@@ -1,0 +1,62 @@
+#!/bin/sh
+# Pandora Data Server startup script
+# Sancho Lerena, <slerena@gmail.com>
+# Linux Version (generic)
+# v1.2 (Ene/2006)
+
+# Configurable path and filenames
+PANDORA_HOME="/opt/pandora_server"
+PANDORA_SERVER_PID="$PANDORA_HOME/var/pandora_server.pid"
+
+# Main script
+
+if [ ! -f $PANDORA_HOME/bin/pandora_server.pl ]
+then
+        echo "Pandora Data Server not found, please check setup and read manual"
+        exit
+fi
+
+case "$1" in
+  start)
+	OLD_PATH="`pwd`"
+	if [ -f $PANDORA_SERVER_PID ]
+	then
+		echo "Pandora Data Server is currently running on this machine. Aborting now..."
+		exit
+	fi
+	
+	cd $PANDORA_HOME/bin
+	./pandora_server.pl $PANDORA_HOME -D
+	MYPID=`ps aux | grep 'pandora_server.pl' | grep -v grep | tail -1 | awk '{print $2}'`
+	if [ ! -z "$MYPID" ]
+	then
+		echo $MYPID > $PANDORA_SERVER_PID
+		echo "Pandora Data Server is now running with PID $MYPID"
+	else
+		echo "Cannot start Pandora Data Server. Aborted"
+	fi
+	cd "$OLD_PATH"
+        ;;
+  stop)
+	if [ -f $PANDORA_SERVER_PID ]
+	then
+	   echo "Stopping Pandora Data Server"
+	   PID_2=`cat $PANDORA_SERVER_PID`
+	   if [ ! -z "`ps -F -p $PID_2 | grep -v grep | grep 'pandora_server'`" ]
+           then
+	       kill `cat $PANDORA_SERVER_PID` 2> /dev/null > /dev/null
+	   fi
+           rm -f $PANDORA_SERVER_PID
+	else
+	  echo "Pandora Data Server is not running, cannot stop it."
+	fi
+        ;;
+  force-reload|restart)
+        $0 stop
+        $0 start
+        ;;
+  *)
+        echo "Usage: pandora_network {start|stop|restart}"
+        exit 1
+esac
+

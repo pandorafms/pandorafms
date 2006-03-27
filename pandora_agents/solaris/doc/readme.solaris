@@ -1,0 +1,30 @@
+Requirements
+============
+
+
+You need MD5 package (from Sunfreeware.com) to run Pandora Agent for Solaris
+
+(ftp://ftp.sunfreeware.com/pub/freeware/sparc/8/md5-6142000-sol8-sparc-local.gz)
+
+
+
+Install MD5 package
+===================
+
+root@suntest:/export/home/root:> gzip -d md5-6142000-sol8-sparc-local.gz
+root@suntest:/export/home/root:> pkgadd -d ./md5-6142000-sol8-sparc-local
+
+The following packages are available:
+  1  SMCmd5     md5
+                (sparc) 6142000
+
+Select package(s) you wish to process (or 'all' to process
+all packages). (default: all) [?,??,q]: 1
+
+SSH Key generation procedure (F-Secure SSH only)
+================================================
+
+If you planning to run Pandora on Linux, when porting a SSH Key from Solaris F-Secure SSH implementation you need to convert from IETF format to OpenSSH format. This could be done using converting utility from Linux OpenSSH implementation:
+
+ssh-keygen -i -f file_ietf_pubkey
+

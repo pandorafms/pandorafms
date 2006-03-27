@@ -1,0 +1,52 @@
+2006/01/04 19:00:59 Launching Pandora Network Server 1.2beta PS060103 
+2006/01/04 19:00:59 [V2] Config options: Logfile at /opt/pandora_server/log/pandora_server.log, Basepath is /opt/pandora_server, Checksum is 1, Master is 1, SNMP Console is 1, Server Threshold at 1 sec, verbosity at 10, Alert Threshold at 60 
+2006/01/04 19:01:43 [V2] Received SNMP Trap from 192.168.5.2 
+2006/01/04 19:01:43 [ERROR] Cannot access to database while updating SNMP Trap data 
+2006/01/04 19:01:43 [V2] [ERROR] SQL Errorcode: Can't call method "prepare" on unblessed reference at ./pandora_network.pl line 522, <SNMPLOGFILE> line 5.
+ 
+2006/01/04 19:03:50 Launching Pandora Network Server 1.2beta PS060103 
+2006/01/04 19:03:50 [V2] Config options: Logfile at /opt/pandora_server/log/pandora_server.log, Basepath is /opt/pandora_server, Checksum is 1, Master is 1, SNMP Console is 1, Server Threshold at 1 sec, verbosity at 10, Alert Threshold at 60 
+2006/01/04 19:06:09 [V2] Received SNMP Trap from 192.168.5.2 
+2006/01/04 19:06:09 [V10] SNMP Alert debug (Custom) cachofa / 8014 
+2006/01/04 19:33:59 Launching Pandora Network Server 1.2beta PS060103 
+2006/01/04 19:33:59 [V2] Config options: Logfile at /opt/pandora_server/log/pandora_server.log, Basepath is /opt/pandora_server, Checksum is 1, Master is 1, SNMP Console is 1, Server Threshold at 1 sec, verbosity at 10, Alert Threshold at 60 
+2006/01/04 19:33:59 FATAL: pandora_audit() cannot connect with database 
+2006/01/04 19:33:59 [V2] FATAL: Error code Can't call method "do" on an undefined value at pandora_db.pm line 582.
+ 
+2006/01/04 19:38:30 Launching Pandora Network Server 1.2beta PS060103 
+2006/01/04 19:38:30 [V2] Config options: Logfile at /opt/pandora_server/log/pandora_server.log, Basepath is /opt/pandora_server, Checksum is 1, Master is 1, SNMP Console is 1, Server Threshold at 1 sec, verbosity at 10, Alert Threshold at 60 
+2006/01/04 19:38:30 FATAL: pandora_audit() cannot connect with database 
+2006/01/04 19:38:30 [V2] FATAL: Error code Can't call method "do" on an undefined value at pandora_db.pm line 592.
+ 
+2006/01/04 20:35:48 Launching Pandora Network Server 1.2beta PS060103 
+2006/01/04 20:35:48 [V2] Config options: Logfile at /opt/pandora_server/log/pandora_server.log, Basepath is /opt/pandora_server, Checksum is 1, Master is 1, SNMP Console is 1, Server Threshold at 1 sec, verbosity at 10, Alert Threshold at 60 
+2006/01/04 20:36:35 Launching Pandora Network Server 1.2beta PS060103 
+2006/01/04 20:36:35 [V2] Config options: Logfile at /opt/pandora_server/log/pandora_server.log, Basepath is /opt/pandora_server, Checksum is 1, Master is 1, SNMP Console is 1, Server Threshold at 1 sec, verbosity at 10, Alert Threshold at 60 
+2006/01/04 20:37:24 Launching Pandora Network Server 1.2beta PS060103 
+2006/01/04 20:37:24 [V2] Config options: Logfile at /opt/pandora_server/log/pandora_server.log, Basepath is /opt/pandora_server, Checksum is 1, Master is 1, SNMP Console is 1, Server Threshold at 1 sec, verbosity at 10, Alert Threshold at 60 
+2006/01/04 20:38:23 Launching Pandora Network Server 1.2beta PS060103 
+2006/01/04 20:38:23 [V2] Config options: Logfile at /opt/pandora_server/log/pandora_server.log, Basepath is /opt/pandora_server, Checksum is 1, Master is 1, SNMP Console is 1, Server Threshold at 1 sec, verbosity at 10, Alert Threshold at 60 
+2006/01/04 20:38:23 [V10] ERROR dame_server_id(): Cannot find server called . Returning -1 
+2006/01/04 20:38:23 [V10] ERROR: SQL Query is select * from tserver where name = 'daeva
+'  
+2006/01/04 20:38:23 [V10] ERROR dame_server_id(): Cannot find server called . Returning -1 
+2006/01/04 20:38:23 [V10] ERROR: SQL Query is select * from tserver where name = 'daeva
+'  
+2006/01/04 20:39:18 Launching Pandora Network Server 1.2beta PS060103 
+2006/01/04 20:39:18 [V2] Config options: Logfile at /opt/pandora_server/log/pandora_server.log, Basepath is /opt/pandora_server, Checksum is 1, Master is 1, SNMP Console is 1, Server Threshold at 1 sec, verbosity at 10, Alert Threshold at 60 
+2006/01/04 20:39:18 [V10] ERROR dame_server_id(): Cannot find server called daeva
+. Returning -1 
+2006/01/04 20:39:18 [V10] ERROR: SQL Query is select * from tserver where name = 'daeva
+'  
+2006/01/04 20:40:36 Launching Pandora Network Server 1.2beta PS060103 
+2006/01/04 20:40:36 [V2] Config options: Logfile at /opt/pandora_server/log/pandora_server.log, Basepath is /opt/pandora_server, Checksum is 1, Master is 1, SNMP Console is 1, Server Threshold at 1 sec, verbosity at 10, Alert Threshold at 60 
+2006/01/04 20:41:06 Launching Pandora Network Server 1.2beta PS060103 
+2006/01/04 20:41:06 [V2] Config options: Logfile at /opt/pandora_server/log/pandora_server.log, Basepath is /opt/pandora_server, Checksum is 1, Master is 1, SNMP Console is 1, Server Threshold at 1 sec, verbosity at 10, Alert Threshold at 60 
+2006/01/04 20:41:36 Launching Pandora Network Server 1.2beta PS060103 
+2006/01/04 20:41:36 [V2] Config options: Logfile at /opt/pandora_server/log/pandora_server.log, Basepath is /opt/pandora_server, Checksum is 1, Master is 1, SNMP Console is 1, Server Threshold at 1 sec, verbosity at 10, Alert Threshold at 60 
+2006/01/04 20:42:01 Launching Pandora Network Server 1.2beta PS060103 
+2006/01/04 20:42:01 [V2] Config options: Logfile at /opt/pandora_server/log/pandora_server.log, Basepath is /opt/pandora_server, Checksum is 1, Master is 1, SNMP Console is 1, Server Threshold at 1 sec, verbosity at 10, Alert Threshold at 60 
+2006/01/04 20:42:20 Launching Pandora Network Server 1.2beta PS060103 
+2006/01/04 20:42:20 [V2] Config options: Logfile at /opt/pandora_server/log/pandora_server.log, Basepath is /opt/pandora_server, Checksum is 1, Master is 1, SNMP Console is 1, Server Threshold at 1 sec, verbosity at 10, Alert Threshold at 60 
+2006/01/04 20:42:47 [V2] Received SNMP Trap from 192.168.5.2 
+2006/01/04 20:42:47 [V10] SNMP Alert debug (Custom) cachofa / 8014 

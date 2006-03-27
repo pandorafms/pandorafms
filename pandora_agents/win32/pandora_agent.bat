@@ -1,0 +1,1 @@
+cscript.exe //B //nologo c:\pandora\pandora_agent.vbs

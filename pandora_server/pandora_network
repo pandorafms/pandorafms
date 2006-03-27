@@ -1,0 +1,62 @@
+#!/bin/sh
+# Pandora Network Server, startup script
+# Sancho Lerena, <slerena@gmail.com>
+# Linux Version (generico)
+# v1.2 (Ene/2006)
+
+# Configurable path and filenames
+PANDORA_HOME="/opt/pandora_server"
+PANDORA_NETWORK_PID="$PANDORA_HOME/var/pandora_network.pid"
+
+# Main script
+
+if [ ! -f $PANDORA_HOME/bin/pandora_network.pl ]
+then
+        echo "Pandora Network Server not found, please check setup and read manual"
+        exit
+fi
+
+case "$1" in
+  start)
+	OLD_PATH="`pwd`"
+	if [ -f $PANDORA_NETWORK_PID ]
+	then
+		echo "Pandora Network Server is currently running on this machine. Aborting now..."
+		exit
+	fi
+	
+	cd $PANDORA_HOME/bin
+	./pandora_network.pl $PANDORA_HOME -D
+	MYPID=`ps aux | grep 'pandora_network.pl' | grep -v grep | tail -1 | awk '{print $2}'`
+	if [ ! -z "$MYPID" ]
+	then
+		echo $MYPID > $PANDORA_NETWORK_PID
+		echo "Pandora Network Server is now running with PID $MYPID"
+	else
+		echo "Cannot start Pandora Network Server. Aborted"
+	fi
+		cd "$OLD_PATH"
+        ;;
+  stop)
+	if [ -f $PANDORA_NETWORK_PID ]
+	then
+	   echo "Stopping Pandora Network Server"
+	   PID_2=`cat $PANDORA_NETWORK_PID`
+	   if [ ! -z "`ps -F -p $PID_2 | grep -v grep | grep 'pandora_network'`" ]
+           then
+	       kill `cat $PANDORA_NETWORK_PID` 2> /dev/null > /dev/null
+	   fi
+           rm -f $PANDORA_NETWORK_PID
+	else
+	  echo "Pandora Network Server is not running, cannot stop it."
+	fi
+        ;;
+  force-reload|restart)
+        $0 stop
+        $0 start
+        ;;
+  *)
+        echo "Usage: pandora_network {start|stop|restart}"
+        exit 1
+esac
+

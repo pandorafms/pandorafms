@@ -1,0 +1,26 @@
+#god a {display: block; color: #000; text-decoration: none;}
+#god a:hover {background-color: #efefbd;}
+#god li {padding: 2px 0px 2px 30px; position:relative; left: 1px; width:99%; border-bottom: 1px solid #d4d4d4; border-top: 1px solid #ffffff;}
+#god1 li, #god2 li, #god3 li, #god4 li, #god5 li, #god6 li, #god7 li, #god8 li, #arrowg li {padding-top: 0px; padding-bottom: 0px; padding-right: 0px;}
+div#god1>ul, div#god2>ul, div#god3>ul, div#god4>ul, div#god5>ul, div#god6>ul, div#god7>ul, div#god8>ul {width:124px;}
+#god1 li {background: url(../../images/god1.gif) no-repeat; background-position: 4px 2px;}
+#god2 li {background: url(../../images/god2.gif) no-repeat; background-position: 4px 3px;}
+#god3 li {background: url(../../images/god3.gif) no-repeat; background-position: 5px 2px;}
+#god4 li {background: url(../../images/god4.gif) no-repeat; background-position: 5px 4px;}
+#god5 li {background: url(../../images/god5.gif) no-repeat; background-position: 4px 3px;}
+#god6 li {background: url(../../images/god6.gif) no-repeat; background-position: 4px 3px;}
+#god7 li {background: url(../../images/god7.gif) no-repeat; background-position: 5px 3px;}
+#god8 li {background: url(../../images/god8.gif) no-repeat; background-position: 3px 3px;}
+#god1 li:hover {background: #efefbd url(../../images/god1.gif) no-repeat; background-position: 4px 2px;}
+#god2 li:hover {background: #efefbd url(../../images/god2.gif) no-repeat; background-position: 4px 3px;}
+#god3 li:hover {background: #efefbd url(../../images/god3.gif) no-repeat; background-position: 5px 2px;}
+#god4 li:hover {background: #efefbd url(../../images/god4.gif) no-repeat; background-position: 5px 4px;}
+#god5 li:hover {background: #efefbd url(../../images/god5.gif) no-repeat; background-position: 4px 3px;}
+#god6 li:hover {background: #efefbd url(../../images/god6.gif) no-repeat; background-position: 4px 3px;}
+#god7 li:hover {background: #efefbd url(../../images/god7.gif) no-repeat; background-position: 5px 3px;}
+#god8 li:hover {background: #efefbd url(../../images/god8.gif) no-repeat; background-position: 3px 3px;}
+#arrowg ul {padding: 0px 0px 0px 0px; list-style: none;} 
+#arrowg li {padding: 0px 0px 0px 15px; background: #f5f5dc url(../../images/arrow.gif) no-repeat; background-position: 2px 4px; position:relative; left: 30px; width:80%;}
+div#arrowg>ul {width: 88%;}
+#arrowg li:hover {background: #efefbd url(../../images/arrow.gif) no-repeat; background-position: 2px 4px;}
+div#menug {background-color:#f5f5dc; border-width:1px; border-style:solid; border-color:#4a6629; width: 155px; margin-bottom: 15px;}

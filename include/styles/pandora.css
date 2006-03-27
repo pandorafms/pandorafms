@@ -1,0 +1,105 @@
+/* 
+Pandora  - The Free Source Monitoring System
+This code is protected by GPL license.
+Este código esta protegido por la licencia GPL.
+Sancho Lerena <slerena@gmail.com>, 2003-2006
+Raúl Mateos <raulofpandora@gmail.com>, 2004-2006
+*/
+
+@import url(op.css);
+@import url(god.css);
+@import url(link.css);
+@import url(tip.css);
+@import url(calendar.css);
+body {background:url(../../images/fondo_serpent.jpg);}
+* {font-family: Verdana, sans-serif, Arial, Helvetica; font-size: 11px;}
+select, textarea, input {font-size: 12px;}
+textarea {border: 1px solid Silver; -moz-border-radius: 3%; padding: 5px;}
+input {border: 1px solid Silver; -moz-border-radius: 1%; padding: 2px 3px 4px 3px; height: 23px;}
+option {height: 16px;}
+h1, h2 {color: #103a3a;}
+h3 {color: #3c566d; font-size: 13px;}
+h1 {font-size: 16px;}
+h2 {font-size: 15px;}
+a {color: #486787; text-decoration: none;}
+a:hover {color: #003a3a; text-decoration: underline;}
+p.center {text-align: center;}
+h1#log {border-bottom: 1px solid #778866; padding-bottom: 3px; margin-top: 5em; width: 29em; text-align: left;}
+h1#log_f, h1#db_fh1  {color: #ff0000; border-bottom: 1px solid #ff0000; padding-bottom: 3px;}
+div#login {text-align: left; border: 1px solid #999999; margin-top: 2em; margin-bottom: -1em; padding: 0.5em; width: 40em;background:url(../../images/fondo_serpent.jpg);}
+div#login_f {text-align: left; margin: auto; padding: 0.5em; width: 48em; margin-top: 5em;}
+div#db_f {text-align: justify; margin:auto; padding: 0.5em; width: 55em; margin-top: 3em;}
+div#login_box {float:right; padding-right: 10px; margin-top: 25px; width: 140px;}
+div#logo_box {margin-top: 25px; padding-left: 5px;}
+div#noaccess {width: 350px; padding-left: 40px;}
+div#activity{padding-top: 18px; padding-bottom: 18px;}
+div#noa {float:right; padding-right: 50px; margin-top: 25px;}
+div#db_ftxt {float:right; padding-top: 10px;}
+#page {width:960px;}
+#main {width:780px; float:right;}
+#menu {width:155px; float:left;}
+div#page>div#menu {width:157px;}
+#head {border-bottom: 1px solid #708090; text-align: right; padding-bottom: 10px; font-size: 10px; width: 100%; margin-bottom: 27px;}
+#foot {padding-top: 25px; text-align: center; clear: both;}
+#ver {margin-bottom: 25px;}
+#ip {margin-top: 10px; clear: both;}
+label {display: block; float:left; padding-top: 4px;}
+th > label {padding-top: 7px;}
+input:hover {background-color: #d4dccd;}
+input.chk {border: 0px none; height: 14px;}
+input.datos {background-color: #f5f5f5;}
+input.datos_readonly {background-color: #050505;}
+input.login {border-color: #778866; background-color: #f5f5f5; margin: 2px 0 8px; width: 90px;}
+input.sub {font-weight: bold; border-bottom-color: #708090; border-right-color: #708090; -moz-border-radius: 5%; font-size: 11px;}
+th {color: #ffffff; background-color: #778866;}
+td.datos, td.datost, td.datosb, td.datos_id, td.datosf9, td.datosf9i, td.datos_jus, td.w30d, td.w40d, td.w90d, td.w135d, td.w180d, td.w230d {background-color: #f5f5f5;}
+td.datos2 {background-color: #c5c5d5;}
+td.datos_id {color: #1a313a;}
+td.datos_jus {text-align: justify;}
+.bg , .bgt {background-color: #4a6629;}
+.bg {position:relative; height: 20px; width: 100%;}
+.f10, .w155f10, #ip {font-size: 10px; text-align: center;}
+.f9, .f9i, .f9b, td.f9, td.f9i, td.datosf9, td.datosf9i, .f9l20, .f9l30  {font-size: 9px;}
+.f9i {font-style: italic;}
+td.datos_id, .f9b {font-weight: bold;}
+.f9l20 {padding-left: 20px;}
+.f9l30, .f9130t {padding-left: 30px;}
+.jus {text-align: justify;}
+.tit {padding-top: 3px;}
+.tit, .titb {font-weight: bold; color: white; text-align: center;}
+.error {color: #ff0000; background:url(../../images/error.gif) no-repeat; padding: 4px 1px 6px 30px;}
+.red  {color: #ff0000;}
+.sep {margin-left: 30px; border-bottom: 1px solid #708090; width: 100%;}
+.suc {color: #5a8629; background: url(../../images/suc.gif) no-repeat 1px; padding: 4px 1px 6px 30px;}
+.green {color: #5a8629;}
+.raya {border-top: 1px solid #778866; width: 100%;}
+.raya, .noraya {margin-bottom: -10px;}
+.p10 {padding-top: 1px; padding-bottom: 0px;}
+.p21 {padding-top: 2px; padding-bottom: 1px;}
+.w30, .w30d {width: 30px;}
+.w40, .w40d {width: 40px;}
+.w45 {width: 45px;}
+.w70 {width: 70px;}
+.w80 {width: 80px;}
+.w90d {width: 90px;}
+.w100 {width: 100px;}
+.w120 {width: 120px;}
+.w130 {width: 130px;}
+.w135, .w135d {width: 135px;}
+.w140 {width: 140px;}
+.w155, .w155f10 {width: 155px;}
+.top, .bgt, .f9130t, td.datost {vertical-align: top;}
+.bot, .titb, td.datosb {vertical-align: bottom;}
+.w180, .w180d {width: 180px;}
+.w200 {width: 200px;}
+.w230d {width: 230px;}
+.w255 {width: 255px;}
+.w540 {width: 540px;}
+.w550 {width: 550px:}
+.msg {margin-top: 15px; text-align: justify;}
+img.help {padding-left: 9px; vertical-align: top;}
+ul.mn {list-style: none; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; line-height: 24px;}
+a.mn {font-family: Arial, Verdana, Helvetica;}
+.imgl {position:absolute; top:0; left:0;}
+.imgr {position:absolute; top:0; right:-1;}
+div.imgr>img {position:absolute; top:0; right:1;}

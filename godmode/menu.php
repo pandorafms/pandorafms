@@ -36,15 +36,15 @@ if (comprueba_login() == 0){
 	}
 	if ( (give_acl($id_user, 0, "PM")==1)){
 		echo '<div id="god4"><ul class="mn"><li><a href="index.php?sec=gperfiles&amp;sec2=godmode/perfiles/lista_perfiles" class="mn">'.$lang_label["manage_profiles"].'</a></li></ul></div>';
-		echo '<div id="god8"><ul class="mn"><li><a href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server" class="mn">'.$lang_label["manage_servers"].'</a></li></ul></div>';
-        echo '<div id="god5"><ul class="mn"><li><a href="index.php?sec=godmode/admin_access_logs" class="mn">'.$lang_label["system_audit"].'</a></li></ul></div>';
-		echo '<div id="god6"><ul class="mn"><li><a href="index.php?sec=gsetup&amp;sec2=godmode/setup/setup" class="mn">'.$lang_label["setup_screen"].'</a></li></ul></div>';
+		echo '<div id="god5"><ul class="mn"><li><a href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server" class="mn">'.$lang_label["manage_servers"].'</a></li></ul></div>';
+        echo '<div id="god6"><ul class="mn"><li><a href="index.php?sec=godmode/admin_access_logs" class="mn">'.$lang_label["system_audit"].'</a></li></ul></div>';
+		echo '<div id="god7"><ul class="mn"><li><a href="index.php?sec=gsetup&amp;sec2=godmode/setup/setup" class="mn">'.$lang_label["setup_screen"].'</a></li></ul></div>';
 		if (isset($_GET["sec"]) && $_GET["sec"] == "gsetup"){
 			echo "<div id='arrowg'><ul class='mn'><li><a href='index.php?sec=gsetup&amp;sec2=godmode/setup/links' class='mn'>".$lang_label["setup_links"]."</a></li></ul></div>";
 		}
 	}
 	if ((give_acl($id_user, 0, "DM")==1)){
-		echo '<div id="god7"><ul class="mn"><li><a href="index.php?sec=gdbman&amp;sec2=godmode/db/db_main" class="mn">'.$lang_label["db_maintenance"].'</a></li></ul></div>';
+		echo '<div id="god8"><ul class="mn"><li><a href="index.php?sec=gdbman&amp;sec2=godmode/db/db_main" class="mn">'.$lang_label["db_maintenance"].'</a></li></ul></div>';
 		if (isset($_GET["sec"]) && $_GET["sec"] == "gdbman"){
 			echo "<div id='arrowg'><ul class='mn'><li><a href='index.php?sec=gdbman&amp;sec2=godmode/db/db_info' class='mn'>".$lang_label["db_info"]."</a></li>";
 			echo "<li><a href='index.php?sec=gdbman&amp;sec2=godmode/db/db_purge' class='mn'>".$lang_label["db_purge"]."</a></li>";

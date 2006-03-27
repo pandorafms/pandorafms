@@ -7,18 +7,18 @@ div#god1>ul, div#god2>ul, div#god3>ul, div#god4>ul, div#god5>ul, div#god6>ul, di
 #god2 li {background: url(../../images/god2.gif) no-repeat; background-position: 4px 3px;}
 #god3 li {background: url(../../images/god3.gif) no-repeat; background-position: 5px 2px;}
 #god4 li {background: url(../../images/god4.gif) no-repeat; background-position: 5px 4px;}
-#god5 li {background: url(../../images/god5.gif) no-repeat; background-position: 4px 3px;}
+#god5 li {background: url(../../images/god5.gif) no-repeat; background-position: 3px 3px;}
 #god6 li {background: url(../../images/god6.gif) no-repeat; background-position: 4px 3px;}
-#god7 li {background: url(../../images/god7.gif) no-repeat; background-position: 5px 3px;}
-#god8 li {background: url(../../images/god8.gif) no-repeat; background-position: 3px 3px;}
+#god7 li {background: url(../../images/god7.gif) no-repeat; background-position: 4px 3px;}
+#god8 li {background: url(../../images/god8.gif) no-repeat; background-position: 5px 3px;}
 #god1 li:hover {background: #efefbd url(../../images/god1.gif) no-repeat; background-position: 4px 2px;}
 #god2 li:hover {background: #efefbd url(../../images/god2.gif) no-repeat; background-position: 4px 3px;}
 #god3 li:hover {background: #efefbd url(../../images/god3.gif) no-repeat; background-position: 5px 2px;}
 #god4 li:hover {background: #efefbd url(../../images/god4.gif) no-repeat; background-position: 5px 4px;}
-#god5 li:hover {background: #efefbd url(../../images/god5.gif) no-repeat; background-position: 4px 3px;}
+#god5 li:hover {background: #efefbd url(../../images/god5.gif) no-repeat; background-position: 3px 3px;}
 #god6 li:hover {background: #efefbd url(../../images/god6.gif) no-repeat; background-position: 4px 3px;}
-#god7 li:hover {background: #efefbd url(../../images/god7.gif) no-repeat; background-position: 5px 3px;}
-#god8 li:hover {background: #efefbd url(../../images/god8.gif) no-repeat; background-position: 3px 3px;}
+#god7 li:hover {background: #efefbd url(../../images/god7.gif) no-repeat; background-position: 4px 3px;}
+#god8 li:hover {background: #efefbd url(../../images/god8.gif) no-repeat; background-position: 5px 3px;}
 #arrowg ul {padding: 0px 0px 0px 0px; list-style: none;} 
 #arrowg li {padding: 0px 0px 0px 15px; background: #f5f5dc url(../../images/arrow.gif) no-repeat; background-position: 2px 4px; position:relative; left: 30px; width:80%;}
 div#arrowg>ul {width: 88%;}

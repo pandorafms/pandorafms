@@ -1,3 +1,8 @@
+Configure
+=========
+Change the values in the ./conf/pandora_server.conf file to your own values: servername, IP and so.
+
+
 SNMP Troubleshooting
 ====================
 

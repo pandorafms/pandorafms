@@ -1,7 +1,7 @@
 #god a {display: block; color: #000; text-decoration: none;}
 #god a:hover {background-color: #efefbd;}
 #god li {padding: 2px 0px 2px 30px; position:relative; left: 1px; width:99%; border-bottom: 1px solid #d4d4d4; border-top: 1px solid #ffffff;}
-#god1 li, #god2 li, #god3 li, #god4 li, #god5 li, #god6 li, #god7 li, #god8 li, #arrowg li {padding-top: 0px; padding-bottom: 0px; padding-right: 0px;}
+#god1 li, #god2 li, #god3 li, #god4 li, #god5 li, #god6 li, #god7 li, #god8 li {padding-top: 0px; padding-bottom: 0px; padding-right: 0px;}
 div#god1>ul, div#god2>ul, div#god3>ul, div#god4>ul, div#god5>ul, div#god6>ul, div#god7>ul, div#god8>ul {width:124px;}
 #god1 li {background: url(../../images/god1.gif) no-repeat; background-position: 4px 2px;}
 #god2 li {background: url(../../images/god2.gif) no-repeat; background-position: 4px 3px;}

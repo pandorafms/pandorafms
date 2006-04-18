@@ -1,7 +1,7 @@
 #op a {display: block; color: #000; text-decoration: none;}
 #op a:hover {background-color: #d4ddc6; text-decoration: none;}
 #op li {padding: 2px 0px 2px 28px; position:relative; left: 0px; width:100%; border-bottom: 1px solid #d4d4d4; border-top: 1px solid #eee;}
-#op1 li, #op2 li, #op3 li, #op4 li, #op5 li, #op6 li, #op7 li, #arrow li {padding-top: 0px; padding-bottom: 0px; padding-right: 1px;}
+#op1 li, #op2 li, #op3 li, #op4 li, #op5 li, #op6 li, #op7 li {padding-top: 0px; padding-bottom: 0px; padding-right: 1px;}
 div#op1>ul, div#op2>ul, div#op3>ul, div#op4>ul, div#op5>ul, div#op6>ul, div#op7>ul {width:126px;}
 #op1 li {background: url(../../images/op1.gif) no-repeat; background-position: 4px 3px;}
 #op2 li {background: url(../../images/op2.gif) no-repeat; background-position: 3px 3px;}

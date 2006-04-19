@@ -12,9 +12,9 @@
 		<div id="login_box">
 			<form method="post" action="index.php?login=1">
 				<div class="f9b">Login</div>
-				<input class="login" type="text" name="nick" value="demo">
+				<input class="login" type="text" name="nick" value="">
 				<div class="f9b">Password</div>
-				<input class="login" type="password" name="pass" value="demo">
+				<input class="login" type="password" name="pass" value="">
 				<div><input type="submit" class="sub" value="Login"></div>
 			</form>
 		</div>

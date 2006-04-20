@@ -124,7 +124,7 @@ if (comprueba_login() == 0)
 			}
 		 	unset($id_perfil);
 		}
-		echo '<h2>'.$lang_label["profile_title"].'<a href="help/chap2_en.php#21" target="_help"><img src="images/ayuda.gif" border="0" class="help"></a></h2>';     
+		echo '<h2>'.$lang_label["profile_title"].'<a href="help/'.substr($language_code,0,2).'/chap2.php#21" target="_help"><img src="images/ayuda.gif" border="0" class="help"></a></h2>';     
 		echo (isset($_GET["new_profile"]))?
 		("<h3>".$lang_label["create_profile"]."</h3>"):
 		((isset($_GET["edit_profile"]))?("<h3>".$lang_label["update_profile"]."</h3>"):

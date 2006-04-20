@@ -13,7 +13,7 @@ if (comprueba_login() == 0) {
 
 echo "<img src='images/pulpo_lupa.gif' align='right' class='bot'>";	
 echo "<h2>".$lang_label["incident_manag"]."</h2>";
-echo "<h3>".$lang_label["find_crit"]." <a href='help/chap4_en.php#43' target='_help'><img src='images/ayuda.gif' border='0' class='help'></a></h3>";
+echo "<h3>".$lang_label["find_crit"]." <a href='help/".substr($language_code,0,2)."/chap4.php#43' target='_help'><img src='images/ayuda.gif' border='0' class='help'></a></h3>";
 ?>
 <table width="500" cellpadding="3" cellspacing="3">
 <form name="busqueda" method="post" action="index.php?sec=incidencias&sec2=operation/incidents/incident">

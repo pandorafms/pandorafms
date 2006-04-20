@@ -55,7 +55,7 @@ if (comprueba_login() == 0) {
 	$last_label = "";
 	$result3=mysql_query($sql3);
 	if (mysql_num_rows ($result3)) {
-	echo "<h3>".$lang_label["last_data_chunk"]."<a href='help/chap3_en.php#3322' target='_help'><img src='images/ayuda.gif' border='0' class='help'></a></h3>";
+	echo "<h3>".$lang_label["last_data_chunk"]."<a href='help/".substr($language_code,0,2)."/chap3.php#3322' target='_help'><img src='images/ayuda.gif' border='0' class='help'></a></h3>";
 	echo "<table width='750' cellpadding='3' cellspacing='3'><th>X<th>".$lang_label["module_name"];
 	echo "<th>".$lang_label["type"]."<th>".$lang_label["int"]."<th>".$lang_label["description"]."<th>".$lang_label["data"]."<th>".$lang_label["graph"]."<th>".$lang_label["raw_data"]."<th>".$lang_label["timestamp"];
 	$texto='';

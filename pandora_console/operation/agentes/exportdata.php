@@ -64,7 +64,7 @@ if (comprueba_login() == 0)
 		} else { // Form view
 			?>
 			<h2><?php echo $lang_label["ag_title"] ?></h2>
-			<h3><?php echo $lang_label["export_data"] ?><a href='help/chap3_en.php#336' target='_help'><img src='images/ayuda.gif' border='0' class='help'></a></h3>
+			<h3><?php echo $lang_label["export_data"] ?><a href='help/<?php echo substr($language_code,0,2);?>/chap3.php#336' target='_help'><img src='images/ayuda.gif' border='0' class='help'></a></h3>
 			<form method="post" action="index.php?sec=estado&sec2=operation/agentes/exportdata&operacion=1" name="export_form">
 			<table width=550 border=0 cellspacing=3 cellpadding=5 class=fon>
 			<tr>

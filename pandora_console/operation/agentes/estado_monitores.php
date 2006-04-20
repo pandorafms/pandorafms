@@ -20,7 +20,7 @@ if (comprueba_login() == 0) {
 	
 	if (mysql_num_rows ($result_t)) {
 
-		echo "<h3>".$lang_label["monitor_listing"]."<a href='help/chap3_en.php#3323' target='_help'><img src='images/ayuda.gif' border='0' class='help'></a></h3>";
+		echo "<h3>".$lang_label["monitor_listing"]."<a href='help/".substr($language_code,0,2)."/chap3.php#3323' target='_help'><img src='images/ayuda.gif' border='0' class='help'></a></h3>";
 		echo "<table width='750' cellpadding=3 cellspacing=3>";
 		echo "<tr><th>".$lang_label["type"]."<th>".$lang_label["module_name"]."<th>".$lang_label["description"]."<th>".$lang_label["status"]."<th>".$lang_label["interval"]."<th>".$lang_label["last_contact"];
 	while ($row_t=mysql_fetch_array($result_t)){

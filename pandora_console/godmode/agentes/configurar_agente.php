@@ -568,7 +568,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 	}
 ?>
 
-<h2><?php echo $lang_label["agent_conf"]; ?><a href="help/chap3_en.php#32" target="_help"><img src="images/ayuda.gif" border="0" class="help"></a></h2>
+<h2><?php echo $lang_label["agent_conf"]; ?><a href="help/<?php echo substr($language_code,0,2);?>/chap3.php#32" target="_help"><img src="images/ayuda.gif" border="0" class="help"></a></h2>
 <?php
 if (isset($_GET["creacion"])){echo "<h3>".$lang_label["create_agent"]."</h3>";}
 else {echo "<h3>".$lang_label["update_agent"]."</h3>";}

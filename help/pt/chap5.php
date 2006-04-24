@@ -27,7 +27,7 @@ div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
 <h1>Not translated yet / No se ha traducido todav&iacute;a</h1>
 
 <p>Please use <a href="../en/toc.php">English version</a> or <a href="../es/toc.php"> Spanish version</a>.</p>
-<p>Utiliza la versi&oacute;n en <a href="../en/toc.php">castellano (espa&ntilde;ol)</a> o en <a href="../en/toc.php">ingl&eacute;s.</a>
+<p>Utiliza la versi&oacute;n en <a href="../es/toc.php">castellano (espa&ntilde;ol)</a> o en <a href="../en/toc.php">ingl&eacute;s.</a>
 
 
 </body>

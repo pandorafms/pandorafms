@@ -68,7 +68,7 @@ if (comprueba_login() == 0)
 				$grupo[$array_index]["group"]=dame_nombre_grupo($migrupo);
 				$contador_agente++;	//  Estado grupo, agent
 				if ($down ==0){
-					$sql2="SELECT * FROM tagente_modulo WHERE ( id_tipo_modulo = 2 OR id_tipo_modulo = 6 or id_tipo_modulo = 10 ) and id_agente =".$row1["id_agente"];
+					$sql2="SELECT * FROM tagente_modulo WHERE ( id_tipo_modulo = 2 OR id_tipo_modulo = 6 OR id_tipo_modulo = 10 ) and id_agente =".$row1["id_agente"];
 					$result2=mysql_query($sql2);
 					while ($row2 = mysql_fetch_array($result2)){
 						$sql3="SELECT * FROM tagente_estado WHERE id_agente_modulo = ".$row2["id_agente_modulo"];
@@ -141,10 +141,13 @@ echo "<br>";
 				$celda = "<td class='bot'><a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=".$grupo[$real_count]["id_grupo"]."' border=0>".$celda."</a><br><br>".$icono_type."<br><br><b><font size=2 face='arial,verdana,sans'>".$group_name."</b><br>";
 
 				$celda = $celda."<table border='0' cellspacing='2' cellpadding='0'>";
-				$celda = $celda."<tr><td class='datos'>".$lang_label["agents"].": <td class='datos'><b>".$grupo[$real_count]["agent"]."</b></font>";
+				$celda = $celda."<tr><th colspan='2' width='90'>".$lang_label["agents"].": </th></tr>";
+				$celda = $celda."<tr><td colspan='2' class='datos' align='center'><b>".$grupo[$real_count]["agent"]."</b></font>";
+				$celda = $celda."<tr><th colspan='2'>".ucfirst($lang_label["monitors"]).":</th></tr>";
 				$celda = $celda."<tr><td class='datos'>".$lang_label["ok"].": <td class='datos'><b><font color='green'>".$grupo[$real_count]["ok"]."</b></font>";
 				$celda = $celda."<tr><td class='datos'>".$lang_label["down"].": <td  class='datos'><b><font color='#808080'>".$grupo[$real_count]["down"]."</b></font>";
 				$celda = $celda."<tr><td class='datos'>".$lang_label["fail"].": <td  class='datos'><b><font class='red'>".$grupo[$real_count]["bad"]."</b></font>";
+				$celda = $celda."<tr><td colspan='2'><div class='raya'></div></td></tr>";
 				$celda = $celda."</table>";
 				$celda = $celda."</td>";
 				echo $celda;

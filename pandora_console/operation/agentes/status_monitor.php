@@ -74,7 +74,7 @@ if (comprueba_login() == 0) {
 		echo "<option>".$ag_modulename;
 	} 
 	echo "<option>---";
-	$sql='SELECT DISTINCT nombre FROM tagente_modulo where (id_tipo_modulo = 2) OR (id_tipo_modulo = 9) OR (id_tipo_modulo = 12) OR (id_tipo_modulo = 18) OR (id_tipo_modulo = 6) ';
+	$sql='SELECT DISTINCT nombre FROM tagente_modulo WHERE (id_tipo_modulo = 2) OR (id_tipo_modulo = 9) OR (id_tipo_modulo = 12) OR (id_tipo_modulo = 18) OR (id_tipo_modulo = 6) ';
 	$result=mysql_query($sql);
 	while ($row=mysql_fetch_array($result)){
 		echo "<option>".$row[0];
@@ -121,7 +121,7 @@ if (comprueba_login() == 0) {
 						$query_gen2='SELECT * FROM tagente_estado WHERE id_agente_modulo = '.$data["id_agente_modulo"];
 						$result_gen2=mysql_query($query_gen2);
 						$data2=mysql_fetch_array($result_gen2);
-						echo "<td class='datos' width=20>";
+						echo "<td class='datos' align='center' width=20>";
 						if ($data2["datos"] > 0){
 							echo "<img src='images/b_green.gif'>";
 						} else {
@@ -133,6 +133,12 @@ if (comprueba_login() == 0) {
 			}
 		}
 		echo "<tr><td colspan='8'><div class='raya'></div></td></tr></table>";
+		echo "<br><table>";
+		echo "<tr><td class='f9i'>";
+		echo "<img src='images/b_green.gif'> - ".$lang_label["green_light"]."</td><td>&nbsp;</td>";
+		echo "<td class='f9i'>";
+		echo "<img src='images/b_red.gif'> - ".$lang_label["red_light"]."</td>";
+		echo "</table>";
 	} else {
 		echo "<font class='red'>".$lang_label["no_agent"]."</font>";
 	}

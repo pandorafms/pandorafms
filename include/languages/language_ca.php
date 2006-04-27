@@ -471,21 +471,21 @@ $lang_label["incident_user"]="Crador de l'incident";
 $lang_label["incident_source"]="Origen de l'incident";
 $lang_label["incident_group"]="Grups d'incident";
 $lang_label["users_statistics"]="Estadístiques d'activitat del usuaris";
-// 15 Agosto 2005
+
 $lang_label["agent_detail"]="Detalls de l'agent";
-// 29 Agosto 2005
+
 $lang_label["snmp_console_alert"]="Alertes SNMP";
 $lang_label["OID"]="OID";
 $lang_label["SNMP_agent"]="Agent SNMP";
 $lang_label["SNMP_console"]="Consola SNMP";
 $lang_label["customvalue"]="Valor personalitzat";
-// 30 ago 2005
+
 $lang_label["agent_type"]="Tipus d'agent ";
 $lang_label["snmp_assigned_alerts"]="Alertes SNMP";
-// 29 Sep 2005
+
 $lang_label["max_alerts"]="Nombre màxim d'alertes";
 $lang_label["min_alerts"]="Nombre mínim d'alertes";
-// 01 Oct 2005
+
 $lang_label["module_group"]="Grup de mòduls";
 $lang_label["ip_target"]="IP destí";
 $lang_label["tcp_rcv"]="TCP rebre";
@@ -500,7 +500,7 @@ $lang_label["server_asigned"]="Servidor assignat";
 $lang_label["remote"]="Remot";
 $lang_label["default_server"]="Per defecte (Servidor Actiu)";
 $lang_label["incident_manag"]="Gestió d'íncidents";
-//Nov 2005 - Messages
+
 $lang_label["del_message_ok"]="Messatge esborrat amb èxit";
 $lang_label["del_message_no"]="There was a problem deleting message";
 $lang_label["read_mes"]="Llegir mensatges";
@@ -522,22 +522,22 @@ $lang_label["new_message_ket"]=" mensatge(s) no llegits.";
 $lang_label["no_subject"]="Sense asumpte";
 $lang_label["read"]="Llegir";
 $lang_label["reply"]="Respondre";
-// 06-08 Dec 2005
+
 $lang_label["general_config"]="Configuració general";
 $lang_label["no_profile"]="Aquest usuari no te asignat cap perfil/grup";
 $lang_label["no_agent"]="No hi ha agents inclosos en aquest grup";
 $lang_label["no_change_field"]="Aquest camp no pot ser modificat mentre s'està editant";
 $lang_label["no_alert"]="Cap agent d'aquest grup te una alerta asignada";
 $lang_label["total_data"]="Dades totals";
-// 16-19 Dec 2005
+
 $lang_label["no_incidents"]="Cap incident coincideis amb la teva cerca";
 $lang_label["no_agent_alert"]=" doncs no hi ha alertes";
-// 20-24 Dec 2005
+
 $lang_label["wrote"]=" va escriure";
 $lang_label["no_snmp_agent"]="No hi ha agents SNMP";
 $lang_label["no_snmp_alert"]="No hi ha alertes SNMP";
 $lang_label["no_agent_def"]="No hi ha agents definits";
-// 5 Jan 2006
+
 $lang_label["view_servers"]="Servidors Pandora";
 $lang_label["no_server"]="No hi ha servidors configurats en la base de dades";
 $lang_label["master"]="Principal";
@@ -551,9 +551,9 @@ $lang_label["no_modules"]="Aquest agent no té cap mòdul";
 $lang_label["no_monitors"]="Aquest agent no té cap monitor";
 $lang_label["no_alerts"]="Aquest agent no té cap alerta";
 $lang_label["server"]="Servidor";
-// 8 Jan 2006
+
 $lang_label["no_sel_mod"]="No s'ha seleccionat cap mòdul";
-// 11 -15 Jan 2006
+
 $lang_label["no_event"]="No hi ha cap event";
 $lang_label["agent_access_rate"]="Accessibilitat de l'agent (24h)";
 $lang_label["agent_module_shareout"]="Distribució de mòduls";
@@ -566,14 +566,12 @@ $lang_label["del_server_ok"]="Servidor esborrat amb èxit";
 $lang_label["del_server_no"]="Hi ha hagut un problema esborrant el servidor";
 $lang_label["groups"]="grups";
 
-// 23-24 Jan 2006
 $lang_label["other"]="Altres";
 $lang_label["icon"]="Icones";
 $lang_label["agent_exists"]="Aquest agent ja existeix"; // BUG: WC-50518-2
 $lang_label["graph_order"]="Ordre del gràfic";
 $lang_label["truetype"]="Fonts Truetype";
 
-// 29 Jan 2006
 $lang_label["right_left"]="Dre. a Esq."; //dreta a esquerra
 $lang_label["left_right"]="Esq. a Dre."; //esquerra a dreta
 

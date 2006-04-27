@@ -320,13 +320,13 @@ sub procesa_datos {
 					module_generic_proc($pa_config,$part,$timestamp,$agent_name,"generic_proc", $dbh);
 				}
 				else {
-					logger($pa_config,"ERROR: Ha llegado un modulo desconocido ($tipo_modulo)",2);
+					logger($pa_config,"ERROR: Received data from an unknown module ($tipo_modulo)",2);
 				}
 			}
 		} else {
 			logger($pa_config,"ERROR: There is no agent defined with name $agent_name ($id_agente)",2);
 		}
 	} else {
-		logger($pa_config,"ERROR: Received data from a unnamed agent",1);
+		logger($pa_config,"ERROR: Received data from an unnamed agent",1);
 	}
 }

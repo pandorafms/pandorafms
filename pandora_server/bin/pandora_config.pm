@@ -35,7 +35,7 @@ sub help_screen {
 	printf "Permission is granted to copy, distribute and/or modify this document \n";
     	printf "under the terms of the GNU Free Documentation License, Version 2.0 \n";
     	printf "or any later version published by the Free Software Foundation at www.gnu.org \n\n";
-	printf "\n\nSintax: \n  pandora_xxxxxxx.pl <fullpathname to PANDORA HOME directory> [ options ] \n\n";
+	printf "\n\nSyntax: \n  pandora_xxxxxxx.pl <fullpathname to PANDORA HOME directory> [ options ] \n\n";
 	printf "Following options are optional : \n";
 	printf "            -v  :  Verbose mode activated, give more information in logfile \n";
 	printf "            -d  :  Debug mode activated, give extensive information in logfile \n";
@@ -54,14 +54,14 @@ sub pandora_init {
 	my $pa_config = $_[0];
 	my $init_string = $_[1];
 	printf "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-2006 <slerena\@gmail.com>\n";
-	printf "You can download latest versions and documentation in http://pandora.sf.net \n\n";
+	printf "You can download latest versions and documentation at http://pandora.sourceforge.net. \n\n";
 
 	# Check we are running Linux
 	die "[ERROR] This isn't Linux. Pandora Server its only OFFICIALLY supported in Linux\nContact us if you require assistance running Pandora Server over other OS\n\n" unless ($^O =~ m/linux/i);
 
 	# Load config file from command line
 	if ($#ARGV == -1 ){
-		print "I Need at least one parameter: Complete path to Pandora HOME Directory \n";
+		print "I Need at least one parameter: Complete path to Pandora HOME Directory. \n";
 		help_screen;
 		exit;
 	}
@@ -82,7 +82,7 @@ sub pandora_init {
 		else { ($pa_config->{"pandora_path"} = $parametro); }
 	}
 	if ($pa_config->{"pandora_path"} eq ""){
-		print "I Need at least one parameter: Complete path to Pandora HOME Directory \n";
+		print "I Need at least one parameter: Complete path to Pandora HOME Directory. \n";
 		exit;
 	}
 }
@@ -125,11 +125,11 @@ sub pandora_loadconfig {
 
 	# Check for UID0
 	if ($> == 0){
-		printf " [W] This is not a good idea running Pandora Server as root user, please DONT!\n";
+		printf " [W] It is not a good idea running Pandora Server as root user, please DON'T DO IT!\n";
 	}
 	# Check for file
 	if ( ! -e $archivo_cfg ) {
-		printf "\n[ERROR] Cannot open configuration file at $archivo_cfg. \nPlease specify a valid Pandora Home Directory in command line \n";
+		printf "\n[ERROR] Cannot open configuration file at $archivo_cfg. \nPlease specify a valid Pandora Home Directory in command line. \n";
 		exit 1;
 	}
 	# Collect items from config file and put in an array 
@@ -179,42 +179,42 @@ sub pandora_loadconfig {
  
  	# Check for valid token token values
  	if (( $pa_config->{"dbuser"} eq "" ) || ( $pa_config->{"basepath"} eq "" ) || ( $pa_config->{"incomingdir"} eq "" ) || ( $pa_config->{"logfile"} eq "" ) || ( $pa_config->{"dbhost"} eq "")  || ( $pa_config->{"pandora_master"} eq "") || ( $pa_config->{"dbpass"} eq "" ) ) {
-		print "[ERROR] Bad Config values. Be sure that $archivo_cfg is a valid setup file \n\n";
+		print "[ERROR] Bad Config values. Be sure that $archivo_cfg is a valid setup file. \n\n";
 		exit;
 	}
 	if (($opmode ==0) && ($pa_config->{"dataserver"} ne 1)) {
-		print " [ERROR] You must enable Dataserver in setup file to run Pandora Server \n\n";
+		print " [ERROR] You must enable Dataserver in setup file to run Pandora Server. \n\n";
 		exit;
 	} 
 	if (($opmode ==1) && ($pa_config->{"networkserver"} ne 1)) {
-		print " [ERROR] You must enable NetworkServer in setup file to run Pandora Network Server \n\n";
+		print " [ERROR] You must enable NetworkServer in setup file to run Pandora Network Server. \n\n";
 		exit;
 	}
 
 	if (($opmode ==3) && ($pa_config->{"snmpconsole"} ne 1)) {
-		print " [ERROR] You must enable SnmpConsole in setup file to run Pandora SNMP Console \n\n";
+		print " [ERROR] You must enable SnmpConsole in setup file to run Pandora SNMP Console. \n\n";
 		exit;
 	}
 	if ($opmode == 0){
-		print " [*] You are running Pandora Data Server \n";
+		print " [*] You are running Pandora Data Server. \n";
 		$parametro ="Pandora Data Server";
 	}
 	if ($opmode == 1){
-		print " [*] You are running Pandora Network Server \n";
+		print " [*] You are running Pandora Network Server. \n";
 		$parametro ="Pandora Network Server";
 	}
 	if ($opmode == 2){
-		print " [*] You are running Pandora SNMP Console \n";
+		print " [*] You are running Pandora SNMP Console. \n";
 		$parametro ="Pandora SNMP Console";
 	}
 	if ($pa_config->{"pandora_check"} == 1) {
-		print " [*] MD5 Security enabled\n";
+		print " [*] MD5 Security enabled.\n";
 	}
 	if ($pa_config->{"pandora_master"} == 1) {
-		print " [*] This server is in MASTER mode\n";
+		print " [*] This server is in MASTER mode.\n";
 	}
 	if ($pa_config->{"daemon"} == 1) {
-		print " [*] This server is running in DAEMON mode\n";
+		print " [*] This server is running in DAEMON mode.\n";
 	}
 	# Abrimos el directorio de datos y leemos cada fichero
 	logger ($pa_config, "Launching $parametro $pa_config->{'version'} $pa_config->{'build'}", 0);
@@ -228,8 +228,8 @@ sub pandora_loadconfig {
 	};
 	if ($@) {
 
-		logger ($pa_config, "Error connecting database in init Phase. Aborting startup",0);
-		print (" [E] Error connecting database in init Phase. Aborting startup \n\n");
+		logger ($pa_config, "Error connecting database in init Phase. Aborting startup.",0);
+		print (" [E] Error connecting database in init Phase. Aborting startup. \n\n");
 		exit;
 	}
 

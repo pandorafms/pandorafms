@@ -2,12 +2,12 @@
 ' | Agente Windows para Pandora | Pandora Agent for Windows
 ' | Este codigo ha sido desarrollado por:
 ' | This code has beed coded by:
-' |   2004-2005, Sancho Lerena <slerena@iname.com>
+' |   2004-2006, Sancho Lerena <slerena@gmail.com>
 ' |   2004-2005, Sergio Iglesias <sergio@genterara.com>
 ' | Este codigo esta distribuido y protegido bajo la licencia GPL.
 ' | This code is distributed and protected under GPL licence.
 ' ----------------------------------------------------------------
-version = "1.2a"
+version = "1.2a for Windows"
 
 ' ====================================
 ' Configuracion del agente
@@ -20,8 +20,8 @@ dim fichero_log
 dim debug_mode
 
 PANDORA_HOME = "c:\pandora\"
-CONFIG_FILE= PANDORA_HOME & "pandora_agent.conf"
-fichero_log = "c:\pandora\pandora_agent.log"
+CONFIG_FILE = PANDORA_HOME & "pandora_agent.conf"
+fichero_log = PANDORA_HOME & "pandora_agent.log"
 debug_mode = 0
 
 ' ======================================================
@@ -78,7 +78,7 @@ if debug_mode Then
 	Set fs = CreateObject("Scripting.FileSystemObject")
 	Set a = fs.OpenTextFile(fichero_log,8, true)
 	texto = "DEBUG Mode: Starting Pandora Agent " & version & " execution " & vbcrlf
-	texto = texto & "DEBUG Mode: Reading startup variables...."  &vbcrlf 
+	texto = texto & "DEBUG Mode: Reading startup variables..."  &vbcrlf 
 	texto = texto & "Home Path : " & PANDORA_HOME & vbcrlf 
 	texto = texto &"Hostname  : " & NOMBRE_HOST & vbcrlf 
 	texto = texto &"Server    : " & SERVER & vbcrlf 
@@ -87,7 +87,7 @@ if debug_mode Then
 	texto = texto &"Interval  : " & INTERVALO & vbcrlf 
 	texto = texto & "PrivateKey: " & PRIVATE_KEY & vbcrlf 
 	wScript.echo texto
-	a.WriteLine("DEBUG Starting Pandora Agent" & version)
+	a.WriteLine("DEBUG Starting Pandora Agent " & version)
 	a.WriteLine("Home Path : " & PANDORA_HOME)
 	a.WriteLine("Hostname  : " & NOMBRE_HOST)
 	a.WriteLine("Server    : " & SERVER)
@@ -136,8 +136,8 @@ do ' Main loop
 	Set WshSysEnv = WshShell.Environment("SYSTEM")
 	strOS = WshSysEnv("OS")
 	strVersionNumber = WshShell.RegRead("HKLM\Software\Microsoft\"  & "Windows NT\CurrentVersion\CurrentVersion")
-	strBuildNumber = WshShell.RegRead("HKLM\Software\Microsoft\" & "Windows NT\CurrentVersion\CurrentBuildNumber")
-	strActualOS = strOS & ", " & strVersionNumber & ", " & strBuildNumber
+	strServicePack = WshShell.RegRead("HKLM\Software\Microsoft\" & "Windows NT\CurrentVersion\CSDVersion")
+	strActualOS = strOS & ", " & strVersionNumber & ",  " & strServicePack
 
 	' ========================================================================
 	' Begin XML construction (agent_data header)
@@ -149,6 +149,7 @@ do ' Main loop
 	' =====================================================================
 	' Module parser
 	' =====================================================================
+	debug_log fichero_log, "*BEGIN PARSING MODULES"
 	Set ts = fs.OpenTextFile(CONFIG_FILE)
     	'Loop while not at the end of the file.
     	Do While Not ts.AtEndOfStream          
@@ -177,14 +178,14 @@ do ' Main loop
 					end if
 					i = i +1
 				loop
-				debug_log fichero_log, "Module name: " & nombre
+				debug_log fichero_log, chr(9) & "--" & vbcrlf & chr(9) & "Module name: " & nombre
 
 				' Parse 3th line (module TYPE)
 				linea_3 = ts.ReadLine
 				contenidos_3 = Split(linea_3, " ")
 				tipo = contenidos_3(1)
 				'debug_mode introduzco el tipo de modulo
-				debug_log fichero_log, "Module type : " & tipo
+				debug_log fichero_log, chr(9) & "Module type : " & tipo
 
 				' Parse 4th linea (could contain spaces between words!)
 				' 4th line contains process/service names
@@ -202,7 +203,7 @@ do ' Main loop
 					i = i +1
 				loop
 				contenidos_4(1)=temp4
-				debug_log fichero_log, "Content search for : " & temp4
+				debug_log fichero_log, chr(9) & "Content search for : " & temp4
 
 				' ================================================
 				' module_service
@@ -210,7 +211,7 @@ do ' Main loop
 				if (lcase(contenidos_4(0)) = "module_service") Then
 					es_servicio = 1
 					nombre_servicio = contenidos_4(1)
-					debug_log fichero_log, "Service Module: " & nombre_servicio
+					debug_log fichero_log, chr(9) & "Service Module: " & nombre_servicio
 					existe = servicio (nombre_servicio) ' Check service function
 					s = render_output (s, nombre, "generic_proc", existe)
 				end if
@@ -222,7 +223,7 @@ do ' Main loop
 					es_proceso = 1
 					nombre_proceso = contenidos_4(1)
 					existe = proceso (nombre_proceso)
-					debug_log fichero_log, "Process module: " & nombre_proceso
+					debug_log fichero_log, chr(9) & "Process module: " & nombre_proceso
 					s = render_output (s, nombre, "generic_proc", existe)
 				end if
 
@@ -232,7 +233,7 @@ do ' Main loop
 				if (lcase(contenidos_4(0)) = "module_system") Then
 					es_sistema = 1
 					dato_sistema = contenidos_4(1)
-					debug_log fichero_log, "Internal system module" & dato_sistema
+					debug_log fichero_log, chr(9) & "Internal system module " & dato_sistema
 					'==================================================
 					' Internal module: Freemem 
 					'==================================================	
@@ -273,10 +274,10 @@ do ' Main loop
 					contenidos_5 = Split(linea_5, " ") ' 5th line is word to search
 					busqueda = contenidos_5(1)						
 					Set fso = CreateObject("Scripting.FileSystemObject")
-					debug_log fichero_log, "File module: " & fichero & " token " & busqueda
+					debug_log fichero_log, chr(9) & "File module: " & fichero & " token " & busqueda
 					linea_encontrada = 0
 					If Not fso.FileExists(fichero) Then ' If file doesnt exists		
-						debug_log fichero_log, "Doesnt exist file " & fichero & " returning 0\n"
+						debug_log fichero_log, chr(9) & "Doesn't exist file " & fichero & " returning 0\n"
 					else
 						Set str_file = fs.OpenTextFile(fichero) ' File exists and
 						Do While Not str_file.AtEndOfStream          
@@ -295,7 +296,7 @@ do ' Main loop
 				' ================================================
 				if (lcase(contenidos_4(0)) = "module_exec") Then
 					ejecucion = contenidos_4(1)			
-					debug_log fichero_log, "Exec module: " & ejecucion
+					debug_log fichero_log, chr(9) & "Exec module: " & ejecucion
 					Set objFSO = CreateObject("Scripting.FileSystemObject")
 					strFileName = objFSO.GetTempName
 					strFullName = objFSO.BuildPath(temporal, strFileName)
@@ -312,13 +313,13 @@ do ' Main loop
 				' ================================================
 				if (lcase(contenidos_4(0)) = "module_registry") Then
 					entrada_registro = contenidos_4(1)
-					debug_log fichero_log, "Registry module: " & entrada_registro
+					debug_log fichero_log, chr(9) & "Registry module: " & entrada_registro
 					salida = ""
 					on error resume next
 					salida = wshShell.regread(entrada_registro)
 					on error goto 0 
 					if salida = "" then
-						debug_log fichero_log, "Error reading Registry module: " & entrada_registro
+						debug_log fichero_log, chr(9) & "Error reading Registry module: " & entrada_registro
 					end if
 					s = render_output ( s, nombre, tipo, salida)
 				end if ' end registry module
@@ -328,7 +329,7 @@ do ' Main loop
 				' ================================================
 				if (lcase(contenidos_4(0)) = "module_eventid") Then
 					id_event_log = contenidos_4(1)
-					debug_log fichero_log, "EventLog module: " & id_event_log
+					debug_log fichero_log, chr(9) & "EventLog module: " & id_event_log
 					Set objWMIService = GetObject("winmgmts:{impersonationLevel=impersonate}!\\.\root\cimv2")
 					Set colLoggedEvents = objWMIService.ExecQuery ("Select * from Win32_NTLogEvent Where Logfile = 'Application' and Eventcode = '" & id_event_log & "'")
 					eventos = 0
@@ -343,6 +344,7 @@ do ' Main loop
 	Loop        
 	'Close the file.        
     ts.Close
+	debug_log fichero_log, "*END PARSING MODULES"
 	
 	' Creamos el filehandle y escribimos en el archivo
 	' ================================================
@@ -479,7 +481,7 @@ Function check_init (config_file)
  
  'Comprobar que ejecutamos con  v5.6 de WSH
  If CDbl(wScript.Version) < CDbl("5.6") then
-  text = " \n ERROR: Windows Scripting Host Incorrect version \n\n Your actual version is  " & wScript.Version & "\n \n Please download a latest version from http://msdn.microsoft.com/downloads/default.asp \n"
+  text = " \n ERROR: Windows Scripting Host Incorrect version \n\n Your current version is " & wScript.Version & "\n \n Please download a latest version from http://msdn.microsoft.com/downloads/default.asp \n"
   wScript.Echo Text
   wScript.Quit
  End if

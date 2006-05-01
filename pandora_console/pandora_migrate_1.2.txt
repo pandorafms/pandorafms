@@ -3,7 +3,7 @@ Migrate Pandora 1.1 to Pandora 1.2
 
 You need a script called pandoradb_1.1_to_1.2.sql provided in Pandora Console Package for 1.2 version. Migrate 1.1 to 1.2 versions includes:
 
-a) Full replacement of Pandora Console PHP Code (backup your original one to replace values in /include/config.php for your login, password, hostname, and database parameters.
+a) Full replacement of Pandora Console PHP Code (backup your original one to replace values in /include/config.php for your login, password, hostname to connect database).
 
 b) Full replacement of Pandora Server PERL Code (backyou your original one to replace values in pandora_server.conf. The new pandora_server.conf is located at /conf directory. It's possible that you need to change incoming dir, or parameters into daemon scripts. Please recheck Pandora Server 1.2 documentation before try to run it.
 

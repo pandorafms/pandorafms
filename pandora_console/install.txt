@@ -1,0 +1,75 @@
+Installation:
+
+Requires a Web Server (Apache recommended) with PHP 4.3.x (or higher but PHP 5 Not tested yet), 
+PHP4-MySQL and PHP4-session modules, PHP-GD v1.3 library 
+and JpGraph (http://www.aditus.nu/jpgraph/) for graphic generation.
+
+Database
+
+You need a database with name "pandora". 
+To create the structure of Pandora database in MySQL Server you have the SQL script pandoradb.sql.
+It creates tables and indexes needed to insert information into Pandora database.
+
+You MUST populate database with pandoradb_data.sql,
+an SQL script that inserts data needed to run Web Console and default user (login: admin, pass: pandora)
+to access Pandora Web Console.
+
+To install the files, first create a database called "pandora", 
+and set an user to be able to access this database:
+
+mysql> create database pandora;
+
+Later, execute the next commands using a user with enough privileges to create tables and indexes
+into Pandora Database into your MySQL Server:
+
+cat pandoradb.sql | mysql -D pandora -u root -p
+cat pandoradb_data.sql | mysql -D pandora -u root -p
+
+Note: if your system is Windows, use the command type instead of cat.
+
+You can also use the source command, if you are connected to MySQL, from the MySQL prompt:
+
+mysql> use pandora;
+mysql> source <path_to_pandoradb.sql>
+mysql> source <path_to_pandoradb_data.sql>
+
+This example is valid using root user in MySQL.
+Remember if you're in Windows and you use MySQL v4.1, use the dobule slash ("//") with the path to the files,
+not the backslash ("\").
+
+If you have any problem with this commands, from the OS command line you can run this commands:
+
+cat pandoradb.sql | mysql -D pandora -u root -p
+cat pandoradb_data.sql | mysql -D pandora -u root -p
+
+Note: if you're using Windows, you must use type command instead of the cat one.
+
+Now we will create an user "pandora" and will be given to it privileges from the localhost:
+
+mysql> grant all on pandora.* to 'pandora'@'localhost' identified by 'pandora';
+
+Keep in mind that users need access from Pandora WEB Console and from Pandora Server,
+if your deployment has many subcomponents in different physical machines,
+you need to setup a MySQL user with privileges to access from different locations.
+
+If you get the error "Warning: mysql_connect() [function.mysql-connect]: client does not support authentication protocol requested by server; consider upgrading"
+when authenticating Web Console, you have to change the way the password is stored into the database (see FAQ):
+
+mysql> set password for 'pandora'@'localhost' = old_password('pandora');
+
+Please note this user will be used by several Pandora subcomponents(Pandora Server, Pandora Web Console) to access database.
+
+Configuration:
+
+The only file you need to modify is include/config.php, where the following variables are included in .php code:
+$dbname="pandora";   // name of database for pandora (default: pandora)
+$dbuser="pandora";   // mysql user to access pandora database
+$dbpassword="pandora";   // Password for mysql user to access pandora database
+$dbhost="pandora";   // Hostname or IP where mySQL server runs
+
+If database is defined and was correctly installed, you can now access:
+http://<hostname_pandora_webconsole>:<port>/<installation_directory>/index.php
+
+The first time you log there is a default admin user "admin" and password "pandora".
+It's worth to say that you MUST CHANGE CREDENTIALS BEFORE LOGIN FIRST TIME,
+change it or create another account, disabling this one. 

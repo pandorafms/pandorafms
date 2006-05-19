@@ -4,14 +4,13 @@ Requires a Web Server (Apache recommended) with PHP 4.3.x (or higher but PHP 5 N
 PHP4-MySQL and PHP4-session modules, PHP-GD v1.3 library 
 and JpGraph (http://www.aditus.nu/jpgraph/) for graphic generation.
 
-Database
-
 You need a database with name "pandora". 
-To create the structure of Pandora database in MySQL Server you have the SQL script pandoradb.sql.
+
+To create the structure of Pandora database in MySQL Server you have the SQL script "pandoradb.sql".
 It creates tables and indexes needed to insert information into Pandora database.
 
-You MUST populate database with pandoradb_data.sql,
-an SQL script that inserts data needed to run Web Console and default user (login: admin, pass: pandora)
+You MUST populate database with SQL script "pandoradb_data.sql",
+it inserts data needed to run Web Console and default user (login: admin, pass: pandora)
 to access Pandora Web Console.
 
 To install the files, first create a database called "pandora", 

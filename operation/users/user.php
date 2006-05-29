@@ -72,7 +72,7 @@ echo "<tr><td colspan='5'><div class='raya'></div></td></tr></table><br>";
 ?>
 
 
-<h3><? echo $lang_label["definedprofiles"] ?></h3>
+<h3><?php echo $lang_label["definedprofiles"] ?></h3>
 
 <table cellpadding=3 cellspacing=3 border=0>
 <?php

@@ -584,14 +584,14 @@ else {echo "<h3>".$lang_label["update_agent"]."</h3>";}
 ?>
 <table width="650" cellpadding="3" cellspacing="3" class="fon">
 <tr><th rowspan=10 width=5>
-<tr><td class="datos"><b><? echo $lang_label["agent_name"]?></b><td class="datos"><input type="text" name="agente" size=30 value="<?php echo $nombre_agente ?>">
+<tr><td class="datos"><b><?php echo $lang_label["agent_name"]?></b></td><td class="datos"><input type="text" name="agente" size=30 value="<?php echo $nombre_agente ?>">
 <?php 
 if (isset($_GET["creacion"])){echo "&nbsp;";}
 else {echo "&nbsp;&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'><img src='images/lupa.gif' border='0' align='middle'></a>";} 
 ?>
-<tr><td class="datos"><b><? echo $lang_label["ip_address"]?></b><td class="datos"><input type="text" name="direccion" size=30 value="<?php echo $direccion_agente ?> ">
+<tr><td class="datos"><b><?php echo $lang_label["ip_address"]?></b><td class="datos"><input type="text" name="direccion" size=30 value="<?php echo $direccion_agente ?> ">
 <!-- Desplegable para el grupo -->
-<tr><td class="datos"><b><? echo $lang_label["group"]?></b><td class="datos"><select name="grupo" class="w130"> 
+<tr><td class="datos"><b><?php echo $lang_label["group"]?></b><td class="datos"><select name="grupo" class="w130"> 
 <?php
 if (isset($grupo)){
 echo "<option value='".$grupo."'>".dame_grupo($grupo);
@@ -606,8 +606,8 @@ while ($row=mysql_fetch_array($result)){
 }
 ?>
 </select>
-<tr><td class="datos"><b><? echo $lang_label["interval"]?></b></td><td class="datos"><input type="text" name="intervalo" size="15" value="<?php echo $intervalo?>"></td>
-<tr><td class="datos"><b><? echo $lang_label["os"]?></b></td><td class="datos">
+<tr><td class="datos"><b><?php echo $lang_label["interval"]?></b></td><td class="datos"><input type="text" name="intervalo" size="15" value="<?php echo $intervalo?>"></td>
+<tr><td class="datos"><b><?php echo $lang_label["os"]?></b></td><td class="datos">
 <select name="os_name" class="w130">
 <?php
 if (isset($id_os)){
@@ -621,7 +621,7 @@ while ($row=mysql_fetch_array($result)){
 ?>
 </select>
 
-<tr><td class="datos"><b><? echo $lang_label["server"]?></b></td><td class="datos">
+<tr><td class="datos"><b><?php echo $lang_label["server"]?></b></td><td class="datos">
 <select name="id_server" class="w130">
 <?php
 echo "<option value='".$id_server."'>".give_server_name($id_server);
@@ -635,8 +635,8 @@ while ($row=mysql_fetch_array($result)){
 </select>
 
 
-<tr><td class="datos"><b><? echo $lang_label["description"]?></b><td class="datos"><input type="text" name="comentarios" size="55" value="<?php echo $comentarios ?>"></td>
-<tr><td class="datos"><b><? echo $lang_label["module_definition"]?></b>
+<tr><td class="datos"><b><?php echo $lang_label["description"]?></b><td class="datos"><input type="text" name="comentarios" size="55" value="<?php echo $comentarios ?>"></td>
+<tr><td class="datos"><b><?php echo $lang_label["module_definition"]?></b>
 <td class="datos">
 	<?php if ($modo == "1"){
 		echo $lang_label["learning_mode"].'<input type="radio" class="chk" name="modo" value="1" checked >';
@@ -646,7 +646,7 @@ while ($row=mysql_fetch_array($result)){
 		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$lang_label["normal_mode"].'<input type="radio" name="modo" class="chk" value="0" checked>';
 	}
 	?>
-<tr><td class="datos"><b><? echo $lang_label["status"]?></b>
+<tr><td class="datos"><b><?php echo $lang_label["status"]?></b>
 <td class="datos">
 <?php if ($disabled == "1"){
 		echo $lang_label["disabled"].'<input type="radio" class="chk"  name="disabled" value="1" checked>';

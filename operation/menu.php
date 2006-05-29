@@ -36,7 +36,7 @@ if (isset($_SESSION["id_usuario"])) {
 				echo "<div id='arrows'><ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60' class='mn'>".$lang_label["detailed_monitoragent_state"]."</a></li></ul></div>";
 			}
 			else echo "<div id='arrow'><ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60' class='mn'>".$lang_label["detailed_monitoragent_state"]."</a></li></ul></div>";
-			if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/agentes/exportada") {
+			if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/agentes/exportdata") {
 				echo "<div id='arrows'><ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/exportdata' class='mn'>".$lang_label["export_data"]."</a></li></ul></div>";
 			}
 			else echo "<div id='arrow'><ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/exportdata' class='mn'>".$lang_label["export_data"]."</a></li></ul></div>";

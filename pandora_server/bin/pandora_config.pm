@@ -33,8 +33,8 @@ my %pa_config;
 
 sub help_screen {
 	printf "Permission is granted to copy, distribute and/or modify this document \n";
-    	printf "under the terms of the GNU Free Documentation License, Version 2.0 \n";
-    	printf "or any later version published by the Free Software Foundation at www.gnu.org \n\n";
+    printf "under the terms of the GNU Free Documentation License, Version 2.0 \n";
+    printf "or any later version published by the Free Software Foundation at www.gnu.org \n\n";
 	printf "\n\nSyntax: \n  pandora_xxxxxxx.pl <fullpathname to PANDORA HOME directory> [ options ] \n\n";
 	printf "Following options are optional : \n";
 	printf "            -v  :  Verbose mode activated, give more information in logfile \n";

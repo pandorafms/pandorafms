@@ -3,7 +3,7 @@ package pandora_db;
 use warnings;
 use Time::Local;
 use DBI;
-use Date::Manip;                	# Needed to manipulate DateTime formats of input, output and compare
+use Date::Manip;	# Needed to manipulate DateTime formats of input, output and compare
 use XML::Simple;
 
 use POSIX qw(strtod);
@@ -58,30 +58,30 @@ our @EXPORT = qw( 	crea_agente_modulo
 
 sub pandora_calcula_alerta (%$$$$$$) {
 	my $pa_config = $_[0];
-        my $timestamp = $_[1];
-        my $nombre_agente = $_[2];
-        my $tipo_modulo = $_[3];
-        my $nombre_modulo = $_[4];
-        my $datos = $_[5];
-        my $dbh = $_[6];
+    my $timestamp = $_[1];
+	my $nombre_agente = $_[2];
+	my $tipo_modulo = $_[3];
+	my $nombre_modulo = $_[4];
+	my $datos = $_[5];
+	my $dbh = $_[6];
 
-        my $id_modulo;
+	my $id_modulo;
 	my $id_agente;
-        my $id_agente_modulo;
+	my $id_agente_modulo;
 	my $max;
 	my $min; # for calculate max & min to generate ALERTS
 
-        # Obtemos los ID's a traves del paquete de datos
-        $id_agente = dame_agente_id($pa_config, $nombre_agente, $dbh);
-        $id_modulo = dame_modulo_id($pa_config, $tipo_modulo,$dbh);
-        $id_agente_modulo = dame_agente_modulo_id($pa_config, $id_agente,$id_modulo,$nombre_modulo,$dbh);
-        logger($pa_config, "DEBUG: calcula_alerta() Calculado id_agente_modulo a $id_agente_modulo",3);
+	# Obtemos los ID's a traves del paquete de datos
+	$id_agente = dame_agente_id($pa_config, $nombre_agente, $dbh);
+	$id_modulo = dame_modulo_id($pa_config, $tipo_modulo,$dbh);
+	$id_agente_modulo = dame_agente_modulo_id($pa_config, $id_agente,$id_modulo,$nombre_modulo,$dbh);
+	logger($pa_config, "DEBUG: calcula_alerta() Calculado id_agente_modulo a $id_agente_modulo",3);
 
-        # Buscamos si existe una alerta definida para esta combinacion agente/modulo
-    	my $query_idag = "select * from talerta_agente_modulo where id_agente_modulo = '$id_agente_modulo'";
-    	my $s_idag = $dbh->prepare($query_idag);
-        $s_idag ->execute;
-        my @data;
+	# Buscamos si existe una alerta definida para esta combinacion agente/modulo
+	my $query_idag = "select * from talerta_agente_modulo where id_agente_modulo = '$id_agente_modulo'";
+	my $s_idag = $dbh->prepare($query_idag);
+	$s_idag ->execute;
+	my @data;
 	# If exists a defined alert for this module then continue
 	if ($s_idag->rows != 0) {
 		while (@data = $s_idag->fetchrow_array()) {

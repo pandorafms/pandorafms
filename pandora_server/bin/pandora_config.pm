@@ -211,7 +211,7 @@ sub pandora_loadconfig {
 		print " [*] MD5 Security enabled.\n";
 	}
 	if ($pa_config->{"pandora_master"} == 1) {
-		print " [*] This server is in MASTER mode.\n";
+		print " [*] This server is running in MASTER mode.\n";
 	}
 	if ($pa_config->{"daemon"} == 1) {
 		print " [*] This server is running in DAEMON mode.\n";

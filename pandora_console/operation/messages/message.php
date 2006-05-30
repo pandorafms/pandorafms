@@ -68,7 +68,7 @@ if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
 	
 		echo '<h3>'.$lang_label["new_message"].'</h3>';
 		echo '
-		<form name="new_mes" method="post" action="index.php?sec=messages&sec2=operation/messages/message&nuevo_mensaje=1">
+		<form name="new_mes" method="POST" action="index.php?sec=messages&sec2=operation/messages/message&nuevo_mensaje=1">
 		<table>
 		<tr><td class="datos">'.$lang_label["m_from"].':</td><td><b>'.$iduser.'</b></td></tr>
 		<tr><td class="datos">'.$lang_label["m_to"].':</td><td>';
@@ -108,9 +108,10 @@ if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
 		<tr><td class="datos">'.$lang_label["m_to"].':</td><td>';
 			echo '<select name="g_destino" class="w100">';
 				while ($row3=mysql_fetch_array($resultado3))
-				if ($row3["id_grupo"] != 1){
+				#if ($row3["id_grupo"] != 1){
 					{echo "<option value='".$row3["id_grupo"]."'>".$row3["nombre"]."</option>";}
-				}
+				#}
+				
 			echo '</select>';
 		echo '</td></tr>
 		<tr><td class="datos">'.$lang_label["subject"].':</td><td><input name="subject" class="w255"></td></tr>

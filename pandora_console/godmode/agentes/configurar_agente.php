@@ -965,7 +965,7 @@ while ($row=mysql_fetch_array($result)){
 
 <tr><td class="datos"><?php echo $lang_label["min"]." ".$lang_label["alerts"] ?>
 <td class="datos">
-<input type="text" name="mix_alerts" size="5" value="<?php  if (isset($alerta_min_alerts)) {echo$alerta_min_alerts;} ?>">
+<input type="text" name="min_alerts" size="5" value="<?php  if (isset($alerta_min_alerts)) {echo$alerta_min_alerts;} ?>">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <?php echo $lang_label["max"]." ".$lang_label["alerts"] ?>
 &nbsp;&nbsp;&nbsp;

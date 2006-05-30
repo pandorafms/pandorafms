@@ -38,7 +38,7 @@ if (comprueba_login() == 0){
 		}
 	}
 	if ((give_acl($id_user, 0, "LM")==1)){
-		if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/alertas/modificar_alerta"){
+		if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/alertas/modificar_alerta" || $_GET["sec2"] == "godmode/alertas/configurar_alerta")){
 			echo '<div id="god2s"><ul class="mn"><li><a href="index.php?sec=galertas&amp;sec2=godmode/alertas/modificar_alerta" class="mn">'.$lang_label["manage_alerts"].'</a></li></ul></div>';
 		}
 		else echo '<div id="god2"><ul class="mn"><li><a href="index.php?sec=galertas&amp;sec2=godmode/alertas/modificar_alerta" class="mn">'.$lang_label["manage_alerts"].'</a></li></ul></div>';

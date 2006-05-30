@@ -24,7 +24,7 @@ if (isset($_SESSION["id_usuario"])) {
 		}
 		else echo '<div id="op1"><ul class="mn"><li><a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_grupo&amp;refr=60" class="mn">'.$lang_label["view_agents"].'</a></li></ul></div>';
 		if (isset($_GET["sec"]) && $_GET["sec"] == "estado"){
-			if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/agentes/estado_agente") {
+			if(isset($_GET["sec2"]) && ($_GET["sec2"] == "operation/agentes/estado_agente" || $_GET["sec2"] == "operation/agentes/ver_agente")) {
 				echo "<div id='arrows'><ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60' class='mn'>".$lang_label["agent_detail"]."</a></li></ul></div>";
 			}
 			else echo "<div id='arrow'><ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60' class='mn'>".$lang_label["agent_detail"]."</a></li></ul></div>";

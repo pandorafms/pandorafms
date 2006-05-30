@@ -22,7 +22,7 @@ if (comprueba_login() == 0){
 	
 <?php 
 	if ((give_acl($id_user, 0, "AW")==1)){
-		if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/agentes/modificar_agente"){
+		if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/agentes/modificar_agente" || $_GET["sec2"] == "godmode/agentes/configurar_agente")){
 			echo '<div id="god1s"><ul class="mn"><li><a href="index.php?sec=gagente&amp;sec2=godmode/agentes/modificar_agente" class="mn">'.$lang_label["manage_agents"].'</a></li></ul></div>';
 		}
 		else echo '<div id="god1"><ul class="mn"><li><a href="index.php?sec=gagente&amp;sec2=godmode/agentes/modificar_agente" class="mn">'.$lang_label["manage_agents"].'</a></li></ul></div>';
@@ -44,7 +44,7 @@ if (comprueba_login() == 0){
 		else echo '<div id="god2"><ul class="mn"><li><a href="index.php?sec=galertas&amp;sec2=godmode/alertas/modificar_alerta" class="mn">'.$lang_label["manage_alerts"].'</a></li></ul></div>';
 	}
 	if ((give_acl($id_user, 0, "UM")==1)){
-		if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/usuarios/lista_usuarios"){
+		if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/usuarios/lista_usuarios" || $_GET["sec2"] == "godmode/grupos/configurar_grupo")){
 			echo '<div id="god3s"><ul class="mn"><li><a href="index.php?sec=gusuarios&amp;sec2=godmode/usuarios/lista_usuarios" class="mn">'.$lang_label["manage_users"].'</a></li></ul></div>';
 		}
 		else echo '<div id="god3"><ul class="mn"><li><a href="index.php?sec=gusuarios&amp;sec2=godmode/usuarios/lista_usuarios" class="mn">'.$lang_label["manage_users"].'</a></li></ul></div>';

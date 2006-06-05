@@ -1,13 +1,13 @@
 #!/bin/bash
-
 # **********************************************************************
-# Agente Generico Pandora 
+# Pandora Generic Host Agent
 # Linux version 
-# (c) Sancho Lerena 2003-2005, <slerena@gmail.com>
+# (c) Sancho Lerena 2003-2006, <slerena@gmail.com> 
+# with the help of many people. Please see http://pandora.sf.net
 # Este codigo esta licenciado bajo la licencia GPL 2.0.
 # This code is licenced under GPL 2.0 licence.
 # **********************************************************************
-AGENT_VERSION=1.2a
+AGENT_VERSION=1.2beta2
 
 IFS=$'\n'
 # Begin cycle for adquire primary config tokens
@@ -15,27 +15,31 @@ TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
 
 if [ -z "$1" ]
 then
- echo " "
- echo "FATAL ERROR: I need an argument to PANDORA AGENT home path"
- echo " "
- echo " example:   /opt/pandora_ng/pandora_agent.sh /opt/pandora_ng  "
- echo " "
- exit -1
+	echo " "
+	echo "FATAL ERROR: I need an argument to PANDORA AGENT home path"
+ 	echo " "
+ 	echo " example:   /opt/pandora_ng/pandora_agent.sh /opt/pandora_ng  "
+ 	echo " "
+ 	exit -1
 else
- PANDORA_HOME=$1
+ 	PANDORA_HOME=$1
 fi
 
 if [ ! -f $PANDORA_HOME/pandora_agent.conf ]
 then
- echo " "
- echo "FATAL ERROR: Cannot load pandora_agent.conf"
- echo " "
- exit -1
+	echo " "
+	echo "FATAL ERROR: Cannot load pandora_agent.conf"
+	echo " "
+	exit -1
 fi
 
 # Default values
+
 CHECKSUM_MODE=1
 DEBUG_MODE=0
+CONTADOR=0
+EXECUTE=1
+MODULE_END=0
 
 echo "$TIMESTAMP - Reading general config parameters from .conf file" >> $PANDORA_HOME/pandora.log
 for a in `cat $PANDORA_HOME/pandora_agent.conf | grep -v -e "^#" | grep -v -e "^module" `
@@ -63,22 +67,21 @@ do
                 INTERVAL=`echo $a | awk '{ print $2 }' `
                 echo "$TIMESTAMP - [SETUP] - Interval is $INTERVAL seconds" >> $PANDORA_HOME/pandora.log
         fi
- if [ ! -z "`echo $a | grep -e '^agent_name'`" ]
+ 	if [ ! -z "`echo $a | grep -e '^agent_name'`" ]
         then
                NOMBRE_HOST=`echo $a | awk '{ print $2 }' `
-         echo "$TIMESTAMP - [SETUP] - Agent name is $NOMBRE_HOST " >> $PANDORA_HOME/pandora.log
+         	echo "$TIMESTAMP - [SETUP] - Agent name is $NOMBRE_HOST " >> $PANDORA_HOME/pandora.log
         fi
- if [ ! -z "`echo $a | grep -e '^debug'`" ]
+ 	if [ ! -z "`echo $a | grep -e '^debug'`" ]
         then
                DEBUG_MODE=`echo $a | awk '{ print $2 }' `
-         echo "$TIMESTAMP - [SETUP] - Debug mode is $DEBUG_MODE " >> $PANDORA_HOME/pandora.log
+         	echo "$TIMESTAMP - [SETUP] - Debug mode is $DEBUG_MODE " >> $PANDORA_HOME/pandora.log
         fi
- if [ ! -z "`echo $a | grep -e '^checksum'`" ]
+ 	if [ ! -z "`echo $a | grep -e '^checksum'`" ]
         then
                CHECKSUM_MODE=`echo $a | awk '{ print $2 }' `
-         echo "$TIMESTAMP - [SETUP] - Checksum is $CHECKSUM_MODE " >> $PANDORA_HOME/pandora.log
+         	echo "$TIMESTAMP - [SETUP] - Checksum is $CHECKSUM_MODE " >> $PANDORA_HOME/pandora.log
         fi
-
 done
 
 
@@ -87,6 +90,7 @@ done
 # OS Data
 OS_VERSION=`uname -r`
 OS_NAME=`uname -s`
+
 # Hostname
 if [ -z "$NOMBRE_HOST" ] 
 then 
@@ -96,116 +100,158 @@ fi
 while [ "1" == "1" ]
 do
 
- # Fecha y hora. Se genera un serial (numero de segundos desde 1970) para cada paquete generado.
- TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
- SERIAL=`date +"%s"`
+ 	# Fecha y hora. Se genera un serial (numero de segundos desde 1970) para cada paquete generado.
+ 	TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
+ 	SERIAL=`date +"%s"`
  
- # Nombre de los archivos
- DATA=$TEMP/$NOMBRE_HOST.$SERIAL.data
- CHECKSUM=$TEMP/$NOMBRE_HOST.$SERIAL.checksum
- PANDORA_FILES="$TEMP/$NOMBRE_HOST.$SERIAL.*"
+ 	# Nombre de los archivos
+ 	DATA=$TEMP/$NOMBRE_HOST.$SERIAL.data
+ 	DATA2=$TEMP/$NOMBRE_HOST.$SERIAL.data_temp
+ 	CHECKSUM=$TEMP/$NOMBRE_HOST.$SERIAL.checksum
+ 	PANDORA_FILES="$TEMP/$NOMBRE_HOST.$SERIAL.*"
  
- # Makes data packet
- echo "<agent_data os_name='$OS_NAME' os_version='$OS_VERSION' interval='$INTERVAL' version='$AGENT_VERSION' timestamp='$TIMESTAMP' agent_name='$NOMBRE_HOST'>" > $DATA
- if [ "$DEBUG_MODE" == "1" ]
- then
-  echo "$TIMESTAMP - Reading module adquisition data from .conf file" >> $PANDORA_HOME/pandora.log
- fi
- for a in `cat $PANDORA_HOME/pandora_agent.conf | grep -v -e "^#" | grep -e "^module" ` 
- do
-  a=`echo $a | tr -s " " " "`
+ 	# Makes data packet
+ 	echo "<agent_data os_name='$OS_NAME' os_version='$OS_VERSION' interval='$INTERVAL' version='$AGENT_VERSION' timestamp='$TIMESTAMP' agent_name='$NOMBRE_HOST'>" > $DATA
+ 	if [ "$DEBUG_MODE" == "1" ]
+ 	then
+  		echo "$TIMESTAMP - Reading module adquisition data from .conf file" >> $PANDORA_HOME/pandora.log
+ 	fi
+ 	for a in `cat $PANDORA_HOME/pandora_agent.conf | grep -v -e "^#" | grep -e "^module" ` 
+ 	do
+  		a=`echo $a | tr -s " " " "`
  
-         if [ ! -z "`echo $a | grep -e '^module_exec'`" ]
-         then
-            execution=`echo $a | cut -c 13- `
-            res=`eval $execution`
-            if [ -z "$flux_string" ]
-            then
-             res=`eval expr $res 2> /dev/null`
-     fi
-            echo "<data>$res</data>" >> $DATA
-         fi
+         	if [ ! -z "`echo $a | grep -e '^module_exec'`" ]
+         	then
+			if [ $EXECUTE -eq 0 ]
+			then
+	            		execution=`echo $a | cut -c 13- `
+            			res=`eval $execution`
+            			if [ -z "$flux_string" ]
+            			then
+	             			res=`eval expr $res 2> /dev/null`
+     				fi
+            			echo "<data>$res</data>" >> $DATA2
+			fi
+         	fi
  
-         if [ ! -z "`echo $a | grep -e '^module_name'`" ]
-         then
-            name=`echo $a | cut -c 13- `
-     echo "<name>$name</name>" >> $DATA
-         fi
- 
-         if [ ! -z "`echo $a | grep -e '^module_begin'`" ]
-         then
-            echo "<module>" >> $DATA
-         fi
+         	if [ ! -z "`echo $a | grep -e '^module_name'`" ]
+         	then
+            		name=`echo $a | cut -c 13- `
+     			echo "<name>$name</name>" >> $DATA2
+         	fi
+		
+		if [ ! -z "`echo $a | grep -e '^module_begin'`" ]
+		then
+			echo "<module>" >> $DATA2
+			EXECUTE=0
+		fi
+		
+		if [ ! -z "`echo $a | grep -e '^module_max' `" ]
+		then
+			max=`echo $a | awk '{ print $2 }' `
+			echo "<max>$max</max>" >> $DATA2
+		fi
 
-  if [ ! -z "`echo $a | grep -e '^module_max' `" ]
-  then
-     max=`echo $a | awk '{ print $2 }' `
-     echo "<max>$max</max>" >> $DATA
-  fi
-  if [ ! -z "`echo $a | grep -e '^module_min'`" ]
-  then
-     min=`echo $a | awk '{ print $2 }' `
-     echo "<min>$min</min>" >> $DATA
-  fi
-  if [ ! -z "`echo $a | grep -e '^module_description'`" ]
-  then
-     desc=`echo $a | cut -c 20- `
-     echo "<description>$desc</description>" >> $DATA
-  fi
+		if [ ! -z "`echo $a | grep -e '^module_min'`" ]
+		then
+			min=`echo $a | awk '{ print $2 }' `
+			echo "<min>$min</min>" >> $DATA2
+		fi
+		
+		if [ ! -z "`echo $a | grep -e '^module_description'`" ]
+		then
+			desc=`echo $a | cut -c 20- `
+			echo "<description>$desc</description>" >> $DATA2
+		fi
   
-         if [ ! -z "`echo $a | grep -e '^module_end'`" ]
-         then
-            echo "</module>" >> $DATA
-         fi
+         	if [ ! -z "`echo $a | grep -e '^module_end'`" ]
+         	then
+         	   	echo "</module>" >> $DATA2
+			MODULE_END=1
+		else
+			MODULE_END=0
+         	fi
  
-         if [ ! -z "`echo $a | grep -e '^module_type'`" ]
-         then
-            mtype=`echo $a | awk '{ print $2 }' `
-            if [ ! -z "`echo $mtype | grep 'generic_data_string'`" ]
-     then
-   flux_string=1
-     else
-                 flux_string=0
-                 unset flux_string
-            fi
-            echo "<type>$mtype</type>" >> $DATA
-         fi
- done
+         	if [ ! -z "`echo $a | grep -e '^module_type'`" ]
+         	then
+            		mtype=`echo $a | awk '{ print $2 }' `
+            		if [ ! -z "`echo $mtype | grep 'generic_data_string'`" ]
+     			then
+   				flux_string=1
+     			else
+                 		flux_string=0
+                 		unset flux_string
+            		fi
+            		echo "<type>$mtype</type>" >> $DATA2
+         	fi
+		
+  		if [ ! -z "`echo $a | grep '^module_interval'`" ]
+  		then
+              		# Determine if execution is to be done
+              		MODULEINTERVAL=`echo $a | awk '{ print $2 }'`
+              		EXECUTE=`expr \( $CONTADOR + 1 \) % $MODULEINTERVAL`
+  		fi
 
- # Call for user-defined script for data adquisition
+		# If module end, and execute for this module is enabled
+		# then write 
 
- if [ -f "$PANDORA_HOME/pandora_user.conf" ]
- then
-    /bin/bash $PANDORA_HOME/pandora_user.conf >> $DATA
- fi
+		if [ $MODULE_END -eq 1 ]
+		then
+			if [ $EXECUTE -eq 0 ]
+			then
+				cat $DATA2 >> $DATA
+			fi
+			rm -Rf $DATA2 > /dev/null 2> /dev/null
+		fi
+	done
+	
+	# Count number of agent runs
+	CONTADOR=`expr $CONTADOR + 1`
+	# Keep a limit of 100 for overflow reasons
+	if [ $CONTADOR -eq 100 ]
+	then
+		CONTADOR=0
+	fi
 
- # Finish data packet
- echo "</agent_data>" >> $DATA
- if [ "$DEBUG_MODE" == "1" ]
- then
-  echo "$TIMESTAMP - Finish writing XML $DATA" >> $PANDORA_HOME/pandora.log
- fi
- 
- if [ "$CHECKSUM_MODE" == "1" ]
- then
-  # Calculate Checksum and prepare MD5 file
-  CHECKSUM_DATA=`/usr/bin/md5sum $DATA`
-         echo $CHECKSUM_DATA > $CHECKSUM 
- else
-  CHECKSUM_DATA="No valid checksum"
-  echo $CHECKSUM_DATA > $CHECKSUM
- fi
- 
- # Send packets to server and detele it
- scp $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH > /dev/null 2> /dev/null
-        if [ "$DEBUG_MODE" == "1" ]
- then
-  echo "$TIMESTAMP - Copying $PANDORA_FILES to $SERVER_IP:$SERVER_PATH" >> $PANDORA_HOME/pandora.log
-  echo "Debug mode. Agent terminated"
-  exit
- fi
- 
- rm -f $PANDORA_FILES> /dev/null
- sleep $INTERVAL
+	# Call for user-defined script for data adquisition
+	
+	if [ -f "$PANDORA_HOME/pandora_user.conf" ]
+	then
+	/bin/bash $PANDORA_HOME/pandora_user.conf >> $DATA
+	fi
+	
+	# Finish data packet
+	echo "</agent_data>" >> $DATA
+	if [ "$DEBUG_MODE" == "1" ]
+	then
+		echo "$TIMESTAMP - Finish writing XML $DATA" >> $PANDORA_HOME/pandora.log
+	fi
+	
+	if [ "$CHECKSUM_MODE" == "1" ]
+	then
+		# Calculate Checksum and prepare MD5 file
+		CHECKSUM_DATA=`/usr/bin/md5sum $DATA`
+		echo $CHECKSUM_DATA > $CHECKSUM 
+	else
+		CHECKSUM_DATA="No valid checksum"
+		echo $CHECKSUM_DATA > $CHECKSUM
+	fi
+	
+	if [ "$DEBUG_MODE" == "1" ]
+	then
+		mv $PANDORA_FILES $SERVER_PATH > /dev/null 2> /dev/null
+		echo "$TIMESTAMP - Copying $PANDORA_FILES to $SERVER_IP:$SERVER_PATH" >> $PANDORA_HOME/pandora.log
+ 	else
+		# Copy XML Data files to remote systems
+		scp $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH > /dev/null 2> /dev/null
+	fi
+	
+	# Delete it
+	rm -f $PANDORA_FILES> /dev/null 2> /dev/null
+	
+	# Go to bed
+	sleep $INTERVAL
+	
+
 done 
-# forever! 
+# This runs forever! 

@@ -754,7 +754,7 @@ sub pandora_writedata (%$$$$$$$$$) {
        	my $sql_oldvalue = $dbh->prepare($query);
         $sql_oldvalue->execute;
         @data = $sql_oldvalue->fetchrow_array();
-       	my $sql_oldvalue = $dbh->prepare($query);
+       	$sql_oldvalue = $dbh->prepare($query);
         $sql_oldvalue->execute;
     	if ($sql_oldvalue->rows != 0) {
         	@data = $sql_oldvalue->fetchrow_array();

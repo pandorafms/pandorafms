@@ -1,7 +1,5 @@
 package pandora_tools;
 
-use 5.008004;
-
 use warnings;
 use Time::Local;
 use Date::Manip;                	# Needed to manipulate DateTime formats of input, output and compare

@@ -1,7 +1,5 @@
 package pandora_config;
 
-use 5.008004;
-
 use warnings;
 use Time::Local;
 use Date::Manip;
@@ -19,8 +17,8 @@ our @EXPORT = qw( 	pandora_help_screen
 # There is no global vars, all variables (setup) passed as hash reference
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "1.2beta";
-my $pandora_build="PS060103";
+my $pandora_version = "1.2beta2";
+my $pandora_build="PS060606";
 
 # Setup hash
 my %pa_config;

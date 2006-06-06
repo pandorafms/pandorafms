@@ -61,10 +61,10 @@ function type_change()
 		document.modulo.tcp_port.disabled=true;
 		document.modulo.ip_target.style.background="#fff";
 		document.modulo.ip_target.disabled=false;
-		document.modulo.modulo_max.style.background="#ddd";
-		document.modulo.modulo_max.disabled=true;
-		document.modulo.modulo_min.style.background="#ddd";
-		document.modulo.modulo_min.disabled=true;
+		document.modulo.modulo_max.style.background="#fff";
+		document.modulo.modulo_max.disabled=false;
+		document.modulo.modulo_min.style.background="#fff";
+		document.modulo.modulo_min.disabled=false;
 	}
 	// tipo 8-11 - TCP
 	if ((document.modulo.tipo.value > 7) && (document.modulo.tipo.value < 12)){

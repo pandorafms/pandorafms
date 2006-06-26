@@ -326,7 +326,7 @@ if (isset($_POST['operacion'])){
 				$offset_counter++;
 				$note_number = dame_numero_notas($row["id_incidencia"]);
 				echo "<tr>";
-				echo "<td class='datost'><a href='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id=".$row["id_incidencia"]."'>".$row["id_incidencia"]."</a>";
+				echo "<td class='datos' align='center'><a href='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id=".$row["id_incidencia"]."'>".$row["id_incidencia"]."</a>";
 
 				// Check for attachments in this incident	
 				$result3=mysql_query("SELECT * FROM tattachment WHERE id_incidencia = ".$row["id_incidencia"]);

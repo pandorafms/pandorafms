@@ -34,7 +34,7 @@ if (comprueba_login() == 0)
 	echo "<h3>".$lang_label["general_config"]."</h3>";
 	echo "<form name='setup' method='POST' action='index.php?sec=godmode/setup/setup&update=1'>";
 	echo '<table width="500" cellpadding="3" cellspacing="3">';
-	echo '<th rowspan="9" width="5"></th><tr><td class="datos">'.$lang_label["language_code"];
+	echo '<tr><td class="lb" rowspan="8" width="5"></td><td class="datos">'.$lang_label["language_code"];
 	echo '<td class="datos"><select name="language_code" onChange="javascript:this.form.submit();">';
 	
 	$sql="SELECT * FROM tlanguage";

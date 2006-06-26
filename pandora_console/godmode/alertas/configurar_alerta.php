@@ -54,7 +54,7 @@ if ( (give_acl($id_user, 0, "LM")==1)){
 		echo "<input type='hidden' name='id_alerta' value='".$id_alerta."'>";
 	}
 ?>
-<tr><th rowspan=3 width=5>
+<tr><td class='lb' rowspan='3' width='5'>
 <td class="datos"><?php echo $lang_label["alertname"] ?>
 <td class="datos"><input type="text" name="nombre" size=30 value="<?php echo $nombre ?>">
 

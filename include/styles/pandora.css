@@ -36,11 +36,11 @@ div#activity{padding-top: 18px; padding-bottom: 18px;}
 div#noa {float:right; padding-right: 50px; margin-top: 25px;}
 div#db_ftxt {float:right; padding-top: 10px;}
 #page {width:960px;}
+#head {border-bottom: 1px solid #708090; text-align: right; padding-bottom: 10px; font-size: 10px; width: 100%; margin-bottom: 27px;}
 #main {width:780px; float:right;}
 #menu {width:155px; float:left;}
-div#page>div#menu {width:157px;}
-#head {border-bottom: 1px solid #708090; text-align: right; padding-bottom: 10px; font-size: 10px; width: 100%; margin-bottom: 27px;}
 #foot {padding-top: 25px; text-align: center; clear: both;}
+div#page>div#menu {width:157px;}
 #ver {margin-bottom: 25px;}
 #ip {margin-top: 10px; clear: both;}
 label {display: block; float:left; padding-top: 4px;}
@@ -51,7 +51,8 @@ input.datos {background-color: #f5f5f5;}
 input.datos_readonly {background-color: #050505;}
 input.login {border-color: #778866; background-color: #f5f5f5; margin: 2px 0 8px; width: 90px;}
 input.sub {font-weight: bold; border-bottom-color: #708090; border-right-color: #708090; -moz-border-radius: 5%; font-size: 11px;}
-th {color: #ffffff; background-color: #778866;}
+th, td.lb {color: #ffffff; background-color: #778866;}
+td.lb {height: 16px; padding-left: 3px; font-weight: bold;}
 td.datos, td.datost, td.datosb, td.datos_id, td.datosf9, td.datosf9i, td.datos_jus, td.w30d, td.w40d, td.w90d, td.w135d, td.w180d, td.w230d {background-color: #f5f5f5;}
 td.datos2 {background-color: #c5c5d5;}
 td.datos_id {color: #1a313a;}
@@ -59,19 +60,21 @@ td.datos_jus {text-align: justify;}
 .bg , .bgt {background-color: #4a6629;}
 .bg {position:relative; height: 20px; width: 100%;}
 .f10, .w155f10, #ip {font-size: 10px; text-align: center;}
-.f9, .f9i, .f9b, td.f9, td.f9i, td.datosf9, td.datosf9i, .f9l20, .f9l30  {font-size: 9px;}
+.f9, .f9i, .f9b, td.f9, td.f9i, td.datosf9, td.datosf9i, .f9l20, .f9l30 {font-size: 9px;}
 .f9i {font-style: italic;}
-td.datos_id, .f9b {font-weight: bold;}
 .f9l20 {padding-left: 20px;}
 .f9l30, .f9130t {padding-left: 30px;}
 .jus {text-align: justify;}
 .tit {padding-top: 3px;}
 .tit, .titb {font-weight: bold; color: white; text-align: center;}
 .error {color: #ff0000; background:url(../../images/error.gif) no-repeat; padding: 4px 1px 6px 30px;}
-.red  {color: #ff0000;}
+.red , .redb {color: #ff0000;}
 .sep {margin-left: 30px; border-bottom: 1px solid #708090; width: 100%;}
 .suc {color: #5a8629; background: url(../../images/suc.gif) no-repeat 1px; padding: 4px 1px 6px 30px;}
-.green {color: #5a8629;}
+.green  {color: #5a8629;}
+.greenb {color: #00aa00;}
+.grey {color: #808080; font-weight: bold;}
+.redb, .greenb, td.datos_id, .f9b {font-weight: bold;}
 .raya {border-top: 1px solid #778866; width: 100%;}
 .raya, .noraya {margin-bottom: -10px;}
 .p10 {padding-top: 1px; padding-bottom: 0px;}
@@ -99,7 +102,8 @@ td.datos_id, .f9b {font-weight: bold;}
 .msg {margin-top: 15px; text-align: justify;}
 img.help {padding-left: 9px; vertical-align: top;}
 ul.mn {list-style: none; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; line-height: 24px;}
-a.mn {font-family: Arial, Verdana, Helvetica;}
+.gr {font-size: 10pt; font-weight: bold;}
+a.mn, .gr {font-family: Arial, Verdana, Helvetica;}
 .imgl {position:absolute; top:0; left:0;}
 .imgr {position:absolute; top:0; right:-1;}
 div.imgr>img {position:absolute; top:0; right:1;}

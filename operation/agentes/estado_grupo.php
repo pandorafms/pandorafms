@@ -56,9 +56,9 @@ if (comprueba_login() == 0)
 	 				$seconds = strtotime($ahora) - strtotime($ultimo_contacto);
 				else
 	 				$seconds = -100000;
-				# Defines if Agent is down (interval x 2 > time last contact
+				# Defines if Agent is down (interval x 2 > time last contact)
 				$down=0;
-				if ($seconds >= ($intervalo*2)){ // Si hace Intervalo x 2 segundos que no recibimos nada, sacamos alerta
+				if ($seconds >= ($intervalo*2)){ //  if Agent is down an alert is shown
 					$grupo[$array_index]["down"]++; // Estado grupo, agent down
 					$estado_grupo_down++;
 					$down=1;
@@ -68,7 +68,7 @@ if (comprueba_login() == 0)
 				$grupo[$array_index]["group"]=dame_nombre_grupo($migrupo);
 				$contador_agente++;	//  Estado grupo, agent
 				if ($down ==0){
-					$sql2="SELECT * FROM tagente_modulo WHERE ( id_tipo_modulo = 2 OR id_tipo_modulo = 6 OR id_tipo_modulo = 10 ) and id_agente =".$row1["id_agente"];
+					$sql2="SELECT * FROM tagente_modulo WHERE (id_tipo_modulo = 2 OR id_tipo_modulo = 6 OR id_tipo_modulo = 10) AND id_agente =".$row1["id_agente"];
 					$result2=mysql_query($sql2);
 					while ($row2 = mysql_fetch_array($result2)){
 						$sql3="SELECT * FROM tagente_estado WHERE id_agente_modulo = ".$row2["id_agente_modulo"];
@@ -108,7 +108,7 @@ echo "<br>";
 //echo "DEBUG ANCHO: $ancho <br>";
 	$real_count =0; // Puedo tener una tabla con mas items en ella que los que realmente debo mostrar, real count cuenta los que voy poniendo hasta llegar a array_index que son los que hay en el array $grupo.
 	echo "<table border=0 cellpadding=10 cellspacing=10>";
-	for ($table=0;$table < $ancho;$table++){
+	for ($table=0;$table < $ancho-1;$table++){
 		echo "<tr class='bot'>";
 		for ($table_row=0;$table_row < $ancho;$table_row++){
 			if ($real_count < $array_index){
@@ -117,16 +117,16 @@ echo "<br>";
 				$icono_grupo = $grupo[$real_count]["icon"];
 				$icono_type="";
 				if ($grupo[$real_count]["down"]>0) {
-					$icono_type="<img src='images/dot_white.gif'>";
+					$icono_type="<img src='images/dot_white.gif' alt=''>";
 				}
 				if ($grupo[$real_count]["bad"]>0) {
-					$icono_type=$icono_type."<img src='images/dot_red.gif'>";
+					$icono_type=$icono_type."<img src='images/dot_red.gif' alt=''>";
 				}
 				if ($grupo[$real_count]["ok"]>0) {
-					$icono_type=$icono_type."<img src='images/dot_green.gif'>";
+					$icono_type=$icono_type."<img src='images/dot_green.gif' alt=''>";
 				}
 				
-				$celda = "<img class='top' src='images/groups/".$icono_grupo."_1.gif' border=0>";
+				$celda = "<img class='top' src='images/groups/".$icono_grupo."_1.gif' border='0' alt=''>";
 				/* Not used anymore
 				if ($grupo[$real_count]["agent"] == 1 ){
 					$celda = "<img class='top' src='images/groups/".$icono_grupo."_1.gif' border=0>";
@@ -138,15 +138,15 @@ echo "<br>";
 					$celda = "<img class='top' src='images/groups/".$icono_grupo."_4.gif' border=0>";
 				}
 				*/
-				$celda = "<td class='bot'><a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=".$grupo[$real_count]["id_grupo"]."' border=0>".$celda."</a><br><br>".$icono_type."<br><br><b><font size=2 face='arial,verdana,sans'>".$group_name."</b><br>";
+				$celda = "<td class='bot'><a href='index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id=".$grupo[$real_count]["id_grupo"]."'>".$celda."</a><br><br>".$icono_type."<br><br><font class='gr'>".$group_name."</font><br>";
 
 				$celda = $celda."<table border='0' cellspacing='2' cellpadding='0'>";
-				$celda = $celda."<tr><th colspan='2' width='90'>".$lang_label["agents"].": </th></tr>";
-				$celda = $celda."<tr><td colspan='2' class='datos' align='center'><b>".$grupo[$real_count]["agent"]."</b></font>";
-				$celda = $celda."<tr><th colspan='2'>".ucfirst($lang_label["monitors"]).":</th></tr>";
-				$celda = $celda."<tr><td class='datos'><img src='images/b_green.gif' align='top'> ".$lang_label["ok"].": <td class='datos'><b><font color='green'>".$grupo[$real_count]["ok"]."</b></font>";
-				$celda = $celda."<tr><td class='datos'><img src='images/b_down.gif' align='top'> ".$lang_label["down"].": <td  class='datos'><b><font color='#808080'>".$grupo[$real_count]["down"]."</b></font>";
-				$celda = $celda."<tr><td class='datos'><img src='images/b_red.gif' align='top'> ".$lang_label["fail"].": <td  class='datos'><b><font class='red'>".$grupo[$real_count]["bad"]."</b></font>";
+				$celda = $celda."<tr><td colspan='2' width='90' class='lb'>".$lang_label["agents"].": </td></tr>";
+				$celda = $celda."<tr><td colspan='2' class='datos' align='center'><b>".$grupo[$real_count]["agent"]."</b>";
+				$celda = $celda."<tr><td colspan='2' class='lb'>".ucfirst($lang_label["monitors"]).":</td></tr>";
+				$celda = $celda."<tr><td class='datos'><img src='images/b_green.gif' align='top' alt=''> ".$lang_label["ok"].": </td><td class='datos'><font class='greenb'>".$grupo[$real_count]["ok"]."</font></td></tr>";
+				$celda = $celda."<tr><td class='datos'><img src='images/b_down.gif' align='top' alt=''> ".$lang_label["down"].": </td><td class='datos'><font class='grey'>".$grupo[$real_count]["down"]."</font></td></tr>";
+				$celda = $celda."<tr><td class='datos'><img src='images/b_red.gif' align='top' alt=''> ".$lang_label["fail"].": </td><td class='datos'><font class='redb'>".$grupo[$real_count]["bad"]."</font></td></tr>";
 				$celda = $celda."<tr><td colspan='2'><div class='raya'></div></td></tr>";
 				$celda = $celda."</table>";
 				$celda = $celda."</td>";

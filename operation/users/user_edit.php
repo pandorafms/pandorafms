@@ -82,7 +82,7 @@ if (comprueba_login() == 0) {
 	if ($view_mode == 0)
 		$password=$rowdup["password"];
 	else 	
-		$password="This is not good idea :-)";
+		$password="This is not a good idea :-)";
 	
 	$comentarios=$rowdup["comentarios"];
 	$direccion=$rowdup["direccion"];
@@ -90,14 +90,14 @@ if (comprueba_login() == 0) {
 	$nombre_real=$rowdup["nombre_real"];
 
 	?>
-	<table cellpadding="3" cellspacing="3" class="fon">
+	<table cellpadding="3" cellspacing="3" class="fon" width="500px">
 	<?php 
 	if ($view_mode == 0) 
 		echo '<form name="user_mod" method="post" action="index.php?sec=usuarios&sec2=operation/users/user_edit&ver='.$id_usuario.'&modificado=1">';
 	else 	
 		echo '<form name="user_mod" method="post" action="">';
 	?>
-	<tr><td class="datos"><?php echo $lang_label["id_user"] ?>
+	<tr><td class="lb" rowspan="8" width="5"><td class="datos"><?php echo $lang_label["id_user"] ?>
 	<td class="datos"><input class=input type="text" name="nombre" value="<?php echo $nombre ?>" disabled>
 	<tr><td class="datos"><?php echo $lang_label["real_name"] ?>
 	<td class="datos"><input class=input type="text" name="nombre_real" value="<?php echo $nombre_real ?>">
@@ -110,12 +110,12 @@ if (comprueba_login() == 0) {
 	<tr><td class="datos"><?php echo $lang_label["telefono"] ?>
 	<td class="datos"><input class=input type="text" name="telefono" value="<?php echo $telefono ?>">
 	<tr><td class="datos" colspan="2"><?php echo $lang_label["comments"] ?>
-	<tr><td class="datos" colspan="2"><textarea name="comentarios" cols=50 rows=4><?php echo $comentarios ?></textarea>
+	<tr><td class="datos" colspan="2"><textarea name="comentarios" cols="55" rows="4"><?php echo $comentarios ?></textarea>
 	
 <?php
 		// Don't delete this!!
 	if ($view_mode ==0){
-		echo '<tr><td colspan="2" align="right">';
+		echo '<tr><td colspan="3" align="right">';
 		echo "<input name='uptbutton' type='submit' class='sub' value='".$lang_label["update"]."'>";
 	}
 	echo '<tr><td></td></tr>';
@@ -123,9 +123,9 @@ if (comprueba_login() == 0) {
 	$sql1='SELECT * FROM tusuario_perfil WHERE id_usuario = "'.$nombre.'"';
 	$result=mysql_query($sql1);
 	if (mysql_num_rows($result)){
-		echo '<tr><td colspan="2"><h3>'.$lang_label["listGroupUser"].'</h3></td>';
+		echo '<tr><td colspan="3"><h3>'.$lang_label["listGroupUser"].'</h3></td>';
 		while ($row=mysql_fetch_array($result)){
-			echo '<tr><td colspan="2">';
+			echo '<tr><td colspan="3">';
 			echo "&nbsp;&nbsp;&nbsp;";
 			echo "<b>".dame_perfil($row["id_perfil"])."</b> / ";
 			echo "<b>".dame_grupo($row["id_grupo"])."</b>";	

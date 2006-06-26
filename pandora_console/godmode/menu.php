@@ -80,7 +80,7 @@ if (comprueba_login() == 0){
 		}
 		else echo '<div id="god8"><ul class="mn"><li><a href="index.php?sec=gdbman&amp;sec2=godmode/db/db_main" class="mn">'.$lang_label["db_maintenance"].'</a></li></ul></div>';
 		if (isset($_GET["sec"]) && $_GET["sec"] == "gdbman"){
-			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/db/db_info"){
+			if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/db/db_info" || $_GET["sec2"] == "godmode/db/db_info_data")){
 				echo "<div id='arrowgs'><ul class='mn'><li><a href='index.php?sec=gdbman&amp;sec2=godmode/db/db_info' class='mn'>".$lang_label["db_info"]."</a></li></ul></div>";
 			}
 			else echo "<div id='arrowg'><ul class='mn'><li><a href='index.php?sec=gdbman&amp;sec2=godmode/db/db_info' class='mn'>".$lang_label["db_info"]."</a></li></ul></div>";

@@ -132,10 +132,10 @@ if (comprueba_login() == 0)
 		// Form to manage date
 		if (isset ($id_perfil)){ // There are values defined, let's show form with data for INSERT or UPDATE
 			echo "<table width='400' cellpadding='3' cellspacing='3'>";
-			echo "<th rowspan=12 width=5>";
+			echo "<tr><td class='lb' rowspan='11' width='5'>";
 			echo "<form method='post' action='index.php?sec=gperfiles&sec2=godmode/perfiles/lista_perfiles&update_data'>";
 			echo "<input type=hidden name=id_perfil value='".$id_perfil."'>";
-			echo "<tr><td class=datos>".$lang_label["profile_name"]."<td class=datos><input name='name' type=text size='27' value='".$name."'>";
+			echo "<td class=datos>".$lang_label["profile_name"]."<td class=datos><input name='name' type=text size='27' value='".$name."'>";
 			
 			echo "<tr><td class=datos>".$lang_label["incident_view"]."<td class=datos><input name='incident_view' type=checkbox class='chk' value='1' ";
 			if ($incident_view == 1) echo "checked"; echo ">";

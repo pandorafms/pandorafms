@@ -573,7 +573,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 if (isset($_GET["creacion"])){echo "<h3>".$lang_label["create_agent"]."</h3>";}
 else {echo "<h3>".$lang_label["update_agent"]."</h3>";}
 ?>
-<form name="agente" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">
+<form name="conf_agent" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">
 <?php
 	if ($creacion_agente == 1)
 		echo "<input type='hidden' name='create_agent' value='1'>";
@@ -583,8 +583,8 @@ else {echo "<h3>".$lang_label["update_agent"]."</h3>";}
 	}
 ?>
 <table width="650" cellpadding="3" cellspacing="3" class="fon">
-<tr><th rowspan=10 width=5>
-<tr><td class="datos"><b><?php echo $lang_label["agent_name"]?></b></td><td class="datos"><input type="text" name="agente" size=30 value="<?php echo $nombre_agente ?>">
+<tr><td class='lb' rowspan='9' width='5'>
+<td class="datos"><b><?php echo $lang_label["agent_name"]?></b></td><td class="datos"><input type="text" name="agente" size=30 value="<?php echo $nombre_agente ?>">
 <?php 
 if (isset($_GET["creacion"])){echo "&nbsp;";}
 else {echo "&nbsp;&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'><img src='images/lupa.gif' border='0' align='middle'></a>";} 
@@ -802,9 +802,8 @@ else
 <h3><?php echo $lang_label["module_asociation_form"] ?></h3>
 <a name="modules"> <!-- Don't Delete !! -->
 <table width="650" cellpadding="3" cellspacing="3" class="fon">
-<tr><th rowspan=8 width=5>
+<tr><td class='lb' rowspan='7' width='5'>
 <!-- Module type combobox -->
-<tr>
 <td class="datos"><?php echo $lang_label["module_type"] ?>
 <td class="datos">
 <?php
@@ -909,8 +908,7 @@ else {
 ?>
 <input type="hidden" name="id_agente" value="<?php echo $id_agente ?>">
 <table width=650 cellpadding="3" cellspacing="3" class="fon" border=0>
-<tr><th rowspan=10 width=5>
-<tr>
+<tr><td class='lb' rowspan='9' width='5'>
 <td class="datos"><?php echo $lang_label["alert_type"]?>
 <td class="datos">
 <select name="tipo_alerta"> 

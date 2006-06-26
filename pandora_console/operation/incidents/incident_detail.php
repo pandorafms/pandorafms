@@ -223,7 +223,7 @@ $creacion_incidente = "";
 			else {echo "<h3>".$lang_label["create_incident"]."<a href='help/".substr($language_code,0,2)."/chap4.php#41' target='_help'><img src='images/ayuda.gif' border='0' class='help'></a></h3>";}
 		echo '<table cellpadding=3 cellspacing=3 border=0 width=600>';
 		if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)) 
-			echo '<tr><td class="datos"><b>'.$lang_label["incident"].'</b><td colspan=3 class="datos"><input type="text" name="titulo" size=70 value="'.$titulo.'">';
+			echo '<tr><td class="lb" rowspan="6" width="5"><td class="datos"><b>'.$lang_label["incident"].'</b><td colspan=3 class="datos"><input type="text" name="titulo" size=70 value="'.$titulo.'">';
 		else
 			echo '<tr><td class="datos"><b>'.$lang_label["incident"].'</b><td colspan=3 class="datos"><input type="text" name="titulo" size=70 value="'.$titulo.'" readonly>';
 		echo '<tr><td class="datos"><b>'.$lang_label["in_openedwhen"].'</b>';
@@ -332,7 +332,7 @@ $creacion_incidente = "";
 		if (isset($texto)) {echo $texto;}
 		echo "</textarea>";
 		
-		echo "<tr><td>";
+		echo "<tr><td colspan='2' style='padding-left: 18px;'>";
 		// Only if user is the used who opened incident or (s)he is admin
 		
 		$iduser_temp=$_SESSION['id_usuario'];
@@ -351,7 +351,7 @@ $creacion_incidente = "";
 		
 		echo "<td colspan=2>";
 		if ($creacion_incidente == 0){
-			echo "<td align=right>";
+			echo "<td style='text-align: right; padding-right: 40px;'>";
 			echo '<form method="post" action="index.php?sec=incidencias&sec2=operation/incidents/incident_note&id_inc='.$id_inc.'"><input type="hidden" name="nota" value="add"><input align=right name="addnote" type="submit" class="sub" value="'.$lang_label["add_note"].'"></form>';
 		}
 		echo "</table><br>";
@@ -360,12 +360,12 @@ $creacion_incidente = "";
 		// Upload control
 			if (give_acl($iduser_temp, $id_grupo, "IW")==1){
 				echo "<table cellpadding=3 cellspacing=3 border=0 width='400'>";
-				echo "<tr><td><b>".$lang_label["attachfile"]."</b>";
-				echo "<tr><td class=datos>";
+				echo "<tr><td colspan='3'><b>".$lang_label["attachfile"]."</b>";
+				echo "<tr><td class='lb' rowspan='2' width='5'><td class=datos>";
 				echo $lang_label["filename"].'<td class=datos colspan=3><form method="post" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'&upload_file=1" enctype="multipart/form-data">';
 				echo '<input type="file" name="userfile" value="userfile" class="sub" size="27">';			
 				echo '<tr><td class=datos>'.$lang_label["description"].'<td class=datos colspan=3><input type="text" name="file_description" size=34>';
-				echo '<tr><td colspan="4" align="right"><input type="submit" name="upload" value="'.$lang_label["upload"].'" class="sub">';
+				echo '<tr><td colspan="4" style="text-align: right; padding-right: 55px;"><input type="submit" name="upload" value="'.$lang_label["upload"].'" class="sub">';
 				echo '</td></tr></table><br>';
 			}
 			// ************************************************************

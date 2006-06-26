@@ -54,7 +54,7 @@ if (comprueba_login() == 0)
 		echo "<input type='hidden' name='id_grupo' value='".$id_grupo."'>";
 	}
 ?>
-<tr><th rowspan=3 width=5>
+<tr><td class='lb' rowspan='3' width='5'>
 <tr><td class="datos"><?php echo $lang_label["group_name"] ?><td class="datos"><input type="text" name="nombre" size="35" value="<?php echo $nombre ?>">
 <tr><td class="datos"><?php echo $lang_label["icon"] ?><td class="datos"><input type="icon" name="icon" size="25" value="<?php if (isset($icono)){echo $icono;} ?>">
 <tr><td></td></tr>

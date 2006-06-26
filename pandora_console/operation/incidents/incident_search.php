@@ -17,7 +17,7 @@ echo "<h3>".$lang_label["find_crit"]." <a href='help/".substr($language_code,0,2
 ?>
 <table width="500" cellpadding="3" cellspacing="3">
 <form name="busqueda" method="post" action="index.php?sec=incidencias&sec2=operation/incidents/incident">
-<th rowspan="4" width="5">
+<td class='lb' rowspan="4" width="5">
 <tr>
 <td class="datos"><?php echo $lang_label["user"] ?>
 <td class="datos">

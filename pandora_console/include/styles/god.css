@@ -19,8 +19,8 @@ div#god1>ul, div#god2>ul, div#god3>ul, div#god4>ul, div#god5>ul, div#god6>ul, di
 #god6 li:hover, #god6s li {background: #efefbd url(../../images/god6.gif) no-repeat; background-position: 4px 3px;}
 #god7 li:hover, #god7s li {background: #efefbd url(../../images/god7.gif) no-repeat; background-position: 4px 3px;}
 #god8 li:hover, #god8s li {background: #efefbd url(../../images/god8.gif) no-repeat; background-position: 5px 3px;}
-#arrowg ul {padding: 0px 0px 0px 0px; list-style: none;} 
-#arrowg li, #arrowgs li {padding: 0px 0px 0px 15px; background: #f5f5dc url(../../images/arrow.gif) no-repeat; background-position: 2px 4px; position:relative; left: 30px; width:80%;}
-div#arrowg>ul, div#arrowgs>ul {width: 88%;}
-#arrowg li:hover, #arrowgs li {background: #efefbd url(../../images/arrow.gif) no-repeat; background-position: 2px 4px;}
+#arrowg1 ul, #arrowg2 ul, #arrowg3 ul, #arrowg4 ul, #arrowg5 ul {padding: 0px 0px 0px 0px; list-style: none;} 
+#arrowg1 li, #arrowg2 li, #arrowg3 li, #arrowg4 li, #arrowg5 li, #arrowgs1 li, #arrowgs2 li, #arrowgs3 li, #arrowgs4 li, #arrowgs5 li {padding: 0px 0px 0px 15px; background: #f5f5dc url(../../images/arrow.gif) no-repeat; background-position: 2px 4px; position:relative; left: 30px; width:80%;}
+div#arrowg1>ul, div#arrowg2>ul, div#arrowg3>ul, div#arrowg4>ul, div#arrowg5>ul, div#arrowgs1>ul, div#arrowgs2>ul, div#arrowgs3>ul,div#arrowgs4>ul, div#arrowgs5>ul {width: 88%;}
+#arrowg1 li:hover, #arrowg2 li:hover, #arrowg3 li:hover, #arrowg4 li:hover, #arrowg5 li:hover, #arrowgs1 li, #arrowgs2 li, #arrowgs3 li, #arrowgs4 li, #arrowgs5 li {background: #efefbd url(../../images/arrow.gif) no-repeat; background-position: 2px 4px;}
 div#menug {background-color:#f5f5dc; border-width:1px; border-style:solid; border-color:#4a6629; width: 155px; margin-bottom: 15px;}

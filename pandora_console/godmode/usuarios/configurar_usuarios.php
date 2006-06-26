@@ -147,11 +147,11 @@ if (comprueba_login() == 0)
 	<table width='500' cellpadding='3' cellspacing='3'>
 	<?php 
 	if (isset($_GET["alta"]))
-		echo '<form name="user_mod" method="post" action="index.php?sec=gusuarios&sec2=godmode/usuarios/configurar_usuarios&nuevo_usuario=1"><tr><th rowspan=10 width=5>';
+		echo '<form name="user_mod" method="post" action="index.php?sec=gusuarios&sec2=godmode/usuarios/configurar_usuarios&nuevo_usuario=1"><tr><td class="lb" rowspan="9" width="5">';
 	else
-		echo '<form name="user_mod" method="post" action="index.php?sec=gusuarios&sec2=godmode/usuarios/configurar_usuarios&id_usuario_mio='.$id_usuario_mio.'"><tr><th rowspan=12 width=5>';
+		echo '<form name="user_mod" method="post" action="index.php?sec=gusuarios&sec2=godmode/usuarios/configurar_usuarios&id_usuario_mio='.$id_usuario_mio.'"><tr><td class="lb" rowspan="11" width="5">';
 	?>
-	<tr><td class="datos"><?php echo $lang_label["id_user"] ?>
+	<td class="datos"><?php echo $lang_label["id_user"] ?>
 	<td class="datos"><input type="text" name="nombre" value="<?php echo $id_usuario_mio ?>">
 	<tr><td class="datos"><?php echo $lang_label["real_name"] ?>
 	<td class="datos"><input type="text" name="nombre_real" value="<?php echo $nombre_real ?>">

@@ -20,102 +20,131 @@ if (isset($_SESSION["id_usuario"])) {
 <?php
     if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 		if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/agentes/estado_grupo") {
-			echo '<div id="op1s"><ul class="mn"><li><a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_grupo&amp;refr=60" class="mn">'.$lang_label["view_agents"].'</a></li></ul></div>';
+			echo '<div id="op1s">';
 		}
-		else echo '<div id="op1"><ul class="mn"><li><a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_grupo&amp;refr=60" class="mn">'.$lang_label["view_agents"].'</a></li></ul></div>';
+		else echo '<div id="op1">';
+		echo '<ul class="mn"><li><a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_grupo&amp;refr=60" class="mn">'.$lang_label["view_agents"].'</a></li></ul></div>';
+		
 		if (isset($_GET["sec"]) && $_GET["sec"] == "estado"){
 			if(isset($_GET["sec2"]) && ($_GET["sec2"] == "operation/agentes/estado_agente" || $_GET["sec2"] == "operation/agentes/ver_agente")) {
-				echo "<div id='arrows1'><ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60' class='mn'>".$lang_label["agent_detail"]."</a></li></ul></div>";
+				echo "<div id='arrows1'>";
 			}
-			else echo "<div id='arrow1'><ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60' class='mn'>".$lang_label["agent_detail"]."</a></li></ul></div>";
+			else echo "<div id='arrow1'>";
+			echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60' class='mn'>".$lang_label["agent_detail"]."</a></li></ul></div>";
+			
 			if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/agentes/estado_alertas") {
-				echo "<div id='arrows2'><ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/estado_alertas&amp;refr=60' class='mn'>".$lang_label["alert_detail"]."</a></li></ul></div>";
+				echo "<div id='arrows2'>";
 			}
-			else echo "<div id='arrow2'><ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/estado_alertas&amp;refr=60' class='mn'>".$lang_label["alert_detail"]."</a></li></ul></div>";
+			else echo "<div id='arrow2'>";
+			echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/estado_alertas&amp;refr=60' class='mn'>".$lang_label["alert_detail"]."</a></li></ul></div>";
+			
 			if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/agentes/status_monitor") {
-				echo "<div id='arrows3'><ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60' class='mn'>".$lang_label["detailed_monitoragent_state"]."</a></li></ul></div>";
+				echo "<div id='arrows3'>";
 			}
-			else echo "<div id='arrow3'><ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60' class='mn'>".$lang_label["detailed_monitoragent_state"]."</a></li></ul></div>";
+			else echo "<div id='arrow3'>";
+			echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60' class='mn'>".$lang_label["detailed_monitoragent_state"]."</a></li></ul></div>";
+			
 			if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/agentes/exportdata") {
-				echo "<div id='arrows4'><ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/exportdata' class='mn'>".$lang_label["export_data"]."</a></li></ul></div>";
+				echo "<div id='arrows4'>";
 			}
-			else echo "<div id='arrow4'><ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/exportdata' class='mn'>".$lang_label["export_data"]."</a></li></ul></div>";
+			else echo "<div id='arrow4'>";
+			echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/exportdata' class='mn'>".$lang_label["export_data"]."</a></li></ul></div>";
+			
 			if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/agentes/estadisticas") {
-				echo "<div id='arrows5'><ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/estadisticas' class='mn'>".$lang_label["statistics"]."</a></li></ul></div>";
+				echo "<div id='arrows5'>";
 			}
-			else echo "<div id='arrow5'><ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/estadisticas' class='mn'>".$lang_label["statistics"]."</a></li></ul></div>";
+			else echo "<div id='arrow5'>";
+			echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/estadisticas' class='mn'>".$lang_label["statistics"]."</a></li></ul></div>";
 		}
 	}
 	if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 		if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/servers/view_server") {
-			echo '<div id="op2s"><ul class="mn"><li><a href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server&amp;refr=60" class="mn">'.$lang_label["view_servers"].'</a></li></ul></div>';
+			echo '<div id="op2s">';
 		}
-		else echo '<div id="op2"><ul class="mn"><li><a href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server&amp;refr=60" class="mn">'.$lang_label["view_servers"].'</a></li></ul></div>';
+		else echo '<div id="op2">';
+		echo '<ul class="mn"><li><a href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server&amp;refr=60" class="mn">'.$lang_label["view_servers"].'</a></li></ul></div>';
 	}
 	if (give_acl($_SESSION["id_usuario"], 0, "IR")==1) {
 		if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/incidents/incident") {
-			echo '<div id="op3s"><ul class="mn"><li><a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident" class="mn">'.$lang_label["manage_incidents"].'</a></li></ul></div>';
+			echo '<div id="op3s">';
 		}
-		else echo '<div id="op3"><ul class="mn"><li><a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident" class="mn">'.$lang_label["manage_incidents"].'</a></li></ul></div>';
+		else echo '<div id="op3">';
+		echo '<ul class="mn"><li><a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident" class="mn">'.$lang_label["manage_incidents"].'</a></li></ul></div>';
+		
 		if (isset($_GET["sec"]) && $_GET["sec"] == "incidencias"){
 			if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/incidents/incident_search") {
-				echo "<div id='arrows1'><ul class='mn'><li><a href='index.php?sec=incidencias&amp;sec2=operation/incidents/incident_search' class='mn'>".$lang_label["search_incident"]."</a></li></ul></div>";
+				echo "<div id='arrows1'>";
 			}
-			else echo "<div id='arrow1'><ul class='mn'><li><a href='index.php?sec=incidencias&amp;sec2=operation/incidents/incident_search' class='mn'>".$lang_label["search_incident"]."</a></li></ul></div>";
+			else echo "<div id='arrow1'>";
+			echo "<ul class='mn'><li><a href='index.php?sec=incidencias&amp;sec2=operation/incidents/incident_search' class='mn'>".$lang_label["search_incident"]."</a></li></ul></div>";
+			
 			if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/incidents/incident_statistics") {
-				echo "<div id='arrows2'><ul class='mn'><li><a href='index.php?sec=incidencias&amp;sec2=operation/incidents/incident_statistics' class='mn'>".$lang_label["statistics"]."</a></li></ul></div>";
+				echo "<div id='arrows2'>";
 			}
-			else echo "<div id='arrow2'><ul class='mn'><li><a href='index.php?sec=incidencias&amp;sec2=operation/incidents/incident_statistics' class='mn'>".$lang_label["statistics"]."</a></li></ul></div>";
+			else echo "<div id='arrow2'>";
+			echo "<ul class='mn'><li><a href='index.php?sec=incidencias&amp;sec2=operation/incidents/incident_statistics' class='mn'>".$lang_label["statistics"]."</a></li></ul></div>";
 		}
 	}
 	if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 		if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/events/events") {
-			echo '<div id="op4s"><ul class="mn"><li><a href="index.php?sec=eventos&amp;sec2=operation/events/events" class="mn">'.$lang_label["view_events"].'</a></li></ul></div>';
+			echo '<div id="op4s">';
 		}
-		else echo '<div id="op4"><ul class="mn"><li><a href="index.php?sec=eventos&amp;sec2=operation/events/events" class="mn">'.$lang_label["view_events"].'</a></li></ul></div>';
+		else echo '<div id="op4">';
+		echo '<ul class="mn"><li><a href="index.php?sec=eventos&amp;sec2=operation/events/events" class="mn">'.$lang_label["view_events"].'</a></li></ul></div>';
+		
 		if (isset($_GET["sec"]) && $_GET["sec"] == "eventos"){
 			if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/events/event_statistics") {
-				echo "<div id='arrows1'><ul class='mn'><li><a href='index.php?sec=eventos&amp;sec2=operation/events/event_statistics' class='mn'>".$lang_label["statistics"]."</a></li></ul></div>";
+				echo "<div id='arrows1'>";
 			}
-			else echo "<div id='arrow1'><ul class='mn'><li><a href='index.php?sec=eventos&amp;sec2=operation/events/event_statistics' class='mn'>".$lang_label["statistics"]."</a></li></ul></div>";
+			else echo "<div id='arrow1'>";
+			echo "<ul class='mn'><li><a href='index.php?sec=eventos&amp;sec2=operation/events/event_statistics' class='mn'>".$lang_label["statistics"]."</a></li></ul></div>";
 		}
 	}
 		if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/users/user") {
-			echo '<div id="op5s"><ul class="mn"><li><a href="index.php?sec=usuarios&amp;sec2=operation/users/user" class="mn">'.$lang_label["view_users"].'</a></li></ul></div>';
+			echo '<div id="op5s">';
 		}
-		else echo '<div id="op5"><ul class="mn"><li><a href="index.php?sec=usuarios&amp;sec2=operation/users/user" class="mn">'.$lang_label["view_users"].'</a></li></ul></div>';
+		else echo '<div id="op5">';
+		echo '<ul class="mn"><li><a href="index.php?sec=usuarios&amp;sec2=operation/users/user" class="mn">'.$lang_label["view_users"].'</a></li></ul></div>';
 		
 		if (isset($_GET["sec"]) && $_GET["sec"] == "usuarios"){
 			if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/users/user_edit"){
-				echo "<div id='arrows1'><ul class='mn'><li><a href='index.php?sec=usuarios&amp;sec2=operation/users/user_edit&ver=".$_SESSION["id_usuario"]."' class='mn'>".$lang_label["index_myuser"]."</a></li></ul></div>";
+				echo "<div id='arrows1'>";
 			}
-			else echo "<div id='arrow1'><ul class='mn'><li><a href='index.php?sec=usuarios&amp;sec2=operation/users/user_edit&ver=".$_SESSION["id_usuario"]."' class='mn'>".$lang_label["index_myuser"]."</a></li></ul></div>";
+			else echo "<div id='arrow1'>";
+			echo "<ul class='mn'><li><a href='index.php?sec=usuarios&amp;sec2=operation/users/user_edit&ver=".$_SESSION["id_usuario"]."' class='mn'>".$lang_label["index_myuser"]."</a></li></ul></div>";
+			
 			if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/users/user_statistics") {
-				echo "<div id='arrows1'><ul class='mn'><li><a href='index.php?sec=usuarios&amp;sec2=operation/users/user_statistics' class='mn'>".$lang_label["statistics"]."</a></li></ul></div>";
+				echo "<div id='arrows1'>";
 			}
-			else echo "<div id='arrow1'><ul class='mn'><li><a href='index.php?sec=usuarios&amp;sec2=operation/users/user_statistics' class='mn'>".$lang_label["statistics"]."</a></li></ul></div>";
+			else echo "<div id='arrow1'>";
+			echo "<ul class='mn'><li><a href='index.php?sec=usuarios&amp;sec2=operation/users/user_statistics' class='mn'>".$lang_label["statistics"]."</a></li></ul></div>";
 		
 		}
 		if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/snmpconsole/snmp_view") {
-			echo '<div id="op6s"><ul class="mn"><li><a href="index.php?sec=snmpconsole&amp;sec2=operation/snmpconsole/snmp_view&amp;refr=30" class="mn">'.$lang_label["SNMP_console"].'</a></li></ul></div>';
+			echo '<div id="op6s">';
 		}
-		else echo '<div id="op6"><ul class="mn"><li><a href="index.php?sec=snmpconsole&amp;sec2=operation/snmpconsole/snmp_view&amp;refr=30" class="mn">'.$lang_label["SNMP_console"].'</a></li></ul></div>';
+		else echo '<div id="op6">';
+		echo '<ul class="mn"><li><a href="index.php?sec=snmpconsole&amp;sec2=operation/snmpconsole/snmp_view&amp;refr=30" class="mn">'.$lang_label["SNMP_console"].'</a></li></ul></div>';
 
 		if (isset($_GET["sec"]) && $_GET["sec"] == "snmpconsole"){
 			if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/snmpconsole/snmp_alert") {
-				echo "<div id='arrows1'><ul class='mn'><li><a href='index.php?sec=snmpconsole&amp;sec2=operation/snmpconsole/snmp_alert' class='mn'>".$lang_label["snmp_console_alert"]."</a></li></ul></div>";
+				echo "<div id='arrows1'>";
 			}
-			else echo "<div id='arrow1'><ul class='mn'><li><a href='index.php?sec=snmpconsole&amp;sec2=operation/snmpconsole/snmp_alert' class='mn'>".$lang_label["snmp_console_alert"]."</a></li></ul></div>";
+			else echo "<div id='arrow1'>";
+			echo "<ul class='mn'><li><a href='index.php?sec=snmpconsole&amp;sec2=operation/snmpconsole/snmp_alert' class='mn'>".$lang_label["snmp_console_alert"]."</a></li></ul></div>";
 		}
 		if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/messages/message" && !isset($_GET["nuevo_g"])) {
-			echo '<div id="op7s"><ul class="mn"><li><a href="index.php?sec=messages&amp;sec2=operation/messages/message" class="mn">'. $lang_label["messages"].'</a></li></ul></div>';
+			echo '<div id="op7s">';
 		}
-		else echo '<div id="op7"><ul class="mn"><li><a href="index.php?sec=messages&amp;sec2=operation/messages/message" class="mn">'. $lang_label["messages"].'</a></li></ul></div>';
+		else echo '<div id="op7">';
+		echo '<ul class="mn"><li><a href="index.php?sec=messages&amp;sec2=operation/messages/message" class="mn">'. $lang_label["messages"].'</a></li></ul></div>';
+		
 		if (isset($_GET["sec"]) && $_GET["sec"] == "messages"){
 			if(isset($_GET["sec2"]) && isset($_GET["nuevo_g"])) {
-				echo "<div id='arrows1'><ul class='mn'><li><a href='index.php?sec=messages&amp;sec2=operation/messages/message&amp;nuevo_g' class='mn'>".$lang_label["messages_g"]."</a></li></ul></div>";
+				echo "<div id='arrows1'>";
 			}
-			else echo "<div id='arrow1'><ul class='mn'><li><a href='index.php?sec=messages&amp;sec2=operation/messages/message&amp;nuevo_g' class='mn'>".$lang_label["messages_g"]."</a></li></ul></div>";
+			else echo "<div id='arrow1'>";
+			echo "<ul class='mn'><li><a href='index.php?sec=messages&amp;sec2=operation/messages/message&amp;nuevo_g' class='mn'>".$lang_label["messages_g"]."</a></li></ul></div>";
 		}
 ?>		
 	</div>

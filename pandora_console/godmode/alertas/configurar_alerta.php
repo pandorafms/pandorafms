@@ -40,7 +40,7 @@ if ( (give_acl($id_user, 0, "LM")==1)){
 	
 ?>
 <h2><?php echo $lang_label["alert_config"];?></h2>
-<h3><?php if (isset($_GET["creacion"])){echo $lang_label["create_alert"];} if (isset($_GET["id_alerta"])){echo $lang_label["mod_alert"];} ?></h3>
+<h3><?php if (isset($_GET["creacion"])){echo $lang_label["create_alert"];} if (isset($_GET["id_alerta"])){echo $lang_label["mod_alert"];} ?><a href="help/<?php echo substr($language_code,0,2);?>/chap3.php#3221" target="_help"><img src="images/ayuda.gif" border="0" class="help"></a></h3>
 
 <table width="500" cellspacing="3" cellpadding="3">
 
@@ -73,18 +73,6 @@ else {echo "<input name='uptbutton' type='submit' class='sub' value='".$lang_lab
 </form>
 
 </table>
-
-<div align="justify">
-<br><br>
-<?php echo $lang_label["alert_setup_msg1"] ?>
-<br><br>
-<li><b>_field1_</b> - <?php echo $lang_label["alert_setup_msg2"] ?><br>
-<li><b>_field2_</b> - <?php echo $lang_label["alert_setup_msg3"] ?><br>
-<li><b>_field3_</b> - <?php echo $lang_label["alert_setup_msg4"] ?><br>
-<li><b>_agent_</b> - <?php echo $lang_label["agent_name"] ?><br>
-<li><b>_timestamp_</b> - <?php echo $lang_label["alert_setup_msg5"] ?><br>
-<li><b>_data_</b> - <?php echo $lang_label["alert_setup_msg6"] ?><br>
-</div>
 
 <?php
 } // end page

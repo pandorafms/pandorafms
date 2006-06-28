@@ -221,8 +221,8 @@ if (comprueba_login() == 0)
 		} else { // Form view
 			?>
 							
-			<h2><?php echo $lang_label["agent_conf"] ?><a href="help/<?php echo substr($language_code,0,2);?>/chap3.php#323" target="_help"><img src="images/ayuda.gif" border="0" class="help"></a></h2>
-			<h3><?php echo $lang_label["config_manage"]; ?></h3>
+			<h2><?php echo $lang_label["agent_conf"] ?></h2>
+			<h3><?php echo $lang_label["config_manage"]; ?><a href="help/<?php echo substr($language_code,0,2);?>/chap3.php#323" target="_help"><img src="images/ayuda.gif" border="0" class="help"></a></h3>
 			<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/manage_config&operacion=1">
 			<table width=450 border=0 cellspacing=3 cellpadding=5>
 			<tr>

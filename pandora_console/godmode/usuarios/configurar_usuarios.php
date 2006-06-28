@@ -147,7 +147,7 @@ if (comprueba_login() == 0)
 	<table width='500' cellpadding='3' cellspacing='3'>
 	<?php 
 	if (isset($_GET["alta"]))
-		echo '<form name="user_mod" method="post" action="index.php?sec=gusuarios&sec2=godmode/usuarios/configurar_usuarios&nuevo_usuario=1"><tr><td class="lb" rowspan="9" width="5">';
+		echo '<form name="new_user" method="post" action="index.php?sec=gusuarios&sec2=godmode/usuarios/configurar_usuarios&nuevo_usuario=1"><tr><td class="lb" rowspan="9" width="5">';
 	else
 		echo '<form name="user_mod" method="post" action="index.php?sec=gusuarios&sec2=godmode/usuarios/configurar_usuarios&id_usuario_mio='.$id_usuario_mio.'"><tr><td class="lb" rowspan="11" width="5">';
 	?>
@@ -214,7 +214,7 @@ if (comprueba_login() == 0)
 				echo '<td class="datost"><a href="index.php?sec=gusuarios&sec2=godmode/usuarios/configurar_usuarios&id_usuario_mio='.$id_usuario_mio.'&borrar_grupo='.$row["id_up"].' " onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;"><img border=0 src="images/cancel.gif"></a>';
 			}
 		}
-		else { echo '<tr><td></td></tr><tr><td class="red" colspan="2">'.$lang_label["no_profile"]; }
+		else { echo '<tr><td></td></tr><tr><td class="red" colspan="3">'.$lang_label["no_profile"]; }
 	}	
 	?>
 	
@@ -223,61 +223,6 @@ if (comprueba_login() == 0)
 	else {echo "<input name='uptbutton' type='submit' class='sub' value='".$lang_label["update"]."'>";} ?> 
 	</form>
 	</td></tr></table>
-	<br>
-	<h3><?php echo $lang_label["definedprofiles"] ?></h3>
-	
-	<?php
-		echo "<table class=fon cellpadding=3 cellspacing=3 border=0><tr>
-		<th class='w180d'><font size=1>".$lang_label["profiles"]."
-		<th class='w40d'><font size=1>IR<a href='#' class='tip2'>&nbsp;<span>".$help_label["IR"]."</span></a>
-		<th class='w40d'><font size=1>IW<a href='#' class='tip2'>&nbsp;<span>".$help_label["IW"]."</span></a>
-		<th class='w40d'><font size=1>IM<a href='#' class='tip2'>&nbsp;<span>".$help_label["IM"]."</span></a>
-		<th class='w40d'><font size=1>AR<a href='#' class='tip2'>&nbsp;<span>".$help_label["AR"]."</span></a>
-		<th class='w40d'><font size=1>AW<a href='#' class='tip2'>&nbsp;<span>".$help_label["AW"]."</span></a>
-		<th class='w40d'><font size=1>LW<a href='#' class='tip2'>&nbsp;<span>".$help_label["LW"]."</span></a>
-		<th class='w40d'><font size=1>UM<a href='#' class='tip2'>&nbsp;<span>".$help_label["UM"]."</span></a>
-		<th class='w40d'><font size=1>DM<a href='#' class='tip2'>&nbsp;<span>".$help_label["DM"]."</span></a>
-		<th class='w40d'><font size=1>LM<a href='#' class='tip2'>&nbsp;<span>".$help_label["LM"]."</span></a>
-		<th class='w40d'><font size=1>PM<a href='#' class='tip2'>&nbsp;<span>".$help_label["PM"]."</span></a>";
-		$query_del1="SELECT * FROM tperfil";
-		$resq1=mysql_query($query_del1);
-		while ($rowdup=mysql_fetch_array($resq1)){
-			$id_perfil = $rowdup["id_perfil"];
-			$nombre=$rowdup["name"];
-			$incident_view = $rowdup["incident_view"];
-			$incident_edit = $rowdup["incident_edit"];
-			$incident_management = $rowdup["incident_management"];
-			$agent_view = $rowdup["agent_view"];
-			$agent_edit =$rowdup["agent_edit"];
-			$alert_edit = $rowdup["alert_edit"];
-			$user_management = $rowdup["user_management"];
-			$db_management = $rowdup["db_management"];
-			$alert_management = $rowdup["alert_management"];
-			$pandora_management = $rowdup["pandora_management"];
-			echo "<tr><td class=datos_id>".$nombre;
-			echo "<td class=datos>";
-			if ($incident_view == 1) echo "<img src='images/ok.gif' border=0>";
-			echo "<td class=datos>";
-			if ($incident_edit == 1) echo "<img src='images/ok.gif' border=0>";
-			echo "<td class=datos>";
-			if ($incident_management == 1) echo "<img src='images/ok.gif' border=0>";
-			echo "<td class=datos>";
-			if ($agent_view == 1) echo "<img src='images/ok.gif' border=0>";
-			echo "<td class=datos>";
-			if ($agent_edit == 1) echo "<img src='images/ok.gif' border=0>";
-			echo "<td class=datos>";
-			if ($alert_edit == 1) echo "<img src='images/ok.gif' border=0>";
-			echo "<td class=datos>";
-			if ($user_management == 1) echo "<img src='images/ok.gif' border=0>";
-			echo "<td class=datos>";
-			if ($db_management == 1) echo "<img src='images/ok.gif' border=0>";
-			echo "<td class=datos>";
-			if ($alert_management == 1) echo "<img src='images/ok.gif' border=0>";
-			echo "<td class=datos>";
-			if ($pandora_management == 1) echo "<img src='images/ok.gif' border=0>";
-		}
-	?>
-	<tr><td colspan='11'><div class='raya'></div></td></tr></table><br>
 
 <?php
 } // fin comprobacion seguridad pagina

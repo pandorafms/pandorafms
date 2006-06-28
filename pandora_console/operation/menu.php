@@ -11,7 +11,7 @@ if (isset($_SESSION["id_usuario"])) {
 ?>
 <div class="bg">
 	<div class="imgl"><img src="images/upper-left-corner.gif" width="5" height="5" alt=""></div>
-	<div class="tit"><?php echo $lang_label["operation_header"] ?></div>
+	<div class="tit">:: <?php echo $lang_label["operation_header"] ?> ::</div>
 	<div class="imgr"><img src="images/upper-right-corner.gif" width="5" height="5" alt=""></div>
 </div>
 <div id="menuop">

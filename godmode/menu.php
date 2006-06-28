@@ -14,13 +14,13 @@ if (comprueba_login() == 0){
 
 <div class="bg">
 	<div class="imgl"><img src="images/upper-left-corner.gif" width="5" height="5" alt=""></div>
-	<div class="tit"><?php echo $lang_label["godmode_header"] ?></div>
+	<div class="tit">:: <?php echo $lang_label["godmode_header"] ?> ::</div>
 	<div class="imgr"><img src="images/upper-right-corner.gif" width="5" height="5" alt=""></div>
 </div>
 <div id="menug">
 	<div id="god">
 	
-<?php 
+	<?php 
 	if ((give_acl($id_user, 0, "AW")==1)){
 		if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/agentes/modificar_agente" || $_GET["sec2"] == "godmode/agentes/configurar_agente")){
 			echo '<div id="god1s">';
@@ -35,7 +35,7 @@ if (comprueba_login() == 0){
 			else echo "<div id='arrowg1'>";
 			echo "<ul class='mn'><li><a href='index.php?sec=gagente&amp;sec2=godmode/agentes/manage_config' class='mn'>".$lang_label["manage_config"]."</a></li></ul></div>";
 			
-			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/grupos/lista_grupos"){
+			if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/grupos/lista_grupos" || $_GET["sec2"] == "godmode/grupos/configurar_grupo")){
 				echo "<div id='arrowgs1'>";
 			}
 			else echo "<div id='arrowg1'>";
@@ -50,7 +50,7 @@ if (comprueba_login() == 0){
 		echo '<ul class="mn"><li><a href="index.php?sec=galertas&amp;sec2=godmode/alertas/modificar_alerta" class="mn">'.$lang_label["manage_alerts"].'</a></li></ul></div>';
 	}
 	if ((give_acl($id_user, 0, "UM")==1)){
-		if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/usuarios/lista_usuarios" || $_GET["sec2"] == "godmode/grupos/configurar_grupo")){
+		if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/usuarios/lista_usuarios" || $_GET["sec2"] == "godmode/usuarios/configurar_usuarios")){
 			echo '<div id="god3s">';
 		}
 		else echo '<div id="god3">';
@@ -128,7 +128,7 @@ if (comprueba_login() == 0){
 			echo "<ul class='mn'><li><a href='index.php?sec=gdbman&amp;sec2=godmode/db/db_event' class='mn'>".$lang_label["db_event"]."</a></li></ul></div>";
 		}
 	}
-?>
+	?>
 	</div>
 </div>
 <?php

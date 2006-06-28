@@ -63,7 +63,6 @@ and can be accessed.</p>
 <p>There are nine default groups on this screen.</p>
 
 <ul>
-<li><b>All</b> (all groups)</li>
 <li><b>Applications</b></li>
 <li><b>Comms</b></li>
 <li><b>Databases</b></li>
@@ -78,7 +77,7 @@ and can be accessed.</p>
 A group is added by clicking "Create group" and assigning a name to it.</p>
 <p>
 
-A group is deleted by clicking the delete icon <img src="../../images/cancel.gif"> in the right hand side of each group. It is not recommended to delete the group "All".</p>
+A group is deleted by clicking the delete icon <img src="../../images/cancel.gif"> in the right hand side of each group.</p>
 
 <h2><a name="32">3.2. Adding an agent</a></h2>
 
@@ -184,6 +183,17 @@ Operating System.</p>
 <li><b>Alert name:</b> The name of the Alert</li>
 <li><b>Command:</b> Command the Alert will trigger</li>
 <li><b>Description:</b> Description of the Alert</li>
+</ul>
+
+<p>In 'Command' data field these variables are used to build the command line that the machine where Pandora resides will execute – if there were several servers, the one in Master mode, replacing at runtime:</p>
+
+<ul>
+<li><code><b>_field1_</b></code>: Field #1, usually assigned as username, e-mail destination or single identification for this event</li>
+<li><code><b>_field2_</b></code>: Field #2, usually assigned as short description of events, as subject line in e-mail</li>
+<li><code><b>_field3_</b></code>: Field #3, a full text explanation for the event</li>
+<li><code><b>_agent_</b></code>: Agent name</li>
+<li><code><b>_timestamp_</b></code>: A standard representation of date and time. Replaced automatically when the event has been fired</li>
+<li><code><b>_data_</b></code>: The data value that triggered the alert</li>
 </ul>
 
 <h4><a name="3222">3.2.2.2. Assigning Alerts</a></h4>

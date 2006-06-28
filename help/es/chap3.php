@@ -62,7 +62,6 @@ de administraci&oacute;n.</p>
 <p>En esta pantalla se encuentran todos los grupos existentes, hay nueve grupos creados por defecto:</p>
 
 <ul>
-<li><b>All</b> (todos los grupos)</li>
 <li><b>Applications</b></li>
 <li><b>Comms</b></li>
 <li><b>Databases</b></li>
@@ -76,7 +75,7 @@ de administraci&oacute;n.</p>
 <p>Se pueden crear todos los grupos que se necesiten pulsando en «Crear grupo» y asign&aacute;ndole un nombre.</p>
 
 <p>Para borrar un grupo se pulsa en
-el icono <img src="../../images/cancel.gif"> que cada grupo tienen a su derecha. No se recomienda borrar el grupo «<i>All</i>».</p>
+el icono <img src="../../images/cancel.gif"> que cada grupo tienen a su derecha.</p>
 
 <h2><a name="32">3.2. A&ntilde;adir un agente</a></h2>
 
@@ -197,23 +196,31 @@ Operativo de Pandora.</p>
 
 <p>Para crear una alerta personalizada se accede a «Gesti&oacute;n de alertas» &gt; «Crear alertas», en el men&uacute; de administraci&oacute;n</p>
 
-<p>En las alertas ya configuradas los valores «<code>_field1_»</code>, «<code>_field2_</code>» y «<code>_field3_</code>»
-se utilizan como variables para construir el comando que ejecutar&aacute; la m&aacute;quina
-donde est&eacute; el servidor de Pandora (si hay varios, en el servidor en modo Master).</p>
 <p class="center"><img src="images/image012.png"></p>
 
 <p>Al crear una alerta, hay que rellenar los siguientes campos:</p>
 <ul>
 <li><b>Nombre de la alerta:</b> Un nombre descriptivo para la alerta</li>
 <li><b>Comando:</b> Comando que ejecutar&aacute; la alerta</li>
-<li><b>Descripc&oacute;n:</b> Descripci&oacute;n de la alerta</li>
+<li><b>Descripci&oacute;n:</b> Descripci&oacute;n de la alerta</li>
+</ul>
+
+<p>En el campo «Comando» se pueden utilizar las siguientes variables para construir el comando que ejecutar&aacute; la m&aacute;quina donde est&eacute; el servidor de Pandora (si hay varios, en el servidor en modo Master), reemplazandose los valores en tiempo de ejecuci&oacute;n:</p>
+
+<ul>
+<li><code><b>_field1_</b></code>: Campo 1, generalmente es el nombre de usuario, e-mail destino o identificaci&oacute;n para este evento</li>
+<li><code><b>_field2_</b></code>: Campo 2, generalmente es una breve descripci&oacute;n de eventos, como el «asunto» del e-mail</li>
+<li><code><b>_field3_</b></code>: Campo 3, texto explicativo del evento</li>
+<li><code><b>_agent_</b></code>: Nombre del agente</li>
+<li><code><b>_timestamp_</b></code>: Representaci&oacute;n est&aacute;ndar de la hora y fecha. Reemplazada autom&aacute;ticamente cuando se ha lanzado el evento</li>
+<li><code><b>_data_</b></code>: Valor del dato que lanz&oacute; la alerta</li>
 </ul>
 
 <h4><a name="3222">3.2.2.2. Asignaci&oacute;n de alertas</a></h4>
 <p>Una vez se ha a&ntilde;adido el agente,
 se han configurado los m&oacute;dulos y se han creado las alertas que se quieren
 generar, se asignan estas alertas al agente correspondiente.</p>
-<p>Desde «Gesti&oacute;n de agentes», desde el men&uacute; de
+<p>Desde «Gesti&oacute;n de agentes» en el men&uacute; de
 administraci&oacute;n, seleccionamos el agente que se quiere configurar. Al final de
 la p&aacute;gina de configuraci&oacute;n est&aacute; la secci&oacute;n «Formulario de asociaci&oacute;n de alerta».</p>
 
@@ -223,14 +230,15 @@ la p&aacute;gina de configuraci&oacute;n est&aacute; la secci&oacute;n «Formular
 
 <ul>
 <li><b>Tipo de Alerta:</b> Se elige la alerta que se generar&aacute; dentro de las alertas que hay definidas.</li>
-<li><b>Valor M&aacute;ximo: </b>Define el valor m&aacute;ximo v&aacute;lido para un m&oacute;dulo. Cualquier valor por encima de &eacute;l, disparar&aacute; la alerta.</li>
 <li><b>Valor M&iacute;nimo: </b>Define el valor m&iacute;nimo v&aacute;lido para un m&oacute;dulo. Cualquier valor por debajo de &eacute;l, disparar&aacute; la alerta.</li>
+<li><b>Valor M&aacute;ximo: </b>Define el valor m&aacute;ximo v&aacute;lido para un m&oacute;dulo. Cualquier valor por encima de &eacute;l, disparar&aacute; la alerta.</li>
 <li><b>Descripci&oacute;n: </b>Describe la funci&oacute;n de la alerta, es &uacute;til para poder discriminarlo en la vista general de alertas.</li>
 <li><b>Campo #1 (Alias nombre):</b> Define el valor utilizado para la variable «<code>_field1_</code>».</li>
 <li><b>Campo #2 (L&iacute;nea sencilla):</b> Define el valor utilizado para la variable «<code>_field2_</code>».</li>
 <li><b>Campo #3 (Texto completo):</b> Define el valor utilizado para la variable «<code>_field3_</code>».</li>
 <li><b>Umbral de tiempo</b>: Tiempo que ha de pasar desde que se dispara una alerta hasta que se puede disparar otra.</li>
-<li><b>Max Alerts Fired</b>: Define el n&uacute;mero m&aacute;ximo de alertas que se env&iacute;an de forma continua.</li>
+<li><b>M&iacute;nimo Alertas</b>: Define el n&uacute;mero m&iacute;nimo de alertas que se env&iacute;an de forma continua.</li>
+<li><b>M&aacute;ximo Alertas</b>: Define el n&uacute;mero m&aacute;ximo de alertas que se env&iacute;an de forma continua.</li>
 <li><b>M&oacute;dulo Asignado</b>: Define el m&oacute;dulo que ser&aacute; monitorizado por la alerta.</li>
 </ul>
 
@@ -244,7 +252,7 @@ repiten en otro agente que se quiere a&ntilde;adir. </p>
 <p>Con el fin de simplificar el
 trabajo de un administrador, dentro de Pandora se pueden copiar m&oacute;dulos y
 alertas definidas en un agente existente sobre otro agente.</p>
-<p>Accedemos a «Gesti&oacute;n de agentes» &gt; «Gestionar configuraci&oacute;n», men&uacute; de administraci&oacute;n:</p>
+<p>Accedemos a «Gesti&oacute;n de agentes» &gt; «Gestionar conf.», men&uacute; de administraci&oacute;n:</p>
 
 <p class="center"><img src="images/image014.png"></p>
 
@@ -275,9 +283,11 @@ gr&aacute;ficas.</p>
 <h3><a name="331">3.3.1. Ver agentes</a></h3>
 
 <p>Desde la opci&oacute;n «Ver agentes» en el
-men&uacute; de operaci&oacute;n se tiene acceso a todos los agentes. Desde aqu&iacute; se ve
+men&uacute; de operaci&oacute;n se tiene acceso a los grupos de agentes. Desde aqu&iacute; se ve
 r&aacute;pidamente estado en que esta cada uno de los agentes simplemente con una
 r&aacute;pida mirada, gracias a un sistema de bombillas y c&iacute;rculos coloreados.</p>
+
+<p>Si entramos en la opci&oacute;n «Detalle agente» accedemos a una lista ordenada alfab&eacute;ticamente de todos los agentes.</p>
 
 <p class="center"><img src="images/image015.png"></p>
 

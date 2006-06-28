@@ -18,7 +18,7 @@ use Net::Ping::External qw(ping);	# For ICMP conectivity
 use Net::Ping;				# For ICMP latency
 use Time::HiRes;			# For high precission timedate functions (Net::Ping)
 use IO::Socket;				# For TCP/UDP access
-use Net::SNMP;				# For SNMP access
+use SNMP;				# For SNMP access (libnet-snmp-perl package!
 
 # Pandora Modules
 use pandora_config;
@@ -226,31 +226,24 @@ sub pandora_query_snmp {
 	my $snmp_target = $_[3];
 	# $_[4] contains error var.
 	my $dbh = $_[5];
-
 	my $output ="";
-	
-	my ($session1, $error) = Net::SNMP->session(
-      	-hostname  => $snmp_target,
-      	-community => $snmp_community,
-      	-port      => 161 );
+	$ENV{'MIBS'}="ALL";  #Load all available MIBs
+	my $SESSION = new SNMP::Session (DestHost =>  $snmp_target, 
+                                Community => $snmp_community,
+                                Version => 1);
 
-   	if (!defined($session1)) {
+   	if (!defined($SESSION)) {
       		logger($pa_config, "SNMP ERROR SESSION", 4);
-   	}
-
-   	my $result = $session1->get_request(
-      		-varbindlist => [$snmp_oid]
-   	);
-
-   	if (!defined($result)) {
-      		logger($pa_config, "SNMP ERROR GET", 4);
-      		$session1->close;
-		#$_[4]=1;
+		$_[4]="1";
    	} else {
-   		$output = $result->{$snmp_oid};
-		$session1->close;
-		$_[4]=0;
-   	}
+		my $OIDLIST =  new SNMP::VarList([$snmp_oid]);
+		# Pass the VarList to getnext building an array of the output
+		my @OIDINFO = $SESSION->getnext($OIDLIST);	
+		$output = $OIDINFO[0];
+		$_[4]="0";
+	}
+	# Too much DEBUG for me :-)
+	# logger($pa_config, "SNMP RESULT $snmp_oid $snmp_target - > $output \n",10);
 	return $output;
 }
 

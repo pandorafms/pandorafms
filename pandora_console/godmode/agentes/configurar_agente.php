@@ -961,11 +961,11 @@ while ($row=mysql_fetch_array($result)){
 &nbsp;&nbsp;&nbsp;
 <input type="text" name="other" size="5">
 
-<tr><td class="datos"><?php echo $lang_label["min"]." ".$lang_label["alerts"] ?>
+<tr><td class="datos"><?php echo $lang_label["min_alerts"] ?>
 <td class="datos">
 <input type="text" name="min_alerts" size="5" value="<?php  if (isset($alerta_min_alerts)) {echo$alerta_min_alerts;} ?>">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<?php echo $lang_label["max"]." ".$lang_label["alerts"] ?>
+<?php echo $lang_label["max_alerts"] ?>
 &nbsp;&nbsp;&nbsp;
 <input type="text" name="max_alerts" size="5" value="<?php if (isset($alerta_max_alerts)) {echo $alerta_max_alerts;} ?>">
 

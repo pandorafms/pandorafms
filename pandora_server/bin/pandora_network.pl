@@ -3,9 +3,19 @@
 # Pandora Network Server
 ##################################################################################
 # Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-# Permission is granted to copy, distribute and/or modify this document
-# under the terms of the GNU Free Documentation License, Version 2.0
-# or any later version published by the Free Software Foundation at www.gnu.org
+# Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L
+#
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ##################################################################################
 
 # Includes list
@@ -231,8 +241,7 @@ sub pandora_query_snmp {
 	my $SESSION = new SNMP::Session (DestHost =>  $snmp_target, 
                                 Community => $snmp_community,
                                 Version => 1);
-
-   	if (!defined($SESSION)) {
+   	if ((!defined($SESSION))&& ($snmp_community != "") && ($snmp_oid != "")) {
       		logger($pa_config, "SNMP ERROR SESSION", 4);
 		$_[4]="1";
    	} else {
@@ -316,7 +325,12 @@ sub exec_network_module {
 	# SNMP Modules (Proc, inc, data, string)
 	# ------------
 	} elsif (($id_tipo_modulo == 15) || ($id_tipo_modulo == 18) || ($id_tipo_modulo == 16) || ($id_tipo_modulo == 17)) { # SNMP module
-		$temp2 = pandora_query_snmp ($pa_config, $mysnmp_oid, $mysnmp_community, $ip_target, $error, $dbh);
+		if ($mysnmp_oid ne ""){
+			$temp2 = pandora_query_snmp ($pa_config, $mysnmp_oid, $mysnmp_community, $ip_target, $error, $dbh);
+		} else {
+			 $error = 1
+		}
+		
 		# SUB pandora_query_snmp (pa_config, oid, community, target, error, dbh)
 		if ($error == 0) { # A correct SNMP Query
 			$module_result = 0;

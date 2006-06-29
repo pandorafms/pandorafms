@@ -66,15 +66,16 @@ En esta p&aacute;gina se encuentran todos los perfiles existentes, por defecto h
 <p>A un nuevo perfil se le puede a&ntilde;adir cualquiera de los siguientes roles:</p>
 
 <ul>
-<li>Ver incidentes</li>
-<li>Editar incidentes</li>
-<li>Ver agentes. Permite ver los datos de los agentes, as&iacute; como los eventos generados por ellos</li>
-<li>Editar agentes. Permite modificar los m&oacute;dulos de los agentes</li>
-<li>Editar alertas. Permite modificar las alertas asignadas a los agentes</li>
-<li>Gesti&oacute;n de usuarios. Permite modificar los usuarios y sus roles</li>
-<li>Gesti&oacute;n de Base de Datos. Permite la manipulaci&oacute;n de la Base de Datos (Global)</li>
-<li>Gesti&oacute;n de alertas. Permite la definici&oacute;n de las alertas (Global)</li>
-<li>Gesti&oacute;n de Pandora. Opciones de configuraciones generales</li>
+<li>Ver incidentes (IR)</li>
+<li>Editar incidentes (IW)</li>
+<li>Gesti&oacute;n de incidentes (IM)</li>
+<li>Ver agentes (AR). Permite ver los datos de los agentes, as&iacute; como los eventos generados por ellos</li>
+<li>Editar agentes (AW). Permite modificar los m&oacute;dulos de los agentes</li>
+<li>Editar alertas (LW). Permite modificar las alertas asignadas a los agentes</li>
+<li>Gesti&oacute;n de usuarios (UM). Permite modificar los usuarios y sus roles</li>
+<li>Gesti&oacute;n de Base de Datos (DM). Permite la manipulaci&oacute;n de la Base de Datos (Global)</li>
+<li>Gesti&oacute;n de alertas (LM). Permite la definici&oacute;n de las alertas (Global)</li>
+<li>Gesti&oacute;n de Pandora (PM). Opciones de configuraciones generales</li>
 </ul>
 
 <h2><a name="22">2.2. A&ntilde;adir un usuario</a></h2>

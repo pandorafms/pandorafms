@@ -118,10 +118,27 @@ if (comprueba_login() == 0)
 			require ("include/calendar.php"); //Including calendar
 			$result=mysql_query("SELECT token, value FROM tconfig");
 			$row=mysql_fetch_array($result);
-			if ($row["token"]=="language_code") {$locale=$row["value"];} //language of calendar.			$time = time();
-						if (isset($_GET["month"]))	$month = $_GET["month"];			else $month = date('n', $time);			if (isset($_GET["year"]))	$year = $_GET["year"];			else $year = date('Y', $time);
+			if ($row["token"]=="language_code") $locale=$row["value"]; //language of calendar.
 			
-			//preparate months (the month next to december is january and back)			$first_of_month = gmmktime(0,0,0,$month,1,$year);			list($month, $year) = explode(',',gmstrftime('%m,%Y',$first_of_month));			$month_a=($month-1);			$month_d=($month+1);			if ($month_d==13) {$year_d = $year; $year_a=$year;}			else {				if ($month==12) $year_d = $year+1;				else $year_d=$year;				if ($month==0) $year_a = $year-1;				else $year_a=$year;			}	
+			$time = time();
+			
+			if (isset($_GET["month"]))	$month = $_GET["month"];
+			else $month = date('n', $time);
+			if (isset($_GET["year"]))	$year = $_GET["year"];
+			else $year = date('Y', $time);
+			
+			//preparate months (the next month to december is january and back)
+			$first_of_month = gmmktime(0,0,0,$month,1,$year);
+			list($month, $year) = explode(',',gmstrftime('%m,%Y',$first_of_month));
+			$month_a = ($month-1);
+			$month_d = ($month+1);
+			if ($month_d==13) {$year_d = $year; $year_a = $year;}
+			else {
+				if ($month==12) $year_d = $year+1;
+				else $year_d = $year;
+				if ($month==0) $year_a = $year-1;
+				else $year_a = $year;
+			}	
 
 			if (isset($_GET["date_from"])) $date_from=$_GET["date_from"];
 				else
@@ -138,10 +155,13 @@ if (comprueba_login() == 0)
 			$days_f = array();
 			$days_t = array();
 			$days_in_month=gmdate('t',$first_of_month);
-			//create links for dyas in every calendar:			for ($day_f=1; $day_f<=$days_in_month; $day_f++){
-				$days_f[$day_f]=array('index.php?sec=estado&sec2=operation/agentes/exportdata&date_from='.$year.'-'.$month.'-'.date('d',mktime(0, 0, 0, $month, $day_f, $year)).' 00:00:00&date_to='.$date_to.'&year='.$year.'&month='.$month);			}
+			//create links for days in every calendar:
+			for ($day_f=1; $day_f<=$days_in_month; $day_f++){
+				$days_f[$day_f]=array('index.php?sec=estado&sec2=operation/agentes/exportdata&date_from='.$year.'-'.$month.'-'.date('d',mktime(0, 0, 0, $month, $day_f, $year)).' 00:00:00&date_to='.$date_to.'&year='.$year.'&month='.$month);
+			}
 			for ($day_t=1; $day_t<=$days_in_month; $day_t++){
-				$days_t[$day_t]=array('index.php?sec=estado&sec2=operation/agentes/exportdata&date_from='.$date_from.'&date_to='.$year.'-'.$month.'-'.date('d',mktime(0, 0, 0, $month, $day_t, $year)).' 00:00:00'.'&year='.$year.'&month='.$month);			}
+				$days_t[$day_t]=array('index.php?sec=estado&sec2=operation/agentes/exportdata&date_from='.$date_from.'&date_to='.$year.'-'.$month.'-'.date('d',mktime(0, 0, 0, $month, $day_t, $year)).' 00:00:00'.'&year='.$year.'&month='.$month);
+			}
 			if (isset($date_from) && isset($date_to))
 			{$date="&date_from=".$date_from."&date_to=".$date_to;}
 			?>

@@ -50,7 +50,7 @@ $lang_label["status"]="Estatua";
 $lang_label["in_openedby"]="Egilea";
 $lang_label["in_openedwhen"]="Irekita";
 $lang_label["updated_at"]="Gaurkotuta";
-$lang_label["main_text"]="Hau da Pandoraren gestioaren konsola. Hemendik egileak,  antolatu  Desde aquí puede gestiónar sus agentes, alertas e incidentes. La sesión permanecerá abierta mientras no exista una inactividad prolongada.";
+$lang_label["main_text"]="Hau da Pandoraren gestioaren konsola. Hemendik egileak,  antolatu  Desde aqu&iacute; puede gesti&oacute;nar sus agentes, alertas e incidentes. La sesi&oacute;n permanecer&aacute; abierta mientras no exista una inactividad prolongada.";
 
 $lang_label["id_user"]="Erabiltzailearen ID";
 $lang_label["real_name"]="Benetako izena";
@@ -129,7 +129,7 @@ $lang_label["assigned_alerts"]="esleituta zurtasunak";
 $lang_label["alert_asociation_form"]="Zurtasun bat gehitzeko galde-sorta";
 $lang_label["module_asociation_form"]="Modulu bat gehitzeko galde-sorta";
 $lang_label["name_type"]="Izena / Mota";
-$lang_label["min_max"]="Min/Máx";
+$lang_label["min_max"]="Min/M&aacute;x";
 $lang_label["detailed_monitoragent_state"]="Monitore xehetasuna";
 $lang_label["alert_detail"]="Zurtasuna xehetasuna";
 $lang_label["detailed_alert_view"]="Zurtasunen bista xehatsa";
@@ -156,7 +156,7 @@ $lang_label["find_crit"]="Bilatzeko mota aukeratzea";
 
 $lang_label["all"]="Osoa";
 $lang_label["free_text_search"]="Bilatzeko Textu librea (*)";
-$lang_label["free_text_search_msg"] ="(*) La búsqueda de texto se hará a partir de todas las palabras introducidas como subcadena, en la descripción del título o en la descripción de cada incidente";
+$lang_label["free_text_search_msg"] ="(*) La b&uacute;squeda de texto se har&aacute; a partir de todas las palabras introducidas como subcadena, en la descripci&oacute;n del t&iacute;tulo o en la descripci&oacute;n de cada incidente";
 $lang_label["confirmation"]="Konfirmazioa";
 $lang_label["password"]="Pasa hitza";
 $lang_label["users_pandora"]="Zer da Pandoran erbiltzaile bat";
@@ -176,7 +176,7 @@ $lang_label["group_name"]="Taldearen izena";
 $lang_label["user_management"]="Erabiltzailen gestioa";
 $lang_label["alert_type"]="Zurtasun mota";
 $lang_label["max_value"]="Balio maximoa";
-$lang_label["min_value"]="Balio Mínimoa";
+$lang_label["min_value"]="Balio M&iacute;nimoa";
 $lang_label["time_threshold"]="denboraren muga";
 $lang_label["assigned_module"] ="Aukeratuta modulua";
 
@@ -282,9 +282,9 @@ $lang_label["add"]="Gehitzea";
 
 $lang_label["db_purge_event"]="Gertakeren datutegiaren ezabaketa";
 $lang_label["db_event"]="Gertakeren datutegia";
-$lang_label["max_min"]="Máx/Mín";
+$lang_label["max_min"]="M&aacute;x/M&iacute;n";
 $lang_label["max"]="Maximoa";
-$lang_label["min"]="Mínimoa";
+$lang_label["min"]="M&iacute;nimoa";
 $lang_label["med"]="Erdia";
 $lang_label["month_graph"]="Hileko taula";
 $lang_label["week_graph"]="Asteko taula";
@@ -314,14 +314,14 @@ $lang_label["delete_alert_no"]="Arazo bat agertu da zurtasuna ezabatzerakoan";
 $lang_label["create_agent_no"]="Arazo bat agertu da egilea egiterakoan";
 $lang_label["update_agent_no"]="Arazo bat agertu da egilea gaurkotzerakoan";
 $lang_label["delete_agent_no"]="Arazo bat agertu daHa habido un problema al borrar el agente";
-$lang_label["update_module_no"]="Arazo bat agertu daHa habido un problema al actualizar el módulo";
-$lang_label["add_module_no"]="Arazo bat agertu daHa habido un problema al a&ntilde;adir el módulo";
-$lang_label["delete_module_no"]="Arazo bat agertu daHa habido un problema al borrar el módulo";
+$lang_label["update_module_no"]="Arazo bat agertu daHa habido un problema al actualizar el m&oacute;dulo";
+$lang_label["add_module_no"]="Arazo bat agertu daHa habido un problema al a&ntilde;adir el m&oacute;dulo";
+$lang_label["delete_module_no"]="Arazo bat agertu daHa habido un problema al borrar el m&oacute;dulo";
 $lang_label["update_user_no"]="Arazo bat agertu daHa habido un problema al actualizar el usuario";
-$lang_label["group_error"]="Arazo bat agertu daHa habido un error al cargar la configuración del grupo";
-$lang_label["create_keep_no"]="Arazo bat agertu daHa habido un problema al crear el módulo keepalive en el nuevo agente";
+$lang_label["group_error"]="Arazo bat agertu daHa habido un error al cargar la configuraci&oacute;n del grupo";
+$lang_label["create_keep_no"]="Arazo bat agertu daHa habido un problema al crear el m&oacute;dulo keepalive en el nuevo agente";
 $lang_label["pass_nomatch"]="Pasa-hitzak ez dira berdinak. Zaiatu berriro";
-$lang_label["purge_audit_30day"]="Borrar los datos de auditoría excepto los últimos 30 días";
+$lang_label["purge_audit_30day"]="Borrar los datos de auditor&iacute;a excepto los &uacute;ltimos 30 d&iacute;as";
 $lang_label["purge_audit_7day"]="Azken astea ez ezik auditoriaren datu guztiak ezabatzea";
 $lang_label["purge_audit_90day"]="Azken hiru hilabete ez ezik auditoriaren datu guztiak ezabatzea";
 $lang_label["purge_audit_14day"]="Azken bi aste ez ezik auditoriaren datu guztiak ezabatzea";
@@ -460,7 +460,7 @@ $lang_label["db_refine"]="Datutegi garbitzea";
 $lang_label["filtering_datamodule"]="Datuen moduluak aukeratzen";
 $lang_label["nomodules_selected"]="Ez dago modulurin aukeratuta";
 $lang_label["purge_below_limits"]="Muga hauetatik kanp datuak ezabatu";
-$lang_label["max_eq_min"]="Máximoa minimoaren bezalakoa";
+$lang_label["max_eq_min"]="M&aacute;ximoa minimoaren bezalakoa";
 
 $lang_label["dbprohelp"]="Datutegia garbitzeko protsesuak eskalatik kanpo sarrerak ezabatzeko balio du. Bere kausa edozein izan daiteke(egileen arazoren bat, benetako datua baina eskalatik kanpo, frogak, datutegian arazoren bat, eta abar)
 Datu ez zuzenak, okerrak edo txarrak ezabatzea taulak hobeto ikusteko balio du.";
@@ -554,26 +554,26 @@ $lang_label["agent_type"]="Tipo agente";
 $lang_label["snmp_assigned_alerts"]="Alertas SNMP";
 
 // 29 sep 2005
-$lang_label["max_alerts"]="Número máximo de alertas";
-$lang_label["min_alerts"]="Número mínimo de alertas";
+$lang_label["max_alerts"]="N&uacute;mero m&aacute;ximo de alertas";
+$lang_label["min_alerts"]="N&uacute;mero m&iacute;nimo de alertas";
 
 // 01 Oct 2005
-$lang_label["module_group"]="Grupo módulos";
+$lang_label["module_group"]="Grupo m&oacute;dulos";
 $lang_label["ip_target"]="IP destino";
 $lang_label["tcp_rcv"]="Recibir TCP";
 $lang_label["tcp_send"]="Enviar TCP";
 $lang_label["tcp_port"]="Puerto TCP";
-$lang_label["maxdata"]="Dato máx.";
-$lang_label["mindata"]="Dato mín.";
+$lang_label["maxdata"]="Dato m&aacute;x.";
+$lang_label["mindata"]="Dato m&iacute;n.";
 $lang_label["snmp_oid"]="SNMP OID";
-$lang_label["module_interval"]="Intervalo módulo";
+$lang_label["module_interval"]="Intervalo m&oacute;dulo";
 $lang_label["snmp_community"]="Comunidad SNMP";
 $lang_label["server_asigned"]="Servidor asignado";
 $lang_label["remote"]="Remota";
 $lang_label["default_server"]="Por defecto (Servidor activo)";
-$lang_label["incident_manag"]="Gestión de incidentes";
+$lang_label["incident_manag"]="Gesti&oacute;n de incidentes";
 
-//Nov 2005 - Mensajes$lang_label["del_message_ok"]="Mensaje borrado correctamente";$lang_label["del_message_no"]="Error al borrar el mensaje";$lang_label["read_mes"]="Leer mensajes";$lang_label["message"]="Mensaje";$lang_label["messages"]="Mensajes";$lang_label["messages_g"]="Mensajes a grupos";$lang_label["subject"]="Asunto";$lang_label["new_message"]="Nuevo mensaje";$lang_label["new_message_g"]="Nuevo mensaje a un grupo";$lang_label["send_mes"]="Enviar mensaje";$lang_label["m_from"]="Remitente"; //from en mensajes$lang_label["m_to"]="Destinatario"; //to en mensajes$lang_label["sender"]="Remitente";$lang_label["message_ok"]="Mensaje insertado correctamente";$lang_label["message_no"]="No se ha podido crear el mensaje";$lang_label["no_messages"]="No hay mensajes";$lang_label["new_message_bra"]="Tienes ";$lang_label["new_message_ket"]=" mensaje(s) por leer.";$lang_label["no_subject"]="Sin Asunto";$lang_label["read"]="Leído";$lang_label["reply"]="Responder";// 06-08 Dec 2005$lang_label["general_config"]="Configuración general";$lang_label["no_profile"]="Este usuario no tiene ningún perfil/grupo asociado";$lang_label["no_agent"]="No hay ningún agente incluido en este grupo";$lang_label["no_change_field"]="Este campo no puede modificarse en el modo edición";$lang_label["no_alert"]="Ningún agente de este grupo tiene alguna alerta definida";$lang_label["total_data"]="Datos totales";// 16-19 Dec 2005$lang_label["no_incidents"]="Ningún incidente se ajusta a tu filtro de búsqueda";$lang_label["no_agent_alert"]=", por tanto no hay alertas";// 20-24 Dec 2005$lang_label["wrote"]=" escribió";$lang_label["no_snmp_agent"]="No hay definido ningún agente SNMP";$lang_label["no_snmp_alert"]="No hay definida ninguna alerta SNMP";$lang_label["no_agent_def"]="No hay ningún agente definido";// 5 Enero 2006$lang_label["view_servers"]="Servidores Pandora";$lang_label["no_server"]="No hay ningún servidor configurado en la base de datos";$lang_label["master"]="Principal";$lang_label["checksum"]="Check";$lang_label["snmp"]="SNMP";$lang_label["laststart"]="Arrancado el";$lang_label["lastupdate"]="Actualizado el";$lang_label["network"]="Red";$lang_label["server_detail"]="Detalle de configuración";$lang_label["no_modules"]="Este agente no tiene ningún módulo definido";$lang_label["no_monitors"]="Este agente no tiene ningún monitor definido";$lang_label["no_alerts"]="Este agente no tiene ninguna alerta definida";$lang_label["server"]="Servidor";// 8 Enero 2006$lang_label["no_sel_mod"]="No se ha seleccionado ningún módulo";// 11 -15 Enero 2006$lang_label["no_event"]="No hay eventos";$lang_label["agent_access_rate"]="Accesibilidad agente (24h)";$lang_label["agent_module_shareout"]="Distribución de módulos";$lang_label["int"]="Itv."; // Nombre corto para intervalo$lang_label["manage_servers"]="Gestión de servidores";$lang_label["update_server"]="Actualizar servidor";$lang_label["upd_server_ok"]="Servidor actualizado correctamente";$lang_label["upd_server_no"]="Ha habido un problema al actualizar el servidor";$lang_label["del_server_ok"]="Servidor eliminado correctamente";$lang_label["del_server_no"]="Ha habido un problema al eliminar el servidor";$lang_label["groups"]="grupos";// 23-24 de Enero 2006$lang_label["other"]="Otro";$lang_label["icon"]="Icono";$lang_label["agent_exists"]="El agente ya existe";$lang_label["graph_order"]="Orden del gráfico";$lang_label["truetype"]="Fuentes truetype";
+//Nov 2005 - Mensajes$lang_label["del_message_ok"]="Mensaje borrado correctamente";$lang_label["del_message_no"]="Error al borrar el mensaje";$lang_label["read_mes"]="Leer mensajes";$lang_label["message"]="Mensaje";$lang_label["messages"]="Mensajes";$lang_label["messages_g"]="Mensajes a grupos";$lang_label["subject"]="Asunto";$lang_label["new_message"]="Nuevo mensaje";$lang_label["new_message_g"]="Nuevo mensaje a un grupo";$lang_label["send_mes"]="Enviar mensaje";$lang_label["m_from"]="Remitente"; //from en mensajes$lang_label["m_to"]="Destinatario"; //to en mensajes$lang_label["sender"]="Remitente";$lang_label["message_ok"]="Mensaje insertado correctamente";$lang_label["message_no"]="No se ha podido crear el mensaje";$lang_label["no_messages"]="No hay mensajes";$lang_label["new_message_bra"]="Tienes ";$lang_label["new_message_ket"]=" mensaje(s) por leer.";$lang_label["no_subject"]="Sin Asunto";$lang_label["read"]="Le&iacute;do";$lang_label["reply"]="Responder";// 06-08 Dec 2005$lang_label["general_config"]="Configuraci&oacute;n general";$lang_label["no_profile"]="Este usuario no tiene ning&uacute;n perfil/grupo asociado";$lang_label["no_agent"]="No hay ning&uacute;n agente incluido en este grupo";$lang_label["no_change_field"]="Este campo no puede modificarse en el modo edici&oacute;n";$lang_label["no_alert"]="Ning&uacute;n agente de este grupo tiene alguna alerta definida";$lang_label["total_data"]="Datos totales";// 16-19 Dec 2005$lang_label["no_incidents"]="Ning&uacute;n incidente se ajusta a tu filtro de b&uacute;squeda";$lang_label["no_agent_alert"]=", por tanto no hay alertas";// 20-24 Dec 2005$lang_label["wrote"]=" escribi&oacute;";$lang_label["no_snmp_agent"]="No hay definido ning&uacute;n agente SNMP";$lang_label["no_snmp_alert"]="No hay definida ninguna alerta SNMP";$lang_label["no_agent_def"]="No hay ning&uacute;n agente definido";// 5 Enero 2006$lang_label["view_servers"]="Servidores Pandora";$lang_label["no_server"]="No hay ning&uacute;n servidor configurado en la base de datos";$lang_label["master"]="Principal";$lang_label["checksum"]="Check";$lang_label["snmp"]="SNMP";$lang_label["laststart"]="Arrancado el";$lang_label["lastupdate"]="Actualizado el";$lang_label["network"]="Red";$lang_label["server_detail"]="Detalle de configuraci&oacute;n";$lang_label["no_modules"]="Este agente no tiene ning&uacute;n m&oacute;dulo definido";$lang_label["no_monitors"]="Este agente no tiene ning&uacute;n monitor definido";$lang_label["no_alerts"]="Este agente no tiene ninguna alerta definida";$lang_label["server"]="Servidor";// 8 Enero 2006$lang_label["no_sel_mod"]="No se ha seleccionado ning&uacute;n m&oacute;dulo";// 11 -15 Enero 2006$lang_label["no_event"]="No hay eventos";$lang_label["agent_access_rate"]="Accesibilidad agente (24h)";$lang_label["agent_module_shareout"]="Distribuci&oacute;n de m&oacute;dulos";$lang_label["int"]="Itv."; // Nombre corto para intervalo$lang_label["manage_servers"]="Gesti&oacute;n de servidores";$lang_label["update_server"]="Actualizar servidor";$lang_label["upd_server_ok"]="Servidor actualizado correctamente";$lang_label["upd_server_no"]="Ha habido un problema al actualizar el servidor";$lang_label["del_server_ok"]="Servidor eliminado correctamente";$lang_label["del_server_no"]="Ha habido un problema al eliminar el servidor";$lang_label["groups"]="grupos";// 23-24 de Enero 2006$lang_label["other"]="Otro";$lang_label["icon"]="Icono";$lang_label["agent_exists"]="El agente ya existe";$lang_label["graph_order"]="Orden del gr&aacute;fico";$lang_label["truetype"]="Fuentes truetype";
 
 global $lang_label;
 global $help_label;

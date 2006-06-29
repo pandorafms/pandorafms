@@ -3,19 +3,19 @@
 # Pandora Network Server
 ##################################################################################
 # Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L
+# Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L
 #
-#This program is free software; you can redistribute it and/or
-#modify it under the terms of the GNU General Public License
-#as published by the Free Software Foundation; either version 2
-#of the License, or (at your option) any later version.
-#This program is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
-#You should have received a copy of the GNU General Public License
-#along with this program; if not, write to the Free Software
-#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ##################################################################################
 
 # Includes list
@@ -113,10 +113,7 @@ sub pandora_network_subsystem {
 		#     ejecuto el modulo, le doy 15 sec y contino.
 		#     si ejecuta bien, grabo datos y estado
 		# siguiente elemento
-
 		# Calculate ID Agent from a select where module_type (id_tipo_modulo) > 4 (network modules)
-	
-
 		# Check for MASTER SERVERS only: check another agents if their servers are gone
 		$server_id = dame_server_id($pa_config, $pa_config->{'servername'}, $dbh);
 		$buffer = "";		
@@ -140,8 +137,7 @@ sub pandora_network_subsystem {
 				}
 			}
 			$exec_sql2->finish();
-		}
-			
+		}	
 		# First: Checkout for enabled agents owned by this server
 		$query_sql2 = "select * from tagente where ( disabled = 0 and id_server = $server_id ) ".$buffer;
 		$exec_sql2 = $dbh->prepare($query_sql2);
@@ -249,7 +245,11 @@ sub pandora_query_snmp {
 		# Pass the VarList to getnext building an array of the output
 		my @OIDINFO = $SESSION->getnext($OIDLIST);	
 		$output = $OIDINFO[0];
-		$_[4]="0";
+		if ((!defined($output)) || ($output eq "")){
+			$_[4]="1";
+		} else {
+			$_[4]="0";
+		}
 	}
 	# Too much DEBUG for me :-)
 	# logger($pa_config, "SNMP RESULT $snmp_oid $snmp_target - > $output \n",10);

@@ -609,14 +609,12 @@ $lang_label["del_server_ok"]="Serveur &eacute;limin&eacute; avec succ&egrave;s";
 $lang_label["del_server_no"]=" Pandora a rencontr&eacute; un probl&egrave;me pour &eacute;liminer le serveur ";
 $lang_label["groups"]="groupes";
 $lang_label["other"]="Autre";
-$lang_label["icon"]="Icône";
+$lang_label["icon"]="Ic&ocirc;ne";
 $lang_label["agent_exists"]="Cet agent existe d&eacute;j&agrave;";
 $lang_label["graph_order"]="Ordre du tableau";
 $lang_label["truetype"]="Polices truetype";
 $lang_label["right_left"]="dr. a gau.";
 $lang_label["left_right"]="gau. a dr.";
-$lang_label["enabled"]="habilit&eacute;";
-$lang_label["disabled"]="deshabilit&eacute;";
 
 global $lang_label;
 global $help_label;

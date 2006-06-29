@@ -249,9 +249,9 @@ $lang_label["add"] = "Adicionar";
 $lang_label["db_purge_event"] = "Limpeza da Base de Dados de eventos";
 $lang_label["db_event"] = "BD de eventos";
 $lang_label["max_min"] = "M&aacute;x/M&iacute;n";
-$lang_label["max"] = "M&aacute;ximo";
-$lang_label["min"] = "M&iacute;nimo";
-$lang_label["med"] = "M&eacute;dia";
+$lang_label["max"] = "Máximo";
+$lang_label["min"] = "Mínimo";
+$lang_label["med"] = "Média";
 $lang_label["month_graph"] = "Gr&aacute;fico mensal";
 $lang_label["week_graph"] = "Gr&aacute;fico Semanal";
 $lang_label["day_graph"] = "Gr&aacute;fico Di&aacute;rio";
@@ -554,8 +554,8 @@ $lang_label["icon"] = "&iacute;cone";
 $lang_label["agent_exists"] = "O agente j&aacute; existe";
 $lang_label["graph_order"] = "Ordem do gr&aacute;fico";
 $lang_label["truetype"] = "Fontes truetype";
-$lang_label["right_left"]="Dir. &agrave;  Esq."; // direita &agrave;  esquerda
-$lang_label["left_right"]="Esq. &agrave;  Dir."; // esquerda &agrave;  direita  
+$lang_label["right_left"]="Dir. &agrave;  Esq."; // direita à  esquerda
+$lang_label["left_right"]="Esq. &agrave;  Dir."; // esquerda à  direita
 
 global $lang_label;
 global $help_label;

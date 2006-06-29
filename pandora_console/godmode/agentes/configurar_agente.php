@@ -1,3 +1,22 @@
+<?PHP 
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+?>
+
 <script language="JavaScript" type="text/javascript">
 <!--
 function type_change()
@@ -107,12 +126,6 @@ function type_change()
 </script>
 
 <?php
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2005-2006
-
 // Load global vars
 require("include/config.php");
 if (give_acl($id_user, 0, "AW")==1) {
@@ -157,6 +170,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 	$ip_target ="";
 	$snmp_community="";
 	$creacion_agente = 0;
+	$combo_snmp_oid="";
 	// Delete Alert
 	// =============
 	if (isset($_GET["delete_alert"])){ // if modified some parameter
@@ -198,7 +212,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 			echo "<h3 class='suc'>".$lang_label["create_alert_ok"]."</h3>";
 		
 	}
-	// Update Alert
+	// Update ALERT
 	// =============
 	if (isset($_POST["update_alert"])){ // Update an existing alert
 		$id_aam = entrada_limpia($_POST["id_aam"]);
@@ -229,10 +243,10 @@ if (give_acl($id_user, 0, "AW")==1) {
 
 			$id_agente = mysql_insert_id();
 	}
-	
-	// Create Agent
-	// =============
-	if (isset($_POST["create_agent"])){ // Create a new and shining agent
+	// ================================
+	// Create AGENT
+	// ================================
+	if (isset($_POST["create_agent"])) { // Create a new and shining agent
 		$nombre_agente =  entrada_limpia($_POST["agente"]);
 		$direccion_agente =  entrada_limpia($_POST["direccion"]);
 		$grupo =  entrada_limpia($_POST["grupo"]);
@@ -269,9 +283,10 @@ if (give_acl($id_user, 0, "AW")==1) {
 			}
 		}
 	}
-	// Update Agente
 	// ================
-	if (isset($_POST["update_agent"])){ // if modified some agent paramenter
+	// Update AGENT
+	// ================
+	if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 		$id_agente = entrada_limpia($_POST["id_agente"]);
 		$nombre_agente =  entrada_limpia($_POST["agente"]);
 		$direccion_agente =  entrada_limpia($_POST["direccion"]);
@@ -328,7 +343,8 @@ if (give_acl($id_user, 0, "AW")==1) {
 		$creacion_agente = 1;
 
 	// Read data module if editing module
-	if (isset($_GET["update_module"])){
+	// ==================================
+	if ((isset($_GET["update_module"])) && (!isset($_POST["oid"])) && (!isset($_POST["update_module"]))) {
 		$update_module = 1;
 		$id_agente_modulo = $_GET["update_module"];
 
@@ -384,25 +400,32 @@ if (give_acl($id_user, 0, "AW")==1) {
 		}
 
 	}
-	// MODULE UPDATE
-	// =================
-	if (isset($_POST["update_module"])){ // if modified something
+
+	// GET DATA for MODULE UPDATE OR MODULE INSERT
+	// ===========================================
+	if ((isset($_POST["update_module"])) || (isset($_POST["insert_module"]))) {
+		if (isset($_POST["update_module"])){
+			$update_module = 1;
+			$id_agente_modulo = $_POST["id_agente_modulo"];
+		}
 		$id_grupo = dame_id_grupo($id_agente);
-			if (give_acl($id_user, $id_grupo, "AW")==0){
-				audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to update a module without admin rights");
-				require ("general/noaccess.php");
-				echo "</table>";
-				require ("general/footer.php");
-				exit;
-			}
-		if (isset($_POST["id_agente_modulo"]))
-			$id_agente_modulo = entrada_limpia($HTTP_POST_VARS["id_agente_modulo"]);
+		if (give_acl($id_user, $id_grupo, "AW")==0){
+			audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to create a module without admin rights");
+			require ("general/noaccess.php");
+			echo "</table>";
+			require ("general/footer.php");
+			exit;
+		}
 		if (isset($_POST["tipo"]))
 			$id_tipo_modulo = entrada_limpia($_POST["tipo"]);
-		if (isset($_POST["nombre"]))
+		if (isset($_POST["nombre"])){
 			$nombre =  entrada_limpia($_POST["nombre"]);
-		if (isset($_POST["descripcion"]))
+			$modulo_nombre = $nombre;
+		}
+		if (isset($_POST["descripcion"])){
 			$descripcion = entrada_limpia($_POST["descripcion"]);
+			$modulo_descripcion = $descripcion;
+		}
 		if (isset($_POST["modulo_max"]))
 			$modulo_max = entrada_limpia($_POST["modulo_max"]);
 		if (isset($_POST["modulo_min"]))
@@ -425,87 +448,55 @@ if (give_acl($id_user, 0, "AW")==1) {
 			$id_module_group = entrada_limpia($_POST["id_module_group"]);
 		if (isset($_POST["module_interval"]))
 			$module_interval = entrada_limpia($_POST["module_interval"]);
-
+	}
+	// MODULE UPDATE
+	// =================
+	if ((isset($_POST["update_module"])) && (!isset($_POST["oid"]))){ // if modified something
+		$combo_snmp_oid = entrada_limpia($_POST["combo_snmp_oid"]);
+		if ($snmp_oid == ""){
+			$snmp_oid = $combo_snmp_oid;
+		}
 		$sql_update = "UPDATE tagente_modulo SET max ='".$modulo_max."', min = '".$modulo_min."', nombre='".$nombre."', descripcion='".$descripcion."', tcp_send = '$tcp_send', tcp_rcv = '$tcp_rcv', tcp_port = '$tcp_port', ip_target = '$ip_target', snmp_oid = '$snmp_oid', snmp_community = '$snmp_community', id_module_group = '$id_module_group', module_interval = '$module_interval'  WHERE id_agente_modulo = ".$id_agente_modulo;
 		$result=mysql_query($sql_update);		
+echo "debug $sql_update <br>";
 		if (! $result)
 			echo "<h3 class='error'>".$lang_label["update_module_no"]."</h3>";
 		else
 			echo "<h3 class='suc'>".$lang_label["update_module_ok"]."</h3>";
-
 		// Init vars to null to avoid trash in forms 
-		$id_tipo_modulo = "";
-		$nombre =  "";
-		$descripcion = "";
-		$modulo_max = "";
-		$modulo_min = "";
-		// Pandora 1.2 new module data:
-		$tcp_send = "";
-		$tcp_rcv = "";
-		$tcp_port = "";
-		$ip_target = "";
-		$snmp_oid = "";
-		$snmp_community = "";
-		$id_module_group = "";
+		$id_tipo_modulo = "";$nombre =  "";$descripcion = "";$modulo_max = "";
+		$modulo_min = "";// Pandora 1.2 new module data:
+		$tcp_send = "";$tcp_rcv = "";$tcp_port = "";$ip_target = "";
+		$snmp_oid = "";$snmp_community = "";$id_module_group = "";
 		$module_interval = "";
-		
 	}
+	// =========================================================
+	// OID Refresh button to get SNMPWALK from data in form
+	// This code is also applied when submitting a new module (insert_module = 1)
+	// =========================================================
+	if (isset($_POST["oid"])){
+		snmp_set_quick_print(1);
+		if (! ($snmpwalk = snmprealwalk($ip_target, $snmp_community, "")))
+			echo "<h3 class='error'>".$lang_label["cannot_read_snmp"]."</h3>";
+		else
+			echo "<h3 class='suc'>".$lang_label["ok_read_snmp"]."</h3>";
+	}
+	// =========================================================
 	// MODULE INSERT
-	// =================
-	if (isset($_POST["insert_module"])){
-		$id_grupo = dame_id_grupo($id_agente);
-			if (give_acl($id_user, $id_grupo, "AW")==0){
-				audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to create a module without admin rights");
-				require ("general/noaccess.php");
-				echo "</table>";
-				require ("general/footer.php");
-				exit;
-			}
-		if (isset($_POST["tipo"]))
-			$id_tipo_modulo = entrada_limpia($_POST["tipo"]);
-		if (isset($_POST["nombre"]))
-			$nombre =  entrada_limpia($_POST["nombre"]);
-		if (isset($_POST["descripcion"]))
-			$descripcion = entrada_limpia($_POST["descripcion"]);
-		if (isset($_POST["modulo_max"]))
-			$modulo_max = entrada_limpia($_POST["modulo_max"]);
-		if (isset($_POST["modulo_min"]))
-			$modulo_min = entrada_limpia($_POST["modulo_min"]);
-		
-		// Pandora 1.2 new module data:
-		if (isset($_POST["tcp_send"]))
-			$tcp_send = entrada_limpia($_POST["tcp_send"]);
-		if (isset($_POST["tcp_rcv"]))
-			$tcp_rcv = entrada_limpia($_POST["tcp_rcv"]);
-		if (isset($_POST["tcp_port"]))
-			$tcp_port = entrada_limpia($_POST["tcp_port"]);
-		if (isset($_POST["ip_target"]))
-			$ip_target = entrada_limpia($_POST["ip_target"]);
-		if (isset($_POST["snmp_oid"]))
-			$snmp_oid = entrada_limpia($_POST["snmp_oid"]);
-		if (isset($_POST["snmp_community"]))
-			$snmp_community = entrada_limpia($_POST["snmp_community"]);
-		if (isset($_POST["id_module_group"]))
-			$id_module_group = entrada_limpia($_POST["id_module_group"]);
-		if (isset($_POST["module_interval"]))
-			$module_interval = entrada_limpia($_POST["module_interval"]);
+	// =========================================================
+	if ((!isset($_POST["oid"])) && (isset($_POST["insert_module"]))){
+		$combo_snmp_oid = entrada_limpia($_POST["combo_snmp_oid"]);
+		if ($snmp_oid == ""){
+			$snmp_oid = $combo_snmp_oid;
+		}
 
 		$sql_insert = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,descripcion,max,min,snmp_oid,snmp_community,id_module_group,module_interval,ip_target,tcp_port,tcp_rcv,tcp_send) VALUES (".$id_agente.",".$id_tipo_modulo.",'".$nombre."','".$descripcion."','".$modulo_max."','".$modulo_min."', '$snmp_oid', '$snmp_community', '$id_module_group', '$module_interval', '$ip_target', '$tcp_port', '$tcp_rcv', '$tcp_send' )";
 
 		// Init vars to null to avoid trash in forms 
-		$id_tipo_modulo = "";
-		$nombre =  "";
-		$descripcion = "";
-		$modulo_max = "";
-		$modulo_min = "";
-		// Pandora 1.2 new module data:
-		$tcp_send = "";
-		$tcp_rcv = "";
-		$tcp_port = "";
-		$ip_target = "";
-		$snmp_oid = "";
-		$snmp_community = "";
-		$id_module_group = "";
+		$id_tipo_modulo = "";$nombre =  "";$descripcion = "";$modulo_max = "";
+		$modulo_min = "";// Pandora 1.2 new module data:
+		$tcp_send = "";$tcp_rcv = "";$tcp_port = "";$ip_target = "";
+		$snmp_oid = "";$snmp_community = "";$id_module_group = "";
 		$module_interval = "";
 
 		// echo "DEBUG ".$sql_insert;
@@ -518,7 +509,6 @@ if (give_acl($id_user, 0, "AW")==1) {
 			$sql_insert = "INSERT INTO tagente_estado (id_agente_modulo,datos,timestamp,cambio,estado,id_agente) VALUES ($id_agente_modulo, 0,'2000-00-00 00:00:00',0,100,'".$id_agente."')";
 		}
 		$result2=mysql_query($sql_insert);
-
 		if ((! $result) && (! $result2))
 			echo "<h3 class='error'>".$lang_label["add_module_no"]."</h3>";
 		else
@@ -586,10 +576,14 @@ else {echo "<h3>".$lang_label["update_agent"]."</h3>";}
 <tr><td class='lb' rowspan='9' width='5'>
 <td class="datos"><b><?php echo $lang_label["agent_name"]?></b></td><td class="datos"><input type="text" name="agente" size=30 value="<?php echo $nombre_agente ?>">
 <?php 
-if (isset($_GET["creacion"])){echo "&nbsp;";}
-else {echo "&nbsp;&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'><img src='images/lupa.gif' border='0' align='middle'></a>";} 
+if (isset($_GET["creacion"])){
+	echo "&nbsp;";
+	
+} else {
+	echo "&nbsp;<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."' <img src='images/setup.gif' width=25 valign='top' align='middle' border=0></a>&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'><img src='images/lupa.gif' border='0' align='middle'></a>";
+} 
 ?>
-<tr><td class="datos"><b><?php echo $lang_label["ip_address"]?></b><td class="datos"><input type="text" name="direccion" size=30 value="<?php echo $direccion_agente ?> ">
+<tr><td class="datos"><b><?php echo $lang_label["ip_address"]?></b><td class="datos"><input type="text" name="direccion" size=30 value="<?php echo $direccion_agente ?>">
 <!-- Desplegable para el grupo -->
 <tr><td class="datos"><b><?php echo $lang_label["group"]?></b><td class="datos"><select name="grupo" class="w130"> 
 <?php
@@ -656,7 +650,7 @@ while ($row=mysql_fetch_array($result)){
 		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$lang_label["active"].'<input type="radio" name="disabled" class="chk" value="0" checked>';
 	}
 ?>
-<!-- <tr><td colspan='3'><div class='raya'></div></td></tr> -->
+<tr><td colspan='3'><div class='raya'></div></td></tr>
 <tr><td colspan="3" align="right">
 <?php if (isset($_GET["creacion"])){echo "<input name='crtbutton' type='submit' class='sub' value='".$lang_label["create"]."'>";}
 else {echo "<input name='uptbutton' type='submit' class='sub' value='".$lang_label["update"]."'>";} ?></td>
@@ -692,7 +686,6 @@ if ($row=mysql_num_rows($result)){
 	<th width="50"><?php echo $lang_label["action"]?>
 	<?php
 while ($row=mysql_fetch_array($result)){
-
 	$id_tipo = $row["id_tipo_modulo"];
 	$nombre_modulo =$row["nombre"];
 	$descripcion = $row["descripcion"];
@@ -726,10 +719,10 @@ while ($row=mysql_fetch_array($result)){
 </table>
 
 <?php
+
 // ====================================================================================
 // View alerts
 // ====================================================================================<br>
-
 
 $sql1='SELECT * FROM tagente_modulo WHERE id_agente = "'.$id_agente.'"';
 $result=mysql_query($sql1);
@@ -788,6 +781,7 @@ echo "<tr><td colspan='6'><div class='raya'></div></td></tr>";
 <br>
 <?php
 echo '<form name="modulo" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">';
+
 // ====================================================================================
 // Module Creation / Update form
 // ====================================================================================
@@ -796,13 +790,18 @@ if ($update_module == "1"){
 	echo '<input type="hidden" name="update_module" value=1>';
 	echo '<input type="hidden" name="id_agente_modulo" value="'.$id_agente_modulo.'" ';
 }
-else
+else {
 	echo '<input type="hidden" name="insert_module" value=1>';
+	// Default values for new modules
+	$ip_target = $direccion_agente;
+	$snmp_community = "public";
+	$module_interval = $intervalo;
+}
 ?>
 <h3><?php echo $lang_label["module_asociation_form"] ?></h3>
 <a name="modules"> <!-- Don't Delete !! -->
 <table width="650" cellpadding="3" cellspacing="3" class="fon">
-<tr><td class='lb' rowspan='7' width='5'>
+<tr><td class='lb' rowspan='8' width='5'>
 <!-- Module type combobox -->
 <td class="datos"><?php echo $lang_label["module_type"] ?>
 <td class="datos">
@@ -850,10 +849,28 @@ else {
 <td class="datos"><input type="text" name="tcp_port" size="5" value="<?php echo $tcp_port ?>"> 
 
 <tr><td class="datos"><?php echo $lang_label["snmp_oid"] ?>
-<td class="datos"><input type="text" name="snmp_oid" size="20" value="<?php echo $snmp_oid ?>"> 
+<td class="datos"><input type="text" name="snmp_oid" size="15" value="<?php echo $snmp_oid ?>"> 
+<input type="submit" name="oid" value="Get Value">
+
 <td class="datos"><?php echo $lang_label["snmp_community"] ?>
 <td class="datos"><input type="text" name="snmp_community" size="20" value="<?php echo $snmp_community ?>"> 
 
+
+<tr><td class="datos"><?php echo $lang_label["snmp_oid"] ?>
+<td colspan=3 class="datos"><select name="combo_snmp_oid">
+<?PHP
+// FILL OID Combobox
+if (isset($_POST["oid"])){
+	for (reset($snmpwalk); $i = key($snmpwalk); next($snmpwalk)) {
+		// OJO, al indice tengo que restarle uno, el SNMP funciona con indices a partir de 0
+		// y el cabron de PHP me devuelve indices a partir de 1 !!!!!!!
+   		//echo "$i: $a[$i]<br />\n";
+		$snmp_output = substr($i,0,35)." - ".substr($snmpwalk[$i],0,20);
+		echo "<option value=$i>".salida_limpia(substr($snmp_output,0,55));
+	}
+}
+?>
+</select>
 
 <tr><td class="datost"><?php echo $lang_label["tcp_send"] ?>
 <td class="datos"><textarea name="tcp_send" cols="17" rows="3"><?php echo $tcp_send ?></textarea>
@@ -871,7 +888,7 @@ else {
 <textarea name="descripcion" cols=52 rows=2>
 <?php echo $modulo_descripcion ?>
 </textarea>
-<!--<tr><td colspan='5'><div class='raya'></div></td></tr>-->
+<tr><td colspan='7'><div class='raya'></div></td></tr>
 <tr><td colspan="5" align="right">
 <?php 
 	if ($update_module == "1"){
@@ -879,6 +896,7 @@ else {
 	} else {
 		echo '<input name="crtbutton" type="submit" class="sub" value="'.$lang_label["add"].'">';
 	}
+	echo ' <a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'"><b>'.$lang_label["cancel"].'</b></a>';
 ?>
 </form>
 </table>
@@ -993,13 +1011,14 @@ while ($row=mysql_fetch_array($result)){
 
  // End block only if $creacion_agente != 1;
 
-// echo '<tr><td colspan="3"><div class="raya"></div></td></tr>';
+echo '<tr><td colspan="3"><div class="raya"></div></td></tr>';
 echo '<tr><td colspan="3" align="right">';
 	if ($update_alert== "1"){
 		echo '<input name="updbutton" type="submit" class="sub" value="'.$lang_label["update"].'">';
 	} else {
 		echo '<input name="crtbutton" type="submit" class="sub" value="'.$lang_label["add"].'">';
 	}
+	echo ' <a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'"><b>'.$lang_label["cancel"].'</b></a>';
 echo '</td></tr></table></form>';
 }
 }
@@ -1008,4 +1027,3 @@ else {
 		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Agent Management");
 		require ("general/noaccess.php");
 	}
-?>

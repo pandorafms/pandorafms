@@ -2,7 +2,7 @@
 // Pandora - the Free monitoring system
 // ====================================
 // Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L, info@artica.es
+// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
 // Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -457,8 +457,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 			$snmp_oid = $combo_snmp_oid;
 		}
 		$sql_update = "UPDATE tagente_modulo SET max ='".$modulo_max."', min = '".$modulo_min."', nombre='".$nombre."', descripcion='".$descripcion."', tcp_send = '$tcp_send', tcp_rcv = '$tcp_rcv', tcp_port = '$tcp_port', ip_target = '$ip_target', snmp_oid = '$snmp_oid', snmp_community = '$snmp_community', id_module_group = '$id_module_group', module_interval = '$module_interval'  WHERE id_agente_modulo = ".$id_agente_modulo;
-		$result=mysql_query($sql_update);		
-echo "debug $sql_update <br>";
+		$result=mysql_query($sql_update);	
 		if (! $result)
 			echo "<h3 class='error'>".$lang_label["update_module_no"]."</h3>";
 		else
@@ -793,9 +792,11 @@ if ($update_module == "1"){
 else {
 	echo '<input type="hidden" name="insert_module" value=1>';
 	// Default values for new modules
-	$ip_target = $direccion_agente;
-	$snmp_community = "public";
-	$module_interval = $intervalo;
+	if ($ip_target == ""){
+		$ip_target = $direccion_agente;
+		$snmp_community = "public";
+		$module_interval = $intervalo;
+	}
 }
 ?>
 <h3><?php echo $lang_label["module_asociation_form"] ?></h3>

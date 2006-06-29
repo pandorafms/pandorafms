@@ -60,10 +60,19 @@ if ( (give_acl($id_user, 0, "LM")==1)){
 
 <tr>
 <td class="datos"><?php echo $lang_label["command"] ?>
-<td class="datos"><input type="text" name="comando" size="30" value="<?php echo $comando ?>">
+<td class="datos"><input type="text" name="comando" size="50" value="<?php echo $comando ?>">
+<a href='#' class='tip'>&nbsp;<span>
+<b>Macros:</b><br>
+_field1_<br>
+_field2_<br>
+_field3_<br>
+_agent_<br>
+_timestamp_<br>
+_data_<br>
+</span></a>
 
 <tr><td class="datos"><?php echo $lang_label["description"] ?>
-<td class="datos"><textarea name="descripcion" cols=50 rows=3>
+<td class="datos"><textarea name="descripcion" cols="50" rows="3">
 <?php echo $descripcion ?>
 </textarea>
 <tr><td></td></tr>

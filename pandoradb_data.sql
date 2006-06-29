@@ -52,7 +52,7 @@ INSERT INTO `tconfig_os` VALUES (11,'Network','Pandora Network Agent','network.g
 INSERT INTO `tgrupo` VALUES (1,'All','');
 INSERT INTO `tgrupo` VALUES (2,'Servers','servers');
 INSERT INTO `tgrupo` VALUES (3,'IDS','ids');
-INSERT INTO `tgrupo` VALUES (4,'Firewall','firewall');
+INSERT INTO `tgrupo` VALUES (4,'Firewalls','firewall');
 INSERT INTO `tgrupo` VALUES (8,'Databases','db');
 INSERT INTO `tgrupo` VALUES (9,'Comms','comms');
 INSERT INTO `tgrupo` VALUES (10,'Others','others');

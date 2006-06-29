@@ -234,8 +234,8 @@ $lang_label["timestamp"]="Fecha/Hora";
 $lang_label["links_header"]="Enlaces";
 $lang_label["godmode_header"]="Administraci&oacute;n";
 $lang_label["operation_header"]="Operaci&oacute;n";
-$lang_label["db_audit"]="BD de auditor&iacute;a";
-$lang_label["db_purge_audit"]="Depuraci&oacute;n de la BBDD de auditor&iacute;a";
+$lang_label["db_audit"]="BBDD de auditor&iacute;a";
+$lang_label["db_purge_audit"]="Depuraci&oacute;n de la Base de Datos de auditor&iacute;a";
 $lang_label["latest_date"]="&Uacute;ltima fecha";
 $lang_label["first_date"]="Primera fecha";
 $lang_label["records"]="Registros";
@@ -281,7 +281,7 @@ $lang_label["doit"]="&iexcl;Hazlo!";
 $lang_label["add"]="A&ntilde;adir";
 
 $lang_label["db_purge_event"]="Limpieza de la Base de Datos de eventos";
-$lang_label["db_event"]="BD de eventos";
+$lang_label["db_event"]="BBDD de eventos";
 $lang_label["max_min"]="M&aacute;x/M&iacute;n";
 $lang_label["max"]="M&aacute;ximo";
 $lang_label["min"]="M&iacute;nimo";
@@ -353,7 +353,7 @@ $help_label["db_purge1"]="Este bot&oacute;n refresca la informaci&oacute;n sobre
 $help_label["db_purge0"]="Use este control para seleccionar un agente. Es necesario seleccionar un agente tanto para obtener informaci&oacute;n de la Base de Datos como para borrar datos de la misma";
 
 $lang_label["profiles"] ="Perfiles";
-$lang_label["current_dbsetup"]="Esta es tu configuraci&oacute;n actual de la Base de Datos";
+$lang_label["current_dbsetup"]="Configuraci&oacute;n actual de la Base de Datos";
 $lang_label["dbsetup_info"]="Por favor, aseg&uacute;rate de que la gesti&oacute;n de la Base de Datos es correcta y de que el sistema autom&aacute;tico de gesti&oacute;n de Base de Datos de Pandora est&aacute; correctamente instalado y funcionando. Es muy importante para el correcto funcionamiento  y rendimiento de Pandora.";
 $lang_label["profile_title"]="Administrar  perfiles";
 $lang_label["create_profile"]="Crear perfil";
@@ -453,16 +453,6 @@ $lang_label["nomodules_selected"]="No se han seleccionado m&oacute;dulos";
 $lang_label["purge_below_limits"]="Borrar datos fuera de estos l&iacute;mites";
 $lang_label["max_eq_min"]="M&aacute;ximo igual al m&iacute;nimo";
 
-$lang_label["dbprohelp"]="El proceso de depuraci&oacute;n de la Base de Datos sirve para eliminar aquellas entradas que se salen de rango,
-por cualquier raz&oacute;n (fallo del agente, valor real pero fuera de escala, pruebas, errores en la BD, etc).
-Eliminar datos falsos, incorrectos o simplemente molestos permite que la escala de las gr&aacute;ficas sea m&aacute;s «real»
-y permite mostrar los datos sin picos ni escalas irreales.";
-$lang_label["valprohelp"]="Los valores introducidos: agente, m&oacute;dulo, m&iacute;nimo y m&aacute;ximo sirven para delimitar los datos correctos.
-Cualquier dato que se salga de ese par de par&aacute;metros, ser&aacute; eliminado.
-Por ejemplo, en un tipo de m&oacute;dulo que registra n&uacute;mero de procesos, nos interesan valores entre 0 y 100,
-puede que tengamos valores muy por encima de 100, pero generalmente ser&aacute;n errores, ruido o situaciones especiales.
-Podemos incluir como m&iacute;nimo un 0, y como m&aacute;ximo un 100.
-Valores tales como -1, 101 &oacute; 100000, ser&aacute;n eliminados permanentemente de la Base de Datos.";
 $lang_label["agent_conf"]="Configuraci&oacute;n de agentes";
 $lang_label["mod_alert"]="Modificar alerta";
 $lang_label["filter"]="Filtro";

@@ -453,16 +453,6 @@ $lang_label["nomodules_selected"]="Aucun module n'a &eacute;t&eacute; s&eacute;l
 $lang_label["purge_below_limits"]="Effacer les donn&eacute;es qui d&eacute;passent ces limites";
 $lang_label["max_eq_min"]="Maximum &eacute;gal au minimum";
 
-$lang_label["dbprohelp"]="Le processus d'&eacute;puration de la Base de Donn&eacute;es sert &agrave; &eacute;liminer les entr&eacute;es qui sortent du rang,
-n'importe la raison (par d&eacute;faillance de l'agent, valeur r&eacute;elle pr&eacute;sente &agrave; l'ext&eacute;rieur du rang, essais, erreurs de la Base de Donn&eacute;es, etc).
-Eliminer les donn&eacute;es fausses, erron&eacute;es ou simplement gênantes aide &agrave;  ce que l'&eacute;chelle des tableaux paraisse plus «vraies»
-et cela aide &eacute;galement &agrave; &eacute;viter que les donn&eacute;es apparaissent repr&eacute;sent&eacute;es par des crêtes ou des &eacute;chelles peu r&eacute;alistes.";
-$lang_label["valprohelp"]="Les valeurs introduites : agent, module, minimum et maximum servent &agrave; d&eacute;limiter les donn&eacute;es exactes.
-Toute donn&eacute;e sortant de ces param&egrave;tres sera &eacute;limin&eacute;.
-Par exemple, dans un module qui enregistre un nombre de processus, nous nous int&eacute;resserons aux valuers entre 0 y 100.
-Il est probable que nous ayons des valeurs qui d&eacute;passent largement le 100, mais il s'agira souvent d'erreurs, de contamination ou de sitations particuli&egrave;res.
-Nuos pouvons enregistrer comme donn&eacute;e mininmum un 0, et comme donn&eacute;e maximum un 100.
-Les valeurs telles que -1, 101 ou 100000, seront &eacute;limin&eacute;s de fa&ccedil;on permanente de la Base de Donn&eacute;es.";
 $lang_label["agent_conf"]="Configuration des agents";
 $lang_label["mod_alert"]="Modifier l'alerte";
 $lang_label["filter"]="Filtre";

@@ -21,14 +21,12 @@ if (comprueba_login() == 0)
  		
  		- A more powerful selection (by Agent, by Module, etc).
  	*/
-		
-	echo "<h2>".$lang_label["dbmain_title"]."</h2>";
-        echo "<h3>".$lang_label["db_purge"]."</h3>";
-
-	echo '<img src="reporting/fgraph.php?tipo=db_agente_purge&id=-1">';
-	
-	echo "<h3>".$lang_label["get_data_agent"]."</h3>";
-
+	 ?>	
+	<h2><?php echo $lang_label["dbmain_title"] ?></h2>
+	<h3><?php echo $lang_label["db_purge"] ?><a href='help/<?php echo substr($language_code,0,2) ?>/chap8.php#8' target='_help'><img src='images/ayuda.gif' border='0' class='help'></a></h3>
+	<img src="reporting/fgraph.php?tipo=db_agente_purge&id=-1"><br><br>
+	<h3><?php echo $lang_label["get_data_agent"] ?></h3>
+	<?php
 	// All data (now)
 	$purge_all=date("Y-m-d H:i:s",time());
 		
@@ -107,7 +105,7 @@ if (comprueba_login() == 0)
 				}
 			}
 			else {
-				echo  $lang_label["deleting_records"].$lang_label["all_agents"];
+				echo $lang_label["deleting_records"].$lang_label["all_agents"];
 				flush();
 				ob_flush();
 				$query = "DELETE FROM tagente_datos WHERE timestamp < '".$from_date."'";
@@ -123,22 +121,27 @@ if (comprueba_login() == 0)
 	}
 	
 	# Select Agent for further operations.
-	echo "<form action='index.php?sec=gdbman&sec2=godmode/db/db_purge' method='post'><table>";
-	echo "<tr><td class='datos'>";
-	echo "<select name='agent'>";
+	?>
+	<form action='index.php?sec=gdbman&sec2=godmode/db/db_purge' method='post'>
+	<table><tr><td class='datos'>
+	<select name='agent' class='w130'>
+	
+	<?php
 	if (isset($_POST["agent"]) and ($id_agent !=-1))
 		echo "<option value='".$_POST["agent"]."'>".dame_nombre_agente($_POST["agent"]);
 	echo "<option value=-1>".$lang_label["choose_agent"];
 	$result_t=mysql_query("SELECT * FROM tagente");
 	while ($row=mysql_fetch_array($result_t)){	
 		echo "<option value='".$row["id_agente"]."'>".$row["nombre"];
-	}	
-	echo "</select>";
-	echo ' <a href="#" class="tip">&nbsp;<span>'.$help_label["db_purge0"].'</span></a>';
-	echo "<td><input class='sub' type='submit' name='purgedb_ag' value='".$lang_label["get_data"]."'>";
-	echo ' <a href="#" class="tip">&nbsp;<span>'.$help_label["db_purge1"].'</span></a>';
-	echo "</table><br>";
-		
+	}
+	?>
+	</select>
+	<a href="#" class="tip">&nbsp;<span><?php echo $help_label["db_purge0"] ?></span></a>
+	<td><input class='sub' type='submit' name='purgedb_ag' value='<?php echo $lang_label["get_data"] ?>'>
+	<a href="#" class="tip">&nbsp;<span><?php echo $help_label["db_purge1"] ?></span></a>
+	</table><br>
+	
+	<?php	
 	# End of get parameters block
 	
 	if (isset($_POST["agent"]) and ($id_agent !=-1)){
@@ -183,10 +186,10 @@ if (comprueba_login() == 0)
 	<td class=datos>
 	<?php echo $datos_rango2 ?>
  
-        <tr><td class=datos>
-        <?php echo $lang_label["rango11"]?>
-        <td class=datos>
-        <?php echo $datos_rango11 ?>
+	<tr><td class=datos>
+	<?php echo $lang_label["rango11"]?>
+	<td class=datos>
+	<?php echo $datos_rango11 ?>
 	
 	<tr><td class=datos>
 	<?php echo $lang_label["rango1"]?>
@@ -208,13 +211,12 @@ if (comprueba_login() == 0)
 	<td class=datos><b>
 	<?php echo $datos_total ?></b>
 	</table>
-	
+	<br>
 	<h3><?php echo $lang_label["purge_data"] ?></h3>
 	<table width=300 border=0>
 	<tr><td>
 	<select name="date_purge">
-        <option value="<?php echo $purge_all ?>"><?php echo $lang_label["purge_all"] ?>
-        <option value="<?php echo $month3 ?>"><?php echo $lang_label["purge_90day"] ?>
+	<option value="<?php echo $month3 ?>"><?php echo $lang_label["purge_90day"] ?>
 	<option value="<?php echo $month ?>"><?php echo $lang_label["purge_30day"] ?>
 	<option value="<?php echo $week2 ?>"><?php echo $lang_label["purge_14day"] ?>
 	<option value="<?php echo $week ?>"><?php echo $lang_label["purge_7day"] ?>

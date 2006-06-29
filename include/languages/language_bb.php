@@ -307,7 +307,7 @@ $help_label["users_msg2"]="Esti usuariu tien permisos segregaos pa agüeyar datos
 $help_label["db_purge1"]="Esti bot&oacute;n resfresca la informaci&oacute;n sobre el usu de la Base de Datos a lo llargu del tiempu";
 $help_label["db_purge0"]="Use esti control pa selecionar un axente. Ye necesariu selecionar un axente tantu pa obtener informaci&oacute;n de la Base de Datos como pa borrar datos de la misma";
 $lang_label["profiles"]="Perfiles";
-$lang_label["current_dbsetup"]="Esta ye tu configuraci&oacute;n actual de la Base de Datos";
+$lang_label["current_dbsetup"]="Configuraci&oacute;n actual de la Base de Datos";
 $lang_label["dbsetup_info"]="Por favor, asegurate de que la xesti&oacute;n de la Base de Datos ye correuta y de qu'el sistema autom&aacute;ticu de xesti&oacute;n de Base de Datos de Pandora est&aacute; correutamante instal&aacute;u y funcionando. Ye per importante pa el correutu funcionamientu y rendimientu de Pandora.";
 $lang_label["profile_title"]="Xesti&oacute;n de perfiles";
 $lang_label["create_profile"]="Crear perfil";
@@ -394,13 +394,6 @@ $lang_label["filtering_datamodule"]="Filtrando m&oacute;dulu de datos";
 $lang_label["nomodules_selected"]="Nun selecion&aacute;ronse m&oacute;dulus";
 $lang_label["purge_below_limits"]="Borrar datos fuera d'estos ll&iacute;mites";
 $lang_label["max_eq_min"]="m&aacute;ximu igual al m&iacute;nimu";
-$lang_label["dbprohelp"]="El procesu de depuraci&oacute;n de la Base de Datos sirve pa elliminar aquelles entraes que salense de rangu, per cualquier raz&oacute;n (fallu de axente, valor real d'escala, prebes, errores en la BD, etc).
-Eliminar datos falsos, incorreutos o simplemente molestos fai que l'escala de les gr&aacute;fiques seya m&aacute;s real y permita mostrar los datos sin picos ni escales irreales.";
-$lang_label["valprohelp"]="Los valores introduc&iacute;os: axente, m&oacute;dulu, m&iacute;nimu y m&aacute;ximu sirven pa delimitar los datos correctos.
-Cualquier dato que se salga d'esi par de par&aacute;metros, ser&aacute; elimin&aacute;u.
-Por exemplu, en un tipu de m&oacute;dulu que rexistra n&uacute;mberu de procesos, interesenmos valores entre 0 y 100, pue que tengamos valores muy per encima de 100, pero xeneralmente ser&aacute;n errores, ruidu o situaciones especiales.
-Podemos incluir como m&iacute;nimu un 0, y como m&aacute;ximu un 100.
-Valores tales como -1, 101 ser&aacute;n eliminaos permanentemente de la Base de Datos";
 $lang_label["agent_conf"]="Configuraci&oacute;n d'axentes";
 $lang_label["mod_alert"]="Modificar alerta";
 $lang_label["filter"]="Filtru";

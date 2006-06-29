@@ -462,12 +462,6 @@ $lang_label["nomodules_selected"]="Ez dago modulurin aukeratuta";
 $lang_label["purge_below_limits"]="Muga hauetatik kanp datuak ezabatu";
 $lang_label["max_eq_min"]="M&aacute;ximoa minimoaren bezalakoa";
 
-$lang_label["dbprohelp"]="Datutegia garbitzeko protsesuak eskalatik kanpo sarrerak ezabatzeko balio du. Bere kausa edozein izan daiteke(egileen arazoren bat, benetako datua baina eskalatik kanpo, frogak, datutegian arazoren bat, eta abar)
-Datu ez zuzenak, okerrak edo txarrak ezabatzea taulak hobeto ikusteko balio du.";
-$lang_label["valprohelp"]="Sartutako balioak (egilea, modulua, minimo eta maximoa) datu zuzenak mugatzeko balio du.
-Edozein datu sartutako balioen artean ez dagoena ezabatuko da.
-Adibide bezala, protzesu kopurua jasotzen duen modulua balioak 0 eta 100 artean egon behar dira, batzuetan 100tik gorako 
-balioaren bat eduki ditzakegu, baina normalean arazoak izango dira. -1, 101 edota 10000 ezabatu izango dira datutegian.";
 $lang_label["agent_conf"]="Egileen konfigurazioa";
 $lang_label["mod_alert"]="Zurtasuana aldatzea";
 $lang_label["filter"]="Filtro";

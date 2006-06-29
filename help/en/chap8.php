@@ -35,14 +35,12 @@ machines is stored in this data base, from the administrator's data, to the
 events, incidents and audit data generated in the system at any time.</p>
 
 <p>It is obvious that the efficiency and reliability of this module is vital for the correct functioning of Pandora. A regular data base maintainance is needed. To do so the data base managers can
-use standard MySQL commands. Pandora is not a data administration tool, but
-maintaining its database in good condition is critital for Pandora to work properly.</p>
+use standard MySQL commands. Maintaining Pandora database in good condition is critital for Pandora to work properly.</p>
 
 <p>As the database size will increase linearly, the data will be compacted to reduce the amount of stored data without loosing important information, specially the different graphs that are generated with
 the processed data.</p>
 
-<p>On "DB Maintenance" from the Administration menu we will find the Database configuration defined in the
-"Pandora Setup" option of the Administration menu to compact and delete data.</p>
+<p>Going to "DB Maintenance" from the Administration menu we will find the Database configuration defined in the "Pandora Setup" option of the Administration menu to compact and delete data.</p>
 
 <p class="center"><img src="images/image054.png"></p>
 

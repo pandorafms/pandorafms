@@ -1,6 +1,9 @@
 a.tip {cursor: help; position: relative; text-decoration: none; background:url(../../images/help.gif) no-repeat; padding: 5px 2px 5px 12px;}
 a.tip2 {cursor: help; position: relative; text-decoration: none; background:url(../../images/help.gif) no-repeat; padding: 2px 2px 2px 12px;}
+a.info {position: relative; text-decoration: none; padding: 25px 0px 0px -20px;}
 a.tip:hover {text-decoration: none; background-color: #f5f5f5;}
 a.tip2:hover {text-decoration: none; background-color: #778866;}
-a.tip span, a.tip2 span {display: none;}
-a.tip:hover span, a.tip2:hover span {display: block; text-decoration: none; position: absolute; z-index: 3; top:20px; left:6px; width: 150px; border: 1px solid #708090; background-color: #d4ddc6; color: #000; padding: 2px;}
+a.info:hover {text-decoration: none;}
+a.tip span, a.tip2 span, a.info span {display: none;}
+a.tip:hover span, a.tip2:hover span, a.info:hover span {display: block; text-decoration: none; position: absolute; z-index: 3; top:20px; left:6px; width: 150px; border: 1px solid #708090; background-color: #d4ddc6; color: #000; padding: 2px;}
+a.info:hover span {top:45px; left:20px; width: 140px;}

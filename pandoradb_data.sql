@@ -38,7 +38,7 @@ INSERT INTO `tconfig_os` VALUES (1,'Linux','Linux: All versions','so_linux.gif')
 INSERT INTO `tconfig_os` VALUES (2,'Solaris','Sun Solaris','so_solaris.gif');
 INSERT INTO `tconfig_os` VALUES (3,'AIX','IBM AIX','so_aix.gif');
 INSERT INTO `tconfig_os` VALUES (4,'BSD','OpenBSD, FreeBSD and Others','so_bsd.gif');
-INSERT INTO `tconfig_os` VALUES (5,'HPUX','HPUX Unix OS','so_hpux.gif');
+INSERT INTO `tconfig_os` VALUES (5,'HP-UX','HPUX Unix OS','so_hpux.gif');
 INSERT INTO `tconfig_os` VALUES (6,'BeOS','BeOS','so_beos.gif');
 INSERT INTO `tconfig_os` VALUES (7,'Cisco','CISCO IOS','so_cisco.gif');
 INSERT INTO `tconfig_os` VALUES (8,'MacOS','MAC OS','so_mac.gif');
@@ -119,7 +119,7 @@ INSERT INTO `ttipo_modulo` VALUES (18,'remote_snmp_proc',1,'Remote SNMP network 
 --
 
 INSERT INTO `tusuario` VALUES ('admin','Default Admin','1da7ee7d45b96d0e1f45ee4ee23da560','Admin Pandora','2005-12-18 20:13:10','admin_pandora@nowhere.net','555-555-555',1);
-INSERT INTO `tusuario` VALUES ('demo','Demo user','fe01ce2a7fbac8fafaed7c982a04e229','Please don\\&#039;t change anything in this user, so other users can connect with it.\r\n\r\nThanks.','2005-12-20 17:46:48','demo@nowhere.net','+4555435435',0);
+INSERT INTO `tusuario` VALUES ('demo','Demo user','fe01ce2a7fbac8fafaed7c982a04e229','Please do not change anything in this user, so other users can connect with it.\r\n\r\nThanks.','2005-12-20 17:46:48','demo@nowhere.net','+4555435435',0);
 
 --
 -- Dumping data for table `tusuario_perfil`
@@ -136,7 +136,7 @@ INSERT INTO `tusuario_perfil` VALUES (2,'admin',5,1,'admin');
 
 INSERT INTO `tlanguage` VALUES ('bb','Bable');
 INSERT INTO `tlanguage` VALUES ('en','English');
-INSERT INTO `tlanguage` VALUES ('es','Espa&ntilde;ol');
+INSERT INTO `tlanguage` VALUES ('es_es','Espa&ntilde;ol');
 INSERT INTO `tlanguage` VALUES ('es_la','Espa&ntilde;ol-Latinoam&eacute;rica');
 INSERT INTO `tlanguage` VALUES ('eu','Euskera');
 INSERT INTO `tlanguage` VALUES ('pt_br','Portuguese-Brazil');

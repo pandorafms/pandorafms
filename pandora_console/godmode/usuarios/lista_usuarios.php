@@ -20,15 +20,15 @@ if (comprueba_login() == 0)
 			$query_del2="DELETE FROM tusuario WHERE id_usuario = '".$nombre."'";
 			$resq1=mysql_query($query_del1);
 			$resq1=mysql_query($query_del2);
-               	 	if (! $resq1)
-               	         	echo "<h3 class='error'>".$lang_label["delete_user_no"]."</h3>";
-               	 	else
-                        	echo "<h3 class='suc'>".$lang_label["delete_user_ok"]."</h3>";
+			if (! $resq1)
+					echo "<h3 class='error'>".$lang_label["delete_user_no"]."</h3>";
+			else
+					echo "<h3 class='suc'>".$lang_label["delete_user_ok"]."</h3>";
 		}
 ?>
 
-<h2><?php echo $lang_label["user_management"] ?><a href="help/<?php echo substr($language_code,0,2);?>/chap2.php#22" target="_help"><img src="images/ayuda.gif" border="0" class="help"></a></h2>
-<h3><?php echo $lang_label["users"] ?></h3>
+<h2><?php echo $lang_label["user_management"] ?></h2>
+<h3><?php echo $lang_label["users"] ?><a href="help/<?php echo substr($language_code,0,2);?>/chap2.php#22" target="_help"><img src="images/ayuda.gif" border="0" class="help"></a></h3>
  
 <table cellpadding=3 cellspacing=3 width=550>
 <th class="w80"><?php echo $lang_label["user_ID"]?>

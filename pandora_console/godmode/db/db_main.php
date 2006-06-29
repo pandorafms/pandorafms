@@ -26,11 +26,6 @@ if (comprueba_login() == 0)
 	echo "<h3>".$lang_label["pandora_db"]."</h3>";
 	echo "<table width=550 cellspacing=3 cellpadding=3 border=0>";
 	echo "<tr><td>";
-	echo "<img src='images/pulpo_cilindro.gif' align=right>";
-	echo "<div align='justify'>".$lang_label["db_description"]."</div>";
-	echo "<tr><td>";
-	echo "<div align='justify'>";
-
 	echo "<h3>".$lang_label["current_dbsetup"]."</h3>";
 	echo "<i>".$lang_label["days_compact"].":</i>&nbsp;<b>".$days_compact."</b><br><br>";
 	echo "<i>".$lang_label["days_purge"].":</i>&nbsp;<b>".$days_purge."</b><br><br>";

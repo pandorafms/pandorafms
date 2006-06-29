@@ -31,7 +31,7 @@ if (comprueba_login() == 0)
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config_graph_order."' WHERE TOKEN='graph_order'");
 	}	
 	echo "<h2>".$lang_label["setup_screen"]."</h2>";
-	echo "<h3>".$lang_label["general_config"]."</h3>";
+	echo "<h3>".$lang_label["general_config"]."<a href='help/".substr($language_code,0,2)."/chap7.php#7' target='_help'><img src='images/ayuda.gif' border='0' class='help'></a></h3>";
 	echo "<form name='setup' method='POST' action='index.php?sec=godmode/setup/setup&update=1'>";
 	echo '<table width="500" cellpadding="3" cellspacing="3">';
 	echo '<tr><td class="lb" rowspan="8" width="5"></td><td class="datos">'.$lang_label["language_code"];

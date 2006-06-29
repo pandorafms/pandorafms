@@ -38,8 +38,7 @@ ocurriendo en el sistema a lo largo del tiempo.</p>
 <p>Es evidente que el rendimiento y
 fiabilidad de este m&oacute;dulo es vital para el funcionamiento correcto de Pandora.
 Es necesario hacer un mantenimiento peri&oacute;dico de la base de datos, para ello se
-pueden utilizar los comandos est&aacute;ndar de MySQL. Este proceso no es una de las
-finalidades de Pandora, pero es una tarea cr&iacute;tica.</p>
+pueden utilizar los comandos est&aacute;ndar de MySQL.</p>
 
 <p>Como el tama&ntilde;o de la base de
 batos aumentar&aacute; de manera lineal, utilizamos un m&eacute;todo de compactaci&oacute;n para

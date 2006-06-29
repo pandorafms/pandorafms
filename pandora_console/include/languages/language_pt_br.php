@@ -396,14 +396,6 @@ $lang_label["filtering_datamodule"] = "Filtrando m&oacute;dulo de dados";
 $lang_label["nomodules_selected"] = "N&atilde;o foram selecionados m&oacute;dulos";
 $lang_label["purge_below_limits"] = "Apagar dados fora destes limites";
 $lang_label["max_eq_min"] = "M&aacute;ximo igual ao m&iacute;nimo";
-$lang_label["dbprohelp"] = "O processo de depura&ccedil;&atilde;o da Base de Dados serve para eliminar aquelas entradas perdidas, por qualquer raz&atilde;o (falha do agente, valor real fora de escala, provas, erros na BD, etc.),
-Eliminar dados falsos, incorretos ou simplesmente inconsistentes permite que a escala dos gr&aacute;ficos seja mais «real» e permita mostrar os dados sem picos ou escalas irreais";
-$lang_label["valprohelp"] = "Os valores introduzidos: agente, m&oacute;dulo, m&iacute;nimo e m&aacute;ximo servem para delimitar os dados corretos.
-Qualquer dado que saia deste conjunto de par&atilde;¢metros, ser&aacute; eliminado.
-Por exemplo, em um tipo de m&oacute;dulo que registra n&uacute;mero de processos, nos interessam valores entre 0 e 100,
-&eacute; poss&iacute;vel que tenhamos valores muito acima de 100, por&eacute;m, geralmente ser&atilde;o erros, distor&ccedil;&otilde;es ou situa&ccedil;&otilde;es especiais.
-Podemos incluir como m&iacute;nimo o valor 0, e como m&aacute;ximo o valor 100.
-Valores tais como -1, 101 ou 100000, ser&atilde;o eliminados permanentemente da Base de Dados.";
 $lang_label["agent_conf"] = "Configura&ccedil;&atilde;o de Agentes";
 $lang_label["mod_alert"] = "Modificar alerta";
 $lang_label["filter"] = "Filtro";

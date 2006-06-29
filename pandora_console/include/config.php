@@ -9,8 +9,8 @@
 // Base config file
 
 //Pandora Version
-$build_version="PC060303"; //PCddmmyy
-$pandora_version="v1.2 Beta 1"; 
+$build_version="PC062906"; //PCddmmyy
+$pandora_version="v1.2 Beta 2"; 
 
 
 // Database configuration

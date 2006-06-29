@@ -1,4 +1,23 @@
 package pandora_config;
+##################################################################################
+# Pandora Config package
+##################################################################################
+# Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+# Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L
+#
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+##################################################################################
+
 
 use warnings;
 use Time::Local;
@@ -17,8 +36,8 @@ our @EXPORT = qw( 	pandora_help_screen
 # There is no global vars, all variables (setup) passed as hash reference
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "1.2beta2";
-my $pandora_build="PS060606";
+my $pandora_version = "1.2 Beta2";
+my $pandora_build="PS60629";
 
 # Setup hash
 my %pa_config;
@@ -30,9 +49,6 @@ my %pa_config;
 ##############################################################################
 
 sub help_screen {
-	printf "Permission is granted to copy, distribute and/or modify this document \n";
-    printf "under the terms of the GNU Free Documentation License, Version 2.0 \n";
-    printf "or any later version published by the Free Software Foundation at www.gnu.org \n\n";
 	printf "\n\nSyntax: \n  pandora_xxxxxxx.pl <fullpathname to PANDORA HOME directory> [ options ] \n\n";
 	printf "Following options are optional : \n";
 	printf "            -v  :  Verbose mode activated, give more information in logfile \n";
@@ -51,7 +67,8 @@ sub help_screen {
 sub pandora_init {
 	my $pa_config = $_[0];
 	my $init_string = $_[1];
-	printf "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-2006 <slerena\@gmail.com>\n";
+	printf "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-2006 ArticaST\n";
+	printf "This program is Free Software, licensed under the terms of GPL License v2 or later.\n";
 	printf "You can download latest versions and documentation at http://pandora.sourceforge.net. \n\n";
 
 	# Check we are running Linux

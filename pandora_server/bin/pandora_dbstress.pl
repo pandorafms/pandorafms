@@ -3,9 +3,19 @@
 # Pandora DB Stress tool
 ##################################################################################
 # Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-# Permission is granted to copy, distribute and/or modify this document
-# under the terms of the GNU Free Documentation License, Version 2.0
-# or any later version published by the Free Software Foundation at www.gnu.org
+# Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L
+#
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ##################################################################################
 
 # Includes list

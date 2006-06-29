@@ -126,7 +126,7 @@ echo "<br>";
 					$icono_type=$icono_type."<img src='images/dot_green.gif' alt=''>";
 				}
 				
-				$celda = "<img class='top' src='images/groups/".$icono_grupo."_1.gif' border='0' alt=''><a href='#' class='tip'>&nbsp;<span>
+				$celda = "<td class='bot'><a href='index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id=".$grupo[$real_count]["id_grupo"]."' class='info'><img class='top' src='images/groups/".$icono_grupo."_1.gif' border='0' alt=''><span>
 				<table cellspacing='2' cellpadding='0' style='margin-left:20px'>
 				<tr><td colspan='2' width='91' class='lb'>".$lang_label["agents"].": </td></tr>
 				<tr><td colspan='2' class='datos' align='center'><b>".$grupo[$real_count]["agent"]."</b></td></tr></table>
@@ -135,9 +135,7 @@ echo "<br>";
 				<tr><td class='datos'><img src='images/b_green.gif' align='top' alt='' border='0'> ".$lang_label["ok"].": </td><td class='datos'><font class='greenb'>".$grupo[$real_count]["ok"]."</font></td></tr>
 				<tr><td class='datos'><img src='images/b_down.gif' align='top' alt='' border='0'> ".$lang_label["down"].": </td><td class='datos'><font class='grey'>".$grupo[$real_count]["down"]."</font></td></tr>
 				<tr><td class='datos'><img src='images/b_red.gif' align='top' alt='' border='0'> ".$lang_label["fail"].": </td><td class='datos'><font class='redb'>".$grupo[$real_count]["bad"]."</font></td></tr></table>
-				</span></a>";
-
-				$celda = "<td class='bot'><a href='index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id=".$grupo[$real_count]["id_grupo"]."'>".$celda."</a><br><br>".$icono_type."<br><br><font class='gr'>".$group_name."</font>";
+				</span></a><br><br>".$icono_type."<br><br><font class='gr'>".$group_name."</font>";
 
 				echo $celda;
 			}

@@ -1,5 +1,5 @@
-a.tip {cursor: help; position: relative; text-decoration: none; background:url(../../images/help.gif) no-repeat; padding: 5px 2px 5px 12px;}
-a.tip2 {cursor: help; position: relative; text-decoration: none; background:url(../../images/help.gif) no-repeat; padding: 2px 2px 2px 12px;}
+a.tip {cursor: help; position: relative; text-decoration: none; background:url(../../images/tip.gif) no-repeat; padding: 5px 2px 5px 12px;}
+a.tip2 {cursor: help; position: relative; text-decoration: none; background:url(../../images/tip.gif) no-repeat; padding: 2px 2px 2px 12px;}
 a.info {position: relative; text-decoration: none; padding: 25px 0px 0px -20px;}
 a.tip:hover {text-decoration: none; background-color: #f5f5f5;}
 a.tip2:hover {text-decoration: none; background-color: #778866;}

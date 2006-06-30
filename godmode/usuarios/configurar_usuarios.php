@@ -136,11 +136,11 @@ if (comprueba_login() == 0)
 		echo "<h2>".$lang_label["user_management"]."</h2>";
 		if (isset($_GET["alta"])){
 				if ($_GET["alta"]==1){
-				echo '<h3>'.$lang_label["create_user"].'<a href="help/'.substr($language_code,0,2).'/chap2.php#22" target="_help"><img src="images/ayuda.gif" border="0" class="help"></a></h3>';
+				echo '<h3>'.$lang_label["create_user"].'<a href="help/'.substr($language_code,0,2).'/chap2.php#22" target="_help"><img src="images/help.gif" border="0" class="help"></a></h3>';
 				}
 		}
 		if (isset($_GET["id_usuario_mio"]) OR isset($_GET["nuevo_usuario"])){
-			echo '<h3>'.$lang_label["update_user"].'<a href="help/'.substr($language_code,0,2).'/chap2.php#22" target="_help"><img src="images/ayuda.gif" border="0" class="help"></a></h3>';
+			echo '<h3>'.$lang_label["update_user"].'<a href="help/'.substr($language_code,0,2).'/chap2.php#22" target="_help"><img src="images/help.gif" border="0" class="help"></a></h3>';
 		}
 
 ?> 

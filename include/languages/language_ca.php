@@ -1,10 +1,21 @@
 <?php
 
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Aquest codi est&agrave; protegit per la llicencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2004-2006
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Hugo Vazquez <hugo@pentest.es>, 2006
 
 $lang_label["view_agents"]="Veure Agents";
@@ -491,11 +502,11 @@ $lang_label["module_interval"]="Interval de M&ograve;dul";
 $lang_label["snmp_community"]="Comunitat SNMP";
 $lang_label["server_asigned"]="Servidor assignat";
 $lang_label["remote"]="Remot";
-$lang_label["default_server"]="Per defecte (Servidor Actiu)";
+$lang_label["default_server"]="Servidor Actiu";
 $lang_label["incident_manag"]="Gesti&oacute; d'&iacute;ncidents";
 
 $lang_label["del_message_ok"]="Messatge esborrat amb &egrave;xit";
-$lang_label["del_message_no"]="There was a problem deleting message";
+$lang_label["del_message_no"]="Hi ha hagut un problema esborrant el mensatge";
 $lang_label["read_mes"]="Llegir mensatges";
 $lang_label["message"]="Mensatge";
 $lang_label["messages"]="Mensatges";
@@ -567,6 +578,12 @@ $lang_label["truetype"]="Fonts Truetype";
 
 $lang_label["right_left"]="Dre. a Esq."; //dreta a esquerra
 $lang_label["left_right"]="Esq. a Dre."; //esquerra a dreta
+$lang_label["right_left"]="Der. a Izq."; //derecha a izquierda
+$lang_label["left_right"]="Izq. a Der."; //izquierda a derecha
+$lang_label["cannot_read_snmp"]="Hi ha hagut un problema llegint SNMP";
+$lang_label["ok_read_snmp"]="El origen SNMP ha sido analizado";
+$lang_label["cancel"]="Cancel.lar";
+$lang_label["network_module_refresh_exec"]="Ejecutado el refresco del m&oaucute;dulo de red";
 
 global $lang_label; 
 global $help_label;

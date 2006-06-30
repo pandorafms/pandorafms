@@ -1,10 +1,21 @@
 <?php
 
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2004-2006
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Sergio Iglesias, 2005
 
 $lang_label["view_agents"]="Egileak ikustea";
@@ -564,10 +575,93 @@ $lang_label["module_interval"]="Intervalo m&oacute;dulo";
 $lang_label["snmp_community"]="Comunidad SNMP";
 $lang_label["server_asigned"]="Servidor asignado";
 $lang_label["remote"]="Remota";
-$lang_label["default_server"]="Por defecto (Servidor activo)";
+$lang_label["default_server"]="Servidor activo";
 $lang_label["incident_manag"]="Gesti&oacute;n de incidentes";
 
-//Nov 2005 - Mensajes$lang_label["del_message_ok"]="Mensaje borrado correctamente";$lang_label["del_message_no"]="Error al borrar el mensaje";$lang_label["read_mes"]="Leer mensajes";$lang_label["message"]="Mensaje";$lang_label["messages"]="Mensajes";$lang_label["messages_g"]="Mensajes a grupos";$lang_label["subject"]="Asunto";$lang_label["new_message"]="Nuevo mensaje";$lang_label["new_message_g"]="Nuevo mensaje a un grupo";$lang_label["send_mes"]="Enviar mensaje";$lang_label["m_from"]="Remitente"; //from en mensajes$lang_label["m_to"]="Destinatario"; //to en mensajes$lang_label["sender"]="Remitente";$lang_label["message_ok"]="Mensaje insertado correctamente";$lang_label["message_no"]="No se ha podido crear el mensaje";$lang_label["no_messages"]="No hay mensajes";$lang_label["new_message_bra"]="Tienes ";$lang_label["new_message_ket"]=" mensaje(s) por leer.";$lang_label["no_subject"]="Sin Asunto";$lang_label["read"]="Le&iacute;do";$lang_label["reply"]="Responder";// 06-08 Dec 2005$lang_label["general_config"]="Configuraci&oacute;n general";$lang_label["no_profile"]="Este usuario no tiene ning&uacute;n perfil/grupo asociado";$lang_label["no_agent"]="No hay ning&uacute;n agente incluido en este grupo";$lang_label["no_change_field"]="Este campo no puede modificarse en el modo edici&oacute;n";$lang_label["no_alert"]="Ning&uacute;n agente de este grupo tiene alguna alerta definida";$lang_label["total_data"]="Datos totales";// 16-19 Dec 2005$lang_label["no_incidents"]="Ning&uacute;n incidente se ajusta a tu filtro de b&uacute;squeda";$lang_label["no_agent_alert"]=", por tanto no hay alertas";// 20-24 Dec 2005$lang_label["wrote"]=" escribi&oacute;";$lang_label["no_snmp_agent"]="No hay definido ning&uacute;n agente SNMP";$lang_label["no_snmp_alert"]="No hay definida ninguna alerta SNMP";$lang_label["no_agent_def"]="No hay ning&uacute;n agente definido";// 5 Enero 2006$lang_label["view_servers"]="Servidores Pandora";$lang_label["no_server"]="No hay ning&uacute;n servidor configurado en la base de datos";$lang_label["master"]="Principal";$lang_label["checksum"]="Check";$lang_label["snmp"]="SNMP";$lang_label["laststart"]="Arrancado el";$lang_label["lastupdate"]="Actualizado el";$lang_label["network"]="Red";$lang_label["server_detail"]="Detalle de configuraci&oacute;n";$lang_label["no_modules"]="Este agente no tiene ning&uacute;n m&oacute;dulo definido";$lang_label["no_monitors"]="Este agente no tiene ning&uacute;n monitor definido";$lang_label["no_alerts"]="Este agente no tiene ninguna alerta definida";$lang_label["server"]="Servidor";// 8 Enero 2006$lang_label["no_sel_mod"]="No se ha seleccionado ning&uacute;n m&oacute;dulo";// 11 -15 Enero 2006$lang_label["no_event"]="No hay eventos";$lang_label["agent_access_rate"]="Accesibilidad agente (24h)";$lang_label["agent_module_shareout"]="Distribuci&oacute;n de m&oacute;dulos";$lang_label["int"]="Itv."; // Nombre corto para intervalo$lang_label["manage_servers"]="Gesti&oacute;n de servidores";$lang_label["update_server"]="Actualizar servidor";$lang_label["upd_server_ok"]="Servidor actualizado correctamente";$lang_label["upd_server_no"]="Ha habido un problema al actualizar el servidor";$lang_label["del_server_ok"]="Servidor eliminado correctamente";$lang_label["del_server_no"]="Ha habido un problema al eliminar el servidor";$lang_label["groups"]="grupos";// 23-24 de Enero 2006$lang_label["other"]="Otro";$lang_label["icon"]="Icono";$lang_label["agent_exists"]="El agente ya existe";$lang_label["graph_order"]="Orden del gr&aacute;fico";$lang_label["truetype"]="Fuentes truetype";
+//Nov 2005 - Mensajes
+$lang_label["del_message_ok"]="Mensaje borrado correctamente";
+$lang_label["del_message_no"]="Error al borrar el mensaje";
+$lang_label["read_mes"]="Leer mensajes";
+$lang_label["message"]="Mensaje";
+$lang_label["messages"]="Mensajes";
+$lang_label["messages_g"]="Mensajes a grupos";
+$lang_label["subject"]="Asunto";
+$lang_label["new_message"]="Nuevo mensaje";
+$lang_label["new_message_g"]="Nuevo mensaje a un grupo";
+$lang_label["send_mes"]="Enviar mensaje";
+$lang_label["m_from"]="Remitente"; //from en mensajes
+$lang_label["m_to"]="Destinatario"; //to en mensajes
+$lang_label["sender"]="Remitente";
+$lang_label["message_ok"]="Mensaje insertado correctamente";
+$lang_label["message_no"]="No se ha podido crear el mensaje";
+$lang_label["no_messages"]="No hay mensajes";
+$lang_label["new_message_bra"]="Tienes ";
+$lang_label["new_message_ket"]=" mensaje(s) por leer.";
+$lang_label["no_subject"]="Sin Asunto";
+$lang_label["read"]="Le&iacute;do";
+$lang_label["reply"]="Responder";
+
+// 06-08 Dec 2005
+$lang_label["general_config"]="Configuraci&oacute;n general";
+$lang_label["no_profile"]="Este usuario no tiene ning&uacute;n perfil/grupo asociado";
+$lang_label["no_agent"]="No hay ning&uacute;n agente incluido en este grupo";
+$lang_label["no_change_field"]="Este campo no puede modificarse en el modo edici&oacute;n";
+$lang_label["no_alert"]="Ning&uacute;n agente de este grupo tiene alguna alerta definida";
+$lang_label["total_data"]="Datos totales";
+
+// 16-19 Dec 2005
+$lang_label["no_incidents"]="Ning&uacute;n incidente se ajusta a tu filtro de b&uacute;squeda";
+$lang_label["no_agent_alert"]=", por tanto no hay alertas";
+
+// 20-24 Dec 2005
+$lang_label["wrote"]=" escribi&oacute;";
+$lang_label["no_snmp_agent"]="No hay definido ning&uacute;n agente SNMP";
+$lang_label["no_snmp_alert"]="No hay definida ninguna alerta SNMP";
+$lang_label["no_agent_def"]="No hay ning&uacute;n agente definido";
+
+// 5 Enero 2006
+$lang_label["view_servers"]="Servidores Pandora";
+$lang_label["no_server"]="No hay ning&uacute;n servidor configurado en la base de datos";
+$lang_label["master"]="Principal";
+$lang_label["checksum"]="Check";
+$lang_label["snmp"]="SNMP";
+$lang_label["laststart"]="Arrancado el";
+$lang_label["lastupdate"]="Actualizado el";
+$lang_label["network"]="Red";
+$lang_label["server_detail"]="Detalle de configuraci&oacute;n";
+$lang_label["no_modules"]="Este agente no tiene ning&uacute;n m&oacute;dulo definido";
+$lang_label["no_monitors"]="Este agente no tiene ning&uacute;n monitor definido";
+$lang_label["no_alerts"]="Este agente no tiene ninguna alerta definida";
+$lang_label["server"]="Servidor";
+
+// 8 Enero 2006
+$lang_label["no_sel_mod"]="No se ha seleccionado ning&uacute;n m&oacute;dulo";
+
+// 11 -15 Enero 2006
+$lang_label["no_event"]="No hay eventos";
+$lang_label["agent_access_rate"]="Accesibilidad agente (24h)";
+$lang_label["agent_module_shareout"]="Distribuci&oacute;n de m&oacute;dulos";
+$lang_label["int"]="Itv."; // Nombre corto para intervalo
+$lang_label["manage_servers"]="Gesti&oacute;n de servidores";
+$lang_label["update_server"]="Actualizar servidor";
+$lang_label["upd_server_ok"]="Servidor actualizado correctamente";
+$lang_label["upd_server_no"]="Ha habido un problema al actualizar el servidor";
+$lang_label["del_server_ok"]="Servidor eliminado correctamente";
+$lang_label["del_server_no"]="Ha habido un problema al eliminar el servidor";
+$lang_label["groups"]="grupos";
+
+// 23-24 de Enero 2006
+$lang_label["other"]="Otro";
+$lang_label["icon"]="Icono";
+$lang_label["agent_exists"]="El agente ya existe";
+$lang_label["graph_order"]="Orden del gr&aacute;fico";
+$lang_label["truetype"]="Fuentes truetype";
+$lang_label["right_left"]="Der. a Izq."; //derecha a izquierda
+$lang_label["left_right"]="Izq. a Der."; //izquierda a derecha
+$lang_label["cannot_read_snmp"]="No se puede leer SNMP del origen";
+$lang_label["ok_read_snmp"]="El origen SNMP ha sido analizado";
+$lang_label["cancel"]="Cancelar";
+$lang_label["network_module_refresh_exec"]="Ejecutado el refresco del m&oaucute;dulo de red";
 
 global $lang_label;
 global $help_label;

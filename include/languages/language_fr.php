@@ -1,10 +1,21 @@
 <?php
 
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2004-2006
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Translation to French
 // Translator: Aline Jorand <jorand.aline@laposte.net >
@@ -548,7 +559,7 @@ $lang_label["module_interval"]="Intervale du module";
 $lang_label["snmp_community"]="Communaut&eacute; SNMP";
 $lang_label["server_asigned"]="Serveur assign&eacute;";
 $lang_label["remote"]="Distant";
-$lang_label["default_server"]="Par d&eacute;faut (Serveur actif)";
+$lang_label["default_server"]="Serveur actif";
 $lang_label["incident_manag"]="Gestion d'incidents";
 $lang_label["del_message_ok"]="Message effac&eacute; avec succ&egrave;s";
 $lang_label["del_message_no"]="Erreur &agrave; l'effacement du message";
@@ -606,7 +617,7 @@ $lang_label["update_server"]="Actualiser le serveur";
 $lang_label["upd_server_ok"]="Serveur actualis&eacute; avec succ&egrave;s";
 $lang_label["upd_server_no"]="Pandora a rencontr&eacute; un probl&egrave;me pour actualiser le serveur";
 $lang_label["del_server_ok"]="Serveur &eacute;limin&eacute; avec succ&egrave;s";
-$lang_label["del_server_no"]=" Pandora a rencontr&eacute; un probl&egrave;me pour &eacute;liminer le serveur ";
+$lang_label["del_server_no"]="Pandora a rencontr&eacute; un probl&egrave;me pour &eacute;liminer le serveur ";
 $lang_label["groups"]="groupes";
 $lang_label["other"]="Autre";
 $lang_label["icon"]="Ic&ocirc;ne";
@@ -615,6 +626,10 @@ $lang_label["graph_order"]="Ordre du tableau";
 $lang_label["truetype"]="Polices truetype";
 $lang_label["right_left"]="dr. a gau.";
 $lang_label["left_right"]="gau. a dr.";
+$lang_label["cannot_read_snmp"]="Cannot read from SNMP source";
+$lang_label["ok_read_snmp"]="SNMP source has been scanned";
+$lang_label["cancel"]="Annuler";
+$lang_label["network_module_refresh_exec"]="L'actualisation du module de R&eacute;seau est ex&eacute;cut&eacute;";
 
 global $lang_label;
 global $help_label;

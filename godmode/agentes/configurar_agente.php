@@ -557,10 +557,10 @@ if (give_acl($id_user, 0, "AW")==1) {
 	}
 ?>
 
-<h2><?php echo $lang_label["agent_conf"]; ?><a href="help/<?php echo substr($language_code,0,2);?>/chap3.php#32" target="_help"><img src="images/ayuda.gif" border="0" class="help"></a></h2>
+<h2><?php echo $lang_label["agent_conf"]; ?></h2>
 <?php
-if (isset($_GET["creacion"])){echo "<h3>".$lang_label["create_agent"]."</h3>";}
-else {echo "<h3>".$lang_label["update_agent"]."</h3>";}
+if (isset($_GET["creacion"])){echo "<h3>".$lang_label["create_agent"]."<a href='help/".substr($language_code,0,2)."/chap3.php#32' target='_help'><img src='images/help.gif' border='0' class='help'></a></h3>";}
+else {echo "<h3>".$lang_label["update_agent"]."<a href='help/".substr($language_code,0,2)."/chap3.php#32' target='_help'><img src='images/help.gif' border='0' class='help'></a></h3>";}
 ?>
 <form name="conf_agent" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">
 <?php
@@ -709,7 +709,7 @@ while ($row=mysql_fetch_array($result)){
 	echo $module_max." / ".$module_min;
 	echo "<td class='datos'>";
 	if ($id_tipo != -1)
-		echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&delete_module=".$row["id_agente_modulo"]."'><img src='images/cancel.gif' border=0 alt='".$lang_label["delete"]."'></b></a> &nbsp; ";
+	echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&delete_module=".$row["id_agente_modulo"]."'><img src='images/cancel.gif' border=0 alt='".$lang_label["delete"]."'></b></a> &nbsp; ";
 	echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&update_module=".$row["id_agente_modulo"]."#modules'><img src='images/config.gif' border=0 alt='".$lang_label["update"]."'></b></a>";
 }
 	echo "<tr><td colspan='7'><div class='raya'></div></td></tr>";
@@ -897,9 +897,10 @@ if (isset($_POST["oid"])){
 	} else {
 		echo '<input name="crtbutton" type="submit" class="sub" value="'.$lang_label["add"].'">';
 	}
-	echo ' <a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'"><b>'.$lang_label["cancel"].'</b></a>';
+	echo "</form>";
+	echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."'><input type='submit' class='sub' name='cancel' value='".$lang_label["cancel"]."'></form>";
 ?>
-</form>
+
 </table>
 <br>
 <?php
@@ -1019,8 +1020,10 @@ echo '<tr><td colspan="3" align="right">';
 	} else {
 		echo '<input name="crtbutton" type="submit" class="sub" value="'.$lang_label["add"].'">';
 	}
-	echo ' <a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'"><b>'.$lang_label["cancel"].'</b></a>';
-echo '</td></tr></table></form>';
+	echo '</form>';
+	
+	echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."'><input type='submit' class='sub' name='crt' value='".$lang_label["cancel"]."'></form>";
+echo '</td></tr></table>';
 }
 }
 	} // end page

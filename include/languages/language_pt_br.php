@@ -1,13 +1,23 @@
 <?php
 
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Este odigo est&aacute; protegido pela licen&ccedil;a GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Ra&uacute;l Mateos <raulofpandora@gmail.com>, 2004-2006
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-// Tradu&ccedil;&atilde;o para o Português do Brasil
+// Tradução para o Português do Brasil
 // Tradutor: Rodrigo J. Dutra <rodrigo.dutra@gmail.com>
 // 28/01/2006
 
@@ -45,7 +55,7 @@ $lang_label["status"] = "Estado";
 $lang_label["in_openedby"] = "Propriet&aacute;rio";
 $lang_label["in_openedwhen"] = "Aberto em";
 $lang_label["updated_at"] = "Atualizado em";
-$lang_label["main_text"] = "Este &eacute; o Console de Administra&ccedil;&atilde;o do Pandora. A partir daqui você pode gerenciar seus agentes, alertas e incidentes. A sess&atilde;o permanecer&aacute; aberta desde que n&atilde;o haja inatividade prolongada.";
+$lang_label["main_text"] = "Este &eacute; o Console de Administra&ccedil;&atilde;o do Pandora. A partir daqui voc&ecirc; pode gerenciar seus agentes, alertas e incidentes. A sess&atilde;o permanecer&aacute; aberta desde que n&atilde;o haja inatividade prolongada.";
 $lang_label["id_user"] = "ID usu&aacute;rio";
 $lang_label["real_name"] = "Nome Real";
 $lang_label["telefono"] = "Telefone";
@@ -174,23 +184,23 @@ $lang_label["broken_light"] = "Agente caiu";
 $lang_label["dbmain_title"] = "Manuten&ccedil;&atilde;o da Base de Dados";
 $lang_label["purge_30day"] = "Apagar os dados com mais de 30 dias";
 $lang_label["purge_7day"] = "Apagar os dados com mais de uma semana";
-$lang_label["purge_90day"] = "Apagar os dados com mais de três meses";
+$lang_label["purge_90day"] = "Apagar os dados com mais de tr&ecirc;s meses";
 $lang_label["purge_14day"] = "Apagar os dados com mais de duas semanas";
-$lang_label["purge_3day"] = "Apagar os dados com mais de três dias";
+$lang_label["purge_3day"] = "Apagar os dados com mais de tr&ecirc;s dias";
 $lang_label["purge_1day"] = "Apagar os dados com mais de um dia";
 $lang_label["purge_all"] = "Apagar todos os dados";
-$lang_label["rango3"] = "Pacotes com menos de três meses";
-$lang_label["rango2"] = "Pacotes com menos de um mês";
+$lang_label["rango3"] = "Pacotes com menos de tr&ecirc;s meses";
+$lang_label["rango2"] = "Pacotes com menos de um m&ecirc;s";
 $lang_label["rango1"] = "Pacotes com menos de uma semana";
 $lang_label["rango11"] = "Pacotes com menos de duas semanas";
-$lang_label["rango0"] = "Pacotes com menos de três dias";
+$lang_label["rango0"] = "Pacotes com menos de tr&ecirc;s dias";
 $lang_label["rango00"] = "Pacotes com menos de 24 horas";
 $lang_label["db_info"] = "Informa&ccedil;&atilde;o do BD";
 $lang_label["db_operation"] = "Manipula&ccedil;&atilde;o do BD";
 $lang_label["data_received"] = "Dados recebidos de";
 $lang_label["last_24"] = "&Uacute;ltimas 24 horas";
 $lang_label["last_week"] = "&Uacute;ltima Semana";
-$lang_label["last_month"] = "&Uacute;ltimo mês";
+$lang_label["last_month"] = "&Uacute;ltimo m&ecirc;s";
 $lang_label["noagentselected"] = "N&atilde;o foi selecionado um agente";
 $lang_label["agentversion"] = "Vers&atilde;o do agente";
 $lang_label["deleting_data"] = "Apagando dados";
@@ -287,14 +297,14 @@ $lang_label["purge_audit_30day"] = "Apagar os dados de auditoria, exceto os dos 
 $lang_label["purge_audit_7day"] = "Apagar os dados de auditoria, exceto os da &uacute;tlima semana";
 $lang_label["purge_audit_90day"] = "Apagar os dados de auditoria, exceto os do &uacute;ltimo trimestre";
 $lang_label["purge_audit_14day"] = "Apagar os dados de auditoria, exceto os das &uacute;tlimas duas semanas";
-$lang_label["purge_audit_3day"] = "Apagar os dados de auditoria, exceto os dos &uacute;ltimos três dias";
+$lang_label["purge_audit_3day"] = "Apagar os dados de auditoria, exceto os dos &uacute;ltimos tr&ecirc;s dias";
 $lang_label["purge_audit_1day"] = "Apagar os dados de auditoria, exceto do &uacute;ltimo dia";
 $lang_label["purge_audit_all"] = "Apagar todos os dados de auditoria";
 $lang_label["purge_event_30day"] = "Apagar os dados de eventos, exceto os dos &uacute;ltimos 30 dias";
 $lang_label["purge_event_7day"] = "Apagar os dados de eventos, exceto os da &uacute;ltima semana";
 $lang_label["purge_event_90day"] = "Apagar os dados de eventos, exceto os do &uacute;ltimo trimestre";
 $lang_label["purge_event_14day"] = "Apagar os dados de eventos, exceto os das &uacute;ltimas duas semanas";
-$lang_label["purge_event_3day"] = "Apagar os dados de eventos, exceto os dos &uacute;ltimos três dias";
+$lang_label["purge_event_3day"] = "Apagar os dados de eventos, exceto os dos &uacute;ltimos tr&ecirc;s dias";
 $lang_label["purge_event_1day"] = "Apagar todos os dados de eventos, exceto os das &uacute;ltimas 24 horas";
 $lang_label["purge_event_all"] = "Apagar todos os dados de eventos";
 $lang_label["deleting_records"] = "Apagando os registros para o m&oacute;dulo";
@@ -489,7 +499,7 @@ $lang_label["module_interval"] = "Intervalo m&oacute;dulo";
 $lang_label["snmp_community"] = "Comunidade SNMP";
 $lang_label["server_asigned"] = "Servidor atribu&iacute;do";
 $lang_label["remote"] = "Remota";
-$lang_label["default_server"] = "Por padr&atilde;o (Servidor ativo)";
+$lang_label["default_server"] = "Servidor ativo";
 $lang_label["incident_manag"] = "Gerenciamento de incidentes";
 $lang_label["del_message_ok"] = "Mensagem apagada corretamente";
 $lang_label["del_message_no"] = "Erro ao apagar a mensagem";
@@ -507,7 +517,7 @@ $lang_label["sender"] = "Remetente";
 $lang_label["message_ok"] = "Mensagem enviada com sucesso";
 $lang_label["message_no"] = "Houve um problema ao enviar a mensagem";
 $lang_label["no_messages"] = "N&atilde;o h&aacute; mensagens";
-$lang_label["new_message_bra"] = "Você tem";
+$lang_label["new_message_bra"] = "Voc&ecirc; tem";
 $lang_label["new_message_ket"] = "mensagem(ns) n&atilde;o lida(s)";
 $lang_label["no_subject"] = "Sem assunto";
 $lang_label["read"] = "Lido";
@@ -556,6 +566,12 @@ $lang_label["graph_order"] = "Ordem do gr&aacute;fico";
 $lang_label["truetype"] = "Fontes truetype";
 $lang_label["right_left"]="Dir. &agrave;  Esq."; // direita à  esquerda
 $lang_label["left_right"]="Esq. &agrave;  Dir."; // esquerda à  direita
+$lang_label["right_left"]="Der. a Izq."; //derecha a izquierda
+$lang_label["left_right"]="Izq. a Der."; //izquierda a derecha
+$lang_label["cannot_read_snmp"]="No se puede leer SNMP del origen";
+$lang_label["ok_read_snmp"]="El origen SNMP ha sido analizado";
+$lang_label["cancel"]="Cancelar";
+$lang_label["network_module_refresh_exec"]="Ejecutado el refresco del m&oaucute;dulo de red";
 
 global $lang_label;
 global $help_label;

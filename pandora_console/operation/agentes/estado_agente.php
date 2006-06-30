@@ -24,7 +24,7 @@ if (comprueba_login() == 0) {
 		$ag_group = $_GET["ag_group_refresh"];
 	}
 	echo "<h2>".$lang_label["ag_title"]."</h2>";
-	echo "<h3>".$lang_label["summary"]."<a href='help/".substr($language_code,0,2)."/chap3.php#331' target='_help'><img src='images/ayuda.gif' border='0' class='help'></a></h3>";
+	echo "<h3>".$lang_label["summary"]."<a href='help/".substr($language_code,0,2)."/chap3.php#331' target='_help'><img src='images/help.gif' border='0' class='help'></a></h3>";
 
 	$iduser_temp=$_SESSION['id_usuario'];
 	

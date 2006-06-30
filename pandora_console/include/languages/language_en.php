@@ -565,7 +565,7 @@ $lang_label["module_interval"]="Module Interval";
 $lang_label["snmp_community"]="SNMP Community";
 $lang_label["server_asigned"]="Server assigned";
 $lang_label["remote"]="Remote";
-$lang_label["default_server"]="Default (Active server)";
+$lang_label["default_server"]="Active Server";
 $lang_label["incident_manag"]="Incident management";
 
 $lang_label["del_message_ok"]="Message sucessfully deleted";
@@ -642,12 +642,13 @@ $lang_label["truetype"]="Truetype fonts";
 $lang_label["right_left"]="Right to Left";
 $lang_label["left_right"]="Left to Right";
 
-// 29 May 06
+// 29 May 06 (New in Beta2)
 
 $lang_label["cannot_read_snmp"]="Cannot read from SNMP source";
 $lang_label["ok_read_snmp"]="SNMP source has been scanned";
 $lang_label["cancel"]="Cancel";
 $lang_label["network_module_refresh_exec"]="Network module refresh executed";
+
 global $lang_label; 
 global $help_label;
 ?>

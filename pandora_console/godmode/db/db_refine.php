@@ -47,7 +47,7 @@ if (comprueba_login() == 0)
 		} else { // Form view
 			?>
 			<h2><?php echo $lang_label["dbmain_title"]; ?></h2>
-			<h3><?php echo $lang_label["db_refine"]; ?><a href='help/<?php echo substr($language_code,0,2)?>/chap8.php#831' target='_help'><img src='images/ayuda.gif' border='0' class='help'></a></h3> 
+			<h3><?php echo $lang_label["db_refine"]; ?><a href='help/<?php echo substr($language_code,0,2)?>/chap8.php#831' target='_help'><img src='images/help.gif' border='0' class='help'></a></h3> 
 			<form method="post" action="index.php?sec=gdbman&sec2=godmode/db/db_refine&operacion=1">
 			<table width='500' border='0' cellspacing='3' cellpadding='5'>
 			<tr>

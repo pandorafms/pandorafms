@@ -28,7 +28,7 @@ if (comprueba_login() == 0)
 ?>
 
 <h2><?php echo $lang_label["user_management"] ?></h2>
-<h3><?php echo $lang_label["users"] ?><a href="help/<?php echo substr($language_code,0,2);?>/chap2.php#22" target="_help"><img src="images/ayuda.gif" border="0" class="help"></a></h3>
+<h3><?php echo $lang_label["users"] ?><a href="help/<?php echo substr($language_code,0,2);?>/chap2.php#22" target="_help"><img src="images/help.gif" border="0" class="help"></a></h3>
  
 <table cellpadding=3 cellspacing=3 width=550>
 <th class="w80"><?php echo $lang_label["user_ID"]?>

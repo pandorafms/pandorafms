@@ -4,7 +4,7 @@
 // Description:	PHP4 Graph Plotting library. Chinese font conversions
 // Created: 	2003-05-30
 // Author:	Johan Persson (johanp@aditus.nu)
-// Ver:		$Id: jpgraph_gb2312.php 20 2005-05-30 20:34:41Z ljp $
+// Ver:		$Id: jpgraph_gb2312.php 21 2005-05-30 20:35:34Z ljp $
 //
 // Copyright (c) Aditus Consulting. All rights reserved.
 //========================================================================
@@ -15,7 +15,7 @@ class GB2312toUTF8 {
 // This code table is used to translate GB2312 code (key) to 
 // it's corresponding Unicode value (data)
 // --------------------------------------------------------------------
-    private $codetable = array( 
+    var $codetable = array( 
 	8481 => 12288, 8482 => 12289, 8483 => 12290, 8484 => 12539, 8485 => 713,
 	8486 => 711, 8487 => 168, 8488 => 12291, 8489 => 12293, 8490 => 8213,
 	8491 => 65374, 8492 => 8214, 8493 => 8230, 8494 => 8216, 8495 => 8217,

@@ -1209,20 +1209,45 @@ function grafico_db_agentes_purge($id_agente) {
 	$graph->Stroke();
 }
 
-// ---------------------------------------------------------------
-// progress_bar ( value, min, max, graph_width, graph_height)
-// Show a progress bar
-// ---------------------------------------------------------------
-
-function prueba() {
-	function drawRating($rating) {
-	$width = $_GET['width'];
-	$height = $_GET['height'];
+function drawWarning($width,$height) {
+	include ("../include/config.php");
+	require ("../include/languages/language_".$language_code.".php");
 	if ($width == 0) {
-	$width = 102;
+		$width = 50;
 	}
 	if ($height == 0) {
-	$height = 10;
+		$height = 30;
+	}
+	
+	
+	$image = imagecreate($width,$height);
+	//colors
+	$back = ImageColorAllocate($image,255,255,255);
+	$border = ImageColorAllocate($image,0,0,0);
+	$red = ImageColorAllocate($image,255,60,75);
+	$fill = ImageColorAllocate($image,44,81,150);
+
+	ImageFilledRectangle($image,0,0,$width-1,$height-1,$back);
+	ImageRectangle($image,0,0,$width-1,$height-1,$border);
+	ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $border, $config_fontpath, $lang_label["no_data"]);
+	imagePNG($image);
+	imagedestroy($image);
+}
+
+function progress_bar($progress,$width,$height) {
+   // Copied from the PHP manual:
+   // http://us3.php.net/manual/en/function.imagefilledrectangle.php
+   // With some adds from sdonie at lgc dot com
+   // Get from official documentation PHP.net website. Thanks guys :-)
+   // Code ripped from Babel Project :-)
+   function drawRating($rating,$width,$height) {
+	include ("../include/config.php");
+	require ("../include/languages/language_".$language_code.".php");
+	if ($width == 0) {
+		$width = 150;
+	}
+	if ($height == 0) {
+		$height = 20;
 	}
 	
 	//$rating = $_GET['rating'];
@@ -1234,53 +1259,28 @@ function prueba() {
 	$border = ImageColorAllocate($image,0,0,0);
 	$red = ImageColorAllocate($image,255,60,75);
 	$fill = ImageColorAllocate($image,44,81,150);
-	
+
 	ImageFilledRectangle($image,0,0,$width-1,$height-1,$back);
-	ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$fill);
+	if ($rating > 100)
+		ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$red);
+	else
+		ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$fill);
 	ImageRectangle($image,0,0,$width-1,$height-1,$border);
+	if ($rating > 50) 
+		if ($rating > 100)
+			ImageTTFText($image, 8, 0, ($width/3)-($width/10), ($height/2)+($height/5), $back, $config_fontpath,$lang_label["out_of_limits"]);
+		else
+			ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $back, $config_fontpath, $rating."%");
+	else 
+		ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $border, $config_fontpath, $rating."%");
 	imagePNG($image);
 	imagedestroy($image);
-	}
-
-	Header("Content-type: image/png");
-	drawRating(120);
+   }
+   Header("Content-type: image/png");
+   drawRating($progress,$width,$height);
 }
 
-function progress_bar($valor, $min, $max, $longitud_barra, $anchura_barra){
-	$uno = $max / $longitud_barra; // define el valor de un 1%
-	$actual = $valor / $uno;
-	$pic=imagecreate($longitud_barra,$anchura_barra);
-	$col3=imagecolorallocate($pic,0,0,0);
-	$col1=imagecolorallocate($pic,200,200,200);
-	$col2=imagecolorallocate($pic,0,0,255);
-	$col4=imagecolorallocate($pic,255,255,255);
-	imagefilledrectangle($pic,1,1,$longitud_barra,$anchura_barra,$col3);
-	imagefilledrectangle($pic,1,1,$actual-1,$anchura_barra-2,$col2);
-	imagefilledrectangle($pic,$actual,1,$longitud_barra-2,$anchura_barra-2,$col1);
-	imagepng($pic,"graficos/temp/barraprogreso_".$valor.".png");
-	echo '<img src="graficos/temp/barraprogreso_'.$valor.'.png" border=0>';
-	imagedestroy($pic); 
-}
 
-function progress_bar_per($valor, $min, $max, $longitud_barra, $anchura_barra){
-	$uno = $max / $longitud_barra; // define el valor de un 1%
-	$actual = $valor / $uno;
-	$porc = (int)($valor/($max/100));
-	$pic=imagecreate($longitud_barra,$anchura_barra);
-	$col3=imagecolorallocate($pic,0,0,0);
-	$col1=imagecolorallocate($pic,200,200,200);
-	$col2=imagecolorallocate($pic,0,0,255);
-	$col4=imagecolorallocate($pic,255,255,255);
-	
-	imagefilledrectangle($pic,1,1,$longitud_barra,$anchura_barra,$col3);
-	imagefilledrectangle($pic,1,1,$actual-1,$anchura_barra-2,$col2);
-	imagefilledrectangle($pic,$actual,1,$longitud_barra-2,$anchura_barra-2,$col1);
-	//array ImageTTFText ( int im, int size, int angle, int x, int y, int col, string fontfile, string text)
-	ImageTTFText($pic, 9, 0, ($longitud_barra/2)-10, 9+(($anchura_barra-12)/2), $col3, "/usr/share/fonts/truetype/commercial/arial.ttf", $porc."%");
-	imagepng($pic,"graficos/temp/barraprogresop_".$valor.".png");
-	echo '<img src="graficos/temp/barraprogresop_'.$valor.'.png" border=0>';
-	imagedestroy($pic); 
-}
 
 // *****************************************************************************************************************
 //   MAIN Code
@@ -1328,5 +1328,11 @@ if (isset($_GET["tipo"])){
 		graphic_agentaccess($_GET["id"], $_GET["periodo"]);
 	elseif ($_GET["tipo"] == "agentmodules")
 		graphic_agentmodules($_GET["id"]);
+	elseif ( $_GET["tipo"] =="progress"){
+		$percent= $_GET["percent"];
+		$width= $_GET["width"];
+		$height= $_GET["height"];
+		progress_bar($percent,$width,$height);
+	}
 }
 ?>

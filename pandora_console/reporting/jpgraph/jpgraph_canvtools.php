@@ -4,7 +4,7 @@
 // Description:	Some utilities for text and shape drawing on a canvas
 // Created: 	2002-08-23
 // Author:	Johan Persson (johanp@aditus.nu)
-// Ver:		$Id: jpgraph_canvtools.php 20 2005-05-30 20:34:41Z ljp $
+// Ver:		$Id: jpgraph_canvtools.php 21 2005-05-30 20:35:34Z ljp $
 //
 // Copyright (c) Aditus Consulting. All rights reserved.
 //========================================================================
@@ -23,12 +23,12 @@ DEFINE('CORNER_BOTTOMLEFT',3);
 //===================================================
  
 class CanvasScale {
-    private $g;
-    private $w,$h;
-    private $ixmin=0,$ixmax=10,$iymin=0,$iymax=10;
+    var $g;
+    var $w,$h;
+    var $ixmin=0,$ixmax=10,$iymin=0,$iymax=10;
 
-    function CanvasScale($graph,$xmin=0,$xmax=10,$ymin=0,$ymax=10) {
-	$this->g = $graph;
+    function CanvasScale(&$graph,$xmin=0,$xmax=10,$ymin=0,$ymax=10) {
+	$this->g = &$graph;
 	$this->w = $graph->img->width;
 	$this->h = $graph->img->height;
 	$this->ixmin = $xmin;
@@ -68,12 +68,12 @@ class CanvasScale {
 // Description: Methods to draw shapes on canvas
 //===================================================
 class Shape {
-    private $img,$scale;
+    var $img,$scale;
 
-    function Shape($aGraph,$scale) {
-	$this->img = $aGraph->img;
+    function Shape(&$aGraph,&$scale) {
+	$this->img = &$aGraph->img;
 	$this->img->SetColor('black');
-	$this->scale = $scale;
+	$this->scale = &$scale;
     }
 
     function SetColor($aColor) {
@@ -374,11 +374,11 @@ class Shape {
 // rounded, possible filled, rectangle.
 //===================================================
 class CanvasRectangleText {
-    private $ix,$iy,$iw,$ih,$ir=4;
-    private $iTxt,$iColor='black',$iFillColor='',$iFontColor='black';
-    private $iParaAlign='center';
-    private $iAutoBoxMargin=5;
-    private $iShadowWidth=3,$iShadowColor='';
+    var $ix,$iy,$iw,$ih,$ir=4;
+    var $iTxt,$iColor='black',$iFillColor='',$iFontColor='black';
+    var $iParaAlign='center';
+    var $iAutoBoxMargin=5;
+    var $iShadowWidth=3,$iShadowColor='';
 
     function CanvasRectangleText($aTxt='',$xl=0,$yt=0,$w=0,$h=0) {
 	$this->iTxt = new Text($aTxt);

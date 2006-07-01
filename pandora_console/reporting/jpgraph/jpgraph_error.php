@@ -4,7 +4,7 @@
 // Description:	Error plot extension for JpGraph
 // Created: 	2001-01-08
 // Author:	Johan Persson (johanp@aditus.nu)
-// Ver:		$Id: jpgraph_error.php 462 2006-02-04 12:07:05Z ljp $
+// Ver:		$Id: jpgraph_error.php 88 2005-08-07 17:18:51Z ljp $
 //
 // Copyright (c) Aditus Consulting. All rights reserved.
 //========================================================================
@@ -16,10 +16,10 @@
 // each datapoint
 //===================================================
 class ErrorPlot extends Plot {
-    private $errwidth=2;
+    var $errwidth=2;
 //---------------
 // CONSTRUCTOR
-    function ErrorPlot($datay,$datax=false) {
+    function ErrorPlot(&$datay,$datax=false) {
 	$this->Plot($datay,$datax);
 	$this->numpoints /= 2;
     }
@@ -27,7 +27,7 @@ class ErrorPlot extends Plot {
 // PUBLIC METHODS
 	
     // Gets called before any axis are stroked
-    function PreStrokeAdjust($graph) {
+    function PreStrokeAdjust(&$graph) {
 	if( $this->center ) {
 	    $a=0.5; $b=0.5;
 	    ++$this->numpoints;			
@@ -40,21 +40,20 @@ class ErrorPlot extends Plot {
     }
 	
     // Method description
-    function Stroke($img,$xscale,$yscale) {
+    function Stroke(&$img,&$xscale,&$yscale) {
 	$numpoints=count($this->coords[0])/2;
 	$img->SetColor($this->color);
 	$img->SetLineWeight($this->weight);	
 
 	if( isset($this->coords[1]) ) {
 	    if( count($this->coords[1])!=$numpoints )
-		JpGraphError::RaiseL(2003,count($this->coords[1]),$numpoints);
-//("Number of X and Y points are not equal. Number of X-points:".count($this->coords[1])." Number of Y-points:$numpoints");
+		JpGraphError::Raise("Number of X and Y points are not equal. Number of X-points:".count($this->coords[1])." Number of Y-points:$numpoints");
 	    else
 		$exist_x = true;
 	}
 	else 
 	    $exist_x = false;
-
+		
 	for( $i=0; $i<$numpoints; ++$i) {
 	    if( $exist_x ) 
 		$x=$this->coords[1][$i];
@@ -65,7 +64,7 @@ class ErrorPlot extends Plot {
 		!is_numeric($this->coords[0][$i*2]) || !is_numeric($this->coords[0][$i*2+1]) ) {
 		continue;
 	    }
-
+	    
 	    $xt = $xscale->Translate($x);
 	    $yt1 = $yscale->Translate($this->coords[0][$i*2]);
 	    $yt2 = $yscale->Translate($this->coords[0][$i*2+1]);
@@ -85,10 +84,10 @@ class ErrorPlot extends Plot {
 // BACKWARD COMPATIBILITY
 //===================================================
 class ErrorLinePlot extends ErrorPlot {
-    public $line=null;
+    var $line=null;
 //---------------
 // CONSTRUCTOR
-    function ErrorLinePlot($datay,$datax=false) {
+    function ErrorLinePlot(&$datay,$datax=false) {
 	$this->ErrorPlot($datay,$datax);
 	// Calculate line coordinates as the average of the error limits
 	$n = count($datay);
@@ -100,13 +99,13 @@ class ErrorLinePlot extends ErrorPlot {
 
 //---------------
 // PUBLIC METHODS
-    function Legend($graph) {
+    function Legend(&$graph) {
 	if( $this->legend != "" )
 	    $graph->legend->Add($this->legend,$this->color);
 	$this->line->Legend($graph);
     }
 			
-    function Stroke($img,$xscale,$yscale) {
+    function Stroke(&$img,&$xscale,&$yscale) {
 	parent::Stroke($img,$xscale,$yscale);
 	$this->line->Stroke($img,$xscale,$yscale);
     }
@@ -118,16 +117,16 @@ class ErrorLinePlot extends ErrorPlot {
 // Description: Combine a line and error plot
 //===================================================
 class LineErrorPlot extends ErrorPlot {
-    public $line=null;
+    var $line=null;
 //---------------
 // CONSTRUCTOR
     // Data is (val, errdeltamin, errdeltamax)
-    function LineErrorPlot($datay,$datax=false) {
+    function LineErrorPlot(&$datay,$datax=false) {
 	$ly=array(); $ey=array();
 	$n = count($datay);
 	if( $n % 3 != 0 ) {
-	    JpGraphError::RaiseL(4002);
-//('Error in input data to LineErrorPlot. Number of data points must be a multiple of 3');
+	    JpGraphError::Raise('Error in input data to LineErrorPlot.'.
+		'Number of data points must be a multiple of 3');
 	}
 	for($i=0; $i < $n; $i+=3 ) {
 	    $ly[]=$datay[$i];
@@ -140,13 +139,13 @@ class LineErrorPlot extends ErrorPlot {
 
 //---------------
 // PUBLIC METHODS
-    function Legend($graph) {
+    function Legend(&$graph) {
 	if( $this->legend != "" )
 	    $graph->legend->Add($this->legend,$this->color);
 	$this->line->Legend($graph);
     }
 			
-    function Stroke($img,$xscale,$yscale) {
+    function Stroke(&$img,&$xscale,&$yscale) {
 	parent::Stroke($img,$xscale,$yscale);
 	$this->line->Stroke($img,$xscale,$yscale);
     }

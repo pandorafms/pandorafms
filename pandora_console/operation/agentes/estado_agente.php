@@ -94,6 +94,7 @@ if (comprueba_login() == 0) {
 		echo "<th>".$lang_label["alerts"]."</th>";
 		echo "<th>".$lang_label["last_contact"]."</th>";
 		// For every agent deficed in the agent table
+		$color = 1;
 		while ($row=mysql_fetch_array($result)){
 			if ($row["disabled"] == 0) {
 				$intervalo = $row["intervalo"]; // Interval in seconds
@@ -142,9 +143,17 @@ if (comprueba_login() == 0) {
 						$agent_down = 1;
 					else
 						$agent_down = 0;
-
+					// Color change for each line (1.2 beta2)
+					if ($color == 1){
+						$tdcolor = "datos";
+						$color = 0;
+					}
+					else {
+						$tdcolor = "datos2";
+						$color = 1;
+					}
 					echo "<tr>";
-					echo "<td class='datos'>";
+					echo "<td class='$tdcolor'>";
 					$id_grupo=dame_id_grupo($id_agente);
 					if (give_acl($id_user, $id_grupo, "AW")==1){
 						echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."'><img src='images/setup.gif' border=0 width=15></a>";
@@ -152,45 +161,57 @@ if (comprueba_login() == 0) {
 					echo "&nbsp;&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'><b>".$nombre_agente."</b></a>";
 					if ( $agent_type == 0) {
 						// Show SO icon :)
-						echo "<td class='datos' align='center'><img border=0 src='images/".dame_so_icon($id_os)."' height=18 alt='".dame_so_name($id_os)."'>";
+						echo "<td class='$tdcolor' align='center'><img border=0 src='images/".dame_so_icon($id_os)."' height=18 alt='".dame_so_name($id_os)."'>";
 					} elseif ($agent_type == 1) {
 						// Show network icon (for pandora 1.2)
-						echo "<td class='datos' align='center'><img border=0 src='images/network.gif' height=18 alt='Network Agent'>";
+						echo "<td class='$tdcolor' align='center'><img border=0 src='images/network.gif' height=18 alt='Network Agent'>";
 					}
-					echo "<td class='datos'>".$intervalo;
-					echo '<td class="datos"><img src="images/g_'.$iconindex_g[$id_grupo].'.gif" border="0"> ( '.dame_grupo($id_grupo).' )';
-					echo "<td class='datos'> ".$numero_modulos." <b>/</b> ".$numero_monitor;
+					echo "<td class='$tdcolor'>".$intervalo;
+					echo '<td class="'.$tdcolor.'"><img src="images/g_'.$iconindex_g[$id_grupo].'.gif" border="0"> ( '.dame_grupo($id_grupo).' )';
+					echo "<td class='$tdcolor'> ".$numero_modulos." <b>/</b> ".$numero_monitor;
 					if ($monitor_bad <> 0)
 						echo " <b>/</b> <font class='red'>".$monitor_bad."</font>";
 					if ($agent_down == 1)
-						echo "<td class='datos' align='center'><img src='images/b_down.gif'>";
+						echo "<td class='$tdcolor' align='center'><img src='images/b_down.gif'>";
 					else
 						if ($numero_monitor <> 0)
 							if ($estado_general <> 0)
 								if ($estado_cambio == 0)
-									echo "<td class='datos' align='center'><img src='images/b_red.gif'>";
+									echo "<td class='$tdcolor' align='center'><img src='images/b_red.gif'>";
 								else
-									echo "<td class='datos' align='center'><img src='images/b_yellow.gif'>";
+									echo "<td class='$tdcolor' align='center'><img src='images/b_yellow.gif'>";
 							else
-								echo "<td class='datos' align='center'><img src='images/b_green.gif'>";
+								echo "<td class='$tdcolor' align='center'><img src='images/b_green.gif'>";
 						elseif ($numero_modulos <> 0) 
-							echo "<td class='datos' align='center'><img src='images/b_white.gif'>";
+							echo "<td class='$tdcolor' align='center'><img src='images/b_white.gif'>";
 						else
-							echo "<td class='datos' align='center'><img src='images/b_blue.gif'>";
+							echo "<td class='$tdcolor' align='center'><img src='images/b_blue.gif'>";
 					// checks if an alert was fired recently
-						echo "<td class='datos' align='center'>";
+						echo "<td class='$tdcolor' align='center'>";
 						if (check_alert_fired($id_agente) == 1)
 							echo "<img src='images/dot_red.gif'>";
 						else
 							echo "<img src='images/dot_green.gif'>";
 								
-						echo "<td class='datos'>";
+						echo "<td class='$tdcolor'>";
 						if ($agent_down == 1) // if agent down, red and bold
 							echo "<b><font class='red'>";
 						if ( $ultimo_contacto == "0000-00-00 00:00:00")
 							echo $lang_label["never"];
-						else 
-							echo $ultimo_contacto;
+						else  {
+							$ultima = strtotime($ultimo_contacto);
+							$ahora = strtotime("now");
+							$diferencia = $ahora - $ultima;
+							if ($intervalo > 0){
+								$percentil = round($diferencia/(($intervalo*2) / 100));	
+							} else {
+								echo "N/A";
+							}
+							echo "<a div class='info'><img src='reporting/fgraph.php?tipo=progress&percent=".$percentil."&height=15&width=80' border=0>";
+							echo "<span>$ultimo_contacto</span></div>";			
+							// echo $ultimo_contacto;
+						}
+						
 					} // writing agent data
 			} // Disabled agent
 		}

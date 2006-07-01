@@ -34,17 +34,26 @@ $query1="SELECT * FROM tsesion WHERE (TO_DAYS(fecha) > TO_DAYS(NOW()) -7) AND ID
 
 	$result=mysql_query($query1);
 	$contador = 5; // Max items
+	$color = 1;
 	while (($row=mysql_fetch_array($result)) and ($contador > 0))
 	{
-	$usuario=$row["ID_usuario"];
-		echo '<tr><td class="datos"><b class="f9">'.$usuario."</b>";
-		echo '<td class="datosf9">';
+		if ($color == 1){
+			$tdcolor = "datos";
+			$color = 0;
+		}
+		else {
+			$tdcolor = "datos2";
+			$color = 1;
+		}
+		$usuario=$row["ID_usuario"];
+		echo '<tr><td class="'.$tdcolor.'"><b class="'.$tdcolor.'f9">'.$usuario."</b>";
+		echo '<td class="'.$tdcolor.'f9">';
 		echo $row["accion"];
-		echo '<td class="datosf9">';
+		echo '<td class="'.$tdcolor.'f9">';
 		echo $row["fecha"];
-		echo '<td class="datosf9">';
+		echo '<td class="'.$tdcolor.'f9">';
 		echo $row["IP_origen"];
-		echo '<td class="datosf9">';
+		echo '<td class="'.$tdcolor.'f9">';
 		echo $row["descripcion"];
 		echo '</tr>';
 		$contador--;

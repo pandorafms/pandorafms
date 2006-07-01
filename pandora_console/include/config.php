@@ -9,7 +9,8 @@
 // Base config file
 
 //Pandora Version
-$build_version="PC060627"; //PCddmmyy
+
+$build_version="PC060630"; //PCddmmyy
 $pandora_version="v1.2 Beta 2"; 
 
 // Database configuration
@@ -18,7 +19,9 @@ $dbuser="pandora";	// DB User
 $dbpassword="pandora";	// Password
 $dbhost="localhost";	// MySQL Host
 $dbtype="mysql"; 	// Type of Database, now only "mysql" its supported
-$attachment_store="/var/www/";	//This is directory where placed "attachment" directory, to upload files stores. This MUST be writtable by wwwserver user, and should be in pandora root. Please append "/" to the end :-)
+$attachment_store="/var/www/pandora_console";	//This is directory where placed "attachment" directory, to upload files stores. This MUST be writtable by wwwserver user, and should be in pandora root. Please append "/" to the end :-)
+$config_fontpath = "/usr/share/fonts/truetype/msttcorefonts/arial.ttf";
+
 
 // Read rest of config from DB
 if (! mysql_pconnect($dbhost,$dbuser,$dbpassword)){ //Persistent connection. If you want non-persistent conn change it to mysql_connect()
@@ -44,6 +47,8 @@ while ($row2=mysql_fetch_array($result2)){
 		case "truetype": $config_truetype=$row2["value"];
 						break;
 		case "graph_order": $config_graph_order=$row2["value"];
+						break;
+		case "bgimage": $config_bgimage=$row2["value"];
 						break;
 	}
 }

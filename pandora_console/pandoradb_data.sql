@@ -29,7 +29,7 @@ INSERT INTO `tconfig` VALUES (8,'db_scheme_version','1.1');
 INSERT INTO `tconfig` VALUES (9,'db_scheme_build','PD60126');
 INSERT INTO `tconfig` VALUES (10,'graph_order','1');
 INSERT INTO `tconfig` VALUES (11,'truetype','0');
-
+INSERT INTO `tconfig` VALUES (12,'bgimage','background2.jpg');
 --
 -- Dumping data for table `tconfig_os`
 --

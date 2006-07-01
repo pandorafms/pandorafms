@@ -21,6 +21,7 @@ if (comprueba_login() == 0)
 		$config_step_compact=$_POST["step_compact"];
 		$config_graph_order=$_POST["graph_order"];
 		$config_truetype=$_POST["truetype"];
+		$config_bgimage=$_POST["bgimage"];
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$block_size."' WHERE TOKEN='block_size'");
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$language_code."' WHERE TOKEN='language_code'");
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$days_purge."' WHERE TOKEN='days_purge'");
@@ -29,12 +30,13 @@ if (comprueba_login() == 0)
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config_step_compact."' WHERE TOKEN='step_compact'");
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config_truetype."' WHERE TOKEN='truetype'");
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config_graph_order."' WHERE TOKEN='graph_order'");
+		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config_bgimage."' WHERE token='bgimage'");
 	}	
 	echo "<h2>".$lang_label["setup_screen"]."</h2>";
 	echo "<h3>".$lang_label["general_config"]."<a href='help/".substr($language_code,0,2)."/chap7.php#7' target='_help'><img src='images/help.gif' border='0' class='help'></a></h3>";
 	echo "<form name='setup' method='POST' action='index.php?sec=godmode/setup/setup&update=1'>";
 	echo '<table width="500" cellpadding="3" cellspacing="3">';
-	echo '<tr><td class="lb" rowspan="8" width="5"></td><td class="datos">'.$lang_label["language_code"];
+	echo '<tr><td class="lb" rowspan="9" width="5"></td><td class="datos">'.$lang_label["language_code"];
 	echo '<td class="datos"><select name="language_code" onChange="javascript:this.form.submit();">';
 	
 	$sql="SELECT * FROM tlanguage";
@@ -87,6 +89,22 @@ if (comprueba_login() == 0)
 		echo '<option value="0">'.$lang_label["disabled"].'</option>';
 		echo '<option value="1">'.$lang_label["active"].'</option>';
 	}
+
+	echo '<tr><td class="datos">'.$lang_label["background_image"];
+	echo '<td class="datos">';
+	echo '<select name="bgimage">';
+	if ($config_bgimage!=""){
+		echo '<option>'.$config_bgimage;
+	}
+	
+	$ficheros = list_files('images/backgrounds/', "background",1, 0);
+	$a=0;
+	while ($ficheros[$a]){
+		echo "<option>".$ficheros[$a];
+		$a++;
+	}
+	echo '</select>';
+
 	echo "<tr><td colspan='3'><div class='noraya'></div></td></tr>";
 	echo "<tr><td colspan='3' align='right'>";
 	echo '<input type="submit" class="sub" value="'.$lang_label["update"].'">';

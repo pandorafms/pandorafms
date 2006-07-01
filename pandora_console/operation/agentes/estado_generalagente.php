@@ -58,31 +58,29 @@ if (comprueba_login() == 0) {
 		echo "&nbsp; <a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."'><img src='images/setup.gif' border=0 width=19 class='top' ></a>";
 	// Data base access graph
 
-	echo "<td class='datost' rowspan=4><b>".$lang_label["agent_access_rate"]."</b><br><br>
-	<img src='reporting/fgraph.php?id=".$id_agente."&tipo=agentaccess&periodo=1440' border=0>";
+	echo "<td rowspan=4><b>".$lang_label["agent_access_rate"]."</b><br><br>
+	<img border=1 src='reporting/fgraph.php?id=".$id_agente."&tipo=agentaccess&periodo=1440' border=0>";
 
-	echo '<tr><td class="datos"><b>'.$lang_label["ip_address"].'</b> <td class="datos">'.salida_limpia($direccion_agente);
+	echo '<tr><td class="datos2"><b>'.$lang_label["ip_address"].'</b> <td class="datos2">'.salida_limpia($direccion_agente);
 	if ($agent_type == 0) {
 		echo '<tr><td class="datos"><b>'.$lang_label["os"].'</b> <td class="datos"><img border=0 src="images/'.dame_so_icon($id_os).'"> - '.dame_so_name($id_os);
 	} elseif ($agent_type == 1) {
-		echo '<tr><td class="datos"><b>'.$lang_label["agent_type"].'</b> <td class="datos"><img border=0 src="images/network.gif"';
+		echo '<tr><td class="datos2"><b>'.$lang_label["agent_type"].'</b> <td class="datos2"><img border=0 src="images/network.gif"';
 	}
 	if ($os_version != "") echo ' v'.salida_limpia($os_version);
-	echo '<tr><td class="datos"><b>'.$lang_label["interval"].'</b> <td class="datos">'.$intervalo;
+	echo '<tr><td class="datos2"><b>'.$lang_label["interval"].'</b> <td class="datos2">'.$intervalo;
 	echo '<tr><td class="datos"><b>'.salida_limpia($lang_label["description"]).'</b> <td class="datos">'.$comentarios;	
 
-	echo "<td datost' rowspan=6><b>".$lang_label["agent_module_shareout"]."</b><br><br>";
-	echo "<img src='reporting/fgraph.php?id=".$id_agente."&tipo=agentmodules' border=0>";
+	echo "<td rowspan=6><b>".$lang_label["agent_module_shareout"]."</b><br><br>";
+	echo "<img border=1 src='reporting/fgraph.php?id=".$id_agente."&tipo=agentmodules' border=0>";
 
-	echo '<tr><td class="datos"><b>'.salida_limpia($lang_label["group"]).'</b> <td class="datos"> <img src="images/g_'.$iconindex_g[$row["id_grupo"]].'.gif" border="0"> ( '.dame_grupo($id_grupo).' )';
+	echo '<tr><td class="datos2"><b>'.salida_limpia($lang_label["group"]).'</b> <td class="datos2"> <img src="images/g_'.$iconindex_g[$row["id_grupo"]].'.gif" border="0"> ( '.dame_grupo($id_grupo).' )';
 	if ($agent_type == 0) {	
 		echo '<tr><td class="datos"><b>'.$lang_label["agentversion"].'</b> <td class="datos">'.salida_limpia($agent_version);
 	}	
 
-	
-
-	echo '<tr><td class="datos"><b>'.$lang_label["total_packets"].'</b> <td class="datos">';
-	
+	// Total packets
+	echo '<tr><td class="datos2"><b>'.$lang_label["total_packets"].'</b> <td class="datos2">';
 	$total_paketes= 0;
 	$id_agente = dame_agente_id($nombre_agente);
 	$sql_2='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_agente;
@@ -93,17 +91,32 @@ if (comprueba_login() == 0) {
 		$row3=mysql_fetch_array($result_3);
 		$total_paketes = $total_paketes + $row3[0];	
 	}	
-	
 	echo $total_paketes;
 
+	// Last contact
 	echo '<tr><td class="datos"><b>'.$lang_label["last_contact"]." / ".$lang_label["remote"].'</b> <td class="datosf9">';
 	echo $ultima_act." / ".$ultima_act_remota;
-	echo '<tr><td class="datos"><b>'.$lang_label["default_server"].'</b> <td class="datos">';
-	if ($server == ""){ // default server
-		echo $lang_label["server_asigned"];
+	
+	// Asigned/active server
+	echo '<tr><td class="datos2"><b>'.$lang_label["server_asigned"].'</b> <td class="datos2">';
+	if ($server == ""){ 
+		echo "N/A";
 	} else {
 		echo give_server_name($server);
 	}
+
+	// Next contact
+
+	$ultima = strtotime($ultima_act);
+	$ahora = strtotime("now");
+	$diferencia = $ahora - $ultima;
+	if ($intervalo > 0){
+		$percentil = round($diferencia/(($intervalo*2) / 100));	
+	} else {
+		echo "N/A";
+	}
+	echo '<tr><td class="datos"><b>'.$lang_label["next_contact"].'</b> <td class="datos2">';
+	echo "<img src='reporting/fgraph.php?tipo=progress&percent=".$percentil."&height=20&width=200'>";
 	echo "</td></tr></table>";
 	
 }

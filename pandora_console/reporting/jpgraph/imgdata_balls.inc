@@ -4,49 +4,51 @@
 // Description:	Base64 encoded images for small round markers
 // Created: 	2003-03-20
 // Author:	Johan Persson (johanp@aditus.nu)
-// Ver:		$Id: imgdata_balls.inc 20 2005-05-30 20:34:41Z ljp $
+// Ver:		$Id: imgdata_balls.inc 21 2005-05-30 20:35:34Z ljp $
 //
 // Copyright (c) Aditus Consulting. All rights reserved.
 //========================================================================
 
 class ImgData_Balls extends ImgData {
-    protected $name = 'Round Balls';
-    protected $an = array(MARK_IMG_LBALL => 'imgdata_large',
+    var $name = 'Round Balls';
+    var $an = array(MARK_IMG_LBALL => 'imgdata_large',
 		    MARK_IMG_MBALL => 'imgdata_small',
 		    MARK_IMG_SBALL => 'imgdata_xsmall',
 		    MARK_IMG_BALL => 'imgdata_xsmall');
-    protected $colors,$index,$maxidx;
-    private $colors_1 = array('blue','lightblue','brown','darkgreen',
+    var $colors_1 = array('blue','lightblue','brown','darkgreen',
 			      'green','purple','red','gray','yellow','silver','gray');
-    private $index_1  = array('blue'=>9,'lightblue'=>1,'brown'=>6,'darkgreen'=>7,
+    var $index_1  = array('blue'=>9,'lightblue'=>1,'brown'=>6,'darkgreen'=>7,
 			      'green'=>8,'purple'=>4,'red'=>0,'gray'=>5,'silver'=>3,'yellow'=>2);
-    private $maxidx_1 = 9 ;
+    var $maxidx_1 = 9 ;
 
-    private $colors_2 = array('blue','bluegreen','brown','cyan',
+    var $colors_2 = array('blue','bluegreen','brown','cyan',
 			  'darkgray','greengray','gray','green',
 			  'greenblue','lightblue','lightred',
 			  'purple','red','white','yellow');
 			  
 	
-    private $index_2 =  array('blue'=>9,'bluegreen'=>13,'brown'=>8,'cyan'=>12,
+    var $index_2 =  array('blue'=>9,'bluegreen'=>13,'brown'=>8,'cyan'=>12,
 			  'darkgray'=>5,'greengray'=>6,'gray'=>2,'green'=>10,
 			  'greenblue'=>3,'lightblue'=>1,'lightred'=>14,
 			  'purple'=>7,'red'=>0,'white'=>11,'yellow'=>4);
 			
-    private $maxidx_2 = 14 ;
+    var $maxidx_2 = 14 ;
 
 
-    private $colors_3 = array('bluegreen','cyan','darkgray','greengray',
+    var $colors_3 = array('bluegreen','cyan','darkgray','greengray',
 			  'gray','graypurple','green','greenblue','lightblue',
 			  'lightred','navy','orange','purple','red','yellow');
 	
-    private $index_3 = array('bluegreen'=>1,'cyan'=>11,'darkgray'=>14,'greengray'=>10,
+    var $index_3 = array('bluegreen'=>1,'cyan'=>11,'darkgray'=>14,'greengray'=>10,
 			 'gray'=>3,'graypurple'=>4,'green'=>9,'greenblue'=>7,
 			 'lightblue'=>13,'lightred'=>0,'navy'=>2,'orange'=>12,
 			 'purple'=>8,'red'=>5,'yellow'=>6);
-    private $maxidx_3 = 14 ;
+    var $maxidx_3 = 14 ;
 
-    protected $imgdata_large, $imgdata_small, $imgdata_xsmall ;
+    var $colors,$index,$maxidx;
+    var $imgdata_large ;
+    var $imgdata_small ;
+    var $imgdata_xsmall ;
 
 
     function GetImg($aMark,$aIdx) {

@@ -340,6 +340,42 @@ function no_permission () {
 	exit;
 }
 
+function list_files($directory, $stringSearch, $searchHandler, $outputHandler) {
+ 	$errorHandler = false;
+ 	$result = array();
+ 	if (! $directoryHandler = @opendir ($directory)) {
+  		echo ("<pre>\nerror: directory \"$directory\" doesn't exist!\n</pre>\n");
+ 		return $errorHandler = true;
+ 	}
+ 	if ($searchHandler == 0) {
+		while (false !== ($fileName = @readdir ($directoryHandler))) {
+			@array_push ($result, $fileName);
+		}
+ 	}
+ 	if ($searchHandler == 1) {
+  		while(false !== ($fileName = @readdir ($directoryHandler))) {
+   			if(@substr_count ($fileName, $stringSearch) > 0) {
+   				@array_push ($result, $fileName);
+   			}
+  		}
+ 	}
+ 	if (($errorHandler == true) &&  (@count ($result) === 0)) {
+  		echo ("<pre>\nerror: no filetype \"$fileExtension\" found!\n</pre>\n");
+ 	}
+ 	else {
+  		sort ($result);
+  		if ($outputHandler == 0) {
+   			return $result;
+  		}
+  		if ($outputHandler == 1) {
+  	 		echo ("<pre>\n");
+   			print_r ($result);
+   			echo ("</pre>\n");
+  		}
+ 	}
+}
+
+
 function pagination ($count, $url, $offset ) {
 	require ("config.php");
 	require ("include/languages/language_".$language_code.".php");

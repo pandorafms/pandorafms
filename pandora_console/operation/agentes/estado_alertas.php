@@ -18,20 +18,28 @@ if (comprueba_login() == 0) {
 			echo "<h3>".$lang_label["alert_listing"]."<a href='help/".substr($language_code,0,2)."/chap3.php#3324' target='_help'><img src='images/help.gif' border='0' class='help'></a></h3>";
 			echo "<table cellpadding='3' cellspacing='3' width=750 border=0>";
 			echo "<tr><th>".$lang_label["type"]."<th>".$lang_label["name"]."</th><th>".$lang_label["description"]."</th><th>".$lang_label["min_max"]."</th><th>".$lang_label["time_threshold"]."</th><th>".$lang_label["last_fired"]."</th><th>".$lang_label["times_fired"]."</th><th>".$lang_label["status"]."</th>";
-	
+			$color=0;
 			while ($data=mysql_fetch_array($result_gen)){
+				if ($color == 1){
+					$tdcolor = "datos";
+					$color = 0;
+				}
+				else {
+					$tdcolor = "datos2";
+					$color = 1;
+				}
 				echo "<tr>";
-				echo "<td class='datos'>".dame_nombre_alerta($data["id_alerta"]);
-				echo "<td class='datos'>".$data["nombre"];
-				echo "<td class='datos'>".$data["descripcion"];
-				echo "<td class='datos'>".$data["dis_max"]."/".$data["dis_min"];
-				echo "<td class='datos'>".$data["time_threshold"];
-				echo "<td class='f9'>".$data["last_fired"];
-				echo "<td class='datos'>".$data["times_fired"];
+				echo "<td class='".$tdcolor."'>".dame_nombre_alerta($data["id_alerta"]);
+				echo "<td class='".$tdcolor."'>".$data["nombre"];
+				echo "<td class='".$tdcolor."'>".$data["descripcion"];
+				echo "<td class='".$tdcolor."'>".$data["dis_max"]."/".$data["dis_min"];
+				echo "<td class='".$tdcolor."'>".$data["time_threshold"];
+				echo "<td class='".$tdcolor."f9'>".$data["last_fired"];
+				echo "<td class='".$tdcolor."'>".$data["times_fired"];
 				if ($data["times_fired"] <> 0)
-					echo "<td class='datos' align='center'><img src='images/dot_red.gif'>";
+					echo "<td class='".$tdcolor."' align='center'><img src='images/dot_red.gif'>";
 				else
-					echo "<td class='datos' align='center'><img src='images/dot_green.gif'>";
+					echo "<td class='".$tdcolor."' align='center'><img src='images/dot_green.gif'>";
 			}
 			echo '<tr><td colspan="9"><div class="raya"></div></td></tr></table>';
 		}
@@ -98,6 +106,7 @@ if (comprueba_login() == 0) {
 			echo "<br>";
 			echo "<table cellpadding='3' cellspacing='3'>";
 			echo "<tr><th>ID</th><th>".$lang_label["type"]."</th><th>".$lang_label["description"]."</th><th>".$lang_label["last_fired"]."</th><th>".$lang_label["times_fired"]."</th><th>".$lang_label["status"]."</th>";
+			$color=1;
 			while ($row=mysql_fetch_array($result)){ //while there are agents
 				if ($row["disabled"] == 0) {
 					$id_agente = $row['id_agente'];
@@ -106,15 +115,23 @@ if (comprueba_login() == 0) {
 					$result_gen=mysql_query($query_gen);
 					if (mysql_num_rows ($result_gen)) {
 						while ($data=mysql_fetch_array($result_gen)){
-							echo "<tr><td class='datos'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'><b>".$nombre_agente."</b>";
-							echo "<td class='datos'>".dame_nombre_alerta($data["id_alerta"]);
-							echo "<td class='datos'>".$data["descripcion"];
-							echo "<td class='datos'>".$data["last_fired"];
-							echo "<td class='datos'>".$data["times_fired"];
+							if ($color == 1){
+								$tdcolor = "datos";
+								$color = 0;
+							}
+							else {
+								$tdcolor = "datos2";
+								$color = 1;
+							}
+							echo "<tr><td class='".$tdcolor."'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'><b>".$nombre_agente."</b>";
+							echo "<td class='".$tdcolor."'>".dame_nombre_alerta($data["id_alerta"]);
+							echo "<td class='".$tdcolor."'>".$data["descripcion"];
+							echo "<td class='".$tdcolor."'>".$data["last_fired"];
+							echo "<td class='".$tdcolor."'>".$data["times_fired"];
 							if ($data["times_fired"] <> 0)
-								echo "<td class='datos' align='center'><img src='images/dot_red.gif'>";
+								echo "<td class='".$tdcolor."' align='center'><img src='images/dot_red.gif'>";
 							else
-								echo "<td class='datos' align='center'><img src='images/dot_green.gif'>";
+								echo "<td class='".$tdcolor."' align='center'><img src='images/dot_green.gif'>";
 						}
 					} //end result
 				} //end disabled=0

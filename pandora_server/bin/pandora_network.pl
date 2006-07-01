@@ -103,7 +103,7 @@ sub pandora_network_subsystem {
 	my $query_sql; my $query_sql2; my $query_sql3;
 	my $exec_sql; my $exec_sql2;  my $exec_sql3;
 	my $buffer;
-
+	my $opmode = 1; # network server code for pandora_updateserver function
 	while ( 1 ) {
 		logger ($pa_config,"Loop in Network Module Subsystem",10);
 		# For each element
@@ -115,14 +115,15 @@ sub pandora_network_subsystem {
 		# siguiente elemento
 		# Calculate ID Agent from a select where module_type (id_tipo_modulo) > 4 (network modules)
 		# Check for MASTER SERVERS only: check another agents if their servers are gone
-		$server_id = dame_server_id($pa_config, $pa_config->{'servername'}, $dbh);
+
+		$server_id = dame_server_id($pa_config, $pa_config->{'servername'}."_Net", $dbh);
 		$buffer = "";		
 		if ($pa_config->{"pandora_master"} == 1){ 
 			my $id_server;
 			# I am the master, we need to check another agents
 			# if their server is down
 			# So look for servers down and keep their id_server
-			$query_sql2 = "select * from tagente where disabled = 0 and id_server != $server_id ";
+			$query_sql2 = "select * from tagente where disabled = 0 and id_server != $server_id";
 			$exec_sql2 = $dbh->prepare($query_sql2);
 			$exec_sql2 ->execute;
 			while (@sql_data2 = $exec_sql2->fetchrow_array()) {
@@ -133,7 +134,7 @@ sub pandora_network_subsystem {
 					# I'm the master server, and there is an agent
 					# with its agent down, so ADD to list
 					$buffer = $buffer." OR id_agente = $id_agente ";
-					logger ($pa_config, "Added id_agente $id_agente for Master Network Server ".$pa_config->{"servername"}." agent pool",5);
+					logger ($pa_config, "Added id_agente $id_agente for Master Network Server ".$pa_config->{"servername"}."_Net"." agent pool",5);
 				}
 			}
 			$exec_sql2->finish();
@@ -215,8 +216,8 @@ sub pandora_network_subsystem {
 			$exec_sql->finish();
 		}	
 		$exec_sql2->finish();
-		pandora_serverkeepaliver($pa_config,$dbh);
-	sleep($pa_config->{"server_threshold"});
+		pandora_serverkeepaliver($pa_config,$opmode,$dbh);
+		sleep($pa_config->{"server_threshold"});
 	}
 	$dbh->disconnect();
 }

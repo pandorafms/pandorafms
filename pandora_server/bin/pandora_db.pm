@@ -3,7 +3,7 @@ package pandora_db;
 # Pandora Database Package
 ##################################################################################
 # Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L
+# Copyright (c) 2005-2006 Artica Soluciones Tecnolï¿½icas S.L
 #
 #This program is free software; you can redistribute it and/or
 #modify it under the terms of the GNU General Public License
@@ -537,6 +537,7 @@ sub module_generic_data (%$$$$$) {
 	
 	if (ref($m_data) ne "HASH"){
 		if ($m_data =~ /[0-9]*/){
+			$m_data =~ s/\,/\./g; # replace "," by "."
 			$m_data = sprintf("%.2f", $m_data);	# Two decimal float. We cannot store more
 		} else {
 			$m_data =0;
@@ -584,8 +585,9 @@ sub module_generic_data_inc (%$$$$$) {
     	my $a_min = $datos->{min}->[0];
 
 	if (ref($m_data) ne "HASH"){
+		$m_data =~ s/\,/\./g; # replace "," by "."
 		$m_data = sprintf("%.2f", $m_data);	# Two decimal float. We cannot store more
-						# to change this, you need to change mysql structure
+							# to change this, you need to change mysql structure
 		$m_data =~ s/\,/\./g; # replace "," by "."
 	
 		if (ref($a_max) eq "HASH") {
@@ -845,43 +847,31 @@ fin_DB_insert_datos:
 ##################################################################################
 sub pandora_serverkeepaliver (%$) {
         my $pa_config= $_[0];
-	my $dbh = $_[1];
+	my $opmode = $_[1]; # 0 dataserver, 1 network server, 2 snmp console
+	my $dbh = $_[2];
+	my $pandorasuffix;
+	my @data;
 
 	if ($pa_config->{"keepalive"} <= 0){
 		my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
-		my $temp = 300; # Update each 2,5 minutes, down if 5minutes unknown
+		my $temp = $pa_config->{"keepalive_orig"} * 2; # Down if keepalive x 2 seconds unknown
 		my $fecha_limite = DateCalc($timestamp,"- $temp seconds",\$err);
-		$fecha_limite = &UnixDate($fecha_limite,"%Y-%m-%d %H:%M:%S");	
-		
+		$fecha_limite = &UnixDate($fecha_limite,"%Y-%m-%d %H:%M:%S");		
 		# Look updated servers and take down non updated servers
 		my $query_idag = "select * from tserver where keepalive < '$fecha_limite'";
 		my $s_idag = $dbh->prepare($query_idag);
 		$s_idag ->execute;
-		my @data;
-		# If exists a defined alert for this module then continue
 		if ($s_idag->rows != 0) {
-			@data = $s_idag->fetchrow_array(); 
-			# Update server data
-			my $sql_update = "update tserver set status = 0 where id_server = $data[0]";
-			$dbh->do($sql_update);
+			while (@data = $s_idag->fetchrow_array()){		
+				# Update server data
+				my $sql_update = "update tserver set status = 0 where id_server = $data[0]";
+				$dbh->do($sql_update);
+			}
 		}
 		$s_idag->finish();
-	
-	
 		# Update my server
-		my $id_server = dame_server_id($pa_config, $pa_config->{'servername'}, $dbh);
-		if ($id_server == -1){ 
-			# Must create a server entry
-			my $sql_server = "insert into tserver (name,description) values ('$servername','Autocreated at startup')";
-			$dbh->do($sql_server);
-			$id_server = dame_server_id($pa_config, $pa_config->{'servername'}, $dbh);
-		}
-		
-		# Update server data
-		my $sql_update = "update tserver set status = 1, keepalive = '$timestamp', snmp_server = $pa_config->{snmpconsole}, network_server = $pa_config->{'networkserver'}, data_server = $pa_config->{'dataserver'}, master = $pa_config->{'pandora_master'}, checksum = $pa_config->{'pandora_check'} where id_server = $id_server";
-		$dbh->do($sql_update);
-		
-		$pa_config->{"keepalive"}=200;
+		pandora_updateserver ($pa_config,$pa_config->{'servername'},1,$opmode, $dbh);	
+		$pa_config->{"keepalive"}=$pa_config->{"keepalive_orig"};
 	}
 	$pa_config->{"keepalive"}=$pa_config->{"keepalive"}-$pa_config->{"server_threshold"};
 }
@@ -895,19 +885,34 @@ sub pandora_updateserver (%$$$) {
         my $pa_config= $_[0];
 	my $servername = $_[1];
 	my $status = $_[2];
-	my $dbh = $_[3];
-	
-	my $id_server = dame_server_id($pa_config, $pa_config->{'servername'}, $dbh);
+	my $opmode = $_[3]; # 0 dataserver, 1 network server, 2 snmp console
+	my $dbh = $_[4];
+	my $sql_update;
+
+	my $pandorasuffix;
+	if ($opmode == 0){
+		$pandorasuffix = "_Data";
+	} elsif ($opmode == 1){
+		$pandorasuffix = "_Net";
+	} else {
+		$pandorasuffix = "_SNMP";
+	}
+	my $id_server = dame_server_id($pa_config, $servername.$pandorasuffix, $dbh);
 	if ($id_server == -1){ 
 		# Must create a server entry
-		my $sql_server = "insert into tserver (name,description) values ('$servername','Autocreated at startup')";
+		my $sql_server = "insert into tserver (name,description) values ('$servername".$pandorasuffix."','Autocreated at startup')";
 		$dbh->do($sql_server);
-		$id_server = dame_server_id($pa_config, $pa_config->{'servername'}, $dbh);
+		$id_server = dame_server_id($pa_config, $pa_config->{'servername'}.$pandorasuffix, $dbh);
 	}
-	
 	# Update server data
         my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
-	my $sql_update = "update tserver set status = 1, laststart = '$timestamp', keepalive = '$timestamp', snmp_server = $pa_config->{snmpconsole}, network_server = $pa_config->{'networkserver'}, data_server = $pa_config->{'dataserver'}, master = $pa_config->{'pandora_master'}, checksum = $pa_config->{'pandora_check'} where id_server = $id_server";
+	if ($opmode == 0){
+		$sql_update = "update tserver set status = 1, laststart = '$timestamp', keepalive = '$timestamp', snmp_server = 0, network_server = 0, data_server = 1, master = $pa_config->{'pandora_master'}, checksum = $pa_config->{'pandora_check'} where id_server = $id_server";
+	} elsif ($opmode == 1){
+		$sql_update = "update tserver set status = 1, laststart = '$timestamp', keepalive = '$timestamp', snmp_server = 0, network_server = 1, data_server = 0, master = $pa_config->{'pandora_master'}, checksum = 0 where id_server = $id_server";
+	} else {
+		$sql_update = "update tserver set status = 1, laststart = '$timestamp', keepalive = '$timestamp', snmp_server = 1, network_server = 0, data_server = 0, master = $pa_config->{'pandora_master'}, checksum = 0 where id_server = $id_server";
+	}
 	$dbh->do($sql_update);
 }
 

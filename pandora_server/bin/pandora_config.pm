@@ -3,7 +3,7 @@ package pandora_config;
 # Pandora Config package
 ##################################################################################
 # Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L
+# Copyright (c) 2005-2006 Artica Soluciones Tecnolï¿½icas S.L
 #
 #This program is free software; you can redistribute it and/or
 #modify it under the terms of the GNU General Public License
@@ -136,8 +136,8 @@ sub pandora_loadconfig {
 	$pa_config->{"networkserver"}=0;
 	$pa_config->{"dataserver"}=0;
 	$pa_config->{"network_threads"}=10; # Fixed default
-	$pa_config->{"keepalive"}=200; # 200 Seconds initially for server keepalive
-
+	$pa_config->{"keepalive"}=60; # 200 Seconds initially for server keepalive
+	$pa_config->{"keepalive_orig"}=$pa_config->{"keepalive"};
 	# Check for UID0
 	if ($> == 0){
 		printf " [W] It is not a good idea running Pandora Server as root user, please DON'T DO IT!\n";
@@ -190,8 +190,13 @@ sub pandora_loadconfig {
   		elsif ($parametro =~ m/^server_threshold\s([0-9]*)/i) { $pa_config->{"server_threshold"}  = $1; } 
 		elsif ($parametro =~ m/^alert_threshold\s([0-9]*)/i) { $pa_config->{"alert_threshold"} = $1; } 
 		elsif ($parametro =~ m/^network_timeout\s([0-9]*)/i) { $pa_config->{'networktimeout'}= $1; }
+		elsif ($parametro =~ m/^server_keepalive\s([0-9]*)/i) { $pa_config->{"keepalive"} = $1; $pa_config->{"keepalive_orig"} = $1; }
  	}
- 
+	if ( $pa_config->{"verbosity"} > 0){ 
+		print " [*] Server keepalive ".$pa_config->{"keepalive"}."\n";
+		print " [*] Server threshold ".$pa_config->{"server_threshold"}."\n";
+	}
+
  	# Check for valid token token values
  	if (( $pa_config->{"dbuser"} eq "" ) || ( $pa_config->{"basepath"} eq "" ) || ( $pa_config->{"incomingdir"} eq "" ) || ( $pa_config->{"logfile"} eq "" ) || ( $pa_config->{"dbhost"} eq "")  || ( $pa_config->{"pandora_master"} eq "") || ( $pa_config->{"dbpass"} eq "" ) ) {
 		print "[ERROR] Bad Config values. Be sure that $archivo_cfg is a valid setup file. \n\n";
@@ -231,15 +236,13 @@ sub pandora_loadconfig {
 	if ($pa_config->{"daemon"} == 1) {
 		print " [*] This server is running in DAEMON mode.\n";
 	}
-	# Abrimos el directorio de datos y leemos cada fichero
 	logger ($pa_config, "Launching $parametro $pa_config->{'version'} $pa_config->{'build'}", 0);
 	my $config_options = "Logfile at ".$pa_config->{"logfile"}.", Basepath is ".$pa_config->{"basepath"}.", Checksum is ".$pa_config->{"pandora_check"}.", Master is ".$pa_config->{"pandora_master"}.", SNMP Console is ".$pa_config->{"snmpconsole"}.", Server Threshold at ".$pa_config->{"server_threshold"}." sec, verbosity at ".$pa_config->{"verbosity"}.", Alert Threshold at $pa_config->{'alert_threshold'}";
 	logger ($pa_config, "Config options: $config_options");
-	
 	# Check valid Database variables and update server status
 	eval {
 		my $dbh = DBI->connect("DBI:mysql:pandora:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
-		pandora_updateserver ($pa_config, $pa_config->{'servername'},1, $dbh); # Alive status
+		pandora_updateserver ($pa_config, $pa_config->{'servername'},1, $opmode, $dbh); # Alive status
 	};
 	if ($@) {
 

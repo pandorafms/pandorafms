@@ -467,7 +467,8 @@ if (give_acl($id_user, 0, "AW")==1) {
 		$modulo_min = "";// Pandora 1.2 new module data:
 		$tcp_send = "";$tcp_rcv = "";$tcp_port = "";$ip_target = "";
 		$snmp_oid = "";$snmp_community = "";$id_module_group = "";
-		$module_interval = "";
+		$module_interval = ""; $modulo_nombre = ""; $modulo_descripcion = "";
+		$update_module = 0;
 	}
 	// =========================================================
 	// OID Refresh button to get SNMPWALK from data in form

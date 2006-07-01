@@ -4,21 +4,21 @@
 // Description:	Base64 encoded images for stars
 // Created: 	2003-03-20
 // Author:	Johan Persson (johanp@aditus.nu)
-// Ver:		$Id: imgdata_stars.inc 20 2005-05-30 20:34:41Z ljp $
+// Ver:		$Id: imgdata_stars.inc 21 2005-05-30 20:35:34Z ljp $
 //
 // Copyright (c) Aditus Consulting. All rights reserved.
 //========================================================================
 
 
 class ImgData_Stars extends ImgData {
-    protected $name = 'Stars';
-    protected $an = array(MARK_IMG_STAR => 'imgdata');
+    var $name = 'Stars';
+    var $an = array(MARK_IMG_STAR => 'imgdata');
 
-    protected $colors = array('bluegreen','lightblue','purple','blue','green','pink','red','yellow');
-    protected $index  = array('bluegreen'=>3,'lightblue'=>4,'purple'=>1, 
+    var $colors = array('bluegreen','lightblue','purple','blue','green','pink','red','yellow');
+    var $index  = array('bluegreen'=>3,'lightblue'=>4,'purple'=>1, 
 			'blue'=>5,'green'=>0,'pink'=>7,'red'=>2,'yellow'=>6);
-    protected $maxidx = 7 ;
-    protected $imgdata ;
+    var $maxidx = 7 ;
+    var $imgdata ;
 
     function ImgData_Stars() {
 //==========================================================

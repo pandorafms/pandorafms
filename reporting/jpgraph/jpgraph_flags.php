@@ -4,7 +4,7 @@
 // Description:	Class Jpfile. Handles plotmarks
 // Created: 	2003-06-28
 // Author:	Johan Persson (johanp@aditus.nu)
-// Ver:		$Id: jpgraph_flags.php 472 2006-02-04 12:13:48Z ljp $
+// Ver:		$Id: jpgraph_flags.php 21 2005-05-30 20:35:34Z ljp $
 //
 // Copyright (c) Aditus Consulting. All rights reserved.
 //========================================================================
@@ -19,7 +19,7 @@ DEFINE('FLAGSIZE4',4);
 
 class FlagImages {
 
-    private $iCountryNameMap = array(
+    var $iCountryNameMap = array(
     'Afghanistan' => 'afgh',
     'Republic of Angola' => 'agla',
     'Republic of Albania' => 'alba',
@@ -188,7 +188,6 @@ class FlagImages {
     'Republic of Palau' => 'pala',
     'Independent State of Papua New Guinea' => 'pang',
     'Republic of Paraguay' => 'para',
-    'Republic of Peru' => 'peru',
     'Republic of the Philippines' => 'phil',
     'British Overseas Territory of the Pitcairn Islands' => 'piis',
     'Republic of Poland' => 'pola',
@@ -254,16 +253,16 @@ class FlagImages {
     'Republic of Zimbabwe' => 'zbwe' ) ;
 
 
-    private $iFlagCount = -1;
-    private $iFlagSetMap = array(
+    var $iFlagCount = -1;
+    var $iFlagSetMap = array(
 	FLAGSIZE1 => 'flags_thumb35x35',
 	FLAGSIZE2 => 'flags_thumb60x60',
 	FLAGSIZE3 => 'flags_thumb100x100',
 	FLAGSIZE4 => 'flags'
 	);
 
-    private $iFlagData ;
-    private $iOrdIdx=array();
+    var $iFlagData ;
+    var $iOrdIdx=array();
 
     function FlagImages($aSize=FLAGSIZE1) {
 	switch($aSize) {
@@ -277,8 +276,8 @@ class FlagImages {
 		$this->iFlagData = unserialize($rawdata);
 	    break;
 	    default:
-		JpGraphError::RaiseL(5001,$aSize);
-//('Unknown flag size. ('.$aSize.')');
+		JpGraphError::Raise('Unknown flag size. ('.$aSize.')');
+		die();
 	}
 	$this->iFlagCount = count($this->iCountryNameMap);
     }
@@ -298,8 +297,7 @@ class FlagImages {
 	    return Image::CreateFromString($d);   
 	}
 	else {
-	    JpGraphError::RaiseL(5002,$aIdx);
-//("Flag index \" $aIdx\" does not exist.");
+	    JpGraphError::Raise("Flag index \" $aIdx\" does not exist.");
 	}
     }
 
@@ -324,8 +322,7 @@ class FlagImages {
 	    return $tmp[0];
 	}
 	else {
-	    JpGraphError::RaiseL(5003,$aOrd);
-//('Invalid ordinal number specified for flag index.');
+	    JpGraphError::Raise('Invalid ordinal number specified for flag index.');
 	}
     }
 
@@ -362,8 +359,7 @@ class FlagImages {
 	    return $val;   
 	}
 	else { 
-	    JpGraphError::RaiseL(5004,$aName);
-//("The (partial) country name \"$aName\" does not have a cooresponding flag image. The flag may still exist but under another name, e.g. insted of \"usa\" try \"united states\".");
+	    JpGraphError::Raise("The (partial) country name \"$aName\" does not have a cooresponding flag image. The flag may still exist but under another name, e.g. insted of \"usa\" try \"united states\".");
 	}
     }
 }

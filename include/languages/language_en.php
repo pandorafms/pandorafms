@@ -2,7 +2,7 @@
 // Pandora - the Free monitoring system
 // ====================================
 // Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L, info@artica.es
+// Copyright (c) 2005-2006 Artica Soluciones Tecnolï¿½icas S.L, info@artica.es
 // Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -642,12 +642,15 @@ $lang_label["truetype"]="Truetype fonts";
 $lang_label["right_left"]="Right to Left";
 $lang_label["left_right"]="Left to Right";
 
-// 29 May 06 (New in Beta2)
+// 29 May 06 (New for Beta2)
 
 $lang_label["cannot_read_snmp"]="Cannot read from SNMP source";
 $lang_label["ok_read_snmp"]="SNMP source has been scanned";
 $lang_label["cancel"]="Cancel";
 $lang_label["network_module_refresh_exec"]="Network module refresh executed";
+$lang_label["next_contact"]="Next agent contact";
+$lang_label["out_of_limits"]="Out of limits";
+$lang_label["background_image"]="Background image";
 
 global $lang_label; 
 global $help_label;

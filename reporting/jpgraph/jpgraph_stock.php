@@ -4,7 +4,7 @@
 // Description:	Stock plot extension for JpGraph
 // Created: 	2003-01-27
 // Author:	Johan Persson (johanp@aditus.nu)
-// Ver:		$Id: jpgraph_stock.php 494 2006-02-04 12:31:05Z ljp $
+// Ver:		$Id: jpgraph_stock.php 41 2005-06-06 10:46:10Z ljp $
 //
 // Copyright (c) Aditus Consulting. All rights reserved.
 //========================================================================
@@ -14,16 +14,15 @@
 // CLASS StockPlot
 //===================================================
 class StockPlot extends Plot {
-    protected $iTupleSize = 4;
-    private $iWidth=9;
-    private $iEndLines=1;
-    private $iStockColor1='white',$iStockColor2='darkred',$iStockColor3='darkred';
+    var $iTupleSize = 4;
+    var $iWidth=9;
+    var $iEndLines=1;
+    var $iStockColor1='white',$iStockColor2='darkred',$iStockColor3='darkred';
 //---------------
 // CONSTRUCTOR
-    function StockPlot($datay,$datax=false) {
+    function StockPlot(&$datay,$datax=false) {
 	if( count($datay) % $this->iTupleSize ) {
-	    JpGraphError::RaiseL(21001,$this->iTupleSize);
-//('Data values for Stock charts must contain an even multiple of '.$this->iTupleSize.' data points.');
+	    JpGraphError::Raise('Data values for Stock charts must contain an even multiple of '.$this->iTupleSize.' data points.');
 	}
 	$this->Plot($datay,$datax);
 	$this->numpoints /= $this->iTupleSize;
@@ -48,7 +47,7 @@ class StockPlot extends Plot {
     }
 
     // Gets called before any axis are stroked
-    function PreStrokeAdjust($graph) {
+    function PreStrokeAdjust(&$graph) {
 	if( $this->center ) {
 	    $a=0.5; $b=0.5;
 	    $this->numpoints++;
@@ -65,8 +64,7 @@ class StockPlot extends Plot {
 	if( $this->center ) $n--;
 	if( isset($this->coords[1]) ) {
 	    if( count($this->coords[1])!=$n )
-		JpGraphError::RaiseL(2003,count($this->coords[1]),$numpoints);
-//("Number of X and Y points are not equal. Number of X-points:".count($this->coords[1])." Number of Y-points:$numpoints");
+		JpGraphError::Raise("Number of X and Y points are not equal. Number of X-points:".count($this->coords[1])." Number of Y-points:$numpoints");
 	    else
 		$exist_x = true;
 	}
@@ -158,7 +156,7 @@ class StockPlot extends Plot {
 // CLASS BoxPlot
 //===================================================
 class BoxPlot extends StockPlot {
-    private $iPColor='black',$iNColor='white';
+    var $iPColor='black',$iNColor='white';
     function BoxPlot($datay,$datax=false) {
 	$this->iTupleSize=5;
 	parent::StockPlot($datay,$datax);

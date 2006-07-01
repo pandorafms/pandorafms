@@ -4,7 +4,7 @@
 // Description: Regression and statistical analysis helper classes
 // Created: 	2002-12-01
 // Author:	Johan Persson (johanp@aditus.nu)
-// Ver:		$Id: jpgraph_regstat.php 614 2006-04-19 19:36:32Z ljp $
+// Ver:		$Id: jpgraph_regstat.php 327 2005-12-10 08:24:50Z ljp $
 //
 // Copyright (c) Aditus Consulting. All rights reserved.
 //========================================================================
@@ -18,9 +18,9 @@
 class Spline {
     // 3:rd degree polynom approximation
 
-    private $xdata,$ydata;   // Data vectors
-    private $y2;		 // 2:nd derivate of ydata	
-    private $n=0;
+    var $xdata,$ydata;   // Data vectors
+    var $y2;		 // 2:nd derivate of ydata	
+    var $n=0;
 
     function Spline($xdata,$ydata) {
 	$this->y2 = array();
@@ -29,10 +29,6 @@ class Spline {
 
 	$n = count($ydata);
 	$this->n = $n;
-	if( $this->n !== count($xdata) ) {
-	    JpGraphError::RaiseL(19001);
-//('Spline: Number of X and Y coordinates must be the same');
-	}
 
 	// Natural spline 2:derivate == 0 at endpoints
 	$this->y2[0]    = 0.0;
@@ -43,8 +39,7 @@ class Spline {
 	for($i=1; $i < $n-1; ++$i) {
 	    $d = ($xdata[$i+1]-$xdata[$i-1]);
 	    if( $d == 0  ) {
-		JpGraphError::RaiseL(19002);
-//('Invalid input data for spline. Two or more consecutive input X-values are equal. Each input X-value must differ since from a mathematical point of view it must be a one-to-one mapping, i.e. each X-value must correspond to exactly one Y-value.');
+		JpGraphError::Raise('Invalid input data for spline. Two or more consecutive input X-values are equal. Each input X-value must differ since from a mathematical point of view it must be a one-to-one mapping, i.e. each X-value must correspond to exactly one Y-value.');
 	    }
 	    $s = ($xdata[$i]-$xdata[$i-1])/$d;
 	    $p = $s*$this->y2[$i-1]+2.0;
@@ -94,8 +89,7 @@ class Spline {
 	$h = $this->xdata[$max]-$this->xdata[$min];
 
 	if( $h == 0  ) {
-	    JpGraphError::RaiseL(19002);
-//('Invalid input data for spline. Two or more consecutive input X-values are equal. Each input X-value must differ since from a mathematical point of view it must be a one-to-one mapping, i.e. each X-value must correspond to exactly one Y-value.');
+	    JpGraphError::Raise('Invalid input data for spline. Two or more consecutive input X-values are equal. Each input X-value must differ since from a mathematical point of view it must be a one-to-one mapping, i.e. each X-value must correspond to exactly one Y-value.');
 	}
 
 
@@ -118,30 +112,22 @@ class Bezier {
  * computed from control points data sets, based on Paul Bourke algorithm :
  * http://astronomy.swin.edu.au/~pbourke/curves/bezier/
  */
-    private $datax = array();
-    private $datay = array();
-    private $n=0;
+    var $datax = array();
+    var $datay = array();
  
     function Bezier($datax, $datay, $attraction_factor = 1) {
-	// Adding control point multiple time will raise their attraction power over the curve
-	$this->n = count($datax);
-	if( $this->n !== count($datay) ) {
-	    JpGraphError::RaiseL(19003);
-//('Bezier: Number of X and Y coordinates must be the same');
-	}
-	$idx=0;
+	// Adding control point multiple time will raise their attraction power over the curve   
 	foreach($datax as $datumx) {
 	    for ($i = 0; $i < $attraction_factor; $i++) {
-		$this->datax[$idx++] = $datumx;
+		$this->datax[] = $datumx;
 	    }
 	}
-   	$idx=0;
+   
 	foreach($datay as $datumy) {
 	    for ($i = 0; $i < $attraction_factor; $i++) {
-		$this->datay[$idx++] = $datumy;
+		$this->datay[] = $datumy;
 	    }
 	}
-	$this->n *= $attraction_factor;
     }
 
     function Get($steps) {
@@ -160,7 +146,7 @@ class Bezier {
     }
  
     function GetPoint($mu) {
-	$n = $this->n - 1;
+	$n = count($this->datax)-1;
 	$k = 0;
 	$kn = 0;
 	$nn = 0;

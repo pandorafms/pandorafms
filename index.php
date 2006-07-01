@@ -2,7 +2,7 @@
 // Pandora - the Free monitoring system
 // ====================================
 // Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L, info@artica.es
+// Copyright (c) 2005-2006 Artica Soluciones Tecnolï¿½icas S.L, info@artica.es
 // Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -54,7 +54,8 @@ if (isset ($_GET["refr"])){
 </head>
 <body>
 <?php
-
+	// Show custom background
+	echo "<body background='images/backgrounds/$config_bgimage'>";
 	$REMOTE_ADDR = getenv("REMOTE_ADDR");
    	global $REMOTE_ADDR;
  

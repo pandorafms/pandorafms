@@ -2,7 +2,7 @@
 // Pandora - the Free monitoring system
 // ====================================
 // Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L, info@artica.es
+// Copyright (c) 2005-2006 Artica Soluciones Tecnolï¿½icas S.L, info@artica.es
 // Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -73,6 +73,8 @@ if (comprueba_login() == 0)
 							$b=-1;
 					else
 							$b=0;
+
+					// Module read
 					if ($modulos ==1){
 				 		for ($b=$b; $b < count($origen_modulo); $b++){
 							if ($multiple == 0)	
@@ -88,17 +90,33 @@ if (comprueba_login() == 0)
 								
 								// Read every module in source agent				
 								$o_descripcion = $row["descripcion"];
+								$o_max = $row["max"];
+								$o_min = $row["min"];
+								$o_module_interval = $row["module_interval"];
+								$o_tcp_port = $row["tcp_port"];
+								$o_tcp_send = $row["tcp_send"];
+								$o_tcp_rcv = $row["tcp_rcv"];
+								$o_snmp_community = $row["snmp_community"];
+								$o_snmp_oid = $row["snmp_oid"];
+								$o_ip_target = $row["ip_target"];
+								$o_id_module_group = $row["id_module_group"];
+								
 								// Write every module in destination agent
 								if ($o_nombre != "agent_keepalive") {
-									$sql = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,descripcion,nombre) VALUES
-									(".$d_id_agente.",'".$o_id_tipo_modulo."','".$o_descripcion."','".$o_nombre."')";
+									$sql = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,descripcion,nombre, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, ip_target, id_module_group, flag) VALUES
+									(".$d_id_agente.",'".$o_id_tipo_modulo."','".$o_descripcion."','".$o_nombre."', '$o_max', '$o_min', '$o_module_interval', '$o_tcp_port','$o_tcp_send','$o_tcp_rcv','$o_snmp_community','$o_snmp_oid','$o_ip_target',$o_id_module_group, 1)";
 									$result2=mysql_query($sql);
-									//echo "DEBUG INSERT $sql <br>";
+							 // echo "DEBUG INSERT $sql <br>";
 									echo "<br>&nbsp;&nbsp;".$lang_label["copymod"]." ->".$o_nombre;
 								}
 							}
 						} 
 				 	}
+					if ($multiple == 0)
+							$b=-1;
+					else
+							$b=0;
+					// Alertas
 					if ($alertas == 1){
 						for ($b=$b; $b < count($origen_modulo); $b++){
 							if ($multiple == 0)
@@ -111,8 +129,6 @@ if (comprueba_login() == 0)
 								$o_id_tipo_modulo = $row["id_tipo_modulo"];
 								$o_nombre = $row["nombre"];
 								$d_id_agente = $id_agente; // destination agent id
-								$o_descripcion = $row["descripcion"];
-
 								// For each agent module, given as $o_id_agente_modulo:
 								// Searching if destination agent has a agente_modulo with same type and name that source
 								$sqlp="SELECT * FROM tagente_modulo WHERE id_agente = ".$d_id_agente." AND nombre = '".$o_nombre."' AND id_tipo_modulo = ".$o_id_tipo_modulo;
@@ -120,7 +136,6 @@ if (comprueba_login() == 0)
 							 	if ( $rowp=mysql_fetch_array($resultp)){
 									// If rowp success get  ID
 									$d_id_agente_modulo = $rowp["id_agente_modulo"];
-								
 									// Read every alert from source agent
 									$sql2='SELECT * FROM talerta_agente_modulo WHERE id_agente_modulo = '.$o_id_agente_modulo;
 									$result3=mysql_query($sql2);
@@ -135,10 +150,10 @@ if (comprueba_login() == 0)
 										$o_time_threshold = $row3["time_threshold"];
 										$o_last_fired = "2001-01-01 00:00:00";
 										$o_max_alerts = $row3["max_alerts"];
+										$o_min_alerts = $row3["min_alerts"];
 										$o_times_fired = 0;
-									
 										// Insert
-										$sql_al="INSERT INTO talerta_agente_modulo (id_agente_modulo, id_alerta, al_campo1, al_campo2, al_campo3, descripcion, dis_max, dis_min, time_threshold, last_fired, max_alerts, times_fired) VALUES ( ".$d_id_agente_modulo.", 
+										$sql_al="INSERT INTO talerta_agente_modulo (id_agente_modulo, id_alerta, al_campo1, al_campo2, al_campo3, descripcion, dis_max, dis_min, time_threshold, last_fired, max_alerts, times_fired, min_alerts) VALUES ( ".$d_id_agente_modulo.", 
 										".$o_id_alerta.",
 										'".$o_al_campo1."',
 										'".$o_al_campo2."',
@@ -149,9 +164,9 @@ if (comprueba_login() == 0)
 										".$o_time_threshold.",
 										'".$o_last_fired."',
 										".$o_max_alerts.",
-										".$o_times_fired.")";
+										".$o_times_fired.", $o_min_alerts)";
 										$result_al=mysql_query($sql_al);
-										//echo "DEBUG SQL: $sql_al <br>";
+							// echo "DEBUG SQL: $sql_al <br>";
 										echo "<br>&nbsp;&nbsp;".$lang_label["copyale"]." ->".$o_descripcion;
 									}
 								} else 
@@ -244,7 +259,7 @@ if (comprueba_login() == 0)
 				echo "<option value=".$_POST["origen"].">".dame_nombre_agente($_POST["origen"]);
 			}
 			// Show combo with agents
-			$sql1='SELECT * FROM tagente';
+			$sql1='SELECT * FROM tagente order by nombre';
 			$result=mysql_query($sql1);
 			while ($row=mysql_fetch_array($result)){
 				if ( (isset($_POST["update_agent"])) AND (isset($_POST["origen"])) ){
@@ -260,7 +275,7 @@ if (comprueba_login() == 0)
 			if ( (isset($_POST["update_agent"])) AND (isset($_POST["origen"])) ) {
 		        	// Populate Module/Agent combo
 				$agente_modulo = $_POST["origen"];
-				$sql1="SELECT * FROM tagente_modulo WHERE id_agente = ".$agente_modulo;	
+				$sql1="SELECT * FROM tagente_modulo WHERE id_agente = ".$agente_modulo. " order by nombre";	
 				$result = mysql_query($sql1);
 				while ($row=mysql_fetch_array($result)){
 			 		echo "<option value=".$row["id_agente_modulo"].">".$row["nombre"];	

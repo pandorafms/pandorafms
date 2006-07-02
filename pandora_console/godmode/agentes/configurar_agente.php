@@ -556,34 +556,32 @@ if (give_acl($id_user, 0, "AW")==1) {
 		$result=mysql_query($sql_delete);
 		
 	}
-?>
 
-<h2><?php echo $lang_label["agent_conf"]; ?></h2>
-<?php
+
+// ========================
+// AGENT GENERAL DATA FORM 
+// ========================
+
+echo "<h2>".$lang_label["agent_conf"]."</h2>";
 if (isset($_GET["creacion"])){echo "<h3>".$lang_label["create_agent"]."<a href='help/".substr($language_code,0,2)."/chap3.php#32' target='_help'><img src='images/help.gif' border='0' class='help'></a></h3>";}
 else {echo "<h3>".$lang_label["update_agent"]."<a href='help/".substr($language_code,0,2)."/chap3.php#32' target='_help'><img src='images/help.gif' border='0' class='help'></a></h3>";}
-?>
-<form name="conf_agent" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">
-<?php
-	if ($creacion_agente == 1)
-		echo "<input type='hidden' name='create_agent' value='1'>";
-	else {
-		echo "<input type='hidden' name='update_agent' value='1'>";
-		echo "<input type='hidden' name='id_agente' value='".$id_agente."'>";
-	}
-?>
-<table width="650" cellpadding="3" cellspacing="3" class="fon">
-<tr><td class='lb' rowspan='9' width='5'>
-<td class="datos"><b><?php echo $lang_label["agent_name"]?></b></td><td class="datos"><input type="text" name="agente" size=30 value="<?php echo $nombre_agente ?>">
-<?php 
+echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
+if ($creacion_agente == 1)
+	echo "<input type='hidden' name='create_agent' value='1'>";
+else {
+	echo "<input type='hidden' name='update_agent' value='1'>";
+	echo "<input type='hidden' name='id_agente' value='".$id_agente."'>";
+}
+echo '<table width="650" cellpadding="3" cellspacing="3" class="fon">';
+echo "<tr><td class='lb' rowspan='9' width='5'>";
+echo '<td class="datos"><b>'.$lang_label["agent_name"].'</b></td><td class="datos"><input type="text" name="agente" size=30 value="'.$nombre_agente.'">';
 if (isset($_GET["creacion"])){
 	echo "&nbsp;";
-	
 } else {
 	echo "&nbsp;<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."' <img src='images/setup.gif' width=25 valign='top' align='middle' border=0></a>&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'><img src='images/lupa.gif' border='0' align='middle'></a>";
 } 
 ?>
-<tr><td class="datos"><b><?php echo $lang_label["ip_address"]?></b><td class="datos"><input type="text" name="direccion" size=30 value="<?php echo $direccion_agente ?>">
+<tr><td class="datos2"><b><?php echo $lang_label["ip_address"]?></b><td class="datos2"><input type="text" name="direccion" size=30 value="<?php echo $direccion_agente ?>">
 <!-- Desplegable para el grupo -->
 <tr><td class="datos"><b><?php echo $lang_label["group"]?></b><td class="datos"><select name="grupo" class="w130"> 
 <?php
@@ -600,7 +598,7 @@ while ($row=mysql_fetch_array($result)){
 }
 ?>
 </select>
-<tr><td class="datos"><b><?php echo $lang_label["interval"]?></b></td><td class="datos"><input type="text" name="intervalo" size="15" value="<?php echo $intervalo?>"></td>
+<tr><td class="datos2"><b><?php echo $lang_label["interval"]?></b></td><td class="datos2"><input type="text" name="intervalo" size="15" value="<?php echo $intervalo?>"></td>
 <tr><td class="datos"><b><?php echo $lang_label["os"]?></b></td><td class="datos">
 <select name="os_name" class="w130">
 <?php
@@ -615,11 +613,11 @@ while ($row=mysql_fetch_array($result)){
 ?>
 </select>
 
-<tr><td class="datos"><b><?php echo $lang_label["server"]?></b></td><td class="datos">
+<tr><td class="datos2"><b><?php echo $lang_label["server"]?></b></td><td class="datos2">
 <select name="id_server" class="w130">
 <?php
 echo "<option value='".$id_server."'>".give_server_name($id_server);
-$sql1='SELECT * FROM tserver ORDER BY name';
+$sql1='SELECT * FROM tserver where network_server = 1 ORDER BY name';
 $result=mysql_query($sql1);
 while ($row=mysql_fetch_array($result)){
 	echo "<option value='".$row["id_server"]."'>".$row["name"];
@@ -630,8 +628,8 @@ while ($row=mysql_fetch_array($result)){
 
 
 <tr><td class="datos"><b><?php echo $lang_label["description"]?></b><td class="datos"><input type="text" name="comentarios" size="55" value="<?php echo $comentarios ?>"></td>
-<tr><td class="datos"><b><?php echo $lang_label["module_definition"]?></b>
-<td class="datos">
+<tr><td class="datos2"><b><?php echo $lang_label["module_definition"]?></b>
+<td class="datos2">
 	<?php if ($modo == "1"){
 		echo $lang_label["learning_mode"].'<input type="radio" class="chk" name="modo" value="1" checked >';
 		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$lang_label["normal_mode"].' <input type="radio" class="chk" name="modo" value="0">';
@@ -670,58 +668,72 @@ if ( $creacion_agente != 1) {
 	while ($row_t=mysql_fetch_array($result_t)){
 		$iconindex[$row_t["id_tipo"]] = $row_t["icon"];
 	}
-$sql1='SELECT * FROM tagente_modulo WHERE id_agente = "'.$id_agente.'"';
-$result=mysql_query($sql1);
-if ($row=mysql_num_rows($result)){
-	?>
-	<h3><?php echo $lang_label["assigned_modules"]?> </h3>
-	<table width="700" cellpadding="3" cellspacing="3" class="fon">
-	<tr>
-	<th><?php echo $lang_label["module_name"]?>
-	<th><?php echo $lang_label["type"]?>
-	<th><?php echo $lang_label["interval"]?>
-	<th><?php echo $lang_label["description"]?>
-	<th><?php echo $lang_label["module_group"]?>
-	<th><?php echo $lang_label["max_min"]?>
-	<th width="50"><?php echo $lang_label["action"]?>
-	<?php
-while ($row=mysql_fetch_array($result)){
-	$id_tipo = $row["id_tipo_modulo"];
-	$nombre_modulo =$row["nombre"];
-	$descripcion = $row["descripcion"];
-	$module_max = $row["max"];
-	$module_min = $row["min"];
-	$module_interval2 = $row["module_interval"];
-	$module_group2 = $row["id_module_group"];
-	
-	echo "<tr><td class='datos_id'>".$nombre_modulo;
-	echo "<td class='datosf9'>";
-	if ($id_tipo > 0) {
-		echo "<img src='images/".$iconindex[$id_tipo]."' border=0>";
-	}
-	echo "<td class='datos'>".$module_interval2;
-	echo "<td class='datos'>".substr($descripcion,0,30);
-	echo "<td class='datos'>".substr(dame_nombre_grupomodulo($module_group2),0,15);
-	echo "<td class='datos'>";
-	if ($module_max == $module_min) {
-		$module_max = "N/A";
-		$module_min = "N/A";
-	}
-	echo $module_max." / ".$module_min;
-	echo "<td class='datos'>";
-	if ($id_tipo != -1)
-	echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&delete_module=".$row["id_agente_modulo"]."'><img src='images/cancel.gif' border=0 alt='".$lang_label["delete"]."'></b></a> &nbsp; ";
-	echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&update_module=".$row["id_agente_modulo"]."#modules'><img src='images/config.gif' border=0 alt='".$lang_label["update"]."'></b></a>";
-}
-	echo "<tr><td colspan='7'><div class='raya'></div></td></tr>";
-}else echo "<font class='red'>No modules</font>";
+	$sql1='SELECT * FROM tagente_modulo WHERE id_agente = "'.$id_agente.'" order by nombre';
+	$result=mysql_query($sql1);
+	if ($row=mysql_num_rows($result)){
+		?>
+		<h3><?php echo $lang_label["assigned_modules"]?> </h3>
+		<table width="700" cellpadding="3" cellspacing="3" class="fon">
+		<tr>
+		<th><?php echo $lang_label["module_name"]?>
+		<th><?php echo $lang_label["type"]?>
+		<th><?php echo $lang_label["interval"]?>
+		<th><?php echo $lang_label["description"]?>
+		<th><?php echo $lang_label["module_group"]?>
+		<th><?php echo $lang_label["max_min"]?>
+		<th width="50"><?php echo $lang_label["action"]?>
+		<?php
+		$color=1;
+		while ($row=mysql_fetch_array($result)){
+			if ($color == 1){
+				$tdcolor="datos";
+				$color =0;
+			} else {
+				$tdcolor="datos2";
+				$color =1;
+			}
+			$id_tipo = $row["id_tipo_modulo"];
+			$nombre_modulo =$row["nombre"];
+			$descripcion = $row["descripcion"];
+			$module_max = $row["max"];
+			$module_min = $row["min"];
+			$module_interval2 = $row["module_interval"];
+			$module_group2 = $row["id_module_group"];
+			
+			echo "<tr><td class='$tdcolor_id'>".$nombre_modulo;
+			echo "<td class='$tdcolorf9'>";
+			if ($id_tipo > 0) {
+				echo "<img src='images/".$iconindex[$id_tipo]."' border=0>";
+			}
+			if ($module_interval2!=0){
+				echo "<td class='$tdcolor'>".$module_interval2;
+			} else {
+				echo "<td class='$tdcolor'> N/A";
+			}
+
+			echo "<td class='$tdcolor'>".substr($descripcion,0,30);
+			echo "<td class='$tdcolor'>".substr(dame_nombre_grupomodulo($module_group2),0,15);
+			echo "<td class='$tdcolor'>";
+			if ($module_max == $module_min) {
+				$module_max = "N/A";
+				$module_min = "N/A";
+			}
+			echo $module_max." / ".$module_min;
+			echo "<td class='$tdcolor'>";
+			if ($id_tipo != -1)
+			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&delete_module=".$row["id_agente_modulo"]."'><img src='images/cancel.gif' border=0 alt='".$lang_label["delete"]."'></b></a> &nbsp; ";
+			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&update_module=".$row["id_agente_modulo"]."#modules'><img src='images/config.gif' border=0 alt='".$lang_label["update"]."'></b></a>";
+		}
+		echo "<tr><td colspan='7'><div class='raya'></div></td></tr>";
+	} else 
+		echo "<font class='red'>No modules</font>";
 ?>
 </table>
 
 <?php
 
 // ====================================================================================
-// View alerts
+// VIEW ALERTS
 // ====================================================================================<br>
 
 $sql1='SELECT * FROM tagente_modulo WHERE id_agente = "'.$id_agente.'"';
@@ -739,6 +751,7 @@ if ($row=mysql_num_rows($result)){
 <th><?php echo $lang_label["description"] ?>
 <th width="50"><?php echo $lang_label["action"] ?>
 <?php
+$color=1;
 while ($row=mysql_fetch_array($result)){  // All modules of this agent
 	$id_tipo = $row["id_tipo_modulo"];
 	$nombre_modulo =$row["nombre"];
@@ -750,23 +763,30 @@ while ($row=mysql_fetch_array($result)){  // All modules of this agent
 	$sql3='SELECT * FROM talerta_agente_modulo WHERE id_agente_modulo = '.$row["id_agente_modulo"];  // From all the alerts give me which are to my agent
 	$result3=mysql_query($sql3);
 	while ($row3=mysql_fetch_array($result3)){
+		if ($color == 1){
+			$tdcolor="datos";
+			$color =0;
+		} else {
+			$tdcolor="datos2";
+			$color =1;
+		}
 		$sql4='SELECT * FROM talerta WHERE id_alerta = '.$row3["id_alerta"];
 		$result4=mysql_query($sql4);
 		$row4=mysql_fetch_array($result4);
 		// Alert name defined by  $row4["nombre"]; 
 		$tipo_modulo = $row2["nombre"];
 		$nombre_alerta = $row4["nombre"];
-		echo "<tr><td class=datos>";
+		echo "<tr><td class='$tdcolor'>";
 		echo $nombre_modulo."/".$tipo_modulo;
-		echo "<td class=datos>";
+		echo "<td class=$tdcolor>";
 		echo $nombre_alerta;
-		echo "<td class=datos>";
+		echo "<td class='$tdcolor'>";
 		echo $row3["time_threshold"];
-		echo "<td class=datos>";
+		echo "<td class='$tdcolor'>";
 		echo $row3["dis_min"]."/".$row3["dis_max"];
-		echo "<td class=datos>";
+		echo "<td class='$tdcolor'>";
 		echo salida_limpia($row3["descripcion"]);
-		echo "<td class=datos>";
+		echo "<td class='$tdcolor'>";
 	 	$id_grupo = dame_id_grupo($id_agente);
 		if (give_acl($id_user, $id_grupo, "LW")==1){
 			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&delete_alert=".$row3["id_aam"]."'><img src='images/cancel.gif' border=0 alt='".$lang_label["delete"]."'></a>  &nbsp; ";
@@ -840,9 +860,9 @@ else {
 ?>
 </select>
 
-<tr><td class="datos"><?php echo $lang_label["module_name"] ?>
-<td class="datos"><input type="text" name="nombre" size="20" value="<?php echo $modulo_nombre ?>"> 
-<td class="datos"><?php echo $lang_label["module_interval"] ?><td class="datos">
+<tr><td class="datos2"><?php echo $lang_label["module_name"] ?>
+<td class="datos2"><input type="text" name="nombre" size="20" value="<?php echo $modulo_nombre ?>"> 
+<td class="datos2"><?php echo $lang_label["module_interval"] ?><td class="datos2">
 <input type="text" name="module_interval" size="5" value="<?php echo $module_interval ?>"> 
 
 <tr><td class="datos"><?php echo $lang_label["ip_target"] ?>
@@ -850,12 +870,12 @@ else {
 <td class="datos"><?php echo $lang_label["tcp_port"] ?>
 <td class="datos"><input type="text" name="tcp_port" size="5" value="<?php echo $tcp_port ?>"> 
 
-<tr><td class="datos"><?php echo $lang_label["snmp_oid"] ?>
-<td class="datos"><input type="text" name="snmp_oid" size="15" value="<?php echo $snmp_oid ?>"> 
+<tr><td class="datos2"><?php echo $lang_label["snmp_oid"] ?>
+<td class="datos2"><input type="text" name="snmp_oid" size="15" value="<?php echo $snmp_oid ?>"> 
 <input type="submit" name="oid" value="Get Value">
 
-<td class="datos"><?php echo $lang_label["snmp_community"] ?>
-<td class="datos"><input type="text" name="snmp_community" size="20" value="<?php echo $snmp_community ?>"> 
+<td class="datos2"><?php echo $lang_label["snmp_community"] ?>
+<td class="datos2"><input type="text" name="snmp_community" size="20" value="<?php echo $snmp_community ?>"> 
 
 
 <tr><td class="datos"><?php echo $lang_label["snmp_oid"] ?>
@@ -874,19 +894,19 @@ if (isset($_POST["oid"])){
 ?>
 </select>
 
-<tr><td class="datost"><?php echo $lang_label["tcp_send"] ?>
-<td class="datos"><textarea name="tcp_send" cols="17" rows="3"><?php echo $tcp_send ?></textarea>
+<tr><td class="datos2t"><?php echo $lang_label["tcp_send"] ?>
+<td class="datos2"><textarea name="tcp_send" cols="17" rows="3"><?php echo $tcp_send ?></textarea>
 
-<td class="datost"><?php echo $lang_label["tcp_rcv"] ?>
-<td class="datos"><textarea name="tcp_rcv" cols="17" rows="3"><?php echo $tcp_rcv ?></textarea>
+<td class="datos2t"><?php echo $lang_label["tcp_rcv"] ?>
+<td class="datos2"><textarea name="tcp_rcv" cols="17" rows="3"><?php echo $tcp_rcv ?></textarea>
 
 <tr><td class="datos"><?php echo $lang_label["mindata"] ?>
 <td class="datos"><input type="text" name="modulo_min" size="5" value="<?php echo $modulo_min ?>"> 
 <td class="datos"><?php echo $lang_label["maxdata"] ?>
 <td class="datos"><input type="text" name="modulo_max" size="5" value="<?php echo $modulo_max ?>">
 
-<tr><td class="datost"><?php echo $lang_label["comments"] ?>
-<td class="datos" colspan=3>
+<tr><td class="datos2t"><?php echo $lang_label["comments"] ?>
+<td class="datos2" colspan=3>
 <textarea name="descripcion" cols=52 rows=2>
 <?php echo $modulo_descripcion ?>
 </textarea>
@@ -946,18 +966,18 @@ while ($row=mysql_fetch_array($result)){
 </select>
 <a name="alerts"> <!-- Don't Delete !! -->
 
-<tr><td class="datos"><?php echo $lang_label["min_value"] ?>
-<td class="datos"><input type="text" name="minimo" size="5" value="<?php echo $alerta_dis_max ?>">
+<tr><td class="datos2"><?php echo $lang_label["min_value"] ?>
+<td class="datos2"><input type="text" name="minimo" size="5" value="<?php echo $alerta_dis_max ?>">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $lang_label["max_value"] ?> &nbsp;&nbsp;&nbsp;
 <input type="text" name="maximo" size="5" value="<?php echo $alerta_dis_min ?>">
 <tr><td class="datos"><?php echo $lang_label["description"] ?>
 <td class="datos"><input type="text" name="descripcion" size="39" value ="<?php echo $alerta_descripcion ?>">
-<tr><td class="datos"><?php echo $lang_label["field1"] ?>
-<td class="datos"><input type="text" name="campo_1" size="39" value="<?php echo $alerta_campo1 ?>">
+<tr><td class="datos2"><?php echo $lang_label["field1"] ?>
+<td class="datos2"><input type="text" name="campo_1" size="39" value="<?php echo $alerta_campo1 ?>">
 <tr><td class="datos"><?php echo $lang_label["field2"] ?>
 <td class="datos"><input type="text" name="campo_2" size="39" value="<?php echo $alerta_campo2 ?>">
-<tr><td class="datos"><?php echo $lang_label["field3"] ?>
-<td class="datos"><textarea name="campo_3" cols="36" rows="3"><?php echo $alerta_campo3 ?></textarea>
+<tr><td class="datos2"><?php echo $lang_label["field3"] ?>
+<td class="datos2"><textarea name="campo_3" cols="36" rows="3"><?php echo $alerta_campo3 ?></textarea>
 <tr><td class="datos"><?php echo $lang_label["time_threshold"] ?>
 <td class="datos"><select name="time_threshold">
 <?PHP
@@ -982,8 +1002,8 @@ while ($row=mysql_fetch_array($result)){
 &nbsp;&nbsp;&nbsp;
 <input type="text" name="other" size="5">
 
-<tr><td class="datos"><?php echo $lang_label["min_alerts"] ?>
-<td class="datos">
+<tr><td class="datos2"><?php echo $lang_label["min_alerts"] ?>
+<td class="datos2">
 <input type="text" name="min_alerts" size="5" value="<?php  if (isset($alerta_min_alerts)) {echo$alerta_min_alerts;} ?>">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <?php echo $lang_label["max_alerts"] ?>

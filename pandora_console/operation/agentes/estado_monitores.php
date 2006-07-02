@@ -15,7 +15,7 @@ if (comprueba_login() == 0) {
 	}
 
 	// Get all module from agent
-	$sql_t='SELECT * FROM tagente_estado, tagente_modulo WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.id_agente='.$id_agente;
+	$sql_t='SELECT * FROM tagente_estado, tagente_modulo WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.id_agente='.$id_agente.' order by tagente_modulo.nombre';
 	$result_t=mysql_query($sql_t);
 	if (mysql_num_rows ($result_t)) {
 		echo "<h3>".$lang_label["monitor_listing"]."<a href='help/".substr($language_code,0,2)."/chap3.php#3323' target='_help'><img src='images/help.gif' border='0' class='help'></a></h3>";

@@ -862,10 +862,14 @@ sub pandora_serverkeepaliver (%$) {
 		my $s_idag = $dbh->prepare($query_idag);
 		$s_idag ->execute;
 		if ($s_idag->rows != 0) {
-			while (@data = $s_idag->fetchrow_array()){		
-				# Update server data
-				my $sql_update = "update tserver set status = 0 where id_server = $data[0]";
-				$dbh->do($sql_update);
+			while (@data = $s_idag->fetchrow_array()){
+				if ($data[3] != 0){ # only if it's currently not down
+					# Update server data
+					my $sql_update = "update tserver set status = 0 where id_server = $data[0]";
+					$dbh->do($sql_update);
+					pandora_event($pa_config, "Server ".$data[1]." going Down", 0, 0, $dbh);
+					logger( $pa_config, "Server ".$data[1]." going Down ",1);
+				}
 			}
 		}
 		$s_idag->finish();
@@ -888,7 +892,6 @@ sub pandora_updateserver (%$$$) {
 	my $opmode = $_[3]; # 0 dataserver, 1 network server, 2 snmp console
 	my $dbh = $_[4];
 	my $sql_update;
-
 	my $pandorasuffix;
 	if ($opmode == 0){
 		$pandorasuffix = "_Data";
@@ -904,16 +907,29 @@ sub pandora_updateserver (%$$$) {
 		$dbh->do($sql_server);
 		$id_server = dame_server_id($pa_config, $pa_config->{'servername'}.$pandorasuffix, $dbh);
 	}
-	# Update server data
-        my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
-	if ($opmode == 0){
-		$sql_update = "update tserver set status = 1, laststart = '$timestamp', keepalive = '$timestamp', snmp_server = 0, network_server = 0, data_server = 1, master = $pa_config->{'pandora_master'}, checksum = $pa_config->{'pandora_check'} where id_server = $id_server";
-	} elsif ($opmode == 1){
-		$sql_update = "update tserver set status = 1, laststart = '$timestamp', keepalive = '$timestamp', snmp_server = 0, network_server = 1, data_server = 0, master = $pa_config->{'pandora_master'}, checksum = 0 where id_server = $id_server";
-	} else {
-		$sql_update = "update tserver set status = 1, laststart = '$timestamp', keepalive = '$timestamp', snmp_server = 1, network_server = 0, data_server = 0, master = $pa_config->{'pandora_master'}, checksum = 0 where id_server = $id_server";
+	my @data;
+	my $query_idag = "select * from tserver where id_server = $id_server";
+	my $s_idag = $dbh->prepare($query_idag);
+	$s_idag ->execute;
+	if ($s_idag->rows != 0) {
+		if (@data = $s_idag->fetchrow_array()){
+			if ($data[3] == 0){ # If down, update to get up the server
+				pandora_event($pa_config, "Server ".$data[1]." going UP", 0, 0, $dbh);
+				logger( $pa_config, "Server ".$data[1]." going UP ",1);
+			}
+			# Update server data
+			my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
+			if ($opmode == 0){
+				$sql_update = "update tserver set status = 1, laststart = '$timestamp', keepalive = '$timestamp', snmp_server = 0, network_server = 0, data_server = 1, master = $pa_config->{'pandora_master'}, checksum = $pa_config->{'pandora_check'} where id_server = $id_server";
+			} elsif ($opmode == 1){
+				$sql_update = "update tserver set status = 1, laststart = '$timestamp', keepalive = '$timestamp', snmp_server = 0, network_server = 1, data_server = 0, master = $pa_config->{'pandora_master'}, checksum = 0 where id_server = $id_server";
+			} else {
+				$sql_update = "update tserver set status = 1, laststart = '$timestamp', keepalive = '$timestamp', snmp_server = 1, network_server = 0, data_server = 0, master = $pa_config->{'pandora_master'}, checksum = 0 where id_server = $id_server";
+			}
+			$dbh->do($sql_update);
+		}
+		$s_idag->finish();
 	}
-	$dbh->do($sql_update);
 }
 
 #################################################################################

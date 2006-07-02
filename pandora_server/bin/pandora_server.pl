@@ -50,13 +50,13 @@ pandora_loadconfig (\%pa_config,0);
 # Audit server starting
 pandora_audit (\%pa_config, "Pandora Daemon starting", "SYSTEM", "System");
 
-# KeepAlive checks for Agents, only for master servers, in separate thread
-threads->new( \&pandora_keepalived, \%pa_config);
-
-
+# BE CAREFUL, if you daemonize, you need to launch threads BEFORE daemonizing.
 if ($pa_config{"daemon"} eq "1" ){
 	&daemonize;
 }
+
+# KeepAlive checks for Agents, only for master servers, in separate thread
+threads->new( \&pandora_keepalived, \%pa_config);
 
 # Module processor subsystem
 pandora_dataserver(\%pa_config);
@@ -159,7 +159,7 @@ sub pandora_dataserver {
 sub pandora_keepalived {
 	my $pa_config = $_[0];
 	my $dbh = DBI->connect("DBI:mysql:pandora:$pa_config->{'dbhost'}:3306",$pa_config->{"dbuser"}, $pa_config->{"dbpass"},{ RaiseError => 1, AutoCommit => 1 });
-	while (1){
+	while ( 1 ){
 		sleep $pa_config->{"server_threshold"};
 		threads->yield;
 		keep_alive_check($pa_config,$dbh);

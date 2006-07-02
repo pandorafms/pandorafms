@@ -21,6 +21,19 @@ if (comprueba_login() == 0)
 		  if (give_acl($iduser_temp,$row["id_grupo"], "AR") == 1)
 			$mis_grupos[]=$row["id_grupo"]; //All my groups in an array
 	}
+	// Update network modules for this group
+	// Check for Network FLAG change request 
+	if (isset($_GET["update_netgroup"])){ 	
+		if (give_acl($id_user, $_GET["update_netgroup"], "AW")==1){ 
+			$sql = "SELECT * FROM tagente where id_grupo = ".$_GET["update_netgroup"]; 
+			$result=mysql_query($sql);
+			while ($row=mysql_fetch_array($result)){ 
+				$id_agente = $row["id_agente"]; 
+				$query2 ="UPDATE tagente_modulo SET flag=1 WHERE id_agente = ".$id_agente; 
+				$res=mysql_query($query2); 
+			}
+		}		
+	}
 	$contador_grupo = 0;
 	$contador_agente=0;
 	$array_index = 0;

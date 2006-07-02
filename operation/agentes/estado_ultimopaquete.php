@@ -68,7 +68,7 @@ if (comprueba_login() == 0) {
 	$intervalo_agente = $row_t["intervalo"];
 
 	// Get last packet
-	$sql3='SELECT * FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente = '.$id_agente.' AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo ORDER BY id_module_group';
+	$sql3='SELECT * FROM tagente_modulo, tagente_estado WHERE tagente_modulo.id_agente = '.$id_agente.' AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo ORDER BY id_module_group, nombre';
 	//$sql3='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_agente.' order by id_module_group';
 	$label_group=0;
 	$last_label = "";

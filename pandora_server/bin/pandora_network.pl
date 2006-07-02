@@ -29,6 +29,7 @@ use Net::Ping;				# For ICMP latency
 use Time::HiRes;			# For high precission timedate functions (Net::Ping)
 use IO::Socket;				# For TCP/UDP access
 use SNMP;				# For SNMP access (libnet-snmp-perl package!
+use threads;
 
 # Pandora Modules
 use pandora_config;
@@ -47,7 +48,6 @@ pandora_init(\%pa_config, "Pandora Network Server");
 # Read config file for Global variables
 pandora_loadconfig (\%pa_config,1);
 # Audit server starting
-
 pandora_audit (\%pa_config, "Pandora Network Daemon starting", "SYSTEM", "System");
 
 # Daemonize of configured
@@ -57,7 +57,17 @@ if ( $pa_config{"daemon"} eq "1" ) {
 }
 
 # Runs main program (have a infinite loop inside)
-pandora_network_subsystem(\%pa_config);
+
+threads->new( \&pandora_network_subsystem, \%pa_config, 1);
+sleep(1);
+threads->new( \&pandora_network_subsystem, \%pa_config, 2);
+sleep(1);
+threads->new( \&pandora_network_subsystem, \%pa_config, 3);
+
+while ( 1 ){
+	sleep(3600);
+ 	threads->yield;
+}
 
 #------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------
@@ -76,6 +86,8 @@ pandora_network_subsystem(\%pa_config);
 sub pandora_network_subsystem {
         # Init vars
 	my $pa_config = $_[0];
+	my $nettype = $_[1]; # 1 for ICMP, 2 for TCP/UDO, 3 for SNMP
+	my $nettypedesc;
 	# Connect ONCE to Database, we pass DBI handler to all subprocess.
 	my $dbh = DBI->connect("DBI:mysql:pandora:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
 
@@ -152,7 +164,20 @@ sub pandora_network_subsystem {
 
 			# Second: Checkout for agent_modules with type > 4 (network modules) and 
 			# owned by our selected agent
-			$query_sql = "select * from tagente_modulo where id_tipo_modulo > 4 and id_agente = $id_agente";
+			# $nettype 1 for ICMP, 2 for TCP/UDO, 3 for SNMP
+			if ($nettype == 1){ # ICMP
+				$query_sql = "select * from tagente_modulo where id_tipo_modulo > 5 and id_tipo_modulo < 8 and id_agente = $id_agente";
+				$nettypedesc="ICMP";
+			} elsif ($nettype == 2){ # UDP/TCP
+				$query_sql = "select * from tagente_modulo where id_tipo_modulo > 7 and id_tipo_modulo < 13 and id_agente = $id_agente";
+				$nettypedesc="TCP/UDP";
+			} elsif ($nettype == 3) { # SNMP
+				$query_sql = "select * from tagente_modulo where id_tipo_modulo > 14 and id_tipo_modulo < 19 and id_agente = $id_agente";
+				$nettypedesc="SNMP";
+			} else { # This section of code never will be executed
+				$query_sql = "select * from tagente_modulo where id_tipo_modulo > 4 and id_agente = $id_agente";
+				$nettypedesc="Global Network";
+			}
 			$exec_sql = $dbh->prepare($query_sql);
 			$exec_sql ->execute; 
 			while (@sql_data = $exec_sql->fetchrow_array()) {
@@ -208,7 +233,7 @@ sub pandora_network_subsystem {
 						$exec_sql3 ->execute;
 						$exec_sql3->finish();
 					}
-					logger ($pa_config, "Network Module Subsystem (Single): Exec Netmodule '$nombre'",5);
+					logger ($pa_config, "Network Module Subsystem ($nettypedesc): Exec Netmodule '$nombre'",5);
 					exec_network_module( $id_agente, $id_agente_estado, $id_tipo_modulo, $fecha_mysql, $nombre, $min, $max, $agent_interval, $tcp_port, $tcp_send, $tcp_rcv, $snmp_community, $snmp_oid, $ip_target, $module_result, $module_data, $estado_cambio, $estado_estado, $agent_name, $agent_osdata, $id_agente_modulo, $pa_config, $dbh);
 					
 				} # Timelimit if
@@ -217,6 +242,7 @@ sub pandora_network_subsystem {
 		}	
 		$exec_sql2->finish();
 		pandora_serverkeepaliver($pa_config,$opmode,$dbh);
+		threads->yield;
 		sleep($pa_config->{"server_threshold"});
 	}
 	$dbh->disconnect();

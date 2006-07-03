@@ -175,6 +175,7 @@ echo "<tr><td colspan='3' align='right'><input name='uptbutton' type='submit' cl
 			echo "</table>";
 			
 		} else { // View list data
+			$color=0;
 			?>
 			<table cellpadding=3 cellspacing=3 border=0>
 			<?php
@@ -206,39 +207,47 @@ echo "<tr><td colspan='3' align='right'><input name='uptbutton' type='submit' cl
 		$db_management = $rowdup["db_management"];
 		$alert_management = $rowdup["alert_management"];
 		$pandora_management = $rowdup["pandora_management"];
-
-		echo "<td class=datos><a href='index.php?sec=gperfiles&sec2=godmode/perfiles/lista_perfiles&edit_profile=".$id_perfil."'><b>".$nombre."</b></a>";
+		if ($color == 1){
+			$tdcolor = "datos";
+			$color = 0;
+		}
+		else {
+			$tdcolor = "datos2";
+			$color = 1;
+		}
+		echo "<td class='$tdcolor'><a href='index.php?sec=gperfiles&sec2=godmode/perfiles/lista_perfiles&edit_profile=".$id_perfil."'><b>".$nombre."</b></a>";
 		
-		echo "<td class=datos>";
+		echo "<td class='$tdcolor'>";
 		if ($incident_view == 1) echo "<img src='images/ok.gif' border=0>";
 			
-		echo "<td class=datos>";
+		echo "<td class='$tdcolor'>";
 		if ($incident_edit == 1) echo "<img src='images/ok.gif' border=0>";
 			
-		echo "<td class=datos>";
+		echo "<td class='$tdcolor'>";
 		if ($incident_management == 1) echo "<img src='images/ok.gif' border=0>";
 			
-		echo "<td class=datos>";
+		echo "<td class='$tdcolor'>";
 		if ($agent_view == 1) echo "<img src='images/ok.gif' border=0>";
 			
-		echo "<td class=datos>";
+		echo "<td class='$tdcolor'>";
 		if ($agent_edit == 1) echo "<img src='images/ok.gif' border=0>";
 			
-		echo "<td class=datos>";
+		echo "<td class='$tdcolor'>";
 		if ($alert_edit == 1) echo "<img src='images/ok.gif' border=0>";
 			
-		echo "<td class=datos>";
+		echo "<td class='$tdcolor'>";
 		if ($user_management == 1) echo "<img src='images/ok.gif' border=0>";
 			
-		echo "<td class=datos>";
+		echo "<td class='$tdcolor'>";
 		if ($db_management == 1) echo "<img src='images/ok.gif' border=0>";
 			
-		echo "<td class=datos>";
+		echo "<td class='$tdcolor'>";
 		if ($alert_management == 1) echo "<img src='images/ok.gif' border=0>";
 			
-		echo "<td class=datos>";
+		echo "<td class='$tdcolor'>";
 		if ($pandora_management == 1) echo "<img src='images/ok.gif' border=0>";
-		echo '<td class=datos align="center"><a href="index.php?sec=gperfiles&sec2=godmode/perfiles/lista_perfiles&delete_profile='.$id_perfil.'" onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;"><img border=0 src="images/cancel.gif"></a></td></tr>';
+		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/perfiles/lista_perfiles&delete_profile=".$id_perfil."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cancel.gif'></a></td></tr>";
+		
 	}
 			echo "</div></td></tr>";
 			echo "<tr><td colspan='12'><div class='raya'></div></td></tr>";

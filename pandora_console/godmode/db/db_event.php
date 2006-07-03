@@ -88,8 +88,8 @@ if (comprueba_login() == 0)
 	echo "<tr>";	
 	$result_t=mysql_query("SELECT min(timestamp) FROM tevento");
 	$row=mysql_fetch_array($result_t);
-	echo "<td class='datos'><b>".$lang_label["first_date"]."</b>";
-	echo "<td class='datos'>".$row[0];
+	echo "<td class='datos2'><b>".$lang_label["first_date"]."</b>";
+	echo "<td class='datos2'>".$row[0];
 	
 	
 	echo "<tr><td class='datos'>";

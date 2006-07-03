@@ -99,15 +99,23 @@ if (comprueba_login() == 0)
 		}
 		
 		$offset_counter = 0;	
-
+		$color=0;
 	// Get data
-		while ($row=mysql_fetch_array($result) and ($offset_counter < $block_size) ){  
+		while ($row=mysql_fetch_array($result) and ($offset_counter < $block_size) ){
+			if ($color == 1){
+				$tdcolor = "datos";
+				$color = 0;
+			}
+			else {
+				$tdcolor = "datos2";
+				$color = 1;
+			}
 		   $usuario=$row["ID_usuario"];
-		   echo '<tr><td class="datos_id">'.$usuario;
-		   echo '<td class="datos">'.$row["accion"];
-		   echo '<td class="datosf9">'.$row["fecha"];
-		   echo '<td class="datosf9">'.$row["IP_origen"];
-		   echo '<td class="datos">'.$row["descripcion"];
+		   echo '<tr><td class="'.$tdcolor.'_id">'.$usuario;
+		   echo '<td class="'.$tdcolor.'">'.$row["accion"];
+		   echo '<td class="'.$tdcolor.'f9">'.$row["fecha"];
+		   echo '<td class="'.$tdcolor.'f9">'.$row["IP_origen"];
+		   echo '<td class="'.$tdcolor.'">'.$row["descripcion"];
 		   echo '</tr>';
 		   $offset_counter++;
 		}	 

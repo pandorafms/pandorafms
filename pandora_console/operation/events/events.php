@@ -190,7 +190,7 @@ if (comprueba_login() == 0) {
 	echo "<label for='checkbox' class='p21'>".$lang_label["all"]." </label>";
 	echo '<input type="checkbox" class="chk" name="allbox" onclick="CheckAll();"></th>';	
 	echo "<form name='eventtable' method='POST' action='index.php?sec=eventos&sec2=operation/events/events&refr=60&offset=".$offset."'>";
-
+	$color = 0;
 	$id_evento = 0;
 	if ($offset !=0)
 		$offset_limit = $offset +1;
@@ -205,33 +205,40 @@ if (comprueba_login() == 0) {
 				$result=mysql_query($sql);
 				$row=mysql_fetch_array($result);
 				$id_group = $row["id_grupo"];
+				if ($color == 1){
+					$tdcolor = "datos";
+					$color = 0;
+				}
+				else {
+					$tdcolor = "datos2";
+					$color = 1;
+				}
 				//if (give_acl($id_usuario, $id_group, "IR") == 1){ // Only incident read access to view data
-					$offset_counter++;
-					echo "<tr>";
-					echo "<td class='datos' align='center'>";
-					if ($row["estado"] == 0)
-						echo "<img src='images/dot_red.gif'>";
-					else 
-						echo "<img src='images/dot_green.gif'>";
-					echo "<td class='datos'>".$row["evento"];
-					if ($row["id_agente"] > 0){
-						echo "<td class='datos'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row["id_agente"]."'><b>".dame_nombre_agente($row["id_agente"])."</b></a>";
-						echo "<td class='datos'>".dame_nombre_grupo($row["id_grupo"]);
-						echo "<td class='datos'>";
+				$offset_counter++;
+				echo "<tr><td class='$tdcolor' align='center'>";
+				if ($row["estado"] == 0)
+					echo "<img src='images/dot_red.gif'>";
+				else 
+					echo "<img src='images/dot_green.gif'>";
+				echo "<td class='$tdcolor'>".$row["evento"];
+				if ($row["id_agente"] > 0){
+						echo "<td class='$tdcolor'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row["id_agente"]."'><b>".dame_nombre_agente($row["id_agente"])."</b></a>";
+						echo "<td class='$tdcolor'>".dame_nombre_grupo($row["id_grupo"]);
+						echo "<td class='$tdcolor'>";
 					} else { // for SNMP generated alerts
-						echo "<td class='datos' colspan=2 >".$lang_label["alert"]." /  SNMP";
-						echo "<td class='datos'>";
+						echo "<td class='$tdcolor' colspan='2'>".$lang_label["alert"]." /  SNMP";
+						echo "<td class='$tdcolor'>";
 					}
 					if ($row["estado"] <> 0)
 						echo "<a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$row["id_usuario"]."'><a href='#' class='tip'>&nbsp;<span>".dame_nombre_real($row["id_usuario"])."</span></a>".substr($row["id_usuario"],0,8)."</a>";
-					echo "<td class='datos'>".$row["timestamp"];
-					echo "<td class='datos' align='center'>";
+					echo "<td class='$tdcolor'>".$row["timestamp"];
+					echo "<td class='$tdcolor' align='center'>";
 					
 					if (($row["estado"] == 0) and (give_acl($id_usuario,$id_group,"IW") ==1))
 						echo "<a href='index.php?sec=eventos&sec2=operation/events/events&check=".$row["id_evento"]."'><img src='images/ok.gif' border='0'></a>";
 					if (give_acl($id_usuario,$id_group,"IM") ==1)
 						echo "<a href='index.php?sec=eventos&sec2=operation/events/events&delete=".$row["id_evento"]."&refr=60&offset=".$offset."'><img src='images/cancel.gif' border=0></a>";
-					echo "<td class='datos' align='center'>";
+					echo "<td class='$tdcolor' align='center'>";
 					echo "<input type='checkbox' class='chk' name='eventid".$offset_counter."' value='".$row["id_evento"]."'>";
 					echo "</td></tr>";
 				//}

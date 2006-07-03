@@ -94,7 +94,7 @@ if (comprueba_login() == 0) {
 		echo "<th>".$lang_label["alerts"]."</th>";
 		echo "<th>".$lang_label["last_contact"]."</th>";
 		// For every agent deficed in the agent table
-		$color = 1;
+		$color = 0;
 		while ($row=mysql_fetch_array($result)){
 			if ($row["disabled"] == 0) {
 				$intervalo = $row["intervalo"]; // Interval in seconds
@@ -207,8 +207,8 @@ if (comprueba_login() == 0) {
 							} else {
 								echo "N/A";
 							}
-							echo "<a div class='info'><img src='reporting/fgraph.php?tipo=progress&percent=".$percentil."&height=15&width=80' border=0>";
-							echo "<span>$ultimo_contacto</span></div>";			
+							echo "<a class='info'><img src='reporting/fgraph.php?tipo=progress&percent=".$percentil."&height=15&width=80' border=0>";
+							echo "<span>$ultimo_contacto</span></a>";			
 							// echo $ultimo_contacto;
 						}
 						

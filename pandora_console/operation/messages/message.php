@@ -139,17 +139,26 @@ else {
 		}
 	$sql3='SELECT * FROM tmensajes WHERE id_usuario_destino="'.$iduser.'"';
 	$resultado3=mysql_query($sql3);
+	$color=0;
 	if (mysql_num_rows($resultado3)) {
 		echo "<table class='w550'><tr><th>".$lang_label["read"]."</th><th>".$lang_label["sender"]."</th><th>".$lang_label["subject"]."</th><th>".$lang_label["timestamp"]."</th><th>".$lang_label["delete"]."</th></tr>";
 		while ($row3=mysql_fetch_array($resultado3)){
-				echo "<tr>";
-				if ($row3["estado"]==1) echo "<td align='center' class='datos'><img src='images/read.gif' border=0></td>";
-				else echo "<td align='center' class='datos'><img src='images/unread.gif' border=0></td>";
-				echo "<td class='datos'><b><a href=index.php?sec=usuarios&sec2=operation/users/user_edit&ver=".$row3["id_usuario_origen"].">".$row3["id_usuario_origen"]."</b></td><td class='w230d'><a href='index.php?sec=messages&sec2=operation/messages/message&leer=1&id_mensaje=".$row3["id_mensaje"]."'>";
-				if ($row3["subject"]) echo $row3["subject"]."</a>";
-				else echo "<i>".$lang_label["no_subject"]."</i></a>";
-				echo "</a></td><td class='w135d'>".$row3["timestamp"]."</td>";
-				echo "<td class='datos' align='center'><a href='index.php?sec=messages&sec2=operation/messages/message&borrar=1&id_mensaje=".$row3["id_mensaje"]."'><img src='images/delete.gif' border='0'></a></td></tr>";
+			if ($color == 1){
+				$tdcolor = "datos";
+				$color = 0;
+				}
+			else {
+				$tdcolor = "datos2";
+				$color = 1;
+			}
+			echo "<tr>";
+			if ($row3["estado"]==1) echo "<td align='center' class='$tdcolor'><img src='images/read.gif' border=0></td>";
+			else echo "<td align='center' class='$tdcolor'><img src='images/unread.gif' border=0></td>";
+			echo "<td class='$tdcolor'><b><a href=index.php?sec=usuarios&sec2=operation/users/user_edit&ver=".$row3["id_usuario_origen"].">".$row3["id_usuario_origen"]."</b></td><td class='w230".$tdcolor."'><a href='index.php?sec=messages&sec2=operation/messages/message&leer=1&id_mensaje=".$row3["id_mensaje"]."'>";
+			if ($row3["subject"]) echo $row3["subject"]."</a>";
+			else echo "<i>".$lang_label["no_subject"]."</i></a>";
+			echo "</a></td><td class='w135".$tdcolor."'>".$row3["timestamp"]."</td>";
+			echo "<td class='$tdcolor' align='center'><a href='index.php?sec=messages&sec2=operation/messages/message&borrar=1&id_mensaje=".$row3["id_mensaje"]."'><img src='images/delete.gif' border='0'></a></td></tr>";
 			}
 		echo "<tr><td colspan='5'><div class='raya'></div></td></tr>";
 	}

@@ -76,7 +76,7 @@ if (isset($_SESSION["id_usuario"])) {
 		echo '<ul class="mn"><li><a href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server&amp;refr=60" class="mn">'.$lang_label["view_servers"].'</a></li></ul></div>';
 	}
 	if (give_acl($_SESSION["id_usuario"], 0, "IR")==1) {
-		if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/incidents/incident") {
+		if(isset($_GET["sec2"]) && ($_GET["sec2"] == "operation/incidents/incident" || $_GET["sec2"] == "operation/incidents/incident_detail")) {
 			echo '<div id="op3s">';
 		}
 		else echo '<div id="op3">';

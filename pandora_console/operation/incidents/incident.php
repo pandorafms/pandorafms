@@ -304,6 +304,7 @@ if (isset($_POST['operacion'])){
 	echo "<th>".$lang_label["source"];
 	echo "<th width='75'>".$lang_label["in_openedby"];
 	echo "<th>".$lang_label["delete"];
+	$color = 0;
 
 	// Skip offset records and begin show data
 	if ($offset !=0)
@@ -322,11 +323,19 @@ if (isset($_POST['operacion'])){
 			$result=mysql_query($sql);
 			$row=mysql_fetch_array($result);
 			$id_group = $row["id_grupo"];
+				if ($color == 1){
+					$tdcolor = "datos";
+					$color = 0;
+				}
+				else {
+					$tdcolor = "datos2";
+					$color = 1;
+				}
 			if (give_acl($id_usuario, $id_group, "IR") ==1){ // Only incident read access to view data !
 				$offset_counter++;
 				$note_number = dame_numero_notas($row["id_incidencia"]);
 				echo "<tr>";
-				echo "<td class='datos' align='center'><a href='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id=".$row["id_incidencia"]."'>".$row["id_incidencia"]."</a>";
+				echo "<td class='$tdcolor' align='center'><a href='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id=".$row["id_incidencia"]."'>".$row["id_incidencia"]."</a>";
 
 				// Check for attachments in this incident	
 				$result3=mysql_query("SELECT * FROM tattachment WHERE id_incidencia = ".$row["id_incidencia"]);
@@ -345,7 +354,7 @@ if (isset($_POST['operacion'])){
 				if (($row["estado"] == 0) && ($note_number >0 )){
 					$row["estado"] = 1;
 				}
-				echo "<td class='datos' align='center'>";
+				echo "<td class='$tdcolor' align='center'>";
 				switch ($row["estado"]) {
 				case 0: echo "<img src='images/dot_red.gif'>";
 							break;
@@ -358,8 +367,8 @@ if (isset($_POST['operacion'])){
 				case 13: echo "<img src='images/dot_green.gif'>";
 							break;
 				}
-				echo "<td class='datosf9''><a href='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id=".$row["id_incidencia"]."'>".substr(salida_limpia($row["titulo"]),0,27);
-				echo "<td class='datos'>";
+				echo "<td class='$tdcolor'><a href='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id=".$row["id_incidencia"]."'>".substr(salida_limpia($row["titulo"]),0,27);
+				echo "<td class='$tdcolor'>";
 				switch ( $row["prioridad"] ){
 				case 0: echo "<img src='images/dot_green.gif'>"."<img src='images/dot_green.gif'>"."<img src='images/dot_yellow.gif'>"; break;
 				case 1: echo "<img src='images/dot_green.gif'>"."<img src='images/dot_yellow.gif'>"."<img src='images/dot_yellow.gif'>"; break;
@@ -376,13 +385,13 @@ if (isset($_POST['operacion'])){
 				case 4: echo $lang_label["very_serious"]; break;
 				case 10: echo $lang_label["maintenance"]; break;
 				*/
-				echo "<td class='datos'>".dame_nombre_grupo($row["id_grupo"]);
-				echo "<td class='datosf9'>".$row["actualizacion"];
-				echo "<td class='datos'>".$row["origen"];
-				echo "<td class='datos'><a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$row["id_usuario"]."'><a href='#' class='tip'>&nbsp;<span>".dame_nombre_real($row["id_usuario"])."</span></a>".substr($row["id_usuario"], 0, 8)."</a></td>";
+				echo "<td class='$tdcolor'>".dame_nombre_grupo($row["id_grupo"]);
+				echo "<td class='$tdcolor'>".$row["actualizacion"];
+				echo "<td class='$tdcolor'>".$row["origen"];
+				echo "<td class='$tdcolor'><a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$row["id_usuario"]."'><a href='#' class='tip'>&nbsp;<span>".dame_nombre_real($row["id_usuario"])."</span></a>".substr($row["id_usuario"], 0, 8)."</a></td>";
 				$id_author_inc = $row["id_usuario"];
 				if ((give_acl($id_usuario, $id_group, "IM") ==1) OR ($_SESSION["id_usuario"] == $id_author_inc) ){ // Only incident owners or incident manager from this group can delete incidents	
-					echo '<td class="datos" align="center"><a href="index.php?sec=incidencias&sec2=operation/incidents/incident&quick_delete='.$row["id_incidencia"].'" onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;"><img src="images/cancel.gif" border="0"></a></td>';
+					echo "<td class='$tdcolor' align='center'><a href='index.php?sec=incidencias&sec2=operation/incidents/incident&quick_delete=".$row["id_incidencia"]."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img src='images/cancel.gif' border='0'></a></td>";
 				}
 			} // if ACL is correct
 		}

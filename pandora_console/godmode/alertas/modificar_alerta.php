@@ -56,13 +56,23 @@ if ( (give_acl($id_user, 0, "LM")==1)){
 	echo "<th class='w100'>".$lang_label["alertname"];
 	echo "<th>".$lang_label["description"];
 	echo "<th>".$lang_label["delete"];
+	$color=0;
 	$sql1='SELECT * FROM talerta ORDER BY nombre';
 	$result=mysql_query($sql1);
 	while ($row=mysql_fetch_array($result)){
-		echo "<tr><td class='datos'><b><a href='index.php?sec=galertas&sec2=godmode/alertas/configurar_alerta&id_alerta=".$row["id_alerta"]."'>".$row["nombre"]."</a></b>";
-		echo "<td class='datos'>".$row["descripcion"];
-		echo '<td class="datos" align="center"><a href="index.php?sec=galertas&sec2=godmode/alertas/modificar_alerta&borrar_alerta='.$row["id_alerta"].'" onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;"><img border=0 src="images/cancel.gif"></a>';
+		if ($color == 1){
+			$tdcolor = "datos";
+			$color = 0;
+			}
+		else {
+			$tdcolor = "datos2";
+			$color = 1;
+		}
+		echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=galertas&sec2=godmode/alertas/configurar_alerta&id_alerta=".$row["id_alerta"]."'>".$row["nombre"]."</a></b>";
+		echo "<td class='$tdcolor'>".$row["descripcion"];
+		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/alertas/modificar_alerta&borrar_alerta=".$row["id_alerta"]."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cancel.gif'></a>";
 	}
+	
 	echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
 	echo "<tr><td align='right' colspan='3'>";
 	echo "<form method=post action='index.php?sec=galertas&sec2=godmode/alertas/configurar_alerta&creacion=1'>";

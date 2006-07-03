@@ -53,20 +53,20 @@ if (comprueba_login() == 0)
 	}
 	echo '</select>';
 			
-	echo '<tr><td class="datos">'.$lang_label["block_size"];
-	echo '<td class="datos"><input type="text" name="block_size" size=5 value="'.$block_size.'">';
+	echo '<tr><td class="datos2">'.$lang_label["block_size"];
+	echo '<td class="datos2"><input type="text" name="block_size" size=5 value="'.$block_size.'">';
 	
 	echo '<tr><td class="datos">'.$lang_label["days_compact"];
 	echo '<td class="datos"><input type="text" name="days_compact" size=5 value="'.$days_compact.'">';
 	
-	echo '<tr><td class="datos">'.$lang_label["days_purge"];
-	echo '<td class="datos"><input type="text" name="days_purge" size=5 value="'.$days_purge.'">';
+	echo '<tr><td class="datos2">'.$lang_label["days_purge"];
+	echo '<td class="datos2"><input type="text" name="days_purge" size=5 value="'.$days_purge.'">';
 	
 	echo '<tr><td class="datos">'.$lang_label["graph_res"];
 	echo '<td class="datos"><input type="text" name="graph_res" size=5 value="'.$config_graph_res.'">';
 	
-	echo '<tr><td class="datos">'.$lang_label["step_compact"];
-	echo '<td class="datos"><input type="text" name="step_compact" size=5 value="'.$config_step_compact.'">';
+	echo '<tr><td class="datos2">'.$lang_label["step_compact"];
+	echo '<td class="datos2"><input type="text" name="step_compact" size=5 value="'.$config_step_compact.'">';
 
 	echo '<tr><td class="datos">'.$lang_label["graph_order"];
 	echo '<td class="datos"><select name="graph_order">';
@@ -79,8 +79,8 @@ if (comprueba_login() == 0)
 		echo '<option value="0">'.$lang_label["left_right"].'</option>';
 	}
 	
-	echo '<tr><td class="datos">'.$lang_label["truetype"];
-	echo '<td class="datos"><select name="truetype">';
+	echo '<tr><td class="datos2">'.$lang_label["truetype"];
+	echo '<td class="datos2"><select name="truetype">';
 	if ($config_truetype==1) {
 		echo '<option value="1">'.$lang_label["active"].'</option>';
 		echo '<option value="0">'.$lang_label["disabled"].'</option>';

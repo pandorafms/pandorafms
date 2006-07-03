@@ -37,7 +37,7 @@ if (comprueba_login() == 0) {
 <th><?php echo $lang_label["description"]?>
 
 <?php
-
+$color = 1;
 $query1="SELECT * FROM tusuario";
 $resq1=mysql_query($query1);
 while ($rowdup=mysql_fetch_array($resq1)){
@@ -45,9 +45,17 @@ while ($rowdup=mysql_fetch_array($resq1)){
 	$nivel =$rowdup["nivel"];
 	$comentarios =$rowdup["comentarios"];
 	$fecha_registro =$rowdup["fecha_registro"];
-	echo "<tr><td class='datos'><a href='index.php?sec=usuarios&sec2=operation/users/user_edit&ver=".$nombre."'><b>".$nombre."</b></a>";
-	echo "<td class='datos'><font size=1>".$fecha_registro."</font>";
-	echo "<td class='datos'>";
+	if ($color == 1){
+		$tdcolor = "datos";
+		$color = 0;
+	}
+	else {
+		$tdcolor = "datos2";
+		$color = 1;
+	}
+	echo "<tr><td class='$tdcolor'><a href='index.php?sec=usuarios&sec2=operation/users/user_edit&ver=".$nombre."'><b>".$nombre."</b></a>";
+	echo "<td class='$tdcolor'><font size=1>".$fecha_registro."</font>";
+	echo "<td class='$tdcolor'>";
 	if ($nivel == 1) 
 		echo "<img src='images/admin.gif'>";
 	else
@@ -63,8 +71,8 @@ while ($rowdup=mysql_fetch_array($resq1)){
 	}
 	else { echo $lang_label["no_profile"]; }
 	echo "</span></a>";
-        echo "<td class='datos' width='100'>".substr($rowdup["nombre_real"],0,16);
-	echo "<td class='datos_jus'>".$comentarios;
+	echo "<td class='$tdcolor' width='100'>".substr($rowdup["nombre_real"],0,16);
+	echo "<td class='$tdcolor'>".$comentarios;
 }
 
 echo "<tr><td colspan='5'><div class='raya'></div></td></tr></table><br>";
@@ -91,7 +99,7 @@ echo "<tr><td colspan='5'><div class='raya'></div></td></tr></table><br>";
 	echo "<th class='w40d'><font size=1>DM<a href='#' class='tip2'>&nbsp;<span>".$help_label["DM"]."</span></a>";
 	echo "<th class='w40d'><font size=1>LM<a href='#' class='tip2'>&nbsp;<span>".$help_label["LM"]."</span></a>";
 	echo "<th class='w40d'><font size=1>PM<a href='#' class='tip2'>&nbsp;<span>".$help_label["PM"]."</span></a>";
-	
+	$color = 0;
 	while ($rowdup=mysql_fetch_array($resq1)){
 		$id_perfil = $rowdup["id_perfil"];
 		$nombre=$rowdup["name"];
@@ -105,37 +113,44 @@ echo "<tr><td colspan='5'><div class='raya'></div></td></tr></table><br>";
 		$db_management = $rowdup["db_management"];
 		$alert_management = $rowdup["alert_management"];
 		$pandora_management = $rowdup["pandora_management"];
+		if ($color == 1){
+			$tdcolor = "datos";
+			$color = 0;
+		}
+		else {
+			$tdcolor = "datos2";
+			$color = 1;
+		}
+		echo "<tr><td class='$tdcolor"."_id'>".$nombre;
 		
-		echo "<tr><td class=datos_id>".$nombre;
-		
-		echo "<td class=datos>";
+		echo "<td class='$tdcolor'>";
 		if ($incident_view == 1) echo "<img src='images/ok.gif' border=0>";
 			
-		echo "<td class=datos>";
+		echo "<td class='$tdcolor'>";
 		if ($incident_edit == 1) echo "<img src='images/ok.gif' border=0>";
 			
-		echo "<td class=datos>";
+		echo "<td class='$tdcolor'>";
 		if ($incident_management == 1) echo "<img src='images/ok.gif' border=0>";
 			
-		echo "<td class=datos>";
+		echo "<td class='$tdcolor'>";
 		if ($agent_view == 1) echo "<img src='images/ok.gif' border=0>";
 			
-		echo "<td class=datos>";
+		echo "<td class='$tdcolor'>";
 		if ($agent_edit == 1) echo "<img src='images/ok.gif' border=0>";
 			
-		echo "<td class=datos>";
+		echo "<td class='$tdcolor'>";
 		if ($alert_edit == 1) echo "<img src='images/ok.gif' border=0>";
 			
-		echo "<td class=datos>";
+		echo "<td class='$tdcolor'>";
 		if ($user_management == 1) echo "<img src='images/ok.gif' border=0>";
 			
-		echo "<td class=datos>";
+		echo "<td class='$tdcolor'>";
 		if ($db_management == 1) echo "<img src='images/ok.gif' border=0>";
 			
-		echo "<td class=datos>";
+		echo "<td class='$tdcolor'>";
 		if ($alert_management == 1) echo "<img src='images/ok.gif' border=0>";
 			
-		echo "<td class=datos>";
+		echo "<td class='$tdcolor'>";
 		if ($pandora_management == 1) echo "<img src='images/ok.gif' border=0>";
 
 	}

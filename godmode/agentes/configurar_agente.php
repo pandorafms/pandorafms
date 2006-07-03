@@ -578,7 +578,7 @@ echo '<td class="datos"><b>'.$lang_label["agent_name"].'</b></td><td class="dato
 if (isset($_GET["creacion"])){
 	echo "&nbsp;";
 } else {
-	echo "&nbsp;<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."' <img src='images/setup.gif' width=25 valign='top' align='middle' border=0></a>&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'><img src='images/lupa.gif' border='0' align='middle'></a>";
+	echo "&nbsp;<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."' <img src='images/setup.gif' width='19' valign='top' align='middle' border='0'></a>&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'><img src='images/lupa.gif' border='0' align='middle'></a>";
 } 
 ?>
 <tr><td class="datos2"><b><?php echo $lang_label["ip_address"]?></b><td class="datos2"><input type="text" name="direccion" size=30 value="<?php echo $direccion_agente ?>">
@@ -700,8 +700,8 @@ if ( $creacion_agente != 1) {
 			$module_interval2 = $row["module_interval"];
 			$module_group2 = $row["id_module_group"];
 			
-			echo "<tr><td class='$tdcolor_id'>".$nombre_modulo;
-			echo "<td class='$tdcolorf9'>";
+			echo "<tr><td class='".$tdcolor."_id'>".$nombre_modulo;
+			echo "<td class='".$tdcolor."f9'>";
 			if ($id_tipo > 0) {
 				echo "<img src='images/".$iconindex[$id_tipo]."' border=0>";
 			}
@@ -910,7 +910,7 @@ if (isset($_POST["oid"])){
 <textarea name="descripcion" cols=52 rows=2>
 <?php echo $modulo_descripcion ?>
 </textarea>
-<tr><td colspan='7'><div class='raya'></div></td></tr>
+<tr><td colspan='5'><div class='raya'></div></td></tr>
 <tr><td colspan="5" align="right">
 <?php 
 	if ($update_module == "1"){

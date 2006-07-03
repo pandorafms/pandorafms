@@ -27,9 +27,10 @@ if (comprueba_login() == 0)
 	echo "<tr><th>".$lang_label["agent_name"];
 	echo "<th>".$lang_label["assigned_module"];
 	echo "<th>".$lang_label["total_data"];
+	$color=0;
 	
 	$result_2=mysql_query("SELECT id_agente FROM tagente");
-	while ($row2=mysql_fetch_array($result_2)){	
+	while ($row2=mysql_fetch_array($result_2)){
 		$total_agente=0;
 		$result_3c=mysql_query("SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_agente = ".$row2["id_agente"]);
 		$row3c=mysql_fetch_array($result_3c);
@@ -39,10 +40,18 @@ if (comprueba_login() == 0)
 			$result_4=mysql_query("SELECT COUNT(id_agente_modulo) FROM tagente_datos WHERE id_agente_modulo = ".$row3["id_agente_modulo"]);
 			$row4=mysql_fetch_array($result_4);
 			$total_agente=$total_agente + $row4[0];
-		}	
-		echo "<tr><td class='datos'><b><a href='index.php?sec=gagente&sec2=operation/agentes/ver_agente&id_agente=".$row2["id_agente"]."'>".dame_nombre_agente($row2[0])."</a></b>";
-		echo "<td class=datos>".$row3c[0];
-		echo "<td class=datos>".$total_agente;
+		}
+		if ($color == 1){
+			$tdcolor = "datos";
+			$color = 0;
+		}
+		else {
+			$tdcolor = "datos2";
+			$color = 1;
+		}
+		echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=gagente&sec2=operation/agentes/ver_agente&id_agente=".$row2["id_agente"]."'>".dame_nombre_agente($row2[0])."</a></b>";
+		echo "<td class='$tdcolor'>".$row3c[0];
+		echo "<td class='$tdcolor'>".$total_agente;
 		flush();
    		//ob_flush();
 	}

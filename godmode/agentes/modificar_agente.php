@@ -64,14 +64,22 @@ if (give_acl($id_user, 0, "AW")==1) {
 	echo "<th>".$lang_label["group"];
 	echo "<th>".$lang_label["description"];
 	echo "<th>".$lang_label["delete"];
-
+	$color=0;
 	while ($row=mysql_fetch_array($result)){
 		$id_grupo = $row["id_grupo"];
+		if ($color == 1){
+			$tdcolor = "datos";
+			$color = 0;
+			}
+		else {
+			$tdcolor = "datos2";
+			$color = 1;
+		}
 		if (give_acl($id_user, $id_grupo, "AW")==1){
-			echo "<tr><td class='datos'><b><a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$row["id_agente"]."'>".$row["nombre"]."</a></b>";
-			echo '<td class="datos"> <img src="images/g_'.$iconindex_g[$id_grupo].'.gif" border="0"> ( '.dame_grupo($id_grupo).' )</td>';
-			echo '<td class="datos">'.$row["comentarios"].'</td>';
-			echo '<td class="datos" align="center"><a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente='.$row["id_agente"].'" onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;"><img border="0" src="images/cancel.gif"></a></td>';
+			echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$row["id_agente"]."'>".$row["nombre"]."</a></b>";
+			echo "<td class='$tdcolor'> <img src='images/g_".$iconindex_g[$id_grupo].".gif' border='0'> ( ".dame_grupo($id_grupo)." )</td>";
+			echo "<td class='$tdcolor'>".$row["comentarios"]."</td>";
+			echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente=".$row["id_agente"]."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cancel.gif'></a></td>";
  		}
 	}
 		echo "<tr><td colspan='4'><div class='raya'></div></td></tr>";	

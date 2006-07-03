@@ -630,6 +630,9 @@ $lang_label["cannot_read_snmp"]="No se puede leer SNMP del origen";
 $lang_label["ok_read_snmp"]="El origen SNMP ha sido analizado";
 $lang_label["cancel"]="Cancelar";
 $lang_label["network_module_refresh_exec"]="Ejecutado el refresco del m&oaucute;dulo de red";
+$lang_label["next_contact"]="Siguiente contacto con el agente";
+$lang_label["out_of_limits"]="Fuera de los l&iacute;mites";
+$lang_label["background_image"]="Imagen de fondo";
 
 global $lang_label;
 global $help_label;

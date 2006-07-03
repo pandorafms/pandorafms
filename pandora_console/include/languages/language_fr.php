@@ -626,10 +626,13 @@ $lang_label["graph_order"]="Ordre du tableau";
 $lang_label["truetype"]="Polices truetype";
 $lang_label["right_left"]="dr. a gau.";
 $lang_label["left_right"]="gau. a dr.";
-$lang_label["cannot_read_snmp"]="Cannot read from SNMP source";
-$lang_label["ok_read_snmp"]="SNMP source has been scanned";
+$lang_label["cannot_read_snmp"]="Le source SNMP ne peut pas &ecirc;tre lu";
+$lang_label["ok_read_snmp"]="Le source SNMP a &eacute;t&eacute; lu rapidement";
 $lang_label["cancel"]="Annuler";
 $lang_label["network_module_refresh_exec"]="L'actualisation du module de R&eacute;seau est ex&eacute;cut&eacute;";
+$lang_label["next_contact"]="Contact suivant de l'agent";
+$lang_label["out_of_limits"]="Hors des limites";
+$lang_label["background_image"]="Image de base";
 
 global $lang_label;
 global $help_label;

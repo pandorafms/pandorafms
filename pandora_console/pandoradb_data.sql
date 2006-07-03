@@ -38,7 +38,7 @@ INSERT INTO `tconfig_os` VALUES (1,'Linux','Linux: All versions','so_linux.gif')
 INSERT INTO `tconfig_os` VALUES (2,'Solaris','Sun Solaris','so_solaris.gif');
 INSERT INTO `tconfig_os` VALUES (3,'AIX','IBM AIX','so_aix.gif');
 INSERT INTO `tconfig_os` VALUES (4,'BSD','OpenBSD, FreeBSD and Others','so_bsd.gif');
-INSERT INTO `tconfig_os` VALUES (5,'HP-UX','HPUX Unix OS','so_hpux.gif');
+INSERT INTO `tconfig_os` VALUES (5,'HP-UX','HP-UX Unix OS','so_hpux.gif');
 INSERT INTO `tconfig_os` VALUES (6,'BeOS','BeOS','so_beos.gif');
 INSERT INTO `tconfig_os` VALUES (7,'Cisco','CISCO IOS','so_cisco.gif');
 INSERT INTO `tconfig_os` VALUES (8,'MacOS','MAC OS','so_mac.gif');

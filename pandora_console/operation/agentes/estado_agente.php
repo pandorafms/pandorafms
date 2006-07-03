@@ -207,8 +207,11 @@ if (comprueba_login() == 0) {
 							} else {
 								echo "N/A";
 							}
-							echo "<a class='info'><img src='reporting/fgraph.php?tipo=progress&percent=".$percentil."&height=15&width=80' border=0>";
-							echo "<span>$ultimo_contacto</span></a>";			
+							echo "<a href='#' class='info'><img src='reporting/fgraph.php?tipo=progress&percent=".$percentil."&height=15&width=80' border='0'>
+							<!--[if IE]>
+							<a href='#' class='tip' style='padding: 2px 0px 0px 20px; height: 20px; z-index: 1'>&nbsp;
+							<![endif]-->
+							<span>$ultimo_contacto</span></a>";
 							// echo $ultimo_contacto;
 						}
 						

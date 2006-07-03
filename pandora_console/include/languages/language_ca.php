@@ -580,11 +580,14 @@ $lang_label["right_left"]="Dre. a Esq."; //dreta a esquerra
 $lang_label["left_right"]="Esq. a Dre."; //esquerra a dreta
 $lang_label["right_left"]="Der. a Izq."; //derecha a izquierda
 $lang_label["left_right"]="Izq. a Der."; //izquierda a derecha
-$lang_label["cannot_read_snmp"]="Hi ha hagut un problema llegint SNMP";
-$lang_label["ok_read_snmp"]="El origen SNMP ha sido analizado";
+$lang_label["cannot_read_snmp"]="No es pot llegir SNMP de l'origen";
+$lang_label["ok_read_snmp"]="L'origen SNMP ha estat analitzat";
 $lang_label["cancel"]="Cancel.lar";
-$lang_label["network_module_refresh_exec"]="Ejecutado el refresco del m&oaucute;dulo de red";
+$lang_label["network_module_refresh_exec"]="Executat el refresc del m&ograve;dul de xarxa";
+$lang_label["next_contact"]="Seg&uuml;ent contacte amb l'agent";
+$lang_label["out_of_limits"]="Fora dels l&iacute;mits";
+$lang_label["background_image"]="Imatge de fons";
 
-global $lang_label; 
+global $lang_label;
 global $help_label;
 ?>

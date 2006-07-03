@@ -25,9 +25,9 @@ a:hover {color: #003a3a; text-decoration: underline;}
 p.center {text-align: center;}
 h1#log {border-bottom: 1px solid #778866; padding-bottom: 3px; margin-top: 5em; width: 29em; text-align: left;}
 h1#log_f, h1#db_fh1  {color: #ff0000; border-bottom: 1px solid #ff0000; padding-bottom: 3px;}
-div#login {text-align: left; border: 1px solid #999999; margin-top: 2em; margin-bottom: -1em; padding: 0.5em; width: 40em;background:url(../../images/fondo_serpent.jpg);}
+div#login {text-align: left; border: 1px solid #999999; margin-top: 2em; margin-bottom: -1em; padding: 0.5em; width: 40em; background:url(../../images/backgrounds/background10.jpg);}
 div#login_f {text-align: left; margin: auto; padding: 0.5em; width: 48em; margin-top: 5em;}
-div#db_f {text-align: justify; margin:auto; padding: 0.5em; width: 55em; margin-top: 3em;}
+div#db_f {text-align: justify; margin: auto; padding: 0.5em; width: 55em; margin-top: 3em;}
 div#login_box {float:right; padding-right: 10px; margin-top: 25px; width: 140px;}
 div#logo_box {margin-top: 25px; padding-left: 5px;}
 div#noaccess {width: 350px; padding-left: 40px;}
@@ -53,9 +53,9 @@ input.sub {font-weight: bold; border-bottom-color: #708090; border-right-color: 
 th, td.lb {color: #ffffff; background-color: #778866;}
 td.lb {height: 16px; padding-left: 3px; font-weight: bold;}
 td.datos, td.datost, td.datosb, td.datos_id, td.datosf9, td.datosf9i, td.datos_jus {background-color: #f5f5f5;}
-d.w30datos, td.w40datos, td.w90datos, td.w135datos, td.w180datos, td.w230datos {background-color: #f5f5f5;}
+td.w30datos, td.w40datos, td.w90datos, td.w135datos, td.w180datos, td.w230datos {background-color: #f5f5f5;}
 td.datos2, td.datos2t, td.datos2b, td.datos2_id, td.datos2f9, td.datos2f9i, td.datos2_jus {background-color: #fafbfc;}
-d.w30datos2, td.w40datos2, td.w90datos2, td.w135datos2, td.w180datos2, td.w230datos2 {background-color: #fafbfc;}
+td.w30datos2, td.w40datos2, td.w90datos2, td.w135datos2, td.w180datos2, td.w230datos2 {background-color: #fafbfc;}
 td.datos3 {background-color: #e6e9cd;}
 td.datos_id {color: #1a313a;}
 td.datos_jus, td.datos2_jus {text-align: justify;}

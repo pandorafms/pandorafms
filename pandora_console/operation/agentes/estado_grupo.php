@@ -139,7 +139,11 @@ if (comprueba_login() == 0)
 					$icono_type=$icono_type."<img src='images/dot_yellow.gif' alt=''>";
 				}
 				// TOOLTIP.
-				$celda = "<td class='bot' width=100><a href='index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id=".$grupo[$real_count]["id_grupo"]."' class='info'><img class='top' src='images/groups/".$icono_grupo."_1.gif' border='0' alt=''><span>
+				$celda = "<td class='bot' width=100><a href='index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id=".$grupo[$real_count]["id_grupo"]."' class='info'><img class='top' src='images/groups/".$icono_grupo."_1.gif' border='0' alt=''>
+				<!--[if IE]>
+				<a href='index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id=".$grupo[$real_count]["id_grupo"]."' class='tip' style='padding: 2px 0px 0px 20px; height: 20px; z-index: 1'>&nbsp;
+				<![endif]-->
+				<span>
 				<table cellspacing='2' cellpadding='0' style='margin-left:20px'>
 				<tr><td colspan='2' width='91' class='lb'>".$lang_label["agents"].": </td></tr>
 				<tr><td colspan='2' class='datos' align='center'><b>".$grupo[$real_count]["agent"]."</b></td></tr></table>

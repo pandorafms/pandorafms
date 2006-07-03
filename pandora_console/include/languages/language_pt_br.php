@@ -568,10 +568,13 @@ $lang_label["right_left"]="Dir. &agrave;а Esq."; // direita ра esquerda
 $lang_label["left_right"]="Esq. &agrave;а Dir."; // esquerda ра direita
 $lang_label["right_left"]="Der. a Izq."; //derecha a izquierda
 $lang_label["left_right"]="Izq. a Der."; //izquierda a derecha
-$lang_label["cannot_read_snmp"]="No se puede leer SNMP del origen";
-$lang_label["ok_read_snmp"]="El origen SNMP ha sido analizado";
+$lang_label["cannot_read_snmp"]="N&atilde;o pode ser lido SNMP del origem";
+$lang_label["ok_read_snmp"]="El origem SNMP foi esquadrinhado";
 $lang_label["cancel"]="Cancelar";
-$lang_label["network_module_refresh_exec"]="Ejecutado el refresco del m&oaucute;dulo de red";
+$lang_label["network_module_refresh_exec"]="Executado refrescar de m&oacute;dulo de rede";
+$lang_label["next_contact"]="Seguinte contato de agente";
+$lang_label["out_of_limits"]="Fora de limites";
+$lang_label["background_image"]="Imagem de fundo";
 
 global $lang_label;
 global $help_label;

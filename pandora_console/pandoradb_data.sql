@@ -8,7 +8,7 @@
 -- Dumping data for table `talerta`
 --
 
-INSERT INTO `talerta` VALUES (1,'eMail','echo _field3_ | mail -s _field2_ _field1_','Send email from Pandora Server. mail is a default command on all &quot;standard&quot; Unix systems, using:\r\n_field1_ as destination email address, and\r\n_field2_ as subject for message. \r\n_field3_ as text of message.');
+INSERT INTO `talerta` VALUES (1,'eMail','echo _field3_ | sendmail -s _field2_ _field1_','Send email from Pandora Server. mail is a default command on all &quot;standard&quot; Unix systems, using:\r\n_field1_ as destination email address, and\r\n_field2_ as subject for message. \r\n_field3_ as text of message.');
 INSERT INTO `talerta` VALUES (2,'LogFile','echo _timestamp_ pandora _field1_ _field2_  &gt;&gt; /var/log/pandora_alert.log','This is a default alert to write alerts in a standard ASCII  plaintext log file in /var/log/pandora_alert.log\r\n');
 INSERT INTO `talerta` VALUES (3,'Internal Audit','','This alert save alert in Pandora internal audit system. Fields are static and only _field1_ is used.');
 INSERT INTO `talerta` VALUES (4,'SNMP Trap','/usr/bin/snmptrap -v 1 -c trap_public 192.168.0.4 1.1.1.1.1.1.1.1 _agent_ _field1_','Send a SNMPTRAP to 192.168.0.4. Please review config and adapt to your needs, this is only a sample, not functional itself.');

@@ -178,38 +178,52 @@ if (comprueba_login() == 0)
 	<table width=300 border=0>
 	<tr><td class=datos>
 	<?php echo $lang_label["rango3"]?>
+	</td>
 	<td class=datos>
 	<?php echo $datos_rango3 ?>
+	</td>
 	
-	<tr><td class=datos>
+	<tr><td class=datos2>
 	<?php echo $lang_label["rango2"]?>
-	<td class=datos>
+	</td>
+	<td class=datos2>
 	<?php echo $datos_rango2 ?>
- 
+	</td>
+	
 	<tr><td class=datos>
 	<?php echo $lang_label["rango11"]?>
+	</td>
 	<td class=datos>
 	<?php echo $datos_rango11 ?>
+	</td>
 	
-	<tr><td class=datos>
+	<tr><td class=datos2>
 	<?php echo $lang_label["rango1"]?>
-	<td class=datos>
+	</td>
+	<td class=datos2>
 	<?php echo $datos_rango1 ?>
+	</td>
 	
 	<tr><td class=datos>
 	<?php echo $lang_label["rango0"]?>
+	</td>
 	<td class=datos>
 	<?php echo $datos_rango0 ?>
+	</td>
 	
-	<tr><td class=datos>
+	<tr><td class=datos2>
 	<?php echo $lang_label["rango00"]?>
-	<td class=datos>
+	</td>
+	<td class=datos2>
 	<?php echo $datos_rango00 ?>
-	
-	<tr><td class=datos><b>
-	<?php echo $lang_label["total_packets"]?></b>
-	<td class=datos><b>
-	<?php echo $datos_total ?></b>
+	</td>	
+	<tr><td class=datos>
+	<b><?php echo $lang_label["total_packets"]?></b>
+	</td>
+	<td class=datos>
+	<b><?php echo $datos_total ?></b>
+	</td>
+	</tr>
 	</table>
 	<br>
 	<h3><?php echo $lang_label["purge_data"] ?></h3>

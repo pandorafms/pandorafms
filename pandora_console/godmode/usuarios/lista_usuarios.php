@@ -45,16 +45,25 @@ $nombre = "";
 $nivel = "";
 $comentarios = "";
 $fecha_registro = "";
+$color=0;
 
 while ($rowdup=mysql_fetch_array($resq1)){
 	$nombre=$rowdup["id_usuario"];
 	$nivel =$rowdup["nivel"];
 	$comentarios =$rowdup["nombre_real"];
 	$fecha_registro =$rowdup["fecha_registro"];
-	echo "<tr><td class=datos>";
+	if ($color == 1){
+		$tdcolor = "datos";
+		$color = 0;
+	}
+	else {
+		$tdcolor = "datos2";
+		$color = 1;
+	}
+	echo "<tr><td class='$tdcolor'>";
 	echo "<a href='index.php?sec=gusuarios&sec2=godmode/usuarios/configurar_usuarios&id_usuario_mio=".$nombre."'><b>".$nombre."</b></a>";
-	echo "<td class=datos>".$fecha_registro;
-	echo "<td class=datos>";
+	echo "<td class='$tdcolor'>".$fecha_registro;
+	echo "<td class='$tdcolor'>";
 	if ($nivel == 1) 
 		echo "<img src='images/admin.gif'>";
 	else
@@ -72,8 +81,8 @@ while ($rowdup=mysql_fetch_array($resq1)){
 	else { echo $lang_label["no_profile"]; }
 	echo "</span></a>";
 	
-	echo "<td class=datos>".$comentarios;
-	echo '<td class=datos align="center"><a href="index.php?sec=gusuarios&sec2=godmode/usuarios/lista_usuarios&borrar_usuario='.$nombre.'" onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;"><img border=0 src="images/cancel.gif"></a>  ';
+	echo "<td class='$tdcolor'>".$comentarios;
+	echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/usuarios/lista_usuarios&borrar_usuario=".$nombre."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cancel.gif'></a>";
 }
 	echo "<tr><td colspan='5'><div class='raya'></div></td></tr>";
 	echo "<tr><td colspan='5' align='right'>";
@@ -83,9 +92,9 @@ while ($rowdup=mysql_fetch_array($resq1)){
 
 echo "</table>";
 
-} // fin comprobacion seguridad pagina
+} // end verify security of page
  else {
-                audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access User Management");
-                require ("general/noaccess.php");
+		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access User Management");
+		require ("general/noaccess.php");
 }        
 ?>

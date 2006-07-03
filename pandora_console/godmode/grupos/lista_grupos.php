@@ -57,13 +57,21 @@ if (comprueba_login() == 0)
 	echo "<th class='w80'>".$lang_label["delete"]."</th>";
 	$sql1='SELECT * FROM tgrupo ORDER BY nombre';
 	$result=mysql_query($sql1);
-	
+	$color=1;
 	while ($row=mysql_fetch_array($result)){
 	$iconindex_g[$row["id_grupo"]] = $row["icon"];
+	if ($color == 1){
+		$tdcolor = "datos";
+		$color = 0;
+		}
+	else {
+		$tdcolor = "datos2";
+		$color = 1;
+	}
 	if ($row["id_grupo"] != 1){
-		echo "<tr><td class='datos' align='center'><img src='images/g_".$iconindex_g[$row["id_grupo"]].".gif' border='0'>"	;
-		echo "<td class='datos'><b><a href='index.php?sec=gagente&sec2=godmode/grupos/configurar_grupo&id_grupo=".$row["id_grupo"]."'>".$row["nombre"]."</a></b>";
-		echo '<td class="datos" align="center"><a href="index.php?sec=gagente&sec2=godmode/grupos/lista_grupos&id_grupo='.$row["id_grupo"].'&borrar_grupo='.$row["id_grupo"].'" onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;"><img border=0 src="images/cancel.gif"></a>';
+		echo "<tr><td class='$tdcolor' align='center'><img src='images/g_".$iconindex_g[$row["id_grupo"]].".gif' border='0'>"	;
+		echo "<td class='$tdcolor'><b><a href='index.php?sec=gagente&sec2=godmode/grupos/configurar_grupo&id_grupo=".$row["id_grupo"]."'>".$row["nombre"]."</a></b>";
+		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/grupos/lista_grupos&id_grupo=".$row["id_grupo"]."&borrar_grupo=".$row["id_grupo"]."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cancel.gif'></a>";
 	}
 	}
 	echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";

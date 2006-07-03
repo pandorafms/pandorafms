@@ -52,11 +52,13 @@ input.login {border-color: #778866; background-color: #f5f5f5; margin: 2px 0 8px
 input.sub {font-weight: bold; border-bottom-color: #708090; border-right-color: #708090; -moz-border-radius: 5%; font-size: 11px;}
 th, td.lb {color: #ffffff; background-color: #778866;}
 td.lb {height: 16px; padding-left: 3px; font-weight: bold;}
-td.datos, td.datost, td.datosb, td.datos_id, td.datosf9, td.datosf9i, td.datos_jus, td.w30d, td.w40d, td.w90d, td.w135d, td.w180d, td.w230d {background-color: #f5f5f5;}
+td.datos, td.datost, td.datosb, td.datos_id, td.datosf9, td.datosf9i, td.datos_jus {background-color: #f5f5f5;}
+d.w30datos, td.w40datos, td.w90datos, td.w135datos, td.w180datos, td.w230datos {background-color: #f5f5f5;}
 td.datos2, td.datos2t, td.datos2b, td.datos2_id, td.datos2f9, td.datos2f9i, td.datos2_jus {background-color: #fafbfc;}
-td.datos3 {background-color: #e6e9cd;}  #d7ebce
+d.w30datos2, td.w40datos2, td.w90datos2, td.w135datos2, td.w180datos2, td.w230datos2 {background-color: #fafbfc;}
+td.datos3 {background-color: #e6e9cd;}
 td.datos_id {color: #1a313a;}
-td.datos_jus {text-align: justify;}
+td.datos_jus, td.datos2_jus {text-align: justify;}
 .bg , .bgt {background-color: #4a6629;}
 .bg {position:relative; height: 20px; width: 100%;}
 .f10, .w155f10, #ip {font-size: 10px; text-align: center;}

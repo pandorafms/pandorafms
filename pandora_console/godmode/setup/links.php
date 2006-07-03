@@ -92,13 +92,22 @@ if (comprueba_login() == 0)
 		echo "<th class='w80'>".$lang_label["delete"];
 		$sql1='SELECT * FROM tlink ORDER BY name';
 		$result=mysql_query($sql1);
+		$color=1;
 		while ($row=mysql_fetch_array($result)){
-			echo "<tr><td class='datos'><b><a href='index.php?sec=gsetup&sec2=godmode/setup/links&form_edit=1&id_link=".$row["id_link"]."'>".$row["name"]."</a></b>";
-			echo '<td class="datos" align="center"><a href="index.php?sec=gsetup&sec2=godmode/setup/links&id_link='.$row["id_link"].'&borrar='.$row["id_link"].'" onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;"><img border=0 src="images/cancel.gif"></a>';
+			if ($color == 1){
+				$tdcolor = "datos";
+				$color = 0;
+			}
+			else {
+				$tdcolor = "datos2";
+				$color = 1;
+			}
+			echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=gsetup&sec2=godmode/setup/links&form_edit=1&id_link=".$row["id_link"]."'>".$row["name"]."</a></b>";
+			echo '<td class="'.$tdcolor.'" align="center"><a href="index.php?sec=gsetup&sec2=godmode/setup/links&id_link='.$row["id_link"].'&borrar='.$row["id_link"].'" onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;"><img border=0 src="images/cancel.gif"></a>';
 		}
 			echo "<tr><td colspan='2'><div class='raya'></div></td>";
 			echo "<tr><td colspan='2' align='right'>";
-			echo "<form method=post action='index.php?sec=gsetup&sec2=godmode/setup/links&form_add=1'>";
+			echo "<form method='post' action='index.php?sec=gsetup&sec2=godmode/setup/links&form_add=1'>";
 			echo "<input type='submit' class='sub' name='form_add' value='".$lang_label["add"]."'>";
 			echo "</form></table>";
 } // Fin bloque else

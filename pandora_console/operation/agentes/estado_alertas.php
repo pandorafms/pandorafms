@@ -106,7 +106,7 @@ if (comprueba_login() == 0) {
 			echo "<br>";
 			echo "<table cellpadding='3' cellspacing='3'>";
 			echo "<tr><th>ID</th><th>".$lang_label["type"]."</th><th>".$lang_label["description"]."</th><th>".$lang_label["last_fired"]."</th><th>".$lang_label["times_fired"]."</th><th>".$lang_label["status"]."</th>";
-			$color=1;
+			$color=0;
 			while ($row=mysql_fetch_array($result)){ //while there are agents
 				if ($row["disabled"] == 0) {
 					$id_agente = $row['id_agente'];

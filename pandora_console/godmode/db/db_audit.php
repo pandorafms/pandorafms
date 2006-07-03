@@ -91,14 +91,14 @@ if (comprueba_login() == 0)
 	echo "<tr><td class='datos'>";
 	$result_t=mysql_query("SELECT COUNT(*) FROM tsesion");
 	$row=mysql_fetch_array($result_t);
-	echo "<B>".$lang_label["total"]."</b>";
-	echo "<td class=datos>".$row[0]." ".$lang_label["records"];
+	echo "<b>".$lang_label["total"]."</b>";
+	echo "<td class='datos'>".$row[0]." ".$lang_label["records"];
 	
 	echo "<tr>";	
 	$result_t=mysql_query("SELECT min(fecha) FROM tsesion");
 	$row=mysql_fetch_array($result_t);
-	echo "<td class='datos'><b>".$lang_label["first_date"]."</b>";
-	echo "<td class='datos'>".$row[0];
+	echo "<td class='datos2'><b>".$lang_label["first_date"]."</b>";
+	echo "<td class='datos2'>".$row[0];
 
 	echo "<tr><td class='datos'>";	
 	$result_t=mysql_query("SELECT max(fecha) FROM tsesion");

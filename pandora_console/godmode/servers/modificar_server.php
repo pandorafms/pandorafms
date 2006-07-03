@@ -87,6 +87,7 @@ if (comprueba_login() == 0) {
 	echo "<th class='datos'>".$lang_label['laststart'];
 	echo "<th class='datos'>".$lang_label['lastupdate'];
 	echo "<th class='datos'>".$lang_label['action'];
+	$color=1;
 		while ($row=mysql_fetch_array($result)){
 			$name = $row["name"];
 			$address = $row["ip_address"];
@@ -101,7 +102,15 @@ if (comprueba_login() == 0) {
 			$description = $row["description"];
 			$id_server = $row["id_server"];
 			
-			echo "<tr><td class='datos'>";
+			if ($color == 1){
+				$tdcolor = "datos";
+				$color = 0;
+			}
+			else {
+				$tdcolor = "datos2";
+				$color = 1;
+			}
+			echo "<tr><td class='$tdcolor'>";
 			echo "<b>$name</b>";
 			echo "<td class='datos' align='middle'>";
 			if ($status ==0){
@@ -109,32 +118,32 @@ if (comprueba_login() == 0) {
 			} else {
 				echo "<img src='images/dot_green.gif'>";
 			}
-			echo "<td class='datos' align='middle'>";
+			echo "<td class='$tdcolor' align='middle'>";
 			echo "$address";
-			echo "<td class='datosf9'>".substr($description,0,25);
-			echo "<td class='datos' align='middle'>";			
+			echo "<td class='".$tdcolor."f9'>".substr($description,0,25);
+			echo "<td class='$tdcolor' align='middle'>";			
 			if ($network_server == 1){
 				echo "<img src='images/network.gif'>";
 			}
-			echo "<td class='datos' align='middle'>";			
+			echo "<td class='$tdcolor' align='middle'>";			
 			if ($data_server == 1){
 				echo "<img src='images/data.gif'>";
 			}
-			echo "<td class='datos' align='middle'>";			
+			echo "<td class='$tdcolor' align='middle'>";			
 			if ($snmp_server == 1){
 				echo "<img src='images/snmp.gif'>";
 			}
-			echo "<td class='datos' align='middle'>";			
+			echo "<td class='$tdcolor' align='middle'>";			
 			if ($master == 1){
 				echo "<img src='images/master.gif'>";
 			}
-			echo "<td class='datos' align='middle'>";			
+			echo "<td class='$tdcolor' align='middle'>";			
 			if ($checksum == 1){
 				echo "<img src='images/binary.gif'>";
 			}
-			echo "<td class='datosf9' align='middle'>".substr($keepalive,0,25);
-			echo "<td class='datosf9' align='middle'>".substr($laststart,0,25);
-			echo "<td class='datosf9' align='middle'><a href='index.php?sec=gserver&sec2=godmode/servers/modificar_server&server=".$id_server."'><img src='images/config.gif' border='0'></a>&nbsp;<a href='index.php?sec=gserver&sec2=godmode/servers/modificar_server&server_del=".$id_server."&delete'><img src='images/cancel.gif' border='0'>";
+			echo "<td class='".$tdcolor."f9' align='middle'>".substr($keepalive,0,25);
+			echo "<td class='".$tdcolor."f9' align='middle'>".substr($laststart,0,25);
+			echo "<td class='".$tdcolor."f9' align='middle'><a href='index.php?sec=gserver&sec2=godmode/servers/modificar_server&server=".$id_server."'><img src='images/config.gif' border='0'></a>&nbsp;<a href='index.php?sec=gserver&sec2=godmode/servers/modificar_server&server_del=".$id_server."&delete'><img src='images/cancel.gif' border='0'>";
 		}
 		echo '<tr><td colspan="12"><div class="raya"></div></td></tr></table>';	
 	}

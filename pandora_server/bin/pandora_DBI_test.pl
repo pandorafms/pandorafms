@@ -17,16 +17,26 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ##################################################################################
-use strict;
+#use strict;
 use warnings;
 
-use DBI;     # DB interface with MySQL
+use DBI();     # DB interface with MySQL
+
+my $dbh = DBI->connect("DBI:mysql:pandora:localhost:3306","pandora","pandora",{ RaiseError => 1 });
 
 while (1){
-	keep_alive_check();
+	# dbd_open_test();
+	dbd_select_test($dbh);
 }
 
-sub keep_alive_check {
-	my $dbh = DBI->connect("DBI:mysql:pandora:localhost:3306","pandora","pandora",{ RaiseError => 1, AutoCommit => 1 });
+sub dbd_select_test {
+	my $dbh = shift;
+	my $query = "select * from tagente";
+	my $result = $dbh->prepare($query);
+	$result ->execute;
+}
+
+sub dbd_open_test {
+	my $dbh = DBI->connect("DBI:mysql:pandora:localhost:3306","pandora","pandora",{ RaiseError => 1 });
 	$dbh->disconnect;
 }

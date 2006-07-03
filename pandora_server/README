@@ -1,54 +1,41 @@
-Configure
-=========
-Change the values in the ./conf/pandora_server.conf file to your own values: servername, IP and so.
+Pandora: The Free Distributed Monitoring System
+===============================================
 
+Version 1.2
 
-SNMP Troubleshooting
-====================
+What is Pandora DMS
+-------------------
 
-You need to install libnet-snmp-perl (not the old libsnmp-perl) package (debian name) to use SNMP Network Agents.
+Pandora are a Free Software set of programs that allows to analyze in a visual way status and performance of several parameters from different Operating Systems, servers, applications and hardware systems as Firewalls, Proxies, Data Bases, Web Servers or Routers. All integrated into an open and distributed architecture.
 
-On PERL code for Pandora Server:
+Pandora can be deployed in every Operating System. You have an agent for every platform. Pandora can monitor hardware systems with TCP/IP Stack, as load balancers, routers, switches, printers and so on.
 
-If problems occur there are number areas to look at to narrow down the possibilities.
-The first step should be to test the UCD SNMP installation independently from the Perl5 SNMP interface.
-Try running the apps from the UCD SNMP distribution, this means: try to exec manually snmpget in the Pandora Network Server. Try for example:
+Pandora has six components: Pandora Data Server, Pandora Network Server, Pandora SNMP Console, Pandora Agents, Pandora Database and Pandora Web Management System (Web Console).
 
-	snmpget -v 1 -c public 192.168.5.1 SNMPv2-MIB::sysName.0
-	bash: snmpget: command not found
+Pandora Servers and SNMP Console
 
-Houston, you've a problem with snmpget :-). Fix it before launch pandora network server.
+They are the recipient of bundles of information and the generators of alerts; they are the brain of the system. We can have several servers for very big systems or a single server. They are developed in Perl and works under any platform, with the required modules. Nevertheless its "official" platform is GNU/Linux. They also insert the gathered data into the Database. You can have several Pandora Servers connected with the same Database.
 
-Make sure your agent (snmpd) is running and properly configured with read-write access for the community you are using.
-Ensure that your MIBs are installed and enviroment variables are set appropriately (see man mib_api)
-Be sure to remove old ucd-snmp installations and ensure headers and libraries from old CMU installations are not being used by mistake.
+Pandora Web Console
 
-If the problem occurs during compilation/linking check that the snmp library being linked is actually the UCD SNMP library (there have been name conflicts with existing snmp libs).
-Also check that the header files are correct and up to date.
-Sometimes compiling the UCD SNMP library with 'position-independent-code' enabled is required (HPUX specifically).
+It allows to manage the system and to operate with it; it's the user interface of Pandora. We can have several Web Consoles in the same implantation. It is developed in PHP and leans on a Data Base and a Web Server, being able to work in any platform: GNU/Linux, Solaris, Win2000, AIX and others.
 
-Network Agent: ICMP Latency
-===========================
+Pandora Database
 
-This module only works if Network Server component its executed under root privileges due limitations of Net::Ping perl library. You can run Network Server using an user without admin privileges but you cannot use ICMP Data / Latency module, but ICMP Proc it's usable using any user because other perl library it's used in this case.
+Core module of Pandora (as you can see in the architecture overview). In this database resides all the information of the enterprise, for example, all data gathered by agents, all configuration defined by administrator, all events, incidents, audit info... At this moment, only MySQL DataBase is supported. More Databases in the future.
 
-Network Agent: UDP
-==================
+Pandora Agents
 
-This module only works if Network Server component its executed under root privileges due limitations of Net::Ping perl library.
+They can monitor any numeric parameter, boolean states, strings or numerical incremental data and/or condition. They have a centralized architecture based on lightweight design for agents (shellscript, wsh, perl) and light agents to collect data. They support all type of platforms (Microsoft, AIX, Solaris, GNU/Linux, IPSO, FreeBSD, etc) because the agents are completely free software, and they communicate using SSH, FTP, NFS or other good way, using an XML container to transport data. 
 
-Network Agent chat
-==================
+What do I need?
+---------------
+Perl, Perl Modules, MySQL, PHP, PHP Modules. See the Installation Documentation or go to http://pandora.sourceforge.net
 
-Its possible to send data to remote TCP ports in Network Agents, you can use "^M" macro to replace \r\n (Return Carriage and Line Feed), for example, to use a simple http request: "GET / HTTP/1.0^M^M".
+License
+-------
 
-remote_tcp_proc moduletype allows you to "expect" a string (rcv data). If this string is matched in any place of the answer, value will be 1 (OK), if not, 0 (BAD).
+The project is distributed under the GPL License v2 or later.
 
-Network SNMP Agent
-==================
+Copyright (C) 2004-2006 Sancho Lerena.
 
-SNMP OID MUST be provided in dotted format, p.e:
-
-IF-MIB::ifInOctets.6 -> .1.3.6.1.2.1.2.2.1.16.6
-
-SNMPv2-MIB::sysUpTime -> .1.3.6.1.2.1.1.3

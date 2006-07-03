@@ -112,6 +112,7 @@ sub pandora_loadconfig {
 	my $archivo_cfg = $pa_config->{'pandora_path'}."/conf/pandora_server.conf";
 	my $buffer_line;
 	my @command_line;
+	my $tbuf;
 
 	# Default values
 	$pa_config->{'version'} = $pandora_version;
@@ -120,7 +121,7 @@ sub pandora_loadconfig {
 	$pa_config->{"dbpass"} = "";
 	$pa_config->{"dbhost"} = "";
 	$pa_config->{"basepath"}=$pa_config->{'pandora_path'}; # Compatibility with Pandora 1.1
-	$pa_config->{"incomingdir"}="";
+	$pa_config->{"incomingdir"}=$pa_config->{'pandora_path'}."/data_in";
 	$pa_config->{"server_threshold"}=30;
 	$pa_config->{"alert_threshold"}=60;
 	$pa_config->{"logfile"}=$pa_config->{'pandora_path'}."/log/pandora_server.log";
@@ -172,17 +173,38 @@ sub pandora_loadconfig {
  
  	for ($ax=0;$ax<=$ltotal;$ax++){
   		$parametro = $args[$ax];
-		if ($parametro =~ m/^incomingdir\s(.*)/i) {  $pa_config->{"incomingdir"} = $1; }
+		if ($parametro =~ m/^incomingdir\s(.*)/i) {  
+			$pa_config->{"incomingdir"} = $1; 
+			$tbuf= $1;		
+			if ($tbuf =~ m/^\.(.*)/){
+				$pa_config->{"incomingdir"} =$pa_config->{"basepath"}.$1;
+			} else {
+				$pa_config->{"incomingdir"} = $tbuf;
+			}
+		}
+		elsif ($parametro =~ m/^log_file\s(.*)/i) { 
+			$tbuf= $1;		
+			if ($tbuf =~ m/^\.(.*)/){
+				$pa_config->{"logfile"} = $pa_config->{"basepath"}.$1;
+			} else {
+				$pa_config->{"logfile"} = $tbuf;
+			}
+		}
+  		elsif ($parametro =~ m/^errorlog_file\s(.*)/i) { 
+			$tbuf= $1;		
+			if ($tbuf =~ m/^\.(.*)/){
+				$pa_config->{"errorlogfile"} = $pa_config->{"basepath"}.$1;
+			} else {
+				$pa_config->{"errorlogfile"} = $tbuf;
+			}
+		}
 		elsif ($parametro =~ m/^dbuser\s(.*)/i) { $pa_config->{'dbuser'}= $1; }
   		elsif ($parametro =~ m/^dbpass\s(.*)/i) { $pa_config->{'dbpass'}= $1; }
   		elsif ($parametro =~ m/^dbhost\s(.*)/i) { $pa_config->{'dbhost'}= $1; }
   		elsif ($parametro =~ m/^daemon\s([0-9]*)/i) { $pa_config->{'daemon'}= $1;}
 		elsif ($parametro =~ m/^dataserver\s([0-9]*)/i) { $pa_config->{'dataserver'}= $1; }
 		elsif ($parametro =~ m/^networkserver\s([0-9]*)/i) { $pa_config->{'networkserver'}= $1;}
-		elsif ($parametro =~ m/^network_threads\s([0-9]*)/i) { $pa_config->{'network_threads'}= $1;}
 		elsif ($parametro =~ m/^servername\s(.*)/i) { $pa_config->{'servername'}= $1; }
-  		elsif ($parametro =~ m/^log_file\s(.*)/i) { $pa_config->{"logfile"} = $1;}
-  		elsif ($parametro =~ m/^errorlog_file\s(.*)/i) { $pa_config->{"errorlogfile"} = $1; }
 		elsif ($parametro =~ m/^checksum\s([0-9])/i) { $pa_config->{"pandora_check"} = $1; }
 		elsif ($parametro =~ m/^master\s([0-9])/i) { $pa_config->{"pandora_master"} = $1; }
 		elsif ($parametro =~ m/^snmpconsole\s([0-9])/i) { $pa_config->{"snmpconsole"} = $1;}
@@ -192,11 +214,14 @@ sub pandora_loadconfig {
 		elsif ($parametro =~ m/^network_timeout\s([0-9]*)/i) { $pa_config->{'networktimeout'}= $1; }
 		elsif ($parametro =~ m/^server_keepalive\s([0-9]*)/i) { $pa_config->{"keepalive"} = $1; $pa_config->{"keepalive_orig"} = $1; }
  	}
-	if ( $pa_config->{"verbosity"} > 0){ 
+	if ( $pa_config->{"verbosity"} > 0){
+		print " [*] Server basepath is ".$pa_config->{'basepath'}."\n";
+		print " [*] Server logfile at ".$pa_config->{"logfile"}."\n";
+		print " [*] Server errorlogfile at ".$pa_config->{"errorlogfile"}."\n";
+		print " [*] Server incoming directory at ".$pa_config->{"incomingdir"}."\n";
 		print " [*] Server keepalive ".$pa_config->{"keepalive"}."\n";
 		print " [*] Server threshold ".$pa_config->{"server_threshold"}."\n";
 	}
-
  	# Check for valid token token values
  	if (( $pa_config->{"dbuser"} eq "" ) || ( $pa_config->{"basepath"} eq "" ) || ( $pa_config->{"incomingdir"} eq "" ) || ( $pa_config->{"logfile"} eq "" ) || ( $pa_config->{"dbhost"} eq "")  || ( $pa_config->{"pandora_master"} eq "") || ( $pa_config->{"dbpass"} eq "" ) ) {
 		print "[ERROR] Bad Config values. Be sure that $archivo_cfg is a valid setup file. \n\n";
@@ -232,9 +257,6 @@ sub pandora_loadconfig {
 	}
 	if ($pa_config->{"pandora_master"} == 1) {
 		print " [*] This server is running in MASTER mode.\n";
-	}
-	if ($pa_config->{"daemon"} == 1) {
-		print " [*] This server is running in DAEMON mode.\n";
 	}
 	logger ($pa_config, "Launching $parametro $pa_config->{'version'} $pa_config->{'build'}", 0);
 	my $config_options = "Logfile at ".$pa_config->{"logfile"}.", Basepath is ".$pa_config->{"basepath"}.", Checksum is ".$pa_config->{"pandora_check"}.", Master is ".$pa_config->{"pandora_master"}.", SNMP Console is ".$pa_config->{"snmpconsole"}.", Server Threshold at ".$pa_config->{"server_threshold"}." sec, verbosity at ".$pa_config->{"verbosity"}.", Alert Threshold at $pa_config->{'alert_threshold'}";

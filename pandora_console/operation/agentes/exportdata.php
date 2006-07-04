@@ -13,7 +13,7 @@ if (comprueba_login() == 0)
 		if ((isset($_GET["operacion"])) AND (! isset($_POST["update_agent"]))){
  			if (isset ($_POST["copiar"])){ // Export main button
 				echo "<h2>".$lang_label["ag_title"]."</h2>";
-				echo "<h3>".$lang_label["export_title"]."</h3>";
+				echo "<h3>".$lang_label["export_title"]."<a href='help/".substr($language_code,0,2)."/chap3.php#336' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 				if (isset ($_POST["origen_modulo"])){
 				if (isset ($_POST["csv"])) // CSV version
 					$csv = 1;
@@ -64,7 +64,7 @@ if (comprueba_login() == 0)
 		} else { // Form view
 			?>
 			<h2><?php echo $lang_label["ag_title"] ?></h2>
-			<h3><?php echo $lang_label["export_data"] ?><a href='help/<?php echo substr($language_code,0,2);?>/chap3.php#336' target='_help'><img src='images/help.gif' border='0' class='help'></a></h3>
+			<h3><?php echo $lang_label["export_data"] ?><a href='help/<?php echo substr($language_code,0,2);?>/chap3.php#336' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
 			<form method="post" action="index.php?sec=estado&sec2=operation/agentes/exportdata&operacion=1" name="export_form">
 			<table width=550 border=0 cellspacing=3 cellpadding=5 class=fon>
 			<tr>

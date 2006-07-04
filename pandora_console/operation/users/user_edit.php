@@ -34,7 +34,7 @@ if (comprueba_login() == 0) {
 	if (isset ($_GET["modificado"])){
 		// Se realiza la modificación
 		if (isset ($_POST["pass1"])){
-			if ( $_POST["nombre"] != $_SESSION["id_usuario"]) {
+			if ( isset($_POST["nombre"]) && ($_POST["nombre"] != $_SESSION["id_usuario"])) {
 				audit_db($_SESSION["id_usuario"],$REMOTE_ADDR,"Security Alert. Trying to modify another user: (".$_POST['nombre'].") ","Security Alert");
 				no_permission;
 			}
@@ -73,7 +73,7 @@ if (comprueba_login() == 0) {
 		}
 	} 
 		echo "<h2>".$lang_label["users_"]."</h2>";
-		echo "<h3>".$lang_label["user_edit_title"]."</h3>";
+		echo "<h3>".$lang_label["user_edit_title"]."<a href='help/".substr($language_code,0,2)."/chap2.php#22' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 
 	// Sino se obtiene la variable "modificado" es que se esta visualizando la informacion y
 	// preparandola para su modificacion, no se almacenan los datos
@@ -99,18 +99,19 @@ if (comprueba_login() == 0) {
 	?>
 	<tr><td class="lb" rowspan="8" width="5"><td class="datos"><?php echo $lang_label["id_user"] ?>
 	<td class="datos"><input class=input type="text" name="nombre" value="<?php echo $nombre ?>" disabled>
-	<tr><td class="datos"><?php echo $lang_label["real_name"] ?>
-	<td class="datos"><input class=input type="text" name="nombre_real" value="<?php echo $nombre_real ?>">
+	<tr><td class="datos2"><?php echo $lang_label["real_name"] ?>
+	<td class="dato2s"><input class=input type="text" name="nombre_real" value="<?php echo $nombre_real ?>">
 	<tr><td class="datos"><?php echo $lang_label["password"] ?>
 	<td class="datos"><input class=input type="password" name="pass1" value="<?php echo $password ?>">
-	<tr><td class="datos"><?php echo $lang_label["password"]; echo " ".$lang_label["confirmation"]?>
-	<td class="datos"><input class=input type="password" name="pass2" value="<?php echo $password ?>">
+	<tr><td class="datos2"><?php echo $lang_label["password"]; echo " ".$lang_label["confirmation"]?>
+	<td class="datos2"><input class=input type="password" name="pass2" value="<?php echo $password ?>">
 	<tr><td class="datos">E-Mail
 	<td class="datos"><input class=input type="text" name="direccion" size="40" value="<?php echo $direccion ?>">
-	<tr><td class="datos"><?php echo $lang_label["telefono"] ?>
-	<td class="datos"><input class=input type="text" name="telefono" value="<?php echo $telefono ?>">
+	<tr><td class="datos2"><?php echo $lang_label["telefono"] ?>
+	<td class="datos2"><input class=input type="text" name="telefono" value="<?php echo $telefono ?>">
 	<tr><td class="datos" colspan="2"><?php echo $lang_label["comments"] ?>
-	<tr><td class="datos" colspan="2"><textarea name="comentarios" cols="55" rows="4"><?php echo $comentarios ?></textarea>
+	<tr><td class="datos2" colspan="2"><textarea name="comentarios" cols="55" rows="4"><?php echo $comentarios ?></textarea>
+	<tr><td colspan='3'><div class='raya'></div></td></tr>
 	
 <?php
 		// Don't delete this!!
@@ -132,7 +133,7 @@ if (comprueba_login() == 0) {
 		}
 
 	}
-	else { echo '<tr><td class="red" colspan="2">'.$lang_label["no_profile"]; }
+	else { echo '<tr><td class="red" colspan="3">'.$lang_label["no_profile"]; }
 
 	echo '</form></td></tr></table> ';
 

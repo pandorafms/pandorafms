@@ -24,7 +24,7 @@ if (comprueba_login() == 0) {
 		$ag_group = $_GET["ag_group_refresh"];
 	}
 	echo "<h2>".$lang_label["ag_title"]."</h2>";
-	echo "<h3>".$lang_label["summary"]."<a href='help/".substr($language_code,0,2)."/chap3.php#331' target='_help'><img src='images/help.gif' border='0' class='help'></a></h3>";
+	echo "<h3>".$lang_label["summary"]."<a href='help/".substr($language_code,0,2)."/chap3.php#331' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 
 	$iduser_temp=$_SESSION['id_usuario'];
 	
@@ -94,7 +94,7 @@ if (comprueba_login() == 0) {
 		echo "<th>".$lang_label["alerts"]."</th>";
 		echo "<th>".$lang_label["last_contact"]."</th>";
 		// For every agent deficed in the agent table
-		$color = 0;
+		$color = 1;
 		while ($row=mysql_fetch_array($result)){
 			if ($row["disabled"] == 0) {
 				$intervalo = $row["intervalo"]; // Interval in seconds
@@ -156,9 +156,9 @@ if (comprueba_login() == 0) {
 					echo "<td class='$tdcolor'>";
 					$id_grupo=dame_id_grupo($id_agente);
 					if (give_acl($id_user, $id_grupo, "AW")==1){
-						echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."'><img src='images/setup.gif' border=0 width=15></a>";
+						echo "<a href='index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente=".$id_agente."'><img src='images/setup.gif' border=0 width=15></a>";
 					}
-					echo "&nbsp;&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'><b>".$nombre_agente."</b></a>";
+					echo "&nbsp;&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$id_agente."'><b>".$nombre_agente."</b></a>";
 					if ( $agent_type == 0) {
 						// Show SO icon :)
 						echo "<td class='$tdcolor' align='center'><img border=0 src='images/".dame_so_icon($id_os)."' height=18 alt='".dame_so_name($id_os)."'>";
@@ -207,10 +207,7 @@ if (comprueba_login() == 0) {
 							} else {
 								echo "N/A";
 							}
-							echo "<a href='#' class='info'><img src='reporting/fgraph.php?tipo=progress&percent=".$percentil."&height=15&width=80' border='0'>
-							<!--[if IE]>
-							<a href='#' class='tip' style='padding: 2px 0px 0px 20px; height: 20px; z-index: 1'>&nbsp;
-							<![endif]-->
+							echo "<a href='#' class='info2'><img src='reporting/fgraph.php?tipo=progress&amp;percent=".$percentil."&amp;height=15&amp;width=80' border='0'>&nbsp;
 							<span>$ultimo_contacto</span></a>";
 							// echo $ultimo_contacto;
 						}

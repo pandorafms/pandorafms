@@ -13,7 +13,7 @@ if (comprueba_login() == 0) {
 	$id_usuario =$_SESSION["id_usuario"];
         if (give_acl($id_usuario, 0, "AR")==1) {
 		echo "<h2>".$lang_label["events"]."</h2>";
-		echo "<h3>".$lang_label["event_statistics"]."<a href='help/".substr($language_code,0,2)."/chap5.php#51' target='_help'><img src='images/help.gif' border='0' class='help'></a></h3>";
+		echo "<h3>".$lang_label["event_statistics"]."<a href='help/".substr($language_code,0,2)."/chap5.php#51' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 		echo '<img src="reporting/fgraph.php?tipo=total_events" border=0>';
 		echo "<br><br>";
 		echo '<img src="reporting/fgraph.php?tipo=user_events" border=0>';

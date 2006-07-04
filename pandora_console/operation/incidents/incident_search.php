@@ -11,10 +11,13 @@ require("include/config.php");
 //require("include/functions_db.php");
 if (comprueba_login() == 0) {
 
-echo "<img src='images/pulpo_lupa.gif' align='right' class='bot'>";	
+
 echo "<h2>".$lang_label["incident_manag"]."</h2>";
-echo "<h3>".$lang_label["find_crit"]." <a href='help/".substr($language_code,0,2)."/chap4.php#43' target='_help'><img src='images/help.gif' border='0' class='help'></a></h3>";
+echo "<h3>".$lang_label["find_crit"]." <a href='help/".substr($language_code,0,2)."/chap4.php#43' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+echo "<div style='width:645'>";
+echo "<div style='float:right;'><img src='images/pulpo_lupa.gif' class='bot' align='left'></div>";	
 ?>
+<div style='float:left;'>
 <table width="500" cellpadding="3" cellspacing="3">
 <form name="busqueda" method="post" action="index.php?sec=incidencias&sec2=operation/incidents/incident">
 <td class='lb' rowspan="4" width="5">
@@ -31,8 +34,8 @@ echo "<h3>".$lang_label["find_crit"]." <a href='help/".substr($language_code,0,2
 	}
 	?>
 </select>
-<tr><td class="datos"><?php echo $lang_label["free_text_search"] ?>
-<td class="datos"><input type="text" size="45" name="texto">
+<tr><td class="datos2"><?php echo $lang_label["free_text_search"] ?>
+<td class="datos2"><input type="text" size="45" name="texto">
 <tr><td class="datos" colspan="2">
 <i><?php echo $lang_label["free_text_search_msg"] ?></i>
 
@@ -41,6 +44,8 @@ echo "<h3>".$lang_label["find_crit"]." <a href='help/".substr($language_code,0,2
 
 </form>
 </table>
+</div>
+</div>
 <?php 
 
 } // fin pagina

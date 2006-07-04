@@ -20,11 +20,20 @@
 
 #include "pandora_module.h"
 #include "../pandora_strutils.h"
+#include "../pandora.h"
 
+using namespace Pandora;
 using namespace Pandora_Modules;
+using namespace Pandora_Strutils;
 
 Pandora_Module::Pandora_Module (string name) {
-        this->module_name = name;
+        this->module_name     = name;
+        this->executions      = 0;
+        this->module_interval = 1;
+        this->output          = "";
+        this->max             = 0;
+        this->min             = 0;
+        this->has_limits      = false;
 }
 
 Pandora_Module::~Pandora_Module () {
@@ -97,6 +106,62 @@ Pandora_Module::run () {
 
 }
 
+TiXmlElement *
+Pandora_Module::getXml () {
+        string        data;
+	TiXmlElement *root;
+	TiXmlElement *element;
+	TiXmlText    *text;
+	string        item_str, data_str, desc_str;
+	
+	pandoraDebug ("%s getXML begin", module_name.c_str ());
+	
+        try {
+                data = this->getOutput ();
+        } catch (Output_Error e) {
+                pandoraLog ("Output error");
+                return NULL;
+        } catch (Interval_Error e) {
+                pandoraLog ("The returned value was not in the interval");
+                return NULL;
+        }
+        
+        root = new TiXmlElement ("module");
+        
+        element = new TiXmlElement ("name");
+        text = new TiXmlText (this->module_name);
+        element->InsertEndChild (*text);
+        root->InsertEndChild (*element);
+        delete element;
+        delete text;
+        
+        element = new TiXmlElement ("type");
+        text = new TiXmlText (this->module_type_str);
+        element->InsertEndChild (*text);
+        root->InsertEndChild (*element);
+        delete element;
+        delete text;
+        
+        element = new TiXmlElement ("data");
+        data_str = strreplace (this->output,
+                               "%", "%%" );
+        text = new TiXmlText (data_str);
+        element->InsertEndChild (*text);
+        root->InsertEndChild (*element);
+        delete text;
+        delete element;
+        
+        element = new TiXmlElement ("description");
+        text = new TiXmlText (this->module_description);
+        element->InsertEndChild (*text);
+        root->InsertEndChild (*element);
+        delete text;
+        delete element;
+        
+        pandoraDebug ("%s getXML end", module_name.c_str ());
+        return root;
+}
+
 void
 Pandora_Module::setMax (int value) {
         this->has_limits = true;
@@ -113,4 +178,15 @@ void
 Pandora_Module::setType (string type) {
         this->module_type_str = type;
         this->module_type     = getModuleType (type);
+}
+
+void
+Pandora_Module::setInterval (int interval) {
+        this->module_interval = interval;
+}
+
+void
+Pandora_Module::setDescription (string description) {
+	pandoraDebug ("Set description to: %s", description.c_str ());
+        this->module_description = description;
 }

@@ -43,9 +43,14 @@ namespace Pandora_Modules {
 
         enum {
                 MODULE_0,
-                MODULE_EXEC
+                MODULE_EXEC,
+                MODULE_PROC,
+		MODULE_SERVICE
         };
+        
         const string module_exec_str                = "module_exec";
+        const string module_proc_str                = "module_proc";
+	const string module_service_str             = "module_service";
 
         class Output_Error   : public Pandora::Pandora_Exception { };
         class Interval_Error : public Pandora::Pandora_Exception { };
@@ -56,8 +61,10 @@ namespace Pandora_Modules {
                 string module_type_str;
                 int    module_type;
                 string module_kind_str;
+                string module_description;
                 int    module_kind;
                 int    module_interval;
+                int    executions;
                 string output;
                 int    max, min;
                 bool   has_limits;
@@ -70,7 +77,7 @@ namespace Pandora_Modules {
                 void   setInterval       (int interval);
                 
                 /* Get the XML output of the agent. */
-                TiXmlElement *getXML     ();
+                TiXmlElement *getXml     ();
                 
                 /* Execute the agent */
                 virtual void   run       ();
@@ -83,6 +90,7 @@ namespace Pandora_Modules {
                 int    getModuleKind     () const;
                 
                 void   setType           (string type);
+                void   setDescription    (string description);
                 void   setMax            (int value);
                 void   setMin            (int value);
         };

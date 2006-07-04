@@ -20,13 +20,13 @@
 
 #include "pandora_windows_service.h"
 #include "pandora.h"
+#include "pandora_strutils.h"
 #include "windows_service.h"
 #include "modules/pandora_module_factory.h"
+#include "ssh/pandora_ssh_client.h"
+#include "misc/pandora_file.h"
+#include "windows/pandora_windows_info.h"
 
-#include "modules/pandora_module_generic_data.h"
-#include "modules/pandora_module_generic_data_inc.h"
-#include "modules/pandora_module_generic_data_string.h"
-#include "modules/pandora_module_generic_proc.h"
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -34,12 +34,12 @@
 using namespace std;
 using namespace Pandora;
 using namespace Pandora_Modules;
+using namespace Pandora_Strutils;
 
 Pandora_Windows_Service::Pandora_Windows_Service (const char * svc_name,
                                               const char * svc_display_name,
                                               const char * svc_description)
-        : Windows_Service (svc_name, svc_display_name, svc_description)
-        {
+        : Windows_Service (svc_name, svc_display_name, svc_description) {
 
         this->setInitFunction ((void (Windows_Service::*) ()) &Pandora_Windows_Service::pandora_init);
         this->setRunFunction ((void (Windows_Service::*) ()) &Pandora_Windows_Service::pandora_run);
@@ -74,85 +74,55 @@ Pandora_Windows_Service::pandora_init () {
         this->setSleepTime (interval_ms);
         
         pandoraDebug ("Init end");
-        return;
 }
 
-void
-Pandora_Windows_Service::addXMLHeader (TiXmlElement *root) {
+TiXmlElement *
+Pandora_Windows_Service::getXmlHeader () {
         TiXmlElement *agent;
-        TiXmlElement *element;
-        TiXmlText    *text;
         SYSTEMTIME    st;
         char          timestamp[20];
+        string        value;
         
-        agent = new TiXmlElement ("agent");
-        
-        element = new TiXmlElement ("name");
+        agent = new TiXmlElement ("agent_data");
+
         /* TODO: Get the name of the machine if there is no agent_name*/
-        text = new TiXmlText ("agent_name");
-        element->InsertEndChild (*text);
-        agent->InsertEndChild (*element);
-        delete text;
-        delete element;
-        
-        element = new TiXmlElement ("version");
+        value = conf->getValue ("agent_name");
+        agent->SetAttribute ("agent_name", value);
+
         /* TODO: Get the real version of the agent */
-        text = new TiXmlText ("1.0Beta");
-        element->InsertEndChild (*text);
-        agent->InsertEndChild (*element);
-        delete text;
-        delete element;
-        
-        element = new TiXmlElement ("timestamp");
+        agent->SetAttribute ("version", "1.2Beta");
+
         GetSystemTime(&st);
         sprintf (timestamp, "%d/%d/%d %d:%d:%d", st.wDay, st.wMonth, 
                  st.wYear, st.wHour, st.wMinute, st.wSecond);
-        text = new TiXmlText (timestamp);
-        element->InsertEndChild (*text);
-        agent->InsertEndChild (*element);
-        delete text;
-        delete element;
-        
-        element = new TiXmlElement ("interval");
-        text = new TiXmlText ("interval");
-        element->InsertEndChild (*text);
-        agent->InsertEndChild (*element);
-        delete text;
-        delete element;
-        
-        element = new TiXmlElement ("os");
-        /* TODO */
-        text = new TiXmlText ("Windows");
-        element->InsertEndChild (*text);
-        agent->InsertEndChild (*element);
-        delete text;
-        delete element;
-        
-        element = new TiXmlElement ("os_version");
-        /* TODO */
-        text = new TiXmlText ("XP");
-        element->InsertEndChild (*text);
-        agent->InsertEndChild (*element);
-        delete text;
-        delete element;
-        
-        element = new TiXmlElement ("os_build");
-        /* TODO */
-        text = new TiXmlText ("1");
-        element->InsertEndChild (*text);
-        agent->InsertEndChild (*element);
-        delete text;
-        delete element;
-        
-        root->InsertEndChild (*agent);
-        delete agent;
+        agent->SetAttribute ("timestamp", timestamp);
+
+	value = conf->getValue ("interval");
+        agent->SetAttribute ("interval", value);
+	
+	value = Pandora_Windows_Info::getOSName ();
+        agent->SetAttribute ("os", value);
+	
+	value = Pandora_Windows_Info::getOSVersion ();
+        agent->SetAttribute ("os_version", value);
+
+        return agent;
 }
 
 void
 Pandora_Windows_Service::pandora_run () {
-
+        TiXmlDocument *doc;
+        TiXmlElement  *local_xml, *agent;
+        string         xml_filename, remote_host;
+        string         remote_filepath, random_integer;
+        string         tmp_filename, tmp_filepath, interval;
+        string         pubkey_file, privkey_file;
+        bool           saved;
+        
         pandoraDebug ("Run begin");
         
+        agent = getXmlHeader ();
+	
         execution_number++;
         
         if (this->modules != NULL) {
@@ -167,18 +137,92 @@ Pandora_Windows_Service::pandora_run () {
                         pandoraDebug ("Run %s", module->getName ().c_str ());
                         module->run ();
                         
-                        try {
-                                result = module->getOutput ();
-                                
-                                pandoraDebug ("Result: %s", result.c_str ());
-                        } catch (Output_Error e) {
-                                pandoraLog ("Output error");
-                        } catch (Interval_Error e) {
-                                pandoraLog ("The returned value was not in the interval");
-                        }
+                        local_xml = module->getXml ();
+                        agent->InsertEndChild (*local_xml);
+			
+                        delete local_xml;
                         this->modules->goNext ();
                 }
         }
+	
+        random_integer = inttostr (rand());
+        tmp_filename = conf->getValue ("agent_name");
+        tmp_filename += "." + random_integer + ".data";
+                
+        xml_filename = conf->getValue ("temporal");
+        if (xml_filename[xml_filename.length () - 1] != '\\') {
+                xml_filename += "\\";
+        }
+        tmp_filepath = xml_filename + tmp_filename;
+
+        /* Copy the XML to a temporal file */
+        pandoraDebug ("Copying XML on %s", tmp_filepath.c_str ());
+        doc = new TiXmlDocument (tmp_filepath);
+        doc->InsertEndChild (*agent);
+        saved = doc->SaveFile();
+        delete doc;
+        delete agent;
+        
+        if (!saved) {
+                pandoraLog ("Error when saving the XML in %s",
+                            tmp_filepath.c_str ());
+                return;
+        }
+        
+        remote_host = conf->getValue ("server_ip");
+        ssh_client = new SSH::Pandora_Ssh_Client ();
+        pandoraDebug ("Connecting with %s", remote_host.c_str ());
+        
+        try {
+                pubkey_file  = Pandora::getPandoraInstallDir ();
+                pubkey_file += "key\\id_dsa.pub";
+                privkey_file = Pandora::getPandoraInstallDir ();
+                privkey_file += "key\\id_dsa";
+                pandoraDebug ("Pub: %s  Priv: %s", pubkey_file.c_str (),
+                              privkey_file.c_str ());
+                ssh_client->connectWithPublicKey (remote_host.c_str (), 22, "babel",
+                                                  pubkey_file, privkey_file, "");
+        } catch (SSH::Authentication_Failed e) {
+                delete ssh_client;
+                pandoraLog ("Pandora Agent: Authentication Failed when connecting to %s",
+                            remote_host.c_str ());
+                try {
+                        Pandora_File::removeFile (tmp_filepath);
+                } catch (Pandora_File::Delete_Error e) {
+                }
+                return;
+        } catch (Pandora_Exception e) {
+                delete ssh_client;
+                pandoraLog ("Pandora Agent: Failed when copying to %s", remote_host.c_str ());
+                try {
+                        Pandora_File::removeFile (tmp_filepath);
+                } catch (Pandora_File::Delete_Error e) {
+                }
+                return;
+        }
+        
+        remote_filepath = conf->getValue ("server_path");
+        if (remote_filepath[remote_filepath.length () - 1] != '/') {
+                remote_filepath += "/";
+        }
+        
+        pandoraDebug ("Remote copying XML %s on server %s at %s%s",
+                    tmp_filepath.c_str (), remote_host.c_str (),
+                    remote_filepath.c_str (), tmp_filename.c_str ());
+        try {
+                ssh_client->scpFileFilename (remote_filepath + tmp_filename,
+                                             tmp_filepath);
+        } catch (Pandora_Exception e) {
+                ssh_client->disconnect();
+                delete ssh_client;
+                try {
+                        Pandora_File::removeFile (tmp_filepath);
+                } catch (Pandora_File::Delete_Error e) {
+                }
+                return;
+        }
+        
+        ssh_client->disconnect();
         
         pandoraDebug ("Execution number %d", execution_number);
         

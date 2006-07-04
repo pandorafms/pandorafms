@@ -19,7 +19,6 @@
 */
 
 #include "pandora_module_exec.h"
-#include "pandora_module.h"
 #include "../pandora_strutils.h"
 #include <windows.h> 
 
@@ -31,7 +30,7 @@ using namespace Pandora_Modules;
 
 Pandora_Module_Exec::Pandora_Module_Exec (string name, string exec)
                                          : Pandora_Module (name) {
-        this->module_exec = "cmd.exe /c " + exec;
+        this->module_exec = "cmd.exe /c \"" + exec + "\"";
         
         this->module_kind_str = module_exec_str;
         this->module_kind     = MODULE_EXEC;
@@ -43,21 +42,41 @@ Pandora_Module_Exec::run () {
         PROCESS_INFORMATION pi;
         DWORD               retval;
         SECURITY_ATTRIBUTES attributes;
-        HANDLE              out, new_stdout, out_read;
+        HANDLE              out, new_stdout, out_read, job;
         string              working_dir;
         
         this->output = "";
+        
+        /* Check the interval */
+        if (this->executions % this->module_interval != 0) {
+                pandoraDebug ("Interval is not fulfilled");
+                this->executions++;
+                return;
+        }
+        
+        /* Increment the executions after check. This is done to execute the
+           first time */
+        this->executions++;
         
         /* Set the bInheritHandle flag so pipe handles are inherited. */
         attributes.nLength = sizeof (SECURITY_ATTRIBUTES); 
         attributes.bInheritHandle = TRUE; 
         attributes.lpSecurityDescriptor = NULL; 
         
+        /* Create a job to kill the child tree if it become zombie */
+        /* CAUTION: In order to work this, WINVER should be defined to 0x0500.
+                    It is defined in <windef.h> */
+        job = CreateJobObject (&attributes, this->module_name.c_str ());
+        if (job == NULL) {
+                pandoraLog ("CreateJobObject bad. Err: %d", GetLastError ());
+                return;
+        }
+        
         /* Get the handle to the current STDOUT. */
         out = GetStdHandle (STD_OUTPUT_HANDLE); 
         
         if (! CreatePipe (&out_read, &new_stdout, &attributes, 0)) {
-                pandoraLog ("CreatePipe failed");
+                pandoraLog ("CreatePipe failed. Err: %d", GetLastError ());
                 return;
         }
         
@@ -83,22 +102,32 @@ Pandora_Module_Exec::run () {
         working_dir = getPandoraInstallDir () + "util\\";
         
         /* Create the child process. */
-        if (! CreateProcess (NULL, (CHAR *) this->module_exec.c_str (), NULL, NULL, TRUE,
-                             CREATE_NEW_CONSOLE, NULL, working_dir.c_str (),
-                             &si, &pi)) {
-                pandoraLog ("Babel_Windows_Password: %s CreateProcess failed (%d)",
+        if (! CreateProcess (NULL, (CHAR *) this->module_exec.c_str (), NULL,
+                             NULL, TRUE, CREATE_SUSPENDED, NULL,
+                             working_dir.c_str (), &si, &pi)) {
+                pandoraLog ("Pandora_Module_Exec: %s CreateProcess failed. Err: %d",
                             this->module_name.c_str (), GetLastError ());
         } else {
                 char          buffer[BUFSIZE + 1];
                 unsigned long read, avail;
                 
+                if (! AssignProcessToJobObject (job, pi.hProcess)) {
+                        pandoraLog ("Assign bad %d", GetLastError ());
+                }
+                ResumeThread (pi.hThread);
+                
                 /* Wait until process exits. */
-                /* TODO: This should not be infinite, but just a few seconds */
-                WaitForSingleObject (pi.hProcess, INFINITE);
+                /* TODO: The time should be an attribute*/
+                WaitForSingleObject (pi.hProcess, 15000);
                 
                 GetExitCodeProcess (pi.hProcess, &retval);
                 if (retval != 0) {
-                        pandoraLog ("Pandora_Module: %s did not executed well (retcode: %d)",
+                        if (! TerminateJobObject (job, 0)) {
+                                pandoraLog ("TerminateJobObject failed. Err: %d",
+                                            GetLastError ());
+                        }
+                        
+                        pandoraLog ("Pandora_Module_Exec: %s did not executed well (retcode: %d)",
                                     this->module_name.c_str (), retval);
                 }
                 
@@ -109,12 +138,13 @@ Pandora_Module_Exec::run () {
                         do {
                                 ReadFile (out_read, buffer, BUFSIZE, &read,
                                           NULL);
+                                buffer[read] = '\0';
                                 this->output += (char *) buffer;
-                                memset (buffer, 0, BUFSIZE);
                         } while (read >= BUFSIZE);
                 }
                 
-                /* Close process and thread handles. */
+                /* Close job, process and thread handles. */
+                CloseHandle (job);
                 CloseHandle (pi.hProcess);
                 CloseHandle (pi.hThread);
         }

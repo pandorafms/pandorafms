@@ -26,25 +26,26 @@
 #include "tinyxml/tinyxml.h"
 #include "pandora_agent_conf.h"
 #include "modules/pandora_module_list.h"
+#include "ssh/pandora_ssh_client.h"
 
 using namespace std;
 
 class Pandora_Windows_Service : public Windows_Service {
 private:
-        //SSH::Babel_Ssh_Client *ssh_client;
-        Pandora_Agent_Conf  *conf;
-        Pandora_Module_List *modules;
-        long                 execution_number;
+        SSH::Pandora_Ssh_Client *ssh_client;
+        Pandora_Agent_Conf      *conf;
+        Pandora_Module_List     *modules;
+        long                     execution_number;
         
-        void addXMLHeader (TiXmlElement *root);
-        public:
-        void pandora_run  ();
-        void pandora_init ();
+        TiXmlElement * getXmlHeader ();
+        
+        void           pandora_run  ();
+        void           pandora_init ();
 public:
-        Pandora_Windows_Service  (const char * svc_name,
-                                  const char * svc_display_name,
-                                  const char * svc_description);
-        ~Pandora_Windows_Service ();
+        Pandora_Windows_Service     (const char * svc_name,
+                                     const char * svc_display_name,
+                                     const char * svc_description);
+        ~Pandora_Windows_Service    ();
 };
 
 #endif

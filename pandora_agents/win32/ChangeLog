@@ -1,0 +1,29 @@
+2006-07-04  Esteban Sanchez  <esteban@steve-o.org>
+
+	* windows/pandora_wmi.*, windows/pandora_windows_info.*, windows/wmi/disphelper.*,
+	  misc/pandora_file.*, ssh/*, ssh/libssh2/*, modules/pandora_module_service.*,
+	modules/pandora_module_proc.*: Added to repository
+
+	* pandora_windows_service.cc, pandora_windows_service.h: getXMLHeader renamed to getXmlHeader
+	and modified its behavior. Updated to the Pandora XML specification. Add SSH and XML generation
+	functionallity.
+
+	* modules/pandora_module_exec.cc: Added the execution to a job to prevent zombies process. Update
+	the execution command.
+
+	* modules/pandora_module_factory.cc: Added Pandora_Module_Proc and Pandora_Module_Service. Added
+	the interval parameter.
+
+	* modules/pandora_module_list.cc: Added support to Pandora_Module_Proc and Pandora_Module_Service.
+	
+	* modules/pandora_module.h: Added new types of modules. Added execution times and module description
+	to the Pandora_Module class. Added support to Pandora_Module_Proc and Pandora_Module_Service. Added
+	getXml, setInterval and setDescription functions.
+
+	* pandora.h: Commentary fixed.
+
+	* Changelog: Renamed to ChangeLog
+	
+2006-06-20 Esteban Sanchez
+
+	* Initial import.

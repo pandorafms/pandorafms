@@ -1,4 +1,4 @@
-/* Pandora exec module. These modules exec a command
+/* Pandora proc module. These modules check if a program is alive in the system.
 
    Copyright (C) 2006 Artica ST.
    Written by Esteban Sanchez.
@@ -18,19 +18,19 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef	__PANDORA_MODULE_EXEC_H__
-#define	__PANDORA_MODULE_EXEC_H__
+#ifndef	__PANDORA_MODULE_PROC_H__
+#define	__PANDORA_MODULE_PROC_H__
 
 #include "pandora_module.h"
 
 namespace Pandora_Modules {
-        class Pandora_Module_Exec : public Pandora_Module {
+        class Pandora_Module_Proc : public Pandora_Module {
         private:
-                string module_exec;        
+                string process_name;
         public:
-                Pandora_Module_Exec    (string name, string exec);
+                Pandora_Module_Proc (string name, string process_name);
                 
-                void   run       ();
+                void   run          ();
         };
 }
 

@@ -563,8 +563,8 @@ if (give_acl($id_user, 0, "AW")==1) {
 // ========================
 
 echo "<h2>".$lang_label["agent_conf"]."</h2>";
-if (isset($_GET["creacion"])){echo "<h3>".$lang_label["create_agent"]."<a href='help/".substr($language_code,0,2)."/chap3.php#32' target='_help'><img src='images/help.gif' border='0' class='help'></a></h3>";}
-else {echo "<h3>".$lang_label["update_agent"]."<a href='help/".substr($language_code,0,2)."/chap3.php#32' target='_help'><img src='images/help.gif' border='0' class='help'></a></h3>";}
+if (isset($_GET["creacion"])){echo "<h3>".$lang_label["create_agent"]."<a href='help/".substr($language_code,0,2)."/chap3.php#32' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";}
+else {echo "<h3>".$lang_label["update_agent"]."<a href='help/".substr($language_code,0,2)."/chap3.php#32' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";}
 echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
 if ($creacion_agente == 1)
 	echo "<input type='hidden' name='create_agent' value='1'>";
@@ -631,21 +631,21 @@ while ($row=mysql_fetch_array($result)){
 <tr><td class="datos2"><b><?php echo $lang_label["module_definition"]?></b>
 <td class="datos2">
 	<?php if ($modo == "1"){
-		echo $lang_label["learning_mode"].'<input type="radio" class="chk" name="modo" value="1" checked >';
-		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$lang_label["normal_mode"].' <input type="radio" class="chk" name="modo" value="0">';
+		echo $lang_label["learning_mode"].'<input type="radio" class="chk" name="modo" value="1" checked style="margin-right: 40px;">';
+		echo $lang_label["normal_mode"].' <input type="radio" class="chk" name="modo" value="0">';
 	} else {
-		echo $lang_label["learning_mode"].'<input type="radio" class="chk" name="modo" value="1">';
-		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$lang_label["normal_mode"].'<input type="radio" name="modo" class="chk" value="0" checked>';
+		echo $lang_label["learning_mode"].'<input type="radio" class="chk" name="modo" value="1" style="margin-right: 40px;">';
+		echo $lang_label["normal_mode"].'<input type="radio" name="modo" class="chk" value="0" checked>';
 	}
 	?>
 <tr><td class="datos"><b><?php echo $lang_label["status"]?></b>
 <td class="datos">
 <?php if ($disabled == "1"){
-		echo $lang_label["disabled"].'<input type="radio" class="chk"  name="disabled" value="1" checked>';
-		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$lang_label["active"].' <input class="chk" type="radio" name="disabled" value="0">';
+		echo $lang_label["disabled"].'<input type="radio" class="chk" name="disabled" value="1" checked style="margin-right: 40px;">';
+		echo $lang_label["active"].' <input class="chk" type="radio" name="disabled" value="0">';
 	} else {
-		echo $lang_label["disabled"].'<input type="radio" class="chk" name="disabled" value="1">';
-		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$lang_label["active"].'<input type="radio" name="disabled" class="chk" value="0" checked>';
+		echo $lang_label["disabled"].'<input type="radio" class="chk" name="disabled" value="1" style="margin-right: 40px;">';
+		echo $lang_label["active"].'<input type="radio" name="disabled" class="chk" value="0" checked>';
 	}
 ?>
 <tr><td colspan='3'><div class='raya'></div></td></tr>
@@ -672,7 +672,7 @@ if ( $creacion_agente != 1) {
 	$result=mysql_query($sql1);
 	if ($row=mysql_num_rows($result)){
 		?>
-		<h3><?php echo $lang_label["assigned_modules"]?> </h3>
+		<h3><?php echo $lang_label["assigned_modules"]?><a href='help/<?php echo substr($language_code,0,2) ?>/chap3.php#321' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
 		<table width="700" cellpadding="3" cellspacing="3" class="fon">
 		<tr>
 		<th><?php echo $lang_label["module_name"]?>
@@ -740,7 +740,7 @@ $sql1='SELECT * FROM tagente_modulo WHERE id_agente = "'.$id_agente.'"';
 $result=mysql_query($sql1);
 if ($row=mysql_num_rows($result)){
 ?>
-<h3><?php echo $lang_label["assigned_alerts"]?></h3>
+<h3><?php echo $lang_label["assigned_alerts"]?><a href='help/<?php echo substr($language_code,0,2) ?>/chap3.php#3222' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
 
 <table cellpadding="3" cellspacing="3" width="700" class="fon">
 <tr>
@@ -820,7 +820,7 @@ else {
 	}
 }
 ?>
-<h3><?php echo $lang_label["module_asociation_form"] ?></h3>
+<h3><?php echo $lang_label["module_asociation_form"] ?><a href='help/<?php echo substr($language_code,0,2) ?>/chap3.php#321' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
 <a name="modules"> <!-- Don't Delete !! -->
 <table width="650" cellpadding="3" cellspacing="3" class="fon">
 <tr><td class='lb' rowspan='8' width='5'>
@@ -930,7 +930,7 @@ if (isset($_POST["oid"])){
 ?>
 
 <!-- Alert Configuration -->
-<h3><?php echo $lang_label["alert_asociation_form"] ?></h3>
+<h3><?php echo $lang_label["alert_asociation_form"] ?><a href='help/<?php echo substr($language_code,0,2) ?>/chap3.php#3222' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
 
 
 <?php
@@ -967,8 +967,8 @@ while ($row=mysql_fetch_array($result)){
 <a name="alerts"> <!-- Don't Delete !! -->
 
 <tr><td class="datos2"><?php echo $lang_label["min_value"] ?>
-<td class="datos2"><input type="text" name="minimo" size="5" value="<?php echo $alerta_dis_max ?>">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $lang_label["max_value"] ?> &nbsp;&nbsp;&nbsp;
+<td class="datos2"><input type="text" name="minimo" size="5" value="<?php echo $alerta_dis_max ?>" style="margin-right: 70px;">
+<?php echo $lang_label["max_value"] ?> &nbsp;&nbsp;&nbsp;
 <input type="text" name="maximo" size="5" value="<?php echo $alerta_dis_min ?>">
 <tr><td class="datos"><?php echo $lang_label["description"] ?>
 <td class="datos"><input type="text" name="descripcion" size="39" value ="<?php echo $alerta_descripcion ?>">
@@ -979,7 +979,7 @@ while ($row=mysql_fetch_array($result)){
 <tr><td class="datos2"><?php echo $lang_label["field3"] ?>
 <td class="datos2"><textarea name="campo_3" cols="36" rows="3"><?php echo $alerta_campo3 ?></textarea>
 <tr><td class="datos"><?php echo $lang_label["time_threshold"] ?>
-<td class="datos"><select name="time_threshold">
+<td class="datos"><select name="time_threshold" style="margin-right: 60px;">
 <?PHP
 	if ($alerta_time_threshold != ""){ 
 		echo "<option value='".$alerta_time_threshold."'>".give_human_time($alerta_time_threshold)."</option>";
@@ -997,15 +997,14 @@ while ($row=mysql_fetch_array($result)){
 <option value=604800>1 Week
 <option value=-1>Other value
 </select>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 <?php echo $lang_label["other"] ?>
 &nbsp;&nbsp;&nbsp;
 <input type="text" name="other" size="5">
 
 <tr><td class="datos2"><?php echo $lang_label["min_alerts"] ?>
 <td class="datos2">
-<input type="text" name="min_alerts" size="5" value="<?php  if (isset($alerta_min_alerts)) {echo$alerta_min_alerts;} ?>">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="text" name="min_alerts" size="5" value="<?php  if (isset($alerta_min_alerts)) {echo$alerta_min_alerts;} ?>" style="margin-right: 10px;">
 <?php echo $lang_label["max_alerts"] ?>
 &nbsp;&nbsp;&nbsp;
 <input type="text" name="max_alerts" size="5" value="<?php if (isset($alerta_max_alerts)) {echo $alerta_max_alerts;} ?>">

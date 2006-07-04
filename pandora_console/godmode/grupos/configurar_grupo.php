@@ -38,8 +38,8 @@ if (comprueba_login() == 0)
 	}
 
 	echo "<h2>".$lang_label["group_management"]."</h2>";
-	if (isset($_GET["creacion_grupo"])) {echo "<h3>".$lang_label["create_group"]."</h3>";}
-	if (isset($_GET["id_grupo"])) {echo "<h3>".$lang_label["update_group"]."</h3>";}
+	if (isset($_GET["creacion_grupo"])) {echo "<h3>".$lang_label["create_group"]."<a href='help/".substr($language_code,0,2)."/chap3.php#31' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";}
+	if (isset($_GET["id_grupo"])) {echo "<h3>".$lang_label["update_group"]."<a href='help/".substr($language_code,0,2)."/chap3.php#31' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";}
 	
 ?>
 <table width="450">
@@ -56,7 +56,7 @@ if (comprueba_login() == 0)
 ?>
 <tr><td class='lb' rowspan='3' width='5'>
 <tr><td class="datos"><?php echo $lang_label["group_name"] ?><td class="datos"><input type="text" name="nombre" size="35" value="<?php echo $nombre ?>">
-<tr><td class="datos"><?php echo $lang_label["icon"] ?><td class="datos"><input type="icon" name="icon" size="25" value="<?php if (isset($icono)){echo $icono;} ?>">
+<tr><td class="datos2"><?php echo $lang_label["icon"] ?><td class="datos2"><input type="icon" name="icon" size="25" value="<?php if (isset($icono)){echo $icono;} ?>">
 <tr><td></td></tr>
 <tr><td colspan="3" align="right"><?php if (isset($_GET["creacion_grupo"])){echo "<input name='crtbutton' type='submit' class='sub' value='".$lang_label["create"]."'>";}
 else {echo "<input name='uptbutton' type='submit' class='sub' value='".$lang_label["update"]."'>";} ?>

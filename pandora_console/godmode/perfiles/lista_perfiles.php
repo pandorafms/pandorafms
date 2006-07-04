@@ -17,10 +17,10 @@ if (comprueba_login() == 0)
 			$query_del1="DELETE FROM tperfil WHERE id_perfil = '".$id_perfil."'";
 			$query_del2="DELETE FROM tusuario_perfil WHERE id_perfil = '".$id_perfil."'";
 			$resq1=mysql_query($query_del1);
-	                if (! $resq1)
-        	                echo "<h3 class='error'>".$lang_label["delete_profile_no"]."</h3>";
-                	else
-                        	echo "<h3 class='suc'>".$lang_label["delete_profile_ok"]."</h3>";
+				if (! $resq1)
+					echo "<h3 class='error'>".$lang_label["delete_profile_no"]."</h3>";
+				else
+					echo "<h3 class='suc'>".$lang_label["delete_profile_ok"]."</h3>";
 			$resq1=mysql_query($query_del2);
 			unset($id_perfil); // forget it to show list
 		}
@@ -126,9 +126,9 @@ if (comprueba_login() == 0)
 		}
 		echo '<h2>'.$lang_label["profile_title"].'</h2>';     
 		echo (isset($_GET["new_profile"]))?
-		('<h3>'.$lang_label["create_profile"].'<a href="help/'.substr($language_code,0,2).'/chap2.php#21" target="_help"><img src="images/help.gif" border="0" class="help"></a></h3>'):
-		((isset($_GET["edit_profile"]))?('<h3>'.$lang_label["update_profile"].'<a href="help/'.substr($language_code,0,2).'/chap2.php#21" target="_help"><img src="images/help.gif" border="0" class="help"></a></h3>'):
-		('<h3>'.$lang_label["definedprofiles"].'<a href="help/'.substr($language_code,0,2).'/chap2.php#21" target="_help"><img src="images/help.gif" border="0" class="help"></a></h3>'));
+		('<h3>'.$lang_label["create_profile"].'<a href="help/'.substr($language_code,0,2).'/chap2.php#21" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h3>'):
+		((isset($_GET["edit_profile"]))?('<h3>'.$lang_label["update_profile"].'<a href="help/'.substr($language_code,0,2).'/chap2.php#21" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h3>'):
+		('<h3>'.$lang_label["definedprofiles"].'<a href="help/'.substr($language_code,0,2).'/chap2.php#21" target="_help"  class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h3>'));
 		// Form to manage date
 		if (isset ($id_perfil)){ // There are values defined, let's show form with data for INSERT or UPDATE
 			echo "<table width='400' cellpadding='3' cellspacing='3'>";
@@ -137,35 +137,36 @@ if (comprueba_login() == 0)
 			echo "<input type=hidden name=id_perfil value='".$id_perfil."'>";
 			echo "<td class=datos>".$lang_label["profile_name"]."<td class=datos><input name='name' type=text size='27' value='".$name."'>";
 			
-			echo "<tr><td class=datos>".$lang_label["incident_view"]."<td class=datos><input name='incident_view' type=checkbox class='chk' value='1' ";
+			echo "<tr><td class=datos2>".$lang_label["incident_view"]."<td class=datos2><input name='incident_view' type=checkbox class='chk' value='1' ";
 			if ($incident_view == 1) echo "checked"; echo ">";
 			
 			echo "<tr><td class=datos>".$lang_label["incident_edit"]."<td class=datos><input name='incident_edit' type=checkbox class='chk' value='1' ";
 			if ($incident_edit == 1) echo "checked";echo ">";
 			
-			echo "<tr><td class=datos>".$lang_label["manage_incidents"]."<td class=datos><input name='incident_management' type=checkbox class='chk' value='1' ";
+			echo "<tr><td class=datos2>".$lang_label["manage_incidents"]."<td class=datos2><input name='incident_management' type=checkbox class='chk' value='1' ";
 			if ($incident_management == 1) echo "checked";echo ">";
 			
 			echo "<tr><td class=datos>".$lang_label["view_agents"]."<td class=datos><input name='agent_view' type=checkbox class='chk' value='1' ";
 			if ($agent_view == 1) echo "checked";echo ">";
 			
-			echo "<tr><td class=datos>".$lang_label["agent_edit"]."<td class=datos><input name='agent_edit'  type=checkbox class='chk' value='1' ";
+			echo "<tr><td class=datos2>".$lang_label["agent_edit"]."<td class=datos2><input name='agent_edit'  type=checkbox class='chk' value='1' ";
 			if ($agent_edit == 1) echo "checked";echo ">";
 			
 			echo "<tr><td class=datos>".$lang_label["alert_edit"]."<td class=datos><input name='alert_edit'  type=checkbox class='chk' value='1' ";
 			if ($alert_edit == 1) echo "checked";echo ">";
 			
-			echo "<tr><td class=datos>".$lang_label["manage_users"]."<td class=datos><input name='user_management' class='chk' type=checkbox value='1' ";
+			echo "<tr><td class=datos2>".$lang_label["manage_users"]."<td class=datos2><input name='user_management' class='chk' type=checkbox value='1' ";
 			if ($user_management == 1) echo "checked";echo ">";
 			
 			echo "<tr><td class=datos>".$lang_label["manage_db"]."<td class=datos><input name='db_management' class='chk' type=checkbox value='1' ";
 			if ($db_management == 1) echo "checked";echo ">";
 			
-			echo "<tr><td class=datos>".$lang_label["manage_alerts"]."<td class=datos><input name='alert_management' class='chk' type=checkbox value='1' ";
+			echo "<tr><td class=datos2>".$lang_label["manage_alerts"]."<td class=datos2><input name='alert_management' class='chk' type=checkbox value='1' ";
 			if ($alert_management == 1) echo "checked";echo ">";
 			
 			echo "<tr><td class=datos>".$lang_label["pandora_management"]."<td class=datos><input name='pandora_management' class='chk' type=checkbox value='1' ";
 			if ($pandora_management == 1) echo "checked";echo ">";
+			echo" <tr><td colspan='3'><div class='raya'></div></td></tr>";
 	if (isset($_GET["new_profile"])){
 echo "<tr><td colspan='3' align='right'><input name='crtbutton' type='submit' class='sub' value='".$lang_label["create"]."'>";
 }
@@ -175,25 +176,25 @@ echo "<tr><td colspan='3' align='right'><input name='uptbutton' type='submit' cl
 			echo "</table>";
 			
 		} else { // View list data
-			$color=0;
+			$color=1;
 			?>
 			<table cellpadding=3 cellspacing=3 border=0>
 			<?php
 		$query_del1="SELECT * FROM tperfil";
 		$resq1=mysql_query($query_del1);
       	echo "<tr>";
-        echo "<th class='w180d'><font size=1>".$lang_label["profiles"];
-        echo "<th class='w40d'><font size=1>IR<a href='#' class='tip2'>&nbsp;<span>".$help_label["IR"]."</span></a>";
-        echo "<th class='w40d'><font size=1>IW<a href='#' class='tip2'>&nbsp;<span>".$help_label["IW"]."</span></a>";
-        echo "<th class='w40d'><font size=1>IM<a href='#' class='tip2'>&nbsp;<span>".$help_label["IM"]."</span></a>";
-        echo "<th class='w40d'><font size=1>AR<a href='#' class='tip2'>&nbsp;<span>".$help_label["AR"]."</span></a>";
-        echo "<th class='w40d'><font size=1>AW<a href='#' class='tip2'>&nbsp;<span>".$help_label["AW"]."</span></a>";
-        echo "<th class='w40d'><font size=1>LW<a href='#' class='tip2'>&nbsp;<span>".$help_label["LW"]."</span></a>";
-        echo "<th class='w40d'><font size=1>UM<a href='#' class='tip2'>&nbsp;<span>".$help_label["UM"]."</span></a>";
-        echo "<th class='w40d'><font size=1>DM<a href='#' class='tip2'>&nbsp;<span>".$help_label["DM"]."</span></a>";
-        echo "<th class='w40d'><font size=1>LM<a href='#' class='tip2'>&nbsp;<span>".$help_label["LM"]."</span></a>";
-        echo "<th class='w40d'><font size=1>PM<a href='#' class='tip2'>&nbsp;<span>".$help_label["PM"]."</span></a>";
-		echo "<th class='w30d'>".$lang_label["delete"]."</th></tr>";
+        echo "<th class='w180'><font size=1>".$lang_label["profiles"];
+        echo "<th class='w40'><font size=1>IR<a href='#' class='tip2'>&nbsp;<span>".$help_label["IR"]."</span></a>";
+        echo "<th class='w40'><font size=1>IW<a href='#' class='tip2'>&nbsp;<span>".$help_label["IW"]."</span></a>";
+        echo "<th class='w40'><font size=1>IM<a href='#' class='tip2'>&nbsp;<span>".$help_label["IM"]."</span></a>";
+        echo "<th class='w40'><font size=1>AR<a href='#' class='tip2'>&nbsp;<span>".$help_label["AR"]."</span></a>";
+        echo "<th class='w40'><font size=1>AW<a href='#' class='tip2'>&nbsp;<span>".$help_label["AW"]."</span></a>";
+        echo "<th class='w40'><font size=1>LW<a href='#' class='tip2'>&nbsp;<span>".$help_label["LW"]."</span></a>";
+        echo "<th class='w40'><font size=1>UM<a href='#' class='tip2'>&nbsp;<span>".$help_label["UM"]."</span></a>";
+        echo "<th class='w40'><font size=1>DM<a href='#' class='tip2'>&nbsp;<span>".$help_label["DM"]."</span></a>";
+        echo "<th class='w40'><font size=1>LM<a href='#' class='tip2'>&nbsp;<span>".$help_label["LM"]."</span></a>";
+        echo "<th class='w40'><font size=1>PM<a href='#' class='tip2'>&nbsp;<span>".$help_label["PM"]."</span></a>";
+		echo "<th class='w30'>".$lang_label["delete"]."</th></tr>";
 	while ($rowdup=mysql_fetch_array($resq1)){
 		$id_perfil = $rowdup["id_perfil"];
 		$nombre=$rowdup["name"];
@@ -215,7 +216,7 @@ echo "<tr><td colspan='3' align='right'><input name='uptbutton' type='submit' cl
 			$tdcolor = "datos2";
 			$color = 1;
 		}
-		echo "<td class='$tdcolor'><a href='index.php?sec=gperfiles&sec2=godmode/perfiles/lista_perfiles&edit_profile=".$id_perfil."'><b>".$nombre."</b></a>";
+		echo "<td class='$tdcolor'><a href='index.php?sec=gperfiles&amp;sec2=godmode/perfiles/lista_perfiles&amp;edit_profile=".$id_perfil."'><b>".$nombre."</b></a>";
 		
 		echo "<td class='$tdcolor'>";
 		if ($incident_view == 1) echo "<img src='images/ok.gif' border=0>";

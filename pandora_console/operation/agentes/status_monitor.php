@@ -19,7 +19,7 @@ if (comprueba_login() == 0) {
 	}
 
 	echo "<h2>".$lang_label["ag_title"]."</h2>";
-	echo "<h3>".$lang_label["monitor_listing"]."<a href='help/".substr($language_code,0,2)."/chap3.php#334' target='_help'><img src='images/help.gif' border='0' class='help'></a></h3>";
+	echo "<h3>".$lang_label["monitor_listing"]."<a href='help/".substr($language_code,0,2)."/chap3.php#334' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 	$iduser_temp=$_SESSION['id_usuario'];
 	
 

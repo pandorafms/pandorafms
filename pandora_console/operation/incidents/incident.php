@@ -127,7 +127,7 @@ if ((give_acl($id_user, 0, "IR")==1) OR (give_acl($id_user, 0, "IM")==1) or (dam
 	$sql1_count="SELECT COUNT(id_incidencia) FROM tincidencia ".$sql1;
 	$sql1=$sql0;
 	echo "<h2>".$lang_label["incident_manag"]."</h2>";
-	echo "<h3>".$lang_label["manage_incidents"]."<a href='help/".substr($language_code,0,2)."/chap4.php#4' target='_help'><img src='images/help.gif' border='0' class='help'></a></h3>";
+	echo "<h3>".$lang_label["manage_incidents"]."<a href='help/".substr($language_code,0,2)."/chap4.php#4' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 ?>
 
 <?php
@@ -304,7 +304,7 @@ if (isset($_POST['operacion'])){
 	echo "<th>".$lang_label["source"];
 	echo "<th width='75'>".$lang_label["in_openedby"];
 	echo "<th>".$lang_label["delete"];
-	$color = 0;
+	$color = 1;
 
 	// Skip offset records and begin show data
 	if ($offset !=0)

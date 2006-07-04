@@ -49,7 +49,7 @@ if (comprueba_login() == 0) {
 	}
 	
 	echo "<h2>".$lang_label["ag_title"]."</h2>";
-	echo "<h3>".$lang_label["view_agent_general_data"]."<a href='help/".substr($language_code,0,2)."/chap3.php#3321' target='_help'><img src='images/help.gif' border='0' class='help'></a></h3>";
+	echo "<h3>".$lang_label["view_agent_general_data"]."<a href='help/".substr($language_code,0,2)."/chap3.php#3321' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 	echo '<table cellspacing=3 cellpadding=3 border=0 width=750>';	
 	echo '<tr><td class="datos"><b>'.$lang_label["agent_name"].'</b> <td class="datos">'.salida_limpia($nombre_agente);
 

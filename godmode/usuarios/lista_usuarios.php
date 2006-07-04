@@ -21,14 +21,14 @@ if (comprueba_login() == 0)
 			$resq1=mysql_query($query_del1);
 			$resq1=mysql_query($query_del2);
 			if (! $resq1)
-					echo "<h3 class='error'>".$lang_label["delete_user_no"]."</h3>";
+				echo "<h3 class='error'>".$lang_label["delete_user_no"]."</h3>";
 			else
-					echo "<h3 class='suc'>".$lang_label["delete_user_ok"]."</h3>";
+				echo "<h3 class='suc'>".$lang_label["delete_user_ok"]."</h3>";
 		}
 ?>
 
 <h2><?php echo $lang_label["user_management"] ?></h2>
-<h3><?php echo $lang_label["users"] ?><a href="help/<?php echo substr($language_code,0,2);?>/chap2.php#22" target="_help"><img src="images/help.gif" border="0" class="help"></a></h3>
+<h3><?php echo $lang_label["users"] ?><a href="help/<?php echo substr($language_code,0,2); ?>/chap2.php#22" target="_help" class="help">&nbsp;<span><?php echo $lang_label["help"]; ?></span></a></h3>
  
 <table cellpadding=3 cellspacing=3 width=550>
 <th class="w80"><?php echo $lang_label["user_ID"]?>
@@ -45,7 +45,7 @@ $nombre = "";
 $nivel = "";
 $comentarios = "";
 $fecha_registro = "";
-$color=0;
+$color=1;
 
 while ($rowdup=mysql_fetch_array($resq1)){
 	$nombre=$rowdup["id_usuario"];

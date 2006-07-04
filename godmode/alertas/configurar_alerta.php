@@ -40,7 +40,7 @@ if ( (give_acl($id_user, 0, "LM")==1)){
 	
 ?>
 <h2><?php echo $lang_label["alert_config"];?></h2>
-<h3><?php if (isset($_GET["creacion"])){echo $lang_label["create_alert"];} if (isset($_GET["id_alerta"])){echo $lang_label["mod_alert"];} ?><a href="help/<?php echo substr($language_code,0,2);?>/chap3.php#3221" target="_help"><img src="images/help.gif" border="0" class="help"></a></h3>
+<h3><?php if (isset($_GET["creacion"])){echo $lang_label["create_alert"];} if (isset($_GET["id_alerta"])){echo $lang_label["mod_alert"];} ?><a href="help/<?php echo substr($language_code,0,2);?>/chap3.php#3221" target="_help" class="help">&nbsp;<span><?php echo $lang_label["help"];?></span></a></h3>
 
 <table width="500" cellspacing="3" cellpadding="3">
 
@@ -59,8 +59,8 @@ if ( (give_acl($id_user, 0, "LM")==1)){
 <td class="datos"><input type="text" name="nombre" size=30 value="<?php echo $nombre ?>">
 
 <tr>
-<td class="datos"><?php echo $lang_label["command"] ?>
-<td class="datos"><input type="text" name="comando" size="50" value="<?php echo $comando ?>">
+<td class="datos2"><?php echo $lang_label["command"] ?>
+<td class="datos2"><input type="text" name="comando" size="50" value="<?php echo $comando ?>">
 <a href='#' class='tip'>&nbsp;<span>
 <b>Macros:</b><br>
 _field1_<br>
@@ -72,10 +72,10 @@ _data_<br>
 </span></a>
 
 <tr><td class="datos"><?php echo $lang_label["description"] ?>
-<td class="datos"><textarea name="descripcion" cols="50" rows="3">
+<td class="datos"><textarea name="descripcion" cols="50" rows="7">
 <?php echo $descripcion ?>
 </textarea>
-<tr><td></td></tr>
+<tr><td colspan='3'><div class='raya'></div></td></tr>
 <tr><td colspan="3" align="right">
 <?php if (isset($_GET["creacion"])){echo "<input name='crtbutton' type='submit' class='sub' value='".$lang_label["create"]."'>";}
 else {echo "<input name='uptbutton' type='submit' class='sub' value='".$lang_label["update"]."'>";} ?>

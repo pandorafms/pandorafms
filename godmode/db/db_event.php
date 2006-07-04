@@ -76,7 +76,7 @@ if (comprueba_login() == 0)
 	# End of get parameters block
 	
 	echo "<h2>".$lang_label["dbmain_title"]."</h2>";
-	echo "<h3>".$lang_label["db_purge_event"]."</h3>";
+	echo "<h3>".$lang_label["db_purge_event"]."<a href='help/".substr($language_code,0,2)."/chap8.php#842' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 
 	echo "<table cellpadding='4' cellspacing='4' border='0'>";
 	echo "<tr><td class='datos'>";	
@@ -104,7 +104,7 @@ if (comprueba_login() == 0)
 	<form name="db_audit" method="post" action="index.php?sec=gdbman&sec2=godmode/db/db_event">
 	<table width='300' border='0'>
 	<tr><td class='datos'>
-	<select name="date_purge">
+	<select name="date_purge" class="w255">
 	<option value="<?php echo $month3 ?>"><?php echo $lang_label["purge_event_90day"] ?>
 	<option value="<?php echo $month ?>"><?php echo $lang_label["purge_event_30day"] ?>
 	<option value="<?php echo $week2 ?>"><?php echo $lang_label["purge_event_14day"] ?>

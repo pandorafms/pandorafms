@@ -99,7 +99,7 @@ if (comprueba_login() == 0)
 		}
 		
 		$offset_counter = 0;	
-		$color=0;
+		$color=1;
 	// Get data
 		while ($row=mysql_fetch_array($result) and ($offset_counter < $block_size) ){
 			if ($color == 1){

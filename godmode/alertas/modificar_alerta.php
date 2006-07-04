@@ -51,12 +51,12 @@ if ( (give_acl($id_user, 0, "LM")==1)){
 	}
 
     echo "<h2>".$lang_label["alert_config"]."</h2>";
-	echo "<h3>".$lang_label["alert_defined2"]."<a href='help/".substr($language_code,0,2)."/chap3.php#3221' target='_help'><img src='images/help.gif' border='0' class='help'></a></h3>";
+	echo "<h3>".$lang_label["alert_defined2"]."<a href='help/".substr($language_code,0,2)."/chap3.php#3221' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 	echo "<table width='500' cellpadding='3' cellspacing='3'>";
 	echo "<th class='w100'>".$lang_label["alertname"];
 	echo "<th>".$lang_label["description"];
 	echo "<th>".$lang_label["delete"];
-	$color=0;
+	$color=1;
 	$sql1='SELECT * FROM talerta ORDER BY nombre';
 	$result=mysql_query($sql1);
 	while ($row=mysql_fetch_array($result)){

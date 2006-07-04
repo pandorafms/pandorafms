@@ -23,7 +23,7 @@ if (comprueba_login() == 0)
  	*/
 ?>
 	<h2><?php echo $lang_label["dbmain_title"] ?></h2>
-	<h3><?php echo $lang_label["current_dbsetup"] ?></h3>
+	<h3><?php echo $lang_label["current_dbsetup"] ?><a href="help/<?php echo substr($language_code,0,2) ?>/chap8.php#8" target="_help" class="help">&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
 	<table width=550 cellspacing=3 cellpadding=3 border=0>
 	<tr><td>
 	<i><?php echo $lang_label["days_compact"]; ?>:</i>&nbsp;<b><?php echo $days_compact; ?></b><br><br>

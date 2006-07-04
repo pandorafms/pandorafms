@@ -46,7 +46,7 @@ if (give_acl($id_user, 0, "AW")==1) {
         	}
 	}
 	echo "<h2>".$lang_label["agent_conf"]."</h2>";
-	echo "<h3>".$lang_label["agent_defined2"]."</h3>";
+	echo "<h3>".$lang_label["agent_defined2"]."<a href='help/".substr($language_code,0,2)."/chap3.php#3' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 	
 	// Load icon index from tgrupos
 	$iconindex_g[]="";
@@ -64,7 +64,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 	echo "<th>".$lang_label["group"];
 	echo "<th>".$lang_label["description"];
 	echo "<th>".$lang_label["delete"];
-	$color=0;
+	$color=1;
 	while ($row=mysql_fetch_array($result)){
 		$id_grupo = $row["id_grupo"];
 		if ($color == 1){

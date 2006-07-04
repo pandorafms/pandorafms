@@ -23,7 +23,7 @@ if (comprueba_login() == 0)
  	*/
 	 ?>	
 	<h2><?php echo $lang_label["dbmain_title"] ?></h2>
-	<h3><?php echo $lang_label["db_purge"] ?><a href='help/<?php echo substr($language_code,0,2) ?>/chap8.php#8' target='_help'><img src='images/help.gif' border='0' class='help'></a></h3>
+	<h3><?php echo $lang_label["db_purge"] ?><a href='help/<?php echo substr($language_code,0,2) ?>/chap8.php#8' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
 	<img src="reporting/fgraph.php?tipo=db_agente_purge&id=-1"><br><br>
 	<h3><?php echo $lang_label["get_data_agent"] ?></h3>
 	<?php
@@ -229,7 +229,7 @@ if (comprueba_login() == 0)
 	<h3><?php echo $lang_label["purge_data"] ?></h3>
 	<table width=300 border=0>
 	<tr><td>
-	<select name="date_purge">
+	<select name="date_purge" class="w255">
 	<option value="<?php echo $month3 ?>"><?php echo $lang_label["purge_90day"] ?>
 	<option value="<?php echo $month ?>"><?php echo $lang_label["purge_30day"] ?>
 	<option value="<?php echo $week2 ?>"><?php echo $lang_label["purge_14day"] ?>

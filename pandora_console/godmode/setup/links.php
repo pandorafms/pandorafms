@@ -78,8 +78,8 @@ if (comprueba_login() == 0)
 		<?php
 		echo "'>";
 		echo '<tr><td class="lb" rowspan="2" width="5"><td class="datos">'.$lang_label["link_name"].'<td class="datos"><input type="text" name="name" size="35" value="'.$nombre.'">';
-		echo '<tr><td class="datos">'.$lang_label["link"].'<td class="datos"><input type="text" name="link" size="35" value="'.$link.'">';
-		echo '<tr><td colspan="5"><div class="noraya"></div></td></tr>';
+		echo '<tr><td class="datos2">'.$lang_label["link"].'<td class="datos2"><input type="text" name="link" size="35" value="'.$link.'">';
+		echo '<tr><td colspan="5"><div class="raya"></div></td></tr>';
 		echo "<tr><td colspan='3' align='right'><input name='crtbutton' type='submit' class='sub' value='".$lang_label["update"]."'>";
 		echo '</form></table>';
 	}

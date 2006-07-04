@@ -23,7 +23,7 @@ if (comprueba_login() == 0)
  	*/
 		
 	echo "<h2>".$lang_label["dbmain_title"]."</h2>";
-	echo "<h3>".$lang_label["db_info2"]."</h3>";
+	echo "<h3>".$lang_label["db_info2"]."<a href='help/".substr($language_code,0,2)."/chap8.php#81' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 	echo "<table border=0>";
 	echo "<tr><td><img src='reporting/fgraph.php?tipo=db_agente_modulo'><br>";
 	echo "<tr><td><br>";

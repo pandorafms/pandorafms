@@ -633,6 +633,7 @@ $lang_label["network_module_refresh_exec"]="Ejecutado el refresco del m&oaucute;
 $lang_label["next_contact"]="Siguiente contacto con el agente";
 $lang_label["out_of_limits"]="Fuera de los l&iacute;mites";
 $lang_label["background_image"]="Imagen de fondo";
+$lang_label["help"]="Ayuda";
 
 global $lang_label;
 global $help_label;

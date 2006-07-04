@@ -563,7 +563,7 @@ $lang_label["mindata"]="Minimum Data";
 $lang_label["snmp_oid"]="SNMP OID";
 $lang_label["module_interval"]="Module Interval";
 $lang_label["snmp_community"]="SNMP Community";
-$lang_label["server_asigned"]="Network Server assigned";
+$lang_label["server_asigned"]="Assigned Network Server";
 $lang_label["remote"]="Remote";
 $lang_label["default_server"]="Active Server";
 $lang_label["incident_manag"]="Incident management";
@@ -651,6 +651,7 @@ $lang_label["network_module_refresh_exec"]="Network module refresh executed";
 $lang_label["next_contact"]="Next agent contact";
 $lang_label["out_of_limits"]="Out of limits";
 $lang_label["background_image"]="Background image";
+$lang_label["help"]="Help";
 
 global $lang_label; 
 global $help_label;

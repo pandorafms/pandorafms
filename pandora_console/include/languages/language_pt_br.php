@@ -575,6 +575,7 @@ $lang_label["network_module_refresh_exec"]="Executado refrescar de m&oacute;dulo
 $lang_label["next_contact"]="Seguinte contato de agente";
 $lang_label["out_of_limits"]="Fora de limites";
 $lang_label["background_image"]="Imagem de fundo";
+$lang_label["help"]="Ajuda";
 
 global $lang_label;
 global $help_label;

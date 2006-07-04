@@ -1,4 +1,4 @@
-/* Pandora exec module. These modules exec a command
+/* Test module to prove SSH connection.
 
    Copyright (C) 2006 Artica ST.
    Written by Esteban Sanchez.
@@ -18,20 +18,17 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef	__PANDORA_MODULE_EXEC_H__
-#define	__PANDORA_MODULE_EXEC_H__
+#include "pandora_ssh_client.h"
+#include "../pandora_agent_conf.h"
 
-#include "pandora_module.h"
-
-namespace Pandora_Modules {
-        class Pandora_Module_Exec : public Pandora_Module {
+namespace SSH {
+        class Pandora_SSH_Test {
         private:
-                string module_exec;        
+                Pandora_Ssh_Client *ssh_client;
+                Pandora_Agent_Conf *conf;
         public:
-                Pandora_Module_Exec    (string name, string exec);
-                
-                void   run       ();
+                Pandora_SSH_Test  ();
+                ~Pandora_SSH_Test ();
+                void test         ();
         };
 }
-
-#endif

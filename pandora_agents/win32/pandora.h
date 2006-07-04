@@ -59,4 +59,4 @@ namespace Pandora {
         class Pandora_Exception { };
 }
 
-#endif /* __BABEL_H__ */
+#endif /* __PANDORA_H__ */

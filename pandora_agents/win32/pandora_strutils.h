@@ -44,6 +44,5 @@ namespace Pandora_Strutils {
         void
         stringtok (list<string> &l, string const &s,
                    char const * const separators = " \t\n");
-
 }
 #endif /* __STRUTILS_H__ */

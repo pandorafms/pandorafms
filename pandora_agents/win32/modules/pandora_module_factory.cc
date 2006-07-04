@@ -21,6 +21,8 @@
 #include "pandora_module_factory.h"
 #include "pandora_module.h"
 #include "pandora_module_exec.h"
+#include "pandora_module_proc.h"
+#include "pandora_module_service.h"
 #include "../pandora_strutils.h"
 #include <list>
 
@@ -32,9 +34,11 @@ using namespace Pandora_Strutils;
 #define TOKEN_TYPE        ("module_type ")
 #define TOKEN_INTERVAL    ("module_interval ")
 #define TOKEN_EXEC        ("module_exec ")
+#define TOKEN_PROC        ("module_proc ")
+#define TOKEN_SERVICE     ("module_service ")
 #define TOKEN_MAX         ("module_max ")
 #define TOKEN_MIN         ("module_min ")
-#define TOKEN_DESCRIPTION ("module_descripcion ")
+#define TOKEN_DESCRIPTION ("module_description ")
 
 string
 parseLine (string line, string token) {
@@ -54,10 +58,21 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
         list<string>::iterator iter;
         string                 module_name, module_type, module_exec;
         string                 module_min, module_max, module_description;
-        string                 module_interval;
+        string                 module_interval, module_proc, module_service;
         Pandora_Module        *module;
         bool                   numeric;
-        
+
+	module_name        = "";
+	module_type        = "";
+	module_min         = "";
+	module_max         = "";
+	module_description = "";
+	module_interval    = "";
+	module_exec        = "";
+	module_proc        = "";
+	module_service     = "";
+		
+		
         stringtok (tokens, definition, "\n");
         
         /* Pick the first and the last value of the token list */
@@ -79,6 +94,12 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
                 if (module_exec == "") {
                         module_exec = parseLine (line, TOKEN_EXEC);
                 }
+                if (module_proc == "") {
+                        module_proc = parseLine (line, TOKEN_PROC);
+                }
+		if (module_service == "") {
+                        module_service = parseLine (line, TOKEN_SERVICE);
+		}
                 if (module_max == "") {
                         module_max = parseLine (line, TOKEN_MAX);
                 }
@@ -95,10 +116,20 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
         if (module_exec != "") {
                 module = new Pandora_Module_Exec (module_name,
                                                   module_exec);
+        } else if (module_proc != "") {
+                module = new Pandora_Module_Proc (module_name,
+                                                  module_proc);
+	} else if (module_service != "") {
+                module = new Pandora_Module_Service (module_name,
+						     module_service);
         } else {
                 return NULL;
         }
-        
+	pandoraDebug ("Description %s", module_description.c_str ());
+	if (module_description != "") {
+                module->setDescription (module_description);
+        }
+	
         switch (Pandora_Module::getModuleType (module_type)) {
         case TYPE_GENERIC_DATA:
         case TYPE_GENERIC_DATA_INC:
@@ -143,6 +174,19 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
                                            module_min.c_str (),
                                            module_name.c_str ());
                         }
+                }
+        }
+        
+        if (module_interval != "") {
+                int interval;
+                
+                try {
+                        interval = strtoint (module_interval);
+                        module->setInterval (interval);
+                } catch (Invalid_Conversion e) {
+                        pandoraLog ("Invalid interval value \"%s\" for module %s",
+                                    module_interval.c_str (),
+                                    module_name.c_str ());
                 }
         }
         return module;

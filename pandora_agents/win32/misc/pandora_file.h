@@ -1,4 +1,4 @@
-/* Pandora exec module. These modules exec a command
+/* Misc utils for files.
 
    Copyright (C) 2006 Artica ST.
    Written by Esteban Sanchez.
@@ -18,20 +18,24 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef	__PANDORA_MODULE_EXEC_H__
-#define	__PANDORA_MODULE_EXEC_H__
+#ifndef	__PANDORA_FILE_H__
+#define	__PANDORA_FILE_H__
 
-#include "pandora_module.h"
+#include <string>
+#include "../pandora.h"
 
-namespace Pandora_Modules {
-        class Pandora_Module_Exec : public Pandora_Module {
-        private:
-                string module_exec;        
-        public:
-                Pandora_Module_Exec    (string name, string exec);
-                
-                void   run       ();
+using namespace std;
+
+namespace Pandora_File {
+        class File_Not_Found : Pandora::Pandora_Exception {
         };
+        
+        class Delete_Error : Pandora::Pandora_Exception {
+        };
+        
+        string readFile   (const string filename);
+        void   removeFile (const string filename);
+        void   writeFile  (const string filename, const string data);
 }
 
 #endif

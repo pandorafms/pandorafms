@@ -21,13 +21,13 @@
 #include "pandora_module_factory.h"
 #include "pandora_module_list.h"
 #include "pandora_module_exec.h"
+#include "pandora_module_proc.h"
+#include "pandora_module_service.h"
 #include <fstream>
 
 using namespace std;
 using namespace Pandora;
 using namespace Pandora_Module_Factory;
-
-
 
 Pandora_Module_List::Pandora_Module_List (string filename) {
         ifstream     file (filename.c_str ());
@@ -85,8 +85,10 @@ Pandora_Module_List::~Pandora_Module_List () {
 
 void
 Pandora_Module_List::parseModuleDefinition (string definition) {
-        Pandora_Module      *module;
-        Pandora_Module_Exec *module_exec;
+        Pandora_Module         *module;
+        Pandora_Module_Exec    *module_exec;
+        Pandora_Module_Proc    *module_proc;
+	Pandora_Module_Service *module_service;
         
         module = getModuleFromDefinition (definition);
         
@@ -95,6 +97,17 @@ Pandora_Module_List::parseModuleDefinition (string definition) {
                 case MODULE_EXEC:
                         module_exec = (Pandora_Module_Exec *) module;
                         modules->push_back (module_exec);
+                        
+                        break;
+                case MODULE_PROC:
+                        module_proc = (Pandora_Module_Proc *) module;
+                        modules->push_back (module_proc);
+                        
+                        break;
+
+		case MODULE_SERVICE:
+                        module_service = (Pandora_Module_Service *) module;
+                        modules->push_back (module_service);
                         
                         break;
                 default:

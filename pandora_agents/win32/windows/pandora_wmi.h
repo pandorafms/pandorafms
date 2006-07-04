@@ -1,4 +1,5 @@
-/* Pandora exec module. These modules exec a command
+/* Class to manage the Windows Management Instrumentation(WMI).
+   It depends on disphelper library (http://disphelper.sourceforge.net)
 
    Copyright (C) 2006 Artica ST.
    Written by Esteban Sanchez.
@@ -18,20 +19,23 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef	__PANDORA_MODULE_EXEC_H__
-#define	__PANDORA_MODULE_EXEC_H__
+#ifndef	__PANDORA_WMI_H__
+#define	__PANDORA_WMI_H__
 
-#include "pandora_module.h"
+#include "../pandora.h"
+#include "wmi/disphelper.h"
+#include <list>
 
-namespace Pandora_Modules {
-        class Pandora_Module_Exec : public Pandora_Module {
-        private:
-                string module_exec;        
-        public:
-                Pandora_Module_Exec    (string name, string exec);
-                
-                void   run       ();
-        };
-}
+using namespace Pandora;
+using namespace std;
+
+namespace Pandora_Wmi {
+        int    isProcessRunning  (string process_name);
+	int    isServiceRunning  (string service_name);
+	string getOSName         ();
+        string getOSVersion      ();
+        string getOSBuild        ();
+        string getSystemName     ();
+};
 
 #endif

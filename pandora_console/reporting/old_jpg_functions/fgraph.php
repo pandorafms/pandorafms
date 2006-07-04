@@ -5,7 +5,6 @@
 // Este codigo esta protegido por la licencia GPL.
 // Sancho Lerena <slerena@gmail.com>, 2003-2006
 // Raúl Mateos <raulofpandora@gmail.com>, 2006
-// Jose Navarro <contacto@indiseg.net>, 2006
 
 // Load global vars
 include ("../include/config.php");
@@ -36,23 +35,16 @@ function dame_fecha_grafico($mh){ // Devuelve fecha formateada en funcion de un 
 	return $m;
 }
 
-function dame_fecha_grafico_timestamp ($timestamp) {  return date('d/m H:i', $timestamp); }
-
-function grafico_modulo_sparse($id_agente_modulo, $periodo, $intervalo, $etiqueta, $color, $draw_events=0){
+function grafico_modulo_sparse($id_agente_modulo, $periodo, $intervalo, $etiqueta, $color){
 	include ("../include/config.php");
 	include ("jpgraph/jpgraph.php");
 	include ("jpgraph/jpgraph_line.php");
-	include ("jpgraph/jpgraph_scatter.php");
 	require ("../include/languages/language_".$language_code.".php");
 
-	// WHere periodo is lapse of time in minutes that we want to show in a graph, this could be a week, 1 hour, a day, etc
-	// 30.06.06 dervitx
-	// $draw_events  behaves as a boolean:  1 implies that events for that module in that period of time
-	//	will be represented with a line in the graph
+	// WHere periodo is lapse of time in seconds that we want to show in a graph, this could be a week, 1 hour, a day, etc
 	$fechatope = dame_fecha($periodo);	// Max old-date limit
 	$horasint = $periodo / $intervalo;	// Each intervalo is $horasint seconds length
 	$nombre_agente = dame_nombre_agente_agentemodulo($id_agente_modulo);
-	$id_agente = dame_agente_id($nombre_agente);
 	$nombre_modulo = dame_nombre_modulo_agentemodulo($id_agente_modulo);
 
 	// Para crear las graficas vamos a crear un array de Ax4 elementos, donde
@@ -201,127 +193,74 @@ function grafico_modulo_sparse($id_agente_modulo, $periodo, $intervalo, $etiquet
 		$etiq_base = $etiq_base2;
 	}
 
-	// 29.06.06 dervitx
-	// let's see if the module in this agent has some events associated
-	// if it has, let's fill $datax and $datay to scatter the events
-	//	in the graphic
-	if ($draw_events) {
-		$initial_time = strtotime($fechatope);
-		$graph_duration = $periodo * 60;  			// in seconds
-		$final_time = $initial_time + $graph_duration;		// now
-		// careful here! next sql sentence looks for the module by name in the "evento" field
-		// tevento database table SHOULD have module_id !!
-		$sql1 = "SELECT * FROM tevento WHERE id_agente = ".$id_agente." and timestamp > '".$fechatope."' and evento like '%" . $nombre_modulo . "%' ";
-		// we populate two arrays with validated and no validated events of the module:
-		//	$datax[1] and $datax[0], respectively. There are $datay arrays for y values.
-		if ($result=mysql_query($sql1)){
-		while ($row=mysql_fetch_array($result)) {
-			if ($row["estado"]) { $estado=1; } else { $estado=0; }
-			$datax[$estado][count($datax[$estado])] = strtotime( $row["timestamp"] );
-			$datay[$estado][count($datay[$estado])] = ceil($valor_maximo / 6) + $valor_maximo;
-			}
-		}
-	}
-	// end 29.06.06 dervitx
+	// Create graph
+	$graph = new Graph(550,220);     
+	$graph->SetMargin(50,120,30,60); 
+	$valor_maximo =  ceil($valor_maximo / 4) + $valor_maximo;
+	$graph->SetScale("textlin",0,$valor_maximo,0,0);
+        $graph->SetAlphaBlending();	
+	// Which background color
+	$graph->SetMarginColor('white');
 	
-	// 30.06.06 dervitx
-	// creating the graph with PEAR Image_Graph
-	include 'Image/Graph.php';
-	$Graph =& Image_Graph::factory('graph', array(550, 220)); 
-	$Font =& $Graph->addNew('font', $config_fontpath);
-	$Font->setSize(8);
-	$Graph->setFont($Font);
-	$Graph->add(
-		Image_Graph::vertical(
-		 	$Title = Image_Graph::factory('title', array("          $etiqueta - $nombre_agente / $nombre_modulo", 10)),
-			Image_Graph::horizontal(
-				$Plotarea = Image_Graph::factory('plotarea','axis'),
-				$Legend = Image_Graph::factory('legend'),
-				80
-				),
-			5
-			)
-		);
+	// Without frame
+	$graph->SetFrame(false);
+	
+	// Colour Y-axe line
+	$graph->ygrid->SetFill(true,'#EFEFEF@0.6','#BBCCFF@0.6');
+	//$graph->xgrid->Show();
+	
+	// Title
+	$graph->tabtitle->Set("$etiqueta - $nombre_agente / $nombre_modulo");
 
-	$Title->setAlignment(IMAGE_GRAPH_ALIGN_LEFT);
-	
- 	$Grid =& $Plotarea->addNew('line_grid', false, IMAGE_GRAPH_AXIS_X);
-	$Grid->setBackgroundColor('silver@0.3');
-	$Grid->setBorderColor('black');
-	$Plotarea->addNew('line_grid', false, IMAGE_GRAPH_AXIS_Y); 
-	// the next grid is only necessary for drawing the right black line of the PlotArea
-	$Grid_sec =& $Plotarea->addNew('line_grid', IMAGE_GRAPH_AXIS_Y_SECONDARY); 
-	$Grid_sec->setBorderColor('black');
-	
-	// now, datasets are created ...
-	$Datasets = array (
-			Image_Graph::factory('dataset'),
-			Image_Graph::factory('dataset'),
-			Image_Graph::factory('dataset'),
-		);
-	$Datasets[0]->setName('Average');
-	$Datasets[1]->setName('Maximum');
-	$Datasets[2]->setName('Minimum');
-	$Legend->setPlotarea($Plotarea);
-	
-	// ... and populated with data ...
-	for ($cc=0; $cc<count($grafica); $cc++) {
-		$tdate=strtotime($etiq_base[$cc]);
-		$Datasets[0]->addPoint($tdate,$grafica[$cc]);
-		$Datasets[1]->addPoint($tdate,$valores_max[$cc]);
-		$Datasets[2]->addPoint($tdate,$valores_min[$cc]);
-		}
-	
-	// ... and added to the Graph
-	$Plot =& $Plotarea->addNew('Image_Graph_Plot_Area', array($Datasets)); 
-	
-	// some other properties of the Graph
-	$FillArray =& Image_Graph::factory('Image_Graph_Fill_Array');
-	$FillArray->addColor('orange');
-	$FillArray->addColor('blue');
-	$FillArray->addColor('yellow');
-	$Plot->setFillStyle($FillArray); 
-	
-	$AxisX =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_X);
-	$AxisX->setLabelInterval($periodo*60/10);
- 	$AxisX->setFontAngle(45);
- 	$AxisX->setDataPreprocessor(Image_Graph::factory('Image_Graph_DataPreprocessor_Function', 'dame_fecha_grafico_timestamp')); 
-	$AxisY =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
-	$AxisY->forceMaximum(ceil($valor_maximo / 4) + $valor_maximo);
-	
-	// let's draw the alerts zones
-	$sql1 = "SELECT dis_min, dis_max FROM talerta_agente_modulo WHERE id_agente_modulo = ".$id_agente_modulo;
-	if ($result=mysql_query($sql1)){
-	while ($row=mysql_fetch_array($result)) {
-		$Marker_alertzone =& $Plotarea->addNew('Image_Graph_Axis_Marker_Area', IMAGE_GRAPH_AXIS_Y);
-		$Marker_alertzone->setFillColor('green@0.2');
-		$Marker_alertzone->setLowerBound($row["dis_min"]);
-		$Marker_alertzone->setUpperBound($row["dis_max"]);
-		}
+	// To use true type fonts (who permits a label text in angle of 45)
+	// cp /usr/share/fonts/truetype/msttcorefonts/arial.ttf /usr/X11R6/lib/X11/fonts/truetype/
+	if ($config_truetype == 1){
+		$graph->xaxis->SetFont(FF_ARIAL,FS_NORMAL,7); 
+		$graph->xaxis->SetLabelAngle(35);
+	} else {
+		// Fixed font
+		$graph->xaxis->SetFont(FF_FONT0);
+		$graph->xaxis->SetLabelAngle(90);
 	}
-		
-	// if there are some events to draw let's scatter them!
-	if ($draw_events) {
-		for ($cc=1; $cc>=0; $cc--) {
-			if (isset($datay[$cc])) {
-				$Dataset_events =& Image_Graph::factory('dataset');
-				$Dataset_events->setName($cc?'Validated events':'Not valid. events');
-				for ($nn=0; $nn<count($datax[$cc]); $nn++) {
-					$Dataset_events->addPoint($datax[$cc][$nn], $datay[$cc][$nn]);
-					}
-				$Plot =& $Plotarea->addNew('Plot_Impulse', array(&$Dataset_events));
-				$Plot->setLineColor($cc?'green@0.5':'red@0.5'); 
-				$Marker_event =& Image_Graph::factory('Image_Graph_Marker_Diamond');
-				$Plot->setMarker($Marker_event);
-				$Marker_event->setFillColor($cc?'green@0.5':'red@0.5');
-				$Marker_event->setLineColor('black');
-				}
-			}
-		}
 	
+	$graph->xaxis->SetTickLabels($etiq_base);
+	//$graph->xaxis->SetTextLabelInterval(ceil($intervalo / 10),0);
 	
-	$Graph->done(); 
-	// 30.06.06 dervitx end
+	$graph->xaxis->SetTextTickInterval(ceil($intervalo/10),0); 
+	$graph->yaxis->SetFont(FF_FONT0);
+	// Crete data line
+
+	$line0=new LinePlot($valores_max);
+	$line0->SetColor("blue");
+	$line0->SetWeight(1);
+	$line0->SetFillColor("blue@0.2");
+ 	$line0->SetLegend($lang_label["max"]); 
+	
+	$line1=new LinePlot($grafica);
+	$line1->SetColor($color);
+	$line1->SetWeight(1);
+	$line1->SetFillColor($color."@0.2");
+	$line1->SetLegend($lang_label["med"]); 
+	
+	$line2=new LinePlot($valores_min);
+	$line2->SetColor("yellow");
+	$line2->SetWeight(1);
+	$line2->SetFillColor("yellow@0.2");
+	$line2->SetLegend($lang_label["min"]); 
+	
+	// Add line to graph
+	$graph->Add($line0);
+	$graph->Add($line1);
+	$graph->Add($line2);
+	
+	$graph->legend->Pos(0.01,0.2,"right","center");
+	
+	// Y-axe up graph
+	$graph->SetGridDepth(DEPTH_BACK);
+	// Antialias
+	// $graph->img->SetAntiAliasing();
+	// Mostramos la imagen 
+	$graph->Stroke();
 }
 
 function graphic_agentmodules($id_agent) {
@@ -1358,9 +1297,7 @@ if (isset($_GET["tipo"])){
 			$intervalo = $_GET["intervalo"];
 			$label = $_GET["label"];
 			$color = "#".$color;
-			if ( isset($_GET["draw_events"]) and $_GET["draw_events"]==1 ) 
-				{ $draw_events = 1; } else { $draw_events = 0; } 
-			grafico_modulo_sparse($id, $periodo, $intervalo, $label, $color, $draw_events);
+			grafico_modulo_sparse($id, $periodo, $intervalo, $label, $color);
 		}
 	}
 	elseif ($_GET["tipo"] =="estado_incidente") 

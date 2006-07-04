@@ -70,8 +70,8 @@ if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
 		echo '
 		<form name="new_mes" method="POST" action="index.php?sec=messages&sec2=operation/messages/message&nuevo_mensaje=1">
 		<table>
-		<tr><td class="datos">'.$lang_label["m_from"].':</td><td><b>'.$iduser.'</b></td></tr>
-		<tr><td class="datos">'.$lang_label["m_to"].':</td><td>';
+		<tr><td class="datos">'.$lang_label["m_from"].':</td><td class="datos"><b>'.$iduser.'</b></td></tr>
+		<tr><td class="datos2">'.$lang_label["m_to"].':</td><td>';
 		if (isset($_POST["u_destino"])) {
 			echo '<b>'.$_POST["u_destino"].'</b><input type="hidden" name="u_destino" value='.$_POST["u_destino"].'>';
 			}
@@ -82,14 +82,14 @@ if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
 			echo '</select>';
 			}
 		echo '</td></tr>
-		<tr><td class="datos">'.$lang_label["subject"].':</td><td>';
+		<tr><td class="datos">'.$lang_label["subject"].':</td><td class="datos">';
 			if (isset($_POST["subject"])) {
 			echo '</b><input name="subject" value="'.$_POST["subject"].'" class="w255">';
 			}
 			else echo '<input name="subject" class="w255">';
 		echo '</td></tr>
-		<tr><td class="datos">'.$lang_label["message"].':</td></tr>
-		<tr><td class="datos" colspan="4"><textarea name="mensaje" rows="10" class= "w540">';
+		<tr><td class="datos2">'.$lang_label["message"].':</td></tr>
+		<tr><td class="datos" colspan="4"><textarea name="mensaje" rows="10" class="w540">';
 			if (isset($_POST["mensaje"])) {
 			echo $_POST["mensaje"];
 			}
@@ -104,8 +104,8 @@ if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
 		echo '
 		<form name="new_mes" method="post" action="index.php?sec=messages&sec2=operation/messages/message&nuevo_mensaje_g=1">
 		<table>
-		<tr><td class="datos">'.$lang_label["m_from"].':</td><td><b>'.$iduser.'</b></td></tr>
-		<tr><td class="datos">'.$lang_label["m_to"].':</td><td>';
+		<tr><td class="datos">'.$lang_label["m_from"].':</td><td class="datos"><b>'.$iduser.'</b></td></tr>
+		<tr><td class="datos2">'.$lang_label["m_to"].':</td><td class="datos2">';
 			echo '<select name="g_destino" class="w100">';
 				while ($row3=mysql_fetch_array($resultado3))
 				#if ($row3["id_grupo"] != 1){
@@ -114,8 +114,8 @@ if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
 				
 			echo '</select>';
 		echo '</td></tr>
-		<tr><td class="datos">'.$lang_label["subject"].':</td><td><input name="subject" class="w255"></td></tr>
-		<tr><td class="datos">'.$lang_label["message"].':</td></tr>
+		<tr><td class="datos">'.$lang_label["subject"].':</td><td class="datos"><input name="subject" class="w255"></td></tr>
+		<tr><td class="datos2">'.$lang_label["message"].':</td></tr>
 		<tr><td class="datos" colspan="4"><textarea name="mensaje" rows="10" class="w540"></textarea></td></tr>
 		<tr><td colspan="2" align="right">
 		<input type="submit" class="sub" name="send_mes" value="'.$lang_label["send_mes"].'"></form></td></tr>';
@@ -139,7 +139,7 @@ else {
 		}
 	$sql3='SELECT * FROM tmensajes WHERE id_usuario_destino="'.$iduser.'"';
 	$resultado3=mysql_query($sql3);
-	$color=0;
+	$color=1;
 	if (mysql_num_rows($resultado3)) {
 		echo "<table class='w550'><tr><th>".$lang_label["read"]."</th><th>".$lang_label["sender"]."</th><th>".$lang_label["subject"]."</th><th>".$lang_label["timestamp"]."</th><th>".$lang_label["delete"]."</th></tr>";
 		while ($row3=mysql_fetch_array($resultado3)){
@@ -175,10 +175,10 @@ else {
 		echo '
 		<table>
 		<form method="post" name="reply_mes" action="index.php?sec=messages&sec2=operation/messages/message&nuevo">
-		<tr><td></td></tr><tr><td class="w90d">'.$lang_label["from"].':</td><td><b>'.$row4["id_usuario_origen"].'</b></td></tr>
-		<tr><td class="datos">'.$lang_label["subject"].':</td><td><b>'.$row4["subject"].'</b></td></tr>
-		<tr><td class="datos">'.$lang_label["message"].':</td>
-		<tr><td class="datos" colspan="4"><textarea name="mensaje" rows="10" class="w540" readonly>'.$row4["mensaje"].'</textarea></td></tr>
+		<tr><td></td></tr><tr><td class="w90datos">'.$lang_label["from"].':</td><td class="datos"><b>'.$row4["id_usuario_origen"].'</b></td></tr>
+		<tr><td class="datos2">'.$lang_label["subject"].':</td><td class="datos2"><b>'.$row4["subject"].'</b></td></tr>
+		<tr><td class="datos" colspan="2">'.$lang_label["message"].':</td>
+		<tr><td class="datos2" colspan="2"><textarea name="mensaje" rows="10" class="w540" readonly>'.$row4["mensaje"].'</textarea></td></tr>
 		<tr><td colspan="2" align="right">
 		<input type="hidden" name="u_destino" value="'.$row4["id_usuario_origen"].'">
 		<input type="hidden" name="subject" value="Re: '.$row4["subject"].'">

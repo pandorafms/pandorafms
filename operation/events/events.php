@@ -109,7 +109,7 @@ if (comprueba_login() == 0) {
 	}
 
 	echo "<h2>".$lang_label["events"]."</h2>";
-	echo "<h3>".$lang_label["event_main_view"]."<a href='help/".substr($language_code,0,2)."/chap5.php#5' target='_help'><img src='images/help.gif' border='0' class='help'></a></h3>";
+	echo "<h3>".$lang_label["event_main_view"]."<a href='help/".substr($language_code,0,2)."/chap5.php#5' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 
 	// Prepare index for pagination
 	$event_list[]="";
@@ -190,7 +190,7 @@ if (comprueba_login() == 0) {
 	echo "<label for='checkbox' class='p21'>".$lang_label["all"]." </label>";
 	echo '<input type="checkbox" class="chk" name="allbox" onclick="CheckAll();"></th>';	
 	echo "<form name='eventtable' method='POST' action='index.php?sec=eventos&sec2=operation/events/events&refr=60&offset=".$offset."'>";
-	$color = 0;
+	$color = 1;
 	$id_evento = 0;
 	if ($offset !=0)
 		$offset_limit = $offset +1;

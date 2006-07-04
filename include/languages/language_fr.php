@@ -633,6 +633,7 @@ $lang_label["network_module_refresh_exec"]="L'actualisation du module de R&eacut
 $lang_label["next_contact"]="Contact suivant de l'agent";
 $lang_label["out_of_limits"]="Hors des limites";
 $lang_label["background_image"]="Image de base";
+$lang_label["help"]="Aide";
 
 global $lang_label;
 global $help_label;

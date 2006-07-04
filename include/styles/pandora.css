@@ -53,9 +53,9 @@ input.sub {font-weight: bold; border-bottom-color: #708090; border-right-color: 
 th, td.lb {color: #ffffff; background-color: #778866;}
 td.lb {height: 16px; padding-left: 3px; font-weight: bold;}
 td.datos, td.datost, td.datosb, td.datos_id, td.datosf9, td.datosf9i, td.datos_jus {background-color: #f5f5f5;}
-td.w30datos, td.w40datos, td.w90datos, td.w135datos, td.w180datos, td.w230datos {background-color: #f5f5f5;}
+td.w90datos, td.w135datos, td.w230datos {background-color: #f5f5f5;}
 td.datos2, td.datos2t, td.datos2b, td.datos2_id, td.datos2f9, td.datos2f9i, td.datos2_jus {background-color: #fafbfc;}
-td.w30datos2, td.w40datos2, td.w90datos2, td.w135datos2, td.w180datos2, td.w230datos2 {background-color: #fafbfc;}
+td.w90datos2, td.w135datos2, td.w230datos2 {background-color: #fafbfc;}
 td.datos3 {background-color: #e6e9cd;}
 td.datos_id {color: #1a313a;}
 td.datos_jus, td.datos2_jus {text-align: justify;}
@@ -81,28 +81,27 @@ td.datos_jus, td.datos2_jus {text-align: justify;}
 .raya, .noraya {margin-bottom: -10px;}
 .p10 {padding-top: 1px; padding-bottom: 0px;}
 .p21 {padding-top: 2px; padding-bottom: 1px;}
-.w30, .w30d {width: 30px;}
-.w40, .w40d {width: 40px;}
+.w30 {width: 30px;}
+.w40 {width: 40px;}
 .w45 {width: 45px;}
 .w70 {width: 70px;}
 .w80 {width: 80px;}
-.w90d {width: 90px;}
+.w90datos {width: 90px;}
 .w100 {width: 100px;}
 .w120 {width: 120px;}
 .w130 {width: 130px;}
-.w135, .w135d {width: 135px;}
+.w135, .w135datos, .w35datos2 {width: 135px;}
 .w140 {width: 140px;}
 .w155, .w155f10 {width: 155px;}
 .top, .bgt, .f9130t, td.datost {vertical-align: top;}
 .bot, .titb, td.datosb {vertical-align: bottom;}
-.w180, .w180d {width: 180px;}
+.w180 {width: 180px;}
 .w200 {width: 200px;}
-.w230d {width: 230px;}
+.w230datos, .w230datos2 {width: 230px;}
 .w255 {width: 255px;}
 .w540 {width: 540px;}
 .w550 {width: 550px;}
 .msg {margin-top: 15px; text-align: justify;}
-img.help {padding-left: 9px; vertical-align: top;}
 ul.mn {list-style: none; padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px; line-height: 24px;}
 .gr {font-size: 10pt; font-weight: bold;}
 a.mn, .gr {font-family: Arial, Verdana, Helvetica;}

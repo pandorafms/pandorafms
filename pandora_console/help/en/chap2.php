@@ -37,13 +37,15 @@ daily activity. One or more profiles can be assigned to a single user</p>
 cannot perform on a given group, e.g. "view incidents", "database management", etc.</p>
 
 <p>Each user is given a number of groups of agents
-he has permission to access, as well as the administrative profile he will have
+he/she has permission to access, as well as the administrative profile he/she will have
 in each group. Each user can belong to one or more groups, with an assigned
 profile for each of them.</p>
 
 <p>Agent belongs to a group and only one, sharing
 the group with agents of similar characteristics. Groups also contain
 incidents.</p>
+
+<p>Summarizing: User profiles in Pandora define which users can access Pandora as well as what each user can do. Groups define elements in common among various users. Each user could be in one or more groups at any one time. Each group has user profiles which are defined and attached to it. A profile is a list of things a user can do, such as view incidents, manage database or other.</p>
 
 <h2><a name="21">2.1. Profile manager</a></h2>
 

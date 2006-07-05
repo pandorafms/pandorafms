@@ -1,5 +1,12 @@
 2006-07-05  Esteban Sanchez  <esteban@steve-o.org>
 
+	* AUTHORS, README: Added to repository
+	
+	* PandoraAgent.dev: Linker options modified to not point to a static
+	path.
+	
+2006-07-05  Esteban Sanchez  <esteban@steve-o.org>
+
 	* pandora.h, ssh/padora_ssh_client.h: Define renamed.
 
 	* pandora_windows_service.cc: SSH user modified.

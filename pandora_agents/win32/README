@@ -1,0 +1,15 @@
+Pandora is the free distributed auditing system.
+
+This is the Windows agent, programmed in C++ with GNU tools and gcc.
+
+In order to build from sources, you will need the latest Dev-Cpp IDE version,
+with the MinGW tools. Download from http://www.bloodshed.net/devcpp.html
+
+Open PandoraAgent.dev with Dev-Cpp and construct the project. Everything should
+compile fine in a default installation.
+
+If you found any problem when building from source, please contact us by
+email (estebans@artica.es) or the SourceForge project web.
+
+http://sourceforge.net/projects/pandora/
+

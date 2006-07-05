@@ -125,7 +125,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
         } else {
                 return NULL;
         }
-	pandoraDebug ("Description %s", module_description.c_str ());
+	
 	if (module_description != "") {
                 module->setDescription (module_description);
         }

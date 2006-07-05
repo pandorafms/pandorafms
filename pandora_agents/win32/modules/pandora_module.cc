@@ -103,7 +103,22 @@ Pandora_Module::getOutput () const {
 
 void
 Pandora_Module::run () {
-
+                    
+        this->output = "";
+        
+        /* Check the interval */
+        if (this->executions % this->module_interval != 0) {
+                pandoraDebug ("%s: Interval is not fulfilled",
+                              this->module_name.c_str ());
+                this->executions++;
+                has_output = false;
+                throw Interval_Not_Fulfilled ();
+        }
+        
+        /* Increment the executions after check. This is done to execute the
+           first time */
+        this->executions++;
+        has_output = true;
 }
 
 TiXmlElement *
@@ -116,6 +131,10 @@ Pandora_Module::getXml () {
 	
 	pandoraDebug ("%s getXML begin", module_name.c_str ());
 	
+	if (!this->has_output) {
+                return NULL;
+        }
+        
         try {
                 data = this->getOutput ();
         } catch (Output_Error e) {
@@ -187,6 +206,5 @@ Pandora_Module::setInterval (int interval) {
 
 void
 Pandora_Module::setDescription (string description) {
-	pandoraDebug ("Set description to: %s", description.c_str ());
         this->module_description = description;
 }

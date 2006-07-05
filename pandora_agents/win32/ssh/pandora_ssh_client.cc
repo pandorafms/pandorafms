@@ -227,7 +227,7 @@ Pandora_Ssh_Client::scpFileFilename (const string remote_filename, const string 
                 Scp_Failed *e;
                 errmsg = (char *) malloc (sizeof (char) * 1000);
                 libssh2_session_last_error (session, &errmsg, &errmsg_len, 1);
-                pandoraDebug ("Error %d on SCP %s", sent, errmsg);
+                pandoraLog ("Error %d on SCP %s", sent, errmsg);
                 e = new Scp_Failed (errmsg);
                         
                 libssh2_channel_close (scp_channel);

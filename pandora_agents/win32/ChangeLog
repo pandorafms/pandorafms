@@ -1,3 +1,30 @@
+2006-07-05  Esteban Sanchez  <esteban@steve-o.org>
+
+	* windows/pandora_wmi.cc: Removed unnecessary debug. Check the service state on isRunningService ()
+
+	* pandora_agent_conf.cc, modules/pandora_module_factory.cc: Removed unnecessary debug.
+
+	* bin/PandoraAgent.tar.gz: Added to repository.
+
+	* ssh/pandora_ssh_client.cc: Debug converted into log.
+
+	* pandora_windows_service.cc:  Get the interval value (in minutes) and set it to the service.
+	Check if the XML of the module is NULL before adding it to the file. Added log output on error.
+	Delete temporal file before finishing the run.
+
+	* pandora_windows_service.h: Macro modified.
+
+	* modules/pandora_module.h, modules/pandora_module.cc: Added new exception, raised when the interval
+	is not fulfilled. Added code to the run funtion of the Pandora_Module class, to check the execution
+	interval.
+
+	* modules/pandora_module_proc.cc, modules/pandora_module_exec.cc, modules/pandora_module_service.cc:
+	Call to the run() base class function before running the specific code.
+
+	* modules/pandora_module_list.cc: Removed use of namespace and use a explicit specification.
+
+	* Changelog: Renamed to ChangeLog.
+	
 2006-07-04  Esteban Sanchez  <esteban@steve-o.org>
 
 	* windows/pandora_wmi.*, windows/pandora_windows_info.*, windows/wmi/disphelper.*,

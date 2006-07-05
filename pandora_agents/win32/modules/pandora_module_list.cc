@@ -27,7 +27,6 @@
 
 using namespace std;
 using namespace Pandora;
-using namespace Pandora_Module_Factory;
 
 Pandora_Module_List::Pandora_Module_List (string filename) {
         ifstream     file (filename.c_str ());
@@ -90,7 +89,7 @@ Pandora_Module_List::parseModuleDefinition (string definition) {
         Pandora_Module_Proc    *module_proc;
 	Pandora_Module_Service *module_service;
         
-        module = getModuleFromDefinition (definition);
+        module = Pandora_Module_Factory::getModuleFromDefinition (definition);
         
         if (module != NULL) {
                 switch (module->getModuleKind ()) {

@@ -27,6 +27,9 @@ function type_change()
 		document.modulo.snmp_oid.disabled=true;
 		document.modulo.snmp_community.style.background="#ddd";
 		document.modulo.snmp_community.disabled=true;
+		document.modulo.combo_snmp_oid.style.background="#ddd";
+		document.modulo.combo_snmp_oid.disabled=true;
+		document.modulo.oid.disabled=true;
 		document.modulo.tcp_send.style.background="#ddd";
 		document.modulo.tcp_send.disabled=true;
 		document.modulo.tcp_rcv.style.background="#ddd";
@@ -46,6 +49,9 @@ function type_change()
 		document.modulo.snmp_oid.style.disabled=false;
 		document.modulo.snmp_community.style.background="#fff";
 		document.modulo.snmp_community.disabled=false;
+		document.modulo.combo_snmp_oid.style.background="#fff";
+		document.modulo.combo_snmp_oid.disabled=false;
+		document.modulo.oid.disabled=false;
 		document.modulo.tcp_send.style.background="#ddd";
 		document.modulo.tcp_send.disabled=true;
 		document.modulo.tcp_rcv.style.background="#ddd";
@@ -72,6 +78,9 @@ function type_change()
 		document.modulo.snmp_oid.disabled=true;
 		document.modulo.snmp_community.style.background="#ddd";
 		document.modulo.snmp_community.disabled=true;
+		document.modulo.combo_snmp_oid.style.background="#ddd";
+		document.modulo.combo_snmp_oid.disabled=true;
+		document.modulo.oid.disabled=true;
 		document.modulo.tcp_send.style.background="#ddd";
 		document.modulo.tcp_send.disabled=true;
 		document.modulo.tcp_rcv.style.background="#ddd";
@@ -91,6 +100,9 @@ function type_change()
 		document.modulo.snmp_oid.disabled=true;
 		document.modulo.snmp_community.style.background="#ddd";
 		document.modulo.snmp_community.disabled=true;
+		document.modulo.combo_snmp_oid.style.background="#ddd";
+		document.modulo.combo_snmp_oid.disabled=true;
+		document.modulo.oid.disabled=true;
 		document.modulo.tcp_send.style.background="#fff";
 		document.modulo.tcp_send.disabled=false;
 		document.modulo.tcp_rcv.style.background="#fff";
@@ -111,10 +123,15 @@ function type_change()
 		document.modulo.snmp_oid.disabled=true;
 		document.modulo.snmp_community.style.background="#ddd";
 		document.modulo.snmp_community.disabled=true;
+		document.modulo.oid.disabled=true;
 		document.modulo.tcp_send.style.background="#fff";
+		document.modulo.tcp_send.disabled=false;
 		document.modulo.tcp_rcv.style.background="#fff";
+		document.modulo.tcp_rcv.disabled=false;
 		document.modulo.tcp_port.style.background="#fff";
+		document.modulo.tcp_port.disabled=false;
 		document.modulo.ip_target.style.background="#fff";
+		document.modulo.ip_target.disabled=false;
 		document.modulo.modulo_max.style.background="#ddd";
 		document.modulo.modulo_max.disabled=true;
 		document.modulo.modulo_min.style.background="#ddd";
@@ -217,7 +234,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 	if (isset($_POST["update_alert"])){ // Update an existing alert
 		$id_aam = entrada_limpia($_POST["id_aam"]);
 		$tipo_alerta = entrada_limpia($_POST["tipo_alerta"]);
-		$id_agente_modulo = entrada_limpia($_POST["agente_modulo"]);
+		if (isset($_POST["agente_modulo"])) $id_agente_modulo = entrada_limpia($_POST["agente_modulo"]);
 		$descripcion= entrada_limpia($_POST["descripcion"]);
 		$campo_1 = entrada_limpia($_POST["campo_1"]);
 		$campo_2 = entrada_limpia($_POST["campo_2"]);
@@ -484,7 +501,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 	// =========================================================
 	// MODULE INSERT
 	// =========================================================
-	if ((!isset($_POST["oid"])) && (isset($_POST["insert_module"]))){
+	if ((!isset($_POST["oid"])) && (isset($_POST["insert_module"])) && (isset($_POST["combo_snmp_oid"]))){
 		$combo_snmp_oid = entrada_limpia($_POST["combo_snmp_oid"]);
 		if ($snmp_oid == ""){
 			$snmp_oid = $combo_snmp_oid;
@@ -738,66 +755,64 @@ if ( $creacion_agente != 1) {
 
 $sql1='SELECT * FROM tagente_modulo WHERE id_agente = "'.$id_agente.'"';
 $result=mysql_query($sql1);
-if ($row=mysql_num_rows($result)){
-?>
-<h3><?php echo $lang_label["assigned_alerts"]?><a href='help/<?php echo substr($language_code,0,2) ?>/chap3.php#3222' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
+	if ($row=mysql_num_rows($result)){
 
-<table cellpadding="3" cellspacing="3" width="700" class="fon">
-<tr>
-<th><?php echo $lang_label["name_type"] ?>
-<th><?php echo $lang_label["alert"] ?>
-<th><?php echo $lang_label["time_threshold"] ?>
-<th><?php echo $lang_label["min_max"] ?>
-<th><?php echo $lang_label["description"] ?>
-<th width="50"><?php echo $lang_label["action"] ?>
-<?php
-$color=1;
-while ($row=mysql_fetch_array($result)){  // All modules of this agent
-	$id_tipo = $row["id_tipo_modulo"];
-	$nombre_modulo =$row["nombre"];
-	$sql2='SELECT * FROM ttipo_modulo WHERE id_tipo = "'.$id_tipo.'"';
-	$result2=mysql_query($sql2);
-	$row2=mysql_fetch_array($result2);
-	//module type modulo is $row2["nombre"];
-	
-	$sql3='SELECT * FROM talerta_agente_modulo WHERE id_agente_modulo = '.$row["id_agente_modulo"];  // From all the alerts give me which are to my agent
-	$result3=mysql_query($sql3);
-	while ($row3=mysql_fetch_array($result3)){
-		if ($color == 1){
-			$tdcolor="datos";
-			$color =0;
-		} else {
-			$tdcolor="datos2";
-			$color =1;
+		echo "<h3>".$lang_label["assigned_alerts"]."<a href='help/".substr($language_code,0,2)."/chap3.php#3222' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+
+		$color=1;
+		while ($row=mysql_fetch_array($result)){  // All modules of this agent
+			$id_tipo = $row["id_tipo_modulo"];
+			$nombre_modulo =$row["nombre"];
+			$sql2='SELECT * FROM ttipo_modulo WHERE id_tipo = "'.$id_tipo.'"';
+			$result2=mysql_query($sql2);
+			$row2=mysql_fetch_array($result2);
+			//module type modulo is $row2["nombre"];
+			
+			$sql3='SELECT * FROM talerta_agente_modulo WHERE id_agente_modulo = '.$row["id_agente_modulo"];  // From all the alerts give me which are to my agent
+			$result3=mysql_query($sql3);
+			while ($row3=mysql_fetch_array($result3)){
+				if ($color == 1){
+					$tdcolor="datos";
+					$color =0;
+				} else {
+					$tdcolor="datos2";
+					$color =1;
+				}
+				$sql4='SELECT * FROM talerta WHERE id_alerta = '.$row3["id_alerta"];
+				$result4=mysql_query($sql4);
+				$row4=mysql_fetch_array($result4);
+				// Alert name defined by  $row4["nombre"]; 
+				$tipo_modulo = $row2["nombre"];
+				$nombre_alerta = $row4["nombre"];
+				$string = "<tr><td class='$tdcolor'>".$nombre_modulo."/".$tipo_modulo;
+				$string = $string."<td class=$tdcolor>".$nombre_alerta;
+				$string = $string."<td class='$tdcolor'>".$row3["time_threshold"];
+				$string = $string."<td class='$tdcolor'>".$row3["dis_min"]."/".$row3["dis_max"];
+				$string = $string."<td class='$tdcolor'>".salida_limpia($row3["descripcion"]);
+				$string = $string."<td class='$tdcolor'>";
+			 	$id_grupo = dame_id_grupo($id_agente);
+				if (give_acl($id_user, $id_grupo, "LW")==1){
+					$string = $string."<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&delete_alert=".$row3["id_aam"]."'><img src='images/cancel.gif' border=0 alt='".$lang_label["delete"]."'></a>  &nbsp; ";
+					$string = $string."<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&update_alert=".$row3["id_aam"]."#alerts'><img src='images/config.gif' border=0 alt='".$lang_label["update"]."'></a>";		
+				}
+			}
 		}
-		$sql4='SELECT * FROM talerta WHERE id_alerta = '.$row3["id_alerta"];
-		$result4=mysql_query($sql4);
-		$row4=mysql_fetch_array($result4);
-		// Alert name defined by  $row4["nombre"]; 
-		$tipo_modulo = $row2["nombre"];
-		$nombre_alerta = $row4["nombre"];
-		echo "<tr><td class='$tdcolor'>";
-		echo $nombre_modulo."/".$tipo_modulo;
-		echo "<td class=$tdcolor>";
-		echo $nombre_alerta;
-		echo "<td class='$tdcolor'>";
-		echo $row3["time_threshold"];
-		echo "<td class='$tdcolor'>";
-		echo $row3["dis_min"]."/".$row3["dis_max"];
-		echo "<td class='$tdcolor'>";
-		echo salida_limpia($row3["descripcion"]);
-		echo "<td class='$tdcolor'>";
-	 	$id_grupo = dame_id_grupo($id_agente);
-		if (give_acl($id_user, $id_grupo, "LW")==1){
-			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&delete_alert=".$row3["id_aam"]."'><img src='images/cancel.gif' border=0 alt='".$lang_label["delete"]."'></a>  &nbsp; ";
-			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&update_alert=".$row3["id_aam"]."#alerts'><img src='images/config.gif' border=0 alt='".$lang_label["update"]."'></a>";		
+		if (isset($string)) {
+		echo "<table cellpadding='3' cellspacing='3' width='700' class='fon'>
+		<tr><th>".$lang_label["name_type"]."</th>
+		<th>".$lang_label["alert"]."</th>
+		<th>".$lang_label["time_threshold"]."</th>
+		<th>".$lang_label["min_max"]."</th>
+		<th>".$lang_label["description"]."</th>
+		<th width='50'>".$lang_label["action"]."</th></tr>";
+		echo $string;
+		echo "<tr><td colspan='6'><div class='raya'></div></td></tr></table>";
 		}
+		else echo "<font class='red'>".$lang_label["no_alerts"]."</font>";
 	}
-}
-echo "<tr><td colspan='6'><div class='raya'></div></td></tr>";
-}else echo "<font class='red'>No modules</font>";
+	else echo "<font class='red'>".$lang_label["no_modules"]."</font>";
 ?>
-</table>
+
 <br>
 <?php
 echo '<form name="modulo" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">';

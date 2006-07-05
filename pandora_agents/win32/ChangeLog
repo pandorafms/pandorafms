@@ -1,5 +1,11 @@
 2006-07-05  Esteban Sanchez  <esteban@steve-o.org>
 
+	* bin/README.txt: Added to repository.
+	
+	* pandora.h: Service name renamed.
+
+2006-07-05  Esteban Sanchez  <esteban@steve-o.org>
+
 	* windows/pandora_wmi.cc: Removed unnecessary debug. Check the service state on isRunningService ()
 
 	* pandora_agent_conf.cc, modules/pandora_module_factory.cc: Removed unnecessary debug.
@@ -23,8 +29,6 @@
 
 	* modules/pandora_module_list.cc: Removed use of namespace and use a explicit specification.
 
-	* Changelog: Renamed to ChangeLog.
-	
 2006-07-04  Esteban Sanchez  <esteban@steve-o.org>
 
 	* windows/pandora_wmi.*, windows/pandora_windows_info.*, windows/wmi/disphelper.*,

@@ -72,8 +72,8 @@ about the execution flow of the Agent.
 	server_path     /opt/pandora/data_in/
 	# Local path to the temporal directory
 	temporal        "C:\temp files"
-	# Interval between executions (in minutes)
-	interval        5
+	# Interval between executions (in seconds)
+	interval        60
 	# Name of the agent
 	agent_name      antiriad
 	# End of pandora_agent.conf example

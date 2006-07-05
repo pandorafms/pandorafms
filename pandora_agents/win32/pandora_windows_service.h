@@ -36,6 +36,7 @@ private:
         Pandora_Agent_Conf      *conf;
         Pandora_Module_List     *modules;
         long                     execution_number;
+        string                   agent_name;
         
         TiXmlElement * getXmlHeader ();
 	

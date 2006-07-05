@@ -30,9 +30,12 @@ using namespace Pandora;
 using namespace Pandora_Strutils;
 
 #define PATH_SIZE    _MAX_PATH+1
+#define PANDORA_VERSION ("1.2Beta")
+
 string pandora_path;
 string pandora_dir;
 bool   pandora_debug;
+string pandora_version = PANDORA_VERSION;
 
 void
 Key_Value::parseLine (string str) {
@@ -160,3 +163,7 @@ Pandora::setPandoraDebug  (bool dbg) {
         pandora_debug = dbg;
 }
 
+string
+Pandora::getPandoraAgentVersion () {
+        return pandora_version;
+}

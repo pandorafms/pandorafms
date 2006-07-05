@@ -105,7 +105,8 @@ Pandora_Module_Exec::run () {
                 unsigned long read, avail;
                 
                 if (! AssignProcessToJobObject (job, pi.hProcess)) {
-                        pandoraLog ("Assign bad %d", GetLastError ());
+                        pandoraLog ("Could not assigned proccess to job (error %d)",
+                                    GetLastError ());
                 }
                 ResumeThread (pi.hThread);
                 
@@ -116,7 +117,7 @@ Pandora_Module_Exec::run () {
                 GetExitCodeProcess (pi.hProcess, &retval);
                 if (retval != 0) {
                         if (! TerminateJobObject (job, 0)) {
-                                pandoraLog ("TerminateJobObject failed. Err: %d",
+                                pandoraLog ("TerminateJobObject failed. (error %d)",
                                             GetLastError ());
                         }
                         

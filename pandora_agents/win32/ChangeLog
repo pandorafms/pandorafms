@@ -1,54 +1,82 @@
 2006-07-05  Esteban Sanchez  <esteban@steve-o.org>
+	
+	* pandora.[cc,h]: Program name and display name of the application.
+	Added pandora_version variable and getPandoraAgentVersion()
+	
+	* pandora_windows_service.[cc,h]: Added checking of debug flag when
+	reading the configuration file. Get the agent name from the machine if
+	it was not defined in the configuration file. Date format on
+	getXmlHeader() corrected. Style correction.
+	
+	* bin/README.txt: Fixed a error.
 
+	* bin/PandoraAgent.tar.gz: Updated to the new commit.
+	
+	* windows/pandora_wmi.cc: The errors are now shown using pandoraLog().
+	
+	* modules/pandora_module.cc, modules/pandora_module_exec.cc,
+	ChangeLog: Style correction.
+	
+2006-07-05  Esteban Sanchez  <esteban@steve-o.org>
 	* bin/README.txt: Added to repository.
 	
 	* pandora.h: Service name renamed.
 
 2006-07-05  Esteban Sanchez  <esteban@steve-o.org>
 
-	* windows/pandora_wmi.cc: Removed unnecessary debug. Check the service state on isRunningService ()
+	* windows/pandora_wmi.cc: Removed unnecessary debug. Check the service
+	state on isRunningService ()
 
-	* pandora_agent_conf.cc, modules/pandora_module_factory.cc: Removed unnecessary debug.
+	* pandora_agent_conf.cc, modules/pandora_module_factory.cc: Removed
+	unnecessary debug.
 
 	* bin/PandoraAgent.tar.gz: Added to repository.
 
 	* ssh/pandora_ssh_client.cc: Debug converted into log.
 
-	* pandora_windows_service.cc:  Get the interval value (in minutes) and set it to the service.
-	Check if the XML of the module is NULL before adding it to the file. Added log output on error.
-	Delete temporal file before finishing the run.
+	* pandora_windows_service.cc:  Get the interval value (in minutes)
+	and set it to the service. Check if the XML of the module is NULL
+	before adding it to the file. Added log output on error. Delete
+	temporal file before finishing the run.
 
 	* pandora_windows_service.h: Macro modified.
 
-	* modules/pandora_module.h, modules/pandora_module.cc: Added new exception, raised when the interval
-	is not fulfilled. Added code to the run funtion of the Pandora_Module class, to check the execution
+	* modules/pandora_module.h, modules/pandora_module.cc: Added new
+	exception, raised when the interval is not fulfilled. Added code to
+	the run funtion of the Pandora_Module class, to check the execution
 	interval.
 
-	* modules/pandora_module_proc.cc, modules/pandora_module_exec.cc, modules/pandora_module_service.cc:
-	Call to the run() base class function before running the specific code.
+	* modules/pandora_module_proc.cc, modules/pandora_module_exec.cc,
+	modules/pandora_module_service.cc: Call to the run() base class
+	function before running the specific code.
 
-	* modules/pandora_module_list.cc: Removed use of namespace and use a explicit specification.
+	* modules/pandora_module_list.cc: Removed use of namespace and use a
+	explicit specification.
 
 2006-07-04  Esteban Sanchez  <esteban@steve-o.org>
 
-	* windows/pandora_wmi.*, windows/pandora_windows_info.*, windows/wmi/disphelper.*,
-	  misc/pandora_file.*, ssh/*, ssh/libssh2/*, modules/pandora_module_service.*,
-	modules/pandora_module_proc.*: Added to repository
+	* windows/pandora_wmi.*, windows/pandora_windows_info.*,
+	windows/wmi/disphelper.*, misc/pandora_file.*, ssh/*, ssh/libssh2/*,
+	modules/pandora_module_service.*, modules/pandora_module_proc.*: Added
+	to repository.
 
-	* pandora_windows_service.cc, pandora_windows_service.h: getXMLHeader renamed to getXmlHeader
-	and modified its behavior. Updated to the Pandora XML specification. Add SSH and XML generation
+	* pandora_windows_service.cc, pandora_windows_service.h: getXMLHeader
+	renamed to getXmlHeader	and modified its behavior. Updated to the
+	Pandora XML specification. Add SSH and XML generation
 	functionallity.
 
-	* modules/pandora_module_exec.cc: Added the execution to a job to prevent zombies process. Update
-	the execution command.
+	* modules/pandora_module_exec.cc: Added the execution to a job to
+	prevent zombies process. Update the execution command.
 
-	* modules/pandora_module_factory.cc: Added Pandora_Module_Proc and Pandora_Module_Service. Added
-	the interval parameter.
-
-	* modules/pandora_module_list.cc: Added support to Pandora_Module_Proc and Pandora_Module_Service.
+	* modules/pandora_module_factory.cc: Added Pandora_Module_Proc and
+	Pandora_Module_Service. Added the interval parameter.
 	
-	* modules/pandora_module.h: Added new types of modules. Added execution times and module description
-	to the Pandora_Module class. Added support to Pandora_Module_Proc and Pandora_Module_Service. Added
+	* modules/pandora_module_list.cc: Added support to Pandora_Module_Proc
+	and Pandora_Module_Service.
+	
+	* modules/pandora_module.h: Added new types of modules. Added
+	execution times and module description to the Pandora_Module class.
+	Added support to Pandora_Module_Proc and Pandora_Module_Service. Added
 	getXml, setInterval and setDescription functions.
 
 	* pandora.h: Commentary fixed.

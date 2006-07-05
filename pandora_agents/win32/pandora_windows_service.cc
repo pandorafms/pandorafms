@@ -215,7 +215,7 @@ Pandora_Windows_Service::pandora_run () {
                 privkey_file = Pandora::getPandoraInstallDir ();
                 privkey_file += "key\\id_dsa";
 		
-                ssh_client->connectWithPublicKey (remote_host.c_str (), 22, "babel",
+                ssh_client->connectWithPublicKey (remote_host.c_str (), 22, "pandora",
                                                   pubkey_file, privkey_file, "");
         } catch (SSH::Authentication_Failed e) {
                 delete ssh_client;

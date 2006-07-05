@@ -18,6 +18,9 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#ifndef __PANDORA_SSH_TEST__
+#define __PANDORA_SSH_TEST__
+
 #include "pandora_ssh_client.h"
 #include "../pandora_agent_conf.h"
 
@@ -32,3 +35,5 @@ namespace SSH {
                 void test         ();
         };
 }
+
+#endif

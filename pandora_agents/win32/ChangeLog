@@ -1,4 +1,16 @@
 2006-07-05  Esteban Sanchez  <esteban@steve-o.org>
+
+	* pandora.h, ssh/padora_ssh_client.h: Define renamed.
+
+	* pandora_windows_service.cc: SSH user modified.
+
+	* main.cc: Added Pandora_SSH_Test
+
+	* ssh/pandora_ssh_test.h: Added define to avoid recursive inclusion.
+	
+	* ssh/pandora_ssh_test.cc: Unnecessary includes removed.
+
+2006-07-05  Esteban Sanchez  <esteban@steve-o.org>
 	
 	* pandora.[cc,h]: Program name and display name of the application.
 	Added pandora_version variable and getPandoraAgentVersion()

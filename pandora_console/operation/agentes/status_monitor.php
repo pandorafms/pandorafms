@@ -91,12 +91,11 @@ if (comprueba_login() == 0) {
 		
 	echo "</table>";
 	echo "<br>";
-	
+	$color =1;
 	$result=mysql_query($sql);
 	if (mysql_num_rows($result)){
-		echo "<table cellpadding='3' cellspacing='3' width='750'>";
-		echo "<tr><th>".$lang_label["agent"]."</th><th>".$lang_label["type"]."</th><th>".$lang_label["name"]."</th><th>".$lang_label["description"]."</th><th>".$lang_label["max_min"]."</th><th>".$lang_label["interval"]."</th><th>".$lang_label["status"]."</th><th>".$lang_label["timestamp"]."</th>";
-		while ($row=mysql_fetch_array($result)){ //while there are agents
+		$string='';
+		while ($row=mysql_fetch_array($result)){ //while there are agents	
 			if ($row["disabled"] == 0) {
 				if ((isset($ag_modulename)) && ($ag_modulename != "---"))
 					$query_gen='SELECT * FROM tagente_modulo WHERE id_agente = '.$row["id_agente"].' AND nombre = "'.entrada_limpia($_POST["ag_modulename"]).'" AND ( (id_tipo_modulo = 2) OR (id_tipo_modulo = 9) OR (id_tipo_modulo = 12) OR (id_tipo_modulo = 18) OR (id_tipo_modulo = 6))';
@@ -105,33 +104,45 @@ if (comprueba_login() == 0) {
 				$result_gen=mysql_query($query_gen);
 				if (mysql_num_rows ($result_gen)) {
 					while ($data=mysql_fetch_array($result_gen)){
-						echo "<tr>";
-						echo "<td class='datos'><b><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$data["id_agente"]."'>".dame_nombre_agente($data["id_agente"])."</A></B>";
-						echo "<td class='datos'>";
-						echo "<img src='images/".$iconindex[$data["id_tipo_modulo"]]."' border=0>";
-						echo "<td class='datos'>".$data["nombre"];
-						echo "<td class='datosf9'>".substr($data["descripcion"],0,30);
-						echo "<td class='datos' width=25>".$data["max"]."/".$data["min"];
-						echo "<td class='datos' width=25>";
-						if ($data["module_interval"] == 0){
-							echo give_agentinterval($data["id_agente"]);
+						if ($color == 1){
+							$tdcolor="datos";
+							$color =0;
 						} else {
-							echo $data["module_interval"];
+							$tdcolor="datos2";
+							$color =1;
+						}
+						if (!isset($string)) {$string='';}
+						$string=$string."<tr><td class='$tdcolor'><b>";
+						$string=$string."<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$data["id_agente"]."'>".dame_nombre_agente($data["id_agente"])."</a></b>";
+						$string=$string."<td class='$tdcolor'>";
+						$string=$string."<img src='images/".$iconindex[$data["id_tipo_modulo"]]."' border=0>";
+						$string=$string."<td class='$tdcolor'>".$data["nombre"];
+						$string=$string."<td class='".$tdcolor."f9'>".substr($data["descripcion"],0,30);
+						$string=$string."<td class='$tdcolor' width=25>".$data["max"]."/".$data["min"];
+						$string=$string."<td class='$tdcolor' width=25>";
+						if ($data["module_interval"] == 0){
+							$string=$string.give_agentinterval($data["id_agente"]);
+						} else {
+							$string=$string.$data["module_interval"];
 						}
 						$query_gen2='SELECT * FROM tagente_estado WHERE id_agente_modulo = '.$data["id_agente_modulo"];
 						$result_gen2=mysql_query($query_gen2);
 						$data2=mysql_fetch_array($result_gen2);
-						echo "<td class='datos' align='center' width=20>";
+						$string=$string."<td class='$tdcolor' align='center' width=20>";
 						if ($data2["datos"] > 0){
-							echo "<img src='images/b_green.gif'>";
+							$string=$string."<img src='images/b_green.gif'>";
 						} else {
-							echo "<img src='images/b_red.gif'>";
+							$string=$string."<img src='images/b_red.gif'>";
 						}
-						echo "<td class='datosf9' width='140'>".$data2["timestamp"];
+						$string=$string."<td class='".$tdcolor."f9' width='140'>".$data2["timestamp"]."</td></tr>";
 					}
 				}
+				else unset($string);
 			}
 		}
+		if (isset($string)) {
+		echo "<table cellpadding='3' cellspacing='3' width='750'><tr><th>".$lang_label["agent"]."</th><th>".$lang_label["type"]."</th><th>".$lang_label["name"]."</th><th>".$lang_label["description"]."</th><th>".$lang_label["max_min"]."</th><th>".$lang_label["interval"]."</th><th>".$lang_label["status"]."</th><th>".$lang_label["timestamp"]."</th>";
+		echo $string; //the built table of monitors
 		echo "<tr><td colspan='8'><div class='raya'></div></td></tr></table>";
 		echo "<br><table>";
 		echo "<tr><td class='f9i'>";
@@ -139,6 +150,10 @@ if (comprueba_login() == 0) {
 		echo "<td class='f9i'>";
 		echo "<img src='images/b_red.gif'> - ".$lang_label["red_light"]."</td>";
 		echo "</table>";
+		}
+		else {
+		echo "<font class='red'>".$lang_label["no_monitors_g"]."</font>";
+		}
 	} else {
 		echo "<font class='red'>".$lang_label["no_agent"]."</font>";
 	}

@@ -19,7 +19,6 @@
 */
 
 #include "pandora_ssh_test.h"
-#include "../pandora_agent_conf.h"
 #include "../tinyxml/tinyxml.h"
 #include "../misc/pandora_file.h"
 #include <iostream>
@@ -117,6 +116,10 @@ Pandora_SSH_Test::test () {
         cout << "Created a blank XML file in " << tmp_filepath<< endl;
         
         remote_filepath = conf->getValue ("server_path");
+        if (remote_filepath[remote_filepath.length () - 1] != '/') {
+                remote_filepath += "/";
+        }
+        
         cout << "Remote copying " << tmp_filepath << "on server " << remote_host
              <<  " at " << remote_filepath << tmp_filename << endl;
         try {

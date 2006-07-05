@@ -17,8 +17,8 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef	__PANDORA_H__
-#define	__PANDORA_H__
+#ifndef	__PANDORA__
+#define	__PANDORA__
 
 #include <list>
 #include <string>

@@ -18,8 +18,8 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef	__PANDORA_SSH_CLIENT_H__
-#define	__PANDORA_SSH_CLIENT_H__
+#ifndef	__PANDORA_SSH_CLIENT__
+#define	__PANDORA_SSH_CLIENT__
 
 #include <string>
 #include "../pandora.h"

@@ -20,10 +20,12 @@
 
 #include "pandora.h"
 #include "pandora_windows_service.h"
+#include "ssh/pandora_ssh_test.h"
 
 #define PATH_SIZE                         _MAX_PATH+1
 #define SERVICE_INSTALL_CMDLINE_PARAM    "--install"
 #define SERVICE_UNINSTALL_CMDLINE_PARAM  "--uninstall"
+#define SSH_TEST_CMDLINE_PARAM           "--test-ssh"
 
 int
 main (int argc, char *argv[]) {
@@ -52,6 +54,17 @@ main (int argc, char *argv[]) {
                         service->uninstall ();
                         
                         delete service;
+                        return 0;
+		} else if (_stricmp(argv[i], SSH_TEST_CMDLINE_PARAM) == 0) {
+                        SSH::Pandora_SSH_Test ssh_test;
+			
+                        delete service;
+                        
+                        try {
+                                ssh_test.test ();
+                        } catch (Pandora_Exception e) {
+                                return 1;
+                        }
                         return 0;
                 } else {
                         cerr << "Usage: " << argv[0] << "[" << SERVICE_INSTALL_CMDLINE_PARAM

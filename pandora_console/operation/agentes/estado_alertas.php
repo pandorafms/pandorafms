@@ -139,8 +139,8 @@ if (comprueba_login() == 0) {
 				echo "<img src='images/dot_green.gif'> - ".$lang_label["not_fired"];
 				echo "</td></tr></table>";
 				echo "<br>";
-				echo "<table cellpadding='3' cellspacing='3'>";
-				echo "<tr><th>ID</th><th>".$lang_label["type"]."</th><th>".$lang_label["description"]."</th><th>".$lang_label["last_fired"]."</th><th>".$lang_label["times_fired"]."</th><th>".$lang_label["status"]."</th>";
+				echo "<table cellpadding='3' cellspacing='3' width='700'>";
+				echo "<tr><th>".$lang_label["agent"]."</th><th>".$lang_label["type"]."</th><th>".$lang_label["description"]."</th><th>".$lang_label["last_fired"]."</th><th>".$lang_label["times_fired"]."</th><th>".$lang_label["status"]."</th>";
 				echo $string; //built table of alerts
 				echo "<tr><td colspan='6'><div class='raya'></div></td></tr></table>";
 			}

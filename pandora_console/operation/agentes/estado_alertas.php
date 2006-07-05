@@ -11,11 +11,11 @@ if (comprueba_login() == 0) {
  	if ((give_acl($id_user, 0, "AR")==1) or (give_acl($id_user,0,"AW")) or (dame_admin($id_user)==1)) {
 
 	if (isset($_GET["id_agente"])){
+		echo "<h3>".$lang_label["alert_listing"]."<a href='help/".substr($language_code,0,2)."/chap3.php#3324' target='_help' class='help'><span>".$lang_label["help"]."</span></a></h3>";
 		$id_agente = $_GET["id_agente"];
 		$query_gen='SELECT talerta_agente_modulo.id_alerta, talerta_agente_modulo.descripcion, talerta_agente_modulo.last_fired, talerta_agente_modulo.times_fired, tagente_modulo.nombre, talerta_agente_modulo.dis_max, talerta_agente_modulo.dis_min, talerta_agente_modulo.max_alerts, talerta_agente_modulo.time_threshold, talerta_agente_modulo.min_alerts, talerta_agente_modulo.id_agente_modulo, tagente_modulo.id_agente_modulo FROM tagente_modulo, talerta_agente_modulo WHERE tagente_modulo.id_agente = '.$id_agente.' AND tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo order by tagente_modulo.nombre';
 		$result_gen=mysql_query($query_gen);
 		if (mysql_num_rows ($result_gen)) {
-			echo "<h3>".$lang_label["alert_listing"]."<a href='help/".substr($language_code,0,2)."/chap3.php#3324' target='_help' class='help'><span>".$lang_label["help"]."</span></a></h3>";
 			echo "<table cellpadding='3' cellspacing='3' width=750 border=0>";
 			echo "<tr><th>".$lang_label["type"]."<th>".$lang_label["name"]."</th><th>".$lang_label["description"]."</th><th>".$lang_label["min_max"]."</th><th>".$lang_label["time_threshold"]."</th><th>".$lang_label["last_fired"]."</th><th>".$lang_label["times_fired"]."</th><th>".$lang_label["status"]."</th>";
 			$color=1;
@@ -43,7 +43,7 @@ if (comprueba_login() == 0) {
 			}
 			echo '<tr><td colspan="9"><div class="raya"></div></td></tr></table>';
 		}
-		else echo "- <font class='red'>".$lang_label["no_alerts"]."</font>";
+		else echo "<font class='red'>".$lang_label["no_alerts"]."</font>";
 	}
 	else 
 	{
@@ -97,15 +97,7 @@ if (comprueba_login() == 0) {
 
 		$result=mysql_query($sql);
 		if (mysql_num_rows($result)){
-			echo "<td class='f9l30'>";
-			echo "<img src='images/dot_red.gif'> - ".$lang_label["fired"];
-			echo "&nbsp;&nbsp;</td>";
-			echo "<td class='f9'>";
-			echo "<img src='images/dot_green.gif'> - ".$lang_label["not_fired"];
-			echo "</td></tr></table>";
-			echo "<br>";
-			echo "<table cellpadding='3' cellspacing='3'>";
-			echo "<tr><th>ID</th><th>".$lang_label["type"]."</th><th>".$lang_label["description"]."</th><th>".$lang_label["last_fired"]."</th><th>".$lang_label["times_fired"]."</th><th>".$lang_label["status"]."</th>";
+			$string='';
 			$color=1;
 			while ($row=mysql_fetch_array($result)){ //while there are agents
 				if ($row["disabled"] == 0) {
@@ -123,21 +115,39 @@ if (comprueba_login() == 0) {
 								$tdcolor = "datos2";
 								$color = 1;
 							}
-							echo "<tr><td class='".$tdcolor."'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'><b>".$nombre_agente."</b>";
-							echo "<td class='".$tdcolor."'>".dame_nombre_alerta($data["id_alerta"]);
-							echo "<td class='".$tdcolor."'>".$data["descripcion"];
-							echo "<td class='".$tdcolor."'>".$data["last_fired"];
-							echo "<td class='".$tdcolor."'>".$data["times_fired"];
+							if (!isset($string)) {$string='';}
+							$string=$string."<tr><td class='".$tdcolor."'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'><b>".$nombre_agente."</b>";
+							$string=$string."<td class='".$tdcolor."'>".dame_nombre_alerta($data["id_alerta"]);
+							$string=$string."<td class='".$tdcolor."'>".$data["descripcion"];
+							$string=$string."<td class='".$tdcolor."'>".$data["last_fired"];
+							$string=$string."<td class='".$tdcolor."'>".$data["times_fired"];
 							if ($data["times_fired"] <> 0)
-								echo "<td class='".$tdcolor."' align='center'><img src='images/dot_red.gif'>";
+								$string=$string."<td class='".$tdcolor."' align='center'><img src='images/dot_red.gif'>";
 							else
-								echo "<td class='".$tdcolor."' align='center'><img src='images/dot_green.gif'>";
+								$string=$string."<td class='".$tdcolor."' align='center'><img src='images/dot_green.gif'>";
 						}
-					} //end result
+					} else if($ag_group>1) {unset($string);} //end result
+					
 				} //end disabled=0
+				
 			} //end while
-			echo "<tr><td colspan='6'><div class='raya'></div></td></tr></table>";
-		} else echo "<tr><td></td></tr><tr><td><font class='red'>". $lang_label["no_agent"].$lang_label["no_agent_alert"]."</table>";
+			if (isset($string)) {
+				echo "<td class='f9l30'>";
+				echo "<img src='images/dot_red.gif'> - ".$lang_label["fired"];
+				echo "&nbsp;&nbsp;</td>";
+				echo "<td class='f9'>";
+				echo "<img src='images/dot_green.gif'> - ".$lang_label["not_fired"];
+				echo "</td></tr></table>";
+				echo "<br>";
+				echo "<table cellpadding='3' cellspacing='3'>";
+				echo "<tr><th>ID</th><th>".$lang_label["type"]."</th><th>".$lang_label["description"]."</th><th>".$lang_label["last_fired"]."</th><th>".$lang_label["times_fired"]."</th><th>".$lang_label["status"]."</th>";
+				echo $string; //built table of alerts
+				echo "<tr><td colspan='6'><div class='raya'></div></td></tr></table>";
+			}
+			else {
+				echo "<tr><td></td></tr><tr><td><font class='red'>".$lang_label["no_alert"]."</font></td></tr></table>";
+			}
+		} else echo "<tr><td></td></tr><tr><td><font class='red'>". $lang_label["no_agent"].$lang_label["no_agent_alert"]."</td></tr></table>";
 	}
 } //end acl
 } //end login

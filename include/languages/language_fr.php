@@ -634,6 +634,7 @@ $lang_label["next_contact"]="Contact suivant de l'agent";
 $lang_label["out_of_limits"]="Hors des limites";
 $lang_label["background_image"]="Image de base";
 $lang_label["help"]="Aide";
+$lang_label["no_monitors_g"]=" Cet groupe ne poss&egrave;de pas de moniteur design&eacute;";
 
 global $lang_label;
 global $help_label;

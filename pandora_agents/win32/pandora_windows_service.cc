@@ -36,6 +36,8 @@ using namespace Pandora;
 using namespace Pandora_Modules;
 using namespace Pandora_Strutils;
 
+string enabled_values[] = {"enabled", "1", "on", "yes", "si", "sí", "ok", ""};
+
 Pandora_Windows_Service::Pandora_Windows_Service (const char * svc_name,
                                               const char * svc_display_name,
                                               const char * svc_description)
@@ -52,18 +54,35 @@ Pandora_Windows_Service::~Pandora_Windows_Service () {
         if (this->conf != NULL) {
                 delete this->conf;
         }
+	
         if (this->modules != NULL) {
                 delete this->modules;
         }
 }
 
+bool
+is_enabled (string value) {
+        int i = 0;
+
+        if (value == "") {
+                return false;
+        }
+
+        while (enabled_values[i] != "") {
+                if (enabled_values[i] == value) {
+                        return true;
+                }
+                i++;
+        }
+        return false;
+}
+
 void
 Pandora_Windows_Service::pandora_init () {
         int    interval_ms = 60000;
-        string conf_file, interval;
+        string conf_file, interval, debug;
         
         setPandoraDebug (true);
-        pandoraDebug ("Init begin");
         
         conf_file = Pandora::getPandoraInstallDir ();
         conf_file += "pandora_agent.conf";
@@ -72,7 +91,10 @@ Pandora_Windows_Service::pandora_init () {
 
         /* Get the interval value (in minutes) and set it to the service */
         interval = conf->getValue ("interval");
-        
+
+	debug = conf->getValue ("pandora_debug");
+        setPandoraDebug (is_enabled (debug));
+	
         if (interval != "") {
 		try {
 			interval_ms = strtoint (interval)
@@ -96,16 +118,17 @@ Pandora_Windows_Service::getXmlHeader () {
         
         agent = new TiXmlElement ("agent_data");
 
-        /* TODO: Get the name of the machine if there is no agent_name*/
         value = conf->getValue ("agent_name");
         agent->SetAttribute ("agent_name", value);
-
-        /* TODO: Get the real version of the agent */
-        agent->SetAttribute ("version", "1.2Beta");
+        if (value == "") {
+                value = Pandora_Windows_Info::getSystemName ();
+        }
+        
+        agent->SetAttribute ("version", getPandoraAgentVersion ());
 
         GetSystemTime(&st);
-        sprintf (timestamp, "%d/%d/%d %d:%d:%d", st.wDay, st.wMonth, 
-                 st.wYear, st.wHour, st.wMinute, st.wSecond);
+        sprintf (timestamp, "%d-%d-%d %d:%d:%d", st.wYear, st.wMonth, st.wDay,
+                 st.wHour, st.wMinute, st.wSecond);
         agent->SetAttribute ("timestamp", timestamp);
 
 	value = conf->getValue ("interval");
@@ -205,7 +228,8 @@ Pandora_Windows_Service::pandora_run () {
                 return;
         } catch (Pandora_Exception e) {
                 delete ssh_client;
-                pandoraLog ("Pandora Agent: Failed when copying to %s", remote_host.c_str ());
+                pandoraLog ("Pandora Agent: Failed when copying to %s",
+                            remote_host.c_str ());
                 try {
                         Pandora_File::removeFile (tmp_filepath);
                 } catch (Pandora_File::Delete_Error e) {
@@ -219,8 +243,8 @@ Pandora_Windows_Service::pandora_run () {
         }
         
         pandoraDebug ("Remote copying XML %s on server %s at %s%s",
-                    tmp_filepath.c_str (), remote_host.c_str (),
-                    remote_filepath.c_str (), tmp_filename.c_str ());
+                      tmp_filepath.c_str (), remote_host.c_str (),
+                      remote_filepath.c_str (), tmp_filename.c_str ());
         try {
                 ssh_client->scpFileFilename (remote_filepath + tmp_filename,
                                              tmp_filepath);

@@ -79,7 +79,7 @@ Pandora_Wmi::isProcessRunning (string process_name) {
                         }
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
-		cerr << "Fatal error details:" << endl << errstr << endl;
+		pandoraLog ("isProcessRunning error. %s", errstr.c_str ());
 	}
         
 	return result;
@@ -126,7 +126,7 @@ Pandora_Wmi::isServiceRunning (string service_name) {
                         }
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
-		cerr << "Fatal error details:" << endl << errstr << endl;
+		pandoraLog ("isServiceRunning error. %s", errstr.c_str ());
 	}
         
 	return 0;
@@ -160,7 +160,7 @@ Pandora_Wmi::getOSName () {
 
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
-		cerr << "Fatal error details:" << endl << errstr << endl;
+		pandoraLog ("getOSName error. %s", errstr.c_str ());
 	}
         
 	return ret;
@@ -194,7 +194,7 @@ Pandora_Wmi::getOSVersion () {
 
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
-		cerr << "Fatal error details:" << endl << errstr << endl;
+		pandoraLog ("getOSVersion error. %s", errstr.c_str ());
 	}
         
 	return ret;
@@ -228,7 +228,7 @@ Pandora_Wmi::getOSBuild () {
 
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
-		cerr << "Fatal error details:" << endl << errstr << endl;
+		pandoraLog ("getOSBuild error. %s", errstr.c_str ());
 	}
         
 	return ret;
@@ -262,7 +262,7 @@ Pandora_Wmi::getSystemName () {
 
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
-		cerr << "Fatal error details:" << endl << errstr << endl;
+		pandoraLog ("getSystemName error. %s", errstr.c_str ());
 	}
         
 	return ret;

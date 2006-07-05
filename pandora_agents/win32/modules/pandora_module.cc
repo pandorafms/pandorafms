@@ -138,10 +138,14 @@ Pandora_Module::getXml () {
         try {
                 data = this->getOutput ();
         } catch (Output_Error e) {
-                pandoraLog ("Output error");
+                pandoraLog ("Output error on module %s",
+                            this->module_name.c_str ());
+                            
                 return NULL;
         } catch (Interval_Error e) {
-                pandoraLog ("The returned value was not in the interval");
+                pandoraLog ("The returned value was not in the interval on module %s",
+                            this->module_name.c_str ());
+                
                 return NULL;
         }
         

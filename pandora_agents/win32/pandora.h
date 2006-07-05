@@ -42,19 +42,20 @@ namespace Pandora {
         };
         
         static const HKEY  hkey          = HKEY_LOCAL_MACHINE;
-        const char * const name          = "PandoraService";
-        const char * const display_name  = "Pandora service";
+        const char * const name          = "PandoraAgent";
+        const char * const display_name  = "Pandora agent";
         const char * const description   = "The Pandora Agent service";
         
-        void   setPandoraInstallDir  (string dir);
-        string getPandoraInstallDir  ();
-        void   setPandoraInstallPath (string path);
-        string getPandoraInstallPath ();
-        void   setPandoraDebug       (bool dbg);
-             
-        void   pandoraDebug (char *format, ...);
-        void   pandoraLog   (char *format, ...);
-        void   pandoraFree  (void * e);
+        void   setPandoraInstallDir   (string dir);
+        string getPandoraInstallDir   ();
+        void   setPandoraInstallPath  (string path);
+        string getPandoraInstallPath  ();
+        void   setPandoraDebug        (bool dbg);
+        string getPandoraAgentVersion ();
+        
+        void   pandoraDebug           (char *format, ...);
+        void   pandoraLog             (char *format, ...);
+        void   pandoraFree            (void * e);
         
         class Pandora_Exception { };
 }

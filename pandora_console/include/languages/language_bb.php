@@ -575,6 +575,7 @@ $lang_label["next_contact"]="Next agent contact";
 $lang_label["out_of_limits"]="Fuera de los l&iacute;mites";
 $lang_label["background_image"]="Imagen de fondo";
 $lang_label["help"]="Ajuda";
+$lang_label["no_monitors_g"]="Esti grupo nun tien neng&uacute;n monitor defin&iacute;o";
 
 global $lang_label;
 global $help_label;

@@ -588,6 +588,7 @@ $lang_label["next_contact"]="Seg&uuml;ent contacte amb l'agent";
 $lang_label["out_of_limits"]="Fora dels l&iacute;mits";
 $lang_label["background_image"]="Imatge de fons";
 $lang_label["help"]="Ajuda";
+$lang_label["no_monitors_g"]="Aquest grup no t&eacute; cap monitor";
 
 global $lang_label;
 global $help_label;

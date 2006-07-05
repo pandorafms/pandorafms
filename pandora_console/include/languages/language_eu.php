@@ -664,6 +664,7 @@ $lang_label["network_module_refresh_exec"]="Ejecutado el refresco del m&oaucute;
 $lang_label["next_contact"]="Next agent contact";
 $lang_label["out_of_limits"]="Out of limits";
 $lang_label["background_image"]="Background image";
+$lang_label["no_monitors_g"]="Este agente no tiene ning&uacute;n monitor definido";
 
 global $lang_label;
 global $help_label;

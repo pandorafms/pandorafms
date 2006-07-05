@@ -16,6 +16,7 @@ if (comprueba_login() == 0)
 
 	$sql1='SELECT * FROM tgrupo';
 	$result2=mysql_query($sql1);
+	if (mysql_num_rows($result2)){
 	while ($row=mysql_fetch_array($result2)){
 		if ($row["id_grupo"]!=1)
 		  if (give_acl($iduser_temp,$row["id_grupo"], "AR") == 1)
@@ -54,6 +55,7 @@ if (comprueba_login() == 0)
 		$existen_agentes =0;
 		$sql1="SELECT * FROM tagente WHERE disabled=0 AND id_grupo =".$migrupo;
 		if ($result1=mysql_query($sql1))
+
 			while ($row1 = mysql_fetch_array($result1)){
 				$existen_agentes =1;
 				$id_agente=$row1["id_agente"];
@@ -163,6 +165,10 @@ if (comprueba_login() == 0)
 		echo "</tr>";
 	}
 	echo "</table>";
+	}
+	else {
+		echo '<tr><td></td></tr><tr><td class="red">'.$lang_label["no_agent"].'</td></tr></table>';
+	}
 }
 else {
 	audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Agent view (Grouped)");

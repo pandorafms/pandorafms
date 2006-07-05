@@ -72,9 +72,9 @@ if (comprueba_login() == 0) {
 	//$sql3='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_agente.' order by id_module_group';
 	$label_group=0;
 	$last_label = "";
+	echo "<h3>".$lang_label["last_data_chunk"]."<a href='help/".substr($language_code,0,2)."/chap3.php#3322' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 	$result3=mysql_query($sql3);
 	if (mysql_num_rows ($result3)) {
-	echo "<h3>".$lang_label["last_data_chunk"]."<a href='help/".substr($language_code,0,2)."/chap3.php#3322' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 	echo "<table width='750' cellpadding='3' cellspacing='3'><th>X<th>".$lang_label["module_name"];
 	echo "<th>".$lang_label["type"]."<th>".$lang_label["int"]."<th>".$lang_label["description"]."<th>".$lang_label["data"]."<th>".$lang_label["graph"]."<th>".$lang_label["raw_data"]."<th>".$lang_label["timestamp"];
 	$texto='';
@@ -176,6 +176,6 @@ if (comprueba_login() == 0) {
 	}
 	echo '<tr><td colspan="9"><div class="raya"></div></td></tr></table>';
 }
-else echo "- <font class='red'>".$lang_label["no_modules"]."</font>";
+else echo "<font class='red'>".$lang_label["no_modules"]."</font>";
 }
 ?>

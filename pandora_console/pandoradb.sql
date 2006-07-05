@@ -1,5 +1,9 @@
+/*
+Create Database if not exists
+*/
+create database if not exists `pandora`;
+USE `pandora`;
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'tagent_access'
 # 
@@ -11,7 +15,6 @@ CREATE TABLE `tagent_access` (
   KEY `agent_index` (`id_agent`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'tagente'
 # 
@@ -34,7 +37,6 @@ CREATE TABLE `tagente` (
   PRIMARY KEY  (`id_agente`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'tagente_datos'
 # 
@@ -50,7 +52,6 @@ CREATE TABLE `tagente_datos` (
   KEY `data_index_3` (`timestamp`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'tagente_datos_inc'
 # 
@@ -63,7 +64,6 @@ CREATE TABLE `tagente_datos_inc` (
   KEY `data_inc_index_1` (`id_agente_modulo`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'tagente_datos_string'
 # 
@@ -79,7 +79,6 @@ CREATE TABLE `tagente_datos_string` (
   KEY `data_string_index_3` (`timestamp`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'tagente_estado'
 # 
@@ -97,7 +96,6 @@ CREATE TABLE `tagente_estado` (
   KEY `status_index_2` (`id_agente_modulo`,`estado`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'tagente_modulo'
 # 
@@ -121,7 +119,6 @@ CREATE TABLE `tagente_modulo` (
   PRIMARY KEY  (`id_agente_modulo`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'talert_snmp'
 # 
@@ -145,7 +142,6 @@ CREATE TABLE `talert_snmp` (
   PRIMARY KEY  (`id_as`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'talerta'
 # 
@@ -157,7 +153,6 @@ CREATE TABLE `talerta` (
   PRIMARY KEY  (`id_alerta`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'talerta_agente_modulo'
 # 
@@ -182,7 +177,6 @@ CREATE TABLE `talerta_agente_modulo` (
   PRIMARY KEY  (`id_aam`)
 ) TYPE=InnoDB;
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'tattachment'
 # 
@@ -196,7 +190,6 @@ CREATE TABLE `tattachment` (
   PRIMARY KEY  (`id_attachment`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'tconfig'
 # 
@@ -207,7 +200,6 @@ CREATE TABLE `tconfig` (
   PRIMARY KEY  (`id_config`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'tconfig_os'
 # 
@@ -219,7 +211,6 @@ CREATE TABLE `tconfig_os` (
   PRIMARY KEY  (`id_os`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'tevento'
 # 
@@ -236,7 +227,6 @@ CREATE TABLE `tevento` (
   KEY `indice_2` (`timestamp`,`id_evento`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'tgrupo'
 # 
@@ -247,7 +237,6 @@ CREATE TABLE `tgrupo` (
   PRIMARY KEY  (`id_grupo`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'tincidencia'
 # 
@@ -268,7 +257,6 @@ CREATE TABLE `tincidencia` (
   KEY `incident_index_1` (`id_usuario`,`id_incidencia`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'tlanguage'
 # 
@@ -278,7 +266,6 @@ CREATE TABLE `tlanguage` (
   PRIMARY KEY  (`id_language`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'tlink'
 # 
@@ -289,7 +276,6 @@ CREATE TABLE `tlink` (
   PRIMARY KEY  (`id_link`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'tmensajes'
 # 
@@ -304,7 +290,6 @@ CREATE TABLE `tmensajes` (
   PRIMARY KEY  (`id_mensaje`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'tmodule_group'
 # 
@@ -314,7 +299,6 @@ CREATE TABLE `tmodule_group` (
   PRIMARY KEY  (`id_mg`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'tnota'
 # 
@@ -326,7 +310,6 @@ CREATE TABLE `tnota` (
   PRIMARY KEY  (`id_nota`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'tnota_inc'
 # 
@@ -337,7 +320,6 @@ CREATE TABLE `tnota_inc` (
   PRIMARY KEY  (`id_nota_inc`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'torigen'
 # 
@@ -345,7 +327,6 @@ CREATE TABLE `torigen` (
   `origen` varchar(100) NOT NULL default ''
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'tperfil'
 # 
@@ -365,7 +346,6 @@ CREATE TABLE `tperfil` (
   PRIMARY KEY  (`id_perfil`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'tserver'
 # 
@@ -385,7 +365,6 @@ CREATE TABLE `tserver` (
   PRIMARY KEY  (`id_server`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'tsesion'
 # 
@@ -399,7 +378,6 @@ CREATE TABLE `tsesion` (
   PRIMARY KEY  (`ID_sesion`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'ttipo_modulo'
 # 
@@ -412,7 +390,6 @@ CREATE TABLE `ttipo_modulo` (
   PRIMARY KEY  (`id_tipo`)
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'ttrap'
 # 
@@ -432,7 +409,6 @@ CREATE TABLE `ttrap` (
   PRIMARY KEY  (`id_trap`)
 ) TYPE=InnoDB COMMENT='SNMP Trap table'; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'tusuario'
 # 
@@ -447,7 +423,6 @@ CREATE TABLE `tusuario` (
   `nivel` tinyint(1) NOT NULL default '0'
 ) TYPE=InnoDB; 
 
-# Host: 192.168.5.2
 # Database: pandora
 # Table: 'tusuario_perfil'
 # 

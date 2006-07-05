@@ -34,7 +34,6 @@ Pandora_Agent_Conf::Pandora_Agent_Conf (string filename) {
         this->key_values = new list<Key_Value> ();
         
         if (!file.is_open ()) {
-                pandoraDebug ("No hay conf");
                 return;
         }
         

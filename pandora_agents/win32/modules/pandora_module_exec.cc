@@ -45,18 +45,11 @@ Pandora_Module_Exec::run () {
         HANDLE              out, new_stdout, out_read, job;
         string              working_dir;
         
-        this->output = "";
-        
-        /* Check the interval */
-        if (this->executions % this->module_interval != 0) {
-                pandoraDebug ("Interval is not fulfilled");
-                this->executions++;
+        try {
+                Pandora_Module::run ();
+        } catch (Interval_Not_Fulfilled e) {
                 return;
         }
-        
-        /* Increment the executions after check. This is done to execute the
-           first time */
-        this->executions++;
         
         /* Set the bInheritHandle flag so pipe handles are inherited. */
         attributes.nLength = sizeof (SECURITY_ATTRIBUTES); 
@@ -133,7 +126,6 @@ Pandora_Module_Exec::run () {
                 
                 PeekNamedPipe (out_read, buffer, BUFSIZE, &read, &avail, NULL);
                 /* Read from the stdout */
-                
                 if (read != 0) {
                         do {
                                 ReadFile (out_read, buffer, BUFSIZE, &read,

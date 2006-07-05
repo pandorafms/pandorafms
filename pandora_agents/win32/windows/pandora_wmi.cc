@@ -73,8 +73,7 @@ Pandora_Wmi::isProcessRunning (string process_name) {
                         name = fix.name;
                         transform (name.begin (), name.end (), name.begin (), 
                                    (int (*) (int)) tolower);
-                        pandoraDebug ("name %s", name.c_str ());
-                        
+			
                         if (process_name == name) {
             			result++;
                         }
@@ -91,7 +90,6 @@ Pandora_Wmi::isServiceRunning (string service_name) {
         CDhInitialize init;
 	CDispPtr      wmi_svc, quickfixes;
 	string        name, state;
-	int           result = 0;
 	
 	dhToggleExceptions (TRUE);
 	
@@ -114,20 +112,24 @@ Pandora_Wmi::isServiceRunning (string service_name) {
                         name = fix.name;
                         transform (name.begin (), name.end (), name.begin (), 
                                    (int (*) (int)) tolower);
-                        pandoraDebug ("name %s", name.c_str ());
                         
                         if (service_name == name) {
 				dhGetValue (L"%s", &fix.state, quickfix,
 					    L".State");
 				state = fix.state;
-				pandoraDebug ("state %s", state.c_str ());
+                                
+				if (state == "Running") {
+                                        return 1;
+                                } else {
+                                        return 0;
+                                }
                         }
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
 		cerr << "Fatal error details:" << endl << errstr << endl;
 	}
         
-	return result;
+	return 0;
 }
 
 string

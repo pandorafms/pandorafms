@@ -19,7 +19,7 @@
 */
 
 #ifndef	__PANDORA_WINDOWS_SERVICE_H__
-#define	__PANDORA_WINDOWS_SERVICE_CLIENT_H__
+#define	__PANDORA_WINDOWS_SERVICE_H__
 
 #include <list>
 #include "windows_service.h"
@@ -38,7 +38,7 @@ private:
         long                     execution_number;
         
         TiXmlElement * getXmlHeader ();
-        
+	
         void           pandora_run  ();
         void           pandora_init ();
 public:

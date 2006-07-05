@@ -59,8 +59,8 @@ Pandora_Windows_Service::~Pandora_Windows_Service () {
 
 void
 Pandora_Windows_Service::pandora_init () {
-        int    interval_ms = 10000;
-        string conf_file;
+        int    interval_ms = 60000;
+        string conf_file, interval;
         
         setPandoraDebug (true);
         pandoraDebug ("Init begin");
@@ -69,7 +69,18 @@ Pandora_Windows_Service::pandora_init () {
         conf_file += "pandora_agent.conf";
         this->conf = new Pandora_Agent_Conf (conf_file);
         this->modules = new Pandora_Module_List (conf_file);
+
+        /* Get the interval value (in minutes) and set it to the service */
+        interval = conf->getValue ("interval");
         
+        if (interval != "") {
+		try {
+			interval_ms = strtoint (interval)
+				* 1000 /* miliseconds */;
+		} catch (Invalid_Conversion e) {
+		}
+        }
+	
         srand ((unsigned) time (0));
         this->setSleepTime (interval_ms);
         
@@ -138,9 +149,11 @@ Pandora_Windows_Service::pandora_run () {
                         module->run ();
                         
                         local_xml = module->getXml ();
-                        agent->InsertEndChild (*local_xml);
-			
-                        delete local_xml;
+                        if (local_xml != NULL) {
+                                agent->InsertEndChild (*local_xml);
+        			
+                                delete local_xml;
+                        }
                         this->modules->goNext ();
                 }
         }
@@ -178,8 +191,7 @@ Pandora_Windows_Service::pandora_run () {
                 pubkey_file += "key\\id_dsa.pub";
                 privkey_file = Pandora::getPandoraInstallDir ();
                 privkey_file += "key\\id_dsa";
-                pandoraDebug ("Pub: %s  Priv: %s", pubkey_file.c_str (),
-                              privkey_file.c_str ());
+		
                 ssh_client->connectWithPublicKey (remote_host.c_str (), 22, "babel",
                                                   pubkey_file, privkey_file, "");
         } catch (SSH::Authentication_Failed e) {
@@ -213,6 +225,8 @@ Pandora_Windows_Service::pandora_run () {
                 ssh_client->scpFileFilename (remote_filepath + tmp_filename,
                                              tmp_filepath);
         } catch (Pandora_Exception e) {
+                pandoraLog ("Unable to copy at %s%s", remote_filepath.c_str (),
+                            tmp_filename.c_str ());
                 ssh_client->disconnect();
                 delete ssh_client;
                 try {
@@ -223,7 +237,13 @@ Pandora_Windows_Service::pandora_run () {
         }
         
         ssh_client->disconnect();
+        delete ssh_client;
         
+        try {
+                Pandora_File::removeFile (tmp_filepath);
+        } catch (Pandora_File::Delete_Error e) {
+        }
+                
         pandoraDebug ("Execution number %d", execution_number);
         
         return;

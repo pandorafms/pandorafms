@@ -31,7 +31,9 @@ using namespace Pandora_Strutils;
 
 Pandora_Module_Service::Pandora_Module_Service (string name, string service_name)
 	: Pandora_Module (name) {
-                                 
+        
+        this->service_name = service_name;
+        
         transform (service_name.begin (), service_name.end (),
                    this->service_name.begin (), (int (*) (int)) tolower);
 	
@@ -41,7 +43,14 @@ Pandora_Module_Service::Pandora_Module_Service (string name, string service_name
 
 void
 Pandora_Module_Service::run () {
-        pandoraDebug ("MODULE_SERVICE RUN");
+	int res;
+	
+	try {
+                Pandora_Module::run ();
+        } catch (Interval_Not_Fulfilled e) {
+                return;
+        }
         
-        output = inttostr (Pandora_Wmi::isServiceRunning (this->service_name));
+        res = Pandora_Wmi::isServiceRunning (this->service_name);
+        output = inttostr (res);
 }

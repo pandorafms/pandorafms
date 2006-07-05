@@ -30,7 +30,8 @@ using namespace Pandora_Strutils;
 
 Pandora_Module_Proc::Pandora_Module_Proc (string name, string process_name)
 	: Pandora_Module (name) {
-                                 
+        
+        this->process_name = process_name;
         transform (process_name.begin (), process_name.end (),
                    this->process_name.begin (), (int (*) (int)) tolower);
 	
@@ -40,10 +41,15 @@ Pandora_Module_Proc::Pandora_Module_Proc (string name, string process_name)
 
 void
 Pandora_Module_Proc::run () {
-        pandoraDebug ("MODULE_PROC RUN");
-
+	int res;
 	
-	int res = Pandora_Wmi::isProcessRunning (this->process_name);
-	pandoraDebug ("res: %d", res);
-        output = "1";
+	try {
+                Pandora_Module::run ();
+        } catch (Interval_Not_Fulfilled e) {
+                return;
+        }
+        
+	res = Pandora_Wmi::isProcessRunning (this->process_name);
+	
+        output = inttostr (res);
 }

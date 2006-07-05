@@ -52,8 +52,9 @@ namespace Pandora_Modules {
         const string module_proc_str                = "module_proc";
 	const string module_service_str             = "module_service";
 
-        class Output_Error   : public Pandora::Pandora_Exception { };
-        class Interval_Error : public Pandora::Pandora_Exception { };
+        class Output_Error           : public Pandora::Pandora_Exception { };
+        class Interval_Error         : public Pandora::Pandora_Exception { };
+        class Interval_Not_Fulfilled : public Pandora::Pandora_Exception { };
         
         class Pandora_Module {
         protected:
@@ -68,6 +69,7 @@ namespace Pandora_Modules {
                 string output;
                 int    max, min;
                 bool   has_limits;
+                bool   has_output;
         public:
                 Pandora_Module           (string name);
                 virtual ~Pandora_Module  ();

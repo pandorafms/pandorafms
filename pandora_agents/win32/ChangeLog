@@ -1,5 +1,14 @@
 2006-07-05  Esteban Sanchez  <esteban@steve-o.org>
 
+	* README: Style correction. 
+
+	* pandora.cc: Log file renamed. 
+
+	* modules/pandora_module.cc: Fixed a bug when sending a integer value
+	from a module exec type.
+
+2006-07-05  Esteban Sanchez  <esteban@steve-o.org>
+
 	* AUTHORS, README: Added to repository
 	
 	* PandoraAgent.dev: Linker options modified to not point to a static

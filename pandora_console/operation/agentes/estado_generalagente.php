@@ -59,7 +59,7 @@ if (comprueba_login() == 0) {
 	// Data base access graph
 
 	echo "<td rowspan=4><b>".$lang_label["agent_access_rate"]."</b><br><br>
-	<img border=1 src='reporting/fgraph.php?id=".$id_agente."&tipo=agentaccess&periodo=1440' border=0>";
+	<img border=0 src='reporting/fgraph.php?id=".$id_agente."&tipo=agentaccess&periodo=1440' border=0>";
 
 	echo '<tr><td class="datos2"><b>'.$lang_label["ip_address"].'</b> <td class="datos2">'.salida_limpia($direccion_agente);
 	if ($agent_type == 0) {
@@ -72,7 +72,7 @@ if (comprueba_login() == 0) {
 	echo '<tr><td class="datos"><b>'.salida_limpia($lang_label["description"]).'</b> <td class="datos">'.$comentarios;	
 
 	echo "<td rowspan=6><b>".$lang_label["agent_module_shareout"]."</b><br><br>";
-	echo "<img border=1 src='reporting/fgraph.php?id=".$id_agente."&tipo=agentmodules' border=0>";
+	echo "<img border=0 src='reporting/fgraph.php?id=".$id_agente."&tipo=agentmodules' border=0>";
 
 	echo '<tr><td class="datos2"><b>'.salida_limpia($lang_label["group"]).'</b> <td class="datos2"> <img src="images/g_'.$iconindex_g[$row["id_grupo"]].'.gif" border="0"> ( '.dame_grupo($id_grupo).' )';
 	if ($agent_type == 0) {	

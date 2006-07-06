@@ -17,16 +17,14 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ##################################################################################
-#use strict;
-use warnings;
 
 use DBI();     # DB interface with MySQL
 
-my $dbh = DBI->connect("DBI:mysql:pandora:localhost:3306","pandora","pandora",{ RaiseError => 1 });
+#$dbh = DBI->connect("DBI:mysql:pandora:localhost:3306","pandora","pandora",{ RaiseError => 1 });
 
 while (1){
-	# dbd_open_test();
-	dbd_select_test($dbh);
+	dbd_open_test();
+	#dbd_select_test($dbh);
 }
 
 sub dbd_select_test {
@@ -34,9 +32,15 @@ sub dbd_select_test {
 	my $query = "select * from tagente";
 	my $result = $dbh->prepare($query);
 	$result ->execute;
+	$result = "";
+	$query = "";
+	$dbh = "";
+	undef $dbh;
+	undef $query;
+	undef $result;
 }
 
 sub dbd_open_test {
-	my $dbh = DBI->connect("DBI:mysql:pandora:localhost:3306","pandora","pandora",{ RaiseError => 1 });
+	$dbh = DBI->connect("DBI:mysql:pandora:localhost:3306","pandora","pandora",{ RaiseError => 1 });
 	$dbh->disconnect;
 }

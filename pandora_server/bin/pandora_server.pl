@@ -3,19 +3,19 @@
 # Pandora Data Server
 ##################################################################################
 # Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2006 Artica Soluciones Tecnol�icas S.L
+# Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L
 #
-#This program is free software; you can redistribute it and/or
-#modify it under the terms of the GNU General Public License
-#as published by the Free Software Foundation; either version 2
-#of the License, or (at your option) any later version.
-#This program is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
-#You should have received a copy of the GNU General Public License
-#along with this program; if not, write to the Free Software
-#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ##################################################################################
 
 # Includes list
@@ -95,7 +95,7 @@ sub pandora_dataserver {
 			threads->yield;
                 	$file_data = "$pa_config->{'incomingdir'}/$onefile";
                 	next if $onefile =~ /^\.\.?$/;     # Skip . and .. directory
-                	if ( $onefile =~ /([\-\:\;\.\,\_\s\a\*\=\(\)\/a-zA-Z0-9]*).data/ ) {  # First filter any file that doesnt like ".data"
+                	if ( $onefile =~ /([\-\:\;\.\,\_\s\a\*\=\(\)a-zA-Z0-9]*).data\z/ ) {  # First filter any file that doesnt like ".data"
    				$agent_filename = $1;
    				$file_md5 = "$pa_config->{'incomingdir'}/$agent_filename.checksum";
 				if (( -e $file_md5 ) or ($pa_config->{'pandora_check'} == 0)){ # If check is disabled, ignore if file_md5 exists
@@ -118,15 +118,15 @@ sub pandora_dataserver {
      						eval { # XML Processing error catching procedure. Critical due XML was no validated
                                   			logger ($pa_config, "Ready to parse $file_data",4);
                                   			$config = XMLin($file_data, forcearray=>'module');
-      							procesa_datos($pa_config, $config, $dbh); 
                           			};
                           			if ($@) {
                                    			logger ($pa_config, "[ERROR] Error processing XML contents in $file_data",0);
-                                   			copy ($file_data,$file_data."_BAD");
+                                   			copy ($file_data,$file_data."_BADXML");
                                    			if (($pa_config->{'pandora_check'} == 1) && ( -e $file_md5 )) {
-								copy ($file_md5,$file_md5."_BAD");
+								copy ($file_md5,$file_md5."_BADCHECKUM");
 							}
                           			}
+						procesa_datos($pa_config, $config, $dbh); 
 						undef $config;
                                         	# If _everything_ its ok..
 						# delete files

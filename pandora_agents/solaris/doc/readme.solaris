@@ -1,12 +1,9 @@
 Requirements
 ============
 
-
-You need MD5 package (from Sunfreeware.com) to run Pandora Agent for Solaris
+You need MD5 package (from Sunfreeware.com) to run Pandora Agent for Solaris if you want data checksum option (optional).
 
 (ftp://ftp.sunfreeware.com/pub/freeware/sparc/8/md5-6142000-sol8-sparc-local.gz)
-
-
 
 Install MD5 package
 ===================
@@ -20,6 +17,11 @@ The following packages are available:
 
 Select package(s) you wish to process (or 'all' to process
 all packages). (default: all) [?,??,q]: 1
+
+OpenSSH Install
+===============
+
+http://www.sunfreeware.com/openssh8.html
 
 SSH Key generation procedure (F-Secure SSH only)
 ================================================

@@ -1,3 +1,14 @@
+2006-07-05  Sancho Lerena  <slerena@artica.es>
+
+	* INSTALL, COPYNG: Added to repository
+
+	* util/ : Added GNU Tools to repository.
+	
+	* libeay32.dll, zlib1.dll: Added to repository.
+
+	* pandora_agent.conf: Some changes to example config file. Added some 
+	examples to reflect a more "real" setup.
+
 2006-07-05  Esteban Sanchez  <esteban@steve-o.org>
 
 	* README: Style correction. 

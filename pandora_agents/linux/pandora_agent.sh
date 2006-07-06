@@ -7,7 +7,7 @@
 # Este codigo esta licenciado bajo la licencia GPL 2.0.
 # This code is licenced under GPL 2.0 licence.
 # **********************************************************************
-AGENT_VERSION=1.2beta2
+AGENT_VERSION=1.2
 
 IFS=$'\n'
 # Begin cycle for adquire primary config tokens
@@ -217,7 +217,7 @@ do
 	
 	if [ -f "$PANDORA_HOME/pandora_user.conf" ]
 	then
-	/bin/bash $PANDORA_HOME/pandora_user.conf >> $DATA
+		/bin/bash $PANDORA_HOME/pandora_user.conf >> $DATA
 	fi
 	
 	# Finish data packet

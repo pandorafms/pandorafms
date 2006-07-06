@@ -4,21 +4,21 @@
 // Description:	Base64 encoded images for diamonds
 // Created: 	2003-03-20
 // Author:	Johan Persson (johanp@aditus.nu)
-// Ver:		$Id: imgdata_diamonds.inc 21 2005-05-30 20:35:34Z ljp $
+// Ver:		$Id: imgdata_diamonds.inc 20 2005-05-30 20:34:41Z ljp $
 //
 // Copyright (c) Aditus Consulting. All rights reserved.
 //========================================================================
 
 class ImgData_Diamonds extends ImgData {
-    var $name = 'Diamonds';
-    var $an = array(MARK_IMG_DIAMOND =>'imgdata');
-    var $colors = array('lightblue','darkblue','gray', 
+    protected $name = 'Diamonds';
+    protected $an = array(MARK_IMG_DIAMOND =>'imgdata');
+    protected $colors = array('lightblue','darkblue','gray', 
 			'blue','pink','purple','red','yellow');
-    var $index  = array('lightblue' =>7,'darkblue'=>2,'gray'=>6, 
+    protected $index  = array('lightblue' =>7,'darkblue'=>2,'gray'=>6, 
 			'blue'=>4,'pink'=>1,'purple'=>5,'red'=>0,'yellow'=>3);
 
-    var $maxidx = 7 ;
-    var $imgdata ;
+    protected $maxidx = 7 ;
+    protected $imgdata ;
 
     function ImgData_Diamonds() {
 //==========================================================

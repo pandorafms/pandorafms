@@ -237,19 +237,18 @@ do
 		echo $CHECKSUM_DATA > $CHECKSUM
 	fi
 	
+	# Send packets to server and detele it
+ 	scp $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH > /dev/null 2> /dev/null
+
 	if [ "$DEBUG_MODE" == "1" ]
 	then
-		mv $PANDORA_FILES $SERVER_PATH > /dev/null 2> /dev/null
 		echo "$TIMESTAMP - Copying $PANDORA_FILES to $SERVER_IP:$SERVER_PATH" >> $PANDORA_HOME/pandora.log
  	else
-		# Copy XML Data files to remote systems
-		scp $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH > /dev/null 2> /dev/null
+		# Delete it
+		rm -f $PANDORA_FILES> /dev/null 2> /dev/null
 	fi
 	
-	# Delete it
-	rm -f $PANDORA_FILES> /dev/null 2> /dev/null
-	
-	# Go to bed
+	# Go to bed :-)
 	sleep $INTERVAL
 	
 

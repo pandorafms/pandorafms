@@ -1,9 +1,20 @@
-<?php
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2005-2006
+<?PHP 
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load globar vars
 require("include/config.php");
@@ -13,13 +24,15 @@ if (comprueba_login() == 0) {
 	if (isset($_GET["id_agente"])){
 		$id_agente = $_GET["id_agente"];
 	}
-	echo "<h3>".$lang_label["monitor_listing"]."<a href='help/".substr($language_code,0,2)."/chap3.php#3323' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+
 	// Get all module from agent
 	$sql_t='SELECT * FROM tagente_estado, tagente_modulo WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.id_agente='.$id_agente.' order by tagente_modulo.nombre';
 	$result_t=mysql_query($sql_t);
 	if (mysql_num_rows ($result_t)) {
+		echo "<h3>".$lang_label["monitor_listing"]."<a href='help/".substr($language_code,0,2)."/chap3.php#3323' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+		echo "<table width='750' cellpadding=3 cellspacing=3>";
+		echo "<tr><th>".$lang_label["type"]."<th>".$lang_label["module_name"]."<th>".$lang_label["description"]."<th>".$lang_label["status"]."<th>".$lang_label["interval"]."<th>".$lang_label["last_contact"];
 		$color=0;
-		$string='';
 		while ($row_t=mysql_fetch_array($result_t)){
 			# For evey module in the status table
 			$est_modulo = $row_t["nombre"];
@@ -53,39 +66,33 @@ if (comprueba_login() == 0) {
 				else
 					$agent_down = 0;
 				
-				if (!isset($string)) {$string='';}
-				$string=$string."<tr><td class='".$tdcolor."'>".$est_tipo;
-				$string=$string."<td class='".$tdcolor."'>".$est_modulo;
-				$string=$string."<td class='".$tdcolor."f9'>".substr($est_description,0,32);
+				echo "<tr>";
+				echo "<td class='".$tdcolor."'>".$est_tipo;
+				echo "<td class='".$tdcolor."'>".$est_modulo;
+				echo "<td class='".$tdcolor."f9'>".substr($est_description,0,32);
 				// echo "<td class='datos'>".$row3["datos"];
 				if ($agent_down == 1)
-					$string=$string."<td class='".$tdcolor."' align='center'><img src='images/b_down.gif'>";
+					echo "<td class='".$tdcolor."' align='center'><img src='images/b_down.gif'>";
 				else	
 					if ($est_estado == 1)
 						if ($est_cambio ==1)
-							$string=$string."<td class='".$tdcolor."' align='center'><img src='images/b_yellow.gif'>";
+							echo "<td class='".$tdcolor."' align='center'><img src='images/b_yellow.gif'>";
 						else
-							$string=$string."<td class='".$tdcolor."' align='center'><img src='images/b_red.gif'>";
+							echo "<td class='".$tdcolor."' align='center'><img src='images/b_red.gif'>";
 					else
-						$string=$string."<td class='".$tdcolor."' align='center'><img src='images/b_green.gif'>";
-				$string=$string."<td class='".$tdcolor."'>".$temp_interval;
-				$string=$string."<td class='".$tdcolor."f9'>";
+						echo "<td class='".$tdcolor."' align='center'><img src='images/b_green.gif'>";
+				echo "<td class='".$tdcolor."'>";
+				echo $temp_interval;
+				echo "<td class='".$tdcolor."f9'>";
 				if ($agent_down == 1) // Si el agente esta down, lo mostramos en negrita y en rojo
-					$string=$string."<b><font color='red'>";
-					$string=$string.$row_t["timestamp"]."</font></b>";
+					echo "<b><font color='red'>";
+	
+				echo $row_t["timestamp"];
 			}
-			else unset($string);
 		}
-	if (isset($string)) {
-	echo "<table width='750' cellpadding=3 cellspacing=3><tr></th><th>".$lang_label["type"]."<th>".$lang_label["module_name"]."</th><th>".$lang_label["description"]."</th><th>".$lang_label["status"]."</th><th>".$lang_label["interval"]."</th><th>".$lang_label["last_contact"]."</th></tr>";
-	echo $string;
 	echo '<tr><td colspan="7"><div class="raya"></div></td></tr></table>';
 	}
-	else {
-		echo "<font class='red'>".$lang_label["no_monitors"]."</font>";
-		}
-	}
 	else 
-		echo "<font class='red'>".$lang_label["no_monitors"]."</font>";
+		echo "- <font class='red'>".$lang_label["no_monitors"]."</font>";
 }
 ?>

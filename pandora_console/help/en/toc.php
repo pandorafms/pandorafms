@@ -76,7 +76,7 @@ dd.help_t4 {margin-left: 92px; margin-top: 3px; margin-bottom: 2px;}
 <dd class="help_t1"><a href="chap7.php#7"><h1>7. Server configuration</h1></a></dd>
 <dd class="help_t2"><a href="chap7.php#71">7.1. Links </a></dd>
 
-<dd class="help_t1"><a href="chap8.php#8"><h1>8. Data Base maintenance</h1></a></dd>
+<dd class="help_t1"><a href="chap8.php#8"><h1>8. Database maintenance</h1></a></dd>
 <dd class="help_t2"><a href="chap8.php#81">8.1. DB Information</a></dd>
 <dd class="help_t2"><a href="chap8.php#82">8.2. Manual purge of the Database</a></dd>
 <dd class="help_t2"><a href="chap8.php#83">8.3. Agent's data purge</a></dd>

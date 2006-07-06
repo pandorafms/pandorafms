@@ -137,7 +137,7 @@ if (comprueba_login() == 0) {
 						$string=$string."<td class='".$tdcolor."f9' width='140'>".$data2["timestamp"]."</td></tr>";
 					}
 				}
-				else unset($string);
+				else if($ag_group>1) {unset($string);}
 			}
 		}
 		if (isset($string)) {

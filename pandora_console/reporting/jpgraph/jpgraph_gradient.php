@@ -4,7 +4,7 @@
 // Description:	Create a color gradient
 // Created: 	2003-02-01
 // Author:	Johan Persson (johanp@aditus.nu)
-// Ver:		$Id: jpgraph_gradient.php 21 2005-05-30 20:35:34Z ljp $
+// Ver:		$Id: jpgraph_gradient.php 630 2006-05-26 00:09:30Z ljp $
 //
 // Copyright (c) Aditus Consulting. All rights reserved.
 //========================================================================
@@ -22,7 +22,7 @@ DEFINE("GRAD_WIDE_MIDHOR",7);
 DEFINE("GRAD_LEFT_REFLECTION",8);
 DEFINE("GRAD_RIGHT_REFLECTION",9);
 DEFINE("GRAD_RAISED_PANEL",10);
-
+DEFINE("GRAD_DIAGONAL",11);
   
 //===================================================
 // CLASS Gradient
@@ -30,8 +30,7 @@ DEFINE("GRAD_RAISED_PANEL",10);
 // considered a "friend" class of Class Image.
 //===================================================
 class Gradient {
-    var $img=null;
-    var $numcolors=100;
+    private $img=null, $numcolors=100;
 //---------------
 // CONSTRUCTOR
     function Gradient(&$img) {
@@ -269,8 +268,57 @@ class Gradient {
 		} 
 		break;
 
+	    case GRAD_DIAGONAL:
+		// use the longer dimension to determine the required number of steps.
+		// first loop draws from one corner to the mid-diagonal and the second
+		// loop draws from the mid-diagonal to the opposing corner.
+		if($xr-$xl > $yb - $yt) {
+		    // width is greater than height -> use x-dimension for steps
+		    $steps = $xr-$xl;
+		    $delta = $xr>=$xl ? 1 : -1;
+		    $this->GetColArray($from_color,$to_color,$steps*2,$colors,$this->numcolors);
+		    $n = count($colors);
+
+		    for($x=$xl, $i=0; $i < $steps && $i < $n; ++$i) {
+			$this->img->current_color = $colors[$i];
+			$y = $yt+($i/$steps)*($yb-$yt)*$delta;
+			$this->img->Line($x,$yt,$xl,$y);
+			$x += $delta;
+		    }
+
+		    for($x=$xl, $i = 0; $i < $steps && $i < $n; ++$i) {
+			$this->img->current_color = $colors[$steps+$i];
+			$y = $yt+($i/$steps)*($yb-$yt)*$delta;
+			$this->img->Line($x,$yb,$xr,$y);
+			$x += $delta;
+		    }
+		} else {
+		    // height is greater than width -> use y-dimension for steps
+		    $steps = $yb-$yt;
+		    $delta = $yb>=$yt ? 1 : -1;
+		    $this->GetColArray($from_color,$to_color,$steps*2,$colors,$this->numcolors);
+		    $n = count($colors);
+		    
+		    for($y=$yt, $i=0; $i < $steps && $i < $n; ++$i) {
+			$this->img->current_color = $colors[$i];
+			$x = $xl+($i/$steps)*($xr-$xl)*$delta;
+			$this->img->Line($x,$yt,$xl,$y);
+			$y += $delta;
+		    }
+
+		    for($y=$yt, $i = 0; $i < $steps && $i < $n; ++$i) {
+			$this->img->current_color = $colors[$steps+$i];
+			$x = $xl+($i/$steps)*($xr-$xl)*$delta;
+			$this->img->Line($x,$yb,$xr,$y);
+			$x += $delta;
+		    }
+
+		}
+		break;
+
 	    default:
-		JpGraphError::Raise("Unknown gradient style (=$style).");
+		JpGraphError::RaiseL(7001,$style);
+//("Unknown gradient style (=$style).");
 		break;
 	}
     }

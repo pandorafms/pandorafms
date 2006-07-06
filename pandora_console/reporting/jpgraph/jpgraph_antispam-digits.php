@@ -4,14 +4,15 @@
 // Description:	Genarate anti-spam challenge
 // Created: 	2004-10-07
 // Author:	Johan Persson (johanp@aditus.nu)
-// Ver:		$Id: jpgraph_antispam-digits.php 21 2005-05-30 20:35:34Z ljp $
+// Ver:		$Id: jpgraph_antispam-digits.php 629 2006-05-26 00:05:28Z ljp $
 //
 // Copyright (c) Aditus Consulting. All rights reserved.
 //========================================================================
 
 class HandDigits {
-    var $digits_thumb30x30 = array();
-    var $iHeight=30, $iWidth=30;
+    public $digits = array();
+    public $iHeight=30, $iWidth=30;
+
     function HandDigits() {
 //==========================================================
 // d6-small.jpg

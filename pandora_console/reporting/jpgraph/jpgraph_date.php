@@ -4,7 +4,7 @@
 // Description:	Classes to handle Date scaling
 // Created: 	2005-05-02
 // Author:	Johan Persson (johanp@aditus.nu)
-// Ver:		$Id: jpgraph_date.php 220 2005-10-15 16:53:53Z ljp $
+// Ver:		$Id: jpgraph_date.php 573 2006-03-04 10:41:59Z ljp $
 //
 // Copyright (c) Aditus Consulting. All rights reserved.
 //========================================================================
@@ -48,9 +48,9 @@ DEFINE('SECPERMIN',60);
 
 
 class DateScale extends LinearScale {
-    var $date_format = '';
-    var $iStartAlign = false, $iEndAlign = false;
-    var $iStartTimeAlign = false, $iEndTimeAlign = false;
+    private $date_format = '';
+    private $iStartAlign = false, $iEndAlign = false;
+    private $iStartTimeAlign = false, $iEndTimeAlign = false;
 
 //---------------
 // CONSTRUCTOR
@@ -377,6 +377,7 @@ class DateScale extends LinearScale {
     // Overrides the automatic determined date format. Must be a valid date() format string
     function SetDateFormat($aFormat) {
 	$this->date_format = $aFormat;
+	$this->ticks->SetLabelDateFormat($this->date_format);
     }
 
     function SetDateAlign($aStartAlign,$aEndAlign=false) {
@@ -396,7 +397,9 @@ class DateScale extends LinearScale {
     }
 
 
-    function AutoScale(&$img,$aStartTime,$aEndTime,$aNumSteps) {
+    function AutoScale($img,$aStartTime,$aEndTime,$aNumSteps,$_adummy=false) {
+	// We need to have one dummy argument to make the signature of AutoScale()
+	// identical to LinearScale::AutoScale
 	if( $aStartTime == $aEndTime ) {
 	    // Special case when we only have one data point.
 	    // Create a small artifical intervall to do the autoscaling
@@ -427,7 +430,8 @@ class DateScale extends LinearScale {
 	*/
 	
 	if( $this->iStartTimeAlign !== false && $this->iStartAlign !== false ) {
-	    JpGraphError::Raise('It is only possible to use either SetDateAlign() or SetTimeAlign() but not both');
+	    JpGraphError::RaiseL(3001);
+//('It is only possible to use either SetDateAlign() or SetTimeAlign() but not both');
 	}
 
 	if( $this->iStartTimeAlign !== false ) {

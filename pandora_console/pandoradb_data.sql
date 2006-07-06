@@ -138,8 +138,7 @@ INSERT INTO `tlanguage` VALUES ('bb','Bable');
 INSERT INTO `tlanguage` VALUES ('en','English');
 INSERT INTO `tlanguage` VALUES ('es_es','Espa&ntilde;ol');
 INSERT INTO `tlanguage` VALUES ('es_la','Espa&ntilde;ol-Latinoam&eacute;rica');
-INSERT INTO `tlanguage` VALUES ('eu','Euskera');
-INSERT INTO `tlanguage` VALUES ('pt_br','Portuguese-Brazil');
+INSERT INTO `tlanguage` VALUES ('pt_br','Portugu&ecirc;s-Brasil');
 INSERT INTO `tlanguage` VALUES ('fr','Fran&ccedil;ais');
 INSERT INTO `tlanguage` VALUES ('ca','Catal&agrave;');
 

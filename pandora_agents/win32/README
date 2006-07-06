@@ -2,7 +2,8 @@ Pandora is the free Distributed Monitoring System.
 
 This is the Windows agent, programmed in C++ with GNU tools and gcc.
 
-In order to build from sources, you will need the latest Dev-Cpp IDE version, with the MinGW tools. Download from http://www.bloodshed.net/devcpp.html
+In order to build from sources, you will need the latest Dev-Cpp IDE version,
+with the MinGW tools. Download it from http://www.bloodshed.net/devcpp.html
 
 Open PandoraAgent.dev with Dev-Cpp and construct the project. Everything should
 compile fine in a default installation.

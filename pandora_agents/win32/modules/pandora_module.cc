@@ -95,7 +95,6 @@ Pandora_Module::getOutput () const {
                 }
                 
                 return Pandora_Strutils::inttostr (value);
-                break;
         default:
                 return this->output;
         }
@@ -166,8 +165,7 @@ Pandora_Module::getXml () {
         delete text;
         
         element = new TiXmlElement ("data");
-        data_str = strreplace (this->output,
-                               "%", "%%" );
+        data_str = strreplace (data, "%", "%%" );
         text = new TiXmlText (data_str);
         element->InsertEndChild (*text);
         root->InsertEndChild (*element);

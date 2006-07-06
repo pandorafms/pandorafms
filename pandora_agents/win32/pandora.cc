@@ -113,7 +113,7 @@ Pandora::pandoraLog (char *format, ...) {
         vsprintf (msg, format, args);
         va_end (args);
         
-        pandoraWriteLog ("pandora-log.dbg", (char *) msg);
+        pandoraWriteLog ("pandora-log.log", (char *) msg);
 }
 
 void

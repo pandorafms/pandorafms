@@ -2,7 +2,7 @@
 # Script de arranque de Agente Pandora
 # Sancho Lerena, <slerena@gmail.com>
 # Version para Linux (generico)
-# v1.1
+# v1.2
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
 PANDORA_PATH=/opt/pandora_agent/
@@ -30,11 +30,15 @@ case "$1" in
   stop)
         if [ -f $PIDFILE ]
         then
-           echo "Stopping Pandora Agent."
-	   kill -9 `cat $PIDFILE`   
-	   rm -f $PIDFILE 
+		echo "Stopping Pandora Agent."
+		PID_2=`cat $PIDFILE`
+		if [ ! -z "`ps -f -p $PID_2 | grep -v grep | grep 'pandora_agent'`" ]
+		then
+			kill -9 $PID_2
+		fi
+		rm -f $PIDFILE 
         else
-           echo "Pandora Agent is not running, cannot stop it. Aborting now..."
+		echo "Pandora Agent is not running, cannot stop it. Aborting now..."
         fi
         ;;
   force-reload|restart)

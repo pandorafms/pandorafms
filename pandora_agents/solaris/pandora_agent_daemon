@@ -1,8 +1,9 @@
-#!/bin/sh
-# Script de arranque de Agente Pandora
+#!/usr/bin/ksh
+# Startup Script for Pandora Agent
 # Sancho Lerena, <slerena@gmail.com>
 # Version para Solaris
-# v1.1
+# v1.2
+
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
 PANDORA_PATH=/opt/pandora_agent/
@@ -23,15 +24,19 @@ case "$1" in
                 echo "Pandora Agent is currently running on this machine. Aborting now..."
                 exit
         fi
-        $PANDORA_PATH/$DAEMON $PANDORA_PATH >> $PANDORA_PATH/pandora.log & MYPID=$!
+	$PANDORA_PATH/$DAEMON $PANDORA_PATH >> $PANDORA_PATH/pandora.log &  MYPID=$!
         echo $MYPID > $PIDFILE
 	echo "Pandora Agent is now running with PID $MYPID"
         ;;
   stop)
         if [ -f $PIDFILE ]
         then
-           echo "Stopping Pandora Agent."
-	   kill -9 `cat $PIDFILE`   
+   	echo "Stopping Pandora Agent."
+	   PID_2=`cat $PIDFILE`
+           if [ ! -z "`ps -f -p $PID_2 | grep -v grep | grep 'pandora_agent'`" ]
+           then
+   	   	kill -9 $PID_2
+	   fi
 	   rm -f $PIDFILE 
         else
            echo "Pandora Agent is not running, cannot stop it. Aborting now..."

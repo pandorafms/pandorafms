@@ -80,14 +80,11 @@ if (comprueba_login() == 0)
 				$grupo[$array_index]["agent"]++;
 				$grupo[$array_index]["group"]=dame_nombre_grupo($migrupo);
 				$contador_agente++;	//  Estado grupo, agent
-				if ($down ==0){
-					$sql2="SELECT * FROM tagente_modulo WHERE (id_tipo_modulo = 2 OR id_tipo_modulo = 6 OR id_tipo_modulo = 9 OR id_tipo_modulo = 12 OR id_tipo_modulo = 18) AND id_agente =".$row1["id_agente"];
-					$result2=mysql_query($sql2);
-					while ($row2 = mysql_fetch_array($result2)){
-						$sql3="SELECT * FROM tagente_estado WHERE id_agente_modulo = ".$row2["id_agente_modulo"];
-						$result3=mysql_query($sql3);
-						$row3 = mysql_fetch_array($result3);
-				 		if ($row3["datos"] !=0){
+				if ($down == 0){
+					$sql3="SELECT * FROM tagente_estado WHERE estado != 100 and id_agente = ".$row1["id_agente"];
+					$result3=mysql_query($sql3);
+					while ($row3 = mysql_fetch_array($result3)){
+						if ($row3["datos"] !=0){
 							$estado_grupo_ok++;
 							$grupo[$array_index]["ok"]++; // Estado grupo, agent ok
 						}
@@ -96,7 +93,7 @@ if (comprueba_login() == 0)
 							$grupo[$array_index]["bad"]++; // Estado grupo, agent BAD
 						}
 					}
-					$sql2="SELECT * FROM tagente_modulo WHERE (id_tipo_modulo != 2 OR id_tipo_modulo != 6 OR id_tipo_modulo != 9 OR id_tipo_modulo != 12 OR id_tipo_modulo != 18) AND id_agente =".$row1["id_agente"];
+					$sql2="SELECT * FROM tagente_estado WHERE estado = 100 and id_agente = ".$row1["id_agente"];
 					$result2=mysql_query($sql2);
 					while ($row2 = mysql_fetch_array($result2)){
 						$sql3="SELECT * FROM tagente_estado WHERE id_agente_modulo = ".$row2["id_agente_modulo"];

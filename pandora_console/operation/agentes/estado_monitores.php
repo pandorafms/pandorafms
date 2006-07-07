@@ -24,12 +24,12 @@ if (comprueba_login() == 0) {
 	if (isset($_GET["id_agente"])){
 		$id_agente = $_GET["id_agente"];
 	}
-
+	echo "<h3>".$lang_label["monitor_listing"]."<a href='help/".substr($language_code,0,2)."/chap3.php#3323' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 	// Get all module from agent
-	$sql_t='SELECT * FROM tagente_estado, tagente_modulo WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.id_agente='.$id_agente.' order by tagente_modulo.nombre';
+	$sql_t='SELECT * FROM tagente_estado, tagente_modulo WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.id_agente='.$id_agente.' and tagente_estado.estado != 100 order by tagente_modulo.nombre';
 	$result_t=mysql_query($sql_t);
 	if (mysql_num_rows ($result_t)) {
-		echo "<h3>".$lang_label["monitor_listing"]."<a href='help/".substr($language_code,0,2)."/chap3.php#3323' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+		
 		echo "<table width='750' cellpadding=3 cellspacing=3>";
 		echo "<tr><th>".$lang_label["type"]."<th>".$lang_label["module_name"]."<th>".$lang_label["description"]."<th>".$lang_label["status"]."<th>".$lang_label["interval"]."<th>".$lang_label["last_contact"];
 		$color=0;
@@ -66,31 +66,30 @@ if (comprueba_login() == 0) {
 				else
 					$agent_down = 0;
 				
-				echo "<tr>";
-				echo "<td class='".$tdcolor."'>".$est_tipo;
+				echo "<tr><td class='".$tdcolor."'>".$est_tipo;
 				echo "<td class='".$tdcolor."'>".$est_modulo;
 				echo "<td class='".$tdcolor."f9'>".substr($est_description,0,32);
 				// echo "<td class='datos'>".$row3["datos"];
 				if ($agent_down == 1)
-					echo "<td class='".$tdcolor."' align='center'><img src='images/b_down.gif'>";
+					echo  "<td class='".$tdcolor."' align='center'><img src='images/b_down.gif'>";
 				else	
 					if ($est_estado == 1)
 						if ($est_cambio ==1)
 							echo "<td class='".$tdcolor."' align='center'><img src='images/b_yellow.gif'>";
 						else
-							echo "<td class='".$tdcolor."' align='center'><img src='images/b_red.gif'>";
+							echo  "<td class='".$tdcolor."' align='center'><img src='images/b_red.gif'>";
 					else
-						echo "<td class='".$tdcolor."' align='center'><img src='images/b_green.gif'>";
+						echo  "<td class='".$tdcolor."' align='center'><img src='images/b_green.gif'>";
 				echo "<td class='".$tdcolor."'>";
-				echo $temp_interval;
-				echo "<td class='".$tdcolor."f9'>";
+				echo  $temp_interval;
+				echo  "<td class='".$tdcolor."f9'>";
 				if ($agent_down == 1) // Si el agente esta down, lo mostramos en negrita y en rojo
-					echo "<b><font color='red'>";
+					echo  "<b><font color='red'>";
 	
-				echo $row_t["timestamp"];
+				echo  $row_t["timestamp"];
 			}
 		}
-	echo '<tr><td colspan="7"><div class="raya"></div></td></tr></table>';
+		echo '<tr><td colspan="7"><div class="raya"></div></td></tr></table>';
 	}
 	else 
 		echo "- <font class='red'>".$lang_label["no_monitors"]."</font>";

@@ -84,7 +84,7 @@ $query1="SELECT * FROM tsesion WHERE (TO_DAYS(fecha) > TO_DAYS(NOW()) -7) AND ID
 	echo $lang_label["there_are"].$row[0]." ".$lang_label["agent_defined"];
 	echo "<br><br>";
 
-	$query1="SELECT COUNT(*) FROM tagente_datos";
+	$query1="SELECT COUNT(id_agente_datos) FROM tagente_datos";
 	$result=mysql_query($query1);
 	$row=mysql_fetch_array($result);
 	echo "<img src='images/datos.gif' align='middle' alt=''>&nbsp;&nbsp;";

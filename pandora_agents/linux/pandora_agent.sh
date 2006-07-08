@@ -130,7 +130,7 @@ do
             			then
 	             			res=`eval expr $res 2> /dev/null`
      				fi
-            			echo "<data>$res</data>" >> $DATA2
+            			echo "<data><![CDATA[$res]]></data>" >> $DATA2
 			fi
          	fi
  

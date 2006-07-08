@@ -237,7 +237,7 @@ function grafico_modulo_sparse($id_agente_modulo, $periodo, $intervalo, $etiquet
 	// end 29.06.06 dervitx
 	
 	$Graph_param = array (
-		'title' 	=> "          $etiqueta - $nombre_agente / $nombre_modulo" ,
+		'title' 	=> "          $etiqueta - $nombre_agente / $nombre_modulo",
 		'size_x'	=> 550 ,
 		'size_y'	=> 220 ,
 		'id_agente_modulo' => $id_agente_modulo ,
@@ -250,7 +250,7 @@ function grafico_modulo_sparse($id_agente_modulo, $periodo, $intervalo, $etiquet
 				&$etiq_base, 
 				array('Maximum','Average','Minimum'),
 				array (	&$valores_max, &$grafica, &$valores_min ), 
-				&$data_x
+				&$datax
 				);
 }
 	
@@ -277,7 +277,6 @@ function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_name, $MGD_data
 	// $MGD_data = array ( &array(data1), &array(data2), ... );	// data to be represented
 	
 	// $MGD_event_data = array ( (notvalidated) &array(data_x), (validated) => &array(data_x) );
-		
 		
 	include ("../include/config.php");
 	require ("../include/languages/language_".$language_code.".php");
@@ -375,7 +374,8 @@ function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_name, $MGD_data
 				$Dataset_events->setName($cc?'Validated events':'Not valid. events');
 				for ($nn=0; $nn<count($MGD_event_data[$cc]); $nn++) {
 					$Dataset_events->addPoint(
-						$MGD_event_data[$cc][$nn], $MGD_param['valor_maximo']);
+						$MGD_event_data[$cc][$nn], 
+						ceil($MGD_param['valor_maximo'] / 7) + $MGD_param['valor_maximo']);
 					}
 				$Plot =& $Plotarea->addNew('Plot_Impulse', array(&$Dataset_events));
 				$Plot->setLineColor($cc?'green@0.5':'red@0.5'); 
@@ -1426,8 +1426,8 @@ if (isset($_GET["tipo"])){
 			$intervalo = $_GET["intervalo"];
 			$label = $_GET["label"];
 			$color = "#".$color;
-			if ( isset($_GET["draw_events"]) and $_GET["draw_events"]==1 ) 
-				{ $draw_events = 1; } else { $draw_events = 0; } 
+			if ( isset($_GET["draw_events"]) and $_GET["draw_events"]==0 ) 
+				{ $draw_events = 0; } else { $draw_events = 1; } 
 			grafico_modulo_sparse($id, $periodo, $intervalo, $label, $color, $draw_events);
 		}
 	}

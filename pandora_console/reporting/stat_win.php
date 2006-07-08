@@ -21,11 +21,20 @@ include ("../include/config.php");
 include ("../include/functions.php");
 include("../include/functions_db.php");
 include("../include/languages/language_".$language_code.".php");
-echo '<style>';
-include("../include/styles/pandora.css");
-echo '</style>';
+
 if (comprueba_login() == 0) {
 	// Has access to this page ???
+	
+	// Parsing the refresh before sending any header
+	if (isset($_GET['refresh']) and is_numeric($_GET['refresh']) and $_GET['refresh']>0) {
+		header( 'refresh: ' . $_GET['refresh'] );
+		}
+
+	// CSS
+	echo '<style>';
+	include("../include/styles/pandora.css");
+	echo '</style>';
+
 	if (isset($_GET["tipo"]) AND isset($_GET["id"])) {
 		$tipo =entrada_limpia($_GET["tipo"]);
 		$id_agente_modulo = entrada_limpia($_GET["id"]);

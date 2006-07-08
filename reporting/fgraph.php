@@ -236,16 +236,73 @@ function grafico_modulo_sparse($id_agente_modulo, $periodo, $intervalo, $etiquet
 	}
 	// end 29.06.06 dervitx
 	
-	// 30.06.06 dervitx
-	// creating the graph with PEAR Image_Graph
+	$Graph_param = array (
+		'title' 	=> "          $etiqueta - $nombre_agente / $nombre_modulo" ,
+		'size_x'	=> 550 ,
+		'size_y'	=> 220 ,
+		'id_agente_modulo' => $id_agente_modulo ,
+		'valor_maximo'	=> $valor_maximo ,
+		'periodo'	=> $periodo ,
+		'draw_events'	=> 1
+		);
+	
+	modulo_grafico_draw ( 	$Graph_param, 
+				&$etiq_base, 
+				array('Maximum','Average','Minimum'),
+				array (	&$valores_max, &$grafica, &$valores_min ), 
+				&$data_x
+				);
+}
+	
+	
+function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_name, $MGD_data, $MGD_event_data ) {	
+	
+	// draws the graph corresponding to the data of a module
+	// arguments:
+	
+	// $MGD_param = array (
+	//	'title' 	=> title ,
+	//	'size_x'	=> size of the graphic ,
+	//	'size_y'	=> ,
+	//	'id_agente_modulo' => agent-module id ,
+	// 	'valor_maximo'	=> maximum value for y axis ,
+	//	'periodo'	=> interval ,
+	//	'draw_events'	=> draw events if equals to 1
+	//	);
+
+	// &$MGD_labels = array ( $etiq_base )    // labels
+
+	// $MGD_data_name = array ( name1, name2, ...  )    // name of the datasets (for the legend only)
+
+	// $MGD_data = array ( &array(data1), &array(data2), ... );	// data to be represented
+	
+	// $MGD_event_data = array ( (notvalidated) &array(data_x), (validated) => &array(data_x) );
+		
+		
+	include ("../include/config.php");
+	require ("../include/languages/language_".$language_code.".php");
 	include 'Image/Graph.php';
-	$Graph =& Image_Graph::factory('graph', array(550, 220)); 
+		
+	// initializing parameters
+		
+	if (!isset( $MGD_param['title'] )) { $MGD_param['title'] = '- no title -'; }
+	if (!isset( $MGD_param['size_x'] )) { $MGD_param['size_x'] = 550; }
+	if (!isset( $MGD_param['size_y'] )) { $MGD_param['size_y'] = 220; }
+		
+	$count_datasets = count( $MGD_data_name );    // number of datasets to represent
+		
+	// creating the graph with PEAR Image_Graph
+	$Graph =& Image_Graph::factory('graph', 
+		array( 	$MGD_param['size_x'], 
+			$MGD_param['size_y']
+			)
+		); 
 	$Font =& $Graph->addNew('font', $config_fontpath);
 	$Font->setSize(8);
 	$Graph->setFont($Font);
 	$Graph->add(
 		Image_Graph::vertical(
-		 	$Title = Image_Graph::factory('title', array("          $etiqueta - $nombre_agente / $nombre_modulo", 10)),
+		 	$Title = Image_Graph::factory('title', array ($MGD_param['title'] , 10)),
 			Image_Graph::horizontal(
 				$Plotarea = Image_Graph::factory('plotarea','axis'),
 				$Legend = Image_Graph::factory('legend'),
@@ -266,22 +323,20 @@ function grafico_modulo_sparse($id_agente_modulo, $periodo, $intervalo, $etiquet
 	$Grid_sec->setBorderColor('black');
 	
 	// now, datasets are created ...
-	$Datasets = array (
-			Image_Graph::factory('dataset'),
-			Image_Graph::factory('dataset'),
-			Image_Graph::factory('dataset'),
-		);
-	$Datasets[0]->setName('Average');
-	$Datasets[1]->setName('Maximum');
-	$Datasets[2]->setName('Minimum');
+	for ($cc=0; $cc<$count_datasets; $cc++) {
+		$Datasets[$cc] = Image_Graph::factory('dataset') ;
+		$Datasets[$cc]->setName( $MGD_data_name[$cc] );
+		}
+	
 	$Legend->setPlotarea($Plotarea);
 	
 	// ... and populated with data ...
-	for ($cc=0; $cc<count($grafica); $cc++) {
-		$tdate=strtotime($etiq_base[$cc]);
-		$Datasets[0]->addPoint($tdate,$grafica[$cc]);
-		$Datasets[1]->addPoint($tdate,$valores_max[$cc]);
-		$Datasets[2]->addPoint($tdate,$valores_min[$cc]);
+	// next line suposes that all $MGD_data have the same number of points
+	for ($cc=0; $cc<count($MGD_data[0]); $cc++) {     
+		$tdate=strtotime( $MGD_labels[$cc] );
+		for ($dd=0; $dd<$count_datasets; $dd++) {
+			$Datasets[$dd]->addPoint($tdate, $MGD_data[$dd][$cc]);
+			}
 		}
 	
 	// ... and added to the Graph
@@ -289,20 +344,20 @@ function grafico_modulo_sparse($id_agente_modulo, $periodo, $intervalo, $etiquet
 	
 	// some other properties of the Graph
 	$FillArray =& Image_Graph::factory('Image_Graph_Fill_Array');
-	$FillArray->addColor('orange');
 	$FillArray->addColor('blue');
+	$FillArray->addColor('orange');
 	$FillArray->addColor('yellow');
 	$Plot->setFillStyle($FillArray); 
 	
 	$AxisX =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_X);
-	$AxisX->setLabelInterval($periodo*60/10);
+	$AxisX->setLabelInterval($MGD_param['periodo']*60/10);
  	$AxisX->setFontAngle(45);
  	$AxisX->setDataPreprocessor(Image_Graph::factory('Image_Graph_DataPreprocessor_Function', 'dame_fecha_grafico_timestamp')); 
 	$AxisY =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
-	$AxisY->forceMaximum(ceil($valor_maximo / 4) + $valor_maximo);
+	$AxisY->forceMaximum(ceil($MGD_param['valor_maximo'] / 4) + $MGD_param['valor_maximo']);
 	
 	// let's draw the alerts zones
-	$sql1 = "SELECT dis_min, dis_max FROM talerta_agente_modulo WHERE id_agente_modulo = ".$id_agente_modulo;
+	$sql1 = "SELECT dis_min, dis_max FROM talerta_agente_modulo WHERE id_agente_modulo = ".$MGD_param['id_agente_modulo'];
 	if ($result=mysql_query($sql1)){
 	while ($row=mysql_fetch_array($result)) {
 		$Marker_alertzone =& $Plotarea->addNew('Image_Graph_Axis_Marker_Area', IMAGE_GRAPH_AXIS_Y);
@@ -313,13 +368,14 @@ function grafico_modulo_sparse($id_agente_modulo, $periodo, $intervalo, $etiquet
 	}
 		
 	// if there are some events to draw let's scatter them!
-	if ($draw_events) {
+	if ($MGD_param['draw_events']) {
 		for ($cc=1; $cc>=0; $cc--) {
-			if (isset($datay[$cc])) {
+			if (isset($MGD_event_data[$cc])) {
 				$Dataset_events =& Image_Graph::factory('dataset');
 				$Dataset_events->setName($cc?'Validated events':'Not valid. events');
-				for ($nn=0; $nn<count($datax[$cc]); $nn++) {
-					$Dataset_events->addPoint($datax[$cc][$nn], $datay[$cc][$nn]);
+				for ($nn=0; $nn<count($MGD_event_data[$cc]); $nn++) {
+					$Dataset_events->addPoint(
+						$MGD_event_data[$cc][$nn], $MGD_param['valor_maximo']);
 					}
 				$Plot =& $Plotarea->addNew('Plot_Impulse', array(&$Dataset_events));
 				$Plot->setLineColor($cc?'green@0.5':'red@0.5'); 

@@ -49,9 +49,6 @@ if (comprueba_login() == 0)
 	$contador_grupo = 0;
 	$contador_agente=0;
 	$array_index = 0;
-	$estado_grupo_ok =0;
-	$estado_grupo_down =0;
-	$estado_grupo_bad =0;	
 	// Recorro cada grupo para ver el estado de todos los modulos
 	foreach ($mis_grupos as $migrupo)
 	if ($migrupo != "") {
@@ -65,58 +62,51 @@ if (comprueba_login() == 0)
 		$grupo[$array_index]["id_grupo"]=$migrupo;
 		$existen_agentes =0;
 		$sql1="SELECT * FROM tagente WHERE disabled=0 AND id_grupo =".$migrupo;
-		if ($result1=mysql_query($sql1))
-
+		if ($result1=mysql_query($sql1)){
 			while ($row1 = mysql_fetch_array($result1)){
 				$existen_agentes =1;
 				$id_agente=$row1["id_agente"];
-				$ultimo_contacto = $row1["ultimo_contacto"];
-				$intervalo = $row1["intervalo"];
-	 			$ahora=date("Y/m/d H:i:s");
-				if ($ultimo_contacto <> "")
-	 				$seconds = strtotime($ahora) - strtotime($ultimo_contacto);
-				else
-	 				$seconds = -100000;
-				# Defines if Agent is down (interval x 2 > time last contact)
-				$down=0;
-				if ($seconds >= ($intervalo*2)){ //  if Agent is down an alert is shown
-					$grupo[$array_index]["down"]++; // Estado grupo, agent down
-					$estado_grupo_down++;
-					$down=1;
-				}
 				// Check for recent alerts
 				if (check_alert_fired($id_agente) == 1){
 					$grupo[$array_index]["alerts"]++;
 				}
 				$grupo[$array_index]["agent"]++;
 				$grupo[$array_index]["group"]=dame_nombre_grupo($migrupo);
-				$contador_agente++;	//  Estado grupo, agent
-				if ($down == 0){
-					$sql3="SELECT * FROM tagente_estado WHERE estado != 100 and id_agente = ".$row1["id_agente"];
-					$result3=mysql_query($sql3);
-					while ($row3 = mysql_fetch_array($result3)){
-						if ($row3["datos"] !=0){
-							$estado_grupo_ok++;
-							$grupo[$array_index]["ok"]++; // Estado grupo, agent ok
-						}
-						else  {
-							$estado_grupo_bad++;
-							$grupo[$array_index]["bad"]++; // Estado grupo, agent BAD
-						}
+				$contador_agente++; //  Estado grupo, agent
+				$sql3="SELECT * FROM tagente_estado WHERE id_agente = ".$row1["id_agente"];
+				$result3=mysql_query($sql3);
+				while ($row3 = mysql_fetch_array($result3)){
+					$estado = $row3["estado"];
+					// Get module interval
+					$ahora=date("Y/m/d H:i:s"); 
+					$sql4="SELECT * FROM tagente_modulo WHERE id_agente_modulo = ".$row3["id_agente_modulo"];
+					$result4=mysql_query($sql4);
+					if ($row4 = mysql_fetch_array($result4)){
+						$module_interval = $row4["module_interval"];
+						if ($module_interval !=0)
+							$intervalo_comp = $module_interval;
+						else
+							$intervalo_comp = $intervalo;
 					}
-					$sql2="SELECT * FROM tagente_estado WHERE estado = 100 and id_agente = ".$row1["id_agente"];
-					$result2=mysql_query($sql2);
-					while ($row2 = mysql_fetch_array($result2)){
-						$sql3="SELECT * FROM tagente_estado WHERE id_agente_modulo = ".$row2["id_agente_modulo"];
-						$result3=mysql_query($sql3);
-						$row3 = mysql_fetch_array($result3);
-				 		if ($row3["datos"] !=0){
-							$estado_grupo_ok++;
-							$grupo[$array_index]["data"]++; // Data module
+					$ultimo_contacto_modulo = $row3["timestamp"];
+					# Defines if module is down (interval x 2 > time last contact)
+					if ($ultimo_contacto_modulo != "2000-00-00 00:00:00"){
+						$seconds = strtotime($ahora) - strtotime($ultimo_contacto_modulo);
+						if ($seconds >= ($intervalo_comp*2)){
+							$grupo[$array_index]["down"]++;
 						}
+						elseif ($estado != 100) {
+							if ($row3["datos"] !=0)
+								$grupo[$array_index]["ok"]++;	
+							else  
+								$grupo[$array_index]["bad"]++;
+						
+						} elseif ($estado == 100) // For data module, not monitors
+							$grupo[$array_index]["data"]++; // Data module
 					}
 				}
 			}
+		} 
 		if ($existen_agentes == 1){
 			$array_index++;
 		}

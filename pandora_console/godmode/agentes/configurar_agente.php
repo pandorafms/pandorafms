@@ -471,9 +471,11 @@ if (give_acl($id_user, 0, "AW")==1) {
 	// MODULE UPDATE
 	// =================
 	if ((isset($_POST["update_module"])) && (!isset($_POST["oid"]))){ // if modified something
-		$combo_snmp_oid = entrada_limpia($_POST["combo_snmp_oid"]);
-		if ($snmp_oid == ""){
-			$snmp_oid = $combo_snmp_oid;
+		if (isset($_POST["combo_snmp_oid"])){
+			$combo_snmp_oid = entrada_limpia($_POST["combo_snmp_oid"]);
+			if ($snmp_oid == ""){
+				$snmp_oid = $combo_snmp_oid;
+			}
 		}
 		$sql_update = "UPDATE tagente_modulo SET max ='".$modulo_max."', min = '".$modulo_min."', nombre='".$nombre."', descripcion='".$descripcion."', tcp_send = '$tcp_send', tcp_rcv = '$tcp_rcv', tcp_port = '$tcp_port', ip_target = '$ip_target', snmp_oid = '$snmp_oid', snmp_community = '$snmp_community', id_module_group = '$id_module_group', module_interval = '$module_interval'  WHERE id_agente_modulo = ".$id_agente_modulo;
 		$result=mysql_query($sql_update);	

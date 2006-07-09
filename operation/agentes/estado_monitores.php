@@ -1,4 +1,4 @@
-<?PHP 
+<?php 
 // Pandora - the Free monitoring system
 // ====================================
 // Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
@@ -92,6 +92,6 @@ if (comprueba_login() == 0) {
 		echo '<tr><td colspan="7"><div class="raya"></div></td></tr></table>';
 	}
 	else 
-		echo "- <font class='red'>".$lang_label["no_monitors"]."</font>";
+		echo "<font class='red'>".$lang_label["no_monitors"]."</font>";
 }
 ?>

@@ -1,9 +1,20 @@
 <?php
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2005-2006
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
 require("include/config.php");
@@ -97,7 +108,6 @@ if (comprueba_login() == 0) {
 
 		$result=mysql_query($sql);
 		if (mysql_num_rows($result)){
-			$string='';
 			$color=1;
 			while ($row=mysql_fetch_array($result)){ //while there are agents
 				if ($row["disabled"] == 0) {
@@ -115,7 +125,9 @@ if (comprueba_login() == 0) {
 								$tdcolor = "datos2";
 								$color = 1;
 							}
-							if (!isset($string)) {$string='';}
+							if (!isset($string)) {
+								$string='';
+							}
 							$string=$string."<tr><td class='".$tdcolor."'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'><b>".$nombre_agente."</b>";
 							$string=$string."<td class='".$tdcolor."'>".dame_nombre_alerta($data["id_alerta"]);
 							$string=$string."<td class='".$tdcolor."'>".$data["descripcion"];
@@ -126,8 +138,10 @@ if (comprueba_login() == 0) {
 							else
 								$string=$string."<td class='".$tdcolor."' align='center'><img src='images/dot_green.gif'>";
 						}
-					} else if($ag_group>1) {unset($string);} //end result
-					
+					}
+					else if($ag_group>1) {
+						unset($string);
+						} //end result
 				} //end disabled=0
 				
 			} //end while

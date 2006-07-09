@@ -46,7 +46,7 @@ if (give_acl($id_user, 0, "AW")==1) {
         	}
 	}
 	echo "<h2>".$lang_label["agent_conf"]."</h2>";
-	echo "<h3>".$lang_label["agent_defined2"]."<a href='help/".substr($language_code,0,2)."/chap3.php#3' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	echo "<h3>".$lang_label["agent_defined2"]."<a href='help/".$help_code."/chap3.php#3' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 	
 	// Load icon index from tgrupos
 	$iconindex_g[]="";

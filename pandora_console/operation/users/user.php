@@ -15,7 +15,7 @@ if (comprueba_login() == 0) {
 ?>
 
 <h2><?php echo $lang_label["users_"] ?></h3>
-<h3><?php echo $lang_label["users"] ?><a href='help/<?php echo substr($language_code,0,2) ?>/chap2.php#2' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
+<h3><?php echo $lang_label["users"] ?><a href='help/<?php echo $help_code ?>/chap2.php#2' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
 
 <table cellpadding="3" cellspacing="3" width="700">
 <th class="w80"><?php echo $lang_label["user_ID"]?>
@@ -68,7 +68,7 @@ echo "<tr><td colspan='5'><div class='raya'></div></td></tr></table><br>";
 ?>
 
 
-<h3><?php echo $lang_label["definedprofiles"] ?><a href='help/<?php echo substr($language_code,0,2) ?>/chap2.php#21' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
+<h3><?php echo $lang_label["definedprofiles"] ?><a href='help/<?php echo $help_code ?>/chap2.php#21' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
 
 <table cellpadding=3 cellspacing=3 border=0>
 <?php

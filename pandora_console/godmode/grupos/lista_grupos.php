@@ -47,7 +47,7 @@ if (comprueba_login() == 0)
 			echo "<h3 class='suc'>".$lang_label["delete_group_ok"]."</h3>";
 	}
 	echo "<h2>".$lang_label["group_management"]."</h2>";	
-	echo "<h3>".$lang_label["definedgroups"]."<a href='help/".substr($language_code,0,2)."/chap3.php#31' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	echo "<h3>".$lang_label["definedgroups"]."<a href='help/".$help_code."/chap3.php#31' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 
 	// Load icon index from tgrupos
 	$iconindex_g[]="";

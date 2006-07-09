@@ -22,7 +22,7 @@ if (comprueba_login() == 0) {
  	if ((give_acl($id_user, 0, "AR")==1) or (give_acl($id_user,0,"AW")) or (dame_admin($id_user)==1)) {
 
 	if (isset($_GET["id_agente"])){
-		echo "<h3>".$lang_label["alert_listing"]."<a href='help/".substr($language_code,0,2)."/chap3.php#3324' target='_help' class='help'><span>".$lang_label["help"]."</span></a></h3>";
+		echo "<h3>".$lang_label["alert_listing"]."<a href='help/".$help_code."/chap3.php#3324' target='_help' class='help'><span>".$lang_label["help"]."</span></a></h3>";
 		$id_agente = $_GET["id_agente"];
 		$query_gen='SELECT talerta_agente_modulo.id_alerta, talerta_agente_modulo.descripcion, talerta_agente_modulo.last_fired, talerta_agente_modulo.times_fired, tagente_modulo.nombre, talerta_agente_modulo.dis_max, talerta_agente_modulo.dis_min, talerta_agente_modulo.max_alerts, talerta_agente_modulo.time_threshold, talerta_agente_modulo.min_alerts, talerta_agente_modulo.id_agente_modulo, tagente_modulo.id_agente_modulo FROM tagente_modulo, talerta_agente_modulo WHERE tagente_modulo.id_agente = '.$id_agente.' AND tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo order by tagente_modulo.nombre';
 		$result_gen=mysql_query($query_gen);
@@ -59,7 +59,7 @@ if (comprueba_login() == 0) {
 	else 
 	{
 		echo "<h2>".$lang_label["ag_title"]."</h2>";
-		echo "<h3>".$lang_label["alert_listing"]."<a href='help/".substr($language_code,0,2)."/chap3.php#335' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+		echo "<h3>".$lang_label["alert_listing"]."<a href='help/".$help_code."/chap3.php#335' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 		$iduser_temp=$_SESSION['id_usuario'];
 		if (isset($_POST["ag_group"]))
 			$ag_group = $_POST["ag_group"];

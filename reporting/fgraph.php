@@ -1390,18 +1390,20 @@ function progress_bar($progress,$width,$height) {
 	$fill = ImageColorAllocate($image,44,81,150);
 
 	ImageFilledRectangle($image,0,0,$width-1,$height-1,$back);
-	if ($rating > 100)
-		ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$red);
-	else
-		ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$fill);
 	ImageRectangle($image,0,0,$width-1,$height-1,$border);
-	if ($rating > 50) 
-		if ($rating > 100)
-			ImageTTFText($image, 8, 0, ($width/3)-($width/10), ($height/2)+($height/5), $back, $config_fontpath,$lang_label["out_of_limits"]);
-		else
-			ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $back, $config_fontpath, $rating."%");
-	else 
-		ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $border, $config_fontpath, $rating."%");
+
+
+	if (($rating > 100) || ($rating < 0)){
+		ImageFilledRectangle($image,1,1,$width-1,$height-1,$red);
+		ImageTTFText($image, 8, 0, ($width/3)-($width/10), ($height/2)+($height/5), $back, $config_fontpath,$lang_label["out_of_limits"]);
+	}
+	else {
+		ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$fill);
+		if ($rating > 50) 
+				ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $back, $config_fontpath, $rating."%");
+		else 
+			ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $border, $config_fontpath, $rating."%");
+	}
 	imagePNG($image);
 	imagedestroy($image);
    }

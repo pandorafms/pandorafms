@@ -43,7 +43,6 @@ if (comprueba_login() == 0) {
 			$est_datos = $row_t["datos"];
 			$est_cambio = $row_t["cambio"];
 			$est_interval = $row_t["module_interval"];
-	
 			if (($est_interval != $intervalo) && ($est_interval > 0)) {
 				$temp_interval = $est_interval;
 			} else {

@@ -110,12 +110,21 @@ if (comprueba_login() == 0) {
 	$ultima = strtotime($ultima_act);
 	$ahora = strtotime("now");
 	$diferencia = $ahora - $ultima;
+
+	// Get higher interval set for the set of modules from this agent
+	$sql_maxi ="select MAX(module_interval) from tagente_modulo where id_agente = ".$id_agente;
+	$result_maxi=mysql_query($sql_maxi);
+	if ($row_maxi=mysql_fetch_array($result_maxi))
+		if ($row_maxi[0] > 0 )
+			$intervalo = $row_maxi[0];
+
 	if ($intervalo > 0){
 		$percentil = round($diferencia/(($intervalo*2) / 100));	
 	} else {
-		echo "N/A";
+		$percentil = -1;
 	}
 	echo '<tr><td class="datos"><b>'.$lang_label["next_contact"].'</b> <td class="datos2">';
+
 	echo "<img src='reporting/fgraph.php?tipo=progress&percent=".$percentil."&height=20&width=200'>";
 	echo "</td></tr></table>";
 	

@@ -1,4 +1,4 @@
-<?PHP 
+<?php
 // Pandora - the Free monitoring system
 // ====================================
 // Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
@@ -234,7 +234,9 @@ if (give_acl($id_user, 0, "AW")==1) {
 	if (isset($_POST["update_alert"])){ // Update an existing alert
 		$id_aam = entrada_limpia($_POST["id_aam"]);
 		$tipo_alerta = entrada_limpia($_POST["tipo_alerta"]);
-		if (isset($_POST["agente_modulo"])) $id_agente_modulo = entrada_limpia($_POST["agente_modulo"]);
+		if (isset($_POST["agente_modulo"])) {
+			$id_agente_modulo = entrada_limpia($_POST["agente_modulo"]);
+		}
 		$descripcion= entrada_limpia($_POST["descripcion"]);
 		$campo_1 = entrada_limpia($_POST["campo_1"]);
 		$campo_2 = entrada_limpia($_POST["campo_2"]);
@@ -501,14 +503,15 @@ if (give_acl($id_user, 0, "AW")==1) {
 	// =========================================================
 	// MODULE INSERT
 	// =========================================================
-	if ((!isset($_POST["oid"])) && (isset($_POST["insert_module"])) && (isset($_POST["combo_snmp_oid"]))){
-		$combo_snmp_oid = entrada_limpia($_POST["combo_snmp_oid"]);
+	if ((!isset($_POST["oid"])) && (isset($_POST["insert_module"]))){
+		if (isset($_POST["combo_snmp_oid"])) {
+			$combo_snmp_oid = entrada_limpia($_POST["combo_snmp_oid"]);
+		}
 		if ($snmp_oid == ""){
 			$snmp_oid = $combo_snmp_oid;
 		}
 
-		$sql_insert = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,descripcion,max,min,snmp_oid,snmp_community,id_module_group,module_interval,ip_target,tcp_port,tcp_rcv,tcp_send) VALUES (".$id_agente.",".$id_tipo_modulo.",'".$nombre."','".$descripcion."','".$modulo_max."','".$modulo_min."', '$snmp_oid', '$snmp_community', '$id_module_group', '$module_interval', '$ip_target', '$tcp_port', '$tcp_rcv', '$tcp_send' )";
-
+		$sql_insert = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,descripcion,max,min,snmp_oid,snmp_community,id_module_group,module_interval,ip_target,tcp_port,tcp_rcv,tcp_send) VALUES (".$id_agente.",".$id_tipo_modulo.",'".$nombre."','".$descripcion."','".$modulo_max."','".$modulo_min."', '$snmp_oid', '$snmp_community', '$id_module_group', '$module_interval', '$ip_target', '$tcp_port', '$tcp_rcv', '$tcp_send')";
 		// Init vars to null to avoid trash in forms 
 		$id_tipo_modulo = "";$nombre =  "";$descripcion = "";$modulo_max = "";
 		$modulo_min = "";// Pandora 1.2 new module data:
@@ -516,7 +519,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 		$snmp_oid = "";$snmp_community = "";$id_module_group = "";
 		$module_interval = "";
 
-		// echo "DEBUG ".$sql_insert;
+		//echo "DEBUG ".$sql_insert;
 		$result=mysql_query($sql_insert);
 		$id_agente_modulo = mysql_insert_id();
 		// Create with different estado if proc type or data type
@@ -526,7 +529,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 			$sql_insert = "INSERT INTO tagente_estado (id_agente_modulo,datos,timestamp,cambio,estado,id_agente) VALUES ($id_agente_modulo, 0,'2000-00-00 00:00:00',0,100,'".$id_agente."')";
 		}
 		$result2=mysql_query($sql_insert);
-		if ((! $result) && (! $result2))
+		if ((! $result) || (! $result2))
 			echo "<h3 class='error'>".$lang_label["add_module_no"]."</h3>";
 		else
 			echo "<h3 class='suc'>".$lang_label["add_module_ok"]."</h3>";

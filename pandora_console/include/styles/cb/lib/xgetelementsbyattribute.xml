@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xGetElementsByAttribute'>
+
+<copyright>Copyright 2002-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>DOM</grp>
+</groups>
+<type>Function</type>
+
+<description><![CDATA[Return an array of all sTag elements whose sAtt attribute matches sRE. sAtt can also be a property name but the property must be of type string.]]></description>
+
+<syntax>xGetElementsByAttribute(sTag, sAtt, sRE[, fn])</syntax>
+
+<parameters>
+  <par>
+    <name>sTag</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>sAtt</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>sRE</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>fn</name>
+    <note><![CDATA[callback function, iterates thru the returned list]]></note>
+  </par>
+</parameters>
+
+<return>array</return>
+
+<dependencies>
+  <dep>xGetElementsByTagName</dep>
+</dependencies>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/toys/</url>
+    <note><![CDATA[Index of all X demos.]]></note>
+  </demo>
+</demos>
+
+<revisions>
+  <rev>
+    <num>2</num>
+    <date>15May04</date>
+    <author>mf</author>
+    <note><![CDATA[added callback fn]]></note>
+  </rev>
+  <rev>
+    <num>1</num>
+    <date>31Mar04</date>
+    <author>mf</author>
+    <note><![CDATA[put in it's own file for use with XC]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

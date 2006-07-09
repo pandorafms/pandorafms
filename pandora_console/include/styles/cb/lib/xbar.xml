@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xBar'>
+
+<copyright>Copyright 2001-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>Object</grp>
+  <grp>Animation</grp>
+</groups>
+<type>Object</type>
+
+<description><![CDATA[Bar-Graph Object]]></description>
+
+<syntax>xBar(sDir, sConStyle, sBarStyle)</syntax>
+
+<parameters>
+  <par>
+    <name>sDir</name>
+    <note><![CDATA[direction string, one of: 'ltr', 'rtl', 'ttb', or 'btt']]></note>
+  </par>
+  <par>
+    <name>sConStyle</name>
+    <note><![CDATA[classname for the bar container]]></note>
+  </par>
+  <par>
+    <name>sBarStyle</name>
+    <note><![CDATA[classname for the bar]]></note>
+  </par>
+</parameters>
+
+<dependencies>
+  <dep>xLeft</dep>
+  <dep>xTop</dep>
+  <dep>xNum</dep>
+  <dep>xResizeTo</dep>
+  <dep>xMoveTo</dep>
+  <dep>xLinearScale</dep>
+</dependencies>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/x/examples/bargraph.html</url>
+    <note><![CDATA[Bar-graph object demo.]]></note>
+  </demo>
+</demos>
+
+<revisions>
+  <rev>
+    <num>1</num>
+    <date>1Dec03</date>
+    <author>mf</author>
+    <note><![CDATA[initial implementation]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

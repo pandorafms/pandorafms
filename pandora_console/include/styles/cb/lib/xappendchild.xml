@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xAppendChild'>
+
+<copyright>Copyright 2001-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>DOM</grp>
+</groups>
+<type>Function</type>
+
+<description><![CDATA[A safe DOM wrapper.]]></description>
+
+<syntax>xAppendChild(oParent, oChild)</syntax>
+
+<parameters>
+  <par>
+    <name>oParent</name>
+    <note><![CDATA[element reference to parent]]></note>
+  </par>
+  <par>
+    <name>oChild</name>
+    <note><![CDATA[element reference to new child to append to oParent's child list]]></note>
+  </par>
+</parameters>
+
+<return>
+  <note><![CDATA[oChild on success, else null]]></note>
+</return>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/toys/</url>
+    <note><![CDATA[Index of all X demos.]]></note>
+  </demo>
+</demos>
+
+<revisions>
+  <rev>
+    <num>1</num>
+    <date>11Mar05</date>
+    <author>mf</author>
+    <note><![CDATA[put in it's own file for use with XC]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

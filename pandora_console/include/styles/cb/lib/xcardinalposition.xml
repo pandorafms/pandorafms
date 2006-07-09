@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xCardinalPosition'>
+
+<copyright>Copyright 2004-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>Position</grp>
+</groups>
+<type>Function</type>
+
+<description><![CDATA[A convient way to get the coordinates of an element's 'cardinal' (or 'compass') points.]]></description>
+
+<syntax>xCardinalPosition(ele, cp[, margin[, outside]])</syntax>
+
+<parameters>
+  <par>
+    <name>ele</name>
+    <note><![CDATA[string element id or object reference]]></note>
+  </par>
+  <par>
+    <name>cp</name>
+    <note><![CDATA[string, one of: 'n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw', 'cen', 'cenh', 'cenv']]></note>
+  </par>
+  <par>
+    <name>margin</name>
+    <note><![CDATA[integer, an offset into the element]]></note>
+  </par>
+  <par>
+    <name>outside</name>
+    <note><![CDATA[boolean, if true 'margin' is interpreted as negative]]></note>
+  </par>
+</parameters>
+
+<return>An object with 'x' and 'y' properties</return>
+
+<dependencies>
+  <dep>xGetElementById</dep>
+  <dep>xleft</dep>
+  <dep>xtop</dep>
+  <dep>xwidth</dep>
+  <dep>xheight</dep>
+  <dep>xparent</dep>
+  <dep>xclientwidth</dep>
+  <dep>xclientheight</dep>
+  <dep>xscrollleft</dep>
+  <dep>xscrolltop</dep>
+</dependencies>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/toys/</url>
+    <note><![CDATA[Index of all X demos.]]></note>
+  </demo>
+</demos>
+
+<comments>
+  <comment>
+    <date>2004</date>
+    <author>mf</author>
+    <note><![CDATA[Ported from CBE to X - not completely tested. I'd like to rename this thing - got any suggestions?]]></note>
+  </comment>
+</comments>
+
+<revisions>
+  <rev>
+    <num>2</num>
+    <date>23May05</date>
+    <author>mf</author>
+    <note><![CDATA[Use xGetElementById just like all X functions.]]></note>
+  </rev>
+  <rev>
+    <num>1</num>
+    <date>11Mar05</date>
+    <author>mf</author>
+    <note><![CDATA[put in it's own file for use with XC]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

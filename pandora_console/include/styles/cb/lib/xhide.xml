@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xHide'>
+
+<copyright>Copyright 2001-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>Style</grp>
+</groups>
+<type>Function</type>
+
+<description><![CDATA[Set visibility to 'hidden'.]]></description>
+
+<syntax>xHide(ele)</syntax>
+
+<parameters>
+  <par>
+    <name>ele</name>
+    <note><![CDATA[id string or element reference]]></note>
+  </par>
+</parameters>
+
+<return>element.style.visibility</return>
+
+<dependencies>
+  <dep>xVisibility</dep>
+</dependencies>
+
+<comments>
+  <comment>
+    <date>2004</date>
+    <author>mf</author>
+    <note><![CDATA[simply calls xVisibility]]></note>
+  </comment>
+</comments>
+
+<revisions>
+  <rev>
+    <num>3</num>
+    <date>27Jan05</date>
+    <author>mf</author>
+    <note><![CDATA[Bug-fixes for xShow/xHide (Dave/dlowther)]]></note>
+  </rev>
+  <rev>
+    <num>2</num>
+    <date>2004</date>
+    <author>mf</author>
+    <note><![CDATA[changed to use xVisibility]]></note>
+  </rev>
+  <rev>
+    <num>1</num>
+    <date>31Mar04</date>
+    <author>mf</author>
+    <note><![CDATA[put in it's own file for use with XC]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xWalkEleTree'>
+
+<copyright>Copyright 2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>DOM</grp>
+</groups>
+<type>Function</type>
+
+<description><![CDATA[Perform a preorder traversal on the subtree starting at oNode and pass each Element node to fnVisit.]]></description>
+
+<syntax>xWalkEleTree(oNode, fnVisit, oData[, iLevel[, iBranch]])</syntax>
+
+<parameters>
+  <par>
+    <name>oNode</name>
+    <note><![CDATA[The Element object at which to begin traversal]]></note>
+  </par>
+  <par>
+    <name>fnVisit</name>
+    <note><![CDATA[This function will be called for each Element in the tree]]></note>
+  </par>
+  <par>
+    <name>oData</name>
+    <note><![CDATA[Object or variable to be passed to fnVisit]]></note>
+  </par>
+  <par>
+    <name>iLevel</name>
+    <note><![CDATA[The starting level number (omit for 0)]]></note>
+  </par>
+  <par>
+    <name>iBranch</name>
+    <note><![CDATA[The starting branch number (omit for 0)]]></note>
+  </par>
+</parameters>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/toys/</url>
+    <note><![CDATA[Index of all X demos.]]></note>
+  </demo>
+</demos>
+
+<comments>
+  <comment>
+    <date></date>
+    <author>mf</author>
+    <note><![CDATA[
+  Visit Function Prototype:
+  ret = fnVisit(node, level, branch, data);
+    node:   The current Element object in the traversal.
+    level:  The current depth of the traversal.
+    branch: The number of the current level 0 subtree.
+    data:   The oData object originally passed to xWalkEleTree.
+    ret:    0 = stop, 1 = continue, 2 = skip subtree.
+    ]]></note>
+  </comment>
+</comments>
+
+<revisions>
+  <rev>
+    <num>3</num>
+    <date>15Mar05</date>
+    <author>mf</author>
+    <note><![CDATA[reduced by 123 bytes with shorter parameter names]]></note>
+  </rev>
+  <rev>
+    <num>2</num>
+    <date>11Mar05</date>
+    <author>mf</author>
+    <note><![CDATA[put in it's own file for use with XC]]></note>
+  </rev>
+  <rev>
+    <num>1</num>
+    <date>10Jan05</date>
+    <author>mf</author>
+    <note><![CDATA[Rewrote xWalkTree and implemented xWalkEleTree]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

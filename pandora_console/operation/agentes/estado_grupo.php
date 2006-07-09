@@ -1,10 +1,21 @@
 <?php
 
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raúl Mateos <raulofpandora@gmail.com>, 2005-2006
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
 require("include/config.php");
@@ -26,7 +37,7 @@ if (comprueba_login() == 0)
 	// Check for Network FLAG change request 
 	if (isset($_GET["update_netgroup"])){ 	
 		if (give_acl($id_user, $_GET["update_netgroup"], "AW")==1){ 
-			$sql = "SELECT * FROM tagente where id_grupo = ".$_GET["update_netgroup"]; 
+			$sql = "SELECT * FROM tagente WHERE id_grupo = ".$_GET["update_netgroup"]; 
 			$result=mysql_query($sql);
 			while ($row=mysql_fetch_array($result)){ 
 				$id_agente = $row["id_agente"]; 
@@ -114,7 +125,7 @@ if (comprueba_login() == 0)
  	$ancho = ceil(sqrt($array_index+1));
 	$real_count =0; // Puedo tener una tabla con mas items en ella que los que realmente debo mostrar, real count cuenta los que voy poniendo hasta llegar a array_index que son los que hay en el array $grupo.
 	echo "<table border=0 cellpadding=10 cellspacing=10>";
-	for ($table=0;$table < $ancho-1;$table++){
+	for ($table=0;$table < $ancho;$table++){
 		echo "<tr class='bot'>";
 		for ($table_row=0;$table_row < $ancho;$table_row++){
 			if ($real_count < $array_index){

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id=''>
+
+<copyright>Copyright 2001-2005 Michael Foster (Cross-Browser.com)</copyright>
+
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+
+<groups>
+  <grp></grp>
+</groups>
+
+<type>Function</type>
+
+<description><![CDATA[]]></description>
+
+<syntax></syntax>
+
+<parameters>
+  <par><name></name><note><![CDATA[]]></note></par>
+</parameters>
+
+<properties>
+  <prop><name></name><note><![CDATA[]]></note></prop>
+</properties>
+
+<methods>
+  <meth><name></name><note><![CDATA[]]></note></meth>
+</methods>
+
+<return><![CDATA[]]></return>
+
+<dependencies>
+  <dep></dep>
+</dependencies>
+
+<demos>
+  <demo><url>http://cross-browser.com/toys/</url><note><![CDATA[Index of all X demos.]]></note></demo>
+</demos>
+
+<tests>
+  <test><date></date><author>mf</author><url></url><note><![CDATA[]]></note></test>
+</tests>
+
+<comments>
+  <comment><date></date><author>mf</author><note><![CDATA[]]></note></comment>
+</comments>
+
+<revisions>
+  <rev><num></num><date></date><author>mf</author><note><![CDATA[]]></note></rev>
+</revisions>
+
+</xlib_symbol>

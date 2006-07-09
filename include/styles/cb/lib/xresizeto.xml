@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xResizeTo'>
+
+<copyright>Copyright 2001-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>Size</grp>
+</groups>
+<type>Function</type>
+
+<description><![CDATA[Resize an element.]]></description>
+
+<syntax>xResizeTo(e, uW, uH)</syntax>
+
+<parameters>
+  <par>
+    <name>e</name>
+    <note><![CDATA[id string or element reference]]></note>
+  </par>
+  <par>
+    <name>uW</name>
+    <note><![CDATA[unsigned integer]]></note>
+  </par>
+  <par>
+    <name>uH</name>
+    <note><![CDATA[unsigned integer]]></note>
+  </par>
+</parameters>
+
+<dependencies>
+  <dep>xwidth</dep>
+  <dep>xheight</dep>
+</dependencies>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/toys/</url>
+    <note><![CDATA[Index of all X demos.]]></note>
+  </demo>
+</demos>
+
+<comments>
+  <comment>
+    <date></date>
+    <author>mf</author>
+    <note><![CDATA[Simply calls xLeft and xTop.]]></note>
+  </comment>
+</comments>
+
+<revisions>
+  <rev>
+    <num>1</num>
+    <date>11Mar05</date>
+    <author>mf</author>
+    <note><![CDATA[put in it's own file for use with XC]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

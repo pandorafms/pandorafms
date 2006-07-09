@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xRemoveEventListener'>
+
+<copyright>Copyright 2001-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>Event</grp>
+</groups>
+<type>Function</type>
+
+<description><![CDATA[Unregister an event listener previously registered with xAddEventListener.]]></description>
+
+<syntax>xRemoveEventListener(ele, sEventType, fnEventListener[, bCapture])</syntax>
+
+<parameters>
+  <par>
+    <name>ele</name>
+    <note><![CDATA[id string or object reference]]></note>
+  </par>
+  <par>
+    <name>sEventType</name>
+    <note><![CDATA[string event type ('mousemove', 'click', 'resize', etc.)]]></note>
+  </par>
+  <par>
+    <name>fnEventListener</name>
+    <note><![CDATA[reference to the listener function]]></note>
+  </par>
+  <par>
+    <name>bCapture</name>
+    <note><![CDATA[boolean capture event flag]]></note>
+  </par>
+</parameters>
+
+<dependencies>
+  <dep>xGetElementById</dep>
+  <dep>xIE4Up</dep>
+  <dep>xOp7Up</dep>
+</dependencies>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/toys/</url>
+    <note><![CDATA[Index of all X demos.]]></note>
+  </demo>
+</demos>
+
+<revisions>
+  <rev>
+    <num>3</num>
+    <date>25Apr05</date>
+    <author>mf</author>
+    <note><![CDATA[use xOp7Up instead of xOp7]]></note>
+  </rev>
+  <rev>
+    <num>2</num>
+    <date>14Mar05</date>
+    <author>mf</author>
+    <note><![CDATA[reduced 103 bytes with shorter parameter names]]></note>
+  </rev>
+  <rev>
+    <num>1</num>
+    <date>31Mar04</date>
+    <author>mf</author>
+    <note><![CDATA[put in it's own file for use with XC]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

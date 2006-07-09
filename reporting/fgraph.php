@@ -50,7 +50,7 @@ function dame_fecha_grafico($mh){ // Devuelve fecha formateada en funcion de un 
 
 function dame_fecha_grafico_timestamp ($timestamp) {  return date('d/m H:i', $timestamp); }
 
-function grafico_modulo_sparse($id_agente_modulo, $periodo, $intervalo, $etiqueta, $color, $draw_events=0){
+function grafico_modulo_sparse($id_agente_modulo, $periodo, $intervalo, $etiqueta, $color, $zoom=1, $draw_events=0){
 	include ("../include/config.php");
 	include ("jpgraph/jpgraph.php");
 	include ("jpgraph/jpgraph_line.php");
@@ -238,8 +238,8 @@ function grafico_modulo_sparse($id_agente_modulo, $periodo, $intervalo, $etiquet
 	
 	$Graph_param = array (
 		'title' 	=> "          $etiqueta - $nombre_agente / $nombre_modulo",
-		'size_x'	=> 550 ,
-		'size_y'	=> 220 ,
+		'size_x'	=> intval(550 * $zoom) ,
+		'size_y'	=> intval(220 * $zoom) ,
 		'id_agente_modulo' => $id_agente_modulo ,
 		'valor_maximo'	=> $valor_maximo ,
 		'periodo'	=> $periodo ,
@@ -1428,7 +1428,10 @@ if (isset($_GET["tipo"])){
 			$color = "#".$color;
 			if ( isset($_GET["draw_events"]) and $_GET["draw_events"]==0 ) 
 				{ $draw_events = 0; } else { $draw_events = 1; } 
-			grafico_modulo_sparse($id, $periodo, $intervalo, $label, $color, $draw_events);
+			if (isset($_GET['zoom']) and is_numeric($_GET['zoom']) and $_GET['zoom']>100) {
+				$zoom = $_GET['zoom'] / 100 ;
+			} else { $zoom = 1; } 
+			grafico_modulo_sparse($id, $periodo, $intervalo, $label, $color, $zoom, $draw_events);
 		}
 	}
 	elseif ($_GET["tipo"] =="estado_incidente") 

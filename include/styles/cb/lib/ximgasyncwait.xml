@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xImgAsyncWait'>
+
+<copyright>Copyright 2003-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>Image</grp>
+  <grp>Event</grp>
+</groups>
+<type>Function</type>
+
+<description><![CDATA[Asynchronously waits (and monitors the status) of newly created or static images. Can be called before or after window.onload, or in the HTML following the last IMG element. During monitoring of image load status, your status function will be called at each iteration. After all images successfully load, your app initialization function is called. If any image fails to load, your error function is called. You can provide error and abort images for those that fail to load.]]></description>
+
+<syntax>xImgAsyncWait(fnStatus, fnInit, fnError, sErrorImg, sAbortImg, imgArray)</syntax>
+
+<parameters>
+  <par>
+    <name>fnStatus</name><note><![CDATA[A reference to a function which will be called at each iteration. It will be passed the same arguments as fnError. This is optional. Pass null if not needed.]]></note>
+  </par>
+  <par>
+    <name>fnInit</name><note><![CDATA[A reference to your application initialization function. It will be called after all images have successfully loaded.]]></note>
+  </par>
+  <par>
+    <name>fnError</name><note><![CDATA[A reference to your error function. After all images have loaded (or failed to load), it will be called if there was an error or abort. This is optional. Pass null if not needed.
+fnError will receive the following arguments:
+n - Total number of images monitored.
+c - Number of images successfully loaded.
+e - Number of images which had an error.
+a - Number of images which were aborted.
+]]></note>
+  </par>
+  <par>
+    <name>sErrorImg</name><note><![CDATA[A URL to an image which will be used for any images that fail to load due to an error.]]></note>
+  </par>
+  <par>
+    <name>sAbortImg</name><note><![CDATA[A URL to an image which will be used for any images that fail to load due to an abort.]]></note>
+  </par>
+  <par>
+    <name>imgArray</name><note><![CDATA[An array of newly created Image objects. These images will be monitored. If you want all static images (document.images) to be monitored then omit this argument.]]></note>
+  </par>
+</parameters>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/x/examples/ximgasyncwait.php</url>
+    <note><![CDATA[just an experiment]]></note>
+  </demo>
+</demos>
+
+<revisions>
+  <rev>
+    <num>2</num>
+    <date>28Jul04</date>
+    <author>mf</author>
+    <note><![CDATA[put in it's own file for use with XC]]></note>
+  </rev>
+  <rev>
+    <num>1</num>
+    <date></date>
+    <author>mf</author>
+    <note><![CDATA[First implementation, optimizations and fixes probably needed.]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>
+

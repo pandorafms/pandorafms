@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xCapitalize'>
+
+<copyright>Copyright 2003-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>String</grp>
+</groups>
+<type>Function</type>
+
+<description><![CDATA[Capitalize the first letter of every word in str.]]></description>
+
+<syntax>xCapitalize(str)</syntax>
+
+<parameters>
+  <par>
+    <name>str</name>
+    <note><![CDATA[String whose words will be capitalized]]></note>
+  </par>
+</parameters>
+
+<return>A string with all words capitalized. Does not modify str.</return>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/x/examples/capitalize.html</url>
+    <note><![CDATA[A simple xCapitalize demo.]]></note>
+  </demo>
+</demos>
+
+<revisions>
+  <rev>
+    <num>1</num>
+    <date>11Mar05</date>
+    <author>mf</author>
+    <note><![CDATA[put in it's own file for use with XC]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

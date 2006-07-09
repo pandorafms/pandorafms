@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xTableCursor'>
+
+<copyright>Copyright 2004-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>Presentation</grp>
+  <grp>Table</grp>
+</groups>
+<type>Object</type>
+
+<description><![CDATA[Mouseover highlight on rows and cells]]></description>
+
+<syntax>xTableCursor(id, inh, def, hov, sel)</syntax>
+
+<parameters>
+  <par>
+    <name>id</name>
+    <note><![CDATA[table id]]></note>
+  </par>
+  <par>
+    <name>inh</name>
+    <note><![CDATA[inherit style]]></note>
+  </par>
+  <par>
+    <name>def</name>
+    <note><![CDATA[default style]]></note>
+  </par>
+  <par>
+    <name>hov</name>
+    <note><![CDATA[row hover style]]></note>
+  </par>
+  <par>
+    <name>sel</name>
+    <note><![CDATA[cell selected style]]></note>
+  </par>
+</parameters>
+
+<properties>
+  <prop>
+    <name></name>
+    <note><![CDATA[]]></note>
+  </prop>
+</properties>
+
+<dependencies>
+  <dep>xGetElementById</dep>
+  <dep>xTableIterate</dep>
+</dependencies>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/x/examples/table_toys.php</url>
+    <note><![CDATA[table toys]]></note>
+  </demo>
+</demos>
+
+<revisions>
+  <rev>
+    <num>2</num>
+    <date>6Apr05</date>
+    <author>mf</author>
+    <note><![CDATA[Added missing semicolon to support XC compression]]></note>
+  </rev>
+  <rev>
+    <num>1</num>
+    <date>30Jul04</date>
+    <author>mf</author>
+    <note><![CDATA[Initial release]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

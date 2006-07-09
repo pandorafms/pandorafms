@@ -1,0 +1,30 @@
+; XC Project: x_dom
+
+options -dep -glb
+
+; If you don't want the library file to be
+; compressed then add -cmp to the above options.
+
+libpath lib\
+
+appfiles
+
+x_dom.xcp
+
+; This project file is the only app file fed to XC.
+; The following X symbols will be included in the
+; library file. They are commented-out so XC will
+; not see them as more app files.
+
+; xWalkEleTree
+; xWalkTree
+; xGetComputedStyle
+; xGetElementsByClassName
+; xGetElementsByTagName
+; xGetElementsByAttribute
+; xPrevSib
+; xNextSib
+; xFirstChild
+; xInnerHtml
+; xCreateElement
+; xAppendChild

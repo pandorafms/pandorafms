@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xFenster'>
+
+<copyright>Copyright 2004-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>Event</grp>
+</groups>
+<type>Object</type>
+
+<description><![CDATA[A simple dhtml window object, with drag, resize and max/restore.]]></description>
+
+<syntax>new xFenster(eleId, iniX, iniY, barId, resBtnId, maxBtnId)</syntax>
+
+<parameters>
+  <par>
+    <name>eleId</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>iniX</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>iniY</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>barId</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>resBtnId</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>maxBtnId</name>
+    <note><![CDATA[]]></note>
+  </par>
+</parameters>
+
+<properties>
+  <prop>
+    <name></name>
+    <note><![CDATA[]]></note>
+  </prop>
+  <prop>
+    <name></name>
+    <note><![CDATA[]]></note>
+  </prop>
+  <prop>
+    <name></name>
+    <note><![CDATA[]]></note>
+  </prop>
+</properties>
+
+<dependencies>
+  <dep>xGetElementById</dep>
+  <dep>xDisableDrag</dep>
+  <dep>xMoveTo</dep>
+  <dep>xWidth</dep>
+  <dep>xHeight</dep>
+  <dep>xResizeTo</dep>
+  <dep>xZIndex</dep>
+  <dep>xEnableDrag</dep>
+  <dep>xShow</dep>
+</dependencies>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/x/examples/drag2.php</url>
+    <note><![CDATA[]]></note>
+  </demo>
+</demos>
+
+<comments>
+  <comment>
+    <date></date>
+    <author>mf</author>
+    <note><![CDATA[see drag1.php for a procedural version]]></note>
+  </comment>
+</comments>
+
+<revisions>
+  <rev>
+    <num>1</num>
+    <date>9May05</date>
+    <author>mf</author>
+    <note><![CDATA[Put in it's own file for use with XC. Added unload conditional for IE.]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

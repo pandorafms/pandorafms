@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xMenu5'>
+
+<copyright>Copyright 2004-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>Navigation</grp>
+</groups>
+<type>Object</type>
+
+<description><![CDATA[Only one branch per level can be open. Assumes btnClass element to be a direct child of an LI, tho it doesn't have to be the first child. Assumes the btn's corresponding UL to be a sibling, tho it doesn't have to be the next sibling.]]></description>
+
+<syntax>new xMenu5(idUL, btnClass[, idAutoOpen])</syntax>
+
+<parameters>
+  <par>
+    <name>idUL</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>btnClass</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>idAutoOpen</name>
+    <note><![CDATA[]]></note>
+  </par>
+</parameters>
+
+<methods>
+  <meth>
+    <name>onUnload</name>
+    <note><![CDATA[removes circular references for IE]]></note>
+  </meth>
+</methods>
+
+<dependencies>
+  <dep>xgetelementbyid</dep>
+  <dep>xgetelementsbyclassname</dep>
+  <dep>xnextsib</dep>
+  <dep>xprevsib</dep>
+  <dep>xfirstchild</dep>
+</dependencies>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/x/menus/xmenu5.php</url>
+    <note><![CDATA[demo]]></note>
+  </demo>
+</demos>
+
+<comments>
+  <comment>
+    <date>2004</date>
+    <author>mf</author>
+    <note><![CDATA[
+  xMenu5 Procedural.
+  This was my first implementation of this menu.
+  It is a procedural implementation, instead of object-oriented.
+  This code is not used in this demo.
+[code]
+function xMenu5_onLoad(id)
+{
+  var i, lbl, mnu = xGetElementById(id);
+  var ul = xGetElementsByTagName('UL', mnu);
+  for (i = 0; i < ul.length; ++i) {
+    ul[i].style.display = 'none';
+    lbl = xPrevSib(ul[i]);
+    lbl.xClpsTgt = ul[i];
+    lbl.onclick = xMenu5_lbl_onClick;
+  }
+}
+function xMenu5_lbl_onClick()
+{
+  if (this.xClpsTgt.style.display == 'none') {
+    this.xClpsTgt.style.display = 'block';
+  }  
+  else {
+    this.xClpsTgt.style.display = 'none';
+  }
+}
+function xMenu5_onUnload(id)
+{
+  var i, lbl, mnu = xGetElementById(id);
+  var ul = xGetElementsByTagName('UL', mnu);
+  for (i = 0; i < ul.length; ++i) {
+    lbl = xPrevSib(ul[i]);
+    lbl.xClpsTgt = null;
+    lbl.onclick = null;
+  }
+}[/code]
+    ]]></note>
+  </comment>
+</comments>
+
+<revisions>
+  <rev>
+    <num></num>
+    <date></date>
+    <author>mf</author>
+    <note><![CDATA[]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

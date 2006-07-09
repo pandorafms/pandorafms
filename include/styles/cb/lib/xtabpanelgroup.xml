@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xTabPanelGroup'>
+
+<copyright>Copyright 2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>Object</grp>
+</groups>
+<type>Object</type>
+
+<description><![CDATA[Downgradeable, accessible, tabbed panels.]]></description>
+
+<syntax>xTabPanelGroup(id, w, h, th, clsTP, clsTG, clsTD, clsTS)</syntax>
+
+<parameters>
+  <par>
+    <name>id</name>
+    <note><![CDATA[id string of tabPanelGroup element]]></note>
+  </par>
+  <par>
+    <name>w</name>
+    <note><![CDATA[overall width]]></note>
+  </par>
+  <par>
+    <name>h</name>
+    <note><![CDATA[overall height]]></note>
+  </par>
+  <par>
+    <name>th</name>
+    <note><![CDATA[tab height]]></note>
+  </par>
+  <par>
+    <name>clsTP</name>
+    <note><![CDATA[tabPanel css class]]></note>
+  </par>
+  <par>
+    <name>clsTG</name>
+    <note><![CDATA[tabGroup css class]]></note>
+  </par>
+  <par>
+    <name>clsTD</name>
+    <note><![CDATA[tabDefault css class]]></note>
+  </par>
+  <par>
+    <name>clsTS</name>
+    <note><![CDATA[tabSelected css class]]></note>
+  </par>
+</parameters>
+
+<properties>
+  <prop>
+    <name></name>
+    <note><![CDATA[]]></note>
+  </prop>
+</properties>
+
+<methods>
+  <meth>
+    <name>select</name>
+    <note><![CDATA[]]></note>
+  </meth>
+</methods>
+
+<dependencies>
+  <dep>xgetelementbyid</dep>
+  <dep>xgetelementsbyclassname</dep>
+  <dep>xresizeto</dep>
+  <dep>xmoveto</dep>
+  <dep>xzindex</dep>
+</dependencies>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/x/examples/tabpanelgroup.php</url>
+    <note><![CDATA[accessible tabbed panels]]></note>
+  </demo>
+</demos>
+
+<comments>
+  <comment>
+    <date></date>
+    <author>mf</author>
+    <note><![CDATA[Assumes tabPanelGroup element (overall container) has a 1px border. The select() method's argument should be "1-based".]]></note>
+  </comment>
+</comments>
+
+<revisions>
+  <rev>
+    <num>7</num>
+    <date>10May05</date>
+    <author>mf</author>
+    <note><![CDATA[I added the select() method for Jonathan. Made the demo much more accessible, using A elements as tabs instead of divs and now support onfocus event for kbd nav.]]></note>
+  </rev>
+  <rev>
+    <num>6</num>
+    <date>3May05</date>
+    <author>mf</author>
+    <note><![CDATA[pdub23 found a little Firefox quirk (inputs had focus but no cursor) and he and José Ignacio Santa Cruz both pointed out that form controls were 'showing through' for IE. I think I've fixed both issues.]]></note>
+  </rev>
+  <rev>
+    <num>1</num>
+    <date>3Jan05</date>
+    <author>mf</author>
+    <note><![CDATA[Initial release]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>
+  

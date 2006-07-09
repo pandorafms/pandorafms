@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xClientHeight'>
+
+<copyright>Copyright 2001-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>Size</grp>
+  <grp>Window</grp>
+</groups>
+<type>Function</type>
+
+<description><![CDATA[The inner height of the window.]]></description>
+
+<syntax>xClientHeight()</syntax>
+
+<return>Integer</return>
+
+<dependencies>
+  <dep>xDef</dep>
+  <dep>xOp6Dn</dep>
+</dependencies>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/toys/</url>
+    <note><![CDATA[Index of all X demos.]]></note>
+  </demo>
+</demos>
+
+<revisions>
+  <rev>
+    <num>3</num>
+    <date>25Apr05</date>
+    <author>mf</author>
+    <note><![CDATA[use xOp6Dn instead of xOp5or6.]]></note>
+  </rev>
+  <rev>
+    <num>2</num>
+    <date>27Jan05</date>
+    <author>mf</author>
+    <note><![CDATA[Moz update for xClientWidth/xClientHeight, check for 'CSS1Compat' (experimental?).]]></note>
+  </rev>
+  <rev>
+    <num>1</num>
+    <date>31Mar04</date>
+    <author>mf</author>
+    <note><![CDATA[put in it's own file for use with XC]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

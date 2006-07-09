@@ -1,0 +1,23 @@
+2006-07-09  Sancho Lerena  <slerena@artica.es>
+
+	* ChangeLog: Create this file, prior to launch final 1.2 version. For the next
+	versions, will use it for every branch and subproject.
+
+	* configurar_agente.php : Fixed Undefined index: combo_snmp_oid notice error.
+	
+	* estado_grupo.php: Detect old "OK" monitors, but doesnt check if they are down 
+	in time, so for example, a old monitor with OK signal but from a week old, it is
+	shown as GREEN (good) value, not as a DOWN (white with ? symbol). FIXED. 
+	Now counts data modules for DOWN total account, and show grey button if ANY
+	type of module is down, not only monitors. Improved SQL searches. 
+
+	* estado_agente.php, estado_ultimopaquete.php: Same as estado_grupo with data_modules, 
+	included in total account, more accurate accounting. A new value shown in grey for 
+	DOWN modules, being monitors or single data modules, no matter type. Improved SQL 
+	searches. Individual module intervals are used to determine if a module is down, 
+	if there is no individual module interval, global agent interval is used. 
+	Now it's possible to have a module with higher interval than Agent interval, so 
+	we take now the more higest interval in modules to calculate if an agent is DOWN.
+
+	* fgraph.php: updated progressbar function to show N/A when data is above 100 or below 0. 
+	

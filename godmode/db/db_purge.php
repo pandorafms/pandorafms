@@ -23,7 +23,7 @@ if (comprueba_login() == 0)
  	*/
 	 ?>	
 	<h2><?php echo $lang_label["dbmain_title"] ?></h2>
-	<h3><?php echo $lang_label["db_purge"] ?><a href='help/<?php echo substr($language_code,0,2) ?>/chap8.php#8' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
+	<h3><?php echo $lang_label["db_purge"] ?><a href='help/<?php echo $help_code ?>/chap8.php#8' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
 	<img src="reporting/fgraph.php?tipo=db_agente_purge&id=-1"><br><br>
 	<h3><?php echo $lang_label["get_data_agent"] ?></h3>
 	<?php

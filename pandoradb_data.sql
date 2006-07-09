@@ -134,7 +134,7 @@ INSERT INTO `tusuario_perfil` VALUES (2,'admin',5,1,'admin');
 --
 
 
-INSERT INTO `tlanguage` VALUES ('bb','Bable');
+INSERT INTO `tlanguage` VALUES ('ast_es','Bable');
 INSERT INTO `tlanguage` VALUES ('en','English');
 INSERT INTO `tlanguage` VALUES ('es_es','Espa&ntilde;ol');
 INSERT INTO `tlanguage` VALUES ('es_la','Espa&ntilde;ol-Latinoam&eacute;rica');

@@ -261,8 +261,8 @@ CREATE TABLE `tincidencia` (
 # Table: 'tlanguage'
 # 
 CREATE TABLE `tlanguage` (
-  `id_language` char(5) NOT NULL default '',
-  `name` varchar(100) NOT NULL default '',
+  `id_language` char(6) NOT NULL default '',
+  `name` varchar(50) NOT NULL default '',
   PRIMARY KEY  (`id_language`)
 ) TYPE=InnoDB; 
 

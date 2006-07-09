@@ -30,8 +30,8 @@ dd.help_t4 {margin-left: 92px; margin-top: 3px; margin-bottom: 2px;}
 
 <dl>
 
-<dd class="help_t1"><a href="chap1.php#1"><h1>1. Introduction</h1></a></dd>
-<dd class="help_t2"><a href="chap1.php#11">1.1. Administración de Pandora</a></dd>
+<dd class="help_t1"><a href="chap1.php#1"><h1>1. Introducci&oacute;n</h1></a></dd>
+<dd class="help_t2"><a href="chap1.php#11">1.1. Administraci&oacute;n de Pandora</a></dd>
 
 <dd class="help_t1"><a href="chap2.php#2"><h1>2. Usuarios</h1></a></dd>
 <dd class="help_t2"><a href="chap2.php#21">2.1. Gesti&oacute;n de perfiles</a></dd>

@@ -109,7 +109,7 @@ if (comprueba_login() == 0) {
 	}
 
 	echo "<h2>".$lang_label["events"]."</h2>";
-	echo "<h3>".$lang_label["event_main_view"]."<a href='help/".substr($language_code,0,2)."/chap5.php#5' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	echo "<h3>".$lang_label["event_main_view"]."<a href='help/".$help_code."/chap5.php#5' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 
 	// Prepare index for pagination
 	$event_list[]="";

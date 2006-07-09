@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xEllipse'>
+
+<copyright>Copyright 2004-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>Animation</grp>
+</groups>
+<type>Function</type>
+
+<description><![CDATA[Animate an element along an elliptical path.]]></description>
+
+<syntax>xEllipse(ele, xRadius, yRadius, radiusInc, totalTime, startAngle, stopAngle)</syntax>
+
+<parameters>
+  <par>
+    <name>ele</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>xRadius</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>yRadius</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>radiusInc</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>totalTime</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>startAngle</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>stopAngle</name>
+    <note><![CDATA[]]></note>
+  </par>
+</parameters>
+
+<dependencies>
+  <dep>xGetElementById</dep>
+  <dep>xLeft</dep>
+  <dep>xTop</dep>
+  <dep>xMoveTo</dep>
+</dependencies>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/x/examples/xellipse.php</url>
+    <note><![CDATA[]]></note>
+  </demo>
+</demos>
+
+<revisions>
+  <rev>
+    <num>1</num>
+    <date>21Jun04</date>
+    <author>mf</author>
+    <note><![CDATA[Ported from CBE to X]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

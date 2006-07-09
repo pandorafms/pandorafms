@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xHasPoint'>
+
+<name>xHasPoint</name>
+
+<copyright>Copyright 2001-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>Position</grp>
+</groups>
+<type>Function</type>
+
+<description><![CDATA[Determines if an element contains an absolute point.]]></description>
+
+<syntax>xHasPoint(ele, iLeft, iTop[, iClpT[, iClpR[, iClpB[, iClpL]]]])</syntax>
+
+<parameters>
+  <par>
+    <name>ele</name>
+    <note><![CDATA[id string or object reference]]></note>
+  </par>
+  <par>
+    <name>iLeft</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>iTop</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>iClpT</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>iClpR</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>iClpB</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>iClpL</name>
+    <note><![CDATA[]]></note>
+  </par>
+</parameters>
+
+<return>true if iLeft,iTop is contained within the clipped area of ele</return>
+
+<dependencies>
+  <dep>xNum</dep>
+  <dep>xPageX</dep>
+  <dep>xPageY</dep>
+  <dep>xWidth</dep>
+  <dep>xHeight</dep>
+</dependencies>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/toys/</url>
+    <note><![CDATA[Index of all X demos.]]></note>
+  </demo>
+</demos>
+
+<revisions>
+  <rev>
+    <num>2</num>
+    <date>16Mar05</date>
+    <author>mf</author>
+    <note><![CDATA[Reduced 146 bytes!]]></note>
+  </rev>
+  <rev>
+    <num>1</num>
+    <date>31Mar04</date>
+    <author>mf</author>
+    <note><![CDATA[put in it's own file for use with XC]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

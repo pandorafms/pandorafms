@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xParent'>
+
+<name>xParent</name>
+
+<copyright>Copyright 2001-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>DOM</grp>
+</groups>
+<type>Function</type>
+
+<description><![CDATA[Get an element's parent node/element.]]></description>
+
+<syntax>xParent(e, bNode)</syntax>
+
+<parameters>
+  <par>
+    <name>ele</name>
+    <note><![CDATA[id string or object reference]]></note>
+  </par>
+  <par>
+    <name>bNode</name>
+    <note><![CDATA[pass true if you want parentNode, else you get offsetParent]]></note>
+  </par>
+</parameters>
+
+<return>a reference to the element's parent element, or null if not found</return>
+
+<dependencies>
+  <dep>xGetElementById</dep>
+  <dep>xDef</dep>
+</dependencies>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/toys/</url>
+    <note><![CDATA[Index of all X demos.]]></note>
+  </demo>
+</demos>
+
+<revisions>
+  <rev>
+    <num>1</num>
+    <date>31Mar04</date>
+    <author>mf</author>
+    <note><![CDATA[put in it's own file for use with XC]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

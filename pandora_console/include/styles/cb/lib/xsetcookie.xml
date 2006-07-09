@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xSetCookie'>
+
+<copyright>Copyright 2001-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>Cookie</grp>
+</groups>
+<type>Function</type>
+
+<description><![CDATA[Set a name/value in a cookie.]]></description>
+
+<syntax>xSetCookie(name, value, expire, path)</syntax>
+
+<parameters>
+  <par>
+    <name>name</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>value</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>expire</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>path</name>
+    <note><![CDATA[]]></note>
+  </par>
+</parameters>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/toys/</url>
+    <note><![CDATA[Index of all X demos.]]></note>
+  </demo>
+</demos>
+
+<revisions>
+  <rev>
+    <num>3</num>
+    <date></date>
+    <author>mf</author>
+    <note><![CDATA[initial implementation (based on code from Netscape Javascript Guide)]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

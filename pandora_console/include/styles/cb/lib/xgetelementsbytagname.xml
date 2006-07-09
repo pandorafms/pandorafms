@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xGetElementsByTagName'>
+
+<copyright>Copyright 2002-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>DOM</grp>
+</groups>
+<type>Function</type>
+
+<description><![CDATA[Returns an array of elements which are descendants of parentEle and have tagName. If parentEle is null or not present, document will be used. If tagName is null or not present, "*" will be used.]]></description>
+
+<syntax>xGetElementsByTagName(tagName[, parentEle])</syntax>
+
+<parameters>
+  <par>
+    <name>tagName</name>
+    <note><![CDATA[string]]></note>
+  </par>
+  <par>
+    <name>parentEle</name>
+    <note><![CDATA[element reference]]></note>
+  </par>
+</parameters>
+
+<return>node list</return>
+
+<dependencies>
+  <dep>xIE4</dep>
+  <dep>xIE5</dep>
+</dependencies>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/toys/</url>
+    <note><![CDATA[Index of all X demos.]]></note>
+  </demo>
+</demos>
+
+<comments>
+  <comment>
+    <date>2May05</date>
+    <author>mf</author>
+    <note><![CDATA[
+  After a discussion with Hallvord on the Opera libraries list on
+  how to eliminate the browser sniff...
+[code]
+function xGetElementsByTagName(t,p)
+{
+  var list = null;
+  t = t || '*';
+  p = p || document;
+////
+  if (p.getElementsByTagName) { // DOM1
+    list = p.getElementsByTagName(t);
+    if (t=='*' && (!list || !list.length)) list = p.all; // IE5 '*' bug
+  }
+  else { // IE4 object model
+    if (t=='*') list = p.all;
+    else if (p.all && p.all.tags) list = p.all.tags(t);
+  }
+////
+  return list || new Array();
+}
+[/code] 
+I really like this - but I don't like the code-size increase (about 50 bytes).
+I realize that my additions contributed to the size increase - but I felt they
+were needed to maintain the semantics of the original function. Perhaps they
+could be optimized.
+ 
+My change to your expression: (t=='*' && list.length == 0)
+to this: (t=='*' && (!list || !list.length))
+is perhaps needless paranoia - I don't know 
+ 
+So we reduced the browser sniff assumption to an assumption (or knowledge) about
+the effect of the bug - with this expression: (t=='*' && (!list || !list.length)).
+Excellent!  And perhaps the increase of 50 bytes is worth it - knowing
+that I won't have to maintain a browser sniff for this function.
+    ]]></note>
+  </comment>
+  <comment>
+    <date>2002</date>
+    <author>mf</author>
+    <note><![CDATA[This even works with IE4.]]></note>
+  </comment>
+</comments>
+
+<revisions>
+  <rev>
+    <num>2</num>
+    <date>16Mar05</date>
+    <author>mf</author>
+    <note><![CDATA[Reduced 93 bytes]]></note>
+  </rev>
+  <rev>
+    <num>1</num>
+    <date>31Mar04</date>
+    <author>mf</author>
+    <note><![CDATA[put in it's own file for use with XC]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>
+  
+

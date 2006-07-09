@@ -1,0 +1,337 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>XC: X Library Compiler</title>
+<meta name='author' content='Mike Foster (Cross-Browser.com)'>
+<meta name='description' content='Cross-Browser DHTML Libraries and Applications'>
+<meta name='keywords' content='dhtml,crossbrowser,tooltips,menu,collapsible,dhtml drag drop,downgradeable layout,dynamic select,image rollover,dhtml layout,css,dom,api,library,dhtml demos,javascript code,unobtrusive dhtml,dom2 events,dynamic forms,animation,ellipse,parametric equation,object-oriented javascript,LGPL license'>
+<link rel='stylesheet' type='text/css' href='../../css/v3.css'>
+
+<style type='text/css'>
+.h5i {
+  color:#596380;
+  background:transparent;
+  margin:1.6em 2em .6em 0;
+  padding:0;
+  font-weight:bold;
+  /**/
+  font-size:xx-small;
+  voice-family: "\"}\"";
+  voice-family: inherit;
+  font-size:x-small;
+}
+html>body .h5i {
+  font-size:x-small;
+}
+</style>
+
+</head>
+<body><div id='topLinkCon'><a name='topofpg'>&nbsp;</a></div>
+
+<div id='leftColumn' class='column'> <!-- Begin left column -->
+
+<div class='leftContent'> <!-- Begin left content -->
+
+<div id='header'>
+<div id='menubar1'>
+<a href='../../talk/' title='News, Articles and Documentation'>Talk</a>&nbsp;|&nbsp;<a href='../../toys/' title='Libraries, Demos and Applications'>Toys</a>&nbsp;|&nbsp;<a href='../../' title='Cross-Browser.com'>Home</a></div> <!-- end toolbar1 -->
+<h1>Cross-Browser.com
+</h1>
+</div> <!-- end header -->
+
+<h2>X Library Compiler</h2>
+
+<h3>Summary</h3>
+<div>
+<p>XC is a companion utility for X. XC scans your application files and creates a custom X library file (with optional compression) which contains only those X functions and objects used in your application. XC also allows you to create a library file containing only the X functions and objects you specify.</p>
+</div>
+
+<h3>Feedback</h3>
+<div>
+<p>XC is still in its infancy and is very simple. The format for the project file is very simple. The symbol parser and compression are very simple. These may be (<i>will</i> be) improved but for now XC works well enough to test its utility. I am open to any <a href='http://cross-browser.com/contact.php?s=xc_comment'>comments/suggestions</a> you may have.</p>
+</div>
+
+<h3>Looking Ahead</h3>
+<div>
+<p>Now that I've had a chance to use XC I see lots of things I'd like to improve...</p>
+<p>The project file format could be better.</p>
+<p>I now have all documentation in xml files. This opens up many possibilities. The <a href='http://cross-browser.com/x/lib/view.php'>X Viewer</a> is my first application.</p>
+<p>I'm playing with the idea of <i>conditional compilation</i>.</p>
+<p>Eventually I'd like to port XC to PHP.</p>
+</div>
+
+<h2>For XC Users</h2>
+
+<h3>XC Usage</h3>
+<div>
+<p>XC is a Win32 command-line program (a VC++ project) written in C. It is invoked as follows:
+<pre>  xc prj_name</pre>
+<p>XC will open the file 'prj_name.xcp' in the current directory and create the output files, prj_name.js and prj_name.log, also in the current directory.</p>
+</div>
+
+<h3>XC Project File</h3>
+<div>
+<h4>Format</h4>
+<div>
+<p>The project file must have a '.xcp' extension (XC Project). The xcp parser looks for three directives: <code>options</code>, <code>libpath</code> and <code>appfiles</code>. The general format is as follows.</p>
+<pre>
+; comments are from ';' to end of line
+options -cmp -dep +log +dbg ; See option descriptions below.
+libpath ..\   ; X library files directory (requires trailing backslash).
+appfiles      ; Application file pathnames from next line to end of file.
+App file pathname 1
+App file pathname 2
+...
+App file pathname n
+</pre>
+</div>
+<h4>Options</h4>
+<div>
+<p>Following the 'options' directive is a space-delimited list of zero or more of the following. Prefix with '-' for false and '+' (or no prefix) for true.</p>
+  <p><span class='h5i'>cmp</span> true = Compression applied to output lib js file. Default = true.
+           Compression removes leading white space, new lines and blank lines.
+           Also removes "//" comments but does not remove multi-line comments "/* */".</p>
+  <p><span class='h5i'>lws</span> true = Retain leading white space. Default = false.</p>
+  <p><span class='h5i'>nln</span> true = Retain newline chars on non-blank lines. Default = false.</p>
+  <p><span class='h5i'>bln</span> true = Retain blank lines. Default = false.</p>
+  <p><span class='h5i'>log</span> true = Generate log file. Default = false.</p>
+  <p><span class='h5i'>lib</span> true = Generate lib file. Default = true.</p>
+  <p><span class='h5i'>glb</span> true = Include globals.js. Default = true.</p>
+  <p><span class='h5i'>dbg</span> true = Debug info in log file. Sets options.log to true. Default = false.</p>
+  <p><span class='h5i'>dep</span> true = Dependents included in output. Default = true.
+                  When false it is useful for creating a lib file from a list of X symbols.
+                  I use -dep to create x_core.js, x_event.js, etc. 
+                  The list of symbols is put in the xcp file (commented with ';')
+                  and the only app file is the xcp file itself.
+                  See x/x_core.xcp for an example.</p>
+</div>
+<h4>Examples</h4>
+<div>
+<p>The following project file builds a library that I use for two demos, <i>floater bar</i> and <i>floater box</i>.</p>
+<pre>
+; XC Project: floater_xlib
+
+options
+libpath ..\
+appfiles
+..\..\examples\floater.php
+..\..\examples\floater_bar.php
+</pre>
+<p></p>
+<p>Before I had all X functions and objects in separate files I had them categorized into x_core.js, x_event.js, etc. For backwards-compatibility I still provide those files, but now I generate those files with XC. In the <code>/x</code> directory you will find these files, along with the .xcp file for each. In that directory is also a batch file, build_all.bat, which will run XC on all .xcp files in that directory.</p>
+<p>The following is one of the .xcp files from the <code>/x</code> directory.
+<pre>
+; XC Project: x_anim
+
+options -dep -glb
+
+; If you don't want the library file to be
+; compressed then add -cmp to the above options.
+
+libpath lib\
+
+appfiles
+
+x_anim.xcp
+
+; This project file is the only app file fed to XC.
+; The following X symbols will be included in the
+; library file. They are commented-out so XC will
+; not see them as more app files.
+
+; xEllipse
+; xParaEq
+; xSlideCornerTo
+</pre>
+</div>
+</div>
+
+<h2>For X Contributors</h2>
+
+<h3>X Library Files</h3>
+<div>
+<p>By convention all X functions, objects and global variables begin with 'x' and are camel-cased. All X functions and objects should be put in separate files with the following standard header, where 'xSymbol' is the name of the function or object. The name of the file should be xsymbol.js (use all lower-case for the filename). If you are the author you should use your own copyright info instead of mine. I do not require copyright assignment for code contributions to X.</p>
+<pre>
+// xSymbol, Copyright 2001-2005 Michael Foster (Cross-Browser.com)
+// Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL
+</pre>
+<p>Since XC's compression option removes newlines, you cannot use implicit statement termination. For example in the following the ';' is required because this is an assignment expression...</p>
+<pre>
+xObject.prototype.method = function()
+{
+  // statements...
+}; // <- this semicolon is required to support compression
+</pre>
+<p>Another example where a semicolon is required in a place where most of us don't usually use a semicolon...</p>
+<pre>
+function myObjectPrototype(id)
+{
+  var img = document.getElementById(id);
+  
+  img.onmouseover = function()
+  {
+    this.src = urlOver;
+  }; // <- this semicolon is required to support compression
+  
+  function foo()
+  {
+  }
+}
+</pre>
+</div>
+
+<h3>X Documentation Files</h3>
+<div>
+<p>For every <code>xsymbol.js</code> file there should be an <code>xsymbol.xml</code> file which contains documentation and author copyright statements for xSymbol. All doc files are now in xml. The xml structure I have for now is as follows.</p>
+<pre>
+&lt;?xml version="1.0" encoding="ISO-8859-1"?&gt;
+
+&lt;xlib_symbol id=''&gt;
+
+&lt;copyright&gt;Copyright 2001-2005 Michael Foster (Cross-Browser.com)&lt;/copyright&gt;
+
+&lt;license&gt;Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL&lt;/license&gt;
+
+&lt;groups&gt;
+  &lt;grp&gt;&lt;/grp&gt;
+&lt;/groups&gt;
+
+&lt;type&gt;Function&lt;/type&gt;
+
+&lt;description&gt;&lt;![CDATA[]]&gt;&lt;/description&gt;
+
+&lt;syntax&gt;&lt;/syntax&gt;
+
+&lt;parameters&gt;
+  &lt;par&gt;&lt;name&gt;&lt;/name&gt;&lt;note&gt;&lt;![CDATA[]]&gt;&lt;/note&gt;&lt;/par&gt;
+&lt;/parameters&gt;
+
+&lt;properties&gt;
+  &lt;prop&gt;&lt;name&gt;&lt;/name&gt;&lt;note&gt;&lt;![CDATA[]]&gt;&lt;/note&gt;&lt;/prop&gt;
+&lt;/properties&gt;
+
+&lt;methods&gt;
+  &lt;meth&gt;&lt;name&gt;&lt;/name&gt;&lt;note&gt;&lt;![CDATA[]]&gt;&lt;/note&gt;&lt;/meth&gt;
+&lt;/methods&gt;
+
+&lt;return&gt;&lt;![CDATA[]]&gt;&lt;/return&gt;
+
+&lt;dependencies&gt;
+  &lt;dep&gt;&lt;/dep&gt;
+&lt;/dependencies&gt;
+
+&lt;demos&gt;
+  &lt;demo&gt;&lt;url&gt;http://cross-browser.com/toys/&lt;/url&gt;&lt;note&gt;&lt;![CDATA[Index of all X demos.]]&gt;&lt;/note&gt;&lt;/demo&gt;
+&lt;/demos&gt;
+
+&lt;tests&gt;
+  &lt;test&gt;&lt;date&gt;&lt;/date&gt;&lt;author&gt;mf&lt;/author&gt;&lt;url&gt;&lt;/url&gt;&lt;note&gt;&lt;![CDATA[]]&gt;&lt;/note&gt;&lt;/test&gt;
+&lt;/tests&gt;
+
+&lt;comments&gt;
+  &lt;comment&gt;&lt;date&gt;&lt;/date&gt;&lt;author&gt;mf&lt;/author&gt;&lt;note&gt;&lt;![CDATA[]]&gt;&lt;/note&gt;&lt;/comment&gt;
+&lt;/comments&gt;
+
+&lt;revisions&gt;
+  &lt;rev&gt;&lt;num&gt;&lt;/num&gt;&lt;date&gt;&lt;/date&gt;&lt;author&gt;mf&lt;/author&gt;&lt;note&gt;&lt;![CDATA[]]&gt;&lt;/note&gt;&lt;/rev&gt;
+&lt;/revisions&gt;
+
+&lt;/xlib_symbol&gt;
+</pre>
+</div>
+
+<h3>For XC Developers</h3>
+<div>
+<p>If you would like to write XC in a different language or port it to a different platform please adhere to the general specifications in this file so all XC implementations will be compatible. My XC Win32 C code is available under the terms of the GNU LGPL.</p>
+<p>I'll try to come up with a more formal specification. For now I just have a few odd bits of info.</p>
+<p>A high-level look at XC's flow of execution:</p>
+<pre>
+  Read project file:
+    Read options, libpath and appfiles from project file.
+
+  Open log file.
+
+  Read current X version from xversion.js.
+
+  Create symbol table:
+    get_valid_syms
+      All filenames, minus extensions, in the libpath directory
+      which match "x*.js" constitute the set of valid X symbols.
+    get_lib_file_deps:
+      Update symbol table with dependency info from the X lib file symbols[sym_idx].
+      Excludes symbols found in "//" comments.
+    
+  Get symbols from app files.
+    Determine which X lib files get included in the output library
+    by searching application files for X symbols.
+
+  Create output lib.
+    For every symbol which has 'symbols[sym_idx].inc == true'
+    include the corresponding X lib file in the output lib.
+    Compression removes all "//" comments but not "/**/" comments.
+
+  Report results.
+    Display filenames created and finalize log file.
+</pre>
+</div>
+
+<!--
+<h3>Section Title</h3>
+<div>
+<p>section content</p>
+</div>
+-->
+
+</div> <!-- end leftContent -->
+
+<div id='footer' class='leftContent'>
+Copyleft &copy; 2001-2005 Michael Foster<br>
+Javascript distributed under the terms of the <a href='../../license.html'>GNU LGPL</a><br>
+<a href='../../' title='Offline Index'>Index</a> &nbsp;|&nbsp;
+<a href='http://cross-browser.com/' title='Cross-Browser.com'>Cross-Browser.com</a> &nbsp;|&nbsp;
+<a href='http://cross-browser.com/contact.php' title='eMail Mike'>Contact</a> &nbsp;|&nbsp;
+<a id='footerTopLink' href='#topofpg' title='Top of Page'>Top</a>
+</div> <!-- end leftContent -->
+
+</div> <!-- end leftColumn -->
+
+<div id='rightColumn' class='column'>
+<div class='rightContent'>
+<h3>License</h3>
+<div class='collapsible'>
+<p>By your use of X and/or CBE and/or any Javascript from this site you consent to the LGPL License - please <a href='../../license.html'>read it</a>.</p>
+</div> <!-- end collapsible -->
+<h3>Developer Support</h3>
+<div class='collapsible'>
+<p>Get your questions answered faster by posting at one of the following forums. I browse these forums every day.</p>
+<p><a href='http://www.sitepoint.com/forums/forumdisplay.php?f=15' title='SitePoint Javascript Forum'>SitePoint.com</a></p>
+<p><a href='http://www.hftonline.com/forum/forumdisplay.php?f=16' title='HFTOnline Web Based Programming Forum'>HFTOnline.com</a></p>
+<p><a href='http://www.codingforums.com/forumdisplay.php?f=2' title='CodingForums JavaScript Programming Forum'>CodingForums.com</a></p>
+</div>
+<h3>Search</h3>
+<div class='collapsible'>
+<form method="get" action="http://www.google.com/custom">
+<p><a class='googlelogo' href="http://www.google.com/"><img src="http://www.google.com/logos/Logo_25wht.gif" border="0" alt="Google"></a></p>
+<p><input type="text" name="q" size="20" maxlength="255" value="" class="inpTxt"></p>
+<p><input type="radio" name="sitesearch" value="cross-browser.com" checked> Cross-Browser.com</p>
+<p><input type="radio" name="sitesearch" value=""> World Wide Web</p>
+<p><input type="submit" name="sa" value="Search"></p>
+<div style='margin:0;padding:0'>
+<input type="hidden" name="domains" value="cross-browser.com">
+<input type="hidden" name="client" value="pub-6162857333153838">
+<input type="hidden" name="forid" value="1">
+<input type="hidden" name="ie" value="ISO-8859-1">
+<input type="hidden" name="oe" value="ISO-8859-1">
+<input type="hidden" name="cof" value="GALT:#008000;GL:1;DIV:#336699;VLC:663399;AH:center;BGC:FFFFFF;LBGC:336699;ALC:0000FF;LC:0000FF;T:000000;GFNT:0000FF;GIMP:0000FF;FORID:1;">
+<input type="hidden" name="hl" value="en">
+</div>
+</form>
+</div>
+
+</div> <!-- end rightContent -->
+</div> <!-- end rightColumn -->
+
+</body>
+</html>

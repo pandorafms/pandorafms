@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xFirstChild'>
+
+<copyright>Copyright 2004-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>DOM</grp>
+</groups>
+<type>Function</type>
+
+<description><![CDATA[An enhanced wrapper for element.firstChild.]]></description>
+
+<syntax>xFirstChild(ele[, tag])</syntax>
+
+<parameters>
+  <par>
+    <name>ele</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>tag</name>
+    <note><![CDATA[]]></note>
+  </par>
+</parameters>
+
+<return>If tag is defined, returns first child (or first child's sibling) with nodeName == tag, else with nodeType == 1.</return>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/toys/</url>
+    <note><![CDATA[Index of all X demos.]]></note>
+  </demo>
+</demos>
+
+<revisions>
+  <rev>
+    <num>2</num>
+    <date>11Mar05</date>
+    <author>mf</author>
+    <note><![CDATA[put in it's own file for use with XC]]></note>
+  </rev>
+  <rev>
+    <num>1</num>
+    <date>27Jan05</date>
+    <author>mf</author>
+    <note><![CDATA[Implemented xPrevSib, xNextSib and xFirstChild (need optimizing).]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

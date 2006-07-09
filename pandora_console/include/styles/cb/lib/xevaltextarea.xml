@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xEvalTextarea'>
+
+<copyright>Copyright 2001-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>Debug</grp>
+</groups>
+<type>Function</type>
+
+<description><![CDATA[Creates a textarea and a button, for executing Javascript in the textarea.]]></description>
+
+<syntax>xEvalTextarea()</syntax>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/x/examples/bookmarklets.html</url>
+    <note><![CDATA[]]></note>
+  </demo>
+</demos>
+
+<revisions>
+  <rev>
+    <num>1</num>
+    <date>12Mar05</date>
+    <author>mf</author>
+    <note><![CDATA[put in it's own file for use with XC]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xInclude'>
+
+<copyright>Copyright 2001-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<type>Function</type>
+
+<description><![CDATA[Warning: This was an interesting experiment but I don't advise that you use it. This should really be done server-side. It would be a fun PHP project ;-)]]></description>
+
+<syntax>xInclude(url1, url2, etc)</syntax>
+
+<parameters>
+  <par>
+    <name>url</name>
+    <note><![CDATA[will accept any number of URLs]]></note>
+  </par>
+</parameters>
+
+</xlib_symbol>

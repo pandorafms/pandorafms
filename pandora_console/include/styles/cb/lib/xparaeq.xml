@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xParaEq'>
+
+<copyright>Copyright 2004-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>Animation</grp>
+</groups>
+<type>Function</type>
+
+<description><![CDATA[Parametric equation animation.]]></description>
+
+<syntax>xParaEq(ele, xExpr, yExpr, totalTime)</syntax>
+
+<parameters>
+  <par>
+    <name>ele</name>
+    <note><![CDATA[id string or element reference]]></note>
+  </par>
+  <par>
+    <name>xExpr</name>
+    <note><![CDATA[string]]></note>
+  </par>
+  <par>
+    <name>yExpr</name>
+    <note><![CDATA[string]]></note>
+  </par>
+  <par>
+    <name>totalTime</name>
+    <note><![CDATA[integer, 0 means no timeout]]></note>
+  </par>
+</parameters>
+
+<properties>
+  <prop>
+    <name>stop</name>
+    <note><![CDATA[read/write - the stop property on the element itself, when true, will stop animation]]></note>
+  </prop>
+  <prop>
+    <name>moving</name>
+    <note><![CDATA[read-only - the moving property on the element itself, when true, indicates animation is active]]></note>
+  </prop>
+</properties>
+
+<dependencies>
+  <dep>xgetelementbyid</dep>
+  <dep>xparent</dep>
+  <dep>xwidth</dep>
+  <dep>xheight</dep>
+  <dep>xscrollleft</dep>
+  <dep>xscrolltop</dep>
+  <dep>xmoveto</dep>
+</dependencies>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/x/examples/xparaeq.php</url>
+    <note><![CDATA[]]></note>
+  </demo>
+</demos>
+
+<revisions>
+  <rev>
+    <num>2</num>
+    <date>6Apr05</date>
+    <author>mf</author>
+    <note><![CDATA[Added missing semicolon to support XC compression]]></note>
+  </rev>
+  <rev>
+    <num>1</num>
+    <date>21Jun04</date>
+    <author>mf</author>
+    <note><![CDATA[Ported from CBE to X]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

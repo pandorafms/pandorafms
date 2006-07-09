@@ -583,8 +583,8 @@ if (give_acl($id_user, 0, "AW")==1) {
 // ========================
 
 echo "<h2>".$lang_label["agent_conf"]."</h2>";
-if (isset($_GET["creacion"])){echo "<h3>".$lang_label["create_agent"]."<a href='help/".substr($language_code,0,2)."/chap3.php#32' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";}
-else {echo "<h3>".$lang_label["update_agent"]."<a href='help/".substr($language_code,0,2)."/chap3.php#32' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";}
+if (isset($_GET["creacion"])){echo "<h3>".$lang_label["create_agent"]."<a href='help/".$help_code."/chap3.php#32' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";}
+else {echo "<h3>".$lang_label["update_agent"]."<a href='help/".$help_code."/chap3.php#32' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";}
 echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
 if ($creacion_agente == 1)
 	echo "<input type='hidden' name='create_agent' value='1'>";
@@ -692,7 +692,7 @@ if ( $creacion_agente != 1) {
 	$result=mysql_query($sql1);
 	if ($row=mysql_num_rows($result)){
 		?>
-		<h3><?php echo $lang_label["assigned_modules"]?><a href='help/<?php echo substr($language_code,0,2) ?>/chap3.php#321' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
+		<h3><?php echo $lang_label["assigned_modules"]?><a href='help/<?php echo $help_code ?>/chap3.php#321' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
 		<table width="700" cellpadding="3" cellspacing="3" class="fon">
 		<tr>
 		<th><?php echo $lang_label["module_name"]?>
@@ -760,7 +760,7 @@ $sql1='SELECT * FROM tagente_modulo WHERE id_agente = "'.$id_agente.'"';
 $result=mysql_query($sql1);
 	if ($row=mysql_num_rows($result)){
 
-		echo "<h3>".$lang_label["assigned_alerts"]."<a href='help/".substr($language_code,0,2)."/chap3.php#3222' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+		echo "<h3>".$lang_label["assigned_alerts"]."<a href='help/".$help_code."/chap3.php#3222' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 
 		$color=1;
 		while ($row=mysql_fetch_array($result)){  // All modules of this agent
@@ -838,7 +838,7 @@ else {
 	}
 }
 ?>
-<h3><?php echo $lang_label["module_asociation_form"] ?><a href='help/<?php echo substr($language_code,0,2) ?>/chap3.php#321' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
+<h3><?php echo $lang_label["module_asociation_form"] ?><a href='help/<?php echo $help_code ?>/chap3.php#321' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
 <a name="modules"> <!-- Don't Delete !! -->
 <table width="650" cellpadding="3" cellspacing="3" class="fon">
 <tr><td class='lb' rowspan='8' width='5'>
@@ -948,7 +948,7 @@ if (isset($_POST["oid"])){
 ?>
 
 <!-- Alert Configuration -->
-<h3><?php echo $lang_label["alert_asociation_form"] ?><a href='help/<?php echo substr($language_code,0,2) ?>/chap3.php#3222' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
+<h3><?php echo $lang_label["alert_asociation_form"] ?><a href='help/<?php echo $help_code ?>/chap3.php#3222' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
 
 
 <?php

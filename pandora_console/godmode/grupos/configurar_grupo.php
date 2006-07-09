@@ -38,8 +38,8 @@ if (comprueba_login() == 0)
 	}
 
 	echo "<h2>".$lang_label["group_management"]."</h2>";
-	if (isset($_GET["creacion_grupo"])) {echo "<h3>".$lang_label["create_group"]."<a href='help/".substr($language_code,0,2)."/chap3.php#31' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";}
-	if (isset($_GET["id_grupo"])) {echo "<h3>".$lang_label["update_group"]."<a href='help/".substr($language_code,0,2)."/chap3.php#31' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";}
+	if (isset($_GET["creacion_grupo"])) {echo "<h3>".$lang_label["create_group"]."<a href='help/".$help_code."/chap3.php#31' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";}
+	if (isset($_GET["id_grupo"])) {echo "<h3>".$lang_label["update_group"]."<a href='help/".$help_code."/chap3.php#31' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";}
 	
 ?>
 <table width="450">

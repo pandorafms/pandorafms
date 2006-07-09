@@ -24,7 +24,7 @@ if (comprueba_login() == 0) {
 	if (isset($_GET["id_agente"])){
 		$id_agente = $_GET["id_agente"];
 	}
-	echo "<h3>".$lang_label["monitor_listing"]."<a href='help/".substr($language_code,0,2)."/chap3.php#3323' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	echo "<h3>".$lang_label["monitor_listing"]."<a href='help/".$help_code."/chap3.php#3323' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 	// Get all module from agent
 	$sql_t='SELECT * FROM tagente_estado, tagente_modulo WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.id_agente='.$id_agente.' and tagente_estado.estado != 100 order by tagente_modulo.nombre';
 	$result_t=mysql_query($sql_t);

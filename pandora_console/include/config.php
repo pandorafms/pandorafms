@@ -52,4 +52,9 @@ while ($row2=mysql_fetch_array($result2)){
 						break;
 	}
 }
+if ($language_code == 'ast_es') {
+	$help_code='ast';
+	}
+else $help_code = substr($language_code,0,2);
+
 ?>

@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2005, Sara Golemon <sarag@libssh2.org>
+/* Copyright (c) 2004-2006, Sara Golemon <sarag@libssh2.org>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms,
@@ -118,7 +118,7 @@ static void libssh2_publickey_status_error(LIBSSH2_PUBLICKEY *pkey, LIBSSH2_SESS
 	m_len = (sizeof(LIBSSH2_PUBLICKEY_STATUS_TEXT_START) - 1) + status_text_len + 
 			(sizeof(LIBSSH2_PUBLICKEY_STATUS_TEXT_MID) - 1) + message_len +
 			(sizeof(LIBSSH2_PUBLICKEY_STATUS_TEXT_END) - 1);
-	m = (char *)LIBSSH2_ALLOC(session, m_len + 1);
+	m = LIBSSH2_ALLOC(session, m_len + 1);
 	if (!m) {
 		libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for status message", 0);
 		return;
@@ -147,19 +147,19 @@ static int libssh2_publickey_packet_receive(LIBSSH2_PUBLICKEY *pkey, unsigned ch
 	unsigned long packet_len;
 	unsigned char *packet;
 
-	if (libssh2_channel_read(channel,(char *) buffer, 4) != 4) {
+	if (libssh2_channel_read(channel, buffer, 4) != 4) {
 		libssh2_error(session, LIBSSH2_ERROR_PUBLICKEY_PROTOCOL, "Invalid response from publickey subsystem", 0);
 		return -1;
 	}
 
 	packet_len = libssh2_ntohu32(buffer);
-	packet = (unsigned char *)LIBSSH2_ALLOC(session, packet_len);
+	packet = LIBSSH2_ALLOC(session, packet_len);
 	if (!packet) {
 		libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate publickey response buffer", 0);
 		return -1;
 	}
 
-	if (libssh2_channel_read(channel, (char *)packet, packet_len) != (int)packet_len) {
+	if (libssh2_channel_read(channel, packet, packet_len) != packet_len) {
 		libssh2_error(session, LIBSSH2_ERROR_SOCKET_TIMEOUT, "Timeout waiting for publickey subsystem response packet", 0);
 		LIBSSH2_FREE(session, packet);
 		return -1;
@@ -187,14 +187,14 @@ static int libssh2_publickey_response_id(unsigned char **pdata, int data_len)
 		return -1;
 	}
 	response_len = libssh2_ntohu32(data);			data += 4;			data_len -= 4;
-	if (data_len < (int) response_len) {
+	if (data_len < response_len) {
 		/* Malformed response */
 		return -1;
 	}
 
 	while (codes->name) {
-		if (codes->name_len == (int)response_len &&
-			strncmp((char *)codes->name, (char *)data, response_len) == 0) {
+		if (codes->name_len == response_len &&
+			strncmp(codes->name, data, response_len) == 0) {
 			*pdata = data + response_len;
 			return codes->code;
 		}
@@ -305,7 +305,7 @@ LIBSSH2_API LIBSSH2_PUBLICKEY *libssh2_publickey_init(LIBSSH2_SESSION *session)
 	libssh2_channel_set_blocking(channel, 1);
 	libssh2_channel_handle_extended_data(channel, LIBSSH2_CHANNEL_EXTENDED_DATA_IGNORE);
 
-	pkey = (LIBSSH2_PUBLICKEY *)LIBSSH2_ALLOC(session, sizeof(LIBSSH2_PUBLICKEY));
+	pkey = LIBSSH2_ALLOC(session, sizeof(LIBSSH2_PUBLICKEY));
 	if (!pkey) {
 		libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate a new publickey structure", 0);
 		goto err_exit;
@@ -322,7 +322,7 @@ LIBSSH2_API LIBSSH2_PUBLICKEY *libssh2_publickey_init(LIBSSH2_SESSION *session)
 #ifdef LIBSSH2_DEBUG_PUBLICKEY
 	_libssh2_debug(session, LIBSSH2_DBG_PUBLICKEY, "Sending publickey version packet advertising version %d support", (int)LIBSSH2_PUBLICKEY_VERSION);
 #endif
-    if ((s - buffer) != libssh2_channel_write(channel, (char *)buffer, (s - buffer))) {
+    if ((s - buffer) != libssh2_channel_write(channel, buffer, (s - buffer))) {
         libssh2_error(session, LIBSSH2_ERROR_SOCKET_SEND, "Unable to send publickey version packet", 0);
 		goto err_exit;
     }
@@ -427,7 +427,7 @@ LIBSSH2_API int libssh2_publickey_add_ex(LIBSSH2_PUBLICKEY *pkey, const unsigned
 			/* Search for a comment attribute */
 			if (attrs[i].name_len == (sizeof("comment") - 1) &&
 				strncmp(attrs[i].name, "comment", sizeof("comment") - 1) == 0) {
-				comment = (unsigned char *)attrs[i].value;
+				comment = attrs[i].value;
 				comment_len = attrs[i].value_len;
 				break;
 			}
@@ -441,7 +441,7 @@ LIBSSH2_API int libssh2_publickey_add_ex(LIBSSH2_PUBLICKEY *pkey, const unsigned
 		}
 	}
 
-	packet = (unsigned char *)LIBSSH2_ALLOC(session, packet_len);
+	packet = LIBSSH2_ALLOC(session, packet_len);
 	if (!packet) {
 		libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for publickey \"add\" packet", 0);
 		return -1;
@@ -482,7 +482,7 @@ LIBSSH2_API int libssh2_publickey_add_ex(LIBSSH2_PUBLICKEY *pkey, const unsigned
 #ifdef LIBSSH2_DEBUG_PUBLICKEY
 	_libssh2_debug(session, LIBSSH2_DBG_PUBLICKEY, "Sending publickey \"add\" packet: type=%s blob_len=%ld num_attrs=%ld", name, blob_len, num_attrs);
 #endif
-    if ((s - packet) != libssh2_channel_write(channel, (char *)packet, (s - packet))) {
+    if ((s - packet) != libssh2_channel_write(channel, packet, (s - packet))) {
         libssh2_error(session, LIBSSH2_ERROR_SOCKET_SEND, "Unable to send publickey add packet", 0);
 		LIBSSH2_FREE(session, packet);
 		return -1;
@@ -512,7 +512,7 @@ LIBSSH2_API int libssh2_publickey_remove_ex(LIBSSH2_PUBLICKEY *pkey, const unsig
 		blob_len(4) +
 		{blob} */
 
-	packet = (unsigned char *)LIBSSH2_ALLOC(session, packet_len);
+	packet = LIBSSH2_ALLOC(session, packet_len);
 	if (!packet) {
 		libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for publickey \"remove\" packet", 0);
 		return -1;
@@ -530,7 +530,7 @@ LIBSSH2_API int libssh2_publickey_remove_ex(LIBSSH2_PUBLICKEY *pkey, const unsig
 #ifdef LIBSSH2_DEBUG_PUBLICKEY
 	_libssh2_debug(session, LIBSSH2_DBG_PUBLICKEY, "Sending publickey \"remove\" packet: type=%s blob_len=%ld", name, blob_len);
 #endif
-    if ((s - packet) != libssh2_channel_write(channel, (char *)packet, (s - packet))) {
+    if ((s - packet) != libssh2_channel_write(channel, packet, (s - packet))) {
         libssh2_error(session, LIBSSH2_ERROR_SOCKET_SEND, "Unable to send publickey remove packet", 0);
 		LIBSSH2_FREE(session, packet);
 		return -1;
@@ -564,7 +564,7 @@ LIBSSH2_API int libssh2_publickey_list_fetch(LIBSSH2_PUBLICKEY *pkey, unsigned l
 #ifdef LIBSSH2_DEBUG_PUBLICKEY
 	_libssh2_debug(session, LIBSSH2_DBG_PUBLICKEY, "Sending publickey \"list\" packet");
 #endif
-    if ((s - buffer) != libssh2_channel_write(channel, (char *)buffer, (s - buffer))) {
+    if ((s - buffer) != libssh2_channel_write(channel, buffer, (s - buffer))) {
         libssh2_error(session, LIBSSH2_ERROR_SOCKET_SEND, "Unable to send publickey list packet", 0);
 		return -1;
     }
@@ -614,7 +614,7 @@ LIBSSH2_API int libssh2_publickey_list_fetch(LIBSSH2_PUBLICKEY *pkey, unsigned l
 				if (keys >= max_keys) {
 					/* Grow the key list if necessary */
 					max_keys += 8;
-					list = (libssh2_publickey_list *)LIBSSH2_REALLOC(session, list, (max_keys + 1) * sizeof(libssh2_publickey_list));
+					list = LIBSSH2_REALLOC(session, list, (max_keys + 1) * sizeof(libssh2_publickey_list));
 					if (!list) {
 						libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for publickey list", 0);
 						goto err_exit;
@@ -626,14 +626,14 @@ LIBSSH2_API int libssh2_publickey_list_fetch(LIBSSH2_PUBLICKEY *pkey, unsigned l
 					comment_len = libssh2_ntohu32(s);								s += 4;
 					if (comment_len) {
 						list[keys].num_attrs = 1;
-						list[keys].attrs = (libssh2_publickey_attribute *)LIBSSH2_ALLOC(session, sizeof(libssh2_publickey_attribute));
+						list[keys].attrs = LIBSSH2_ALLOC(session, sizeof(libssh2_publickey_attribute));
 						if (!list[keys].attrs) {
 							libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for publickey attributes", 0);
 							goto err_exit;
 						}
 						list[keys].attrs[0].name = "comment";
 						list[keys].attrs[0].name_len = sizeof("comment") - 1;
-						list[keys].attrs[0].value = (char *)s;
+						list[keys].attrs[0].value = s;
 						list[keys].attrs[0].value_len = comment_len;
 						list[keys].attrs[0].mandatory = 0;
 
@@ -654,16 +654,16 @@ LIBSSH2_API int libssh2_publickey_list_fetch(LIBSSH2_PUBLICKEY *pkey, unsigned l
 					list[keys].blob = s;											s += list[keys].blob_len;
 					list[keys].num_attrs = libssh2_ntohu32(s);						s += 4;
 					if (list[keys].num_attrs) {
-						list[keys].attrs = (libssh2_publickey_attribute *)LIBSSH2_ALLOC(session, list[keys].num_attrs * sizeof(libssh2_publickey_attribute));
+						list[keys].attrs = LIBSSH2_ALLOC(session, list[keys].num_attrs * sizeof(libssh2_publickey_attribute));
 						if (!list[keys].attrs) {
 							libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for publickey attributes", 0);
 							goto err_exit;
 						}
 						for(i = 0; i < list[keys].num_attrs; i++) {
 							list[keys].attrs[i].name_len = libssh2_ntohu32(s);			s += 4;
-							list[keys].attrs[i].name = (char *)s;								s += list[keys].attrs[i].name_len;
+							list[keys].attrs[i].name = s;								s += list[keys].attrs[i].name_len;
 							list[keys].attrs[i].value_len = libssh2_ntohu32(s);			s += 4;
-							list[keys].attrs[i].value = (char *)s;								s += list[keys].attrs[i].value_len;
+							list[keys].attrs[i].value = s;								s += list[keys].attrs[i].value_len;
 							list[keys].attrs[i].mandatory = 0;	/* actually an ignored value */
 						}
 					} else {

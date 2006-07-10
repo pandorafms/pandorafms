@@ -12,7 +12,7 @@ ResourceIncludes=
 MakeIncludes=
 Compiler=
 CppCompiler=
-Linker=-lole32_@@_-loleaut32_@@_-luuid_@@_-lpsapi_@@_-lwsock32_@@_-leay32_@@_-lz_@@_-liphlpapi_@@_-lnetapi32_@@_-lws2_32_@@_
+Linker=-lole32_@@_-loleaut32_@@_-luuid_@@_-lpsapi_@@_-lwsock32_@@_-lz_@@_-liphlpapi_@@_-lnetapi32_@@_-lws2_32_@@_-lcrypto_@@_-lgdi32_@@__@@_
 IsCpp=1
 Icon=
 ExeOutput=
@@ -379,43 +379,43 @@ BuildCmd=
 
 [Unit34]
 FileName=ssh\libssh2\userauth.c
-CompileCpp=1
+CompileCpp=0
 Folder=SSH/libssh2
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=
+BuildCmd=$(CC) -c userauth.c -o userauth.o $(CFLAGS)
 
 [Unit35]
 FileName=ssh\libssh2\comp.c
-CompileCpp=1
+CompileCpp=0
 Folder=SSH/libssh2
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=
+BuildCmd=$(CC) -c comp.c -o comp.o $(CFLAGS)
 
 [Unit36]
 FileName=ssh\libssh2\crypt.c
-CompileCpp=1
+CompileCpp=0
 Folder=SSH/libssh2
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=
+BuildCmd=$(CC) -c crypt.c -o crypt.o $(CFLAGS)
 
 [Unit37]
 FileName=ssh\libssh2\kex.c
-CompileCpp=1
+CompileCpp=0
 Folder=SSH/libssh2
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=
+BuildCmd=$(CC) -c kex.c -o kex.o $(CFLAGS)
 
 [Unit38]
 FileName=ssh\libssh2\libssh2.h
@@ -449,53 +449,53 @@ BuildCmd=
 
 [Unit41]
 FileName=ssh\libssh2\mac.c
-CompileCpp=1
+CompileCpp=0
 Folder=SSH/libssh2
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=
+BuildCmd=$(CC) -c mac.c -o mac.o $(CFLAGS)
 
 [Unit42]
 FileName=ssh\libssh2\packet.c
-CompileCpp=1
+CompileCpp=0
 Folder=SSH/libssh2
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=
+BuildCmd=$(CC) -c packet.c -o packet.o $(CFLAGS)
 
 [Unit43]
 FileName=ssh\libssh2\publickey.c
-CompileCpp=1
+CompileCpp=0
 Folder=SSH/libssh2
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=
+BuildCmd=$(CC) -c publickey.c -o publickey.o $(CFLAGS)
 
 [Unit44]
 FileName=ssh\libssh2\scp.c
-CompileCpp=1
+CompileCpp=0
 Folder=SSH/libssh2
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=
+BuildCmd=$(CC) -c scp.c -o scp.o $(CFLAGS)
 
 [Unit45]
 FileName=ssh\libssh2\session.c
-CompileCpp=1
+CompileCpp=0
 Folder=SSH/libssh2
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=
+BuildCmd=$(CC) -c session.c -o session.o $(CFLAGS)
 
 [Unit47]
 FileName=ssh\libssh2\libssh2_priv.h
@@ -519,43 +519,43 @@ BuildCmd=
 
 [Unit49]
 FileName=ssh\libssh2\misc.c
-CompileCpp=1
+CompileCpp=0
 Folder=SSH/libssh2
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=
+BuildCmd=$(CC) -c misc.c -o misc.o $(CFLAGS)
 
 [Unit50]
 FileName=ssh\libssh2\sftp.c
-CompileCpp=1
+CompileCpp=0
 Folder=SSH/libssh2
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=
+BuildCmd=$(CC) -c sftp.c -o sftp.o $(CFLAGS)
 
 [Unit51]
 FileName=ssh\libssh2\channel.c
-CompileCpp=1
+CompileCpp=0
 Folder=SSH/libssh2
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=
+BuildCmd=$(CC) -c channel.c -o channel.o $(CFLAGS)
 
 [Unit46]
 FileName=ssh\libssh2\hostkey.c
-CompileCpp=1
+CompileCpp=0
 Folder=SSH/libssh2
 Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=
+BuildCmd=$(CC) -c hostkey.c -o hostkey.o $(CFLAGS)
 
 [Unit54]
 FileName=windows\pandora_windows_info.h

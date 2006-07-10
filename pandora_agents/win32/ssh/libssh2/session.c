@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2005, Sara Golemon <sarag@libssh2.org>
+/* Copyright (c) 2004-2006, Sara Golemon <sarag@libssh2.org>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms,
@@ -96,16 +96,35 @@ static int libssh2_banner_receive(LIBSSH2_SESSION *session)
 	char banner[256];
 	int banner_len = 0;
 
-	while ((banner_len < (int) sizeof(banner)) &&
+	while ((banner_len < sizeof(banner)) &&
 			((banner_len == 0) || (banner[banner_len-1] != '\n'))) {
 		char c = '\0';
 		int ret;
 
 		ret = recv(session->socket_fd, &c, 1, LIBSSH2_SOCKET_RECV_FLAGS(session));
 
-		if ((ret < 0) && (ret != EAGAIN)) {
-			/* Some kinda error, but don't break for non-blocking issues */
-			return 1;
+		if (ret < 0) {
+#ifdef WIN32
+			switch (WSAGetLastError()) {
+				case WSAEWOULDBLOCK:
+					errno = EAGAIN;
+					break;
+				case WSAENOTSOCK:
+					errno = EBADF;
+					break;
+				case WSAENOTCONN:
+				case WSAECONNABORTED:
+					errno = ENOTCONN;
+					break;
+				case WSAEINTR:
+					errno = EINTR;
+					break;
+			}
+#endif /* WIN32 */
+			if (errno != EAGAIN) {
+				/* Some kinda error, but don't break for non-blocking issues */
+				return 1;
+			}
 		}
 
 		if (ret <= 0) continue;
@@ -125,7 +144,7 @@ static int libssh2_banner_receive(LIBSSH2_SESSION *session)
 
 	if (!banner_len) return 1;
 
-	session->remote.banner = (unsigned char *) LIBSSH2_ALLOC(session, banner_len + 1);
+	session->remote.banner = LIBSSH2_ALLOC(session, banner_len + 1);
 	memcpy(session->remote.banner, banner, banner_len);
 	session->remote.banner[banner_len] = '\0';
 #ifdef LIBSSH2_DEBUG_TRANSPORT
@@ -145,8 +164,8 @@ static int libssh2_banner_send(LIBSSH2_SESSION *session)
 
 	if (session->local.banner) {
 		/* setopt_string will have given us our \r\n characters */
-		banner_len = strlen((char *) session->local.banner);
-		banner = (char *) session->local.banner;
+		banner_len = strlen(session->local.banner);
+		banner = session->local.banner;
 	}
 #ifdef LIBSSH2_DEBUG_TRANSPORT
 {
@@ -185,7 +204,7 @@ LIBSSH2_API int libssh2_banner_set(LIBSSH2_SESSION *session, const char *banner)
 		return 0;
 	}
 
-	session->local.banner = (unsigned char *) LIBSSH2_ALLOC(session, banner_len + 3);
+	session->local.banner = LIBSSH2_ALLOC(session, banner_len + 3);
 	if (!session->local.banner) {
 		libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for local banner", 0);
 		return -1;
@@ -225,7 +244,7 @@ LIBSSH2_API LIBSSH2_SESSION *libssh2_session_init_ex(
 	if (my_free)	local_free		= my_free;
 	if (my_realloc)	local_realloc	= my_realloc;
 
-	session = (LIBSSH2_SESSION *) local_alloc(sizeof(LIBSSH2_SESSION), (void **) abstract);
+	session = local_alloc(sizeof(LIBSSH2_SESSION), abstract);
 	memset(session, 0, sizeof(LIBSSH2_SESSION));
 	session->alloc		= local_alloc;
 	session->free		= local_free;
@@ -249,28 +268,28 @@ LIBSSH2_API void* libssh2_session_callback_set(LIBSSH2_SESSION *session, int cbt
 
 	switch (cbtype) {
 		case LIBSSH2_CALLBACK_IGNORE:
-			oldcb = (void *) session->ssh_msg_ignore;
-			session->ssh_msg_ignore = (void (*) (LIBSSH2_SESSION*, const char *, int, void **))callback;
+			oldcb = session->ssh_msg_ignore;
+			session->ssh_msg_ignore = callback;
 			return oldcb;
 			break;
 		case LIBSSH2_CALLBACK_DEBUG:
-			oldcb = (void *) session->ssh_msg_debug;
-			session->ssh_msg_debug = (void (*) (LIBSSH2_SESSION*, int, const char *, int, const char *, int, void **))callback;
+			oldcb = session->ssh_msg_debug;
+			session->ssh_msg_debug = callback;
 			return oldcb;
 			break;
 		case LIBSSH2_CALLBACK_DISCONNECT:
-			oldcb = (void *) session->ssh_msg_disconnect;
-			session->ssh_msg_disconnect = (void (*) (LIBSSH2_SESSION*, int, const char *, int, const char *, int, void **))callback;
+			oldcb = session->ssh_msg_disconnect;
+			session->ssh_msg_disconnect = callback;
 			return oldcb;
 			break;
 		case LIBSSH2_CALLBACK_MACERROR:
-			oldcb = (void *) session->macerror;
-			session->macerror = (int (*) (LIBSSH2_SESSION*, const char *, int, void **))callback;
+			oldcb = session->macerror;
+			session->macerror = callback;
 			return oldcb;
 			break;
 		case LIBSSH2_CALLBACK_X11:
-			oldcb = (void *) session->x11;
-			session->x11 = (void (*) (LIBSSH2_SESSION*, LIBSSH2_CHANNEL*, char*, int, void **) )callback;
+			oldcb = session->x11;
+			session->x11 = callback;
 			return oldcb;
 			break;
 	}
@@ -298,9 +317,9 @@ LIBSSH2_API int libssh2_session_startup(LIBSSH2_SESSION *session, int socket)
 #ifdef LIBSSH2_DEBUG_TRANSPORT
 	_libssh2_debug(session, LIBSSH2_DBG_TRANS, "session_startup for socket %d", socket);
 #endif
-	if (socket <= 0) {
+	if (socket < 0) {
 		/* Did we forget something? */
-		libssh2_error(session, LIBSSH2_ERROR_SOCKET_NONE, "No socket provided", 0);
+		libssh2_error(session, LIBSSH2_ERROR_SOCKET_NONE, "Bad socket provided", 0);
 		return LIBSSH2_ERROR_SOCKET_NONE;
 	}
 	session->socket_fd = socket;
@@ -341,7 +360,7 @@ LIBSSH2_API int libssh2_session_startup(LIBSSH2_SESSION *session, int socket)
 	service_length = libssh2_ntohu32(data + 1);
 
 	if ((service_length != (sizeof("ssh-userauth") - 1)) ||
-		strncmp((char *)"ssh-userauth", (char *)data + 5, service_length)) {
+		strncmp("ssh-userauth", data + 5, service_length)) {
 		LIBSSH2_FREE(session, data);
 		libssh2_error(session, LIBSSH2_ERROR_PROTO, "Invalid response received from server", 0);
 		return LIBSSH2_ERROR_PROTO;
@@ -394,6 +413,7 @@ LIBSSH2_API void libssh2_session_free(LIBSSH2_SESSION *session)
 		if (session->local.crypt) {
 			if (session->local.crypt->flags & LIBSSH2_CRYPT_METHOD_FLAG_EVP) {
 				if (session->local.crypt_abstract) {
+					EVP_CIPHER_CTX_cleanup(session->local.crypt_abstract);
 					LIBSSH2_FREE(session, session->local.crypt_abstract);
 					session->local.crypt_abstract = NULL;
 				}
@@ -415,6 +435,7 @@ LIBSSH2_API void libssh2_session_free(LIBSSH2_SESSION *session)
 		if (session->remote.crypt) {
 			if (session->remote.crypt->flags & LIBSSH2_CRYPT_METHOD_FLAG_EVP) {
 				if (session->remote.crypt_abstract) {
+					EVP_CIPHER_CTX_cleanup(session->remote.crypt_abstract);
 					LIBSSH2_FREE(session, session->remote.crypt_abstract);
 					session->remote.crypt_abstract = NULL;
 				}
@@ -513,7 +534,7 @@ LIBSSH2_API int libssh2_session_disconnect_ex(LIBSSH2_SESSION *session, int reas
 	}
 	data_len = descr_len + lang_len + 13; /* packet_type(1) + reason code(4) + descr_len(4) + lang_len(4) */
 
-	s = data = (unsigned char *) LIBSSH2_ALLOC(session, data_len);
+	s = data = LIBSSH2_ALLOC(session, data_len);
 	if (!data) {
 		libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for disconnect packet", 0);
 		return -1;
@@ -618,7 +639,7 @@ LIBSSH2_API int libssh2_session_last_error(LIBSSH2_SESSION *session, char **errm
 	if (!session->err_code) {
 		if (errmsg) {
 			if (want_buf) {
-				*errmsg = (char *) LIBSSH2_ALLOC(session, 1);
+				*errmsg = LIBSSH2_ALLOC(session, 1);
 				if (*errmsg) {
 					**errmsg = 0;
 				}
@@ -633,7 +654,7 @@ LIBSSH2_API int libssh2_session_last_error(LIBSSH2_SESSION *session, char **errm
 	}
 
 	if (errmsg) {
-		char *serrmsg = session->err_msg ? session->err_msg : (char *) "";
+		char *serrmsg = session->err_msg ? session->err_msg : "";
 		int ownbuf = session->err_msg ? session->err_should_free : 0;
 
 		if (want_buf) {
@@ -643,7 +664,7 @@ LIBSSH2_API int libssh2_session_last_error(LIBSSH2_SESSION *session, char **errm
 				session->err_should_free = 0;
 			} else {
 				/* Make a copy so the calling program can own it */
-				*errmsg = (char *) LIBSSH2_ALLOC(session, session->err_msglen + 1);
+				*errmsg = LIBSSH2_ALLOC(session, session->err_msglen + 1);
 				if (*errmsg) {
 					memcpy(*errmsg, session->err_msg, session->err_msglen);
 					(*errmsg)[session->err_msglen] = 0;
@@ -809,7 +830,7 @@ LIBSSH2_API int libssh2_poll(LIBSSH2_POLLFD *fds, unsigned int nfds, long timeou
 
 		active_fds = 0;
 
-		for (i = 0; i < (int) nfds; i++) {
+		for (i = 0; i < nfds; i++) {
 			if (fds[i].events != fds[i].revents) {
 				switch (fds[i].type) {
 					case LIBSSH2_POLLFD_CHANNEL:

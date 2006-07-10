@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2005, Sara Golemon <sarag@libssh2.org>
+/* Copyright (c) 2004-2006, Sara Golemon <sarag@libssh2.org>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms,
@@ -57,7 +57,7 @@ LIBSSH2_API char *libssh2_userauth_list(LIBSSH2_SESSION *session, const char *us
 	unsigned long methods_len;
 	unsigned char *data, *s;
 
-	s = data = (unsigned char *) LIBSSH2_ALLOC(session, data_len);
+	s = data = LIBSSH2_ALLOC(session, data_len);
 	if (!data) {
 		libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for userauth_list", 0);
 		return NULL;
@@ -99,7 +99,7 @@ LIBSSH2_API char *libssh2_userauth_list(LIBSSH2_SESSION *session, const char *us
 #ifdef LIBSSH2_DEBUG_USERAUTH
 	_libssh2_debug(session, LIBSSH2_DBG_AUTH, "Permitted auth methods: %s", data);
 #endif
-	return (char *) data;
+	return data;
 }
 /* }}} */
 
@@ -124,7 +124,7 @@ LIBSSH2_API int libssh2_userauth_password_ex(LIBSSH2_SESSION *session, const cha
 	unsigned long data_len = username_len + password_len + 40; /* packet_type(1) + username_len(4) + service_len(4) + service(14)"ssh-connection" + 
 																  method_len(4) + method(8)"password" + chgpwdbool(1) + password_len(4) */
 
-	s = data = (unsigned char *) LIBSSH2_ALLOC(session, data_len);
+	s = data = LIBSSH2_ALLOC(session, data_len);
 	if (!data) {
 		libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for userauth-password request", 0);
 		return -1;
@@ -184,7 +184,7 @@ LIBSSH2_API int libssh2_userauth_password_ex(LIBSSH2_SESSION *session, const cha
 				return -1;
 			}
 			data_len = username_len + password_len + 44 + newpw_len; /* basic data_len + newpw_len(4) */
-			s = data = (unsigned char *) LIBSSH2_ALLOC(session, data_len);
+			s = data = LIBSSH2_ALLOC(session, data_len);
 			if (!data) {
 				libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for userauth-password-change request", 0);
 				return -1;
@@ -259,13 +259,13 @@ static int libssh2_file_read_publickey(LIBSSH2_SESSION *session, unsigned char *
 		return -1;
 	}
 
-	pubkey = (char *) LIBSSH2_ALLOC(session, pubkey_len);
+	pubkey = LIBSSH2_ALLOC(session, pubkey_len);
 	if (!pubkey) {
 		libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for public key data", 0);
 		fclose(fd);
 		return -1;
 	}
-	if (fread(pubkey, 1, pubkey_len, fd) != (unsigned int) pubkey_len) {
+	if (fread(pubkey, 1, pubkey_len, fd) != pubkey_len) {
 		libssh2_error(session, LIBSSH2_ERROR_FILE, "Unable to read public key from file", 0);
 		LIBSSH2_FREE(session, pubkey);
 		fclose(fd);
@@ -280,7 +280,7 @@ static int libssh2_file_read_publickey(LIBSSH2_SESSION *session, unsigned char *
 		return -1;
 	}
 
-	if ((sp1 = (char *) memchr(pubkey, ' ', pubkey_len)) == NULL) {
+	if ((sp1 = memchr(pubkey, ' ', pubkey_len)) == NULL) {
 		libssh2_error(session, LIBSSH2_ERROR_FILE, "Invalid public key data", 0);
 		LIBSSH2_FREE(session, pubkey);
 		return -1;
@@ -288,12 +288,12 @@ static int libssh2_file_read_publickey(LIBSSH2_SESSION *session, unsigned char *
 	/* Wasting some bytes here (okay, more than some),
 	 * but since it's likely to be freed soon anyway, 
 	 * we'll just avoid the extra free/alloc and call it a wash */
-	*method = (unsigned char *) pubkey;
+	*method = pubkey;
 	*method_len = sp1 - pubkey;
 
 	sp1++;
 
-	if ((sp2 = (char *) memchr(sp1, ' ', pubkey_len - *method_len)) == NULL) {
+	if ((sp2 = memchr(sp1, ' ', pubkey_len - *method_len)) == NULL) {
 		/* Assume that the id string is missing, but that it's okay */
 		sp2 = pubkey + pubkey_len;
 	}
@@ -303,7 +303,7 @@ static int libssh2_file_read_publickey(LIBSSH2_SESSION *session, unsigned char *
 		LIBSSH2_FREE(session, pubkey);
 		return -1;
 	}
-	*pubkeydata = (unsigned char *) tmp;
+	*pubkeydata = tmp;
 	*pubkeydata_len = tmp_len;
 
 	return 0;
@@ -314,8 +314,8 @@ static int libssh2_file_read_publickey(LIBSSH2_SESSION *session, unsigned char *
  * Read a PEM encoded private key from an id_??? style file
  */
 static int libssh2_file_read_privatekey(LIBSSH2_SESSION *session,	LIBSSH2_HOSTKEY_METHOD **hostkey_method, void **hostkey_abstract,
-					const char *method, int method_len,
-					const char *privkeyfile, const char *passphrase)
+																	const char *method, int method_len,
+																	const char *privkeyfile, const char *passphrase)
 {
 	LIBSSH2_HOSTKEY_METHOD **hostkey_methods_avail = libssh2_hostkey_methods();
 
@@ -337,7 +337,7 @@ static int libssh2_file_read_privatekey(LIBSSH2_SESSION *session,	LIBSSH2_HOSTKE
 		return -1;
 	}
 
-	if ((*hostkey_method)->initPEM(session, (unsigned char *) privkeyfile, (unsigned char *) passphrase, hostkey_abstract)) {
+	if ((*hostkey_method)->initPEM(session, privkeyfile, passphrase, hostkey_abstract)) {
 		libssh2_error(session, LIBSSH2_ERROR_FILE, "Unable to initialize private key from file", 0);
 		return -1;
 	}
@@ -373,7 +373,7 @@ LIBSSH2_API int libssh2_userauth_hostbased_fromfile_ex(LIBSSH2_SESSION *session,
 	 */
 	/* Preallocate space for an overall length,  method name again,
 	 * and the signature, which won't be any larger than the size of the publickeydata itself */
-	s = packet = (unsigned char *) LIBSSH2_ALLOC(session, packet_len + 4 + (4 + method_len) + (4 + pubkeydata_len));
+	s = packet = LIBSSH2_ALLOC(session, packet_len + 4 + (4 + method_len) + (4 + pubkeydata_len));
 
 	*(s++) = SSH_MSG_USERAUTH_REQUEST;
 	libssh2_htonu32(s, username_len);				s += 4;
@@ -397,18 +397,18 @@ LIBSSH2_API int libssh2_userauth_hostbased_fromfile_ex(LIBSSH2_SESSION *session,
 	libssh2_htonu32(s, local_username_len);			s += 4;
 	memcpy(s, local_username, local_username_len);	s += local_username_len;
 
-	if (libssh2_file_read_privatekey(session, &privkeyobj, &abstract, (char *) method, method_len, privatekey, passphrase)) {
+	if (libssh2_file_read_privatekey(session, &privkeyobj, &abstract, method, method_len, privatekey, passphrase)) {
 		LIBSSH2_FREE(session, method);
 		LIBSSH2_FREE(session, packet);
 		return -1;
 	}
 
 	libssh2_htonu32(buf, session->session_id_len);
-	datavec[0].iov_base = (char *) buf;
+	datavec[0].iov_base = buf;
 	datavec[0].iov_len = 4;
-	datavec[1].iov_base = (char *) session->session_id;
+	datavec[1].iov_base = session->session_id;
 	datavec[1].iov_len = session->session_id_len;
-	datavec[2].iov_base = (char *) packet;
+	datavec[2].iov_base = packet;
 	datavec[2].iov_len = packet_len;
 
 	if (privkeyobj->signv(session, &sig, &sig_len, 3, datavec, &abstract)) {
@@ -426,7 +426,7 @@ LIBSSH2_API int libssh2_userauth_hostbased_fromfile_ex(LIBSSH2_SESSION *session,
 
 	if (sig_len > pubkeydata_len ) {
 		/* Should *NEVER* happen, but...well.. better safe than sorry */
-		packet = (unsigned char *) LIBSSH2_REALLOC(session, packet, packet_len + 4 + (4 + method_len) + (4 + sig_len)); /* PK sigblob */
+		packet = LIBSSH2_REALLOC(session, packet, packet_len + 4 + (4 + method_len) + (4 + sig_len)); /* PK sigblob */
 		if (!packet) {
 			libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Failed allocating additional space for userauth-hostbased packet", 0);
 			LIBSSH2_FREE(session, method);
@@ -502,7 +502,7 @@ LIBSSH2_API int libssh2_userauth_publickey_fromfile_ex(LIBSSH2_SESSION *session,
 																	   algmethod_len(4) + publickey_len(4) */
 	/* Preallocate space for an overall length,  method name again,
 	 * and the signature, which won't be any larger than the size of the publickeydata itself */
-	s = packet = (unsigned char *) LIBSSH2_ALLOC(session, packet_len + 4 + (4 + method_len) + (4 + pubkeydata_len));
+	s = packet = LIBSSH2_ALLOC(session, packet_len + 4 + (4 + method_len) + (4 + pubkeydata_len));
 
 	*(s++) = SSH_MSG_USERAUTH_REQUEST;
 	libssh2_htonu32(s, username_len);				s += 4;
@@ -568,7 +568,7 @@ LIBSSH2_API int libssh2_userauth_publickey_fromfile_ex(LIBSSH2_SESSION *session,
 	LIBSSH2_FREE(session, data);
 	LIBSSH2_FREE(session, pubkeydata);
 
-	if (libssh2_file_read_privatekey(session, &privkeyobj, &abstract, (char *) method, method_len, privatekey, passphrase)) {
+	if (libssh2_file_read_privatekey(session, &privkeyobj, &abstract, method, method_len, privatekey, passphrase)) {
 		LIBSSH2_FREE(session, method);
 		LIBSSH2_FREE(session, packet);
 		return -1;
@@ -577,11 +577,11 @@ LIBSSH2_API int libssh2_userauth_publickey_fromfile_ex(LIBSSH2_SESSION *session,
 	*b = 0xFF;
 
 	libssh2_htonu32(buf, session->session_id_len);
-	datavec[0].iov_base = (char *) buf;
+	datavec[0].iov_base = buf;
 	datavec[0].iov_len = 4;
-	datavec[1].iov_base = (char *) session->session_id;
+	datavec[1].iov_base = session->session_id;
 	datavec[1].iov_len = session->session_id_len;
-	datavec[2].iov_base = (char *) packet;
+	datavec[2].iov_base = packet;
 	datavec[2].iov_len = packet_len;
 
 	if (privkeyobj->signv(session, &sig, &sig_len, 3, datavec, &abstract)) {
@@ -599,7 +599,7 @@ LIBSSH2_API int libssh2_userauth_publickey_fromfile_ex(LIBSSH2_SESSION *session,
 
 	if (sig_len > pubkeydata_len) {
 		/* Should *NEVER* happen, but...well.. better safe than sorry */
-		packet = (unsigned char *) LIBSSH2_REALLOC(session, packet, packet_len + 4 + (4 + method_len) + (4 + sig_len)); /* PK sigblob */
+		packet = LIBSSH2_REALLOC(session, packet, packet_len + 4 + (4 + method_len) + (4 + sig_len)); /* PK sigblob */
 		if (!packet) {
 			libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Failed allocating additional space for userauth-publickey packet", 0);
 			LIBSSH2_FREE(session, method);
@@ -670,7 +670,7 @@ LIBSSH2_API int libssh2_userauth_keyboard_interactive_ex(LIBSSH2_SESSION *sessio
 		+ 4 + 0            /* string    submethods (ISO-10646 UTF-8) */
 		;
 
-	if (!(data = s = (unsigned char *) LIBSSH2_ALLOC(session, packet_len))) {
+	if (!(data = s = LIBSSH2_ALLOC(session, packet_len))) {
 		libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for keyboard-interactive authentication", 0);
 		return -1;
 	}
@@ -743,7 +743,7 @@ LIBSSH2_API int libssh2_userauth_keyboard_interactive_ex(LIBSSH2_SESSION *sessio
 
 		/* string    name (ISO-10646 UTF-8) */
 		auth_name_len = libssh2_ntohu32(s);								s += 4;
-		if (!(auth_name = (char *) LIBSSH2_ALLOC(session, auth_name_len))) {
+		if (!(auth_name = LIBSSH2_ALLOC(session, auth_name_len))) {
 			libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for keyboard-interactive 'name' request field", 0);
 			goto cleanup;
 		}
@@ -751,7 +751,7 @@ LIBSSH2_API int libssh2_userauth_keyboard_interactive_ex(LIBSSH2_SESSION *sessio
 
 		/* string    instruction (ISO-10646 UTF-8) */
 		auth_instruction_len = libssh2_ntohu32(s); s += 4;
-		if (!(auth_instruction = (char *) LIBSSH2_ALLOC(session, auth_instruction_len))) {
+		if (!(auth_instruction = LIBSSH2_ALLOC(session, auth_instruction_len))) {
 			libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for keyboard-interactive 'instruction' request field", 0);
 			goto cleanup;
 		}
@@ -764,14 +764,14 @@ LIBSSH2_API int libssh2_userauth_keyboard_interactive_ex(LIBSSH2_SESSION *sessio
 		/* int       num-prompts */
 		num_prompts = libssh2_ntohu32(s);								s += 4;
 
-		prompts = (LIBSSH2_USERAUTH_KBDINT_PROMPT *) LIBSSH2_ALLOC(session, sizeof(LIBSSH2_USERAUTH_KBDINT_PROMPT) * num_prompts);
+		prompts = LIBSSH2_ALLOC(session, sizeof(LIBSSH2_USERAUTH_KBDINT_PROMPT) * num_prompts);
 		if (!prompts) {
 			libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for keyboard-interactive prompts array", 0);
 			goto cleanup;
 		}
 		memset(prompts, 0, sizeof(LIBSSH2_USERAUTH_KBDINT_PROMPT) * num_prompts);
 
-		responses = (LIBSSH2_USERAUTH_KBDINT_RESPONSE *) LIBSSH2_ALLOC(session, sizeof(LIBSSH2_USERAUTH_KBDINT_RESPONSE) * num_prompts);
+		responses = LIBSSH2_ALLOC(session, sizeof(LIBSSH2_USERAUTH_KBDINT_RESPONSE) * num_prompts);
 		if (!responses) {
 			libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for keyboard-interactive responses array", 0);
 			goto cleanup;
@@ -781,7 +781,7 @@ LIBSSH2_API int libssh2_userauth_keyboard_interactive_ex(LIBSSH2_SESSION *sessio
 		for(i = 0; i != num_prompts; ++i) {
 			/* string    prompt[1] (ISO-10646 UTF-8) */
 			prompts[i].length = libssh2_ntohu32(s);						s += 4;
-			if (!(prompts[i].text = (char *) LIBSSH2_ALLOC(session, prompts[i].length))) {
+			if (!(prompts[i].text = LIBSSH2_ALLOC(session, prompts[i].length))) {
 				libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for keyboard-interactive prompt message", 0);
 				goto cleanup;
 			}
@@ -805,7 +805,7 @@ LIBSSH2_API int libssh2_userauth_keyboard_interactive_ex(LIBSSH2_SESSION *sessio
 			packet_len += 4 + responses[i].length; /* string    response[1] (ISO-10646 UTF-8) */
 		}
 
-		if (!(data = s = (unsigned char *) LIBSSH2_ALLOC(session, packet_len))) {
+		if (!(data = s = LIBSSH2_ALLOC(session, packet_len))) {
 			libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for keyboard-interactive response packet", 0);
 			goto cleanup;
 		}

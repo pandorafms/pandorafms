@@ -141,6 +141,9 @@ if (comprueba_login() == 0) {
   position:absolute;
   margin:0; width:550px; height:220px;
   visibility:hidden;
+  filter:alpha(opacity=95);
+  -moz-opacity: 0.95;
+  opacity: 0.95;
 }
 --></style>
 

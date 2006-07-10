@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2005, Sara Golemon <sarag@libssh2.org>
+/* Copyright (c) 2004-2006, Sara Golemon <sarag@libssh2.org>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms,
@@ -95,7 +95,7 @@ inline int libssh2_packet_queue_listener(LIBSSH2_SESSION *session, unsigned char
 	_libssh2_debug(session, LIBSSH2_DBG_CONN, "Remote received connection from %s:%ld to %s:%ld", shost, sport, host, port);
 #endif
 	while (l) {
-		if ((l->port == (int)port) &&
+		if ((l->port == port) &&
 			(strlen(l->host) == host_len) &&
 			(memcmp(l->host, host, host_len) == 0)) {
 			/* This is our listener */
@@ -111,7 +111,7 @@ inline int libssh2_packet_queue_listener(LIBSSH2_SESSION *session, unsigned char
 				break;
 			}
 
-			channel = (LIBSSH2_CHANNEL *) LIBSSH2_ALLOC(session, sizeof(LIBSSH2_CHANNEL));
+			channel = LIBSSH2_ALLOC(session, sizeof(LIBSSH2_CHANNEL));
 			if (!channel) {
 				libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate a channel for new connection", 0);
 				failure_code = 4; /* SSH_OPEN_RESOURCE_SHORTAGE */
@@ -121,7 +121,7 @@ inline int libssh2_packet_queue_listener(LIBSSH2_SESSION *session, unsigned char
 
 			channel->session = session;
 			channel->channel_type_len = sizeof("forwarded-tcpip") - 1;
-			channel->channel_type = (unsigned char *) LIBSSH2_ALLOC(session, channel->channel_type_len + 1);
+			channel->channel_type = LIBSSH2_ALLOC(session, channel->channel_type_len + 1);
 			if (!channel->channel_type) {
 				libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate a channel for new connection", 0);
 				LIBSSH2_FREE(session, channel);
@@ -225,7 +225,7 @@ inline int libssh2_packet_x11_open(LIBSSH2_SESSION *session, unsigned char *data
 	_libssh2_debug(session, LIBSSH2_DBG_CONN, "X11 Connection Received from %s:%ld on channel %lu", shost, sport, sender_channel);
 #endif
 	if (session->x11) {
-		channel = (LIBSSH2_CHANNEL *) LIBSSH2_ALLOC(session, sizeof(LIBSSH2_CHANNEL));
+		channel = LIBSSH2_ALLOC(session, sizeof(LIBSSH2_CHANNEL));
 		if (!channel) {
 			libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate a channel for new connection", 0);
 			failure_code = 4; /* SSH_OPEN_RESOURCE_SHORTAGE */
@@ -235,7 +235,7 @@ inline int libssh2_packet_x11_open(LIBSSH2_SESSION *session, unsigned char *data
 
 		channel->session = session;
 		channel->channel_type_len = sizeof("x11") - 1;
-		channel->channel_type = (unsigned char *) LIBSSH2_ALLOC(session, channel->channel_type_len + 1);
+		channel->channel_type = LIBSSH2_ALLOC(session, channel->channel_type_len + 1);
 		if (!channel->channel_type) {
 			libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate a channel for new connection", 0);
 			LIBSSH2_FREE(session, channel);
@@ -284,7 +284,7 @@ inline int libssh2_packet_x11_open(LIBSSH2_SESSION *session, unsigned char *data
 		session->channels.tail = channel;
 
 		/* Pass control to the callback, they may turn right around and free the channel, or actually use it */
-		LIBSSH2_X11_OPEN(channel, (char *) shost, sport);
+		LIBSSH2_X11_OPEN(channel, shost, sport);
 
 		return 0;
 	} else {
@@ -321,7 +321,7 @@ static int libssh2_packet_add(LIBSSH2_SESSION *session, unsigned char *data, siz
 #endif
 	if (macstate == LIBSSH2_MAC_INVALID) {
 		if (session->macerror) {
-			if (LIBSSH2_MACERROR(session, (char *)data, datalen) == 0) {
+			if (LIBSSH2_MACERROR(session, data, datalen) == 0) {
 				/* Calling app has given the OK, Process it anyway */
 				macstate = LIBSSH2_MAC_CONFIRMED;
 			} else {
@@ -349,7 +349,7 @@ static int libssh2_packet_add(LIBSSH2_SESSION *session, unsigned char *data, siz
 
 			reason = libssh2_ntohu32(data + 1);
 			message_len = libssh2_ntohu32(data + 5);
-			message = (char *)data + 9; /* packet_type(1) + reason(4) + message_len(4) */
+			message = data + 9; /* packet_type(1) + reason(4) + message_len(4) */
 			language_len = libssh2_ntohu32(data + 9 + message_len);
 			/* This is where we hack on the data a little,
 			 * Use the MSB of language_len to to a terminating NULL (In all liklihood it is already)
@@ -358,7 +358,7 @@ static int libssh2_packet_add(LIBSSH2_SESSION *session, unsigned char *data, siz
 			 * With the lengths passed this isn't *REALLY* necessary, but it's "kind"
 			 */
 			message[message_len] = '\0';
-			language = (char *)data + 9 + message_len + 3;
+			language = data + 9 + message_len + 3;
 			if (language_len) {
 				memcpy(language, language + 1, language_len);
 			}
@@ -380,7 +380,7 @@ static int libssh2_packet_add(LIBSSH2_SESSION *session, unsigned char *data, siz
 			memcpy(data + 4, data + 5, datalen - 5);
 			data[datalen] = '\0';
 			if (session->ssh_msg_ignore) {
-				LIBSSH2_IGNORE(session, (char *)data + 4, datalen - 5);
+				LIBSSH2_IGNORE(session, data + 4, datalen - 5);
 			}
 			LIBSSH2_FREE(session, data);
 			return 0;
@@ -392,7 +392,7 @@ static int libssh2_packet_add(LIBSSH2_SESSION *session, unsigned char *data, siz
 			int message_len, language_len;
 
 			message_len = libssh2_ntohu32(data + 2);
-			message = (char *)data + 6; /* packet_type(1) + display(1) + message_len(4) */
+			message = data + 6; /* packet_type(1) + display(1) + message_len(4) */
 			language_len = libssh2_ntohu32(data + 6 + message_len);
 			/* This is where we hack on the data a little,
 			 * Use the MSB of language_len to to a terminating NULL (In all liklihood it is already)
@@ -401,7 +401,7 @@ static int libssh2_packet_add(LIBSSH2_SESSION *session, unsigned char *data, siz
 			 * With the lengths passed this isn't *REALLY* necessary, but it's "kind"
 			 */
 			message[message_len] = '\0';
-			language = (char *)data + 6 + message_len + 3;
+			language = data + 6 + message_len + 3;
 			if (language_len) {
 				memcpy(language, language + 1, language_len);
 			}
@@ -573,7 +573,7 @@ static int libssh2_packet_add(LIBSSH2_SESSION *session, unsigned char *data, siz
 			break;
 	}
 
-	packet = (LIBSSH2_PACKET *)LIBSSH2_ALLOC(session, sizeof(LIBSSH2_PACKET));
+	packet = LIBSSH2_ALLOC(session, sizeof(LIBSSH2_PACKET));
 	memset(packet, 0, sizeof(LIBSSH2_PACKET));
 
 	packet->data = data;
@@ -635,14 +635,14 @@ static int libssh2_blocking_read(LIBSSH2_SESSION *session, unsigned char *buf, s
 	while (bytes_read < count) {
 		int ret;
 
-		ret = recv(session->socket_fd, (char *)buf + bytes_read, count - bytes_read, LIBSSH2_SOCKET_RECV_FLAGS(session));
+		ret = recv(session->socket_fd, buf + bytes_read, count - bytes_read, LIBSSH2_SOCKET_RECV_FLAGS(session));
 		if (ret < 0) {
 #ifdef WIN32
 			switch (WSAGetLastError()) {
 				case WSAEWOULDBLOCK:	errno = EAGAIN;		break;
+				case WSAENOTSOCK:		errno = EBADF;		break;
 				case WSAENOTCONN:
-				case WSAENOTSOCK:
-				case WSAECONNABORTED:	errno = EBADF;		break;
+				case WSAECONNABORTED:	errno = ENOTCONN;	break;
 				case WSAEINTR:			errno = EINTR;		break;
 			}
 #endif
@@ -680,7 +680,7 @@ static int libssh2_blocking_read(LIBSSH2_SESSION *session, unsigned char *buf, s
 			if (errno == EINTR) {
 				continue;
 			}
-			if ((errno == EBADF) || (errno == EIO)) {
+			if ((errno == EBADF) || (errno == EIO) || (errno == ENOTCONN)) {
 				session->socket_state = LIBSSH2_SOCKET_DISCONNECTED;
 			}
 			return -1;
@@ -744,13 +744,13 @@ int libssh2_packet_read(LIBSSH2_SESSION *session, int should_block)
 		if (should_block) {
 			read_len = libssh2_blocking_read(session, block, blocksize);
 		} else {
-			read_len = recv(session->socket_fd, (char *)block, 1, LIBSSH2_SOCKET_RECV_FLAGS(session));
+			read_len = recv(session->socket_fd, block, 1, LIBSSH2_SOCKET_RECV_FLAGS(session));
 			if (read_len <= 0) {
 				return 0;
 			}
 			read_len += libssh2_blocking_read(session, block + read_len, blocksize - read_len);
 		}
-		if (read_len < (int)blocksize) {
+		if (read_len < blocksize) {
 			return (session->socket_state == LIBSSH2_SOCKET_DISCONNECTED) ? 0 : -1;
 		}
 
@@ -781,13 +781,13 @@ int libssh2_packet_read(LIBSSH2_SESSION *session, int should_block)
 			return -1;
 		}
 
-		s = payload = (unsigned char *)LIBSSH2_ALLOC(session, payload_len);
+		s = payload = LIBSSH2_ALLOC(session, payload_len);
 		memcpy(s, block + 5, blocksize - 5);
 		s += blocksize - 5;
 
-		while ((s - payload) < (int)payload_len) {
+		while ((s - payload) < payload_len) {
 			read_len = libssh2_blocking_read(session, block, blocksize);
-			if (read_len < (int)blocksize) {
+			if (read_len < blocksize) {
 				LIBSSH2_FREE(session, payload);
 				return -1;
 			}
@@ -815,7 +815,7 @@ int libssh2_packet_read(LIBSSH2_SESSION *session, int should_block)
 		/* Calculate MAC hash */
  		session->remote.mac->hash(session, block + session->remote.mac->mac_len, session->remote.seqno, tmp, 5, payload, payload_len, &session->remote.mac_abstract);
 
-		macstate =  (strncmp((char *)block, (char *)block + session->remote.mac->mac_len, session->remote.mac->mac_len) == 0) ? LIBSSH2_MAC_CONFIRMED : LIBSSH2_MAC_INVALID;
+		macstate =  (strncmp(block, block + session->remote.mac->mac_len, session->remote.mac->mac_len) == 0) ? LIBSSH2_MAC_CONFIRMED : LIBSSH2_MAC_INVALID;
 
 		session->remote.seqno++;
 
@@ -851,7 +851,7 @@ int libssh2_packet_read(LIBSSH2_SESSION *session, int should_block)
 					LIBSSH2_FREE(session, payload);
 
 					/* We need a freeable struct otherwise the brigade won't know what to do with it */
-					payload = (unsigned char *)LIBSSH2_ALLOC(session, data_len);
+					payload = LIBSSH2_ALLOC(session, data_len);
 					if (!payload) {
 						libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for copy of uncompressed data", 0);
 						return -1;
@@ -862,9 +862,9 @@ int libssh2_packet_read(LIBSSH2_SESSION *session, int should_block)
 			}
 		}
 
+		packet_type = payload[0];
 		libssh2_packet_add(session, payload, payload_len, macstate);
 
-		packet_type = payload[0];
 	} else { /* No cipher active */
 		unsigned char *payload;
 		unsigned char buf[24];
@@ -875,7 +875,7 @@ int libssh2_packet_read(LIBSSH2_SESSION *session, int should_block)
 		if (should_block) {
 			buf_len = libssh2_blocking_read(session, buf, 5);
 		} else {
-			buf_len = recv(session->socket_fd, (char *)buf, 1, LIBSSH2_SOCKET_RECV_FLAGS(session));
+			buf_len = recv(session->socket_fd, buf, 1, LIBSSH2_SOCKET_RECV_FLAGS(session));
 			if (buf_len <= 0) {
 				return 0;
 			}
@@ -892,13 +892,13 @@ int libssh2_packet_read(LIBSSH2_SESSION *session, int should_block)
 #endif
 
 		payload_len = packet_length - padding_length - 1; /* padding_length(1) */
-		payload = (unsigned char *)LIBSSH2_ALLOC(session, payload_len);
+		payload = LIBSSH2_ALLOC(session, payload_len);
 		if (!payload) {
 			libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for copy of plaintext data", 0);
 			return -1;
 		}
 
-		if (libssh2_blocking_read(session, payload, payload_len) < (int) payload_len) {
+		if (libssh2_blocking_read(session, payload, payload_len) < payload_len) {
 			return (session->socket_state == LIBSSH2_SOCKET_DISCONNECTED) ? 0 : -1;
 		}
 		while (padding_length) {
@@ -911,11 +911,11 @@ int libssh2_packet_read(LIBSSH2_SESSION *session, int should_block)
 				break;
 		}
 
+		packet_type = payload[0];
+
 		/* MACs don't exist in non-encrypted mode */
 		libssh2_packet_add(session, payload, payload_len, LIBSSH2_MAC_CONFIRMED);
 		session->remote.seqno++;
-
-		packet_type = payload[0];
 	}
 	return packet_type;
 }
@@ -972,7 +972,7 @@ int libssh2_packet_ask_ex(LIBSSH2_SESSION *session, unsigned char packet_type, u
 int libssh2_packet_askv_ex(LIBSSH2_SESSION *session, unsigned char *packet_types, unsigned char **data, unsigned long *data_len,
 													 unsigned long match_ofs, const unsigned char *match_buf, unsigned long match_len, int poll_socket)
 {
-	int i, packet_types_len = strlen((char *)packet_types);
+	int i, packet_types_len = strlen(packet_types);
 
 	for(i = 0; i < packet_types_len; i++) {
 		if (0 == libssh2_packet_ask_ex(session, packet_types[i], data, data_len, match_ofs, match_buf, match_len, i ? 0 : poll_socket)) {
@@ -1017,6 +1017,48 @@ int libssh2_packet_require_ex(LIBSSH2_SESSION *session, unsigned char packet_typ
 }
 /* }}} */
 
+/* {{{ libssh2_packet_burn
+ * Loops libssh2_packet_read() until any packet is available and promptly discards it
+ * Used during KEX exchange to discard badly guessed KEX_INIT packets
+ */
+int libssh2_packet_burn(LIBSSH2_SESSION *session)
+{
+	unsigned char *data;
+	unsigned long data_len;
+	char all_packets[255];
+	int i;
+	for(i = 1; i < 256; i++) all_packets[i - 1] = i;
+
+	if (libssh2_packet_askv_ex(session, all_packets, &data, &data_len, 0, NULL, 0, 0) == 0) {
+		i = data[0];
+		/* A packet was available in the packet brigade, burn it */
+		LIBSSH2_FREE(session, data);
+		return i;
+	}
+
+#ifdef LIBSSH2_DEBUG_TRANSPORT
+	_libssh2_debug(session, LIBSSH2_DBG_TRANS, "Blocking until packet becomes available to burn");
+#endif
+	while (session->socket_state == LIBSSH2_SOCKET_CONNECTED) {
+		int ret = libssh2_packet_read(session, 1);
+		if (ret < 0) {
+			return -1;
+		}
+		if (ret == 0) continue;
+
+		/* Be lazy, let packet_ask pull it out of the brigade */
+		if (0 == libssh2_packet_ask_ex(session, ret, &data, &data_len, 0, NULL, 0, 0)) {
+			/* Smoke 'em if you got 'em */
+			LIBSSH2_FREE(session, data);
+			return ret;
+		}
+	}
+
+	/* Only reached if the socket died */
+	return -1;
+}
+/* }}} */
+
 /* {{{ libssh2_packet_requirev
  * Loops libssh2_packet_read() until one of a list of packet types requested is available
  * SSH_DISCONNECT or a SOCKET_DISCONNECTED will cause a bailout
@@ -1039,7 +1081,7 @@ int libssh2_packet_requirev_ex(LIBSSH2_SESSION *session, unsigned char *packet_t
 			continue;
 		}
 
-		if (strchr((char *)packet_types, ret)) {
+		if (strchr(packet_types, ret)) {
 			/* Be lazy, let packet_ask pull it out of the brigade */
 			return libssh2_packet_askv_ex(session, packet_types, data, data_len, match_ofs, match_buf, match_len, 0);
 		}
@@ -1116,7 +1158,7 @@ int libssh2_packet_write(LIBSSH2_SESSION *session, unsigned char *data, unsigned
 		EVP_CIPHER_CTX *ctx = (EVP_CIPHER_CTX *)session->local.crypt_abstract;
 
 		/* include packet_length(4) itself and room for the hash at the end */
-		encbuf = (unsigned char *)LIBSSH2_ALLOC(session, 4 + packet_length + session->local.mac->mac_len);
+		encbuf = LIBSSH2_ALLOC(session, 4 + packet_length + session->local.mac->mac_len);
 		if (!encbuf) {
 			libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate encryption buffer", 0);
 			if (free_data) {
@@ -1137,7 +1179,7 @@ int libssh2_packet_write(LIBSSH2_SESSION *session, unsigned char *data, unsigned
  		session->local.mac->hash(session, encbuf + 4 + packet_length , session->local.seqno, encbuf, 4 + packet_length, NULL, 0, &session->local.mac_abstract);
 
 		/* Encrypt data */
-		for(s = encbuf; (s - encbuf) < (int) (4 + packet_length) ; s += session->local.crypt->blocksize) {
+		for(s = encbuf; (s - encbuf) < (4 + packet_length) ; s += session->local.crypt->blocksize) {
 			if (session->local.crypt->flags & LIBSSH2_CRYPT_METHOD_FLAG_EVP) {
 				EVP_Cipher(ctx, buf, s, session->local.crypt->blocksize);
 				memcpy(s, buf, session->local.crypt->blocksize);
@@ -1149,7 +1191,7 @@ int libssh2_packet_write(LIBSSH2_SESSION *session, unsigned char *data, unsigned
 		session->local.seqno++;
 
 		/* Send It */
-		ret = ((4 + packet_length + session->local.mac->mac_len) == (unsigned int) send(session->socket_fd, (char *)encbuf, 4 + packet_length + session->local.mac->mac_len, LIBSSH2_SOCKET_SEND_FLAGS(session))) ? 0 : -1;
+		ret = ((4 + packet_length + session->local.mac->mac_len) == send(session->socket_fd, encbuf, 4 + packet_length + session->local.mac->mac_len, LIBSSH2_SOCKET_SEND_FLAGS(session))) ? 0 : -1;
 
 		/* Cleanup environment */
 		LIBSSH2_FREE(session, encbuf);
@@ -1162,11 +1204,11 @@ int libssh2_packet_write(LIBSSH2_SESSION *session, unsigned char *data, unsigned
 		/* Using vectors means we don't have to alloc a new buffer -- a byte saved is a byte earned
 		 * No MAC during unencrypted phase
 		 */
-		data_vector[0].iov_base = (char *)buf;
+		data_vector[0].iov_base = buf;
 		data_vector[0].iov_len = 5;
 		data_vector[1].iov_base = (char*)data;
 		data_vector[1].iov_len = data_len;
-		data_vector[2].iov_base = (char *)buf + 5;
+		data_vector[2].iov_base = buf + 5;
 		data_vector[2].iov_len = padding_length;
 
 		session->local.seqno++;
@@ -1176,7 +1218,7 @@ int libssh2_packet_write(LIBSSH2_SESSION *session, unsigned char *data, unsigned
 			LIBSSH2_FREE(session, data);
 		}
 
-		return ((packet_length + 4) == (unsigned int)writev(session->socket_fd, data_vector, 3)) ? 0 : 1;
+		return ((packet_length + 4) == writev(session->socket_fd, data_vector, 3)) ? 0 : 1;
 	}
 }
 /* }}} */

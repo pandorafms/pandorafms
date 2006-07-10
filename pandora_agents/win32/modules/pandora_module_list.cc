@@ -72,14 +72,21 @@ Pandora_Module_List::Pandora_Module_List (string filename) {
 }
 
 Pandora_Module_List::~Pandora_Module_List () {
-        if (modules != NULL) {
-                delete modules;
-                modules = NULL;
+	Pandora_Module                       *module;
+	std::list<Pandora_Module *>::iterator iter;
+	
+        if (modules->size () > 0) {
+                iter = modules->begin ();
+                do {
+                        module = *iter;
+			delete module;
+                        iter++;
+                } while (iter != modules->end ());
         }
-        if (current != NULL) {
-                delete current;
-                current = NULL;
-        }
+	delete modules;
+	delete current;
+	modules = NULL;
+	current = NULL;
 }
 
 void

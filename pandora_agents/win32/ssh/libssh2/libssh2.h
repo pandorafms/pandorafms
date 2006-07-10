@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2005, Sara Golemon <sarag@libssh2.org>
+/* Copyright (c) 2004-2006, Sara Golemon <sarag@libssh2.org>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms,
@@ -71,7 +71,7 @@ typedef unsigned long long libssh2_uint64_t;
 typedef long long libssh2_int64_t;
 #endif
 
-#define LIBSSH2_VERSION								"0.13"
+#define LIBSSH2_VERSION								"0.14"
 #define LIBSSH2_APINO								200507211326
 
 /* Part of every banner, user specified or not */
@@ -124,6 +124,7 @@ typedef struct _LIBSSH2_USERAUTH_KBDINT_RESPONSE
 	unsigned int length;
 } LIBSSH2_USERAUTH_KBDINT_RESPONSE;
 
+#define ENOTCONN -40
 /* 'keyboard-interactive' authentication callback */
 #define LIBSSH2_USERAUTH_KBDINT_RESPONSE_FUNC(name_) void name_(const char* name, int name_len, const char* instruction, int instruction_len, int num_prompts, const LIBSSH2_USERAUTH_KBDINT_PROMPT* prompts, LIBSSH2_USERAUTH_KBDINT_RESPONSE* responses, void **abstract)
 

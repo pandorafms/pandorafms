@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2005, Sara Golemon <sarag@libssh2.org>
+/* Copyright (c) 2004-2006, Sara Golemon <sarag@libssh2.org>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms,
@@ -120,7 +120,7 @@ LIBSSH2_API LIBSSH2_CHANNEL *libssh2_channel_open_ex(LIBSSH2_SESSION *session, c
 #ifdef LIBSSH2_DEBUG_CONNECTION
 	_libssh2_debug(session, LIBSSH2_DBG_CONN, "Opening Channel - win %d pack %d", window_size, packet_size);
 #endif
-	channel = (LIBSSH2_CHANNEL *) LIBSSH2_ALLOC(session, sizeof(LIBSSH2_CHANNEL));
+	channel = LIBSSH2_ALLOC(session, sizeof(LIBSSH2_CHANNEL));
 	if (!channel) {
 		libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate space for channel data", 0);
 		return NULL;
@@ -128,7 +128,7 @@ LIBSSH2_API LIBSSH2_CHANNEL *libssh2_channel_open_ex(LIBSSH2_SESSION *session, c
 	memset(channel, 0, sizeof(LIBSSH2_CHANNEL));
 
 	channel->channel_type_len	= channel_type_len;
-	channel->channel_type		= (unsigned char *) LIBSSH2_ALLOC(session, channel_type_len);
+	channel->channel_type		= LIBSSH2_ALLOC(session, channel_type_len);
 	if (!channel->channel_type) {
 		libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Failed allocating memory for channel type name", 0);
 		LIBSSH2_FREE(session, channel);
@@ -144,7 +144,7 @@ LIBSSH2_API LIBSSH2_CHANNEL *libssh2_channel_open_ex(LIBSSH2_SESSION *session, c
 
 	libssh2_channel_add(session, channel);
 
-	s = packet = (unsigned char *) LIBSSH2_ALLOC(session, packet_len);
+	s = packet = LIBSSH2_ALLOC(session, packet_len);
 	if (!packet) {
 		libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate temporary space for packet", 0);
 		return NULL;
@@ -244,7 +244,7 @@ LIBSSH2_API LIBSSH2_CHANNEL *libssh2_channel_direct_tcpip_ex(LIBSSH2_SESSION *se
 	_libssh2_debug(session, LIBSSH2_DBG_CONN, "Requesting direct-tcpip session to from %s:%d to %s:%d", shost, sport, host, port);
 #endif
 
-	s = message = (unsigned char *) LIBSSH2_ALLOC(session, message_len);
+	s = message = LIBSSH2_ALLOC(session, message_len);
 	if (!message) {
 		libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for direct-tcpip connection", 0);
 		return NULL;
@@ -257,7 +257,7 @@ LIBSSH2_API LIBSSH2_CHANNEL *libssh2_channel_direct_tcpip_ex(LIBSSH2_SESSION *se
 	memcpy(s, shost, shost_len);					s += shost_len;
 	libssh2_htonu32(s, sport);						s += 4;
 
-	channel = (LIBSSH2_CHANNEL *) libssh2_channel_open_ex(session, "direct-tcpip", sizeof("direct-tcpip") - 1, LIBSSH2_CHANNEL_WINDOW_DEFAULT, LIBSSH2_CHANNEL_PACKET_DEFAULT, (char *) message, message_len);
+	channel = libssh2_channel_open_ex(session, "direct-tcpip", sizeof("direct-tcpip") - 1, LIBSSH2_CHANNEL_WINDOW_DEFAULT, LIBSSH2_CHANNEL_PACKET_DEFAULT, message, message_len);
 	LIBSSH2_FREE(session, message);
 
 	return channel;
@@ -279,7 +279,7 @@ LIBSSH2_API LIBSSH2_LISTENER *libssh2_channel_forward_listen_ex(LIBSSH2_SESSION 
 	_libssh2_debug(session, LIBSSH2_DBG_CONN, "Requesting tcpip-forward session for %s:%d", host, port);
 #endif
 
-	s = packet = (unsigned char *) LIBSSH2_ALLOC(session, packet_len);
+	s = packet = LIBSSH2_ALLOC(session, packet_len);
 	if (!packet) {
 		libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memeory for setenv packet", 0);
 		return NULL;
@@ -308,7 +308,7 @@ LIBSSH2_API LIBSSH2_LISTENER *libssh2_channel_forward_listen_ex(LIBSSH2_SESSION 
 	if (data[0] == SSH_MSG_REQUEST_SUCCESS) {
 		LIBSSH2_LISTENER *listener;
 
-		listener = (LIBSSH2_LISTENER *) LIBSSH2_ALLOC(session, sizeof(LIBSSH2_LISTENER));
+		listener = LIBSSH2_ALLOC(session, sizeof(LIBSSH2_LISTENER));
 		if (!listener) {
 			libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for listener queue", 0);
 			LIBSSH2_FREE(session, data);
@@ -316,7 +316,7 @@ LIBSSH2_API LIBSSH2_LISTENER *libssh2_channel_forward_listen_ex(LIBSSH2_SESSION 
 		}
 		memset(listener, 0, sizeof(LIBSSH2_LISTENER));
 		listener->session = session;
-		listener->host = (char *) LIBSSH2_ALLOC(session, host_len + 1);
+		listener->host = LIBSSH2_ALLOC(session, host_len + 1);
 		if (!listener->host) {
 			libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for listener queue", 0);
 			LIBSSH2_FREE(session, listener);
@@ -379,7 +379,7 @@ LIBSSH2_API int libssh2_channel_forward_cancel(LIBSSH2_LISTENER *listener)
 	_libssh2_debug(session, LIBSSH2_DBG_CONN, "Cancelling tcpip-forward session for %s:%d", listener->host, listener->port);
 #endif
 
-	s = packet = (unsigned char *) LIBSSH2_ALLOC(session, packet_len);
+	s = packet = LIBSSH2_ALLOC(session, packet_len);
 	if (!packet) {
 		libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memeory for setenv packet", 0);
 		return -1;
@@ -475,7 +475,7 @@ LIBSSH2_API int libssh2_channel_setenv_ex(LIBSSH2_CHANNEL *channel, char *varnam
 	_libssh2_debug(session, LIBSSH2_DBG_CONN, "Setting remote environment variable: %s=%s on channel %lu/%lu", varname, value, channel->local.id, channel->remote.id);
 #endif
 
-	s = packet = (unsigned char *) LIBSSH2_ALLOC(session, packet_len);
+	s = packet = LIBSSH2_ALLOC(session, packet_len);
 	if (!packet) {
 		libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memeory for setenv packet", 0);
 		return -1;
@@ -535,7 +535,7 @@ LIBSSH2_API int libssh2_channel_request_pty_ex(LIBSSH2_CHANNEL *channel, char *t
 	_libssh2_debug(session, LIBSSH2_DBG_CONN, "Allocating tty on channel %lu/%lu", channel->local.id, channel->remote.id);
 #endif
 
-	s = packet = (unsigned char *) LIBSSH2_ALLOC(session, packet_len);
+	s = packet = LIBSSH2_ALLOC(session, packet_len);
 	if (!packet) {
 		libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for pty-request", 0);
 		return -1;
@@ -608,7 +608,7 @@ LIBSSH2_API int libssh2_channel_x11_req_ex(LIBSSH2_CHANNEL *channel, int single_
 												auth_cookie ? auth_cookie : "<random>", screen_number);
 #endif
 
-	s = packet = (unsigned char *) LIBSSH2_ALLOC(session, packet_len);
+	s = packet = LIBSSH2_ALLOC(session, packet_len);
 	if (!packet) {
 		libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for pty-request", 0);
 		return -1;
@@ -633,9 +633,9 @@ LIBSSH2_API int libssh2_channel_x11_req_ex(LIBSSH2_CHANNEL *channel, int single_
 		int i;
 		char buffer[LIBSSH2_X11_RANDOM_COOKIE_LEN / 2];
 
-		RAND_bytes((unsigned char *) buffer, LIBSSH2_X11_RANDOM_COOKIE_LEN / 2);
+		RAND_bytes(buffer, LIBSSH2_X11_RANDOM_COOKIE_LEN / 2);
 		for (i = 0; i < (LIBSSH2_X11_RANDOM_COOKIE_LEN / 2); i++) {
-			snprintf((char *) s + (i * 2), 2, "%02X", buffer[i]);
+			snprintf(s + (i * 2), 2, "%02X", buffer[i]);
 		}
 	}
 	s += cookie_len;
@@ -684,7 +684,7 @@ LIBSSH2_API int libssh2_channel_process_startup(LIBSSH2_CHANNEL *channel, const 
 	_libssh2_debug(session, LIBSSH2_DBG_CONN, "starting request(%s) on channel %lu/%lu, message=%s", request, channel->local.id, channel->remote.id, message);
 #endif
 
-	s = packet = (unsigned char *) LIBSSH2_ALLOC(session, packet_len);
+	s = packet = LIBSSH2_ALLOC(session, packet_len);
 	if (!packet) {
 		libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate memory for channel-process request", 0);
 		return -1;
@@ -755,7 +755,7 @@ LIBSSH2_API int libssh2_channel_flush_ex(LIBSSH2_CHANNEL *channel, int streamid)
 			/* It's our channel at least */
 			unsigned long packet_stream_id = (packet_type == SSH_MSG_CHANNEL_DATA) ? 0 : libssh2_ntohu32(packet->data + 5);
 			if ((streamid == LIBSSH2_CHANNEL_FLUSH_ALL) ||
-				((packet_type == (unsigned char) SSH_MSG_CHANNEL_EXTENDED_DATA) && ((streamid == (int) LIBSSH2_CHANNEL_FLUSH_EXTENDED_DATA) || (streamid == (int) packet_stream_id))) ||
+				((packet_type == SSH_MSG_CHANNEL_EXTENDED_DATA) && ((streamid == LIBSSH2_CHANNEL_FLUSH_EXTENDED_DATA) || (streamid == packet_stream_id))) ||
 				((packet_type == SSH_MSG_CHANNEL_DATA) && (streamid == 0))) {
 				int bytes_to_flush = packet->data_len - packet->data_head;
 #ifdef LIBSSH2_DEBUG_CONNECTION
@@ -885,7 +885,7 @@ LIBSSH2_API int libssh2_channel_read_ex(LIBSSH2_CHANNEL *channel, int stream_id,
 		while (libssh2_packet_read(session, blocking_read) > 0) blocking_read = 0;
 		packet = session->packets.head;
 
-		while (packet && (bytes_read < (int) buflen)) {
+		while (packet && (bytes_read < buflen)) {
 			/* In case packet gets destroyed during this iteration */
 			LIBSSH2_PACKET *next = packet->next;
 
@@ -893,13 +893,13 @@ LIBSSH2_API int libssh2_channel_read_ex(LIBSSH2_CHANNEL *channel, int stream_id,
 			 * or the standard stream (and data was available),
 			 * or the standard stream with extended_data_merge enabled and data was available
 			 */
-			if ((stream_id  && (packet->data[0] == (char) SSH_MSG_CHANNEL_EXTENDED_DATA) && (channel->local.id == (unsigned int) libssh2_ntohu32(packet->data + 1)) &&  (stream_id == (int) libssh2_ntohu32(packet->data + 5))) ||
+			if ((stream_id  && (packet->data[0] == SSH_MSG_CHANNEL_EXTENDED_DATA) && (channel->local.id == libssh2_ntohu32(packet->data + 1)) && (stream_id == libssh2_ntohu32(packet->data + 5))) ||
 				(!stream_id && (packet->data[0] == SSH_MSG_CHANNEL_DATA) && (channel->local.id == libssh2_ntohu32(packet->data + 1))) ||
 				(!stream_id && (packet->data[0] == SSH_MSG_CHANNEL_EXTENDED_DATA) && (channel->local.id == libssh2_ntohu32(packet->data + 1)) && (channel->remote.extended_data_ignore_mode == LIBSSH2_CHANNEL_EXTENDED_DATA_MERGE))) {
 				int want = buflen - bytes_read;
 				int unlink_packet = 0;
 
-				if (want >= (int) (packet->data_len - packet->data_head)) {
+				if (want >= (packet->data_len - packet->data_head)) {
 					want = packet->data_len - packet->data_head;
 					unlink_packet = 1;
 				}
@@ -971,7 +971,7 @@ LIBSSH2_API int libssh2_channel_write_ex(LIBSSH2_CHANNEL *channel, int stream_id
 	}
 
 	packet_len = buflen + (stream_id ? 13 : 9); /* packet_type(1) + channelno(4) [ + streamid(4) ] + buflen(4) */
-	packet = (unsigned char *)LIBSSH2_ALLOC(session, packet_len);
+	packet = LIBSSH2_ALLOC(session, packet_len);
 	if (!packet) {
 		libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocte space for data transmission packet", 0);
 		return -1;
@@ -1125,6 +1125,11 @@ LIBSSH2_API int libssh2_channel_close(LIBSSH2_CHANNEL *channel)
 LIBSSH2_API int libssh2_channel_wait_closed(LIBSSH2_CHANNEL *channel)
 {
 	LIBSSH2_SESSION* session = channel->session;
+
+	if (!libssh2_channel_eof(channel)) {
+		libssh2_error(session, LIBSSH2_ERROR_INVAL, "libssh2_channel_wait_closed() invoked when channel is not in EOF state", 0);
+		return -1;
+	}
 
 #ifdef LIBSSH2_DEBUG_CONNECTION
 	_libssh2_debug(session, LIBSSH2_DBG_CONN, "Awaiting close of channel %lu/%lu", channel->local.id, channel->remote.id);

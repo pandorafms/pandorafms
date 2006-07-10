@@ -1,3 +1,14 @@
+2006-07-10  Esteban Sanchez  <estebans@artica.es>
+
+	* modules/pandora_module_list.cc: Delete modules from the list in the
+	destructor.
+	
+	* ssh/libssh2/*: Updated to a new version of libssh2 (v 0.14). It
+	solves a very important leak.
+	
+	* PandoraAgent.dev: Linker options modified. Libssh2 files are not
+	compiled as C++.
+
 2006-07-05  Sancho Lerena  <slerena@artica.es>
 
 	* INSTALL, COPYNG: Added to repository

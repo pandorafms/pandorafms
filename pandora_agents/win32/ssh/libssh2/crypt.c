@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2005, Sara Golemon <sarag@libssh2.org>
+/* Copyright (c) 2004-2006, Sara Golemon <sarag@libssh2.org>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms,
@@ -68,7 +68,7 @@ static LIBSSH2_CRYPT_METHOD libssh2_crypt_method_3des_cbc = {
 	24, /* secret length */
 	LIBSSH2_CRYPT_METHOD_FLAG_EVP,
 	NULL,
-	(int (*)(LIBSSH2_SESSION *, unsigned char *, void **)) EVP_des_ede3_cbc,
+	(void*)EVP_des_ede3_cbc,
 	NULL,
 };
 
@@ -80,7 +80,7 @@ static LIBSSH2_CRYPT_METHOD libssh2_crypt_method_aes128_cbc = {
 	16, /* secret length -- 16*8 == 128bit */
 	LIBSSH2_CRYPT_METHOD_FLAG_EVP,
 	NULL,
-	(int (*)(LIBSSH2_SESSION *, unsigned char *, void **))EVP_aes_128_cbc,
+	(void*)EVP_aes_128_cbc,
 	NULL,
 };
 
@@ -91,7 +91,7 @@ static LIBSSH2_CRYPT_METHOD libssh2_crypt_method_aes192_cbc = {
 	24, /* secret length -- 24*8 == 192bit */
 	LIBSSH2_CRYPT_METHOD_FLAG_EVP,
 	NULL,
-	(int (*)(LIBSSH2_SESSION *, unsigned char *, void **))EVP_aes_192_cbc,
+	(void*)EVP_aes_192_cbc,
 	NULL,
 };
 
@@ -102,7 +102,7 @@ static LIBSSH2_CRYPT_METHOD libssh2_crypt_method_aes256_cbc = {
 	32, /* secret length -- 32*8 == 256bit */
 	LIBSSH2_CRYPT_METHOD_FLAG_EVP,
 	NULL,
-	(int (*)(LIBSSH2_SESSION *, unsigned char *, void **))EVP_aes_256_cbc,
+	(void*)EVP_aes_256_cbc,
 	NULL,
 };
 
@@ -114,7 +114,7 @@ static LIBSSH2_CRYPT_METHOD libssh2_crypt_method_rijndael_cbc_lysator_liu_se = {
 	32, /* secret length -- 32*8 == 256bit */
 	LIBSSH2_CRYPT_METHOD_FLAG_EVP,
 	NULL,
-	(int (*)(LIBSSH2_SESSION *, unsigned char *, void **))EVP_aes_256_cbc,
+	(void*)EVP_aes_256_cbc,
 	NULL,
 };
 #endif /* OPENSSL_VERSION_NUMBER >= 0x00907000L && !defined(OPENSSL_NO_AES)*/
@@ -127,7 +127,7 @@ static LIBSSH2_CRYPT_METHOD libssh2_crypt_method_blowfish_cbc = {
 	16, /* secret length */
 	LIBSSH2_CRYPT_METHOD_FLAG_EVP,
 	NULL,
-	(int (*)(LIBSSH2_SESSION *, unsigned char *, void **))EVP_bf_cbc,
+	(void*)EVP_bf_cbc,
 	NULL,
 };
 #endif /* ! OPENSSL_NO_BLOWFISH */
@@ -140,7 +140,7 @@ static LIBSSH2_CRYPT_METHOD libssh2_crypt_method_cast128_cbc = {
 	16, /* secret length */
 	LIBSSH2_CRYPT_METHOD_FLAG_EVP,
 	NULL,
-	(int (*)(LIBSSH2_SESSION *, unsigned char *, void **))EVP_cast5_cbc,
+	(void*)EVP_cast5_cbc,
 	NULL,
 };
 #endif /* ! OPENSSL_NO_CAST */
@@ -153,7 +153,7 @@ static LIBSSH2_CRYPT_METHOD libssh2_crypt_method_arcfour = {
 	16, /* secret length */
 	LIBSSH2_CRYPT_METHOD_FLAG_EVP,
 	NULL,
-	(int (*)(LIBSSH2_SESSION *, unsigned char *, void **))EVP_rc4,
+	(void*)EVP_rc4,
 	NULL,
 };
 #endif /* ! OPENSSL_NO_RC4 */

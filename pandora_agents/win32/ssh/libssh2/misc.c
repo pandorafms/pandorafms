@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2005, Sara Golemon <sarag@libssh2.org>
+/* Copyright (c) 2004-2006, Sara Golemon <sarag@libssh2.org>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms,
@@ -133,13 +133,12 @@ LIBSSH2_API int libssh2_base64_decode(LIBSSH2_SESSION *session, char **data, int
 	short v;
 	int i = 0, len = 0;
 
-        d = (unsigned char *) LIBSSH2_ALLOC(session, (3 * src_len / 4) + 1);
-	*data = (char *) d;
+	*data = d = LIBSSH2_ALLOC(session, (3 * src_len / 4) + 1);
 	if (!d) {
 		return -1;
 	}
 
-	for(s = (unsigned char *)src; ((char*)s) < (src + src_len); s++) {
+	for(s = src; ((char*)s) < (src + src_len); s++) {
 		if ((v = libssh2_base64_reverse_table[*s]) < 0) continue;
 		switch (i % 4) {
 			case 0:
@@ -180,8 +179,6 @@ void _libssh2_debug(LIBSSH2_SESSION *session, int context, const char *format, .
 	char buffer[1536];
 	int len;
 	va_list vargs;
-	FILE   *file; /* TODO: Change to fstream */
-        
 	char *contexts[9] = {	"Unknown",
 							"Transport",
 							"Key Exhange",
@@ -201,10 +198,9 @@ void _libssh2_debug(LIBSSH2_SESSION *session, int context, const char *format, .
 
 	va_start(vargs, format);
 	len += vsnprintf(buffer + len, 1535 - len, format, vargs);
-	buffer[len] = '\0';
+	buffer[len] = '\n';
 	va_end(vargs);
-        
-	fprintf (stderr, "%s\n", buffer);
+	write(2, buffer, len + 1);
 }
 /* }}} */
 #endif

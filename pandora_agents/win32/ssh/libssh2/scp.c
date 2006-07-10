@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2005, Sara Golemon <sarag@libssh2.org>
+/* Copyright (c) 2004-2006, Sara Golemon <sarag@libssh2.org>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms,
@@ -56,7 +56,7 @@ LIBSSH2_API LIBSSH2_CHANNEL *libssh2_scp_recv(LIBSSH2_SESSION *session, const ch
 		command_len++;
 	}
 
-	command = (unsigned char *) LIBSSH2_ALLOC(session, command_len);
+	command = LIBSSH2_ALLOC(session, command_len);
 	if (!command) {
 		libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate a command buffer for scp session", 0);
 		return NULL;
@@ -82,7 +82,7 @@ LIBSSH2_API LIBSSH2_CHANNEL *libssh2_scp_recv(LIBSSH2_SESSION *session, const ch
 	libssh2_channel_set_blocking(channel, 1);
 
 	/* Request SCP for the desired file */
-	if (libssh2_channel_process_startup(channel, "exec", sizeof("exec") - 1, (char *)command, command_len)) {
+	if (libssh2_channel_process_startup(channel, "exec", sizeof("exec") - 1, command, command_len)) {
 		LIBSSH2_FREE(session, command);
 		libssh2_channel_free(channel);
 		return NULL;
@@ -94,7 +94,7 @@ LIBSSH2_API LIBSSH2_CHANNEL *libssh2_scp_recv(LIBSSH2_SESSION *session, const ch
 #endif
 	/* SCP ACK */
 	response[0] = '\0';
-	if (libssh2_channel_write(channel, (char *)response, 1) != 1) {
+	if (libssh2_channel_write(channel, response, 1) != 1) {
 		libssh2_channel_free(channel);
 		return NULL;
 	}
@@ -104,7 +104,7 @@ LIBSSH2_API LIBSSH2_CHANNEL *libssh2_scp_recv(LIBSSH2_SESSION *session, const ch
 	while (sb && (response_len < LIBSSH2_SCP_RESPONSE_BUFLEN)) {
 		unsigned char *s, *p;
 
-		if (libssh2_channel_read(channel, (char *)response + response_len, 1) <= 0) {
+		if (libssh2_channel_read(channel, response + response_len, 1) <= 0) {
 			/* Timeout, give up */
 			libssh2_error(session, LIBSSH2_ERROR_SCP_PROTOCOL, "Timed out waiting for SCP response", 0);
 			libssh2_channel_free(channel);
@@ -152,7 +152,7 @@ LIBSSH2_API LIBSSH2_CHANNEL *libssh2_scp_recv(LIBSSH2_SESSION *session, const ch
 
 		s = response + 1;
 
-		p = (unsigned char *) strchr((char *)s, ' ');
+		p = strchr(s, ' ');
 		if (!p || ((p - s) <= 0)) {
 			/* No spaces or space in the wrong spot */
 			libssh2_error(session, LIBSSH2_ERROR_SCP_PROTOCOL, "Invalid response from SCP server, malformed mtime", 0);
@@ -163,13 +163,13 @@ LIBSSH2_API LIBSSH2_CHANNEL *libssh2_scp_recv(LIBSSH2_SESSION *session, const ch
 		*(p++) = '\0';
 		/* Make sure we don't get fooled by leftover values */
 		errno = 0;
-		mtime = strtol((char *)s, NULL, 10);
+		mtime = strtol(s, NULL, 10);
 		if (errno) {
 			libssh2_error(session, LIBSSH2_ERROR_SCP_PROTOCOL, "Invalid response from SCP server, invalid mtime", 0);
 			libssh2_channel_free(channel);
 			return NULL;
 		}
-		s = (unsigned char *)strchr((char *)p, ' ');
+		s = strchr(p, ' ');
 		if (!s || ((s - p) <= 0)) {
 			/* No spaces or space in the wrong spot */
 			libssh2_error(session, LIBSSH2_ERROR_SCP_PROTOCOL, "Invalid response from SCP server, malformed mtime.usec", 0);
@@ -179,7 +179,7 @@ LIBSSH2_API LIBSSH2_CHANNEL *libssh2_scp_recv(LIBSSH2_SESSION *session, const ch
 
 		/* Ignore mtime.usec */
 		s++;
-		p = (unsigned char *)strchr((char *)s, ' ');
+		p = strchr(s, ' ');
 		if (!p || ((p - s) <= 0)) {
 			/* No spaces or space in the wrong spot */
 			libssh2_error(session, LIBSSH2_ERROR_SCP_PROTOCOL, "Invalid response from SCP server, too short or malformed", 0);
@@ -190,7 +190,7 @@ LIBSSH2_API LIBSSH2_CHANNEL *libssh2_scp_recv(LIBSSH2_SESSION *session, const ch
 		*(p++) = '\0';
 		/* Make sure we don't get fooled by leftover values */
 		errno = 0;
-		atime = strtol((char *)s, NULL, 10);
+		atime = strtol(s, NULL, 10);
 		if (errno) {
 			libssh2_error(session, LIBSSH2_ERROR_SCP_PROTOCOL, "Invalid response from SCP server, invalid atime", 0);
 			libssh2_channel_free(channel);
@@ -199,7 +199,7 @@ LIBSSH2_API LIBSSH2_CHANNEL *libssh2_scp_recv(LIBSSH2_SESSION *session, const ch
 
 		/* SCP ACK */
 		response[0] = '\0';
-		if (libssh2_channel_write(channel, (char *)response, 1) != 1) {
+		if (libssh2_channel_write(channel, response, 1) != 1) {
 			libssh2_channel_free(channel);
 			return NULL;
 		}
@@ -215,7 +215,7 @@ LIBSSH2_API LIBSSH2_CHANNEL *libssh2_scp_recv(LIBSSH2_SESSION *session, const ch
 	while (response_len < LIBSSH2_SCP_RESPONSE_BUFLEN) {
 		char *s, *p, *e = NULL;
 
-		if (libssh2_channel_read(channel, (char *)response + response_len, 1) <= 0) {
+		if (libssh2_channel_read(channel, response + response_len, 1) <= 0) {
 			/* Timeout, give up */
 			libssh2_error(session, LIBSSH2_ERROR_SCP_PROTOCOL, "Timed out waiting for SCP response", 0);
 			libssh2_channel_free(channel);
@@ -260,7 +260,7 @@ LIBSSH2_API LIBSSH2_CHANNEL *libssh2_scp_recv(LIBSSH2_SESSION *session, const ch
 			return NULL;
 		}
 
-		s = (char *)response + 1;
+		s = response + 1;
 		
 		p = strchr(s, ' ');
 		if (!p || ((p - s) <= 0)) {
@@ -300,7 +300,7 @@ LIBSSH2_API LIBSSH2_CHANNEL *libssh2_scp_recv(LIBSSH2_SESSION *session, const ch
 
 		/* SCP ACK */
 		response[0] = '\0';
-		if (libssh2_channel_write(channel, (char *)response, 1) != 1) {
+		if (libssh2_channel_write(channel, response, 1) != 1) {
 			libssh2_channel_free(channel);
 			return NULL;
 		}
@@ -342,7 +342,7 @@ LIBSSH2_API LIBSSH2_CHANNEL *libssh2_scp_send_ex(LIBSSH2_SESSION *session, const
 		command_len++;
 	}
 
-	command = (unsigned char *)LIBSSH2_ALLOC(session, command_len);
+	command = LIBSSH2_ALLOC(session, command_len);
 	if (!command) {
 		libssh2_error(session, LIBSSH2_ERROR_ALLOC, "Unable to allocate a command buffer for scp session", 0);
 		return NULL;
@@ -370,7 +370,7 @@ LIBSSH2_API LIBSSH2_CHANNEL *libssh2_scp_send_ex(LIBSSH2_SESSION *session, const
 	libssh2_channel_set_blocking(channel, 1);
 
 	/* Request SCP for the desired file */
-	if (libssh2_channel_process_startup(channel, "exec", sizeof("exec") - 1, (char *)command, command_len)) {
+	if (libssh2_channel_process_startup(channel, "exec", sizeof("exec") - 1, command, command_len)) {
 	        /* previous call set libssh2_session_last_error(), pass it through */
 		LIBSSH2_FREE(session, command);
 		libssh2_channel_free(channel);
@@ -379,7 +379,7 @@ LIBSSH2_API LIBSSH2_CHANNEL *libssh2_scp_send_ex(LIBSSH2_SESSION *session, const
 	LIBSSH2_FREE(session, command);
 
 	/* Wait for ACK */
-	if ((libssh2_channel_read(channel, (char *)response, 1) <= 0) || (response[0] != 0)) {
+	if ((libssh2_channel_read(channel, response, 1) <= 0) || (response[0] != 0)) {
 		libssh2_error(session, LIBSSH2_ERROR_SCP_PROTOCOL, "Invalid ACK response from remote", 0);
 		libssh2_channel_free(channel);
 		return NULL;
@@ -387,17 +387,17 @@ LIBSSH2_API LIBSSH2_CHANNEL *libssh2_scp_send_ex(LIBSSH2_SESSION *session, const
 
 	/* Send mtime and atime to be used for file */
 	if (mtime || atime) {
-		response_len = snprintf((char *)response, LIBSSH2_SCP_RESPONSE_BUFLEN, "T%ld 0 %ld 0\n", mtime, atime);
+		response_len = snprintf(response, LIBSSH2_SCP_RESPONSE_BUFLEN, "T%ld 0 %ld 0\n", mtime, atime);
 #ifdef LIBSSH2_DEBUG_SCP
 		_libssh2_debug(session, LIBSSH2_DBG_SCP, "Sent %s", response);
 #endif
-		if (libssh2_channel_write(channel, (char *)response, response_len) != (int)response_len) {
+		if (libssh2_channel_write(channel, response, response_len) != response_len) {
 			libssh2_error(session, LIBSSH2_ERROR_SOCKET_SEND, "Unable to send time data for SCP file", 0);
 			libssh2_channel_free(channel);
 			return NULL;
 		}
 		/* Wait for ACK */
-		if ((libssh2_channel_read(channel, (char *)response, 1) <= 0) || (response[0] != 0)) {
+		if ((libssh2_channel_read(channel, response, 1) <= 0) || (response[0] != 0)) {
 			libssh2_error(session, LIBSSH2_ERROR_SCP_PROTOCOL, "Invalid ACK response from remote", 0);
 			libssh2_channel_free(channel);
 			return NULL;
@@ -405,24 +405,24 @@ LIBSSH2_API LIBSSH2_CHANNEL *libssh2_scp_send_ex(LIBSSH2_SESSION *session, const
 	}
 
 	/* Send mode, size, and basename */
-	base = (unsigned char *)strrchr((char *)path, '/');
+	base = strrchr(path, '/');
 	if (base) {
 		base++;
 	} else {
-		base = (unsigned char *)path;
+		base = path;
 	}
 
-	response_len = snprintf((char *)response, LIBSSH2_SCP_RESPONSE_BUFLEN, "C0%o %lu %s\n", mode, (unsigned long)size, base);
+	response_len = snprintf(response, LIBSSH2_SCP_RESPONSE_BUFLEN, "C0%o %lu %s\n", mode, (unsigned long)size, base);
 #ifdef LIBSSH2_DEBUG_SCP
 	_libssh2_debug(session, LIBSSH2_DBG_SCP, "Sent %s", response);
 #endif
-	if (libssh2_channel_write(channel, (char *)response, response_len) != (int)response_len) {
+	if (libssh2_channel_write(channel, response, response_len) != response_len) {
 		libssh2_error(session, LIBSSH2_ERROR_SOCKET_SEND, "Unable to send core file data for SCP file", 0);
 		libssh2_channel_free(channel);
 		return NULL;
 	}
 	/* Wait for ACK */
-	if ((libssh2_channel_read(channel, (char *)response, 1) <= 0) || (response[0] != 0)) {
+	if ((libssh2_channel_read(channel, response, 1) <= 0) || (response[0] != 0)) {
 		libssh2_error(session, LIBSSH2_ERROR_SCP_PROTOCOL, "Invalid ACK response from remote", 0);
 		libssh2_channel_free(channel);
 		return NULL;

@@ -1,4 +1,4 @@
-/* Copyright (c) 2004-2005, Sara Golemon <sarag@libssh2.org>
+/* Copyright (c) 2004-2006, Sara Golemon <sarag@libssh2.org>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms,
@@ -39,7 +39,6 @@
 #include <openssl/bn.h>
 #include <openssl/pem.h>
 #include <openssl/evp.h>
-#include <openssl/sha.h>
 
 /* Needed for struct iovec on some platforms */
 #ifdef HAVE_SYS_UIO_H
@@ -69,7 +68,7 @@ static int libssh2_hostkey_method_ssh_rsa_init(LIBSSH2_SESSION *session, unsigne
 
 	s = hostkey_data;
 	len = libssh2_ntohu32(s);					s += 4;
-	if (len != 7 || strncmp((char *) s, "ssh-rsa", 7) != 0) {
+	if (len != 7 || strncmp(s, "ssh-rsa", 7) != 0) {
 		return -1;
 	}											s += 7;
 
@@ -120,7 +119,7 @@ static int libssh2_hostkey_method_ssh_rsa_initPEM(LIBSSH2_SESSION *session, unsi
 		*abstract = NULL;
 	}
 
-	fp = fopen((char *)privkeyfile, "r");
+	fp = fopen(privkeyfile, "r");
 	if (!fp) {
 		return -1;
 	}
@@ -132,7 +131,7 @@ static int libssh2_hostkey_method_ssh_rsa_initPEM(LIBSSH2_SESSION *session, unsi
 		 */
 		OpenSSL_add_all_ciphers();
 	}
-	rsactx = PEM_read_RSAPrivateKey(fp, NULL, (int (*) (char *, int, int, void *))libssh2_hostkey_method_ssh_rsadsa_passphrase_cb, (void*)passphrase);
+	rsactx = PEM_read_RSAPrivateKey(fp, NULL, (void*)libssh2_hostkey_method_ssh_rsadsa_passphrase_cb, (void*)passphrase);
 	if (!rsactx) {
 		fclose(fp);
 		return -1;
@@ -158,7 +157,7 @@ static int libssh2_hostkey_method_ssh_rsa_sig_verify(LIBSSH2_SESSION *session, c
 	/* Skip past keyname_len(4) + keyname(7){"ssh-rsa"} + signature_len(4) */
 	sig += 15; sig_len -= 15;
 	SHA1(m, m_len, hash);
-	ret = RSA_verify(NID_sha1, hash, SHA_DIGEST_LENGTH, (unsigned char *)sig, sig_len, rsactx);
+	ret = RSA_verify(NID_sha1, hash, SHA_DIGEST_LENGTH, (char *)sig, sig_len, rsactx);
 
 	return (ret == 1) ? 0 : -1;
 }
@@ -178,7 +177,7 @@ static int libssh2_hostkey_method_ssh_rsa_sign(LIBSSH2_SESSION *session, unsigne
 	int sig_len;
 
 	sig_len = RSA_size(rsactx);
-	sig = (char *) LIBSSH2_ALLOC(session, sig_len);
+	sig = LIBSSH2_ALLOC(session, sig_len);
 
 	if (!sig) {
 		return -1;
@@ -188,13 +187,13 @@ static int libssh2_hostkey_method_ssh_rsa_sign(LIBSSH2_SESSION *session, unsigne
 	SHA1_Update(&ctx, buf, buf_len);
 	SHA1_Final(hash, &ctx);	
 
-	ret = RSA_sign(NID_sha1, hash, SHA_DIGEST_LENGTH, (unsigned char *) sig, (unsigned int *) &sig_len, rsactx);
+	ret = RSA_sign(NID_sha1, hash, SHA_DIGEST_LENGTH, sig, &sig_len, rsactx);
 	if (!ret) {
 		LIBSSH2_FREE(session, sig);
 		return -1;
 	}
 
-	*signature = (unsigned char *) sig;
+	*signature = sig;
 	*signature_len = sig_len;
 
 	return 0;
@@ -215,26 +214,26 @@ static int libssh2_hostkey_method_ssh_rsa_signv(LIBSSH2_SESSION *session, unsign
 	int sig_len;
 
 	sig_len = RSA_size(rsactx);
-	sig = (char *) LIBSSH2_ALLOC(session, sig_len);
+	sig = LIBSSH2_ALLOC(session, sig_len);
 
 	if (!sig) {
 		return -1;
 	}
 
 	SHA1_Init(&ctx);
-	for(i = 0; i < (int) veccount; i++) {
+	for(i = 0; i < veccount; i++) {
 		SHA1_Update(&ctx, datavec[i].iov_base, datavec[i].iov_len);
 	}
 	SHA1_Final(hash, &ctx);	
 
-	ret = RSA_sign(NID_sha1, hash, SHA_DIGEST_LENGTH, (unsigned char *) sig, (unsigned int *) &sig_len, rsactx);
+	ret = RSA_sign(NID_sha1, hash, SHA_DIGEST_LENGTH, sig, &sig_len, rsactx);
 
 	if (!ret) {
 		LIBSSH2_FREE(session, sig);
 		return -1;
 	}
 
-	*signature = (unsigned char *) sig;
+	*signature = sig;
 	*signature_len = sig_len;
 
 	return 0;
@@ -292,7 +291,7 @@ static int libssh2_hostkey_method_ssh_dss_init(LIBSSH2_SESSION *session, unsigne
 
 	s = hostkey_data;
 	len = libssh2_ntohu32(s);					s += 4;
-	if (len != 7 || strncmp((char *) s, "ssh-dss", 7) != 0) {
+	if (len != 7 || strncmp(s, "ssh-dss", 7) != 0) {
 		return -1;
 	}											s += 7;
 
@@ -334,7 +333,7 @@ static int libssh2_hostkey_method_ssh_dss_initPEM(LIBSSH2_SESSION *session, unsi
 		*abstract = NULL;
 	}
 
-	fp = fopen((char *) privkeyfile, "r");
+	fp = fopen(privkeyfile, "r");
 	if (!fp) {
 		return -1;
 	}
@@ -346,7 +345,7 @@ static int libssh2_hostkey_method_ssh_dss_initPEM(LIBSSH2_SESSION *session, unsi
 		 */
 		OpenSSL_add_all_ciphers();
 	}
-	dsactx = PEM_read_DSAPrivateKey(fp, NULL, (int (*) (char *, int, int, void *))libssh2_hostkey_method_ssh_rsadsa_passphrase_cb, (void*)passphrase);
+	dsactx = PEM_read_DSAPrivateKey(fp, NULL, (void*)libssh2_hostkey_method_ssh_rsadsa_passphrase_cb, (void*)passphrase);
 	if (!dsactx) {
 		fclose(fp);
 		return -1;
@@ -399,7 +398,7 @@ static int libssh2_hostkey_method_ssh_dss_sign(LIBSSH2_SESSION *session, unsigne
 	unsigned char hash[SHA_DIGEST_LENGTH];
 	SHA_CTX ctx;
 
-	*signature = (unsigned char *) LIBSSH2_ALLOC(session, 2 * SHA_DIGEST_LENGTH);
+	*signature = LIBSSH2_ALLOC(session, 2 * SHA_DIGEST_LENGTH);
 	*signature_len = 2 * SHA_DIGEST_LENGTH;
 
 	if (!(*signature)) {
@@ -437,7 +436,7 @@ static int libssh2_hostkey_method_ssh_dss_signv(LIBSSH2_SESSION *session, unsign
 	SHA_CTX ctx;
 	int r_len, s_len, rs_pad, i;
 
-	*signature = (unsigned char *) LIBSSH2_ALLOC(session, 2 * SHA_DIGEST_LENGTH);
+	*signature = LIBSSH2_ALLOC(session, 2 * SHA_DIGEST_LENGTH);
 	*signature_len = 2 * SHA_DIGEST_LENGTH;
 	memset(*signature, 0, 2 * SHA_DIGEST_LENGTH);
 
@@ -446,7 +445,7 @@ static int libssh2_hostkey_method_ssh_dss_signv(LIBSSH2_SESSION *session, unsign
 	}
 
 	SHA1_Init(&ctx);
-	for(i = 0; i < (int) veccount; i++) {
+	for(i = 0; i < veccount; i++) {
 		SHA1_Update(&ctx, datavec[i].iov_base, datavec[i].iov_len);
 	}
 	SHA1_Final(hash, &ctx);	
@@ -529,12 +528,12 @@ LIBSSH2_API const char *libssh2_hostkey_hash(LIBSSH2_SESSION *session, int hash_
 	switch (hash_type) {
 #ifndef OPENSSL_NO_MD5
 		case LIBSSH2_HOSTKEY_HASH_MD5:
-			return (char *) session->server_hostkey_md5;
+			return session->server_hostkey_md5;
 			break;
 #endif /* ! OPENSSL_NO_MD5 */
 #ifndef OPENSSL_NO_SHA
 		case LIBSSH2_HOSTKEY_HASH_SHA1:
-			return (char *) session->server_hostkey_sha1;
+			return session->server_hostkey_sha1;
 			break;
 #endif /* ! OPENSSL_NO_SHA */
 		default:

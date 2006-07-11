@@ -1,5 +1,21 @@
 2006-07-11  Raul Mateos  <raulofpandora@gmail.com>
 
+	* index.php: Add new text about authors.
+	
+	* functions.php: Add new text about authors. Change PATH to noaccess.php file.
+	
+	* noaccess.php: Add new text about authors.
+	
+	* login_failed.php: Add new text about authors.
+	
+	* logoff.php: Add new text about authors.
+	
+	* config.php: Add new text about authors.
+	
+	* configurar_usuarios.php: Add new text about authors. Clean code. Solve small bug that avoid creating a new user. Add a line between table and button. Add different colors between rows (cosmetic changes).
+	
+	* pandora.css: Added new class .datos2t
+
 	* ver_agente.php: Add new text about authors. Clean Code.
 	
 	* estado_generalagente.php: Add new text about authors. Solve small bug showing different colors between rows (cosmetic changes).

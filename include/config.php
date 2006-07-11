@@ -21,8 +21,8 @@
 
 //Pandora Version
 
-$build_version="PC060630"; //PCddmmyy
-$pandora_version="v1.2 Beta 2"; 
+$build_version="PC060710"; //PCddmmyy
+$pandora_version="v1.2 Beta 3"; 
 
 // Database configuration
 $dbname="pandora";	// MySQL DataBase
@@ -31,7 +31,7 @@ $dbpassword="pandora";	// Password
 $dbhost="localhost";	// MySQL Host
 $dbtype="mysql"; 	// Type of Database, now only "mysql" its supported
 $attachment_store="/var/www/pandora_console";	//This is directory where placed "attachment" directory, to upload files stores. This MUST be writtable by wwwserver user, and should be in pandora root. Please append "/" to the end :-)
-$config_fontpath = "/usr/share/fonts/truetype/msttcorefonts/arial.ttf";
+$config_fontpath = "/var/www/pandora_console/include/FreeSans.ttf";
 
 
 // Read rest of config from DB

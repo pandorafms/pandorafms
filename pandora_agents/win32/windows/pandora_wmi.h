@@ -30,12 +30,15 @@ using namespace Pandora;
 using namespace std;
 
 namespace Pandora_Wmi {
-        int    isProcessRunning  (string process_name);
-	int    isServiceRunning  (string service_name);
-	string getOSName         ();
-        string getOSVersion      ();
-        string getOSBuild        ();
-        string getSystemName     ();
+        class Pandora_Wmi_Error : public Pandora_Exception { };
+	
+        int    isProcessRunning (string process_name);
+	int    isServiceRunning (string service_name);
+	long   getDiskFreeSpace (string disk_id);
+	string getOSName        ();
+        string getOSVersion     ();
+        string getOSBuild       ();
+        string getSystemName    ();
 };
 
 #endif

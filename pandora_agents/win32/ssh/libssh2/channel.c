@@ -1126,11 +1126,6 @@ LIBSSH2_API int libssh2_channel_wait_closed(LIBSSH2_CHANNEL *channel)
 {
 	LIBSSH2_SESSION* session = channel->session;
 
-	if (!libssh2_channel_eof(channel)) {
-		libssh2_error(session, LIBSSH2_ERROR_INVAL, "libssh2_channel_wait_closed() invoked when channel is not in EOF state", 0);
-		return -1;
-	}
-
 #ifdef LIBSSH2_DEBUG_CONNECTION
 	_libssh2_debug(session, LIBSSH2_DBG_CONN, "Awaiting close of channel %lu/%lu", channel->local.id, channel->remote.id);
 #endif

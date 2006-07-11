@@ -49,7 +49,12 @@ Pandora_Strutils::trim (const string str) {
 
 string
 Pandora_Strutils::inttostr (const int i) {
-        std::ostringstream o;
+        return longtostr (i);
+}
+
+string
+Pandora_Strutils::longtostr (const long i) {
+	std::ostringstream o;
         
         o << i;
         

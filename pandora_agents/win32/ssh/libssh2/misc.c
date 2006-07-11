@@ -198,9 +198,9 @@ void _libssh2_debug(LIBSSH2_SESSION *session, int context, const char *format, .
 
 	va_start(vargs, format);
 	len += vsnprintf(buffer + len, 1535 - len, format, vargs);
-	buffer[len] = '\n';
+	buffer[len] = '\0';
 	va_end(vargs);
-	write(2, buffer, len + 1);
+	fprintf (stderr,"%s\n", buffer);
 }
 /* }}} */
 #endif

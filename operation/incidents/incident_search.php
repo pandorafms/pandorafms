@@ -1,14 +1,25 @@
 <?php
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2005-2006
 
-// Cargamos variables globales
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+// Load global vars
 require("include/config.php");
-//require("include/functions.php");
-//require("include/functions_db.php");
+
 if (comprueba_login() == 0) {
 
 
@@ -35,10 +46,9 @@ echo "<div style='float:right;'><img src='images/pulpo_lupa.gif' class='bot' ali
 	?>
 </select>
 <tr><td class="datos2"><?php echo $lang_label["free_text_search"] ?>
-<td class="datos2"><input type="text" size="45" name="texto">
-<tr><td class="datos" colspan="2">
-<i><?php echo $lang_label["free_text_search_msg"] ?></i>
-
+<td class="datos2"><input type="text" size="45" name="texto"></tr>
+<tr><td class="datos" colspan="2"><i><?php echo $lang_label["free_text_search_msg"] ?></i></td></tr>
+<tr><td colspan='3'><div class='raya'></div></td></tr>
 <tr><td align="right" colspan="3">
 <?php echo "<input name='uptbutton' type='submit' class='sub' value='".$lang_label["search"]."'>"; ?>
 

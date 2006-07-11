@@ -19,10 +19,11 @@
 
 // Load global vars
 require("include/config.php");
+
 if (comprueba_login() == 0)
 	if (give_acl($id_user, 0, "AR")==1) {
 	echo "<h2>".$lang_label["ag_title"]."</h2>";
-	echo "<h3>".$lang_label["group_view"]."</h3>";
+	echo "<h3>".$lang_label["group_view"]."<a href='help/".$help_code."/chap3.php#331' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 	$iduser_temp=$_SESSION['id_usuario'];
 
 	$sql1='SELECT * FROM tgrupo';

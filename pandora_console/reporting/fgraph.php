@@ -247,11 +247,19 @@ function grafico_modulo_sparse($id_agente_modulo, $periodo, $intervalo, $etiquet
 		);
 	
 	modulo_grafico_draw ( 	$Graph_param, 
-				&$etiq_base, 
+				$etiq_base, 
 				array('Maximum','Average','Minimum'),
 				array (	&$valores_max, &$grafica, &$valores_min ), 
-				&$datax
-				);
+				$datax
+				); // Replaced pass by reference   (slerena, 11 Jul06)
+	/*  PHP Warning:  Call-time pass-by-reference has
+	been deprecated - argument pass
+	ed by value;  If you would like to pass it by reference, modify the
+	declaration of [runtime function
+ 	name]().  If you would like to enable call-time pass-by-reference,
+	you can set allow_call_time_pass
+	_reference to true in your INI file.  However, future versions may not
+	support this any longer.  */
 }
 	
 	
@@ -376,17 +384,16 @@ function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_name, $MGD_data
 					$Dataset_events->addPoint(
 						$MGD_event_data[$cc][$nn], 
 						ceil($MGD_param['valor_maximo'] / 7) + $MGD_param['valor_maximo']);
-					}
+				}
 				$Plot =& $Plotarea->addNew('Plot_Impulse', array(&$Dataset_events));
 				$Plot->setLineColor($cc?'green@0.5':'red@0.5'); 
 				$Marker_event =& Image_Graph::factory('Image_Graph_Marker_Diamond');
 				$Plot->setMarker($Marker_event);
 				$Marker_event->setFillColor($cc?'green@0.5':'red@0.5');
 				$Marker_event->setLineColor('black');
-				}
 			}
 		}
-	
+	}
 	
 	$Graph->done(); 
 	// 30.06.06 dervitx end

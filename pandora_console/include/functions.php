@@ -221,16 +221,16 @@ function entrada_limpia ($texto){
 // ---------------------------------------------------------------
 
 function parametro_limpio($texto){
-
 	// Metemos comprobaciones de seguridad para los includes de paginas pasados por parametro
-    // Gracias Raul (http://seclists.org/lists/incidents/2004/Jul/0034.html)
-    // Consiste en purgar los http:// de las cadenas
-    $pos = strpos($texto,"://");	// quitamos la parte "fea" de http:// o ftp:// o telnet:// :-)))
-    if ($pos <> 0)
-    	$texto = substr_replace($texto,"",$pos,+3);   
-    // limitamos la entrada de datos por parametros a 125 caracteres
-    $texto = substr_replace($texto,"",125);
-    return $texto;
+	// Gracias Raul (http://seclists.org/lists/incidents/2004/Jul/0034.html)
+	// Consiste en purgar los http:// de las cadenas
+	$pos = strpos($texto,"://");	// quitamos la parte "fea" de http:// o ftp:// o telnet:// :-)))
+	if ($pos <> 0)
+	$texto = substr_replace($texto,"",$pos,+3);   
+	// limitamos la entrada de datos por parametros a 125 caracteres
+	$texto = substr_replace($texto,"",125);
+	$safe = preg_replace('/[^a-z0-9_\/]/i','',$texto);
+	return $safe;
 }
 
 // ---------------------------------------------------------------

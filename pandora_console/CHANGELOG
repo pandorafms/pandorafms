@@ -1,6 +1,10 @@
 2006-07-11  Raul Mateos  <raulofpandora@gmail.com>
 
-	* estado_agente.php: Clean code, add new text about authors
+	* ver_agente.php: Add new text about authors. Clean Code.
+	
+	* estado_generalagente.php: Add new text about authors. Solve small bug showing different colors between rows (cosmetic changes).
+
+	* estado_agente.php: Clean code, add new text about authors.
 	
 	* configurar_agente.php: Solve small bug that in some cases the module association form didn't work.
 	Added the feature of disable the not required inputs for the different type of agents while editing
@@ -22,9 +26,10 @@
 	
 	* message.php: Add new text about authors. Add new help icon; At this moment help for this item isn't available. Add a line between table and button (cosmetic change).
 	
-	* incident_detail: Add new text about authors. Add a line between table and button. Add different colors between rows. Change button position (cosmetic changes).
+	* incident_detail.php: Add new text about authors. Add a line between table and button. Add different colors between rows. Change button position (cosmetic changes).
 	
-	* incident_note: Add new text about authors. Add a line between table and button. Add different colors between rows (cosmetic changes).
+	* incident_note.php: Add new text about authors. Add a line between table and button. Add different colors between rows (cosmetic changes).
+	
 
 	
 2006-07-09  Sancho Lerena  <slerena@artica.es>

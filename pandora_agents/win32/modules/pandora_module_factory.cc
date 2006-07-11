@@ -23,6 +23,7 @@
 #include "pandora_module_exec.h"
 #include "pandora_module_proc.h"
 #include "pandora_module_service.h"
+#include "pandora_module_freedisk.h"
 #include "../pandora_strutils.h"
 #include <list>
 
@@ -36,6 +37,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_EXEC        ("module_exec ")
 #define TOKEN_PROC        ("module_proc ")
 #define TOKEN_SERVICE     ("module_service ")
+#define TOKEN_FREEDISK    ("module_freedisk ")
 #define TOKEN_MAX         ("module_max ")
 #define TOKEN_MIN         ("module_min ")
 #define TOKEN_DESCRIPTION ("module_description ")
@@ -59,6 +61,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
         string                 module_name, module_type, module_exec;
         string                 module_min, module_max, module_description;
         string                 module_interval, module_proc, module_service;
+	string                 module_freedisk;
         Pandora_Module        *module;
         bool                   numeric;
 
@@ -100,6 +103,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_service == "") {
                         module_service = parseLine (line, TOKEN_SERVICE);
 		}
+		if (module_freedisk == "") {
+                        module_freedisk = parseLine (line, TOKEN_FREEDISK);
+		}
                 if (module_max == "") {
                         module_max = parseLine (line, TOKEN_MAX);
                 }
@@ -122,6 +128,10 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	} else if (module_service != "") {
                 module = new Pandora_Module_Service (module_name,
 						     module_service);
+	} else if (module_freedisk != "") {
+                module = new Pandora_Module_Freedisk (module_name,
+						      module_freedisk);
+		
         } else {
                 return NULL;
         }

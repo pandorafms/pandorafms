@@ -120,7 +120,7 @@ Pandora_SSH_Test::test () {
                 remote_filepath += "/";
         }
         
-        cout << "Remote copying " << tmp_filepath << "on server " << remote_host
+        cout << "Remote copying " << tmp_filepath << " on server " << remote_host
              <<  " at " << remote_filepath << tmp_filename << endl;
         try {
                 ssh_client->scpFileFilename (remote_filepath + tmp_filename,

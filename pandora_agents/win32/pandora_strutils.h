@@ -35,6 +35,7 @@ namespace Pandora_Strutils {
         string trim        (const string str);
         
         string inttostr    (const int i);
+        string longtostr   (const long i);
         string longtohex   (const long i);
         
         int    strtoint    (const string str);

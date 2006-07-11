@@ -1,3 +1,27 @@
+2006-07-11  Esteban Sanchez  <estebans@artica.es>
+
+	* pandora_windows_service.h: Public methods converted into private.
+	
+	* modules/pandora_module_freedisk.[cc,h]: Added to repository.
+	Implements a module to check the free space in a disk.
+
+	* modules/pandora_module.h, modules/pandora_module_factory.cc,
+	pandora_module_list.cc: Added support to Pandora_Module_Freedisk
+	modules.
+
+	* ssh/libssh2/channel.c: Fixed a bug on libssh2_channel_wait_closed
+	that caused to not copy the file to the remote host.
+
+	* windows/wmi/pandora_wmi.[cc,h]: Added getDiskFreeSpace() to get
+	support eh Pandora_Module_Freedisk modules.
+
+	* pandora_strutils,[cc,h]: Added longtostr() to convert a long into a
+	string.
+	
+	* PandoraAgent.dev: Added new files to the project.
+
+	* bin/PandoraAgent.exe: Updated to the new commit.
+	
 2006-07-10  Esteban Sanchez  <estebans@artica.es>
 
 	* modules/pandora_module_list.cc: Delete modules from the list in the

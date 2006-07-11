@@ -132,6 +132,50 @@ Pandora_Wmi::isServiceRunning (string service_name) {
 	return 0;
 }
 
+long
+Pandora_Wmi::getDiskFreeSpace (string disk_id) {
+	CDhInitialize init;
+	CDispPtr      wmi_svc, quickfixes;
+	string        id;
+	
+	dhToggleExceptions (TRUE);
+	
+        struct QFix {
+		CDhStringA id;
+		long       free_space;
+	};
+        
+	try {
+                dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
+		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
+                                     L".ExecQuery(%S)",
+                                     L"SELECT * FROM Win32_LogicalDisk "));
+
+		FOR_EACH (quickfix, quickfixes, NULL) {
+			QFix fix = { 0 };
+
+			dhGetValue (L"%s", &fix.id, quickfix,
+                                    L".DeviceID");
+
+			id = fix.id;
+			
+			pandoraDebug ("%s %s", disk_id.c_str (), id.c_str ());
+
+			if (disk_id == id) {
+				dhGetValue (L"%d", &fix.free_space, quickfix,
+					    L".FreeSpace");
+				pandoraDebug ("%d Bytes", fix.free_space);
+				return fix.free_space;
+			}
+
+		} NEXT_THROW (quickfix);
+	} catch (string errstr) {
+		pandoraLog ("getOSName error. %s", errstr.c_str ());
+	}
+        
+	throw Pandora_Wmi_Error ();
+}
+
 string
 Pandora_Wmi::getOSName () {
         CDhInitialize init;

@@ -45,12 +45,14 @@ namespace Pandora_Modules {
                 MODULE_0,
                 MODULE_EXEC,
                 MODULE_PROC,
-		MODULE_SERVICE
+		MODULE_SERVICE,
+		MODULE_FREEDISK
         };
         
         const string module_exec_str                = "module_exec";
         const string module_proc_str                = "module_proc";
 	const string module_service_str             = "module_service";
+	const string module_freedisk_str            = "module_freedisk";
 
         class Output_Error           : public Pandora::Pandora_Exception { };
         class Interval_Error         : public Pandora::Pandora_Exception { };

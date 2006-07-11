@@ -1,3 +1,9 @@
+2006-07-11  Raul Mateos  <raulofpandora@gmail.com>
+
+	* Moved FreeSans.ttf to the reporting directory
+	
+	* Modified config.php. Now only shows the font, $config_fontpath var is set without the path (it should look for the font in the reporting directory)
+
 2006-07-11  Sancho Lerena  <slerena@gmail.com>
 
 	* config.php: Replaced default font for use in graphs to use FreeSans.ttf
@@ -42,7 +48,7 @@
 	Added the feature of disable the not required inputs for the different type of agents while editing
 	module.
 
-	* indicent_search.php: Add new text about authors and add a line between table and button (cosmetic change).
+	* incident_search.php: Add new text about authors and add a line between table and button (cosmetic change).
 	
 	* setup.php: Add new text about authors and add a line between table and button (cosmetic change).
 	

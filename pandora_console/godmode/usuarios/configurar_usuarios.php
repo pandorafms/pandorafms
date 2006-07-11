@@ -1,12 +1,24 @@
 <?php
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2005-2006
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
 require("include/config.php");
+
 if (comprueba_login() == 0) 
 	if (give_acl($id_user, 0, "UM")==1) {
 	// Init. vars
@@ -123,7 +135,7 @@ if (comprueba_login() == 0)
 			$nivel = entrada_limpia($_POST["nivel"]);
 		$password=md5($password);
 		$ahora = date("Y/m/d H:i:s");
-		$sql_insert = "insert into tusuario (id_usuario,direccion,password,telefono,fecha_registro,nivel,comentarios, nombre_real) values ('".$nombre."','".$direccion."','".$password."','".$telefono."','".$ahora."','".$nivel."','".$comentarios."','".$nombre_real."')";
+		$sql_insert = "INSERT INTO tusuario (id_usuario,direccion,password,telefono,fecha_registro,nivel,comentarios, nombre_real) VALUES ('".$nombre."','".$direccion."','".$password."','".$telefono."','".$ahora."','".$nivel."','".$comentarios."','".$nombre_real."')";
 		$resq1=mysql_query($sql_insert);
 			if (! $resq1)
 				echo "<h3 class='error'>".$lang_label["create_user_no"]."</h3>";
@@ -175,7 +187,7 @@ if (comprueba_login() == 0)
 	}
 	?>		
 	<tr><td class="datos2" colspan="2"><?php echo $lang_label["comments"] ?>
-	<tr><td class="datos" colspan="2"><textarea name="comentarios" cols="50" rows="4"><?php echo $comentarios ?></textarea>
+	<tr><td class="datos" colspan="2"><textarea name="comentarios" cols="60" rows="4"><?php echo $comentarios ?></textarea>
 	
 	<?php
 	if ($modo == "edicion") { // Solo se visualizan los grupos para usuarios existentes.
@@ -194,7 +206,7 @@ if (comprueba_login() == 0)
 		
 		echo "<tr><td class='datos'>".$lang_label["profiles"];
 		echo "<td class='datos'><select name='perfil'>";
-		$sql1='SELECT * FROM tperfil order by name';
+		$sql1='SELECT * FROM tperfil ORDER BY name';
 		$result=mysql_query($sql1);
 		while ($row=mysql_fetch_array($result)){
 			echo "<option value='".$row["id_perfil"]."'>".$row["name"];
@@ -202,27 +214,42 @@ if (comprueba_login() == 0)
 		echo '</select>';
 		echo '<tr><td colspan="3"><div class="raya"></div></td></tr>';
 		echo '<tr><td align="right" colspan="3">';
-	if (isset($_GET["alta"])){echo "<input name='crtbutton' type='submit' class='sub' value='".$lang_label["create"]."'>";}
-	else {echo "<input name='uptbutton' type='submit' class='sub' value='".$lang_label["update"]."'>";}
+		echo "<input name='uptbutton' type='submit' class='sub' value='".$lang_label["update"]."'></table><br>";
 		// Show user profile / groups assigned
 		$sql1='SELECT * FROM tusuario_perfil WHERE id_usuario = "'.$id_usuario_mio.'"';
 		$result=mysql_query($sql1);
+		
+		echo '<h3>'.$lang_label["listGroupUser"].'<a href="help/'.$help_code.'/chap2.php#22" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h3>';
+		echo "<table width='500' cellpadding='3' cellspacing='3' class='fon'>";
 		if (mysql_num_rows($result)){
-			echo "</table>
-			
-			<br><table width='500' cellpadding='3' cellspacing='3' class=fon>";
-			echo '<tr><td colspan="2"><h3>'.$lang_label["listGroupUser"]."</h3>";
+			echo '<tr><td class="lb" rowspan="'.mysql_num_rows($result).'" width="5">';
+			$color=1;
 			while ($row=mysql_fetch_array($result)){
-				echo '<tr><td class="datos">';
+				if ($color == 1){
+					$tdcolor = "datos";
+					$color = 0;
+					}
+				else {
+					$tdcolor = "datos2";
+					$color = 1;
+				}
+				echo '<td class="'.$tdcolor.'">';
 				echo "<b style='margin-left:10px'>".dame_perfil($row["id_perfil"])."</b> / ";
 				echo "<b>".dame_grupo($row["id_grupo"])."</b>";
-				echo '<td class="datost"><a href="index.php?sec=gusuarios&sec2=godmode/usuarios/configurar_usuarios&id_usuario_mio='.$id_usuario_mio.'&borrar_grupo='.$row["id_up"].' " onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;"><img border=0 src="images/cancel.gif"></a>';
+				echo '<td class="'.$tdcolor.'t"><a href="index.php?sec=gusuarios&sec2=godmode/usuarios/configurar_usuarios&id_usuario_mio='.$id_usuario_mio.'&borrar_grupo='.$row["id_up"].' " onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;"><img border=0 src="images/cancel.gif"></a><tr>';
 			}
+				echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
 		}
-		else { echo '<tr><td></td></tr><tr><td class="red" colspan="3">'.$lang_label["no_profile"]; }
+		else { echo '<tr><td class="red" colspan="3">'.$lang_label["no_profile"].'</td></tr>';}
 	}	
 	?>
-	
+
+	<?php if (isset($_GET["alta"])){
+		echo '<tr><td colspan="3"><div class="raya"></div></td></tr>';
+		echo '<tr><td align="right" colspan="3">';
+		echo '<input name="crtbutton" type="submit" class="sub" value="'.$lang_label["create"].'">';
+	} 
+	?> 
 	</form>
 	</td></tr></table>
 

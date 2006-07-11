@@ -1,12 +1,25 @@
 <?php
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2005-2006
+
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
 require("include/config.php");
+
 if (give_acl($id_user, 0, "AW")==1) {
 	if (isset($_GET["borrar_agente"])){ // if delete agent
 		$id_agente = entrada_limpia($_GET["borrar_agente"]);
@@ -59,7 +72,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 	$sql1='SELECT * FROM tagente ORDER BY nombre';
 	$result=mysql_query($sql1);
 	if (mysql_num_rows($result)){
-	echo "<table cellpadding='3' cellspacing='3'>";
+	echo "<table cellpadding='3' cellspacing='3' width='500'>";
 	echo "<th>".$lang_label["agent_name"];
 	echo "<th>".$lang_label["group"];
 	echo "<th>".$lang_label["description"];

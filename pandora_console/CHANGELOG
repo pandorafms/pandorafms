@@ -1,3 +1,25 @@
+2006-07-11  Raul Mateos  <raulofpandora@gmail.com>
+
+	* estado_agente.php: Clean code, add new text about authors
+	
+	* configurar_agente.php: Solve small bug that in some cases the module association form didn't work.
+	Added the feature of disable the not required inputs for the different type of agents while editing
+	module.
+
+	* indicent_search.php: Add new text about authors and add a line between table and button (cosmetic change)
+	
+	* setup.php: Add new text about authors and add a line between table and button (cosmetic change)
+	
+	* estado_grupo.php: Add new text about authors. Add new help icon; At this moment help for this item isn't available.
+	
+	* view_server.php: Add new text about authors. Add new help icon; At this moment help for this item isn't available.
+	
+	* snmp_alert.php: Add new text about authors. Add new help icon; At this moment help for this item isn't available. Cosmetic change, adding class 'suc' when creating alert is successful.
+	
+	* snmp_view.php: Add new text about authors. Add new help icon; At this moment help for this item isn't available.
+	
+	* tip.css: Change class padding to not showing error in Firefox Javascript Console
+	
 2006-07-09  Sancho Lerena  <slerena@artica.es>
 
 	* ChangeLog: Create this file, prior to launch final 1.2 version. For the next
@@ -20,4 +42,3 @@
 	we take now the more higest interval in modules to calculate if an agent is DOWN.
 
 	* fgraph.php: updated progressbar function to show N/A when data is above 100 or below 0. 
-	

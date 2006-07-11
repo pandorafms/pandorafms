@@ -145,6 +145,7 @@ function type_change()
 <?php
 // Load global vars
 require("include/config.php");
+
 if (give_acl($id_user, 0, "AW")==1) {
 	// Init vars
 	$descripcion = "";
@@ -512,7 +513,15 @@ if (give_acl($id_user, 0, "AW")==1) {
 		if ($snmp_oid == ""){
 			$snmp_oid = $combo_snmp_oid;
 		}
-
+		if (!isset($tcp_port) || $tcp_port== "") {
+			$tcp_port= "0";
+			}
+		if (!isset($modulo_max) || $modulo_max=="") {
+			$modulo_max= "0";
+		}
+		if (!isset($modulo_min) || $modulo_min=="") {
+			$modulo_min= "0";
+		}
 		$sql_insert = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,descripcion,max,min,snmp_oid,snmp_community,id_module_group,module_interval,ip_target,tcp_port,tcp_rcv,tcp_send) VALUES (".$id_agente.",".$id_tipo_modulo.",'".$nombre."','".$descripcion."','".$modulo_max."','".$modulo_min."', '$snmp_oid', '$snmp_community', '$id_module_group', '$module_interval', '$ip_target', '$tcp_port', '$tcp_rcv', '$tcp_send')";
 		// Init vars to null to avoid trash in forms 
 		$id_tipo_modulo = "";$nombre =  "";$descripcion = "";$modulo_max = "";
@@ -521,7 +530,8 @@ if (give_acl($id_user, 0, "AW")==1) {
 		$snmp_oid = "";$snmp_community = "";$id_module_group = "";
 		$module_interval = "";
 
-		//echo "DEBUG ".$sql_insert;
+		//echo "DEBUG: ".$sql_insert;
+
 		$result=mysql_query($sql_insert);
 		$id_agente_modulo = mysql_insert_id();
 		// Create with different estado if proc type or data type
@@ -744,7 +754,7 @@ if ( $creacion_agente != 1) {
 			echo "<td class='$tdcolor'>";
 			if ($id_tipo != -1)
 			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&delete_module=".$row["id_agente_modulo"]."'><img src='images/cancel.gif' border=0 alt='".$lang_label["delete"]."'></b></a> &nbsp; ";
-			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&update_module=".$row["id_agente_modulo"]."#modules'><img src='images/config.gif' border=0 alt='".$lang_label["update"]."'></b></a>";
+			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&update_module=".$row["id_agente_modulo"]."#modules'><img src='images/config.gif' border=0 alt='".$lang_label["update"]."' onLoad='type_change()'></b></a>";
 		}
 		echo "<tr><td colspan='7'><div class='raya'></div></td></tr>";
 	} else 
@@ -828,7 +838,7 @@ echo '<form name="modulo" method="post" action="index.php?sec=gagente&sec2=godmo
 
 if ($update_module == "1"){
 	echo '<input type="hidden" name="update_module" value=1>';
-	echo '<input type="hidden" name="id_agente_modulo" value="'.$id_agente_modulo.'" ';
+	echo '<input type="hidden" name="id_agente_modulo" value="'.$id_agente_modulo.'">';
 }
 else {
 	echo '<input type="hidden" name="insert_module" value=1>';
@@ -848,8 +858,10 @@ else {
 <td class="datos"><?php echo $lang_label["module_type"] ?>
 <td class="datos">
 <?php
-if ($update_module == "1")
+if ($update_module == "1") {
+	echo "<input type='hidden' name='tipo' value='".$modulo_id_tipo_modulo."'>";
 	echo "<i class='red'>".$lang_label["no_change_field"]."</i>";
+	}
 else {
 	echo '<select name="tipo" onChange="type_change()">';
 	$sql1='SELECT * FROM ttipo_modulo ORDER BY nombre';
@@ -900,7 +912,7 @@ else {
 
 <tr><td class="datos"><?php echo $lang_label["snmp_oid"] ?>
 <td colspan=3 class="datos"><select name="combo_snmp_oid">
-<?PHP
+<?php
 // FILL OID Combobox
 if (isset($_POST["oid"])){
 	for (reset($snmpwalk); $i = key($snmpwalk); next($snmpwalk)) {

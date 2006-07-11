@@ -1,12 +1,25 @@
 <?php
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este c�igo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2005
-// Raul Mateos <raulofpandora@gmail.com>, 2004-2005
 
-// Cargamos variables globales
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+// Load global vars
 require("include/config.php");
+
 if (give_acl($id_user, 0, "LW")==1) {
 	// Variable init
 	$view_alert=1;
@@ -97,7 +110,7 @@ if (give_acl($id_user, 0, "LW")==1) {
 	
 		echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&submit=1">';
 		echo '<input type="hidden" name="id_as" value="'.$id_as.'">'; // if known, if add will be undetermined (0).
-		echo '<h3>'.$lang_label["create_alert"]."</h3>";
+		echo '<h3>'.$lang_label["create_alert"]."<a href='help/".$help_code."/chap3.php#331' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 		echo '<table cellpadding="3" cellspacing="3" width="650" class="fon">';
 		echo '<tr><th rowspan=13 width=5>';
 		// Alert
@@ -149,12 +162,13 @@ if (give_acl($id_user, 0, "LW")==1) {
 		echo '<td class=datos><input type="text" size=60 name="field3" value="'.$al_field3.'">';
 		
 		// max & min alerts, time threshold
-		echo '<tr><td class=datos>'.$lang_label["max_alerts"];
-		echo '<td class=datos><input type="text" size=3 name="max" value="'.$max_alerts.'">';
 		echo '<tr><td class=datos>'.$lang_label["min_alerts"];
 		echo '<td class=datos><input type="text" size=3 name="min" value="'.$min_alerts.'">';
+		echo '<tr><td class=datos>'.$lang_label["max_alerts"];
+		echo '<td class=datos><input type="text" size=3 name="max" value="'.$max_alerts.'">';
 		echo '<tr><td class=datos>'.$lang_label["time_threshold"];
 		echo '<td class=datos><input type="text" size=3 name="time" value="'.$time_threshold.'">';
+		echo '<tr><td colspan="3"><div class="raya"></div></td></tr>';
 		// Update or Add button
 		if ($alert_update != 0) {
 			echo '<tr><td colspan="3" align="right"><input name="uptbutton" type="submit" class="sub" value="'.$lang_label["update"].'">';
@@ -177,11 +191,11 @@ if (give_acl($id_user, 0, "LW")==1) {
 		$sql1='SELECT * FROM talert_snmp';
 		$result=mysql_query($sql1);
 		
-		echo '<h3>'.$lang_label["snmp_assigned_alerts"]."</h3>";		
+		echo '<h3>'.$lang_label["snmp_assigned_alerts"]."<a href='help/".$help_code."/chap3.php#331' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";		
 		if (mysql_num_rows($result)){
 
 			if ($alert_submit !=0) {
-				echo '<h3>'.$lang_label["update_alert_ok"]."</h3>";
+				echo '<h3 class="suc">'.$lang_label["create_alert_ok"].'</h3>';
 			}
 			echo '<table cellpadding="3" cellspacing="3" width="750" class="fon" border=0>';
 			echo '<tr><th>'.$lang_label["alert"];
@@ -193,7 +207,7 @@ if (give_acl($id_user, 0, "LW")==1) {
 			echo '<th>'.$lang_label["times_fired"];
 			echo '<th>'.$lang_label["last_fired"];
 			echo '<th width="50">'.$lang_label["action"];
-	;
+			
 			while ($row=mysql_fetch_array($result)){
 				$id_as = $row["id_as"];
 				$id_alert = $row["id_alert"];

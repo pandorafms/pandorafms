@@ -93,7 +93,7 @@ td.datos_jus, td.datos2_jus {text-align: justify;}
 .w135, .w135datos, .w35datos2 {width: 135px;}
 .w140 {width: 140px;}
 .w155, .w155f10 {width: 155px;}
-.top, .bgt, .f9130t, td.datost {vertical-align: top;}
+.top, .bgt, .f9130t, td.datost, td.datos2t {vertical-align: top;}
 .bot, .titb, td.datosb {vertical-align: bottom;}
 .w180 {width: 180px;}
 .w200 {width: 200px;}

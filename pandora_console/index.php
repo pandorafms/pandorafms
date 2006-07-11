@@ -1,4 +1,5 @@
-<?PHP 
+<?php
+
 // Pandora - the Free monitoring system
 // ====================================
 // Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com

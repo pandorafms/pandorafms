@@ -6,9 +6,9 @@
 	Added the feature of disable the not required inputs for the different type of agents while editing
 	module.
 
-	* indicent_search.php: Add new text about authors and add a line between table and button (cosmetic change)
+	* indicent_search.php: Add new text about authors and add a line between table and button (cosmetic change).
 	
-	* setup.php: Add new text about authors and add a line between table and button (cosmetic change)
+	* setup.php: Add new text about authors and add a line between table and button (cosmetic change).
 	
 	* estado_grupo.php: Add new text about authors. Add new help icon; At this moment help for this item isn't available.
 	
@@ -18,7 +18,14 @@
 	
 	* snmp_view.php: Add new text about authors. Add new help icon; At this moment help for this item isn't available.
 	
-	* tip.css: Change class padding to not showing error in Firefox Javascript Console
+	* tip.css: Change class padding to not showing error in Firefox Javascript Console.
+	
+	* message.php: Add new text about authors. Add new help icon; At this moment help for this item isn't available. Add a line between table and button (cosmetic change).
+	
+	* incident_detail: Add new text about authors. Add a line between table and button. Add different colors between rows. Change button position (cosmetic changes).
+	
+	* incident_note: Add new text about authors. Add a line between table and button. Add different colors between rows (cosmetic changes).
+
 	
 2006-07-09  Sancho Lerena  <slerena@artica.es>
 

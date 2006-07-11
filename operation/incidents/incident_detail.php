@@ -1,14 +1,25 @@
 <?php
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2005-2006
+
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
 require("include/config.php");
-//require("include/functions.php");
-//require("include/functions_db.php");
+
 if (comprueba_login() == 0) {
 $id_grupo = "";
 $creacion_incidente = "";
@@ -226,10 +237,10 @@ $creacion_incidente = "";
 			echo '<tr><td class="lb" rowspan="6" width="5"><td class="datos"><b>'.$lang_label["incident"].'</b><td colspan=3 class="datos"><input type="text" name="titulo" size=70 value="'.$titulo.'">';
 		else
 			echo '<tr><td class="datos"><b>'.$lang_label["incident"].'</b><td colspan=3 class="datos"><input type="text" name="titulo" size=70 value="'.$titulo.'" readonly>';
-		echo '<tr><td class="datos"><b>'.$lang_label["in_openedwhen"].'</b>';
-		echo "<td class='datos' <i>".$inicio."</i>";
-		echo '<td class="datos"><b>'.$lang_label["updated_at"].'</b>';
-		echo "<td class='datos'><i>".$actualizacion."</i>";
+		echo '<tr><td class="datos2"><b>'.$lang_label["in_openedwhen"].'</b>';
+		echo "<td class='datos2' <i>".$inicio."</i>";
+		echo '<td class="datos2"><b>'.$lang_label["updated_at"].'</b>';
+		echo "<td class='datos2'><i>".$actualizacion."</i>";
 		echo '<tr><td class="datos"><b>'.$lang_label["in_openedby"].'</b><td class="datos">';
 		if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)) {
 			echo "<select name='usuario' class='w200'>";
@@ -273,14 +284,14 @@ $creacion_incidente = "";
 		echo '</select>';
 
 		if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)) 
-			echo '<tr><td class="datos"><b>'.$lang_label["source"].'</b><td class="datos"><select name="origen" class="w135">';
+			echo '<tr><td class="datos2"><b>'.$lang_label["source"].'</b><td class="dato2s"><select name="origen" class="w135">';
 		else
-			echo '<tr><td class="datos"><b>'.$lang_label["source"].'</b><td class="datos"><select disabled name="origen" class="w135">';
+			echo '<tr><td class="datos2"><b>'.$lang_label["source"].'</b><td class="datos2"><select disabled name="origen" class="w135">';
 		
 		// Fill combobox with source (origen)
 		if ($origen != "")
 			echo "<option value='".$origen."'>".$origen;
-		$sql1='SELECT * FROM torigen order by origen';
+		$sql1='SELECT * FROM torigen ORDER BY origen';
 		$result=mysql_query($sql1);
 		while ($row2=mysql_fetch_array($result)){
 			echo "<option value='".$row2["origen"]."'>".$row2["origen"];
@@ -289,9 +300,9 @@ $creacion_incidente = "";
 		
 		// Group combo
 		if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)) 
-			echo '<td class="datos"><b>'.$lang_label["group"].'</b><td class="datos"><select name="grupo" class="w135">';
+			echo '<td class="datos2"><b>'.$lang_label["group"].'</b><td class="datos2"><select name="grupo" class="w135">';
 		else 
-			echo '<td class="datos"><b>'.$lang_label["group"].'</b><td class="datos"><select disabled name="grupo" class="w135">';
+			echo '<td class="datos2"><b>'.$lang_label["group"].'</b><td class="datos2"><select disabled name="grupo" class="w135">';
 		if ($id_grupo != 0)
 			echo "<option value='".$id_grupo."'>".$grupo;
 		$sql1='SELECT * FROM tgrupo ORDER BY nombre';
@@ -323,16 +334,17 @@ $creacion_incidente = "";
 		echo '<option value="4">'.$lang_label["very_serious"]; 
 		echo '<option value="10">'.$lang_label["maintenance"]; 
 		
-		echo "<td class=datos><b>Creator</b><td class='datos'>".$id_creator." ( <i>".dame_nombre_real($id_creator)." </i>)";
+		echo "<td class='datos'><b>Creator</b><td class='datos'>".$id_creator." ( <i>".dame_nombre_real($id_creator)." </i>)";
 		
 		if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)) 
-			echo '</select><tr><td class="datos" colspan="4"><textarea name="descripcion" rows="15" cols="95">';
+			echo '</select><tr><td class="datos2" colspan="4"><textarea name="descripcion" rows="15" cols="85">';
 		else
-			echo '</select><tr><td class="datos" colspan="4"><textarea readonly name="descripcion" rows="15" cols="95">';
+			echo '</select><tr><td class="datos2" colspan="4"><textarea readonly name="descripcion" rows="15" cols="85">';
 		if (isset($texto)) {echo $texto;}
 		echo "</textarea>";
 		
-		echo "<tr><td colspan='2' style='padding-left: 18px;'>";
+		echo '<tr><td colspan="5"><div class="raya"></div></td></tr>';
+		echo "<tr><td colspan='5' align='right'>";
 		// Only if user is the used who opened incident or (s)he is admin
 		
 		$iduser_temp=$_SESSION['id_usuario'];
@@ -349,23 +361,23 @@ $creacion_incidente = "";
 		
 		echo "</form>";
 		
-		echo "<td colspan=2>";
 		if ($creacion_incidente == 0){
-			echo "<td style='text-align: right; padding-right: 40px;'>";
+			echo "<tr><td colspan='7' style='text-align: right;'>";
 			echo '<form method="post" action="index.php?sec=incidencias&sec2=operation/incidents/incident_note&id_inc='.$id_inc.'"><input type="hidden" name="nota" value="add"><input align=right name="addnote" type="submit" class="sub" value="'.$lang_label["add_note"].'"></form>';
 		}
-		echo "</table><br>";
+		echo "</tr></table><br>";
 
 		if ($creacion_incidente == 0){
 		// Upload control
 			if (give_acl($iduser_temp, $id_grupo, "IW")==1){
 				echo "<table cellpadding=3 cellspacing=3 border=0 width='400'>";
 				echo "<tr><td colspan='3'><b>".$lang_label["attachfile"]."</b>";
-				echo "<tr><td class='lb' rowspan='2' width='5'><td class=datos>";
-				echo $lang_label["filename"].'<td class=datos colspan=3><form method="post" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'&upload_file=1" enctype="multipart/form-data">';
-				echo '<input type="file" name="userfile" value="userfile" class="sub" size="27">';			
-				echo '<tr><td class=datos>'.$lang_label["description"].'<td class=datos colspan=3><input type="text" name="file_description" size=34>';
-				echo '<tr><td colspan="4" style="text-align: right; padding-right: 55px;"><input type="submit" name="upload" value="'.$lang_label["upload"].'" class="sub">';
+				echo "<tr><td class='lb' rowspan='2' width='5'>";
+				echo '<td class="datos">'.$lang_label["filename"].'</td><td class="datos"><form method="post" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'&upload_file=1" enctype="multipart/form-data">';
+				echo '<input type="file" name="userfile" value="userfile" class="sub" size="40">';
+				echo '<tr><td class="datos2">'.$lang_label["description"].'</td><td class="datos2" colspan=3><input type="text" name="file_description" size=47>';
+				echo '<tr><td colspan="4"><div class="raya"></div></td></tr>';
+				echo '<tr><td colspan="4" style="text-align: right;"><input type="submit" name="upload" value="'.$lang_label["upload"].'" class="sub">';
 				echo '</td></tr></table><br>';
 			}
 			// ************************************************************

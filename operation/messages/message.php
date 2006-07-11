@@ -1,11 +1,25 @@
 <?php
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2005-2006
 
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+// Load global vars
 require("include/config.php");
+
 function create_message($usuario_origen, $usuario_destino, $subject, $mensaje){
 	$ahora=date("Y/m/d H:i:s");
 	require ("include/config.php");
@@ -59,14 +73,14 @@ if (isset($_GET["nuevo_mensaje_g"])){
 			$error=create_message_g($iduser, $row["id_usuario"], $subject, $mensaje);
 		}
 		if ($error==0) echo "<h3 class='suc'>".$lang_label["message_ok"]."</h3>";
-		else echo "<h3 class='error'>".$lang_label["message_no"]."d</h3>";
+		else echo "<h3 class='error'>".$lang_label["message_no"]."</h3>";
 	}
 	else {echo "<h3 class='error'>".$lang_label["message_no"]."</h3>";}
 }
 if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
 	if (isset($_GET["nuevo"])){ //create message
 	
-		echo '<h3>'.$lang_label["new_message"].'</h3>';
+		echo '<h3>'.$lang_label["new_message"].'<a href="help/'.$help_code.'/chap3.php#331" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h3>';
 		echo '
 		<form name="new_mes" method="POST" action="index.php?sec=messages&sec2=operation/messages/message&nuevo_mensaje=1">
 		<table>
@@ -100,7 +114,7 @@ if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
 	}
 	
 	if (isset($_GET["nuevo_g"])){
-		echo '<h3>'.$lang_label["new_message_g"].'</h3>';
+		echo '<h3>'.$lang_label["new_message_g"].'<a href="help/'.$help_code.'/chap3.php#331" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h3>';
 		echo '
 		<form name="new_mes" method="post" action="index.php?sec=messages&sec2=operation/messages/message&nuevo_mensaje_g=1">
 		<table>
@@ -133,7 +147,7 @@ else {
 	
 	//List
 	
-	echo "<h3>".$lang_label["read_mes"]."</h3>";
+	echo "<h3>".$lang_label["read_mes"]."<a href='help/".$help_code."/chap3.php#331' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 	if ($row2["COUNT(*)"]!=0){
 		echo $lang_label["new_message_bra"]."<b> ".$row2["COUNT(*)"]."</b> <img src='images/mail.gif'>".$lang_label["new_message_ket"]."<br><br>";
 		}

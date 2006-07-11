@@ -82,10 +82,10 @@ if (comprueba_login() == 0)
 			
 			if (dame_password($nombre_viejo)!=$password){
 				$password=md5($password);
-				$sql = "UPDATE tusuario set nombre_real ='".$nombre_real."', id_usuario ='".$nombre."', password = '".$password."', telefono ='".$telefono."', direccion ='".$direccion." ', nivel = '".$nivel."', comentarios = '".$comentarios."' WHERE id_usuario = '".$nombre_viejo."'";
+				$sql = "UPDATE tusuario SET nombre_real ='".$nombre_real."', id_usuario ='".$nombre."', password = '".$password."', telefono ='".$telefono."', direccion ='".$direccion." ', nivel = '".$nivel."', comentarios = '".$comentarios."' WHERE id_usuario = '".$nombre_viejo."'";
 			}
 			else 	
-				$sql = "UPDATE tusuario set nombre_real ='".$nombre_real."', id_usuario ='".$nombre."', telefono ='".$telefono."', direccion ='".$direccion." ', nivel = '".$nivel."', comentarios = '".$comentarios."' WHERE id_usuario = '".$nombre_viejo."'";
+				$sql = "UPDATE tusuario SET nombre_real ='".$nombre_real."', id_usuario ='".$nombre."', telefono ='".$telefono."', direccion ='".$direccion." ', nivel = '".$nivel."', comentarios = '".$comentarios."' WHERE id_usuario = '".$nombre_viejo."'";
 			$resq2=mysql_query($sql);
 
 			// Añadimos grupo

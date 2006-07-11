@@ -111,18 +111,18 @@ if (isset($_SESSION["id_usuario"])) {
 			echo "<ul class='mn'><li><a href='index.php?sec=eventos&amp;sec2=operation/events/event_statistics' class='mn'>".$lang_label["statistics"]."</a></li></ul></div>";
 		}
 	}
-		if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/users/user") {
+		if(isset($_GET["sec2"]) && ($_GET["sec2"] == "operation/users/user" || $_GET["sec2"] == "operation/users/user_edit" )) {
 			echo '<div id="op5s">';
 		}
 		else echo '<div id="op5">';
 		echo '<ul class="mn"><li><a href="index.php?sec=usuarios&amp;sec2=operation/users/user" class="mn">'.$lang_label["view_users"].'</a></li></ul></div>';
 		
 		if (isset($_GET["sec"]) && $_GET["sec"] == "usuarios"){
-			if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/users/user_edit"){
+			if(isset($_GET["ver"]) && $_GET["ver"] == $_SESSION["id_usuario"]){
 				echo "<div id='arrows1'>";
 			}
 			else echo "<div id='arrow1'>";
-			echo "<ul class='mn'><li><a href='index.php?sec=usuarios&amp;sec2=operation/users/user_edit&ver=".$_SESSION["id_usuario"]."' class='mn'>".$lang_label["index_myuser"]."</a></li></ul></div>";
+			echo "<ul class='mn'><li><a href='index.php?sec=usuarios&amp;sec2=operation/users/user_edit&amp;ver=".$_SESSION["id_usuario"]."' class='mn'>".$lang_label["index_myuser"]."</a></li></ul></div>";
 			
 			if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/users/user_statistics") {
 				echo "<div id='arrows1'>";

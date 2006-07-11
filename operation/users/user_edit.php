@@ -1,14 +1,25 @@
 <?php
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2005-2006
+
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
 require("include/config.php");
-//require("include/functions.php");
-//require("include/functions_db.php");
+
 if (comprueba_login() == 0) {
 	
 	$view_mode = 0;
@@ -27,9 +38,7 @@ if (comprueba_login() == 0) {
 	$rowdup=mysql_fetch_array($resq1);
 	$nombre=$rowdup["id_usuario"];
 	
-	// Obtenemos el ID del usuario para modificar los datos del usuario actual
-	// no podemos pasar el ID como parámetro, sino seria muy facil acceder 
-	// a los datos de otro usuario
+	// Get user ID to modify data of current user.
 
 	if (isset ($_GET["modificado"])){
 		// Se realiza la modificación
@@ -75,7 +84,7 @@ if (comprueba_login() == 0) {
 		echo "<h2>".$lang_label["users_"]."</h2>";
 		echo "<h3>".$lang_label["user_edit_title"]."<a href='help/".$help_code."/chap2.php#22' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 
-	// Sino se obtiene la variable "modificado" es que se esta visualizando la informacion y
+	// Si no se obtiene la variable "modificado" es que se esta visualizando la informacion y
 	// preparandola para su modificacion, no se almacenan los datos
 	
 	$nombre=$rowdup["id_usuario"];
@@ -117,21 +126,30 @@ if (comprueba_login() == 0) {
 		// Don't delete this!!
 	if ($view_mode ==0){
 		echo '<tr><td colspan="3" align="right">';
-		echo "<input name='uptbutton' type='submit' class='sub' value='".$lang_label["update"]."'>";
+		echo "<input name='uptbutton' type='submit' class='sub' value='".$lang_label["update"]."'></td></tr>";
 	}
-	echo '<tr><td></td></tr>';
-	
+	echo '</table><br>';
+	echo '<h3>'.$lang_label["listGroupUser"].'<a href="help/'.$help_code.'/chap2.php#22" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h3>';
+	echo "<table width='500' cellpadding='3' cellspacing='3' class='fon'>";
 	$sql1='SELECT * FROM tusuario_perfil WHERE id_usuario = "'.$nombre.'"';
 	$result=mysql_query($sql1);
 	if (mysql_num_rows($result)){
-		echo '<tr><td colspan="3"><h3>'.$lang_label["listGroupUser"].'</h3></td>';
+		echo '<tr><td class="lb" rowspan="'.mysql_num_rows($result).'" width="5">';
+		$color=1;
 		while ($row=mysql_fetch_array($result)){
-			echo '<tr><td colspan="3">';
-			echo "&nbsp;&nbsp;&nbsp;";
+			if ($color == 1){
+				$tdcolor = "datos";
+				$color = 0;
+				}
+			else {
+				$tdcolor = "datos2";
+				$color = 1;
+			}
+			echo '<td class="'.$tdcolor.'">';
 			echo "<b>".dame_perfil($row["id_perfil"])."</b> / ";
-			echo "<b>".dame_grupo($row["id_grupo"])."</b>";	
+			echo "<b>".dame_grupo($row["id_grupo"])."</b><tr>";	
 		}
-
+			echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
 	}
 	else { echo '<tr><td class="red" colspan="3">'.$lang_label["no_profile"]; }
 

@@ -1,5 +1,9 @@
 2006-07-11  Raul Mateos  <raulofpandora@gmail.com>
 
+	* user_edit.php: Add new text about authors. Add a line between table and button. Add different colors between rows (cosmetic changes).
+	
+	* menu.php: Add new text about authors. Add code to highlight "edit my user" when editing the user authenticated.
+
 	* index.php: Add new text about authors.
 	
 	* functions.php: Add new text about authors. Change PATH to noaccess.php file.

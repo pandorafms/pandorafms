@@ -1,3 +1,15 @@
+2006-07-11  Sancho Lerena  <slerena@gmail.com>
+
+	* config.php: Replaced default font for use in graphs to use FreeSans.ttf
+
+	* FreeSans.ttf: added to SVN repository.
+
+	* fpgraph.php: Fixed problem with Call-time pass-by-reference in PHP.
+
+	* functions.php: Updated parametro_limpio() security function to parse better. 
+	Includes a regular expression to purge %00 expresions.
+
+
 2006-07-11  Raul Mateos  <raulofpandora@gmail.com>
 
 	* user_edit.php: Add new text about authors. Add a line between table and button. Add different colors between rows (cosmetic changes).

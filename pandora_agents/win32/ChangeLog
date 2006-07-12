@@ -1,4 +1,25 @@
 2006-07-11  Esteban Sanchez  <estebans@artica.es>
+	
+	* modules/pandora_module_cpuusage.[cc,h]: Added to repository.
+	Implements a module to get the CPU usage percentage.
+
+	* modules/pandora_module.h, modules/pandora_module_factory.cc,
+	modules/pandora_module_list.cc: Added support to
+	Pandora_Module_Cpuusage.
+
+	* modules/pandora_module_freedisk.cc: Removed unnecessary debug
+	output.
+
+	* modules/pandora_module_service.h: Style correction.
+
+	* windows/pandora_wmi.[cc,h]: Added getCpuUsagePercentage().  Removed
+	unnecessary debug output.
+
+	* PandoraAgent.dev: Added new files to the project.
+
+	* bin/PandoraAgent.exe: Updated to the new commit.
+	
+2006-07-11  Esteban Sanchez  <estebans@artica.es>
 
 	* pandora_windows_service.h: Public methods converted into private.
 	

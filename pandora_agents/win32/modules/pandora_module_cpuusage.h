@@ -1,5 +1,5 @@
-/* Class to manage the Windows Management Instrumentation(WMI).
-   It depends on disphelper library (http://disphelper.sourceforge.net)
+/* Pandora CPU usage module. These modules check the usage percentage
+   of a CPU.
 
    Copyright (C) 2006 Artica ST.
    Written by Esteban Sanchez.
@@ -19,27 +19,20 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#ifndef	__PANDORA_WMI_H__
-#define	__PANDORA_WMI_H__
+#ifndef	__PANDORA_MODULE_CPUUSAGE_H__
+#define	__PANDORA_MODULE_CPUUSAGE_H__
 
-#include "../pandora.h"
-#include "wmi/disphelper.h"
-#include <list>
+#include "pandora_module.h"
 
-using namespace Pandora;
-using namespace std;
-
-namespace Pandora_Wmi {
-        class Pandora_Wmi_Error : public Pandora_Exception { };
-	
-        int    isProcessRunning      (string process_name);
-	int    isServiceRunning      (string service_name);
-	long   getDiskFreeSpace      (string disk_id);
-	int    getCpuUsagePercentage (int cpu_id);
-	string getOSName             ();
-        string getOSVersion          ();
-        string getOSBuild            ();
-        string getSystemName         ();
-};
+namespace Pandora_Modules {
+        class Pandora_Module_Cpuusage : public Pandora_Module {
+        private:
+                int cpu_id;
+        public:
+                Pandora_Module_Cpuusage (string name, int cpu_id);
+                
+                void   run              ();
+        };
+}
 
 #endif

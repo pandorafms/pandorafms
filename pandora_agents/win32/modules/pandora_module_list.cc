@@ -24,6 +24,7 @@
 #include "pandora_module_proc.h"
 #include "pandora_module_service.h"
 #include "pandora_module_freedisk.h"
+#include "pandora_module_cpuusage.h"
 #include <fstream>
 
 using namespace std;
@@ -97,6 +98,7 @@ Pandora_Module_List::parseModuleDefinition (string definition) {
         Pandora_Module_Proc     *module_proc;
 	Pandora_Module_Service  *module_service;
 	Pandora_Module_Freedisk *module_freedisk;
+	Pandora_Module_Cpuusage *module_cpuusage;
         
         module = Pandora_Module_Factory::getModuleFromDefinition (definition);
         
@@ -122,6 +124,11 @@ Pandora_Module_List::parseModuleDefinition (string definition) {
 		case MODULE_FREEDISK:
 			module_freedisk = (Pandora_Module_Freedisk *) module;
                         modules->push_back (module_freedisk);
+                        
+                        break;
+		case MODULE_CPUUSAGE:
+			module_cpuusage = (Pandora_Module_Cpuusage *) module;
+                        modules->push_back (module_cpuusage);
                         
                         break;
                 default:

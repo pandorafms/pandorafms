@@ -24,6 +24,7 @@
 #include "pandora_module_proc.h"
 #include "pandora_module_service.h"
 #include "pandora_module_freedisk.h"
+#include "pandora_module_cpuusage.h"
 #include "../pandora_strutils.h"
 #include <list>
 
@@ -38,6 +39,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_PROC        ("module_proc ")
 #define TOKEN_SERVICE     ("module_service ")
 #define TOKEN_FREEDISK    ("module_freedisk ")
+#define TOKEN_CPUUSAGE    ("module_cpuusage ")
 #define TOKEN_MAX         ("module_max ")
 #define TOKEN_MIN         ("module_min ")
 #define TOKEN_DESCRIPTION ("module_description ")
@@ -61,7 +63,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
         string                 module_name, module_type, module_exec;
         string                 module_min, module_max, module_description;
         string                 module_interval, module_proc, module_service;
-	string                 module_freedisk;
+	string                 module_freedisk, module_cpuusage;
         Pandora_Module        *module;
         bool                   numeric;
 
@@ -106,6 +108,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_freedisk == "") {
                         module_freedisk = parseLine (line, TOKEN_FREEDISK);
 		}
+		if (module_cpuusage == "") {
+                        module_cpuusage = parseLine (line, TOKEN_CPUUSAGE);
+		}
                 if (module_max == "") {
                         module_max = parseLine (line, TOKEN_MAX);
                 }
@@ -132,7 +137,22 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
                 module = new Pandora_Module_Freedisk (module_name,
 						      module_freedisk);
 		
-        } else {
+	} else if (module_cpuusage != "") {
+		int cpu_id;
+
+		try {
+			cpu_id = strtoint (module_cpuusage);
+		} catch (Invalid_Conversion e) {
+			pandoraLog ("Invalid CPU id '%s' on module_cpuusage %s",
+				    module_name.c_str ());
+			return NULL;
+		}
+		
+                module = new Pandora_Module_Cpuusage (module_name,
+						      cpu_id);
+		
+        }
+	else {
                 return NULL;
         }
 	

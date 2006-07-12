@@ -1,21 +1,30 @@
 <?php
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este c�igo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2005-2006
 
-// Cargamos variables globales
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+// Load global vars
 require("include/config.php");
-//require("include/functions.php");
-//require("include/functions_db.php");
 
 function datos_raw($id_agente_modulo, $periodo){
-	// Conecto con la BBDD
 	require("include/config.php");
 	require("include/languages/language_".$language_code.".php");
 	
-	// Fecha 24 horas
+	// 24 hours date
 	$yesterday_year = date("Y", time()-86400);
 	$yesterday_month = date("m", time()-86400);
 	$yesterday_day = date ("d", time()-86400);
@@ -23,14 +32,14 @@ function datos_raw($id_agente_modulo, $periodo){
 	$dia = $yesterday_year."-".$yesterday_month."-".$yesterday_day." ".$yesterday_hour.":00:00";
 	
 		
-	// Fecha 24x7 Horas (una semana)
+	// 24x7 hours (one week)
 	$week_year = date("Y", time()-604800);
 	$week_month = date("m", time()-604800);
 	$week_day = date ("d", time()-604800);
 	$week_hour = date ("H", time()-604800);
 	$week = $week_year."-".$week_month."-".$week_day." ".$week_hour.":00:00";
 	
-		// Fecha de hace 24x7x30 Horas (un mes)
+	// 24x7x30 Hours (one month)
 	$month_year = date("Y", time()-2592000);
 	$month_month = date("m", time()-2592000);
 	$month_day = date ("d", time()-2592000);
@@ -68,19 +77,27 @@ function datos_raw($id_agente_modulo, $periodo){
 	$nombre_modulo = dame_nombre_modulo_agentemodulo($id_agente_modulo);
 	
 	echo "<h2>".$lang_label["data_received"]." '$nombre_agente' / '$nombre_modulo' </h2>";
-	echo "<div><b> $et </b></div>";
-	echo "<br>";
+	echo "<h3> $et <a href='help/".$help_code."/chap3.php#3322' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 	if (mysql_num_rows($result)){
-		echo "<table cellpadding='3' cellspacing='3' width=750 border=0>";
+		echo "<table cellpadding='3' cellspacing='3' width='600' border='0'>";
+		$color=1;
 		echo "<th>".$lang_label["timestamp"]."</th>";
 		echo "<th>".$lang_label["data"]."</th>";
 		while ($row=mysql_fetch_array($result)){
+			if ($color == 1){
+				$tdcolor = "datos";
+				$color = 0;
+				}
+			else {
+				$tdcolor = "datos2";
+				$color = 1;
+			}
 			echo "<tr>";	
-			echo "<td class='f9'>".$row["timestamp"];
-			echo "<td class='datos'>".salida_limpia($row["datos"]);
+			echo "<td class='".$tdcolor."f9 w130'>".$row["timestamp"];
+			echo "<td class='".$tdcolor."'>".salida_limpia($row["datos"]);
 		}
+		echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
 		echo "</table>";
-		echo "</table>"; // I dont know why but there is an unclosed table in somewhere :-?
 	}
  	else  {
 		echo "no_data";

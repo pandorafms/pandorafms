@@ -1,5 +1,5 @@
-/* Pandora freedisk module. These modules check the free space in a
-   logical drive.
+/* Pandora cpuusage module. These modules check if a cpuusage is running in the
+   system.
 
    Copyright (C) 2006 Artica ST.
    Written by Esteban Sanchez.
@@ -19,31 +19,26 @@
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include "pandora_module_freedisk.h"
+#include "pandora_module_cpuusage.h"
 #include "../windows/pandora_wmi.h"
 #include "../pandora_strutils.h"
-#include <algorithm>
-#include <cctype>
 
 using namespace Pandora;
 using namespace Pandora_Modules;
 using namespace Pandora_Strutils;
 
-Pandora_Module_Freedisk::Pandora_Module_Freedisk (string name, string disk_id)
+Pandora_Module_Cpuusage::Pandora_Module_Cpuusage (string name, int cpu_id)
 	: Pandora_Module (name) {
         
-        this->disk_id = disk_id;
-        
-        transform (disk_id.begin (), disk_id.end (),
-                   this->disk_id.begin (), (int (*) (int)) toupper);
+        this->cpu_id = cpu_id;
 	
-        this->module_kind_str = module_freedisk_str;
-        this->module_kind     = MODULE_FREEDISK;
+        this->module_kind_str = module_cpuusage_str;
+        this->module_kind     = MODULE_CPUUSAGE;
 }
 
 void
-Pandora_Module_Freedisk::run () {
-	long res;
+Pandora_Module_Cpuusage::run () {
+	int res;
 	
 	try {
                 Pandora_Module::run ();
@@ -52,9 +47,9 @@ Pandora_Module_Freedisk::run () {
         }
 
 	try {
-		res = Pandora_Wmi::getDiskFreeSpace (this->disk_id);
-			
-		output = longtostr (res);
+		res = Pandora_Wmi::getCpuUsagePercentage (this->cpu_id);
+		
+		output = inttostr (res);
 	} catch (Pandora_Wmi::Pandora_Wmi_Error e) {
 		this->has_output = false;
 	}

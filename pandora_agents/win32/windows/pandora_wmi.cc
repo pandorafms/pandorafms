@@ -159,13 +159,56 @@ Pandora_Wmi::getDiskFreeSpace (string disk_id) {
 
 			id = fix.id;
 			
-			pandoraDebug ("%s %s", disk_id.c_str (), id.c_str ());
-
 			if (disk_id == id) {
 				dhGetValue (L"%d", &fix.free_space, quickfix,
 					    L".FreeSpace");
-				pandoraDebug ("%d Bytes", fix.free_space);
+				
 				return fix.free_space;
+			}
+
+		} NEXT_THROW (quickfix);
+	} catch (string errstr) {
+		pandoraLog ("getOSName error. %s", errstr.c_str ());
+	}
+        
+	throw Pandora_Wmi_Error ();
+}
+
+int
+Pandora_Wmi::getCpuUsagePercentage (int cpu_id) {
+	CDhInitialize init;
+	CDispPtr      wmi_svc, quickfixes;
+	string        id, cpu_id_str;
+	
+	dhToggleExceptions (TRUE);
+
+	cpu_id_str = "CPU";
+        cpu_id_str += Pandora_Strutils::inttostr (cpu_id);
+	
+        struct QFix {
+		CDhStringA id;
+		long       load_percentage;
+	};
+        
+	try {
+                dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
+		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
+                                     L".ExecQuery(%S)",
+                                     L"SELECT * FROM Win32_Processor "));
+
+		FOR_EACH (quickfix, quickfixes, NULL) {
+			QFix fix = { 0 };
+
+			dhGetValue (L"%s", &fix.id, quickfix,
+                                    L".DeviceID");
+
+			id = fix.id;
+			
+			if (cpu_id_str == id) {
+				dhGetValue (L"%d", &fix.load_percentage, quickfix,
+					    L".LoadPercentage");
+                                
+				return fix.load_percentage;
 			}
 
 		} NEXT_THROW (quickfix);

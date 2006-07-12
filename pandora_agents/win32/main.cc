@@ -73,7 +73,7 @@ main (int argc, char *argv[]) {
                 }
         }
         service->run ();
-	
-        delete service;
+        
+	delete service;
         return 0;
 }

@@ -1,7 +1,7 @@
 [Project]
 FileName=PandoraAgent.dev
 Name=PandoraAgent
-UnitCount=61
+UnitCount=63
 Type=1
 Ver=1
 ObjFiles=
@@ -649,6 +649,26 @@ BuildCmd=
 
 [Unit61]
 FileName=modules\pandora_module_freedisk.h
+CompileCpp=1
+Folder=Modules
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit63]
+FileName=modules\pandora_module_cpuusage.cc
+CompileCpp=1
+Folder=Modules
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit62]
+FileName=modules\pandora_module_cpuusage.h
 CompileCpp=1
 Folder=Modules
 Compile=1

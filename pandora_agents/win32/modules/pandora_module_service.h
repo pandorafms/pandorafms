@@ -31,7 +31,7 @@ namespace Pandora_Modules {
         public:
                 Pandora_Module_Service (string name, string service_name);
                 
-                void   run          ();
+                void   run             ();
         };
 }
 

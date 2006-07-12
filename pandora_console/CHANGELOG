@@ -1,5 +1,9 @@
 2006-07-12  Raul Mateos  <raulofpandora@gmail.com>
 
+	* changed name from pandora_info_es.html to pandora_info_es_es.html and pandora_info_bb.html to pandora_info_ast_es.html
+
+	* pandora_info_it.html. New file, GPL license in italian
+
 	* language_it.php. New language file, italian
 	
 	* pandoradb_data.sql. Change to add that the new language

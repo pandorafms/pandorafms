@@ -1,5 +1,10 @@
 2006-07-11  Esteban Sanchez  <estebans@artica.es>
+
+	* bin/pandora_agent.conf: Added examples of CPU usage and free space
+	on disk.
 	
+2006-07-11  Esteban Sanchez  <estebans@artica.es>
+
 	* modules/pandora_module_cpuusage.[cc,h]: Added to repository.
 	Implements a module to get the CPU usage percentage.
 

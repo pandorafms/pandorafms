@@ -1,3 +1,11 @@
+2006-07-12  Raul Mateos  <raulofpandora@gmail.com>
+
+	* language_it.php. New language file, italian
+	
+	* pandoradb_data.sql. Change to add that the new language
+
+	* help/it. New directory for help files in italian
+
 2006-07-11  Raul Mateos  <raulofpandora@gmail.com>
 
 	* Moved FreeSans.ttf to the reporting directory

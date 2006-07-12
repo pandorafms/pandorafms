@@ -140,6 +140,7 @@ INSERT INTO `tlanguage` VALUES ('es_es','Espa&ntilde;ol');
 INSERT INTO `tlanguage` VALUES ('es_la','Espa&ntilde;ol-Latinoam&eacute;rica');
 INSERT INTO `tlanguage` VALUES ('pt_br','Portugu&ecirc;s-Brasil');
 INSERT INTO `tlanguage` VALUES ('fr','Fran&ccedil;ais');
+INSERT INTO `tlanguage` VALUES ('it','Italiano');
 INSERT INTO `tlanguage` VALUES ('ca','Catal&agrave;');
 
 --

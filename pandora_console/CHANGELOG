@@ -1,5 +1,13 @@
 2006-07-12  Raul Mateos  <raulofpandora@gmail.com>
 
+	* datos_agente.php. Add new text about authors. Add a line between table and button. Add different colors between rows (cosmetic changes). Add Help.
+	
+	* user.php. Add new text about authors. Clean code.
+	
+	* menu.php. Add highlight when datos_agente selected.
+
+	* pandora.css. Add new text about authors.
+	
 	* changed name from pandora_info_es.html to pandora_info_es_es.html and pandora_info_bb.html to pandora_info_ast_es.html
 
 	* pandora_info_it.html. New file, GPL license in italian

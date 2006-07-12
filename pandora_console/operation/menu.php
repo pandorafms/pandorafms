@@ -1,4 +1,5 @@
-<?PHP 
+<?php
+
 // Pandora - the Free monitoring system
 // ====================================
 // Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
@@ -37,7 +38,7 @@ if (isset($_SESSION["id_usuario"])) {
 		echo '<ul class="mn"><li><a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_grupo&amp;refr=60" class="mn">'.$lang_label["view_agents"].'</a></li></ul></div>';
 		
 		if (isset($_GET["sec"]) && $_GET["sec"] == "estado"){
-			if(isset($_GET["sec2"]) && ($_GET["sec2"] == "operation/agentes/estado_agente" || $_GET["sec2"] == "operation/agentes/ver_agente")) {
+			if(isset($_GET["sec2"]) && ($_GET["sec2"] == "operation/agentes/estado_agente" || $_GET["sec2"] == "operation/agentes/ver_agente" || $_GET["sec2"] == "operation/agentes/datos_agente")) {
 				echo "<div id='arrows1'>";
 			}
 			else echo "<div id='arrow1'>";

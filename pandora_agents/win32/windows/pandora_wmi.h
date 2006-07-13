@@ -36,6 +36,7 @@ namespace Pandora_Wmi {
 	int    isServiceRunning      (string service_name);
 	long   getDiskFreeSpace      (string disk_id);
 	int    getCpuUsagePercentage (int cpu_id);
+	long   getFreememory         ();
 	string getOSName             ();
         string getOSVersion          ();
         string getOSBuild            ();

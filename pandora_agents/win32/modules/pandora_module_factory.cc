@@ -24,6 +24,7 @@
 #include "pandora_module_proc.h"
 #include "pandora_module_service.h"
 #include "pandora_module_freedisk.h"
+#include "pandora_module_freememory.h"
 #include "pandora_module_cpuusage.h"
 #include "../pandora_strutils.h"
 #include <list>
@@ -39,6 +40,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_PROC        ("module_proc ")
 #define TOKEN_SERVICE     ("module_service ")
 #define TOKEN_FREEDISK    ("module_freedisk ")
+#define TOKEN_FREEMEMORY  ("module_freememory")
 #define TOKEN_CPUUSAGE    ("module_cpuusage ")
 #define TOKEN_MAX         ("module_max ")
 #define TOKEN_MIN         ("module_min ")
@@ -48,11 +50,15 @@ string
 parseLine (string line, string token) {
         unsigned int pos;
         string retstr = "";
-        
+	
         pos = line.find (token);
         if (pos == 0) {
                 retstr = line.substr (token.length ());
+		if (retstr == "") {
+			retstr = " ";
+		}
         }
+	
         return retstr;
 }
 
@@ -63,7 +69,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
         string                 module_name, module_type, module_exec;
         string                 module_min, module_max, module_description;
         string                 module_interval, module_proc, module_service;
-	string                 module_freedisk, module_cpuusage;
+	string                 module_freedisk, module_cpuusage, module_freememory;
         Pandora_Module        *module;
         bool                   numeric;
 
@@ -108,6 +114,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_freedisk == "") {
                         module_freedisk = parseLine (line, TOKEN_FREEDISK);
 		}
+		if (module_freememory == "") {
+                        module_freememory = parseLine (line, TOKEN_FREEMEMORY);
+		}
 		if (module_cpuusage == "") {
                         module_cpuusage = parseLine (line, TOKEN_CPUUSAGE);
 		}
@@ -136,6 +145,10 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	} else if (module_freedisk != "") {
                 module = new Pandora_Module_Freedisk (module_name,
 						      module_freedisk);
+		
+	} else if (module_freememory != "") {
+		pandoraDebug ("Freememory");
+                module = new Pandora_Module_Freememory (module_name);
 		
 	} else if (module_cpuusage != "") {
 		int cpu_id;

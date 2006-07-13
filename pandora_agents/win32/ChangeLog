@@ -1,3 +1,24 @@
+2006-07-12  Esteban Sanchez  <estebans@artica.es>
+	
+	* modules/pandora_module_freememory.[cc,h]: Added to repository.
+	Implements a module to the the amount of free memory.
+
+	* modules/pandora_module.h, modules/pandora_module_factory.cc,
+	modules/pandora_module_list.cc: Added support to
+	Pandora_Module_Freememory.
+
+	* modules/pandora_wmi.[cc,h]: Added getFreememory () to get the amount
+	of free memory.
+
+	* pandora_windows_service.h: Removed public specificator from some
+	functions.
+
+	* PandoraAgent.dev: Added new files.
+
+	* bin/PandoraAgent.exe: Updated to the new commit.
+
+	* bin/pandora_agent.conf: Added example of free memory module.
+	
 2006-07-11  Esteban Sanchez  <estebans@artica.es>
 
 	* bin/pandora_agent.conf: Added examples of CPU usage and free space

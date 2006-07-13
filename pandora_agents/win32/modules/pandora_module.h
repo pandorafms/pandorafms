@@ -47,13 +47,15 @@ namespace Pandora_Modules {
                 MODULE_PROC,
 		MODULE_SERVICE,
 		MODULE_FREEDISK,
-		MODULE_CPUUSAGE
+		MODULE_CPUUSAGE,
+		MODULE_FREEMEMORY
         };
         
         const string module_exec_str                = "module_exec";
         const string module_proc_str                = "module_proc";
 	const string module_service_str             = "module_service";
 	const string module_freedisk_str            = "module_freedisk";
+	const string module_freememory_str          = "module_freememory";
 	const string module_cpuusage_str            = "module_cpuusage";
 
         class Output_Error           : public Pandora::Pandora_Exception { };

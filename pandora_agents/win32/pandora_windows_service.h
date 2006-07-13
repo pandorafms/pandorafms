@@ -39,7 +39,7 @@ private:
         string                   agent_name;
         
         TiXmlElement * getXmlHeader ();
-public:	
+	
         void           pandora_run  ();
         void           pandora_init ();
 public:

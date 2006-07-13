@@ -163,12 +163,12 @@ Pandora_Wmi::getDiskFreeSpace (string disk_id) {
 				dhGetValue (L"%d", &fix.free_space, quickfix,
 					    L".FreeSpace");
 				
-				return fix.free_space;
+				return fix.free_space / 1024 / 1024;
 			}
 
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
-		pandoraLog ("getOSName error. %s", errstr.c_str ());
+		pandoraLog ("getDiskFreeSpace error. %s", errstr.c_str ());
 	}
         
 	throw Pandora_Wmi_Error ();
@@ -213,10 +213,43 @@ Pandora_Wmi::getCpuUsagePercentage (int cpu_id) {
 
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
-		pandoraLog ("getOSName error. %s", errstr.c_str ());
+		pandoraLog ("getCpuUsagePercentage error. %s", errstr.c_str ());
 	}
         
 	throw Pandora_Wmi_Error ();
+}
+
+
+long
+Pandora_Wmi::getFreememory () {
+	CDhInitialize init;
+	CDispPtr      wmi_svc, quickfixes;
+
+	dhToggleExceptions (TRUE);
+	
+        struct QFix {
+		long free_memory;
+	};
+        
+	try {
+                dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
+		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
+                                     L".ExecQuery(%S)",
+                                     L"SELECT * FROM Win32_PerfRawData_PerfOS_Memory "));
+
+		FOR_EACH (quickfix, quickfixes, NULL) {
+			QFix fix = { 0 };
+			
+			dhGetValue (L"%d", &fix.free_memory, quickfix,
+                                    L".AvailableMBytes");
+			
+			return fix.free_memory;
+		} NEXT_THROW (quickfix);
+	} catch (string errstr) {
+		pandoraLog ("getFreememory error. %s", errstr.c_str ());
+	}
+        
+	throw Pandora_Wmi_Error ();	
 }
 
 string

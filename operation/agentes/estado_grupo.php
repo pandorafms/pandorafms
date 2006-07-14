@@ -1,7 +1,7 @@
 <?php
 
-// Pandora - the Free monitoring system
-// ====================================
+// Pandora - the Free Distributed Monitoring System
+// ================================================
 // Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
 // Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
 // Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
@@ -66,7 +66,8 @@ if (comprueba_login() == 0)
 		if ($result1=mysql_query($sql1)){
 			while ($row1 = mysql_fetch_array($result1)){
 				$existen_agentes =1;
-				$id_agente=$row1["id_agente"];
+				$intervalo = $row1["intervalo"];
+				$id_agente=$row1["id_agente"]; // Bugsolved 0607113 <slerena@gmail.com>
 				// Check for recent alerts
 				if (check_alert_fired($id_agente) == 1){
 					$grupo[$array_index]["alerts"]++;
@@ -84,10 +85,11 @@ if (comprueba_login() == 0)
 					$result4=mysql_query($sql4);
 					if ($row4 = mysql_fetch_array($result4)){
 						$module_interval = $row4["module_interval"];
-						if ($module_interval !=0)
+						if ($module_interval > 0)
 							$intervalo_comp = $module_interval;
-						else
+						else {
 							$intervalo_comp = $intervalo;
+						}
 					}
 					$ultimo_contacto_modulo = $row3["timestamp"];
 					# Defines if module is down (interval x 2 > time last contact)

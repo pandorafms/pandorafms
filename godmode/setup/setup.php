@@ -109,7 +109,7 @@ if (comprueba_login() == 0)
 	
 	$ficheros = list_files('images/backgrounds/', "background",1, 0);
 	$a=0;
-	while ($ficheros[$a]){
+	while (isset($ficheros[$a])){
 		echo "<option>".$ficheros[$a];
 		$a++;
 	}

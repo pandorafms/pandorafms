@@ -1,3 +1,12 @@
+2006-07-13 Sancho Lerena <sancho.lerena@artica.es>
+
+        * estado_grupo.php. Fix bug viewing groups, agent intervar was not read and 
+	misused, resulting in a bad result of module down total sum.
+
+        * Some headers changed to show the "official" GPL Header info
+
+	* godmode/setup/setup.php: Fixed small bug showing filelist.
+
 2006-07-12  Raul Mateos  <raulofpandora@gmail.com>
 
 	* datos_agente.php. Add new text about authors. Add a line between table and button. Add different colors between rows (cosmetic changes). Add Help.

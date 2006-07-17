@@ -1,12 +1,25 @@
 <?php
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2005-2006
 
-// Load global variables
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+// Load global vars
 require("include/config.php");
+
 if (comprueba_login() == 0)
 	$id_user = $_SESSION["id_usuario"];
 	if ( (give_acl($id_user, 0, "AR")==1) OR (give_acl($id_user, 0, "AW")==1) ){
@@ -29,9 +42,9 @@ if (comprueba_login() == 0)
 				$to_date=$_POST["to_date"];
 				echo $lang_label["db_agent_bra"]."<b>".dame_nombre_agente($origen)."</b>".$lang_label["from2"]."<b>".$from_date."</b>".$lang_label["to2"]."<b>".$to_date."</b><br>";
 				if ($csv == 0){
-					echo "<br><table cellpadding='3' cellspacing='3' width='600'><tr><th class=datos>".$lang_label["module"]."<th class=datos>".$lang_label["data"]."<th class=datos>Timestamp";
-					$separador_1 = "<tr><td class=datos_id>"; 
-					$separador_2 = "<td class=datos>";
+					echo "<br><table cellpadding='3' cellspacing='3' width='600'><tr><th class='datos'>".$lang_label["module"]."</th><th class=datos>".$lang_label["data"]."<th class='datos'>Timestamp</th>";
+					$separador_1 = "<tr><td class='datos_id'>"; 
+					$separador_2 = "<td class='datos'>";
 					$separador_3= "";
 				} else {
 					$separador_1 = "<br>'";
@@ -44,9 +57,9 @@ if (comprueba_login() == 0)
 					$sql1='SELECT * FROM tdatos WHERE id_agente = '.$origen;
 					$tipo = dame_nombre_tipo_modulo(dame_id_tipo_modulo_agentemodulo($id_modulo));
 					if ($tipo == "generic_data_string")
-						$sql1='SELECT * FROM tagente_datos_string WHERE timestamp > "'.$from_date.'" AND timestamp < "'.$to_date.'" AND id_agente_modulo ='.$id_modulo.' ORDER BY timestamp desc';
+						$sql1='SELECT * FROM tagente_datos_string WHERE timestamp > "'.$from_date.'" AND timestamp < "'.$to_date.'" AND id_agente_modulo ='.$id_modulo.' ORDER BY timestamp DESC';
 					else
-						$sql1='SELECT * FROM tagente_datos WHERE timestamp > "'.$from_date.'" AND timestamp < "'.$to_date.'" AND id_agente_modulo ='.$id_modulo.' ORDER BY timestamp desc';
+						$sql1='SELECT * FROM tagente_datos WHERE timestamp > "'.$from_date.'" AND timestamp < "'.$to_date.'" AND id_agente_modulo ='.$id_modulo.' ORDER BY timestamp DESC';
 						$result1=mysql_query($sql1);
 						while ($row=mysql_fetch_array($result1)){
 							echo $separador_1;
@@ -58,13 +71,17 @@ if (comprueba_login() == 0)
 							echo $separador_3;
 						}
 				}
+				if ($csv == 0) {
+					echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
+				}
 				echo "</table>";
-				}else echo "<b class='error'>".$lang_label["no_sel_mod"]."</b>";
+				
+				} else echo "<b class='error'>".$lang_label["no_sel_mod"]."</b>";
 			}
 		} else { // Form view
 			?>
 			<h2><?php echo $lang_label["ag_title"] ?></h2>
-			<h3><?php echo $lang_label["export_data"] ?><a href='help/<?php echo $help_code;?>/chap3.php#336' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
+			<h3><?php echo $lang_label["export_data"] ?><a href='help/<?php echo $help_code; ?>/chap3.php#336' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
 			<form method="post" action="index.php?sec=estado&sec2=operation/agentes/exportdata&operacion=1" name="export_form">
 			<table width=550 border=0 cellspacing=3 cellpadding=5 class=fon>
 			<tr>
@@ -103,7 +120,7 @@ if (comprueba_login() == 0)
 				}
 			}
 			?>
-			<td class='datost'><b><?php echo $lang_label["date_range"]; ?></b><br><br>
+			<td class='datos2t'><b><?php echo $lang_label["date_range"]; ?></b><br><br>
 			<table cellspacing=3 cellpadding=3 border=0>
 			<?php 
 			$mh = "10080"; // a week, una semana
@@ -188,7 +205,7 @@ if (comprueba_login() == 0)
 		 	<tr class=datos><td><?php echo $lang_label["csv"] ?><td><input class="chk" type="checkbox" name="csv" value=0><br>
 			
 		 	<tr><td></td></tr>
-			<tr><td colspan=2 class="datosb" align="right">
+			<tr><td colspan=2 class="datos2b" align="right">
 			<input type=submit name="copiar" class=sub value="<?php echo $lang_label["export"] ?>">
 			</table></td></tr>
 			</table>

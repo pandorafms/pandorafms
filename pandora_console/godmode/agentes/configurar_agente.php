@@ -775,6 +775,7 @@ $result=mysql_query($sql1);
 		echo "<h3>".$lang_label["assigned_alerts"]."<a href='help/".$help_code."/chap3.php#3222' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 
 		$color=1;
+		$string='';
 		while ($row=mysql_fetch_array($result)){  // All modules of this agent
 			$id_tipo = $row["id_tipo_modulo"];
 			$nombre_modulo =$row["nombre"];
@@ -783,7 +784,7 @@ $result=mysql_query($sql1);
 			$row2=mysql_fetch_array($result2);
 			//module type modulo is $row2["nombre"];
 			
-			$sql3='SELECT * FROM talerta_agente_modulo WHERE id_agente_modulo = '.$row["id_agente_modulo"];  // From all the alerts give me which are to my agent
+			$sql3='SELECT * FROM talerta_agente_modulo WHERE id_agente_modulo = '.$row["id_agente_modulo"];  // From all the alerts give me which are from my agent
 			$result3=mysql_query($sql3);
 			while ($row3=mysql_fetch_array($result3)){
 				if ($color == 1){
@@ -799,7 +800,7 @@ $result=mysql_query($sql1);
 				// Alert name defined by  $row4["nombre"]; 
 				$tipo_modulo = $row2["nombre"];
 				$nombre_alerta = $row4["nombre"];
-				$string = "<tr><td class='$tdcolor'>".$nombre_modulo."/".$tipo_modulo;
+				$string = $string."<tr><td class='$tdcolor'>".$nombre_modulo."/".$tipo_modulo;
 				$string = $string."<td class=$tdcolor>".$nombre_alerta;
 				$string = $string."<td class='$tdcolor'>".$row3["time_threshold"];
 				$string = $string."<td class='$tdcolor'>".$row3["dis_min"]."/".$row3["dis_max"];

@@ -1,4 +1,12 @@
-2006-07-14  Esteban Sanchez  <estebans@artica.es>
+2006-07-17  Esteban Sanchez  <estebans@artica.es>
+
+	* main.cc: Added "--help" option.
+
+	* pandora_strutils.cpp: Renamed to pandora_strutils.cc
+
+	* bin/PandoraAgent.exe: Updated to the new commit.
+
+2006-07-17  Esteban Sanchez  <estebans@artica.es>
 
 	* modules/pandora_module_factory.cc: Removed unnecessary debug.
 

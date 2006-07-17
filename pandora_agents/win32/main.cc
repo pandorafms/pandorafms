@@ -26,6 +26,7 @@
 #define SERVICE_INSTALL_CMDLINE_PARAM    "--install"
 #define SERVICE_UNINSTALL_CMDLINE_PARAM  "--uninstall"
 #define SSH_TEST_CMDLINE_PARAM           "--test-ssh"
+#define HELP_CMDLINE_PARAM               "--help"
 
 int
 main (int argc, char *argv[]) {
@@ -66,14 +67,23 @@ main (int argc, char *argv[]) {
                                 return 1;
                         }
                         return 0;
+                }  else if (_stricmp(argv[i], HELP_CMDLINE_PARAM) == 0) {
+			cout << "Usage: " << argv[0] << " [OPTION]" << endl << endl;
+			cout << "Available options are:" << endl;
+			cout << "\t" << SERVICE_INSTALL_CMDLINE_PARAM << ":   Install the Pandora Agent service." << endl;
+			cout << "\t" << SERVICE_UNINSTALL_CMDLINE_PARAM << ": Uninstall the Pandora Agent service." << endl;
+			cout << "\t" << SSH_TEST_CMDLINE_PARAM << ":  Test the SSH Pandora Agent configuration." << endl;
+			
+                        return 0;
                 } else {
-                        cerr << "Usage: " << argv[0] << "[" << SERVICE_INSTALL_CMDLINE_PARAM
+                        cout << "Usage: " << argv[0] << " [" << SERVICE_INSTALL_CMDLINE_PARAM
                              << "] [" << SERVICE_UNINSTALL_CMDLINE_PARAM << "]" << endl;
+			cerr << "Run " << argv[0] << "with " << HELP_CMDLINE_PARAM << " parameter for more info." << endl;
                         return 1;
                 }
         }
         service->run ();
-	        
+	
 	delete service;
         return 0;
 }

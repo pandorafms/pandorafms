@@ -1,8 +1,10 @@
 2006-07-17  Raul Mateos  <raulofpandora@gmail.com>
 
+	* view_server.php. Add different colors between rows (cosmetic changes)
+
 	* Some headers changed to show the "official" GPL Header info
 	
-	* modificar_server.php. Add highlights. Add line before the submit button. Add help.
+	* modificar_server.php. Add different colors between rows (cosmetic changes). Add line before the submit button. Add help.
 
 	* configurar_agente.php. Solved small bug that only show the last alert when creating alert in an agent, but the alert was created into database.
 

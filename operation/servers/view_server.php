@@ -31,7 +31,6 @@ if (comprueba_login() == 0) {
 	// Connect DataBase
 	$result=mysql_query($sql);
 	if (mysql_num_rows($result)){
-	echo "<br>";	
 	echo "<table cellpadding='3' cellspacing='3' witdh=550>";
 	echo "<tr><th class='datos'>".$lang_label["name"];
 	echo "<th class='datos'>".$lang_label['status'];
@@ -44,7 +43,16 @@ if (comprueba_login() == 0) {
 	echo "<th class='datos'>".$lang_label['checksum'];
 	echo "<th class='datos'>".$lang_label['laststart'];
 	echo "<th class='datos'>".$lang_label['lastupdate'];
+		$color=1;
 		while ($row=mysql_fetch_array($result)){
+			if ($color == 1){
+				$tdcolor = "datos";
+				$color = 0;
+				}
+			else {
+				$tdcolor = "datos2";
+				$color = 1;
+			}
 			$name = $row["name"];
 			$address = $row["ip_address"];
 			$status = $row["status"];
@@ -57,39 +65,39 @@ if (comprueba_login() == 0) {
 			$checksum = $row["checksum"];
 			$description = $row["description"];
 			
-			echo "<tr><td class='datos'>";
+			echo "<tr><td class='$tdcolor'>";
 			echo "<b>$name</b>";
-			echo "<td class='datos' align='middle'>";
+			echo "<td class='$tdcolor' align='middle'>";
 			if ($status ==0){
 				echo "<img src='images/dot_red.gif'>";
 			} else {
 				echo "<img src='images/dot_green.gif'>";
 			}
-			echo "<td class='datos' align='middle'>";
+			echo "<td class='$tdcolor' align='middle'>";
 			echo "$address";
-			echo "<td class='datosf9'>".substr($description,0,25);
-			echo "<td class='datos' align='middle'>";			
+			echo "<td class='".$tdcolor."f9'>".substr($description,0,25);
+			echo "<td class='$tdcolor' align='middle'>";			
 			if ($network_server == 1){
 				echo "<img src='images/network.gif'>";
 			}
-			echo "<td class='datos' align='middle'>";			
+			echo "<td class='$tdcolor' align='middle'>";			
 			if ($data_server == 1){
 				echo "<img src='images/data.gif'>";
 			}
-			echo "<td class='datos' align='middle'>";			
+			echo "<td class='$tdcolor' align='middle'>";			
 			if ($snmp_server == 1){
 				echo "<img src='images/snmp.gif'>";
 			}
-			echo "<td class='datos' align='middle'>";			
+			echo "<td class='$tdcolor' align='middle'>";			
 			if ($master == 1){
 				echo "<img src='images/master.gif'>";
 			}
-			echo "<td class='datos' align='middle'>";			
+			echo "<td class='$tdcolor' align='middle'>";			
 			if ($checksum == 1){
 				echo "<img src='images/binary.gif'>";
 			}
-			echo "<td class='datosf9' align='middle'>".substr($laststart,0,25);
-			echo "<td class='datosf9' align='middle'>".substr($keepalive,0,25);
+			echo "<td class='".$tdcolor."f9' align='middle'>".substr($laststart,0,25);
+			echo "<td class='".$tdcolor."f9' align='middle'>".substr($keepalive,0,25);
 		}
 	echo '<tr><td colspan="11"><div class="raya"></div></td></tr></table>';	
 	}

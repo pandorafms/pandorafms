@@ -1,3 +1,14 @@
+2006-07-14  Esteban Sanchez  <estebans@artica.es>
+
+	* modules/pandora_module_factory.cc: Removed unnecessary debug.
+
+	* windows/pandora_wmi.cc: Removed graphical exceptions to be executed
+	when something happens with disphelper library. Get a string when
+	retrieving the FreeSpace field on getDiskFreeSpace(), it solves a bug
+	when the free space was a huge amount.
+
+	* bin/PandoraAgent.exe: Updated to the new commit.
+
 2006-07-12  Esteban Sanchez  <estebans@artica.es>
 	
 	* modules/pandora_module_freememory.[cc,h]: Added to repository.

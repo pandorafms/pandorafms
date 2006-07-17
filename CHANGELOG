@@ -1,5 +1,7 @@
 2006-07-17  Raul Mateos  <raulofpandora@gmail.com>
 
+	* exportdata.php. Add a line at the end of table
+
 	* view_server.php. Add different colors between rows (cosmetic changes)
 
 	* Some headers changed to show the "official" GPL Header info

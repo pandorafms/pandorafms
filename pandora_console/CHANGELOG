@@ -1,5 +1,9 @@
 2006-07-17  Raul Mateos  <raulofpandora@gmail.com>
 
+	* Some headers changed to show the "official" GPL Header info
+	
+	* modificar_server.php. Add highlights. Add line before the submit button. Add help.
+
 	* configurar_agente.php. Solved small bug that only show the last alert when creating alert in an agent, but the alert was created into database.
 
 2006-07-13 Sancho Lerena <sancho.lerena@artica.es>
@@ -9,7 +13,7 @@
 
 	* Some headers changed to show the "official" GPL Header info
 
-	* godmode/setup/setup.php: Fixed small bug showing filelist.
+	* godmode/setup/setup.php. Fixed small bug showing filelist.
 
 2006-07-12  Raul Mateos  <raulofpandora@gmail.com>
 

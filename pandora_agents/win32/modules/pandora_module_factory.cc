@@ -147,7 +147,6 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 						      module_freedisk);
 		
 	} else if (module_freememory != "") {
-		pandoraDebug ("Freememory");
                 module = new Pandora_Module_Freememory (module_name);
 		
 	} else if (module_cpuusage != "") {

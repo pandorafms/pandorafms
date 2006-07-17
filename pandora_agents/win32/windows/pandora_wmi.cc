@@ -52,8 +52,6 @@ Pandora_Wmi::isProcessRunning (string process_name) {
 	string        name;
 	int           result = 0;
 	
-	dhToggleExceptions (TRUE);
-	
         struct QFix {
 		CDhStringA name, description, state;
 	};
@@ -90,8 +88,6 @@ Pandora_Wmi::isServiceRunning (string service_name) {
         CDhInitialize init;
 	CDispPtr      wmi_svc, quickfixes;
 	string        name, state;
-	
-	dhToggleExceptions (TRUE);
 	
         struct QFix {
 		CDhStringA name, state;
@@ -136,20 +132,18 @@ long
 Pandora_Wmi::getDiskFreeSpace (string disk_id) {
 	CDhInitialize init;
 	CDispPtr      wmi_svc, quickfixes;
-	string        id;
-	
-	dhToggleExceptions (TRUE);
+	string        id, space_str;
+	int           space;
 	
         struct QFix {
-		CDhStringA id;
-		long       free_space;
+		CDhStringA id, free_space;
 	};
         
 	try {
                 dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
 		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
                                      L".ExecQuery(%S)",
-                                     L"SELECT * FROM Win32_LogicalDisk "));
+                                     L"SELECT DeviceID, FreeSpace FROM Win32_LogicalDisk "));
 
 		FOR_EACH (quickfix, quickfixes, NULL) {
 			QFix fix = { 0 };
@@ -160,10 +154,18 @@ Pandora_Wmi::getDiskFreeSpace (string disk_id) {
 			id = fix.id;
 			
 			if (disk_id == id) {
-				dhGetValue (L"%d", &fix.free_space, quickfix,
+				dhGetValue (L"%s", &fix.free_space, quickfix,
 					    L".FreeSpace");
 				
-				return fix.free_space / 1024 / 1024;
+				space_str = fix.free_space;
+				
+				try {
+					space = Pandora_Strutils::strtoint (space_str);
+				} catch (Pandora_Exception e) {
+					throw Pandora_Wmi_Error ();
+				}
+				
+				return space / 1024 / 1024;
 			}
 
 		} NEXT_THROW (quickfix);
@@ -180,8 +182,6 @@ Pandora_Wmi::getCpuUsagePercentage (int cpu_id) {
 	CDispPtr      wmi_svc, quickfixes;
 	string        id, cpu_id_str;
 	
-	dhToggleExceptions (TRUE);
-
 	cpu_id_str = "CPU";
         cpu_id_str += Pandora_Strutils::inttostr (cpu_id);
 	
@@ -225,8 +225,6 @@ Pandora_Wmi::getFreememory () {
 	CDhInitialize init;
 	CDispPtr      wmi_svc, quickfixes;
 
-	dhToggleExceptions (TRUE);
-	
         struct QFix {
 		long free_memory;
 	};
@@ -257,8 +255,6 @@ Pandora_Wmi::getOSName () {
         CDhInitialize init;
 	CDispPtr      wmi_svc, quickfixes;
 	string        ret;
-	
-	dhToggleExceptions (TRUE);
 	
         struct QFix {
 		CDhStringA name, state, description;
@@ -292,8 +288,6 @@ Pandora_Wmi::getOSVersion () {
 	CDispPtr      wmi_svc, quickfixes;
 	string        ret;
 	
-	dhToggleExceptions (TRUE);
-	
         struct QFix {
 		CDhStringA name, state, description;
 	};
@@ -325,9 +319,7 @@ Pandora_Wmi::getOSBuild () {
         CDhInitialize init;
 	CDispPtr      wmi_svc, quickfixes;
 	string        ret;
-	
-	dhToggleExceptions (TRUE);
-	
+		
         struct QFix {
 		CDhStringA name, state, description;
 	};
@@ -359,8 +351,6 @@ Pandora_Wmi::getSystemName () {
         CDhInitialize init;
 	CDispPtr      wmi_svc, quickfixes;
 	string        ret;
-	
-	dhToggleExceptions (TRUE);
 	
         struct QFix {
 		CDhStringA name, state, description;

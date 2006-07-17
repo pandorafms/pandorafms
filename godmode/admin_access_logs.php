@@ -1,4 +1,5 @@
 <?php
+
 // Pandora - the Free monitoring system
 // ====================================
 // Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
@@ -18,8 +19,7 @@
 
 // Load global vars
 require("include/config.php");
-//require("include/functions.php");
-//require("include/functions_db.php");
+
 if (comprueba_login() == 0) 
    	$id_usuario= $_SESSION["id_usuario"];
    	if ( (dame_admin($id_user)==1) OR (give_acl($id_usuario, 0, "PM")==1)){ 

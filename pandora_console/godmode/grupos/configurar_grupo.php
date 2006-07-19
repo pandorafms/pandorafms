@@ -1,12 +1,25 @@
 <?php
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2005-2006
 
-// Cargamos variables globales
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+// Load global vars
 require("include/config.php");
+
 if (comprueba_login() == 0)
    $id_user = $_SESSION["id_usuario"];
    if (give_acl($id_user, 0, "PM")==1) {
@@ -57,7 +70,7 @@ if (comprueba_login() == 0)
 <tr><td class='lb' rowspan='3' width='5'>
 <tr><td class="datos"><?php echo $lang_label["group_name"] ?><td class="datos"><input type="text" name="nombre" size="35" value="<?php echo $nombre ?>">
 <tr><td class="datos2"><?php echo $lang_label["icon"] ?><td class="datos2"><input type="icon" name="icon" size="25" value="<?php if (isset($icono)){echo $icono;} ?>">
-<tr><td></td></tr>
+<tr><td colspan='3'><div class='raya'></div></td></tr>
 <tr><td colspan="3" align="right"><?php if (isset($_GET["creacion_grupo"])){echo "<input name='crtbutton' type='submit' class='sub' value='".$lang_label["create"]."'>";}
 else {echo "<input name='uptbutton' type='submit' class='sub' value='".$lang_label["update"]."'>";} ?>
 </form>

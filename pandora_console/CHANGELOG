@@ -1,3 +1,7 @@
+2006-07-18  Raul Mateos  <raulofpandora@gmail.com>
+
+	* Some headers changed to show the "official" GPL Header info. No new features or solved bugs
+
 2006-07-17  Raul Mateos  <raulofpandora@gmail.com>
 
 	* exportdata.php. Add a line at the end of table

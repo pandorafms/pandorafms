@@ -1,12 +1,24 @@
 <?php
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2005-2006
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
 require("include/config.php");
+
 if (comprueba_login() == 0)
    $id_user = $_SESSION["id_usuario"];
    if (give_acl($id_user, 0, "PM")==1) {
@@ -23,7 +35,7 @@ if (comprueba_login() == 0)
 		}
 	}
 
-	if (isset($_POST["update_grupo"])){ // se ha modificado algun parametro de agente
+	if (isset($_POST["update_grupo"])){ // if modified any parameter
 		$nombre = entrada_limpia($_POST["nombre"]);
 		$id_grupo = entrada_limpia($_POST["id_grupo"]);
 		$icon = entrada_limpia($_POST["icon"]);
@@ -35,7 +47,7 @@ if (comprueba_login() == 0)
 			echo "<h3 class='suc'>".$lang_label["modify_group_ok"]."</h3>";
 	}
 	
-	if (isset($_GET["borrar_grupo"])){ // se ha modificado algun parametro
+	if (isset($_GET["borrar_grupo"])){ // if delete
 		$id_borrar_modulo = entrada_limpia($_GET["id_grupo"]);
 		
 		// First delete from tagente_modulo

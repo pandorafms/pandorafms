@@ -18,8 +18,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Translation to French
-// Translator: Aline Jorand <jorand.aline@laposte.net >
-// 07/03/2006
+// Copyright (c) 2006 Aline Jorand <jorand.aline@laposte.net>
 
 $lang_label["view_agents"]="Voir agents";
 $lang_label["manage_incidents"]="G&eacute;rer incidents";

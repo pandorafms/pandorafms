@@ -16,7 +16,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-// Hugo Vazquez <hugo@pentest.es>, 2006
+
+// Catalan translation
+// Copyright (c) 2006 Hugo Vazquez <hugo@pentest.es>
 
 $lang_label["view_agents"]="Veure Agents";
 $lang_label["manage_incidents"]="Gestionar Incidents";

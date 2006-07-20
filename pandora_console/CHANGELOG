@@ -1,5 +1,15 @@
 2006-07-20  Raul Mateos  <raulofpandora@gmail.com>
 
+	* language_fr.php. Update text.
+
+	* language_ca.php. Update text.
+	
+	* language_pt_br.php. Update text.
+	
+	* language_ast_es.php. Update text.
+
+	* language_it.php. Update text.
+	
 	* snmp_alert.php. Add text when alert not created /updated / deleted. Add different colors between rows (cosmetic changes).
 	
 

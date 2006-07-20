@@ -71,11 +71,21 @@ if (give_acl($id_user, 0, "LW")==1) {
 		
 		if ($create == 1){
 			$sql = "INSERT INTO talert_snmp (id_alert,al_field1,al_field2,al_field3,description,alert_type,agent,custom_oid,oid,time_threshold,max_alerts,min_alerts) VALUES ($alert_id,'$field1','$field2','$field3','$description', $alert_type, '$agent', '$custom', '$oid', $time, $max, $min)";
+			$result=mysql_query($sql);
+			if (!$result)
+				echo "<h3 class='error'>".$lang_label["create_alert_no"]."</h3>";
+			else
+				echo "<h3 class='suc'>".$lang_label["create_alert_ok"]."</h3>";
 		} else { 
 			$sql = "UPDATE talert_snmp set id_alert= $alert_id, al_field1 = '$field1', al_field2 = '$field2', al_field3 = '$field3', description = '$description', alert_type = $alert_type, agent = '$agent', custom_oid = '$custom', oid = '$oid', time_threshold = $time, max_alerts = '$max', min_alerts = '$min' WHERE id_as = $id_as";
+			$result=mysql_query($sql);
+			if (!$result)
+				echo "<h3 class='error'>".$lang_label["update_alert_no"]."</h3>";
+			else
+				echo "<h3 class='suc'>".$lang_label["create_alert_ok"]."</h3>";
 		}
 
-		$result=mysql_query($sql);
+
 	}
 	// Alert update: (first, load data used in form), later use insert/add form
 	// ============
@@ -179,12 +189,10 @@ if (give_acl($id_user, 0, "LW")==1) {
 			echo "<input type='hidden' name='update' value='0'>";
 			echo "<input type='hidden' name='create' value='1'>";
 		}
-
 		// Endtable
 		echo "</table>";
 		$view_alert =0; // Do not show alert list
 	}
-
 
 	if ($view_alert == 1) { // View alerts defined on SNMP traps
 		
@@ -194,9 +202,6 @@ if (give_acl($id_user, 0, "LW")==1) {
 		echo '<h3>'.$lang_label["snmp_assigned_alerts"]."<a href='help/".$help_code."/chap3.php#331' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";		
 		if (mysql_num_rows($result)){
 
-			if ($alert_submit !=0) {
-				echo '<h3 class="suc">'.$lang_label["create_alert_ok"].'</h3>';
-			}
 			echo '<table cellpadding="3" cellspacing="3" width="750" class="fon" border=0>';
 			echo '<tr><th>'.$lang_label["alert"];
 			echo '<th width=75>'.$lang_label["alert_type"];		

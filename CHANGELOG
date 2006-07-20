@@ -1,6 +1,12 @@
+2006-07-20  Raul Mateos  <raulofpandora@gmail.com>
+
+	* snmp_alert.php. Add different colors between rows (cosmetic changes).
+	
+
 2006-07-18  Raul Mateos  <raulofpandora@gmail.com>
 
 	* Some headers changed to show the "official" GPL Header info. No new features or solved bugs
+
 
 2006-07-17  Raul Mateos  <raulofpandora@gmail.com>
 

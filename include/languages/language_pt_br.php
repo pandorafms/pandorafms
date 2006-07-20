@@ -18,8 +18,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Tradução para o Português do Brasil
-// Tradutor: Rodrigo J. Dutra <rodrigo.dutra@gmail.com>
-// 28/01/2006
+// Copyright (c) 2006 Rodrigo J. Dutra <rodrigo.dutra@gmail.com>
 
 $lang_label["view_agents"] = "Ver agentes";
 $lang_label["manage_incidents"] = "Gerenciamento de incidentes";

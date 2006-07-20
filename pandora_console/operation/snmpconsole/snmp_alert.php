@@ -49,6 +49,10 @@ if (give_acl($id_user, 0, "LW")==1) {
 		$alert_delete = $_GET["delete_alert"];
 		$sql1='DELETE FROM talert_snmp WHERE id_as = '.$alert_delete;
 		$result=mysql_query($sql1);
+		if (!$result)
+			echo "<h3 class='error'>".$lang_label["delete_alert_no"]."</h3>";
+		else
+			echo "<h3 class='suc'>".$lang_label["delete_alert_ok"]."</h3>";
 	}
 	// Alert submit (for insert or update)
 	if (isset($_GET["submit"])){

@@ -1,6 +1,6 @@
 2006-07-20  Raul Mateos  <raulofpandora@gmail.com>
 
-	* snmp_alert.php. Add different colors between rows (cosmetic changes).
+	* snmp_alert.php. Add text when alert not created /updated. Add different colors between rows (cosmetic changes).
 	
 
 2006-07-18  Raul Mateos  <raulofpandora@gmail.com>

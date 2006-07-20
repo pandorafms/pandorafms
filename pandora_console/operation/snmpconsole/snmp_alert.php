@@ -70,7 +70,7 @@ if (give_acl($id_user, 0, "LW")==1) {
 		$field3 = entrada_limpia($_POST["field3"]);
 		
 		if ($create == 1){
-			$sql = "insert into talert_snmp (id_alert,al_field1,al_field2,al_field3,description,alert_type,agent,custom_oid,oid,time_threshold,max_alerts,min_alerts) values ($alert_id,'$field1','$field2','$field3','$description', $alert_type, '$agent', '$custom', '$oid', $time, $max, $min)";
+			$sql = "INSERT INTO talert_snmp (id_alert,al_field1,al_field2,al_field3,description,alert_type,agent,custom_oid,oid,time_threshold,max_alerts,min_alerts) VALUES ($alert_id,'$field1','$field2','$field3','$description', $alert_type, '$agent', '$custom', '$oid', $time, $max, $min)";
 		} else { 
 			$sql = "UPDATE talert_snmp set id_alert= $alert_id, al_field1 = '$field1', al_field2 = '$field2', al_field3 = '$field3', description = '$description', alert_type = $alert_type, agent = '$agent', custom_oid = '$custom', oid = '$oid', time_threshold = $time, max_alerts = '$max', min_alerts = '$min' WHERE id_as = $id_as";
 		}
@@ -112,7 +112,7 @@ if (give_acl($id_user, 0, "LW")==1) {
 		echo '<input type="hidden" name="id_as" value="'.$id_as.'">'; // if known, if add will be undetermined (0).
 		echo '<h3>'.$lang_label["create_alert"]."<a href='help/".$help_code."/chap3.php#331' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 		echo '<table cellpadding="3" cellspacing="3" width="650" class="fon">';
-		echo '<tr><th rowspan=13 width=5>';
+		echo '<tr><td class="lb" rowspan="13" width=5>';
 		// Alert
 		echo '<tr><td class=datos>'.$lang_label["alert"].'<td class=datos><select name="alert_id">';
 		if ($alert_update != 0) { // calculate first item
@@ -128,8 +128,8 @@ if (give_acl($id_user, 0, "LW")==1) {
 		}
 		echo "</select>";
 		// Alert type		
-		echo '<tr><td class=datos>'.$lang_label["alert_type"];
-		echo '<td><select name="alert_type">';
+		echo '<tr><td class="datos2">'.$lang_label["alert_type"];
+		echo '<td class="datos2"><select name="alert_type">';
 		if ($alert_type == 0) {
 			echo '<option value=0>OID<option value=1>CustomOID/Value<option value=2>SNMPAgent</select>';
 		} elseif ($alert_type == 1) {
@@ -142,32 +142,32 @@ if (give_acl($id_user, 0, "LW")==1) {
 		echo '<td class=datos><input type="text" size=60 name="description" value="'.$description.'">';
 
 		// OID
-		echo '<tr><td class=datos>'.$lang_label["OID"];
-		echo '<td class=datos><input type="text" size=30 name="oid" value="'.$oid.'">';
+		echo '<tr><td class="datos2">'.$lang_label["OID"];
+		echo '<td  class="datos2"><input type="text" size=30 name="oid" value="'.$oid.'">';
 
 		// OID Custom
 		echo '<tr><td class=datos>'.$lang_label["customvalue"];
 		echo '<td class=datos><input type="text" size=30 name="custom" value="'.$custom_oid.'">';
 
 		// SNMP Agent
-		echo '<tr><td class=datos>'.$lang_label["SNMP_agent"]." IP";
-		echo '<td class=datos><input type="text" size=30 name="agent" value="'.$agent.'">';
+		echo '<tr><td class="datos2">'.$lang_label["SNMP_agent"]." IP";
+		echo '<td class="datos2"><input type="text" size=30 name="agent" value="'.$agent.'">';
 		
 		// Alert fields
 		echo '<tr><td class=datos>'.$lang_label["field1"];
 		echo '<td class=datos><input type="text" size=30 name="field1" value="'.$al_field1.'">';
-		echo '<tr><td class=datos>'.$lang_label["field2"];
-		echo '<td class=datos><input type="text" size=40 name="field2" value="'.$al_field2.'">';
+		echo '<tr><td class="datos2">'.$lang_label["field2"];
+		echo '<td class="datos2"><input type="text" size=40 name="field2" value="'.$al_field2.'">';
 		echo '<tr><td class=datos>'.$lang_label["field3"];
 		echo '<td class=datos><input type="text" size=60 name="field3" value="'.$al_field3.'">';
 		
 		// max & min alerts, time threshold
-		echo '<tr><td class=datos>'.$lang_label["min_alerts"];
-		echo '<td class=datos><input type="text" size=3 name="min" value="'.$min_alerts.'">';
+		echo '<tr><td class="datos2">'.$lang_label["min_alerts"];
+		echo '<td class="datos2"><input type="text" size=3 name="min" value="'.$min_alerts.'">';
 		echo '<tr><td class=datos>'.$lang_label["max_alerts"];
 		echo '<td class=datos><input type="text" size=3 name="max" value="'.$max_alerts.'">';
-		echo '<tr><td class=datos>'.$lang_label["time_threshold"];
-		echo '<td class=datos><input type="text" size=3 name="time" value="'.$time_threshold.'">';
+		echo '<tr><td class="datos2">'.$lang_label["time_threshold"];
+		echo '<td class="datos2"><input type="text" size=3 name="time" value="'.$time_threshold.'">';
 		echo '<tr><td colspan="3"><div class="raya"></div></td></tr>';
 		// Update or Add button
 		if ($alert_update != 0) {
@@ -207,8 +207,16 @@ if (give_acl($id_user, 0, "LW")==1) {
 			echo '<th>'.$lang_label["times_fired"];
 			echo '<th>'.$lang_label["last_fired"];
 			echo '<th width="50">'.$lang_label["action"];
-			
+			$color=1;
 			while ($row=mysql_fetch_array($result)){
+				if ($color == 1){
+					$tdcolor = "datos";
+					$color = 0;
+					}
+				else {
+					$tdcolor = "datos2";
+					$color = 1;
+				}
 				$id_as = $row["id_as"];
 				$id_alert = $row["id_alert"];
 				$nombre_alerta = dame_nombre_alerta($id_alert);
@@ -226,9 +234,9 @@ if (give_acl($id_user, 0, "LW")==1) {
 				$max_alerts = $row["max_alerts"];
 				$min_alerts = $row["min_alerts"];
 				
-				echo "<tr><td class=datos>";
+				echo "<tr><td class='$tdcolor'>";
 				echo $nombre_alerta;
-				echo "<td class=datos>";
+				echo "<td class='$tdcolor'>";
 				if ($alert_type == 0) {
 					$tipo_alerta = $lang_label["OID"];
 				} elseif ($alert_type == 1) {
@@ -239,21 +247,21 @@ if (give_acl($id_user, 0, "LW")==1) {
 					$tipo_alerta = "N/A";
 				}
 				echo $tipo_alerta;
-				echo "<td class=datos>";
+				echo "<td class='$tdcolor'>";
 				if ($alert_type == 2) {
 					echo $agent;
 				} else { 
 					echo "N/A";
 				}
 	
-				echo "<td class=datos>";
+				echo "<td class='$tdcolor'>";
 				if ($alert_type == 0) {
 					echo $oid;
 				} else { 
 					echo "N/A";
 				}
 				
-				echo "<td class=datos>";
+				echo "<td class='$tdcolor'>";
 				if ($alert_type == 1) {
 					echo $custom_oid;
 				} else { 
@@ -261,17 +269,17 @@ if (give_acl($id_user, 0, "LW")==1) {
 				}
 				
 				
-				echo "<td class=datos>";
+				echo "<td class='$tdcolor'>";
 				echo $description;
 				
-				echo "<td class=datos>";
+				echo "<td class='$tdcolor'>";
 				echo $times_fired;
-				echo "<td class=datos>";
+				echo "<td class='$tdcolor'>";
 				if ($last_fired != "2005-01-01 00:00:00")
 					echo $last_fired;
 				else
 					echo "N/A";
-				echo "<td class=datos>";
+				echo "<td class='$tdcolor'>";
 				echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&delete_alert=".$id_as."'><img src='images/cancel.gif' border=0 alt='".$lang_label["delete"]."'></b></a> &nbsp; ";
 				echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&update_alert=".$id_as."'><img src='images/config.gif' border=0 alt='".$lang_label["update"]."'></b></a>";
 			}

@@ -144,7 +144,12 @@ if (comprueba_login() == 0) {
   filter:alpha(opacity=95);
   -moz-opacity: 0.95;
   opacity: 0.95;
+         margin-left: 0px;
+         margin-top: 0px;
+         margin-right: 0px;
+         margin-bottom: 0px;
 }
+
 --></style>
 
 
@@ -152,7 +157,7 @@ if (comprueba_login() == 0) {
 var defOffset = 2;
 var defSlideTime = 200;
 var tnActive = 0;
-var visibleMargin = 0;
+var visibleMargin = 5;
 var menuW = 550;
 var menuH = 220;
 window.onload = function() {

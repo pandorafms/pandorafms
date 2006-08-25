@@ -62,6 +62,14 @@ parseLine (string line, string token) {
         return retstr;
 }
 
+/** 
+ * Creates a Pandora_Module object based on a string definition.
+ *
+ * @param definition Module definition readed from the configuration file.
+ * 
+ * @return A new Pandora_Module object. NULL if the definition is
+ *         incorrect.
+ */
 Pandora_Module *
 Pandora_Module_Factory::getModuleFromDefinition (string definition) {
         list<string>           tokens;
@@ -72,6 +80,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_freedisk, module_cpuusage, module_freememory;
         Pandora_Module        *module;
         bool                   numeric;
+	Module_Type            type;
 
 	module_name        = "";
 	module_type        = "";
@@ -82,8 +91,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_exec        = "";
 	module_proc        = "";
 	module_service     = "";
-		
-		
+
         stringtok (tokens, definition, "\n");
         
         /* Pick the first and the last value of the token list */
@@ -171,8 +179,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	if (module_description != "") {
                 module->setDescription (module_description);
         }
-	
-        switch (Pandora_Module::getModuleType (module_type)) {
+
+	type = Pandora_Module::parseModuleTypeFromString (module_type);
+        switch (type) {
         case TYPE_GENERIC_DATA:
         case TYPE_GENERIC_DATA_INC:
         case TYPE_GENERIC_PROC:

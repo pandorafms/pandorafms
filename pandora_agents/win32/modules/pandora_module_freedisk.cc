@@ -29,6 +29,12 @@ using namespace Pandora;
 using namespace Pandora_Modules;
 using namespace Pandora_Strutils;
 
+/** 
+ * Creates a Pandora_Module_Freedisk object.
+ * 
+ * @param name Module name.
+ * @param disk_id Logical drive id to be monitorized. Usually it's "C:"
+ */
 Pandora_Module_Freedisk::Pandora_Module_Freedisk (string name, string disk_id)
 	: Pandora_Module (name) {
         
@@ -37,8 +43,7 @@ Pandora_Module_Freedisk::Pandora_Module_Freedisk (string name, string disk_id)
         transform (disk_id.begin (), disk_id.end (),
                    this->disk_id.begin (), (int (*) (int)) toupper);
 	
-        this->module_kind_str = module_freedisk_str;
-        this->module_kind     = MODULE_FREEDISK;
+        this->setKind (module_freedisk_str);
 }
 
 void
@@ -54,8 +59,8 @@ Pandora_Module_Freedisk::run () {
 	try {
 		res = Pandora_Wmi::getDiskFreeSpace (this->disk_id);
 			
-		output = longtostr (res);
-	} catch (Pandora_Wmi::Pandora_Wmi_Error e) {
+		this->output = longtostr (res);
+	} catch (Pandora_Wmi::Pandora_Wmi_Exception e) {
 		this->has_output = false;
 	}
 }

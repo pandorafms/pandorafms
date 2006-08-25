@@ -45,6 +45,13 @@ getWmiStr (LPCWSTR computer) {
 	return wmi_str;
 }
 
+/** 
+ * Check if a process is running.
+ * 
+ * @param process_name Name of the process with extension.
+ * 
+ * @return Number of instances of the process running.
+ */
 int
 Pandora_Wmi::isProcessRunning (string process_name) {
         CDhInitialize init;
@@ -83,6 +90,14 @@ Pandora_Wmi::isProcessRunning (string process_name) {
 	return result;
 }
 
+/** 
+ * Check if a Windows service is running.
+ * 
+ * @param service_name Internal name of the service to check.
+ * 
+ * @retval 1 The service is running
+ * @retval 0 The service is stopped
+ */
 int
 Pandora_Wmi::isServiceRunning (string service_name) {
         CDhInitialize init;
@@ -128,6 +143,13 @@ Pandora_Wmi::isServiceRunning (string service_name) {
 	return 0;
 }
 
+/** 
+ * Get the free space in a logical disk drive.
+ * 
+ * @param disk_id Disk drive letter (C.
+ * 
+ * @return Free space amount in MB.
+ */
 long
 Pandora_Wmi::getDiskFreeSpace (string disk_id) {
 	CDhInitialize init;
@@ -162,7 +184,7 @@ Pandora_Wmi::getDiskFreeSpace (string disk_id) {
 				try {
 					space = Pandora_Strutils::strtoint (space_str);
 				} catch (Pandora_Exception e) {
-					throw Pandora_Wmi_Error ();
+					throw Pandora_Wmi_Exception ();
 				}
 				
 				return space / 1024 / 1024;
@@ -173,9 +195,16 @@ Pandora_Wmi::getDiskFreeSpace (string disk_id) {
 		pandoraLog ("getDiskFreeSpace error. %s", errstr.c_str ());
 	}
         
-	throw Pandora_Wmi_Error ();
+	throw Pandora_Wmi_Exception ();
 }
 
+/** 
+ * Get the CPU usage percentage in the last minutes.
+ * 
+ * @param cpu_id CPU identifier.
+ * 
+ * @return The usage percentage of the CPU.
+ */
 int
 Pandora_Wmi::getCpuUsagePercentage (int cpu_id) {
 	CDhInitialize init;
@@ -216,10 +245,14 @@ Pandora_Wmi::getCpuUsagePercentage (int cpu_id) {
 		pandoraLog ("getCpuUsagePercentage error. %s", errstr.c_str ());
 	}
         
-	throw Pandora_Wmi_Error ();
+	throw Pandora_Wmi_Exception ();
 }
 
-
+/** 
+ * Get the amount of free memory in the system
+ *
+ * @return The amount of free memory in MB.
+ */
 long
 Pandora_Wmi::getFreememory () {
 	CDhInitialize init;
@@ -247,9 +280,14 @@ Pandora_Wmi::getFreememory () {
 		pandoraLog ("getFreememory error. %s", errstr.c_str ());
 	}
         
-	throw Pandora_Wmi_Error ();	
+	throw Pandora_Wmi_Exception ();	
 }
 
+/**
+ * Get the name of the operating system.
+ * 
+ * @return The name of the operating system.
+ */
 string
 Pandora_Wmi::getOSName () {
         CDhInitialize init;
@@ -282,6 +320,11 @@ Pandora_Wmi::getOSName () {
 	return ret;
 }
 
+/** 
+ * Get the version of the operating system.
+ * 
+ * @return The version of the operaing system.
+ */
 string
 Pandora_Wmi::getOSVersion () {
         CDhInitialize init;
@@ -314,6 +357,11 @@ Pandora_Wmi::getOSVersion () {
 	return ret;
 }
 
+/** 
+ * Get the build of the operating system.
+ * 
+ * @return The build of the operating system.
+ */
 string
 Pandora_Wmi::getOSBuild () {
         CDhInitialize init;
@@ -346,6 +394,11 @@ Pandora_Wmi::getOSBuild () {
 	return ret;
 }
 
+/** 
+ * Get the system name of the operating system.
+ * 
+ * @return The system name of the operating system.
+ */
 string
 Pandora_Wmi::getSystemName () {
         CDhInitialize init;

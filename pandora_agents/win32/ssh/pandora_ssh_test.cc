@@ -26,21 +26,47 @@
 using namespace std;
 using namespace SSH;
 
+/** 
+ * Creates a Pandora_SSH_Test.
+ *
+ * It will read the configuration file and prepares
+ * all the information to perform a SSH test.
+ */
 Pandora_SSH_Test::Pandora_SSH_Test () {
         string conf_file;
         
         conf_file = Pandora::getPandoraInstallDir ();
         conf_file += "pandora_agent.conf";
-        conf = new Pandora_Agent_Conf (conf_file);
+        conf = new Pandora::Pandora_Agent_Conf (conf_file);
         
         ssh_client = new SSH::Pandora_Ssh_Client ();
 }
 
+/** 
+ * Deletes a Pandora_SSH_Test object.
+ */
 Pandora_SSH_Test::~Pandora_SSH_Test () {
         delete conf;
         delete ssh_client;
 }
 
+/** 
+ * Executes a SSH test.
+ *
+ * It will generate a lot of output to the stdout.
+ *
+ * @exception Authentication_Failed Throwed if the authentication process
+ *            failed when connecting to the host.
+ * @exception Socket_Error Throwed when something goes bad with the sockets.
+ * @exception Resolv_Failed Throwed when the remote host could not be resolved
+ *            to a valid IP.
+ * @exception Connection_Failed Throwed if the TCP/IP connection to the host
+ *            failed or could not be done. It includes timeouts, route failures,
+ *            etc
+ * @exception Session_Error Throwed if there was problem with the SSH session.
+ * @exception Pandora::Pandora_Exception Throwed if there was an unespecified
+ *            error.
+ */
 void
 Pandora_SSH_Test::test () {
         string            pubkey_file, privkey_file, tmp_filename;
@@ -107,7 +133,7 @@ Pandora_SSH_Test::test () {
         saved = doc->SaveFile();
         delete doc;
         if (!saved) {
-                Pandora_Exception e;
+                Pandora::Pandora_Exception e;
                 cout << "Error when saving the XML in " << tmp_filepath << endl;
                 cout << "Check the configuration file" << endl;
                 throw e;
@@ -131,7 +157,7 @@ Pandora_SSH_Test::test () {
                 cout << "Check the network configuration." << endl;
                 try {
                         Pandora_File::removeFile (tmp_filepath);
-                } catch (Pandora_Exception e) {
+                } catch (Pandora::Pandora_Exception e) {
                 }
                 throw e;
         } catch (Scp_Failed e) {
@@ -140,10 +166,10 @@ Pandora_SSH_Test::test () {
                 cout << "Check the network configuration." << endl;
                 try {
                         Pandora_File::removeFile (tmp_filepath);
-                } catch (Pandora_Exception e) {
+                } catch (Pandora::Pandora_Exception e) {
                 }
                 throw e;
-        } catch (Pandora_Exception e) {
+        } catch (Pandora::Pandora_Exception e) {
                 ssh_client->disconnect();
                 cout << "An unhandled exception happened." << endl;
                 throw e;

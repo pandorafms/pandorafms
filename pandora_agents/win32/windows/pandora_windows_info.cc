@@ -26,26 +26,51 @@
 using namespace Pandora_Strutils;
 using namespace Pandora_Windows_Info;
 
+/** 
+ * Get the name of the running operating system.
+ * 
+ * @return The name of the operating system.
+ */
 string
 Pandora_Windows_Info::getOSName () {
         return Pandora_Wmi::getOSName ();
 }
 
+/** 
+ * Get the versioof the running operating system.
+ * 
+ * @return The version of the operating system.
+ */
 string
 Pandora_Windows_Info::getOSVersion () {
         return Pandora_Wmi::getOSVersion ();
 }
 
+/** 
+ * Get the build of the running operating system.
+ * 
+ * @return The build of the operating system.
+ */
 string
 Pandora_Windows_Info::getOSBuild () {
         return Pandora_Wmi::getOSBuild();
 }
 
+/** 
+ * Get the system name of the running operating system.
+ * 
+ * @return The system name of the operating system.
+ */
 string
 Pandora_Windows_Info::getSystemName () {
         return Pandora_Wmi::getSystemName ();
 }
 
+/** 
+ * Get the system path of the running operating system.
+ * 
+ * @return The system path of the operating system.
+ */
 string
 Pandora_Windows_Info::getSystemPath () {
 	char buffer[MAX_PATH];

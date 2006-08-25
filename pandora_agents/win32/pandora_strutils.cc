@@ -27,6 +27,15 @@
 
 using namespace Pandora;
 
+/** 
+ * Removes heading and tailing blank spaces from a string.
+ *
+ * The blank spaces removed are " ", "\t", "\r" and "\n".
+ * 
+ * @param str String to be trimmed.
+ * 
+ * @return The trimmed string.
+ */
 string
 Pandora_Strutils::trim (const string str) {
         char *            delims = " \t\r\n";
@@ -47,11 +56,25 @@ Pandora_Strutils::trim (const string str) {
         return result;
 }
 
+/** 
+ * Transform an integer variable into a string.
+ * 
+ * @param i Integer to transform.
+ * 
+ * @return A string with the integer value.
+ */
 string
 Pandora_Strutils::inttostr (const int i) {
         return longtostr (i);
 }
 
+/** 
+ * Transform a long variable into a string.
+ * 
+ * @param i Long variable to transform
+ * 
+ * @return A string with the long value.
+ */
 string
 Pandora_Strutils::longtostr (const long i) {
 	std::ostringstream o;
@@ -61,6 +84,13 @@ Pandora_Strutils::longtostr (const long i) {
         return o.str();
 }
 
+/** 
+ * Transform a long variable into hexadecimal.
+ * 
+ * @param i Long variable to transform.
+ * 
+ * @return The hexadecimal value of the long variable.
+ */
 string
 Pandora_Strutils::longtohex (const long i) {
         std::ostringstream o;
@@ -69,6 +99,16 @@ Pandora_Strutils::longtohex (const long i) {
         return o.str();
 }
 
+/** 
+ * Tranform a string into a integer.
+ * 
+ * @param str String to convert.
+ * 
+ * @return The integer value of the string.
+ *
+ * @exception Invalid_Conversion throwed if the string has non-
+ *            decimal values.
+ */
 int
 Pandora_Strutils::strtoint (const string str) {
         int result;
@@ -79,6 +119,15 @@ Pandora_Strutils::strtoint (const string str) {
         return result;
 }
 
+/** 
+ * Replace every occurence of a pattern in a string with other substring.
+ * 
+ * @param in Objective string.
+ * @param pattern Pattern to be replaced.
+ * @param rep Substring that replace every occurence of the pattern.
+ * 
+ * @return The input string with all pattern occurence replaced.
+ */
 string
 Pandora_Strutils::strreplace (string in, string pattern, string rep) {
         int i = in.find (pattern);
@@ -107,9 +156,19 @@ isseparator (char c, char const * const wstr) {
         return (strchr (wstr, c) != NULL);
 }
 
+/** 
+ * Split a string into diferent tokens, divided by one or many
+ * field separators.
+ * 
+ * @param l Returned string list with every tokens. Must be initialized
+ *        before calling the function.
+ * @param s Input string.
+ * @param separators Field separators string. I.e. " \t" will separate
+ *        with every " " and "\t". Can be ommited and will be " \t\n".
+ */
 void
 Pandora_Strutils::stringtok (list<string> &l, string const &s, 
-                           char const * const separators) {
+                             char const * const separators) {
     
         const string::size_type  strsize = s.size();
         string::size_type        i = 0;
@@ -136,5 +195,3 @@ Pandora_Strutils::stringtok (list<string> &l, string const &s,
                 i = j + 1;
         }
 }
-
-

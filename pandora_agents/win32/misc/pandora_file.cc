@@ -25,10 +25,20 @@
 
 using namespace std;
 
+/**
+ * Reads a file and returns its content.
+ *
+ * @param filepath Path of the file to read.
+ *
+ * @return File content.
+ *
+ * @exception File_Not_Found throwed if the path is incorrect or the
+ *            file does not exists or could not be opened.
+ **/
 string
-Pandora_File::readFile (const string filename) {
+Pandora_File::readFile (const string filepath) {
         string   line, result;
-        ifstream myfile (filename.c_str ());
+        ifstream myfile (filepath.c_str ());
         
         if (! myfile.is_open ()) {
                 throw File_Not_Found ();
@@ -44,16 +54,32 @@ Pandora_File::readFile (const string filename) {
         return result;
 }
 
+/**
+ * Delete a file from a directory.
+ *
+ * @param filepath Path of the file to delete.
+ *
+ * @exception Delete_Error if the file could not be deleted.
+ */
 void
-Pandora_File::removeFile (const string filename) {
-        if (remove (filename.c_str ()) == -1) {
+Pandora_File::removeFile (const string filepath) {
+        if (remove (filepath.c_str ()) == -1) {
                  throw Delete_Error ();
         }
 }
 
+/**
+ * Write data into a text file.
+ *
+ * @param filepath Path of the file to write in.
+ * @param data Data to be written.
+ *
+ * @exception File_Not_Found throwed if the path is incorrect or the
+ *            file does not exists or could not be opened.
+ */
 void
-Pandora_File::writeFile (const string filename, const string data) {
-        ofstream  file (filename.c_str ());
+Pandora_File::writeFile (const string filepath, const string data) {
+        ofstream  file (filepath.c_str ());
         
         if (! file.is_open ()) {
                 throw File_Not_Found ();

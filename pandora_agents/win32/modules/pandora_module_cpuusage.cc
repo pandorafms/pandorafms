@@ -27,13 +27,18 @@ using namespace Pandora;
 using namespace Pandora_Modules;
 using namespace Pandora_Strutils;
 
+/** 
+ * Creates a Pandora_Module_Cpuusage object.
+ * 
+ * @param name Module name.
+ * @param cpu_id CPU id to control. It's 0 in monoprocessor systems.
+ */
 Pandora_Module_Cpuusage::Pandora_Module_Cpuusage (string name, int cpu_id)
 	: Pandora_Module (name) {
         
         this->cpu_id = cpu_id;
 	
-        this->module_kind_str = module_cpuusage_str;
-        this->module_kind     = MODULE_CPUUSAGE;
+        this->setKind (module_cpuusage_str);
 }
 
 void
@@ -49,8 +54,8 @@ Pandora_Module_Cpuusage::run () {
 	try {
 		res = Pandora_Wmi::getCpuUsagePercentage (this->cpu_id);
 		
-		output = inttostr (res);
-	} catch (Pandora_Wmi::Pandora_Wmi_Error e) {
+		this->output = inttostr (res);
+	} catch (Pandora_Wmi::Pandora_Wmi_Exception e) {
 		this->has_output = false;
 	}
 }

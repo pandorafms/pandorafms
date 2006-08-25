@@ -40,12 +40,24 @@ static void  SetWindowsServiceStatus             (DWORD dwCurrentState,
                                                   DWORD dwWaitHint);
 static void  ErrorStopService                    (LPTSTR lpszAPI);
 
+/**
+ * Set the values of the service to run.
+ *
+ * All the attributes are set to NULL.
+ */
 Windows_Service::Windows_Service () {
         service_name          = NULL;
         service_display_name  = NULL;
         service_description   = NULL;
 }
-
+/** 
+ * Set the values of the service to run.
+ *
+ * @param svc_name Internal service name.
+ * @param svc_display_name Service name to display in the Windows
+ *        service administration utility.
+ * @param svc_description Long description of the service.
+ */
 Windows_Service::Windows_Service (const char * svc_name,
                                   const char * svc_display_name,
                                   const char * svc_description) {
@@ -59,21 +71,44 @@ Windows_Service::Windows_Service (const char * svc_name,
         current_service       = this;
 }
 
+/** 
+ * Destroy the service
+ */
 Windows_Service::~Windows_Service () {
 }
 
+/**
+ * Set the function to run on service execution.
+ *
+ * @param f Pointer to execution function.
+ */
 void
 Windows_Service::setRunFunction (void (Windows_Service::*f) ()) {
         run_function = f;
         current_service->run_function = f;
 }
 
+/**
+ * Set the function to initialize the service.
+ *
+ * This functions is executed before the run function.
+ *
+ * @param f Pointer to init function.
+ */
 void
 Windows_Service::setInitFunction (void (Windows_Service::*f) ()) {
         init_function = f;
         current_service->init_function = f;
 }
 
+/** 
+ * Exec the run function.
+ * 
+ * If the sleep_time is set to a greater value than 0, then the
+ * function will execute infinitely.
+ * Notice: This function does not have to be called from the main
+ * function
+ */
 void
 Windows_Service::execRunFunction () {
         if (run_function != NULL) {
@@ -86,6 +121,9 @@ Windows_Service::execRunFunction () {
         }
 }
 
+/** 
+ * Exec the init function.
+ */
 void
 Windows_Service::execInitFunction () {
         if (init_function != NULL) {
@@ -93,17 +131,36 @@ Windows_Service::execInitFunction () {
         }
 }
 
+/** 
+ * Get the internal service name.
+ * 
+ * @return The internal service name.
+ */
 LPSTR
 Windows_Service::getServiceName () {
         return service_name;
 }
 
+/** 
+ * Set the time between executions.
+ *
+ * If it's set to 0 (default value), the service will execute
+ * the run function once. Else it's executed infinitely every
+ * s seconds
+ *
+ * @param s Seconds between executions.
+ */
 void
 Windows_Service::setSleepTime (unsigned int s) {
         sleep_time = s;
         current_service->sleep_time = sleep_time;
 }
 
+/** 
+ * Install the service in the Windows services system.
+ * 
+ * @param application_binary_path Path to binary file.
+ */
 void
 Windows_Service::install (LPCTSTR application_binary_path) { 
         SC_HANDLE           sc_manager;
@@ -225,6 +282,9 @@ Windows_Service::install (LPCTSTR application_binary_path) {
         CloseServiceHandle (sc_manager);
 } 
 
+/** 
+ * Uninstall the service from the system.
+ */
 void
 Windows_Service::uninstall () { 
         SC_HANDLE sc_manager, sc_service;
@@ -336,8 +396,13 @@ Windows_Service::uninstall () {
 } 
 
 
-/* this is the entry point which is called from main() */
-int
+/** 
+ * Run the service.
+ *
+ * This function must be called from main function to
+ * start the service when started by Windows services system.
+ */
+void
 Windows_Service::run () {
         SERVICE_TABLE_ENTRY ste_dispatch_table[] = 
         { 
@@ -353,8 +418,6 @@ Windows_Service::run () {
                 memset (msg, sizeof (msg), '\0');
                 svc_format_message (msg, sizeof (msg));
         }
-
-        return (0);
 } 
 
 static void WINAPI

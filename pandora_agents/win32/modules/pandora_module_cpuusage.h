@@ -25,6 +25,9 @@
 #include "pandora_module.h"
 
 namespace Pandora_Modules {
+	/**
+	 * Module to retrieve the CPU usage percentage.
+	 */
         class Pandora_Module_Cpuusage : public Pandora_Module {
         private:
                 int cpu_id;

@@ -26,13 +26,30 @@
 
 using namespace std;
 
+/**
+ * File operations.
+ */
 namespace Pandora_File {
-        class File_Not_Found : Pandora::Pandora_Exception {
+	/**
+	 * File super-class exception.
+	 */
+        class File_Exception : Pandora::Pandora_Exception {
         };
-        
-        class Delete_Error : Pandora::Pandora_Exception {
+	
+	/**
+	 * Exception throwed when a file could not be found when doing
+	 * a file operation.
+	 */
+        class File_Not_Found : Pandora_File::File_Exception {
         };
-        
+
+        /**
+	 * Exception throwed when a file could not be deleted on a delete
+	 * operation.
+	 */
+        class Delete_Error : Pandora_File::File_Exception {
+        };
+
         string readFile   (const string filename);
         void   removeFile (const string filename);
         void   writeFile  (const string filename, const string data);

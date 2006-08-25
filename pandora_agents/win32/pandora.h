@@ -29,12 +29,18 @@ using namespace std;
 
 #define	PANDORA_DEBUG 1
 
+/**
+ * Main application.
+ */
 namespace Pandora {
-          
+	/**
+	 * A Key_Value object holds a relation between a value and a
+	 * unique key value.
+	 */
         class Key_Value {
-        protected:
-                string key;
-                string value;
+        private:
+		string key;
+		string value;
         public:
                 void   parseLine (string str);
                 string getKey    ();
@@ -45,7 +51,7 @@ namespace Pandora {
         const char * const name          = "PandoraAgent";
         const char * const display_name  = "Pandora agent";
         const char * const description   = "The Pandora Agent service";
-        
+
         void   setPandoraInstallDir   (string dir);
         string getPandoraInstallDir   ();
         void   setPandoraInstallPath  (string path);
@@ -56,7 +62,13 @@ namespace Pandora {
         void   pandoraDebug           (char *format, ...);
         void   pandoraLog             (char *format, ...);
         void   pandoraFree            (void * e);
-        
+
+	/**
+	 * Super-class exception.
+	 *
+	 * Other exceptions generated in the application should inherate from
+	 * this class. This allow a easier handling on throw and catch blocks.
+	 */
         class Pandora_Exception { };
 }
 

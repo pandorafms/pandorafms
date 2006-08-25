@@ -26,19 +26,25 @@
 #include <list>
 
 using namespace std;
-using namespace Pandora;
 
-class Pandora_Agent_Conf {
-protected:
-        list<Key_Value> *key_values; /* Key-value list */
-public:
-        /* Read and set a key-value set from a file. */
-        Pandora_Agent_Conf       (string filename);
-        
-        ~Pandora_Agent_Conf      ();
-        
-        /* Get the value of a key from a key-value set. */
-        string getValue        (const string key);
-};
+namespace Pandora {
+        /**
+	 * Agent main configuration class.
+	 *
+	 * Stores a list of Key_Value objects with the agent configuration.
+	 * It parses a configuration file and supplies a function to get the
+	 * configuration values.
+	 */
+	class Pandora_Agent_Conf {
+	private:
+		list<Key_Value> *key_values;
+	public:
+		Pandora_Agent_Conf       (string filename);
+		
+		~Pandora_Agent_Conf      ();
+		
+		string getValue        (const string key);
+	};
+}
 
-#endif /* __BABEL_AGENT_CONF_H__ */
+#endif /* __PANDORA_AGENT_CONF_H__ */

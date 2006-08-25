@@ -27,13 +27,22 @@
 
 using namespace std;
 
+/**
+ * Operations with strings.
+ */
 namespace Pandora_Strutils {
-        class Invalid_Conversion : Pandora::Pandora_Exception {};
-        
-        /* Strip blank spaces characters from the end and the beginning of a
-           string. */
+        /**
+	 * String super-class exception.
+	 */
+        class String_Exception : Pandora::Pandora_Exception {};
+	
+	/**
+	 * Exception throwed when a conversion could no be successful.
+	 */
+        class Invalid_Conversion : Pandora_Strutils::String_Exception {};
+	
         string trim        (const string str);
-        
+
         string inttostr    (const int i);
         string longtostr   (const long i);
         string longtohex   (const long i);

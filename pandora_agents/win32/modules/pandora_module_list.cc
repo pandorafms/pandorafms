@@ -29,9 +29,16 @@
 #include <fstream>
 
 using namespace std;
-using namespace Pandora;
 
-Pandora_Module_List::Pandora_Module_List (string filename) {
+/** 
+ * Read and set a key-value set from a file.
+ *
+ * It parses the file and create a Pandora_Module object with
+ *
+ * @param filename Path to the configuration file that includes the
+ *        module definitions.
+ */
+Pandora_Modules::Pandora_Module_List::Pandora_Module_List (string filename) {
         ifstream     file (filename.c_str ());
         string       buffer;
         unsigned int pos;
@@ -74,7 +81,12 @@ Pandora_Module_List::Pandora_Module_List (string filename) {
         *current = modules->begin ();
 }
 
-Pandora_Module_List::~Pandora_Module_List () {
+/** 
+ * Destroy the list.
+ *
+ * Note it also deletes all modules from the list.
+ */
+Pandora_Modules::Pandora_Module_List::~Pandora_Module_List () {
 	Pandora_Module                       *module;
 	std::list<Pandora_Module *>::iterator iter;
 	
@@ -93,7 +105,7 @@ Pandora_Module_List::~Pandora_Module_List () {
 }
 
 void
-Pandora_Module_List::parseModuleDefinition (string definition) {
+Pandora_Modules::Pandora_Module_List::parseModuleDefinition (string definition) {
         Pandora_Module            *module;
         Pandora_Module_Exec       *module_exec;
         Pandora_Module_Proc       *module_proc;
@@ -144,49 +156,73 @@ Pandora_Module_List::parseModuleDefinition (string definition) {
         }
 }
 
+
+/** 
+ * Get the Pandora_Module that is pointed by the internal current pointer.
+ * 
+ * @return The current Pandora_Module.
+ */
 Pandora_Module *
-Pandora_Module_List::getCurrentValue () { 
+Pandora_Modules::Pandora_Module_List::getCurrentValue () { 
         return *(*current);
 }
 
+/** 
+ * Move the current pointer to the first element of the list.
+ */
 void
-Pandora_Module_List::goFirst () {
+Pandora_Modules::Pandora_Module_List::goFirst () {
         if (modules != NULL) {
                 *current = modules->begin ();
         }
 }
 
+/** 
+ * Move the current pointer to the last element of the list.
+ */
 void
-Pandora_Module_List::goLast () {
+Pandora_Modules::Pandora_Module_List::goLast () {
         if (modules != NULL) {
                 *current = modules->end ();
         }
 }
 
+/** 
+ * Move the current pointer to the next element of the list.
+ */
 void
-Pandora_Module_List::goNext () {
+Pandora_Modules::Pandora_Module_List::goNext () {
         if (current != NULL && !isLast ()) {
                 (*current)++;
         }
 }
 
+/** 
+ * Move the current pointer to the previous element of the list.
+ */
 void
-Pandora_Module_List::goPrev () {
+Pandora_Modules::Pandora_Module_List::goPrev () {
         if (current != NULL && !isFirst ()) {
                 (*current)--;
         }
 }
 
+/** 
+ * Check if the current pointer is the last one of the list.
+ */
 bool
-Pandora_Module_List::isLast () {
+Pandora_Modules::Pandora_Module_List::isLast () {
         if (current == NULL || modules == NULL) {
                 return true;
         }
         return *current == modules->end ();
 }
 
+/** 
+ * Check if the current pointer is the first one of the list.
+ */
 bool
-Pandora_Module_List::isFirst () {
+Pandora_Modules::Pandora_Module_List::isFirst () {
         if (current == NULL || modules == NULL) {
                 return true;
         }

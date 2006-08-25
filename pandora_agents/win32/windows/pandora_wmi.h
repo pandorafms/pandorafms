@@ -29,8 +29,14 @@
 using namespace Pandora;
 using namespace std;
 
+/**
+ * Operations with the Windows Management Instrumentation (WMI)
+ */
 namespace Pandora_Wmi {
-        class Pandora_Wmi_Error : public Pandora_Exception { };
+	/**
+	 * Exception super-class when doing a WMI operation.
+	 */
+        class Pandora_Wmi_Exception : public Pandora_Exception { };
 	
         int    isProcessRunning      (string process_name);
 	int    isServiceRunning      (string service_name);

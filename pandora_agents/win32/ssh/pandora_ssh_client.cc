@@ -36,18 +36,37 @@ using namespace std;
 using namespace SSH;
 using namespace Pandora;
 
+/**
+ * Creates a Connection_Failed exception.
+ *
+ * @param e Numeric error code.
+ */
 Connection_Failed::Connection_Failed (int e) {
         err_number = e;
 }
 
+/**
+ * Get the numeric error code.
+ *
+ * @return The numeric code.
+ */
 int
 Connection_Failed::getError () {
         return err_number;
 }
+
+/**
+ * Creates a Scp_Failed exception.
+ *
+ * @param e Error description.
+ */
 Scp_Failed::Scp_Failed (char *e) {
         errmsg = strdup (e);
 }
 
+/**
+ * Creates a SSH client object and initialize its attributes.
+ */
 Pandora_Ssh_Client::Pandora_Ssh_Client () {
         sock        = 0;
         fingerprint = "";
@@ -56,6 +75,13 @@ Pandora_Ssh_Client::Pandora_Ssh_Client () {
         return;
 }
 
+/**
+ * Destroy a SSH client object.
+ *
+ * It also disconnect the client from the host if connected.
+ *
+ * @see disconnect
+ */
 Pandora_Ssh_Client::~Pandora_Ssh_Client () {
         if (session != NULL) {
                 disconnect ();
@@ -64,7 +90,11 @@ Pandora_Ssh_Client::~Pandora_Ssh_Client () {
         return;
 }
 
-/* Disconnects from remote host. It will close all open connections and channels. */
+/**
+ * Disconnects from remote host.
+ *
+ * It will close all open connections and channels.
+ */
 void
 Pandora_Ssh_Client::disconnect () {
         if (channel != NULL) {
@@ -142,28 +172,22 @@ Pandora_Ssh_Client::newConnection (const string host, const int port) {
         fingerprint.erase (fingerprint.length () - 1, 2);
 }
 
-/* Connects to specified host and port using a username and a password */
-void
-Pandora_Ssh_Client::connectWithUserPass (const string host, const int port,
-                                       const string username, const string passwd) {
-        try {
-                newConnection (host, port);
-        } catch (Session_Already_Opened e) {
-        }
-        
-        if (session != NULL) {
-                if (libssh2_userauth_password (session, username.c_str (),
-                                               passwd.c_str ())) {
-                        disconnect ();
-                        throw Authentication_Failed ();
-        	}
-        }
-	return;
-}
-
-/* Connects to specified host and port using a username and a public/private key.
+/**
+ * Connects to specified host and port using a username and a public/private key.
+ *
  * The keys are the filename that contains the public and the private keys.
- * The passphrase is the password for these keys. */
+ * The passphrase is the password for these keys.
+ *
+ * @param host Remote host to connect to.
+ * @param port Remote port to connect to.
+ * @param username Remote host username to connect to.
+ * @param filename_pubkey Path to the public key file.
+ * @param filename_privkey Path to the private key file.
+ * @param passphrase Passphrase of the keys.
+ *
+ * @exception Authentication_Failed throwed when the atuhentication could not
+ *            be done.
+ */
 void
 Pandora_Ssh_Client::connectWithPublicKey (const string host, const int port,
                                         const string username, const string filename_pubkey,
@@ -186,13 +210,28 @@ Pandora_Ssh_Client::connectWithPublicKey (const string host, const int port,
 	return;
 }
                              
-/* Copy a file using a SSH connection (scp).
+/**
+ * Copy a file using a SSH connection via scp method.
+ *
  * The function receives a filename in the local filesystem and copies all
  * its content to the remote host. The remote filename will be the 
  * basename of the local file and will be copied in the remote actual
- * directory. */
+ * directory.
+ *
+ * @param remote_filename Remote path to copy the local file in.
+ * @param filename Path to the local file.
+ *
+ * @exception Session_Not_Opened Throwed if the session was not opened before
+ *           calling this function.
+ * @exception Pandora_File::File_Not_Found Throwed if the local file does not
+ *            exists.
+ * @exception Channel_Error Throwd if there was an error with the SSH channel.
+ * @exception Scp_Failed Throwed if the scp operations failed when copying the
+ *            file.
+ */
 void
-Pandora_Ssh_Client::scpFileFilename (const string remote_filename, const string filename) {
+Pandora_Ssh_Client::scpFileFilename (const string remote_filename,
+				     const string filename) {
         LIBSSH2_CHANNEL *scp_channel;
         size_t           to_send, sent;
         char            *errmsg;
@@ -207,7 +246,7 @@ Pandora_Ssh_Client::scpFileFilename (const string remote_filename, const string 
         } catch (Pandora_File::File_Not_Found e) {
                 pandoraLog ("Pandora_Ssh_Client: File %s not found",
                           filename.c_str());
-                return;
+		throw e;
         }
         
         to_send = buffer.length ();
@@ -243,6 +282,14 @@ Pandora_Ssh_Client::scpFileFilename (const string remote_filename, const string 
         libssh2_channel_free (scp_channel);
 }
 
+/** 
+ * Get the fingerprint of the remote host.
+ * 
+ * The finger print is a unical identifier of the host. It's a method
+ * to ensure that the host is the host we supposed.
+ *
+ * @return The fingerprint of the remote host.
+ */
 string
 Pandora_Ssh_Client::getFingerprint () {
         return this->fingerprint;    

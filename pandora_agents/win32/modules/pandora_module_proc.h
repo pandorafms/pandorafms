@@ -24,6 +24,9 @@
 #include "pandora_module.h"
 
 namespace Pandora_Modules {
+	/**
+	 * Module to check that a process is running on the system.
+	 */
         class Pandora_Module_Proc : public Pandora_Module {
         private:
                 string process_name;

@@ -30,23 +30,28 @@
 
 using namespace std;
 
-class Pandora_Windows_Service : public Windows_Service {
-private:
-        SSH::Pandora_Ssh_Client *ssh_client;
-        Pandora_Agent_Conf      *conf;
-        Pandora_Module_List     *modules;
-        long                     execution_number;
-        string                   agent_name;
+namespace Pandora {
+	/**
+	 * Class to implement the Pandora Windows service.
+	 */
+	class Pandora_Windows_Service : public Windows_Service {
+	private:
+		SSH::Pandora_Ssh_Client              *ssh_client;
+		Pandora_Agent_Conf                   *conf;
+		Pandora_Modules::Pandora_Module_List *modules;
+		long                                  execution_number;
+		string                                agent_name;
         
-        TiXmlElement * getXmlHeader ();
+		TiXmlElement  *getXmlHeader ();
 	
-        void           pandora_run  ();
-        void           pandora_init ();
-public:
-        Pandora_Windows_Service     (const char * svc_name,
-                                     const char * svc_display_name,
-                                     const char * svc_description);
-        ~Pandora_Windows_Service    ();
-};
+		void           pandora_run  ();
+		void           pandora_init ();
+	public:
+		Pandora_Windows_Service     (const char * svc_name,
+					     const char * svc_display_name,
+					     const char * svc_description);
+		~Pandora_Windows_Service    ();
+	};
+}
 
 #endif

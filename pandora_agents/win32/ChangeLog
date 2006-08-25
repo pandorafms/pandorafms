@@ -1,3 +1,48 @@
+2006-08-15  Esteban Sanchez  <estebans@artica.es>
+
+	* autogen.sh, configure.in, Makefile.am, Doxyfile.in: Added to
+	repository. They are used to generate documentation, not to compile.
+
+	* main.cc: Added some comments. Style correction.
+
+	* pandora.[cc,h]: Added documentation comments. Changed visibility of
+	some attributes.
+
+	* pandora_agent_conf.[cc,h]: Added to Pandora namespace. Added
+	documentation comments.
+
+	* pandora_windows_service.[cc,h], pandora_strutils.[cc,h],
+	windows/pandora_windows_infp.[cc,h], ssh/pandora_ssh_test.[cc,h]:
+	Added documentation comments.
+
+	* ssh/pandora_ssh_client.[cc,h]:Added documentation comments. Removed
+	old method to connect with user and password. Style correction.
+	
+	* misc/pandora_file.[cc,h]: Added documentation comments. Renamed some
+	parameters.
+
+	* modules/pandora_module.[cc,h]: Added documentation comments. Put a
+	name to the enumerators. Added a new class to agroupate all exceptions
+	produced by Pandora_Module child class objects. Changed visibility of
+	some attributes. Added some new methods and renamed others.
+
+	* modules/pandora_module_cpuusage.[cc,h],
+	modules/pandora_module_exec.[cc,h],
+	modules/pandora_module_freememory.[cc,h],
+	modules/pandora_module_freedisk.[cc,h], modules/pandora_module_proc.[cc,h],
+	modules/pandora_module_service.[cc,h]: Added documentation comments.
+	Some changes to adapt the objects to the Pandora_Module changes.
+
+	* modules/pandora_module_list.[cc,h]: Added documentation comments.
+	Some changes to adapt the objects to the Pandora_Module changes. Added
+	to Pandora_Modules namespace.
+		
+	* windows/pandora_windows_wmi.[cc,h]: Added documentation comments.
+	Renamed Pandora_Wmi_Error to Pandora_Wmi_Exception.
+
+	* windows_service.[cc,h]: Added documentation comments. Changed
+	visibility of some attributes. Style correction.
+
 2006-07-17  Esteban Sanchez  <estebans@artica.es>
 
 	* main.cc: Added "--help" option.

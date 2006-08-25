@@ -30,6 +30,9 @@
 using namespace Pandora;
 using namespace std;
 
+/**
+ * Windows information functions.
+ */
 namespace Pandora_Windows_Info {
         
         string getOSName     ();

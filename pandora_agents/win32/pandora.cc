@@ -37,6 +37,13 @@ string pandora_dir;
 bool   pandora_debug;
 string pandora_version = PANDORA_VERSION;
 
+/**
+ * Parses a string and initialize the key and the value.
+ * 
+ * The string should be in the format:
+ *  - <code>key value</code>
+ *  - <code>key "value with blankspaces"</code>
+ */
 void
 Key_Value::parseLine (string str) {
         unsigned int           pos;
@@ -68,11 +75,21 @@ Key_Value::parseLine (string str) {
         }
 }
 
+/**
+ * Get the key of the object.
+ * 
+ * @return The key
+ */
 string
 Key_Value::getKey () {
         return key;
 }
 
+/**
+ * Get the value of the object.
+ * 
+ * @return The value
+ */
 string
 Key_Value::getValue () {
         return value;
@@ -104,6 +121,15 @@ pandoraWriteLog (string filename, string line) {
         cout << line << endl;
 }
 
+/**
+ * Write a message in the log file.
+ *
+ * The log file is used to write the output of errors and problems of the
+ * agent.
+ *
+ * @param format String output format.
+ * @param ... Variable argument list
+ */
 void
 Pandora::pandoraLog (char *format, ...) {
         va_list    args;
@@ -116,6 +142,15 @@ Pandora::pandoraLog (char *format, ...) {
         pandoraWriteLog ("pandora-log.log", (char *) msg);
 }
 
+/**
+ * Write a message in the debug file.
+ *
+ * The log file is used to write the output of debugging information of the
+ * agent.
+ *
+ * @param format String output format.
+ * @param ... Variable argument list
+ */
 void
 Pandora::pandoraDebug (char *format, ...) {
         if (pandora_debug) {
@@ -131,38 +166,95 @@ Pandora::pandoraDebug (char *format, ...) {
         return;
 }
 
+/**
+ * Secure free of a pointer.
+ *
+ * @param pointer pointer to free.
+ */
 void
-Pandora::pandoraFree (void * e) {
-        if (e != NULL)
-                free (e);
+Pandora::pandoraFree (void * pointer) {
+        if (pointer != NULL)
+                free (pointer);
         return;       
 }
 
+/**
+ * Set the installation directory of the application.
+ *
+ * This directory is the path to the directory which holds
+ * the binary file.
+ *
+ * @param dir The path to the directory. 
+ *
+ * @see getPandoraInstallDir
+ */
 void
 Pandora::setPandoraInstallDir (string dir) {
         pandora_dir = dir;
 }
 
+/**
+ * Get the installation directory of the application.
+ *
+ * This directory is the path to the directory which holds
+ * the binary file.
+ *
+ * @return The path to the directory.
+ *
+ * @see setPandoraInstallDir
+ */
 string
 Pandora::getPandoraInstallDir () {
         return pandora_dir;
 }
 
+/**
+ * Set the installation path of the application.
+ *
+ * This the complete path to the binary file.
+ *
+ * @param path The path to the binary file. 
+ *
+ * @see getPandoraInstallPath
+ */
 void
 Pandora::setPandoraInstallPath (string path) {
         pandora_path = path;
 }
 
+/**
+ * Get the installation path of the application.
+ *
+ * This the complete path to the binary file.
+ *
+ * @return The path.
+ *
+ * @see setPandoraInstallPath
+ */
 string
 Pandora::getPandoraInstallPath () {
         return pandora_path;
 }
 
+/**
+ * Set the debug flag.
+ *
+ * If the flag is false output wil be generated.
+ *
+ * @param dbg Turns the debug flag on/off.
+ * 
+ * @see pandoraDebug
+ */
 void
 Pandora::setPandoraDebug  (bool dbg) {
         pandora_debug = dbg;
 }
 
+/**
+ * Get the version of the agent.
+ *
+ * @return The version.
+ */
 string
 Pandora::getPandoraAgentVersion () {
         return pandora_version;

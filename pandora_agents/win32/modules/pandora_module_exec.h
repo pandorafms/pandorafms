@@ -24,6 +24,13 @@
 #include "pandora_module.h"
 
 namespace Pandora_Modules {
+	/**
+	 * Module to execute a custom command using the Windows command
+	 * line.
+	 *
+	 * Any custom order that want to be executed can be put in
+	 * the <code>util</code> directory into the Pandora agent path.
+	 */
         class Pandora_Module_Exec : public Pandora_Module {
         private:
                 string module_exec;        

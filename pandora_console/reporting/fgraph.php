@@ -477,7 +477,7 @@ function graphic_agentaccess($id_agent, $periodo){
 	include ("jpgraph/jpgraph.php");
 	include ("jpgraph/jpgraph_line.php");
 	require ("../include/languages/language_".$language_code.".php");
-	$color ="#437722"; // Green pandora 1.1 octopus
+	$color ="#437722"; // Green pandora 1.1 octopus color
 
 	$agent_interval = give_agentinterval($id_agent);
 	$intervalo = 30 * $config_graph_res; // Desired interval / range between dates
@@ -525,7 +525,7 @@ function graphic_agentaccess($id_agent, $periodo){
 
 	// Create graph 
 	$graph = new Graph(280,70);     
-	$graph-> img-> SetImgFormat("gif");
+	$graph-> img-> SetImgFormat("png"); // GIF was causing odd problems in Redhat EL 4
 	$graph->SetMargin(25,5,3,3); 
 	$graph->SetScale("textlin",0,0,0,0);
 	$graph->SetAlphaBlending(true);

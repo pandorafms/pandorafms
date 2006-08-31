@@ -127,7 +127,7 @@ pandoraWriteLog (string filename, string line) {
  * The log file is used to write the output of errors and problems of the
  * agent.
  *
- * @param format String output format.
+ * @param format String output format (like printf).
  * @param ... Variable argument list
  */
 void

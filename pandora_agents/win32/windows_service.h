@@ -32,7 +32,7 @@
  * set the init_function and run_function. Then use
  * install function to perform the service installation
  * and the run function on the main function to start it.
- * Notice: A program can have only one object of this class.
+ * Notice: A program should have only one object of this class.
  */
 class Windows_Service {
 private:

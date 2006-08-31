@@ -1,3 +1,14 @@
+2006-08-31  Esteban Sanchez  <estebans@artica.es>
+
+	* pandora.cc, pandora_strutils.h, windows_service.h,
+	wmi/pandora_wmi.cc, ssh/pandora_ssh_test.cc: Documentation comments
+	updated.
+	
+	* ssh/pandora_ssh_client.[h,cc]: Documentation comments updated.
+	Comment deleted.
+
+	* windows_service.cc: Comment deleted.
+	
 2006-08-15  Esteban Sanchez  <estebans@artica.es>
 
 	* autogen.sh, configure.in, Makefile.am, Doxyfile.in: Added to

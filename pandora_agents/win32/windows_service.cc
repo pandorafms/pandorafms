@@ -538,9 +538,6 @@ ErrorStopService (LPTSTR lpszAPI)
         SetWindowsServiceStatus (SERVICE_STOPPED, GetLastError(), 0, 0);
 }
 
-/* Copy the system error message into the buffer provided.
- * The buffer length is indicated in iCount.
- */
 static VOID
 svc_format_message (LPSTR msg, int count)
 {

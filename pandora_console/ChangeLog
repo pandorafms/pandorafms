@@ -1,3 +1,14 @@
+2006-08-30 slerena <slerena@artica.es>
+
+        * ChangeLog: Renamed file from CHANGELOG.
+
+        * fgraph.php: Updated problem with GIF graphics in Access graph.
+
+        * pandora_console/reporting/*.php: Replaced new code for 1.3
+        version and rollback to stable (and slow) code to be released with
+        1.2 version
+
+	
 2006-07-20  Raul Mateos  <raulofpandora@gmail.com>
 
 	* language_fr.php. Update text.

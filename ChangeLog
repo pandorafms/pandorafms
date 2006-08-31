@@ -1,3 +1,11 @@
+2006-08-30 Sancho Lerena  <slerena@artica.es>
+
+	* CHANGELOG: Renamed to ChangeLog
+
+	* reporting/*.php: Replaced old code with new code for trunk. Deleted
+	old_jpg_functions directory from repository
+
+	
 2006-07-20  Raul Mateos  <raulofpandora@gmail.com>
 
 	* language_fr.php. Update text.
@@ -10,7 +18,9 @@
 
 	* language_it.php. Update text.
 	
-	* snmp_alert.php. Add text when alert not created /updated / deleted. Add different colors between rows (cosmetic changes).
+	* snmp_alert.php. Add text when alert not created /updated / deleted. Add
+	different colors between
+	rows (cosmetic changes).
 	
 
 2006-07-18  Raul Mateos  <raulofpandora@gmail.com>

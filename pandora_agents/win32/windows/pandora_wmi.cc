@@ -149,6 +149,9 @@ Pandora_Wmi::isServiceRunning (string service_name) {
  * @param disk_id Disk drive letter (C.
  * 
  * @return Free space amount in MB.
+ *
+ * @exception Pandora_Wmi_Exception Throwd if an error occured when reading
+ *            from WMI database.
  */
 long
 Pandora_Wmi::getDiskFreeSpace (string disk_id) {
@@ -204,6 +207,9 @@ Pandora_Wmi::getDiskFreeSpace (string disk_id) {
  * @param cpu_id CPU identifier.
  * 
  * @return The usage percentage of the CPU.
+ *
+ * @exception Pandora_Wmi_Exception Throwd if an error occured when reading
+ *            from WMI database.
  */
 int
 Pandora_Wmi::getCpuUsagePercentage (int cpu_id) {
@@ -252,6 +258,8 @@ Pandora_Wmi::getCpuUsagePercentage (int cpu_id) {
  * Get the amount of free memory in the system
  *
  * @return The amount of free memory in MB.
+ * @exception Pandora_Wmi_Exception Throwd if an error occured when reading
+ *            from WMI database.
  */
 long
 Pandora_Wmi::getFreememory () {

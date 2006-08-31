@@ -285,7 +285,7 @@ Pandora_Ssh_Client::scpFileFilename (const string remote_filename,
 /** 
  * Get the fingerprint of the remote host.
  * 
- * The finger print is a unical identifier of the host. It's a method
+ * The fingerprint is a unical identifier of the host. It's a method
  * to ensure that the host is the host we supposed.
  *
  * @return The fingerprint of the remote host.

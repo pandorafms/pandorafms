@@ -37,7 +37,7 @@ namespace Pandora_Strutils {
         class String_Exception : Pandora::Pandora_Exception {};
 	
 	/**
-	 * Exception throwed when a conversion could no be successful.
+	 * Exception throwed when a conversion could not be success.
 	 */
         class Invalid_Conversion : Pandora_Strutils::String_Exception {};
 	

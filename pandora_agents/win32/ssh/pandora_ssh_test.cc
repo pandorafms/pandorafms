@@ -27,7 +27,7 @@ using namespace std;
 using namespace SSH;
 
 /** 
- * Creates a Pandora_SSH_Test.
+ * Creates a Pandora_SSH_Test object.
  *
  * It will read the configuration file and prepares
  * all the information to perform a SSH test.

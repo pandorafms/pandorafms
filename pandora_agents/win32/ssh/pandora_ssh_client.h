@@ -31,7 +31,7 @@ using namespace std;
  * SSH connection classes.
  */
 namespace SSH {
-       /**
+        /**
 	 * A SSH super-class exception.
 	 */
         class SSH_Exception          : public Pandora::Pandora_Exception {
@@ -131,10 +131,6 @@ namespace SSH {
             
                 void disconnect           ();
                                              
-                /* Copy a file using a SSH connection (scp).
-                 * The function receives a filename in the local filesystem and copies all
-                 * its content to the remote host. The remote filename will be the 
-                 * first argument. */
                 void scpFileFilename      (const string remote_filename, 
                                            const string filename);
                                            

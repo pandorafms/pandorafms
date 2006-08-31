@@ -389,7 +389,8 @@ function graphic_agentaccess($id_agent, $periodo){
 
 	// Create graph 
 	$graph = new Graph(280,70);     
-	$graph-> img-> SetImgFormat("gif");
+	$graph-> img-> SetImgFormat("png"); // Replaced instead of GIF format. PNG is free :-)
+					    // and GIF was causing problems in Redhat EL 4 
 	$graph->SetMargin(25,5,3,3); 
 	$graph->SetScale("textlin",0,0,0,0);
 	$graph->SetAlphaBlending(true);

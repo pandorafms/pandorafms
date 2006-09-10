@@ -1,9 +1,20 @@
 <?php
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2004-2006
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ?>
 <html>
 <head>
@@ -114,6 +125,13 @@ de ellos. Suele ser un reflejo de la actividad de cada usuario.</p>
 el men&uacute; de operaci&oacute;n.</p>
 
 <p class="center"><img src="images/image006.png"></p>
+
+<h2><a name="25">2.5. Mensajes a usuarios</a></h2>
+
+<p>Desde «Mensajes», en el men&uacute; de operaci&oacute;n podemos enviar mensajes a otros usuarios y leer los mensajes que hemos recibido. No se almancenan los que se han enviado.</p>
+
+<h3><a name="251">2.5.1. Mensajes a grupos</a></h3>
+<p>Desde «Mensajes»&gt;«Mensajes a grupos» en el men&uacute; de operaci&oacute;n podemos enviar mensajes a grupos de usuarios. No se almancenan los que se han enviado.</p>
 
 </body>
 </html>

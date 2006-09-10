@@ -55,7 +55,7 @@ CREATE TABLE `talert_snmp` (
   `oid` varchar(255) NOT NULL default '',
   `time_threshold` int(11) NOT NULL default '0',
   `times_fired` int(2) unsigned NOT NULL default '0',
-  `last_fired` datetime NOT NULL default '2005-01-01 00:00:00',
+  `last_fired` datetime NOT NULL default '0000-00-00 00:00:00',
   `max_alerts` int(11) NOT NULL default '1',
   `min_alerts` int(11) NOT NULL default '1',
   `internal_counter` int(2) unsigned NOT NULL default '0',
@@ -78,7 +78,7 @@ CREATE TABLE `tmensajes` (
   `id_usuario_origen` varchar(100) NOT NULL default '',
   `id_usuario_destino` varchar(100) NOT NULL default '',
   `mensaje` mediumtext NOT NULL,
-  `timestamp` datetime NOT NULL default '2005-01-01 00:00:00',
+  `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `subject` varchar(255) NOT NULL default '',
   `estado` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_mensaje`)
@@ -182,4 +182,3 @@ CREATE TABLE `tagente_datos` (
   KEY `data_index_2` (`id_agente`),
   KEY `data_index_3` (`timestamp`)
 ) TYPE=InnoDB;
-

@@ -1,4 +1,13 @@
-2006-09-04 Raul Mateos  <raulofpandora@gmail.com>
+2006-09-10 Raul Mateos  <raulofpandora@gmail.com>
+
+	* Massive upload several files, to reflect changes in help,
+		only text, no code changed
+	
+	* pandoradb.sql: change value of ultimo_contacto row in 
+	tagente table to 0000-00-00 00:00:00, to solve a small issue
+	when the agent haven't send any data
+
+2006-09-08 Raul Mateos  <raulofpandora@gmail.com>
 
 	* images/pandora.ico: New icon for Pandora Web Console
 

@@ -1,9 +1,22 @@
 <?php
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2004-2006
+
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 ?>
 <html>
 <head>
@@ -272,6 +285,14 @@ de las alertas o todo el conjunto. Se pedir&aacute; confirmaci&oacute;n antes de
 dado que al eliminar los m&oacute;dulos asignados a un agente se eliminar&aacute; tambi&eacute;n
 todos los datos asociados a &eacute;stos.</p>
 
+<h3><a name="323">3.2.4. Grupos de agentes</a></h3>
+
+<p>Una vez que se han configurado los grupos y los agentes, se puede ver el estado de los grupos de agente utilizando la opci&oacute;n «Ver agentes» del men&uacute; de operaci&oacute;n</p>
+
+<p>Si pasamos el rat&oacute;n sobre cualquier imagen de grupo, veremos el n&uacute;mero de agentes que tiene el grupo adem&aacute;s del n&uacute;mero de monitores, organizado por estado.</p>
+
+<p>Si pulsamos el icono <img src="../../images/target.gif"> que aparece a la derecha de cada grupo, se refrescar&aacute; la informaci&oacute;n del grupo seleccionado.</p>
+
 <h2><a name="33">3.3. Monitorizaci&oacute;n de agentes</a></h2>
 
 <p>Una vez el agente empieza a
@@ -317,7 +338,7 @@ problema de comunicaci&oacute;n o a un «cuelgue» del sistema remoto.</p>
 		<p><img src="../../images/dot_green.gif"> Cuando no se ha enviado ninguna alerta.</p>
 		<p><img src="../../images/dot_red.gif"> Cuando se ha enviado al menos una alerta en el per&iacute;odo definido como «time threshold» o «umbral de tiempo» en la alerta.</p>
 		</div>
-<p><b>&Uacute;ltimo contacto</b>: Muestra la fecha y hora en que se recibieron los &uacute;ltimos datos del agente.</p>
+<p><b>&Uacute;ltimo contacto</b>: Muestra la fecha y hora en que se recibieron los &uacute;ltimos datos del agente, utilizando una barra de progreso, de acuerdo con el valor del intervalo. Si se muestra la imagen <img src="../../images/outof.gif">, el agente no ha enviado datos al finalizar el intervalo. Si pasamos el rat&oacute;n encima de la imagen, se mostrar&aacute; el &uacute;ltimo contacto en formato de fecha y hora.</p>
 
 <p><b><u>Nota:</u></b> El icono <img src="../../images/setup.gif" width="15"> s&oacute;lo es visible si es usuario es administrador y es un enlace a la opci&oacute;n «Gestionar agentes» &gt; «Actualizar agente» del men&uacute; de administraci&oacute;n.</p>
 
@@ -481,6 +502,10 @@ m&oacute;dulos que env&iacute;a un agente cada intervalo de tiempo.</li>
 <p class="center"><img src="images/image031.png"></p>
 <p class="center"><img src="images/image032.png"></p>
 <p class="center"><img src="images/image033.png"></p>
+
+<h2><a name="34">3.4. Consola SNMP</a></h2>
+
+<h3><a name="341">3.4.1. Alertas SNMP</a></h3>
 
 </body>
 </html>

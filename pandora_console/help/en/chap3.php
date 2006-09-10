@@ -43,7 +43,7 @@ div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
 
 </div>
 <div class="rayah">
-<p align='right'>Pandora is a GPL Software Project. &copy; Sancho Lerena 2003-2005, David villanueva 2004-2005, Alex Arnal 2005, Ra&uacute;l Mateos 2004-2005.</p>
+<p align='right'>Pandora is a GPL Software Project. &copy; Sancho Lerena 2003-2006, David villanueva 2004-2005, Alex Arnal 2005, Ra&uacute;l Mateos 2004-2006.</p>
 </div>
 
 <a name="3"><h1>3. Agents</h1></a>
@@ -255,6 +255,14 @@ form indicate whether it is the modules or the alerts configuration what is to
 be deleted. The application will prompt to confirm the deletion, as once
 deletion is performed, the data associated to them will also be deleted.</p>
 
+<h3><a name="323">3.2.4. Agents group detail</a></h3>
+
+<p>Once you have configured your groups and agents, you can see the status of the groups of agents through "View Agents", in the Operation Menu.</p>
+
+<p>If you pass the mouse over any group image, you'll see the number of agents of that group as well the number of monitors, organized by status.</p>
+
+<p>By pressing the icon <img src="../../images/target.gif"> at the right of any group image, you will update the info of that group.</p>
+
 <h2><a name="33">3.3. Agent monitoring </a></h2>
 
 <p>When the agents start the data transmission to the server, and it is added in the Web console, Pandora processes and inserts the data in the Database. The data are consolidated and can be accessed from the Web console, either as row data or as graphs.</p>
@@ -293,7 +301,7 @@ modules, the number of monitors and the number of monitors with "incorrect" stat
 		<p><img src="../../images/dot_green.gif"> No alerts have been sent.</p>
 		<p><img src="../../images/dot_red.gif"> When at least one alert has been sent within the time threshold of the alert.</p>
 	</div>
-<p><b>Last contact:</b> Shows the time and date of the last data package sent by the agent.</p>
+<p><b>Last contact:</b> Shows the time and date of the last data package sent by the agent, using a progress bar, according to value of the interval. If you see the image <img src="../../images/outof.gif">, the agent has not send data during the interval. Passing the mouse over the image will show you the last contact in time and date format.</p>
 
 <p><b><u>Note:</u></b> The icon <img src="../../images/setup.gif" width="15"> is only visible if you're and administrator and it's a link to the "Manage Agents" &gt; "Update Agent" option in the Administration menu.</p>
 <h3><a name="332">3.3.2. Accessing the data of an agent</a></h3>
@@ -454,5 +462,8 @@ values from the modules the agent sends after each time interval.</li>
 <p class="center"><img src="images/image032.png"></p>
 <p class="center"><img src="images/image033.png"></p>
 
+<h2><a name="34">3.4. SNMP Console</a></h2>
+
+<h3><a name="341">3.4.1. SNMP Alerts</a></h3>
 </body>
 </html>

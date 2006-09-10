@@ -24,7 +24,7 @@ CREATE TABLE `tagente` (
   `direccion` varchar(100) default '',
   `comentarios` varchar(255) default '',
   `id_grupo` int(10) unsigned NOT NULL default '0',
-  `ultimo_contacto` datetime NOT NULL default '2004-01-01 00:00:00',
+  `ultimo_contacto` datetime NOT NULL default '0000-00-00 00:00:00',
   `modo` tinyint(1) NOT NULL default '0',
   `intervalo` int(8) NOT NULL default '300',
   `id_os` int(11) default '0',

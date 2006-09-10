@@ -1,9 +1,20 @@
 <?php
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2004-2006
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ?>
 <html>
 <head>
@@ -20,7 +31,7 @@ div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
 <img src="../../images/logo_menu.gif" alt='logo'><h1>Ayuda de Pandora v1.2</h1>
 </div>
 <div class="toc">
-<h1><a href="chap5.php">5. Eventos</a> « <a href="toc.php">&Iacute;ndice</a> » <a href="chap7.php">7. Configuraci&oacute;n de Servidor</a></h1>
+<h1><a href="chap5.php">5. Eventos</a> « <a href="toc.php">&Iacute;ndice</a> » <a href="chap7.php">7. Servidores Pandora</a></h1>
 
 </div>
 <div class="rayah">

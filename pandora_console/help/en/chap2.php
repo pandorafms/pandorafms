@@ -39,7 +39,7 @@ div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
 
 </div>
 <div class="rayah">
-<p align='right'>Pandora is a GPL Software Project. &copy; Sancho Lerena 2003-2005, David villanueva 2004-2005, Alex Arnal 2005, Ra&uacute;l Mateos 2004-2005.</p>
+<p align='right'>Pandora is a GPL Software Project. &copy; Sancho Lerena 2003-2006, David villanueva 2004-2005, Alex Arnal 2005, Ra&uacute;l Mateos 2004-2006.</p>
 </div>
 
 <a name="2"><h1>2. Users</h1></a>
@@ -128,6 +128,13 @@ a user usually reflects the user's activity.</p>
 <p>Click on "View Users"&gt;"Statistics" in the Operation menu to show this graph:</p>
 
 <p class="center"><img src="images/image006.png"></p>
+
+<h2><a name="25">2.5. Messages to users</a></h2>
+
+<p>To create a new message to other user, go to "Messages" section in the Operation menu «Mensajes». You can also read the received messages, but the sent messages are not stored.</p>
+
+<h3><a name="251">2.5.1. Messages to groups</a></h3>
+<p>From "Messages"&gt;"Messages to groups" section in the Operation menu you can send messages to groups of users. The sent messages will not be stores.</p>
 
 </body>
 </html>

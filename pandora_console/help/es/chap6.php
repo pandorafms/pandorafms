@@ -42,7 +42,7 @@ div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
 
 <p>En Pandora las entradas de auditor&iacute;a muestran las acciones realizadas por cada usuario, as&iacute; como los intentos de acceso fallidos al sistema.</p>
 
-<p>En la versi&oacute;n actual de Pandora (1.1),
+<p>En la versi&oacute;n actual de Pandora (1.2),
 adem&aacute;s se muestran operaciones que de alguna manera han intentado eludir el
 sistema de seguridad, tales como intentos de borrar un incidente sobre el que
 el usuario no tiene permiso, cambio del perfil de usuario sin tener permiso de

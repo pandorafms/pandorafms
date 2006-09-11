@@ -49,7 +49,7 @@ div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
 
 These parameters are:</p>
 
-<p><b>Language:</b> In following versions or revisions of the actual Pandora version will support more languages. At the moment version 1.1 only supports English, Spanish, Euskera and Bable.</p>
+<p><b>Language:</b> In following versions or revisions of the actual Pandora version will support more languages. At the moment version 1.2 supports English, Spanish, Bable, Italian, French, Catalan and Portuguese of Brazil.</p>
 <p><b>Page block size:</b> Maximum size of the lists in the event, incident and audit log sections.</p>
 <p><b>Max. days before compact data:</b> This parameter controls data compacting. From the
 number of days in this parameter the data starts getting compacted. For large

@@ -73,10 +73,10 @@ dd.help_t4 {margin-left: 92px; margin-top: 3px; margin-bottom: 2px;}
 <dd class="help_t3"><a href="chap3.php#333">3.3.3. Detalle de grupos</a></dd>
 <dd class="help_t3"><a href="chap3.php#334">3.3.4. Ver monitores</a></dd>
 <dd class="help_t3"><a href="chap3.php#335">3.3.5. Detalle de alertas</a></dd>
-<dd class="help_t3"><a href="chap3.php#336">3.3.6. Exportar satos</a></dd>
+<dd class="help_t3"><a href="chap3.php#336">3.3.6. Exportar datos</a></dd>
 <dd class="help_t3"><a href="chap3.php#337">3.3.7. Estad&iacute;sticas</a></dd>
-<dd class="help_t2"><a href="chap3.php#34">3.3. Consola SNMP</a></dd>
-<dd class="help_t3"><a href="chap3.php#331">3.4.1. Alertas SNMP</a></dd>
+<dd class="help_t2"><a href="chap3.php#34">3.4. Consola SNMP</a></dd>
+<dd class="help_t3"><a href="chap3.php#341">3.4.1. Alertas SNMP</a></dd>
 
 <dd class="help_t1"><a href="chap4.php#4"><h1>4. Gesti&oacute;n de incidentes</h1></a></dd>
 <dd class="help_t2"><a href="chap4.php#41">4.1. A&ntilde;adir un incidente</a></dd>

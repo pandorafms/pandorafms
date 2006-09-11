@@ -103,8 +103,8 @@ dd.help_t4 {margin-left: 92px; margin-top: 3px; margin-bottom: 2px;}
 <dd class="help_t3"><a href="chap8.php#841">8.4.1. Audit data purge</a></dd>
 <dd class="help_t3"><a href="chap8.php#842">8.4.2. Event data purge</a></dd>
 
-<dd class="help_t1"><a href="chap7.php#7"><h1>9. Pandora configuration</h1></a></dd>
-<dd class="help_t2"><a href="chap7.php#71">9.1. Links</a></dd>
+<dd class="help_t1"><a href="chap9.php#9"><h1>9. Pandora configuration</h1></a></dd>
+<dd class="help_t2"><a href="chap9.php#91">9.1. Links</a></dd>
 
 </dl>
 

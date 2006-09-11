@@ -108,8 +108,7 @@ a&ntilde;adir el agente a trav&eacute;s de la consola Web.</p>
 <li><b>Nombre del agente:</b> <b>Tiene que coincidir</b> con el nombre que se ha configurado en la
 variable «<code>agent name</code>» en el archivo <code>agent.conf</code> que hay en cada agente.
 En el caso en el que esta variable est&eacute; comentada se
-utilizara el nombre de Host de la m&aacute;quina donde se est&aacute; ejecutando el agente
-(&eacute;ste se obtiene ejecutando el comando <i>hostname</i>).
+utilizar&aacute; el nombre de Host de la m&aacute;quina donde se est&aacute; ejecutando el agente (&eacute;ste se obtiene ejecutando el comando <i>hostname</i>).
 <li><b>Direcci&oacute;n IP:</b> Muestra la IP del agente, es un dato a t&iacute;tulo informativo y puede coincidir en varios Agentes.</li>
 <li><b>Grupo:</b> Define el grupo al que pertenece el agente, dentro de los grupos definidos en Pandora.</li>
 <li><b>Intervalo:</b> Intervalo de ejecuci&oacute;n que tiene el agente. Es el tiempo que pasa desde que se ejecuta.</li>
@@ -161,7 +160,7 @@ Desde aqu&iacute; se crear&aacute;n los m&oacute;dulos desde el formulario de as
 </p>
 <li><b>Nombre del m&oacute;dulo:</b> Define el nombre del m&oacute;dulo.</li>
 <li><b>M&aacute;ximo</b>: Define el valor m&aacute;ximo que se aceptara para este dato.
-Cualquier valor por encima del maximo definido se interpretar&aacute; como un dato no v&aacute;lido y se descartar&aacute; el m&oacute;dulo completo.</li>
+Cualquier valor por encima del m&aacute;ximo definido se interpretar&aacute; como un dato no v&aacute;lido y se descartar&aacute; el m&oacute;dulo completo.</li>
 <li><b>M&iacute;nimo</b>: Define el valor m&iacute;nimo que se aceptara para este dato.
 Cualquier valor por debajo del m&iacute;nimo definido se interpretar&aacute; como un dato no v&aacute;lido y se descartar&aacute; el m&oacute;dulo completo.</li>
 <li><b>Comentario:</b> Campo para incluir un comentario al m&oacute;dulo.</li>
@@ -283,7 +282,7 @@ como «destino», en la casilla de selecci&oacute;n m&uacute;ltiple. Se pueden sel
 varios agentes, indicando si queremos eliminar la configuraci&oacute;n de los m&oacute;dulos,
 de las alertas o todo el conjunto. Se pedir&aacute; confirmaci&oacute;n antes de ejecutar
 dado que al eliminar los m&oacute;dulos asignados a un agente se eliminar&aacute; tambi&eacute;n
-todos los datos asociados a &eacute;stos.</p>
+todos los datos asociados a estos.</p>
 
 <h3><a name="323">3.2.4. Grupos de agentes</a></h3>
 
@@ -372,7 +371,7 @@ y horarias (M, W, D y H, respectivamente).</p>
 <p>En la parte izquierda de la gr&aacute;fica se sit&uacute;an los datos m&aacute;s nuevos, mientras que en la parte derecha est&aacute;n
 los datos m&aacute;s antiguos.</p>
 
-<p>La gr&aacute;ficas que se generan son:</p>
+<p>Las gr&aacute;ficas que se generan son:</p>
 <p class="ml75"> - <b>Gr&aacute;fico horario</b> (<img src="../../images/grafica_h.gif">) con un rango total de 60 minutos</p>
 <p class="center"><img src="images/image018.png"></p>
 

@@ -255,7 +255,7 @@ form indicate whether it is the modules or the alerts configuration what is to
 be deleted. The application will prompt to confirm the deletion, as once
 deletion is performed, the data associated to them will also be deleted.</p>
 
-<h3><a name="323">3.2.4. Agents group detail</a></h3>
+<h3><a name="324">3.2.4. Agents group detail</a></h3>
 
 <p>Once you have configured your groups and agents, you can see the status of the groups of agents through "View Agents", in the Operation Menu.</p>
 
@@ -304,6 +304,7 @@ modules, the number of monitors and the number of monitors with "incorrect" stat
 <p><b>Last contact:</b> Shows the time and date of the last data package sent by the agent, using a progress bar, according to value of the interval. If you see the image <img src="../../images/outof.gif">, the agent has not send data during the interval. Passing the mouse over the image will show you the last contact in time and date format.</p>
 
 <p><b><u>Note:</u></b> The icon <img src="../../images/setup.gif" width="15"> is only visible if you're and administrator and it's a link to the "Manage Agents" &gt; "Update Agent" option in the Administration menu.</p>
+
 <h3><a name="332">3.3.2. Accessing the data of an agent</a></h3>
 
 <p>When an agent is accessed, by clicking on its name, all the information related to that agent is displayed.</p>

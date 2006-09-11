@@ -131,7 +131,7 @@ a user usually reflects the user's activity.</p>
 
 <h2><a name="25">2.5. Messages to users</a></h2>
 
-<p>To create a new message to other user, go to "Messages" section in the Operation menu «Mensajes». You can also read the received messages, but the sent messages are not stored.</p>
+<p>To create a new message to other user, go to "Messages" section in the Operation menu. You can also read the received messages, but the sent messages are not stored.</p>
 
 <h3><a name="251">2.5.1. Messages to groups</a></h3>
 <p>From "Messages"&gt;"Messages to groups" section in the Operation menu you can send messages to groups of users. The sent messages will not be stores.</p>

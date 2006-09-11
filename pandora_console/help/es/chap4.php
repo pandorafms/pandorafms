@@ -105,7 +105,7 @@ orden de actualizaci&oacute;n. Mediante los filtros se puede acceder s&oacute;lo
 <p class="ml25"><img src="../../images/dot_green.gif"><img src="../../images/dot_green.gif"><img src="../../images/dot_green.gif"> Prioridad de tarea de Mantenimiento</p>
 
 <p><b>Grupo:</b> Define el grupo al que se ha asociado el incidente. Un
-incidente s&oacute;lo puede pertenecer a un &uacute;nico grupo. </p>
+incidente s&oacute;lo puede pertenecer a un &uacute;nico grupo.</p>
 <p><b>Actualizado el:</b> &Uacute;ltima vez que se produjo alguna actualizaci&oacute;n en el incidente.</p>
 <p><b>Origen:</b> Etiqueta que se aplica para asignar un origen al
 incidente. Puede ser seleccionada de una lista que se almacena en la base de
@@ -119,7 +119,7 @@ incidentes sobre el grupo al que pertenezca el incidente.</p>
 
 <h2><a name="41">4.1. A&ntilde;adir un incidente</a></h2>
 
-<p>Para crear un incidente bastara con acceder a «Gesti&oacute;n de incidentes» &gt; «Nuevo incidente», dentro del men&uacute; de operaci&oacute;n.</p>
+<p>Para crear un incidente bastar&aaacute; con acceder a «Gesti&oacute;n de incidentes» &gt; «Nuevo incidente», dentro del men&uacute; de operaci&oacute;n.</p>
 
 <p class="center"><img src="images/image035.png"></p>
 
@@ -180,7 +180,7 @@ se puede hacer una b&uacute;squeda m&aacute;s concreta desde «Gesti&oacute;n de 
 <p class="center"><img src="images/image041.png"></p>
 
 <p>Desde aqu&iacute; se puede buscar cualquier cadena de texto introducida como subcadena dentro del incidente,
-haciendo un filtro por el usuario que creo el mismo.</p>
+haciendo un filtro por el usuario que creo &eacute;l mismo.</p>
 
 <p>Las b&uacute;squedas se realizan sobre
 el t&iacute;tulo del incidente o sobre el contenido del mismo, pero no sobre las notas

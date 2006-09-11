@@ -44,10 +44,6 @@ div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
 
 <a name="7"><h1>7. Pandora Servers</h1></a>
 
-<p>All the configurable parameters in Pandora can be set in the "Pandora Setup" section, in the Administration menu.</p>
-
-<h1><a name="7">7. Configuraci&oacute;n de los servidores</a></h1>
-
 <p>From "Manage Servers" section, in the Administration menu you can see a list of configured Pandora Servers and also can manage them.</p>
 
 <p>From "Pandora Servers" in the Operation menu you can see a list of the Pandora Servers.</p>

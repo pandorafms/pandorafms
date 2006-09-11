@@ -46,8 +46,7 @@ div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
 <p>Estos par&aacute;metros son:</p>
 
 <p><b>C&oacute;digo de lenguaje para Pandora.</b> En sucesivas versiones o ampliaciones de la versi&oacute;n
-actual pueden aparecer nuevos idiomas. En la versi&oacute;n 1.1, s&oacute;lo est&aacute;n soportados
-Ingl&eacute;s y Espa&ntilde;ol (Castellano).</p>
+actual pueden aparecer nuevos idiomas. En la versi&oacute;n 1.2 est&aacute;n soportados ingl&eacute;s, franc&eacute;s, catal&aacute;n, portugu&eacute;s de Brasil, bable y espa&ntilde;ol (castellano).</p>
 
 <p><b>Tama&ntilde;o de bloque para la paginaci&oacute;n</b>. Tama&ntilde;o m&aacute;ximo de las listas en la secci&oacute;n de eventos,
 incidentes y Logs de auditor&iacute;a.</p>

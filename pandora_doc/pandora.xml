@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="ISO-8859-15" standalone="no" ?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.4//EN"
+	  "/usr/share/xml/docbook/schema/dtd/4.4/docbookx.dtd" [
+<!ENTITY pandora_version "v1.2">
+<!ENTITY pandora "<emphasis>Pandora</emphasis>">
+<!ENTITY include_fdl SYSTEM "fdl.xml">
+<!ENTITY include_gpl SYSTEM "gpl.xml">
+<!ENTITY include_pandora_chapter1 SYSTEM "pandora_chapter1.xml">
+<!ENTITY include_pandora_chapter2 SYSTEM "pandora_chapter2.xml">
+<!ENTITY include_pandora_chapter3 SYSTEM "pandora_chapter3.xml">
+<!ENTITY include_pandora_chapter4 SYSTEM "pandora_chapter4.xml">
+<!ENTITY include_pandora_chapter5 SYSTEM "pandora_chapter5.xml">
+<!ENTITY include_pandora_chapter6 SYSTEM "pandora_chapter6.xml">
+<!ENTITY include_pandora_chapter7 SYSTEM "pandora_chapter7.xml">
+<!ENTITY include_pandora_chapter8 SYSTEM "pandora_chapter8.xml">
+<!ENTITY include_pandora_chapter9 SYSTEM "pandora_chapter9.xml">
+]>
+
+<book lang="en">
+  <bookinfo>
+    <title>&pandora; &pandora_version;</title>
+    <graphic fileref="./img/pandora_logo.jpg" valign="bottom" align="center"/>
+    <copyright>
+      <year>2006</year>
+      <holder>
+	Ártica Soluciones Tecnológicas S.L, Sancho Lerena, Esteban Sánchez y otros.
+      </holder>
+    </copyright>
+    <date>11/09/2006</date>
+    <releaseinfo>&pandora_version;</releaseinfo>
+    <edition>First Edition(&pandora_version;)</edition>
+    <pubdate>
+    September 11th, 2006</pubdate>
+    <keywordset>
+      <keyword>pandora user manual</keyword>
+    </keywordset>
+    <legalnotice>
+      <para>
+	Permission is granted to copy, distribute and/or modify this
+	document under the terms of the GNU Free Documentation
+	License, Version 1.1 or any later version published by the
+	Free Software Foundation. A copy of the license is included
+	in the section entitled <quote>GNU Free Documentation
+	License</quote>.
+      </para>
+    </legalnotice>
+    <revhistory>
+      <revision>
+	<revnumber>1.0</revnumber>
+	<date>11 Sept 2006</date>
+	<revremark>Submitted.</revremark>
+      </revision>
+      <revision>
+	<revnumber>0.1</revnumber>
+	<date>11 Sept 2006</date>
+	<revremark>First draft for review.</revremark>
+      </revision>
+    </revhistory>
+  </bookinfo>
+  
+  &include_pandora_chapter1;
+  &include_pandora_chapter2; 
+  &include_pandora_chapter3;
+  &include_pandora_chapter4;
+  &include_pandora_chapter5;
+  &include_pandora_chapter6;
+  &include_pandora_chapter7;
+  &include_pandora_chapter8; 
+  &include_pandora_chapter9;
+  &include_fdl;
+  &include_gpl;
+  
+</book>

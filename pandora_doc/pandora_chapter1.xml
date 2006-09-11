@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ISO-8859-15"?> 
+<chapter>
+	<title>Introduction</title>
+	<sect1>
+		<title>Pandora Administration</title>
+
+		<para>The web console is the tool used to administrate Pandora.
+		It is written in PHP and doesn't need any third party software
+		to work neither FLASH, JAVA, nor ActiveX plug-ins. 
+		The Web console can be run over any web browser supporting HTML and
+		CSS (IE5+ or Mozilla 4+).</para>
+
+		<graphic fileref="images/image001.png" valign="bottom" align="center"/>
+
+		<para>Pandora administration is divided in the following main elements:</para>
+		  <itemizedlist>
+		    <listitem>
+		      <para>Pandora users</para>
+		    </listitem>
+		    <listitem>
+		      <para>Agents</para>
+		    </listitem>
+		    <listitem>
+		      <para>Alerts</para>
+		    </listitem>
+		    <listitem>
+		      <para>Incidents</para>
+		    </listitem>
+		    <listitem>
+		      <para>Server configuration</para>
+		    </listitem>
+		    <listitem>
+		      <para>Database maintenance</para>
+		    </listitem>
+		</itemizedlist>
+	</sect1>
+</chapter>

@@ -5,6 +5,10 @@
 	* Updated pandora.xml
 	
 	* Updated fdl.xml & gpl.xml
+	
+	* Moved all the english files to /en/ directory
+	
+	* Created /es/ directory
 
 2006-09-11  Sancho Lerena  <slerena@artica.es>
 

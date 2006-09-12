@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-15"?> 
+<?xml version="1.0" encoding="utf-8"?> 
 
 <chapter>
 	<title>Pandora Configuration</title>
@@ -9,19 +9,19 @@
 
 	<para>These parameters are:</para>
 
-	<para><b>Language:</b> In following versions or revisions of the actual Pandora version will support more languages. At the moment version 1.2 supports English, Spanish, Bable, Italian, French, Catalan and Portuguese of Brazil.</para>
-	<para><b>Page block size:</b> Maximum size of the lists in the event, incident and audit log sections.</para>
-	<para><b>Max. days before compact data:</b> This parameter controls data compacting. From the
+	<para><emphasis>Language:</emphasis> In following versions or revisions of the actual Pandora version will support more languages. At the moment version 1.2 supports English, Spanish, Bable, Italian, French, Catalan and Portuguese of Brazil.</para>
+	<para><emphasis>Page block size:</emphasis> Maximum size of the lists in the event, incident and audit log sections.</para>
+	<para><emphasis>Max. days before compact data:</emphasis> This parameter controls data compacting. From the
 	number of days in this parameter the data starts getting compacted. For large
 	amounts of data it is recommended to set this parameter to a number between 14
 	and 28; for systems with less data load or very powerful systems, a number
 	between 30 and 50 will be enough.</para>
-	<para><b>Max. days before purge:</b> This parameter controls how long the data is kept
+	<para><emphasis>Max. days before purge:</emphasis> This parameter controls how long the data is kept
 	before it is permanently deleted. The recommended value is 60. For systems with
 	little resources or large work load the recommended value is between 40 and 50.</para>
-	<para><b>Graphic resolution (1 low, 5 high):</b> This value represents the precision of the
+	<para><emphasis>Graphic resolution (1 low, 5 high):</emphasis> This value represents the precision of the
 	interpolation logarithm to generate the graphics.</para>
-	<para><b>Compact interpolation (Hours: 1 fine, 10 medium, 20 bad):</b> This is the grade of compression used to compact the Data Base, being 1 the lowest compression rate and 20 the highest. A value above 12 means a considerable data loss. It's not recommended to use value above 6 if the data needs to be
+	<para><emphasis>Compact interpolation (Hours: 1 fine, 10 medium, 20 bad):</emphasis> This is the grade of compression used to compact the Data Base, being 1 the lowest compression rate and 20 the highest. A value above 12 means a considerable data loss. It's not recommended to use value above 6 if the data needs to be
 	represented graphically in large time intervals.</para>
 	<sect1>
 		<title>Links</title>

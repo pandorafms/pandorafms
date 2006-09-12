@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-15"?> 
+<?xml version="1.0" encoding="utf-8"?> 
 
 <chapter>
 	<title>Events</title>
@@ -21,18 +21,18 @@
 
 	<para>The event information list shows the data in the following columns:</para>
 
-	<para><b>Status:</b> The event status is represented by the icon bellow:</para>
-	<graphic fileref="../../images/dot_green.gif"/> The event has been validated
-	<graphic fileref="../../images/dot_red.gif"/> The event hasn't been validated
-	<para><b>Event name:</b> Name assigned to the event by Pandora.</para>
-	<para><b>Agent name:</b> Agent where the event happend.</para>
-	<para><b>Group name:</b> Group of the agent where the event has happened.</para>
-	<para><b>User ID: </b>User that validated the event.</para>
-	<para><b>Timestamp:</b> Date and time when the event was raised or validated
+	<para><emphasis>Status:</emphasis> The event status is represented by the icon bellow:</para>
+	<para><graphic fileref="../../images/dot_green.gif"/> The event has been validated</para>
+	<para><graphic fileref="../../images/dot_red.gif"/> The event hasn't been validated</para>
+	<para><emphasis>Event name:</emphasis> Name assigned to the event by Pandora.</para>
+	<para><emphasis>Agent name:</emphasis> Agent where the event happend.</para>
+	<para><emphasis>Group name:</emphasis> Group of the agent where the event has happened.</para>
+	<para><emphasis>User ID: </emphasis>User that validated the event.</para>
+	<para><emphasis>Timestamp:</emphasis> Date and time when the event was raised or validated
 	- if it has been validated.</para>
-	<para><b>Action:</b> Action that can be executed over the event.</para>
-	<graphic fileref="../../images/ok.gif"/> This icon will validate the event, disappearing the icon
-	<graphic fileref="../../images/cancel.gif"/> This icon will delete the event
+	<para><emphasis>Action:</emphasis> Action that can be executed over the event.</para>
+	<para><graphic fileref="../../images/ok.gif"/> This icon will validate the event, disappearing the icon</para>
+	<para><graphic fileref="../../images/cancel.gif"/> This icon will delete the event</para>
 
 	<para>The events can be also validated or deleted in groups by selecting 
 	the tick boxes on the last column of the event, and pressing "Validate" or 

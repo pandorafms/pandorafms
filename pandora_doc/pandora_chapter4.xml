@@ -1,64 +1,78 @@
-<?xml version="1.0" encoding="ISO-8859-15"?> 
+<?xml version="1.0" encoding="utf-8"?> 
 
 <chapter>
 	<title>Incident management</title>
 
-	<para>The system monitoring process needs to follow up the incidents 
+	<para>
+	The system monitoring process needs to follow up the incidents 
 	arising in the system besides receiving and processing the data to be 
-	monitored in each time interval</para>
+	monitored in each time interval
+	</para>
 
-	<para>Pandora uses a tool called Incident Manager for this task, where 
+	<para>
+	Pandora uses a tool called Incident Manager for this task, where 
 	each user can open an incident, where a description of what happened 
 	in the network is shown. This can be completed with comments and files
-	when necessary.</para>
+	when necessary.
+	</para>
 
-	<para>This system is designed for group work. Different roles and
+	<para>
+	This system is designed for group work. Different roles and
 	workflow systems permit to move incidents from one group to another. 
 	The system allows different groups and different users to work on
-	the same incident, sharing information and files.</para>
+	the same incident, sharing information and files.
+	</para>
 
-	<para>Clicking on "Manage Incidents", in the Operation menu, a list 
+	<para>
+	Clicking on "Manage Incidents", in the Operation menu, a list 
 	showing all the incidents is displayed, ordered by the date-time they
 	were last updated. Filters can be applied to display only those
-	incidents the user is interested on.</para>
+	incidents the user is interested on.
+	</para>
 
 	<graphic fileref="images/image034.png" valign="bottom" align="center"/>
 
-	<para>The filters that can be applied are:</para>
+	<para>
+	The filters that can be applied are:
+	</para>
 
 	<itemizedlist>
 	    <listitem>
-	      <para><b>Incident status filter</b>. The user can display:
+	      <para><emphasis>Incident status filter</emphasis>.
+		  The user can display:</para>
 			<para>- All incidents</para>
 			<para>- Active incidents</para>
 			<para>- Closed incidents</para>
 			<para>- Rejected incidents</para>
 			<para>- Expired incidents</para>
+	    </listitem>
+	    <listitem>
+			<para>
+			<emphasis>Property filter</emphasis>.
+			The incidents are shown by:
 			</para>
+			<para>- All priorities</para>
+			<para>- Informative priority</para>
+			<para>- Low priority</para>
+			<para>- Medium priority</para>
+			<para>- High priority</para>
+			<para>- Very high priority</para>
+			<para>- Maintenance</para>
 	    </listitem>
 	    <listitem>
-	      <para>
-	<b>Property filter</b>. The incidents are shown by:
-	<para>- All priorities</para>
-	<para>- Informative priority</para>
-	<para>- Low priority</para>
-	<para>- Medium priority</para>
-	<para>- High priority</para>
-	<para>- Very high priority</para>
-	<para>- Maintenance</para>
-	</para>
-	    </listitem>
-	    <listitem>
-	      <para><b>Group filter</b>. It can be selected to display just the 
-		  incidents of a given Pandora group.</para>
+	      <para><emphasis>Group filter</emphasis>. 
+		  It can be selected to display just the 
+		  incidents of a given Pandora group.
+		  </para>
 	    </listitem>
 	</itemizedlist>
 
-	<para>The incident list is displayed showing information in the following 
-	columns:</para>
+	<para>
+	The incident list is displayed showing information in the following columns:
+	</para>
 
-	<para><b>ID:</b> ID of the incident.</para>
-	<para><b>Status:</b> The incident status is represented by the following 
+	<para><emphasis>ID:</emphasis> ID of the incident.</para>
+	<para><emphasis>Status:</emphasis> The incident status is represented by the following 
 	icons:</para>
 
 	<para><graphic fileref="../../images/dot_red.gif"/> Active incident</para>
@@ -68,8 +82,8 @@
 	<para><graphic fileref="../../images/dot_green.gif"/> Closed incident</para>
 	<para><graphic fileref="../../images/dot_white.gif"/> Expired incident</para>
 
-	<para><b>Incident name:</b> Name given to the incident</para>
-	<para><b>Priority:</b> The incident assigned priority is represented 
+	<para><emphasis>Incident name:</emphasis> Name given to the incident</para>
+	<para><emphasis>Priority:</emphasis> The incident assigned priority is represented 
 	by the following icons:</para>
 
 	<para><graphic fileref="../../images/dot_red.gif"/>
@@ -96,15 +110,15 @@
 	<graphic fileref="../../images/dot_green.gif"/>
 	<graphic fileref="../../images/dot_green.gif"/> Maintenance priority</para>
 
-	<para><b>Group:</b> The name of the group the incident has been assigned 
+	<para><emphasis>Group:</emphasis> The name of the group the incident has been assigned 
 	to. One incident can only belong to a single group.</para>
-	<para><b>Updated at:</b> This is the date/time the incident was updated 
+	<para><emphasis>Updated at:</emphasis> This is the date/time the incident was updated 
 	for the last time.</para>
-	<para><b>Source:</b> The source of the incident. The source is selected 
+	<para><emphasis>Source:</emphasis> The source of the incident. The source is selected 
 	from a list stored
 	in the data base. This list can only be modified by the database base
 	administrator.</para>
-	<para><b>Owner:</b> User to whom the incident has been assigned to. 
+	<para><emphasis>Owner:</emphasis> User to whom the incident has been assigned to. 
 	It doesn't coinced
 	with the creator of the incident, as the incident may have been moved 
 	from one user to another. The incident can be assigned to another user 
@@ -141,22 +155,22 @@
 		<para>From this form the following values can be updated:</para>
 		<itemizedlist>
 		    <listitem>
-		      <para><b>Incident name</b></para>
+		      <para><emphasis>Incident name</emphasis></para>
 		    </listitem>
 		    <listitem>
-		      <para><b>Incident owner</b></para>
+		      <para><emphasis>Incident owner</emphasis></para>
 		    </listitem>
 		    <listitem>
-		      <para><b>Incident status</b></para>
+		      <para><emphasis>Incident status</emphasis></para>
 		    </listitem>
 		    <listitem>
-		      <para><b>Incident source</b></para>
+		      <para><emphasis>Incident source</emphasis></para>
 		    </listitem>
 		    <listitem>
-		      <para><b>Group the indicent will belong to</b></para>
+		      <para><emphasis>Group the indicent will belong to</emphasis></para>
 		    </listitem>
 		    <listitem>
-		      <para><b>Indicent priority</b></para>
+		      <para><emphasis>Indicent priority</emphasis></para>
 		    </listitem>
 		</itemizedlist>
 		<para>The indicent is updated by clicking on the "Update incident" button.</para>
@@ -193,7 +207,7 @@
 		<title>Searching for an incident</title>
 
 		<para>A specific incident can be found amongst the
-		incidents created in Pandora by either using a filter  as explained in the
+		incidents created in Pandora by either using a filter _ as explained in the
 		first section of this chapter - or by making a query using the "Manage Incidents"&gt;"Searh Incident" tool, in the Operation menu.</para>
 
 		<graphic fileref="images/image041.png" valign="bottom" align="center"/>
@@ -212,19 +226,19 @@
 
 		<itemizedlist>
 		    <listitem>
-		      <para><b>Incident status</b></para>
+		      <para><emphasis>Incident status</emphasis></para>
 		    </listitem>
 		    <listitem>
-		      <para><b>Incident priority</b></para>
+		      <para><emphasis>Incident priority</emphasis></para>
 		    </listitem>
 		    <listitem>
-		      <para><b>Users with the incident opened</b></para>
+		      <para><emphasis>Users with the incident opened</emphasis></para>
 		    </listitem>
 		    <listitem>
-		      <para><b>Incidents by group</b></para>
+		      <para><emphasis>Incidents by group</emphasis></para>
 		    </listitem>
 		    <listitem>
-		      <para><b>Incident source</b></para>
+		      <para><emphasis>Incident source</emphasis></para>
 		    </listitem>
 		</itemizedlist>
 

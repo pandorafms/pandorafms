@@ -561,7 +561,7 @@
 	<para><emphasis>Module name:</emphasis> Name given to the module
 	in the agent's config file.</para>
 	<para><emphasis>Module type:</emphasis> Type of module as described
-	in <link linkend="#321">section 3.2.1</link>.</para>
+	in Asigning Modules section.</para>
 	<para><emphasis>Description:</emphasis> Description given to the module
 	in the agent's config file.</para>
 	<para><emphasis>Data:</emphasis> Last data sent by the agent.</para>

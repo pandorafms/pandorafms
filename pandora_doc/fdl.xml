@@ -1,12 +1,4 @@
-<!--  
-     The GNU Free Documentation License 1.1 in DocBook
-     Markup by Eric Baudais <baudais@okstate.edu>
-     Maintained by the GNOME Documentation Project
-     http://developer.gnome.org/projects/gdp
-     Version: 1.0.1
-     Last Modified: Nov 16, 2000
--->
-<?xml version='1.0' encoding='ISO-8859-1'?>
+<?xml version='1.0' encoding='utf-8'?>
 <appendix id="fdl">
   <appendixinfo>
     <releaseinfo>
@@ -627,7 +619,7 @@
     
     <blockquote>
       <para>
-	Copyright &copy; YEAR YOUR NAME.
+		Copyright &copy; YEAR YOUR NAME.
       </para>
       <para>
 	Permission is granted to copy, distribute and/or modify this

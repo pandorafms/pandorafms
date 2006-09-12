@@ -1,10 +1,8 @@
-<?xml version="1.0" encoding="ISO-8859-15" standalone="no" ?>
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.4//EN"
-	  "/usr/share/xml/docbook/schema/dtd/4.4/docbookx.dtd" [
+	  "docbookx.dtd" [
 <!ENTITY pandora_version "v1.2">
 <!ENTITY pandora "<emphasis>Pandora</emphasis>">
-<!ENTITY include_fdl SYSTEM "fdl.xml">
-<!ENTITY include_gpl SYSTEM "gpl.xml">
 <!ENTITY include_pandora_chapter1 SYSTEM "pandora_chapter1.xml">
 <!ENTITY include_pandora_chapter2 SYSTEM "pandora_chapter2.xml">
 <!ENTITY include_pandora_chapter3 SYSTEM "pandora_chapter3.xml">
@@ -23,7 +21,7 @@
     <copyright>
       <year>2006</year>
       <holder>
-	Ártica Soluciones Tecnológicas S.L, Sancho Lerena, Esteban Sánchez y otros.
+	Ãrtica Soluciones TecnolÃ³gicas S.L, Sancho Lerena, Esteban SÃ¡nchez y otros.
       </holder>
     </copyright>
     <date>11/09/2006</date>
@@ -67,7 +65,5 @@
   &include_pandora_chapter7;
   &include_pandora_chapter8; 
   &include_pandora_chapter9;
-  &include_fdl;
-  &include_gpl;
   
 </book>

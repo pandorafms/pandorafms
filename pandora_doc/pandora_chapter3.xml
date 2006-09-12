@@ -419,7 +419,7 @@
       button shows the modules for that agent in the Modules list box.
       </para>
 
-      <para><emphasis><i>The copy process</i></emphasis> is performed to copy 
+      <para><emphasis>The copy process</emphasis> is performed to copy 
       the module and/or alert configuration from the selected source 
       agents to the selected destination agents. Several agents can be
       selected, pressing CTRL and the mouse right button simultaneously. 
@@ -427,7 +427,7 @@
       if the configuration to copy is from modules and/or from alerts.
       </para>
 
-      <para><emphasis><i>The delete process</i></emphasis> is performed to delete the
+      <para><emphasis>The delete process</emphasis> is performed to delete the
       configuration of the destination agents, in the multiple selection 
       list box. Several agents can be selected at a time, and the tick 
       boxes at the top of the form indicate whether it is the modules
@@ -561,7 +561,7 @@
 	<para><emphasis>Module name:</emphasis> Name given to the module
 	in the agent's config file.</para>
 	<para><emphasis>Module type:</emphasis> Type of module as described
-	in <a href="#321">section 3.2.1</a>.</para>
+	in <link linkend="#321">section 3.2.1</link>.</para>
 	<para><emphasis>Description:</emphasis> Description given to the module
 	in the agent's config file.</para>
 	<para><emphasis>Data:</emphasis> Last data sent by the agent.</para>

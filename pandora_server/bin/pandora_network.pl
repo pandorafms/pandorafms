@@ -268,7 +268,24 @@ sub pandora_query_snmp {
       		logger($pa_config, "SNMP ERROR SESSION", 4);
 		$_[4]="1";
    	} else {
-		my $OIDLIST =  new SNMP::VarList([$snmp_oid]);
+		# Perl uses different OID syntax than SNMPWALK or PHP's SNMP
+		# for example:
+		# SNMPv2-MIB::sysDescr for PERL SNMP
+		# is equivalent to SNMPv2-MIB::sysDescr.0 in SNMP and PHP/SNMP
+		# So we parse last byte and cut off if = 0 and delete 1 if != 0
+		my $perl_oid = $snmp_oid;
+		if ($perl_oid =~ m/(.*)\.([0-9]*)\z/){
+			my $local_oid = $1;
+			my $local_oid_idx = $2;
+			if ($local_oid_idx == 0){
+				$perl_oid = $local_oid; # Strip .0 from orig. OID
+			} else {
+				$local_oid_idx--;
+				$perl_oid = $local_oid.".".$local_oid_idx;
+			}
+		}
+
+		my $OIDLIST =  new SNMP::VarList([$perl_oid]);
 		# Pass the VarList to getnext building an array of the output
 		my @OIDINFO = $SESSION->getnext($OIDLIST);	
 		$output = $OIDINFO[0];

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?> 
 
-<chapter>
+<chapter id="chapter3">
+
   <title>Agents</title>
 
   <para>The agents collect information. The public key
@@ -33,7 +34,7 @@
     </listitem>
   </itemizedlist>
 
-  <sect1>
+  <sect1 id="3.1">
     <title>Group Manager</title>
 
     <para>Groups are added in "Manage Profiles" &gt; "Manage Groups", 
@@ -73,10 +74,10 @@
     <para>A group is added by clicking "Create group" and assigning
     a name to it.</para>
     <para>A group is deleted by clicking the delete icon 
-    <graphic fileref="../../images/cancel.gif"/> 
+    <inlinegraphic fileref="images/cancel.gif"/> 
     in the right hand side of each group.</para>
   </sect1>	
-  <sect1>
+  <sect1 id="3.2">
     <title>Adding an agent</title>
 
     <para>Before an agent is added, the public key of the
@@ -162,7 +163,7 @@
 	</para>
       </listitem>
     </itemizedlist>
-    <sect2>
+    <sect2 id="3.2.1">
       <title>Assigning modules</title>
 
       <para>Pandora's agents use the operating system own commands to
@@ -247,12 +248,12 @@
       <itemizedlist>
 	<listitem>
 	  <para>
-	    Deleted by clicking <graphic fileref="../../images/cancel.gif"/>
+	    Deleted by clicking <inlinegraphic fileref="images/cancel.gif"/>
 	  </para>
 	</listitem>
 	<listitem>
 	  <para>
-	    Edited by clicking <graphic fileref="../../images/config.gif"/>
+	    Edited by clicking <inlinegraphic fileref="images/config.gif"/>
 	  </para>
 	</listitem>
       </itemizedlist>
@@ -261,145 +262,198 @@
 	However, the type of data of the module can't be modified.
       </para>
     </sect2>
-    <sect2>
-      <title>Alerts</title>
+    <sect2 id="3.2.2">
+		<title>Alerts</title>
 
-      <para>
-	An alert is Pandora's reaction to an out of range module
-	value. The Alert can consist in sending and e-mail or SMS to
-	the administrator, sending a SNMP trap, write the incident
-	into the system syslog or Pandora log file, etc. And basically
-	anything that can be triggered by a script configured in
-	Pandora's Operating System.
-      </para>
-      <sect3>
-	<title>Adding an Alert</title>
+		<para>
+		An alert is Pandora's reaction to an out of range module
+		value. The Alert can consist in sending and e-mail or SMS to
+		the administrator, sending a SNMP trap, write the incident
+		into the system syslog or Pandora log file, etc. And basically
+		anything that can be triggered by a script configured in
+		Pandora's Operating System.
+		</para>
+		<sect3 id="3.2.2.1">
+			<title>Adding an Alert</title>
 
-	<para>
-	  The existing Alerts are accessed by clicking on the "Manage
-	  Alerts" option, Administration menu.
-	</para>
-	<para>There are 6 default types of Alerts:</para>
+			<para>
+			  The existing Alerts are accessed by clicking on the "Manage
+			  Alerts" option, Administration menu.
+			</para>
+			<para>There are 6 default types of Alerts:</para>
 
-	<itemizedlist>
-	  <listitem>
-	    <para>
-	      <emphasis>eMail</emphasis>. Sends an e-mail from Pandora's Server
-	    </para>
-	  </listitem>
-	  <listitem>
-	    <para>
-	      <emphasis>Internal audit</emphasis>. Writes the incident
-	      in Pandora's internal audit system
-	    </para>
-	  </listitem>
-	  <listitem>
-	    <para><emphasis>LogFile</emphasis>. Writes the incident in the log file</para>
-	  </listitem>
-	  <listitem>
-	    <para><emphasis>SMS Text</emphasis>. Sends an SMS to a given mobile phone</para>
-	  </listitem>
-	  <listitem>
-	    <para><emphasis>SNMP Trap</emphasis>. Sends a SNMP Trap</para>
-	  </listitem>
-	  <listitem>
-	    <para><emphasis>Syslog</emphasis>. Sends an alert to the Syslog</para>
-	  </listitem>
-	</itemizedlist>
+			<itemizedlist>
+			  <listitem>
+				<para>
+				  <emphasis>eMail</emphasis>. Sends an e-mail from Pandora's Server
+				</para>
+			  </listitem>
+			  <listitem>
+				<para>
+				  <emphasis>Internal audit</emphasis>. Writes the incident
+				  in Pandora's internal audit system
+				</para>
+			  </listitem>
+			  <listitem>
+				<para><emphasis>LogFile</emphasis>. Writes the incident in the log file</para>
+			  </listitem>
+			  <listitem>
+				<para><emphasis>SMS Text</emphasis>. Sends an SMS to a given mobile phone</para>
+			  </listitem>
+			  <listitem>
+				<para><emphasis>SNMP Trap</emphasis>. Sends a SNMP Trap</para>
+			  </listitem>
+			  <listitem>
+				<para><emphasis>Syslog</emphasis>. Sends an alert to the Syslog</para>
+			  </listitem>
+			</itemizedlist>
 
-	<graphic fileref="images/image011.png" valign="bottom" align="center"/>
+			<graphic fileref="images/image011.png" valign="bottom" align="center"/>
 
-	<para>An Alert is deleted by clicking on the delete icon <graphic fileref="../../images/cancel.gif"/> placed on the right hand side of the Alert. A new customised Alert can be created clicking in "Create Alert".</para>
+			<para>
+			An Alert is deleted by clicking on the delete icon 
+			<inlinegraphic fileref="images/cancel.gif"/> 
+			placed on the right hand side of the Alert. 
+			A new customised Alert can be created clicking in "Create Alert".
+			</para>
 
-	<para>The values "_field1_", "_field2_" and "_field3_" in the customised Alerts are used to build the command line that the machine where Pandora resides will execute  if there were several servers, the one in Master mode.</para>
+			<para>The values "_field1_", "_field2_" and "_field3_" 
+			in the customised Alerts are used to build the command 
+			line that the machine where Pandora resides will execute
+			- if there were several servers, the one in Master mode.
+			</para>
 
-	<graphic fileref="images/image012.png" valign="bottom" align="center"/>
+			<graphic fileref="images/image012.png" valign="bottom" align="center"/>
 
-	<para>When a new Alert is created the following field must be filled in:</para>
-	<itemizedlist>
-	  <listitem>
-	    <para><emphasis>Alert name:</emphasis> The name of the Alert</para>
-	  </listitem>
-	  <listitem>
-	    <para><emphasis>Command:</emphasis> Command the Alert will trigger</para>
-	  </listitem>
-	  <listitem>
-	    <para><emphasis>Description:</emphasis> Description of the Alert</para>
-	  </listitem>
-	</itemizedlist>
+			<para>When a new Alert is created the following field must be filled in:</para>
+			<itemizedlist>
+			  <listitem>
+				<para><emphasis>Alert name:</emphasis> The name of the Alert</para>
+			  </listitem>
+			  <listitem>
+				<para><emphasis>Command:</emphasis> Command the Alert will trigger</para>
+			  </listitem>
+			  <listitem>
+				<para><emphasis>Description:</emphasis> Description of the Alert</para>
+			  </listitem>
+			</itemizedlist>
 
-	<para>In 'Command' data field these variables are used to build the command line that the machine where Pandora resides will execute  if there were several servers, the one in Master mode, replacing at runtime:</para>
+			<para>
+			In 'Command' data field these variables are used to build 
+			the command line that the machine where Pandora resides will execute 
+			- if there were several servers, the one in Master mode, 
+			replacing at runtime:
+			</para>
 
-	<itemizedlist>
-	  <listitem>
-	    <para><emphasis>_field1_</emphasis>: Field #1, usually assigned as username, e-mail destination or single identification for this event</para>
-	  </listitem>
-	  <listitem>
-	    <para><emphasis>_field2_</emphasis>: Field #2, usually assigned as short description of events, as subject line in e-mail</para>
-	  </listitem>
-	  <listitem>
-	    <para>><emphasis>_field3_</emphasis>: Field #3, a full text explanation for the event</para>
-	  </listitem>
-	  <listitem>
-	    <para>><emphasis>_agent_</emphasis>: Agent name</para>
-	  </listitem>
-	  <listitem>
-	    <para><emphasis>_timestamp_</emphasis>: A standard representation of date and time. Replaced automatically when the event has been fired</para>
-	  </listitem>
-	  <listitem>
-	    <para><emphasis>_data_</emphasis>: The data value that triggered the alert</para>
-	  </listitem>
-	</itemizedlist>
-      </sect3>
-      <sect3>
-	<title>Assigning Alerts</title>
+			<itemizedlist>
+			  <listitem>
+				<para><emphasis>_field1_</emphasis>: 
+				Field #1, usually assigned as username, 
+				e-mail destination or single identification for this event
+				</para>
+			  </listitem>
+			  <listitem>
+				<para><emphasis>_field2_</emphasis>: 
+				Field #2, usually assigned as short 
+				description of events, as subject line in e-mail
+				</para>
+			  </listitem>
+			  <listitem>
+				<para><emphasis>_field3_</emphasis>: 
+				Field #3, a full text explanation 
+				for the event</para>
+			  </listitem>
+			  <listitem>
+				<para>><emphasis>_agent_</emphasis>: Agent name</para>
+			  </listitem>
+			  <listitem>
+				<para><emphasis>_timestamp_</emphasis>: 
+				A standard representation of date and time. 
+				Replaced automatically when the event has been fired
+				</para>
+			  </listitem>
+			  <listitem>
+				<para><emphasis>_data_</emphasis>: The data value that triggered the alert</para>
+			  </listitem>
+			</itemizedlist>
+		</sect3>
+		<sect3 id="3.2.2.2">
+			<title>Assigning Alerts</title>
 
-	<para>The next step after an Agent has been added, its modules have been configurated and the alerts have been defined, it is time to assign those Alerts to the agent.</para>
+			<para>
+			The next step after an Agent has been added, its 
+			modules have been configurated and the alerts have been defined, 
+			it is time to assign those Alerts to the agent.
+			</para>
 
-	<para>This is done by clicking on the Agent to be configured on the "Manage Agents" option, Administration menu. The Alert Assignation form is placed at the bottom of that page.</para>
+			<para>
+			This is done by clicking on the Agent to be configured on the 
+			"Manage Agents" option, Administration menu. 
+			The Alert Assignation form is placed at the bottom of that page.
+			</para>
 
-	<graphic fileref="images/image013.png" valign="bottom" align="center"/>
+			<graphic fileref="images/image013.png" valign="bottom" align="center"/>
 
-	<para>To assign an Alert the next fields must be filled in:</para>
+			<para>To assign an Alert the next fields must be filled in:</para>
 
-	<itemizedlist>
-	  <listitem>
-	    <para><emphasis>Alert type:</emphasis> This can be selected from the list of alerts that have been previously generated.</para>
-	  </listitem>
-	  <listitem>
-	    <para><emphasis>Maximum Value:</emphasis> Defines the maximum value for a module. Any value above that threshold will trigger the Alert.</para>
-	  </listitem>
-	  <listitem>
-	    <para><emphasis>Minimum Value:</emphasis> Defines the minimum value for a module. Any value below that will trigger the Alert.</para>
-	  </listitem>
-	  <listitem>
-	    <para><emphasis>Description:</emphasis> Describes the function of the Alert, and it is useful to identify the Alert amongst the others in the Alert General View.</para>
-	  </listitem>
-	  <listitem>
-	    <para><emphasis>Field #1 (Alias, name):</emphasis> Define the used value for the "_field1_" variable.</para>
-	  </listitem>
-	  <listitem>
-	    <para><emphasis>Field #2 (Single Line):</emphasis> Define the used value for the "_field2_" variable.</para>
-	  </listitem>
-	  <listitem>
-	    <para><emphasis>Field #3 (Full Text):</emphasis> Define the used value for the "_field3_" variable.</para>
-	  </listitem>
-	  <listitem>
-	    <para><emphasis>Time threshold:</emphasis> Minimum duration between the firing of two consecutive alerts, in seconds.</para>
-	  </listitem>
-	  <listitem>
-	    <para><emphasis>Max Alerts Fired:</emphasis> Maximun number of alerts that can be sent consecutively.</para>
-	  </listitem>
-	  <listitem>
-	    <para><emphasis>Assigned module:</emphasis> Module to be motitorized by the alert.</para>
-	  </listitem>
-	</itemizedlist>
+			<itemizedlist>
+			  <listitem>
+			    <para><emphasis>Alert type:</emphasis> 
+				This can be selected from the list of alerts that have 
+				been previously generated.
+				</para>
+			  </listitem>
+			  <listitem>
+			    <para><emphasis>Maximum Value:</emphasis> 
+				Defines the maximum value for a module. Any value above that 
+				threshold will trigger the Alert.
+				</para>
+			  </listitem>
+			  <listitem>
+			    <para><emphasis>Minimum Value:</emphasis> 
+				Defines the minimum value for a module. Any value below that 
+				will trigger the Alert.
+				</para>
+			  </listitem>
+			  <listitem>
+			    <para><emphasis>Description:</emphasis> 
+				Describes the function of the Alert, and it is useful to identify
+				the Alert amongst the others in the Alert General View.
+				</para>
+			  </listitem>
+			  <listitem>
+			    <para><emphasis>Field #1 (Alias, name):</emphasis> 
+				Define the used value for the "_field1_" variable.</para>
+			  </listitem>
+			  <listitem>
+			    <para><emphasis>Field #2 (Single Line):</emphasis> 
+				Define the used value for the "_field2_" variable.</para>
+			  </listitem>
+			  <listitem>
+			    <para><emphasis>Field #3 (Full Text):</emphasis> 
+				Define the used value for the "_field3_" variable.</para>
+			  </listitem>
+			  <listitem>
+			    <para><emphasis>Time threshold:</emphasis> 
+				Minimum duration between the firing of two consecutive alerts,
+				in seconds.
+				</para>
+			  </listitem>
+			  <listitem>
+			    <para><emphasis>Max Alerts Fired:</emphasis> 
+				Maximun number of alerts that can be sent consecutively.</para>
+			  </listitem>
+			  <listitem>
+			    <para><emphasis>Assigned module:</emphasis> 
+				Module to be motitorized by the alert.</para>
+			  </listitem>
+			</itemizedlist>
 
-	<para>All the alerts of an agent can be seen through "Manage Agents"
-	in the Adminitration menu and selecting the agent.</para>
-      </sect3>
+			<para>All the alerts of an agent can be seen through "Manage Agents"
+			in the Adminitration menu and selecting the agent.</para>
+	    </sect3>
     </sect2>
-    <sect2>
+    <sect2 id="3.2.3">
       <title>Agent module and agent's alert management</title>
 
       <para>It might happen that the user finds that modules and alerts
@@ -436,7 +490,7 @@
       deletion is performed, the data associated to them will also be 
       deleted.</para>
     </sect2>
-    <sect2>
+    <sect2 id="3.2.4">
       <title>Agents group detail</title>
 
       <para>Once you have configured your groups and agents, you can 
@@ -448,20 +502,20 @@
       organized by status.</para>
 
       <para>By pressing the icon 
-      <graphic fileref="../../images/target.gif"/> 
+      <inlinegraphic fileref="images/target.gif"/> 
       at the right of any group image, you will update the info of 
       that group.</para>
     </sect2>
   </sect1>
-  <sect1>
-    <title>Agent monitoring </title>
+  <sect1 id="3.3">
+    <title>Agent monitoring</title>
 
     <para>When the agents start the data transmission to the server,
     and it is added in the Web console, Pandora processes and inserts
     the data in the Database. The data are consolidated and can be
     accessed from the Web console, either as row data or as graphs.</para>
     
-    <sect2>
+    <sect2 id="3.3.1">
       <title>Agent view</title>
 
       <para>All the Agents can be accessed from the Operation menu.
@@ -488,176 +542,189 @@
       <para><emphasis>Status:</emphasis> Shows the "general" status of the agent
       through the following icons:</para>
       <para>
-	<graphic fileref="../../images/b_green.gif"/> 
-	All the monitors OK. It's the ideal status.
-	<graphic fileref="../../images/b_white.gif"/> 
-	No defined monitors. Sometimes nothing is monitored
-	that could be right or wrong, and only numeric or 
-	text data is reported.
-	<graphic fileref="../../images/b_red.gif"/> 
-	At least one of the monitors is failing. Usually we
-	want to avoid this, and keep our systems in a healthy 
-	green colour.
-	<graphic fileref="../../images/b_blue.gif"/> The agent 
-	doesn't have any data. New agents with an empty data
-	package can have this status.
-	<graphic fileref="../../images/b_yellow.gif"/> Colour 
-	shifting from green to red. This icon indicates
-	that the agent has just changed its status, from 
-	'All OK' to 'we have a problem'.
-	<graphic fileref="../../images/b_down.gif"/> When an agent
-	is down or there is no news from it for 2 times the Interval
-	value in seconds. Usually it is due to a communication issue
-	or a crashed remote system.>
-      </para>
+		<inlinegraphic fileref="images/b_green.gif"/> 
+		All the monitors OK. It's the ideal status.
+	  </para>
+		<para>
+		<inlinegraphic fileref="images/b_white.gif"/> 
+		No defined monitors. Sometimes nothing is monitored
+		that could be right or wrong, and only numeric or 
+		text data is reported.
+		</para>
+		<para>
+		<inlinegraphic fileref="images/b_red.gif"/> 
+		At least one of the monitors is failing. Usually we
+		want to avoid this, and keep our systems in a healthy 
+		green colour.
+		</para>
+		<para>
+		<inlinegraphic fileref="images/b_blue.gif"/> The agent 
+		doesn't have any data. New agents with an empty data
+		package can have this status.
+		</para>
+		<para>
+		<inlinegraphic fileref="images/b_yellow.gif"/> Colour 
+		shifting from green to red. This icon indicates
+		that the agent has just changed its status, from 
+		'All OK' to 'we have a problem'.
+		</para>
+		<para>
+		<inlinegraphic fileref="images/b_down.gif"/> When an agent
+		is down or there is no news from it for 2 times the Interval
+		value in seconds. Usually it is due to a communication issue
+		or a crashed remote system.
+        </para>
       <para><emphasis>Alerts:</emphasis> Shows if any alerts have been sent 
-      through the following icons:</para>
+      through the following icons:
+	  </para>
       <para>
-	<graphic fileref="../../images/dot_green.gif"/> 
+	<inlinegraphic fileref="images/dot_green.gif"/> 
 	No alerts have been sent.
-	<graphic fileref="../../images/dot_red.gif"/> 
+	</para>
+	<para>
+	<inlinegraphic fileref="images/dot_red.gif"/> 
 	When at least one alert has been sent within 
 	the time threshold of the alert.
       </para>
       <para><emphasis>Last contact:</emphasis> Shows the time and date of the 
       last data package sent by the agent, using a progress bar, 
       according to value of the interval. If you see the image 
-      <graphic fileref="../../images/outof.gif"/>, 
+      <inlinegraphic fileref="images/outof.gif"/>, 
       the agent has not send data during the interval. 
       Passing the mouse over the image will show you the last contact 
       in time and date format.</para>
 
       <para><emphasis>Note:</emphasis> The icon 
-      <graphic fileref="../../images/setup.gif" width="15"/> 
+      <inlinegraphic fileref="images/setup.gif" width="15"/> 
       is only visible if you're and administrator and it's a link 
       to the "Manage Agents" &gt; "Update Agent" option in the 
       Administration menu.
       </para>
     </sect2>
-    <sect2>
+    <sect2 id="3.3.2">
       <title>Accessing the data of an agent</title>
 
       <para>When an agent is accessed, by clicking on its name, all the
       information related to that agent is displayed.</para>
-      <sect3>
-	<title>Agent general info</title>
+      <sect3 id="3.3.2.1">
+		<title>Agent general info</title>
 
-	<para>This shows the data introduced when the agent was created 
-	and the total number a data packages the agent has sent.</para>
+		<para>This shows the data introduced when the agent was created 
+		and the total number a data packages the agent has sent.</para>
 
-	<graphic fileref="images/image016.png" valign="bottom" align="center"/>
+		<graphic fileref="images/image016.png" valign="bottom" align="center"/>
       </sect3>
-      <sect3>
-	<title>Last data received</title>
+      <sect3 id="3.3.2.2">
+		<title>Last data received</title>
 
-	<para>This is the description of all the agent modules 
-	been monitored.</para>
+		<para>This is the description of all the agent modules 
+		been monitored.</para>
 
-	<graphic fileref="images/image017.png" valign="bottom" align="center"/>
+		<graphic fileref="images/image017.png" valign="bottom" align="center"/>
 
-	<para>In this list the module information is shown
-	in the following columns:</para>
+		<para>In this list the module information is shown
+		in the following columns:</para>
 
-	<para><emphasis>Module name:</emphasis> Name given to the module
-	in the agent's config file.</para>
-	<para><emphasis>Module type:</emphasis> Type of module as described
-	in Asigning Modules section.</para>
-	<para><emphasis>Description:</emphasis> Description given to the module
-	in the agent's config file.</para>
-	<para><emphasis>Data:</emphasis> Last data sent by the agent.</para>
-	<para><emphasis>Graph:</emphasis> Monthly(M), Weekly(W), Daily(D)
-	and Hourly(H) graphs are generated with
-	the data sent by the agent against time.</para>
+		<para><emphasis>Module name:</emphasis> Name given to the module
+		in the agent's config file.</para>
+		<para><emphasis>Module type:</emphasis> Type of module as described
+		in Asigning Modules section.</para>
+		<para><emphasis>Description:</emphasis> Description given to the module
+		in the agent's config file.</para>
+		<para><emphasis>Data:</emphasis> Last data sent by the agent.</para>
+		<para><emphasis>Graph:</emphasis> Monthly(M), Weekly(W), Daily(D)
+		and Hourly(H) graphs are generated with
+		the data sent by the agent against time.</para>
 
-	<para>On the left hand side of the graph the newst
-	data is represent, and on the right had side the oldest.</para>
+		<para>On the left hand side of the graph the newst
+		data is represent, and on the right had side the oldest.</para>
 
-	<para>The generated graphs are:</para>
-	<para> - <emphasis>Hourly graph</emphasis> 
-	(<graphic fileref="../../images/grafica_h.gif"/>)
-	covers a 60 minute interval</para>
-	<graphic fileref="images/image018.png" valign="bottom" align="center"/>
+		<para>The generated graphs are:</para>
+		<para> - <emphasis>Hourly graph</emphasis> 
+		(<inlinegraphic fileref="images/grafica_h.gif"/>)
+		covers a 60 minute interval</para>
+		<graphic fileref="images/image018.png" valign="bottom" align="center"/>
 
-	<para> - <emphasis>Daily graph</emphasis> 
-	(<graphic fileref="../../images/grafica_d.gif"/>) 
-	covers a 24 hour interval</para>
-	<graphic fileref="images/image019.png" valign="bottom" align="center"/>
+		<para> - <emphasis>Daily graph</emphasis> 
+		(<inlinegraphic fileref="images/grafica_d.gif"/>) 
+		covers a 24 hour interval</para>
+		<graphic fileref="images/image019.png" valign="bottom" align="center"/>
 
-	<para> - <emphasis>Weekly graph</emphasis> 
-	(<graphic fileref="../../images/grafica_w.gif"/>) 
-	covers a 7 day interval</para>
-	<graphic fileref="images/image020.png" valign="bottom" align="center"/>
+		<para> - <emphasis>Weekly graph</emphasis> 
+		(<inlinegraphic fileref="images/grafica_w.gif"/>) 
+		covers a 7 day interval</para>
+		<graphic fileref="images/image020.png" valign="bottom" align="center"/>
 
-	<para> - <emphasis>Mothly graph</emphasis> 
-	(<graphic fileref="../../images/grafica_m.gif"/>) 
-	covers a 30 day interval</para>
-	<graphic fileref="images/image021.png" valign="bottom" align="center"/>
+		<para> - <emphasis>Mothly graph</emphasis> 
+		(<inlinegraphic fileref="images/grafica_m.gif"/>) 
+		covers a 30 day interval</para>
+		<graphic fileref="images/image021.png" valign="bottom" align="center"/>
 
-	<para><emphasis>Raw Data:</emphasis> This is the raw data sent by the agent</para>
+		<para><emphasis>Raw Data:</emphasis> This is the raw data sent by the agent</para>
 
-	<para> - <graphic fileref="../../images/data_m.gif"/> Last month</para>
-	<para> - <graphic fileref="../../images/data_w.gif"/> Last week</para>
-	<para> - <graphic fileref="../../images/data_d.gif"/> Last day</para>
+		<para> - <inlinegraphic fileref="images/data_m.gif"/> Last month</para>
+		<para> - <inlinegraphic fileref="images/data_w.gif"/> Last week</para>
+		<para> - <inlinegraphic fileref="images/data_d.gif"/> Last day</para>
       </sect3>
-      <sect3>
-	<title>Complete list of monitors</title>
+      <sect3 id="3.3.2.3">
+		<title>Complete list of monitors</title>
 
-	<para>This is the description of all the monitors defined by
-	the agent</para>
+		<para>This is the description of all the monitors defined by
+		the agent</para>
 
-	<graphic fileref="images/image022.png" valign="bottom" align="center"/>
+		<graphic fileref="images/image022.png" valign="bottom" align="center"/>
 
-	<para>The list shows the information about the monitors in the
-	following columns:</para>
+		<para>The list shows the information about the monitors in the
+		following columns:</para>
 
-	<para><emphasis>Agent:</emphasis> Agent where the monitor is defined.</para>
-	<para><emphasis>Type:</emphasis> Data type of the monitor. For a monitor this
-	value is always of the generic_proc type.</para>
-	<para><emphasis>Module name:</emphasis> Name given to the module when it was
-	created.</para>
-	<para><emphasis>Description:</emphasis> Description given to the module
-	in the agent's config file.</para>
-	<para><emphasis>Status:</emphasis> The table shows the agent status through
-	the	following icons:</para>
+		<para><emphasis>Agent:</emphasis> Agent where the monitor is defined.</para>
+		<para><emphasis>Type:</emphasis> Data type of the monitor. For a monitor this
+		value is always of the generic_proc type.</para>
+		<para><emphasis>Module name:</emphasis> Name given to the module when it was
+		created.</para>
+		<para><emphasis>Description:</emphasis> Description given to the module
+		in the agent's config file.</para>
+		<para><emphasis>Status:</emphasis> The table shows the agent status through
+		the	following icons:</para>
 
-	<para><graphic fileref="../../images/b_green.gif"/> 
-	The monitor is OK</para>
-	<para><graphic fileref="../../images/b_red.gif"/> 
-	The monitor is failing</para>
+		<para><inlinegraphic fileref="images/b_green.gif"/> 
+		The monitor is OK</para>
+		<para><inlinegraphic fileref="images/b_red.gif"/> 
+		The monitor is failing</para>
 
-	<para><emphasis>Last contact:</emphasis> Shows the time and date of 
-	the last data packaged received from the agent</para>
+		<para><emphasis>Last contact:</emphasis> Shows the time and date of 
+		the last data packaged received from the agent</para>
 
       </sect3>
-      <sect3>
-	<title>Complete list of alerts</title>
+      <sect3 id="3.3.2.4">
+		<title>Complete list of alerts</title>
 
-	<para>This is the description of all the alarms defined 
-	in the agent</para>
+		<para>This is the description of all the alarms defined 
+		in the agent</para>
 
-	<graphic fileref="images/image023.png" valign="bottom" align="center"/>
+		<graphic fileref="images/image023.png" valign="bottom" align="center"/>
 
-	<para>The monitor information is shown in the list 
-	divided in the following fields:</para>
+		<para>The monitor information is shown in the list 
+		divided in the following fields:</para>
 
-	<para><emphasis>ID:</emphasis> Agent were the alert has been defined.</para>
-	<para><emphasis>Type:</emphasis> Type of alert.</para>
-	<para><emphasis>Description:</emphasis> Description given to the alert when 
-	it was created.</para>
-	<para><emphasis>Last fired:</emphasis> The last time the alert was 
-	executed.</para>
-	<para><emphasis>Times Fired:</emphasis> Number of times the alert was 
-	launched.</para>
-	<para><emphasis>Status:</emphasis> Shows if the alert has been sent through 
-	the following icon:</para>
+		<para><emphasis>ID:</emphasis> Agent were the alert has been defined.</para>
+		<para><emphasis>Type:</emphasis> Type of alert.</para>
+		<para><emphasis>Description:</emphasis> Description given to the alert when 
+		it was created.</para>
+		<para><emphasis>Last fired:</emphasis> The last time the alert was 
+		executed.</para>
+		<para><emphasis>Times Fired:</emphasis> Number of times the alert was 
+		launched.</para>
+		<para><emphasis>Status:</emphasis> Shows if the alert has been sent through 
+		the following icon:</para>
 
-	<para><graphic fileref="../../images/dot_green.gif"/> No alerts 
-	have been sent</para>
-	<para><graphic fileref="../../images/dot_red.gif"/> At least 
-	one alert has been sent</para>
+		<para><inlinegraphic fileref="images/dot_green.gif"/> No alerts 
+		have been sent</para>
+		<para><inlinegraphic fileref="images/dot_red.gif"/> At least 
+		one alert has been sent</para>
       </sect3>
     </sect2>
-    <sect2>
+    <sect2 id="3.3.3">
       <title>Group details</title>
 
       <para>The groups configured in Pandora can be
@@ -677,21 +744,21 @@
       <para><emphasis>Status:</emphasis> The status is described through 
       the following icons:</para>
 
-      <para><graphic fileref="../../images/b_green.gif"/> 
+      <para><inlinegraphic fileref="images/b_green.gif"/> 
       All monitors are OK.</para>
-      <para><graphic fileref="../../images/b_red.gif"/> 
+      <para><inlinegraphic fileref="images/b_red.gif"/> 
       At least one monitor has failed.</para>
-      <para><graphic fileref="../../images/b_down.gif"/> 
+      <para><inlinegraphic fileref="images/b_down.gif"/> 
       At least one monitor is down and there is no contact
       with it.</para>
-      <para><graphic fileref="../../images/b_white.gif"/> 
+      <para><inlinegraphic fileref="images/b_white.gif"/> 
       This Agent doesn't have any monitor defined.</para>
 
       <para><emphasis>OK:</emphasis> Number of monitors that are OK.</para>
       <para><emphasis>Failed:</emphasis> Number of failing monitors.</para>
       <para><emphasis>Down:</emphasis> Number of down monitors.</para>
     </sect2>
-    <sect2>
+    <sect2 id="3.3.4">
       <title>Monitors view</title>
 
       <para>The description of all the monitors defined in the server
@@ -704,7 +771,7 @@
       in the individual view, but now they are shown all together. 
       This allows a deeper analisys of each monitor.</para>
     </sect2>
-    <sect2>
+    <sect2 id="3.3.5">
       <title>Alert details</title>
 
       <para>The description of all the alerts defined in the server 
@@ -717,7 +784,7 @@
       as in the individual view, but now they are shown all together. 
       This allows a deeper analisys of each alert.</para>
     </sect2>
-    <sect2>
+    <sect2 id="3.3.6">
       <title>Data Export</title>
 
       <para>The Data Export tool can be found in the "View Agents"&gt;"
@@ -745,7 +812,7 @@
 
       <graphic fileref="images/image030.png" valign="bottom" align="center"/>
     </sect2>
-    <sect2>
+    <sect2 id="3.3.7">
       <title>Statistics</title>
 
       <para>Two kinds of graphical statistics are displayed from the 
@@ -767,10 +834,10 @@
       <graphic fileref="images/image033.png" valign="bottom" align="center"/>
     </sect2>
   </sect1>
-  <sect1>
+  <sect1 id="3.4">
     <title>SNMP Console</title>
     <para></para>
-    <sect2>
+    <sect2 id="3.4.1">
       <title>SNMP Alerts</title>
       <para></para>
     </sect2>

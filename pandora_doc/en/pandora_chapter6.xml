@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-15"?> 
 
-<chapter>
+<chapter id="chapter6">
 	<title>System audit</title>
 
 	<para>The Pandora's system audit shows all the actions performed by each user, as well as the failed logins.</para>
@@ -27,7 +27,7 @@
 	<para><emphasis>Source IP:</emphasis> IP of the machine or the agent that provoked the entry.</para>
 	<para><emphasis>Comment:</emphasis> Comment describing the entry</para>
 
-	<sect1>
+	<sect1 id="6.1">
 		<title>Statistics</title>
 
 		<para>There isn't a special section to view system audit statistics. However, we could use a graph generated in the Users section to evaluate the actions of each user, as this graph would represent the total

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?> 
 
-<chapter>
+<chapter id="chapter2">
+
   <title>Users</title>
   
   <para>
@@ -39,7 +40,7 @@
     incidents, manage database or other.
   </para>
   
-  <sect1>
+  <sect1 id="2.1">
     <title>Profile manager</title>
     
     <para>
@@ -75,7 +76,7 @@
       </listitem>
     </itemizedlist>
     <para>
-      To create a new profile click on "Manage Profiles" ->
+      To create a new profile click on "Manage Profiles"&gt;
       "Create Profile" in the Administration Menu
     </para>
     <graphic fileref="images/image002.png" valign="bottom" align="center"/>    
@@ -118,7 +119,7 @@
     </itemizedlist>
   </sect1>
   
-  <sect1>
+  <sect1 id="2.2">
     <title>Adding a user</title>
     
     <para>
@@ -147,23 +148,23 @@
     </para>
     <graphic fileref="images/image004.png" valign="bottom" align="center"/>
     <para>
-      A user profile is deleted by clicking on the delete icon
-      <graphic fileref="../../images/cancel.gif"/> on the right
-      hand side of the profile.
+	A user profile is deleted by clicking on the delete icon
+    <inlinegraphic fileref="images/cancel.gif"/> on the right
+    hand side of the profile.
     </para>
   </sect1>
-  <sect1>
+  <sect1 id="2.3">
     <title>Deleting a user</title>
     
     <para>
-      A user is deleted by clicking on the delete icon <graphic
-      fileref="../../images/cancel.gif"/> on the right hand side
+    A user is deleted by clicking on the delete icon <inlinegraphic
+      fileref="images/cancel.gif"/> on the right hand side
       of the user. The list of users is accessed through the
       "Manage Users" option in the Administration menu. 
       <graphic fileref="images/image005.png" valign="bottom" align="center"/>
     </para>
   </sect1>
-  <sect1>
+  <sect1 id="2.4">
     <title>Statistics</title>
     <para>
       The user activity statistics show a graph with the
@@ -172,24 +173,24 @@
       user usually reflects the user's activity.
     </para>
     <para>
-      Click on "View Users" -> "Statistics" in the Operation
+      Click on "View Users"&gt;"Statistics" in the Operation
       menu to show this graph:
     <graphic fileref="images/image006.png" valign="bottom" align="center"/>	  </para>
   </sect1>
-  <sect1>
-    <title>Messages to users</title>
-    <para>
-      To create a new message to other user, go to "Messages"
-      section in the Operation menu. You can also read the
-      received messages, but the sent messages are not stored.
-    </para>
-    <sect2>
-      <title>Messages to groups</title>
-      <para>
-	From "Messages" -> "Messages to groups" section in the
-	Operation menu you can send messages to groups of users.
-	The sent messages will not be stores.
-      </para>
-    </sect2>
+  <sect1 id="2.5">
+	    <title>Messages to users</title>
+	    <para>
+	    To create a new message to other user, go to "Messages"
+	    section in the Operation menu. You can also read the
+	    received messages, but the sent messages are not stored.
+	    </para>
+	    <sect2 id="2.5.1">
+		    <title>Messages to groups</title>
+		    <para>
+			From "Messages"&gt;"Messages to groups" section in the
+			Operation menu you can send messages to groups of users.
+			The sent messages will not be stores.
+		    </para>
+	    </sect2>
   </sect1>
 </chapter>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?> 
 
-<chapter>
+<chapter id="chapter4">
 	<title>Incident management</title>
 
 	<para>
@@ -75,40 +75,41 @@
 	<para><emphasis>Status:</emphasis> The incident status is represented by the following 
 	icons:</para>
 
-	<para><graphic fileref="../../images/dot_red.gif"/> Active incident</para>
-	<para><graphic fileref="../../images/dot_yellow.gif"/> Active incident 
+	<para><inlinegraphic fileref="images/dot_red.gif"/> Active incident</para>
+	<para><inlinegraphic fileref="images/dot_yellow.gif"/> Active incident 
 	with comments</para>
-	<para><graphic fileref="../../images/dot_blue.gif"/> Rejected incident</para>
-	<para><graphic fileref="../../images/dot_green.gif"/> Closed incident</para>
-	<para><graphic fileref="../../images/dot_white.gif"/> Expired incident</para>
+	<para><inlinegraphic fileref="images/dot_blue.gif"/> Rejected incident</para>
+	<para><inlinegraphic fileref="images/dot_green.gif"/> Closed incident</para>
+	<para><inlinegraphic fileref="images/dot_white.gif"/> Expired incident</para>
 
 	<para><emphasis>Incident name:</emphasis> Name given to the incident</para>
 	<para><emphasis>Priority:</emphasis> The incident assigned priority is represented 
 	by the following icons:</para>
 
-	<para><graphic fileref="../../images/dot_red.gif"/>
-	<graphic fileref="../../images/dot_red.gif"/>
-	<graphic fileref="../../images/dot_red.gif"/> 
+	<para><inlinegraphic fileref="images/dot_red.gif"/>
+	<inlinegraphic fileref="images/dot_red.gif"/>
+	<inlinegraphic fileref="images/dot_red.gif"/> 
 	Very high priority</para>
-	<para><graphic fileref="../../images/dot_yellow.gif"/>
-	<graphic fileref="../../images/dot_red.gif"/>
-	<graphic fileref="../../images/dot_red.gif"/> 
+	<para><inlinegraphic fileref="images/dot_yellow.gif"/>
+	<inlinegraphic fileref="images/dot_red.gif"/>
+	<inlinegraphic fileref="images/dot_red.gif"/> 
 	High priority</para>
-	<para><graphic fileref="../../images/dot_yellow.gif"/>
-	<graphic fileref="../../images/dot_yellow.gif"/>
-	<graphic fileref="../../images/dot_red.gif"/> 
+	<para><inlinegraphic fileref="images/dot_yellow.gif"/>
+	<inlinegraphic fileref="images/dot_yellow.gif"/>
+	<inlinegraphic fileref="images/dot_red.gif"/> 
 	Medium priority</para>
-	<para><graphic fileref="../../images/dot_green.gif"/>
-	<graphic fileref="../../images/dot_yellow.gif"/>
-	<graphic fileref="../../images/dot_yellow.gif"/> 
+	<para><inlinegraphic fileref="images/dot_green.gif"/>
+	<inlinegraphic fileref="images/dot_yellow.gif"/>
+	<inlinegraphic fileref="images/dot_yellow.gif"/> 
 	Low priority</para>
-	<para><graphic fileref="../../images/dot_green.gif"/>
-	<graphic fileref="../../images/dot_green.gif"/>
-	<graphic fileref="../../images/dot_yellow.gif"/> 
+	<para><inlinegraphic fileref="images/dot_green.gif"/>
+	<inlinegraphic fileref="images/dot_green.gif"/>
+	<inlinegraphic fileref="images/dot_yellow.gif"/> 
 	Informative priority</para>
-	<para><graphic fileref="../../images/dot_green.gif"/>
-	<graphic fileref="../../images/dot_green.gif"/>
-	<graphic fileref="../../images/dot_green.gif"/> Maintenance priority</para>
+	<para><inlinegraphic fileref="images/dot_green.gif"/>
+	<inlinegraphic fileref="images/dot_green.gif"/>
+	<inlinegraphic fileref="images/dot_green.gif"/>
+	Maintenance priority</para>
 
 	<para><emphasis>Group:</emphasis> The name of the group the incident has been assigned 
 	to. One incident can only belong to a single group.</para>
@@ -124,7 +125,7 @@
 	from one user to another. The incident can be assigned to another user 
 	by its owner, or by a user with management privileges over the group 
 	the incidents belong to.</para>
-	<sect1>
+	<sect1 id="4.1">
 		<title>Adding an incident</title>
 
 		<para>The creation of incidents is performed by clicking on 
@@ -136,7 +137,7 @@
 		fields to define the incident. The process is completed by clicking 
 		on the "Create" button.</para>
 	</sect1>
-	<sect1>
+	<sect1 id="4.2">
 		<title>Incident follow up</title>
 
 		<para>All the open incidents can be followed up. The tool is reached by 
@@ -174,41 +175,57 @@
 		    </listitem>
 		</itemizedlist>
 		<para>The indicent is updated by clicking on the "Update incident" button.</para>
-		<sect2>
+		<sect2 id="4.2.1">
 			<title>Adding comments to an incident</title>
 
-			<para> Comments about the incident can added clicking on "Add note". This will open up a screen with a text box in it.</para>
+			<para> Comments about the incident can added clicking on "Add note".
+			This will open up a screen with a text box in it.
+			</para>
 
 			<graphic fileref="images/image037.png" valign="bottom" align="center"/>
 
-			<para>The comment is written in this box. The Comment will appear in the "Notes attached to incident" section after the button "Add" is pressed.</para>
+			<para>The comment is written in this box.
+			The Comment will appear in the "Notes attached to incident"
+			section after the button "Add" is pressed.
+			</para>
 
 			<graphic fileref="images/image038.png" valign="bottom" align="center"/>
 
-			<para>Only users with writting privilieges can add a comment, and only the owners of the incident or of the notes can delete them.</para>
+			<para>Only users with writting privilieges can add a comment,
+			and only the owners of the incident or of the notes can delete them.
+			</para>
 		</sect2>
-		<sect2>
+		<sect2 id="4.2.2">
 			<title>Attaching files to an incident</title>
 
-			<para>Sometimes it is necessary to link an incident with an image, a configuration file, or any kind of file.</para>
+			<para>Sometimes it is necessary to link an incident with an image,
+			a configuration file, or any kind of file.
+			</para>
 
-			<para>The files are attached in the "Attach file" section. Here the file can be searched for in the local machine and attached when the "Upload" button is pressed.</para>
+			<para>The files are attached in the "Attach file" section.
+			Here the file can be searched for in the local machine and
+			attached when the "Upload" button is pressed.
+			</para>
 
-			<para>Only a user with writing privileges can attach a file, and only the owner of the incident or of the file can delete it.</para>
+			<para>Only a user with writing privileges can attach a file,
+			and only the owner of the incident or of the file can delete it.
+			</para>
 
 			<graphic fileref="images/image039.png" valign="bottom" align="center"/>
 
-			<para>The incident follow up screen shows all the files attached to the incident in the "Attached files" section of the screen.</para>
+			<para>The incident follow up screen shows all the files attached 
+			to the incident in the "Attached files" section of the screen.</para>
 
 			<graphic fileref="images/image040.png" valign="bottom" align="center"/>
 		</sect2>
 	</sect1>
-	<sect1>
+	<sect1 id="4.3">
 		<title>Searching for an incident</title>
 
-		<para>A specific incident can be found amongst the
-		incidents created in Pandora by either using a filter _ as explained in the
-		first section of this chapter - or by making a query using the "Manage Incidents"&gt;"Searh Incident" tool, in the Operation menu.</para>
+		<para>A specific incident can be found amongst the incidents created 
+		in Pandora by either using a filter, as explained in the first
+		section of this chapter, or by making a query using the 
+		"Manage Incidents"&gt;"Searh Incident" tool, in the Operation menu.</para>
 
 		<graphic fileref="images/image041.png" valign="bottom" align="center"/>
 
@@ -219,10 +236,11 @@
 		the attached files. The search can be performed in addition to group, priority
 		or status filters.</para>
 	</sect1>
-	<sect1>
+	<sect1 id="4.4">
 		<title>Statistics</title>
 
-		<para>The incident statisticts are shown in the "Manage Incidents"&gt;"Statistics" option of the Operation menu. They can be of five different types:</para>
+		<para>The incident statisticts are shown in the "Manage Incidents"&gt;"Statistics"
+		option of the Operation menu. They can be of five different types:</para>
 
 		<itemizedlist>
 		    <listitem>

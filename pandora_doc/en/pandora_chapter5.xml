@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?> 
 
-<chapter>
+<chapter id="chapter5">
 	<title>Events</title>
 
 	<para>An event in Pandora is any unusual change happend in an agent.</para>
@@ -22,8 +22,8 @@
 	<para>The event information list shows the data in the following columns:</para>
 
 	<para><emphasis>Status:</emphasis> The event status is represented by the icon bellow:</para>
-	<para><graphic fileref="../../images/dot_green.gif"/> The event has been validated</para>
-	<para><graphic fileref="../../images/dot_red.gif"/> The event hasn't been validated</para>
+	<para><inlinegraphic fileref="images/dot_green.gif"/> The event has been validated</para>
+	<para><inlinegraphic fileref="images/dot_red.gif"/> The event hasn't been validated</para>
 	<para><emphasis>Event name:</emphasis> Name assigned to the event by Pandora.</para>
 	<para><emphasis>Agent name:</emphasis> Agent where the event happend.</para>
 	<para><emphasis>Group name:</emphasis> Group of the agent where the event has happened.</para>
@@ -31,13 +31,15 @@
 	<para><emphasis>Timestamp:</emphasis> Date and time when the event was raised or validated
 	- if it has been validated.</para>
 	<para><emphasis>Action:</emphasis> Action that can be executed over the event.</para>
-	<para><graphic fileref="../../images/ok.gif"/> This icon will validate the event, disappearing the icon</para>
-	<para><graphic fileref="../../images/cancel.gif"/> This icon will delete the event</para>
+	<para><inlinegraphic fileref="images/ok.gif"/> 
+	This icon will validate the event, disappearing the icon</para>
+	<para><inlinegraphic fileref="images/cancel.gif"/> 
+	This icon will delete the event</para>
 
 	<para>The events can be also validated or deleted in groups by selecting 
 	the tick boxes on the last column of the event, and pressing "Validate" or 
 	"Delete" at the bottom of the list.</para>
-	<sect1>
+	<sect1 id="5.1">
 		<title>Statistics</title>
 
 		<para>Three different kinds of graphical statistic representation can be 

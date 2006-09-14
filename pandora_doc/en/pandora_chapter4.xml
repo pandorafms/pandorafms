@@ -125,7 +125,7 @@
 	from one user to another. The incident can be assigned to another user 
 	by its owner, or by a user with management privileges over the group 
 	the incidents belong to.</para>
-	<sect1 id="4.1">
+	<sect1 id="sec4.1">
 		<title>Adding an incident</title>
 
 		<para>The creation of incidents is performed by clicking on 
@@ -137,7 +137,7 @@
 		fields to define the incident. The process is completed by clicking 
 		on the "Create" button.</para>
 	</sect1>
-	<sect1 id="4.2">
+	<sect1 id="sec4.2">
 		<title>Incident follow up</title>
 
 		<para>All the open incidents can be followed up. The tool is reached by 
@@ -175,7 +175,7 @@
 		    </listitem>
 		</itemizedlist>
 		<para>The indicent is updated by clicking on the "Update incident" button.</para>
-		<sect2 id="4.2.1">
+		<sect2 id="sec4.2.1">
 			<title>Adding comments to an incident</title>
 
 			<para> Comments about the incident can added clicking on "Add note".
@@ -195,7 +195,7 @@
 			and only the owners of the incident or of the notes can delete them.
 			</para>
 		</sect2>
-		<sect2 id="4.2.2">
+		<sect2 id="sec4.2.2">
 			<title>Attaching files to an incident</title>
 
 			<para>Sometimes it is necessary to link an incident with an image,
@@ -219,7 +219,7 @@
 			<graphic fileref="images/image040.png" valign="bottom" align="center"/>
 		</sect2>
 	</sect1>
-	<sect1 id="4.3">
+	<sect1 id="sec4.3">
 		<title>Searching for an incident</title>
 
 		<para>A specific incident can be found amongst the incidents created 
@@ -236,7 +236,7 @@
 		the attached files. The search can be performed in addition to group, priority
 		or status filters.</para>
 	</sect1>
-	<sect1 id="4.4">
+	<sect1 id="sec4.4">
 		<title>Statistics</title>
 
 		<para>The incident statisticts are shown in the "Manage Incidents"&gt;"Statistics"

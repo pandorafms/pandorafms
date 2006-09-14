@@ -34,7 +34,7 @@
     </listitem>
   </itemizedlist>
 
-  <sect1 id="3.1">
+  <sect1 id="sec3.1">
     <title>Group Manager</title>
 
     <para>Groups are added in "Manage Profiles" &gt; "Manage Groups", 
@@ -77,7 +77,7 @@
     <inlinegraphic fileref="images/cancel.gif"/> 
     in the right hand side of each group.</para>
   </sect1>	
-  <sect1 id="3.2">
+  <sect1 id="sec3.2">
     <title>Adding an agent</title>
 
     <para>Before an agent is added, the public key of the
@@ -163,7 +163,7 @@
 	</para>
       </listitem>
     </itemizedlist>
-    <sect2 id="3.2.1">
+    <sect2 id="sec3.2.1">
       <title>Assigning modules</title>
 
       <para>Pandora's agents use the operating system own commands to
@@ -262,7 +262,7 @@
 	However, the type of data of the module can't be modified.
       </para>
     </sect2>
-    <sect2 id="3.2.2">
+    <sect2 id="sec3.2.2">
 		<title>Alerts</title>
 
 		<para>
@@ -273,7 +273,7 @@
 		anything that can be triggered by a script configured in
 		Pandora's Operating System.
 		</para>
-		<sect3 id="3.2.2.1">
+		<sect3 id="sec3.2.2.1">
 			<title>Adding an Alert</title>
 
 			<para>
@@ -377,7 +377,7 @@
 			  </listitem>
 			</itemizedlist>
 		</sect3>
-		<sect3 id="3.2.2.2">
+		<sect3 id="sec3.2.2.2">
 			<title>Assigning Alerts</title>
 
 			<para>
@@ -453,7 +453,7 @@
 			in the Adminitration menu and selecting the agent.</para>
 	    </sect3>
     </sect2>
-    <sect2 id="3.2.3">
+    <sect2 id="sec3.2.3">
       <title>Agent module and agent's alert management</title>
 
       <para>It might happen that the user finds that modules and alerts
@@ -490,7 +490,7 @@
       deletion is performed, the data associated to them will also be 
       deleted.</para>
     </sect2>
-    <sect2 id="3.2.4">
+    <sect2 id="sec3.2.4">
       <title>Agents group detail</title>
 
       <para>Once you have configured your groups and agents, you can 
@@ -507,7 +507,7 @@
       that group.</para>
     </sect2>
   </sect1>
-  <sect1 id="3.3">
+  <sect1 id="sec3.3">
     <title>Agent monitoring</title>
 
     <para>When the agents start the data transmission to the server,
@@ -515,7 +515,7 @@
     the data in the Database. The data are consolidated and can be
     accessed from the Web console, either as row data or as graphs.</para>
     
-    <sect2 id="3.3.1">
+    <sect2 id="sec3.3.1">
       <title>Agent view</title>
 
       <para>All the Agents can be accessed from the Operation menu.
@@ -601,12 +601,12 @@
       Administration menu.
       </para>
     </sect2>
-    <sect2 id="3.3.2">
+    <sect2 id="sec3.3.2">
       <title>Accessing the data of an agent</title>
 
       <para>When an agent is accessed, by clicking on its name, all the
       information related to that agent is displayed.</para>
-      <sect3 id="3.3.2.1">
+      <sect3 id="sec3.3.2.1">
 		<title>Agent general info</title>
 
 		<para>This shows the data introduced when the agent was created 
@@ -614,7 +614,7 @@
 
 		<graphic fileref="images/image016.png" valign="bottom" align="center"/>
       </sect3>
-      <sect3 id="3.3.2.2">
+      <sect3 id="sec3.3.2.2">
 		<title>Last data received</title>
 
 		<para>This is the description of all the agent modules 
@@ -666,7 +666,7 @@
 		<para> - <inlinegraphic fileref="images/data_w.gif"/> Last week</para>
 		<para> - <inlinegraphic fileref="images/data_d.gif"/> Last day</para>
       </sect3>
-      <sect3 id="3.3.2.3">
+      <sect3 id="sec3.3.2.3">
 		<title>Complete list of monitors</title>
 
 		<para>This is the description of all the monitors defined by
@@ -696,7 +696,7 @@
 		the last data packaged received from the agent</para>
 
       </sect3>
-      <sect3 id="3.3.2.4">
+      <sect3 id="sec3.3.2.4">
 		<title>Complete list of alerts</title>
 
 		<para>This is the description of all the alarms defined 
@@ -724,7 +724,7 @@
 		one alert has been sent</para>
       </sect3>
     </sect2>
-    <sect2 id="3.3.3">
+    <sect2 id="sec3.3.3">
       <title>Group details</title>
 
       <para>The groups configured in Pandora can be
@@ -758,7 +758,7 @@
       <para><emphasis>Failed:</emphasis> Number of failing monitors.</para>
       <para><emphasis>Down:</emphasis> Number of down monitors.</para>
     </sect2>
-    <sect2 id="3.3.4">
+    <sect2 id="sec3.3.4">
       <title>Monitors view</title>
 
       <para>The description of all the monitors defined in the server
@@ -771,7 +771,7 @@
       in the individual view, but now they are shown all together. 
       This allows a deeper analisys of each monitor.</para>
     </sect2>
-    <sect2 id="3.3.5">
+    <sect2 id="sec3.3.5">
       <title>Alert details</title>
 
       <para>The description of all the alerts defined in the server 
@@ -784,7 +784,7 @@
       as in the individual view, but now they are shown all together. 
       This allows a deeper analisys of each alert.</para>
     </sect2>
-    <sect2 id="3.3.6">
+    <sect2 id="sec3.3.6">
       <title>Data Export</title>
 
       <para>The Data Export tool can be found in the "View Agents"&gt;"
@@ -812,7 +812,7 @@
 
       <graphic fileref="images/image030.png" valign="bottom" align="center"/>
     </sect2>
-    <sect2 id="3.3.7">
+    <sect2 id="sec3.3.7">
       <title>Statistics</title>
 
       <para>Two kinds of graphical statistics are displayed from the 
@@ -834,10 +834,10 @@
       <graphic fileref="images/image033.png" valign="bottom" align="center"/>
     </sect2>
   </sect1>
-  <sect1 id="3.4">
+  <sect1 id="sec3.4">
     <title>SNMP Console</title>
     <para></para>
-    <sect2 id="3.4.1">
+    <sect2 id="sec3.4.1">
       <title>SNMP Alerts</title>
       <para></para>
     </sect2>

@@ -1,8 +1,12 @@
+2006-09-14  Raul Mateos  <raulofpandora@gmail.com>
+
+	* Updated id in pandora_doc/en/pandora_chapter[1-9].xml (!7)
+
 2006-09-13  Raul Mateos  <raulofpandora@gmail.com>
 
-	* New /en/images/ files
+	* New pandora_doc/en/images/ files
 
-	* Updated /en/pandora_chapter 1 to 9.xml
+	* Updated pandora_doc/en/pandora_chapter 1 to 9.xml
 
 2006-09-12  Raul Mateos  <raulofpandora@gmail.com>
 
@@ -12,9 +16,9 @@
 	
 	* Updated fdl.xml & gpl.xml
 	
-	* Moved all the english files to /en/ directory
+	* Moved all the english files to pandora_doc/en/ directory
 	
-	* Created /es/ directory
+	* Created pandora_doc/es/ directory
 
 2006-09-11  Sancho Lerena  <slerena@artica.es>
 

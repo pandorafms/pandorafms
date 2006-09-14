@@ -42,7 +42,7 @@
 	It's not recommended to use value above 6 if the data needs to be
 	represented graphically in large time intervals.
 	</para>
-	<sect1 id="9.1">
+	<sect1 id="sec9.1">
 		<title>Links</title>
 
 		<para>Links to different Internet or private network links can be 

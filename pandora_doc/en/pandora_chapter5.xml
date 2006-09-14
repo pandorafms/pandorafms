@@ -21,7 +21,7 @@
 
 	<para>The event information list shows the data in the following columns:</para>
 
-	<para><emphasis>Status:</emphasis> The event status is represented by the icon bellow:</para>
+	<para><emphasis>Status:</emphasis> The event status is represented by the icon below:</para>
 	<para><inlinegraphic fileref="images/dot_green.gif"/> The event has been validated</para>
 	<para><inlinegraphic fileref="images/dot_red.gif"/> The event hasn't been validated</para>
 	<para><emphasis>Event name:</emphasis> Name assigned to the event by Pandora.</para>
@@ -39,7 +39,7 @@
 	<para>The events can be also validated or deleted in groups by selecting 
 	the tick boxes on the last column of the event, and pressing "Validate" or 
 	"Delete" at the bottom of the list.</para>
-	<sect1 id="5.1">
+	<sect1 id="sec5.1">
 		<title>Statistics</title>
 
 		<para>Three different kinds of graphical statistic representation can be 

@@ -2,7 +2,7 @@
 
 <chapter id="chapter1">
 	<title>Introduction</title>
-	<sect1 id="1.1">
+	<sect1 id="sec1.1">
 		<title>What is Pandora?</title>
 		
 		<para>Pandora is a monitoring tool that allows a system administrator
@@ -88,7 +88,7 @@
 		in virtually any language, given its simple API	and being open source.
 		</para>
 	</sect1>
-	<sect1 id="1.2">
+	<sect1 id="sec1.2">
 		<title>Pandora Administration</title>
 
 		<para>

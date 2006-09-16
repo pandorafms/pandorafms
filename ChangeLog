@@ -1,7 +1,6 @@
-2006-09-11 Raul Mateos  <raulofpandora@gmail.com>
+2006-09-16 Raul Mateos  <raulofpandora@gmail.com>
 
-	* New pandora_doc directory for documents in docbook format.
-	Very Beta :-D
+	* Set all timestamp values in pandoradb.sql file to 0000-00-00 00:00:00
 	
 2006-09-11 Raul Mateos  <raulofpandora@gmail.com>
 

@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="ISO-8859-15"?>
+<chapter>
+  <title>&pandora; installation</title>
+  <sect1>
+    <title>Prerequisites</title>
+    <para>
+      &pandora; is not only a single app, its composed by
+      several shellscript files (Unix Agents), a WEB application in
+      PHP (Console), some code in C++ (Windows Agent), some code in
+      PERL5 (Server) and some structure and data in SQL (Database),
+      so, to get all this running you need to have some pieces of
+      software installed in your system. This is a list of packages,
+      libraries and software you need before install &pandora;.
+    </para>
+  </sect1>
+  <sect1>
+    <title>Pandora Server install and setup</title>
+    <sect2><title>Pandora Data Server</title>
+    <para>
+      To build <emphasis>Pandora Data Server</emphasis> you need to
+      have the following perl modules and software installed in your
+      machine. This packages could be installed using your
+      distribution packaging system or using CPAN.
+      <blockquote>
+	<itemizedlist mark='bullet'>
+	  <listitem><para>XML::Simple, useful XML functions
+	  </para></listitem>
+  	  <listitem><para>Digest::MD5, MD5 generation
+	  </para></listitem>
+  	  <listitem><para>Time::Local, Date and Time basic manipulation
+	  </para></listitem>
+	  <listitem><para>DBI, DB interface with MySQL
+	  </para></listitem>
+	  <listitem>
+	    <para>
+	      Date::Manip, needed to manipulate Date and Time formats
+	      of input, output and compare
+	  </para>
+	  </listitem>
+	</itemizedlist>
+      </blockquote>
+      You can find them at http://www.cpan.org or install using your
+      default package instalation system. These packages are in the
+      default distribution of Suse 9.1 and Debian 3.0 GNU/Linux. Also
+      available for Solaris in CPAN repository. If you use Windows go
+      to http://ppm.activestate.com. Or you can use the ppm tool to
+      download the modules:
+      <programlisting>
+	ppm install DBI
+	ppm install DBD-mysql
+	ppm install Datemanip
+      </programlisting>
+      Next, you need to set the TZ (Time Zone) environment
+      variable. In Windows: set TZ=WET (for example)
+    </para>
+    </sect2>
+
+    <sect2><title>Pandora Network Server</title>
+    <para>
+      Requires SSH Server and Perl v5.8 or higher and the next Perl Modules:
+       <blockquote>
+	<itemizedlist mark='bullet'>
+	  <listitem>
+	    <para>
+	      IO::Socket, manage and manipulation of TCP/UDP sockets
+	  </para>
+	  </listitem>
+  	  <listitem>
+	    <para>
+	      Time::HiRes, needed for ICMP times
+	  </para>
+	  </listitem>
+  	  <listitem>
+	    <para>
+	      Time::Local, Date and Time basic manipulation
+	  </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      SNMP, for SNMP management
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      Date::Manip, needed to manipulate Date and Time formats
+	      of input, output and compare
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      Net::Ping, to calculate latency times (it's required
+	      that the server runs as root user).
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </blockquote>
+      To use SNMP fuctions it's needed also to have installed the
+      net-snmp package. It's worth to say that to run modules of
+      GENERIC_ICMP_DATA type (calculate ICMP latency time) Pandora
+      Network Server must run with root privileges.
+    </para>
+    </sect2>
+    <sect2><title>Pandora SNMP Server</title>
+    <para>
+      You need to install the NET-SNMP package which is included in
+      all GNU/Linux distributions. You have to use the snmptrapd
+      binary and copy or link it to $HOME_PANDORA/util, where
+      $HOME_PANDORA is the instalation directory of Pandora.
+    </para>
+    <para>
+      This binary gets the SNMP traps, generating a log that is
+      parsed by the Pandora Server.
+    </para>
+    </sect2>
+
+    <sect2><title>Installing Pandora Server</title>
+    <para>
+      Create the <filename>/opt/pandora</filename> directory and
+      "gunzip" and "untar" here the
+      <filename>pandora_server_1.2.tar.gz</filename> file.
+    </para>
+    <para>
+      Create an user pandora in OS. Usually you do that (in GNU/Linux)
+      with commands:
+      <programlisting>
+	useraddd pandora -d /home/pandora
+	mkdir /home/pandora
+	chown pandora /home/pandora
+      </programlisting>
+      This user will be used by the SSH transfers to the server, so
+      this user will need a strong password.
+    </para>
+    <para>
+      In the file
+      <filename>/home/pandora/.ssh/authorized_keys</filename> we will
+      add the public key of each agent which send data to Pandora
+      Server. These keys must be SSH v2, OpenSSH DiffieHellman (DF) or
+      RSA. To convert between keys you can use the ssh-keygen tool.
+    </para>
+    <para>
+      Pandora Server will check and parse XML files sent by Pandora
+      Agents and will insert the data into the Database.
+    </para>
+    <para>
+      Check launch scripts (pandora_network, pandora_server,
+      pandora_snmp) and check for pathnames in the first two variables
+      in script.  roa Server. This usually is
+      <filename>/opt/pandora_server</filename>
+    </para>
+  </sect2>
+    
+  <sect2><title>Configuring your new Pandora Server setup</title>
+  <para>
+    After install Pandora Server in, you will need to edit the file
+    <filename>pandora_server.conf</filename>, where are defined the
+    variables of the server configuration. File
+    <filename>pandora_server.conf</filename> is a text file, you could
+    edit with your prefer text editor, like emacs. This configuration
+    file is common to all kinds of Pandora Server (Data server, SNMP
+    Server, Network server), you also could have different copies of
+    configuration file for each Pandora Server you have.
+  </para>
+  <para>
+    Edit configuration file of Pandora Server, usually
+    <filename>/opt/pandora/conf/pandora_server.conf</filename> and
+    take a look at the lines:
+    <programlisting>
+      dbuser pandora
+      dbpass pandora
+      dbhost localhost
+    </programlisting>
+    Please change them to your own data. For security reasons isn't
+    recommended use the default values. If you run Pandora Server in
+    Windows, you need to use the backslash twice in $dirname, that is:
+    "\\", for example: my
+    $dirname="C:\\pandora\\pandora_server\\data_in";, not needed in
+    $log_file.
+  </para>
+  <para>
+    These are default values, and all must be existing directory and
+    filename and valid username, password and hostname.
+  </para>
+  <para>
+    Remember: you need to create the directory /opt/pandora/data_in
+    where Pandora Server will read and write data, sent by remote
+    agents using ssh/scp. This directory must be owned or with
+    permissions to write for user "pandora". If you dont have a
+    "pandora" user yet, create it.
+  </para>
+  <para>
+    You can run Pandora Server with an user without privilegues, you
+    can use the user "pandora", it only needs to run /usr/bin/perl and
+    access to <filename>/opt/pandora</filename> and
+    <filename>/opt/pandora/data_in</filename> directories.
+  </para>
+  <para>
+    This is true with all the components but with Pandora SNMP Console
+    needs root user to open UDP port 161 (this can be solved setting
+    SUID0 to the snmptrapd binary) and running the rest of the Server
+    using an user without privileges.
+  </para>
+  <para>
+    Also Pandora Network Server can be run using an user without
+    privileges, but the GENERIC_ICMP_DATA type won't work, as root
+    privileges are required to get ICMP latency times.
+  </para>
+  <para>
+    Check the MySQL connection with the user and password before running the server
+  </para>
+  <para>
+    Pandora Server distribution tarball includes a Posix/System V
+    start/stop script for "daemonize" Pandora Server. It is possible
+    that you need to customize, but its runs smoothly on GNU/Linux
+    (debian, Suse) and Solaris 8 systems. It has start|stop|restart
+    parameters to include it in your default init level directory and
+    it creates a logfile defined in $log_file variable (by default is
+    <filename>/opt/pandora/pandora.log</filename>):
+    <programlisting>
+      /etc/init.d/pandora_server start
+    </programlisting>
+  </para>
+
+    <sect3><title>Setting up SSH configuration</title>
+    <para>
+      Pandora, uses SSH protocol to copy XML data packets,
+      generated by the agents, to the server. You need to generate a
+      SSH2 key in every agent, and copy the public key in
+      <filename>/home/pandora/.ssh/authorized_keys</filename>, so you
+      need to create a user called "pandora" withour privileges. This
+      user will be used by agents to copy data into Pandora Data Server
+      <filename>/opt/pandora/data_in</filename> directory.
+    </para>
+    <para>
+      Please BE SURE that user "pandora" exists (if not, create with
+      useradd), and
+      <filename>/home/pandora/.ssh/authorized_keys</filename> exists and
+      ownership of this file and directory is for pandora user, and
+      permissions set to 600.
+    </para>
+    <para>
+      Please be sure that directory
+      <filename>/opt/pandora/data_in</filename> exists and pandora
+      user is able to write in.
+    </para>
+    </sect3>
+  </sect2>
+  </sect1>
+    
+  <sect1>
+    <title>Installing Pandora Console and database</title>
+    <sect2><title>Pandora database</title>
+    <para>
+      Please look at MySQL install and management guide
+      (http://dev.mysql.com/doc) to obtain information about how to
+      create a MySQL database, how to manage mysql users and give
+      him/her privileges to read/write in Pandora database. Remember
+      that you must write the password of the root user in MySQL
+      database to enter mysql command line. This user is not the same
+      of the Operating System. The root password in MySQL is in blank
+      by default (within almost all distributions), you must changed
+      this password with the MySQL command
+      <filename>mysqladmin</filename>. Please be careful with this.
+    </para>
+    <para>
+      You need a database with name "pandora", you could rename it, but
+      you need to reconfigure in server too.
+    </para>
+    <para>
+      To create the structure of Pandora database in MySQL Server you have the SQL script "pandoradb.sql".
+    </para>
+    <para>
+      It creates tables and indexes needed to insert information into
+      Pandora database.
+    </para>
+    <para>
+      You MUST populate database with SQL script "pandoradb_data.sql",
+      it inserts data needed to run Web Console and default user
+      (login: admin, pass: pandora) to access Pandora Web Console.
+    </para>
+    <para>
+      First create a database called "pandora", and set an user to be
+      able to access this database:
+    </para>
+    <programlisting>
+      mysql> create database pandora;
+    </programlisting>
+    <para>
+      Later, execute the next commands using a user with enough
+      privileges to create tables and indexes for pandora Database into
+      your MySQL Server:
+    </para>
+    <programlisting>
+      cat pandoradb.sql | mysql -D pandora -u root -p
+      cat pandoradb_data.sql | mysql -D pandora -u root -p
+    </programlisting>
+    <para>	
+      Note: if your system is Windows, use the command type instead of
+      cat.
+    </para>
+    <para>	
+      You can also use the source command, if you are connected to
+      MySQL, from the MySQL prompt:
+    </para>
+    <programlisting>
+      mysql> use babel
+      mysql> source path_to_babel_dbstruct.sql
+      mysql> source path_to_babel_dbdata.sql
+    </programlisting>
+    <para>	
+      This example is valid using root user in
+      MySQL<footnote><para>Remember if you're in Windows use the
+      double slash ("//") with the path to the files, not the
+      backslash ("\").</para></footnote>
+    </para>
+    <para>
+      Now we will create an user "pandora" and will be given to it
+      privileges from the localhost:
+      <programlisting>
+	mysql> grant all on pandora.* to 'pandora'@'localhost' identified by 'pandora';
+      </programlisting>
+      Keep in mind that users need access from Pandora WEB Console and
+      from Pandora Server, if your deployment has many subcomponents in
+      different physical machines, you need to setup a MySQL user with
+      privileges to access from different locations.
+    </para>
+    <para>
+      If you get the error "Warning: mysql_connect()
+      [function.mysql-connect]: client does not support authentication
+      protocol requested by server; consider upgrading" when
+      authenticating Web Console, you have to change the way the
+      password is stored into the database:
+      <programlisting>
+	mysql> set password for 'babel'@'localhost' = old_password('babel');
+      </programlisting>
+      Please note this user will be used by several babel
+      subcomponents(babel Server, babel Web Console) to access
+      database.
+    </para>
+    </sect2>
+
+    
+    <sect2>
+      <title>Pandora Console.</title>
+      <para>Prior to install Pandora console, you need the following dependencies and software needed:
+      <blockquote>
+	<itemizedlist mark='bullet'>
+	  <listitem>
+	    <para>
+	      Web server. Apache2 is recommended.
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      PHP 4.3.x, or PHP 5.x. Both has been tested for Pandora 1.2
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      PHP Modules for MySQL, GD, session management and SNMP.
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      JpGraph, it is necesary to generate graphics. It has an
+	      open source license, you can download it in
+	      http://www.aditus.nu/jpgraph/
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </blockquote>
+      </para>
+      <para>
+	To install Pandora Console, simply untar in your HTTP server
+	publishing directory and set perms to www-data or http user.
+      </para>
+      <para>
+	To setup Pandora Console, you only need to modify a file,
+	<filename>include/config.php</filename>, where the following
+	variables are included in .php code:
+      </para>
+      <programlisting>
+	$dbname="pandora";   // name of database for pandora (default: pandora)
+	$dbuser="pandora";   // mysql user to access db
+	$dbpassword="pandora";   // Password for mysql user to access db
+	$dbhost="pandora";   // Hostname or IP where mySQL server runs
+      </programlisting>
+      <para>
+	If database is defined and was correctly installed, you can
+	now access:
+	<programlisting>
+	  http://hostname:port/installation_directory/index.php
+	</programlisting>
+	The first time you log there is a default admin user "admin"
+	and password "pandora". It's worth to say that <emphasis>YOU
+	MUST CHANGE CREDENTIALS BEFORE LOGIN FIRST TIME</emphasis>,
+	change it or create another account, give it administrator
+	privileges, and disable this one.
+      </para>      
+      <para>
+	<graphic fileref="img/pandora_login.jpg" scale="70" align="center"/>
+	If you cannot see a screen like this, it's possible that you
+	have problems with PHP instalation. When you installed the
+	Web, please check that PHP engine its running. Fist try to
+	access to the server IP with a browser. You must see the
+	Welcome Apache page.
+      </para>
+      <para>
+	Remember that alter installing the PHP and the PHP module for
+	Apache you must stop and start the Server Apache. As an
+	example, Ubuntu with Apache2:
+	<programlisting>
+	  /etc/init.d/apache2 stop
+	  /etc/init.d/apache2 start
+	</programlisting>
+	
+	To verify the PHP and Apache integration you can create the
+	file <filename>test.php</filename> with the following lines:
+	<screen>
+	  &lt;?PHP
+	  echo "&lt;h1&gt;TEST&lt;/h1&gt;";
+	  phpinfo();
+	  ?&gt;
+	</screen>
+	Now, copy this file in the Apache HTTPDOC directory. This
+	directory depend of the Operating System or Linux
+	Distribution, for example in Ubuntu this directory is
+	<filename>/var/www</filename> and in SUSE is
+	<filename>/srv/www/htdocs</filename>).
+      </para>
+      <para>
+	To check this integration, please use your browser to open the
+	following URL:
+	<programlisting>
+	  http://IP/test.php
+	</programlisting>
+	
+	Where IP is IP Address of your Apache server. If the
+	integration is correct you will see in the browser a text
+	string with big font: <quote>TEST</quote> and a big table with
+	a lot of info about your PHP installation.
+      </para>
+      <sect3><title>Graphic reporting instalation</title>
+      <para>
+	For correct graphic generation, you need to enter the full
+	path to a TrueType font installed in your system. By default a
+	free truetype font is distributed with Pandora Console
+	package, and placed in
+	<filename>./reporting/FreeSans.ttf</filename> file. Please
+	check that setup directive
+	<filename>$config_fontpath</filename> is well configured.
+      </para>
+      <para>
+	Pandora 1.2 uses JpGraph for viewing graphics. JpGraph is a
+	different project and has no relationship with Pandora, so you
+	need to install it. You can find at
+	<filename>http://www.aditus.nu/jpgraph/</filename>. Download
+	last version (2.x), and place all <filename>.php</filename>
+	files from src directory into
+	<filename>reporting/jpgraph</filename> Pandora Console
+	directory.
+      </para>
+      </sect3>
+    </sect2>
+  </sect1>
+</chapter>
+
+

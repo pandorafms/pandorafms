@@ -29,14 +29,6 @@
 #include "pandora-setup.h"
 #include "pandora-status.h"
 
-enum {
-        CHECKER_STATE_READY,
-        CHECKER_STATE_RUNNING,
-        CHECKER_STATE_FINISHED,
-        CHECKER_STATE_STOPPING,
-        CHECKER_STATE_FAILED
-};
-
 #define PANDORA_STATUS_CHECKER_TYPE		 (pandora_status_checker_get_type())
 #define PANDORA_STATUS_CHECKER(object)		 (G_TYPE_CHECK_INSTANCE_CAST((object), PANDORA_STATUS_CHECKER_TYPE, PandoraStatusChecker))
 #define PANDORA_STATUS_CHECKER_CLASS(klass)	 (G_TYPE_CHECK_CLASS_CAST((klass), PANDORA_STATUS_CHECKER_TYPE, PandoraStatusCheckerClass))

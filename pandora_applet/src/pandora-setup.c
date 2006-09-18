@@ -349,6 +349,7 @@ pandora_setup_read_config_file (PandoraSetup *setup, gchar *file)
 	root = xmlDocGetRootElement (doc);
 
         if (!root) {
+		xmlFreeDoc (doc);
                 return;
         }
 
@@ -370,6 +371,8 @@ pandora_setup_read_config_file (PandoraSetup *setup, gchar *file)
 		g_free (password);
 		g_free (dbname);
         }
+
+	xmlFreeDoc (doc);
 }
 
 void

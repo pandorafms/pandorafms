@@ -26,6 +26,14 @@
 
 #include "pandora-status-checker.h"
 
+enum {
+        CHECKER_STATE_READY,
+        CHECKER_STATE_RUNNING,
+        CHECKER_STATE_FINISHED,
+        CHECKER_STATE_STOPPING,
+        CHECKER_STATE_FAILED
+};
+
 struct _PandoraStatusCheckerPrivate {
 	GThread       *thread;
 	GMutex        *state_mutex;
@@ -163,39 +171,40 @@ pandora_status_checker_new (PandoraSetup *setup, PandoraStatus *status)
 static gboolean
 pandora_status_checker_connect (PandoraStatusChecker *checker)
 {
-	MYSQL        *connection;
-	PandoraSetup *setup;
 	gchar        *host, *username, *password, *dbname;
 	gboolean      retval = TRUE;
-
-	connection = checker->priv->connection;
-	setup      = checker->priv->setup;
 	
-	if (connection) {
-		mysql_close (connection);
+	if (checker->priv->connection != NULL) {
+		mysql_close (checker->priv->connection);
+		checker->priv->connection = NULL;
 	}
 
-	connection = mysql_init (NULL);
+	checker->priv->connection = mysql_init (NULL);
 
-        if (connection == NULL) {
+        if (checker->priv->connection == NULL) {
 		return FALSE;
         }
 
-	g_object_get (G_OBJECT (setup), "host", &host, "username", &username,
+	g_object_get (G_OBJECT (checker->priv->setup), "host", &host, "username", &username,
 		      "password", &password, "dbname", &dbname, NULL);
 
-	if (mysql_real_connect (connection, host, username,
+	if (mysql_real_connect (checker->priv->connection, host, username,
 				password, dbname, 3306, NULL, 0) == NULL)
         {
 		
                 g_print ("mysql_real_connect() failed. %s\n",
-			 mysql_error (connection));
-                mysql_close (connection);
-
+			 mysql_error (checker->priv->connection));
+                mysql_close (checker->priv->connection);
+		checker->priv->connection = NULL;
+		
 		retval = FALSE;
 	}
 	
-	checker->priv->connection = connection;
+	g_free (host);
+	g_free (username);
+	g_free (password);
+	g_free (dbname);
+	
 	return retval;
 }
 
@@ -212,7 +221,6 @@ pandora_status_checker_disconnect (PandoraStatusChecker *checker)
 static PandoraState
 pandora_status_checker_check_agents (PandoraStatusChecker *checker)
 {
-	MYSQL             *connection = NULL;
 	MYSQL_RES         *result;
 	MYSQL_ROW          row;
 	const gchar const *query_time = "SELECT * FROM tagente "
@@ -222,28 +230,32 @@ pandora_status_checker_check_agents (PandoraStatusChecker *checker)
  		                          "LEFT JOIN tagente "
 		                          "ON tagente_estado.id_agente = tagente.id_agente "
 		                          "WHERE estado != 100 and datos = 0.0";
-	connection = checker->priv->connection;
-	g_return_val_if_fail (connection != NULL, FALSE);
 
-	if (mysql_query (connection, query_time) != 0) {
+	if (checker->priv->connection == NULL) {
+		return FALSE;
+	}
+
+	if (mysql_query (checker->priv->connection, query_time) != 0) {
 		return STATE_UNKNOWN;
 	}
 
-	result = mysql_store_result (connection);
+	result = mysql_store_result (checker->priv->connection);
 
 	if (mysql_num_rows (result) > 0) {
+		mysql_free_result (result);
 		return STATE_BAD;
 	}
 
 	mysql_free_result (result);
 
-	if (mysql_query (connection, query_status) != 0) {
+	if (mysql_query (checker->priv->connection, query_status) != 0) {
 		return STATE_UNKNOWN;
 	}
 
-	result = mysql_store_result (connection);
+	result = mysql_store_result (checker->priv->connection);
 
 	if (mysql_num_rows (result) > 0) {
+		mysql_free_result (result);
 		return STATE_BAD;
 	}
 
@@ -254,23 +266,25 @@ pandora_status_checker_check_agents (PandoraStatusChecker *checker)
 static PandoraState
 pandora_status_checker_check_servers (PandoraStatusChecker *checker)
 {
-	MYSQL             *connection = NULL;
 	MYSQL_RES         *result;
 	MYSQL_ROW          row;
 	const gchar const *query = "SELECT * FROM tserver "
 		                   "WHERE status = 0";
 	
-	connection = checker->priv->connection;
-	g_return_val_if_fail (connection != NULL, FALSE);
-
-	if (mysql_query (connection, query) != 0) {
+	if (checker->priv->connection == NULL) {
+		return FALSE;
+        }
+		
+	if (mysql_query (checker->priv->connection, query) != 0) {
 		return STATE_UNKNOWN;
 	}
 
-	result = mysql_store_result (connection);
+	result = mysql_store_result (checker->priv->connection);
 
-	if (mysql_num_rows (result) > 0)
+	if (mysql_num_rows (result) > 0) {
+		mysql_free_result (result);
 		return STATE_BAD;
+	}
 
 	mysql_free_result (result);
 	return STATE_OK;
@@ -279,7 +293,6 @@ pandora_status_checker_check_servers (PandoraStatusChecker *checker)
 static PandoraState
 pandora_status_checker_check_alerts (PandoraStatusChecker *checker)
 {
-	MYSQL             *connection = NULL;
 	MYSQL_RES         *result1 = NULL, *result2 = NULL, *result3 = NULL;
 	MYSQL_ROW          row;
 	const gchar const *query_all_agents = "SELECT * FROM tagente "
@@ -291,14 +304,15 @@ pandora_status_checker_check_alerts (PandoraStatusChecker *checker)
 		                               "AND times_fired > 0";
 	gchar             *query;
 	
-	connection = checker->priv->connection;
-	g_return_val_if_fail (connection != NULL, FALSE);
+	if (checker->priv->connection == NULL) {
+		return FALSE;
+	}
 
-	if (mysql_query (connection, query_all_agents) != 0) {
+	if (mysql_query (checker->priv->connection, query_all_agents) != 0) {
 		return STATE_UNKNOWN;
 	}
 
-	result1 = mysql_store_result (connection);
+	result1 = mysql_store_result (checker->priv->connection);
 	if (result1 == NULL)
 		return STATE_UNKNOWN;
 
@@ -308,8 +322,8 @@ pandora_status_checker_check_alerts (PandoraStatusChecker *checker)
 	while (row = mysql_fetch_row (result1)) {
 		query = g_strdup_printf (query_agent_state, row[0]);
 
-		if (mysql_query (connection, query) == 0) {
-			result2 = mysql_store_result (connection);
+		if (mysql_query (checker->priv->connection, query) == 0) {
+			result2 = mysql_store_result (checker->priv->connection);
 			
 			if (mysql_num_rows (result2) > 0) {
 
@@ -319,8 +333,8 @@ pandora_status_checker_check_alerts (PandoraStatusChecker *checker)
 					query = g_strdup_printf (query_agent_alert,
 								 row[1]);
 
-					if (mysql_query (connection, query) == 0) {
-						result3 = mysql_store_result (connection);
+					if (mysql_query (checker->priv->connection, query) == 0) {
+						result3 = mysql_store_result (checker->priv->connection);
 						
 						if (mysql_num_rows (result3) > 0) {
 							mysql_free_result (result1);
@@ -361,10 +375,7 @@ pandora_status_checker_run_thread (gpointer data)
 	while (checker->priv->state == CHECKER_STATE_RUNNING) {
 		g_mutex_unlock (checker->priv->state_mutex);
 
-		if (!pandora_status_checker_connect (checker)) {
-			pandora_status_checker_stop (checker);
-			return NULL;
-		}
+		pandora_status_checker_connect (checker);
 
 		alerts = pandora_status_checker_check_alerts (checker);
 		servers = pandora_status_checker_check_servers (checker);
@@ -389,6 +400,13 @@ pandora_status_checker_run_thread (gpointer data)
 void
 pandora_status_checker_run (PandoraStatusChecker *checker)
 {
+	g_mutex_lock (checker->priv->state_mutex);
+	if (checker->priv->state == CHECKER_STATE_RUNNING) {
+		g_mutex_unlock (checker->priv->state_mutex);
+		return;
+	}
+	g_mutex_unlock (checker->priv->state_mutex);
+			
 	checker->priv->thread = g_thread_create (pandora_status_checker_run_thread,
 						 (gpointer) checker, TRUE, NULL);
 }
@@ -397,6 +415,6 @@ void
 pandora_status_checker_stop (PandoraStatusChecker *checker)
 {
 	g_mutex_lock (checker->priv->state_mutex);
-	checker->priv->state = CHECKER_STATE_RUNNING;
+	checker->priv->state = CHECKER_STATE_STOPPING;
 	g_mutex_unlock (checker->priv->state_mutex);
 }

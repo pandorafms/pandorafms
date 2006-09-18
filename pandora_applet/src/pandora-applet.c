@@ -261,6 +261,9 @@ pandora_applet_show_setup_cb (GtkMenuItem *mi, PandoraApplet *applet)
 	case GTK_RESPONSE_ACCEPT:
 		pandora_setup_dialog_apply_changes (applet->priv->setup_dialog);
 		pandora_setup_save_to_disk (applet->priv->setup);
+				
+		pandora_status_checker_stop (applet->priv->checker);
+		pandora_status_checker_run (applet->priv->checker);
 		break;
 	default:
 		break;

@@ -107,6 +107,7 @@ pandora_setup_dialog_init (PandoraSetupDialog *dialog)
 	str = g_strdup_printf ("<b>%s:</b>", _("Database connection"));
 	label_title = gtk_label_new (NULL);
 	gtk_label_set_markup (GTK_LABEL (label_title), str);
+	g_free (str);
         gtk_misc_set_alignment (GTK_MISC (label_title), 0, 0.5);
 
 	frame = gtk_frame_new (NULL);

@@ -1,3 +1,11 @@
+2006-09-18  slerena  <slerena@artica.es>
+
+	* en/pandora.xml: Moved to pandora_user.xml. A new file called
+	pandora.xml will be "install manual". We'll have two different
+	docs: User guide, and Install / Advanced guide.
+
+	* en/pandora_install.xml: New XML include file for install guide.
+
 2006-09-14  Raul Mateos  <raulofpandora@gmail.com>
 
 	* Updated id in pandora_doc/en/pandora_chapter[1-9].xml (!7)

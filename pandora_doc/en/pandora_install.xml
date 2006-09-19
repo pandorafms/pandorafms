@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-15"?>
+<?xml version="1.0" encoding="utf-8"?>
 <chapter>
   <title>&pandora; installation</title>
   <sect1>
@@ -462,6 +462,905 @@
       </sect3>
     </sect2>
   </sect1>
-</chapter>
+  <sect1><title>Installing agents</title>
+  <sect2><title>Introduction</title>
+  <para>
+    Pandora�s agents collect all the Pandora system's data. They are
+    executed in each local system, although they can also collect
+    remote information by installing monitoring systems for the agent
+    in several different machines - called satellite agents.
+  </para>
+  <para>
+    They are developed to work under a given platform, making use of
+    the specific tools of the language being used: VBSCript/Windows
+    Scripting for Microsoft platforms (Win2000, WinXP y Win2003),
+    ShellScripting for UNIX - which includes Linux, Solaris, AIX, HPUX
+    and BSD, as well as the Nokia's IPSO. Pandora agents can be
+    developed in virtually any language, given its simple API system
+    and being open source. There are branches of the Pandora project
+    started for the creation of agents in Posix C, Perl and Java for
+    those systems requiring closed agents.
+  </para>
+  <para>
+    Pandora Agents are Free Software, i.e., the way agents collect and
+    sent information is documented. An agent can be recreated in any
+    programming language, and can be upgraded easily, to improve
+    aspects of the program not covered so far.
+  </para>
+  <para>
+    This document describes the installation of agents in machines
+    running over Windows and Unix operating systems.
+  </para>
+  <graphic fileref="images/pandora_agentbox.jpg" valign="bottom" align="right"/>
+  </sect2>
 
+  <sect2><title>Generic role of the agents</title>
+  <para>
+    Regardless the platform an agent is running on, this is formed of
+    the following elements: 
+  </para>
+
+  <para>
+    A script (or binary application in Windows) that collects and
+    sends the data to the server. For UNIX machines the script is
+    called pandora_agent.sh and is executed directly from the Pandora�
+    s agent folder.
+  </para>
+  <para>
+    One or several configuration files where the values to be
+    collected are defined. The file is called pandora_agent.conf both
+    for Windows and Unix machines.
+  </para>
+  <para>
+    This simple structure makes it easy the customisation of an
+    agent. There is no need to �reprogram� the agent to modify the
+    way it works, as the configuration file holds most of the
+    parameters needed to do so.
+  </para>
+  </sect2>
+
+  <sect2><title>Main Script</title>
+  <para>
+    The main script is the executable file that collects the data
+    specified in the configuration file. It sends the data to the
+    server in XML. In Windows machines application is installed as a
+    service and is executed at the time intervals set in the
+    configuration file. In machines running over UNIX the main script
+    is run through a special script called pandora_agent_daemon, and
+    runs continuously in the machine as a process.
+  </para>
+  </sect2>
+
+  <sect2><title>Configuration File</title>
+  <para>
+    The data collection in the host system is the gathering of
+    independent data units, which are defined in the
+    pandora_agent.conf file. The pandora_agent.conf file is divided in
+    two parts:
+  </para>
+  <para>
+    General parameters.
+  </para>
+  <para>
+    Module definitions.
+  </para>
+
+  <sect3><title>General parameters</title>
+  <para>
+    The general parameters of the agent configuration are defined in this section. Some of these parameters are common for all systems and others specific for Windows or UNIX. The general parameters are:
+  </para>
+  <itemizedlist mark='bullet'>
+	  <listitem>
+	    <para>
+	      server_path: (Shared parameter) The server path is the
+	      full path of the folder where the server stores the data
+	      sent by the agent. It is usually /opt/pandora/data_in.
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      server_ip: (Parameter shared by Windows and Unix agents)
+	      The server IP is the IP address or the host name of the
+	      Pandora server, where the data will be stored. The host
+	      must be reachable and must be listening to port 22
+	      (SSH).
+
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      temporal: (Shared parameter) This is the full path of
+	      the folder where the agent stores the data locally,
+	      before it is sent to the server. It must be said that
+	      the data packages are deleted once the agent tries to
+	      contact the Pandora�s server, no matter if the
+	      communication was successful or not. This is done to
+	      avoid over flooding hard drive of the host system where
+	      the agent runs. The location of the local folder varies
+	      with the architecture of the host system. In Unix
+	      systems this is usually /opt/pandora/data_out, and in
+	      Windows systems C:\pandora\data_out.
+
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      interval: (Shared parameter) This is the time interval
+	      in seconds in which the agent will collect data from the
+	      host system and send the data packages to the
+	      server. The recommended value ranges from 300 (5
+	      minutes) to 600 (10 minutes). This number could be
+	      larger, although it is important to consider the impact
+	      of a larger number on the database.
+
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      debug: (Unix only) This parameter is used to test
+	      the connection between agent and server and the correct
+	      working condition of the agent. The process consists of
+	      a loop, data collection and data transfer. It doesn�t
+	      delete any data when the process is finished. The
+	      activity is written in a log file, stored in the Pandora
+	      root folder. The file is named pandora_agent.log. This
+	      log file can be used to test the system and to
+	      investigate potential issues.
+
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      agent_name: (Shared parameter) This is an
+	      alternative host name. This parameter is optional as if
+	      it is not declared the name is obtained directly from
+	      the system.
+
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      pandora_path: (Unix exclusive parameter) This is then
+	      path of the folder where the files of the Pandora agent
+	      are stored. This is usually /opt/pandora.
+
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      checksum: (Shared parameter).  This parameter
+	      can take two values. If the value is 1, the checksums
+	      are performed through MD5. If the value is 0, the
+	      checksum is not performed at all. This may be useful for
+	      systems where a MD5 tool cannot be implemented. If the
+	      checksum is deactivated in the agent it must be also
+	      disconnected in the server. Otherwise it could create
+	      problems.
+	    </para>
+	  </listitem>  
+  </itemizedlist>
+  <para>
+    An example of the general parameters from a Unix configuration would be.
+    <programlisting>
+      server_ip Pandora_Server
+      server_path  /opt/pandora/data_in
+      pandora_path /opt/pandora
+      temporal /opt/pandora/data_out
+      interval 300
+      agent_name  satellite_agent
+      debug 1
+      checksum 1
+    </programlisting>
+  </para>
+  </sect3>
+  <sect3><title>Module definition</title>
+  <para>
+    Each data item that is to be collected must be defined precisely
+    in each module, using the exact syntax. As many values as
+    necessary can be set to be collected, adding at the end of the
+    general parameters as many modules as the number of values to
+    collect. Each module is made of several directives:
+  </para>
+  <para>
+    Beginning of the module: <filename>module_begin</filename>
+  </para>
+  <para>
+    Name of the module: <filename>module_name _name_</filename>
+  </para>
+  <para>
+    Data type: <filename>module_type _type_</filename>. Data type the
+    module will handle. There are four data types for agents:
+  <itemizedlist mark='bullet'>
+    <listitem>
+      <para>
+	Numeric (generic_data). Simple numeric data, float or
+	integer. If the values are of the float type, they will be
+	truncated to their integer value.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	Incremental (generic_date_inc). Integer numeric data equal to
+	the differential between the actual value and the previous
+	one. When this differential is negative the value is set to 0.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	Alphanumeric (generic_string). Text strings up to 255 characters.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	Monitors (generic_proc). Stores numerically the status of the
+	processes. This data type is called monitor because it assigns
+	0 to an "Incorrect" status and any value above 0 to any
+	"Correct" status.
+      </para>
+    </listitem>
+  </itemizedlist>
+  </para>
+  <para>
+    <emphasis>Command to execute</emphasis>: Several different
+    system-dependant directives are used to define the command that
+    will be executed to obtained a specific value.
+  </para>
+  <para>
+    Both, for Unix and Windows agentsthere is only one directive to
+    obtain data in a generic way, executing a single command (you
+    could use pipes for redirecting execution to anoter command):
+  </para>
+  <para>
+    <filename>module_exec _command_</filename>: Executes a command and
+    stores the returned value. This method is also available on
+    Windows agents. This is the "general purpose method" for both kind
+    of agents.
+  </para>
+  <para>
+    For a Windows agent there are more directives to obtain to data:
+  </para>
+  <para>
+    <filename>module_service _service_</filename> : Checks if a given
+    service name is running in this host. Remember to use " "
+    characters if service name contains blank spaces.
+  </para>
+  <para>
+    <filename>module_proc _proc_</filename>: Checks if a given
+    processname is running in this host. Remember to use " "
+    characters if process name contains blank spaces.
+  </para>
+  <para>
+    <filename>module_freedisk _drive_letter_:_</filename>: Checks free
+    disk on drive letter (do not forget ":" after drive letter.
+  </para>
+  <para>
+    <filename>module_cpuusage _cpu_</filename>: Returns CPU usage on
+    CPU number _cpu_. If you only have one cpu, use 0 as value.
+  </para>
+  <para>
+    <filename>module_freememory</filename>: Return free memory usage.
+  </para>  
+  <para>
+    Minimum accepted value: <filename>module_min _value_</filename>:
+    This is the minimum valid value for the data generated in this
+    module. If the module has not yet been defined in the web console
+    this value will be taken from this directive. This directive is
+    not compulsory. This value does not override the value defined in
+    the agent if the module does not exist in the management
+    console. It is created automatically when working on learning
+    mode.
+  </para>
+  <para>
+    Maximum accepted value: <filename>module_max _value_</filename>:
+    It is the maximum valid value for the data generated in this
+    module. If the module hasn�t been defined in the web console this
+    value will be taken from this directive. This directive is not
+    compulsory and is not supported by the Windows agent. This value
+    does not override the value defined in the agent if the module
+    doesn�t exist in the management console. This is created
+    automatically when working on learning mode.
+  </para>
+  <para>
+    Description: <filename>module_description _text_</filename>: This
+    directive is used to add a comment to the module. This directive
+    is not compulsory. This value does not override the value defined
+    in the agent if the module doesn�t exist in the management
+    console. This is created automatically when working on learning
+    mode.
+  </para>
+  <para>
+    End of module: <filename>module_end</filename>
+  </para>
+  <para>
+    An example of a Windows module, checking if EventLog service is alive,  would be:
+    <programlisting>
+      module_begin
+      module_name ServicioReg
+      module_type generic_proc
+      module_service Eventlog
+      module_description Eventlog service availability
+      module_end
+    </programlisting>
+  </para>
+  <para>
+    An example of a Unix module would be:
+    <programlisting>
+      module_begin
+      module_name cpu_user
+      module_type generic_data
+      module_exec vmstat | tail -1 | awk '{ print $14 }'
+      module_min 0
+      module_max 100
+      module_description User CPU
+      module_end
+    </programlisting>
+  </para>
+  </sect3>
+</sect2>
+
+<sect2><title>Agent types</title>
+<para>
+  It is possible to monitor virtually any system with Pandora. This
+  can be done either with a local agent collecting data directly from
+  the system to be monitored, using a a satellite agent collecting
+  data from a system by SNMP or using the new Pandora 1.2 agents, the
+  remote agents, who can chack using remote network polling (TCP, UCP,
+  ICMP/PING and SNMP) remote services, from the Pandora Network
+  Server.
+</para>
+<para>
+  The local agents can be either Windows or Unix agents. The satellite
+  agents can be implemented using any of the agents above. The modules
+  are configured to collect data from the external system by, for
+  example, an SNMPGET tool.
+  </para>
+</sect2>
+</sect1>
+
+<sect1><title>UNIX agents</title>
+<sect2><title>Introduction to Unix agents</title>
+<para>
+  The in-built UNIX applications and tools make the agents running on
+  this system be very simple. There are also agents developed for AIX,
+  Linux, Solaris and BSD platforms, some of them very similar but not
+  identical.  Requirements for the installation of Pandora Agents on
+  UNIX
+  </para>
+  <sect3><title>AIX</title>
+  <para>
+    MD5 signatures are used to guarantee the integrity of the
+    generated data packages. The MD5 package is integrated in AIX 5.1
+    and above. There is a freeware package for AIX 4.3 but it has
+    several issues and might not work correctly. In the case of having
+    problems with the AIX agents the checksum system used to validate
+    the integrity of the data can be disabled.
+  </para>
+  </sect3>
+  <sect3><title>Solaris</title>
+  <para>
+    The MD5 package is necessary to execute the Solaris agent
+    correctly. This package is available from http://sunfreeware.com
+    . It can be also downloaded for Solaris 8 from the following URL:
+  </para>
+  <para>
+    ftp://ftp.sunfreeware.com/pub/freeware/sparc/8/md5-6142000-sol8-sparc-local.gz
+  </para>
+  <sect4><title>MD5 Package installation on Solaris</title>
+  <para>
+    <programlisting>
+      root@stest:/tmp:> gzip -d md5-6142000-sol8-sparc-local.gz
+      root@stest:/tmp:> pkgadd -d ./md5-6142000-sol8-sparc-local
+      
+      The following packages are available:
+      1  SMCmd5     md5
+      (sparc) 6142000
+
+      Select package(s) you wish to process (or 'all' to process
+      all packages). (default: all) [?,??,q]: 1
+    </programlisting>
+  </para>
+  </sect4>
+  <para>
+    The suggested SSH client is OpenSSH. If any other SSH client is to
+    be used it must be considered that each piece software may have
+    different ways to generate or manage keys. For example, if
+    F-Secure SSH is used, the public key must be in OpenSSH format
+    when the keys are generated. The format can be changed from IETF
+    to OpenSSH with F-Secure SSH, using the following command:
+    <programlisting>
+      ssh-keygen -i -f file_ietf_pubkey
+    </programlisting>
+  </para>
+  </sect3>
+  <sect3><title>GNU/Linux</title>
+  <para>
+    SSH and MD5 should be installed in Linux by default, but if they
+    are not they can be installed using the tools available in each
+    distribution.
+  </para>
+  </sect3>
+  <sect3><title>BSD (IPSO)</title>
+  <para>
+    SSH and MD5 should be installed by default. If they are not, it is necessary to install them.
+  </para>
+  </sect3>
+  </sect2>
+  </sect1>
+
+
+  
+  <sect1><title>Software installation</title>
+  <sect2><title>UNIX Systems</title>
+  <para>
+    The software comes in a .tar.gz file. First of all the file needs
+    to be extracted into a folder, usually /opt/pandora_agent,
+    although any other folder may be used. If a different folder is
+    used, the daemon launcher must be modified by changing route to
+    $PANDORA_HOME.
+  </para>
+  <para>
+    There is hardly any difference between AIX, Solaris and Linux, and
+    they all work around the hash MD5 generation binaries.
+  </para>
+  <para>
+    This is the structure of the installation in /opt/pandora_agent/
+    once the files have been extracted:
+  </para>
+  <para>
+    /opt/pandora_agent/data_out, folder where the data collected by the agents is stored.
+  </para>
+  <para>
+    /opt/pandora_agent/doc, folder with information about the agent and its license.
+  </para>
+  <para>
+    /opt/pandora_agent/pandora_agent.conf, file where the data to be
+    collected is defined, along side the command to be executed for
+    the data collection. This is the system�s core, as it
+    defines the main data to be collected in any Firewall.
+  </para>
+  <para>
+    /opt/pandora_agent/pandora_user.conf, file where several of the
+    parameters to collect data from the monitored system are defined
+    in more detail.
+  </para>
+  <para>
+    /opt/pandora_agent/pandora_agent.sh, this is the actual Pandora
+    agent. This file is a shellscript that collects the data
+    configured in the pandora_agent.conf and pandora_user.conf
+    files. It also transfers the data packages to the Pandora server.
+  </para>
+  <para>
+    /opt/pandora_agent/pandora_agent_daemon, start and stop script. It
+    makes a call to pandora_agent.sh. It offers two options, start and
+    stop.
+  </para>
+  <para>
+    /opt/pandora_agent/pandora.log, text file where the activity of
+    the Pandora agent is saved, when the agent is executed in
+    debugging mode.
+  </para>
+  <sect3><title>Key generation</title>
+  <para>
+    The SSH keys generated must be:
+
+    <itemizedlist mark='bullet'>
+	  <listitem>
+	    <para>
+	      SSSH version2 keys
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      Open SSH format keys
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      DiffieHellman (DH) format keys
+	    </para>
+	  </listitem>
+    </itemizedlist>
+    
+    To generate the keys the command ssh-keygen is executed followed
+    by the specific parameters for our operating system. Please,
+    create key WITHOUT password.
+  </para>
+  <para>
+    The public key must be copied into the
+    /home/.pandora/authorized_keys file in the Pandora server. Before
+    starting the Pandora agent the SSH authentication must be
+    checked. To do this the following command must be executed on the
+    agent machine:
+    <programlisting>
+      $ ssh pandora@pandora_server
+    </programlisting>
+    
+    The system must connect successfully BEFORE launching the Pandora agent.
+  </para>
+  </sect3>
+  <sect3><title>First execution of the agent</title>
+  <para>
+    To start the agent it is only necessary to execute
+    pandora_agent_daemon start from /opt/pandora_client. Pandora Agent
+    creates a file (/var/run/pandora.pid) with the PID number of the
+    process when it is started.
+  </para>
+  <para>
+    For IPSO systems the agent will be started with a nice -10
+    priority, so it becomes the process with the lowest priority over
+    the system CPU. It will be executed when no other processes with a
+    higher priority are waiting in the system CPU queue.
+  </para>
+  <para>
+    In BSD systems the maximum priority is +20 and the lowest -20.
+  </para>
+  <para>
+    To stop agent, execute pandora_agent_daemon stop from /opt/pandora_agent.
+  </para>
+  </sect3>
+  </sect2>
+  </sect1>
+  
+  <sect1><title>Advanced agent configuration for Unix</title>
+  <para>
+
+    The real power of Pandora resides in the capability of the agents to run user defined scripts. This could be used to collect specific data or to perform an operation to return any desired value. This is the purpose of pandora_user.conf.
+  </para>
+  <para>
+    This file is executed every in agent loop. It is a shell-script in which any command can be executed, as long as the output is in the XML format the agent uses to send data to the server. The XML structure would be:
+
+  <programlisting>
+    &lt;module&gt;
+      &lt;name&gt;NAME&lt;/name&gt;
+      &lt;type&gt;TYPE&lt;/type&gt;
+      &lt;data&gt;DATA&lt;/data&gt;
+    &lt;/module&gt;
+  </programlisting>
+
+  Where NAME, TYPE and DATA are the variables already defined in previous sections. The XML must be built manually, usually using echo commands.
+  </para>
+  <para>
+    For example, this would be the script a customized agent would use
+    for Checkpoint FW1 in IPSO agents:
+    <programlisting>
+      #!/bin/sh
+      # Pandora User-Defined acquisition script
+      # This code is under GPL licence
+      # Please refer documentation for more example and a more depth usage instructions
+
+      # mbuf clusters usados (%)
+      MBUF_TOTAL=`netstat -m |grep "mbuf cluster" | tr -s "/" " " |awk '{ print $2 }'`
+      MBUF_USED=`netstat -m |grep "mbuf cluster" | tr -s "/" " " |awk '{ print $1 }'`
+      MBUF_USED_PER=`echo $MBUF_TOTAL $MBUF_USED |  awk '{ print $2 / ($1 / 100) }
+      
+      echo "&lt;module&gt;"
+      echo "&lt;name&gt;MBUF_CLUSTER_USED_PER&lt;/name&gt;"
+      echo "&lt;data&gt;$MBUF_USED_PER&lt;/data&gt;"
+      echo "&lt;type&gt;generic_data&lt;/type&gt;"
+      echo "&lt;/module&gt;"
+    </programlisting>
+  </para>
+  <para>      
+    A more complex example could be:
+    <screen>
+      #!/bin/sh
+      # Pandora User-Defined acquisition script
+      # This code is under GPL licence
+      # Please refer documentation for more example and a more depth usage instructions
+	
+      # Calculating the number of packages generated by ETH2, if nothing is generated 
+      # within 20 seconds an alert is rosen
+      # Perform the calculation between 8 to 23h. Return ok for times outside this range 
+      
+      echo "<module>"
+      echo "<name>Packet_Generator_Check</name>"
+      echo "<type>generic_proc</type>"
+      UNO=`ifconfig eth2 | grep "TX packets" | cut -f 2 -d ":" | grep -o -e "[0-9]*"`
+      sleep 20
+      DOS=`ifconfig eth2 | grep "TX packets" | cut -f 2 -d ":" | grep -o -e "[0-9]*"`
+      HORA=`date "+%k"`
+      if [ "$HORA" \< "8" ] && [ "$HORA" \> "11" ]
+      then
+      # Time out of range, no checking, everything OK
+      # Fuera de hora, no compruebo, esta OK
+         echo "<data>1</data>"
+      else
+	    if [ "$UNO" == "$DOS" ]
+	    then
+   	        echo "<data>0</data>"
+	    else
+	        echo "<data>1</data>"
+	    fi
+	  fi
+	    echo "</module>"
+	
+      </screen>
+    </para>
+  </sect1>
+
+  <sect1><title>Implementation examples</title>
+  <para>
+    Example #1: calculate the number of HITS of the main page of an Apache Web server:
+    <programlisting>
+
+      module_begin
+      module_name WEB_Hits
+      module_type generic_data_inc
+      module_exec cat /var/log/apache/access.log | grep "index" | wc -l
+      module_end
+    </programlisting>
+  </para>
+  <para>
+    Example: check if the process of the DNS server (named) is active or fell over:
+    <programlisting>
+      module_begin
+      module_name DNS_Daemon
+      module_type generic_proc
+      module_exec ps -Af | grep named | grep -v "grep" | wc -l
+      module_end
+    </programlisting>
+  </para>
+  <para>
+    Complete example of the configuration of an agent for Linux
+    <programlisting>
+      # General Parameters
+      # ==================
+      
+      server_ip 		192.168.100.45
+      server_path 	/opt/pandora/data_in
+      pandora_path 	/opt/pandora_ng/
+      temporal    	/opt/pandora_ng/data_out
+      interval    	300
+      hostname		linuxbox01
+      debug			0
+      checksum		1
+      
+      # Module Definition
+      # =================
+      
+      module_begin
+      module_name cpu_user
+      module_type generic_data
+      module_exec vmstat 1 2 | tail -1 | awk '{ print $14 }'
+      module_end
+      
+      module_begin
+      module_name cpu_sys
+      module_type generic_data
+      module_exec vmstat 1 2 | tail -1 | awk '{ print $14 }'
+      module_end
+      
+      module_begin
+      module_name disk_root_free
+      module_type generic_data
+      module_exec df -kh / | tail -1 | awk '{ print 100 - $5 }'
+      module_end
+      
+      module_begin
+      module_name disk_store_free
+      module_type generic_data
+      module_exec df -kh /store  | tail -1 | awk '{ print 100 - $5 }'
+      module_end
+      
+      module_begin
+      module_name memfree
+      module_type generic_data
+      module_exec cat /proc/meminfo  | grep MemFree | cut -c 10-23
+      module_end
+      
+      module_begin
+      module_name memused
+      module_type generic_data
+      module_exec cat /proc/meminfo | grep "Active"  | cut -c 8- | cut -f 1 -d "k"
+      module_end
+      
+      module_begin
+      module_name proctotal
+      module_type generic_data
+      module_exec ps -A | wc -l
+      module_end
+      
+      module_begin
+      module_name sshd
+      module_type generic_proc
+      module_exec ps -Af | grep sshd | grep -v "grep" | wc -l
+      
+      module_begin
+      module_name WEB_Hits
+      module_type generic_data_inc
+      module_exec cat /var/log/apache/access.log | grep "index.php" | wc -l
+      module_end
+      
+      module_begin
+      module_name eMails_proc
+      module_type generic_data_inc
+      module_exec cat /var/log/mail/mail.log | grep "message-id" | wc -l
+      module_end
+      
+      module_begin
+      module_name FTP_sessions
+      module_type generic_data_inc
+      module_exec cat /var/log/syslog | grep "FTP session opened" | wc -l
+      module_end
+      
+      module_begin
+      module_name eMails_SPAM
+      module_type generic_data_inc
+      module_exec cat /var/log/mail/mail.log | grep "identified spam" | wc -l
+      module_end
+      
+    </programlisting>
+  </para>
+      
+
+  <sect2>
+    <title>Installing Pandora Agent for Windows</title>
+    <sect3>
+      <title>Build Windows Agent from sources</title>
+      <para>
+	In order to build from sources, you will need the latest
+	Dev-Cpp IDE version, with the MinGW tools. Download from
+	http://www.bloodshed.net/devcpp.html
+      </para>
+      <para>
+	Open PandoraService.dev with Dev-Cpp and construct the
+	project. Everything should compile fine in a default
+	installation.
+      </para>
+    </sect3>
+    <sect3>
+      <title>Windows Agent installation</title>		
+      <para>
+	Before running or installation of Pandora Windows service, you
+	must create the configuration directory and extract the
+	PandoraBin.zip file into it.
+	
+	It doesn't matter where it is installled, because Pandora Agent
+	will adapt to any local directory. In the examples, the
+	application will be installed in <filename>C:\Pandora\</filename>
+      </para>
+      <para>
+	This directory will hold the configuration files, which are:
+	<screen>
+	  c:\Pandora\pandora_agent.conf   :: Pandora Windows service main configuration
+	  c:\Pandora\id_dsa             :: Private SSH key 
+	  c:\Pandora\id_dsa.pub         :: Public SSH key
+	</screen>
+      </para>
+      <para>
+	Notice: At this moment, the installation of the Pandora Windows
+	Agent must be done manually. We are working in a auto-install
+	package.
+      </para>
+      <para>
+	To install the Pandora Windows Agent execute this sentence in a
+	Windows command line:
+	
+	<programlisting>
+	  PandoraService.exe  --install
+	</programlisting>
+	
+	The Agent will be installed into the Windows services
+	system. You can check it on Control Panel -> Administrative
+	tools -> Services.
+      </para>
+      <para>
+	To run the Agent open the "Services" dialog (Control Panel ->
+	Administrative tools-> Services), search the "Pandora Service"
+	service and run it clicking the play button. To stop the
+	service, open the "Services" dialog, search the "Pandora
+	Service" and click the stop button.
+      </para>
+      <para>
+	To uninstall the Pandora Windows Agent, execute this sentence in
+	a Windows command line:
+	<programlisting>
+	  PandoraService.exe --uninstall
+	</programlisting>
+      </para>
+    </sect3>
+    <sect3>
+      <title>Windows Agent testing</title>
+      <para>
+	You can check the Pandora Windows Agent output in the
+	<filename>C:\babel\babel-debug.dbg</filename> file, that is a
+	plain text file and includes info about the execution flow of
+	the Agent.
+      </para>
+      <para>
+	To test that SSH is working correctly, you can use the
+	--test-ssh parameter in the executable file. This force babel
+	to conect using internal SSH and copy a file called
+	"ssh.test".
+      </para>
+    </sect3>
+    <sect3>
+      <title>Windows Agent configuration</title>
+      <para>
+	All setup is made in <filename>babel_agent.conf</filename>.
+	This file is a list of keys/values pairs. Here is an example
+	of this file.
+	<screen>
+	  # General Parameters
+	  # ==================
+	  
+	  server_ip 127.0.0.1
+	  server_path /opt/pandora_server/data_in
+	  temporal "D:\temp"
+	  interval 1
+	  agent_name localhost
+	  
+	  # Module Definition
+	  # =================
+	  
+	  
+	  # Counting OpenedConnections (check the language string)
+	  module_begin
+	  module_name OpenNetConnections
+	  module_type generic_data
+	  module_exec netstat -na | grep ESTAB | wc -l | tr -d " "
+	  module_description Conexiones abiertas (interval 2)
+	  module_interval 2
+	  module_end
+	  
+	  # Is Schedule service running ?
+	  module_begin
+	  module_name ServicioProg
+	  module_type generic_proc
+	  module_service Schedule
+	  module_description Servicio Programador de tareas
+	  module_end
+	  
+	  # Is Eventlog service running ?
+	  module_begin
+	  module_name ServicioReg
+	  module_type generic_proc
+	  module_service Eventlog
+	  module_description Servicio Registro de sucesos
+	  module_end
+	  
+	  # Is lsass.exe process alive ?
+	  module_begin
+	  module_name Proc_lsass
+	  module_type generic_proc
+	  module_proc "lsass.exe"
+	  module_description Proceso LSASS.exe
+	  module_end
+	  
+	  # Received packets
+	  module_begin
+	  module_name ReceivedPackets
+	  module_type generic_data
+	  module_exec netstat -s | grep  "Paquetes recibidos  "| tr -d " " | cut -f 2 -d "=" | tr -d "\n"
+	  module_description Conexiones abiertas (interval 2)
+	  module_end
+	  
+	  # Free space on disk
+	  module_begin
+	  module_name FreeDiskC
+	  module_type generic_data
+	  module_freedisk C:
+	  module_description Free space on drive C:
+	  module_end
+	  
+	  # CPU usage percentage
+	  module_begin
+	  module_name CPUUse0
+	  module_type generic_data
+	  module_cpuusage 0
+	  module_description CPU#0 usage
+	  module_end
+	  
+	  module_begin
+	  module_name FreeMemory
+	  module_type generic_data
+	  module_freememory
+	  module_description Amount of free memory.
+	  module_end
+	</screen>
+      </para>
+    </sect3>
+  </sect2>
+  </sect1>
+</chapter>
 

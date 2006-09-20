@@ -1,5 +1,9 @@
 2006-08-31  Esteban Sanchez  <estebans@artica.es>
 
+	* bin/PandoraAgent.exe: Updated to the new code.
+
+2006-08-31  Esteban Sanchez  <estebans@artica.es>
+
 	* pandora.cc, pandora_strutils.h, windows_service.h,
 	wmi/pandora_wmi.cc, ssh/pandora_ssh_test.cc: Documentation comments
 	updated.

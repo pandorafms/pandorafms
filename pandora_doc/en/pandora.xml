@@ -3,6 +3,7 @@
 	  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
 <!ENTITY pandora_version "v1.2">
 <!ENTITY pandora "<emphasis>Pandora</emphasis>">
+<!ENTITY include_pandora_introduction SYSTEM "pandora_introduction.xml">
 <!ENTITY include_pandora_install SYSTEM "pandora_install.xml">
 <!ENTITY include_fdl SYSTEM "fdl.xml">
 <!ENTITY include_gpl SYSTEM "gpl.xml">
@@ -11,11 +12,12 @@
 <book lang="en">
   <bookinfo>
     <title>&pandora; &pandora_version;</title>
-    <graphic fileref="./img/pandora_logo.jpg" valign="bottom" align="center"/>
+    <graphic fileref="./images/pandora_logo.jpg" valign="bottom" align="center"/>
     <copyright>
       <year>2006</year>
       <holder>
-	√Årtica Soluciones Tecnol√≥gicas S.L, Sancho Lerena, Esteban S√°nchez y otros.
+	¡rtica Soluciones TecnolÛgicas S.L, Sancho Lerena, Esteban
+	S·nchez y otros.
       </holder>
     </copyright>
     <date>11/09/2006</date>
@@ -42,14 +44,16 @@
 	<date>11 Sept 2006</date>
 	<revremark>Submitted.</revremark>
       </revision>
+
       <revision>
-	<revnumber>0.1</revnumber>
-	<date>11 Sept 2006</date>
+	<revnumber>1.1</revnumber>
+	<date>20 Sept 2006</date>
 	<revremark>First draft for review.</revremark>
       </revision>
     </revhistory>
   </bookinfo>
-  
+
+  &include_pandora_introduction; 
   &include_pandora_install;
   &include_fdl;
   &include_gpl;

@@ -43,7 +43,7 @@ CREATE TABLE `tagente` (
 CREATE TABLE `tagente_datos` (
   `id_agente_datos` bigint(10) unsigned NOT NULL auto_increment,
   `id_agente_modulo` bigint(4) NOT NULL default '0',
-  `datos` double(12,2) default NULL,
+  `datos` double(18,2) default NULL,
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `id_agente` bigint(4) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_agente_datos`),
@@ -58,7 +58,7 @@ CREATE TABLE `tagente_datos` (
 CREATE TABLE `tagente_datos_inc` (
   `id_adi` bigint(20) unsigned NOT NULL auto_increment,
   `id_agente_modulo` bigint(20) NOT NULL default '0',
-  `datos` bigint(12) default NULL,
+  `datos` bigint(18) default NULL,
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id_adi`),
   KEY `data_inc_index_1` (`id_agente_modulo`)

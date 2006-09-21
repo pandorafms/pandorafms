@@ -137,13 +137,6 @@ dbhost localhost
 
 Please change them to your own data. For security reasons isn't recommended use the default values.
 
-Before running Pandora Server, you need to have Pandora DataBase running. In order to setup database configuration you'll need to edit pandora_server.pl perl script and change this parameters (all are together, in the first lines of code):
-my $dirname = "/opt/pandora/data_in";
-my $dbuser = "pandora";
-my $dbpass = "pandora";
-my $dbhost = "pandora";
-my $log_file = "/opt/pandora/pandora.log";
-
 If you run Pandora Server in Windows, you need to use the backslash twice in $dirname, that is: "\\", for example: my $dirname="C:\\pandora\\pandora_server\\data_in";, not needed in $log_file.
 
 These are default values, and all must be existing directory and filename and valid username, password and hostname.

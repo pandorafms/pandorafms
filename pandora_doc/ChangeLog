@@ -1,9 +1,24 @@
+2006-09-20  Sancho Lerena  <slerena@artica.es>
+
+	* en/pandora.xml: Changes in copyright notice and other minor stuff.
+
+	* en/pandora_introduction.xml: Major cut/paste info from older
+	docs. Formatting and some graphics inline. Initial first version
+	of introduction chapter for main/install pandora doc. Please
+	review it MANY times before publish it.
+
+	* en/pandora_install.xml: More formatting and text added. Second
+	version, with new stuff from last revision. Please review it MANY
+	times before publish it.
+
+	* en/images/*.jpg: New files added for introduction chapter.
+	
 2006-09-21  Raul Mateos  <raulofpandora@gmail.com>
 
 	* en/pandora_install.xml: Updated
 
 2006-09-18  slerena  <slerena@artica.es>
-
+	
 	* en/pandora.xml: Moved to pandora_user.xml. A new file called
 	pandora.xml will be "install manual". We'll have two different
 	docs: User guide, and Install / Advanced guide.

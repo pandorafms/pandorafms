@@ -1,3 +1,11 @@
+2006-09-21  Sancho Lerena  <slerena@artica.es>
+
+	* pandoradb.sql: Altered tagente_datos field "datos" to have
+	DOUBLE(18,2) instead of DOUBLE (12,2).
+
+	* pandora_db1.1_to1.2.sql: Altered tagente_datos field "datos" to
+	have DOUBLE(18,2) instead of DOUBLE (12,2).
+
 2006-09-16 Raul Mateos  <raulofpandora@gmail.com>
 
 	* Set all timestamp values in pandoradb.sql file to 0000-00-00 00:00:00

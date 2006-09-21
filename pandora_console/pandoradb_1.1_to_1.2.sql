@@ -174,7 +174,7 @@ DROP TABLE tagente_datos;
 CREATE TABLE `tagente_datos` (
   `id_agente_datos` bigint(10) unsigned NOT NULL auto_increment,
   `id_agente_modulo` bigint(4) NOT NULL default '0',
-  `datos` double(12,2) default NULL,
+  `datos` double(18,2) default NULL,
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `id_agente` bigint(4) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_agente_datos`),

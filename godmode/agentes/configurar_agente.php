@@ -500,11 +500,15 @@ if (give_acl($id_user, 0, "AW")==1) {
 	// =========================================================
 	if (isset($_POST["oid"])){
 		snmp_set_quick_print(1);
+echo "DEBUG snmpreadwalk call() $ip_target $snmp_community <br>";
 		if (! ($snmpwalk = snmprealwalk($ip_target, $snmp_community, "")))
 			echo "<h3 class='error'>".$lang_label["cannot_read_snmp"]."</h3>";
 		else
 			echo "<h3 class='suc'>".$lang_label["ok_read_snmp"]."</h3>";
+echo "DEBUG $snmpwalk <br>";
 	}
+
+
 	// =========================================================
 	// MODULE INSERT
 	// =========================================================
@@ -917,6 +921,8 @@ else {
 <td colspan=3 class="datos"><select name="combo_snmp_oid">
 <?php
 // FILL OID Combobox
+
+
 if (isset($_POST["oid"])){
 	for (reset($snmpwalk); $i = key($snmpwalk); next($snmpwalk)) {
 		// OJO, al indice tengo que restarle uno, el SNMP funciona con indices a partir de 0

@@ -1,3 +1,8 @@
+2006-09-16 Raul Mateos  <raulofpandora@gmail.com>
+
+	* godmode/agentes/configurar_agente.php: Update :-D. Well, really comment
+	DEBUG code added last update.
+
 2006-09-21  Sancho Lerena  <slerena@artica.es>
 
 	* pandoradb.sql: Altered tagente_datos field "datos" to have

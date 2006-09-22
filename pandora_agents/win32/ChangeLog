@@ -1,3 +1,15 @@
+2006-09-22  Raúl Mateos  <raulofpandora@gmail.com>
+
+	* installer/: New directory to put the Pandora Agent for Windows installer
+	
+	* Pandora Windows Agent-1.2 Beta3-Setup.exe: New file added to repository
+
+2006-09-20	Raul Mateos  <raulofpandora@gmail.com>
+
+	* win32\bin\pandora_agent.conf: Updated some texts to english
+	
+	* win32\bin\README: Added
+
 2006-08-31  Esteban Sanchez  <estebans@artica.es>
 
 	* bin/PandoraAgent.exe: Updated to the new code.

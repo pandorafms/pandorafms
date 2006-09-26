@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xTableColDisplay'>
+
+<copyright>Copyright 2004-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>Presentation</grp>
+  <grp>Table</grp>
+</groups>
+<type>Function</type>
+
+<description><![CDATA[Set the display of a table column.]]></description>
+
+<syntax>xTableColDisplay(bShow, sec, nCol)</syntax>
+
+<parameters>
+  <par>
+    <name>bShow</name>
+    <note><![CDATA[if true show the column, else hide it]]></note>
+  </par>
+  <par>
+    <name>sec</name>
+    <note><![CDATA[ID or element reference of table, tHead, tBody, etc.]]></note>
+  </par>
+  <par>
+    <name>nCol</name>
+    <note><![CDATA[zero-based column number]]></note>
+  </par>
+</parameters>
+
+<dependencies>
+  <dep>xgetelementbyid</dep>
+</dependencies>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/x/examples/table_toys.php</url>
+    <note><![CDATA[table toys]]></note>
+  </demo>
+</demos>
+
+<comments>
+  <comment>
+    <date></date>
+    <author>mf</author>
+    <note><![CDATA[Note: may not work in Safari v1.2. Reference: http://www.quirksmode.org/dom/w3c_html.html. Thanks Rob :-)]]></note>
+  </comment>
+</comments>
+
+<revisions>
+  <rev>
+    <num>3</num>
+    <date>30Jul04</date>
+    <author>mf</author>
+    <note><![CDATA[Initial release]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xMenu1B'>
+
+<copyright>Copyright 2001-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>Navigation</grp>
+</groups>
+<type>Object</type>
+
+<description><![CDATA[xMenu1B Object Prototype. A variation on xMenu1A. The menu requires a click to close and opening one closes any others that were open.]]></description>
+
+<syntax>xMenu1B(openTriggerId, closeTriggerId, menuId, slideTime, bOnClick)</syntax>
+
+<parameters>
+  <par>
+    <name>openTriggerId</name>
+    <note><![CDATA[id string of element which shows menu]]></note>
+  </par>
+  <par>
+    <name>closeTriggerId</name>
+    <note><![CDATA[id string of element which closes menu]]></note>
+  </par>
+  <par>
+    <name>menuId</name>
+    <note><![CDATA[id string of menu]]></note>
+  </par>
+  <par>
+    <name>slideTime</name>
+    <note><![CDATA[integer time for menu slide (in milliseconds)]]></note>
+  </par>
+  <par>
+    <name>bOnClick</name>
+    <note><![CDATA[if true menu will open on click, else on mouseover]]></note>
+  </par>
+</parameters>
+
+<properties>
+  <prop>
+    <name></name>
+    <note><![CDATA[]]></note>
+  </prop>
+</properties>
+
+<dependencies>
+  <dep>xgetelementbyid</dep>
+  <dep>xhide</dep>
+  <dep>xmoveto</dep>
+  <dep>xpagex</dep>
+  <dep>xpagey</dep>
+  <dep>xshow</dep>
+  <dep>xslideto</dep>
+  <dep>xheight</dep>
+</dependencies>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.loc/x/menus/xmenu1.php</url>
+    <note><![CDATA[simple menus with plenty of potential]]></note>
+  </demo>
+</demos>
+
+</xlib_symbol>

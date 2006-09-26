@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xIntersection'>
+
+<copyright>Copyright 2001-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>Position</grp>
+  <grp>Size</grp>
+</groups>
+<type>Function</type>
+
+<description><![CDATA[Determine the intersecting rectangle of two elements.]]></description>
+
+<syntax>xIntersection(ele1, ele2, obj)</syntax>
+
+<parameters>
+  <par>
+    <name>ele1</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>ele2</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>obj</name>
+    <note><![CDATA[]]></note>
+  </par>
+</parameters>
+
+<return>Returns true if the two elements intersect and assigns properties to obj which describe the intersected rectangle: x, y, w, and h.</return>
+
+<dependencies>
+  <dep>xpagex</dep>
+  <dep>xwidth</dep>
+  <dep>xpagey</dep>
+  <dep>xheight</dep>
+</dependencies>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/toys/</url>
+    <note><![CDATA[Index of all X demos.]]></note>
+  </demo>
+</demos>
+
+<revisions>
+  <rev>
+    <num>2</num>
+    <date>21Apr04</date>
+    <author>mf</author>
+    <note><![CDATA[finished porting to X ;-) thanks Nick]]></note>
+  </rev>
+  <rev>
+    <num>1</num>
+    <date>31Mar04</date>
+    <author>mf</author>
+    <note><![CDATA[put in it's own file for use with XC]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

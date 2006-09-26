@@ -1,0 +1,378 @@
+
+html {
+  margin:0; padding:0;
+}
+body {
+  font-family:verdana,arial,sans-serif,helvetica; font-size:12px;
+  color:#000; background:#bba;
+  margin:0; padding:0;
+}
+p {
+  font-family:verdana,arial,sans-serif,helvetica; font-size:12px;
+  color:#000000; background:#ffffff; 
+}
+h1 {
+  font-family:verdana,arial,sans-serif,helvetica; font-size:14px;
+  color:#333; background:#cc9; font-style:normal; text-align:center;
+  margin:0 0 1.2em 0; padding:0;
+}
+h2 {
+  font-family:verdana,arial,sans-serif,helvetica; font-size:14px;
+  color:#333; background:#ffffff; font-style:italic;
+  margin:0 0 1em 0;
+}
+h3 {
+  font-family:verdana,arial,sans-serif,helvetica; font-size:10px;
+  color:#333; background:#ffffff; font-style:normal;
+  margin:0 0 1em 0;
+}
+
+a {
+  font-family:verdana,arial,helvetica,sans-serif; font-size:12px;
+  color:#000;
+}
+a:link, a:active {
+  font-family:verdana,arial,helvetica,sans-serif; font-size:12px;
+  color:#000;
+}
+a:visited {
+  font-family:verdana,arial,helvetica,sans-serif; font-size:12px;
+  color:#666;
+}
+a:hover {
+  font-family:verdana,arial,helvetica,sans-serif; font-size:12px;
+  color:#fff; background:#999;
+  text-decoration:none;
+}
+
+a.m {
+  font-family:verdana,arial,helvetica,sans-serif; font-size:10px;
+  color:#000;
+  margin:0; padding:0;
+  display:block; text-decoration:none; cursor:default;
+}
+a.m:link, a.m:active {
+  font-family:verdana,arial,helvetica,sans-serif; font-size:10px;
+  color:#000;
+  margin:0; padding:0;
+  display:block; text-decoration:none; cursor:default;
+}
+a.m:visited {
+  font-family:verdana,arial,helvetica,sans-serif; font-size:10px;
+  color:#666;
+  margin:0; padding:0;
+  display:block; text-decoration:none; cursor:default;
+}
+a.m:hover {
+  font-family:verdana,arial,helvetica,sans-serif; font-size:10px;
+  color:#fff; background:#999;
+  margin:0; padding:0;
+  display:block; text-decoration:none; cursor:default;
+}
+
+.rMenu {
+  position:relative; visibility:visible; overflow:visible;
+  background:#cc9;
+  margin:0; padding:0;
+  text-align:left;
+  height:20px;
+/*
+  border-left:1px outset #ccc;
+  border-top:1px outset #ccc;
+  border-right:1px solid #333;
+  border-bottom:1px solid #333;*/
+  
+}
+.aMenu {
+  position:absolute; visibility:hidden; overflow:visible;
+  margin:0; padding:0 2px 0 0;
+  text-align:left;
+
+/*  border-left:1px outset #ccc;
+  border-top:1px outset #ccc;
+  border-right:1px solid #333;
+  border-bottom:1px solid #333;*/
+  
+}
+.mLabel {
+  position:absolute; visibility:hidden; overflow:hidden;
+  margin:0; padding:2px;
+  cursor:default;
+  border-left:1px outset #ccc;
+  border-top:1px outset #ccc;
+  border-right:1px solid #333;
+  border-bottom:1px solid #333;
+}
+.mLabelOver {
+  position:absolute; visibility:hidden; overflow:hidden;
+  margin:0; padding:2px;
+  cursor:default;
+  border-left:1px outset #333;
+  border-top:1px outset #333;
+  border-right:1px solid #ccc;
+  border-bottom:1px solid #ccc;
+}
+.mBox {
+  position:absolute; visibility:hidden; overflow:hidden;
+  margin:0; padding:4px 2px 4px 2px;
+  cursor:default;
+  width:auto; /* wrapping col for nn4, over-ride in page-specific css */
+  line-height:1.25em;
+  border-left:1px solid #ccc;
+  border-top:1px solid #ccc;
+  border-right:1px solid #333;
+  border-bottom:1px solid #333;
+}
+
+#header {
+  margin:20px 80px 0px 80px; 
+  padding:0;
+}
+#banner {
+  margin:0; padding:6px 4px;
+  background:#333;
+}
+.section {
+  margin:0px 80px 20px 80px; 
+  padding:10px;
+  font-family:verdana,arial,sans-serif,helvetica;
+  font-size:12px; color:#000000; background:#ffffff;
+}
+
+.demoBar {
+  overflow:hidden;
+  font-size:x-small;
+  height:1.2em;
+  margin:0;
+  padding:1px;
+  font-weight:bold;
+  color:#000;
+  background:#596380;
+  cursor:default;
+}
+
+.demoBox {
+  position:absolute;
+  overflow:hidden;
+  visibility:hidden;
+  width:200px;
+  margin:0;
+  padding:0;
+  font-size:x-small;
+  color:#000;
+  background:#FFFFFF; 
+  cursor:default;
+  border:1px solid #596380;
+}
+.demoBar {
+  overflow:hidden;
+  font-size:x-small;
+  height:1.2em;
+  margin:0;
+  padding:1px;
+  font-weight:bold;
+  color:#000;
+  background:#596380;
+  cursor:default;
+}
+.demoBtn {
+  position:absolute;
+  overflow:hidden;
+  font-size:x-small;
+  width:1.2em;
+  height:1.2em;
+  margin:0;
+  padding:0;
+  color:#000;
+  background:#FFFFFF;
+  cursor:default;
+}
+.demoContent {
+  margin:10px;
+}
+.noLink {text-decoration:none; color:black}
+
+
+.fenster {
+  position:absolute;
+  visibility:hidden;
+  overflow:hidden;
+  width:75px;
+  margin:0;
+  padding:0;
+  font-size:x-small;
+  color:#000;
+/*   background:#BF8660 ; */
+  cursor:default;
+  border:1px solid #596380;
+
+}
+.fenBar {
+  overflow:hidden;
+  font-size:x-small;
+  height:1.8em;
+  margin:0;
+  padding:1px;
+  font-weight:bold;
+  color:#000;
+/*   background:#596380 ; */
+  cursor:default;
+}
+/*.fenMaxBtn {
+  position:absolute;
+  overflow:hidden;
+  font-size:x-small;
+  width:1.2em;
+  height:1.2em;
+  margin:0;
+  padding:0;
+  color:#000;
+  background:#BF8660;
+  cursor:default;
+}
+.fenResBtn {
+  position:absolute;
+  overflow:hidden;
+  font-size:x-small;
+  width:1.2em;
+  height:1.2em;
+  margin:0;
+  padding:0;
+  color:#000;
+  background:#596380;
+  cursor:default;
+}*/
+.fenContent {
+  margin:10px;
+}
+
+
+
+
+
+
+
+/*
+  xTabPanelGroup Demo
+  default css
+*/
+
+.tabPanelGroup {
+  margin:10px; padding:0;
+  border:1px solid #CFD4E6;
+}
+.tabPanel {
+  margin:0; padding:10px;
+  color:#000; background:#CFD4E6;
+}
+.tabGroup {
+  margin:0; padding:0;
+}
+.tabDefault {
+  margin:0; padding:2px;
+  background:#FFF;
+}
+.tabSelected {
+  margin:0; padding:2px;
+  color:#000; background:#CFD4E6;
+}
+
+
+/*
+  xTabPanelGroup Demo
+  dynamic css
+*/
+
+.tabPanelGroup {
+  position:relative; overflow:hidden;
+}
+.tabPanel {
+  position:absolute; overflow:auto;
+  display:none;
+}
+.tabGroup {
+  position:absolute; overflow:hidden;
+}
+
+.tabGroup a.tabDefault:link,
+.tabGroup a.tabDefault:visited,
+.tabGroup a.tabDefault:active,
+/* .tabGroup a.tabDefault:hover, */
+.tabDefault {
+  position:absolute; overflow:hidden;
+  cursor:pointer;
+  text-align:center;
+  border-top:none;
+  border-left:1px solid #CFD4E6;
+  border-right:1px solid #CFD4E6;
+  border-bottom:1px solid #596380;
+  background:#FFF;
+  text-decoration:none;
+}
+.tabGroup a.tabDefault:hover,
+.tabDefault:hover {
+  position:absolute; overflow:hidden;
+  cursor:pointer;
+  text-align:center;
+  border-top:none;
+  border-left:1px solid #CFD4E6;
+  border-right:1px solid #CFD4E6;
+  border-bottom:1px solid #596380;
+  background:#FFF;
+  text-decoration:none;
+}
+
+.tabGroup a.tabSelected:link,
+.tabGroup a.tabSelected:visited,
+.tabGroup a.tabSelected:active,
+.tabGroup a.tabSelected:hover,
+.tabSelected {
+  position:absolute; overflow:hidden;
+  cursor:pointer;
+  text-align:center;
+  border-top:1px solid #596380;
+  border-right:1px solid #596380;
+  border-bottom:1px solid #CFD4E6;
+  border-left:1px solid #596380;
+  background:#CFD4E6;
+  text-decoration:none;
+}
+
+span.linkDelim {
+  display:none;
+}
+
+/*
+a.tabDefault:link,
+a.tabDefault:visited,
+a.tabDefault:active {
+  display:block;
+  position:absolute; overflow:hidden;
+  cursor:pointer;
+  text-align:center;
+  border-top:none;
+  border-left:1px solid #CFD4E6;
+  border-right:1px solid #CFD4E6;
+  border-bottom:1px solid #596380;
+}
+.tabGroup a.tabSelected:link,
+.tabGroup a.tabSelected:visited,
+.tabGroup a.tabSelected:active,
+.tabGroup a.tabSelected:hover {
+  display:block;
+  position:absolute; overflow:hidden;
+  cursor:pointer;
+  text-align:center;
+  border-top:1px solid #596380;
+  border-right:1px solid #596380;
+  border-bottom:1px solid #CFD4E6;
+  border-left:1px solid #596380;
+}
+
+
+a.tabGroup:link,
+a.tabGroup:visited,
+a.tabGroup:active {
+  background:transparent;
+}
+*/

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xTooltipGroup'>
+
+<copyright>Copyright 2002-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>Object</grp>
+</groups>
+<type>Object</type>
+
+<description><![CDATA[Different tooltips applied to groups of elements.]]></description>
+
+<syntax>xTooltipGroup(grpClassOrIdList, tipClass, origin, xOffset, yOffset, textList)</syntax>
+
+<parameters>
+  <par>
+    <name>grpClassOrIdList</name>
+    <note><![CDATA[The css class name which you add to any element you want to trigger a tooltip - Or - an array of id strings.]]></note>
+  </par>
+  <par>
+    <name>tipClass</name>
+    <note><![CDATA[The css class name applied to the tooltip triggered by elements with the grpClass class name (or elements whose id is in the IdList).]]></note>
+  </par>
+  <par>
+    <name>origin</name>
+    <note><![CDATA[One of 'right', 'top', or 'mouse'. For 'right' or 'top', the tooltip is positioned to the right (or top) of the trigger element. For 'mouse' the tooltip will follow the mouse. In all three cases the following offsets are applied.]]></note>
+  </par>
+  <par>
+    <name>xOffset/yOffset</name>
+    <note><![CDATA[The tooltip is positioned relative to the above origin, offset by these amounts.]]></note>
+  </par>
+  <par>
+    <name>textList</name>
+    <note><![CDATA[If grpClassOrIdList is an array of IDs, then textList provides the tooltip text for the corresponding array index. If grpClassOrIdList is a class name then textList is not needed (tooltip text is taken from the element's TITLE attribute).]]></note>
+  </par>
+</parameters>
+
+<properties>
+  <prop>
+    <name></name>
+    <note><![CDATA[]]></note>
+  </prop>
+</properties>
+
+<dependencies>
+  <dep>xstr</dep>
+  <dep>xgetelementsbyclassname</dep>
+  <dep>xgetelementbyid</dep>
+  <dep>xaddeventlistener</dep>
+  <dep>xpagex</dep>
+  <dep>xwidth</dep>
+  <dep>xpagey</dep>
+  <dep>xheight</dep>
+  <dep>xmoveto</dep>
+  <dep>xshow</dep>
+  <dep>xevent</dep>
+</dependencies>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/x/examples/tooltips3.html</url>
+    <note><![CDATA[tooltips demo]]></note>
+  </demo>
+</demos>
+
+<revisions>
+  <rev>
+    <num>2</num>
+    <date>17May04</date>
+    <author>mf</author>
+    <note><![CDATA[removed closures]]></note>
+  </rev>
+  <rev>
+    <num>1</num>
+    <date>31Mar04</date>
+    <author>mf</author>
+    <note><![CDATA[put in it's own file for use with XC]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

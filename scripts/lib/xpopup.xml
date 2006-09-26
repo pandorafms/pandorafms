@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xPopup'>
+
+<copyright>Copyright 2002-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>Object</grp>
+</groups>
+<type>Object</type>
+
+<description><![CDATA[A DHTML alternative to popup windows.]]></description>
+
+<syntax>xPopup(sTmrType, uTimeout, sPos1, sPos2, sPos3, sStyle, sId, sUrl)</syntax>
+
+<parameters>
+  <par>
+    <name>sTmrType</name>
+    <note><![CDATA['timeout' or 'interval']]></note>
+  </par>
+  <par>
+    <name>uTimeout</name>
+    <note><![CDATA[time in ms]]></note>
+  </par>
+  <par>
+    <name>sPos1</name>
+    <note><![CDATA[on show, slides from this cp]]></note>
+  </par>
+  <par>
+    <name>sPos2</name>
+    <note><![CDATA[on show, slides to this cp]]></note>
+  </par>
+  <par>
+    <name>sPos3</name>
+    <note><![CDATA[on hide, slides to this cp]]></note>
+  </par>
+  <par>
+    <name>sStyle</name>
+    <note><![CDATA[applied to the iframe]]></note>
+  </par>
+  <par>
+    <name>sId</name>
+    <note><![CDATA[applied to the iframe]]></note>
+  </par>
+  <par>
+    <name>sUrl</name>
+    <note><![CDATA[gets loaded into the newly created iframe]]></note>
+  </par>
+</parameters>
+
+<properties>
+  <prop>
+    <name>slideTime</name>
+    <note><![CDATA[integer, read/write, defaults to 500]]></note>
+  </prop>
+</properties>
+
+<dependencies>
+  <dep>xshow</dep>
+  <dep>xtimer</dep>
+  <dep>xcardinalposition</dep>
+  <dep>xslideto</dep>
+  <dep>xmoveto</dep>
+</dependencies>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/examples/popup.php</url>
+    <note><![CDATA[popup demo using xTimer]]></note>
+  </demo>
+</demos>
+
+<comments>
+  <comment>
+    <date></date>
+    <author>mf</author>
+    <note><![CDATA[cp is one of: 'n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw', 'cen', 'cenh' or 'cenv']]></note>
+  </comment>
+  <comment>
+    <date></date>
+    <author>mf</author>
+    <note><![CDATA[experimental because of its use of xTimer]]></note>
+  </comment>
+</comments>
+
+</xlib_symbol>

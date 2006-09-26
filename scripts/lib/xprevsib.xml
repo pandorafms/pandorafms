@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xPrevSib'>
+
+<copyright>Copyright 2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>DOM</grp>
+</groups>
+<type>Function</type>
+
+<description><![CDATA[Get an element's previous sibling.]]></description>
+
+<syntax>xPrevSib(ele, tag)</syntax>
+
+<parameters>
+  <par>
+    <name>ele</name>
+    <note><![CDATA[id string or object reference]]></note>
+  </par>
+  <par>
+    <name>tag</name>
+    <note><![CDATA[string]]></note>
+  </par>
+</parameters>
+
+<return>returns previous sibling with nodeName == tag (if tag is defined), else with nodeType == 1.</return>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/toys/</url>
+    <note><![CDATA[Index of all X demos.]]></note>
+  </demo>
+</demos>
+
+<comments>
+  <comment>
+    <date>27Jan05</date>
+    <author>mf</author>
+    <note><![CDATA[I like the features - but it needs optimizing. I didn't stick with my X naming philosophy - perhaps it should have been 'xPreviousSibling' ???]]></note>
+  </comment>
+</comments>
+
+<revisions>
+  <rev>
+    <num>2</num>
+    <date>11Mar05</date>
+    <author>mf</author>
+    <note><![CDATA[put in it's own file for use with XC]]></note>
+  </rev>
+  <rev>
+    <num>1</num>
+    <date>27Jan05</date>
+    <author>mf</author>
+    <note><![CDATA[Implemented xPrevSib, xNextSib and xFirstChild (need optimizing)]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<xlib_symbol id='xHex'>
+
+<copyright>Copyright 2001-2005 Michael Foster (Cross-Browser.com)</copyright>
+<license>Part of X, a Cross-Browser Javascript Library, Distributed under the terms of the GNU LGPL</license>
+<groups>
+  <grp>String</grp>
+</groups>
+<type>Function</type>
+
+<description><![CDATA[Converts an integer to a hex string.]]></description>
+
+<syntax>xHex(n, digits, prefix)</syntax>
+
+<parameters>
+  <par>
+    <name>n</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>digits</name>
+    <note><![CDATA[]]></note>
+  </par>
+  <par>
+    <name>prefix</name>
+    <note><![CDATA[]]></note>
+  </par>
+</parameters>
+
+<return>string</return>
+
+<demos>
+  <demo>
+    <url>http://cross-browser.com/toys/</url>
+    <note><![CDATA[Index of all X demos.]]></note>
+  </demo>
+</demos>
+
+<revisions>
+  <rev>
+    <num>1</num>
+    <date>11Mar05</date>
+    <author>mf</author>
+    <note><![CDATA[put in it's own file for use with XC]]></note>
+  </rev>
+</revisions>
+
+</xlib_symbol>

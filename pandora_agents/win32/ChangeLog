@@ -1,3 +1,8 @@
+2006-09-27  Raúl Mateos  <raulofpandora@gmail.com>
+
+	* Pandora Windows Agent-1.2 Beta3-Setup.exe: Updated logo image and added
+	shortcut to edit configuration file.
+
 2006-09-22  Raúl Mateos  <raulofpandora@gmail.com>
 
 	* installer/: New directory to put the Pandora Agent for Windows installer

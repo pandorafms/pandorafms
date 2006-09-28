@@ -1,3 +1,28 @@
+2006-09-28  Sancho Lerena  <slerena@artica.es>
+
+	* en/pandora.pdf: Provide a test version for betatesters of doc.
+	
+	* en/pandora.xml: Added migration info.
+
+	* en/pandora_migration.xml: Added.
+
+	* en/images/access_graph_*.jpg: Added.
+
+	* en/images/access_graph_*.jpg: Added.
+	
+	* en/images/Pandora_*_Diagram.png: Added
+	
+	* en/pandora_advanced.xml: Added to repository. Talks about
+	advanced issues with pandora.
+
+	* en/pandora_userguide.xml: Fixed bad path for Pandora Logo shown
+	in cover page.
+
+	* en/pandora_introduction.xml: New section (new feautes), and added
+	some text and corrections.
+
+	* en/pandora.xml: Added advanced section as included file.     
+
 2006-09-20  Sancho Lerena  <slerena@artica.es>
 
 	* en/pandora.xml: Changes in copyright notice and other minor stuff.

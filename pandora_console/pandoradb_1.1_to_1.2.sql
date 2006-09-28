@@ -106,7 +106,7 @@ CREATE TABLE `tserver` (
   PRIMARY KEY  (`id_server`)
 ) TYPE=InnoDB;
 
-ALTER TABLE ttipo_modulo ADD column `icon` varchar(100) default NULL AFTER COLUMN descripcion;
+ALTER TABLE ttipo_modulo ADD column `icon` varchar(100) default NULL AFTER descripcion;
 
 CREATE TABLE `ttrap` (
   `id_trap` bigint(20) unsigned NOT NULL auto_increment,
@@ -125,13 +125,14 @@ CREATE TABLE `ttrap` (
 ) TYPE=InnoDB COMMENT='SNMP Trap table';
 
 UPDATE tconfig set value = "1.2" where token = "db_scheme_version";
-INSERT INTO tconfig (token,value) VALUES ('db_scheme_buile','PD060308');
+UPDATE tconfig set value = "en" where token = "language_code";
+INSERT INTO tconfig (token,value) VALUES ('db_scheme_buile','PD060926');
 INSERT INTO tconfig (token,value) VALUES ('truetype','0');
 INSERT INTO tconfig (token,value) VALUES ('graph_order','1');
 
 INSERT INTO `tlanguage` VALUES ('bb','Bable');
 INSERT INTO `tlanguage` VALUES ('en','English');
-INSERT INTO `tlanguage` VALUES ('es','Espa&ntilde;ol');
+INSERT INTO `tlanguage` VALUES ('es_es','Espa&ntilde;ol');
 INSERT INTO `tlanguage` VALUES ('es_la','Espa&ntilde;ol-Latinoam&eacute;rica');
 INSERT INTO `tlanguage` VALUES ('eu','Euskera');
 INSERT INTO `tlanguage` VALUES ('pt_br','Portuguese-Brazil');
@@ -147,7 +148,7 @@ INSERT INTO `tmodule_group` VALUES (5,'Miscellaneous');
 UPDATE ttipo_modulo set icon = "mod_data.gif" where nombre = "generic_data";
 UPDATE ttipo_modulo set icon = "mod_proc.gif" where nombre = "generic_proc";
 UPDATE ttipo_modulo set icon = "mod_string.gif" where nombre = "generic_data_string";
-UPDATE ttipo_modulo set icon = "mod_inc.gif" where nombre = "generic_data_inc";
+UPDATE ttipo_modulo set icon = "mod_data_inc.gif" where nombre = "generic_data_inc";
 INSERT INTO `ttipo_modulo` VALUES (6,'remote_icmp_proc',3,'Remote ICMP network agent, boolean data','mod_icmp_proc.gif');
 INSERT INTO `ttipo_modulo` VALUES (7,'remote_icmp',2,'Remote ICMP network agent (latency)','mod_icmp_data.gif');
 INSERT INTO `ttipo_modulo` VALUES (8,'remote_tcp',2,'Remote TCP network agent, numeric data','mod_tcp_data.gif');
@@ -169,6 +170,7 @@ UPDATE tgrupo set icon = "comms" where nombre = "Comms";
 UPDATE tgrupo set icon = "others" where nombre like "Other%";
 UPDATE tgrupo set icon = "workstation" where nombre = "Workstations";
 UPDATE tgrupo set icon = "apps" where nombre = "Applications";
+INSERT INTO `tconfig_os` VALUES ('Network','Pandora Network Agent','network.gif');
 
 DROP TABLE tagente_datos;
 CREATE TABLE `tagente_datos` (

@@ -1,7 +1,21 @@
+2006-09-28  Sancho Lerena  <slerena@artica.es>
+
+	* languages/language_es_es.php: Fixed message "out of limits"
+          without tildes in spanish for jpgraph output.
+
+	* pandoradb_1.1_to_1.2.sql: Fixed small issues: mod_data_inc was
+	  as mod_inc.gif in modify SQL sentence. Spanish language is
+	  _es_es not _es. Setup by default english language after
+	  migration. Added network agent as OS. Changed Build versions in
+	  DB Scheme and versions (1.1 in old one !!!).
+
+	* pandora_console/pandoradb_data.sql: Fixed version number and
+	  build.
+	  
 2006-09-16 Raul Mateos  <raulofpandora@gmail.com>
 
-	* godmode/agentes/configurar_agente.php: Update :-D. Well, really comment
-	DEBUG code added last update.
+	* godmode/agentes/configurar_agente.php: Comment DEBUG code added
+	last update.
 
 2006-09-21  Sancho Lerena  <slerena@artica.es>
 

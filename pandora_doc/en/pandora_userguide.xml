@@ -19,11 +19,11 @@
 <book lang="en">
   <bookinfo>
     <title>&pandora; &pandora_version;</title>
-    <graphic fileref="./img/pandora_logo.jpg" valign="bottom" align="center"/>
+    <graphic fileref="./images/pandora_logo.jpg" valign="bottom" align="center"/>
     <copyright>
       <year>2006</year>
       <holder>
-	Ártica Soluciones Tecnológicas S.L, Sancho Lerena, Esteban Sánchez y otros.
+	Artica Soluciones Tecnologicas S.L, Sancho Lerena, Esteban Sanchez y otros.
       </holder>
     </copyright>
     <date>11/09/2006</date>

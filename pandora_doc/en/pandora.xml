@@ -5,6 +5,7 @@
 <!ENTITY pandora "<emphasis>Pandora</emphasis>">
 <!ENTITY include_pandora_introduction SYSTEM "pandora_introduction.xml">
 <!ENTITY include_pandora_install SYSTEM "pandora_install.xml">
+<!ENTITY include_pandora_advanced SYSTEM "pandora_advanced.xml">
 <!ENTITY include_fdl SYSTEM "fdl.xml">
 <!ENTITY include_gpl SYSTEM "gpl.xml">
 ]>
@@ -55,6 +56,7 @@
 
   &include_pandora_introduction; 
   &include_pandora_install;
+  &include_pandora_advanced;
   &include_fdl;
   &include_gpl;
     

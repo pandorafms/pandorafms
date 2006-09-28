@@ -150,7 +150,7 @@
       <listitem>
 	<para>
 	  - <emphasis>Normal mode:</emphasis> The modules in this mode
-	  must be configured manually. The self  definition of the
+	  must be configured manually. The self definition of the
 	  modules is not allowed in this mode.
 	</para>
       </listitem>

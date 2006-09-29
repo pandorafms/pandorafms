@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?> 
-
 <chapter id="chapter7">
-	<title>Pandora Servers</title>
-
-	<para>
-	From "Manage Servers" section, in the Administration menu you can see a 
-	list of configured Pandora Servers and also can manage them.
-	</para>
-
-	<para>
-	From "Pandora Servers" in the Operation menu you can see a list
-	of the Pandora Servers.
-	</para>
-
+  <title>Pandora Servers</title>
+  <para>
+    From "Manage Servers" section, in the Administration menu you can see a 
+    list of configured Pandora Servers and also can manage them.
+  </para>
+  <para>
+    From "Pandora Servers" in the Operation menu you can see a list
+    of the Pandora Servers.
+  </para>
 </chapter>

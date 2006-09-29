@@ -1417,15 +1417,15 @@ sub crea_agente_modulo (%$$$$$$$) {
 	my $modulo_id = dame_modulo_id($pa_config, $tipo_modulo,$dbh);
 	my $agente_id = dame_agente_id($pa_config, $nombre_agente,$dbh);
 	
-	if ((!defined($max) || ($max eq "")){
+	if ((!defined($max)) || ($max eq "")){
 		$max =0;
 	}
 	
-	if ((!defined($min) || ($min eq "")){
+	if ((!defined($min)) || ($min eq "")){
 		$min =0;
 	}
 
-	if ((!defined($descripcion) || ($descripcion eq "")){
+	if ((!defined($descripcion)) || ($descripcion eq "")){
 		$descripcion="N/A";
 	}
 

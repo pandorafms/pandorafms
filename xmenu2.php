@@ -247,7 +247,7 @@ while ($vista=mysql_fetch_array($vistas)){ //recorremos las vistas y creamos un 
 
 	// Creamos los objetos, lineas que representan las relaciones entre objetos
 	for ($j=0;$j<sizeof($aObjetos);$j++){
-//   	echo "alert (".$j.");";
+
 		if (esObjetoDeVista($aObjetos[$j],$vista["idVista"]))
 		{
 			

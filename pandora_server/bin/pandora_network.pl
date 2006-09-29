@@ -1,7 +1,7 @@
 #!/usr/bin/perl
-##################################################################################
+##########################################################################
 # Pandora Network Server
-##################################################################################
+##########################################################################
 # Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
 # Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L
 #
@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-##################################################################################
+##########################################################################
 
 # Includes list
 use strict;
@@ -72,16 +72,16 @@ while ( 1 ){
 #------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------
-#---------------------  Main Perl Code below this line-------------------------------
+#---------------------  Main Perl Code below this line-----------------------
 #------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------
 
-##########################################################################################
+##########################################################################
 # SUB pandora_network_subsystem
 # Subsystem to process network modules
 # This module runs each X seconds (server threshold) checking for network modules status
-##########################################################################################
+##########################################################################
 
 sub pandora_network_subsystem {
         # Init vars
@@ -97,8 +97,8 @@ sub pandora_network_subsystem {
 	my $max; my $min; my $module_interval;
 	my $nombre; my $tcp_port; my $tcp_rcv; my $tcp_send; my $snmp_oid;
 	my $snmp_community; my $ip_target; my $id_module_group;
-	my $timestamp_viejo; # Almacena el timestamp del campo de la tabla tagente_estado
-	my $id_agente_estado; # ID de la tabla de tagente_estado (para hacer el update mas fino)
+	my $timestamp_viejo; # Stores timestamp from tagente_estado table
+	my $id_agente_estado; # ID from tagente_estado table
 	my $estado_cambio; # store tagente_estado cambio field
 	my $estado_estado; # Store tagente_estado estado field
 	my $agent_name; # Agent name
@@ -119,12 +119,12 @@ sub pandora_network_subsystem {
 	while ( 1 ) {
 		logger ($pa_config,"Loop in Network Module Subsystem",10);
 		# For each element
-		# -Leo un modulo de tipo red (tipo 5, 6 o 7) o categoria grupo 2
-		# -Leo su ultima entrada en la tabla tagente_modulo
-		# -si timestamp  de tagente_estado + module_interval <= timestamp actual
-		#     ejecuto el modulo, le doy 15 sec y contino.
-		#     si ejecuta bien, grabo datos y estado
-		# siguiente elemento
+		# -read net type module (type 5, 6 or 7) or group cathegory 2
+		# -read its last tagente_modulo table entry
+		# -if tagente_estado + module_interval  timestamp<= present timestamp
+		#     run module, sleep 15 secs. and continue
+		#     if ok, store data and status
+		# next element
 		# Calculate ID Agent from a select where module_type (id_tipo_modulo) > 4 (network modules)
 		# Check for MASTER SERVERS only: check another agents if their servers are gone
 
@@ -248,10 +248,10 @@ sub pandora_network_subsystem {
 	$dbh->disconnect();
 }
 
-##########################################################################################
+##########################################################################
 # SUB pandora_query_snmp (pa_config, oid, community, target, error, dbh)
 # Makes a call to SNMP modules to get a value,
-##########################################################################################
+##########################################################################
 sub pandora_query_snmp {
 	my $pa_config = $_[0];
 	my $snmp_oid = $_[1];
@@ -300,10 +300,10 @@ sub pandora_query_snmp {
 	return $output;
 }
 
-######################################################################################
+##########################################################################
 # SUB exec_network_module (many parameters...)
 # Execute network module task in separated thread
-######################################################################################
+##########################################################################
 sub exec_network_module {
 	my $id_agente = $_[0];
 	my $id_agente_estado = $_[1];
@@ -432,12 +432,10 @@ sub exec_network_module {
 						$module_data = $temp2;
 						$module_result =0;
 					} else { # TCP Data numeric (inc or data)
-						if ($temp2 ne ""){ # COMO OSTIAS PUEDO SABER EN PERL
-								   # EL TIPO DEL CONTENIDO DE UNA VARIABLE
-								   #  ODIO EL PUTO PERL !!!
+						if ($temp2 ne ""){
 							if ($temp2 =~ /[A-Za-z\.\,\-\/\\\(\)\[\]]/){
- 								$module_result=1; # Pequeña ñapita
-								$module_data = 0; # Datos invalidos
+ 								$module_result=1; # init
+								$module_data = 0; # invalid data
 							} else {
 								$module_data = int($temp2); 
 								$module_result = 0; # Successful	

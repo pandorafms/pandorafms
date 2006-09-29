@@ -1,9 +1,9 @@
 package pandora_tools;
-##################################################################################
+##########################################################################
 # Pandora Tools Package
-##################################################################################
+##########################################################################
 # Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L
+# Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L
 #
 #This program is free software; you can redistribute it and/or
 #modify it under the terms of the GNU General Public License
@@ -16,7 +16,7 @@ package pandora_tools;
 #You should have received a copy of the GNU General Public License
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-##################################################################################
+##########################################################################
 
 use warnings;
 use Time::Local;
@@ -37,10 +37,10 @@ our @EXPORT = qw( 	daemonize
 		);
 
 
-##########################################################################################
+##########################################################################
 # Sub daemonize ()
 # Put program in background (for daemon mode)
-##########################################################################################
+##########################################################################
 
 sub daemonize {
     chdir '/tmp'                 or die "Can't chdir to /tmp: $!";
@@ -54,14 +54,14 @@ sub daemonize {
 }
 
 
-# ----------------------------------------+
-# Otras funciones generales de Pandora    |
-# ----------------------------------------+
+# -------------------------------------------+
+# Pandora other General functions  |
+# -------------------------------------------+
 
-#################################################################################
+##########################################################################
 # SUB is_numeric
 # Return TRUE if given argument is numeric
-#################################################################################
+##########################################################################
 
 sub getnum {
         use POSIX qw(strtod);
@@ -79,12 +79,12 @@ sub getnum {
 
 sub is_numeric { defined getnum($_[0]) }   
 
-#################################################################################
-# SUB md5check (par1, par2)
-# Comprobacion MD5 del archivo
-#################################################################################
-# param_1 : Nombre de archivo datos
-# param_2 : Nombre de archivo con MD5
+##########################################################################
+# SUB md5check (param_1, param_2)
+# Verify MD5 file .checksum
+##########################################################################
+# param_1 : Name of data file
+# param_2 : Name of md5 file
 
 sub md5check {
 	my $buf;
@@ -115,12 +115,12 @@ sub md5check {
 	}
 }
 
-#################################################################################
-# SUB logger (pa_config, par1, par2)
-# Vuelca informacion a un archivo (para hacer log)
-#################################################################################
-# param_1 : Nombre de archivo datos
-# param_2 : Datos
+##########################################################################
+# SUB logger (pa_config, param_1, param_2)
+# Log to file
+##########################################################################
+# param_1 : Data file
+# param_2 : Data
 
 sub logger {
 	my $pa_config = $_[0];
@@ -146,9 +146,9 @@ sub logger {
 	}
 }
 
-##############################################################################
+##########################################################################
 # limpia_cadena (string) - Purge a string for any forbidden characters (esc, etc)
-##############################################################################
+##########################################################################
 sub limpia_cadena {
     my $micadena;
     $micadena = $_[0];
@@ -157,12 +157,12 @@ sub limpia_cadena {
     return $micadena;
 }
 
-##############################################################################
+##########################################################################
 # sub float_equal (num1, num2, decimals)
 # This function make possible to compare two float numbers, using only x decimals
 # in comparation.
 # Taken from Perl Cookbook, O'Reilly. Thanks, guys.
-##############################################################################
+##########################################################################
 sub float_equal {
     my ($A, $B, $dp) = @_;
     return sprintf("%.${dp}g", $A) eq sprintf("%.${dp}g", $B);

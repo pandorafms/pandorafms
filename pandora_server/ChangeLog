@@ -1,3 +1,8 @@
+2006-09-29 Raul Mateos <raulofpandora@gmail.com>
+
+	* pandora_server/bin/*.pl and *.pm: Updated some comments from
+	Spanish to English. Update build date.
+
 2006-09-13 Sancho Lerena <slerena@artica.es>
 
 	* pandora_network.pl: Fixed problems with OID index. Perl needs to
@@ -5,5 +10,3 @@
 	SNMPv2-MIB::sysDescr. Also, other numerical indexes are referenced
 	different from system SNMP or PHP. IF-MIB::ifDescr.3 is
 	IF-MIB::ifDescr.2 for PERL's SNMP.
-
-	

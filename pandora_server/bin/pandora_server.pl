@@ -1,7 +1,7 @@
 #!/usr/bin/perl
-##################################################################################
+##########################################################################
 # Pandora Data Server
-##################################################################################
+##########################################################################
 # Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
 # Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L
 #
@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-##################################################################################
+##########################################################################
 
 # Includes list
 use strict;
@@ -25,13 +25,13 @@ use warnings;
 use XML::Simple;                	# Useful XML functions
 use Digest::MD5;                	# MD5 generation
 use Time::Local;                	# DateTime basic manipulation
-use DBI;                               	# DB interface with MySQL
+use DBI;                            # DB interface with MySQL
 use Date::Manip;                	# Needed to manipulate DateTime formats of input, output and compare
-use File::Copy;                          # Needed to manipulate files
+use File::Copy;                     # Needed to manipulate files
 use threads;
 use threads::shared;
 
-# Librerias / Modulos de pandora
+# Pandora Modules
 use pandora_config;
 use pandora_tools;
 use pandora_db;
@@ -41,7 +41,7 @@ $| = 1;
 
 my %pa_config; 
 
-# Inicio del bucle principal de programa
+# Init main loop
 pandora_init(\%pa_config,"Pandora Server");
 
 # Read config file for Global variables
@@ -65,7 +65,7 @@ pandora_dataserver(\%pa_config);
 #------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------
-#---------------------  Main Perl Code below this line-------------------------------
+#---------------------  Main Perl Code below this line-----------------------
 #------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------
@@ -73,9 +73,9 @@ pandora_dataserver(\%pa_config);
 
 
 
-##############################################################################
+##########################################################################
 # Main loop
-##############################################################################
+##########################################################################
 
 sub pandora_dataserver {
 	my $pa_config = $_[0];
@@ -99,7 +99,7 @@ sub pandora_dataserver {
    				$agent_filename = $1;
    				$file_md5 = "$pa_config->{'incomingdir'}/$agent_filename.checksum";
 				if (( -e $file_md5 ) or ($pa_config->{'pandora_check'} == 0)){ # If check is disabled, ignore if file_md5 exists
-    					# Comprobamos integridad
+    					# Verify integrity
     					my $check_result;
 					$check_result = md5check ($file_data,$file_md5);
 					if (($pa_config->{'pandora_check'} == 0) || ($check_result == 1)){
@@ -142,7 +142,7 @@ sub pandora_dataserver {
 							unlink ($file_md5);
 						}
     					}
-   				} # No existe fichero de checksum, ignoramos el archivo
+   				} # No checksum file, ignore file
                 	}
         	}
         	closedir(DIR);
@@ -151,10 +151,10 @@ sub pandora_dataserver {
 	}
 } # End of main loop function
 
-#################################################################################
+##########################################################################
 ## SUB pandora_keepalived
 ## Pandora Keepalive alert daemon subsystem
-##################################################################################
+##########################################################################
 
 sub pandora_keepalived {
 	my $pa_config = $_[0];
@@ -168,13 +168,13 @@ sub pandora_keepalived {
 }
 
 
-#################################################################################
+##########################################################################
 ## SUB keep_alive_check  ()
 ## Calculate a global keep alive check for agents without data and an alert defined 
-##################################################################################
+##########################################################################
 
 sub keep_alive_check {
-        # Buscamos si existe una alerta definida para cada item de la tablacombinacion agente/modulo
+        # Search of any defined alert for any agent/module table entry
 	my $pa_config = $_[0];
 	my $dbh = $_[1];
     	
@@ -281,11 +281,11 @@ sub keep_alive_check {
 	$s_idag->finish();
 }
 
-#################################################################################
-## SUB procesa_datos (par1)
-## Procesa un paquete de datos (XML preprocesado)
-##################################################################################
-## param_1 : Nombre de la estructura contenedora de datos (XML)
+##########################################################################
+## SUB procesa_datos (param_1)
+## Process data packet (XML file)
+##########################################################################
+## param_1 : XML datafile name
 
 sub procesa_datos {
    	my $pa_config = $_[0];

@@ -74,7 +74,7 @@
     <para>A group is added by clicking "Create group" and assigning
     a name to it.</para>
     <para>A group is deleted by clicking the delete icon 
-    <inlinegraphic fileref="images/cancel.gif"/> 
+    <inlinegraphic fileref="images/cancel.png"/> 
     in the right hand side of each group.</para>
   </sect1>	
   <sect1 id="sec3.2">
@@ -248,12 +248,12 @@
       <itemizedlist>
 	<listitem>
 	  <para>
-	    Deleted by clicking <inlinegraphic fileref="images/cancel.gif"/>
+	    Deleted by clicking <inlinegraphic fileref="images/cancel.png"/>
 	  </para>
 	</listitem>
 	<listitem>
 	  <para>
-	    Edited by clicking <inlinegraphic fileref="images/config.gif"/>
+	    Edited by clicking <inlinegraphic fileref="images/config.png"/>
 	  </para>
 	</listitem>
       </itemizedlist>
@@ -312,7 +312,7 @@
 
 			<para>
 			An Alert is deleted by clicking on the delete icon 
-			<inlinegraphic fileref="images/cancel.gif"/> 
+			<inlinegraphic fileref="images/cancel.png"/> 
 			placed on the right hand side of the Alert. 
 			A new customised Alert can be created clicking in "Create Alert".
 			</para>
@@ -463,7 +463,7 @@
       the option of copying modules and alerts defined in an agent to be 
       assigned to another.</para>
 
-      <para>The screen is accessed through "Manage Agents"&gt;
+      <para>The screen is accessed through "Manage Agents" &gt;
       "Manage Config.", in the Administration menu:</para>
 
       <graphic fileref="images/image014.png" valign="bottom" align="center"/>
@@ -502,7 +502,7 @@
       organized by status.</para>
 
       <para>By pressing the icon 
-      <inlinegraphic fileref="images/target.gif"/> 
+      <inlinegraphic fileref="images/target.png"/> 
       at the right of any group image, you will update the info of 
       that group.</para>
     </sect2>
@@ -542,34 +542,34 @@
       <para><emphasis>Status:</emphasis> Shows the "general" status of the agent
       through the following icons:</para>
       <para>
-		<inlinegraphic fileref="images/b_green.gif"/> 
+		<inlinegraphic fileref="images/b_green.png"/> 
 		All the monitors OK. It's the ideal status.
 	  </para>
 		<para>
-		<inlinegraphic fileref="images/b_white.gif"/> 
+		<inlinegraphic fileref="images/b_white.png"/> 
 		No defined monitors. Sometimes nothing is monitored
 		that could be right or wrong, and only numeric or 
 		text data is reported.
 		</para>
 		<para>
-		<inlinegraphic fileref="images/b_red.gif"/> 
+		<inlinegraphic fileref="images/b_red.png"/> 
 		At least one of the monitors is failing. Usually we
 		want to avoid this, and keep our systems in a healthy 
 		green colour.
 		</para>
 		<para>
-		<inlinegraphic fileref="images/b_blue.gif"/> The agent 
+		<inlinegraphic fileref="images/b_blue.png"/> The agent 
 		doesn't have any data. New agents with an empty data
 		package can have this status.
 		</para>
 		<para>
-		<inlinegraphic fileref="images/b_yellow.gif"/> Colour 
+		<inlinegraphic fileref="images/b_yellow.png"/> Colour 
 		shifting from green to red. This icon indicates
 		that the agent has just changed its status, from 
 		'All OK' to 'we have a problem'.
 		</para>
 		<para>
-		<inlinegraphic fileref="images/b_down.gif"/> When an agent
+		<inlinegraphic fileref="images/b_down.png"/> When an agent
 		is down or there is no news from it for 2 times the Interval
 		value in seconds. Usually it is due to a communication issue
 		or a crashed remote system.
@@ -578,24 +578,24 @@
       through the following icons:
 	  </para>
       <para>
-	<inlinegraphic fileref="images/dot_green.gif"/> 
+	<inlinegraphic fileref="images/dot_green.png"/> 
 	No alerts have been sent.
 	</para>
 	<para>
-	<inlinegraphic fileref="images/dot_red.gif"/> 
+	<inlinegraphic fileref="images/dot_red.png"/> 
 	When at least one alert has been sent within 
 	the time threshold of the alert.
       </para>
       <para><emphasis>Last contact:</emphasis> Shows the time and date of the 
       last data package sent by the agent, using a progress bar, 
       according to value of the interval. If you see the image 
-      <inlinegraphic fileref="images/outof.gif"/>, 
+      <inlinegraphic fileref="images/outof.png"/>, 
       the agent has not send data during the interval. 
       Passing the mouse over the image will show you the last contact 
       in time and date format.</para>
 
       <para><emphasis>Note:</emphasis> The icon 
-      <inlinegraphic fileref="images/setup.gif" width="15"/> 
+      <inlinegraphic fileref="images/setup.png" width="15"/> 
       is only visible if you're and administrator and it's a link 
       to the "Manage Agents" &gt; "Update Agent" option in the 
       Administration menu.
@@ -641,30 +641,30 @@
 
 		<para>The generated graphs are:</para>
 		<para> - <emphasis>Hourly graph</emphasis> 
-		(<inlinegraphic fileref="images/grafica_h.gif"/>)
+		(<inlinegraphic fileref="images/grafica_h.png"/>)
 		covers a 60 minute interval</para>
 		<graphic fileref="images/image018.png" valign="bottom" align="center"/>
 
 		<para> - <emphasis>Daily graph</emphasis> 
-		(<inlinegraphic fileref="images/grafica_d.gif"/>) 
+		(<inlinegraphic fileref="images/grafica_d.png"/>) 
 		covers a 24 hour interval</para>
 		<graphic fileref="images/image019.png" valign="bottom" align="center"/>
 
 		<para> - <emphasis>Weekly graph</emphasis> 
-		(<inlinegraphic fileref="images/grafica_w.gif"/>) 
+		(<inlinegraphic fileref="images/grafica_w.png"/>) 
 		covers a 7 day interval</para>
 		<graphic fileref="images/image020.png" valign="bottom" align="center"/>
 
 		<para> - <emphasis>Mothly graph</emphasis> 
-		(<inlinegraphic fileref="images/grafica_m.gif"/>) 
+		(<inlinegraphic fileref="images/grafica_m.png"/>) 
 		covers a 30 day interval</para>
 		<graphic fileref="images/image021.png" valign="bottom" align="center"/>
 
 		<para><emphasis>Raw Data:</emphasis> This is the raw data sent by the agent</para>
 
-		<para> - <inlinegraphic fileref="images/data_m.gif"/> Last month</para>
-		<para> - <inlinegraphic fileref="images/data_w.gif"/> Last week</para>
-		<para> - <inlinegraphic fileref="images/data_d.gif"/> Last day</para>
+		<para> - <inlinegraphic fileref="images/data_m.png"/> Last month</para>
+		<para> - <inlinegraphic fileref="images/data_w.png"/> Last week</para>
+		<para> - <inlinegraphic fileref="images/data_d.png"/> Last day</para>
       </sect3>
       <sect3 id="sec3.3.2.3">
 		<title>Complete list of monitors</title>
@@ -687,9 +687,9 @@
 		<para><emphasis>Status:</emphasis> The table shows the agent status through
 		the	following icons:</para>
 
-		<para><inlinegraphic fileref="images/b_green.gif"/> 
+		<para><inlinegraphic fileref="images/b_green.png"/> 
 		The monitor is OK</para>
-		<para><inlinegraphic fileref="images/b_red.gif"/> 
+		<para><inlinegraphic fileref="images/b_red.png"/> 
 		The monitor is failing</para>
 
 		<para><emphasis>Last contact:</emphasis> Shows the time and date of 
@@ -718,9 +718,9 @@
 		<para><emphasis>Status:</emphasis> Shows if the alert has been sent through 
 		the following icon:</para>
 
-		<para><inlinegraphic fileref="images/dot_green.gif"/> No alerts 
+		<para><inlinegraphic fileref="images/dot_green.png"/> No alerts 
 		have been sent</para>
-		<para><inlinegraphic fileref="images/dot_red.gif"/> At least 
+		<para><inlinegraphic fileref="images/dot_red.png"/> At least 
 		one alert has been sent</para>
       </sect3>
     </sect2>
@@ -744,14 +744,14 @@
       <para><emphasis>Status:</emphasis> The status is described through 
       the following icons:</para>
 
-      <para><inlinegraphic fileref="images/b_green.gif"/> 
+      <para><inlinegraphic fileref="images/b_green.png"/> 
       All monitors are OK.</para>
-      <para><inlinegraphic fileref="images/b_red.gif"/> 
+      <para><inlinegraphic fileref="images/b_red.png"/> 
       At least one monitor has failed.</para>
-      <para><inlinegraphic fileref="images/b_down.gif"/> 
+      <para><inlinegraphic fileref="images/b_down.png"/> 
       At least one monitor is down and there is no contact
       with it.</para>
-      <para><inlinegraphic fileref="images/b_white.gif"/> 
+      <para><inlinegraphic fileref="images/b_white.png"/> 
       This Agent doesn't have any monitor defined.</para>
 
       <para><emphasis>OK:</emphasis> Number of monitors that are OK.</para>
@@ -762,7 +762,7 @@
       <title>Monitors view</title>
 
       <para>The description of all the monitors defined in the server
-      can be viewed from the "View Agents"&gt;"Monitor detail" 
+      can be viewed from the "View Agents" &gt; "Monitor detail" 
       option in the Operation menu.</para>
 
       <graphic fileref="images/image026.png" valign="bottom" align="center"/>
@@ -775,7 +775,7 @@
       <title>Alert details</title>
 
       <para>The description of all the alerts defined in the server 
-      can be viewed from the "View Agents"&gt;"Alert Details" 
+      can be viewed from the "View Agents" &gt; "Alert Details" 
       option in Operation menu.</para>
 
       <graphic fileref="images/image027.png" valign="bottom" align="center"/>
@@ -787,8 +787,8 @@
     <sect2 id="sec3.3.6">
       <title>Data Export</title>
 
-      <para>The Data Export tool can be found in the "View Agents"&gt;"
-      Export data" option in the Operation Menu.</para>
+      <para>The Data Export tool can be found in the "View Agents" &gt; 
+      "Export data" option in the Operation Menu.</para>
 
       <para>Three parameters need to be configured for exporting data: 
       the agent where data resides, the modules to be exported 
@@ -816,7 +816,7 @@
       <title>Statistics</title>
 
       <para>Two kinds of graphical statistics are displayed from the 
-      "View Agents" &gt;"Statistics" option, in the Operation menu:</para>
+      "View Agents" &gt; "Statistics" option, in the Operation menu:</para>
 
       <itemizedlist>
 	<listitem>

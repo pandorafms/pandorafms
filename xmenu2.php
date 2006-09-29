@@ -193,7 +193,7 @@ while ($vista=mysql_fetch_array($vistas)){ //recorremos las vistas y creamos un 
 	$objetos = dameObjetosVista($vista["idVista"]);
 // 	while ($objeto=mysql_fetch_array($objetos)){
  		echo "aObjeto".$vista["idVista"]." = new Array(), aObjeto".$vista["idVista"]."_count =".mysql_num_rows($objetos).";";
-
+////////
 		echo "
      		var aPos".$vista["idVista"]." = new Array(); // Creamos array que guarde las posiciones de los objetos
 

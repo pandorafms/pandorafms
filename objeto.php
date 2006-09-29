@@ -80,6 +80,11 @@ function xFenster(eleId, iniX, iniY, barId, resBtnId, maxBtnId) // object protot
   {
     xZIndex(ele, xFenster.z++);
   }
+
+function fenOnMouseup()
+  {
+<!--     alert("Subelooo!!"); -->
+  }
 //   function maxOnClick()
 //   {
 //     if (maximized) {
@@ -117,6 +122,7 @@ function xFenster(eleId, iniX, iniY, barId, resBtnId, maxBtnId) // object protot
   xEnableDrag(ele, null, fenOnDrag, null);
 //   mBtn.onclick = maxOnClick;
   ele.onmousedown = fenOnMousedown;
+  ele.onmouseup = fenOnMouseup;
   xShow(ele);
 } // end xFenster object prototype
 

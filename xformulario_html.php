@@ -690,6 +690,43 @@ document.write(
 +  "</div>"
 + "</div>");
 }
+else if (tipo == 'eliminar_relacion')
+{
+
+document.write(
+"<div id='xForm' class='demoBox'>"
++ "<div id='formCerrBtn' class='demoBtn'>X</div>"
++  "<div id='xFormBar' class='demoBar'>FORMULARIO</div>"
++  "<div class='demoContent'>"
++ "<p>"
+ +"<FORM action=xmenu2.php?action=eliminarRelacion&mode=edition method=\"post\">"
++ "<p>Relaciones de esta Vista:</p>"
+
+
+<?php
+	$idVista = obtenerVistaActiva(); 
+
+	$relaciones = dameRelacionesVista($idVista);
+
+	while ($relacion =mysql_fetch_array($relaciones)){
+		$objeto1 = dameObjeto($relacion['idObjeto1']);
+		$objeto2 = dameObjeto($relacion['idObjeto2']);
+		$nom_obj1 = dameNombreObjeto($objeto1['id_tipo'],$objeto1['tipo']);
+		$nom_obj2 = dameNombreObjeto($objeto2['id_tipo'],$objeto2['tipo']);
+		echo " + \"<input type=\'radio\' id=group1".$objeto1['id_objeto']."_".$objeto2['id_objeto']." name=\'group1\' value=\'".$objeto1['id_objeto']."_".$objeto2['id_objeto']. "\'> <label for=group1".$objeto1['id_objeto']."_".$objeto2['id_objeto'].">".$nom_obj1." <--> ".$nom_obj2." </label><br>  \"";
+	}
+?>
+
+
++ "<BR>"
++   " <INPUT type=\"submit\" value=\"Aceptar\"> <INPUT type=\"reset\">"
++ "<BR>"
+
++" </FORM>"
++ "</p>"
++  "</div>"
++ "</div>");
+}
 
 
 

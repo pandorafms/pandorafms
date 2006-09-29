@@ -777,11 +777,11 @@ function crearRelacionObjetos($idObjeto1, $idObjeto2)
 }
 
 //Devuelve todas las relaciones del objeto pasado como parametro y que sea el Objeto 1 de la relacion, si no tiene ninguna relación, devuelve -1
-function dameRelacionesObjeto($idObjeto1)
+function dameRelacionesObjeto($idObjeto)
 {
 	opendb();
 
-	$query1="SELECT * FROM relacion_objetos where idObjeto1='".$idObjeto1."';"; 
+	$query1="SELECT * FROM relacion_objetos where idObjeto1='".$idObjeto."' or idObjeto2='".$idObjeto."';"; 
 	$resq1=mysql_query($query1);  
 
 	closedb();
@@ -810,6 +810,29 @@ function esObjetoDeVista($idObjeto,$idVista)
 
 }
 
+// Funcion que devuelve las relaciones entre objetos de la vista que se le pasa como parametro.
+function dameRelacionesVista($idVista)
+{
+	opendb();
+
+	$query1="Select idObjeto1, idObjeto2 from relacion_objetos, objeto_consola where idVista='".$idVista."' and idObjeto1 = id_objeto ;"; 
+	$resq1=mysql_query($query1);
+
+	closedb();
+
+	return $resq1;
+	
+}
+
+function eliminarRelacion($obj1, $obj2)
+{
+	opendb();
+	$query_relacion="DELETE from relacion_objetos where idObjeto1='".$obj1."' and idObjeto2='".$obj2."';"; 
+	mysql_query($query_relacion) or die("Failed Query of " . $query_relacion);
+
+	closedb();
+	
+}
 
 
 ?>

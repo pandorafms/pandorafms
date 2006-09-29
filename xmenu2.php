@@ -235,35 +235,39 @@ while ($vista=mysql_fetch_array($vistas)){ //recorremos las vistas y creamos un 
 //mysql_data_seek($objetos,0);
 // 	$objetos = dameObjetosVista($vista["idVista"]);
 	while ($objeto=mysql_fetch_array($objetos)){
-
+ 		
 		$aObjetos[$i-1]=$objeto["id_objeto"]; // Array php de objetos
-
+		
 		echo "aObjeto".$vista["idVista"]."[".$i."] = new xFenster('fen_".$vista["idVista"]."_".$objeto["id_objeto"]."', parseInt(aPos".$vista["idVista"]."['".$i."X']), parseInt(aPos".$vista["idVista"]."['".$i."Y']), 'fenBar".$vista["idVista"].$objeto["id_objeto"]."', 'fenResBtn".$vista["idVista"].$objeto["id_objeto"]."', 'fenMaxBtn".$vista["idVista"].$objeto["id_objeto"]."');";
-
+ 		
 		$i=$i+1;
+		
 	}
 
 
 	// Creamos los objetos, lineas que representan las relaciones entre objetos
-	for ($i=0;$i<sizeof($aObjetos);$i++){
-		if (esObjetoDeVista($aObjetos[$i],$vista["idVista"]))
+	for ($j=0;$j<sizeof($aObjetos);$j++){
+//   	echo "alert (".$j.");";
+		if (esObjetoDeVista($aObjetos[$j],$vista["idVista"]))
 		{
-// 			mensaje($aObjetos[$i]);
-			$aRelaciones=dameRelacionesObjeto($aObjetos[$i]);
+			
+			$aRelaciones=dameRelacionesObjeto($aObjetos[$j]);
+
 			if ($aRelaciones !=-1)
 			{
+				
 				while ($relacion=mysql_fetch_array($aRelaciones))
 				{
-				$irelacionObj1=$i+1; // parece que no me deja sumarlo despues
+				$irelacionObj1=$j+1; // parece que no me deja sumarlo despues
 				$idObjeto2=$relacion["idObjeto2"];
 				$irelacionObj2=array_search($idObjeto2,$aObjetos) + 1; //Buscamos la posicion del array php en el que se encuentra el id del segundo objeto. Esto nos sirve para saber cual sera el nombre del objeto javascript, ya que exite una relacion entre los indices de los diferentes arrays. El indexPHP=indexJavascrip - 1;
-				echo " jg_".$vista["idVista"]."_".$aObjetos[$i]."_".$idObjeto2." = new jsGraphics('Canvas_".$vista["idVista"]."_".$aObjetos[$i]."_".$idObjeto2."');
-					jg_".$vista["idVista"]."_".$aObjetos[$i]."_".$idObjeto2.".setColor('#000000'); 
-					jg_".$vista["idVista"]."_".$aObjetos[$i]."_".$idObjeto2.".drawLine(aObjeto".$vista["idVista"]."[".$irelacionObj1."].dameX(), aObjeto".$vista["idVista"]."[".$irelacionObj1."].dameY(), aObjeto".$vista["idVista"]."[".$irelacionObj2."].dameX(), aObjeto".$vista["idVista"]."[".$irelacionObj2."].dameY()); 
-					jg_".$vista["idVista"]."_".$aObjetos[$i]."_".$idObjeto2.".paint();
+				echo " jg_".$vista["idVista"]."_".$aObjetos[$j]."_".$idObjeto2." = new jsGraphics('Canvas_".$vista["idVista"]."_".$aObjetos[$j]."_".$idObjeto2."');
+					jg_".$vista["idVista"]."_".$aObjetos[$j]."_".$idObjeto2.".setColor('#000000'); 
+					jg_".$vista["idVista"]."_".$aObjetos[$j]."_".$idObjeto2.".drawLine(aObjeto".$vista["idVista"]."[".$irelacionObj1."].dameX(), aObjeto".$vista["idVista"]."[".$irelacionObj1."].dameY(), aObjeto".$vista["idVista"]."[".$irelacionObj2."].dameX(), aObjeto".$vista["idVista"]."[".$irelacionObj2."].dameY()); 
+					jg_".$vista["idVista"]."_".$aObjetos[$j]."_".$idObjeto2.".paint();
 					";
 				//Añado la nueva relacion al array que guarda todos las creadas
-				echo "aRelacionesObjetos['jg_".$vista["idVista"]."_".$aObjetos[$i]."_".$idObjeto2."']=jg_".$vista["idVista"]."_".$aObjetos[$i]."_".$idObjeto2.";";
+				echo "aRelacionesObjetos['jg_".$vista["idVista"]."_".$aObjetos[$j]."_".$idObjeto2."']=jg_".$vista["idVista"]."_".$aObjetos[$j]."_".$idObjeto2.";";
 				 
 				}
 			}
@@ -641,7 +645,21 @@ if ($HTTP_GET_VARS["action"]=="addagent")
 
 	// Actualizamos la pagina para que aparezca el nuevo objeto
  	echo "window.location.href=location.pathname+'?mode='+modo;";
+
+}elseif ($HTTP_GET_VARS["action"]=="eliminarRelacion")
+{/*
+	crearRelacionObjetos($_POST["group1"],$_POST["group2"]);
+
+	// Actualizamos la pagina para que aparezca el nuevo objeto
+ 	echo "window.location.href=location.pathname+'?mode='+modo;";*/
+	
+	$aObj= explode("_",$_POST["group1"]);
+	$obj1 = $aObj[0];
+	$obj2 = $aObj[1];
+	eliminarRelacion($obj1,$obj2);
+	echo "window.location.href=location.pathname+'?mode='+modo;";
 }
+
 
 
 // El siguiente if controla el estado del menu
@@ -737,6 +755,10 @@ if (($HTTP_GET_VARS["mode"]=="monitor" ) or ($HTTP_GET_VARS["mode"]==""))
 	}elseif	 ($HTTP_GET_VARS["formulario"]=="relacionar_objetos")
 	{
 		echo "insertFormulario('relacionar_objetos');";
+
+	}elseif	 ($HTTP_GET_VARS["formulario"]=="eliminar_relacion")
+	{
+		echo "insertFormulario('eliminar_relacion');";
 	}
 }
 

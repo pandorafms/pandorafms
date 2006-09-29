@@ -24,6 +24,7 @@ document.write("<div id='menu"+n+"' class='"+p+"Menu'><!-- menu "+n+" -->"
 +"  <a class='m' href='javascript:abrirFormulario(\"eliminar_objeto\")'><b>Eliminar</b></a>"
 + "<hr>"
 +"  <a class='m' href='javascript:abrirFormulario(\"relacionar_objetos\")'><b>Nueva Relacion</b></a>"
++"  <a class='m' href='javascript:abrirFormulario(\"eliminar_relacion\")'><b>Eliminar Relacion</b></a>"
 +"</div>"
 
 +"<div id='label"+n+"2' class='mLabel'>Vista</div>"

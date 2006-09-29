@@ -1,3 +1,13 @@
+2006-09-29  Sancho Lerena  <slerena.@artica.es>
+
+	* pandora_userguide.xml, pandora_chapter*: Many changes to use PNG
+	graphics instead .GIF. Many format changes.
+
+	* many *.gif - > *.png: .GIF files deleted and replaced by .PNG.
+
+	* extras/* : Added extras directory with openoffice bubble graphs
+	for each server component.
+	
 2006-09-28  Sancho Lerena  <slerena@artica.es>
 
 	* en/pandora.pdf: Provide a test version for betatesters of doc.

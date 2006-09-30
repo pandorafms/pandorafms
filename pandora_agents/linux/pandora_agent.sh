@@ -132,8 +132,13 @@ do
  	DATA=$TEMP/$NOMBRE_HOST.$SERIAL.data
  	DATA2=$TEMP/$NOMBRE_HOST.$SERIAL.data_temp
  	CHECKSUM=$TEMP/$NOMBRE_HOST.$SERIAL.checksum
- 	PANDORA_FILES="$TEMP/$NOMBRE_HOST.$SERIAL.*"
- 
+	
+        # next change needed for pandora_agent_log.pl
+	# SERIAL from that module could be different than
+	# this SERIAL
+        #PANDORA_FILES="$TEMP/$NOMBRE_HOST.$SERIAL.*"
+        PANDORA_FILES="$TEMP/$NOMBRE_HOST.*"
+
  	# Makes data packet
  	echo "<agent_data os_name='$OS_NAME' os_version='$OS_VERSION' interval='$INTERVAL' version='$AGENT_VERSION' timestamp='$TIMESTAMP' agent_name='$NOMBRE_HOST'>" > $DATA
  	if [ "$DEBUG_MODE" == "1" ]
@@ -260,6 +265,14 @@ do
 		CHECKSUM_DATA="No valid checksum"
 		echo $CHECKSUM_DATA > $CHECKSUM
 	fi
+
+        # Process log modules
+        # Execute pandora_agent_log.pl
+ 
+        if [ -f "/usr/bin/perl" ] && [ -f "$PANDORA_HOME/pandora_agent_log.pl" ]
+        then
+                /usr/bin/perl $PANDORA_HOME/pandora_agent_log.pl $PANDORA_HOME
+        fi
 	
 	# Send packets to server and detele it
  	scp $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH > /dev/null 2> /dev/null

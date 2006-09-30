@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<chapter>
+  <title>Documentation for developers: pandora log engine</title>
+  <sect1><title>Notes for this chapter</title>
+    <para>
+      This chapter is documentation for developers of the Pandora project,
+      and its main objective is to share information about the inners
+      workings of the code.
+    </para>
+  </sect1>
+  
+  <sect1><title>Introduction</title>
+    <para>
+      Till version 1.2 beta2, pandora was able to treat several types
+      of data, including numeric, incremetal numeric and strings. However,
+      string data type lack some funcionalities for monitoring log files.
+    </para>
+    <para>
+      The aim of this pack of code, or development branch, is to strength
+      the capabilities of Pandora for monitoring text files that are
+      increased and rotated with the time, like log files.
+    </para>
+    <para>
+      In particular, the main objectives of this development branch are:
+        <listitem>
+	  <para>
+	    - pandora agents should be able to analize new lines of a
+	    text log file, and only the new ones
+	  </para>
+	</listitem>
+        <listitem>
+	  <para>
+	    - pandora agents should treat each new line as a independent
+	    element/data unit
+	  </para>
+	</listitem>
+        <listitem>
+	  <para>
+	    - pandora agents need to be aware about rotation of log files
+	    in order to not lose information
+	  </para>
+	</listitem>
+        <listitem>
+	  <para>
+	    - alerts capabilities on string data types has to be improved
+	  </para>
+	</listitem>
+        <listitem>
+	  <para>
+	    - graphic representation capabilites on string data modules has
+	    to be improved
+	  </para>
+	</listitem>
+    </para>
+  </sect1>
+  <sect1><title>Architecture</title>
+    <para>
+      Funcionalities described in the Introduction chapter can be implemented
+      in several ways. The approach presented in this document propose that
+      the pandora agent can control log files, detect which new lines are
+      created since its last execution, and process differents modules on
+      EACH of the lines.
+    </para>
+    <para>
+      On this branch of development, pandora_agent.sh calls to another script
+      just before copying data files to the server. This script is a simple
+      perl script named pandora_agent_log.pl, that uses another file as 
+      a configuration file, pandora_agent_log.conf.
+    </para>
+    <para>
+      pandora_agent_log.pl and pandora_agent_log.conf are very similar to
+      pandora_agent.sh and pandora_agent.conf. In the future, its 
+      funcionalities are intended to be included in the agent code. Now,
+      they are presented sepparated just for clarity in the development.
+    </para>
+  </sect1>
+  <sect1><title>pandora_agent_log.pl</title>
+    <para>
+      Some of the code used for this script, mainly the index files manegement,
+      is based in the part of the code of pandora_server/bin/
+      pandora_snmpconsole.pl
+    </para>
+    <para>
+      this script performs the following actions in the following order:
+        <listitem>
+          <para>
+	    - load the pandora_agent_log.conf configuration file, that is
+	    described later in this chapter
+	  </para>
+        </listitem>
+        <listitem>
+          <para>
+	    - for each log file to be monitored loops through the next steps
+	  </para>
+        </listitem>
+        <listitem>
+          <para>
+	    - loads or creates an index file. Each index file stores 
+	    information regarding the state of the log file in the last 
+	    execution of the agent. Indexes are stored in $PANDORA_HOME
+	  </para>
+        </listitem>
+        <listitem>
+          <para>
+	    - the script make some checks over the log file to see if it has
+	    been rewritten and/or rotated
+	  </para>
+        </listitem>
+        <listitem>
+          <para>
+	    - loops for the NEW lines of the log (since last agent's 
+	    execution). For each line, a data file in data_out is created.
+	  </para>
+        </listitem>
+        <listitem>
+          <para>
+	    - each module associated with that log file is executed against
+	    the new log line, and data is written in the corresponding data
+	    file
+	  </para>
+        </listitem>
+        <listitem>
+          <para>
+	    - checksum is performed on data files
+	  </para>
+        </listitem>
+    </para>
+  </sect1>
+  <sect1><title>pandora_agent_log.conf</title>
+    <para>
+      the structure of this file is the same as the structure of 
+      pandora_agent.conf, but some extensions has been added.
+    </para>
+    <listitem>
+      <para>
+        module_log [LOG FILE] :  only the modules with "module_log" are 
+	considered. [LOG FILE] is the file, path included, of the log to
+	be analysed. Different modules can be associated to the same log
+	file. A module can only be associated (for now) to a log file.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        module_log_timestamp  :  timestamp of the data file can be rewritten
+	using this module. The overriding timestamp is the result of 
+	processing 'module_exec' on the log line. Modules with 
+	module_log_timestamp are not further considered as pandora modules.
+	So, they require no name, description, data type, ...
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        module_exec [EXPR]  :  expression to be executed on every new line for
+	this module. For now, EXPR is a perl expression. You can use the 
+	variable $LINE to represent the new log line. F.ex., 
+	'module_exec $LINE =~ y/A-Z/a-z/; return $LINE;' lowercase the log
+	lines before be stored in pandora database.
+      </para>
+    </listitem>
+  </sect1>
+  <sect1><title>Example</title>
+  
+  </sect1>
+  <sect1><title>todo list</title>
+    <listitem>
+      ideas?
+    </listitem>
+  </sect1>
+</chapter>

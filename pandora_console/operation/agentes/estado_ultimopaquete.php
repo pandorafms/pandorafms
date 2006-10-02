@@ -135,7 +135,7 @@ if (comprueba_login() == 0) {
 			else
 				echo $intervalo_agente;
 			//echo $nombre_tipo_modulo;
-			echo "<td class='".$tdcolor."f9'>";
+			echo "<td class='".$tdcolor."f9' title='".$row3["descripcion"]."'>"; 
 			echo salida_limpia(substr($row3["descripcion"],0,32));
 			if (strlen($row3["descripcion"]) > 32){
 				echo "...";

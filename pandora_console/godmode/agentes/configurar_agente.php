@@ -208,7 +208,10 @@ if (give_acl($id_user, 0, "AW")==1) {
 	// =============
 	if (isset($_POST["insert_alert"])){ // if created alert
 		//$id_agente = $_POST["id_agente"];
-		$id_agente_modulo = entrada_limpia($_POST["agente_modulo"]);
+		//$tmp_agente_modulo = entrada_limpia($_POST["agente_modulo"]); # contains id_agente_modulo and id_tipo_modulo
+		$tmp_array = explode ('-', entrada_limpia ($_POST["agente_modulo"]) );
+		$id_agente_modulo = $tmp_array[0];
+		if (isset($tmp_array[1])) { $id_tipo_modulo = $tmp_array[1]; } else { $id_tipo_modulo=0; }
 		$descripcion= entrada_limpia($_POST["descripcion"]);
 		$campo_1 = entrada_limpia($_POST["campo_1"]);
 		$campo_2 = entrada_limpia($_POST["campo_2"]);
@@ -223,7 +226,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 		if ($time_threshold == -1) {
 			$time_threshold = $other;
 		}
-		$sql_insert="INSERT INTO talerta_agente_modulo (id_agente_modulo,id_alerta,al_campo1,al_campo2,al_campo3,descripcion,dis_max,dis_min,time_threshold,max_alerts, min_alerts) VALUES ('".$id_agente_modulo."','".$tipo_alerta."','".$campo_1."','".$campo_2."','".$campo_3."','".$descripcion."','".$maximo."','".$minimo."','".$time_threshold."','".$max_alerts."','".$min_alerts."')";
+		$sql_insert="INSERT INTO talerta_agente_modulo (id_agente_modulo,id_alerta,al_campo1,al_campo2,al_campo3,descripcion,dis_max,dis_min,time_threshold,max_alerts, min_alerts, module_type) VALUES ('".$id_agente_modulo."','".$tipo_alerta."','".$campo_1."','".$campo_2."','".$campo_3."','".$descripcion."','".$maximo."','".$minimo."','".$time_threshold."','".$max_alerts."','".$min_alerts."','".$id_tipo_modulo."')";
 		$result=mysql_query($sql_insert);	
 		if (! $result)
 			echo "<h3 class='error'>".$lang_label["create_alert_no"]."</h3>";
@@ -1062,7 +1065,7 @@ while ($row=mysql_fetch_array($result)){
 			$sql1='SELECT * FROM ttipo_modulo WHERE id_tipo = '.$row2["id_tipo_modulo"];
 			$result=mysql_query($sql1);
 			while ($row=mysql_fetch_array($result)){
-				echo "<option value='".$row2["id_agente_modulo"]."'>".$row["nombre"]."/".$row2["nombre"];
+				echo "<option value='".$row2["id_agente_modulo"]. "-" . $row2["id_tipo_modulo"] . "'>".$row["nombre"]."/".$row2["nombre"];
 			}
 		} else // for -1, is a special module, keep alive monitor !!
 			echo "<option value='".$row2["id_agente_modulo"]."'>".$row2["nombre"];

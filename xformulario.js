@@ -9,7 +9,7 @@ var cBtn = xGetElementById('formCerrBtn');
 formPaint();
   xEnableDrag('xFormBar', formOnDragStart, formOnDrag, null);
   xZIndex('xForm', highZ++);
-cBtn.onclick = cBtnOnClick;
+ cBtn.onclick = cBtnOnClick;
   xShow('xForm');
 }
 function formPaint()

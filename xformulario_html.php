@@ -6,6 +6,7 @@ require("cookie_functions.php");
 
 
 
+
 ?>
 
 
@@ -53,6 +54,8 @@ document.write(
 + "</p>"
 +  "</div>"
 + "</div>");
+
+
 }
 
 else if (tipo == 'nuevo_modulo'){

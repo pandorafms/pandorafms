@@ -49,10 +49,11 @@ session_start();
 	perfil=0;
  	cookieEstado=GetCookie("estado");
 	
-
+	
 	// Comprobamos que existe una cookie de estado
 	if (cookieEstado != null)
 	{
+	
     		if (cookieEstado.length > 0){
         		var params=cookieEstado.split("&");
         		for (var i=0 ; i < params.length ; i++){
@@ -67,6 +68,7 @@ session_start();
 				}else if (name == "modo")
 				{
 					modo=value
+					
 				}else if (name == "menu")
 				{
 					var coor = value.indexOf("x");
@@ -301,7 +303,7 @@ while ($vista=mysql_fetch_array($vistas)){ //recorremos las vistas y creamos un 
 echo "
 
 
-
+var tpg2;
 
   tpg2 = new xTabPanelGroup('tpg2', 1000, 1000, 25, 'tabPanel', 'tabGroup', 'tabDefault', 'tabSelected');
  
@@ -687,6 +689,7 @@ if (($HTTP_GET_VARS["mode"]=="monitor" ) or ($HTTP_GET_VARS["mode"]==""))
 	if ($HTTP_GET_VARS["formulario"]=="nuevo_agente")
 	{
 		echo "insertFormulario('nuevo_agente');";
+	
 
 	}elseif	 ($HTTP_GET_VARS["formulario"]=="nuevo_modulo")
 	{

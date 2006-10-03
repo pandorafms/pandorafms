@@ -43,6 +43,9 @@ document.cookie = name + "=" + escape (value) +
 
 function setCookieEstado()
 {
+
+
+
 	if ((getLeftMenu(3)>0) || (getTopMenu(3)>0))
 	{
 		menuX=getLeftMenu(3);
@@ -76,18 +79,23 @@ function guardarEstado()
 
 
 	$perfil_activo = obtenerPerfilActivo();
+
+
+
 	// echo ("alert('".$perfil_activo."');");
 	// echo "alert(".$perfil_activo.")";
 	$vistasU = dameVistasPerfilActivas($perfil_activo);
 
 	while ($vistaU=mysql_fetch_array($vistasU)){
+
 		echo "
+		
 		result".$vistaU["idVista"]."='';
 
   		for (var i = 1; i < aObjeto".$vistaU["idVista"].".length; ++i) {
+
 			result".$vistaU["idVista"]."= result".$vistaU["idVista"]." + i + '=' + aObjeto".$vistaU["idVista"]."[i].dameX() + 'x' + aObjeto".$vistaU["idVista"]."[i].dameY() + '&' ;
 	
-     			aObjeto".$vistaU["idVista"]."[i].onunload(); 
   		}
 
 
@@ -102,7 +110,7 @@ function guardarEstado()
 	setCookieEstado();
 
 	";
-
+	
 	?>
 
 

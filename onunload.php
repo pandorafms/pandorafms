@@ -57,10 +57,20 @@ function setCookieEstado()
 	}
 	nomCookie="estado";
 
+	<?
+	
+
+	?>
+
+
 	if (selectedIndex)
+	{
 		vistaActiva=selectedIndex;
+	}
 	else
+	{	
 		vistaActiva=0;
+	}
 
 	resultEstado = 'vista_activa='+vistaActiva+'x'+relacionPestaVista[vistaActiva]+'&modo='+modo+'&menu='+menuX+'x'+menuY+'&perfil_activo='+perfil;
 	SetCookie (nomCookie ,resultEstado);

@@ -520,11 +520,11 @@ function damePerfilCualquiera(){
 
 }
 
-// Devuelve una vista cualquiera (Utilizado a la hora de cerrar una Vista que esta en curso, con esto se carga otra Vista existente)
+// Devuelve una vista cualquiera de las que estan visibles (Utilizado a la hora de cerrar una Vista que esta en curso, con esto se carga otra Vista existente)
 function dameVistaCualquiera($idPerfil){
 	opendb();
 
-	$query1="SELECT * FROM perfil_vista where idPerfil=".$idPerfil.";"; 
+	$query1="SELECT * FROM perfil_vista where idPerfil=".$idPerfil." and activa='1';"; 
 	$resq1=mysql_query($query1);  
 	$vista=mysql_fetch_array($resq1);
 
@@ -762,6 +762,20 @@ function es_ultimaVistaActiva($idPerfil)
 	else return 1;
 
 }
+
+// Funcion que devuelve 1 si la vista del perfil es activa, o devuelve 0 si no lo esta
+function esVistaActiva($idVista,$idPerfil)
+{
+
+	opendb();
+
+	$queryCheck="SELECT * FROM perfil_vista where idVista='".$idVista."' and idPerfil=".$idPerfil.";"; 
+	$vista_exe=mysql_query($queryCheck); 
+	$vista=mysql_fetch_array($vista_exe);
+	return $vista["activa"];
+
+}
+
 
 // Crea una relacion (linea) entre dos objetos
 function crearRelacionObjetos($idObjeto1, $idObjeto2)

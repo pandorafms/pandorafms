@@ -4,23 +4,41 @@
 
 function obtenerVistaActiva()
 {
-
+	
 	// Obtenemos la cookie estado y consultamos cual es la vista activa
 	$cookieVista = $_COOKIE["estado"];
 
 	if ($cookieVista != null)
-	{
+	{ 
+
+
 		$params = explode("&" ,$cookieVista);
 		for ($i=0; $i<sizeof($params)-1;$i++)
 		{	
 			
 			$name_data= explode("=",$params[$i]);
 			
-			if ($name_data[0] == "vista_activa")
+			if ($name_data[0] == "vista_activa") // Obtenemos la vista activa
 			{
+				$pestaVista = explode ("x",$name_data[1]);
+				$tmp_vistaActiva=$pestaVista[1];
+// 				mensaje($tmp_vistaActiva);
+// 				mensaje($tmp_vistaActiva);
+// 				if (isset($tmp_vistaActiva))
+// 				{	
+// 					$vista_activa=$tmp_vistaActiva;
+//  					mensaje($tmp_vistaActiva);
+// 				}
+				$vista_activa=$tmp_vistaActiva;
+// 				mensaje($vista_activa);
+				if ($vista_activa=="undefined") // cuando cerramos una pestaña hay que elegir otra pestaña de las disponibles
+				{
+					
+					$perfil = obtenerPerfilActivo();
+					$vista_activa=dameVistaCualquiera($perfil);
+// 					mensaje($vista_activa["idVista"]);
+				}
 			
-			$pestaVista = explode ("x",$name_data[1]);
-			$vista_activa=$pestaVista[1];
 			}
 		}
 
@@ -35,7 +53,7 @@ function obtenerVistaActiva()
 		
 	
 	}
-	
+// 	mensaje("la vista es:".$vista_activa);
 	return $vista_activa;
 
 }

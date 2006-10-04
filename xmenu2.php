@@ -190,7 +190,7 @@ $vistas = dameVistasPerfilActivas($perfil);
 echo "perfil=".$perfil.";"; // Tengo que crear una variable javascript para pasarsela en cookie (con $_SESSION no consigo que funcione)
 echo "aVistas = new Array(), aVistas_count =".mysql_num_rows($vistas).";";
 echo "cuentaVis=aVistas_count;";
-$j=0;
+$k=0;
 while ($vista=mysql_fetch_array($vistas)){ //recorremos las vistas y creamos un array por cada vista con los objetos que se encuentran incluidos en la vista
 	$objetos = dameObjetosVista($vista["idVista"]);
 // 	while ($objeto=mysql_fetch_array($objetos)){
@@ -225,10 +225,11 @@ while ($vista=mysql_fetch_array($vistas)){ //recorremos las vistas y creamos un 
         			}
     			}
 		}
-		relacionPestaVista[".$j."]=".$vista["idVista"].";
+		
+		relacionPestaVista[".$k."]=".$vista["idVista"].";
 		
 		";
-		$j++;
+		$k++;
 // 	}
 
 // Creamos las instancias de los objetos (que se corresponderan con los ids de los divs html)

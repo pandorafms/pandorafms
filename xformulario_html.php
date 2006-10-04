@@ -313,7 +313,7 @@ document.write(
 
 <?php
 	$idVista = obtenerVistaActiva(); 
-
+// 	mensaje($idVista);
 	$objetos = dameObjetosVista($idVista);
 
 	while ($objeto =mysql_fetch_array($objetos)){

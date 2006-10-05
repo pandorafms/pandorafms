@@ -1,0 +1,420 @@
+<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->
+<html id="idHtml" xmlns="http://www.w3.org/1999/xhtml"><head id="idHead">
+
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Pandora Console </title>
+
+<meta name="author" content="Mike Foster, cross-browser.com">
+<meta name="description" content="Programming example for X, a cross-browser DHTML API for Internet Explorer, Netscape Navigator, Gecko, and Opera, available at cross-browser.com">
+<link rel="stylesheet" href="styles/main.css" type="text/css">
+<script type="text/javascript" src="scripts/x_core.js"></script>
+<script type="text/javascript" src="scripts/x_event.js"></script>
+<script type="text/javascript" src="scripts/x_slide.js"></script>
+<script type='text/javascript' src='scripts/x_drag.js'></script>
+
+<script type='text/javascript' src='objeto.php'></script>
+<script type="text/javascript" src="xmenu2.js"></script>
+<script type="text/javascript" src="xmenu2_html.js"></script>
+
+<script type="text/javascript" src="xformulario.js"></script>
+<script type="text/javascript" src="xformulario_html.php"></script>
+
+<!-- <script type="text/javascript" src="onload.php"></script> -->
+<script type="text/javascript" src="onunload.php"></script>
+
+<script type='text/javascript' src='scripts/x_dom.js'></script>
+<script type='text/javascript' src='scripts/lib/xtabpanelgroup.js'></script>
+
+<script type="text/javascript" src="scripts/wz_jsgraphics.js"></script>
+
+
+<script type="text/javascript">
+// Obtenemos la cookie estado que define el valor de: pestaña selecionada, 
+
+	vistaActiva=0;
+	selectedIndex=0;
+	modo="monitor";
+	menuLeft=0;
+	menuTop=0;
+	perfil=0;
+ 	cookieEstado=GetCookie("estado");
+	
+	
+	// Comprobamos que existe una cookie de estado
+	if (cookieEstado != null)
+	{
+	
+    		if (cookieEstado.length > 0){
+        		var params=cookieEstado.split("&");
+        		for (var i=0 ; i < params.length ; i++){
+            			var pos = params[i].indexOf("=");
+            			var name = params[i].substring(0, pos);
+            			var value = params[i].substring(pos + 1);
+	    			if (name == "vista_activa" )
+				{
+					var vis = value.indexOf("x");
+            				vistaActiva = value.substring(0, vis);
+
+				}else if (name == "modo")
+				{
+					modo=value
+					
+				}else if (name == "menu")
+				{
+					var coor = value.indexOf("x");
+            				menuLeft = value.substring(0, coor);
+					menuTop = value.substring(coor + 1);
+				}
+        		}
+    		}
+	}else{ // Cargamos los valores de la base de datos
+	vista_activa=1;menuLeft=100;menuTop=100;	}
+
+
+
+
+var highZ = 3;
+//creamos un array en javascript que contendrá la relacion entre el numero de pestaña y el id de la vista que se representa en dicha pestaña
+var relacionPestaVista=new Array();
+aRelacionesObjetos=new Array(); // Este array almacena el nombre de las relaciones (lineas)
+ 
+</script>
+
+    
+
+
+<!-- Absolutely Positioned Elements -->
+
+<script type="text/javascript">
+
+
+
+window.onload = function() {
+
+
+
+
+
+ // Definimos los menus
+
+ 
+  // relative, under heading
+  menu1 = new xMenu2(
+    false, true, false,         // absolute, horizontal, floating,
+    0, 0, 3,                    // menuX, menuY, menuZ
+    0, [75,50,40,40], 20,       // lblOffset, lblWidthsArray, lblHeight,
+    [120,150,140,140],          // boxWidthsArray,
+    '#000000', '#333333',       // activeColor, inactiveColor,
+    '#cccc99', '#cccc99',       // activeBkgnd, inactiveBkgnd
+    '#cccc99'                   // boxBkgnd
+  );
+  // top-right
+  menu2 = new xMenu2(
+    true, false, true,          // absolute, horizontal, floating,
+    xClientWidth() - 75, xClientHeight() - 80, 5, // menuX, menuY, menuZ
+    0, [75,75,75,75], 20,       // lblOffset, lblWidthsArray, lblHeight,
+    [120,150,140,140],          // boxWidthsArray,
+    '#ffccff', '#000080',       // activeColor, inactiveColor,
+    '#FF6600', '#CC6600',       // activeBkgnd, inactiveBkgnd
+    '#FF6600'                   // boxBkgnd
+  );
+  // bottom-left
+  menu3 = new xMenu2(
+    true, false, true,          // absolute, horizontal, floating,
+    0, xClientHeight() - 80, 2, // menuX, menuY, menuZ
+    0, [75,75,75,75], 20,       // lblOffset, lblWidthsArray, lblHeight,
+    [120,150,140,140], 
+    '#000000', '#333333',       // activeColor, inactiveColor,
+    '#cccc99', '#cccc99',       // activeBkgnd, inactiveBkgnd
+    '#cccc99'             // boxWidthsArray,
+/*    '#000080', '#FF9999',       // activeColor, inactiveColor,
+    '#00CCFF', '#0099FF',       // activeBkgnd, inactiveBkgnd
+    '#00CCFF'    */               // boxBkgnd
+  );
+  // bottom-right
+  menu4 = new xMenu2(
+    true, true, true,           // absolute, horizontal, floating,
+    xClientWidth()-205, xClientHeight()-20, 4, // menuX, menuY, menuZ
+    0, [75,50,40,40], 20,       // lblOffset, lblWidthsArray, lblHeight,
+    [120,150,140,140],          // boxWidthsArray,
+    '#000066', '#ffff66',       // activeColor, inactiveColor,
+    '#cccc99', '#9999cc',       // activeBkgnd, inactiveBkgnd
+    '#cccc99'                   // boxBkgnd
+  );
+
+  scrollListener(); // initial slide
+  xAddEventListener(document, "mousemove", menuHideListener, false);
+  xAddEventListener(window, "scroll", scrollListener, false);
+
+perfil=1;aVistas = new Array(), aVistas_count =3;cuentaVis=aVistas_count;aObjeto1 = new Array(), aObjeto1_count =4;
+     		var aPos1 = new Array(); // Creamos array que guarde las posiciones de los objetos
+
+    		var cookieData=GetCookie("objParams1"); // Parseamos la cookie de la vista
+		if (cookieData !=null){
+    			if (cookieData.length > 0){
+        			var parametros=cookieData.split("&");
+				for (var i=0 ; i < parametros.length ; i++){
+            				var posicion = parametros[i].indexOf("=");
+            				var nombre = parametros[i].substring(0, posicion);
+            				var valor = parametros[i].substring(posicion + 1);
+
+				    if (nombre == i+1 )
+					{
+					metaposicion = valor;
+		    			if (metaposicion.length > 0){
+        					var metaparams=metaposicion.split("x");
+						posX=metaparams[0];
+						posY=metaparams[1];
+						indexX=nombre+"X";
+						indexY=nombre+"Y";
+						aPos1[indexX]=posX;
+						aPos1[indexY]=posY;
+
+					 }
+					}
+        			}
+    			}
+		}
+		
+		relacionPestaVista[0]=1;
+		
+		aObjeto1[1] = new xFenster('fen_1_201', parseInt(aPos1['1X']), parseInt(aPos1['1Y']), 'fenBar1201', 'fenResBtn1201', 'fenMaxBtn1201');aObjeto1[2] = new xFenster('fen_1_200', parseInt(aPos1['2X']), parseInt(aPos1['2Y']), 'fenBar1200', 'fenResBtn1200', 'fenMaxBtn1200');aObjeto1[3] = new xFenster('fen_1_222', parseInt(aPos1['3X']), parseInt(aPos1['3Y']), 'fenBar1222', 'fenResBtn1222', 'fenMaxBtn1222');aObjeto1[4] = new xFenster('fen_1_223', parseInt(aPos1['4X']), parseInt(aPos1['4Y']), 'fenBar1223', 'fenResBtn1223', 'fenMaxBtn1223');aObjeto152 = new Array(), aObjeto152_count =0;
+     		var aPos152 = new Array(); // Creamos array que guarde las posiciones de los objetos
+
+    		var cookieData=GetCookie("objParams152"); // Parseamos la cookie de la vista
+		if (cookieData !=null){
+    			if (cookieData.length > 0){
+        			var parametros=cookieData.split("&");
+				for (var i=0 ; i < parametros.length ; i++){
+            				var posicion = parametros[i].indexOf("=");
+            				var nombre = parametros[i].substring(0, posicion);
+            				var valor = parametros[i].substring(posicion + 1);
+
+				    if (nombre == i+1 )
+					{
+					metaposicion = valor;
+		    			if (metaposicion.length > 0){
+        					var metaparams=metaposicion.split("x");
+						posX=metaparams[0];
+						posY=metaparams[1];
+						indexX=nombre+"X";
+						indexY=nombre+"Y";
+						aPos152[indexX]=posX;
+						aPos152[indexY]=posY;
+
+					 }
+					}
+        			}
+    			}
+		}
+		
+		relacionPestaVista[1]=152;
+		
+		aObjeto156 = new Array(), aObjeto156_count =2;
+     		var aPos156 = new Array(); // Creamos array que guarde las posiciones de los objetos
+
+    		var cookieData=GetCookie("objParams156"); // Parseamos la cookie de la vista
+		if (cookieData !=null){
+    			if (cookieData.length > 0){
+        			var parametros=cookieData.split("&");
+				for (var i=0 ; i < parametros.length ; i++){
+            				var posicion = parametros[i].indexOf("=");
+            				var nombre = parametros[i].substring(0, posicion);
+            				var valor = parametros[i].substring(posicion + 1);
+
+				    if (nombre == i+1 )
+					{
+					metaposicion = valor;
+		    			if (metaposicion.length > 0){
+        					var metaparams=metaposicion.split("x");
+						posX=metaparams[0];
+						posY=metaparams[1];
+						indexX=nombre+"X";
+						indexY=nombre+"Y";
+						aPos156[indexX]=posX;
+						aPos156[indexY]=posY;
+
+					 }
+					}
+        			}
+    			}
+		}
+		
+		relacionPestaVista[2]=156;
+		
+		aObjeto156[1] = new xFenster('fen_156_220', parseInt(aPos156['1X']), parseInt(aPos156['1Y']), 'fenBar156220', 'fenResBtn156220', 'fenMaxBtn156220');aObjeto156[2] = new xFenster('fen_156_221', parseInt(aPos156['2X']), parseInt(aPos156['2Y']), 'fenBar156221', 'fenResBtn156221', 'fenMaxBtn156221'); jg_156_220_221 = new jsGraphics('Canvas_156_220_221');
+					jg_156_220_221.setColor('#000000'); 
+					jg_156_220_221.drawLine(aObjeto156[1].dameX(), aObjeto156[1].dameY(), aObjeto156[2].dameX(), aObjeto156[2].dameY()); 
+					jg_156_220_221.paint();
+					aRelacionesObjetos['jg_156_220_221']=jg_156_220_221; jg_156_221_221 = new jsGraphics('Canvas_156_221_221');
+					jg_156_221_221.setColor('#000000'); 
+					jg_156_221_221.drawLine(aObjeto156[2].dameX(), aObjeto156[2].dameY(), aObjeto156[2].dameX(), aObjeto156[2].dameY()); 
+					jg_156_221_221.paint();
+					aRelacionesObjetos['jg_156_221_221']=jg_156_221_221;
+
+
+var tpg2;
+
+  tpg2 = new xTabPanelGroup('tpg2', 1000, 1000, 25, 'tabPanel', 'tabGroup', 'tabDefault', 'tabSelected');
+ 
+
+tpg2.select(parseInt(vistaActiva)+1); 
+
+  FormSetup();
+
+}
+
+insertMenu(3,'a');</script>
+<BODY  onUnload="javascript:guardarEstado()" >
+<div>
+	<div id='tpg2' class='tabPanelGroup'>
+
+  		<div class='tabGroup'>
+<a href='#tpg21' class='tabDefault'  title='Descripcion de la Vista' style="background-color:yellow" > <TABLE ALIGN="center">
+	  <TR>
+    	  	<TD>
+	  		vista
+	  	</TD>
+    	  	<TD>
+	  		<IMG SRC='imagenes/utiles/dot_green.gif' border=0 ALT='imagen'>
+	  	</TD>
+    	  	<TD>
+	  		<IMG SRC='imagenes/utiles/dot_red.gif' border=0 ALT='imagen'>
+	  	</TD>
+		<TD></TD><TD></TD><TD></TD><TD></TD><TD></TD><TD></TD>
+		<TD>
+	  		<IMG  SRC='imagenes/utiles/cancel.gif' border=0 onclick="setCookieEstado();location.href='xmenu2.php?action=cerrarVista&mode='+modo">
+	  	</TD>
+
+	  </TR>
+	  		</TABLE></a><span class='linkDelim'>&nbsp;|&nbsp;</span><a href='#tpg2152' class='tabDefault'  title=''> <TABLE ALIGN="center">
+	  <TR>
+    	  	<TD>
+	  		dsfa
+	  	</TD>
+    	  	<TD>
+	  		<IMG SRC='imagenes/utiles/dot_green.gif' border=0 ALT='imagen'>
+	  	</TD>
+    	  	<TD>
+	  		<IMG SRC='imagenes/utiles/dot_red.gif' border=0 ALT='imagen'>
+	  	</TD>
+		<TD></TD><TD></TD><TD></TD><TD></TD><TD></TD><TD></TD>
+		<TD>
+	  		<IMG  SRC='imagenes/utiles/cancel.gif' border=0 onclick="setCookieEstado();location.href='xmenu2.php?action=cerrarVista&mode='+modo">
+	  	</TD>
+
+	  </TR>
+	  		</TABLE></a><span class='linkDelim'>&nbsp;|&nbsp;</span><a href='#tpg2156' class='tabDefault'  title=''> <TABLE ALIGN="center">
+	  <TR>
+    	  	<TD>
+	  		fdsaeewqe
+	  	</TD>
+    	  	<TD>
+	  		<IMG SRC='imagenes/utiles/dot_green.gif' border=0 ALT='imagen'>
+	  	</TD>
+    	  	<TD>
+	  		<IMG SRC='imagenes/utiles/dot_red.gif' border=0 ALT='imagen'>
+	  	</TD>
+		<TD></TD><TD></TD><TD></TD><TD></TD><TD></TD><TD></TD>
+		<TD>
+	  		<IMG  SRC='imagenes/utiles/cancel.gif' border=0 onclick="setCookieEstado();location.href='xmenu2.php?action=cerrarVista&mode='+modo">
+	  	</TD>
+
+	  </TR>
+	  		</TABLE></a><span class='linkDelim'>&nbsp;|&nbsp;</span></div>
+  		<div id='tpg21' class='tabPanel'>
+	
+		 
+		<div id='fen_1_201' class='fenster' >
+  			<div id='fenBar1201' class='fenBar' title='dsfa [V]'>dsfa [  <IMG  SRC='imagenes/utiles/play.gif' border=0 onclick="setCookieEstado();location.href='xmenu2.php?action=clickAbrirVista&vista=152&mode='+modo">]</div>
+  			<div class='fenContent'>
+    			<IMG SRC='imagenes/apps_1.gif' ALT='imagen' >
+			<br>
+			<IMG SRC='imagenes/utiles/dot_green.gif' ALT='imagen'>
+			<IMG SRC='imagenes/utiles/dot_red.gif' ALT='imagen'>
+			<IMG SRC='imagenes/utiles/b_down.gif' ALT='imagen'>
+  			</div>  
+  	
+		</div>
+
+	
+		<div id='fen_1_200' class='fenster'>
+  			<div id='fenBar1200' class='fenBar' title='lk [V]'>lk [  <IMG  SRC='imagenes/utiles/play.gif' border=0 onclick="setCookieEstado();location.href='xmenu2.php?action=clickAbrirVista&vista=151&mode='+modo">]</div>
+  			<div class='fenContent'>
+    			<IMG SRC='imagenes/firewall_1.gif' ALT='imagen' >
+			<br>
+			<IMG SRC='imagenes/utiles/dot_green.gif' ALT='imagen'>
+			<IMG SRC='imagenes/utiles/dot_red.gif' ALT='imagen'>
+			<IMG SRC='imagenes/utiles/b_down.gif' ALT='imagen'>
+  			</div>  
+  	
+		</div>
+
+	
+		<div id='fen_1_222' class='fenster'>
+  			<div id='fenBar1222' class='fenBar' title='fdsaeewqe [V]'>fdsaeewqe [  <IMG  SRC='imagenes/utiles/play.gif' border=0 onclick="setCookieEstado();location.href='xmenu2.php?action=clickAbrirVista&vista=156&mode='+modo">]</div>
+  			<div class='fenContent'>
+    			<IMG SRC='imagenes/db_1.gif' ALT='imagen' >
+			<br>
+			<IMG SRC='imagenes/utiles/dot_green.gif' ALT='imagen'>
+			<IMG SRC='imagenes/utiles/dot_red.gif' ALT='imagen'>
+			<IMG SRC='imagenes/utiles/b_down.gif' ALT='imagen'>
+  			</div>  
+  	
+		</div>
+
+	
+		<div id='fen_1_223' class='fenster'>
+  			<div id='fenBar1223' class='fenBar' title='win [A]'>win [A]</div>
+  			<div class='fenContent'>
+    			<IMG SRC='imagenes/workstation_1.gif' ALT='imagen' >
+			<br>
+			<IMG SRC='imagenes/utiles/dot_green.gif' ALT='imagen'>
+			<IMG SRC='imagenes/utiles/dot_red.gif' ALT='imagen'>
+			<IMG SRC='imagenes/utiles/b_down.gif' ALT='imagen'>
+  			</div>  
+  	
+		</div>
+
+	</div>
+  		<div id='tpg2152' class='tabPanel'>
+	
+		 </div>
+  		<div id='tpg2156' class='tabPanel'>
+	
+		 
+		<div id='fen_156_220' class='fenster' style="background-color:#e41a1a;border-color:#28e41a">
+  			<div id='fenBar156220' class='fenBar' title='win [A]'>win [A]</div>
+  			<div class='fenContent'>
+    			<IMG SRC='imagenes/workstation_1.gif' ALT='imagen' >
+			<br>
+			<IMG SRC='imagenes/utiles/dot_green.gif' ALT='imagen'>
+			<IMG SRC='imagenes/utiles/dot_red.gif' ALT='imagen'>
+			<IMG SRC='imagenes/utiles/b_down.gif' ALT='imagen'>
+  			</div>  
+  	
+		</div>
+
+	<div id='Canvas_156_220_221' style='position:relative;height:5px;width:5px;'></div>
+				
+		<div id='fen_156_221' class='fenster'>
+  			<div id='fenBar156221' class='fenBar' title='Networking [GM]'>Networking [GM]</div>
+  			<div class='fenContent'>
+    			<IMG SRC='imagenes/comms_1.gif' ALT='imagen' >
+			<br>
+			<IMG SRC='imagenes/utiles/dot_green.gif' ALT='imagen'>
+			<IMG SRC='imagenes/utiles/dot_red.gif' ALT='imagen'>
+			<IMG SRC='imagenes/utiles/b_down.gif' ALT='imagen'>
+  			</div>  
+  	
+		</div>
+
+	<div id='Canvas_156_221_221' style='position:relative;height:5px;width:5px;'></div>
+				</div>
+  
+ 		</div>
+	</div>
+</div>
+	
+
+</body></html>

@@ -234,19 +234,23 @@ Pandora_Windows_Service::pandora_run () {
                 delete ssh_client;
                 pandoraLog ("Pandora Agent: Authentication Failed when connecting to %s",
                             remote_host.c_str ());
-                try {
-                        Pandora_File::removeFile (tmp_filepath);
-                } catch (Pandora_File::Delete_Error e) {
-                }
+		if (getPandoraDebug () == false) {
+	                try {
+        	                Pandora_File::removeFile (tmp_filepath);
+	                } catch (Pandora_File::Delete_Error e) {
+        	        }
+		}
                 return;
         } catch (Pandora_Exception e) {
                 delete ssh_client;
                 pandoraLog ("Pandora Agent: Failed when copying to %s",
                             remote_host.c_str ());
-                try {
-                        Pandora_File::removeFile (tmp_filepath);
-                } catch (Pandora_File::Delete_Error e) {
-                }
+                if (getPandoraDebug () == false) {
+			try {
+                        	Pandora_File::removeFile (tmp_filepath);
+	                } catch (Pandora_File::Delete_Error e) {
+	                }
+		}
                 return;
         }
         
@@ -266,20 +270,24 @@ Pandora_Windows_Service::pandora_run () {
                             tmp_filename.c_str ());
                 ssh_client->disconnect();
                 delete ssh_client;
-                try {
-                        Pandora_File::removeFile (tmp_filepath);
-                } catch (Pandora_File::Delete_Error e) {
-                }
+		if (getPandoraDebug () == false) {
+	                try {
+        	                Pandora_File::removeFile (tmp_filepath);
+                	} catch (Pandora_File::Delete_Error e) {
+                	}
+		}
                 return;
         }
         
         ssh_client->disconnect();
         delete ssh_client;
         
-        try {
-                Pandora_File::removeFile (tmp_filepath);
-        } catch (Pandora_File::Delete_Error e) {
-        }
+	if (getPandoraDebug () == false) {
+	        try {
+	                Pandora_File::removeFile (tmp_filepath);
+	        } catch (Pandora_File::Delete_Error e) {
+	        }
+	}
                 
         pandoraDebug ("Execution number %d", execution_number);
         

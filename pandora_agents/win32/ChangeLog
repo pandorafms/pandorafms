@@ -1,29 +1,44 @@
+2006-10-06  Esteban Sanchez  <estebans@artica.es>
+
+	* pandora.cc, pandora.h: Added getPandoraDebug() to get the debug
+	flag value.
+
+	* pandora_windows_service.cc: Do not remove the data file if flag
+	debug is active.
+
+	* bin/PandoraAgent.exe: Updated to new changes.
+
+	* ChangeLog: Style correction.
+
 2006-10-05  Raúl Mateos  <raulofpandora@gmail.com>
 
-	* Pandora Windows Agent-1.2 Beta3-Setup.exe: Updated installer to include 
-	Pair Key generation.
+	* installer/Pandora Windows Agent-1.2 Beta3-Setup.exe: Updated
+	installer to include Pair Key generation.
 	
-	* pandora.mpi: New file, installjammer installer. You should change PATHS
-	to include the files into the installer.
+	* installer/pandora.mpi: New file, installjammer installer. You should
+	change PATHS to include the files into the installer.
 	
-	* pandora.ico: New file, used in the installer.
+	* installer/pandora.ico: New file, used in the installer.
 	
-	* logo.gif: New file, used in the installer (it should be changed to .png)
+	* installer/logo.gif: New file, used in the installer (it should be
+	changed to .png)
 
 2006-09-27  Raúl Mateos  <raulofpandora@gmail.com>
 
-	* Pandora Windows Agent-1.2 Beta3-Setup.exe: Updated logo image and added
-	shortcut to edit configuration file.
+	* installer/Pandora Windows Agent-1.2 Beta3-Setup.exe: Updated logo
+	image and added shortcut to edit configuration file.
 
 2006-09-22  Raúl Mateos  <raulofpandora@gmail.com>
 
-	* installer/: New directory to put the Pandora Agent for Windows installer
+	* installer/: New directory to put the Pandora Agent for Windows
+	installer.
 	
-	* Pandora Windows Agent-1.2 Beta3-Setup.exe: New file added to repository
+	* Pandora Windows Agent-1.2 Beta3-Setup.exe: New file added to
+	repository.
 
-2006-09-20	Raul Mateos  <raulofpandora@gmail.com>
+2006-09-22  Raul Mateos  <raulofpandora@gmail.com>
 
-	* win32\bin\pandora_agent.conf: Updated some texts to english
+	* win32\bin\pandora_agent.conf: Updated some texts to english.
 	
 	* win32\bin\README: Added
 

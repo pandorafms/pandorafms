@@ -72,7 +72,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 	$sql1='SELECT * FROM tagente ORDER BY nombre';
 	$result=mysql_query($sql1);
 	if (mysql_num_rows($result)){
-	echo "<table cellpadding='3' cellspacing='3' width='500'>";
+	echo "<table cellpadding='3' cellspacing='3' width='600'>";
 	echo "<th>".$lang_label["agent_name"];
 	echo "<th>".$lang_label["group"];
 	echo "<th>".$lang_label["description"];

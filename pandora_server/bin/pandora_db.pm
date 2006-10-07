@@ -118,8 +118,10 @@ sub pandora_calcula_alerta (%$$$$$$) {
 			my $last_fired = $data[10];
 			my $max_alerts = $data[11];
 			my $times_fired = $data[12];
+			my $module_type = $data[13];
 			my $min_alerts = $data[14];
 			my $internal_counter = $data[15];
+			my $perl_expr = $data[16];
 			my $comando ="";
 			logger($pa_config, "Found an alert defined for $nombre_modulo, its ID $id_alerta",5);
 			# Here we process alert if conditions are ok
@@ -151,8 +153,23 @@ sub pandora_calcula_alerta (%$$$$$$) {
 			my $alert_fired = 0;
 			my $update_counter =0;
 
-			# Is data between valid values ?
-			if (($datos > $dis_max) || ($datos < $dis_min)){
+			# alert needs to be fired ?
+			
+			my $flag_firealert = 0;  # turned to 1 if alert needs to be fired
+			
+			logger ($pa_config, "XXX: moduletype $module_type", 3);
+			if ($module_type == 3) {   # if module is generic_data_string
+				# $perl_expr contains the regular expression to be match
+				# TODO:  are security checks needed ???
+				logger ($pa_config, "XXX alerta de log. dato $datos, re $perl_expr", 3);
+				if ($datos =~ $perl_expr) { $flag_firealert = 1; }
+			} else {
+				logger($pa_config,"XXX alerta numerica. dato $datos, max $dis_max, min $dis_min",3);
+				if (($datos > $dis_max) || ($datos < $dis_min)) { $flag_firealert = 1; }
+			}
+			
+			if ( $flag_firealert ){
+				logger ($pa_config, "XXX alerta tiene que ser disparada!",3);  
 				# Check timegap
 				my $fecha_ultima_alerta = ParseDate($last_fired);
 				my $fecha_actual = ParseDate( $timestamp );
@@ -179,6 +196,8 @@ sub pandora_calcula_alerta (%$$$$$$) {
 				# Caution: MIN Limit is related to triggered (in time-threshold limit) alerts
 				# but MAX limit is related to executed alerts, not only triggered. Because an alarm to be
 				# executed could be triggered X (min value) times to be executed.
+				logger ($pa_config, "XXX : int_count $internal_counter, minal $min_alerts", 3);
+				logger ($pa_config, "XXX : times_fired $times_fired, maxalerts $max_alerts", 3);
 				if (($internal_counter >= $min_alerts) && ($times_fired  <= $max_alerts)){
 					# The new alert is between last valid time + threshold and between max/min limit to alerts in this gap of time.
 					$times_fired++;

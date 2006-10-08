@@ -1,3 +1,8 @@
+2006-10-08 Sancho Lerena <slerena@artica.es>
+
+        * incident_detail.php: Fixed DOS newlines to UNIX newlines. Fixed
+          help code. Fixed Background color for field "Source".
+ 
 2006-10-04 Raul Mateos  <raulofpandora@gmail.com>
 
 	* operation/agentes/estado_ultimopaquete.php: Delete old comments.

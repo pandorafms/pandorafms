@@ -221,6 +221,12 @@ do
               		EXECUTE=`expr \( $CONTADOR + 1 \) % $MODULEINTERVAL`
   		fi
 
+		if [ ! -z "`echo $a | grep '^module_store_all_data'`" ]
+		then
+			# pandora will store all values, even repeated and consecutives ones
+			echo "<storealldata>1</storealldata>" >> $DATA2
+		fi
+
 		# If module end, and execute for this module is enabled
 		# then write 
 

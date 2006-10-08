@@ -184,6 +184,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 	$modulo_max="";
 	$modulo_min='';
 	$module_interval = "";
+	$storealldata = 0;
 	$tcp_port = "";
 	$tcp_send = "";
 	$tcp_rcv = "";
@@ -391,6 +392,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 			$snmp_oid = $row["snmp_oid"];
 			$id_module_group = $row["id_module_group"];
 			$module_interval = $row["module_interval"];
+			$storealldata = $row["store_all_data"];
 			$modulo_max = $row["max"];
 			if (! isset($modulo_max))
 				$modulo_max ="N/A";
@@ -477,6 +479,11 @@ if (give_acl($id_user, 0, "AW")==1) {
 			$id_module_group = entrada_limpia($_POST["id_module_group"]);
 		if (isset($_POST["module_interval"]))
 			$module_interval = entrada_limpia($_POST["module_interval"]);
+		if (isset($_POST["storealldata"]))
+			{ $storealldata = entrada_limpia($_POST["storealldata"]); }
+		  else
+		  	{ $storealldata = 0; }
+		
 	}
 	// MODULE UPDATE
 	// =================
@@ -487,7 +494,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 				$snmp_oid = $combo_snmp_oid;
 			}
 		}
-		$sql_update = "UPDATE tagente_modulo SET max ='".$modulo_max."', min = '".$modulo_min."', nombre='".$nombre."', descripcion='".$descripcion."', tcp_send = '$tcp_send', tcp_rcv = '$tcp_rcv', tcp_port = '$tcp_port', ip_target = '$ip_target', snmp_oid = '$snmp_oid', snmp_community = '$snmp_community', id_module_group = '$id_module_group', module_interval = '$module_interval'  WHERE id_agente_modulo = ".$id_agente_modulo;
+		$sql_update = "UPDATE tagente_modulo SET max ='".$modulo_max."', min = '".$modulo_min."', nombre='".$nombre."', descripcion='".$descripcion."', tcp_send = '$tcp_send', tcp_rcv = '$tcp_rcv', tcp_port = '$tcp_port', ip_target = '$ip_target', snmp_oid = '$snmp_oid', snmp_community = '$snmp_community', id_module_group = '$id_module_group', module_interval = '$module_interval' , store_all_data = '$storealldata'  WHERE id_agente_modulo = ".$id_agente_modulo;
 		$result=mysql_query($sql_update);	
 		if (! $result)
 			echo "<h3 class='error'>".$lang_label["update_module_no"]."</h3>";
@@ -499,7 +506,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 		$tcp_send = "";$tcp_rcv = "";$tcp_port = "";$ip_target = "";
 		$snmp_oid = "";$snmp_community = "";$id_module_group = "";
 		$module_interval = ""; $modulo_nombre = ""; $modulo_descripcion = "";
-		$update_module = 0;
+		$update_module = 0; $storealldata = 0;
 	}
 	// =========================================================
 	// OID Refresh button to get SNMPWALK from data in form
@@ -535,13 +542,13 @@ if (give_acl($id_user, 0, "AW")==1) {
 		if (!isset($modulo_min) || $modulo_min=="") {
 			$modulo_min= "0";
 		}
-		$sql_insert = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,descripcion,max,min,snmp_oid,snmp_community,id_module_group,module_interval,ip_target,tcp_port,tcp_rcv,tcp_send) VALUES (".$id_agente.",".$id_tipo_modulo.",'".$nombre."','".$descripcion."','".$modulo_max."','".$modulo_min."', '$snmp_oid', '$snmp_community', '$id_module_group', '$module_interval', '$ip_target', '$tcp_port', '$tcp_rcv', '$tcp_send')";
+		$sql_insert = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,descripcion,max,min,snmp_oid,snmp_community,id_module_group,module_interval,ip_target,tcp_port,tcp_rcv,tcp_send,store_all_data) VALUES (".$id_agente.",".$id_tipo_modulo.",'".$nombre."','".$descripcion."','".$modulo_max."','".$modulo_min."', '$snmp_oid', '$snmp_community', '$id_module_group', '$module_interval', '$ip_target', '$tcp_port', '$tcp_rcv', '$tcp_send', '$storealldata')";
 		// Init vars to null to avoid trash in forms 
 		$id_tipo_modulo = "";$nombre =  "";$descripcion = "";$modulo_max = "";
 		$modulo_min = "";// Pandora 1.2 new module data:
 		$tcp_send = "";$tcp_rcv = "";$tcp_port = "";$ip_target = "";
 		$snmp_oid = "";$snmp_community = "";$id_module_group = "";
-		$module_interval = "";
+		$module_interval = ""; $storealldata = 0;
 
 		//echo "DEBUG: ".$sql_insert;
 
@@ -867,7 +874,7 @@ else {
 <h3><?php echo $lang_label["module_asociation_form"] ?><a href='help/<?php echo $help_code ?>/chap3.php#321' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
 <a name="modules"> <!-- Don't Delete !! -->
 <table width="650" cellpadding="3" cellspacing="3" class="fon">
-<tr><td class='lb' rowspan='8' width='5'>
+<tr><td class='lb' rowspan='9' width='5'>
 <!-- Module type combobox -->
 <td class="datos"><?php echo $lang_label["module_type"] ?>
 <td class="datos">
@@ -910,6 +917,12 @@ else {
 <td class="datos2"><input type="text" name="nombre" size="20" value="<?php echo $modulo_nombre ?>"> 
 <td class="datos2"><?php echo $lang_label["module_interval"] ?><td class="datos2">
 <input type="text" name="module_interval" size="5" value="<?php echo $module_interval ?>"> 
+
+<tr><td class="datos">store all data
+<td colspan=3 class="datos"><select name="storealldata">
+  <option value=0 <?php if ($storealldata == 0) { echo "selected"; } ?> >No
+  <option value=1 <?php if ($storealldata == 1) { echo "selected"; } ?> >Yes
+  </select>
 
 <tr><td class="datos"><?php echo $lang_label["ip_target"] ?>
 <td class="datos"><input type="text" name="ip_target" size="20" value="<?php echo $ip_target ?>"> 
@@ -997,7 +1010,7 @@ else {
 ?>
 <input type="hidden" name="id_agente" value="<?php echo $id_agente ?>">
 <table width=650 cellpadding="3" cellspacing="3" class="fon" border=0>
-<tr><td class='lb' rowspan='9' width='5'>
+<tr><td class='lb' rowspan='10' width='5'>
 <td class="datos"><?php echo $lang_label["alert_type"]?>
 <td class="datos">
 <select name="tipo_alerta"> 

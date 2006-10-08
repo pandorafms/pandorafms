@@ -258,6 +258,9 @@ foreach $logfile ( keys %log_modules ) {
 				if ( defined($module{'module_description'}) );
 			print DATAFILE '<type><![CDATA[' . $module{'module_type'} . ']]></type>' . "\n"
 				if ( defined($module{'module_type'}) );
+			print DATAFILE '<storealldata>1</storealldata>' . "\n"
+				if ( defined($module{'module_store_all_data'}) );
+		
 				
 			# in next line we execute $module_exec after key substitution
 			# SECURITY NOTE:  in this version there are not injection checks,

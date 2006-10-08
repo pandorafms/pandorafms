@@ -116,6 +116,7 @@ CREATE TABLE `tagente_modulo` (
   `ip_target` varchar(100) default '',
   `id_module_group` int(4) unsigned default '0',
   `flag` tinyint(3) unsigned default '0',
+  `store_all_data` bool default '0',
   PRIMARY KEY  (`id_agente_modulo`)
 ) TYPE=InnoDB; 
 
@@ -174,6 +175,7 @@ CREATE TABLE `talerta_agente_modulo` (
   `module_type` int(11) NOT NULL default '0',
   `min_alerts` int(4) NOT NULL default '0',
   `internal_counter` int(4) default '0',
+  `perl_expr` text default NULL,
   PRIMARY KEY  (`id_aam`)
 ) TYPE=InnoDB;
 

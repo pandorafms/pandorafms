@@ -500,6 +500,7 @@ sub module_generic_proc (%$$$$$) {
 	my $estado;
 	# Leemos datos de la estructura
 	my $a_datos = $datos->{data}->[0];
+	my $storealldata = (defined($datos->{storealldata}->[0]))?$datos->{storealldata}->[0]:0;
 
 	if ((ref($a_datos) ne "HASH")){
 		$a_datos = sprintf("%.2f", $a_datos);		# Two decimal float. We cannot store more
@@ -517,7 +518,7 @@ sub module_generic_proc (%$$$$$) {
 			$a_min = "";
 		}
 		
-		pandora_writedata($pa_config, $a_timestamp,$agent_name,$module_type,$a_name,$a_datos,$a_max,$a_min,$a_desc,$dbh);
+		pandora_writedata($pa_config, $a_timestamp,$agent_name,$module_type,$a_name,$a_datos,$a_max,$a_min,$a_desc,$storealldata,$dbh);
 	
 		# Check for status: <1 state 1 (Bad), >= 1 state 0 (Good)
 		# Calculamos su estado
@@ -553,6 +554,7 @@ sub module_generic_data (%$$$$$) {
 	my $m_name = $datos->{name}->[0];
 	my $a_desc = $datos->{description}->[0];
 	my $m_data = $datos->{data}->[0];
+	my $storealldata = (defined($datos->{storealldata}->[0]))?$datos->{storealldata}->[0]:0;
 	
 	if (ref($m_data) ne "HASH"){
 		if ($m_data =~ /[0-9]*/){
@@ -572,7 +574,7 @@ sub module_generic_data (%$$$$$) {
 		if (ref($a_min) eq "HASH") {
 			$a_min = "";
 		}
-		pandora_writedata($pa_config, $m_timestamp,$agent_name,$module_type,$m_name,$m_data,$a_max,$a_min,$a_desc,$dbh);
+		pandora_writedata($pa_config, $m_timestamp,$agent_name,$module_type,$m_name,$m_data,$a_max,$a_min,$a_desc,$storealldata,$dbh);
 		# Numeric data has status N/A (100) always
 		pandora_writestate ($pa_config, $agent_name,$module_type,$m_name,$m_data,100, $dbh);
 	} else {
@@ -602,6 +604,7 @@ sub module_generic_data_inc (%$$$$$) {
 	my $m_data = $datos->{data}->[0];
 	my $a_max = $datos->{max}->[0];
     	my $a_min = $datos->{min}->[0];
+	my $storealldata = (defined($datos->{storealldata}->[0]))?$datos->{storealldata}->[0]:0;
 
 	if (ref($m_data) ne "HASH"){
 		$m_data =~ s/\,/\./g; # replace "," by "."
@@ -680,7 +683,7 @@ sub module_generic_data_inc (%$$$$$) {
 				logger($pa_config, "ERROR: Error inside data_inc algorithm, for Agent $agent_name and Type Generic_data_inc ",6);
 			}
 		}
-		pandora_writedata($pa_config, $m_timestamp,$agent_name,$module_type,$m_name,$nuevo_data,$a_max,$a_min,$a_desc,$dbh);
+		pandora_writedata($pa_config, $m_timestamp,$agent_name,$module_type,$m_name,$nuevo_data,$a_max,$a_min,$a_desc,$storealldata,$dbh);
 	
 		# Calculamos su estado (su estado siempre es bueno, jeje)
 		# Inc status is always 100 (N/A)
@@ -692,7 +695,7 @@ sub module_generic_data_inc (%$$$$$) {
 
 
 ##########################################################################
-## SUB module_generic_data (param_1, param_2,param_3, param_4)
+## SUB module_generic_data_string (param_1, param_2,param_3, param_4)
 ## Process generated data form alfanumeric data module acquire
 ##########################################################################
 ## param_1 : XML name
@@ -714,6 +717,7 @@ sub module_generic_data_string (%$$$$$) {
 	my $a_desc = $datos->{description}->[0];
 	my $a_max = $datos->{max}->[0];
         my $a_min = $datos->{min}->[0];
+	my $storealldata = (defined($datos->{storealldata}->[0]))?$datos->{storealldata}->[0]:0;
 	if (ref($m_data) eq "HASH") {
     		$m_data = XMLout($m_data, RootName=>undef);
  	}
@@ -723,7 +727,7 @@ sub module_generic_data_string (%$$$$$) {
         if (ref($a_min) eq "HASH") {
                 $a_min = "";
         }
-	pandora_writedata($pa_config, $m_timestamp,$agent_name,$module_type,$m_name,$m_data,$a_max,$a_min,$a_desc,$dbh);
+	pandora_writedata($pa_config, $m_timestamp,$agent_name,$module_type,$m_name,$m_data,$a_max,$a_min,$a_desc,$storealldata,$dbh);
     	# String type has no state (100 = N/A)
 	pandora_writestate ($pa_config, $agent_name,$module_type,$m_name,$m_data,100,$dbh);
 }
@@ -745,7 +749,8 @@ sub pandora_writedata (%$$$$$$$$$) {
         my $max = $_[6];
 	my $min = $_[7];
 	my $descripcion = $_[8];
-	my $dbh = $_[9];
+	my $storealldata = $_[9];
+	my $dbh = $_[10];
 	my @data;
 
 
@@ -776,7 +781,7 @@ sub pandora_writedata (%$$$$$$$$$) {
 		if (dame_learnagente($pa_config, $id_agente,$dbh) eq "1"){
 			# Try to write a module and agent_module definition for that datablock
 			logger( $pa_config, "Pandora_insertdata will create module (learnmode) for agent $nombre_agente",4);
-			crea_agente_modulo($pa_config, $nombre_agente, $tipo_modulo, $nombre_modulo, $max, $min, $descripcion,$dbh);
+			crea_agente_modulo($pa_config, $nombre_agente, $tipo_modulo, $nombre_modulo, $max, $min, $descripcion, $storealldata, $dbh);
 			$id_agente_modulo = dame_agente_modulo_id($pa_config, $id_agente, $id_modulo, $nombre_modulo,$dbh);
 			$needscreate = 1; # Really needs to be created
 		} else {
@@ -789,48 +794,56 @@ sub pandora_writedata (%$$$$$$$$$) {
 	# if old value nonequal to new value, needs update
         my $query;
 	my $needsupdate =0;
-	
-	$query = "select * from tagente_estado where id_agente_modulo = $id_agente_modulo";
-       	my $sql_oldvalue = $dbh->prepare($query);
-        $sql_oldvalue->execute;
-        @data = $sql_oldvalue->fetchrow_array();
-       	$sql_oldvalue = $dbh->prepare($query);
-        $sql_oldvalue->execute;
-    	if ($sql_oldvalue->rows != 0) {
-        	@data = $sql_oldvalue->fetchrow_array();
-		#$data[2] contains data
-		if ($tipo_modulo =~ /string/){
-			$datos = $datos; # No change
-		} else { # Numeric change to real 
-			$datos = sprintf("%.2f", $datos);
-			$data[2] = sprintf("%.2f", $data[2]);
-			# Two decimal float. We cannot store more
-			# to change this, you need to change mysql structure
-			$datos =~ s/\,/\./g; # replace "," by "."
-			$data[2] =~ s/\,/\./g; # replace "," by "."
+
+	# skip "old value" checking if module_store_all_data is being used
+	if ($storealldata) {
+		$needsupdate = 1;
 		}
-		if ($data[2] ne $datos){
-			$needsupdate=1;
-			logger( $pa_config, "Updating data for $nombre_modulo after compare with tagente_data: new($datos) ne old($data[2])",10);
-		} else {
-			# Data in DB is the same, but could be older (more than 1 day )
-			my $fecha_datos = $data[3];
-			my $fecha_mysql = &UnixDate("today","%Y-%m-%d %H:%M:%S");      
-			my $fecha_actual = ParseDate( $fecha_mysql );
-			my $fecha_flag; my $err;
-			my $fecha_limite = DateCalc($fecha_actual,"- 1 days",\$err);
-			$fecha_flag = Date_Cmp($fecha_limite,$fecha_datos);
-			if ($fecha_flag >= 0) { # write data, 
-			logger( $pa_config, "Updating data for $nombre_modulo, data too ld in tagente_data",10);
-				$needsupdate = 1;
+	else	
+		{
+		$query = "select * from tagente_estado where id_agente_modulo = $id_agente_modulo";
+		my $sql_oldvalue = $dbh->prepare($query);
+		$sql_oldvalue->execute;
+		@data = $sql_oldvalue->fetchrow_array();
+		$sql_oldvalue = $dbh->prepare($query);
+		$sql_oldvalue->execute;
+		if ($sql_oldvalue->rows != 0) {
+			@data = $sql_oldvalue->fetchrow_array();
+			#$data[2] contains data
+			if ($tipo_modulo =~ /string/){
+				$datos = $datos; # No change
+			} else { # Numeric change to real 
+				$datos = sprintf("%.2f", $datos);
+				$data[2] = sprintf("%.2f", $data[2]);
+				# Two decimal float. We cannot store more
+				# to change this, you need to change mysql structure
+				$datos =~ s/\,/\./g; # replace "," by "."
+				$data[2] =~ s/\,/\./g; # replace "," by "."
 			}
+			if ($data[2] ne $datos){
+				$needsupdate=1;
+				logger( $pa_config, "Updating data for $nombre_modulo after compare with tagente_data: new($datos) ne old($data[2])",10);
+			} else {
+				# Data in DB is the same, but could be older (more than 1 day )
+				my $fecha_datos = $data[3];
+				my $fecha_mysql = &UnixDate("today","%Y-%m-%d %H:%M:%S");      
+				my $fecha_actual = ParseDate( $fecha_mysql );
+				my $fecha_flag; my $err;
+				my $fecha_limite = DateCalc($fecha_actual,"- 1 days",\$err);
+				$fecha_flag = Date_Cmp($fecha_limite,$fecha_datos);
+				if ($fecha_flag >= 0) { # write data, 
+				logger( $pa_config, "Updating data for $nombre_modulo, data too ld in tagente_data",10);
+					$needsupdate = 1;
+				}
+			}
+		} else {
+			$needsupdate=1; # There aren't data
+			logger( $pa_config, "Updating data for $nombre_modulo, because there are not data in DB ",10);
+
 		}
-    	} else {
-		$needsupdate=1; # There aren't data
-		logger( $pa_config, "Updating data for $nombre_modulo, because there are not data in DB ",10);
+		$sql_oldvalue->finish();
 
 	}
-	$sql_oldvalue->finish();
 
 	if (($needscreate == 1) || ($needsupdate == 1)){
 		my $outlimit = 0;
@@ -1432,7 +1445,8 @@ sub crea_agente_modulo (%$$$$$$$) {
 	my $max = $_[4];
 	my $min = $_[5];
 	my $descripcion = $_[6];
-	my $dbh = $_[7];
+	my $storealldata = $_[7];
+	my $dbh = $_[8];
 
 	my $modulo_id = dame_modulo_id($pa_config, $tipo_modulo,$dbh);
 	my $agente_id = dame_agente_id($pa_config, $nombre_agente,$dbh);
@@ -1449,13 +1463,17 @@ sub crea_agente_modulo (%$$$$$$$) {
 		$descripcion="N/A";
 	}
 
-	my $query = "insert into tagente_modulo (id_agente,id_tipo_modulo,nombre,max,min,descripcion) values ($agente_id,$modulo_id,'$nombre_modulo',$max,$min,'$descripcion (*)')";
+	if ((!defined($storealldata)) || ($storealldata eq "")){
+		$storealldata="0";
+	}
+
+	my $query = "insert into tagente_modulo (id_agente,id_tipo_modulo,nombre,max,min,descripcion,store_all_data) values ($agente_id,$modulo_id,'$nombre_modulo',$max,$min,'$descripcion (*)', $storealldata)";
 	if (($max eq "") and ($min eq "")) {
-		$query = "insert into tagente_modulo (id_agente,id_tipo_modulo,nombre,descripcion) values ($agente_id,$modulo_id,'$nombre_modulo','$descripcion (*)')";
+		$query = "insert into tagente_modulo (id_agente,id_tipo_modulo,nombre,descripcion,store_all_data) values ($agente_id,$modulo_id,'$nombre_modulo','$descripcion (*)', $storealldata)";
 	} elsif ($min eq "") {
-		$query = "insert into tagente_modulo (id_agente,id_tipo_modulo,nombre,max,descripcion) values ($agente_id,$modulo_id,'$nombre_modulo',$max,'$descripcion (*)')";
+		$query = "insert into tagente_modulo (id_agente,id_tipo_modulo,nombre,max,descripcion,store_all_data) values ($agente_id,$modulo_id,'$nombre_modulo',$max,'$descripcion (*)', $storealldata)";
 	} elsif ($min eq "") {
-		$query = "insert into tagente_modulo (id_agente,id_tipo_modulo,nombre,min,descripcion) values 	($agente_id,$modulo_id,'$nombre_modulo',$min,'$descripcion (*)')";
+		$query = "insert into tagente_modulo (id_agente,id_tipo_modulo,nombre,min,descripcion,store_all_data) values 	($agente_id,$modulo_id,'$nombre_modulo',$min,'$descripcion (*)', $storealldata)";
 	}
 	logger( $pa_config, "DEBUG: Query for autocreate : $query ",3);	
     	$dbh->do($query);

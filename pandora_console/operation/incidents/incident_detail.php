@@ -230,8 +230,11 @@ $creacion_incidente = "";
 			
 		if (isset($id_inc)) {echo "<input type='hidden' name='id_inc' value='".$id_inc."'>";}
 		echo "<h2>".$lang_label["incident_manag"]."</h2>";
-		if (isset($id_inc)) {echo "<h3>".$lang_label["rev_incident"]." # ".$id_inc." <a href='help/<?php echo $help_code;?>/chap4.php#42' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";} 
-			else {echo "<h3>".$lang_label["create_incident"]."<a href='help/".$help_code."/chap4.php#41' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";}
+		if (isset($id_inc)) {
+			echo "<h3>".$lang_label["rev_incident"]." # ".$id_inc." <a href='help/".$help_code."/chap4.php#42' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+		} else {
+			echo "<h3>".$lang_label["create_incident"]."<a href='help/".$help_code."/chap4.php#41' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+		}
 		echo '<table cellpadding=3 cellspacing=3 border=0 width=600>';
 		if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)) 
 			echo '<tr><td class="lb" rowspan="6" width="5"><td class="datos"><b>'.$lang_label["incident"].'</b><td colspan=3 class="datos"><input type="text" name="titulo" size=70 value="'.$titulo.'">';
@@ -284,7 +287,7 @@ $creacion_incidente = "";
 		echo '</select>';
 
 		if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)) 
-			echo '<tr><td class="datos2"><b>'.$lang_label["source"].'</b><td class="dato2s"><select name="origen" class="w135">';
+			echo '<tr><td class="datos2"><b>'.$lang_label["source"].'</b><td class="datos2"><select name="origen" class="w135">';
 		else
 			echo '<tr><td class="datos2"><b>'.$lang_label["source"].'</b><td class="datos2"><select disabled name="origen" class="w135">';
 		

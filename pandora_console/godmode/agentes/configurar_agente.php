@@ -220,7 +220,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 		$campo_3 = entrada_limpia($_POST["campo_3"]);
 		$maximo = entrada_limpia($_POST["maximo"]);
 		$minimo = entrada_limpia($_POST["minimo"]);
-		$perl_expr = entrada_limpia($_POST["perl_expr"]);
+		$perl_expr = $_POST["perl_expr"];
 		$tipo_alerta = entrada_limpia($_POST["tipo_alerta"]);
 		$time_threshold = entrada_limpia($_POST["time_threshold"]);
 		$max_alerts = entrada_limpia($_POST["max_alerts"]);
@@ -229,7 +229,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 		if ($time_threshold == -1) {
 			$time_threshold = $other;
 		}
-		$sql_insert="INSERT INTO talerta_agente_modulo (id_agente_modulo,id_alerta,al_campo1,al_campo2,al_campo3,descripcion,dis_max,dis_min,time_threshold,max_alerts, min_alerts, module_type, perl_expr) VALUES ('".$id_agente_modulo."','".$tipo_alerta."','".$campo_1."','".$campo_2."','".$campo_3."','".$descripcion."','".$maximo."','".$minimo."','".$time_threshold."','".$max_alerts."','".$min_alerts."','".$id_tipo_modulo."','".$perl_expr."')";
+		$sql_insert="INSERT INTO talerta_agente_modulo (id_agente_modulo,id_alerta,al_campo1,al_campo2,al_campo3,descripcion,dis_max,dis_min,time_threshold,max_alerts, min_alerts, module_type, perl_expr) VALUES ('".$id_agente_modulo."','".$tipo_alerta."','".$campo_1."','".$campo_2."','".$campo_3."','".$descripcion."','".$maximo."','".$minimo."','".$time_threshold."','".$max_alerts."','".$min_alerts."','".$id_tipo_modulo."','". entrada_limpia_sql($perl_expr) ."')";
 		$result=mysql_query($sql_insert);	
 		if (! $result)
 			echo "<h3 class='error'>".$lang_label["create_alert_no"]."</h3>";
@@ -255,14 +255,13 @@ if (give_acl($id_user, 0, "AW")==1) {
 		$time_threshold = entrada_limpia($_POST["time_threshold"]);
 		$max_alerts = entrada_limpia($_POST["max_alerts"]);
 		$min_alerts = entrada_limpia($_POST["min_alerts"]);
-		$perl_expr = entrada_limpia($_POST["perl_expr"]);
+		$perl_expr = $_POST["perl_expr"];
 		$other = entrada_limpia($_POST["other"]);
 		if ($time_threshold == -1) {
 			$time_threshold = $other;
 		}
-
-		$sql_insert="UPDATE talerta_agente_modulo SET id_alerta = ".$tipo_alerta.", max_alerts = '".$max_alerts."', min_alerts = '".$min_alerts."' ,time_threshold = '".$time_threshold."' ,dis_min = '".$minimo."' ,dis_max = '".$maximo."' ,al_campo3 = '".$campo_3."' ,al_campo2 = '".$campo_2."' ,al_campo1 = '".$campo_1."' , descripcion = '".$descripcion."' ,perl_expr = '".$perl_expr."'  WHERE id_aam = ".$id_aam;
-		$result=mysql_query($sql_insert);	
+		$sql_insert="UPDATE talerta_agente_modulo SET id_alerta = ".$tipo_alerta.", max_alerts = '".$max_alerts."', min_alerts = '".$min_alerts."' ,time_threshold = '".$time_threshold."' ,dis_min = '".$minimo."' ,dis_max = '".$maximo."' ,al_campo3 = '".$campo_3."' ,al_campo2 = '".$campo_2."' ,al_campo1 = '".$campo_1."' , descripcion = '".$descripcion."' ,perl_expr = '". $perl_expr ."'  WHERE id_aam = ".$id_aam;
+		$result=mysql_query($sql_insert);
 		if (! $result) {
 			echo "<h3 class='error'>".$lang_label["update_alert_no"]."</h3>";
 			// echo "SQL DEBUG  ".$sql_insert;
@@ -427,7 +426,10 @@ if (give_acl($id_user, 0, "AW")==1) {
 			$alerta_min_alerts = $row["min_alerts"];
 			$alerta_time_threshold = $row["time_threshold"];
 			$alerta_descripcion = $row["descripcion"];
-			$perl_expr = $row["perl_expr"];
+			// we filter $perl_expr with entrada_limpia() now
+			// because it has not done before 
+			// (special characters needed for regular expression)
+			$alerta_perl_expr = entrada_limpia( $row["perl_expr"] );
 		}
 
 	}
@@ -1032,7 +1034,7 @@ while ($row=mysql_fetch_array($result)){
 <?php echo $lang_label["max_value"] ?> &nbsp;&nbsp;&nbsp;
 <input type="text" name="maximo" size="5" value="<?php echo $alerta_dis_max ?>">
 <tr><td class="datos2">Perl expression
-<td class="datos2"><input type="text" name="perl_expr" size="39" value ="<?php echo $perl_expr ?>">
+<td class="datos2"><input type="text" name="perl_expr" size="39" value ="<?php echo $alerta_perl_expr ?>">
 <tr><td class="datos"><?php echo $lang_label["description"] ?>
 <td class="datos"><input type="text" name="descripcion" size="39" value ="<?php echo $alerta_descripcion ?>">
 <tr><td class="datos2"><?php echo $lang_label["field1"] ?>

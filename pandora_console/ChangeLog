@@ -1,7 +1,23 @@
+2006-10-09 Raul Mateos  <raulofpandora@gmail.com>
+
+	* operation/agentes/estado_alertas.php: Add code for showing 'Never'
+	if never an alert has been triggered.
+	
+	* operation/agentes/estado_alertas.php, estado_agente.php
+	, status_monitor.php: Changed select size.
+	
+	* operation/incidents/incident_search.php: Changed select size.
+	
+	* operation/messages/message.php: Changed select size.
+	
+	* godmode/usuarios/configurar_usuarios.php: Changed select size.
+	
+	* godmode/setup/setup.php: Changed select size.
+
 2006-10-08 Sancho Lerena <slerena@artica.es>
 
-        * incident_detail.php: Fixed DOS newlines to UNIX newlines. Fixed
-          help code. Fixed Background color for field "Source".
+	* incident_detail.php: Fixed DOS newlines to UNIX newlines. Fixed
+	  help code. Fixed Background color for field "Source".
  
 2006-10-04 Raul Mateos  <raulofpandora@gmail.com>
 

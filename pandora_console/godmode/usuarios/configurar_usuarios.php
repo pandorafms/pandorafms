@@ -38,10 +38,10 @@ if (comprueba_login() == 0)
 		$resq1=mysql_query($query_del2);
 	}
 		
-	if (isset($_GET["id_usuario_mio"])){ // se ha modificado algun parametro de agente
+	if (isset($_GET["id_usuario_mio"])){ // if any parameter changed
 		$modo="edicion";
 		$id_usuario_mio = entrada_limpia($_GET["id_usuario_mio"]);
-		// Leemos los datos del usuario para mostrarlos en el formulario
+		// Read user data to include in form
 		$query1="SELECT * FROM tusuario WHERE id_usuario = '".$id_usuario_mio."'";
 		$resq1=mysql_query($query1);
 		$rowdup=mysql_fetch_array($resq1);
@@ -61,9 +61,9 @@ if (comprueba_login() == 0)
 		$nombre_real=$rowdup["nombre_real"];
 	}
 	
-	// Modificacion de un usuario
+	// Edit user
 	if (isset ($_POST["edicion"])){		
-		// Se realiza la modificación
+		// We do it
 		if (isset ($_POST["pass1"])){
 			$nombre = entrada_limpia($_POST["nombre"]);
 			$nombre_real=entrada_limpia($_POST["nombre_real"]);
@@ -88,7 +88,7 @@ if (comprueba_login() == 0)
 				$sql = "UPDATE tusuario SET nombre_real ='".$nombre_real."', id_usuario ='".$nombre."', telefono ='".$telefono."', direccion ='".$direccion." ', nivel = '".$nivel."', comentarios = '".$comentarios."' WHERE id_usuario = '".$nombre_viejo."'";
 			$resq2=mysql_query($sql);
 
-			// Añadimos grupo
+			// Add group
 			if (isset($_POST["grupo"]))
 				if ($_POST["grupo"] <> ""){
 					$grupo = $_POST["grupo"];
@@ -190,12 +190,12 @@ if (comprueba_login() == 0)
 	<tr><td class="datos" colspan="2"><textarea name="comentarios" cols="60" rows="4"><?php echo $comentarios ?></textarea>
 	
 	<?php
-	if ($modo == "edicion") { // Solo se visualizan los grupos para usuarios existentes.
-		// Desplegable para el grupo 
+	if ($modo == "edicion") { // Only show groups for existing users
+		// Combo for group
 		echo '<input type="hidden" name="edicion" value="1">';
 		echo '<input type="hidden" name="id_usuario_antiguo" value="'.$id_usuario_mio.'">';
 		
-		echo '<tr><td class="datos2">'.$lang_label["group_avail"].'<td class="datos2"><select name="grupo">';
+		echo '<tr><td class="datos2">'.$lang_label["group_avail"].'<td class="datos2"><select name="grupo" class="w155">';
 		echo "<option value=''>".$lang_label["none"];
 		$sql1='SELECT * FROM tgrupo ORDER BY nombre';
 		$result=mysql_query($sql1);
@@ -205,7 +205,7 @@ if (comprueba_login() == 0)
 		echo '</select>';
 		
 		echo "<tr><td class='datos'>".$lang_label["profiles"];
-		echo "<td class='datos'><select name='perfil'>";
+		echo "<td class='datos'><select name='perfil' class='w155'>";
 		$sql1='SELECT * FROM tperfil ORDER BY name';
 		$result=mysql_query($sql1);
 		while ($row=mysql_fetch_array($result)){
@@ -254,7 +254,7 @@ if (comprueba_login() == 0)
 	</td></tr></table>
 
 <?php
-} // fin comprobacion seguridad pagina
+} // end security check
 else {
 		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access User Management");
 		require ("general/noaccess.php");

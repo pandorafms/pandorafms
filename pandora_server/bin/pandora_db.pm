@@ -1,9 +1,9 @@
 package pandora_db;
-##################################################################################
+##########################################################################
 # Pandora Database Package
-##################################################################################
+##########################################################################
 # Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2006 Artica Soluciones Tecnol�icas S.L
+# Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L
 #
 #This program is free software; you can redistribute it and/or
 #modify it under the terms of the GNU General Public License
@@ -16,7 +16,7 @@ package pandora_db;
 #You should have received a copy of the GNU General Public License
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-##################################################################################
+##########################################################################
 
 use warnings;
 use Time::Local;
@@ -68,11 +68,11 @@ our @EXPORT = qw( 	crea_agente_modulo
 # 'Crea' in spanish means 'create'
 # 'Dame' in spanish means 'give'
 
-#################################################################################
+##########################################################################
 ## SUB pandora_calcula_alerta 
 ## (paconfig, timestamp,nombre_agente,tipo_modulo,nombre_modulo,datos,dbh)
 ## Given a datamodule, generate alert if needed
-##################################################################################
+##########################################################################
 
 sub pandora_calcula_alerta (%$$$$$$) {
 	my $pa_config = $_[0];
@@ -89,13 +89,13 @@ sub pandora_calcula_alerta (%$$$$$$) {
 	my $max;
 	my $min; # for calculate max & min to generate ALERTS
 
-	# Obtemos los ID's a traves del paquete de datos
+	# Get IDs from data packet
 	$id_agente = dame_agente_id($pa_config, $nombre_agente, $dbh);
 	$id_modulo = dame_modulo_id($pa_config, $tipo_modulo,$dbh);
 	$id_agente_modulo = dame_agente_modulo_id($pa_config, $id_agente,$id_modulo,$nombre_modulo,$dbh);
 	logger($pa_config, "DEBUG: calcula_alerta() Calculado id_agente_modulo a $id_agente_modulo",3);
 
-	# Buscamos si existe una alerta definida para esta combinacion agente/modulo
+	# If any alert from this combinatio of agent/module
 	my $query_idag = "select * from talerta_agente_modulo where id_agente_modulo = '$id_agente_modulo'";
 	my $s_idag = $dbh->prepare($query_idag);
 	$s_idag ->execute;
@@ -156,7 +156,7 @@ sub pandora_calcula_alerta (%$$$$$$) {
 				# Check timegap
 				my $fecha_ultima_alerta = ParseDate($last_fired);
 				my $fecha_actual = ParseDate( $timestamp );
-				my $ahora_mysql = &UnixDate("today","%Y-%m-%d %H:%M:%S");       # If we need to update MYSQL ast_fired will use $ahora_mysql
+				my $ahora_mysql = &UnixDate("today","%Y-%m-%d %H:%M:%S");  # If we need to update MYSQL ast_fired will use $ahora_mysql
 				my $time_threshold = $threshold;
 				my $err; my $flag;
 				my $fecha_limite = DateCalc($fecha_ultima_alerta,"+ $time_threshold seconds",\$err);
@@ -258,10 +258,10 @@ sub pandora_calcula_alerta (%$$$$$$) {
 
 
 
-#################################################################################
+##########################################################################
 ## SUB execute_alert (id_alert, field1, field2, field3, agent, timestamp, data)
 ## Do a execution of given alert with this parameters
-##################################################################################
+##########################################################################
 
 sub execute_alert (%$$$$$$$$) {
 	my $pa_config = $_[0];
@@ -324,10 +324,10 @@ sub execute_alert (%$$$$$$$$) {
 }
 
 
-#################################################################################
+##########################################################################
 ## SUB pandora_writestate (pa_config, nombre_agente,tipo_modulo,nombre_modulo,valor_datos, estado)
 ## Alter data, chaning status of modules in state table
-##################################################################################
+##########################################################################
 
 sub pandora_writestate (%$$$$$$) {
 	# my $timestamp = $_[0];
@@ -343,9 +343,9 @@ sub pandora_writestate (%$$$$$$) {
 	my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
 	my @data;
 	my $cambio = 0; my $id_grupo; 
-	# Obtenemos los identificadores
-	# OJO; no controlamos si los valores pasados como cadena son validos.
-	# PENDIENTE: Comprobacion de errores aqui.
+	# Get id
+	# BE CAREFUL: We don't verify the strings chains
+	# TO DO: Verify errors
 	my $id_agente = dame_agente_id($pa_config,$nombre_agente,$dbh);
 	my $id_modulo = dame_modulo_id($pa_config,$tipo_modulo,$dbh);
 	my $id_agente_modulo = dame_agente_modulo_id($pa_config,$id_agente, $id_modulo, $nombre_modulo,$dbh);
@@ -353,7 +353,7 @@ sub pandora_writestate (%$$$$$$) {
 		goto fin_pandora_writestate;
 	}
 	# Check alert subroutine
-	eval { # Hacemos la comprobacion de las alertas aqui. OJO !
+	eval {
 		# Alerts checks for Agents, only for master servers
                 if ($pa_config->{"pandora_master"} == 1){
 			pandora_calcula_alerta($pa_config, $timestamp, $nombre_agente, $tipo_modulo, $nombre_modulo, $datos, $dbh);
@@ -363,8 +363,8 @@ sub pandora_writestate (%$$$$$$) {
 			logger($pa_config, "ERROR: Error in SUB calcula_alerta(). ModuleName: $nombre_modulo ModuleType: $tipo_modulo AgentName: $nombre_agente",1);
 			logger($pa_config, "ERROR Code: $@",1)
 	}
-	# $id_agente apunta al ID del agente que queremos actualizar".dame_nombreagente_agentemodulo ($id_agente_modulo)."
-	# Vamos a ver si existe una entrada en la tabla  tagente_estado
+	# $id_agente is agent ID to update ".dame_nombreagente_agentemodulo ($id_agente_modulo)."
+	# Let's see if there is any entry at tagente_estado table
 	my $idages = "select * from tagente_estado where id_agente_modulo = $id_agente_modulo";
 	my $s_idages = $dbh->prepare($idages);
 	$s_idages ->execute;
@@ -399,9 +399,9 @@ sub pandora_writestate (%$$$$$$) {
 fin_pandora_writestate:
 }
 
-#################################################################################
+##########################################################################
 ####   MODULOS implementados en Pandora
-#################################################################################
+##########################################################################
 
 # ----------------------------------------+
 # Modulos genericos de Pandora            |
@@ -424,10 +424,10 @@ fin_pandora_writestate:
 
 # generic_data_string. Store a string, max 255 chars.
 
-#################################################################################
+##########################################################################
 ## SUB pandora_accessupdate (pa_config, id_agent, dbh)
 ## Update agent access table
-##################################################################################
+##########################################################################
 
 sub pandora_accessupdate (%$$) {
 	my $pa_config = $_[0];
@@ -461,10 +461,10 @@ sub pandora_accessupdate (%$$) {
 	}
 }
 
-#################################################################################
+##########################################################################
 ## SUB module_generic_proc (param_1, param_2, param_3)
 ## Procesa datos genericos sobre un proceso
-##################################################################################
+##########################################################################
 ## param_1 : Nombre de la estructura contenedora de datos (XML)
 ## paran_2 : Timestamp del paquete de datos
 ## param_3 : Agent name
@@ -513,13 +513,13 @@ sub module_generic_proc (%$$$$$) {
 	}
 }
 
-#################################################################################
-## SUB module_generic_data (par1, par2)
-## Procesa datos generados por Modulo de adquisicion de datos numericos
-##################################################################################
-## param_1 : Nombre de la estructura contenedora de datos (XML)
-## paran_2 : Timestamp del paquete de datos
-## param_3 : Nombre del agente
+##########################################################################
+## SUB module_generic_data (param_1, param_2,param_3, param_4)
+## Process generated data form numeric data module acquire
+##########################################################################
+## param_1 : XML name
+## paran_2 : Timestamp
+## param_3 : Agent name
 ## param_4 : Module type
 
 sub module_generic_data (%$$$$$) {
@@ -561,13 +561,13 @@ sub module_generic_data (%$$$$$) {
 	}
 }
 
-#################################################################################
-## SUB module_generic_data_inc (par1, par2)
-## Procesa datos generados por Modulo de adquisicion de datos numericos incrementales
-##################################################################################
-## param_1 : Nombre de la estructura contenedora de datos (XML)
-## paran_2 : Timestamp del paquete de datos
-## param_3 : Nombre del agente
+##########################################################################
+## SUB module_generic_data_inc (param_1, param_2,param_3, param_4)
+## Process generated data form incremental numeric data module acquire
+##########################################################################
+## param_1 : XML name
+## paran_2 : Timestamp
+## param_3 : Agent name
 ## param_4 : Module type
 sub module_generic_data_inc (%$$$$$) {
 	my $pa_config = $_[0];
@@ -577,7 +577,7 @@ sub module_generic_data_inc (%$$$$$) {
 	my $module_type = $_[4];
 	my $dbh = $_[5];
 
-	# Leemos datos de la estructura
+	# Read structure data
 	my $m_name = $datos->{name}->[0];
 	my $a_desc = $datos->{description}->[0];
 	my $m_data = $datos->{data}->[0];
@@ -642,7 +642,7 @@ sub module_generic_data_inc (%$$$$$) {
 		if ($no_existe == 1){
 			my $query = "insert into tagente_datos_inc (id_agente_modulo,datos,timestamp) VALUES ($id_agente_modulo,'$m_data','$timestamp')";
 			$dbh->do($query);
-		} else { # Si existe, modificamos
+		} else { # If exists, modfy
 			if ($diferencia > 0) {
 				my $query_idag = "update tagente_datos_inc set datos = '$m_data' where id_agente_modulo  = $id_agente_modulo";
 				$s_idag = $dbh->prepare($query_idag);
@@ -671,14 +671,15 @@ sub module_generic_data_inc (%$$$$$) {
 	}
 }
 
-#################################################################################
-## SUB module_generic_data_string (par1, par2)
-## Procesa datos generados por el modulo de adquisicion de datos alfanumericos
-##################################################################################
-## param_1 : Nombre de la estructura contenedora de datos (XML)
-## paran_2 : Timestamp del paquete de datos
-## param_3 : Nombre del agente
-## param_4 : Modyle type
+
+##########################################################################
+## SUB module_generic_data (param_1, param_2,param_3, param_4)
+## Process generated data form alfanumeric data module acquire
+##########################################################################
+## param_1 : XML name
+## paran_2 : Timestamp
+## param_3 : Agent name
+## param_4 : Module type
 
 sub module_generic_data_string (%$$$$$) {
 	my $pa_config = $_[0];
@@ -688,7 +689,7 @@ sub module_generic_data_string (%$$$$$) {
 	my $module_type = $_[4];	
 	my $dbh = $_[5];	
 
-	# Leemos datos de la estructura
+	# Read Structure
 	my $m_name = $datos->{name}->[0];
 	my $m_data = $datos->{data}->[0];
 	my $a_desc = $datos->{description}->[0];
@@ -709,11 +710,11 @@ sub module_generic_data_string (%$$$$$) {
 }
 
 
-#################################################################################
+##########################################################################
 ## SUB pandora_writedata (pa_config, timestamp,nombre_agente,tipo_modulo,nombre_modulo,datos)
 ## Insert data in main table: tagente_datos
        
-##################################################################################
+##########################################################################
 
 sub pandora_writedata (%$$$$$$$$$) {
 	my $pa_config = $_[0];
@@ -841,10 +842,10 @@ sub pandora_writedata (%$$$$$$$$$) {
 fin_DB_insert_datos:
 }
 
-#################################################################################
+##########################################################################
 ## SUB pandora_serverkeepalive (pa_config, status, dbh)
 ## Update server status
-##################################################################################
+##########################################################################
 sub pandora_serverkeepaliver (%$) {
         my $pa_config= $_[0];
 	my $opmode = $_[1]; # 0 dataserver, 1 network server, 2 snmp console
@@ -881,12 +882,12 @@ sub pandora_serverkeepaliver (%$) {
 }
 
 
-#################################################################################
+##########################################################################
 ## SUB pandora_updateserver (pa_config, status, dbh)
 ## Update server status
-##################################################################################
+##########################################################################
 sub pandora_updateserver (%$$$) {
-        my $pa_config= $_[0];
+    my $pa_config= $_[0];
 	my $servername = $_[1];
 	my $status = $_[2];
 	my $opmode = $_[3]; # 0 dataserver, 1 network server, 2 snmp console
@@ -932,10 +933,10 @@ sub pandora_updateserver (%$$$) {
 	}
 }
 
-#################################################################################
+##########################################################################
 ## SUB pandora_lastagentcontact (pa_config, timestamp,nombre_agente,os_data, agent_version,interval,dbh)
 ## Update last contact field in Agent Table
-##################################################################################
+##########################################################################
 
 sub pandora_lastagentcontact (%$$$$$$) {
         my $pa_config= $_[0];
@@ -962,10 +963,10 @@ sub pandora_lastagentcontact (%$$$$$$) {
     	$sag ->finish();
 }
 
-#################################################################################
+##########################################################################
 ## SUB pandora_event (pa_config, evento, id_grupo, id_agente)
 ## Write in internal audit system an entry.
-##################################################################################
+##########################################################################
 
 sub pandora_event (%$$$$) {
 	my $pa_config = $_[0];
@@ -982,10 +983,10 @@ sub pandora_event (%$$$$) {
         $dbh->do($query);	
 }
 
-#################################################################################
+##########################################################################
 ## SUB pandora_audit (pa_config, escription, name, action, pandora_dbcfg_hash)
 ## Write in internal audit system an entry.
-##################################################################################
+##########################################################################
 sub pandora_audit (%$$$$) {
 	my $pa_config = $_[0];
         my $desc = $_[1];
@@ -1014,10 +1015,10 @@ sub pandora_audit (%$$$$) {
 	}
 }
 
-#################################################################################
+##########################################################################
 ## SUB dame_agente_id (nombre_agente)
 ## Return agent ID, use "nombre_agente" as name of agent.
-##################################################################################
+##########################################################################
 sub dame_agente_id (%$$) {
 	my $pa_config = $_[0];
         my $nombre_agente = $_[1];
@@ -1025,7 +1026,7 @@ sub dame_agente_id (%$$) {
 
         my $id_agente;my @data;
 	if (defined($nombre_agente)){
-		# Calculamos el ID del agente haciendo una select por su nombre.
+		# Calculate agent ID using select by its name
 		my $query_idag = "select * from tagente where nombre = '$nombre_agente'";
 		my $s_idag = $dbh->prepare($query_idag);
 		$s_idag ->execute;
@@ -1042,10 +1043,10 @@ sub dame_agente_id (%$$) {
  	}
 }
 
-#################################################################################
+##########################################################################
 ## SUB dame_server_id (pa_config, servername, dbh)
 ## Return serverID, using "nane" as name of server
-##################################################################################
+##########################################################################
 sub dame_server_id (%$$) {
 	my $pa_config = $_[0];
         my $name = $_[1];
@@ -1066,10 +1067,10 @@ sub dame_server_id (%$$) {
         return $id_server;
 }
 
-#################################################################################
+##########################################################################
 ## SUB give_networkserver_status (id_server) 
 ## Return NETWORK server status given its id
-#################################################################################
+##########################################################################
 
 sub give_networkserver_status (%$$) {
 	my $pa_config = $_[0];
@@ -1091,10 +1092,10 @@ sub give_networkserver_status (%$$) {
        	return $status;
 }
 
-#################################################################################
+##########################################################################
 ## SUB dame_grupo_agente (id_agente) 
 ## Return id_group of an agent given its id
-#################################################################################
+##########################################################################
 
 sub dame_grupo_agente (%$$) {
 	my $pa_config = $_[0];
@@ -1103,7 +1104,7 @@ sub dame_grupo_agente (%$$) {
 
 	my $id_grupo;
 	my @data;
-	# Calculamos el ID del agente haciendo una select por su id
+	# Calculate agent using select by its id
         my $query_idag = "select * from tagente where id_agente = $id_agente";
         my $s_idag = $dbh->prepare($query_idag);
         $s_idag ->execute;
@@ -1116,17 +1117,17 @@ sub dame_grupo_agente (%$$) {
        	return $id_grupo;
 }
 
-#################################################################################
+##########################################################################
 ## SUB dame_comando_alerta (id_alerta)
 ## Return agent ID, use "nombre_agente" as name of agent.
-##################################################################################
+##########################################################################
 sub dame_comando_alerta (%$$) {
 	my $pa_config = $_[0];
         my $id_alerta = $_[1];
 	my $dbh = $_[2];
 
 	my @data;
-        # Calculamos el ID del agente haciendo una select por su nombre.
+        # Calculate agent ID using select by its name
         my $query_idag = "select * from talerta where id_alerta = $id_alerta";
         my $s_idag = $dbh->prepare($query_idag);
 	my $comando = "";
@@ -1143,10 +1144,10 @@ sub dame_comando_alerta (%$$) {
 }
 
 
-#################################################################################
+##########################################################################
 ## SUB dame_agente_nombre (id_agente)
 ## Return agent name, given "id_agente"
-##################################################################################
+##########################################################################
 sub dame_agente_nombre (%$$) {
 	my $pa_config = $_[0];
         my $id_agente = $_[1];
@@ -1154,7 +1155,7 @@ sub dame_agente_nombre (%$$) {
         
 	my $nombre_agente;
 	my @data;
-        # Calculamos el ID del agente haciendo una select por su nombre.
+        # Calculate agent ID using select by its name
         my $query_idag = "select * from tagente where id_agente = '$id_agente'";
         my $s_idag = $dbh->prepare($query_idag);
         $s_idag ->execute;
@@ -1168,17 +1169,17 @@ sub dame_agente_nombre (%$$) {
 }
 
 
-#################################################################################
+##########################################################################
 ## SUB dame_modulo_id (nombre_modulo)
 ## Return module ID, given "nombre_modulo" as module name
-##################################################################################
+##########################################################################
 sub dame_modulo_id (%$$) {
 	my $pa_config = $_[0];
         my $nombre_modulo = $_[1];
 	my $dbh = $_[2];
 
         my $id_modulo; my @data;
-        # Calculamos el ID del agente haciendo una select por su nombre.
+        # Calculate agent ID using select by its name
         my $query_idag = "select * from ttipo_modulo where nombre = '$nombre_modulo'";
         my $s_idag = $dbh->prepare($query_idag);
         $s_idag ->execute;
@@ -1195,10 +1196,10 @@ sub dame_modulo_id (%$$) {
 }
 
 
-#################################################################################
+##########################################################################
 ## SUB dame_agente_modulo_id (id_agente, id_tipomodulo, nombre)
 ## Return agente_modulo ID, from tabla tagente_modulo, given id_agente, id_tipomodulo and name
-##################################################################################
+##########################################################################
 sub dame_agente_modulo_id (%$$$$) {
 	my $pa_config = $_[0];
         my $id_agente = $_[1];
@@ -1208,7 +1209,7 @@ sub dame_agente_modulo_id (%$$$$) {
         my $id_agentemodulo;
 	my @data;
 	
-        # Calculamos el ID del agente haciendo una select por su nombre.
+        # Calculate agent ID using select by its name
         my $query_idag = "select * from tagente_modulo where id_agente = '$id_agente' and id_tipo_modulo = '$id_tipomodulo' and nombre = '$nombre'";
         my $s_idag = $dbh->prepare($query_idag);
         $s_idag ->execute;
@@ -1224,17 +1225,17 @@ sub dame_agente_modulo_id (%$$$$) {
     	return $id_agentemodulo;
 }
 
-#################################################################################
+##########################################################################
 ## SUB dame_nombreagente_agentemodulo (id_agente_modulo)
 ## Return agent name diven id_agente_modulo
-##################################################################################
+##########################################################################
 sub dame_nombreagente_agentemodulo (%$$) {
 	my $pa_config = $_[0];
         my $id_agentemodulo = $_[1];
 	my $dbh = $_[2];
 
         my $id_agente; my @data;
-        # Calculamos el ID del agente haciendo una select por su nombre.
+        # Calculate agent ID using select by its name
         my $query_idag = "select * from tagente_modulo where id_agente_modulo = ".$id_agentemodulo;
         my $s_idag = $dbh->prepare($query_idag);
         $s_idag ->execute;
@@ -1252,17 +1253,17 @@ sub dame_nombreagente_agentemodulo (%$$) {
     	return $nombre_agente;
 }
 
-#################################################################################
+##########################################################################
 ## SUB dame_nombretipomodulo_idtipomodulo (id_tipo_modulo)
 ## Return name of moduletype given id_tipo_modulo
-##################################################################################
+##########################################################################
 sub dame_nombretipomodulo_idagentemodulo (%$$) {
 	my $pa_config = $_[0];
 	my $id_tipomodulo = $_[1]; 
 	my $dbh = $_[2];
 	
 	my @data;
-	# Calculamos el ID del agente haciendo una select por su nombre.
+	# Calculate agent ID using select by its name
 	my $query_idag = "select * from ttipo_modulo where id_tipo = ".$id_tipomodulo;
 	my $s_idag = $dbh->prepare($query_idag);
 	$s_idag ->execute;
@@ -1275,17 +1276,17 @@ sub dame_nombretipomodulo_idagentemodulo (%$$) {
 	return $tipo;
 }
 
-#################################################################################
+##########################################################################
 ## SUB dame_learnagente (id_agente)
 ## Return 1 if agent is in learn mode, 0 if not
-##################################################################################
+##########################################################################
 sub dame_learnagente (%$$) {
 	my $pa_config = $_[0];
         my $id_agente = $_[1];
 	my $dbh = $_[2];
 	my @data;
         
-        # Calculamos el ID del agente haciendo una select por su nombre.
+        # Calculate agent ID using select by its name
         my $query = "select * from tagente where id_agente = ".$id_agente;
         my $s_idag = $dbh->prepare($query);
         $s_idag ->execute;
@@ -1299,17 +1300,17 @@ sub dame_learnagente (%$$) {
 }
 
 
-#################################################################################
+##########################################################################
 ## SUB dame_id_tipo_modulo (id_agente_modulo)
 ## Return id_tipo of module with id_agente_modulo
-##################################################################################
+##########################################################################
 sub dame_id_tipo_modulo (%$$) {
 	my $pa_config = $_[0];
         my $id_agente_modulo = $_[1];
 	my $dbh = $_[2];
 
         my $tipo; my @data;
-        # Calculamos el ID del agente haciendo una select por su nombre.
+        # Calculate agent ID using select by its name
         my $query_idag = "select * from tagente_modulo where id_agente_modulo = ".$id_agente_modulo;
         my $s_idag = $dbh->prepare($query_idag);
         $s_idag ->execute;
@@ -1325,17 +1326,17 @@ sub dame_id_tipo_modulo (%$$) {
         return $tipo;
 }
 
-#################################################################################
+##########################################################################
 ## SUB dame_intervalo (id_agente)
 ## Return interval for id_agente
-##################################################################################
+##########################################################################
 sub dame_intervalo (%$$) {
 	my $pa_config = $_[0];
         my $id_agente = $_[1];
 	my $dbh = $_[2];
 
         my $tipo; my @data;
-        # Calculamos el ID del agente haciendo una select por su nombre.
+        # Calculate agent ID using select by its name
         my $query_idag = "select * from tagente where id_agente = ".$id_agente;
         my $s_idag = $dbh->prepare($query_idag);
         $s_idag ->execute;
@@ -1349,10 +1350,10 @@ sub dame_intervalo (%$$) {
         return $tipo;
 }
 
-#################################################################################
+##########################################################################
 ## SUB dame_desactivado (id_agente)
 ## Return disabled = 1 if disabled, 0 if not disabled
-##################################################################################
+##########################################################################
 sub dame_desactivado (%$$) {
 	my $pa_config = $_[0];
         my $id_agente = $_[1];
@@ -1360,7 +1361,7 @@ sub dame_desactivado (%$$) {
 	my $desactivado;
 
         my $tipo; my @data;
-        # Calculamos el ID del agente haciendo una select por su nombre.
+        # Calculate agent ID using select by its name
         my $query_idag = "select * from tagente where id_agente = ".$id_agente;
 	my $s_idag = $dbh->prepare($query_idag);
         $s_idag ->execute;
@@ -1377,17 +1378,17 @@ sub dame_desactivado (%$$) {
         return $desactivado;
 }
 
-#################################################################################
+##########################################################################
 ## SUB dame_ultimo_contacto (id_agente)
 ## Return last_contact for id_agente
-##################################################################################
+##########################################################################
 sub dame_ultimo_contacto (%$$) {
 	my $pa_config = $_[0];
         my $id_agente = $_[1];
 	my $dbh = $_[2];
 
         my $tipo; my @data;
-        # Calculamos el ID del agente haciendo una select por su nombre.
+        # Calculate agent ID using select by its name
         my $query_idag = "select * from tagente where id_agente = ".$id_agente;
         my $s_idag = $dbh->prepare($query_idag);
         $s_idag ->execute;
@@ -1400,10 +1401,10 @@ sub dame_ultimo_contacto (%$$) {
         return $tipo;
 }
 
-#################################################################################
+##########################################################################
 ## SUB crea_agente_modulo(nombre_agente, nombre_tipo_modulo, nombre_modulo)
 ## create an entry in tagente_modulo
-##################################################################################
+##########################################################################
 sub crea_agente_modulo (%$$$$$$$) {
 	my $pa_config = $_[0];
 	my $nombre_agente = $_[1];
@@ -1417,15 +1418,15 @@ sub crea_agente_modulo (%$$$$$$$) {
 	my $modulo_id = dame_modulo_id($pa_config, $tipo_modulo,$dbh);
 	my $agente_id = dame_agente_id($pa_config, $nombre_agente,$dbh);
 	
-	if ($max eq ""){
+	if ((!defined($max)) || ($max eq "")){
 		$max =0;
 	}
 	
-	if ($min eq ""){
+	if ((!defined($min)) || ($min eq "")){
 		$min =0;
 	}
 
-	if ($descripcion eq ""){
+	if ((!defined($descripcion)) || ($descripcion eq "")){
 		$descripcion="N/A";
 	}
 

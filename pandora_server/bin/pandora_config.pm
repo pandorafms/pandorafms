@@ -1,7 +1,7 @@
 package pandora_config;
-##################################################################################
+##########################################################################
 # Pandora Config package
-##################################################################################
+##########################################################################
 # Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
 # Copyright (c) 2005-2006 Artica Soluciones Tecnol�icas S.L
 #
@@ -16,7 +16,7 @@ package pandora_config;
 #You should have received a copy of the GNU General Public License
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-##################################################################################
+##########################################################################
 
 
 use warnings;
@@ -36,17 +36,17 @@ our @EXPORT = qw( 	pandora_help_screen
 # There is no global vars, all variables (setup) passed as hash reference
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "1.2 Beta2";
-my $pandora_build="PS60629";
+my $pandora_version = "1.2 Beta 3";
+my $pandora_build="PS060929";
 
 # Setup hash
 my %pa_config;
 
-# Delaracion de funciones publicas 
-##############################################################################
+# Public functions
+##########################################################################
 # SUB pandora_help_screen()
 #  Show a help screen an exits
-##############################################################################
+##########################################################################
 
 sub help_screen {
 	printf "\n\nSyntax: \n  pandora_xxxxxxx.pl <fullpathname to PANDORA HOME directory> [ options ] \n\n";
@@ -59,10 +59,10 @@ sub help_screen {
 	exit;
 }
 
-##############################################################################
+##########################################################################
 # SUB pandora_init ( %pandora_cfg )
 # Makes the initial parameter parsing, initializing and error checking
-##############################################################################
+##########################################################################
 
 sub pandora_init {
 	my $pa_config = $_[0];
@@ -102,9 +102,9 @@ sub pandora_init {
 	}
 }
 
-##############################################################################
+##########################################################################
 # Read external configuration file
-##############################################################################
+##########################################################################
 
 sub pandora_loadconfig {
 	my $pa_config = $_[0];
@@ -145,7 +145,8 @@ sub pandora_loadconfig {
 	}
 	# Check for file
 	if ( ! -e $archivo_cfg ) {
-		printf "\n[ERROR] Cannot open configuration file at $archivo_cfg. \nPlease specify a valid Pandora Home Directory in command line. \n";
+		printf "\n[ERROR] Cannot open configuration file at $archivo_cfg. \n";
+		printf " Please specify a valid Pandora Home Directory in command line. \n";
 		exit 1;
 	}
 	# Collect items from config file and put in an array 

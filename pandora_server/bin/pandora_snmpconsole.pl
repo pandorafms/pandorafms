@@ -1,9 +1,9 @@
 #!/usr/bin/perl
-##################################################################################
+##########################################################################
 # Pandora Server. SNMP Console
-##################################################################################
+##########################################################################
 # Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2006 Artica Soluciones Tecnol�icas S.L
+# Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L
 #
 #This program is free software; you can redistribute it and/or
 #modify it under the terms of the GNU General Public License
@@ -16,7 +16,7 @@
 #You should have received a copy of the GNU General Public License
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-##################################################################################
+##########################################################################
 
 # Includes list
 use strict;
@@ -55,10 +55,10 @@ if ( $pa_config{"daemon"} eq "1" ) {
 pandora_snmptrapd (\%pa_config);
 
 
-#################################################################################
+##########################################################################
 ## SUB pandora_snmptrapd
 ## Pandora SNMP Trap console/daemon subsystem
-##################################################################################
+##########################################################################
 
 sub pandora_snmptrapd {
 	my $pa_config = $_[0];
@@ -96,7 +96,7 @@ sub pandora_snmptrapd {
 	}
 	$logfile_size = (stat($snmp_logfile))[7];
 
-	if ($logfile_size < $index_data[1]){ # El tama? del log es ahora mas peq. que la ultima vez que lo leimos -> es uno nuevo
+	if ($logfile_size < $index_data[1]){ # Log size smaller last time we read it -> new one
 		unlink ($snmp_logfile.".index");
 		$index_data[0]=0;
 		$index_data[1]=0;
@@ -169,10 +169,10 @@ sub pandora_snmptrapd {
 }
 
 
-#################################################################################
+##########################################################################
 ## SUB calcula_alerta_snmp($source,$oid,$custom_value,$timestamp);
 ## Given an SNMP Trap received with this data, execute Alert or not
-##################################################################################
+##########################################################################
 
 sub calcula_alerta_snmp {
 	# Parameters passed as arguments
@@ -231,14 +231,14 @@ sub calcula_alerta_snmp {
 			}
 
 			if ($alert_fired == 1){ # Exists condition to fire alarm.
-				# Comprobar que est?por debajo del rango de time_threshold
+				# Verify if under time_threshold
 				my $fecha_ultima_alerta = ParseDate($last_fired);
 				my $fecha_actual = ParseDate( $timestamp );
-				my $ahora_mysql = &UnixDate("today","%Y-%m-%d %H:%M:%S");       # If we need to update MYSQL last_fired will use $ahora_mysql
+				my $ahora_mysql = &UnixDate("today","%Y-%m-%d %H:%M:%S"); # If we need to update MYSQL last_fired will use $ahora_mysql
 				my $err; my $flag;
 				my $fecha_limite = DateCalc($fecha_ultima_alerta,"+ $time_threshold seconds",\$err);
-				# Comprobar que est?por encima (sumando esta) del minimo de alertas
-				# Comprobar que est?por debajo (sumando esta) del m?imo de alertas
+				# verify if upper min alerts
+				# Verify if under min alerts
 				$flag = Date_Cmp($fecha_actual,$fecha_limite);
 				if ( $flag >= 0 ) { # Out limits !, reset $times_fired, but do not write to
 						    # database until a real alarm was fired

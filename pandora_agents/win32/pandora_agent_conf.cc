@@ -23,10 +23,22 @@
 #include "pandora.h"
 
 using namespace std;
+using namespace Pandora;
 
 #define MAX_KEYS 100
 
-Pandora_Agent_Conf::Pandora_Agent_Conf (string filename) {
+/**
+ * Creates a new Pandora_Agent_Conf.
+ * 
+ * It parses the filename and initialize the internal structures
+ * of configuration values. The configuration file consist of a number of
+ * lines of some of these forms:
+ *  - <code>name value</code>
+ *  - <code>name "value with blankspaces"</code>
+ *
+ * @param filename Configuration file to open.
+ */
+Pandora::Pandora_Agent_Conf::Pandora_Agent_Conf (string filename) {
         ifstream     file (filename.c_str ());
         string       buffer;
         unsigned int pos;
@@ -56,12 +68,26 @@ Pandora_Agent_Conf::Pandora_Agent_Conf (string filename) {
         file.close ();
 }
 
-Pandora_Agent_Conf::~Pandora_Agent_Conf () {
-        delete key_values;
+/**
+ * Destroy a Pandora_Agent_Conf object.
+ */
+Pandora::Pandora_Agent_Conf::~Pandora_Agent_Conf () {
+        delete key_values; 
 }
 
+/**
+ * Queries for a configuration value.
+ * 
+ * This method search in the key_values attribute for a
+ * configuration value which match the key supplied.
+ *
+ * @param key Key to look for.
+ *
+ * @return The value of the configuration key looked for.
+ *         If it could not be found then an empty string is returned.
+ */
 string
-Pandora_Agent_Conf::getValue (const string key) {
+Pandora::Pandora_Agent_Conf::getValue (const string key) {
         std::list<Key_Value>::iterator i = key_values->begin ();
         
         while (i != key_values->end ()) {

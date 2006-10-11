@@ -34,8 +34,8 @@ div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
 </div>
 
 <div class="rayah">
-<p>Pandora is a GPL Software Project. English version &copy; Sancho Lerena 2003-2005, David villanueva 2004-2005, Alex Arnal 2005, Ra&uacute;l Mateos 2004-2005.</p>
-<p>Pandora es un proyecto de software GPL. Versi&oacute;n en espa&ntilde;ol&copy; Sancho Lerena 2003-2005, David Villanueva 2004-2005 y Ra&uacute;l Mateos 2004-2005.</p>
+<p>Pandora is a GPL Software Project. English version &copy; Sancho Lerena 2003-2006, David villanueva 2004-2005, Alex Arnal 2005, Ra&uacute;l Mateos 2004-2006.</p>
+<p>Pandora es un proyecto de software GPL. Versi&oacute;n en espa&ntilde;ol&copy; Sancho Lerena 2003-2006, David Villanueva 2004-2005 y Ra&uacute;l Mateos 2004-2006.</p>
 </div>
 
 <h1>Not translated yet / No se ha traducido todav&iacute;a</h1>

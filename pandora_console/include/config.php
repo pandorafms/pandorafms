@@ -21,7 +21,7 @@
 
 //Pandora Version
 
-$build_version="PC060710"; //PCddmmyy
+$build_version="PC061004"; //PCddmmyy
 $pandora_version="v1.2 Beta 3"; 
 
 // Database configuration
@@ -31,13 +31,30 @@ $dbpassword="pandora";	// Password
 $dbhost="localhost";	// MySQL Host
 $dbtype="mysql"; 	// Type of Database, now only "mysql" its supported
 $attachment_store="/var/www/pandora_console";	//This is directory where placed "attachment" directory, to upload files stores. This MUST be writtable by wwwserver user, and should be in pandora root. Please append "/" to the end :-)
-$config_fontpath = "../reporting/FreeSans.ttf";
+$config_fontpath = "../reporting/FreeSans.ttf";	// Change this to your font folder, if needed.
 
+// Do not display any ERROR
+error_reporting(0);
 
 // Read rest of config from DB
 if (! mysql_pconnect($dbhost,$dbuser,$dbpassword)){ //Persistent connection. If you want non-persistent conn change it to mysql_connect()
-	exit ('<html><head><title>Pandora Error</title><link rel="stylesheet" href="./include/styles/pandora.css" type="text/css"></head><body><div align="center">
-<div id="db_f"><div><a href="index.php"><img src="images/logo_menu.gif" border="0"></a></div><div id="db_ftxt"><h1 id="db_fh1" class="error">Pandora Console Error DB-001</h1>Cannot connect with Database, please check your database setup in the <b>./include/config.php</b> file and read documentation.<i><br><br>Probably any of your user/database/hostname values are incorrect or database is not running.</i><br><br><font class="error"><b>MySQL ERROR:</b> '. mysql_error().'</font><br>&nbsp;</div></div></body></html>');
+	exit ('<html><head><title>Pandora Error</title>
+	<link rel="stylesheet" href="./include/styles/pandora.css" type="text/css">
+	</head><body><div align="center">
+	<div id="db_f">
+		<div>
+		<a href="index.php"><img src="images/logo_menu.gif" border="0"></a>
+		</div>
+	<div id="db_ftxt">
+		<h1 id="db_fh1" class="error">Pandora Console Error DB-001</h1>
+		Cannot connect with Database, please check your database setup in the 
+		<b>./include/config.php</b> file and read documentation.<i><br><br>
+		Probably any of your user/database/hostname values are incorrect or 
+		database is not running.</i><br><br><font class="error">
+		<b>MySQL ERROR:</b> '. mysql_error().'</font>
+		<br>&nbsp;
+	</div>
+	</div></body></html>');
 }
 mysql_select_db($dbname);
 $result2=mysql_query("SELECT * FROM tconfig");

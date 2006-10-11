@@ -28,6 +28,12 @@ using namespace Pandora;
 using namespace Pandora_Modules;
 using namespace Pandora_Strutils;
 
+/** 
+ * Creates a Pandora_Module_Proc object.
+ * 
+ * @param name Module name.
+ * @param process_name Process name to check.
+ */
 Pandora_Module_Proc::Pandora_Module_Proc (string name, string process_name)
 	: Pandora_Module (name) {
         
@@ -35,8 +41,7 @@ Pandora_Module_Proc::Pandora_Module_Proc (string name, string process_name)
         transform (process_name.begin (), process_name.end (),
                    this->process_name.begin (), (int (*) (int)) tolower);
 	
-        this->module_kind_str = module_proc_str;
-        this->module_kind     = MODULE_PROC;
+        this->setKind (module_proc_str);
 }
 
 void
@@ -51,5 +56,5 @@ Pandora_Module_Proc::run () {
         
 	res = Pandora_Wmi::isProcessRunning (this->process_name);
 	
-        output = inttostr (res);
+        this->output = inttostr (res);
 }

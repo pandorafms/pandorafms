@@ -40,7 +40,7 @@ div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
 
 </div>
 <div class="rayah">
-<p align='right'>Pandora is a GPL Software Project. &copy; Sancho Lerena 2003-2005, David villanueva 2004-2005, Alex Arnal 2005, Ra&uacute;l Mateos 2004-2005.</p>
+<p align='right'>Pandora is a GPL Software Project. &copy; Sancho Lerena 2003-2006, David villanueva 2004-2005, Alex Arnal 2005, Ra&uacute;l Mateos 2004-2006.</p>
 </div>
 
 <a name="1"><h1>1. Introduction</h1></a>

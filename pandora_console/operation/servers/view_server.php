@@ -26,7 +26,7 @@ if (comprueba_login() == 0) {
 	$sql='SELECT * FROM tserver';
 	
 	echo "<h2>".$lang_label["view_servers"]."</h2>";
-	echo "<h3>".$lang_label["server_detail"]."<a href='help/".$help_code."/chap3.php#331' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	echo "<h3>".$lang_label["server_detail"]."<a href='help/".$help_code."/chap7.php#7' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 
 	// Connect DataBase
 	$result=mysql_query($sql);

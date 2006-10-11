@@ -28,32 +28,36 @@
 
 using namespace std;
 using namespace Pandora;
-using namespace Pandora_Modules;
 
-class Pandora_Module_List {
-protected:
-        list<Pandora_Module *>           *modules;
-        list<Pandora_Module *>::iterator *current;
-private:
-        void             parseModuleDefinition (string definition);
-public:
-        /* Read and set a key-value set from a file. */
-        Pandora_Module_List                    (string filename);
-        
-        ~Pandora_Module_List                   ();
-        
-        Pandora_Module * getCurrentValue       ();
-        
-        /* Move to the first element of the list */
-        void             goFirst               ();
-        
-        /* Move to the last element of the list */
-        void             goLast                ();
-        void             goNext                ();
-        void             goPrev                ();
-        
-        bool             isLast                ();
-        bool             isFirst               ();
-};
-
+namespace Pandora_Modules {
+	/**
+	 * Class to handle a list of Pandora_Module objects.
+	 *
+	 * It provides a set of methods to iterate through the list
+	 * by using a internal "current module" pointer.
+	 */
+	class Pandora_Module_List {
+	private:
+		list<Pandora_Module *>           *modules;
+		list<Pandora_Module *>::iterator *current;
+		void             parseModuleDefinition (string definition);
+	public:
+		Pandora_Module_List                    (string filename);
+		
+		~Pandora_Module_List                   ();
+		
+		Pandora_Module * getCurrentValue       ();
+		
+		/* Move to the first element of the list */
+		void             goFirst               ();
+		
+		/* Move to the last element of the list */
+		void             goLast                ();
+		void             goNext                ();
+		void             goPrev                ();
+		
+		bool             isLast                ();
+		bool             isFirst               ();
+	};
+}
 #endif /* __PANDORA_MODULE_LIST_H__ */

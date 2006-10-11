@@ -45,7 +45,12 @@ if (comprueba_login() == 0) {
 				echo "<td class='".$tdcolor."'>".$data["descripcion"];
 				echo "<td class='".$tdcolor."'>".$data["dis_max"]."/".$data["dis_min"];
 				echo "<td class='".$tdcolor."'>".$data["time_threshold"];
-				echo "<td class='".$tdcolor."f9'>".$data["last_fired"];
+				if ($data["last_fired"] == "0000-00-00 00:00:00") {
+					echo "<td class='".$tdcolor."f9'>".$lang_label["never"];
+				}
+				else {
+					echo "<td class='".$tdcolor."f9'>".$data["last_fired"];
+				}
 				echo "<td class='".$tdcolor."'>".$data["times_fired"];
 				if ($data["times_fired"] <> 0)
 					echo "<td class='".$tdcolor."' align='center'><img src='images/dot_red.gif'>";
@@ -78,7 +83,7 @@ if (comprueba_login() == 0) {
 			echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/estado_alertas&refr=60'>";
 		}
 		echo "<table border='0'><tr><td valign='middle'>";
-		echo "<select name='ag_group' onChange='javascript:this.form.submit();'>";
+		echo "<select name='ag_group' onChange='javascript:this.form.submit();' class='w130'>";
 	
 		if ( $ag_group > 1 ){
 			echo "<option value='".$ag_group."'>".dame_nombre_grupo($ag_group);
@@ -102,9 +107,9 @@ if (comprueba_login() == 0) {
 		// Show only selected groups	
 	
 		if ($ag_group > 1)
-			$sql='SELECT * FROM tagente WHERE id_grupo='.$ag_group.' order by nombre';
+			$sql='SELECT * FROM tagente WHERE id_grupo='.$ag_group.' ORDER BY nombre';
 		else 
-			$sql='SELECT * FROM tagente order by id_grupo, nombre';
+			$sql='SELECT * FROM tagente ORDER BY id_grupo, nombre';
 
 		$result=mysql_query($sql);
 		if (mysql_num_rows($result)){
@@ -131,7 +136,11 @@ if (comprueba_login() == 0) {
 							$string=$string."<tr><td class='".$tdcolor."'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'><b>".$nombre_agente."</b>";
 							$string=$string."<td class='".$tdcolor."'>".dame_nombre_alerta($data["id_alerta"]);
 							$string=$string."<td class='".$tdcolor."'>".$data["descripcion"];
-							$string=$string."<td class='".$tdcolor."'>".$data["last_fired"];
+							if ($data["last_fired"] == "0000-00-00 00:00:00") {
+							$string=$string."<td class='".$tdcolor."'>".$lang_label["never"];
+							}
+							else {
+							$string=$string."<td class='".$tdcolor."'>".$data["last_fired"];}
 							$string=$string."<td class='".$tdcolor."'>".$data["times_fired"];
 							if ($data["times_fired"] <> 0)
 								$string=$string."<td class='".$tdcolor."' align='center'><img src='images/dot_red.gif'>";

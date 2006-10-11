@@ -28,12 +28,17 @@ using namespace Pandora;
 using namespace Pandora_Strutils;
 using namespace Pandora_Modules;
 
+/** 
+ * Creates a Pandora_Module_Exec object.
+ * 
+ * @param name Module name
+ * @param exec Command to be executed.
+ */
 Pandora_Module_Exec::Pandora_Module_Exec (string name, string exec)
                                          : Pandora_Module (name) {
         this->module_exec = "cmd.exe /c \"" + exec + "\"";
         
-        this->module_kind_str = module_exec_str;
-        this->module_kind     = MODULE_EXEC;
+        this->setKind (module_exec_str);
 }
 
 void
@@ -48,6 +53,7 @@ Pandora_Module_Exec::run () {
         try {
                 Pandora_Module::run ();
         } catch (Interval_Not_Fulfilled e) {
+		this->has_output = false;
                 return;
         }
         
@@ -62,6 +68,7 @@ Pandora_Module_Exec::run () {
         job = CreateJobObject (&attributes, this->module_name.c_str ());
         if (job == NULL) {
                 pandoraLog ("CreateJobObject bad. Err: %d", GetLastError ());
+		this->has_output = false;
                 return;
         }
         
@@ -70,6 +77,7 @@ Pandora_Module_Exec::run () {
         
         if (! CreatePipe (&out_read, &new_stdout, &attributes, 0)) {
                 pandoraLog ("CreatePipe failed. Err: %d", GetLastError ());
+		this->has_output = false;
                 return;
         }
         
@@ -100,6 +108,7 @@ Pandora_Module_Exec::run () {
                              working_dir.c_str (), &si, &pi)) {
                 pandoraLog ("Pandora_Module_Exec: %s CreateProcess failed. Err: %d",
                             this->module_name.c_str (), GetLastError ());
+		this->has_output = false;
         } else {
                 char          buffer[BUFSIZE + 1];
                 unsigned long read, avail;
@@ -123,6 +132,7 @@ Pandora_Module_Exec::run () {
                         
                         pandoraLog ("Pandora_Module_Exec: %s did not executed well (retcode: %d)",
                                     this->module_name.c_str (), retval);
+			this->has_output = false;
                 }
                 
                 PeekNamedPipe (out_read, buffer, BUFSIZE, &read, &avail, NULL);

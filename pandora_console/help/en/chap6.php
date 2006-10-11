@@ -35,11 +35,11 @@ div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
 <img src="../../images/logo_menu.gif" alt='logo'><h1>Pandora Help v1.2</h1>
 </div>
 <div class="toc">
-<h1><a href="chap5.php">5. Events</a> « <a href="toc.php">Table of Contents</a> » <a href="chap7.php">7. Server Configuration</a></h1>
+<h1><a href="chap5.php">5. Events</a> « <a href="toc.php">Table of Contents</a> » <a href="chap7.php">7. Pandora Servers</a></h1>
 
 </div>
 <div class="rayah">
-<p align='right'>Pandora is a GPL Software Project. &copy; Sancho Lerena 2003-2005, David villanueva 2004-2005, Alex Arnal 2005, Ra&uacute;l Mateos 2004-2005.</p>
+<p align='right'>Pandora is a GPL Software Project. &copy; Sancho Lerena 2003-2006, David villanueva 2004-2005, Alex Arnal 2005, Ra&uacute;l Mateos 2004-2006.</p>
 </div>
 
 <a name="6"><h1>6. System audit</h1></a>

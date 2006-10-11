@@ -52,7 +52,7 @@ if (comprueba_login() == 0) {
 	}
 	echo "<table border='0' cellspacing=3 cellpadding=3><tr><td valign='middle'>".$lang_label["group_name"];
 	echo "<td valign='middle'>";
-	echo "<select name='ag_group' onChange='javascript:this.form.submit();'>";
+	echo "<select name='ag_group' onChange='javascript:this.form.submit();' class='w130'>";
 
 	if ( $ag_group > 1 ){
 		echo "<option value='".$ag_group."'>".dame_nombre_grupo($ag_group);

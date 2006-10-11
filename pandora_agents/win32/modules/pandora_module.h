@@ -26,30 +26,47 @@
 #include <list>
 #include <string>
 
+/**
+ * Definition of Pandora modules.
+ */
 namespace Pandora_Modules {
 
-        enum {
-                TYPE_0,
-                TYPE_GENERIC_DATA,
-                TYPE_GENERIC_DATA_INC,
-                TYPE_GENERIC_PROC,
-                TYPE_GENERIC_DATA_STRING
-        };
+	/**
+	 * Defines the type of the module.
+	 *
+	 * The type of a module is the value type the module can have.
+	 */
+        typedef enum {
+                TYPE_0,                  /**< Invalid value               */
+                TYPE_GENERIC_DATA,       /**< The value is an integer     */
+                TYPE_GENERIC_DATA_INC,   /**< The value is an integer with
+					  *  incremental diferences       */
+                TYPE_GENERIC_PROC,       /**< The value is a 0 or a 1     */
+                TYPE_GENERIC_DATA_STRING /**< The value is a string       */
+        } Module_Type;
 
         const string module_generic_data_str        = "generic_data";
         const string module_generic_data_inc_str    = "generic_data_inc";
         const string module_generic_proc_str        = "generic_proc";
         const string module_generic_data_string_str = "generic_data_string";
 
-        enum {
-                MODULE_0,
-                MODULE_EXEC,
-                MODULE_PROC,
-		MODULE_SERVICE,
-		MODULE_FREEDISK,
-		MODULE_CPUUSAGE,
-		MODULE_FREEMEMORY
-        };
+	/**
+	 * Defines the kind of the module.
+	 *
+	 * The kind of a module is the work the module does.
+	 */
+        typedef enum {
+                MODULE_0,         /**< Invalid kind                    */
+                MODULE_EXEC,      /**< The module run a custom command */
+                MODULE_PROC,      /**< The module checks for a running
+				   *   process                         */
+		MODULE_SERVICE,   /**< The module checks for a running
+				   *   service                         */
+		MODULE_FREEDISK,  /**< The module checks the free      */
+		MODULE_CPUUSAGE,  /**< The module checks the CPU usage */
+		MODULE_FREEMEMORY /**< The module checks the amount of 
+				   *   freememory in the system        */
+        } Module_Kind;
         
         const string module_exec_str                = "module_exec";
         const string module_proc_str                = "module_proc";
@@ -58,49 +75,89 @@ namespace Pandora_Modules {
 	const string module_freememory_str          = "module_freememory";
 	const string module_cpuusage_str            = "module_cpuusage";
 
-        class Output_Error           : public Pandora::Pandora_Exception { };
-        class Interval_Error         : public Pandora::Pandora_Exception { };
-        class Interval_Not_Fulfilled : public Pandora::Pandora_Exception { };
-        
+	/**
+	 * Pandora module super-class exception.
+	 */
+        class Module_Exception : public Pandora::Pandora_Exception    { };
+	
+	/**
+	 * An error happened with the module output.
+	 */
+        class Output_Error : public Pandora_Modules::Module_Exception { };
+	
+	/**
+	 * The module value is not correct, usually beacause of the limits.
+	 */
+        class Value_Error : public Pandora_Modules::Module_Exception  { };
+	
+	/**
+	 * The module does not satisfy its interval.
+	 */
+        class Interval_Not_Fulfilled : public Pandora_Modules::Module_Exception { };
+
+        /**
+	 * Pandora module super-class.
+	 *
+	 * Every defined module must inherit of this class.
+	 */
         class Pandora_Module {
+	private:
+		int         module_interval;
+                int         executions;
+                int         max, min;
+                bool        has_limits;
+		string      module_type_str;
+                Module_Type module_type;
+		string      module_kind_str;
+                Module_Kind module_kind;
         protected:
-                string module_name;
-                string module_type_str;
-                int    module_type;
-                string module_kind_str;
-                string module_description;
-                int    module_kind;
-                int    module_interval;
-                int    executions;
-                string output;
-                int    max, min;
-                bool   has_limits;
-                bool   has_output;
+		/**
+		 * Module output generated at execution.
+		 */
+		string      output;
+		/**
+		 * Indicates if the module generated output in
+		 * his last execution.
+		 */
+		bool        has_output;
+		/**
+		 * The name of the module.
+		 */
+                string      module_name;
+		/**
+		 * The description of the module.
+		 */
+                string      module_description;
         public:
-                Pandora_Module           (string name);
-                virtual ~Pandora_Module  ();
+                Pandora_Module                    (string name);
+                virtual ~Pandora_Module           ();
+
+                static Module_Type
+			parseModuleTypeFromString (string type);
+		
+		static Module_Kind
+			parseModuleKindFromString (string kind);
+		
+                void               setInterval    (int interval);
                 
-                static int getModuleType (string type);
+                TiXmlElement      *getXml         ();
                 
-                void   setInterval       (int interval);
+                virtual void       run            ();
                 
-                /* Get the XML output of the agent. */
-                TiXmlElement *getXml     ();
+                virtual string     getOutput      () const;
                 
-                /* Execute the agent */
-                virtual void   run       ();
+                string             getName        () const;
+		string             getDescription () const;
+                string             getTypeString  () const;
+                Module_Type        getTypeInt     () const;
+                Module_Type        getModuleType  () const;
+		Module_Kind        getModuleKind  () const;
                 
-                virtual string getOutput () const;
-                
-                string getName           () const;
-                string getTypeString     () const;
-                int    getTypeInt        () const;
-                int    getModuleKind     () const;
-                
-                void   setType           (string type);
-                void   setDescription    (string description);
-                void   setMax            (int value);
-                void   setMin            (int value);
+                void               setType        (string type);
+		void               setKind        (string kind);
+                void               setDescription (string description);
+                void               setMax         (int value);
+                void               setMin         (int value);
         };
 }
 

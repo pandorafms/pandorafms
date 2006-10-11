@@ -26,6 +26,13 @@ using namespace Pandora;
 using namespace Pandora_Modules;
 using namespace Pandora_Strutils;
 
+/** 
+ * Creates a Pandora_Module.
+ *
+ * Initializes all attributes. The default interval is set to 1 loop.
+ * 
+ * @param name Module name.
+ */
 Pandora_Module::Pandora_Module (string name) {
         this->module_name     = name;
         this->executions      = 0;
@@ -36,11 +43,23 @@ Pandora_Module::Pandora_Module (string name) {
         this->has_limits      = false;
 }
 
+/** 
+ * Virtual destructor of Pandora_Module.
+ *
+ * Should be redefined by child classes.
+ */
 Pandora_Module::~Pandora_Module () {
 }
 
-int
-Pandora_Module::getModuleType (string type) {
+/** 
+ * Get the Module_Type from a string type.
+ * 
+ * @param type String type.
+ * 
+ * @return The Module_Type which represents the type.
+ */
+Module_Type
+Pandora_Module::parseModuleTypeFromString (string type) {
         if (type == module_generic_data_str) {
                 return TYPE_GENERIC_DATA;
         } else if (type == module_generic_data_inc_str) {
@@ -54,26 +73,104 @@ Pandora_Module::getModuleType (string type) {
         }
 }
 
+/** 
+ * Get the Module_Kind from a string Kind.
+ * 
+ * @param kind String Kind.
+ * 
+ * @return The Module_Kind which represents the Kind.
+ */
+Module_Kind
+Pandora_Module::parseModuleKindFromString (string kind) {
+        if (kind == module_exec_str) {
+                return MODULE_EXEC;
+        } else if (kind == module_proc_str) {
+                return MODULE_PROC;
+        } else if (kind == module_service_str) {
+                return MODULE_SERVICE;
+        } else if (kind == module_freedisk_str) {
+                return MODULE_FREEDISK;
+        } else if (kind == module_freememory_str) {
+                return MODULE_FREEMEMORY;
+        } else if (kind == module_cpuusage_str) {
+                return MODULE_CPUUSAGE;
+        } else {
+                return MODULE_0;
+        }
+}
+
+/** 
+ * Get the name of the module.
+ * 
+ * @return The name of the module.
+ */
 string
 Pandora_Module::getName () const {
         return this->module_name;
 }
 
+/** 
+ * Get the description of the module.
+ * 
+ * @return The module description.
+ */
+string
+Pandora_Module::getDescription () const {
+	return this->module_description;
+}
+
+/** 
+ * Get the module type in a human readable string.
+ * 
+ * @return The module type..
+ */
 string
 Pandora_Module::getTypeString () const {
         return this->module_type_str;
 }
 
-int
+/** 
+ * Get the module type in a integer value.
+ * 
+ * @return The module type in a integer value.
+ */
+Module_Type
 Pandora_Module::getTypeInt () const {
         return this->module_type;
 }
 
-int
+/** 
+ * Get the kind of the module in a integer_value.
+ * 
+ * @return The module kind in a integer value.
+ */
+Module_Kind
 Pandora_Module::getModuleKind () const {
         return this->module_kind;
 }
 
+/** 
+ * Get the type of the module in a integer_value.
+ * 
+ * @return The module type in a integer value.
+ */
+Module_Type
+Pandora_Module::getModuleType () const {
+        return this->module_type;
+}
+
+/** 
+ * Get the module output.
+ *
+ * After running the module, this function will return the output,
+ * based on the module_type and the interval.
+ *
+ * @return The output in a string.
+ *
+ * @exception Output_Error Throwed if the module_type is not correct.
+ * @exception Value_Error Throwed when the output is not in
+ *            the interval range.
+ */
 string
 Pandora_Module::getOutput () const {
         switch (this->module_type) {
@@ -90,7 +187,7 @@ Pandora_Module::getOutput () const {
                 
                 if (this->has_limits) {
                         if (value >= this->max || value <= this->min) {
-                                throw Interval_Error ();
+                                throw Value_Error ();
                         }
                 }
                 
@@ -100,6 +197,16 @@ Pandora_Module::getOutput () const {
         }
 }
 
+/** 
+ * Run the module and generates the output.
+ *
+ * It is used by the child classes to check the execution interval
+ * value and increment the executions variable.
+ * 
+ * @exception Interval_Not_Fulfilled Throwed when the execution
+ *            interval value indicates that the module doesn't have
+ *            to execute.
+ */
 void
 Pandora_Module::run () {
                     
@@ -120,6 +227,23 @@ Pandora_Module::run () {
         has_output = true;
 }
 
+/** 
+ * Get the XML output of the value.
+ *
+ * The output is a element of the TinyXML library. A sample output of
+ * a module is:
+ * @verbatim
+ <module>
+   <name>Conexiones abiertas</name>
+   <type>generic_data</type>
+   <data>5</data>
+   <description>Conexiones abiertas</description>
+ </module>
+   @endverbatim
+ *
+ * @return A pointer to the TiXmlElement if successful which has to be
+ *         freed by the caller. NULL if the XML could not be created.
+ */
 TiXmlElement *
 Pandora_Module::getXml () {
         string        data;
@@ -141,7 +265,7 @@ Pandora_Module::getXml () {
                             this->module_name.c_str ());
                             
                 return NULL;
-        } catch (Interval_Error e) {
+        } catch (Value_Error e) {
                 pandoraLog ("The returned value was not in the interval on module %s",
                             this->module_name.c_str ());
                 
@@ -183,29 +307,69 @@ Pandora_Module::getXml () {
         return root;
 }
 
+/** 
+ * Set the max value the module can have.
+ *
+ * The range is closed, so the value is included.
+ *
+ * @param value Max value to set.
+ */
 void
 Pandora_Module::setMax (int value) {
         this->has_limits = true;
         this->max        = value;
 }
 
+/** 
+ * Set the min value the module can have.
+ *
+ * The range is closed, so the value is included.
+ *
+ * @param value Min value to set.
+ */
 void
 Pandora_Module::setMin (int value) {
         this->has_limits = true;
         this->min        = value;
 }
 
+/** 
+ * Set the module type from a string type.
+ * 
+ * @param type String type.
+ */
 void
 Pandora_Module::setType (string type) {
         this->module_type_str = type;
-        this->module_type     = getModuleType (type);
+        this->module_type     = parseModuleTypeFromString (type);
 }
 
+/** 
+ * Set the module kind from a string kind.
+ * 
+ * @param kind String kind.
+ */
+void
+Pandora_Module::setKind (string kind) {
+        this->module_kind_str = kind;
+        this->module_kind     = parseModuleKindFromString (kind);
+}
+
+/** 
+ * Set the interval execution.
+ * 
+ * @param interval Interval between executions.
+ */
 void
 Pandora_Module::setInterval (int interval) {
         this->module_interval = interval;
 }
 
+/** 
+ * Set the module description.
+ * 
+ * @param description Description of the module.
+ */
 void
 Pandora_Module::setDescription (string description) {
         this->module_description = description;

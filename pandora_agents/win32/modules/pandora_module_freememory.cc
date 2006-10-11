@@ -27,11 +27,15 @@ using namespace Pandora;
 using namespace Pandora_Modules;
 using namespace Pandora_Strutils;
 
+/** 
+ * Creates a Pandora_Module_Freememory object.
+ * 
+ * @param name Module name.
+ */
 Pandora_Module_Freememory::Pandora_Module_Freememory (string name)
 	: Pandora_Module (name) {
 	
-        this->module_kind_str = module_freememory_str;
-        this->module_kind     = MODULE_FREEMEMORY;
+        this->setKind (module_freememory_str);
 }
 
 void
@@ -47,8 +51,8 @@ Pandora_Module_Freememory::run () {
 	try {
 		res = Pandora_Wmi::getFreememory ();
 		
-		output = longtostr (res);
-	} catch (Pandora_Wmi::Pandora_Wmi_Error e) {
+		this->output = longtostr (res);
+	} catch (Pandora_Wmi::Pandora_Wmi_Exception e) {
 		this->has_output = false;
 	}
 }

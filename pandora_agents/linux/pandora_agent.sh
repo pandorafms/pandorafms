@@ -8,6 +8,7 @@
 # This code is licenced under GPL 2.0 licence.
 # **********************************************************************
 AGENT_VERSION=1.2
+AGENT_BUILD=060920
 
 IFS=$'\n'
 # Begin cycle for adquire primary config tokens
@@ -87,8 +88,31 @@ done
 
 # MAIN Program loop begin
 
+# Get Linux Distro type and version
+
+# SUSE
+if [ -f "/etc/SuSE-release" ]
+then
+  OS_VERSION=`cat /etc/SuSE-release | grep VERSION | cut -f 3 -d " "`
+  LINUX_DISTRO=SUSE
+else
+    if [ -f "/etc/lsb-release" ]
+    then
+        OS_VERSION=`cat /etc/lsb-release | grep DISTRIB_RELEASE | cut -f 2 -d "="`
+        LINUX_DISTRO=UBUNTU
+    else
+        if [ -f "/etc/debian_version" ]
+        then
+            OS_VERSION=`cat /etc/debian_version`
+            OS_VERSION="DEBIAN $OS_VERSION"
+            LINUX_DISTRO=DEBIAN
+        else
+            LINUX_DISTRO=GENERIC
+            OS_VERSION=`uname -r`
+        fi
+    fi
+fi
 # OS Data
-OS_VERSION=`uname -r`
 OS_NAME=`uname -s`
 
 # Hostname

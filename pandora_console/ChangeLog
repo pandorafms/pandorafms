@@ -1,4 +1,77 @@
-2006-09-04 Raul Mateos  <raulofpandora@gmail.com>
+2006-10-09 Raul Mateos  <raulofpandora@gmail.com>
+
+	* operation/agentes/estado_alertas.php: Add code for showing 'Never'
+	if never an alert has been triggered.
+	
+	* operation/agentes/estado_alertas.php, estado_agente.php
+	, status_monitor.php: Changed select size.
+	
+	* operation/incidents/incident_search.php: Changed select size.
+	
+	* operation/messages/message.php: Changed select size.
+	
+	* godmode/usuarios/configurar_usuarios.php: Changed select size.
+	
+	* godmode/setup/setup.php: Changed select size.
+
+2006-10-08 Sancho Lerena <slerena@artica.es>
+
+	* incident_detail.php: Fixed DOS newlines to UNIX newlines. Fixed
+	  help code. Fixed Background color for field "Source".
+ 
+2006-10-04 Raul Mateos  <raulofpandora@gmail.com>
+
+	* operation/agentes/estado_ultimopaquete.php: Delete old comments.
+	
+	* general/login_page.php, logon_ok.php: Updated headers.
+	
+	* include/config.php: Set PHP errors disabled by default.
+
+2006-09-28  Sancho Lerena  <slerena@artica.es>
+
+	* languages/language_es_es.php: Fixed message "out of limits"
+          without tildes in spanish for jpgraph output.
+
+	* pandoradb_1.1_to_1.2.sql: Fixed small issues: mod_data_inc was
+	  as mod_inc.gif in modify SQL sentence. Spanish language is
+	  _es_es not _es. Setup by default english language after
+	  migration. Added network agent as OS. Changed Build versions in
+	  DB Scheme and versions (1.1 in old one !!!).
+
+	* pandora_console/pandoradb_data.sql: Fixed version number and
+	  build.
+	  
+2006-09-23 Raul Mateos  <raulofpandora@gmail.com>
+
+	* godmode/agentes/configurar_agente.php: Comment DEBUG code added
+	last update.
+
+2006-09-21  Sancho Lerena  <slerena@artica.es>
+
+	* pandoradb.sql: Altered tagente_datos field "datos" to have
+	DOUBLE(18,2) instead of DOUBLE (12,2).
+
+	* pandora_db1.1_to1.2.sql: Altered tagente_datos field "datos" to
+	have DOUBLE(18,2) instead of DOUBLE (12,2).
+
+2006-09-16 Raul Mateos  <raulofpandora@gmail.com>
+
+	* Set all timestamp values in pandoradb.sql file to 0000-00-00 00:00:00
+	
+2006-09-11 Raul Mateos  <raulofpandora@gmail.com>
+
+	* Massive upload of several help files to update text.
+
+2006-09-10 Raul Mateos  <raulofpandora@gmail.com>
+
+	* Massive upload several files, to reflect changes in help,
+		only text, no code changed
+	
+	* pandoradb.sql: change value of ultimo_contacto row in 
+	tagente table to 0000-00-00 00:00:00, to solve a small issue
+	when the agent haven't send any data
+
+2006-09-08 Raul Mateos  <raulofpandora@gmail.com>
 
 	* images/pandora.ico: New icon for Pandora Web Console
 
@@ -7,15 +80,12 @@
 	* help/es/image001.gif: Replaced old image
 	* help/en/image001.gif: Repladed old image
 
-2006-08-30 slerena <slerena@artica.es>
+2006-08-30 Sancho Lerena  <slerena@artica.es>
 
-    * ChangeLog: Renamed file from CHANGELOG.
+	* CHANGELOG: Renamed to ChangeLog
 
-	* fgraph.php: Updated problem with GIF graphics in Access graph.
-
-	* pandora_console/reporting/*.php: Replaced new code for 1.3
-      version and rollback to stable (and slow) code to be released with
-      1.2 version
+	* reporting/*.php: Replaced old code with new code for trunk. Deleted
+	old_jpg_functions directory from repository
 
 	
 2006-07-20  Raul Mateos  <raulofpandora@gmail.com>
@@ -30,8 +100,9 @@
 
 	* language_it.php. Update text.
 	
-	* snmp_alert.php. Add text when alert not created /updated / deleted. 
-	Add different colors between rows (cosmetic changes).
+	* snmp_alert.php. Add text when alert not created /updated / deleted. Add
+	different colors between
+	rows (cosmetic changes).
 	
 
 2006-07-18  Raul Mateos  <raulofpandora@gmail.com>

@@ -29,6 +29,12 @@ using namespace Pandora;
 using namespace Pandora_Modules;
 using namespace Pandora_Strutils;
 
+/** 
+ * Creates a Pandora_Module_Service object.
+ * 
+ * @param name Module name.
+ * @param service_name Service internal name to check.
+ */
 Pandora_Module_Service::Pandora_Module_Service (string name, string service_name)
 	: Pandora_Module (name) {
         
@@ -37,8 +43,7 @@ Pandora_Module_Service::Pandora_Module_Service (string name, string service_name
         transform (service_name.begin (), service_name.end (),
                    this->service_name.begin (), (int (*) (int)) tolower);
 	
-        this->module_kind_str = module_service_str;
-        this->module_kind     = MODULE_SERVICE;
+        this->setKind (module_service_str);
 }
 
 void
@@ -52,5 +57,5 @@ Pandora_Module_Service::run () {
         }
         
         res = Pandora_Wmi::isServiceRunning (this->service_name);
-        output = inttostr (res);
+        this->output = inttostr (res);
 }

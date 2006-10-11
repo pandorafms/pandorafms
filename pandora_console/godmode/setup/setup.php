@@ -43,11 +43,11 @@ if (comprueba_login() == 0)
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config_bgimage."' WHERE token='bgimage'");
 	}	
 	echo "<h2>".$lang_label["setup_screen"]."</h2>";
-	echo "<h3>".$lang_label["general_config"]."<a href='help/".$help_code."/chap7.php#7' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	echo "<h3>".$lang_label["general_config"]."<a href='help/".$help_code."/chap9.php#9' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 	echo "<form name='setup' method='POST' action='index.php?sec=gsetup&amp;sec2=godmode/setup/setup&update=1'>";
 	echo '<table width="500" cellpadding="3" cellspacing="3">';
 	echo '<tr><td class="lb" rowspan="9" width="5"></td><td class="datos">'.$lang_label["language_code"];
-	echo '<td class="datos"><select name="language_code" onChange="javascript:this.form.submit();">';
+	echo '<td class="datos"><select name="language_code" onChange="javascript:this.form.submit();" class="w180">';
 	
 	$sql="SELECT * FROM tlanguage";
 	$result=mysql_query($sql);
@@ -79,7 +79,7 @@ if (comprueba_login() == 0)
 	echo '<td class="datos2"><input type="text" name="step_compact" size=5 value="'.$config_step_compact.'">';
 
 	echo '<tr><td class="datos">'.$lang_label["graph_order"];
-	echo '<td class="datos"><select name="graph_order" style="width: 110px;">';
+	echo '<td class="datos"><select name="graph_order" class="w120">';
 	if ($config_graph_order==0) {
 		echo '<option value="0">'.$lang_label["left_right"].'</option>';
 		echo '<option value="1">'.$lang_label["right_left"].'</option>';
@@ -90,7 +90,7 @@ if (comprueba_login() == 0)
 	}
 	
 	echo '<tr><td class="datos2">'.$lang_label["truetype"];
-	echo '<td class="datos2"><select name="truetype" style="width: 110px;">';
+	echo '<td class="datos2"><select name="truetype" class="w120">';
 	if ($config_truetype==1) {
 		echo '<option value="1">'.$lang_label["active"].'</option>';
 		echo '<option value="0">'.$lang_label["disabled"].'</option>';
@@ -102,7 +102,7 @@ if (comprueba_login() == 0)
 
 	echo '<tr><td class="datos">'.$lang_label["background_image"];
 	echo '<td class="datos">';
-	echo '<select name="bgimage">';
+	echo '<select name="bgimage" class="w155">';
 	if ($config_bgimage!=""){
 		echo '<option>'.$config_bgimage;
 	}

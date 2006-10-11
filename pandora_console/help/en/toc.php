@@ -1,9 +1,22 @@
 <?php
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2004-2006
+
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 ?>
 <html>
 <head>
@@ -37,6 +50,8 @@ dd.help_t4 {margin-left: 92px; margin-top: 3px; margin-bottom: 2px;}
 <dd class="help_t2"><a href="chap2.php#22">2.2. Adding a user</a></dd>
 <dd class="help_t2"><a href="chap2.php#23">2.3. Deleting a user</a></dd>
 <dd class="help_t2"><a href="chap2.php#24">2.4. Statistics</a></dd>
+<dd class="help_t2"><a href="chap2.php#25">2.5. Messages to users</a></dd>
+<dd class="help_t3"><a href="chap2.php#251">2.5.1. Menssages to groups</a></dd>
 
 <dd class="help_t1"><a href="chap3.php#3"><h1>3. Agents</h1></a></dd>
 <dd class="help_t2"><a href="chap3.php#31">3.1. Group Manager</a></dd>
@@ -46,6 +61,7 @@ dd.help_t4 {margin-left: 92px; margin-top: 3px; margin-bottom: 2px;}
 <dd class="help_t4"><a href="chap3.php#3221">3.2.2.1. Adding an Alert</a></dd>
 <dd class="help_t4"><a href="chap3.php#3222">3.2.2.2. Assigning Alerts</a></dd>
 <dd class="help_t3"><a href="chap3.php#323">3.2.3. Agent module and agent's alert management</a></dd>
+<dd class="help_t3"><a href="chap3.php#324">3.2.4. Agents group detail</a></dd>
 <dd class="help_t2"><a href="chap3.php#33">3.3. Agent monitoring</a></dd>
 <dd class="help_t3"><a href="chap3.php#331">3.3.1. Agent view</a></dd>
 <dd class="help_t3"><a href="chap3.php#332">3.3.2. Accessing the data of an agent</a></dd>
@@ -58,6 +74,8 @@ dd.help_t4 {margin-left: 92px; margin-top: 3px; margin-bottom: 2px;}
 <dd class="help_t3"><a href="chap3.php#335">3.3.5. Alert details</a></dd>
 <dd class="help_t3"><a href="chap3.php#336">3.3.6. Data export</a></dd>
 <dd class="help_t3"><a href="chap3.php#337">3.3.7. Statistics</a></dd>
+<dd class="help_t2"><a href="chap3.php#34">3.4. SNMP Console</a></dd>
+<dd class="help_t3"><a href="chap3.php#341">3.4.1. SNMP Console</a></dd>
 
 <dd class="help_t1"><a href="chap4.php#4"><h1>4. Incident management</h1></a></dd>
 <dd class="help_t2"><a href="chap4.php#41">4.1. Adding an incident</a></dd>
@@ -73,8 +91,7 @@ dd.help_t4 {margin-left: 92px; margin-top: 3px; margin-bottom: 2px;}
 <dd class="help_t1"><a href="chap6.php#6"><h1>6. System audit</h1></a></dd>
 <dd class="help_t2"><a href="chap6.php#61">6.1. Statistics</a></dd>
 
-<dd class="help_t1"><a href="chap7.php#7"><h1>7. Server configuration</h1></a></dd>
-<dd class="help_t2"><a href="chap7.php#71">7.1. Links </a></dd>
+<dd class="help_t1"><a href="chap7.php#7"><h1>7. Pandora Servers</h1></a></dd>
 
 <dd class="help_t1"><a href="chap8.php#8"><h1>8. Database maintenance</h1></a></dd>
 <dd class="help_t2"><a href="chap8.php#81">8.1. DB Information</a></dd>
@@ -85,6 +102,10 @@ dd.help_t4 {margin-left: 92px; margin-top: 3px; margin-bottom: 2px;}
 <dd class="help_t2"><a href="chap8.php#84">8.4. Purging system data</a></dd>
 <dd class="help_t3"><a href="chap8.php#841">8.4.1. Audit data purge</a></dd>
 <dd class="help_t3"><a href="chap8.php#842">8.4.2. Event data purge</a></dd>
+
+<dd class="help_t1"><a href="chap9.php#9"><h1>9. Pandora configuration</h1></a></dd>
+<dd class="help_t2"><a href="chap9.php#91">9.1. Links</a></dd>
+
 </dl>
 
 </body>

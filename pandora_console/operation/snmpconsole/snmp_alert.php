@@ -203,7 +203,7 @@ if (give_acl($id_user, 0, "LW")==1) {
 		$sql1='SELECT * FROM talert_snmp';
 		$result=mysql_query($sql1);
 		
-		echo '<h3>'.$lang_label["snmp_assigned_alerts"]."<a href='help/".$help_code."/chap3.php#331' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";		
+		echo '<h3>'.$lang_label["snmp_assigned_alerts"]."<a href='help/".$help_code."/chap4.php#341' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";		
 		if (mysql_num_rows($result)){
 
 			echo '<table cellpadding="3" cellspacing="3" width="750" class="fon" border=0>';
@@ -277,17 +277,16 @@ if (give_acl($id_user, 0, "LW")==1) {
 					echo "N/A";
 				}
 				
-				
 				echo "<td class='$tdcolor'>";
 				echo $description;
 				
 				echo "<td class='$tdcolor'>";
 				echo $times_fired;
 				echo "<td class='$tdcolor'>";
-				if ($last_fired != "2005-01-01 00:00:00")
+				if ($last_fired != "0000-00-00 00:00:00")
 					echo $last_fired;
 				else
-					echo "N/A";
+					echo $lang_label["never"];
 				echo "<td class='$tdcolor'>";
 				echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&delete_alert=".$id_as."'><img src='images/cancel.gif' border=0 alt='".$lang_label["delete"]."'></b></a> &nbsp; ";
 				echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&update_alert=".$id_as."'><img src='images/config.gif' border=0 alt='".$lang_label["update"]."'></b></a>";

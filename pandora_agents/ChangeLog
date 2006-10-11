@@ -1,0 +1,9 @@
+2006-09-20  Sancho Lerena  <slerena@artica.es>
+
+	* linux/pandora_agent.sh: Inserted code for detect Linux Distro,
+	and get versions (ported from babel agent code).
+
+2006-08-30 Sancho Lerena <slerena@gmail.com>
+
+	* pandora_agent/ChangeLog: Created and added to repository
+

@@ -38,18 +38,31 @@ using namespace Pandora_Strutils;
 
 string enabled_values[] = {"enabled", "1", "on", "yes", "si", "sí", "ok", ""};
 
+/** 
+ * Creates a new Pandora_Windows_Service.
+ * 
+ * @param svc_name Internal service name
+ * @param svc_display_name Service name that will appear in the
+ *        Windows service administration tool.
+ * @param svc_description Long description of the service.
+ */
 Pandora_Windows_Service::Pandora_Windows_Service (const char * svc_name,
-                                              const char * svc_display_name,
-                                              const char * svc_description)
+						  const char * svc_display_name,
+						  const char * svc_description)
         : Windows_Service (svc_name, svc_display_name, svc_description) {
 
-        this->setInitFunction ((void (Windows_Service::*) ()) &Pandora_Windows_Service::pandora_init);
-        this->setRunFunction ((void (Windows_Service::*) ()) &Pandora_Windows_Service::pandora_run);
+        this->setInitFunction ((void (Windows_Service::*) ())
+			       &Pandora_Windows_Service::pandora_init);
+        this->setRunFunction ((void (Windows_Service::*) ())
+			      &Pandora_Windows_Service::pandora_run);
         execution_number = 0;
         this->modules    = NULL;
         this->conf       = NULL;
 }
 
+/** 
+ * Destroys a Pandora_Windows_Service object.
+ */
 Pandora_Windows_Service::~Pandora_Windows_Service () {
         if (this->conf != NULL) {
                 delete this->conf;
@@ -86,7 +99,7 @@ Pandora_Windows_Service::pandora_init () {
         
         conf_file = Pandora::getPandoraInstallDir ();
         conf_file += "pandora_agent.conf";
-        this->conf = new Pandora_Agent_Conf (conf_file);
+        this->conf = new Pandora::Pandora_Agent_Conf (conf_file);
         this->modules = new Pandora_Module_List (conf_file);
 
         /* Get the interval value (in minutes) and set it to the service */
@@ -221,19 +234,23 @@ Pandora_Windows_Service::pandora_run () {
                 delete ssh_client;
                 pandoraLog ("Pandora Agent: Authentication Failed when connecting to %s",
                             remote_host.c_str ());
-                try {
-                        Pandora_File::removeFile (tmp_filepath);
-                } catch (Pandora_File::Delete_Error e) {
-                }
+		if (getPandoraDebug () == false) {
+	                try {
+        	                Pandora_File::removeFile (tmp_filepath);
+	                } catch (Pandora_File::Delete_Error e) {
+        	        }
+		}
                 return;
         } catch (Pandora_Exception e) {
                 delete ssh_client;
                 pandoraLog ("Pandora Agent: Failed when copying to %s",
                             remote_host.c_str ());
-                try {
-                        Pandora_File::removeFile (tmp_filepath);
-                } catch (Pandora_File::Delete_Error e) {
-                }
+                if (getPandoraDebug () == false) {
+			try {
+                        	Pandora_File::removeFile (tmp_filepath);
+	                } catch (Pandora_File::Delete_Error e) {
+	                }
+		}
                 return;
         }
         
@@ -253,20 +270,24 @@ Pandora_Windows_Service::pandora_run () {
                             tmp_filename.c_str ());
                 ssh_client->disconnect();
                 delete ssh_client;
-                try {
-                        Pandora_File::removeFile (tmp_filepath);
-                } catch (Pandora_File::Delete_Error e) {
-                }
+		if (getPandoraDebug () == false) {
+	                try {
+        	                Pandora_File::removeFile (tmp_filepath);
+                	} catch (Pandora_File::Delete_Error e) {
+                	}
+		}
                 return;
         }
         
         ssh_client->disconnect();
         delete ssh_client;
         
-        try {
-                Pandora_File::removeFile (tmp_filepath);
-        } catch (Pandora_File::Delete_Error e) {
-        }
+	if (getPandoraDebug () == false) {
+	        try {
+	                Pandora_File::removeFile (tmp_filepath);
+	        } catch (Pandora_File::Delete_Error e) {
+	        }
+	}
                 
         pandoraDebug ("Execution number %d", execution_number);
         

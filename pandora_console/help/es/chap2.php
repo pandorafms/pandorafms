@@ -1,9 +1,20 @@
 <?php
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2004-2006
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ?>
 <html>
 <head>
@@ -30,8 +41,7 @@ div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
 
 <p>En Pandora se definen usuarios para la operativa diaria y se les asignan uno o varios perfiles.</p>
 
-<p>Un perfil es una lista de lo que se puede y no se puede hacer sobre un grupo, como por ejemplo «ver incidentes»,
-«gestionar bases de datos», etc.</p>
+<p>Un perfil es una lista de lo que se puede y no se puede hacer sobre un grupo, como por ejemplo «ver incidentes», «gestionar bases de datos», etc.</p>
 
 <p>En cada usuario se define a que grupos de agentes se puede acceder y el perfil de administraci&oacute;n que se tendr&aacute;
 en cada uno de ellos. Cada usuario puede pertenecer a uno o m&aacute;s grupos, y tiene
@@ -59,7 +69,7 @@ En esta p&aacute;gina se encuentran todos los perfiles existentes, por defecto h
 <li>Pandora Administrator</li>
 </ul>
 
-<p>Para crear un perfil lo hacemos desde «Gesti&oacute;n de perfiles»&gt;«Crear perfil» dentro del men&uacute; de Administraci&oacute;n.</p>
+<p>Para crear un perfil lo hacemos desde «Gesti&oacute;n de perfiles» &gt; «Crear perfil» dentro del men&uacute; de Administraci&oacute;n.</p>
 
 <p class="center"><img src="images/image002.png"></p>
 
@@ -80,11 +90,12 @@ En esta p&aacute;gina se encuentran todos los perfiles existentes, por defecto h
 
 <h2><a name="22">2.2. A&ntilde;adir un usuario</a></h2>
 
-Para a&ntilde;adir un usuario lo hacemos desde «Gesti&oacute;n de usuarios»&gt;«Crear Usuario» dentro del men&uacute; de administraci&oacute;n.</p>
+Para a&ntilde;adir un usuario lo hacemos desde «Gesti&oacute;n de usuarios» &gt; «Crear Usuario» dentro del men&uacute; de administraci&oacute;n.</p>
 
 <p>Para crear un usuario se deben completar al menos los datos de identificador, contrase&ntilde;a (dos veces) y perfil global dentro de Pandora.</p>
 
 <p>El perfil global define a un usuario como Administrador o como Usuario est&aacute;ndar dentro de Pandora.</p>
+
 <p>Los usuarios con perfil «Administrador» tendr&aacute;n permisos totales en el servidor.</p>
 
 <p class="center"><img src="images/image003.png"></p>
@@ -114,6 +125,13 @@ de ellos. Suele ser un reflejo de la actividad de cada usuario.</p>
 el men&uacute; de operaci&oacute;n.</p>
 
 <p class="center"><img src="images/image006.png"></p>
+
+<h2><a name="25">2.5. Mensajes a usuarios</a></h2>
+
+<p>Desde «Mensajes», en el men&uacute; de operaci&oacute;n podemos enviar mensajes a otros usuarios y leer los mensajes que hemos recibido. No se almacenan los que se han enviado.</p>
+
+<h3><a name="251">2.5.1. Mensajes a grupos</a></h3>
+<p>Desde «Mensajes» &gt; «Mensajes a grupos» en el men&uacute; de operaci&oacute;n podemos enviar mensajes a grupos de usuarios. No se almacenan los que se han enviado.</p>
 
 </body>
 </html>

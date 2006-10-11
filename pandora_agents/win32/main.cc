@@ -44,19 +44,25 @@ main (int argc, char *argv[]) {
         pos = aux.rfind ("\\");
         aux.erase (pos + 1);
         Pandora::setPandoraInstallDir (aux);
-        
+
+	/* Check the parameters */
         for (int i = 1; i < argc; i++) {
                 if (_stricmp(argv[i], SERVICE_INSTALL_CMDLINE_PARAM) == 0) {
+			/* Install parameter */
                         service->install (Pandora::getPandoraInstallPath ().c_str ());
                         
                         delete service;
+			
                         return 0;
                 } else if (_stricmp(argv[i], SERVICE_UNINSTALL_CMDLINE_PARAM) == 0) {
+			/* Uninstall parameter */
                         service->uninstall ();
                         
                         delete service;
+			
                         return 0;
 		} else if (_stricmp(argv[i], SSH_TEST_CMDLINE_PARAM) == 0) {
+			/* SSH test parameter */
                         SSH::Pandora_SSH_Test ssh_test;
 			
                         delete service;
@@ -66,24 +72,33 @@ main (int argc, char *argv[]) {
                         } catch (Pandora_Exception e) {
                                 return 1;
                         }
+			
                         return 0;
                 }  else if (_stricmp(argv[i], HELP_CMDLINE_PARAM) == 0) {
+			/* Help parameter */
 			cout << "Usage: " << argv[0] << " [OPTION]" << endl << endl;
 			cout << "Available options are:" << endl;
-			cout << "\t" << SERVICE_INSTALL_CMDLINE_PARAM << ":   Install the Pandora Agent service." << endl;
-			cout << "\t" << SERVICE_UNINSTALL_CMDLINE_PARAM << ": Uninstall the Pandora Agent service." << endl;
-			cout << "\t" << SSH_TEST_CMDLINE_PARAM << ":  Test the SSH Pandora Agent configuration." << endl;
+			cout << "\t" << SERVICE_INSTALL_CMDLINE_PARAM;
+			cout <<	":   Install the Pandora Agent service." << endl;
+			cout << "\t" << SERVICE_UNINSTALL_CMDLINE_PARAM;
+			cout << ": Uninstall the Pandora Agent service." << endl;
+			cout << "\t" << SSH_TEST_CMDLINE_PARAM;
+			cout << ":  Test the SSH Pandora Agent configuration." << endl;
 			
                         return 0;
                 } else {
-                        cout << "Usage: " << argv[0] << " [" << SERVICE_INSTALL_CMDLINE_PARAM
-                             << "] [" << SERVICE_UNINSTALL_CMDLINE_PARAM << "]" << endl;
-			cerr << "Run " << argv[0] << "with " << HELP_CMDLINE_PARAM << " parameter for more info." << endl;
+			/* No parameter recognized */
+                        cout << "Usage: " << argv[0] << " [" << SERVICE_INSTALL_CMDLINE_PARAM;
+			cout << "] [" << SERVICE_UNINSTALL_CMDLINE_PARAM << "]" << endl;
+			cout << "Run " << argv[0] << "with " << HELP_CMDLINE_PARAM;
+			cout << " parameter for more info." << endl;
+			
                         return 1;
                 }
         }
         service->run ();
 	
 	delete service;
+	
         return 0;
 }

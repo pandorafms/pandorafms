@@ -23,7 +23,7 @@
 <!--
 function type_change()
 {
-	// tipo 1-4 - Generic_xxxxxx
+	// type 1-4 - Generic_xxxxxx
 	if ((document.modulo.tipo.value > 0) && (document.modulo.tipo.value < 5)){
 		document.modulo.snmp_oid.style.background="#ddd";
 		document.modulo.snmp_oid.disabled=true;
@@ -45,7 +45,7 @@ function type_change()
 		document.modulo.modulo_min.style.background="#fff";
 		document.modulo.modulo_min.disabled=false;
 	}
-	// tipo 15-18- SNMP
+	// type 15-18- SNMP
 	if ((document.modulo.tipo.value > 14) && (document.modulo.tipo.value < 19 )){
 		document.modulo.snmp_oid.style.background="#fff";
 		document.modulo.snmp_oid.style.disabled=false;
@@ -74,7 +74,7 @@ function type_change()
 			document.modulo.modulo_min.disabled=false;
 		}
 	}
-	// tipo 6-7 - ICMP
+	// type 6-7 - ICMP
 	if ((document.modulo.tipo.value == 6) || (document.modulo.tipo.value == 7)){
 		document.modulo.snmp_oid.style.background="#ddd";
 		document.modulo.snmp_oid.disabled=true;
@@ -96,7 +96,7 @@ function type_change()
 		document.modulo.modulo_min.style.background="#fff";
 		document.modulo.modulo_min.disabled=false;
 	}
-	// tipo 8-11 - TCP
+	// type 8-11 - TCP
 	if ((document.modulo.tipo.value > 7) && (document.modulo.tipo.value < 12)){
 		document.modulo.snmp_oid.style.background="#ddd";
 		document.modulo.snmp_oid.disabled=true;
@@ -119,7 +119,7 @@ function type_change()
 		document.modulo.modulo_min.disabled=true;
 	}
 	
-	// tipo 12 - UDP
+	// type 12 - UDP
 	if (document.modulo.tipo.value == 12){
 		document.modulo.snmp_oid.style.background="#ddd";
 		document.modulo.snmp_oid.disabled=true;
@@ -500,11 +500,15 @@ if (give_acl($id_user, 0, "AW")==1) {
 	// =========================================================
 	if (isset($_POST["oid"])){
 		snmp_set_quick_print(1);
+//echo "DEBUG snmpreadwalk call() $ip_target $snmp_community <br>";
 		if (! ($snmpwalk = snmprealwalk($ip_target, $snmp_community, "")))
 			echo "<h3 class='error'>".$lang_label["cannot_read_snmp"]."</h3>";
 		else
 			echo "<h3 class='suc'>".$lang_label["ok_read_snmp"]."</h3>";
+//echo "DEBUG $snmpwalk <br>";
 	}
+
+
 	// =========================================================
 	// MODULE INSERT
 	// =========================================================
@@ -567,14 +571,14 @@ if (give_acl($id_user, 0, "AW")==1) {
 		$id_agente = $row["id_agente"];
 		$nombre_modulo = $row["nombre"];
 		$id_tipo_modulo = $row["id_tipo_modulo"];
-		// Primero borramos de la tabla de tagente_modulo
+		// First detele from tagente_modulo
 		$sql_delete= "DELETE FROM tagente_modulo WHERE id_agente_modulo = ".$id_borrar_modulo;
 		$result=mysql_query($sql_delete);
 		if (! $result)
 			echo "<h3 class='error'>".$lang_label["delete_module_no"]."</h3>"; 
 		else
 			echo "<h3 class='suc'>".$lang_label["delete_module_ok"]."</h3>";
-		// Luego borramos de la tabla de estados, las entradas que haya de este modulo
+		// Then delete all staus
 		$sql_delete = "DELETE FROM tagente_estado WHERE id_agente_modulo = ".$id_borrar_modulo;
 		//echo "DEBUG SQL_DELETE $sql_delete <br>";
 		$result=mysql_query($sql_delete);
@@ -616,7 +620,7 @@ if (isset($_GET["creacion"])){
 } 
 ?>
 <tr><td class="datos2"><b><?php echo $lang_label["ip_address"]?></b><td class="datos2"><input type="text" name="direccion" size=30 value="<?php echo $direccion_agente ?>">
-<!-- Desplegable para el grupo -->
+<!-- Combo for group -->
 <tr><td class="datos"><b><?php echo $lang_label["group"]?></b><td class="datos"><select name="grupo" class="w130"> 
 <?php
 if (isset($grupo)){
@@ -690,9 +694,9 @@ else {echo "<input name='uptbutton' type='submit' class='sub' value='".$lang_lab
 </table>
 
 <?php 
-// Visualizacion de modulos y otras especies !!!, solo cuando no estamos en modo creacion
+// Module visualization where in create mode
 if ( $creacion_agente != 1) {
-// MODULE VISUALIZACION
+// MODULE VISUALIZATION
 // ======================
 // Load icon index for ttipo_modulo
 	$iconindex[]="";
@@ -917,6 +921,8 @@ else {
 <td colspan=3 class="datos"><select name="combo_snmp_oid">
 <?php
 // FILL OID Combobox
+
+
 if (isset($_POST["oid"])){
 	for (reset($snmpwalk); $i = key($snmpwalk); next($snmpwalk)) {
 		// OJO, al indice tengo que restarle uno, el SNMP funciona con indices a partir de 0

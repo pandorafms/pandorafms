@@ -1,3 +1,10 @@
+2006-10-12  dervitx <josepublico@jnavarro.net>
+
+	* pandora_doc/en/pandora_log_engine.pdf: documentation for log engine
+	
+	* pandora_doc/en/pandora_log_engine.xml: documentation for log engine
+
+
 2006-09-29  Sancho Lerena  <slerena.@artica.es>
 
 	* pandora_userguide.xml, pandora_chapter*: Many changes to use PNG

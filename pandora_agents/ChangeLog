@@ -1,3 +1,12 @@
+2006-10-12  dervitx <josepublico@jnavarro.net>
+
+        * pandora_agents/linux/pandora_agent_log.conf: log engine
+	configuration file
+	
+	* pandora_agents/linux/pandora_agent.sh: executes pandora_agent_log.pl
+	
+	* pandora_agents/linux/pandora_agent_log.pl: log engine main file
+
 2006-09-20  Sancho Lerena  <slerena@artica.es>
 
 	* linux/pandora_agent.sh: Inserted code for detect Linux Distro,

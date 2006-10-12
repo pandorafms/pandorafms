@@ -22,7 +22,6 @@ require("include/config.php");
 
 if (comprueba_login() == 0) {
 
-
 echo "<h2>".$lang_label["incident_manag"]."</h2>";
 echo "<h3>".$lang_label["find_crit"]." <a href='help/".$help_code."/chap4.php#43' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 echo "<div style='width:645'>";
@@ -35,7 +34,7 @@ echo "<div style='float:right;'><img src='images/pulpo_lupa.gif' class='bot' ali
 <tr>
 <td class="datos"><?php echo $lang_label["user"] ?>
 <td class="datos">
-<select name="usuario">
+<select name="usuario" class="w120">
 	<option value=""><?php echo $lang_label["all"] ?>
 	<?php 
 	$sql1='SELECT * FROM tusuario ORDER BY id_usuario';
@@ -58,5 +57,5 @@ echo "<div style='float:right;'><img src='images/pulpo_lupa.gif' class='bot' ali
 </div>
 <?php 
 
-} // fin pagina
+} // end page
 ?>

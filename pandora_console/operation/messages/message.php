@@ -90,7 +90,7 @@ if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
 			echo '<b>'.$_POST["u_destino"].'</b><input type="hidden" name="u_destino" value='.$_POST["u_destino"].'>';
 			}
 		else{
-			echo '<select name="u_destino" class="w100">';
+			echo '<select name="u_destino" class="w120">';
 				while ($row=mysql_fetch_array($resultado))
 				{echo "<option value='".$row["id_usuario"]."'>".$row["id_usuario"]."</option>";} 
 			echo '</select>';
@@ -120,7 +120,7 @@ if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
 		<table>
 		<tr><td class="datos">'.$lang_label["m_from"].':</td><td class="datos"><b>'.$iduser.'</b></td></tr>
 		<tr><td class="datos2">'.$lang_label["m_to"].':</td><td class="datos2">';
-			echo '<select name="g_destino" class="w100">';
+			echo '<select name="g_destino" class="w130">';
 				while ($row3=mysql_fetch_array($resultado3))
 				#if ($row3["id_grupo"] != 1){
 					{echo "<option value='".$row3["id_grupo"]."'>".$row3["nombre"]."</option>";}

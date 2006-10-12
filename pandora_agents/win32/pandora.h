@@ -57,6 +57,7 @@ namespace Pandora {
         void   setPandoraInstallPath  (string path);
         string getPandoraInstallPath  ();
         void   setPandoraDebug        (bool dbg);
+	bool   getPandoraDebug        ();
         string getPandoraAgentVersion ();
         
         void   pandoraDebug           (char *format, ...);

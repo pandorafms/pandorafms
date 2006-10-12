@@ -1,3 +1,46 @@
+2006-10-12 dervitx <josepublico@jnavarro.net>
+
+	* pandora_console/pandoradb.sql: modified tagente_modulo and
+	talerta_agente_modulo for regular expression-based alerts for
+	generic_data_string (svn revisions 206:230)
+	
+	* pandora_console/operation/agentes/estado_alertas.php: support for
+	regular expression-based alerts for generic_data_string (svn revisions
+	206:230)
+        
+	* pandora_console/godmode/agentes/configurar_agente.php: support for
+	regular expression-based alerts for generic_data_string (svn revisions
+	206:230)
+
+2006-10-09 Raul Mateos  <raulofpandora@gmail.com>
+
+	* operation/agentes/estado_alertas.php: Add code for showing 'Never'
+	if never an alert has been triggered.
+	
+	* operation/agentes/estado_alertas.php, estado_agente.php
+	, status_monitor.php: Changed select size.
+	
+	* operation/incidents/incident_search.php: Changed select size.
+	
+	* operation/messages/message.php: Changed select size.
+	
+	* godmode/usuarios/configurar_usuarios.php: Changed select size.
+	
+	* godmode/setup/setup.php: Changed select size.
+
+2006-10-08 Sancho Lerena <slerena@artica.es>
+
+	* incident_detail.php: Fixed DOS newlines to UNIX newlines. Fixed
+	  help code. Fixed Background color for field "Source".
+ 
+2006-10-04 Raul Mateos  <raulofpandora@gmail.com>
+
+	* operation/agentes/estado_ultimopaquete.php: Delete old comments.
+	
+	* general/login_page.php, logon_ok.php: Updated headers.
+	
+	* include/config.php: Set PHP errors disabled by default.
+
 2006-09-28  Sancho Lerena  <slerena@artica.es>
 
 	* languages/language_es_es.php: Fixed message "out of limits"
@@ -12,7 +55,7 @@
 	* pandora_console/pandoradb_data.sql: Fixed version number and
 	  build.
 	  
-2006-09-16 Raul Mateos  <raulofpandora@gmail.com>
+2006-09-23 Raul Mateos  <raulofpandora@gmail.com>
 
 	* godmode/agentes/configurar_agente.php: Comment DEBUG code added
 	last update.

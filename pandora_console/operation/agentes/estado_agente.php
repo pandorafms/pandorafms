@@ -48,7 +48,7 @@ if (comprueba_login() == 0) {
 	}
 
 	echo "<table border='0'><tr><td valign='middle'>";
-	echo "<select name='ag_group' onChange='javascript:this.form.submit();'>";
+	echo "<select name='ag_group' onChange='javascript:this.form.submit();' class='w130'>";
 
 	if ( $ag_group > 1 ){
 		echo "<option value='".$ag_group."'>".dame_nombre_grupo($ag_group);

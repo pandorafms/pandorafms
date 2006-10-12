@@ -1,3 +1,8 @@
+2006-10-12 dervitx <josepublico@jnavarro.net>
+
+	* pandora_server/bin/pandora_db.pm: added functions to support log
+	engine. (svn revisions 206:230)
+
 2006-09-29 Raul Mateos <raulofpandora@gmail.com>
 
 	* pandora_server/bin/*.pl and *.pm: Updated some comments from

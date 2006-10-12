@@ -239,16 +239,31 @@ Pandora::getPandoraInstallPath () {
 /**
  * Set the debug flag.
  *
- * If the flag is false output wil be generated.
+ * If the flag is true output wil be generated and XML files will not be deleted.
  *
  * @param dbg Turns the debug flag on/off.
  * 
+ * @see getPandoraDebug
  * @see pandoraDebug
  */
 void
 Pandora::setPandoraDebug  (bool dbg) {
         pandora_debug = dbg;
 }
+
+/**
+ * Get the debug flag value.
+ *
+ * If the flag is truee output wil be generated and XML files will not be deleted.
+ *
+ * @see setPandoraDebug
+ * @see pandoraDebug
+ */
+bool
+Pandora::getPandoraDebug  () {
+	return pandora_debug;
+}
+
 
 /**
  * Get the version of the agent.

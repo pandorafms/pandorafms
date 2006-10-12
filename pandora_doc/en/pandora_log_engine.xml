@@ -1,7 +1,56 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.4//EN"
+	  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
+<!ENTITY pandora_version "v1.2">
+<!ENTITY pandora "<emphasis>Pandora</emphasis>">
+]>
+
+<book lang="en">
+  <bookinfo>
+    <title>&pandora; &pandora_version;</title>
+    <graphic fileref="./images/pandora_logo.jpg" valign="bottom" align="center"/>
+    <copyright>
+      <year>2006</year>
+      <holder>
+	Artica Soluciones Tecnologicas S.L, Sancho Lerena, Esteban Sanchez y otros.
+      </holder>
+      <holder>
+	INDISEG S.L., Jose Navarro, Jonathan Barajas
+      </holder>
+    </copyright>
+    <date>12/10/2006</date>
+    <releaseinfo>&pandora_version;</releaseinfo>
+    <edition>First Edition(&pandora_version;)</edition>
+    <pubdate>
+    October 12th, 2006</pubdate>
+    <keywordset>
+      <keyword>pandora log engine</keyword>
+    </keywordset>
+    <legalnotice>
+      <para>
+	Permission is granted to copy, distribute and/or modify this
+	document under the terms of the GNU Free Documentation
+	License, Version 1.1 or any later version published by the
+	Free Software Foundation. A copy of the license is included
+	in the section entitled <quote>GNU Free Documentation
+	License</quote>.
+      </para>
+    </legalnotice>
+    <revhistory>
+      <revision>
+	<revnumber>0.1</revnumber>
+	<date>12 Oct 2006</date>
+	<revremark>First draft for review.</revremark>
+      </revision>
+    </revhistory>
+  </bookinfo>
+ 
 <chapter>
   <title>Documentation for developers: pandora log engine</title>
-  <sect1><title>Notes for this chapter</title>
+  
+  
+  <sect1>
+    <title>Notes for this chapter</title>
     <para>
       This chapter is documentation for developers of the Pandora project,
       and its main objective is to share information about the inners
@@ -9,11 +58,13 @@
     </para>
   </sect1>
   
-  <sect1><title>Introduction</title>
+  
+  <sect1>
+    <title>Introduction</title>
     <para>
       Till version 1.2 beta2, pandora was able to treat several types
       of data, including numeric, incremetal numeric and strings. However,
-      string data type lack some funcionalities for monitoring log files.
+      string data type lacks some funcionalities for monitoring log files.
     </para>
     <para>
       The aim of this pack of code, or development branch, is to strength
@@ -22,38 +73,43 @@
     </para>
     <para>
       In particular, the main objectives of this development branch are:
+    </para>
+    <itemizedlist>
         <listitem>
 	  <para>
-	    - pandora agents should be able to analize new lines of a
+	    pandora agents should be able to analize new lines of a
 	    text log file, and only the new ones
 	  </para>
 	</listitem>
         <listitem>
 	  <para>
-	    - pandora agents should treat each new line as a independent
+	    pandora agents should treat each new line as a independent
 	    element/data unit
 	  </para>
 	</listitem>
         <listitem>
 	  <para>
-	    - pandora agents need to be aware about rotation of log files
+	    pandora agents need to be aware about rotation of log files
 	    in order to not lose information
 	  </para>
 	</listitem>
         <listitem>
 	  <para>
-	    - alerts capabilities on string data types has to be improved
+	    alerts capabilities on string data types has to be improved
 	  </para>
 	</listitem>
         <listitem>
 	  <para>
-	    - graphic representation capabilites on string data modules has
+	    graphic representation capabilites on string data modules has
 	    to be improved
 	  </para>
 	</listitem>
-    </para>
+     </itemizedlist>
   </sect1>
-  <sect1><title>Architecture</title>
+  
+  
+  <sect1>
+    <title>Architecture</title>
     <para>
       Funcionalities described in the Introduction chapter can be implemented
       in several ways. The approach presented in this document propose that
@@ -74,7 +130,10 @@
       they are presented sepparated just for clarity in the development.
     </para>
   </sect1>
-  <sect1><title>pandora_agent_log.pl</title>
+  
+  
+  <sect1>
+    <title>pandora_agent_log.pl</title>
     <para>
       Some of the code used for this script, mainly the index files manegement,
       is based in the part of the code of pandora_server/bin/
@@ -82,55 +141,62 @@
     </para>
     <para>
       this script performs the following actions in the following order:
+    </para>
+    <itemizedlist>
         <listitem>
           <para>
-	    - load the pandora_agent_log.conf configuration file, that is
+	    load the pandora_agent_log.conf configuration file, that is
 	    described later in this chapter
 	  </para>
         </listitem>
         <listitem>
           <para>
-	    - for each log file to be monitored loops through the next steps
+	    for each log file to be monitored loops through the next steps
 	  </para>
         </listitem>
         <listitem>
           <para>
-	    - loads or creates an index file. Each index file stores 
+	    loads or creates an index file. Each index file stores 
 	    information regarding the state of the log file in the last 
 	    execution of the agent. Indexes are stored in $PANDORA_HOME
 	  </para>
         </listitem>
         <listitem>
           <para>
-	    - the script make some checks over the log file to see if it has
-	    been rewritten and/or rotated
+	    the script make some checks over the log file to see if it has
+	    been rewritten and/or rotated. If it has been rotated, rotated
+	    log file is processed first to recover last lines.
 	  </para>
         </listitem>
         <listitem>
           <para>
-	    - loops for the NEW lines of the log (since last agent's 
+	    loops for the NEW lines of the log (since last agent's 
 	    execution). For each line, a data file in data_out is created.
 	  </para>
         </listitem>
         <listitem>
           <para>
-	    - each module associated with that log file is executed against
+	    each module associated with that log file is executed against
 	    the new log line, and data is written in the corresponding data
 	    file
 	  </para>
         </listitem>
         <listitem>
           <para>
-	    - checksum is performed on data files
+	    checksum is performed on data files
 	  </para>
         </listitem>
-    </para>
+    </itemizedlist>
   </sect1>
-  <sect1><title>pandora_agent_log.conf</title>
+  
+  
+  <sect1>
+    <title>pandora_agent_log.conf</title>
     <para>
       the structure of this file is the same as the structure of 
       pandora_agent.conf, but some extensions has been added.
     </para>
+    <itemizedlist>
     <listitem>
       <para>
         module_log [LOG FILE] :  only the modules with "module_log" are 
@@ -150,6 +216,15 @@
     </listitem>
     <listitem>
       <para>
+      	module_log_rotated [LOG FILE] :  tells the agent what wil be the name
+      	of the rotated log file. Everytime that the agent detects a rotation
+      	in the main log file, it will analize the last lines of [LOG FILE]. 
+      	You don't need to put it in every module associated with a log file:
+      	in one is enough.
+      </para>	
+    </listitem>
+    <listitem>
+      <para>
         module_exec [EXPR]  :  expression to be executed on every new line for
 	this module. For now, EXPR is a perl expression. You can use the 
 	variable $LINE to represent the new log line. F.ex., 
@@ -157,13 +232,145 @@
 	lines before be stored in pandora database.
       </para>
     </listitem>
-  </sect1>
-  <sect1><title>Example</title>
-  
-  </sect1>
-  <sect1><title>todo list</title>
     <listitem>
-      ideas?
+      <para>
+        module_store_all_data  :   the default behaviour of pandora is not to
+        store in the database repeated values captures by the agent. This 
+        options override that behaviour, forcing pandora to store ALL data.
+        NOTE:  please note that this parameter can be used with all kind of
+        modules, not just module_log ones.
+      </para>
     </listitem>
+    </itemizedlist>
   </sect1>
+  
+  
+  <sect1>
+  <title>alert configuration on generic_data_string modules</title>
+  <para>
+  From Pandora 1.2 beta 3, it is going to be possible to configure alerts on
+  generic_data_string modules using perl regular expressions.
+  </para>
+  <para>
+  NOTE:  please note that, although this feature has been development in this
+  development branch, it can be used in all generic_data_string modules, not
+  only in the module_log ones.
+  </para>
+  <para>
+  For the configuration of this feature, a new field has been added to the 
+  "Alert association form" of the pandora console: "Perl expression". A 
+  succesful matching of the generic_data_string data will trigger an alert.
+  </para>
+  <para>
+  Regular expressions has to have Perl syntax, for example:
+  </para>
+  <itemizedlist>
+    <listitem>
+      <para>word : matches the word "word"</para>
+    </listitem>
+    <listitem>
+      <para>^# : matches lines beginning with '#'</para>
+    </listitem>
+    <listitem>
+      <para>(\d{1,3}\.){3}\d{1,3} :  matches IP addresses</para>
+    </listitem>
+  </itemizedlist>
+  </sect1>
+  
+  
+  <sect1>
+    <title>Example</title>
+    <para>Next pandora_agent_log.conf performs the following actions:</para>
+    <itemizedlist>
+      <listitem>
+        <para>
+      	monitors log file /tmp/log1.log with two modules. First one, returns 
+      	the line, and second one makes a simple substitution.
+      	</para>
+      </listitem>
+    </itemizedlist> 
+    <itemizedlist>
+      <listitem>
+        <para>
+      	all log lines of /tmp/log1.log are stored and displayed in database,
+      	even repeated and consecutives ones.
+      	</para>
+      </listitem>
+    </itemizedlist> 
+    <itemizedlist>
+      <listitem>
+        <para>
+      	for /tmp/log1.log, a rotated file is configured, /tmp/log1.log.0
+      	</para>
+      </listitem>
+    </itemizedlist> 
+    <itemizedlist>
+      <listitem>
+        <para>
+      	/tmp/log2.log log file is also monitored. A generic_data module is 
+      	configured.
+      	</para>
+      </listitem>
+    </itemizedlist> 
+    <itemizedlist>
+      <listitem>
+        <para>
+      	for /tmp/log2.log, a fixed timestamp is forced, so all data is 
+      	registered in database as captured '2006/9/25 1:1:1'
+      	</para>
+      </listitem>
+    </itemizedlist> 
+    
+    <sect2>
+      <title>pandora_agent_log.conf, an example</title>
+
+    
+<para>module_begin</para>
+<para>module_name log1</para>
+<para>module_descripcion log 1 log file</para>
+<para>module_log /tmp/log1.log</para>
+<para>module_log_rotated /tmp/log1.log.0</para>
+<para>module_store_all_data</para>
+<para>module_type generic_data_string</para>
+<para>module_exec return $LINE</para>
+<para>module_end</para>
+<para></para>
+<para>module_begin</para>
+<para>module_name log1_subst</para>
+<para>module_descripcion simple substitution in log 1</para>
+<para>module_log /tmp/log1.log</para>
+<para>module_type generic_data_string</para>
+<para>module_exec $LINE =~ s/o/X/g; return $LINE</para>
+<para>module_end</para>
+<para></para>
+<para>module_begin</para>
+<para>module_name log2</para>
+<para>module_description log2 - generic_data</para>
+<para>module_log /tmp/log2.log</para>
+<para>module_type generic_data</para>
+<para>module_exec return $LINE;</para>
+<para>module_end</para>
+<para></para>
+<para>module_begin</para>
+<para>module_log /tmp/log2.log</para>
+<para>module_log_timestamp</para>
+<para>module_exec return '2006/9/25 1:1:1';</para>
+<para>module_end</para>
+
+    </sect2>     
+     
+  </sect1>
+  
+  
+  <sect1>
+    <title>todo list</title>
+    <para>any ideas?</para>
+  </sect1>
+  
+  
 </chapter>
+
+
+
+ 
+</book>

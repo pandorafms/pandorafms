@@ -2,6 +2,10 @@
 
 	* installer/Pandora Windows Agent-1.2 Beta3-Setup.exe: Updated
 	installer to include last binary file.
+	
+	* installer/logo.png: New File.
+	
+	* installer/logo.gif: Delete file.
 
 2006-10-06  Esteban Sanchez  <estebans@artica.es>
 

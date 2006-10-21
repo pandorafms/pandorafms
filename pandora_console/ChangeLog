@@ -1,3 +1,10 @@
+2006-10-21 Sancho Lerena <slerena@artica.es>
+
+        * include/functions.php: Change function no_permission () to show 
+          noaccess.gif image correctly, due a path problem.
+
+        * general/noaccess.php: Change code to show noaccess.gif correctly.
+
 2006-10-09 Raul Mateos  <raulofpandora@gmail.com>
 
 	* operation/agentes/estado_alertas.php: Add code for showing 'Never'

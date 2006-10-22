@@ -1,10 +1,23 @@
 <?php
 
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raúl Mateos <raulofpandora@gmail.com>, 2006
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
 include ("../include/config.php");
@@ -35,232 +48,508 @@ function dame_fecha_grafico($mh){ // Devuelve fecha formateada en funcion de un 
 	return $m;
 }
 
-function grafico_modulo_sparse($id_agente_modulo, $periodo, $intervalo, $etiqueta, $color){
+function dame_fecha_grafico_timestamp ($timestamp) {  return date('d/m H:i', $timestamp); }
+
+function mysql_date ($timestamp) { return date('Y-m-d H:i:s', $timestamp); } 
+
+function mysql_time ($date) {  
+	// strptime is only for PHP 5  >:/
+	// chapuza va!
+
+	$a1 = explode(" ", $date);
+	$a2 = explode("-", $a1[0]);
+	$a3 = explode(":", $a1[1]);
+	
+	return mktime ( $a3[0], 
+				$a3[1],
+				$a3[2], 
+				$a2[1], 
+				$a2[2],
+				$a2[0] ); 
+}
+
+function dame_id_agente_agentemodulo($id_agente_modulo){
+        //require("config.php");
+        $query1="SELECT * FROM tagente_modulo WHERE id_agente_modulo = ".$id_agente_modulo;
+        $resq1=mysql_query($query1);
+        if ($rowdup=mysql_fetch_array($resq1))
+                return $rowdup["id_agente"];
+        else
+                return NULL;
+        
+}
+
+
+
+function gms_get_table_id ($abc_o, $abc_f, $period, $type, $id_agente_modulo)  {
+
+	// this function checks if the temporal table associated with the $hash
+	// exists in the tmp_fgraph_tables table
+
+$sql = "SELECT * from tmp_fgraph_tables where 
+					id_agente_modulo='" . $id_agente_modulo . "'  and 
+					type='" . $type . "' and 
+					period='" . $period . "' ;";
+	if (!$result=mysql_query($sql)){
+		if ( mysql_error() == "Table 'pandora.tmp_fgraph_tables' doesn't exist"  ) { 
+			// if the table does not exist, let's create it
+			// but, first, we remove any other temporal table
+			$result=mysql_query( "show tables;");
+			 while ($row=mysql_fetch_row($result)) { 
+				if (strpos($row[0], 'tmp_fgraph')!==FALSE) { mysql_query ('drop table ' . $row[0] . ';');  } 
+			}
+			
+			// tmp_fgraph_tables should not be a memory table. It is now just for
+			// development reasons, but should be included in the stable version
+			// in pandoradb.sql
+			mysql_query("
+				CREATE TABLE `pandora`.`tmp_fgraph_tables` (
+				`id` integer  NOT NULL  AUTO_INCREMENT,
+				`abc_o` INTEGER UNSIGNED  NOT NULL ,
+				`abc_f` INTEGER UNSIGNED  NOT NULL ,
+				`period` INTEGER UNSIGNED  NOT NULL ,
+				`type` integer  NOT NULL ,
+				`id_agente_modulo` integer  NOT NULL ,
+				`last_modification` INTEGER UNSIGNED NOT NULL,
+				PRIMARY KEY(`id`)
+				)
+				ENGINE = MEMORY
+				COMMENT = 'temporals tables';
+				");
+			// now, other temporal tables must be removed
+			
+			return 0;
+		 }
+	} else {
+		$max_useful_abc=0;		// useful stored values to build this table
+		$id_to_return=0;		// chosen table to be returned by this function
+		while ($row=mysql_fetch_array($result) ) {
+			// let's see if this table has info of the interval requested
+			// That's when useful_abc > 0, where
+			$useful_abc = min($abc_f, $row['abc_f']) - max($abc_o, $row['abc_o']);
+			
+			if ( $useful_abc < 0 )  {
+				// in this case, the stored table is useless, so we can delete it if it has not been 
+				// used recently (1 hour)
+				/*if ( (time() - $row['last_modification']) > 3600 ) {
+					mysql_query( " DELETE FROM tmp_fgraph_tables WHERE id='" . $row['id'] . "' ;
+									DROP TABLE tmp_fgraph_" . $row['id'] . " ; " );
+				}*/
+			} else {
+				// ok! this table has values that we can reuse to build the graph
+				// but I'm going to remember it only if it is the best we have seen so far
+				$id_to_return = ( $useful_abc > $max_useful_abc )?$row['id']:$id_to_return;
+				$max_useful_abc = ( $useful_abc > $max_useful_abc )?$useful_abc:$max_useful_abc;
+			}
+		}
+	}
+
+// if there is no id_to_return, let's see if the tmp tables need to be flushed
+// This happens when pandora startup and there are a lot of empty tmp tables that must be removed
+// This must to be replaced by other more robust 'clean-up' function or service
+if (!$id_to_return) {
+	// is tmp_fgraph_tables empty?
+	$result = mysql_query('select count(*) from tmp_fgraph_tables;');
+	$row=mysql_fetch_array($result);
+	if (!$row[0]) { 
+			// yes?!?   let's flush!
+			$result=mysql_query( "show tables;");
+			 while ($row=mysql_fetch_row($result)) { 
+				if (strpos($row[0], 'tmp_fgraph')!==FALSE and strpos($row[0], 'tables')===FALSE) 
+						{ mysql_query ('drop table ' . $row[0] . ';');  } 
+			}
+	} 
+}
+
+return $id_to_return ;
+
+}
+
+function gms_create_tmp_table ($abc_o, $abc_f, $period, $type, $id_agente_modulo, $number_ord) {
+	
+	// creates the temporal table for the graph associated with $hash.
+	// returns the id assigned in tmp_fgraph_tables
+	// the table will have one column for abscises and $number_ord for ordenates
+	// columns for ordenates.
+	
+	
+	//  registers the table in tmp_fgraph_table
+	// I skip to check the existance of tmp_fgraph_table in sake of performance
+	$sql = "INSERT INTO tmp_fgraph_tables ( abc_o, abc_f, period, type, id_agente_modulo , last_modification)
+			VALUES ('$abc_o', '$abc_f', '$period', '$type', '$id_agente_modulo', '" . time() . "') ; ";
+	
+	if (!mysql_query($sql)) { return 0; }
+	
+	 if ( !$id = gms_get_table_id ($abc_o, $abc_f, $period, $type, $id_agente_modulo) ) { return 0;}
+	
+	// creates the table
+	$sql = "	CREATE TABLE `pandora`.`tmp_fgraph_" . $id ."` (
+  		`abc` INTEGER UNSIGNED NOT NULL,";
+  		
+  	for ($cc=1; $cc<=($number_ord); $cc++) {
+  		$sql = $sql . "`ord". $cc . "` FLOAT DEFAULT NULL ,";
+  	}
+  	
+  	$sql = $sql . "PRIMARY KEY(`abc`)
+				)
+				ENGINE = MEMORY;
+				";
+
+	if (!mysql_query($sql)) { return 0; }
+
+	return $id;
+
+}
+
+
+function &gms_load_table ($graph_id) {
+
+	// takes a graph id as argument, loads the corresponding table from the data base
+	// to memory and returns an array.
+	
+	$sql = "SELECT * FROM tmp_fgraph_$graph_id ORDER BY abc;";
+	if ($result=mysql_query($sql)){
+		$cc = 0;
+		while ( $row=mysql_fetch_row($result) ) {
+			$table[$cc++] = $row;
+		}
+	} else { return NULL ; }
+	
+	return $table;
+}
+
+function &gms_load_interval ($graph_id) {
+
+	// takes a graph id as argument and returns the intervals (like gms_get_interval)
+	
+	$sql = "SELECT * FROM tmp_fgraph_tables where id=$graph_id;";
+
+	if ($result=mysql_query($sql) and $row = mysql_fetch_array($result) ){
+
+		$intervals =& gms_get_intervals ( $row['abc_o'], $row['abc_f'], $row['period'] );
+		return $intervals;	
+		
+	} else {  return NULL; }
+}
+
+function &gms_get_intervals ( $abc_i, $abc_f, $abc_per ) {
+	// given an initial, final and interval abcises, this function returns an array (by reference)
+	// with the initial points of every interval, calculated in such a way that:
+	//   abc_n = int( abc_i / abc_per ) + (n+1) abc_per
+
+	if (!$abc_per) { return ; }  // Notice: Only variable references should be returned by reference
+	$abc_0 = intval ( $abc_i / $abc_per ) * $abc_per ;
+	$n_total = intval (($abc_f - $abc_i)/$abc_per) +1;
+	for ($cc=0; $cc < $n_total; $cc++) {
+		$result[$cc] = $abc_0 + $cc * $abc_per;
+	}
+
+	return $result;
+}
+
+
+function gms_generate_MAM ($id, $intervals_cc, $period, $abc_o_cc, $abc_f_cc, $tnow) {
+
+				// this is specific of MAM graphs
+				
+				// periodicity of the module
+				$module_period = give_moduleinterval($id);
+				
+				// get data of the period + 1 point before + 1 point after
+				$sql = 	"(SELECT timestamp, datos FROM tagente_datos 
+						WHERE id_agente_modulo='$id' AND
+						timestamp < '" . mysql_date($intervals_cc) . "' 
+						ORDER BY timestamp DESC LIMIT 1 ) " .
+						" UNION " .
+						"(SELECT timestamp, datos FROM tagente_datos 
+						WHERE id_agente_modulo='$id' AND
+						timestamp > '" . mysql_date($intervals_cc) . "' AND
+						timestamp < '" . mysql_date( $intervals_cc + $period )  . "' ) " .
+						"ORDER BY timestamp DESC; ";
+				if ($result=mysql_query($sql) ) {	// if (!  ...   return ;
+							// note that Pandora does not distinguish here between measuring the same
+							// value and not measuring due to any error.
+							// NOTE: should i check if the agent was ok? or I should suggest to use special values
+							// like NULL to indicate a failure of the agent? ;
+					
+					unset($max, $min, $last_date);
+					$avg = 0;
+					$n_measures_total = 0;
+					
+					while ($row = mysql_fetch_array($result)) {
+						
+						$row_timestamp = mysql_time( $row['timestamp'] );
+						$row_timestamp = ($row_timestamp<$abc_o_cc)?$abc_o_cc:$row_timestamp;
+						$last_date = ( isset($last_date))?$last_date:min($abc_f_cc, $tnow);
+						
+						if ( $row_timestamp < $abc_f_cc ) {
+							$incr_time = $last_date - $row_timestamp; 	// always >= 0
+							$n_measures = ($incr_time / $module_period) ;  // yes, it is a float
+							$n_measures_total += $n_measures;
+							
+							$max = ( isset($max) and $row['datos']<$max )?$max:$row['datos'];
+							$min = ( isset ($min) and $min<$row['datos'] )?$min:$row['datos'];
+							$avg += $row['datos'] * $n_measures ;  // divided by $n_measures_total later
+						
+							$last_date = $row_timestamp;
+						}
+					}
+					$avg = ($n_measures_total>0)?($avg/$n_measures_total):NULL;
+					// finito
+					return (isset($max))?array ($abc_o_cc, $max, $avg, $min):NULL;
+				}
+				return NULL;
+}
+
+
+function grafico_modulo_sparse(	$id_agente_modulo,			// array with modules id to be represented
+								$label,						// label of the graph
+								$graph_type, 				// type of graph to be represented
+								$abc_o, $abc_int, 			// origin abcise of graph and abscise interval
+															// $abc_f - $abc_o = $abc_int
+								$period,						// resolution of abc
+								$ord_o, $ord_int,				// origin ordenade and interval
+								$normalization_mode=0,		// defaults to 'auto'
+								$zoom=1, $draw_events=0){
 	include ("../include/config.php");
-	include ("jpgraph/jpgraph.php");
-	include ("jpgraph/jpgraph_line.php");
 	require ("../include/languages/language_".$language_code.".php");
 
-	// WHere periodo is lapse of time in seconds that we want to show in a graph, this could be a week, 1 hour, a day, etc
-	$fechatope = dame_fecha($periodo);	// Max old-date limit
-	$horasint = $periodo / $intervalo;	// Each intervalo is $horasint seconds length
-	$nombre_agente = dame_nombre_agente_agentemodulo($id_agente_modulo);
-	$nombre_modulo = dame_nombre_modulo_agentemodulo($id_agente_modulo);
-
-	// Para crear las graficas vamos a crear un array de Ax4 elementos, donde
-	// A es el numero de posiciones diferentes en la grafica (30 para un mes, 7 para una semana, etc)
-	// y los 4 valores en el ejeY serian los detallados a continuacion:
-	// Rellenamos la tabla con un solo select, y los calculos se hacen todos sobre memoria
-	// esto acelera el tiempo de calculo al maximo, aunque complica el algoritmo :-)
+	$tnow = time();
+	$abc_f = $abc_o + $abc_int;
+	$intervals =& gms_get_intervals($abc_o, $abc_f, $period);
 	
-	// Where
-	// intervalo - This is the number of "rows" we are divided the time to fill data.
-	//             more interval, more resolution, and slower.
-	
-	// periodo - Gap of time, in seconds. This is now to (now-periodo) secs
-
-	// Init tables
-	for ($x = 0; $x <= $intervalo; $x++) {
-		$valores[$x][0] = 0; // [0] Value (counter)
-		$valores[$x][2] = dame_fecha($horasint * $x); // [2] Rango superior de fecha para ese rango
-		$valores[$x][3] = dame_fecha($horasint*($x+1)); // [3] Rango inferior de fecha para ese rango
-		$etiq_base[] = dame_fecha_grafico($horasint * $x);
-		$valores_min[$x]= 0; $valores_max[$x]=0;
-	}
-
-	// Get the last value, the last known value (more recent)
-	$sql1 = "SELECT * FROM tagente_datos WHERE id_agente_modulo = ".$id_agente_modulo."  ORDER BY timestamp DESC limit 1";
-	if ($result=mysql_query($sql1)){
-		$row=mysql_fetch_array($result);
-		$old_value=$row["datos"];
-		$old_date = $row["timestamp"];
+	if (is_array($id_agente_modulo)) {
+		$id_array = $id_agente_modulo;
 	} else {
-		$old_value=0;
+		$id_array = array( $id_agente_modulo );
 	}
+	
+	foreach ( $id_array as $id ) {
+		
+		$agent_name = dame_nombre_agente_agentemodulo($id_agente_modulo);
+		$module_name = dame_nombre_modulo_agentemodulo($id_agente_modulo);
+		$label = "          $label - $agent_name / $module_name";
+		
+		if (! $graph_id[$id]  = gms_get_table_id ( $abc_o, $abc_f, $period, $graph_type, $id ) ) {
+			$graph_id[$id] = gms_create_tmp_table($abc_o, $abc_f, $period, $graph_type, $id, '3');
+			}
+		
+		$table =& gms_load_table ($graph_id[$id]);
+		if ($table) {
+			$table_n_ord = count($table[0]) -1 ;
+			$table_intervals =& gms_load_interval ($graph_id[$id]);
+		} 
+				
+		for ($cc=0; $cc < count($intervals); $cc++) {
+			// limits of the interval cc. Remember that $cc=0 is the older
+			$abc_o_cc = $intervals[$cc];
+			$abc_f_cc =  $intervals[$cc] + $period;
 
-	// Get the last known date (most near to now) for lastcontact in this module
-	$sql1 = "SELECT * FROM tagente_estado WHERE id_agente_modulo = ".$id_agente_modulo;
-	if ($result=mysql_query($sql1)){
-		$row=mysql_fetch_array($result);
-		$old_date = $row["timestamp"];
-	}
-
-	// Get the last first date (most far to now) for lastcontact in this module
-	// there is no data far away, so value must be 0 before this date
-	$sql1 = "SELECT * FROM tagente_datos WHERE id_agente_modulo = ".$id_agente_modulo." order by timestamp asc limit 1";
-	if ($result=mysql_query($sql1)){
-		$row=mysql_fetch_array($result);
-		$first_date = $row["timestamp"];
-	}
-
-	// Get the oldest known date just out of lower bound for global interval
-	$sql1 = "SELECT * FROM tagente_datos WHERE id_agente_modulo = ".$id_agente_modulo." and timestamp < '".$fechatope."' order by timestamp desc limit 1";
-	if ($result=mysql_query($sql1)){
-		$row=mysql_fetch_array($result);
-		$old_date_interval = $row["timestamp"];
-		$old_data_interval = $row["datos"];
-		$old_data_used = 0;
-	}
-
-	for ($i = $intervalo; $i >= 0; $i--){
-		$sql1 = "SELECT AVG(datos),MAX(datos),MIN(datos) FROM tagente_datos WHERE id_agente_modulo = ".$id_agente_modulo." and timestamp >= '".$valores[$i][3]."' and timestamp < '".$valores[$i][2]."'";
-		$sql2 = "SELECT datos FROM tagente_datos WHERE id_agente_modulo = ".$id_agente_modulo." and timestamp >= '".$valores[$i][3]."' and timestamp < '".$valores[$i][2]."' order by timestamp desc limit 1";
-		$result2=mysql_query($sql2);
-		$result=mysql_query($sql1);
-		$row=mysql_fetch_array($result);
-		$row2=mysql_fetch_array($result2);
-#echo "AVG  MAX  MIN (old_value)  ".$valores[$i][3]."<br>";
-#echo $row[0]."  ".$row[1]."  ".$row[2]."  old-".$old_value." ".$old_date;
-#echo "<br><br>";
-		if ($row[0] != ""){		
-			$data_item=$row[0];
-			$valores_max[$i] = $row[1];
-			$valores_min[$i] = $row[2];
-			if ($data_item == ""){
-				$data_item = $old_value;
-				$valores_min[$i] = $old_value;
-				$valores_max[$i] = $old_value;
+			$key = (isset($table_intervals))?array_search($intervals[$cc], $table_intervals):FALSE; 
+			if ( ( ($key === FALSE)  or  $cc == (count($intervals)-1)) or !$table_intervals  ) {
+				if ($results = gms_generate_MAM ($id, $intervals[$cc], $period, $abc_o_cc, $abc_f_cc, $tnow) ) {
+					$xdata[$cc] =  $results[0] ; 
+					for ($nn = 1; $nn < count($results) ; $nn++ ) {
+						$ydata[$nn-1][$cc] = $results[$nn] ;
+					}
+					$sql = "INSERT INTO tmp_fgraph_" . $graph_id[$id] . " VALUES ( " . $xdata[$cc]  ;
+						for ($nn = 0; $nn < count($ydata); $nn++) { 
+							$sql .=  ", " . $ydata[$nn][$cc] ;
+						}
+						$sql .=  " ) ";
+						$sql .= " ON DUPLICATE KEY UPDATE  "  ;
+						for ($nn = 0; $nn < count($ydata); $nn++) { 
+							$sql .=  " ord" .  ($nn+1) . " = '" . $ydata[$nn][$cc] . "'" ;
+							$sql .= ( $nn == (count($ydata) -1 ))?"":", ";
+						}
+						$sql .=  " ; ";
+					if (!$result=mysql_query($sql)){
+					print mysql_error(); }
+				} 
 			} else {
-				$old_value = $row2[0]; // Last data
-				#$old_date = $valores[$i][3];
+				if ($table) {
+					//print "<br>$cc - $key - " . $table[$key][0];
+					$xdata[$cc] =  $table[$key][0] ;
+					for ($nn = 1; $nn <= $table_n_ord ; $nn++ ) {
+						$ydata[$nn-1][$cc] = $table[$key][$nn] ;
+					}
+				}
 			}
-			$old_data_used =1; 	// Dont use "previous value for this interval" anymore 				// if a real value its in database.
-		} else {
-			// Interval more recent that last module -contact-
-			if ((strtotime($old_date) < strtotime($valores[$i][2]))){
-                                $data_item = 0;
-                                $valores_min[$i] = 0;
-                                $valores_max[$i] = 0;
-			// Get data from lower limit of this interval
-                        } elseif ((isset($old_date_interval)) AND (strtotime($old_date_interval) < strtotime($valores[$i][2])) AND ($old_data_used == 0)) {
-                                $data_item = $old_data_interval;
-			        $valores_min[$i] = $data_item;
-                                $valores_max[$i] = $data_item;
-			} elseif ( strtotime($valores[$i][2]) < strtotime($first_date)){
-				$data_item = 0;
-                                $valores_min[$i] = 0;
-                                $valores_max[$i] = 0;
-			}  else {
-                                $data_item = $old_value;
-                                $valores_min[$i] = $old_value;
-                                $valores_max[$i] = $old_value;
-                        }
 		}
-
-		$valores[$i][0]=$data_item;
+		
+		$valor_maximo = max($ydata[0]);		
+	
+		$Graph_param = array (
+			'title' => $label,
+			'size_x'	=> intval(550 * $zoom) ,
+			'size_y'	=> intval(220 * $zoom) ,
+			'id_agente_modulo' => $id ,
+			'id_agente' => dame_agente_id($agent_name),
+			'valor_maximo'	=> $valor_maximo ,
+			'periodo'	=> $abc_int/60,
+			'draw_events'	=> $draw_events
+			);
+		
+		modulo_grafico_draw ( 	$Graph_param, 
+					$xdata, 
+					array('Maximum','Average','Minimum'),
+					array (	$ydata[0], $ydata[1], $ydata[2] ), 
+					$intervals[0],
+					$intervals[count($intervals)-1] + $period
+					); 
 	}
+}
+	
+	
+function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_name, $MGD_data, $MGD_xo="", $MGD_xf="" ) {	
+	
+	// draws the graph corresponding to the data of a module
+	// arguments:
+	
+	// $MGD_param = array (
+	//	'title' 	=> title ,
+	//	'size_x'	=> size of the graphic ,
+	//	'size_y'	=> ,
+	//	'id_agente_modulo' => agent-module id ,
+	//	'id_agente'	=> agent id ,
+	// 	'valor_maximo'	=> maximum value for y axis ,
+	//	'periodo'	=> interval ,
+	//	'draw_events'	=> draws events if equals to 1
+	//	);
 
-	$sql1 = "SELECT MAX(datos) FROM tagente_datos WHERE id_agente_modulo = ".$id_agente_modulo." AND timestamp > '".$valores[0][2]."' AND timestamp > '".$valores[$intervalo][3]."'";
+	// $MGD_labels = array ( $etiq_base )    // labels in numeric timestamp format
+
+	// $MGD_data_name = array ( name1, name2, ...  )    // name of the datasets (for the legend only)
+
+	// $MGD_data = array ( array(data1), array(data2), ... );	// data to be represented
+	
+	// $MGD_event_data = array ( (notvalidated) &array(data_x), (validated) => &array(data_x) );
+		
+	include ("../include/config.php");
+	require ("../include/languages/language_".$language_code.".php");
+	include 'Image/Graph.php';
+		
+	// initializing parameters
+		
+	if (!isset( $MGD_param['title'] )) { $MGD_param['title'] = '- no title -'; }
+	if (!isset( $MGD_param['size_x'] )) { $MGD_param['size_x'] = 550; }
+	if (!isset( $MGD_param['size_y'] )) { $MGD_param['size_y'] = 220; }
+		
+	$count_datasets = count( $MGD_data_name );    // number of datasets to represent
+		
+	// creating the graph with PEAR Image_Graph
+	$Graph =& Image_Graph::factory('graph', 
+		array( 	$MGD_param['size_x'], 
+			$MGD_param['size_y']
+			)
+		); 
+	$Font =& $Graph->addNew('font', $config_fontpath);
+	$Font->setSize(8);
+	$Graph->setFont($Font);
+	$Graph->add(
+		Image_Graph::vertical(
+		 	$Title = Image_Graph::factory('title', array ($MGD_param['title'] , 10)),
+			Image_Graph::horizontal(
+				$Plotarea = Image_Graph::factory('plotarea','axis'),
+				$Legend = Image_Graph::factory('legend'),
+				80
+				),
+			5
+			)
+		);
+
+	$Title->setAlignment(IMAGE_GRAPH_ALIGN_LEFT);
+	
+ 	$Grid =& $Plotarea->addNew('line_grid', false, IMAGE_GRAPH_AXIS_X);
+	$Grid->setBackgroundColor('silver@0.3');
+	$Grid->setBorderColor('black');
+	$Plotarea->addNew('line_grid', false, IMAGE_GRAPH_AXIS_Y); 
+	// the next grid is only necessary for drawing the right black line of the PlotArea
+	$Grid_sec =& $Plotarea->addNew('line_grid', IMAGE_GRAPH_AXIS_Y_SECONDARY); 
+	$Grid_sec->setBorderColor('black');
+	
+	// now, datasets are created ...
+	for ($cc=0; $cc<$count_datasets; $cc++) {
+		$Datasets[$cc] = Image_Graph::factory('dataset') ;
+		$Datasets[$cc]->setName( $MGD_data_name[$cc] );
+		}
+	
+	$Legend->setPlotarea($Plotarea);
+	
+	// ... and populated with data ...
+	// next line suposes that all $MGD_data have the same number of points
+	for ($cc=0; $cc<count($MGD_data[0]); $cc++) {     
+		$tdate= $MGD_labels[$cc];
+		for ($dd=0; $dd<$count_datasets; $dd++) {
+			$Datasets[$dd]->addPoint($tdate, $MGD_data[$dd][$cc]);
+			}
+		}
+	
+	// ... and added to the Graph
+	$Plot =& $Plotarea->addNew('Image_Graph_Plot_Area', array($Datasets)); 
+	
+	// some other properties of the Graph
+	$FillArray =& Image_Graph::factory('Image_Graph_Fill_Array');
+	$FillArray->addColor('blue');
+	$FillArray->addColor('orange');
+	$FillArray->addColor('yellow');
+	$Plot->setFillStyle($FillArray); 
+	
+	$AxisX =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_X);
+	$AxisX->setLabelInterval($MGD_param['periodo']*60/10);
+	if ($MGD_xf!="") { $AxisX->forceMaximum($MGD_xf); }
+	if ($MGD_xo!="") { $AxisX->forceMinimum($MGD_xo);}
+ 	$AxisX->setFontAngle(45);
+ 	$AxisX->setDataPreprocessor(Image_Graph::factory('Image_Graph_DataPreprocessor_Function', 'dame_fecha_grafico_timestamp')); 
+	$AxisY =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
+	$AxisY->forceMaximum(ceil($MGD_param['valor_maximo'] / 4) + $MGD_param['valor_maximo']);
+	
+	// let's draw the alerts zones
+	$sql1 = "SELECT dis_min, dis_max FROM talerta_agente_modulo WHERE id_agente_modulo = ".$MGD_param['id_agente_modulo'];
 	if ($result=mysql_query($sql1)){
-		$row=mysql_fetch_array($result);
-		$valor_maximo=$row[0];
-		if ($valor_maximo == ""){
-				$valor_maximo = 0;
-			}
-	} else {
-		$valor_maximo=0;
+	while ($row=mysql_fetch_array($result)) {
+		$Marker_alertzone =& $Plotarea->addNew('Image_Graph_Axis_Marker_Area', IMAGE_GRAPH_AXIS_Y);
+		$Marker_alertzone->setFillColor('green@0.2');
+		$Marker_alertzone->setLowerBound($row["dis_min"]);
+		$Marker_alertzone->setUpperBound($row["dis_max"]);
+		}
 	}
+		
+	// if there are some events to draw let's scatter them!
+	if ($MGD_param['draw_events']) {
 
-	// Invert data order in graph
-	if ($config_graph_order == 1){
-		$valor_maximo=0;$valor_minimo=0;
-		for ($x = 0; $x <=$intervalo; $x++) {
-			$grafica[$x]=$valores[$x][0];
-			if ($valores_max[$x] > $valor_maximo){
-				$valor_maximo = $valores_max[$x];
-			}
-			if ($valores_min[$x] < $valor_minimo){
-				$valor_minimo = $valores_min[$x];
+		$module_name = dame_nombre_modulo_agentemodulo($MGD_param['id_agente_modulo']);
+		
+		for ($cc=1; $cc>=0; $cc--) {   // one dataset for each state of events (validated and not validated)
+			$Dataset_events =& Image_Graph::factory('dataset');
+			$Dataset_events->setName($cc?'Validated events':'Not valid. events');
+			
+			// careful here! next sql sentence looks for the module by name in the "evento" field
+			// tevento database table SHOULD have module_id !!
+			$sql1 = "SELECT id_evento, timestamp FROM tevento WHERE id_agente = ". $MGD_param['id_agente'] ." and timestamp > '" .
+					 mysql_date($MGD_xo) . "'  and timestamp < '" .  mysql_date($MGD_xf) . "' and evento like '%" . $module_name . "%' ".
+					 " and estado = '$cc'  order by timestamp ASC;";
+					 
+			// we populate two arrays with validated and no validated events of the module
+			if ($result=mysql_query($sql1)){
+				while ($row=mysql_fetch_array($result)) {
+					$Dataset_events->addPoint(
+						mysql_time($row['timestamp']),
+						ceil($MGD_param['valor_maximo'] / 7) + $MGD_param['valor_maximo']);
+				}
+				$Plot =& $Plotarea->addNew('Plot_Impulse', array(&$Dataset_events));
+				$Plot->setLineColor($cc?'green@0.5':'red@0.5'); 
+				$Marker_event =& Image_Graph::factory('Image_Graph_Marker_Diamond');
+				$Plot->setMarker($Marker_event);
+				$Marker_event->setFillColor($cc?'green@0.5':'red@0.5');
+				$Marker_event->setLineColor('black');
 			}
 		}
-	} else {
-		// Invert data
-		$valor_maximo=0;$valor_minimo=0;
-		for ($x = $intervalo; $x>=0; $x--) {
-			$grafica[$x]=$valores[$intervalo-$x][0];
-			$valores_max2[$x] = $valores_max[$intervalo-$x];
-			$valores_min2[$x] = $valores_min[$intervalo-$x];
-			if ($valores_max[$x] > $valor_maximo){
-				$valor_maximo = $valores_max[$x];
-			}
-			if ($valores_min[$x] < $valor_minimo){
-				$valor_minimo = $valores_min[$x] - 50;
-			}
-			$etiq_base2[$intervalo-$x]=$etiq_base[$x];
-		}
-		$valores_max = $valores_max2;
-		$valores_min = $valores_min2;
-		$etiq_base = $etiq_base2;
-	}
-
-	// Create graph
-	$graph = new Graph(550,220);     
-	$graph->SetMargin(50,120,30,60); 
-	$valor_maximo =  ceil($valor_maximo / 4) + $valor_maximo;
-	$graph->SetScale("textlin",0,$valor_maximo,0,0);
-        $graph->SetAlphaBlending();	
-	// Which background color
-	$graph->SetMarginColor('white');
-	
-	// Without frame
-	$graph->SetFrame(false);
-	
-	// Colour Y-axe line
-	$graph->ygrid->SetFill(true,'#EFEFEF@0.6','#BBCCFF@0.6');
-	//$graph->xgrid->Show();
-	
-	// Title
-	$graph->tabtitle->Set("$etiqueta - $nombre_agente / $nombre_modulo");
-
-	// To use true type fonts (who permits a label text in angle of 45)
-	// cp /usr/share/fonts/truetype/msttcorefonts/arial.ttf /usr/X11R6/lib/X11/fonts/truetype/
-	if ($config_truetype == 1){
-		$graph->xaxis->SetFont(FF_ARIAL,FS_NORMAL,7); 
-		$graph->xaxis->SetLabelAngle(35);
-	} else {
-		// Fixed font
-		$graph->xaxis->SetFont(FF_FONT0);
-		$graph->xaxis->SetLabelAngle(90);
 	}
 	
-	$graph->xaxis->SetTickLabels($etiq_base);
-	//$graph->xaxis->SetTextLabelInterval(ceil($intervalo / 10),0);
-	
-	$graph->xaxis->SetTextTickInterval(ceil($intervalo/10),0); 
-	$graph->yaxis->SetFont(FF_FONT0);
-	// Crete data line
-
-	$line0=new LinePlot($valores_max);
-	$line0->SetColor("blue");
-	$line0->SetWeight(1);
-	$line0->SetFillColor("blue@0.2");
- 	$line0->SetLegend($lang_label["max"]); 
-	
-	$line1=new LinePlot($grafica);
-	$line1->SetColor($color);
-	$line1->SetWeight(1);
-	$line1->SetFillColor($color."@0.2");
-	$line1->SetLegend($lang_label["med"]); 
-	
-	$line2=new LinePlot($valores_min);
-	$line2->SetColor("yellow");
-	$line2->SetWeight(1);
-	$line2->SetFillColor("yellow@0.2");
-	$line2->SetLegend($lang_label["min"]); 
-	
-	// Add line to graph
-	$graph->Add($line0);
-	$graph->Add($line1);
-	$graph->Add($line2);
-	
-	$graph->legend->Pos(0.01,0.2,"right","center");
-	
-	// Y-axe up graph
-	$graph->SetGridDepth(DEPTH_BACK);
-	// Antialias
-	// $graph->img->SetAntiAliasing();
-	// Mostramos la imagen 
-	$graph->Stroke();
+	$Graph->done();
+	//$Graph->done(array('filename' => '/tmp/jarl.png'));
+	 
 }
 
 function graphic_agentmodules($id_agent) {
@@ -389,8 +678,7 @@ function graphic_agentaccess($id_agent, $periodo){
 
 	// Create graph 
 	$graph = new Graph(280,70);     
-	$graph-> img-> SetImgFormat("png"); // Replaced instead of GIF format. PNG is free :-)
-					    // and GIF was causing problems in Redhat EL 4 
+	$graph-> img-> SetImgFormat("gif");
 	$graph->SetMargin(25,5,3,3); 
 	$graph->SetScale("textlin",0,0,0,0);
 	$graph->SetAlphaBlending(true);
@@ -1262,18 +1550,20 @@ function progress_bar($progress,$width,$height) {
 	$fill = ImageColorAllocate($image,44,81,150);
 
 	ImageFilledRectangle($image,0,0,$width-1,$height-1,$back);
-	if ($rating > 100)
-		ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$red);
-	else
-		ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$fill);
 	ImageRectangle($image,0,0,$width-1,$height-1,$border);
-	if ($rating > 50) 
-		if ($rating > 100)
-			ImageTTFText($image, 8, 0, ($width/3)-($width/10), ($height/2)+($height/5), $back, $config_fontpath,$lang_label["out_of_limits"]);
-		else
-			ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $back, $config_fontpath, $rating."%");
-	else 
-		ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $border, $config_fontpath, $rating."%");
+
+
+	if (($rating > 100) || ($rating < 0)){
+		ImageFilledRectangle($image,1,1,$width-1,$height-1,$red);
+		ImageTTFText($image, 8, 0, ($width/3)-($width/10), ($height/2)+($height/5), $back, $config_fontpath,$lang_label["out_of_limits"]);
+	}
+	else {
+		ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$fill);
+		if ($rating > 50) 
+				ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $back, $config_fontpath, $rating."%");
+		else 
+			ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $border, $config_fontpath, $rating."%");
+	}
 	imagePNG($image);
 	imagedestroy($image);
    }
@@ -1288,6 +1578,8 @@ function progress_bar($progress,$width,$height) {
 //   parse get parameters
 // *****************************************************************************************************************
 
+$ahora = time(); 
+
 if (isset($_GET["tipo"])){
 	if ($_GET["tipo"]=="sparse"){
 		if (isset($_GET["id"]) and   (isset($_GET["label"])) and ( isset($_GET["periodo"])) and (isset ($_GET["intervalo"])) AND (isset ($_GET["color"])) ){
@@ -1298,7 +1590,22 @@ if (isset($_GET["tipo"])){
 			$intervalo = $_GET["intervalo"];
 			$label = $_GET["label"];
 			$color = "#".$color;
-			grafico_modulo_sparse($id, $periodo, $intervalo, $label, $color);
+			if ( isset($_GET["draw_events"]) and $_GET["draw_events"]==0 ) 
+				{ $draw_events = 0; } else { $draw_events = 1; } 
+			if (isset($_GET['zoom']) and is_numeric($_GET['zoom']) and $_GET['zoom']>100) {
+				$zoom = $_GET['zoom'] / 100 ;
+			} else { $zoom = 1; } 
+			// grafico_modulo_sparse($id, $periodo, $intervalo, $label, $color, $zoom, $draw_events)
+//			print "periodo: $periodo, intervalo: $intervalo<br>";
+			grafico_modulo_sparse(	$id_agente_modulo=$id,					// array with modules id to be represented
+								$label, 						// label of the graph
+								$graph_type=2, 				// type of graph to be represented
+								$abc_o=($ahora-($periodo*60)), $abc_int=$periodo*60, 			// origin abcise of graph and abscise interval
+																			// $abc_f - $abc_o = $abc_int,
+								$period=ceil($abc_int/$intervalo),						// resolution of abc
+								$ord_o=0, $ord_int=100,				// origin ordenade and interval
+								$normalization_mode=0,		// defaults to 'auto'
+								 $zoom=1, $draw_events);
 		}
 	}
 	elseif ($_GET["tipo"] =="estado_incidente") 
@@ -1334,6 +1641,8 @@ if (isset($_GET["tipo"])){
 		$width= $_GET["width"];
 		$height= $_GET["height"];
 		progress_bar($percent,$width,$height);
-	}
-}
+	} 
+} 
+
+
 ?>

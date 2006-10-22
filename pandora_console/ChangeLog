@@ -1,3 +1,9 @@
+2006-10-22 dervitx <josepublico@jnavarro.net>
+
+        * pandora_console/reporting/fgraph.php: dynamic precalculated tables
+
+        * pandora_console/reporting/stat_win.php: dynamic precalculated tables
+
 2006-10-21 Sancho Lerena <slerena@artica.es>
 
         * include/functions.php: Change function no_permission () to show

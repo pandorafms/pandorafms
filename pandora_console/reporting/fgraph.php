@@ -302,15 +302,16 @@ function gms_generate_MAM ($id, $intervals_cc, $period, $abc_o_cc, $abc_f_cc, $t
 }
 
 
-function grafico_modulo_sparse(	$id_agente_modulo,			// array with modules id to be represented
-								$label,						// label of the graph
-								$graph_type, 				// type of graph to be represented
-								$abc_o, $abc_int, 			// origin abcise of graph and abscise interval
-															// $abc_f - $abc_o = $abc_int
-								$period,						// resolution of abc
-								$ord_o, $ord_int,				// origin ordenade and interval
-								$normalization_mode=0,		// defaults to 'auto'
-								$zoom=1, $draw_events=0){
+function grafico_modulo_sparse(		$id_agente_modulo,		// array with modules id to be represented
+					$label,				// label of the graph
+					$graph_type, 			// type of graph to be represented
+					$abc_o, $abc_int, 		// origin abcise of graph and abscise interval
+									// $abc_f - $abc_o = $abc_int
+					$period,			// resolution of abc
+					$ord_o, $ord_int,		// origin ordenade and interval
+					$normalization_mode=0,		// defaults to 'auto'
+					$zoom=1, $draw_events=0){
+					
 	include ("../include/config.php");
 	require ("../include/languages/language_".$language_code.".php");
 
@@ -338,6 +339,7 @@ function grafico_modulo_sparse(	$id_agente_modulo,			// array with modules id to
 		if ($table) {
 			$table_n_ord = count($table[0]) -1 ;
 			$table_intervals =& gms_load_interval ($graph_id[$id]);
+			for ($cc=0; $cc < count($table); $cc++) { $table_xs[$cc] = $table[$cc][0]; }
 		} 
 				
 		for ($cc=0; $cc < count($intervals); $cc++) {
@@ -345,33 +347,34 @@ function grafico_modulo_sparse(	$id_agente_modulo,			// array with modules id to
 			$abc_o_cc = $intervals[$cc];
 			$abc_f_cc =  $intervals[$cc] + $period;
 
-			$key = (isset($table_intervals))?array_search($intervals[$cc], $table_intervals):FALSE; 
-			if ( ( ($key === FALSE)  or  $cc == (count($intervals)-1)) or !$table_intervals  ) {
+			$pointer = count($xdata);
+			$key = (isset($table_xs))?array_search($intervals[$cc], $table_xs):FALSE; 
+			if ( ( ($key === FALSE)  or  $cc == (count($intervals)-1)) or !$table_xs  ) {
 				if ($results = gms_generate_MAM ($id, $intervals[$cc], $period, $abc_o_cc, $abc_f_cc, $tnow) ) {
-					$xdata[$cc] =  $results[0] ; 
+					$xdata[$pointer] =  $results[0] ; 
 					for ($nn = 1; $nn < count($results) ; $nn++ ) {
-						$ydata[$nn-1][$cc] = $results[$nn] ;
+						$ydata[$nn-1][$pointer] = $results[$nn] ;
 					}
-					$sql = "INSERT INTO tmp_fgraph_" . $graph_id[$id] . " VALUES ( " . $xdata[$cc]  ;
+					$sql = "INSERT INTO tmp_fgraph_" . $graph_id[$id] . " VALUES ( " . $xdata[$pointer]  ;
 						for ($nn = 0; $nn < count($ydata); $nn++) { 
-							$sql .=  ", " . $ydata[$nn][$cc] ;
+							$sql .=  ", " . $ydata[$nn][$pointer] ;
 						}
 						$sql .=  " ) ";
 						$sql .= " ON DUPLICATE KEY UPDATE  "  ;
 						for ($nn = 0; $nn < count($ydata); $nn++) { 
-							$sql .=  " ord" .  ($nn+1) . " = '" . $ydata[$nn][$cc] . "'" ;
+							$sql .=  " ord" .  ($nn+1) . " = '" . $ydata[$nn][$pointer] . "'" ;
 							$sql .= ( $nn == (count($ydata) -1 ))?"":", ";
 						}
 						$sql .=  " ; ";
 					if (!$result=mysql_query($sql)){
 					print mysql_error(); }
+					
 				} 
 			} else {
 				if ($table) {
-					//print "<br>$cc - $key - " . $table[$key][0];
-					$xdata[$cc] =  $table[$key][0] ;
+					$xdata[$pointer] =  $table[$key][0] ;
 					for ($nn = 1; $nn <= $table_n_ord ; $nn++ ) {
-						$ydata[$nn-1][$cc] = $table[$key][$nn] ;
+						$ydata[$nn-1][$pointer] = $table[$key][$nn] ;
 					}
 				}
 			}
@@ -389,7 +392,7 @@ function grafico_modulo_sparse(	$id_agente_modulo,			// array with modules id to
 			'periodo'	=> $abc_int/60,
 			'draw_events'	=> $draw_events
 			);
-		
+
 		modulo_grafico_draw ( 	$Graph_param, 
 					$xdata, 
 					array('Maximum','Average','Minimum'),
@@ -434,7 +437,7 @@ function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_name, $MGD_data
 	if (!isset( $MGD_param['title'] )) { $MGD_param['title'] = '- no title -'; }
 	if (!isset( $MGD_param['size_x'] )) { $MGD_param['size_x'] = 550; }
 	if (!isset( $MGD_param['size_y'] )) { $MGD_param['size_y'] = 220; }
-		
+	
 	$count_datasets = count( $MGD_data_name );    // number of datasets to represent
 		
 	// creating the graph with PEAR Image_Graph
@@ -500,6 +503,7 @@ function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_name, $MGD_data
 	if ($MGD_xf!="") { $AxisX->forceMaximum($MGD_xf); }
 	if ($MGD_xo!="") { $AxisX->forceMinimum($MGD_xo);}
  	$AxisX->setFontAngle(45);
+	$AxisX->setLabelOption('offset',35); 
  	$AxisX->setDataPreprocessor(Image_Graph::factory('Image_Graph_DataPreprocessor_Function', 'dame_fecha_grafico_timestamp')); 
 	$AxisY =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
 	$AxisY->forceMaximum(ceil($MGD_param['valor_maximo'] / 4) + $MGD_param['valor_maximo']);
@@ -1605,7 +1609,7 @@ if (isset($_GET["tipo"])){
 								$period=ceil($abc_int/$intervalo),						// resolution of abc
 								$ord_o=0, $ord_int=100,				// origin ordenade and interval
 								$normalization_mode=0,		// defaults to 'auto'
-								 $zoom=1, $draw_events);
+								$zoom, $draw_events);
 		}
 	}
 	elseif ($_GET["tipo"] =="estado_incidente") 

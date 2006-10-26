@@ -302,34 +302,88 @@ function gms_generate_MAM ($id, $intervals_cc, $period, $abc_o_cc, $abc_f_cc, $t
 }
 
 
-function grafico_modulo_sparse(		$id_agente_modulo,		// array with modules id to be represented
-					$label,				// label of the graph
-					$graph_type, 			// type of graph to be represented
+function grafico_modulo_sparse(		$label,				// label of the graph
+					$id_agente_modulo,		// array with modules id to be represented
+					$graph_type, 			// array type of graph to be represented
 					$abc_o, $abc_int, 		// origin abcise of graph and abscise interval
 									// $abc_f - $abc_o = $abc_int
 					$period,			// resolution of abc
 					$ord_o, $ord_int,		// origin ordenade and interval
-					$normalization_mode=0,		// defaults to 'auto'
-					$zoom=1, $draw_events=0){
+					$zoom=1, $draw_events=0,	// zoom and events
+					$transparency = 0		// transparency (=0 auto)
+					)
+{
 					
 	include ("../include/config.php");
 	require ("../include/languages/language_".$language_code.".php");
 
+	define('GMD_PLOT_AREA', 0);
+	define('GMD_PLOT_IMPULSE', 1);
+	define('GMD_ALERTZONE', 2);
+	define('GMD_PLOT_STACKED', 3);
+	define('GMD_PLOT_BAND', 4);
+	
+	$MGD_data_label 	= array();  // declaring arrays for array_push to work properly
+	$MGD_data_type 		= array();
+	$MGD_data_color		= array();
+	
 	$tnow = time();
 	$abc_f = $abc_o + $abc_int;
 	$intervals =& gms_get_intervals($abc_o, $abc_f, $period);
 	
 	if (is_array($id_agente_modulo)) {
+		// TODO feo
 		$id_array = $id_agente_modulo;
+		$type_array = $graph_type;
 	} else {
 		$id_array = array( $id_agente_modulo );
-	}
-	
-	foreach ( $id_array as $id ) {
-		
+		$type_array = array( $graph_type );
+
 		$agent_name = dame_nombre_agente_agentemodulo($id_agente_modulo);
 		$module_name = dame_nombre_modulo_agentemodulo($id_agente_modulo);
 		$label = "          $label - $agent_name / $module_name";
+	}
+
+	$color_array = (count($id_array)==1)?
+				array('blue', 'orange', 'yellow')
+				:
+				array(	'blue', 'deepskyblue', 'paleturquoise',
+					'darkorange', 'gold', 'khaki',
+					'green', 'limegreen', 'palegreen',
+					'red', 'indianred', 'lightsalmon'
+					);
+	
+	if (!$transparency) { 
+		$transparency = (count($id_array)==1)?'1':'0.5';
+	}
+	$transparency = '@' . $transparency;
+	
+	if ($draw_events) {
+		for ($xx=0; $xx < count($id_array); $xx++) {
+			$id = $id_array[$xx];
+			$type = $type_array[$xx];
+			
+			// let's draw the alerts zones
+			$sql1 = "SELECT dis_min, dis_max FROM talerta_agente_modulo WHERE id_agente_modulo = ".$id.";";
+			if ($result=mysql_query($sql1)){
+				while ($row=mysql_fetch_array($result)) {
+					$MGD_data[ count($MGD_data) ][0] = $row["dis_min"];
+					$MGD_data[ count($MGD_data) ][0] = $row["dis_max"];
+					$MGD_data_color[ count($MGD_data_color) ] = $color_array[ ($xx * 3) % count($color_array) ] . '@0.2';
+					$MGD_data_type[ count($MGD_data_type) ] = 2;
+					$MGD_data_label[ count($MGD_data_label) ] = 'alert zone';
+				}
+			}
+		}
+	}
+
+	for ($xx=0; $xx < count($id_array); $xx++) {
+
+		$id = $id_array[$xx];
+		$type = $type_array[$xx];
+		
+		$agent_name = dame_nombre_agente_agentemodulo($id_agente_modulo[$xx]);
+		$module_name = dame_nombre_modulo_agentemodulo($id_agente_modulo[$xx]);
 		
 		if (! $graph_id[$id]  = gms_get_table_id ( $abc_o, $abc_f, $period, $graph_type, $id ) ) {
 			$graph_id[$id] = gms_create_tmp_table($abc_o, $abc_f, $period, $graph_type, $id, '3');
@@ -341,8 +395,12 @@ function grafico_modulo_sparse(		$id_agente_modulo,		// array with modules id to
 			$table_intervals =& gms_load_interval ($graph_id[$id]);
 			for ($cc=0; $cc < count($table); $cc++) { $table_xs[$cc] = $table[$cc][0]; }
 		} 
+			
+		unset($xdata);
+		unset($ydata);
 				
 		for ($cc=0; $cc < count($intervals); $cc++) {
+			
 			// limits of the interval cc. Remember that $cc=0 is the older
 			$abc_o_cc = $intervals[$cc];
 			$abc_f_cc =  $intervals[$cc] + $period;
@@ -380,33 +438,123 @@ function grafico_modulo_sparse(		$id_agente_modulo,		// array with modules id to
 			}
 		}
 		
+		// TODO tendría que se ser de todos los $ydata !!
 		$valor_maximo = max($ydata[0]);		
-	
-		$Graph_param = array (
-			'title' => $label,
-			'size_x'	=> intval(550 * $zoom) ,
-			'size_y'	=> intval(220 * $zoom) ,
-			'id_agente_modulo' => $id ,
-			'id_agente' => dame_agente_id($agent_name),
-			'valor_maximo'	=> $valor_maximo ,
-			'periodo'	=> $abc_int/60,
-			'draw_events'	=> $draw_events
-			);
 
-		modulo_grafico_draw ( 	$Graph_param, 
-					$xdata, 
-					array('Maximum','Average','Minimum'),
-					array (	$ydata[0], $ydata[1], $ydata[2] ), 
-					$intervals[0],
-					$intervals[count($intervals)-1] + $period
-					); 
+		for ($cc=0; $cc < count($ydata); $cc++) {
+			$MGD_data[ count($MGD_data) ] = $xdata;
+			$MGD_data[ count($MGD_data) ] = $ydata[$cc];
+		}
+		
+
+		// colors
+		if ( is_numeric( array_search($type, array( GMD_PLOT_AREA, GMD_PLOT_STACKED, GMD_PLOT_BAND ) ) ) ) {
+		
+			array_push ($MGD_data_color, 	$color_array[ ($xx * 3) 	% count($color_array) ] . $transparency,
+							$color_array[ ($xx * 3 + 1) 	% count($color_array) ] . $transparency,
+							$color_array[ ($xx * 3 + 2)	% count($color_array) ] . $transparency
+							);	
+		}
+		
+
+		// legends and type
+		if ( is_numeric( array_search($type, array( GMD_PLOT_AREA, GMD_PLOT_STACKED ) ) ) ) {
+			array_push ($MGD_data_label, "$module_name Max", "$module_name Avg", "$module_name Min");
+			array_push ($MGD_data_type, $type, $type, $type);
+		}
+		
+		if ( $type == GMD_PLOT_BAND ) {
+			// ugly repeating three times
+			array_push ($MGD_data_label, "$module_name", "$module_name", "$module_name");
+			array_push ($MGD_data_type, $type, $type, $type);
+		}
+		
+	}		
+
+	// if there are some events to draw let's scatter them!
+	if ($draw_events) {
+		
+		for ($xx=0; $xx < count($id_array); $xx++) {
+			$id = $id_array[$xx];
+			$type = $type_array[$xx];
+			
+			// TODO if $type = al que toca ...
+			
+			$module_name = dame_nombre_modulo_agentemodulo($id);
+			
+			// careful here! next sql sentence looks for the module by name in the "evento" field
+			// tevento database table SHOULD have module_id !!
+			$sql1 = "SELECT id_evento, timestamp FROM tevento WHERE id_agente = ". dame_agente_id($agent_name) ." and timestamp > '" .
+					 mysql_date($abc_o) . "'  and timestamp < '" .  mysql_date($abc_f) . "' and evento like '%" . $module_name . "%' ".
+					 "  order by timestamp ASC;";
+					
+			// we populate two arrays with validated and no validated events of the module
+			if ($result=mysql_query($sql1)){
+				$x_in = count($MGD_data);  // index for x data
+				$y_in = $x_in + 1;
+				$y_value = $valor_maximo/7 + $valor_maximo - ($valor_maximo /10 * $xx);
+				while ($row=mysql_fetch_array($result)) {
+					//array_push ( $MGD_data[$x_in], mysql_time($row['timestamp']) );
+					//array_push ( $MGD_data[$y_in], $y_value );
+
+					$MGD_data[$x_in][ count($MGD_data[$x_in]) ] = mysql_time( $row['timestamp'] );
+					$MGD_data[$y_in][ count($MGD_data[$y_in]) ] = $y_value;
+				}
+
+				if (isset( $MGD_data[$x_in][0] )) {
+					//array_push ( $MGD_data_color, 'green' );
+					//array_push ( $MGD_data_type, 1 );
+					//array_push ( $MGD_data_label, 'cambiar' );
+
+					$MGD_data_color[ count($MGD_data_color) ] = $color_array[ ($xx * 3) % count($color_array) ] . '@0.5';
+					$MGD_data_type[ count($MGD_data_type) ] = 1;
+					$MGD_data_label[ count($MGD_data_label) ] = 'events';
+				}
+			}
+		
+		}
 	}
+	
+/*	print "<hr>debug: <br><br>";
+
+	for ($cc=0; $cc<count($MGD_data); $cc=$cc+2) {
+		
+		print "<br>SERIE: " . ($cc/2) . "<br>";
+		
+		for ($dd=0; $dd<count($MGD_data[$cc]); $dd++) {
+			print $MGD_data[$cc][$dd]." - ".$MGD_data[$cc+1][$dd]."<br>";
+		}
+	
+	}
+*/
+
+	
+	$Graph_param = array (
+		'title' => $label,
+		'size_x'	=> 550 ,
+		'size_y'	=> 220 ,
+		'zoom'		=> $zoom,
+		'id_agente_modulo' => $id ,
+		'id_agente' => dame_agente_id($agent_name),
+		'valor_maximo'	=> $valor_maximo ,
+		'periodo'	=> $abc_int/60
+		);
+
+	modulo_grafico_draw ( 	$Graph_param, 
+				$intervals,
+				$MGD_data_label,
+				$MGD_data_type,
+				$MGD_data_color,
+				$MGD_data, 
+				$intervals[0],
+				$intervals[count($intervals)-1] + $period
+				); 
 }
 	
 	
-function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_name, $MGD_data, $MGD_xo="", $MGD_xf="" ) {	
+function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_label, $MGD_data_type, $MGD_data_color, $MGD_data, $MGD_xo="", $MGD_xf="" ) {	
 	
-	// draws the graph corresponding to the data of a module
+// draws the graph corresponding to the data of a module
 	// arguments:
 	
 	// $MGD_param = array (
@@ -417,14 +565,13 @@ function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_name, $MGD_data
 	//	'id_agente'	=> agent id ,
 	// 	'valor_maximo'	=> maximum value for y axis ,
 	//	'periodo'	=> interval ,
-	//	'draw_events'	=> draws events if equals to 1
 	//	);
 
 	// $MGD_labels = array ( $etiq_base )    // labels in numeric timestamp format
 
-	// $MGD_data_name = array ( name1, name2, ...  )    // name of the datasets (for the legend only)
+	// $MGD_data_label = array ( name1, name2, ...  )    // name of the datasets (for the legend only)
 
-	// $MGD_data = array ( array(data1), array(data2), ... );	// data to be represented
+	// $MGD_data = array ( array (xdata1), array(ydata1), array(xdata2), ... );	// data to be represented
 	
 	// $MGD_event_data = array ( (notvalidated) &array(data_x), (validated) => &array(data_x) );
 		
@@ -432,13 +579,34 @@ function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_name, $MGD_data
 	require ("../include/languages/language_".$language_code.".php");
 	include 'Image/Graph.php';
 		
+	define('GMD_PLOT_AREA', 0);
+	define('GMD_PLOT_IMPULSE', 1);
+	define('GMD_ALERTZONE', 2);
+	define('GMD_PLOT_STACKED', 3);
+	define('GMD_PLOT_BAND', 4);
+/*	
+	print "<hr>debug: <br><br>";
+
+	for ($cc=0; $cc<count($MGD_data); $cc=$cc+2) {
+		
+		print "<br>SERIE: " . ($cc/2) . "<br>";
+		
+		for ($dd=0; $dd<count($MGD_data[$cc]); $dd++) {
+			print $MGD_data[$cc][$dd]." - ".$MGD_data[$cc+1][$dd]."<br>";
+		}
+	
+	}
+*/
 	// initializing parameters
 		
 	if (!isset( $MGD_param['title'] )) { $MGD_param['title'] = '- no title -'; }
 	if (!isset( $MGD_param['size_x'] )) { $MGD_param['size_x'] = 550; }
 	if (!isset( $MGD_param['size_y'] )) { $MGD_param['size_y'] = 220; }
 	
-	$count_datasets = count( $MGD_data_name );    // number of datasets to represent
+	$MGD_param['size_x'] = intval($MGD_param['size_x'] * $MGD_param['zoom']); 
+	$MGD_param['size_y'] = intval($MGD_param['size_y'] * $MGD_param['zoom']);
+	
+	$count_datasets = count( $MGD_data_label );    // number of datasets to represent
 		
 	// creating the graph with PEAR Image_Graph
 	$Graph =& Image_Graph::factory('graph', 
@@ -447,11 +615,12 @@ function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_name, $MGD_data
 			)
 		); 
 	$Font =& $Graph->addNew('font', $config_fontpath);
-	$Font->setSize(8);
+	$base_fontsize = 4 + intval( 4 * $MGD_param['zoom'] );
+	$Font->setSize( $base_fontsize );
 	$Graph->setFont($Font);
 	$Graph->add(
 		Image_Graph::vertical(
-		 	$Title = Image_Graph::factory('title', array ($MGD_param['title'] , 10)),
+		 	$Title = Image_Graph::factory('title', array ($MGD_param['title'] , $base_fontsize + 2 )),
 			Image_Graph::horizontal(
 				$Plotarea = Image_Graph::factory('plotarea','axis'),
 				$Legend = Image_Graph::factory('legend'),
@@ -471,90 +640,94 @@ function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_name, $MGD_data
 	$Grid_sec =& $Plotarea->addNew('line_grid', IMAGE_GRAPH_AXIS_Y_SECONDARY); 
 	$Grid_sec->setBorderColor('black');
 	
+	$Legend->setPlotarea($Plotarea);
+	
 	// now, datasets are created ...
 	for ($cc=0; $cc<$count_datasets; $cc++) {
 		$Datasets[$cc] = Image_Graph::factory('dataset') ;
-		$Datasets[$cc]->setName( $MGD_data_name[$cc] );
-		}
-	
-	$Legend->setPlotarea($Plotarea);
-	
-	// ... and populated with data ...
-	// next line suposes that all $MGD_data have the same number of points
-	for ($cc=0; $cc<count($MGD_data[0]); $cc++) {     
-		$tdate= $MGD_labels[$cc];
-		for ($dd=0; $dd<$count_datasets; $dd++) {
-			$Datasets[$dd]->addPoint($tdate, $MGD_data[$dd][$cc]);
+		$Datasets[$cc]->setName( $MGD_data_label[$cc] );
+		
+		// and populated with data ...
+		if ( $MGD_data_type[$cc] == GMD_PLOT_BAND ) {
+			for ($dd=0; $dd < count($MGD_data[$cc*2]); $dd++) {
+				$Datasets[$cc]->addPoint( $MGD_data[$cc*2][$dd], 
+								array('high' => $MGD_data[($cc*2)+1][$dd], 
+									'low' => $MGD_data[($cc*2)+5][$dd]) );
+			}
+			$cc = $cc + 2;     // ugly!
+		} else {
+			for ($dd=0; $dd < count($MGD_data[$cc*2]); $dd++) {
+				$Datasets[$cc]->addPoint($MGD_data[$cc*2][$dd], $MGD_data[($cc*2)+1][$dd]);
 			}
 		}
+	}
 	
 	// ... and added to the Graph
-	$Plot =& $Plotarea->addNew('Image_Graph_Plot_Area', array($Datasets)); 
-	
-	// some other properties of the Graph
-	$FillArray =& Image_Graph::factory('Image_Graph_Fill_Array');
-	$FillArray->addColor('blue');
-	$FillArray->addColor('orange');
-	$FillArray->addColor('yellow');
-	$Plot->setFillStyle($FillArray); 
+	for ($cc=0; $cc < $count_datasets; $cc++) {
+		// and the most important: the plots!
+		switch ($MGD_data_type[$cc]) {
+			case GMD_PLOT_AREA :
+				$Plot =& $Plotarea->addNew('Image_Graph_Plot_Area', array($Datasets[$cc])); 
+				$FillArray =& Image_Graph::factory('Image_Graph_Fill_Array');
+				$FillArray->addColor( $MGD_data_color[$cc] );
+				$Plot->setFillStyle( $FillArray ); 
+				break;
+			case GMD_PLOT_BAND :
+				$Plot =& $Plotarea->addNew('Image_Graph_Plot_Band', array($Datasets[$cc])); 
+				$FillArray =& Image_Graph::factory('Image_Graph_Fill_Array');
+				$FillArray->addColor( $MGD_data_color[$cc] );
+				$Plot->setFillStyle( $FillArray ); 
+				$cc = $cc + 2;
+				break;
+			case GMD_PLOT_STACKED :
+				// ugly piece of code follows ...
+				$FillArray =& Image_Graph::factory('Image_Graph_Fill_Array');
+				$stacked_Datasets[ count($stacked_Datasets) ] = $Datasets[$cc];
+				$FillArray->addColor( $MGD_data_color[$cc] );
+				
+				while ( $MGD_data_type[$cc+1] == GMD_PLOT_STACKED ) {
+					$cc++;	// ugly
+					$stacked_Datasets[ count($stacked_Datasets) ] = $Datasets[$cc];
+					$FillArray->addColor( $MGD_data_color[$cc] );
+				}
+				
+				$Plot =& $Plotarea->addNew('Image_Graph_Plot_Area', array($stacked_Datasets, 'stacked')); 
+				$Plot->setFillStyle( $FillArray ); 
+				break;
+			case GMD_PLOT_IMPULSE :
+				$Plot =& $Plotarea->addNew('Plot_Impulse', array($Datasets[$cc])); 
+				$Plot->setLineColor( $MGD_data_color[$cc] ); 
+				$Marker_event =& Image_Graph::factory('Image_Graph_Marker_Diamond');
+				$Plot->setMarker($Marker_event);
+				$Marker_event->setFillColor( $MGD_data_color[$cc] );
+				$Marker_event->setLineColor( 'black' );
+				break;
+			case GMD_ALERTZONE :
+				$Plot =& $Plotarea->addNew('Image_Graph_Axis_Marker_Area', IMAGE_GRAPH_AXIS_Y);
+				$Plot->setFillColor( $MGD_data_color[$cc] );
+				$Plot->setLowerBound( $MGD_data[$cc*2][0] );
+				$Plot->setUpperBound( $MGD_data[($cc*2)+1][0] );
+				break;
+			default:
+				break;
+		}
+	}
 	
 	$AxisX =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_X);
 	$AxisX->setLabelInterval($MGD_param['periodo']*60/10);
 	if ($MGD_xf!="") { $AxisX->forceMaximum($MGD_xf); }
 	if ($MGD_xo!="") { $AxisX->forceMinimum($MGD_xo);}
  	$AxisX->setFontAngle(45);
-	$AxisX->setLabelOption('offset',35); 
+	$AxisX->setLabelOption('offset', 15 + intval( 20 * $MGD_param['zoom'] )); 
  	$AxisX->setDataPreprocessor(Image_Graph::factory('Image_Graph_DataPreprocessor_Function', 'dame_fecha_grafico_timestamp')); 
 	$AxisY =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
-	$AxisY->forceMaximum(ceil($MGD_param['valor_maximo'] / 4) + $MGD_param['valor_maximo']);
-	
-	// let's draw the alerts zones
-	$sql1 = "SELECT dis_min, dis_max FROM talerta_agente_modulo WHERE id_agente_modulo = ".$MGD_param['id_agente_modulo'];
-	if ($result=mysql_query($sql1)){
-	while ($row=mysql_fetch_array($result)) {
-		$Marker_alertzone =& $Plotarea->addNew('Image_Graph_Axis_Marker_Area', IMAGE_GRAPH_AXIS_Y);
-		$Marker_alertzone->setFillColor('green@0.2');
-		$Marker_alertzone->setLowerBound($row["dis_min"]);
-		$Marker_alertzone->setUpperBound($row["dis_max"]);
-		}
-	}
-		
-	// if there are some events to draw let's scatter them!
-	if ($MGD_param['draw_events']) {
-
-		$module_name = dame_nombre_modulo_agentemodulo($MGD_param['id_agente_modulo']);
-		
-		for ($cc=1; $cc>=0; $cc--) {   // one dataset for each state of events (validated and not validated)
-			$Dataset_events =& Image_Graph::factory('dataset');
-			$Dataset_events->setName($cc?'Validated events':'Not valid. events');
-			
-			// careful here! next sql sentence looks for the module by name in the "evento" field
-			// tevento database table SHOULD have module_id !!
-			$sql1 = "SELECT id_evento, timestamp FROM tevento WHERE id_agente = ". $MGD_param['id_agente'] ." and timestamp > '" .
-					 mysql_date($MGD_xo) . "'  and timestamp < '" .  mysql_date($MGD_xf) . "' and evento like '%" . $module_name . "%' ".
-					 " and estado = '$cc'  order by timestamp ASC;";
-					 
-			// we populate two arrays with validated and no validated events of the module
-			if ($result=mysql_query($sql1)){
-				while ($row=mysql_fetch_array($result)) {
-					$Dataset_events->addPoint(
-						mysql_time($row['timestamp']),
-						ceil($MGD_param['valor_maximo'] / 7) + $MGD_param['valor_maximo']);
-				}
-				$Plot =& $Plotarea->addNew('Plot_Impulse', array(&$Dataset_events));
-				$Plot->setLineColor($cc?'green@0.5':'red@0.5'); 
-				$Marker_event =& Image_Graph::factory('Image_Graph_Marker_Diamond');
-				$Plot->setMarker($Marker_event);
-				$Marker_event->setFillColor($cc?'green@0.5':'red@0.5');
-				$Marker_event->setLineColor('black');
-			}
-		}
-	}
+	$AxisY->forceMaximum(ceil($MGD_param['valor_maximo'] / 4) + $MGD_param['valor_maximo'], false);
 	
 	$Graph->done();
 	//$Graph->done(array('filename' => '/tmp/jarl.png'));
-	 
 }
+
+
 
 function graphic_agentmodules($id_agent) {
 	include ("../include/config.php");
@@ -1601,15 +1774,16 @@ if (isset($_GET["tipo"])){
 			} else { $zoom = 1; } 
 			// grafico_modulo_sparse($id, $periodo, $intervalo, $label, $color, $zoom, $draw_events)
 //			print "periodo: $periodo, intervalo: $intervalo<br>";
-			grafico_modulo_sparse(	$id_agente_modulo=$id,					// array with modules id to be represented
-								$label, 						// label of the graph
-								$graph_type=2, 				// type of graph to be represented
-								$abc_o=($ahora-($periodo*60)), $abc_int=$periodo*60, 			// origin abcise of graph and abscise interval
-																			// $abc_f - $abc_o = $abc_int,
-								$period=ceil($abc_int/$intervalo),						// resolution of abc
-								$ord_o=0, $ord_int=100,				// origin ordenade and interval
-								$normalization_mode=0,		// defaults to 'auto'
-								$zoom, $draw_events);
+
+			grafico_modulo_sparse(	$label, 				// label of the graph
+						$id_agente_modulo = $id,			// array with modules id to be represented
+						$graph_type= 0, 				// type of graph to be represented
+						$abc_o=($ahora-($periodo*60)), $abc_int=$periodo*60, 			// origin abcise of graph and abscise interval
+															// $abc_f - $abc_o = $abc_int,
+						$period=ceil($abc_int/$intervalo),						// resolution of abc
+						$ord_o=0, $ord_int=100,				// origin ordenade and interval
+						$zoom, $draw_events,
+						$transparency = 0);
 		}
 	}
 	elseif ($_GET["tipo"] =="estado_incidente") 
@@ -1649,4 +1823,4 @@ if (isset($_GET["tipo"])){
 } 
 
 
-?>
+

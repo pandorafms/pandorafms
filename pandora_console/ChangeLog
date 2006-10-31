@@ -1,3 +1,8 @@
+2006-10-31 Sancho Lerena  <slerena@artica.es>
+
+	* pandora_console/peargraph_test.php: Test graph to check Pear
+	Graph instalation. Needs to be edited and put a valid TTF font.
+
 2006-10-22 dervitx <josepublico@jnavarro.net>
 
         * pandora_console/reporting/fgraph.php: dynamic precalculated tables

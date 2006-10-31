@@ -147,7 +147,7 @@ sub pandora_snmptrapd {
 				} else { # not custom OID type, deleting old values in these vars
 					$custom_oid="";
 					$custom_type="";
-					$custom_value="";
+					$custom_value="type_desc";
 				}
 				$sql_insert = "insert into ttrap (timestamp, source, oid, type, value, oid_custom, value_custom,  type_custom) values ('$timestamp', '$source', '$oid', $type, '$value', '$custom_oid', '$custom_value', '$custom_type')";
 				logger ($pa_config,"Received SNMP Trap from $source",2);

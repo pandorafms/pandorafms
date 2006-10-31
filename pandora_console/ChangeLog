@@ -1,9 +1,14 @@
+2006-10-31 Raul Mateos  <raulofpandora@gmail.com>
+
+	* operation/menu.php: Add highlighting when creating note in incidents
+	page.
+
 2006-10-21 Sancho Lerena <slerena@artica.es>
 
-        * include/functions.php: Change function no_permission () to show
-          noaccess.gif image correctly, due a path problem.
+	* include/functions.php: Change function no_permission () to show 
+	  noaccess.gif image correctly, due a path problem.
 
-        * general/noaccess.php: Change code to show noaccess.gif correctly.
+	* general/noaccess.php: Change code to show noaccess.gif correctly.
 
 2006-10-09 Raul Mateos  <raulofpandora@gmail.com>
 

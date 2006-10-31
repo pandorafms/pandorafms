@@ -1,3 +1,8 @@
+2006-11-01 dervitx <josepublico@jnavarro.net>
+
+        * pandora_server/bin/pandora_server.pl:  new thread implemented, that
+        introduces NULL values in database when modules lose contact
+
 2006-09-13 Sancho Lerena <slerena@artica.es>
 
 	* pandora_network.pl: Fixed problems with OID index. Perl needs to

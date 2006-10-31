@@ -58,6 +58,10 @@ if ($pa_config{"daemon"} eq "1" ){
 # KeepAlive checks for Agents, only for master servers, in separate thread
 threads->new( \&pandora_keepalived, \%pa_config);
 
+# keepalive checks for modules, only for master servers, in separate thread
+# looks for modules without activity, and adds "NULL" values to ddbb
+threads->new( \&modules_keepalive, \%pa_config);
+
 # Module processor subsystem
 pandora_dataserver(\%pa_config);
 
@@ -281,6 +285,8 @@ sub keep_alive_check {
 	$s_idag->finish();
 }
 
+
+
 ##########################################################################
 ## SUB procesa_datos (param_1)
 ## Process data packet (XML file)
@@ -333,5 +339,67 @@ sub procesa_datos {
 		}
 	} else {
 		logger($pa_config,"ERROR: Received data from an unnamed agent",1);
+	}
+}
+
+
+##########################################################################
+## SUB modules_keepalive (param_1)
+## Modules Keepalive daemon subsystem
+##########################################################################
+
+sub modules_keepalive {
+	my $pa_config = $_[0];
+	my $dbh = DBI->connect("DBI:mysql:pandora:$pa_config->{'dbhost'}:3306",$pa_config->{"dbuser"}, $pa_config->{"dbpass"},{ RaiseError => 1, AutoCommit => 1 });
+	while ( 1 ){
+		sleep $pa_config->{"server_threshold"};
+		threads->yield;
+
+		my $now_timestamp = ParseDate ( &UnixDate("today","%Y-%m-%d %H:%M:%S") );
+	
+		my $query_idag = "select m.id_agente_modulo, m.timestamp, a.intervalo, a.id_agente from
+					tagente_estado m, tagente a 
+					where a.id_agente = m.id_agente; ";
+		my $s_idag = $dbh->prepare($query_idag);
+		$s_idag ->execute;
+		my @data; my $flag, my $err;
+		
+		if ($s_idag->rows != 0) {
+			while (@data = $s_idag->fetchrow_array()) {
+				threads->yield;
+				my $id_agente_modulo = $data[0];
+				my $last_timestamp =  ParseDate ( $data[1] );
+				my $period = $data[2];
+				my $id_agente = $data[3];
+				
+				my $twice_period = 2 * $period;
+				my $limit_timestamp = DateCalc($last_timestamp,"+ $twice_period seconds",\$err);
+				
+				$flag = Date_Cmp($now_timestamp,$limit_timestamp);
+				
+				if ($flag >= 0) {
+					# we have lost one module!!
+					# let's check if the last value is a NULL
+					my $qq = "select id_agente_modulo, datos from tagente_datos 
+							where id_agente_modulo = " . $id_agente_modulo . 
+							" order by timestamp DESC limit 1;";
+					my $ss = $dbh->prepare($qq);
+					$ss->execute;
+					my @rr = $ss->fetchrow_array();
+					
+					# jump to the next if the data is NULL
+					next unless ( defined($rr[1]) ) ;
+					
+					# let's insert a NULL value in the limit timestamp
+					$qq = "insert into tagente_datos (id_agente_modulo, datos, timestamp, id_agente)
+							values (	'". $id_agente_modulo . 
+									"', NULL, '" . 
+									&UnixDate($limit_timestamp,"%Y-%m-%d %H:%M:%S") .
+									"', '" . $id_agente ."' ); ";
+					$ss = $dbh->prepare($qq);
+					$ss->execute;
+				}
+			 }
+		}
 	}
 }

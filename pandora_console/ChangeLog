@@ -1,7 +1,18 @@
+2006-11-01 dervitx <josepublico@jnavarro.net>
+
+        * pandora_console/reporting/fgraph.php:  implement breaks in graphs
+        for NULL data
+
 2006-10-31 Sancho Lerena  <slerena@artica.es>
 
 	* pandora_console/peargraph_test.php: Test graph to check Pear
 	Graph instalation. Needs to be edited and put a valid TTF font.
+
+2006-10-26 dervitx <josepublico@jnavarro.net>
+
+        * pandora_console/reporting/fgraph.php: support for representation of
+	several modules in one graph. Support for band and stacked graphs. 
+	Support for transpareness and zoomming. Code cleaning
 
 2006-10-22 dervitx <josepublico@jnavarro.net>
 

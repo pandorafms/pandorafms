@@ -281,8 +281,8 @@ function gms_generate_MAM ($id, $intervals_cc, $period, $abc_o_cc, $abc_f_cc, $t
 						$row_timestamp = mysql_time( $row['timestamp'] );
 						$row_timestamp = ($row_timestamp<$abc_o_cc)?$abc_o_cc:$row_timestamp;
 						$last_date = ( isset($last_date))?$last_date:min($abc_f_cc, $tnow);
-						
 						if ( $row_timestamp < $abc_f_cc ) {
+							if ( !is_null($row['datos']) ) {
 							$incr_time = $last_date - $row_timestamp; 	// always >= 0
 							$n_measures = ($incr_time / $module_period) ;  // yes, it is a float
 							$n_measures_total += $n_measures;
@@ -290,13 +290,13 @@ function gms_generate_MAM ($id, $intervals_cc, $period, $abc_o_cc, $abc_f_cc, $t
 							$max = ( isset($max) and $row['datos']<$max )?$max:$row['datos'];
 							$min = ( isset ($min) and $min<$row['datos'] )?$min:$row['datos'];
 							$avg += $row['datos'] * $n_measures ;  // divided by $n_measures_total later
-						
+							}
 							$last_date = $row_timestamp;
 						}
 					}
 					$avg = ($n_measures_total>0)?($avg/$n_measures_total):NULL;
 					// finito
-					return (isset($max))?array ($abc_o_cc, $max, $avg, $min):NULL;
+					return (isset($max))?array ($abc_o_cc, $max, $avg, $min):array ($abc_o_cc, NULL, NULL, NULL);
 				}
 				return NULL;
 }
@@ -398,7 +398,7 @@ function grafico_modulo_sparse(		$label,				// label of the graph
 			
 		unset($xdata);
 		unset($ydata);
-				
+		
 		for ($cc=0; $cc < count($intervals); $cc++) {
 			
 			// limits of the interval cc. Remember that $cc=0 is the older
@@ -408,26 +408,29 @@ function grafico_modulo_sparse(		$label,				// label of the graph
 			$pointer = count($xdata);
 			$key = (isset($table_xs))?array_search($intervals[$cc], $table_xs):FALSE; 
 			if ( ( ($key === FALSE)  or  $cc == (count($intervals)-1)) or !$table_xs  ) {
-				if ($results = gms_generate_MAM ($id, $intervals[$cc], $period, $abc_o_cc, $abc_f_cc, $tnow) ) {
-					$xdata[$pointer] =  $results[0] ; 
-					for ($nn = 1; $nn < count($results) ; $nn++ ) {
-						$ydata[$nn-1][$pointer] = $results[$nn] ;
+				$results = gms_generate_MAM ($id, $intervals[$cc], $period, $abc_o_cc, $abc_f_cc, $tnow) ;
+				$xdata[$pointer] =  $results[0] ; 
+				for ($nn = 1; $nn < count($results) ; $nn++ ) {
+					//$ydata[$nn-1][$pointer] = (is_null($results[$nn]))?'NULL':$results[$nn] ;
+					$ydata[$nn-1][$pointer] = $results[$nn] ;
+				}
+				$sql = "INSERT INTO tmp_fgraph_" . $graph_id[$id] . " ";
+					$sql .= " VALUES ( '" . $xdata[$pointer] . "'" ;
+					for ($nn = 0; $nn < count($ydata); $nn++) { 
+						$sql .=  is_null($ydata[$nn][$pointer])?", NULL":", '" . $ydata[$nn][$pointer] . "'";
 					}
-					$sql = "INSERT INTO tmp_fgraph_" . $graph_id[$id] . " VALUES ( " . $xdata[$pointer]  ;
-						for ($nn = 0; $nn < count($ydata); $nn++) { 
-							$sql .=  ", " . $ydata[$nn][$pointer] ;
-						}
-						$sql .=  " ) ";
-						$sql .= " ON DUPLICATE KEY UPDATE  "  ;
-						for ($nn = 0; $nn < count($ydata); $nn++) { 
-							$sql .=  " ord" .  ($nn+1) . " = '" . $ydata[$nn][$pointer] . "'" ;
-							$sql .= ( $nn == (count($ydata) -1 ))?"":", ";
-						}
-						$sql .=  " ; ";
-					if (!$result=mysql_query($sql)){
-					print mysql_error(); }
-					
-				} 
+					$sql .=  " ) ";
+					$sql .= " ON DUPLICATE KEY UPDATE  "  ;
+					for ($nn = 0; $nn < count($ydata); $nn++) { 
+						$sql .=  " ord" .  ($nn+1) . " = " ;
+						$sql .= is_null($ydata[$nn][$pointer])?" NULL ":"'" . $ydata[$nn][$pointer] . "'" ;
+						$sql .= ( $nn == (count($ydata) -1 ))?"":", ";
+					}
+					$sql .=  " ; ";
+
+					//print "$sql <br>";
+				if (!$result=mysql_query($sql)){
+				print mysql_error(); }
 			} else {
 				if ($table) {
 					$xdata[$pointer] =  $table[$key][0] ;
@@ -657,7 +660,7 @@ function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_label, $MGD_dat
 			$cc = $cc + 2;     // ugly!
 		} else {
 			for ($dd=0; $dd < count($MGD_data[$cc*2]); $dd++) {
-				$Datasets[$cc]->addPoint($MGD_data[$cc*2][$dd], $MGD_data[($cc*2)+1][$dd]);
+				$Datasets[$cc]->addPoint($MGD_data[$cc*2][$dd], is_null($MGD_data[($cc*2)+1][$dd])?'null':$MGD_data[($cc*2)+1][$dd]);
 			}
 		}
 	}
@@ -668,6 +671,7 @@ function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_label, $MGD_dat
 		switch ($MGD_data_type[$cc]) {
 			case GMD_PLOT_AREA :
 				$Plot =& $Plotarea->addNew('Image_Graph_Plot_Area', array($Datasets[$cc])); 
+				//$Plot =& $Plotarea->addNew('line', array($Datasets[$cc])); 
 				$FillArray =& Image_Graph::factory('Image_Graph_Fill_Array');
 				$FillArray->addColor( $MGD_data_color[$cc] );
 				$Plot->setFillStyle( $FillArray ); 
@@ -1776,8 +1780,8 @@ if (isset($_GET["tipo"])){
 //			print "periodo: $periodo, intervalo: $intervalo<br>";
 
 			grafico_modulo_sparse(	$label, 				// label of the graph
-						$id_agente_modulo = $id,			// array with modules id to be represented
-						$graph_type= 0, 				// type of graph to be represented
+						$id_agente_modulo = array($id),			// array with modules id to be represented
+						$graph_type= array(0), 				// type of graph to be represented
 						$abc_o=($ahora-($periodo*60)), $abc_int=$periodo*60, 			// origin abcise of graph and abscise interval
 															// $abc_f - $abc_o = $abc_int,
 						$period=ceil($abc_int/$intervalo),						// resolution of abc

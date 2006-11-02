@@ -60,6 +60,7 @@ CREATE TABLE `tagente_datos_inc` (
   `id_agente_modulo` bigint(20) NOT NULL default '0',
   `datos` bigint(18) default NULL,
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
+  `id_agente` bigint(4) unsigned default NULL,
   PRIMARY KEY  (`id_adi`),
   KEY `data_inc_index_1` (`id_agente_modulo`)
 ) TYPE=InnoDB; 
@@ -70,7 +71,7 @@ CREATE TABLE `tagente_datos_inc` (
 CREATE TABLE `tagente_datos_string` (
   `id_tagente_datos_string` bigint(20) unsigned NOT NULL auto_increment,
   `id_agente_modulo` int(11) NOT NULL default '0',
-  `datos` tinytext NOT NULL default '',
+  `datos` tinytext,
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `id_agente` bigint(4) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_tagente_datos_string`),

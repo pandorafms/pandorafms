@@ -347,6 +347,13 @@ sub procesa_datos {
 ## SUB modules_keepalive (param_1)
 ## Modules Keepalive daemon subsystem
 ##########################################################################
+## param_1 : XML datafile name
+#
+# This thread checks ALL modules for inactivity (no data for twice the
+# agent's period), and inserts NULL values in the database. This NULL
+# values provide these two features:
+# (a) the graph engine can represent inactivity periods
+# (b) inactivity time can be calculated by module
 
 sub modules_keepalive {
 	my $pa_config = $_[0];
@@ -372,6 +379,18 @@ sub modules_keepalive {
 				my $period = $data[2];
 				my $id_agente = $data[3];
 				
+				# let's see how this module's type is named
+				my $qq = " select t.nombre from ttipo_modulo t, tagente_modulo m where t.id_tipo = m.id_tipo_modulo 
+						and m.id_agente_modulo = '". $id_agente_modulo ."';";
+				my $ss = $dbh->prepare($qq);
+				$ss->execute;
+				my @rr = $ss->fetchrow_array();
+				my $name_agente_modulo = $rr[0];
+
+				my $table_suffix 	= '';
+				$table_suffix 		= '_inc' 	if $name_agente_modulo =~ /_inc/;
+				$table_suffix 		= '_string' 	if $name_agente_modulo =~ /_string/;
+				
 				my $twice_period = 2 * $period;
 				my $limit_timestamp = DateCalc($last_timestamp,"+ $twice_period seconds",\$err);
 				
@@ -380,24 +399,33 @@ sub modules_keepalive {
 				if ($flag >= 0) {
 					# we have lost one module!!
 					# let's check if the last value is a NULL
-					my $qq = "select id_agente_modulo, datos from tagente_datos 
+					$qq = "select id_agente_modulo, datos from tagente_datos". $table_suffix ." 
 							where id_agente_modulo = " . $id_agente_modulo . 
 							" order by timestamp DESC limit 1;";
-					my $ss = $dbh->prepare($qq);
+					$ss = $dbh->prepare($qq);
 					$ss->execute;
-					my @rr = $ss->fetchrow_array();
+					@rr = $ss->fetchrow_array();
 					
 					# jump to the next if the data is NULL
 					next unless ( defined($rr[1]) ) ;
 					
 					# let's insert a NULL value in the limit timestamp
-					$qq = "insert into tagente_datos (id_agente_modulo, datos, timestamp, id_agente)
+					$qq = "insert into tagente_datos". $table_suffix ." (id_agente_modulo, datos, timestamp, id_agente)
 							values (	'". $id_agente_modulo . 
 									"', NULL, '" . 
 									&UnixDate($limit_timestamp,"%Y-%m-%d %H:%M:%S") .
 									"', '" . $id_agente ."' ); ";
 					$ss = $dbh->prepare($qq);
+					$ss->execute;					
+					
+					# let's modify module's state
+					$qq = "update tagente_estado set 
+							datos = NULL, 
+							timestamp = '" . &UnixDate($limit_timestamp,"%Y-%m-%d %H:%M:%S") . "'
+							where id_agente_modulo = '" . $id_agente_modulo . "' ; ";
+					$ss = $dbh->prepare($qq);
 					$ss->execute;
+
 				}
 			 }
 		}

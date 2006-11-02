@@ -660,6 +660,12 @@ function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_label, $MGD_dat
 			$cc = $cc + 2;     // ugly!
 		} else {
 			for ($dd=0; $dd < count($MGD_data[$cc*2]); $dd++) {
+				# note that in the next line, null values in the data are introduced in image_graph
+				# as 'null'. That's NOT what makes a break in the graph (see 
+				# http://pear.veggerby.dk/samples/code/id/line_break )
+				# It should be null (without the quotes). Unfortunately, breaks are
+				# only supported in 'line' graphics, so this is a patch:
+				# image_graph draws a point in zero when 'null' found
 				$Datasets[$cc]->addPoint($MGD_data[$cc*2][$dd], is_null($MGD_data[($cc*2)+1][$dd])?'null':$MGD_data[($cc*2)+1][$dd]);
 			}
 		}

@@ -179,10 +179,12 @@ if (give_acl($id_user, 0, "AW")==1) {
 	$alerta_max_alerts = "";
 	$alerta_time_threshold = "";
 	$alerta_descripcion = "";
+	$perl_expr="";
 	$disabled="";
 	$modulo_max="";
 	$modulo_min='';
 	$module_interval = "";
+	$storealldata = 0;
 	$tcp_port = "";
 	$tcp_send = "";
 	$tcp_rcv = "";
@@ -208,13 +210,17 @@ if (give_acl($id_user, 0, "AW")==1) {
 	// =============
 	if (isset($_POST["insert_alert"])){ // if created alert
 		//$id_agente = $_POST["id_agente"];
-		$id_agente_modulo = entrada_limpia($_POST["agente_modulo"]);
+		//$tmp_agente_modulo = entrada_limpia($_POST["agente_modulo"]); # contains id_agente_modulo and id_tipo_modulo
+		$tmp_array = explode ('-', entrada_limpia ($_POST["agente_modulo"]) );
+		$id_agente_modulo = $tmp_array[0];
+		if (isset($tmp_array[1])) { $id_tipo_modulo = $tmp_array[1]; } else { $id_tipo_modulo=0; }
 		$descripcion= entrada_limpia($_POST["descripcion"]);
 		$campo_1 = entrada_limpia($_POST["campo_1"]);
 		$campo_2 = entrada_limpia($_POST["campo_2"]);
 		$campo_3 = entrada_limpia($_POST["campo_3"]);
 		$maximo = entrada_limpia($_POST["maximo"]);
 		$minimo = entrada_limpia($_POST["minimo"]);
+		$perl_expr = $_POST["perl_expr"];
 		$tipo_alerta = entrada_limpia($_POST["tipo_alerta"]);
 		$time_threshold = entrada_limpia($_POST["time_threshold"]);
 		$max_alerts = entrada_limpia($_POST["max_alerts"]);
@@ -223,7 +229,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 		if ($time_threshold == -1) {
 			$time_threshold = $other;
 		}
-		$sql_insert="INSERT INTO talerta_agente_modulo (id_agente_modulo,id_alerta,al_campo1,al_campo2,al_campo3,descripcion,dis_max,dis_min,time_threshold,max_alerts, min_alerts) VALUES ('".$id_agente_modulo."','".$tipo_alerta."','".$campo_1."','".$campo_2."','".$campo_3."','".$descripcion."','".$maximo."','".$minimo."','".$time_threshold."','".$max_alerts."','".$min_alerts."')";
+		$sql_insert="INSERT INTO talerta_agente_modulo (id_agente_modulo,id_alerta,al_campo1,al_campo2,al_campo3,descripcion,dis_max,dis_min,time_threshold,max_alerts, min_alerts, module_type, perl_expr) VALUES ('".$id_agente_modulo."','".$tipo_alerta."','".$campo_1."','".$campo_2."','".$campo_3."','".$descripcion."','".$maximo."','".$minimo."','".$time_threshold."','".$max_alerts."','".$min_alerts."','".$id_tipo_modulo."','". entrada_limpia_sql($perl_expr) ."')";
 		$result=mysql_query($sql_insert);	
 		if (! $result)
 			echo "<h3 class='error'>".$lang_label["create_alert_no"]."</h3>";
@@ -249,13 +255,13 @@ if (give_acl($id_user, 0, "AW")==1) {
 		$time_threshold = entrada_limpia($_POST["time_threshold"]);
 		$max_alerts = entrada_limpia($_POST["max_alerts"]);
 		$min_alerts = entrada_limpia($_POST["min_alerts"]);
+		$perl_expr = $_POST["perl_expr"];
 		$other = entrada_limpia($_POST["other"]);
 		if ($time_threshold == -1) {
 			$time_threshold = $other;
 		}
-
-		$sql_insert="UPDATE talerta_agente_modulo SET id_alerta = ".$tipo_alerta.", max_alerts = '".$max_alerts."', min_alerts = '".$min_alerts."' ,time_threshold = '".$time_threshold."' ,dis_min = '".$minimo."' ,dis_max = '".$maximo."' ,al_campo3 = '".$campo_3."' ,al_campo2 = '".$campo_2."' ,al_campo1 = '".$campo_1."' , descripcion = '".$descripcion."' WHERE id_aam = ".$id_aam;
-		$result=mysql_query($sql_insert);	
+		$sql_insert="UPDATE talerta_agente_modulo SET id_alerta = ".$tipo_alerta.", max_alerts = '".$max_alerts."', min_alerts = '".$min_alerts."' ,time_threshold = '".$time_threshold."' ,dis_min = '".$minimo."' ,dis_max = '".$maximo."' ,al_campo3 = '".$campo_3."' ,al_campo2 = '".$campo_2."' ,al_campo1 = '".$campo_1."' , descripcion = '".$descripcion."' ,perl_expr = '". $perl_expr ."'  WHERE id_aam = ".$id_aam;
+		$result=mysql_query($sql_insert);
 		if (! $result) {
 			echo "<h3 class='error'>".$lang_label["update_alert_no"]."</h3>";
 			// echo "SQL DEBUG  ".$sql_insert;
@@ -385,6 +391,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 			$snmp_oid = $row["snmp_oid"];
 			$id_module_group = $row["id_module_group"];
 			$module_interval = $row["module_interval"];
+			$storealldata = $row["store_all_data"];
 			$modulo_max = $row["max"];
 			if (! isset($modulo_max))
 				$modulo_max ="N/A";
@@ -419,6 +426,10 @@ if (give_acl($id_user, 0, "AW")==1) {
 			$alerta_min_alerts = $row["min_alerts"];
 			$alerta_time_threshold = $row["time_threshold"];
 			$alerta_descripcion = $row["descripcion"];
+			// we filter $perl_expr with entrada_limpia() now
+			// because it has not done before 
+			// (special characters needed for regular expression)
+			$alerta_perl_expr = entrada_limpia( $row["perl_expr"] );
 		}
 
 	}
@@ -470,6 +481,11 @@ if (give_acl($id_user, 0, "AW")==1) {
 			$id_module_group = entrada_limpia($_POST["id_module_group"]);
 		if (isset($_POST["module_interval"]))
 			$module_interval = entrada_limpia($_POST["module_interval"]);
+		if (isset($_POST["storealldata"]))
+			{ $storealldata = entrada_limpia($_POST["storealldata"]); }
+		  else
+		  	{ $storealldata = 0; }
+		
 	}
 	// MODULE UPDATE
 	// =================
@@ -480,7 +496,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 				$snmp_oid = $combo_snmp_oid;
 			}
 		}
-		$sql_update = "UPDATE tagente_modulo SET max ='".$modulo_max."', min = '".$modulo_min."', nombre='".$nombre."', descripcion='".$descripcion."', tcp_send = '$tcp_send', tcp_rcv = '$tcp_rcv', tcp_port = '$tcp_port', ip_target = '$ip_target', snmp_oid = '$snmp_oid', snmp_community = '$snmp_community', id_module_group = '$id_module_group', module_interval = '$module_interval'  WHERE id_agente_modulo = ".$id_agente_modulo;
+		$sql_update = "UPDATE tagente_modulo SET max ='".$modulo_max."', min = '".$modulo_min."', nombre='".$nombre."', descripcion='".$descripcion."', tcp_send = '$tcp_send', tcp_rcv = '$tcp_rcv', tcp_port = '$tcp_port', ip_target = '$ip_target', snmp_oid = '$snmp_oid', snmp_community = '$snmp_community', id_module_group = '$id_module_group', module_interval = '$module_interval' , store_all_data = '$storealldata'  WHERE id_agente_modulo = ".$id_agente_modulo;
 		$result=mysql_query($sql_update);	
 		if (! $result)
 			echo "<h3 class='error'>".$lang_label["update_module_no"]."</h3>";
@@ -492,7 +508,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 		$tcp_send = "";$tcp_rcv = "";$tcp_port = "";$ip_target = "";
 		$snmp_oid = "";$snmp_community = "";$id_module_group = "";
 		$module_interval = ""; $modulo_nombre = ""; $modulo_descripcion = "";
-		$update_module = 0;
+		$update_module = 0; $storealldata = 0;
 	}
 	// =========================================================
 	// OID Refresh button to get SNMPWALK from data in form
@@ -528,13 +544,13 @@ if (give_acl($id_user, 0, "AW")==1) {
 		if (!isset($modulo_min) || $modulo_min=="") {
 			$modulo_min= "0";
 		}
-		$sql_insert = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,descripcion,max,min,snmp_oid,snmp_community,id_module_group,module_interval,ip_target,tcp_port,tcp_rcv,tcp_send) VALUES (".$id_agente.",".$id_tipo_modulo.",'".$nombre."','".$descripcion."','".$modulo_max."','".$modulo_min."', '$snmp_oid', '$snmp_community', '$id_module_group', '$module_interval', '$ip_target', '$tcp_port', '$tcp_rcv', '$tcp_send')";
+		$sql_insert = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,descripcion,max,min,snmp_oid,snmp_community,id_module_group,module_interval,ip_target,tcp_port,tcp_rcv,tcp_send,store_all_data) VALUES (".$id_agente.",".$id_tipo_modulo.",'".$nombre."','".$descripcion."','".$modulo_max."','".$modulo_min."', '$snmp_oid', '$snmp_community', '$id_module_group', '$module_interval', '$ip_target', '$tcp_port', '$tcp_rcv', '$tcp_send', '$storealldata')";
 		// Init vars to null to avoid trash in forms 
 		$id_tipo_modulo = "";$nombre =  "";$descripcion = "";$modulo_max = "";
 		$modulo_min = "";// Pandora 1.2 new module data:
 		$tcp_send = "";$tcp_rcv = "";$tcp_port = "";$ip_target = "";
 		$snmp_oid = "";$snmp_community = "";$id_module_group = "";
-		$module_interval = "";
+		$module_interval = ""; $storealldata = 0;
 
 		//echo "DEBUG: ".$sql_insert;
 
@@ -860,7 +876,7 @@ else {
 <h3><?php echo $lang_label["module_asociation_form"] ?><a href='help/<?php echo $help_code ?>/chap3.php#321' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
 <a name="modules"> <!-- Don't Delete !! -->
 <table width="650" cellpadding="3" cellspacing="3" class="fon">
-<tr><td class='lb' rowspan='8' width='5'>
+<tr><td class='lb' rowspan='9' width='5'>
 <!-- Module type combobox -->
 <td class="datos"><?php echo $lang_label["module_type"] ?>
 <td class="datos">
@@ -903,6 +919,12 @@ else {
 <td class="datos2"><input type="text" name="nombre" size="20" value="<?php echo $modulo_nombre ?>"> 
 <td class="datos2"><?php echo $lang_label["module_interval"] ?><td class="datos2">
 <input type="text" name="module_interval" size="5" value="<?php echo $module_interval ?>"> 
+
+<tr><td class="datos">store all data
+<td colspan=3 class="datos"><select name="storealldata">
+  <option value=0 <?php if ($storealldata == 0) { echo "selected"; } ?> >No
+  <option value=1 <?php if ($storealldata == 1) { echo "selected"; } ?> >Yes
+  </select>
 
 <tr><td class="datos"><?php echo $lang_label["ip_target"] ?>
 <td class="datos"><input type="text" name="ip_target" size="20" value="<?php echo $ip_target ?>"> 
@@ -990,7 +1012,7 @@ else {
 ?>
 <input type="hidden" name="id_agente" value="<?php echo $id_agente ?>">
 <table width=650 cellpadding="3" cellspacing="3" class="fon" border=0>
-<tr><td class='lb' rowspan='9' width='5'>
+<tr><td class='lb' rowspan='10' width='5'>
 <td class="datos"><?php echo $lang_label["alert_type"]?>
 <td class="datos">
 <select name="tipo_alerta"> 
@@ -1007,10 +1029,12 @@ while ($row=mysql_fetch_array($result)){
 </select>
 <a name="alerts"> <!-- Don't Delete !! -->
 
-<tr><td class="datos2"><?php echo $lang_label["min_value"] ?>
-<td class="datos2"><input type="text" name="minimo" size="5" value="<?php echo $alerta_dis_max ?>" style="margin-right: 70px;">
+<tr><td class="datos"><?php echo $lang_label["min_value"] ?>
+<td class="datos"><input type="text" name="minimo" size="5" value="<?php echo $alerta_dis_min ?>" style="margin-right: 70px;">
 <?php echo $lang_label["max_value"] ?> &nbsp;&nbsp;&nbsp;
-<input type="text" name="maximo" size="5" value="<?php echo $alerta_dis_min ?>">
+<input type="text" name="maximo" size="5" value="<?php echo $alerta_dis_max ?>">
+<tr><td class="datos2">Perl expression
+<td class="datos2"><input type="text" name="perl_expr" size="39" value ="<?php echo $alerta_perl_expr ?>">
 <tr><td class="datos"><?php echo $lang_label["description"] ?>
 <td class="datos"><input type="text" name="descripcion" size="39" value ="<?php echo $alerta_descripcion ?>">
 <tr><td class="datos2"><?php echo $lang_label["field1"] ?>
@@ -1062,7 +1086,7 @@ while ($row=mysql_fetch_array($result)){
 			$sql1='SELECT * FROM ttipo_modulo WHERE id_tipo = '.$row2["id_tipo_modulo"];
 			$result=mysql_query($sql1);
 			while ($row=mysql_fetch_array($result)){
-				echo "<option value='".$row2["id_agente_modulo"]."'>".$row["nombre"]."/".$row2["nombre"];
+				echo "<option value='".$row2["id_agente_modulo"]. "-" . $row2["id_tipo_modulo"] . "'>".$row["nombre"]."/".$row2["nombre"];
 			}
 		} else // for -1, is a special module, keep alive monitor !!
 			echo "<option value='".$row2["id_agente_modulo"]."'>".$row2["nombre"];

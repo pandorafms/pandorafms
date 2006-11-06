@@ -3,6 +3,11 @@
         * pandora_server/bin/pandora_server.pl:  new thread implemented, that
         introduces NULL values in database when modules lose contact
 
+2006-10-12 dervitx <josepublico@jnavarro.net>
+
+        * pandora_server/bin/pandora_db.pm: added functions to support log
+	        engine. (svn revisions 206:230)
+
 2006-09-13 Sancho Lerena <slerena@artica.es>
 
 	* pandora_network.pl: Fixed problems with OID index. Perl needs to

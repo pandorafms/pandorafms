@@ -39,6 +39,20 @@
 
 	* general/noaccess.php: Change code to show noaccess.gif correctly.
 
+2006-10-12 dervitx <josepublico@jnavarro.net>
+
+	* pandora_console/pandoradb.sql: modified tagente_modulo and
+	talerta_agente_modulo for regular expression-based alerts for
+	generic_data_string (svn revisions 206:230)
+	
+	* pandora_console/operation/agentes/estado_alertas.php: support for
+	regular expression-based alerts for generic_data_string (svn revisions
+	206:230)
+        
+	* pandora_console/godmode/agentes/configurar_agente.php: support for
+	regular expression-based alerts for generic_data_string (svn revisions
+	206:230)
+
 2006-10-09 Raul Mateos  <raulofpandora@gmail.com>
 
 	* operation/agentes/estado_alertas.php: Add code for showing 'Never'

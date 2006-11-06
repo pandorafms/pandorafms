@@ -41,7 +41,7 @@ if (isset ($_GET["refr"])){
 		echo '<meta http-equiv="refresh" content="'.$intervalo.'">';	
 }
 ?>
-<title>Pandora - <?php echo $lang_label["header_title"]; ?></title>
+<title>Pandora FMS - <?php echo $lang_label["header_title"]; ?></title>
 <meta http-equiv="expires" content="0">
 <meta http-equiv="content-type" content="text/html; charset=ISO-8859-15">
 <meta name="resource-type" content="document">

@@ -1,3 +1,10 @@
+2006-11-06 Raul Mateos  <raulofpandora@gmail.com>
+
+	* index.php: Added FMS to title
+
+	* include/languages/language_es_es.php, language_en.php,
+	language_es_la.php, language_it.php: Remove "distributed" from title
+
 2006-11-01 dervitx <josepublico@jnavarro.net>
 
         * pandora_console/reporting/fgraph.php:  implement breaks in graphs
@@ -7,6 +14,11 @@
 
 	* pandora_console/peargraph_test.php: Test graph to check Pear
 	Graph instalation. Needs to be edited and put a valid TTF font.
+
+2006-10-31 Raul Mateos  <raulofpandora@gmail.com>
+
+	* operation/menu.php: Add highlighting when creating note in incidents
+	page.
 
 2006-10-26 dervitx <josepublico@jnavarro.net>
 
@@ -22,10 +34,10 @@
 
 2006-10-21 Sancho Lerena <slerena@artica.es>
 
-        * include/functions.php: Change function no_permission () to show
-          noaccess.gif image correctly, due a path problem.
+	* include/functions.php: Change function no_permission () to show 
+	  noaccess.gif image correctly, due a path problem.
 
-        * general/noaccess.php: Change code to show noaccess.gif correctly.
+	* general/noaccess.php: Change code to show noaccess.gif correctly.
 
 2006-10-09 Raul Mateos  <raulofpandora@gmail.com>
 

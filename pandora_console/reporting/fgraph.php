@@ -1376,46 +1376,53 @@ function progress_bar($progress,$width,$height) {
    // With some adds from sdonie at lgc dot com
    // Get from official documentation PHP.net website. Thanks guys :-)
    // Code ripped from Babel Project :-)
-   function drawRating($rating,$width,$height) {
-	include ("../include/config.php");
-	require ("../include/languages/language_".$language_code.".php");
-	if ($width == 0) {
-		$width = 150;
-	}
-	if ($height == 0) {
-		$height = 20;
-	}
-	
-	//$rating = $_GET['rating'];
-	$ratingbar = (($rating/100)*$width)-2;
-	
-	$image = imagecreate($width,$height);
-	//colors
-	$back = ImageColorAllocate($image,255,255,255);
-	$border = ImageColorAllocate($image,0,0,0);
-	$red = ImageColorAllocate($image,255,60,75);
-	$fill = ImageColorAllocate($image,44,81,150);
+	function drawRating($rating,$width,$height) {
+		include ("../include/config.php");
+		require ("../include/languages/language_".$language_code.".php");
+		if ($width == 0) {
+			$width = 150;
+		}
+		if ($height == 0) {
+			$height = 20;
+		}
+		
+		//$rating = $_GET['rating'];
+		$ratingbar = (($rating/100)*$width)-2;
+		$image = imagecreate($width,$height);
+		//colors
+		$back = ImageColorAllocate($image,255,255,255);
+		$border = ImageColorAllocate($image,0,0,0);
+		$red = ImageColorAllocate($image,255,60,75);
+		$fill = ImageColorAllocate($image,44,81,150);
 
-	ImageFilledRectangle($image,0,0,$width-1,$height-1,$back);
-	ImageRectangle($image,0,0,$width-1,$height-1,$border);
+		ImageFilledRectangle($image,0,0,$width-1,$height-1,$back);
+		ImageRectangle($image,0,0,$width-1,$height-1,$border);
 
 
-	if (($rating > 100) || ($rating < 0)){
-		ImageFilledRectangle($image,1,1,$width-1,$height-1,$red);
-		ImageTTFText($image, 8, 0, ($width/3)-($width/10), ($height/2)+($height/5), $back, $config_fontpath,$lang_label["out_of_limits"]);
+		if (($rating > 100) || ($rating < 0)){
+			ImageFilledRectangle($image,1,1,$width-1,$height-1,$red);
+			ImageTTFText($image, 8, 0, ($width/3)-($width/10), ($height/2)+($height/5), $back, $config_fontpath,$lang_label["out_of_limits"]);
+		}
+		else {
+			ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$fill);
+			if ($rating > 50) 
+					ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $back, $config_fontpath, $rating."%");
+			else 
+				ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $border, $config_fontpath, $rating."%");
+		}
+		imagePNG($image);
+		imagedestroy($image);
 	}
-	else {
-		ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$fill);
-		if ($rating > 50) 
-				ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $back, $config_fontpath, $rating."%");
-		else 
-			ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $border, $config_fontpath, $rating."%");
-	}
-	imagePNG($image);
-	imagedestroy($image);
-   }
-   Header("Content-type: image/png");
-   drawRating($progress,$width,$height);
+	// Show header
+	Header("Content-type: image/png");
+	// If progress is out limits, show static image, beware of image size!
+	if ($progress > 100 || $progress < 0){
+		$imgPng = imageCreateFromPng("../images/outlimits.png");
+		imageAlphaBlending($imgPng, true);
+		imageSaveAlpha($imgPng, true);
+		imagePng($imgPng);
+	} else
+		drawRating($progress,$width,$height);   
 }
 
 

@@ -340,10 +340,10 @@ function popup_help ($help_id){
 function no_permission () {
 	require("config.php");
 	require ("include/languages/language_".$language_code.".php");
-	echo "<h1>".$lang_label["no_permission_title"]."</h1>";
-	echo "<img src='img/noaccess.gif' width='120'><br><br>";
+	echo "<h3 class='error'>".$lang_label["no_permission_title"]."</h3>";
+	echo "<img src='images/noaccess.gif' width='120'><br><br>";
 	echo "<table width=550>";
-	echo "<tr><td class=datos>";
+	echo "<tr><td>";
 	echo $lang_label["no_permission_text"];
 	echo "</table>";
 	echo "<tr><td><td><td><td>";

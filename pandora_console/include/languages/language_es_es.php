@@ -89,7 +89,7 @@ $lang_label["field2"]="Campo #2 (L&iacute;nea sencilla)";
 $lang_label["field3"]="Campo #3 (Texto completo)";
 $lang_label["no_access_title"]="No tiene permiso para acceder a esta p&aacute;gina";
 $lang_label["no_access_text"]="El acceso a esta p&aacute;gina est&aacute; restringido a usuarios autorizados, contacte con el administrador del sistema si necesita ayuda. <br><br>Todos los intentos de acceso a esta p&aacute;gina son grabados en los logs de seguridad de Pandora";
-$lang_label["header_title"]="el Sistema Libre de Monitorizaci&oacute;n Distribuida";
+$lang_label["header_title"]="Sistema Libre de Monitorizaci&oacute;n";
 
 $lang_label["gpl_notice"]="es un <b>Proyecto de Software GPL</b>";
 $lang_label["gpl_used"]="Desarrollado utilizando herramientas y software GPL"; 

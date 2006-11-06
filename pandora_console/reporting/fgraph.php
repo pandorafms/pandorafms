@@ -654,8 +654,8 @@ function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_label, $MGD_dat
 		if ( $MGD_data_type[$cc] == GMD_PLOT_BAND ) {
 			for ($dd=0; $dd < count($MGD_data[$cc*2]); $dd++) {
 				$Datasets[$cc]->addPoint( $MGD_data[$cc*2][$dd], 
-								array('high' => $MGD_data[($cc*2)+1][$dd], 
-									'low' => $MGD_data[($cc*2)+5][$dd]) );
+								array('high' => is_null($MGD_data[($cc*2)+1][$dd])?'null':$MGD_data[($cc*2)+1][$dd], 
+									'low' => is_null($MGD_data[($cc*2)+5][$dd])?'null':$MGD_data[($cc*2)+5][$dd]  ) );
 			}
 			$cc = $cc + 2;     // ugly!
 		} else {
@@ -1770,25 +1770,37 @@ $ahora = time();
 if (isset($_GET["tipo"])){
 	if ($_GET["tipo"]=="sparse"){
 		if (isset($_GET["id"]) and   (isset($_GET["label"])) and ( isset($_GET["periodo"])) and (isset ($_GET["intervalo"])) AND (isset ($_GET["color"])) ){
-			$id = $_GET["id"];
+			$tmp_id_module = $_GET["id"];
+			$tmp_graph_type = $_GET["graphtype"];
 			$color = $_GET["color"];
 			$tipo = $_GET["tipo"];
 			$periodo = $_GET["periodo"];
 			$intervalo = $_GET["intervalo"];
 			$label = $_GET["label"];
 			$color = "#".$color;
+			if ( isset($_GET["origin"]) and is_numeric($_GET["origin"]) ) 
+				{ $origin = $_GET["origin"]; } else { $origin = $ahora-($periodo*60); }
 			if ( isset($_GET["draw_events"]) and $_GET["draw_events"]==0 ) 
 				{ $draw_events = 0; } else { $draw_events = 1; } 
 			if (isset($_GET['zoom']) and is_numeric($_GET['zoom']) and $_GET['zoom']>100) {
 				$zoom = $_GET['zoom'] / 100 ;
 			} else { $zoom = 1; } 
-			// grafico_modulo_sparse($id, $periodo, $intervalo, $label, $color, $zoom, $draw_events)
-//			print "periodo: $periodo, intervalo: $intervalo<br>";
+
+			// building parameters for grafico_modulo_sparse
+			// $graph_type
+			$graph_type = split (":", $tmp_graph_type);
+			for ($cc=0; $cc<count($graph_type); $cc++) {
+				if (!is_numeric($graph_type[$cc])) { $graph_type[$cc] = '0'; }
+			}
+		
+			// $id_module
+			$id_module = split (":", $tmp_id_module);
+			// TODO: check
 
 			grafico_modulo_sparse(	$label, 				// label of the graph
-						$id_agente_modulo = array($id),			// array with modules id to be represented
-						$graph_type= array(0), 				// type of graph to be represented
-						$abc_o=($ahora-($periodo*60)), $abc_int=$periodo*60, 			// origin abcise of graph and abscise interval
+						$id_module,				// array with modules id to be represented
+						$graph_type, 				// type of graph to be represented
+						$abc_o=$origin, $abc_int=$periodo*60, 			// origin abcise of graph and abscise interval
 															// $abc_f - $abc_o = $abc_int,
 						$period=ceil($abc_int/$intervalo),						// resolution of abc
 						$ord_o=0, $ord_int=100,				// origin ordenade and interval

@@ -38,6 +38,7 @@ if (comprueba_login() == 0) {
 	if (isset($_GET["tipo"]) AND isset($_GET["id"])) {
 		$tipo =entrada_limpia($_GET["tipo"]);
 		$id_agente_modulo = entrada_limpia($_GET["id"]);
+		$ahora = time();
 	}
 	else {
 		echo "<h3 class='error'>".$lang_label["graf_error"]."</h3>";
@@ -110,6 +111,7 @@ if (comprueba_login() == 0) {
 	$param['tipo']='sparse';
 	$param['zoom']=isset($param['zoom'])?$param['zoom']:100;
 	$param['draw_events']=isset($param['draw_events'])?$param['draw_events']:1;
+	$param['origin']=isset($param['origin'])?$param['origin']:($ahora-($param['periodo']*60));
 	
 	/*if (isset($_GET['draw_events']) and $_GET['draw_events']==0) {
 		$param['draw_events'] = 0;
@@ -151,6 +153,13 @@ if (comprueba_login() == 0) {
 }
 
 --></style>
+
+<!-- jscalendar -->
+
+<style type="text/css">@import url(../include/styles/jscalendar/calendar-win2k-1.css);</style>
+<script type="text/javascript" src="../include/styles/jscalendar/calendar.js"></script>
+<script type="text/javascript" src="../include/styles/jscalendar/lang/calendar-en.js"></script>
+<script type="text/javascript" src="../include/styles/jscalendar/calendar-setup.js"></script>
 
 
 <script type='text/javascript'><!--
@@ -198,32 +207,121 @@ function getTermEle(ele) {
 
 
 <div id='divmenu' class='menu'>
-	<b>Configuration Menu</b><br>Please, make your changes and apply with <i>Reload</i> button<BR><BR>
+	<b>Configuration Menu</b><br>Please, make your changes and apply with <i>Reload</i> button<BR>
 
 	<form method='get' action='stat_win.php'>
 		<table>
-		<tr><td><B>Actual configuration</B> <BR></td>
-		    <td><B>Configurable parameters</B> <BR></td>
+		<tr><td width='2%'> </td>
+		    <td colspan='3' width='45%'></td>
+		    <td width='6%'> </td>
+		    <td colspan='3' width='45%'></td>
+		    <td width='2%'> </td>
 		</tr> 
-		<tr><td>
-			<?php
-			foreach ($param as $key => $value) {
-				echo "<input type='hidden' name='$key' value='$value'>";
-				echo "<DD>$key - $value <BR>";
-			}
-			?>
-		</td><td>
-			<?php
-			echo "Refresh <input type='text' name='refresh' value='" . $param['refresh'] . "'> seconds <br>";
-			echo "Zoom <input type='text' name='zoom' value='" . $param['zoom'] . "'> % <br>";
-			echo "Show events <input type='text' name='draw_events' value='" . $param['draw_events'] . "'> ( 1 or 0 ) <br>";
-			?>
-		</td></tr>
-		</table>
+	
+		<tr>
+			<td></td>
+			<td>id(s): </td>
+			<td><input type='text' name='id' value='<?php echo $param['id']; ?>'></td>
+			<td> </td>
+			
+			<td></td>
+			<td>origin: </td>
+			<td>
+
+<!-- jscalendar -->
+<input type="hidden" name="origin" id="f_date_b" value='<?php echo $param['origin']; ?>'
+       /><button type="reset" id="f_trigger_b"
+       >popup calendar</button>
+<script type="text/javascript">
+    Calendar.setup({
+	firstDay       :    1,
+        inputField     :    "f_date_b",          //*
+        ifFormat       :    "%s",
+        showsTime      :    true,
+        button         :    "f_trigger_b",       //*
+        step           :    1
+    });
+</script>
+
+			</td>
+			<td></td>
+
+		</tr>
 		
-		<input type="submit" value="reload">
+		<tr>
+			<td></td>
+			<td>graph type(s): </td>
+			<td><input type='text' name='graphtype' value='<?php echo $param['graphtype']; ?>'></td>
+			<td> </td>
+			
+			<td></td>
+			<td>interval: </td>
+			<td>
+				<select name='periodo' value='<?php echo $param['periodo']; ?>'>
+					<option value='60' <?php if ($param['periodo'] == '60') { echo 'selected="selected"';} ?> >1 hour
+					<option value='1440' <?php if ($param['periodo'] == '1440') { echo 'selected="selected"';} ?> >1 day
+					<option value='44640' <?php if ($param['periodo'] == '44640') { echo 'selected="selected"';} ?> >31 days
+					<option value='525600' <?php if ($param['periodo'] == '525600') { echo 'selected="selected"';} ?> >365 days
+				</select>
+			</td>
+			<td></td>
+			
+			<td></td>
+		</tr>
+
+		<tr>
+			<td></td>
+			<td>draw_events: </td>
+			<td>
+				<input type='radio' name='draw_events' value='0' <?php if ($param['draw_events'] == '0') { echo 'checked="checked"';} ?> > no
+				&nbsp; &nbsp; 
+				<input type='radio' name='draw_events' value='1' <?php if ($param['draw_events'] == '1') { echo 'checked="checked"';} ?> > yes
+			</td>
+			<td></td>
+			
+			<td></td>
+			<td>points </td>
+			<td><input type='text' name='intervalo' value='<?php echo $param['intervalo']; ?>'></td>
+			<td></td>
+			
+			<td></td>
+		</tr>
+
+		<tr>
+			<td></td>
+			<td>label: </td>
+			<td><input type='text' name='label' value='<?php echo $param['label']; ?>'></td>
+			<td> </td>
+			
+			<td></td>
+			<td>zoom: </td>
+			<td><input type='text' name='zoom' value='<?php echo $param['zoom']; ?>'></td>
+			<td>%</td>
+			
+			<td></td>
+		</tr>
+	
+		<tr>
+			<td></td>
+			<td> </td>
+			<td> </td>
+			<td> </td>
+			
+			<td></td>
+			<td>refresh: </td>
+			<td><input type='text' name='refresh' value='<?php echo $param['refresh']; ?>'></td>
+			<td> s</td>
+			
+			<td></td>
+		</tr>
+		</table>
+
+		<input type='hidden' name='tipo' value='<?php echo $param['tipo']; ?>'>
+		
+		&nbsp;&nbsp;&nbsp;<input type="submit" value="reload">
 	</form>
 	
 </div>
 
-
+</body>
+</html>

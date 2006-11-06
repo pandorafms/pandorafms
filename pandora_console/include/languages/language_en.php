@@ -87,7 +87,7 @@ $lang_label["field2"]="Field #2 (Single Line)";
 $lang_label["field3"]="Field #3 (Full Text)";
 $lang_label["no_access_title"]="You don't have access to this page";
 $lang_label["no_access_text"]="Access to this page is restricted to authorized users only, please contact system administrator if you need assistance. <br><br>Please know that all attempts to access this page are recorded in security logs of Pandora System Database";
-$lang_label["header_title"]="The Free Distributed Monitoring System";
+$lang_label["header_title"]="Free Monitoring System";
 
 $lang_label["gpl_notice"]="is a <b>Free Software Project, licensed under GPL terms</b>";
 $lang_label["gpl_used"]="Designed using GPL software and tools"; 

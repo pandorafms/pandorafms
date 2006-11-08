@@ -5,11 +5,11 @@
   <title>Agents</title>
 
   <para>
-    The agents collect information. They could be a "real" agent,
-    based on a software agent, or a network agent, a non-physical
-    agent, witout need of installing any software, that execute
-    network tasks in Pandora Network servers, and showing information
-    on console inside an Agent.
+    The agents collect information. There are agent based on a software 
+    agent and install in the System to monitor, and network agent, a 
+    non-physical agent, without need of installing any software, that 
+    execute network tasks in Pandora Network servers, and showing 
+    information on console inside an Agent.
   </para>
   <para>
     For agents who need to install software onto remote systems,
@@ -320,7 +320,7 @@
 	</listitem>
 	<listitem>
 	  <para>
-	    <emphasis>Maximum:</emphasis> Lower threshold for the
+	    <emphasis>Minimum:</emphasis> Lower threshold for the
 	    value in the module. Any value below this threshold will
 	    be taken as invalid and the whole module will be
 	    discarded.
@@ -336,12 +336,6 @@
 	Aditionally if you are defining a network module, you also
 	have more fields related to Network options:
       </para>
-      <itemizedlist>
-	<listitem>
-	  <para>
-	  </para>
-	</listitem>
-      </itemizedlist>
       
       <para>
 	All the modules to be monitored by an agent can be reviewed by

@@ -251,6 +251,8 @@ static int libssh2_file_read_publickey(LIBSSH2_SESSION *session, unsigned char *
 		return -1;
 	}
 	while (!feof(fd) && (c = fgetc(fd)) != '\r' && c != '\n')	pubkey_len++;
+	if (c != '\r' || c != '\n')
+                pubkey_len--;
 	rewind(fd);
 
 	if (pubkey_len <= 1) {

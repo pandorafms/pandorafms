@@ -1,3 +1,10 @@
+2006-08-11  Esteban Sanchez  <estebans@artica.es>
+
+	* ssh/libssh2/userauth.c: Fixed a bug when the public key file do
+	not finish with '\n' or '\r'.
+
+	* bin/PandoraAgent.exe: Updated to new changes.
+
 2006-10-13  Raúl Mateos  <raulofpandora@gmail.com>
 
 	* installer/Pandora Windows Agent-1.2 Beta3-Setup.exe: Updated

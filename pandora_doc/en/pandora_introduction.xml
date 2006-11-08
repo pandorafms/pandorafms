@@ -54,13 +54,13 @@
       </listitem>
       <listitem>
 	<para>
-	  <emphasis>Server</emphasis>: The core server is the receptor
-	  of the data packages and generates the alerts - it is the
-	  brain of the system. Several servers can work alongside for
-	  larger systems. It has been developed in Perl and works over
-	  any platform, although, the official platform is GNU/Linux.
-	</para>
+	  <emphasis>Server</emphasis>: In Pandora 1.2 there are three 
+	  different servers:
+  	</para>
 	<para>
+	  The core server is the receptor of the data packages and 
+	  generates the alerts - it is the brain of the system. 
+	  Several servers can work alongside for larger systems. 
 	  The core server accesses Pandora database, which is shared
 	  with the Web server, and stores the processed data
 	  packages. Server executes as daemon, and processes the
@@ -72,11 +72,15 @@
 	  the alerts and the events.
 	</para>
 	<para>
-	  With the new Pandora 1.2 Network Server technology, Pandora
-	  Network Servers could monitorize remote systems using
+	  The Network Servers monitorize remote systems using
 	  network resources like ICMP, TCP, UDP or SNMP
 	  Queries. Network Servers are acting itself like "Network
-	  Agents".
+	  Agents". This server fires the alerts and the events for this
+	  modules.
+        </para>
+	<para>
+	  The SNMP Server receives and processes the snmp traps, and fires
+	  the alerts associated to it.
 	</para>
       </listitem>
       <listitem>

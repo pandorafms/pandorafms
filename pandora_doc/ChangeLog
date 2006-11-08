@@ -1,3 +1,17 @@
+2006-09-29  David Villanueva <david.villanueva@artica.es>
+
+	* en/pandora_introduction.xml: Changed in Server definition.
+
+	* en/pandora.pdf: New compiled file.
+
+	* en/images/image009.png: Image changed.
+
+	* en/pandora_userguide.pdf: New compiled file.
+
+	* en/pandora_chapter2.xml: Changed in users, profiles and messages.
+
+	* en/pandora_chapter3.xml: image changed in modules. 
+
 2006-09-29  Sancho Lerena  <slerena.@artica.es>
 
 	* pandora_userguide.xml, pandora_chapter*: Many changes to use PNG

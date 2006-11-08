@@ -2,13 +2,9 @@
 <chapter id="chapter2">
   <title>Users</title>
   <para>
-    The definition of a user is based on the user's daily
-    activity. One or more profiles can be assigned to a single user
-  </para>
-  
-  <para>
-    A profile is a list of actions a user can or cannot perform on a
-    given group, e.g. "view incidents", "database management", etc
+    A user is based on the user's daily activity. Each user have his/her 
+    profile, with a list of actions that can or cannot perform, to access
+    to Pandora.One or more profiles can be assigned to a single user.
   </para>
   
   <para>
@@ -120,30 +116,11 @@
       in the Administration Menu
     </para>
     
-    <para>
-      To create a new user it is necessary to, at least, fill in
-      the user ID, the password (twice) and Pandora's global
-      profile.
-    </para>
-    <para>
-      A global profile for a user maybe Administrator or
-      Standard User.
-    </para>
-    <para>
-      A user with an "Administrator" profile will have the
-      highest security privileges in Pandora.
-    </para>
     <graphic fileref="images/image003.png" valign="bottom" align="center"/>
     <para>
-      Profiles must be assigned for each of the groups a new
-      "standard" profile user can access, once the user is
-      created and his configuration updated.
-    </para>
-    <graphic fileref="images/image004.png" valign="bottom" align="center"/>
-    <para>
-	A user profile is deleted by clicking on the delete icon
-    <inlinegraphic fileref="images/cancel.png"/> on the right
-    hand side of the profile.
+	    To create a new user it is necessary to, at least, fill in
+	    the user ID, the password (twice) and Pandora's global
+	    profile.
     </para>
   </sect1>
   <sect1 id="sec2.3">
@@ -174,9 +151,10 @@
   <sect1 id="sec2.5">
     <title>Messages to users</title>
     <para>
-      To create a new message to other user, go to "Messages"
-      section in the Operation menu. You can also read the
-      received messages, but the sent messages are not stored.
+      In pandora 1.2 the possibility of send messages to other 
+      users has been added.To create a new message to other user,
+      go to "Messages"section in the Operation menu. You can also 
+      read the received messages, but the sent messages are not stored.
     </para>
     <sect2 id="sec2.5.1">
       <title>Messages to groups</title>

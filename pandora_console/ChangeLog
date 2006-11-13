@@ -1,3 +1,7 @@
+2006-11-13 Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/config.php: Change build date to correct order.
+
 2006-11-06 Raul Mateos  <raulofpandora@gmail.com>
 
 	* index.php: Added FMS to title

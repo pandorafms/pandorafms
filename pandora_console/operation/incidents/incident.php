@@ -44,31 +44,6 @@ if ((give_acl($id_user, 0, "IR")==1) OR (give_acl($id_user, 0, "IM")==1) or (dam
 		}
 	}
 	
-	/* Pending to delete code
-	// Delete incidents (Actions)
-	if (isset($_POST["accion"])){
-		$id_inc = $_POST["id_inc"];
-		if ($_POST["accion"] == $lang_label["in_delinc"]){ // Delete Incident
-			$id_author_inc = give_incident_author($id_inc);
-			if (($_SESSION["id_usuario"] == $id_author_inc) OR dame_admin($_SESSION["id_usuario"])) {	
-				borrar_incidencia($id_inc);
-			} else {
-				audit_db($id_author_inc,$REMOTE_ADDR,"ACL Forbidden","User ".$_SESSION["id_usuario"]." try to update incident");
-				echo "<h3 class='error'>".$lang_label["del_incid_no"]."</h3>"; 
-				no_permission();
-			}
-		}
-	}
-	*/
-	
-	/* EXPLANATION FOR THiS PAGE:
-
-	Due to this form get data from other forms, variables are mixed in GET and POST inputs. Combo data originally comes
-	from POST inputs. All data from posts are translated below to GET INPUT, all posterior data process are using GET
-	because filter data are dynamically written to links to pass filter data between pages
-
-	*/
-		
 	// Search
 	$busqueda="";
 	if (isset($_POST["texto"]) OR (isset($_GET["texto"]))){
@@ -182,7 +157,7 @@ if (isset($_POST['operacion'])){
 </td>
 <td valign="middle"><noscript><input type="submit" class="sub" value="<?php echo $lang_label["show"] ?>" border="0"></noscript>
 </td>
-<td rowspan="5" class="f9130t">
+<td rowspan="5" class="f9l30t">
 <h3><?php echo $lang_label["status"] ?></h3>
 <img src='images/dot_red.gif'> - <?php echo $lang_label["opened_inc"] ?><br>
 <img src='images/dot_yellow.gif'> - <?php echo $lang_label["openedcom_inc"] ?><br>
@@ -190,7 +165,7 @@ if (isset($_POST['operacion'])){
 <img src='images/dot_green.gif'> - <?php echo $lang_label["closed_inc"] ?><br>
 <img src='images/dot_white.gif'> - <?php echo $lang_label["exp_inc"] ?></td>
 
-<td rowspan="5" class="f9130t">
+<td rowspan="5" class="f9l30t">
 <h3><?php echo $lang_label["priority"] ?></h3>
 <img src='images/dot_red.gif'><img src='images/dot_red.gif'><img src='images/dot_red.gif'> - <?php echo $lang_label["very_serious"] ?><br>
 <img src='images/dot_yellow.gif'><img src='images/dot_red.gif'><img src='images/dot_red.gif'> - <?php echo $lang_label["serious"] ?><br>

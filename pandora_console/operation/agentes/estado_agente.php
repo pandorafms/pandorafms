@@ -73,9 +73,9 @@ if (comprueba_login() == 0) {
 	// Show only selected groups	
 
 	if ($ag_group > 1)
-		$sql='SELECT * FROM tagente WHERE id_grupo='.$ag_group.' and disabled = 0 order by nombre';
+		$sql='SELECT * FROM tagente WHERE id_grupo='.$ag_group.' AND disabled = 0 ORDER BY nombre';
 	else 
-		$sql='SELECT * FROM tagente WHERE  disabled = 0 ORDER BY id_grupo, nombre';	
+		$sql='SELECT * FROM tagente WHERE disabled = 0 ORDER BY id_grupo, nombre';	
 
 	$result=mysql_query($sql);
 	if (mysql_num_rows($result)){
@@ -89,7 +89,7 @@ if (comprueba_login() == 0) {
 		echo "<td class='f9l30'>";
 		echo "<img src='images/dot_red.gif'> - ".$lang_label["fired"];
 		echo "&nbsp;&nbsp;</td>";
-		echo "<td class='f9'>";
+		echo "<td>";
 		echo "<img src='images/dot_green.gif'> - ".$lang_label["not_fired"];
 		echo "</td></tr></table>";
 		echo "<br>";

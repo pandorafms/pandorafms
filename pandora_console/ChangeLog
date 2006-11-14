@@ -1,7 +1,25 @@
+2006-11-14 Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/styles/pandora.css: Change some styles.
+	
+	* operation/agentes/estado_agente.php, 
+	operation/agentes/estado_alertas.php, 
+	operation/incidents/incident.php: Clear code, change styles.
+	
+	* operation/events/event.php: New selection for event type. EXPERIMENTAL.
+	TO DO: Add selection for groups.
+
 2006-11-13 Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/config.php: Change build date to correct order.
 
+2006-11-06 Raul Mateos  <raulofpandora@gmail.com>
+
+	* index.php: Added FMS to title
+
+	* include/languages/language_es_es.php, language_en.php,
+	language_es_la.php, language_it.php: Remove "distributed" from title
+	
 2006-10-31 Raul Mateos  <raulofpandora@gmail.com>
 
 	* operation/menu.php: Add highlighting when creating note in incidents

@@ -112,7 +112,7 @@ if (comprueba_login() == 0) {
 				$id_evento = $_POST["eventid".$count];
 				$id_group = gime_idgroup_from_idevent($id_evento);
 				if (give_acl($id_usuario, $id_group, "IW") ==1){
-					$sql2="UPDATE tevento SET estado=1, id_usuario = '".$id_usuario."' WHERE estado = 0 and id_evento = ".$id_evento;
+					$sql2="UPDATE tevento SET estado=1, id_usuario = '".$id_usuario."' WHERE estado = 0 AND id_evento = ".$id_evento;
 					$result2=mysql_query($sql2);
 				} else {
 					audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to checkout event ID".$id_evento);
@@ -124,10 +124,28 @@ if (comprueba_login() == 0) {
 
 	echo "<h2>".$lang_label["events"]."</h2>";
 	echo "<h3>".$lang_label["event_main_view"]."<a href='help/".$help_code."/chap5.php#5' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	echo "<table><tr>";
+	echo "<td>";
+	echo "<form method='post' action='index.php?sec=eventos&sec2=operation/events/events&refr=60'>";
+	echo "<select name='event' onChange='javascript:this.form.submit();' class='w155'>";
+
 
 	// Prepare index for pagination
 	$event_list[]="";
-	$sql2="SELECT * FROM tevento ORDER BY timestamp DESC";
+	if (isset($_POST["event"])){
+		$event = entrada_limpia($_POST["event"]);
+		if ($event=="All")
+		{
+			$sql2="SELECT * FROM tevento ORDER BY timestamp DESC";
+
+		} else {
+			$sql2="SELECT * FROM tevento WHERE evento = '$event' ORDER BY timestamp DESC";
+			echo "<option value='".$event."'>".$event;
+		}
+	} else {
+		$sql2="SELECT * FROM tevento ORDER BY timestamp DESC";
+	}
+	echo "<option value='All'>".$lang_label["all"];
 	$result2=mysql_query($sql2);
 	if (mysql_num_rows($result2)){
 		while ($row2=mysql_fetch_array($result2)){ // Jump offset records
@@ -141,17 +159,23 @@ if (comprueba_login() == 0) {
 			$offset=0;
 	
 		$offset_counter=0;
-
-	echo "<table><tr>";
-	echo "<td class='f9l30'>";
+	$sql='SELECT DISTINCT evento FROM tevento';
+	$result=mysql_query($sql);
+	while ($row=mysql_fetch_array($result)){
+			echo "<option value='".$row["evento"]."'>".$row["evento"];
+		}
+	echo "</select>";
+	echo "</form>";
+	echo "<td valign='middle'><noscript><input type='submit' class='sub' value='".$lang_label["show"]."' border='0'></noscript>";
+	echo "<td class='f9l30w17t'>";
 	echo "<img src='images/dot_green.gif'> - ".$lang_label["validated_event"];
 	echo "<br>";
 	echo "<img src='images/dot_red.gif'> - ".$lang_label["not_validated_event"];
 	echo "</td>";
-	echo "<td class='f9l20'>";  
+	echo "<td class='f9l30w17t'>";  
 	echo "<img src='images/ok.gif'> - ".$lang_label["validate_event"];
 	echo "<br>"; 
-	echo "<img src='images/cancel.gif '> - ".$lang_label["delete_event"];
+	echo "<img src='images/cancel.gif'> - ".$lang_label["delete_event"];
 	echo "</td>"; 
 	echo "</tr></table>";
 	echo "<br>";
@@ -159,30 +183,6 @@ if (comprueba_login() == 0) {
 	//pagination
 	$total_eventos = count($event_list);
 	pagination($total_eventos, "index.php?sec=eventos&sec2=operation/events/events", $offset);
-	/*
-	if ($total_eventos > $block_size){ 
-		// If existes more registers tha$row["id_usuario"]n i can put in a page, calculate index markers
-		$index_counter = ceil($total_eventos/$block_size);
-		for ($i = 1; $i <= $index_counter; $i++) {
-			$inicio_bloque = ($i * $block_size - $block_size);
-			$final_bloque = $i * $block_size;
-			if ($total_eventos < $final_bloque)
-				$final_bloque = $total_eventos;
-			echo '<a href="index.php?sec=eventos&sec2=eventos/eventos&offset='.$inicio_bloque.'">';
-			$inicio_bloque_fake = $inicio_bloque + 1;
-			if ($inicio_bloque == $offset)
-				echo '<b>[ '.$inicio_bloque_fake.' - '.$final_bloque.' ]</b>';
-			else 
-				echo '[ '.$inicio_bloque_fake.' - '.$final_bloque.' ]';
-			echo '</a> ';
-		}
-		echo "<br><br>";
-		// if exists more registers than i can put in a page (defined by $block_size config parameter)
-		// get offset for index calculation
-	}
-
-	echo "</div>";
-	*/
 	
 	if (isset($_GET["offset"])){
 		$offset=entrada_limpia($_GET["offset"]);
@@ -215,7 +215,16 @@ if (comprueba_login() == 0) {
 		if (isset($event_list[$a])) {
 			$id_evento = $event_list[$a]; 
 			if ($id_evento != ""){
-				$sql="SELECT * FROM tevento WHERE id_evento = $id_evento";
+				if (isset($_POST["event"])){
+					$event = entrada_limpia($_POST["event"]);
+					if ($event=="All") {
+						$sql="SELECT * FROM tevento WHERE id_evento = $id_evento";
+					} else {
+					$sql="SELECT * FROM tevento WHERE evento= '$event' AND id_evento = $id_evento";
+					}
+				} else {
+					$sql="SELECT * FROM tevento WHERE id_evento = $id_evento";
+				}
 				$result=mysql_query($sql);
 				$row=mysql_fetch_array($result);
 				$id_group = $row["id_grupo"];
@@ -267,7 +276,6 @@ if (comprueba_login() == 0) {
 		echo "<input class='sub' type='submit' name='deletebt' value='".$lang_label["delete"]."'>";
 	}
 	echo "</form></table>";
-	
 	}
 	else {echo "<font class='red'>".$lang_label["no_event"]."</font>";}
 	}

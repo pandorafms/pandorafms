@@ -158,7 +158,7 @@ if (comprueba_login() == 0) {
 				echo "<td class='f9l30'>";
 				echo "<img src='images/dot_red.gif'> - ".$lang_label["fired"];
 				echo "&nbsp;&nbsp;</td>";
-				echo "<td class='f9'>";
+				echo "<td>";
 				echo "<img src='images/dot_green.gif'> - ".$lang_label["not_fired"];
 				echo "</td></tr></table>";
 				echo "<br>";

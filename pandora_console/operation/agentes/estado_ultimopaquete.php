@@ -134,7 +134,7 @@ if (comprueba_login() == 0) {
 			if (($row3["id_tipo_modulo"] != 3) AND ($row3["id_tipo_modulo"]!=10) AND ($row3["id_tipo_modulo"]!=17)){
 
 				echo "<td class=".$tdcolor.">";
-				echo substr($row3["datos"],0,5);
+				echo substr($row3["datos"],0,9);
 				$handle = "stat".$nombre_tipo_modulo."_".$nombre_agente;
 				$url = 'reporting/procesos.php?agente='.$nombre_agente;
 				$win_handle=dechex(crc32($nombre_agente.$row3["nombre"]));

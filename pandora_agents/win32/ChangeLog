@@ -1,4 +1,16 @@
-2006-08-11  Esteban Sanchez  <estebans@artica.es>
+2006-11-17  Raúl Mateos  <raulofpandora@gmail.com>
+
+	* installer/Pandora_FMS_Windows_Agent-1.2-Setup.exe: New installer to 
+	include last binary file. This should be the last one before release
+	of Pandora FMS 1.2.
+	
+	* installer/start_pandora_agent.bat, installer/stop_pandora_agent.bat,
+	installer/LICENSE.txt, installer/README.txt: Added new files used by
+	the installer in shorcuts.
+	
+	* installer/pandora.mpi: Update installer script file.
+
+2006-11-08  Esteban Sanchez  <estebans@artica.es>
 
 	* ssh/libssh2/userauth.c: Fixed a bug when the public key file do
 	not finish with '\n' or '\r'.

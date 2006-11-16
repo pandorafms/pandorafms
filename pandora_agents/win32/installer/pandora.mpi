@@ -3,7 +3,7 @@ AllowLanguageSelection
 No
 
 AppName
-{Pandora Windows Agent}
+{Pandora Free Monitoring System Windows Agent}
 
 ApplicationID
 97CBF91D-0515-4D67-9A51-DC1814710701
@@ -42,10 +42,10 @@ Ext
 .exe
 
 Icon
-C:/Programas/InstallJammer/Images/Modern/Small/SetupModernSmall01.gif
+E:/SVN/pandora/trunk/pandora_agents/win32/installer/logo.png
 
 Image
-D:/Pandora/Img/logo.gif
+E:/SVN/pandora/trunk/pandora_agents/win32/installer/logo.png
 
 IncludeDebugging
 Yes
@@ -63,7 +63,7 @@ ProjectVersion
 1.0.3.0
 
 ShortAppName
-Pandora
+{Pandora FMS}
 
 SkipUnusedFileGroups
 Yes
@@ -78,38 +78,89 @@ ThemeVersion
 1
 
 Version
-1.2_Beta_3
+1.2
 
 ViewReadme
 Yes
 
 }
 
-FileGroup ::D423DC2C-F9C9-43EA-99A5-1873B77AC840 -setup Install -type filegroup -active Yes -platforms Windows -name Pandora -parent FileGroups
-File ::10419D7A-E86A-4136-A692-5D7A3C9B2CF9 -name D:/Pandora/Installer-Pandora/key -type dir -parent D423DC2C-F9C9-43EA-99A5-1873B77AC840
-File ::45DE32D5-92B7-401E-A836-CBE91C3FD182 -name D:/Pandora/Installer-Pandora/key/PUT_SSH_KEYS_HERE -type file -parent 10419D7A-E86A-4136-A692-5D7A3C9B2CF9
-File ::D35194CC-D332-4A44-95EC-CCD77828A73C -name D:/Pandora/Installer-Pandora/util -type dir -parent D423DC2C-F9C9-43EA-99A5-1873B77AC840
-File ::D4B15F08-631E-4EEC-A177-0A17AEEB4A40 -name D:/Pandora/Installer-Pandora/util/cut.exe -type file -parent D35194CC-D332-4A44-95EC-CCD77828A73C
-File ::481ADC11-36A0-498E-9B53-72FF90984FF0 -name D:/Pandora/Installer-Pandora/util/date.exe -type file -parent D35194CC-D332-4A44-95EC-CCD77828A73C
-File ::FBDBC949-2FBD-413C-91F5-25C104F8A91F -name D:/Pandora/Installer-Pandora/util/expr.exe -type file -parent D35194CC-D332-4A44-95EC-CCD77828A73C
-File ::BB69D706-F421-4F3C-8639-80188342BBA4 -name D:/Pandora/Installer-Pandora/util/gawk.exe -type file -parent D35194CC-D332-4A44-95EC-CCD77828A73C
-File ::4520B061-1C24-4627-BE09-E71A712CB145 -name D:/Pandora/Installer-Pandora/util/grep.exe -type file -parent D35194CC-D332-4A44-95EC-CCD77828A73C
-File ::0BB26112-4AED-40B4-B6FA-2804D13E5B16 -name D:/Pandora/Installer-Pandora/util/head.exe -type file -parent D35194CC-D332-4A44-95EC-CCD77828A73C
-File ::15930FC4-427B-42C7-8162-686FFD0C8FC6 -name D:/Pandora/Installer-Pandora/util/ls.exe -type file -parent D35194CC-D332-4A44-95EC-CCD77828A73C
-File ::41F7F092-4FDC-4E9F-846C-A41E85EEBDD9 -name D:/Pandora/Installer-Pandora/util/md5.exe -type file -parent D35194CC-D332-4A44-95EC-CCD77828A73C
-File ::5CF29D04-91C1-4AE8-B19A-B636BEA7B9B1 -name D:/Pandora/Installer-Pandora/util/puttygen.exe -type file -parent D35194CC-D332-4A44-95EC-CCD77828A73C
-File ::778B7689-3CB7-432E-A9A9-061493884193 -name D:/Pandora/Installer-Pandora/util/tail.exe -type file -parent D35194CC-D332-4A44-95EC-CCD77828A73C
-File ::DB83E4BC-3737-4637-AC41-B927309B0F49 -name D:/Pandora/Installer-Pandora/util/tr.exe -type file -parent D35194CC-D332-4A44-95EC-CCD77828A73C
-File ::A674F7B2-31E1-4126-84A7-2647999E8AD6 -name D:/Pandora/Installer-Pandora/util/wc.exe -type file -parent D35194CC-D332-4A44-95EC-CCD77828A73C
-File ::E2F88C04-77B6-403B-9754-42AF7ED87309 -name D:/Pandora/Installer-Pandora/libeay32.dll -type file -parent D423DC2C-F9C9-43EA-99A5-1873B77AC840
-File ::32796141-72FA-4368-8DFD-D2D67E9326C1 -name D:/Pandora/Installer-Pandora/LICENSE.txt -type file -parent D423DC2C-F9C9-43EA-99A5-1873B77AC840
-File ::BA4C9FDA-00A7-40AF-9130-DF9B60FF500F -name D:/Pandora/Installer-Pandora/pandora.ico -type file -parent D423DC2C-F9C9-43EA-99A5-1873B77AC840
-File ::59B6D141-FF1E-4935-9AE5-F441B4D9770F -name D:/Pandora/Installer-Pandora/pandora_agent.conf -type file -parent D423DC2C-F9C9-43EA-99A5-1873B77AC840
-File ::AD999D67-2FBD-4C74-AD64-99A953113FB9 -name D:/Pandora/Installer-Pandora/PandoraAgent.exe -type file -parent D423DC2C-F9C9-43EA-99A5-1873B77AC840
-File ::F51C11BD-4B23-4884-8F4F-960A7B38EB09 -name D:/Pandora/Installer-Pandora/README.txt -type file -parent D423DC2C-F9C9-43EA-99A5-1873B77AC840
-File ::D4748850-1E9F-4C74-AA12-01927CB471B2 -name D:/Pandora/Installer-Pandora/start_pandora_agent.bat -type file -parent D423DC2C-F9C9-43EA-99A5-1873B77AC840
-File ::3C0C58AD-E562-4C2F-B8A7-396E1213510F -name D:/Pandora/Installer-Pandora/stop_pandora_agent.bat -type file -parent D423DC2C-F9C9-43EA-99A5-1873B77AC840
-File ::C493C536-639C-41BC-95CD-F4FA8622F51E -name D:/Pandora/Installer-Pandora/zlib1.dll -type file -parent D423DC2C-F9C9-43EA-99A5-1873B77AC840
+FileGroup ::AC33C2B4-AB01-4572-802B-BA89E7661C04 -setup Install -type filegroup -active Yes -platforms Windows -name Pandora -parent FileGroups
+File ::6DA2A3A6-1067-4E78-9588-557D5EFD6246 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/key -type dir -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
+File ::5C4CD905-0532-4F03-8C35-89786ED2CEB3 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/key/id_dsa -type file -active 0 -parent 6DA2A3A6-1067-4E78-9588-557D5EFD6246
+File ::FC77F4B2-AC48-4803-B746-D5919B79E1BA -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/key/id_dsa.pub -type file -active 0 -parent 6DA2A3A6-1067-4E78-9588-557D5EFD6246
+File ::732880DD-6768-46CB-BB70-7980E56441A6 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/key/PUT_SSH_KEYS_HERE -type file -parent 6DA2A3A6-1067-4E78-9588-557D5EFD6246
+File ::5FFFA207-1CAE-4B67-9D15-C27B5FC6FC4C -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/key/.svn -type dir -active 0 -parent 6DA2A3A6-1067-4E78-9588-557D5EFD6246
+File ::EBCEA2A0-6F2D-4D7F-B180-BE5A5B13D403 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/key/.svn/all-wcprops -type file -parent 5FFFA207-1CAE-4B67-9D15-C27B5FC6FC4C
+File ::3461D1A8-36B4-40C5-8ABD-B27E8AA11EE4 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/key/.svn/entries -type file -parent 5FFFA207-1CAE-4B67-9D15-C27B5FC6FC4C
+File ::DD0A0259-F170-4E65-B43B-CC4439D1103F -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/key/.svn/format -type file -parent 5FFFA207-1CAE-4B67-9D15-C27B5FC6FC4C
+File ::E5FAA25B-3003-4298-B513-54F3FDD1F96D -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/key/.svn/prop-base -type dir -active 0 -parent 5FFFA207-1CAE-4B67-9D15-C27B5FC6FC4C
+File ::CC184E9C-07E4-48C5-AFD4-843388870401 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/key/.svn/props -type dir -active 0 -parent 5FFFA207-1CAE-4B67-9D15-C27B5FC6FC4C
+File ::04F5CA15-2F5A-4AE1-919E-DA2F756A0D70 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/key/.svn/text-base -type dir -active 0 -parent 5FFFA207-1CAE-4B67-9D15-C27B5FC6FC4C
+File ::721E2D79-7EA5-4EF8-BB32-F20A6422E2E4 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/key/.svn/text-base/PUT_SSH_KEYS_HERE.svn-base -type file -parent 04F5CA15-2F5A-4AE1-919E-DA2F756A0D70
+File ::FB2996BC-41B6-4A2A-800C-32C896CB2254 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/key/.svn/tmp -type dir -active 0 -parent 5FFFA207-1CAE-4B67-9D15-C27B5FC6FC4C
+File ::92DB9904-CB82-459D-8E21-32D9240099D8 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/key/.svn/tmp/prop-base -type dir -parent FB2996BC-41B6-4A2A-800C-32C896CB2254
+File ::E22186B4-1AD5-4E07-A767-3B84901F00BD -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/key/.svn/tmp/props -type dir -parent FB2996BC-41B6-4A2A-800C-32C896CB2254
+File ::7B5A6BC9-AA3A-41B7-9918-BECAFCBDC9E3 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/key/.svn/tmp/text-base -type dir -parent FB2996BC-41B6-4A2A-800C-32C896CB2254
+File ::E4BA4651-AE89-4F4F-BADC-00162647E5E9 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/key/.svn/tmp/wcprops -type dir -parent FB2996BC-41B6-4A2A-800C-32C896CB2254
+File ::253702CB-C5FD-47A3-8C1B-BEE11167D259 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util -type dir -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
+File ::773340B0-9FF7-4CAA-8B83-0BC7F9A30921 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/cut.exe -type file -parent 253702CB-C5FD-47A3-8C1B-BEE11167D259
+File ::3753FFC9-BF8F-4872-B856-0DB200BEBBBC -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/date.exe -type file -parent 253702CB-C5FD-47A3-8C1B-BEE11167D259
+File ::A0979F93-D3DF-41D8-AE23-7139D9E0F63E -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/expr.exe -type file -parent 253702CB-C5FD-47A3-8C1B-BEE11167D259
+File ::BB1B7D14-F5A7-4FDA-BEA9-97E64F6BCAF2 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/gawk.exe -type file -parent 253702CB-C5FD-47A3-8C1B-BEE11167D259
+File ::7117B0AE-D209-4057-AB22-D78262E5DE4B -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/grep.exe -type file -parent 253702CB-C5FD-47A3-8C1B-BEE11167D259
+File ::0384937F-14C6-4F57-AB1F-537E36B4968C -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/head.exe -type file -parent 253702CB-C5FD-47A3-8C1B-BEE11167D259
+File ::6F485128-442A-4BBE-BCEA-91D6E0561F7C -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/ls.exe -type file -parent 253702CB-C5FD-47A3-8C1B-BEE11167D259
+File ::F3B64EA8-B2C0-490B-B52B-2FD8342221A9 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/md5.exe -type file -parent 253702CB-C5FD-47A3-8C1B-BEE11167D259
+File ::7CE0D0A8-DF39-4A4F-B130-DD5A4550ADC7 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/puttygen.exe -type file -parent 253702CB-C5FD-47A3-8C1B-BEE11167D259
+File ::F6C0A697-316C-4F8D-A760-58C91C0520B7 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/tail.exe -type file -parent 253702CB-C5FD-47A3-8C1B-BEE11167D259
+File ::1F4821FF-1F78-4621-B220-E837483D4724 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/tr.exe -type file -parent 253702CB-C5FD-47A3-8C1B-BEE11167D259
+File ::8583B998-89A2-4DC9-A50B-3E09FC4A572F -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/wc.exe -type file -parent 253702CB-C5FD-47A3-8C1B-BEE11167D259
+File ::DCAEE111-50C6-4C9B-92CA-EFA23EA12DD5 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn -type dir -active 0 -parent 253702CB-C5FD-47A3-8C1B-BEE11167D259
+File ::25EBA718-1AEB-42B7-803D-891DC69B4A0E -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/all-wcprops -type file -active 0 -parent DCAEE111-50C6-4C9B-92CA-EFA23EA12DD5
+File ::736B9DA9-F2DD-4CD6-AE61-1035508712FB -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/entries -type file -active 0 -parent DCAEE111-50C6-4C9B-92CA-EFA23EA12DD5
+File ::46BB1829-5B71-4B77-AA6C-AD8F40E72068 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/format -type file -active 0 -parent DCAEE111-50C6-4C9B-92CA-EFA23EA12DD5
+File ::AA016215-95B1-4523-BD3D-545DBFFFE726 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/prop-base -type dir -active 0 -parent DCAEE111-50C6-4C9B-92CA-EFA23EA12DD5
+File ::B48BCB30-54CB-499C-A244-09F94DA2DF44 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/prop-base/cut.exe.svn-base -type file -parent AA016215-95B1-4523-BD3D-545DBFFFE726
+File ::FB88D44D-60DB-4581-85DA-F37B46E10F51 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/prop-base/date.exe.svn-base -type file -parent AA016215-95B1-4523-BD3D-545DBFFFE726
+File ::E9CC0D7C-754C-4F9F-8913-CF4B777A887E -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/prop-base/expr.exe.svn-base -type file -parent AA016215-95B1-4523-BD3D-545DBFFFE726
+File ::6368AAA2-4E4A-4464-A603-55C54D2D8179 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/prop-base/gawk.exe.svn-base -type file -parent AA016215-95B1-4523-BD3D-545DBFFFE726
+File ::4C1005EA-9270-4F1D-91FD-42FDCF3CD4D2 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/prop-base/grep.exe.svn-base -type file -parent AA016215-95B1-4523-BD3D-545DBFFFE726
+File ::B652B446-1B02-4581-85A8-6D865BA287B8 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/prop-base/head.exe.svn-base -type file -parent AA016215-95B1-4523-BD3D-545DBFFFE726
+File ::4577522D-0E3E-4C1B-8E81-48A3F7A662CE -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/prop-base/ls.exe.svn-base -type file -parent AA016215-95B1-4523-BD3D-545DBFFFE726
+File ::5C20FF0B-6150-48AA-8F02-2A05B9EB02E3 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/prop-base/md5.exe.svn-base -type file -parent AA016215-95B1-4523-BD3D-545DBFFFE726
+File ::4C21736A-9D36-44EE-B058-EEC6FC633AFE -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/prop-base/puttygen.exe.svn-base -type file -parent AA016215-95B1-4523-BD3D-545DBFFFE726
+File ::F5C39B10-311C-47E5-A80B-8CADBDBF7977 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/prop-base/tail.exe.svn-base -type file -parent AA016215-95B1-4523-BD3D-545DBFFFE726
+File ::53DCB266-805F-46BF-85B4-1F42CC391E6D -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/prop-base/tr.exe.svn-base -type file -parent AA016215-95B1-4523-BD3D-545DBFFFE726
+File ::1CAFC877-563C-4D97-A6EA-DAE7F3824ECC -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/prop-base/wc.exe.svn-base -type file -parent AA016215-95B1-4523-BD3D-545DBFFFE726
+File ::1974B6A9-3363-4DCD-98A1-D14C36FCF5C2 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/props -type dir -active 0 -parent DCAEE111-50C6-4C9B-92CA-EFA23EA12DD5
+File ::38D4EED6-A914-41CF-AE68-ABF00EDE4891 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/text-base -type dir -active 0 -parent DCAEE111-50C6-4C9B-92CA-EFA23EA12DD5
+File ::E9F53969-9211-487A-A98E-8066E5393B03 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/text-base/cut.exe.svn-base -type file -parent 38D4EED6-A914-41CF-AE68-ABF00EDE4891
+File ::C64C1FC5-A813-45C0-973B-5838DC2C1CB1 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/text-base/date.exe.svn-base -type file -parent 38D4EED6-A914-41CF-AE68-ABF00EDE4891
+File ::F5F379BD-9E45-42FE-8B17-B2988B413640 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/text-base/expr.exe.svn-base -type file -parent 38D4EED6-A914-41CF-AE68-ABF00EDE4891
+File ::DACBEC77-204C-4919-ABF7-B0A9E04B8ED5 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/text-base/gawk.exe.svn-base -type file -parent 38D4EED6-A914-41CF-AE68-ABF00EDE4891
+File ::148DF6BA-B717-46E1-92D7-600B504EB7BD -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/text-base/grep.exe.svn-base -type file -parent 38D4EED6-A914-41CF-AE68-ABF00EDE4891
+File ::8916126C-1357-4C50-A202-99718879369B -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/text-base/head.exe.svn-base -type file -parent 38D4EED6-A914-41CF-AE68-ABF00EDE4891
+File ::6F8C4F15-4295-4403-8FDC-3816B02002EB -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/text-base/ls.exe.svn-base -type file -parent 38D4EED6-A914-41CF-AE68-ABF00EDE4891
+File ::8D148B9E-7DA6-4607-AB21-A4358762CFAA -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/text-base/md5.exe.svn-base -type file -parent 38D4EED6-A914-41CF-AE68-ABF00EDE4891
+File ::A0CE3364-E2FC-4068-AE07-375DD3033CDD -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/text-base/puttygen.exe.svn-base -type file -parent 38D4EED6-A914-41CF-AE68-ABF00EDE4891
+File ::2D31828D-65A1-44C1-9D4F-017A60999954 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/text-base/tail.exe.svn-base -type file -parent 38D4EED6-A914-41CF-AE68-ABF00EDE4891
+File ::15FC5008-32B2-47F6-9960-33B74DE9FE32 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/text-base/tr.exe.svn-base -type file -parent 38D4EED6-A914-41CF-AE68-ABF00EDE4891
+File ::81B3FE5C-DB31-471C-B04E-38FF698274DD -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/text-base/wc.exe.svn-base -type file -parent 38D4EED6-A914-41CF-AE68-ABF00EDE4891
+File ::058FC295-6EB3-472C-8908-5A2ACE924B6C -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/tmp -type dir -active 0 -parent DCAEE111-50C6-4C9B-92CA-EFA23EA12DD5
+File ::7809D0DE-6E83-42E3-81ED-BE6233F49948 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/tmp/prop-base -type dir -parent 058FC295-6EB3-472C-8908-5A2ACE924B6C
+File ::B5D109E7-7790-47E6-B900-84FBE227587E -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/tmp/props -type dir -parent 058FC295-6EB3-472C-8908-5A2ACE924B6C
+File ::0C0BB512-76DC-4D94-97E6-0C15B41513B9 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/tmp/text-base -type dir -parent 058FC295-6EB3-472C-8908-5A2ACE924B6C
+File ::C03923C7-FE97-462F-865D-006541C55554 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/util/.svn/tmp/wcprops -type dir -parent 058FC295-6EB3-472C-8908-5A2ACE924B6C
+File ::5C296981-DD34-430A-921F-1B392C4D9D4D -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/libeay32.dll -type file -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
+File ::5AE89E3D-CED2-4A3E-A6B2-3F078DD5AFF5 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/pandora_agent.conf -type file -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
+File ::F9B74871-5757-4867-8C4F-5C73BC52D864 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/PandoraAgent.exe -type file -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
+File ::51F64B0B-3CE8-4964-9FC5-970BEEEA0EA5 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/zlib1.dll -type file -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
+File ::4936082A-240C-4873-BF8F-1E8F1706B0CA -name E:/SVN/pandora/trunk/pandora_agents/win32/installer/pandora.ico -type file -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
+File ::948C2E48-E7F8-4339-8E5E-494B1E949A25 -name E:/SVN/pandora/trunk/pandora_agents/win32/installer/README.txt -type file -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
+File ::B28881B7-6060-4FBB-B450-0C3F660112F5 -name E:/SVN/pandora/trunk/pandora_agents/win32/installer/stop_pandora_agent.bat -type file -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
+File ::4D5F0FE2-6A5C-4473-9020-F492C10DA248 -name E:/SVN/pandora/trunk/pandora_agents/win32/installer/start_pandora_agent.bat -type file -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
+File ::3ADC9E8F-2866-47C1-A374-E9F1F4A67D8F -name E:/SVN/pandora/trunk/pandora_agents/win32/installer/LICENSE.txt -type file -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
 Component ::10A1AE8A-A5C5-4F0E-8D15-FC176DF534B0 -setup Install -type component -active Yes -platforms {Linux-x86 Windows} -name Instalable -parent Components
 SetupType ::7080336B-65E6-4818-9201-068FFEA6FB3A -setup Install -type setuptype -active Yes -platforms Windows -name Typical -parent SetupTypes
 
@@ -160,13 +211,6 @@ Condition A9B19865-C97D-4C2B-B147-45025214786C -active Yes -parent B5120279-23E9
 InstallComponent 1F7C75DC-8004-46C9-A39C-6E852C05E103 -setup Install -conditions {86A623D9-F175-4F3E-97B5-15D52B7B9874 02CCB56D-6D6D-4279-B617-DA980BBA0FC8} -title {Launch Application Checkbutton} -component AddWidget -command insert -type action -active Yes -parent 1A3AA32B-20A3-4919-B9F2-782D9E158017
 Condition 86A623D9-F175-4F3E-97B5-15D52B7B9874 -active Yes -parent 1F7C75DC-8004-46C9-A39C-6E852C05E103 -title {File Exists Condition} -component FileExistsCondition
 Condition 02CCB56D-6D6D-4279-B617-DA980BBA0FC8 -active Yes -parent 1F7C75DC-8004-46C9-A39C-6E852C05E103 -title {String Is Condition} -component StringIsCondition
-InstallComponent 308E0161-3353-4A59-88CE-7D8EF4CC769C -setup Install -conditions {7E7AD9C6-5A9C-4D0D-870E-381E459CC5FD F4B2A831-D9FA-4072-B9A0-337CBA8AE553} -title {Desktop Shortcut Checkbutton} -component AddWidget -command insert -type action -active Yes -parent 1A3AA32B-20A3-4919-B9F2-782D9E158017
-Condition 7E7AD9C6-5A9C-4D0D-870E-381E459CC5FD -active Yes -parent 308E0161-3353-4A59-88CE-7D8EF4CC769C -title {File Exists Condition} -component FileExistsCondition
-Condition F4B2A831-D9FA-4072-B9A0-337CBA8AE553 -active Yes -parent 308E0161-3353-4A59-88CE-7D8EF4CC769C -title {String Is Condition} -component StringIsCondition
-InstallComponent B62CA434-3DDE-4196-A536-6F84033DDB00 -setup Install -conditions {66FDB613-FCED-4499-934B-5D75E49FDB88 35B1D17D-B545-4005-880A-42F0B31BD60B 05BCA20F-9D3D-4E91-9D85-680F9C49E4E2} -title {Quick Launch Shortcut Checkbutton} -component AddWidget -command insert -type action -active Yes -parent 1A3AA32B-20A3-4919-B9F2-782D9E158017
-Condition 66FDB613-FCED-4499-934B-5D75E49FDB88 -active Yes -parent B62CA434-3DDE-4196-A536-6F84033DDB00 -title {Platform Condition} -component PlatformCondition
-Condition 35B1D17D-B545-4005-880A-42F0B31BD60B -active Yes -parent B62CA434-3DDE-4196-A536-6F84033DDB00 -title {File Exists Condition} -component FileExistsCondition
-Condition 05BCA20F-9D3D-4E91-9D85-680F9C49E4E2 -active Yes -parent B62CA434-3DDE-4196-A536-6F84033DDB00 -title {String Is Condition} -component StringIsCondition
 InstallComponent 862253D2-7CCE-4650-A41F-1296A320A8B1 -setup Install -title {Execute Action} -component ExecuteAction -type action -active Yes -parent SilentInstall
 InstallComponent 7DE8CA95-CD7F-4DB0-8769-3D03363F2A4C -setup Install -title Exit -component Exit -type action -active Yes -parent SilentInstall
 InstallComponent 23FCB9D3-7AA3-4034-8579-EB66379E46C8 -setup Install -title {Startup Actions} -type actiongroup -active Yes -parent ActionGroupsInstall
@@ -184,13 +228,6 @@ Condition 0ABCD476-DEC8-4DEC-8D34-E4604F4ABA32 -active Yes -parent 737CD05E-BAAA
 InstallComponent 7CD927B3-1A87-47E1-999D-1A8C8824531D -setup Install -conditions 9F64A2D3-C999-4D4F-A87A-EDFDC1954973 -title {Uninstall Shortcut} -component InstallWindowsShortcut -command insert -type action -active Yes -parent E09D0867-6CDD-4A4C-B3F1-E5BB868CD728
 Condition 9F64A2D3-C999-4D4F-A87A-EDFDC1954973 -active Yes -parent 7CD927B3-1A87-47E1-999D-1A8C8824531D -title {Platform Condition} -component PlatformCondition
 InstallComponent 3A1A2BDA-B8F8-4F63-8D49-58A7C46D4BCB -setup Install -title {Finish Actions} -type actiongroup -active Yes -parent ActionGroupsInstall
-InstallComponent 3B072EBF-DE43-4342-826A-F8F391DD4F42 -setup Install -conditions {C57D91D7-5E4E-4DE9-90E3-3D0B0CF14ACC 147A0F6B-94EA-46BA-91FD-E9B30D62D3BB} -title {Install Desktop Shortcut} -component InstallDesktopShortcut -command insert -type action -active Yes -parent 3A1A2BDA-B8F8-4F63-8D49-58A7C46D4BCB
-Condition C57D91D7-5E4E-4DE9-90E3-3D0B0CF14ACC -active Yes -parent 3B072EBF-DE43-4342-826A-F8F391DD4F42 -title {String Is Condition} -component StringIsCondition
-Condition 147A0F6B-94EA-46BA-91FD-E9B30D62D3BB -active Yes -parent 3B072EBF-DE43-4342-826A-F8F391DD4F42 -title {File Exists Condition} -component FileExistsCondition
-InstallComponent E2C937B7-E82D-4008-A205-5548FD1B686B -setup Install -conditions {DDD1CA35-5774-4A2F-AF96-0DAB3B44886A 776B37CD-CDEC-40FE-9152-AB21F1FCA42A A68F31DB-E0CF-4001-AD30-6CD3EB18C32C} -title {Install Quick Launch Shortcut} -component InstallWindowsShortcut -command insert -type action -active Yes -parent 3A1A2BDA-B8F8-4F63-8D49-58A7C46D4BCB
-Condition DDD1CA35-5774-4A2F-AF96-0DAB3B44886A -active Yes -parent E2C937B7-E82D-4008-A205-5548FD1B686B -title {String Is Condition} -component StringIsCondition
-Condition 776B37CD-CDEC-40FE-9152-AB21F1FCA42A -active Yes -parent E2C937B7-E82D-4008-A205-5548FD1B686B -title {Platform Condition} -component PlatformCondition
-Condition A68F31DB-E0CF-4001-AD30-6CD3EB18C32C -active Yes -parent E2C937B7-E82D-4008-A205-5548FD1B686B -title {File Exists Condition} -component FileExistsCondition
 InstallComponent 333668BE-FF48-4EBC-BDE5-F06A9CB5A099 -setup Install -conditions {B3EF0677-2D7E-471F-AD14-7EA1D2ED4021 F9B1158A-D9CD-4BBD-AFFB-06F80CE84DB3 71467F66-E145-41DF-A197-5F2760A1C9CD} -title {View Readme Window} -component TextWindow -command insert -type action -active Yes -parent 3A1A2BDA-B8F8-4F63-8D49-58A7C46D4BCB
 Condition B3EF0677-2D7E-471F-AD14-7EA1D2ED4021 -active Yes -parent 333668BE-FF48-4EBC-BDE5-F06A9CB5A099 -title {String Is Condition} -component StringIsCondition
 Condition F9B1158A-D9CD-4BBD-AFFB-06F80CE84DB3 -active Yes -parent 333668BE-FF48-4EBC-BDE5-F06A9CB5A099 -title {String Is Condition} -component StringIsCondition
@@ -224,6 +261,9 @@ InstallComponent 0ABA7462-20D0-4529-B75F-37E8525668BD -setup Uninstall -title {F
 InstallComponent C3F33EA6-1694-4CDD-9A50-89D3E46E780F -setup Uninstall -title {Cancel Actions} -type actiongroup -active Yes -parent ActionGroupsUninstall
 
 array set Properties {
+0208E3DF-A646-4450-A71E-8FE6BAAC9B3A,Conditions
+{0 conditions}
+
 0208E3DF-A646-4450-A71E-8FE6BAAC9B3A,State
 disabled
 
@@ -241,12 +281,6 @@ Windows
 
 05AB3D42-63A6-4A2D-90B7-5E0647445351,Conditions
 {0 conditions}
-
-05BCA20F-9D3D-4E91-9D85-680F9C49E4E2,Operator
-false
-
-05BCA20F-9D3D-4E91-9D85-680F9C49E4E2,String
-<%InstallStopped%>
 
 062A52B5-D9BA-43E7-A6B4-3C3FBD33ED83,Conditions
 {0 conditions}
@@ -288,16 +322,13 @@ Windows
 1
 
 10A1AE8A-A5C5-4F0E-8D15-FC176DF534B0,FileGroups
-D423DC2C-F9C9-43EA-99A5-1873B77AC840
+AC33C2B4-AB01-4572-802B-BA89E7661C04
 
 10A1AE8A-A5C5-4F0E-8D15-FC176DF534B0,Name
 Instalable
 
 10A1AE8A-A5C5-4F0E-8D15-FC176DF534B0,RequiredComponent
 Yes
-
-147A0F6B-94EA-46BA-91FD-E9B30D62D3BB,Filename
-<%ProgramExecutable%>
 
 14C49B0E-CDD3-42F5-9840-47CFA13F7C1C,BackButton,subst
 1
@@ -410,27 +441,6 @@ Readme
 28F7E616-CB61-4A58-8395-12704E80AB90,Action
 {Uninstall Actions}
 
-308E0161-3353-4A59-88CE-7D8EF4CC769C,Background
-white
-
-308E0161-3353-4A59-88CE-7D8EF4CC769C,Conditions
-{2 conditions}
-
-308E0161-3353-4A59-88CE-7D8EF4CC769C,Text,subst
-1
-
-308E0161-3353-4A59-88CE-7D8EF4CC769C,Type
-checkbutton
-
-308E0161-3353-4A59-88CE-7D8EF4CC769C,VirtualText
-CreateDesktopShortcut
-
-308E0161-3353-4A59-88CE-7D8EF4CC769C,X
-185
-
-308E0161-3353-4A59-88CE-7D8EF4CC769C,Y
-180
-
 315C9A80-ADCA-476A-9748-82FC6835170B,ProgramCommandLine
 <%ProgramExecutable%>
 
@@ -470,9 +480,6 @@ Message
 34850665-453F-4650-9386-204DA165E04F,String
 <%LaunchApplication%>
 
-35B1D17D-B545-4005-880A-42F0B31BD60B,Filename
-<%ProgramExecutable%>
-
 38417056-79C6-47B0-81D4-BD9EE0F6223D,Operator
 false
 
@@ -490,15 +497,6 @@ NextButton
 
 3A1A2BDA-B8F8-4F63-8D49-58A7C46D4BCB,Alias
 {Finish Actions}
-
-3B072EBF-DE43-4342-826A-F8F391DD4F42,ShortcutName
-<%AppName%>
-
-3B072EBF-DE43-4342-826A-F8F391DD4F42,TargetFileName
-<%ProgramExecutable%>
-
-3B072EBF-DE43-4342-826A-F8F391DD4F42,WorkingDirectory
-<%InstallDir%>
 
 3E668536-AEF9-48A5-A5D0-1DE224E0D276,FailureMessage
 {ERROR: I can't find the PandoraAgent.exe file}
@@ -626,7 +624,7 @@ Uninstaller
 {<%InstallDir%>\pandora.ico}
 
 61C2FDF5-242F-4982-BBC8-F71CBA9C5DE3,ShortcutName
-{Start Pandora Agent Service}
+{Start Pandora FMS Agent Service}
 
 61C2FDF5-242F-4982-BBC8-F71CBA9C5DE3,TargetFileName
 {<%InstallDir%>\start_pandora_agent.bat}
@@ -664,9 +662,6 @@ Uninstaller
 661189B2-8DBD-4E1E-B2A5-FF7C435C1623,Title,subst
 1
 
-66FDB613-FCED-4499-934B-5D75E49FDB88,Platform
-Windows
-
 7080336B-65E6-4818-9201-068FFEA6FB3A,Components
 10A1AE8A-A5C5-4F0E-8D15-FC176DF534B0
 
@@ -687,9 +682,6 @@ Typical
 
 737CD05E-BAAA-470E-8BED-CB5EAED9A415,WorkingDirectory
 <%InstallDir%>
-
-776B37CD-CDEC-40FE-9152-AB21F1FCA42A,Platform
-Windows
 
 77AAF6D2-BB64-4080-A1C8-4F3373A31A3A,Conditions
 {0 conditions}
@@ -747,9 +739,6 @@ Windows
 
 7DE8CA95-CD7F-4DB0-8769-3D03363F2A4C,ExitType
 Finish
-
-7E7AD9C6-5A9C-4D0D-870E-381E459CC5FD,Filename
-<%ProgramExecutable%>
 
 862253D2-7CCE-4650-A41F-1296A320A8B1,Action
 {Install Actions}
@@ -823,7 +812,7 @@ Yes
 {<%InstallDir%>\pandora.ico}
 
 9595B40E-22BA-4E6D-AB81-1292E482FB6F,ShortcutName
-{Stop Pandora Agent Service}
+{Stop Pandora FMS Agent Service}
 
 9595B40E-22BA-4E6D-AB81-1292E482FB6F,TargetFileName
 {<%InstallDir%>\stop_pandora_agent.bat}
@@ -845,6 +834,9 @@ Yes
 
 9B6AAE09-27A3-43ED-ABF7-E990112D3143,Caption,subst
 1
+
+9B6AAE09-27A3-43ED-ABF7-E990112D3143,Conditions
+{0 conditions}
 
 9B6AAE09-27A3-43ED-ABF7-E990112D3143,FileLabel,subst
 1
@@ -870,9 +862,6 @@ Windows
 A247675F-046A-4C9F-814B-41527A5B4EA2,Conditions
 {0 conditions}
 
-A68F31DB-E0CF-4001-AD30-6CD3EB18C32C,Filename
-<%ProgramExecutable%>
-
 A9B19865-C97D-4C2B-B147-45025214786C,Operator
 false
 
@@ -887,6 +876,15 @@ false
 
 AB84BA85-FF76-4615-BC55-02974C54C689,String
 <%SilentMode%>
+
+AC33C2B4-AB01-4572-802B-BA89E7661C04,Destination
+<%InstallDir%>
+
+AC33C2B4-AB01-4572-802B-BA89E7661C04,Name
+Pandora
+
+AC33C2B4-AB01-4572-802B-BA89E7661C04,Size
+7669132
 
 B1313CDD-A5DA-4A72-ABCF-59E341F46E5A,FailureMessage
 {Error initiating service}
@@ -942,31 +940,13 @@ B5120279-23E9-4757-99A3-548F029D0421,X
 B5120279-23E9-4757-99A3-548F029D0421,Y
 140
 
-B62CA434-3DDE-4196-A536-6F84033DDB00,Background
-white
-
-B62CA434-3DDE-4196-A536-6F84033DDB00,Conditions
-{3 conditions}
-
-B62CA434-3DDE-4196-A536-6F84033DDB00,Text,subst
-1
-
-B62CA434-3DDE-4196-A536-6F84033DDB00,Type
-checkbutton
-
-B62CA434-3DDE-4196-A536-6F84033DDB00,VirtualText
-CreateQuickLaunchShortcut
-
-B62CA434-3DDE-4196-A536-6F84033DDB00,X
-185
-
-B62CA434-3DDE-4196-A536-6F84033DDB00,Y
-200
-
 B6705E80-0395-453A-BC1D-E1BBD8D3FFB2,Alias
 {Startup Actions}
 
 B865820C-DFF0-4A19-AFBE-8CC0136543CF,Conditions
+{0 conditions}
+
+C00AB7AE-9C93-4BD0-B5AE-1E46C8AF33A2,Conditions
 {0 conditions}
 
 C0ABB0FC-E4C3-4955-B16C-37FA5C6DCA28,Conditions
@@ -995,18 +975,6 @@ C57C6846-F39C-4D09-8008-D43470FAD071,ProgramCommandLine
 
 C57C6846-F39C-4D09-8008-D43470FAD071,WorkingDirectory
 <%InstallDir%>
-
-C57D91D7-5E4E-4DE9-90E3-3D0B0CF14ACC,String
-<%CreateDesktopShortcut%>
-
-D423DC2C-F9C9-43EA-99A5-1873B77AC840,Destination
-<%InstallDir%>
-
-D423DC2C-F9C9-43EA-99A5-1873B77AC840,Name
-Pandora
-
-D423DC2C-F9C9-43EA-99A5-1873B77AC840,Size
-7102197
 
 D651AEE7-E69C-44FD-B111-8DE881B83843,Conditions
 {1 condition}
@@ -1053,23 +1021,8 @@ D8E7CB00-75A9-4031-BB60-047D19C89753,Message,subst
 D8E7CB00-75A9-4031-BB60-047D19C89753,NextButton,subst
 1
 
-DDD1CA35-5774-4A2F-AF96-0DAB3B44886A,String
-<%CreateQuickLaunchShortcut%>
-
 E09D0867-6CDD-4A4C-B3F1-E5BB868CD728,Alias
 {Install Actions}
-
-E2C937B7-E82D-4008-A205-5548FD1B686B,ShortcutDirectory
-<%QUICK_LAUNCH%>
-
-E2C937B7-E82D-4008-A205-5548FD1B686B,ShortcutName
-<%AppName%>
-
-E2C937B7-E82D-4008-A205-5548FD1B686B,TargetFileName
-<%ProgramExecutable%>
-
-E2C937B7-E82D-4008-A205-5548FD1B686B,WorkingDirectory
-<%InstallDir%>
 
 E5CD4D08-6331-4F49-937C-949A501D9B9A,BackButton,subst
 1
@@ -1083,6 +1036,9 @@ E5CD4D08-6331-4F49-937C-949A501D9B9A,Caption,subst
 E5CD4D08-6331-4F49-937C-949A501D9B9A,Conditions
 {0 conditions}
 
+E5CD4D08-6331-4F49-937C-949A501D9B9A,Image
+E:/SVN/pandora/trunk/pandora_agents/win32/installer/logo.png
+
 E5CD4D08-6331-4F49-937C-949A501D9B9A,Message,subst
 1
 
@@ -1091,6 +1047,9 @@ E5CD4D08-6331-4F49-937C-949A501D9B9A,NextButton,subst
 
 E6AB96D2-AE3F-459A-BC09-8E6A92BA8227,Action
 {Install Actions}
+
+E6AB96D2-AE3F-459A-BC09-8E6A92BA8227,Conditions
+{0 conditions}
 
 E7EA4D7E-6DFE-47A1-947C-6B1D70EFD6F8,Conditions
 {0 conditions}
@@ -1139,12 +1098,6 @@ false
 
 F494ED23-A5F0-4A50-BEC6-321923ABB856,String
 <%LicenseAccepted%>
-
-F4B2A831-D9FA-4072-B9A0-337CBA8AE553,Operator
-false
-
-F4B2A831-D9FA-4072-B9A0-337CBA8AE553,String
-<%InstallStopped%>
 
 F5161B8B-B97F-4685-AC23-4876DC92DC04,Platform
 Windows
@@ -1219,7 +1172,7 @@ Windows,BuildType
 {}
 
 Windows,Executable
-<%AppName%>-<%Version%>-Setup<%Ext%>
+Pandora_FMS_Windows_Agent-<%Version%>-Setup<%Ext%>
 
 Windows,IncludeTWAPI
 No
@@ -1237,7 +1190,7 @@ Windows,ProgramFolderAllUsers
 No
 
 Windows,ProgramFolderName
-<%AppName%>
+{Pandora FMS Windows Agent}
 
 Windows,ProgramLicense
 {<%InstallDir%>\LICENSE.txt}
@@ -1249,7 +1202,7 @@ Windows,ProgramReadme
 {<%InstallDir%>\README.txt}
 
 Windows,WindowsIcon
-D:/Pandora/Installer-Pandora/pandora.ico
+E:/SVN/pandora/trunk/pandora_agents/win32/installer/pandora.ico
 
 }
 
@@ -1414,6 +1367,10 @@ C26ADDF5-B908-4B20-81F9-655807DD5C7B,Message
 
 C26ADDF5-B908-4B20-81F9-655807DD5C7B,Title
 {Service Initialization}
+
+D8E7CB00-75A9-4031-BB60-047D19C89753,Message
+{The InstallJammer Wizard has successfully installed <%AppName%> <%Version%>.
+Click Finish to exit the wizard.}
 
 DB634BF4-9244-4008-ACF1-9810BCC95A4A,Text
 <%LaunchApplicationText%>

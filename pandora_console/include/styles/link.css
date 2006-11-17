@@ -1,6 +1,31 @@
-#link a {display: block; color: #000;}
-#link a:hover {background-color: #cde0ad;}
-div.linkli>ul {width: 133px;}
-.linkli li {padding: 0px 0px 0px 22px; border-bottom: 1px solid #d6d6d6; border-top: 1px solid #f5ffff; position:relative; left: 0px; width:100%; background: url(../../images/link.gif) no-repeat; background-position: 3px 8px;}
-.linkli li:hover {background: #cde0ad url(../../images/link.gif) no-repeat; background-position: 3px 8px;}
-div#menul {background-color: #e9f3d2; border-width:1px; border-style:solid; border-color:#4a6629; width: 155px;}
+#link a {
+	display: block;
+	color: #000;
+	}
+#link a:hover {
+	background-color: #cde0ad;
+	}
+div.linkli>ul {
+	width: 133px;
+	}
+.linkli li {
+	padding: 0px 0px 0px 22px;
+	border-bottom: 1px solid #d6d6d6;
+	border-top: 1px solid #f5ffff;
+	position: relative;
+	left: 0px;
+	width: 100%;
+	background: url(../../images/link.gif) no-repeat;
+	background-position: 3px 8px;
+	}
+.linkli li:hover {
+	background: #cde0ad url(../../images/link.gif) no-repeat;
+	background-position: 3px 8px;
+	}
+div#menul {
+	background-color: #e9f3d2;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #4a6629;
+	width: 155px;
+	}

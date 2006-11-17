@@ -1,3 +1,13 @@
+2006-11-17 Raul Mateos  <raulofpandora@gmail.com>
+
+	* operation/agentes/estado_generalagente.php: Clear code, small adapt to
+	guidelines. Add code for showing 'Never' if there wasn't a previous contact
+	of the agent.
+	
+	* include/styles/pandora.css, god.css, link.css, op.css, tip.css: Style
+	correction. Add border: 0px to tables and images. With this change, all the
+	tables and images shouln't have the "border=0" parameter.
+
 2006-11-14 Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/styles/pandora.css: Change some styles.

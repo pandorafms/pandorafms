@@ -19,18 +19,20 @@
 <book lang="en">
   <bookinfo>
     <title>&pandora; &pandora_version;</title>
-    <graphic fileref="./images/pandora_logo.jpg" valign="bottom" align="center"/>
+    <graphic fileref="./images/pandora_logo.jpg" valign="bottom" 
+	     align="center"/>
     <copyright>
       <year>2006</year>
       <holder>
-	Artica Soluciones Tecnologicas S.L, Sancho Lerena, Esteban Sanchez y otros.
+	Artica Soluciones Tecnologicas S.L, Sancho Lerena, Esteban 
+	Sanchez, David Villanueva and others.
       </holder>
     </copyright>
-    <date>11/09/2006</date>
+    <date>19/11/2006</date>
     <releaseinfo>&pandora_version;</releaseinfo>
     <edition>First Edition(&pandora_version;)</edition>
     <pubdate>
-    September 11th, 2006</pubdate>
+    November 19th, 2006</pubdate>
     <keywordset>
       <keyword>pandora user manual</keyword>
     </keywordset>

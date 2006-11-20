@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?> 
 
 <chapter id="chapter4">
-  <title>Incident management</title>
+  <title>Incident management and messages</title>
   
   <para>
     The system monitoring process needs to follow up the incidents 
@@ -30,7 +30,8 @@
     incidents the user is interested on.
   </para>
   
-  <graphic fileref="images/image034.png" valign="bottom" align="center"/>
+  <graphic scale='70' fileref="images/image034.png" valign="bottom" 
+	   align="center"/>
 
   <para>
     The filters that can be applied are:
@@ -283,4 +284,28 @@
     <graphic fileref="images/image043.png" valign="bottom" align="center"/>
     <graphic fileref="images/image044.png" valign="bottom" align="center"/>
   </sect1>
-</chapter>	
+  <sect1 id="sec4.5">
+	<title>Messages</title>
+	<para>
+	 In Pandora 1.2 is possible send messages to others user. Each user can 
+	 see his/her messages in Operation, Messages.
+	</para>
+	
+	<graphic scale='80' fileref="images/messages.png" valign="bottom" 
+		 align="center"/>
+
+	<para>
+	To send a message to other user you must click in  Operation, Messages, 
+	"New mesage" 
+	</para>
+	
+	<graphic scale='80' fileref="images/messages1.png" valign="bottom" 
+		 align="center"/>
+	<para>
+	Is possible send a mmesage a group in Operation, Messages, Messages to 
+	group. 
+	</para>
+	<graphic scale='80' fileref="images/messages2.png" valign="bottom" 
+		 align="center"/>
+   </sect1>
+</chapter>

@@ -27,7 +27,8 @@
 	  at the top of the table.
 	</para>
 
-	<graphic fileref="images/image045.png" valign="bottom" align="center"/>
+	<graphic scale='70' fileref="images/image045.png" valign="bottom" 
+		 align="center"/>
 
 	<para>
 	The event information list shows the data in the following
@@ -41,18 +42,24 @@
 	been validated</para>
 	<para>
 	<inlinegraphic fileref="images/dot_red.png"/> The event hasn't
-	been validated</para>
+	been validated
+	</para>
 	<para>
 	<emphasis>Event name:</emphasis> Name assigned to the event by
-	Pandora.</para>
+	Pandora.
+	</para>
 	<para>
-	<emphasis>Agent name:</emphasis> Agent where the event happend.</para>
+	<emphasis>Agent name:</emphasis> Agent where the event 
+	happend.
+	</para>
 	<para>
 	<emphasis>Group name:</emphasis> Group of the agent where the
-	event has happened.</para>
+	event has happened.
+	</para>
 	<para>
 	<emphasis>User ID: </emphasis>User that validated the
-	event.</para>
+	event.
+	</para>
 	<para>
 	  <emphasis>Timestamp:</emphasis> Date and time when the event
 	  was raised or validated - if it has been validated.
@@ -61,11 +68,14 @@
 	  <emphasis>Action:</emphasis> Action that can be executed over
 	  the event.
 	</para>
-	<para><inlinegraphic fileref="images/ok.png"/> 
-	This icon will validate the event, disappearing the icon</para>
-	<para><inlinegraphic fileref="images/cancel.png"/> 
-	This icon will delete the event</para>
-
+	<para>
+	<inlinegraphic fileref="images/ok.png"/> 
+	This icon will validate the event, disappearing the icon
+	</para>
+	<para>
+	<inlinegraphic fileref="images/cancel.png"/> 
+	This icon will delete the event
+	</para>
 	<para>
 	  The events can be also validated or deleted in groups by
 	  selecting the tick boxes on the last column of the event,
@@ -86,21 +96,24 @@
 	      <para>
 		Total number of events divided by revised and not
 		revised
-	      <graphic fileref="images/image046.png" valign="bottom" align="center"/>
+	      <graphic fileref="images/image046.png" valign="bottom" 
+		       align="center"/>
 	      </para>
 	    </listitem>
 	    <listitem>
 	      <para>
 		Total events divided by the users who validated the
 		events
-	      <graphic fileref="images/image047.png" valign="bottom" align="center"/>
+	      <graphic fileref="images/image047.png" valign="bottom" 
+		       align="center"/>
 	      </para>
 	    </listitem>
 	    <listitem>
 	      <para>
 		Total events divided by the group the agent raising
 		the event belongs to
-	      <graphic fileref="images/image048.png" valign="bottom" align="center"/>
+	      <graphic fileref="images/image048.png" valign="bottom" 
+		       align="center"/>
 	      </para>
 	    </listitem>
 	  </itemizedlist>

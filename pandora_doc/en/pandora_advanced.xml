@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <chapter>
-  <title>Pandora. Advanced section</title>
-  <sect1><title>Pandora High availabilty features</title>
+  <title>Pandora FMS advanced section</title>
+  <sect1><title>Pandora FMS High Availability features</title>
   <para>
     You may setup Pandora for use HA in several scenarios:
     <itemizedlist mark='bullet'>
@@ -9,17 +9,17 @@
 	<para>
 	  <emphasis>Database Clustering for HA</emphasis>. You need to
 	  setup a MySQL5 Cluster. In support forums / wiki are
-	  information to make this, you only need to convert DB schama
+	  information to make this, you only need to convert DB schema
 	  in a MySQL Cluster compatible tables. This scenario has been
-	  tested and works fine, but you need some advanced knowledgue
-	  for MySQL Clustering administration.
+	  tested and works fine, but you need some advanced knowledge
+	  about MySQL Clustering administration.
 	</para>
       </listitem>
       <listitem>
 	<para>
 	  <emphasis>Multiple Pandora Console</emphasis>. It's easy,
 	  you only need to setup another one. No locking problems or
-	  incompatibility has been detected in several Pandora
+	  incompatibility has been detected in several Pandora FMS
 	  deployments.
 	</para>
       </listitem>
@@ -103,13 +103,13 @@
     Data compression based on interpolation and data purge, makes a
     smaller database, but this was not enought. Production systems has
     a limit based on 100 agents, with about ten modules each one. This
-    was not a high limit for huge enviroments.
+    was not a high limit for huge environments.
   </para>
   <para>
     This problem was very important for Pandora future, so we are
-    changed the way Pandora store its pada. New data management system
+    changed the way Pandora store its data. New data management system
     store only "new" data. If a duplicate value enter the system, it
-    doesnt be stored in database. It's very useful to keep database
+    won't be stored in database. It's very useful to keep database
     small. This works for all pandora data modules: numerical,
     incremental, boolean and string.
   </para>
@@ -125,11 +125,11 @@
   <para>
     Changes come with some different ways to reading data. With new
     version, if an agent cannot communicate with Pandora, and Pandora
-    Server doesnt receive data from agent, this "no data" cannot have
+    Server doesn't receive data from agent, this "no data" cannot have
     a graphical representation, for module graph there will be no
-    changes.  You will have a graph with a perfect horizontal
-    line. Pandora, if doesnt receive new values, thinks that is no new
-    values, and everything seems to be equal that in the last
+    changes. You will have a graph with a perfect horizontal
+    line. Pandora, if doesn't receive new values, thinks that there 
+	are no new values, and everything seems to be equal that in the last
     notification.
   </para>
   <para>
@@ -138,8 +138,8 @@
 
     <graphic fileref="images/module_graph_full.jpg" scale="60" align="center"/>
 
-    This would be the equivalent graph for the same data, excepting a
-    conexión failure, from 05:55 to 15:29 aproximately.
+    This would be the equivalent graph for the same data, except a
+    connection failure, from 05:55 to 15:29 aproximately.
 
     <graphic fileref="images/module_graph_peak.jpg" scale="60" align="center"/>
   </para>

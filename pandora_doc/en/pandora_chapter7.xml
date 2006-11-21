@@ -6,8 +6,8 @@
     Data Server or SNMP Server.
   </para>
   <para>
-   Is posible manage the Pandora Servers in "Manage Servers" option of the
-   Administration menu.
+   It is possible to manage the Pandora Servers from the "Manage Servers"
+   option of the Administration menu.
   </para>
   <graphic scale='60' fileref="images/Servers.png" valign="bottom" 
 	   align="center"/>
@@ -74,18 +74,18 @@
   </listitem>
   <listitem>
     <para>
-     <emphasis>Action:</emphasis> Icons to modify a server´s properties or
+     <emphasis>Action:</emphasis> Icons to modify a server's properties or
      to delete a server.
     </para> 
   </listitem>
   </itemizedlist>
   <para>
-   Is posible delete a with the icon <inlinegraphic 
+   It is possible delete a server using the icon <inlinegraphic 
    fileref="images/cancel.png"/> 
    </para>
    <para>
-    Is posible change the server´s propirties with the icon <inlinegraphic
-    fileref="images/config.png"/> 
+    It is posible to change the server's properties using the icon 
+	<inlinegraphic fileref="images/config.png"/> 
    </para>
    <para>
     In a Server is posiible modify: Name, IP Address and Description.

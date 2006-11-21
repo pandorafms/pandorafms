@@ -243,14 +243,14 @@
       A specific incident can be found amongst the incidents created
       in Pandora by either using a filter, as explained in the first
       section of this chapter, or by making a query using the "Manage
-      Incidents"&gt;"Searh Incident" tool, in the Operation menu.
+      Incidents" &gt; "Searh Incident" tool, in the Operation menu.
     </para>
     <graphic fileref="images/image041.png" valign="bottom" align="center"/>
     <para>
       Any text string included as a sub-string in the incident can be
       searched for using this tool. This search engine looks for the
       string in the Incident title as well as in the text contained by
-      the incident.  The search engine will not search neither the
+      the incident. The search engine will not search neither the
       Comments added to the agent nor the attached files. The search
       can be performed in addition to group, priority or status
       filters.
@@ -260,7 +260,7 @@
     <title>Statistics</title>
     <para>
       The incident statisticts are shown in the "Manage
-      Incidents"&gt;"Statistics" option of the Operation menu. They
+      Incidents" &gt; "Statistics" option of the Operation menu. They
       can be of five different types:
     </para>
     <itemizedlist>
@@ -287,23 +287,24 @@
   <sect1 id="sec4.5">
 	<title>Messages</title>
 	<para>
-	 In Pandora 1.2 is possible send messages to others user. Each user can 
-	 see his/her messages in Operation, Messages.
+	 In Pandora 1.2 it is possible to send messages to others user. 
+	 Each user can see his/her messages in "Messages" in the Operation
+	 menu.
 	</para>
 	
 	<graphic scale='80' fileref="images/messages.png" valign="bottom" 
 		 align="center"/>
 
 	<para>
-	To send a message to other user you must click in  Operation, Messages, 
-	"New mesage" 
+	To send a message to other user you must click in "Messages" &gt; 
+	"New mesage" in the Operation menu.
 	</para>
 	
 	<graphic scale='80' fileref="images/messages1.png" valign="bottom" 
 		 align="center"/>
 	<para>
-	Is possible send a mmesage a group in Operation, Messages, Messages to 
-	group. 
+	It is possible to send a message to a group from "Messages to groups"
+	&gt; "New mesage" in the Operation menu. 
 	</para>
 	<graphic scale='80' fileref="images/messages2.png" valign="bottom" 
 		 align="center"/>

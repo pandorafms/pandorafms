@@ -32,7 +32,7 @@
     <releaseinfo>&pandora_version;</releaseinfo>
     <edition>First Edition(&pandora_version;)</edition>
     <pubdate>
-    November 19th, 2006</pubdate>
+    November 21st, 2006</pubdate>
     <keywordset>
       <keyword>pandora user manual</keyword>
     </keywordset>
@@ -47,6 +47,11 @@
       </para>
     </legalnotice>
     <revhistory>
+	    <revision>
+	<revnumber>1.2</revnumber>
+	<date>21 November 2006</date>
+	<revremark>Submitted.</revremark>
+      </revision>
        <revision>
 	<revnumber>1.1</revnumber>
 	<date>10 October 2006</date>
@@ -54,12 +59,12 @@
       </revision>
       <revision>
 	<revnumber>1.0</revnumber>
-	<date>11 Sept 2006</date>
+	<date>11 September 2006</date>
 	<revremark>Submitted.</revremark>
       </revision>
       <revision>
 	<revnumber>0.1</revnumber>
-	<date>11 Sept 2006</date>
+	<date>11 September 2006</date>
 	<revremark>First draft for review.</revremark>
       </revision>
     </revhistory>

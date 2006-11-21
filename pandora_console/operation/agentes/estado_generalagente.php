@@ -61,7 +61,7 @@ if (comprueba_login() == 0) {
 	
 	echo "<h2>".$lang_label["ag_title"]."</h2>";
 	echo "<h3>".$lang_label["view_agent_general_data"]."<a href='help/".$help_code."/chap3.php#3321' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
-	echo '<table cellspacing=3 cellpadding=3 width=750>';	
+	echo '<table cellspacing="3" cellpadding="3" width="750">';	
 	echo '<tr>
 	<td class="datos"><b>'.$lang_label["agent_name"].'</b></td>
 	<td class="datos">'.salida_limpia($nombre_agente);
@@ -86,13 +86,14 @@ if (comprueba_login() == 0) {
 		echo '<tr>
 		<td class="datos"><b>'.$lang_label["os"].'</b></td>
 		<td class="datos">
-		<img src="images/'.dame_so_icon($id_os).'"> - '.dame_so_name($id_os).'</td>';
+		<img src="images/'.dame_so_icon($id_os).'"> - '.dame_so_name($id_os);
 	} elseif ($agent_type == 1) {
 		echo '<tr>
 		<td class="datos2"><b>'.$lang_label["agent_type"].'</b></td>
-		<td class="datos2"><img src="images/network.gif"></td>';
+		<td class="datos2"><img src="images/network.gif">';
 	}
-	if ($os_version != "") echo ' v'.salida_limpia($os_version);
+	if ($os_version != "") echo ' '.salida_limpia($os_version);
+	echo '</td>';
 	echo '</tr>';
 	echo '<tr>
 	<td class="datos2"><b>'.$lang_label["interval"].'</b></td>
@@ -128,7 +129,7 @@ if (comprueba_login() == 0) {
 		$sql_3='SELECT COUNT(*) FROM tagente_datos WHERE id_agente_modulo = '.$row["id_agente_modulo"];
 		$result_3=mysql_query($sql_3);
 		$row3=mysql_fetch_array($result_3);
-		$total_paketes = $total_paketes + $row3[0];	
+		$total_paketes = $total_paketes + $row3['0'];	
 	}	
 	echo $total_paketes;
 	echo '</td></tr>';

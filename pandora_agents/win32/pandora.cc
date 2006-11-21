@@ -118,7 +118,6 @@ pandoraWriteLog (string filename, string line) {
                 fprintf (file, "%s\n", buffer.c_str ());
                 fclose (file);
         }
-        cout << line << endl;
 }
 
 /**

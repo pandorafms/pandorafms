@@ -762,8 +762,11 @@
     </sect4>
     <sect4><title>module_proc process (Win32 Only)</title>
     <para>
-      Checks if a given processname is running in this host. Remember
-      to use " " characters if process name contains blank spaces.
+      Checks if a given processname is running in this host. If the
+      process name contains blank spaces <emphasis>do not</emphasis>
+      use " ". Also notice that the process name must have the
+      <application>.exe</application> extension. The module will
+      return the number of process running with this name.
     </para>
     </sect4>
     <sect4><title>module_freedisk drive_letter: (Win32 Only)</title>
@@ -1402,11 +1405,13 @@
 	  module_begin
 	  module_name Proc_lsass
 	  module_type generic_proc
-	  module_proc "lsass.exe"
-	  module_description Proceso LSASS.exe
+	  module_proc lsass.exe
+	  module_description LSASS.exe process.
 	  module_end
 	  
-	  # Received packets
+	  # Received packets.
+          # Please notice that "Paquetes recibidos" string must be replaced by
+          # the correct string in your Windows system language.
 	  module_begin
 	  module_name ReceivedPackets
 	  module_type generic_data

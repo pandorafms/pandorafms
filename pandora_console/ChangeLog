@@ -3,6 +3,10 @@
 	* general/footer.php: Change time() function to $_SERVER['REQUEST_TIME']
 	for optimization, Esteban's suggestion. Changed text from Pandora to
 	Pandora FMS.
+	
+	* operation/agentes/estado_alertas.php,
+	operation/agentes/status_monitor.php: small code changes to make it more
+	HTML compliant.
 
 2006-11-17 Raul Mateos  <raulofpandora@gmail.com>
 

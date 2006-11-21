@@ -1,4 +1,12 @@
-2006-09-29  David Villanueva <david.villanueva@artica.es>
+2006-11-21  Esteban Sanchez  <estebans@artica.es>
+
+	* en/pandora_install.xml: Changed module_proc explanation and example,
+	it doesn't need " if the process name has blank spaces. Added a
+	comment to the ReceivedPackets example.
+
+	* ChangeLog: Fixed the date of the last commmit.
+
+2006-11-20  David Villanueva <david.villanueva@artica.es>
 
 	* en/pandora_introduction.xml: Changed in Server definition.
 

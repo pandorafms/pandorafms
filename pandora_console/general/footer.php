@@ -1,4 +1,4 @@
-<?PHP 
+<?PHP
 // Pandora - the Free monitoring system
 // ====================================
 // Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
@@ -26,8 +26,8 @@
 	echo $lang_label["gpl_notice"];
 	echo '</a><br>';
 	if (isset($_SESSION['id_usuario'])) {
-	echo $lang_label["gen_date"]." ".date("D F d, Y H:i:s",time())."<br>";
+	echo $lang_label["gen_date"]." ".date("D F d, Y H:i:s",$_SERVER['REQUEST_TIME'])."<br>";
 	}
 	?>
-	<i>Pandora is a <a target="_new" href="http://pandora.sourceforge.net">SourceForge registered project</a></i>
+	<i>Pandora FMS is a <a target="_new" href="http://pandora.sourceforge.net">SourceForge registered project</a></i>
 </div>

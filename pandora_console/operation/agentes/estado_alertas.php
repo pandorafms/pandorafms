@@ -82,7 +82,7 @@ if (comprueba_login() == 0) {
 		} else {
 			echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/estado_alertas&refr=60'>";
 		}
-		echo "<table border='0'><tr><td valign='middle'>";
+		echo "<table><tr><td valign='middle'>";
 		echo "<select name='ag_group' onChange='javascript:this.form.submit();' class='w130'>";
 	
 		if ( $ag_group > 1 ){

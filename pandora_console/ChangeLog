@@ -1,3 +1,9 @@
+2006-11-21 Raul Mateos  <raulofpandora@gmail.com>
+
+	* general/footer.php: Change time() function to $_SERVER['REQUEST_TIME']
+	for optimization, Esteban's suggestion. Changed text from Pandora to
+	Pandora FMS.
+
 2006-11-17 Raul Mateos  <raulofpandora@gmail.com>
 
 	* operation/agentes/estado_generalagente.php: Clear code, small adapt to

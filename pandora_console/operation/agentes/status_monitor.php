@@ -84,11 +84,11 @@ if (comprueba_login() == 0) {
 	if ( isset($ag_modulename)){
 		echo "<option>".$ag_modulename;
 	} 
-	echo "<option>---";
+	echo "<option>ALL</option>";
 	$sql='SELECT DISTINCT nombre FROM tagente_modulo WHERE (id_tipo_modulo = 2) OR (id_tipo_modulo = 9) OR (id_tipo_modulo = 12) OR (id_tipo_modulo = 18) OR (id_tipo_modulo = 6) ';
 	$result=mysql_query($sql);
 	while ($row=mysql_fetch_array($result)){
-		echo "<option>".$row[0];
+		echo "<option>".$row[0]."</option>";
 	}
 	echo "</select>";
 	echo "<td valign='middle'><noscript><input name='uptbutton' type='submit' class='sub' value='".$lang_label["show"]."'></noscript></form>";
@@ -107,7 +107,7 @@ if (comprueba_login() == 0) {
 	if (mysql_num_rows($result)){
 		while ($row=mysql_fetch_array($result)){ //while there are agents	
 			if ($row["disabled"] == 0) {
-				if ((isset($ag_modulename)) && ($ag_modulename != "---"))
+				if ((isset($ag_modulename)) && ($ag_modulename != "ALL"))
 					$query_gen='SELECT * FROM tagente_modulo WHERE id_agente = '.$row["id_agente"].' AND nombre = "'.entrada_limpia($_POST["ag_modulename"]).'" AND ( (id_tipo_modulo = 2) OR (id_tipo_modulo = 9) OR (id_tipo_modulo = 12) OR (id_tipo_modulo = 18) OR (id_tipo_modulo = 6))';
 				else
 					$query_gen='SELECT * FROM tagente_modulo WHERE id_agente = '.$row["id_agente"].' AND ( (id_tipo_modulo = 2) OR (id_tipo_modulo = 9) OR (id_tipo_modulo = 12) OR (id_tipo_modulo = 18) OR (id_tipo_modulo = 6))';

@@ -1,3 +1,15 @@
+2006-11-21  Esteban Sánchez  <estebans@artica.es>
+
+	* pandora_windows_service.cc: Changed the debug option of the
+	configuration to "debug" instead of "pandora_debug".
+
+	* pandora.cc: Removed output to stdout when logging.
+
+	* bin/pandora_agent.conf: Removed " from module_proc example. Fixes
+	bug #1600008.
+	
+	* bin/PandoraAgent.exe: Updated to new commit.
+
 2006-11-17  Raúl Mateos  <raulofpandora@gmail.com>
 
 	* installer/Pandora_FMS_Windows_Agent-1.2-Setup.exe: New installer to 

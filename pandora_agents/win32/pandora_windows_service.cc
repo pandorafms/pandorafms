@@ -105,7 +105,7 @@ Pandora_Windows_Service::pandora_init () {
         /* Get the interval value (in minutes) and set it to the service */
         interval = conf->getValue ("interval");
 
-	debug = conf->getValue ("pandora_debug");
+	debug = conf->getValue ("debug");
         setPandoraDebug (is_enabled (debug));
 	
         if (interval != "") {

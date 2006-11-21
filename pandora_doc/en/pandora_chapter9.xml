@@ -15,7 +15,7 @@
    <emphasis>Language:</emphasis> In following versions or 
    revisions of the actual Pandora version will support more 
    languages. At the moment version 1.2 supports English, Spanish, 
-   Spanish Latin-AMerica Bable, Italian, French, Catalan and 
+   Spanish Latin-America, Bable, Italian, French, Catalan and 
    Portuguese of Brazil.
   </para>
   <para>
@@ -52,17 +52,17 @@
   </para>
   <para>
    <emphasis>Graph order:</emphasis> This value represents the order
-   to create the graphs. The posibility are Righ to left, or left to
+   to create the graphs. The possibility are right to left, or left to
    right.
   </para>
   <para>
   <emphasis>Truetype fonts:</emphasis> This value represents the 
-  capacity to active the truetypefonts.The posibility are Active or 
-  Disable.
+  capacity to active the truetypefonts. The possible values are
+  Active or Disable.
   </para>
   <para>
    <emphasis>Background image:</emphasis> This value represents the 
-   image to background, is possibel change it bettwen severaql 
+   image to background, it is possible to change it between several 
    different images. 
   </para>
   <sect1 id="sec9.1">
@@ -74,13 +74,13 @@
     </para>
     <para>
      The links configured in Pandora can be edited through the 
-     "Pandora Setup"&gt;"Links" option in the Administration 
+     "Pandora Setup" &gt; "Links" option in the Administration 
      menu.
     </para>
     <graphic scale='70' fileref="images/image052.png" valign="bottom" 
 	     align="center"/>
     <para>
-     A new link is created by clicking on "Add".The link can be then 
+     A new link is created by clicking on "Add". The link can be then 
      edited:
     </para>
     <graphic fileref="images/image053.png" valign="bottom" 

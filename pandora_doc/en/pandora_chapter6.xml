@@ -10,8 +10,8 @@
   
   <para>
     The system audit includes actions that somehow try to by pass the 
-    security system: attempts to delete an incident by an unauthorised 
-    user, attemps to change user profiles by unauthoried users, etc.
+    security system: attempts to delete an incident by an unauthorized 
+    user, attempts to change user profiles by unauthorized users, etc.
     Its main function is, however, to trace the user connections 
     (login/logout).
   </para>
@@ -39,7 +39,7 @@
   </para>
   <para>
    <emphasis>User:</emphasis> User that triggerd the event (SYSTEM 
-   isspecial user of the system).
+   is special user of the system).
   </para>
   <itemizedlist>
   <listitem>

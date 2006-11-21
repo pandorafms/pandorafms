@@ -4,9 +4,9 @@
   <sect1 id="prereq">
     <title>Prerequisites</title>
     <para>
-      &pandora; is not only a single app, its composed by
-      several shellscript files (Unix Agents), a WEB application in
-      PHP (Console), some code in C++ (Windows Agent), some code in
+      &pandora; is not only a single app, it is made up by
+      several shellscript files (Unix/Linux Agents), a WEB application
+	  in PHP (Console), some code in C++ (Windows Agent), some code in
       PERL5 (Server) and some structure and data in SQL (Database),
       so, to get all this running you need to have some pieces of
       software installed in your system. This is a list of packages,
@@ -16,10 +16,10 @@
   <sect1 id="servers">
     <title>Pandora Servers</title>
     <para>
-      Pandora 1.2 has three kind of servers: Data server, Network
+      Pandora FMS 1.2 has three kind of servers: Data server, Network
       Server and SNMP Server/Trap console. All of them could be
       installed in the same machine or in different machines, also,
-      you could setup many of them in a High Availability enviroment
+      you could setup many of them in a High Availability environment
       or using it to manage highs loads of data.
     </para>
     <sect2 id="dataserver"><title>Pandora Data Server</title>
@@ -51,16 +51,9 @@
       You can find them at http://www.cpan.org or install using your
       default package instalation system. These packages are in the
       default distribution of Suse 9.1 and Debian 3.0 GNU/Linux. Also
-      available for Solaris in CPAN repository. If you use Windows go
-      to http://ppm.activestate.com. Or you can use the ppm tool to
-      download the modules:
-      <programlisting>
-	ppm install DBI
-	ppm install DBD-mysql
-	ppm install Datemanip
-      </programlisting>
+      available for Solaris in CPAN repository.
       Next, you need to set the TZ (Time Zone) environment
-      variable. In Windows: set TZ=WET (for example)
+      variable.
     </para>
     </sect2>
 
@@ -129,7 +122,7 @@
       <filename>pandora_server_1.2.tar.gz</filename> file.
     </para>
     <para>
-      Create an user pandora in OS. Usually you do that (in GNU/Linux)
+      Create an user pandora in OS. Usually you do that in GNU/Linux
       with commands:
       <programlisting>
 	useraddd pandora -d /home/pandora
@@ -179,11 +172,7 @@
       dbhost localhost
     </programlisting>
     Please change them to your own data. For security reasons isn't
-    recommended use the default values. If you run Pandora Server in
-    Windows, you need to use the backslash twice in $dirname, that is:
-    "\\", for example: my
-    $dirname="C:\\pandora\\pandora_server\\data_in";, not needed in
-    $log_file.
+    recommended use the default values.
   </para>
   <para>
     These are default values, and all must be existing directory and
@@ -193,7 +182,7 @@
     Remember: you need to create the directory /opt/pandora/data_in
     where Pandora Server will read and write data, sent by remote
     agents using ssh/scp. This directory must be owned or with
-    permissions to write for user "pandora". If you dont have a
+    permissions to write for user "pandora". If you don't have a
     "pandora" user yet, create it.
   </para>
   <para>
@@ -303,10 +292,6 @@
       cat pandoradb_data.sql | mysql -D pandora -u root -p
     </programlisting>
     <para>	
-      Note: if your system is Windows, use the command type instead of
-      cat.
-    </para>
-    <para>	
       You can also use the source command, if you are connected to
       MySQL, from the MySQL prompt:
     </para>
@@ -317,9 +302,7 @@
     </programlisting>
     <para>	
       This example is valid using root user in
-      MySQL<footnote><para>Remember if you're in Windows use the
-      double slash ("//") with the path to the files, not the
-      backslash ("\").</para></footnote>
+      MySQL
     </para>
     <para>
       Now we will create an user "pandora" and will be given to it
@@ -340,14 +323,13 @@
       authenticating Web Console, you have to change the way the
       password is stored into the database:
       <programlisting>
-	mysql> set password for 'babel'@'localhost' = old_password('babel');
+		mysql> set password for 'pandora'@'localhost' = old_password('pandora');
       </programlisting>
-      Please note this user will be used by several babel
-      subcomponents(babel Server, babel Web Console) to access
+      Please note this user will be used by several pandora
+      subcomponents (Pandora Server, Pandora Web Console) to access
       database.
     </para>
     </sect2>
-
     
     <sect2 id="console_install">
       <title>Pandora console install.</title>
@@ -486,7 +468,7 @@
     They are developed to work under a given platform, making use of
     the specific tools of the language being used: VBSCript/Windows
     Scripting for Microsoft platforms (Win2000, WinXP y Win2003),
-    ShellScripting for UNIX - which includes Linux, Solaris, AIX, HPUX
+    ShellScripting for UNIX - which includes Linux, Solaris, AIX, HP-UX
     and BSD, as well as the Nokia's IPSO. Pandora agents can be
     developed in virtually any language, given its simple API system
     and being open source. There are branches of the Pandora project

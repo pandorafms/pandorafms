@@ -4,7 +4,7 @@
   <para>
     A user is based on the user's daily activity. Each user have his/her 
     profile, with a list of actions that can or cannot perform, to access
-    to Pandora.One or more profiles can be assigned to a single user.
+    to Pandora. One or more profiles can be assigned to a single user.
   </para>
   
   <para>
@@ -24,7 +24,7 @@
     access Pandora as well as what each user can do. Groups define
     elements in common among various users. Each user could be in one
     or more groups at any one time. Each group has user profiles which
-    are defined and attached to it.  A profile is a list of things a
+    are defined and attached to it. A profile is a list of things a
     user can do, such as view incidents, manage database or other.
   </para>
   
@@ -112,7 +112,7 @@
     <title>Adding a user</title>
     
     <para>
-      A user is added clicking on "Manage Users"&gt;"Create user"
+      A user is added clicking on "Manage Users" &gt; "Create user"
       in the Administration Menu
     </para>
     

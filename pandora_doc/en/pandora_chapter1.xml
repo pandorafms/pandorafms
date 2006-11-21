@@ -3,10 +3,10 @@
 <chapter id="chapter1">
   <title>Introduction</title>
   <sect1 id="sec1.1">
-    <title>What is Pandora?</title>
+    <title>What is Pandora FMS?</title>
     
     <para>
-      Pandora is a monitoring tool that allows a system administrator
+      Pandora FMS is a monitoring tool that allows a system administrator
       to visually analise the status and efficiency of Operating
       Systems, Servers, Applications and Hardware Systems - such as
       firewalls, proxies, databases, Web servers, tunnelling servers,
@@ -46,18 +46,18 @@
       <emphasis>- Core Server:</emphasis> Pandora Core server is the
       receptor of the data packages and generates the alerts - it is
       the brain of the system. Several servers can work alongside for
-      larger systems.  It has been developed in Perl and works over
+      larger systems. It has been developed in Perl and works over
       any platform, although, the official platform is GNU/Linux.
     </para>
     
     <para>
       The core server accesses Pandora database, which is shared with
       the Web server, and stores the processed data packages. The
-      server is executed under the name of "Demonio", and processes
-      the packages stored in its file system.  The data is generated
+      server is executed under the name of "Demon", and processes
+      the packages stored in its file system. The data is generated
       by the system agents. Despite the server's low system resources
       comsumption and simple installation and operation, the core
-      server is the most critical element of the system.  The core
+      server is the most critical element of the system. The core
       server receives and processes the produced data, and fires the
       alerts and the events.
     </para>
@@ -67,8 +67,8 @@
       system only supports MySQL. The central database keeps all the
       information Pandora needs to work - agent data, settings, user
       information, incidents, system settings, etc. The system can use
-      a MySQL cluster to store the information, or a high
-      disponibility solution for larger sytems.
+      a MySQL cluster to store the information, or a High
+      Availability (HA) solution for larger sytems.
     </para>
     
     <para>
@@ -89,7 +89,7 @@
       They have been developed to work under a specific platform,
       making use of the specific tools of the used language:
       VBSCript/Windows Scripting for Microsoft platforms (Win2000,
-      WinXP y Win2003) and ShellScripting for Unix - which includes
+      WinXP and Win2003) and ShellScripting for Unix - which includes
       GNU/Linux, Solaris, AIX, HP-UX and BSD, as well as the Nokia's
       IPSO. Pandora agents can be developed in virtually any language,
       given its simple API and being open source.

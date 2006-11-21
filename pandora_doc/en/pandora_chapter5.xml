@@ -88,7 +88,7 @@
 	  <para>
 	    Three different kinds of graphical statistic
 	    representation can be choosen from the "View
-	    Events"&gt;"Statistics" option in the Operation menu:
+	    Events" &gt; "Statistics" option in the Operation menu:
 	  </para>
 	  
 	  <itemizedlist>
@@ -110,7 +110,7 @@
 	    </listitem>
 	    <listitem>
 	      <para>
-		Total events divided by the group the agent raising
+		Total events divided by the group the agent that launched
 		the event belongs to
 	      <graphic fileref="images/image048.png" valign="bottom" 
 		       align="center"/>

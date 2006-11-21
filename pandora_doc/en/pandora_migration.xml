@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <chapter>
   <title>Migrating from Pandora 1.1</title>
-  <sect1><title>Migrate Pandora 1.1 to Pandora 1.2 </title>
+  <sect1><title>Migrate Pandora 1.1 to Pandora 1.2</title>
   <para>
     You need a script called pandoradb_1.1_to_1.2.sql provided in
     Pandora Console Package for 1.2 version. Migrate 1.1 to 1.2
@@ -28,7 +28,7 @@
 	<para>
 	  Read documentation about new features of Pandora 1.2.
 	  Migration process doesnt delete any data, you don't loss any
-	  agente, config, or enviroment data, but please, read
+	  agente, config, or environment data, but please, read
 	  _carefully_ all documentation about this process before
 	  trying it.
 	</para>

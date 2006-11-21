@@ -65,8 +65,16 @@ if (comprueba_login() == 0) {
 	echo "<h3>".$lang_label["last_data_chunk"]."<a href='help/".$help_code."/chap3.php#3322' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 	$result3=mysql_query($sql3);
 	if (mysql_num_rows ($result3)) {
-	echo "<table width='750' cellpadding='3' cellspacing='3'><th>X<th>".$lang_label["module_name"];
-	echo "<th>".$lang_label["type"]."<th>".$lang_label["int"]."<th>".$lang_label["description"]."<th>".$lang_label["data"]."<th>".$lang_label["graph"]."<th>".$lang_label["raw_data"]."<th>".$lang_label["timestamp"];
+	echo "<table width='750' cellpadding='3' cellspacing='3'>";
+	echo "<th>X</th>";
+	echo "<th>".$lang_label["module_name"]."</th>";
+	echo "<th>".$lang_label["type"]."</th>";
+	echo "<th>".$lang_label["int"]."</th>";
+	echo "<th>".$lang_label["description"]."</th>";
+	echo "<th>".$lang_label["data"]."</th>";
+	echo "<th>".$lang_label["graph"]."</th>";
+	echo "<th>".$lang_label["raw_data"]."</th>";
+	echo "<th>".$lang_label["timestamp"]."</th>";
 	$texto='';
 	$color = 1;
 	while ($row3=mysql_fetch_array($result3)){
@@ -82,7 +90,8 @@ if (comprueba_login() == 0) {
 			// Render module group names  (fixed code)
 			$nombre_grupomodulo = dame_nombre_grupomodulo ($row3["id_module_group"]);
 			if ($nombre_grupomodulo != ""){
-				if (($label_group == 0) || ($last_label != $nombre_grupomodulo)){	// Show label module group
+				if (($label_group == 0) || ($last_label != $nombre_grupomodulo)){
+				// Show label module group
 					$label_group = -1;
 					$last_label = $nombre_grupomodulo;
 					echo "<tr><td class='datos3' align='center' colspan=9><b>".$nombre_grupomodulo."</b>";
@@ -133,26 +142,26 @@ if (comprueba_login() == 0) {
 			// For types not string type (3 data_string, 9 tcp_string, 14 snmp_string)
 			if (($row3["id_tipo_modulo"] != 3) AND ($row3["id_tipo_modulo"]!=10) AND ($row3["id_tipo_modulo"]!=17)){
 
-				echo "<td class=".$tdcolor.">";
+				echo "<td class=".$tdcolor." title=".$row3["datos"].">";
 				echo substr($row3["datos"],0,9);
 				$handle = "stat".$nombre_tipo_modulo."_".$nombre_agente;
 				$url = 'reporting/procesos.php?agente='.$nombre_agente;
 				$win_handle=dechex(crc32($nombre_agente.$row3["nombre"]));
 				echo "<td class=".$tdcolor." width='78'>";
 				
-				echo "<a href='javascript:winopeng(\"reporting/stat_win.php?tipo=mes&id=".$row3["id_agente_modulo"]."&refresh=180000\", \"mes_".$win_handle."\")'><img  border=0  src='images/grafica_m.gif'></a>&nbsp;";
+				echo "<a href='javascript:winopeng(\"reporting/stat_win.php?tipo=mes&id=".$row3["id_agente_modulo"]."&refresh=180000\", \"mes_".$win_handle."\")'><img  src='images/grafica_m.gif'></a>&nbsp;";
 				
 				$link ="winopeng('reporting/stat_win.php?tipo=semana&id=".$row3["id_agente_modulo"]."&refresh=6000','sem_".$win_handle."')";
-				echo '<a href="javascript:'.$link.'"><img border=0 src="images/grafica_w.gif"></a>&nbsp;';
+				echo '<a href="javascript:'.$link.'"><img src="images/grafica_w.gif"></a>&nbsp;';
 				
 				$link ="winopeng('reporting/stat_win.php?tipo=dia&id=".$row3["id_agente_modulo"]."&refresh=800','dia_".$win_handle."')";
-				echo '<a href="javascript:'.$link.'"><img border=0  src="images/grafica_d.gif"></a>&nbsp;';
+				echo '<a href="javascript:'.$link.'"><img src="images/grafica_d.gif"></a>&nbsp;';
 
 				$link ="winopeng('reporting/stat_win.php?tipo=hora&id=".$row3["id_agente_modulo"]."&refresh=30','hora_".$win_handle."')";
-				echo '<a href="javascript:'.$link.'"><img border=0 src="images/grafica_h.gif"</a>';
+				echo '<a href="javascript:'.$link.'"><img src="images/grafica_h.gif"</a>';
 			}
 			else { # Writing string data in different way :)
-				echo "<td class='".$tdcolor."f9' colspan='2'>";
+				echo "<td class='".$tdcolor."f9' colspan='2' title='".$row3["datos"]."'>";
 				echo salida_limpia(substr($row3["datos"],0,42));
 			}
 			

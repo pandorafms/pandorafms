@@ -4,13 +4,18 @@
 	for optimization, Esteban's suggestion. Changed text from Pandora to
 	Pandora FMS.
 	
-	* operation/agentes/estado_alertas.php,
-	operation/agentes/status_monitor.php: small code changes to make it more
-	HTML compliant.
+	* operation/agentes/estado_alertas.php: small code changes 
+	
+	* operation/agentes/status_monitor.php: change bulb images from botton
+	to top, some style corrections
+	
+	* operation/agentes/estado_generalagente.php,
+	operation/agentes/estado_ultimopaquete.php:
+	Several changes to make it more HTML compliant, and better sytle.
 
 2006-11-17 Raul Mateos  <raulofpandora@gmail.com>
 
-	* operation/agentes/estado_generalagente.php: Clear code, small adapt to
+	* operation/agentes/estado_generalagente.php: Clean code, small adapt to
 	guidelines. Add code for showing 'Never' if there wasn't a previous contact
 	of the agent.
 	

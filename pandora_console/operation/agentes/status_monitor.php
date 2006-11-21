@@ -50,7 +50,8 @@ if (comprueba_login() == 0) {
 	} else {
 		echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60'>";
 	}
-	echo "<table border='0' cellspacing=3 cellpadding=3><tr><td valign='middle'>".$lang_label["group_name"];
+	echo "<table cellspacing=3 cellpadding=3>";
+	echo "<tr><td valign='middle'>".$lang_label["group_name"]."</td>";
 	echo "<td valign='middle'>";
 	echo "<select name='ag_group' onChange='javascript:this.form.submit();' class='w130'>";
 
@@ -79,16 +80,25 @@ if (comprueba_login() == 0) {
 	} else {
 		echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60'>";
 	}
-	echo "<tr><td valign='middle'>";
-	echo $lang_label["module_name"]."<td valign='middle'> <select name='ag_modulename' onChange='javascript:this.form.submit();'>";
+	
+	echo "<td>&nbsp;</td>";
+	echo "<td>";
+	echo "<img src='images/b_green.gif'> - ".$lang_label["green_light"]."</td><td>&nbsp;</td>";
+	echo "<td>";
+	echo "<img src='images/b_red.gif'> - ".$lang_label["red_light"]."</td>";
+	echo "</td>";
+	echo "</tr>";
+	echo "<tr>";
+	echo "<td valign='middle'>".$lang_label["module_name"]."</td>";
+	echo "<td valign='middle'><select name='ag_modulename' onChange='javascript:this.form.submit();'>";
 	if ( isset($ag_modulename)){
-		echo "<option>".$ag_modulename;
+		echo "<option>".$ag_modulename."</option>";
 	} 
 	echo "<option>ALL</option>";
 	$sql='SELECT DISTINCT nombre FROM tagente_modulo WHERE (id_tipo_modulo = 2) OR (id_tipo_modulo = 9) OR (id_tipo_modulo = 12) OR (id_tipo_modulo = 18) OR (id_tipo_modulo = 6) ';
 	$result=mysql_query($sql);
 	while ($row=mysql_fetch_array($result)){
-		echo "<option>".$row[0]."</option>";
+		echo "<option>".$row['0']."</option>";
 	}
 	echo "</select>";
 	echo "<td valign='middle'><noscript><input name='uptbutton' type='submit' class='sub' value='".$lang_label["show"]."'></noscript></form>";
@@ -154,12 +164,6 @@ if (comprueba_login() == 0) {
 		echo "<table cellpadding='3' cellspacing='3' width='750'><tr><th>".$lang_label["agent"]."</th><th>".$lang_label["type"]."</th><th>".$lang_label["name"]."</th><th>".$lang_label["description"]."</th><th>".$lang_label["max_min"]."</th><th>".$lang_label["interval"]."</th><th>".$lang_label["status"]."</th><th>".$lang_label["timestamp"]."</th>";
 		echo $string; //the built table of monitors
 		echo "<tr><td colspan='8'><div class='raya'></div></td></tr></table>";
-		echo "<br><table>";
-		echo "<tr><td class='f9i'>";
-		echo "<img src='images/b_green.gif'> - ".$lang_label["green_light"]."</td><td>&nbsp;</td>";
-		echo "<td class='f9i'>";
-		echo "<img src='images/b_red.gif'> - ".$lang_label["red_light"]."</td>";
-		echo "</table>";
 		}
 		else {
 		echo "<font class='red'>".$lang_label["no_monitors_g"]."</font>";

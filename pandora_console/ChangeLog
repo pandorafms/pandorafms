@@ -1,3 +1,9 @@
+2006-11-22  Sancho Lerena  <slerena@artica.es>
+
+	* agentes/estado_ultimopaquete.php: Fixed small size of
+	visualization of data in packet view. Big values was cutted. Added
+	elimination of decimals, and suffix for M (1000) divisible values.
+
 2006-11-21 Raul Mateos  <raulofpandora@gmail.com>
 
 	* general/footer.php: Change time() function to $_SERVER['REQUEST_TIME']
@@ -44,7 +50,15 @@
 
 	* include/languages/language_es_es.php, language_en.php,
 	language_es_la.php, language_it.php: Remove "distributed" from title
-	
+
+2006-11-05 Sancho Lerena  <slerena@artica.es>
+
+        * images/outlimits.png: Static image for progress bar out of
+	limits.
+
+        * reporting/fgraph.php: Progress bar now show static image if there is
+          out of limits before calculating (faster).
+
 2006-10-31 Raul Mateos  <raulofpandora@gmail.com>
 
 	* operation/menu.php: Add highlighting when creating note in incidents

@@ -140,10 +140,23 @@ if (comprueba_login() == 0) {
 				echo "...";
 			}
 			// For types not string type (3 data_string, 9 tcp_string, 14 snmp_string)
-			if (($row3["id_tipo_modulo"] != 3) AND ($row3["id_tipo_modulo"]!=10) AND ($row3["id_tipo_modulo"]!=17)){
-
-				echo "<td class=".$tdcolor." title=".$row3["datos"].">";
-				echo substr($row3["datos"],0,9);
+			if (($row3["id_tipo_modulo"] != 3) AND ($row3["id_tipo_modulo"] != 10) AND ($row3["id_tipo_modulo"] != 17)){
+				echo "<td class=".$tdcolor.">";
+				if (($row3["datos"] != 0) AND (is_numeric($row3["datos"]))){
+					$mytempdata = fmod($row3["datos"], $row3["datos"]);
+					if ($mytempdata == 0)
+						$myvalue = intval($row3["datos"]);
+					else
+						$myvalue = $row3["datos"];
+					if ($myvalue > 1000){ // Add sufix "M" for thousands
+						$mytempdata = $myvalue / 1000;
+						echo $mytempdata." M";
+					} else 
+					echo substr($myvalue,0,12);
+				} elseif ($row3["datos"] == 0)
+					echo "0";
+				else
+					echo substr($row3["datos"],0,12);
 				$handle = "stat".$nombre_tipo_modulo."_".$nombre_agente;
 				$url = 'reporting/procesos.php?agente='.$nombre_agente;
 				$win_handle=dechex(crc32($nombre_agente.$row3["nombre"]));

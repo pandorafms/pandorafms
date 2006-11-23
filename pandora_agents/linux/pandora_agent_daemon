@@ -1,7 +1,9 @@
 #!/bin/bash
-# Script de arranque de Agente Pandora
-# Sancho Lerena, <slerena@gmail.com>
+# Init script for Pandora FMS agent
+# Script de arranque del agente Pandora FMS
+# Generic GNU/Linux version
 # Version para GNU/Linux (generico)
+# Sancho Lerena, <slerena@artica.es>
 # v1.2
 
 ### BEGIN INIT INFO

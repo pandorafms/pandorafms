@@ -1,3 +1,10 @@
+2006-11-23  Sancho Lerena  <slerena@artica.es>
+
+        * agentes/estado_ultimopaquete.php: Added "border=0" to some graphic.
+	Fixed typo in hourly graph.
+
+	* agentes/estado_generalagente.php: Added "border=0" in setup icon.
+
 2006-11-22  Sancho Lerena  <slerena@artica.es>
 
 	* agentes/estado_ultimopaquete.php: Fixed small size of

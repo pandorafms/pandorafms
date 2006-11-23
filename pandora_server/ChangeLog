@@ -1,3 +1,11 @@
+2006-11-23 Raul Mateos <raulofpandora@gmail.com>
+
+	* pandora_server/bin/pandora_config.pm: Updated some text from Linux to
+	GNU/Linux. Update build date and final version.
+
+	* pandora_server/config/pandora_server.conf: Changed servername from
+	"daeva" to localhost.
+
 2006-11-22 Manuel Arostegui <marostegui@artica.es>
 
 	* pandora_server/specs/fedoracore5/*, pandora_server/specs/rhel/*: Added

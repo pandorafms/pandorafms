@@ -66,10 +66,10 @@ function datos_raw($id_agente_modulo, $periodo){
 	if ( (dame_nombre_tipo_modulo($id_tipo_modulo) == "generic_data_string" ) OR
 	     (dame_nombre_tipo_modulo($id_tipo_modulo) == "remote_tcp_string" ) OR
  	     (dame_nombre_tipo_modulo($id_tipo_modulo) == "remote_snmp_string" )) {
-		$sql1="SELECT * FROM tagente_datos_string WHERE id_agente_modulo = ".$id_agente_modulo." AND timestamp > '".$periodo."' ORDER BY timestamp"; 
+		$sql1="SELECT * FROM tagente_datos_string WHERE id_agente_modulo = ".$id_agente_modulo." AND timestamp > '".$periodo."' ORDER BY timestamp DESC"; 
 	}
 	else {
-		$sql1="SELECT * FROM tagente_datos WHERE id_agente_modulo = ".$id_agente_modulo." AND timestamp > '".$periodo."' ORDER BY timestamp";
+		$sql1="SELECT * FROM tagente_datos WHERE id_agente_modulo = ".$id_agente_modulo." AND timestamp > '".$periodo."' ORDER BY timestamp DESC";
 	}
 	
 	$result=mysql_query($sql1);
@@ -94,7 +94,23 @@ function datos_raw($id_agente_modulo, $periodo){
 			}
 			echo "<tr>";	
 			echo "<td class='".$tdcolor."f9 w130'>".$row["timestamp"];
-			echo "<td class='".$tdcolor."'>".salida_limpia($row["datos"]);
+			echo "<td class='".$tdcolor."'>";
+			if (($row["datos"] != 0) AND (is_numeric($row["datos"]))) {
+                        	$mytempdata = fmod($row["datos"], $row["datos"]);
+                                if ($mytempdata == 0)
+                                	$myvalue = intval($row["datos"]);
+                                else
+                                        $myvalue = $row["datos"];
+                                if ($myvalue > 1000000) { // Add sufix "M" for millions
+                                        $mytempdata = $myvalue / 1000000;
+                                        echo $mytempdata." M";
+                                } elseif ( $myvalue > 1000){ // Add sufix "K" for thousands
+                                        $mytempdata = $myvalue / 1000;
+                                        echo $mytempdata." K";
+                                } else
+                                        echo substr($myvalue,0,12);
+                        } else
+                               echo substr($row["datos"],0,12);
 		}
 		echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
 		echo "</table>";

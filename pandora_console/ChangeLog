@@ -5,6 +5,8 @@
 
 	* agentes/estado_generalagente.php: Added "border=0" in setup icon.
 
+	* agentes/datos_agente.php: Better output (sort DESC and with M and K suffix)
+
 2006-11-22  Sancho Lerena  <slerena@artica.es>
 
 	* agentes/estado_ultimopaquete.php: Fixed small size of

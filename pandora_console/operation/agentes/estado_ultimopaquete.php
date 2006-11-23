@@ -148,11 +148,14 @@ if (comprueba_login() == 0) {
 						$myvalue = intval($row3["datos"]);
 					else
 						$myvalue = $row3["datos"];
-					if ($myvalue > 1000){ // Add sufix "M" for thousands
-						$mytempdata = $myvalue / 1000;
+					if ($myvalue > 1000000) { // Add sufix "M" for millions
+						$mytempdata = $myvalue / 1000000;
 						echo $mytempdata." M";
-					} else 
-					echo substr($myvalue,0,12);
+					} elseif ( $myvalue > 1000){ // Add sufix "K" for thousands
+                                                $mytempdata = $myvalue / 1000;
+                                                echo $mytempdata." K";
+					} else
+						echo substr($myvalue,0,12);
 				} elseif ($row3["datos"] == 0)
 					echo "0";
 				else

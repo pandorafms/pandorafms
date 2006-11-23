@@ -20,7 +20,7 @@
 
 <div id="foot">
 	<?php
-	echo '<a target="_new" href="general/license/pandora_info_'.$language_code.'.html">Pandora ';
+	echo '<a target="_new" href="general/license/pandora_info_'.$language_code.'.html">Pandora FMS ';
 	echo $pandora_version." Build ";
 	echo $build_version." "; 
 	echo $lang_label["gpl_notice"];

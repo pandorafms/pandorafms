@@ -3,7 +3,7 @@ package pandora_config;
 # Pandora Config package
 ##########################################################################
 # Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2006 Artica Soluciones Tecnol�icas S.L
+# Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L
 #
 #This program is free software; you can redistribute it and/or
 #modify it under the terms of the GNU General Public License
@@ -36,8 +36,8 @@ our @EXPORT = qw( 	pandora_help_screen
 # There is no global vars, all variables (setup) passed as hash reference
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "1.2 Beta 3";
-my $pandora_build="PS060929";
+my $pandora_version = "1.2";
+my $pandora_build="PS061123";
 our $VERSION = $pandora_version;
 
 # Setup hash
@@ -72,12 +72,12 @@ sub pandora_init {
 	printf "This program is Free Software, licensed under the terms of GPL License v2 or later.\n";
 	printf "You can download latest versions and documentation at http://pandora.sourceforge.net. \n\n";
 
-	# Check we are running Linux
-	die "[ERROR] This isn't Linux. Pandora Server its only OFFICIALLY supported in Linux\nContact us if you require assistance running Pandora Server over other OS\n\n" unless ($^O =~ m/linux/i);
+	# Check we are running GNU/Linux
+	die "[ERROR] This isn't GNU/Linux. Pandora Server is only OFFICIALLY supported in GNU/Linux.\nContact us if you require assistance running Pandora Server in other OS.\n\n" unless ($^O =~ m/linux/i);
 
 	# Load config file from command line
 	if ($#ARGV == -1 ){
-		print "I Need at least one parameter: Complete path to Pandora HOME Directory. \n";
+		print "I Need at least one parameter: Complete path to Pandora Server HOME Directory. \n";
 		help_screen;
 		exit;
 	}

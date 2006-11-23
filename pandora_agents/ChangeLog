@@ -1,9 +1,16 @@
+2006-11-23  Raul Mateos <raulofpandora@gmail.com>
+
+	* linux/pandora_agent.sh, linux/pandora_agent_daemon: Update license,
+	translated text from spanish to english, updated build.
+	
+	* linux/pandora_agent.conf: Solved small bug with vmstat.
+
 2006-09-20  Sancho Lerena  <slerena@artica.es>
 
 	* linux/pandora_agent.sh: Inserted code for detect Linux Distro,
 	and get versions (ported from babel agent code).
 
-2006-08-30 Sancho Lerena <slerena@gmail.com>
+2006-08-30 Sancho Lerena <slerena@artica.es>
 
 	* pandora_agent/ChangeLog: Created and added to repository
 

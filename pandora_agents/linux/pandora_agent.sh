@@ -1,14 +1,14 @@
 #!/bin/bash
 # **********************************************************************
-# Pandora Generic Host Agent
-# Linux version 
-# (c) Sancho Lerena 2003-2006, <slerena@gmail.com> 
-# with the help of many people. Please see http://pandora.sf.net
+# Pandora FMS Generic Host Agent
+# GNU/Linux version 
+# (c) Sancho Lerena 2003-2006, <slerena@artica.es> 
+# with the help of many people. Please see http://pandora.sourceforge.net
 # Este codigo esta licenciado bajo la licencia GPL 2.0.
-# This code is licenced under GPL 2.0 licence.
+# This code is licensed under GPL 2.0 license.
 # **********************************************************************
 AGENT_VERSION=1.2
-AGENT_BUILD=060920
+AGENT_BUILD=061123
 
 IFS=$'\n'
 # Begin cycle for adquire primary config tokens
@@ -124,11 +124,11 @@ fi
 while [ "1" == "1" ]
 do
 
- 	# Fecha y hora. Se genera un serial (numero de segundos desde 1970) para cada paquete generado.
+ 	# Date and time, SERIAL is number of seconds since 1/1/1970, for every packet.
  	TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
  	SERIAL=`date +"%s"`
  
- 	# Nombre de los archivos
+ 	# File names
  	DATA=$TEMP/$NOMBRE_HOST.$SERIAL.data
  	DATA2=$TEMP/$NOMBRE_HOST.$SERIAL.data_temp
  	CHECKSUM=$TEMP/$NOMBRE_HOST.$SERIAL.checksum
@@ -216,7 +216,7 @@ do
               		EXECUTE=`expr \( $CONTADOR + 1 \) % $MODULEINTERVAL`
   		fi
 
-		# If module end, and execute for this module is enabled
+		# If module ends, and execute for this module is enabled
 		# then write 
 
 		if [ $MODULE_END -eq 1 ]

@@ -1,6 +1,10 @@
+2006-11-23 Raul Mateos  <raulofpandora@gmail.com>
+
+	* general/footer.php: Changed text from Pandora to Pandora FMS.
+
 2006-11-23  Sancho Lerena  <slerena@artica.es>
 
-        * agentes/estado_ultimopaquete.php: Added "border=0" to some graphic.
+    * agentes/estado_ultimopaquete.php: Added "border=0" to some graphic.
 	Fixed typo in hourly graph.
 
 	* agentes/estado_generalagente.php: Added "border=0" in setup icon.

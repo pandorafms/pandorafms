@@ -8,13 +8,13 @@
     The agents collect information. There are agents based on a software 
     agent and installed in the System to monitor, and network agents - a 
     non-physical agent, without need of installing any software, that 
-    execute network tasks in Pandora Network servers and shows 
+    executes network tasks in Pandora Network servers and shows 
     information on console.
   </para>
   <para>
     For agents who need to install software into remote systems,
     public key of the machine to be monitored needs to be copied into
-    Pandora Data server to be able to collect data, as it is specified
+    Pandora Data server in order to be able to collect data, as it is specified
     in detail in Pandora Install documentation.
   </para>
   <para>
@@ -80,7 +80,7 @@
 
     <para>
 	 There are several default groups defined in Pandora. You also can
-     create your own (please use given icons or edit and add your own icons).
+     create your own group (please use given icons or edit and add your own icons).
      You can also modify default ones.
 	 </para>
 
@@ -172,7 +172,7 @@
       </listitem>
       <listitem>
 	<para>
-	  <emphasis>Module definition:</emphasis> There are two modes
+	  <emphasis>Module definition:</emphasis> There are two state
 	  for a module:
 	</para>
       </listitem>
@@ -180,7 +180,7 @@
 	<para>
 	  <emphasis>Learning mode:</emphasis> All the modules sent
 	  by the agent are accepted. If modules are not defined, they
-	  are automatically defined by the system. It is recommended
+	  will be automatically defined by the system. It is recommended
 	  to activate the agents in this mode and change it once the
 	  user is familiar with Pandora FMS.
 	</para>
@@ -403,7 +403,7 @@
 	value. The Alert can consist of sending an e-mail or SMS to
 	the administrator, sending a SNMP trap, write the incident
 	into the system syslog or Pandora log file, etc. Basically,
-	it's anything that can be triggered by a script configured 
+	anything that can be triggered by a script configured 
 	in the Operating System where Pandora Servers run.
       </para>
       <sect3 id="sec3.2.2.1">
@@ -539,7 +539,7 @@
 	<para>
 	  The next step after an agent has been added, its 
 	  modules have been configurated and the alerts have been 
-	  defined, is to assign those alerts to the agent.
+	  defined, is assign those alerts to the agent.
 	</para>
 	
 	<para>
@@ -640,7 +640,7 @@
       <para>It might happen that the user finds that modules and alerts
       configured for an agent would be repeated in a new agent.
       </para>
-      <para>In order to simplify the administrator's job Pandora offers
+      <para>In order to simplify the administrator's work Pandora offers
       the option of copying modules and alerts defined in an agent to 
       be assigned to another.
       </para>
@@ -840,7 +840,7 @@
 	<graphic scale='70' fileref="images/image017.png" 
 		 valign="bottom" align="center"/>
 	<para>
-	 In this list the module information is shown in the following 
+	 In this list the module information is showed in the following 
 	 columns:
 	</para>
 	
@@ -916,8 +916,8 @@
 	</para>
 	
 	<para>
-	 <emphasis>Timestamp:</emphasis> This is the hour of the last 
-	 contact.
+	 <emphasis>Timestamp:</emphasis> This is the hour when last 
+	 contact was made.
 	</para>
       </sect3>
       <sect3 id="sec3.3.2.3">
@@ -1122,7 +1122,7 @@
   <sect1 id="sec3.4">
     <title>SNMP Console</title>
     <para>
-      Almost all device can send SNMP traps when have any problem as
+      Majority of devices can send SNMP traps when have any problem as
       reboot, lost interface, the temperature is very high, CPU crash,
       etc. With Traps is possible to know the problem when it happens.
     </para>
@@ -1140,7 +1140,7 @@
     <sect2 id="sec3.4.1">
       <title>SNMP Alerts</title>
       <para>
-	Just like is possible to generat alert if there is an out of 
+	Just like is possible to generate an alert if there is an out of 
 	range module value. It is possible to generate an alert if an
 	SNMP trap is received with a anorma value. The Alert can consist of 
 	sending and e-mail or SMS to the administrator, sending an SNMP 

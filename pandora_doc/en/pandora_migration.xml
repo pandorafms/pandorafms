@@ -38,8 +38,8 @@
   </sect1>
   <sect1><title>Migration steps </title>
   <para>
-    0. You need to stop Pandora Server before any changes in
-    database. Think that you dont loose any data in the process of
+    0. You need to stop Pandora Server before change anything in
+    database. Think that you don't lose any data in the process of
     migration because agent data will be stored in incoming
     directory. Move this data to the new incoming directory before
     launch the new server, and you process that data without miss

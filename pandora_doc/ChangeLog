@@ -1,3 +1,11 @@
+2006-11-24  Manuel Arostegui <marostegui@artica.es>
+
+	* en/pandora_chapter1.xml,pandora_chapter2.xml,pandora_chapter3.xml,
+	  pandora_chapter4.xml,pandora_chapter5.xml,pandora_chapter6.xml,
+	  pandora_chapter8.xml,pandora_chapter9.xml,pandora_advanced.xml,
+	  pandora_userguide.xml,pandora_migration.xml,pandora_introduction.xml
+	  pandora.xml: Text corrections.
+
 2006-11-21  Esteban Sanchez  <estebans@artica.es>
 
 	* en/pandora_install.xml: Changed module_proc explanation and example,

@@ -26,7 +26,7 @@
   <para>
     Clicking on "Manage Incidents", in the Operation menu, a list 
     showing all the incidents is displayed, ordered by the date-time they
-    were last updated. Filters can be applied to display only those
+    were updated. Filters can be applied to display only those
     incidents the user is interested on.
   </para>
   
@@ -240,7 +240,7 @@
   <sect1 id="sec4.3">
     <title>Searching for an incident</title>
     <para>
-      A specific incident can be found amongst the incidents created
+      A specific incident can be found among the incidents created
       in Pandora by either using a filter, as explained in the first
       section of this chapter, or by making a query using the "Manage
       Incidents" &gt; "Searh Incident" tool, in the Operation menu.
@@ -250,8 +250,8 @@
       Any text string included as a sub-string in the incident can be
       searched for using this tool. This search engine looks for the
       string in the Incident title as well as in the text contained by
-      the incident. The search engine will not search neither the
-      Comments added to the agent nor the attached files. The search
+      the incident. The search engine will not search either the
+      Comments added to the agent or the attached files. The search
       can be performed in addition to group, priority or status
       filters.
     </para>

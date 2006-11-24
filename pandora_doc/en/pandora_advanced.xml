@@ -27,7 +27,7 @@
 	<para>
 	  <emphasis>Multiple Pandora Data Servers for HA
 	  </emphasis>. This is the more complex scenario, because you
-	  dont need to know nothing special about Pandora Server
+	  don't need to know anything special about Pandora Server
 	  setup, and you need to use of another tool to implement
 	  Network HA, like VRRP or Keepalive. For Pandora Data server
 	  you need to setup two identical machines, with the same
@@ -36,7 +36,7 @@
 	  point one of them. If one fails, VRRP or Keepalive "promote"
 	  the other server up, and Pandora Agents, will connect it for
 	  the next data packets. There is no need to change anything
-	  in each of Pandora Data server, only need to be sure that
+	  in each of Pandora Data server, only need ensure that
 	  Pandora Server name is the same on both machines (in pandora
 	  server setup, not in the system hostname).
 	</para>
@@ -47,10 +47,10 @@
 	  </emphasis>. This is more easy. You need to setup multiple
 	  network servers in several machines across your network (or
 	  all of them in the same segment), and assign modules to the
-	  same server. If this servers fails, and there ara other
+	  same server. If this servers fails, and there are other
 	  Network Servers active, marked as "primary" server,
 	  automatically, the first network server available marked as
-	  "Primary" launch the network module query. If you have many
+	  "Primary" will launch the network module query. If you have many
 	  servers marked as "primary", any of them could launch query.
 	</para>
       </listitem>
@@ -60,7 +60,7 @@
 	  balancing.  </emphasis>. You need to setup multiple network
 	  servers in several machines across your network (or all of
 	  them in the same segment), and assign agent/modules to
-	  different servers, balancing yourself load between all
+	  different servers, balancing load between all
 	  servers available.	  
 	</para>
       </listitem>
@@ -84,29 +84,29 @@
   <sect1><title>Pandora Database design (and redesign from 1.1)</title>
   <para>
     First Pandora versions, from 0.83 until 1.1 was based on a simple
-    idea: ona data, one database insertion. This was very easy to
-    develop and allow to program easily searches, insertions and other
+    idea: one data, one database insertion. This was very easy to
+    develop and allowed to program easily searches, insertions and other
     operations.
   </para>
   <para>
-    This had many advantages and a great problem: the
+    This had many advantages and a big problem: the
     scalability. This system has a limit defined in maximum number of
     modules that could support in a "easy" way, from that number of
     modules the management was too slow.
   </para>
   <para>
-    Solutions based on MySQL cluster was difficult and comes with some
+    Solutions based on MySQL cluster was difficult and cames with some
     problems and they did not offer either a solution in the long
     term.
   </para>
   <para>
     Data compression based on interpolation and data purge, makes a
-    smaller database, but this was not enought. Production systems has
+    smaller database, but this was not enough. Production systems has
     a limit based on 100 agents, with about ten modules each one. This
-    was not a high limit for huge environments.
+    was not a high limit for large environments.
   </para>
   <para>
-    This problem was very important for Pandora future, so we are
+    This problem was very important for Pandora future, so we 
     changed the way Pandora store its data. New data management system
     store only "new" data. If a duplicate value enter the system, it
     won't be stored in database. It's very useful to keep database
@@ -129,11 +129,11 @@
     a graphical representation, for module graph there will be no
     changes. You will have a graph with a perfect horizontal
     line. Pandora, if doesn't receive new values, thinks that there 
-	are no new values, and everything seems to be equal that in the last
+    are no new values, and everything seems to be as in the last
     notification.
   </para>
   <para>
-    This graph, for example, show changes for each data, received each
+    This graph, for example, shows changes for each data, received every
     180 seconds.
 
     <graphic fileref="images/module_graph_full.jpg" scale="60" align="center"/>
@@ -150,10 +150,9 @@
     and it's receiving data. This is an example of an agent connecting
     regulary to server:
     <graphic fileref="images/access_graph_full.jpg" scale="65" align="center"/>
-    If you have low leaks in this graph, you could have experiencing
-    some problems or slow connections in Pandora Agent connectivity
-    with Pandora Server. This graph with previous example could have
-    an aspect similar to this:
+    If you have low leaks in this graph, you may have some problems or slow 
+    connections in Pandora Agent connectivity with Pandora Server. This graph 
+    with previous example could have an aspect similar to this:
     <graphic fileref="images/access_graph_peak.jpg" scale="65" align="center"/>
   </para>  
   </sect1>

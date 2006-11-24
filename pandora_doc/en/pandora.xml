@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.4//EN"
-	  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
+	  "http://www.docbook.org/xml/4.4/docbookx.dtd" [
 <!ENTITY pandora_version "v1.2">
 <!ENTITY pandora "<emphasis>Pandora</emphasis>">
 <!ENTITY include_pandora_introduction SYSTEM "pandora_introduction.xml">
@@ -19,8 +19,8 @@
     <copyright>
       <year>2006</year>
       <holder>
-	�tica Soluciones Tecnol�icas S.L, Sancho Lerena, Esteban
-	S�chez, David Villanueva and others.
+	Artica Soluciones Tecnologicas S.L, Sancho Lerena, Esteban
+	S�chez, David Villanueva, Raul Mateos, Manuel Arostegui  and others.
       </holder>
     </copyright>
     <date>19/11/2006</date>

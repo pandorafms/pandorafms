@@ -153,12 +153,12 @@ Pandora_Wmi::isServiceRunning (string service_name) {
  * @exception Pandora_Wmi_Exception Throwd if an error occured when reading
  *            from WMI database.
  */
-long
+unsigned long
 Pandora_Wmi::getDiskFreeSpace (string disk_id) {
 	CDhInitialize init;
 	CDispPtr      wmi_svc, quickfixes;
 	string        id, space_str;
-	int           space;
+	unsigned long space;
 	
         struct QFix {
 		CDhStringA id, free_space;
@@ -185,7 +185,7 @@ Pandora_Wmi::getDiskFreeSpace (string disk_id) {
 				space_str = fix.free_space;
 				
 				try {
-					space = Pandora_Strutils::strtoint (space_str);
+					space = Pandora_Strutils::strtoulong (space_str);
 				} catch (Pandora_Exception e) {
 					throw Pandora_Wmi_Exception ();
 				}

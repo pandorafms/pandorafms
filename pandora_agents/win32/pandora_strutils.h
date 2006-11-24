@@ -41,15 +41,16 @@ namespace Pandora_Strutils {
 	 */
         class Invalid_Conversion : Pandora_Strutils::String_Exception {};
 	
-        string trim        (const string str);
+        string        trim        (const string str);
 
-        string inttostr    (const int i);
-        string longtostr   (const long i);
-        string longtohex   (const long i);
+        string        inttostr    (const int i);
+        string        longtostr   (const long i);
+        string        longtohex   (const long i);
         
-        int    strtoint    (const string str);
+        int           strtoint    (const string str);
+	unsigned long strtoulong  (const string str);
         
-        string strreplace  (string in, string pattern, string rep);
+        string        strreplace  (string in, string pattern, string rep);
 
         void
         stringtok (list<string> &l, string const &s,

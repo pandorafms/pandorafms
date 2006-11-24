@@ -1,3 +1,15 @@
+2006-11-24  Esteban Sánchez  <estebans@artica.es>
+
+	* pandora_strutils.h, pandora_strutils.cc: Added strtoulong() to
+	convert a string into a unsigned long integer.
+
+	* wmi/pandora_wmi.h, pandora_wmi.cc: Modified getDisgkFreeSpace() to
+	return a unsigned long integer. Used srttoulong() to transform the
+	free disk into a log instead of an integer, that caused a negative
+	value of free disk space when the amount was in the order of GB.
+
+	* bin/PandoraAgent.exe: Updated to new commit.
+
 2006-11-21  Esteban Sánchez  <estebans@artica.es>
 
 	* pandora_windows_service.cc: Changed the debug option of the

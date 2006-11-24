@@ -120,6 +120,28 @@ Pandora_Strutils::strtoint (const string str) {
 }
 
 /** 
+ * Tranform a string into a long integer.
+ * 
+ * @param str String to convert.
+ * 
+ * @return The long integer value of the string.
+ *
+ * @exception Invalid_Conversion throwed if the string has non-
+ *            decimal values.
+ */
+unsigned long
+Pandora_Strutils::strtoulong (const string str) {
+        unsigned long result;
+
+        if (! std::sscanf (str.c_str (), "%uld", &result)) {
+                throw Invalid_Conversion ();
+        }
+	printf ("%s - %u\n", str.c_str (), result);
+
+        return result;
+}
+
+/** 
  * Replace every occurence of a pattern in a string with other substring.
  * 
  * @param in Objective string.

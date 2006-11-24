@@ -104,7 +104,7 @@
 	For example, in a module registering the number of processes,
 	if we are only interested in values between 0 and 100, any values 
 	above that number will be usually produced by errors, noise 
-	or abnormal	circumstances. If we set to range between 0 and 100 
+	or abnormal circumstances. If we set to range between 0 and 100 
 	all those values below and above - such as -1, 100 or 100000 - 
 	will be permanently deleted from the database.
       </para>

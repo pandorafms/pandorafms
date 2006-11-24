@@ -29,7 +29,7 @@
       servers, etc. - all integrated into an open and distributed
       architecture.  Pandora can be implemented over any operating
       system, with specific agents for each platform. Pandora can also
-      monitor any TCP/IP hardware system, such as load balancers,
+      monitor any TCP/IP hardware system, as load balancers,
       routers, switches, printers, etc.
       <graphic fileref="images/esquema.png" scale="50" align="center"/>
       Pandora architecture is formed of four main components:
@@ -39,16 +39,16 @@
 	  <emphasis>Web Console</emphasis>: Pandora's user
 	  interface. The user controls and operates the system with
 	  it. Several Web consoles can be implemented in a single
-	  system. The Web console is written in PHP, and rests on a
+	  system. The Web console is written in PHP, and it is over a
 	  database and a Web server. It is compatible with any
-	  platform - GNU/Linux, Solaris, Win2000, AIX, etc. However,
-	  the official supported platform is GNU/Linux.
+	  platform - GNU/Linux, Solaris, Win2000, AIX, etc.T
+	  official supported platform is GNU/Linux, though
 	</para>
 	<para>
 	  The console permits the user to control the status of the
 	  agents, view statistical information, generate graphs and
-	  data tables, keep a system incident control, as well as to
-	  generate reports and change the alerts, agents, and user
+	  data tables, keep a system incident control,moreover it is able 
+	  to generate reports and change the alerts, agents, and user
 	  profile settings.
 	</para>
       </listitem>
@@ -132,7 +132,7 @@
     At present, with Pandora any process or system that through a
     command returns a value can be monitored, as well as any value in
     any Operating System log file or similar. Some examples of already
-    existing implementations can be the following ones:
+    existing implementations below:
     <programlisting>      
       Number of connections (sessions) of Checkpoint FW-1
       Number of NAT sessions of Checkpoint FW-1
@@ -199,11 +199,11 @@
     The process of transferring the data file from the agent to the
     server is made regularly at a defined time interval in the agent
     configuration file, pandora_agent.conf. It's possible to modify
-    that parameter to not fill the database with non-relevant
-    information, not to load the network or to not affect the system
+    that parameter in order to do not fill the database with non-relevant
+    information, either load the network or affect the system
     performance. The default interval is 300 (seconds), which is
     equivalent to five minutes. Minor values of 100 (seconds) are not
-    recommended since host performance can be affected, besides
+    recommended since host performance could be affected, besides
     loading excessively Database and the Operating System of Pandora
     Server. Pandora is not a real time system; it's an applications
     and systems general monitoring system in environments that are not
@@ -263,8 +263,7 @@
     Pandora. This file has the information gathered by the Agent. Its
     easy structure allows that any user could create its own
     developments to be processed in Pandora, or use the included ones.
-    An example of the information included into the data file is the
-    following one:
+    An example of the information included into the data file below:
   <screen>
     <![CDATA[
     <agent data os_name="SunOS" os_version="5.8" timestamp="300"
@@ -331,7 +330,7 @@
 	  For example, if you create a module to make a ping check to
 	  192.168.1.1 and assign this agent/module to a server in a
 	  192.168.2.0/24 network without access to 192.168.1.0/24
-	  module always report DOWN. 
+	  module will always report DOWN. 
 	</para>
       </listitem>
       <listitem>
@@ -349,27 +348,27 @@
   </para>
   <para>
     Data are extracted from the data file, identifying origin, type
-    and category. One classified, the data are inserted into the
+    and category. Once it's classified, the data are inserted into the
     Database by the same Perl script.
   </para>
   <para>
     Pandora Server can work in High Availability and/or Load
     Balancing. In a very big architecture, several Pandora Servers can
-    be arranged simultaneously to be able to manage big volumes of
+    be arranged simultaneously in order to be able to manage big volumes of
     information distributed by geographical or functional zones.
   </para>
   <para>
     Pandora Server is always running (as a daemon) and permanently
     verifies if some element causes to fire an alarm. If so, it
     executes the action defined in the alarm, as to send a SMS, an
-    email, to activate the execution of a SCRIPT or to send an HTTP
+    email, even activates the execution of a SCRIPT or to send an HTTP
     form.
   </para>
   <para>
     We could have several simultaneous servers, one of them is the
-    Main Server or "Master Server " and the rest servers are "Slave
+    Main Server or "Master Server " and the rest of servers are "Slave
     Servers". The Master Server is the only one that verifies the
-    alarms if any agent goes down. The server who receives the data
+    alarms if any agent goes down. The server which receives the data
     file from the agent always fires the rest of alarms, defined in
     the agents' modules. This is also important if this server changes
     (due to configurations of high availability, load balancing or
@@ -379,20 +378,20 @@
   
   <sect2><title>Pandora console</title>
   <para>
-    The Web Console it's a web application that allows to see
-    graphical reports, state of every agent, and to access to the
+    The Web Console is a web application that allows to see
+    graphical reports, state of every agent, also to access to the
     information sent by the agent, to see every monitored parameter
     and to see its evolution throughout the time, to form the
     different nodes, groups and users of the system. It is the part
-    that interacts with the final user, and that allows you to
+    that interacts with the final user, and that will allows you to
     administer the system.
   </para>
   <para>
     The Web Console is written in PHP and no plug-in, Flash, Java or
     ActiveX is needed to access the console, only a browser that
-    supports HTML and CSS (IE5+ o Mozilla 4+). Pandora Web Console can
-    run in several servers, the only thing you need is to access
-    Pandora Database, where Pandora stores all the information.
+    supports HTML and CSS (IE5+ or Mozilla 4+). Pandora Web Console can
+    run in several servers, the only thing you need is to be allow to
+    access Pandora Database, where Pandora stores all the information.
   </para>
   </sect2>
   
@@ -400,7 +399,7 @@
   <para>
     Pandora uses a SQL Database to store all the information. Pandora
     maintains an asynchronous database with all the received data,
-    making a temporary cohesion of everything what it receives and
+    making a temporary cohesion of everything  it is receives and
     normalizing all the information from the different sources. Every
     Agent data module generates an entry of information for every data
     bundle, which implies that a real production system can have of
@@ -408,33 +407,31 @@
   </para>
   <para>
     This information is managed automatically from Pandora, carrying
-    out a periodic and automatic maintenance of the database. This
-    allows that Pandora should need neither any type of administration
-    of database nor process attended by an operator or manager. This
-    is made by a periodic purge of the past information over a date
-    (by default 90 days), as well as a data compaction of the data
-    that have more than, by default, 30 days.
+    out a periodic and automatic maintenance of the database. This means
+    that there is no operator either manager required to run tasks as database
+    administration ones. This is possible thanks to a periodic purge of the past 
+    information over a date (by default 90 days), as well as a data 
+    which is older, by default, 30 days.
   </para>
 
   <sect3><title>Compacting data</title>
   <para>
-    Data stored by Pandora are useful to see evolutions regard through
-    the time, to make statistics, to generate reports and to do
-    capacity planning, as well as other tasks of statistical
-    nature. For it, it isn't necessary to have all the data, but it's
+    Data stored by Pandora are useful to see evolutions through
+    the time, in order to: make statistics, generate reports and to do
+    capacity planning, as well as other statisticals tasks. 
+    To do that it isn't necessary to have all the data, but it's
     enough to have a representative sample, of smaller resolution,
     enough to carry out the task that is needed.
   </para>
   <para>
     With that philosophy the compaction system has been
-    constructed. If we have a sample of 9.000 elements, distributed
-    during 90 days, for example, Pandora is going to take the data of
-    last month, which would be 3.000 elements and it's going them to
-    compress them in 300. In the graphs they will practically be seen
-    equal, which it will serve us for the reports, statistics and
-    other tasks. This is made by means of interpolation in temporary
-    strips, in a totally automatic and periodic way, without the user
-    or the administrator must himself or herself worry about it.
+    constructed. For instance, If we have a sample of 9.000 elements, 
+    distributed during 90 days, Pandora will take the data of
+    last month, which would be 3.000 elements and will compress it in 300. 
+    In the graphs they will practically be equal, and  it will be usfel for the reports, statistics
+    and other tasks. This is made thanks to a interpolation in temporary
+    strips, in a totally automatic and periodic way, there is not user
+    or the administrator needed to do this.
   </para>
   </sect3>
   </sect2>
@@ -442,12 +439,12 @@
 <sect1>
   <title>Pandora 1.2 new features</title>
   <para>
-    <emphasis>Alert system</emphasis>. Now its possible to define a
+    <emphasis>Alert system</emphasis>. Now it is possible to define a
     "minimun" and "maximum" limit to fire an alert, just to delete
     "noisy" data that fires false positives.
   </para>
   <para>
-    <emphasis>Network Subsystem</emphasis>. Now its possible to
+    <emphasis>Network Subsystem</emphasis>. Now it is possible to
     monitor and analyze data using remote network tools, without using
     agents, from the new Pandora Network Server component. All
     management are made from Pandora Console, and now you will be able
@@ -499,7 +496,7 @@
     Pandora is a project initiated and mainly developed by Sancho
     Lerena, at present other people is working on it: Raul Mateos,
     David Villanueva, Esteban Sanchez, Jose Navarro and Jonathan
-    Barajas. We want to give thanks for many other people who help us
+    Barajas. We want to thank many other people who help us
     with translation, graphic design, bugs reporting and interesting
     ideas.
   </para>

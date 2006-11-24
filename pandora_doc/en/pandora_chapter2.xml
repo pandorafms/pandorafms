@@ -25,14 +25,14 @@
     elements in common among various users. Each user could be in one
     or more groups at any one time. Each group has user profiles which
     are defined and attached to it. A profile is a list of things a
-    user can do, such as view incidents, manage database or other.
+    user can do, such as view incidents, manage database or other tasks.
   </para>
   
   <sect1 id="sec2.1">
     <title>Profile manager</title>
     <para>
       Pandora's profile manager is used to assign specific profiles to
-      each user. A hierarchy of users is so created, structured by the
+      each user. A hierarchy of users is created, structured by the
       user's profile within the company. With this system different
       security levels can be implemented: read-only users, agent group
       coordinators or system administrators.
@@ -112,7 +112,7 @@
     <title>Adding a user</title>
     
     <para>
-      A user is added clicking on "Manage Users" &gt; "Create user"
+      An user is added clicking on "Manage Users" &gt; "Create user"
       in the Administration Menu
     </para>
     
@@ -127,7 +127,7 @@
     <title>Deleting a user</title>
     
     <para>
-      A user is deleted by clicking on the delete icon <inlinegraphic
+      An user is deleted by clicking on the delete icon <inlinegraphic
       fileref="images/cancel.png"/> on the right hand side
       of the user. The list of users is accessed through the
       "Manage Users" option in the Administration menu. 
@@ -137,7 +137,7 @@
   <sect1 id="sec2.4">
     <title>Statistics</title>
     <para>
-      The user activity statistics show a graph with the
+      The user activity statistics shows a graph with the
       activity of the user, being the number of events the audit
       has generated for each user. The number of events of a
       user usually reflects the user's activity.
@@ -152,7 +152,7 @@
     <title>Messages to users</title>
     <para>
       In pandora 1.2 the possibility of send messages to other 
-      users has been added.To create a new message to other user,
+      users has been added.To create a new message to another user,
       go to "Messages"section in the Operation menu. You can also 
       read the received messages, but the sent messages are not stored.
     </para>

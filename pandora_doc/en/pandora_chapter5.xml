@@ -23,7 +23,7 @@
 	<para>
 	  The events appear ordered chronologically as they enter the
 	  system, and can be viewed by clicking the "View Events"
-	  option in the Operation menu.  The newer events are placed
+	  option in the Operation menu.  The newest events are placed
 	  at the top of the table.
 	</para>
 
@@ -86,7 +86,7 @@
 	  <title>Statistics</title>
 	  
 	  <para>
-	    Three different kinds of graphical statistic
+	    Three different sort of graphical statistic
 	    representation can be choosen from the "View
 	    Events" &gt; "Statistics" option in the Operation menu:
 	  </para>

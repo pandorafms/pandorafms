@@ -1,3 +1,11 @@
+2006-11-27 Manuel Arostegui <marostegui@artica.es>
+
+	* pandora_server/specs/fedoracore5/perl-Pandora-1.2-beta3.spec:
+	  Missing Changelog section, added.
+	
+	* pandora_server/specs/rhel/perl-Pandora-1.2-beta3.speci: Missing 
+	  Changelog section, added.
+
 2006-11-23 Raul Mateos <raulofpandora@gmail.com>
 
 	* pandora_server/bin/pandora_config.pm: Updated some text from Linux to

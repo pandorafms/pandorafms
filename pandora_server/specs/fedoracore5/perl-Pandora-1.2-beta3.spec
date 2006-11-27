@@ -37,3 +37,9 @@ make install
 
 %clean
 rm -Rf $RPM_BUILD_DIR/%{name}-%{version}
+
+%changelog
+* Wed Nov 22 2006 - Manuel Arostegui Ramirez <marostegui@artica.es>
+- Added Fedora PATHS
+* Wed Nov 22 2006 - Jose Angel de Bustos Perez <jadebustos@linuxmail.org>
+- Initial package of version 1.2

@@ -155,10 +155,10 @@ Pandora_Wmi::isServiceRunning (string service_name) {
  */
 unsigned long
 Pandora_Wmi::getDiskFreeSpace (string disk_id) {
-	CDhInitialize init;
-	CDispPtr      wmi_svc, quickfixes;
-	string        id, space_str;
-	unsigned long space;
+	CDhInitialize      init;
+	CDispPtr           wmi_svc, quickfixes;
+	string             id, space_str;
+	unsigned long long space = 0;
 	
         struct QFix {
 		CDhStringA id, free_space;

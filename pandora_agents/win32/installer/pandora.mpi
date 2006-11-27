@@ -51,7 +51,7 @@ IncludeDebugging
 Yes
 
 InstallVersion
-1.0.0.1
+1.0.0.2
 
 LaunchApplication
 Yes
@@ -60,7 +60,7 @@ ProjectID
 9A2D5834-BB98-4916-89A5-06C81E368C0A
 
 ProjectVersion
-1.0.3.0
+1.0.4.0
 
 ShortAppName
 {Pandora FMS}
@@ -184,7 +184,7 @@ InstallComponent 9595B40E-22BA-4E6D-AB81-1292E482FB6F -setup Install -title {Ins
 InstallComponent 062A52B5-D9BA-43E7-A6B4-3C3FBD33ED83 -setup Install -title {Install Windows Shortcut} -component InstallWindowsShortcut -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
 InstallComponent 26BC0EC8-61D5-41BC-93EA-C4D5C62F25E4 -setup Install -title {Install Windows Shortcut} -component InstallWindowsShortcut -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
 InstallComponent E8082112-E869-4AAC-918A-3C5307CB6423 -setup Install -title {Message Box} -component MessageBox -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
-InstallComponent 5A843D75-D3C0-4EA4-8C21-F29DBE168521 -setup Install -conditions {87FE38EB-DF8C-4DD6-8F4A-F09D4DD0ECB6 1FF15B8D-813C-40C8-876D-156505470C6B} -title {Execute External Program} -component ExecuteExternalProgram -command insert -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
+InstallComponent 5A843D75-D3C0-4EA4-8C21-F29DBE168521 -setup Install -conditions {87FE38EB-DF8C-4DD6-8F4A-F09D4DD0ECB6 1FF15B8D-813C-40C8-876D-156505470C6B} -title {Execute External Program} -component ExecuteExternalProgram -command reorder -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
 Condition 87FE38EB-DF8C-4DD6-8F4A-F09D4DD0ECB6 -active Yes -parent 5A843D75-D3C0-4EA4-8C21-F29DBE168521 -title {Ask Yes or No} -component AskYesOrNo
 Condition 1FF15B8D-813C-40C8-876D-156505470C6B -active Yes -parent 5A843D75-D3C0-4EA4-8C21-F29DBE168521 -title {String Is Condition} -component StringIsCondition
 InstallComponent D651AEE7-E69C-44FD-B111-8DE881B83843 -setup Install -conditions 3E668536-AEF9-48A5-A5D0-1DE224E0D276 -title {Execute External Program} -component ExecuteExternalProgram -command insert -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
@@ -884,7 +884,7 @@ AC33C2B4-AB01-4572-802B-BA89E7661C04,Name
 Pandora
 
 AC33C2B4-AB01-4572-802B-BA89E7661C04,Size
-7669132
+7100188
 
 B1313CDD-A5DA-4A72-ABCF-59E341F46E5A,FailureMessage
 {Error initiating service}
@@ -1390,6 +1390,9 @@ E8082112-E869-4AAC-918A-3C5307CB6423,Message
 
 E8082112-E869-4AAC-918A-3C5307CB6423,Title
 {Public and Private Key Generation}
+
+F1A35B0F-4ED6-4687-8D6B-92BF1D209A25,Caption
+{Setup has enough information to start copying the program files. If you want to review or change any settings, click Back.  If you are satisfied with the settings, click Next to begin copying files.}
 
 FD4A35A5-930C-464A-BF60-2E721C498270,Text
 <%CreateDesktopShortcutText%>

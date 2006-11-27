@@ -109,6 +109,13 @@ else
         else
             LINUX_DISTRO=GENERIC
             OS_VERSION=`uname -r`
+	
+		if [ -f "/etc/fedora-release" ]
+			then
+		   	OS_VERSION=`cat /etc/fedora-release | cut -f 4 -d " "`
+		   	OS_VERSION="FEDORA $OS_VERSION"
+		   	LINUX_DISTRO=FEDORA
+           fi	   
         fi
     fi
 fi

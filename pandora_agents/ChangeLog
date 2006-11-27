@@ -1,3 +1,7 @@
+2006-11-27  Manuel Arostegui <marostegui@artica.es>
+
+	* linux/pandora_agent.sh: Added new distro detection
+
 2006-11-23  Raul Mateos <raulofpandora@gmail.com>
 
 	* linux/pandora_agent.sh, linux/pandora_agent_daemon: Update license,

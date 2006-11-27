@@ -129,14 +129,13 @@ Pandora_Strutils::strtoint (const string str) {
  * @exception Invalid_Conversion throwed if the string has non-
  *            decimal values.
  */
-unsigned long
+unsigned long long
 Pandora_Strutils::strtoulong (const string str) {
-        unsigned long result;
+        unsigned long long result;
 
-        if (! std::sscanf (str.c_str (), "%uld", &result)) {
+        if (! std::sscanf (str.c_str (), "%I64d", &result)) {
                 throw Invalid_Conversion ();
         }
-	printf ("%s - %u\n", str.c_str (), result);
 
         return result;
 }

@@ -1,3 +1,14 @@
+2006-11-27  Esteban Sánchez  <estebans@artica.es>
+
+	* pandora_strutils.h, pandora_strutils.cc: strtoulong() now returns an
+	unsigned long long. This will finally fixes the bug with freedisk big
+	amounts.
+
+	* windows/pandora_wmi.cc: Now the space amount is a unsigned long
+	long enough to amounts up to PB (billions of GB).
+
+	* bin/PandoraAgent.exe: Updated to new commit.
+
 2006-11-24  Esteban Sánchez  <estebans@artica.es>
 
 	* pandora_strutils.h, pandora_strutils.cc: Added strtoulong() to

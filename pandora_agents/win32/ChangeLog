@@ -1,3 +1,15 @@
+2006-11-27 Raul Mateos <raulofpandora@gmail.com>
+
+	* installer/Pandora_FMS_Windows_Agent-1.2-Setup.exe: Updated with last
+	binary file.
+	
+	* installer/pandora.mpi: Update installer script file.
+	
+	* installer/Pandora Windows Agent-1.2 Beta3-Setup.exe: deleted old file.
+	
+	* bin/pandora_agent.conf: Changed path in server to
+	/var/spool/pandora/data_in.
+
 2006-11-27  Esteban Sánchez  <estebans@artica.es>
 
 	* pandora_strutils.h, pandora_strutils.cc: strtoulong() now returns an

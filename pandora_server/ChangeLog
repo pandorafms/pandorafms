@@ -1,3 +1,10 @@
+2006-11-27 Raul Mateos <raulofpandora@gmail.com>
+
+	* pandora_server/data_in: Removed old directory.
+
+	* pandora_server/config/pandora_server.conf: Changed data_in directory to
+	/var/spool/pandora/data_in.
+
 2006-11-27 Manuel Arostegui <marostegui@artica.es>
 
 	* pandora_server/specs/fedoracore5/perl-Pandora-1.2-beta3.spec:

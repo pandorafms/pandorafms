@@ -20,14 +20,21 @@
 
 <div id="foot">
 	<?php
-	echo '<a target="_new" href="general/license/pandora_info_'.$language_code.'.html">Pandora FMS ';
-	echo $pandora_version." Build ";
-	echo $build_version." "; 
+	echo '<a target="_new" href="general/license/pandora_info_'
+	.$language_code.'.html">Pandora FMS ';
+	echo $pandora_version." Build ".$build_version." ";
 	echo $lang_label["gpl_notice"];
 	echo '</a><br>';
 	if (isset($_SESSION['id_usuario'])) {
-	echo $lang_label["gen_date"]." ".date("D F d, Y H:i:s",$_SERVER['REQUEST_TIME'])."<br>";
+	
+		if (isset($_SERVER['REQUEST_TIME'])) {
+			$time = $_SERVER['REQUEST_TIME'];
+		} else {
+			$time = time();
+		}
+		echo $lang_label["gen_date"]." ".date("D F d, Y H:i:s", $time)."<br>";
 	}
 	?>
-	<i>Pandora FMS is a <a target="_new" href="http://pandora.sourceforge.net">SourceForge registered project</a></i>
+	<i>Pandora FMS is a <a target="_new" href="http://pandora.sourceforge.net">
+	SourceForge registered project</a></i>
 </div>

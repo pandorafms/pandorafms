@@ -161,7 +161,7 @@
     <graphic fileref="images/Pandora_NetworkServer_Diagram.png" scale="65" align="center"/>
     <graphic fileref="images/Pandora_DataServer_Diagram.png" scale="65" align="center"/>
     <graphic fileref="images/Pandora_SNMP_Diagram.png" scale="55" align="center"/>
-    
+    <graphic fileref="images/pandora_ER.png" scale="50" align="center"/> 
   </para>
   </sect1>
 </chapter>

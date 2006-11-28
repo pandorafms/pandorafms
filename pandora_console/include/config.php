@@ -33,7 +33,10 @@ $attachment_store="/var/www/pandora_console";	//This is directory where placed "
 $config_fontpath = "../reporting/FreeSans.ttf";	// Change this to your font folder, if needed.
 
 // Do not display any ERROR
-error_reporting(0);
+// error_reporting(0);
+
+// Display all errores, warnings and notices
+error_reporting(E_ALL);
 
 // Read rest of config from DB
 if (! mysql_pconnect($dbhost,$dbuser,$dbpassword)){ //Persistent connection. If you want non-persistent conn change it to mysql_connect()

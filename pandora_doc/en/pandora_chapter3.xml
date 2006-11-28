@@ -837,7 +837,7 @@
 	 This is the description of all the agent modules been
 	 monitored.
  	</para>
-	<graphic scale='70' fileref="images/image017.png" 
+	<graphic scale='55' fileref="images/image017.png" 
 		 valign="bottom" align="center"/>
 	<para>
 	 In this list the module information is showed in the following 
@@ -926,7 +926,7 @@
 	<para>This is the description of all the monitors defined by
 	the agent</para>
 	
-	<graphic scale='70' fileref="images/image022.png" 
+	<graphic scale='55' fileref="images/image022.png" 
 		 valign="bottom" align="center"/>
 	
 	<para>
@@ -1135,7 +1135,7 @@
       From SNMP Console in the Operation menu the users can see
 	  the SNMP traps sent to Pandora Server.
     </para>
-       <graphic scale='70' fileref="images/SNMP_console.png" 
+       <graphic scale='55' fileref="images/SNMP_console.png" 
 		valign="bottom" align="center"/>
     <sect2 id="sec3.4.1">
       <title>SNMP Alerts</title>
@@ -1152,7 +1152,7 @@
 	 In "SNMP Console" &gt; "SNMP Alerts" from Operation menu, the users
 	 can see the configured SNMP Alerts.
       </para>
-      <graphic scale='70' fileref="images/SNMP_alert.png" 
+      <graphic scale='55' fileref="images/SNMP_alert.png" 
 	       valign="bottom" align="center"/>
     <para> - 
 	To create a new alert the administrator must click in 

@@ -9,6 +9,11 @@
 	
 	* linux/pandora_agent.conf: Solved small bug with vmstat.
 
+2006-11-15  Sancho Lerena  <slerena@artica.es>
+
+        * linux/pandora_agent_daemon: Updated header for LSB compatibility
+        (thanks to patch send by Jose Angel de Bustos.
+
 2006-09-20  Sancho Lerena  <slerena@artica.es>
 
 	* linux/pandora_agent.sh: Inserted code for detect Linux Distro,

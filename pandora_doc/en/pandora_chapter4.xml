@@ -231,10 +231,10 @@
 	Only a user with writing privileges can attach a file,
 	and only the owner of the incident or of the file can delete it.
       </para>
-      <graphic fileref="images/image039.png" valign="bottom" align="center"/>
+      <graphic fileref="images/image039.png" valign="bottom" align="center" scale="70"/>
       <para>The incident follow up screen shows all the files attached 
       to the incident in the "Attached files" section of the screen.</para>
-      <graphic fileref="images/image040.png" valign="bottom" align="center"/>
+      <graphic fileref="images/image040.png" valign="bottom" align="center" scale="60"/>
     </sect2>
   </sect1>
   <sect1 id="sec4.3">

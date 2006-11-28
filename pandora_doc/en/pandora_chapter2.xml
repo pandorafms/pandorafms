@@ -64,7 +64,7 @@
       To create a new profile click on "Manage Profiles" &gt;
       "Create Profile" in the Administration Menu
     </para>
-    <graphic fileref="images/image002.png" valign="bottom" align="center"/>    
+    <graphic fileref="images/image002.png" valign="bottom" align="center" scale="60"/>    
     <para>
       Any of the following roles can be assigned to a new profile:
     </para>
@@ -116,7 +116,7 @@
       in the Administration Menu
     </para>
     
-    <graphic fileref="images/image003.png" valign="bottom" align="center"/>
+    <graphic fileref="images/image003.png" valign="bottom" align="center" scale="60"/>
     <para>
 	    To create a new user it is necessary to, at least, fill in
 	    the user ID, the password (twice) and Pandora's global
@@ -131,7 +131,7 @@
       fileref="images/cancel.png"/> on the right hand side
       of the user. The list of users is accessed through the
       "Manage Users" option in the Administration menu. 
-      <graphic fileref="images/image005.png" valign="bottom" align="center"/>
+      <graphic fileref="images/image005.png" valign="bottom" align="center" scale="60"/>
     </para>
   </sect1>
   <sect1 id="sec2.4">
@@ -145,7 +145,7 @@
     <para>
       Click on "View Users" &gt; "Statistics" in the Operation
       menu to show this graph:
-    <graphic fileref="images/image006.png" valign="bottom" align="center"/>
+    <graphic fileref="images/image006.png" valign="bottom" align="center" scale="60"/>
     </para>
   </sect1>
   <sect1 id="sec2.5">

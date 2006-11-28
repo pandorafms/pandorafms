@@ -1,3 +1,8 @@
+2006-11-28  Sancho Lerena  <slerena@artica.es>
+
+	* en/*.xml: Updated styles, added ER diagram and finished
+	revision. Generated "correct" PDF versions. Possibly final versions :-)
+
 2006-11-24  Manuel Arostegui <marostegui@artica.es>
 
 	* en/pandora_chapter1.xml,pandora_chapter2.xml,pandora_chapter3.xml,

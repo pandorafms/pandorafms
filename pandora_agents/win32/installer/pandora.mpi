@@ -1,6 +1,6 @@
 array set info {
 AllowLanguageSelection
-No
+Yes
 
 AppName
 {Pandora Free Monitoring System Windows Agent}
@@ -24,16 +24,10 @@ CommandLineFailureAction
 {Fail (recommended)}
 
 Company
-{Ártica Soluciones Tecnológicas S.T.}
+{Ártica Soluciones Tecnológicas S.L.}
 
 CompressionLevel
 6
-
-CreateDesktopShortcut
-Yes
-
-CreateQuickLaunchShortcut
-Yes
 
 DefaultLanguage
 English
@@ -51,7 +45,7 @@ IncludeDebugging
 Yes
 
 InstallVersion
-1.0.0.2
+1.0.0.3
 
 LaunchApplication
 Yes
@@ -178,13 +172,8 @@ InstallComponent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623 -setup Install -title {Cop
 InstallComponent 1816F27B-8A0F-47D9-9433-93C62D0CD81C -setup Install -title {Check for Previous Install} -component CheckForPreviousInstall -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
 InstallComponent C0ABB0FC-E4C3-4955-B16C-37FA5C6DCA28 -setup Install -title {Create Folder} -component CreateFolder -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
 InstallComponent B865820C-DFF0-4A19-AFBE-8CC0136543CF -setup Install -title {Install Selected Files} -component InstallSelectedFiles -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
-InstallComponent 77AAF6D2-BB64-4080-A1C8-4F3373A31A3A -setup Install -title {Install Windows Shortcut} -component InstallWindowsShortcut -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
-InstallComponent 61C2FDF5-242F-4982-BBC8-F71CBA9C5DE3 -setup Install -title {Install Windows Shortcut} -component InstallWindowsShortcut -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
-InstallComponent 9595B40E-22BA-4E6D-AB81-1292E482FB6F -setup Install -title {Install Windows Shortcut} -component InstallWindowsShortcut -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
-InstallComponent 062A52B5-D9BA-43E7-A6B4-3C3FBD33ED83 -setup Install -title {Install Windows Shortcut} -component InstallWindowsShortcut -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
-InstallComponent 26BC0EC8-61D5-41BC-93EA-C4D5C62F25E4 -setup Install -title {Install Windows Shortcut} -component InstallWindowsShortcut -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
 InstallComponent E8082112-E869-4AAC-918A-3C5307CB6423 -setup Install -title {Message Box} -component MessageBox -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
-InstallComponent 5A843D75-D3C0-4EA4-8C21-F29DBE168521 -setup Install -conditions {87FE38EB-DF8C-4DD6-8F4A-F09D4DD0ECB6 1FF15B8D-813C-40C8-876D-156505470C6B} -title {Execute External Program} -component ExecuteExternalProgram -command reorder -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
+InstallComponent 5A843D75-D3C0-4EA4-8C21-F29DBE168521 -setup Install -conditions {87FE38EB-DF8C-4DD6-8F4A-F09D4DD0ECB6 1FF15B8D-813C-40C8-876D-156505470C6B} -title {Execute External Program} -component ExecuteExternalProgram -command insert -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
 Condition 87FE38EB-DF8C-4DD6-8F4A-F09D4DD0ECB6 -active Yes -parent 5A843D75-D3C0-4EA4-8C21-F29DBE168521 -title {Ask Yes or No} -component AskYesOrNo
 Condition 1FF15B8D-813C-40C8-876D-156505470C6B -active Yes -parent 5A843D75-D3C0-4EA4-8C21-F29DBE168521 -title {String Is Condition} -component StringIsCondition
 InstallComponent D651AEE7-E69C-44FD-B111-8DE881B83843 -setup Install -conditions 3E668536-AEF9-48A5-A5D0-1DE224E0D276 -title {Execute External Program} -component ExecuteExternalProgram -command insert -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
@@ -192,10 +181,15 @@ Condition 3E668536-AEF9-48A5-A5D0-1DE224E0D276 -active Yes -parent D651AEE7-E69C
 InstallComponent 33B90425-CD22-45B1-9027-7395E23425CE -setup Install -conditions {C26ADDF5-B908-4B20-81F9-655807DD5C7B B1313CDD-A5DA-4A72-ABCF-59E341F46E5A} -title {Execute External Program} -component ExecuteExternalProgram -command insert -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
 Condition C26ADDF5-B908-4B20-81F9-655807DD5C7B -active Yes -parent 33B90425-CD22-45B1-9027-7395E23425CE -title {Ask Yes or No} -component AskYesOrNo
 Condition B1313CDD-A5DA-4A72-ABCF-59E341F46E5A -active Yes -parent 33B90425-CD22-45B1-9027-7395E23425CE -title {String Is Condition} -component StringIsCondition
-InstallComponent E7EA4D7E-6DFE-47A1-947C-6B1D70EFD6F8 -setup Install -title {Install Log File} -component InstallLogFile -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
 InstallComponent 05AB3D42-63A6-4A2D-90B7-5E0647445351 -setup Install -title {Install Uninstaller} -component InstallUninstaller -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
-InstallComponent 60F2F86C-6BBD-4C93-887E-8ECB65A5DDCB -setup Install -title {Install Windows Shortcut} -component InstallWindowsShortcut -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
+InstallComponent E7EA4D7E-6DFE-47A1-947C-6B1D70EFD6F8 -setup Install -title {Install Log File} -component InstallLogFile -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
 InstallComponent A247675F-046A-4C9F-814B-41527A5B4EA2 -setup Install -title {Move Forward} -component MoveForward -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
+InstallComponent 77AAF6D2-BB64-4080-A1C8-4F3373A31A3A -setup Install -title {Install Windows Shortcut} -component InstallWindowsShortcut -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
+InstallComponent 61C2FDF5-242F-4982-BBC8-F71CBA9C5DE3 -setup Install -title {Install Windows Shortcut} -component InstallWindowsShortcut -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
+InstallComponent 9595B40E-22BA-4E6D-AB81-1292E482FB6F -setup Install -title {Install Windows Shortcut} -component InstallWindowsShortcut -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
+InstallComponent 062A52B5-D9BA-43E7-A6B4-3C3FBD33ED83 -setup Install -title {Install Windows Shortcut} -component InstallWindowsShortcut -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
+InstallComponent 26BC0EC8-61D5-41BC-93EA-C4D5C62F25E4 -setup Install -title {Install Windows Shortcut} -component InstallWindowsShortcut -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
+InstallComponent 60F2F86C-6BBD-4C93-887E-8ECB65A5DDCB -setup Install -title {Install Windows Shortcut} -component InstallWindowsShortcut -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
 InstallComponent D8E7CB00-75A9-4031-BB60-047D19C89753 -setup Install -title {Setup Complete} -component SetupComplete -type pane -active Yes -parent StandardInstall
 InstallComponent B3DC46D9-345A-4534-B9CC-873647DA4A81 -setup Install -conditions {0898EB52-F809-4B66-8FEF-900E9745ED38 FE12D13F-E622-4640-9A96-9F95E056559F} -title {View Readme Checkbutton} -component AddWidget -command insert -type action -active Yes -parent D8E7CB00-75A9-4031-BB60-047D19C89753
 Condition 0898EB52-F809-4B66-8FEF-900E9745ED38 -active Yes -parent B3DC46D9-345A-4534-B9CC-873647DA4A81 -title {File Exists Condition} -component FileExistsCondition
@@ -213,7 +207,7 @@ Condition 86A623D9-F175-4F3E-97B5-15D52B7B9874 -active Yes -parent 1F7C75DC-8004
 Condition 02CCB56D-6D6D-4279-B617-DA980BBA0FC8 -active Yes -parent 1F7C75DC-8004-46C9-A39C-6E852C05E103 -title {String Is Condition} -component StringIsCondition
 InstallComponent 862253D2-7CCE-4650-A41F-1296A320A8B1 -setup Install -title {Execute Action} -component ExecuteAction -type action -active Yes -parent SilentInstall
 InstallComponent 7DE8CA95-CD7F-4DB0-8769-3D03363F2A4C -setup Install -title Exit -component Exit -type action -active Yes -parent SilentInstall
-InstallComponent 23FCB9D3-7AA3-4034-8579-EB66379E46C8 -setup Install -title {Startup Actions} -type actiongroup -active Yes -parent ActionGroupsInstall
+InstallComponent 23FCB9D3-7AA3-4034-8579-EB66379E46C8 -setup Install -title {Startup Actions} -type actiongroup -active No -parent ActionGroupsInstall
 InstallComponent AAC8F807-D2DC-4217-A909-92132F5CA32C -setup Install -conditions {F6476C46-BCA9-4066-B0A9-E0D03B4014D6 14F906D2-8874-4CE1-B74F-B6DE472D2DCC} -title Exit -component Exit -command insert -type action -active Yes -parent 23FCB9D3-7AA3-4034-8579-EB66379E46C8
 Condition F6476C46-BCA9-4066-B0A9-E0D03B4014D6 -active Yes -parent AAC8F807-D2DC-4217-A909-92132F5CA32C -title {String Is Condition} -component StringIsCondition
 Condition 14F906D2-8874-4CE1-B74F-B6DE472D2DCC -active Yes -parent AAC8F807-D2DC-4217-A909-92132F5CA32C -title {Ask Yes or No} -component AskYesOrNo
@@ -306,6 +300,9 @@ License
 0984E8A0-C38E-441B-A031-BCB19716E0DF,Caption,subst
 1
 
+0984E8A0-C38E-441B-A031-BCB19716E0DF,Conditions
+{0 conditions}
+
 0984E8A0-C38E-441B-A031-BCB19716E0DF,Message,subst
 1
 
@@ -314,6 +311,9 @@ License
 
 0ABA7462-20D0-4529-B75F-37E8525668BD,Alias
 {Finish Actions}
+
+0ABA7462-20D0-4529-B75F-37E8525668BD,Conditions
+{0 conditions}
 
 0ABCD476-DEC8-4DEC-8D34-E4604F4ABA32,Platform
 Windows
@@ -338,6 +338,9 @@ Yes
 
 14C49B0E-CDD3-42F5-9840-47CFA13F7C1C,Caption,subst
 1
+
+14C49B0E-CDD3-42F5-9840-47CFA13F7C1C,Conditions
+{1 condition}
 
 14C49B0E-CDD3-42F5-9840-47CFA13F7C1C,Message,subst
 1
@@ -370,6 +373,9 @@ No
 {Uninstall Actions}
 
 181CB7A1-ABD8-4DBA-8FC2-02A23A077060,Conditions
+{0 conditions}
+
+19EBFAC0-83A4-4585-A459-BE44E585953F,Conditions
 {0 conditions}
 
 19EBFAC0-83A4-4585-A459-BE44E585953F,State
@@ -423,8 +429,14 @@ LaunchApplication
 1FF15B8D-813C-40C8-876D-156505470C6B,String
 <%Answer%>
 
+23FCB9D3-7AA3-4034-8579-EB66379E46C8,Active
+No
+
 23FCB9D3-7AA3-4034-8579-EB66379E46C8,Alias
 {Startup Actions}
+
+23FCB9D3-7AA3-4034-8579-EB66379E46C8,Conditions
+{0 conditions}
 
 26BC0EC8-61D5-41BC-93EA-C4D5C62F25E4,Conditions
 {0 conditions}
@@ -455,6 +467,9 @@ No
 
 333668BE-FF48-4EBC-BDE5-F06A9CB5A099,CloseButton,subst
 1
+
+333668BE-FF48-4EBC-BDE5-F06A9CB5A099,Conditions
+{3 conditions}
 
 333668BE-FF48-4EBC-BDE5-F06A9CB5A099,Message,subst
 1
@@ -498,6 +513,9 @@ NextButton
 3A1A2BDA-B8F8-4F63-8D49-58A7C46D4BCB,Alias
 {Finish Actions}
 
+3A1A2BDA-B8F8-4F63-8D49-58A7C46D4BCB,Conditions
+{0 conditions}
+
 3E668536-AEF9-48A5-A5D0-1DE224E0D276,FailureMessage
 {ERROR: I can't find the PandoraAgent.exe file}
 
@@ -506,6 +524,9 @@ NextButton
 
 48B6BBA1-6E57-4F24-A197-D80E14913459,Filename
 <%ProgramExecutable%>
+
+4D1586CF-54A8-4247-9BDF-7FA7E5A192F6,Conditions
+{0 conditions}
 
 4E7789D9-F175-4850-A615-BF786EF9A83C,Message,subst
 1
@@ -943,6 +964,9 @@ B5120279-23E9-4757-99A3-548F029D0421,Y
 B6705E80-0395-453A-BC1D-E1BBD8D3FFB2,Alias
 {Startup Actions}
 
+B6705E80-0395-453A-BC1D-E1BBD8D3FFB2,Conditions
+{0 conditions}
+
 B865820C-DFF0-4A19-AFBE-8CC0136543CF,Conditions
 {0 conditions}
 
@@ -966,6 +990,9 @@ C26ADDF5-B908-4B20-81F9-655807DD5C7B,Title,subst
 
 C3F33EA6-1694-4CDD-9A50-89D3E46E780F,Alias
 {Cancel Actions}
+
+C3F33EA6-1694-4CDD-9A50-89D3E46E780F,Conditions
+{0 conditions}
 
 C57C6846-F39C-4D09-8008-D43470FAD071,Conditions
 {0 conditions}
@@ -1003,6 +1030,9 @@ D70BB230-EE6A-4601-99D0-87D9C2B2111E,String
 D74AA54D-EA03-4E5B-A4F4-25EC22ED20CF,Comment
 {Ask the user if they want to proceed with the uninstall.}
 
+D74AA54D-EA03-4E5B-A4F4-25EC22ED20CF,Conditions
+{2 conditions}
+
 D8E7CB00-75A9-4031-BB60-047D19C89753,BackButton,subst
 1
 
@@ -1023,6 +1053,9 @@ D8E7CB00-75A9-4031-BB60-047D19C89753,NextButton,subst
 
 E09D0867-6CDD-4A4C-B3F1-E5BB868CD728,Alias
 {Install Actions}
+
+E09D0867-6CDD-4A4C-B3F1-E5BB868CD728,Conditions
+{0 conditions}
 
 E5CD4D08-6331-4F49-937C-949A501D9B9A,BackButton,subst
 1
@@ -1065,6 +1098,9 @@ E8082112-E869-4AAC-918A-3C5307CB6423,Title,subst
 
 E9D8B68E-B780-46CA-B6E0-315CCC734848,Alias
 {Cancel Actions}
+
+EB3BE1C7-501D-43F7-883B-F0960FF79EC4,Conditions
+{0 conditions}
 
 F1A35B0F-4ED6-4687-8D6B-92BF1D209A25,BackButton,subst
 1
@@ -1386,7 +1422,7 @@ It is recommended that you close all other applications before continuing.
 Click Next to continue or Cancel to exit Setup.}
 
 E8082112-E869-4AAC-918A-3C5307CB6423,Message
-{Please generate both Public and Private keys, SSH2 DSA, and save them like id_dsa.pub and id_dsa into <%InstallDir%>\key folder.}
+{Please generate both Public and Private keys, SSH2 DSA, and save them like id_dsa.pub and id_dsa, OpenSSH format, into <%InstallDir%>\key folder.}
 
 E8082112-E869-4AAC-918A-3C5307CB6423,Title
 {Public and Private Key Generation}
@@ -1396,6 +1432,45 @@ F1A35B0F-4ED6-4687-8D6B-92BF1D209A25,Caption
 
 FD4A35A5-930C-464A-BF60-2E721C498270,Text
 <%CreateDesktopShortcutText%>
+
+}
+::msgcat::mcmset es {
+87FE38EB-DF8C-4DD6-8F4A-F09D4DD0ECB6,Message
+{¿Quiere generar las claves pública y privada?}
+
+87FE38EB-DF8C-4DD6-8F4A-F09D4DD0ECB6,Title
+{Generación de claves pública y privada}
+
+C26ADDF5-B908-4B20-81F9-655807DD5C7B,Message
+{¿Desea iniciar el Servicio Pandora Agent?}
+
+C26ADDF5-B908-4B20-81F9-655807DD5C7B,Title
+{Inicio de Servicio}
+
+D8E7CB00-75A9-4031-BB60-047D19C89753,Message
+{El Instalador InstallJammer ha instalado <%AppName%> con éxito. Pulse Finalizar para salir de este Instalador.}
+
+E5CD4D08-6331-4F49-937C-949A501D9B9A,Caption
+{Bienvenido al Instalador InstallJammer para <%AppName%>}
+
+E5CD4D08-6331-4F49-937C-949A501D9B9A,Message
+{Este programa instalará <%AppName%> versión <%Version%> en su equipo. 
+
+Se recomienda cerrar las demás aplicaciones antes de continuar.  
+
+Pulse siguiente para continuar o Cancelar para salir de la instalación.}
+
+E8082112-E869-4AAC-918A-3C5307CB6423,Message
+{Genere las claves Pública y Privada de tipo SSH2 DSA, y guárdelas como id_dsa.pub e id_dsa en formato OpenSSH en el directorio <%InstallDir%>\key.}
+
+E8082112-E869-4AAC-918A-3C5307CB6423,Title
+{Generación de clave pública y clave privada}
+
+F1A35B0F-4ED6-4687-8D6B-92BF1D209A25,Caption
+{Se ha recopilado la información necesaria para comenzar a copiar los archivos del programa. Si desea revisar o cambiar la configuración, pulse Atrás. Si esta conforme con la configuración, pulse Siguiente para comenzar a copiar los archivos.}
+
+UninstallStartupText
+{Se eliminará completamente <%AppName%> de su sistema. ¿Seguro que desea esto?}
 
 }
 

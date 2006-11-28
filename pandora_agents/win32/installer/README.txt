@@ -1,6 +1,6 @@
-Pandora is the free Distributed Monitoring System.
+Pandora FMS is the Free Monitoring System.
 
-This is the Windows agent, programmed in C++ with GNU tools and gcc.
+This is the Windows agent installer, programmed in C++ with GNU tools and gcc.
 
 The binary included is PandoraAgent.exe, that will run as a Windows Service.
 This should be done by the installer, if you have any problem, run:

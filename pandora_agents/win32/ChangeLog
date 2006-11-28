@@ -1,3 +1,12 @@
+2006-11-28 Raul Mateos <raulofpandora@gmail.com>
+
+	* installer/Pandora_FMS_Windows_Agent-1.2-Setup.exe: Updated with last
+	binary file.
+	
+	* installer/pandora.mpi: Update installer script file.
+	
+	* installer/README.txt: Updated file.
+
 2006-11-27 Raul Mateos <raulofpandora@gmail.com>
 
 	* installer/Pandora_FMS_Windows_Agent-1.2-Setup.exe: Updated with last

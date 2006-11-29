@@ -123,7 +123,7 @@ sub pandora_dataserver {
                                    			logger ($pa_config, "[ERROR] Error processing XML contents in $file_data",0);
                                    			copy ($file_data,$file_data."_BADXML");
                                    			if (($pa_config->{'pandora_check'} == 1) && ( -e $file_md5 )) {
-								copy ($file_md5,$file_md5."_BADCHECKUM");
+								copy ($file_md5,$file_md5."_BADCHECKSUM");
 							}
                           			}
 						procesa_datos($pa_config, $config, $dbh); 

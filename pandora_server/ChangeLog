@@ -1,9 +1,13 @@
+2006-11-29  Sancho Lerena  <slerena@artica.es>
+
+	* pandora_server/pandora_server.pl: Fixed BUG #1604778.
+
 2006-11-27 Raul Mateos <raulofpandora@gmail.com>
 
 	* pandora_server/data_in: Removed old directory.
 
-	* pandora_server/config/pandora_server.conf: Changed data_in directory to
-	/var/spool/pandora/data_in.
+	* pandora_server/config/pandora_server.conf: Changed data_in
+	directory to /var/spool/pandora/data_in.
 
 2006-11-27 Manuel Arostegui <marostegui@artica.es>
 
@@ -15,16 +19,17 @@
 
 2006-11-23 Raul Mateos <raulofpandora@gmail.com>
 
-	* pandora_server/bin/pandora_config.pm: Updated some text from Linux to
-	GNU/Linux. Update build date and final version.
+	* pandora_server/bin/pandora_config.pm: Updated some text from
+	Linux to GNU/Linux. Update build date and final version.
 
-	* pandora_server/config/pandora_server.conf: Changed servername from
-	"daeva" to localhost.
+	* pandora_server/config/pandora_server.conf: Changed servername
+	from "daeva" to localhost.
 
 2006-11-22 Manuel Arostegui <marostegui@artica.es>
 
-	* pandora_server/specs/fedoracore5/*, pandora_server/specs/rhel/*: Added
-	  to repository. Added specs files for Fedora Core 5 and RHEL.
+	* pandora_server/specs/fedoracore5/*, pandora_server/specs/rhel/*:
+	  Added to repository. Added specs files for Fedora Core 5 and
+	  RHEL.
 
 2006-11-13  Sancho Lerena  <slerena@artica.es>
 

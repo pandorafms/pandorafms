@@ -1,7 +1,0 @@
-2006/07/06 18:44:43 - Reading general config parameters from .conf file
-2006/07/06 18:44:43 - [SETUP] - Server IP Address is 192.168.50.100
-2006/07/06 18:44:43 - [SETUP] - Server Path is /opt/pandora_server/data_in
-2006/07/06 18:44:43 - [SETUP] - Temporal Path is /opt/pandora_agent/data_out
-2006/07/06 18:44:43 - [SETUP] - Interval is 300 seconds
-2006/07/06 18:44:43 - [SETUP] - Debug mode is 0 
-2006/07/06 18:44:43 - [SETUP] - Checksum is 0 

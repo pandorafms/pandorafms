@@ -1,3 +1,13 @@
+2006-11-30  Sancho Lerena  <slerena@artica.es>
+
+	* pandora.xml: Updated header, fixed problems with punctuation
+          chars, and added subtitle. Add revision.
+
+	* .pdf: Updated PDF.
+
+	* pandora_logo.jpg: Big images with margins, fit ok on first page.
+
+	* pandora_userguide.xml: Added subtitle and revision.
 2006-11-28  Sancho Lerena  <slerena@artica.es>
 
 	* en/*.xml: Updated styles, added ER diagram and finished

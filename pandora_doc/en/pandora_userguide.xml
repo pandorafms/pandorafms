@@ -19,6 +19,7 @@
 <book lang="en">
   <bookinfo>
     <title>&pandora; &pandora_version;</title>
+    <subtitle>Userguide</subtitle>
     <graphic fileref="./images/pandora_logo.jpg" valign="bottom" 
 	     align="center"/>
     <copyright>

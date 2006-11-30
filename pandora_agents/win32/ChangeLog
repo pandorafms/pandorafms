@@ -1,3 +1,7 @@
+2006-11-30 Raul Mateos <raulofpandora@gmail.com>
+
+	* bin/help/*: New directory and files with help for generating keys.
+
 2006-11-28 Raul Mateos <raulofpandora@gmail.com>
 
 	* installer/Pandora_FMS_Windows_Agent-1.2-Setup.exe: Updated with last

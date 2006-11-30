@@ -1,0 +1,45 @@
+<html>
+<head>
+<title>Fandora FMS - Generate keys step-by-step</title>
+</head>
+<body>
+
+<h3>Step-by-step generating keys</h3>
+
+From 
+<a href="http://pandora.sourceforge.net/en/print.php?sec=docs/faq_answers#q23">
+Pandora FMS FAQ</a>.
+
+<ol>
+	<li>
+		Go to <code>.\util</code> of your Pandora FMS agent for Windows
+		and run <code>puttygen.exe</code>.<br>
+		Generate keys, SSH-2_DSA, 1024:<br><br>
+		<img src="images/1.jpg"><br><br>
+	</li>
+	<li>
+		Press Generate<br>
+		Export key to OpenSSH key (Cygwin uses a port of OpenSSH)<br><br>
+		<img src="images/2.jpg"><br><br>
+	</li>
+	<li>
+		We have no chosen password, so press YES:<br><br>
+		<img src="images/3.jpg"><br><br>
+	</li>
+	<li>
+		Save it as <code>c:\pandora\keys\id_dsa:</code><br><br>
+		<img src="images/4.jpg"><br><br>
+	</li>
+	<li>
+		Now let's copy the public key to clipboard:<br><br>
+		<img src="images/5.jpg"><br><br>
+	</li>
+	<li>
+		and paste it as <code>c:\pandora_agent\keys\id_dsa.pub</code>,
+		and also to the <code>/home/pandora/.ssh/authorized_keys</code> file.
+		<br><br>
+		<img src="images/6.jpg"><br><br>
+	</li>
+</ol>
+</body>
+</html>

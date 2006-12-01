@@ -1,3 +1,11 @@
+2006-12-01  Esteban Sanchez  <estebans@artica.es>
+
+	* pandora_windows_service.cpp: Fixed a bug when copying the data file
+	to server, which it didn't include the agent name if it was not
+	defined in configuration file and was taken from Windows functions.
+	
+	* bin/PandoraAgent.exe: Updated to new commit.
+
 2006-11-30 Raul Mateos <raulofpandora@gmail.com>
 
 	* bin/help/*: New directory and files with help for generating keys.

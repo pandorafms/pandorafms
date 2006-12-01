@@ -45,7 +45,7 @@ IncludeDebugging
 Yes
 
 InstallVersion
-1.0.0.3
+1.0.0.4
 
 LaunchApplication
 Yes
@@ -152,9 +152,64 @@ File ::F9B74871-5757-4867-8C4F-5C73BC52D864 -name E:/SVN/pandora/trunk/pandora_a
 File ::51F64B0B-3CE8-4964-9FC5-970BEEEA0EA5 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/zlib1.dll -type file -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
 File ::4936082A-240C-4873-BF8F-1E8F1706B0CA -name E:/SVN/pandora/trunk/pandora_agents/win32/installer/pandora.ico -type file -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
 File ::948C2E48-E7F8-4339-8E5E-494B1E949A25 -name E:/SVN/pandora/trunk/pandora_agents/win32/installer/README.txt -type file -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
-File ::B28881B7-6060-4FBB-B450-0C3F660112F5 -name E:/SVN/pandora/trunk/pandora_agents/win32/installer/stop_pandora_agent.bat -type file -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
-File ::4D5F0FE2-6A5C-4473-9020-F492C10DA248 -name E:/SVN/pandora/trunk/pandora_agents/win32/installer/start_pandora_agent.bat -type file -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
 File ::3ADC9E8F-2866-47C1-A374-E9F1F4A67D8F -name E:/SVN/pandora/trunk/pandora_agents/win32/installer/LICENSE.txt -type file -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
+File ::7A1CA342-E39A-4F70-B58D-21C3DEBF7827 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help -type dir -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
+File ::C0838E16-8BDE-4894-8592-D51DA29AE46E -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/how_to_keys.html -type file -parent 7A1CA342-E39A-4F70-B58D-21C3DEBF7827
+File ::69D866C7-FEDB-4051-9050-0086968BFEC0 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/.svn -type dir -active 0 -parent 7A1CA342-E39A-4F70-B58D-21C3DEBF7827
+File ::EF71F254-43AA-41F8-98AA-AC888E8DE94A -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/.svn/all-wcprops -type file -parent 69D866C7-FEDB-4051-9050-0086968BFEC0
+File ::6F7CDDC0-4CA0-4F8B-A344-0D7C89D4DD57 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/.svn/entries -type file -parent 69D866C7-FEDB-4051-9050-0086968BFEC0
+File ::AB449748-3F05-485A-9025-8FAA91201CFD -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/.svn/format -type file -parent 69D866C7-FEDB-4051-9050-0086968BFEC0
+File ::FE4C9287-E115-4BF9-8911-C8DAA4DF8FD9 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/.svn/prop-base -type dir -parent 69D866C7-FEDB-4051-9050-0086968BFEC0
+File ::38393B84-D2E8-4922-90FA-1D28DF27AD00 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/.svn/props -type dir -parent 69D866C7-FEDB-4051-9050-0086968BFEC0
+File ::0E93FD7D-1B93-4E90-A482-E4FCBF438C05 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/.svn/text-base -type dir -parent 69D866C7-FEDB-4051-9050-0086968BFEC0
+File ::D1B2764E-D985-4CC3-9542-A16A3A3AB0C4 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/.svn/text-base/how_to_keys.html.svn-base -type file -parent 0E93FD7D-1B93-4E90-A482-E4FCBF438C05
+File ::ACCFEEC3-3B9A-404B-8439-5F5B59C284B6 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/.svn/tmp -type dir -parent 69D866C7-FEDB-4051-9050-0086968BFEC0
+File ::A4FFC531-4C71-4424-B1ED-2693B9A7CD63 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/.svn/tmp/prop-base -type dir -parent ACCFEEC3-3B9A-404B-8439-5F5B59C284B6
+File ::76BAAD51-4623-4CE3-81E5-D650B473E0FB -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/.svn/tmp/props -type dir -parent ACCFEEC3-3B9A-404B-8439-5F5B59C284B6
+File ::86E716CD-9BF1-451E-8770-50DE8F0874A8 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/.svn/tmp/text-base -type dir -parent ACCFEEC3-3B9A-404B-8439-5F5B59C284B6
+File ::D6AA8CC0-30A8-44E4-A888-8846C0E87BF4 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images -type dir -parent 7A1CA342-E39A-4F70-B58D-21C3DEBF7827
+File ::AEC3D30A-F79D-4235-8107-628C52F4D1B5 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/1.jpg -type file -parent D6AA8CC0-30A8-44E4-A888-8846C0E87BF4
+File ::B75FAEB7-AFB8-4F87-9730-6D4330B7E987 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/2.jpg -type file -parent D6AA8CC0-30A8-44E4-A888-8846C0E87BF4
+File ::CB23E3A0-7C81-4D53-943A-54F3EC44AE73 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/3.jpg -type file -parent D6AA8CC0-30A8-44E4-A888-8846C0E87BF4
+File ::98F7B423-85F2-4F86-AD12-723973C4A806 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/4.jpg -type file -parent D6AA8CC0-30A8-44E4-A888-8846C0E87BF4
+File ::D3DF2241-A8E4-4C4D-869C-CAF2CF20AE99 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/5.jpg -type file -parent D6AA8CC0-30A8-44E4-A888-8846C0E87BF4
+File ::1087E54B-C1D2-44DE-8E95-34CC903EF759 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/6.jpg -type file -parent D6AA8CC0-30A8-44E4-A888-8846C0E87BF4
+File ::883EF532-9BF8-4D00-A4E6-5292136325BB -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/.svn -type dir -active 0 -parent D6AA8CC0-30A8-44E4-A888-8846C0E87BF4
+File ::31868F32-6F31-406A-8C7E-6B370BDBBDAB -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/.svn/all-wcprops -type file -parent 883EF532-9BF8-4D00-A4E6-5292136325BB
+File ::39EB5783-E680-404B-A78A-EEC0922174D4 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/.svn/entries -type file -parent 883EF532-9BF8-4D00-A4E6-5292136325BB
+File ::6ECCB885-1AFB-47BF-8EA3-664CBB7413B7 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/.svn/format -type file -parent 883EF532-9BF8-4D00-A4E6-5292136325BB
+File ::1340DE6A-EE01-4BB3-BB96-7F90CB708462 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/.svn/prop-base -type dir -parent 883EF532-9BF8-4D00-A4E6-5292136325BB
+File ::9BDD322D-5B38-4CBC-B1F7-8C6C881C7399 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/.svn/prop-base/1.jpg.svn-base -type file -parent 1340DE6A-EE01-4BB3-BB96-7F90CB708462
+File ::0FF54FBC-F648-44E3-891C-E268DA2F6DAA -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/.svn/prop-base/2.jpg.svn-base -type file -parent 1340DE6A-EE01-4BB3-BB96-7F90CB708462
+File ::14FE1FD3-84DA-44C4-AAE6-BCB2EADEE275 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/.svn/prop-base/3.jpg.svn-base -type file -parent 1340DE6A-EE01-4BB3-BB96-7F90CB708462
+File ::31B8D31F-2C78-480E-8C3B-1967205B082A -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/.svn/prop-base/4.jpg.svn-base -type file -parent 1340DE6A-EE01-4BB3-BB96-7F90CB708462
+File ::309AD9FA-4F07-4894-95B0-2E519550190F -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/.svn/prop-base/5.jpg.svn-base -type file -parent 1340DE6A-EE01-4BB3-BB96-7F90CB708462
+File ::AD7E6DDA-BEB8-4546-984B-7C8BFC0EC5FF -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/.svn/prop-base/6.jpg.svn-base -type file -parent 1340DE6A-EE01-4BB3-BB96-7F90CB708462
+File ::A60D9C46-29F7-4D94-AA48-36B1EF3BD3D1 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/.svn/props -type dir -parent 883EF532-9BF8-4D00-A4E6-5292136325BB
+File ::3C8040C8-3B5F-4F49-B91B-9E827DB6F598 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/.svn/text-base -type dir -parent 883EF532-9BF8-4D00-A4E6-5292136325BB
+File ::CD7E1DFF-282C-48A3-A315-7C73423A99DF -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/.svn/text-base/1.jpg.svn-base -type file -parent 3C8040C8-3B5F-4F49-B91B-9E827DB6F598
+File ::3FB8F0C4-822C-4CAD-A062-D0A2D72879A4 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/.svn/text-base/2.jpg.svn-base -type file -parent 3C8040C8-3B5F-4F49-B91B-9E827DB6F598
+File ::55F19EC5-C194-48D1-B881-19F944E36091 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/.svn/text-base/3.jpg.svn-base -type file -parent 3C8040C8-3B5F-4F49-B91B-9E827DB6F598
+File ::14EF5E72-CE97-47D6-BF5D-576656366594 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/.svn/text-base/4.jpg.svn-base -type file -parent 3C8040C8-3B5F-4F49-B91B-9E827DB6F598
+File ::55ED3A31-48C5-4878-88DC-520CBA91EC0E -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/.svn/text-base/5.jpg.svn-base -type file -parent 3C8040C8-3B5F-4F49-B91B-9E827DB6F598
+File ::A0D514CA-79E8-41E6-B85E-AEDD536489B1 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/.svn/text-base/6.jpg.svn-base -type file -parent 3C8040C8-3B5F-4F49-B91B-9E827DB6F598
+File ::12D9439E-9791-40FB-BD1D-3D7E312DD8C7 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/.svn/tmp -type dir -parent 883EF532-9BF8-4D00-A4E6-5292136325BB
+File ::CF764A0F-49AD-447B-869D-D118C32B456B -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/.svn/tmp/prop-base -type dir -parent 12D9439E-9791-40FB-BD1D-3D7E312DD8C7
+File ::9DE2D059-471B-4F73-813D-5AB5635A153D -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/.svn/tmp/props -type dir -parent 12D9439E-9791-40FB-BD1D-3D7E312DD8C7
+File ::771E44E0-A69F-4E9B-BF4C-20E8C60CDF96 -name E:/SVN/pandora/trunk/pandora_agents/win32/bin/help/images/.svn/tmp/text-base -type dir -parent 12D9439E-9791-40FB-BD1D-3D7E312DD8C7
+File ::824789FD-D251-4D3F-9640-757BF22F2CD0 -name E:/SVN/pandora/trunk/pandora_agents/win32/installer/scripts -type dir -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
+File ::25DADAAA-7DA2-469C-870D-AD2D6017D46E -name E:/SVN/pandora/trunk/pandora_agents/win32/installer/scripts/start_pandora_agent.bat -type file -parent 824789FD-D251-4D3F-9640-757BF22F2CD0
+File ::E68E6D0D-D735-4116-AA67-21419036343F -name E:/SVN/pandora/trunk/pandora_agents/win32/installer/scripts/stop_pandora_agent.bat -type file -parent 824789FD-D251-4D3F-9640-757BF22F2CD0
+File ::62A39BD6-AC47-477F-9E65-8AD92FF407F1 -name E:/SVN/pandora/trunk/pandora_agents/win32/installer/scripts/.svn -type dir -active 0 -parent 824789FD-D251-4D3F-9640-757BF22F2CD0
+File ::99CF8FA4-5539-44EC-8EB3-2DEC65CB80DC -name E:/SVN/pandora/trunk/pandora_agents/win32/installer/scripts/.svn/entries -type file -parent 62A39BD6-AC47-477F-9E65-8AD92FF407F1
+File ::78B5B4E2-13D6-4E13-8F92-D0E6F9AF4042 -name E:/SVN/pandora/trunk/pandora_agents/win32/installer/scripts/.svn/format -type file -parent 62A39BD6-AC47-477F-9E65-8AD92FF407F1
+File ::4BB12EC6-8339-425D-946B-622561363A17 -name E:/SVN/pandora/trunk/pandora_agents/win32/installer/scripts/.svn/prop-base -type dir -parent 62A39BD6-AC47-477F-9E65-8AD92FF407F1
+File ::A6C56F4E-727B-45C7-BDCF-CB11BF3FA9A6 -name E:/SVN/pandora/trunk/pandora_agents/win32/installer/scripts/.svn/props -type dir -parent 62A39BD6-AC47-477F-9E65-8AD92FF407F1
+File ::46700D4F-A08E-455E-8E3E-B4020A9039A5 -name E:/SVN/pandora/trunk/pandora_agents/win32/installer/scripts/.svn/text-base -type dir -parent 62A39BD6-AC47-477F-9E65-8AD92FF407F1
+File ::5AFB52B6-9EB7-42B7-90C9-3CECF1D319AE -name E:/SVN/pandora/trunk/pandora_agents/win32/installer/scripts/.svn/tmp -type dir -parent 62A39BD6-AC47-477F-9E65-8AD92FF407F1
+File ::8A3DE19D-DCEA-4A33-9E80-0BA1E4C66A7D -name E:/SVN/pandora/trunk/pandora_agents/win32/installer/scripts/.svn/tmp/prop-base -type dir -parent 5AFB52B6-9EB7-42B7-90C9-3CECF1D319AE
+File ::4FA54FEC-F78D-49B3-9E7F-841191A450B1 -name E:/SVN/pandora/trunk/pandora_agents/win32/installer/scripts/.svn/tmp/props -type dir -parent 5AFB52B6-9EB7-42B7-90C9-3CECF1D319AE
+File ::1DC34198-0014-4DD4-ABF6-D1785794DC3E -name E:/SVN/pandora/trunk/pandora_agents/win32/installer/scripts/.svn/tmp/text-base -type dir -parent 5AFB52B6-9EB7-42B7-90C9-3CECF1D319AE
 Component ::10A1AE8A-A5C5-4F0E-8D15-FC176DF534B0 -setup Install -type component -active Yes -platforms {Linux-x86 Windows} -name Instalable -parent Components
 SetupType ::7080336B-65E6-4818-9201-068FFEA6FB3A -setup Install -type setuptype -active Yes -platforms Windows -name Typical -parent SetupTypes
 
@@ -173,6 +228,7 @@ InstallComponent 1816F27B-8A0F-47D9-9433-93C62D0CD81C -setup Install -title {Che
 InstallComponent C0ABB0FC-E4C3-4955-B16C-37FA5C6DCA28 -setup Install -title {Create Folder} -component CreateFolder -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
 InstallComponent B865820C-DFF0-4A19-AFBE-8CC0136543CF -setup Install -title {Install Selected Files} -component InstallSelectedFiles -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
 InstallComponent E8082112-E869-4AAC-918A-3C5307CB6423 -setup Install -title {Message Box} -component MessageBox -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
+InstallComponent C80E7EBE-498A-4E5B-896E-19BF17CFCF8F -setup Install -title {Launch Web Browser} -component LaunchWebBrowser -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
 InstallComponent 5A843D75-D3C0-4EA4-8C21-F29DBE168521 -setup Install -conditions {87FE38EB-DF8C-4DD6-8F4A-F09D4DD0ECB6 1FF15B8D-813C-40C8-876D-156505470C6B} -title {Execute External Program} -component ExecuteExternalProgram -command insert -type action -active Yes -parent 661189B2-8DBD-4E1E-B2A5-FF7C435C1623
 Condition 87FE38EB-DF8C-4DD6-8F4A-F09D4DD0ECB6 -active Yes -parent 5A843D75-D3C0-4EA4-8C21-F29DBE168521 -title {Ask Yes or No} -component AskYesOrNo
 Condition 1FF15B8D-813C-40C8-876D-156505470C6B -active Yes -parent 5A843D75-D3C0-4EA4-8C21-F29DBE168521 -title {String Is Condition} -component StringIsCondition
@@ -579,7 +635,7 @@ NextButton
 Message
 
 5A843D75-D3C0-4EA4-8C21-F29DBE168521,WorkingDirectory
-{<%InstallDir%>\key}
+<%InstallDir%>/key
 
 5B889992-52D9-4B0B-A014-DBF37F91B087,Active
 Yes
@@ -648,7 +704,7 @@ Uninstaller
 {Start Pandora FMS Agent Service}
 
 61C2FDF5-242F-4982-BBC8-F71CBA9C5DE3,TargetFileName
-{<%InstallDir%>\start_pandora_agent.bat}
+{<%InstallDir%>\scripts\start_pandora_agent.bat}
 
 61C2FDF5-242F-4982-BBC8-F71CBA9C5DE3,WorkingDirectory
 <%InstallDir%>
@@ -836,7 +892,7 @@ Yes
 {Stop Pandora FMS Agent Service}
 
 9595B40E-22BA-4E6D-AB81-1292E482FB6F,TargetFileName
-{<%InstallDir%>\stop_pandora_agent.bat}
+{<%InstallDir%>\scripts\stop_pandora_agent.bat}
 
 9595B40E-22BA-4E6D-AB81-1292E482FB6F,WorkingDirectory
 <%InstallDir%>
@@ -905,7 +961,7 @@ AC33C2B4-AB01-4572-802B-BA89E7661C04,Name
 Pandora
 
 AC33C2B4-AB01-4572-802B-BA89E7661C04,Size
-7100188
+7440348
 
 B1313CDD-A5DA-4A72-ABCF-59E341F46E5A,FailureMessage
 {Error initiating service}
@@ -1002,6 +1058,12 @@ C57C6846-F39C-4D09-8008-D43470FAD071,ProgramCommandLine
 
 C57C6846-F39C-4D09-8008-D43470FAD071,WorkingDirectory
 <%InstallDir%>
+
+C80E7EBE-498A-4E5B-896E-19BF17CFCF8F,Conditions
+{0 conditions}
+
+C80E7EBE-498A-4E5B-896E-19BF17CFCF8F,URL
+<%InstallDir%>/help/how_to_keys.html
 
 D651AEE7-E69C-44FD-B111-8DE881B83843,Conditions
 {1 condition}
@@ -1468,6 +1530,12 @@ E8082112-E869-4AAC-918A-3C5307CB6423,Title
 
 F1A35B0F-4ED6-4687-8D6B-92BF1D209A25,Caption
 {Se ha recopilado la información necesaria para comenzar a copiar los archivos del programa. Si desea revisar o cambiar la configuración, pulse Atrás. Si esta conforme con la configuración, pulse Siguiente para comenzar a copiar los archivos.}
+
+TypicalInstallDescription
+{Instalación típica.}
+
+UninstallLeftoverText
+{Algunos componentes no pudieron ser eliminados. ¿Desea borrarlos de todos modos? (no recomendado)}
 
 UninstallStartupText
 {Se eliminará completamente <%AppName%> de su sistema. ¿Seguro que desea esto?}

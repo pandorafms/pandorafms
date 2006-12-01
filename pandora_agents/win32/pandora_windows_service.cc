@@ -156,17 +156,94 @@ Pandora_Windows_Service::getXmlHeader () {
         return agent;
 }
 
+
+void
+Pandora_Windows_Service::copyDataFile (string filename)
+{
+	string remote_host, remote_filepath;
+	string tmp_dir, filepath;
+	string pubkey_file, privkey_file;
+
+	tmp_dir = conf->getValue ("temporal");
+        if (tmp_dir[tmp_dir.length () - 1] != '\\') {
+                tmp_dir += "\\";
+        }
+        filepath = tmp_dir + filename;
+	
+	remote_host = conf->getValue ("server_ip");
+        ssh_client = new SSH::Pandora_Ssh_Client ();
+        pandoraDebug ("Connecting with %s", remote_host.c_str ());
+        
+        try {
+                pubkey_file  = Pandora::getPandoraInstallDir ();
+                pubkey_file += "key\\id_dsa.pub";
+                privkey_file = Pandora::getPandoraInstallDir ();
+                privkey_file += "key\\id_dsa";
+		
+                ssh_client->connectWithPublicKey (remote_host.c_str (), 22, "pandora",
+                                                  pubkey_file, privkey_file, "");
+        } catch (SSH::Authentication_Failed e) {
+                delete ssh_client;
+                pandoraLog ("Pandora Agent: Authentication Failed when connecting to %s",
+                            remote_host.c_str ());
+		if (getPandoraDebug () == false) {
+	                try {
+        	                Pandora_File::removeFile (filepath);
+	                } catch (Pandora_File::Delete_Error e) {
+        	        }
+		}
+                return;
+        } catch (Pandora_Exception e) {
+                delete ssh_client;
+                pandoraLog ("Pandora Agent: Failed when copying to %s",
+                            remote_host.c_str ());
+                if (getPandoraDebug () == false) {
+			try {
+                        	Pandora_File::removeFile (filepath);
+	                } catch (Pandora_File::Delete_Error e) {
+	                }
+		}
+                return;
+        }
+        
+        remote_filepath = conf->getValue ("server_path");
+        if (remote_filepath[remote_filepath.length () - 1] != '/') {
+                remote_filepath += "/";
+        }
+        
+        pandoraDebug ("Remote copying XML %s on server %s at %s%s",
+                      filepath.c_str (), remote_host.c_str (),
+                      remote_filepath.c_str (), filename.c_str ());
+        try {
+                ssh_client->scpFileFilename (remote_filepath + filename,
+                                             filepath);
+        } catch (Pandora_Exception e) {
+                pandoraLog ("Unable to copy at %s%s", remote_filepath.c_str (),
+                            filename.c_str ());
+                ssh_client->disconnect();
+                delete ssh_client;
+		if (getPandoraDebug () == false) {
+	                try {
+        	                Pandora_File::removeFile (filepath);
+                	} catch (Pandora_File::Delete_Error e) {
+                	}
+		}
+                return;
+        }
+        
+        ssh_client->disconnect();
+        delete ssh_client;
+}
+
 void
 Pandora_Windows_Service::pandora_run () {
         TiXmlDocument *doc;
         TiXmlElement  *local_xml, *agent;
-        string         xml_filename, remote_host;
-        string         remote_filepath, random_integer;
-        string         tmp_filename, tmp_filepath, interval;
-        string         pubkey_file, privkey_file;
+        string         xml_filename, random_integer;
+	string         tmp_filename, tmp_filepath, interval;
         bool           saved;
         
-        pandoraDebug ("Run begin");
+        pandoraLog ("Run begin");
         
         agent = getXmlHeader ();
 	
@@ -214,85 +291,25 @@ Pandora_Windows_Service::pandora_run () {
         saved = doc->SaveFile();
         delete doc;
         delete agent;
-        
+	
         if (!saved) {
                 pandoraLog ("Error when saving the XML in %s",
                             tmp_filepath.c_str ());
                 return;
         }
-        
-        remote_host = conf->getValue ("server_ip");
-        ssh_client = new SSH::Pandora_Ssh_Client ();
-        pandoraDebug ("Connecting with %s", remote_host.c_str ());
-        
-        try {
-                pubkey_file  = Pandora::getPandoraInstallDir ();
-                pubkey_file += "key\\id_dsa.pub";
-                privkey_file = Pandora::getPandoraInstallDir ();
-                privkey_file += "key\\id_dsa";
-		
-                ssh_client->connectWithPublicKey (remote_host.c_str (), 22, "pandora",
-                                                  pubkey_file, privkey_file, "");
-        } catch (SSH::Authentication_Failed e) {
-                delete ssh_client;
-                pandoraLog ("Pandora Agent: Authentication Failed when connecting to %s",
-                            remote_host.c_str ());
-		if (getPandoraDebug () == false) {
-	                try {
-        	                Pandora_File::removeFile (tmp_filepath);
-	                } catch (Pandora_File::Delete_Error e) {
-        	        }
-		}
-                return;
-        } catch (Pandora_Exception e) {
-                delete ssh_client;
-                pandoraLog ("Pandora Agent: Failed when copying to %s",
-                            remote_host.c_str ());
-                if (getPandoraDebug () == false) {
-			try {
-                        	Pandora_File::removeFile (tmp_filepath);
-	                } catch (Pandora_File::Delete_Error e) {
-	                }
-		}
-                return;
-        }
-        
-        remote_filepath = conf->getValue ("server_path");
-        if (remote_filepath[remote_filepath.length () - 1] != '/') {
-                remote_filepath += "/";
-        }
-        
-        pandoraDebug ("Remote copying XML %s on server %s at %s%s",
-                      tmp_filepath.c_str (), remote_host.c_str (),
-                      remote_filepath.c_str (), tmp_filename.c_str ());
-        try {
-                ssh_client->scpFileFilename (remote_filepath + tmp_filename,
-                                             tmp_filepath);
-        } catch (Pandora_Exception e) {
-                pandoraLog ("Unable to copy at %s%s", remote_filepath.c_str (),
-                            tmp_filename.c_str ());
-                ssh_client->disconnect();
-                delete ssh_client;
-		if (getPandoraDebug () == false) {
-	                try {
-        	                Pandora_File::removeFile (tmp_filepath);
-                	} catch (Pandora_File::Delete_Error e) {
-                	}
-		}
-                return;
-        }
-        
-        ssh_client->disconnect();
-        delete ssh_client;
-        
+
 	if (getPandoraDebug () == false) {
-	        try {
+		this->copyDataFile (tmp_filename);
+
+		try {
 	                Pandora_File::removeFile (tmp_filepath);
 	        } catch (Pandora_File::Delete_Error e) {
 	        }
 	}
-                
-        pandoraDebug ("Execution number %d", execution_number);
+
+	/* Get the interval value (in minutes) */
+        interval = conf->getValue ("interval");
+        pandoraLog ("Next execution on %s mins", interval.c_str ());
         
         return;
 }

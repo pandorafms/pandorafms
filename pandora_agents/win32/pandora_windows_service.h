@@ -43,6 +43,7 @@ namespace Pandora {
 		string                                agent_name;
         
 		TiXmlElement  *getXmlHeader ();
+		void           copyDataFile (string filename);
 	
 		void           pandora_run  ();
 		void           pandora_init ();

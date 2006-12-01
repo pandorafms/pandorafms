@@ -196,6 +196,9 @@ Pandora_Windows_Service::pandora_run () {
 	
         random_integer = inttostr (rand());
         tmp_filename = conf->getValue ("agent_name");
+	if (tmp_filename == "") {
+                tmp_filename = Pandora_Windows_Info::getSystemName ();
+        }
         tmp_filename += "." + random_integer + ".data";
                 
         xml_filename = conf->getValue ("temporal");

@@ -1,3 +1,14 @@
+2006-12-01 Raul Mateos <raulofpandora@gmail.com>
+
+	* installer/Pandora_FMS_Windows_Agent-1.2-Setup.exe: Updated with last
+	binary file, also added html help to generate keys.
+	
+	* installer/scripts/*.bat: moved from installer directory.
+	
+	* installer/pandora.mpi: Update installer script file.
+	
+	* installer/README.txt: Updated file.
+
 2006-12-01  Esteban Sanchez  <estebans@artica.es>
 
 	* pandora_windows_service.[cc,h]: Added copyDataFile() method to

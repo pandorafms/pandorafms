@@ -34,7 +34,7 @@ these directives (this is a small resume, more information at
 server_ip - Hostname or Pandora Server IP where the gathered data will be sent.
 
 server_path - Path where the server will store the data sent by agent. 
-Usually is "/opt/pandora/data_in".
+Usually is "/var/spool/pandora/data_in".
 
 temporal - Path where the agent stores locally data before send them 
 to the Pandora Server. The agent deletes the data every time it tries 

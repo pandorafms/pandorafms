@@ -1084,7 +1084,7 @@ D6F9A060-D62E-46A0-B0A9-788E2325C927,ProgramCommandLine
 stop_pandora_agent.bat
 
 D6F9A060-D62E-46A0-B0A9-788E2325C927,WorkingDirectory
-<%InstallDir%>
+<%InstallDir%>/scripts
 
 D70BB230-EE6A-4601-99D0-87D9C2B2111E,String
 <%ErrorsOccurred%>

@@ -1,6 +1,6 @@
 2006-12-03 Raul Mateos  <raulofpandora@gmail.com>
 
-	* include/styles/pandora.css: new style for not found items.
+	* include/styles/pandora.css: new style for not found items. Join styles.
 	
 	* operation/events/events.php: Add filter to events by group. Changed
 	style for not found items.

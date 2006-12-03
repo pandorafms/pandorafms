@@ -1,3 +1,17 @@
+2006-12-03  Sancho Lerena  <slerena@artica.es>
+
+	* pandora.xml: Updated header, now is Pandora FMS not Pandora. Add
+	revision ( I hope that final ).
+
+	* pandora_install.xml: Add chapter for Windows Agent key creation,
+	and some text changes to make reference to new installer. Old
+	options deleted and some texts changed (debug mode).
+
+	* pandora_userguide:  Updated header, now is Pandora FMS not Pandora. Add
+	revision ( I hope that final )
+
+	* 1-6.jpg: Added files for Windows Agent key creation from HTML help.
+
 2006-11-30  Sancho Lerena  <slerena@artica.es>
 
 	* pandora.xml: Updated header, fixed problems with punctuation

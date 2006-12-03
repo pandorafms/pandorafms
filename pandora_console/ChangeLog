@@ -1,3 +1,7 @@
+2006-12-03 Sancho Lerena <slerena@artica.es>
+
+	* godmode/agentes/configure_agent.php: Fix a bug editing alerts.
+
 2006-11-13 Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/config.php: Change build date to correct order.

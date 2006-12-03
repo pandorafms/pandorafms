@@ -559,90 +559,77 @@
   <itemizedlist mark='bullet'>
 	  <listitem>
 	    <para>
-	      <emphasis>server_path</emphasis>: (Shared parameter) The
-	      server path is the full path of the folder where the
-	      server stores the data sent by the agent. It is usually
+	      <emphasis>server_path</emphasis>: The server path is the
+	      full path of the folder where the server stores the data
+	      sent by the agent. It is usually
 	      <filename>/opt/pandora/data_in</filename>.
 	    </para>
 	  </listitem>
 	  <listitem>
 	    <para>
-	      <emphasis>server_ip</emphasis>: (Parameter shared by
-	      Windows and Unix agents) The server IP is the IP address
-	      or the host name of the Pandora server, where the data
-	      will be stored. The host must be reachable and must be
-	      listening to port 22 (SSH).
+	      <emphasis>server_ip</emphasis>: The server IP is the IP
+	      address or the host name of the Pandora server, where
+	      the data will be stored. The host must be reachable and
+	      must be listening to port 22 (SSH).
 	    </para>
 	  </listitem>
 	  <listitem>
 	    <para>
-	      <emphasis>temporal</emphasis>: (Shared parameter) This
-	      is the full path of the folder where the agent stores
-	      the data locally, before it is sent to the server. It
-	      must be said that the data packages are deleted once the
-	      agent tries to contact Pandora server, no matter if the
-	      communication was successful or not. This is done to
-	      avoid over flooding hard drive of the host system where
-	      the agent runs. The location of the local folder varies
-	      with the architecture of the host system. In Unix
-	      systems this is usually
-	      <filename>/opt/pandora/data_out</filename>, and in
-	      Windows systems
+	      <emphasis>temporal</emphasis>: This is the full path of
+	      the folder where the agent stores the data locally,
+	      before it is sent to the server. It must be said that
+	      the data packages are deleted once the agent tries to
+	      contact Pandora server, no matter if the communication
+	      was successful or not. This is done to avoid over
+	      flooding hard drive of the host system where the agent
+	      runs. The location of the local folder varies with the
+	      architecture of the host system. In Unix systems this is
+	      usually <filename>/opt/pandora/data_out</filename>, and
+	      in Windows systems
 	      <filename>C:\pandora\data_out</filename>.
 
 	    </para>
 	  </listitem>
 	  <listitem>
 	    <para>
-	      <emphasis>interval</emphasis>: (Shared parameter) This
-	      is the time interval in seconds in which the agent will
-	      collect data from the host system and send the data
-	      packages to the server. The recommended value ranges
-	      from 300 (5 minutes) to 600 (10 minutes). This number
-	      could be larger, although it is important to consider
-	      the impact of a larger number on the database.
+	      <emphasis>interval</emphasis>: This is the time interval
+	      in seconds in which the agent will collect data from the
+	      host system and send the data packages to the
+	      server. The recommended value ranges from 300 (5
+	      minutes) to 600 (10 minutes). This number could be
+	      larger, although it is important to consider the impact
+	      of a larger number on the database.
 	    </para>
 	  </listitem>
 	  <listitem>
 	    <para>
-	      <emphasis>debug</emphasis>: (Unix only) This parameter
-	      is used to test the connection between agent and server
-	      and the correct working condition of the agent. The
-	      process consists of a loop, data collection and data
-	      transfer. It does not delete any data when the process
-	      is finished. The activity is written in a log file,
-	      stored in the Pandora root folder. The file is named
+	      <emphasis>debug</emphasis>: This parameter is used to
+	      test the generation of data files, forcing the agent to
+	      do not copy data file to server, so you can check data
+	      file contents and copy XML data file manually. It does
+	      not delete any data when the process is finished, so
+	      data file will be in temp directory. The activity is
+	      written in a log file. The file is named
 	      pandora_agent.log. This log file can be used to test the
 	      system and to investigate potential issues.
 	    </para>
 	  </listitem>
 	  <listitem>
 	    <para>
-	      <emphasis>agent_name</emphasis>: (Shared parameter) This
-	      is an alternative host name. This parameter is optional
-	      as if it is not declared the name is obtained directly
-	      from the system.
+	      <emphasis>agent_name</emphasis>: This is an alternative
+	      host name. This parameter is optional as if it is not
+	      declared the name is obtained directly from the system.
 	    </para>
 	  </listitem>
 	  <listitem>
 	    <para>
-	      <emphasis>pandora_path</emphasis>: (Unix exclusive
-	      parameter) This is then path of the folder where the
-	      files of the Pandora agent are stored. This is usually
-	      <filename>/opt/pandora</filename> or
-	      <filename>/opt/pandora_agent</filename>.
-	    </para>
-	  </listitem>
-	  <listitem>
-	    <para>
-	      <emphasis>checksum</emphasis>: (Shared parameter).  This parameter
-	      can take two values. If the value is 1, the checksums
-	      are performed through MD5. If the value is 0, the
-	      checksum is not performed at all. This may be useful for
-	      systems where a MD5 tool cannot be implemented. If the
-	      checksum is deactivated in the agent it must be also
-	      disconnected in the server. Otherwise it could create
-	      problems.
+	      <emphasis>checksum</emphasis>: This parameter can take
+	      two values. If the value is 1, the checksums are
+	      performed through MD5. If the value is 0, the checksum
+	      is not performed at all. This may be useful for systems
+	      where a MD5 tool cannot be implemented. If the checksum
+	      is deactivated in the agent it must be also disconnected
+	      in the server. Otherwise it could create problems.
 	    </para>
 	  </listitem>  
   </itemizedlist>
@@ -651,7 +638,6 @@
     <screen>
       server_ip Pandora_Server
       server_path  /opt/pandora/data_in
-      pandora_path /opt/pandora
       temporal /opt/pandora/data_out
       interval 300
       agent_name  satellite_agent
@@ -1257,9 +1243,9 @@
 </sect2>
 
   <sect2 id="win_a">
-    <title>Pandora Windows Agents</title>
+    <title>Pandora FMS Windows Agents</title>
     <sect3 id="build_win_a">
-      <title>Build Windows Agent from sources</title>
+      <title>Build Pandora FMS Windows Agent from sources</title>
       <para>
 	In order to build from sources, you will need the latest
 	Dev-Cpp IDE version, with the MinGW tools. Download from
@@ -1271,8 +1257,43 @@
 	installation.
       </para>
     </sect3>
+    <sect3 id="installer_win_a">
+      <title>Pandora FMS Windows Agent installation (installer)</title>		
+      <para>
+	Starting with Pandora FMS v1.2.0, Windows version comes with
+	an automated installer, provided with excelent freesoftware
+	Install Jammer, so install now is very easy. You only need to
+	choose a destination path, install and generate manually SSH
+	keys as described below. For personalized or corporate
+	deployments, you also can create your own installer (we
+	provide install jammer sources for creating your own
+	installable, so you can include a set of SSH keys in your own
+	installer package).
+      </para>
+    </sect3>
+    <sect3 id="a_windows_ssh"><title>Creating SSH keys with Windows Agents</title>
+    <para>
+      Go to <filename>.\util</filename> of your Pandora FMS agent for
+      Windows and run <filename>puttygen.exe</filename>. Choose option
+      "Generate keys, SSH-2_DSA, 1024".
+      <graphic fileref="images/1.jpg" scale="60" align="center"/>
+      Press Generate. Export key to OpenSSH key (Pandora's SSH implementation uses a port of OpenSSH).
+      <graphic fileref="images/2.jpg" scale="60" align="center"/>
+      We have no chosen password, so press YES:
+      <graphic fileref="images/3.jpg" scale="60" align="center"/>
+      Save it as <filename>C:\Program Files\Pandora_Agent\keys\id_dsa</filename>
+      <graphic fileref="images/4.jpg" scale="60" align="center"/>
+      Now let's copy the public key to clipboard
+      <graphic fileref="images/5.jpg" scale="60" align="center"/>
+      and paste it as <filename>C:\Program
+      Files\Pandora_Agent\keys\id_dsa.pub</filename>, and also to
+      <filename>/home/pandora/.ssh/authorized_keys</filename> file in
+      server to establish a correct SSH automatic key authentication.
+      <graphic fileref="images/6.jpg" scale="60" align="center"/>
+    </para>
+    </sect3>
     <sect3 id="install_win_a">
-      <title>Windows Agent installation</title>		
+      <title>Manual Pandora FMS Windows Agent installation (without installer)</title>		
       <para>
 	Before running or installation of Pandora Windows service, you
 	must create the configuration directory and extract the
@@ -1291,12 +1312,7 @@
 	</screen>
       </para>
       <para>
-	Notice: At this moment, the installation of the Pandora Windows
-	Agent must be done manually. We are working in a auto-install
-	package.
-      </para>
-      <para>
-	To install the Pandora Windows Agent execute this sentence in a
+	To install manually (without installer) the Pandora FMS Windows Agent execute this sentence in a
 	Windows command line:
 	
 	<programlisting>
@@ -1350,8 +1366,8 @@
 	  
 	  server_ip 127.0.0.1
 	  server_path /opt/pandora_server/data_in
-	  temporal "D:\temp"
-	  interval 1
+	  temporal "c:\windows\temp"
+	  interval 300
 	  agent_name localhost
 	  
 	  # Module Definition

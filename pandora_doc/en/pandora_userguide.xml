@@ -2,7 +2,7 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.4//EN"
 	  "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
 <!ENTITY pandora_version "v1.2">
-<!ENTITY pandora "<emphasis>Pandora</emphasis>">
+<!ENTITY pandora "<emphasis>Pandora FMS</emphasis>">
 <!ENTITY include_pandora_chapter1 SYSTEM "pandora_introduction.xml">
 <!ENTITY include_pandora_chapter2 SYSTEM "pandora_chapter2.xml">
 <!ENTITY include_pandora_chapter3 SYSTEM "pandora_chapter3.xml">

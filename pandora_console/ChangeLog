@@ -1,3 +1,18 @@
+2006-12-03 Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/styles/pandora.css: new style for not found items.
+	
+	* operation/events/events.php: Add filter to events by group. Changed
+	style for not found items.
+	
+	* operation/agentes/estado_agente.php, status_monitor.php,
+	estado_alertas.php: Add name to filter combo. Changed style for not
+	found items.
+
+	* operation/incidents/incident.php: Changed style for not found items.
+	
+	* images/cancel.gif: Changed image to one with smaller size.
+
 2006-11-27 Raul Mateos  <raulofpandora@gmail.com>
 
 	* general/footer.php: Add variable $time to get time from server which

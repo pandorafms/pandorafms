@@ -50,8 +50,8 @@ if (comprueba_login() == 0) {
 	} else {
 		echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60'>";
 	}
-	echo "<table cellspacing=3 cellpadding=3>";
-	echo "<tr><td valign='middle'>".$lang_label["group_name"]."</td>";
+	echo "<table cellspacing='3' cellpadding='3'>";
+	echo "<tr><td valign='middle'>".$lang_label["group"]."</td>";
 	echo "<td valign='middle'>";
 	echo "<select name='ag_group' onChange='javascript:this.form.submit();' class='w130'>";
 
@@ -60,7 +60,7 @@ if (comprueba_login() == 0) {
 	} 
 	echo "<option value=1>".dame_nombre_grupo(1);
 	$mis_grupos[]=""; // Define array mis_grupos to put here all groups with Agent Read permission
-	$sql='SELECT * FROM tgrupo';
+	$sql='SELECT id_grupo FROM tgrupo';
 	$result=mysql_query($sql);
 	while ($row=mysql_fetch_array($result)){
 		if ($row["id_grupo"] != 1){
@@ -166,10 +166,10 @@ if (comprueba_login() == 0) {
 		echo "<tr><td colspan='8'><div class='raya'></div></td></tr></table>";
 		}
 		else {
-		echo "<font class='red'>".$lang_label["no_monitors_g"]."</font>";
+		echo "<div class='nf'>".$lang_label["no_monitors_g"]."</div>";
 		}
 	} else {
-		echo "<font class='red'>".$lang_label["no_agent"]."</font>";
+		echo "<div class='nf'>".$lang_label["no_agent"]."</div>";
 	}
 
 } //end acl

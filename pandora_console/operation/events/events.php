@@ -121,52 +121,41 @@ if (comprueba_login() == 0) {
 			$count++;
 		}
 	}
-
+	
+	
 	echo "<h2>".$lang_label["events"]."</h2>";
 	echo "<h3>".$lang_label["event_main_view"]."<a href='help/".$help_code."/chap5.php#5' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
-	echo "<table><tr>";
-	echo "<td>";
-	echo "<form method='post' action='index.php?sec=eventos&sec2=operation/events/events&refr=60'>";
-	echo "<select name='event' onChange='javascript:this.form.submit();' class='w155'>";
-
-
-	// Prepare index for pagination
-	$event_list[]="";
-	if (isset($_POST["event"])){
-		$event = entrada_limpia($_POST["event"]);
-		if ($event=="All")
-		{
-			$sql2="SELECT * FROM tevento ORDER BY timestamp DESC";
-
-		} else {
-			$sql2="SELECT * FROM tevento WHERE evento = '$event' ORDER BY timestamp DESC";
-			echo "<option value='".$event."'>".$event;
-		}
-	} else {
-		$sql2="SELECT * FROM tevento ORDER BY timestamp DESC";
-	}
-	echo "<option value='All'>".$lang_label["all"];
-	$result2=mysql_query($sql2);
-	if (mysql_num_rows($result2)){
-		while ($row2=mysql_fetch_array($result2)){ // Jump offset records
-			$id_grupo = $row2["id_grupo"];
-				if (give_acl($id_usuario, $id_grupo, "IR") == 1) // Only incident read access to view data !
-					$event_list[]=$row2["id_evento"];
-		}
-		if (isset($_GET["offset"]))
-			$offset=$_GET["offset"];
-		else
-			$offset=0;
+	echo "<table cellpadding='3' cellspacing='3'><tr>";
 	
-		$offset_counter=0;
-	$sql='SELECT DISTINCT evento FROM tevento';
+	if (isset($_POST["ev_group"])) {
+		$ev_group = $_POST["ev_group"];
+	} else {
+		$ev_group = -1;
+	}
+	echo "<form method='post' action='index.php?sec=eventos&sec2=operation/events/events&refr=60'>";
+
+	echo "<td>".$lang_label["group"]."</td>";
+	echo "<td>";
+	echo "<select name='ev_group' onChange='javascript:this.form.submit();' class='w130'>";
+
+	if ( $ev_group > 1 ){
+		echo "<option value='".$ev_group."'>".dame_nombre_grupo($ev_group);
+	} 
+	echo "<option value=1>".dame_nombre_grupo(1)."</option>";
+	$mis_grupos[]=""; // Define array mis_grupos to put here all groups with Agent Read permission
+	$iconindex_g[]="";
+	$sql='SELECT id_grupo, icon FROM tgrupo';
 	$result=mysql_query($sql);
 	while ($row=mysql_fetch_array($result)){
-			echo "<option value='".$row["evento"]."'>".$row["evento"];
+		$iconindex_g[$row["id_grupo"]] = $row["icon"];
+		if ($row["id_grupo"] != 1){
+			if (give_acl($id_usuario,$row["id_grupo"], "AR") == 1){
+				echo "<option value='".$row["id_grupo"]."'>".dame_nombre_grupo($row["id_grupo"]);
+				$mis_grupos[]=$row["id_grupo"]; //Put in  an array all the groups the user belongs
+			}
 		}
+	}
 	echo "</select>";
-	echo "</form>";
-	echo "<td valign='middle'><noscript><input type='submit' class='sub' value='".$lang_label["show"]."' border='0'></noscript>";
 	echo "<td class='f9l30w17t'>";
 	echo "<img src='images/dot_green.gif'> - ".$lang_label["validated_event"];
 	echo "<br>";
@@ -177,7 +166,63 @@ if (comprueba_login() == 0) {
 	echo "<br>"; 
 	echo "<img src='images/cancel.gif'> - ".$lang_label["delete_event"];
 	echo "</td>"; 
-	echo "</tr></table>";
+	echo "<tr><td valign='middle'>".$lang_label["events"]."</td>";
+	echo "<td><form method='post' action='index.php?sec=eventos&sec2=operation/events/events&refr=60'>";
+	echo "<select name='event' onChange='javascript:this.form.submit();' class='w155'>";
+
+
+	// Prepare index for pagination
+	$event_list[]="";
+	if (isset($_POST["event"])){
+		$event = entrada_limpia($_POST["event"]);
+		if ($event=="All")
+		{
+			if (isset($ev_group) && ($ev_group > 1)) {
+				$sql2="SELECT * FROM tevento WHERE id_grupo = '$ev_group' ORDER BY timestamp DESC";
+			} else {
+				$sql2="SELECT * FROM tevento ORDER BY timestamp DESC";
+			}
+		} else {
+			if (isset($ev_group) && ($ev_group > 1)) {
+				$sql2="SELECT * FROM tevento WHERE evento = '$event' AND id_grupo = '$ev_group' ORDER BY timestamp DESC";
+			} else {
+				$sql2="SELECT * FROM tevento WHERE evento = '$event' ORDER BY timestamp DESC";
+				}
+			echo "<option value='".$event."'>".$event."</option>";
+		}
+	} else {
+		$sql2="SELECT * FROM tevento ORDER BY timestamp DESC";
+	}
+	echo "<option value='All'>".$lang_label["all"]."</option>";
+	$result2=mysql_query($sql2);
+	if (mysql_num_rows($result2)){
+		while ($row2=mysql_fetch_array($result2)){ // Jump offset records
+		
+			$id_grupo = $row2["id_grupo"];
+				if (give_acl($id_usuario, $id_grupo, "IR") == 1) // Only incident read access to view data !
+					$event_list[]=$row2["id_evento"];
+		}
+		if (isset($_GET["offset"]))
+			$offset=$_GET["offset"];
+		else
+			$offset=0;
+	
+		$offset_counter=0;
+	if (isset($ev_group) && ($ev_group > 1)) {
+		$sql="SELECT DISTINCT evento FROM tevento WHERE id_grupo = '$ev_group'";
+	} else {
+		$sql="SELECT DISTINCT evento FROM tevento";
+	}
+	$result=mysql_query($sql);
+	while ($row=mysql_fetch_array($result)){
+			echo "<option value='".$row["evento"]."'>".$row["evento"]."</option>";
+		}
+	echo "</select>";
+	echo "</form>";
+	echo "<td valign='middle'>";
+	echo "<noscript><input type='submit' class='sub' value='".$lang_label["show"]."'></noscript>";
+	echo "</td></tr>";
+	echo "</table>";
 	echo "<br>";
 	
 	//pagination
@@ -191,12 +236,12 @@ if (comprueba_login() == 0) {
 	}
 	
 	echo "<br>";
-	echo "<table border='0' cellpadding='3' cellspacing='3' width='775'>";
+	echo "<table cellpadding='3' cellspacing='3' width='775'>";
 	echo "<tr>";
 	echo "<th>".$lang_label["status"];
 	echo "<th>".$lang_label["event_name"];
 	echo "<th>".$lang_label["agent_name"];
-	echo "<th>".$lang_label["group_name"];
+	echo "<th>".$lang_label["group"];
 	echo "<th>".$lang_label["id_user"];
 	echo "<th class='w130'>".$lang_label["timestamp"];
 	echo "<th>".$lang_label["action"];
@@ -215,13 +260,24 @@ if (comprueba_login() == 0) {
 		if (isset($event_list[$a])) {
 			$id_evento = $event_list[$a]; 
 			if ($id_evento != ""){
-				if (isset($_POST["event"])){
+				if (isset($_POST["event"])) {
 					$event = entrada_limpia($_POST["event"]);
 					if ($event=="All") {
-						$sql="SELECT * FROM tevento WHERE id_evento = $id_evento";
+						if (isset($ev_group) && ($ev_group > 1)) {
+							$sql="SELECT * FROM tevento WHERE id_evento = '$id_evento' AND id_grupo = '$ev_group'";
+						} else {
+							$sql="SELECT * FROM tevento WHERE id_evento = '$id_evento'";
+						}
+						
 					} else {
-					$sql="SELECT * FROM tevento WHERE evento= '$event' AND id_evento = $id_evento";
+						if (isset($ev_group) && ($ev_group > 1)) {
+							$sql="SELECT * FROM tevento WHERE evento= '$event' AND id_evento = '$id_evento' AND id_grupo = '$ev_group'";
+						} else {
+							$sql="SELECT * FROM tevento WHERE evento= '$event' AND id_evento = '$id_evento'";
+						}
 					}
+					
+					
 				} else {
 					$sql="SELECT * FROM tevento WHERE id_evento = $id_evento";
 				}
@@ -246,7 +302,7 @@ if (comprueba_login() == 0) {
 				echo "<td class='$tdcolor'>".$row["evento"];
 				if ($row["id_agente"] > 0){
 						echo "<td class='$tdcolor'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row["id_agente"]."'><b>".dame_nombre_agente($row["id_agente"])."</b></a>";
-						echo "<td class='$tdcolor'>".dame_nombre_grupo($row["id_grupo"]);
+						echo "<td class='$tdcolor'><img src='images/g_".$iconindex_g[$id_group].".gif'> ( ".dame_grupo($id_group)." )</td>";
 						echo "<td class='$tdcolor'>";
 					} else { // for SNMP generated alerts
 						echo "<td class='$tdcolor' colspan='2'>".$lang_label["alert"]." /  SNMP";
@@ -277,7 +333,7 @@ if (comprueba_login() == 0) {
 	}
 	echo "</form></table>";
 	}
-	else {echo "<font class='red'>".$lang_label["no_event"]."</font>";}
+	else {echo "</select></form></td></tr></table><br><div class='nf'>".$lang_label["no_event"]."</div>";}
 	}
 	else {
 		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access event viewer");

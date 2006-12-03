@@ -1,3 +1,7 @@
+2006-12-03 Sancho Lerena <slerena@artica.es>
+
+        * godmode/agentes/configurar_agente.php: Fixed bug editing alerts.
+
 2006-12-03 Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/styles/pandora.css: new style for not found items. Join styles.

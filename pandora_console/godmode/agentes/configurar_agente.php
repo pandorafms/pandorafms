@@ -1008,9 +1008,9 @@ while ($row=mysql_fetch_array($result)){
 <a name="alerts"> <!-- Don't Delete !! -->
 
 <tr><td class="datos2"><?php echo $lang_label["min_value"] ?>
-<td class="datos2"><input type="text" name="minimo" size="5" value="<?php echo $alerta_dis_max ?>" style="margin-right: 70px;">
+<td class="datos2"><input type="text" name="minimo" size="5" value="<?php echo $alerta_dis_min ?>" style="margin-right: 70px;">
 <?php echo $lang_label["max_value"] ?> &nbsp;&nbsp;&nbsp;
-<input type="text" name="maximo" size="5" value="<?php echo $alerta_dis_min ?>">
+<input type="text" name="maximo" size="5" value="<?php echo $alerta_dis_max ?>">
 <tr><td class="datos"><?php echo $lang_label["description"] ?>
 <td class="datos"><input type="text" name="descripcion" size="39" value ="<?php echo $alerta_descripcion ?>">
 <tr><td class="datos2"><?php echo $lang_label["field1"] ?>

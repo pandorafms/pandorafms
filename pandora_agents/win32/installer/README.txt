@@ -1,4 +1,7 @@
-Pandora FMS is the Free Monitoring System.
+Pandora FMS Windows Agent v1.2
+==============================
+
+For mode information, please refer to documentation, you can get it on our proyect website at http://pandora.sourceforge.net
 
 This is the Windows agent installer, programmed in C++ with GNU tools and gcc.
 
@@ -15,17 +18,17 @@ The directory structure that will be created is something like:
 
 Pandora_Agent\pandora_agent.conf   :: Pandora Windows Agent main configuration
 Pandora_Agent\key\                 :: Directory which holds the private and 
-										public key files
+				      public key files
 Pandora_Agent\key\id_dsa           :: Private key to access the Pandora server 
-										using SSH
+				      using SSH
 Pandora_Agent\key\id_dsa.pub       :: Public key to access the Pandora server 
-										using SSH
+			              using SSH
 
 You also have:
 
 Pandora_Agent\utils\	           :: Directory where the user could put 
-										misc utils to use with exec type modules  
-										I.e. UNIX-like tools (cut, grep, etc...)
+                                      misc utils to use with exec type modules  
+                                      I.e. UNIX-like tools (cut, grep, etc...)
 										
 In the configuration file pandora_agent.conf, you can find 
 these directives (this is a small resume, more information at
@@ -58,12 +61,18 @@ module_end - End of a module
 module_name - Name for the identification of the module
 
 module_type - Type of data of the module:
+
 	- generic_data - It's a simple numeric, floating point or integer.
+
 	- generic_data_inc - It's an integer numeric, difference between the data 
-		collected previously with the data collected at that moment.
+          collected previously with the data collected at that moment.
+
 	- generic_data_string - Text String.
+
 	- generic_proc - It stores the state of processes numerically. 
-		Its value is 0 for a "bad" state and any number greater than 0 for the 
-		"good" state.
+          Its value is 0 for a "bad" state and any number greater than 0 for the 
+          "good" state.
 
 module_description - Description of the module :-D
+
+For mode information, please refer to documentation, you can get it on our proyect website at http://pandora.sourceforge.net

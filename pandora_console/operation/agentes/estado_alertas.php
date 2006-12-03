@@ -24,7 +24,7 @@ if (comprueba_login() == 0) {
 	if (isset($_GET["id_agente"])){
 		echo "<h3>".$lang_label["alert_listing"]."<a href='help/".$help_code."/chap3.php#3324' target='_help' class='help'><span>".$lang_label["help"]."</span></a></h3>";
 		$id_agente = $_GET["id_agente"];
-		$query_gen='SELECT talerta_agente_modulo.id_alerta, talerta_agente_modulo.descripcion, talerta_agente_modulo.last_fired, talerta_agente_modulo.times_fired, tagente_modulo.nombre, talerta_agente_modulo.dis_max, talerta_agente_modulo.dis_min, talerta_agente_modulo.max_alerts, talerta_agente_modulo.time_threshold, talerta_agente_modulo.min_alerts, talerta_agente_modulo.id_agente_modulo, tagente_modulo.id_agente_modulo FROM tagente_modulo, talerta_agente_modulo WHERE tagente_modulo.id_agente = '.$id_agente.' AND tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo order by tagente_modulo.nombre';
+		$query_gen='SELECT talerta_agente_modulo.id_alerta, talerta_agente_modulo.descripcion, talerta_agente_modulo.last_fired, talerta_agente_modulo.times_fired, tagente_modulo.nombre, talerta_agente_modulo.dis_max, talerta_agente_modulo.dis_min, talerta_agente_modulo.max_alerts, talerta_agente_modulo.time_threshold, talerta_agente_modulo.min_alerts, talerta_agente_modulo.id_agente_modulo, tagente_modulo.id_agente_modulo FROM tagente_modulo, talerta_agente_modulo WHERE tagente_modulo.id_agente = '.$id_agente.' AND tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo ORDER BY tagente_modulo.nombre';
 		$result_gen=mysql_query($query_gen);
 		if (mysql_num_rows ($result_gen)) {
 			echo "<table cellpadding='3' cellspacing='3' width=750 border=0>";
@@ -59,7 +59,7 @@ if (comprueba_login() == 0) {
 			}
 			echo '<tr><td colspan="9"><div class="raya"></div></td></tr></table>';
 		}
-		else echo "<font class='red'>".$lang_label["no_alerts"]."</font>";
+		else echo "<div class='nf'>".$lang_label["no_alerts"]."</div>";
 	}
 	else 
 	{
@@ -82,7 +82,9 @@ if (comprueba_login() == 0) {
 		} else {
 			echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/estado_alertas&refr=60'>";
 		}
-		echo "<table><tr><td valign='middle'>";
+		echo "<table cellpadding='3' cellspacing='3'><tr>";
+		echo "<td>".$lang_label["group"]."</td>";
+		echo "<td valign='middle'>";
 		echo "<select name='ag_group' onChange='javascript:this.form.submit();' class='w130'>";
 	
 		if ( $ag_group > 1 ){
@@ -102,8 +104,8 @@ if (comprueba_login() == 0) {
 			}
 		}
 		}
-		echo "</select>";
-		echo "<td valign='middle'><noscript><input name='uptbutton' type='submit' class='sub' value='".$lang_label["show"]."'></noscript></form>";
+		echo "</select></td>";
+		echo "<td valign='middle'><noscript><input name='uptbutton' type='submit' class='sub' value='".$lang_label["show"]."'></noscript></td></form>";
 		// Show only selected groups	
 	
 		if ($ag_group > 1)
@@ -168,9 +170,9 @@ if (comprueba_login() == 0) {
 				echo "<tr><td colspan='6'><div class='raya'></div></td></tr></table>";
 			}
 			else {
-				echo "<tr><td></td></tr><tr><td><font class='red'>".$lang_label["no_alert"]."</font></td></tr></table>";
+				echo "</table><br><div class='nf'>".$lang_label["no_alert"]."</div>";
 			}
-		} else echo "<tr><td></td></tr><tr><td><font class='red'>". $lang_label["no_agent"].$lang_label["no_agent_alert"]."</td></tr></table>";
+		} else echo "</table><br><div class='nf'>". $lang_label["no_agent"].$lang_label["no_agent_alert"]."</div>";
 	}
 } //end acl
 } //end login

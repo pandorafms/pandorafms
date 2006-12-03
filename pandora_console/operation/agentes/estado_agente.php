@@ -47,7 +47,9 @@ if (comprueba_login() == 0) {
 		echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60'>";
 	}
 
-	echo "<table border='0'><tr><td valign='middle'>";
+	echo "<table cellpadding='3' cellspacing='3'><tr>";
+	echo "<td>".$lang_label["group"]."</td>";
+	echo "<td valign='middle'>";
 	echo "<select name='ag_group' onChange='javascript:this.form.submit();' class='w130'>";
 
 	if ( $ag_group > 1 ){
@@ -69,7 +71,7 @@ if (comprueba_login() == 0) {
 	}
 	}
 	echo "</select>";
-	echo "<td valign='middle'><noscript><input name='uptbutton' type='submit' class='sub' value='".$lang_label["show"]."'></noscript></form>";
+	echo "<td valign='middle'><noscript><input name='uptbutton' type='submit' class='sub' value='".$lang_label["show"]."'></noscript></td></form>";
 	// Show only selected groups	
 
 	if ($ag_group > 1)
@@ -192,7 +194,7 @@ if (comprueba_login() == 0) {
 					echo "<td class='$tdcolor'><font color='green'>".$biginterval."</font>";
 				else
 					echo "<td class='$tdcolor'>".$intervalo;
-				echo '<td class="'.$tdcolor.'"><img src="images/g_'.$iconindex_g[$id_grupo].'.gif" border="0"> ( '.dame_grupo($id_grupo).' )';
+				echo '<td class="'.$tdcolor.'"><img src="images/g_'.$iconindex_g[$id_grupo].'.gif"> ( '.dame_grupo($id_grupo).' )';
 				echo "<td class='$tdcolor'> ".$numero_modulos." <b>/</b> ".$numero_monitor;
 				if ($monitor_bad <> 0)
 					echo " <b>/</b> <font class='red'>".$monitor_bad."</font>";
@@ -244,7 +246,7 @@ if (comprueba_login() == 0) {
 		}
 		echo "<tr><td colspan='8'><div class='raya'></div></td></tr>";
 		echo "</table><br>";
-		echo "<table>";
+		echo "<table cellpadding='3' cellspacing='3'>";
 		echo "<tr><td class='f9i'>";
 		echo "<img src='images/b_green.gif'> - ".$lang_label["green_light"]."</td>";
 		echo "<td class='f9i'>";
@@ -260,7 +262,7 @@ if (comprueba_login() == 0) {
 		echo "</table>";
 	}
 	else {
-		echo '<tr><td></td></tr><tr><td class="red">'.$lang_label["no_agent"].'</td></tr></table>';
+		echo '</table><br><div class="nf">'.$lang_label["no_agent"].'</div>';
 	}
 
 } else {

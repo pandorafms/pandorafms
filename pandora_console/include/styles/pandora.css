@@ -410,3 +410,7 @@ div.imgr>img {
 	top: 0;
 	right: 1;
 	}
+div.nf {
+    margin-left: 7px;
+	color: red;
+	}

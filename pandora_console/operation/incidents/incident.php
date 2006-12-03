@@ -248,7 +248,7 @@ if (isset($_POST['operacion'])){
 	$result2=mysql_query($sql1);
 	
 	if (!mysql_num_rows($result2)) {
-	echo '<div style="margin-left: 7px; color: red">'.$lang_label["no_incidents"].'</div><br><table>';}
+	echo '<div class="nf">'.$lang_label["no_incidents"].'</div><br><table>';}
 	else {
 	while ($row2=mysql_fetch_array($result2)){ // Jump offset records
 	$id_group = $row2["id_grupo"];
@@ -279,7 +279,7 @@ if (isset($_POST['operacion'])){
 	pagination ($total_incidentes, $url, $offset);
 	echo '<br>';
 	// Show headers
-	echo "<table cellpadding=3 cellspacing=3 width=770>";
+	echo "<table cellpadding='3' cellspacing='3' width='770'>";
 	echo "<tr>";
 	echo "<th width='43'>ID";
 	echo "<th>".$lang_label["status"];

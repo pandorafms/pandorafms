@@ -50,7 +50,8 @@ namespace Pandora_File {
         class Delete_Error : Pandora_File::File_Exception {
         };
 
-        string readFile   (const string filename);
+	bool   fileExists (const string filename);
+        string readFile   (const string filename);	
         void   removeFile (const string filename);
         void   writeFile  (const string filename, const string data);
 }

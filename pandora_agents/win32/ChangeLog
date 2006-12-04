@@ -1,3 +1,13 @@
+2006-12-04  Esteban Sanchez  <estebans@artica.es>
+
+	* misc/pandora_file.[cc,h]: Added a function to check the existance of
+	a file.
+
+	* pandora_ssh_tesct.cc: Check if private and public key files exists
+	when doing the test.
+
+	* bin/PandoraAgent.exe: Updated to new commit.
+
 2006-12-01 Raul Mateos <raulofpandora@gmail.com>
 
 	* installer/Pandora_FMS_Windows_Agent-1.2-Setup.exe: Updated with last

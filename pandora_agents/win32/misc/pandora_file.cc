@@ -26,6 +26,26 @@
 using namespace std;
 
 /**
+ * Checks if a file exists.
+ *
+ * @param filepath Path of the file to check.
+ *
+ * @retval True if the file exists.
+ **/
+bool
+Pandora_File::fileExists (const string filepath) {
+        string   line, result;
+        ifstream myfile (filepath.c_str ());
+        
+        if (! myfile.is_open ()) {
+                return false;
+        }
+
+	myfile.close();
+        return true;
+}
+
+/**
  * Reads a file and returns its content.
  *
  * @param filepath Path of the file to read.

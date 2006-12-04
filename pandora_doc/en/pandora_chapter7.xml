@@ -9,7 +9,7 @@
    It is possible to manage the Pandora Servers from the "Manage Servers"
    option of the Administration menu.
   </para>
-  <graphic scale='60' fileref="images/Servers.png" valign="bottom" 
+  <graphic scale='60' fileref="images/servers1.png" valign="bottom" 
 	   align="center"/>
   <para>
    The following fields are displayed in the Managed Servers page:
@@ -22,8 +22,8 @@
   </listitem>
   <listitem>
    <para>
-    <emphasis>Status:</emphasis> Status of the server. Green ok and 
-    Red fail.
+    <emphasis>Status:</emphasis> Status of the server. Green OK and 
+    Red FAIL.
    </para>
   </listitem>
   <listitem>
@@ -33,12 +33,12 @@
   </listitem>
   <listitem>
    <para>
-    <emphasis>Description:</emphasis> Server´s description.
+    <emphasis>Description:</emphasis> Server description.
    </para> 
   </listitem>
   <listitem>
    <para>
-    <emphasis>Network:</emphasis> Mark for Network Server..
+    <emphasis>Network:</emphasis> Mark for Network Server.
    </para> 
   </listitem>
   <listitem>
@@ -53,8 +53,8 @@
   </listitem>
   <listitem>
    <para>
-    <emphasis>Master:</emphasis> Mark when the server is Master and not 
-    mark when the master is backup.
+    <emphasis>Master:</emphasis> Marked when the server is Master and not 
+    marked when the master is backup.
    </para> 
   </listitem>
   <listitem>
@@ -74,22 +74,26 @@
   </listitem>
   <listitem>
     <para>
-     <emphasis>Action:</emphasis> Icons to modify a server's properties or
-     to delete a server.
+     <emphasis>Action:</emphasis> Icons to modify server properties or
+     to delete a server (only in Administration menu).
     </para> 
   </listitem>
   </itemizedlist>
+  <para>
+  From "Manage Servers", Administration menu you can configure and manage
+  servers.
+  </para>
   <para>
    It is possible delete a server using the icon <inlinegraphic 
    fileref="images/cancel.png"/> 
    </para>
    <para>
-    It is posible to change the server's properties using the icon 
+    It is possible to change the server properties using the icon 
 	<inlinegraphic fileref="images/config.png"/> 
    </para>
    <para>
-    In a Server is posiible modify: Name, IP Address and Description.
+    In a Server it is possible to modify: Name, IP Address and Description.
    </para>
-   <graphic scale='70' fileref="images/Servers1.png" valign="bottom" 
+   <graphic scale='70' fileref="images/servers2.png" valign="bottom" 
 	   align="center"/>
 </chapter>

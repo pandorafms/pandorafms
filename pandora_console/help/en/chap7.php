@@ -44,9 +44,67 @@ div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
 
 <a name="7"><h1>7. Pandora Servers</h1></a>
 
-<p>From "Manage Servers" section, in the Administration menu you can see a list of configured Pandora Servers and also can manage them.</p>
+<p>In Pandora 1.2 there are three different type of servers, Network Server,
+Data Server and SNMP Server.</p>
 
-<p>From "Pandora Servers" in the Operation menu you can see a list of the Pandora Servers.</p>
+<p>It is possible to manage the Pandora Servers from "Pandora Servers" option 
+in the Operation menu.</p>
 
+<p class="center"><img src="images/servers1.png"></p>
+<p>The following fields are displayed:</p>
+  <ul>
+  <li>
+   <b>Name:</b> Name of the server.
+  </li>
+  <li>
+    <b>Status:</b> Status of the server. Green OK and Red FAIL.
+  </li>
+  <li>
+    <b>IP address:</b> IP of the Server.
+  </li>
+  <li>
+    <b>Description:</b> Server description.
+  </li>
+  <li>
+    <b>Network:</b> Mark for Network Server.
+  </li>
+  <li>
+    <b>Data:</b> Mark for Data Server.
+  </li>
+  <li>
+    <b>SNMP:</b> Mark for SNMP Server.
+  </li>
+  <li>
+    <b>Master:</b> Marked when the server is Master and not 
+    marked when the master is backup.
+  </li>
+  <li>
+    <b>Check:</b>
+  </li>
+  <li>
+    <b>Started at:</b> Date when the Server started.
+  </li>
+  <li>
+    <b>Updated at:</b> The date of the last update.
+  </li>
+  <li>
+     <b>Action:</b> Icons to modify server properties or
+     to delete a server (only in Administration menu).
+  </li>
+  </ul>
+  <p>From "Manage Servers", Administration menu you can configure and manage
+  servers.</p>
+  <p>
+   It is possible delete a server using the icon
+   <img src="../../images/cancel.gif">
+   </p>
+   <p>
+    It is possible to change the server properties using the icon 
+	<img src="../../images/config.gif"> 
+   </p>
+   <p>
+    In a Server it is possible to modify: Name, IP Address and Description.
+   </p>
+<p class="center"><img src="images/servers2.png"></p>
 </body>
 </html>

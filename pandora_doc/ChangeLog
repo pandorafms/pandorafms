@@ -1,3 +1,10 @@
+2006-12-04 Raul Mateos  <raulofpandora@gmail.com>
+
+	* en/images/servers1.png, servers2.png: Renamed files from Servers.png and
+	servers1.png.
+	
+	* pandora_chapter2.xml, pandora_chapter7.xml: Updated files.
+
 2006-12-03  Sancho Lerena  <slerena@artica.es>
 
 	* pandora.xml: Updated header, now is Pandora FMS not Pandora. Add

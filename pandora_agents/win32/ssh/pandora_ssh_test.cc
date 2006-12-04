@@ -75,16 +75,26 @@ Pandora_SSH_Test::test () {
         TiXmlDeclaration *decl;
         bool              saved;
         
-        remote_host = this->conf->getValue ("server_ip");
-        
         pubkey_file  = Pandora::getPandoraInstallDir ();
         pubkey_file += "key\\id_dsa.pub";
+	if (! Pandora_File::fileExists (pubkey_file)) {
+		cout << "Public key file " << pubkey_file << " not found."
+		     << endl;
+		return;
+	}
+        cout << "Public key file " << pubkey_file << " exists." << endl;
+	
         privkey_file = Pandora::getPandoraInstallDir ();
         privkey_file += "key\\id_dsa";
-        
-        cout << "Public key file: " << pubkey_file << endl;
-        cout << "Private key file: " << privkey_file << endl;
-        cout << "Connecting with " << remote_host << "..." << endl;
+	if (! Pandora_File::fileExists (privkey_file)) {
+		cout << "Private key file " << privkey_file << " not found."
+		     << endl;
+		return;
+	}
+        cout << "Private key file: " << privkey_file << " exists." << endl;
+	
+	remote_host = this->conf->getValue ("server_ip");
+        cout << "Connecting with " << remote_host << "." << endl;
         
         try {
                 this->ssh_client->connectWithPublicKey (remote_host.c_str (), 22,

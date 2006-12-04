@@ -38,15 +38,15 @@ namespace Pandora_Wmi {
 	 */
         class Pandora_Wmi_Exception : public Pandora_Exception { };
 	
-        int    isProcessRunning      (string process_name);
-	int    isServiceRunning      (string service_name);
-	long   getDiskFreeSpace      (string disk_id);
-	int    getCpuUsagePercentage (int cpu_id);
-	long   getFreememory         ();
-	string getOSName             ();
-        string getOSVersion          ();
-        string getOSBuild            ();
-        string getSystemName         ();
+        int           isProcessRunning      (string process_name);
+	int           isServiceRunning      (string service_name);
+	unsigned long getDiskFreeSpace      (string disk_id);
+	int           getCpuUsagePercentage (int cpu_id);
+	long          getFreememory         ();
+	string        getOSName             ();
+        string        getOSVersion          ();
+        string        getOSBuild            ();
+        string        getSystemName         ();
 };
 
 #endif

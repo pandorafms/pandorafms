@@ -40,9 +40,70 @@ div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
 
 <h1><a name="7">7. Servidores Pandora</a></h1>
 
-<p>Desde «Gesti&oacute;n» en el men&uacute; de administraci&oacute;n se puede acceder a la lista de los Servidores Pandora que est&aacute;n configurados y administrarlos.</p>
+<p>En Pandora 1.2 hay tres tipos diferentes de servidores, Servidor de red, 
+Servidor de datos y servidor SNMP.</p>
 
-<p>Desde «Servidores Pandora» en el men&uacute; de operaci&oacute;n se puede acceder a la lista de los Servidores Pandora.</p>
+<p>Desde «Servidores Pandora» en el men&uacute; de operaci&oacute;n se puede
+acceder a la lista de los Servidores Pandora.</p>
+
+<p class="center"><img src="images/servers1.png"></p>
+<p>Se muestran los siguientes campos:</p>
+  <ul>
+  <li>
+   <b>Nombre:</b> Nombre del servidor.
+  </li>
+  <li>
+    <b>Estado:</b> Estado del servidor. Si es verde todo est&aacute; correto,
+	si est&aacute; rojo, hay fallos.
+  </li>
+  <li>
+    <b>Direcci&oacute;n IP:</b> Direcci&oacute;n IP del Servidor.
+  </li>
+  <li>
+    <b>Descripci&oacute;n:</b> Descripci&oacute;n del Servidor.
+  </li>
+  <li>
+    <b>Red:</b> Marca el servidor de red.
+  </li>
+  <li>
+    <b>Datos:</b> Marca el servidor de datos.
+  </li>
+  <li>
+    <b>SNMP:</b> Marca el servidor SNMP.
+  </li>
+  <li>
+    <b>Principal:</b> Marcado cuando el servidor es el <i>Master</i>
+	y no marcado cuando es de <i>backup</i>.
+  </li>
+  <li>
+    <b>Check:</b>
+  </li>
+  <li>
+    <b>Arrancado el:</b> Fecha y hora de inicio del servidor.
+  </li>
+  <li>
+    <b>Actualizado el:</b> Fecha y hora de la &uacute;ltima actualizaci&oacute;n.
+  </li>
+  <li>
+     <b>Acci&oacute;n:</b> Iconos para modificar las propiedades del servidor o
+	 borrarlo (esta opci&oacute;n s&oacute;lo aparece en el men&uacute; de 
+	 administraci&oacute;n).
+  </li>
+  </ul>
+     <p>Desde «Gesti&oacute;n» en el men&uacute; de administraci&oacute;n se puede acceder a la lista de los Servidores Pandora que est&aacute;n configurados y administrarlos.</p>
+  <p>
+   Para borrar un servidor utilizamos el icono
+   <img src="../../images/cancel.gif">
+   </p>
+   <p>
+   Para modificar un servidor utilizamos el icono 
+	<img src="../../images/config.gif"> 
+   </p>
+   <p>
+    Si estamos modificando un servidor podemos cambiar las siguientes 
+	propiedades: Nombre, direcci&oacute;n IP y descripci&oacute;n.
+   </p>
+<p class="center"><img src="images/servers2.png"></p>
 
 </body>
 </html>

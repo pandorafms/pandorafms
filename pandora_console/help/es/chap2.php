@@ -128,10 +128,12 @@ el men&uacute; de operaci&oacute;n.</p>
 
 <h2><a name="25">2.5. Mensajes a usuarios</a></h2>
 
-<p>Desde «Mensajes», en el men&uacute; de operaci&oacute;n podemos enviar mensajes a otros usuarios y leer los mensajes que hemos recibido. No se almacenan los que se han enviado.</p>
+<p>Desde «Mensajes», en el men&uacute; de operaci&oacute;n podemos enviar mensajes a otros usuarios y leer los mensajes que hemos recibido. No se almacenan los correos
+que se han enviado.</p>
 
 <h3><a name="251">2.5.1. Mensajes a grupos</a></h3>
-<p>Desde «Mensajes» &gt; «Mensajes a grupos» en el men&uacute; de operaci&oacute;n podemos enviar mensajes a grupos de usuarios. No se almacenan los que se han enviado.</p>
+<p>Desde «Mensajes» &gt; «Mensajes a grupos» en el men&uacute; de operaci&oacute;n podemos enviar mensajes a grupos de usuarios. No se almacenan los correos que se han enviado.
+</p>
 
 </body>
 </html>

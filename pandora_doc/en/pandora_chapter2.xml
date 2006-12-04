@@ -31,9 +31,9 @@
   <sect1 id="sec2.1">
     <title>Profile manager</title>
     <para>
-      Pandora's profile manager is used to assign specific profiles to
+      Pandora profile manager is used to assign specific profiles to
       each user. A hierarchy of users is created, structured by the
-      user's profile within the company. With this system different
+      user profile within the company. With this system different
       security levels can be implemented: read-only users, agent group
       coordinators or system administrators.
     </para>
@@ -160,8 +160,8 @@
       <title>Messages to groups</title>
       <para>
 	From "Messages" &gt; "Messages to groups" section in the
-	Operation menu you can send messages to groups of users.  The
-	sent messages will not be stores.
+	Operation menu you can send messages to groups of users. The
+	sent messages will not be stored.
     </para>
   </sect2>
 </sect1>

@@ -45,7 +45,9 @@ if (comprueba_login() == 0)
 
 	// generate select 
 	
-	echo "<h3>".$lang_label["filter"]."</h3>"; 
+	echo "<h3>".$lang_label["filter"];
+	echo "<a href='help/".$help_code."/chap6.php#6' target='_help' class='help'>
+	&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 	echo "<form name='query_sel' method='post' action='index.php?sec=godmode&sec2=godmode/admin_access_logs'>";
 	echo "<table border='0'><tr><td valign='middle'>";
 	echo "<select name='tipo_log' onChange='javascript:this.form.submit();'>";

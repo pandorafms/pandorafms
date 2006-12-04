@@ -1,3 +1,11 @@
+2006-12-04 Raul Mateos  <raulofpandora@gmail.com>
+
+	* help/[en|es]/images/servers1.png, servers2.png: New files.
+	
+	* help/[en|es]/chap2.php, chap7.php: Update files.
+	
+	* godmode/admin_access_logs.php: Add help icon.
+
 2006-12-03 Sancho Lerena <slerena@artica.es>
 
         * godmode/agentes/configurar_agente.php: Fixed bug editing alerts.

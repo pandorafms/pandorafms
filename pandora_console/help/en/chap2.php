@@ -44,7 +44,7 @@ div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
 
 <a name="2"><h1>2. Users</h1></a>
 
-<p>The definition of a user is based on the user's
+<p>The definition of a user is based on the user
 daily activity. One or more profiles can be assigned to a single user</p>
 
 <p>A profile is a list of actions a user can or
@@ -134,7 +134,7 @@ a user usually reflects the user's activity.</p>
 <p>To create a new message to other user, go to "Messages" section in the Operation menu. You can also read the received messages, but the sent messages are not stored.</p>
 
 <h3><a name="251">2.5.1. Messages to groups</a></h3>
-<p>From "Messages"&gt;"Messages to groups" section in the Operation menu you can send messages to groups of users. The sent messages will not be stores.</p>
+<p>From "Messages"&gt;"Messages to groups" section in the Operation menu you can send messages to groups of users. The sent messages will not be stored.</p>
 
 </body>
 </html>

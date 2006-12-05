@@ -132,10 +132,10 @@ Pandora_Windows_Service::getXmlHeader () {
         agent = new TiXmlElement ("agent_data");
 
         value = conf->getValue ("agent_name");
-        agent->SetAttribute ("agent_name", value);
         if (value == "") {
                 value = Pandora_Windows_Info::getSystemName ();
         }
+        agent->SetAttribute ("agent_name", value);
         
         agent->SetAttribute ("version", getPandoraAgentVersion ());
 

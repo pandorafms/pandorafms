@@ -1,3 +1,9 @@
+2006-12-04  Esteban Sanchez  <estebans@artica.es>
+
+	* misc/pandora_file.cc: Removed unuser variables.
+
+	* bin/PandoraAgent.exe: Really updated to last commit.
+
 2006-12-04 Raul Mateos <raulofpandora@gmail.com>
 
 	* installer/Pandora_Windows_Agent-1.2.0-Setup.exe: Added icon

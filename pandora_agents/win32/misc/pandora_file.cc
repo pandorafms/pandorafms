@@ -34,7 +34,6 @@ using namespace std;
  **/
 bool
 Pandora_File::fileExists (const string filepath) {
-        string   line, result;
         ifstream myfile (filepath.c_str ());
         
         if (! myfile.is_open ()) {

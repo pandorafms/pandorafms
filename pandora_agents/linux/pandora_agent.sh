@@ -41,6 +41,7 @@ DEBUG_MODE=0
 CONTADOR=0
 EXECUTE=1
 MODULE_END=0
+SERVER_PORT=22
 
 echo "$TIMESTAMP - Reading general config parameters from .conf file" >> $PANDORA_HOME/pandora.log
 for a in `cat $PANDORA_HOME/pandora_agent.conf | grep -v -e "^#" | grep -v -e "^module" `
@@ -82,6 +83,12 @@ do
         then
                CHECKSUM_MODE=`echo $a | awk '{ print $2 }' `
          	echo "$TIMESTAMP - [SETUP] - Checksum is $CHECKSUM_MODE " >> $PANDORA_HOME/pandora.log
+        fi
+	# Contribution of daggett
+	if [ ! -z "`echo $a | grep -e '^server_port'`" ]
+        then
+                SERVER_PORT=`echo $a | awk '{ print $2 }' `
+                echo "$TIMESTAMP - [SETUP] - Server Port is $SERVER_PORT" >> $PANDORA_HOME/pandora.log
         fi
 done
 
@@ -269,7 +276,7 @@ do
 	fi
 	
 	# Send packets to server and detele it
- 	scp $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH > /dev/null 2> /dev/null
+ 	scp -P $SERVER_PORT $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH > /dev/null 2> /dev/null
 
 	if [ "$DEBUG_MODE" == "1" ]
 	then

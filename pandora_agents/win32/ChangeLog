@@ -1,3 +1,10 @@
+2006-12-05  Esteban Sanchez  <estebans@artica.es>
+
+	* pandora_windows_service.cc: Fixed a bug when the agent name is not
+	configured and should be getted from the system.
+
+	* bin/PandoraAgent.exe: Updated to last commit.
+
 2006-12-05 Raul Mateos <raulofpandora@gmail.com>
 
 	* installer/Pandora_Windows_Agent-1.2.0-Setup.exe: Updated installer.

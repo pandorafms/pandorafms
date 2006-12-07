@@ -206,16 +206,16 @@ if (give_acl($id_user, 0, "LW")==1) {
 		echo '<h3>'.$lang_label["snmp_assigned_alerts"]."<a href='help/".$help_code."/chap4.php#341' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";		
 		if (mysql_num_rows($result)){
 
-			echo '<table cellpadding="3" cellspacing="3" width="750" class="fon" border=0>';
-			echo '<tr><th>'.$lang_label["alert"];
-			echo '<th width=75>'.$lang_label["alert_type"];		
-			echo '<th>'.$lang_label["SNMP_agent"];
-			echo '<th>'.$lang_label["OID"];
-			echo '<th>'.$lang_label["customvalue"];
-			echo '<th>'.$lang_label["description"];
-			echo '<th>'.$lang_label["times_fired"];
-			echo '<th>'.$lang_label["last_fired"];
-			echo '<th width="50">'.$lang_label["action"];
+			echo '<table cellpadding="3" cellspacing="3" width="750">';
+			echo '<tr><th>'.$lang_label["alert"]."</th>";
+			echo '<th width=75>'.$lang_label["alert_type"]."</th>";	
+			echo '<th>'.$lang_label["SNMP_agent"]."</th>";
+			echo '<th>'.$lang_label["OID"]."</th>";
+			echo '<th>'.$lang_label["customvalue"]."</th>";
+			echo '<th>'.$lang_label["description"]."</th>";
+			echo '<th>'.$lang_label["times_fired"]."</th>";
+			echo '<th>'.$lang_label["last_fired"]."</th>";
+			echo '<th width="50">'.$lang_label["action"]."</th>";
 			$color=1;
 			while ($row=mysql_fetch_array($result)){
 				if ($color == 1){
@@ -297,8 +297,8 @@ if (give_acl($id_user, 0, "LW")==1) {
 			echo '<input name="add_alert" type="submit" class="sub" value="'.$lang_label["create"].'">';
 			echo "</form>";
 			echo "</table>";
-		} else { 
-			echo '<font class="red">'.$lang_label["no_snmp_alert"].'</font>';
+		} else {
+			echo "<div class='nf'>".$lang_label["no_snmp_alert"]."</div>";
 			echo "<br><br>";
 			echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert">';
 			echo '<input name="add_alert" type="submit" class="sub" value="'.$lang_label["create"].'">';

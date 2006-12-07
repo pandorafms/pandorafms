@@ -188,16 +188,16 @@ if (comprueba_login() == 0) {
 		$offset=0;
 	}
 	echo "<br>";
-	echo "<table border=0 cellpadding='3' cellspacing='3' width='750'>";
+	echo "<table cellpadding='3' cellspacing='3' width='750'>";
 	echo "<tr>";
-	echo "<th>".$lang_label["status"];
-	echo "<th>".$lang_label["OID"];
-	echo "<th>".$lang_label["SNMP_agent"];
-	echo "<th>".$lang_label["customvalue"];
-	echo "<th>".$lang_label["id_user"];
-	echo "<th class='w130'>".$lang_label["timestamp"];
-	echo "<th>".$lang_label["alert"];
-	echo "<th>".$lang_label["action"];
+	echo "<th>".$lang_label["status"]."</th>";
+	echo "<th>".$lang_label["OID"]."</th>";
+	echo "<th>".$lang_label["SNMP_agent"]."</th>";
+	echo "<th>".$lang_label["customvalue"]."</th>";
+	echo "<th>".$lang_label["id_user"]."</th>";
+	echo "<th class='w130'>".$lang_label["timestamp"]."</th>";
+	echo "<th>".$lang_label["alert"]."</th>";
+	echo "<th>".$lang_label["action"]."</th>";
 	echo "<th class='p10'>";
 	echo "<label for='checkbox' class='p21'>".$lang_label["all"]." </label>";
 	echo '<input type="checkbox" class="chk" name="allbox" onclick="CheckAll();"></th>';
@@ -227,17 +227,19 @@ if (comprueba_login() == 0) {
 				$sql="SELECT * FROM tagente WHERE direccion = '".$row["source"]."'";
 				$result2=mysql_query($sql); // If there's any agent with this IP we show name and link to agent
 				if ($row2=mysql_fetch_array($result2)){
-					echo "<td class='datos'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row2["id_agente"]."'><b>".dame_nombre_agente($row2["id_agente"])."</b></a>";
+					echo "<td class='datos'>
+					<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row2["id_agente"]."'>
+					<b>".dame_nombre_agente($row2["id_agente"])."</b></a></td>";
 				}
 				else {
-					echo "<td class='datos'>".$row["source"];
+					echo "<td class='datos'>".$row["source"]."</td>";
 				}
-				echo "<td class='datos'>".$row["value_custom"];
+				echo "<td class='datos'>".$row["value_custom"]."</td>";
 	
 				echo "<td class='datos'>";
 				if ($row["status"] <> 0)
 					echo "<a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$row["id_usuario"]."'><a href='#' class='tip'>&nbsp;<span>".dame_nombre_real($row["id_usuario"])."</span></a>".substr($row["id_usuario"],0,8)."</a>";
-				echo "<td class='datos'>".$row["timestamp"];
+				echo "<td class='datos'>".$row["timestamp"]."</td>";
 				echo "<td class='datos' align='center'>";
 				if ($row["alerted"] != 0 )
 					echo "<img src='images/dot_yellow.gif' border=0>";
@@ -263,8 +265,9 @@ if (comprueba_login() == 0) {
 	}
 	echo "</form></table>";
 
-	}
-	else { echo '<font class="red">'.$lang_label["no_snmp_agent"].'</font>';}
+	} else { 
+		echo "<div class='nf'>".$lang_label["no_snmp_agent"]."</div>";
+		}
 	
 	} 
 	else {

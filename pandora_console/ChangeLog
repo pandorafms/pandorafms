@@ -1,3 +1,13 @@
+2006-12-07 Raul Mateos  <raulofpandora@gmail.com>
+	
+	* include/config.php: Changed build
+	
+	* operation/snmp/*: Close some HTML tags. Changed style 
+	for not found items.
+	
+	* operation/servers/view_server.php: Close some HTML tags. Changed style 
+	for not found items.
+	
 2006-12-04 Raul Mateos  <raulofpandora@gmail.com>
 
 	* help/[en|es]/images/servers1.png, servers2.png: New files.

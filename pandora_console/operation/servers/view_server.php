@@ -31,18 +31,18 @@ if (comprueba_login() == 0) {
 	// Connect DataBase
 	$result=mysql_query($sql);
 	if (mysql_num_rows($result)){
-	echo "<table cellpadding='3' cellspacing='3' witdh=550>";
-	echo "<tr><th class='datos'>".$lang_label["name"];
-	echo "<th class='datos'>".$lang_label['status'];
-	echo "<th class='datos'>".$lang_label['ip_address'];
-	echo "<th class='datos'>".$lang_label['description'];
-	echo "<th class='datos'>".$lang_label['network'];
-	echo "<th class='datos'>".$lang_label['data'];
-	echo "<th class='datos'>".$lang_label['snmp'];
-	echo "<th class='datos'>".$lang_label['master'];
-	echo "<th class='datos'>".$lang_label['checksum'];
-	echo "<th class='datos'>".$lang_label['laststart'];
-	echo "<th class='datos'>".$lang_label['lastupdate'];
+		echo "<table cellpadding='3' cellspacing='3' witdh=550>";
+		echo "<tr><th class='datos'>".$lang_label["name"]."</th>";
+		echo "<th class='datos'>".$lang_label['status']."</th>";
+		echo "<th class='datos'>".$lang_label['ip_address']."</th>";
+		echo "<th class='datos'>".$lang_label['description']."</th>";
+		echo "<th class='datos'>".$lang_label['network'."</th>"];
+		echo "<th class='datos'>".$lang_label['data']."</th>";
+		echo "<th class='datos'>".$lang_label['snmp']."</th>";
+		echo "<th class='datos'>".$lang_label['master']."</th>";
+		echo "<th class='datos'>".$lang_label['checksum']."</th>";
+		echo "<th class='datos'>".$lang_label['laststart']."</th>";
+		echo "<th class='datos'>".$lang_label['lastupdate']."</th>";
 		$color=1;
 		while ($row=mysql_fetch_array($result)){
 			if ($color == 1){
@@ -96,18 +96,19 @@ if (comprueba_login() == 0) {
 			if ($checksum == 1){
 				echo "<img src='images/binary.gif'>";
 			}
-			echo "<td class='".$tdcolor."f9' align='middle'>".substr($laststart,0,25);
-			echo "<td class='".$tdcolor."f9' align='middle'>".substr($keepalive,0,25);
+			echo "<td class='".$tdcolor."f9' align='middle'>"
+			.substr($laststart,0,25)."</td>";
+			echo "<td class='".$tdcolor."f9' align='middle'>"
+			.substr($keepalive,0,25)."</td>";
 		}
-	echo '<tr><td colspan="11"><div class="raya"></div></td></tr></table>';	
-	}
-	else {
-		echo '<font class="red">'.$lang_label["no_server"].'</font>';
+		echo '<tr><td colspan="11"><div class="raya"></div></td></tr></table>';	
+	} else {
+		echo "<div class='nf'>".$lang_label["no_server"]."</div>";
 	}
 
-} else {
+	} else {
 	audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Agent view");
 		require ("general/noaccess.php");
-}
+	}
 }
 ?>

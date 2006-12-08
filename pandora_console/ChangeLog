@@ -1,3 +1,15 @@
+2006-12-08 Raul Mateos  <raulofpandora@gmail.com>
+	
+	* include/config.php: Changed build
+	
+	* images/info.gif: New file
+	
+	* include/styles/pandora.css: Created new style and modified others
+	
+	* operation/agentes/*.php, operation/servers/*.php, godmode/agentes/*.php,
+	godmode/servers/*.php,: Close some HTML tags. Changed style for not
+	found items.
+
 2006-12-07 Raul Mateos  <raulofpandora@gmail.com>
 	
 	* include/config.php: Changed build

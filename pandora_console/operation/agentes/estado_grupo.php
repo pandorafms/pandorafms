@@ -114,61 +114,64 @@ if (comprueba_login() == 0)
 			$array_index++;
 		}
 	}
-	if ($contador_agente==0) {echo "<font class='red'>".$lang_label["no_agent_def"]."</font>";}
- 	$ancho = ceil(sqrt($array_index+1));
-	$real_count =0; // Puedo tener una tabla con mas items en ella que los que realmente debo mostrar, real count cuenta los que voy poniendo hasta llegar a array_index que son los que hay en el array $grupo.
-	echo "<table border=0 cellpadding=10 cellspacing=10>";
-	for ($table=0;$table < $ancho;$table++){
-		echo "<tr class='bot'>";
-		for ($table_row=0;$table_row < $ancho;$table_row++){
-			if ($real_count < $array_index){
-				$group_name = $grupo[$real_count]["group"];
-				$icono_grupo = $grupo[$real_count]["icon"];
-				$icono_type="";
-				if ($grupo[$real_count]["down"]>0) {
-					$icono_type="<img src='images/dot_down.gif' alt=''>";
+	if ($contador_agente!=0) {
+	 	$ancho = ceil(sqrt($array_index+1));
+		$real_count =0;
+		echo "<table cellpadding=10 cellspacing=10>";
+		for ($table=0;$table < $ancho;$table++){
+			echo "<tr class='bot'>";
+			for ($table_row=0;$table_row < $ancho;$table_row++){
+				if ($real_count < $array_index){
+					$group_name = $grupo[$real_count]["group"];
+					$icono_grupo = $grupo[$real_count]["icon"];
+					$icono_type="";
+					if ($grupo[$real_count]["down"]>0) {
+						$icono_type="<img src='images/dot_down.gif' alt=''>";
+					}
+					if ($grupo[$real_count]["bad"]>0) {
+						$icono_type=$icono_type."<img src='images/dot_red.gif' alt=''>";
+					}
+					if ($grupo[$real_count]["ok"]>0) {
+						$icono_type=$icono_type."<img src='images/dot_green.gif' alt=''>";
+					}
+					if ($grupo[$real_count]["data"]>0) {
+						$icono_type=$icono_type."<img src='images/dot_white.gif' alt=''>";
+					}
+					// Show yellow light if there are recent alerts fired for this group
+					if ($grupo[$real_count]["alerts"] > 0 ){
+						$icono_type=$icono_type."<img src='images/dot_yellow.gif' alt=''>";
+					}
+					// TOOLTIP.
+					$celda = "<td class='bot' width=100><a href='index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id=".$grupo[$real_count]["id_grupo"]."' class='info'><img class='top' src='images/groups/".$icono_grupo."_1.gif' border='0' alt=''>&nbsp;
+					<span>
+					<table cellspacing='2' cellpadding='0' style='margin-left:20px'>
+					<tr><td colspan='2' width='91' class='lb'>".$lang_label["agents"].": </td></tr>
+					<tr><td colspan='2' class='datos' align='center'><b>".$grupo[$real_count]["agent"]."</b></td></tr></table>
+					<table cellspacing='2' cellpadding='0' style='margin-left:20px'>
+					<tr><td colspan='2' width='90' class='lb'>".ucfirst($lang_label["monitors"]).":</td></tr>
+					<tr><td class='datos'><img src='images/b_green.gif' align='top' alt='' border='0'> ".$lang_label["ok"].": </td><td class='datos'><font class='greenb'>".$grupo[$real_count]["ok"]."</font></td></tr>
+					<tr><td class='datos'><img src='images/b_down.gif' align='top' alt='' border='0'> ".$lang_label["down"].": </td><td class='datos'><font class='grey'>".$grupo[$real_count]["down"]."</font></td></tr>
+					<tr><td class='datos'><img src='images/b_red.gif' align='top' alt='' border='0'> ".$lang_label["fail"].": </td><td class='datos'><font class='redb'>".$grupo[$real_count]["bad"]."</font></td></tr>
+					<tr><td class='datos'><img src='images/b_yellow.gif' align='top' alt='' border='0'> ".$lang_label["alerts"].": </td><td class='datos'><font class='grey'>".$grupo[$real_count]["alerts"]."</font></td></tr>
+					</table></span></a>";
+					// Render network exec module button, only when this group is writtable by user
+					if (give_acl($id_user, $grupo[$real_count]["id_grupo"], "AW")==1){
+						$celda = $celda . "<a href='index.php?sec=estado&sec2=operation/agentes/estado_grupo&update_netgroup=".$grupo[$real_count]["id_grupo"]."'><img src='images/target.gif' border=0></a>";
+					}
+					$celda = $celda . "<br><br>".$icono_type."<br><br><font class='gr'>".$group_name."</font>";
+					echo $celda;
 				}
-				if ($grupo[$real_count]["bad"]>0) {
-					$icono_type=$icono_type."<img src='images/dot_red.gif' alt=''>";
-				}
-				if ($grupo[$real_count]["ok"]>0) {
-					$icono_type=$icono_type."<img src='images/dot_green.gif' alt=''>";
-				}
-				if ($grupo[$real_count]["data"]>0) {
-					$icono_type=$icono_type."<img src='images/dot_white.gif' alt=''>";
-				}
-				// Show yellow light if there are recent alerts fired for this group
-				if ($grupo[$real_count]["alerts"] > 0 ){
-					$icono_type=$icono_type."<img src='images/dot_yellow.gif' alt=''>";
-				}
-				// TOOLTIP.
-				$celda = "<td class='bot' width=100><a href='index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id=".$grupo[$real_count]["id_grupo"]."' class='info'><img class='top' src='images/groups/".$icono_grupo."_1.gif' border='0' alt=''>&nbsp;
-				<span>
-				<table cellspacing='2' cellpadding='0' style='margin-left:20px'>
-				<tr><td colspan='2' width='91' class='lb'>".$lang_label["agents"].": </td></tr>
-				<tr><td colspan='2' class='datos' align='center'><b>".$grupo[$real_count]["agent"]."</b></td></tr></table>
-				<table cellspacing='2' cellpadding='0' style='margin-left:20px'>
-				<tr><td colspan='2' width='90' class='lb'>".ucfirst($lang_label["monitors"]).":</td></tr>
-				<tr><td class='datos'><img src='images/b_green.gif' align='top' alt='' border='0'> ".$lang_label["ok"].": </td><td class='datos'><font class='greenb'>".$grupo[$real_count]["ok"]."</font></td></tr>
-				<tr><td class='datos'><img src='images/b_down.gif' align='top' alt='' border='0'> ".$lang_label["down"].": </td><td class='datos'><font class='grey'>".$grupo[$real_count]["down"]."</font></td></tr>
-				<tr><td class='datos'><img src='images/b_red.gif' align='top' alt='' border='0'> ".$lang_label["fail"].": </td><td class='datos'><font class='redb'>".$grupo[$real_count]["bad"]."</font></td></tr>
-				<tr><td class='datos'><img src='images/b_yellow.gif' align='top' alt='' border='0'> ".$lang_label["alerts"].": </td><td class='datos'><font class='grey'>".$grupo[$real_count]["alerts"]."</font></td></tr>
-				</table></span></a>";
-				// Render network exec module button, only when this group is writtable by user
-				if (give_acl($id_user, $grupo[$real_count]["id_grupo"], "AW")==1){
-					$celda = $celda . "<a href='index.php?sec=estado&sec2=operation/agentes/estado_grupo&update_netgroup=".$grupo[$real_count]["id_grupo"]."'><img src='images/target.gif' border=0></a>";
-				}
-				$celda = $celda . "<br><br>".$icono_type."<br><br><font class='gr'>".$group_name."</font>";
-				echo $celda;
+				$real_count++;
 			}
-			$real_count++;
+			echo "</tr>";
 		}
-		echo "</tr>";
-	}
-	echo "</table>";
+		echo "</table>";
+	} else {
+		echo "<div class='nf'>".$lang_label["no_agent_def"]."</div>";
+		}
 	}
 	else {
-		echo '<tr><td></td></tr><tr><td class="red">'.$lang_label["no_agent"].'</td></tr></table>';
+		echo "<div class='nf'>".$lang_label["no_agent"]."</div>";
 	}
 }
 else {

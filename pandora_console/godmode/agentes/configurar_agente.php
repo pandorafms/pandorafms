@@ -764,7 +764,7 @@ if ( $creacion_agente != 1) {
 		}
 		echo "<tr><td colspan='7'><div class='raya'></div></td></tr>";
 	} else 
-		echo "<font class='red'>No modules</font>";
+		echo "<div class='nf'>No modules</div>";
 ?>
 </table>
 
@@ -830,9 +830,9 @@ $result=mysql_query($sql1);
 		echo $string;
 		echo "<tr><td colspan='6'><div class='raya'></div></td></tr></table>";
 		}
-		else echo "<font class='red'>".$lang_label["no_alerts"]."</font>";
+		else echo "<div class='nf'>".$lang_label["no_alerts"]."</div>";
 	}
-	else echo "<font class='red'>".$lang_label["no_modules"]."</font>";
+	else echo "<div class='nf'>".$lang_label["no_modules"]."</div>";
 ?>
 
 <br>
@@ -857,7 +857,9 @@ else {
 	}
 }
 ?>
-<h3><?php echo $lang_label["module_asociation_form"] ?><a href='help/<?php echo $help_code ?>/chap3.php#321' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
+<h3><?php echo $lang_label["module_asociation_form"] ?>
+<a href='help/<?php echo $help_code ?>/chap3.php#321' target='_help' class='help'>
+&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
 <a name="modules"> <!-- Don't Delete !! -->
 <table width="650" cellpadding="3" cellspacing="3" class="fon">
 <tr><td class='lb' rowspan='8' width='5'>
@@ -867,7 +869,7 @@ else {
 <?php
 if ($update_module == "1") {
 	echo "<input type='hidden' name='tipo' value='".$modulo_id_tipo_modulo."'>";
-	echo "<i class='red'>".$lang_label["no_change_field"]."</i>";
+	echo "<span class='redi'>".$lang_label["no_change_field"]."</span>";
 	}
 else {
 	echo '<select name="tipo" onChange="type_change()">';

@@ -69,7 +69,7 @@ if (comprueba_login() == 0) {
 		echo "<tr><td class='datos'>".$lang_label['description']."<td class='datos'><input type='text' name='description' value='".$description."' class='w200'><input type='hidden' name='server' value='".entrada_limpia($_GET["server"])."></input>";
 	}
 	else {
-		echo '<font class="red">'.$lang_label["no_server"].'</font>';
+		echo "<div class='nf'>".$lang_label["no_server"]."</div>";
 		}
 	echo '<tr><td colspan="3"><div class="raya"></div></td></tr>';
 	echo '<tr><td colspan="3" align="right">';
@@ -159,7 +159,7 @@ if (comprueba_login() == 0) {
 		echo '<tr><td colspan="12"><div class="raya"></div></td></tr></table>';	
 	}
 	else {
-		echo '<font class="red">'.$lang_label["no_server"].'</font>';
+		echo "<div class='nf'>".$lang_label["no_server"]."</div>";
 		}
 	}
 

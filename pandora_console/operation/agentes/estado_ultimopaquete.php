@@ -191,6 +191,8 @@ if (comprueba_login() == 0) {
 	}
 	echo '<tr><td colspan="9"><div class="raya"></div></td></tr></table>';
 }
-else echo "<font class='red'>".$lang_label["no_modules"]."</font>";
-}
+else {
+	echo "<div class='nf'>".$lang_label["no_modules"]."</div>";
+}	
+	}
 ?>

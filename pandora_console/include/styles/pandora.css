@@ -249,7 +249,7 @@ td.datos_jus, td.datos2_jus {
 .f9, .f9i, .f9b, td.f9, td.f9i, td.datosf9, td.datos2f9, td.datosf9i, td.datos2f9i {
 	font-size: 9px;
 	}
-.f9i {
+.f9i, .redi {
 	font-style: italic;
 	}
 .f9l20 {
@@ -276,7 +276,7 @@ td.datos_jus, td.datos2_jus {
 	background: url(../../images/error.gif) no-repeat;
 	padding: 4px 1px 6px 30px;
 	}
-.red , .redb, .error, div.nf {
+.red , .redb, .redi, .error {
 	color: #ff0000;
 	}
 .sep {
@@ -410,5 +410,8 @@ div.imgr>img {
 	right: 1;
 	}
 div.nf {
+	background: url(../../images/info.gif) no-repeat;
+	color: #9a2f0a;
     margin-left: 7px;
+	padding: 2px 1px 6px 25px;
 	}

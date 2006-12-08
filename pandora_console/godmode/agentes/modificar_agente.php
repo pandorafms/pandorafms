@@ -59,7 +59,9 @@ if (give_acl($id_user, 0, "AW")==1) {
         	}
 	}
 	echo "<h2>".$lang_label["agent_conf"]."</h2>";
-	echo "<h3>".$lang_label["agent_defined2"]."<a href='help/".$help_code."/chap3.php#3' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	echo "<h3>".$lang_label["agent_defined2"]."
+	<a href='help/".$help_code."/chap3.php#3' target='_help' class='help'>
+	&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 	
 	// Load icon index from tgrupos
 	$iconindex_g[]="";
@@ -99,10 +101,10 @@ if (give_acl($id_user, 0, "AW")==1) {
 		echo "<tr><td align='right' colspan='4'>";
 		echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&creacion=1'>";
 		echo "<input type='submit' class='sub' name='crt' value='".$lang_label["create_agent"]."'>";
-		echo "</form></td></tr></table>";
+		echo "</form></td></tr>";
 		echo "</table>";
 		} else {
-		echo '<font class="red">'.$lang_label["no_agent_def"].'</font><br><br>';
+		echo "<div class='nf'>".$lang_label["no_agent_def"]."</div>";
 		echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&creacion=1'>";
 		echo "<input type='submit' class='sub' name='crt' value='".$lang_label["create_agent"]."'>";
 		echo "</form>";

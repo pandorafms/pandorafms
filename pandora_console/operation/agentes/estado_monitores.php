@@ -65,32 +65,37 @@ if (comprueba_login() == 0) {
 				else
 					$agent_down = 0;
 				
-				echo "<tr><td class='".$tdcolor."'>".$est_tipo;
-				echo "<td class='".$tdcolor."'>".$est_modulo;
-				echo "<td class='".$tdcolor."f9'>".substr($est_description,0,32);
+				echo "<tr><td class='".$tdcolor."'>".$est_tipo."</td>";
+				echo "<td class='".$tdcolor."'>".$est_modulo."</td>";
+				echo "<td class='".$tdcolor."f9'>"
+				.substr($est_description,0,32)."</td>";
 				// echo "<td class='datos'>".$row3["datos"];
 				if ($agent_down == 1)
-					echo  "<td class='".$tdcolor."' align='center'><img src='images/b_down.gif'>";
+					echo  "<td class='".$tdcolor."' align='center'>
+					<img src='images/b_down.gif'></td>";
 				else	
 					if ($est_estado == 1)
 						if ($est_cambio ==1)
-							echo "<td class='".$tdcolor."' align='center'><img src='images/b_yellow.gif'>";
+							echo "<td class='".$tdcolor."' align='center'>
+							<img src='images/b_yellow.gif'></td>";
 						else
-							echo  "<td class='".$tdcolor."' align='center'><img src='images/b_red.gif'>";
+							echo  "<td class='".$tdcolor."' align='center'>
+							<img src='images/b_red.gif'></td>";
 					else
-						echo  "<td class='".$tdcolor."' align='center'><img src='images/b_green.gif'>";
+						echo  "<td class='".$tdcolor."' align='center'>
+						<img src='images/b_green.gif'></td>";
 				echo "<td class='".$tdcolor."'>";
-				echo  $temp_interval;
+				echo  $temp_interval."</td>";
 				echo  "<td class='".$tdcolor."f9'>";
-				if ($agent_down == 1) // Si el agente esta down, lo mostramos en negrita y en rojo
-					echo  "<b><font color='red'>";
-	
-				echo  $row_t["timestamp"];
+				if ($agent_down == 1) { // If agent down, it's shown red and bold
+					echo  "<span class='redb'>";
+				}
+				echo $row_t["timestamp"]."</span></td>";
 			}
 		}
 		echo '<tr><td colspan="7"><div class="raya"></div></td></tr></table>';
 	}
 	else 
-		echo "<font class='red'>".$lang_label["no_monitors"]."</font>";
+		echo "<div class='nf'>".$lang_label["no_monitors"]."</div>";
 }
 ?>

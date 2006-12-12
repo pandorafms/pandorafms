@@ -369,6 +369,8 @@ pandora_status_checker_run_thread (gpointer data)
 	PandoraStatusChecker *checker = PANDORA_STATUS_CHECKER (data);
 	PandoraState          alerts, servers, agents;
 
+	g_usleep (G_USEC_PER_SEC);
+	
 	g_mutex_lock (checker->priv->state_mutex);
         checker->priv->state = CHECKER_STATE_RUNNING;
 
@@ -417,4 +419,6 @@ pandora_status_checker_stop (PandoraStatusChecker *checker)
 	g_mutex_lock (checker->priv->state_mutex);
 	checker->priv->state = CHECKER_STATE_STOPPING;
 	g_mutex_unlock (checker->priv->state_mutex);
+	
+	g_thread_join (checker->priv->thread);
 }

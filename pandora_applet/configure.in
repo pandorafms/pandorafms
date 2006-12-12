@@ -1,12 +1,6 @@
 AC_PREREQ(2.59)
 
-m4_define([pandoraapplet_major_version], [1])
-m4_define([pandoraapplet_minor_version], [0])
-m4_define([pandoraapplet_micro_version], [0])
-m4_define([pandoraapplet_build_version], [])
-m4_define([pandoraapplet_version], m4_format('%s.%s.%s%s', pandoraapplet_major_version, pandoraapplet_minor_version, pandoraapplet_micro_version, pandoraapplet_build_version))
-
-AC_INIT([pandora-applet], [pandoraapplet_version], [http://sourceforge.net/], [pandora_applet])
+AC_INIT([pandora-applet], [1.2.0], [http://sourceforge.net/tracker/?group_id=155200&atid=794852], [pandora_applet])
 AC_CONFIG_SRCDIR([src/main.c])
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 

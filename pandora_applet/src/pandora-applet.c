@@ -173,17 +173,18 @@ pandora_applet_get_instance (PandoraApplet *applet)
 {
 	gtk_widget_hide (GTK_WIDGET (applet));
 
-
 	return GTK_WIDGET (applet);
 }
 
 static void
 pandora_applet_destroy (PandoraApplet *applet)
 {
-	pandora_status_checker_stop (applet->priv->checker);
-	
+	gtk_widget_hide (GTK_WIDGET (applet));
+
 	gtk_widget_destroy (GTK_WIDGET (applet->priv->info_window));
 	gtk_widget_destroy (GTK_WIDGET (applet->priv->setup_dialog));
+	
+	pandora_status_checker_stop (applet->priv->checker);
 	
 	exit_app ();
 }
@@ -197,6 +198,7 @@ pandora_applet_new ()
 static void
 pandora_applet_quit_cb (GtkMenuItem *mi, PandoraApplet *applet)
 {
+	gtk_widget_hide (GTK_WIDGET (applet));
 	gtk_widget_destroy (GTK_WIDGET (applet));
 }
 
@@ -213,7 +215,7 @@ pandora_applet_about_cb (GtkMenuItem *mi, PandoraApplet *applet)
         };
 	static const gchar *artists[] =
         {
-		"Esteban Sánchez <estebans@artica.es>"
+		"Esteban Sánchez <estebans@artica.es>\n"
                 "Icons from Tango Desktop Project <http://tango.freedesktop.org/>",
                 NULL
         };
@@ -256,6 +258,11 @@ pandora_applet_show_setup_cb (GtkMenuItem *mi, PandoraApplet *applet)
 	gtk_widget_show_all (GTK_WIDGET (applet->priv->setup_dialog));
 	
 	result = gtk_dialog_run (GTK_DIALOG (applet->priv->setup_dialog));
+
+	gtk_widget_hide (GTK_WIDGET (applet->priv->setup_dialog));
+
+	while (gtk_events_pending ())
+		gtk_main_iteration ();
 	
 	switch (result) {
 	case GTK_RESPONSE_ACCEPT:
@@ -268,8 +275,6 @@ pandora_applet_show_setup_cb (GtkMenuItem *mi, PandoraApplet *applet)
 	default:
 		break;
 	}
-
-	gtk_widget_hide (GTK_WIDGET (applet->priv->setup_dialog));
 }
 
 static void

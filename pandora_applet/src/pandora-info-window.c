@@ -71,16 +71,25 @@ static gboolean pandora_info_window_delete_cb             (GtkWidget *dialog,
 static gboolean pandora_info_window_close_cb              (GtkWidget *widget,
 							   gpointer  data);
 
-static void     pandora_info_window_status_changed_cb     (GObject  *object,
-							   gpointer  data);
+static void     pandora_info_window_alerts_changed_cb     (GObject  *object,
+							   gint      data,
+							   gpointer  user_data);
 
-static void     pandora_info_window_status_update         (PandoraInfoWindow *window);
+static void     pandora_info_window_agents_changed_cb     (GObject  *object,
+							   gint      data,
+							   gpointer  user_data);
 
-static void     pandora_info_window_status_update_alerts   (PandoraInfoWindow *window,
+static void     pandora_info_window_servers_changed_cb    (GObject  *object,
+							   gint      data,
+							   gpointer  user_data);
+
+static void     pandora_info_window_status_update_all     (PandoraInfoWindow *window);
+
+static void     pandora_info_window_status_update_alerts  (PandoraInfoWindow *window,
 							   PandoraState       state);
-static void     pandora_info_window_status_update_agents   (PandoraInfoWindow *window,
+static void     pandora_info_window_status_update_agents  (PandoraInfoWindow *window,
 							   PandoraState       state);
-static void     pandora_info_window_status_update_servers  (PandoraInfoWindow *window,
+static void     pandora_info_window_status_update_servers (PandoraInfoWindow *window,
 							   PandoraState       state);
 
 GType
@@ -117,7 +126,7 @@ pandora_info_window_init (PandoraInfoWindow *window)
 	GtkWidget *button_close;
 
 	window->priv = PANDORA_INFO_WINDOW_GET_PRIVATE (window);
-
+	
 	window->priv->status = NULL;
 	window->priv->state_alerts = STATE_INVALID;
 	window->priv->state_servers = STATE_INVALID;
@@ -159,7 +168,7 @@ pandora_info_window_init (PandoraInfoWindow *window)
 	gtk_table_attach (GTK_TABLE (table), window->priv->label_alerts,
 			  1, 2, 0, 1, GTK_FILL | GTK_EXPAND, GTK_FILL, 0, 0);
 
-	/* Third row */
+	/* Second row */
 	window->priv->label_agents = gtk_label_new (_("Agents status."));
 	gtk_misc_set_alignment (GTK_MISC (window->priv->label_agents), 0, 0.5);
 
@@ -171,7 +180,7 @@ pandora_info_window_init (PandoraInfoWindow *window)
 	gtk_table_attach (GTK_TABLE (table), window->priv->label_agents,
 			  1, 2, 1, 2, GTK_FILL | GTK_EXPAND, GTK_FILL, 0, 0);
 
-	/* Second row */
+	/* Third row */
 	window->priv->label_servers = gtk_label_new (_("Servers status."));
 	gtk_misc_set_alignment (GTK_MISC (window->priv->label_servers), 0, 0.5);
 
@@ -262,7 +271,8 @@ pandora_info_window_new (void)
 }
 
 static gboolean
-pandora_info_window_close_cb (GtkWidget *widget, gpointer data)
+pandora_info_window_close_cb (GtkWidget *widget,
+			      gpointer data)
 {
 	GtkWidget *window;
 	
@@ -275,7 +285,9 @@ pandora_info_window_close_cb (GtkWidget *widget, gpointer data)
 }
 
 static gboolean
-pandora_info_window_delete_cb (GtkWidget *widget, GdkEvent *event, gpointer data)
+pandora_info_window_delete_cb (GtkWidget *widget,
+			       GdkEvent  *event,
+			       gpointer   data)
 {
 	gtk_widget_hide (widget);
 
@@ -284,7 +296,7 @@ pandora_info_window_delete_cb (GtkWidget *widget, GdkEvent *event, gpointer data
 
 void
 pandora_info_window_set_status (PandoraInfoWindow *window,
-				PandoraStatus *status)
+				PandoraStatus     *status)
 {
 	if (window->priv->status) {
 		g_object_unref (window->priv->status);
@@ -292,16 +304,22 @@ pandora_info_window_set_status (PandoraInfoWindow *window,
 
 	window->priv->status = status;
 
-	g_signal_connect (status, "changed",
-			  G_CALLBACK (pandora_info_window_status_changed_cb),
+	g_signal_connect (status, "changed_alerts",
+			  G_CALLBACK (pandora_info_window_alerts_changed_cb),
+			  (gpointer) window);
+	g_signal_connect (status, "changed_agents",
+			  G_CALLBACK (pandora_info_window_agents_changed_cb),
+			  (gpointer) window);
+	g_signal_connect (status, "changed_servers",
+			  G_CALLBACK (pandora_info_window_servers_changed_cb),
 			  (gpointer) window);
 
-	pandora_info_window_status_update (window);
+	pandora_info_window_status_update_all (window);
 }
 
 static void
 pandora_info_window_status_update_alerts (PandoraInfoWindow *window,
-					 PandoraState       state)
+					  PandoraState       state)
 {
 	switch (state) {
 	case STATE_BAD:
@@ -328,7 +346,7 @@ pandora_info_window_status_update_alerts (PandoraInfoWindow *window,
 
 static void
 pandora_info_window_status_update_agents (PandoraInfoWindow *window,
-					 PandoraState       state)
+					  PandoraState       state)
 {
 	switch (state) {
 	case STATE_BAD:
@@ -355,7 +373,7 @@ pandora_info_window_status_update_agents (PandoraInfoWindow *window,
 
 static void
 pandora_info_window_status_update_servers (PandoraInfoWindow *window,
-					  PandoraState       state)
+					   PandoraState       state)
 {
 	switch (state) {
 	case STATE_BAD:
@@ -381,34 +399,55 @@ pandora_info_window_status_update_servers (PandoraInfoWindow *window,
 }
 
 static void
-pandora_info_window_status_update (PandoraInfoWindow *window)
+pandora_info_window_status_update_all (PandoraInfoWindow *window)
 {
-	PandoraStatus *status;
-	PandoraState   state;
+	PandoraState state;
 	
-	status = window->priv->status;
-	
-	if (status == NULL) {
+	if (window->priv->status == NULL) {
 		pandora_info_window_status_update_alerts (window, TRUE);
 		pandora_info_window_status_update_agents (window, TRUE);
 		pandora_info_window_status_update_servers (window, TRUE);
 	} else {
-		state = pandora_status_get_alerts (status);
+		state = pandora_status_get_alerts (window->priv->status);
 		pandora_info_window_status_update_alerts (window, state);
-
-		state = pandora_status_get_agents (status);
+		
+		state = pandora_status_get_agents (window->priv->status);
 		pandora_info_window_status_update_agents (window, state);
 		
-		state = pandora_status_get_servers (status);
+		state = pandora_status_get_servers (window->priv->status);
 		pandora_info_window_status_update_servers (window, state);
 	}
 }
 
 static void
-pandora_info_window_status_changed_cb (GObject  *object,
-				       gpointer  data)
+pandora_info_window_alerts_changed_cb (GObject *object,
+				       gint     data,
+				       gpointer user_data)
 {
-	PandoraInfoWindow *window = PANDORA_INFO_WINDOW (data);
+	PandoraState       state = data;
+	PandoraInfoWindow *window = PANDORA_INFO_WINDOW (user_data);
+	
+	pandora_info_window_status_update_alerts (window, state);
+}
 
-	pandora_info_window_status_update (window);
+static void
+pandora_info_window_agents_changed_cb (GObject *object,
+				       gint     data,
+				       gpointer user_data)
+{
+	PandoraState       state = data;
+	PandoraInfoWindow *window = PANDORA_INFO_WINDOW (user_data);
+	
+	pandora_info_window_status_update_agents (window, state);
+}
+
+static void
+pandora_info_window_servers_changed_cb (GObject *object,
+					gint     data,
+					gpointer user_data)
+{
+	PandoraState       state = data;
+	PandoraInfoWindow *window = PANDORA_INFO_WINDOW (user_data);
+	
+	pandora_info_window_status_update_servers (window, state);
 }

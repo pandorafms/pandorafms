@@ -1,5 +1,23 @@
 2006-12-12  Esteban Sanchez  <estebans@artica.es>
 
+	* src/pandora_status.[ch]: pandora_status_set_* removed and replaced
+	by an unique pandora_status_set_all function. Added a new signal
+	throwed for each status property when it changes. Added a new signal
+	throwed when there is an incidence (any of the values changed to bad
+	or good.
+
+	* src/pandora-status-checker.c: Error message when SQL connects failed
+	rewritten. Fixed the return of a gboolean value on functions that
+	returns PandoraState. Check code replaced with the new functions.
+
+	* src/pandora-info-window.c: Listen to new signals of PandoraStatus
+	object. Style correction.
+
+	* src/pandora-applet.c: Listen to new "incidence" signal of
+	PandoraStatus object. Callback rewritten. Removed unused function.
+
+2006-12-12  Esteban Sanchez  <estebans@artica.es>
+
 	* src/pandora-status-checker.c: Wait one second before starting to
 	check the status.
 

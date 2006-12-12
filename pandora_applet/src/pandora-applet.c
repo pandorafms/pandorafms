@@ -66,8 +66,9 @@ static void       pandora_applet_set_image_from_stock          (PandoraApplet *a
 static gboolean   pandora_applet_toplevel_menu_button_press_cb (GtkWidget *widget,
 								GdkEventButton *event,
 								gpointer data);
-static void       pandora_applet_changed_status_cb             (GObject *object,
-								gpointer *data);
+static void       pandora_applet_incidence_cb                  (GObject *object,
+								gint     data,
+								gpointer user_data);
 static GtkWidget *pandora_applet_context_menu_create           (PandoraApplet *applet);
 
 static GObject   *pandora_applet_constructor                   (GType type, guint n_props,
@@ -133,8 +134,8 @@ pandora_applet_init (PandoraApplet *applet)
 
 	gtk_widget_show_all (GTK_WIDGET (applet));
 	
-	g_signal_connect (G_OBJECT (applet->priv->status), "changed",
-			  G_CALLBACK (pandora_applet_changed_status_cb),
+	g_signal_connect (G_OBJECT (applet->priv->status), "incidence",
+			  G_CALLBACK (pandora_applet_incidence_cb),
 			  (gpointer) applet);
 
 	pandora_status_checker_run (applet->priv->checker);
@@ -278,48 +279,25 @@ pandora_applet_show_setup_cb (GtkMenuItem *mi, PandoraApplet *applet)
 }
 
 static void
-pandora_applet_changed_status_cb (GObject *object,
-				  gpointer *data)
+pandora_applet_incidence_cb (GObject *object,
+			     gint     data,
+			     gpointer user_data)
 {
-	PandoraApplet *applet = PANDORA_APPLET (data);
+	PandoraState   state = data;
+	PandoraApplet *applet = PANDORA_APPLET (user_data);
 	
-	switch (pandora_status_get_alerts (PANDORA_STATUS (object))) {
+	switch (state) {
 	case STATE_BAD:
 		pandora_applet_set_image_from_pixbuf (applet, applet->priv->icon_bad);
-		return;
+		
 		break;
 	case STATE_OK:
-		break;
-	default:
-		pandora_applet_set_image_from_pixbuf (applet, applet->priv->icon_unknown);
-		return;
-	}
+		pandora_applet_set_image_from_pixbuf (applet, applet->priv->icon_good);
 
-	switch (pandora_status_get_servers (PANDORA_STATUS (object))) {
-	case STATE_BAD:
-		pandora_applet_set_image_from_pixbuf (applet, applet->priv->icon_bad);
-		return;
-		break;
-	case STATE_OK:
 		break;
 	default:
 		pandora_applet_set_image_from_pixbuf (applet, applet->priv->icon_unknown);
-		return;
 	}
-
-	switch (pandora_status_get_agents (PANDORA_STATUS (object))) {
-	case STATE_BAD:
-		pandora_applet_set_image_from_pixbuf (applet, applet->priv->icon_bad);
-		return;
-		break;
-	case STATE_OK:
-		break;
-	default:
-		pandora_applet_set_image_from_pixbuf (applet, applet->priv->icon_unknown);
-		return;
-	}
-	
-	pandora_applet_set_image_from_pixbuf (applet, applet->priv->icon_good);
 }
 
 static GtkWidget *
@@ -382,10 +360,10 @@ pandora_applet_menu_position_func (GtkMenu *menu G_GNUC_UNUSED,
 				   int *x, int *y, gboolean *push_in,
 				   gpointer user_data)
 {
-        int screen_w, screen_h, button_x, button_y, panel_w, panel_h;
+        gint           screen_w, screen_h, button_x, button_y, panel_w, panel_h;
         GtkRequisition requisition;
-        GdkScreen *screen;
-        PandoraApplet *applet = (PandoraApplet *)user_data;
+        GdkScreen     *screen;
+        PandoraApplet *applet = PANDORA_APPLET (user_data);
 
         screen = gtk_widget_get_screen (applet->priv->event_box);
         screen_w = gdk_screen_get_width (screen);
@@ -412,7 +390,6 @@ pandora_applet_toplevel_menu_button_press_cb (GtkWidget *widget,
 					      GdkEventButton *event,
 					      gpointer data)
 {
-
 	PandoraApplet *applet;
 
 	applet = PANDORA_APPLET (data);
@@ -433,11 +410,6 @@ pandora_applet_toplevel_menu_button_press_cb (GtkWidget *widget,
         }
 
         return FALSE;
-}
-
-static void
-pandora_applet_setup_widgets (PandoraApplet *applet)
-{
 }
 
 static void

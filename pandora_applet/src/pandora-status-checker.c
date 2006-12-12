@@ -50,16 +50,16 @@ struct _PandoraStatusCheckerPrivate {
         (G_TYPE_INSTANCE_GET_PRIVATE ((object), PANDORA_STATUS_CHECKER_TYPE, \
 				      PandoraStatusCheckerPrivate))
 
-static gboolean pandora_status_checker_connect      (PandoraStatusChecker *checker);
-static gboolean pandora_status_checker_disconnect   (PandoraStatusChecker *checker);
+static gboolean     pandora_status_checker_connect       (PandoraStatusChecker *checker);
+static gboolean     pandora_status_checker_disconnect    (PandoraStatusChecker *checker);
 
 static PandoraState pandora_status_checker_check_alerts  (PandoraStatusChecker *checker);
 static PandoraState pandora_status_checker_check_servers (PandoraStatusChecker *checker);
 static PandoraState pandora_status_checker_check_agents  (PandoraStatusChecker *checker);
 
-static void     pandora_status_checker_init         (PandoraStatusChecker      *checker);
-static void     pandora_status_checker_class_init   (PandoraStatusCheckerClass *klass);
-static void     pandora_status_checker_finalize     (GObject                   *object);
+static void         pandora_status_checker_init          (PandoraStatusChecker      *checker);
+static void         pandora_status_checker_class_init    (PandoraStatusCheckerClass *klass);
+static void         pandora_status_checker_finalize      (GObject                   *object);
 
 static gpointer pandora_status_checker_run_thread   (gpointer data);
 
@@ -135,7 +135,6 @@ pandora_status_checker_finalize (GObject *object)
 		checker->priv->status = NULL;
 	}
 
-
 	if (checker->priv->state_mutex) {
 		g_mutex_free (checker->priv->state_mutex);
 		checker->priv->state_mutex = NULL;
@@ -192,7 +191,7 @@ pandora_status_checker_connect (PandoraStatusChecker *checker)
 				password, dbname, 3306, NULL, 0) == NULL)
         {
 		
-                g_print ("mysql_real_connect() failed. %s\n",
+                g_print ("SQL connection failed. %s\n",
 			 mysql_error (checker->priv->connection));
                 mysql_close (checker->priv->connection);
 		checker->priv->connection = NULL;
@@ -232,7 +231,7 @@ pandora_status_checker_check_agents (PandoraStatusChecker *checker)
 		                          "WHERE estado != 100 and datos = 0.0";
 
 	if (checker->priv->connection == NULL) {
-		return FALSE;
+		return STATE_UNKNOWN;
 	}
 
 	if (mysql_query (checker->priv->connection, query_time) != 0) {
@@ -272,7 +271,7 @@ pandora_status_checker_check_servers (PandoraStatusChecker *checker)
 		                   "WHERE status = 0";
 	
 	if (checker->priv->connection == NULL) {
-		return FALSE;
+		return STATE_UNKNOWN;
         }
 		
 	if (mysql_query (checker->priv->connection, query) != 0) {
@@ -305,7 +304,7 @@ pandora_status_checker_check_alerts (PandoraStatusChecker *checker)
 	gchar             *query;
 	
 	if (checker->priv->connection == NULL) {
-		return FALSE;
+		return STATE_UNKNOWN;
 	}
 
 	if (mysql_query (checker->priv->connection, query_all_agents) != 0) {
@@ -377,17 +376,22 @@ pandora_status_checker_run_thread (gpointer data)
 	while (checker->priv->state == CHECKER_STATE_RUNNING) {
 		g_mutex_unlock (checker->priv->state_mutex);
 
-		pandora_status_checker_connect (checker);
+		if (pandora_status_checker_connect (checker)) {
 
-		alerts = pandora_status_checker_check_alerts (checker);
-		servers = pandora_status_checker_check_servers (checker);
-		agents = pandora_status_checker_check_agents (checker);
-		
-		pandora_status_set_alerts (checker->priv->status, alerts);
-		pandora_status_set_servers (checker->priv->status, servers);
-		pandora_status_set_agents (checker->priv->status, agents);
-		
-		pandora_status_checker_disconnect (checker);
+			alerts = pandora_status_checker_check_alerts (checker);
+			servers = pandora_status_checker_check_servers (checker);
+			agents = pandora_status_checker_check_agents (checker);
+
+			pandora_status_set_all (checker->priv->status,
+						alerts, agents, servers);
+			
+			pandora_status_checker_disconnect (checker);
+		} else {
+			pandora_status_set_all (checker->priv->status,
+						STATE_UNKNOWN,
+						STATE_UNKNOWN,
+						STATE_UNKNOWN);
+		}
 
 		g_usleep (G_USEC_PER_SEC * 10);
 		

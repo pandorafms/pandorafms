@@ -27,7 +27,11 @@
 #include "pandora-status.h"
 
 enum {
-	CHANGED,
+	NONE,
+	INCIDENCE,
+	CHANGED_ALERTS,
+	CHANGED_AGENTS,
+	CHANGED_SERVERS,
 	N_SIGNALS
 };
 
@@ -45,9 +49,9 @@ static guint pandora_status_signals[N_SIGNALS];
         (G_TYPE_INSTANCE_GET_PRIVATE ((object), PANDORA_STATUS_TYPE, \
 				      PandoraStatusPrivate))
 
-static void     pandora_status_init       (PandoraStatus      *status);
-static void     pandora_status_class_init (PandoraStatusClass *klass);
-static void     pandora_status_finalize   (GObject            *object);
+static void pandora_status_init       (PandoraStatus      *status);
+static void pandora_status_class_init (PandoraStatusClass *klass);
+static void pandora_status_finalize   (GObject            *object);
 
 GType
 pandora_status_get_type (void)
@@ -85,7 +89,6 @@ pandora_status_init (PandoraStatus *status)
 	status->priv->mutex = g_mutex_new ();
 }
 
-
 static void
 pandora_status_class_init (PandoraStatusClass *klass)
 {
@@ -95,15 +98,42 @@ pandora_status_class_init (PandoraStatusClass *klass)
 
 	object_class = G_OBJECT_CLASS (klass);
 	object_class->finalize = pandora_status_finalize;
-	
-	pandora_status_signals[CHANGED] =
-                g_signal_new ("changed",
+
+	pandora_status_signals[INCIDENCE] =
+                g_signal_new ("incidence",
                               G_TYPE_FROM_CLASS (object_class),
                               G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
                               G_STRUCT_OFFSET (PandoraStatusClass, changed),
                               NULL, NULL,
-                              g_cclosure_marshal_VOID__VOID,
-                              G_TYPE_NONE, 0);
+                              g_cclosure_marshal_VOID__INT,
+                              G_TYPE_NONE, 1, G_TYPE_INT);
+	
+	pandora_status_signals[CHANGED_ALERTS] =
+                g_signal_new ("changed_alerts",
+                              G_TYPE_FROM_CLASS (object_class),
+                              G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+                              G_STRUCT_OFFSET (PandoraStatusClass, changed),
+                              NULL, NULL,
+                              g_cclosure_marshal_VOID__INT,
+                              G_TYPE_NONE, 1, G_TYPE_INT);
+
+	pandora_status_signals[CHANGED_AGENTS] =
+                g_signal_new ("changed_agents",
+                              G_TYPE_FROM_CLASS (object_class),
+                              G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+                              G_STRUCT_OFFSET (PandoraStatusClass, changed),
+                              NULL, NULL,
+                              g_cclosure_marshal_VOID__INT,
+                              G_TYPE_NONE, 1, G_TYPE_INT);
+
+	pandora_status_signals[CHANGED_SERVERS] =
+                g_signal_new ("changed_servers",
+                              G_TYPE_FROM_CLASS (object_class),
+                              G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+                              G_STRUCT_OFFSET (PandoraStatusClass, changed),
+                              NULL, NULL,
+                              g_cclosure_marshal_VOID__INT,
+                              G_TYPE_NONE, 1, G_TYPE_INT);
 }
 
 static void
@@ -131,54 +161,55 @@ pandora_status_new (void)
 }
 
 void
-pandora_status_set_alerts (PandoraStatus *status, PandoraState value)
+pandora_status_set_all (PandoraStatus *status,
+			PandoraState   alerts,
+			PandoraState   agents,
+			PandoraState   servers)
 {
-	g_return_if_fail (PANDORA_IS_STATUS (status));
-
-	g_mutex_lock (status->priv->mutex);
-
-	if (status->priv->alerts != value) {
-		status->priv->alerts = value;
-		g_mutex_unlock (status->priv->mutex);
-			
-		g_signal_emit (status, pandora_status_signals[CHANGED], 0);
-	} else {
-		g_mutex_unlock (status->priv->mutex);
-	}
-}
-
-void
-pandora_status_set_agents (PandoraStatus *status, PandoraState value)
-{
-	g_return_if_fail (PANDORA_IS_STATUS (status));
-
-	g_mutex_lock (status->priv->mutex);
-
-	if (status->priv->agents != value) {
-		status->priv->agents = value;
-		g_mutex_unlock (status->priv->mutex);
-		
-		g_signal_emit (status, pandora_status_signals[CHANGED], 0);
-	} else {
-		g_mutex_unlock (status->priv->mutex);
-	}
-}
-
-void
-pandora_status_set_servers (PandoraStatus *status, PandoraState value)
-{
-	g_return_if_fail (PANDORA_IS_STATUS (status));
-
-	g_mutex_lock (status->priv->mutex);
+	PandoraState incidence = STATE_INVALID;
 	
-	if (status->priv->servers != value) {
-		status->priv->servers = value;
-		g_mutex_unlock (status->priv->mutex);
+	g_return_if_fail (PANDORA_IS_STATUS (status));
+
+	g_mutex_lock (status->priv->mutex);
+
+	if (status->priv->alerts != alerts) {
+		status->priv->alerts = alerts;
+					
+		g_signal_emit (status, pandora_status_signals[CHANGED_ALERTS],
+			       0, alerts);
 		
-		g_signal_emit (status, pandora_status_signals[CHANGED], 0);
-	} else {
-		g_mutex_unlock (status->priv->mutex);
+		incidence = alerts;
 	}
+
+	if (status->priv->agents != agents) {
+		status->priv->agents = agents;
+					
+		g_signal_emit (status, pandora_status_signals[CHANGED_AGENTS],
+			       0, agents);
+
+		/* Change value if it was invalid or OK, so
+		 * "incidence" signal will be emmited only if there
+		 * are any bad value or all are ok. */
+		if (incidence == STATE_INVALID || incidence == STATE_OK)
+			incidence = agents;
+	}
+
+	if (status->priv->servers != servers) {
+		status->priv->servers = servers;
+					
+		g_signal_emit (status, pandora_status_signals[CHANGED_SERVERS],
+			       0, servers);
+		
+		if (incidence == STATE_INVALID || incidence == STATE_OK)
+			incidence = agents;
+	}
+	
+	/* Emit incidence_any signal if necessary */
+	if (incidence != STATE_INVALID)
+		g_signal_emit (status, pandora_status_signals[INCIDENCE],
+			       0, incidence);
+	
+	g_mutex_unlock (status->priv->mutex);
 }
 
 PandoraState

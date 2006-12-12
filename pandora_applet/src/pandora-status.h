@@ -27,10 +27,10 @@
 #include <glib-object.h>
 
 typedef enum {
-	STATE_INVALID,
-	STATE_UNKNOWN,
-	STATE_OK,
-	STATE_BAD
+	STATE_INVALID = 0,
+	STATE_UNKNOWN = 1,
+	STATE_OK      = 2,
+	STATE_BAD     = 3
 } PandoraState;
 
 #define PANDORA_STATUS_TYPE		 (pandora_status_get_type())
@@ -55,9 +55,10 @@ typedef struct {
 } PandoraStatusClass; 
 
 PandoraStatus *pandora_status_new         (void);
-void           pandora_status_set_alerts  (PandoraStatus *status, PandoraState value);
-void           pandora_status_set_agents  (PandoraStatus *status, PandoraState value);
-void           pandora_status_set_servers (PandoraStatus *status, PandoraState value);
+void           pandora_status_set_all     (PandoraStatus *status,
+					   PandoraState   alerts,
+					   PandoraState   agents,
+					   PandoraState   servers);
 
 PandoraState   pandora_status_get_alerts  (PandoraStatus *status);
 PandoraState   pandora_status_get_agents  (PandoraStatus *status);

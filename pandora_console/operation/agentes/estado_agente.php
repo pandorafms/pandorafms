@@ -197,7 +197,7 @@ if (comprueba_login() == 0) {
 				echo '<td class="'.$tdcolor.'"><img src="images/g_'.$iconindex_g[$id_grupo].'.gif"> ( '.dame_grupo($id_grupo).' )';
 				echo "<td class='$tdcolor'> ".$numero_modulos." <b>/</b> ".$numero_monitor;
 				if ($monitor_bad <> 0)
-					echo " <b>/</b> <font class='red'>".$monitor_bad."</font>";
+					echo " <b>/</b> <span class='red'>".$monitor_bad."</span>";
 				if ($monitor_down <> 0)
 					echo " <b>/</b> <font class='grey'>".$monitor_down."</font>";
 				if ($numero_monitor <> 0){

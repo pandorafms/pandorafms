@@ -1,6 +1,13 @@
 2006-12-14 Raul Mateos  <raulofpandora@gmail.com>
 
-	* include/styles/*.css: Simplify styles. First Try.
+	* operation/messages/message.php: Updated style for not found items.
+	
+	* godmode/agentes/configurar_agente.php, 
+	operation/agentes/estado_agente.php: Updated style for red text.
+
+2006-12-14 Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/styles/*.css: Simplify styles.
 
 2006-12-08 Raul Mateos  <raulofpandora@gmail.com>
 	

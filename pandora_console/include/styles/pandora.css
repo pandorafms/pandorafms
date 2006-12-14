@@ -213,13 +213,15 @@ td.lb {
 	padding-left: 3px;
 	font-weight: bold;
 	}
-td.datos, td.datost, td.datosb, td.datos_id, td.datosf9, td.datosf9i, td.datos_jus {
+td.datos, td.datost, td.datosb, td.datos_id, td.datosf9, 
+td.datosf9i, td.datos_jus {
 	background-color: #f5f5f5;
 	}
 td.w90datos, td.w135datos, td.w230datos {
 	background-color: #f5f5f5;
 	}
-td.datos2, td.datos2t, td.datos2b, td.datos2_id, td.datos2f9, td.datos2f9i, td.datos2_jus {
+td.datos2, td.datos2t, td.datos2b, td.datos2_id, td.datos2f9, 
+td.datos2f9i, td.datos2_jus {
 	background-color: #fafbfc;
 	}
 td.w90datos2, td.w135datos2, td.w230datos2 {
@@ -246,7 +248,8 @@ td.datos_jus, td.datos2_jus {
 	font-size: 10px;
 	text-align: center;
 	}
-.f9, .f9i, .f9b, td.f9, td.f9i, td.datosf9, td.datos2f9, td.datosf9i, td.datos2f9i {
+.f9, .f9i, .f9b, td.f9, td.f9i, td.datosf9, td.datos2f9, 
+td.datosf9i, td.datos2f9i {
 	font-size: 9px;
 	}
 .f9i, .redi {

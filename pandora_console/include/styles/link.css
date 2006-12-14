@@ -2,9 +2,7 @@
 	display: block;
 	color: #000;
 	}
-#link a:hover {
-	background-color: #cde0ad;
-	}
+
 div.linkli>ul {
 	width: 133px;
 	}
@@ -12,20 +10,16 @@ div.linkli>ul {
 	padding: 0px 0px 0px 22px;
 	border-bottom: 1px solid #d6d6d6;
 	border-top: 1px solid #f5ffff;
-	position: relative;
-	left: 0px;
 	width: 100%;
-	background: url(../../images/link.gif) no-repeat;
-	background-position: 3px 8px;
+    }
+.linkli li, .linkli li:hover {
+	background: url(../../images/link.gif) no-repeat 3px 8px;
 	}
-.linkli li:hover {
-	background: #cde0ad url(../../images/link.gif) no-repeat;
-	background-position: 3px 8px;
+#link a:hover, .linkli li:hover {
+	background-color: #cde0ad;
 	}
 div#menul {
 	background-color: #e9f3d2;
-	border-width: 1px;
-	border-style: solid;
-	border-color: #4a6629;
+	border: 1px solid #4a6629;
 	width: 155px;
 	}

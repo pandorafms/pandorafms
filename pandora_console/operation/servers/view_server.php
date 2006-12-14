@@ -36,7 +36,7 @@ if (comprueba_login() == 0) {
 		echo "<th class='datos'>".$lang_label['status']."</th>";
 		echo "<th class='datos'>".$lang_label['ip_address']."</th>";
 		echo "<th class='datos'>".$lang_label['description']."</th>";
-		echo "<th class='datos'>".$lang_label['network'."</th>"];
+		echo "<th class='datos'>".$lang_label['network']."</th>";
 		echo "<th class='datos'>".$lang_label['data']."</th>";
 		echo "<th class='datos'>".$lang_label['snmp']."</th>";
 		echo "<th class='datos'>".$lang_label['master']."</th>";

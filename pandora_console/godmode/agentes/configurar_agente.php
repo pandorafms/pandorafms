@@ -1071,7 +1071,7 @@ while ($row=mysql_fetch_array($result)){
 	}
 	echo "</select>";
 } else {
-	echo "<i class='red'>".$lang_label["no_change_field"]."</i>";
+	echo "<span class='redi'>".$lang_label["no_change_field"]."</span>";
 }
 
  // End block only if $creacion_agente != 1;

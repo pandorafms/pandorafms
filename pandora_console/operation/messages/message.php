@@ -176,7 +176,7 @@ else {
 			}
 		echo "<tr><td colspan='5'><div class='raya'></div></td></tr>";
 	}
-	else echo "<div class='red'>".$lang_label["no_messages"]."</div><table>"; //no messages
+	else echo "<div class='nf'>".$lang_label["no_messages"]."</div><table>"; //no messages
 	
 	//read mess
 	if (isset($_GET["leer"])){

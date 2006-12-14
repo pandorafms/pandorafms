@@ -50,7 +50,6 @@ div#god5s>ul, div#god6s>ul, div#god7s>ul, div#god8s>ul {
 #arrowg1 li, #arrowg2 li, #arrowg3 li, #arrowg4 li, #arrowg5 li, #arrowgs1 li, 
 #arrowgs2 li, #arrowgs3 li, #arrowgs4 li, #arrowgs5 li {
 	padding: 0px 0px 0px 15px;
-	background: #f5f5dc url(../../images/arrow.gif) no-repeat 2px 4px;
 	position: relative;
 	left: 30px;
 	width: 80%;
@@ -59,8 +58,9 @@ div#arrowg1>ul, div#arrowg2>ul, div#arrowg3>ul, div#arrowg4>ul, div#arrowg5>ul,
 div#arrowgs1>ul, div#arrowgs2>ul, div#arrowgs3>ul,div#arrowgs4>ul, div#arrowgs5>ul {
 	width: 88%;
 	}
-#arrowg1 li:hover, #arrowg2 li:hover, #arrowg3 li:hover, #arrowg4 li:hover, 
-#arrowg5 li:hover, #arrowgs1 li, #arrowgs2 li, #arrowgs3 li, #arrowgs4 li, #arrowgs5 li {
+#arrowg1 li, #arrowg1 li:hover, #arrowgs1 li, #arrowg2 li, #arrowg2 li:hover, #arrowgs2 li,
+#arrowg3 li, #arrowg3 li:hover, #arrowgs3 li, #arrowg4 li, #arrowg4 li:hover, #arrowgs4 li, 
+#arrowg5 li, #arrowg5 li:hover, #arrowgs5 li {
 	background: url(../../images/arrow.gif) no-repeat 2px 4px;
 	}
 div#menug {

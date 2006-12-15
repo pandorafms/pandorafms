@@ -66,20 +66,26 @@ function datos_raw($id_agente_modulo, $periodo){
 	if ( (dame_nombre_tipo_modulo($id_tipo_modulo) == "generic_data_string" ) OR
 	     (dame_nombre_tipo_modulo($id_tipo_modulo) == "remote_tcp_string" ) OR
  	     (dame_nombre_tipo_modulo($id_tipo_modulo) == "remote_snmp_string" )) {
-		$sql1="SELECT * FROM tagente_datos_string WHERE id_agente_modulo = ".$id_agente_modulo." AND timestamp > '".$periodo."' ORDER BY timestamp DESC"; 
+		$sql1="SELECT * FROM tagente_datos_string WHERE id_agente_modulo = ".
+		$id_agente_modulo." AND timestamp > '".$periodo."' 
+		ORDER BY timestamp DESC"; 
 	}
 	else {
-		$sql1="SELECT * FROM tagente_datos WHERE id_agente_modulo = ".$id_agente_modulo." AND timestamp > '".$periodo."' ORDER BY timestamp DESC";
+		$sql1="SELECT * FROM tagente_datos WHERE id_agente_modulo = ".
+		$id_agente_modulo." AND timestamp > '".$periodo."' 
+		ORDER BY timestamp DESC";
 	}
 	
 	$result=mysql_query($sql1);
 	$nombre_agente = dame_nombre_agente_agentemodulo($id_agente_modulo);
 	$nombre_modulo = dame_nombre_modulo_agentemodulo($id_agente_modulo);
 	
-	echo "<h2>".$lang_label["data_received"]." '$nombre_agente' / '$nombre_modulo' </h2>";
-	echo "<h3> $et <a href='help/".$help_code."/chap3.php#3322' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	echo "<h2>".$lang_label["data_received"]." 
+	'$nombre_agente' / '$nombre_modulo' </h2>";
+	echo "<h3> $et <a href='help/".$help_code."/chap3.php#3322' target='_help' 
+	class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 	if (mysql_num_rows($result)){
-		echo "<table cellpadding='3' cellspacing='3' width='600' border='0'>";
+		echo "<table cellpadding='3' cellspacing='3' width='600'>";
 		$color=1;
 		echo "<th>".$lang_label["timestamp"]."</th>";
 		echo "<th>".$lang_label["data"]."</th>";
@@ -116,7 +122,7 @@ function datos_raw($id_agente_modulo, $periodo){
 		echo "</table>";
 	}
  	else  {
-		echo "no_data";
+		echo "<div class='nf'>no_data</div>";
 	}
 }	
 

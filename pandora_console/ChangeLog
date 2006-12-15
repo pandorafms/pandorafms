@@ -1,5 +1,10 @@
 2006-12-15 Raul Mateos  <raulofpandora@gmail.com>
 
+	* operation/agentes/datos_agente.php: Add no data CSS style. Some
+	style correction.
+
+2006-12-15 Raul Mateos  <raulofpandora@gmail.com>
+
 	* include/styles/op.css, god.css: Solved detected problem,
 	more style simplification.
 	

@@ -654,6 +654,10 @@ $lang_label["background_image"]="Background image";
 $lang_label["help"]="Help";
 $lang_label["no_monitors_g"]="This group doesn't have any monitor";
 
+// 15 dev, new for 1.3 dev
+$lang_label["reporting"]="Reporting";
+$lang_label["agent_general_reporting"]="Agent overview";
+
 global $lang_label; 
 global $help_label;
 ?>

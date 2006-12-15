@@ -20,8 +20,8 @@
 // This is the base config file
 
 //Pandora Version
-$build_version="PC061208"; //PCyymmdd
-$pandora_version="v1.3 Beta 1"; 
+$build_version="PC061215"; //PCyymmdd
+$pandora_version="v1.3 devel"; 
 
 // Database configuration
 $dbname="pandora";	// MySQL DataBase

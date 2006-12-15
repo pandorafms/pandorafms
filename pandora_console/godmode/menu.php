@@ -41,15 +41,15 @@ if (comprueba_login() == 0){
 		
 		if (isset($_GET["sec"]) && $_GET["sec"] == "gagente"){
 			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/agentes/manage_config"){
-				echo "<div id='arrowgs1'>";
+				echo "<div class='arrowgs'>";
 			}
-			else echo "<div id='arrowg1'>";
+			else echo "<div class='arrowg'>";
 			echo "<ul class='mn'><li><a href='index.php?sec=gagente&amp;sec2=godmode/agentes/manage_config' class='mn'>".$lang_label["manage_config"]."</a></li></ul></div>";
 			
 			if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/grupos/lista_grupos" || $_GET["sec2"] == "godmode/grupos/configurar_grupo")){
-				echo "<div id='arrowgs1'>";
+				echo "<div class='arrowgs'>";
 			}
-			else echo "<div id='arrowg1'>";
+			else echo "<div class='arrowg'>";
 			echo "<ul class='mn'><li><a href='index.php?sec=gagente&amp;sec2=godmode/grupos/lista_grupos' class='mn'>".$lang_label["manage_groups"]."</a></li></ul></div>";
 		}
 	}
@@ -94,9 +94,9 @@ if (comprueba_login() == 0){
 		
 		if (isset($_GET["sec"]) && $_GET["sec"] == "gsetup"){
 			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/setup/links"){
-				echo "<div id='arrowgs1'>";
+				echo "<div class='arrowgs'>";
 			}
-			else echo "<div id='arrowg1'>";
+			else echo "<div class='arrowg'>";
 			echo "<ul class='mn'><li><a href='index.php?sec=gsetup&amp;sec2=godmode/setup/links' class='mn'>".$lang_label["setup_links"]."</a></li></ul></div>";
 		}
 	}
@@ -109,33 +109,33 @@ if (comprueba_login() == 0){
 		
 		if (isset($_GET["sec"]) && $_GET["sec"] == "gdbman"){
 			if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/db/db_info" || $_GET["sec2"] == "godmode/db/db_info_data")){
-				echo "<div id='arrowgs1'>";
+				echo "<div class='arrowgs'>";
 			}
-			else echo "<div id='arrowg1'>";
+			else echo "<div class='arrowg'>";
 			echo "<ul class='mn'><li><a href='index.php?sec=gdbman&amp;sec2=godmode/db/db_info' class='mn'>".$lang_label["db_info"]."</a></li></ul></div>";
 			
 			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/db/db_purge"){
-				echo "<div id='arrowgs2'>";
+				echo "<div class='arrowg'>";
 			}
-			else echo "<div id='arrowg2'>";			
+			else echo "<div class='arrowg'>";			
 			echo "<ul class='mn'><li><a href='index.php?sec=gdbman&amp;sec2=godmode/db/db_purge' class='mn'>".$lang_label["db_purge"]."</a></li></ul></div>";
 			
 			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/db/db_refine"){
-				echo "<div id='arrowgs3'>";
+				echo "<div class='arrowgs'>";
 			}
-			else echo "<div id='arrowg3'>";			
+			else echo "<div class='arrowg'>";			
 			echo "<ul class='mn'><li><a href='index.php?sec=gdbman&amp;sec2=godmode/db/db_refine' class='mn'>".$lang_label["db_refine"]."</a></li></ul></div>";
 			
 			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/db/db_audit"){
-				echo "<div id='arrowgs4'>";
+				echo "<div class='arrowgs'>";
 			}
-			else echo "<div id='arrowg4'>";			
+			else echo "<div class='arrowg'>";			
 			echo "<ul class='mn'><li><a href='index.php?sec=gdbman&amp;sec2=godmode/db/db_audit' class='mn'>".$lang_label["db_audit"]."</a></li></ul></div>";
 			
 			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/db/db_event"){
-				echo "<div id='arrowgs5'>";
+				echo "<div class='arrowgs'>";
 			}
-			else echo "<div id='arrowg5'>";			
+			else echo "<div class='arrowg'>";			
 			echo "<ul class='mn'><li><a href='index.php?sec=gdbman&amp;sec2=godmode/db/db_event' class='mn'>".$lang_label["db_event"]."</a></li></ul></div>";
 		}
 	}

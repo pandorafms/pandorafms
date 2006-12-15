@@ -30,15 +30,14 @@ require("include/functions_db.php");
 <?php
 // Refresh page
 if (isset ($_GET["refr"])){
-	$intervalo = entrada_limpia($_GET["refr"]);
+	$intervalo = entrada_limpia ($_GET["refr"]);
 	// Agent selection filters and refresh
- 	if (isset ($_POST["ag_group"])){
+ 	if (isset ($_POST["ag_group"])) {
 		$ag_group = $_POST["ag_group"];
-		$query='http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'].'&ag_group_refresh='.$ag_group;
-		echo '<meta http-equiv="refresh" content="'.$intervalo.'; URL='.$query.'">';
-	}
-	else 
-		echo '<meta http-equiv="refresh" content="'.$intervalo.'">';	
+		$query = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] . '&ag_group_refresh=' . $ag_group;
+		echo '<meta http-equiv="refresh" content="' . $intervalo . '; URL=' . $query . '">';
+	} else 
+		echo '<meta http-equiv="refresh" content="' . $intervalo . '">';	
 }
 ?>
 <title>Pandora FMS - <?php echo $lang_label["header_title"]; ?></title>
@@ -54,93 +53,105 @@ if (isset ($_GET["refr"])){
 <link rel="stylesheet" href="include/styles/pandora.css" type="text/css">
 </head>
 <body>
-<?php
+	<?php
 	// Show custom background
-	echo "<body background='images/backgrounds/$config_bgimage'>";
-	$REMOTE_ADDR = getenv("REMOTE_ADDR");
+	echo '<body background="images/backgrounds/' . $config_bgimage . '">';
+	$REMOTE_ADDR = getenv ("REMOTE_ADDR");
    	global $REMOTE_ADDR;
- 
-   	if ( (! isset($_SESSION['id_usuario'])) AND (isset($_GET["login"]))){ // Login process
-		$nick = entrada_limpia($_POST["nick"]);
-		$pass = entrada_limpia($_POST["pass"]);
+
+        // Login process 
+   	if ( (! isset ($_SESSION['id_usuario'])) AND (isset ($_GET["login"]))) {
+		
+		$nick = entrada_limpia ($_POST["nick"]);
+		$pass = entrada_limpia ($_POST["pass"]);
+		
 		// Connect to Database
-		$sql1='SELECT * FROM tusuario WHERE id_usuario = "'.$nick.'"';
-		$result=mysql_query($sql1); 
-		// Every registry
-		if ($row=mysql_fetch_array($result)){
-			if ($row["password"]==md5($pass)){
-			// Login OK
-				// Nick could be uppercase or lowercase (select in mysql is not case sensitive)
-				// We get DB nick to put in PHP Session variable, to avoid problems with case-sensitive usernames :)
+		$sql1 = 'SELECT * FROM tusuario WHERE id_usuario = "'.$nick.'"';
+		$result = mysql_query ($sql1);
+		
+		// For every registry
+		if ($row = mysql_fetch_array ($result)){
+			if ($row["password"] == md5 ($pass)){
+				// Login OK
+				// Nick could be uppercase or lowercase (select in MySQL
+				// is not case sensitive)
+				// We get DB nick to put in PHP Session variable,
+				// to avoid problems with case-sensitive usernames.
 				// Thanks to David Muñiz for Bug discovery :)
 				$nick = $row["id_usuario"];
-				unset($_GET["sec2"]);
-				$_GET["sec"]="general/logon_ok";
-				update_user_contact($nick);
-				logon_db($nick,$REMOTE_ADDR);
-				$_SESSION['id_usuario']=$nick;
+				unset ($_GET["sec2"]);
+				$_GET["sec"] = "general/logon_ok";
+				update_user_contact ($nick);
+				logon_db ($nick, $REMOTE_ADDR);
+				$_SESSION['id_usuario'] = $nick;
 				
-			}
-			else { // Login failed (bad password)
-				unset($_GET["sec2"]);
+			} else {
+				// Login failed (bad password)
+				unset ($_GET["sec2"]);
 				include "general/logon_failed.php";
 				// change password to do not show all string
-				$primera = substr($pass,0,1);
-				$ultima = substr($pass,strlen($pass)-1,1);
-				$pass = $primera."****".$ultima;
-				audit_db($nick,$REMOTE_ADDR,"Logon Failed","Incorrect password: ".$nick." / ".$pass);
+				$primera = substr ($pass,0,1);
+				$ultima = substr ($pass, strlen ($pass) - 1, 1);
+				$pass = $primera . "****" . $ultima;
+				audit_db ($nick, $REMOTE_ADDR, "Logon Failed",
+					  "Incorrect password: " . $nick . " / " . $pass);
 				include "general/footer.php";
 				exit;
 			}
 		}
-		else { // User not known
-			unset($_GET["sec2"]);
+		else {
+			// User not known
+			unset ($_GET["sec2"]);
 			include "general/logon_failed.php";
-			$primera = substr($pass,0,1);
-			$ultima = substr($pass,strlen($pass)-1,1);
-			$pass = $primera."****".$ultima;
-			audit_db($nick,$REMOTE_ADDR,"Logon Failed","Invalid username: ".$nick." / ".$pass);
+			$primera = substr ($pass, 0, 1);
+			$ultima = substr ($pass, strlen ($pass) - 1, 1);
+			$pass = $primera . "****" . $ultima;
+			audit_db ($nick, $REMOTE_ADDR, "Logon Failed",
+				  "Invalid username: " . $nick . " / " . $pass);
 			include "general/footer.php";
 			exit;
 		}
-	}
-	// If there is no user connected
-	elseif (! isset($_SESSION['id_usuario'])) {
+	} elseif (! isset ($_SESSION['id_usuario'])) {
+		// There is no user connected
 		include "general/login_page.php";
 		exit;
 	}
 	
-	if (isset($_GET["logoff"])){ // LOG OFF
-		unset($_GET["sec2"]);
-		$_GET["sec"]="general/logoff";
-		$iduser=$_SESSION["id_usuario"];
-		logoff_db($iduser,$REMOTE_ADDR);
-		session_unregister("id_usuario");
+	if (isset ($_GET["logoff"])) {
+		// Log off
+		unset ($_GET["sec2"]);
+		$_GET["sec"] = "general/logoff";
+		$iduser = $_SESSION["id_usuario"];
+		logoff_db ($iduser, $REMOTE_ADDR);
+		session_unregister ("id_usuario");
 	}
 ?>
 <div id="page">
-	<div id="menu"><?php require("general/main_menu.php"); ?></div>
+	<div id="menu"><?php require ("general/main_menu.php"); ?></div>
 	<div id="main">
 		<div id='head'><?php require("general/header.php"); ?></div>
 		<?php
-		if (isset($_GET["sec2"])){
-		  	$pagina = parametro_limpio($_GET["sec2"]);
-		  	if ($pagina <> "") {
-				if(file_exists($pagina.".php")) {
-					require($pagina.".php");
+		if (isset ($_GET["sec2"])) {
+		  	$pagina = parametro_limpio ($_GET["sec2"]);
+
+			if ($pagina <> "") {
+				if (file_exists ($pagina . ".php")) {
+					require ($pagina . ".php");
+				} else {
+					echo "<br><b class='error'>Sorry! I can't find the page!</b>";
 				}
-				else print "<br><b class='error'>Sorry! I can't find the page!</b>";
 			}
-		}
-		elseif (isset($_GET["sec"] )){
-	  	  	$pagina = parametro_limpio($_GET["sec"]);
-			if(file_exists($pagina.".php")) {
-				require($pagina.".php");
+		} elseif (isset ($_GET["sec"])) {
+	  	  	$pagina = parametro_limpio ($_GET["sec"]);
+			
+			if (file_exists ($pagina . ".php")) {
+				require ($pagina . ".php");
+			} else {
+				echo "<br><b class='error'>Sorry! I can't find the page!</b>";
 			}
-			else print "<br><b class='error'>Sorry! I can't find the page!</b>";
+		} else {
+			require ("general/logon_ok.php");  //default
 		}
-		else
-			require("general/logon_ok.php");  //default
 		?>
 	</div>
 </div>

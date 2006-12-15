@@ -1,3 +1,11 @@
+2006-12-15 Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/styles/op.css, god.css: Solved detected problem,
+	more style simplification.
+	
+	* godmode/menu.php, operation/menu.php: Updated files to
+	styles.
+
 2006-12-15  Sancho Lerena  <slerena@artica.es>
 
 	* include/styles/op.css: Added new op8. FIXME: There is a little

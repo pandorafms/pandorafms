@@ -1,3 +1,11 @@
+2006-12-16 Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/styles/pandora.css, op.css, god.css: Removed more unnecessary
+	lines and solve some typo errors.
+	
+	* operation/agentes/estado_grupo.php: Style correction. Change some
+	colour names for its HTML RGB code.
+
 2006-12-15 Raul Mateos  <raulofpandora@gmail.com>
 
 	* operation/agentes/datos_agente.php: Add no data CSS style. Some

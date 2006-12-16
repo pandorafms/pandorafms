@@ -40,11 +40,13 @@ if (comprueba_login () == 0) {
 			// Check for Network FLAG change request 
 			if (isset ($_GET["update_netgroup"])) {
 				if (give_acl ($id_user, $_GET["update_netgroup"], "AW") == 1) {
-					$sql = "SELECT * FROM tagente WHERE id_grupo = ".$_GET["update_netgroup"]; 
+					$sql = "SELECT * FROM tagente WHERE id_grupo = ".
+					$_GET["update_netgroup"]; 
 					$result = mysql_query ($sql);
 					while ($row = mysql_fetch_array ($result)) { 
 						$id_agente = $row["id_agente"]; 
-						$query2 ="UPDATE tagente_modulo SET flag=1 WHERE id_agente = ".$id_agente; 
+						$query2 ="UPDATE tagente_modulo SET flag=1 
+						WHERE id_agente = ".$id_agente; 
 						$res = mysql_query ($query2); 
 					}
 				}		
@@ -67,7 +69,8 @@ if (comprueba_login () == 0) {
 					$grupo[$array_index]["id_grupo"] = $migrupo;
 					$existen_agentes =0;
 					
-					$sql1 = "SELECT * FROM tagente WHERE disabled=0 AND id_grupo =".$migrupo;
+					$sql1 = "SELECT * FROM tagente WHERE disabled=0 
+					AND id_grupo =".$migrupo;
 					if ($result1 = mysql_query ($sql1)) {
 						while ($row1 = mysql_fetch_array ($result1)) {
 							$existen_agentes = 1;
@@ -103,7 +106,7 @@ if (comprueba_login () == 0) {
 								$ultimo_contacto_modulo = $row3["timestamp"];
 
 								// Defines if module is down (interval x 2 > time last contact)
-								if ($ultimo_contacto_modulo != "2000-00-00 00:00:00") {
+								if ($ultimo_contacto_modulo != "0000-00-00 00:00:00") {
 									$seconds = strtotime ($ahora) - strtotime ($ultimo_contacto_modulo);
 									if ($seconds >= ($intervalo_comp * 2)) {
 										$grupo[$array_index]["down"]++;
@@ -140,41 +143,94 @@ if (comprueba_login () == 0) {
 							$icono_type  = "";
 							
 							if ($grupo[$real_count]["down"] > 0) {
-								$icono_type = "<img src='images/dot_down.gif' alt=''>";
+								$icono_type = "
+								<img src='images/dot_down.gif' alt=''>";
 							}
 							if ($grupo[$real_count]["bad"] > 0) {
-								$icono_type = $icono_type."<img src='images/dot_red.gif' alt=''>";
+								$icono_type = $icono_type."
+								<img src='images/dot_red.gif' alt=''>";
 							}
 							if ($grupo[$real_count]["ok"] > 0) {
-								$icono_type = $icono_type."<img src='images/dot_green.gif' alt=''>";
+								$icono_type = $icono_type."
+								<img src='images/dot_green.gif' alt=''>";
 							}
 							if ($grupo[$real_count]["data"] > 0) {
-								$icono_type = $icono_type."<img src='images/dot_white.gif' alt=''>";
+								$icono_type = $icono_type."
+								<img src='images/dot_white.gif' alt=''>";
 							}
 							// Show yellow light if there are recent alerts fired for this group
 							if ($grupo[$real_count]["alerts"] > 0 ){
-								$icono_type=$icono_type."<img src='images/dot_yellow.gif' alt=''>";
+								$icono_type=$icono_type."
+								<img src='images/dot_yellow.gif' alt=''>";
 							}
 
 							/* FIXME: This line is ugly */
 							// TOOLTIP.
-							$celda = "<td class='bot' width=100><a href='index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id=".$grupo[$real_count]["id_grupo"]."' class='info'><img class='top' src='images/groups/".$icono_grupo."_1.gif' border='0' alt=''>&nbsp;
+							$celda = "<td class='bot' width=100>
+							<a href='index.php?sec=estado&amp;
+							sec2=operation/agentes/estado_agente&amp;
+							refr=60&amp;
+							group_id=".$grupo[$real_count]["id_grupo"]."' 
+							class='info'>
+							<img class='top' 
+							src='images/groups/".$icono_grupo."_1.gif' alt=''>
+							&nbsp;
 					<span>
-					<table cellspacing='2' cellpadding='0' style='margin-left:20px'>
-					<tr><td colspan='2' width='91' class='lb'>".$lang_label["agents"].": </td></tr>
-					<tr><td colspan='2' class='datos' align='center'><b>".$grupo[$real_count]["agent"]."</b></td></tr></table>
-					<table cellspacing='2' cellpadding='0' style='margin-left:20px'>
-					<tr><td colspan='2' width='90' class='lb'>".ucfirst($lang_label["monitors"]).":</td></tr>
-					<tr><td class='datos'><img src='images/b_green.gif' align='top' alt='' border='0'> ".$lang_label["ok"].": </td><td class='datos'><font class='greenb'>".$grupo[$real_count]["ok"]."</font></td></tr>
-					<tr><td class='datos'><img src='images/b_down.gif' align='top' alt='' border='0'> ".$lang_label["down"].": </td><td class='datos'><font class='grey'>".$grupo[$real_count]["down"]."</font></td></tr>
-					<tr><td class='datos'><img src='images/b_red.gif' align='top' alt='' border='0'> ".$lang_label["fail"].": </td><td class='datos'><font class='redb'>".$grupo[$real_count]["bad"]."</font></td></tr>
-					<tr><td class='datos'><img src='images/b_yellow.gif' align='top' alt='' border='0'> ".$lang_label["alerts"].": </td><td class='datos'><font class='grey'>".$grupo[$real_count]["alerts"]."</font></td></tr>
-					</table></span></a>";
+					<table cellspacing='2' cellpadding='0' 
+					style='margin-left:20px'>
+						<tr><td colspan='2' width='91' class='lb'>".
+						$lang_label["agents"].": </td></tr>
+						<tr><td colspan='2' class='datos' align='center'><b>".
+						$grupo[$real_count]["agent"]."</b></td></tr>
+					</table>
+					<table cellspacing='2' cellpadding='0' 
+					style='margin-left:20px'>
+						<tr>
+						<td colspan='2' width='90' class='lb'>".
+						ucfirst($lang_label["monitors"]).":</td>
+						</tr>
+						<tr>
+						<td class='datos'>
+						<img src='images/b_green.gif' align='top' alt='' > 
+						".$lang_label["ok"].": </td>
+						<td class='datos'>
+						<font class='greenb'>".$grupo[$real_count]["ok"]."</font>
+						</td>
+						</tr>
+						<tr>
+						<td class='datos'>
+						<img src='images/b_down.gif' align='top' alt=''>
+						".$lang_label["down"].": </td>
+						<td class='datos'><font class='#a9aa9a'>".
+						$grupo[$real_count]["down"]."</font></td>
+						</tr>
+						<tr>
+						<td class='datos'>
+						<img src='images/b_red.gif' align='top' alt=''>
+						".$lang_label["fail"].": </td>
+						<td class='datos'><font class='redb'>".
+						$grupo[$real_count]["bad"]."</font></td>
+						</tr>
+						<tr>
+						<td class='datos'>
+						<img src='images/b_yellow.gif' align='top' alt=''>
+						".$lang_label["alerts"].": </td>
+						<td class='datos'><font class='grey'>".
+						$grupo[$real_count]["alerts"]."</font></td>
+						</tr>
+					</table>
+					</span></a>";
 							// Render network exec module button, only when this group is writtable by user
 							if (give_acl ($id_user, $grupo[$real_count]["id_grupo"], "AW") == 1) {
-								$celda .= "<a href='index.php?sec=estado&sec2=operation/agentes/estado_grupo&update_netgroup=".$grupo[$real_count]["id_grupo"]."'><img src='images/target.gif' border=0></a>";
+								$celda .= "<a href='index.php?
+								sec=estado&
+								sec2=operation/agentes/estado_grupo&
+								update_netgroup=".$grupo[$real_count]["id_grupo"]."'>
+								<img src='images/target.gif'></a>";
 							}
-							$celda .= "<br><br>".$icono_type."<br><br><font class='gr'>".$group_name."</font>";
+							$celda .= "<br><br>".
+							$icono_type."<br><br>
+							<span class='gr'>".$group_name."</span>";
 							echo $celda;
 						}
 						$real_count++;
@@ -190,7 +246,8 @@ if (comprueba_login () == 0) {
 			echo "<div class='nf'>".$lang_label["no_agent"]."</div>";
 		}
 	} else {
-		audit_db ($id_user, $REMOTE_ADDR, "ACL Violation", "Trying to access Agent view (Grouped)");
+		audit_db ($id_user, $REMOTE_ADDR, "ACL Violation", 
+		"Trying to access Agent view (Grouped)");
 		require ("general/noaccess.php");
 	}
 }

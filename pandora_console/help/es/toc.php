@@ -36,7 +36,7 @@ dd.help_t4 {margin-left: 92px; margin-top: 3px; margin-bottom: 2px;}
 
 <p><h1>Ayuda de Pandora 1.2</h1></p>
 <p>(Actualizado el 20 de abril de 2006).</p>
-<p>Pandora es un proyecto de software GPL. <br>&copy; Sancho Lerena 2003-2006, David Villanueva 2004-2006 y Ra&uacute;l Mateos 2004-2006.</p>
+<p>Pandora es un proyecto de software libre con licencia GPL. <br>&copy; Sancho Lerena 2003-2006, David Villanueva 2004-2006 y Ra&uacute;l Mateos 2004-2006.</p>
 </center>
 <br>
 <h1>&Iacute;ndice</h1>

@@ -59,7 +59,7 @@ $query1="SELECT * FROM tsesion WHERE (TO_DAYS(fecha) > TO_DAYS(NOW()) - 7) AND I
 		
 		$usuario = $row["ID_usuario"];
 		echo '<tr><td class="' . $tdcolor . '">';
-		echo '"<b class="' . $tdcolor . 'f9">' . $usuario . '</b>';
+		echo '<b class="' . $tdcolor . 'f9">' . $usuario . '</b>';
 		echo '<td class="' . $tdcolor . 'f9">';
 		echo $row["accion"];
 		echo '<td class="' . $tdcolor . 'f9">';

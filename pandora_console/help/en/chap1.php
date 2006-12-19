@@ -26,7 +26,8 @@
 <style>
 div.logo {float:left;}
 div.toc {padding-left: 200px;}
-div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
+div.rayah {border-top: 1px solid #708090; width: 100%;}
+div.rayah2 {clear:both; border-top: 1px solid #708090; width: 100%; padding-bottom: 35px;}
 </style>
 </head>
 
@@ -39,8 +40,7 @@ div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
 <h1><a href="toc.php">Table of Contents</a> » <a href="chap2.php">2. Users</a></h1>
 
 </div>
-<div class="rayah">
-<p align='right'>Pandora is a GPL Software Project. &copy; Sancho Lerena 2003-2006, David villanueva 2004-2005, Alex Arnal 2005, Ra&uacute;l Mateos 2004-2006.</p>
+<div class="rayah2">
 </div>
 
 <a name="1"><h1>1. Introduction</h1></a>
@@ -65,6 +65,8 @@ CSS (IE5+ or Mozilla 4+).</p>
 <li>Server configuration</li>
 <li>Database maintenance</li>
 </ul>
-
+<div class="rayah">
+<p align='right'>Pandora FMS is Free Software Project, licensed under GPL terms.<br> &copy; Sancho Lerena 2003-2006, David villanueva 2004-2006, Alex Arnal 2005, Ra&uacute;l Mateos 2004-2006.</p>
+</div>
 </body>
 </html>

@@ -24,7 +24,8 @@
 .ml25 {margin-left: 25px;}
 div.logo {float:left;}
 div.toc {padding-left: 200px;}
-div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
+div.rayah {border-top: 1px solid #708090; width: 100%;}
+div.rayah2 {clear:both; border-top: 1px solid #708090; width: 100%; padding-bottom: 35px;}
 </style>
 
 <div class='logo'>
@@ -34,9 +35,7 @@ div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
 <h1><a href="chap4.php">4. Gesti&oacute;n de incidentes</a> « <a href="toc.php">&Iacute;ndice</a> » <a href="chap6.php">6. Auditor&iacute;a del Sistema</a></h1>
 
 </div>
-<div class="rayah">
-<p align='right'>Pandora es un proyecto de software GPL. &copy; Sancho Lerena 2003-2006, David Villanueva 2004-2006 y Ra&uacute;l Mateos 2004-2006.</p>
-</div>
+<div class="rayah2"></div>
 
 <h1><a name="5">5. Eventos</a></h1>
 
@@ -86,5 +85,8 @@ solucionado.</p>
 </li>
 </ul>
 
+<div class="rayah">
+<p align='right'>Pandora es un proyecto de software libre con licencia GPL. <br>&copy; Sancho Lerena 2003-2006, David Villanueva 2004-2006 y Ra&uacute;l Mateos 2004-2006.</p>
+</div>
 </body>
 </html>

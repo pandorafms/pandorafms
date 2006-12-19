@@ -23,7 +23,8 @@
 <style>
 div.logo {float:left;}
 div.toc {padding-left: 200px;}
-div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
+div.rayah {border-top: 1px solid #708090; width: 100%;}
+div.rayah2 {clear:both; border-top: 1px solid #708090; width: 100%; padding-bottom: 35px;}
 </style>
 
 <div class='logo'>
@@ -33,9 +34,7 @@ div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
 <h1><a href="toc.php">&Iacute;ndice</a> » <a href="chap2.php">2. Usuarios</a></h1>
 
 </div>
-<div class="rayah">
-<p align='right'>Pandora es un proyecto de software GPL. &copy; Sancho Lerena 2003-2006, David Villanueva 2004-2006 y Ra&uacute;l Mateos 2004-2006.</p>
-</div>
+<div class="rayah2"></div>
 
 <h1><a name="1">1. Introducci&oacute;n</a></h1>
 
@@ -68,5 +67,8 @@ acceder al contenedor de datos donde Pandora almacena todo: la base de datos.</p
 <li>Mantenimiento de la Base de Datos</li>
 </ul>
 
+<div class="rayah">
+<p align='right'>Pandora es un proyecto de software libre con licencia GPL. <br>&copy; Sancho Lerena 2003-2006, David Villanueva 2004-2006 y Ra&uacute;l Mateos 2004-2006.</p>
+</div>
 </body>
 </html>

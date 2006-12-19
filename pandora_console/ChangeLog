@@ -1,4 +1,10 @@
-2006-12-18 Raul Mateos  <raulofpandora@gmail.com>
+2006-12-19 Raul Mateos  <raulofpandora@gmail.com>
+
+	* help/en/*: Stylesheet correction. Change some texts and images.
+	
+	* help/en/images/SNMP*, groups.png: New files.
+
+2006-12-19 Raul Mateos  <raulofpandora@gmail.com>
 
 	* help/es/*, help/en/*: Stylesheet correction. Change some texts.
 	

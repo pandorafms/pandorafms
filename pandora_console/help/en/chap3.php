@@ -213,7 +213,7 @@ Operating System.</p>
 
 <p>The next step after an Agent has been added, its modules have been configurated and the alerts have been defined, it is time to assign those Alerts to the agent.</p>
 
-<p>This is done by clicking on the Agent to be configured on the "Manage Agents" option, Administration menu. The Alert Assignation form is placed at the bottom of that page.</p>
+<p>This is done by clicking on the Agent to be configured on the "Manage Agents" option, Administration menu. The Alert association form is placed at the bottom of that page.</p>
 
 <p><img src="images/image013.png"></p>
 
@@ -268,7 +268,15 @@ deletion is performed, the data associated to them will also be deleted.</p>
 
 <h3><a name="331">3.3.1. Agent view</a></h3>
 
-<p>All the Agents can be accessed from the Operation menu. From here the status of the agents can be quickly reviewed thanks to a simple system of bulbs and coloured circles.</p>
+<p>All the Agents can be accessed from the Operation menu.</p>
+
+<p>	You can view the agents in groups by clicking "View agents".
+	From here the status of the agents can be quickly reviewed 
+	thanks to a simple system coloured circles and bulbs that 
+	appear when the user pass the mouse on a group.
+	</p>
+    <p class="center"><img src="images/groups.png"></p>
+    <p>To view all the Agents of the group just click in the icon of the group.</p>
 
 <p class="center"><img src="images/image015.png"></p>
 
@@ -281,7 +289,8 @@ deletion is performed, the data associated to them will also be deleted.</p>
 <p><b>Modules:</b> Under normal circumstances this field shows the values representing the
 number of modules and the number of monitors, both in black. If the status of a
 monitor changes to "incorrect", one additional number is shown: the number of
-modules, the number of monitors and the number of monitors with "incorrect" status, all in black save the last one.</p>
+modules, the number of monitors and the number of monitors with "incorrect" status,
+all in black save the last one.</p>
 <p><b>Status:</b> Shows the "general" status of the agent through the following icons:</p>
 	<div class='ml35'>
 		<p><img src="../../images/b_green.gif"> All the monitors OK. It's the ideal status.</p>
@@ -463,8 +472,85 @@ values from the modules the agent sends after each time interval.</li>
 <p class="center"><img src="images/image033.png"></p>
 
 <h2><a name="34">3.4. SNMP Console</a></h2>
-
+    <p>
+      Majority of devices can send SNMP traps when have any problem as
+      reboot, lost interface, the temperature is very high, CPU crash,
+      etc. With Traps is possible to know the problem when it happens.
+    </p>
+    <p>
+      In Pandora 1.2 there is a SNMP console to receive SNMP traps. 
+      It is possible configure any device to send SNMP traps to
+	  Pandora FMS, you only need the Pandora IP and Community. 
+    </p>	
+    <p>      
+      From SNMP Console in the Operation menu the users can see
+	  the SNMP traps sent to Pandora Server.
+    </p>	
+    <p class="center"><img src="images/SNMP_console.png" align="center"></p>	
+	
 <h3><a name="341">3.4.1. SNMP Alerts</a></h3>
+    <p>
+	Just like is possible to generate an alert if there is an out of 
+	range module value. It is possible to generate an alert if an
+	SNMP trap is received with a anorma value. The Alert can consist of 
+	sending and e-mail or SMS to the administrator, sending an SNMP 
+	trap, write the incident into the system syslog or Pandora log 
+	file, etc. Basically anything that can be triggered by a 
+	script configured in the Operating System when Pandora Servers run.
+  </p>
+  <p> 
+	 In "SNMP Console" &gt; "SNMP Alerts" from Operation menu, the users
+	 can see the configured SNMP Alerts.
+      </p>
+      <p class="center"><img src="images/SNMP_alert.png" align="center"></p>
+    <p> - 
+	To create a new alert the administrator must click in "Create" button.
+
+	Then you get the following screen:
+	</p>
+	<p class="center"><img src="images/SNMP_alert_create.png"></p>
+	<p>
+	 To assign an Alert the next fields must be filled in:
+	</p><p>
+	 <b>Alert:</b> This can be selected from 
+	 the list of alerts that have been previously generated.
+	</p><p>
+	<b>Alert type:</b> You can chose between 
+	"OID", "Custom OID/value" or "SNNMAgent".
+	</p><p>
+	  <b>Description:</b> Describes the 
+	  function of the Alert, and it is useful to identify 
+	  the Alert amongst the others in the Alert General 
+	  View.
+	</p><p>
+	   <b>OID:</b> The OID to be motitorized 
+	   by the alert.
+	</p><p>
+	<b>Custom value:</b> Custom value to be 
+	motitorized by the alert.
+	</p><p>
+	<b>SNMP Agent IP:</b> IP of the SNMP 
+	agent.
+	</p><p>
+	<b>Field #1 (Alias, name):</b> Define the 
+	used value for the "_field1_" variable.
+	</p><p>
+	<b>Field #2 (Single Line):</b> Define the 
+	used value for the "_field2_" variable.
+	</p><p>
+	<b>Field #3 (Full Text):</b> Define the 
+	used value for the "_field3_" variable.
+	</p><p>
+	 <b>Min number of alerts:</b> Minimun 
+	 number of alerts that can be sent consecutively.
+	</p><p>
+	 <b>Max number of alerts:</b> Maximun 
+	 number of alerts that can be sent consecutively.
+	</p><p><b>Time threshold:</b> Minimum 
+	 duration between the firing of two consecutive 
+	 alerts, in seconds.
+
+
 <div class="rayah">
 <p align='right'>Pandora FMS is Free Software Project, licensed under GPL terms.<br> &copy; Sancho Lerena 2003-2006, David villanueva 2004-2006, Alex Arnal 2005, Ra&uacute;l Mateos 2004-2006.</p>
 </div>

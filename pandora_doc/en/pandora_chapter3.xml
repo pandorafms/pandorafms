@@ -545,7 +545,7 @@
 	<para>
 	  This is done by clicking on the agent to be configured in the 
 	  "Manage Agents" option, Administration menu. 
-	  The Alert Assignation form is placed at the bottom of that 
+	  The Alert association form is placed at the bottom of that 
 	  page.
 	</para>
 	
@@ -710,15 +710,15 @@
 	All the Agents can be accessed from the Operation menu.
      </para>
      <para>
-	You can view the agents in group you must click in "View agent"
+	You can view the agents in group by clicking "View agents".
 	From here the status of the agents can be quickly reviewed 
-	thanks to a simple system coloured circles and windows that 
+	thanks to a simple system coloured circles and bulbs that 
 	appear when the user pass the mouse on a group.
       </para>
 	<graphic scale='70' fileref="images/groups.png" valign="bottom"
 		 align="center"/>
       <para>
-	To view all the Agents the user must click in "View aggent"
+	To view all the Agents of the group just click in the icon of the group.
       </para>
       <graphic scale='60' fileref="images/image015.png" valign="bottom"
 		 align="center"/>
@@ -1175,7 +1175,7 @@
 	   <listitem>
 		<para>
 		<emphasis>Alert type:</emphasis> You can chose between 
-		"OID", "Custom OID/vaule" or "SNNMAgent".
+		"OID", "Custom OID/value" or "SNNMAgent".
 		</para>
 	   </listitem>
 	   <listitem>

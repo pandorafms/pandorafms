@@ -25,7 +25,9 @@ if (comprueba_login() == 0)
    
 	if (isset($_POST["crear_grupo"])){ // Create group
 		$nombre = entrada_limpia($_POST["nombre"]);
+		$icon = entrada_limpia($_POST["icon"]);
 		$sql_insert="INSERT INTO tgrupo (nombre, icon) VALUES ('".$nombre."', '".$icon."') ";
+		echo $sql_insert;
 		$result=mysql_query($sql_insert);	
 		if (! $result)
 			echo "<h3 class='error'>".$lang_label["create_group_no"]."</h3>";

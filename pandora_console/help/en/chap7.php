@@ -26,7 +26,8 @@
 <style>
 div.logo {float:left;}
 div.toc {padding-left: 200px;}
-div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
+div.rayah {border-top: 1px solid #708090; width: 100%;}
+div.rayah2 {clear:both; border-top: 1px solid #708090; width: 100%; padding-bottom: 35px;}
 </style>
 </head>
 
@@ -38,9 +39,7 @@ div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
 <h1><a href="chap6.php">6. System audit</a> « <a href="toc.php">Table of Contents</a> » <a href="chap8.php">8. Database maintenance</a></h1>
 
 </div>
-<div class="rayah">
-<p align='right'>Pandora is a GPL Software Project. &copy; Sancho Lerena 2003-2006, David villanueva 2004-2005, Alex Arnal 2005, Ra&uacute;l Mateos 2004-2006.</p>
-</div>
+<div class="rayah2"></div>
 
 <a name="7"><h1>7. Pandora Servers</h1></a>
 
@@ -106,5 +105,8 @@ in the Operation menu.</p>
     In a Server it is possible to modify: Name, IP Address and Description.
    </p>
 <p class="center"><img src="images/servers2.png"></p>
+<div class="rayah">
+<p align='right'>Pandora FMS is Free Software Project, licensed under GPL terms.<br> &copy; Sancho Lerena 2003-2006, David villanueva 2004-2006, Alex Arnal 2005, Ra&uacute;l Mateos 2004-2006.</p>
+</div>
 </body>
 </html>

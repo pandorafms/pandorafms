@@ -30,7 +30,8 @@
 .ml75 {margin-left: 75px;}
 div.logo {float:left;}
 div.toc {padding-left: 200px;}
-div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
+div.rayah {border-top: 1px solid #708090; width: 100%;}
+div.rayah2 {clear:both; border-top: 1px solid #708090; width: 100%; padding-bottom: 35px;}
 </style>
 </head>
 
@@ -42,9 +43,7 @@ div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
 <h1><a href="chap2.php">2. Users</a> « <a href="toc.php">Table of Contents</a> » <a href="chap4.php">4. Incident Management</a></h1>
 
 </div>
-<div class="rayah">
-<p align='right'>Pandora is a GPL Software Project. &copy; Sancho Lerena 2003-2006, David villanueva 2004-2005, Alex Arnal 2005, Ra&uacute;l Mateos 2004-2006.</p>
-</div>
+<div class="rayah2"></div>
 
 <a name="3"><h1>3. Agents</h1></a>
 
@@ -466,5 +465,8 @@ values from the modules the agent sends after each time interval.</li>
 <h2><a name="34">3.4. SNMP Console</a></h2>
 
 <h3><a name="341">3.4.1. SNMP Alerts</a></h3>
+<div class="rayah">
+<p align='right'>Pandora FMS is Free Software Project, licensed under GPL terms.<br> &copy; Sancho Lerena 2003-2006, David villanueva 2004-2006, Alex Arnal 2005, Ra&uacute;l Mateos 2004-2006.</p>
+</div>
 </body>
 </html>

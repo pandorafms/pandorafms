@@ -27,7 +27,8 @@
 .ml25 {margin-left: 25px;}
 div.logo {float:left;}
 div.toc {padding-left: 200px;}
-div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
+div.rayah {border-top: 1px solid #708090; width: 100%;}
+div.rayah2 {clear:both; border-top: 1px solid #708090; width: 100%; padding-bottom: 35px;}
 </style>
 </head>
 
@@ -39,9 +40,7 @@ div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
 <h1><a href="chap3.php">3. Agents</a> « <a href="toc.php">Table of Contents</a> » <a href="chap5.php">5. Events</a></h1>
 
 </div>
-<div class="rayah">
-<p align='right'>Pandora is a GPL Software Project. &copy; Sancho Lerena 2003-2006, David villanueva 2004-2005, Alex Arnal 2005, Ra&uacute;l Mateos 2004-2006.</p>
-</div>
+<div class="rayah2"></div>
 
 <a name="4"><h1>4. Incident management</h1></a>
 
@@ -202,5 +201,8 @@ or status filters.</p>
 <img src="images/image044.png"><br>
 </p>
 
+<div class="rayah">
+<p align='right'>Pandora FMS is Free Software Project, licensed under GPL terms.<br> &copy; Sancho Lerena 2003-2006, David villanueva 2004-2006, Alex Arnal 2005, Ra&uacute;l Mateos 2004-2006.</p>
+</div>
 </body>
 </html>

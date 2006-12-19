@@ -29,7 +29,8 @@
 .ml75 {margin-left: 75px;}
 div.logo {float:left;}
 div.toc {padding-left: 200px;}
-div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
+div.rayah {border-top: 1px solid #708090; width: 100%;}
+div.rayah2 {clear:both; border-top: 1px solid #708090; width: 100%; padding-bottom: 35px;}
 </style>
 
 <div class='logo'>
@@ -39,9 +40,7 @@ div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
 <h1><a href="chap2.php">2. Usuarios</a> « <a href="toc.php">&Iacute;ndice</a> » <a href="chap4.php">4. Gesti&oacute;n de incidentes</a></h1>
 
 </div>
-<div class="rayah">
-<p align='right'>Pandora es un proyecto de software GPL. &copy; Sancho Lerena 2003-2006, David Villanueva 2004-2006 y Ra&uacute;l Mateos 2004-2006.</p>
-</div>
+<div class="rayah2"></div>
 
 <h1><a name="3">3. Agentes</a></h1>
 
@@ -506,5 +505,8 @@ m&oacute;dulos que env&iacute;a un agente cada intervalo de tiempo.</li>
 
 <h3><a name="341">3.4.1. Alertas SNMP</a></h3>
 
+<div class="rayah">
+<p align='right'>Pandora es un proyecto de software libre con licencia GPL. <br>&copy; Sancho Lerena 2003-2006, David Villanueva 2004-2006 y Ra&uacute;l Mateos 2004-2006.</p>
+</div>
 </body>
 </html>

@@ -1,3 +1,12 @@
+2006-12-18 Raul Mateos  <raulofpandora@gmail.com>
+
+	* help/es/*, help/en/*: Stylesheet correction. Change some texts.
+	
+	* godmode/grupos/lista_grupos.php: Solved some small bug with icon
+	when creating group.
+	
+	* general/logon_ok.php: Solved small bug due to style correction.
+
 2006-12-16 Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/styles/pandora.css, op.css, god.css: Removed more unnecessary

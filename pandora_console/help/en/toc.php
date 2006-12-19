@@ -35,8 +35,8 @@ dd.help_t4 {margin-left: 92px; margin-top: 3px; margin-bottom: 2px;}
 <img src="../../images/logo_menu.gif" alt='logo'>
 
 <p><h1>Pandora Help v1.2</h1></p>
-<p>(Updated March, 05<sup>th</sup> 2006).</p>
-<p>Pandora is a GPL Software Project. <br>&copy; Sancho Lerena 2003-2006, David Villanueva 2004-2006, Alex Arnal 2005 and Ra&uacute;l Mateos 2004-2006.</p>
+<p>(Updated December, 15<sup>th</sup> 2006).</p>
+<p>Pandora FMS is Free Software Project, licensed under GPL terms.<br> &copy; Sancho Lerena 2003-2006, David villanueva 2004-2006, Alex Arnal 2005, Ra&uacute;l Mateos 2004-2006.</p>
 </center>
 <br>
 <h1>Table of Contents</h1>

@@ -451,6 +451,10 @@
 	files from src directory into
 	<filename>reporting/jpgraph</filename> Pandora Console
 	directory.
+	Depending on the jpgraph you downloaded you might be required
+	to change the includes on the <filename>reporting/fgraph.php
+	</filename> adding the correct path, it will looks like:
+        <filename>include ("jpgraph/src/jpgraph.php");</filename> 
       </para>
       </sect3>
     </sect2>

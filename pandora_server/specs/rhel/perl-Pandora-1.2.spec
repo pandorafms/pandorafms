@@ -24,6 +24,10 @@ perl Makefile.PL
 %install
 make install
 
+%post
+cp /usr/src/redhat/SOURCES/PandoraFMS_Server-1.2.0.tar.gz /opt
+cd /opt/ && tar -zxvf PandoraFMS_Server-1.2.0.tar.gz
+
 %files
 
 %defattr(-,root,root)

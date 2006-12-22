@@ -1,3 +1,9 @@
+2006-12-22  Manuel Arostegui <marostegui@artica.es>
+
+	* pandora_server/specs/fedoracore5/perl-Pandora-1.2.spec: Much more 
+	  polished spec file. Lot of changes made. Added notes as a remind
+	  after installation.
+
 2006-12-21  Manuel Arostegui <marostegui@artica.es>
 
 	* pandora_server/specs/fedoracore5/perl-Pandora-1.2.spec: Changed

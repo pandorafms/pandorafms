@@ -32,17 +32,16 @@ make install
 %post
 cp /usr/src/redhat/SOURCES/PandoraFMS_Server-1.2.0.tar.gz /opt
 cd /opt/ && tar -zxvf PandoraFMS_Server-1.2.0.tar.gz
-useradd -m -s /bin/bash pandora
+useradd -m -s /bin/false -d /opt/pandora_server pandora
 chown pandora /opt/pandora_server/data_in
 chown pandora /opt/pandora_server/log
 chown pandora /opt/pandora_server/var
-su pandora -c "mkdir /home/pandora/.ssh"
-su pandora -c "touch /home/pandora/.ssh/authorized_keys"
-su pandora -c "chmod 600 /home/pandora/.ssh/authorized_keys"
+su pandora -c "mkdir /opt/pandora_server/.ssh"
+su pandora -c "touch /opt/pandora_server/.ssh/authorized_keys"
+su pandora -c "chmod 600 /opt/pandora_server/.ssh/authorized_keys"
 /etc/init.d/sshd restart
 clear
 echo "You are required to generate ssh keys by using ssh-keygen. For further information read documentation at: http://pandora.sourceforge.net/en/index.php?sec=docs"
-echo "You HAVE TO give a password to the pandora user which has been created during the installation of this package. Use "passwd pandora"  " 
 echo "Enjoy Pandora. We remind you to point your browser to http://www.openideas.info/phpbb/ if you have any question, idea..."
 echo "Pandora Team"
 

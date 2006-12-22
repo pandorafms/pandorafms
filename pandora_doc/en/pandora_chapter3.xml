@@ -424,28 +424,28 @@
 	  <listitem>
 	    <para>
 	      <emphasis>Internal audit</emphasis>. Writes the incident
-	      in Pandora's internal audit system
+	      in Pandora's internal audit system, that is stored in Pandora SQL database.
 	    </para>
 	  </listitem>
 	  <listitem>
-	    <para><emphasis>LogFile</emphasis>. Writes the incident in the log 
-		file
+	    <para><emphasis>LogFile</emphasis>.Writes the incident in the log 
+		file. Use this in combination with a customized LogFile alert to generate
+ 		logfiles using the format you want.
 	    </para>
 	  </listitem>
 	  <listitem>
 	    <para><emphasis>SMS Text</emphasis>. Sends an SMS to a 
-	     given mobile phone
+	     given mobile phone, of course, you need to define a alert before to make this possible
+	     and a email/Sms gateway configured and accesible from pandora server.
      	</para>
 	  </listitem>
 	  <listitem>
 	    <para>
-	     <emphasis>SNMP Trap</emphasis>. Sends a SNMP 
-	     Trap
+	     <emphasis>SNMP Trap</emphasis>. Sends a SNMP Trap.
      	</para>
 	  </listitem>
 	  <listitem>
-	    <para><emphasis>Syslog</emphasis>. Sends an alert to the 
-	    Syslog
+	    <para><emphasis>Syslog</emphasis>. Sends an alert to the Syslog
     	</para>
 	  </listitem>
 	</itemizedlist>
@@ -574,7 +574,9 @@
 	    <para>
 	    <emphasis>Minimum Value:</emphasis> Defines the minimum 
 	    value for a module. Any value below that will trigger the
-	    Alert.
+	    Alert. Both Maximun value and minimun value defines "the acceptable" values
+	    that Pandora FMS consider "valid", outside this values, Pandora will consider as
+	    alert candidate.
 	    </para>
 	  </listitem>
 	  <listitem>
@@ -619,7 +621,8 @@
 	  <listitem>
 	     <para>
 	      <emphasis>Max number of alerts:</emphasis> Maximun number 
-	      of alerts that can be sent consecutively.
+	      of alerts that can be sent consecutively. If you set it to 0 no alerts
+	      will be send.
 	     </para>
 	  </listitem>
 	  <listitem>
@@ -632,6 +635,12 @@
 	<para>
 	All the alerts of an agent can be seen through "Manage Agents"
 	in the Adminitration menu and selecting the agent.
+	You need to use TimeThreshold in cooperation with max. number of alerts. Let's see an example:</para>	
+	<para>
+	"I want to fire an alert when XXX goes down, and please, dont't disturb me again at least for one hour, then, if this thing continue to be down, fire another alert and wait another hour".
+	</para>
+	<para>
+	You need to setup: Time threshold 3600 (1 Hour), Min. number of alerts = 1,  Max. number of alerts = 1
 	</para>
       </sect3>
     </sect2>

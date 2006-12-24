@@ -164,9 +164,8 @@ if (comprueba_login () == 0) {
 								<img src='images/dot_yellow.gif' alt=''>";
 							}
 
-							/* FIXME: This line is ugly */
 							// TOOLTIP.
-							$celda = "<td class='bot' width=100>
+							$celda = "<td class='bot' width='100'>
 							<a href='index.php?sec=estado&amp;
 							sec2=operation/agentes/estado_agente&amp;
 							refr=60&amp;
@@ -174,7 +173,6 @@ if (comprueba_login () == 0) {
 							class='info'>
 							<img class='top' 
 							src='images/groups/".$icono_grupo."_1.gif' alt=''>
-							&nbsp;
 					<span>
 					<table cellspacing='2' cellpadding='0' 
 					style='margin-left:20px'>

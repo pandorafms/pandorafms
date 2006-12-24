@@ -95,7 +95,9 @@ if (isset ($_GET["refr"])){
 				$pass = $primera . "****" . $ultima;
 				audit_db ($nick, $REMOTE_ADDR, "Logon Failed",
 					  "Incorrect password: " . $nick . " / " . $pass);
+				echo '<div id="foot">';
 				include "general/footer.php";
+				echo '</div>';
 				exit;
 			}
 		}
@@ -108,7 +110,9 @@ if (isset ($_GET["refr"])){
 			$pass = $primera . "****" . $ultima;
 			audit_db ($nick, $REMOTE_ADDR, "Logon Failed",
 				  "Invalid username: " . $nick . " / " . $pass);
+			echo '<div id="foot">';
 			include "general/footer.php";
+			echo '</div>';
 			exit;
 		}
 	} elseif (! isset ($_SESSION['id_usuario'])) {
@@ -155,6 +159,6 @@ if (isset ($_GET["refr"])){
 		?>
 	</div>
 </div>
-<?php require("general/footer.php") ?>
+<div id="foot"><?php require("general/footer.php") ?></div>
 </body>
 </html>

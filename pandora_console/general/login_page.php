@@ -32,10 +32,11 @@
 			</form>
 		</div>
 		<div id="logo_box">
-			<a href="index.php"><img src="images/logo_login.gif" border="0" alt="logo"></a><br>
+			<a href="index.php">
+			<img src="images/logo_login.gif" border="0" alt="logo"></a><br>
 			<?php echo $pandora_version; ?>
 		</div>
 		<div id="ip"><?php echo 'IP: <b class="f10">'.$REMOTE_ADDR.'</b>'; ?></div>
 	</div>
-	<?php include "general/footer.php"; ?>
+	<div id="foot"><?php require("general/footer.php") ?></div>
 </div>

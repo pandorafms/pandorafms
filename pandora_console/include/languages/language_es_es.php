@@ -37,7 +37,7 @@ $lang_label["os"]="SO";
 $lang_label["alert"]="Alerta";
 $lang_label["alerts"]="Alertas";
 
-$lang_label["incident"]="Incident";
+$lang_label["incident"]="Incidente";
 $lang_label["author"]="Autor";
 $lang_label["delete"]="Borrar";
 
@@ -61,7 +61,7 @@ $lang_label["in_openedby"]="Propietario";
 $lang_label["in_openedwhen"]="Abierto el";
 $lang_label["updated_at"]="Actualizado el";
 
-$lang_label["main_text"]="Esta es la Consola de Administraci&oacute;n de Pandora. Desde aqu&iacute; puede gestionar sus agentes, alertas e incidentes. La sesi&oacute;n permanecer&aacute; abierta mientras no exista una inactividad prolongada.";
+$lang_label["main_text"]="Esta es la Consola de Administraci&oacute;n de Pandora. Desde aqu&iacute; puede gestionar sus agentes, alertas e incidentes. La sesi&oacute;n permanecer&aacute; abierta mientras exista uactividad.";
 
 $lang_label["id_user"]="ID usuario";
 $lang_label["real_name"]="Nombre Real";
@@ -88,10 +88,10 @@ $lang_label["field1"]="Campo #1 (Alias, nombre)";
 $lang_label["field2"]="Campo #2 (L&iacute;nea sencilla)";
 $lang_label["field3"]="Campo #3 (Texto completo)";
 $lang_label["no_access_title"]="No tiene permiso para acceder a esta p&aacute;gina";
-$lang_label["no_access_text"]="El acceso a esta p&aacute;gina est&aacute; restringido a usuarios autorizados, contacte con el administrador del sistema si necesita ayuda. <br><br>Todos los intentos de acceso a esta p&aacute;gina son grabados en los logs de seguridad de Pandora";
+$lang_label["no_access_text"]="El acceso a esta p&aacute;gina est&aacute; restringido a usuarios autorizados, contacte con el administrador del sistema si necesita ayuda. <br><br>Todos los intentos de acceso a esta p&aacute;gina son grabados en los logs de seguridad de Pandora FMS";
 $lang_label["header_title"]="Sistema Libre de Monitorizaci&oacute;n";
 
-$lang_label["gpl_notice"]="es un <b>Proyecto de Software GPL</b>";
+$lang_label["gpl_notice"]="es un <b>Proyecto de Software Libre bajo licencia GPL</b>";
 $lang_label["gpl_used"]="Desarrollado utilizando herramientas y software GPL"; 
 $lang_label["gen_date"]="P&aacute;gina generada el ";
 
@@ -101,15 +101,17 @@ $lang_label["medium"]="Media";
 $lang_label["serious"]="Grave";
 $lang_label["very_serious"]="Muy grave";
 $lang_label["maintenance"]="Mantenimiento";
-$lang_label["incident_main_view"]="Vista principal de incidentes";
 
+$lang_label["date"]="Fecha";
+
+$lang_label["incident_main_view"]="Vista principal de incidentes";
 $lang_label["all_inc"]="Todos los incidentes";
 $lang_label["opened_inc"]="Incidentes activos";
 $lang_label["openedcom_inc"]="Incidentes activos, con comentarios";
 $lang_label["closed_inc"]="Incidentes cerrados";
 $lang_label["rej_inc"]="Incidentes rechazados";
 $lang_label["exp_inc"]="Incidentes expirados";
-$lang_label["date"]="Fecha";
+
 $lang_label["rev_incident"]="Revisar incidente";
 $lang_label["note_title"]="A&ntilde;adir nota al incidente";
 $lang_label["audit_title"]="Revisar logs de auditor&iacute;a de Pandora";
@@ -171,7 +173,6 @@ $lang_label["free_text_search"]="Texto libre para buscar (*)";
 $lang_label["free_text_search_msg"] ="(*) La b&uacute;squeda de texto se har&aacute; a partir de todas las palabras introducidas como subcadena, en la descripci&oacute;n del t&iacute;tulo o en la descripci&oacute;n de cada incidente";
 $lang_label["confirmation"]="confirmaci&oacute;n";
 $lang_label["password"]="Contrase&ntilde;a";
-$lang_label["users_pandora"]="Qu&eacute; es un usuario en Pandora";
 $lang_label["users"]="Usuarios definidos en Pandora";
 $lang_label["user_ID"]="ID de usuario";
 $lang_label["profile"]="Perfil";
@@ -343,8 +344,8 @@ $lang_label["purge_event_3day"]="Borrar los datos de eventos excepto los &uacute
 $lang_label["purge_event_1day"]="Borrar todos los datos de eventos, excepto las &uacute;ltimas 24 horas";
 $lang_label["purge_event_all"]="Borrar todos los datos de eventos";
 
-$lang_label["deleting_records"]="Borrando registros para el m&oacute;dulo  ";
-$lang_label["purge_task"]="Tarea de borrado lanzada para el agente  ";
+$lang_label["deleting_records"]="Borrando registros para el m&oacute;dulo ";
+$lang_label["purge_task"]="Tarea de borrado lanzada para el agente ";
 
 $lang_label["manage_config"]="Gestionar conf.";
 $lang_label["config_manage"]="Gesti&oacute;n de Configuraciones";
@@ -361,7 +362,7 @@ $help_label["db_purge0"]="Use este control para seleccionar un agente. Es necesa
 
 $lang_label["profiles"] ="Perfiles";
 $lang_label["current_dbsetup"]="Configuraci&oacute;n actual de la Base de Datos";
-$lang_label["dbsetup_info"]="Por favor, aseg&uacute;rate de que la gesti&oacute;n de la Base de Datos es correcta y de que el sistema autom&aacute;tico de gesti&oacute;n de Base de Datos de Pandora est&aacute; correctamente instalado y funcionando. Es muy importante para el correcto funcionamiento  y rendimiento de Pandora.";
+$lang_label["dbsetup_info"]="Por favor, aseg&uacute;rate de que la gesti&oacute;n de la Base de Datos es correcta y de que el sistema autom&aacute;tico de gesti&oacute;n de Base de Datos de Pandora est&aacute; correctamente instalado y funcionando. Es muy importante para el correcto funcionamiento y rendimiento de Pandora.";
 $lang_label["profile_title"]="Gesti&oacute;n de perfiles";
 $lang_label["create_profile"]="Crear perfil";
 $lang_label["profile_name"]="Nombre del perfil";
@@ -542,7 +543,7 @@ $lang_label["SNMP_agent"]="Agente SNMP";
 $lang_label["SNMP_console"]="Consola SNMP";
 $lang_label["customvalue"]="Valor de usuario";
 
-$lang_label["agent_type"]="Tipo agente";
+$lang_label["agent_type"]="Tipo de agente";
 $lang_label["snmp_assigned_alerts"]="Alertas SNMP";
 
 $lang_label["max_alerts"]="N&uacute;mero m&aacute;ximo de alertas";

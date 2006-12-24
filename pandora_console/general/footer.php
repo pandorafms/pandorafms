@@ -17,24 +17,20 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ?>
 
+<?php
+echo '
+<a target="_new" href="general/license/pandora_info_'.$language_code.'.html">
+Pandora FMS '.$pandora_version.' Build '.$build_version.' '.
+$lang_label["gpl_notice"].'</a><br>';
+if (isset($_SESSION['id_usuario'])) {
 
-<div id="foot">
-	<?php
-	echo '<a target="_new" href="general/license/pandora_info_'
-	.$language_code.'.html">Pandora FMS ';
-	echo $pandora_version." Build ".$build_version." ";
-	echo $lang_label["gpl_notice"];
-	echo '</a><br>';
-	if (isset($_SESSION['id_usuario'])) {
-	
-		if (isset($_SERVER['REQUEST_TIME'])) {
-			$time = $_SERVER['REQUEST_TIME'];
-		} else {
-			$time = time();
-		}
-		echo $lang_label["gen_date"]." ".date("D F d, Y H:i:s", $time)."<br>";
+	if (isset($_SERVER['REQUEST_TIME'])) {
+		$time = $_SERVER['REQUEST_TIME'];
+	} else {
+		$time = time();
 	}
-	?>
-	<i>Pandora FMS is a <a target="_new" href="http://pandora.sourceforge.net">
-	SourceForge registered project</a></i>
-</div>
+	echo $lang_label["gen_date"]." ".date("D F d, Y H:i:s", $time)."<br>";
+}
+?>
+<i>Pandora FMS is a <a target="_new" href="http://pandora.sourceforge.net">
+SourceForge registered project</a></i>

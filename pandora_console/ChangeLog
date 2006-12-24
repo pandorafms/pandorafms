@@ -1,3 +1,14 @@
+2006-12-24 Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/styles/pandora.css, tip.css: Stylesheet correction.
+	
+	* include/general/footer.php, header.php, login_page.php: Corrected
+	styles.
+	
+	* index.php: added div for footer.
+	
+	* include/languages/*.php: Removed old texts.
+
 2006-12-19 Raul Mateos  <raulofpandora@gmail.com>
 
 	* help/en/*: Stylesheet correction. Change some texts and images.

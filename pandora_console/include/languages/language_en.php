@@ -99,15 +99,15 @@ $lang_label["medium"]="Medium";
 $lang_label["serious"]="Serious";
 $lang_label["very_serious"]="Very Serious";
 $lang_label["maintenance"]="Maintenance";
-$lang_label["incident_main_view"]="Incident Main view";
+$lang_label["date"]="Date";
 
+$lang_label["incident_main_view"]="Incident Main view";
 $lang_label["all_inc"]="All incidents";
 $lang_label["opened_inc"]="Active incidents";
 $lang_label["openedcom_inc"]="Active incidents, with comments";
 $lang_label["closed_inc"]="Closed incidents";
 $lang_label["rej_inc"]="Rejected incidents";
 $lang_label["exp_inc"]="Expired incidents";
-$lang_label["date"]="Date";
 $lang_label["rev_incident"]="Review of incident";
 $lang_label["note_title"]="Add note to incident";
 $lang_label["audit_title"]="Review of Pandora audit logs";
@@ -167,7 +167,6 @@ $lang_label["free_text_search"]="Free text for search (*)";
 $lang_label["free_text_search_msg"] ="(*) The text search will look for all words entered as substring, in index title or description of each incident";
 $lang_label["confirmation"]="confirmation";
 $lang_label["password"]="Password";
-$lang_label["users_pandora"]="What is an user in Pandora";
 $lang_label["users"]="Users defined in Pandora";
 
 $lang_label["user_ID"]="UserID";

@@ -1,51 +1,45 @@
+a.tip, a.tip2 {
+	cursor: help;
+	background: url(../../images/tip.gif) no-repeat;
+}
 a.tip {
-	cursor: help;
-	position: relative;
-	text-decoration: none;
-	background: url(../../images/tip.gif) no-repeat;
 	padding: 5px 2px 5px 12px;
-	}
+}
 a.tip2 {
-	cursor: help;
-	position: relative;
-	text-decoration: none;
-	background: url(../../images/tip.gif) no-repeat;
 	padding: 2px 2px 2px 12px;
-	}
+}
 a.help {
 	cursor: help;
-	position: relative;
-	text-decoration: none;
 	background: url(../../images/help.gif) no-repeat;
 	padding: 2px 2px 2px 12px;
 	left: 5px;
-	}
+}
 a.info {
-	position: relative;
-	text-decoration: none;
 	padding: 25px 0px 0px 0px;
-	}
+}
 a.info2 {
+	padding: 2px 0px 0px 0px;
+}
+a.tip, a.tip2, a.help , a.info, a.info2 {
 	position: relative;
 	text-decoration: none;
-	padding: 2px 0px 0px 0px;
-	}
+}
 a.tip:hover {
 	text-decoration: none;
 	background-color: #f5f5f5;
-	}
+}
 a.tip2:hover {
 	text-decoration: none;
 	background-color: #778866;
-	}
+}
 a.info:hover, a.info2:hover, a.help:hover {
 	text-decoration: none;
-	background-color: #fff;
-	}
+}
 a.tip span, a.tip2 span, a.info span, a.info2 span, a.help span {
 	display: none;
-	}
-a.tip:hover span, a.tip2:hover span, a.info:hover span, a.info2:hover span, a.help:hover span {
+}
+a.tip:hover span, a.tip2:hover span, a.info:hover span, a.info2:hover span,
+a.help:hover span {
 	display: block;
 	text-decoration: none;
 	position: absolute;
@@ -57,16 +51,16 @@ a.tip:hover span, a.tip2:hover span, a.info:hover span, a.info2:hover span, a.he
 	background-color: #d4ddc6;
 	color: #000;
 	padding: 2px;
-	}
+}
 a.info:hover span {
 	top: 45px;
 	left: 20px;
 	width: 140px;
-	}
+}
 a.info2:hover span {
 	top: 8px;
-	}
+}
 a.help:hover span {
 	top: 15px;
 	width: 80px;
-	}
+}

@@ -462,25 +462,23 @@ function pagination ($count, $url, $offset ) {
 		// get offset for index calculation
 
 	}
-        // End of subrouting to navigate throught blocks
-
-		/*  Now you have a header with blocks rendered, and only need to jump offset records. 
-			Tasks you need to do now:
-			
-			Skip offset records
-        	
-			$query1="SELECT * FROM $table $filter $order";
-            $result=mysql_query($query1);
-            mysql_data_seek($result, $offset);
-		    $offset_counter = 0;
-
-        	Start viewing data
-			
-			while ($row=mysql_fetch_array($result) and ($offset_counter < $block_size) ){
-            $data=$row["ID_xxx"];
-			.
-			.
-			.
-		*/
 }
+
+function list_group ($id_user){
+	$mis_grupos[]=""; // Define array mis_grupos to put here all groups with Agent Read permission
+	$iconindex_g[]="";
+	$sql='SELECT id_grupo, icon FROM tgrupo';
+	$result=mysql_query($sql);
+	while ($row=mysql_fetch_array($result)){
+		$iconindex_g[$row["id_grupo"]] = $row["icon"];
+		if ($row["id_grupo"] != 1){
+			if (give_acl($id_user,$row["id_grupo"], "AR") == 1){
+				echo "<option value='".$row["id_grupo"]."'>".
+				dame_nombre_grupo($row["id_grupo"])."</option>";
+				$mis_grupos[]=$row["id_grupo"]; //Put in  an array all the groups the user belongs
+			}
+		}
+	}
+}
+
 ?>

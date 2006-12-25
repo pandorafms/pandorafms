@@ -574,7 +574,7 @@
 	    <para>
 	    <emphasis>Minimum Value:</emphasis> Defines the minimum 
 	    value for a module. Any value below that will trigger the
-	    Alert. Both Maximun value and minimun value defines "the acceptable" values
+	    Alert. Both maximum and minimum values define "the acceptable" values
 	    that Pandora FMS consider "valid", outside this values, Pandora will consider as
 	    alert candidate.
 	    </para>
@@ -614,13 +614,13 @@
 	  </listitem>
 	  <listitem>
 	    <para>
-		 <emphasis>Min number of alerts:</emphasis> Minimun number 
+		 <emphasis>Min number of alerts:</emphasis> Minimum number 
 	 of alerts that can be sent consecutively.
 		</para>
 	  </listitem>
 	  <listitem>
 	     <para>
-	      <emphasis>Max number of alerts:</emphasis> Maximun number 
+	      <emphasis>Max number of alerts:</emphasis> Maximum number 
 	      of alerts that can be sent consecutively. If you set it to 0 no alerts
 	      will be send.
 	     </para>
@@ -1046,7 +1046,8 @@
     <sect2 id="sec3.3.4">
 	<title>Monitor details</title>
 	<para>
-	The description of all the monitors defined in the server can
+	The description of all the monitors defined in the server 
+	(a monitor is a module of "proc" type) can
 	be viewed from the "View Agents" &gt; "Monitor detail" option
 	in the Operation menu.
 	</para>
@@ -1233,13 +1234,13 @@
 	       </listitem>
 		<listitem>
 		 <para>
-		 <emphasis>Min number of alerts:</emphasis> Minimun 
+		 <emphasis>Min number of alerts:</emphasis> Minimum 
 		 number of alerts that can be sent consecutively.
 		 </para>
 		</listitem>
 		<listitem>
 		 <para>
-		 <emphasis>Max number of alerts:</emphasis> Maximun 
+		 <emphasis>Max number of alerts:</emphasis> Maximum 
 		 number of alerts that can be sent consecutively.
 		 </para>
 		</listitem>

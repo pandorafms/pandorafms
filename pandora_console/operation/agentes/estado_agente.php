@@ -21,7 +21,8 @@
 require("include/config.php");
 
 if (comprueba_login() == 0) {
- 	if ((give_acl($id_user, 0, "AR")==1) or (give_acl($id_user,0,"AW")) or (dame_admin($id_user)==1)) {
+ 	if ((give_acl($id_user, 0, "AR")==1) or (give_acl($id_user,0,"AW"))
+	or (dame_admin($id_user)==1)) {
 
  	if (isset($_POST["ag_group"]))
 			$ag_group = $_POST["ag_group"];
@@ -34,50 +35,65 @@ if (comprueba_login() == 0) {
 		$ag_group = $_GET["ag_group_refresh"];
 	}
 	echo "<h2>".$lang_label["ag_title"]."</h2>";
-	echo "<h3>".$lang_label["summary"]."<a href='help/".$help_code."/chap3.php#331' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
-
-	$iduser_temp=$_SESSION['id_usuario'];
+	echo "<h3>".$lang_label["summary"]."
+	<a href='help/".$help_code."/chap3.php#331' target='_help' class='help'>
+	&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 	
 	// Show group selector
 
 	if (isset($_POST["ag_group"])){
 		$ag_group = $_POST["ag_group"];
-		echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&ag_group_refresh=".$ag_group."'>";
+		echo "<form method='post' 
+		action='index.php?sec=estado&sec2=operation/agentes/estado_agente
+		&refr=60&ag_group_refresh=".$ag_group."'>";
 	} else {
-		echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60'>";
+		echo "<form method='post'
+		action='index.php?sec=estado&sec2=operation/agentes/estado_agente
+		&refr=60'>";
 	}
 
 	echo "<table cellpadding='3' cellspacing='3'><tr>";
 	echo "<td>".$lang_label["group"]."</td>";
 	echo "<td valign='middle'>";
-	echo "<select name='ag_group' onChange='javascript:this.form.submit();' class='w130'>";
+	echo "<select name='ag_group' onChange='javascript:this.form.submit();' 
+	class='w130'>";
 
 	if ( $ag_group > 1 ){
-		echo "<option value='".$ag_group."'>".dame_nombre_grupo($ag_group);
+		echo "<option value='".$ag_group."'>".dame_nombre_grupo($ag_group).
+		"</option>";
 	}
-	echo "<option value=1>".dame_nombre_grupo(1); // Group all is always active 
+	echo "<option value=1>".dame_nombre_grupo(1)."</option>"; // Group all is always active 
 	// Group 1 (ALL) gives A LOT of problems, be careful with this code:
 	// Run query on all groups and show data only if ACL check its ok: $iduser_temp is user, and acl is AR (agent read)
 	$mis_grupos[]=""; // Define array mis_grupos to put here all groups with Agent Read permission
 	
-	$sql='SELECT * FROM tgrupo';
+	$sql='SELECT id_grupo FROM tgrupo';
 	$result=mysql_query($sql);
 	while ($row=mysql_fetch_array($result)){
 	if ($row["id_grupo"] != 1){
-		if (give_acl($iduser_temp,$row["id_grupo"], "AR") == 1){
-			echo "<option value='".$row["id_grupo"]."'>".dame_nombre_grupo($row["id_grupo"]);
+		if (give_acl($id_user,$row["id_grupo"], "AR") == 1){
+			echo "<option value='".$row["id_grupo"]."'>".
+			dame_nombre_grupo($row["id_grupo"])."</option>";
 			$mis_grupos[]=$row["id_grupo"]; //Put in  an array all the groups the user belongs
 		}
 	}
 	}
 	echo "</select>";
-	echo "<td valign='middle'><noscript><input name='uptbutton' type='submit' class='sub' value='".$lang_label["show"]."'></noscript></td></form>";
+	echo "<td valign='middle'>
+	<noscript>
+	<input name='uptbutton' type='submit' class='sub' 
+	value='".$lang_label["show"]."'>
+	</noscript>
+	</td>
+	</form>";
 	// Show only selected groups	
 
 	if ($ag_group > 1)
-		$sql='SELECT * FROM tagente WHERE id_grupo='.$ag_group.' AND disabled = 0 ORDER BY nombre';
+		$sql='SELECT * FROM tagente WHERE id_grupo='.$ag_group.' 
+		AND disabled = 0 ORDER BY nombre';
 	else 
-		$sql='SELECT * FROM tagente WHERE disabled = 0 ORDER BY id_grupo, nombre';	
+		$sql='SELECT * FROM tagente WHERE disabled = 0 
+		ORDER BY id_grupo, nombre';	
 
 	$result=mysql_query($sql);
 	if (mysql_num_rows($result)){
@@ -126,9 +142,18 @@ if (comprueba_login() == 0) {
 			}
 			if ($pertenece == 1) { // Si el agente pertenece a uno de los grupos que el usuario puede visualizar
 				// Obtenemos la lista de todos los modulos de cada agente
-				$sql_t="SELECT * FROM tagente_estado, tagente_modulo WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.id_agente=".$id_agente;
+				$sql_t="SELECT * FROM tagente_estado, tagente_modulo 
+				WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
+				AND tagente_modulo.id_agente=".$id_agente;
 				$result_t=mysql_query($sql_t);
-				$estado_general = 0; $numero_modulos = 0; $numero_monitor = 0; $est_timestamp = ""; $monitor_bad=0; $monitor_ok = 0; $monitor_down=0; $numero_datamodules=0;
+				$estado_general = 0; 
+				$numero_modulos = 0; 
+				$numero_monitor = 0; 
+				$est_timestamp = ""; 
+				$monitor_bad=0; 
+				$monitor_ok = 0; 
+				$monitor_down=0; 
+				$numero_datamodules=0;
 				$estado_cambio=0; // Oops, I forgot initialize this fucking var... many problems due it
 				$ahora=date("Y/m/d H:i:s");
 				// Calculate module/monitor totals  for this agent

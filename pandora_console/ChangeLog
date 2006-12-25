@@ -1,3 +1,15 @@
+2006-12-25 Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/styles/pandora.css: New style mr40.
+	
+	* help/en,es/chapter3.php: Explanation of monitor added. Solved error with 
+	english file (maximun-> manimum; minimun -> minimum)
+	
+	* include/functions: Add function to show groups of an user.
+	
+	* operation/agentes/*, operation/eventos/eventos.php: Use new function.
+	Style correction.
+
 2006-12-24 Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/styles/pandora.css, tip.css: Stylesheet correction.

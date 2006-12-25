@@ -54,20 +54,19 @@ require("include/config.php");
 
 if (comprueba_login() == 0) {
 	$accion = "";
-	$id_usuario =$_SESSION["id_usuario"];
- 	if (give_acl($id_usuario, 0, "AR")==1) {
+ 	if (give_acl($id_user, 0, "AR")==1) {
 	// OPERATIONS
 	// Delete Event (only incident management access).
 	if (isset($_GET["delete"])){
 		$id_evento = $_GET["delete"];
 		// Look for event_id following parameters: id_group.
 		$id_group = gime_idgroup_from_idevent($id_evento);
-		if (give_acl($id_usuario, $id_group, "IM") ==1){
+		if (give_acl($id_user, $id_group, "IM") ==1){
 			$sql2="DELETE FROM tevento WHERE id_evento =".$id_evento;
 			$result2=mysql_query($sql2);
 			if ($result) {echo "<h3 class='suc'>".$lang_label["delete_event_ok"]."</h3>";}
 		} else {
-			audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to delete event ID".$id_evento);
+			audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to delete event ID".$id_evento);
 		}
 	}
 	
@@ -76,13 +75,13 @@ if (comprueba_login() == 0) {
 		$id_evento = $_GET["check"];
 		// Look for event_id following parameters: id_group.
 		$id_group = gime_idgroup_from_idevent($id_evento);
-		if (give_acl($id_usuario, $id_group, "IW") ==1){
-			$sql2="UPDATE tevento SET estado=1, id_usuario = '".$id_usuario."' WHERE id_evento = ".$id_evento;
+		if (give_acl($id_user, $id_group, "IW") ==1){
+			$sql2="UPDATE tevento SET estado=1, id_user = '".$id_user."' WHERE id_evento = ".$id_evento;
 			$result2=mysql_query($sql2);
 			if ($result2) { echo "<h3 class='suc'>".$lang_label["validate_event_ok"]."</h3>";}
 
 		} else {
-			audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to checkout event ID".$id_evento);
+			audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to checkout event ID".$id_evento);
 		}
 	}
 	
@@ -94,10 +93,10 @@ if (comprueba_login() == 0) {
 				$event_id = $_POST["eventid".$count];
 				// Look for event_id following parameters: id_group.
 				$id_group = gime_idgroup_from_idevent($event_id);
-				if (give_acl($id_usuario, $id_group, "IM") ==1){
+				if (give_acl($id_user, $id_group, "IM") ==1){
 					mysql_query("DELETE FROM tevento WHERE id_evento =".$event_id);
 				} else {
-					audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to delete event ID".$id_evento);
+					audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to delete event ID".$id_evento);
 				}
 			}
 			$count++;
@@ -111,11 +110,11 @@ if (comprueba_login() == 0) {
 			if (isset($_POST["eventid".$count])){
 				$id_evento = $_POST["eventid".$count];
 				$id_group = gime_idgroup_from_idevent($id_evento);
-				if (give_acl($id_usuario, $id_group, "IW") ==1){
-					$sql2="UPDATE tevento SET estado=1, id_usuario = '".$id_usuario."' WHERE estado = 0 AND id_evento = ".$id_evento;
+				if (give_acl($id_user, $id_group, "IW") ==1){
+					$sql2="UPDATE tevento SET estado=1, id_user = '".$id_user."' WHERE estado = 0 AND id_evento = ".$id_evento;
 					$result2=mysql_query($sql2);
 				} else {
-					audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to checkout event ID".$id_evento);
+					audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to checkout event ID".$id_evento);
 				}
 			}
 			$count++;
@@ -142,19 +141,7 @@ if (comprueba_login() == 0) {
 		echo "<option value='".$ev_group."'>".dame_nombre_grupo($ev_group);
 	} 
 	echo "<option value=1>".dame_nombre_grupo(1)."</option>";
-	$mis_grupos[]=""; // Define array mis_grupos to put here all groups with Agent Read permission
-	$iconindex_g[]="";
-	$sql='SELECT id_grupo, icon FROM tgrupo';
-	$result=mysql_query($sql);
-	while ($row=mysql_fetch_array($result)){
-		$iconindex_g[$row["id_grupo"]] = $row["icon"];
-		if ($row["id_grupo"] != 1){
-			if (give_acl($id_usuario,$row["id_grupo"], "AR") == 1){
-				echo "<option value='".$row["id_grupo"]."'>".dame_nombre_grupo($row["id_grupo"]);
-				$mis_grupos[]=$row["id_grupo"]; //Put in  an array all the groups the user belongs
-			}
-		}
-	}
+	list_group ($id_user);
 	echo "</select>";
 	echo "<td class='f9l30w17t'>";
 	echo "<img src='images/dot_green.gif'> - ".$lang_label["validated_event"];
@@ -199,7 +186,7 @@ if (comprueba_login() == 0) {
 		while ($row2=mysql_fetch_array($result2)){ // Jump offset records
 		
 			$id_grupo = $row2["id_grupo"];
-				if (give_acl($id_usuario, $id_grupo, "IR") == 1) // Only incident read access to view data !
+				if (give_acl($id_user, $id_grupo, "IR") == 1) // Only incident read access to view data !
 					$event_list[]=$row2["id_evento"];
 		}
 		if (isset($_GET["offset"]))
@@ -292,7 +279,7 @@ if (comprueba_login() == 0) {
 					$tdcolor = "datos2";
 					$color = 1;
 				}
-				//if (give_acl($id_usuario, $id_group, "IR") == 1){ // Only incident read access to view data
+				//if (give_acl($id_user, $id_group, "IR") == 1){ // Only incident read access to view data
 				$offset_counter++;
 				echo "<tr><td class='$tdcolor' align='center'>";
 				if ($row["estado"] == 0)
@@ -309,13 +296,13 @@ if (comprueba_login() == 0) {
 						echo "<td class='$tdcolor'>";
 					}
 					if ($row["estado"] <> 0)
-						echo "<a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$row["id_usuario"]."'><a href='#' class='tip'>&nbsp;<span>".dame_nombre_real($row["id_usuario"])."</span></a>".substr($row["id_usuario"],0,8)."</a>";
+						echo "<a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$row["id_user"]."'><a href='#' class='tip'>&nbsp;<span>".dame_nombre_real($row["id_user"])."</span></a>".substr($row["id_user"],0,8)."</a>";
 					echo "<td class='$tdcolor'>".$row["timestamp"];
 					echo "<td class='$tdcolor' align='center'>";
 					
-					if (($row["estado"] == 0) and (give_acl($id_usuario,$id_group,"IW") ==1))
+					if (($row["estado"] == 0) and (give_acl($id_user,$id_group,"IW") ==1))
 						echo "<a href='index.php?sec=eventos&sec2=operation/events/events&check=".$row["id_evento"]."'><img src='images/ok.gif' border='0'></a>";
-					if (give_acl($id_usuario,$id_group,"IM") ==1)
+					if (give_acl($id_user,$id_group,"IM") ==1)
 						echo "<a href='index.php?sec=eventos&sec2=operation/events/events&delete=".$row["id_evento"]."&refr=60&offset=".$offset."'><img src='images/cancel.gif' border=0></a>";
 					echo "<td class='$tdcolor' align='center'>";
 					echo "<input type='checkbox' class='chk' name='eventid".$offset_counter."' value='".$row["id_evento"]."'>";
@@ -328,7 +315,7 @@ if (comprueba_login() == 0) {
 	echo "<tr><td colspan='8' align='right'>";
 	
 	echo "<input class='sub' type='submit' name='updatebt' value='".$lang_label["validate"]."'> ";
-	if (give_acl($id_usuario, 0,"IM") ==1){
+	if (give_acl($id_user, 0,"IM") ==1){
 		echo "<input class='sub' type='submit' name='deletebt' value='".$lang_label["delete"]."'>";
 	}
 	echo "</form></table>";

@@ -452,7 +452,7 @@ simplemente con una r&aacute;pida mirada, gracias a un sistema de bombillas de d
 
 <h3><a name="334">3.3.4. Ver monitores</a></h3>
 
-<p>Desde «Ver agentes» &gt; «Detalle monitores» en el men&uacute; de operaci&oacute;n, se puede ver la descripci&oacute;n de todos los monitores definidos en el servidor.</p>
+<p>Desde «Ver agentes» &gt; «Detalle monitores» en el men&uacute; de operaci&oacute;n, se puede ver la descripci&oacute;n de todos los monitores definidos en el servidor (un monitor es un m&oacute;dulo de tipo <i>proc</i>).</p>
 
 <p class="center"><img src="images/image026.png"></p>
 

@@ -228,7 +228,7 @@ Operating System.</p>
 <li><b>Field #2 (Single Line):</b> Define the used value for the "_field2_" variable.</li>
 <li><b>Field #3 (Full Text):</b> Define the used value for the "_field3_" variable.</li>
 <li><b>Time threshold:</b> Minimum duration between the firing of two consecutive alerts, in seconds.</li>
-<li><b>Max Alerts Fired:</b> Maximun number of alerts that can be sent consecutively.</li>
+<li><b>Max Alerts Fired:</b> Maximum number of alerts that can be sent consecutively.</li>
 <li><b>Assigned module:</b> Module to be motitorized by the alert.</li>
 </ul>
 
@@ -422,7 +422,7 @@ The groups are displayed ordered by the following columns:</p>
 
 <h3><a name="334">3.3.4. Monitors view</a></h3>
 
-<p>The description of all the monitors defined in the server can be viewed from the "View Agents"&gt;"Monitor detail" option in the Operation menu.</p>
+<p>The description of all the monitors (a monitor is a module of "proc" type) defined in the server can be viewed from the "View Agents"&gt;"Monitor detail" option in the Operation menu.</p>
 
 <p class="center"><img src="images/image026.png"></p>
 
@@ -541,10 +541,10 @@ values from the modules the agent sends after each time interval.</li>
 	<b>Field #3 (Full Text):</b> Define the 
 	used value for the "_field3_" variable.
 	</p><p>
-	 <b>Min number of alerts:</b> Minimun 
+	 <b>Min number of alerts:</b> Minimum 
 	 number of alerts that can be sent consecutively.
 	</p><p>
-	 <b>Max number of alerts:</b> Maximun 
+	 <b>Max number of alerts:</b> Maximum 
 	 number of alerts that can be sent consecutively.
 	</p><p><b>Time threshold:</b> Minimum 
 	 duration between the firing of two consecutive 

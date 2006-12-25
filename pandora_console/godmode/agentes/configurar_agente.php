@@ -541,10 +541,25 @@ if (give_acl($id_user, 0, "AW")==1) {
 		$result=mysql_query($sql_insert);
 		$id_agente_modulo = mysql_insert_id();
 		// Create with different estado if proc type or data type
-		if (($id_tipo_modulo == 2) || ($id_tipo_modulo == 6) || ($id_tipo_modulo == 9) || ($id_tipo_modulo == 12) || ($id_tipo_modulo == 18)  ){ 
-			$sql_insert = "INSERT INTO tagente_estado (id_agente_modulo,datos,timestamp,cambio,estado,id_agente) VALUES ($id_agente_modulo, 0,'2000-00-00 00:00:00',0,0,'".$id_agente."')"; }
+		if (
+		($id_tipo_modulo == 2) || 
+		($id_tipo_modulo == 6) || 
+		($id_tipo_modulo == 9) || 
+		($id_tipo_modulo == 12) || 
+		($id_tipo_modulo == 18) 
+		){ 
+			$sql_insert = "INSERT INTO tagente_estado 
+			(id_agente_modulo,datos,timestamp,cambio,estado,id_agente) 
+			VALUES (
+			$id_agente_modulo, 0,'0000-00-00 00:00:00',0,0,'".$id_agente."'
+			)";
+		}
 		else { 
-			$sql_insert = "INSERT INTO tagente_estado (id_agente_modulo,datos,timestamp,cambio,estado,id_agente) VALUES ($id_agente_modulo, 0,'2000-00-00 00:00:00',0,100,'".$id_agente."')";
+			$sql_insert = "INSERT INTO tagente_estado 
+			(id_agente_modulo,datos,timestamp,cambio,estado,id_agente) 
+			VALUES (
+			$id_agente_modulo, 0,'0000-00-00 00:00:00',0,100,'".$id_agente."'
+			)";
 		}
 		$result2=mysql_query($sql_insert);
 		if ((! $result) || (! $result2))
@@ -558,39 +573,41 @@ if (give_acl($id_user, 0, "AW")==1) {
 		$id_borrar_modulo = $_GET["delete_module"];
 			$id_grupo = dame_id_grupo($id_agente);
 				if (give_acl($id_user, $id_grupo, "AW")==0){
-					audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to delete a module without admin rights");
+					audit_db($id_user,$REMOTE_ADDR, "ACL Violation",
+					"Trying to delete a module without admin rights");
 					require ("general/noaccess.php");
 					echo "</table>";
 					require ("general/footer.php");
 					exit;
 				}	
 		// Get information of the module to be deleted
-		$sql1='SELECT * FROM tagente_modulo WHERE id_agente_modulo = '.$id_borrar_modulo;
+		$sql1='SELECT * FROM tagente_modulo 
+		WHERE id_agente_modulo = '.$id_borrar_modulo;
 		$result=mysql_query($sql1);
 		$row=mysql_fetch_array($result);
 		$id_agente = $row["id_agente"];
 		$nombre_modulo = $row["nombre"];
 		$id_tipo_modulo = $row["id_tipo_modulo"];
 		// First detele from tagente_modulo
-		$sql_delete= "DELETE FROM tagente_modulo WHERE id_agente_modulo = ".$id_borrar_modulo;
+		$sql_delete= "DELETE FROM tagente_modulo 
+		WHERE id_agente_modulo = ".$id_borrar_modulo;
 		$result=mysql_query($sql_delete);
 		if (! $result)
 			echo "<h3 class='error'>".$lang_label["delete_module_no"]."</h3>"; 
 		else
 			echo "<h3 class='suc'>".$lang_label["delete_module_ok"]."</h3>";
 		// Then delete all staus
-		$sql_delete = "DELETE FROM tagente_estado WHERE id_agente_modulo = ".$id_borrar_modulo;
-		//echo "DEBUG SQL_DELETE $sql_delete <br>";
+		$sql_delete = "DELETE FROM tagente_estado 
+		WHERE id_agente_modulo = ".$id_borrar_modulo;
 		$result=mysql_query($sql_delete);
-		// And finally, delete all data of this module
-		$sql_delete = "DELETE FROM tagente_datos WHERE id_agente_modulo = ".$id_borrar_modulo;
-		//echo "DEBUG SQL_DELETE $sql_delete <br>";
+		$sql_delete = "DELETE FROM tagente_datos 
+		WHERE id_agente_modulo = ".$id_borrar_modulo;
 		$result=mysql_query($sql_delete);
-		$sql_delete = "DELETE FROM tagente_datos_string WHERE id_agente_modulo = ".$id_borrar_modulo;
-		//echo "DEBUG SQL_DELETE $sql_delete <br>";
+		$sql_delete = "DELETE FROM tagente_datos_string 
+		WHERE id_agente_modulo = ".$id_borrar_modulo;
 		$result=mysql_query($sql_delete);
-		$sql_delete = "DELETE FROM tagente_datos_inc WHERE id_agente_modulo = ".$id_borrar_modulo;
-		//echo "DEBUG SQL_DELETE $sql_delete <br>";
+		$sql_delete = "DELETE FROM tagente_datos_inc 
+		WHERE id_agente_modulo = ".$id_borrar_modulo;
 		$result=mysql_query($sql_delete);
 		
 	}
@@ -601,9 +618,17 @@ if (give_acl($id_user, 0, "AW")==1) {
 // ========================
 
 echo "<h2>".$lang_label["agent_conf"]."</h2>";
-if (isset($_GET["creacion"])){echo "<h3>".$lang_label["create_agent"]."<a href='help/".$help_code."/chap3.php#32' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";}
-else {echo "<h3>".$lang_label["update_agent"]."<a href='help/".$help_code."/chap3.php#32' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";}
-echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente">';
+if (isset($_GET["creacion"])){
+	echo "<h3>".$lang_label["create_agent"]."
+	<a href='help/".$help_code."/chap3.php#32' target='_help' class='help'>
+	&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	} else {
+		echo "<h3>".$lang_label["update_agent"]."
+		<a href='help/".$help_code."/chap3.php#32' target='_help' class='help'>
+		&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	}
+echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&
+sec2=godmode/agentes/configurar_agente">';
 if ($creacion_agente == 1)
 	echo "<input type='hidden' name='create_agent' value='1'>";
 else {
@@ -612,21 +637,32 @@ else {
 }
 echo '<table width="650" cellpadding="3" cellspacing="3" class="fon">';
 echo "<tr><td class='lb' rowspan='9' width='5'>";
-echo '<td class="datos"><b>'.$lang_label["agent_name"].'</b></td><td class="datos"><input type="text" name="agente" size=30 value="'.$nombre_agente.'">';
+echo '<td class="datos"><b>'.$lang_label["agent_name"].'</b></td>
+<td class="datos">
+<input type="text" name="agente" size=30 value="'.$nombre_agente.'">';
 if (isset($_GET["creacion"])){
 	echo "&nbsp;";
 } else {
-	echo "&nbsp;<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."' <img src='images/setup.gif' width='19' valign='top' align='middle' border='0'></a>&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'><img src='images/lupa.gif' border='0' align='middle'></a>";
+	echo "&nbsp;<a href='index.php?sec=gagente&
+	sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."' 
+	<img src='images/setup.gif' width='19' valign='top' align='middle' border='0'></a>
+	&nbsp;<a href='index.php?sec=estado&
+	sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'>
+	<img src='images/lupa.gif' border='0' align='middle'></a>";
 } 
 ?>
-<tr><td class="datos2"><b><?php echo $lang_label["ip_address"]?></b><td class="datos2"><input type="text" name="direccion" size=30 value="<?php echo $direccion_agente ?>">
+<tr><td class="datos2"><b><?php echo $lang_label["ip_address"]?></b>
+<td class="datos2">
+<input type="text" name="direccion" size="30" value="
+<?php echo $direccion_agente ?>"></td>
 <!-- Combo for group -->
-<tr><td class="datos"><b><?php echo $lang_label["group"]?></b><td class="datos"><select name="grupo" class="w130"> 
+<tr><td class="datos"><b><?php echo $lang_label["group"]?></b>
+<td class="datos"><select name="grupo" class="w130"> 
 <?php
 if (isset($grupo)){
 echo "<option value='".$grupo."'>".dame_grupo($grupo);
 }
-$sql1='SELECT * FROM tgrupo ORDER BY nombre';
+$sql1='SELECT id_grupo, nombre FROM tgrupo ORDER BY nombre';
 $result=mysql_query($sql1);
 while ($row=mysql_fetch_array($result)){
 	// Group ALL cannot be selected
@@ -636,8 +672,12 @@ while ($row=mysql_fetch_array($result)){
 }
 ?>
 </select>
-<tr><td class="datos2"><b><?php echo $lang_label["interval"]?></b></td><td class="datos2"><input type="text" name="intervalo" size="15" value="<?php echo $intervalo?>"></td>
-<tr><td class="datos"><b><?php echo $lang_label["os"]?></b></td><td class="datos">
+<tr><td class="datos2"><b><?php echo $lang_label["interval"]?></b></td>
+<td class="datos2">
+<input type="text" name="intervalo" size="15" value="
+<?php echo $intervalo?>"></td>
+<tr><td class="datos"><b><?php echo $lang_label["os"]?></b></td>
+<td class="datos">
 <select name="os_name" class="w130">
 <?php
 if (isset($id_os)){
@@ -651,7 +691,8 @@ while ($row=mysql_fetch_array($result)){
 ?>
 </select>
 
-<tr><td class="datos2"><b><?php echo $lang_label["server"]?></b></td><td class="datos2">
+<tr><td class="datos2"><b><?php echo $lang_label["server"]?></b></td>
+<td class="datos2">
 <select name="id_server" class="w130">
 <?php
 echo "<option value='".$id_server."'>".give_server_name($id_server);
@@ -665,31 +706,52 @@ while ($row=mysql_fetch_array($result)){
 </select>
 
 
-<tr><td class="datos"><b><?php echo $lang_label["description"]?></b><td class="datos"><input type="text" name="comentarios" size="55" value="<?php echo $comentarios ?>"></td>
+<tr><td class="datos"><b><?php echo $lang_label["description"]?></b>
+<td class="datos">
+<input type="text" name="comentarios" size="55" value="
+<?php echo $comentarios ?>"></td>
 <tr><td class="datos2"><b><?php echo $lang_label["module_definition"]?></b>
 <td class="datos2">
 	<?php if ($modo == "1"){
-		echo $lang_label["learning_mode"].'<input type="radio" class="chk" name="modo" value="1" checked style="margin-right: 40px;">';
-		echo $lang_label["normal_mode"].' <input type="radio" class="chk" name="modo" value="0">';
+		echo $lang_label["learning_mode"].'
+		<input type="radio" class="chk" name="modo" value="1" class="mr40" checked>';
+		echo $lang_label["normal_mode"].' 
+		<input type="radio" class="chk" name="modo" value="0">';
 	} else {
-		echo $lang_label["learning_mode"].'<input type="radio" class="chk" name="modo" value="1" style="margin-right: 40px;">';
-		echo $lang_label["normal_mode"].'<input type="radio" name="modo" class="chk" value="0" checked>';
+		echo $lang_label["learning_mode"].'
+		<input type="radio" class="chk" name="modo" value="1" class="mr40">';
+		echo $lang_label["normal_mode"].'
+		<input type="radio" name="modo" class="chk" value="0" checked>';
 	}
 	?>
 <tr><td class="datos"><b><?php echo $lang_label["status"]?></b>
 <td class="datos">
 <?php if ($disabled == "1"){
-		echo $lang_label["disabled"].'<input type="radio" class="chk" name="disabled" value="1" checked style="margin-right: 40px;">';
-		echo $lang_label["active"].' <input class="chk" type="radio" name="disabled" value="0">';
+		echo $lang_label["disabled"].'
+		<input type="radio" class="chk" name="disabled" value="1" class="mr40" checked>';
+		echo $lang_label["active"].' 
+		<input class="chk" type="radio" name="disabled" value="0">';
 	} else {
-		echo $lang_label["disabled"].'<input type="radio" class="chk" name="disabled" value="1" style="margin-right: 40px;">';
-		echo $lang_label["active"].'<input type="radio" name="disabled" class="chk" value="0" checked>';
+		echo $lang_label["disabled"].'
+		<input type="radio" class="chk" name="disabled" value="1" class="mr40">';
+		echo $lang_label["active"].'
+		<input type="radio" name="disabled" class="chk" value="0" checked>';
 	}
 ?>
 <tr><td colspan='3'><div class='raya'></div></td></tr>
 <tr><td colspan="3" align="right">
-<?php if (isset($_GET["creacion"])){echo "<input name='crtbutton' type='submit' class='sub' value='".$lang_label["create"]."'>";}
-else {echo "<input name='uptbutton' type='submit' class='sub' value='".$lang_label["update"]."'>";} ?></td>
+<?php 
+if (isset($_GET["creacion"])){
+	echo "
+	<input name='crtbutton' type='submit' class='sub' value='".
+	$lang_label["create"]."'>";
+} else {
+	echo "
+	<input name='uptbutton' type='submit' class='sub' value='".
+	$lang_label["update"]."'>";
+}
+?>
+</td>
 </form>
 </table>
 

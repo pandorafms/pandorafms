@@ -1,3 +1,9 @@
+2006-12-26 Raul Mateos  <raulofpandora@gmail.com>
+
+	* extras/Pandora_DataServer_Diagram-1.odg,
+	Pandora_DataServer_Diagram-2.odg, Pandora_NetworkServer_Diagram.odg:
+	New files with new architecture. First try.
+
 2006-12-26 Manuel Arostegui <marostegui@artica.es>
 
 	* en/pandora_introduction.xml, pandora_advanced.xml, pandora_install.xml

@@ -142,6 +142,7 @@ INSERT INTO `tlanguage` VALUES ('pt_br','Portugu&ecirc;s-Brasil');
 INSERT INTO `tlanguage` VALUES ('fr','Fran&ccedil;ais');
 INSERT INTO `tlanguage` VALUES ('it','Italiano');
 INSERT INTO `tlanguage` VALUES ('ca','Catal&agrave;');
+INSERT INTO `tlanguage` VALUES ('gl','Galego;');
 
 --
 -- Dumping data for table `tmodule_group`

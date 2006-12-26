@@ -1,3 +1,14 @@
+2006-12-26 Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/languages/language_es*.php: Updated.
+	
+	* include/languages/language_gl*.php: New galician language.
+	
+	* operation/agentes/bulbs.php: New file with the bulbs. Used by
+	estado_agente.php.
+	
+	* pandoradb_data.sql: Updated to use the new language.
+
 2006-12-25 Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/styles/pandora.css: New style mr40.

@@ -61,7 +61,7 @@ $lang_label["in_openedby"]="Propietario";
 $lang_label["in_openedwhen"]="Abierto el";
 $lang_label["updated_at"]="Actualizado el";
 
-$lang_label["main_text"]="Esta es la Consola de Administraci&oacute;n de Pandora. Desde aqu&iacute; puede gestionar sus agentes, alertas e incidentes. La sesi&oacute;n permanecer&aacute; abierta mientras exista uactividad.";
+$lang_label["main_text"]="Esta es la Consola de Administraci&oacute;n de Pandora. Desde aqu&iacute; puede gestionar sus agentes, alertas e incidentes. La sesi&oacute;n permanecer&aacute; abierta mientras exista actividad.";
 
 $lang_label["id_user"]="ID usuario";
 $lang_label["real_name"]="Nombre Real";

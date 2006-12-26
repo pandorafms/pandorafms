@@ -204,56 +204,76 @@ if (comprueba_login() == 0) {
 				echo "<td class='$tdcolor'>";
 				$id_grupo=dame_id_grupo($id_agente);
 				if (give_acl($id_user, $id_grupo, "AW")==1){
-					echo "<a href='index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente=".$id_agente."'><img src='images/setup.gif' border=0 width=15></a>";
+					echo "<a href='index.php?sec=gagente&amp;
+					sec2=godmode/agentes/configurar_agente&amp;
+					id_agente=".$id_agente."'>
+					<img src='images/setup.gif' border=0 width=15></a>";
 				}
-				echo "&nbsp;&nbsp;<a href='index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente=".$id_agente."'><b>".$nombre_agente."</b></a>";
+				echo "&nbsp;&nbsp;<a href='index.php?sec=estado&amp;
+				sec2=operation/agentes/ver_agente&amp;id_agente=".$id_agente."'>
+				<b>".$nombre_agente."</b></a></td>";
 				if ( $agent_type == 0) {
 					// Show SO icon :)
-					echo "<td class='$tdcolor' align='center'><img border=0 src='images/".dame_so_icon($id_os)."' height=18 alt='".dame_so_name($id_os)."'>";
+					echo "<td class='$tdcolor' align='center'>
+					<img border=0 src='images/".dame_so_icon($id_os)."' 
+					height=18 alt='".dame_so_name($id_os)."'></td>";
 				} elseif ($agent_type == 1) {
-					// Show network icon (for pandora 1.2)
-					echo "<td class='$tdcolor' align='center'><img border=0 src='images/network.gif' height=18 alt='Network Agent'>";
+					// Show network icon
+					echo "<td class='$tdcolor' align='center'>
+					<img border=0 src='images/network.gif' height=18 
+					alt='Network Agent'></td>";
 				}
 				// If there are a module interval bigger than agent interval
-				if ($biginterval > $intervalo)
-					echo "<td class='$tdcolor'><font color='green'>".$biginterval."</font>";
-				else
-					echo "<td class='$tdcolor'>".$intervalo;
-				echo '<td class="'.$tdcolor.'"><img src="images/g_'.$iconindex_g[$id_grupo].'.gif"> ( '.dame_grupo($id_grupo).' )';
-				echo "<td class='$tdcolor'> ".$numero_modulos." <b>/</b> ".$numero_monitor;
-				if ($monitor_bad <> 0)
+				if ($biginterval > $intervalo) {
+					echo "<td class='$tdcolor'>
+					<span class='green'>".$biginterval."</span></td>";
+				} else {
+					echo "<td class='$tdcolor'>".$intervalo."</td>";
+				}
+				echo '<td class="'.$tdcolor.'">
+				<img src="images/g_'.$iconindex_g[$id_grupo].'.gif"> 
+				( '.dame_grupo($id_grupo).' )</td>';
+				echo "<td class='$tdcolor'> ".
+				$numero_modulos." <b>/</b> ".$numero_monitor;
+				if ($monitor_bad <> 0) {
 					echo " <b>/</b> <span class='red'>".$monitor_bad."</span>";
-				if ($monitor_down <> 0)
-					echo " <b>/</b> <font class='grey'>".$monitor_down."</font>";
+				}
+				if ($monitor_down <> 0){
+					echo " <b>/</b> <span class='grey'>".$monitor_down."</span>";
+				}
+				echo "</td>
+				<td class='$tdcolor' align='center'>";	
 				if ($numero_monitor <> 0){
 					if ($estado_general <> 0){
 						if ($estado_cambio == 0){
-							echo "<td class='$tdcolor' align='center'><img src='images/b_red.gif'>";
+							echo "<img src='images/b_red.gif'>";
 						} else {
-							echo "<td class='$tdcolor' align='center'><img src='images/b_yellow.gif'>";
+							echo "<img src='images/b_yellow.gif'>";
 						}
-					} elseif ($monitor_ok > 0)
-						echo "<td class='$tdcolor' align='center'><img src='images/b_green.gif'>";
-					elseif ($numero_datamodules > 0) 
-						echo "<td class='$tdcolor' align='center'><img src='images/b_white.gif'>";
-					elseif ($monitor_down > 0)
-						echo "<td class='$tdcolor' align='center'><img src='images/b_down.gif'>"; 
-					
-					
-				} else
-					echo "<td class='$tdcolor' align='center'><img src='images/b_blue.gif'>";
-				
+					} elseif ($monitor_ok > 0) {
+						echo "<img src='images/b_green.gif'>";
+					}
+					elseif ($numero_datamodules > 0) {
+						echo "<img src='images/b_white.gif'>";
+					}
+					elseif ($monitor_down > 0) {
+						echo "<img src='images/b_down.gif'>"; 
+					}
+				} else {
+					echo "<img src='images/b_blue.gif'>";
+				}
 			// checks if an alert was fired recently
 				echo "<td class='$tdcolor' align='center'>";
-				if (check_alert_fired($id_agente) == 1)
+				if (check_alert_fired($id_agente) == 1) {
 					echo "<img src='images/dot_red.gif'>";
-				else
+				} else {
 					echo "<img src='images/dot_green.gif'>";
-						
+				}
+				echo "</td>";
 				echo "<td class='$tdcolor'>";
-				if ( $ultimo_contacto == "0000-00-00 00:00:00")
+				if ( $ultimo_contacto == "0000-00-00 00:00:00"){
 					echo $lang_label["never"];
-				else  {
+				} else {
 					$ultima = strtotime($ultimo_contacto);
 					$ahora = strtotime("now");
 					$diferencia = $ahora - $ultima;
@@ -262,29 +282,17 @@ if (comprueba_login() == 0) {
 					} else {
 						echo "N/A";
 					}
-					echo "<a href='#' class='info2'><img src='reporting/fgraph.php?tipo=progress&amp;percent=".$percentil."&amp;height=15&amp;width=80' border='0'>&nbsp;
-					<span>$ultimo_contacto</span></a>";
-					// echo $ultimo_contacto;
+					echo "<a href='#' class='info2'>
+					<img src='reporting/fgraph.php?tipo=progress&amp;percent=".
+					$percentil."&amp;height=15&amp;width=80' border='0'>
+					&nbsp;<span>$ultimo_contacto</span></a>";
 				}
 				
 			} // If pertenece/belongs to group
 		}
 		echo "<tr><td colspan='8'><div class='raya'></div></td></tr>";
 		echo "</table><br>";
-		echo "<table cellpadding='3' cellspacing='3'>";
-		echo "<tr><td class='f9i'>";
-		echo "<img src='images/b_green.gif'> - ".$lang_label["green_light"]."</td>";
-		echo "<td class='f9i'>";
-		echo "<img src='images/b_red.gif'> - ".$lang_label["red_light"]."</td>";
-		echo "<td class='f9i'>";
-		echo "<img src='images/b_yellow.gif'> - ".$lang_label["yellow_light"]."</td>";
-		echo "<tr><td class='f9i'>";
-		echo "<img src='images/b_white.gif'> - ".$lang_label["no_light"]."</td>";
-		echo "<td class='f9i'>";
-		echo "<img src='images/b_blue.gif'> - ".$lang_label["blue_light"]."</td>";
-		echo "<td class='f9i'>";
-		echo "<img src='images/b_down.gif'> - ".$lang_label["broken_light"]."</td>";
-		echo "</table>";
+		require "bulbs.php";
 	}
 	else {
 		echo '</table><br><div class="nf">'.$lang_label["no_agent"].'</div>';

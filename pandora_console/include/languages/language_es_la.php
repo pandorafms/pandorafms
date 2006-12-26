@@ -65,7 +65,7 @@ $lang_label["in_openedby"]="Propietario";
 $lang_label["in_openedwhen"]="Abierto el";
 $lang_label["updated_at"]="Actualizado el";
 
-$lang_label["main_text"]="Esta es la Consola de Administraci&oacute;n de Pandora. Desde aqu&iacute; puede administrar sus agentes, alertas e incidentes. La sesi&oacute;n permanecer&aacute; abierta mientras no exista una inactividad prolongada.";
+$lang_label["main_text"]="Esta es la Consola de Administraci&oacute;n de Pandora. Desde aqu&iacute; puede administrar sus agentes, alertas e incidentes. La sesi&oacute;n permanecer&aacute; abierta mientras exista actividad.";
 
 $lang_label["id_user"]="ID usuario";
 $lang_label["real_name"]="Nombre Real";
@@ -95,7 +95,7 @@ $lang_label["no_access_title"]="No tiene permiso para acceder a esta p&aacute;gi
 $lang_label["no_access_text"]="El acceso a esta p&aacute;gina est&aacute; restringido a usuarios autorizados, contacte al administrador del sistema si necesita ayuda. <br><br>Todos los intentos de acceso a esta p&aacute;gina son grabados en los logs de seguridad de Pandora";
 $lang_label["header_title"]="Sistema Libre de Monitorizaci&oacute;n";
 
-$lang_label["gpl_notice"]="es un <b>Proyecto de Software GPL</b>";
+$lang_label["gpl_notice"]="es un <b>Proyecto de Software Libre bajo licencia GPL</b>";
 $lang_label["gpl_used"]="Desarrollado utilizando herramientas y software GPL"; 
 $lang_label["gen_date"]="P&aacute;gina generada el ";
 

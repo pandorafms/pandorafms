@@ -428,9 +428,9 @@
     constructed. For instance, If we have a sample of 9.000 elements, 
     distributed during 90 days, Pandora will take the data of
     last month, which would be 3.000 elements and will compress it in 300. 
-    In the graphs they will practically be equal, and  it will be usfel for the reports, statistics
+    In the graphs they will practically be equal, and  it will be useful for the reports, statistics
     and other tasks. This is made thanks to a interpolation in temporary
-    strips, in a totally automatic and periodic way, there is not user
+    strips, in a totally automatic and periodic way, there is no user
     or the administrator needed to do this.
   </para>
   </sect3>
@@ -495,8 +495,8 @@
   <para>
     Pandora is a project initiated and mainly developed by Sancho
     Lerena, at present other people is working on it: Raul Mateos,
-    David Villanueva, Esteban Sanchez, Jose Navarro and Jonathan
-    Barajas. We want to thank many other people who help us
+    David Villanueva, Esteban Sanchez, Jose Navarro, Jonathan
+    Barajas and Manuel Arostegui. We want to thank many other people who help us
     with translation, graphic design, bugs reporting and interesting
     ideas.
   </para>

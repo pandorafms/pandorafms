@@ -44,7 +44,7 @@
       <listitem>
 	<para>
 	  <emphasis>Multiple Pandora Network Servers for HA
-	  </emphasis>. This is more easy. You need to setup multiple
+	  </emphasis>. This is easier. You need to setup multiple
 	  network servers in several machines across your network (or
 	  all of them in the same segment), and assign modules to the
 	  same server. If this servers fails, and there are other

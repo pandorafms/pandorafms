@@ -29,6 +29,7 @@
     %define is_rh7 %(test -n "`cat /etc/redhat-release | grep '(Valhalla)'`" && echo 1 || echo 0)
     %define is_el2 %(test -n "`cat /etc/redhat-release | grep '(Pensacola)'`" && echo 1 || echo 0)
     %define is_centos2 %(test -n "`cat /etc/redhat-release | grep 'CentOS release 2'`" && echo 1 || echo 0)
+    %define is_fedora %(test -n "`cat /etc/redhat-release | grep 'Fedora'`" && echo 1 || echo 0)
 %endif
 %define is_apache   0
 %if %{is_rh7}
@@ -39,6 +40,9 @@
 %endif
 %if %{is_centos2}
 %define is_apache   1
+%if %{is_fedora}
+%define is_apache   1
+%endif
 %endif
 # Evaluate PHP version
 %define phpver_lt_430 %(out=`rpm -q --queryformat='%{VERSION}' php` 2>&1 >/dev/null || out=0 ; out=`echo $out | tr . : | sed s/://g` ; if [ $out -lt 430 ] ; then out=1 ; else out=0; fi ; echo $out)
@@ -57,7 +61,7 @@ Packager:           Manuel Arostegui <marostegui@artica.es>
 %if "%{_vendor}" == "suse"
 Prefix:             /srv/www
 %else
-Prefix:             /var/www
+Prefix:             /var/www/html
 %endif
 BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
 BuildArchitectures: noarch

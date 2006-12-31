@@ -1,3 +1,12 @@
+2006-12-31 Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/functions.php, functions_db.php: Move list_group from f*.php
+	to f*_db.php. Add two new functions to show icons.
+	
+	* operation/agentes/*.php, operation/eventos/eventos.php, 
+	godmode/agentes/*.php: Updated files to use the new functions for icons.
+	Clear code. Clear sytle.
+	
 2006-12-29 Manuel Arostegui <marostegui@artica.es>
 	
 	* pandora_console.spec: Added missing path.

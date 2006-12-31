@@ -39,15 +39,6 @@ if (comprueba_login() == 0) {
 	if (isset($_GET["id_agente"])){
 		$id_agente = $_GET["id_agente"];
 	}
-
-	// Load icon index from ttipo_modulo
-	$iconindex[]="";
-
-	$sql_tm='SELECT id_tipo, icon FROM ttipo_modulo';
-	$result_tm=mysql_query($sql_tm);
-	while ($row_tm=mysql_fetch_array($result_tm)){
-		$iconindex[$row_tm["id_tipo"]] = $row_tm["icon"];
-	}
 	
 	// View last data packet		
 	// Get timestamp of last packet
@@ -108,9 +99,21 @@ if (comprueba_login() == 0) {
 			if (give_acl($id_usuario, $id_grupo, "AW")==1){
 				if ($row3["id_tipo_modulo"] > 4){
 					if ($row3["flag"] == 0){
-						echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."&id_agente_modulo=".$row3["id_agente_modulo"]."&flag=1&refr=60'><img src='images/target.gif' border=0></a>";
+						echo "<a href='index.php?sec=estado&
+						sec2=operation/agentes/ver_agente&
+						id_agente=".$id_agente."&
+						id_agente_modulo=".$row3["id_agente_modulo"]."&
+						flag=1&
+						refr=60'>
+						<img src='images/target.gif' border=0></a>";
 					} else {
-						echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."&id_agente_modulo=".$row3["id_agente_modulo"]."&flag=1&refr=60'><img src='images/refresh.gif' border=0></a>";
+						echo "<a href='index.php?sec=estado&
+						sec2=operation/agentes/ver_agente&
+						id_agente=".$id_agente."&
+						id_agente_modulo=".$row3["id_agente_modulo"]."&
+						flag=1&
+						refr=60'>
+						<img src='images/refresh.gif' border=0></a>";
 					}
 				} 				
 			} 
@@ -119,7 +122,9 @@ if (comprueba_login() == 0) {
 				if (($label_group == 0) || ($last_label != $nombre_grupomodulo)){	// Show label module group
 					$label_group = -1;
 					$last_label = $nombre_grupomodulo;
-					$texto = $texto. "<td class='$tdcolor' align='center' colspan=7><b>".$nombre_grupomodulo."</b>";
+					$texto = $texto. "
+					<td class='$tdcolor' align='center' colspan=7>
+					<b>".$nombre_grupomodulo."</b>";
 				}
 			}
 			
@@ -127,7 +132,7 @@ if (comprueba_login() == 0) {
 			echo "<td class='".$tdcolor."_id'>";
 			echo salida_limpia(substr($row3["nombre"],0,15));
 			echo "<td class='".$tdcolor."'>";
-			echo "<img src='images/".$iconindex[$row3["id_tipo_modulo"]]."' border=0>";
+			echo "<img src='images/".show_icon_type($row3["id_tipo_modulo"])."' border=0>";
 			echo "<td class='".$tdcolor."'>";
 			if ($row3["module_interval"] != 0)
 				echo $row3["module_interval"];
@@ -140,7 +145,9 @@ if (comprueba_login() == 0) {
 				echo "...";
 			}
 			// For types not string type (3 data_string, 9 tcp_string, 14 snmp_string)
-			if (($row3["id_tipo_modulo"] != 3) AND ($row3["id_tipo_modulo"] != 10) AND ($row3["id_tipo_modulo"] != 17)){
+			if (($row3["id_tipo_modulo"] != 3) 
+			AND ($row3["id_tipo_modulo"] != 10) 
+AND ($row3["id_tipo_modulo"] != 17)){
 				echo "<td class=".$tdcolor.">";
 				if (($row3["datos"] != 0) AND (is_numeric($row3["datos"]))){
 					$mytempdata = fmod($row3["datos"], $row3["datos"]);
@@ -182,11 +189,16 @@ if (comprueba_login() == 0) {
 			}
 			
 			echo "<td class=".$tdcolor." width=70>";
-			echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=mes&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_m.gif'>&nbsp;&nbsp;";
-			echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=semana&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_w.gif'>&nbsp;&nbsp;";
-			echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=dia&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_d.gif'>";
-			echo "<td class='".$tdcolor."f9'>".$row3["timestamp"];
-
+			echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=mes&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_m.gif'></a>&nbsp;&nbsp;";
+			echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=semana&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_w.gif'></a>&nbsp;&nbsp;";
+			echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=dia&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_d.gif'></a>";
+			echo "<td class='".$tdcolor."f9'>";
+				if ($row3["timestamp"] == "0000-00-00 00:00:00"){ 
+					echo $lang_label["never"];
+				} else {
+					echo $row3["timestamp"];
+				}
+			echo "</td></tr>";
  		//}
 	}
 	echo '<tr><td colspan="9"><div class="raya"></div></td></tr></table>';

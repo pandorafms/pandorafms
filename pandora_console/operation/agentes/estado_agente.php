@@ -63,21 +63,7 @@ if (comprueba_login() == 0) {
 		"</option>";
 	}
 	echo "<option value=1>".dame_nombre_grupo(1)."</option>"; // Group all is always active 
-	// Group 1 (ALL) gives A LOT of problems, be careful with this code:
-	// Run query on all groups and show data only if ACL check its ok: $iduser_temp is user, and acl is AR (agent read)
-	$mis_grupos[]=""; // Define array mis_grupos to put here all groups with Agent Read permission
-	
-	$sql='SELECT id_grupo FROM tgrupo';
-	$result=mysql_query($sql);
-	while ($row=mysql_fetch_array($result)){
-	if ($row["id_grupo"] != 1){
-		if (give_acl($id_user,$row["id_grupo"], "AR") == 1){
-			echo "<option value='".$row["id_grupo"]."'>".
-			dame_nombre_grupo($row["id_grupo"])."</option>";
-			$mis_grupos[]=$row["id_grupo"]; //Put in  an array all the groups the user belongs
-		}
-	}
-	}
+	$mis_grupos=list_group ($id_user); //Print combo for groups and set an array with all groups
 	echo "</select>";
 	echo "<td valign='middle'>
 	<noscript>
@@ -97,13 +83,6 @@ if (comprueba_login() == 0) {
 
 	$result=mysql_query($sql);
 	if (mysql_num_rows($result)){
-		// Load icon index from tgrupos
-		$iconindex_g[]="";
-		$sql_g='SELECT id_grupo, icon FROM tgrupo';
-		$result_g=mysql_query($sql_g);
-		while ($row_g=mysql_fetch_array($result_g)){
-			$iconindex_g[$row_g["id_grupo"]] = $row_g["icon"];
-		}
 		echo "<td class='f9l30'>";
 		echo "<img src='images/dot_red.gif'> - ".$lang_label["fired"];
 		echo "&nbsp;&nbsp;</td>";
@@ -231,7 +210,7 @@ if (comprueba_login() == 0) {
 					echo "<td class='$tdcolor'>".$intervalo."</td>";
 				}
 				echo '<td class="'.$tdcolor.'">
-				<img src="images/g_'.$iconindex_g[$id_grupo].'.gif"> 
+				<img src="images/g_'.show_icon_group($id_grupo).'.gif"> 
 				( '.dame_grupo($id_grupo).' )</td>';
 				echo "<td class='$tdcolor'> ".
 				$numero_modulos." <b>/</b> ".$numero_monitor;

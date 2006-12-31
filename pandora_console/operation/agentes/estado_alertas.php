@@ -96,9 +96,9 @@ if (comprueba_login() == 0) {
 		// Show only selected groups	
 	
 		if ($ag_group > 1)
-			$sql='SELECT * FROM tagente WHERE id_grupo='.$ag_group.' ORDER BY nombre';
+			$sql='SELECT id_agente, nombre, disabled FROM tagente WHERE id_grupo='.$ag_group.' ORDER BY nombre';
 		else 
-			$sql='SELECT * FROM tagente ORDER BY id_grupo, nombre';
+			$sql='SELECT id_agente, nombre, disabled FROM tagente ORDER BY id_grupo, nombre';
 
 		$result=mysql_query($sql);
 		if (mysql_num_rows($result)){

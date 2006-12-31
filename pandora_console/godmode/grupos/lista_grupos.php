@@ -26,7 +26,8 @@ if (comprueba_login() == 0)
 	if (isset($_POST["crear_grupo"])){ // Create group
 		$nombre = entrada_limpia($_POST["nombre"]);
 		$icon = entrada_limpia($_POST["icon"]);
-		$sql_insert="INSERT INTO tgrupo (nombre, icon) VALUES ('".$nombre."', '".$icon."') ";
+		$sql_insert="INSERT INTO tgrupo (nombre, icon) 
+		VALUES ('".$nombre."', '".$icon."') ";
 		echo $sql_insert;
 		$result=mysql_query($sql_insert);	
 		if (! $result)
@@ -41,7 +42,9 @@ if (comprueba_login() == 0)
 		$nombre = entrada_limpia($_POST["nombre"]);
 		$id_grupo = entrada_limpia($_POST["id_grupo"]);
 		$icon = entrada_limpia($_POST["icon"]);
-	    $sql_update ="UPDATE tgrupo SET nombre = '".$nombre."', icon = '".$icon."' WHERE id_grupo = '".$id_grupo."'";
+	    $sql_update ="UPDATE tgrupo 
+		SET nombre = '".$nombre."', icon = '".$icon."' 
+		WHERE id_grupo = '".$id_grupo."'";
 		$result=mysql_query($sql_update);
 		if (! $result)
 			echo "<h3 class='error'>".$lang_label["modify_group_no"]."</h3>";
@@ -61,38 +64,58 @@ if (comprueba_login() == 0)
 			echo "<h3 class='suc'>".$lang_label["delete_group_ok"]."</h3>";
 	}
 	echo "<h2>".$lang_label["group_management"]."</h2>";	
-	echo "<h3>".$lang_label["definedgroups"]."<a href='help/".$help_code."/chap3.php#31' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	echo "
+		<h3>".$lang_label["definedgroups"]."
+		<a href='help/".$help_code."/chap3.php#31' target='_help' class='help'>
+		<span>".$lang_label["help"]."</span></a>
+		</h3>";
 
-	// Load icon index from tgrupos
-	$iconindex_g[]="";
 	echo "<table cellpadding=3 cellspacing=3>";
 	echo "<th class='w40'>".$lang_label["icon"]."</th>";
 	echo "<th class='w180'>".$lang_label["group_name"]."</th>";
 	echo "<th class='w80'>".$lang_label["delete"]."</th>";
-	$sql1='SELECT * FROM tgrupo ORDER BY nombre';
+	$sql1='SELECT id_grupo, nombre FROM tgrupo ORDER BY nombre';
 	$result=mysql_query($sql1);
 	$color=0;
 	while ($row=mysql_fetch_array($result)){
-	$iconindex_g[$row["id_grupo"]] = $row["icon"];
-	if ($color == 1){
-		$tdcolor = "datos";
-		$color = 0;
+		if ($color == 1){
+			$tdcolor = "datos";
+			$color = 0;
+			}
+		else {
+			$tdcolor = "datos2";
+			$color = 1;
 		}
-	else {
-		$tdcolor = "datos2";
-		$color = 1;
-	}
-	if ($row["id_grupo"] != 1){
-		echo "<tr><td class='$tdcolor' align='center'><img src='images/g_".$iconindex_g[$row["id_grupo"]].".gif' border='0'>"	;
-		echo "<td class='$tdcolor'><b><a href='index.php?sec=gagente&sec2=godmode/grupos/configurar_grupo&id_grupo=".$row["id_grupo"]."'>".$row["nombre"]."</a></b>";
-		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/grupos/lista_grupos&id_grupo=".$row["id_grupo"]."&borrar_grupo=".$row["id_grupo"]."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cancel.gif'></a>";
-	}
+		if ($row["id_grupo"] != 1){
+			echo "
+			<tr>
+				<td class='$tdcolor' align='center'>
+				<img src='images/g_".show_icon_group($row["id_grupo"]).".gif' 
+				border='0'>
+				</td>
+				<td class='$tdcolor'>
+				<b><a href='index.php?sec=gagente&
+				sec2=godmode/grupos/configurar_grupo&
+				id_grupo=".$row["id_grupo"]."'>".$row["nombre"]."</a>
+				</b></td>
+				<td class='$tdcolor' align='center'>
+				<a href='index.php?sec=gagente&
+				sec2=godmode/grupos/lista_grupos&
+				id_grupo=".$row["id_grupo"]."&
+				borrar_grupo=".$row["id_grupo"]."' 
+				onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) 
+				return false;'>
+				<img border='0' src='images/cancel.gif'></a>
+				</td>
+			</tr>";
+		}
 	}
 	echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
 	echo "<tr><td colspan='3' align='right'>";
-	echo "<form method=post action='index.php?sec=gagente&sec2=godmode/grupos/configurar_grupo&creacion_grupo=1'>";
+	echo "<form method=post action='index.php?sec=gagente&
+	sec2=godmode/grupos/configurar_grupo&creacion_grupo=1'>";
 	echo "<input type='submit' class='sub' name='crt' value='".$lang_label["create_group"]."'>";
-	echo "</form></table>";
+	echo "</form></td></tr></table>";
 
    } // Fin pagina
    else {

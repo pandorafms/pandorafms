@@ -157,7 +157,6 @@ if (comprueba_login() == 0) {
 	echo "<td><form method='post' action='index.php?sec=eventos&sec2=operation/events/events&refr=60'>";
 	echo "<select name='event' onChange='javascript:this.form.submit();' class='w155'>";
 
-
 	// Prepare index for pagination
 	$event_list[]="";
 	if (isset($_POST["event"])){
@@ -202,12 +201,14 @@ if (comprueba_login() == 0) {
 	}
 	$result=mysql_query($sql);
 	while ($row=mysql_fetch_array($result)){
-			echo "<option value='".$row["evento"]."'>".$row["evento"]."</option>";
-		}
+		echo "<option value='".$row["evento"]."'>".$row["evento"]."</option>";
+	}
 	echo "</select>";
 	echo "</form>";
 	echo "<td valign='middle'>";
-	echo "<noscript><input type='submit' class='sub' value='".$lang_label["show"]."'></noscript>";
+	echo "<noscript>
+	<input type='submit' class='sub' value='".$lang_label["show"]."'>
+	</noscript>";
 	echo "</td></tr>";
 	echo "</table>";
 	echo "<br>";
@@ -215,7 +216,6 @@ if (comprueba_login() == 0) {
 	//pagination
 	$total_eventos = count($event_list);
 	pagination($total_eventos, "index.php?sec=eventos&sec2=operation/events/events", $offset);
-	
 	if (isset($_GET["offset"])){
 		$offset=entrada_limpia($_GET["offset"]);
 	} else {
@@ -289,14 +289,14 @@ if (comprueba_login() == 0) {
 				echo "<td class='$tdcolor'>".$row["evento"];
 				if ($row["id_agente"] > 0){
 						echo "<td class='$tdcolor'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row["id_agente"]."'><b>".dame_nombre_agente($row["id_agente"])."</b></a>";
-						echo "<td class='$tdcolor'><img src='images/g_".$iconindex_g[$id_group].".gif'> ( ".dame_grupo($id_group)." )</td>";
+						echo "<td class='$tdcolor'><img src='images/g_".show_icon_group($id_group).".gif'> ( ".dame_grupo($id_group)." )</td>";
 						echo "<td class='$tdcolor'>";
 					} else { // for SNMP generated alerts
 						echo "<td class='$tdcolor' colspan='2'>".$lang_label["alert"]." /  SNMP";
 						echo "<td class='$tdcolor'>";
 					}
 					if ($row["estado"] <> 0)
-						echo "<a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$row["id_user"]."'><a href='#' class='tip'>&nbsp;<span>".dame_nombre_real($row["id_user"])."</span></a>".substr($row["id_user"],0,8)."</a>";
+						echo "<a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$row["id_usuario"]."'><a href='#' class='tip'>&nbsp;<span>".dame_nombre_real($row["id_usuario"])."</span></a>".substr($row["id_usuario"],0,8)."</a>";
 					echo "<td class='$tdcolor'>".$row["timestamp"];
 					echo "<td class='$tdcolor' align='center'>";
 					

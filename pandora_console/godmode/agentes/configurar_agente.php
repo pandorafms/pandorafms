@@ -581,7 +581,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 					exit;
 				}	
 		// Get information of the module to be deleted
-		$sql1='SELECT * FROM tagente_modulo 
+		$sql1='SELECT id_agente, nombre, id_tipo_modulo FROM tagente_modulo 
 		WHERE id_agente_modulo = '.$id_borrar_modulo;
 		$result=mysql_query($sql1);
 		$row=mysql_fetch_array($result);
@@ -683,7 +683,7 @@ while ($row=mysql_fetch_array($result)){
 if (isset($id_os)){
 	echo "<option value='".$id_os."'>".dame_so_name($id_os);
 }
-$sql1='SELECT * FROM tconfig_os ORDER BY name';
+$sql1='SELECT id_os, name FROM tconfig_os ORDER BY name';
 $result=mysql_query($sql1);
 while ($row=mysql_fetch_array($result)){
 	echo "<option value='".$row["id_os"]."'>".$row["name"];
@@ -696,7 +696,7 @@ while ($row=mysql_fetch_array($result)){
 <select name="id_server" class="w130">
 <?php
 echo "<option value='".$id_server."'>".give_server_name($id_server);
-$sql1='SELECT * FROM tserver where network_server = 1 ORDER BY name';
+$sql1='SELECT id_server, name FROM tserver where network_server = 1 ORDER BY name';
 $result=mysql_query($sql1);
 while ($row=mysql_fetch_array($result)){
 	echo "<option value='".$row["id_server"]."'>".$row["name"];
@@ -760,19 +760,15 @@ if (isset($_GET["creacion"])){
 if ( $creacion_agente != 1) {
 // MODULE VISUALIZATION
 // ======================
-// Load icon index for ttipo_modulo
-	$iconindex[]="";
 
-	$sql_t='SELECT * FROM ttipo_modulo';
-	$result_t=mysql_query($sql_t);
-	while ($row_t=mysql_fetch_array($result_t)){
-		$iconindex[$row_t["id_tipo"]] = $row_t["icon"];
-	}
-	$sql1='SELECT * FROM tagente_modulo WHERE id_agente = "'.$id_agente.'" order by nombre';
+	$sql1='SELECT * FROM tagente_modulo WHERE id_agente = "'.$id_agente.'" 
+	ORDER BY nombre';
 	$result=mysql_query($sql1);
 	if ($row=mysql_num_rows($result)){
 		?>
-		<h3><?php echo $lang_label["assigned_modules"]?><a href='help/<?php echo $help_code ?>/chap3.php#321' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
+		<h3><?php echo $lang_label["assigned_modules"]?>
+		<a href='help/<?php echo $help_code ?>/chap3.php#321' target='_help' class='help'>
+		<span><?php echo $lang_label["help"] ?></span></a></h3>
 		<table width="700" cellpadding="3" cellspacing="3" class="fon">
 		<tr>
 		<th><?php echo $lang_label["module_name"]?>
@@ -803,7 +799,7 @@ if ( $creacion_agente != 1) {
 			echo "<tr><td class='".$tdcolor."_id'>".$nombre_modulo;
 			echo "<td class='".$tdcolor."f9'>";
 			if ($id_tipo > 0) {
-				echo "<img src='images/".$iconindex[$id_tipo]."' border=0>";
+				echo "<img src='images/".show_icon_type($id_tipo)."' border=0>";
 			}
 			if ($module_interval2!=0){
 				echo "<td class='$tdcolor'>".$module_interval2;
@@ -811,8 +807,9 @@ if ( $creacion_agente != 1) {
 				echo "<td class='$tdcolor'> N/A";
 			}
 
-			echo "<td class='$tdcolor'>".substr($descripcion,0,30);
-			echo "<td class='$tdcolor'>".substr(dame_nombre_grupomodulo($module_group2),0,15);
+			echo "<td class='$tdcolor'>".substr($descripcion,0,30)."</td>";
+			echo "<td class='$tdcolor'>".
+			substr(dame_nombre_grupomodulo($module_group2),0,15)."</td>";
 			echo "<td class='$tdcolor'>";
 			if ($module_max == $module_min) {
 				$module_max = "N/A";
@@ -821,8 +818,17 @@ if ( $creacion_agente != 1) {
 			echo $module_max." / ".$module_min;
 			echo "<td class='$tdcolor'>";
 			if ($id_tipo != -1)
-			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&delete_module=".$row["id_agente_modulo"]."'><img src='images/cancel.gif' border=0 alt='".$lang_label["delete"]."'></b></a> &nbsp; ";
-			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&update_module=".$row["id_agente_modulo"]."#modules'><img src='images/config.gif' border=0 alt='".$lang_label["update"]."' onLoad='type_change()'></b></a>";
+			echo "<a href='index.php?sec=gagente&
+			sec2=godmode/agentes/configurar_agente&
+			id_agente=".$id_agente."&
+			delete_module=".$row["id_agente_modulo"]."'>
+			<img src='images/cancel.gif' border=0 alt='".$lang_label["delete"]."'>
+			</b></a> &nbsp; ";
+			echo "<a href='index.php?sec=gagente&
+			sec2=godmode/agentes/configurar_agente&
+			id_agente=".$id_agente."&
+			update_module=".$row["id_agente_modulo"]."#modules'>
+			<img src='images/config.gif' border=0 alt='".$lang_label["update"]."' onLoad='type_change()'></b></a>";
 		}
 		echo "<tr><td colspan='7'><div class='raya'></div></td></tr>";
 	} else 
@@ -852,7 +858,8 @@ $result=mysql_query($sql1);
 			$row2=mysql_fetch_array($result2);
 			//module type modulo is $row2["nombre"];
 			
-			$sql3='SELECT * FROM talerta_agente_modulo WHERE id_agente_modulo = '.$row["id_agente_modulo"];  // From all the alerts give me which are from my agent
+			$sql3='SELECT * FROM talerta_agente_modulo 
+			WHERE id_agente_modulo = '.$row["id_agente_modulo"];  // From all the alerts give me which are from my agent
 			$result3=mysql_query($sql3);
 			while ($row3=mysql_fetch_array($result3)){
 				if ($color == 1){
@@ -876,8 +883,14 @@ $result=mysql_query($sql1);
 				$string = $string."<td class='$tdcolor'>";
 			 	$id_grupo = dame_id_grupo($id_agente);
 				if (give_acl($id_user, $id_grupo, "LW")==1){
-					$string = $string."<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&delete_alert=".$row3["id_aam"]."'><img src='images/cancel.gif' border=0 alt='".$lang_label["delete"]."'></a>  &nbsp; ";
-					$string = $string."<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."&update_alert=".$row3["id_aam"]."#alerts'><img src='images/config.gif' border=0 alt='".$lang_label["update"]."'></a>";		
+					$string = $string."<a href='index.php?sec=gagente&
+					sec2=godmode/agentes/configurar_agente&
+					id_agente=".$id_agente."&delete_alert=".$row3["id_aam"]."'>
+					<img src='images/cancel.gif' border=0 alt='".$lang_label["delete"]."'></a>  &nbsp; ";
+					$string = $string."<a href='index.php?sec=gagente&
+					sec2=godmode/agentes/configurar_agente&
+					id_agente=".$id_agente."&update_alert=".$row3["id_aam"]."#alerts'>
+					<img src='images/config.gif' border=0 alt='".$lang_label["update"]."'></a>";		
 				}
 			}
 		}

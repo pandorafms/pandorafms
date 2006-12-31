@@ -36,7 +36,7 @@ if (comprueba_login() == 0)
 	if (isset($_GET["id_grupo"])){
 		// Conecto con la BBDD
 		$id_grupo = entrada_limpia($_GET["id_grupo"]);
-		$sql1='SELECT * FROM tgrupo WHERE id_grupo = '.$id_grupo;
+		$sql1='SELECT nombre, icon FROM tgrupo WHERE id_grupo = '.$id_grupo;
 		$result=mysql_query($sql1);
 		if ($row=mysql_fetch_array($result)){
 			$nombre = $row["nombre"];
@@ -57,7 +57,8 @@ if (comprueba_login() == 0)
 ?>
 <table width="450">
 
-<form name="grupo" method="post" action="index.php?sec=gagente&sec2=godmode/grupos/lista_grupos">
+<form name="grupo" method="post" action="index.php?sec=gagente&
+sec2=godmode/grupos/lista_grupos">
 
 <?php
 	if ($creacion_grupo == 1)
@@ -68,11 +69,26 @@ if (comprueba_login() == 0)
 	}
 ?>
 <tr><td class='lb' rowspan='3' width='5'>
-<tr><td class="datos"><?php echo $lang_label["group_name"] ?><td class="datos"><input type="text" name="nombre" size="35" value="<?php echo $nombre ?>">
-<tr><td class="datos2"><?php echo $lang_label["icon"] ?><td class="datos2"><input type="icon" name="icon" size="25" value="<?php if (isset($icono)){echo $icono;} ?>">
+<tr><td class="datos"><?php echo $lang_label["group_name"] ?></td>
+<td class="datos">
+<input type="text" name="nombre" size="35" value="<?php echo $nombre ?>">
+</td></tr>
+<tr><td class="datos2"><?php echo $lang_label["icon"] ?></td>
+<td class="datos2">
+<input type="icon" name="icon" size="25" 
+value="<?php if (isset($icono)){echo $icono;} ?>">
+</td></tr>
 <tr><td colspan='3'><div class='raya'></div></td></tr>
-<tr><td colspan="3" align="right"><?php if (isset($_GET["creacion_grupo"])){echo "<input name='crtbutton' type='submit' class='sub' value='".$lang_label["create"]."'>";}
-else {echo "<input name='uptbutton' type='submit' class='sub' value='".$lang_label["update"]."'>";} ?>
+<tr><td colspan="3" align="right">
+<?php 
+if (isset($_GET["creacion_grupo"])){
+	echo "<input name='crtbutton' type='submit' class='sub' 
+	value='".$lang_label["create"]."'>";
+	} else {
+	echo "<input name='uptbutton' type='submit' class='sub' 
+	value='".$lang_label["update"]."'>";
+	} 
+?>
 </form>
 
 </table>
@@ -80,7 +96,8 @@ else {echo "<input name='uptbutton' type='submit' class='sub' value='".$lang_lab
 <?php
    } // fin pagina
 else {
-		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Group Management2");
-		require ("general/noaccess.php");
+	audit_db($id_user,$REMOTE_ADDR, "ACL Violation",
+	"Trying to access Group Management2");
+	require ("general/noaccess.php");
 	}
 ?>

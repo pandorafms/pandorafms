@@ -464,21 +464,4 @@ function pagination ($count, $url, $offset ) {
 	}
 }
 
-function list_group ($id_user){
-	$mis_grupos[]=""; // Define array mis_grupos to put here all groups with Agent Read permission
-	$iconindex_g[]="";
-	$sql='SELECT id_grupo, icon FROM tgrupo';
-	$result=mysql_query($sql);
-	while ($row=mysql_fetch_array($result)){
-		$iconindex_g[$row["id_grupo"]] = $row["icon"];
-		if ($row["id_grupo"] != 1){
-			if (give_acl($id_user,$row["id_grupo"], "AR") == 1){
-				echo "<option value='".$row["id_grupo"]."'>".
-				dame_nombre_grupo($row["id_grupo"])."</option>";
-				$mis_grupos[]=$row["id_grupo"]; //Put in  an array all the groups the user belongs
-			}
-		}
-	}
-}
-
 ?>

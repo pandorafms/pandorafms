@@ -574,5 +574,53 @@ function give_agentmodule_flag($id_agent_module){
 	return $interval;
 }
 
+// ---------------------------------------------------------------------- 
+// Returns a combo with the groups and defines an array 
+// to put all groups with Agent Read permission
+// ----------------------------------------------------------------------
+
+function list_group ($id_user){
+	$mis_grupos[]=""; // Define array mis_grupos to put here all groups with Agent Read permission
+	$sql='SELECT id_grupo FROM tgrupo';
+	$result=mysql_query($sql);
+	while ($row=mysql_fetch_array($result)){
+		if ($row["id_grupo"] != 1){
+			if (give_acl($id_user,$row["id_grupo"], "AR") == 1){
+				echo "<option value='".$row["id_grupo"]."'>".
+				dame_nombre_grupo($row["id_grupo"])."</option>";
+				$mis_grupos[]=$row["id_grupo"]; //Put in  an array all the groups the user belongs
+			}
+		}
+	}
+	return ($mis_grupos);
+}
+
+// --------------------------------------------------------------- 
+// Return Group iconname given its name
+// --------------------------------------------------------------- 
+
+function show_icon_group($id_group){ 
+	$sql="SELECT icon FROM tgrupo WHERE id_grupo='$id_group'";
+	$result=mysql_query($sql);
+	if ($row=mysql_fetch_array($result))
+		$pro=$row["icon"];
+	else
+		$pro = "";
+	return $pro;
+}
+
+// --------------------------------------------------------------- 
+// Return Type iconname given its name
+// --------------------------------------------------------------- 
+
+function show_icon_type($id_tipo){ 
+	$sql="SELECT id_tipo, icon FROM ttipo_modulo WHERE id_tipo='$id_tipo'";
+	$result=mysql_query($sql);
+	if ($row=mysql_fetch_array($result))
+		$pro=$row["icon"];
+	else
+		$pro = "";
+	return $pro;
+}
 
 ?>

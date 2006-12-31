@@ -21,14 +21,6 @@ require("include/config.php");
 if (comprueba_login() == 0) {
  	if ((give_acl($id_user, 0, "AR")==1) or (give_acl($id_user,0,"AW")) or (dame_admin($id_user)==1)) {
 	
-	// Load icon index array from ttipo_modulo
-	$iconindex[]="";
-	$sql_tm='SELECT id_tipo, icon FROM ttipo_modulo';
-	$result_tm=mysql_query($sql_tm);
-	while ($row_tm=mysql_fetch_array($result_tm)){
-		$iconindex[$row_tm["id_tipo"]] = $row_tm["icon"];
-	}
-
 	echo "<h2>".$lang_label["ag_title"]."</h2>";
 	echo "<h3>".$lang_label["monitor_listing"]."<a href='help/".$help_code."/chap3.php#334' target='_help' class='help'>
 	&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
@@ -161,7 +153,8 @@ if (comprueba_login() == 0) {
 						dame_nombre_agente($data["id_agente"])."</a></b></td>";
 						$string=$string."<td class='$tdcolor'>";
 						$string=$string."
-						<img src='images/".$iconindex[$data["id_tipo_modulo"]]."' border=0></td>";
+						<img src='images/".show_icon_type($data["id_tipo_modulo"])."' border=0>
+						</td>";
 						$string=$string."<td class='$tdcolor'>".
 						$data["nombre"]."</td>";
 						$string=$string."<td class='".$tdcolor."f9'>".

@@ -64,9 +64,12 @@ if (comprueba_login() == 0) {
 		if (give_acl($id_user, $id_group, "IM") ==1){
 			$sql2="DELETE FROM tevento WHERE id_evento =".$id_evento;
 			$result2=mysql_query($sql2);
-			if ($result) {echo "<h3 class='suc'>".$lang_label["delete_event_ok"]."</h3>";}
+			if ($result) {
+				echo "<h3 class='suc'>".$lang_label["delete_event_ok"]."</h3>";
+			}
 		} else {
-			audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to delete event ID".$id_evento);
+			audit_db($id_user,$REMOTE_ADDR, "ACL Violation",
+			"Trying to delete event ID".$id_evento);
 		}
 	}
 	
@@ -120,7 +123,6 @@ if (comprueba_login() == 0) {
 			$count++;
 		}
 	}
-	
 	
 	echo "<h2>".$lang_label["events"]."</h2>";
 	echo "<h3>".$lang_label["event_main_view"]."<a href='help/".$help_code."/chap5.php#5' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";

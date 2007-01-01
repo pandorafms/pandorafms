@@ -595,6 +595,25 @@ function list_group ($id_user){
 	return ($mis_grupos);
 }
 
+// ---------------------------------------------------------------------- 
+// Defines an array 
+// to put all groups with Agent Read permission
+// ----------------------------------------------------------------------
+
+function list_group2 ($id_user){
+	$mis_grupos[]=""; // Define array mis_grupos to put here all groups with Agent Read permission
+	$sql='SELECT id_grupo FROM tgrupo';
+	$result=mysql_query($sql);
+	while ($row=mysql_fetch_array($result)){
+		if ($row["id_grupo"] != 1){
+			if (give_acl($id_user,$row["id_grupo"], "AR") == 1){
+				$mis_grupos[]=$row["id_grupo"]; //Put in  an array all the groups the user belongs
+			}
+		}
+	}
+	return ($mis_grupos);
+}
+
 // --------------------------------------------------------------- 
 // Return Group iconname given its name
 // --------------------------------------------------------------- 

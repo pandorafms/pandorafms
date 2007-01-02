@@ -3,7 +3,7 @@
 #
 %define name        pandora_agents
 %define version	    1.2.0
-Summary:            Agents  Babel Enterprise
+Summary:            Pandora Agents
 Name:               %{name}
 Version:            %{version}
 Release:            1
@@ -42,15 +42,19 @@ mkdir -p $RPM_BUILD_ROOT/usr/
 mkdir -p $RPM_BUILD_ROOT/usr/share/
 mkdir -p $RPM_BUILD_ROOT/usr/share/man
 mkdir -p $RPM_BUILD_ROOT/usr/share/man/man1
-mkdir -p $RPM_BUILD_ROOT/usr/local/
-mkdir -p $RPM_BUILD_ROOT/usr/local/bin/
-mkdir -p $RPM_BUILD_ROOT/usr/local/etc/
-mkdir -p $RPM_BUILD_ROOT/usr/local/etc/pandora/
+mkdir -p $RPM_BUILD_ROOT/usr/
+mkdir -p $RPM_BUILD_ROOT/usr/bin/
+mkdir -p $RPM_BUILD_ROOT/etc/
+mkdir -p $RPM_BUILD_ROOT/etc/pandora/
+mkdir -p $RPM_BUILD_ROOT/usr/local/etc/pandora/temp
+mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/
+mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_out
+mkdir -p $RPM_BUILD_ROOT/var/log/pandora/
 cp -aRf * $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}
-mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/pandora_agent.sh $RPM_BUILD_ROOT/usr/local/bin/pandora_agent
-mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/pandora_agent_daemon $RPM_BUILD_ROOT/usr/local/bin/pandora_agent_daemon
-mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/pandora_agent.conf $RPM_BUILD_ROOT/usr/local/etc/pandora/pandora_agent.conf
-mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/pandora_user.conf $RPM_BUILD_ROOT/usr/local/etc/pandora/pandora_user.conf
+mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/pandora_agent.sh $RPM_BUILD_ROOT/usr/bin/pandora_agent
+mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/pandora_agent_daemon $RPM_BUILD_ROOT/usr/bin/pandora_agent_daemon
+mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/pandora_agent.conf $RPM_BUILD_ROOT/etc/pandora/pandora_agent.conf
+mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/pandora_user.conf $RPM_BUILD_ROOT/etc/pandora/pandora_user.conf
 cp pandora.1 $RPM_BUILD_ROOT/usr/share/man/man1/
 cp pandora_agents.1 $RPM_BUILD_ROOT/usr/share/man/man1/
 if [ -f $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/%{name}.spec ] ; then
@@ -60,13 +64,18 @@ fi
 %clean
 rm -rf $RPM_BUILD_ROOT
 %post
-echo "Pandora Agent has been place under /usr/local/bin/"
-echo "Pandora Agent configuration file is /usr/local/etc/pandora/pandora_agent.conf"
+echo "Pandora Agent has been place under /usr/bin/"
+echo "Pandora Agent configuration file is /etc/pandora/pandora_agent.conf"
 %files
-/usr/local/bin/pandora_agent
-/usr/local/etc/pandora/pandora_user.conf
-/usr/local/etc/pandora/pandora_agent.conf
-/usr/local/bin/pandora_agent_daemon
+%defattr(700,pandora,pandora)
+/usr/bin/pandora_agent_daemon
+/usr/bin/pandora_agent
+%defattr(600,pandora,pandora)
+/var/log/pandora/
+/var/spool/pandora/
+%defattr(755,pandora,pandora)
+/etc/pandora/pandora_user.conf
+/etc/pandora/pandora_agent.conf
 %docdir %{prefix}/%{name}-%{version}-%{release}/docs
 %{prefix}/%{name}-%{version}-%{release}
 %{_mandir}/man1/pandora.1.gz

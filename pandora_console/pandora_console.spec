@@ -101,10 +101,12 @@ rm -rf $RPM_BUILD_ROOT
 %install
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}
-mkdir -p $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/usr/share/man/man1/
+mkdir -p $RPM_BUILD_ROOT/usr/share/
+mkdir -p $RPM_BUILD_ROOT/usr/share/man/
+mkdir -p $RPM_BUILD_ROOT/usr/share/man/man1/
 cp -aRf * $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}
-cp pandora.1 $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/usr/share/man/man1/
-cp pandora_console.1 $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/usr/share/man/man1/
+cp pandora.1 $RPM_BUILD_ROOT/usr/share/man/man1/
+cp pandora_console.1 $RPM_BUILD_ROOT/usr/share/man/man1/
 if [ -f $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/%{name}.spec ] ; then
     rm $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/%{name}.spec
 fi

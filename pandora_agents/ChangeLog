@@ -1,3 +1,8 @@
+2007-01-02  Manuel Arostegui <marostegui@artica.es>
+
+	* linux/pandora_agents.spec: Added new PATHS for config files and binary
+	  ones. Fixed perms. Change Summary due to a typo bug.
+
 2007-01-01  Manuel Arostegui <marostegui@artica.es>
 
 	* linux/pandora_agents.spec: Added to repository. Spec file for pandora

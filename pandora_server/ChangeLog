@@ -1,3 +1,8 @@
+2007-01-03  Manuel Arostegui <marostegui@artica.es>
+
+	* pandora_server/specs/fedoracore5/pandora_server.spec: Fixed small bug with .pm
+	  files. Fixed a PATH slip-up
+
 2007-01-02  Manuel Arostegui <marostegui@artica.es>
 
 	* pandora_server/specs/fedoracore5/pandora_server.spec: Added to reposistory.

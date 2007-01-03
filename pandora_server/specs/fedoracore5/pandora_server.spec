@@ -42,10 +42,6 @@ mkdir -p $RPM_BUILD_ROOT/etc/
 mkdir -p $RPM_BUILD_ROOT/etc/pandora/
 mkdir -p $RPM_BUILD_ROOT/etc/pandora/conf/
 mkdir -p $RPM_BUILD_ROOT/usr/local/
-mkdir -p $RPM_BUILD_ROOT/usr/local/bin/
-mkdir -p $RPM_BUILD_ROOT/usr/local/etc/
-mkdir -p $RPM_BUILD_ROOT/usr/local/etc/pandora/
-mkdir -p $RPM_BUILD_ROOT/usr/local/etc/pandora/conf/
 mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/
 mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in
 mkdir -p $RPM_BUILD_ROOT/var/log/pandora/
@@ -57,6 +53,10 @@ mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/pandora_network.pl
 mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/pandora_snmpconsole.pl $RPM_BUILD_ROOT/usr/bin/pandora_snmpconsole
 mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/conf/pandora_server.conf $RPM_BUILD_ROOT/etc/pandora/conf/pandora_server.conf
 mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/util/ $RPM_BUILD_ROOT/usr/share/pandora/
+mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/pandora_config.pm $RPM_BUILD_ROOT/usr/share/pandora/util/
+mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/pandora_db.pm $RPM_BUILD_ROOT/usr/share/pandora/util/
+mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/pandora_tools.pm $RPM_BUILD_ROOT/usr/share/pandora/util/
+
 cp pandora.1 $RPM_BUILD_ROOT/usr/share/man/man1/
 cp pandora_server.1 $RPM_BUILD_ROOT/usr/share/man/man1/
 if [ -f $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/%{name}.spec ] ; then

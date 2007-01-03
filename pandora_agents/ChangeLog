@@ -1,17 +1,27 @@
+2007-01-03  Sancho Lerena <slerena@artica.es>
+
+        * Linux/pandora_agent.conf: Added more tokens to config
+	file. Added logfile, temporal and encoding issues.
+
+        * Linux/pandora_agent.sh: Many changes on agent. Solved problems
+	with encoding, changed all paths, fixed minor bugs, and some work
+	with XML.
+
 2007-01-03  Manuel Arostegui <marostegui@artica.es>
 
 	* linux/pandora_agents.spec: Added dependencies
 
 2007-01-02  Manuel Arostegui <marostegui@artica.es>
 
-	* linux/pandora_agents.spec: Added new PATHS for config files and binary
-	  ones. Fixed perms. Change Summary due to a typo bug.
+	* linux/pandora_agents.spec: Added new PATHS for config files and
+	  binary ones. Fixed perms. Change Summary due to a typo bug.
 
 2007-01-01  Manuel Arostegui <marostegui@artica.es>
 
-	* linux/pandora_agents.spec: Added to repository. Spec file for pandora
-	  agents RPM package. Launch scripts are installed under /usr/local/bin/
-	  and configuration files are in /usr/local/etc/pandora
+	* linux/pandora_agents.spec: Added to repository. Spec file for
+	  pandora agents RPM package. Launch scripts are installed under
+	  /usr/local/bin/ and configuration files are in
+	  /usr/local/etc/pandora
 
 2006-12-05  Sancho Lerena  <slerena@artica.es>
 

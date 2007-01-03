@@ -2,24 +2,20 @@
 # **********************************************************************
 # Pandora FMS Generic Host Agent
 # GNU/Linux version 
-# (c) Sancho Lerena 2003-2006, <slerena@artica.es> 
+# (c) 2003-2006 Sancho Lerena <slerena@gmail.com>
 # with the help of many people. Please see http://pandora.sourceforge.net
 # Este codigo esta licenciado bajo la licencia GPL 2.0.
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
-AGENT_VERSION=1.2
-AGENT_BUILD=061123
-
-IFS=$'\n'
-# Begin cycle for adquire primary config tokens
-TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
+AGENT_VERSION=1.2.1
+AGENT_BUILD=070103
 
 if [ -z "$1" ]
 then
 	echo " "
-	echo "FATAL ERROR: I need an argument to PANDORA AGENT home path"
+	echo "Fatal error: I need an argument to Pandora FMS Agent config directory"
  	echo " "
- 	echo " example:   /opt/pandora_ng/pandora_agent.sh /opt/pandora_ng  "
+ 	echo " example: pandora_agent /etc/pandora  "
  	echo " "
  	exit -1
 else
@@ -29,114 +25,140 @@ fi
 if [ ! -f $PANDORA_HOME/pandora_agent.conf ]
 then
 	echo " "
-	echo "FATAL ERROR: Cannot load pandora_agent.conf"
+	echo "FATAL ERROR: Cannot load $PANDORA_HOME/pandora_agent.conf"
 	echo " "
 	exit -1
 fi
 
-# Default values
-
-CHECKSUM_MODE=1
-DEBUG_MODE=0
+# Init internal variables
 CONTADOR=0
 EXECUTE=1
 MODULE_END=0
-SERVER_PORT=22
+TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
+IFS=$'\n'
 
-echo "$TIMESTAMP - Reading general config parameters from .conf file" >> $PANDORA_HOME/pandora.log
+# Default values
+CHECKSUM_MODE=1
+DEBUG_MODE=0
+SERVER_PORT=22
+INTERVAL=300
+ENCODING=`echo $LANG | cut -f 2 -d "."`
+if [ -z "$ENCODING" ]
+then
+	ENCODING="iso-8859-1"
+fi
+NOMBRE_HOST=`/bin/hostname`
+OS_NAME=`uname -s`
+PANDORA_LOGFILE=/var/log/pandora_agent.log
+TEMP=/tmp
+
+# Read config file
 for a in `cat $PANDORA_HOME/pandora_agent.conf | grep -v -e "^#" | grep -v -e "^module" `
 do
         a=`echo $a | tr -s " " " "`
-
         # Get general configuration parameters from config file
+        if [ ! -z "`echo $a | grep -e '^logfile'`" ]
+        then
+                PANDORA_LOGFILE=`echo $a | awk '{ print $2 }' `
+                echo "$TIMESTAMP - [SETUP] - Pandora Logfile is $PANDORA_LOGFILE" >> $PANDORA_LOGFILE
+        fi
         if [ ! -z "`echo $a | grep -e '^server_ip'`" ]
         then
                 SERVER_IP=`echo $a | awk '{ print $2 }' `
-                echo "$TIMESTAMP - [SETUP] - Server IP Address is $SERVER_IP" >> $PANDORA_HOME/pandora.log
+                echo "$TIMESTAMP - [SETUP] - Server IP Address is $SERVER_IP" >> $PANDORA_LOGFILE
         fi
         if [ ! -z "`echo $a | grep -e '^server_path'`" ]
         then
                 SERVER_PATH=`echo $a | awk '{ print $2 }' `
-                echo "$TIMESTAMP - [SETUP] - Server Path is $SERVER_PATH" >> $PANDORA_HOME/pandora.log
+                echo "$TIMESTAMP - [SETUP] - Server Path is $SERVER_PATH" >> $PANDORA_LOGFILE
         fi
         if [ ! -z "`echo $a | grep -e '^temporal'`" ]
         then
                 TEMP=`echo $a | awk '{ print $2 }' `
-                echo "$TIMESTAMP - [SETUP] - Temporal Path is $TEMP" >> $PANDORA_HOME/pandora.log
+                echo "$TIMESTAMP - [SETUP] - Temporal Path is $TEMP" >> $PANDORA_LOGFILE
         fi
         if [ ! -z "`echo $a | grep -e '^interval'`" ]
         then
                 INTERVAL=`echo $a | awk '{ print $2 }' `
-                echo "$TIMESTAMP - [SETUP] - Interval is $INTERVAL seconds" >> $PANDORA_HOME/pandora.log
+                echo "$TIMESTAMP - [SETUP] - Interval is $INTERVAL seconds" >> $PANDORA_LOGFILE
         fi
  	if [ ! -z "`echo $a | grep -e '^agent_name'`" ]
         then
                NOMBRE_HOST=`echo $a | awk '{ print $2 }' `
-         	echo "$TIMESTAMP - [SETUP] - Agent name is $NOMBRE_HOST " >> $PANDORA_HOME/pandora.log
+         	echo "$TIMESTAMP - [SETUP] - Agent name is $NOMBRE_HOST " >> $PANDORA_LOGFILE
         fi
  	if [ ! -z "`echo $a | grep -e '^debug'`" ]
         then
                DEBUG_MODE=`echo $a | awk '{ print $2 }' `
-         	echo "$TIMESTAMP - [SETUP] - Debug mode is $DEBUG_MODE " >> $PANDORA_HOME/pandora.log
+         	echo "$TIMESTAMP - [SETUP] - Debug mode is $DEBUG_MODE " >> $PANDORA_LOGFILE
         fi
  	if [ ! -z "`echo $a | grep -e '^checksum'`" ]
         then
                CHECKSUM_MODE=`echo $a | awk '{ print $2 }' `
-         	echo "$TIMESTAMP - [SETUP] - Checksum is $CHECKSUM_MODE " >> $PANDORA_HOME/pandora.log
+         	echo "$TIMESTAMP - [SETUP] - Checksum is $CHECKSUM_MODE " >> $PANDORA_LOGFILE
         fi
 	# Contribution of daggett
 	if [ ! -z "`echo $a | grep -e '^server_port'`" ]
         then
                 SERVER_PORT=`echo $a | awk '{ print $2 }' `
-                echo "$TIMESTAMP - [SETUP] - Server Port is $SERVER_PORT" >> $PANDORA_HOME/pandora.log
+                echo "$TIMESTAMP - [SETUP] - Server Port is $SERVER_PORT" >> $PANDORA_LOGFILE
+        fi
+	# Contribution of daggett
+	if [ ! -z "`echo $a | grep -e '^encoding'`" ]
+        then
+                ENCODING=`echo $a | awk '{ print $2 }' `
+                echo "$TIMESTAMP - [SETUP] - Encoding is $ENCODING" >> $PANDORA_LOGFILE
         fi
 done
 
 
-# MAIN Program loop begin
-
 # Get Linux Distro type and version
-
-# SUSE
 if [ -f "/etc/SuSE-release" ]
 then
-  OS_VERSION=`cat /etc/SuSE-release | grep VERSION | cut -f 3 -d " "`
-  LINUX_DISTRO=SUSE
+	OS_VERSION=`cat /etc/SuSE-release | grep VERSION | cut -f 3 -d " "`
+	LINUX_DISTRO=SUSE
 else
-    if [ -f "/etc/lsb-release" ]
-    then
-        OS_VERSION=`cat /etc/lsb-release | grep DISTRIB_RELEASE | cut -f 2 -d "="`
-        LINUX_DISTRO=UBUNTU
-    else
-        if [ -f "/etc/debian_version" ]
-        then
-            OS_VERSION=`cat /etc/debian_version`
-            OS_VERSION="DEBIAN $OS_VERSION"
-            LINUX_DISTRO=DEBIAN
-        else
-            LINUX_DISTRO=GENERIC
-            OS_VERSION=`uname -r`
-	
-		if [ -f "/etc/fedora-release" ]
+	if [ -f "/etc/lsb-release" ]
+	then
+		OS_VERSION=`cat /etc/lsb-release | grep DISTRIB_RELEASE | cut -f 2 -d "="`
+		LINUX_DISTRO=UBUNTU
+		OS_VERSION="UBUNTU $OS_VERSION"
+	else
+		if [ -f "/etc/debian_version" ]
+		then
+			OS_VERSION=`cat /etc/debian_version`
+			OS_VERSION="DEBIAN $OS_VERSION"
+			LINUX_DISTRO=DEBIAN
+		else
+			if [ -f "/etc/fedora-release" ]
 			then
-		   	OS_VERSION=`cat /etc/fedora-release | cut -f 4 -d " "`
-		   	OS_VERSION="FEDORA $OS_VERSION"
-		   	LINUX_DISTRO=FEDORA
-           fi	   
-        fi
-    fi
+				OS_VERSION=`cat /etc/fedora-release | cut -f 4 -d " "`
+				OS_VERSION="FEDORA $OS_VERSION"
+				LINUX_DISTRO=FEDORA
+			else
+				LINUX_DISTRO=GENERIC
+				OS_VERSION=`uname -r`
+			fi
+		fi
+	fi
 fi
-# OS Data
-OS_NAME=`uname -s`
 
-# Hostname
-if [ -z "$NOMBRE_HOST" ] 
-then 
- NOMBRE_HOST=`/bin/hostname`
+# Script banner at start
+echo "Pandora FMS Agent $AGENT_VERSION (c) Sancho Lerena, and others 2007"
+echo "This program is licensed under GPL Terms. http://pandora.sf.net"
+echo " "
+
+if [ "$DEBUG_MODE" == "1" ]
+then
+	echo "Warning: Running in DEBUG mode"
 fi
+
+# MAIN Program loop begin
 
 while [ "1" == "1" ]
 do
+	# Deleted debug / error info on each run to avoid giant logs
+	rm -Rf $PANDORA_LOGFILE.err 2> /dev/null
 
  	# Date and time, SERIAL is number of seconds since 1/1/1970, for every packet.
  	TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
@@ -149,11 +171,9 @@ do
  	PANDORA_FILES="$TEMP/$NOMBRE_HOST.$SERIAL.*"
  
  	# Makes data packet
- 	echo "<agent_data os_name='$OS_NAME' os_version='$OS_VERSION' interval='$INTERVAL' version='$AGENT_VERSION' timestamp='$TIMESTAMP' agent_name='$NOMBRE_HOST'>" > $DATA
- 	if [ "$DEBUG_MODE" == "1" ]
- 	then
-  		echo "$TIMESTAMP - Reading module adquisition data from .conf file" >> $PANDORA_HOME/pandora.log
- 	fi
+	echo "<?xml version=\"1.0\" encoding=\"$ENCODING\"?> " > $DATA
+	echo "<agent_data os_name='$OS_NAME' os_version='$OS_VERSION' interval='$INTERVAL' version='$AGENT_VERSION' timestamp='$TIMESTAMP' agent_name='$NOMBRE_HOST'>" >> $DATA
+	
  	for a in `cat $PANDORA_HOME/pandora_agent.conf | grep -v -e "^#" | grep -e "^module" ` 
  	do
   		a=`echo $a | tr -s " " " "`
@@ -166,7 +186,7 @@ do
             			res=`eval $execution`
             			if [ -z "$flux_string" ]
             			then
-	             			res=`eval expr $res 2> /dev/null`
+	             			res=`eval expr $res 2> $PANDORA_LOGFILE.err`
      				fi
             			echo "<data><![CDATA[$res]]></data>" >> $DATA2
 			fi
@@ -175,7 +195,7 @@ do
          	if [ ! -z "`echo $a | grep -e '^module_name'`" ]
          	then
             		name=`echo $a | cut -c 13- `
-     			echo "<name>$name</name>" >> $DATA2
+     			echo "<name><![CDATA[$name]]></name>" >> $DATA2
          	fi
 		
 		if [ ! -z "`echo $a | grep -e '^module_begin'`" ]
@@ -187,19 +207,19 @@ do
 		if [ ! -z "`echo $a | grep -e '^module_max' `" ]
 		then
 			max=`echo $a | awk '{ print $2 }' `
-			echo "<max>$max</max>" >> $DATA2
+			echo "<max><![CDATA[$max]]></max>" >> $DATA2
 		fi
 
 		if [ ! -z "`echo $a | grep -e '^module_min'`" ]
 		then
 			min=`echo $a | awk '{ print $2 }' `
-			echo "<min>$min</min>" >> $DATA2
+			echo "<min><![CDATA[$min]]></min>" >> $DATA2
 		fi
 		
 		if [ ! -z "`echo $a | grep -e '^module_description'`" ]
 		then
 			desc=`echo $a | cut -c 20- `
-			echo "<description>$desc</description>" >> $DATA2
+			echo "<description><![CDATA[$desc]]></description>" >> $DATA2
 		fi
   
          	if [ ! -z "`echo $a | grep -e '^module_end'`" ]
@@ -220,7 +240,7 @@ do
                  		flux_string=0
                  		unset flux_string
             		fi
-            		echo "<type>$mtype</type>" >> $DATA2
+            		echo "<type><![CDATA[$mtype]]></type>" >> $DATA2
          	fi
 		
   		if [ ! -z "`echo $a | grep '^module_interval'`" ]
@@ -252,43 +272,40 @@ do
 	fi
 
 	# Call for user-defined script for data adquisition
-	
 	if [ -f "$PANDORA_HOME/pandora_user.conf" ]
 	then
 		/bin/bash $PANDORA_HOME/pandora_user.conf >> $DATA
 	fi
 	
-	# Finish data packet
-	echo "</agent_data>" >> $DATA
-	if [ "$DEBUG_MODE" == "1" ]
-	then
-		echo "$TIMESTAMP - Finish writing XML $DATA" >> $PANDORA_HOME/pandora.log
-	fi
-	
+	# Checking MD5
 	if [ "$CHECKSUM_MODE" == "1" ]
 	then
 		# Calculate Checksum and prepare MD5 file
-		CHECKSUM_DATA=`/usr/bin/md5sum $DATA`
+		CHECKSUM_DATA=`md5sum $DATA`
 		echo $CHECKSUM_DATA > $CHECKSUM 
 	else
 		CHECKSUM_DATA="No valid checksum"
 		echo $CHECKSUM_DATA > $CHECKSUM
 	fi
-	
-	# Send packets to server and detele it
- 	scp -P $SERVER_PORT $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH > /dev/null 2> /dev/null
 
+	# Finish data packet
+	echo "</agent_data>" >> $DATA
 	if [ "$DEBUG_MODE" == "1" ]
 	then
-		echo "$TIMESTAMP - Copying $PANDORA_FILES to $SERVER_IP:$SERVER_PATH" >> $PANDORA_HOME/pandora.log
- 	else
-		# Delete it
-		rm -f $PANDORA_FILES> /dev/null 2> /dev/null
+		echo "$TIMESTAMP - Finish writing XML $DATA" >> $PANDORA_LOGFILE
+		echo "Data file is at $DATA - Exiting now"
+		echo " "
+		exit 0
 	fi
+	
+	# Send packets to server and detele it
+ 	scp -P $SERVER_PORT $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH > /dev/null 2>  $PANDORA_LOGFILE.err
+
+	# Delete data
+	rm -f $PANDORA_FILES> /dev/null 2> $PANDORA_LOGFILE.err
 	
 	# Go to bed :-)
 	sleep $INTERVAL
-	
 
 done 
 # This runs forever! 

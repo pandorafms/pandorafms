@@ -21,12 +21,8 @@ AutoReq:            0
 Provides:           %{name}-%{version}
 
 %description
-Pandora agents are based on native languages in every platform: scripts that can be written in any
-language. It’s possible to reproduce any agent in any programming language and can be extended
-without difﬁculty the existing ones in order to cover aspects not taken into account up to the moment.
-These scripts are formed by modules that each one gathers a "chunk" of information. Thus, every agent
-gathers several "chunks" of information; this one is organized in a data set and stored in a single ﬁle,
-called data ﬁle.
+Pandora agents are based on native languages in every platform: scripts that can be written in any language. It’s possible to reproduce any agent in any programming language and can be extended without difﬁculty the existing ones in order to cover aspects not taken into account up to the moment.
+These scripts are formed by modules that each one gathers a "chunk" of information. Thus, every agent gathers several "chunks" of information; this one is organized in a data set and stored in a single ﬁle, called data ﬁle.
 
 %prep
 #rm -rf $RPM_BUILD_ROOT

@@ -16,7 +16,8 @@ Packager:           Manuel Arostegui <marostegui@artica.es>
 Prefix:             /opt
 BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
 BuildArchitectures: noarch
-
+Requires:	    openssh-server net-snmp perl-XML-Simple perl-DBI perl-TimeDate perl-DateManip perl-Net-Ping perl-Net-Ping-External perl-IO-Socket-SSL
+Requires:	    perl-Net-SNMP perl-Digest-MD2
 AutoReq:            0
 Provides:           %{name}-%{version}
 

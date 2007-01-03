@@ -16,7 +16,7 @@ Packager:           Manuel Arostegui <marostegui@artica.es>
 Prefix:             /opt
 BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
 BuildArchitectures: noarch
-
+Requires:	    openssh-client coreutils
 AutoReq:            0
 Provides:           %{name}-%{version}
 

@@ -1,3 +1,7 @@
+2007-01-03  Manuel Arostegui <marostegui@artica.es>
+
+	* linux/pandora_agents.spec: Added dependencies
+
 2007-01-02  Manuel Arostegui <marostegui@artica.es>
 
 	* linux/pandora_agents.spec: Added new PATHS for config files and binary

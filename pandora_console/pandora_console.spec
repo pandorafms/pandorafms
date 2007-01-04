@@ -63,7 +63,7 @@ Prefix:             /srv/www
 %else
 Prefix:             /var/www/html
 %endif
-BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
+BuildRoot:          %{_tmppath}/%{name}
 BuildArchitectures: noarch
 
 AutoReq:            0
@@ -100,15 +100,15 @@ rm -rf $RPM_BUILD_ROOT
 
 %install
 rm -rf $RPM_BUILD_ROOT
-mkdir -p $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}
+mkdir -p $RPM_BUILD_ROOT%{prefix}/%{name}
 mkdir -p $RPM_BUILD_ROOT/usr/share/
 mkdir -p $RPM_BUILD_ROOT/usr/share/man/
 mkdir -p $RPM_BUILD_ROOT/usr/share/man/man1/
-cp -aRf * $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}
+cp -aRf * $RPM_BUILD_ROOT%{prefix}/%{name}
 cp pandora.1 $RPM_BUILD_ROOT/usr/share/man/man1/
 cp pandora_console.1 $RPM_BUILD_ROOT/usr/share/man/man1/
-if [ -f $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/%{name}.spec ] ; then
-    rm $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/%{name}.spec
+if [ -f $RPM_BUILD_ROOT%{prefix}/%{name}/%{name}.spec ] ; then
+    rm $RPM_BUILD_ROOT%{prefix}/%{name}/%{name}.spec
 fi
 
 %clean
@@ -117,7 +117,7 @@ rm -rf $RPM_BUILD_ROOT
 echo "Please you HAVE to take a look at the INSTALL file placed on your DocumentRoot in order to follow the instructions to create the database for Pandora"
 %files
 %defattr(0644,%{httpd_user},%{httpd_group},0755)
-%docdir %{prefix}/%{name}-%{version}-%{release}/docs
-%{prefix}/%{name}-%{version}-%{release}
+%docdir %{prefix}/%{name}/docs
+%{prefix}/%{name}
 %{_mandir}/man1/pandora.1.gz
 %{_mandir}/man1/pandora_console.1.gz

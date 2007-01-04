@@ -42,10 +42,11 @@ CHECKSUM_MODE=1
 DEBUG_MODE=0
 SERVER_PORT=22
 INTERVAL=300
-ENCODING=`echo $LANG | cut -f 2 -d "."`
-if [ -z "$ENCODING" ]
+if [ -z "`echo $LANG | grep '\.'`" ]
 then
 	ENCODING="iso-8859-1"
+else
+	ENCODING=`echo $LANG | cut -f 2 -d "."`
 fi
 NOMBRE_HOST=`/bin/hostname`
 OS_NAME=`uname -s`
@@ -146,6 +147,7 @@ fi
 # Script banner at start
 echo "Pandora FMS Agent $AGENT_VERSION (c) Sancho Lerena, and others 2007"
 echo "This program is licensed under GPL Terms. http://pandora.sf.net"
+echo "Running in $NOMBRE_HOST at $TIMESTAMP \n"
 echo " "
 
 if [ "$DEBUG_MODE" == "1" ]
@@ -290,6 +292,13 @@ do
 
 	# Finish data packet
 	echo "</agent_data>" >> $DATA
+	echo "" >> $DATA
+
+	# Replace & chars in XML (should not to be any) to avoid syntax problems
+	sed "s/&/&amp;/g" $DATA > $TEMP/finalxml.tmp
+	rm -f $DATA
+	mv $TEMP/finalxml.tmp $DATA
+
 	if [ "$DEBUG_MODE" == "1" ]
 	then
 		echo "$TIMESTAMP - Finish writing XML $DATA" >> $PANDORA_LOGFILE

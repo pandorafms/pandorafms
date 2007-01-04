@@ -1,3 +1,8 @@
+2007-01-04  Sancho Lerena  <slerena@artica.es>
+
+	* Linux/pandora_agent.sh: Solved problem with encoding. Now XML
+	its parsed before sending it, replacing all & characters.
+
 2007-01-03  Sancho Lerena <slerena@artica.es>
 
         * Linux/pandora_agent.conf: Added more tokens to config

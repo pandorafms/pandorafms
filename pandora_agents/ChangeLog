@@ -1,3 +1,9 @@
+2007-01-05  Sancho Lerena  <slerena@artica.es>
+
+	* linux/pandora_agent_daemon: Some adjustements for a generic
+	daemon launcher. Need to be improved with some code from Dagget
+	and Manu.
+
 2007-01-04  Sancho Lerena  <slerena@artica.es>
 
 	* Linux/pandora_agent.sh: Solved problem with encoding. Now XML

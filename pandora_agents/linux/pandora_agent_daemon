@@ -16,14 +16,14 @@
 ### END INIT INFO
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
-PANDORA_PATH=/opt/pandora_agent/
-DAEMON=pandora_agent.sh
+PANDORA_PATH=/etc/pandora
+DAEMON=/usr/bin/pandora_agent
 PIDFILE=/var/run/pandora_agent.pid
 
 
-if [ ! -f $PANDORA_PATH/$DAEMON ]
+if [ ! -f $DAEMON ]
 then
-	echo "Pandora Agent not found at $PANDORA_PATH/$DAEMON, please check setup"
+	echo "Pandora Agent not found at $DAEMON, please check setup"
 	exit
 fi
 
@@ -34,7 +34,7 @@ case "$1" in
                 echo "Pandora Agent is currently running on this machine. Aborting now..."
                 exit
         fi
-        $PANDORA_PATH/$DAEMON $PANDORA_PATH >> $PANDORA_PATH/pandora.log &  MYPID=$!
+        $DAEMON $PANDORA_PATH >> $PANDORA_PATH/pandora.log &  MYPID=$!
         echo $MYPID > $PIDFILE
 	echo "Pandora Agent is now running with PID $MYPID"
         ;;

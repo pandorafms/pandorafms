@@ -20,7 +20,7 @@
 // This is the base config file
 
 //Pandora Version
-$build_version="PC061215"; //PCyymmdd
+$build_version="PC080105"; //PCyymmdd
 $pandora_version="v1.3 devel"; 
 
 // Database configuration
@@ -36,8 +36,8 @@ $config_fontpath = "../reporting/FreeSans.ttf";	// Change this to your font fold
 // error_reporting(0);
 
 // Display all errores, warnings and notices
-error_reporting(E_ALL);
-
+// error_reporting(E_ALL);
+error_reporting(0);
 // Read rest of config from DB
 if (! mysql_connect($dbhost,$dbuser,$dbpassword)){ 
 //Non-persistent connection. If you want persistent conn change it to mysql_pconnect()

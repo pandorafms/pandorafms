@@ -23,7 +23,6 @@ if (! isset($_SESSION["id_usuario"])) {
 	return;
 } 
 
-
 ?>
 <div class="bg">
 	<div class="imgl"><img src="images/upper-left-corner.gif" width="5" height="5" alt=""></div>
@@ -75,6 +74,12 @@ if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 		echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/estadisticas' class='mn'>". $lang_label["statistics"]. "</a></li></ul></div>";
 	}
 
+	// Active console
+	echo '<div id="op9">';
+	echo '<ul class="mn"><li>';
+	echo '<a href="operation/active_console/index.php" class="mn"  target="_top">'.$lang_label["active_console"].'</a></li></ul></div>';
+
+	// Server view
 	if ( isset($_GET["sec2"]) && $_GET["sec2"] == "operation/servers/view_server")
 		echo '<div id="op2s">';
 	else

@@ -1,0 +1,21 @@
+INSTALACIÓN
+-----------
+
+Para instalar la consola Web, seguir los siguientes pasos:
+
+1) Copia toda la carpeta de la consola en el directorio raiz de tu servidor web (/var/www)
+2) Ejecuta el script pandora_console.sql y pandora_console_data.sql sobre la base de datos de pandora.
+3) Dentro de la carpeta lib se encuentran dos scripts php (db_functions.php y extra_functions.php), al principio de estos archivos se encuentran variables necesarias para el correcto funcionamiento.
+
+
+Solución de problemas conocidos
+-------------------------------
+
+1) A veces ocurre que php viene configurado para que controle todos los errores y warnings a un nivel demasiado ruidoso, incluyendo codigo que hace que las páginas html no sean validas, visualizandose todo el codigo javascript en vez de la consola. 
+Para solucionarlo debes configurar el php.ini para que los informes de error no sean demasiado ruidosos. Para ello configura la variable llamada error_reporting.
+Se ha probado que funciona con estos niveles:
+
+error_reporting  =  E_ALL & ~E_NOTICE
+error_reporting  =  E_COMPILE_ERROR|E_ERROR|E_CORE_ERROR
+
+

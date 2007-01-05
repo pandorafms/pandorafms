@@ -657,6 +657,10 @@ $lang_label["no_monitors_g"]="This group doesn't have any monitor";
 $lang_label["reporting"]="Reporting";
 $lang_label["agent_general_reporting"]="Agent overview";
 
+// 5 de Enero 2007
+$lang_label["active_console"]="Active console";
+
+
 global $lang_label; 
 global $help_label;
 ?>

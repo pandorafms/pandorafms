@@ -1,3 +1,7 @@
+2007-01-08  Manuel Arostegui <marostegui@artica.es>
+
+	* pandora_console.spec: Changed group.
+
 2007-01-05  Sancho Lerena  <slerena@artica.es>
 
 	Importing data from Azabel brach. This commit is a little

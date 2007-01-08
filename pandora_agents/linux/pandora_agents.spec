@@ -11,7 +11,7 @@ License:            GPL
 Vendor:             Sancho Lerena <sancho.lerena@artica.es>
 Source0:            %{name}-%{version}.tar.gz
 URL:                http://pandora.sf.net
-Group:              Networking/Security
+Group:              System/Monitoring
 Packager:           Manuel Arostegui <marostegui@artica.es>
 Prefix:             /opt
 BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot

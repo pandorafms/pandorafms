@@ -55,7 +55,7 @@ License:            GPL
 Vendor:             Sancho Lerena <sancho.lerena@artica.es>
 Source0:            %{name}-%{version}.tar.gz
 URL:                http://www.pandorafms.net
-Group:              Networking/WWW
+Group:              Productivity/Networking/Web/Utilities
 Packager:           Manuel Arostegui <marostegui@artica.es>
 
 %if "%{_vendor}" == "suse"

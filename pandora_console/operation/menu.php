@@ -35,42 +35,47 @@ if (! isset($_SESSION["id_usuario"])) {
 
 // Agent read, Server read
 if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
-	if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/agentes/estado_grupo")
+	if (isset($_GET["sec2"]) && $_GET["sec2"] == "operation/agentes/estado_grupo") {
 		echo '<div id="op1s">';
-	else
+	} else {
 		echo '<div id="op1">';
+	}
 	echo '<ul class="mn"><li><a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_grupo&amp;refr=60" class="mn">'.$lang_label["view_agents"].'</a></li></ul></div>';
 
 	if (isset($_GET["sec"]) && $_GET["sec"] == "estado"){
-		if(isset($_GET["sec2"]) && ($_GET["sec2"] == "operation/agentes/estado_agente" || $_GET["sec2"] == "operation/agentes/ver_agente" || $_GET["sec2"] == "operation/agentes/datos_agente"))
+		if (isset($_GET["sec2"]) && ($_GET["sec2"] == "operation/agentes/estado_agente" || $_GET["sec2"] == "operation/agentes/ver_agente" || $_GET["sec2"] == "operation/agentes/datos_agente")) {
 			echo "<div class='arrows'>";
-		else
+		} else {
 			echo "<div class='arrow'>";
+		}
 		echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60' class='mn'>".$lang_label["agent_detail"]."</a></li></ul></div>";
 
-		if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/agentes/estado_alertas") 
+		if (isset($_GET["sec2"]) && $_GET["sec2"] == "operation/agentes/estado_alertas"){
 			echo "<div class='arrows'>";
-		else
+		} else {
 			echo "<div class='arrow'>";
-			
+		}
 		echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/estado_alertas&amp;refr=60' class='mn'>".$lang_label["alert_detail"]."</a></li></ul></div>";
 
-		if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/agentes/status_monitor")
+		if (isset($_GET["sec2"]) && $_GET["sec2"] == "operation/agentes/status_monitor") {
 			echo "<div class='arrows'>";
-		else
+		} else {
 			echo "<div class='arrow'>";
+		}
 		echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60' class='mn'>".$lang_label["detailed_monitoragent_state"]."</a></li></ul></div>";
 
-		if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/agentes/exportdata")
+		if (isset($_GET["sec2"]) && $_GET["sec2"] == "operation/agentes/exportdata") {
 			echo "<div class='arrows'>";
-		else
+		} else {
 			echo "<div class='arrow'>";
+		}
 		echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/exportdata' class='mn'>".$lang_label["export_data"]."</a></li></ul></div>";
 
-		if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/agentes/estadisticas")
+		if (isset($_GET["sec2"]) && $_GET["sec2"] == "operation/agentes/estadisticas") {
 			echo "<div class='arrows'>";
-		else
+		} else {
 			echo "<div class='arrow'>";
+		}
 		echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/estadisticas' class='mn'>". $lang_label["statistics"]. "</a></li></ul></div>";
 	}
 
@@ -80,10 +85,11 @@ if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 	echo '<a href="operation/active_console/index.php" class="mn"  target="_top">'.$lang_label["active_console"].'</a></li></ul></div>';
 
 	// Server view
-	if ( isset($_GET["sec2"]) && $_GET["sec2"] == "operation/servers/view_server")
+	if ( isset($_GET["sec2"]) && $_GET["sec2"] == "operation/servers/view_server") {
 		echo '<div id="op2s">';
-	else
+	} else {
 		echo '<div id="op2">';
+	}
 	echo '<ul class="mn"><li>';
 	echo '<a href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server&amp;refr=60" class="mn">'.$lang_label["view_servers"].'</a></li></ul></div>';
 }
@@ -91,23 +97,26 @@ if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 
 // Check access for incident
 if (give_acl($_SESSION["id_usuario"], 0, "IR")==1) {
-	if(isset($_GET["sec2"]) && ($_GET["sec2"] == "operation/incidents/incident" || $_GET["sec2"] == "operation/incidents/incident_detail"|| $_GET["sec2"] == "operation/incidents/incident_note")) 
+	if(isset($_GET["sec2"]) && ($_GET["sec2"] == "operation/incidents/incident" || $_GET["sec2"] == "operation/incidents/incident_detail"|| $_GET["sec2"] == "operation/incidents/incident_note")) {
 		echo '<div id="op3s">';
-	else
+	} else {
 		echo '<div id="op3">';
+	}
 	echo '<ul class="mn"><li><a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident" class="mn">'.$lang_label["manage_incidents"].'</a></li></ul></div>';
 
 	if (isset($_GET["sec"]) && $_GET["sec"] == "incidencias"){
 		if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/incidents/incident_search") {
 			echo "<div class='arrows'>";
+		} else {
+			echo "<div class='arrow'>";
 		}
-		else echo "<div class='arrow'>";
 		echo "<ul class='mn'><li><a href='index.php?sec=incidencias&amp;sec2=operation/incidents/incident_search' class='mn'>".$lang_label["search_incident"]."</a></li></ul></div>";
 
-		if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/incidents/incident_statistics") {
+		if (isset($_GET["sec2"]) && $_GET["sec2"] == "operation/incidents/incident_statistics") {
 			echo "<div class='arrows'>";
+		} else {
+			echo "<div class='arrow'>";
 		}
-		else echo "<div class='arrow'>";
 		echo "<ul class='mn'><li><a href='index.php?sec=incidencias&amp;sec2=operation/incidents/incident_statistics' class='mn'>".$lang_label["statistics"]."</a></li></ul></div>";
 	}
 }
@@ -117,80 +126,90 @@ if (give_acl($_SESSION["id_usuario"], 0, "IR")==1) {
 if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 
 	// Events
-	if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/events/events")
+	if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/events/events") {
 		echo '<div id="op4s">';
-	else
+	} else {
 		echo '<div id="op4">';
+	}
 	echo '<ul class="mn"><li><a href="index.php?sec=eventos&amp;sec2=operation/events/events" class="mn">'.$lang_label["view_events"].'</a></li></ul></div>';
 	// Event statistics submenu
 	if (isset($_GET["sec"]) && $_GET["sec"] == "eventos"){
-		if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/events/event_statistics")
+		if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/events/event_statistics") {
 			echo "<div class='arrows'>";
-		else
+		} else {
 			echo "<div class='arrow'>";
+		}
 		echo "<ul class='mn'><li><a href='index.php?sec=eventos&amp;sec2=operation/events/event_statistics' class='mn'>".$lang_label["statistics"]."</a></li></ul></div>";
 	}
 
 	// Users
-	if(isset($_GET["sec2"]) && ($_GET["sec2"] == "operation/users/user" || $_GET["sec2"] == "operation/users/user_edit" ))
+	if(isset($_GET["sec2"]) && ($_GET["sec2"] == "operation/users/user" || $_GET["sec2"] == "operation/users/user_edit" )) {
 		echo '<div id="op5s">';
-	else
+	} else {
 		echo '<div id="op5">';
+	}
 	echo '<ul class="mn"><li><a href="index.php?sec=usuarios&amp;sec2=operation/users/user" class="mn">'.$lang_label["view_users"].'</a></li></ul></div>';
 
 	// User edit (submenu)
 	if (isset($_GET["sec"]) && $_GET["sec"] == "usuarios"){
-		if(isset($_GET["ver"]) && $_GET["ver"] == $_SESSION["id_usuario"])
+		if(isset($_GET["ver"]) && $_GET["ver"] == $_SESSION["id_usuario"]) {
 			echo "<div class='arrows'>";
-		else
+		} else {
 			echo "<div class='arrow'>";
+		}
 		echo "<ul class='mn'><li><a href='index.php?sec=usuarios&amp;sec2=operation/users/user_edit&amp;ver=".$_SESSION["id_usuario"]."' class='mn'>".$lang_label["index_myuser"]."</a></li></ul></div>";
 
 		// User statistic
-		if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/users/user_statistics")
+		if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/users/user_statistics") {
 			echo "<div class='arrows'>";
-		else
+		} else {
 			echo "<div class='arrow'>";
+		}
 		echo "<ul class='mn'><li><a href='index.php?sec=usuarios&amp;sec2=operation/users/user_statistics' class='mn'>".$lang_label["statistics"]."</a></li></ul></div>";
 	}
 
 	// SNMP console
-	if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/snmpconsole/snmp_view")
+	if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/snmpconsole/snmp_view") {
 		echo '<div id="op6s">';
-	else
+	} else {
 		echo '<div id="op6">';
+	}
 	echo '<ul class="mn"><li><a href="index.php?sec=snmpconsole&amp;sec2=operation/snmpconsole/snmp_view&amp;refr=30" class="mn">'.$lang_label["SNMP_console"].'</a></li></ul></div>';
 
 	// SNMP Console alert (submenu)
 	if (isset($_GET["sec"]) && $_GET["sec"] == "snmpconsole"){
-		if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/snmpconsole/snmp_alert")
+		if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/snmpconsole/snmp_alert") {
 			echo "<div class='arrows'>";
-		else
+		} else {
 			echo "<div class='arrow'>";
+		}
 		echo "<ul class='mn'><li><a href='index.php?sec=snmpconsole&amp;sec2=operation/snmpconsole/snmp_alert' class='mn'>".$lang_label["snmp_console_alert"]."</a></li></ul></div>";
 	}
 
 	// Messages
-	if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/messages/message" && !isset($_GET["nuevo_g"]))
+	if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/messages/message" && !isset($_GET["nuevo_g"])) {
 		echo '<div id="op7s">';
-	else
+	} else {
 		echo '<div id="op7">';
+	}
 	echo '<ul class="mn"><li><a href="index.php?sec=messages&amp;sec2=operation/messages/message" class="mn">'. $lang_label["messages"].'</a></li></ul></div>';
 
 	// New message (submenu)
 	if (isset($_GET["sec"]) && $_GET["sec"] == "messages"){
-		if(isset($_GET["sec2"]) && isset($_GET["nuevo_g"]))
+		if(isset($_GET["sec2"]) && isset($_GET["nuevo_g"])) {
 			echo "<div class='arrows'>";
-		else
+		} else {
 			echo "<div class='arrow'>";
+		}
 		echo "<ul class='mn'><li><a href='index.php?sec=messages&amp;sec2=operation/messages/message&amp;nuevo_g' class='mn'>".$lang_label["messages_g"]."</a></li></ul></div>";
 	}
 
-	// Reporing
-	if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/reporting/reporting" && !isset($_GET["nuevo_g"]))
+	// Reporting
+	if (isset($_GET["sec2"]) && $_GET["sec2"] == "operation/reporting/reporting") {
 		echo '<div id="op8s">';
-	else
+	} else {
 		echo '<div id="op8">';
+	}
 	echo '<ul class="mn"><li><a href="index.php?sec=reporting&sec2=operation/reporting/reporting" class="mn">'. $lang_label["reporting"].'</a></li></ul></div>';
 
 	// New message (reporting)

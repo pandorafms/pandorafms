@@ -591,6 +591,11 @@ $lang_label["background_image"]="Imatge de fons";
 $lang_label["help"]="Ajuda";
 $lang_label["no_monitors_g"]="Aquest grup no t&eacute; cap monitor";
 
+$lang_label["reporting"]="Informes";
+$lang_label["agent_general_reporting"]="Agent overview";
+
+$lang_label["active_console"]="Consola activa";
+
 global $lang_label;
 global $help_label;
 ?>

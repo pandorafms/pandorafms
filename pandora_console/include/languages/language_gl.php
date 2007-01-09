@@ -649,6 +649,11 @@ $lang_label["background_image"]="Imaxe de fondo";
 $lang_label["help"]="Axuda";
 $lang_label["no_monitors_g"]="Este grupo non ten monitor definido";
 
+$lang_label["reporting"]="Informes";
+$lang_label["agent_general_reporting"]="Agent overview";
+
+$lang_label["active_console"]="Consola activa";
+
 global $lang_label;
 global $help_label;
 ?>

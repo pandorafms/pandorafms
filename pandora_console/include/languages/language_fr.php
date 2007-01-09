@@ -634,6 +634,11 @@ $lang_label["background_image"]="Image de base";
 $lang_label["help"]="Aide";
 $lang_label["no_monitors_g"]=" Cet groupe ne poss&egrave;de pas de moniteur design&eacute;";
 
+$lang_label["reporting"]="Rapports";
+$lang_label["agent_general_reporting"]="Agent overview";
+
+$lang_label["active_console"]="Console active";
+
 global $lang_label;
 global $help_label;
 ?>

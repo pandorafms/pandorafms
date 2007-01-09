@@ -635,6 +635,11 @@ $lang_label["background_image"]="Imagen de fondo";
 $lang_label["help"]="Ayuda";
 $lang_label["no_monitors_g"]="Este agente no tiene ning&uacute;n monitor definido";
 
+$lang_label["reporting"]="Informes";
+$lang_label["agent_general_reporting"]="Agent overview";
+
+$lang_label["active_console"]="Consola activa";
+
 global $lang_label;
 global $help_label;
 ?>

@@ -574,7 +574,12 @@ $lang_label["next_contact"]="Seguinte contato de agente";
 $lang_label["out_of_limits"]="Fora de limites";
 $lang_label["background_image"]="Imagem de fundo";
 $lang_label["help"]="Ajuda";
-$lang_label["no_monitors_g"] = "Este grupo n&atilde;o tem nenhum monitor definido";
+$lang_label["no_monitors_g"]="Este grupo n&atilde;o tem nenhum monitor definido";
+
+$lang_label["reporting"]="Relat&oacute;rios";
+$lang_label["agent_general_reporting"]="Agent overview";
+
+$lang_label["active_console"]="Console ativa";
 
 global $lang_label;
 global $help_label;

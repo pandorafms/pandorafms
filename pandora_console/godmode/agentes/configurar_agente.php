@@ -480,12 +480,26 @@ if (give_acl($id_user, 0, "AW")==1) {
 				$snmp_oid = $combo_snmp_oid;
 			}
 		}
-		$sql_update = "UPDATE tagente_modulo SET max ='".$modulo_max."', min = '".$modulo_min."', nombre='".$nombre."', descripcion='".$descripcion."', tcp_send = '$tcp_send', tcp_rcv = '$tcp_rcv', tcp_port = '$tcp_port', ip_target = '$ip_target', snmp_oid = '$snmp_oid', snmp_community = '$snmp_community', id_module_group = '$id_module_group', module_interval = '$module_interval'  WHERE id_agente_modulo = ".$id_agente_modulo;
+		$sql_update = "UPDATE tagente_modulo 
+		SET max ='".$modulo_max."', 
+		min = '".$modulo_min."', 
+		nombre='".$nombre."', 
+		descripcion='".$descripcion."', 
+		tcp_send = '$tcp_send', 
+		tcp_rcv = '$tcp_rcv', 
+		tcp_port = '$tcp_port', 
+		ip_target = '$ip_target', 
+		snmp_oid = '$snmp_oid', 
+		snmp_community = '$snmp_community', 
+		id_module_group = '$id_module_group', 
+		module_interval = '$module_interval' 
+		WHERE id_agente_modulo = ".$id_agente_modulo;
 		$result=mysql_query($sql_update);	
-		if (! $result)
+		if (! $result) {
 			echo "<h3 class='error'>".$lang_label["update_module_no"]."</h3>";
-		else
+		} else {
 			echo "<h3 class='suc'>".$lang_label["update_module_ok"]."</h3>";
+		}
 		// Init vars to null to avoid trash in forms 
 		$id_tipo_modulo = "";$nombre =  "";$descripcion = "";$modulo_max = "";
 		$modulo_min = "";// Pandora 1.2 new module data:
@@ -500,12 +514,11 @@ if (give_acl($id_user, 0, "AW")==1) {
 	// =========================================================
 	if (isset($_POST["oid"])){
 		snmp_set_quick_print(1);
-//echo "DEBUG snmpreadwalk call() $ip_target $snmp_community <br>";
-		if (! ($snmpwalk = snmprealwalk($ip_target, $snmp_community, "")))
+		if (! ($snmpwalk = snmprealwalk($ip_target, $snmp_community, ""))) {
 			echo "<h3 class='error'>".$lang_label["cannot_read_snmp"]."</h3>";
-		else
+		} else {
 			echo "<h3 class='suc'>".$lang_label["ok_read_snmp"]."</h3>";
-//echo "DEBUG $snmpwalk <br>";
+		}
 	}
 
 
@@ -553,8 +566,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 			VALUES (
 			$id_agente_modulo, 0,'0000-00-00 00:00:00',0,0,'".$id_agente."'
 			)";
-		}
-		else { 
+		} else { 
 			$sql_insert = "INSERT INTO tagente_estado 
 			(id_agente_modulo,datos,timestamp,cambio,estado,id_agente) 
 			VALUES (
@@ -562,10 +574,11 @@ if (give_acl($id_user, 0, "AW")==1) {
 			)";
 		}
 		$result2=mysql_query($sql_insert);
-		if ((! $result) || (! $result2))
+		if ((! $result) || (! $result2)) {
 			echo "<h3 class='error'>".$lang_label["add_module_no"]."</h3>";
-		else
+		} else {
 			echo "<h3 class='suc'>".$lang_label["add_module_ok"]."</h3>";
+		}
 	}
 	// MODULE DELETION
 	// =================
@@ -592,10 +605,11 @@ if (give_acl($id_user, 0, "AW")==1) {
 		$sql_delete= "DELETE FROM tagente_modulo 
 		WHERE id_agente_modulo = ".$id_borrar_modulo;
 		$result=mysql_query($sql_delete);
-		if (! $result)
+		if (! $result) {
 			echo "<h3 class='error'>".$lang_label["delete_module_no"]."</h3>"; 
-		else
+		} else {
 			echo "<h3 class='suc'>".$lang_label["delete_module_ok"]."</h3>";
+		}
 		// Then delete all staus
 		$sql_delete = "DELETE FROM tagente_estado 
 		WHERE id_agente_modulo = ".$id_borrar_modulo;
@@ -629,9 +643,9 @@ if (isset($_GET["creacion"])){
 	}
 echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&
 sec2=godmode/agentes/configurar_agente">';
-if ($creacion_agente == 1)
+if ($creacion_agente == 1) {
 	echo "<input type='hidden' name='create_agent' value='1'>";
-else {
+} else {
 	echo "<input type='hidden' name='update_agent' value='1'>";
 	echo "<input type='hidden' name='id_agente' value='".$id_agente."'>";
 }
@@ -643,10 +657,11 @@ echo '<td class="datos"><b>'.$lang_label["agent_name"].'</b></td>
 if (isset($_GET["creacion"])){
 	echo "&nbsp;";
 } else {
-	echo "&nbsp;<a href='index.php?sec=gagente&
+	echo "
+	<a href='index.php?sec=gagente&
 	sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."' 
 	<img src='images/setup.gif' width='19' valign='top' align='middle' border='0'></a>
-	&nbsp;<a href='index.php?sec=estado&
+	<a href='index.php?sec=estado&
 	sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'>
 	<img src='images/lupa.gif' border='0' align='middle'></a>";
 } 
@@ -807,7 +822,7 @@ if ( $creacion_agente != 1) {
 				echo "<td class='$tdcolor'> N/A";
 			}
 
-			echo "<td class='$tdcolor'>".substr($descripcion,0,30)."</td>";
+			echo "<td class='$tdcolor' title='$descripcion'>".substr($descripcion,0,30)."</td>";
 			echo "<td class='$tdcolor'>".
 			substr(dame_nombre_grupomodulo($module_group2),0,15)."</td>";
 			echo "<td class='$tdcolor'>";
@@ -858,7 +873,9 @@ $result=mysql_query($sql1);
 			$row2=mysql_fetch_array($result2);
 			//module type modulo is $row2["nombre"];
 			
-			$sql3='SELECT * FROM talerta_agente_modulo 
+			$sql3='SELECT id_aam, id_alerta, time_threshold, dis_min, dis_max, 
+			descripcion 
+			FROM talerta_agente_modulo 
 			WHERE id_agente_modulo = '.$row["id_agente_modulo"];  // From all the alerts give me which are from my agent
 			$result3=mysql_query($sql3);
 			while ($row3=mysql_fetch_array($result3)){
@@ -869,7 +886,7 @@ $result=mysql_query($sql1);
 					$tdcolor="datos2";
 					$color =1;
 				}
-				$sql4='SELECT * FROM talerta WHERE id_alerta = '.$row3["id_alerta"];
+				$sql4='SELECT nombre FROM talerta WHERE id_alerta = '.$row3["id_alerta"];
 				$result4=mysql_query($sql4);
 				$row4=mysql_fetch_array($result4);
 				// Alert name defined by  $row4["nombre"]; 
@@ -892,9 +909,10 @@ $result=mysql_query($sql1);
 					id_agente=".$id_agente."&update_alert=".$row3["id_aam"]."#alerts'>
 					<img src='images/config.gif' border=0 alt='".$lang_label["update"]."'></a>";		
 				}
+				$string = $string."</td>";
 			}
 		}
-		if (isset($string)) {
+		if (isset($string) & $string!='') {
 		echo "<table cellpadding='3' cellspacing='3' width='700' class='fon'>
 		<tr><th>".$lang_label["name_type"]."</th>
 		<th>".$lang_label["alert"]."</th>
@@ -904,10 +922,12 @@ $result=mysql_query($sql1);
 		<th width='50'>".$lang_label["action"]."</th></tr>";
 		echo $string;
 		echo "<tr><td colspan='6'><div class='raya'></div></td></tr></table>";
+		} else {
+			echo "<div class='nf'>".$lang_label["no_alerts"]."</div>";
 		}
-		else echo "<div class='nf'>".$lang_label["no_alerts"]."</div>";
+	} else {
+		echo "<div class='nf'>".$lang_label["no_modules"]."</div>";
 	}
-	else echo "<div class='nf'>".$lang_label["no_modules"]."</div>";
 ?>
 
 <br>
@@ -945,10 +965,9 @@ else {
 if ($update_module == "1") {
 	echo "<input type='hidden' name='tipo' value='".$modulo_id_tipo_modulo."'>";
 	echo "<span class='redi'>".$lang_label["no_change_field"]."</span>";
-	}
-else {
+} else {
 	echo '<select name="tipo" onChange="type_change()">';
-	$sql1='SELECT * FROM ttipo_modulo ORDER BY nombre';
+	$sql1='SELECT id_tipo, nombre FROM ttipo_modulo ORDER BY nombre';
 	$result=mysql_query($sql1);
 	echo "<option>--</option>";
 	while ($row=mysql_fetch_array($result)){
@@ -1058,9 +1077,9 @@ if (isset($_POST["oid"])){
 echo '<form name="agente" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">';
 if (! isset($update_alert))
 	$update_alert = -1;
-if ($update_alert != 1)
+if ($update_alert != 1) {
 	echo '<input type="hidden" name="insert_alert" value=1>';
-else {
+} else {
 	echo '<input type="hidden" name="update_alert" value=1>';
 	echo '<input type="hidden" name="id_aam" value="'.$alerta_id_aam.'"';
 }
@@ -1072,13 +1091,13 @@ else {
 <td class="datos">
 <select name="tipo_alerta"> 
 <?php
-$sql1='SELECT * FROM talerta ORDER BY nombre';
 if (isset($tipo_alerta)){
-	echo "<option value='".$tipo_alerta."'>".dame_nombre_alerta($tipo_alerta);
+	echo "<option value='".$tipo_alerta."'>".dame_nombre_alerta($tipo_alerta)."</option>";
 }
+$sql1='SELECT id_alerta, nombre FROM talerta ORDER BY nombre';
 $result=mysql_query($sql1);
 while ($row=mysql_fetch_array($result)){
-	echo "<option value='".$row["id_alerta"]."'>".$row["nombre"];
+	echo "<option value='".$row["id_alerta"]."'>".$row["nombre"]."</option>";
 }
 ?>
 </select>
@@ -1132,17 +1151,17 @@ while ($row=mysql_fetch_array($result)){
 <td class="datos">
 <?php if ($update_alert != 1) {
 	echo '<select name="agente_modulo"> ';
-	$sql2='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_agente;
+	$sql2='SELECT id_agente_modulo, id_tipo_modulo, nombre FROM tagente_modulo WHERE id_agente = '.$id_agente;
 	$result2=mysql_query($sql2);
 	while ($row2=mysql_fetch_array($result2)){
 		if ($row2["id_tipo_modulo"] != -1) {
-			$sql1='SELECT * FROM ttipo_modulo WHERE id_tipo = '.$row2["id_tipo_modulo"];
+			$sql1='SELECT nombre FROM ttipo_modulo WHERE id_tipo = '.$row2["id_tipo_modulo"];
 			$result=mysql_query($sql1);
 			while ($row=mysql_fetch_array($result)){
 				echo "<option value='".$row2["id_agente_modulo"]."'>".$row["nombre"]."/".$row2["nombre"];
 			}
 		} else // for -1, is a special module, keep alive monitor !!
-			echo "<option value='".$row2["id_agente_modulo"]."'>".$row2["nombre"];
+			echo "<option value='".$row2["id_agente_modulo"]."'>".$row2["nombre"]."</option>";
 	}
 	echo "</select>";
 } else {

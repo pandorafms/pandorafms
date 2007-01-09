@@ -1,11 +1,15 @@
 2007-01-09 Raul Mateos  <raulofpandora@gmail.com>
 
+	* godmode/agentes/configurar_agente.php; Style correction. Solve small
+	bug	not showing any table if no alert defined.
+	
+	* include/config.php: Add some comments and change order of error reporting
+	function.
+	
 	* include/languages/*.php: New file for german language. Some
 	updates for the rest of files.
 	
 	* pandoradb_data.sql: Add entry for german language.
-
-2007-01-09 Raul Mateos  <raulofpandora@gmail.com>
 
 	* operation/menu.php: Style correction (not enough).
 	

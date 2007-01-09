@@ -143,7 +143,7 @@ INSERT INTO `tlanguage` VALUES ('fr','Fran&ccedil;ais');
 INSERT INTO `tlanguage` VALUES ('it','Italiano');
 INSERT INTO `tlanguage` VALUES ('ca','Catal&agrave;');
 INSERT INTO `tlanguage` VALUES ('gl','Galego');
-
+INSERT INTO `tlanguage` VALUES ('de','Deutch');
 --
 -- Dumping data for table `tmodule_group`
 --

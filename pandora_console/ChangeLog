@@ -1,5 +1,12 @@
 2007-01-09 Raul Mateos  <raulofpandora@gmail.com>
 
+	* include/languages/*.php: New file for german language. Some
+	updates for the rest of files.
+	
+	* pandoradb_data.sql: Add entry for german language.
+
+2007-01-09 Raul Mateos  <raulofpandora@gmail.com>
+
 	* operation/menu.php: Style correction (not enough).
 	
 	* include/op.css: Solve small bug with hover in reporting icon.

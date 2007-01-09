@@ -579,6 +579,11 @@ $lang_label["background_image"] = "Immagine di sfondo";
 $lang_label["help"] = "Aiuto";
 $lang_label["no_monitors_g"] = "Questo gruppo non ha monitoraggi";
 
+$lang_label["reporting"]="Rapporto";
+$lang_label["agent_general_reporting"]="Agent overview";
+
+$lang_label["active_console"]="Console attiva";
+
 global $lang_label; 
 global $help_label;
 ?>

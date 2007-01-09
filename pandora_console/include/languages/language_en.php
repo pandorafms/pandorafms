@@ -641,8 +641,6 @@ $lang_label["truetype"]="Truetype fonts";
 $lang_label["right_left"]="Right to Left";
 $lang_label["left_right"]="Left to Right";
 
-// 29 May 06 (New for Beta2)
-
 $lang_label["cannot_read_snmp"]="Cannot read from SNMP source";
 $lang_label["ok_read_snmp"]="SNMP source has been scanned";
 $lang_label["cancel"]="Cancel";
@@ -657,7 +655,7 @@ $lang_label["no_monitors_g"]="This group doesn't have any monitor";
 $lang_label["reporting"]="Reporting";
 $lang_label["agent_general_reporting"]="Agent overview";
 
-// 5 de Enero 2007
+// 5 Jan 2007
 $lang_label["active_console"]="Active console";
 
 

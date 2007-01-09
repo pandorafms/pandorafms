@@ -1,3 +1,9 @@
+2007-01-09 Raul Mateos  <raulofpandora@gmail.com>
+
+	* operation/menu.php: Style correction (not enough).
+	
+	* include/op.css: Solve small bug with hover in reporting icon.
+
 2007-01-08  Manuel Arostegui <marostegui@artica.es>
 
 	* pandora_console.spec: Changed group.
@@ -8,7 +14,6 @@
 	chaotic :-). Almost all code it's break apart, so no problems
 	should not be generated. New graphical console will be called
 	"Active console", as temporal name.
-
 	
 	* pandora_graphical_console.sql: New SQL for active console.
 

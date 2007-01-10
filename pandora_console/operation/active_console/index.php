@@ -1,4 +1,6 @@
-<!--// Pandora - the Free monitoring system
+<?php
+
+// Pandora - the Free monitoring system
 // ====================================
 // Copyright (c) Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
 // Copyright (c) INDISEG S.L, contacto[AT]indiseg[DOT]net www.indiseg.net
@@ -13,10 +15,8 @@
 // GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.-->
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-
-<?php
 require("../../include/config.php");
 global $dbname;
 global $dbuser;
@@ -36,13 +36,13 @@ $heigthGraph=200;
 
 	
 ?>
-<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->
-<html id="idHtml" xmlns="http://www.w3.org/1999/xhtml"><head id="idHead">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head id="idHead">
 
 
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 
-<?	// Añadimos esta linea que fuerza el refresco cada 10 segundos si se está en modo monitor. 
+<?php	// Añadimos esta linea que fuerza el refresco cada 10 segundos si se está en modo monitor. 
 	if ($_GET["mode"]=="monitor")
 	{
 		echo ("<meta http-equiv=\"refresh\" content=\"10\">"); 
@@ -116,16 +116,16 @@ $heigthGraph=200;
         		}
     		}
 	}else{ // Cargamos los valores de la base de datos
-	<?
+	<?php
 
 //////////////////////////////////////////////////////////////////////////////////////////
 //  		$usuario = dameUsuarioActivo();  Es una fase que siemrpe retorna admin hay que implementarla bien cuando se haga la integración real con Pandora
 //////////////////////////////////////////////////////////////////////////////////////////
 		$usuario="admin";
 		$estado_consola=dameEstadoConsola($usuario);
-		echo "vista_activa=".$estado_consola["idVistaActiva"].";";
-		echo "menuLeft=".$estado_consola["menuX"].";";
-		echo "menuTop=".$estado_consola["menuY"].";";
+		echo "vista_activa='".$estado_consola["idVistaActiva"]."';";
+		echo "menuLeft='".$estado_consola["menuX"]."';";
+		echo "menuTop='".$estado_consola["menuY"]."';";
 
 	?>
 	}
@@ -148,7 +148,7 @@ aRelacionesObjetos=new Array(); // Este array almacena el nombre de las relacion
 <script type="text/javascript">
 
 
-<?
+<?php
 
 
 ///////////////ON-LOAD////////////////////
@@ -163,9 +163,6 @@ aRelacionesObjetos=new Array(); // Este array almacena el nombre de las relacion
 
 echo "
 window.onload = function() {
-
-
-
 
 
  // Definimos los menus
@@ -225,8 +222,8 @@ $perfil = obtenerPerfilActivo();
 
 // Obtenemos las vistas asignadas al perfil especial activo con id igual a 2 y creamos un array JavaScript que contendrá las Vistas
 $vistas = dameVistasPerfilActivas($perfil);
-echo "perfil=".$perfil.";"; // Tengo que crear una variable javascript para pasarsela en cookie (con $_SESSION no consigo que funcione)
-echo "aVistas = new Array(), aVistas_count =".mysql_num_rows($vistas).";";
+echo "perfil='".$perfil."';"; // Tengo que crear una variable javascript para pasarsela en cookie (con $_SESSION no consigo que funcione)
+echo "aVistas = new Array(), aVistas_count ='".mysql_num_rows($vistas)."';";
 echo "cuentaVis=aVistas_count;";
 $k=0;
 while ($vista=mysql_fetch_array($vistas)){ //recorremos las vistas y creamos un array por cada vista con los objetos que se encuentran incluidos en la vista
@@ -1259,7 +1256,8 @@ if (($_GET["mode"]=="monitor" ) or ($_GET["mode"]==""))
 
 
 echo "</script>\n";
-echo "<BODY  onUnload=\"javascript:guardarEstado()\" >
+echo "</head>\n";
+echo "<body onUnload=\"javascript:guardarEstado()\" >
 <div>
 	<div id='tpg2' class='tabPanelGroup'>
 

@@ -214,10 +214,11 @@ if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 
 	// New message (reporting)
 	if (isset($_GET["sec"]) && $_GET["sec"] == "reporting"){
-		if(isset($_GET["sec2"]) && isset($_GET["nuevo_g"]))
+		if(isset($_GET["sec2"])){
 			echo "<div class='arrows'>";
-		else
+		} else {
 			echo "<div class='arrow'>";
+		}
 		echo "<ul class='mn'><li><a href='index.php?sec=reporting&sec2=operation/reporting/reporting' class='mn'>".$lang_label["agent_general_reporting"]."</a></li></ul></div>";
 	}
 }

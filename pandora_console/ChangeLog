@@ -1,3 +1,13 @@
+2007-01-10 Raul Mateos  <raulofpandora@gmail.com>
+
+	* help/[gl|de]/*.php: New files. At this moment, is a redirect to the
+	english help.
+	
+	* operation/menu.php: Small style correction.
+	
+	* active_console/*.php: Change from <? to <?php, change comments to put them
+	inside <?php. Small changes in js scripts.
+
 2007-01-09 Raul Mateos  <raulofpandora@gmail.com>
 
 	* godmode/agentes/configurar_agente.php; Style correction. Solve small

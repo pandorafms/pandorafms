@@ -1,3 +1,7 @@
+2007-01-14 Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/languages/language_de.php: Updated file for german language.
+
 2007-01-10 Raul Mateos  <raulofpandora@gmail.com>
 
 	* help/[gl|de]/*.php: New files. At this moment, is a redirect to the

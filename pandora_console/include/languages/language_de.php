@@ -205,12 +205,12 @@ $lang_label["purge_3day"]="L&ouml;sche Daten, die &auml;lter als 3 Tage sind";
 $lang_label["purge_1day"]="L&ouml;sche Daten, die &auml;lter als 1 Tag sind";
 $lang_label["purge_all"]="L&ouml;sche <b>alle</b> Daten";
 
-$lang_label["rango3"]="Pakete, die &auml;ter als 3 Monate sind";
-$lang_label["rango2"]="Pakete, die &auml;ter als 1 Monat sind";
-$lang_label["rango1"]="Pakete, die &auml;ter als 1 Woche sind";
-$lang_label["rango11"]="Pakete, die &auml;ter als 2 Wochen sind";
-$lang_label["rango0"]="Pakete, die &auml;ter als 3 Tage sind";
-$lang_label["rango00"]="Pakete, die &auml;ter als 1 Tag sind";
+$lang_label["rango3"]="Pakete, die &auml;lter als 3 Monate sind";
+$lang_label["rango2"]="Pakete, die &auml;lter als 1 Monat sind";
+$lang_label["rango1"]="Pakete, die &auml;lter als 1 Woche sind";
+$lang_label["rango11"]="Pakete, die &auml;lter als 2 Wochen sind";
+$lang_label["rango0"]="Pakete, die &auml;lter als 3 Tage sind";
+$lang_label["rango00"]="Pakete, die &auml;lter als 1 Tag sind";
 
 $lang_label["db_info"]="DB Information";
 $lang_label["db_operation"]="Ver&auml;nderung der Datenbasis";
@@ -299,7 +299,7 @@ $lang_label["week_graph"]="Graph der letzten 7 Tage";
 $lang_label["day_graph"]="Graph der letzten 24 Stunden";
 $lang_label["hour_graph"]="Graph der letzten Stunde";
 
-$lang_label["days_compact"]="Max. Anzahl der Tage bevor die Daten komprimiert werden.";
+$lang_label["days_compact"]="Max. Anzahl der Tage, bevor die Daten komprimiert werden";
 $lang_label["days_purge"]="Max. Anzahl der Tage vor dem L&ouml;schen";
 
 $lang_label["fired"]="Erzeugter Alarm";
@@ -329,20 +329,20 @@ $lang_label["update_user_no"]="Die Nutzerinformation konnte nicht ver&auml;ndert
 $lang_label["group_error"]="Die Gruppe konnte nicht geladen werden";
 $lang_label["create_keep_no"]="Das &Uuml;berwachungsmodul f&uuml;r den neuen Agenten konnte nicht kreiert werden";
 $lang_label["pass_nomatch"]="Die Passworte stimmen nicht &uuml;berein. Bitte wiederholen Sie Ihre Eingaben";
-$lang_label["purge_audit_30day"]="L&ouml;sche Protokolldaten, die &auml;ter als 30 Tage sind";
-$lang_label["purge_audit_7day"]="L&ouml;sche Protokolldaten, die &auml;ter als 7 Tage sind";
-$lang_label["purge_audit_90day"]="L&ouml;sche Protokolldaten, die &auml;ter als 90 Tage sind";
-$lang_label["purge_audit_14day"]="L&ouml;sche Protokolldaten, die &auml;ter als 14 Tage sind";
-$lang_label["purge_audit_3day"]="L&ouml;sche Protokolldaten, die &auml;ter als 3 Tage sind";
-$lang_label["purge_audit_1day"]="L&ouml;sche Protokolldaten, die &auml;ter als 1 Tag sind";
+$lang_label["purge_audit_30day"]="L&ouml;sche Protokolldaten, die &auml;lter als 30 Tage sind";
+$lang_label["purge_audit_7day"]="L&ouml;sche Protokolldaten, die &auml;lter als 7 Tage sind";
+$lang_label["purge_audit_90day"]="L&ouml;sche Protokolldaten, die &auml;lter als 90 Tage sind";
+$lang_label["purge_audit_14day"]="L&ouml;sche Protokolldaten, die &auml;lter als 14 Tage sind";
+$lang_label["purge_audit_3day"]="L&ouml;sche Protokolldaten, die &auml;lter als 3 Tage sind";
+$lang_label["purge_audit_1day"]="L&ouml;sche Protokolldaten, die &auml;lter als 1 Tag sind";
 $lang_label["purge_audit_all"]="L&ouml;sche alle Protokolldaten";
 
-$lang_label["purge_event_30day"]="L&ouml;sche Ereignisse, die &auml;ter als 30 Tage sind";
-$lang_label["purge_event_7day"]="L&ouml;sche Ereignisse, die &auml;ter als 7 Tage sind";
-$lang_label["purge_event_90day"]="L&ouml;sche Ereignisse, die &auml;ter als 90 Tage sind";
-$lang_label["purge_event_14day"]="L&ouml;sche Ereignisse, die &auml;ter als 14 Tage sind";
-$lang_label["purge_event_3day"]="L&ouml;sche Ereignisse, die &auml;ter als 3 Tage sind";
-$lang_label["purge_event_1day"]="L&ouml;sche Ereignisse, die &auml;ter als 1 Tag sind";
+$lang_label["purge_event_30day"]="L&ouml;sche Ereignisse, die &auml;lter als 30 Tage sind";
+$lang_label["purge_event_7day"]="L&ouml;sche Ereignisse, die &auml;lter als 7 Tage sind";
+$lang_label["purge_event_90day"]="L&ouml;sche Ereignisse, die &auml;lter als 90 Tage sind";
+$lang_label["purge_event_14day"]="L&ouml;sche Ereignisse, die &auml;lter als 14 Tage sind";
+$lang_label["purge_event_3day"]="L&ouml;sche Ereignisse, die &auml;lter als 3 Tage sind";
+$lang_label["purge_event_1day"]="L&ouml;sche Ereignisse, die &auml;lter als 1 Tag sind";
 $lang_label["purge_event_all"]="L&ouml;sche alle Ereignisse";
 
 $lang_label["deleting_records"]="L&ouml;sche Aufzeichnung zum Modul ";
@@ -363,7 +363,7 @@ $help_label["db_purge0"]="Nutze diese Kombination, um einen Agenten f&uuml;r die
 
 $lang_label["profiles"] ="Profile";
 $lang_label["current_dbsetup"]="Dies ist Ihre aktuelle Einstellung zur Wartung der Datenbasis.";
-$lang_label["dbsetup_info"]="Bitte, &uuml;berpr&uuml;fen Sie die Einstellungen des Pandora Server setup, und stellen Sie sicher, dass der Hintergrundproze&szlig; zur Wartung der Datenbasis l&auml;ft. Es ist sehr wichtig, die Datenasis aktuell zu halten; nur so lassen sich in Pandora einen bestm&ouml;glichen Durchsatz und Ergebnisse erzielen.";
+$lang_label["dbsetup_info"]="Bitte, &uuml;berpr&uuml;fen Sie die Einstellungen des Pandora Servers, und stellen Sie sicher, dass der Hintergrundproze&szlig; zur Wartung der Datenbasis aktiv ist. Es ist sehr wichtig, die Datenasis aktuell zu halten; nur so lassen sich in Pandora ein bestm&ouml;glicher Durchsatz erzielen.";
 
 $lang_label["profile_title"]="Profilmanagement";
 $lang_label["create_profile"]="Kreiere Profil";
@@ -450,7 +450,7 @@ $lang_label["copyage"]="Kopiere Agent";
 $lang_label["notfoundmod"]="Kein Modul gefunden ";  
 $lang_label["inagent"]=" im Agenten  ";
 $lang_label["you_must_select_modules"]="Es mu&szlig; ein Modul und/oder ein Alarm selektiert werden, um die Kopierfunktion auszuf&uuml;hren";
-$lang_label["packets_by_date"]="Pakete nach Datum geordnet";
+$lang_label["packets_by_date"]="Pakete nach Alter geordnet";
 $lang_label["packets_by_agent"]="Pakete pro Agent";
 $lang_label["modules_per_agent"]="Module pro Agent";
 $lang_label["event_total"]="Summe der Ereignisse";

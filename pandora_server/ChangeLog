@@ -1,3 +1,8 @@
+2007-01-16  Manuel Arostegui <marostegui@artica.es>
+
+	* pandora_server/specs/fedoracore5/pandora_server.spec: Fixed
+	  bug #1636585.
+
 2007-01-08  Manuel Arostegui <marostegui@artica.es>
 
 	* pandora_server/specs/fedoracore5/pandora_server.spec: Changed group.

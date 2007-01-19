@@ -1,3 +1,17 @@
+2007-01-19  dervitx <josepublico@jnavarro.net>
+	
+        * en/pandora_log_engine.pdf: deleted
+	
+        * en/pandora_log_engine.xml: deleted
+        
+	* en/pandora_log_engine
+        
+	* en/pandora_log_engine/log_engine.tex
+        
+	* en/pandora_log_engine/log_engine.pdf :  new documentation for the
+	log agent
+
+
 2006-10-12  dervitx <josepublico@jnavarro.net>
 
 	* pandora_doc/en/pandora_log_engine.pdf: documentation for log engine

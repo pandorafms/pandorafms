@@ -82,7 +82,8 @@ if [ "$1" = "0" ]; then
        /usr/sbin/groupdel pandora
 fi
 mkdir -p /etc/pandora
-ln -s /usr/share/pandora/conf/pandora_server.conf /etc/pandora/pandora_server.conf
+mkdir -p /etc/pandora/conf/
+ln -s /usr/share/pandora/conf/pandora_server.conf /etc/pandora/conf/pandora_server.conf
 
 echo "Pandora Server binarys has been placed under /usr/bin/"
 echo "Pandora Server configuration is /etc/pandora/conf"

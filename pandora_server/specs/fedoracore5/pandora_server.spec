@@ -47,6 +47,7 @@ mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/
 mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in
 mkdir -p $RPM_BUILD_ROOT/var/log/pandora/
 mkdir -p $RPM_BUILD_ROOT/usr/share/pandora/
+mkdir -p $RPM_BUILD_ROOT/usr/share/pandora/conf/
 mkdir -p $RPM_BUILD_ROOT/usr/lib/
 mkdir -p $RPM_BUILD_ROOT/usr/lib/perl5
 mkdir -p $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/
@@ -57,7 +58,7 @@ cp -aRf * $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}
 mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/pandora_server.pl $RPM_BUILD_ROOT/usr/bin/pandora_server
 mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/pandora_network.pl $RPM_BUILD_ROOT/usr/bin/pandora_network
 mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/pandora_snmpconsole.pl $RPM_BUILD_ROOT/usr/bin/pandora_snmpconsole
-mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/conf/pandora_server.conf $RPM_BUILD_ROOT/etc/pandora/conf/pandora_server.conf
+mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/conf/pandora_server.conf $RPM_BUILD_ROOT/usr/share/pandora/conf/pandora_server.conf
 mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/util/ $RPM_BUILD_ROOT/usr/share/pandora/
 mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/pandora_config.pm $RPM_BUILD_ROOT/usr/share/pandora/util/
 mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/pandora_db.pm $RPM_BUILD_ROOT/usr/share/pandora/util/
@@ -80,6 +81,8 @@ if [ "$1" = "0" ]; then
        /usr/sbin/userdel pandora
        /usr/sbin/groupdel pandora
 fi
+mkdir -p /etc/pandora
+ln -s /usr/share/pandora/conf/pandora_server.conf /etc/pandora/pandora_server.conf
 
 echo "Pandora Server binarys has been placed under /usr/bin/"
 echo "Pandora Server configuration is /etc/pandora/conf"
@@ -93,7 +96,7 @@ echo "For further information please: man pandora or man pandora_server"
 /usr/bin/pandora_snmpconsole
 /var/spool/pandora/
 %defattr(755,pandora,pandora)
-/etc/pandora/conf/pandora_server.conf
+#/etc/pandora/conf/pandora_server.conf
 /usr/share/pandora/util/pandora_config.pm
 /usr/share/pandora/util/pandora_db.pm
 /usr/share/pandora/util/pandora_tools.pm
@@ -103,7 +106,7 @@ echo "For further information please: man pandora or man pandora_server"
 /usr/lib/perl5/site_perl/5.8.5/Pandora/pandora_config.pm
 /usr/lib/perl5/site_perl/5.8.5/Pandora/pandora_db.pm
 /usr/lib/perl5/site_perl/5.8.5/Pandora/pandora_tools.pm
-
+/usr/share/pandora/conf/pandora_server.conf
 %docdir %{prefix}/%{name}-%{version}-%{release}/docs
 %{prefix}/%{name}-%{version}-%{release}
 %{_mandir}/man1/pandora.1.gz

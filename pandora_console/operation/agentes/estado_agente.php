@@ -186,9 +186,9 @@ if (comprueba_login() == 0) {
 					echo "<a href='index.php?sec=gagente&amp;
 					sec2=godmode/agentes/configurar_agente&amp;
 					id_agente=".$id_agente."'>
-					<img src='images/setup.gif' border=0 width=15></a>";
+					<img src='images/setup.gif' border=0 width=16></a>";
 				}
-				echo "&nbsp;&nbsp;<a href='index.php?sec=estado&amp;
+				echo "&nbsp;<a href='index.php?sec=estado&amp;
 				sec2=operation/agentes/ver_agente&amp;id_agente=".$id_agente."'>
 				<b>".$nombre_agente."</b></a></td>";
 				if ( $agent_type == 0) {

@@ -60,8 +60,8 @@ if (comprueba_login() == 0) {
 	echo "&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."&refr=60'>
 	<img src='images/refresh.gif' class='top' border=0></a>";
 	if (dame_admin($_SESSION['id_usuario'])==1 )
-		echo "&nbsp;<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."'>
-		<img src='images/setup.gif' width='19' class='top' border=0></a>";
+		echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."'>
+		<img src='images/setup.gif' width='16' class='top' border=0></a>";
 	// Data base access graph
 	echo '</td>';
 	echo "

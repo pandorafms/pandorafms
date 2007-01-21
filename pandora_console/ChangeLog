@@ -1,3 +1,10 @@
+2007-01-21 Raul Mateos  <raulofpandora@gmail.com>
+
+	* images/setup.gif: Updated icon.
+	
+	* operation/estado_agente.php, estado_generalagente.php: Updated image width
+	for new icon.
+
 2007-01-14 Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/languages/language_de.php: Updated file for german language.

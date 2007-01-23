@@ -76,6 +76,7 @@ fi
 
 %clean
 rm -rf $RPM_BUILD_ROOT
+rm -fr $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}
 %post
 if [ "$1" = "0" ]; then
        /usr/sbin/userdel pandora
@@ -108,6 +109,8 @@ echo "For further information please: man pandora or man pandora_server"
 /usr/lib/perl5/site_perl/5.8.5/Pandora/pandora_db.pm
 /usr/lib/perl5/site_perl/5.8.5/Pandora/pandora_tools.pm
 /usr/share/pandora/conf/pandora_server.conf
+/var/log/pandora
+
 %docdir %{prefix}/%{name}-%{version}-%{release}/docs
 %{prefix}/%{name}-%{version}-%{release}
 %{_mandir}/man1/pandora.1.gz

@@ -276,20 +276,20 @@ if (give_acl($id_user, 0, "AW")==1) {
 		$comentarios =  entrada_limpia($_POST["comentarios"]);
 		$modo = entrada_limpia($_POST["modo"]);
 		$id_server = entrada_limpia($_POST["id_server"]);
-		$os_name = entrada_limpia($_POST["os_name"]);
+		$id_os = entrada_limpia($_POST["id_os"]);
 		$disabled = entrada_limpia($_POST["disabled"]);
 
 		// Check if agent exists (BUG WC-50518-2 )
-		$sql1='SELECT * FROM tagente WHERE nombre = "'.$nombre_agente.'"';
+		$sql1='SELECT nombre FROM tagente WHERE nombre = "'.$nombre_agente.'"';
 		$result=mysql_query($sql1);
 		if ($row=mysql_fetch_array($result)){
 			echo "<h3 class='error'>".$lang_label["agent_exists"]."</h3>";
 			$creacion_agente = 1;
 		} else { 
 			if ($id_server != ""){
-				$sql_insert ="INSERT INTO tagente (nombre, direccion, id_grupo, intervalo, comentarios,modo, id_os, disabled, id_server) VALUES ('".$nombre_agente."', '".$direccion_agente."', '".$grupo."', '".$intervalo."', '".$comentarios."',".$modo.", ".$os_name.", '".$disabled."',$id_server)";
+				$sql_insert ="INSERT INTO tagente (nombre, direccion, id_grupo, intervalo, comentarios,modo, id_os, disabled, id_server) VALUES ('".$nombre_agente."', '".$direccion_agente."', '".$grupo."', '".$intervalo."', '".$comentarios."',".$modo.", ".$id_os.", '".$disabled."',$id_server)";
 			} else {
-				$sql_insert ="INSERT INTO tagente (nombre, direccion, id_grupo, intervalo, comentarios,modo, id_os, disabled) VALUES ('".$nombre_agente."', '".$direccion_agente."', '".$grupo."', '".$intervalo."', '".$comentarios."',".$modo.", ".$os_name.", '".$disabled."')";
+				$sql_insert ="INSERT INTO tagente (nombre, direccion, id_grupo, intervalo, comentarios,modo, id_os, disabled) VALUES ('".$nombre_agente."', '".$direccion_agente."', '".$grupo."', '".$intervalo."', '".$comentarios."',".$modo.", ".$id_os.", '".$disabled."')";
 			}
 			$result=mysql_query($sql_insert);	
 			if (! $result)
@@ -316,16 +316,24 @@ if (give_acl($id_user, 0, "AW")==1) {
 		$intervalo =  entrada_limpia($_POST["intervalo"]);
 		$comentarios =  entrada_limpia($_POST["comentarios"]);
 		$modo = entrada_limpia($_POST["modo"]);
-		$os_name = entrada_limpia($_POST["os_name"]);
-		$id_os = $os_name; // Bug reported by Azabel, Feb/2006 :-)
-		$id_server = entrada_limpia($_POST["id_server"]);
+		$id_os = entrada_limpia($_POST["id_os"]);
 		$disabled = entrada_limpia($_POST["disabled"]);
-		$sql_update ="UPDATE tagente SET disabled = ".$disabled." , id_os = ".$os_name." , modo = ".$modo." , nombre = '".$nombre_agente."', direccion = '".$direccion_agente."', id_grupo = '".$grupo."', intervalo = '".$intervalo."', comentarios = '".$comentarios."', id_server = ".$id_server." WHERE id_agente = '".$id_agente."'";
+		$id_server = entrada_limpia($_POST["id_server"]);
+		if ($id_server != ""){
+			$sql_update ="UPDATE tagente 
+			SET disabled = ".$disabled." , id_os = ".$id_os." , modo = ".$modo." , nombre = '".$nombre_agente."', direccion = '".$direccion_agente."', id_grupo = '".$grupo."', intervalo = '".$intervalo."', comentarios = '".$comentarios."', id_server = '".$id_server."' 
+			WHERE id_agente = '".$id_agente."'";
+		} else {
+			$sql_update ="UPDATE tagente 
+			SET disabled = ".$disabled." , id_os = ".$id_os." , modo = ".$modo." , nombre = '".$nombre_agente."', direccion = '".$direccion_agente."', id_grupo = '".$grupo."', intervalo = '".$intervalo."', comentarios = '".$comentarios."' 
+			WHERE id_agente = '".$id_agente."'";
+		}
 		$result=mysql_query($sql_update);
-		if (! $result)
+		if (! $result) {
 			echo "<h3 class='error'>".$lang_label["update_agent_no"]."</h3>";
-		else
+		} else {
 			echo "<h3 class='suc'>".$lang_label["update_agent_ok"]."</h3>";
+		}
 	}
 
 	// Read agent data
@@ -370,7 +378,8 @@ if (give_acl($id_user, 0, "AW")==1) {
 		$update_module = 1;
 		$id_agente_modulo = $_GET["update_module"];
 
-		$sql_update = "SELECT * FROM tagente_modulo WHERE id_agente_modulo = ".$id_agente_modulo;
+		$sql_update = "SELECT * FROM tagente_modulo 
+		WHERE id_agente_modulo = ".$id_agente_modulo;
 		$result=mysql_query($sql_update);		
 		while ($row=mysql_fetch_array($result)){
 			$modulo_id_agente = $row["id_agente"];
@@ -660,7 +669,7 @@ if (isset($_GET["creacion"])){
 	echo "
 	<a href='index.php?sec=gagente&
 	sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."' 
-	<img src='images/setup.gif' width='19' valign='top' align='middle' border='0'></a>
+	<img src='images/setup.gif' width='16' valign='top' align='middle' border='0'></a>
 	<a href='index.php?sec=estado&
 	sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'>
 	<img src='images/lupa.gif' border='0' align='middle'></a>";
@@ -693,7 +702,7 @@ while ($row=mysql_fetch_array($result)){
 <?php echo $intervalo?>"></td>
 <tr><td class="datos"><b><?php echo $lang_label["os"]?></b></td>
 <td class="datos">
-<select name="os_name" class="w130">
+<select name="id_os" class="w130">
 <?php
 if (isset($id_os)){
 	echo "<option value='".$id_os."'>".dame_so_name($id_os);

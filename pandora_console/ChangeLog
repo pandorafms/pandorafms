@@ -1,3 +1,9 @@
+2007-01-27 Raul Mateos  <raulofpandora@gmail.com>
+
+	* godmode/agentes/configurar_agente.php: Fixed bug 1643627, some style
+	changes. Also solve small bug due to use id_os and os_version as the same
+	var.
+
 2007-01-21 Raul Mateos  <raulofpandora@gmail.com>
 
 	* images/setup.gif: Updated icon.

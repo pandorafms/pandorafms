@@ -1,3 +1,9 @@
+2007-02-01  Manuel Arostegui <marostegui@artica.es>
+
+	*  pandora_server/specs/fedoracore5/pandora_server.spec:
+	   Fixed small bugs with some .pm files behaviur and logs
+	   paths.
+
 2007-01-23  Manuel Arostegui <marostegui@artica.es>
 
 	*  pandora_server/specs/fedoracore5/pandora_server.spec:

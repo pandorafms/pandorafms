@@ -1,3 +1,7 @@
+2007-02-02  Manuel Arostegui <marostegui@artica.es>
+
+	linux/pandora_agents.spec: More polished spec file.
+
 2007-01-08  Manuel Arostegui <marostegui@artica.es>
 
 	* linux/pandora_agents.spec: Changed group.

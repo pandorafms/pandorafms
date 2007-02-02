@@ -16,7 +16,7 @@ Packager:           Manuel Arostegui <marostegui@artica.es>
 Prefix:             /opt
 BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
 BuildArchitectures: noarch
-Requires:	    openssh-client coreutils
+Requires:	    coreutils
 AutoReq:            0
 Provides:           %{name}-%{version}
 
@@ -33,7 +33,7 @@ These scripts are formed by modules that each one gathers a "chunk" of informati
 
 %install
 rm -rf $RPM_BUILD_ROOT
-mkdir -p $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}
+mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_agent/
 mkdir -p $RPM_BUILD_ROOT/usr/
 mkdir -p $RPM_BUILD_ROOT/usr/share/
 mkdir -p $RPM_BUILD_ROOT/usr/share/man
@@ -46,11 +46,9 @@ mkdir -p $RPM_BUILD_ROOT/usr/local/etc/pandora/temp
 mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/
 mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_out
 mkdir -p $RPM_BUILD_ROOT/var/log/pandora/
-cp -aRf * $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}
-mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/pandora_agent.sh $RPM_BUILD_ROOT/usr/bin/pandora_agent
-mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/pandora_agent_daemon $RPM_BUILD_ROOT/usr/bin/pandora_agent_daemon
-mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/pandora_agent.conf $RPM_BUILD_ROOT/etc/pandora/pandora_agent.conf
-mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/pandora_user.conf $RPM_BUILD_ROOT/etc/pandora/pandora_user.conf
+cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_agent/
+mv $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent.sh $RPM_BUILD_ROOT/usr/bin/pandora_agent
+mv $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent_daemon $RPM_BUILD_ROOT/usr/bin/pandora_agent_daemon
 cp pandora.1 $RPM_BUILD_ROOT/usr/share/man/man1/
 cp pandora_agents.1 $RPM_BUILD_ROOT/usr/share/man/man1/
 if [ -f $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/%{name}.spec ] ; then
@@ -62,6 +60,9 @@ rm -rf $RPM_BUILD_ROOT
 %post
 echo "Pandora Agent has been place under /usr/bin/"
 echo "Pandora Agent configuration file is /etc/pandora/pandora_agent.conf"
+mkdir -p /etc/pandora
+ln -s /opt/pandora_agent/pandora_agent.conf /etc/pandora/pandora_agent.conf
+ln -s /opt/pandora_agent/pandora_user.conf /etc/pandora/pandora_user.conf
 %files
 %defattr(700,pandora,pandora)
 /usr/bin/pandora_agent_daemon
@@ -70,9 +71,7 @@ echo "Pandora Agent configuration file is /etc/pandora/pandora_agent.conf"
 /var/log/pandora/
 /var/spool/pandora/
 %defattr(755,pandora,pandora)
-/etc/pandora/pandora_user.conf
-/etc/pandora/pandora_agent.conf
-%docdir %{prefix}/%{name}-%{version}-%{release}/docs
-%{prefix}/%{name}-%{version}-%{release}
+%docdir %{prefix}/pandora_agents/docs
+%{prefix}/pandora_agent
 %{_mandir}/man1/pandora.1.gz
 %{_mandir}/man1/pandora_agents.1.gz

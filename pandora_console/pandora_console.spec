@@ -100,11 +100,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %install
 rm -rf $RPM_BUILD_ROOT
-mkdir -p $RPM_BUILD_ROOT%{prefix}/%{name}
+mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_console
 mkdir -p $RPM_BUILD_ROOT/usr/share/
 mkdir -p $RPM_BUILD_ROOT/usr/share/man/
 mkdir -p $RPM_BUILD_ROOT/usr/share/man/man1/
-cp -aRf * $RPM_BUILD_ROOT%{prefix}/%{name}
+cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_console
 cp pandora.1 $RPM_BUILD_ROOT/usr/share/man/man1/
 cp pandora_console.1 $RPM_BUILD_ROOT/usr/share/man/man1/
 if [ -f $RPM_BUILD_ROOT%{prefix}/%{name}/%{name}.spec ] ; then
@@ -117,7 +117,7 @@ rm -rf $RPM_BUILD_ROOT
 echo "Please you HAVE to take a look at the INSTALL file placed on your DocumentRoot in order to follow the instructions to create the database for Pandora"
 %files
 %defattr(0644,%{httpd_user},%{httpd_group},0755)
-%docdir %{prefix}/%{name}/docs
-%{prefix}/%{name}
+%docdir %{prefix}/pandora_console/docs
+%{prefix}/pandora_console
 %{_mandir}/man1/pandora.1.gz
 %{_mandir}/man1/pandora_console.1.gz

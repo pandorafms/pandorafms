@@ -1,3 +1,7 @@
+2007-02-02 Manuel Arostegui <marostegui@artica.es>
+
+	* pandora_console.spec: Fixed small weird bug submitted to my email.
+
 2007-01-27 Raul Mateos  <raulofpandora@gmail.com>
 
 	* godmode/agentes/configurar_agente.php: Fixed bug 1643627, some style

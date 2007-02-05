@@ -600,7 +600,7 @@ $lang_label["no_incidents"]="No incident matches your search filter";
 $lang_label["no_agent_alert"]=" so there are no alerts";
 
 $lang_label["wrote"]=" wrote";
-$lang_label["no_snmp_agent"]="There are no SNMP agents";
+$lang_label["no_snmp_agent"]="There are no SNMP traps in database";
 $lang_label["no_snmp_alert"]="There are no SNMP alerts";
 $lang_label["no_agent_def"]="There are no defined agents";
 
@@ -651,6 +651,8 @@ $lang_label["background_image"]="Background image";
 $lang_label["help"]="Help";
 $lang_label["no_monitors_g"]="This group doesn't have any monitor";
 
+// New strings for 1.3 version
+
 // 15 dev, new for 1.3 dev
 $lang_label["reporting"]="Reporting";
 $lang_label["agent_general_reporting"]="Agent overview";
@@ -658,7 +660,8 @@ $lang_label["agent_general_reporting"]="Agent overview";
 // 5 Jan 2007
 $lang_label["active_console"]="Active console";
 
-
+$lang_label["validate_event_failed"]="Event validation failed";
+// 
 global $lang_label; 
 global $help_label;
 ?>

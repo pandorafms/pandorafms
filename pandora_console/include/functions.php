@@ -398,11 +398,13 @@ function pagination ($count, $url, $offset ) {
 	   " http://pandora/index.php?sec=godmode&sec2=godmode/admin_access_logs "
 	   
 	*/
-	$block_limit = 10; // Visualize only $block_limit blocks 
+	$block_limit = 15; // Visualize only $block_limit blocks
 	if ($count > $block_size){
 		// If exists more registers than I can put in a page, calculate index markers
 		$index_counter = ceil($count/$block_size); // Number of blocks of block_size with data
-		$index_page = ceil($offset/$block_size); // block to begin to show data
+		$index_page = ceil($offset/$block_size)-(ceil($block_limit/2)); // block to begin to show data;
+		if ($index_page < 0)
+			$index_page = 0;
 
 		// This calculate index_limit, block limit for this search.
 		if (($index_page + $block_limit) > $index_counter)
@@ -425,43 +427,56 @@ function pagination ($count, $url, $offset ) {
 		else
 			$inicio_pag = 0;
 
-		// This shows first "<" in query, only if there
-		if (($index_page > 0) and ($paginacion_maxima ==1)){
-			$index_page_prev= ($index_page-1)*$block_size;
-			echo '<a href="'.$url.'&offset='.$index_page_prev.'">&lt;</a> ';
+		echo "<div>";
+		// Show GOTO FIRST button
+		echo '<a href="'.$url.'&offset=0">';
+		echo "<img src='images/control_start_blue.png'>";
+		echo "</a>";
+		echo "&nbsp;";
+		// Show PREVIOUS button
+		if ($index_page > 0){
+			$index_page_prev= ($index_page-$block_limit)*$block_size;
+			if ($index_page_prev < 0)
+				$index_page_prev = 0;
+			echo '<a href="'.$url.'&offset='.$index_page_prev.'"><img src="images/control_rewind_blue.png"></a> ';
 		}
 
 		// Draw blocks markers
-		echo "<div>";
-		for ($i = $inicio_pag; $i <= $index_limit; $i++) {
+		for ($i = $inicio_pag; $i < $index_limit; $i++) {
 			$inicio_bloque = ($i * $block_size);
 			$final_bloque = $inicio_bloque + $block_size;
 			if ($final_bloque > $count){ // if upper limit is beyond max, this shouldnt be possible !
 				$final_bloque = ($i-1)*$block_size + $count-(($i-1) * $block_size);
 			}
-			if (isset($filter_item))
-				echo '<a href="'.$url.'&offset='.$inicio_bloque.'">';
-			else
-				echo '<a href="'.$url.'&offset='.$inicio_bloque.'">';
+			echo "<span>";
+			echo '<a href="'.$url.'&offset='.$inicio_bloque.'">';
 			$inicio_bloque_fake = $inicio_bloque + 1;
-			// Show ">" marker if paginacion maxima limit reached and last block is shown.
-			if (($i==$inicio_pag + $block_limit) AND ($paginacion_maxima ==1)){
-				echo "&gt;</a> ";
+			// Show NEXT PAGE
+			if (($i >= $inicio_pag + $block_limit) AND ($paginacion_maxima == 1)){
+				echo "<img src='images/control_fastforward_blue.png'></a> ";
 				$i = $index_counter;
 			}
 			else {	// Calculate last block (doesnt end with round data, it must be shown if not round to block limit)
 				if ($inicio_bloque == $offset)
-					echo '<b>[ '.$inicio_bloque_fake.'-'.$final_bloque.' ]</b>';
+					echo "<b>[ $i ]</b>";
 				else
-					echo '[ '.$inicio_bloque_fake.'-'.$final_bloque.' ]';
+					echo "[ $i ]";
 				echo '</a> ';
 			}
+			echo "</span>";
 		}
-		echo "</div>";
 		// if exists more registers than i can put in a page (defined by $block_size config parameter)
 		// get offset for index calculation
 
 	}
+	// Draw "last" block link
+	if (($count - $block_size) > 0){
+		echo '&nbsp;<a href="'.$url.'&offset='.($count - $block_size).'">';
+		echo "<img src='images/control_end_blue.png'>";
+		echo "</a>";
+	}
+	// End div and layout
+	echo "</div>";
 }
 
 ?>

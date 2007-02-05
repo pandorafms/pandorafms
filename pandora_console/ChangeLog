@@ -1,3 +1,36 @@
+2007-02-05  Sancho Lerena  <slerena@artica.es>
+
+	* include/functions_db.php: Added function to get
+	info for events (return_event_description().
+	
+	* include/languages/language_en.php: More new strings.
+	
+	* include/functions.php: Pagination improved !. not finished yet.
+	
+	* pandora_console/index.php: Added some credits to main page.
+	
+	* operation/incidents/incident.php: Improved incident
+	visualization. Fixed some render bugs in last raul's commit :->
+	
+	* operation/incidents/incident_detail.php: Now incidents could be
+	"reported" using event button for submit incident.
+	
+	* operation/events/events.php: Pagination is now using LIMIT SQL
+	syntax, and pagination works fine. Several issues fixed, and added
+	function to report incident from here.
+	
+	* images/ok.gif, cancel.gif: Changed icon.
+
+	* images/control_start_blue.png: Added.
+
+	* images/page_lightning.png: Added.
+	
+	* images/control_rewind_blue.png: Added.
+	
+	* images/control_end_blue.png: Added.
+	
+	* images/control_fastforward_blue.png: Added.
+
 2007-02-02 Manuel Arostegui <marostegui@artica.es>
 
 	* pandora_console.spec: Fixed small weird bug submitted to my email.

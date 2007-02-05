@@ -17,6 +17,12 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+// Pandora FMS 1.x uses icons from famfamfam, licensed under CC Atr. 2.5
+// Silk icon set 1.3
+// (cc) Mark James, http://www.famfamfam.com/lab/icons/silk/
+
+// Pandora FMS 1.x uses Pear Image::Graph code
+
 session_start(); 
 include "include/config.php";
 include "include/languages/language_".$language_code.".php";

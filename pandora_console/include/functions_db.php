@@ -164,6 +164,20 @@ function dame_agente_modulo_id($id_agente, $id_tipomodulo, $nombre){
 	return $pro;
 }
 
+// --------------------------------------------------------------- 
+// Returns event description given it's id
+// --------------------------------------------------------------- 
+
+function return_event_description ($id_event){
+	require("config.php");
+	$query1="SELECT evento FROM tevento WHERE id_evento = $id_event";
+	$resq1=mysql_query($query1);
+	if ($rowdup=mysql_fetch_array($resq1))
+		$pro=$rowdup[0];
+	else
+		$pro = "";
+	return $pro;
+}
 
 // --------------------------------------------------------------- 
 // Return ID_Group from an event given as id_event

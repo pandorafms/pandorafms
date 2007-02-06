@@ -408,7 +408,7 @@ function pagination ($count, $url, $offset ) {
 
 		// This calculate index_limit, block limit for this search.
 		if (($index_page + $block_limit) > $index_counter)
-			$index_limit = $index_counter - 1;
+			$index_limit = $index_counter;
 		else
 			$index_limit = $index_page + $block_limit;
 
@@ -435,13 +435,14 @@ function pagination ($count, $url, $offset ) {
 		echo "&nbsp;";
 		// Show PREVIOUS button
 		if ($index_page > 0){
-			$index_page_prev= ($index_page-$block_limit)*$block_size;
+			$index_page_prev= ($index_page-(floor($block_limit/2)))*$block_size;
 			if ($index_page_prev < 0)
 				$index_page_prev = 0;
 			echo '<a href="'.$url.'&offset='.$index_page_prev.'"><img src="images/control_rewind_blue.png"></a> ';
 		}
 
 		// Draw blocks markers
+		// $i stores number of page
 		for ($i = $inicio_pag; $i < $index_limit; $i++) {
 			$inicio_bloque = ($i * $block_size);
 			$final_bloque = $inicio_bloque + $block_size;
@@ -449,33 +450,40 @@ function pagination ($count, $url, $offset ) {
 				$final_bloque = ($i-1)*$block_size + $count-(($i-1) * $block_size);
 			}
 			echo "<span>";
-			echo '<a href="'.$url.'&offset='.$inicio_bloque.'">';
+			
 			$inicio_bloque_fake = $inicio_bloque + 1;
-			// Show NEXT PAGE
-			if (($i >= $inicio_pag + $block_limit) AND ($paginacion_maxima == 1)){
+			// To Calculate last block (doesnt end with round data,
+			// it must be shown if not round to block limit)
+			echo '<a href="'.$url.'&offset='.$inicio_bloque.'">';
+			if ($inicio_bloque == $offset)
+				echo "<b>[ $i ]</b>";
+			else
+				echo "[ $i ]";
+			echo '</a> ';	
+			echo "</span>";
+		}
+		// Show NEXT PAGE (fast forward)
+		// Index_counter stores max of blocks
+		if (($paginacion_maxima == 1) AND (($index_counter - $i) > 0)) {
+				$prox_bloque = ($i+ceil($block_limit/2))*$block_size;
+				if ($prox_bloque > $count)
+					$prox_bloque = ($count -1) - $block_size;
+				echo '<a href="'.$url.'&offset='.$prox_bloque.'">';
 				echo "<img src='images/control_fastforward_blue.png'></a> ";
 				$i = $index_counter;
-			}
-			else {	// Calculate last block (doesnt end with round data, it must be shown if not round to block limit)
-				if ($inicio_bloque == $offset)
-					echo "<b>[ $i ]</b>";
-				else
-					echo "[ $i ]";
-				echo '</a> ';
-			}
-			echo "</span>";
 		}
 		// if exists more registers than i can put in a page (defined by $block_size config parameter)
 		// get offset for index calculation
-
-	}
-	// Draw "last" block link
-	if (($count - $block_size) > 0){
-		echo '&nbsp;<a href="'.$url.'&offset='.($count - $block_size).'">';
-		echo "<img src='images/control_end_blue.png'>";
-		echo "</a>";
-	}
+		// Draw "last" block link, ajust for last block will be the same
+		// as painted in last block (last integer block).	
+		if (($count - $block_size) > 0){
+			$myoffset = floor(($count-1)/ $block_size)* $block_size;
+			echo '&nbsp;<a href="'.$url.'&offset='.$myoffset.'">';
+			echo "<img src='images/control_end_blue.png'>";
+			echo "</a>";
+		}
 	// End div and layout
+	}
 	echo "</div>";
 }
 

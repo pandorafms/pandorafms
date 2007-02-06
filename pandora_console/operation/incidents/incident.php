@@ -18,21 +18,22 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
-
+$accion = "";
 require("include/config.php");
 if (comprueba_login() != 0) {
 	audit_db("Noauth",$REMOTE_ADDR, "No authenticated acces","Trying to access incident viewer");
 	require ("general/noaccess.php");
 	exit;
 }
+
 $id_usuario =$_SESSION["id_usuario"];
-$accion = "";
 if (give_acl($id_usuario, 0, "IR")!=1) {
 	audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access incident viewer");
 	require ("general/noaccess.php");
 	exit;
 }
 
+// Delete incident
 if (isset($_GET["quick_delete"])){
 	$id_inc = $_GET["quick_delete"];
 	$sql2="SELECT * FROM tincidencia WHERE id_incidencia=".$id_inc;
@@ -49,6 +50,54 @@ if (isset($_GET["quick_delete"])){
 			echo "<h3 class='error'>".$lang_label["del_incid_no"]."</h3>";
 			no_permission();
 		}
+	}
+}
+
+// UPDATE incident
+if ((isset($_GET["action"])) AND ($_GET["action"]=="update")){
+	$id_inc = $_POST["id_inc"];
+ 	$grupo = entrada_limpia($_POST['grupo_form']);
+	$usuario= entrada_limpia($_POST["usuario_form"]);
+	if ((give_acl($id_usuario, $grupo, "IM")==1) OR ($usuario == $id_usuario)) { // Only admins (manage incident) or owners can modify incidents
+		$id_author_inc = give_incident_author($id_inc);
+		$titulo = entrada_limpia($_POST["titulo"]);
+		$descripcion = entrada_limpia($_POST['descripcion']);
+		$origen = entrada_limpia($_POST['origen_form']);
+		$prioridad = entrada_limpia($_POST['prioridad_form']);
+		$estado = entrada_limpia($_POST["estado_form"]);
+		$ahora=date("Y/m/d H:i:s");
+		$sql = "UPDATE tincidencia SET actualizacion = '".$ahora."', titulo = '".$titulo."', origen= '".$origen."', estado = '".$estado."', id_grupo = '".$grupo."', id_usuario = '".$usuario."', prioridad = '".$prioridad."', descripcion = '".$descripcion."' WHERE id_incidencia = ".$id_inc;
+		$result=mysql_query($sql);
+		if ($result)
+			echo "<h3 class='suc'>".$lang_label["upd_incid_ok"]."</h3>";
+	} else {
+		audit_db($id_usuario,$REMOTE_ADDR,"ACL Forbidden","User ".$_SESSION["id_usuario"]." try to update incident");
+		echo "<h3 class='error'>".$lang_label["upd_incid_no"]."</h3>";
+		no_permission();
+	}
+}
+// INSERT incident
+if ((isset($_GET["action"])) AND ($_GET["action"]=="insert")){
+	$grupo = entrada_limpia($_POST['grupo_form']);
+	$usuario= entrada_limpia($_POST["usuario_form"]);
+	if ((give_acl($id_usuario, $grupo, "IM") == 1) OR ($usuario == $id_usuario)) { // Only admins (manage
+		// Read input variables
+		$titulo = entrada_limpia($_POST['titulo']);
+		$inicio = date("Y/m/d H:i:s");
+		$descripcion = entrada_limpia($_POST['descripcion']);
+		$texto = $descripcion; // to view in textarea after insert
+		$origen = entrada_limpia($_POST['origen_form']);
+		$prioridad = entrada_limpia($_POST['prioridad_form']);
+		$actualizacion = $inicio;
+		$id_creator = $id_usuario;
+		$estado = entrada_limpia($_POST["estado_form"]);
+		$sql = " INSERT INTO tincidencia (inicio,actualizacion,titulo,descripcion,id_usuario,origen,estado,prioridad,id_grupo, id_creator) VALUES ('".$inicio."','".$actualizacion."','".$titulo."','".$descripcion."','".$usuario."','".$origen."','".$estado."','".$prioridad."','".$grupo."','".$id_creator."') ";
+		if (mysql_query($sql))
+			echo "<h3 class='suc'>".$lang_label["create_incid_ok"]."</h3>";
+			$id_inc=mysql_insert_id();
+	} else {
+		audit_db($id_usuario,$REMOTE_ADDR,"ACL Forbidden","User ".$_SESSION["id_usuario"]." try to create  incident");
+		no_permission();
 	}
 }
 
@@ -259,8 +308,7 @@ if (!mysql_num_rows($result2)) {
 	// Fill array with data
 
 	// TOTAL incidents
-	$total_incidentes = sizeof($incident_list);
-
+	$total_incidentes = sizeof($incident_list) - 1;
 	$url = "index.php?sec=incidencias&sec2=operation/incidents/incident";
 
 	// add form filter values for group, priority, state, and search fields: user and text

@@ -89,49 +89,6 @@ if (isset($_GET["id"])){
 		$res4 = mysql_query($sql4);
 	}
 
-	// Modify incident
-	if (isset($_POST["accion"])){
-		$id_inc = $_POST["id_inc"];
-		if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)) { // Only admins (manage incident) or owners can modify incidents
-			// Edicion !!
-			if ($_POST["accion"] == $lang_label["in_modinc"]){ // Modify Incident
-				$id_author_inc = give_incident_author($id_inc);
-				$titulo = entrada_limpia($_POST["titulo"]);
-				$descripcion = entrada_limpia($_POST['descripcion']);
-				$origen = entrada_limpia($_POST['origen']);
-				$prioridad = entrada_limpia($_POST['prioridad']);
-				$grupo = entrada_limpia($_POST['grupo']);
-				$usuario= entrada_limpia($_POST["usuario"]);
-				$estado = entrada_limpia($_POST["estado"]);
-				$ahora=date("Y/m/d H:i:s");
-				$sql = "UPDATE tincidencia SET actualizacion = '".$ahora."', titulo = '".$titulo."', origen= '".$origen."', estado = '".$estado."', id_grupo = '".$grupo."', id_usuario = '".$usuario."', prioridad = '".$prioridad."', descripcion = '".$descripcion."' WHERE id_incidencia = ".$id_inc;
-				$result=mysql_query($sql);
-				if ($result) echo "<h3 class='suc'>".$lang_label["upd_incid_ok"]."</h3>";
-				// Re-read data for correct presentation
-				// Obtain group of this incident
-				$sql1='SELECT * FROM tincidencia WHERE id_incidencia = '.$id_inc;
-				$result=mysql_query($sql1);
-				$row=mysql_fetch_array($result);
-				// Get values
-				$titulo = $row["titulo"];
-				$texto = $row["descripcion"];
-				$inicio = $row["inicio"];
-				$actualizacion = $row["actualizacion"];
-				$estado = $row["estado"];
-				$prioridad = $row["prioridad"];
-				$origen = $row["origen"];
-				$usuario = $row["id_usuario"];
-				$nombre_real = dame_nombre_real($usuario);
-				$id_grupo = $row["id_grupo"];
-				$grupo = dame_nombre_grupo($id_grupo);
-			}
-		} else {
-			audit_db($id_author_inc,$REMOTE_ADDR,"ACL Forbidden","User ".$_SESSION["id_usuario"]." try to update incident");
-			echo "<h3 class='error'>".$lang_label["upd_incid_no"]."</h3>";
-			no_permission();
-		}
-	}
-
 	// Delete note
 	if (isset($_GET["id_nota"])){
 		$note_user = give_note_author ($_GET["id_nota"]);
@@ -190,30 +147,10 @@ if (isset($_GET["id"])){
 			}
 		}
 	}
-} else { // Not given id
-	// Insert data !
-	if (isset($_POST["accion"]) and ($_POST["accion"] == $lang_label["create"])) {
-		$iduser_temp=$_SESSION['id_usuario'];
-		// Read input variables
-		$titulo = entrada_limpia($_POST['titulo']);
-		$inicio = date("Y/m/d H:i:s");
-		$descripcion = entrada_limpia($_POST['descripcion']);
-		$texto = $descripcion; // to view in textarea after insert
-		$origen = entrada_limpia($_POST['origen']);
-		$prioridad = entrada_limpia($_POST['prioridad']);
-		$grupo = entrada_limpia($_POST['grupo']);
-		$usuario= entrada_limpia($_SESSION["id_usuario"]);
-		$actualizacion = $inicio;
-		$id_creator = $iduser_temp;
-		$estado = 0; // if the indicent is new, state (estado) is 0
-		$sql = " INSERT INTO tincidencia (inicio,actualizacion,titulo,descripcion,id_usuario,origen,estado,prioridad,id_grupo, id_creator) VALUES ('".$inicio."','".$actualizacion."','".$titulo."','".$descripcion."','".$usuario."','".$origen."','".$estado."','".$prioridad."','".$grupo."','".$id_creator."') ";
-		if (give_acl($iduser_temp, $grupo, "IW")==1){
-			if (mysql_query($sql)) echo "<h3 class='suc'>".$lang_label["create_incid_ok"]."</h3>";
-			$id_inc=mysql_insert_id();
-		} else
-			no_permission();
-	 // INSERT FORM.
-	} elseif (isset($_GET["insert_form"])){ 
+} // else Not given id
+// Create incident from event... read event data
+elseif (isset($_GET["insert_form"])){
+
 		$iduser_temp=$_SESSION['id_usuario'];
 		$titulo = "";
 		if (isset($_GET["from_event"])){
@@ -235,12 +172,13 @@ if (isset($_GET["id"])){
 		$inicio = $actualizacion;
 		$id_creator = $iduser_temp;
 		$creacion_incidente = 1;
-	} else {
-		audit_db($id_user,$REMOTE_ADDR, "HACK","Trying to create incident in a unusual way");
-		no_permission();
-		
-	}
+} else {
+	audit_db($id_user,$REMOTE_ADDR, "HACK","Trying to create incident in a unusual way");
+	no_permission();
+
 }
+
+
 
 // ********************************************************************************************************
 // ********************************************************************************************************
@@ -248,9 +186,9 @@ if (isset($_GET["id"])){
 // ********************************************************************************************************
 
 if ($creacion_incidente == 0)
-	echo "<form name='accion_form' method='POST' action='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id=".$id_inc."'>";
+	echo "<form name='accion_form' method='POST' action='index.php?sec=incidencias&sec2=operation/incidents/incident&action=update'>";
 else
-	echo "<form name='accion_form' method='POST' action='index.php?sec=incidencias&sec2=operation/incidents/incident_detail'>";
+	echo "<form name='accion_form' method='POST' action='index.php?sec=incidencias&sec2=operation/incidents/incident&action=insert'>";
 
 if (isset($id_inc)) {
 	echo "<input type='hidden' name='id_inc' value='".$id_inc."'>";
@@ -272,7 +210,7 @@ echo '<td class="datos2"><b>'.$lang_label["updated_at"].'</b>';
 echo "<td class='datos2'><i>".$actualizacion."</i>";
 echo '<tr><td class="datos"><b>'.$lang_label["in_openedby"].'</b><td class="datos">';
 if ((give_acl($id_user, $id_grupo, "IM")==1) OR ($usuario == $id_user)) {
-	echo "<select name='usuario' class='w200'>";
+	echo "<select name='usuario_form' class='w200'>";
 	echo "<option value='".$usuario."'>".$usuario." - ".dame_nombre_real($usuario);
 	$sql1='SELECT * FROM tusuario ORDER BY id_usuario';
 	$result=mysql_query($sql1);
@@ -282,7 +220,7 @@ if ((give_acl($id_user, $id_grupo, "IM")==1) OR ($usuario == $id_user)) {
 	echo "</select>";
 }
 else {
-	echo "<input type=hidden name='usuario' value='".$usuario."'>";
+	echo "<input type=hidden name='usuario_form2' value='".$usuario."'>";
 	echo $usuario." - (<i><a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$usuario."'>".$nombre_real."</a></i>)";
 }
 // Tipo de estado
@@ -293,9 +231,9 @@ else {
 // 13 - Cerrada / Closed
 
 if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp))
-	echo '<td class="datos"><b>'.$lang_label["status"].'</b><td class="datos"><select name="estado" class="w135">';
+	echo '<td class="datos"><b>'.$lang_label["status"].'</b><td class="datos"><select name="estado_form" class="w135">';
 else
-	echo '<td class="datos"><b>'.$lang_label["status"].'</b><td class="datos"><select disabled name="estado" class="w135">';
+	echo '<td class="datos"><b>'.$lang_label["status"].'</b><td class="datos"><select disabled name="estado_form" class="w135">';
 
 switch ( $estado ){
 	case 0: echo '<option value="0">'.$lang_label["in_state_0"]; break;
@@ -314,9 +252,9 @@ echo '</select>';
 
 // Only owner could change source or user with Incident management privileges
 if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp))
-	echo '<tr><td class="datos2"><b>'.$lang_label["source"].'</b><td class="datos2"><select name="origen" class="w135">';
+	echo '<tr><td class="datos2"><b>'.$lang_label["source"].'</b><td class="datos2"><select name="origen_form" class="w135">';
 else
-	echo '<tr><td class="datos2"><b>'.$lang_label["source"].'</b><td class="datos2"><select disabled name="origen" class="w135">';
+	echo '<tr><td class="datos2"><b>'.$lang_label["source"].'</b><td class="datos2"><select disabled name="origen_form" class="w135">';
 
 // Fill combobox with source (origen)
 if ($origen != "")
@@ -330,9 +268,9 @@ echo "</select>";
 
 // Group combo
 if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp))
-	echo '<td class="datos2"><b>'.$lang_label["group"].'</b><td class="datos2"><select name="grupo" class="w135">';
+	echo '<td class="datos2"><b>'.$lang_label["group"].'</b><td class="datos2"><select name="grupo_form" class="w135">';
 else
-	echo '<td class="datos2"><b>'.$lang_label["group"].'</b><td class="datos2"><select disabled name="grupo" class="w135">';
+	echo '<td class="datos2"><b>'.$lang_label["group"].'</b><td class="datos2"><select disabled name="grupo_form" class="w135">';
 if ($id_grupo != 0)
 	echo "<option value='".$id_grupo."'>".$grupo;
 $sql1='SELECT * FROM tgrupo ORDER BY nombre';
@@ -344,9 +282,9 @@ while ($row=mysql_fetch_array($result)){
 
 echo '</select><tr>';
 if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp))
-	echo '<td class="datos"><b>'.$lang_label["priority"].'</b><td class="datos"><select name="prioridad" class="w135">';
+	echo '<td class="datos"><b>'.$lang_label["priority"].'</b><td class="datos"><select name="prioridad_form" class="w135">';
 else
-	echo '<td class="datos"><b>'.$lang_label["priority"].'</b><td class="datos"><select disabled name="prioridad" class="w135">';
+	echo '<td class="datos"><b>'.$lang_label["priority"].'</b><td class="datos"><select disabled name="prioridad_form" class="w135">';
 
 switch ( $prioridad ){
 	case 0: echo '<option value="0">'.$lang_label["informative"]; break;

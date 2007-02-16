@@ -1,3 +1,22 @@
+2007-02-16  Sancho Lerena  <slerena@artica.es>
+
+	* pandoradb.sql: added unixtime field to tagente_datos,
+	tagente_datos_string and tagente_estado tables. Future queries
+	will use UNIX time instead of "Human" timestamp strings.
+	
+	* index.php: Small fix of duplicated body html tag.
+
+	* agentes/estado_ultimopaquete.php: [DEBUG] Add a debug ICON for new
+	graph... need to be delted.
+
+	* /active_console/styles/main.css, and many .js: Style correction
+	(massive changes), only indented and commented, no changes in
+	code.
+
+	* reporting/fgraph.php: CURRENTLY CHANGING CODE, NOT USE.
+
+	* reporting/stat_win.php: Unified parameter parsing.
+	
 2007-02-06  Sancho Lerena  <slerena@artica.es>
 
 	* include/functions.php: Pagination function now works fine.

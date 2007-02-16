@@ -11,6 +11,7 @@ CREATE TABLE `tagent_access` (
   `id_ac` bigint(20) unsigned NOT NULL auto_increment,
   `id_agent` int(11) NOT NULL default '0',
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
+  `utimestamp` bigint(20) NOT NULL default '0',
   PRIMARY KEY  (`id_ac`),
   KEY `agent_index` (`id_agent`)
 ) TYPE=InnoDB; 
@@ -46,6 +47,7 @@ CREATE TABLE `tagente_datos` (
   `datos` double(18,2) default NULL,
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `id_agente` bigint(4) unsigned NOT NULL default '0',
+  `utimestamp` bigint(20) NOT NULL default '0',
   PRIMARY KEY  (`id_agente_datos`),
   KEY `data_index_1` (`id_agente_modulo`),
   KEY `data_index_2` (`id_agente`),
@@ -73,6 +75,7 @@ CREATE TABLE `tagente_datos_string` (
   `datos` tinytext NOT NULL default '',
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `id_agente` bigint(4) unsigned NOT NULL default '0',
+  `utimestamp` bigint(20) NOT NULL default '0',
   PRIMARY KEY  (`id_tagente_datos_string`),
   KEY `data_string_index_1` (`id_agente_modulo`),
   KEY `data_string_index_2` (`id_agente`),
@@ -91,8 +94,8 @@ CREATE TABLE `tagente_estado` (
   `estado` int(11) NOT NULL default '0',
   `id_agente` int(11) NOT NULL default '0',
   `last_try` datetime default NULL,
+  `utimestamp` bigint(20) NOT NULL default '0',
   PRIMARY KEY  (`id_agente_estado`),
-  KEY `status_index_1` (`id_agente_modulo`),
   KEY `status_index_2` (`id_agente_modulo`,`estado`)
 ) TYPE=InnoDB; 
 

@@ -26,7 +26,6 @@ if (n == '3')
 // MENU EDICION
 
 document.write("<div id='menu"+n+"' class='"+p+"Menu'><!-- menu "+n+" -->"
-
 +"<div id='label"+n+"1' class='mLabel'>Objeto</div>"
 +"<div id='box"+n+"1' class='mBox'>"
 +"  <a class='m' href=''><b><i>NUEVO: </b></i></a>"

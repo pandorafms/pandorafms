@@ -58,8 +58,8 @@ if (isset ($_GET["refr"])){
 <link rel="icon" href="images/pandora.ico" type="image/ico">
 <link rel="stylesheet" href="include/styles/pandora.css" type="text/css">
 </head>
-<body>
-	<?php
+
+<?php
 	// Show custom background
 	echo '<body background="images/backgrounds/' . $config_bgimage . '">';
 	$REMOTE_ADDR = getenv ("REMOTE_ADDR");

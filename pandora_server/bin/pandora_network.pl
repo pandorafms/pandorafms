@@ -2,8 +2,8 @@
 ##########################################################################
 # Pandora Network Server
 ##########################################################################
-# Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+# Copyright (c) 2005-2007 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License

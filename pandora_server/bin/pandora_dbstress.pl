@@ -1,7 +1,7 @@
 #!/usr/bin/perl
-##################################################################################
+################################################################################
 # Pandora DB Stress tool
-##################################################################################
+################################################################################
 # Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
 # Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L
 #
@@ -16,7 +16,15 @@
 #You should have received a copy of the GNU General Public License
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-##################################################################################
+################################################################################
+
+# Configure here target (AGENT_ID for Stress)
+my $target_agent_id = 8;
+my $target_interval = 60;
+my $target_days = 30;
+
+################################################################################
+################################################################################
 
 # Includes list
 use strict;
@@ -30,17 +38,15 @@ use pandora_config;
 use pandora_tools;
 use pandora_db;
 
-# Configure here target (AGENT_ID for Stress)
-my $target_agent_id = 4;
-my $target_interval = 300;
-my $target_days = 15;
+################################################################################
+################################################################################
 
-my $version = "1.2Beta 060213";
+my $version = "1.3-dev 070216";
 
 # FLUSH in each IO (only for debug, very slooow)
 # ENABLED in DEBUGMODE
 # DISABLE FOR PRODUCTION
-$| = 1;
+$| = 0;
 
 my %pa_config;
 
@@ -72,7 +78,6 @@ if ($s_idag->rows != 0) {
 $s_idag->finish();
 $dbh->disconnect();
 print " [*] All work done\n\n";
-
 # END of main proc
 
 
@@ -181,7 +186,6 @@ sub process_module(){
 		}
 
 	}
-
 	close (LOG);
 	print "\n";
 }

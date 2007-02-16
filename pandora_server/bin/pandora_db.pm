@@ -2,8 +2,8 @@ package pandora_db;
 ##########################################################################
 # Pandora Database Package
 ##########################################################################
-# Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+# Copyright (c) 2005-2007 Artica Soluciones Tecnologicas S.L
 #
 #This program is free software; you can redistribute it and/or
 #modify it under the terms of the GNU General Public License
@@ -20,6 +20,7 @@ package pandora_db;
 
 use warnings;
 use Time::Local;
+use Time::Format qw(%time %strftime %manip); # For data mangling
 use DBI;
 use Date::Manip;	# Needed to manipulate DateTime formats of input, output and compare
 use XML::Simple;
@@ -341,6 +342,8 @@ sub pandora_writestate (%$$$$$$) {
 	my $estado = $_[5];
 	my $dbh = $_[6];
 	my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
+	my $utimestamp; # integer version of timestamp	
+	$utimestamp = &UnixDate($timestamp,"%s"); # convert from human to integer
 	my @data;
 	my $cambio = 0; my $id_grupo; 
 	# Get id
@@ -372,7 +375,7 @@ sub pandora_writestate (%$$$$$$) {
 	my $query_act; # OJO que dentro de una llave solo tiene existencia en esa llave !!
 	if ($s_idages->rows == 0) { # Doesnt exist entry in table, lets make the first entry
 		logger($pa_config, "Generando entrada (INSERT) en tagente_estado para $nombre_modulo",2);
-    		$query_act = "insert into tagente_estado (id_agente_modulo,datos,timestamp,estado,cambio,id_agente,last_try) values ($id_agente_modulo,$datos,'$timestamp','$estado','1',$id_agente,'$timestamp')"; # Cuando se hace un insert, siempre hay un cambio de estado
+    		$query_act = "insert into tagente_estado (id_agente_modulo,datos,timestamp,estado,cambio,id_agente,last_try, utimestamp) values ($id_agente_modulo,$datos,'$timestamp','$estado','1',$id_agente,'$timestamp',$utimestamp)"; # Cuando se hace un insert, siempre hay un cambio de estado
 
     	} else { # There are an entry in table already
 	        @data = $s_idages->fetchrow_array();
@@ -386,11 +389,15 @@ sub pandora_writestate (%$$$$$$) {
 			# Makes an event entry, only if previous state changes, if new state, doesnt give any alert
 			$id_grupo = dame_grupo_agente($pa_config, $id_agente,$dbh);
 			my $descripcion;
- 			if ( $estado == 0) { $descripcion = "Monitor ($nombre_modulo) goes up "; }
-			if ( $estado == 1) { $descripcion = "Monitor ($nombre_modulo) goes down"; }
+ 			if ( $estado == 0) {
+ 				$descripcion = "Monitor ($nombre_modulo) goes up ";
+ 			}
+			if ( $estado == 1) {
+				$descripcion = "Monitor ($nombre_modulo) goes down";
+			}
 			pandora_event($pa_config, $descripcion,$id_grupo,$id_agente,$dbh);
 	        }
-    		$query_act = "update tagente_estado set datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, last_try = '$timestamp' where id_agente_modulo = $id_agente_modulo ";
+    		$query_act = "update tagente_estado set utimestamp = $utimestamp, datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, last_try = '$timestamp' where id_agente_modulo = $id_agente_modulo ";
     	}
 	my $a_idages = $dbh->prepare($query_act);
 	$a_idages->execute;
@@ -738,7 +745,10 @@ sub pandora_writedata (%$$$$$$$$$) {
 	}
         my $id_modulo = dame_modulo_id($pa_config, $tipo_modulo,$dbh);
         my $id_agente_modulo = dame_agente_modulo_id($pa_config, $id_agente, $id_modulo, $nombre_modulo,$dbh);
-
+        # Pandora 1.3. Now uses integer to store timestamp in datatables
+	# much more faster to do comparations...
+	my $utimestamp; # integer version of timestamp
+	$utimestamp = &UnixDate($timestamp,"%s"); # convert from human to integer
 	my $needscreate = 0;
 
 	# take max and min values for this id_agente_module
@@ -812,12 +822,11 @@ sub pandora_writedata (%$$$$$$$$$) {
 
 	}
 	$sql_oldvalue->finish();
-
 	if (($needscreate == 1) || ($needsupdate == 1)){
 		my $outlimit = 0;
 		if ($tipo_modulo =~ /string/) { # String module types
 			$datos = $dbh->quote($datos); # Parse data entry for adecuate SQL representation.
-			$query = "insert into tagente_datos_string (id_agente_modulo,datos,timestamp,id_agente) VALUES ($id_agente_modulo,$datos,'$timestamp',$id_agente)";	
+			$query = "insert into tagente_datos_string (id_agente_modulo,datos,timestamp,utimestamp,id_agente) VALUES ($id_agente_modulo,$datos,'$timestamp',$utimestamp,$id_agente)";	
 		} else {
 			if ($max != $min) {
 				if ($datos > $max) { 
@@ -831,7 +840,7 @@ sub pandora_writedata (%$$$$$$$$$) {
 					logger($pa_config, "DEBUG: MIN Value reached ($min) for agent $nombre_agente / $nombre_modulo",2);
 				}
 			}
-			$query = "insert into tagente_datos (id_agente_modulo,datos,timestamp,id_agente) VALUES ($id_agente_modulo,$datos,'$timestamp',$id_agente)";
+			$query = "insert into tagente_datos (id_agente_modulo, datos,timestamp, utimestamp, id_agente) VALUES ($id_agente_modulo, $datos, '$timestamp', $utimestamp, $id_agente)";
 		} # If data is out of limits, do not insert into database (Thanks for David Villanueva for his words)
 		if ($outlimit == 0){
 			logger($pa_config, "DEBUG: pandora_insertdata Calculado id_agente_modulo a $id_agente_modulo",3);

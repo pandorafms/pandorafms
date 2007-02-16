@@ -172,15 +172,18 @@ AND ($row3["id_tipo_modulo"] != 17)){
 				$win_handle=dechex(crc32($nombre_agente.$row3["nombre"]));
 				echo "<td class=".$tdcolor." width='78'>";
 				
-				echo "<a href='javascript:winopeng(\"reporting/stat_win.php?tipo=mes&id=".$row3["id_agente_modulo"]."&refresh=180000\", \"mes_".$win_handle."\")'><img  src='images/grafica_m.gif' border=0></a>&nbsp;";
+				echo "<a href='javascript:winopeng(\"reporting/stat_win.php?range=mes&id=".$row3["id_agente_modulo"]."&refresh=180000\", \"mes_".$win_handle."\")'><img  src='images/grafica_m.gif' border=0></a>&nbsp;";
+
+				$link ="winopeng('reporting/stat_win.php?range=mesg&id=".$row3["id_agente_modulo"]."&refresh=6000','sem_".$win_handle."')";
+				echo '<a href="javascript:'.$link.'"><img src="images/b_green.gif" border=0></a>&nbsp;';
 				
-				$link ="winopeng('reporting/stat_win.php?tipo=semana&id=".$row3["id_agente_modulo"]."&refresh=6000','sem_".$win_handle."')";
+				$link ="winopeng('reporting/stat_win.php?range=semana&id=".$row3["id_agente_modulo"]."&refresh=6000','sem_".$win_handle."')";
 				echo '<a href="javascript:'.$link.'"><img src="images/grafica_w.gif" border=0></a>&nbsp;';
 				
-				$link ="winopeng('reporting/stat_win.php?tipo=dia&id=".$row3["id_agente_modulo"]."&refresh=800','dia_".$win_handle."')";
+				$link ="winopeng('reporting/stat_win.php?range=dia&id=".$row3["id_agente_modulo"]."&refresh=800','dia_".$win_handle."')";
 				echo '<a href="javascript:'.$link.'"><img src="images/grafica_d.gif" border=0></a>&nbsp;';
 
-				$link ="winopeng('reporting/stat_win.php?tipo=hora&id=".$row3["id_agente_modulo"]."&refresh=30','hora_".$win_handle."')";
+				$link ="winopeng('reporting/stat_win.php?tipo=range&id=".$row3["id_agente_modulo"]."&refresh=30','hora_".$win_handle."')";
 				echo '<a href="javascript:'.$link.'"><img src="images/grafica_h.gif" border=0></a>';
 			}
 			else { # Writing string data in different way :)

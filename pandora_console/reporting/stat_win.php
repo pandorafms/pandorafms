@@ -35,8 +35,8 @@ if (comprueba_login() == 0) {
 	include("../include/styles/pandora.css");
 	echo '</style>';
 
-	if (isset($_GET["tipo"]) AND isset($_GET["id"])) {
-		$tipo =entrada_limpia($_GET["tipo"]);
+	if (isset($_GET["range"]) AND isset($_GET["id"])) {
+		$range =entrada_limpia($_GET["range"]);
 		$id_agente_modulo = entrada_limpia($_GET["id"]);
 	}
 	else {
@@ -55,8 +55,22 @@ if (comprueba_login() == 0) {
 	$module_interval = $module_interval / 60; // Convert to resol / minute
 	// Please be caution, interval now is in MINUTES not in seconds
 	// interval is the number of rows that will store data. more rows, more resolution
+	// Testing 16Feb06
+	$param['tipo']='sparse';
 	
-	switch ($tipo) {
+	switch ($range) {
+		case "mesg": 	$intervalo = 30 * $config_graph_res;
+				$intervalo_real = (43200 / $module_interval);
+				if ($intervalo_real < $intervalo ){
+					$intervalo = $intervalo_real;
+				}
+				$param['color'] = '6e90ff';
+				$param['periodo'] = 43200;
+				$param['intervalo'] = $intervalo;
+				$param['label'] = $lang_label["month_graph"];
+				$param['tipo']='gdirect';
+				break;
+
 		case "mes": 	$intervalo = 30 * $config_graph_res;
 				$intervalo_real = (43200 / $module_interval);
 				if ($intervalo_real < $intervalo ){
@@ -103,11 +117,10 @@ if (comprueba_login() == 0) {
 
 	}
 	
-	
 	foreach ($_GET as $key => $value) {
 		$param[$key] = $value;
 	}
-	$param['tipo']='sparse';
+
 	$param['zoom']=isset($param['zoom'])?$param['zoom']:100;
 	$param['draw_events']=isset($param['draw_events'])?$param['draw_events']:1;
 	
@@ -115,7 +128,7 @@ if (comprueba_login() == 0) {
 		$param['draw_events'] = 0;
 	}*/ 
 	
-	$imgtag = "<img src='fgraph.php?tipo=sparse&id=". $id_agente_modulo ;
+	$imgtag = "<img src='fgraph.php?id=". $id_agente_modulo ;
 	foreach ($param as $key => $value) {
 		$imgtag .= "&" . $key . "=" . $value;
 	}
@@ -123,79 +136,81 @@ if (comprueba_login() == 0) {
 		
 	echo $imgtag;
 	
-	$param['tipo'] = $_GET['tipo'];
+	
 	$param['id'] = $_GET['id'];
 } 
 
 ?>
 
-<script type='text/javascript' src='../include/styles/cb/x_core.js'></script>
-<script type='text/javascript' src='../include/styles/cb/x_event.js'></script>
-<script type='text/javascript' src='../include/styles/cb/x_slide.js'></script>
+<script type='text/javascript' src='../operation/active_console/scripts/x_core.js'></script>
+<script type='text/javascript' src='../operation/active_console/scripts/x_event.js'></script>
+<script type='text/javascript' src='../operation/active_console/scripts/x_slide.js'></script>
 <style type='text/css'><!--
 
 .menu {
-  color:#000; background:#ccc; margin:2px; padding:2px;
-  font-family:verdana,arial,sans-serif,helvetica; font-size:10px;
-  border:1px solid #000;
-  position:absolute;
-  margin:0; width:550px; height:220px;
-  visibility:hidden;
-  filter:alpha(opacity=95);
-  -moz-opacity: 0.95;
-  opacity: 0.95;
-         margin-left: 0px;
-         margin-top: 0px;
-         margin-right: 0px;
-         margin-bottom: 0px;
+	color:#000; background:#ccc; margin:2px; padding:2px;
+	font-family:verdana,arial,sans-serif,helvetica; font-size:10px;
+	border:1px solid #000;
+	position:absolute;
+	margin:0; width:550px; height:220px;
+	visibility:hidden;
+	filter:alpha(opacity=95);
+	-moz-opacity: 0.95;
+	opacity: 0.95;
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
 }
 
 --></style>
 
 
 <script type='text/javascript'><!--
-var defOffset = 2;
-var defSlideTime = 200;
-var tnActive = 0;
-var visibleMargin = 5;
-var menuW = 550;
-var menuH = 220;
-window.onload = function() {
-  var d;
-  d = xGetElementById('divmenu');
-  d.termNumber = 1;
-  xMoveTo(d, visibleMargin - menuW, 0);
-  xShow(d);
-  xAddEventListener(document, 'mousemove', docOnMousemove, false);
-}
-function docOnMousemove(evt) {
-  var e = new xEvent(evt);
-  var d = getTermEle(e.target);
-  if (!tnActive) { // no def is active
-    if (d) { // mouse is over a term, activate its def
-      xSlideTo('divmenu', 0, xPageY(d), defSlideTime);
-      tnActive = 1;
-    }
-  }
-  else { // a def is active
-    if (!d) { // mouse is not over a term, deactivate active def
-      xSlideTo('divmenu', visibleMargin - menuW, xPageY(d), defSlideTime);
-      tnActive = 0;
-    }
-  }
-}
-function getTermEle(ele) {
-//window.status = ele;
-  while(ele && !ele.termNumber) {
-    if (ele == document) return null;
-    ele = xParent(ele);
-  }
-  return ele;
-}
-//--></script>
+	var defOffset = 2;
+	var defSlideTime = 200;
+	var tnActive = 0;
+	var visibleMargin = 5;
+	var menuW = 550;
+	var menuH = 220;
+	window.onload = function() {
+		var d;
+		d = xGetElementById('divmenu');
+		d.termNumber = 1;
+		xMoveTo(d, visibleMargin - menuW, 0);
+		xShow(d);
+		xAddEventListener(document, 'mousemove', docOnMousemove, false);
+	}
+	
+	function docOnMousemove(evt) {
+		var e = new xEvent(evt);
+		var d = getTermEle(e.target);
+		if (!tnActive) { // no def is active
+			if (d) { // mouse is over a term, activate its def
+				xSlideTo('divmenu', 0, xPageY(d), defSlideTime);
+				tnActive = 1;
+			}
+		}
+		else { // a def is active
+			if (!d) { // mouse is not over a term, deactivate active def
+				xSlideTo('divmenu', visibleMargin - menuW, xPageY(d), defSlideTime);
+				tnActive = 0;
+			}
+		}
+	}
+	
+	function getTermEle(ele) {
+		//window.status = ele;
+  		while(ele && !ele.termNumber) {
+    			if (ele == document) return null;
+    			ele = xParent(ele);
+  		}
+  		return ele;
+	}
+//-->
+</script>
 </head>
 <body>
-
 
 <div id='divmenu' class='menu'>
 	<b>Configuration Menu</b><br>Please, make your changes and apply with <i>Reload</i> button<BR><BR>

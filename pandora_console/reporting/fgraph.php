@@ -50,18 +50,22 @@ function dame_fecha_grafico($mh){ // Devuelve fecha formateada en funcion de un 
 
 function dame_fecha_grafico_timestamp ($timestamp) {  return date('d/m H:i', $timestamp); }
 
-function grafico_modulo_sparse($id_agente_modulo, $periodo, $intervalo, $etiqueta, $color, $zoom=1, $draw_events=0){
+function grafico_modulo_sparse_ORIGINAL(
+	$id_agente_modulo, 
+	$periodo, $intervalo,
+	$etiqueta, $color,
+	$zoom=1, $draw_events=0){
+
 	include ("../include/config.php");
-	include ("jpgraph/jpgraph.php");
-	include ("jpgraph/jpgraph_line.php");
-	include ("jpgraph/jpgraph_scatter.php");
 	require ("../include/languages/language_".$language_code.".php");
 
-	// WHere periodo is lapse of time in minutes that we want to show in a graph, this could be a week, 1 hour, a day, etc
-	// 30.06.06 dervitx
-	// $draw_events  behaves as a boolean:  1 implies that events for that module in that period of time
-	//	will be represented with a line in the graph
+	// Where periodo is lapse of time in minutes that we want to show in a
+	// graph, this could be a week, 1 hour, a day, etc
+	// 30.06.06 dervitx:
+	// $draw_events  behaves as a boolean:  1 implies that events for that
+	// module in that period of time will be represented with a line in the graph
 	$fechatope = dame_fecha($periodo);	// Max old-date limit
+	
 	$horasint = $periodo / $intervalo;	// Each intervalo is $horasint seconds length
 	$nombre_agente = dame_nombre_agente_agentemodulo($id_agente_modulo);
 	$id_agente = dame_agente_id($nombre_agente);
@@ -261,10 +265,139 @@ function grafico_modulo_sparse($id_agente_modulo, $periodo, $intervalo, $etiquet
 	_reference to true in your INI file.  However, future versions may not
 	support this any longer.  */
 }
+
+function grafico_modulo_sparse(
+	$id_agente_modulo, 
+	$periodo, $intervalo,
+	$etiqueta, $color,
+	$zoom, $draw_events, 
+	$width, $height , $title           ){
+
+	include ("../include/config.php");
+	require ("../include/languages/language_".$language_code.".php");
+	include 'Image/Graph.php';
+
+	// Where periodo is lapse of time in minutes that we want to show in a
+	// graph, this could be a week, 1 hour, a day, etc
+	// 30.06.06 dervitx:
+	// $draw_events  behaves as a boolean:  1 implies that events for that
+	// module in that period of time will be represented with a line in the graph
+	$fechatope = time - $periodo; // limit date
+	$horasint = $periodo / $intervalo; // Each intervalo is $horasint seconds length
+	$nombre_agente = dame_nombre_agente_agentemodulo($id_agente_modulo);
+	$id_agente = dame_agente_id($nombre_agente);
+	$nombre_modulo = dame_nombre_modulo_agentemodulo($id_agente_modulo);
+
+	// intervalo - This is the number of "rows" we are divided the time to fill data.
+	//             more interval, more resolution, and slower.
+	// periodo - Gap of time, in seconds. This is now to (now-periodo) secs
 	
+	// Init tables
+	for ($x = 0; $x <= $intervalo; $x++) {
+		$valores[$x][0] = 0; // real value
+		$valores[$x][1] = 0; // min
+		$valores[$x][2] = $horasint * $x; // [2] Top limit for this range
+		$valores[$x][3] = $horasint*($x+1); // [3] Botom limit 
+		$etiq_base[] = dame_fecha_grafico($horasint * $x);
+		$valores[$x][5] = 0; // max
+	}
+	// Init other general variables
+	$max_value = 0;
+	$min_value = 9999999999999;
 	
-function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_name, $MGD_data, $MGD_event_data ) {	
+	// Get the last value, the last known value (the more recent or last stored)
+	$sql1 = "SELECT * FROM tagente_estado WHERE id_agente_modulo = ".$id_agente_modulo;
+	if ($result=mysql_query($sql1)){
+		$row=mysql_fetch_array($result);
+		$old_value=$row["datos"];
+		$old_date = $row["utimestamp"];
+	} else {
+		$old_value=0;
+	}
+
+	// Get the last first date (most far to now) for lastcontact in this module
+	// there is no data far away, so value must be 0 before this date
+	$sql1 = "SELECT * FROM tagente_datos WHERE id_agente_modulo = ".$id_agente_modulo." order by timestamp asc limit 1";
+	if ($result=mysql_query($sql1)){
+		$row=mysql_fetch_array($result);
+		$first_date = $row["timestamp"];
+	}
+
+	for ($i = $intervalo; $i >= 0; $i--){
+		$sql1 = "SELECT AVG(datos),MAX(datos),MIN(datos) FROM tagente_datos
+		WHERE id_agente_modulo = ".$id_agente_modulo." AND utimestamp >= ".$valores[$i][3]."' and utimestamp < ".$valores[$i][2];
+		$result=mysql_query($sql1);
+		$row=mysql_fetch_array($result);
+#echo "AVG  MAX  MIN (old_value)  ".$valores[$i][3]."<br>";
+#echo $row[0]."  ".$row[1]."  ".$row[2]."  old-".$old_value." ".$old_date;
+#echo "<br><br>";
+		if ($row[0] != ""){		
+			$valores[$i][0] = $row[0];
+			$valores[$i][1] = $row[2];
+			$valores[$i][5] = $row[1];
+		}
+		// Check max. value 
+		if ($valores[$i][5] > $max_value)
+			$max_value = $valores[$i][5];
+		// Check min. value... not needed I think..
+		// if ($valores[$i][1] < $min_value)
+			//$min_value = $valores[$i][1];
+		
+	}
+
+	// 29.06.06 dervitx
+	// let's see if the module in this agent has some events associated
+	// if it has, let's fill $datax and $datay to scatter the events
+	//	in the graphic
+	/*
+	if ($draw_events) {
+		$initial_time = strtotime($fechatope);
+		$graph_duration = $periodo * 60;  			// in seconds
+		$final_time = $initial_time + $graph_duration;		// now
+		// careful here! next sql sentence looks for the module by name in the "evento" field
+		// tevento database table SHOULD have module_id !!
+		$sql1 = "SELECT * FROM tevento WHERE id_agente = ".$id_agente." and timestamp > '".$fechatope."' and evento like '%" . $nombre_modulo . "%' ";
+		// we populate two arrays with validated and no validated events of the module:
+		//	$datax[1] and $datax[0], respectively. There are $datay arrays for y values.
+		if ($result=mysql_query($sql1)){
+		while ($row=mysql_fetch_array($result)) {
+			if ($row["estado"]) { $estado=1; } else { $estado=0; }
+			$datax[$estado][count($datax[$estado])] = strtotime( $row["timestamp"] );
+			$datay[$estado][count($datay[$estado])] = ceil($valor_maximo / 6) + $valor_maximo;
+			}
+		}
+	}
+	// end 29.06.06 dervitx
+	*/
+	/*
+	$Graph_param = array (
+		'title' 	=> "          $etiqueta - $nombre_agente / $nombre_modulo",
+		'size_x'	=> intval(550 * $zoom) ,
+		'size_y'	=> intval(220 * $zoom) ,
+		'id_agente_modulo' => $id_agente_modulo ,
+		'valor_maximo'	=> $max_value ,
+		'periodo'	=> $periodo ,
+		'draw_events'	=> 0
+		);
+	*/
+	/* modulo_grafico_draw ( 	$Graph_param, 
+				$etiq_base, 
+				array('Maximum','Average','Minimum'),
+				array (	&$valores_max, &$grafica, &$valores_min ), 
+				$datax
+				); // Replaced pass by reference   (slerena, 11 Jul06)
+	/*  PHP Warning:  Call-time pass-by-reference has
+	been deprecated - argument pass
+	ed by value;  If you would like to pass it by reference, modify the
+	declaration of [runtime function
+ 	name]().  If you would like to enable call-time pass-by-reference,
+	you can set allow_call_time_pass
+	_reference to true in your INI file.  However, future versions may not
+	support this any longer.  */
+
 	
+/* function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_name, $MGD_data, $MGD_event_data ) {
+*/	
 	// draws the graph corresponding to the data of a module
 	// arguments:
 	
@@ -283,33 +416,24 @@ function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_name, $MGD_data
 	// $MGD_data_name = array ( name1, name2, ...  )    // name of the datasets (for the legend only)
 
 	// $MGD_data = array ( &array(data1), &array(data2), ... );	// data to be represented
-	
+
 	// $MGD_event_data = array ( (notvalidated) &array(data_x), (validated) => &array(data_x) );
-		
-	include ("../include/config.php");
-	require ("../include/languages/language_".$language_code.".php");
-	include 'Image/Graph.php';
-		
 	// initializing parameters
-		
-	if (!isset( $MGD_param['title'] )) { $MGD_param['title'] = '- no title -'; }
-	if (!isset( $MGD_param['size_x'] )) { $MGD_param['size_x'] = 550; }
-	if (!isset( $MGD_param['size_y'] )) { $MGD_param['size_y'] = 220; }
-		
+				
 	$count_datasets = count( $MGD_data_name );    // number of datasets to represent
 		
 	// creating the graph with PEAR Image_Graph
 	$Graph =& Image_Graph::factory('graph', 
-		array( 	$MGD_param['size_x'], 
-			$MGD_param['size_y']
+		array( 	$width, 
+			$height
 			)
 		); 
 	$Font =& $Graph->addNew('font', $config_fontpath);
-	$Font->setSize(8);
+	$Font->setSize(6);
 	$Graph->setFont($Font);
 	$Graph->add(
 		Image_Graph::vertical(
-		 	$Title = Image_Graph::factory('title', array ($MGD_param['title'] , 10)),
+		 	$Title = Image_Graph::factory('title', array ($title , 10)),
 			Image_Graph::horizontal(
 				$Plotarea = Image_Graph::factory('plotarea','axis'),
 				$Legend = Image_Graph::factory('legend'),
@@ -322,32 +446,32 @@ function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_name, $MGD_data
 	$Title->setAlignment(IMAGE_GRAPH_ALIGN_LEFT);
 	
  	$Grid =& $Plotarea->addNew('line_grid', false, IMAGE_GRAPH_AXIS_X);
-	$Grid->setBackgroundColor('silver@0.3');
+	$Grid->setBackgroundColor('silver@0.6');
 	$Grid->setBorderColor('black');
 	$Plotarea->addNew('line_grid', false, IMAGE_GRAPH_AXIS_Y); 
 	// the next grid is only necessary for drawing the right black line of the PlotArea
 	$Grid_sec =& $Plotarea->addNew('line_grid', IMAGE_GRAPH_AXIS_Y_SECONDARY); 
 	$Grid_sec->setBorderColor('black');
 	
-	// now, datasets are created ...
-	for ($cc=0; $cc<$count_datasets; $cc++) {
-		$Datasets[$cc] = Image_Graph::factory('dataset') ;
-		$Datasets[$cc]->setName( $MGD_data_name[$cc] );
-		}
-	
+
+	$dataset[0] = Image_Graph::factory('dataset');
+	$dataset[0]->setName("Avg.");
+	$dataset[1] = Image_Graph::factory('dataset');
+	$dataset[1]->setName("Min.");
+	$dataset[2] = Image_Graph::factory('dataset');
+	$dataset[2]->setName("Max.");
 	$Legend->setPlotarea($Plotarea);
 	
 	// ... and populated with data ...
-	// next line suposes that all $MGD_data have the same number of points
-	for ($cc=0; $cc<count($MGD_data[0]); $cc++) {     
-		$tdate=strtotime( $MGD_labels[$cc] );
-		for ($dd=0; $dd<$count_datasets; $dd++) {
-			$Datasets[$dd]->addPoint($tdate, $MGD_data[$dd][$cc]);
-			}
-		}
+	for ($cc=0; $cc<$intervalo; $cc++) {
+		$tdate = strtotime( $valores[$cc][2] );
+		$dataset[0]->addPoint($tdate, $valores[$cc][0]);
+		$dataset[1]->addPoint($tdate, $valores[$cc][1]);
+		$dataset[2]->addPoint($tdate, $valores[$cc][5]);
+	}
 	
 	// ... and added to the Graph
-	$Plot =& $Plotarea->addNew('Image_Graph_Plot_Area', array($Datasets)); 
+	$Plot =& $Plotarea->addNew('Image_Graph_Plot_Area', array($dataset));
 	
 	// some other properties of the Graph
 	$FillArray =& Image_Graph::factory('Image_Graph_Fill_Array');
@@ -357,14 +481,14 @@ function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_name, $MGD_data
 	$Plot->setFillStyle($FillArray); 
 	
 	$AxisX =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_X);
-	$AxisX->setLabelInterval($MGD_param['periodo']*60/10);
+	$AxisX->setLabelInterval($periodo*60/10);
  	$AxisX->setFontAngle(45);
  	$AxisX->setDataPreprocessor(Image_Graph::factory('Image_Graph_DataPreprocessor_Function', 'dame_fecha_grafico_timestamp')); 
 	$AxisY =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
-	$AxisY->forceMaximum(ceil($MGD_param['valor_maximo'] / 4) + $MGD_param['valor_maximo']);
+	$AxisY->forceMaximum(ceil($max_value / 4) + $max_value);
 	
 	// let's draw the alerts zones
-	$sql1 = "SELECT dis_min, dis_max FROM talerta_agente_modulo WHERE id_agente_modulo = ".$MGD_param['id_agente_modulo'];
+	$sql1 = "SELECT dis_min, dis_max FROM talerta_agente_modulo WHERE id_agente_modulo = ".$id_agente_modulo;
 	if ($result=mysql_query($sql1)){
 	while ($row=mysql_fetch_array($result)) {
 		$Marker_alertzone =& $Plotarea->addNew('Image_Graph_Axis_Marker_Area', IMAGE_GRAPH_AXIS_Y);
@@ -375,6 +499,7 @@ function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_name, $MGD_data
 	}
 		
 	// if there are some events to draw let's scatter them!
+	/*
 	if ($MGD_param['draw_events']) {
 		for ($cc=1; $cc>=0; $cc--) {
 			if (isset($MGD_event_data[$cc])) {
@@ -394,7 +519,7 @@ function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_name, $MGD_data
 			}
 		}
 	}
-	
+	*/
 	$Graph->done(); 
 	// 30.06.06 dervitx end
 }
@@ -1370,6 +1495,7 @@ function drawWarning($width,$height) {
 	imagedestroy($image);
 }
 
+
 function progress_bar($progress,$width,$height) {
    // Copied from the PHP manual:
    // http://us3.php.net/manual/en/function.imagefilledrectangle.php
@@ -1385,7 +1511,7 @@ function progress_bar($progress,$width,$height) {
 		if ($height == 0) {
 			$height = 20;
 		}
-		
+
 		//$rating = $_GET['rating'];
 		$ratingbar = (($rating/100)*$width)-2;
 		$image = imagecreate($width,$height);
@@ -1396,59 +1522,196 @@ function progress_bar($progress,$width,$height) {
 		$fill = ImageColorAllocate($image,44,81,150);
 
 		ImageFilledRectangle($image,0,0,$width-1,$height-1,$back);
-		ImageRectangle($image,0,0,$width-1,$height-1,$border);
-
-
-		if (($rating > 100) || ($rating < 0)){
-			ImageFilledRectangle($image,1,1,$width-1,$height-1,$red);
-			ImageTTFText($image, 8, 0, ($width/3)-($width/10), ($height/2)+($height/5), $back, $config_fontpath,$lang_label["out_of_limits"]);
-		}
-		else {
+		if ($rating > 100)
+			ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$red);
+		else
 			ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$fill);
-			if ($rating > 50) 
-					ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $back, $config_fontpath, $rating."%");
-			else 
-				ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $border, $config_fontpath, $rating."%");
-		}
+		ImageRectangle($image,0,0,$width-1,$height-1,$border);
+		if ($rating > 50)
+			if ($rating > 100)
+				ImageTTFText($image, 8, 0, ($width/4), ($height/2)+($height/5), $back, $config_fontpath,$lang_label["out_of_limits"]);
+			else
+				ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $back, $config_fontpath, $rating."%");
+		else
+			ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $border, $config_fontpath, $rating."%");
 		imagePNG($image);
 		imagedestroy($image);
-	}
-	// Show header
-	Header("Content-type: image/png");
-	// If progress is out limits, show static image, beware of image size!
+   	}
+   	Header("Content-type: image/png");
 	if ($progress > 100 || $progress < 0){
+		// HACK: This report a static image... will increase render in about 200% :-) useful for
+		// high number of realtime statusbar images creation (in main all agents view, for example
 		$imgPng = imageCreateFromPng("../images/outlimits.png");
 		imageAlphaBlending($imgPng, true);
 		imageSaveAlpha($imgPng, true);
-		imagePng($imgPng);
-	} else
-		drawRating($progress,$width,$height);   
+		imagePng($imgPng); 
+   	} else 
+   		drawRating($progress,$width,$height);
+}
+
+function graphic_test ($id, $period, $interval, $label, $width, $height){
+	require_once 'Image/Graph.php';
+	include ("../include/config.php");
+	$color ="#437722"; // Green pandora 1.1 octopus color
+
+	$intervalo = 500; // We want 30 slices for graph resolution.
+	$now_date = dame_fecha(0);
+	$horasint = $period / $intervalo;
+	$top_date = dame_fecha($period);
+
+	// Para crear las graficas vamos a crear un array de Ax4 elementos, donde
+	// A es el numero de posiciones diferentes en la grafica (30 para un mes, 7 para una semana, etc)
+	// y los 4 valores en el ejeY serian los detallados a continuacion:
+	// Rellenamos la tabla con un solo select, y los calculos se hacen todos sobre memoria
+	// esto acelera el tiempo de calculo al maximo, aunque complica el algoritmo :-)
+
+	$total_items=5000;
+	$factor = rand(1,10); $b=0;
+	// This is my temporal data (only a simple static test by now)
+	for ($a=0; $a < $total_items; $a++){
+		$valor = 1 + cos(deg2rad($b));
+		$b = $b + $factor/10;
+		if ($b > 180){
+			$b =0;
+		}
+		$valor = $valor * $b ;
+		$valores[$a][0] = $valor;
+		$valores[$a][1] = $a;
+	}
+
+	
+	// Creamos la tabla (array) con los valores para el grafico. Inicializacion
+	$valor_maximo = 0;
+	$maxvalue=0;
+	$minvalue=100000000;
+	for ($i = $intervalo-1; $i >0; $i--) { // 30 entries in graph, one by day
+		$grafica[]=$valores[$i][0];
+		$legend[]=$valores[$i][1];
+		if ($valores[$i][0] < $minvalue)
+			$minvalue = $valores[$i][0];
+		if ($valores[$i][0] > $maxvalue)
+			$maxvalue = $valores[$i][0];
+	}
+
+	// Create graph 
+	
+		// Create graph
+		// create the graph
+		$Graph =& Image_Graph::factory('graph', array($width, $height));
+		// add a TrueType font
+		$Font =& $Graph->addNew('font', $config_fontpath);
+		$Font->setSize(6);
+		$Graph->setFont($Font);
+		$Graph->add(
+		Image_Graph::vertical(
+			Image_Graph::factory('title', array("", 2)),
+			$Plotarea = Image_Graph::factory('plotarea'),
+			0)
+		);
+		// Create the dataset
+		// Merge data into a dataset object (sancho)
+		$Dataset =& Image_Graph::factory('dataset');
+		for ($a=0;$a < sizeof($grafica); $a++){
+			$Dataset->addPoint($legend[$a],$grafica[$a]);
+		}
+		// create the 1st plot as smoothed area chart using the 1st dataset
+		$Plot =& $Plotarea->addNew('area', array(&$Dataset));
+		// set a line color
+		$Plot->setLineColor('gray');
+		// set a standard fill style
+		$Plot->setFillColor('green@0.4');
+		// $Plotarea->hideAxis();
+		$AxisX =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_X);
+		// $AxisX->Hide();
+		$AxisY =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
+		$AxisY->setLabelOption("showtext",true);
+		$AxisY->setLabelInterval(ceil(($maxvalue-$minvalue)/4));
+		$AxisX->setLabelInterval($intervalo / 5);
+		$AxisY->forceMinimum($minvalue);
+		$GridY2 =& $Plotarea->addNew('bar_grid', IMAGE_GRAPH_AXIS_Y_SECONDARY);
+		$GridY2->setLineColor('blue');
+		$GridY2->setFillColor('blue@0.1');
+		$AxisY2 =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y_SECONDARY);
+		$Graph->done();
+
 }
 
 
 
-// *****************************************************************************************************************
-//   MAIN Code
-//   parse get parameters
-// *****************************************************************************************************************
+// **************************************************************************
+// **************************************************************************
+//   MAIN Code - Parse get parameters
+// **************************************************************************
+// **************************************************************************
+
+// Generic parameter handling
+// **************************
+
+if (isset($_GET["tipo"]))
+	$tipo = entrada_limpia($_GET["tipo"]);
+else
+	$tipo = ""; // 1 day default period
+
+
+if (isset($_GET["periodo"]))
+	$periodo = entrada_limpia($_GET["periodo"]);
+else
+	$periodo = 86400; // 1 day default period
+
+if (isset($_GET["intervalo"]))
+	$intervalo = entrada_limpia($_GET["intervalo"]);
+else
+	$intervalo = 300; // 1 day default period
+
+if (isset($_GET["id"]))
+	$id = entrada_limpia($_GET["id"]);
+else
+	$id = 0;
+if (isset($_GET["width"]))
+	$width = entrada_limpia($_GET["width"]);
+else
+	$width = 300;
+
+if (isset($_GET["height"]))
+	$height = entrada_limpia ($_GET["height"]);
+else
+	$height = 200;
+
+if (isset($_GET["label"]))
+	$label = entrada_limpia ($_GET["label"]);
+else
+	$label = "";
+
+if (isset($_GET["color"]))
+	$color = entrada_limpia ($_GET["color"]);
+else
+	$color = "#226677";
+
+if (isset($_GET["percent"]))
+	$percent = entrada_limpia ($_GET["percent"]);
+else
+	$percent = "100";
+
+// Zoom
+if (isset($_GET['zoom']) and
+	is_numeric($_GET['zoom']) and
+	$_GET['zoom']>100) 
+		$zoom = $_GET['zoom'] / 100 ;
+else
+	$zoom = 1;
+	
+// Draw Events  ?
+if ( isset($_GET["draw_events"]) and $_GET["draw_events"]==0 )
+		$draw_events = 0;
+	else
+		$draw_events = 1;
+	
+// Image handler
+// *****************
 
 if (isset($_GET["tipo"])){
-	if ($_GET["tipo"]=="sparse"){
-		if (isset($_GET["id"]) and   (isset($_GET["label"])) and ( isset($_GET["periodo"])) and (isset ($_GET["intervalo"])) AND (isset ($_GET["color"])) ){
-			$id = $_GET["id"];
-			$color = $_GET["color"];
-			$tipo = $_GET["tipo"];
-			$periodo = $_GET["periodo"];
-			$intervalo = $_GET["intervalo"];
-			$label = $_GET["label"];
-			$color = "#".$color;
-			if ( isset($_GET["draw_events"]) and $_GET["draw_events"]==0 ) 
-				{ $draw_events = 0; } else { $draw_events = 1; } 
-			if (isset($_GET['zoom']) and is_numeric($_GET['zoom']) and $_GET['zoom']>100) {
-				$zoom = $_GET['zoom'] / 100 ;
-			} else { $zoom = 1; } 
-			grafico_modulo_sparse($id, $periodo, $intervalo, $label, $color, $zoom, $draw_events);
-		}
+	if ($_GET["tipo"] == "sparse"){	
+		grafico_modulo_sparse($id, $periodo, $intervalo, $label, $color, $zoom, $draw_events, $width, $height , $title );
 	}
 	elseif ($_GET["tipo"] =="estado_incidente") 
 		grafico_incidente_estados();	
@@ -1478,10 +1741,10 @@ if (isset($_GET["tipo"])){
 		graphic_agentaccess($_GET["id"], $_GET["periodo"]);
 	elseif ($_GET["tipo"] == "agentmodules")
 		graphic_agentmodules($_GET["id"]);
+	elseif ($_GET["tipo"] == "gdirect")
+		graphic_test ($id, $periodo, $intervalo, $label, $width, $height);
 	elseif ( $_GET["tipo"] =="progress"){
 		$percent= $_GET["percent"];
-		$width= $_GET["width"];
-		$height= $_GET["height"];
 		progress_bar($percent,$width,$height);
 	}
 }

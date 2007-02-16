@@ -15,51 +15,48 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.-->
 
-function FormSetup()
-{
+function FormSetup(){
 
-var cBtn = xGetElementById('formCerrBtn');
-var xForm = xGetElementById('xForm');
+	var cBtn = xGetElementById('formCerrBtn');
+	var xForm = xGetElementById('xForm');
 
-posLeft = 0;
-posTop = 0;
+	posLeft = 0;
+	posTop = 0;
 
-if (xClientWidth()>xWidth(xForm))
-{
-posLeft = xClientWidth()/2 -xWidth(xForm)/2;
+	if (xClientWidth()>xWidth(xForm)) {
+		posLeft = xClientWidth()/2 -xWidth(xForm)/2;
+	}
+
+	if (xClientHeight()>xHeight(xForm)) {
+		posTop = xClientHeight()/2 -xHeight(xForm)/2
+	}
+
+ 	xMoveTo('xForm',posLeft ,posTop);
+	formPaint();
+  	xEnableDrag('xFormBar', formOnDragStart, formOnDrag, null);
+  	xZIndex('xForm', highZ++);
+ 	cBtn.onclick = cBtnOnClick;
+  	xShow('xForm');
 }
 
-if (xClientHeight()>xHeight(xForm))
-{
-posTop = xClientHeight()/2 -xHeight(xForm)/2
-}
 
-  xMoveTo('xForm',posLeft ,posTop);
-formPaint();
-  xEnableDrag('xFormBar', formOnDragStart, formOnDrag, null);
-  xZIndex('xForm', highZ++);
- cBtn.onclick = cBtnOnClick;
-  xShow('xForm');
-}
-function formPaint()
-{
-  var xForm = xGetElementById('xForm');
-  var cBtn = xGetElementById('formCerrBtn');
-  xMoveTo(cBtn, xWidth(xForm) - xWidth(cBtn), 0);
+function formPaint(){
+	var xForm = xGetElementById('xForm');
+	var cBtn = xGetElementById('formCerrBtn');
+	xMoveTo(cBtn, xWidth(xForm) - xWidth(cBtn), 0);
 
 }
-function formOnDragStart(ele, mx, my)
-{
-  xZIndex('xForm', highZ++);
-}
-function formOnDrag(ele, mdx, mdy)
-{
-  xMoveTo('xForm', xLeft('xForm') + mdx, xTop('xForm') + mdy);
-}
-function cBtnOnClick()
-{
-var cBtn = xGetElementById('formCerrBtn');
-var xForm = xGetElementById('xForm');
-xHide(xForm);
 
+function formOnDragStart(ele, mx, my){
+	xZIndex('xForm', highZ++);
+}
+
+function formOnDrag(ele, mdx, mdy){
+	xMoveTo('xForm', xLeft('xForm') + mdx, xTop('xForm') + mdy);
+}
+
+function cBtnOnClick(){
+	var cBtn = xGetElementById('formCerrBtn');
+	var xForm = xGetElementById('xForm');
+	xHide(xForm);
 }

@@ -24,7 +24,7 @@ global $dbpassword;
 global $dbtype;
 global $dbhost;
 
-require("lib/db_functions.php"); // añadimos el php que contiene las funciones de acceso a base de datos
+require("lib/db_functions.php"); // Add external functions to database 
 require("lib/extra_functions.php");
 
 //Variables globales
@@ -32,52 +32,43 @@ require("lib/extra_functions.php");
 $widthGraph=200;
 $heigthGraph=200;
 
-// session_start();
+session_start(); 
 
 	
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head id="idHead">
-
-
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 
-<?php	// Añadimos esta linea que fuerza el refresco cada 10 segundos si se está en modo monitor. 
-	if ($_GET["mode"]=="monitor")
-	{
+<?php	// Add this line to refresh each X seconds
+	// *TODO* Adjust a variable interval
+	if ($_GET["mode"] == "monitor"){
 		echo ("<meta http-equiv=\"refresh\" content=\"10\">"); 
 	}
 ?>
 
-<title>Pandora Console </title>
+<title>Pandora FMS Active Console </title>
 
-<meta name="author" content="Jonathan Barajas">
+<meta name="author" content="Jonathan Barajas, Sancho Lerena">
 <meta name="description" content="Pandora Web Console">
 <link rel="stylesheet" href="styles/main.css" type="text/css">
 <script type="text/javascript" src="scripts/x_core.js"></script>
 <script type="text/javascript" src="scripts/x_event.js"></script>
 <script type="text/javascript" src="scripts/x_slide.js"></script>
 <script type='text/javascript' src='scripts/x_drag.js'></script>
-
 <script type='text/javascript' src='scripts/objeto.php'></script>
 <script type="text/javascript" src="scripts/xmenu2.js"></script>
 <script type="text/javascript" src="scripts/xmenu2_html.js"></script>
-
 <script type="text/javascript" src="scripts/xformulario.js"></script>
 <script type="text/javascript" src="scripts/xformulario_html.php"></script>
-
 <script type="text/javascript" src="scripts/onunload.php"></script>
-
 <script type='text/javascript' src='scripts/x_dom.js'></script>
 <script type='text/javascript' src='scripts/xtabpanelgroup.js'></script>
-
 <script type="text/javascript" src="scripts/wz_jsgraphics.js"></script>
 
 
 <script type="text/javascript">
-
-
-// Obtenemos la cookie estado que define el valor de: pestaña selecionada, 
+// Get the cookie that stores about what topslide its selected
 
 	vistaActiva=0;
 	selectedIndex=0;
@@ -86,12 +77,8 @@ $heigthGraph=200;
 	menuTop=0;
 	perfil=0;
  	cookieEstado=GetCookie("estado");
-	
-	
 	// Comprobamos que existe una cookie de estado
-	if (cookieEstado != null)
-	{
-	
+	if (cookieEstado != null){
     		if (cookieEstado.length > 0){
         		var params=cookieEstado.split("&");
         		for (var i=0 ; i < params.length ; i++){
@@ -113,43 +100,31 @@ $heigthGraph=200;
             				menuLeft = value.substring(0, coor);
 					menuTop = value.substring(coor + 1);
 				}
-        		}
-    		}
-	}else{ // Cargamos los valores de la base de datos
+        		} // for
+    		} 
+	} else { // Cargamos los valores de la base de datos
 	<?php
-
-//////////////////////////////////////////////////////////////////////////////////////////
-//  		$usuario = dameUsuarioActivo();  Es una fase que siemrpe retorna admin hay que implementarla bien cuando se haga la integración real con Pandora
-//////////////////////////////////////////////////////////////////////////////////////////
+// $usuario = dameUsuarioActivo();
+// Es una fase que siemrpe retorna admin hay que implementarla bien cuando
+// se haga la integracion real con Pandora
 		$usuario="admin";
 		$estado_consola=dameEstadoConsola($usuario);
 		echo "vista_activa='".$estado_consola["idVistaActiva"]."';";
 		echo "menuLeft='".$estado_consola["menuX"]."';";
 		echo "menuTop='".$estado_consola["menuY"]."';";
-
 	?>
-	}
+	} //else
 
-
-
-
-var highZ = 3;
-//creamos un array en javascript que contendrá la relacion entre el numero de pestaña y el id de la vista que se representa en dicha pestaña
-var relacionPestaVista=new Array();
-aRelacionesObjetos=new Array(); // Este array almacena el nombre de las relaciones (lineas)
- 
+// Create an array in javascript that stores relation between number of tabs
+// and ID of view that it's showed in that tab.
+	var highZ = 3;
+	var relacionPestaVista = new Array();
+	aRelacionesObjetos = new Array(); // This array stores name of relationships (lines)
 </script>
 
-    
-
-
 <!-- Absolutely Positioned Elements -->
-
 <script type="text/javascript">
-
-
 <?php
-
 
 ///////////////ON-LOAD////////////////////
 
@@ -1255,8 +1230,10 @@ if (($_GET["mode"]=="monitor" ) or ($_GET["mode"]==""))
 }
 
 
+	
 echo "</script>\n";
 echo "</head>\n";
+//background='/images/console/background/europa.jpg'
 echo "<body onUnload=\"javascript:guardarEstado()\" >
 <div>
 	<div id='tpg2' class='tabPanelGroup'>

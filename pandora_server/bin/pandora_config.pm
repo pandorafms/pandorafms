@@ -2,8 +2,8 @@ package pandora_config;
 ##########################################################################
 # Pandora Config package
 ##########################################################################
-# Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+# Copyright (c) 2005-2007 Artica Soluciones Tecnologicas S.L
 #
 #This program is free software; you can redistribute it and/or
 #modify it under the terms of the GNU General Public License
@@ -36,8 +36,8 @@ our @EXPORT = qw( 	pandora_help_screen
 # There is no global vars, all variables (setup) passed as hash reference
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "1.2";
-my $pandora_build="PS061123";
+my $pandora_version = "1.3-dev";
+my $pandora_build="PS070216";
 our $VERSION = $pandora_version;
 
 # Setup hash

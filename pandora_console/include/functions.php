@@ -483,8 +483,8 @@ function pagination ($count, $url, $offset ) {
 			echo "</a>";
 		}
 	// End div and layout
-	}
 	echo "</div>";
+	}
 }
 
 ?>

@@ -33,6 +33,14 @@ if (give_acl($id_usuario, 0, "IR")!=1) {
 	exit;
 }
 
+// Take input parameters
+
+// Offset adjustment
+if (isset($_GET["offset"]))
+	$offset=$_GET["offset"];
+else
+	$offset=0;
+
 // Delete incident
 if (isset($_GET["quick_delete"])){
 	$id_inc = $_GET["quick_delete"];
@@ -44,8 +52,8 @@ if (isset($_GET["quick_delete"])){
 		if ((give_acl($id_usuario, $row2["id_grupo"], "IM") ==1) OR ($_SESSION["id_usuario"] == $id_author_inc) ){
 			borrar_incidencia($id_inc);
 			echo "<h3 class='suc'>".$lang_label["del_incid_ok"]."</h3>";
-			}
-		else {
+			audit_db($id_author_inc,$REMOTE_ADDR,"Incident deleted","User ".$id_usuario." deleted incident #".$id_inc);
+		} else {
 			audit_db($id_author_inc,$REMOTE_ADDR,"ACL Forbidden","User ".$_SESSION["id_usuario"]." try to delete incident");
 			echo "<h3 class='error'>".$lang_label["del_incid_no"]."</h3>";
 			no_permission();
@@ -68,8 +76,11 @@ if ((isset($_GET["action"])) AND ($_GET["action"]=="update")){
 		$ahora=date("Y/m/d H:i:s");
 		$sql = "UPDATE tincidencia SET actualizacion = '".$ahora."', titulo = '".$titulo."', origen= '".$origen."', estado = '".$estado."', id_grupo = '".$grupo."', id_usuario = '".$usuario."', prioridad = '".$prioridad."', descripcion = '".$descripcion."' WHERE id_incidencia = ".$id_inc;
 		$result=mysql_query($sql);
+		audit_db($id_author_inc,$REMOTE_ADDR,"Incident updated","User ".$id_usuario." deleted updated #".$id_inc);
 		if ($result)
 			echo "<h3 class='suc'>".$lang_label["upd_incid_ok"]."</h3>";
+		else
+			echo "<h3 class='suc'>".$lang_label["upd_incid_no"]."</h3>";
 	} else {
 		audit_db($id_usuario,$REMOTE_ADDR,"ACL Forbidden","User ".$_SESSION["id_usuario"]." try to update incident");
 		echo "<h3 class='error'>".$lang_label["upd_incid_no"]."</h3>";
@@ -92,9 +103,11 @@ if ((isset($_GET["action"])) AND ($_GET["action"]=="insert")){
 		$id_creator = $id_usuario;
 		$estado = entrada_limpia($_POST["estado_form"]);
 		$sql = " INSERT INTO tincidencia (inicio,actualizacion,titulo,descripcion,id_usuario,origen,estado,prioridad,id_grupo, id_creator) VALUES ('".$inicio."','".$actualizacion."','".$titulo."','".$descripcion."','".$usuario."','".$origen."','".$estado."','".$prioridad."','".$grupo."','".$id_creator."') ";
-		if (mysql_query($sql))
+		if (mysql_query($sql)){
 			echo "<h3 class='suc'>".$lang_label["create_incid_ok"]."</h3>";
 			$id_inc=mysql_insert_id();
+			audit_db($usuario,$REMOTE_ADDR,"Incident created","User ".$id_usuario." created incident #".$id_inc);
+		}
 	} else {
 		audit_db($id_usuario,$REMOTE_ADDR,"ACL Forbidden","User ".$_SESSION["id_usuario"]." try to create  incident");
 		no_permission();
@@ -167,10 +180,11 @@ if (isset($_POST['estado']) OR (isset($_POST['grupo'])) OR (isset($_POST['priori
 		}
 	}
 
-
 $sql0="SELECT * FROM tincidencia ".$sql1." ORDER BY actualizacion DESC";
 $sql1_count="SELECT COUNT(id_incidencia) FROM tincidencia ".$sql1;
 $sql1=$sql0;
+$sql1=$sql1." LIMIT $offset, $block_size";
+
 echo "<h2>".$lang_label["incident_manag"]."</h2>";
 echo "<h3>".$lang_label["manage_incidents"]."<a href='help/".$help_code."/chap4.php#4' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 if (isset($_POST['operacion'])){
@@ -192,9 +206,13 @@ if (isset($_POST['operacion'])){
 	// 3 - Caducada (out of date)
 	// 13 - Cerrada (closed)
 
-	if (isset($_GET["estado"])){
-		echo "<option value='".$_GET["estado"]."'>";
-		switch ($_GET["estado"]){
+	if ((isset($_GET["estado"])) OR (isset($_GET["estado"]))){ 
+		if (isset($_GET["estado"]))
+			$estado = $_GET["estado"];
+		if (isset($_POST["estado"]))
+			$estado = $_POST["estado"];
+		echo "<option value='".$estado."'>";
+		switch ($estado){
 			case -1: echo $lang_label["all_inc"]; break;
 			case 0: echo $lang_label["opened_inc"]; break;
 			case 13: echo $lang_label["closed_inc"]; break;
@@ -233,9 +251,13 @@ if (isset($_POST['operacion'])){
 	<select name="prioridad" onChange="javascript:this.form.submit();" class="w155">
 <?php 
 
-if (isset($_GET["prioridad"])){
-	echo "<option value=".$_GET["prioridad"].">";
-	switch ($_GET["prioridad"]){
+if ((isset($_GET["prioridad"])) OR (isset($_GET["prioridad"]))){ 
+	if (isset($_GET["prioridad"]))
+		$prioridad = $_GET["prioridad"];
+	if (isset($_POST["prioridad"]))
+		$prioridad = $_POST["prioridad"];
+	echo "<option value=".$prioridad.">";
+	switch ($prioridad){
 		case -1: echo $lang_label["all"]." ".$lang_label["priority"]; break;
 		case 0: echo $lang_label["informative"]; break;
 		case 1: echo $lang_label["low"]; break;
@@ -252,17 +274,22 @@ echo '<option value="2">'.$lang_label["medium"];
 echo '<option value="3">'.$lang_label["serious"];
 echo '<option value="4">'.$lang_label["very_serious"];
 echo '<option value="10">'.$lang_label["maintenance"];
-echo "</select></td><td valign='middle¡><noscript>";
+echo "</select></td><td valign='middle><noscript>";
 echo "<input type='submit' class='sub' value='".$lang_label["show"]."' border='0'></noscript>";
 echo "</td>";
 echo '<tr><td><select name="grupo" onChange="javascript:this.form.submit();" class="w155">';
 
-if (isset($_GET["grupo"])){
-echo "<option value=".$_GET["grupo"].">";
-if ($_GET["grupo"] == -1)
-	echo $lang_label["all"]." ".$lang_label["groups"]; // all groups (default)
-else
-	echo dame_nombre_grupo($_GET["grupo"]);
+if ((isset($_GET["grupo"])) OR (isset($_GET["grupo"]))){ 
+	if (isset($_GET["grupo"]))
+		$grupo = $_GET["grupo"];
+	if (isset($_POST["grupo"]))
+		$grupo = $_POST["grupo"];
+	echo "<option value=".$grupo.">";
+
+	if ($grupo == -1)
+		echo $lang_label["all"]." ".$lang_label["groups"]; // all groups (default)
+	else
+		echo dame_nombre_grupo($grupo);
 }
 echo "<option value='-1'>".$lang_label["all"]." ".$lang_label["groups"]; // all groups (default)
 $sql2="SELECT * FROM tgrupo";
@@ -285,30 +312,18 @@ echo "
 	<br><br>
 	<table>";
 
-// Offset adjustment
-if (isset($_GET["offset"]))
-	$offset=$_GET["offset"];
-else
-	$offset=0;
 $offset_counter=0;
 // Prepare index for pagination
 $incident_list[]="";
 $result2=mysql_query($sql1);
+$result2_count=mysql_query($sql1_count);
+$row2_count = mysql_fetch_array($result2_count);
 
-if (!mysql_num_rows($result2)) {
+if ($row2_count[0] <= 0 ) {
 	echo '<div class="nf">'.$lang_label["no_incidents"].'</div><br></table>';
 } else {
-	while ($row2=mysql_fetch_array($result2)){ // Jump offset records
-		$id_group = $row2["id_grupo"];
-		if (give_acl($id_usuario, $id_group, "IR") ==1){
-		// Only incident read access to view data !
-			$incident_list[]=$row2["id_incidencia"];
-		}
-	}
-	// Fill array with data
-
 	// TOTAL incidents
-	$total_incidentes = sizeof($incident_list) - 1;
+	$total_incidentes = $row2_count[0];
 	$url = "index.php?sec=incidencias&sec2=operation/incidents/incident";
 
 	// add form filter values for group, priority, state, and search fields: user and text
@@ -322,6 +337,8 @@ if (!mysql_num_rows($result2)) {
 		$url = $url."&usuario=".$_GET["usuario"];
 	if (isset($_GET["texto"]))
 		$url = $url."&texto=".$_GET["texto"];
+	if (isset($_GET["offset"] ))
+		$url = $url."&offset=".$_GET["offset"];
 
 	// Show pagination
 	pagination ($total_incidentes, $url, $offset);
@@ -341,41 +358,25 @@ if (!mysql_num_rows($result2)) {
 	echo "<th>".$lang_label["delete"];
 	$color = 1;
 
-	// Skip offset records and begin show data
-	if ($offset !=0)
-		$offset_begin = $offset+1;
-	else
-		$offset_begin = $offset;
+	while ($row2=mysql_fetch_array($result2)){ 
+		$id_group = $row2["id_grupo"];
+		if (give_acl($id_usuario, $id_group, "IR") ==1){
+			if ($color == 1){
+				$tdcolor = "datos";
+				$color = 0;
+			}
+			else {
+				$tdcolor = "datos2";
+				$color = 1;
+			}
+			$note_number = dame_numero_notas($row2["id_incidencia"]);
+			echo "<tr>";
+			echo "<td class='$tdcolor' align='center'><a href='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id=".$row2["id_incidencia"]."'>".$row2["id_incidencia"]."</a>";
 
-	for ($a=$offset_begin; $a < ($offset + $block_size +1);$a++){
-		if (isset($incident_list[$a])){
-			$id_incidente = $incident_list[$a];
-		} else {
-			$id_incidente ="";
-		}
-		if ($id_incidente != ""){
-			$sql="SELECT * FROM tincidencia WHERE id_incidencia = $id_incidente";
-			$result=mysql_query($sql);
-			$row=mysql_fetch_array($result);
-			$id_group = $row["id_grupo"];
-				if ($color == 1){
-					$tdcolor = "datos";
-					$color = 0;
-				}
-				else {
-					$tdcolor = "datos2";
-					$color = 1;
-				}
-			if (give_acl($id_usuario, $id_group, "IR") ==1){ // Only incident read access to view data !
-				$offset_counter++;
-				$note_number = dame_numero_notas($row["id_incidencia"]);
-				echo "<tr>";
-				echo "<td class='$tdcolor' align='center'><a href='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id=".$row["id_incidencia"]."'>".$row["id_incidencia"]."</a>";
-
-				// Check for attachments in this incident
-				$result3=mysql_query("SELECT * FROM tattachment WHERE id_incidencia = ".$row["id_incidencia"]);
-				mysql_fetch_array($result3);
-				if (mysql_affected_rows() > 0)
+			// Check for attachments in this incident
+			$result3=mysql_query("SELECT * FROM tattachment WHERE id_incidencia = ".$row2["id_incidencia"]);
+			mysql_fetch_array($result3);
+			if (mysql_affected_rows() > 0)
 				echo '&nbsp;&nbsp;<img src="images/file.gif" align="middle">';
 
 				// Tipo de estado  (Type)
@@ -385,12 +386,12 @@ if (!mysql_num_rows($result2)) {
 				// 3 - Caducada (out of date)
 				// 13 - Cerrada (closed)
 
-				// Verify if the status changes
-				if (($row["estado"] == 0) && ($note_number >0 )){
-					$row["estado"] = 1;
-				}
-				echo "<td class='$tdcolor' align='center'>";
-				switch ($row["estado"]) {
+			// Verify if the status changes
+			if (($row2["estado"] == 0) && ($note_number >0 )){
+				$row2["estado"] = 1;
+			}
+			echo "<td class='$tdcolor' align='center'>";
+			switch ($row2["estado"]) {
 				case 0: echo "<img src='images/dot_red.gif'>";
 							break;
 				case 1: echo "<img src='images/dot_yellow.gif'>";
@@ -401,37 +402,35 @@ if (!mysql_num_rows($result2)) {
 							break;
 				case 13: echo "<img src='images/dot_green.gif'>";
 							break;
-				}
-				echo "<td class='$tdcolor'><a href='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id=".$row["id_incidencia"]."'>".substr(salida_limpia($row["titulo"]),0,27);
-				echo "<td class='$tdcolor'>";
-				switch ( $row["prioridad"] ){
-					case 0: echo "<img src='images/dot_green.gif'>"."<img src='images/dot_green.gif'>"."<img src='images/dot_yellow.gif'>"; break;
-					case 1: echo "<img src='images/dot_green.gif'>"."<img src='images/dot_yellow.gif'>"."<img src='images/dot_yellow.gif'>"; break;
-					case 2: echo "<img src='images/dot_yellow.gif'>"."<img src='images/dot_yellow.gif'>"."<img src='images/dot_red.gif'>"; break;
-					case 3: echo "<img src='images/dot_yellow.gif'>"."<img src='images/dot_red.gif'>"."<img src='images/dot_red.gif'>"; break;
-					case 4: echo "<img src='images/dot_red.gif'>"."<img src='images/dot_red.gif'>"."<img src='images/dot_red.gif'>"; break;
-					case 10: echo "<img src='images/dot_green.gif'>"."<img src='images/dot_green.gif'>"."<img src='images/dot_green.gif'>"; break;
-				}
-				/*
-				case 0: echo $lang_label["informative"]; break;
-				case 1: echo $lang_label["low"]; break;
-				case 2: echo $lang_label["medium"]; break;
-				case 3: echo $lang_label["serious"]; break;
-				case 4: echo $lang_label["very_serious"]; break;
-				case 10: echo $lang_label["maintenance"]; break;
-				*/
-				echo "<td class='$tdcolor'>".dame_nombre_grupo($row["id_grupo"]);
-				echo "<td class='$tdcolor'>".$row["actualizacion"];
-				echo "<td class='$tdcolor'>".$row["origen"];
-				echo "<td class='$tdcolor'><a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$row["id_usuario"]."'><a href='#' class='tip'>&nbsp;<span>".dame_nombre_real($row["id_usuario"])."</span></a>".substr($row["id_usuario"], 0, 8)."</a></td>";
-				$id_author_inc = $row["id_usuario"];
-				if ((give_acl($id_usuario, $id_group, "IM") ==1) OR
-				($_SESSION["id_usuario"] == $id_author_inc) ){
-				// Only incident owners or incident manager
-				// from this group can delete incidents
-					echo "<td class='$tdcolor' align='center'><a href='index.php?sec=incidencias&sec2=operation/incidents/incident&quick_delete=".$row["id_incidencia"]."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img src='images/cancel.gif' border='0'></a></td>";
-				}
-			} // if ACL is correct
+			}
+			echo "<td class='$tdcolor'><a href='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id=".$row2["id_incidencia"]."'>".substr(salida_limpia($row2["titulo"]),0,25);
+			echo "<td class='$tdcolor'>";
+			switch ( $row2["prioridad"] ){
+				case 0: echo "<img src='images/dot_green.gif'>"."<img src='images/dot_green.gif'>"."<img src='images/dot_yellow.gif'>"; break;
+				case 1: echo "<img src='images/dot_green.gif'>"."<img src='images/dot_yellow.gif'>"."<img src='images/dot_yellow.gif'>"; break;
+				case 2: echo "<img src='images/dot_yellow.gif'>"."<img src='images/dot_yellow.gif'>"."<img src='images/dot_red.gif'>"; break;
+				case 3: echo "<img src='images/dot_yellow.gif'>"."<img src='images/dot_red.gif'>"."<img src='images/dot_red.gif'>"; break;
+				case 4: echo "<img src='images/dot_red.gif'>"."<img src='images/dot_red.gif'>"."<img src='images/dot_red.gif'>"; break;
+				case 10: echo "<img src='images/dot_green.gif'>"."<img src='images/dot_green.gif'>"."<img src='images/dot_green.gif'>"; break;
+			}
+			/*
+			case 0: echo $lang_label["informative"]; break;
+			case 1: echo $lang_label["low"]; break;
+			case 2: echo $lang_label["medium"]; break;
+			case 3: echo $lang_label["serious"]; break;
+			case 4: echo $lang_label["very_serious"]; break;
+			case 10: echo $lang_label["maintenance"]; break;
+			*/
+			echo "<td class='$tdcolor'>".dame_nombre_grupo($row2["id_grupo"]);
+			echo "<td class='$tdcolor'>".$row2["actualizacion"];
+			echo "<td class='$tdcolor'>".$row2["origen"];
+			echo "<td class='$tdcolor'><a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$row2["id_usuario"]."'><a href='#' class='tip'>&nbsp;<span>".dame_nombre_real($row2["id_usuario"])."</span></a>".substr($row2["id_usuario"], 0, 8)."</a></td>";
+			$id_author_inc = $row2["id_usuario"];
+			if ((give_acl($id_usuario, $id_group, "IM") ==1) OR ($_SESSION["id_usuario"] == $id_author_inc) ){
+			// Only incident owners or incident manager
+			// from this group can delete incidents
+				echo "<td class='$tdcolor' align='center'><a href='index.php?sec=incidencias&sec2=operation/incidents/incident&quick_delete=".$row2["id_incidencia"]."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img src='images/cancel.gif' border='0'></a></td>";
+			}
 		}
 	}
 	echo "<tr><td colspan='9'><div class='raya'></div>"	;

@@ -186,9 +186,9 @@ echo "<option value='All'>".$lang_label["all"]."</option>";
 
 // Fill event type combo (DISTINCT!)
 if (isset($ev_group) && ($ev_group > 1))
-	$sql="SELECT DISTINCT evento FROM tevento WHERE id_grupo = '$ev_group' DESC LIMIT $offset, $block_size";
+	$sql="SELECT DISTINCT evento FROM tevento WHERE id_grupo = '$ev_group'";
 else
-	$sql="SELECT DISTINCT evento FROM tevento DESC LIMIT $offset, $block_size";
+	$sql="SELECT DISTINCT evento FROM tevento";
 $result=mysql_query($sql);
 // Make query for distinct (to fill combo)
 while ($row=mysql_fetch_array($result))
@@ -219,66 +219,68 @@ $result3=mysql_query($sql3);
 $row3=mysql_fetch_array($result3);
 $total_events = $row3[0];
 // Show pagination header
-pagination($total_events, "index.php?sec=eventos&sec2=operation/events/events", $offset);
-	
-// Show data.
-	
-echo "<br>";
-echo "<table cellpadding='3' cellspacing='3' width='775'>";
-echo "<tr>";
-echo "<th>".$lang_label["status"]."</th>";
-echo "<th>".$lang_label["event_name"]."</th>";
-echo "<th>".$lang_label["agent_name"]."</th>";
-echo "<th>".$lang_label["group"]."</th>";
-echo "<th>".$lang_label["id_user"]."</th>";
-echo "<th class='w130'>".$lang_label["timestamp"]."</th>";
-echo "<th width='62'>".$lang_label["action"]."</th>";
-echo "<th class='p10'>";
-echo "<label for='checkbox' class='p21'>".$lang_label["all"]." </label>";
-echo '<input type="checkbox" class="chk" name="allbox" onclick="CheckAll();"></th>';
-echo "<form name='eventtable' method='POST' action='index.php?sec=eventos&sec2=operation/events/events&refr=60&offset=".$offset."'>";
-$color = 1;
-$id_evento = 0;
 
-// Prepare index for pagination. Prepare queries
-if ($event=="All"){
-	if (isset($ev_group) && ($ev_group > 1)) {
-		$sql2="SELECT * FROM tevento WHERE id_grupo = '$ev_group' ORDER BY timestamp DESC LIMIT $offset, $block_size";
-	} else {
-		$sql2="SELECT * FROM tevento ORDER BY timestamp DESC LIMIT $offset, $block_size";
-	}
-} else {
-	if (isset($ev_group) && ($ev_group > 1)) {
-		$sql2="SELECT * FROM tevento WHERE evento = '$event' AND id_grupo = '$ev_group' ORDER BY timestamp DESC LIMIT $offset, $block_size";
-	} else {
-		$sql2="SELECT * FROM tevento WHERE evento = '$event' ORDER BY timestamp DESC LIMIT $offset, $block_size";
-	}
-}
-// Make query for data (all data, not only distinct).
-$result2=mysql_query($sql2);
-while ($row2=mysql_fetch_array($result2)){
-	$id_grupo = $row2["id_grupo"];
-	if (give_acl($id_user, $id_grupo, "IR") == 1){ // Only incident read access to view data !
-		$id_group = $row2["id_grupo"];
-		if ($color == 1){
-			$tdcolor = "datos";
-			$color = 0;
-		}
-		else {
-			$tdcolor = "datos2";
-			$color = 1;
-		}
+if ($total_events > 0){
+	pagination($total_events, "index.php?sec=eventos&sec2=operation/events/events", $offset);		
+	// Show data.
 		
-		echo "<tr><td class='$tdcolor' align='center'>";
-		if ($row2["estado"] == 0)
-			echo "<img src='images/dot_red.gif'>";
-		else
-			echo "<img src='images/dot_green.gif'>";
-		echo "<td class='$tdcolor'>".$row2["evento"];
-		if ($row2["id_agente"] > 0){
-				echo "<td class='$tdcolor'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row2["id_agente"]."'><b>".dame_nombre_agente($row2["id_agente"])."</b></a>";
-				echo "<td class='$tdcolor'><img src='images/g_".show_icon_group($id_group).".gif'></td>";
-				echo "<td class='$tdcolor'>";
+	echo "<br>";
+	echo "<br>";
+	echo "<table cellpadding='3' cellspacing='3' width='775'>";
+	echo "<tr>";
+	echo "<th>".$lang_label["status"]."</th>";
+	echo "<th>".$lang_label["event_name"]."</th>";
+	echo "<th>".$lang_label["agent_name"]."</th>";
+	echo "<th>".$lang_label["group"]."</th>";
+	echo "<th>".$lang_label["id_user"]."</th>";
+	echo "<th class='w130'>".$lang_label["timestamp"]."</th>";
+	echo "<th width='62'>".$lang_label["action"]."</th>";
+	echo "<th class='p10'>";
+	echo "<label for='checkbox' class='p21'>".$lang_label["all"]." </label>";
+	echo '<input type="checkbox" class="chk" name="allbox" onclick="CheckAll();"></th>';
+	echo "<form name='eventtable' method='POST' action='index.php?sec=eventos&sec2=operation/events/events&refr=60&offset=".$offset."'>";
+	$color = 1;
+	$id_evento = 0;
+	
+	// Prepare index for pagination. Prepare queries
+	if ($event=="All"){
+		if (isset($ev_group) && ($ev_group > 1)) {
+			$sql2="SELECT * FROM tevento WHERE id_grupo = '$ev_group' ORDER BY timestamp DESC LIMIT $offset, $block_size";
+		} else {
+			$sql2="SELECT * FROM tevento ORDER BY timestamp DESC LIMIT $offset, $block_size";
+		}
+	} else {
+		if (isset($ev_group) && ($ev_group > 1)) {
+			$sql2="SELECT * FROM tevento WHERE evento = '$event' AND id_grupo = '$ev_group' ORDER BY timestamp DESC LIMIT $offset, $block_size";
+		} else {
+			$sql2="SELECT * FROM tevento WHERE evento = '$event' ORDER BY timestamp DESC LIMIT $offset, $block_size";
+		}
+	}
+
+	// Make query for data (all data, not only distinct).
+	$result2=mysql_query($sql2);
+	while ($row2=mysql_fetch_array($result2)){
+		$id_grupo = $row2["id_grupo"];
+		if (give_acl($id_user, $id_grupo, "IR") == 1){ // Only incident read access to view data !
+			$id_group = $row2["id_grupo"];
+			if ($color == 1){
+				$tdcolor = "datos";
+				$color = 0;
+			}
+			else {
+				$tdcolor = "datos2";
+				$color = 1;
+			}
+			echo "<tr><td class='$tdcolor' align='center'>";
+			if ($row2["estado"] == 0)
+				echo "<img src='images/dot_red.gif'>";
+			else
+				echo "<img src='images/dot_green.gif'>";
+			echo "<td class='$tdcolor'>".$row2["evento"];
+			if ($row2["id_agente"] > 0){
+					echo "<td class='$tdcolor'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row2["id_agente"]."'><b>".dame_nombre_agente($row2["id_agente"])."</b></a>";
+					echo "<td class='$tdcolor'><img src='images/g_".show_icon_group($id_group).".gif'></td>";
+					echo "<td class='$tdcolor'>";
 			} else { // for SNMP generated alerts
 				echo "<td class='$tdcolor' colspan='2'>".$lang_label["alert"]." /  SNMP";
 				echo "<td class='$tdcolor' width='95'>";
@@ -287,33 +289,28 @@ while ($row2=mysql_fetch_array($result2)){
 				echo "<a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$row2["id_usuario"]."'><a href='#' class='tip'>&nbsp;<span>".dame_nombre_real($row2["id_usuario"])."</span></a>".substr($row2["id_usuario"],0,8)."</a>";
 			echo "<td class='$tdcolor'>".$row2["timestamp"];
 			echo "<td class='$tdcolor' align='right'>";
-
+	
 			if (($row2["estado"] == 0) and (give_acl($id_user,$id_group,"IW") ==1))
 				echo "<a href='index.php?sec=eventos&sec2=operation/events/events&offset=".$offset."&check=".$row2["id_evento"]."'><img src='images/ok.gif' border='0'></a>";
 			if (give_acl($id_user,$id_group,"IM") ==1)
 				echo "<a href='index.php?sec=eventos&sec2=operation/events/events&delete=".$row2["id_evento"]."&refr=60&offset=".$offset."'><img src='images/cancel.gif' border=0></a> ";
-				
+					
 			if (give_acl($id_user,$id_group,"IW") == 1)
 				echo "<a href='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&insert_form&from_event=".$row2["id_evento"]."'><img src='images/page_lightning.png' border=0></a>";
-				
+					
 			echo "<td class='$tdcolor' align='center'>";
 			echo "<input type='checkbox' class='chk' name='eventid".$offset_counter."' value='".$row2["id_evento"]."'>";
 			echo "</td></tr>";
-		//}
+		}
 	}
-}
+		
+	echo "<tr><td colspan='8'><div class='raya'></div></td></tr>";
+	echo "<tr><td colspan='8' align='right'>";
 	
-echo "<tr><td colspan='8'><div class='raya'></div></td></tr>";
-echo "<tr><td colspan='8' align='right'>";
-
-echo "<input class='sub' type='submit' name='updatebt' value='".$lang_label["validate"]."'> ";
-if (give_acl($id_user, 0,"IM") ==1){
-	echo "<input class='sub' type='submit' name='deletebt' value='".$lang_label["delete"]."'>";
-}
-echo "</form></table>";
-
-	/* else {echo "</select></form></td></tr></table><br><div class='nf'>".$lang_label["no_event"]."</div>";}
-	} */
-
-
+	echo "<input class='sub' type='submit' name='updatebt' value='".$lang_label["validate"]."'> ";
+	if (give_acl($id_user, 0,"IM") ==1){
+		echo "<input class='sub' type='submit' name='deletebt' value='".$lang_label["delete"]."'>";
+	}
+	echo "</form></table>";
+} // no events to show
 ?>

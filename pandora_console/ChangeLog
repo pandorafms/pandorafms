@@ -1,3 +1,39 @@
+2007-02-19  dervitx  <josepublico@jnavarro.net>
+
+       * Reporting module added:
+       * include/styles/reporting.css
+       * include/styles/op.css
+       * include/languages/language_es_es.php
+       * include/languages/language_en.php
+       * include/config.php
+       * help/en/chap10.php
+       * help/en/toc.php
+       * operation/reporting
+       * operation/reporting/report.php
+       * operation/reporting/plugins
+       * operation/reporting/plugins/RC_paragraph.php
+       * operation/reporting/plugins/RC_pandoragraph.php
+       * operation/reporting/plugins/DC_paragraph.php
+       * operation/reporting/plugins/RC_header.php
+       * operation/reporting/plugins/DC_pandoragraph.php
+       * operation/reporting/plugins/RC_guihtml.php
+       * operation/reporting/plugins/RC_listpie.php
+       * operation/reporting/plugins/RC_list.php
+       * operation/reporting/plugins/RC_report.php
+       * operation/reporting/plugins/DC_guihtml.php
+       * operation/reporting/plugins/DC_listmoduledata.php
+       * operation/reporting/plugins/RC_footer.php
+       * operation/reporting/plugins/RC_graphdensity.php
+       * operation/reporting/plugins/RC_section.php
+       * operation/reporting/report_create.php
+       * operation/reporting/download_report.php
+       * operation/reporting/download_xml.php
+       * operation/reporting/reports
+       * operation/menu.php
+       * images/op8.gif
+       * reporting/fgraph.php
+       * godmode/agentes/configurar_agente.php
+
 2006-11-06 Raul Mateos  <raulofpandora@gmail.com>
 
 	* index.php: Added FMS to title

@@ -1,0 +1,44 @@
+
+div#clpsDIV1	{ 
+		margin: 0px;  
+		padding: 0px;
+		border: 0px;
+} 
+
+div.replev3 	{ 	
+		margin: 10px 40px 20px 40px;  
+		padding: 0px;
+		border-width: 0px;
+		border-color: #000;
+		border-style: solid;
+}
+
+div.replev4 	{
+		margin: 0px;  
+		padding: 0px;
+}
+
+h3 		{		
+		background:  url(../../images/arrow.gif) no-repeat; background-position: 0px 2px;
+		margin: 0px 20px; 
+		padding: 0px 15px;
+		border: 0px;
+}
+
+h4 		{
+		margin: 0px; 
+		padding: 0px;
+		border: 0px;
+}
+
+table 		{
+		width: 90%;
+}
+
+td.left		{
+		width: 30%;
+}
+
+td.right	{
+		width: 70%;
+}

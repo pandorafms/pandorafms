@@ -20,10 +20,27 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
-include ("../include/config.php");
-include ("../include/functions.php");
-include ("../include/functions_db.php");
-require ("../include/languages/language_".$language_code.".php");
+
+// includes' path depends on the working path
+// I don't know how to do it better
+
+// the next 2 in case getcwd = pandora_console
+// include ("include/config.php");
+// //include ("include/functions.php");
+// //include ("include/functions_db.php");
+// include ("include/languages/language_".$language_code.".php");
+// 
+// // the next 4 in case getcwd = pandora_console/reporting
+// include ("../include/config.php");
+// include ("../include/functions.php");
+// include ("../include/functions_db.php");
+// include ("../include/languages/language_".$language_code.".php");
+
+
+ include_once "../include/config.php";
+ include_once "../include/functions.php";
+ include_once "../include/functions_db.php";
+ include_once "../include/languages/language_".$language_code.".php";
 
 function dame_fecha($mh){ 
 	// Return a MySQL timestamp date, formatted with actual date MINUS X minutes, given as parameter
@@ -55,6 +72,8 @@ function mysql_date ($timestamp) { return date('Y-m-d H:i:s', $timestamp); }
 function mysql_time ($date) {  
 	// strptime is only for PHP 5  >:/
 	// chapuza va!
+
+	if ( $date == 'NOW') { return time(); }
 
 	$a1 = explode(" ", $date);
 	$a2 = explode("-", $a1[0]);
@@ -313,9 +332,9 @@ function grafico_modulo_sparse(		$label,				// label of the graph
 					$transparency = 0		// transparency (=0 auto)
 					)
 {
-					
-	include ("../include/config.php");
-	require ("../include/languages/language_".$language_code.".php");
+		
+	//include ("../include/config.php");
+	//require ("../include/languages/language_".$language_code.".php");
 
 	define('GMD_PLOT_AREA', 0);
 	define('GMD_PLOT_IMPULSE', 1);
@@ -518,19 +537,6 @@ function grafico_modulo_sparse(		$label,				// label of the graph
 		}
 	}
 	
-/*	print "<hr>debug: <br><br>";
-
-	for ($cc=0; $cc<count($MGD_data); $cc=$cc+2) {
-		
-		print "<br>SERIE: " . ($cc/2) . "<br>";
-		
-		for ($dd=0; $dd<count($MGD_data[$cc]); $dd++) {
-			print $MGD_data[$cc][$dd]." - ".$MGD_data[$cc+1][$dd]."<br>";
-		}
-	
-	}
-*/
-
 	
 	$Graph_param = array (
 		'title' => $label,
@@ -543,19 +549,22 @@ function grafico_modulo_sparse(		$label,				// label of the graph
 		'periodo'	=> $abc_int/60
 		);
 
-	modulo_grafico_draw ( 	$Graph_param, 
-				$intervals,
-				$MGD_data_label,
-				$MGD_data_type,
-				$MGD_data_color,
-				$MGD_data, 
-				$intervals[0],
-				$intervals[count($intervals)-1] + $period
-				); 
+	return ( array (	'Graph_param'	=>	$Graph_param,
+				'intervals'	=>	$intervals,
+				'MGD_data_label'	=>	$MGD_data_label,
+				'MGD_data_type'		=>	$MGD_data_type,
+				'MGD_data_color'	=>	$MGD_data_color,
+				'MGD_data'		=>	$MGD_data,
+				'MGD_xo'		=>	$intervals[0],
+				'MGD_xf'		=>	$intervals[count($intervals)-1] + $period
+	) );
+
 }
+
 	
 	
-function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_label, $MGD_data_type, $MGD_data_color, $MGD_data, $MGD_xo="", $MGD_xf="" ) {	
+function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_label, $MGD_data_type, $MGD_data_color, $MGD_data, $MGD_xo="", $MGD_xf="", $MGD_filename="" ) {	
+	
 	
 // draws the graph corresponding to the data of a module
 	// arguments:
@@ -578,28 +587,17 @@ function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_label, $MGD_dat
 	
 	// $MGD_event_data = array ( (notvalidated) &array(data_x), (validated) => &array(data_x) );
 		
-	include ("../include/config.php");
-	require ("../include/languages/language_".$language_code.".php");
-	include 'Image/Graph.php';
+	include_once ("../include/config.php");
+	include_once ("../include/languages/language_".$language_code.".php");
+	global $config_fontpath;
+	include_once 'Image/Graph.php';
 		
 	define('GMD_PLOT_AREA', 0);
 	define('GMD_PLOT_IMPULSE', 1);
 	define('GMD_ALERTZONE', 2);
 	define('GMD_PLOT_STACKED', 3);
 	define('GMD_PLOT_BAND', 4);
-/*	
-	print "<hr>debug: <br><br>";
 
-	for ($cc=0; $cc<count($MGD_data); $cc=$cc+2) {
-		
-		print "<br>SERIE: " . ($cc/2) . "<br>";
-		
-		for ($dd=0; $dd<count($MGD_data[$cc]); $dd++) {
-			print $MGD_data[$cc][$dd]." - ".$MGD_data[$cc+1][$dd]."<br>";
-		}
-	
-	}
-*/
 	// initializing parameters
 		
 	if (!isset( $MGD_param['title'] )) { $MGD_param['title'] = '- no title -'; }
@@ -733,8 +731,12 @@ function modulo_grafico_draw( $MGD_param, $MGD_labels, $MGD_data_label, $MGD_dat
 	$AxisY =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
 	$AxisY->forceMaximum(ceil($MGD_param['valor_maximo'] / 4) + $MGD_param['valor_maximo'], false);
 	
-	$Graph->done();
-	//$Graph->done(array('filename' => '/tmp/jarl.png'));
+	
+	if ($MGD_filename) { 
+		$Graph->done(array('filename' => $MGD_filename));
+	} else {
+		$Graph->done(); 
+	}
 }
 
 
@@ -1767,7 +1769,7 @@ function progress_bar($progress,$width,$height) {
 
 $ahora = time(); 
 
-if (isset($_GET["tipo"])){
+if (isset($_GET["tipo"])){ 
 	if ($_GET["tipo"]=="sparse"){
 		if (isset($_GET["id"]) and   (isset($_GET["label"])) and ( isset($_GET["periodo"])) and (isset ($_GET["intervalo"])) AND (isset ($_GET["color"])) ){
 			$tmp_id_module = $_GET["id"];
@@ -1796,16 +1798,28 @@ if (isset($_GET["tipo"])){
 			// $id_module
 			$id_module = split (":", $tmp_id_module);
 			// TODO: check
-
-			grafico_modulo_sparse(	$label, 				// label of the graph
+           
+			$params_graph = grafico_modulo_sparse(	$label, 				// label of the graph
 						$id_module,				// array with modules id to be represented
 						$graph_type, 				// type of graph to be represented
 						$abc_o=$origin, $abc_int=$periodo*60, 			// origin abcise of graph and abscise interval
 															// $abc_f - $abc_o = $abc_int,
-						$period=ceil($abc_int/$intervalo),						// resolution of abc
+						$period=ceil($periodo*60/$intervalo),						// resolution of abc
 						$ord_o=0, $ord_int=100,				// origin ordenade and interval
 						$zoom, $draw_events,
 						$transparency = 0);
+						
+			modulo_grafico_draw ( 	$params_graph['Graph_param'],
+						$params_graph['intervals'],		
+						$params_graph['MGD_data_label'],	
+						$params_graph['MGD_data_type'],		
+						$params_graph['MGD_data_color'],	
+						$params_graph['MGD_data'],		
+						$params_graph['MGD_xo'],		
+						$params_graph['MGD_xf']		
+			);
+
+
 		}
 	}
 	elseif ($_GET["tipo"] =="estado_incidente") 
@@ -1842,7 +1856,7 @@ if (isset($_GET["tipo"])){
 		$height= $_GET["height"];
 		progress_bar($percent,$width,$height);
 	} 
-} 
+}  
 
 
 

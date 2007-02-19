@@ -647,6 +647,32 @@ $lang_label["background_image"]="Imagen de fondo";
 $lang_label["help"]="Ayuda";
 $lang_label["no_monitors_g"]="Este grupo no tiene ning&uacute;n monitor definido";
 
+// Reporting module -19 Feb 2007-
+
+$lang_label["rep_menu"] = "Informes";
+$lang_label["rep_101"] = "Estructura del informe";
+$lang_label["rep_102"] = "Modificar el informe";
+$lang_label["rep_1021"] = "A&ntilde;adir/Quitar valores por defecto de un componente";
+$lang_label["rep_1022"] = "A&ntilde;adir un componente de informe";
+$lang_label["rep_before"] = "antes";
+$lang_label["rep_after"] = "despu&eacute;s";
+$lang_label["rep_position"] = "posici&oacute;n";
+$lang_label["rep_type"] = "tipo";
+$lang_label["rep_1023"] = "Borrar un componente de informe";
+$lang_label["rep_submit_changes"] = "Aplicar cambios";
+$lang_label["rep_103"] = "Gestionar un informe";
+$lang_label["rep_1031"] = "Ejecutar y bajar un informe";
+$lang_label["rep_1032"] = "Grabar la plantilla XML del informe";
+$lang_label["rep_1033"] = "Cargar la plantilla XML del informe";
+$lang_label["rep_execute"] = "ejecutar";
+$lang_label["rep_download_xml"] = "guardar XML";
+$lang_label["rep_upload_xml"] = "cargar XML";
+$lang_label["rep_more_help"] = "&iquest; Necesitas m&aacute;s ayuda ?";
+$lang_label["rep_important_notes"] = "Informaci&oacute;n importante";
+$lang_label["rep_suggested_steps"] = "Pasos recomendados para construir un informe";
+$lang_label["rep_components_explained"] = "Los componentes explicados";
+
+
 global $lang_label;
 global $help_label;
 ?>

@@ -31,7 +31,12 @@ $dbpassword="pandora";	// Password
 $dbhost="localhost";	// MySQL Host
 $dbtype="mysql"; 	// Type of Database, now only "mysql" its supported
 $attachment_store="/var/www/pandora_console";	//This is directory where placed "attachment" directory, to upload files stores. This MUST be writtable by wwwserver user, and should be in pandora root. Please append "/" to the end :-)
-$config_fontpath = "../reporting/FreeSans.ttf";	// Change this to your font folder, if needed.
+
+// Change this to your font folder, if needed.
+$config_fontpath;
+if (file_exists("../reporting/FreeSans.ttf")) { $config_fontpath = "../reporting/FreeSans.ttf"; }
+if (file_exists("reporting/FreeSans.ttf")) { $config_fontpath = "reporting/FreeSans.ttf"; }
+
 
 // Do not display any ERROR
 error_reporting(0);

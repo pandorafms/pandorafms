@@ -159,7 +159,19 @@ if (isset($_SESSION["id_usuario"])) {
 			echo "<ul class='mn'><li><a href='index.php?sec=messages&amp;sec2=operation/messages/message&amp;nuevo_g' class='mn'>".$lang_label["messages_g"]."</a></li></ul></div>";
 		}
 
-?>		
+?>
+<?php
+	// testing
+		if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/reporting/report_create") {
+			echo '<div id="op8s">';
+		}
+		else echo '<div id="op8">';
+		echo '<ul class="mn"><li><a href="index.php?sec=reporting&amp;sec2=operation/reporting/report_create" class="mn">' . $lang_label["rep_menu"] . '</a></li></ul></div>';
+		
+		
+?>
+
+		
 	</div>
 </div>	
 <?php

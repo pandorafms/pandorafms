@@ -229,7 +229,7 @@ if (give_acl($id_user, 0, "AW")==1) {
 		if ($time_threshold == -1) {
 			$time_threshold = $other;
 		}
-		$sql_insert="INSERT INTO talerta_agente_modulo (id_agente_modulo,id_alerta,al_campo1,al_campo2,al_campo3,descripcion,dis_max,dis_min,time_threshold,max_alerts, min_alerts, module_type, perl_expr) VALUES ('".$id_agente_modulo."','".$tipo_alerta."','".$campo_1."','".$campo_2."','".$campo_3."','".$descripcion."','".$maximo."','".$minimo."','".$time_threshold."','".$max_alerts."','".$min_alerts."','".$id_tipo_modulo."','". entrada_limpia_sql($perl_expr) ."')";
+		$sql_insert="INSERT INTO talerta_agente_modulo (id_agente_modulo,id_alerta,al_campo1,al_campo2,al_campo3,descripcion,dis_max,dis_min,time_threshold,max_alerts, min_alerts, module_type, perl_expr) VALUES ('".$id_agente_modulo."','".$tipo_alerta."','".$campo_1."','".$campo_2."','".$campo_3."','".$descripcion."','".$maximo."','".$minimo."','".$time_threshold."','".$max_alerts."','".$min_alerts."','".$id_tipo_modulo."','". $perl_expr ."')";
 		$result=mysql_query($sql_insert);	
 		if (! $result)
 			echo "<h3 class='error'>".$lang_label["create_alert_no"]."</h3>";

@@ -654,6 +654,33 @@ $lang_label["background_image"]="Background image";
 $lang_label["help"]="Help";
 $lang_label["no_monitors_g"]="This group doesn't have any monitor";
 
+// Reporting module -19 Feb 2007-
+
+$lang_label["rep_menu"] = "Reporting";
+$lang_label["rep_101"] = "Report structure";
+$lang_label["rep_102"] = "Modify report";
+$lang_label["rep_1021"] = "Add/Delete default values for a component";
+$lang_label["rep_1022"] = "Add a report component";
+$lang_label["rep_before"] = "before";
+$lang_label["rep_after"] = "after";
+$lang_label["rep_position"] = "position";
+$lang_label["rep_type"] = "type";
+$lang_label["rep_1023"] = "Delete a report component";
+$lang_label["rep_submit_changes"] = "Submit changes";
+$lang_label["rep_103"] = "Manage report";
+$lang_label["rep_1031"] = "Execute and download report";
+$lang_label["rep_1032"] = "Download XML report template";
+$lang_label["rep_1033"] = "Upload XML report template";
+$lang_label["rep_execute"] = "execute";
+$lang_label["rep_download_xml"] = "download XML";
+$lang_label["rep_upload_xml"] = "upload XML";
+$lang_label["rep_more_help"] = "More help needed ?";
+$lang_label["rep_important_notes"] = "Important notes";
+$lang_label["rep_suggested_steps"] = "Suggested steps in order to build a report";
+$lang_label["rep_components_explained"] = "Components explained";
+
+
+
 global $lang_label; 
 global $help_label;
 ?>

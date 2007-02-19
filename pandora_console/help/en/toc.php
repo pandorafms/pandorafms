@@ -106,6 +106,14 @@ dd.help_t4 {margin-left: 92px; margin-top: 3px; margin-bottom: 2px;}
 <dd class="help_t1"><a href="chap9.php#9"><h1>9. Pandora configuration</h1></a></dd>
 <dd class="help_t2"><a href="chap9.php#91">9.1. Links</a></dd>
 
+<dd class="help_t1"><a href="chap10.php#10"><h1>10. Reporting</h1></a></dd>
+<dd class="help_t2"><a href="chap10.php#101">10.1. Report structure</a></dd>
+<dd class="help_t2"><a href="chap10.php#102">10.2. Modify report</a></dd>
+<dd class="help_t2"><a href="chap10.php#103">10.3. Manage report</a></dd>
+<dd class="help_t2"><a href="chap10.php#104">10.4. Important notes</a></dd>
+<dd class="help_t2"><a href="chap10.php#105">10.5. Suggested steps in order to build a report</a></dd>
+<dd class="help_t2"><a href="chap10.php#106">10.6. Components explained</a></dd>
+
 </dl>
 
 </body>

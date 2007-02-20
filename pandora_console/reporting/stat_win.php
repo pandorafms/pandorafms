@@ -35,109 +35,55 @@ if (comprueba_login() == 0) {
 	include("../include/styles/pandora.css");
 	echo '</style>';
 
-	if (isset($_GET["range"]) AND isset($_GET["id"])) {
-		$range =entrada_limpia($_GET["range"]);
-		$id_agente_modulo = entrada_limpia($_GET["id"]);
-	}
-	else {
+	// Get input parameters
+	if (!isset($_GET["period"]) OR (!isset($_GET["id"]))) {
 		echo "<h3 class='error'>".$lang_label["graf_error"]."</h3>";
 		exit;	
 	}
 	
-	// Nota: En los intervalos, se han aumentado por encima de los 24 del grafico diario y los 7 del semanal para
-	// que la grafica tenga mas resolucion. Cuanto mayor sea el intervalo mas tardara la grafica en generarse !!!.
-	
-	// TODO: Crear una variable para que se pueda utilizar como factor de resolucion de graficos y parametrizarlo en un
-	// archivo de configuracion.
-	
-	$module_interval = give_moduleinterval($id_agente_modulo); 
-	// Interval defined for this module or agent general interval, if interval for this specific module not defined
-	$module_interval = $module_interval / 60; // Convert to resol / minute
-	// Please be caution, interval now is in MINUTES not in seconds
-	// interval is the number of rows that will store data. more rows, more resolution
-	// Testing 16Feb06
-	$param['tipo']='sparse';
-	
-	switch ($range) {
-		case "mesg": 	$intervalo = 30 * $config_graph_res;
-				$intervalo_real = (43200 / $module_interval);
-				if ($intervalo_real < $intervalo ){
-					$intervalo = $intervalo_real;
-				}
-				$param['color'] = '6e90ff';
-				$param['periodo'] = 43200;
-				$param['intervalo'] = $intervalo;
-				$param['label'] = $lang_label["month_graph"];
-				$param['tipo']='gdirect';
-				break;
+	if (isset($_GET["event"]))
+		$draw_events = entrada_limpia($_GET["event"]);
+	else
+		$draw_events = 0;
+	if (isset($_GET["refresh"]))
+		$refresh = entrada_limpia($_GET["refresh"]);
+	else
+		$refresh = 0;
+			
+	if (isset($_GET["period"]))
+		$period = entrada_limpia($_GET["period"]);
+	else
+		$period = 86400; // 1 day default period
 
-		case "mes": 	$intervalo = 30 * $config_graph_res;
-				$intervalo_real = (43200 / $module_interval);
-				if ($intervalo_real < $intervalo ){
-					$intervalo = $intervalo_real;
-				}
-				$param['color'] = '6e90ff';
-				$param['periodo'] = 43200;
-				$param['intervalo'] = $intervalo;
-				$param['label'] = $lang_label["month_graph"];
-				break;
-
-		case "dia": 	$intervalo = 24 * $config_graph_res;
-				$intervalo_real = (1440 / $module_interval);
-				if ($intervalo_real < $intervalo ){
-					$intervalo = $intervalo_real;
-				}
-				$param['color'] = 'f3c330';
-				$param['periodo'] = 1440;
-				$param['intervalo'] = $intervalo;
-				$param['label'] = $lang_label["day_graph"];
-				break;
-				
-		case "semana": 	$intervalo = 28 * $config_graph_res;
-				$intervalo_real = (10080 / $module_interval);
-				if ($intervalo_real < $intervalo ) {
-					$intervalo = $intervalo_real;
-				}
-				$param['color'] = 'e366cd';
-				$param['periodo'] = 10080;
-				$param['intervalo'] = $intervalo;
-				$param['label'] = $lang_label["week_graph"];
-				break;
-				
-		case "hora": 	$intervalo = 5 * $config_graph_res;
-				$intervalo_real = 60 / $module_interval;
-				if ($intervalo_real < $intervalo ) {
-					$intervalo = $intervalo_real;
-				}
-				$param['color'] = '40d840';
-				$param['periodo'] = 60;
-				$param['intervalo'] = $intervalo;
-				$param['label'] = $lang_label["hour_graph"];
-				break;		
-
-	}
-	
-	foreach ($_GET as $key => $value) {
-		$param[$key] = $value;
-	}
-
-	$param['zoom']=isset($param['zoom'])?$param['zoom']:100;
-	$param['draw_events']=isset($param['draw_events'])?$param['draw_events']:1;
-	
-	/*if (isset($_GET['draw_events']) and $_GET['draw_events']==0) {
-		$param['draw_events'] = 0;
-	}*/ 
-	
-	$imgtag = "<img src='fgraph.php?id=". $id_agente_modulo ;
-	foreach ($param as $key => $value) {
-		$imgtag .= "&" . $key . "=" . $value;
-	}
-	$imgtag .= "' border=0 alt=''>";
+	if (isset($_GET["id"]))
+		$id = entrada_limpia($_GET["id"]);
+	else
+		$id = 0;
 		
-	echo $imgtag;
-	
-	
-	$param['id'] = $_GET['id'];
+	if (isset($_GET["width"]))
+		$width = entrada_limpia($_GET["width"]);
+	else
+		$width = 525;
+
+	if (isset($_GET["height"]))
+		$height = entrada_limpia ($_GET["height"]);
+	else
+		$height = 200;
+
+	if (isset($_GET["label"]))
+		$label = entrada_limpia ($_GET["label"]);
+	else
+		$label = "";
+
+	if (isset($_GET["zoom"])){
+		$zoom = entrada_limpia ($_GET["zoom"]);
+		$height=$height*$zoom;
+		$width=$width*$zoom;
+	}		
+	else
+		$zoom = "1";
+
+	echo "<img src='fgraph.php?tipo=sparse&id=$id&zoom=$zoom&label=$label&height=$height&width=$width&period=$period'  border=0 alt=''>";
 } 
 
 ?>
@@ -222,16 +168,18 @@ if (comprueba_login() == 0) {
 		</tr> 
 		<tr><td>
 			<?php
-			foreach ($param as $key => $value) {
-				echo "<input type='hidden' name='$key' value='$value'>";
-				echo "<DD>$key - $value <BR>";
-			}
+			
+			echo "<input type='hidden' name='$id' value='$id'>";
+			echo "<input type='hidden' name='$refresh' value='$refresh'>";
+			echo "<input type='hidden' name='$zoom' value='$zoom'>";
+			echo "<input type='hidden' name='$events' value='$draw_events'>";
+	
 			?>
 		</td><td>
 			<?php
-			echo "Refresh <input type='text' name='refresh' value='" . $param['refresh'] . "'> seconds <br>";
-			echo "Zoom <input type='text' name='zoom' value='" . $param['zoom'] . "'> % <br>";
-			echo "Show events <input type='text' name='draw_events' value='" . $param['draw_events'] . "'> ( 1 or 0 ) <br>";
+			echo "Refresh <input type='text' name='refresh' value='" . $refresh . "'> seconds <br>";
+			echo "Zoom <input type='text' name='zoom' value='" . $zoom . "'> % <br>";
+			echo "Show events <input type='text' name='draw_events' value='" . $draw_events . "'> ( 1 or 0 ) <br>";
 			?>
 		</td></tr>
 		</table>

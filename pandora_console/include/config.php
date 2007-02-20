@@ -19,13 +19,13 @@
 // This is the base config file
 
 //Pandora Version
-$build_version="PC080105"; //PCyymmdd
+$build_version="PC070221"; //PCyymmdd
 $pandora_version="v1.3 devel"; 
 
 // Database configuration
 $dbname="pandora";	// MySQL DataBase
-$dbuser="root";	// DB User 
-$dbpassword="";	// Password
+$dbuser="pandora";	// DB User 
+$dbpassword="pandora";	// Password
 $dbhost="localhost";	// MySQL Host
 $dbtype="mysql"; 	// Type of Database, now only "mysql" its supported
 $attachment_store="/var/www/pandora_console";	//This is directory where placed "attachment" directory, to upload files stores. This MUST be writtable by wwwserver user, and should be in pandora root. Please append "/" to the end :-)

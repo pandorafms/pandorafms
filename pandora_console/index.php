@@ -22,27 +22,40 @@
 // Pandora FMS 1.x uses icons from famfamfam, licensed under CC Atr. 2.5
 // Silk icon set 1.3 (cc) Mark James, http://www.famfamfam.com/lab/icons/silk/
 
+// Pandora FMS 1.x uses Pear Image::Graph code
+
 // Pandora FMS shares much of it's code with project Babel Enterprise, also a
 // FreeSoftware Project coded by some of the people who makes Pandora FMS 
 
-// If no config file, automatically try to install
-if (! file_exists("include/config.php")){
-	include ("install.php");
-	exit;
+$develop_bypass = 1;
+if ($develop_bypass != 1){
+	// If no config file, automatically try to install
+	if (! file_exists("include/config.php")){
+		include ("install.php");
+		exit;
+	}
+	// Check for installer presence
+	if (file_exists("install.php")){
+		include "general/error_install.php";
+		exit;
+	}
+	// Check perms for config.php
+	if ((substr(sprintf('%o', fileperms('include/config.php')), -4) != "0600") &&
+	(substr(sprintf('%o', fileperms('include/config.php')), -4) != "0660") &&
+	(substr(sprintf('%o', fileperms('include/config.php')), -4) != "0640") &&
+	(substr(sprintf('%o', fileperms('include/config.php')), -4) != "0600"))
+	{
+		include "general/error_perms.php";
+		exit;
+	}
 }
 
-// Check for installer presence
-if (file_exists("install.php")){
-	include "general/error_install.php";
-	exit;
-}
-
-// Pandora FMS 1.x uses Pear Image::Graph code
+// Real start
 session_start(); 
 include "include/config.php";
 include "include/languages/language_".$language_code.".php";
-require("include/functions.php"); // Including funcions.
-require("include/functions_db.php");
+require "include/functions.php"; // Including funcions.
+require "include/functions_db.php";
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">

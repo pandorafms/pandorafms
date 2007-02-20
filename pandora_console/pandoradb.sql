@@ -9,9 +9,9 @@ USE `pandora`;
 # 
 CREATE TABLE `tagent_access` (
   `id_ac` bigint(20) unsigned NOT NULL auto_increment,
-  `id_agent` int(11) NOT NULL default '0',
+  `id_agent` int(8) unsigned NOT NULL default '0',
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
-  `utimestamp` bigint(20) NOT NULL default '0',
+  `utimestamp` mediumint(12) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_ac`),
   KEY `agent_index` (`id_agent`)
 ) TYPE=InnoDB; 
@@ -20,20 +20,20 @@ CREATE TABLE `tagent_access` (
 # Table: 'tagente'
 # 
 CREATE TABLE `tagente` (
-  `id_agente` bigint(4) unsigned NOT NULL auto_increment,
+  `id_agente` int(8) unsigned NOT NULL auto_increment,
   `nombre` varchar(100) NOT NULL default '',
   `direccion` varchar(100) default '',
   `comentarios` varchar(255) default '',
-  `id_grupo` int(10) unsigned NOT NULL default '0',
+  `id_grupo` int(8) unsigned NOT NULL default '0',
   `ultimo_contacto` datetime NOT NULL default '0000-00-00 00:00:00',
-  `modo` tinyint(1) NOT NULL default '0',
-  `intervalo` int(8) NOT NULL default '300',
-  `id_os` int(11) default '0',
+  `modo` tinyint(1) unsigned NOT NULL default '0',
+  `intervalo` int(8) unsigned NOT NULL default '300',
+  `id_os` tinyint(4) unsigned default '0',
   `os_version` varchar(100) default '',
   `agent_version` varchar(100) default '',
   `ultimo_contacto_remoto` datetime default '0000-00-00 00:00:00',
-  `disabled` tinyint(2) NOT NULL default '0',
-  `agent_type` int(2) unsigned NOT NULL default '0',
+  `disabled` tinyint(2) unsigned NOT NULL default '0',
+  `agent_type` tinyint(2) unsigned NOT NULL default '0',
   `id_server` int(4) unsigned default '0',
   PRIMARY KEY  (`id_agente`)
 ) TYPE=InnoDB; 
@@ -42,12 +42,12 @@ CREATE TABLE `tagente` (
 # Table: 'tagente_datos'
 # 
 CREATE TABLE `tagente_datos` (
-  `id_agente_datos` bigint(10) unsigned NOT NULL auto_increment,
-  `id_agente_modulo` bigint(4) NOT NULL default '0',
+  `id_agente_datos` bigint(20) unsigned NOT NULL auto_increment,
+  `id_agente_modulo` int(10) unsigned NOT NULL default '0',
   `datos` double(18,2) default NULL,
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `id_agente` bigint(4) unsigned NOT NULL default '0',
-  `utimestamp` bigint(20) NOT NULL default '0',
+  `utimestamp` mediumint(12) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_agente_datos`),
   KEY `data_index_1` (`id_agente_modulo`),
   KEY `data_index_2` (`id_agente`),
@@ -59,8 +59,8 @@ CREATE TABLE `tagente_datos` (
 # 
 CREATE TABLE `tagente_datos_inc` (
   `id_adi` bigint(20) unsigned NOT NULL auto_increment,
-  `id_agente_modulo` bigint(20) NOT NULL default '0',
-  `datos` bigint(18) default NULL,
+  `id_agente_modulo` int(10) unsigned NOT NULL default '0',
+  `datos` double(18,2) default NULL,
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id_adi`),
   KEY `data_inc_index_1` (`id_agente_modulo`)
@@ -71,15 +71,14 @@ CREATE TABLE `tagente_datos_inc` (
 # 
 CREATE TABLE `tagente_datos_string` (
   `id_tagente_datos_string` bigint(20) unsigned NOT NULL auto_increment,
-  `id_agente_modulo` int(11) NOT NULL default '0',
+  `id_agente_modulo` int(10) unsigned NOT NULL default '0',
   `datos` tinytext NOT NULL default '',
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `id_agente` bigint(4) unsigned NOT NULL default '0',
-  `utimestamp` bigint(20) NOT NULL default '0',
+  `utimestamp` mediumint(12) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_tagente_datos_string`),
   KEY `data_string_index_1` (`id_agente_modulo`),
   KEY `data_string_index_2` (`id_agente`),
-  KEY `data_string_index_3` (`timestamp`)
 ) TYPE=InnoDB; 
 
 # Database: pandora
@@ -87,14 +86,14 @@ CREATE TABLE `tagente_datos_string` (
 # 
 CREATE TABLE `tagente_estado` (
   `id_agente_estado` int(10) unsigned NOT NULL auto_increment,
-  `id_agente_modulo` int(20) NOT NULL default '0',
+  `id_agente_modulo` int(10) unsigned NOT NULL default '0',
   `datos` varchar(255) NOT NULL default '',
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
-  `cambio` int(11) NOT NULL default '0',
-  `estado` int(11) NOT NULL default '0',
-  `id_agente` int(11) NOT NULL default '0',
+  `cambio` tinyint(2) unsigned NOT NULL default '0',
+  `estado` tinyint(2) unsigned NOT NULL default '0',
+  `id_agente` int(8) unsigned NOT NULL default '0',
   `last_try` datetime default NULL,
-  `utimestamp` bigint(20) NOT NULL default '0',
+  `utimestamp` mediumint(12) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_agente_estado`),
   KEY `status_index_2` (`id_agente_modulo`,`estado`)
 ) TYPE=InnoDB; 
@@ -103,15 +102,15 @@ CREATE TABLE `tagente_estado` (
 # Table: 'tagente_modulo'
 # 
 CREATE TABLE `tagente_modulo` (
-  `id_agente_modulo` bigint(100) unsigned NOT NULL auto_increment,
-  `id_agente` int(11) NOT NULL default '0',
-  `id_tipo_modulo` int(11) NOT NULL default '0',
+  `id_agente_modulo` int(10) unsigned NOT NULL auto_increment,
+  `id_agente` int(10) unsigned NOT NULL default '0',
+  `id_tipo_modulo` int(10) unsigned NOT NULL default '0',
   `descripcion` varchar(100) NOT NULL default '',
   `nombre` varchar(100) NOT NULL default '',
-  `max` bigint(20) default '0',
-  `min` bigint(20) default '0',
-  `module_interval` int(4) unsigned default '0',
-  `tcp_port` int(4) unsigned default '0',
+  `max` int(10) default '0',
+  `min` int(10) default '0',
+  `module_interval` int(8) unsigned default '0',
+  `tcp_port` int(5) unsigned default '0',
   `tcp_send` varchar(150) default '',
   `tcp_rcv` varchar(100) default '',
   `snmp_community` varchar(100) default '',
@@ -136,11 +135,11 @@ CREATE TABLE `talert_snmp` (
   `agent` varchar(100) default '',
   `custom_oid` varchar(200) default '',
   `oid` varchar(255) NOT NULL default '',
-  `time_threshold` int(11) NOT NULL default '0',
+  `time_threshold` int(10) unsigned NOT NULL default '0',
   `times_fired` int(2) unsigned NOT NULL default '0',
   `last_fired` datetime NOT NULL default '0000-00-00 00:00:00',
-  `max_alerts` int(11) NOT NULL default '1',
-  `min_alerts` int(11) NOT NULL default '1',
+  `max_alerts` tinyint(4) unsigned NOT NULL default '1',
+  `min_alerts` tinyint(4) unsigned NOT NULL default '1',
   `internal_counter` int(2) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_as`)
 ) TYPE=InnoDB; 
@@ -161,22 +160,22 @@ CREATE TABLE `talerta` (
 # 
 
 CREATE TABLE `talerta_agente_modulo` (
-  `id_aam` int(11) unsigned NOT NULL auto_increment,
-  `id_agente_modulo` int(11) NOT NULL default '0',
-  `id_alerta` int(11) NOT NULL default '0',
+  `id_aam` int(10) unsigned NOT NULL auto_increment,
+  `id_agente_modulo` int(10) unsigned NOT NULL default '0',
+  `id_alerta` int(10) unsigned NOT NULL default '0',
   `al_campo1` varchar(255) default '',
   `al_campo2` varchar(255) default '',
   `al_campo3` mediumtext default '',
   `descripcion` varchar(255) default '',
-  `dis_max` bigint(12) default NULL,
-  `dis_min` bigint(12) default NULL,
-  `time_threshold` int(11) NOT NULL default '0',
+  `dis_max` int(8) default NULL,
+  `dis_min` int(8) default NULL,
+  `time_threshold` int(8) NOT NULL default '0',
   `last_fired` datetime NOT NULL default '0000-00-00 00:00:00',
-  `max_alerts` int(4) NOT NULL default '1',
-  `times_fired` int(11) NOT NULL default '0',
-  `module_type` int(11) NOT NULL default '0',
-  `min_alerts` int(4) NOT NULL default '0',
-  `internal_counter` int(4) default '0',
+  `max_alerts` tinyint(4) unsigned NOT NULL default '1',
+  `times_fired` tinyint(4) unsigned NOT NULL default '0',
+  `module_type` tinyint(4) unsigned NOT NULL default '0',
+  `min_alerts` tinyint(4) unsigned NOT NULL default '0',
+  `internal_counter` tinyint(4) unsigned default '0',
   PRIMARY KEY  (`id_aam`)
 ) TYPE=InnoDB;
 
@@ -184,12 +183,12 @@ CREATE TABLE `talerta_agente_modulo` (
 # Table: 'tattachment'
 # 
 CREATE TABLE `tattachment` (
-  `id_attachment` bigint(20) unsigned NOT NULL auto_increment,
-  `id_incidencia` bigint(20) NOT NULL default '0',
+  `id_attachment` int(10) unsigned NOT NULL auto_increment,
+  `id_incidencia` int(10) unsigned NOT NULL default '0',
   `id_usuario` varchar(60) NOT NULL default '',
   `filename` varchar(255) NOT NULL default '',
   `description` varchar(150) default '',
-  `size` bigint(20) NOT NULL default '0',
+  `size` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_attachment`)
 ) TYPE=InnoDB; 
 
@@ -219,10 +218,10 @@ CREATE TABLE `tconfig_os` (
 # 
 CREATE TABLE `tevento` (
   `id_evento` bigint(20) unsigned NOT NULL auto_increment,
-  `id_agente` bigint(20) NOT NULL default '0',
+  `id_agente` int(10) unsigned NOT NULL default '0',
   `id_usuario` varchar(60) NOT NULL default '0',
-  `id_grupo` bigint(20) NOT NULL default '0',
-  `estado` int(10) unsigned NOT NULL default '0',
+  `id_grupo` int(10) unsigned NOT NULL default '0',
+  `estado` tynyint(4) unsigned NOT NULL default '0',
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `evento` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id_evento`),
@@ -244,16 +243,16 @@ CREATE TABLE `tgrupo` (
 # Table: 'tincidencia'
 # 
 CREATE TABLE `tincidencia` (
-  `id_incidencia` bigint(20) unsigned NOT NULL auto_increment,
+  `id_incidencia` int(10) unsigned NOT NULL auto_increment,
   `inicio` datetime NOT NULL default '0000-00-00 00:00:00',
   `cierre` datetime NOT NULL default '0000-00-00 00:00:00',
   `titulo` varchar(100) NOT NULL default '',
   `descripcion` mediumtext NOT NULL,
   `id_usuario` varchar(100) NOT NULL default '',
   `origen` varchar(100) NOT NULL default '',
-  `estado` int(11) NOT NULL default '0',
-  `prioridad` int(11) NOT NULL default '0',
-  `id_grupo` mediumint(9) NOT NULL default '0',
+  `estado` tinyint(4) unsigned NOT NULL default '0',
+  `prioridad` tinyint(4) unsigned NOT NULL default '0',
+  `id_grupo` int(10) unsigned NOT NULL default '0',
   `actualizacion` datetime NOT NULL default '0000-00-00 00:00:00',
   `id_creator` varchar(60) default NULL,
   PRIMARY KEY  (`id_incidencia`),
@@ -283,7 +282,7 @@ CREATE TABLE `tlink` (
 # Table: 'tmensajes'
 # 
 CREATE TABLE `tmensajes` (
-  `id_mensaje` bigint(20) unsigned NOT NULL auto_increment,
+  `id_mensaje` int(10) unsigned NOT NULL auto_increment,
   `id_usuario_origen` varchar(100) NOT NULL default '',
   `id_usuario_destino` varchar(100) NOT NULL default '',
   `mensaje` tinytext NOT NULL,
@@ -297,7 +296,7 @@ CREATE TABLE `tmensajes` (
 # Table: 'tmodule_group'
 # 
 CREATE TABLE `tmodule_group` (
-  `id_mg` bigint(20) unsigned NOT NULL auto_increment,
+  `id_mg` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(150) NOT NULL default '',
   PRIMARY KEY  (`id_mg`)
 ) TYPE=InnoDB; 
@@ -318,8 +317,8 @@ CREATE TABLE `tnota` (
 # 
 CREATE TABLE `tnota_inc` (
   `id_nota_inc` mediumint(8) unsigned NOT NULL auto_increment,
-  `id_incidencia` mediumint(9) NOT NULL default '0',
-  `id_nota` mediumint(9) NOT NULL default '0',
+  `id_incidencia` mediumint(8) unsigned  NOT NULL default '0',
+  `id_nota` mediumint(8) unsigned  NOT NULL default '0',
   PRIMARY KEY  (`id_nota_inc`)
 ) TYPE=InnoDB; 
 
@@ -334,18 +333,18 @@ CREATE TABLE `torigen` (
 # Table: 'tperfil'
 # 
 CREATE TABLE `tperfil` (
-  `id_perfil` int(10) unsigned NOT NULL auto_increment,
+  `id_perfil` mediumint(8) unsigned  NOT NULL auto_increment,
   `name` varchar(60) NOT NULL default '',
-  `incident_edit` int(11) NOT NULL default '0',
-  `incident_view` int(11) NOT NULL default '0',
-  `incident_management` int(11) NOT NULL default '0',
-  `agent_view` int(11) NOT NULL default '0',
-  `agent_edit` int(11) NOT NULL default '0',
-  `alert_edit` int(11) NOT NULL default '0',
-  `user_management` int(11) NOT NULL default '0',
-  `db_management` int(11) NOT NULL default '0',
-  `alert_management` int(11) NOT NULL default '0',
-  `pandora_management` int(11) NOT NULL default '0',
+  `incident_edit` tinyint(3) unsigned  NOT NULL default '0',
+  `incident_view` tinyint(3) unsigned  NOT NULL default '0',
+  `incident_management` tinyint(3) unsigned  NOT NULL default '0',
+  `agent_view` tinyint(3) unsigned  NOT NULL default '0',
+  `agent_edit` tinyint(3) unsigned  NOT NULL default '0',
+  `alert_edit` tinyint(3) unsigned  NOT NULL default '0',
+  `user_management` tinyint(3) unsigned  NOT NULL default '0',
+  `db_management` tinyint(3) unsigned  NOT NULL default '0',
+  `alert_management` tinyint(3) unsigned  NOT NULL default '0',
+  `pandora_management` tinyint(3) unsigned  NOT NULL default '0',
   PRIMARY KEY  (`id_perfil`)
 ) TYPE=InnoDB; 
 
@@ -356,14 +355,14 @@ CREATE TABLE `tserver` (
   `id_server` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(100) NOT NULL default '',
   `ip_address` varchar(100) NOT NULL default '',
-  `status` int(11) NOT NULL default '0',
+  `status` tinyint(3) unsigned  NOT NULL default '0',
   `laststart` datetime NOT NULL default '0000-00-00 00:00:00',
   `keepalive` datetime NOT NULL default '0000-00-00 00:00:00',
-  `snmp_server` int(6) NOT NULL default '1',
-  `network_server` int(11) NOT NULL default '0',
-  `data_server` int(11) NOT NULL default '0',
-  `master` smallint(6) NOT NULL default '1',
-  `checksum` smallint(6) NOT NULL default '1',
+  `snmp_server` tinyint(3) unsigned  NOT NULL default '1',
+  `network_server` tinyint(3) unsigned  NOT NULL default '0',
+  `data_server` tinyint(3) unsigned  NOT NULL default '0',
+  `master` tinyint(3) unsigned  NOT NULL default '1',
+  `checksum` tinyint(3) unsigned  NOT NULL default '1',
   `description` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id_server`)
 ) TYPE=InnoDB; 
@@ -387,7 +386,7 @@ CREATE TABLE `tsesion` (
 CREATE TABLE `ttipo_modulo` (
   `id_tipo` smallint(5) unsigned NOT NULL auto_increment,
   `nombre` varchar(100) NOT NULL default '',
-  `categoria` int(11) NOT NULL default '0',
+  `categoria` tinyint(3) unsigned  NOT NULL default '0',
   `descripcion` varchar(100) NOT NULL default '',
   `icon` varchar(100) default NULL,
   PRIMARY KEY  (`id_tipo`)
@@ -397,16 +396,16 @@ CREATE TABLE `ttipo_modulo` (
 # Table: 'ttrap'
 # 
 CREATE TABLE `ttrap` (
-  `id_trap` bigint(20) unsigned NOT NULL auto_increment,
+  `id_trap` int(10) unsigned NOT NULL auto_increment,
   `source` varchar(50) NOT NULL default '',
   `oid` varchar(255) NOT NULL default '',
   `oid_custom` varchar(255) default '',
-  `type` int(11) NOT NULL default '0',
+  `type` tinyint(3) unsigned  NOT NULL default '0',
   `type_custom` varchar(100) default '',
   `value` varchar(255) default '',
   `value_custom` varchar(255) default '',
-  `alerted` smallint(6) NOT NULL default '0',
-  `status` smallint(6) NOT NULL default '0',
+  `alerted` tinyint(3) unsigned  NOT NULL default '0',
+  `status`tinyint(3) unsigned  NOT NULL default '0',
   `id_usuario` varchar(150) default '',
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id_trap`)
@@ -430,10 +429,10 @@ CREATE TABLE `tusuario` (
 # Table: 'tusuario_perfil'
 # 
 CREATE TABLE `tusuario_perfil` (
-  `id_up` bigint(20) unsigned NOT NULL auto_increment,
+  `id_up` int(10) unsigned NOT NULL auto_increment,
   `id_usuario` varchar(100) NOT NULL default '',
-  `id_perfil` int(20) NOT NULL default '0',
-  `id_grupo` int(11) NOT NULL default '0',
+  `id_perfil` tinyint(3) unsigned  NOT NULL default '0',
+  `id_grupo` tinyint(3) unsigned  NOT NULL default '0',
   `assigned_by` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`id_up`)
 ) TYPE=InnoDB; 

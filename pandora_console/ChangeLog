@@ -1,6 +1,19 @@
+2007-02-21  Raul Mateos  <raulofpandora@gmail.com>
+
+	* pandoradb.sql: Solved small problems that caused some tables not 
+	to be created.
+	
+	* operation/active_console/lib/db_functions.php: Remove ".." in include
+	path for config file.
+	
+	* general/logon_ok.php: Use new styles and small check to show some text if
+	no data.
+	
+	* include/styles/pandora.css: New styles.
+
 2007-02-20  Sancho Lerena  <slerena@artica.es>
 
-        * pandoradb.sql: Upgraded SQL. Improved lenght for some fields.
+    * pandoradb.sql: Upgraded SQL. Improved lenght for some fields.
 	
 	* index.php: Better permission checks
 	
@@ -13,7 +26,7 @@
 	* reporting/fgraph.php: MAJOR UPGRADE. Replacement for three main
 	graphics from agents now using Image Graph.
 	
-        * reporting/stat_win.php: MAJOR UPGRADE.
+	* reporting/stat_win.php: MAJOR UPGRADE.
 
 
 2007-02-19  Sancho Leren   <slerena@openideas.info>

@@ -86,41 +86,45 @@ $query1="SELECT * FROM tsesion WHERE (TO_DAYS(fecha) > TO_DAYS(NOW()) - 7) AND I
 		echo $lang_label["new_message_ket"] . '</div>';
 	}
 
-	echo '<h2>' . $lang_label["stat_title"] . '</h2>';
+	echo '<h2 class="mgb25">' . $lang_label["stat_title"] . '</h2>';
 
 	$query1 = "SELECT COUNT(*) FROM tusuario";
 	$result = mysql_query ($query1);
 	$row = mysql_fetch_array ($result);
-	echo '<img src="images/usuarios.gif" align="middle" alt="">&nbsp;&nbsp;';
+	echo '<span class="users">';
 	echo $lang_label["there_are"] . $row[0] . ' ' . $lang_label["user_defined"];
-	echo '<br /><br />';
+	echo '</span>';
 
 	$query1 = "SELECT COUNT(*) FROM tagente";
 	$result = mysql_query ($query1);
 	$row = mysql_fetch_array ($result);
-	echo '<img src="images/agentes.gif" align="middle" alt="">&nbsp;&nbsp;';
+	echo '<span class="agents">';
 	echo $lang_label["there_are"] . $row[0]  .' ' . $lang_label["agent_defined"];
-	echo '<br /><br />';
+	echo '</span>';
 
 	$query1 = "SELECT COUNT(id_agente_datos) FROM tagente_datos";
 	$result = mysql_query ($query1);
 	$row = mysql_fetch_array ($result);
-	echo '<img src="images/datos.gif" align="middle" alt="">&nbsp;&nbsp;';
+	echo '<span class="data">';
 	echo $lang_label["there_are"] . $row[0] . ' ' . $lang_label["data_harvested"];
-	echo '<br /><br />';
+	echo '</span>';
 
 	$query1 = "SELECT COUNT(*) FROM talerta_agente_modulo";
 	$result = mysql_query ($query1);
 	$row = mysql_fetch_array ($result);
-	echo '<img src="images/alertas.gif" align="middle" alt="">&nbsp;&nbsp;';
+	echo "<span class='alerts'>";
 	echo $lang_label["there_are"] . $row[0] .' ' . $lang_label["alert_defined"];
-	echo '<br /><br />';
-
-	$query1 = "SELECT * FROM tagente_estado ORDER BY timestamp DESC";
+	echo "</span>";
+	
+	echo '<span class="time">';
+	$query1 = "SELECT timestamp FROM tagente_estado ORDER BY timestamp DESC";
 	$result = mysql_query($query1);
-	$row = mysql_fetch_array($result);
-	// Take the first element only
-	echo '<img src="images/time.gif" align="middle" alt="">&nbsp;&nbsp;';
-	echo $lang_label["data_timestamp"] . $row["timestamp"];
+	if($row = mysql_fetch_array($result)!='') {	// Take the first element only
+		echo $lang_label["data_timestamp"] . $row["timestamp"];
+	} else {
+		echo 'No data received yet!';
+	}
+	echo '</span>';
+	
 	echo '</div>';
 ?>

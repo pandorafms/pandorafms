@@ -72,13 +72,13 @@ CREATE TABLE `tagente_datos_inc` (
 CREATE TABLE `tagente_datos_string` (
   `id_tagente_datos_string` bigint(20) unsigned NOT NULL auto_increment,
   `id_agente_modulo` int(10) unsigned NOT NULL default '0',
-  `datos` tinytext NOT NULL default '',
+  `datos` tinytext NOT NULL,
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `id_agente` bigint(4) unsigned NOT NULL default '0',
   `utimestamp` mediumint(12) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_tagente_datos_string`),
   KEY `data_string_index_1` (`id_agente_modulo`),
-  KEY `data_string_index_2` (`id_agente`),
+  KEY `data_string_index_2` (`id_agente`)
 ) TYPE=InnoDB; 
 
 # Database: pandora
@@ -165,7 +165,7 @@ CREATE TABLE `talerta_agente_modulo` (
   `id_alerta` int(10) unsigned NOT NULL default '0',
   `al_campo1` varchar(255) default '',
   `al_campo2` varchar(255) default '',
-  `al_campo3` mediumtext default '',
+  `al_campo3` mediumtext,
   `descripcion` varchar(255) default '',
   `dis_max` int(8) default NULL,
   `dis_min` int(8) default NULL,
@@ -221,7 +221,7 @@ CREATE TABLE `tevento` (
   `id_agente` int(10) unsigned NOT NULL default '0',
   `id_usuario` varchar(60) NOT NULL default '0',
   `id_grupo` int(10) unsigned NOT NULL default '0',
-  `estado` tynyint(4) unsigned NOT NULL default '0',
+  `estado` tinyint(4) unsigned NOT NULL default '0',
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `evento` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id_evento`),

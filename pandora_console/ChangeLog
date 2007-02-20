@@ -1,3 +1,22 @@
+2007-02-19  Sancho Leren   <slerena@openideas.info>
+
+	* include/styles/pandora.css: Updated to have new styles for
+	installer.
+	
+	* include/config.inc.php: New skeleton for config, used in wizard.
+
+	* install.php: NEW wizar/installer for console.
+	
+	* index.php: Some modifications for main page.
+
+	* operation/incidents/incide*: Some header changes.
+	
+	* operation/active_console/index.php: Header changes.
+	
+	* images/*: New images for wizard.
+
+	* general/error_*.php: New messages for wizard.
+	
 2007-02-19  Sancho Lerena  <slerena@openideas.info>
 
 	* operation/incidents/incident.php: Pagination finished.

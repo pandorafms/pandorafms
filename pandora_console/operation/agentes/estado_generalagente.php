@@ -67,7 +67,7 @@ if (comprueba_login() == 0) {
 	echo "
 	<td rowspan=4>
 	<b>".$lang_label["agent_access_rate"]."</b><br><br>
-	<img  src='reporting/fgraph.php?id=".$id_agente."&tipo=agentaccess&periodo=1440'>
+	<img  src='reporting/fgraph.php?id=".$id_agente."&tipo=agentaccess&periodo=1440&height=70&width=280'>
 	</td>";
 	echo '</tr>';
 	echo '<tr>
@@ -95,7 +95,7 @@ if (comprueba_login() == 0) {
 	<td class="datos">'.$comentarios.'</td>';	
 
 	echo "<td rowspan=6><b>".$lang_label["agent_module_shareout"]."</b><br><br>
-	<img src='reporting/fgraph.php?id=".$id_agente."&tipo=agentmodules' >
+	<img src='reporting/fgraph.php?id=".$id_agente."&tipo=agentmodules&height=150&width=280' >
 	</td>";
 	echo '</tr>';
 	echo '<tr>

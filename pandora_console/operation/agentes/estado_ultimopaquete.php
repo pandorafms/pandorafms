@@ -147,7 +147,7 @@ if (comprueba_login() == 0) {
 			// For types not string type (3 data_string, 9 tcp_string, 14 snmp_string)
 			if (($row3["id_tipo_modulo"] != 3) 
 			AND ($row3["id_tipo_modulo"] != 10) 
-AND ($row3["id_tipo_modulo"] != 17)){
+			AND ($row3["id_tipo_modulo"] != 17)){
 				echo "<td class=".$tdcolor.">";
 				if (($row3["datos"] != 0) AND (is_numeric($row3["datos"]))){
 					$mytempdata = fmod($row3["datos"], $row3["datos"]);
@@ -171,19 +171,17 @@ AND ($row3["id_tipo_modulo"] != 17)){
 				$url = 'reporting/procesos.php?agente='.$nombre_agente;
 				$win_handle=dechex(crc32($nombre_agente.$row3["nombre"]));
 				echo "<td class=".$tdcolor." width='78'>";
+				$graph_label = entrada_limpia($row3["nombre"]." - ".$nombre_agente);
 				
-				echo "<a href='javascript:winopeng(\"reporting/stat_win.php?range=mes&id=".$row3["id_agente_modulo"]."&refresh=180000\", \"mes_".$win_handle."\")'><img  src='images/grafica_m.gif' border=0></a>&nbsp;";
-
-				$link ="winopeng('reporting/stat_win.php?range=mesg&id=".$row3["id_agente_modulo"]."&refresh=6000','sem_".$win_handle."')";
-				echo '<a href="javascript:'.$link.'"><img src="images/b_green.gif" border=0></a>&nbsp;';
+				echo "<a href='javascript:winopeng(\"reporting/stat_win.php?period=2419200&id=".$row3["id_agente_modulo"]."&label=".$graph_label."refresh=180000\", \"month_".$win_handle."\")'><img  src='images/grafica_m.gif' border=0></a>&nbsp;";
 				
-				$link ="winopeng('reporting/stat_win.php?range=semana&id=".$row3["id_agente_modulo"]."&refresh=6000','sem_".$win_handle."')";
+				$link ="winopeng('reporting/stat_win.php?period=604800&id=".$row3["id_agente_modulo"]."&label=".$graph_label."&refresh=6000','week_".$win_handle."')";
 				echo '<a href="javascript:'.$link.'"><img src="images/grafica_w.gif" border=0></a>&nbsp;';
 				
-				$link ="winopeng('reporting/stat_win.php?range=dia&id=".$row3["id_agente_modulo"]."&refresh=800','dia_".$win_handle."')";
+				$link ="winopeng('reporting/stat_win.php?period=86400&id=".$row3["id_agente_modulo"]."&label=".$graph_label."&refresh=600','day_".$win_handle."')";
 				echo '<a href="javascript:'.$link.'"><img src="images/grafica_d.gif" border=0></a>&nbsp;';
 
-				$link ="winopeng('reporting/stat_win.php?tipo=range&id=".$row3["id_agente_modulo"]."&refresh=30','hora_".$win_handle."')";
+				$link ="winopeng('reporting/stat_win.php?period=3600&id=".$row3["id_agente_modulo"]."&label=".$graph_label."&refresh=60','hour_".$win_handle."')";
 				echo '<a href="javascript:'.$link.'"><img src="images/grafica_h.gif" border=0></a>';
 			}
 			else { # Writing string data in different way :)

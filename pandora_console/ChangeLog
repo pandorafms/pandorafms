@@ -1,3 +1,21 @@
+2007-02-20  Sancho Lerena  <slerena@artica.es>
+
+        * pandoradb.sql: Upgraded SQL. Improved lenght for some fields.
+	
+	* index.php: Better permission checks
+	
+	* operation/agentes/estado_ultimopaquete.php: Changed some
+	parameters for agent graphics.
+	
+	* operation/agentes/estado_generalagente.php: Changed some
+	parameters for agent graphics.
+	
+	* reporting/fgraph.php: MAJOR UPGRADE. Replacement for three main
+	graphics from agents now using Image Graph.
+	
+        * reporting/stat_win.php: MAJOR UPGRADE.
+
+
 2007-02-19  Sancho Leren   <slerena@openideas.info>
 
 	* include/styles/pandora.css: Updated to have new styles for

@@ -661,7 +661,10 @@ $lang_label["agent_general_reporting"]="Agent overview";
 $lang_label["active_console"]="Active console";
 
 $lang_label["validate_event_failed"]="Event validation failed";
-// 
+// 21 feb 2007
+ 
+$lang_label["load"]="Load";
+
 global $lang_label; 
 global $help_label;
 ?>

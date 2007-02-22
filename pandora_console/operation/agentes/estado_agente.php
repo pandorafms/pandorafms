@@ -64,6 +64,7 @@ if (comprueba_login() == 0) {
 	}
 	echo "<option value=1>".dame_nombre_grupo(1)."</option>"; // Group all is always active 
 	$mis_grupos=list_group ($id_user); //Print combo for groups and set an array with all groups
+
 	echo "</select>";
 	echo "<td valign='middle'>
 	<noscript>
@@ -133,7 +134,7 @@ if (comprueba_login() == 0) {
 				$monitor_ok = 0; 
 				$monitor_down=0; 
 				$numero_datamodules=0;
-				$estado_cambio=0; // Oops, I forgot initialize this fucking var... many problems due it
+				$estado_cambio=0;
 				$ahora=date("Y/m/d H:i:s");
 				// Calculate module/monitor totals  for this agent
 				while ($row_t=mysql_fetch_array($result_t)){

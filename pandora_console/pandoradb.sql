@@ -46,12 +46,10 @@ CREATE TABLE `tagente_datos` (
   `id_agente_modulo` int(10) unsigned NOT NULL default '0',
   `datos` double(18,2) default NULL,
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
-  `id_agente` bigint(4) unsigned NOT NULL default '0',
-  `utimestamp` mediumint(12) unsigned NOT NULL default '0',
+  `id_agente` mediumint(8) unsigned NOT NULL default '0',
+  `utimestamp` integer unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_agente_datos`),
-  KEY `data_index_1` (`id_agente_modulo`),
-  KEY `data_index_2` (`id_agente`),
-  KEY `data_index_3` (`timestamp`)
+  KEY `data_index_1` (`id_agente_modulo`, `id_agente` ),
 ) TYPE=InnoDB; 
 
 # Database: pandora
@@ -59,7 +57,7 @@ CREATE TABLE `tagente_datos` (
 # 
 CREATE TABLE `tagente_datos_inc` (
   `id_adi` bigint(20) unsigned NOT NULL auto_increment,
-  `id_agente_modulo` int(10) unsigned NOT NULL default '0',
+  `id_agente_modulo` mediumint(8) unsigned NOT NULL default '0',
   `datos` double(18,2) default NULL,
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id_adi`),
@@ -74,11 +72,10 @@ CREATE TABLE `tagente_datos_string` (
   `id_agente_modulo` int(10) unsigned NOT NULL default '0',
   `datos` tinytext NOT NULL,
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
-  `id_agente` bigint(4) unsigned NOT NULL default '0',
-  `utimestamp` mediumint(12) unsigned NOT NULL default '0',
+  `id_agente` mediumint(8) unsigned NOT NULL default '0',
+  `utimestamp` integer unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_tagente_datos_string`),
-  KEY `data_string_index_1` (`id_agente_modulo`),
-  KEY `data_string_index_2` (`id_agente`)
+  KEY `data_index_1` (`id_agente_modulo`, `id_agente` ),
 ) TYPE=InnoDB; 
 
 # Database: pandora
@@ -86,14 +83,14 @@ CREATE TABLE `tagente_datos_string` (
 # 
 CREATE TABLE `tagente_estado` (
   `id_agente_estado` int(10) unsigned NOT NULL auto_increment,
-  `id_agente_modulo` int(10) unsigned NOT NULL default '0',
+  `id_agente_modulo` mediumint(8) unsigned NOT NULL default '0',
   `datos` varchar(255) NOT NULL default '',
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `cambio` tinyint(2) unsigned NOT NULL default '0',
   `estado` tinyint(2) unsigned NOT NULL default '0',
-  `id_agente` int(8) unsigned NOT NULL default '0',
+  `id_agente` mediumint(8) unsigned NOT NULL default '0',
   `last_try` datetime default NULL,
-  `utimestamp` mediumint(12) unsigned NOT NULL default '0',
+  `utimestamp` integer unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_agente_estado`),
   KEY `status_index_2` (`id_agente_modulo`,`estado`)
 ) TYPE=InnoDB; 
@@ -408,6 +405,7 @@ CREATE TABLE `ttrap` (
   `status`tinyint(3) unsigned  NOT NULL default '0',
   `id_usuario` varchar(150) default '',
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
+  `utimestamp` integer unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_trap`)
 ) TYPE=InnoDB COMMENT='SNMP Trap table'; 
 

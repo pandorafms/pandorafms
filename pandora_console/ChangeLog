@@ -1,3 +1,7 @@
+2007-02-22  Sancho Lerena  <slerena@artica.es>
+
+	* pandoradb.sql: Fixed some problems in last commit.
+
 2007-02-21  Raul Mateos  <raulofpandora@gmail.com>
 
 	* pandoradb.sql: Solved small problems that caused some tables not 
@@ -6,8 +10,8 @@
 	* operation/active_console/lib/db_functions.php: Remove ".." in include
 	path for config file.
 	
-	* general/logon_ok.php: Use new styles and small check to show some text if
-	no data.
+	* general/logon_ok.php: Use new styles and small check to show
+	some text if no data.
 	
 	* include/styles/pandora.css: New styles.
 

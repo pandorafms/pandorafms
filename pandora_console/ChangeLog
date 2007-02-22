@@ -5,11 +5,33 @@
 
 2007-02-22  Sancho Lerena  <slerena@artica.es>
 
+	* reporting/Image: Added to repository (at last!) Image Graph
+	package (not original, copy from Babel Enterprise project, has
+	some modification for antialiasing -disabled- due to problems on
+	some environments.
+	
+	* include/styles/pandora.css: Added new styles for new layour
+	(pending to do, not finished yet, i need help, Raul).
+	
+	* include/languages/language_en.php: Some strings added.
+	
+	* operation/agentes/ver_agente.php: Changes for adding tabs and
+	new style, not finished.
+	
+	* operation/servers/view_server.php: NEW feature: network server
+	load. Needs to be improved :)
+
+	* images/image_problem.png: Static image for problems rendering
+	graph.
+
+	* images/console: Added graphcs for active console, not used yet
+	(backgrounds).
+
 	* pandoradb.sql: Fixed some problems in last commit.
 
 2007-02-21  Raul Mateos  <raulofpandora@gmail.com>
 
-	* pandoradb.sql: Solved small problems that caused some tables not 
+	* pandoradb.sql: Solved small problems that caused some tables not
 	to be created.
 	
 	* operation/active_console/lib/db_functions.php: Remove ".." in include
@@ -22,7 +44,7 @@
 
 2007-02-20  Sancho Lerena  <slerena@artica.es>
 
-    * pandoradb.sql: Upgraded SQL. Improved lenght for some fields.
+        * pandoradb.sql: Upgraded SQL. Improved lenght for some fields.
 	
 	* index.php: Better permission checks
 	

@@ -45,14 +45,30 @@ if (comprueba_login() == 0) {
 			}
 
 			if (give_acl($id_usuario,$id_grupo, "AR") == 1){
-				require "estado_generalagente.php";
-				echo "<br>";
-				require "estado_ultimopaquete.php";
-				echo "<br>";
-				require "estado_monitores.php";
-				echo "<br>";
-				require "estado_alertas.php";		
-				echo "<br>";
+				if (isset($_GET["tab"]))
+					$tab = $_GET["tab"];
+				else
+					$tab = "main";
+				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'>Main</A> - ";
+				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data'>Data</A> - ";
+				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=alert'>Alerts</A>";
+				echo "<div class='data_box'>";
+				switch ($tab) {
+				case "main":	
+						echo "<h3>Main view</h3></p>";
+						require "estado_generalagente.php";
+						echo "<br>";
+						//require "estado_monitores.php";
+						
+						break;
+				case "data": echo "<h3>Monitors</h3>";
+						require "estado_ultimopaquete.php";
+						break;
+				case "alert": echo "<h3>Alerts</h3>";
+						require "estado_alertas.php";
+						break;
+				}
+				echo "</div>";
 			} else {
 				audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to read data from agent ".dame_nombre_agente($id_agente));
 				require ("general/noaccess.php");

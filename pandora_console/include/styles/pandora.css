@@ -148,6 +148,7 @@ div#db_ftxt {
 	width: 780px;
 	float: right;
 }
+
 #menu {
 	width: 155px;
 	float: left;
@@ -441,27 +442,13 @@ div#install_box {
 	margin-top: 10px;
 	width: 350px;
 }
-span.users {
-	background: url(../../images/usuarios.gif) no-repeat;
-}
-span.agents {
-	background: url(../../images/agentes.gif) no-repeat;
-}
-span.data {
-	background: url(../../images/datos.gif) no-repeat;
-}
-span.alerts {
-	background: url(../../images/alertas.gif) no-repeat;
-}
-span.time {
-	background: url(../../images/time.gif) no-repeat;
-}
-span.users, span.agents, span.data, span.alerts, span.time {
-	margin-left: 4px;
+
+div#data_box {
+	float: right;
+	padding-right: 20px;
 	margin-top: 10px;
-	padding: 4px 8px 12px 30px;
-	display: block;
-}
-.mgb25 {
-	margin-bottom: 25px;
+	background-color: #ffffff;
+	border: 1px solid #999999;
+	width: 700px;
+	margin-top: 3em;
 }

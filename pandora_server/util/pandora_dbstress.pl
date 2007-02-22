@@ -1,12 +1,29 @@
 #!/usr/bin/perl
-##################################################################################
+################################################################################
 # Pandora DB Stress tool
-##################################################################################
+################################################################################
 # Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-# Permission is granted to copy, distribute and/or modify this document
-# under the terms of the GNU Free Documentation License, Version 2.0
-# or any later version published by the Free Software Foundation at www.gnu.org
-##################################################################################
+# Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L
+#
+#This program is free software; you can redistribute it and/or
+#modify it under the terms of the GNU General Public License
+#as published by the Free Software Foundation; either version 2
+#of the License, or (at your option) any later version.
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+################################################################################
+
+my $target_interval = 300;
+my $target_days = 40;
+my $target_agent = 10; # if not defined, uses ALL agents
+
+################################################################################
+################################################################################
 
 # Includes list
 use strict;
@@ -20,17 +37,15 @@ use pandora_config;
 use pandora_tools;
 use pandora_db;
 
-# Configure here target (AGENT_ID for Stress)
-my $target_agent_id = 3;
-my $target_interval = 300;
-my $target_days = 7;
+################################################################################
+################################################################################
 
-my $version = "1.2Beta 060213";
+my $version = "1.3-dev 070216";
 
 # FLUSH in each IO (only for debug, very slooow)
 # ENABLED in DEBUGMODE
 # DISABLE FOR PRODUCTION
-$| = 1;
+$| = 0;
 
 my %pa_config;
 
@@ -43,26 +58,25 @@ pandora_loadconfig (\%pa_config,2);
 # open database, only ONCE. We pass reference to DBI handler ($dbh) to all subprocess
 my $dbh = DBI->connect("DBI:mysql:pandora:$pa_config{'dbhost'}:3306",$pa_config{'dbuser'}, $pa_config{'dbpass'},	{ RaiseError => 1, AutoCommit => 1 });
 
-print " [*] Working for agent ID $target_agent_id \n";
 print " [*] Generating data of $target_days days ago \n";
 print " [*] Interval for this workload is $target_interval \n";
 
-# For each module of $target_agent_id
-my $query_idag = "select * from tagente_modulo where id_agente = $target_agent_id";
+#my $query_idag = "select * from tagente_modulo where id_agente = $target_agent";
+my $query_idag = "select * from tagente_modulo";
 my $s_idag = $dbh->prepare($query_idag);
 $s_idag ->execute;
 my @data;
 # Read all alerts and apply to this incoming trap 
 if ($s_idag->rows != 0) {
 	while (@data = $s_idag->fetchrow_array()) {
+print " [*] Working for agent ID ".$data[1]." \n";
 		# Fill this module with data !
-		process_module (\%pa_config, $data[0], $target_interval, $data[4], $target_days, $data[2], $target_agent_id, $dbh);
+		process_module (\%pa_config, $data[0], $target_interval, $data[4], $target_days, $data[2], $data[1], $dbh);
 	}
 }
 $s_idag->finish();
 $dbh->disconnect();
 print " [*] All work done\n\n";
-
 # END of main proc
 
 
@@ -171,7 +185,6 @@ sub process_module(){
 		}
 
 	}
-
 	close (LOG);
 	print "\n";
 }

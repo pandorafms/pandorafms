@@ -11,7 +11,7 @@ CREATE TABLE `tagent_access` (
   `id_ac` bigint(20) unsigned NOT NULL auto_increment,
   `id_agent` int(8) unsigned NOT NULL default '0',
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
-  `utimestamp` mediumint(12) unsigned NOT NULL default '0',
+  `utimestamp` integer unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_ac`),
   KEY `agent_index` (`id_agent`)
 ) TYPE=InnoDB; 

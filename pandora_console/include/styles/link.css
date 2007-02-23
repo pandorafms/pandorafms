@@ -1,25 +1,24 @@
 #link a {
 	display: block;
 	color: #000;
-	}
-
+}
 div.linkli>ul {
 	width: 133px;
-	}
+}
 .linkli li {
 	padding: 0px 0px 0px 22px;
-	border-bottom: 1px solid #d6d6d6;
+	border-bottom: 1px solid #d4d4d4;
 	border-top: 1px solid #f5ffff;
 	width: 100%;
-    }
+}
 .linkli li, .linkli li:hover {
 	background: url(../../images/link.gif) no-repeat 3px 8px;
-	}
+}
 #link a:hover, .linkli li:hover {
 	background-color: #cde0ad;
-	}
+}
 div#menul {
 	background-color: #e9f3d2;
 	border: 1px solid #4a6629;
 	width: 155px;
-	}
+}

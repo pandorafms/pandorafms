@@ -43,7 +43,7 @@ a.help:hover span {
 	display: block;
 	text-decoration: none;
 	position: absolute;
-	z-index: 3;
+	z-index: 99;
 	top: 20px;
 	left: 6px;
 	width: 150px;

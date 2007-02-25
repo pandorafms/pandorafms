@@ -206,7 +206,7 @@ window.onload = function()
 
 		<table>
 			<tr><td class='left'>
-			<?php echo $lang_label['rep_1031']; ?>:
+			<?php echo $lang_label['rep_1032']; ?>:
 			</td><td class='right'>
 				<input type='hidden' name='xml_file' value='<?php print htmlentities($xml_file,ENT_QUOTES); ?>'>
 				<input type='hidden' name='execute' value='1'> 	
@@ -223,7 +223,7 @@ window.onload = function()
 	
 		<table>
 			<tr><td class='left'>
-			<?php echo $lang_label['rep_1031']; ?>:
+			<?php echo $lang_label['rep_1033']; ?>:
 			</td><td class='right'>
 				<input type='hidden' name='xml_file' value='<?php print htmlentities($xml_file,ENT_QUOTES); ?>'>
 				<input type="submit" value="<?php echo $lang_label['rep_download_xml']; ?>">		

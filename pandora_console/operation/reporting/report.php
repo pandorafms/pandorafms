@@ -75,10 +75,11 @@ function esc_LaTeX ( $text ) {
 // XML and report management functions //
 
 
-function XML_get_content ( &$xml_node )
-// in http://se.php.net/domxml/ is said that $node->get_content() is deprecated
-// and, that text content is now a text node. Ok, so, let's access this new node.
-{
+function XML_get_content_php4 ( &$xml_node ) {
+
+	// in http://se.php.net/domxml/ is said that $node->get_content() is deprecated
+	// and, that text content is now a text node. Ok, so, let's access this new node.
+
 	$ar = $xml_node->child_nodes();
 
    	foreach($ar as $i)
@@ -89,11 +90,18 @@ function XML_get_content ( &$xml_node )
    	}
 }
 
+function XML_get_content_php5 ( &$xml_node ) {
 
-function &XML_parseConf ( $XML_node, $tagname, &$child_type ) {
+	// simpleXML version of XML_get_content_php4
+
+	return iconv ( "UTF-8", "ISO-8859-1", (string) $xml_node );
+}
+
+
+function &XML_parseConf_php4 ( $XML_node, $tagname, &$child_type ) {
 	
 	if ($tagname) {
-		$tt = $XML_node->get_elements_by_tagname( $tagname );
+		$tt = XML_get_elements_by_tagname_php4 ( $XML_node, $tagname );
 		$child = $tt[0];
 	} else {
 		$child = $XML_node;
@@ -102,7 +110,7 @@ function &XML_parseConf ( $XML_node, $tagname, &$child_type ) {
 	if ($child) {
 		$tt = $child->child_nodes();
 		foreach ($tt as $param) {
-			$ar_param[ $param->node_name() ] = XML_get_content ( $param );
+			$ar_param[ $param->node_name() ] = XML_get_content_php4 ( $param );
 		}
 
 		$child_type = $child->get_attribute('type');
@@ -114,12 +122,38 @@ function &XML_parseConf ( $XML_node, $tagname, &$child_type ) {
 }
 
 
-function &open_report_xml ( $xml_file ) {
+function &XML_parseConf_php5 ( $XML_node, $tagname, &$child_type ) {
+
+	// simpleXML version of XML_parseConf_php4
+	
+	if ($tagname) {
+		$tt = XML_get_elements_by_tagname_php5 ( $XML_node, $tagname );
+		$child = $tt[0];
+	} else {
+		$child = $XML_node;
+	}
+	
+	if ($child) {
+		$tt = $child->children();
+		foreach ($tt as $param) {
+			$ar_param[ $param->getName() ] = XML_get_content_php5 ( $param );
+		}
+
+		$child_type = (string) $child['type'];
+	} else {
+		$child_type = "";
+	}
+
+	return $ar_param;	
+}
+
+
+function &open_report_xml_php4 ( $xml_file ) {
 
 	// domxml_open_file|mem only work with utf-8
 	// this change is unmade in the function XML_get_content
 	$xml_file = iconv("ISO-8859-1", "UTF-8", $xml_file);
-	
+
 	$func = is_file( $xml_file )?'domxml_open_file':'domxml_open_mem';
 	
 	if (!$reportxml = $func ( $xml_file ,
@@ -137,6 +171,98 @@ function &open_report_xml ( $xml_file ) {
 }
 
 
+function &open_report_xml_php5 ( $xml_file ) {
+
+	// simpleXML version of open_report_xml_php4
+
+	// simpleXML only work with utf-8
+	// this change is unmade in the function XML_get_content
+	$xml_file = iconv("ISO-8859-1", "UTF-8", $xml_file);
+	
+	$reportxml = simplexml_load_string($xml_file);
+	
+	return $reportxml;
+}
+
+
+function XML_load_report_php4 ( $xml_file ) {
+
+	// loads $xml_file into domxml and returns the root node
+
+	if (!$reportxml =& open_report_xml_php4 ( $xml_file )) { return; }
+  	return $reportxml->document_element();
+}
+
+
+function XML_load_report_php5 ( $xml_file ) {
+
+	// simpleXML version of XML_load_report_php4
+	
+	if (!$reportxml =& open_report_xml_php5 ( $xml_file )) { return; }
+	return $reportxml;
+}
+
+
+function XML_load_defaults_php4 ( $report ) {
+	// loads defaults values from domxml report (root node)
+
+	$childs = XML_get_elements_by_tagname_php4 ($report, 'defaultvalues');
+	
+	foreach ($childs as $defaultvalues_node) {
+		
+		// let's fill $defaultvalues[?C_type][param]=default value
+		
+		$c_type_ar = $defaultvalues_node->child_nodes();
+		foreach ($c_type_ar as $c_type) {
+			$defaultvalues[ $c_type->node_name() ] =& XML_parseConf_php4 ( $c_type, '', $dummy );
+		}
+	}
+
+	return $defaultvalues;
+}
+
+
+function XML_load_defaults_php5 ( $report ) {
+	
+	// simpleXML version of XML_load_defaults_php4
+	
+	$childs = XML_get_elements_by_tagname_php5 ($report, 'defaultvalues');
+	foreach ($childs as $defaultvalues_node) {
+		
+		// let's fill $defaultvalues[?C_type][param]=default value
+		
+		$c_type_ar = $defaultvalues_node->children();
+		foreach ($c_type_ar as $c_type) {
+			
+			$defaultvalues[ $c_type->getName() ] =& XML_parseConf_php5 ( $c_type, '', $dummy );
+		}
+	}
+
+	return $defaultvalues;	
+}
+
+
+function XML_get_elements_by_tagname_php4 ( $node, $tagname ) {
+	// get elements, inside a domxml node, named $tagname
+
+	return $node->get_elements_by_tagname( $tagname );
+}
+
+function XML_get_elements_by_tagname_php5 ( $node, $tagname ) {
+
+	// simpleXML version of XML_get_elements_by_tagname_php4
+	
+	foreach ( $node->children() as $child ) {
+		if ( $child->getName() == $tagname ) { $matched_elements[] = $child; }
+	}
+	
+	return $matched_elements;
+}
+
+
+// end of XML functions // 
+
+
 function complete_with_defaults ( $C_type, &$C_params ) {
 
 	global $defaultvalues;
@@ -151,27 +277,14 @@ function complete_with_defaults ( $C_type, &$C_params ) {
 function open_and_write_report ( $xml_file, &$present_plugins, &$present_plugin_functions, $file='php://output', $override='' ) {
 
 	global $reports_ext, $reports_dir, $defaultvalues;
+	global $XML_parseConf, $XML_load_report, $XML_load_defaults, $XML_get_elements_by_tagname;
 
 	// loading root (report)
-	
-	if (!$reportxml =& open_report_xml ( $xml_file )) { return; }
-  	$report = $reportxml->document_element();
-	
+	$report = $XML_load_report ($xml_file);	
 
 	// loading default values
-	
-	$childs = $report->get_elements_by_tagname('defaultvalues');
-	foreach ($childs as $defaultvalues_node) {
+	$defaultvalues = $XML_load_defaults ( $report );
 		
-		// let's fill $defaultvalues[?C_type][param]=default value
-		
-		$c_type_ar = $defaultvalues_node->child_nodes();
-		foreach ($c_type_ar as $c_type) {
-			$defaultvalues[ $c_type->node_name() ] =& XML_parseConf ( $c_type, '', $dummy );
-		}
-	}	
-		
-	
 	// opening handler
 	
 	if (!$reports_ext[ $defaultvalues['RC_report']['output_format'] ] and !$override) { return; }
@@ -196,24 +309,21 @@ function open_and_write_report ( $xml_file, &$present_plugins, &$present_plugin_
 	if ($override=='guihtml') {	
 		
 		$counter = 0;   // counter for doing a unique identifier for defaultvalues	
-		foreach ($childs as $defaultvalues_node) {	
-		
-			foreach ( $defaultvalues as $c_type => $params ) {
-				// is DC or RC ?
-				$type = '';
-				if ( strstr($c_type, 'DC_') == $c_type ) { $type = 'DC'; }
-				if ( strstr($c_type, 'RC_') == $c_type ) { $type = 'RC'; }	
+		foreach ( $defaultvalues as $c_type => $params ) {
+			// is DC or RC ?
+			$type = '';
+			if ( strstr($c_type, 'DC_') == $c_type ) { $type = 'DC'; }
+			if ( strstr($c_type, 'RC_') == $c_type ) { $type = 'RC'; }	
+			
+			if ($type) {
+				$counter++;
+				$data[ 'identifier' ] = 'dvid' . $counter . '_';
+				$data[ 'C_type' ] = $c_type;
+				$RC_override = 'RC_' . $override;
 				
-				if ($type) {
-					$counter++;
-					$data[ 'identifier' ] = 'dvid' . $counter . '_';
-					$data[ 'C_type' ] = $c_type;
-					$RC_override = 'RC_' . $override;
-					
-					if ( $RC_override and in_array($RC_override, $present_plugins) ) {
-						$func = $RC_override . '_write_defaultvalues';
-						$func ( $params, $data, $handler );
-					}
+				if ( $RC_override and in_array($RC_override, $present_plugins) ) {
+					$func = $RC_override . '_write_defaultvalues';
+					$func ( $params, $data, $handler );
 				}
 			}
 		}
@@ -223,7 +333,7 @@ function open_and_write_report ( $xml_file, &$present_plugins, &$present_plugin_
 	// loading RC's
 
 	$counter = 0;	// counter for doing a unique identifier for RC's
-	$childs = $report->get_elements_by_tagname('RC');
+	$childs = $XML_get_elements_by_tagname ( $report, 'RC');
 	foreach ($childs as $RC_node) {
 
 		// for each RC:
@@ -236,7 +346,7 @@ function open_and_write_report ( $xml_file, &$present_plugins, &$present_plugin_
 		
 		// processing DC
 		
-		$ar_param =& XML_parseConf ( $RC_node, 'DC', $child_DC_type );
+		$ar_param =& $XML_parseConf ( $RC_node, 'DC', $child_DC_type );
 
 		if ($override) { 
 			$ar_param['DC_type'] = $child_DC_type;
@@ -252,7 +362,7 @@ function open_and_write_report ( $xml_file, &$present_plugins, &$present_plugin_
 		
 		// processing RC parameters
 		
-		$ar_param =& XML_parseConf ( $RC_node, '', $RC_node_type );
+		$ar_param =& $XML_parseConf ( $RC_node, '', $RC_node_type );
 
 		if ($override) { 
 			$ar_param['RC_type'] = $RC_node_type;
@@ -469,6 +579,31 @@ $time_key_words = array (
 			'WEEK'	=>	604800,
 			'MONTH'	=>	2592000	
 		);
+
+// XML functions
+// ok, now a bit of history. I began using domxml with php4 and completely
+// forgot that domxml was not continued in php5. Instead of rewriting all
+// for simpleXML (the simplest XML support in PHP5), i want this script to
+// work also with domxml (debian sarge users with only php4... I dont like
+// backports). I have decided (maybe wrong) to maintain two functions (one
+// for domxml-php4 and one for simplexml-php5) for every XML function in 
+// Pandora Reporting. 
+// Every XML function should be named:  function_name_phpX , where X is the
+// major php version.
+// These functions must be called   $function_name ( ... ), and I define 
+// these general function names here. I prefer this than to use call_user_func
+// Remember to include "global $XML_function_name" if you are out of scope
+// So far, so good. If you have a better method, please, let me know
+
+$majorPHPversion = array_shift ( explode ('.', phpversion()) );
+
+$XML_functions = array ( 'XML_get_content', 'XML_parseConf', 'open_report_xml',
+		'XML_load_report', 'XML_load_defaults', 'XML_get_elements_by_tagname' );
+		
+foreach ($XML_functions as $XML_function) {
+
+	$$XML_function = $XML_function . '_php' . $majorPHPversion;
+}
 
 
 // let's begin loading the plugins, checking them

@@ -9,6 +9,12 @@
 	border-bottom: 1px solid #d4d4d4;
 	border-top: 1px solid #ffffff;
 }
+div#menug {
+	background-color: #f5f5dc;
+	border: 1px solid #dAdBdC;
+	width: 155px;
+	margin-bottom: 15px;
+	}
 #god1 li, #god2 li, #god3 li, #god4 li, #god5 li, #god6 li, #god7 li, #god8 li, #god1s li, 
 #god2s li, #god3s li, #god4s li, #god5s li, #god6s li, #god7s li, #god8s li {
 	padding: 0px 0px 0px 30px;
@@ -49,12 +55,6 @@ div.arrowg>ul, div.arrowgs>ul {
 	background: url(../../images/arrow.gif) no-repeat 2px 4px;
 	margin-left: 26px;
 	padding: 0px 0px 0px 14px;	
-}
-div#menug {
-	background-color: #f5f5dc;
-	border: 1px solid #4a6629;
-	width: 155px;
-	margin-bottom: 15px;
 }
 #god a:hover,
 #god1 li:hover, #god1s li, #god2 li:hover, #god2s li, #god3 li:hover, #god3s li,

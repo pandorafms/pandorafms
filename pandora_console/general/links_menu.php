@@ -9,7 +9,7 @@ $sql1='SELECT * FROM tlink ORDER BY name';
 $result=mysql_query($sql1);
 if ($row=mysql_fetch_array($result)){
 ?>
-<div class="bg">
+<div class="bg4">
 	<div class="imgl"><img src="images/upper-left-corner.gif" width="5" height="5" alt=""></div>
 	<div class="tit">:: <?php echo $lang_label["links_header"] ?> ::</div>
 	<div class="imgr"><img src="images/upper-right-corner.gif" width="5" height="5" alt=""></div>

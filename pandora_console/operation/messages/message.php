@@ -168,15 +168,22 @@ else {
 			echo "<tr>";
 			if ($row3["estado"]==1) echo "<td align='center' class='$tdcolor'><img src='images/read.gif' border=0></td>";
 			else echo "<td align='center' class='$tdcolor'><img src='images/unread.gif' border=0></td>";
-			echo "<td class='$tdcolor'><b><a href=index.php?sec=usuarios&sec2=operation/users/user_edit&ver=".$row3["id_usuario_origen"].">".$row3["id_usuario_origen"]."</b></td><td class='w230".$tdcolor."'><a href='index.php?sec=messages&sec2=operation/messages/message&leer=1&id_mensaje=".$row3["id_mensaje"]."'>";
-			if ($row3["subject"]) echo $row3["subject"]."</a>";
-			else echo "<i>".$lang_label["no_subject"]."</i></a>";
-			echo "</a></td><td class='w135".$tdcolor."'>".$row3["timestamp"]."</td>";
-			echo "<td class='$tdcolor' align='center'><a href='index.php?sec=messages&sec2=operation/messages/message&borrar=1&id_mensaje=".$row3["id_mensaje"]."'><img src='images/delete.gif' border='0'></a></td></tr>";
+
+			echo "<td class='$tdcolor'>";
+			echo "<b><a href=index.php?sec=usuarios&sec2=operation/users/user_edit&ver=".$row3["id_usuario_origen"].">".$row3["id_usuario_origen"]."</b></td><td class='".$tdcolor."'><a href='index.php?sec=messages&sec2=operation/messages/message&leer=1&id_mensaje=".$row3["id_mensaje"]."'>";
+
+			if ($row3["subject"]) 
+				echo $row3["subject"]."</a>";
+			else 
+				echo "<i>".$lang_label["no_subject"]."</i></a>";
+
+			echo "</a></td><td class='".$tdcolor."'>".$row3["timestamp"]."</td>";
+			echo "<td class='$tdcolor' align='center'><a href='index.php?sec=messages&sec2=operation/messages/message&borrar=1&id_mensaje=".$row3["id_mensaje"]."'><img src='images/cancel.gif' border='0'></a></td></tr>";
 			}
 		echo "<tr><td colspan='5'><div class='raya'></div></td></tr>";
 	}
-	else echo "<div class='nf'>".$lang_label["no_messages"]."</div><table>"; //no messages
+	else 
+		echo "<div class='nf'>".$lang_label["no_messages"]."</div><table>"; //no messages
 	
 	//read mess
 	if (isset($_GET["leer"])){
@@ -189,7 +196,7 @@ else {
 		echo '
 		<table>
 		<form method="post" name="reply_mes" action="index.php?sec=messages&sec2=operation/messages/message&nuevo">
-		<tr><td></td></tr><tr><td class="w90datos">'.$lang_label["from"].':</td><td class="datos"><b>'.$row4["id_usuario_origen"].'</b></td></tr>
+		<tr><td></td></tr><tr><td class="datos">'.$lang_label["from"].':</td><td class="datos"><b>'.$row4["id_usuario_origen"].'</b></td></tr>
 		<tr><td class="datos2">'.$lang_label["subject"].':</td><td class="datos2"><b>'.$row4["subject"].'</b></td></tr>
 		<tr><td class="datos" colspan="2">'.$lang_label["message"].':</td>
 		<tr><td class="datos2" colspan="2"><textarea name="mensaje" rows="10" class="w540" readonly>'.$row4["mensaje"].'</textarea></td></tr>

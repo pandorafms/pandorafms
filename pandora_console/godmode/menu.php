@@ -3,7 +3,7 @@
 // Pandora - the Free monitoring system
 // ====================================
 // Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L, info@artica.es
+// Copyright (c) 2005-2006 Artica Soluciones Tecnolï¿½icas S.L, info@artica.es
 // Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -23,7 +23,7 @@ if (comprueba_login() == 0){
 
 ?>
 
-<div class="bg">
+<div class="bg3">
 	<div class="imgl"><img src="images/upper-left-corner.gif" width="5" height="5" alt=""></div>
 	<div class="tit">:: <?php echo $lang_label["godmode_header"] ?> ::</div>
 	<div class="imgr"><img src="images/upper-right-corner.gif" width="5" height="5" alt=""></div>

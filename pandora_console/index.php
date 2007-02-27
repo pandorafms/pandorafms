@@ -163,36 +163,58 @@ if (isset ($_GET["refr"])){
 		logoff_db ($iduser, $REMOTE_ADDR);
 		session_unregister ("id_usuario");
 	}
+	$pagina = "";
+	if (isset ($_GET["sec"])){
+		$sec = parametro_limpio ($_GET["sec"]);
+		$pagina = $sec2;
+	}
+	else
+		$sec = "";
+
+	if (isset ($_GET["sec2"])){
+		$sec2 = parametro_limpio ($_GET["sec2"]);
+		$pagina = $sec2;
+	} else
+		$sec2 = "";
+
+
 ?>
 <div id="page">
 	<div id="menu"><?php require ("general/main_menu.php"); ?></div>
 	<div id="main">
-		<div id='head'><?php require("general/header.php"); ?></div>
-		<?php
-		if (isset ($_GET["sec2"])) {
-		  	$pagina = parametro_limpio ($_GET["sec2"]);
 
-			if ($pagina <> "") {
-				if (file_exists ($pagina . ".php")) {
-					require ($pagina . ".php");
-				} else {
-					echo "<br><b class='error'>Sorry! I can't find the page!</b>";
-				}
-			}
-		} elseif (isset ($_GET["sec"])) {
-	  	  	$pagina = parametro_limpio ($_GET["sec"]);
-			
+	
+	<div class='data_box' style='padding-right:0px; height:74px; text-align:right;'>
+		<!-- solapita -->
+		<div style='color: #ffffff; background-color: #4E682C; line-height: 18px; width:120px; float: right; margin-left: 0px; margin-right:0px; padding-right: 10px; padding-left: 10px; '>
+		Pandora FMS Header
+		</div>	
+		<p align='left'>
+		<?php require("general/header.php"); ?>  
+		</p>
+	</div>
+
+	<!-- Title tab -->
+
+	<div class='data_box'>
+
+	<?php
+		// Page loader / selector		
+		if ($pagina != ""){
 			if (file_exists ($pagina . ".php")) {
 				require ($pagina . ".php");
 			} else {
 				echo "<br><b class='error'>Sorry! I can't find the page!</b>";
-			}
-		} else {
+			}	
+		} elseif (isset ($_GET["sec"])) {
 			require ("general/logon_ok.php");  //default
 		}
-		?>
+	?>
+		
 	</div>
+
+	<div class="data_box"><?php require("general/footer.php") ?></div>
+
 </div>
-<div id="foot"><?php require("general/footer.php") ?></div>
 </body>
 </html>

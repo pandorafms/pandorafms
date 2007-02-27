@@ -136,14 +136,7 @@ div#db_ftxt {
 #page {
 	width: 960px;
 }
-#head {
-	border-bottom: 1px solid #708090;
-	text-align: right;
-	padding-bottom: 10px;
-	font-size: 10px;
-	width: 100%;
-	margin-bottom: 27px;
-}
+
 #main {
 	width: 780px;
 	float: right;
@@ -153,11 +146,7 @@ div#db_ftxt {
 	width: 155px;
 	float: left;
 }
-#foot {
-	padding-top: 25px;
-	text-align: center;
-	clear: both;
-}
+
 div#page>div#menu {
 	width: 157px;
 }
@@ -215,19 +204,17 @@ td.lb {
 	font-weight: bold;
 }
 td.datos, td.datost, td.datosb, td.datos_id, td.datosf9, 
-td.datosf9i, td.datos_jus {
-	background-color: #f5f5f5;
+td.datosf9i, td.datos_jus, td.w90datos, td.w135datos {
+	/* background-color: #f5f5f5; */
+	background-color: #F9F9F9; 
 }
-td.w90datos, td.w135datos, td.w230datos {
-	background-color: #f5f5f5;
-}
+ 
 td.datos2, td.datos2t, td.datos2b, td.datos2_id, td.datos2f9, 
-td.datos2f9i, td.datos2_jus {
-	background-color: #fafbfc;
+td.datos2f9i, td.datos2_jus, td.w90datos2, td.w135datos2 {
+	/* background-color: #fafbfc; */
+	background-color: #e6e9cd;
 }
-td.w90datos2, td.w135datos2, td.w230datos2 {
-	background-color: #fafbfc;
-}
+
 td.datos3 {
 	background-color: #e6e9cd;
 }
@@ -237,14 +224,25 @@ td.datos_id {
 td.datos_jus, td.datos2_jus {
 	text-align: justify;
 }
-.bg , .bgt {
+.bg , .bgt { /* op menu */
 	background-color: #4a6629;
 }
-.bg {
+.bg2 { /* main page */
+	background-color: #D84437;
+}
+.bg3 { /* godmode */
+	background-color: #D84437;
+}
+.bg4 { /* links */
+	background-color: #D8C4C4;
+}
+
+.bg, .bg2, .bg3, .bg4 {
 	position: relative;
 	height: 20px;
 	width: 100%;
 }
+
 .f10, .w155f10, #ip {
 	font-size: 10px;
 	text-align: center;
@@ -369,9 +367,6 @@ td.datosf9i, td.datos2f9i {
 .w200 {
 	width: 200px;
 }
-.w230datos, .w230datos2 {
-	width: 230px;
-}
 .w255 {
 	width: 255px;
 }
@@ -419,7 +414,7 @@ div.imgr>img {
 div.nf {
 	background: url(../../images/info.gif) no-repeat;
 	color: #9a2f0a;
-    margin-left: 7px;
+	margin-left: 7px;
 	padding: 2px 1px 6px 25px;
 }
 div#wizard {
@@ -443,15 +438,69 @@ div#install_box {
 	width: 350px;
 }
 
-div#data_box {
-	float: right;
-	padding-right: 20px;
-	margin-top: 10px;
-	background-color: #ffffff;
-	border: 1px solid #999999;
-	width: 700px;
-	margin-top: 3em;
+div.title_line {
+	background-color: #4E682C;
+	height: 5px;
+	width: 762px;
 }
+
+div.data_box {
+	border-top: 5px solid #4E682C;
+	padding-left: 10px;
+	padding-top: 0px;
+	padding-bottom: 20px;
+	margin-bottom: 25px;
+	background-color: #fefefe;
+	/* border: 1px solid #dAdBdC; */
+	width: 800px;
+	float: left;
+	margin-top: 0px;
+	margin-left: -5px;
+	margin-right: 0px;
+}
+
+#menu_tab .mn, #menu_tab ul, #menu_tab .mn ul
+{
+	padding: 0px;
+	list-style: none;
+	margin: 0px;
+}
+#menu_tab .mn li
+{
+	float: right;
+	position: relative;
+}
+#menu_tab li a, #menu_tab li.nomn a
+{
+	background: #db6351;
+	padding: 1px 9px 1px 9px;
+	color: #fff;
+	border: 1px solid #E01A1E;
+	font-weight: bold;
+	line-height: 17px;
+}
+
+#menu_tab .mn li a
+{
+	display: block;
+	text-decoration: none;
+}
+
+#menu_tab li.nomn:hover a, 
+#menu_tab li:hover ul a:hover
+{
+	background: #b2b08a;
+}
+#menu_tab li:hover a
+{
+	background: #b2b08a url("../images/arrow.gif") no-repeat right 3px;
+}
+#menu_tab li:hover ul a, #menu_tab .mn ul
+{
+	background: #db6351;
+	border-top: none;
+}
+
 span.users {
 	background: url(../../images/usuarios.gif) no-repeat;
 }

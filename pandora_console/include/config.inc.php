@@ -1,5 +1,4 @@
 <?php
-
 // Pandora FMS - the Free monitoring system
 // ========================================
 // Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
@@ -21,7 +20,7 @@
 // This is the base config file
 
 //Pandora Version
-$build_version="PC080105"; //PCyymmdd
+$build_version="PC070224"; //PCyymmdd
 $pandora_version="v1.3 devel"; 
 
 // Database configuration (default ones)

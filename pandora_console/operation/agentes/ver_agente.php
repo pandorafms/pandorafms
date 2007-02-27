@@ -49,26 +49,34 @@ if (comprueba_login() == 0) {
 					$tab = $_GET["tab"];
 				else
 					$tab = "main";
-				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'>Main</A> - ";
-				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data'>Data</A> - ";
+				
+				echo "
+				<div id='menu_tab'>
+				<ul class='mn'>	
+				<li class='nomn'>";
+					
+				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'>Main</a>";
+				echo "</li>";
+				echo "<li class='nomn'>";
+				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data'>Data</a>";
+				echo "</li>";
+				echo "<li class='nomn'>";
 				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=alert'>Alerts</A>";
-				echo "<div class='data_box'>";
+				echo "</li>";
+				echo "</ul>";
+				echo "</div>";
+
 				switch ($tab) {
-				case "main":	
-						echo "<h3>Main view</h3></p>";
-						require "estado_generalagente.php";
+				case "main":	require "estado_generalagente.php";
 						echo "<br>";
 						//require "estado_monitores.php";
 						
 						break;
-				case "data": echo "<h3>Monitors</h3>";
-						require "estado_ultimopaquete.php";
+				case "data": 	require "estado_ultimopaquete.php";
 						break;
-				case "alert": echo "<h3>Alerts</h3>";
-						require "estado_alertas.php";
+				case "alert": 	require "estado_alertas.php";
 						break;
 				}
-				echo "</div>";
 			} else {
 				audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to read data from agent ".dame_nombre_agente($id_agente));
 				require ("general/noaccess.php");

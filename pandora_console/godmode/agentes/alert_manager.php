@@ -1,0 +1,200 @@
+<?php
+
+// ====================================================================================
+// VIEW ALERTS
+// ====================================================================================<br>
+
+$sql1='SELECT * FROM tagente_modulo WHERE id_agente = "'.$id_agente.'"';
+$result=mysql_query($sql1);
+	if ($row=mysql_num_rows($result)){
+
+		echo "<h3>".$lang_label["assigned_alerts"]."<a href='help/".$help_code."/chap3.php#3222' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+
+		$color=1;
+		$string='';
+		while ($row=mysql_fetch_array($result)){  // All modules of this agent
+			$id_tipo = $row["id_tipo_modulo"];
+			$nombre_modulo =$row["nombre"];
+			$sql2='SELECT * FROM ttipo_modulo WHERE id_tipo = "'.$id_tipo.'"';
+			$result2=mysql_query($sql2);
+			$row2=mysql_fetch_array($result2);
+			//module type modulo is $row2["nombre"];
+			
+			$sql3='SELECT id_aam, id_alerta, time_threshold, dis_min, dis_max, 
+			descripcion 
+			FROM talerta_agente_modulo 
+			WHERE id_agente_modulo = '.$row["id_agente_modulo"];  // From all the alerts give me which are from my agent
+			$result3=mysql_query($sql3);
+			while ($row3=mysql_fetch_array($result3)){
+				if ($color == 1){
+					$tdcolor="datos";
+					$color =0;
+				} else {
+					$tdcolor="datos2";
+					$color =1;
+				}
+				$sql4='SELECT nombre FROM talerta WHERE id_alerta = '.$row3["id_alerta"];
+				$result4=mysql_query($sql4);
+				$row4=mysql_fetch_array($result4);
+				// Alert name defined by  $row4["nombre"]; 
+				$tipo_modulo = $row2["nombre"];
+				$nombre_alerta = $row4["nombre"];
+				$string = $string."<tr><td class='$tdcolor'>".$nombre_modulo."/".$tipo_modulo;
+				$string = $string."<td class=$tdcolor>".$nombre_alerta;
+				$string = $string."<td class='$tdcolor'>".$row3["time_threshold"];
+				$string = $string."<td class='$tdcolor'>".$row3["dis_min"]."/".$row3["dis_max"];
+				$string = $string."<td class='$tdcolor'>".salida_limpia($row3["descripcion"]);
+				$string = $string."<td class='$tdcolor'>";
+			 	$id_grupo = dame_id_grupo($id_agente);
+				if (give_acl($id_user, $id_grupo, "LW")==1){
+					$string = $string."<a href='index.php?sec=gagente&
+					sec2=godmode/agentes/configurar_agente&
+					id_agente=".$id_agente."&delete_alert=".$row3["id_aam"]."'>
+					<img src='images/cancel.gif' border=0 alt='".$lang_label["delete"]."'></a>  &nbsp; ";
+					$string = $string."<a href='index.php?sec=gagente&
+					sec2=godmode/agentes/configurar_agente&
+					id_agente=".$id_agente."&update_alert=".$row3["id_aam"]."#alerts'>
+					<img src='images/config.gif' border=0 alt='".$lang_label["update"]."'></a>";		
+				}
+				$string = $string."</td>";
+			}
+		}
+		if (isset($string) & $string!='') {
+		echo "<table cellpadding='3' cellspacing='3' width='700' class='fon'>
+		<tr><th>".$lang_label["name_type"]."</th>
+		<th>".$lang_label["alert"]."</th>
+		<th>".$lang_label["time_threshold"]."</th>
+		<th>".$lang_label["min_max"]."</th>
+		<th>".$lang_label["description"]."</th>
+		<th width='50'>".$lang_label["action"]."</th></tr>";
+		echo $string;
+		echo "<tr><td colspan='6'><div class='raya'></div></td></tr></table>";
+		} else {
+			echo "<div class='nf'>".$lang_label["no_alerts"]."</div>";
+		}
+	} else {
+		echo "<div class='nf'>".$lang_label["no_modules"]."</div>";
+	}
+?>
+
+<h3><?php echo $lang_label["alert_asociation_form"] ?><a href='help/<?php echo $help_code ?>/chap3.php#3222' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
+
+
+<?php
+// ==================================================================================
+// Add alerts
+// ==================================================================================
+echo '<form name="agente" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">';
+if (! isset($update_alert))
+	$update_alert = -1;
+if ($update_alert != 1) {
+	echo '<input type="hidden" name="insert_alert" value=1>';
+} else {
+	echo '<input type="hidden" name="update_alert" value=1>';
+	echo '<input type="hidden" name="id_aam" value="'.$alerta_id_aam.'"';
+}
+?>
+<input type="hidden" name="id_agente" value="<?php echo $id_agente ?>">
+<table width=650 cellpadding="3" cellspacing="3" class="fon" border=0>
+<tr><td class='lb' rowspan='9' width='5'>
+<td class="datos"><?php echo $lang_label["alert_type"]?>
+<td class="datos">
+<select name="tipo_alerta"> 
+<?php
+if (isset($tipo_alerta)){
+	echo "<option value='".$tipo_alerta."'>".dame_nombre_alerta($tipo_alerta)."</option>";
+}
+$sql1='SELECT id_alerta, nombre FROM talerta ORDER BY nombre';
+$result=mysql_query($sql1);
+while ($row=mysql_fetch_array($result)){
+	echo "<option value='".$row["id_alerta"]."'>".$row["nombre"]."</option>";
+}
+?>
+</select>
+<a name="alerts"> <!-- Don't Delete !! -->
+
+<tr><td class="datos2"><?php echo $lang_label["min_value"] ?>
+<td class="datos2"><input type="text" name="minimo" size="5" value="<?php echo $alerta_dis_min ?>" style="margin-right: 70px;">
+<?php echo $lang_label["max_value"] ?> &nbsp;&nbsp;&nbsp;
+<input type="text" name="maximo" size="5" value="<?php echo $alerta_dis_max ?>">
+<tr><td class="datos"><?php echo $lang_label["description"] ?>
+<td class="datos"><input type="text" name="descripcion" size="39" value ="<?php echo $alerta_descripcion ?>">
+<tr><td class="datos2"><?php echo $lang_label["field1"] ?>
+<td class="datos2"><input type="text" name="campo_1" size="39" value="<?php echo $alerta_campo1 ?>">
+<tr><td class="datos"><?php echo $lang_label["field2"] ?>
+<td class="datos"><input type="text" name="campo_2" size="39" value="<?php echo $alerta_campo2 ?>">
+<tr><td class="datos2"><?php echo $lang_label["field3"] ?>
+<td class="datos2"><textarea name="campo_3" cols="36" rows="3"><?php echo $alerta_campo3 ?></textarea>
+<tr><td class="datos"><?php echo $lang_label["time_threshold"] ?>
+<td class="datos"><select name="time_threshold" style="margin-right: 60px;">
+<?PHP
+	if ($alerta_time_threshold != ""){ 
+		echo "<option value='".$alerta_time_threshold."'>".give_human_time($alerta_time_threshold)."</option>";
+	}
+?>
+<option value=300>5 Min.
+<option value=600>10 Min
+<option value=900>15 min
+<option value=1800>30 Min
+<option value=3600>1 Hour
+<option value=7200>2 Hour
+<option value=18000>5 Hour
+<option value=43200>12 Hour
+<option value=86400>1 Day
+<option value=604800>1 Week
+<option value=-1>Other value
+</select>
+
+<?php echo $lang_label["other"] ?>
+&nbsp;&nbsp;&nbsp;
+<input type="text" name="other" size="5">
+
+<tr><td class="datos2"><?php echo $lang_label["min_alerts"] ?>
+<td class="datos2">
+<input type="text" name="min_alerts" size="5" value="<?php  if (isset($alerta_min_alerts)) {echo$alerta_min_alerts;} ?>" style="margin-right: 10px;">
+<?php echo $lang_label["max_alerts"] ?>
+&nbsp;&nbsp;&nbsp;
+<input type="text" name="max_alerts" size="5" value="<?php if (isset($alerta_max_alerts)) {echo $alerta_max_alerts;} ?>">
+
+
+<tr><td class="datos"><?php echo $lang_label["assigned_module"] ?>
+<td class="datos">
+<?php if ($update_alert != 1) {
+	echo '<select name="agente_modulo"> ';
+	$sql2='SELECT id_agente_modulo, id_tipo_modulo, nombre FROM tagente_modulo WHERE id_agente = '.$id_agente;
+	$result2=mysql_query($sql2);
+	while ($row2=mysql_fetch_array($result2)){
+		if ($row2["id_tipo_modulo"] != -1) {
+			$sql1='SELECT nombre FROM ttipo_modulo WHERE id_tipo = '.$row2["id_tipo_modulo"];
+			$result=mysql_query($sql1);
+			while ($row=mysql_fetch_array($result)){
+				echo "<option value='".$row2["id_agente_modulo"]."'>".$row["nombre"]."/".$row2["nombre"];
+			}
+		} else // for -1, is a special module, keep alive monitor !!
+			echo "<option value='".$row2["id_agente_modulo"]."'>".$row2["nombre"]."</option>";
+	}
+	echo "</select>";
+} else {
+	echo "<span class='redi'>".$lang_label["no_change_field"]."</span>";
+}
+
+ // End block only if $creacion_agente != 1;
+
+echo '<tr><td colspan="3"><div class="raya"></div></td></tr>';
+echo '<tr><td colspan="3" align="right">';
+	if ($update_alert== "1"){
+		echo '<input name="updbutton" type="submit" class="sub" value="'.$lang_label["update"].'">';
+	} else {
+		echo '<input name="crtbutton" type="submit" class="sub" value="'.$lang_label["add"].'">';
+	}
+	echo '</form>';
+	
+	echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."'><input type='submit' class='sub' name='crt' value='".$lang_label["cancel"]."'></form>";
+echo '</td></tr></table>';
+}
+}
+	} // end page
+else {
+		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Agent Management");
+		require ("general/noaccess.php");
+	}

@@ -2,7 +2,7 @@
 // Pandora - the Free monitoring system
 // ====================================
 // Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L, info@artica.es
+// Copyright (c) 2005-2006 Artica Soluciones Tecnolï¿½icas S.L, info@artica.es
 // Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -16,8 +16,9 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ?>
+<p align='center'>
 
-<?php
+<?PHP
 echo '
 <a target="_new" href="general/license/pandora_info_'.$language_code.'.html">
 Pandora FMS '.$pandora_version.' Build '.$build_version.' '.
@@ -32,5 +33,7 @@ if (isset($_SESSION['id_usuario'])) {
 	echo $lang_label["gen_date"]." ".date("D F d, Y H:i:s", $time)."<br>";
 }
 ?>
+
 <i>Pandora FMS is a <a target="_new" href="http://pandora.sourceforge.net">
 SourceForge registered project</a></i>
+</p>

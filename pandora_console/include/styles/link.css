@@ -2,6 +2,11 @@
 	display: block;
 	color: #000;
 }
+div#menul {
+	background-color: #e9f3d2;	
+	border: 1px solid #dAdBdC;
+	width: 155px;
+}
 div.linkli>ul {
 	width: 133px;
 }
@@ -16,9 +21,4 @@ div.linkli>ul {
 }
 #link a:hover, .linkli li:hover {
 	background-color: #cde0ad;
-}
-div#menul {
-	background-color: #e9f3d2;
-	border: 1px solid #4a6629;
-	width: 155px;
 }

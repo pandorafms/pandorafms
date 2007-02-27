@@ -1,3 +1,55 @@
+2007-02-27  Sancho Lerena  <slerena@openideas.info>
+
+	* include/styles/god.css: Moved style block.
+	
+	* include/styles/link.css: Moved style block.
+	
+	* include/styles/op.css: Moved style block.
+	
+	* include/styles/pandora.css: Added some clases for new
+	appearance. Needs to be improved, not finished yet !.
+	
+	* include/config.inc.php: Changed version number.
+	
+	* index.php: Some changes for new block disposition using
+	data_box class and other changes.
+	
+	* operation/agentes/ver_agente.php: Now shows data in three
+	tabs. Needs to be improved, but functional.
+	
+	* operation/agentes/estado_generalagente.php: Change in title
+	order. This should be the way to show title and subtitle since
+	now.
+	
+	* operation/messages/message.php: Changed icon, and fix problem in
+	CSS. Deleted class: Classes with only fix weight should be avoided
+	from now and added in code just with a style attribute, it
+	generates too many classes in main CSS.
+	
+	* images/bottom-*-corner.gif: Added.
+	
+	* general/footer.php: Needs to be updated.
+	
+	* general/links_menu.php: New style in use (different color for
+	top).
+	
+	* godmode/agentes/module_manager.php: New file to manage in tabs
+	agent configuration. Almost functional, needs fix.
+	
+	* godmode/agentes/alert_manager.php: Content of alert management
+	for agent manager, now in a individual file to be shown in a tab.
+	
+	* godmode/agentes/configurar_agente.php;
+
+	* godmode/agentes/agent_manager.php:  New file to manage in tabs
+	agent configuration. Almost functional, needs fix.
+	
+	* godmode/menu.php: New style in use (different color for top).
+
+	This is a partial commit not fully functional, need to be done due
+	to many changes in a temporal development computer. Sorry for
+	problems to people that are testing SVN version.
+	
 2007-02-22  Esteban Sanchez  <estebans@artica.es>
 
 	* pandoradb.sql: Changed a 'utimestamp' field from mediumint to

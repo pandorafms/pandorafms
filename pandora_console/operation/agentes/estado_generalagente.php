@@ -50,8 +50,7 @@ if (comprueba_login() == 0) {
 			}
 	}
 
-	echo "<h2>".$lang_label["ag_title"]."</h2>";
-	echo "<h3>".$lang_label["view_agent_general_data"]."<a href='help/".$help_code."/chap3.php#3321' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	echo "<h2>".$lang_label["ag_title"]." &gt; ".$lang_label["view_agent_general_data"]."<a href='help/".$help_code."/chap3.php#3321' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 	echo '<table cellspacing="3" cellpadding="3" width="750">';	
 	echo '<tr>
 	<td class="datos"><b>'.$lang_label["agent_name"].'</b></td>

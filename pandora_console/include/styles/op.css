@@ -9,6 +9,13 @@
 	border-bottom: 1px solid #d4d4d4;
 	border-top: 1px solid #eee;
 }
+div#menuop {
+	background-color: #e6e9cd;
+	border: 1px solid #dAdBdC;
+	/* border: 1px solid #4a6629; */
+	width: 155px;
+	margin-bottom: 15px;
+	}
 #op1 li, #op2 li, #op3 li, #op4 li, #op5 li, #op6 li, #op7 li, #op8 li, #op9 li,
 #op1s li, #op2s li, #op3s li, #op4s li, #op5s li, #op6s li, #op7s li, #op8s li, #op9s li {
 	padding: 0px 0px 0px 28px;
@@ -53,12 +60,7 @@ div.arrow>ul, div.arrows>ul {
 	margin-left: 26px;
 	padding: 0px 0px 0px 14px;	
 }
-div#menuop {
-	background-color: #e6e9cd;
-	border: 1px solid #4a6629;
-	width: 155px;
-	margin-bottom: 15px;
-}
+
 #op a:hover ,
 #op1 li:hover, #op1s li , #op2 li:hover, #op2s li , #op3 li:hover, #op3s li , 
 #op4 li:hover, #op4s li , #op5 li:hover, #op5s li , #op6 li:hover, #op6s li , 

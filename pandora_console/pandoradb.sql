@@ -1,4 +1,22 @@
 /*
+// Pandora FMS - the Free monitoring system
+// ========================================
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
+// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
+// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation version 2
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 Create Database if not exists
 */
 create database if not exists `pandora`;
@@ -115,7 +133,8 @@ CREATE TABLE `tagente_modulo` (
   `ip_target` varchar(100) default '',
   `id_module_group` int(4) unsigned default '0',
   `flag` tinyint(3) unsigned default '0',
-  PRIMARY KEY  (`id_agente_modulo`)
+  PRIMARY KEY  (`id_agente_modulo`),
+  KEY `tam_agente` (`id_agente`)
 ) TYPE=InnoDB; 
 
 # Database: pandora
@@ -222,8 +241,9 @@ CREATE TABLE `tevento` (
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `evento` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id_evento`),
-  KEY `indice_1` (`id_agente`,`id_evento`),
-  KEY `indice_2` (`timestamp`,`id_evento`)
+  KEY `indice_1` (`id_agente`),
+  KEY `indice_2` (`id_grupo`),
+  KEY `indice_3` (`id_usuario`)
 ) TYPE=InnoDB; 
 
 # Database: pandora
@@ -254,6 +274,7 @@ CREATE TABLE `tincidencia` (
   `id_creator` varchar(60) default NULL,
   PRIMARY KEY  (`id_incidencia`),
   KEY `incident_index_1` (`id_usuario`,`id_incidencia`)
+  KEY `indident_index_2` (`id_grupo`),
 ) TYPE=InnoDB; 
 
 # Database: pandora
@@ -286,7 +307,8 @@ CREATE TABLE `tmensajes` (
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `subject` varchar(255) NOT NULL default '',
   `estado` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id_mensaje`)
+  PRIMARY KEY  (`id_mensaje`),
+  KEY `msg_index_1` (`id_usuario_origen`),
 ) TYPE=InnoDB; 
 
 # Database: pandora

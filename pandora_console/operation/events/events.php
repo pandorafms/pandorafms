@@ -1,14 +1,15 @@
 <?php
+// Pandora FMS - the Free monitoring system
+// ========================================
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
+// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
+// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
 
-// Pandora - the Free monitoring system
-// ====================================
-// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
-// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// as published by the Free Software Foundation version 2
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -16,7 +17,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
 ?>
 
 <script language="JavaScript" type="text/javascript">
@@ -155,9 +155,8 @@ $event="All";
 if (isset($_POST["event"]))
 	$event = entrada_limpia($_POST["event"]);
 
-echo "<h2>".$lang_label["events"]."</h2>";
-echo "<h3>".$lang_label["event_main_view"]."<a href='help/".$help_code."/chap5.php#5' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
-echo "<table cellpadding='3' cellspacing='3'><tr>";
+echo "<h2>".$lang_label["events"]." &gt; ".$lang_label["event_main_view"]."<a href='help/".$help_code."/chap5.php#5' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+echo "<table cellpadding='4' cellspacing='4'><tr>";
 
 echo "<form method='post' action='index.php?sec=eventos&sec2=operation/events/events&refr=60'>";
 echo "<td>".$lang_label["group"]."</td>";
@@ -233,7 +232,7 @@ if ($total_events > 0){
 	echo "<th>".$lang_label["agent_name"]."</th>";
 	echo "<th>".$lang_label["group"]."</th>";
 	echo "<th>".$lang_label["id_user"]."</th>";
-	echo "<th class='w130'>".$lang_label["timestamp"]."</th>";
+	echo "<th>".$lang_label["timestamp"]."</th>";
 	echo "<th width='62'>".$lang_label["action"]."</th>";
 	echo "<th class='p10'>";
 	echo "<label for='checkbox' class='p21'>".$lang_label["all"]." </label>";
@@ -279,19 +278,21 @@ if ($total_events > 0){
 			echo "<td class='$tdcolor'>".$row2["evento"];
 			if ($row2["id_agente"] > 0){
 					echo "<td class='$tdcolor'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row2["id_agente"]."'><b>".dame_nombre_agente($row2["id_agente"])."</b></a>";
-					echo "<td class='$tdcolor'><img src='images/g_".show_icon_group($id_group).".gif'></td>";
+
+					echo "<td class='$tdcolor' align='center'><img src='images/groups_small/".show_icon_group($id_group).".png' class='bot'></td>";
 					echo "<td class='$tdcolor'>";
 			} else { // for SNMP generated alerts
-				echo "<td class='$tdcolor' colspan='2'>".$lang_label["alert"]." /  SNMP";
-				echo "<td class='$tdcolor' width='95'>";
+				echo "<td class='$tdcolor'>".$lang_label["alert"]." /  SNMP";
+				echo "<td class='$tdcolor' align='center'><img src='images/dot_white.gif' class='bot'>";
+				echo "<td class='$tdcolor'>";
 			}
 			if ($row2["estado"] <> 0)
-				echo "<a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$row2["id_usuario"]."'><a href='#' class='tip'>&nbsp;<span>".dame_nombre_real($row2["id_usuario"])."</span></a>".substr($row2["id_usuario"],0,8)."</a>";
-			echo "<td class='$tdcolor'>".$row2["timestamp"];
+				echo "<a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$row2["id_usuario"]."'>".substr($row2["id_usuario"],0,8)."<a href='#' class='tip'> <span>".dame_nombre_real($row2["id_usuario"])."</span></a></a>";
+			echo "<td class='".$tdcolor."f9'>".$row2["timestamp"];
 			echo "<td class='$tdcolor' align='right'>";
 	
 			if (($row2["estado"] == 0) and (give_acl($id_user,$id_group,"IW") ==1))
-				echo "<a href='index.php?sec=eventos&sec2=operation/events/events&offset=".$offset."&check=".$row2["id_evento"]."'><img src='images/ok.gif' border='0'></a>";
+				echo "<a href='index.php?sec=eventos&sec2=operation/events/events&offset=".$offset."&check=".$row2["id_evento"]."'><img src='images/ok.gif' border='0'></a> ";
 			if (give_acl($id_user,$id_group,"IM") ==1)
 				echo "<a href='index.php?sec=eventos&sec2=operation/events/events&delete=".$row2["id_evento"]."&refr=60&offset=".$offset."'><img src='images/cancel.gif' border=0></a> ";
 					

@@ -1,14 +1,15 @@
 <?php
+// Pandora FMS - the Free monitoring system
+// ========================================
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
+// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
+// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
 
-// Pandora - the Free monitoring system
-// ====================================
-// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
-// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// as published by the Free Software Foundation version 2
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -21,8 +22,21 @@
 require("include/config.php");
 
 if (comprueba_login() == 0) {
- 	if ((give_acl($id_user, 0, "AR")==1) or (give_acl($id_user,0,"AW"))
-	or (dame_admin($id_user)==1)) {
+ 	if (give_acl($id_user, 0, "AR") == 0) {
+		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access agent main list view");
+		require ("general/noaccess.php");
+		exit;
+	}
+
+	if (isset($_GET["offset"]))
+		$offset = entrada_limpia($_GET["offset"]);
+	else
+		$offset = 0;
+
+	if (isset($_GET["group_id"]))
+		$group_id = entrada_limpia($_GET["group_id"]);
+	else
+		$group_id = 0;
 
  	if (isset($_POST["ag_group"]))
 			$ag_group = $_POST["ag_group"];
@@ -34,13 +48,11 @@ if (comprueba_login() == 0) {
 	if (isset($_GET["ag_group_refresh"])){
 		$ag_group = $_GET["ag_group_refresh"];
 	}
-	echo "<h2>".$lang_label["ag_title"]."</h2>";
-	echo "<h3>".$lang_label["summary"]."
-	<a href='help/".$help_code."/chap3.php#331' target='_help' class='help'>
-	&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	
+	echo "<h2>".$lang_label["ag_title"]." &gt; ".$lang_label["summary"]."<a href='help/".$help_code."/chap3.php#331' target='_help' class='help'>
+	&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 	
 	// Show group selector
-
 	if (isset($_POST["ag_group"])){
 		$ag_group = $_POST["ag_group"];
 		echo "<form method='post' 
@@ -72,25 +84,34 @@ if (comprueba_login() == 0) {
 	value='".$lang_label["show"]."'>
 	</noscript>
 	</td>
-	</form>";
+	</form>
+	</table>";
+	
 	// Show only selected groups	
+	if ($ag_group > 1){
+		$sql="SELECT * FROM tagente WHERE id_grupo=$ag_group
+		AND disabled = 0 ORDER BY nombre LIMIT $offset, $block_size ";
+		$sql2="SELECT COUNT(id_agente) FROM tagente WHERE id_grupo=$ag_group 
+		AND disabled = 0 ORDER BY nombre";
+	}
+	else {
+		$sql="SELECT * FROM tagente WHERE disabled = 0
+		ORDER BY nombre, id_grupo LIMIT $offset, $block_size";
+		$sql2="SELECT COUNT(id_agente) FROM tagente WHERE disabled = 0
+		ORDER BY nombre, id_grupo";
+	}
 
-	if ($ag_group > 1)
-		$sql='SELECT * FROM tagente WHERE id_grupo='.$ag_group.' 
-		AND disabled = 0 ORDER BY nombre';
-	else 
-		$sql='SELECT * FROM tagente WHERE disabled = 0 
-		ORDER BY id_grupo, nombre';	
-
+	$result2=mysql_query($sql2);
+	$row2=mysql_fetch_array($result2);
+	$total_events = $row2[0];
+	echo "<div style='height: 10px'> </div>";
+	// Prepare pagination
+	
+	pagination ($total_events, "index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$group_id&refr=60", $offset);
+	// Show data.
+	echo "<div style='height: 20px'> </div>";
 	$result=mysql_query($sql);
 	if (mysql_num_rows($result)){
-		echo "<td class='f9l30'>";
-		echo "<img src='images/dot_red.gif'> - ".$lang_label["fired"];
-		echo "&nbsp;&nbsp;</td>";
-		echo "<td>";
-		echo "<img src='images/dot_green.gif'> - ".$lang_label["not_fired"];
-		echo "</td></tr></table>";
-		echo "<br>";
 		echo "<table cellpadding='3' cellspacing='3' width='700'>";
 		echo "<th>".$lang_label["agent"]."</th>";
 		echo "<th>".$lang_label["os"]."</th>";
@@ -112,7 +133,7 @@ if (comprueba_login() == 0) {
 			$agent_type = $row["agent_type"];
 			$ultimo_contacto = $row["ultimo_contacto"];
 			$biginterval=$intervalo;
-			foreach ($mis_grupos as $migrupo){	//Verifiy if the group this agent begins is one of the user groups
+			foreach ($mis_grupos as $migrupo){ //Verifiy if the group this agent begins is one of the user groups
 				if (($migrupo ==1) || ($id_grupo==$migrupo)){
 					$pertenece = 1;
 					break;
@@ -125,6 +146,7 @@ if (comprueba_login() == 0) {
 				$sql_t="SELECT * FROM tagente_estado, tagente_modulo 
 				WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
 				AND tagente_modulo.id_agente=".$id_agente;
+				// $sql_t="SELECT * FROM tagente_estado WHERE id_agente=".$id_agente;
 				$result_t=mysql_query($sql_t);
 				$estado_general = 0; 
 				$numero_modulos = 0; 
@@ -182,7 +204,6 @@ if (comprueba_login() == 0) {
 				}
 				echo "<tr>";
 				echo "<td class='$tdcolor'>";
-				$id_grupo=dame_id_grupo($id_agente);
 				if (give_acl($id_user, $id_grupo, "AW")==1){
 					echo "<a href='index.php?sec=gagente&amp;
 					sec2=godmode/agentes/configurar_agente&amp;
@@ -210,9 +231,8 @@ if (comprueba_login() == 0) {
 				} else {
 					echo "<td class='$tdcolor'>".$intervalo."</td>";
 				}
-				echo '<td class="'.$tdcolor.'">
-				<img src="images/g_'.show_icon_group($id_grupo).'.gif"> 
-				( '.dame_grupo($id_grupo).' )</td>';
+				echo '<td class="'.$tdcolor.'" align="center">
+				<img src="images/groups_small/'.show_icon_group($id_grupo).'.png" title="'.dame_grupo($id_grupo).'"></td>';
 				echo "<td class='$tdcolor'> ".
 				$numero_modulos." <b>/</b> ".$numero_monitor;
 				if ($monitor_bad <> 0) {
@@ -239,16 +259,16 @@ if (comprueba_login() == 0) {
 					elseif ($monitor_down > 0) {
 						echo "<img src='images/b_down.gif'>"; 
 					}
-				} else {
+				} else 
 					echo "<img src='images/b_blue.gif'>";
-				}
-			// checks if an alert was fired recently
+
+				// checks if an alert was fired recently
 				echo "<td class='$tdcolor' align='center'>";
-				if (check_alert_fired($id_agente) == 1) {
+				if (check_alert_fired($id_agente) == 1) 
 					echo "<img src='images/dot_red.gif'>";
-				} else {
+				else
 					echo "<img src='images/dot_green.gif'>";
-				}
+				
 				echo "</td>";
 				echo "<td class='$tdcolor'>";
 				if ( $ultimo_contacto == "0000-00-00 00:00:00"){
@@ -282,5 +302,5 @@ if (comprueba_login() == 0) {
 	audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Agent view");
 		require ("general/noaccess.php");
 }
-}
+
 ?>

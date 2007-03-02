@@ -95,7 +95,6 @@ if (isset ($_GET["refr"])){
 
         // Login process 
    	if ( (! isset ($_SESSION['id_usuario'])) AND (isset ($_GET["login"]))) {
-		
 		$nick = entrada_limpia ($_POST["nick"]);
 		$pass = entrada_limpia ($_POST["pass"]);
 		
@@ -154,48 +153,34 @@ if (isset ($_GET["refr"])){
 		include "general/login_page.php";
 		exit;
 	}
-	
-	if (isset ($_GET["logoff"])) {
-		// Log off
-		unset ($_GET["sec2"]);
-		$_GET["sec"] = "general/logoff";
+
+	// Log off
+	if (isset ($_GET["bye"])) {
+		include "general/logoff.php";
 		$iduser = $_SESSION["id_usuario"];
 		logoff_db ($iduser, $REMOTE_ADDR);
 		session_unregister ("id_usuario");
+		exit;
 	}
 	$pagina = "";
+	if (isset ($_GET["sec2"])){
+		$sec2 = parametro_limpio ($_GET["sec2"]);
+		$pagina = $sec2;
+	} else
+		$sec2 = "";
+		
 	if (isset ($_GET["sec"])){
 		$sec = parametro_limpio ($_GET["sec"]);
 		$pagina = $sec2;
 	}
 	else
 		$sec = "";
-
-	if (isset ($_GET["sec2"])){
-		$sec2 = parametro_limpio ($_GET["sec2"]);
-		$pagina = $sec2;
-	} else
-		$sec2 = "";
-
-
 ?>
 <div id="page">
 	<div id="menu"><?php require ("general/main_menu.php"); ?></div>
-	<div id="main">
-
-	
-	<div class='data_box' style='padding-right:0px; height:74px; text-align:right;'>
-		<!-- solapita -->
-		<div style='color: #ffffff; background-color: #4E682C; line-height: 18px; width:120px; float: right; margin-left: 0px; margin-right:0px; padding-right: 10px; padding-left: 10px; '>
-		Pandora FMS Header
-		</div>	
-		<p align='left'>
-		<?php require("general/header.php"); ?>  
-		</p>
-	</div>
-
-	<!-- Title tab -->
-
+	<div id="main">	
+	<div id='head'><?php require("general/header.php"); ?></div>
+	<div style='height: 40px'> </div>
 	<div class='data_box'>
 
 	<?php
@@ -212,9 +197,7 @@ if (isset ($_GET["refr"])){
 	?>
 		
 	</div>
-
-	<div class="data_box"><?php require("general/footer.php") ?></div>
-
 </div>
+<div id="foot"><?php require("general/footer.php") ?></div>
 </body>
 </html>

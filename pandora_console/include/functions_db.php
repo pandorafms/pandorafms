@@ -214,7 +214,7 @@ function dame_module_id($nombre){
 // Returns agent name when given its ID
 // --------------------------------------------------------------- 
 
-function dame_nombre_agente($id){
+function dame_nombre_agente ($id){
 	require("config.php"); 
 	$query1="SELECT * FROM tagente WHERE id_agente = ".$id; 
 	$resq1=mysql_query($query1);  
@@ -526,6 +526,20 @@ function dame_so_icon($id){
 		$pro = "";
 	return $pro;
 }
+
+// ---------------------------------------------------------------
+// Returns Admin value (0 no admin, 1 admin)
+// ---------------------------------------------------------------
+
+function dame_admin($id){
+	require("config.php");
+	$query1="SELECT * FROM tusuario WHERE id_usuario ='".$id."'";   
+	$rowdup=mysql_query($query1);
+	$rowdup2=mysql_fetch_array($rowdup);
+	$admin=$rowdup2["nivel"];
+	return $admin;
+}
+
 
 // --------------------------------------------------------------- 
 // event_insert - Insert event in eventable, using Id_grupo, Id_agente and Evento

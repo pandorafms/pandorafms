@@ -1,14 +1,15 @@
 <?php
+// Pandora FMS - the Free monitoring system
+// ========================================
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
+// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
+// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
 
-// Pandora - the Free monitoring system
-// ====================================
-// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
-// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// as published by the Free Software Foundation version 2
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -73,11 +74,27 @@ sec2=godmode/grupos/lista_grupos">
 <td class="datos">
 <input type="text" name="nombre" size="35" value="<?php echo $nombre ?>">
 </td></tr>
-<tr><td class="datos2"><?php echo $lang_label["icon"] ?></td>
-<td class="datos2">
-<input type="icon" name="icon" size="25" 
-value="<?php if (isset($icono)){echo $icono;} ?>">
-</td></tr>
+<tr><td class='datos2'>
+<?PHP
+		echo $lang_label["icon"];
+		echo '<td class="datos2">';
+		
+		echo '<select name="icon">';
+
+		if ($icono != ""){
+			echo '<option>' . $icono;
+		}
+		
+		$ficheros = list_files ('images/groups_small/', "png", 1, 0);
+		$size = count ($ficheros);
+		for ($i = 0; $i < $size; $i++) {
+			echo "<option>".substr($ficheros[$i],0,strlen($ficheros[$i])-4);
+		}
+		echo '</select>';
+?>
+
+
+
 <tr><td colspan='3'><div class='raya'></div></td></tr>
 <tr><td colspan="3" align="right">
 <?php 

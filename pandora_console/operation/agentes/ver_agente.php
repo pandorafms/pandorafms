@@ -1,14 +1,15 @@
 <?php
+// Pandora FMS - the Free monitoring system
+// ========================================
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
+// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
+// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
 
-// Pandora - the Free monitoring system
-// ====================================
-// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
-// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// as published by the Free Software Foundation version 2
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -22,7 +23,6 @@ require("include/config.php");
 
 if (comprueba_login() == 0) {
 	if (isset($_GET["id_agente"])){
-			
 		$id_agente = $_GET["id_agente"];
 		// get group for this id_agente
 		$query="SELECT * FROM tagente WHERE id_agente = ".$id_agente;
@@ -33,7 +33,6 @@ if (comprueba_login() == 0) {
 		if (give_acl($id_usuario, $id_grupo, "AR")==1){
 			// Get the user who makes this request
 			$id_usuario = $_SESSION["id_usuario"];
-
 			// Check for Network FLAG change request
 			if (isset($_GET["flag"])){
 				if ($_GET["flag"]==1){
@@ -43,30 +42,47 @@ if (comprueba_login() == 0) {
 					}
 				}
 			}
-
 			if (give_acl($id_usuario,$id_grupo, "AR") == 1){
 				if (isset($_GET["tab"]))
 					$tab = $_GET["tab"];
 				else
 					$tab = "main";
-				
 				echo "
 				<div id='menu_tab'>
-				<ul class='mn'>	
-				<li class='nomn'>";
-					
-				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'>Main</a>";
-				echo "</li>";
+				<ul class='mn'>";
+				if (give_acl($id_usuario,$id_grupo, "AW") == 1){
+					// Manage agent
+					echo "<li class='nomn'><a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'><img src='images/setup.gif' width='16' class='top' border=0> Manage</A>";
+					echo "</li>";
+				}
+				// Main view
 				echo "<li class='nomn'>";
-				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data'>Data</a>";
+				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/monitor.png' class='top' border=0> Main</a>";
 				echo "</li>";
+
+				// Data
 				echo "<li class='nomn'>";
-				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=alert'>Alerts</A>";
+				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data'><img src='images/lightbulb.png' class='top' border=0> Data</a>";
 				echo "</li>";
+
+				// Alerts
+				echo "<li class='nomn'>";
+				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=alert'><img src='images/bell.png' class='top' border=0> Alerts</A>";
+				echo "</li>";
+
+				// Go to group view
+				echo "<li class='nomn'>";
+				echo "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_grupo&refr=60'><img src='images/images.png' class='top' border=0> Group view</a>";
+				echo "</li>";
+				
 				echo "</ul>";
 				echo "</div>";
-
+				echo "<div style='height: 25px'> </div>";
 				switch ($tab) {
+				/* http://pandora.localhost/index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=600 */
+				case "manage":	require "estado_generalagente.php";
+						echo "<br>";
+				
 				case "main":	require "estado_generalagente.php";
 						echo "<br>";
 						//require "estado_monitores.php";

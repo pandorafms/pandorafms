@@ -1,13 +1,15 @@
 <?php
-// Pandora - the Free monitoring system
-// ====================================
-// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnol�icas S.L, info@artica.es
-// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// Pandora FMS - the Free monitoring system
+// ========================================
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
+// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
+// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
+
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// as published by the Free Software Foundation version 2
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -158,7 +160,7 @@ $lang_label["normal_user"]="Standard user";
 $lang_label["has_connected"]="You are connected as";
 $lang_label["logged_out"]="Logged Out";
 $lang_label["logout_msg"]="Your session is over. Please close your browser window to close session on Pandora.<br><br>";
-$lang_label["user_last_activity"]="This is your last activity in Pandora";
+$lang_label["user_last_activity"]="This is your last activity in Pandora FMS console";
 $lang_label["err_auth"]="Authentication Error";
 $lang_label["err_auth_msg"]="Either, your password or your login are incorrect. Please check your CAPS LOCK key, username and password are case SeNSiTiVe.<br><br>All actions, included failed login attempts are logged in Pandora System logs, and these can be reviewed by each user, please report to admin any incident or malfunction.";
 $lang_label["find_crit"]="Please select a search criterion";
@@ -664,6 +666,7 @@ $lang_label["validate_event_failed"]="Event validation failed";
 // 21 feb 2007
  
 $lang_label["load"]="Load";
+$lang_label["information"]="General information";
 
 global $lang_label; 
 global $help_label;

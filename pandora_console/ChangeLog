@@ -1,3 +1,9 @@
+2007-03-02  Sancho Lerena  <slerena@artica.es>
+
+	* Massive commit. Updated almost every file for agent
+	visualization, module visualizacion, added many icons, and altered
+	so many files.
+
 2007-02-27  Sancho Lerena  <slerena@openideas.info>
 
 	* include/styles/god.css: Moved style block.

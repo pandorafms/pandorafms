@@ -335,18 +335,16 @@ function install_step4() {
 					$cfgout = fopen ($pandora_config,"w");
 					$config_contents = fread ($cfgin, filesize("include/config.inc.php"));
 	
-					$config_new = '
-	<!-- Begin of automatic config file -->
-	<?PHP
-	$dbname="'.$db_name.'";	// MySQL DataBase 
-	$dbuser="pandora";	// DB User
-	$dbpassword="'.$random_password.'";	// Password
-	$dbhost="'.$dbhost.'";	// MySQL Host
-	$config_homedir="'.$path.'";	// MySQL Host 
-	$BASE_URL="'.$url.'";	// MySQL Host
-	?>
-	<!-- End of automatic config file -->
-	';
+					$config_new = '<?PHP
+// Begin of automatic config file
+$dbname="'.$db_name.'";			// MySQL DataBase name
+$dbuser="pandora";			// DB User
+$dbpassword="'.$random_password.'";	// DB Password
+$dbhost="'.$dbhost.'";			// DB Host
+$config_homedir="'.$path.'";		// Config homedir
+$BASE_URL="'.$url.'";			// Base URL
+// End of automatic config file
+?>';
 					$step7 = fputs ($cfgout, $config_new);
 					$step7 = $step7 + fputs ($cfgout, $config_contents);
 					if ($step7 > 0)

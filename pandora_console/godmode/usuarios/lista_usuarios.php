@@ -65,9 +65,9 @@ while ($rowdup=mysql_fetch_array($resq1)){
 	echo "<td class='$tdcolor'>".$fecha_registro;
 	echo "<td class='$tdcolor'>";
 	if ($nivel == 1) 
-		echo "<img src='images/admin.gif'>";
+		echo "<img src='images/user_suit.png'>";
 	else
-		echo "<img src='images/user.gif'>";
+		echo "<img src='images/user_green.png'>";
 	
 	$sql1='SELECT * FROM tusuario_perfil WHERE id_usuario = "'.$nombre.'"';
 	$result=mysql_query($sql1);

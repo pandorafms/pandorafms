@@ -26,28 +26,30 @@ div#op7s>ul, div#op8s>ul, div#op9s>ul {
 	width: 126px;
 }
 #op1 li , #op1 li:hover, #op1s li {
-	background: url(../../images/op1.gif) no-repeat 4px 3px;
+	background: url(../../images/bricks.png) no-repeat 4px 3px;
 }
 #op2 li, #op2 li:hover, #op2s li {
-	background: url(../../images/op2.gif) no-repeat 3px 3px;
+	background: url(../../images/server_database.png) no-repeat 4px 3px;
 }
 #op3 li, #op3 li:hover, #op3s li {
-	background: url(../../images/op3.gif) no-repeat 5px 3px;
+	background: url(../../images/book_edit.png) no-repeat 4px 3px;
 }
 #op4 li, #op4 li:hover, #op4s li {
-	background: url(../../images/op4.gif) no-repeat 5px 3px;
+	background: url(../../images/lightning_go.png) no-repeat 4px 3px;
 }
+/* users */
 #op5 li, #op5 li:hover, #op5s li {
-	background: url(../../images/op5.gif) no-repeat 7px 3px;
+	background: url(../../images/group.png) no-repeat 4px 3px;
 }
 #op6 li, #op6 li:hover, #op6s li {
-	background: url(../../images/op6.gif) no-repeat 4px 5px;
+	background: url(../../images/computer_error.png) no-repeat 4px 5px;
 }
+/* trap console */
 #op7 li, #op7 li:hover, #op7s li  {
-	background: url(../../images/op7.gif) no-repeat 1px 0px;
+	background: url(../../images/email.png) no-repeat 4px 3px;
 }
 #op8 li, #op8 li:hover, #op8s li  {
-	background: url(../../images/op8.gif) no-repeat 4px 3px;
+	background: url(../../images/chart_pie.png) no-repeat 4px 3px;
 }
 #op9 li, #op9 li:hover, #op9s li  {
 	background: url(../../images/op9.gif) no-repeat 4px 3px;

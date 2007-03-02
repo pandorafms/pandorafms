@@ -3,6 +3,14 @@
 // ========================
 // AGENT GENERAL DATA FORM 
 // ========================
+// Load global vars
+require("include/config.php");
+
+if (give_acl($id_user, 0, "AW")!=1) {
+	audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access agent manager");
+	require ("general/noaccess.php");
+	exit;
+};
 
 echo "<h2>".$lang_label["agent_conf"];
 if (isset($_GET["creacion"])){
@@ -15,6 +23,7 @@ echo " &gt; ".$lang_label["create_agent"]."
 	&nbsp;<span>".$lang_label["help"]."</span></a>";
 }
 echo "</h2>";
+echo "<div style='height: 25px'> </div>";
 
 echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&
 sec2=godmode/agentes/configurar_agente">';
@@ -25,7 +34,7 @@ if ($creacion_agente == 1) {
 	echo "<input type='hidden' name='id_agente' value='".$id_agente."'>";
 }
 echo '<table width="650" cellpadding="3" cellspacing="3" class="fon">';
-echo "<tr><td class='lb' rowspan='9' width='5'>";
+echo "<tr><td class='lb' rowspan='9' width='1'>";
 echo '<td class="datos"><b>'.$lang_label["agent_name"].'</b></td>
 <td class="datos">
 <input type="text" name="agente" size=30 value="'.$nombre_agente.'">';
@@ -33,9 +42,6 @@ if (isset($_GET["creacion"])){
 	echo "&nbsp;";
 } else {
 	echo "
-	<a href='index.php?sec=gagente&
-	sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."' 
-	<img src='images/setup.gif' width='16' valign='top' align='middle' border='0'></a>
 	<a href='index.php?sec=estado&
 	sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'>
 	<img src='images/lupa.gif' border='0' align='middle'></a>";

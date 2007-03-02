@@ -125,29 +125,35 @@ function type_change()
 
 
 <?PHP
+// Load global vars
+require("include/config.php");
 
-// Module visualization where in create mode
-// MODULE VISUALIZATION
-// ======================
+if (give_acl($id_user, 0, "AW")!=1) {
+	audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access agent manager");
+	require ("general/noaccess.php");
+	exit;
+};
+
+// MODULE VISUALIZATION TABLE
+// ==========================
+
 if ( $creacion_agente != 1) {
 	$sql1='SELECT * FROM tagente_modulo WHERE id_agente = "'.$id_agente.'" 
 	ORDER BY nombre';
 	$result=mysql_query($sql1);
+	echo "<h2>".$lang_label["agent_conf"]." &gt; ".$lang_label["assigned_modules"]."
+		<a href='help/".$help_code."/chap3.php#321' target='_help' class='help'>
+		<span>".$lang_label["help"]."</span></a></h2>";
 	if ($row=mysql_num_rows($result)){
-		?>
-		<h3><?php echo $lang_label["assigned_modules"]?>
-		<a href='help/<?php echo $help_code ?>/chap3.php#321' target='_help' class='help'>
-		<span><?php echo $lang_label["help"] ?></span></a></h3>
-		<table width="700" cellpadding="3" cellspacing="3" class="fon">
-		<tr>
-		<th><?php echo $lang_label["module_name"]?>
-		<th><?php echo $lang_label["type"]?>
-		<th><?php echo $lang_label["interval"]?>
-		<th><?php echo $lang_label["description"]?>
-		<th><?php echo $lang_label["module_group"]?>
-		<th><?php echo $lang_label["max_min"]?>
-		<th width="50"><?php echo $lang_label["action"]?>
-		<?php
+		echo '<table width="700" cellpadding="3" cellspacing="3" class="fon">';
+		echo '<tr>';
+		echo "<th>".$lang_label["module_name"];
+		echo "<th>".$lang_label["type"];
+		echo "<th>".$lang_label["interval"];
+		echo "<th>".$lang_label["description"];
+		echo "<th>".$lang_label["module_group"];
+		echo "<th>".$lang_label["max_min"];
+		echo "<th width=50>".$lang_label["action"];
 		$color=1;
 		while ($row=mysql_fetch_array($result)){
 			if ($color == 1){
@@ -175,7 +181,6 @@ if ( $creacion_agente != 1) {
 			} else {
 				echo "<td class='$tdcolor'> N/A";
 			}
-
 			echo "<td class='$tdcolor' title='$descripcion'>".substr($descripcion,0,30)."</td>";
 			echo "<td class='$tdcolor'>".
 			substr(dame_nombre_grupomodulo($module_group2),0,15)."</td>";
@@ -188,6 +193,7 @@ if ( $creacion_agente != 1) {
 			echo "<td class='$tdcolor'>";
 			if ($id_tipo != -1)
 			echo "<a href='index.php?sec=gagente&
+			tab=module&
 			sec2=godmode/agentes/configurar_agente&
 			id_agente=".$id_agente."&
 			delete_module=".$row["id_agente_modulo"]."'>
@@ -196,19 +202,22 @@ if ( $creacion_agente != 1) {
 			echo "<a href='index.php?sec=gagente&
 			sec2=godmode/agentes/configurar_agente&
 			id_agente=".$id_agente."&
+			tab=module&
 			update_module=".$row["id_agente_modulo"]."#modules'>
 			<img src='images/config.gif' border=0 alt='".$lang_label["update"]."' onLoad='type_change()'></b></a>";
 		}
 		echo "<tr><td colspan='7'><div class='raya'></div></td></tr>";
+		echo "</table>";
 	} else 
 		echo "<div class='nf'>No modules</div>";
+		
 }
 // ====================================================================================
 // Module Creation / Update form
 // ====================================================================================
 else {
 
-	echo '<form name="modulo" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">';
+	echo '<form name="modulo" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'">';
 	if ($update_module == "1"){
 		echo '<input type="hidden" name="update_module" value=1>';
 		echo '<input type="hidden" name="id_agente_modulo" value="'.$id_agente_modulo.'">';
@@ -223,18 +232,17 @@ else {
 		}
 	}
 }
-?>
 
-<h3><?php echo $lang_label["module_asociation_form"] ?>
-<a href='help/<?php echo $help_code ?>/chap3.php#321' target='_help' class='help'>
-&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
-<a name="modules"> <!-- Don't Delete !! -->
-<table width="650" cellpadding="3" cellspacing="3" class="fon">
-<tr><td class='lb' rowspan='8' width='5'>
-<!-- Module type combobox -->
-<td class="datos"><?php echo $lang_label["module_type"] ?>
-<td class="datos">
-<?php
+echo "<h2>".$lang_label["agent_conf"]." &gt; ".$lang_label["module_asociation_form"]."<a href='help/".$help_code."/chap3.php#321' target='_help' class='help'>
+&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+
+echo '<a name="modules"> <!-- Dont Delete !! -->';
+echo '<table width="650" cellpadding="3" cellspacing="3" class="fon">';
+echo "<tr><td class='lb' rowspan='8' width='1'>";
+
+//-- Module type combobox
+echo "<td class='datos'>".$lang_label["module_type"];
+echo "<td class='datos'>";
 if ($update_module == "1") {
 	echo "<input type='hidden' name='tipo' value='".$modulo_id_tipo_modulo."'>";
 	echo "<span class='redi'>".$lang_label["no_change_field"]."</span>";
@@ -321,15 +329,17 @@ if (isset($_POST["oid"])){
 <?php echo $modulo_descripcion ?>
 </textarea>
 <tr><td colspan='5'><div class='raya'></div></td></tr>
-<tr><td colspan="5" align="right">
-<?php 
+<tr>
+<?php
+	echo "<td colspan=5 align='right'>";
 	if ($update_module == "1"){
 		echo '<input name="updbutton" type="submit" class="sub" value="'.$lang_label["update"].'">';
 	} else {
 		echo '<input name="crtbutton" type="submit" class="sub" value="'.$lang_label["add"].'">';
 	}
 	echo "</form>";
-	echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."'><input type='submit' class='sub' name='cancel' value='".$lang_label["cancel"]."'></form>";
+
+
 ?>
 
 </table>

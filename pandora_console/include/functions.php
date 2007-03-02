@@ -1,14 +1,16 @@
 <?php
 
-// Pandora - the Free monitoring system
-// ====================================
-// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas, info@artica.es
-// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// Pandora FMS - the Free monitoring system
+// ========================================
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
+// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
+// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
+
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// as published by the Free Software Foundation version 2
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -16,7 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
 // Functions
 
 // ---------------------------------------------------------------
@@ -119,19 +120,6 @@ function comprueba_admin() {
 	}
 	require("../general/no_access.php");
 	return 1;
-}
-
-// ---------------------------------------------------------------
-// Returns Admin value (0 no admin, 1 admin)
-// ---------------------------------------------------------------
-
-function dame_admin($id){
-	require("config.php");
-	$query1="SELECT * FROM tusuario WHERE id_usuario ='".$id."'";   
-	$rowdup=mysql_query($query1);
-	$rowdup2=mysql_fetch_array($rowdup);
-	$admin=$rowdup2["nivel"];
-	return $admin;
 }
 
 // ---------------------------------------------------------------
@@ -430,7 +418,7 @@ function pagination ($count, $url, $offset ) {
 		echo "<div>";
 		// Show GOTO FIRST button
 		echo '<a href="'.$url.'&offset=0">';
-		echo "<img src='images/control_start_blue.png'>";
+		echo "<img src='images/control_start_blue.png' class='bot'>";
 		echo "</a>";
 		echo "&nbsp;";
 		// Show PREVIOUS button
@@ -438,9 +426,9 @@ function pagination ($count, $url, $offset ) {
 			$index_page_prev= ($index_page-(floor($block_limit/2)))*$block_size;
 			if ($index_page_prev < 0)
 				$index_page_prev = 0;
-			echo '<a href="'.$url.'&offset='.$index_page_prev.'"><img src="images/control_rewind_blue.png"></a> ';
+			echo '<a href="'.$url.'&offset='.$index_page_prev.'"><img src="images/control_rewind_blue.png" class="bot"></a>';
 		}
-
+		echo "&nbsp;";echo "&nbsp;";
 		// Draw blocks markers
 		// $i stores number of page
 		for ($i = $inicio_pag; $i < $index_limit; $i++) {
@@ -462,6 +450,7 @@ function pagination ($count, $url, $offset ) {
 			echo '</a> ';	
 			echo "</span>";
 		}
+		echo "&nbsp;";echo "&nbsp;";
 		// Show NEXT PAGE (fast forward)
 		// Index_counter stores max of blocks
 		if (($paginacion_maxima == 1) AND (($index_counter - $i) > 0)) {
@@ -469,7 +458,7 @@ function pagination ($count, $url, $offset ) {
 				if ($prox_bloque > $count)
 					$prox_bloque = ($count -1) - $block_size;
 				echo '<a href="'.$url.'&offset='.$prox_bloque.'">';
-				echo "<img src='images/control_fastforward_blue.png'></a> ";
+				echo "<img class='bot' src='images/control_fastforward_blue.png'></a> ";
 				$i = $index_counter;
 		}
 		// if exists more registers than i can put in a page (defined by $block_size config parameter)
@@ -478,8 +467,8 @@ function pagination ($count, $url, $offset ) {
 		// as painted in last block (last integer block).	
 		if (($count - $block_size) > 0){
 			$myoffset = floor(($count-1)/ $block_size)* $block_size;
-			echo '&nbsp;<a href="'.$url.'&offset='.$myoffset.'">';
-			echo "<img src='images/control_end_blue.png'>";
+			echo '<a href="'.$url.'&offset='.$myoffset.'">';
+			echo "<img class='bot' src='images/control_end_blue.png'>";
 			echo "</a>";
 		}
 	// End div and layout

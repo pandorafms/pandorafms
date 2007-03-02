@@ -1,21 +1,22 @@
 <?php
-// Pandora - the Free monitoring system
-// ====================================
-// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
-// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// Pandora FMS - the Free monitoring system
+// ========================================
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
+// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
+// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
+
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// as published by the Free Software Foundation version 2
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-?>
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.?>
 
 <?php
 // Load global vars
@@ -26,6 +27,10 @@ if (give_acl($id_user, 0, "AW")!=1) {
 	exit;
 };
 
+if (isset($_GET["id_agente"]))
+	$id_agente = $_GET["id_agente"];
+else
+	$id_agente = -1;
 
 // Init vars
 $descripcion = "";
@@ -37,9 +42,7 @@ $maximo = "0";
 $minimo = "0";
 $nombre_agente = "";
 $direccion_agente = "";
-$id_agente = "";
 $intervalo = "300";
-$id_agente = "";
 $id_server = "";
 $max_alerts = 0;
 $modo = 0;
@@ -69,6 +72,36 @@ $ip_target ="";
 $snmp_community="";
 $creacion_agente = 0;
 $combo_snmp_oid="";
+
+// Show tabs
+// ¯-----------------
+echo "<div id='menu_tab'>
+<ul class='mn'>	
+<li class='nomn'>";
+	
+echo "<li class='nomn'>";
+echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/zoom.png' width='16' class='top' border=0>&nbsp; View agent</a>";
+echo "</li>";
+
+echo "<li class='nomn'>";
+echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=$id_agente'><img src='images/cog.png' width='16' class='top' border=0>&nbsp; Setup agent</a>";
+echo "</li>";
+
+echo "<li class='nomn'>";
+echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente=$id_agente'><img src='images/lightbulb.png' width='16' class='top' border=0>&nbsp; Modules</a>";
+echo "</li>";
+
+echo "<li class='nomn'>";
+echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=$id_agente'><img src='images/bell.png' width='16' class='top' border=0>&nbsp; Alerts</a>";
+echo "</li>";
+
+echo "</ul>";
+echo "</div>";
+// Make some space between tabs and title
+echo "<div style='height: 25px'> </div>";
+// Unset variable to allow operations to work
+$id_agente = "";
+
 // Delete Alert
 // =============
 if (isset($_GET["delete_alert"])){ // if modified some parameter
@@ -513,27 +546,12 @@ if (isset($_GET["delete_module"])){ // DELETE agent module !
 	
 }
 
+// Load page depending on tab selected
+// -----------------------------------
 if (isset($_GET["tab"]))
 	$tab = $_GET["tab"];
 else
 	$tab = "main";
-
-echo "<div id='menu_tab'>
-<ul class='mn'>	
-<li class='nomn'>";
-	
-echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=$id_agente'>Agent info</a>";
-echo "</li>";
-
-echo "<li class='nomn'>";
-echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente=$id_agente'>Modules</a>";
-echo "</li>";
-
-echo "<li class='nomn'>";
-echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=$id_agente'>Alerts</a>";
-echo "</li>";
-echo "</ul>";
-echo "</div>";
 
 switch ($tab) {
 case "main":	require "agent_manager.php";
@@ -545,5 +563,4 @@ case "alert": 	require "alert_manager.php";
 }
 
 
-echo "FUCKIN SHIT";
 ?>

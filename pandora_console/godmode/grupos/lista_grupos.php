@@ -1,13 +1,15 @@
 <?php
-// Pandora - the Free monitoring system
-// ====================================
-// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
-// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// Pandora FMS - the Free monitoring system
+// ========================================
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
+// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
+// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
+
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// as published by the Free Software Foundation version 2
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -28,7 +30,6 @@ if (comprueba_login() == 0)
 		$icon = entrada_limpia($_POST["icon"]);
 		$sql_insert="INSERT INTO tgrupo (nombre, icon) 
 		VALUES ('".$nombre."', '".$icon."') ";
-		echo $sql_insert;
 		$result=mysql_query($sql_insert);	
 		if (! $result)
 			echo "<h3 class='error'>".$lang_label["create_group_no"]."</h3>";
@@ -90,7 +91,7 @@ if (comprueba_login() == 0)
 			echo "
 			<tr>
 				<td class='$tdcolor' align='center'>
-				<img src='images/g_".show_icon_group($row["id_grupo"]).".gif' 
+				<img src='images/groups_small/".show_icon_group($row["id_grupo"]).".png'
 				border='0'>
 				</td>
 				<td class='$tdcolor'>

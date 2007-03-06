@@ -1,3 +1,12 @@
+2007-03-06  Sancho Lerena  <slerena@artica.es>
+
+	* include/functions*.php: Some reorganization, moved some funtions
+	from functions.php. Added recursive functions to implement group
+	hiearchy (group_belong_group, agent_belong_group).
+
+	* godmode/agentes/module_manager.php, configurar_agente.php:
+	Module edition/add now works :-)
+
 2007-03-02  Sancho Lerena  <slerena@artica.es>
 
 	* Massive commit. Updated almost every file for agent

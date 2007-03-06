@@ -31,131 +31,18 @@ function midebug($var, $mesg){
 } 
 
 // --------------------------------------------------------------- 
-// audit_db, update audit log
-// --------------------------------------------------------------- 
-
-function audit_db($id,$ip,$accion,$descripcion){
-	require("config.php");
-	$today=date('Y-m-d H:i:s');
-	$sql1='INSERT INTO tsesion (ID_usuario, accion, fecha, IP_origen,descripcion) VALUES ("'.$id.'","'.$accion.'","'.$today.'","'.$ip.'","'.$descripcion.'")';
-	$result=mysql_query($sql1);
-}
-
-
-// --------------------------------------------------------------- 
-// logon_db, update entry in logon audit
-// --------------------------------------------------------------- 
-
-function logon_db($id,$ip){
-	require("config.php");
-	audit_db($id,$ip,"Logon","Logged in");
-	// Update last registry of user to get last logon
-	$sql2='UPDATE tusuario fecha_registro = $today WHERE id_usuario = "$id"';
-	$result=mysql_query($sql2);
-}
-
-// --------------------------------------------------------------- 
-// logoff_db, also adds audit log
-// --------------------------------------------------------------- 
-
-function logoff_db($id,$ip){
-	require("config.php");
-	audit_db($id,$ip,"Logoff","Logged out");
-}
-
-// --------------------------------------------------------------- 
-// Return email of a user given ID 
-// --------------------------------------------------------------- 
-
-function dame_email($id){ 
-	require("config.php");
-	$query1="SELECT * FROM tusuario WHERE id_usuario =".$id;
-	$resq1=mysql_query($query1);
-	$rowdup=mysql_fetch_array($resq1);
-	$nombre=$rowdup["direccion"];
-	return $nombre;
-} 
-
-
-// --------------------------------------------------------------- 
-// Gives error message and stops execution if user 
-//doesn't have an open session and this session is from an valid user
-// --------------------------------------------------------------- 
-
-function comprueba_login() { 
-	if (isset($_SESSION["id_usuario"])){
-		$id = $_SESSION["id_usuario"];
-		require("config.php");
-		$query1="SELECT * FROM tusuario WHERE id_usuario = '".$id."'";
-		$resq1=mysql_query($query1);
-		$rowdup=mysql_fetch_array($resq1);
-		$nombre=$rowdup["id_usuario"];
-		if ( $id == $nombre ){
-			return 0 ;	
-		}
-	}
-	require("general/noaccess.php");
-	return 1;	
-}
-
-// --------------------------------------------------------------- 
-// Gives error message and stops execution if user 
-//doesn't have an open session and this session is from an administrator
-// --------------------------------------------------------------- 
-
-function comprueba_admin() {
-	if (isset($_SESSION["id_usuario"])){
-		$iduser=$_SESSION['id_usuario'];
-		if (dame_admin($iduser)==1){
-			$id = $_SESSION["id_usuario"];
-			require("config.php");
-			$query1="SELECT * FROM tusuario WHERE id_usuario = '".$id."'";
-			$resq1=mysql_query($query1);
-			$rowdup=mysql_fetch_array($resq1);
-			$nombre=$rowdup["id_usuario"];
-			$nivel=$rowdup["nivel"];
-			if (( $id == $nombre) and ($nivel ==1))
-				return 0;
-		}
-	}
-	require("../general/no_access.php");
-	return 1;
-}
-
-// ---------------------------------------------------------------
-// Returns number of alerts fired by this agent
+// array_in
+// Search "item" in a given array, return 1 if exists, 0 if not
 // ---------------------------------------------------------------
 
-function check_alert_fired($id_agente){
-	require("config.php");
-	$query1="SELECT * FROM tagente_modulo WHERE id_agente ='".$id_agente."'";   
-	$rowdup=mysql_query($query1);
-	while ($data=mysql_fetch_array($rowdup)){
-		$query2="SELECT COUNT(*) FROM talerta_agente_modulo WHERE times_fired > 0 AND id_agente_modulo =".$data["id_agente_modulo"];
-		$rowdup2=mysql_query($query2);
-		$data2=mysql_fetch_array($rowdup2);
-		if ($data2[0] > 0)
-			return 1;
-	}
-	return 0;
-}
-
-// ---------------------------------------------------------------
-// 0 if it doesn't exist, 1 if it does, when given email
-// ---------------------------------------------------------------
-
-function existe($id){
-	require("config.php");
-	$query1="SELECT * FROM tusuario WHERE id_usuario = '".$id."'";   
-	$resq1=mysql_query($query1);
-	if ($resq1 != 0) {
-		if ($rowdup=mysql_fetch_array($resq1)){ 
-			return 1; 
+function array_in($exampleArray, $item){
+	$result = 0;
+	foreach ($exampleArray as $key => $value){
+  		if ($value == $item){
+   			$result = 1;
 		}
-		else {
-			return 0; 
-		}
-	} else { return 0 ; }
+  	}
+	return $result;
 }
 
 

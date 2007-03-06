@@ -200,7 +200,7 @@ th, td.lb {
 
 td.lb_view {
 	color: #ffffff;
-	background-color: #7BA04A;
+	background-color: #7ba04a;
 }
 
 td.lb, td.lb_view {
@@ -233,13 +233,13 @@ td.datos_jus, td.datos2_jus {
 	background-color: #4a6629;
 }
 .bg2 { /* main page */
-	background-color: #D84437;
+	background-color: #d84437;
 }
 .bg3 { /* godmode */
-	background-color: #D84437;
+	background-color: #d84437;
 }
 .bg4 { /* links */
-	background-color: #5385BF;
+	background-color: #5385bf;
 }
 
 .bg, .bg2, .bg3, .bg4 {
@@ -413,13 +413,13 @@ a.mn, .gr {
 	right: -1;
 }
 div.imgr>img {
-	position:absolute;
+	position: absolute;
 	top: 0;
 	right: 1;
 }
 div.nf {
-	background: url(../../images/info.gif) no-repeat;
-	color: #9a2f0a;
+	background: url(../../images/info.png) no-repeat;
+	color: #ac4444;
 	margin-left: 7px;
 	padding: 2px 1px 6px 25px;
 }
@@ -445,15 +445,15 @@ div#install_box {
 }
 
 div.title_line {
-	background-color: #4E682C;
+	background-color: #4e682c;
 	height: 5px;
 	width: 762px;
 }
 
 div.data_box {
-	border-top: 5px solid #4E682C;
-	border-right: 1px solid #4E682C;
-	border-bottom: 1px solid #4E682C;
+	border-top: 5px solid #778855;
+	border-right: 1px solid #4e682c;
+	border-bottom: 1px solid #4e682c;
 	padding-left: 20px;
 	padding-top: 0px;
 	padding-bottom: 20px;
@@ -509,7 +509,6 @@ div.data_box {
 	background: #db6351;
 	border-top: none;
 }
-
 span.users {
 	background: url(../../images/group.png) no-repeat;
 }
@@ -534,7 +533,6 @@ span.users, span.agents, span.data, span.alerts, span.time {
 .mgb25 {
 	margin-bottom: 25px;
 }
-
 #head {
 	border-bottom: 1px solid #708090;
 	padding-bottom: 12px;

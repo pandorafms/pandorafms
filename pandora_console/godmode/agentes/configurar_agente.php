@@ -391,6 +391,8 @@ if ((isset($_POST["update_module"])) || (isset($_POST["insert_module"]))) {
 	if (isset($_POST["module_interval"]))
 		$module_interval = entrada_limpia($_POST["module_interval"]);
 }
+
+
 // MODULE UPDATE
 // =================
 if ((isset($_POST["update_module"])) && (!isset($_POST["oid"]))){ // if modified something

@@ -97,7 +97,7 @@ function type_change()
 		document.modulo.modulo_min.style.background="#ddd";
 		document.modulo.modulo_min.disabled=true;
 	}
-	
+
 	// type 12 - UDP
 	if (document.modulo.tipo.value == 12){
 		document.modulo.snmp_oid.style.background="#ddd";
@@ -212,24 +212,19 @@ if ( $creacion_agente != 1) {
 		echo "<div class='nf'>No modules</div>";
 		
 }
-// ====================================================================================
-// Module Creation / Update form
-// ====================================================================================
-else {
 
-	echo '<form name="modulo" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'">';
-	if ($update_module == "1"){
-		echo '<input type="hidden" name="update_module" value=1>';
-		echo '<input type="hidden" name="id_agente_modulo" value="'.$id_agente_modulo.'">';
-	}
-	else { // Create
-		echo '<input type="hidden" name="insert_module" value=1>';
-		// Default values for new modules
-		if ($ip_target == ""){
-			$ip_target = $direccion_agente;
-			$snmp_community = "public";
-			$module_interval = $intervalo;
-		}
+echo '<form name="modulo" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'">';
+if ($update_module == "1"){
+	echo '<input type="hidden" name="update_module" value=1>';
+	echo '<input type="hidden" name="id_agente_modulo" value="'.$id_agente_modulo.'">';
+}
+else { // Create
+	echo '<input type="hidden" name="insert_module" value=1>';
+	// Default values for new modules
+	if ($ip_target == ""){
+		$ip_target = $direccion_agente;
+		$snmp_community = "public";
+		$module_interval = $intervalo;
 	}
 }
 

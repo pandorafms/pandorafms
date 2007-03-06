@@ -1,3 +1,14 @@
+2007-03-06  Raul Mateos  <raulofpandora@gmail.com>
+
+	* images/info.png: New image, replace old info.gif.
+	
+	* images/help.png: Change colour.
+	
+	* include/styles/pandora.css: Changed colour in nf class. Small changes
+	in other colours.
+	
+	* include/styles/menu.css: Small colour change in menu border.
+
 2007-03-06  Sancho Lerena  <slerena@artica.es>
 
 	* include/functions*.php: Some reorganization, moved some funtions

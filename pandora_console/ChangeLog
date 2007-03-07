@@ -1,3 +1,11 @@
+2007-03-07  Raul Mateos  <raulofpandora@gmail.com>
+
+	* godmode/agentes/alert_manager.php, modificar_agente.php,
+	operation/agentes/estado_generalagente.php: Small changes
+	with table lines.
+	
+	* include/styles/pandora.css: Reduce data_box class one pix.
+
 2007-03-06  Raul Mateos  <raulofpandora@gmail.com>
 
 	* images/info.png: New image, replace old info.gif.

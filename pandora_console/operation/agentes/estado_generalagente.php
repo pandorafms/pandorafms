@@ -166,31 +166,31 @@ if (comprueba_login() == 0) {
 	} else {
 		$percentil = -1;
 	}
-	echo '<tr>
-	<td class="datos"><b>'.$lang_label["next_contact"].'</b>
-	<td class="datos" colspan=2">
-	<img src="reporting/fgraph.php?tipo=progress&percent='.$percentil.'&height=20&width=200">
+	echo "<tr>
+	<td class='datos'><b>".$lang_label['next_contact']."</b>
+	<td class='datos' colspan=2>
+	<img src='reporting/fgraph.php?tipo=progress&percent=".$percentil."&height=20&width=200'>
 	</td>
-	</tr>';
-	echo "</table>";
+	</tr>
+	<tr><td colspan='4'><div class='raya'></div></td></tr>
+	</table>
 
-	echo "<td valign='top'>";
+	<td valign='top'>
 	
-	echo "<table border=0>";
-	echo "<tr>";
-	echo "<td >
+	<table border=0>
+	<tr>
+	<td>
 		<b>".$lang_label["agent_access_rate"]."</b><br><br>
 		<img border=1 src='reporting/fgraph.php?id=".$id_agente."&tipo=agentaccess&periodo=1440&height=70&width=280'>
-		</td>";
-	echo "</tr><tr>
+		</td>
+	</tr><tr>
 		<td><div style='height:25px'> </div>
 		<b>".$lang_label["agent_module_shareout"]."</b><br><br>
 		<img src='reporting/fgraph.php?id=".$id_agente."&tipo=agentmodules&height=150&width=280' >
-		</td></tr>";
-	echo "</table></td></tr>";
-	echo '</table>';
-
-	echo "<div style='height:40px'> </div>";
+		</td></tr>
+	</table></td></tr>
+	</table>
+	<div style='height:40px'> </div>";
 	
 }
 

@@ -1,5 +1,22 @@
 <?php
 
+// Pandora - the Free monitoring system
+// ====================================
+// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 // ====================================================================================
 // VIEW ALERTS
 // ====================================================================================<br>
@@ -126,23 +143,24 @@ while ($row=mysql_fetch_array($result)){
 <tr><td class="datos2"><?php echo $lang_label["field3"] ?>
 <td class="datos2"><textarea name="campo_3" cols="36" rows="3"><?php echo $alerta_campo3 ?></textarea>
 <tr><td class="datos"><?php echo $lang_label["time_threshold"] ?>
-<td class="datos"><select name="time_threshold" style="margin-right: 60px;">
-<?PHP
+<td class="datos">
+<select name="time_threshold" style="margin-right: 60px;">
+<?php
 	if ($alerta_time_threshold != ""){ 
 		echo "<option value='".$alerta_time_threshold."'>".give_human_time($alerta_time_threshold)."</option>";
 	}
 ?>
-<option value=300>5 Min.
-<option value=600>10 Min
-<option value=900>15 min
-<option value=1800>30 Min
-<option value=3600>1 Hour
-<option value=7200>2 Hour
-<option value=18000>5 Hour
-<option value=43200>12 Hour
-<option value=86400>1 Day
-<option value=604800>1 Week
-<option value=-1>Other value
+<option value=300>5 Min.</option>
+<option value=600>10 Min.</option>
+<option value=900>15 Min.</option>
+<option value=1800>30 Min.</option>
+<option value=3600>1 Hour</option>
+<option value=7200>2 Hour</option>
+<option value=18000>5 Hour</option>
+<option value=43200>12 Hour</option>
+<option value=86400>1 Day</option>
+<option value=604800>1 Week</option>
+<option value=-1>Other value</option>
 </select>
 
 <?php echo $lang_label["other"] ?>
@@ -191,10 +209,4 @@ echo '<tr><td colspan="3" align="right">';
 	
 	echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."'><input type='submit' class='sub' name='crt' value='".$lang_label["cancel"]."'></form>";
 echo '</td></tr></table>';
-}
-}
-	} // end page
-else {
-		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Agent Management");
-		require ("general/noaccess.php");
-	}
+

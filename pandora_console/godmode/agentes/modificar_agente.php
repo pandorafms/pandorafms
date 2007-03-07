@@ -143,8 +143,8 @@
 				<img border='0' src='images/cancel.gif'></a></td>";
 			}
 		}
-		echo "<tr><td colspan='4'><div class='raya'></div></td></tr>";
-		echo "<tr><td align='right' colspan='4'>";
+		echo "<tr><td colspan='5'><div class='raya'></div></td></tr>";
+		echo "<tr><td align='right' colspan='5'>";
 		echo "<form method='post' action='index.php?sec=gagente&
 		sec2=godmode/agentes/configurar_agente&creacion=1'>";
 		echo "<input type='submit' class='sub' name='crt'

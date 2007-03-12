@@ -23,43 +23,6 @@ include_once ('reporting/fgraph.php');
 include_once 'Image/Graph.php';
 
 
-// initialization functions //
-
-
-// ---------------------------------------------------------------
-//  gets id_agente_modulo from agent and module names
-// ---------------------------------------------------------------
-
-function dame_agente_modulo_id_names($agent_name, $module_name){
-	// this function suposes (maybe incorrectly) that the module name
-	// is unic regardless of the type, i.e., two modules cannot have the
-	// same name although they have different module types
-        
-// 	checks if 
-// 		the agent name exists in db, 
-// 		if it has a module with this name associated
-// 	and returns the id_agente_modulo of the agent-module pair
-
-//	returns nothing if there is any error
-        
-       	// checking agent name
-      
-	if (!( $agent_id = dame_agente_id($agent_name) )) { return; }
-
-        // checking module
-        $query1="SELECT * FROM tagente_modulo WHERE id_agente = '" . 
-        	mysql_real_escape_string($agent_id) . "' and nombre = '" .
-        	mysql_real_escape_string($module_name) . "'"; 
-        $resq1=mysql_query($query1);
-        if ($rowdup=mysql_fetch_array($resq1))
-                $pro=$rowdup["id_agente_modulo"];
-        else
-                $pro = "";
-                
-        // returning agent-module id (if any)
-        return $pro;	
-}
-
 
 // LaTeX related functions
 

@@ -36,14 +36,32 @@ if (comprueba_login() == 0) {
 	echo '</style>';
 
 	if (isset($_GET["tipo"]) AND isset($_GET["id"])) {
-		$tipo =entrada_limpia($_GET["tipo"]);
-		$id_agente_modulo = entrada_limpia($_GET["id"]);
+		$tipo = entrada_limpia($_GET["tipo"]); 
+		$id_agente_modulo = entrada_limpia($_GET["id"]); 
 		$ahora = time();
 	}
+	elseif (isset($_GET["tipo"]) AND isset($_GET["agentname"]) AND isset($_GET["modulename"])) {
+		$tipo = entrada_limpia($_GET["tipo"]);
+		$param['agentname'] = entrada_limpia($_GET["agentname"]);
+		$param['modulename'] = entrada_limpia($_GET["modulename"]); 
+		$id_agente_modulo = dame_agente_modulo_id_names( $param['agentname'], $param['modulename'] );
+		$ahora = time();	
+		
+		
+	} 
 	else {
 		echo "<h3 class='error'>".$lang_label["graf_error"]."</h3>";
 		exit;	
 	}
+	
+	if (($_GET["agentname_comp"]) AND ($_GET["modulename_comp"])) {
+		$param['agentname_comp'] = entrada_limpia($_GET["agentname_comp"]);
+		$param['modulename_comp'] = entrada_limpia($_GET["modulename_comp"]);
+		$id_agente_modulo_comp = dame_agente_modulo_id_names( $param['agentname_comp'], $param['modulename_comp'] );
+		$id_agente_modulo = $id_agente_modulo . ":" . $id_agente_modulo_comp;
+		$graphtype = "4:4";
+	}
+	
 	
 	// Nota: En los intervalos, se han aumentado por encima de los 24 del grafico diario y los 7 del semanal para
 	// que la grafica tenga mas resolucion. Cuanto mayor sea el intervalo mas tardara la grafica en generarse !!!.
@@ -104,11 +122,12 @@ if (comprueba_login() == 0) {
 
 	}
 	
-	
+ 
 	foreach ($_GET as $key => $value) {
 		$param[$key] = $value;
 	}
 	$param['tipo']='sparse';
+	$param['graphtype'] = $graphtype;
 	$param['zoom']=isset($param['zoom'])?$param['zoom']:100;
 	$param['draw_events']=isset($param['draw_events'])?$param['draw_events']:1;
 	$param['origin']=isset($param['origin'])?$param['origin']:($ahora-($param['periodo']*60));
@@ -116,6 +135,7 @@ if (comprueba_login() == 0) {
 	/*if (isset($_GET['draw_events']) and $_GET['draw_events']==0) {
 		$param['draw_events'] = 0;
 	}*/ 
+	
 	
 	$imgtag = "<img src='fgraph.php?tipo=sparse&id=". $id_agente_modulo ;
 	foreach ($param as $key => $value) {
@@ -125,8 +145,10 @@ if (comprueba_login() == 0) {
 		
 	echo $imgtag;
 	
-	$param['tipo'] = $_GET['tipo'];
-	$param['id'] = $_GET['id'];
+	$param['tipo'] = $tipo;
+	$tmpid = split(':', $id_agente_modulo);
+	$param['id'] = $tmpid[0];
+	
 } 
 
 ?>
@@ -207,7 +229,7 @@ function getTermEle(ele) {
 
 
 <div id='divmenu' class='menu'>
-	<b>Configuration Menu</b><br>Please, make your changes and apply with <i>Reload</i> button<BR>
+	<b>Configuration Menu</b>
 
 	<form method='get' action='stat_win.php'>
 		<table>
@@ -220,10 +242,25 @@ function getTermEle(ele) {
 	
 		<tr>
 			<td></td>
-			<td>id(s): </td>
-			<td><input type='text' name='id' value='<?php echo $param['id']; ?>'></td>
+			<td>agent:<br>module: </td>
+			<td>
+				<input type='text' name='agentname' value='<?php echo dame_nombre_agente_agentemodulo( $param['id'] ); ?>'><br>
+				<input type='text' name='modulename' value='<?php echo dame_nombre_modulo_agentemodulo( $param['id'] ); ?>'>
+			</td>
 			<td> </td>
 			
+			<td></td>
+			<td>agent:<br>module: </td>
+			<td>
+				<input type='text' name='agentname_comp' value='<?php echo $param['agentname_comp']; ?>'><br>
+				<input type='text' name='modulename_comp' value='<?php echo $param['modulename_comp']; ?>'>
+			</td>
+			
+			<td></td>
+
+		</tr>
+		
+		<tr>
 			<td></td>
 			<td>origin: </td>
 			<td>
@@ -244,14 +281,6 @@ function getTermEle(ele) {
 </script>
 
 			</td>
-			<td></td>
-
-		</tr>
-		
-		<tr>
-			<td></td>
-			<td>graph type(s): </td>
-			<td><input type='text' name='graphtype' value='<?php echo $param['graphtype']; ?>'></td>
 			<td> </td>
 			
 			<td></td>
@@ -260,6 +289,7 @@ function getTermEle(ele) {
 				<select name='periodo' value='<?php echo $param['periodo']; ?>'>
 					<option value='60' <?php if ($param['periodo'] == '60') { echo 'selected="selected"';} ?> >1 hour
 					<option value='1440' <?php if ($param['periodo'] == '1440') { echo 'selected="selected"';} ?> >1 day
+					<option value='10080' <?php if ($param['periodo'] == '10080') { echo 'selected="selected"';} ?> >1 week
 					<option value='44640' <?php if ($param['periodo'] == '44640') { echo 'selected="selected"';} ?> >31 days
 					<option value='525600' <?php if ($param['periodo'] == '525600') { echo 'selected="selected"';} ?> >365 days
 				</select>

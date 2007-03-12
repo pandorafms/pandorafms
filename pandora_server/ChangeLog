@@ -1,3 +1,27 @@
+2007-03-12  Sancho Lerena  <slerena@artica.es>
+
+	* util/pandora_dbstress.pl: Upgraded. Now admits one agent or all
+	agent.
+	
+	* bin/pandora_recon.pl: New network recon server, to autoexplore
+	new machines and add to monitorization automatically. Not
+	finished, first version, first commit to SVN :-)
+
+	* bin/pandora_db.pm: Now pandora_writestate() writes new fields
+	current_interval, processed_by_server into tagente_estado
+	table. This increase seeks for Unknown modules, and to know what
+	server manage the module (data or network).
+
+	* bin/pandora_server.pl: Small changes in banners.
+
+	* bin/pandora_network.pl: Small changes in banner. Small
+	optimization, now server_id is only checked once.
+
+	* bin/pandora_config.pm: Small changes in banner. Added support to
+	new reconserver, added config hash "servermode" to maintain a
+	single var with servertype. Now renders in console real server
+	name at startup and a "all correct" message after initializing.
+
 2007-02-22  Sancho Lerena  <slerena@artica.es>
 
 	* bin/pandora_dbstress.pl: Deleted, valid one is on /util

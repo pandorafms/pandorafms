@@ -19,8 +19,8 @@
 ################################################################################
 
 my $target_interval = 300;
-my $target_days = 40;
-my $target_agent = 10; # if not defined, uses ALL agents
+my $target_days = 7;
+my $target_agent = -1; # if -1, uses ALL agents
 
 ################################################################################
 ################################################################################
@@ -40,7 +40,7 @@ use pandora_db;
 ################################################################################
 ################################################################################
 
-my $version = "1.3-dev 070216";
+my $version = "1.3-dev 070312";
 
 # FLUSH in each IO (only for debug, very slooow)
 # ENABLED in DEBUGMODE
@@ -53,7 +53,7 @@ my %pa_config;
 pandora_init(\%pa_config,"Pandora DB Stress tool");
 
 # Read config file for Global variables
-pandora_loadconfig (\%pa_config,2);
+pandora_loadconfig (\%pa_config,0); #Start like a data server
 
 # open database, only ONCE. We pass reference to DBI handler ($dbh) to all subprocess
 my $dbh = DBI->connect("DBI:mysql:pandora:$pa_config{'dbhost'}:3306",$pa_config{'dbuser'}, $pa_config{'dbpass'},	{ RaiseError => 1, AutoCommit => 1 });
@@ -61,8 +61,14 @@ my $dbh = DBI->connect("DBI:mysql:pandora:$pa_config{'dbhost'}:3306",$pa_config{
 print " [*] Generating data of $target_days days ago \n";
 print " [*] Interval for this workload is $target_interval \n";
 
-#my $query_idag = "select * from tagente_modulo where id_agente = $target_agent";
-my $query_idag = "select * from tagente_modulo";
+my $query_idag;
+
+if ($target_agent ne -1){
+	$query_idag = "select * from tagente_modulo where id_agente = $target_agent";
+} else {
+	$query_idag = "select * from tagente_modulo";
+}
+
 my $s_idag = $dbh->prepare($query_idag);
 $s_idag ->execute;
 my @data;

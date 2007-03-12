@@ -345,7 +345,8 @@ sub pandora_writestate (%$$$$$$) {
 	my $utimestamp; # integer version of timestamp	
 	$utimestamp = &UnixDate($timestamp,"%s"); # convert from human to integer
 	my @data;
-	my $cambio = 0; my $id_grupo; 
+	my $cambio = 0; my $id_grupo;
+	my $server_name = $pa_config->{'servername'}.$pa_config->{"servermode"};
 	# Get id
 	# BE CAREFUL: We don't verify the strings chains
 	# TO DO: Verify errors
@@ -355,6 +356,20 @@ sub pandora_writestate (%$$$$$$) {
 	if (($id_agente eq "-1") || ($id_agente_modulo eq "-1")) {
 		goto fin_pandora_writestate;
 	}
+	# Seek for agent_interval or module_interval
+	my $query_idag = "select * from tagente_modulo where id_agente_modulo = " . $id_agente_modulo;;
+	my $s_idag = $dbh->prepare($query_idag);
+	$s_idag ->execute;
+	if ($s_idag->rows == 0) {
+		logger( $pa_config, "ERROR Cannot find agenteModulo $id_agente_modulo",6);
+		logger( $pa_config, "ERROR: SQL Query is $query_idag ",8);
+	} else  {    @data = $s_idag->fetchrow_array(); }
+	my $module_interval = $data[7];
+	if ($module_interval == 0){
+		$module_interval = dame_intervalo($pa_config, $id_agente, $dbh);
+ 	}
+	$s_idag->finish();
+	
 	# Check alert subroutine
 	eval {
 		# Alerts checks for Agents, only for master servers
@@ -374,8 +389,8 @@ sub pandora_writestate (%$$$$$$) {
 	$datos = $dbh->quote($datos); # Parse data entry for adecuate SQL representation.
 	my $query_act; # OJO que dentro de una llave solo tiene existencia en esa llave !!
 	if ($s_idages->rows == 0) { # Doesnt exist entry in table, lets make the first entry
-		logger($pa_config, "Generando entrada (INSERT) en tagente_estado para $nombre_modulo",2);
-    		$query_act = "insert into tagente_estado (id_agente_modulo,datos,timestamp,estado,cambio,id_agente,last_try, utimestamp) values ($id_agente_modulo,$datos,'$timestamp','$estado','1',$id_agente,'$timestamp',$utimestamp)"; # Cuando se hace un insert, siempre hay un cambio de estado
+		logger($pa_config, "Create entry in tagente_estado for module $nombre_modulo",2);
+    		$query_act = "insert into tagente_estado (id_agente_modulo, datos, timestamp, estado, cambio, id_agente, last_try, utimestamp, current_interval, processed_by_server) values ($id_agente_modulo,$datos,'$timestamp','$estado','1',$id_agente,'$timestamp',$utimestamp, $module_interval, '$server_name')"; # Cuando se hace un insert, siempre hay un cambio de estado
 
     	} else { # There are an entry in table already
 	        @data = $s_idages->fetchrow_array();
@@ -397,7 +412,7 @@ sub pandora_writestate (%$$$$$$) {
 			}
 			pandora_event($pa_config, $descripcion,$id_grupo,$id_agente,$dbh);
 	        }
-    		$query_act = "update tagente_estado set utimestamp = $utimestamp, datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, last_try = '$timestamp' where id_agente_modulo = $id_agente_modulo ";
+    		$query_act = "update tagente_estado set utimestamp = '$utimestamp', datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, last_try = '$timestamp', current_interval = '$module_interval', processed_by_server = '$server_name' where id_agente_modulo = '$id_agente_modulo'";
     	}
 	my $a_idages = $dbh->prepare($query_act);
 	$a_idages->execute;
@@ -504,7 +519,6 @@ sub module_generic_proc (%$$$$$) {
 		if (ref($a_min) eq "HASH") {
 			$a_min = "";
 		}
-		
 		pandora_writedata($pa_config, $a_timestamp,$agent_name,$module_type,$a_name,$a_datos,$a_max,$a_min,$a_desc,$dbh);
 	
 		# Check for status: <1 state 1 (Bad), >= 1 state 0 (Good)

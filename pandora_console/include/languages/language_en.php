@@ -1,15 +1,19 @@
 <?php
 // Pandora FMS - the Free monitoring system
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development and project architecture and management
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
+// CSS and some PHP additions
 // Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
-
+// Javascript Active Console code.
+// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
+// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation version 2
+// as published by the Free Software Foundation; version 2
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -17,7 +21,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
 $lang_label["view_agents"]="View Agents";
 $lang_label["manage_incidents"]="Manage Incidents";
 $lang_label["view_users"]= "View Users";
@@ -138,7 +141,7 @@ $lang_label["assigned_modules"]="Assigned modules";
 $lang_label["learning_mode"]="Learning mode";
 $lang_label["assigned_alerts"]="Assigned alerts";
 $lang_label["alert_asociation_form"]="Alert association form";
-$lang_label["module_asociation_form"]="Module association form";
+$lang_label["module_asociation_form"]="Module assignment";
 $lang_label["name_type"]="Name / Type";
 $lang_label["min_max"]="Min/Max";
 $lang_label["detailed_monitoragent_state"]="Monitor detail";
@@ -395,7 +398,7 @@ $lang_label["copy_conf"]="Copy Configuration";
 $lang_label["fromagent"]="From Agent";
 $lang_label["toagent"]="To Agent(s):";
 
-$lang_label["step_compact"]="Compact interpolation (Hours: 1 Fine, 10 medium, 20 bad)";
+$lang_label["step_compact"]="Compact interpolation in hours (1 Fine-20 bad)";
 
 $lang_label["setup_links"]="Links";
 $lang_label["create_link_no"]="There was a problem creating link";
@@ -655,19 +658,55 @@ $lang_label["no_monitors_g"]="This group doesn't have any monitor";
 
 // New strings for 1.3 version
 
-// 15 dev, new for 1.3 dev
 $lang_label["reporting"]="Reporting";
 $lang_label["agent_general_reporting"]="Agent overview";
-
-// 5 Jan 2007
 $lang_label["active_console"]="Active console";
-
 $lang_label["validate_event_failed"]="Event validation failed";
-// 21 feb 2007
- 
 $lang_label["load"]="Load";
 $lang_label["information"]="General information";
-
+$lang_label["parent"]="Parent";
+$lang_label["show_unknown"]="Show unknown modules in global view";
+$lang_label["show_lastalerts"]="Show last fired alerts in global view";
+$lang_label["manage_modules"]="Manage modules";
+$lang_label["modify_module_ok"]="Module updated successfully";
+$lang_label["modify_module_no"]="Problem modifying module";
+$lang_label["module_management"]="Module management";
+$lang_label["defined_modules"]="Defined modules";
+$lang_label["cat_0"] = "Software agent data";
+$lang_label["cat_1"] = "Software agent monitor";
+$lang_label["cat_2"] = "Network agent data";
+$lang_label["cat_3"] = "Network agent monitor";
+$lang_label["unknown"] = "Unknown";
+$lang_label["create_module"]="Create module";
+$lang_label["network_templates"]="Network templates";
+$lang_label["snmp_modules"]="SNMP modules";
+$lang_label["network_components_groups"]="Network components groups";
+$lang_label["network_components"]="Network components";
+$lang_label["create_ok"]="Created successfully";
+$lang_label["create_no"]="Not created. Error inserting data";
+$lang_label["modify_ok"]="Updated successfully";
+$lang_label["modify_no"]="Not updated. Error updating data";
+$lang_label["delete_no"]="Not deleted. Error deleting data";
+$lang_label["delete_ok"]="Deleted successfully";
+$lang_label["network_component_group_management"]="Network Component group management";
+$lang_label["network_component_management"]="Network component management";
+$lang_label["oid"]="OID";
+$lang_label['recon_server']="Recon Server";
+$lang_label['snmp_console']="SNMP Console";
+$lang_label['network_server']="Network Server";
+$lang_label['data_server']="Data Server";
+$lang_label["md5_checksum"]="MD5 Check";
+$lang_label["nc_groups"]="Component groups";
+$lang_label["nc.group"]="NC.Group";
+$lang_label["manual_config"]="Manual setup";
+$lang_label["network_component"]="Network Component";
+$lang_label["not_available_in_edit_mode"]="Not available in edition mode";
+$lang_label["using_network_component"]="Using Network Component";
+$lang_label["view_mode"]="View mode";
+$lang_label["setup_mode"]="Setup mode";
+$lang_label["refresh_data"]="Refresh data";
+$lang_label["lag"]="LAG";
+$lang_label["N/A"]="N/A";
 global $lang_label; 
 global $help_label;
 ?>

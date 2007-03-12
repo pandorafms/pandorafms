@@ -1,14 +1,20 @@
 <?php 
 
-// Pandora - the Free monitoring system
-// ====================================
-// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
-// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// Pandora FMS - the Free monitoring system
+// ========================================
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development and project architecture and management
+// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// CSS and some PHP additions
+// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
+// Javascript Active Console code.
+// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
+// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// as published by the Free Software Foundation; version 2
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -29,18 +35,19 @@ if (comprueba_login() == 0)
 		$days_purge=$_POST["days_purge"];
 		$config_graph_res=$_POST["graph_res"];
 		$config_step_compact=$_POST["step_compact"];
-		$config_graph_order=$_POST["graph_order"];
-		$config_truetype=$_POST["truetype"];
 		$config_bgimage=$_POST["bgimage"];
+		$config_show_unknown=$_POST["show_unknown"];
+		$config_show_lastalerts=$_POST["show_lastalerts"];
+		
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$block_size."' WHERE TOKEN='block_size'");
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$language_code."' WHERE TOKEN='language_code'");
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$days_purge."' WHERE TOKEN='days_purge'");
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$days_compact." ' WHERE TOKEN='days_compact'");
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config_graph_res."' WHERE TOKEN='graph_res'");
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config_step_compact."' WHERE TOKEN='step_compact'");
-		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config_truetype."' WHERE TOKEN='truetype'");
-		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config_graph_order."' WHERE TOKEN='graph_order'");
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config_bgimage."' WHERE token='bgimage'");
+		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config_show_unknown."' WHERE token='show_unknown'");
+		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config_show_lastalerts."' WHERE token='show_lastalerts'");
 	}	
 	echo "<h2>".$lang_label["setup_screen"]."</h2>";
 	echo "<h3>".$lang_label["general_config"]."<a href='help/".$help_code."/chap9.php#9' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
@@ -57,7 +64,6 @@ if (comprueba_login() == 0)
 	if ($row2=mysql_fetch_array($result2)){
 		echo '<option value="'.$row2["id_language"].'">'.$row2["name"];
 	}
-		
 	while ($row=mysql_fetch_array($result)){
 		echo "<option value=".$row["id_language"].">".$row["name"];
 	}
@@ -78,20 +84,21 @@ if (comprueba_login() == 0)
 	echo '<tr><td class="datos2">'.$lang_label["step_compact"];
 	echo '<td class="datos2"><input type="text" name="step_compact" size=5 value="'.$config_step_compact.'">';
 
-	echo '<tr><td class="datos">'.$lang_label["graph_order"];
-	echo '<td class="datos"><select name="graph_order" class="w120">';
-	if ($config_graph_order==0) {
-		echo '<option value="0">'.$lang_label["left_right"].'</option>';
-		echo '<option value="1">'.$lang_label["right_left"].'</option>';
+	
+	echo '<tr><td class="datos">'.$lang_label["show_unknown"];
+	echo '<td class="datos"><select name="show_unknown" class="w120">';
+	if ($config_show_unknown==1) {
+		echo '<option value="1">'.$lang_label["active"].'</option>';
+		echo '<option value="0">'.$lang_label["disabled"].'</option>';
 	}
 	else {
-		echo '<option value="1">'.$lang_label["right_left"].'</option>';
-		echo '<option value="0">'.$lang_label["left_right"].'</option>';
+		echo '<option value="0">'.$lang_label["disabled"].'</option>';
+		echo '<option value="1">'.$lang_label["active"].'</option>';
 	}
-	
-	echo '<tr><td class="datos2">'.$lang_label["truetype"];
-	echo '<td class="datos2"><select name="truetype" class="w120">';
-	if ($config_truetype==1) {
+
+	echo '<tr><td class="datos2">'.$lang_label["show_lastalerts"];
+	echo '<td class="datos2"><select name="show_lastalerts" class="w120">';
+	if ($config_show_lastalerts==1) {
 		echo '<option value="1">'.$lang_label["active"].'</option>';
 		echo '<option value="0">'.$lang_label["disabled"].'</option>';
 	}

@@ -1,13 +1,19 @@
 <?PHP 
-// Pandora - the Free monitoring system
-// ====================================
-// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
-// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// Pandora FMS - the Free monitoring system
+// ========================================
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development and project architecture and management
+// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// CSS and some PHP additions
+// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
+// Javascript Active Console code.
+// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
+// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// as published by the Free Software Foundation; version 2
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -104,6 +110,7 @@ if (comprueba_login() == 0) {
 						id_agente=".$id_agente."&
 						id_agente_modulo=".$row3["id_agente_modulo"]."&
 						flag=1&
+						tab=data&
 						refr=60'>
 						<img src='images/target.gif' border=0></a>";
 					} else {
@@ -111,7 +118,7 @@ if (comprueba_login() == 0) {
 						sec2=operation/agentes/ver_agente&
 						id_agente=".$id_agente."&
 						id_agente_modulo=".$row3["id_agente_modulo"]."&
-						flag=1&
+						tab=data&
 						refr=60'>
 						<img src='images/refresh.gif' border=0></a>";
 					}
@@ -149,24 +156,25 @@ if (comprueba_login() == 0) {
 			AND ($row3["id_tipo_modulo"] != 10) 
 			AND ($row3["id_tipo_modulo"] != 17)){
 				echo "<td class=".$tdcolor.">";
-				if (($row3["datos"] != 0) AND (is_numeric($row3["datos"]))){
-					$mytempdata = fmod($row3["datos"], $row3["datos"]);
-					if ($mytempdata == 0)
+				if (($row3["datos"] != 0) AND (is_numeric($row3["datos"]))) {
+					$mytempdata = fmod($row3["datos"], 1);
+					if ($mytempdata == "0")
 						$myvalue = intval($row3["datos"]);
 					else
 						$myvalue = $row3["datos"];
 					if ($myvalue > 1000000) { // Add sufix "M" for millions
 						$mytempdata = $myvalue / 1000000;
-						echo $mytempdata." M";
+						echo format_numeric($mytempdata)." M";
 					} elseif ( $myvalue > 1000){ // Add sufix "K" for thousands
                                                 $mytempdata = $myvalue / 1000;
-                                                echo $mytempdata." K";
+                                                echo format_numeric ($mytempdata)." K";
 					} else
 						echo substr($myvalue,0,12);
 				} elseif ($row3["datos"] == 0)
 					echo "0";
 				else
 					echo substr($row3["datos"],0,12);
+					
 				$handle = "stat".$nombre_tipo_modulo."_".$nombre_agente;
 				$url = 'reporting/procesos.php?agente='.$nombre_agente;
 				$win_handle=dechex(crc32($nombre_agente.$row3["nombre"]));
@@ -184,6 +192,7 @@ if (comprueba_login() == 0) {
 				$link ="winopeng('reporting/stat_win.php?period=3600&id=".$row3["id_agente_modulo"]."&label=".$graph_label."&refresh=60','hour_".$win_handle."')";
 				echo '<a href="javascript:'.$link.'"><img src="images/grafica_h.gif" border=0></a>';
 			}
+			// STRING DATA
 			else { # Writing string data in different way :)
 				echo "<td class='".$tdcolor."f9' colspan='2' title='".$row3["datos"]."'>";
 				echo salida_limpia(substr($row3["datos"],0,42));

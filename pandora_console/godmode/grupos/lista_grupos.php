@@ -1,15 +1,19 @@
 <?php
 // Pandora FMS - the Free monitoring system
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development and project architecture and management
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
+// CSS and some PHP additions
 // Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
-
+// Javascript Active Console code.
+// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
+// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation version 2
+// as published by the Free Software Foundation; version 2
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -17,7 +21,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
 // Load global vars
 require("include/config.php");
 
@@ -71,11 +74,12 @@ if (comprueba_login() == 0)
 		<span>".$lang_label["help"]."</span></a>
 		</h3>";
 
-	echo "<table cellpadding=3 cellspacing=3>";
-	echo "<th class='w40'>".$lang_label["icon"]."</th>";
-	echo "<th class='w180'>".$lang_label["group_name"]."</th>";
-	echo "<th class='w80'>".$lang_label["delete"]."</th>";
-	$sql1='SELECT id_grupo, nombre FROM tgrupo ORDER BY nombre';
+	echo "<table cellpadding=3 cellspacing=3 width=400>";
+	echo "<th>".$lang_label["icon"]."</th>";
+	echo "<th>".$lang_label["group_name"]."</th>";
+	echo "<th>".$lang_label["parent"]."</th>";
+	echo "<th>".$lang_label["delete"]."</th>";
+	$sql1='SELECT * FROM tgrupo ORDER BY nombre';
 	$result=mysql_query($sql1);
 	$color=0;
 	while ($row=mysql_fetch_array($result)){
@@ -91,7 +95,7 @@ if (comprueba_login() == 0)
 			echo "
 			<tr>
 				<td class='$tdcolor' align='center'>
-				<img src='images/groups_small/".show_icon_group($row["id_grupo"]).".png'
+				<img src='images/groups_small/".$row["icon"].".png'
 				border='0'>
 				</td>
 				<td class='$tdcolor'>
@@ -99,6 +103,9 @@ if (comprueba_login() == 0)
 				sec2=godmode/grupos/configurar_grupo&
 				id_grupo=".$row["id_grupo"]."'>".$row["nombre"]."</a>
 				</b></td>
+				<td class='$tdcolor'>
+				".dame_nombre_grupo ($row["parent"])."
+				</td>
 				<td class='$tdcolor' align='center'>
 				<a href='index.php?sec=gagente&
 				sec2=godmode/grupos/lista_grupos&
@@ -111,8 +118,8 @@ if (comprueba_login() == 0)
 			</tr>";
 		}
 	}
-	echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
-	echo "<tr><td colspan='3' align='right'>";
+	echo "<tr><td colspan='4'><div class='raya'></div></td></tr>";
+	echo "<tr><td colspan='4' align='right'>";
 	echo "<form method=post action='index.php?sec=gagente&
 	sec2=godmode/grupos/configurar_grupo&creacion_grupo=1'>";
 	echo "<input type='submit' class='sub' name='crt' value='".$lang_label["create_group"]."'>";

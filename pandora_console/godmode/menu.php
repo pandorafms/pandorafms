@@ -1,14 +1,20 @@
 <?php
 
-// Pandora - the Free monitoring system
-// ====================================
-// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnol�icas S.L, info@artica.es
-// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// Pandora FMS - the Free monitoring system
+// ========================================
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development and project architecture and management
+// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// CSS and some PHP additions
+// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
+// Javascript Active Console code.
+// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
+// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// as published by the Free Software Foundation; version 2
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -16,7 +22,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
 if (comprueba_login() == 0){
 	$id_user = $_SESSION["id_usuario"];
 	if ( (give_acl($id_user, 0, "LM")==1) OR (give_acl($id_user, 0, "AW")==1 ) OR (give_acl($id_user, 0, "PM")==1) OR (give_acl($id_user, 0, "DM")==1) OR (give_acl($id_user, 0, "UM")==1 )){
@@ -31,12 +36,13 @@ if (comprueba_login() == 0){
 <div id="menug">
 	<div id="god">
 	
-	<?php 
+<?PHP
 	if ((give_acl($id_user, 0, "AW")==1)){
 		if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/agentes/modificar_agente" || $_GET["sec2"] == "godmode/agentes/configurar_agente")){
 			echo '<div id="god1s">';
 		}
-		else echo '<div id="god1">';
+		else
+			echo '<div id="god1">';
 		echo '<ul class="mn"><li><a href="index.php?sec=gagente&amp;sec2=godmode/agentes/modificar_agente" class="mn">'.$lang_label["manage_agents"].'</a></li></ul></div>';
 		
 		if (isset($_GET["sec"]) && $_GET["sec"] == "gagente"){
@@ -49,10 +55,44 @@ if (comprueba_login() == 0){
 			if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/grupos/lista_grupos" || $_GET["sec2"] == "godmode/grupos/configurar_grupo")){
 				echo "<div class='arrowgs'>";
 			}
-			else echo "<div class='arrowg'>";
+			else
+				echo "<div class='arrowg'>";
 			echo "<ul class='mn'><li><a href='index.php?sec=gagente&amp;sec2=godmode/grupos/lista_grupos' class='mn'>".$lang_label["manage_groups"]."</a></li></ul></div>";
 		}
 	}
+
+	if ((give_acl($id_user, 0, "AW")==1)){
+		if (isset($_GET["sec"]) && ($_GET["sec"] == "gmodules"))
+			echo '<div id="god_module_sel">';
+		else
+			echo '<div id="god_module">';
+		echo '<ul class="mn"><li><a href="index.php?sec=gmodules&sec2=godmode/modules/module_list" class="mn">'.$lang_label["manage_modules"].'</a></li></ul></div>';
+
+		if (isset($_GET["sec"]) && $_GET["sec"] == "gmodules"){
+			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/modules/manage_nc_groups")
+				echo "<div class='arrowgs'>";
+			else
+				echo "<div class='arrowg'>";
+			echo "<ul class='mn'><li><a href='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups' class='mn'>".$lang_label["nc_groups"]."</a></li></ul></div>";
+		}
+		
+		if (isset($_GET["sec"]) && $_GET["sec"] == "gmodules"){
+			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/modules/manage_network_components")
+				echo "<div class='arrowgs'>";
+			else
+				echo "<div class='arrowg'>";
+			echo "<ul class='mn'><li><a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components' class='mn'>".$lang_label["network_components"]."</a></li></ul></div>";
+		}
+		// Network Profiles
+		if (isset($_GET["sec"]) && $_GET["sec"] == "gmodules"){
+			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/modules/manage_network_templates")
+				echo "<div class='arrowgs'>";
+			else
+				echo "<div class='arrowg'>";
+			echo "<ul class='mn'><li><a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates' class='mn'>".$lang_label["network_templates"]."</a></li></ul></div>";
+		}
+	}
+	
 	if ((give_acl($id_user, 0, "LM")==1)){
 		if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/alertas/modificar_alerta" || $_GET["sec2"] == "godmode/alertas/configurar_alerta")){
 			echo '<div id="god2s">';

@@ -16,12 +16,12 @@ div#menug {
 	margin-bottom: 15px;
 	}
 #god1 li, #god2 li, #god3 li, #god4 li, #god5 li, #god6 li, #god7 li, #god8 li, #god1s li, 
-#god2s li, #god3s li, #god4s li, #god5s li, #god6s li, #god7s li, #god8s li {
+#god2s li, #god3s li, #god4s li, #god5s li, #god6s li, #god7s li, #god8s li, #god_module li, #god_module_sel li {
 	padding: 0px 0px 0px 30px;
 }
 div#god1>ul, div#god2>ul, div#god3>ul, div#god4>ul, div#god5>ul, div#god6>ul, 
 div#god7>ul, div#god8>ul, div#god1s>ul, div#god2s>ul, div#god3s>ul, div#god4s>ul, 
-div#god5s>ul, div#god6s>ul, div#god7s>ul, div#god8s>ul {
+div#god5s>ul, div#god6s>ul, div#god7s>ul, div#god8s>ul, div#god_module>ul, div#god_module_sel>ul {
 	width: 124px;
 }
 #god1 li, #god1 li:hover, #god1s li  {
@@ -48,6 +48,9 @@ div#god5s>ul, div#god6s>ul, div#god7s>ul, div#god8s>ul {
 #god8 li, #god8 li:hover, #god8s li {
 	background: url(../../images/god8.gif) no-repeat 5px 3px;
 }
+#god_module li, #god_module li:hover, #god_module_sel li {
+	background: url(../../images/brick.png) no-repeat 4px 5px;
+}
 div.arrowg>ul, div.arrowgs>ul {
 	width: 74%;
 }
@@ -59,7 +62,7 @@ div.arrowg>ul, div.arrowgs>ul {
 #god a:hover,
 #god1 li:hover, #god1s li, #god2 li:hover, #god2s li, #god3 li:hover, #god3s li,
 #god4 li:hover, #god4s li, #god5 li:hover, #god5s li, #god6 li:hover, #god6s li,
-#god7 li:hover, #god7s li, #god8 li:hover, #god8s li,
+#god7 li:hover, #god7s li, #god8 li:hover, #god8s li, #god_module li:hover, #god_module_sel li, 
 .arrowg li:hover, .arrowgs li
  {
 	background-color: #efefbd;

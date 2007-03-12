@@ -2,15 +2,19 @@
 
 // Pandora FMS - the Free monitoring system
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development and project architecture and management
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
+// CSS and some PHP additions
 // Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
-
+// Javascript Active Console code.
+// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
+// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation version 2
+// as published by the Free Software Foundation; version 2
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -18,8 +22,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-// Functions
-
 // ---------------------------------------------------------------
 // input: var, string. 
 //          mesg, mesage to show, var content. 
@@ -361,6 +363,17 @@ function pagination ($count, $url, $offset ) {
 	// End div and layout
 	echo "</div>";
 	}
+}
+
+// Render data in a fashion way :-)
+function format_numeric ( $number, $decimals=2, $dec_point=".", $thousands_sep=",") {
+	if ($number == 0)
+		return 0;
+	// If has decimals
+	if (fmod($number , 1)> 0)
+		return number_format ($number, 2, $dec_point, $thousands_sep);
+	else
+		return number_format ($number, 0, $dec_point, $thousands_sep);
 }
 
 ?>

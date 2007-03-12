@@ -1,15 +1,19 @@
 <?php
 // Pandora FMS - the Free monitoring system
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development and project architecture and management
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
+// CSS and some PHP additions
 // Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
-
+// Javascript Active Console code.
+// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
+// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation version 2
+// as published by the Free Software Foundation; version 2
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -17,7 +21,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
 // This is the base config file
 
 //Pandora Version
@@ -60,33 +63,43 @@ if (! mysql_connect($dbhost,$dbuser,$dbpassword)){
 	</div>
 	</div></body></html>');
 }
+
+// Default values for config
+$language_code = "en";
+$block_size = 25;
+$days_purge = 30;
+$days_compact = 7;
+$config_graph_res = 3;
+$config_step_compact = 1;
+$config_bgimage = "background4.jpg";
+$config_show_unknown = 0;
+$config_show_lastalerts = 0;
+
 mysql_select_db($dbname);
 $result2=mysql_query("SELECT * FROM tconfig");
 while ($row2=mysql_fetch_array($result2)){
 	switch ($row2["token"]) {
-		case "language_code": $language_code=$row2["value"];
-						break;
-		case "block_size": $block_size=$row2["value"];
-						break;
-		case "days_purge": $days_purge=$row2["value"];
-						break;
-		case "days_compact": $days_compact=$row2["value"];
-						break;
-		case "graph_res": $config_graph_res=$row2["value"];
-						break;
-		case "step_compact": $config_step_compact=$row2["value"];
-						break;
-		case "truetype": $config_truetype=$row2["value"];
-						break;
-		case "graph_order": $config_graph_order=$row2["value"];
-						break;
-		case "bgimage": $config_bgimage=$row2["value"];
-						break;
+		case "language_code": $language_code = $row2["value"];
+			break;
+		case "block_size": $block_size = $row2["value"];
+			break;
+		case "days_purge": $days_purge = $row2["value"];
+			break;
+		case "days_compact": $days_compact = $row2["value"];
+			break;
+		case "graph_res": $config_graph_res = $row2["value"];
+			break;
+		case "show_unknown": $config_show_unknown = $row2["value"];
+			break;
+		case "show_lastalerts": $config_show_lastalerts = $row2["value"];
+			break;
 	}
 }
-if ($language_code == 'ast_es') {
-	$help_code='ast';
-	}
-else $help_code = substr($language_code,0,2);
+
+// Adjist helpcode from language_code
+if ($language_code == 'ast_es')
+	$help_code = 'ast';
+else
+	$help_code = substr($language_code,0,2);
 
 ?>

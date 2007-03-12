@@ -1,3 +1,27 @@
+<?PHP
+// Pandora FMS - the Free monitoring system
+// ========================================
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development and project architecture and management
+// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// CSS and some PHP additions
+// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
+// Javascript Active Console code.
+// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
+// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; version 2
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+?>
 <script language="JavaScript" type="text/javascript">
 <!--
 function type_change()
@@ -134,86 +158,98 @@ if (give_acl($id_user, 0, "AW")!=1) {
 	exit;
 };
 
+// ==========================
 // MODULE VISUALIZATION TABLE
 // ==========================
 
-if ( $creacion_agente != 1) {
-	$sql1='SELECT * FROM tagente_modulo WHERE id_agente = "'.$id_agente.'" 
-	ORDER BY nombre';
-	$result=mysql_query($sql1);
-	echo "<h2>".$lang_label["agent_conf"]." &gt; ".$lang_label["assigned_modules"]."
-		<a href='help/".$help_code."/chap3.php#321' target='_help' class='help'>
-		<span>".$lang_label["help"]."</span></a></h2>";
-	if ($row=mysql_num_rows($result)){
-		echo '<table width="700" cellpadding="3" cellspacing="3" class="fon">';
-		echo '<tr>';
-		echo "<th>".$lang_label["module_name"];
-		echo "<th>".$lang_label["type"];
-		echo "<th>".$lang_label["interval"];
-		echo "<th>".$lang_label["description"];
-		echo "<th>".$lang_label["module_group"];
-		echo "<th>".$lang_label["max_min"];
-		echo "<th width=50>".$lang_label["action"];
-		$color=1;
-		while ($row=mysql_fetch_array($result)){
-			if ($color == 1){
-				$tdcolor="datos";
-				$color =0;
-			} else {
-				$tdcolor="datos2";
-				$color =1;
-			}
-			$id_tipo = $row["id_tipo_modulo"];
-			$nombre_modulo =$row["nombre"];
-			$descripcion = $row["descripcion"];
-			$module_max = $row["max"];
-			$module_min = $row["min"];
-			$module_interval2 = $row["module_interval"];
-			$module_group2 = $row["id_module_group"];
-			
-			echo "<tr><td class='".$tdcolor."_id'>".$nombre_modulo;
-			echo "<td class='".$tdcolor."f9'>";
-			if ($id_tipo > 0) {
-				echo "<img src='images/".show_icon_type($id_tipo)."' border=0>";
-			}
-			if ($module_interval2!=0){
-				echo "<td class='$tdcolor'>".$module_interval2;
-			} else {
-				echo "<td class='$tdcolor'> N/A";
-			}
-			echo "<td class='$tdcolor' title='$descripcion'>".substr($descripcion,0,30)."</td>";
-			echo "<td class='$tdcolor'>".
-			substr(dame_nombre_grupomodulo($module_group2),0,15)."</td>";
-			echo "<td class='$tdcolor'>";
-			if ($module_max == $module_min) {
-				$module_max = "N/A";
-				$module_min = "N/A";
-			}
-			echo $module_max." / ".$module_min;
-			echo "<td class='$tdcolor'>";
-			if ($id_tipo != -1)
-			echo "<a href='index.php?sec=gagente&
-			tab=module&
-			sec2=godmode/agentes/configurar_agente&
-			id_agente=".$id_agente."&
-			delete_module=".$row["id_agente_modulo"]."'>
-			<img src='images/cancel.gif' border=0 alt='".$lang_label["delete"]."'>
-			</b></a> &nbsp; ";
-			echo "<a href='index.php?sec=gagente&
-			sec2=godmode/agentes/configurar_agente&
-			id_agente=".$id_agente."&
-			tab=module&
-			update_module=".$row["id_agente_modulo"]."#modules'>
-			<img src='images/config.gif' border=0 alt='".$lang_label["update"]."' onLoad='type_change()'></b></a>";
+$sql1='SELECT * FROM tagente_modulo WHERE id_agente = "'.$id_agente.'"
+ORDER BY nombre';
+$result=mysql_query($sql1);
+echo "<h2>".$lang_label["agent_conf"]." &gt; ".$lang_label["assigned_modules"]."
+	<a href='help/".$help_code."/chap3.php#321' target='_help' class='help'>
+	<span>".$lang_label["help"]."</span></a>";
+	echo "&nbsp;&nbsp;<a class='info' href='#module_assignment'> <span>".$lang_label["module_asociation_form"]."</span><img src='../images/wand.png'></a>";
+	echo "</h2>";
+if ($row=mysql_num_rows($result)){
+	echo '<table width="700" cellpadding="3" cellspacing="3" class="fon">';
+	echo '<tr>';
+	echo "<th>".$lang_label["module_name"];
+	echo "<th>".$lang_label["type"];
+	echo "<th>".$lang_label["interval"];
+	echo "<th>".$lang_label["description"];
+	echo "<th>".$lang_label["module_group"];
+	echo "<th>".$lang_label["max_min"];
+	echo "<th width=50>".$lang_label["action"];
+	$color=1;
+	while ($row=mysql_fetch_array($result)){
+		if ($color == 1){
+			$tdcolor="datos";
+			$color =0;
+		} else {
+			$tdcolor="datos2";
+			$color =1;
 		}
-		echo "<tr><td colspan='7'><div class='raya'></div></td></tr>";
-		echo "</table>";
-	} else 
-		echo "<div class='nf'>No modules</div>";
-		
-}
+		$id_tipo = $row["id_tipo_modulo"];
+		$nombre_modulo =$row["nombre"];
+		$descripcion = $row["descripcion"];
+		$module_max = $row["max"];
+		$module_min = $row["min"];
+		$module_interval2 = $row["module_interval"];
+		$module_group2 = $row["id_module_group"];
 
-echo '<form name="modulo" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'">';
+		echo "<tr><td class='".$tdcolor."_id'>".$nombre_modulo;
+		echo "<td class='".$tdcolor."f9'>";
+		if ($id_tipo > 0) {
+			echo "<img src='images/".show_icon_type($id_tipo)."' border=0>";
+		}
+		if ($module_interval2!=0){
+			echo "<td class='$tdcolor'>".$module_interval2;
+		} else {
+			echo "<td class='$tdcolor'> N/A";
+		}
+		echo "<td class='$tdcolor' title='$descripcion'>".substr($descripcion,0,30)."</td>";
+		echo "<td class='$tdcolor'>".
+		substr(dame_nombre_grupomodulo($module_group2),0,15)."</td>";
+		echo "<td class='$tdcolor'>";
+		if ($module_max == $module_min) {
+			$module_max = "N/A";
+			$module_min = "N/A";
+		}
+		echo $module_max." / ".$module_min;
+		echo "<td class='$tdcolor'>";
+		if ($id_tipo != -1)
+		echo "<a href='index.php?sec=gagente&
+		tab=module&
+		sec2=godmode/agentes/configurar_agente&
+		id_agente=".$id_agente."&
+		delete_module=".$row["id_agente_modulo"]."'>
+		<img src='images/cancel.gif' border=0 alt='".$lang_label["delete"]."'>
+		</b></a> &nbsp; ";
+		echo "<a href='index.php?sec=gagente&
+		sec2=godmode/agentes/configurar_agente&
+		id_agente=".$id_agente."&
+		tab=module&
+		update_module=".$row["id_agente_modulo"]."#modules'>
+		<img src='images/config.gif' border=0 alt='".$lang_label["update"]."' onLoad='type_change()'></b></a>";
+	}
+	echo "<tr><td colspan='7'><div class='raya'></div></td></tr>";
+	echo "</table>";
+} else
+	echo "<div class='nf'>No modules</div>";
+
+// ==========================
+// Module assignment form
+// ==========================
+
+echo "<a name='module_assignment'>";
+echo "<h2>".$lang_label["agent_conf"]." &gt; ".$lang_label["module_asociation_form"]."</a><a href='help/".$help_code."/chap3.php#321' target='_help' class='help'>
+&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+
+if ($update_module == "1")
+	echo '<form name="modulo" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'#module_assignment">';
+else // equal than previous, but without #module_assigment
+	echo '<form name="modulo" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'">';
+
 if ($update_module == "1"){
 	echo '<input type="hidden" name="update_module" value=1>';
 	echo '<input type="hidden" name="id_agente_modulo" value="'.$id_agente_modulo.'">';
@@ -224,27 +260,59 @@ else { // Create
 	if ($ip_target == ""){
 		$ip_target = $direccion_agente;
 		$snmp_community = "public";
-		$module_interval = $intervalo;
+		if ($module_interval == 0)
+			$module_interval = $intervalo;
 	}
 }
 
-echo "<h2>".$lang_label["agent_conf"]." &gt; ".$lang_label["module_asociation_form"]."<a href='help/".$help_code."/chap3.php#321' target='_help' class='help'>
-&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
-
 echo '<a name="modules"> <!-- Dont Delete !! -->';
-echo '<table width="650" cellpadding="3" cellspacing="3" class="fon">';
-echo "<tr><td class='lb' rowspan='8' width='1'>";
+echo '<table width="700" cellpadding="3" cellspacing="3" class="fon">';
+echo "<tr><td class='lb' rowspan='11' width='1'>";
+
+echo '<tr><td class="datos3">';
+echo $lang_label["network_component"];
+if ($update_module != "1"){
+	echo "<td class='datos3' colspan=2>";
+	echo '<select name="nc">';
+	$sql1='SELECT * FROM tnetwork_component ORDER BY name';
+	$result=mysql_query($sql1);
+	echo "<option value=-1>---".$lang_label["manual_config"]."---</option>";
+	while ($row=mysql_fetch_array($result)){
+		echo "<option value='".$row["id_nc"]."'>".substr($row["name"],0,20)." / ".substr($row["description"],0,20);
+	}
+	echo "</select>";
+	echo '<td class="datos3" <input align="right" name="updbutton" type="submit" class="sub" value="'.$lang_label["update"].'">';
+} else {
+	echo "<td class='datos3' colspan=3 align='left'>";
+	echo "<span class='redi'>";
+	echo $lang_label["not_available_in_edit_mode"];
+	echo "</span>";
+	
+}
+
+echo '<tr>';
+echo '<td class="datos2">'.$lang_label["module_name"];
+echo '<td class="datos2"><input type="text" name="nombre" size="25" value="'.$modulo_nombre.'">';
+echo '<td class="datos2">'.$lang_label["ip_target"];
+echo '<td class="datos2"><input type="text" name="ip_target" size="25" value="'.$ip_target.'">';
+
+echo "<tr>";
+echo "<td colspan='4'>";
 
 //-- Module type combobox
+echo "<tr>";
 echo "<td class='datos'>".$lang_label["module_type"];
 echo "<td class='datos'>";
 if ($update_module == "1") {
 	echo "<input type='hidden' name='tipo' value='".$modulo_id_tipo_modulo."'>";
-	echo "<span class='redi'>".$lang_label["no_change_field"]."</span>";
+	echo "<span class='redi'>".$lang_label["not_available_in_edit_mode"]."</span>";
 } else {
 	echo '<select name="tipo" onChange="type_change()">';
 	$sql1='SELECT id_tipo, nombre FROM ttipo_modulo ORDER BY nombre';
 	$result=mysql_query($sql1);
+	if (($update_module == "1") OR ($modulo_id_tipo_modulo != 0)) {
+		echo "<option value='".$modulo_id_tipo_modulo ."'>".dame_nombre_tipo_modulo ($modulo_id_tipo_modulo);
+	}
 	echo "<option>--</option>";
 	while ($row=mysql_fetch_array($result)){
 		echo "<option value='".$row["id_tipo"]."'>".$row["nombre"];
@@ -259,7 +327,7 @@ if ($update_module == "1") {
 <td class="datos">
 <?php
 	echo '<select name="id_module_group">';
-	if ($update_module == "1"){
+	if (($id_module_group != 0) OR ($update_module == "1")){
 		echo "<option value='".$id_module_group."'>".dame_nombre_grupomodulo($id_module_group);
 	}
 	$sql1='SELECT * FROM tmodule_group';
@@ -271,30 +339,26 @@ if ($update_module == "1") {
 ?>
 </select>
 
-<tr><td class="datos2"><?php echo $lang_label["module_name"] ?>
-<td class="datos2"><input type="text" name="nombre" size="20" value="<?php echo $modulo_nombre ?>"> 
+<tr>
+
 <td class="datos2"><?php echo $lang_label["module_interval"] ?><td class="datos2">
 <input type="text" name="module_interval" size="5" value="<?php echo $module_interval ?>"> 
 
-<tr><td class="datos"><?php echo $lang_label["ip_target"] ?>
-<td class="datos"><input type="text" name="ip_target" size="20" value="<?php echo $ip_target ?>"> 
-<td class="datos"><?php echo $lang_label["tcp_port"] ?>
-<td class="datos"><input type="text" name="tcp_port" size="5" value="<?php echo $tcp_port ?>"> 
-
-<tr><td class="datos2"><?php echo $lang_label["snmp_oid"] ?>
-<td class="datos2"><input type="text" name="snmp_oid" size="15" value="<?php echo $snmp_oid ?>"> 
-<input type="submit" name="oid" value="Get Value">
-
-<td class="datos2"><?php echo $lang_label["snmp_community"] ?>
-<td class="datos2"><input type="text" name="snmp_community" size="20" value="<?php echo $snmp_community ?>"> 
-
+<td class="datos2"><?php echo $lang_label["tcp_port"] ?>
+<td class="datos2"><input type="text" name="tcp_port" size="5" value="<?php echo $tcp_port ?>"> 
 
 <tr><td class="datos"><?php echo $lang_label["snmp_oid"] ?>
-<td colspan=3 class="datos"><select name="combo_snmp_oid">
+<td class="datos"><input type="text" name="snmp_oid" size="25" value="<?php echo $snmp_oid ?>">
+
+
+<td class="datos"><?php echo $lang_label["snmp_community"] ?>
+<td class="datos"><input type="text" name="snmp_community" size="25" value="<?php echo $snmp_community ?>">
+
+
+<tr><td class="datos2"><?php echo $lang_label["snmp_oid"] ?>
+<td colspan=2 class="datos2"><select name="combo_snmp_oid">
 <?php
 // FILL OID Combobox
-
-
 if (isset($_POST["oid"])){
 	for (reset($snmpwalk); $i = key($snmpwalk); next($snmpwalk)) {
 		// OJO, al indice tengo que restarle uno, el SNMP funciona con indices a partir de 0
@@ -306,21 +370,22 @@ if (isset($_POST["oid"])){
 }
 ?>
 </select>
+<td class="datos2"><input type="submit" name="oid" value="SNMP Walk">
 
-<tr><td class="datos2t"><?php echo $lang_label["tcp_send"] ?>
-<td class="datos2"><textarea name="tcp_send" cols="17" rows="3"><?php echo $tcp_send ?></textarea>
+<tr><td class="datost"><?php echo $lang_label["tcp_send"] ?>
+<td class="datos"><textarea name="tcp_send" cols="22" rows="2"><?php echo $tcp_send ?></textarea>
 
-<td class="datos2t"><?php echo $lang_label["tcp_rcv"] ?>
-<td class="datos2"><textarea name="tcp_rcv" cols="17" rows="3"><?php echo $tcp_rcv ?></textarea>
+<td class="datost"><?php echo $lang_label["tcp_rcv"] ?>
+<td class="datos"><textarea name="tcp_rcv" cols="22" rows="2"><?php echo $tcp_rcv ?></textarea>
 
-<tr><td class="datos"><?php echo $lang_label["mindata"] ?>
-<td class="datos"><input type="text" name="modulo_min" size="5" value="<?php echo $modulo_min ?>"> 
-<td class="datos"><?php echo $lang_label["maxdata"] ?>
-<td class="datos"><input type="text" name="modulo_max" size="5" value="<?php echo $modulo_max ?>">
+<tr><td class="datos2"><?php echo $lang_label["mindata"] ?>
+<td class="datos2"><input type="text" name="modulo_min" size="5" value="<?php echo $modulo_min ?>"> 
+<td class="datos2"><?php echo $lang_label["maxdata"] ?>
+<td class="datos2"><input type="text" name="modulo_max" size="5" value="<?php echo $modulo_max ?>">
 
-<tr><td class="datos2t"><?php echo $lang_label["comments"] ?>
-<td class="datos2" colspan=3>
-<textarea name="descripcion" cols=52 rows=2>
+<tr><td class="datost"><?php echo $lang_label["comments"] ?>
+<td class="datos" colspan=3>
+<textarea name="descripcion" cols=71 rows=2>
 <?php echo $modulo_descripcion ?>
 </textarea>
 <tr><td colspan='5'><div class='raya'></div></td></tr>

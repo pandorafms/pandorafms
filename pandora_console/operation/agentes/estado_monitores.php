@@ -19,17 +19,15 @@
 // Load globar vars
 require("include/config.php");
 if (comprueba_login() == 0) {
-
 	// $id_agente can be obtained as global variable or GET param.
 	if (isset($_GET["id_agente"])){
 		$id_agente = $_GET["id_agente"];
 	}
-	echo "<h3>".$lang_label["monitor_listing"]."<a href='help/".$help_code."/chap3.php#3323' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 	// Get all module from agent
 	$sql_t='SELECT * FROM tagente_estado, tagente_modulo WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.id_agente='.$id_agente.' and tagente_estado.estado != 100 order by tagente_modulo.nombre';
 	$result_t=mysql_query($sql_t);
 	if (mysql_num_rows ($result_t)) {
-		
+		echo "<h3>".$lang_label["monitor_listing"]."<a href='help/".$help_code."/chap3.php#3323' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 		echo "<table width='750' cellpadding=3 cellspacing=3>";
 		echo "<tr><th>".$lang_label["type"]."<th>".$lang_label["module_name"]."<th>".$lang_label["description"]."<th>".$lang_label["status"]."<th>".$lang_label["interval"]."<th>".$lang_label["last_contact"];
 		$color=0;

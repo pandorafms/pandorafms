@@ -1,24 +1,27 @@
 <?php
 // Pandora FMS - the Free monitoring system
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development and project architecture and management
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
+// CSS and some PHP additions
 // Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
-
+// Javascript Active Console code.
+// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
+// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation version 2
+// as published by the Free Software Foundation; version 2
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.?>
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-<?php
 // Load global vars
 require("include/config.php");
 if (give_acl($id_user, 0, "AW")!=1) {
@@ -70,17 +73,67 @@ $tcp_rcv = "";
 $snmp_oid= "";
 $ip_target ="";
 $snmp_community="";
-$creacion_agente = 0;
 $combo_snmp_oid="";
+$agent_created_ok = 0;
+$create_agent = 0;
+
+// ================================
+// Create AGENT
+// ================================
+// We need to create agent BEFORE show tabs, because we need to get agent_id
+// This is not very clean, but...
+if (isset($_POST["create_agent"])) { // Create a new and shining agent
+	$nombre_agente =  entrada_limpia($_POST["agente"]);
+	$direccion_agente =  entrada_limpia($_POST["direccion"]);
+	$grupo =  entrada_limpia($_POST["grupo"]);
+	$intervalo =  entrada_limpia($_POST["intervalo"]);
+	$comentarios =  entrada_limpia($_POST["comentarios"]);
+	$modo = entrada_limpia($_POST["modo"]);
+	$id_server = entrada_limpia($_POST["id_server"]);
+	$id_os = entrada_limpia($_POST["id_os"]);
+	$disabled = entrada_limpia($_POST["disabled"]);
+
+	// Check if agent exists (BUG WC-50518-2 )
+	$sql1='SELECT nombre FROM tagente WHERE nombre = "'.$nombre_agente.'"';
+	$result=mysql_query($sql1);
+	if ($row=mysql_fetch_array($result))
+		echo "<h3 class='error'>".$lang_label["agent_exists"]."</h3>";
+	else {
+		if ($id_server != ""){
+			$sql_insert ="INSERT INTO tagente (nombre, direccion, id_grupo, intervalo, comentarios,modo, id_os, disabled, id_server) VALUES ('".$nombre_agente."', '".$direccion_agente."', '".$grupo."', '".$intervalo."', '".$comentarios."',".$modo.", ".$id_os.", '".$disabled."',$id_server)";
+		} else {
+			$sql_insert ="INSERT INTO tagente (nombre, direccion, id_grupo, intervalo, comentarios,modo, id_os, disabled) VALUES ('".$nombre_agente."', '".$direccion_agente."', '".$grupo."', '".$intervalo."', '".$comentarios."',".$modo.", ".$id_os.", '".$disabled."')";
+		}
+		$result=mysql_query($sql_insert);	
+		if ($result) {
+			$agent_created_ok = 1;
+			$id_agente = mysql_insert_id();
+			// Create special MODULE agent_keepalive
+			$sql_insert ="INSERT INTO tagente_modulo (nombre, id_agente, id_tipo_modulo, descripcion) VALUES ('agent_keepalive', ".$id_agente.",-1,'Agent Keepalive monitor')";		
+			$result=mysql_query($sql_insert);
+		}
+		
+	}
+}
 
 // Show tabs
 // ¯-----------------
+
+echo "<div id='menu_tab_left'>
+<ul class='mn'>	
+<li class='nomn'>";
+echo "<li class='nomn'>";
+echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'><img src='../images/bricks.png' class='top' border=0>&nbsp; ".dame_nombre_agente($id_agente)." - ".$lang_label["setup_mode"]."</A>";
+echo "</li>";
+echo "</ul></div>";
+
+
 echo "<div id='menu_tab'>
 <ul class='mn'>	
 <li class='nomn'>";
-	
+
 echo "<li class='nomn'>";
-echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/zoom.png' width='16' class='top' border=0>&nbsp; View agent</a>";
+echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/zoom.png' width='16' class='top' border=0>&nbsp; View</A>";
 echo "</li>";
 
 echo "<li class='nomn'>";
@@ -95,12 +148,26 @@ echo "<li class='nomn'>";
 echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=$id_agente'><img src='images/bell.png' width='16' class='top' border=0>&nbsp; Alerts</a>";
 echo "</li>";
 
+echo "<li class='nomn'>";
+echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=templatet&id_agente=$id_agente'><img src='images/network.gif' width='16' class='top' border=0>&nbsp; NC Templates</a>";
+echo "</li>";
+
 echo "</ul>";
 echo "</div>";
+
+
 // Make some space between tabs and title
 echo "<div style='height: 25px'> </div>";
 // Unset variable to allow operations to work
 $id_agente = "";
+
+// Show agent creation results
+if (isset($_POST["create_agent"])){
+	if ($agent_created_ok == 0)
+		echo "<h3 class='error'>".$lang_label["create_agent_no"]."</h3>";
+	else
+		echo "<h3 class='suc'>".$lang_label["create_agent_ok"]."</h3>";
+}
 
 // Delete Alert
 // =============
@@ -176,46 +243,7 @@ if (isset($_POST["update_alert"])){ // Update an existing alert
 
 		$id_agente = mysql_insert_id();
 }
-// ================================
-// Create AGENT
-// ================================
-if (isset($_POST["create_agent"])) { // Create a new and shining agent
-	$nombre_agente =  entrada_limpia($_POST["agente"]);
-	$direccion_agente =  entrada_limpia($_POST["direccion"]);
-	$grupo =  entrada_limpia($_POST["grupo"]);
-	$intervalo =  entrada_limpia($_POST["intervalo"]);
-	$comentarios =  entrada_limpia($_POST["comentarios"]);
-	$modo = entrada_limpia($_POST["modo"]);
-	$id_server = entrada_limpia($_POST["id_server"]);
-	$id_os = entrada_limpia($_POST["id_os"]);
-	$disabled = entrada_limpia($_POST["disabled"]);
 
-	// Check if agent exists (BUG WC-50518-2 )
-	$sql1='SELECT nombre FROM tagente WHERE nombre = "'.$nombre_agente.'"';
-	$result=mysql_query($sql1);
-	if ($row=mysql_fetch_array($result)){
-		echo "<h3 class='error'>".$lang_label["agent_exists"]."</h3>";
-		$creacion_agente = 1;
-	} else { 
-		if ($id_server != ""){
-			$sql_insert ="INSERT INTO tagente (nombre, direccion, id_grupo, intervalo, comentarios,modo, id_os, disabled, id_server) VALUES ('".$nombre_agente."', '".$direccion_agente."', '".$grupo."', '".$intervalo."', '".$comentarios."',".$modo.", ".$id_os.", '".$disabled."',$id_server)";
-		} else {
-			$sql_insert ="INSERT INTO tagente (nombre, direccion, id_grupo, intervalo, comentarios,modo, id_os, disabled) VALUES ('".$nombre_agente."', '".$direccion_agente."', '".$grupo."', '".$intervalo."', '".$comentarios."',".$modo.", ".$id_os.", '".$disabled."')";
-		}
-		$result=mysql_query($sql_insert);	
-		if (! $result)
-			echo "<h3 class='error'>".$lang_label["create_agent_no"]."</h3>";
-		else 
-			echo "<h3 class='suc'>".$lang_label["create_agent_ok"]."</h3>";
-			$id_agente = mysql_insert_id();
-		// Create special MODULE agent_keepalive
-		$sql_insert ="INSERT INTO tagente_modulo (nombre, id_agente, id_tipo_modulo, descripcion) VALUES ('agent_keepalive', ".$id_agente.",-1,'Agent Keepalive monitor')";		
-		$result=mysql_query($sql_insert);	
-		if (! $result) {
-			echo "<h3 class='error'>".$lang_label["create_keep_no"]."</h3>";
-		}
-	}
-}
 // ================
 // Update AGENT
 // ================
@@ -280,8 +308,6 @@ if (isset($_GET["id_agente"])){
 		exit;
 		}
 }
-if (isset($_GET["creacion"]))
-	$creacion_agente = 1;
 
 // Read data module if editing module
 // ==================================
@@ -358,6 +384,7 @@ if ((isset($_POST["update_module"])) || (isset($_POST["insert_module"]))) {
 		require ("general/footer.php");
 		exit;
 	}
+
 	if (isset($_POST["tipo"]))
 		$id_tipo_modulo = entrada_limpia($_POST["tipo"]);
 	if (isset($_POST["nombre"])){
@@ -443,11 +470,41 @@ if (isset($_POST["oid"])){
 	}
 }
 
+// =========================================================
+// Network Component UPDATE button to fill module data with NC data
+// This code is only applied when creating a new module (not active in update mode)
+// =========================================================
+if ( (isset($_POST["nc"]) && ($_POST["nc"]!=-1))){
+	echo "<h3 class='suc'>".$lang_label["using_network_component"]."</h3>";
+	$id_nc = entrada_limpia($_POST["nc"]);
+	$sql1="SELECT * FROM tnetwork_component WHERE id_nc = '$id_nc'";
+	$result=mysql_query($sql1);
+	$row=mysql_fetch_array($result);
+	$modulo_id_agente = $row["id_agente"];
+	$modulo_id_tipo_modulo = $row["type"];
+	$id_module_group = $row["id_module_group"];
+	$modulo_nombre = $row["name"];
+	$modulo_descripcion = $row["description"];
+	$tcp_send = $row["tcp_send"];
+	$tcp_rcv = $row["tcp_rcv"];
+	$tcp_port = $row["tcp_port"];
+	$ip_target = $row["ip_target"];
+	$snmp_community = $row["snmp_community"];
+	$snmp_oid = $row["snmp_oid"];
+	$id_module_group = $row["id_module_group"];
+	$module_interval = $row["module_interval"];
+	$modulo_max = $row["max"];
+	$modulo_min = $row["min"];
+}
 
 // =========================================================
 // MODULE INSERT
 // =========================================================
-if ((!isset($_POST["oid"])) && (isset($_POST["insert_module"]))){
+
+if (((!isset($_POST["nc"]) OR ($_POST["nc"]==-1)) ) 	&&
+			(!isset($_POST["oid"]))		&&
+			(isset($_POST["insert_module"]))){
+
 	if (isset($_POST["combo_snmp_oid"])) {
 		$combo_snmp_oid = entrada_limpia($_POST["combo_snmp_oid"]);
 	}
@@ -462,19 +519,11 @@ if ((!isset($_POST["oid"])) && (isset($_POST["insert_module"]))){
 	}
 	if (!isset($modulo_min) || $modulo_min=="") {
 		$modulo_min= "0";
-	}
+	}	
 	$sql_insert = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,descripcion,max,min,snmp_oid,snmp_community,id_module_group,module_interval,ip_target,tcp_port,tcp_rcv,tcp_send) VALUES (".$id_agente.",".$id_tipo_modulo.",'".$nombre."','".$descripcion."','".$modulo_max."','".$modulo_min."', '$snmp_oid', '$snmp_community', '$id_module_group', '$module_interval', '$ip_target', '$tcp_port', '$tcp_rcv', '$tcp_send')";
-	// Init vars to null to avoid trash in forms 
-	$id_tipo_modulo = "";$nombre =  "";$descripcion = "";$modulo_max = "";
-	$modulo_min = "";// Pandora 1.2 new module data:
-	$tcp_send = "";$tcp_rcv = "";$tcp_port = "";$ip_target = "";
-	$snmp_oid = "";$snmp_community = "";$id_module_group = "";
-	$module_interval = "";
-
-	//echo "DEBUG: ".$sql_insert;
-
 	$result=mysql_query($sql_insert);
 	$id_agente_modulo = mysql_insert_id();
+
 	// Create with different estado if proc type or data type
 	if (
 	($id_tipo_modulo == 2) || 
@@ -484,15 +533,15 @@ if ((!isset($_POST["oid"])) && (isset($_POST["insert_module"]))){
 	($id_tipo_modulo == 18) 
 	){ 
 		$sql_insert = "INSERT INTO tagente_estado 
-		(id_agente_modulo,datos,timestamp,cambio,estado,id_agente) 
+		(id_agente_modulo,datos,timestamp,cambio,estado,id_agente, utimestamp) 
 		VALUES (
-		$id_agente_modulo, 0,'0000-00-00 00:00:00',0,0,'".$id_agente."'
+		$id_agente_modulo, 0,'0000-00-00 00:00:00',0,0,'".$id_agente."',0
 		)";
 	} else { 
 		$sql_insert = "INSERT INTO tagente_estado 
-		(id_agente_modulo,datos,timestamp,cambio,estado,id_agente) 
+		(id_agente_modulo,datos,timestamp,cambio,estado,id_agente, utimestamp) 
 		VALUES (
-		$id_agente_modulo, 0,'0000-00-00 00:00:00',0,100,'".$id_agente."'
+		$id_agente_modulo, 0,'0000-00-00 00:00:00',0,100,'".$id_agente."',0
 		)";
 	}
 	$result2=mysql_query($sql_insert);
@@ -501,28 +550,24 @@ if ((!isset($_POST["oid"])) && (isset($_POST["insert_module"]))){
 	} else {
 		echo "<h3 class='suc'>".$lang_label["add_module_ok"]."</h3>";
 	}
+	// Init vars to null to avoid trash in forms 
+	$id_tipo_modulo = "";$nombre =  "";$descripcion = "";$modulo_max = "";
+	$modulo_min = "";// Pandora 1.2 new module data:
+	$tcp_send = "";$tcp_rcv = "";$tcp_port = "";$ip_target = "";
+	$snmp_oid = "";$snmp_community = "";$id_module_group = "";
+	$module_interval = "";
 }
+
 // MODULE DELETION
 // =================
 if (isset($_GET["delete_module"])){ // DELETE agent module !
 	$id_borrar_modulo = $_GET["delete_module"];
-		$id_grupo = dame_id_grupo($id_agente);
-			if (give_acl($id_user, $id_grupo, "AW")==0){
-				audit_db($id_user,$REMOTE_ADDR, "ACL Violation",
-				"Trying to delete a module without admin rights");
-				require ("general/noaccess.php");
-				echo "</table>";
-				require ("general/footer.php");
-				exit;
-			}	
-	// Get information of the module to be deleted
-	$sql1='SELECT id_agente, nombre, id_tipo_modulo FROM tagente_modulo 
-	WHERE id_agente_modulo = '.$id_borrar_modulo;
-	$result=mysql_query($sql1);
-	$row=mysql_fetch_array($result);
-	$id_agente = $row["id_agente"];
-	$nombre_modulo = $row["nombre"];
-	$id_tipo_modulo = $row["id_tipo_modulo"];
+	$id_grupo = dame_id_grupo($id_agente);	if (give_acl($id_user, $id_grupo, "AW")==0){
+		audit_db($id_user,$REMOTE_ADDR, "ACL Violation",
+		"Trying to delete a module without admin rights");
+		require ("general/noaccess.php");
+		exit;
+	}
 	// First detele from tagente_modulo
 	$sql_delete= "DELETE FROM tagente_modulo 
 	WHERE id_agente_modulo = ".$id_borrar_modulo;
@@ -536,20 +581,24 @@ if (isset($_GET["delete_module"])){ // DELETE agent module !
 	$sql_delete = "DELETE FROM tagente_estado 
 	WHERE id_agente_modulo = ".$id_borrar_modulo;
 	$result=mysql_query($sql_delete);
+	
 	$sql_delete = "DELETE FROM tagente_datos 
 	WHERE id_agente_modulo = ".$id_borrar_modulo;
 	$result=mysql_query($sql_delete);
+	
 	$sql_delete = "DELETE FROM tagente_datos_string 
 	WHERE id_agente_modulo = ".$id_borrar_modulo;
 	$result=mysql_query($sql_delete);
+	
 	$sql_delete = "DELETE FROM tagente_datos_inc 
 	WHERE id_agente_modulo = ".$id_borrar_modulo;
 	$result=mysql_query($sql_delete);
-	
 }
 
+// -----------------------------------
 // Load page depending on tab selected
 // -----------------------------------
+
 if (isset($_GET["tab"]))
 	$tab = $_GET["tab"];
 else

@@ -37,7 +37,7 @@ our @EXPORT = qw( 	pandora_help_screen
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "1.3-dev";
-my $pandora_build="PS070216";
+my $pandora_build="PS070312";
 our $VERSION = $pandora_version;
 
 # Setup hash
@@ -68,16 +68,16 @@ sub help_screen {
 sub pandora_init {
 	my $pa_config = $_[0];
 	my $init_string = $_[1];
-	printf "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-2006 ArticaST\n";
-	printf "This program is Free Software, licensed under the terms of GPL License v2 or later.\n";
+	printf "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-2007 ArticaST\n";
+	printf "This program is Free Software, licensed under the terms of GPL License v2.\n";
 	printf "You can download latest versions and documentation at http://pandora.sourceforge.net. \n\n";
 
 	# Check we are running GNU/Linux
-	die "[ERROR] This isn't GNU/Linux. Pandora Server is only OFFICIALLY supported in GNU/Linux.\nContact us if you require assistance running Pandora Server in other OS.\n\n" unless ($^O =~ m/linux/i);
+	die "[ERROR] This isn't GNU/Linux. Pandora FMS Servers are only OFFICIALLY supported in GNU/Linux.\nContact us if you require assistance running Pandora FMS Server in other OS.\n\n" unless ($^O =~ m/linux/i);
 
 	# Load config file from command line
 	if ($#ARGV == -1 ){
-		print "I Need at least one parameter: Complete path to Pandora Server HOME Directory. \n";
+		print "I Need at least one parameter: Complete path to Pandora FMS Server HOME Directory. \n";
 		help_screen;
 		exit;
 	}
@@ -98,7 +98,7 @@ sub pandora_init {
 		else { ($pa_config->{"pandora_path"} = $parametro); }
 	}
 	if ($pa_config->{"pandora_path"} eq ""){
-		print "I Need at least one parameter: Complete path to Pandora HOME Directory. \n";
+		print "I Need at least one parameter: Complete path to Pandora FMS HOME Directory. \n";
 		exit;
 	}
 }
@@ -109,7 +109,7 @@ sub pandora_init {
 
 sub pandora_loadconfig {
 	my $pa_config = $_[0];
-	my $opmode = $_[1]; # 0 dataserver, 1 network server, 2 snmp console
+	my $opmode = $_[1]; # 0 dataserver, 1 network server, 2 snmp console, 3 recon server
 	my $archivo_cfg = $pa_config->{'pandora_path'}."/conf/pandora_server.conf";
 	my $buffer_line;
 	my @command_line;
@@ -137,17 +137,19 @@ sub pandora_loadconfig {
 	$pa_config->{"servername"}=~ s/\s//g; # Replace ' ' chars
 	$pa_config->{"networkserver"}=0;
 	$pa_config->{"dataserver"}=0;
+	$pa_config->{"reconserver"}=0;
+	$pa_config->{"servermode"}="";
 	$pa_config->{"network_threads"}=10; # Fixed default
 	$pa_config->{"keepalive"}=60; # 200 Seconds initially for server keepalive
 	$pa_config->{"keepalive_orig"}=$pa_config->{"keepalive"};
 	# Check for UID0
 	if ($> == 0){
-		printf " [W] It is not a good idea running Pandora Server as root user, please DON'T DO IT!\n";
+		printf " [W] It is not a good idea running Pandora FMS Server as root user, please DON'T DO IT!\n";
 	}
 	# Check for file
 	if ( ! -e $archivo_cfg ) {
 		printf "\n[ERROR] Cannot open configuration file at $archivo_cfg. \n";
-		printf " Please specify a valid Pandora Home Directory in command line. \n";
+		printf " Please specify a valid Pandora FMS Home Directory in command line. \n";
 		exit 1;
 	}
 	# Collect items from config file and put in an array 
@@ -204,12 +206,21 @@ sub pandora_loadconfig {
   		elsif ($parametro =~ m/^dbpass\s(.*)/i) { $pa_config->{'dbpass'}= $1; }
   		elsif ($parametro =~ m/^dbhost\s(.*)/i) { $pa_config->{'dbhost'}= $1; }
   		elsif ($parametro =~ m/^daemon\s([0-9]*)/i) { $pa_config->{'daemon'}= $1;}
-		elsif ($parametro =~ m/^dataserver\s([0-9]*)/i) { $pa_config->{'dataserver'}= $1; }
-		elsif ($parametro =~ m/^networkserver\s([0-9]*)/i) { $pa_config->{'networkserver'}= $1;}
+		elsif ($parametro =~ m/^dataserver\s([0-9]*)/i) {
+			$pa_config->{'dataserver'}= $1;
+		}
+		elsif ($parametro =~ m/^reconserver\s([0-9]*)/i) {
+			$pa_config->{'reconserver'}= $1;
+		}
+		elsif ($parametro =~ m/^networkserver\s([0-9]*)/i) {
+			$pa_config->{'networkserver'}= $1;
+		}
 		elsif ($parametro =~ m/^servername\s(.*)/i) { $pa_config->{'servername'}= $1; }
 		elsif ($parametro =~ m/^checksum\s([0-9])/i) { $pa_config->{"pandora_check"} = $1; }
 		elsif ($parametro =~ m/^master\s([0-9])/i) { $pa_config->{"pandora_master"} = $1; }
-		elsif ($parametro =~ m/^snmpconsole\s([0-9])/i) { $pa_config->{"snmpconsole"} = $1;}
+		elsif ($parametro =~ m/^snmpconsole\s([0-9])/i) {
+			$pa_config->{"snmpconsole"} = $1;
+		}
   		elsif ($parametro =~ m/^verbosity\s([0-9]*)/i) { $pa_config->{"verbosity"} = $1; } 
   		elsif ($parametro =~ m/^server_threshold\s([0-9]*)/i) { $pa_config->{"server_threshold"}  = $1; } 
 		elsif ($parametro =~ m/^alert_threshold\s([0-9]*)/i) { $pa_config->{"alert_threshold"} = $1; } 
@@ -230,29 +241,40 @@ sub pandora_loadconfig {
 		exit;
 	}
 	if (($opmode ==0) && ($pa_config->{"dataserver"} ne 1)) {
-		print " [ERROR] You must enable Dataserver in setup file to run Pandora Server. \n\n";
+		print " [ERROR] You must enable Dataserver in setup file to run Pandora FMS Data Server. \n\n";
 		exit;
 	} 
 	if (($opmode ==1) && ($pa_config->{"networkserver"} ne 1)) {
-		print " [ERROR] You must enable NetworkServer in setup file to run Pandora Network Server. \n\n";
+		print " [ERROR] You must enable NetworkServer in setup file to run Pandora FMS Network Server. \n\n";
 		exit;
 	}
-
-	if (($opmode ==3) && ($pa_config->{"snmpconsole"} ne 1)) {
-		print " [ERROR] You must enable SnmpConsole in setup file to run Pandora SNMP Console. \n\n";
+	if (($opmode ==2) && ($pa_config->{"snmpconsole"} ne 1)) {
+		print " [ERROR] You must enable SnmpConsole in setup file to run Pandora FMS SNMP Console. \n\n";
+		exit;
+	}
+	if (($opmode ==3) && ($pa_config->{"reconserver"} ne 1)) {
+		print " [ERROR] You must enable Recon server in setup file to run Pandora FMS Recon server. \n\n";
 		exit;
 	}
 	if ($opmode == 0){
-		print " [*] You are running Pandora Data Server. \n";
-		$parametro ="Pandora Data Server";
+		print " [*] You are running Pandora FMS Data Server. \n";
+		$parametro ="Pandora FMS Data Server";
+		$pa_config->{"servermode"}="_Data";
 	}
 	if ($opmode == 1){
-		print " [*] You are running Pandora Network Server. \n";
-		$parametro ="Pandora Network Server";
+		print " [*] You are running Pandora FMS Network Server. \n";
+		$parametro ="Pandora FMS Network Server";
+		$pa_config->{"servermode"}="_Net";
 	}
 	if ($opmode == 2){
-		print " [*] You are running Pandora SNMP Console. \n";
-		$parametro ="Pandora SNMP Console";
+		print " [*] You are running Pandora FMS SNMP Console. \n";
+		$parametro ="Pandora FMS SNMP Console";
+		$pa_config->{"servermode"}="_SNMP";
+	}
+	if ($opmode == 3){
+		print " [*] You are running Pandora FMS Recon Server. \n";
+		$parametro ="Pandora FMS Recon Server";
+		$pa_config->{"servermode"}="_Recon";
 	}
 	if ($pa_config->{"pandora_check"} == 1) {
 		print " [*] MD5 Security enabled.\n";
@@ -261,7 +283,7 @@ sub pandora_loadconfig {
 		print " [*] This server is running in MASTER mode.\n";
 	}
 	logger ($pa_config, "Launching $parametro $pa_config->{'version'} $pa_config->{'build'}", 0);
-	my $config_options = "Logfile at ".$pa_config->{"logfile"}.", Basepath is ".$pa_config->{"basepath"}.", Checksum is ".$pa_config->{"pandora_check"}.", Master is ".$pa_config->{"pandora_master"}.", SNMP Console is ".$pa_config->{"snmpconsole"}.", Server Threshold at ".$pa_config->{"server_threshold"}." sec, verbosity at ".$pa_config->{"verbosity"}.", Alert Threshold at $pa_config->{'alert_threshold'}";
+	my $config_options = "Logfile at ".$pa_config->{"logfile"}.", Basepath is ".$pa_config->{"basepath"}.", Checksum is ".$pa_config->{"pandora_check"}.", Master is ".$pa_config->{"pandora_master"}.", SNMP Console is ".$pa_config->{"snmpconsole"}.", Server Threshold at ".$pa_config->{"server_threshold"}." sec, verbosity at ".$pa_config->{"verbosity"}.", Alert Threshold at $pa_config->{'alert_threshold'}, ServerName is '".$pa_config->{'servername'}.$pa_config->{"servermode"}."'";
 	logger ($pa_config, "Config options: $config_options");
 	# Check valid Database variables and update server status
 	eval {
@@ -274,13 +296,12 @@ sub pandora_loadconfig {
 		print (" [E] Error connecting database in init Phase. Aborting startup. \n\n");
 		exit;
 	}
-
+	print " [*] Pandora FMS Server [".$pa_config->{'servername'}.$pa_config->{"servermode"}."] is running and operative \n";
 	# Dump all errors to errorlog
 	# DISABLED in DEBUGMODE
 	# ENABLE FOR PRODUCTION
 	# open STDERR, ">>$pa_config->{'errorlogfile'}" or die "Can't write to Errorlog : $!";
 }
-
 
 # End of function declaration
 # End of defined Code

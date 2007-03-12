@@ -2,13 +2,11 @@
 ##########################################################################
 # Pandora Network Server
 ##########################################################################
-# Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2007 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2007 Sancho Lerena, slerena@gmail.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
+# as published by the Free Software Foundation; version 2
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -44,11 +42,11 @@ $| = 1;
 my %pa_config;
 
 # Inicio del bucle principal de programa
-pandora_init(\%pa_config, "Pandora Network Server");
+pandora_init(\%pa_config, "Pandora FMS Network Server");
 # Read config file for Global variables
 pandora_loadconfig (\%pa_config,1);
 # Audit server starting
-pandora_audit (\%pa_config, "Pandora Network Daemon starting", "SYSTEM", "System");
+pandora_audit (\%pa_config, "Pandora FMS Network Daemon starting", "SYSTEM", "System");
 
 # Daemonize of configured
 if ( $pa_config{"daemon"} eq "1" ) {
@@ -116,6 +114,9 @@ sub pandora_network_subsystem {
 	my $exec_sql; my $exec_sql2;  my $exec_sql3;
 	my $buffer;
 	my $opmode = 1; # network server code for pandora_updateserver function
+
+	
+	$server_id = dame_server_id($pa_config, $pa_config->{'servername'}."_Net", $dbh);
 	while ( 1 ) {
 		logger ($pa_config,"Loop in Network Module Subsystem",10);
 		# For each element
@@ -127,8 +128,6 @@ sub pandora_network_subsystem {
 		# next element
 		# Calculate ID Agent from a select where module_type (id_tipo_modulo) > 4 (network modules)
 		# Check for MASTER SERVERS only: check another agents if their servers are gone
-
-		$server_id = dame_server_id($pa_config, $pa_config->{'servername'}."_Net", $dbh);
 		$buffer = "";		
 		if ($pa_config->{"pandora_master"} == 1){ 
 			my $id_server;

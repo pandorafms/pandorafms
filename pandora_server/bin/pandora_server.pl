@@ -2,13 +2,12 @@
 ##########################################################################
 # Pandora Data Server
 ##########################################################################
-# Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+# Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
 # Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
+# as published by the Free Software Foundation; version 2
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -42,13 +41,13 @@ $| = 1;
 my %pa_config; 
 
 # Init main loop
-pandora_init(\%pa_config,"Pandora Server");
+pandora_init(\%pa_config,"Pandora FMS Data Server");
 
 # Read config file for Global variables
 pandora_loadconfig (\%pa_config,0);
 
 # Audit server starting
-pandora_audit (\%pa_config, "Pandora Daemon starting", "SYSTEM", "System");
+pandora_audit (\%pa_config, "Pandora FMS data server Daemon starting", "SYSTEM", "System");
 
 # BE CAREFUL, if you daemonize, you need to launch threads BEFORE daemonizing.
 if ($pa_config{"daemon"} eq "1" ){

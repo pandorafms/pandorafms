@@ -2,15 +2,19 @@
 
 // Pandora FMS - the Free monitoring system
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development and project architecture and management
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
+// CSS and some PHP additions
 // Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
-
+// Javascript Active Console code.
+// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
+// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation version 2
+// as published by the Free Software Foundation; version 2
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -18,7 +22,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
 	// Load global vars
 	require("include/config.php");
 
@@ -54,7 +57,7 @@
 	$contador_grupo  = 0;
 	$contador_agente = 0;
 	$array_index     = 0;
-
+	// Prepare data to show
 	// For each valid group for this user, take data from agent and modules
 	foreach ($mis_grupos as $migrupo) {
 		if ($migrupo != "") {
@@ -78,53 +81,65 @@
 					$id_agente = $row1["id_agente"];
 
 					// Check for recent alerts
+					if ($config_show_lastalerts == 1)
 					if (check_alert_fired($id_agente) == 1) {
 						$grupo[$array_index]["alerts"]++;
 					}
 
 					$grupo[$array_index]["agent"]++;
 					$grupo[$array_index]["group"] = dame_nombre_grupo ($migrupo);
+					
 					//  Estado grupo, agent
 					$contador_agente++;
-					$sql3 = "SELECT estado, timestamp, id_agente_modulo,
+					$sql3 = "SELECT estado, utimestamp, id_agente_modulo,
 					datos FROM tagente_estado
 					WHERE id_agente = ".$row1["id_agente"];
 					$result3 = mysql_query ($sql3);
 					while ($row3 = mysql_fetch_array ($result3)) {
-						$estado = $row3["estado"];
-						// Get module interval
+						$estado = $row3["estado"];			
 						$ahora = date ("Y/m/d H:i:s");
-						$sql4 = "SELECT module_interval
-						FROM tagente_modulo
-						WHERE id_agente_modulo = ".$row3["id_agente_modulo"];
-						$result4 = mysql_query ($sql4);
-						if ($row4 = mysql_fetch_array ($result4)) {
-							$module_interval = $row4["module_interval"];
-							if ($module_interval > 0) {
-								$intervalo_comp = $module_interval;
-							} else {
-								$intervalo_comp = $intervalo;
-							}
-						}
 
-						$ultimo_contacto_modulo = $row3["timestamp"];
-
-						// Defines if module is down (interval x 2 > time last contact)
-						if ($ultimo_contacto_modulo != "0000-00-00 00:00:00") {
-							$seconds = strtotime ($ahora) -
-							strtotime ($ultimo_contacto_modulo);
-							if ($seconds >= ($intervalo_comp * 2)) {
-								$grupo[$array_index]["down"]++;
-							} elseif ($estado != 100) {
-								if ($row3["datos"] != 0) {
-									$grupo[$array_index]["ok"]++;
+						if ($config_show_unknown != 0){
+							// Get module interval
+							$sql4 = "SELECT module_interval
+							FROM tagente_modulo
+							WHERE id_agente_modulo = ".$row3["id_agente_modulo"];
+							$result4 = mysql_query ($sql4);
+							if ($row4 = mysql_fetch_array ($result4)) {
+								$module_interval = $row4["module_interval"];
+								if ($module_interval > 0) {
+									$intervalo_comp = $module_interval;
 								} else {
-									$grupo[$array_index]["bad"]++;
+									$intervalo_comp = $intervalo;
 								}
-							} elseif ($estado == 100) // For data module, not monitors
-									$grupo[$array_index]["data"]++; // Data module
-						}
+							}
+							$ultimo_contacto_modulo = $row3["utimestamp"];
+							// Defines if module is down (interval x 2 > time last contact)
+							if ($ultimo_contacto_modulo != 0) {
+								$seconds = strtotime ($ahora) -
+								$ultimo_contacto_modulo;
+								if ($seconds >= ($intervalo_comp * 2)) {
+									$grupo[$array_index]["down"]++;
+								} elseif ($estado != 100) {
+									if ($row3["datos"] != 0) {
+										$grupo[$array_index]["ok"]++;
+									} else {
+										$grupo[$array_index]["bad"]++;
+									}
+								} elseif ($estado == 100) // For data module, not monitors
+										$grupo[$array_index]["data"]++; // Data module
+							}
+							// do not use module interval neither down check
+						} elseif ($estado != 100) {
+							if ($row3["datos"] != 0) {
+								$grupo[$array_index]["ok"]++;
+							} else {
+								$grupo[$array_index]["bad"]++;
+							}
+						} elseif ($estado == 100) // For data module, not monitors
+							$grupo[$array_index]["data"]++; // Data module
 					}
+					
 				}
 			}
 			if ($existen_agentes == 1){
@@ -134,16 +149,14 @@
 	}
 
 	// Draw data
-
 	if ($contador_agente != 0) {
 		$ancho = ceil(sqrt($array_index+1));
 		$real_count =0;
-		echo "<table cellpadding=10 cellspacing=10>";
+		echo "<table cellpadding=10 cellspacing=10 border=0>";
 		for ($table=0; $table < $ancho; $table++) {
 			echo "<tr class='bot'>";
 			for ($table_row=0; $table_row < $ancho; $table_row++) {
 				if ($real_count < $array_index) {
-
 					$group_name  = $grupo[$real_count]["group"];
 					$icono_grupo = $grupo[$real_count]["icon"];
 					$icono_type  = "";
@@ -170,60 +183,76 @@
 						<img src='images/dot_yellow.gif' alt=''>";
 					}
 
-					// TOOLTIP.
-					$celda = "<td class='top' width='100'>
-					<a href='index.php?sec=estado&amp;
+					$celda = "<td class='top' width='100'>";
+					
+					// Yellow border if agents down / unknown
+					if ($grupo[$real_count]["down"] > 0) 
+						$celda = "<td class='top' style='border: 3px solid #FFDD00;' width='100'>";
+
+					// Red border if agents bad
+					if ($grupo[$real_count]["bad"] > 0)
+						$celda = "<td class='top' style='border: 3px solid #ff0000;' width='100'>";
+      					
+      					if (($grupo[$real_count]["bad"] > 0) && ($grupo[$real_count]["down"] > 0))
+						$celda = "<td class='top' style='border: 3px solid #F700FF;'  width='100'>";
+						
+					$celda .= "<a href='index.php?sec=estado&amp;
 					sec2=operation/agentes/estado_agente&amp;
 					refr=60&amp;
 					group_id=".$grupo[$real_count]["id_grupo"]."'
-					class='info'>
-					<img class='top'
-					src='images/groups_small/".$icono_grupo.".png' height='32'  width='32' alt=''>
-			<span>
-			<table cellspacing='2' cellpadding='0'
-			style='margin-left:20px'>
-				<tr><td colspan='2' width='91' class='lb'>".
-				$lang_label["agents"].": </td></tr>
-				<tr><td colspan='2' class='datos' align='center'><b>".
-				$grupo[$real_count]["agent"]."</b></td></tr>
-			</table>
-			<table cellspacing='2' cellpadding='0'
-			style='margin-left:20px'>
-				<tr>
-				<td colspan='2' width='90' class='lb'>".
-				ucfirst($lang_label["monitors"]).":</td>
-				</tr>
-				<tr>
-				<td class='datos'>
-				<img src='images/b_green.gif' align='top' alt='' >
-				".$lang_label["ok"].": </td>
-				<td class='datos'>
-				<font class='greenb'>".$grupo[$real_count]["ok"]."</font>
-				</td>
-				</tr>
-				<tr>
-				<td class='datos'>
-				<img src='images/b_down.gif' align='top' alt=''>
-				".$lang_label["down"].": </td>
-				<td class='datos'><font class='#a9aa9a'>".
-				$grupo[$real_count]["down"]."</font></td>
-				</tr>
-				<tr>
-				<td class='datos'>
-				<img src='images/b_red.gif' align='top' alt=''>
-				".$lang_label["fail"].": </td>
-				<td class='datos'><font class='redb'>".
-				$grupo[$real_count]["bad"]."</font></td>
-				</tr>
-				<tr>
-				<td class='datos'>
-				<img src='images/b_yellow.gif' align='top' alt=''>
-				".$lang_label["alerts"].": </td>
-				<td class='datos'><font class='grey'>".
-				$grupo[$real_count]["alerts"]."</font></td>
-				</tr>
-			</table>
-			</span></a>";
+					class='info'>";
+
+					// Add group icon
+					$celda .= "<img class='top'
+					src='images/groups_small/".$icono_grupo.".png' height='32'  width='32' alt=''>";
+
+					// Add float info table
+					$celda .= "
+						<span>
+						<table cellspacing='2' cellpadding='0'
+						style='margin-left:20px;'>
+							<tr><td colspan='2' width='91' class='lb'>".
+							$lang_label["agents"].": </td></tr>
+							<tr><td colspan='2' class='datos' align='center'><b>".
+							$grupo[$real_count]["agent"]."</b></td></tr>
+						</table>
+						<table cellspacing='2' cellpadding='0'
+						style='margin-left:20px'>
+							<tr>
+							<td colspan='2' width='90' class='lb'>".
+							ucfirst($lang_label["monitors"]).":</td>
+							</tr>
+							<tr>
+							<td class='datos'>
+							<img src='images/b_green.gif' align='top' alt='' >
+							".$lang_label["ok"].": </td>
+							<td class='datos'>
+							<font class='greenb'>".$grupo[$real_count]["ok"]."</font>
+							</td>
+							</tr>
+							<tr>
+							<td class='datos'>
+							<img src='images/b_down.gif' align='top' alt=''>
+							".$lang_label["down"].": </td>
+							<td class='datos'><font class='#a9aa9a'>".
+							$grupo[$real_count]["down"]."</font></td>
+							</tr>
+							<tr>
+							<td class='datos'>
+							<img src='images/b_red.gif' align='top' alt=''>
+							".$lang_label["fail"].": </td>
+							<td class='datos'><font class='redb'>".
+							$grupo[$real_count]["bad"]."</font></td>
+							</tr>
+							<tr>
+							<td class='datos'>
+							<img src='images/b_yellow.gif' align='top' alt=''>
+							".$lang_label["alerts"].": </td>
+							<td class='datos'><font class='grey'>".
+							$grupo[$real_count]["alerts"]."</font></td>
+							</tr>
+						</table>
+						</span></a>";
 					// Render network exec module button, only when this group is writtable by user
 					if (give_acl ($id_user, $grupo[$real_count]["id_grupo"], "AW") == 1) {
 						$celda .= "&nbsp;<a href='index.php?

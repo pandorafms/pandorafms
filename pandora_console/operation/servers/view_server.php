@@ -20,6 +20,10 @@
 // Load global vars
 require("include/config.php");
 
+$modules_server = 0;
+$total_modules = 0;
+$total_modules_data = 0;
+
 if (comprueba_login() == 0) {
  	if ((give_acl($id_user, 0, "AR")==1) or (give_acl($id_user,0,"AW")) or (dame_admin($id_user)==1)) {
 
@@ -28,26 +32,30 @@ if (comprueba_login() == 0) {
 	echo "<h2>".$lang_label["view_servers"]."</h2>";
 	echo "<h3>".$lang_label["server_detail"]."<a href='help/".$help_code."/chap7.php#7' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 
-	// Get total modules defined
+	// Get total modules defined (network)
 	$sql1='SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo > 4';
 	$result1=mysql_query($sql1);
 	$row1=mysql_fetch_array($result1);
 	$total_modules = $row1[0];
 
-	
+	// Get total modules defined (data)
+	$sql1='SELECT COUNT(processed_by_server) FROM tagente_estado WHERE processed_by_server LIKE "%_Data" ';
+	$result1=mysql_query($sql1);
+	$row1=mysql_fetch_array($result1);
+	$total_modules_data = $row1[0];
+
 	// Connect DataBase
 	$result=mysql_query($sql);
 	if (mysql_num_rows($result)){
-		echo "<table cellpadding='3' cellspacing='3' witdh=650>";
+		echo "<table cellpadding='4' cellspacing='4' witdh='750'>";
 		echo "<tr><th class='datos'>".$lang_label["name"]."</th>";
 		echo "<th class='datos'>".$lang_label['status']."</th>";
 		echo "<th class='datos'>".$lang_label['load']."</th>";
-		echo "<th class='datos'>".$lang_label['ip_address']."</th>";
+		echo "<th class='datos'>".$lang_label['modules']."</th>";
+		echo "<th class='datos'>".$lang_label['lag']."</th>";
 		echo "<th class='datos'>".$lang_label['description']."</th>";
-		echo "<th class='datos'>".$lang_label['network']."</th>";
-		echo "<th class='datos'>".$lang_label['data']."</th>";
-		echo "<th class='datos'>".$lang_label['snmp']."</th>";
-		echo "<th class='datos'>".$lang_label['master']."</th>";
+		echo "<th class='datos'>".$lang_label['type']."</th>";
+		// echo "<th class='datos'>".$lang_label['master']."</th>";
 		//echo "<th class='datos'>".$lang_label['checksum']."</th>";
 		//echo "<th class='datos'>".$lang_label['laststart']."</th>";
 		echo "<th class='datos'>".$lang_label['lastupdate']."</th>";
@@ -61,6 +69,7 @@ if (comprueba_login() == 0) {
 				$tdcolor = "datos2";
 				$color = 1;
 			}
+			$id_server = $row["id_server"];
 			$name = $row["name"];
 			$address = $row["ip_address"];
 			$status = $row["status"];
@@ -69,25 +78,33 @@ if (comprueba_login() == 0) {
 			$network_server = $row["network_server"];
 			$data_server = $row["data_server"];
 			$snmp_server = $row["snmp_server"];
+			$recon_server = $row["recon_server"];
 			$master = $row["master"];
 			$checksum = $row["checksum"];
 			$description = $row["description"];
 
 			$modules_server = 0;
-
-			// Get total modules defined for this server
-			$sql1='SELECT * FROM tagente where id_server = '.$row["id_server"];
-
-			$result1=mysql_query($sql1);
-			while ($row1=mysql_fetch_array($result1)){
-				$sql2='SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo > 4 AND id_agente = '.$row1["id_agente"];
-				$result2=mysql_query($sql2);
-				$row2=mysql_fetch_array($result2);
-				$modules_server = $modules_server + $row2[0];
-			}
+			if (($network_server == 1) OR ($data_server == 1))
+				if ($network_server == 1){
+					// Get total modules defined for this server (network modules)
+					$sql1='SELECT * FROM tagente where id_server = '.$row["id_server"];
+					$result1=mysql_query($sql1);
+					while ($row1=mysql_fetch_array($result1)){
+						$sql2='SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo > 4 AND id_agente = '.$row1["id_agente"];
+						$result2=mysql_query($sql2);
+						$row2=mysql_fetch_array($result2);
+						$modules_server = $modules_server + $row2[0];
+					}
+				} else {
+					// Get total modules defined for this server (data modules)
+					$sql2 = "SELECT COUNT(processed_by_server) FROM tagente_estado WHERE processed_by_server = '$name'";
+					$result2=mysql_query($sql2);
+					$row2=mysql_fetch_array($result2);
+					$modules_server = $row2[0];
+				}
 			
 			echo "<tr><td class='$tdcolor'>";
-			echo "<b>$name</b> ";
+			echo "<b><a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=$id_server'>$name</a></b> ";
 			echo "<td class='$tdcolor' align='middle'>";
 			if ($status ==0){
 				echo "<img src='images/dot_red.gif'>";
@@ -95,37 +112,73 @@ if (comprueba_login() == 0) {
 				echo "<img src='images/dot_green.gif'>";
 			}
 			echo "<td class='$tdcolor' align='middle'>";
-			$percentil = $modules_server / ($total_modules / 100);
-			echo '<img src="reporting/fgraph.php?tipo=progress&percent='.$percentil.'&height=20&width=100">';
-			//echo $modules_server . " / ". $total_modules;
-			echo "<td class='$tdcolor' align='middle'>";
-			echo "$address";
+			if (($network_server == 1) OR ($data_server == 1)){
+				// Progress bar calculations
+				if ($network_server == 1){
+					if ($total_modules == 0)
+						$percentil = 0;
+					$percentil = $modules_server / ($total_modules / 100);
+					$total_modules_temp = $total_modules;
+				} else {
+					if ($total_modules_data == 0)
+						$percentil = 0;
+					else
+						$percentil = $modules_server / ($total_modules_data / 100);
+					$total_modules_temp = $total_modules_data;
+				}
+				// Progress bar render
+				echo '<img src="reporting/fgraph.php?tipo=progress&percent='.$percentil.'&height=20&width=100">';
+			} else 
+				echo "-";
+			echo "<td class='$tdcolor'>";
+			if (($network_server == 1) OR ($data_server == 1))
+				echo $modules_server . " / ". $total_modules_temp;
+			else
+				echo "-";
+
+			echo "<td class='$tdcolor'>"; 
+			// Calculate lag: get oldest module, for this server,
+			// and calculate difference in seconds 
+			// Get total modules defined for this server
+			if (($network_server == 1) OR ($data_server == 1)){
+				$sql1 = "SELECT utimestamp, current_interval FROM tagente_estado WHERE processed_by_server = '$name' ";
+				$result1=mysql_query($sql1);
+				$nowtime = time();
+				$maxlag=0;
+				while ($row1=mysql_fetch_array($result1)){
+					if (($row1["utimestamp"] + $row1["current_interval"]) < $nowtime)
+						$maxlag =  $nowtime - ($row1["utimestamp"] + $row1["current_interval"]);
+				}
+				echo $maxlag." sec";
+			} else
+				echo "-";
 			echo "<td class='".$tdcolor."f9'>".substr($description,0,25);
 			echo "<td class='$tdcolor' align='middle'>";			
 			if ($network_server == 1){
-				echo "<img src='images/network.gif'>";
+				echo " <img src='images/network.gif'>";
 			}
-			echo "<td class='$tdcolor' align='middle'>";			
 			if ($data_server == 1){
-				echo "<img src='images/data.gif'>";
+				echo "&nbsp; <img src='images/data.gif'>";
 			}
-			echo "<td class='$tdcolor' align='middle'>";			
 			if ($snmp_server == 1){
-				echo "<img src='images/snmp.gif'>";
+				echo "&nbsp; <img src='images/snmp.gif'>";
 			}
-			echo "<td class='$tdcolor' align='middle'>";			
+			if ($recon_server == 1){
+				echo "&nbsp; <img src='images/chart_organisation.png'>";
+			}
 			if ($master == 1){
-				echo "<img src='images/master.gif'>";
+				echo "&nbsp; <img src='images/master.gif'>";
 			}
-			//echo "<td class='$tdcolor' align='middle'>";			
-			//if ($checksum == 1){
-				//echo "<img src='images/binary.gif'>";
-			//}
+			if ($checksum == 1){
+				echo "&nbsp; <img src='images/binary.gif'>";
+			}
 			//echo "<td class='".$tdcolor."f9' align='middle'>"
 			//.substr($laststart,0,25)."</td>";
 			echo "<td class='".$tdcolor."f9' align='middle'>";
 			if ($status ==0)
 				echo "<font color='red'>";
+			else
+				echo "<font color='black'>";
 			echo substr($keepalive,0,25)."</td>";
 		}
 		echo '<tr><td colspan="11"><div class="raya"></div></td></tr></table>';	
@@ -137,5 +190,19 @@ if (comprueba_login() == 0) {
 	audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Agent view");
 		require ("general/noaccess.php");
 	}
+	echo "<table cellpadding=4 cellspacing=4>";
+	echo "<tr><td>";
+	echo "<img src='images/network.gif'><td>".$lang_label["network_server"];
+	echo "<td>";
+	echo "<img src='images/master.gif'><td>".$lang_label["master"];
+	echo "<td>";
+	echo "<img src='images/data.gif'><td>".$lang_label["data_server"];
+	echo "<td>";
+	echo "<img src='images/binary.gif'><td>".$lang_label["md5_checksum"];
+	echo "<td>";
+	echo "<img src='images/snmp.gif'><td>".$lang_label["snmp_console"];
+	echo "<td>";
+	echo "<img src='images/chart_organisation.png'><td>".$lang_label["recon_server"];
+	echo "</table>";
 }
 ?>

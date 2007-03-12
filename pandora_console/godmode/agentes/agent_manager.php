@@ -1,5 +1,29 @@
 <?PHP
 
+// Pandora FMS - the Free monitoring system
+// ========================================
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development and project architecture and management
+// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// CSS and some PHP additions
+// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
+// Javascript Active Console code.
+// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
+// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; version 2
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+
 // ========================
 // AGENT GENERAL DATA FORM 
 // ========================
@@ -13,21 +37,22 @@ if (give_acl($id_user, 0, "AW")!=1) {
 };
 
 echo "<h2>".$lang_label["agent_conf"];
-if (isset($_GET["creacion"])){
-echo " &gt; ".$lang_label["create_agent"]."
-<a href='help/".$help_code."/chap3.php#32' target='_help' class='help'>
-&nbsp;<span>".$lang_label["help"]."</span></a>";
+if (isset($_GET["create_agent"])){
+	$create_agent = 1;
+	echo " &gt; ".$lang_label["create_agent"]."
+	<a href='help/".$help_code."/chap3.php#32' target='_help' class='help'>
+	&nbsp;<span>".$lang_label["help"]."</span></a>";
 } else {
 	echo " &gt; ".$lang_label["update_agent"]."
 	<a href='help/".$help_code."/chap3.php#32' target='_help' class='help'>
 	&nbsp;<span>".$lang_label["help"]."</span></a>";
 }
 echo "</h2>";
-echo "<div style='height: 25px'> </div>";
+echo "<div style='height: 5px'> </div>";
 
 echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&
 sec2=godmode/agentes/configurar_agente">';
-if ($creacion_agente == 1) {
+if ($create_agent == 1) {
 	echo "<input type='hidden' name='create_agent' value='1'>";
 } else {
 	echo "<input type='hidden' name='update_agent' value='1'>";
@@ -137,7 +162,7 @@ while ($row=mysql_fetch_array($result)){
 <tr><td colspan='3'><div class='raya'></div></td></tr>
 <tr><td colspan="3" align="right">
 <?php 
-if (isset($_GET["creacion"])){
+if ($create_agent == 1){
 	echo "
 	<input name='crtbutton' type='submit' class='sub' value='".
 	$lang_label["create"]."'>";

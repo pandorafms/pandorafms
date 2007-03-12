@@ -1,11 +1,27 @@
 <?php
 
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2005-2006
-
+// Pandora FMS - the Free monitoring system
+// ========================================
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development and project architecture and management
+// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// CSS and some PHP additions
+// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
+// Javascript Active Console code.
+// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
+// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; version 2
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Database functions
 
 // --------------------------------------------------------------- 
@@ -399,7 +415,7 @@ function give_server_name($id_server){
 // Return name of a module type when given ID
 // --------------------------------------------------------------- 
 
-function dame_nombre_tipo_modulo($id){
+function dame_nombre_tipo_modulo ($id){
 	require("config.php");
 	$query1="SELECT * FROM ttipo_modulo WHERE id_tipo =".$id;
 	$resq1=mysql_query($query1);
@@ -414,14 +430,14 @@ function dame_nombre_tipo_modulo($id){
 // Return name of a group when given ID
 // --------------------------------------------------------------- 
 
-function dame_nombre_grupo($id){
-	require("config.php");
-	$query1="SELECT * FROM tgrupo WHERE id_grupo =".$id;
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1)){
-		$pro=$rowdup["nombre"];
-	}
-	else $pro = "";
+function dame_nombre_grupo ($id){
+	require ("config.php");
+	$query1 = "SELECT * FROM tgrupo WHERE id_grupo = ".$id;
+	$resq1 = mysql_query($query1);
+	if ($rowdup = mysql_fetch_array ($resq1))
+		$pro = $rowdup["nombre"];
+	else
+		$pro = "";
 	return $pro;
 } 
 
@@ -558,6 +574,7 @@ function dame_so_icon($id){
 		$pro = "";
 	return $pro;
 }
+
 
 // --------------------------------------------------------------- 
 // Return email of a user given ID 
@@ -847,5 +864,38 @@ function group_belong_group($id_group_a, $id_groupset){
 		return 0;
 }
 
+// ---------------------------------------------------------------
+// Return category name
+// ---------------------------------------------------------------
+function give_modulecategory_name ($value) {
+	require("config.php");
+	require ("include/languages/language_".$language_code.".php");
+	switch ($value) {
+	   case 0: return $lang_label["cat_0"];
+	   	break;
+	   case 1: return $lang_label["cat_1"];
+	   	break;
+	   case 2: return $lang_label["cat_2"];
+	   	break;
+	   case 3: return $lang_label["cat_3"];
+	   	break;
+	}
+	return $lang_label["unknown"]; 
+}
+
+// --------------------------------------------------------------- 
+// Return network component group name given its ID
+// --------------------------------------------------------------- 
+
+function give_network_component_group_name ($id){
+	require("config.php");
+	$query1="SELECT * FROM tnetwork_component_group WHERE id_sg= ".$id;
+	$resq1=mysql_query($query1);
+	if ($rowdup=mysql_fetch_array($resq1))
+		$pro=$rowdup["name"];
+	else
+		$pro = "";
+	return $pro;
+}
 
 ?>

@@ -1,14 +1,20 @@
 <?php
 
-// Pandora - the Free monitoring system
-// ====================================
-// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L, info@artica.es
-// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// Pandora FMS - the Free monitoring system
+// ========================================
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development and project architecture and management
+// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// CSS and some PHP additions
+// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
+// Javascript Active Console code.
+// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
+// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// as published by the Free Software Foundation; version 2
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -16,7 +22,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
 $lang_label["view_agents"]="Ver agentes";
 $lang_label["manage_incidents"]="Gesti&oacute;n de incidentes";
 $lang_label["view_users"]="Ver usuarios";
@@ -621,7 +626,7 @@ $lang_label["no_event"]="No hay eventos";
 $lang_label["agent_access_rate"]="Accesibilidad agente (24h)";
 $lang_label["agent_module_shareout"]="Distribuci&oacute;n de m&oacute;dulos";
 $lang_label["int"]="Itv."; // Nombre corto para intervalo
-$lang_label["manage_servers"]="Gesti&oacute;n de servidores";
+$lang_label["manage_servers"]="Gesti&oacute;n servidores";
 $lang_label["update_server"]="Actualizar servidor";
 $lang_label["upd_server_ok"]="Servidor actualizado correctamente";
 $lang_label["upd_server_no"]="Ha habido un problema al actualizar el servidor";
@@ -652,6 +657,7 @@ $lang_label["reporting"]="Informes";
 $lang_label["agent_general_reporting"]="Agent overview";
 
 $lang_label["active_console"]="Consola activa";
+$lang_label["parent"]="Padre";
 
 global $lang_label;
 global $help_label;

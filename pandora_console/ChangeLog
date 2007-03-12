@@ -1,3 +1,25 @@
+2007-03-12  Sancho Lerena  <slerena@artica.es>
+
+	* pandoradb.sql: Upgraded scheme, many changes and many tables
+	added. I Need to commit the new "preloaded" data for this scheme,
+	give me some days, this stuff are on development.
+
+	* includes/styles/*: Many additions to reflect new menu options,
+	and the tab menu title.
+
+	* reporting/fgraph.php: Minor changes to format progressbar.
+
+	* godmode/modules/*: Many many changes and additions (manage_*)
+	for the new management system using tabs :-)
+
+	* include/languages/language_es_es.php: Many additions.
+
+	* operation/servers/view_server.php: Implemented detailed load for
+	each servertype and latency time to each server to detect problems
+	with high load.
+	
+	Many changes in godmode subsystem. Not detailed at this time.
+	
 2007-03-07  Raul Mateos  <raulofpandora@gmail.com>
 
 	* godmode/agentes/alert_manager.php, modificar_agente.php,
@@ -17,6 +39,7 @@
 	
 	* include/styles/menu.css: Small colour change in menu border.
 
+>>>>>>> .r393
 2007-03-06  Sancho Lerena  <slerena@artica.es>
 
 	* include/functions*.php: Some reorganization, moved some funtions

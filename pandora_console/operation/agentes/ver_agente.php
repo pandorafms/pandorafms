@@ -1,15 +1,19 @@
 <?php
 // Pandora FMS - the Free monitoring system
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development and project architecture and management
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
+// CSS and some PHP additions
 // Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
-
+// Javascript Active Console code.
+// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
+// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation version 2
+// as published by the Free Software Foundation; version 2
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -17,7 +21,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
 // Load global vars
 require("include/config.php");
 
@@ -43,6 +46,16 @@ if (comprueba_login() == 0) {
 				}
 			}
 			if (give_acl($id_usuario,$id_grupo, "AR") == 1){
+
+				echo "<div id='menu_tab_left'>
+				<ul class='mn'>	
+				<li class='nomn'>";
+				echo "<li class='nomn'>";
+				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='../images/bricks.png' class='top' border=0>&nbsp; ".dame_nombre_agente($id_agente)." - ".$lang_label["view_mode"]."</A>";
+				echo "</li>";
+				echo "</ul></div>";
+
+			
 				if (isset($_GET["tab"]))
 					$tab = $_GET["tab"];
 				else
@@ -55,6 +68,8 @@ if (comprueba_login() == 0) {
 					echo "<li class='nomn'><a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'><img src='images/setup.gif' width='16' class='top' border=0> Manage</A>";
 					echo "</li>";
 				}
+
+				
 				// Main view
 				echo "<li class='nomn'>";
 				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/monitor.png' class='top' border=0> Main</a>";
@@ -84,8 +99,7 @@ if (comprueba_login() == 0) {
 						echo "<br>";
 				
 				case "main":	require "estado_generalagente.php";
-						echo "<br>";
-						//require "estado_monitores.php";
+						require "estado_monitores.php";
 						
 						break;
 				case "data": 	require "estado_ultimopaquete.php";

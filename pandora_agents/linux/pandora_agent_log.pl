@@ -105,6 +105,9 @@ foreach $logfile ( keys %log_modules ) {
 					# log file has been rotated, so rotated file must
 					# to be read
 	my $logfile_to_open; 	# should be $logfile or $logfile_rotated
+	my %log_counter;		# stores counter variables that are preserved from 
+					# line to line (see documentation for more info)
+					# $log_counter{log file}{module name}
 	
 	# let's take module_log_rotated, if it exists ...
 	
@@ -114,8 +117,6 @@ foreach $logfile ( keys %log_modules ) {
 		}
 	}
 	
-	#debug
-	print "XXX $logfile_rotated\n";
 	
 	my $last_line = 0;		# last line read
 	my $last_line_byte = 0;		# position of $last_line
@@ -153,135 +154,161 @@ foreach $logfile ( keys %log_modules ) {
 			# note that in this case the values recovered for the index file
 			# are the indexes of the rotated file!
 		}
-        }
+
+
+		# and now log file is processed
+		# NOTE: note that if the index does not exist, log file is not processed!!
+		# this behaviour prevents the agent to scan huge log files the first time
+		# is executed
 	
-	
-	for ( $cc=$flag_rotated_detected; $cc>=0; $cc-- ) {
+		for ( $cc=$flag_rotated_detected; $cc>=0; $cc-- ) {
 
-		$logfile_to_open = ($cc)?$logfile_rotated:$logfile;
-	
-		open (LOGFILE, $logfile_to_open);   	# TODO checks!!
-							# TODO support for compressed rotated log files
+			$logfile_to_open = ($cc)?$logfile_rotated:$logfile;
 		
-		# TODO:  more checks to see if the log file has been rewritten
-		# we could check if the last line read remains the same
-		# If not, maybe the log file has changed!
-		# ... for the next version ...
-		
-		# moving to the last position read and begining to read new lines
-		
-		seek ( LOGFILE, $last_byte, 0 );
-		while ($logline = <LOGFILE>) {
-
-			chomp $logline;
-			$logline =~ s/\'/\\\'/g; 	# escaping '
-
-			# for each line, a data file will be created in data_out
-			# for each line, all modules associated to this logfile are processed
-
-			# creating data file
+			open (LOGFILE, $logfile_to_open);   	# TODO checks!!
+								# TODO support for compressed rotated log files
 			
-			$SERIAL = time() . "-" . (int(rand(1000)) + 1);  # yes, could be a counter
-			$datafile = "$TEMP/$NOMBRE_HOST.$SERIAL.data";
-			$checksumfile = "$TEMP/$NOMBRE_HOST.$SERIAL.checksum";
+			# TODO:  more checks to see if the log file has been rewritten
+			# we could check if the last line read remains the same
+			# If not, maybe the log file has changed!
+			# ... for the next version ...
 			
-			open (DATAFILE, ">$datafile");  # TODO checks !!
-
-			# timestamp for the data file (remember, one for each line of the log)
-			# can be overwritten. For that, a module with module_log_timestamp is needed.
-			# This module has to return a TIMESTAMP with the format like the command
-			# date +"%Y/%m/%d %H:%M:%S"
-			# NOTE: this module will not be included in the data file as a 
-			# normal module, i. e., timestamps will not be recorded in the database
-
-			$TIMESTAMP_module = $TIMESTAMP;
-			foreach $module_id ( @{$log_modules{$logfile}} ) {
-				
-				# just for clarity
-				my %module = %{$all_modules[$module_id]};
-				my $module_exec = $module{'module_exec'};   # TODO: checks!!
-				
-				unless ( defined($module{'module_log_timestamp'}) ) { next; }
-
-				# let's substitute key words
-				$module_exec = 'my $LINE  = \'' . $logline . '\'; ' . $module_exec . ';' ;
-				
-				$TIMESTAMP_module = eval( $module_exec );
-
-				last;  # only the first 'module_log_timestamp' is considered
-			}
-
-			# header of the data file is printed now with the calculated timestamp
+			# moving to the last position read and begining to read new lines
 			
-			print DATAFILE "<agent_data os_name='$OS_NAME' os_version='$OS_VERSION' interval='$INTERVAL' version='$AGENT_VERSION' timestamp='$TIMESTAMP_module' agent_name='$NOMBRE_HOST'>\n";
+			seek ( LOGFILE, $last_byte, 0 );
+			while ($logline = <LOGFILE>) {
 
-			# now, for every module of this logfile, a <module> entry is created
-			# in DATAFILE.
-			# Note that we do not use a data_temp, neither we check for all the required
-			# fields --> for next version
-			#
-			# module_interval is not supported --> future versions
-			
-			foreach $module_id ( @{$log_modules{$logfile}} ) {
+				chomp $logline;
+				$logline =~ s/\'/\\\'/g; 	# escaping '
 
-				# just for clarity
-				my %module = %{$all_modules[$module_id]};
-				my $module_exec = $module{'module_exec'};
+				# for each line, a data file will be created in data_out
+				# for each line, all modules associated to this logfile are processed
 
-				# modules with 'module_log_timestamp' wont be considered
-				if ( defined($module{'module_log_timestamp'}) ) { next; }
+				# creating data file
 				
-				# let's substitute key words
-				$module_exec = 'my $LINE  = \'' . $logline . '\'; ' . $module_exec . ';' ;
+				$SERIAL = time() . "-" . (int(rand(1000)) + 1);  # yes, could be a counter
+				$datafile = "$TEMP/$NOMBRE_HOST.$SERIAL.data";
+				$checksumfile = "$TEMP/$NOMBRE_HOST.$SERIAL.checksum";
 				
-				# printing headers
-				print DATAFILE '<module>' . "\n";
-				
-				print DATAFILE '<name><![CDATA[' . $module{'module_name'} . ']]></name>'  . "\n"
-					if ( defined($module{'module_name'}) );
-				print DATAFILE '<max><![CDATA[' . $module{'module_max'} . ']]></max>' . "\n"	
-					if ( defined($module{'module_max'}) );
-				print DATAFILE '<min><![CDATA[' . $module{'module_min'} . ']]></min>' . "\n"		
-					if ( defined($module{'module_min'}) );
-				print DATAFILE '<description><![CDATA[' . $module{'module_description'} . ']]></description>' . "\n"
-					if ( defined($module{'module_description'}) );
-				print DATAFILE '<type><![CDATA[' . $module{'module_type'} . ']]></type>' . "\n"
-					if ( defined($module{'module_type'}) );
-				print DATAFILE '<storealldata>1</storealldata>' . "\n"
-					if ( defined($module{'module_store_all_data'}) );
-			
+
+				my $content;		# here all the xml data content will be stored
+							# If there is any module successfully executed,
+							# the actual file will be written.
+
+				# timestamp for the data file (remember, one for each line of the log)
+				# can be overwritten. For that, a module with module_log_timestamp is needed.
+				# This module has to return a TIMESTAMP with the format like the command
+				# date +"%Y/%m/%d %H:%M:%S"
+				# NOTE: this module will not be included in the data file as a 
+				# normal module, i. e., timestamps will not be recorded in the database
+
+				$TIMESTAMP_module = $TIMESTAMP;
+				foreach $module_id ( @{$log_modules{$logfile}} ) {
 					
-				# in next line we execute $module_exec after key substitution
-				# SECURITY NOTE:  in this version there are not injection checks,
-				# so, if the agent is running as root, any user that can write in the log
-				# files could execute commands as root !!!
+					# just for clarity
+					my %module = %{$all_modules[$module_id]};
+					my $module_exec = $module{'module_exec'};   # TODO: checks!!
+					
+					unless ( defined($module{'module_log_timestamp'}) ) { next; }
+
+					# let's substitute key words
+					$module_exec = 'my $LINE  = \'' . $logline . '\'; ' . $module_exec . ';' ;
+					
+					$TIMESTAMP_module = eval( $module_exec );
+
+					last;  # only the first 'module_log_timestamp' is considered
+				}
+
+				# header of the data file is printed now with the calculated timestamp
 				
-				print DATAFILE '<data><![CDATA[' . eval( $module_exec ) . ']]></data>' . "\n";
+				$content .= "<agent_data os_name='$OS_NAME' os_version='$OS_VERSION' interval='$INTERVAL' version='$AGENT_VERSION' timestamp='$TIMESTAMP_module' agent_name='$NOMBRE_HOST'>\n";
 
-				print DATAFILE '</module>' . "\n";
+				# now, for every module of this logfile, a <module> entry is created
+				# in DATAFILE.
+				# Note that we do not use a data_temp, neither we check for all the required
+				# fields --> for next version
+				#
+				# module_interval is not supported --> future versions
+				
+				foreach $module_id ( @{$log_modules{$logfile}} ) {
+
+					# just for clarity
+					my %module = %{$all_modules[$module_id]};
+					my $module_exec = $module{'module_exec'};
+
+					# modules with 'module_log_timestamp' wont be considered
+					if ( defined($module{'module_log_timestamp'}) ) { next; }
+					
+					# let's substitute key words
+					$module_exec = 'my $LINE  = \'' . $logline . '\'; ' . $module_exec . ';' ;
+					
+					# in next block we execute $module_exec after key substitution
+					# SECURITY NOTE:  in this version there are not injection checks,
+					# so, if the agent is running as root, any user that can write in the log
+					# files could execute commands as root !!!
+					
+					my $module_exec_result = eval( $module_exec );
+					
+					# if the module is a counter, updates $log_counter and
+					# jumps to the next module (counter results are written
+					# in the index file)
+					if ( defined($module{'module_log_counter'}) and defined($module{'module_name'}) ) {
+						if ($module_exec_result) { $log_counter{$logfile}{ $module{'module_name'} }++; }
+						next;
+					}
+					
+					# printing headers
+					$content .= '<module>' . "\n";
+					
+					$content .= '<name><![CDATA[' . $module{'module_name'} . ']]></name>'  . "\n"
+						if ( defined($module{'module_name'}) );
+					$content .= '<max><![CDATA[' . $module{'module_max'} . ']]></max>' . "\n"	
+						if ( defined($module{'module_max'}) );
+					$content .= '<min><![CDATA[' . $module{'module_min'} . ']]></min>' . "\n"		
+						if ( defined($module{'module_min'}) );
+					$content .= '<description><![CDATA[' . $module{'module_description'} . ']]></description>' . "\n"
+						if ( defined($module{'module_description'}) );
+					$content .= '<type><![CDATA[' . $module{'module_type'} . ']]></type>' . "\n"
+						if ( defined($module{'module_type'}) );
+					$content .= '<storealldata>1</storealldata>' . "\n"
+						if ( defined($module{'module_store_all_data'}) );
+						
+					$content .= '<data><![CDATA[' . $module_exec_result . ']]></data>' . "\n";
+
+					$content .= '</module>' . "\n";
+				}
+
+				# finishing this data file
+				$content .= "</agent_data>";
+
+				# if there is some data collected, let's write the data file
+				
+				if ($content=~/<module>/) {
+				
+					open (DATAFILE, ">$datafile");  # TODO checks !!
+					print DATAFILE $content;
+					close (DATAFILE);
+
+					# now, checksum
+					# we use /usr/bin/md5sum
+					# for next versions: do it with perl
+					
+					open (CHECKSUM_FILE, ">$checksumfile");    #TODO checks!!
+					
+					if ($CHECKSUM_MODE and (-e '/usr/bin/md5sum')) {
+						print CHECKSUM_FILE `/usr/bin/md5sum $datafile`;
+					} else {
+						print CHECKSUM_FILE "No valid checksum";
+					}
+					close (CHECKSUM_FILE);
+				}
 			}
 
-			# finishing this data file
-			print DATAFILE "</agent_data>";
-			close (DATAFILE);
-
-			# now, checksum
-			# we use /usr/bin/md5sum
-			# for next versions: do it with perl
+			# resetting indexes after processing a rotated log file
 			
-			open (CHECKSUM_FILE, ">$checksumfile");    #TODO checks!!
-			
-			if ($CHECKSUM_MODE and (-e '/usr/bin/md5sum')) {
-				print CHECKSUM_FILE `/usr/bin/md5sum $datafile`;
-			} else {
-				print CHECKSUM_FILE "No valid checksum";
-			}
-			close (CHECKSUM_FILE);
+			if ($cc) {( $last_byte, $last_line, $last_line_byte ) = ( 0, 0, 0 ); }
 		}
 
-		# resetting indexes after processing a rotated log file
-		
-		if ($cc) {( $last_byte, $last_line, $last_line_byte ) = ( 0, 0, 0 ); }
 	}
 
 	# updating index file
@@ -289,8 +316,14 @@ foreach $logfile ( keys %log_modules ) {
 	unlink $logfile_index;    # TODO checks!!
 	if (-e $logfile) {
 		open (LOGFILE_INDEX, ">$logfile_index");
-		$last_byte = tell( LOGFILE );
+		# $last_byte = tell( LOGFILE );
+		$last_byte = (stat($logfile))[7];
 		print LOGFILE_INDEX $last_byte . " " . $last_line . " " . $last_line_byte . "\n";
+
+		foreach $counter ( keys %{$log_counter{$logfile}} ) { 
+			print LOGFILE_INDEX "counter " . $log_counter{$logfile}{$counter} . " " . $counter . "\n";
+		}
+		
 		print LOGFILE_INDEX "# $logfile";
 		close LOGFILE_INDEX;
 	}

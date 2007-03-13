@@ -190,7 +190,10 @@ foreach $logfile ( keys %log_modules ) {
 				$datafile = "$TEMP/$NOMBRE_HOST.$SERIAL.data";
 				$checksumfile = "$TEMP/$NOMBRE_HOST.$SERIAL.checksum";
 				
-				open (DATAFILE, ">$datafile");  # TODO checks !!
+
+				my $content;		# here all the xml data content will be stored
+							# If there is any module successfully executed,
+							# the actual file will be written.
 
 				# timestamp for the data file (remember, one for each line of the log)
 				# can be overwritten. For that, a module with module_log_timestamp is needed.
@@ -218,7 +221,7 @@ foreach $logfile ( keys %log_modules ) {
 
 				# header of the data file is printed now with the calculated timestamp
 				
-				print DATAFILE "<agent_data os_name='$OS_NAME' os_version='$OS_VERSION' interval='$INTERVAL' version='$AGENT_VERSION' timestamp='$TIMESTAMP_module' agent_name='$NOMBRE_HOST'>\n";
+				$content .= "<agent_data os_name='$OS_NAME' os_version='$OS_VERSION' interval='$INTERVAL' version='$AGENT_VERSION' timestamp='$TIMESTAMP_module' agent_name='$NOMBRE_HOST'>\n";
 
 				# now, for every module of this logfile, a <module> entry is created
 				# in DATAFILE.
@@ -255,42 +258,50 @@ foreach $logfile ( keys %log_modules ) {
 					}
 					
 					# printing headers
-					print DATAFILE '<module>' . "\n";
+					$content .= '<module>' . "\n";
 					
-					print DATAFILE '<name><![CDATA[' . $module{'module_name'} . ']]></name>'  . "\n"
+					$content .= '<name><![CDATA[' . $module{'module_name'} . ']]></name>'  . "\n"
 						if ( defined($module{'module_name'}) );
-					print DATAFILE '<max><![CDATA[' . $module{'module_max'} . ']]></max>' . "\n"	
+					$content .= '<max><![CDATA[' . $module{'module_max'} . ']]></max>' . "\n"	
 						if ( defined($module{'module_max'}) );
-					print DATAFILE '<min><![CDATA[' . $module{'module_min'} . ']]></min>' . "\n"		
+					$content .= '<min><![CDATA[' . $module{'module_min'} . ']]></min>' . "\n"		
 						if ( defined($module{'module_min'}) );
-					print DATAFILE '<description><![CDATA[' . $module{'module_description'} . ']]></description>' . "\n"
+					$content .= '<description><![CDATA[' . $module{'module_description'} . ']]></description>' . "\n"
 						if ( defined($module{'module_description'}) );
-					print DATAFILE '<type><![CDATA[' . $module{'module_type'} . ']]></type>' . "\n"
+					$content .= '<type><![CDATA[' . $module{'module_type'} . ']]></type>' . "\n"
 						if ( defined($module{'module_type'}) );
-					print DATAFILE '<storealldata>1</storealldata>' . "\n"
+					$content .= '<storealldata>1</storealldata>' . "\n"
 						if ( defined($module{'module_store_all_data'}) );
 						
-					print DATAFILE '<data><![CDATA[' . $module_exec_result . ']]></data>' . "\n";
+					$content .= '<data><![CDATA[' . $module_exec_result . ']]></data>' . "\n";
 
-					print DATAFILE '</module>' . "\n";
+					$content .= '</module>' . "\n";
 				}
 
 				# finishing this data file
-				print DATAFILE "</agent_data>";
-				close (DATAFILE);
+				$content .= "</agent_data>";
 
-				# now, checksum
-				# we use /usr/bin/md5sum
-				# for next versions: do it with perl
+				# if there is some data collected, let's write the data file
 				
-				open (CHECKSUM_FILE, ">$checksumfile");    #TODO checks!!
+				if ($content=~/<module>/) {
 				
-				if ($CHECKSUM_MODE and (-e '/usr/bin/md5sum')) {
-					print CHECKSUM_FILE `/usr/bin/md5sum $datafile`;
-				} else {
-					print CHECKSUM_FILE "No valid checksum";
+					open (DATAFILE, ">$datafile");  # TODO checks !!
+					print DATAFILE $content;
+					close (DATAFILE);
+
+					# now, checksum
+					# we use /usr/bin/md5sum
+					# for next versions: do it with perl
+					
+					open (CHECKSUM_FILE, ">$checksumfile");    #TODO checks!!
+					
+					if ($CHECKSUM_MODE and (-e '/usr/bin/md5sum')) {
+						print CHECKSUM_FILE `/usr/bin/md5sum $datafile`;
+					} else {
+						print CHECKSUM_FILE "No valid checksum";
+					}
+					close (CHECKSUM_FILE);
 				}
-				close (CHECKSUM_FILE);
 			}
 
 			# resetting indexes after processing a rotated log file

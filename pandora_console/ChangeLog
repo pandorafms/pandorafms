@@ -1,3 +1,8 @@
+2007-03-19  Raul Mateos  <raulofpandora@gmail.com>
+
+	* pandoradb.sql, pandoradb_data.sql: Solve small problem in last commit
+	with groups table and language code for more than 5 chars (as ast_es).
+
 2007-03-19  Sancho Lerena  <slerena@artica.es>
 
 	* functions_db.php: Added give_network_profile_name() function.
@@ -63,7 +68,6 @@
 	
 	* include/styles/menu.css: Small colour change in menu border.
 
->>>>>>> .r393
 2007-03-06  Sancho Lerena  <slerena@artica.es>
 
 	* include/functions*.php: Some reorganization, moved some funtions

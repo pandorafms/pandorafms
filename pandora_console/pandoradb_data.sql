@@ -69,15 +69,15 @@ INSERT INTO `tconfig_os` VALUES (11,'Network','Pandora Network Agent','network.g
 -- Dumping data for table `tgrupo`
 --
 
-INSERT INTO `tgrupo` VALUES (1,'All','world');
-INSERT INTO `tgrupo` VALUES (2,'Servers','server_database');
-INSERT INTO `tgrupo` VALUES (3,'IDS','eye');
-INSERT INTO `tgrupo` VALUES (4,'Firewalls','firewal');
-INSERT INTO `tgrupo` VALUES (8,'Databases','db');
-INSERT INTO `tgrupo` VALUES (9,'Comms','comms');
-INSERT INTO `tgrupo` VALUES (10,'Others','others');
-INSERT INTO `tgrupo` VALUES (11,'Workstations','workstation');
-INSERT INTO `tgrupo` VALUES (12,'Applications','apps');
+INSERT INTO `tgrupo` VALUES (1,'All','world',0);
+INSERT INTO `tgrupo` VALUES (2,'Servers','server_database',0);
+INSERT INTO `tgrupo` VALUES (3,'IDS','eye',0);
+INSERT INTO `tgrupo` VALUES (4,'Firewalls','firewal',0);
+INSERT INTO `tgrupo` VALUES (8,'Databases','db',0);
+INSERT INTO `tgrupo` VALUES (9,'Comms','comms',0);
+INSERT INTO `tgrupo` VALUES (10,'Others','others',0);
+INSERT INTO `tgrupo` VALUES (11,'Workstations','workstation',0);
+INSERT INTO `tgrupo` VALUES (12,'Applications','apps',0);
 
 --
 -- Dumping data for table `tlink`

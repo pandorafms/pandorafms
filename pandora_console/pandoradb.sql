@@ -412,7 +412,7 @@ CREATE TABLE `tincidencia` (
 
 DROP TABLE IF EXISTS `tlanguage`;
 CREATE TABLE `tlanguage` (
-  `id_language` varchar(5) NOT NULL default '',
+  `id_language` varchar(6) NOT NULL default '',
   `name` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`id_language`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

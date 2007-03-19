@@ -104,7 +104,10 @@ if (comprueba_login() == 0) {
 				}
 			
 			echo "<tr><td class='$tdcolor'>";
-			echo "<b><a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=$id_server'>$name</a></b> ";
+			if ($recon_server == 1)
+				echo "<b><a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=$id_server'>$name</a></b> ";
+			else
+				echo "<b>$name</b>";
 			echo "<td class='$tdcolor' align='middle'>";
 			if ($status ==0){
 				echo "<img src='images/dot_red.gif'>";
@@ -126,28 +129,63 @@ if (comprueba_login() == 0) {
 						$percentil = $modules_server / ($total_modules_data / 100);
 					$total_modules_temp = $total_modules_data;
 				}
+			} elseif ($recon_server == 1){
+			
+				$sql2 = "SELECT COUNT(id_rt) FROM trecon_task WHERE id_network_server = $id_server";
+				$result2=mysql_query($sql2);
+				$row2=mysql_fetch_array($result2);
+				$modules_server = $row2[0];
+
+				$sql2 = "SELECT COUNT(id_rt) FROM trecon_task";
+				$result2=mysql_query($sql2);
+				$row2=mysql_fetch_array($result2);
+				$total_modules = $row2[0];
+				if ($total_modules == 0)
+					$percentil = 0;
+				$percentil = $modules_server / ($total_modules / 100);
+				$total_modules_temp = $total_modules;
+			}
+			else 
+				echo "-";
+
+			if (($network_server == 1) OR ($data_server == 1) OR ($recon_server == 1))
 				// Progress bar render
 				echo '<img src="reporting/fgraph.php?tipo=progress&percent='.$percentil.'&height=20&width=100">';
-			} else 
-				echo "-";
+				
+			// Number of modules
 			echo "<td class='$tdcolor'>";
-			if (($network_server == 1) OR ($data_server == 1))
+			if (($recon_server ==1) OR ($network_server == 1) OR ($data_server == 1))
 				echo $modules_server . " / ". $total_modules_temp;
 			else
 				echo "-";
 
+			// LAG CHECK
 			echo "<td class='$tdcolor'>"; 
-			// Calculate lag: get oldest module, for this server,
+			// Calculate lag: get oldest module of any proc_type, for this server,
 			// and calculate difference in seconds 
 			// Get total modules defined for this server
 			if (($network_server == 1) OR ($data_server == 1)){
-				$sql1 = "SELECT utimestamp, current_interval FROM tagente_estado WHERE processed_by_server = '$name' ";
+				$sql1 = "SELECT utimestamp, current_interval FROM tagente_estado WHERE  processed_by_server = '$name' AND estado < 100";
 				$result1=mysql_query($sql1);
 				$nowtime = time();
 				$maxlag=0;
 				while ($row1=mysql_fetch_array($result1)){
 					if (($row1["utimestamp"] + $row1["current_interval"]) < $nowtime)
-						$maxlag =  $nowtime - ($row1["utimestamp"] + $row1["current_interval"]);
+						$maxlag2 =  $nowtime - ($row1["utimestamp"] + $row1["current_interval"]);
+						if ($maxlag2 > $maxlag)
+							$maxlag = $maxlag2;
+				}
+				echo $maxlag." sec";
+			} elseif ($recon_server == 1) {
+				$sql1 = "SELECT * FROM trecon_task WHERE id_network_server = $id_server";
+				$result1=mysql_query($sql1);
+				$nowtime = time();
+				$maxlag=0;
+				while ($row1=mysql_fetch_array($result1)){
+					if (($row1["utimestamp"] + $row1["interval"]) < $nowtime)
+						$maxlag2 =  $nowtime - ($row1["utimestamp"] + $row1["interval"]);
+						if ($maxlag2 > $maxlag)
+							$maxlag = $maxlag2;
 				}
 				echo $maxlag." sec";
 			} else

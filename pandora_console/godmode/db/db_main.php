@@ -32,7 +32,7 @@ if (comprueba_login() == 0)
 	<div align='justify'>
 	<?php echo $lang_label["dbsetup_info"]; ?>
 	</div><br>
-	<img src="reporting/fgraph.php?tipo=db_agente_purge&id=-1">
+	<!-- <img src="reporting/fgraph.php?tipo=db_agente_purge&id=-1"> -->
 	</table>
 <?php
 	} else {

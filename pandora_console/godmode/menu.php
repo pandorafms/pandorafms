@@ -116,9 +116,49 @@ if (comprueba_login() == 0){
 		
 		if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/servers/modificar_server"){
 			echo '<div id="god5s">';
-        }
-		else echo '<div id="god5">';
+        	} else
+			echo '<div id="god5">';
+			
 		echo '<ul class="mn"><li><a href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server" class="mn">'.$lang_label["manage_servers"].'</a></li></ul></div>';
+
+		if (isset($_GET["sec"]) && $_GET["sec"] == "gservers"){
+			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/servers/manage_recontask"){
+				echo "<div class='arrowgs'>";
+			} else
+				echo "<div class='arrowg'>";
+			echo "<ul class='mn'><li><a href='index.php?sec=gservers&sec2=godmode/servers/manage_recontask' class='mn'>".$lang_label["manage_recontask"]."</a></li></ul></div>";
+		}
+/*
+		if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/agentes/modificar_agente" || $_GET["sec2"] == "godmode/agentes/configurar_agente")){
+			echo '<div id="god1s">';
+		}
+		else
+			echo '<div id="god1">';
+		echo '<ul class="mn"><li><a href="index.php?sec=gagente&amp;sec2=godmode/agentes/modificar_agente" class="mn">'.$lang_label["manage_agents"].'</a></li></ul></div>';
+		
+		if (isset($_GET["sec"]) && $_GET["sec"] == "gagente"){
+			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/agentes/manage_config"){
+				echo "<div class='arrowgs'>";
+			}
+			else echo "<div class='arrowg'>";
+			echo "<ul class='mn'><li><a href='index.php?sec=gagente&amp;sec2=godmode/agentes/manage_config' class='mn'>".$lang_label["manage_config"]."</a></li></ul></div>";
+			
+			if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/grupos/lista_grupos" || $_GET["sec2"] == "godmode/grupos/configurar_grupo")){
+				echo "<div class='arrowgs'>";
+			}
+			else
+				echo "<div class='arrowg'>";
+			echo "<ul class='mn'><li><a href='index.php?sec=gagente&amp;sec2=godmode/grupos/lista_grupos' class='mn'>".$lang_label["manage_groups"]."</a></li></ul></div>";
+		}
+*/
+
+
+
+
+
+
+
+
         
 		if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/admin_access_logs"){
 			echo '<div id="god6s">';

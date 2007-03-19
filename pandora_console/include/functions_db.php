@@ -898,4 +898,19 @@ function give_network_component_group_name ($id){
 	return $pro;
 }
 
+// --------------------------------------------------------------- 
+// Return network profile name name given its ID
+// --------------------------------------------------------------- 
+
+function give_network_profile_name ($id_np){
+	require("config.php");
+	$query1="SELECT * FROM tnetwork_profile WHERE id_np= ".$id_np;
+	$resq1=mysql_query($query1);
+	if ($rowdup=mysql_fetch_array($resq1))
+		$pro=$rowdup["name"];
+	else
+		$pro = "";
+	return $pro;
+}
+
 ?>

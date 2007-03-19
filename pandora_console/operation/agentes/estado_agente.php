@@ -280,7 +280,7 @@ if (comprueba_login() == 0) {
 					if ($biginterval > 0){
 						$percentil = round($diferencia/(($biginterval*2) / 100));	
 					} else {
-						echo "N/A";
+						$percentil = -1;
 					}
 					echo "<a href='#' class='info2'>
 					<img src='reporting/fgraph.php?tipo=progress&amp;percent=".

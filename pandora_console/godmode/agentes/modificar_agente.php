@@ -78,8 +78,17 @@ if (isset($_GET["borrar_agente"])){ // if delete agent
 		WHERE id_agente = ".$id_agente;
 		$result=mysql_query($sql_delete2);
 		$result=mysql_query($sql_delete3);
-		audit_db($id_user,$REMOTE_ADDR, "Agent '$agent_name' deleted",
-			"Agent Management");
+		
+		// Delete IPs from tadress table and taddress_agent
+		$sql = "SELECT * FROM taddress_agent where id_agent = $id_agente";
+		$result=mysql_query($sql);
+		while ($row=mysql_fetch_array($result)){
+			$sql2="DELETE FROM taddress where id_a = ".$row["id_a"];
+			$result2=mysql_query($sql2);
+		}
+		$sql = "DELETE FROM taddress_agent  where id_agent = $id_agente";
+		$result=mysql_query($sql);
+		audit_db($id_user,$REMOTE_ADDR, "Agent '$agent_name' deleted", "Agent Management");
 	} else { // NO permissions.
 		audit_db($id_user,$REMOTE_ADDR, "ACL Violation",
 		"Trying to delete agent '$agent_name'");

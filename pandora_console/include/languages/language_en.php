@@ -707,6 +707,26 @@ $lang_label["setup_mode"]="Setup mode";
 $lang_label["refresh_data"]="Refresh data";
 $lang_label["lag"]="LAG";
 $lang_label["N/A"]="N/A";
+$lang_label["done"]="Done";
+$lang_label["pending"]="Pending";
+$lang_label['progress']="Progress";
+$lang_label['task_name']="Task name";
+$lang_label["days"]="days";
+$lang_label["day"]="day";
+$lang_label["week"]="week";
+$lang_label["weeks"]="weeks";
+$lang_label["month"]="month";
+$lang_label["months"]="monts";
+$lang_label["hours"]="hours";
+$lang_label["hour"]="hour";
+$lang_label['network_profile']="Network profile";
+$lang_label["manage_recontask"]="Manage recontask";
+$lang_label["yes"]="Yes";
+$lang_label["no"]="No";
+$lang_label["view"]="View";
+$lang_label["number_of_modules"]="# Modules";
+$lang_label["network_profile_management"]="Network profile management";
+
 global $lang_label; 
 global $help_label;
 ?>

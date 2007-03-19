@@ -102,7 +102,7 @@ if (comprueba_login() == 0) {
 	echo "<th class='datos'>".$lang_label['checksum'];
 	echo "<th class='datos'>".$lang_label['laststart'];
 	echo "<th class='datos'>".$lang_label['lastupdate'];
-	echo "<th class='datos'>".$lang_label['action'];
+	echo "<th class='datos'>".$lang_label['delete'];
 	$color=1;
 		while ($row=mysql_fetch_array($result)){
 			$name = $row["name"];
@@ -127,7 +127,7 @@ if (comprueba_login() == 0) {
 				$color = 1;
 			}
 			echo "<tr><td class='$tdcolor'>";
-			echo "<b>$name</b>";
+			echo "<a href='index.php?sec=gserver&sec2=godmode/servers/modificar_server&server=".$id_server."'><b>$name</b></a>";
 			echo "<td class='$tdcolor' align='middle'>";
 			if ($status ==0){
 				echo "<img src='images/dot_red.gif'>";
@@ -159,7 +159,7 @@ if (comprueba_login() == 0) {
 			}
 			echo "<td class='".$tdcolor."f9' align='middle'>".substr($keepalive,0,25);
 			echo "<td class='".$tdcolor."f9' align='middle'>".substr($laststart,0,25);
-			echo "<td class='".$tdcolor."f9' align='middle'><a href='index.php?sec=gserver&sec2=godmode/servers/modificar_server&server=".$id_server."'><img src='images/config.gif' border='0'></a>&nbsp;<a href='index.php?sec=gserver&sec2=godmode/servers/modificar_server&server_del=".$id_server."&delete'><img src='images/cancel.gif' border='0'>";
+			echo "<td class='".$tdcolor."f9' align='middle'><a href='index.php?sec=gserver&sec2=godmode/servers/modificar_server&server_del=".$id_server."&delete'><img src='images/cancel.gif' border='0'>";
 		}
 		echo '<tr><td colspan="12"><div class="raya"></div></td></tr></table>';	
 	}

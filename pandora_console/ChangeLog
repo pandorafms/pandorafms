@@ -1,3 +1,27 @@
+2007-03-19  Sancho Lerena  <slerena@artica.es>
+
+	* functions_db.php: Added give_network_profile_name() function.
+
+	* language_en.php: Added new strings.
+
+	* index.php, ver_agente.php, estado_generalagente.php: Some style
+	fixes.
+
+	* view_server.php: Added support for recon servers. Added LAG
+	check for server processing queue.
+
+	* view_server_detail.php: Added, to get updated information in
+	realtime for queues processed by recon server.
+
+	* modificar_agente.php: Now deletes associated IP addresses when
+	deleting an agent.
+
+	* manage_network_templates*.php: Manage network templates / profiles.
+
+	* manage_recontask*.php: Editor for network tasks (recon server).
+
+	* menu.php: Added new options.
+	
 2007-03-12  Sancho Lerena  <slerena@artica.es>
 
 	* pandoradb.sql: Upgraded scheme, many changes and many tables

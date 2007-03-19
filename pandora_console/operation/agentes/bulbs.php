@@ -27,7 +27,7 @@ echo "
 	<img src='images/b_red.gif'> - ".$lang_label["red_light"]."</td>
 	<td class='f9i'>
 	<img src='images/b_yellow.gif'> - ".$lang_label["yellow_light"]."</td>
-	<td class='f9l'>
+	<td class='f9i'>
 	<img src='images/dot_red.gif'> - ".$lang_label["fired"]."</td>
 	<tr><td class='f9i'>
 	<img src='images/b_white.gif'> - ".$lang_label["no_light"]."</td>

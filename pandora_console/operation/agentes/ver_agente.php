@@ -96,14 +96,15 @@ if (comprueba_login() == 0) {
 				switch ($tab) {
 				/* http://pandora.localhost/index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=600 */
 				case "manage":	require "estado_generalagente.php";
-						echo "<br>";
+						break;
 				
 				case "main":	require "estado_generalagente.php";
 						require "estado_monitores.php";
-						
 						break;
+						
 				case "data": 	require "estado_ultimopaquete.php";
 						break;
+						
 				case "alert": 	require "estado_alertas.php";
 						break;
 				}

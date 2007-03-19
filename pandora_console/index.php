@@ -45,9 +45,9 @@ if ($develop_bypass != 1){
 	}
 	// Check perms for config.php
 	if ((substr(sprintf('%o', fileperms('include/config.php')), -4) != "0600") &&
-	(substr(sprintf('%o', fileperms('include/config.php')), -4) != "0660") &&
-	(substr(sprintf('%o', fileperms('include/config.php')), -4) != "0640") &&
-	(substr(sprintf('%o', fileperms('include/config.php')), -4) != "0600"))
+	    (substr(sprintf('%o', fileperms('include/config.php')), -4) != "0660") &&
+	    (substr(sprintf('%o', fileperms('include/config.php')), -4) != "0640") &&
+	    (substr(sprintf('%o', fileperms('include/config.php')), -4) != "0600"))
 	{
 		include "general/error_perms.php";
 		exit;
@@ -184,7 +184,7 @@ if (isset ($_GET["refr"])){
 	<div id="menu"><?php require ("general/main_menu.php"); ?></div>
 	<div id="main">	
 	<div id='head'><?php require("general/header.php"); ?></div>
-	<div style='height: 40px'> </div>
+	<!-- <div style='height: 10px'> </div> -->
 	<div class='data_box'>
 
 	<?php
@@ -195,9 +195,9 @@ if (isset ($_GET["refr"])){
 			} else {
 				echo "<br><b class='error'>Sorry! I can't find the page!</b>";
 			}	
-		} elseif (isset ($_GET["sec"])) {
+		} else
 			require ("general/logon_ok.php");  //default
-		}
+		
 	?>
 		
 	</div>

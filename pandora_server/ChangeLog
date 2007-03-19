@@ -1,3 +1,20 @@
+2007-03-19  Sancho Lerena  <slerena@artica.es>
+
+	* pandora_recon: Startup script for recon server.
+
+	* pandora_recon.pl: Major code cleanup. First "complete" version,
+	this sould be enought for a while. Works for me.
+
+	* pandora_db.pm: Added generic functions to add incident . Added
+	function give_network_component_profile_name(). Now updates
+	correctly recon server status in pandora_updateserver function
+	call.
+	
+	* pandora_network.pm: Replaced Net::Ping::External usage with
+	Net::Ping library. This should fix many problems with some
+	distros. Added pandora_ping_icmp() function to check ICMP boolean.
+	
+	
 2007-03-12  Sancho Lerena  <slerena@artica.es>
 
 	* util/pandora_dbstress.pl: Upgraded. Now admits one agent or all

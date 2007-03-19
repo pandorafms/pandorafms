@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 ##########################################################################
-# Pandora Network Server
+# Pandora FMS Network Server
 ##########################################################################
-# Copyright (c) 2007 Sancho Lerena, slerena@gmail.com
+# Copyright (c) 2006-2007 Sancho Lerena, slerena@gmail.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,7 +22,6 @@ use warnings;
 
 use Date::Manip;                	# Needed to manipulate DateTime formats of input, output and compare
 use Time::Local;                	# DateTime basic manipulation
-use Net::Ping::External qw(ping);	# For ICMP conectivity
 use Net::Ping;				# For ICMP latency
 use Time::HiRes;			# For high precission timedate functions (Net::Ping)
 use IO::Socket;				# For TCP/UDP access
@@ -247,6 +246,25 @@ sub pandora_network_subsystem {
 	$dbh->disconnect();
 }
 
+##############################################################################
+# pandora_ping_icmp (destination, timeout) - Do a ICMP scan, 1 if alive, 0 if not
+##############################################################################
+ 
+sub pandora_ping_icmp {
+	my $p;
+	my $dest = $_[0];
+	my $l_timeout = $_[1];
+
+	$p = Net::Ping->new("icmp",$l_timeout);
+	if ($p->ping($dest)) {
+		$p->close();  
+		return 1;
+	} else {
+		$p->close();  
+	     	return 0;
+	}
+}
+
 ##########################################################################
 # SUB pandora_query_snmp (pa_config, oid, community, target, error, dbh)
 # Makes a call to SNMP modules to get a value,
@@ -335,15 +353,15 @@ sub exec_network_module {
 	# ICMP Modules
 	# ------------
 	if ($id_tipo_modulo == 6){ # ICMP (Connectivity only: Boolean)
-		$temp = ping(hostname => $ip_target, timeout => $pa_config->{'networktimeout'});
-		if ($temp eq "1" ){
+
+		$temp = pandora_ping_icmp ($ip_target, $pa_config->{'networktimeout'});
+		if ($temp == 1 ){
 			$module_result = 0; # Successful
 			$module_data = 1;
 		} else {
 			$module_result = 0; # Error, cannot connect
 			$module_data = 0;
 		}
-		
 	} elsif ($id_tipo_modulo == 7){ # ICMP (data for latency in ms)
 		# This module only could be executed if executed as root
 		if ($> == 0){

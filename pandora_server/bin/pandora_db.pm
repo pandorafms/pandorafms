@@ -1,14 +1,13 @@
 package pandora_db;
 ##########################################################################
-# Pandora Database Package
+# Pandora FMS Database Package
 ##########################################################################
 # Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
 # Copyright (c) 2005-2007 Artica Soluciones Tecnologicas S.L
 #
 #This program is free software; you can redistribute it and/or
 #modify it under the terms of the GNU General Public License
-#as published by the Free Software Foundation; either version 2
-#of the License, or (at your option) any later version.
+#as published by the Free Software Foundation; version 2
 #This program is distributed in the hope that it will be useful,
 #but WITHOUT ANY WARRANTY; without even the implied warranty of
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -63,6 +62,8 @@ our @EXPORT = qw( 	crea_agente_modulo
 			module_generic_data_inc
 			module_generic_data_string
 			execute_alert
+			give_network_component_profile_name
+			pandora_create_incident 
 		);
 
 # Spanish translation note:
@@ -871,7 +872,7 @@ fin_DB_insert_datos:
 ##########################################################################
 sub pandora_serverkeepaliver (%$) {
         my $pa_config= $_[0];
-	my $opmode = $_[1]; # 0 dataserver, 1 network server, 2 snmp console
+	my $opmode = $_[1]; # 0 dataserver, 1 network server, 2 snmp console, 3 recon server
 	my $dbh = $_[2];
 	my $pandorasuffix;
 	my @data;
@@ -898,12 +899,11 @@ sub pandora_serverkeepaliver (%$) {
 		}
 		$s_idag->finish();
 		# Update my server
-		pandora_updateserver ($pa_config,$pa_config->{'servername'},1,$opmode, $dbh);	
+		pandora_updateserver ($pa_config, $pa_config->{'servername'}, 1, $opmode, $dbh);
 		$pa_config->{"keepalive"}=$pa_config->{"keepalive_orig"};
 	}
 	$pa_config->{"keepalive"}=$pa_config->{"keepalive"}-$pa_config->{"server_threshold"};
 }
-
 
 ##########################################################################
 ## SUB pandora_updateserver (pa_config, status, dbh)
@@ -913,7 +913,7 @@ sub pandora_updateserver (%$$$) {
     my $pa_config= $_[0];
 	my $servername = $_[1];
 	my $status = $_[2];
-	my $opmode = $_[3]; # 0 dataserver, 1 network server, 2 snmp console
+	my $opmode = $_[3]; # 0 dataserver, 1 network server, 2 snmp console, 3 recon
 	my $dbh = $_[4];
 	my $sql_update;
 	my $pandorasuffix;
@@ -921,8 +921,10 @@ sub pandora_updateserver (%$$$) {
 		$pandorasuffix = "_Data";
 	} elsif ($opmode == 1){
 		$pandorasuffix = "_Net";
-	} else {
+	} elsif ($opmode == 2){
 		$pandorasuffix = "_SNMP";
+	} elsif ($opmode == 3){
+		$pandorasuffix = "_Recon";
 	}
 	my $id_server = dame_server_id($pa_config, $servername.$pandorasuffix, $dbh);
 	if ($id_server == -1){ 
@@ -944,11 +946,13 @@ sub pandora_updateserver (%$$$) {
 			# Update server data
 			my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
 			if ($opmode == 0){
-				$sql_update = "update tserver set status = 1, laststart = '$timestamp', keepalive = '$timestamp', snmp_server = 0, network_server = 0, data_server = 1, master = $pa_config->{'pandora_master'}, checksum = $pa_config->{'pandora_check'} where id_server = $id_server";
+				$sql_update = "update tserver set status = 1, laststart = '$timestamp', keepalive = '$timestamp', recon_server = 0, snmp_server = 0, network_server = 0, data_server = 1, master = $pa_config->{'pandora_master'}, checksum = $pa_config->{'pandora_check'} where id_server = $id_server";
 			} elsif ($opmode == 1){
-				$sql_update = "update tserver set status = 1, laststart = '$timestamp', keepalive = '$timestamp', snmp_server = 0, network_server = 1, data_server = 0, master = $pa_config->{'pandora_master'}, checksum = 0 where id_server = $id_server";
-			} else {
-				$sql_update = "update tserver set status = 1, laststart = '$timestamp', keepalive = '$timestamp', snmp_server = 1, network_server = 0, data_server = 0, master = $pa_config->{'pandora_master'}, checksum = 0 where id_server = $id_server";
+				$sql_update = "update tserver set status = 1, laststart = '$timestamp', keepalive = '$timestamp', recon_server = 0, snmp_server = 0, network_server = 1, data_server = 0, master = $pa_config->{'pandora_master'}, checksum = 0 where id_server = $id_server";
+			} elsif ($opmode == 2) {
+				$sql_update = "update tserver set status = 1, laststart = '$timestamp', keepalive = '$timestamp', recon_server = 0, snmp_server = 1, network_server = 0, data_server = 0, master = $pa_config->{'pandora_master'}, checksum = 0 where id_server = $id_server";
+			} elsif ($opmode == 3) {
+				$sql_update = "update tserver set status = 1, laststart = '$timestamp', keepalive = '$timestamp', recon_server = 1, snmp_server = 0, network_server = 0, data_server = 0, master =  $pa_config->{'pandora_master'}, checksum = 0 where id_server = $id_server";
 			}
 			$dbh->do($sql_update);
 		}
@@ -987,7 +991,7 @@ sub pandora_lastagentcontact (%$$$$$$) {
 }
 
 ##########################################################################
-## SUB pandora_event (pa_config, evento, id_grupo, id_agente)
+## SUB pandora_event (pa_config, evento, id_grupo, id_agente, dbh)
 ## Write in internal audit system an entry.
 ##########################################################################
 
@@ -1001,10 +1005,30 @@ sub pandora_event (%$$$$) {
         my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
         $evento = $dbh->quote($evento);
        	$timestamp = $dbh->quote($timestamp);
-	my $query = "insert into tevento (id_agente, id_grupo, evento, timestamp, estado) VALUES ($id_agente,$id_grupo,$evento,$timestamp,0)";
-	logger ($pa_config,"EVENT Insertion: $query",5);
+	my $query = "INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado) VALUES ($id_agente,$id_grupo,$evento,$timestamp,0)";
+	logger ($pa_config,"EVENT Insertion: $query", 5);
         $dbh->do($query);	
 }
+
+##########################################################################
+## SUB pandora_incident (pa_config, dbh, title, text, priority, status, origin, id_group
+## Write in internal incident management system
+##########################################################################
+
+sub pandora_create_incident (%$$$$$$$) {
+	my $pa_config = $_[0];
+	my $dbh = $_[1];
+        my $title = $_[2];
+        my $text = $_[3];
+        my $priority = $_[4];
+	my $status = $_[5];
+	my $origin = $_[6];
+	my $id_group = $_[7];
+	my $my_timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
+	my $sql = "INSERT INTO tincidencia (inicio, actualizacion, titulo, descripcion, origen, estado, prioridad, id_grupo) VALUES ('$my_timestamp', '$my_timestamp', '$title', '$text', '$origin', $status, $priority, $id_group)";
+	$dbh->do($sql);
+}
+
 
 ##########################################################################
 ## SUB pandora_audit (pa_config, escription, name, action, pandora_dbcfg_hash)
@@ -1345,6 +1369,28 @@ sub dame_id_tipo_modulo (%$$) {
 		@data = $s_idag->fetchrow_array(); 
 		$tipo= $data[2];
 	}
+    	$s_idag->finish();
+        return $tipo;
+}
+##########################################################################
+## SUB give_network_component_profile_name ($pa_config, $dbh, $task_ncprofile)
+## Return network component profile name, given it's id
+##########################################################################
+sub give_network_component_profile_name (%$$) {
+	my $pa_config = $_[0];
+	my $dbh = $_[1];
+        my $id_np = $_[2];
+	
+        my $tipo; my @data;
+        my $query_idag = "SELECT * FROM tnetwork_profile WHERE id_np = ".$id_np;
+        my $s_idag = $dbh->prepare($query_idag);
+        $s_idag ->execute;
+    	if ($s_idag->rows == 0) {
+        	logger($pa_config, "ERROR give_network_component_profile_name(): Cannot find network profile $id_nc",1);
+      		logger($pa_config, "ERROR: SQL Query is $query_idag ",2);
+		$tipo = 0;
+    	} else  {    @data = $s_idag->fetchrow_array(); }
+    	$tipo= $data[1];
     	$s_idag->finish();
         return $tipo;
 }

@@ -296,9 +296,9 @@
       MySQL, from the MySQL prompt:
     </para>
     <programlisting>
-      mysql> use babel
-      mysql> source path_to_babel_dbstruct.sql
-      mysql> source path_to_babel_dbdata.sql
+      mysql> use pandora 
+      mysql> source path_to_pandora_dbstruct.sql
+      mysql> source path_to_pandora_dbdata.sql
     </programlisting>
     <para>	
       This example is valid using root user in
@@ -1348,13 +1348,13 @@
       <title>Windows Agent testing</title>
       <para>
 	You can check the Pandora Windows Agent output in the
-	<filename>C:\babel\babel-debug.dbg</filename> file, that is a
+	<filename>C:\pandora\pandora-debug.dbg</filename> file, that is a
 	plain text file and includes info about the execution flow of
 	the Agent.
       </para>
       <para>
 	To test that SSH is working correctly, you can use the
-	--test-ssh parameter in the executable file. This force babel
+	--test-ssh parameter in the executable file. This force pandora
 	to conect using internal SSH and copy a file called
 	"ssh.test".
       </para>
@@ -1362,7 +1362,7 @@
     <sect3 id="win_a_conf">
       <title>Windows Agent configuration</title>
       <para>
-	All setup is made in <filename>babel_agent.conf</filename>.
+	All setup is made in <filename>pandora_agent.conf</filename>.
 	This file is a list of keys/values pairs. Here is an example
 	of this file.
 	<screen>

@@ -1,3 +1,8 @@
+2007-03-20 Manuel Arostegui <marostegui@artica.es>
+
+	*  en/pandora_install.xml: Fixed some confusions; using Babel rather
+	than Pandora.
+
 2006-12-26 Raul Mateos  <raulofpandora@gmail.com>
 
 	* extras/Pandora_DataServer_Diagram-1.odg,

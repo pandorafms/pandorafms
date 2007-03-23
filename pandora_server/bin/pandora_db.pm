@@ -78,7 +78,7 @@ our @EXPORT = qw( 	crea_agente_modulo
 
 sub pandora_calcula_alerta (%$$$$$$) {
 	my $pa_config = $_[0];
-    my $timestamp = $_[1];
+    	my $timestamp = $_[1];
 	my $nombre_agente = $_[2];
 	my $tipo_modulo = $_[3];
 	my $nombre_modulo = $_[4];
@@ -88,14 +88,15 @@ sub pandora_calcula_alerta (%$$$$$$) {
 	my $id_modulo;
 	my $id_agente;
 	my $id_agente_modulo;
+	my $alert_name;
 	my $max;
 	my $min; # for calculate max & min to generate ALERTS
-
+	
 	# Get IDs from data packet
 	$id_agente = dame_agente_id($pa_config, $nombre_agente, $dbh);
 	$id_modulo = dame_modulo_id($pa_config, $tipo_modulo,$dbh);
 	$id_agente_modulo = dame_agente_modulo_id($pa_config, $id_agente,$id_modulo,$nombre_modulo,$dbh);
-	logger($pa_config, "DEBUG: calcula_alerta() Calculado id_agente_modulo a $id_agente_modulo",3);
+	logger($pa_config, "DEBUG: calcula_alerta() Calculado id_agente_modulo a $id_agente_modulo",5);
 
 	# If any alert from this combinatio of agent/module
 	my $query_idag = "select * from talerta_agente_modulo where id_agente_modulo = '$id_agente_modulo'";
@@ -107,6 +108,7 @@ sub pandora_calcula_alerta (%$$$$$$) {
 		while (@data = $s_idag->fetchrow_array()) {
 			my $id_aam = $data[0];
 			my $id_alerta = $data[2];
+			
 			$id_agente_modulo = $data[1];
 			$id_agente = dame_agente_id($pa_config,dame_nombreagente_agentemodulo($pa_config, $id_agente_modulo,$dbh),$dbh);
 			my $id_grupo = dame_grupo_agente($pa_config, $id_agente,$dbh);
@@ -123,7 +125,7 @@ sub pandora_calcula_alerta (%$$$$$$) {
 			my $min_alerts = $data[14];
 			my $internal_counter = $data[15];
 			my $comando ="";
-			logger($pa_config, "Found an alert defined for $nombre_modulo, its ID $id_alerta",5);
+			logger($pa_config, "Found an alert defined for $nombre_modulo, its ID $id_alerta",4);
 			# Here we process alert if conditions are ok
 			# Get data for defined alert given as $id_alerta
 			my $query_idag2 = "select * from talerta where id_alerta = '$id_alerta'";
@@ -133,6 +135,7 @@ sub pandora_calcula_alerta (%$$$$$$) {
 			if ($s2_idag->rows != 0) {
 				while (@data2 = $s2_idag->fetchrow_array()) {
 					$comando = $data2[2];
+					$alert_name = $data2[1];
 				}
 			}
 			$s2_idag->finish();
@@ -143,7 +146,7 @@ sub pandora_calcula_alerta (%$$$$$$) {
                	 	$s_idag_max ->execute;
                 	if ($s_idag_max->rows == 0) {
                         	logger($pa_config, "ERROR Cannot find agenteModulo $id_agente_modulo",2);
-                        	logger($pa_config, "ERROR: SQL Query is $query_idag ",2);
+                        	logger($pa_config, "ERROR: SQL Query is $query_idag ",10);
                 	} else  {    @data = $s_idag_max->fetchrow_array(); }
                 	$max = $data_max[5];
                 	$min = $data_max[6];
@@ -171,10 +174,6 @@ sub pandora_calcula_alerta (%$$$$$$) {
 						$times_fired = 0;
 						$internal_counter=0;
 					}
-					#my $query_idag = "update talerta_agente_modulo set times_fired = $times_fired, last_fired = $fecha_limite, internal_counter = $internal_counter where id_aam = $id_aam ";
-					#	$dbh->do($query_idag);
-					#my $query_idag = "update talerta_agente_modulo set times_fired = $times_fired , internal_counter = $internal_counter where id_aam = $id_aam ";
-					#$dbh->do($query_idag);	
 					logger ($pa_config,"Alarm out of timethreshold limits, resetting counters",10);
 				}
 				# We are between limits marked by time_threshold or running a new time-alarm-interval 
@@ -185,43 +184,13 @@ sub pandora_calcula_alerta (%$$$$$$) {
 					# The new alert is between last valid time + threshold and between max/min limit to alerts in this gap of time.
 					$times_fired++;
 					$internal_counter++;
-					# FIRE ALERT !
-					my $evt_descripcion = "Alert fired ($nombre_modulo)";
-					pandora_event($pa_config, $evt_descripcion,$id_grupo,$id_agente, $dbh);	
 					my $query_idag = "update talerta_agente_modulo set times_fired = $times_fired, last_fired = '$ahora_mysql', internal_counter = $internal_counter where id_aam = $id_aam ";
 					$dbh->do($query_idag);
 					my $nombre_agente = dame_nombreagente_agentemodulo($pa_config, $id_agente_modulo,$dbh);
-					logger( $pa_config, "Alert TRIGGERED for $nombre_agente ! ",1);
-					# If exists a defined alert for this module then continue
-					if ($id_alerta != 0){ # id_alerta 0 is reserved for internal audit system
-						$comando =~ s/_field1_/"$campo1"/gi;
-						$comando =~ s/_field2_/"$campo2"/gi;
-						$comando =~ s/_field3_/"$campo3"/gi;
-						$comando =~ s/_agent_/$nombre_agente/gi;
-						$comando =~ s/_timestamp_/$timestamp/gi;
-						$comando =~ s/_data_/$datos/ig;
-						$comando =~ s/\^M/\r\n/g; # Replace Carriage rerturn and line feed
-						# Clean up some "tricky" characters
-						$comando =~ s/&gt;/>/g;
-						# EXECUTING COMMAND !!!
-						eval {
-							my $exit_value = system ($comando);
-							$exit_value  = $? >> 8; # Shift 8 bits to get a "classic" errorlevel
-							if ($exit_value != 0) {
-								logger($pa_config, "Executed command for triggered alert had errors (errorlevel =! 0) ",0);
-								logger($pa_config, "Executed command was $comando ",0);
-							}
-						};
-						if ($@){
-							logger($pa_config, "ERROR: Error executing alert command  ( $comando )",0);
-							logger($pa_config, "ERROR Code: $@",1);
-						}
-					} else { # id_alerta = 0, is a internal system audit
-						logger( $pa_config, "Internal audit lauch for agent name $nombre_agente",2);
-						$campo1 =~ s/_timestamp_/$timestamp/g;
-						$campo1 =~ s/_data_/$datos/g;
-						pandora_audit ($pa_config, $campo1, $nombre_agente, "User Alert", $dbh);
-					}
+					# --------------------------------------
+					# Now call to execute_alert to real exec
+					execute_alert ($pa_config, $id_alerta, $campo1, $campo2, $campo3, $nombre_agente, $timestamp, $datos, $comando, $alert_name, $dbh);
+					# --------------------------------------
 				} else { # Alert is in valid timegap but has too many alerts or too many little
 					$internal_counter++;
 					if ($internal_counter < $min_alerts){
@@ -234,7 +203,7 @@ sub pandora_calcula_alerta (%$$$$$$) {
 						$dbh->do($query_idag);						
 						logger ($pa_config, "Alarm not fired because is above max limit",8);
 					}
-				} #main block 
+				}  
 			} # data between alert values
 			else {
 				# Check timegap
@@ -265,7 +234,7 @@ sub pandora_calcula_alerta (%$$$$$$) {
 ## Do a execution of given alert with this parameters
 ##########################################################################
 
-sub execute_alert (%$$$$$$$$) {
+sub execute_alert (%$$$$$$$$$$) {
 	my $pa_config = $_[0];
 	my $id_alert = $_[1];
 	my $field1 = $_[2];
@@ -274,25 +243,27 @@ sub execute_alert (%$$$$$$$$) {
 	my $agent = $_[5];
 	my $timestamp = $_[6];
 	my $data = $_[7];
-	my $dbh = $_[8];
-	my $comand = "";
-	my $alert_name="";
+	my $command = $_[8];
+	my $alert_name = $_[9];
+	my $dbh = $_[10];
 
-	# Get values for commandline, reading from talerta.
-	my $query_idag = "select * from talerta where id_alerta = '$id_alert'";
-	my $idag = $dbh->prepare($query_idag);
-	$idag ->execute;
-	my @datarow;
-	if ($idag->rows != 0) {
-		while (@datarow = $idag->fetchrow_array()) {
-			$comand = $datarow[2];
-			$alert_name = $datarow[1];		
+	if (($command == "") && ($alert_name == "")){
+		# Get values for commandline, reading from talerta.
+		my $query_idag = "select * from talerta where id_alerta = '$id_alert'";
+		my $idag = $dbh->prepare($query_idag);
+		$idag ->execute;
+		my @datarow;
+		if ($idag->rows != 0) {
+			while (@datarow = $idag->fetchrow_array()) {
+				$comand = $datarow[2];
+				$alert_name = $datarow[1];		
+			}
 		}
+		$idag->finish();
 	}
-	$idag->finish();
-
-	logger($pa_config, "Alert ($alert_name) TRIGGERED for $agent",1);
-	if ($id_alert != 0){ # id_alerta 0 is reserved for internal audit system
+	
+	logger($pa_config, "Alert ($alert_name) TRIGGERED for $agent",2);
+	if ($id_alert != 3){ # id_alerta 3 is reserved for internal audit system
 		$comand =~ s/_field1_/"$field1"/g;
 		$comand =~ s/_field2_/"$field2"/g;
 		$comand =~ s/_field3_/"$field3"/g;
@@ -307,22 +278,22 @@ sub execute_alert (%$$$$$$$$) {
 			$exit_value  = $? >> 8; # Shift 8 bits to get a "classic" errorlevel
 			if ($exit_value != 0) {
 				logger($pa_config, "Executed command for triggered alert '$alert_name' had errors (errorlevel =! 0) ",0);
-				logger($pa_config, "Executed command was $comand ",0);
+				logger($pa_config, "Executed command was $comand ",1);
 			}
 		};
 		if ($@){
-			logger($pa_config, "ERROR: Error executing alert command ( $comand )",0);
-			logger($pa_config, "ERROR Code: $@",1);
+			logger($pa_config, "WARNING: Alert command don't retun from execution. ( $comand )", 0 );
+			logger($pa_config, "ERROR Code: $@",0);
 		}
-	} else { # id_alerta = 0, is a internal system audit
+	} else { # id_alerta = 3, is a internal system audit
 		logger($pa_config, "Internal audit lauch for agent name $agent",2);
 		$field1 =~ s/_timestamp_/$timestamp/g;
 		$field1 =~ s/_data_/$data/g;
-		pandora_audit ($pa_config,$field1, $agent, "User Alert ($alert_name)",$dbh);
+		pandora_audit ($pa_config, $field1, $agent, "User Alert ($alert_name)", $dbh);
 	}
-	my $evt_descripcion = "Alert fired ($agent $alert_name) $data";
+	my $evt_descripcion = "Alert fired ($agent $alert_name) $field1 $field2";
 	my $id_agente = dame_agente_id($pa_config,$agent,$dbh);
-	pandora_event($pa_config,$evt_descripcion,$id_agente,0,$dbh);
+	pandora_event($pa_config, $evt_descripcion, 0, $id_agente, $dbh);
 }
 
 
@@ -331,7 +302,7 @@ sub execute_alert (%$$$$$$$$) {
 ## Alter data, chaning status of modules in state table
 ##########################################################################
 
-sub pandora_writestate (%$$$$$$) {
+sub pandora_writestate (%$$$$$$$) {
 	# my $timestamp = $_[0];
 	# slerena, 05/10/04 : Fixed bug because differences between agent / server time source.
 	# now we use only local timestamp to stamp state of modules
@@ -342,6 +313,7 @@ sub pandora_writestate (%$$$$$$) {
 	my $datos = $_[4]; # OJO, no pasa una estructura sino un valor discreto
 	my $estado = $_[5];
 	my $dbh = $_[6];
+	my $needs_update = $_[7];
 	my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
 	my $utimestamp; # integer version of timestamp	
 	$utimestamp = &UnixDate($timestamp,"%s"); # convert from human to integer
@@ -363,7 +335,7 @@ sub pandora_writestate (%$$$$$$) {
 	$s_idag ->execute;
 	if ($s_idag->rows == 0) {
 		logger( $pa_config, "ERROR Cannot find agenteModulo $id_agente_modulo",6);
-		logger( $pa_config, "ERROR: SQL Query is $query_idag ",8);
+		logger( $pa_config, "ERROR: SQL Query is $query_idag ",10);
 	} else  {    @data = $s_idag->fetchrow_array(); }
 	my $module_interval = $data[7];
 	if ($module_interval == 0){
@@ -390,12 +362,12 @@ sub pandora_writestate (%$$$$$$) {
 	$datos = $dbh->quote($datos); # Parse data entry for adecuate SQL representation.
 	my $query_act; # OJO que dentro de una llave solo tiene existencia en esa llave !!
 	if ($s_idages->rows == 0) { # Doesnt exist entry in table, lets make the first entry
-		logger($pa_config, "Create entry in tagente_estado for module $nombre_modulo",2);
+		logger($pa_config, "Create entry in tagente_estado for module $nombre_modulo",4);
     		$query_act = "insert into tagente_estado (id_agente_modulo, datos, timestamp, estado, cambio, id_agente, last_try, utimestamp, current_interval, processed_by_server) values ($id_agente_modulo,$datos,'$timestamp','$estado','1',$id_agente,'$timestamp',$utimestamp, $module_interval, '$server_name')"; # Cuando se hace un insert, siempre hay un cambio de estado
 
     	} else { # There are an entry in table already
 	        @data = $s_idages->fetchrow_array();
-	        # Se supone que $data[5] nos daria el estado ANTERIOR, podriamos leerlo
+	        # Se supone que $data[5](estado) ( nos daria el estado ANTERIOR, podriamos leerlo
 	        # ($c1,$c2,$c3...) $i_dages->fetchrow_array(); y luego hacer referencia a $c6 p.e
 		# For xxxx_PROC type (boolean / monitor), create an event if state has changed
 	        if (( $data[5] != $estado) && ($tipo_modulo =~ /proc/) ) {
@@ -411,9 +383,14 @@ sub pandora_writestate (%$$$$$$) {
 			if ( $estado == 1) {
 				$descripcion = "Monitor ($nombre_modulo) goes down";
 			}
-			pandora_event($pa_config, $descripcion,$id_grupo,$id_agente,$dbh);
+			pandora_event($pa_config, $descripcion, $id_grupo, $id_agente, $dbh);
 	        }
-    		$query_act = "update tagente_estado set utimestamp = '$utimestamp', datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, last_try = '$timestamp', current_interval = '$module_interval', processed_by_server = '$server_name' where id_agente_modulo = '$id_agente_modulo'";
+	        if ($needs_update == 1) {
+    			$query_act = "update tagente_estado set utimestamp = '$utimestamp', datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, last_try = '$timestamp', current_interval = '$module_interval', processed_by_server = '$server_name' where id_agente_modulo = '$id_agente_modulo'";
+    		} else { # dont update last_try field, that it's the field
+    			 # we use to check last update time in database
+    			$query_act = "update tagente_estado set utimestamp = '$utimestamp', datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, current_interval = '$module_interval', processed_by_server = '$server_name' where id_agente_modulo = '$id_agente_modulo'";
+    		}
     	}
 	my $a_idages = $dbh->prepare($query_act);
 	$a_idages->execute;
@@ -501,6 +478,7 @@ sub module_generic_proc (%$$$$$) {
 	my $module_type = $_[4];
 	my $dbh = $_[5];
 
+	my $bUpdateDatos = 0; # added, patch submitted by Dassing
 	my $estado;
 	# Leemos datos de la estructura
 	my $a_datos = $datos->{data}->[0];
@@ -520,8 +498,8 @@ sub module_generic_proc (%$$$$$) {
 		if (ref($a_min) eq "HASH") {
 			$a_min = "";
 		}
-		pandora_writedata($pa_config, $a_timestamp,$agent_name,$module_type,$a_name,$a_datos,$a_max,$a_min,$a_desc,$dbh);
-	
+		pandora_writedata($pa_config, $a_timestamp,$agent_name,$module_type,$a_name,$a_datos,$a_max,$a_min,$a_desc,$dbh, \$bUpdateDatos);
+
 		# Check for status: <1 state 1 (Bad), >= 1 state 0 (Good)
 		# Calculamos su estado
 		if ( $datos->{'data'}->[0] < 1 ) { 
@@ -529,7 +507,7 @@ sub module_generic_proc (%$$$$$) {
 		} else { 
 			$estado=0;
 		}
-		pandora_writestate ($pa_config, $agent_name,$module_type,$a_name,$a_datos,$estado,$dbh);
+		pandora_writestate ($pa_config, $agent_name,$module_type,$a_name,$a_datos,$estado,$dbh, $bUpdateDatos);
 	} else {
 		logger ($pa_config, "Invalid data received from agent $agent_name",2);
 	}
@@ -556,7 +534,7 @@ sub module_generic_data (%$$$$$) {
 	my $m_name = $datos->{name}->[0];
 	my $a_desc = $datos->{description}->[0];
 	my $m_data = $datos->{data}->[0];
-	
+	my $bUpdateDatos = 0; # added, patch submitted by Dassing
 	if (ref($m_data) ne "HASH"){
 		if ($m_data =~ /[0-9]*/){
 			$m_data =~ s/\,/\./g; # replace "," by "."
@@ -575,11 +553,11 @@ sub module_generic_data (%$$$$$) {
 		if (ref($a_min) eq "HASH") {
 			$a_min = "";
 		}
-		pandora_writedata($pa_config, $m_timestamp,$agent_name,$module_type,$m_name,$m_data,$a_max,$a_min,$a_desc,$dbh);
+		pandora_writedata($pa_config, $m_timestamp,$agent_name,$module_type,$m_name,$m_data,$a_max,$a_min,$a_desc,$dbh,\$bUpdateDatos);
 		# Numeric data has status N/A (100) always
-		pandora_writestate ($pa_config, $agent_name,$module_type,$m_name,$m_data,100, $dbh);
+		pandora_writestate ($pa_config, $agent_name, $module_type, $m_name, $m_data, 100, $dbh, $bUpdateDatos);
 	} else {
-		logger($pa_config, "Invalid data value received from $agent_name, module $m_name",2);
+		logger($pa_config, "Invalid data value received from $agent_name, module $m_name",1);
 	}
 }
 
@@ -598,7 +576,7 @@ sub module_generic_data_inc (%$$$$$) {
 	my $agent_name = $_[3];
 	my $module_type = $_[4];
 	my $dbh = $_[5];
-
+	my $bUpdateDatos = 0; # added, patch submitted by Dassing
 	# Read structure data
 	my $m_name = $datos->{name}->[0];
 	my $a_desc = $datos->{description}->[0];
@@ -683,11 +661,9 @@ sub module_generic_data_inc (%$$$$$) {
 				logger($pa_config, "ERROR: Error inside data_inc algorithm, for Agent $agent_name and Type Generic_data_inc ",6);
 			}
 		}
-		pandora_writedata($pa_config, $m_timestamp,$agent_name,$module_type,$m_name,$nuevo_data,$a_max,$a_min,$a_desc,$dbh);
-	
-		# Calculamos su estado (su estado siempre es bueno, jeje)
+		pandora_writedata ($pa_config, $m_timestamp, $agent_name, $module_type, $m_name, $nuevo_data, $a_max, $a_min, $a_desc, $dbh, \$bUpdateDatos);
 		# Inc status is always 100 (N/A)
-		pandora_writestate ($pa_config, $agent_name,$module_type,$m_name,$nuevo_data,100,$dbh);
+		pandora_writestate ($pa_config, $agent_name, $module_type, $m_name, $nuevo_data, 100, $dbh, $bUpdateDatos);
 	} else {
 		logger ($pa_config, "Invalid data received from $agent_name",2);
 	}
@@ -710,7 +686,7 @@ sub module_generic_data_string (%$$$$$) {
 	my $agent_name = $_[3];
 	my $module_type = $_[4];	
 	my $dbh = $_[5];	
-
+	my $bUpdateDatos = 0; # added, patch submitted by Dassing
 	# Read Structure
 	my $m_name = $datos->{name}->[0];
 	my $m_data = $datos->{data}->[0];
@@ -726,9 +702,9 @@ sub module_generic_data_string (%$$$$$) {
         if (ref($a_min) eq "HASH") {
                 $a_min = "";
         }
-	pandora_writedata($pa_config, $m_timestamp,$agent_name,$module_type,$m_name,$m_data,$a_max,$a_min,$a_desc,$dbh);
+	pandora_writedata($pa_config, $m_timestamp, $agent_name, $module_type, $m_name, $m_data, $a_max, $a_min, $a_desc, $dbh, \$bUpdateDatos);
     	# String type has no state (100 = N/A)
-	pandora_writestate ($pa_config, $agent_name,$module_type,$m_name,$m_data,100,$dbh);
+	pandora_writestate ($pa_config, $agent_name, $module_type, $m_name, $m_data, 100, $dbh, $bUpdateDatos);
 }
 
 
@@ -738,7 +714,7 @@ sub module_generic_data_string (%$$$$$) {
        
 ##########################################################################
 
-sub pandora_writedata (%$$$$$$$$$) {
+sub pandora_writedata (%$$$$$$$$$$){
 	my $pa_config = $_[0];
     	my $timestamp = $_[1];
         my $nombre_agente = $_[2];
@@ -749,8 +725,8 @@ sub pandora_writedata (%$$$$$$$$$) {
 	my $min = $_[7];
 	my $descripcion = $_[8];
 	my $dbh = $_[9];
+	my $Ref_bUpdateDatos = $_[10];
 	my @data;
-
 
         # Obtenemos los identificadores
         my $id_agente = dame_agente_id($pa_config, $nombre_agente,$dbh);
@@ -768,12 +744,12 @@ sub pandora_writedata (%$$$$$$$$$) {
 
 	# take max and min values for this id_agente_module
         if ($id_agente_modulo != -1){ # ID AgenteModulo does exists
-		my $query_idag = "select * from tagente_modulo where id_agente_modulo = ".$id_agente_modulo;;
+		my $query_idag = "SELECT * FROM tagente_modulo WHERE id_agente = $id_agente AND id_agente_modulo = ".$id_agente_modulo;
 		my $s_idag = $dbh->prepare($query_idag);
 		$s_idag ->execute;
 		if ($s_idag->rows == 0) {
 			logger( $pa_config, "ERROR Cannot find agenteModulo $id_agente_modulo",6);
-			logger( $pa_config, "ERROR: SQL Query is $query_idag ",8);
+			logger( $pa_config, "ERROR: SQL Query is $query_idag ",10);
 		} else  {    @data = $s_idag->fetchrow_array(); }
 		$max = $data[5];
 		$min = $data[6];
@@ -781,9 +757,9 @@ sub pandora_writedata (%$$$$$$$$$) {
 	} else { # Id AgenteModulo DOESNT exist, it could need to be created...
 		if (dame_learnagente($pa_config, $id_agente,$dbh) eq "1"){
 			# Try to write a module and agent_module definition for that datablock
-			logger( $pa_config, "Pandora_insertdata will create module (learnmode) for agent $nombre_agente",4);
-			crea_agente_modulo($pa_config, $nombre_agente, $tipo_modulo, $nombre_modulo, $max, $min, $descripcion,$dbh);
-			$id_agente_modulo = dame_agente_modulo_id($pa_config, $id_agente, $id_modulo, $nombre_modulo,$dbh);
+			logger( $pa_config, "Pandora_insertdata will create module (learnmode) for agent $nombre_agente",5);
+			crea_agente_modulo ($pa_config, $nombre_agente, $tipo_modulo, $nombre_modulo, $max, $min, $descripcion, $dbh);
+			$id_agente_modulo = dame_agente_modulo_id ($pa_config, $id_agente, $id_modulo, $nombre_modulo, $dbh);
 			$needscreate = 1; # Really needs to be created
 		} else {
 			logger( $pa_config, "VERBOSE: pandora_insertdata cannot find module definition ($nombre_modulo / $tipo_modulo )for agent $nombre_agente - Use LEARN MODE for autocreate.",2);
@@ -796,7 +772,7 @@ sub pandora_writedata (%$$$$$$$$$) {
         my $query;
 	my $needsupdate =0;
 	
-	$query = "select * from tagente_estado where id_agente_modulo = $id_agente_modulo";
+	$query = "SELECT * FROM tagente_estado WHERE id_agente_modulo = $id_agente_modulo";
        	my $sql_oldvalue = $dbh->prepare($query);
         $sql_oldvalue->execute;
         @data = $sql_oldvalue->fetchrow_array();
@@ -805,6 +781,7 @@ sub pandora_writedata (%$$$$$$$$$) {
     	if ($sql_oldvalue->rows != 0) {
         	@data = $sql_oldvalue->fetchrow_array();
 		#$data[2] contains data
+		# Transform data (numeric types only)
 		if ($tipo_modulo =~ /string/){
 			$datos = $datos; # No change
 		} else { # Numeric change to real 
@@ -815,30 +792,36 @@ sub pandora_writedata (%$$$$$$$$$) {
 			$datos =~ s/\,/\./g; # replace "," by "."
 			$data[2] =~ s/\,/\./g; # replace "," by "."
 		}
+		# Detect changes between stored data and adquired data.
 		if ($data[2] ne $datos){
 			$needsupdate=1;
-			logger( $pa_config, "Updating data for $nombre_modulo after compare with tagente_data: new($datos) ne old($data[2])",10);
+			logger( $pa_config, "Updating data for $nombre_modulo after compare with tagente_data: new($datos) ne old($data[2])",4);
 		} else {
-			# Data in DB is the same, but could be older (more than 1 day )
-			my $fecha_datos = $data[3];
-			my $fecha_mysql = &UnixDate("today","%Y-%m-%d %H:%M:%S");      
+			# Data in DB is the same, but could be older (more than 1
+			# day ). Should check this against last_try field, who is
+			# updated only when new data is stored or each 24 hours
+			my $fecha_datos = $data[7]; # last_try
+			my $fecha_mysql = &UnixDate("today","%Y-%m-%d %H:%M:%S");    
 			my $fecha_actual = ParseDate( $fecha_mysql );
 			my $fecha_flag; my $err;
 			my $fecha_limite = DateCalc($fecha_actual,"- 1 days",\$err);
-			$fecha_flag = Date_Cmp($fecha_limite,$fecha_datos);
+			$fecha_flag = Date_Cmp ($fecha_limite, $fecha_datos);
 			if ($fecha_flag >= 0) { # write data, 
-			logger( $pa_config, "Updating data for $nombre_modulo, data too ld in tagente_data",10);
+				logger( $pa_config, "Too old data stored (>24Hr). Updating data for $nombre_modulo",5);
 				$needsupdate = 1;
 			}
 		}
     	} else {
-		$needsupdate=1; # There aren't data
+    		$needsupdate=1; # There aren't data
 		logger( $pa_config, "Updating data for $nombre_modulo, because there are not data in DB ",10);
-
 	}
 	$sql_oldvalue->finish();
 	if (($needscreate == 1) || ($needsupdate == 1)){
 		my $outlimit = 0;
+		# Patch submitted by Dassing.
+		if ( defined $Ref_bUpdateDatos ) {
+			$$Ref_bUpdateDatos = 1; # true
+		}
 		if ($tipo_modulo =~ /string/) { # String module types
 			$datos = $dbh->quote($datos); # Parse data entry for adecuate SQL representation.
 			$query = "insert into tagente_datos_string (id_agente_modulo,datos,timestamp,utimestamp,id_agente) VALUES ($id_agente_modulo,$datos,'$timestamp',$utimestamp,$id_agente)";	
@@ -858,9 +841,9 @@ sub pandora_writedata (%$$$$$$$$$) {
 			$query = "insert into tagente_datos (id_agente_modulo, datos,timestamp, utimestamp, id_agente) VALUES ($id_agente_modulo, $datos, '$timestamp', $utimestamp, $id_agente)";
 		} # If data is out of limits, do not insert into database (Thanks for David Villanueva for his words)
 		if ($outlimit == 0){
-			logger($pa_config, "DEBUG: pandora_insertdata Calculado id_agente_modulo a $id_agente_modulo",3);
-			logger($pa_config, "DEBUG: pandora_insertdata SQL : $query",4);
-			$dbh->do($query);
+			logger($pa_config, "DEBUG: pandora_insertdata Calculado id_agente_modulo a $id_agente_modulo",4);
+			logger($pa_config, "DEBUG: pandora_insertdata SQL : $query",10);
+			$dbh->do($query); # Makes insertion in database
 		}
 	}
 fin_DB_insert_datos:
@@ -910,7 +893,7 @@ sub pandora_serverkeepaliver (%$) {
 ## Update server status
 ##########################################################################
 sub pandora_updateserver (%$$$) {
-    my $pa_config= $_[0];
+    	my $pa_config= $_[0];
 	my $servername = $_[1];
 	my $status = $_[2];
 	my $opmode = $_[3]; # 0 dataserver, 1 network server, 2 snmp console, 3 recon
@@ -1003,9 +986,11 @@ sub pandora_event (%$$$$) {
 	my $dbh = $_[4];
 	
         my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
+	my $utimestamp; # integer version of timestamp	
+	$utimestamp = &UnixDate($timestamp,"%s"); # convert from human to integer
         $evento = $dbh->quote($evento);
        	$timestamp = $dbh->quote($timestamp);
-	my $query = "INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado) VALUES ($id_agente,$id_grupo,$evento,$timestamp,0)";
+	my $query = "INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp) VALUES ($id_agente, $id_grupo, $evento, $timestamp, 0, $utimestamp)";
 	logger ($pa_config,"EVENT Insertion: $query", 5);
         $dbh->do($query);	
 }
@@ -1048,8 +1033,10 @@ sub pandora_audit (%$$$$) {
 		$dbh = DBI->connect("DBI:mysql:pandora:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
 	}
         my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
+	my $utimestamp; # integer version of timestamp	
+	$utimestamp = &UnixDate($timestamp,"%s"); # convert from human to integer
 
-        my $query = "insert into tsesion (ID_usuario, IP_origen, accion, fecha, descripcion) values ('SYSTEM','".$name."','".$action."','".$timestamp."','".$desc."')";
+        my $query = "insert into tsesion (ID_usuario, IP_origen, accion, fecha, descripcion, utimestamp) values ('SYSTEM','".$name."','".$action."','".$timestamp."','".$desc."', $utimestamp)";
 	eval { # Check for problems in Database, if cannot audit, break execution
         	$dbh->do($query);
 	};

@@ -245,7 +245,7 @@ CREATE TABLE `tagente_modulo` (
   `snmp_oid` varchar(255) default '0',
   `ip_target` varchar(100) default '',
   `id_module_group` int(4) unsigned default '0',
-  `flag` tinyint(3) unsigned default '0',
+  `flag` tinyint(3) unsigned default '1',
   PRIMARY KEY  (`id_agente_modulo`),
   KEY `tam_agente` (`id_agente`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

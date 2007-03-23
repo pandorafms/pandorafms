@@ -255,9 +255,8 @@ sub calcula_alerta_snmp {
 					$times_fired++;
 					$internal_counter++;
 					# ---------> EXECUTE ALERT <---------------
-					## SUB execute_alert (id_alert, field1, field2, field3, agent, timestamp, data)
 					logger($pa_config,"Executing SNMP Trap alert for $agent - $alert_data",2);
-					execute_alert($pa_config,$id_alert, $field1, $field2, $field3, $trap_agente, $timestamp, $alert_data, $dbh);
+					execute_alert ($pa_config, $id_alert, $field1, $field2, $field3, $trap_agente, $timestamp, $alert_data, "", "", $dbh);
 					# Now update the new value for times_fired, alert_fired, internal_counter and last_fired for this alert.
 					my $query_idag2 = "update talert_snmp set times_fired = $times_fired, last_fired = '$ahora_mysql', internal_counter = $internal_counter where id_as = $id_as ";
 					$dbh->do($query_idag2);

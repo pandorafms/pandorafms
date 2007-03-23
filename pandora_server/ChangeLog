@@ -1,3 +1,20 @@
+2007-03-23  Sancho Lerena  <slerena@artica.es>
+
+	* pandora_tools.pm: Added sqlWrap function to manage quotes.
+
+	* pandora_network.pm: MAJOR changes in internal architecture: Now
+	uses 10 threads for manage network tasks and one only to keep
+	server alive. Now catch TERM signal and log it. New function to
+	check UDP services. This should be enought for improve network
+	server performance until 2.0 version :-)
+
+	* pandora_db.pm: pandora_calcula_alerta now calls execute_alert
+	and clenanup alert code. Fixed bug with Internal audit
+	alert. Addded fix from Dassing to pandora_writestate and added
+	more fixes for 24hr data problem that include fix
+	odule_generic_data.. functions.  pandora_audit () now uses
+	utimestamp also.
+
 2007-03-19  Sancho Lerena  <slerena@artica.es>
 
 	* pandora_recon: Startup script for recon server.

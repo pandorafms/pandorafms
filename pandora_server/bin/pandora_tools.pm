@@ -157,6 +157,18 @@ sub limpia_cadena {
     return $micadena;
 }
 
+########################################################################################
+# sub sqlWrap(texto)
+# Elimina comillas  y caracteres problematicos y los sustituye por equivalentes
+########################################################################################
+
+sub sqlWrap {
+     my $toBeWrapped = shift(@_);
+     $toBeWrapped =~ s/\\//g;
+     $toBeWrapped =~ s/\'/\\\'/g;
+     return "'".$toBeWrapped."'";
+}
+
 ##########################################################################
 # sub float_equal (num1, num2, decimals)
 # This function make possible to compare two float numbers, using only x decimals

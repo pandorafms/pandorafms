@@ -36,9 +36,12 @@ use pandora_db;
 # FLUSH in each IO (only for debug, very slooow)
 # ENABLED in DEBUGMODE
 # DISABLE FOR PRODUCTION
-$| = 1;
+$| = 0;
 
 my %pa_config;
+
+$SIG{'TERM'} = 'pandora_shutdown';
+$SIG{'INT'} = 'pandora_shutdown';
 
 # Inicio del bucle principal de programa
 pandora_init(\%pa_config, "Pandora FMS Network Server");
@@ -46,24 +49,47 @@ pandora_init(\%pa_config, "Pandora FMS Network Server");
 pandora_loadconfig (\%pa_config,1);
 # Audit server starting
 pandora_audit (\%pa_config, "Pandora FMS Network Daemon starting", "SYSTEM", "System");
+print " [*] Starting up network threads\n";
 
-# Daemonize of configured
 if ( $pa_config{"daemon"} eq "1" ) {
-	print " [*] Backgrounding...\n";
+	print " [*] Backgrounding Pandora FMS Network Server process.\n";
 	&daemonize;
 }
 
 # Runs main program (have a infinite loop inside)
+# 111 for ICMP PROC high latency (Interval > 100)
+# 112 for ICMP PROC low latency (Interval < 100)
+# 201 for TCP PROC high latency (Interval > 100)
+# 202 for TCP PROC low latency (Interval < 100)
+# 331 for SNMP DATA_INC high latency (interval > 100)
+# 332 for SNMP DATA_INC low latency (interval < 100)
+# 12 for ICMP DATA
+# 32 for SNMP PROC
+# 0 for the rest: TCP DATA, TCP DATA_INC and TCP DATA_STRING
+#                 SNMP DATA, SNMP DATA_STRING
+threads->new( \&pandora_network_subsystem, \%pa_config, 111);
+threads->new( \&pandora_network_subsystem, \%pa_config, 112);
+threads->new( \&pandora_network_subsystem, \%pa_config, 201);
+threads->new( \&pandora_network_subsystem, \%pa_config, 202);
+threads->new( \&pandora_network_subsystem, \%pa_config, 331);
+threads->new( \&pandora_network_subsystem, \%pa_config, 332);
+threads->new( \&pandora_network_subsystem, \%pa_config, 12);
+threads->new( \&pandora_network_subsystem, \%pa_config, 32);
+threads->new( \&pandora_network_subsystem, \%pa_config, 0);
+print " [*] Threads loaded and running \n";
+# Last thread is the main process
 
-threads->new( \&pandora_network_subsystem, \%pa_config, 1);
-sleep(1);
-threads->new( \&pandora_network_subsystem, \%pa_config, 2);
-sleep(1);
-threads->new( \&pandora_network_subsystem, \%pa_config, 3);
+my $dbhost = $pa_config{'dbhost'};
+my $dbh = DBI->connect("DBI:mysql:pandora:$dbhost:3306", $pa_config{'dbuser'}, $pa_config{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
 
-while ( 1 ){
-	sleep(3600);
- 	threads->yield;
+while (1) {
+	pandora_serverkeepaliver (\%pa_config,1,$dbh);
+	threads->yield;
+	if ($pa_config{"server_threshold"} < 10){
+		sleep (10);
+	} else {
+		sleep ($pa_config{"server_threshold"});
+	}
 }
 
 #------------------------------------------------------------------------------------
@@ -74,6 +100,16 @@ while ( 1 ){
 #------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------
 
+########################################################################################
+# pandora_shutdown ()
+# Close system
+########################################################################################
+sub pandora_shutdown {
+	logger (\%pa_config,"Pandora FMS Network Server Shutdown by signal ",0);
+	print " [*] Shutting down Pandora FMS Network Server (received signal)...\n";
+	exit;
+}
+
 ##########################################################################
 # SUB pandora_network_subsystem
 # Subsystem to process network modules
@@ -83,7 +119,17 @@ while ( 1 ){
 sub pandora_network_subsystem {
         # Init vars
 	my $pa_config = $_[0];
-	my $nettype = $_[1]; # 1 for ICMP, 2 for TCP/UDO, 3 for SNMP
+	my $nettype = $_[1];
+	# 111 for ICMP PROC high latency (Interval > 100)
+	# 112 for ICMP PROC low latency (Interval < 100)
+	# 201 for TCP PROC high latency (Interval > 100)
+	# 202 for TCP PROC low latency (Interval < 100)
+	# 331 for SNMP DATA_INC high latency (interval > 100)
+	# 332 for SNMP DATA_INC low latency (interval < 100)
+	# 12 for ICMP DATA
+	# 32 for SNMP PROC
+	# 0 for the rest: TCP DATA, TCP DATA_INC and TCP DATA_STRING
+	#                 SNMP DATA, SNMP DATA_STRING
 	my $nettypedesc;
 	# Connect ONCE to Database, we pass DBI handler to all subprocess.
 	my $dbh = DBI->connect("DBI:mysql:pandora:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
@@ -112,7 +158,7 @@ sub pandora_network_subsystem {
 	my $query_sql; my $query_sql2; my $query_sql3;
 	my $exec_sql; my $exec_sql2;  my $exec_sql3;
 	my $buffer;
-	my $opmode = 1; # network server code for pandora_updateserver function
+	
 
 	
 	$server_id = dame_server_id($pa_config, $pa_config->{'servername'}."_Net", $dbh);
@@ -144,7 +190,7 @@ sub pandora_network_subsystem {
 					# I'm the master server, and there is an agent
 					# with its agent down, so ADD to list
 					$buffer = $buffer." OR id_agente = $id_agente ";
-					logger ($pa_config, "Added id_agente $id_agente for Master Network Server ".$pa_config->{"servername"}."_Net"." agent pool",5);
+					logger ($pa_config, "Added id_agente $id_agente for Master Network Server ".$pa_config->{"servername"}."_Net"." agent pool",10);
 				}
 			}
 			$exec_sql2->finish();
@@ -160,21 +206,52 @@ sub pandora_network_subsystem {
 			$agent_disabled = $sql_data2[12];
 			$agent_osdata =$sql_data2[8];
 
-			# Second: Checkout for agent_modules with type > 4 (network modules) and 
-			# owned by our selected agent
-			# $nettype 1 for ICMP, 2 for TCP/UDO, 3 for SNMP
-			if ($nettype == 1){ # ICMP
-				$query_sql = "select * from tagente_modulo where id_tipo_modulo > 5 and id_tipo_modulo < 8 and id_agente = $id_agente";
-				$nettypedesc="ICMP";
-			} elsif ($nettype == 2){ # UDP/TCP
-				$query_sql = "select * from tagente_modulo where id_tipo_modulo > 7 and id_tipo_modulo < 13 and id_agente = $id_agente";
+			# Second: Checkout for agent_modules with type = X
+			# (network modules) and owned by our selected agent
+			
+			# 111 for ICMP PROC high latency (Interval > 100)
+			# 112 for ICMP PROC low latency (Interval < 100)
+			# 201 for TCP PROC high latency (Interval > 100)
+			# 202 for TCP PROC low latency (Interval < 100)
+			# 331 for SNMP DATA_INC high latency (interval > 100)
+			# 332 for SNMP DATA_INC low latency (interval < 100)
+			# 12 for ICMP DATA
+			# 32 for SNMP PROC
+			# 0 for the rest: TCP DATA, TCP DATA_INC and TCP DATA_STRING
+			#                 SNMP DATA, SNMP DATA_STRING
+			
+
+			if ($nettype == 111){ # icmp proc high lat
+				$query_sql = "select * from tagente_modulo where id_tipo_modulo = 6 AND (module_interval = 0 OR module_interval > 100) AND id_agente = $id_agente";
+				$nettypedesc="ICMP PROC HighLatency";
+			} elsif ($nettype == 112){ # icmp proc low lat
+				$query_sql = "select * from tagente_modulo where id_tipo_modulo = 6 AND module_interval != 0 AND module_interval < 100 AND id_agente = $id_agente";
+				$nettypedesc="ICMP PROC Low Latency";
+			} elsif ($nettype == 201){ # tcp proc high lat
+				$query_sql = "select * from tagente_modulo where id_tipo_modulo = 9 AND (module_interval = 0 OR module_interval > 100) AND id_agente = $id_agente";
+				$nettypedesc="TCP PROC High Latency";
+			} elsif ($nettype == 202){ # tcp proc low lat
+				$query_sql = "select * from tagente_modulo where id_tipo_modulo = 9 AND module_interval != 0 AND module_interval < 100 AND id_agente = $id_agente";
+				$nettypedesc="TCP PROC Low Latency";
+			} elsif ($nettype == 331){ # SNMP DATA_INC high latency
+				$query_sql = "select * from tagente_modulo where id_tipo_modulo = 16 AND ( module_interval = 0 OR module_interval > 100 ) AND id_agente = $id_agente";
+				$nettypedesc="SNMP DataInc High Latency";
+			} elsif ($nettype == 332){ # SNMP DATA_INC low latency
+				$query_sql = "select * from tagente_modulo where id_tipo_modulo = 16 AND module_interval != 0 AND module_interval < 100 AND id_agente = $id_agente";
+				$nettypedesc="SNMP DataInc Low Latency";
+			} elsif ($nettype == 12){ #icmp data
+				$query_sql = "select * from tagente_modulo where id_tipo_modulo = 7 AND id_agente = $id_agente";
+				$nettypedesc="ICMP PROC Low Latency";
 				$nettypedesc="TCP/UDP";
-			} elsif ($nettype == 3) { # SNMP
-				$query_sql = "select * from tagente_modulo where id_tipo_modulo > 14 and id_tipo_modulo < 19 and id_agente = $id_agente";
-				$nettypedesc="SNMP";
-			} else { # This section of code never will be executed
-				$query_sql = "select * from tagente_modulo where id_tipo_modulo > 4 and id_agente = $id_agente";
-				$nettypedesc="Global Network";
+			} elsif ($nettype == 32){ #snmp proc
+				$query_sql = "select * from tagente_modulo where id_tipo_modulo = 18 AND id_agente = $id_agente";
+				$nettypedesc="ICMP PROC Low Latency";
+				$nettypedesc="TCP/UDP";
+			} elsif ($nettype == 0){
+			# TCP DATA, TCP DATA_INC and TCP DATA_STRING, UDP PROC
+			# SNMP DATA, SNMP DATA_STRING
+				$query_sql = "select * from tagente_modulo where ( id_tipo_modulo = 8 OR id_tipo_modulo = 10 OR id_tipo_modulo =11 OR id_tipo_modulo = 12 OR id_tipo_modulo = 15 OR id_tipo_modulo = 17 ) AND id_agente = $id_agente";
+				$nettypedesc="TCPData, TCPDataInc, TCPString, UDPProc, SNMPData, SNMPString";
 			}
 			$exec_sql = $dbh->prepare($query_sql);
 			$exec_sql ->execute; 
@@ -239,7 +316,6 @@ sub pandora_network_subsystem {
 			$exec_sql->finish();
 		}	
 		$exec_sql2->finish();
-		pandora_serverkeepaliver($pa_config,$opmode,$dbh);
 		threads->yield;
 		sleep($pa_config->{"server_threshold"});
 	}
@@ -262,6 +338,34 @@ sub pandora_ping_icmp {
 	} else {
 		$p->close();  
 	     	return 0;
+	}
+}
+
+##############################################################################
+# pandora_ping_udp (destination, timeout, port ) - Do a UDP, 1 if alive, 0 if not
+##############################################################################
+ 
+sub pandora_ping_udp {
+	my $p;
+	my $dest = $_[0];
+	my $l_timeout = $_[1];
+	my $tcp_port = $_[2];
+
+	if (($tcp_port < 65536) && ($tcp_port > 0)){
+		$p = Net::Ping->new("udp",$l_timeout);
+		my $udp_return;
+		my $udp_reply;
+		my $udp_ip;
+		($udp_return, $udp_reply, $udp_ip) = $p->ping ($dest,$l_timeout);
+		if ($udp_return) {
+			# Return value
+			return 1;
+		} else {
+			return 0;
+		}
+		$p->close();
+	} else {
+		return 0;
 	}
 }
 
@@ -477,28 +581,19 @@ sub exec_network_module {
 		} else { 
 			$module_result = 1; 
 		}
-   	} elsif ($id_tipo_modulo == 12){ # UDP Proc 
-		if (($tcp_port < 65536) && ($tcp_port > 0)){
-			my $p = Net::Ping->new("udp", $pa_config->{"networktimeout"});
-			my $icmp_return;
-			my $icmp_reply;
-			my $icmp_ip;
-			($icmp_return, $icmp_reply, $icmp_ip) = $p->ping ($ip_target,$pa_config->{"networktimeout"});
-			if ($icmp_return) {
-				# Return value	
-				$module_result = 0; 
-				$module_data = 1;
-			} else {
-				$module_result = 0; # Cannot connect
-				$module_data = 0;
-			}
-   			$p->close();
+   	} elsif ($id_tipo_modulo == 12){ # UDP Proc
+   		if (pandora_ping_udp ($ip_target, $pa_config->{"networktimeout"}, $tcp_port) == 1){
+   			$module_result = 0; 
+			$module_data = 1;
 		} else {
- 			$module_result = 1;  
+			$module_result = 0; # Cannot connect
+			$module_data = 0;
 		}
 	}
+	# --------------------------------------------------------
 	# module_generic_data_inc (part, timestamp, agent_name)
 	# recreate hash for module_generic functions
+	# --------------------------------------------------------
 	if ($module_result == 0) {
 		my %part;
 		$part{'name'}[0]=$nombre;

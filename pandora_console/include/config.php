@@ -24,7 +24,7 @@
 // This is the base config file
 
 //Pandora Version
-$build_version="PC070221"; //PCyymmdd
+$build_version="PC070328"; //PCyymmdd
 $pandora_version="v1.3 devel"; 
 
 // Database configuration
@@ -38,7 +38,7 @@ $config_fontpath = "../reporting/FreeSans.ttf";	// Change this to your font fold
 
 // Do not display any ERROR
 //error_reporting(E_ALL);
-error_reporting(0);
+error_reporting(E_ALL);
 
 
 // Uncomment next  to Display all errors, warnings and notices

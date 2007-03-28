@@ -163,7 +163,7 @@ if (give_acl($id_user, 0, "AW")!=1) {
 // ==========================
 
 $sql1='SELECT * FROM tagente_modulo WHERE id_agente = "'.$id_agente.'"
-ORDER BY nombre';
+ORDER BY id_module_group, nombre ';
 $result=mysql_query($sql1);
 echo "<h2>".$lang_label["agent_conf"]." &gt; ".$lang_label["assigned_modules"]."
 	<a href='help/".$help_code."/chap3.php#321' target='_help' class='help'>
@@ -180,7 +180,7 @@ if ($row=mysql_num_rows($result)){
 	echo "<th>".$lang_label["module_group"];
 	echo "<th>".$lang_label["max_min"];
 	echo "<th width=50>".$lang_label["action"];
-	$color=1;
+	$color=1;$last_modulegroup = "0";
 	while ($row=mysql_fetch_array($result)){
 		if ($color == 1){
 			$tdcolor="datos";
@@ -196,6 +196,12 @@ if ($row=mysql_num_rows($result)){
 		$module_min = $row["min"];
 		$module_interval2 = $row["module_interval"];
 		$module_group2 = $row["id_module_group"];
+		if ($module_group2 != $last_modulegroup ){
+			// Render module group names  (fixed code)
+			$nombre_grupomodulo = dame_nombre_grupomodulo ($module_group2);
+			$last_modulegroup = $module_group2;
+			echo "<tr><td class='datos3' align='center' colspan=9><b>".$nombre_grupomodulo."</b>";
+		}
 
 		echo "<tr><td class='".$tdcolor."_id'>".$nombre_modulo;
 		echo "<td class='".$tdcolor."f9'>";

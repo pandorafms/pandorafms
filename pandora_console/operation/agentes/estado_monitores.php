@@ -56,8 +56,7 @@ if (comprueba_login() == 0) {
 					$tdcolor = "datos2";
 					$color = 1;
 				}
-				$ahora=date("Y/m/d H:i:s");
-				$seconds = strtotime($ahora) - strtotime($row_t["timestamp"]);
+				$seconds = time() - $row_t["utimestamp"];
 				if ($seconds >= ($temp_interval*2)) // If every interval x 2 secs. we get nothing, there's and alert
 					$agent_down = 1;
 				else

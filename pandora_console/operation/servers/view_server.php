@@ -54,10 +54,11 @@ if (comprueba_login() == 0) {
 		echo "<th class='datos'>".$lang_label['modules']."</th>";
 		echo "<th class='datos'>".$lang_label['lag']."</th>";
 		echo "<th class='datos'>".$lang_label['description']."</th>";
-		echo "<th class='datos'>".$lang_label['type']."</th>";
+		echo "<th class='datos' width=80>".$lang_label['type']."</th>";
 		// echo "<th class='datos'>".$lang_label['master']."</th>";
 		//echo "<th class='datos'>".$lang_label['checksum']."</th>";
 		//echo "<th class='datos'>".$lang_label['laststart']."</th>";
+		echo "<th class='datos'>".$lang_label['version']."</th>";
 		echo "<th class='datos'>".$lang_label['lastupdate']."</th>";
 		$color=1;
 		while ($row=mysql_fetch_array($result)){
@@ -82,6 +83,7 @@ if (comprueba_login() == 0) {
 			$master = $row["master"];
 			$checksum = $row["checksum"];
 			$description = $row["description"];
+			$version = $row["version"];
 
 			$modules_server = 0;
 			if (($network_server == 1) OR ($data_server == 1))
@@ -150,7 +152,7 @@ if (comprueba_login() == 0) {
 
 			if (($network_server == 1) OR ($data_server == 1) OR ($recon_server == 1))
 				// Progress bar render
-				echo '<img src="reporting/fgraph.php?tipo=progress&percent='.$percentil.'&height=20&width=100">';
+				echo '<img src="reporting/fgraph.php?tipo=progress&percent='.$percentil.'&height=18&width=80">';
 				
 			// Number of modules
 			echo "<td class='$tdcolor'>";
@@ -175,21 +177,31 @@ if (comprueba_login() == 0) {
 						if ($maxlag2 > $maxlag)
 							$maxlag = $maxlag2;
 				}
-				echo $maxlag." sec";
+				if ($maxlag < 60)
+					echo $maxlag." sec";
+				elseif ($maxlag < 86400)
+					echo format_numeric($maxlag/60) . " min";
+				elseif ($maxlag > 86400)
+					echo "+1 ".$lang_label["day"];
 			} elseif ($recon_server == 1) {
 				$sql1 = "SELECT * FROM trecon_task WHERE id_network_server = $id_server";
 				$result1=mysql_query($sql1);
 				$nowtime = time();
 				$maxlag=0;
 				while ($row1=mysql_fetch_array($result1)){
-					if (($row1["utimestamp"] + $row1["interval"]) < $nowtime)
+					if (($row1["utimestamp"] + $row1["interval_sweep"]) < $nowtime)
 						$maxlag2 =  $nowtime - ($row1["utimestamp"] + $row1["interval"]);
 						if ($maxlag2 > $maxlag)
 							$maxlag = $maxlag2;
 				}
-				echo $maxlag." sec";
+				if ($maxlag < 60)
+					echo $maxlag." sec";
+				elseif ($maxlag < 86400)
+					echo format_numeric($maxlag/60) . " min";
+				elseif ($maxlag > 86400)
+					echo "+1 ".$lang_label["day"];
 			} else
-				echo "-";
+				echo "--";
 			echo "<td class='".$tdcolor."f9'>".substr($description,0,25);
 			echo "<td class='$tdcolor' align='middle'>";			
 			if ($network_server == 1){
@@ -213,11 +225,11 @@ if (comprueba_login() == 0) {
 			//echo "<td class='".$tdcolor."f9' align='middle'>"
 			//.substr($laststart,0,25)."</td>";
 			echo "<td class='".$tdcolor."f9' align='middle'>";
-			if ($status ==0)
-				echo "<font color='red'>";
-			else
-				echo "<font color='black'>";
-			echo substr($keepalive,0,25)."</td>";
+				echo $version;
+			
+			echo "<td class='".$tdcolor."f9' align='middle'>";
+			// if ($status ==0)
+				echo substr($keepalive,0,25)."</td>";
 		}
 		echo '<tr><td colspan="11"><div class="raya"></div></td></tr></table>';	
 	} else {

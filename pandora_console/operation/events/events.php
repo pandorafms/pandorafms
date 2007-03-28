@@ -74,6 +74,7 @@ if (isset($_GET["delete"])){
 		$result2=mysql_query($sql2);
 		if ($result) {
 			echo "<h3 class='suc'>".$lang_label["delete_event_ok"]."</h3>";
+			audit_db($id_user,$REMOTE_ADDR, "Event deleted","Deleted event: ".return_event_description ($id_evento));
 		}
 	} else {
 		audit_db($id_user,$REMOTE_ADDR, "ACL Violation",
@@ -91,12 +92,13 @@ if (isset($_GET["check"])){
 		$result2=mysql_query($sql2);
 		if ($result2) {
 			echo "<h3 class='suc'>".$lang_label["validate_event_ok"]."</h3>";
+			audit_db($id_user,$REMOTE_ADDR, "Event validated","Validate event: ".return_event_description ($id_evento));
 		} else {
 			echo "<h3 class='error'>".$lang_label["validate_event_failed"]."</h3>";
 		}
-
+		
 	} else {
-		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to checkout event ID".$id_evento);
+		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to checkout event ".return_event_description ($id_evento));
 	}
 }
 	
@@ -109,9 +111,10 @@ if (isset($_POST["deletebt"])){
 			// Look for event_id following parameters: id_group.
 			$id_group = gime_idgroup_from_idevent($event_id);
 			if (give_acl($id_user, $id_group, "IM") ==1){
-				mysql_query("DELETE FROM tevento WHERE id_evento =".$event_id);
+				mysql_query("DELETE FROM tevento WHERE id_evento = ".$event_id);
+				audit_db($id_user,$REMOTE_ADDR, "Event deleted","Deleted event: ".return_event_description ($event_id));
 			} else {
-				audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to delete event ID".$id_evento);
+				audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to delete event ".return_event_description ($event_id));
 			}
 		}
 		$count++;
@@ -126,8 +129,9 @@ if (isset($_POST["updatebt"])){
 			$id_evento = $_POST["eventid".$count];
 			$id_group = gime_idgroup_from_idevent($id_evento);
 			if (give_acl($id_user, $id_group, "IW") ==1){
-				$sql2="UPDATE tevento SET estado=1, id_user = '".$id_user."' WHERE estado = 0 AND id_evento = ".$id_evento;
+				$sql2="UPDATE tevento SET estado=1, id_usuario = '".$id_user."' WHERE estado = 0 AND id_evento = ".$id_evento;
 				$result2=mysql_query($sql2);
+				audit_db($id_user,$REMOTE_ADDR, "Event validated","Validate event: ".return_event_description ($id_evento));
 			} else {
 				audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to checkout event ID".$id_evento);
 			}
@@ -256,6 +260,7 @@ if ($total_events > 0){
 		}
 	}
 
+	$offset_counter=0;
 	// Make query for data (all data, not only distinct).
 	$result2=mysql_query($sql2);
 	while ($row2=mysql_fetch_array($result2)){
@@ -303,6 +308,7 @@ if ($total_events > 0){
 			echo "<input type='checkbox' class='chk' name='eventid".$offset_counter."' value='".$row2["id_evento"]."'>";
 			echo "</td></tr>";
 		}
+		$offset_counter++;
 	}
 		
 	echo "<tr><td colspan='8'><div class='raya'></div></td></tr>";

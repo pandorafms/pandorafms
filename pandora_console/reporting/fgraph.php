@@ -37,7 +37,6 @@ function graphic_error () {
 }
 
 function dame_fecha_grafico ($mh, $format){ 
-
 	// Date 24x7x30 hours ago (one month)
 	$m_year = date("Y", time()-$mh*60);
 	$m_month = date("m", time()-$mh*60);
@@ -71,6 +70,255 @@ function dame_fecha($mh){
 
 function dame_fecha_grafico_timestamp ($timestamp) {
 	return date('d/m H:i', $timestamp);
+}
+
+function graphic_combined_module ($module_list, $weight_list, $periodo, $width, $height , $title, $unit_name, $show_event=0, $show_alert=0 ) {
+	include ("../include/config.php");
+	require ("../include/languages/language_".$language_code.".php");
+	require_once 'Image/Graph.php';
+	$resolution = $config_graph_res * 50; // Number of "slices" we want in graph
+	
+	//$unix_timestamp = strtotime($mysql_timestamp) // Convert MYSQL format tio utime
+	$fechatope = time() - $periodo; // limit date
+	$horasint = $periodo / $resolution; // Each intervalo is $horasint seconds length
+	$module_number = count($module_list);
+
+	// intervalo - This is the number of "rows" we are divided the time to fill data.
+	//             more interval, more resolution, and slower.
+	// periodo - Gap of time, in seconds. This is now to (now-periodo) secs
+	
+	// Init tables
+	for ($y = 0; $y < $module_number; $y++){
+		$real_data[$y] = array();
+		if ($show_event == 1)
+			$real_event[$y] = array();
+		if (isset($weight_list[$y])){
+			if ($weight_list[$y] == 0)
+				$weight_list[$y] = 1;
+		} else
+			$weight_list[$y] = 1;
+	}
+
+	$max_value = 0;
+	$min_value = 0;
+	// FOR EACH MODULE IN module_list....
+	for ($y = 0; $y < $module_number; $y++){	
+		$id_agente_modulo = $module_list[$y];
+		$nombre_agente = dame_nombre_agente_agentemodulo($id_agente_modulo);
+		$id_agente = dame_agente_id($nombre_agente);
+		$nombre_modulo = dame_nombre_modulo_agentemodulo($id_agente_modulo);
+
+		$module_list_name[$y] = substr($nombre_agente,0,8)." - ".substr($nombre_modulo,0,8);
+		if ($weight_list[$y] != 1)
+			$module_list_name[$y] .= " (x".$weight_list[$y].")";
+		for ($x = 0; $x <= $resolution; $x++) {
+			$valores[$x][0] = 0; // SUM of all values for this interval
+			$valores[$x][1] = 0; // counter
+			$valores[$x][2] = $fechatope + ($horasint * $x); // [2] Top limit for this range
+			$valores[$x][3] = $fechatope + ($horasint*($x+1)); // [3] Botom limit
+			$valores[$x][4] = 0; // MIN
+			$valores[$x][5] = 0; // MAX
+			$valores[$x][6] = 0; // Event
+		}
+		// Init other general variables
+
+		if ($show_event == 1){
+			// If we want to show events in graphs
+			$sql1="SELECT utimestamp FROM tevento WHERE id_agente = $id_agente AND utimestamp > $fechatope";
+			$result=mysql_query($sql1);
+			while ($row=mysql_fetch_array($result)){
+				$utimestamp = $row[0];
+				for ($i=0; $i <= $resolution; $i++) {
+					if ( ($utimestamp <= $valores[$i][3]) && ($utimestamp >= $valores[$i][2]) ){
+						$real_event[$i]=1;
+					}
+				}
+			}
+		}
+		$alert_high = 0;
+		$alert_low = 0;
+		if ($show_alert == 1){
+			// If we want to show alerts limits
+			$sql1="SELECT * FROM talerta_agente_modulo where id_agente_modulo = ".$id_agente_modulo;
+			$result=mysql_query($sql1);
+			while ($row=mysql_fetch_array($result)){
+				if ($row["dis_max"] > $alert_high)
+					$alert_high = $row["dis_max"];
+				if ($row["dis_max"] > $alert_high)
+				$min = $row["dis_min"];
+				
+			}
+		}
+		
+		$previous=0;
+		// Get the first data outsite (to the left---more old) of the interval given
+		$sql1="SELECT datos,utimestamp FROM tagente_datos WHERE id_agente = $id_agente AND id_agente_modulo = $id_agente_modulo AND utimestamp < $fechatope ORDER BY utimestamp DESC LIMIT 1";
+		$result=mysql_query($sql1);
+		if ($row=mysql_fetch_array($result))
+			$previous=$row[0];
+		
+		$sql1="SELECT datos,utimestamp FROM tagente_datos WHERE id_agente = $id_agente AND id_agente_modulo = $id_agente_modulo AND utimestamp > $fechatope";
+		if ($result=mysql_query($sql1))
+		while ($row=mysql_fetch_array($result)){
+			$datos = $row[0];
+			$utimestamp = $row[1];
+			if ($datos > 0) {
+				for ($i=0; $i <= $resolution; $i++) {
+					if ( ($utimestamp <= $valores[$i][3]) && ($utimestamp >= $valores[$i][2]) ){
+						$valores[$i][0]=$valores[$i][0]+$datos;
+						$valores[$i][1]++;
+						// Init min value
+						if ($valores[$i][4] == 0)
+							$valores[$i][4] = $datos;
+						else {
+							// Check min value
+							if ($datos < $valores[$i][4])
+							$valores[$i][4] = $datos;
+						}			
+						// Check max value
+						if ($datos > $valores[$i][5])
+							$valores[$i][5] = $datos;
+						$i = $resolution+1; // BREAK FOR
+					}
+				}
+			}		
+		}
+
+		
+		// Calculate Average value for $valores[][0]
+		for ($x =0; $x <= $resolution; $x++) {
+			if ($valores[$x][1] > 0){
+				$valores[$x][0] = $valores[$x][0]/$valores[$x][1];
+				$real_data[$y][$x] =  $weight_list[$y]*($valores[$x][0]/$valores[$x][1]);
+			} else {
+				$valores[$x][0] = $previous;
+				$real_data[$y][$x] = $previous * $weight_list[$y];
+				$valores[$x][4] = $previous;
+				$valores[$x][5] = $previous;
+			}
+			// Get max value for all graph
+			if ($valores[$x][5] * $weight_list[$y] > $max_value )
+				$max_value = $valores[$x][5] * $weight_list[$y];
+			// Take prev. value
+			// TODO: CHeck if there are more than 24hours between
+			// data, if there are > 24h, module down.
+			$previous = $valores[$x][0];
+		}
+	}
+
+	// Create graph
+	// *************
+	$Graph =& Image_Graph::factory('graph', array($width, $height));
+	// add a TrueType font
+	$Font =& $Graph->addNew('font', $config_fontpath);
+	$Font->setSize(6);
+	$Graph->setFont($Font);
+
+	if ($periodo == 86400)
+		$title_period = "Last day";
+	elseif ($periodo == 604800)
+		$title_period = "Last week";
+	elseif ($periodo == 3600)
+		$title_period = "Last hour";
+	elseif ($periodo == 2419200)
+		$title_period = "Last month";
+	else
+		$title_period = "Last ".format_numeric(($periodo / (3600*24)),2)." days";
+
+	$Graph->add(
+	Image_Graph::vertical(
+		Image_Graph::vertical(
+            		$Title = Image_Graph::factory('title', array('   Pandora FMS Graph - '.$title_period, 10)),
+              		$Subtitle = Image_Graph::factory('title', array('     '.$title, 7)),
+            		90
+        	), 
+		Image_Graph::horizontal(
+			$Plotarea = Image_Graph::factory('plotarea'),
+			$Legend = Image_Graph::factory('legend'),
+   			80
+			),
+		20)
+	);
+	$Legend->setPlotarea($Plotarea);
+	$Title->setAlignment(IMAGE_GRAPH_ALIGN_LEFT);
+	$Subtitle->setAlignment(IMAGE_GRAPH_ALIGN_LEFT);
+	// Create the dataset
+	// Merge data into a dataset object (sancho)
+	// $Dataset =& Image_Graph::factory('dataset');
+
+	for ($y = 0; $y < $module_number; $y++){
+		$dataset[$y] = Image_Graph::factory('dataset');
+		$dataset[$y] -> setName($module_list_name[$y]);
+	}
+	if ($show_event == 1){
+		$dataset_event = Image_Graph::factory('dataset');
+		$dataset_event -> setName("Event Fired");
+	}
+	
+	// ... and populated with data ...
+	for ($cc=0; $cc <= $resolution; $cc++) {
+		$tdate = date('d/m', $valores[$cc][2])."\n".date('H:i', $valores[$cc][2]);
+		for ($y = 0; $y < $module_number; $y++){
+			$dataset[$y]->addPoint($tdate, $real_data[$y][$cc]);
+			if (($show_event == 1) AND (isset($real_event[$cc]))) {
+				$dataset_event->addPoint($tdate, $max_value);
+			}
+		}
+	}
+	
+	if ($max_value > 0){
+		// Show events !
+		if ($show_event == 1){
+			$Plot =& $Plotarea->addNew('Plot_Impulse', array($dataset_event));
+			$Plot->setLineColor( 'black' );
+			$Marker_event =& Image_Graph::factory('Image_Graph_Marker_Cross');
+			$Plot->setMarker($Marker_event);
+			$Marker_event->setFillColor( 'red' );
+			$Marker_event->setLineColor( 'red' );
+			$Marker_event->setSize ( 5 );
+		}
+		
+		// Show limits (for alert or whathever you want...
+		if ($show_alert == 1){
+			$Plot =& $Plotarea->addNew('Image_Graph_Axis_Marker_Area', IMAGE_GRAPH_AXIS_Y);
+			$Plot->setFillColor( 'blue@0.1' );
+			$Plot->setLowerBound( $alert_low);
+			$Plot->setUpperBound( $alert_high );
+		}
+		
+			
+		// create the 1st plot as smoothed area chart using the 1st dataset
+		$Plot =& $Plotarea->addNew('area', array(&$dataset));
+		$Plot->setLineColor('gray@0.4');
+		$AxisX =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_X);
+		// $AxisX->Hide();
+		$AxisY =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
+		$AxisY->setLabelOption("showtext",true);
+		$AxisY->setLabelInterval(ceil($max_value / 5));
+		$AxisY->showLabel(IMAGE_GRAPH_LABEL_ZERO);
+		if ($unit_name != "")
+			$AxisY->setTitle($unit_name, 'vertical');
+		$AxisX->setLabelInterval($resolution / 10);		
+		//$AxisY->forceMinimum($minvalue);
+		$AxisY->forceMaximum($max_value+($max_value/12)) ;
+		$GridY2 =& $Plotarea->addNew('bar_grid', IMAGE_GRAPH_AXIS_Y_SECONDARY);
+		$GridY2->setLineColor('gray');
+		$GridY2->setFillColor('lightgray@0.05');
+		// set line colors
+		$FillArray =& Image_Graph::factory('Image_Graph_Fill_Array');
+		$Plot->setFillStyle($FillArray);
+		$FillArray->addColor('#BFFF51@0.6'); // Green
+		$FillArray->addColor('yellow@0.6'); // yellow
+		$FillArray->addColor('#FF5FDF@0.6'); // pink
+		$FillArray->addColor('orange@0.6'); // orange
+		$FillArray->addColor('#7D8AFF@0.6'); // blue
+		$FillArray->addColor('#FF302A@0.6'); // red
+		$FillArray->addColor('brown@0.6'); // brown
+		$FillArray->addColor('green@0.6');
+		$AxisY_Weather =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
+		$Graph->done();
+	} else
+		graphic_error ();
 }
 
 function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $draw_events,
@@ -183,7 +431,7 @@ function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $draw_events,
 	elseif ($periodo == 2419200)
 		$title_period = "Last month";
 	else
-		$title_period = "Last ".($periodo / (3600*24))." days";
+		$title_period = "Last ".format_numeric(($periodo / (3600*24)),2)." days";
 
 	$Graph->add(
 	Image_Graph::vertical(
@@ -243,9 +491,13 @@ function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $draw_events,
 		// set line colors
 		$FillArray =& Image_Graph::factory('Image_Graph_Fill_Array');
 		$Plot->setFillStyle($FillArray);
-		$FillArray->addColor('yellow@0.5'); // MAX
-		$FillArray->addColor('orange@0.6'); // AVG
-		$FillArray->addColor('brown@0.7'); // MIN
+		$FillArray->addColor('yellow@0.5'); 
+		$FillArray->addColor('orange@0.6'); 
+		$FillArray->addColor('brown@0.7');
+		$FillArray->addColor('red@0.7');
+		$FillArray->addColor('blue@0.7');
+		$FillArray->addColor('green@0.7');
+		$FillArray->addColor('black@0.7');
 
 		$AxisY_Weather =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
 
@@ -1108,96 +1360,42 @@ function grafico_db_agentes_paquetes() {
         $graph->Stroke();
 }
 
-function grafico_db_agentes_purge($id_agente) {
+function grafico_db_agentes_purge ($id_agente, $width, $height) {
 	include ("../include/config.php");
-	include ("jpgraph/jpgraph.php");
-	include ("jpgraph/jpgraph_pie.php");
-	include ("jpgraph/jpgraph_pie3d.php");
+	require_once 'Image/Graph.php';
 	require ("../include/languages/language_".$language_code.".php");
 
 	// All data (now)
 	$purge_all=date("Y-m-d H:i:s",time());
-		
-	// 1 day
-	$d1_year = date("Y", time()-28800);
-	$d1_month = date("m", time()-28800);
-	$d1_day = date ("d", time()-28800);
-	$d1_hour = date ("H", time()-28800);
-	$minuto = date("i",time());
-	$segundo = date("s",time());
-	$d1 = $d1_year."-".$d1_month."-".$d1_day." ".$d1_hour.":".$minuto.":".$segundo."";
-	
-	// 3 days
-	$d3_year = date("Y", time()-86400);
-	$d3_month = date("m", time()-86400);
-	$d3_day = date ("d", time()-86400);
-	$d3_hour = date ("H", time()-86400);
-	$d3 = $d3_year."-".$d3_month."-".$d3_day." ".$d3_hour.":".$minuto.":".$segundo."";
-	
-	// Fecha 24x7 Horas (una semana)
-	$week_year = date("Y", time()-604800);
-	$week_month = date("m", time()-604800);
-	$week_day = date ("d", time()-604800);
-	$week_hour = date ("H", time()-604800);
-	$d7 = $week_year."-".$week_month."-".$week_day." ".$week_hour.":".$minuto.":".$segundo."";
-	
-	// Fecha 24x7x2 Horas (dos semanas)
-	$week2_year = date("Y", time()-1209600);
-	$week2_month = date("m", time()-1209600);
-	$week2_day = date ("d", time()-1209600);
-	$week2_hour = date ("H", time()-1209600);
-	$d14 = $week2_year."-".$week2_month."-".$week2_day." ".$week2_hour.":".$minuto.":".$segundo."";
-		
-	// Fecha de hace 24x7x30 Horas (un mes)
-	$month_year = date("Y", time()-2592000);
-	$month_month = date("m", time()-2592000);
-	$month_day = date ("d", time()-2592000);
-	$month_hour = date ("H", time()-2592000);
-	$d30 = $month_year."-".$month_month."-".$month_day." ".$month_hour.":".$minuto.":".$segundo."";
-	
-	// Three months
-	$month3_year = date("Y", time()-7257600);
-	$month3_month = date("m", time()-7257600);
-	$month3_day = date ("d", time()-7257600);
-	$month3_hour = date ("H", time()-7257600);
-	$d90 = $month3_year."-".$month3_month."-".$month3_day." ".$month3_hour.":".$minuto.":".$segundo."";
 	
 	$data = array();
 	$legend = array();
-
-	$fechas= array($d90, $d30, $d7, $d1);
-	$fechas_label = array("> 30 days","7-30 days","2-7 days","24Hr");
+	
+	$d90 = time()-(2592000*3);
+	$d30 = time()-2592000;
+	$d7 = time()-604800;
+	$d1 = time()-86400;
+	$fechas = array($d90, $d30, $d7, $d1);
+	$fechas_label = array("30-90 days","7-30 days","This week","Today");
 
 	// Calc. total packets
         $sql1="SELECT COUNT(id_agente_datos) FROM tagente_datos";;
         $result2=mysql_query($sql1);
         $row2=mysql_fetch_array($result2);
         $total = $row2[0];
-
-	for ($a=0;$a<sizeof($fechas);$a++){	// 4 x intervals will be enought, increase if your database is very very quickly :)
+	
+	for ($a=0; $a < sizeof ($fechas); $a++){
+	// 4 x intervals will be enought, increase if your database is very very fast :)
 		if ($a==3)
-			$sql1="SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE timestamp >= '".$fechas[$a]."' ";
+			$sql1="SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp >= ".$fechas[$a];
 		else
-			$sql1="SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE timestamp >= '".$fechas[$a]."' AND timestamp < '".$fechas[$a+1]."' ";
+			$sql1="SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp >= ".$fechas[$a]." AND utimestamp < ".$fechas[$a+1];
 		$result=mysql_query($sql1);
 		$row=mysql_fetch_array($result);
 		$data[] = $row[0];
 		$legend[]=$fechas_label[$a]." ( ".$row[0]." )";
 	}
 
-	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
-        // or much better, pay me to do a special version for you, highly optimized :-))))
-        for ($a=0;$a < sizeof($data);$a++){
-                for ($b=$a; $b <sizeof($data); $b++)
-                if ($data[$b] > $data[$a]){
-                        $temp = $data[$a];
-                        $temp_label = $legend[$a];
-                        $data[$a] = $data[$b];
-                        $legend[$a] = $legend[$b];
-                        $data[$b] = $temp;
-                        $legend[$b] = $temp_label;
-                }
-        }
 	$mayor = 0;
 	$mayor_data =0;
 	for ($a=0;$a < sizeof($data); $a++)
@@ -1206,21 +1404,59 @@ function grafico_db_agentes_purge($id_agente) {
 			$mayor_data = $data[$a];
 		}
 	
-	$graph = new PieGraph(500,200,"auto");
-	$graph->SetMarginColor('white@0.2');
-	$graph->title->Set($lang_label["packets_by_date"]." ( Tot - $total ) ");
-	$graph->title->SetFont(FF_FONT1,FS_BOLD);
-	$graph->SetShadow();
-	$graph->SetAlphaBlending();	
-	$graph->SetFrame(true);
-	$p1 = new PiePlot3D($data);
-	$p1->ExplodeSlice($mayor);
-	$p1->SetSize(0.35);
-	$p1->SetCenter(0.3);
-	$p1->SetLegends($legend);
-	$graph->Add($p1);
-	$graph->img->SetAntiAliasing();
-	$graph->Stroke();
+	if ($total> 1){
+		// create the graph
+		$Graph =& Image_Graph::factory('graph', array($width, $height));
+		// add a TrueType font
+		$Font =& $Graph->addNew('font', $config_fontpath);
+		// set the font size to 7 pixels
+		$Font->setSize(7);
+		$Graph->setFont($Font);
+		// create the plotarea
+		$Graph->add(
+			Image_Graph::horizontal(
+				$Plotarea = Image_Graph::factory('plotarea'),
+				$Legend = Image_Graph::factory('legend'),
+			70
+			)
+		);
+		$Legend->setPlotarea($Plotarea);
+		// Create the dataset
+		// Merge data into a dataset object (sancho)
+		$Dataset1 =& Image_Graph::factory('dataset');
+		for ($a=0;$a < sizeof($data); $a++){
+			$Dataset1->addPoint($legend[$a], $data[$a]);
+		}
+		$Plot =& $Plotarea->addNew('pie', $Dataset1);
+		$Plotarea->hideAxis();
+		// create a Y data value marker
+		$Marker =& $Plot->addNew('Image_Graph_Marker_Value', IMAGE_GRAPH_PCT_Y_TOTAL);
+		// create a pin-point marker type
+		$PointingMarker =& $Plot->addNew('Image_Graph_Marker_Pointing_Angular', array(1, &$Marker));
+		// and use the marker on the 1st plot
+		$Plot->setMarker($PointingMarker);
+		// format value marker labels as percentage values
+		$Marker->setDataPreprocessor(Image_Graph::factory('Image_Graph_DataPreprocessor_Formatted', '%0.1f%%'));
+		$Plot->Radius = 15;
+		$FillArray =& Image_Graph::factory('Image_Graph_Fill_Array');
+		$Plot->setFillStyle($FillArray);
+		
+		$FillArray->addColor('green@0.7');
+		$FillArray->addColor('yellow@0.7');
+		$FillArray->addColor('red@0.7');
+		$FillArray->addColor('orange@0.7');
+		$FillArray->addColor('blue@0.7');
+		$FillArray->addColor('purple@0.7');
+		$FillArray->addColor('lightgreen@0.7');
+		$FillArray->addColor('lightblue@0.7');
+		$FillArray->addColor('lightred@0.7');
+		$FillArray->addColor('grey@0.6', 'rest');
+		$Plot->explode(6);
+		$Plot->setStartingAngle(145);
+		// output the Graph
+		$Graph->done();
+	} else 
+		graphic_error ();
 }
 
 function drawWarning($width,$height) {
@@ -1418,6 +1654,12 @@ if (isset($_GET["id"]))
 	$id = entrada_limpia($_GET["id"]);
 else
 	$id = 0;
+
+if (isset($_GET["weight_l"]))
+	$weight_l = entrada_limpia($_GET["weight_l"]);
+else
+	$weight_l = 0;
+	
 if (isset($_GET["width"]))
 	$width = entrada_limpia($_GET["width"]);
 else
@@ -1481,7 +1723,7 @@ if (isset($_GET["tipo"])){
 	elseif ($_GET["tipo"]=="db_agente_paquetes")
 		grafico_db_agentes_paquetes();
 	elseif ($_GET["tipo"] =="db_agente_purge")
-		grafico_db_agentes_purge(-1);
+		grafico_db_agentes_purge(-1, $width, $height);
 	elseif ($_GET["tipo"] =="group_events")
 		grafico_eventos_grupo();
 	elseif ($_GET["tipo"] =="user_events")
@@ -1505,6 +1747,14 @@ if (isset($_GET["tipo"])){
 	elseif ( $_GET["tipo"] =="progress"){
 		$percent= $_GET["percent"];
 		progress_bar($percent,$width,$height);
+	}
+	elseif ( $_GET["tipo"] =="combined"){
+		// Split id to get all parameters
+		$module_list = array();
+		$module_list = split ( ",", $id);
+		$weight_list = array();
+		$weight_list = split ( ",", $weight_l);
+		graphic_combined_module ($module_list, $weight_list, $period, $width, $height , $label, $unit_name );
 	}
 	else
 		graphic_error ();

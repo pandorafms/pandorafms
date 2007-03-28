@@ -37,7 +37,9 @@ $attachment_store="/var/www/pandora_console";	//This is directory where placed "
 $config_fontpath = "../reporting/FreeSans.ttf";	// Change this to your font folder, if needed.
 
 // Do not display any ERROR
-error_reporting(E_ALL);
+//error_reporting(E_ALL);
+error_reporting(0);
+
 
 // Uncomment next  to Display all errors, warnings and notices
 // error_reporting(E_ALL);

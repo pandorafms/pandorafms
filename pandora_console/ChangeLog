@@ -1,3 +1,13 @@
+2007-03-28  Esteban Sanchez  <estebans@artica.es>
+
+	* pandoradb.sql: Changed MyISAM tables to InnoDB. Deleted charset
+	definition to Latin1. Some changes to be consecuent with the data.
+	Deleted unnecesary field from tagente_estado. Added tmodule table and
+	a field in tagente_module to point there. Fixed some default dates to
+	become the same. Removed mysqldump comments.
+
+	* pandoradb_data.sql: Removed mysqldump comments.
+
 2007-03-28  Sancho Lerena  <slerena@artica.es>
 
 	* pandoradb.sql: Updated SQL.

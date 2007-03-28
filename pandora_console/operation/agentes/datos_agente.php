@@ -2,12 +2,12 @@
 
 // Pandora - the Free monitoring system
 // ====================================
-// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
 // Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
-// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
+// as published by the Free Software Foundation;  version 2
 // of the License, or (at your option) any later version.
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,56 +23,34 @@ require("include/config.php");
 function datos_raw($id_agente_modulo, $periodo){
 	require("include/config.php");
 	require("include/languages/language_".$language_code.".php");
-	
-	// 24 hours date
-	$yesterday_year = date("Y", time()-86400);
-	$yesterday_month = date("m", time()-86400);
-	$yesterday_day = date ("d", time()-86400);
-	$yesterday_hour = date ("H", time()-86400);
-	$dia = $yesterday_year."-".$yesterday_month."-".$yesterday_day." ".$yesterday_hour.":00:00";
-	
-		
-	// 24x7 hours (one week)
-	$week_year = date("Y", time()-604800);
-	$week_month = date("m", time()-604800);
-	$week_day = date ("d", time()-604800);
-	$week_hour = date ("H", time()-604800);
-	$week = $week_year."-".$week_month."-".$week_day." ".$week_hour.":00:00";
-	
-	// 24x7x30 Hours (one month)
-	$month_year = date("Y", time()-2592000);
-	$month_month = date("m", time()-2592000);
-	$month_day = date ("d", time()-2592000);
-	$month_hour = date ("H", time()-2592000);
-	$month = $month_year."-".$month_month."-".$month_day." ".$month_hour.":00:00";
-	$et = " "; 
 	switch ($periodo) {
 		case "mes":
-				$periodo = $month;
+				$periodo = 86400*30;
 				$et=$lang_label["last_month"];
 				break;
 		case "semana":
-				$periodo = $week;
+				$periodo = 86400*7;
 				$et=$lang_label["last_week"];
 				break;
 		case "dia":
-				$periodo = $dia;
+				$periodo = 86400;
 				$et=$lang_label["last_24"];
 				break;
 	}
-		
+	$periodo = time() - $periodo;
+	$id_agent = give_agent_id_from_module_id ($id_agente_modulo);
 	// Different query for string data type
 	$id_tipo_modulo = dame_id_tipo_modulo_agentemodulo($id_agente_modulo);
 	if ( (dame_nombre_tipo_modulo($id_tipo_modulo) == "generic_data_string" ) OR
 	     (dame_nombre_tipo_modulo($id_tipo_modulo) == "remote_tcp_string" ) OR
  	     (dame_nombre_tipo_modulo($id_tipo_modulo) == "remote_snmp_string" )) {
 		$sql1="SELECT * FROM tagente_datos_string WHERE id_agente_modulo = ".
-		$id_agente_modulo." AND timestamp > '".$periodo."' 
+		$id_agente_modulo." AND id_agente = $id_agent AND utimestamp > '".$periodo."' 
 		ORDER BY timestamp DESC"; 
 	}
 	else {
 		$sql1="SELECT * FROM tagente_datos WHERE id_agente_modulo = ".
-		$id_agente_modulo." AND timestamp > '".$periodo."' 
+		$id_agente_modulo." AND id_agente = $id_agent AND utimestamp > '".$periodo."' 
 		ORDER BY timestamp DESC";
 	}
 	
@@ -99,7 +77,7 @@ function datos_raw($id_agente_modulo, $periodo){
 				$color = 1;
 			}
 			echo "<tr>";	
-			echo "<td class='".$tdcolor."f9 w130'>".$row["timestamp"];
+			echo "<td class='".$tdcolor."' style='width:150px'>".$row["timestamp"];
 			echo "<td class='".$tdcolor."'>";
 			if (($row["datos"] != 0) AND (is_numeric($row["datos"]))) {
                         	$mytempdata = fmod($row["datos"], $row["datos"]);
@@ -126,18 +104,29 @@ function datos_raw($id_agente_modulo, $periodo){
 	}
 }	
 
-// Comienzo de la pagina en si misma
+// ---------------
+// Page begin
+// ---------------
 
-if (comprueba_login() == 0) {
-	if (isset($_GET["tipo"]) AND isset($_GET["id"])) {
-		$id =entrada_limpia($_GET["id"]);
-		$tipo= entrada_limpia($_GET["tipo"]);
-	}
-	else {
-		echo "<h3 class='error'>".$lang_label["graf_error"]."</h3>";
-		exit;	
-	}
+$id_user = "";
+if (comprueba_login() == 0)
+	$id_user = $_SESSION["id_usuario"];
 	
-	datos_raw($id,$tipo);
+if (give_acl($id_user, 0, "AR")!=1) {
+	audit_db ($id_user, $REMOTE_ADDR, "ACL Violation",
+	"Trying to access Agent Data view");
+	require ("general/noaccess.php");
+	exit;
 }
+
+if (isset($_GET["tipo"]) AND isset($_GET["id"])) {
+	$id =entrada_limpia($_GET["id"]);
+	$tipo= entrada_limpia($_GET["tipo"]);
+} else {
+	echo "<h3 class='error'>".$lang_label["graf_error"]."</h3>";
+	exit;
+}
+
+datos_raw($id,$tipo);
+		
 ?>

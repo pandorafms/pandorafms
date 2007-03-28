@@ -726,6 +726,20 @@ $lang_label["no"]="No";
 $lang_label["view"]="View";
 $lang_label["number_of_modules"]="# Modules";
 $lang_label["network_profile_management"]="Network profile management";
+$lang_label["graph_builder"]="Graph builder";
+$lang_label["combined_image"]="Combined image render";
+$lang_label["redraw"]="Redraw";
+$lang_label["graph_builder_modulelist"]="Graph builder module list";
+$lang_label["seconds"]="Seconds";
+$lang_name["custom_graph_name"]="Custom graph name";
+$lang_label["save"]="Save";
+$lang_label["Manage"]="Manage";
+$lang_label["group_view_tab"]="Group view";
+$lang_label["Alerts"]="Alerts";
+$lang_label["Data"]="Data";
+$lang_label["Main"]="Main";
+$lang_label["version"]="Version";
+
 
 global $lang_label; 
 global $help_label;

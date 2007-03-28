@@ -51,7 +51,7 @@ if (comprueba_login() == 0) {
 				<ul class='mn'>	
 				<li class='nomn'>";
 				echo "<li class='nomn'>";
-				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='../images/bricks.png' class='top' border=0>&nbsp; ".dame_nombre_agente($id_agente)." - ".$lang_label["view_mode"]."</A>";
+				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/bricks.png' class='top' border=0>&nbsp; ".dame_nombre_agente($id_agente)." - ".$lang_label["view_mode"]."</A>";
 				echo "</li>";
 				echo "</ul></div>";
 
@@ -60,34 +60,30 @@ if (comprueba_login() == 0) {
 					$tab = $_GET["tab"];
 				else
 					$tab = "main";
-				echo "
-				<div id='menu_tab'>
-				<ul class='mn'>";
+				echo "<div id='menu_tab'><ul class='mn'>";
 				if (give_acl($id_usuario,$id_grupo, "AW") == 1){
 					// Manage agent
-					echo "<li class='nomn'><a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'><img src='images/setup.gif' width='16' class='top' border=0> Manage</A>";
+					echo "<li class='nomn'><a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'><img src='images/setup.gif' width='16' class='top' border=0> ".$lang_label["Manage"]." </A>";
 					echo "</li>";
 				}
-
-				
 				// Main view
 				echo "<li class='nomn'>";
-				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/monitor.png' class='top' border=0> Main</a>";
+				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/monitor.png' class='top' border=0> ".$lang_label["Main"]." </a>";
 				echo "</li>";
 
 				// Data
 				echo "<li class='nomn'>";
-				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data'><img src='images/lightbulb.png' class='top' border=0> Data</a>";
+				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data'><img src='images/lightbulb.png' class='top' border=0> ".$lang_label["Data"]." </a>";
 				echo "</li>";
 
 				// Alerts
 				echo "<li class='nomn'>";
-				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=alert'><img src='images/bell.png' class='top' border=0> Alerts</A>";
+				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=alert'><img src='images/bell.png' class='top' border=0> ".$lang_label["Alerts"]." </A>";
 				echo "</li>";
 
 				// Go to group view
 				echo "<li class='nomn'>";
-				echo "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_grupo&refr=60'><img src='images/images.png' class='top' border=0> Group view</a>";
+				echo "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_grupo&refr=60'><img src='images/images.png' class='top' border=0> ".$lang_label["group_view_tab"]." </a>";
 				echo "</li>";
 				
 				echo "</ul>";

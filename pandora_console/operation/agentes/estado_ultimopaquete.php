@@ -72,7 +72,7 @@ if (comprueba_login() == 0) {
 	echo "<th>".$lang_label["graph"]."</th>";
 	echo "<th>".$lang_label["raw_data"]."</th>";
 	echo "<th>".$lang_label["timestamp"]."</th>";
-	$texto='';
+	$texto=''; $last_modulegroup = 0;
 	$color = 1;
 	while ($row3=mysql_fetch_array($result3)){
 			// Calculate table line color
@@ -84,16 +84,14 @@ if (comprueba_login() == 0) {
 				$tdcolor = "datos2";
 				$color = 1;
 			}
-			// Render module group names  (fixed code)
-			$nombre_grupomodulo = dame_nombre_grupomodulo ($row3["id_module_group"]);
-			if ($nombre_grupomodulo != ""){
-				if (($label_group == 0) || ($last_label != $nombre_grupomodulo)){
-				// Show label module group
-					$label_group = -1;
-					$last_label = $nombre_grupomodulo;
-					echo "<tr><td class='datos3' align='center' colspan=9><b>".$nombre_grupomodulo."</b>";
-				}
+
+			if ($row3["id_module_group"] != $last_modulegroup ){
+				// Render module group names  (fixed code)
+				$nombre_grupomodulo = dame_nombre_grupomodulo ($row3["id_module_group"]);
+				$last_modulegroup = $row3["id_module_group"];
+				echo "<tr><td class='datos3' align='center' colspan=9><b>".$nombre_grupomodulo."</b>";
 			}
+			
 			// Begin to render data ...
 			echo "<tr><td class='$tdcolor'>";
 			// Render network exec module button, only when
@@ -141,10 +139,13 @@ if (comprueba_login() == 0) {
 			echo "<td class='".$tdcolor."'>";
 			echo "<img src='images/".show_icon_type($row3["id_tipo_modulo"])."' border=0>";
 			echo "<td class='".$tdcolor."'>";
-			if ($row3["module_interval"] != 0)
+			if ($row3["module_interval"] != 0){
 				echo $row3["module_interval"];
-			else
+				$real_interval = $row3["module_interval"];
+			} else {
 				echo $intervalo_agente;
+				$real_interval = $intervalo_agente;
+			}
 			//echo $nombre_tipo_modulo;
 			echo "<td class='".$tdcolor."f9' title='".$row3["descripcion"]."'>"; 
 			echo salida_limpia(substr($row3["descripcion"],0,32));
@@ -206,7 +207,13 @@ if (comprueba_login() == 0) {
 				if ($row3["timestamp"] == "0000-00-00 00:00:00"){ 
 					echo $lang_label["never"];
 				} else {
-					echo $row3["timestamp"];
+					$ahora = time();
+					if ( ($ahora - $row3["utimestamp"]) > ($real_interval*2)) {
+						echo "<font color='red'>";
+						echo $row3["timestamp"];
+						echo "</font>";
+					} else
+						echo $row3["timestamp"];
 				}
 			echo "</td></tr>";
  		//}

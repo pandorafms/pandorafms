@@ -169,10 +169,10 @@ if (comprueba_login() == 0) {
 		<tr><td>
 			<?php
 			
-			echo "<input type='hidden' name='$id' value='$id'>";
-			echo "<input type='hidden' name='$refresh' value='$refresh'>";
-			echo "<input type='hidden' name='$zoom' value='$zoom'>";
-			echo "<input type='hidden' name='$events' value='$draw_events'>";
+			echo "<input type='hidden' name='id' value='$id'>";
+			echo "<input type='hidden' name='refresh' value='$refresh'>";
+			echo "<input type='hidden' name='zoom' value='$zoom'>";
+			echo "<input type='hidden' name='event' value='$draw_events'>";
 	
 			?>
 		</td><td>

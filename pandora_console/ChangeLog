@@ -1,3 +1,51 @@
+2007-03-28  Sancho Lerena  <slerena@artica.es>
+
+	* tip.css, pandora.css: Some updates to fix render in tooltips and
+	datos3 background color.
+
+	* config.php: Version update.
+
+	* operation/menu.php: Added reporting suboption: Custom Graph Builder.
+
+       	* operation/reporting/graph_builder.php: New custom and combined
+	graphic generator that uses new function from fgraph
+	graphic_combined_module().
+
+	* reporting/fgraph.php: new function graphic_combined_module() to
+	generate combined graphs. Needs to finish implementation to show
+	alerts and evetns (most work done). Function
+	grafico_db_agentes_purge() now uses Pear Graph instead jpgraph.
+
+	* operation/agents/exportdata.php: Now uses indexes and improve
+	the overall speed.
+
+	* operation/agents/estado_grupo.php: Rewritten version, much more
+	fast than previous.
+
+	* operation/events/events.php: Fixed code to mass delete/update
+	and added some audit control points.
+
+	* pandora_db.php: audit_db() now uses utimestamp. event_insert()
+	now uses utimestamp. Added function
+	give_agent_id_from_module_id().
+
+	* operation/agents/estado_ultimopaquete.php: Now render in red
+	timestamp for "outdated" data. Fixes some minor problems with
+	module groups and interval rendering.
+
+	* operation/agents/estado_monitores.php: now uses utimestamp.
+
+	* operation/agents/ver_agente.php: Uses lang_label labels for some
+	texts. Fixed image bug.
+
+	* operation/servers/view_server.php: Added version of server and
+	some cosmetic adjustments.
+
+	* godmode/db/db_main.php: Applied new graphic.
+
+	* godmode/agentes/module_manager.php: Now sort by modulegroup.
+
+	
 2007-03-28  Esteban Sanchez  <estebans@artica.es>
 
 	* pandoradb.sql: Changed MyISAM tables to InnoDB. Deleted charset

@@ -90,10 +90,11 @@ function give_acl($id_user, $id_group, $access){
 // audit_db, update audit log
 // --------------------------------------------------------------- 
 
-function audit_db($id,$ip,$accion,$descripcion){
+function audit_db ($id, $ip, $accion, $descripcion){
 	require("config.php");
 	$today=date('Y-m-d H:i:s');
-	$sql1='INSERT INTO tsesion (ID_usuario, accion, fecha, IP_origen,descripcion) VALUES ("'.$id.'","'.$accion.'","'.$today.'","'.$ip.'","'.$descripcion.'")';
+	$utimestamp = time();
+	$sql1='INSERT INTO tsesion (ID_usuario, accion, fecha, IP_origen,descripcion, utimestamp) VALUES ("'.$id.'","'.$accion.'","'.$today.'","'.$ip.'","'.$descripcion.'", '.$utimestamp.')';
 	$result=mysql_query($sql1);
 }
 
@@ -211,6 +212,7 @@ function dame_agente_modulo_id($id_agente, $id_tipomodulo, $nombre){
 		$pro = "";
 	return $pro;
 }
+
 
 // --------------------------------------------------------------- 
 // Returns event description given it's id
@@ -335,7 +337,7 @@ function dame_nombre_agente_agentemodulo($id_agente_modulo){
 }
 
 // --------------------------------------------------------------- 
-// Return agent module, given a ID of agente_module table
+// Return agent module name, given a ID of agente_module table
 // --------------------------------------------------------------- 
 
 function dame_nombre_modulo_agentemodulo($id_agente_modulo){
@@ -692,7 +694,9 @@ function existe($id){
 function event_insert($evento, $id_grupo, $id_agente){
 	require("config.php");
 	$today=date('Y-m-d H:i:s');
-	$sql1='INSERT INTO tevento (id_agente,id_grupo,evento,timestamp,estado) VALUES ('.$id_agente.','.$id_grupo.',"'.$evento.'","'.$today.'",0)';
+	$utimestamp = time();
+	
+	$sql1='INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp) VALUES ('.$id_agente.','.$id_grupo.',"'.$evento.'","'.$today.'",0, $utimestamp)';
 	$result=mysql_query($sql1);
 }
 
@@ -912,5 +916,21 @@ function give_network_profile_name ($id_np){
 		$pro = "";
 	return $pro;
 }
+
+// --------------------------------------------------------------- 
+// Returns agent id given name of agent
+// --------------------------------------------------------------- 
+
+function give_agent_id_from_module_id ($id_module){
+	require("config.php");
+	$query1="SELECT * FROM tagente_modulo WHERE id_agente_modulo = $id_module";
+	$resq1=mysql_query($query1);
+	if ($rowdup=mysql_fetch_array($resq1))
+		$pro=$rowdup["id_agente"];
+	else
+		$pro = "";
+	return $pro;
+}
+
 
 ?>

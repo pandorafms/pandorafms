@@ -205,21 +205,30 @@ if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 	}
 
 	// Reporting
-	if (isset($_GET["sec2"]) && $_GET["sec2"] == "operation/reporting/reporting") {
+	if (isset($_GET["sec2"]) && $_GET["sec2"] == "operation/reporting/reporting"){
 		echo '<div id="op8s">';
 	} else {
 		echo '<div id="op8">';
 	}
 	echo '<ul class="mn"><li><a href="index.php?sec=reporting&sec2=operation/reporting/reporting" class="mn">'. $lang_label["reporting"].'</a></li></ul></div>';
 
-	// New message (reporting)
+	// Agent general reporting
 	if (isset($_GET["sec"]) && $_GET["sec"] == "reporting"){
-		if(isset($_GET["sec2"])){
+		if (isset($_GET["sec2"]) && $_GET["sec2"] == "operation/reporting/agent_overview"){
 			echo "<div class='arrows'>";
 		} else {
 			echo "<div class='arrow'>";
 		}
-		echo "<ul class='mn'><li><a href='index.php?sec=reporting&sec2=operation/reporting/reporting' class='mn'>".$lang_label["agent_general_reporting"]."</a></li></ul></div>";
+		echo "<ul class='mn'><li><a href='index.php?sec=reporting&sec2=operation/reporting/agent_overview' class='mn'>".$lang_label["agent_general_reporting"]."</a></li></ul></div>";
+	}
+	// Custom graph builder
+	if (isset($_GET["sec"]) && $_GET["sec"] == "reporting"){
+		if (isset($_GET["sec2"]) && $_GET["sec2"] == "operation/reporting/graph_builder"){
+			echo "<div class='arrows'>";
+		} else {
+			echo "<div class='arrow'>";
+		}
+		echo "<ul class='mn'><li><a href='index.php?sec=reporting&sec2=operation/reporting/graph_builder' class='mn'>".$lang_label["graph_builder"]."</a></li></ul></div>";
 	}
 }
 

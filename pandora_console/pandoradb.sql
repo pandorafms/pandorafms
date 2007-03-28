@@ -1,20 +1,3 @@
--- MySQL dump 10.10
---
--- Host: localhost    Database: pandora
--- ------------------------------------------------------
--- Server version	5.0.24a-Debian_9ubuntu0.1-log
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
 --
 -- Table structure for table `estado_consola`
 --
@@ -27,7 +10,7 @@ CREATE TABLE `estado_consola` (
   `menuX` int(5) NOT NULL,
   `menuY` int(5) NOT NULL,
   PRIMARY KEY  (`id_usuario`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `objeto_consola`
@@ -43,7 +26,7 @@ CREATE TABLE `objeto_consola` (
   `id_tipo` varchar(20) NOT NULL,
   `idVista` int(5) NOT NULL,
   PRIMARY KEY  (`id_objeto`)
-) ENGINE=MyISAM AUTO_INCREMENT=37 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=37;
 
 --
 -- Table structure for table `perfil`
@@ -55,7 +38,7 @@ CREATE TABLE `perfil` (
   `Nombre` varchar(50) NOT NULL,
   `Descripcion` varchar(250) NOT NULL,
   PRIMARY KEY  (`idPerfil`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3;
 
 --
 -- Table structure for table `perfil_vista`
@@ -67,7 +50,7 @@ CREATE TABLE `perfil_vista` (
   `idVista` int(5) NOT NULL,
   `activa` tinyint(1) NOT NULL default '1',
   PRIMARY KEY  (`idPerfil`,`idVista`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `relacion_estado`
@@ -78,7 +61,7 @@ CREATE TABLE `relacion_estado` (
   `id_objeto` int(5) NOT NULL,
   `relacion` varchar(50) NOT NULL,
   PRIMARY KEY  (`id_objeto`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `relacion_objetos`
@@ -89,7 +72,7 @@ CREATE TABLE `relacion_objetos` (
   `idObjeto1` int(5) NOT NULL,
   `idObjeto2` int(5) NOT NULL,
   PRIMARY KEY  (`idObjeto1`,`idObjeto2`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `taddress`
@@ -101,7 +84,7 @@ CREATE TABLE `taddress` (
   `ip` varchar(15) NOT NULL default '',
   `ip_pack` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_a`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `taddress_agent`
@@ -113,7 +96,7 @@ CREATE TABLE `taddress_agent` (
   `id_a` bigint(20) unsigned NOT NULL default '0',
   `id_agent` mediumint(8) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_ag`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tagent_access`
@@ -126,8 +109,9 @@ CREATE TABLE `tagent_access` (
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `utimestamp` bigint(20) NOT NULL default '0',
   PRIMARY KEY  (`id_ac`),
-  KEY `agent_index` (`id_agent`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  KEY `agent_index` (`id_agent`),
+  UNIQUE (`id_agent`)
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tagente`
@@ -142,8 +126,8 @@ CREATE TABLE `tagente` (
   `id_grupo` int(10) unsigned NOT NULL default '0',
   `ultimo_contacto` datetime NOT NULL default '2004-01-01 00:00:00',
   `modo` tinyint(1) NOT NULL default '0',
-  `intervalo` int(11) NOT NULL default '0',
-  `id_os` tinyint(3) unsigned default '0',
+  `intervalo` int(11) NOT NULL default '300',
+  `id_os` int(10) unsigned default '0',
   `os_version` varchar(100) default '',
   `agent_version` varchar(100) default '',
   `ultimo_contacto_remoto` datetime default '0000-00-00 00:00:00',
@@ -151,7 +135,7 @@ CREATE TABLE `tagente` (
   `agent_type` int(2) unsigned NOT NULL default '0',
   `id_server` int(10) unsigned default '0',
   PRIMARY KEY  (`id_agente`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tagente_datos`
@@ -167,7 +151,7 @@ CREATE TABLE `tagente_datos` (
   `utimestamp` int(10) unsigned default '0',
   PRIMARY KEY  (`id_agente_datos`),
   KEY `data_index2` (`id_agente`,`id_agente_modulo`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tagente_datos_inc`
@@ -181,7 +165,7 @@ CREATE TABLE `tagente_datos_inc` (
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id_adi`),
   KEY `data_inc_index_1` (`id_agente_modulo`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tagente_datos_string`
@@ -191,15 +175,14 @@ DROP TABLE IF EXISTS `tagente_datos_string`;
 CREATE TABLE `tagente_datos_string` (
   `id_tagente_datos_string` bigint(20) unsigned NOT NULL auto_increment,
   `id_agente_modulo` int(11) NOT NULL default '0',
-  `datos` tinytext NOT NULL,
+  `datos` tinytext NOT NULL default '',
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `id_agente` bigint(4) unsigned NOT NULL default '0',
-  `utimestamp` bigint(20) NOT NULL default '0',
+  `utimestamp` int(10) unsigned NOT NULL default 0,
   PRIMARY KEY  (`id_tagente_datos_string`),
   KEY `data_string_index_1` (`id_agente_modulo`),
-  KEY `data_string_index_2` (`id_agente`),
-  KEY `data_string_index_3` (`timestamp`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  KEY `data_string_index_2` (`id_agente`)
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tagente_estado`
@@ -216,13 +199,23 @@ CREATE TABLE `tagente_estado` (
   `id_agente` int(11) NOT NULL default '0',
   `last_try` datetime default NULL,
   `utimestamp` bigint(20) NOT NULL default '0',
-  `inc_lastrealvalue` double(18,2) NOT NULL default '0.00',
   `current_interval` int(10) unsigned NOT NULL default '0',
-  `running_by` int(10) unsigned NOT NULL default '0',
+  `running_by` int(10) unsigned NULL default 0,
   PRIMARY KEY  (`id_agente_estado`),
   KEY `status_index_1` (`id_agente_modulo`),
   KEY `status_index_2` (`id_agente_modulo`,`estado`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
+
+# Database: pandora
+# Table: 'tmodule'
+#
+CREATE TABLE `tmodule` (
+  `id_module` int(11) unsigned NOT NULL auto_increment,
+  `name` varchar(100) NOT NULL default '',
+  PRIMARY KEY (`id_module`),
+  UNIQUE (name)
+) ENGINE=InnoDB;
+
 
 --
 -- Table structure for table `tagente_modulo`
@@ -246,9 +239,11 @@ CREATE TABLE `tagente_modulo` (
   `ip_target` varchar(100) default '',
   `id_module_group` int(4) unsigned default '0',
   `flag` tinyint(3) unsigned default '1',
-  PRIMARY KEY  (`id_agente_modulo`),
+  `id_modulo` int(11) unsigned NULL default 0,
+  PRIMARY KEY (`id_agente_modulo`, `id_agente`),
   KEY `tam_agente` (`id_agente`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  FOREIGN KEY (id_modulo) REFERENCES tmodule (id_module)
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `talert_snmp`
@@ -268,12 +263,12 @@ CREATE TABLE `talert_snmp` (
   `oid` varchar(255) NOT NULL default '',
   `time_threshold` int(11) NOT NULL default '0',
   `times_fired` int(2) unsigned NOT NULL default '0',
-  `last_fired` datetime NOT NULL default '2005-01-01 00:00:00',
+  `last_fired` datetime NOT NULL default '2004-01-01 00:00:00',
   `max_alerts` int(11) NOT NULL default '1',
   `min_alerts` int(11) NOT NULL default '1',
   `internal_counter` int(2) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_as`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `talerta`
@@ -286,7 +281,7 @@ CREATE TABLE `talerta` (
   `comando` varchar(100) default '',
   `descripcion` varchar(255) default '',
   PRIMARY KEY  (`id_alerta`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `talerta_agente_modulo`
@@ -299,19 +294,19 @@ CREATE TABLE `talerta_agente_modulo` (
   `id_alerta` int(11) NOT NULL default '0',
   `al_campo1` varchar(255) default '',
   `al_campo2` varchar(255) default '',
-  `al_campo3` mediumtext,
+  `al_campo3` mediumtext default '',
   `descripcion` varchar(255) default '',
   `dis_max` bigint(12) default NULL,
   `dis_min` bigint(12) default NULL,
   `time_threshold` int(11) NOT NULL default '0',
-  `last_fired` datetime NOT NULL default '2001-01-01 00:00:00',
+  `last_fired` datetime NOT NULL default '2004-01-01 00:00:00',
   `max_alerts` int(4) NOT NULL default '1',
   `times_fired` int(11) NOT NULL default '0',
   `module_type` int(11) NOT NULL default '0',
   `min_alerts` int(4) NOT NULL default '0',
   `internal_counter` int(4) default '0',
   PRIMARY KEY  (`id_aam`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tattachment`
@@ -326,7 +321,7 @@ CREATE TABLE `tattachment` (
   `description` varchar(150) default '',
   `size` bigint(20) NOT NULL default '0',
   PRIMARY KEY  (`id_attachment`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tconfig`
@@ -338,7 +333,7 @@ CREATE TABLE `tconfig` (
   `token` varchar(100) NOT NULL default '',
   `value` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`id_config`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tconfig_os`
@@ -351,7 +346,7 @@ CREATE TABLE `tconfig_os` (
   `description` varchar(250) default '',
   `icon_name` varchar(100) default '',
   PRIMARY KEY  (`id_os`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tevento`
@@ -370,7 +365,7 @@ CREATE TABLE `tevento` (
   PRIMARY KEY  (`id_evento`),
   KEY `indice_1` (`id_agente`,`id_evento`),
   KEY `indice_2` (`timestamp`,`id_evento`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tgrupo`
@@ -383,7 +378,7 @@ CREATE TABLE `tgrupo` (
   `icon` varchar(50) default NULL,
   `parent` tinyint(4) NOT NULL default '-1',
   PRIMARY KEY  (`id_grupo`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tincidencia`
@@ -405,7 +400,7 @@ CREATE TABLE `tincidencia` (
   `id_creator` varchar(60) default NULL,
   PRIMARY KEY  (`id_incidencia`),
   KEY `incident_index_1` (`id_usuario`,`id_incidencia`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tlanguage`
@@ -416,7 +411,7 @@ CREATE TABLE `tlanguage` (
   `id_language` varchar(6) NOT NULL default '',
   `name` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`id_language`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tlink`
@@ -428,7 +423,7 @@ CREATE TABLE `tlink` (
   `name` varchar(100) NOT NULL default '',
   `link` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id_link`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tmensajes`
@@ -440,11 +435,11 @@ CREATE TABLE `tmensajes` (
   `id_usuario_origen` varchar(100) NOT NULL default '',
   `id_usuario_destino` varchar(100) NOT NULL default '',
   `mensaje` tinytext NOT NULL,
-  `timestamp` datetime NOT NULL default '2005-01-01 00:00:00',
+  `timestamp` datetime NOT NULL default '2004-01-01 00:00:00',
   `subject` varchar(255) NOT NULL default '',
   `estado` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_mensaje`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tmodule_group`
@@ -455,7 +450,7 @@ CREATE TABLE `tmodule_group` (
   `id_mg` bigint(20) unsigned NOT NULL auto_increment,
   `name` varchar(150) NOT NULL default '',
   PRIMARY KEY  (`id_mg`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tnetwork_component`
@@ -478,7 +473,7 @@ CREATE TABLE `tnetwork_component` (
   `snmp_oid` varchar(400) NOT NULL,
   `id_module_group` tinyint(4) NOT NULL default '0',
   PRIMARY KEY  (`id_nc`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tnetwork_component_group`
@@ -490,7 +485,7 @@ CREATE TABLE `tnetwork_component_group` (
   `name` varchar(200) NOT NULL default '',
   `parent` mediumint(9) NOT NULL default '0',
   PRIMARY KEY  (`id_sg`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tnetwork_profile`
@@ -502,7 +497,7 @@ CREATE TABLE `tnetwork_profile` (
   `name` varchar(100) NOT NULL default '',
   `description` varchar(250) default '',
   PRIMARY KEY  (`id_np`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tnetwork_profile_component`
@@ -514,7 +509,7 @@ CREATE TABLE `tnetwork_profile_component` (
   `id_nc` mediumint(8) unsigned NOT NULL default '0',
   `id_np` mediumint(8) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_npc`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tnota`
@@ -527,7 +522,7 @@ CREATE TABLE `tnota` (
   `timestamp` tinyblob NOT NULL,
   `nota` mediumtext NOT NULL,
   PRIMARY KEY  (`id_nota`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tnota_inc`
@@ -539,7 +534,7 @@ CREATE TABLE `tnota_inc` (
   `id_incidencia` mediumint(9) NOT NULL default '0',
   `id_nota` mediumint(9) NOT NULL default '0',
   PRIMARY KEY  (`id_nota_inc`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `torigen`
@@ -548,7 +543,7 @@ CREATE TABLE `tnota_inc` (
 DROP TABLE IF EXISTS `torigen`;
 CREATE TABLE `torigen` (
   `origen` varchar(100) NOT NULL default ''
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tperfil`
@@ -569,7 +564,7 @@ CREATE TABLE `tperfil` (
   `alert_management` int(11) NOT NULL default '0',
   `pandora_management` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id_perfil`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `trecon_task`
@@ -591,7 +586,7 @@ CREATE TABLE `trecon_task` (
   `interval_sweep` int(10) unsigned NOT NULL default '0',
   `id_network_server_assigned` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_rt`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tserver`
@@ -614,7 +609,7 @@ CREATE TABLE `tserver` (
   `recon_server` tinyint(3) unsigned NOT NULL default '0',
   `version` varchar(20) NOT NULL default '',
   PRIMARY KEY  (`id_server`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tsesion`
@@ -630,7 +625,7 @@ CREATE TABLE `tsesion` (
   `fecha` datetime NOT NULL default '0000-00-00 00:00:00',
   `utimestamp` bigint(20) unsigned NOT NULL default '0',
   PRIMARY KEY  (`ID_sesion`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `ttipo_modulo`
@@ -644,7 +639,7 @@ CREATE TABLE `ttipo_modulo` (
   `descripcion` varchar(100) NOT NULL default '',
   `icon` varchar(100) default NULL,
   PRIMARY KEY  (`id_tipo`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `ttrap`
@@ -665,7 +660,7 @@ CREATE TABLE `ttrap` (
   `id_usuario` varchar(150) default '',
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id_trap`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='SNMP Trap table';
+) ENGINE=InnoDB COMMENT='SNMP Trap table';
 
 --
 -- Table structure for table `tusuario`
@@ -681,7 +676,7 @@ CREATE TABLE `tusuario` (
   `direccion` varchar(100) default '',
   `telefono` varchar(100) default '',
   `nivel` tinyint(1) NOT NULL default '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `tusuario_perfil`
@@ -695,7 +690,7 @@ CREATE TABLE `tusuario_perfil` (
   `id_grupo` int(11) NOT NULL default '0',
   `assigned_by` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`id_up`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB;
 
 --
 -- Table structure for table `vistas_consola`
@@ -707,7 +702,7 @@ CREATE TABLE `vistas_consola` (
   `nombre` varchar(50) NOT NULL,
   `descripcion` varchar(250) NOT NULL,
   PRIMARY KEY  (`idVista`)
-) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

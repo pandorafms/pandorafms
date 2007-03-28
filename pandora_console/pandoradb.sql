@@ -2,7 +2,7 @@
 --
 -- Host: localhost    Database: pandora
 -- ------------------------------------------------------
--- Server version	5.0.24a-Debian_9-log
+-- Server version	5.0.24a-Debian_9ubuntu0.1-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -218,7 +218,7 @@ CREATE TABLE `tagente_estado` (
   `utimestamp` bigint(20) NOT NULL default '0',
   `inc_lastrealvalue` double(18,2) NOT NULL default '0.00',
   `current_interval` int(10) unsigned NOT NULL default '0',
-  `processed_by_server` varchar(100) default NULL,
+  `running_by` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_agente_estado`),
   KEY `status_index_1` (`id_agente_modulo`),
   KEY `status_index_2` (`id_agente_modulo`,`estado`)
@@ -366,6 +366,7 @@ CREATE TABLE `tevento` (
   `estado` int(10) unsigned NOT NULL default '0',
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `evento` varchar(255) NOT NULL default '',
+  `utimestamp` bigint(20) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_evento`),
   KEY `indice_1` (`id_agente`,`id_evento`),
   KEY `indice_2` (`timestamp`,`id_evento`)
@@ -580,14 +581,15 @@ CREATE TABLE `trecon_task` (
   `name` varchar(100) NOT NULL default '',
   `description` varchar(250) NOT NULL default '',
   `type` tinyint(3) unsigned NOT NULL default '0',
-  `subnet` varchar(20) NOT NULL default '',
+  `subnet` varchar(64) NOT NULL default '',
   `id_network_server` int(10) unsigned NOT NULL default '0',
   `id_network_profile` int(10) unsigned NOT NULL default '0',
   `create_incident` tinyint(3) unsigned NOT NULL default '0',
   `id_group` int(10) unsigned NOT NULL default '1',
   `utimestamp` bigint(20) unsigned NOT NULL default '0',
   `status` tinyint(4) NOT NULL default '0',
-  `interval` int(10) unsigned NOT NULL default '1440',
+  `interval_sweep` int(10) unsigned NOT NULL default '0',
+  `id_network_server_assigned` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_rt`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -610,6 +612,7 @@ CREATE TABLE `tserver` (
   `checksum` tinyint(3) unsigned NOT NULL default '0',
   `description` varchar(255) default NULL,
   `recon_server` tinyint(3) unsigned NOT NULL default '0',
+  `version` varchar(20) NOT NULL default '',
   PRIMARY KEY  (`id_server`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -625,6 +628,7 @@ CREATE TABLE `tsesion` (
   `accion` varchar(100) NOT NULL default '',
   `descripcion` varchar(200) NOT NULL default '',
   `fecha` datetime NOT NULL default '0000-00-00 00:00:00',
+  `utimestamp` bigint(20) unsigned NOT NULL default '0',
   PRIMARY KEY  (`ID_sesion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

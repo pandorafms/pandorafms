@@ -1,3 +1,10 @@
+2007-03-28  Sancho Lerena  <slerena@artica.es>
+
+	* pandoradb.sql: Updated SQL.
+
+	* pandoradb_data.sql: Updated data. Some info must be corrected
+	before final version (network components, groups and some other).
+
 2007-03-23  Esteban Sánchez  <estebans@artica.es>
 
 	* pandoradb.sql: Default value of flag field in tagente_module changed

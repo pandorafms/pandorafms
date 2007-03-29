@@ -37,7 +37,7 @@ our @EXPORT = qw( 	pandora_help_screen
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "1.3-dev";
-my $pandora_build="PS070312";
+my $pandora_build="PS070328";
 our $VERSION = $pandora_version;
 
 # Setup hash
@@ -140,8 +140,8 @@ sub pandora_loadconfig {
 	$pa_config->{"reconserver"}=0;
 	$pa_config->{"servermode"}="";
 	$pa_config->{"network_threads"}=10; # Fixed default
-	$pa_config->{"keepalive"}=60; # 200 Seconds initially for server keepalive
-	$pa_config->{"keepalive_orig"}=$pa_config->{"keepalive"};
+	$pa_config->{"keepalive"}=60; # 60 Seconds initially for server keepalive
+	$pa_config->{"keepalive_orig"} = $pa_config->{"keepalive"};
 	# Check for UID0
 	if ($> == 0){
 		printf " [W] It is not a good idea running Pandora FMS Server as root user, please DON'T DO IT!\n";
@@ -285,9 +285,10 @@ sub pandora_loadconfig {
 	logger ($pa_config, "Launching $parametro $pa_config->{'version'} $pa_config->{'build'}", 0);
 	my $config_options = "Logfile at ".$pa_config->{"logfile"}.", Basepath is ".$pa_config->{"basepath"}.", Checksum is ".$pa_config->{"pandora_check"}.", Master is ".$pa_config->{"pandora_master"}.", SNMP Console is ".$pa_config->{"snmpconsole"}.", Server Threshold at ".$pa_config->{"server_threshold"}." sec, verbosity at ".$pa_config->{"verbosity"}.", Alert Threshold at $pa_config->{'alert_threshold'}, ServerName is '".$pa_config->{'servername'}.$pa_config->{"servermode"}."'";
 	logger ($pa_config, "Config options: $config_options");
+	my $dbh;
 	# Check valid Database variables and update server status
 	eval {
-		my $dbh = DBI->connect("DBI:mysql:pandora:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
+		$dbh = DBI->connect("DBI:mysql:pandora:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
 		pandora_updateserver ($pa_config, $pa_config->{'servername'},1, $opmode, $dbh); # Alive status
 	};
 	if ($@) {
@@ -297,6 +298,9 @@ sub pandora_loadconfig {
 		exit;
 	}
 	print " [*] Pandora FMS Server [".$pa_config->{'servername'}.$pa_config->{"servermode"}."] is running and operative \n";
+	$pa_config->{'server_id'} = dame_server_id ($pa_config, $pa_config->{'servername'}.$pa_config->{"servermode"}, $dbh);
+
+	
 	# Dump all errors to errorlog
 	# DISABLED in DEBUGMODE
 	# ENABLE FOR PRODUCTION

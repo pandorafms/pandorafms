@@ -1,3 +1,29 @@
+2007-03-29  Sancho Lerena  <slerena@artica.es>
+
+	* pandora_config.pm: Now stores $pa_config->{'server_id'}
+	available for any function in Pandora FMS Server.
+
+	* pandora_db.pm: Several verbosity level adjustements in logger
+	functions in all code. Some debug code purged. Alert code now
+	should store group correctly in events. Renamed
+	"processed_by_server" field from tagente_estado by "running_by",
+	updated some code. pandora_updateserver() now stores also server
+	version.
+
+	* pandora_network.pm: pandora_serverkeepaliver now run more
+	exactly and does not apply any delay. Module selection now uses
+	utimestamp AND the new running_by to know that other instance of
+	server is currently running this module. TCP code has moved to
+	function pandora_query_tcp() -code cleanup-. UDP code deleted
+	(doesn't work, and never used!). Fixed important bug in ICMP Proc
+	that causes constant FLIPFLOP in monitors since last commit. Fixed
+	also a problem from that version updating status timestamp. Lastry
+	field only be used now for checking 24hr without updating tdata
+	table.
+
+	* pandora_server.conf: Updated some text and formatting, more
+	clear now.
+	
 2007-03-23  Sancho Lerena  <slerena@artica.es>
 
 	* pandora_tools.pm: Added sqlWrap function to manage quotes.

@@ -96,7 +96,7 @@ sub pandora_calcula_alerta (%$$$$$$) {
 	$id_agente = dame_agente_id($pa_config, $nombre_agente, $dbh);
 	$id_modulo = dame_modulo_id($pa_config, $tipo_modulo,$dbh);
 	$id_agente_modulo = dame_agente_modulo_id($pa_config, $id_agente,$id_modulo,$nombre_modulo,$dbh);
-	logger($pa_config, "DEBUG: calcula_alerta() Calculado id_agente_modulo a $id_agente_modulo",5);
+	logger($pa_config, "DEBUG: calcula_alerta() Calculado id_agente_modulo a $id_agente_modulo",6);
 
 	# If any alert from this combinatio of agent/module
 	my $query_idag = "select * from talerta_agente_modulo where id_agente_modulo = '$id_agente_modulo'";
@@ -166,7 +166,6 @@ sub pandora_calcula_alerta (%$$$$$$) {
 				my $err; my $flag;
 				my $fecha_limite = DateCalc($fecha_ultima_alerta,"+ $time_threshold seconds",\$err);
 				$flag = Date_Cmp($fecha_actual,$fecha_limite);
-				# DEBUG print "actual $fecha_actual limite $fecha_limite flag $flag times_fired $times_fired internal_counter $internal_counter \n";
 				# Check timer threshold for this alert
 				if ( $flag >= 0 ) { # Out limits !, reset $times_fired, but do not write to
 						    # database until a real alarm was fired
@@ -219,7 +218,6 @@ sub pandora_calcula_alerta (%$$$$$$) {
 						    # database until a real alarm was fired
 					my $query_idag = "update talerta_agente_modulo set times_fired = 0, internal_counter = 0 where id_aam = $id_aam ";
 					$dbh->do($query_idag);
-					# DEBUG print "SQL $query_idag \n";	
 				}	
 			}
 		} # While principal
@@ -247,7 +245,7 @@ sub execute_alert (%$$$$$$$$$$) {
 	my $alert_name = $_[9];
 	my $dbh = $_[10];
 
-	if (($command == "") && ($alert_name == "")){
+	if (($command eq "") && ($alert_name eq "")){
 		# Get values for commandline, reading from talerta.
 		my $query_idag = "select * from talerta where id_alerta = '$id_alert'";
 		my $idag = $dbh->prepare($query_idag);
@@ -293,7 +291,7 @@ sub execute_alert (%$$$$$$$$$$) {
 	}
 	my $evt_descripcion = "Alert fired ($agent $alert_name) $field1 $field2";
 	my $id_agente = dame_agente_id($pa_config,$agent,$dbh);
-	pandora_event($pa_config, $evt_descripcion, 0, $id_agente, $dbh);
+	pandora_event($pa_config, $evt_descripcion, dame_grupo_agente($pa_config, $id_agente, $dbh), $id_agente, $dbh);
 }
 
 
@@ -334,7 +332,7 @@ sub pandora_writestate (%$$$$$$$) {
 	my $s_idag = $dbh->prepare($query_idag);
 	$s_idag ->execute;
 	if ($s_idag->rows == 0) {
-		logger( $pa_config, "ERROR Cannot find agenteModulo $id_agente_modulo",6);
+		logger( $pa_config, "ERROR Cannot find agenteModulo $id_agente_modulo",4);
 		logger( $pa_config, "ERROR: SQL Query is $query_idag ",10);
 	} else  {    @data = $s_idag->fetchrow_array(); }
 	my $module_interval = $data[7];
@@ -356,19 +354,17 @@ sub pandora_writestate (%$$$$$$$) {
 	}
 	# $id_agente is agent ID to update ".dame_nombreagente_agentemodulo ($id_agente_modulo)."
 	# Let's see if there is any entry at tagente_estado table
-	my $idages = "select * from tagente_estado where id_agente_modulo = $id_agente_modulo";
+	my $idages = "SELECT * from tagente_estado WHERE id_agente_modulo = $id_agente_modulo";
 	my $s_idages = $dbh->prepare($idages);
 	$s_idages ->execute;
 	$datos = $dbh->quote($datos); # Parse data entry for adecuate SQL representation.
 	my $query_act; # OJO que dentro de una llave solo tiene existencia en esa llave !!
 	if ($s_idages->rows == 0) { # Doesnt exist entry in table, lets make the first entry
 		logger($pa_config, "Create entry in tagente_estado for module $nombre_modulo",4);
-    		$query_act = "insert into tagente_estado (id_agente_modulo, datos, timestamp, estado, cambio, id_agente, last_try, utimestamp, current_interval, processed_by_server) values ($id_agente_modulo,$datos,'$timestamp','$estado','1',$id_agente,'$timestamp',$utimestamp, $module_interval, '$server_name')"; # Cuando se hace un insert, siempre hay un cambio de estado
-
+    		$query_act = "INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, cambio, id_agente, last_try, utimestamp, current_interval, running_by) VALUES ($id_agente_modulo,$datos,'$timestamp','$estado','1',$id_agente,'$timestamp',$utimestamp, $module_interval, 0)"; # Cuando se hace un insert, siempre hay un cambio de estado
     	} else { # There are an entry in table already
 	        @data = $s_idages->fetchrow_array();
-	        # Se supone que $data[5](estado) ( nos daria el estado ANTERIOR, podriamos leerlo
-	        # ($c1,$c2,$c3...) $i_dages->fetchrow_array(); y luego hacer referencia a $c6 p.e
+	        # Se supone que $data[5](estado) ( nos daria el estado ANTERIOR
 		# For xxxx_PROC type (boolean / monitor), create an event if state has changed
 	        if (( $data[5] != $estado) && ($tipo_modulo =~ /proc/) ) {
 	                # Cambio de estado detectado !
@@ -386,10 +382,10 @@ sub pandora_writestate (%$$$$$$$) {
 			pandora_event($pa_config, $descripcion, $id_grupo, $id_agente, $dbh);
 	        }
 	        if ($needs_update == 1) {
-    			$query_act = "update tagente_estado set utimestamp = '$utimestamp', datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, last_try = '$timestamp', current_interval = '$module_interval', processed_by_server = '$server_name' where id_agente_modulo = '$id_agente_modulo'";
+    			$query_act = "update tagente_estado set utimestamp = '$utimestamp', datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, last_try = '$timestamp', current_interval = '$module_interval', running_by = 0 where id_agente_modulo = '$id_agente_modulo'";
     		} else { # dont update last_try field, that it's the field
     			 # we use to check last update time in database
-    			$query_act = "update tagente_estado set utimestamp = '$utimestamp', datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, current_interval = '$module_interval', processed_by_server = '$server_name' where id_agente_modulo = '$id_agente_modulo'";
+    			$query_act = "update tagente_estado set utimestamp = '$utimestamp', datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, current_interval = '$module_interval', running_by = 0 where id_agente_modulo = '$id_agente_modulo'";
     		}
     	}
 	my $a_idages = $dbh->prepare($query_act);
@@ -757,7 +753,7 @@ sub pandora_writedata (%$$$$$$$$$$){
 	} else { # Id AgenteModulo DOESNT exist, it could need to be created...
 		if (dame_learnagente($pa_config, $id_agente,$dbh) eq "1"){
 			# Try to write a module and agent_module definition for that datablock
-			logger( $pa_config, "Pandora_insertdata will create module (learnmode) for agent $nombre_agente",5);
+			logger( $pa_config, "Pandora_insertdata will create module (learnmode) for agent $nombre_agente",6);
 			crea_agente_modulo ($pa_config, $nombre_agente, $tipo_modulo, $nombre_modulo, $max, $min, $descripcion, $dbh);
 			$id_agente_modulo = dame_agente_modulo_id ($pa_config, $id_agente, $id_modulo, $nombre_modulo, $dbh);
 			$needscreate = 1; # Really needs to be created
@@ -795,7 +791,7 @@ sub pandora_writedata (%$$$$$$$$$$){
 		# Detect changes between stored data and adquired data.
 		if ($data[2] ne $datos){
 			$needsupdate=1;
-			logger( $pa_config, "Updating data for $nombre_modulo after compare with tagente_data: new($datos) ne old($data[2])",4);
+			logger( $pa_config, "Updating data for $nombre_modulo after compare with tagente_data: new($datos) ne old($data[2])",5);
 		} else {
 			# Data in DB is the same, but could be older (more than 1
 			# day ). Should check this against last_try field, who is
@@ -830,18 +826,18 @@ sub pandora_writedata (%$$$$$$$$$$){
 				if ($datos > $max) { 
 					$datos = $max; 
 					$outlimit=1;
-					logger($pa_config,"DEBUG: MAX Value reached ($max) for agent $nombre_agente / $nombre_modulo",2);
+					logger($pa_config,"DEBUG: MAX Value reached ($max) for agent $nombre_agente / $nombre_modulo",6);
 				}		
 				if ($datos < $min) { 
 					$datos = $min;
 					$outlimit = 1;
-					logger($pa_config, "DEBUG: MIN Value reached ($min) for agent $nombre_agente / $nombre_modulo",2);
+					logger($pa_config, "DEBUG: MIN Value reached ($min) for agent $nombre_agente / $nombre_modulo",6);
 				}
 			}
 			$query = "insert into tagente_datos (id_agente_modulo, datos,timestamp, utimestamp, id_agente) VALUES ($id_agente_modulo, $datos, '$timestamp', $utimestamp, $id_agente)";
 		} # If data is out of limits, do not insert into database (Thanks for David Villanueva for his words)
 		if ($outlimit == 0){
-			logger($pa_config, "DEBUG: pandora_insertdata Calculado id_agente_modulo a $id_agente_modulo",4);
+			logger($pa_config, "DEBUG: pandora_insertdata Calculado id_agente_modulo a $id_agente_modulo",6);
 			logger($pa_config, "DEBUG: pandora_insertdata SQL : $query",10);
 			$dbh->do($query); # Makes insertion in database
 		}
@@ -853,14 +849,15 @@ fin_DB_insert_datos:
 ## SUB pandora_serverkeepalive (pa_config, status, dbh)
 ## Update server status
 ##########################################################################
-sub pandora_serverkeepaliver (%$) {
+sub pandora_serverkeepaliver (%$$) {
         my $pa_config= $_[0];
 	my $opmode = $_[1]; # 0 dataserver, 1 network server, 2 snmp console, 3 recon server
 	my $dbh = $_[2];
+	
 	my $pandorasuffix;
 	my @data;
-
-	if ($pa_config->{"keepalive"} <= 0){
+	my $temp = $pa_config->{"keepalive"} - $pa_config->{"server_threshold"};
+	if ($temp <= 0){
 		my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
 		my $temp = $pa_config->{"keepalive_orig"} * 2; # Down if keepalive x 2 seconds unknown
 		my $fecha_limite = DateCalc($timestamp,"- $temp seconds",\$err);
@@ -873,7 +870,8 @@ sub pandora_serverkeepaliver (%$) {
 			while (@data = $s_idag->fetchrow_array()){
 				if ($data[3] != 0){ # only if it's currently not down
 					# Update server data
-					my $sql_update = "update tserver set status = 0 where id_server = $data[0]";
+					my $version_data = $pa_config->{"version"}." (P) ".$pa_config->{"build"};
+					my $sql_update = "UPDATE tserver SET status = 0, version = '".$version_data."' WHERE id_server = $data[0]";
 					$dbh->do($sql_update);
 					pandora_event($pa_config, "Server ".$data[1]." going Down", 0, 0, $dbh);
 					logger( $pa_config, "Server ".$data[1]." going Down ",1);
@@ -883,9 +881,9 @@ sub pandora_serverkeepaliver (%$) {
 		$s_idag->finish();
 		# Update my server
 		pandora_updateserver ($pa_config, $pa_config->{'servername'}, 1, $opmode, $dbh);
-		$pa_config->{"keepalive"}=$pa_config->{"keepalive_orig"};
+		$pa_config->{"keepalive"} = $pa_config->{"keepalive_orig"};
 	}
-	$pa_config->{"keepalive"}=$pa_config->{"keepalive"}-$pa_config->{"server_threshold"};
+	$pa_config->{"keepalive"} = $pa_config->{"keepalive"} - $pa_config->{"server_threshold"};
 }
 
 ##########################################################################
@@ -912,7 +910,8 @@ sub pandora_updateserver (%$$$) {
 	my $id_server = dame_server_id($pa_config, $servername.$pandorasuffix, $dbh);
 	if ($id_server == -1){ 
 		# Must create a server entry
-		my $sql_server = "insert into tserver (name,description) values ('$servername".$pandorasuffix."','Autocreated at startup')";
+		my $version_data = $pa_config->{"version"}." (P) ".$pa_config->{"build"};
+		my $sql_server = "INSERT INTO tserver (name,description,version) VALUES ('$servername".$pandorasuffix."','Autocreated at startup','$version_data')";
 		$dbh->do($sql_server);
 		$id_server = dame_server_id($pa_config, $pa_config->{'servername'}.$pandorasuffix, $dbh);
 	}
@@ -928,14 +927,15 @@ sub pandora_updateserver (%$$$) {
 			}
 			# Update server data
 			my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
+			my $version_data = $pa_config->{"version"}." (P) ".$pa_config->{"build"};
 			if ($opmode == 0){
-				$sql_update = "update tserver set status = 1, laststart = '$timestamp', keepalive = '$timestamp', recon_server = 0, snmp_server = 0, network_server = 0, data_server = 1, master = $pa_config->{'pandora_master'}, checksum = $pa_config->{'pandora_check'} where id_server = $id_server";
+				$sql_update = "update tserver set version = '$version_data', status = 1, laststart = '$timestamp', keepalive = '$timestamp', recon_server = 0, snmp_server = 0, network_server = 0, data_server = 1, master = $pa_config->{'pandora_master'}, checksum = $pa_config->{'pandora_check'} where id_server = $id_server";
 			} elsif ($opmode == 1){
-				$sql_update = "update tserver set status = 1, laststart = '$timestamp', keepalive = '$timestamp', recon_server = 0, snmp_server = 0, network_server = 1, data_server = 0, master = $pa_config->{'pandora_master'}, checksum = 0 where id_server = $id_server";
+				$sql_update = "update tserver set version = '$version_data', status = 1, laststart = '$timestamp', keepalive = '$timestamp', recon_server = 0, snmp_server = 0, network_server = 1, data_server = 0, master = $pa_config->{'pandora_master'}, checksum = 0 where id_server = $id_server";
 			} elsif ($opmode == 2) {
-				$sql_update = "update tserver set status = 1, laststart = '$timestamp', keepalive = '$timestamp', recon_server = 0, snmp_server = 1, network_server = 0, data_server = 0, master = $pa_config->{'pandora_master'}, checksum = 0 where id_server = $id_server";
+				$sql_update = "update tserver set version = '$version_data', status = 1, laststart = '$timestamp', keepalive = '$timestamp', recon_server = 0, snmp_server = 1, network_server = 0, data_server = 0, master = $pa_config->{'pandora_master'}, checksum = 0 where id_server = $id_server";
 			} elsif ($opmode == 3) {
-				$sql_update = "update tserver set status = 1, laststart = '$timestamp', keepalive = '$timestamp', recon_server = 1, snmp_server = 0, network_server = 0, data_server = 0, master =  $pa_config->{'pandora_master'}, checksum = 0 where id_server = $id_server";
+				$sql_update = "update tserver set version = '$version_data', status = 1, laststart = '$timestamp', keepalive = '$timestamp', recon_server = 1, snmp_server = 0, network_server = 0, data_server = 0, master =  $pa_config->{'pandora_master'}, checksum = 0 where id_server = $id_server";
 			}
 			$dbh->do($sql_update);
 		}
@@ -1088,11 +1088,11 @@ sub dame_server_id (%$$) {
 
         my $id_server;my @data;
         # Get serverid
-        my $query_idag = "select * from tserver where name = '$name'";
+        my $query_idag = "SELECT * FROM tserver WHERE name = '$name' ";
        	my $s_idag = $dbh->prepare($query_idag);
         $s_idag ->execute;
     	if ($s_idag->rows == 0) {
-        	logger ($pa_config, "ERROR dame_server_id(): Cannot find server called $name. Returning -1",10);
+        	logger ($pa_config, "ERROR dame_server_id(): Cannot find server called $name. Returning -1",4);
         	logger ($pa_config, "ERROR: SQL Query is $query_idag ",10);
 		$data[0]=-1;
     	} else  {           @data = $s_idag->fetchrow_array();   }
@@ -1194,8 +1194,8 @@ sub dame_agente_nombre (%$$) {
         my $s_idag = $dbh->prepare($query_idag);
         $s_idag ->execute;
     	if ($s_idag->rows == 0) {
-        	logger($pa_config, "ERROR dame_agente_nombre(): Cannot find agent with id $id_agente",1);
-        	logger($pa_config, "ERROR: SQL Query is $query_idag ",2);
+        	logger($pa_config, "ERROR dame_agente_nombre(): Cannot find agent with id $id_agente",4);
+        	logger($pa_config, "ERROR: SQL Query is $query_idag ",10);
     	} else  {           @data = $s_idag->fetchrow_array();   }
     	$nombre_agente = $data[1];
     	$s_idag->finish();
@@ -1274,8 +1274,8 @@ sub dame_nombreagente_agentemodulo (%$$) {
         my $s_idag = $dbh->prepare($query_idag);
         $s_idag ->execute;
     	if ($s_idag->rows == 0) {
-        	logger($pa_config, "ERROR dame_nombreagente_agentemodulo(): Cannot find id_agente_modulo $id_agentemodulo",1);
-        	logger($pa_config, "ERROR: SQL Query is $query_idag ",2);
+        	logger($pa_config, "ERROR dame_nombreagente_agentemodulo(): Cannot find id_agente_modulo $id_agentemodulo",3);
+        	logger($pa_config, "ERROR: SQL Query is $query_idag ",10);
 		$id_agente = -1;
     	} else  {   
 		@data = $s_idag->fetchrow_array(); 
@@ -1349,8 +1349,8 @@ sub dame_id_tipo_modulo (%$$) {
         my $s_idag = $dbh->prepare($query_idag);
         $s_idag ->execute;
     	if ($s_idag->rows == 0) {
-        	logger($pa_config, "ERROR dame_id_tipo_modulo(): Cannot find id_agente_modulo $id_agente_modulo",1);
-      		logger($pa_config,  "ERROR: SQL Query is $query_idag ",2);
+        	logger($pa_config, "ERROR dame_id_tipo_modulo(): Cannot find id_agente_modulo $id_agente_modulo",4);
+      		logger($pa_config,  "ERROR: SQL Query is $query_idag ",10);
 		$tipo ="-1";
     	} else  {    
 		@data = $s_idag->fetchrow_array(); 
@@ -1422,8 +1422,8 @@ sub dame_desactivado (%$$) {
 	my $s_idag = $dbh->prepare($query_idag);
         $s_idag ->execute;
     	if ($s_idag->rows == 0) {
-        	logger($pa_config, "ERROR dame_desactivado(): Cannot find agente $id_agente",1);
-      	 	logger($pa_config, "ERROR: SQL Query is $query_idag ",2);
+        	logger($pa_config, "ERROR dame_desactivado(): Cannot find agente $id_agente",4);
+      	 	logger($pa_config, "ERROR: SQL Query is $query_idag ",10);
 		$desactivado = -1;
     	} else  {    
 		@data = $s_idag->fetchrow_array(); 
@@ -1494,7 +1494,7 @@ sub crea_agente_modulo (%$$$$$$$) {
 	} elsif ($min eq "") {
 		$query = "insert into tagente_modulo (id_agente,id_tipo_modulo,nombre,min,descripcion) values 	($agente_id,$modulo_id,'$nombre_modulo',$min,'$descripcion (*)')";
 	}
-	logger( $pa_config, "DEBUG: Query for autocreate : $query ",3);	
+	logger( $pa_config, "DEBUG: Query for autocreate : $query ",6);	
     	$dbh->do($query);
 }
 

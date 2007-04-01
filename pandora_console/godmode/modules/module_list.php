@@ -63,7 +63,7 @@ if (give_acl($id_user, 0, "PM")==1) {
 	echo "<th>".$lang_label["icon"]."</th>";
 	echo "<th>".$lang_label["name"]."</th>";
 	echo "<th>".$lang_label["type"]."</th>";
-	echo "<th>".$lang_label["descripcion"]."</th>";
+	echo "<th>".$lang_label["description"]."</th>";
 	$sql1='SELECT * FROM ttipo_modulo ORDER BY nombre';
 	$result=mysql_query($sql1);
 	$color=0;

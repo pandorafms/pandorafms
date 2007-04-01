@@ -1,3 +1,11 @@
+2007-04-01 Raul Mateos <raulofpandora@gmail.com>
+
+	* pandoradb.sql, pandoradb_data.sql: Removed comments that
+	caused some warnings. Solved small bug when adding table tmodule.
+	Changed (again) HPUX to HP-UX.
+	
+	* godmode/agentes/modificar_agente.php: Removed some notice error.
+
 2007-03-28  Sancho Lerena  <slerena@artica.es>
 
 	* tip.css, pandora.css: Some updates to fix render in tooltips and

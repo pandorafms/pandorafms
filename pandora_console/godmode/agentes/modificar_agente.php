@@ -131,7 +131,7 @@ value='".$lang_label["show"]."'>
 </td>
 </form>
 </table>";
-if ($ag_group > 1){
+if (isset($ag_group) && $ag_group> 1){
 	$sql1="SELECT id_agente, nombre, id_grupo, comentarios, id_os
 	FROM tagente WHERE id_grupo = $ag_group ORDER BY nombre LIMIT $offset, $block_size";
 	$sql2="SELECT COUNT(id_agente) FROM tagente WHERE id_grupo = $ag_group";

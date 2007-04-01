@@ -27,7 +27,7 @@ UNLOCK TABLES;
 
 /*!40000 ALTER TABLE `tconfig_os` DISABLE KEYS */;
 LOCK TABLES `tconfig_os` WRITE;
-INSERT INTO `tconfig_os` VALUES (1,'Linux','Linux: All versions','so_linux.gif'),(2,'Solaris','Sun Solaris','so_solaris.gif'),(3,'AIX','IBM AIX','so_aix.gif'),(4,'BSD','OpenBSD, FreeBSD and Others','so_bsd.gif'),(5,'HPUX','HPUX Unix OS','so_hpux.gif'),(6,'BeOS','BeOS','so_beos.gif'),(7,'Cisco','CISCO IOS','so_cisco.gif'),(8,'MacOS','MAC OS','so_mac.gif'),(9,'Windows','Microsoft Windows OS','so_win.gif'),(10,'Other','Other SO','so_other.gif'),(11,'Network','Pandora Network Agent','network.gif');
+INSERT INTO `tconfig_os` VALUES (1,'Linux','Linux: All versions','so_linux.gif'),(2,'Solaris','Sun Solaris','so_solaris.gif'),(3,'AIX','IBM AIX','so_aix.gif'),(4,'BSD','OpenBSD, FreeBSD and Others','so_bsd.gif'),(5,'HP-UX','HPUX Unix OS','so_hpux.gif'),(6,'BeOS','BeOS','so_beos.gif'),(7,'Cisco','CISCO IOS','so_cisco.gif'),(8,'MacOS','MAC OS','so_mac.gif'),(9,'Windows','Microsoft Windows OS','so_win.gif'),(10,'Other','Other SO','so_other.gif'),(11,'Network','Pandora Network Agent','network.gif');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `tconfig_os` ENABLE KEYS */;
 
@@ -156,14 +156,4 @@ UNLOCK TABLES;
 LOCK TABLES `tperfil` WRITE;
 INSERT INTO `tperfil` VALUES (1,'Operator (Read)',0,1,0,1,0,0,0,0,0,0),(2,'Operator (Write)',1,1,0,1,0,0,0,0,0,0),(3,'Chief Operator',1,1,1,1,0,0,0,0,0,0),(4,'Group coordinator',1,1,1,1,1,1,1,0,0,0),(5,'Pandora Administrator',1,1,1,1,1,1,1,1,1,1);
 UNLOCK TABLES;
-/*!40000 ALTER TABLE `tperfil` ENABLE KEYS */;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 

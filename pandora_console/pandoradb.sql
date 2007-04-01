@@ -241,8 +241,8 @@ CREATE TABLE `tagente_modulo` (
   `flag` tinyint(3) unsigned default '1',
   `id_modulo` int(11) unsigned NULL default 0,
   PRIMARY KEY (`id_agente_modulo`, `id_agente`),
-  KEY `tam_agente` (`id_agente`)
-  FOREIGN KEY (id_modulo) REFERENCES tmodule (id_module)
+  KEY `tam_agente` (`id_agente`),
+  FOREIGN KEY (id_modulo)  REFERENCES tmodule (id_module)
 ) ENGINE=InnoDB;
 
 --
@@ -703,13 +703,5 @@ CREATE TABLE `vistas_consola` (
   `descripcion` varchar(250) NOT NULL,
   PRIMARY KEY  (`idVista`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 

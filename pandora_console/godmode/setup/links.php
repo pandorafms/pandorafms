@@ -2,8 +2,8 @@
 // Pandora - The Free Monitoring System
 // This code is protected by GPL license.
 // Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2005-2006
+// Sancho Lerena <slerena@gmail.com>, 2003-2007
+// Raul Mateos <raulofpandora@gmail.com>, 2005-2007
 
 // Load global vars
 if (comprueba_login() == 0)
@@ -23,7 +23,7 @@ if (comprueba_login() == 0)
 		}
 	}
 
-	if (isset($_POST["update"])){ // se ha modificado algun parameter
+	if (isset($_POST["update"])){ // if update
 		$id_link = entrada_limpia($_POST["id_link"]);
 		$name = entrada_limpia($_POST["name"]);
 		$link = entrada_limpia($_POST["link"]);
@@ -35,7 +35,7 @@ if (comprueba_login() == 0)
 			echo "<h3 class='suc'>".$lang_label["modify_link_ok"]."</h3>";
 	}
 	
-	if (isset($_GET["borrar"])){ // se ha modificado algun parametro
+	if (isset($_GET["borrar"])){ // if delete
 		$id_link = entrada_limpia($_GET["borrar"]);
 		$sql_delete= "DELETE FROM tlink WHERE id_link = ".$id_link;
 		$result=mysql_query($sql_delete);
@@ -103,12 +103,12 @@ if (comprueba_login() == 0)
 				$color = 1;
 			}
 			echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=gsetup&sec2=godmode/setup/links&form_edit=1&id_link=".$row["id_link"]."'>".$row["name"]."</a></b>";
-			echo '<td class="'.$tdcolor.'" align="center"><a href="index.php?sec=gsetup&sec2=godmode/setup/links&id_link='.$row["id_link"].'&borrar='.$row["id_link"].'" onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;"><img border=0 src="images/cancel.gif"></a>';
+			echo '<td class="'.$tdcolor.'" align="center"><a href="index.php?sec=gsetup&sec2=godmode/setup/links&id_link='.$row["id_link"].'&borrar='.$row["id_link"].'" onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;"><img border=0 src="images/cross.png"></a>';
 		}
 			echo "<tr><td colspan='2'><div class='raya'></div></td>";
 			echo "<tr><td colspan='2' align='right'>";
 			echo "<form method='post' action='index.php?sec=gsetup&sec2=godmode/setup/links&form_add=1'>";
-			echo "<input type='submit' class='sub' name='form_add' value='".$lang_label["add"]."'>";
+			echo "<input type='submit' class='sub next' name='form_add' value='".$lang_label["add"]."'>";
 			echo "</form></table>";
 } // Fin bloque else
 } else  {

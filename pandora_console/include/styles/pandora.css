@@ -193,6 +193,14 @@ input.sub {
 	-moz-border-radius: 5%;
 	font-size: 11px;
 }
+input.next {
+	padding-right: 15px;
+	background: #e5e5e5 url(../../images/go.png) no-repeat right 2px;
+}
+input.upd {
+	padding-right: 15px;
+	background: #e5e5e5 url(../../images/upd.png) no-repeat right 2px;
+}
 table, img {
 	border: 0px;
 }
@@ -215,7 +223,7 @@ td.lb, td.lb_view {
 td.datos, td.datost, td.datosb, td.datos_id, td.datosf9, 
 td.datosf9i, td.datos_jus, td.w90datos, td.w135datos {
 	/* background-color: #f5f5f5; */
-	background-color: #F9F9F9;
+	background-color: #f9f9f9;
 }
  
 td.datos2, td.datos2t, td.datos2b, td.datos2_id, td.datos2f9, 
@@ -332,9 +340,6 @@ td.datosf9i, td.datos2f9i {
 .w30 {
 	width: 30px;
 }
-.w40 {
-	width: 40px;
-}
 .w45 {
 	width: 45px;
 }
@@ -373,9 +378,6 @@ td.datosf9i, td.datos2f9i {
 }
 .bot, .titb, td.datosb {
 	vertical-align: bottom;
-}
-.w180 {
-	width: 180px;
 }
 .w200 {
 	width: 200px;

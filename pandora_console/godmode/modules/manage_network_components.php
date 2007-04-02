@@ -240,7 +240,7 @@ if ( $row = mysql_num_rows ($result)){
 		echo $module_max." / ".$module_min;
 		echo "<td class='$tdcolor' align='center'>";
 		echo "<a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&delete=1&id_nc=".$row["id_nc"]."'>";
-		echo "<img src='images/cancel.gif' border=0 alt='".$lang_label["delete"]."'></A>";
+		echo "<img src='images/cross.png' border=0 alt='".$lang_label["delete"]."'></A>";
 	}
 	echo "<tr><td colspan='7'><div class='raya'></div></td></tr>";
 	echo "<tr><td colspan='7' align='right'>";

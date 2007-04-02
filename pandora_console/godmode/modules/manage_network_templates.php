@@ -71,7 +71,7 @@ while ($row=mysql_fetch_array($result)){
 			<a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates&delete=".$row["id_np"]."'
 				onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\'))
 			return false;'>
-			<img border='0' src='images/cancel.gif'></a>
+			<img border='0' src='images/cross.png'></a>
 			</td>
 		</tr>";
 

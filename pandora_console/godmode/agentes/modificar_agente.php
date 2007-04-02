@@ -189,25 +189,25 @@ if (mysql_num_rows($result)){
 			borrar_agente=".$row["id_agente"]."'
 			onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\'))
 			return false;'>
-			<img border='0' src='images/cancel.gif'></a></td>";
+			<img border='0' src='images/cross.png'></a></td>";
 		}
 	}
 	echo "<tr><td colspan='5'><div class='raya'></div></td></tr>";
 	echo "<tr><td align='right' colspan='5'>";
 	echo "<form method='post' action='index.php?sec=gagente&
 	sec2=godmode/agentes/configurar_agente&create_agent=1'>";
-	echo "<input type='submit' class='sub' name='crt'
+	echo "<input type='submit' class='sub next' name='crt'
 	value='".$lang_label["create_agent"]."'>";
 	echo "</form></td></tr>";
 	echo "</table>";
 } else {
 	// If no data... let's show a beautiful button to create agent
 	// This is a piece of crap because we're duplicanting code above
-	// of this, don't do again, Raul, please.
+	// of this, don't do again.
 	echo "<div class='nf'>".$lang_label["no_agent_def"]."</div>";
 	echo "<form method='post' action='index.php?sec=gagente&
 	sec2=godmode/agentes/configurar_agente&creacion=1'>";
-	echo "<input type='submit' class='sub' name='crt'
+	echo "<input type='submit' class='sub next' name='crt'
 	value='".$lang_label["create_agent"]."'>";
 	echo "</form>";
 }

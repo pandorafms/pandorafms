@@ -141,9 +141,9 @@ if (comprueba_login() == 0) {
 		echo "<img src='images/dot_yellow.gif'> - ".$lang_label["alert"];
 		echo "</td>";
 		echo "<td class='f9l20'>";  
-		echo "<img src='images/ok.gif'> - ".$lang_label["validate_event"];
+		echo "<img src='images/ok.png'> - ".$lang_label["validate_event"];
 		echo "<br>"; 
-		echo "<img src='images/cancel.gif '> - ".$lang_label["delete_event"];
+		echo "<img src='images/cross.png '> - ".$lang_label["delete_event"];
 		echo "</td>";
 		echo "</tr></table>";
 		echo "<br>";
@@ -246,9 +246,9 @@ if (comprueba_login() == 0) {
 				echo "<td class='datos' align='center'>";
 				
 				if (($row["status"] == 0) and (give_acl($id_usuario,"0","IW") ==1))
-					echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&check=".$row["id_trap"]."'><img src='images/ok.gif' border='0'></a>";
+					echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&check=".$row["id_trap"]."'><img src='images/ok.png' border='0'></a>";
 				if (give_acl($id_usuario,"0","IM") ==1)
-					echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&delete=".$row["id_trap"]."&refr=60&offset=".$offset."'><img src='images/cancel.gif' border=0></a>";
+					echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&delete=".$row["id_trap"]."&refr=60&offset=".$offset."'><img src='images/cross.png' border=0></a>";
 				echo "<td class='datos' align='center'>";
 				echo "<input type='checkbox' class='chk' name='snmptrapid".$offset_counter."' value='".$row["id_trap"]."'>";
 				echo "</td></tr>";

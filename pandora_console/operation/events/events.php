@@ -178,9 +178,9 @@ echo "<br>";
 echo "<img src='images/dot_red.gif'> - ".$lang_label["not_validated_event"];
 echo "</td>";
 echo "<td class='f9l30w17t'>";
-echo "<img src='images/ok.gif'> - ".$lang_label["validate_event"];
+echo "<img src='images/ok.png'> - ".$lang_label["validate_event"];
 echo "<br>";
-echo "<img src='images/cancel.gif'> - ".$lang_label["delete_event"];
+echo "<img src='images/cross.png'> - ".$lang_label["delete_event"];
 echo "</td>";
 echo "<tr><td valign='middle'>".$lang_label["events"]."</td>";
 echo "<td><form method='post' action='index.php?sec=eventos&sec2=operation/events/events&refr=60'>";
@@ -297,9 +297,9 @@ if ($total_events > 0){
 			echo "<td class='$tdcolor' align='right'>";
 	
 			if (($row2["estado"] == 0) and (give_acl($id_user,$id_group,"IW") ==1))
-				echo "<a href='index.php?sec=eventos&sec2=operation/events/events&offset=".$offset."&check=".$row2["id_evento"]."'><img src='images/ok.gif' border='0'></a> ";
+				echo "<a href='index.php?sec=eventos&sec2=operation/events/events&offset=".$offset."&check=".$row2["id_evento"]."'><img src='images/ok.png' border='0'></a> ";
 			if (give_acl($id_user,$id_group,"IM") ==1)
-				echo "<a href='index.php?sec=eventos&sec2=operation/events/events&delete=".$row2["id_evento"]."&refr=60&offset=".$offset."'><img src='images/cancel.gif' border=0></a> ";
+				echo "<a href='index.php?sec=eventos&sec2=operation/events/events&delete=".$row2["id_evento"]."&refr=60&offset=".$offset."'><img src='images/cross.png' border=0></a> ";
 					
 			if (give_acl($id_user,$id_group,"IW") == 1)
 				echo "<a href='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&insert_form&from_event=".$row2["id_evento"]."'><img src='images/page_lightning.png' border=0></a>";

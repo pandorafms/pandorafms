@@ -58,7 +58,7 @@ if (give_acl($id_user, 0, "LW")==1) {
 	if (isset($_GET["submit"])){
 		$alert_submit=1;
 		$create = entrada_limpia($_POST["create"]);
-		$update = entrada_limpia($_POST["create"]);
+		$update = entrada_limpia($_POST["update"]);
 		$id_as = entrada_limpia($_POST["id_as"]);
 		$max = entrada_limpia($_POST["max"]);
 		$min = entrada_limpia($_POST["min"]);
@@ -288,20 +288,20 @@ if (give_acl($id_user, 0, "LW")==1) {
 				else
 					echo $lang_label["never"];
 				echo "<td class='$tdcolor'>";
-				echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&delete_alert=".$id_as."'><img src='images/cancel.gif' border=0 alt='".$lang_label["delete"]."'></b></a> &nbsp; ";
+				echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&delete_alert=".$id_as."'><img src='images/cross.png' border=0 alt='".$lang_label["delete"]."'></b></a> &nbsp; ";
 				echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&update_alert=".$id_as."'><img src='images/config.gif' border=0 alt='".$lang_label["update"]."'></b></a>";
 			}
 			echo "<tr><td colspan='9'><div class='raya'></div></td></tr>";
 			echo "<tr><td colspan=9 align='right'>";
 			echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert">';
-			echo '<input name="add_alert" type="submit" class="sub" value="'.$lang_label["create"].'">';
+			echo '<input name="add_alert" type="submit" class="sub next" value="'.$lang_label["create"].'">';
 			echo "</form>";
 			echo "</table>";
 		} else {
 			echo "<div class='nf'>".$lang_label["no_snmp_alert"]."</div>";
 			echo "<br><br>";
 			echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert">';
-			echo '<input name="add_alert" type="submit" class="sub" value="'.$lang_label["create"].'">';
+			echo '<input name="add_alert" type="submit" class="sub next" value="'.$lang_label["create"].'">';
 			echo "</form>";
 		} // End of view snmp alert
 	}

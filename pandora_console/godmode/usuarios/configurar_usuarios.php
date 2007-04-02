@@ -236,7 +236,7 @@ if (comprueba_login() == 0)
 				echo '<td class="'.$tdcolor.'">';
 				echo "<b style='margin-left:10px'>".dame_perfil($row["id_perfil"])."</b> / ";
 				echo "<b>".dame_grupo($row["id_grupo"])."</b>";
-				echo '<td class="'.$tdcolor.'t"><a href="index.php?sec=gusuarios&sec2=godmode/usuarios/configurar_usuarios&id_usuario_mio='.$id_usuario_mio.'&borrar_grupo='.$row["id_up"].' " onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;"><img border=0 src="images/cancel.gif"></a><tr>';
+				echo '<td class="'.$tdcolor.'t"><a href="index.php?sec=gusuarios&sec2=godmode/usuarios/configurar_usuarios&id_usuario_mio='.$id_usuario_mio.'&borrar_grupo='.$row["id_up"].' " onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;"><img border=0 src="images/cross.png"></a><tr>';
 			}
 				echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
 		}

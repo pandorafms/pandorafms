@@ -87,7 +87,7 @@ de administraci&oacute;n.</p>
 <p>Se pueden crear todos los grupos que se necesiten pulsando en «Crear grupo» y asign&aacute;ndole un nombre.</p>
 
 <p>Para borrar un grupo se pulsa en
-el icono <img src="../../images/cancel.gif"> que cada grupo tienen a su derecha.</p>
+el icono <img src="../../images/cross.png"> que cada grupo tienen a su derecha.</p>
 
 <h2><a name="32">3.2. A&ntilde;adir un agente</a></h2>
 
@@ -171,7 +171,7 @@ Cualquier valor por debajo del m&iacute;nimo definido se interpretar&aacute; com
 
 <p>Desde aqu&iacute; se puede:</p>
 <ul>
-<li>borrar un m&oacute;dulo pinchando en el icono <img src="../../images/cancel.gif"></li>
+<li>borrar un m&oacute;dulo pinchando en el icono <img src="../../images/cross.png"></li>
 <li>o editarlo, pinchando en el icono <img src="../../images/config.gif"></li>
 </ul>
 
@@ -203,7 +203,7 @@ Operativo de Pandora.</p>
 
 <p class="center"><img src="images/image011.png"></p>
 
-<p>Para borrar una alerta pulsamos en <img src="../../images/cancel.gif"> que se encuentra a la derecha de la alerta que se quiere borrar.</p>
+<p>Para borrar una alerta pulsamos en <img src="../../images/cross.png"> que se encuentra a la derecha de la alerta que se quiere borrar.</p>
 
 <p>Para crear una alerta personalizada se accede a «Gesti&oacute;n de alertas» &gt; «Crear alertas», en el men&uacute; de administraci&oacute;n</p>
 

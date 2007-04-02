@@ -659,6 +659,9 @@ $lang_label["agent_general_reporting"]="Agent overview";
 $lang_label["active_console"]="Consola activa";
 $lang_label["parent"]="Padre";
 
+//2 Apr 2007
+$lang_label["no_rtask"]="No hay ninguna tarea de reconocimiento configurada";
+
 global $lang_label;
 global $help_label;
 ?>

@@ -39,17 +39,17 @@ div#op7s>ul, div#op8s>ul, div#op9s>ul {
 }
 /* users */
 #op5 li, #op5 li:hover, #op5s li {
-	background: url(../../images/group.png) no-repeat 4px 3px;
+	background: url(../../images/group.png) no-repeat 4px 4px;
 }
 #op6 li, #op6 li:hover, #op6s li {
-	background: url(../../images/computer_error.png) no-repeat 4px 5px;
+	background: url(../../images/computer_error.png) no-repeat 4px 4px;
 }
 /* trap console */
 #op7 li, #op7 li:hover, #op7s li  {
-	background: url(../../images/email.png) no-repeat 4px 3px;
+	background: url(../../images/email.png) no-repeat 4px 4px;
 }
 #op8 li, #op8 li:hover, #op8s li  {
-	background: url(../../images/chart_pie.png) no-repeat 4px 3px;
+	background: url(../../images/chart_pie.png) no-repeat 4px 4px;
 }
 #op9 li, #op9 li:hover, #op9s li  {
 	background: url(../../images/op9.gif) no-repeat 4px 3px;

@@ -2,15 +2,14 @@
 // Pandora - The Free Monitoring System
 // This code is protected by GPL license.
 // Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2005-2006
+// Sancho Lerena <slerena@gmail.com>, 2003-2007
+// Raul Mateos <raulofpandora@gmail.com>, 2005-2007
 
 // Load global vars
 require("include/config.php");
-//require("include/functions.php");
-//require("include/functions_db.php");
+
 if ( (give_acl($id_user, 0, "LM")==1)){
-	if (isset($_POST["update_alerta"])){ // se ha modificado algun parametro de agente
+	if (isset($_POST["update_alerta"])){ // if modified any parameter
 		$id_alerta = entrada_limpia($_POST["id_alerta"]);
 	    $nombre =  entrada_limpia($_POST["nombre"]);
 	    $comando =  entrada_limpia($_POST["comando"]);
@@ -23,8 +22,7 @@ if ( (give_acl($id_user, 0, "LM")==1)){
 			echo "<h3 class='suc'>".$lang_label["update_alert_ok"]."</h3>";
 	}
 
-	if (isset($_POST["crear_alerta"])){ // se ha modificado algun parametro de agente
-		// $id_alerta = entrada_limpia($_POST["id_alerta"]);
+	if (isset($_POST["crear_alerta"])){ // if create alert
 	    $nombre =  entrada_limpia($_POST["nombre"]);
 	    $comando =  entrada_limpia($_POST["comando"]);
 	    $descripcion=  entrada_limpia($_POST["descripcion"]);
@@ -36,9 +34,8 @@ if ( (give_acl($id_user, 0, "LM")==1)){
 			echo "<h3 class='suc'>".$lang_label["create_alert_ok"]."</h3>";  
 	}
 	
-	if (isset($_GET["borrar_alerta"])){ // se ha modificado algun parametro
+	if (isset($_GET["borrar_alerta"])){ // if delete alert
 		$id_alerta = entrada_limpia($_GET["borrar_alerta"]);
-		// Primero borramos de la tabla de tagente_modulo
 		$sql_delete= "DELETE FROM talerta WHERE id_alerta = ".$id_alerta;
 		$result=mysql_query($sql_delete);		
 		if (! $result)
@@ -70,17 +67,17 @@ if ( (give_acl($id_user, 0, "LM")==1)){
 		}
 		echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=galertas&sec2=godmode/alertas/configurar_alerta&id_alerta=".$row["id_alerta"]."'>".$row["nombre"]."</a></b>";
 		echo "<td class='$tdcolor'>".$row["descripcion"];
-		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/alertas/modificar_alerta&borrar_alerta=".$row["id_alerta"]."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cancel.gif'></a>";
+		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/alertas/modificar_alerta&borrar_alerta=".$row["id_alerta"]."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cross.png'></a>";
 	}
 	
 	echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
 	echo "<tr><td align='right' colspan='3'>";
 	echo "<form method=post action='index.php?sec=galertas&sec2=godmode/alertas/configurar_alerta&creacion=1'>";
-	echo "<input type='submit' class='sub' name='crt' value='".$lang_label["create_alert"]."'>";
+	echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create_alert"]."'>";
 	echo "</form>";
 	echo "</td></tr></table>";
 	
-} // Fin pagina
+} // End page
 else {
                 audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Alert Management");
                 require ("general/noaccess.php");

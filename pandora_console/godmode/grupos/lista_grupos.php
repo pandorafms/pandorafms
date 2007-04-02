@@ -113,7 +113,7 @@ if (comprueba_login() == 0)
 				borrar_grupo=".$row["id_grupo"]."' 
 				onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) 
 				return false;'>
-				<img border='0' src='images/cancel.gif'></a>
+				<img border='0' src='images/cross.png'></a>
 				</td>
 			</tr>";
 		}
@@ -122,7 +122,7 @@ if (comprueba_login() == 0)
 	echo "<tr><td colspan='4' align='right'>";
 	echo "<form method=post action='index.php?sec=gagente&
 	sec2=godmode/grupos/configurar_grupo&creacion_grupo=1'>";
-	echo "<input type='submit' class='sub' name='crt' value='".$lang_label["create_group"]."'>";
+	echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create_group"]."'>";
 	echo "</form></td></tr></table>";
 
    } // Fin pagina

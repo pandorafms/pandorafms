@@ -54,7 +54,7 @@ if (comprueba_login() == 0)
 	echo "<form name='setup' method='POST' action='index.php?sec=gsetup&amp;sec2=godmode/setup/setup&update=1'>";
 	echo '<table width="500" cellpadding="3" cellspacing="3">';
 	echo '<tr><td class="lb" rowspan="9" width="5"></td><td class="datos">'.$lang_label["language_code"];
-	echo '<td class="datos"><select name="language_code" onChange="javascript:this.form.submit();" class="w180">';
+	echo '<td class="datos"><select name="language_code" onChange="javascript:this.form.submit();" width="180px">';
 	
 	$sql="SELECT * FROM tlanguage";
 	$result=mysql_query($sql);
@@ -124,7 +124,7 @@ if (comprueba_login() == 0)
 
 	echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
 	echo "<tr><td colspan='3' align='right'>";
-	echo '<input type="submit" class="sub" value="'.$lang_label["update"].'">';
+	echo '<input type="submit" class="sub upd" value="'.$lang_label["update"].'">';
 	echo "</table>";
 }
 else {

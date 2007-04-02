@@ -111,11 +111,11 @@ least, fill in the user ID, the password (twice) and Pandora's global profile.</
 
 <p class="center"><img src="images/image004.png"></p>
 
-<p>A user profile is deleted by clicking on the delete icon <img src="../../images/cancel.gif"> on the right hand side of the profile.</p>
+<p>A user profile is deleted by clicking on the delete icon <img src="../../images/cross.png"> on the right hand side of the profile.</p>
 
 <h2><a name="23">2.3. Deleting a user</a></h2>
 
-<p>A user is deleted by clicking on the delete icon <img src="../../images/cancel.gif"> on the right hand side of the user. The list of users is accessed through the "Manage Users" option in the Administration menu.</p>
+<p>A user is deleted by clicking on the delete icon <img src="../../images/cross.png"> on the right hand side of the user. The list of users is accessed through the "Manage Users" option in the Administration menu.</p>
 
 <p class="center"><img src="images/image005.png"></p>
 

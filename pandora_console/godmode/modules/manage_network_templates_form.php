@@ -161,7 +161,7 @@ if ($id_np != -1){
 			}
 			echo "<td class='$tdcolor'>".substr($descripcion,0,30)."</td>";
 			echo "<td class='$tdcolor'>".give_network_component_group_name($id_group)."</td>";
-			echo "<td class='$tdcolor'><a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np=$id_np&delete_module=$id_npc'><img src='images/cancel.gif'></a></td>";
+			echo "<td class='$tdcolor'><a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np=$id_np&delete_module=$id_npc'><img src='images/cross.png'></a></td>";
 		}
 	}
 	echo "</table>";

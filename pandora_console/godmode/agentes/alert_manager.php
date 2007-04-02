@@ -73,7 +73,7 @@ $result=mysql_query($sql1);
 					$string = $string."<a href='index.php?sec=gagente&
 					sec2=godmode/agentes/configurar_agente&
 					id_agente=".$id_agente."&delete_alert=".$row3["id_aam"]."'>
-					<img src='images/cancel.gif' border=0 alt='".$lang_label["delete"]."'></a>  &nbsp; ";
+					<img src='images/cross.png' border=0 alt='".$lang_label["delete"]."'></a>  &nbsp; ";
 					$string = $string."<a href='index.php?sec=gagente&
 					sec2=godmode/agentes/configurar_agente&
 					id_agente=".$id_agente."&update_alert=".$row3["id_aam"]."#alerts'>

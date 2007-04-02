@@ -2,16 +2,15 @@
 // Pandora - The Free Monitoring System
 // This code is protected by GPL license.
 // Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2005-2006
+// Sancho Lerena <slerena@gmail.com>, 2003-2007
+// Raul Mateos <raulofpandora@gmail.com>, 2005-2007
 
 // Load globar vars
 require("include/config.php");
-//require("include/functions.php");
-//require("include/functions_db.php");
+
 if (comprueba_login() == 0) 
 	if (give_acl($id_user, 0, "UM")==1) {
-		if (isset($_GET["borrar_usuario"])){ // se ha modificado algun parametro de agente
+		if (isset($_GET["borrar_usuario"])){ // if delete user
 			$nombre= entrada_limpia($_GET["borrar_usuario"]);
 			// Delete user
 			// Delete cols from table tgrupo_usuario
@@ -40,7 +39,7 @@ if (comprueba_login() == 0)
 <?php
 $query1="SELECT * FROM tusuario";
 $resq1=mysql_query($query1);
-// Inicializacion variables
+// Init vars
 $nombre = "";
 $nivel = "";
 $comentarios = "";
@@ -82,13 +81,13 @@ while ($rowdup=mysql_fetch_array($resq1)){
 	echo "</span></a>";
 	
 	echo "<td class='$tdcolor'>".$comentarios;
-	echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/usuarios/lista_usuarios&borrar_usuario=".$nombre."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cancel.gif'></a>";
+	echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/usuarios/lista_usuarios&borrar_usuario=".$nombre."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cross.png'></a>";
 }
 	echo "<tr><td colspan='5'><div class='raya'></div></td></tr>";
 	echo "<tr><td colspan='5' align='right'>";
 	echo "<form method=post action='index.php?sec=gusuarios&sec2=godmode/usuarios/configurar_usuarios&alta=1'>";
-        echo "<input type='submit' class='sub' name='crt' value='".$lang_label["create_user"]."'>";
-        echo "</form></td></tr></table>";
+	echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create_user"]."'>";
+	echo "</form></td></tr></table>";
 
 echo "</table>";
 

@@ -46,10 +46,12 @@ while ($rowdup=mysql_fetch_array($resq1)){
 	if ($color == 1){
 		$tdcolor = "datos";
 		$color = 0;
+		$tip = "tip";
 	}
 	else {
 		$tdcolor = "datos2";
 		$color = 1;
+		$tip = "tip2";
 	}
 	echo "<tr><td class='$tdcolor'><a href='index.php?sec=usuarios&sec2=operation/users/user_edit&ver=".$nombre."'><b>".$nombre."</b></a>";
 	echo "<td class='$tdcolor'><font size=1>".$fecha_registro."</font>";
@@ -60,7 +62,7 @@ while ($rowdup=mysql_fetch_array($resq1)){
 		echo "<img src='images/user_green.png'>";
 	$sql1='SELECT * FROM tusuario_perfil WHERE id_usuario = "'.$nombre.'"';
 	$result=mysql_query($sql1);
-	echo "<a href='#' class='tip'>&nbsp;<span>";
+	echo "<a href='#' class='$tip'>&nbsp;<span>";
 	if (mysql_num_rows($result)){
 		while ($row=mysql_fetch_array($result)){
 			echo dame_perfil($row["id_perfil"])."/ ";
@@ -86,17 +88,17 @@ echo "<tr><td colspan='5'><div class='raya'></div></td></tr></table><br>";
 	$query_del1="SELECT * FROM tperfil";
 	$resq1=mysql_query($query_del1);
 	echo "<tr>";
-	echo "<th class='w180'><font size=1>".$lang_label["profiles"];
-	echo "<th class='w40'><font size=1>IR<a href='#' class='tip2'>&nbsp;<span>".$help_label["IR"]."</span></a>";
-	echo "<th class='w40'><font size=1>IW<a href='#' class='tip2'>&nbsp;<span>".$help_label["IW"]."</span></a>";
-	echo "<th class='w40'><font size=1>IM<a href='#' class='tip2'>&nbsp;<span>".$help_label["IM"]."</span></a>";
-	echo "<th class='w40'><font size=1>AR<a href='#' class='tip2'>&nbsp;<span>".$help_label["AR"]."</span></a>";
-	echo "<th class='w40'><font size=1>AW<a href='#' class='tip2'>&nbsp;<span>".$help_label["AW"]."</span></a>";
-	echo "<th class='w40'><font size=1>LW<a href='#' class='tip2'>&nbsp;<span>".$help_label["LW"]."</span></a>";
-	echo "<th class='w40'><font size=1>UM<a href='#' class='tip2'>&nbsp;<span>".$help_label["UM"]."</span></a>";
-	echo "<th class='w40'><font size=1>DM<a href='#' class='tip2'>&nbsp;<span>".$help_label["DM"]."</span></a>";
-	echo "<th class='w40'><font size=1>LM<a href='#' class='tip2'>&nbsp;<span>".$help_label["LM"]."</span></a>";
-	echo "<th class='w40'><font size=1>PM<a href='#' class='tip2'>&nbsp;<span>".$help_label["PM"]."</span></a>";
+	echo "<th width='180px'><font size=1>".$lang_label["profiles"];
+	echo "<th width='40px'><font size=1>IR<a href='#' class='tipp'>&nbsp;<span>".$help_label["IR"]."</span></a>";
+	echo "<th width='40px'><font size=1>IW<a href='#' class='tipp'>&nbsp;<span>".$help_label["IW"]."</span></a>";
+	echo "<th width='40px'><font size=1>IM<a href='#' class='tipp'>&nbsp;<span>".$help_label["IM"]."</span></a>";
+	echo "<th width='40px'><font size=1>AR<a href='#' class='tipp'>&nbsp;<span>".$help_label["AR"]."</span></a>";
+	echo "<th width='40px'><font size=1>AW<a href='#' class='tipp'>&nbsp;<span>".$help_label["AW"]."</span></a>";
+	echo "<th width='40px'><font size=1>LW<a href='#' class='tipp'>&nbsp;<span>".$help_label["LW"]."</span></a>";
+	echo "<th width='40px'><font size=1>UM<a href='#' class='tipp'>&nbsp;<span>".$help_label["UM"]."</span></a>";
+	echo "<th width='40px'><font size=1>DM<a href='#' class='tipp'>&nbsp;<span>".$help_label["DM"]."</span></a>";
+	echo "<th width='40px'><font size=1>LM<a href='#' class='tipp'>&nbsp;<span>".$help_label["LM"]."</span></a>";
+	echo "<th width='40px'><font size=1>PM<a href='#' class='tipp'>&nbsp;<span>".$help_label["PM"]."</span></a>";
 	$color = 1;
 	while ($rowdup=mysql_fetch_array($resq1)){
 		$id_perfil = $rowdup["id_perfil"];
@@ -122,34 +124,34 @@ echo "<tr><td colspan='5'><div class='raya'></div></td></tr></table><br>";
 		echo "<tr><td class='$tdcolor"."_id'>".$nombre;
 		
 		echo "<td class='$tdcolor'>";
-		if ($incident_view == 1) echo "<img src='images/ok.gif' border=0>";
+		if ($incident_view == 1) echo "<img src='images/ok.png' border=0>";
 			
 		echo "<td class='$tdcolor'>";
-		if ($incident_edit == 1) echo "<img src='images/ok.gif' border=0>";
+		if ($incident_edit == 1) echo "<img src='images/ok.png' border=0>";
 			
 		echo "<td class='$tdcolor'>";
-		if ($incident_management == 1) echo "<img src='images/ok.gif' border=0>";
+		if ($incident_management == 1) echo "<img src='images/ok.png' border=0>";
 			
 		echo "<td class='$tdcolor'>";
-		if ($agent_view == 1) echo "<img src='images/ok.gif' border=0>";
+		if ($agent_view == 1) echo "<img src='images/ok.png' border=0>";
 			
 		echo "<td class='$tdcolor'>";
-		if ($agent_edit == 1) echo "<img src='images/ok.gif' border=0>";
+		if ($agent_edit == 1) echo "<img src='images/ok.png' border=0>";
 			
 		echo "<td class='$tdcolor'>";
-		if ($alert_edit == 1) echo "<img src='images/ok.gif' border=0>";
+		if ($alert_edit == 1) echo "<img src='images/ok.png' border=0>";
 			
 		echo "<td class='$tdcolor'>";
-		if ($user_management == 1) echo "<img src='images/ok.gif' border=0>";
+		if ($user_management == 1) echo "<img src='images/ok.png' border=0>";
 			
 		echo "<td class='$tdcolor'>";
-		if ($db_management == 1) echo "<img src='images/ok.gif' border=0>";
+		if ($db_management == 1) echo "<img src='images/ok.png' border=0>";
 			
 		echo "<td class='$tdcolor'>";
-		if ($alert_management == 1) echo "<img src='images/ok.gif' border=0>";
+		if ($alert_management == 1) echo "<img src='images/ok.png' border=0>";
 			
 		echo "<td class='$tdcolor'>";
-		if ($pandora_management == 1) echo "<img src='images/ok.gif' border=0>";
+		if ($pandora_management == 1) echo "<img src='images/ok.png' border=0>";
 
 	}
 } //end of page

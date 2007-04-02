@@ -47,6 +47,10 @@ my @all_modules;	# array for storing modules configuration
 my %log_modules;	# array for storing log modules configuration
 			# $log_modules{'/url/file'}[1] points to the element 1 of @all_modules
 
+my %log_counter;	# stores counter variables that are preserved from 
+			# line to line (see documentation for more info)
+			# $log_counter{log file}{module name}
+					
 while (<CONF>) {
    next if (/^\s*#/);
    split;
@@ -80,6 +84,9 @@ while (<CONF>) {
 for ($cc=0; $cc<=$#all_modules; $cc++) {
 	if ( grep(/^module_log$/, keys %{$all_modules[$cc]} ) ) { 
 		unshift (  @{$log_modules{ $all_modules[$cc]{'module_log'} }}, $cc  );
+		if ( defined( $all_modules[$cc]{'module_log_counter'} ) ) {
+			$log_counter{ $all_modules[$cc]{'module_log'} }{ $all_modules[$cc]{'module_name'} } = 0;
+		}
 	}
 }
 

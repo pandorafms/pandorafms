@@ -153,6 +153,7 @@ function DC_pandoragraph_params () {
 			'graphtype'	,
 			'origin'	,
 			'draw_events'	,
+			'intervalo'	,
 			'zoom'			
 			);
 

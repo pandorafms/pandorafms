@@ -159,7 +159,7 @@ if (comprueba_login() == 0) {
 			}
 			echo "<td class='".$tdcolor."f9' align='middle'>".substr($keepalive,0,25);
 			echo "<td class='".$tdcolor."f9' align='middle'>".substr($laststart,0,25);
-			echo "<td class='".$tdcolor."f9' align='middle'><a href='index.php?sec=gserver&sec2=godmode/servers/modificar_server&server_del=".$id_server."&delete'><img src='images/cancel.gif' border='0'>";
+			echo "<td class='".$tdcolor."f9' align='middle'><a href='index.php?sec=gserver&sec2=godmode/servers/modificar_server&server_del=".$id_server."&delete'><img src='images/cross.png' border='0'>";
 		}
 		echo '<tr><td colspan="12"><div class="raya"></div></td></tr></table>';	
 	}

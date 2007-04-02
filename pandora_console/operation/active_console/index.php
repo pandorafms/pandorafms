@@ -1277,7 +1277,7 @@ while ($vista=mysql_fetch_array($vistas)){
 
 		<TD></TD><TD></TD><TD></TD><TD></TD><TD></TD><TD></TD>
 		<TD>
-	  		<IMG  SRC='imagenes/utiles/cancel.gif' border=0 onclick=\"setCookieEstado();location.href='index.php?action=cerrarVista&mode='+modo\">
+	  		<IMG  SRC='imagenes/utiles/cross.png' border=0 onclick=\"setCookieEstado();location.href='index.php?action=cerrarVista&mode='+modo\">
 	  	</TD>
 
 	  </TR>

@@ -68,8 +68,8 @@ if the problem can be ignored or it's been already solved.</p>
 <p><b>User ID: </b>User that validated the event.</p>
 <p><b>Timestamp:</b> Date and time when the event was raised or validated- if it has been validated.</p>
 <p><b>Action:</b> Action that can be executed over the event.</p>
-<p class="ml25"><img src="../../images/ok.gif"> This icon will validate the event, disappearing the icon</p>
-<p class="ml25"><img src="../../images/cancel.gif"> This icon will delete the event</p>
+<p class="ml25"><img src="../../images/ok.png"> This icon will validate the event, disappearing the icon</p>
+<p class="ml25"><img src="../../images/cross.png"> This icon will delete the event</p>
 
 <p>The events can be also validated or deleted in groups by selecting the tick boxes
 on the last column of the event, and pressing "Validate" or "Delete" at the

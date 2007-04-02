@@ -110,7 +110,7 @@ if ((isset($_GET["action"])) AND ($_GET["action"]=="insert")){
 			audit_db($usuario,$REMOTE_ADDR,"Incident created","User ".$id_usuario." created incident #".$id_inc);
 		}
 	} else {
-		audit_db($id_usuario,$REMOTE_ADDR,"ACL Forbidden","User ".$_SESSION["id_usuario"]." try to create  incident");
+		audit_db($id_usuario,$REMOTE_ADDR,"ACL Forbidden","User ".$_SESSION["id_usuario"]." try to create incident");
 		no_permission();
 	}
 }
@@ -430,7 +430,7 @@ if ($row2_count[0] <= 0 ) {
 			if ((give_acl($id_usuario, $id_group, "IM") ==1) OR ($_SESSION["id_usuario"] == $id_author_inc) ){
 			// Only incident owners or incident manager
 			// from this group can delete incidents
-				echo "<td class='$tdcolor' align='center'><a href='index.php?sec=incidencias&sec2=operation/incidents/incident&quick_delete=".$row2["id_incidencia"]."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img src='images/cancel.gif' border='0'></a></td>";
+				echo "<td class='$tdcolor' align='center'><a href='index.php?sec=incidencias&sec2=operation/incidents/incident&quick_delete=".$row2["id_incidencia"]."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img src='images/cross.png' border='0'></a></td>";
 			}
 		}
 	}
@@ -440,7 +440,7 @@ if ($row2_count[0] <= 0 ) {
 if (give_acl($_SESSION["id_usuario"], 0, "IW")==1) {
 	echo "<tr><td align='right' colspan='9'>";
 	echo "<form method='post' action='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&insert_form'>";
-	echo "<input type='submit' class='sub' name='crt' value='".$lang_label["create_incident"]."'></form>";
+	echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create_incident"]."'></form>";
 }
 echo "</td></tr></table>";
 

@@ -101,7 +101,7 @@ if (give_acl($id_user, 0, "PM")==1) {
 	echo "<tr><td colspan='4' align='right'>";
 	echo "<form method=post action='index.php?sec=gmodules&
 	sec2=godmode/modules/manage_modules&create=1'>";
-	echo "<input type='submit' class='sub' name='crt' value='".$lang_label["create_module"]."'>";
+	echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create_module"]."'>";
 	echo "</form></td></tr></table>";
 
 } // Fin pagina

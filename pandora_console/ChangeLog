@@ -1,3 +1,18 @@
+2007-04-02 Raul Mateos <raulofpandora@gmail.com>
+
+	* images/ok.gif: Deleted
+	
+	* images/cross.png, go.png, ok.png, upd.png: Added new images
+	
+	* include/styles/pandora.css, tip.css, op.css: Updated. Deleted some
+	old styles, not all.
+	
+	* include/languages/language_en.php, language_es_es.php: Added text
+	for no recon task.
+	
+	* godmode/*.php, operation/*.php, help/*.php: Changed some icons, 
+	updated several buttons with new icons.
+
 2007-04-01 Raul Mateos <raulofpandora@gmail.com>
 
 	* pandoradb.sql, pandoradb_data.sql: Removed comments that

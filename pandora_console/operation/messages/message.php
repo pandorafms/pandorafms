@@ -105,7 +105,7 @@ if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
 		<tr><td class="datos2">'.$lang_label["message"].':</td></tr>
 		<tr><td class="datos" colspan="4"><textarea name="mensaje" rows="10" class="w540">';
 			if (isset($_POST["mensaje"])) {
-			echo $_POST["mensaje"];
+				echo $_POST["mensaje"];
 			}
 		echo '</textarea></td></tr>
 		<tr><td colspan="2"><div class="noraya"></div></td></tr>
@@ -178,7 +178,7 @@ else {
 				echo "<i>".$lang_label["no_subject"]."</i></a>";
 
 			echo "</a></td><td class='".$tdcolor."'>".$row3["timestamp"]."</td>";
-			echo "<td class='$tdcolor' align='center'><a href='index.php?sec=messages&sec2=operation/messages/message&borrar=1&id_mensaje=".$row3["id_mensaje"]."'><img src='images/cancel.gif' border='0'></a></td></tr>";
+			echo "<td class='$tdcolor' align='center'><a href='index.php?sec=messages&sec2=operation/messages/message&borrar=1&id_mensaje=".$row3["id_mensaje"]."'><img src='images/cross.png' border='0'></a></td></tr>";
 			}
 		echo "<tr><td colspan='5'><div class='raya'></div></td></tr>";
 	}
@@ -207,7 +207,7 @@ else {
 		<input type="submit" class="sub" name="send_mes" value="'.$lang_label["reply"].'">
 		</form></td></tr>';
 	}
-	else echo '<tr><td colspan="5"><div class="noraya"></div></td></tr><tr><td colspan="5" align="right"><form method="post" name="new_mes" action="index.php?sec=messages&sec2=operation/messages/message&nuevo"><input type="submit" class="sub" name="send_mes" value="'.$lang_label["new_message"].'"></form></td></tr>';
+	else echo '<tr><td colspan="5"><div class="noraya"></div></td></tr><tr><td colspan="5" align="right"><form method="post" name="new_mes" action="index.php?sec=messages&sec2=operation/messages/message&nuevo"><input type="submit" class="sub next" name="send_mes" value="'.$lang_label["new_message"].'"></form></td></tr>';
 }
  echo '</table>';
  ?>

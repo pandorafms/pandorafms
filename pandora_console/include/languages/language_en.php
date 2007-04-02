@@ -740,6 +740,9 @@ $lang_label["Data"]="Data";
 $lang_label["Main"]="Main";
 $lang_label["version"]="Version";
 
+//2 Apr 2007
+$lang_label["no_rtask"]="There are no recon task configured";
+
 
 global $lang_label; 
 global $help_label;

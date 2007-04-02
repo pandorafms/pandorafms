@@ -95,7 +95,7 @@ in the Operation menu.</p>
   servers.</p>
   <p>
    It is possible delete a server using the icon
-   <img src="../../images/cancel.gif">
+   <img src="../../images/cross.png">
    </p>
    <p>
     It is possible to change the server properties using the icon 

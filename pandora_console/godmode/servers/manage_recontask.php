@@ -91,18 +91,19 @@ echo "<h2>".$lang_label["manage_recontask"]."</h2>";
 $query="SELECT * FROM trecon_task";
 $result=mysql_query($query);
 $color=1;
-
-echo "<table cellpadding='4' cellspacing='4' witdh='750'>";
-echo "<tr><th class='datos'>".$lang_label["name"];
-echo "<th class='datos'>".$lang_label['type'];
-echo "<th class='datos'>".$lang_label['network'];
-echo "<th class='datos'>".$lang_label['network_profile'];
-echo "<th class='datos'>".$lang_label['group'];
-echo "<th class='datos'>".$lang_label['incident'];
-echo "<th class='datos'>".$lang_label['interval'];
-echo "<th class='datos'>".$lang_label['recon_server'];
-echo "<th class='datos'>".$lang_label['network_server'];
-echo "<th class='datos'>X";
+if (mysql_num_rows($result)){
+	echo "<table cellpadding='4' cellspacing='4' witdh='750'>";
+	echo "<tr><th class='datos'>".$lang_label["name"];
+	echo "<th class='datos'>".$lang_label['type'];
+	echo "<th class='datos'>".$lang_label['network'];
+	echo "<th class='datos'>".$lang_label['network_profile'];
+	echo "<th class='datos'>".$lang_label['group'];
+	echo "<th class='datos'>".$lang_label['incident'];
+	echo "<th class='datos'>".$lang_label['interval'];
+	echo "<th class='datos'>".$lang_label['recon_server'];
+	echo "<th class='datos'>".$lang_label['network_server'];
+	echo "<th class='datos'>X";
+}
 while ($row=mysql_fetch_array($result)){
 	$id_rt = $row["id_rt"];
 	$name = $row["name"];
@@ -160,14 +161,18 @@ while ($row=mysql_fetch_array($result)){
 	echo "<a href='index.php?sec=gserver&sec2=godmode/servers/modificar_server&server=$id_network_server_assigned'>".give_server_name($id_network_server_assigned)."</a>";;
 
 	// ACTION
-	echo "<td class='".$tdcolor."' align='center'><a href='index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete=$id_rt'><img src='images/cancel.gif' border='0'>";
+	echo "<td class='".$tdcolor."' align='center'><a href='index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete=$id_rt'><img src='images/cross.png' border='0'>";
 	
 }
-
-echo '<tr><td colspan="12"><div class="raya"></div></td></tr>';
+if (mysql_num_rows($result)){
+	echo '<tr><td colspan="12"><div class="raya"></div></td></tr>';
+} else {
+	echo "<div class='nf'>".$lang_label["no_rtask"]."</div>";
+	echo "<table>";
+}
 echo "<tr><td align='right' colspan='11'>";
 echo "<form method='post' action='index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&create'>";
-echo "<input type='submit' class='sub' name='crt'
+echo "<input type='submit' class='sub next' name='crt'
 value='".$lang_label["create"]."'>";
 echo "</form></table>";
 

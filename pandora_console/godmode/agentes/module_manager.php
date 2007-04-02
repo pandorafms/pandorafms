@@ -229,7 +229,7 @@ if ($row=mysql_num_rows($result)){
 		sec2=godmode/agentes/configurar_agente&
 		id_agente=".$id_agente."&
 		delete_module=".$row["id_agente_modulo"]."'>
-		<img src='images/cancel.gif' border=0 alt='".$lang_label["delete"]."'>
+		<img src='images/cross.png' border=0 alt='".$lang_label["delete"]."'>
 		</b></a> &nbsp; ";
 		echo "<a href='index.php?sec=gagente&
 		sec2=godmode/agentes/configurar_agente&

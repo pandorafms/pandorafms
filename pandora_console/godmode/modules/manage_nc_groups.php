@@ -105,7 +105,7 @@ while ($row=mysql_fetch_array($result)){
 			<a href='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&delete=1&id_sg=".$row["id_sg"]."'
 				onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\'))
 			return false;'>
-			<img border='0' src='images/cancel.gif'></a>
+			<img border='0' src='images/cross.png'></a>
 			</td>
 		</tr>";
 

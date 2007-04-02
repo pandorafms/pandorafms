@@ -90,7 +90,7 @@ and can be accessed.</p>
 A group is added by clicking "Create group" and assigning a name to it.</p>
 <p>
 
-A group is deleted by clicking the delete icon <img src="../../images/cancel.gif"> in the right hand side of each group.</p>
+A group is deleted by clicking the delete icon <img src="../../images/cross.png"> in the right hand side of each group.</p>
 
 <h2><a name="32">3.2. Adding an agent</a></h2>
 
@@ -155,7 +155,7 @@ user views.</li>
 
 <p>In this screen the modules can be:</p>
 <ul>
-<li>Deleted by clicking <img src="../../images/cancel.gif"></li>
+<li>Deleted by clicking <img src="../../images/cross.png"></li>
 <li>Edited by clicking <img src="../../images/config.gif"></li>
 </ul>
 
@@ -185,7 +185,7 @@ Operating System.</p>
 
 <p class="center"><img src="images/image011.png"></p>
 
-<p>An Alert is deleted by clicking on the delete icon <img src="../../images/cancel.gif"> placed on the right hand side of the Alert. A new customised Alert can be created clicking in "Create Alert".</p>
+<p>An Alert is deleted by clicking on the delete icon <img src="../../images/cross.png"> placed on the right hand side of the Alert. A new customised Alert can be created clicking in "Create Alert".</p>
 
 <p>The values "<code>_field1_</code>", "<code>_field2_</code>" and "<code>_field3_</code>" in the customised Alerts are used to build the command line that the machine where Pandora resides will execute – if there were several servers, the one in Master mode.</p>
 

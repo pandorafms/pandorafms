@@ -92,7 +92,7 @@ acceder a la lista de los Servidores Pandora.</p>
      <p>Desde «Gesti&oacute;n» en el men&uacute; de administraci&oacute;n se puede acceder a la lista de los Servidores Pandora que est&aacute;n configurados y administrarlos.</p>
   <p>
    Para borrar un servidor utilizamos el icono
-   <img src="../../images/cancel.gif">
+   <img src="../../images/cross.png">
    </p>
    <p>
    Para modificar un servidor utilizamos el icono 

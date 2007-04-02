@@ -104,12 +104,12 @@ grupos a los que tiene acceso una vez se ha creado el usuario, y actualizar su c
 
 <p class="center"><img src="images/image004.png"></p>
 
-<p>Para borrar un perfil de un usuario bastar&aacute; con pulsar en el icono <img src="../../images/cancel.gif">
+<p>Para borrar un perfil de un usuario bastar&aacute; con pulsar en el icono <img src="../../images/cross.png">
 correspondiente que hay a la derecha de cada perfil.</p>
 
 <h2><a name="23">2.3. Borrar un usuario</a></h2>
 
-<p>Para borrar un usuario bastar&aacute; en pulsar en el icono <img src="../../images/cancel.gif">
+<p>Para borrar un usuario bastar&aacute; en pulsar en el icono <img src="../../images/cross.png">
 correspondiente que hay a la derecha del usuario en la lista de usuarios accesible desde «Gesti&oacute;n de usuarios», en el men&uacute; de administraci&oacute;n.</p>
 
 <p class="center"><img src="images/image005.png"></p>

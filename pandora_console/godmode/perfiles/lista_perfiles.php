@@ -2,8 +2,8 @@
 // Pandora - The Free Monitoring System
 // This code is protected by GPL license.
 // Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2005-2006
+// Sancho Lerena <slerena@gmail.com>, 2003-2007
+// Raul Mateos <raulofpandora@gmail.com>, 2005-2007
 
 // Global variables
 require("include/config.php");
@@ -183,18 +183,18 @@ echo "<tr><td colspan='3' align='right'><input name='uptbutton' type='submit' cl
 		$query_del1="SELECT * FROM tperfil";
 		$resq1=mysql_query($query_del1);
       	echo "<tr>";
-        echo "<th class='w180'><font size=1>".$lang_label["profiles"];
-        echo "<th class='w40'><font size=1>IR<a href='#' class='tip2'>&nbsp;<span>".$help_label["IR"]."</span></a>";
-        echo "<th class='w40'><font size=1>IW<a href='#' class='tip2'>&nbsp;<span>".$help_label["IW"]."</span></a>";
-        echo "<th class='w40'><font size=1>IM<a href='#' class='tip2'>&nbsp;<span>".$help_label["IM"]."</span></a>";
-        echo "<th class='w40'><font size=1>AR<a href='#' class='tip2'>&nbsp;<span>".$help_label["AR"]."</span></a>";
-        echo "<th class='w40'><font size=1>AW<a href='#' class='tip2'>&nbsp;<span>".$help_label["AW"]."</span></a>";
-        echo "<th class='w40'><font size=1>LW<a href='#' class='tip2'>&nbsp;<span>".$help_label["LW"]."</span></a>";
-        echo "<th class='w40'><font size=1>UM<a href='#' class='tip2'>&nbsp;<span>".$help_label["UM"]."</span></a>";
-        echo "<th class='w40'><font size=1>DM<a href='#' class='tip2'>&nbsp;<span>".$help_label["DM"]."</span></a>";
-        echo "<th class='w40'><font size=1>LM<a href='#' class='tip2'>&nbsp;<span>".$help_label["LM"]."</span></a>";
-        echo "<th class='w40'><font size=1>PM<a href='#' class='tip2'>&nbsp;<span>".$help_label["PM"]."</span></a>";
-		echo "<th class='w30'>".$lang_label["delete"]."</th></tr>";
+        echo "<th width='180px'><font size=1>".$lang_label["profiles"];
+        echo "<th width='40px'><font size=1>IR<a href='#' class='tipp'>&nbsp;<span>".$help_label["IR"]."</span></a>";
+        echo "<th width='40px'><font size=1>IW<a href='#' class='tipp'>&nbsp;<span>".$help_label["IW"]."</span></a>";
+        echo "<th width='40px'><font size=1>IM<a href='#' class='tipp'>&nbsp;<span>".$help_label["IM"]."</span></a>";
+        echo "<th width='40px'><font size=1>AR<a href='#' class='tipp'>&nbsp;<span>".$help_label["AR"]."</span></a>";
+        echo "<th width='40px'><font size=1>AW<a href='#' class='tipp'>&nbsp;<span>".$help_label["AW"]."</span></a>";
+        echo "<th width='40px'><font size=1>LW<a href='#' class='tipp'>&nbsp;<span>".$help_label["LW"]."</span></a>";
+        echo "<th width='40px'><font size=1>UM<a href='#' class='tipp'>&nbsp;<span>".$help_label["UM"]."</span></a>";
+        echo "<th width='40px'><font size=1>DM<a href='#' class='tipp'>&nbsp;<span>".$help_label["DM"]."</span></a>";
+        echo "<th width='40px'><font size=1>LM<a href='#' class='tipp'>&nbsp;<span>".$help_label["LM"]."</span></a>";
+        echo "<th width='40px'><font size=1>PM<a href='#' class='tipp'>&nbsp;<span>".$help_label["PM"]."</span></a>";
+		echo "<th width='40px'>".$lang_label["delete"]."</th></tr>";
 	while ($rowdup=mysql_fetch_array($resq1)){
 		$id_perfil = $rowdup["id_perfil"];
 		$nombre=$rowdup["name"];
@@ -219,42 +219,42 @@ echo "<tr><td colspan='3' align='right'><input name='uptbutton' type='submit' cl
 		echo "<td class='$tdcolor'><a href='index.php?sec=gperfiles&amp;sec2=godmode/perfiles/lista_perfiles&amp;edit_profile=".$id_perfil."'><b>".$nombre."</b></a>";
 		
 		echo "<td class='$tdcolor'>";
-		if ($incident_view == 1) echo "<img src='images/ok.gif' border=0>";
+		if ($incident_view == 1) echo "<img src='images/ok.png' border=0>";
 			
 		echo "<td class='$tdcolor'>";
-		if ($incident_edit == 1) echo "<img src='images/ok.gif' border=0>";
+		if ($incident_edit == 1) echo "<img src='images/ok.png' border=0>";
 			
 		echo "<td class='$tdcolor'>";
-		if ($incident_management == 1) echo "<img src='images/ok.gif' border=0>";
+		if ($incident_management == 1) echo "<img src='images/ok.png' border=0>";
 			
 		echo "<td class='$tdcolor'>";
-		if ($agent_view == 1) echo "<img src='images/ok.gif' border=0>";
+		if ($agent_view == 1) echo "<img src='images/ok.png' border=0>";
 			
 		echo "<td class='$tdcolor'>";
-		if ($agent_edit == 1) echo "<img src='images/ok.gif' border=0>";
+		if ($agent_edit == 1) echo "<img src='images/ok.png' border=0>";
 			
 		echo "<td class='$tdcolor'>";
-		if ($alert_edit == 1) echo "<img src='images/ok.gif' border=0>";
+		if ($alert_edit == 1) echo "<img src='images/ok.png' border=0>";
 			
 		echo "<td class='$tdcolor'>";
-		if ($user_management == 1) echo "<img src='images/ok.gif' border=0>";
+		if ($user_management == 1) echo "<img src='images/ok.png' border=0>";
 			
 		echo "<td class='$tdcolor'>";
-		if ($db_management == 1) echo "<img src='images/ok.gif' border=0>";
+		if ($db_management == 1) echo "<img src='images/ok.png' border=0>";
 			
 		echo "<td class='$tdcolor'>";
-		if ($alert_management == 1) echo "<img src='images/ok.gif' border=0>";
+		if ($alert_management == 1) echo "<img src='images/ok.png' border=0>";
 			
 		echo "<td class='$tdcolor'>";
-		if ($pandora_management == 1) echo "<img src='images/ok.gif' border=0>";
-		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/perfiles/lista_perfiles&delete_profile=".$id_perfil."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cancel.gif'></a></td></tr>";
+		if ($pandora_management == 1) echo "<img src='images/ok.png' border=0>";
+		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/perfiles/lista_perfiles&delete_profile=".$id_perfil."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cross.png'></a></td></tr>";
 		
 	}
 			echo "</div></td></tr>";
 			echo "<tr><td colspan='12'><div class='raya'></div></td></tr>";
 			echo "<tr><td colspan='12' align='right'>";
 			echo "<form method=post action='index.php?sec=gperfiles&sec2=godmode/perfiles/lista_perfiles&new_profile=1'>";
-			echo "<input type='submit' class='sub' name='crt' value='".$lang_label["create_profile"]."'>";
+			echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create_profile"]."'>";
 			echo "</form></table>";
 		}
 	}

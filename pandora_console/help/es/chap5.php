@@ -64,8 +64,8 @@ solucionado.</p>
 <p><b>ID de usuario:</b> Usuario que ha validado el evento.</p>
 <p><b>Fecha y hora:</b> Fecha y hora de aparici&oacute;n del evento o de validaci&oacute;n en caso de estar validado.</p>
 <p><b>Acci&oacute;n:</b> Acci&oacute;n que se puede ejecutar sobre el evento:</p>
-<p class="ml25"><img src="../../images/ok.gif"> Pinchando en este icono se validar&aacute; el evento y desaparecer&aacute; el icono</p>
-<p class="ml25"><img src="../../images/cancel.gif"> Pinchando en este icono se borrar&aacute; (y desaparecer&aacute;) el evento</p>
+<p class="ml25"><img src="../../images/ok.png"> Pinchando en este icono se validar&aacute; el evento y desaparecer&aacute; el icono</p>
+<p class="ml25"><img src="../../images/cross.png"> Pinchando en este icono se borrar&aacute; (y desaparecer&aacute;) el evento</p>
 
 <p>Los eventos tambi&eacute;n se pueden validar y eliminar, marc&aacute;ndolos en la columna de la derecha y pinchando en «Validar» o «Borrar».</p>
 

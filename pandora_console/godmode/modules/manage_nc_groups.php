@@ -113,7 +113,7 @@ while ($row=mysql_fetch_array($result)){
 echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
 echo "<tr><td colspan='3' align='right'>";
 echo "<form method=post action='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups_form&create=1'>";
-echo "<input type='submit' class='sub' name='crt' value='".$lang_label["create"]."'>";
+echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create"]."'>";
 echo "</form></td></tr></table>";
 
 ?>

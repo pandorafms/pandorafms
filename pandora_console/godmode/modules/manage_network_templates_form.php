@@ -118,7 +118,9 @@ echo "<input type='text' size=25 name='name' value='$name'>";
 echo "<tr><td class='datos2'>".$lang_label["description"];
 echo "<td class='datos2'>";
 echo "<textarea cols=50 rows=2 name='description'>";
-echo $description;
+if (isset($description)) {
+	echo $description;
+}
 echo "</textarea>";
 echo "</td></tr></table>";
 
@@ -150,7 +152,7 @@ if ($id_np != -1){
 			$id_tipo = $row2["type"];
 			$id_group = $row2["id_group"];
 			$nombre_modulo =$row2["name"];
-			$descripcion = $row2["description"];
+			$description = $row2["description"];
 			$module_group2 = $row2["id_module_group"];
 
 			echo "<tr><td class='".$tdcolor."_id'>";
@@ -159,7 +161,7 @@ if ($id_np != -1){
 			if ($id_tipo > 0) {
 				echo "<img src='images/".show_icon_type($id_tipo)."' border=0>";
 			}
-			echo "<td class='$tdcolor'>".substr($descripcion,0,30)."</td>";
+			echo "<td class='$tdcolor'>".substr($description,0,30)."</td>";
 			echo "<td class='$tdcolor'>".give_network_component_group_name($id_group)."</td>";
 			echo "<td class='$tdcolor'><a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np=$id_np&delete_module=$id_npc'><img src='images/cross.png'></a></td>";
 		}

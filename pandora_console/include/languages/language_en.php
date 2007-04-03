@@ -743,6 +743,8 @@ $lang_label["version"]="Version";
 //2 Apr 2007
 $lang_label["no_rtask"]="There are no recon task configured";
 
+//3 Apr 2007
+$lang_label["no_netprofiles"]="There are no defined network profiles";
 
 global $lang_label; 
 global $help_label;

@@ -662,6 +662,9 @@ $lang_label["parent"]="Padre";
 //2 Apr 2007
 $lang_label["no_rtask"]="No hay ninguna tarea de reconocimiento configurada";
 
+//3 Apr 2007
+$lang_label["no_netprofiles"]="No hay ning&uacute;n perfil de red definido";
+
 global $lang_label;
 global $help_label;
 ?>

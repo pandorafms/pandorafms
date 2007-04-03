@@ -173,13 +173,13 @@ echo "<select name='ncgroup' onChange='javascript:this.form.submit();'>";
 echo "<option value='$ncgroup'>".give_network_component_group_name($ncgroup);	
 if ($ncgroup != 0)
 	echo "<option value='0'>".$lang_label["all"];
-$sql1 = "SELECT * FROM tnetwork_component_group where id_sg != '$ncgroup'";
+$sql1 = "SELECT * FROM tnetwork_component_group WHERE id_sg != '$ncgroup'";
 $result = mysql_query($sql1);
 while ($row = mysql_fetch_array ($result))
 	echo "<option value='" . $row["id_sg"] . "'>". give_network_component_group_name ($row["id_sg"]);
 echo "</select>";
 echo "<td valign='middle'>";
-echo "<input name='uptbutton' type='submit' class='sub' value='".$lang_label["show"]."'>";
+echo "<noscript><input name='uptbutton' type='submit' class='sub' value='".$lang_label["show"]."'></noscript>";
 echo "</td></form></table><br><br>";
 
 if ($ncgroup != 0)
@@ -245,7 +245,7 @@ if ( $row = mysql_num_rows ($result)){
 	echo "<tr><td colspan='7'><div class='raya'></div></td></tr>";
 	echo "<tr><td colspan='7' align='right'>";
 	echo "<form method=post action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components_form&create=1'>";
-	echo "<input type='submit' class='sub' name='crt' value='".$lang_label["create"]."'>";
+	echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create"]."'>";
 	echo "</form></td></tr></table>";
 
 } else

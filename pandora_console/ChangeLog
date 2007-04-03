@@ -1,3 +1,22 @@
+2007-04-03 Raul Mateos <raulofpandora@gmail.com>
+
+	* include/languages/language_en.php, language_es_es.php: Added text
+	for no network profile.
+
+	* godmode/modules/manage_network_components.php: Added noscript tag
+	to avoid showing the "show" button if Javascript is enabled. Added
+	image to button Create.
+	
+	* godmode/modules/manage_network_templates.php: Added code to show
+	text if no netork template is defined. Added
+	image to button Create.
+	
+	* godmode/modules/manage_network_templates_form.php: Added code to 
+	avoid a notice error when creating new profile.
+	
+	* godmode/modules/manage_nc_groups.php: Added imaged to Button
+	Create.
+	
 2007-04-02 Raul Mateos <raulofpandora@gmail.com>
 
 	* images/ok.gif: Deleted

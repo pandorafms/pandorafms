@@ -44,13 +44,16 @@ if (isset($_GET["delete"])){ // if delete
 
 echo "<h2>".$lang_label["network_profile_management"]."</h2>";
 
-echo "<table cellpadding=4 cellspacing=4 width=550>";
-echo "<th>".$lang_label["name"]."</th>";
-echo "<th>".$lang_label["description"]."</th>";
-echo "<th>".$lang_label["number_of_modules"]."</th>";
+
 $sql1='SELECT * FROM tnetwork_profile ORDER BY name';
 $result=mysql_query($sql1);
 $color=0;
+if (mysql_num_rows($result)) {
+	echo "<table cellpadding=4 cellspacing=4 width=550>";
+	echo "<th>".$lang_label["name"]."</th>";
+	echo "<th>".$lang_label["description"]."</th>";
+	echo "<th>".$lang_label["number_of_modules"]."</th>";
+}
 while ($row=mysql_fetch_array($result)){
 	if ($color == 1){
 		$tdcolor = "datos";
@@ -76,10 +79,15 @@ while ($row=mysql_fetch_array($result)){
 		</tr>";
 
 }
-echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
+if (mysql_num_rows($result)) {
+	echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
+} else {
+	echo "<div class='nf'>".$lang_label["no_netprofiles"]."</div>";
+	echo "<table>";
+}
 echo "<tr><td colspan='3' align='right'>";
 echo "<form method=post action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np=-1'>";
-echo "<input type='submit' class='sub' name='crt' value='".$lang_label["create"]."'>";
+echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create"]."'>";
 echo "</form></td></tr></table>";
 
 ?>

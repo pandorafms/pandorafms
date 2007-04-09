@@ -36,8 +36,8 @@ our @EXPORT = qw( 	pandora_help_screen
 # There is no global vars, all variables (setup) passed as hash reference
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "1.2 Beta 3";
-my $pandora_build="PS060929";
+my $pandora_version = "1.2.1";
+my $pandora_build="PS070409";
 
 # Setup hash
 my %pa_config;

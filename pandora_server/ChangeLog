@@ -1,3 +1,11 @@
+2007-04-09  Sancho Lerena  <slerena@artica.es>
+
+	* pandora_db.pm: Fixed BUG #1623231. Fixed BUG #1627076. Solved
+	problem with reported excesive verbosity in logfile. This is
+	version 1.2.1 officially.
+
+	* pandora_config.pm: Update version.
+
 2006-09-13 Sancho Lerena <slerena@artica.es>
 
 	* pandora_network.pl: Fixed problems with OID index. Perl needs to

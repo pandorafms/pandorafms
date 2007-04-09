@@ -15,7 +15,7 @@
       architecture.
     </para>
     <para>
-      Pandora can be implemented over any operating system, with specific
+      Pandora can be implemented on top of any operating system, with specific
       agents for each platform. Pandora can also monitor any TCP/IP
       hardware system, as load balancers, routers, switches, printers
       and so on.
@@ -28,7 +28,7 @@
       <emphasis>- Web Console:</emphasis> Pandora's user
       interface. The user controls and operates the system with
       it. Several Web consoles can be implemented in a single system.
-      The Web console is written in PHP, and it must be over a database and a
+      The Web console is written in PHP, and it lies on top of a database and a
       Web server. It is compatible with any platforms - GNU/Linux,
       Solaris, Win2000, AIX, etc. Although, the official supported
       platform is GNU/Linux.
@@ -37,7 +37,7 @@
     <para>
       The console permits the user to control the status of the
       agents, view statistical information, generate graphs and data
-      tables, keep a system incident control, moreover, it will be able
+      tables, keep a system incident control. Moreover, it will be able
       to generate reports and change the alerts, agents, and user profile
       settings.
     </para>

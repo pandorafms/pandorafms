@@ -27,7 +27,7 @@
       such as firewalls, proxies, databases, Web servers, tunnelling
       servers, routers, switches, processes, services, remote access
       servers, etc. - all integrated into an open and distributed
-      architecture.  Pandora can be implemented over any operating
+      architecture.  Pandora can be implemented on top of any operating
       system, with specific agents for each platform. Pandora can also
       monitor any TCP/IP hardware system, as load balancers,
       routers, switches, printers, etc.
@@ -39,8 +39,8 @@
 	  <emphasis>Web Console</emphasis>: Pandora's user
 	  interface. The user controls and operates the system with
 	  it. Several Web consoles can be implemented in a single
-	  system. The Web console is written in PHP, and it is over a
-	  database and a Web server. It is compatible with any
+	  system. The Web console is written in PHP, and it lies on top
+	  of a database and a Web server. It is compatible with any
 	  platform - GNU/Linux, Solaris, Win2000, AIX, etc.T
 	  official supported platform is GNU/Linux, though
 	</para>
@@ -74,7 +74,7 @@
 	<para>
 	  The Network Servers monitorize remote systems using
 	  network resources like ICMP, TCP, UDP or SNMP
-	  Queries. Network Servers are acting itself like "Network
+	  Queries. Network Servers are acting themselves as "Network
 	  Agents". This server fires the alerts and the events for this
 	  modules.
         </para>
@@ -94,9 +94,9 @@
 	  sytems.
 	</para>
 	<para>
-	  This database can work with any of the platform officially
+	  This database can work with any of the platforms officially
 	  supported by MySQL. Pandora can be implemented with MySQL
-	  versions from 3.0 to 5.0, although the latest is recommended.
+	  versions from 3.0 to 5.0, although the latest one is recommended.
 	</para>
       </listitem>
       <listitem>
@@ -104,7 +104,7 @@
 	  <emphasis>Pandora Agents</emphasis>: They collect all the
 	  system's data. They are executed in each local system,
 	  although they can also collect remote information by
-	  intalling monitoring sytems for the agent in several
+	  installing monitoring sytems for the agent in several
 	  different machines - called satellite agents.
 	</para>
 	<para>
@@ -113,7 +113,7 @@
 	  ShellScripting for Unix - which includes GNU/Linux, Solaris,
 	  AIX, HP-UX and BSD, as well as the Nokia's IPSO. Pandora
 	  agents can be developed in virtually any language, given its
-	  simple API and being open source. Windows agent are
+	  simple API and being open source. Windows agents are
 	  developed in a free development environment for C++ and uses
 	  the same interface and modularity than Unix agents.
 	</para>
@@ -185,12 +185,12 @@
   <para>
     Pandora agents are based on native languages in every platform:
     scripts that can be written in any language. It's possible to
-    reproduce any agent in any programming language and can be
-    extended without difficulty the existing ones in order to cover
-    aspects not taken into account up to the moment.
+    reproduce any agent in any programming language and the existing ones
+    can be extended without difficulty in order to cover aspects 
+    not taken into account up to the moment.
   </para>
   <para>
-    These scripts are formed by modules that each one gathers a
+    These scripts are formed by modules each one gathering a
     "chunk" of information. Thus, every agent gathers several "chunks"
     of information; this one is organized in a data set and stored in
     a single file, called data file.
@@ -202,7 +202,7 @@
     that parameter in order to do not fill the database with non-relevant
     information, either load the network or affect the system
     performance. The default interval is 300 (seconds), which is
-    equivalent to five minutes. Minor values of 100 (seconds) are not
+    equivalent to five minutes. Values under 100 (seconds) are not
     recommended since host performance could be affected, besides
     loading excessively Database and the Operating System of Pandora
     Server. Pandora is not a real time system; it's an applications

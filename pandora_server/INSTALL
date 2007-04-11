@@ -43,7 +43,7 @@ To use SNMP fuctions it's needed also to have installed the net-snmp package. It
 
 Pandora SNMP Console
 ~~~~~~~~~~~~~~~~~~~~
-It's needed to install the NET-SNMP package which is included in all GNU/Linux distributions. You have to use the snmptrapd binary and copy or link it to $HOME_PANDORA/util, where $HOME_PANDORA is the instalation directory of Pandroa Server. This usually is /opt/pandora_server.
+It's needed to install the NET-SNMP package which is included in all GNU/Linux distributions. You have to use the snmptrapd binary and copy or link it to $HOME_PANDORA/util, where $HOME_PANDORA is the instalation directory of Pandroa Server. This usually is /usr/share/pandora_server.
 
 This binary gets the SNMP traps, generating a log that is parsed by the Pandora Server.
 
@@ -115,7 +115,7 @@ flush privileges;
 Pandora Server
 ~~~~~~~~~~~~~~
 
-Create the /opt/pandora directory and "gunzip" and "untar" here the pandora_server_1.2beta1.tar.gz file.
+Create the /usr/share/pandora_server directory and "gunzip" and "untar" here the pandora_server_1.2beta1.tar.gz file.
 
 Create an user pandora in OS. Usually you do that (in GNU/Linux) with commands:
 useraddd pandora -d /home/pandora
@@ -130,7 +130,7 @@ Pandora Server will check and parse XML files sent by Pandora Agents and will in
 
 Check launch scripts (pandora_network, pandora_server, pandora_snmp) and check for pathnames in the first two variables in script.
 
-Edit configuration file of Pandora Server, usually /opt/pandora/conf/pandora_server.conf and take a look at the lines:
+Edit configuration file of Pandora Server, usually /usr/share/pandora_server/conf/pandora_server.conf and take a look at the lines:
 dbuser pandora
 dbpass pandora
 dbhost localhost
@@ -141,9 +141,9 @@ If you run Pandora Server in Windows, you need to use the backslash twice in $di
 
 These are default values, and all must be existing directory and filename and valid username, password and hostname.
 
-Remember: you need to create the directory /opt/pandora/data_in where Pandora Server will read and write data, sent by remote agents using ssh/scp. This directory must be owned or with permissions to write for user "pandora". If you dont have a "pandora" user yet, create it.
+Remember: you need to create the directory /usr/share/pandora_server/data_in where Pandora Server will read and write data, sent by remote agents using ssh/scp. This directory must be owned or with permissions to write for user "pandora". If you dont have a "pandora" user yet, create it.
 
-You can run Pandora Server with an user without privilegues, you can use the user "pandora", it only needs to run /usr/bin/perl and access to /opt/pandora and /opt/pandora/data_in directories.
+You can run Pandora Server with an user without privilegues, you can use the user "pandora", it only needs to run /usr/bin/perl and access to /usr/share/pandora_server and /usr/share/pandora_server/data_in directories.
 
 This is true with all the components but with Pandora SNMP Console needs root user to open UDP port 161 (this can be solved setting SUID0 to the snmptrapd binary) and running the rest of the Server using an user without privileges.
 
@@ -151,7 +151,7 @@ Also Pandora Network Server can be run using an user without privileges, but the
 
 Check the MySQL connection with the user and password before running the server
 
-Pandora Server distribution tarball includes a Posix/System V start/stop script for "daemonize" Pandora Server. It is possible that you need to customize, but its runs smoothly on GNU/Linux (debian, Suse) and Solaris 8 systems. It has start|stop|restart parameters to include it in your default init level directory and it creates a logfile defined in $log_file variable (by default is /opt/pandora/pandora.log):
+Pandora Server distribution tarball includes a Posix/System V start/stop script for "daemonize" Pandora Server. It is possible that you need to customize, but its runs smoothly on GNU/Linux (debian, Suse) and Solaris 8 systems. It has start|stop|restart parameters to include it in your default init level directory and it creates a logfile defined in $log_file variable (by default is /usr/share/pandora_server/pandora.log):
 /etc/init.d/pandora_server start
 
 Pandora Web Console

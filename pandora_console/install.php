@@ -157,7 +157,7 @@ function install_step1() {
 			<i>Pandora FMS Development team</i>
 		";
 		if (file_exists("include/config.php")){
-			echo "<p><img src='images/info.png' valign='bottom'><b> Warning: You already have a config.php file. Configuracion and database would be overwritten if you continue.</b></p>";
+			echo "<p><img src='images/info.png' valign='bottom'><b> Warning: You already have a config.php file. Configuration and database would be overwritten if you continued.</b></p>";
 		}
 		echo "
 		</div>
@@ -208,8 +208,8 @@ function install_step2() {
 		<div id='install_box' style='margin-bottom: 25px;margin-left: 25px;'>";
 			if ($res > 0) {
 				echo "<p><img src='images/info.png'> You have some uncomplete 
-				dependencies. Please correct it or this installer 
-				could not finish your installation.
+				dependencies. Please correct them or this installer 
+				will not be able to finish your installation.
 				</p>
 				Ignore it. <a href='install.php?step=3'>Force install Step #3</a>";
 			} else {
@@ -232,12 +232,12 @@ function install_step3() {
 		<div id='install_box'>
 			<h1>Environment and database setup</h1>
 			<p>
-			This wizard will create your Pandora FMS database, and populate it with data needed to run for first time. 
+			This wizard will create your Pandora FMS database, and populate it with all the data needed to run for the first time. 
 			You need a privileged user to create database schema, this is usually root user. 
-			Information about <i>root</i> user will not be used or stored for anymore.
+			Information about <i>root</i> user will not be used or stored anymore.
 			</p>
 			<p>
-			Now, please, complete all details to configure your database and enviroment setup. <b>NOTICE</b> that database will be destroyed if already exists!.
+			Now, please, complete all details to configure your database and enviroment setup. <b>NOTICE</b> that database will be destroyed if it already exists!.
 			</p>
 			<form method='post' action='install.php?step=4'>
 				<div>DB User with privileges on MySQL</div>
@@ -378,7 +378,7 @@ $BASE_URL="'.$url.'";			// Base URL
 			if ($everything_ok == 1) {
 				echo "<a href='install.php?step=5'><img align='right' src='images/arrow_next.png' border=0 class=''></a>";
 			} else {
-				echo "<img src='images/info.png'> You get some problems. Installation is not completed. 
+				echo "<img src='images/info.png'> You got some problems. Installation is not completed. 
 				<p>Please correct failures before trying again. All database schemes created in this step have been dropped.</p>";
 
 				if (mysql_error() != "")

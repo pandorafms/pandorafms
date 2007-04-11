@@ -1,3 +1,7 @@
+2007-04-11 Manuel Arostegui <marostegui@artica.es>
+
+	* install.php: Text corrections.
+
 2007-04-10 Sancho Lerena <slerena@gmail.com>
 
 	* pandoradb_data.sql: Fixed some odd problems with schema data. 

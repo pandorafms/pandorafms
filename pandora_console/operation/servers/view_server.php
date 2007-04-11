@@ -29,8 +29,8 @@ if (comprueba_login() == 0) {
 
 	$sql='SELECT * FROM tserver';
 	
-	echo "<h2>".$lang_label["view_servers"]."</h2>";
-	echo "<h3>".$lang_label["server_detail"]."<a href='help/".$help_code."/chap7.php#7' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	echo "<h2>".$lang_label["view_servers"]." -&gt; ";
+	echo $lang_label["server_detail"]." <a href='help/".$help_code."/chap7.php#7' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 
 	// Get total modules defined (network)
 	$sql1='SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo > 4';
@@ -40,9 +40,11 @@ if (comprueba_login() == 0) {
 
 	// Get total modules defined (data)
 	$sql1='SELECT COUNT(processed_by_server) FROM tagente_estado WHERE processed_by_server LIKE "%_Data" ';
-	$result1=mysql_query($sql1);
-	$row1=mysql_fetch_array($result1);
-	$total_modules_data = $row1[0];
+	if ($result1=mysql_query($sql1)){
+		$row1=mysql_fetch_array($result1);
+		$total_modules_data = $row1[0];
+	} else	
+		$total_modules_data = 0;
 
 	// Connect DataBase
 	$result=mysql_query($sql);
@@ -122,7 +124,10 @@ if (comprueba_login() == 0) {
 				if ($network_server == 1){
 					if ($total_modules == 0)
 						$percentil = 0;
-					$percentil = $modules_server / ($total_modules / 100);
+					if ($total_modules > 0)
+						$percentil = $modules_server / ($total_modules / 100);
+					else	
+						$percentil = 0;
 					$total_modules_temp = $total_modules;
 				} else {
 					if ($total_modules_data == 0)
@@ -168,15 +173,16 @@ if (comprueba_login() == 0) {
 			// Get total modules defined for this server
 			if (($network_server == 1) OR ($data_server == 1)){
 				$sql1 = "SELECT utimestamp, current_interval FROM tagente_estado WHERE  processed_by_server = '$name' AND estado < 100";
-				$result1=mysql_query($sql1);
+	
 				$nowtime = time();
 				$maxlag=0;
-				while ($row1=mysql_fetch_array($result1)){
-					if (($row1["utimestamp"] + $row1["current_interval"]) < $nowtime)
-						$maxlag2 =  $nowtime - ($row1["utimestamp"] + $row1["current_interval"]);
-						if ($maxlag2 > $maxlag)
-							$maxlag = $maxlag2;
-				}
+				if ($result1=mysql_query($sql1))
+					while ($row1=mysql_fetch_array($result1)){
+						if (($row1["utimestamp"] + $row1["current_interval"]) < $nowtime)
+							$maxlag2 =  $nowtime - ($row1["utimestamp"] + $row1["current_interval"]);
+							if ($maxlag2 > $maxlag)
+								$maxlag = $maxlag2;
+					}
 				if ($maxlag < 60)
 					echo $maxlag." sec";
 				elseif ($maxlag < 86400)

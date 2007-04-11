@@ -71,6 +71,8 @@
 	echo "</td></tr></table>";
 	echo "</div>"; // activity
 
+	// Private messages pending to read !
+
 	$sql='SELECT COUNT(*) FROM tmensajes WHERE id_usuario_destino="' . $nick . '" AND estado="FALSE";';
 	$resultado = mysql_query ($sql);
 	$row = mysql_fetch_array ($resultado);
@@ -78,26 +80,49 @@
 		
 		echo '<div style="margin-left: 8px">' . $lang_label["new_message_bra"];
 		echo '<b><a href="index.php?sec=messages&sec2=operation/messages/message">';
-		echo $row["COUNT(*)"] . '</b> <img src="images/mail.gif" border="0"></a>';
-		echo $lang_label["new_message_ket"] . '</div>';
+		echo $row["COUNT(*)"] . '</b> <img src="images/mail.gif" border="0">';
+		echo $lang_label["new_message_ket"] . '</a></div>';
 	}
 
+	// Site news !
+	echo '<h2>' . $lang_label["site_news"] . '</h2>';
+	echo '<table cellpadding="3" cellspacing="3" width="720"><tr>'; 
+
+
+	$sql_news = "SELECT * FROM tnews ORDER by utimestamp LIMIT 3";
+	$result_news = mysql_query ($sql_news);
+	while ($row = mysql_fetch_array ($result_news)) {	
+		
+		echo '<tr><th align="left">';
+		echo $lang_label["at"]. " <i>". $row["utimestamp"] ."</i> ".$lang_label["user"]. " <b>". $row["author"]."</b> ".$lang_label["says"].":  \"<b>".$row["subject"]."\"</b>";
+		echo '<tr><td class=datos>';
+		echo clean_output_breaks($row["text"]);
+		echo '<td><td class=datos3">';
+
+	}
+	echo "</table>";
+
+	// Site stats
 	echo '<h2 class="mgb25">' . $lang_label["stat_title"] . '</h2>';
 
+	echo '<table cellpadding="3" cellspacing="3" width="500"><tr>'; 
 	$query1 = "SELECT COUNT(id_usuario) FROM tusuario";
 	$result = mysql_query ($query1);
 	$row = mysql_fetch_array ($result);
+	echo "<tr><td class=datos>";
 	echo '<span class="users">';
 	echo $lang_label["there_are"] ."<b>". $row[0] . '</b> ' . $lang_label["user_defined"];
 	echo '</span>';
 
+	echo "<tr><td class=datos>";
 	$query1 = "SELECT COUNT(id_agente) FROM tagente";
 	$result = mysql_query ($query1);
 	$row = mysql_fetch_array ($result);
 	echo '<span class="agents">';
 	echo $lang_label["there_are"] . "<b>".$row[0]."</b> ". $lang_label["agent_defined"];
 	echo '</span>';
-
+	
+	echo "<tr><td class=datos>";
 	$query1 = "SELECT COUNT(id_agente_datos) FROM tagente_datos";
 	$result = mysql_query ($query1);
 	$row = mysql_fetch_array ($result);
@@ -105,6 +130,7 @@
 	echo $lang_label["there_are"] . "<b>".$row[0] . '</b> ' . $lang_label["data_harvested"];
 	echo '</span>';
 
+	echo "<tr><td class=datos>";
 	$query1 = "SELECT COUNT(*) FROM talerta_agente_modulo";
 	$result = mysql_query ($query1);
 	$row = mysql_fetch_array ($result);
@@ -112,6 +138,7 @@
 	echo $lang_label["there_are"] . "<b>".$row[0] .'</b> ' . $lang_label["alert_defined"];
 	echo "</span>";
 	
+	echo "<tr><td class=datos>";
 	echo '<span class="time">';
 	$query1 = "SELECT timestamp FROM tagente_estado ORDER BY timestamp DESC LIMIT 1";
 	$result = mysql_query($query1);
@@ -121,6 +148,6 @@
 		echo 'No data received yet!';
 	}
 	echo '</span>';
-	
+	echo "</table>";
 	echo '</div>'; // class "jus"
 ?>

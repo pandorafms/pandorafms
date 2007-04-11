@@ -117,13 +117,13 @@ if (isset($_POST["create_agent"])) { // Create a new and shining agent
 }
 
 // Show tabs
-// ¯-----------------
+// -----------------
 
 echo "<div id='menu_tab_left'>
 <ul class='mn'>	
 <li class='nomn'>";
 echo "<li class='nomn'>";
-echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'><img src='../images/bricks.png' class='top' border=0>&nbsp; ".dame_nombre_agente($id_agente)." - ".$lang_label["setup_mode"]."</A>";
+echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'><img src='images/bricks.png' class='top' border=0>&nbsp; ".dame_nombre_agente($id_agente)." - ".$lang_label["setup_mode"]."</A>";
 echo "</li>";
 echo "</ul></div>";
 
@@ -480,7 +480,6 @@ if ( (isset($_POST["nc"]) && ($_POST["nc"]!=-1))){
 	$sql1="SELECT * FROM tnetwork_component WHERE id_nc = '$id_nc'";
 	$result=mysql_query($sql1);
 	$row=mysql_fetch_array($result);
-	$modulo_id_agente = $row["id_agente"];
 	$modulo_id_tipo_modulo = $row["type"];
 	$id_module_group = $row["id_module_group"];
 	$modulo_nombre = $row["name"];
@@ -488,7 +487,6 @@ if ( (isset($_POST["nc"]) && ($_POST["nc"]!=-1))){
 	$tcp_send = $row["tcp_send"];
 	$tcp_rcv = $row["tcp_rcv"];
 	$tcp_port = $row["tcp_port"];
-	$ip_target = $row["ip_target"];
 	$snmp_community = $row["snmp_community"];
 	$snmp_oid = $row["snmp_oid"];
 	$id_module_group = $row["id_module_group"];
@@ -521,6 +519,7 @@ if (((!isset($_POST["nc"]) OR ($_POST["nc"]==-1)) ) 	&&
 		$modulo_min= "0";
 	}	
 	$sql_insert = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,descripcion,max,min,snmp_oid,snmp_community,id_module_group,module_interval,ip_target,tcp_port,tcp_rcv,tcp_send) VALUES (".$id_agente.",".$id_tipo_modulo.",'".$nombre."','".$descripcion."','".$modulo_max."','".$modulo_min."', '$snmp_oid', '$snmp_community', '$id_module_group', '$module_interval', '$ip_target', '$tcp_port', '$tcp_rcv', '$tcp_send')";
+
 	$result=mysql_query($sql_insert);
 	$id_agente_modulo = mysql_insert_id();
 

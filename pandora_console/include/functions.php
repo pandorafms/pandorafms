@@ -65,14 +65,12 @@ function salida_limpia ($string){
 	// after the initial translation, _do_ map standalone '&' into '&#38;'
 	return preg_replace("/&(?![A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/","&#38;" , strtr($string, $trans));
 }
-/*
-{
-	$texto_ok = htmlspecialchars($texto, ENT_QUOTES, "ISO8859-15"); // Quitamos 
-	// Reemplazamos retornos de carro por "<br>"
-	$texto_html = str_replace(chr(13),"<br>",$texto_ok);
-	return $texto_html;
+
+function clean_output_breaks ($string){
+	$myoutput = salida_limpia($string);
+	return preg_replace ('/\n/',"<br>", $myoutput);
+	
 }
-*/
 
 // ---------------------------------------------------------------
 // This function reads a string and returns it "clean"

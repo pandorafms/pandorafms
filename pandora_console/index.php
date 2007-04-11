@@ -32,10 +32,15 @@
 // FreeSoftware Project coded by some of the people who makes Pandora FMS 
 
 $develop_bypass = 1;
+
 if ($develop_bypass != 1){
 	// If no config file, automatically try to install
 	if (! file_exists("include/config.php")){
-		include ("install.php");
+		if (!file_exists("install.php")){
+			include "general/error_install.php";
+			exit;
+		} else
+			include ("install.php");
 		exit;
 	}
 	// Check for installer presence

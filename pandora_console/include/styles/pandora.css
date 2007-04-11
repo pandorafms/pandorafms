@@ -228,8 +228,8 @@ td.datosf9i, td.datos_jus, td.w90datos, td.w135datos {
  
 td.datos2, td.datos2t, td.datos2b, td.datos2_id, td.datos2f9, 
 td.datos2f9i, td.datos2_jus, td.w90datos2, td.w135datos2 {
-	/* background-color: #fafbfc; */
-	background-color: #e6e9cd;
+	background-color: #efefef; 
+	/* background-color: #e6e9cd; */
 }
 
 td.datos3 {

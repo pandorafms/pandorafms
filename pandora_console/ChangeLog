@@ -1,3 +1,48 @@
+2007-04-10 Sancho Lerena <slerena@gmail.com>
+
+	* pandoradb_data.sql: Fixed some odd problems with schema data. 
+
+	* pandoradb.sql: Fixed some odd problems with schema structure and
+	added new table tnews for publish board updates. 
+
+	* include/styles/pandora.css: Changed color for data2 style.
+
+	* include/config.inc.php: Deleted two last blank lines who makes
+	config.php unusable for graphs. FIXED.
+
+	* include/languages/language_en.php: Added some new strings.
+
+	* include/config.php: some problems with new config
+	variables. Need to recheck.
+
+	* include/functions.php: Added function to render normal text,
+	replacing carriage return with HTML br tag.
+
+	* install.php: Many small bugs fixed. Now uses dbname variable and
+	use default variables in form.
+
+	* estado_grupo.php: Small bug fixed.
+
+	* estado_ultimopaquete: Small bug fixed.
+
+	* estado_generalagente.php: Small bug fixed.
+
+	* view_server.php: Small bug fixed.
+
+	* fgraph.php: Now agent with only one kind of module render module
+	distribution graph.
+
+	* stat_win.php: Fixed small bug with windows ids.
+
+	* module_manager.php: Fixed small bug.
+
+	* modificar_agente.php: Fixed small bug.
+
+	* module_list.php: Fixed stupid bug.
+
+	* god_mode/menu.php: Fixed problem with menu position.
+	
+	
 2007-04-03 Raul Mateos <raulofpandora@gmail.com>
 
 	* include/languages/language_en.php, language_es_es.php: Added text

@@ -7,7 +7,7 @@
 # Compatible with NetSNMP 5.1 or higher
 
 # Configurable path and filenames
-PANDORA_HOME="/opt/pandora_server"
+PANDORA_HOME="/usr/share/pandora_server"
 DAEMON_PATH="$PANDORA_HOME/util"
 DAEMON_LOG="$PANDORA_HOME/log/snmptrapd.log"
 DAEMON_PID="$PANDORA_HOME/var/snmptrapd.pid"

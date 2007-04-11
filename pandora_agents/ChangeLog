@@ -1,6 +1,35 @@
+2007-04-11  Manuel Arostegui <marostegui@artica.es>
+
+	* linux/pandora_agent.conf, pandora_agents.spec: Changed
+	  PATHS to adapt them to the upcoming 1.3 release.
+        
+	* bsd-ipso/pandora_agent_daemon, pandora_agent.conf,
+	  pandora_agent.sh: Changed PATHS to adapt them to
+	  the upcoming 1.3 release.
+      
+	* aix/pandora_agent_daemon, pandora_agent.conf,
+	  pandora_agent.sh: Changed PATHS to adapt them
+	  to the upcoming 1.3 release.
+      
+	* hp-ux/pandora_agent_daemon, pandora_agent.conf,
+	  pandora_agent.sh: Changed PATHS to adapt them
+	  to the upcoming 1.3 release.
+      
+	* win32/bin/pandora_agent.conf: Changed PATHS to
+	  adapt them to the upcoming 1.3 release.
+      
+	* meta_agent/pandora_agent_sim.sh, pandora_agent_daemon,
+	  pandora_agent_1.conf, pandora_agent_2.conf, pandora_agent_3.conf,
+	  pandora_agent_4.conf, pandora_agent_5.conf: Changed PATHS
+	  to adapt them to the upcoming 1.3 release.
+      
+	* solaris/pandora_agent_daemon, pandora_agent.conf,
+	  pandora_agent.sh: Changed PATHS to adapt them to the upcoming
+	  1.3 release.
+
 2007-02-02  Manuel Arostegui <marostegui@artica.es>
 
-	linux/pandora_agents.spec: More polished spec file.
+	* linux/pandora_agents.spec: More polished spec file.
 
 2007-01-08  Manuel Arostegui <marostegui@artica.es>
 

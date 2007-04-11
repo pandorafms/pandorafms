@@ -5,7 +5,7 @@
 # v1.0.3 
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
-PANDORA_PATH=/opt/pandora_agent_sim
+PANDORA_PATH=/usr/share/pandora_agent_sim
 DAEMON=pandora_agent_sim.sh
 PIDFILE=/var/run/pandora_sim.pid
 test -x $PANDORA_PATH/$DAEMON || exit

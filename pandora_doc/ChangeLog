@@ -1,5 +1,10 @@
 2007-04-11 Manuel Arostegui <marostegui@artica.es>
 
+	* en/pandora_quick_install.xml: Added information about
+	the new Pandora Web Console Installation Wizard.
+
+2007-04-11 Manuel Arostegui <marostegui@artica.es>
+
 	* en/pandora_quick_install.xml: Added some new text and some
           corrections done as well.
 

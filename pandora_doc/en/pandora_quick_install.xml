@@ -220,88 +220,7 @@
   </sect2>
   </sect1>
   <sect1 id="console_db">
-    <title>Pandora Console and Pandora database</title>
-    <sect2 id="db_install"><title>Pandora database install</title>
-    <para>
-      Please look at MySQL install and management guide
-      (http://dev.mysql.com/doc) to obtain information about how to
-      create a MySQL database, how to manage mysql users and give
-      him/her privileges to read/write in Pandora database. Remember
-      that you must write the password of the root user in MySQL
-      database to enter mysql command line. This user is not the same
-      of the Operating System. The root password in MySQL is in blank
-      by default (within almost all distributions), you must changed
-      this password with the MySQL command
-      <filename>mysqladmin</filename>. Please be careful with this.
-    </para>
-    <para>
-      You need a database with name "pandora", you could rename it, but
-      you need to reconfigure in server too.
-    </para>
-    <para>
-      To create the structure of Pandora database in MySQL Server you
-      have the SQL script "pandoradb.sql".
-    </para>
-    <para>
-      You MUST populate database with SQL script "pandoradb_data.sql",
-      it inserts data needed to run Web Console and default user
-      (login: admin, pass: pandora) to access Pandora Web Console.
-    </para>
-    <para>
-      First create a database called "pandora", and set an user to be
-      able to access this database:
-    </para>
-    <programlisting>
-      mysql> create database pandora;
-    </programlisting>
-    <para>
-      Later, execute the next commands using a user with enough
-      privileges to create tables and indexes for pandora Database into
-      your MySQL Server:
-    </para>
-    <programlisting>
-      cat pandoradb.sql | mysql -D pandora -u root -p
-      cat pandoradb_data.sql | mysql -D pandora -u root -p
-    </programlisting>
-    <para>	
-      You can also use the source command, if you are connected to
-      MySQL, from the MySQL prompt:
-    </para>
-    <programlisting>
-      mysql> use pandora 
-      mysql> source path_to_pandora_dbstruct.sql
-      mysql> source path_to_pandora_dbdata.sql
-    </programlisting>
-    <para>	
-      This example is valid using root user in MySQL
-    </para>
-    <para>
-      Now we will create an user "pandora" and will be given to it
-      privileges from the localhost:
-      <programlisting>
-	mysql> grant all on pandora.* to 'pandora'@'localhost'
-	identified by 'pandora';
-      </programlisting>
-      Keep in mind that users need access from Pandora WEB Console and
-      from Pandora Server, if your deployment has many subcomponents
-      in different physical machines, you need to setup a MySQL user
-      with privileges to access from different locations.
-    </para>
-    <para>
-      If you get the error "Warning: mysql_connect()
-      [function.mysql-connect]: client does not support authentication
-      protocol requested by server; consider upgrading" when
-      authenticating Web Console, you have to change the way the
-      password is stored into the database:
-      <programlisting>
-		mysql> set password for 'pandora'@'localhost' = old_password('pandora');
-      </programlisting>
-      Please note this user will be used by several pandora
-      subcomponents (Pandora Server, Pandora Web Console) to access
-      database.
-    </para>
-    </sect2>
-    
+    <title>Pandora Console</title>
     <sect2 id="console_install">
       <title>Pandora console install.</title>
       <para>Prior to install Pandora console, you need the following
@@ -320,8 +239,18 @@
 	  </listitem>
 	  <listitem>
 	    <para>
-	      PHP Modules for MySQL, GD, session management and SNMP.
+	      PHP Modules for MySQL.
 	    </para>
+	  </listitem>
+	  <listitem> 
+	    <para> 
+	      PHP-GD > 1.3.X
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      PHP SNMP extension
+	   </para>
 	  </listitem>
 	  <listitem>
 	    <para>
@@ -338,19 +267,17 @@
 	publishing directory and set perms to www-data or http user.
       </para>
       <para>
-	To setup Pandora Console, you only need to modify a file,
-	<filename>include/config.php</filename>, where the following
-	variables are included in .php code:
+	Then point your browser to:
+	<programlisting>
+	  http://host:port/installdir/install.php
+	</programlisting>
       </para>
-      <programlisting>
-	$dbname="pandora";   // name of database for pandora)
-	$dbuser="pandora";   // mysql user to access db
-	$dbpassword="pandora";   // Password for mysql user
-	$dbhost="pandora";   // Hostname or IP of mySQL server
-      </programlisting>
       <para>
-	If database is defined and was correctly installed, you can
-	now access:
+	Once you are there, you will be followed through 4 easy steps to 
+	configure your Pandora FMS Web Console.
+      <para>
+	If the proccess finished succesfully you will be able to reach
+	your new Pandora FMS Web Console at:
 	<programlisting>
 	  http://host:port/installdir/index.php
 	</programlisting>
@@ -360,14 +287,6 @@
 	change it or create another account, give it administrator
 	privileges, and disable this one.
       </para>      
-      <para>
-	<graphic fileref="images/pandora_login.jpg" scale="70" align="center"/>
-	If you cannot see a screen like this, it's possible that you
-	have problems with PHP instalation. When you installed the
-	Web, please check that PHP engine its running. Fist try to
-	access to the server IP with a browser. You must see the
-	Welcome Apache page.
-      </para>
       <para>
 	Remember that alter installing the PHP and the PHP module for
 	Apache you must stop and start the Server Apache. As an
@@ -416,7 +335,7 @@
       </para>
       <para>
 	Pandora 1.2 uses JpGraph for viewing graphics. JpGraph is a
-	different project and has no relationship with Pandora, so you
+	different project and has nothing to do with Pandora, so you
 	need to install it. You can find at
 	<filename>http://www.aditus.nu/jpgraph/</filename>. Download
 	last version (2.x), and place all <filename>.php</filename>

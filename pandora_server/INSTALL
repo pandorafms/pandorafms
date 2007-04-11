@@ -141,9 +141,9 @@ If you run Pandora Server in Windows, you need to use the backslash twice in $di
 
 These are default values, and all must be existing directory and filename and valid username, password and hostname.
 
-Remember: you need to create the directory /usr/share/pandora_server/data_in where Pandora Server will read and write data, sent by remote agents using ssh/scp. This directory must be owned or with permissions to write for user "pandora". If you dont have a "pandora" user yet, create it.
+Remember: you need to create the directory /var/spool/pandora/data_in where Pandora Server will read and write data, sent by remote agents using ssh/scp. This directory must be owned or with permissions to write for user "pandora". If you dont have a "pandora" user yet, create it.
 
-You can run Pandora Server with an user without privilegues, you can use the user "pandora", it only needs to run /usr/bin/perl and access to /usr/share/pandora_server and /usr/share/pandora_server/data_in directories.
+You can run Pandora Server with an user without privilegues, you can use the user "pandora", it only needs to run /usr/bin/perl and access to /usr/share/pandora_server and /var/spool/pandora_server/data_in directories.
 
 This is true with all the components but with Pandora SNMP Console needs root user to open UDP port 161 (this can be solved setting SUID0 to the snmptrapd binary) and running the rest of the Server using an user without privileges.
 

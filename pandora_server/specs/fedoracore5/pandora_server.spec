@@ -13,7 +13,7 @@ Source0:            %{name}-%{version}.tar.gz
 URL:                http://pandora.sf.net
 Group:              System/Monitoring
 Packager:           Manuel Arostegui <marostegui@artica.es>
-Prefix:             /opt
+Prefix:             /usr/share
 BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
 BuildArchitectures: noarch
 Requires:	    openssh-server net-snmp perl-XML-Simple perl-DBI perl-TimeDate perl-DateManip perl-Net-Ping perl-Net-Ping-External perl-IO-Socket-SSL
@@ -46,8 +46,8 @@ mkdir -p $RPM_BUILD_ROOT/usr/local/
 mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/
 mkdir -p $RPM_BUILD_ROOT/var/spool/pandora/data_in
 mkdir -p $RPM_BUILD_ROOT/var/log/pandora/
-mkdir -p $RPM_BUILD_ROOT/usr/share/pandora/
-mkdir -p $RPM_BUILD_ROOT/usr/share/pandora/conf/
+mkdir -p $RPM_BUILD_ROOT/usr/share/pandora_server/
+mkdir -p $RPM_BUILD_ROOT/usr/share/pandora_server/conf/
 mkdir -p $RPM_BUILD_ROOT/usr/lib/
 mkdir -p $RPM_BUILD_ROOT/usr/lib/perl5
 mkdir -p $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/
@@ -57,14 +57,14 @@ cp -aRf * $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}
 mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/pandora_server.pl $RPM_BUILD_ROOT/usr/bin/pandora_server
 mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/pandora_network.pl $RPM_BUILD_ROOT/usr/bin/pandora_network
 mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/pandora_snmpconsole.pl $RPM_BUILD_ROOT/usr/bin/pandora_snmpconsole
-mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/conf/pandora_server.conf $RPM_BUILD_ROOT/usr/share/pandora/conf/pandora_server.conf
+mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/conf/pandora_server.conf $RPM_BUILD_ROOT/usr/share/pandora_server/conf/pandora_server.conf
 mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/util/ $RPM_BUILD_ROOT/usr/share/pandora/
-mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/pandora_config.pm $RPM_BUILD_ROOT/usr/share/pandora/util/
-mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/pandora_db.pm $RPM_BUILD_ROOT/usr/share/pandora/util/
-mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/pandora_tools.pm $RPM_BUILD_ROOT/usr/share/pandora/util/
-cp $RPM_BUILD_ROOT/usr/share/pandora/util/pandora_config.pm $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/5.8.5/
-cp $RPM_BUILD_ROOT/usr/share/pandora/util/pandora_db.pm $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/5.8.5/
-cp  $RPM_BUILD_ROOT/usr/share/pandora/util/pandora_tools.pm $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/5.8.5/
+mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/pandora_config.pm $RPM_BUILD_ROOT/usr/share/pandora_server/util/
+mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/pandora_db.pm $RPM_BUILD_ROOT/usr/share/pandora_server/util/
+mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/pandora_tools.pm $RPM_BUILD_ROOT/usr/share/pandora_server/util/
+cp $RPM_BUILD_ROOT/usr/share/pandora_server/util/pandora_config.pm $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/5.8.5/
+cp $RPM_BUILD_ROOT/usr/share/pandora_server/util/pandora_db.pm $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/5.8.5/
+cp  $RPM_BUILD_ROOT/usr/share/pandora_server/util/pandora_tools.pm $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/5.8.5/
 
 
 cp pandora.1 $RPM_BUILD_ROOT/usr/share/man/man1/
@@ -83,15 +83,15 @@ if [ "$1" = "0" ]; then
 fi
 mkdir -p /etc/pandora
 mkdir -p /etc/pandora/conf/
-ln -s /usr/share/pandora/conf/pandora_server.conf /etc/pandora/conf/pandora_server.conf
+ln -s /usr/share/pandora_server/conf/pandora_server.conf /etc/pandora/conf/pandora_server.conf
 
-mkdir -p /opt/pandora_server/
-mkdir -p /opt/pandora_server/log/
-mkdir -p /opt/pandora_server/data_in
+mkdir -p /usr/share/pandora_server/
+mkdir -p /usr/share/pandora_server/log/
+mkdir -p /usr/share/pandora_server/data_in
 
 echo "Pandora Server binarys has been placed under /usr/bin/"
 echo "Pandora Server configuration is /etc/pandora/conf"
-echo "Pandora Server data has been placed under /var/spool/data_in/"
+echo "Pandora Server data has been placed under /var/spool/pandora/data_in/"
 echo "Pandora Server logs has benn placed under /var/log/pandora"
 echo "For further information please: man pandora or man pandora_server"
 %files
@@ -102,12 +102,12 @@ echo "For further information please: man pandora or man pandora_server"
 /var/spool/pandora/
 %defattr(755,pandora,pandora)
 #/etc/pandora/conf/pandora_server.conf
-/usr/share/pandora/util/pandora_config.pm
-/usr/share/pandora/util/pandora_db.pm
-/usr/share/pandora/util/pandora_tools.pm
-/usr/share/pandora/util/pandora_db.pl
-/usr/share/pandora/util/pandora_dbstress.pl
-/usr/share/pandora/util/snmptrapd
+/usr/share/pandora_server/util/pandora_config.pm
+/usr/share/pandora_server/util/pandora_db.pm
+/usr/share/pandora_server/util/pandora_tools.pm
+/usr/share/pandora_server/util/pandora_db.pl
+/usr/share/pandora_server/util/pandora_dbstress.pl
+/usr/share/pandora_server/util/snmptrapd
 /usr/lib/perl5/site_perl/5.8.5/pandora_config.pm
 /usr/lib/perl5/site_perl/5.8.5/pandora_db.pm
 /usr/lib/perl5/site_perl/5.8.5/pandora_tools.pm

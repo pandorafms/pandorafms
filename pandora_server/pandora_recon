@@ -5,7 +5,7 @@
 # v1.3 (Mar/2007)
 
 # Configurable path and filenames
-PANDORA_HOME="/opt/pandora_server"
+PANDORA_HOME="/usr/share/pandora_server"
 PANDORA_PID="$PANDORA_HOME/var/pandora_recon.pid"
 
 # Main script

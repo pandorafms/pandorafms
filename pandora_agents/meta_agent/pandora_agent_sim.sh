@@ -18,7 +18,7 @@ then
 	echo " "
 	echo "FATAL ERROR: I need an argument to PANDORA AGENT home path"
 	echo " "
-	echo " example:   /opt/pandora_ng/pandora_agent_sim.sh /opt/pandora_ng  "
+	echo " example:   /usr/share/pandora_ng/pandora_agent_sim.sh /usr/share/pandora_ng  "
 	echo " "
 	exit -1
 else

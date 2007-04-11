@@ -6,7 +6,7 @@
 
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
-PANDORA_PATH=/opt/pandora_agent/
+PANDORA_PATH=/usr/share/pandora_agent/
 DAEMON=pandora_agent.sh
 PIDFILE=/var/run/pandora_agent.pid
 

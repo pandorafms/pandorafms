@@ -13,7 +13,7 @@ Source0:            %{name}-%{version}.tar.gz
 URL:                http://pandora.sf.net
 Group:              System/Monitoring
 Packager:           Manuel Arostegui <marostegui@artica.es>
-Prefix:             /opt
+Prefix:             /usr/share
 BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
 BuildArchitectures: noarch
 Requires:	    coreutils
@@ -61,8 +61,8 @@ rm -rf $RPM_BUILD_ROOT
 echo "Pandora Agent has been place under /usr/bin/"
 echo "Pandora Agent configuration file is /etc/pandora/pandora_agent.conf"
 mkdir -p /etc/pandora
-ln -s /opt/pandora_agent/pandora_agent.conf /etc/pandora/pandora_agent.conf
-ln -s /opt/pandora_agent/pandora_user.conf /etc/pandora/pandora_user.conf
+ln -s /usr/share/pandora_agent/pandora_agent.conf /etc/pandora/pandora_agent.conf
+ln -s /usr/share/pandora_agent/pandora_user.conf /etc/pandora/pandora_user.conf
 %files
 %defattr(700,pandora,pandora)
 /usr/bin/pandora_agent_daemon

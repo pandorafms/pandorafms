@@ -523,7 +523,10 @@
 	      <emphasis>server_ip</emphasis>: The server IP is the IP
 	      address or the host name of the Pandora server, where
 	      the data will be stored. The host must be reachable and
-	      must be listening to port 22 (SSH).
+	      must be listening to port 22 (SSH). If it's listening in
+	      any other port, you would have to set it up in the option
+              which manages the ssh port to connect to, also in the 
+              <filename>pandora_agent.conf</filename>.
 	    </para>
 	  </listitem>
 	  <listitem>
@@ -540,10 +543,26 @@
 	      usually <filename>/opt/pandora/data_out</filename>, and
 	      in Windows systems
 	      <filename>C:\pandora\data_out</filename>.
-
-	    </para>
-	  </listitem>
-	  <listitem>
+              </para> 
+	 </listitem>
+	    <listitem>
+            <para>
+              <emphasis>temporal</emphasis>: This is the full path of
+              the folder where the agent stores the data locally,
+              before it is sent to the server. It must be said that
+              the data packages are deleted once the agent tries to
+              contact Pandora server, no matter if the communication
+              was successful or not. This is done to avoid over
+              flooding hard drive of the host system where the agent
+              runs. The location of the local folder varies with the
+              architecture of the host system. In Unix systems this is
+              usually <filename>/opt/pandora/data_out</filename>, and
+              in Windows systems
+              <filename>C:\pandora\data_out</filename>.
+              </para>
+         </listitem>
+ 
+	 <listitem>
 	    <para>
 	      <emphasis>interval</emphasis>: This is the time interval
 	      in seconds in which the agent will collect data from the
@@ -591,7 +610,7 @@
     <screen>
       server_ip Pandora_Server
       server_path  /var/spool/pandora/data_in
-      temporal /opt/pandora/data_out
+      temporal /usr/share/pandora/data_out
       interval 300
       agent_name  satellite_agent
       debug 1
@@ -813,8 +832,8 @@
   </para>
   <para><emphasis>Solaris SSH</emphasis></para>
   <para>
-    The suggested SSH client is OpenSSH. If any other SSH client is to
-    be used it must be considered that each piece software may have
+    The suggested SSH client is OpenSSH. If any other SSH client is going
+    to be used it must be considered that each piece software may have
     different ways to generate or manage keys. For example, if
     F-Secure SSH is used, the public key must be in OpenSSH format
     when the keys are generated. The format can be changed from IETF
@@ -847,7 +866,7 @@
 <sect2 id="unix_a_install"><title>Pandora Unix Agent install</title>
 <para>
   The software comes in a .tar.gz file. First of all the file needs
-  to be extracted into a folder, usually /opt/pandora_agent,
+  to be extracted into a folder, usually /usr/share/pandora_agent,
   although any other folder may be used. If a different folder is
   used, the daemon launcher must be modified by changing route to
   $PANDORA_HOME.
@@ -1009,13 +1028,13 @@
       # General Parameters
       # ==================
       
-      server_ip 		192.168.100.45
+      server_ip 	 192.168.100.45
       server_path 	/var/spool/pandora/data_in
-      pandora_path 	/opt/pandora_ng/
-      temporal    	/opt/pandora_ng/data_out
+      pandora_path 	/usr/share/pandora_agent/
+      temporal    	/var/spool/pandora_agent/data_out
       interval    	300
       hostname		linuxbox01
-      debug			0
+      debug		0
       checksum		1
       
       # Module Definition

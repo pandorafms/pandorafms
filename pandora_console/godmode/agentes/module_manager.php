@@ -168,7 +168,7 @@ $result=mysql_query($sql1);
 echo "<h2>".$lang_label["agent_conf"]." &gt; ".$lang_label["assigned_modules"]."
 	<a href='help/".$help_code."/chap3.php#321' target='_help' class='help'>
 	<span>".$lang_label["help"]."</span></a>";
-	echo "&nbsp;&nbsp;<a class='info' href='#module_assignment'> <span>".$lang_label["module_asociation_form"]."</span><img src='../images/wand.png'></a>";
+	echo "&nbsp;&nbsp;<a class='info' href='#module_assignment'> <span>".$lang_label["module_asociation_form"]."</span><img src='images/wand.png'></a>";
 	echo "</h2>";
 if ($row=mysql_num_rows($result)){
 	echo '<table width="700" cellpadding="3" cellspacing="3" class="fon">';

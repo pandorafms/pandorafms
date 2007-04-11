@@ -24,6 +24,9 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 	// Load global vars
 	require("include/config.php");
+	
+	if (! isset($config_show_lastalerts))
+		$config_show_lastalerts=1;
 
 	if (give_acl ($id_user, 0, "AR") != 1) {
 		audit_db ($id_user, $REMOTE_ADDR, "ACL Violation", 

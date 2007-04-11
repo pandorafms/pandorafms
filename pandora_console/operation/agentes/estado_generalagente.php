@@ -101,7 +101,7 @@ if (comprueba_login() == 0) {
 	echo '<tr>
 	<td class="datos2"><b>'.salida_limpia($lang_label["group"]).'</b></td>
 	<td class="datos2" colspan="2">
-	<img class="bot" src="images/groups_small/'.show_icon_group($row["id_grupo"]).'.png" >&nbsp;&nbsp; '.dame_grupo($id_grupo).'<br>'.dame_grupo($id_group).'</td></tr>';
+	<img class="bot" src="images/groups_small/'.show_icon_group($row["id_grupo"]).'.png" >&nbsp;&nbsp; '.dame_grupo($id_grupo).'<br>'.dame_grupo($id_grupo).'</td></tr>';
 	if ($agent_type == 0) {	
 		echo '<tr><td class="datos"><b>'.$lang_label["agentversion"].'</b>
 		<td class="datos" colspan=2>'.salida_limpia($agent_version).'</td>';

@@ -554,7 +554,7 @@ function graphic_agentmodules($id_agent, $width, $height) {
 	}
 
 
-	if ($cx > 1){
+	if ($cx > 0){
 		// create the graph
 		$Graph =& Image_Graph::factory('graph', array($width, $height));
 		// add a TrueType font

@@ -98,4 +98,3 @@ if ($language_code == 'ast_es') {
 else $help_code = substr($language_code,0,2);
 
 ?>
-

@@ -176,11 +176,11 @@ if (comprueba_login() == 0) {
 				else
 					echo substr($row3["datos"],0,12);
 					
-				$handle = "stat".$nombre_tipo_modulo."_".$nombre_agente;
-				$url = 'reporting/procesos.php?agente='.$nombre_agente;
-				$win_handle=dechex(crc32($nombre_agente.$row3["nombre"]));
+				$handle = "stat".$nombre_tipo_modulo."_".$row3["id_agente_modulo"];
+				$url = 'reporting/procesos.php?agente='.$row3["id_agente_modulo"];
+				$win_handle=dechex(crc32($row3["id_agente_modulo"].$row3["nombre"]));
 				echo "<td class=".$tdcolor." width='78'>";
-				$graph_label = entrada_limpia($row3["nombre"]." - ".$nombre_agente);
+				$graph_label = entrada_limpia($row3["nombre"]." - ".$row3["id_agente_modulo"]);
 				
 				echo "<a href='javascript:winopeng(\"reporting/stat_win.php?period=2419200&id=".$row3["id_agente_modulo"]."&label=".$graph_label."refresh=180000\", \"month_".$win_handle."\")'><img  src='images/grafica_m.gif' border=0></a>&nbsp;";
 				

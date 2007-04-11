@@ -746,6 +746,10 @@ $lang_label["no_rtask"]="There are no recon task configured";
 //3 Apr 2007
 $lang_label["no_netprofiles"]="There are no defined network profiles";
 
+//11 Apr 207
+$lang_label["site_news"]="Site news";
+$lang_label["at"]="At";
+$lang_label["says"]="says";
 global $lang_label; 
 global $help_label;
 ?>

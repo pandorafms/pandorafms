@@ -241,8 +241,7 @@ CREATE TABLE `tagente_modulo` (
   `flag` tinyint(3) unsigned default '1',
   `id_modulo` int(11) unsigned NULL default 0,
   PRIMARY KEY (`id_agente_modulo`, `id_agente`),
-  KEY `tam_agente` (`id_agente`),
-  FOREIGN KEY (id_modulo)  REFERENCES tmodule (id_module)
+  KEY `tam_agente` (`id_agente`)
 ) ENGINE=InnoDB;
 
 --

@@ -77,7 +77,7 @@ if (comprueba_login() == 0){
 		}
 		
 		if (isset($_GET["sec"]) && $_GET["sec"] == "gmodules"){
-			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/modules/manage_network_components")
+			if (isset($_GET["sec2"]) && ( $_GET["sec2"] == "godmode/modules/manage_network_components" || $_GET["sec2"] == "godmode/modules/manage_network_components_form") )
 				echo "<div class='arrowgs'>";
 			else
 				echo "<div class='arrowg'>";

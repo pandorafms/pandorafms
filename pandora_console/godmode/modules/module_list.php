@@ -76,26 +76,25 @@ if (give_acl($id_user, 0, "PM")==1) {
 			$tdcolor = "datos2";
 			$color = 1;
 		}
-		if ($row["id_grupo"] != 1){
-			echo "
-			<tr>
-				<td class='$tdcolor' align='center'>
-				<img src='images/".$row["icon"]."' 
-				border='0'>
-				</td>
-				<td class='$tdcolor'>
-				<b><a href='index.php?sec=gmodules&
-				sec2=godmode/modules/manage_modules&
-				id_module=".$row["id_tipo"]."'>".$row["nombre"]."</a>
-				</b></td>
-				<td class='$tdcolor'>
-				".give_modulecategory_name ($row["categoria"])."
-				</td>
-				<td class='$tdcolor'>
-				".$row["descripcion"]."
-				</td>
-			</tr>";
-		}
+		echo "
+		<tr>
+			<td class='$tdcolor' align='center'>
+			<img src='images/".$row["icon"]."' 
+			border='0'>
+			</td>
+			<td class='$tdcolor'>
+			<b><a href='index.php?sec=gmodules&
+			sec2=godmode/modules/manage_modules&
+			id_module=".$row["id_tipo"]."'>".$row["nombre"]."</a>
+			</b></td>
+			<td class='$tdcolor'>
+			".give_modulecategory_name ($row["categoria"])."
+			</td>
+			<td class='$tdcolor'>
+			".$row["descripcion"]."
+			</td>
+		</tr>";
+		
 	}
 	echo "<tr><td colspan='4'><div class='raya'></div></td></tr>";
 	echo "<tr><td colspan='4' align='right'>";

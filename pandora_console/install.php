@@ -34,45 +34,10 @@
 <meta name="robots" content="index, follow">
 <link rel="icon" href="images/pandora.ico" type="image/ico">
 <link rel="stylesheet" href="include/styles/pandora.css" type="text/css">
-</head>
-<body background='images/backgrounds/background11.jpg'>
+</head><body background='images/backgrounds/background11.jpg'>
 <?PHP
 
 error_reporting(0);
-
-function install_step1() {
-	echo "
-	<div align='center' class='mt35'>
-	<h1>Pandora FMS instalation wizard. Step #1 of 4</h1>
-	<div id='wizard' style='height: 300px;'>
-		<div id='install_box'>
-			<h1>Welcome to Pandora FMS installation Wizard</h1>
-			<p>This wizard helps you to quick install Pandora FMS console in your system.</p>
-			<p>In three steps checks all dependencies and make your configuration for a quick installation.</p> 
-			<p>For more information, please refer to documentation.</p>
-			<i>Pandora FMS Development team</i>
-		";
-		if (file_exists("include/config.php")){
-			echo "<p><img src='images/info.gif'> Warning: You already have a config.php file. Configuracion and database would be overwritten if you continue.</p>";
-		}
-		echo "
-		</div>
-		<div class='box'>
-			<img src='images/logo_login.gif' border='0'><br>			
-		</div>
-		<div class='box'>
-			<img src='images/step0.png' border='0'>
-		</div>
-		<div id='install_box' style='margin-bottom: 25px;margin-left: 25px;'>
-			<a href='install.php?step=2'><img align='right' src='images/arrow_next.png' border=0></a>
-			</div>
-		</div>
-		<div id='foot'>
-			<i>Pandora FMS is a Free Software project registered at 
-			<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
-		</div>
-	</div>";
-}
 
 function check_extension ( $ext, $label ){
 	echo "<tr><td>";
@@ -152,100 +117,6 @@ function check_variable ( $var, $value, $label, $mode ){
 	echo "</td></tr>";
 }
 
-function install_step2() {
-	echo "
-	<div align='center' class='mt35'>
-	<h1>Pandora FMS console instalation wizard. Step #2 of 4</h1>
-	<div id='wizard' style='height: 250px;'>
-		<div id='install_box'>";
-		echo "<h1>Checking software dependencies</h1>";
-			echo "<table border=0 width=230>";
-			$res = 0;
-			$res += check_variable(phpversion(),"4.3","PHP version >= 4.3.x",1);
-			$res += check_extension("mysql","PHP MySQL extension");
-			//$res += check_extension("curl","PHP Curl extension");
-			$res += check_extension("gd","PHP gd extension");
-			$res += check_extension("snmp","PHP smmp extension");
-			$res += check_extension("session","PHP session extension");
-			$res += check_include("PEAR.php","PEAR PHP Library");
-			//$res += check_exists ("/usr/bin/pdflatex","PDF Latex in /usr/bin/pdflatex");
-			echo "</table>
-		</div>
-		<div class='box'>
-			<img src='images/logo_login.gif' border='0'' alt=''>
-		</div>
-		<div class='box'>
-			<img src='images/step1.png' border='0' alt=''>
-		</div>
-		<div id='install_box' style='margin-bottom: 25px;margin-left: 25px;'>";
-			if ($res > 0) {
-				echo "<p><img src='images/info.gif'> You have some uncomplete 
-				dependencies. Please correct it or this installer 
-				could not finish your installation.
-				</p>
-				Ignore it. <a href='install.php?step=3'>Force install Step #3</a>";
-			} else {
-				echo "<a href='install.php?step=3'><img align='right' src='images/arrow_next.png' border=0 alt=''></a>";
-			}
-			echo "
-		</div>
-		</div>
-		</div>
-		<div id='foot'>";
-	echo '<i>Pandora FMS is a Free Software project registered at <a target="_new" href="http://pandora.sourceforge.net">SourceForge</a></i>';
-	echo "</div></div>";
-}
-
-function install_step3() {
-	echo "
-	<div align='center' class='mt35'>
-	<h1>Pandora FMS console instalation wizard. Step #3 of 4 </h1>
-	<div id='wizard' style='height: 500px;'>
-		<div id='install_box'>
-			<h1>Environment and database setup</h1>
-			<p>
-			This wizard will create your Pandora FMS database, and populate it with data needed to run for first time. 
-			You need a privileged user to create database schema, this is usually root user. 
-			Information about <i>root</i> user will not be used or stored for anymore.
-			</p>
-			<p>
-			Now, please, complete all details to configure your database and enviroment setup
-			</p>
-			<form method='post' action='install.php?step=4'>
-				<div>DB User with privileges on MySQL</div>
-				<input class='login' type='text' name='user' value=''>
-				<div>DB Password for this user</div>
-				<input class='login' type='passwordzx' name='pass' value=''>
-				<div>DB Hostname of MySQL</div>
-				<input class='login' type='text' name='host' value=''>
-
-				<div>Full path to HTTP publication directory.<br>
-				<span class='f9b'>For example /srv/www/hdtocs/</span>
-				</div>
-				<input class='login' type='text' name='path' style='width: 190px;' value=''>
-
-				<div>Full local URL to Pandora FMS Console. <br>
-				<span class='f9b'>For example http://localhost/pandora_console</span>
-				</div>
-				<input class='login' type='text' name='url' style='width: 250px;'  value=''>
-				
-				<div><input align='right' style='align: right; width:70px; height: 16px;' type='image' src='images/arrow_next.png'  value='Step #4'></div>
-			</form>
-			</div>
-			<div class='box'>
-				<img src='images/logo_login.gif' border='0' alt=''>
-			</div>
-			<div class='box'>
-				<img src='images/step2.png' border='0' alt=''>
-			</div>
-		</div>
-		<div id='foot'>
-			<i>Pandora FMS is a Free Software project registered at 
-			<a target='_ne' href='http://pandora.sourceforge.net'>SourceForge</a></i>
-		</div>
-	</div>";
-}
-
 function parse_mysql_dump($url){
 	if (file_exists($url)){
    		$file_content = file($url);
@@ -273,18 +144,156 @@ function random_name ($size){
 	return $temp;
 }
 
+function install_step1() {
+	echo "
+	<div align='center' class='mt35'>
+	<h1>Pandora FMS instalation wizard. Step #1 of 4</h1>
+	<div id='wizard' style='height: 310px;'>
+		<div id='install_box'>
+			<h1>Welcome to Pandora FMS installation Wizard</h1>
+			<p>This wizard helps you to quick install Pandora FMS console in your system.</p>
+			<p>In three steps checks all dependencies and make your configuration for a quick installation.</p> 
+			<p>For more information, please refer to documentation.</p>
+			<i>Pandora FMS Development team</i>
+		";
+		if (file_exists("include/config.php")){
+			echo "<p><img src='images/info.png' valign='bottom'><b> Warning: You already have a config.php file. Configuracion and database would be overwritten if you continue.</b></p>";
+		}
+		echo "
+		</div>
+		<div class='box'>
+			<img src='images/logo_login.gif' border='0'><br>			
+		</div>
+		<div class='box'>
+			<img src='images/step0.png' border='0'>
+		</div>
+		<div id='install_box' style='margin-bottom: 25px;margin-left: 25px;'>
+			<a href='install.php?step=2'><img align='right' src='images/arrow_next.png' border=0></a>
+			</div>
+		</div>
+		<div id='foot'>
+			<i>Pandora FMS is a Free Software project registered at 
+			<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
+		</div>
+	</div>";
+}
+
+
+
+function install_step2() {
+	echo "
+	<div align='center' class='mt35'>
+	<h1>Pandora FMS console instalation wizard. Step #2 of 4</h1>
+	<div id='wizard' style='height: 250px;'>
+		<div id='install_box'>";
+		echo "<h1>Checking software dependencies</h1>";
+			echo "<table border=0 width=230>";
+			$res = 0;
+			$res += check_variable(phpversion(),"4.3","PHP version >= 4.3.x",1);
+			$res += check_extension("mysql","PHP MySQL extension");
+			//$res += check_extension("curl","PHP Curl extension");
+			$res += check_extension("gd","PHP gd extension");
+			$res += check_extension("snmp","PHP smmp extension");
+			$res += check_extension("session","PHP session extension");
+			$res += check_include("PEAR.php","PEAR PHP Library");
+			//$res += check_exists ("/usr/bin/pdflatex","PDF Latex in /usr/bin/pdflatex");
+			echo "</table>
+		</div>
+		<div class='box'>
+			<img src='images/logo_login.gif' border='0'' alt=''>
+		</div>
+		<div class='box'>
+			<img src='images/step1.png' border='0' alt=''>
+		</div>
+		<div id='install_box' style='margin-bottom: 25px;margin-left: 25px;'>";
+			if ($res > 0) {
+				echo "<p><img src='images/info.png'> You have some uncomplete 
+				dependencies. Please correct it or this installer 
+				could not finish your installation.
+				</p>
+				Ignore it. <a href='install.php?step=3'>Force install Step #3</a>";
+			} else {
+				echo "<a href='install.php?step=3'><img align='right' src='images/arrow_next.png' border=0 alt=''></a>";
+			}
+			echo "
+		</div>
+		</div>
+		</div>
+		<div id='foot'>";
+	echo '<i>Pandora FMS is a Free Software project registered at <a target="_new" href="http://pandora.sourceforge.net">SourceForge</a></i>';
+	echo "</div></div>";
+}
+
+function install_step3() {
+	echo "
+	<div align='center' class='mt35'>
+	<h1>Pandora FMS console instalation wizard. Step #3 of 4 </h1>
+	<div id='wizard' style='height: 540px;'>
+		<div id='install_box'>
+			<h1>Environment and database setup</h1>
+			<p>
+			This wizard will create your Pandora FMS database, and populate it with data needed to run for first time. 
+			You need a privileged user to create database schema, this is usually root user. 
+			Information about <i>root</i> user will not be used or stored for anymore.
+			</p>
+			<p>
+			Now, please, complete all details to configure your database and enviroment setup. <b>NOTICE</b> that database will be destroyed if already exists!.
+			</p>
+			<form method='post' action='install.php?step=4'>
+				<div>DB User with privileges on MySQL</div>
+				<input class='login' type='text' name='user' value='root'>
+
+				<div>DB Password for this user</div>
+				<input class='login' type='passwordzx' name='pass' value=''>
+				
+				<div>DB Hostname of MySQL</div>
+				<input class='login' type='text' name='host' value='localhost'>
+
+				<div>DB Name (pandora by default)</div>
+				<input class='login' type='text' name='dbname' value='pandora'>
+
+				<div>Full path to HTTP publication directory.<br>
+				<span class='f9b'>For example /var/www/pandora_console/</span>
+				</div>
+				<input class='login' type='text' name='path' style='width: 190px;' value='/var/www/pandora_console/'>
+
+				<div>Full local URL to Pandora FMS Console. <br>
+				<span class='f9b'>For example http://localhost/pandora_console</span>
+				</div>
+				<input class='login' type='text' name='url' style='width: 250px;'  value='http://localhost/pandora_console'>
+				
+				<div><input align='right' style='align: right; width:70px; height: 16px;' type='image' src='images/arrow_next.png'  value='Step #4'></div>
+			</form>
+			</div>
+			<div class='box'>
+				<img src='images/logo_login.gif' border='0' alt=''>
+			</div>
+			<div class='box'>
+				<img src='images/step2.png' border='0' alt=''>
+			</div>
+		</div>
+		<div id='foot'>
+			<i>Pandora FMS is a Free Software project registered at 
+			<a target='_ne' href='http://pandora.sourceforge.net'>SourceForge</a></i>
+		</div>
+	</div>";
+}
+
+
+
 function install_step4() {
-	$db_name = "pandora";
 	$pandora_config = "include/config.php";
 
-	if ( (! isset($_POST["user"])) || (! isset($_POST["host"])) || (! isset($_POST["pass"])) ) {
+	if ( (! isset($_POST["user"])) || (! isset($_POST["dbname"])) || (! isset($_POST["host"])) || (! isset($_POST["pass"])) ) {
 		$dbpassword = "";
 		$dbuser = "";
 		$dbhost = "";
+		$dbname = "";
 	} else {
 		$dbpassword = $_POST["pass"];
 		$dbuser = $_POST["user"];
 		$dbhost = $_POST["host"];
+		$dbname = $_POST["dbname"];
 		if (isset($_POST["url"]))
 			$url = $_POST["url"];
 		else
@@ -311,11 +320,11 @@ function install_step4() {
 			} else {
 				check_generic ( 1, "Connection with Database");
 				// Create schema
-				$step1 = mysql_query ("CREATE DATABASE $db_name");
-				check_generic ($step1, "Creating database '$db_name'");
+				$step1 = mysql_query ("CREATE DATABASE $dbname");
+				check_generic ($step1, "Creating database '$dbname'");
 				if ($step1 == 1){
-					$step2 = mysql_select_db($db_name);
-					check_generic ($step2, "Opening database '$db_name'");
+					$step2 = mysql_select_db($dbname);
+					check_generic ($step2, "Opening database '$dbname'");
 	
 					$step3 = parse_mysql_dump("pandoradb.sql");
 					check_generic ($step3, "Creating schema");
@@ -324,9 +333,9 @@ function install_step4() {
 					check_generic ($step4, "Populating database");
 	
 					$random_password = random_name (8);
-					$step5 = mysql_query ("GRANT ALL PRIVILEGES ON $db_name.* to pandora@localhost IDENTIFIED BY '".$random_password."'");
+					$step5 = mysql_query ("GRANT ALL PRIVILEGES ON $dbname.* to pandora@localhost IDENTIFIED BY '".$random_password."'");
 					mysql_query ("FLUSH PRIVILEGES");
-					check_generic ($step5, "Established privileges for user pandora");
+					check_generic ($step5, "Established privileges for user pandora <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;password <i>'$random_password'</i>");
 	
 					$step6 = is_writable("include");
 					check_generic ($step6, "Write permissions to save config file in './include'");
@@ -337,7 +346,7 @@ function install_step4() {
 	
 					$config_new = '<?PHP
 // Begin of automatic config file
-$dbname="'.$db_name.'";			// MySQL DataBase name
+$dbname="'.$dbname.'";			// MySQL DataBase name
 $dbuser="pandora";			// DB User
 $dbpassword="'.$random_password.'";	// DB Password
 $dbhost="'.$dbhost.'";			// DB Host
@@ -369,13 +378,13 @@ $BASE_URL="'.$url.'";			// Base URL
 			if ($everything_ok == 1) {
 				echo "<a href='install.php?step=5'><img align='right' src='images/arrow_next.png' border=0 class=''></a>";
 			} else {
-				echo "<img src='images/info.gif'> You get some problems. Installation is not completed. 
+				echo "<img src='images/info.png'> You get some problems. Installation is not completed. 
 				<p>Please correct failures before trying again. All database schemes created in this step have been dropped.</p>";
 
 				if (mysql_error() != "")
-					echo "<p><img src='images/info.gif'> <b>ERROR:</b> ". mysql_error()."</p>";
+					echo "<p><img src='images/info.png'> <b>ERROR:</b> ". mysql_error()."</p>";
 
-				mysql_query ("DROP DATABASE $db_name");
+				mysql_query ("DROP DATABASE $dbname");
 			}		
 		echo "
 		</div>
@@ -394,7 +403,7 @@ function install_step5() {
 	<div id='wizard' style='height: 300px;'>
 		<div id='install_box'>
 			<h1>Installation complete</h1>
-			<p>You now must delete manually this installer for security, ('install.php') and rename your new config file '".$pandora_config."' to 'config.php' before trying to access to your Pandora FMS console.
+			<p>You now must delete manually this installer for security, ('install.php') before trying to access to your Pandora FMS console.
 			<p>Don't forget to check <a href='http://pandora.sourceforge.net'>http://pandora.sourceforge.net</a> for updates.
 			<p><a href='index.php'>Click here to access to your Pandora FMS console</A></p>
 		</div>
@@ -411,6 +420,11 @@ function install_step5() {
 	</div>
 </div>";
 }
+
+
+// ---------------
+// Main page code
+// ---------------
 
 if (! isset($_GET["step"])){
 	install_step1();

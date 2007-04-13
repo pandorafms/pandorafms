@@ -86,25 +86,23 @@
 
 	// Site news !
 	echo '<h2>' . $lang_label["site_news"] . '</h2>';
-	echo '<table cellpadding="3" cellspacing="3" width="720"><tr>'; 
-
-
 	$sql_news = "SELECT * FROM tnews ORDER by utimestamp LIMIT 3";
-	$result_news = mysql_query ($sql_news);
-	while ($row = mysql_fetch_array ($result_news)) {	
-		
-		echo '<tr><th align="left">';
-		echo $lang_label["at"]. " <i>". $row["utimestamp"] ."</i> ".$lang_label["user"]. " <b>". $row["author"]."</b> ".$lang_label["says"].":  \"<b>".$row["subject"]."\"</b>";
-		echo '<tr><td class=datos>';
-		echo clean_output_breaks($row["text"]);
-		echo '<td><td class=datos3">';
+	if ($result_news = mysql_query ($sql_news)){
+		echo '<table cellpadding="3" cellspacing="3" width="720"><tr>'; 
+		while ($row = mysql_fetch_array ($result_news)) {	
+			
+			echo '<tr><th align="left">';
+			echo $lang_label["at"]. " <i>". $row["utimestamp"] ."</i> ".$lang_label["user"]. " <b>". $row["author"]."</b> ".$lang_label["says"].":  \"<b>".$row["subject"]."\"</b>";
+			echo '<tr><td class=datos>';
+			echo clean_output_breaks($row["text"]);
+			echo '<td><td class=datos3">';
 
+		}
+		echo "</table>";
 	}
-	echo "</table>";
 
 	// Site stats
 	echo '<h2 class="mgb25">' . $lang_label["stat_title"] . '</h2>';
-
 	echo '<table cellpadding="3" cellspacing="3" width="500"><tr>'; 
 	$query1 = "SELECT COUNT(id_usuario) FROM tusuario";
 	$result = mysql_query ($query1);

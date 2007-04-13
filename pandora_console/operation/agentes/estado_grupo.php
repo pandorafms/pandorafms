@@ -70,6 +70,7 @@
 			$grupo[$array_index]["ok"]       = 0;
 			$grupo[$array_index]["bad"]      = 0;
 			$grupo[$array_index]["alerts"]   = 0;
+			$grupo[$array_index]["down"]   = 0;
 			$grupo[$array_index]["icon"]     = dame_grupo_icono ($migrupo);
 			$grupo[$array_index]["id_grupo"] = $migrupo;
 			$grupo[$array_index]["group"] = dame_nombre_grupo ($migrupo);
@@ -82,8 +83,20 @@
 			if ($row0[0] > 0)
 				$existen_agentes = 1;
 
+			// Get timestamp status (down or not for each agent)
+			$sql1 = "SELECT intervalo, ultimo_contacto FROM tagente where id_grupo = $migrupo";
+			if ($result1 = mysql_query ($sql1))
+				while ($row1 = mysql_fetch_array ($result1)) {
+				// Check unknown contact status for whole agent
+					$ultimo_contacto = $row1[1];
+					$agent_interval = $row1[0];
+					$ahora=date("Y/m/d H:i:s");
+					$seconds = strtotime($ahora) - strtotime($ultimo_contacto);
+					if ($seconds >= ($agent_interval*2))
+						$grupo[$array_index]["down"]++;
+			}
 			// SQL Join to get monitor status for agents belong this group
-			$sql1 = "SELECT tagente.id_agente, tagente_estado.estado,  tagente_estado.datos FROM tagente, tagente_estado WHERE tagente.disabled = 0 AND tagente.id_grupo = $migrupo AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.estado != 100";
+			$sql1 = "SELECT tagente.id_agente, tagente_estado.estado, tagente_estado.datos FROM tagente, tagente_estado WHERE tagente.disabled = 0 AND tagente.id_grupo = $migrupo AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.estado != 100";
 			if ($result1 = mysql_query ($sql1)){
 				while ($row1 = mysql_fetch_array ($result1)) {
 					$id_agente = $row1[0];
@@ -140,10 +153,20 @@
 						$icono_type=$icono_type."
 						<img src='images/dot_yellow.gif' alt=''>";
 					}
-
-					// Bu default green border
-					$celda = "<td class='top' style='border: 3px solid #AEFF21;' width='100'>";
 					
+					// Show grey light if there are agent down for this group
+					if ($grupo[$real_count]["down"] > 0 ){
+						$icono_type=$icono_type."
+						<img src='images/dot_white.gif' alt=''>";
+					}
+
+					// By default green border
+					$celda = "<td class='top' style='border: 3px solid #AEFF21;' width='100'>";
+
+					// Grey border if agent down
+      					if ($grupo[$real_count]["down"] > 0)
+						$celda = "<td class='top' style='border: 3px solid #AABBAA;'  width='100'>";
+						
 					// Yellow border if agents with alerts
 					if ($grupo[$real_count]["alerts"] > 0)
 						$celda = "<td class='top' style='border: 3px solid #FFEA00;' width='100'>";
@@ -155,6 +178,7 @@
       					// Orange if alerts and down modules
       					if (($grupo[$real_count]["bad"] > 0) && ($grupo[$real_count]["alerts"] > 0))
 						$celda = "<td class='top' style='border: 3px solid #FFBB00;'  width='100'>";
+
 						
 					$celda .= "<a href='index.php?sec=estado&amp;
 					sec2=operation/agentes/estado_agente&amp;
@@ -196,8 +220,14 @@
 							".$lang_label["fail"].": </td>
 							<td class='datos'><font class='redb'>".
 							$grupo[$real_count]["bad"]."</font></td>
+							</tr>
+							<tr>
+							<td class='datos'>
+							<img src='images/b_white.gif' align='top' alt=''>
+							".$lang_label["down"].": </td>
+							<td class='datos'><font class='redb'>".
+							$grupo[$real_count]["down"]."</font></td>
 							</tr>";
-							
 					if ($config_show_lastalerts == 1)
 						$celda .= "<tr>
 						<td class='datos'>

@@ -25,7 +25,7 @@
 		</div>
 		<div id="logo_box">
 			<a href="index.php"><img src="images/logo_menu.gif" border="0" alt="logo"></a><br>
-			<?php echo $babel_version; ?>
+			<?php echo $pandora_version; ?>
 		</div>
 		<div id="ip"><?php echo 'IP: <b class="f10">'.$REMOTE_ADDR.'</b>'; ?></div>
 	</div>

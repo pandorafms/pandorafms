@@ -182,6 +182,14 @@ if (isset($_GET["delete_alert"])){ // if modified some parameter
 			echo "<h3 class='suc'>".$lang_label["delete_alert_ok"]."</h3>";
 
 }
+
+// Delete IP address
+if (isset($_POST["delete_ip"])){
+	echo "DELETING IP ADDRESS ".$_POST["delete_ip"];
+	echo "<br>";
+}
+
+
 // Create alert
 // =============
 if (isset($_POST["insert_alert"])){ // if created alert

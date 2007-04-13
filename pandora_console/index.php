@@ -184,6 +184,9 @@ if (isset ($_GET["refr"])){
 	}
 	else
 		$sec = "";
+	// http://es2.php.net/manual/en/ref.session.php#64525
+	// Session locking concurrency speedup!
+	session_write_close(); 
 ?>
 <div id="page">
 	<div id="menu"><?php require ("general/main_menu.php"); ?></div>

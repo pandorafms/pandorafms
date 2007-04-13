@@ -1,8 +1,8 @@
 <?PHP
 // Begin of automatic config file
 $dbname="pandora";			// MySQL DataBase name
-$dbuser="pandora";			// DB User
-$dbpassword="xviyvunu";	// DB Password
+$dbuser="root";
+$dbpassword="none";
 $dbhost="localhost";			// DB Host
 $config_homedir="/var/www/pandora_console/";		// Config homedir
 $BASE_URL="http://localhost/pandora_console";			// Base URL

@@ -397,6 +397,7 @@ CREATE TABLE `tincidencia` (
   `id_grupo` mediumint(9) NOT NULL default '0',
   `actualizacion` datetime NOT NULL default '0000-00-00 00:00:00',
   `id_creator` varchar(60) default NULL,
+  `notify_email` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_incidencia`),
   KEY `incident_index_1` (`id_usuario`,`id_incidencia`)
 ) ENGINE=InnoDB;
@@ -701,6 +702,15 @@ CREATE TABLE `vistas_consola` (
   `nombre` varchar(50) NOT NULL,
   `descripcion` varchar(250) NOT NULL,
   PRIMARY KEY  (`idVista`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7;
 
 
+CREATE TABLE `tnews` (
+  `id_news` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
+  `author` varchar(255)  NOT NULL DEFAULT '',
+  `subject` varchar(255)  NOT NULL DEFAULT '',
+  `text` TEXT  NOT NULL DEFAULT '',
+  `utimestamp` DATETIME  NOT NULL DEFAULT 0,
+  PRIMARY KEY(`id_news`)
+)
+ENGINE = InnoDB;

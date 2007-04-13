@@ -918,6 +918,40 @@ function give_network_profile_name ($id_np){
 }
 
 // --------------------------------------------------------------- 
+// Associate IP address to an agent
+// --------------------------------------------------------------- 
+
+function agent_add_address ($id_agent, $ip_address) {
+	require("config.php");
+	$query1="SELECT * FROM taddress_agent WHERE id_agent= $id_agent";
+	$resq1=mysql_query($query1);
+	$address_exist = 0;
+	while ($rowdup=mysql_fetch_array($resq1)){
+		$sql_3='SELECT ip FROM taddress WHERE id_a = '.$rowdup["id_a"];
+		$result_3=mysql_query($sql_3);
+		$row3=mysql_fetch_array($result_3);
+		if ($row3[0] == $ip_address)
+			$address_exist = 1;
+	}
+	if ($address_exist == 1){
+		// Add address
+		
+	}
+
+
+	$sql_2='SELECT id_a FROM taddress_agent WHERE id_agent = '.$id_agent;
+	$result_t=mysql_query($sql_2);
+	while ($row=mysql_fetch_array($result_t)){	
+		$sql_3='SELECT ip FROM taddress WHERE id_a = '.$row[0];
+		$result_3=mysql_query($sql_3);
+		$row3=mysql_fetch_array($result_3);
+		if ($direccion_agente != $row3[0])
+			echo "<option>".salida_limpia($row3[0]);
+	}
+	
+}
+
+// --------------------------------------------------------------- 
 // Returns agent id given name of agent
 // --------------------------------------------------------------- 
 

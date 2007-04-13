@@ -74,7 +74,26 @@ if (comprueba_login() == 0) {
 	echo '</tr>';
 	echo '<tr>
 	<td class="datos2"><b>'.$lang_label["ip_address"].'</b></td>
-	<td class="datos2" colspan=2>'.salida_limpia($direccion_agente);
+	<td class="datos2" colspan=2>';
+
+	
+	// Show all address for this agent, show first the main IP (taken from tagente table)
+	echo "<select name='notused' size=1>";
+	echo "<option>".salida_limpia($direccion_agente);
+	$sql_2='SELECT id_a FROM taddress_agent WHERE id_agent = '.$id_agente;
+	$result_t=mysql_query($sql_2);
+	while ($row=mysql_fetch_array($result_t)){	
+		$sql_3='SELECT ip FROM taddress WHERE id_a = '.$row[0];
+		$result_3=mysql_query($sql_3);
+		$row3=mysql_fetch_array($result_3);
+		if ($direccion_agente != $row3[0])
+			echo "<option>".salida_limpia($row3[0]);
+	}
+	echo "</select>";
+
+	
+
+	
 	if ($agent_type == 0) {
 		echo '<tr>
 		<td class="datos"><b>'.$lang_label["os"].'</b></td>

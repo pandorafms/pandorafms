@@ -1,3 +1,34 @@
+2007-04-13  Sancho Lerena  <slerena@artica.es>
+
+	* include/functions_db.php: Added function add_address() not finished!.
+	
+	* pandoradb.sql: Added field "notify_email" in tincidencia. More
+	changes are coming in incident management coming from FRITS
+	project. Added tnews
+	
+	* index.php: VERY IMPORTANT: Added Session locking concurrency
+        speedup, taken from
+        http://es2.php.net/manual/en/ref.session.php#64525. This solve GUI
+        lookups when one page it's processing huge data and one user
+        cannot access to other pages. This is a common PHP issue for
+        bad-susing SESSION functions.
+	
+
+	* operation/agentes/estado_grupo.php: Added checks for timeout in
+	agents. Now render gray icons/boxes if agent is completely timeout
+	(with no modules in time).
+	
+	* operation/agentes/estado_generalagente.php: Show IP address in
+	combo. More changes are coming to agent address management
+	(multiaddress).
+	
+	* general/logoff.php: Fixed, "babel" string :-)
+	
+	* general/logon_ok.php: Added news display in main logon screen.
+	
+	* godmode/agentes/configurar_agente.php: Delete address code, not
+	finished.
+
 2007-04-11 Manuel Arostegui <marostegui@artica.es>
 
 	* install.php: Text corrections.

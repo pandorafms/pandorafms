@@ -2,7 +2,7 @@
 # Pandora Console
 #
 %define name        PandoraFMS_Console
-%define version     1.2.0
+%define version     1.3.0
 %define release     1
 
 
@@ -25,6 +25,7 @@
 %define is_rh7      0
 %define is_el2      0
 %define is_centos2  0
+%define is_fedora   0
 %if %(test -f "/etc/redhat-release" && echo 1 || echo 0)
     %define is_rh7 %(test -n "`cat /etc/redhat-release | grep '(Valhalla)'`" && echo 1 || echo 0)
     %define is_el2 %(test -n "`cat /etc/redhat-release | grep '(Pensacola)'`" && echo 1 || echo 0)
@@ -114,7 +115,7 @@ fi
 %clean
 rm -rf $RPM_BUILD_ROOT
 %post
-echo "Please you HAVE to take a look at the INSTALL file placed on your DocumentRoot in order to follow the instructions to create the database for Pandora"
+echo "Please, now, point your broswer to http://localhost/pandora_console/install.php and follow all the steps described on it."
 %files
 %defattr(0644,%{httpd_user},%{httpd_group},0755)
 %docdir %{prefix}/pandora_console/docs

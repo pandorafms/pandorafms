@@ -1,3 +1,8 @@
+2007-04-17  Manuel Arostegui <marostegui@artica.es>
+
+	* specs/fedoracore5/pandora_server.spec: Added code to evaluate
+	  the perl version using by the system.
+
 2007-04-11  Manuel Arostegui <marostegui@artica.es>
 
 	* conf/pandora_server.conf: Changed PATHS to adapt them to the

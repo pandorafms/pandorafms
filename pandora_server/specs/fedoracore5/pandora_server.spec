@@ -27,6 +27,9 @@ Pandora watchs your systems and applications, and allows to know the status of a
 %prep
 rm -rf $RPM_BUILD_ROOT
 
+#Evaluate perl version:
+perl_version=`rpm -q --queryformat='%{VERSION}' perl`
+
 %setup -q -n pandora_server
 
 %build
@@ -74,7 +77,7 @@ if [ -f $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/%{name}.spec ] ; 
 fi
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+#rm -rf $RPM_BUILD_ROOT
 rm -fr $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}
 %post
 if [ "$1" = "0" ]; then

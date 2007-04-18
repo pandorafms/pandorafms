@@ -1,6 +1,7 @@
 <?php
 // Pandora FMS - the Free monitoring system
 // ========================================
+
 // Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
 // Main PHP/SQL code development and project architecture and management
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
@@ -32,8 +33,12 @@ if (give_acl($id_user, 0, "AW")!=1) {
 
 if (isset($_GET["id_agente"]))
 	$id_agente = $_GET["id_agente"];
-else
+else {
 	$id_agente = -1;
+	if (isset($_POST["update_agent"])) { // if modified some agent paramenter
+		$id_agente = entrada_limpia($_POST["id_agente"]);
+	}
+}
 
 // Init vars
 $descripcion = "";
@@ -149,7 +154,7 @@ echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=
 echo "</li>";
 
 echo "<li class='nomn'>";
-echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=templatet&id_agente=$id_agente'><img src='images/network.gif' width='16' class='top' border=0>&nbsp; NC Templates</a>";
+echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=template&id_agente=$id_agente'><img src='images/network.gif' width='16' class='top' border=0>&nbsp; NC Templates</a>";
 echo "</li>";
 
 echo "</ul>";
@@ -182,13 +187,6 @@ if (isset($_GET["delete_alert"])){ // if modified some parameter
 			echo "<h3 class='suc'>".$lang_label["delete_alert_ok"]."</h3>";
 
 }
-
-// Delete IP address
-if (isset($_POST["delete_ip"])){
-	echo "DELETING IP ADDRESS ".$_POST["delete_ip"];
-	echo "<br>";
-}
-
 
 // Create alert
 // =============
@@ -259,6 +257,7 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	$id_agente = entrada_limpia($_POST["id_agente"]);
 	$nombre_agente =  entrada_limpia($_POST["agente"]);
 	$direccion_agente =  entrada_limpia($_POST["direccion"]);
+	$old_agent_address = give_agent_address ($id_agente);
 	$grupo =  entrada_limpia($_POST["grupo"]);
 	$intervalo =  entrada_limpia($_POST["intervalo"]);
 	$comentarios =  entrada_limpia($_POST["comentarios"]);
@@ -266,6 +265,10 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	$id_os = entrada_limpia($_POST["id_os"]);
 	$disabled = entrada_limpia($_POST["disabled"]);
 	$id_server = entrada_limpia($_POST["id_server"]);
+
+	if ($direccion_agente != $old_agent_address){
+		agent_add_address ($id_agente, $direccion_agente);
+	}
 	if ($id_server != ""){
 		$sql_update ="UPDATE tagente 
 		SET disabled = ".$disabled." , id_os = ".$id_os." , modo = ".$modo." , nombre = '".$nombre_agente."', direccion = '".$direccion_agente."', id_grupo = '".$grupo."', intervalo = '".$intervalo."', comentarios = '".$comentarios."', id_server = '".$id_server."' 
@@ -275,6 +278,13 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 		SET disabled = ".$disabled." , id_os = ".$id_os." , modo = ".$modo." , nombre = '".$nombre_agente."', direccion = '".$direccion_agente."', id_grupo = '".$grupo."', intervalo = '".$intervalo."', comentarios = '".$comentarios."' 
 		WHERE id_agente = '".$id_agente."'";
 	}
+
+	// Delete one of associateds IP's ?
+	if (isset($_POST["delete_ip"])) {
+		$delete_ip = $_POST["address_list"];
+		agent_delete_address ($id_agente, $delete_ip);
+	}
+	
 	$result=mysql_query($sql_update);
 	if (! $result) {
 		echo "<h3 class='error'>".$lang_label["update_agent_no"]."</h3>";
@@ -617,6 +627,8 @@ case "main":	require "agent_manager.php";
 case "module": 	require "module_manager.php";
 		break;
 case "alert": 	require "alert_manager.php";
+		break;
+case "template":require "agent_template.php";
 		break;
 }
 

@@ -1,8 +1,13 @@
---
--- Table structure for table `estado_consola`
---
 
-DROP TABLE IF EXISTS `estado_consola`;
+-- Pandora FMS tables for active console (not officially included )
+
+CREATE TABLE `vistas_consola` (
+  `idVista` int(5) NOT NULL auto_increment,
+  `nombre` varchar(50) NOT NULL,
+  `descripcion` varchar(250) NOT NULL,
+  PRIMARY KEY  (`idVista`)
+) ENGINE=InnoDB;
+
 CREATE TABLE `estado_consola` (
   `id_usuario` varchar(50) NOT NULL,
   `idPerfilActivo` int(5) NOT NULL,
@@ -12,11 +17,7 @@ CREATE TABLE `estado_consola` (
   PRIMARY KEY  (`id_usuario`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `objeto_consola`
---
 
-DROP TABLE IF EXISTS `objeto_consola`;
 CREATE TABLE `objeto_consola` (
   `id_objeto` int(5) NOT NULL auto_increment,
   `nom_img` varchar(50) NOT NULL,
@@ -26,25 +27,17 @@ CREATE TABLE `objeto_consola` (
   `id_tipo` varchar(20) NOT NULL,
   `idVista` int(5) NOT NULL,
   PRIMARY KEY  (`id_objeto`)
-) ENGINE=InnoDB AUTO_INCREMENT=37;
+) ENGINE=InnoDB;
 
---
--- Table structure for table `perfil`
---
 
-DROP TABLE IF EXISTS `perfil`;
 CREATE TABLE `perfil` (
   `idPerfil` int(5) NOT NULL auto_increment,
   `Nombre` varchar(50) NOT NULL,
   `Descripcion` varchar(250) NOT NULL,
   PRIMARY KEY  (`idPerfil`)
-) ENGINE=InnoDB AUTO_INCREMENT=3;
+) ENGINE=InnoDB;
 
---
--- Table structure for table `perfil_vista`
---
 
-DROP TABLE IF EXISTS `perfil_vista`;
 CREATE TABLE `perfil_vista` (
   `idPerfil` int(5) NOT NULL,
   `idVista` int(5) NOT NULL,
@@ -52,33 +45,22 @@ CREATE TABLE `perfil_vista` (
   PRIMARY KEY  (`idPerfil`,`idVista`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `relacion_estado`
---
 
-DROP TABLE IF EXISTS `relacion_estado`;
 CREATE TABLE `relacion_estado` (
   `id_objeto` int(5) NOT NULL,
   `relacion` varchar(50) NOT NULL,
   PRIMARY KEY  (`id_objeto`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `relacion_objetos`
---
 
-DROP TABLE IF EXISTS `relacion_objetos`;
 CREATE TABLE `relacion_objetos` (
   `idObjeto1` int(5) NOT NULL,
   `idObjeto2` int(5) NOT NULL,
   PRIMARY KEY  (`idObjeto1`,`idObjeto2`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `taddress`
---
+-- Pandora FMS official tables
 
-DROP TABLE IF EXISTS `taddress`;
 CREATE TABLE `taddress` (
   `id_a` bigint(20) unsigned NOT NULL auto_increment,
   `ip` varchar(15) NOT NULL default '',
@@ -86,11 +68,7 @@ CREATE TABLE `taddress` (
   PRIMARY KEY  (`id_a`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `taddress_agent`
---
 
-DROP TABLE IF EXISTS `taddress_agent`;
 CREATE TABLE `taddress_agent` (
   `id_ag` bigint(20) unsigned NOT NULL auto_increment,
   `id_a` bigint(20) unsigned NOT NULL default '0',
@@ -98,26 +76,17 @@ CREATE TABLE `taddress_agent` (
   PRIMARY KEY  (`id_ag`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tagent_access`
---
 
-DROP TABLE IF EXISTS `tagent_access`;
 CREATE TABLE `tagent_access` (
   `id_ac` bigint(20) unsigned NOT NULL auto_increment,
   `id_agent` int(11) NOT NULL default '0',
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `utimestamp` bigint(20) NOT NULL default '0',
   PRIMARY KEY  (`id_ac`),
-  KEY `agent_index` (`id_agent`),
-  UNIQUE (`id_agent`)
+  KEY `agent_index` (`id_agent`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tagente`
---
 
-DROP TABLE IF EXISTS `tagente`;
 CREATE TABLE `tagente` (
   `id_agente` mediumint(8) unsigned NOT NULL auto_increment,
   `nombre` varchar(100) NOT NULL default '',
@@ -137,11 +106,7 @@ CREATE TABLE `tagente` (
   PRIMARY KEY  (`id_agente`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tagente_datos`
---
 
-DROP TABLE IF EXISTS `tagente_datos`;
 CREATE TABLE `tagente_datos` (
   `id_agente_datos` bigint(10) unsigned NOT NULL auto_increment,
   `id_agente_modulo` mediumint(8) unsigned NOT NULL default '0',
@@ -153,11 +118,7 @@ CREATE TABLE `tagente_datos` (
   KEY `data_index2` (`id_agente`,`id_agente_modulo`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tagente_datos_inc`
---
 
-DROP TABLE IF EXISTS `tagente_datos_inc`;
 CREATE TABLE `tagente_datos_inc` (
   `id_adi` bigint(20) unsigned NOT NULL auto_increment,
   `id_agente_modulo` bigint(20) NOT NULL default '0',
@@ -167,11 +128,7 @@ CREATE TABLE `tagente_datos_inc` (
   KEY `data_inc_index_1` (`id_agente_modulo`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tagente_datos_string`
---
 
-DROP TABLE IF EXISTS `tagente_datos_string`;
 CREATE TABLE `tagente_datos_string` (
   `id_tagente_datos_string` bigint(20) unsigned NOT NULL auto_increment,
   `id_agente_modulo` int(11) NOT NULL default '0',
@@ -184,11 +141,7 @@ CREATE TABLE `tagente_datos_string` (
   KEY `data_string_index_2` (`id_agente`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tagente_estado`
---
 
-DROP TABLE IF EXISTS `tagente_estado`;
 CREATE TABLE `tagente_estado` (
   `id_agente_estado` int(10) unsigned NOT NULL auto_increment,
   `id_agente_modulo` int(20) NOT NULL default '0',
@@ -206,22 +159,14 @@ CREATE TABLE `tagente_estado` (
   KEY `status_index_2` (`id_agente_modulo`,`estado`)
 ) ENGINE=InnoDB;
 
-# Database: pandora
-# Table: 'tmodule'
-#
+
 CREATE TABLE `tmodule` (
   `id_module` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(100) NOT NULL default '',
   PRIMARY KEY (`id_module`),
-  UNIQUE (name)
 ) ENGINE=InnoDB;
 
 
---
--- Table structure for table `tagente_modulo`
---
-
-DROP TABLE IF EXISTS `tagente_modulo`;
 CREATE TABLE `tagente_modulo` (
   `id_agente_modulo` bigint(100) unsigned NOT NULL auto_increment,
   `id_agente` int(11) NOT NULL default '0',
@@ -244,11 +189,7 @@ CREATE TABLE `tagente_modulo` (
   KEY `tam_agente` (`id_agente`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `talert_snmp`
---
 
-DROP TABLE IF EXISTS `talert_snmp`;
 CREATE TABLE `talert_snmp` (
   `id_as` int(10) unsigned NOT NULL auto_increment,
   `id_alert` int(10) unsigned NOT NULL default '0',
@@ -269,11 +210,7 @@ CREATE TABLE `talert_snmp` (
   PRIMARY KEY  (`id_as`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `talerta`
---
 
-DROP TABLE IF EXISTS `talerta`;
 CREATE TABLE `talerta` (
   `id_alerta` int(10) unsigned NOT NULL auto_increment,
   `nombre` varchar(100) NOT NULL default '',
@@ -282,11 +219,7 @@ CREATE TABLE `talerta` (
   PRIMARY KEY  (`id_alerta`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `talerta_agente_modulo`
---
 
-DROP TABLE IF EXISTS `talerta_agente_modulo`;
 CREATE TABLE `talerta_agente_modulo` (
   `id_aam` int(11) unsigned NOT NULL auto_increment,
   `id_agente_modulo` int(11) NOT NULL default '0',
@@ -295,8 +228,8 @@ CREATE TABLE `talerta_agente_modulo` (
   `al_campo2` varchar(255) default '',
   `al_campo3` mediumtext default '',
   `descripcion` varchar(255) default '',
-  `dis_max` bigint(12) default NULL,
-  `dis_min` bigint(12) default NULL,
+  `dis_max` double(18,2) default NULL,
+  `dis_min` double(18,2) default NULL,
   `time_threshold` int(11) NOT NULL default '0',
   `last_fired` datetime NOT NULL default '2004-01-01 00:00:00',
   `max_alerts` int(4) NOT NULL default '1',
@@ -307,11 +240,7 @@ CREATE TABLE `talerta_agente_modulo` (
   PRIMARY KEY  (`id_aam`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tattachment`
---
 
-DROP TABLE IF EXISTS `tattachment`;
 CREATE TABLE `tattachment` (
   `id_attachment` bigint(20) unsigned NOT NULL auto_increment,
   `id_incidencia` bigint(20) NOT NULL default '0',
@@ -322,11 +251,7 @@ CREATE TABLE `tattachment` (
   PRIMARY KEY  (`id_attachment`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tconfig`
---
 
-DROP TABLE IF EXISTS `tconfig`;
 CREATE TABLE `tconfig` (
   `id_config` int(10) unsigned NOT NULL auto_increment,
   `token` varchar(100) NOT NULL default '',
@@ -334,11 +259,7 @@ CREATE TABLE `tconfig` (
   PRIMARY KEY  (`id_config`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tconfig_os`
---
 
-DROP TABLE IF EXISTS `tconfig_os`;
 CREATE TABLE `tconfig_os` (
   `id_os` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(100) NOT NULL default '',
@@ -347,11 +268,7 @@ CREATE TABLE `tconfig_os` (
   PRIMARY KEY  (`id_os`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tevento`
---
 
-DROP TABLE IF EXISTS `tevento`;
 CREATE TABLE `tevento` (
   `id_evento` bigint(20) unsigned NOT NULL auto_increment,
   `id_agente` bigint(20) NOT NULL default '0',
@@ -366,11 +283,7 @@ CREATE TABLE `tevento` (
   KEY `indice_2` (`timestamp`,`id_evento`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tgrupo`
---
 
-DROP TABLE IF EXISTS `tgrupo`;
 CREATE TABLE `tgrupo` (
   `id_grupo` mediumint(8) unsigned NOT NULL auto_increment,
   `nombre` varchar(100) NOT NULL default '',
@@ -379,11 +292,7 @@ CREATE TABLE `tgrupo` (
   PRIMARY KEY  (`id_grupo`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tincidencia`
---
 
-DROP TABLE IF EXISTS `tincidencia`;
 CREATE TABLE `tincidencia` (
   `id_incidencia` bigint(20) unsigned NOT NULL auto_increment,
   `inicio` datetime NOT NULL default '0000-00-00 00:00:00',
@@ -402,22 +311,14 @@ CREATE TABLE `tincidencia` (
   KEY `incident_index_1` (`id_usuario`,`id_incidencia`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tlanguage`
---
 
-DROP TABLE IF EXISTS `tlanguage`;
 CREATE TABLE `tlanguage` (
   `id_language` varchar(6) NOT NULL default '',
   `name` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`id_language`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tlink`
---
 
-DROP TABLE IF EXISTS `tlink`;
 CREATE TABLE `tlink` (
   `id_link` int(10) unsigned zerofill NOT NULL auto_increment,
   `name` varchar(100) NOT NULL default '',
@@ -425,11 +326,7 @@ CREATE TABLE `tlink` (
   PRIMARY KEY  (`id_link`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tmensajes`
---
 
-DROP TABLE IF EXISTS `tmensajes`;
 CREATE TABLE `tmensajes` (
   `id_mensaje` bigint(20) unsigned NOT NULL auto_increment,
   `id_usuario_origen` varchar(100) NOT NULL default '',
@@ -441,22 +338,14 @@ CREATE TABLE `tmensajes` (
   PRIMARY KEY  (`id_mensaje`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tmodule_group`
---
 
-DROP TABLE IF EXISTS `tmodule_group`;
 CREATE TABLE `tmodule_group` (
   `id_mg` bigint(20) unsigned NOT NULL auto_increment,
   `name` varchar(150) NOT NULL default '',
   PRIMARY KEY  (`id_mg`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tnetwork_component`
---
 
-DROP TABLE IF EXISTS `tnetwork_component`;
 CREATE TABLE `tnetwork_component` (
   `id_nc` mediumint(12) unsigned NOT NULL auto_increment,
   `name` varchar(50) NOT NULL,
@@ -475,11 +364,7 @@ CREATE TABLE `tnetwork_component` (
   PRIMARY KEY  (`id_nc`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tnetwork_component_group`
---
 
-DROP TABLE IF EXISTS `tnetwork_component_group`;
 CREATE TABLE `tnetwork_component_group` (
   `id_sg` mediumint(8) unsigned NOT NULL auto_increment,
   `name` varchar(200) NOT NULL default '',
@@ -487,11 +372,7 @@ CREATE TABLE `tnetwork_component_group` (
   PRIMARY KEY  (`id_sg`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tnetwork_profile`
---
 
-DROP TABLE IF EXISTS `tnetwork_profile`;
 CREATE TABLE `tnetwork_profile` (
   `id_np` mediumint(8) unsigned NOT NULL auto_increment,
   `name` varchar(100) NOT NULL default '',
@@ -499,11 +380,7 @@ CREATE TABLE `tnetwork_profile` (
   PRIMARY KEY  (`id_np`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tnetwork_profile_component`
---
 
-DROP TABLE IF EXISTS `tnetwork_profile_component`;
 CREATE TABLE `tnetwork_profile_component` (
   `id_npc` mediumint(8) unsigned NOT NULL auto_increment,
   `id_nc` mediumint(8) unsigned NOT NULL default '0',
@@ -511,11 +388,7 @@ CREATE TABLE `tnetwork_profile_component` (
   PRIMARY KEY  (`id_npc`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tnota`
---
 
-DROP TABLE IF EXISTS `tnota`;
 CREATE TABLE `tnota` (
   `id_nota` mediumint(8) unsigned NOT NULL auto_increment,
   `id_usuario` varchar(100) NOT NULL default '0',
@@ -524,11 +397,7 @@ CREATE TABLE `tnota` (
   PRIMARY KEY  (`id_nota`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tnota_inc`
---
 
-DROP TABLE IF EXISTS `tnota_inc`;
 CREATE TABLE `tnota_inc` (
   `id_nota_inc` mediumint(8) unsigned NOT NULL auto_increment,
   `id_incidencia` mediumint(9) NOT NULL default '0',
@@ -536,20 +405,12 @@ CREATE TABLE `tnota_inc` (
   PRIMARY KEY  (`id_nota_inc`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `torigen`
---
 
-DROP TABLE IF EXISTS `torigen`;
 CREATE TABLE `torigen` (
   `origen` varchar(100) NOT NULL default ''
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tperfil`
---
 
-DROP TABLE IF EXISTS `tperfil`;
 CREATE TABLE `tperfil` (
   `id_perfil` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(60) NOT NULL default '',
@@ -566,11 +427,7 @@ CREATE TABLE `tperfil` (
   PRIMARY KEY  (`id_perfil`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `trecon_task`
---
 
-DROP TABLE IF EXISTS `trecon_task`;
 CREATE TABLE `trecon_task` (
   `id_rt` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(100) NOT NULL default '',
@@ -588,11 +445,7 @@ CREATE TABLE `trecon_task` (
   PRIMARY KEY  (`id_rt`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tserver`
---
 
-DROP TABLE IF EXISTS `tserver`;
 CREATE TABLE `tserver` (
   `id_server` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(100) NOT NULL default '',
@@ -611,11 +464,7 @@ CREATE TABLE `tserver` (
   PRIMARY KEY  (`id_server`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tsesion`
---
 
-DROP TABLE IF EXISTS `tsesion`;
 CREATE TABLE `tsesion` (
   `ID_sesion` bigint(4) unsigned NOT NULL auto_increment,
   `ID_usuario` varchar(60) NOT NULL default '0',
@@ -627,11 +476,7 @@ CREATE TABLE `tsesion` (
   PRIMARY KEY  (`ID_sesion`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `ttipo_modulo`
---
 
-DROP TABLE IF EXISTS `ttipo_modulo`;
 CREATE TABLE `ttipo_modulo` (
   `id_tipo` smallint(5) unsigned NOT NULL auto_increment,
   `nombre` varchar(100) NOT NULL default '',
@@ -641,11 +486,7 @@ CREATE TABLE `ttipo_modulo` (
   PRIMARY KEY  (`id_tipo`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `ttrap`
---
 
-DROP TABLE IF EXISTS `ttrap`;
 CREATE TABLE `ttrap` (
   `id_trap` bigint(20) unsigned NOT NULL auto_increment,
   `source` varchar(50) NOT NULL default '',
@@ -660,13 +501,9 @@ CREATE TABLE `ttrap` (
   `id_usuario` varchar(150) default '',
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id_trap`)
-) ENGINE=InnoDB COMMENT='SNMP Trap table';
+) ENGINE=InnoDB;
 
---
--- Table structure for table `tusuario`
---
 
-DROP TABLE IF EXISTS `tusuario`;
 CREATE TABLE `tusuario` (
   `id_usuario` varchar(60) NOT NULL default '0',
   `nombre_real` varchar(125) NOT NULL default '',
@@ -678,11 +515,7 @@ CREATE TABLE `tusuario` (
   `nivel` tinyint(1) NOT NULL default '0'
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `tusuario_perfil`
---
 
-DROP TABLE IF EXISTS `tusuario_perfil`;
 CREATE TABLE `tusuario_perfil` (
   `id_up` bigint(20) unsigned NOT NULL auto_increment,
   `id_usuario` varchar(100) NOT NULL default '',
@@ -692,18 +525,6 @@ CREATE TABLE `tusuario_perfil` (
   PRIMARY KEY  (`id_up`)
 ) ENGINE=InnoDB;
 
---
--- Table structure for table `vistas_consola`
---
-
-DROP TABLE IF EXISTS `vistas_consola`;
-CREATE TABLE `vistas_consola` (
-  `idVista` int(5) NOT NULL auto_increment,
-  `nombre` varchar(50) NOT NULL,
-  `descripcion` varchar(250) NOT NULL,
-  PRIMARY KEY  (`idVista`)
-) ENGINE=InnoDB AUTO_INCREMENT=7;
-
 
 CREATE TABLE `tnews` (
   `id_news` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
@@ -712,5 +533,4 @@ CREATE TABLE `tnews` (
   `text` TEXT  NOT NULL DEFAULT '',
   `utimestamp` DATETIME  NOT NULL DEFAULT 0,
   PRIMARY KEY(`id_news`)
-)
-ENGINE = InnoDB;
+) ENGINE = InnoDB;

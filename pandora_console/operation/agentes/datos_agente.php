@@ -79,20 +79,13 @@ function datos_raw($id_agente_modulo, $periodo){
 			echo "<tr>";	
 			echo "<td class='".$tdcolor."' style='width:150px'>".$row["timestamp"];
 			echo "<td class='".$tdcolor."'>";
-			if (($row["datos"] != 0) AND (is_numeric($row["datos"]))) {
-                        	$mytempdata = fmod($row["datos"], $row["datos"]);
-                                if ($mytempdata == 0)
-                                	$myvalue = intval($row["datos"]);
-                                else
-                                        $myvalue = $row["datos"];
-                                if ($myvalue > 1000000) { // Add sufix "M" for millions
-                                        $mytempdata = $myvalue / 1000000;
-                                        echo $mytempdata." M";
-                                } elseif ( $myvalue > 1000){ // Add sufix "K" for thousands
-                                        $mytempdata = $myvalue / 1000;
-                                        echo $mytempdata." K";
-                                } else
-                                        echo substr($myvalue,0,12);
+			if (is_numeric($row["datos"])) {
+				$mytempdata = fmod($row["datos"], 1);
+				if ($mytempdata == 0)
+					$myvalue = intval($row["datos"]);
+				else
+					$myvalue = $row["datos"];
+				echo format_for_graph($myvalue );
                         } else
                                echo substr($row["datos"],0,12);
 		}

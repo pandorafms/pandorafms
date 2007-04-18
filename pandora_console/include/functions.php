@@ -363,7 +363,9 @@ function pagination ($count, $url, $offset ) {
 	}
 }
 
+// ---------------------------------------------------------------
 // Render data in a fashion way :-)
+// ---------------------------------------------------------------
 function format_numeric ( $number, $decimals=2, $dec_point=".", $thousands_sep=",") {
 	if ($number == 0)
 		return 0;
@@ -373,5 +375,17 @@ function format_numeric ( $number, $decimals=2, $dec_point=".", $thousands_sep="
 	else
 		return number_format ($number, 0, $dec_point, $thousands_sep);
 }
+
+// ---------------------------------------------------------------
+// Render numeric data in a easy way to the user
+// ---------------------------------------------------------------
+function format_for_graph ( $number ) {
+	if ($number > "1000000")
+		return number_format ($number/1000000, 1, ".", ",")." M";
+	if ($number > "1000")
+		return number_format ($number/1000, 1, ".", ",")." K";
+	return $number;
+}
+
 
 ?>

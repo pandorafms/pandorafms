@@ -157,30 +157,23 @@ if (comprueba_login() == 0) {
 			AND ($row3["id_tipo_modulo"] != 10) 
 			AND ($row3["id_tipo_modulo"] != 17)){
 				echo "<td class=".$tdcolor.">";
-				if (($row3["datos"] != 0) AND (is_numeric($row3["datos"]))) {
+				if (is_numeric($row3["datos"])) {
 					$mytempdata = fmod($row3["datos"], 1);
-					if ($mytempdata == "0")
+					if ($mytempdata == 0)
 						$myvalue = intval($row3["datos"]);
 					else
 						$myvalue = $row3["datos"];
-					if ($myvalue > 1000000) { // Add sufix "M" for millions
-						$mytempdata = $myvalue / 1000000;
-						echo format_numeric($mytempdata)." M";
-					} elseif ( $myvalue > 1000){ // Add sufix "K" for thousands
-                                                $mytempdata = $myvalue / 1000;
-                                                echo format_numeric ($mytempdata)." K";
-					} else
-						echo substr($myvalue,0,12);
-				} elseif ($row3["datos"] == 0)
-					echo "0";
-				else
-					echo substr($row3["datos"],0,12);
+					echo format_for_graph($myvalue );
+				} else
+				echo substr($row["datos"],0,12);
+
+				
 					
 				$handle = "stat".$nombre_tipo_modulo."_".$row3["id_agente_modulo"];
 				$url = 'reporting/procesos.php?agente='.$row3["id_agente_modulo"];
 				$win_handle=dechex(crc32($row3["id_agente_modulo"].$row3["nombre"]));
 				echo "<td class=".$tdcolor." width='78'>";
-				$graph_label = entrada_limpia($row3["nombre"]." - ".$row3["id_agente_modulo"]);
+				$graph_label = entrada_limpia($row3["nombre"]);
 				
 				echo "<a href='javascript:winopeng(\"reporting/stat_win.php?period=2419200&id=".$row3["id_agente_modulo"]."&label=".$graph_label."refresh=180000\", \"month_".$win_handle."\")'><img  src='images/grafica_m.gif' border=0></a>&nbsp;";
 				

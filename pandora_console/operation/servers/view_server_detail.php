@@ -126,7 +126,7 @@ if ((comprueba_login() == 0) AND (give_acl($id_user, 0, "AR")==1) ) {
 
 				echo "<td class='$tdcolor'>";
 				if (give_acl($id_user, 0, "PM")==1){
-					echo "<a  href='http://pandora.localhost/index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update=$id_rt'>";
+					echo "<a  href='index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update=$id_rt'>";
 					echo "<img src='../images/wrench_orange.png'></A>";
 				}	
 			}

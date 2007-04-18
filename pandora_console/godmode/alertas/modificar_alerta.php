@@ -16,10 +16,11 @@ if ( (give_acl($id_user, 0, "LM")==1)){
 	    $descripcion=  entrada_limpia($_POST["descripcion"]);
 	    $sql_update ="UPDATE talerta SET nombre = '".$nombre."', comando = '".$comando."', descripcion = '".$descripcion."' WHERE id_alerta= '".$id_alerta."'";
 		$result=mysql_query($sql_update);	
-		if (! $result)
+		if (! $result) {
 			echo "<h3 class='error'>".$lang_label["update_alert_no"]."</h3>";
-		else
+		} else {
 			echo "<h3 class='suc'>".$lang_label["update_alert_ok"]."</h3>";
+		}
 	}
 
 	if (isset($_POST["crear_alerta"])){ // if create alert
@@ -50,9 +51,9 @@ if ( (give_acl($id_user, 0, "LM")==1)){
     echo "<h2>".$lang_label["alert_config"]."</h2>";
 	echo "<h3>".$lang_label["alert_defined2"]."<a href='help/".$help_code."/chap3.php#3221' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 	echo "<table width='500' cellpadding='3' cellspacing='3'>";
-	echo "<th class='w100'>".$lang_label["alertname"];
-	echo "<th>".$lang_label["description"];
-	echo "<th>".$lang_label["delete"];
+	echo "<th width='100px'>".$lang_label["alertname"]."</th>";
+	echo "<th>".$lang_label["description"]."</th>";
+	echo "<th>".$lang_label["delete"]."</th>";
 	$color=1;
 	$sql1='SELECT * FROM talerta ORDER BY nombre';
 	$result=mysql_query($sql1);
@@ -65,9 +66,9 @@ if ( (give_acl($id_user, 0, "LM")==1)){
 			$tdcolor = "datos2";
 			$color = 1;
 		}
-		echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=galertas&sec2=godmode/alertas/configurar_alerta&id_alerta=".$row["id_alerta"]."'>".$row["nombre"]."</a></b>";
-		echo "<td class='$tdcolor'>".$row["descripcion"];
-		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/alertas/modificar_alerta&borrar_alerta=".$row["id_alerta"]."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cross.png'></a>";
+		echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=galertas&sec2=godmode/alertas/configurar_alerta&id_alerta=".$row["id_alerta"]."'>".$row["nombre"]."</a></b></td>";
+		echo "<td class='$tdcolor'>".$row["descripcion"]."</td>";
+		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/alertas/modificar_alerta&borrar_alerta=".$row["id_alerta"]."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cross.png'></a></td></tr>";
 	}
 	
 	echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
@@ -79,7 +80,7 @@ if ( (give_acl($id_user, 0, "LM")==1)){
 	
 } // End page
 else {
-                audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Alert Management");
-                require ("general/noaccess.php");
-        }
+		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Alert Management");
+		require ("general/noaccess.php");
+	}
 ?>

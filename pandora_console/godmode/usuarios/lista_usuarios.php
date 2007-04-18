@@ -29,12 +29,13 @@ if (comprueba_login() == 0)
 <h2><?php echo $lang_label["user_management"] ?></h2>
 <h3><?php echo $lang_label["users"] ?><a href="help/<?php echo $help_code; ?>/chap2.php#22" target="_help" class="help">&nbsp;<span><?php echo $lang_label["help"]; ?></span></a></h3>
  
-<table cellpadding=3 cellspacing=3 width=550>
-<th class="w80"><?php echo $lang_label["user_ID"]?>
-<th><?php echo $lang_label["last_contact"]?>
-<th><?php echo $lang_label["profile"]?>
-<th><?php echo $lang_label["name"]?>
-<th width=30><?php echo $lang_label["delete"]?>
+<table cellpadding="3" cellspacing="3" width="700">
+<th width="80px"><?php echo $lang_label["user_ID"]?>
+<th width="155px"><?php echo $lang_label["last_contact"]?>
+<th width="45px"><?php echo $lang_label["profile"]?>
+<th width="120px"><?php echo $lang_label["name"]?>
+<th><?php echo $lang_label["description"]?>
+<th width="30px"><?php echo $lang_label["delete"]?>
 
 <?php
 $query1="SELECT * FROM tusuario";
@@ -47,9 +48,10 @@ $fecha_registro = "";
 $color=1;
 
 while ($rowdup=mysql_fetch_array($resq1)){
-	$nombre=$rowdup["id_usuario"];
-	$nivel =$rowdup["nivel"];
-	$comentarios =$rowdup["nombre_real"];
+	$name=$rowdup["id_usuario"];
+	$nivel=$rowdup["nivel"];
+	$real_name=$rowdup["nombre_real"];
+	$comments=$rowdup["comentarios"];
 	$fecha_registro =$rowdup["fecha_registro"];
 	if ($color == 1){
 		$tdcolor = "datos";
@@ -60,7 +62,7 @@ while ($rowdup=mysql_fetch_array($resq1)){
 		$color = 1;
 	}
 	echo "<tr><td class='$tdcolor'>";
-	echo "<a href='index.php?sec=gusuarios&sec2=godmode/usuarios/configurar_usuarios&id_usuario_mio=".$nombre."'><b>".$nombre."</b></a>";
+	echo "<a href='index.php?sec=gusuarios&sec2=godmode/usuarios/configurar_usuarios&id_usuario_mio=".$nombre."'><b>".$name."</b></a>";
 	echo "<td class='$tdcolor'>".$fecha_registro;
 	echo "<td class='$tdcolor'>";
 	if ($nivel == 1) 
@@ -68,7 +70,7 @@ while ($rowdup=mysql_fetch_array($resq1)){
 	else
 		echo "<img src='images/user_green.png'>";
 	
-	$sql1='SELECT * FROM tusuario_perfil WHERE id_usuario = "'.$nombre.'"';
+	$sql1='SELECT * FROM tusuario_perfil WHERE id_usuario = "'.$name.'"';
 	$result=mysql_query($sql1);
 	echo "<a href='#' class='tip'>&nbsp;<span>";
 	if (mysql_num_rows($result)){
@@ -80,11 +82,12 @@ while ($rowdup=mysql_fetch_array($resq1)){
 	else { echo $lang_label["no_profile"]; }
 	echo "</span></a>";
 	
-	echo "<td class='$tdcolor'>".$comentarios;
+	echo "<td class='$tdcolor' width='100'>".substr($real_name,0,16)."</td>";
+	echo "<td class='$tdcolor'>".$comments."</td>";
 	echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/usuarios/lista_usuarios&borrar_usuario=".$nombre."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cross.png'></a>";
 }
-	echo "<tr><td colspan='5'><div class='raya'></div></td></tr>";
-	echo "<tr><td colspan='5' align='right'>";
+	echo "<tr><td colspan='6'><div class='raya'></div></td></tr>";
+	echo "<tr><td colspan='6' align='right'>";
 	echo "<form method=post action='index.php?sec=gusuarios&sec2=godmode/usuarios/configurar_usuarios&alta=1'>";
 	echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create_user"]."'>";
 	echo "</form></td></tr></table>";

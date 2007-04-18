@@ -211,7 +211,7 @@ echo '<td class="datos2"><b>'.$lang_label["updated_at"].'</b>';
 echo "<td class='datos2'><i>".$actualizacion."</i>";
 echo '<tr><td class="datos"><b>'.$lang_label["in_openedby"].'</b><td class="datos">';
 if ((give_acl($id_user, $id_grupo, "IM")==1) OR ($usuario == $id_user)) {
-	echo "<select name='usuario_form' class='w200'>";
+	echo "<select name='usuario_form' width='200px'>";
 	echo "<option value='".$usuario."'>".$usuario." - ".dame_nombre_real($usuario);
 	$sql1='SELECT * FROM tusuario ORDER BY id_usuario';
 	$result=mysql_query($sql1);
@@ -231,10 +231,13 @@ else {
 // 3 - Caducada / Outdated
 // 13 - Cerrada / Closed
 
-if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp))
-	echo '<td class="datos"><b>'.$lang_label["status"].'</b><td class="datos"><select name="estado_form" class="w135">';
-else
-	echo '<td class="datos"><b>'.$lang_label["status"].'</b><td class="datos"><select disabled name="estado_form" class="w135">';
+if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)) {
+	echo '<td class="datos"><b>'.$lang_label["status"].'</b>
+	<td class="datos"><select name="estado_form" class="w135">';
+} else {
+	echo '<td class="datos"><b>'.$lang_label["status"].'</b>
+	<td class="datos"><select disabled name="estado_form" class="w135">';
+}
 
 switch ( $estado ){
 	case 0: echo '<option value="0">'.$lang_label["in_state_0"]; break;
@@ -252,26 +255,31 @@ echo '<option value="13">'.$lang_label["in_state_13"];
 echo '</select>';
 
 // Only owner could change source or user with Incident management privileges
-if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp))
-	echo '<tr><td class="datos2"><b>'.$lang_label["source"].'</b><td class="datos2"><select name="origen_form" class="w135">';
-else
-	echo '<tr><td class="datos2"><b>'.$lang_label["source"].'</b><td class="datos2"><select disabled name="origen_form" class="w135">';
-
+if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)) {
+	echo '<tr><td class="datos2"><b>'.$lang_label["source"].'</b></td>
+	<td class="datos2"><select name="origen_form" class="w135">';
+} else {
+	echo '<tr><td class="datos2"><b>'.$lang_label["source"].'</b></td>
+	<td class="datos2"><select disabled name="origen_form" class="w135">';
+}
 // Fill combobox with source (origen)
 if ($origen != "")
 	echo "<option value='".$origen."'>".$origen;
 $sql1='SELECT * FROM torigen ORDER BY origen';
 $result=mysql_query($sql1);
 while ($row2=mysql_fetch_array($result)){
-	echo "<option value='".$row2["origen"]."'>".$row2["origen"];
+	echo "<option value='".$row2["origen"]."'>".$row2["origen"]."</option>";
 }
 echo "</select>";
 
 // Group combo
-if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp))
-	echo '<td class="datos2"><b>'.$lang_label["group"].'</b><td class="datos2"><select name="grupo_form" class="w135">';
-else
-	echo '<td class="datos2"><b>'.$lang_label["group"].'</b><td class="datos2"><select disabled name="grupo_form" class="w135">';
+if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)) {
+	echo '<td class="datos2"><b>'.$lang_label["group"].'</b></td>
+	<td class="datos2"><select name="grupo_form" class="w135">';
+} else {
+	echo '<td class="datos2"><b>'.$lang_label["group"].'</b></td>
+	<td class="datos2"><select disabled name="grupo_form" class="w135">';
+}
 if ($id_grupo != 0)
 	echo "<option value='".$id_grupo."'>".$grupo;
 $sql1='SELECT * FROM tgrupo ORDER BY nombre';
@@ -282,10 +290,13 @@ while ($row=mysql_fetch_array($result)){
 }
 
 echo '</select><tr>';
-if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp))
-	echo '<td class="datos"><b>'.$lang_label["priority"].'</b><td class="datos"><select name="prioridad_form" class="w135">';
-else
-	echo '<td class="datos"><b>'.$lang_label["priority"].'</b><td class="datos"><select disabled name="prioridad_form" class="w135">';
+if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)) {
+	echo '<td class="datos"><b>'.$lang_label["priority"].'</b></td>
+	<td class="datos"><select name="prioridad_form" class="w135">';
+} else {
+	echo '<td class="datos"><b>'.$lang_label["priority"].'</b></td>
+	<td class="datos"><select disabled name="prioridad_form" class="w135">';
+}
 
 switch ( $prioridad ){
 	case 0: echo '<option value="0">'.$lang_label["informative"]; break;
@@ -303,14 +314,22 @@ echo '<option value="3">'.$lang_label["serious"];
 echo '<option value="4">'.$lang_label["very_serious"];
 echo '<option value="10">'.$lang_label["maintenance"];
 
-echo "<td class='datos'><b>Creator</b><td class='datos'>".$id_creator." ( <i>".dame_nombre_real($id_creator)." </i>)";
+echo "<td class='datos'><b>Creator</b>
+<td class='datos'>".$id_creator." ( <i>".dame_nombre_real($id_creator)." </i>)";
 
-if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp))
-	echo '</select><tr><td class="datos2" colspan="4"><textarea name="descripcion" rows="15" cols="85">';
-else
-	echo '</select><tr><td class="datos2" colspan="4"><textarea readonly name="descripcion" rows="15" cols="85">';
-if (isset($texto)) {echo $texto;}
-echo "</textarea>";
+if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)) {
+	echo '</select>
+	<tr><td class="datos2" colspan="4">
+	<textarea name="descripcion" rows="15" cols="85">';
+} else {
+	echo '</select>
+	<tr><td class="datos2" colspan="4">
+	<textarea readonly name="descripcion" rows="15" cols="85">';
+}
+if (isset($texto)) {
+	echo $texto;
+}
+echo "</textarea></td></tr>";
 
 echo '<tr><td colspan="5"><div class="raya"></div></td></tr>';
 echo "<tr><td colspan='5' align='right'>";
@@ -331,22 +350,32 @@ echo "</form>";
 
 if ($creacion_incidente == 0){
 	echo "<tr><td colspan='7' style='text-align: right;'>";
-	echo '<form method="post" action="index.php?sec=incidencias&sec2=operation/incidents/incident_note&id_inc='.$id_inc.'"><input type="hidden" name="nota" value="add"><input align=right name="addnote" type="submit" class="sub" value="'.$lang_label["add_note"].'"></form>';
+	echo '
+	<form method="post" action="index.php?sec=incidencias&sec2=operation/incidents/incident_note&id_inc='.$id_inc.'">
+	<input type="hidden" name="nota" value="add">
+	<input align=right name="addnote" type="submit" class="sub" value="'.$lang_label["add_note"].'">
+	</form>';
 }
 echo "</tr></table><br>";
 
 if ($creacion_incidente == 0){
 // Upload control
 	if (give_acl($iduser_temp, $id_grupo, "IW")==1){
-		echo "<table cellpadding=3 cellspacing=3 border=0 width='400'>";
-		echo "<tr><td colspan='3'><b>".$lang_label["attachfile"]."</b>";
-		echo "<tr><td class='lb' rowspan='2' width='5'>";
-		echo '<td class="datos">'.$lang_label["filename"].'</td><td class="datos"><form method="post" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'&upload_file=1" enctype="multipart/form-data">';
-		echo '<input type="file" name="userfile" value="userfile" class="sub" size="40">';
-		echo '<tr><td class="datos2">'.$lang_label["description"].'</td><td class="datos2" colspan=3><input type="text" name="file_description" size=47>';
-		echo '<tr><td colspan="4"><div class="raya"></div></td></tr>';
-		echo '<tr><td colspan="4" style="text-align: right;"><input type="submit" name="upload" value="'.$lang_label["upload"].'" class="sub">';
-		echo '</td></tr></table><br>';
+		echo '
+		<table cellpadding=3 cellspacing=3 border=0 width="400">
+		<tr><td colspan="3"><b>'.$lang_label["attachfile"].'</b>
+		<tr><td class="lb" rowspan="2" width="5">
+		<td class="datos">'.$lang_label["filename"].'</td>
+		<td class="datos"><form method="post" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'&upload_file=1" enctype="multipart/form-data">
+		<input type="file" name="userfile" value="userfile" class="sub" size="40">
+		</td></tr>
+		<tr><td class="datos2">'.$lang_label["description"].'</td>
+		<td class="datos2" colspan="3">
+		<input type="text" name="file_description" size="47">
+		<tr><td colspan="4"><div class="raya"></div></td></tr>
+		<tr><td colspan="4" style="text-align: right;">
+		<input type="submit" name="upload" value="'.$lang_label["upload"].'" class="sub">
+		</td></tr></table><br>';
 	}
 	// ************************************************************
 	// Files attached to this incident
@@ -361,10 +390,11 @@ if ($creacion_incidente == 0){
 		echo "<tr><td>";
 		echo "<h3>".$lang_label["attached_files"]."</h3>";
 		echo "</td></tr><td>";
-		echo "<table width='650'><tr><th class=datos>".$lang_label["filename"];
-		echo "<th class=datos>".$lang_label["description"];
-		echo "<th class=datos>".$lang_label["size"];
-		echo "<th class=datos>".$lang_label["delete"];
+		echo "<table width='650'><tr>
+		<th class=datos>".$lang_label["filename"]."</th>
+		<th class=datos>".$lang_label["description"]."</th>
+		<th class=datos>".$lang_label["size"]."</th>
+		<th class=datos>".$lang_label["delete"]."</th></tr>";
 
 		while ($row=mysql_fetch_array($att_fil)){
 			echo "<tr><td class=datos><a target='_new' href='attachment/pand".$row["id_attachment"]."_".$row["filename"]."'><img src='images/file.gif' border=0 align='middle'> ".$row["filename"]."</a>";
@@ -386,7 +416,7 @@ if ($creacion_incidente == 0){
 	$res4=mysql_query($sql4);
 	while ($row2=mysql_fetch_array($res4)){
 		if ($cabecera == 0) { // Show head only one time
-			echo "<table cellpadding='3' cellspacing='3' border='0' class='w550'>";
+			echo "<table cellpadding='3' cellspacing='3' border='0' width='550px'>";
 			echo "<tr><td>";
 			echo "<h3>".$lang_label["in_notas_t1"]."</h3>";
 			echo "<table cellpadding='3' cellspacing='3' border='0'>";

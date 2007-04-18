@@ -276,7 +276,6 @@ td.datos_jus, td.datos2_jus {
 	height: 20px;
 	width: 100%;
 }
-
 .f10, .w155f10, #ip {
 	font-size: 10px;
 	text-align: center;
@@ -354,37 +353,16 @@ td.datosf9i, td.datos2f9i {
 	padding-top: 2px;
 	padding-bottom: 1px;
 }
-.w30 {
-	width: 30px;
-}
-.w45 {
-	width: 45px;
-}
-.w70 {
-	width: 70px;
-}
-.w80 {
-	width: 80px;
-}
-.w90datos {
-	width: 90px;
-}
-.w100 {
-	width: 100px;
-}
 .w120 {
 	width: 120px;
 }
 .w130 {
 	width: 130px;
 }
-.w135, .w135datos, .w35datos2 {
+.w135 {
 	width: 135px;
 }
-.w140 {
-	width: 140px;
-}
-.w155, .w155f10 {
+.w155 {
 	width: 155px;
 }
 .top, .top_red, .bgt, .f9l30t, td.datost, td.datos2t {
@@ -395,18 +373,6 @@ td.datosf9i, td.datos2f9i {
 }
 .bot, .titb, td.datosb {
 	vertical-align: bottom;
-}
-.w200 {
-	width: 200px;
-}
-.w255 {
-	width: 255px;
-}
-.w540 {
-	width: 540px;
-}
-.w550 {
-	width: 550px;
 }
 .msg {
 	margin-top: 15px;
@@ -507,10 +473,10 @@ div.data_box {
 }
 #menu_tab li a, #menu_tab li.nomn a
 {
-	background: #0FB800;
+	background: #d4ddc6;
 	padding: 2px 10px 2px 10px;
-	color: #fff;
-	border: 1px solid #0D9D00;
+	color: #333;
+	border-left: 1px solid #fff;
 	font-weight: bold;
 	line-height: 18px;
 }
@@ -524,7 +490,7 @@ div.data_box {
 #menu_tab li.nomn:hover a, 
 #menu_tab li:hover ul a:hover
 {
-	background: #25DB00;
+	background: #cde0ad;
 }
 #menu_tab li:hover a
 {
@@ -550,10 +516,9 @@ div.data_box {
 }
 #menu_tab_left li a, #menu_tab_left li.nomn a
 {
-	background: #D84437;
+	background: #999;
 	padding: 2px 10px 2px 10px;
 	color: #fff;
-	border: 1px solid #C43E32;
 	font-weight: bold;
 	line-height: 18px;
 }

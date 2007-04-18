@@ -69,8 +69,8 @@ if (comprueba_login() == 0) {
 		echo '<form name="servers" method="POST" action="index.php?sec=gserver&sec2=godmode/servers/modificar_server&update=1">';
 		echo "<table cellpadding='3' cellspacing='3' width='450'>";
 		echo "<tr><td class='lb' rowspan='3' width='5'>";
-		echo "<td class='datos'>".$lang_label["name"]."</td><td class='datos'><input type='text' name='name' value='".$name."' class='w200'>";
-		echo "<tr><td class='datos2'>".$lang_label['ip_address']."</td><td class='datos2'><input type='text' name='address' value='".$address."' class='w200'>";
+		echo "<td class='datos'>".$lang_label["name"]."</td><td class='datos'><input type='text' name='name' value='".$name."' width="200px">";
+		echo "<tr><td class='datos2'>".$lang_label['ip_address']."</td><td class='datos2'><input type='text' name='address' value='".$address."' width="200px">";
 		echo "<tr><td class='datos'>".$lang_label['description']."<td class='datos'><input type='text' name='description' value='".$description."'><input type='hidden' name='server' value='".entrada_limpia($_GET["server"])."'></input>";
 	}
 	else {

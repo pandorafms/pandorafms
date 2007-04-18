@@ -31,9 +31,9 @@
 	echo '<table cellpadding="3" cellspacing="3" width="700"><tr>'; 
 	echo '<th>' . $lang_label["user"] . '</th>';
 	echo '<th>' . $lang_label["action"] . '</th>';
-	echo '<th class="w130">' . $lang_label["date"] . '</th>';
+	echo '<th width="130px">' . $lang_label["date"] . '</th>';
 	echo '<th>' . $lang_label["src_address"] . '</th>';
-	echo '<th class="w200">' . $lang_label["comments"] . '</th></tr>';
+	echo '<th width="200px">' . $lang_label["comments"] . '</th></tr>';
 
 	// Skip offset records
 	$query1="SELECT * FROM tsesion WHERE (TO_DAYS(fecha) > TO_DAYS(NOW()) - 7) AND ID_usuario = '" . $nick . "' ORDER BY fecha DESC limit 15";

@@ -28,10 +28,10 @@ if (comprueba_login() == 0) {
 <h3><?php echo $lang_label["users"] ?><a href='help/<?php echo $help_code ?>/chap2.php#2' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
 
 <table cellpadding="3" cellspacing="3" width="700">
-<th class="w80"><?php echo $lang_label["user_ID"]?>
-<th class="w155"><?php echo $lang_label["last_contact"]?>
-<th class="w45"><?php echo $lang_label["profile"]?>
-<th class="w120"><?php echo $lang_label["name"]?>
+<th width="80px"><?php echo $lang_label["user_ID"]?>
+<th width="155px"><?php echo $lang_label["last_contact"]?>
+<th width="45px"><?php echo $lang_label["profile"]?>
+<th width="120px"><?php echo $lang_label["name"]?>
 <th><?php echo $lang_label["description"]?>
 
 <?php
@@ -39,9 +39,10 @@ $color = 1;
 $query1="SELECT * FROM tusuario";
 $resq1=mysql_query($query1);
 while ($rowdup=mysql_fetch_array($resq1)){
-	$nombre=$rowdup["id_usuario"];
-	$nivel =$rowdup["nivel"];
-	$comentarios =$rowdup["comentarios"];
+	$name=$rowdup["id_usuario"];
+	$nivel=$rowdup["nivel"];
+	$real_name=$rowdup["nombre_real"];
+	$comments=$rowdup["comentarios"];
 	$fecha_registro =$rowdup["fecha_registro"];
 	if ($color == 1){
 		$tdcolor = "datos";
@@ -53,14 +54,14 @@ while ($rowdup=mysql_fetch_array($resq1)){
 		$color = 1;
 		$tip = "tip2";
 	}
-	echo "<tr><td class='$tdcolor'><a href='index.php?sec=usuarios&sec2=operation/users/user_edit&ver=".$nombre."'><b>".$nombre."</b></a>";
+	echo "<tr><td class='$tdcolor'><a href='index.php?sec=usuarios&sec2=operation/users/user_edit&ver=".$nombre."'><b>".$name."</b></a>";
 	echo "<td class='$tdcolor'><font size=1>".$fecha_registro."</font>";
 	echo "<td class='$tdcolor'>";
 	if ($nivel == 1) 
 		echo "<img src='images/user_suit.png'>";
 	else
 		echo "<img src='images/user_green.png'>";
-	$sql1='SELECT * FROM tusuario_perfil WHERE id_usuario = "'.$nombre.'"';
+	$sql1='SELECT * FROM tusuario_perfil WHERE id_usuario = "'.$name.'"';
 	$result=mysql_query($sql1);
 	echo "<a href='#' class='$tip'>&nbsp;<span>";
 	if (mysql_num_rows($result)){
@@ -71,8 +72,8 @@ while ($rowdup=mysql_fetch_array($resq1)){
 	}
 	else { echo $lang_label["no_profile"]; }
 	echo "</span></a>";
-	echo "<td class='$tdcolor' width='100'>".substr($rowdup["nombre_real"],0,16);
-	echo "<td class='$tdcolor'>".$comentarios;
+	echo "<td class='$tdcolor' width='100'>".substr($real_name,0,16)."</td>";
+	echo "<td class='$tdcolor'>".$comments."</td>";
 }
 
 echo "<tr><td colspan='5'><div class='raya'></div></td></tr></table><br>";

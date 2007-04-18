@@ -24,7 +24,9 @@ function create_message($usuario_origen, $usuario_destino, $subject, $mensaje){
 	$ahora=date("Y/m/d H:i:s");
 	require ("include/config.php");
 	require ("include/languages/language_".$language_code.".php");
-	$sql='INSERT INTO tmensajes (id_usuario_origen, id_usuario_destino, subject, mensaje, timestamp) VALUES ("'.$usuario_origen.'", "'.$usuario_destino.'", "'.$subject.'", "'.$mensaje.'","'.$ahora.'")';
+	$sql='
+	INSERT INTO tmensajes (id_usuario_origen, id_usuario_destino, subject, mensaje, timestamp)
+	VALUES ("'.$usuario_origen.'", "'.$usuario_destino.'", "'.$subject.'", "'.$mensaje.'","'.$ahora.'")';
 	$result=mysql_query($sql);
 	if ($result) echo "<h3 class='suc'>".$lang_label["message_ok"]."</h3>";
 	else echo "<h3 class='error'>".$lang_label["message_no"]."</h3>";
@@ -98,12 +100,12 @@ if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
 		echo '</td></tr>
 		<tr><td class="datos">'.$lang_label["subject"].':</td><td class="datos">';
 			if (isset($_POST["subject"])) {
-			echo '</b><input name="subject" value="'.$_POST["subject"].'" class="w255">';
+			echo '</b><input name="subject" value="'.$_POST["subject"].'" width="255px">';
 			}
-			else echo '<input name="subject" class="w255">';
+			else echo '<input name="subject" width="255px">';
 		echo '</td></tr>
 		<tr><td class="datos2">'.$lang_label["message"].':</td></tr>
-		<tr><td class="datos" colspan="4"><textarea name="mensaje" rows="10" class="w540">';
+		<tr><td class="datos" colspan="4"><textarea name="mensaje" rows="10" width="540px">';
 			if (isset($_POST["mensaje"])) {
 				echo $_POST["mensaje"];
 			}
@@ -128,9 +130,9 @@ if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
 				
 			echo '</select>';
 		echo '</td></tr>
-		<tr><td class="datos">'.$lang_label["subject"].':</td><td class="datos"><input name="subject" class="w255"></td></tr>
+		<tr><td class="datos">'.$lang_label["subject"].':</td><td class="datos"><input name="subject" width="255px"></td></tr>
 		<tr><td class="datos2">'.$lang_label["message"].':</td></tr>
-		<tr><td class="datos" colspan="4"><textarea name="mensaje" rows="10" class="w540"></textarea></td></tr>
+		<tr><td class="datos" colspan="4"><textarea name="mensaje" rows="10" width="540px"></textarea></td></tr>
 		<tr><td colspan="2" align="right">
 		<input type="submit" class="sub" name="send_mes" value="'.$lang_label["send_mes"].'"></form></td></tr>';
 	}
@@ -155,7 +157,13 @@ else {
 	$resultado3=mysql_query($sql3);
 	$color=1;
 	if (mysql_num_rows($resultado3)) {
-		echo "<table class='w550'><tr><th>".$lang_label["read"]."</th><th>".$lang_label["sender"]."</th><th>".$lang_label["subject"]."</th><th>".$lang_label["timestamp"]."</th><th>".$lang_label["delete"]."</th></tr>";
+		echo "
+		<table width='550px'><tr>
+		<th>".$lang_label["read"]."</th>
+		<th>".$lang_label["sender"]."</th>
+		<th>".$lang_label["subject"]."</th>
+		<th>".$lang_label["timestamp"]."</th>
+		<th>".$lang_label["delete"]."</th></tr>";
 		while ($row3=mysql_fetch_array($resultado3)){
 			if ($color == 1){
 				$tdcolor = "datos";
@@ -166,11 +174,16 @@ else {
 				$color = 1;
 			}
 			echo "<tr>";
-			if ($row3["estado"]==1) echo "<td align='center' class='$tdcolor'><img src='images/read.gif' border=0></td>";
-			else echo "<td align='center' class='$tdcolor'><img src='images/unread.gif' border=0></td>";
-
+			if ($row3["estado"]==1) {
+				echo "<td align='center' class='$tdcolor'>
+				<img src='images/read.gif' border=0></td>";
+			} else {
+				echo "<td align='center' class='$tdcolor'>
+				<img src='images/unread.gif' border=0></td>";
+			}
 			echo "<td class='$tdcolor'>";
-			echo "<b><a href=index.php?sec=usuarios&sec2=operation/users/user_edit&ver=".$row3["id_usuario_origen"].">".$row3["id_usuario_origen"]."</b></td><td class='".$tdcolor."'><a href='index.php?sec=messages&sec2=operation/messages/message&leer=1&id_mensaje=".$row3["id_mensaje"]."'>";
+			echo "<b><a href=index.php?sec=usuarios&sec2=operation/users/user_edit&ver=".$row3["id_usuario_origen"].">".$row3["id_usuario_origen"]."</b></td>
+			<td class='".$tdcolor."'><a href='index.php?sec=messages&sec2=operation/messages/message&leer=1&id_mensaje=".$row3["id_mensaje"]."'>";
 
 			if ($row3["subject"]) 
 				echo $row3["subject"]."</a>";
@@ -199,7 +212,7 @@ else {
 		<tr><td></td></tr><tr><td class="datos">'.$lang_label["from"].':</td><td class="datos"><b>'.$row4["id_usuario_origen"].'</b></td></tr>
 		<tr><td class="datos2">'.$lang_label["subject"].':</td><td class="datos2"><b>'.$row4["subject"].'</b></td></tr>
 		<tr><td class="datos" colspan="2">'.$lang_label["message"].':</td>
-		<tr><td class="datos2" colspan="2"><textarea name="mensaje" rows="10" class="w540" readonly>'.$row4["mensaje"].'</textarea></td></tr>
+		<tr><td class="datos2" colspan="2"><textarea name="mensaje" rows="10" width="540px" readonly>'.$row4["mensaje"].'</textarea></td></tr>
 		<tr><td colspan="2" align="right">
 		<input type="hidden" name="u_destino" value="'.$row4["id_usuario_origen"].'">
 		<input type="hidden" name="subject" value="Re: '.$row4["subject"].'">

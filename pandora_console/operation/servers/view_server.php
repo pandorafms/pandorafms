@@ -101,7 +101,7 @@ if (comprueba_login() == 0) {
 					}
 				} else {
 					// Get total modules defined for this server (data modules)
-					$sql2 = "SELECT COUNT(processed_by_server) FROM tagente_estado WHERE processed_by_server = '$name'";
+					$sql2 = "SELECT COUNT(running_by) FROM tagente_estado WHERE running_by = $id_server";
 					$result2=mysql_query($sql2);
 					$row2=mysql_fetch_array($result2);
 					$modules_server = $row2[0];
@@ -196,7 +196,7 @@ if (comprueba_login() == 0) {
 				$maxlag=0;
 				while ($row1=mysql_fetch_array($result1)){
 					if (($row1["utimestamp"] + $row1["interval_sweep"]) < $nowtime)
-						$maxlag2 =  $nowtime - ($row1["utimestamp"] + $row1["interval"]);
+						$maxlag2 =  $nowtime - ($row1["utimestamp"] + $row1["interval_sweep"]);
 						if ($maxlag2 > $maxlag)
 							$maxlag = $maxlag2;
 				}

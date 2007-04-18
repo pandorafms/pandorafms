@@ -33,7 +33,6 @@ if (isset($_GET["update"])){ // Edit mode
 	$name = $row["name"];
 	$network = $row["subnet"];
 	$description = $row["description"];
-	$id_server = $row["server"];
 	$type = $row["type"];
 	$id_network_server = $row["id_network_server"];
 	$interval = $row["interval_sweep"];

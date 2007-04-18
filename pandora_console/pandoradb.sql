@@ -93,7 +93,7 @@ CREATE TABLE `tagente` (
   `direccion` varchar(100) default '',
   `comentarios` varchar(255) default '',
   `id_grupo` int(10) unsigned NOT NULL default '0',
-  `ultimo_contacto` datetime NOT NULL default '2004-01-01 00:00:00',
+  `ultimo_contacto` datetime NOT NULL default '0000-00-00 00:00:00',
   `modo` tinyint(1) NOT NULL default '0',
   `intervalo` int(11) NOT NULL default '300',
   `id_os` int(10) unsigned default '0',
@@ -132,7 +132,7 @@ CREATE TABLE `tagente_datos_inc` (
 CREATE TABLE `tagente_datos_string` (
   `id_tagente_datos_string` bigint(20) unsigned NOT NULL auto_increment,
   `id_agente_modulo` int(11) NOT NULL default '0',
-  `datos` tinytext NOT NULL default '',
+  `datos` tinytext NOT NULL,
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `id_agente` bigint(4) unsigned NOT NULL default '0',
   `utimestamp` int(10) unsigned NOT NULL default 0,
@@ -163,7 +163,7 @@ CREATE TABLE `tagente_estado` (
 CREATE TABLE `tmodule` (
   `id_module` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(100) NOT NULL default '',
-  PRIMARY KEY (`id_module`),
+  PRIMARY KEY (`id_module`)
 ) ENGINE=InnoDB;
 
 
@@ -203,7 +203,7 @@ CREATE TABLE `talert_snmp` (
   `oid` varchar(255) NOT NULL default '',
   `time_threshold` int(11) NOT NULL default '0',
   `times_fired` int(2) unsigned NOT NULL default '0',
-  `last_fired` datetime NOT NULL default '2004-01-01 00:00:00',
+  `last_fired` datetime NOT NULL default '0000-00-00 00:00:00',
   `max_alerts` int(11) NOT NULL default '1',
   `min_alerts` int(11) NOT NULL default '1',
   `internal_counter` int(2) unsigned NOT NULL default '0',
@@ -226,12 +226,12 @@ CREATE TABLE `talerta_agente_modulo` (
   `id_alerta` int(11) NOT NULL default '0',
   `al_campo1` varchar(255) default '',
   `al_campo2` varchar(255) default '',
-  `al_campo3` mediumtext default '',
+  `al_campo3` mediumtext NOT NULL,
   `descripcion` varchar(255) default '',
   `dis_max` double(18,2) default NULL,
   `dis_min` double(18,2) default NULL,
   `time_threshold` int(11) NOT NULL default '0',
-  `last_fired` datetime NOT NULL default '2004-01-01 00:00:00',
+  `last_fired` datetime NOT NULL default '0000-00-00 00:00:00',
   `max_alerts` int(4) NOT NULL default '1',
   `times_fired` int(11) NOT NULL default '0',
   `module_type` int(11) NOT NULL default '0',
@@ -332,7 +332,7 @@ CREATE TABLE `tmensajes` (
   `id_usuario_origen` varchar(100) NOT NULL default '',
   `id_usuario_destino` varchar(100) NOT NULL default '',
   `mensaje` tinytext NOT NULL,
-  `timestamp` datetime NOT NULL default '2004-01-01 00:00:00',
+  `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `subject` varchar(255) NOT NULL default '',
   `estado` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_mensaje`)
@@ -530,7 +530,7 @@ CREATE TABLE `tnews` (
   `id_news` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
   `author` varchar(255)  NOT NULL DEFAULT '',
   `subject` varchar(255)  NOT NULL DEFAULT '',
-  `text` TEXT  NOT NULL DEFAULT '',
+  `text` TEXT NOT NULL,
   `utimestamp` DATETIME  NOT NULL DEFAULT 0,
   PRIMARY KEY(`id_news`)
 ) ENGINE = InnoDB;

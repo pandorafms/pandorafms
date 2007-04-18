@@ -32,21 +32,38 @@
 	font-family: Verdana, sans-serif, Arial, Helvetica;
 	font-size: 11px;
 }
-select, textarea, input {
-	font-size: 12px;
+
+input {
+	padding: 4px;
+	border:1px solid #eee;
+	font: normal 1em/1.5em Verdana, sans-serif;
 }
 textarea {
-	border: 1px solid #c0c0c0;
-	padding: 5px;
+	padding:4px;
+	font: normal 1em/1.5em Verdana, sans-serif;
+	border:1px solid #eee;
+	height:100px;
 }
-input {
-	border: 1px solid #c0c0c0;
-	padding: 2px 3px 4px 3px;
-	height: 23px;
+input.button { 
+	margin: 0; 
+	font: bold 1em Arial, Sans-serif; 
+	border: 1px solid #CCC;
+	background: #FFF; 
+	padding: 2px 3px; 
+	margin: 10px 15px;
 }
-option {
-	height: 16px;
+select {
+	padding: 2px;
+	border:1px solid #eee;
+	font: normal 1em/1.5em Verdana, sans-serif;
 }
+checkbox {
+	padding: 4px;
+	border:1px solid #eee;
+	font: normal 1em/1.5em Verdana, sans-serif;
+}
+
+
 h1, h2 {
 	color: #103a3a;
 	padding-bottom: 15px;
@@ -584,4 +601,23 @@ span.users, span.agents, span.data, span.alerts, span.time {
 	padding-top: 25px;
 	text-align: center;
 	clear: both;
+}
+
+/* New styles for data box */
+
+.databox_color {
+	margin: 10px 15px;
+	border: 1px solid #f2f2f2; 
+	border-left: 3px solid #EC981F;  
+}
+
+.databox {
+	margin: 10px 15px;
+	border: 1px solid #f2f2f2; 
+	background-color: #FAFAFA; 
+}
+
+.databox_frame {
+	margin: 10px 15px;
+	border: 1px solid #f2f2f2; 
 }

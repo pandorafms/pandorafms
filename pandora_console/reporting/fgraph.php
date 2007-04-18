@@ -72,7 +72,7 @@ function dame_fecha_grafico_timestamp ($timestamp) {
 	return date('d/m H:i', $timestamp);
 }
 
-function graphic_combined_module ($module_list, $weight_list, $periodo, $width, $height , $title, $unit_name, $show_event=0, $show_alert=0 ) {
+function graphic_combined_module ($module_list, $weight_list, $periodo, $width, $height, $title, $unit_name, $show_event=0, $show_alert=0 ) {
 	include ("../include/config.php");
 	require ("../include/languages/language_".$language_code.".php");
 	require_once 'Image/Graph.php';
@@ -121,7 +121,6 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 			$valores[$x][6] = 0; // Event
 		}
 		// Init other general variables
-
 		if ($show_event == 1){
 			// If we want to show events in graphs
 			$sql1="SELECT utimestamp FROM tevento WHERE id_agente = $id_agente AND utimestamp > $fechatope";
@@ -136,7 +135,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 			}
 		}
 		$alert_high = 0;
-		$alert_low = 0;
+		$alert_low = 10000000;
 		if ($show_alert == 1){
 			// If we want to show alerts limits
 			$sql1="SELECT * FROM talerta_agente_modulo where id_agente_modulo = ".$id_agente_modulo;
@@ -144,9 +143,8 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 			while ($row=mysql_fetch_array($result)){
 				if ($row["dis_max"] > $alert_high)
 					$alert_high = $row["dis_max"];
-				if ($row["dis_max"] > $alert_high)
-				$min = $row["dis_min"];
-				
+				if ($row["dis_min"] < $alert_low)
+					$alert_low = $row["dis_min"];
 			}
 		}
 		
@@ -224,11 +222,11 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 		$title_period = "Last month";
 	else
 		$title_period = "Last ".format_numeric(($periodo / (3600*24)),2)." days";
-
+	
 	$Graph->add(
 	Image_Graph::vertical(
 		Image_Graph::vertical(
-            		$Title = Image_Graph::factory('title', array('   Pandora FMS Graph - '.$title_period, 10)),
+            		$Title = Image_Graph::factory('title', array('   Pandora FMS Graph - '. $title_period, 10)),
               		$Subtitle = Image_Graph::factory('title', array('     '.$title, 7)),
             		90
         	), 
@@ -321,8 +319,8 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 		graphic_error ();
 }
 
-function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $draw_events,
-				 $width, $height , $title, $unit_name ) {
+function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $show_event,
+				 $width, $height , $title, $unit_name, $show_alert ) {
 	
 	include ("../include/config.php");
 	require ("../include/languages/language_".$language_code.".php");
@@ -337,8 +335,29 @@ function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $draw_events,
 	$id_agente = dame_agente_id($nombre_agente);
 	$nombre_modulo = dame_nombre_modulo_agentemodulo($id_agente_modulo);
 
-	// intervalo - This is the number of "rows" we are divided the time to fill data.
-	//             more interval, more resolution, and slower.
+	if ($show_event == 1)
+		$real_event = array();
+
+	if ($show_alert == 1){
+		$alert_high = 0;
+		$alert_low = 10000000;
+		// If we want to show alerts limits
+		$sql1="SELECT * FROM talerta_agente_modulo where id_agente_modulo = ".$id_agente_modulo;
+		$result=mysql_query($sql1);
+		while ($row=mysql_fetch_array($result)){
+			if ($row["dis_max"] > $alert_high)
+				$alert_high = $row["dis_max"];
+			if ($row["dis_min"] < $alert_low)
+				$alert_low = $row["dis_min"];
+		}
+		// if no valid alert defined to render limits, disable it
+		if (($alert_low == 10000000) && ($alert_high == 0)){
+			$show_alert = 0;
+		}
+	}
+
+	// intervalo - This is the number of "rows" we are divided the time
+	 // to fill data. more interval, more resolution, and slower.
 	// periodo - Gap of time, in seconds. This is now to (now-periodo) secs
 	
 	// Init tables
@@ -349,6 +368,22 @@ function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $draw_events,
 		$valores[$x][3] = $fechatope + ($horasint*($x+1)); // [3] Botom limit
 		$valores[$x][4] = 0; // MIN
 		$valores[$x][5] = 0; // MAX
+		$valores[$x][6] = 0; // Event
+		
+	}
+	// Init other general variables
+	if ($show_event == 1){
+		// If we want to show events in graphs
+		$sql1="SELECT utimestamp FROM tevento WHERE id_agente = $id_agente AND utimestamp > $fechatope";
+		$result=mysql_query($sql1);
+		while ($row = mysql_fetch_array($result)){
+			$utimestamp = $row[0];
+			for ($i=0; $i <= $resolution; $i++) {
+				if ( ($utimestamp <= $valores[$i][3]) && ($utimestamp >= $valores[$i][2]) ){
+					$real_event[$i]=1;
+				}
+			}
+		}
 	}
 	// Init other general variables
 	$max_value = 0;
@@ -436,7 +471,7 @@ function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $draw_events,
 	$Graph->add(
 	Image_Graph::vertical(
 		Image_Graph::vertical(
-            		$Title = Image_Graph::factory('title', array('   Pandora FMS Graph - '.$title_period, 10)),
+            		$Title = Image_Graph::factory('title', array('   Pandora FMS Graph - '.strtoupper($nombre_agente)." - ".$title_period, 10)),
               		$Subtitle = Image_Graph::factory('title', array('     '.$title, 7)),
             		90
         	), 
@@ -459,24 +494,42 @@ function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $draw_events,
 	$dataset[1]->setName("Avg.");
 	$dataset[2] = Image_Graph::factory('dataset');
 	$dataset[2]->setName("Min.");
-
+	
+	// Event dataset creation
+	if ($show_event == 1){
+		$dataset_event = Image_Graph::factory('dataset');
+		$dataset_event -> setName("Event Fired");
+	}
 	// ... and populated with data ...
 	for ($cc=0; $cc <= $resolution; $cc++) {
 		$tdate = date('d/m', $valores[$cc][2])."\n".date('H:i', $valores[$cc][2]);
 		$dataset[1]->addPoint($tdate, $valores[$cc][0]);
 		$dataset[0]->addPoint($tdate, $valores[$cc][5]);
 		$dataset[2]->addPoint($tdate, $valores[$cc][4]);
-		//echo "$cc -- $tdate - ".$valores[$cc][0]." -- ".$valores[$cc][4]."--".$valores[$cc][5]."<br>";
-		
+		if (($show_event == 1) AND (isset($real_event[$cc]))) {
+			$dataset_event->addPoint($tdate, $valores[$cc][5]);
+		}
 	}
 
 	if ($max_value > 0){
+
+
+		// Show alert limits 
+		if ($show_alert == 1){
+			$Plot =& $Plotarea->addNew('Image_Graph_Axis_Marker_Area', IMAGE_GRAPH_AXIS_Y);
+			$Plot->setFillColor( 'blue@0.1' );
+			$Plot->setLowerBound( $alert_low);
+			$Plot->setUpperBound( $alert_high );
+		}
+
 		// create the 1st plot as smoothed area chart using the 1st dataset
 		$Plot =& $Plotarea->addNew('area', array(&$dataset));
 		$Plot->setLineColor('yellow@0.1');
 		$AxisX =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_X);
 		// $AxisX->Hide();
+		
 		$AxisY =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
+		$AxisY->setDataPreprocessor(Image_Graph::factory('Image_Graph_DataPreprocessor_Function', 'format_for_graph'));
 		$AxisY->setLabelOption("showtext",true);
 		$AxisY->setLabelInterval(ceil($max_value / 5));
 		$AxisY->showLabel(IMAGE_GRAPH_LABEL_ZERO);
@@ -498,12 +551,19 @@ function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $draw_events,
 		$FillArray->addColor('blue@0.7');
 		$FillArray->addColor('green@0.7');
 		$FillArray->addColor('black@0.7');
-
 		$AxisY_Weather =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
 
+		// Show events !
+		if ($show_event == 1){
+			$Plot =& $Plotarea->addNew('Plot_Impulse', array($dataset_event));
+			$Plot->setLineColor( 'red' );
+			$Marker_event =& Image_Graph::factory('Image_Graph_Marker_Cross');
+			$Plot->setMarker($Marker_event);
+			$Marker_event->setFillColor( 'red' );
+			$Marker_event->setLineColor( 'red' );
+			$Marker_event->setSize ( 5 );
+		}
 
-
-		
 		$Graph->done();
 	} else
 		graphic_error ();
@@ -1701,10 +1761,16 @@ else
 
 
 // Draw Events  ?
-if ( isset($_GET["draw_events"]) and $_GET["draw_events"]==0 )
-		$draw_events = 0;
-	else
-		$draw_events = 1;
+if ( isset($_GET["draw_events"]))
+	$draw_events = $_GET["draw_events"];
+else
+	$draw_events = 0;
+
+// Draw alert limits ?
+if ( isset($_GET["draw_alerts"])) 
+	$draw_alerts = $_GET["draw_alerts"];
+else
+	$draw_alerts = 0;
 	
 // Image handler
 // *****************
@@ -1712,7 +1778,7 @@ if ( isset($_GET["draw_events"]) and $_GET["draw_events"]==0 )
 
 if (isset($_GET["tipo"])){
 	if ($_GET["tipo"] == "sparse"){
-		grafico_modulo_sparse($id, $period, $draw_events, $width, $height , $label, $unit_name);
+		grafico_modulo_sparse($id, $period, $draw_events, $width, $height , $label, $unit_name, $draw_alerts);
 	}
 	elseif ($_GET["tipo"] =="estado_incidente") 
 		grafico_incidente_estados();	

@@ -42,7 +42,22 @@ if (comprueba_login() == 0) {
 				echo "<td class='".$tdcolor."'>".dame_nombre_alerta($data["id_alerta"]);
 				echo "<td class='".$tdcolor."'>".$data["nombre"];
 				echo "<td class='".$tdcolor."'>".$data["descripcion"];
-				echo "<td class='".$tdcolor."'>".$data["dis_max"]."/".$data["dis_min"];
+	
+				$mytempdata = fmod($data["dis_min"], 1);
+				if ($mytempdata == 0)
+					$mymin = intval($data["dis_min"]);
+				else
+					$mymin = $data["dis_min"];
+				$mymin = format_for_graph($mymin );
+
+				$mytempdata = fmod($data["dis_max"], 1);
+				if ($mytempdata == 0)
+					$mymax = intval($data["dis_max"]);
+				else
+					$mymax = $data["dis_max"];
+				$mymax =  format_for_graph($mymax );
+				
+				echo "<td class='".$tdcolor."'>".$mymin." / ".$mymax;
 				echo "<td class='".$tdcolor."'>".$data["time_threshold"];
 				if ($data["last_fired"] == "0000-00-00 00:00:00") {
 					echo "<td class='".$tdcolor."f9'>".$lang_label["never"];

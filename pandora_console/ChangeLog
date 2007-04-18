@@ -1,3 +1,57 @@
+2007-04-18  Sancho Lerena  <slerena@artica.es>
+
+	* include/styles/pandora.css: Added frame and changed basic form input 
+	styles (fixed the old problem with radio and checkboxes).
+	
+	* include/functions_db.php: Finished function
+	agent_add_address(). Added functions: agent_delete_address(),
+	give_agent_address() and give_agent_address_from_list().
+
+	* include/languages/language_en.php: More strings !
+
+	* include/functions.php: Added numeric render for graph Y scale
+	and for numeric data output in screen: format_for_graph().
+	
+	* pandoradb.sql: Several small fixes and cleanup (deleted drop check).
+
+	* operation/agentes/estado_alertas.php: Fixed old bug with
+	visualization of alerts (min/max) vs (max/min). Now alert is a
+	real value, not integer.
+	
+	* operation/agentes/datos_agente.php: Better render for numeric
+	(float) data.
+	
+	* operation/agentes/estado_ultimopaquete.php: Better render for numeric
+	(float) data and fixed a small costemic bug.
+	
+	* operation/agentes/estado_generalagente.php: Fixed a small
+	costemic bug, list of ip's have some white space before and this
+	have better visualization for user due to combo style stripping
+	some space.
+	
+	* reporting/fgraph.php: Graph improvement: graphs now could show
+	alerts associated to an agent and draw alert limits. Preprocessor
+	function is now used to render axis label with (M,K) symbols and
+	decimal commas. Title and subtitle has been improved.
+		
+	* reporting/stat_win.php: Graph menu improvement. Fully completed
+	work. This should work for final version without more changes.
+	
+	* godmode/agentes/agent_template.php: Template/Wizard module
+	assigment form for agent.
+	
+	* godmode/agentes/alert_manager.php: Several fixes (links) and
+	alert max/min render.
+	
+	* godmode/agentes/configurar_agente.php: Fixed several navitation
+	bugs. Added agent ip addition/deletion code.
+	
+	* godmode/agentes/agent_manager.php: Address list management code.
+	
+	* godmode/modules/module_list.php: Deleted link to "module type
+	editor" and create button: This has no sense since there is no
+	moduletype editor yet :-)
+
 2007-04-16  Manuel Arostegui <marostegui@artica.es>
 
 	* pandora_console.spec: Small changes to adapt the RPM to the

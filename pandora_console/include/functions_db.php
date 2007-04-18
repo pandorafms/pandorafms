@@ -923,32 +923,119 @@ function give_network_profile_name ($id_np){
 
 function agent_add_address ($id_agent, $ip_address) {
 	require("config.php");
-	$query1="SELECT * FROM taddress_agent WHERE id_agent= $id_agent";
-	$resq1=mysql_query($query1);
 	$address_exist = 0;
-	while ($rowdup=mysql_fetch_array($resq1)){
-		$sql_3='SELECT ip FROM taddress WHERE id_a = '.$rowdup["id_a"];
-		$result_3=mysql_query($sql_3);
-		$row3=mysql_fetch_array($result_3);
-		if ($row3[0] == $ip_address)
+	$id_address =-1;
+	$address_attached = 0;
+
+	// Check if already is attached to agent
+	$query1="SELECT * FROM taddress_agent, taddress
+		WHERE taddress_agent.id_a = taddress.id_a
+			AND ip = '$ip_address'
+			AND id_agent = $id_agent";
+	if ($resq1=mysql_query($query1)){
+		if ($rowdup=mysql_fetch_array($resq1)){
+			$address_attached = 1;
+		}
+	}
+	if ($address_attached == 1)
+		return;
+	// Look for a record with this IP Address
+	$query1="SELECT * FROM taddress WHERE ip = '$ip_address'";
+	if ($resq1=mysql_query($query1)){
+		if ($rowdup=mysql_fetch_array($resq1)){
+			$id_address = $rowdup["id_a"];
 			$address_exist = 1;
-	}
-	if ($address_exist == 1){
-		// Add address
-		
+		}
 	}
 
-
-	$sql_2='SELECT id_a FROM taddress_agent WHERE id_agent = '.$id_agent;
-	$result_t=mysql_query($sql_2);
-	while ($row=mysql_fetch_array($result_t)){	
-		$sql_3='SELECT ip FROM taddress WHERE id_a = '.$row[0];
-		$result_3=mysql_query($sql_3);
-		$row3=mysql_fetch_array($result_3);
-		if ($direccion_agente != $row3[0])
-			echo "<option>".salida_limpia($row3[0]);
+	if ($address_exist == 0){
+		// Create IP address in tadress table
+		$query = "INSERT INTO taddress
+			  	(ip) VALUES
+			  	('$ip_address')";
+		$res = mysql_query ($query);
+		$id_address = mysql_insert_id ();
 	}
+	// Add address to agent
+	$query = "INSERT INTO taddress_agent
+			(id_a, id_agent) VALUES
+			($id_address,$id_agent)";
+	$res = mysql_query ($query);
 	
+	// Change main address in agent to whis one
+	/* Not needed, configurar_agente does automatically on every update
+	$query = "UPDATE tagente 
+		  	(direccion) VALUES
+			($ip_address)
+			WHERE id_agente = $id_agent ";
+	$res = mysql_query ($query);
+	*/
+}
+
+// --------------------------------------------------------------- 
+// De-associate IP address to an agent (delete)
+// --------------------------------------------------------------- 
+
+function agent_delete_address ($id_agent, $ip_address) {
+	require("config.php");
+	$address_exist = 0;
+	$id_address =-1;
+	$query1="SELECT * FROM taddress_agent, taddress
+		WHERE taddress_agent.id_a = taddress.id_a
+			AND ip = '$ip_address'
+			AND id_agent = $id_agent";
+	if ($resq1=mysql_query($query1)){
+		$rowdup=mysql_fetch_array($resq1);
+		$id_ag = $rowdup["id_ag"];
+		$id_a = $rowdup["id_a"];
+		$sql_3="DELETE FROM taddress_agent
+			WHERE id_ag = $id_ag";	
+		$result_3=mysql_query($sql_3);
+	}
+	// Need to change main address ? 
+	if (give_agent_address ($id_agent) == $ip_address){
+		$new_ip = give_agent_address_from_list ($id_agent);
+		// Change main address in agent to whis one
+		$query = "UPDATE tagente 
+				(direccion) VALUES
+				($new_ip)
+				WHERE id_agente = $id_agent ";
+		$res = mysql_query ($query);
+	}
+
+}
+
+// --------------------------------------------------------------- 
+// Returns (main) agent address given id
+// --------------------------------------------------------------- 
+
+function give_agent_address ($id_agent){
+	require("config.php");
+	$query1="SELECT * FROM tagente WHERE id_agente = $id_agent";
+	$resq1=mysql_query($query1);
+	if ($rowdup=mysql_fetch_array($resq1))
+		$pro=$rowdup["direccion"];
+	else
+		$pro = "";
+	return $pro;
+}
+
+// --------------------------------------------------------------- 
+// Returns the first agent address given id taken from associated addresses
+// --------------------------------------------------------------- 
+
+function give_agent_address_from_list ($id_agent){
+	require("config.php");
+	$query1="SELECT * FROM taddress_agent, taddress
+		WHERE taddress_agent.id_a = taddress.id_a
+		AND id_agent = $id_agent";
+	if ($resq1=mysql_query($query1)){
+		$rowdup=mysql_fetch_array($resq1);
+		$pro=$rowdup["ip"];
+	}
+	else
+		$pro = "";
+	return $pro;
 }
 
 // --------------------------------------------------------------- 

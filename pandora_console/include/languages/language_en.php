@@ -750,6 +750,9 @@ $lang_label["no_netprofiles"]="There are no defined network profiles";
 $lang_label["site_news"]="Site news";
 $lang_label["at"]="At";
 $lang_label["says"]="says";
+$lang_label["delete_sel"]="Delete selected";
+$lang_label["available_templates"]="Available templates";
+$lang_label["assign"]="Assign";
 global $lang_label; 
 global $help_label;
 ?>

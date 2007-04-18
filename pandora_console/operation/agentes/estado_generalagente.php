@@ -78,7 +78,7 @@ if (comprueba_login() == 0) {
 
 	
 	// Show all address for this agent, show first the main IP (taken from tagente table)
-	echo "<select name='notused' size=1>";
+	echo "<select style='padding:0px' name='notused' size=1>";
 	echo "<option>".salida_limpia($direccion_agente);
 	$sql_2='SELECT id_a FROM taddress_agent WHERE id_agent = '.$id_agente;
 	$result_t=mysql_query($sql_2);
@@ -87,11 +87,9 @@ if (comprueba_login() == 0) {
 		$result_3=mysql_query($sql_3);
 		$row3=mysql_fetch_array($result_3);
 		if ($direccion_agente != $row3[0])
-			echo "<option>".salida_limpia($row3[0]);
+			echo "<option value='".salida_limpia($row3[0])."'>".salida_limpia($row3[0])."&nbsp;&nbsp;";
 	}
 	echo "</select>";
-
-	
 
 	
 	if ($agent_type == 0) {
@@ -120,7 +118,7 @@ if (comprueba_login() == 0) {
 	echo '<tr>
 	<td class="datos2"><b>'.salida_limpia($lang_label["group"]).'</b></td>
 	<td class="datos2" colspan="2">
-	<img class="bot" src="images/groups_small/'.show_icon_group($row["id_grupo"]).'.png" >&nbsp;&nbsp; '.dame_grupo($id_grupo).'<br>'.dame_grupo($id_grupo).'</td></tr>';
+	<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.png" >&nbsp;&nbsp; '.dame_grupo($id_grupo).'</td></tr>';
 	if ($agent_type == 0) {	
 		echo '<tr><td class="datos"><b>'.$lang_label["agentversion"].'</b>
 		<td class="datos" colspan=2>'.salida_limpia($agent_version).'</td>';

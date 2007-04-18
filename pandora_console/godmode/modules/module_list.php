@@ -83,9 +83,7 @@ if (give_acl($id_user, 0, "PM")==1) {
 			border='0'>
 			</td>
 			<td class='$tdcolor'>
-			<b><a href='index.php?sec=gmodules&
-			sec2=godmode/modules/manage_modules&
-			id_module=".$row["id_tipo"]."'>".$row["nombre"]."</a>
+			<b>".$row["nombre"]."
 			</b></td>
 			<td class='$tdcolor'>
 			".give_modulecategory_name ($row["categoria"])."
@@ -100,7 +98,9 @@ if (give_acl($id_user, 0, "PM")==1) {
 	echo "<tr><td colspan='4' align='right'>";
 	echo "<form method=post action='index.php?sec=gmodules&
 	sec2=godmode/modules/manage_modules&create=1'>";
+	/* not used yet 
 	echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create_module"]."'>";
+	*/
 	echo "</form></td></tr></table>";
 
 } // Fin pagina

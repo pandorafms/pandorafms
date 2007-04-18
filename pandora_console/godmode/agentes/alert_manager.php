@@ -65,17 +65,32 @@ $result=mysql_query($sql1);
 				$string = $string."<tr><td class='$tdcolor'>".$nombre_modulo."/".$tipo_modulo;
 				$string = $string."<td class=$tdcolor>".$nombre_alerta;
 				$string = $string."<td class='$tdcolor'>".$row3["time_threshold"];
-				$string = $string."<td class='$tdcolor'>".$row3["dis_min"]."/".$row3["dis_max"];
+		
+				$mytempdata = fmod($row3["dis_min"], 1);
+				if ($mytempdata == 0)
+					$mymin = intval($row3["dis_min"]);
+				else
+					$mymin = $row3["dis_min"];
+				$mymin = format_for_graph($mymin );
+
+				$mytempdata = fmod($row3["dis_max"], 1);
+				if ($mytempdata == 0)
+					$mymax = intval($row3["dis_max"]);
+				else
+					$mymax = $row3["dis_max"];
+				$mymax =  format_for_graph($mymax );
+				
+				$string = $string."<td class='$tdcolor'>".$mymin." / ".$mymax;
 				$string = $string."<td class='$tdcolor'>".salida_limpia($row3["descripcion"]);
 				$string = $string."<td class='$tdcolor'>";
 			 	$id_grupo = dame_id_grupo($id_agente);
 				if (give_acl($id_user, $id_grupo, "LW")==1){
 					$string = $string."<a href='index.php?sec=gagente&
-					sec2=godmode/agentes/configurar_agente&
+					sec2=godmode/agentes/configurar_agente&tab=alert&
 					id_agente=".$id_agente."&delete_alert=".$row3["id_aam"]."'>
 					<img src='images/cross.png' border=0 alt='".$lang_label["delete"]."'></a>  &nbsp; ";
 					$string = $string."<a href='index.php?sec=gagente&
-					sec2=godmode/agentes/configurar_agente&
+					sec2=godmode/agentes/configurar_agente&tab=alert&
 					id_agente=".$id_agente."&update_alert=".$row3["id_aam"]."#alerts'>
 					<img src='images/config.gif' border=0 alt='".$lang_label["update"]."'></a>";		
 				}

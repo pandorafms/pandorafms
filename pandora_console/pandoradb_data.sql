@@ -27,7 +27,7 @@ UNLOCK TABLES;
 
 /*!40000 ALTER TABLE `tconfig_os` DISABLE KEYS */;
 LOCK TABLES `tconfig_os` WRITE;
-INSERT INTO `tconfig_os` VALUES (1,'Linux','Linux: All versions','so_linux.gif'),(2,'Solaris','Sun Solaris','so_solaris.gif'),(3,'AIX','IBM AIX','so_aix.gif'),(4,'BSD','OpenBSD, FreeBSD and Others','so_bsd.gif'),(5,'HP-UX','HPUX Unix OS','so_hpux.gif'),(6,'BeOS','BeOS','so_beos.gif'),(7,'Cisco','CISCO IOS','so_cisco.gif'),(8,'MacOS','MAC OS','so_mac.gif'),(9,'Windows','Microsoft Windows OS','so_win.gif'),(10,'Other','Other SO','so_other.gif'),(11,'Network','Pandora Network Agent','network.gif');
+INSERT INTO `tconfig_os` VALUES (1,'Linux','Linux: All versions','so_linux.gif'),(2,'Solaris','Sun Solaris','so_solaris.gif'),(3,'AIX','IBM AIX','so_aix.gif'),(4,'BSD','OpenBSD, FreeBSD and Others','so_bsd.gif'),(5,'HP-UX','HP-UX Unix OS','so_hpux.gif'),(6,'BeOS','BeOS','so_beos.gif'),(7,'Cisco','CISCO IOS','so_cisco.gif'),(8,'MacOS','MAC OS','so_mac.gif'),(9,'Windows','Microsoft Windows OS','so_win.gif'),(10,'Other','Other SO','so_other.gif'),(11,'Network','Pandora Network Agent','network.gif');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `tconfig_os` ENABLE KEYS */;
 
@@ -132,7 +132,7 @@ UNLOCK TABLES;
 
 /*!40000 ALTER TABLE `tusuario` DISABLE KEYS */;
 LOCK TABLES `tusuario` WRITE;
-INSERT INTO `tusuario` VALUES ('admin','Default Admin','1da7ee7d45b96d0e1f45ee4ee23da560','Admin Pandora','2007-03-27 18:59:39','admin_pandora@nowhere.net','555-555-555',1),('demo','Demo user','fe01ce2a7fbac8fafaed7c982a04e229','Please don\\&#039;t change anything in this user, so other users can connect with it.\r\n\r\nThanks.','2006-04-20 13:00:05','demo@nowhere.net','+4555435435',0);
+INSERT INTO `tusuario` VALUES ('admin','Default Admin','1da7ee7d45b96d0e1f45ee4ee23da560','Admin Pandora','2007-03-27 18:59:39','admin_pandora@nowhere.net','555-555-555',1),('demo','Demo user','fe01ce2a7fbac8fafaed7c982a04e229','Please don\\&#039;t change anything in this user, so other users can connect with it.\r\n\r\nThanks.','2007-03-20 13:00:05','demo@nowhere.net','+4555435435',0);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `tusuario` ENABLE KEYS */;
 

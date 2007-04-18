@@ -1,3 +1,7 @@
+2007-04-18  Raul Mateos  <raulofpandora@gmail.com>
+
+	* pandoradb_data.sql, pandoradb.sql: Fixed small warnings.
+
 2007-04-18  Sancho Lerena  <slerena@artica.es>
 
 	* include/styles/pandora.css: Added frame and changed basic form input 

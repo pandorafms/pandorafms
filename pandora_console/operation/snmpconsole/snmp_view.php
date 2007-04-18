@@ -195,7 +195,7 @@ if (comprueba_login() == 0) {
 	echo "<th>".$lang_label["SNMP_agent"]."</th>";
 	echo "<th>".$lang_label["customvalue"]."</th>";
 	echo "<th>".$lang_label["id_user"]."</th>";
-	echo "<th class='w130'>".$lang_label["timestamp"]."</th>";
+	echo "<th width ='130px'>".$lang_label["timestamp"]."</th>";
 	echo "<th>".$lang_label["alert"]."</th>";
 	echo "<th>".$lang_label["action"]."</th>";
 	echo "<th class='p10'>";

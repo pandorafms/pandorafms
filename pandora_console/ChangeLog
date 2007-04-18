@@ -1,6 +1,14 @@
 2007-04-18  Raul Mateos  <raulofpandora@gmail.com>
 
 	* pandoradb_data.sql, pandoradb.sql: Fixed small warnings.
+	
+	* include/pandora.css: removed old "wxx" classes. Change some colours
+	for agent general information tabs.
+	
+	* include/god.css, link.css: minimal changes for case letters.
+	
+	* several .php updated to use the changes in sytles. No new features or
+	functionality changed.
 
 2007-04-18  Sancho Lerena  <slerena@artica.es>
 

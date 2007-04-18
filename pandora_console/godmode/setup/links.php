@@ -88,8 +88,8 @@ if (comprueba_login() == 0)
 		echo "<h2>".$lang_label["setup_screen"]."</h2>";
 		echo "<h3>".$lang_label["link_management"]."<a href='help/".$help_code."/chap9.php#9' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 		echo "<table cellpadding=3 cellspacing=3>";
-		echo "<th class='w180'>".$lang_label["link_name"];
-		echo "<th class='w80'>".$lang_label["delete"];
+		echo "<th width='180px'>".$lang_label["link_name"];
+		echo "<th width='80px'>".$lang_label["delete"];
 		$sql1='SELECT * FROM tlink ORDER BY name';
 		$result=mysql_query($sql1);
 		$color=1;

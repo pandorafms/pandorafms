@@ -229,7 +229,7 @@ if (comprueba_login() == 0)
 	<h3><?php echo $lang_label["purge_data"] ?></h3>
 	<table width=300 border=0>
 	<tr><td>
-	<select name="date_purge" class="w255">
+	<select name="date_purge" width="255px">
 	<option value="<?php echo $month3 ?>"><?php echo $lang_label["purge_90day"] ?>
 	<option value="<?php echo $month ?>"><?php echo $lang_label["purge_30day"] ?>
 	<option value="<?php echo $week2 ?>"><?php echo $lang_label["purge_14day"] ?>

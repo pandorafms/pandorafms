@@ -94,11 +94,11 @@
 	// table header
 	echo '<table cellpadding="3" cellspacing="3" width=700>';
 	echo '<tr>';
-	echo '<th class="w70">'.$lang_label["user"].'</th>';
+	echo '<th width="80px">'.$lang_label["user"].'</th>';
 	echo '<th>'.$lang_label["action"].'</th>';
-	echo '<th class="w130">'.$lang_label["date"].'</th>';
-	echo '<th class="w100">'.$lang_label["src_address"].'</th>';
-	echo '<th class="w200">'.$lang_label["comments"].'</th>';
+	echo '<th width="130px">'.$lang_label["date"].'</th>';
+	echo '<th width="100px">'.$lang_label["src_address"].'</th>';
+	echo '<th width="200px">'.$lang_label["comments"].'</th>';
 
 	// Skip offset records
 	$query1="SELECT * FROM tsesion ".$tipo_log_select." ORDER BY fecha DESC";

@@ -121,7 +121,7 @@ if (comprueba_login() == 0)
 	<form name="db_audit" method="post" action="index.php?sec=gdbman&sec2=godmode/db/db_audit">
 	<table width='300' border='0'>
 	<tr><td class='datos'>
-	<select name="date_purge" class="w255">
+	<select name="date_purge" width="255px">
 	<option value="<?php echo $month3 ?>"><?php echo $lang_label["purge_audit_90day"] ?>
 	<option value="<?php echo $month ?>"><?php echo $lang_label["purge_audit_30day"] ?>
 	<option value="<?php echo $week2 ?>"><?php echo $lang_label["purge_audit_14day"] ?>

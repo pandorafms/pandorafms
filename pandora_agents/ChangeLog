@@ -1,5 +1,10 @@
 2007-04-11  Manuel Arostegui <marostegui@artica.es>
 
+	* linux/pandora_agents.spec: Added links from 
+	  init.d to rc0.d, rc6.d, rc3.d and rc5.d
+
+2007-04-11  Manuel Arostegui <marostegui@artica.es>
+
       	* linux/pandora_agent.conf: Changed PATHS to
 	   adapt them to the upcoming 1.3 release.
       	

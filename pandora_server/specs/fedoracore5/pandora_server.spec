@@ -67,8 +67,10 @@ mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/pandora_db.pm $RPM
 mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/pandora_tools.pm $RPM_BUILD_ROOT/usr/share/pandora_server/util/
 cp $RPM_BUILD_ROOT/usr/share/pandora_server/util/pandora_config.pm $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/5.8.5/
 cp $RPM_BUILD_ROOT/usr/share/pandora_server/util/pandora_db.pm $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/5.8.5/
-cp  $RPM_BUILD_ROOT/usr/share/pandora_server/util/pandora_tools.pm $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/5.8.5/
-
+cp $RPM_BUILD_ROOT/usr/share/pandora_server/util/pandora_tools.pm $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/5.8.5/
+cp $RPM_BUILD_ROOT/usr/share/pandora_server/pandora_server $RPM_BUILD_ROOT/etc/init.d/pandora_server
+cp $RPM_BUILD_ROOT/usr/share/pandora_server/pandora_recon $RPM_BUILD_ROOT/etc/init.d/pandora_recon
+cp $RPM_BUILD_ROOT/usr/share/pandora_server/bin/pandora_recon.pl $RPM_BUILD_ROOT/usr/bin/pandora_recon
 
 cp pandora.1 $RPM_BUILD_ROOT/usr/share/man/man1/
 cp pandora_server.1 $RPM_BUILD_ROOT/usr/share/man/man1/
@@ -103,7 +105,11 @@ echo "For further information please: man pandora or man pandora_server"
 /usr/bin/pandora_network
 /usr/bin/pandora_snmpconsole
 /var/spool/pandora/
+/usr/bin/pandora_recon
+/etc/init.d/pandora_recon
+/etc/init.d/pandora_server
 %defattr(755,pandora,pandora)
+
 #/etc/pandora/conf/pandora_server.conf
 /usr/share/pandora_server/util/pandora_config.pm
 /usr/share/pandora_server/util/pandora_db.pm

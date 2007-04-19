@@ -2,13 +2,12 @@ package pandora_tools;
 ##########################################################################
 # Pandora Tools Package
 ##########################################################################
-# Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+# Copyright (c) 2005-2007 Artica Soluciones Tecnologicas S.L
 #
 #This program is free software; you can redistribute it and/or
 #modify it under the terms of the GNU General Public License
-#as published by the Free Software Foundation; either version 2
-#of the License, or (at your option) any later version.
+#as published by the Free Software Foundation; version 2
 #This program is distributed in the hope that it will be useful,
 #but WITHOUT ANY WARRANTY; without even the implied warranty of
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -33,6 +32,7 @@ our @EXPORT = qw( 	daemonize
 			limpia_cadena
 			md5check
 			float_equal
+			sqlWrap
 			is_numeric
 		);
 
@@ -140,8 +140,9 @@ sub logger {
 		}
 	
 		my $time_now = &UnixDate("today","%Y/%m/%d %H:%M:%S");
-		open (FILE, ">> $fichero") or die "[FATAL] Cannot open logfile at $fichero";	
-		print FILE "$time_now $datos \n";
+		open (FILE, ">> $fichero") or die "[FATAL] Cannot open logfile at $fichero";
+		my $server_name = $pa_config->{'servername'}.$pa_config->{"servermode"};
+		print FILE "$time_now $server_name $datos \n";
 		close (FILE);
 	}
 }
@@ -164,8 +165,8 @@ sub limpia_cadena {
 
 sub sqlWrap {
      my $toBeWrapped = shift(@_);
-     $toBeWrapped =~ s/\\//g;
      $toBeWrapped =~ s/\'/\\\'/g;
+     $toBeWrapped =~ s/\"/\\\'/g;
      return "'".$toBeWrapped."'";
 }
 

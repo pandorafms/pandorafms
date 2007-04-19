@@ -91,16 +91,17 @@ sub pandora_calcula_alerta (%$$$$$$) {
 	my $alert_name;
 	my $max;
 	my $min; # for calculate max & min to generate ALERTS
+	my $alert_text="";
 	
 	# Get IDs from data packet
 	$id_agente = dame_agente_id($pa_config, $nombre_agente, $dbh);
-	$id_modulo = dame_modulo_id($pa_config, $tipo_modulo,$dbh);
-	$id_agente_modulo = dame_agente_modulo_id($pa_config, $id_agente,$id_modulo,$nombre_modulo,$dbh);
-	logger($pa_config, "DEBUG: calcula_alerta() Calculado id_agente_modulo a $id_agente_modulo",6);
+	$id_modulo = dame_modulo_id($pa_config, $tipo_modulo, $dbh);
+	$id_agente_modulo = dame_agente_modulo_id ($pa_config, $id_agente, $id_modulo, $nombre_modulo, $dbh);
+	logger($pa_config, "DEBUG: calcula_alerta() Calculado id_agente_modulo a $id_agente_modulo", 6);
 
 	# If any alert from this combinatio of agent/module
-	my $query_idag = "select * from talerta_agente_modulo where id_agente_modulo = '$id_agente_modulo'";
-	my $s_idag = $dbh->prepare($query_idag);
+	my $query_idag1 = "SELECT * FROM talerta_agente_modulo WHERE id_agente_modulo = '$id_agente_modulo'";
+	my $s_idag = $dbh->prepare($query_idag1);
 	$s_idag ->execute;
 	my @data;
 	# If exists a defined alert for this module then continue
@@ -108,10 +109,9 @@ sub pandora_calcula_alerta (%$$$$$$) {
 		while (@data = $s_idag->fetchrow_array()) {
 			my $id_aam = $data[0];
 			my $id_alerta = $data[2];
-			
 			$id_agente_modulo = $data[1];
-			$id_agente = dame_agente_id($pa_config,dame_nombreagente_agentemodulo($pa_config, $id_agente_modulo,$dbh),$dbh);
-			my $id_grupo = dame_grupo_agente($pa_config, $id_agente,$dbh);
+			$id_agente = dame_agente_id ($pa_config, dame_nombreagente_agentemodulo ($pa_config,  $id_agente_modulo, $dbh), $dbh);
+			my $id_grupo = dame_grupo_agente ($pa_config, $id_agente, $dbh);
 			my $campo1 = $data[3];
 			my $campo2 = $data[4];
 			my $campo3 = $data[5];
@@ -124,6 +124,7 @@ sub pandora_calcula_alerta (%$$$$$$) {
 			my $times_fired = $data[12];
 			my $min_alerts = $data[14];
 			my $internal_counter = $data[15];
+			my $alert_text = $data[16];
 			my $comando ="";
 			logger($pa_config, "Found an alert defined for $nombre_modulo, its ID $id_alerta",4);
 			# Here we process alert if conditions are ok
@@ -145,8 +146,8 @@ sub pandora_calcula_alerta (%$$$$$$) {
                 	my $s_idag_max = $dbh->prepare($query_idag_max);
                	 	$s_idag_max ->execute;
                 	if ($s_idag_max->rows == 0) {
-                        	logger($pa_config, "ERROR Cannot find agenteModulo $id_agente_modulo",2);
-                        	logger($pa_config, "ERROR: SQL Query is $query_idag ",10);
+                        	logger($pa_config, "ERROR Cannot find agenteModulo $id_agente_modulo",3);
+                        	logger($pa_config, "ERROR: SQL Query is $query_idag_max ",10);
                 	} else  {    @data = $s_idag_max->fetchrow_array(); }
                 	$max = $data_max[5];
                 	$min = $data_max[6];
@@ -155,17 +156,24 @@ sub pandora_calcula_alerta (%$$$$$$) {
 			my $alert_prefired = 0;
 			my $alert_fired = 0;
 			my $update_counter =0;
-
-			# Is data between valid values ?
-			if (($datos > $dis_max) || ($datos < $dis_min)){
+			my $should_check_alert = 0;
+			my $id_tipo_modulo = dame_id_tipo_modulo ($pa_config, $id_agente_modulo, $dbh);
+			if (($id_tipo_modulo == 3) || ($id_tipo_modulo == 10) || ($id_tipo_modulo == 17)){
+				if ( $datos =~ m/$alert_text/i ){
+					$should_check_alert = 1;
+				}
+			} elsif (($datos > $dis_max) || ($datos < $dis_min)) {
+				$should_check_alert = 1;
+			}
+			if ($should_check_alert == 1){
 				# Check timegap
 				my $fecha_ultima_alerta = ParseDate($last_fired);
 				my $fecha_actual = ParseDate( $timestamp );
 				my $ahora_mysql = &UnixDate("today","%Y-%m-%d %H:%M:%S");  # If we need to update MYSQL ast_fired will use $ahora_mysql
 				my $time_threshold = $threshold;
 				my $err; my $flag;
-				my $fecha_limite = DateCalc($fecha_ultima_alerta,"+ $time_threshold seconds",\$err);
-				$flag = Date_Cmp($fecha_actual,$fecha_limite);
+				my $fecha_limite = DateCalc ($fecha_ultima_alerta, "+ $time_threshold seconds", \$err);
+				$flag = Date_Cmp ($fecha_actual, $fecha_limite);
 				# Check timer threshold for this alert
 				if ( $flag >= 0 ) { # Out limits !, reset $times_fired, but do not write to
 						    # database until a real alarm was fired
@@ -173,7 +181,7 @@ sub pandora_calcula_alerta (%$$$$$$) {
 						$times_fired = 0;
 						$internal_counter=0;
 					}
-					logger ($pa_config,"Alarm out of timethreshold limits, resetting counters",10);
+					logger ($pa_config, "Alarm out of timethreshold limits, resetting counters", 10);
 				}
 				# We are between limits marked by time_threshold or running a new time-alarm-interval 
 				# Caution: MIN Limit is related to triggered (in time-threshold limit) alerts
@@ -183,9 +191,9 @@ sub pandora_calcula_alerta (%$$$$$$) {
 					# The new alert is between last valid time + threshold and between max/min limit to alerts in this gap of time.
 					$times_fired++;
 					$internal_counter++;
-					my $query_idag = "update talerta_agente_modulo set times_fired = $times_fired, last_fired = '$ahora_mysql', internal_counter = $internal_counter where id_aam = $id_aam ";
+					my $query_idag = "UPDATE talerta_agente_modulo SET times_fired = $times_fired, last_fired = '$ahora_mysql', internal_counter = $internal_counter WHERE id_aam = $id_aam ";
 					$dbh->do($query_idag);
-					my $nombre_agente = dame_nombreagente_agentemodulo($pa_config, $id_agente_modulo,$dbh);
+					my $nombre_agente = dame_nombreagente_agentemodulo ($pa_config, $id_agente_modulo, $dbh);
 					# --------------------------------------
 					# Now call to execute_alert to real exec
 					execute_alert ($pa_config, $id_alerta, $campo1, $campo2, $campo3, $nombre_agente, $timestamp, $datos, $comando, $alert_name, $dbh);
@@ -194,13 +202,13 @@ sub pandora_calcula_alerta (%$$$$$$) {
 					$internal_counter++;
 					if ($internal_counter < $min_alerts){
 						# Now update the new value for times_fired & last_fired if we are below min limit for triggering this alert
-						my $query_idag = "update talerta_agente_modulo set times_fired = $times_fired, internal_counter = $internal_counter where id_aam = $id_aam ";
-						$dbh->do($query_idag);
-						logger ($pa_config, "Alarm not fired because is below min limit",8);
+						my $query_idag = "UPDATE talerta_agente_modulo SET times_fired = $times_fired, internal_counter = $internal_counter WHERE id_aam = $id_aam ";
+						$dbh->do ($query_idag);
+						logger ($pa_config, "Alarm not fired because is below min limit",6);
 					} else { # Too many alerts fired (upper limit)
-						my $query_idag = "update talerta_agente_modulo set times_fired = $times_fired,  internal_counter = $internal_counter where id_aam = $id_aam ";
+						my $query_idag = "UPDATE talerta_agente_modulo SET times_fired = $times_fired,  internal_counter = $internal_counter WHERE id_aam = $id_aam ";
 						$dbh->do($query_idag);						
-						logger ($pa_config, "Alarm not fired because is above max limit",8);
+						logger ($pa_config, "Alarm not fired because is above max limit",6);
 					}
 				}  
 			} # data between alert values
@@ -208,15 +216,17 @@ sub pandora_calcula_alerta (%$$$$$$) {
 				# Check timegap
 				my $fecha_ultima_alerta = ParseDate($last_fired);
 				my $fecha_actual = ParseDate( $timestamp );
-				my $ahora_mysql = &UnixDate("today","%Y-%m-%d %H:%M:%S");       # If we need to update MYSQL ast_fired will use $ahora_mysql
+				my $ahora_mysql = &UnixDate("today","%Y-%m-%d %H:%M:%S");
+				# If we need to update MYSQL ast_fired will use $ahora_mysql
 				my $time_threshold = $threshold;
 				my $err; my $flag;
 				my $fecha_limite = DateCalc($fecha_ultima_alerta,"+ $time_threshold seconds",\$err);
-				$flag = Date_Cmp($fecha_actual,$fecha_limite);
+				$flag = Date_Cmp ($fecha_actual, $fecha_limite);
 				# Check timer threshold for this alert
-				if ( $flag >= 0 ) { # Out limits !, reset $times_fired, but do not write to
-						    # database until a real alarm was fired
-					my $query_idag = "update talerta_agente_modulo set times_fired = 0, internal_counter = 0 where id_aam = $id_aam ";
+				if ( $flag >= 0 ) {
+					# Out limits !, reset $times_fired, but do not write to
+					# database until a real alarm was fired
+					my $query_idag = "UPDATE talerta_agente_modulo SET times_fired = 0, internal_counter = 0 WHERE id_aam = $id_aam ";
 					$dbh->do($query_idag);
 				}	
 			}
@@ -224,8 +234,6 @@ sub pandora_calcula_alerta (%$$$$$$) {
 	} # if there are valid records
 	$s_idag->finish();
 }
-
-
 
 ##########################################################################
 ## SUB execute_alert (id_alert, field1, field2, field3, agent, timestamp, data)
@@ -247,7 +255,7 @@ sub execute_alert (%$$$$$$$$$$) {
 
 	if (($command eq "") && ($alert_name eq "")){
 		# Get values for commandline, reading from talerta.
-		my $query_idag = "select * from talerta where id_alerta = '$id_alert'";
+		my $query_idag = "SELECT * FROM talerta WHERE id_alerta = '$id_alert'";
 		my $idag = $dbh->prepare($query_idag);
 		$idag ->execute;
 		my @datarow;
@@ -262,12 +270,12 @@ sub execute_alert (%$$$$$$$$$$) {
 	
 	logger($pa_config, "Alert ($alert_name) TRIGGERED for $agent",2);
 	if ($id_alert != 3){ # id_alerta 3 is reserved for internal audit system
-		$comand =~ s/_field1_/"$field1"/g;
-		$comand =~ s/_field2_/"$field2"/g;
-		$comand =~ s/_field3_/"$field3"/g;
-		$comand=~ s/_agent_/$agent/g;
-		$comand =~ s/_timestamp_/$timestamp/g;
-		$comand =~ s/_data_/$data/g;
+		$comand =~ s/_field1_/"$field1"/ig;
+		$comand =~ s/_field2_/"$field2"/ig;
+		$comand =~ s/_field3_/"$field3"/ig;
+		$comand=~ s/_agent_/$agent/ig;
+		$comand =~ s/_timestamp_/$timestamp/ig;
+		$comand =~ s/_data_/$data/ig;
 		# Clean up some "tricky" characters
 		$comand =~ s/&gt;/>/g;
 		# EXECUTING COMMAND !!!
@@ -275,8 +283,8 @@ sub execute_alert (%$$$$$$$$$$) {
 			my $exit_value = system ($comand);
 			$exit_value  = $? >> 8; # Shift 8 bits to get a "classic" errorlevel
 			if ($exit_value != 0) {
-				logger($pa_config, "Executed command for triggered alert '$alert_name' had errors (errorlevel =! 0) ",0);
-				logger($pa_config, "Executed command was $comand ",1);
+				logger($pa_config, "Executed command for triggered alert '$alert_name' had errors (errorlevel =! 0) ",1);
+				logger($pa_config, "Executed command was $comand ",2);
 			}
 		};
 		if ($@){
@@ -284,12 +292,13 @@ sub execute_alert (%$$$$$$$$$$) {
 			logger($pa_config, "ERROR Code: $@",0);
 		}
 	} else { # id_alerta = 3, is a internal system audit
-		logger($pa_config, "Internal audit lauch for agent name $agent",2);
-		$field1 =~ s/_timestamp_/$timestamp/g;
-		$field1 =~ s/_data_/$data/g;
+		logger($pa_config, "Internal audit lauch for agent name $agent",3);
+		$field1 =~ s/_agent_/$agent/ig;
+		$field1 =~ s/_timestamp_/$timestamp/ig;
+		$field1 =~ s/_data_/$data/ig;
 		pandora_audit ($pa_config, $field1, $agent, "User Alert ($alert_name)", $dbh);
 	}
-	my $evt_descripcion = "Alert fired ($agent $alert_name) $field1 $field2";
+	my $evt_descripcion = "Alert fired ($agent $alert_name) $field1";
 	my $id_agente = dame_agente_id($pa_config,$agent,$dbh);
 	pandora_event($pa_config, $evt_descripcion, dame_grupo_agente($pa_config, $id_agente, $dbh), $id_agente, $dbh);
 }
@@ -321,14 +330,14 @@ sub pandora_writestate (%$$$$$$$) {
 	# Get id
 	# BE CAREFUL: We don't verify the strings chains
 	# TO DO: Verify errors
-	my $id_agente = dame_agente_id($pa_config,$nombre_agente,$dbh);
-	my $id_modulo = dame_modulo_id($pa_config,$tipo_modulo,$dbh);
-	my $id_agente_modulo = dame_agente_modulo_id($pa_config,$id_agente, $id_modulo, $nombre_modulo,$dbh);
+	my $id_agente = dame_agente_id ($pa_config, $nombre_agente, $dbh);
+	my $id_modulo = dame_modulo_id ($pa_config, $tipo_modulo, $dbh);
+	my $id_agente_modulo = dame_agente_modulo_id($pa_config, $id_agente, $id_modulo, $nombre_modulo, $dbh);
 	if (($id_agente eq "-1") || ($id_agente_modulo eq "-1")) {
 		goto fin_pandora_writestate;
 	}
 	# Seek for agent_interval or module_interval
-	my $query_idag = "select * from tagente_modulo where id_agente_modulo = " . $id_agente_modulo;;
+	my $query_idag = "SELECT * FROM tagente_modulo WHERE id_agente_modulo = " . $id_agente_modulo;;
 	my $s_idag = $dbh->prepare($query_idag);
 	$s_idag ->execute;
 	if ($s_idag->rows == 0) {
@@ -349,7 +358,7 @@ sub pandora_writestate (%$$$$$$$) {
 		}
 	};
 	if ($@) {
-			logger($pa_config, "ERROR: Error in SUB calcula_alerta(). ModuleName: $nombre_modulo ModuleType: $tipo_modulo AgentName: $nombre_agente",1);
+			logger($pa_config, "ERROR: Error in SUB calcula_alerta(). ModuleName: $nombre_modulo ModuleType: $tipo_modulo AgentName: $nombre_agente",8);
 			logger($pa_config, "ERROR Code: $@",1)
 	}
 	# $id_agente is agent ID to update ".dame_nombreagente_agentemodulo ($id_agente_modulo)."
@@ -473,7 +482,6 @@ sub module_generic_proc (%$$$$$) {
 	my $agent_name = $_[3];
 	my $module_type = $_[4];
 	my $dbh = $_[5];
-
 	my $bUpdateDatos = 0; # added, patch submitted by Dassing
 	my $estado;
 	# Leemos datos de la estructura
@@ -505,7 +513,7 @@ sub module_generic_proc (%$$$$$) {
 		}
 		pandora_writestate ($pa_config, $agent_name,$module_type,$a_name,$a_datos,$estado,$dbh, $bUpdateDatos);
 	} else {
-		logger ($pa_config, "Invalid data received from agent $agent_name",2);
+		logger ($pa_config, "(proc) Invalid data received from agent $agent_name", 2);
 	}
 }
 
@@ -553,7 +561,7 @@ sub module_generic_data (%$$$$$) {
 		# Numeric data has status N/A (100) always
 		pandora_writestate ($pa_config, $agent_name, $module_type, $m_name, $m_data, 100, $dbh, $bUpdateDatos);
 	} else {
-		logger($pa_config, "Invalid data value received from $agent_name, module $m_name",1);
+		logger($pa_config, "(data) Invalid data value received from $agent_name, module $m_name", 2);
 	}
 }
 
@@ -661,7 +669,7 @@ sub module_generic_data_inc (%$$$$$) {
 		# Inc status is always 100 (N/A)
 		pandora_writestate ($pa_config, $agent_name, $module_type, $m_name, $nuevo_data, 100, $dbh, $bUpdateDatos);
 	} else {
-		logger ($pa_config, "Invalid data received from $agent_name",2);
+		logger ($pa_config, "(data_inc) Invalid data received from $agent_name, module $m_name",2);
 	}
 }
 
@@ -1055,20 +1063,22 @@ sub pandora_audit (%$$$$) {
 ##########################################################################
 sub dame_agente_id (%$$) {
 	my $pa_config = $_[0];
-        my $nombre_agente = $_[1];
+        my $nombre_agente = sqlWrap($_[1]);
 	my $dbh = $_[2];
 
         my $id_agente;my @data;
 	if (defined($nombre_agente)){
 		# Calculate agent ID using select by its name
-		my $query_idag = "select * from tagente where nombre = '$nombre_agente'";
+		my $query_idag = "SELECT id_agente FROM tagente WHERE nombre = $nombre_agente";
 		my $s_idag = $dbh->prepare($query_idag);
 		$s_idag ->execute;
 		if ($s_idag->rows == 0) {
 			logger ($pa_config, "ERROR dame_agente_id(): Cannot find agent called $nombre_agente. Returning -1",1);
 			logger ($pa_config, "ERROR: SQL Query is $query_idag ",2);
 			$data[0]=-1;
-		} else  {           @data = $s_idag->fetchrow_array();   }
+		} else  {
+			@data = $s_idag->fetchrow_array();
+		}
 		$id_agente = $data[0];
 		$s_idag->finish();
 		return $id_agente;
@@ -1139,14 +1149,14 @@ sub dame_grupo_agente (%$$) {
 	my $id_grupo;
 	my @data;
 	# Calculate agent using select by its id
-        my $query_idag = "select * from tagente where id_agente = $id_agente";
+        my $query_idag = "SELECT id_grupo FROM tagente WHERE id_agente = $id_agente";
         my $s_idag = $dbh->prepare($query_idag);
         $s_idag ->execute;
     	if ($s_idag->rows == 0) {
         	logger ($pa_config, "ERROR dame_grupo_agente(): Cannot find agent with id $id_agente",1);
         	logger ($pa_config, "ERROR: SQL Query is $query_idag ",2);
     	} else  {           @data = $s_idag->fetchrow_array();   }
- 	$id_grupo = $data[4];
+ 	$id_grupo = $data[0];
     	$s_idag->finish();
        	return $id_grupo;
 }
@@ -1190,14 +1200,16 @@ sub dame_agente_nombre (%$$) {
 	my $nombre_agente;
 	my @data;
         # Calculate agent ID using select by its name
-        my $query_idag = "select * from tagente where id_agente = '$id_agente'";
+        my $query_idag = "SELECT nombre FROM tagente WHERE id_agente = '$id_agente'";
         my $s_idag = $dbh->prepare($query_idag);
         $s_idag ->execute;
     	if ($s_idag->rows == 0) {
         	logger($pa_config, "ERROR dame_agente_nombre(): Cannot find agent with id $id_agente",4);
         	logger($pa_config, "ERROR: SQL Query is $query_idag ",10);
-    	} else  {           @data = $s_idag->fetchrow_array();   }
-    	$nombre_agente = $data[1];
+    	} else  {
+    		@data = $s_idag->fetchrow_array();
+    	}
+    	$nombre_agente = $data[0];
     	$s_idag->finish();
         return $nombre_agente;
 }
@@ -1270,7 +1282,7 @@ sub dame_nombreagente_agentemodulo (%$$) {
 
         my $id_agente; my @data;
         # Calculate agent ID using select by its name
-        my $query_idag = "select * from tagente_modulo where id_agente_modulo = ".$id_agentemodulo;
+        my $query_idag = "SELECT id_agente FROM tagente_modulo WHERE id_agente_modulo = ".$id_agentemodulo;
         my $s_idag = $dbh->prepare($query_idag);
         $s_idag ->execute;
     	if ($s_idag->rows == 0) {
@@ -1279,11 +1291,10 @@ sub dame_nombreagente_agentemodulo (%$$) {
 		$id_agente = -1;
     	} else  {   
 		@data = $s_idag->fetchrow_array(); 
-		$id_agente= $data[1];
+		$id_agente= $data[0];
 	}
-    	
     	$s_idag->finish();
-    	my $nombre_agente = dame_agente_nombre ($pa_config, $id_agente,$dbh);
+    	my $nombre_agente = dame_agente_nombre ($pa_config, $id_agente, $dbh);
     	return $nombre_agente;
 }
 
@@ -1295,7 +1306,6 @@ sub dame_nombretipomodulo_idagentemodulo (%$$) {
 	my $pa_config = $_[0];
 	my $id_tipomodulo = $_[1]; 
 	my $dbh = $_[2];
-	
 	my @data;
 	# Calculate agent ID using select by its name
 	my $query_idag = "select * from ttipo_modulo where id_tipo = ".$id_tipomodulo;
@@ -1305,7 +1315,7 @@ sub dame_nombretipomodulo_idagentemodulo (%$$) {
 		logger( $pa_config, "ERROR dame_nombreagente_agentemodulo(): Cannot find module type with ID $id_tipomodulo",1);
 		logger( $pa_config, "ERROR: SQL Query is $query_idag ",2);
 	} else  {    @data = $s_idag->fetchrow_array(); }
-	my $tipo= $data[1];
+	my $tipo = $data[1];
 	$s_idag->finish();
 	return $tipo;
 }
@@ -1342,16 +1352,15 @@ sub dame_id_tipo_modulo (%$$) {
 	my $pa_config = $_[0];
         my $id_agente_modulo = $_[1];
 	my $dbh = $_[2];
-
         my $tipo; my @data;
         # Calculate agent ID using select by its name
-        my $query_idag = "select * from tagente_modulo where id_agente_modulo = ".$id_agente_modulo;
+        my $query_idag = "SELECT * FROM tagente_modulo WHERE id_agente_modulo = ".$id_agente_modulo;
         my $s_idag = $dbh->prepare($query_idag);
         $s_idag ->execute;
     	if ($s_idag->rows == 0) {
-        	logger($pa_config, "ERROR dame_id_tipo_modulo(): Cannot find id_agente_modulo $id_agente_modulo",4);
-      		logger($pa_config,  "ERROR: SQL Query is $query_idag ",10);
-		$tipo ="-1";
+        	logger($pa_config, "ERROR dame_id_tipo_modulo(): Cannot find id_agente_modulo $id_agente_modulo", 4);
+      		logger($pa_config, "ERROR: SQL Query is $query_idag ", 10);
+		$tipo = "-1";
     	} else  {    
 		@data = $s_idag->fetchrow_array(); 
 		$tipo= $data[2];
@@ -1377,7 +1386,7 @@ sub give_network_component_profile_name (%$$) {
       		logger($pa_config, "ERROR: SQL Query is $query_idag ",2);
 		$tipo = 0;
     	} else  {    @data = $s_idag->fetchrow_array(); }
-    	$tipo= $data[1];
+    	$tipo = $data[1];
     	$s_idag->finish();
         return $tipo;
 }
@@ -1466,35 +1475,35 @@ sub crea_agente_modulo (%$$$$$$$) {
 	my $nombre_agente = $_[1];
 	my $tipo_modulo = $_[2];
 	my $nombre_modulo = $_[3];
-	my $max = $_[4];
-	my $min = $_[5];
+	my $max = sqlWrap($_[4]);
+	my $min = sqlWrap($_[5]);
 	my $descripcion = $_[6];
 	my $dbh = $_[7];
 
-	my $modulo_id = dame_modulo_id($pa_config, $tipo_modulo,$dbh);
-	my $agente_id = dame_agente_id($pa_config, $nombre_agente,$dbh);
+	my $modulo_id = dame_modulo_id ($pa_config, $tipo_modulo, $dbh);
+	my $agente_id = dame_agente_id ($pa_config, $nombre_agente, $dbh);
 	
 	if ((!defined($max)) || ($max eq "")){
 		$max =0;
 	}
-	
 	if ((!defined($min)) || ($min eq "")){
 		$min =0;
 	}
-
 	if ((!defined($descripcion)) || ($descripcion eq "")){
 		$descripcion="N/A";
 	}
+	$descripcion = sqlWrap ($descripcion. "(*)" );
+	$nombre_modulo = sqlWrap ($nombre_modulo);
 
-	my $query = "insert into tagente_modulo (id_agente,id_tipo_modulo,nombre,max,min,descripcion) values ($agente_id,$modulo_id,'$nombre_modulo',$max,$min,'$descripcion (*)')";
+	my $query = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,max,min,descripcion) VALUES ($agente_id, $modulo_id, $nombre_modulo, $max, $min, $descripcion)";
 	if (($max eq "") and ($min eq "")) {
-		$query = "insert into tagente_modulo (id_agente,id_tipo_modulo,nombre,descripcion) values ($agente_id,$modulo_id,'$nombre_modulo','$descripcion (*)')";
+		$query = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,descripcion) VALUES ($agente_id, $modulo_id, $nombre_modulo, $descripcion)";
 	} elsif ($min eq "") {
-		$query = "insert into tagente_modulo (id_agente,id_tipo_modulo,nombre,max,descripcion) values ($agente_id,$modulo_id,'$nombre_modulo',$max,'$descripcion (*)')";
+		$query = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,max,descripcion) VALUES ($agente_id, $modulo_id, $nombre_modulo, $max, $descripcion)";
 	} elsif ($min eq "") {
-		$query = "insert into tagente_modulo (id_agente,id_tipo_modulo,nombre,min,descripcion) values 	($agente_id,$modulo_id,'$nombre_modulo',$min,'$descripcion (*)')";
+		$query = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,min,descripcion) VALUES 	($agente_id, $modulo_id, $nombre_modulo, $min, $descripcion)";
 	}
-	logger( $pa_config, "DEBUG: Query for autocreate : $query ",6);	
+	logger( $pa_config, "DEBUG: Query for autocreate : $query ", 8);	
     	$dbh->do($query);
 }
 

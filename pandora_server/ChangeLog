@@ -1,3 +1,8 @@
+2007-04-19  Manuel Arostegui <marostegui@artica.es>
+
+	* specs/fedoracore5/pandora_server: Added files of the
+	  new 1.3 version.
+
 2007-04-17  Manuel Arostegui <marostegui@artica.es>
 
 	* specs/fedoracore5/pandora_server.spec: Added code to evaluate

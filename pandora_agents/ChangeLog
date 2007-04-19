@@ -1,3 +1,15 @@
+2007-04-19  Sancho Lerena  <slerena@artica.es>
+
+	At the moment, only linux agent changes, need to be propagated to
+	other Unix agents:
+		
+	* Local development changes for pandora_agent.sh, and for
+	pandora_agent.conf. Will be changed for production release.
+
+	* Added contrib dir.
+
+	* Added installer: pandora_agent_installer
+
 2007-04-11  Manuel Arostegui <marostegui@artica.es>
 
 	* linux/pandora_agents.spec: Added links from 

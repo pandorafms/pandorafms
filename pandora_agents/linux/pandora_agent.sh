@@ -7,8 +7,8 @@
 # Este codigo esta licenciado bajo la licencia GPL 2.0.
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
-AGENT_VERSION=1.2.1
-AGENT_BUILD=070103
+AGENT_VERSION=1.3-dev
+AGENT_BUILD=070320
 
 if [ -z "$1" ]
 then
@@ -146,8 +146,8 @@ fi
 
 # Script banner at start
 echo "Pandora FMS Agent $AGENT_VERSION (c) Sancho Lerena, and others 2007"
-echo "This program is licensed under GPL Terms. http://pandora.sf.net"
-echo "Running in $NOMBRE_HOST at $TIMESTAMP \n"
+echo "This program is licensed under GPL2 Terms. http://pandora.sf.net"
+echo "Running in $NOMBRE_HOST at $TIMESTAMP"
 echo " "
 
 if [ "$DEBUG_MODE" == "1" ]
@@ -308,7 +308,8 @@ do
 	fi
 	
 	# Send packets to server and detele it
- 	scp -P $SERVER_PORT $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH > /dev/null 2>  $PANDORA_LOGFILE.err
+ 	#scp -P $SERVER_PORT $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH > /dev/null 2>  $PANDORA_LOGFILE.err
+	cp $PANDORA_FILES /opt/pandora_server/data_in
 
 	# Delete data
 	rm -f $PANDORA_FILES> /dev/null 2> $PANDORA_LOGFILE.err

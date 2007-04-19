@@ -753,6 +753,18 @@ $lang_label["says"]="says";
 $lang_label["delete_sel"]="Delete selected";
 $lang_label["available_templates"]="Available templates";
 $lang_label["assign"]="Assign";
+
+$lang_label["graph_store"]="Custom graph store";
+$lang_label["private"]="Private";
+$lang_label["store"]="Store";
+$lang_label["store_graph_suc"]="Graph store successful";
+$lang_label["store_graph_error"]="Graph store error";
+$lang_label["custom_graph_viewer"]="Custom graph viewer";
+$lang_label["graph_name"]="Graph name";
+$lang_label["custom_graphs"]="Custom graphs";
+$lang_label["custom_reporting"]="Custom reporting";
+$lang_label["alert_text"]="Alert text";
+$lang_label["text"]="Text";
 global $lang_label; 
 global $help_label;
 ?>

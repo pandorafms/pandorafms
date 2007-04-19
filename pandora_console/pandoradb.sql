@@ -237,6 +237,7 @@ CREATE TABLE `talerta_agente_modulo` (
   `module_type` int(11) NOT NULL default '0',
   `min_alerts` int(4) NOT NULL default '0',
   `internal_counter` int(4) default '0',
+  `alert_text` varchar(255) default '',
   PRIMARY KEY  (`id_aam`)
 ) ENGINE=InnoDB;
 
@@ -534,3 +535,45 @@ CREATE TABLE `tnews` (
   `utimestamp` DATETIME  NOT NULL DEFAULT 0,
   PRIMARY KEY(`id_news`)
 ) ENGINE = InnoDB;
+
+CREATE TABLE `tgraph` (
+  `id_graph` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
+  `id_user` varchar(100) NOT NULL default '',
+  `name` varchar(150) NOT NULL default '',
+  `description` TEXT NOT NULL,
+  `period` int(11) NOT NULL default '0',
+  `width` smallint(5) UNSIGNED NOT NULL DEFAULT 0,
+  `height` smallint(5) UNSIGNED NOT NULL DEFAULT 0,
+  `private` tinyint(1) UNSIGNED NOT NULL default 0,
+  `events` tinyint(1) UNSIGNED NOT NULL default 0,
+  PRIMARY KEY(`id_graph`)
+) ENGINE = InnoDB;
+
+CREATE TABLE `tgraph_source` (
+  `id_gs` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
+  `id_graph` int(11) NOT NULL default 0,
+  `id_agent_module` int(11) NOT NULL default 0,
+  `weight` smallint(5) UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY(`id_gs`)
+) ENGINE = InnoDB;
+
+
+CREATE TABLE `treport` (
+  `id_report` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
+  `id_user` varchar(100) NOT NULL default '',
+  `name` varchar(150) NOT NULL default '',
+  `description` TEXT NOT NULL,
+  `private` tinyint(1) UNSIGNED NOT NULL default 0,
+  PRIMARY KEY(`id_report`)
+) ENGINE = InnoDB;
+
+CREATE TABLE `treport_content` (
+  `id_rc` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_report` INTEGER UNSIGNED NOT NULL default 0,
+  `id_gs` INTEGER UNSIGNED NOT NULL default 0,
+  `id_agent_module` int(11) NOT NULL default 0,
+  `type` tinyint(1) UNSIGNED NOT NULL default 0,
+  `period` int(11) NOT NULL default 0,
+  PRIMARY KEY(`id_rc`)
+) ENGINE = InnoDB;
+

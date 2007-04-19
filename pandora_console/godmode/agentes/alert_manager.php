@@ -43,10 +43,10 @@ $result=mysql_query($sql1);
 			$row2=mysql_fetch_array($result2);
 			//module type modulo is $row2["nombre"];
 			
-			$sql3='SELECT id_aam, id_alerta, time_threshold, dis_min, dis_max, 
-			descripcion 
-			FROM talerta_agente_modulo 
-			WHERE id_agente_modulo = '.$row["id_agente_modulo"];  // From all the alerts give me which are from my agent
+			$sql3='SELECT * 
+				FROM talerta_agente_modulo 
+				WHERE id_agente_modulo = '.$row["id_agente_modulo"];
+				// From all the alerts give me which are from my agent
 			$result3=mysql_query($sql3);
 			while ($row3=mysql_fetch_array($result3)){
 				if ($color == 1){
@@ -79,8 +79,11 @@ $result=mysql_query($sql1);
 				else
 					$mymax = $row3["dis_max"];
 				$mymax =  format_for_graph($mymax );
-				
-				$string = $string."<td class='$tdcolor'>".$mymin." / ".$mymax;
+				// We have alert text ?
+				if ($row3["alert_text"] != "")
+					$string = $string."<td class='$tdcolor'>".$lang_label["text"];
+				else	
+					$string = $string."<td class='$tdcolor'>".$mymin." / ".$mymax;
 				$string = $string."<td class='$tdcolor'>".salida_limpia($row3["descripcion"]);
 				$string = $string."<td class='$tdcolor'>";
 			 	$id_grupo = dame_id_grupo($id_agente);
@@ -133,8 +136,8 @@ if ($update_alert != 1) {
 }
 ?>
 <input type="hidden" name="id_agente" value="<?php echo $id_agente ?>">
-<table width=650 cellpadding="3" cellspacing="3" class="fon" border=0>
-<tr><td class='lb' rowspan='9' width='5'>
+<table width=600 cellpadding="4" cellspacing="4" class="fon" border=0>
+<tr><td class='lb' rowspan='10' width='3'>
 <td class="datos"><?php echo $lang_label["alert_type"]?>
 <td class="datos">
 <select name="tipo_alerta"> 
@@ -155,16 +158,39 @@ while ($row=mysql_fetch_array($result)){
 <td class="datos2"><input type="text" name="minimo" size="5" value="<?php echo $alerta_dis_min ?>" style="margin-right: 70px;">
 <?php echo $lang_label["max_value"] ?> &nbsp;&nbsp;&nbsp;
 <input type="text" name="maximo" size="5" value="<?php echo $alerta_dis_max ?>">
-<tr><td class="datos"><?php echo $lang_label["description"] ?>
-<td class="datos"><input type="text" name="descripcion" size="39" value ="<?php echo $alerta_descripcion ?>">
-<tr><td class="datos2"><?php echo $lang_label["field1"] ?>
-<td class="datos2"><input type="text" name="campo_1" size="39" value="<?php echo $alerta_campo1 ?>">
-<tr><td class="datos"><?php echo $lang_label["field2"] ?>
-<td class="datos"><input type="text" name="campo_2" size="39" value="<?php echo $alerta_campo2 ?>">
-<tr><td class="datos2"><?php echo $lang_label["field3"] ?>
-<td class="datos2"><textarea name="campo_3" cols="36" rows="3"><?php echo $alerta_campo3 ?></textarea>
-<tr><td class="datos"><?php echo $lang_label["time_threshold"] ?>
-<td class="datos">
+
+<!-- FREE TEXT ALERT -->
+<tr><td class="datos"><?php echo $lang_label["alert_text"] ?> <a href='#' class='tip'>&nbsp;<span>
+Regular Expression Supported
+</span></a>
+<td class="datos"><input type="text" name="alert_text" size="39" value ="<?php echo $alert_text ?>">
+
+<tr><td class="datos2"><?php echo $lang_label["description"] ?>
+<td class="datos2"><input type="text" name="descripcion" size="39" value ="<?php echo $alerta_descripcion ?>">
+
+<tr><td class="datos"><?php echo $lang_label["field1"] ?> <a href='#' class='tip'>&nbsp;<span>
+<b>Macros:</b><br>
+_agent_<br>
+_timestamp_<br>
+_data_<br>
+</span></a>
+<td class="datos"><input type="text" name="campo_1" size="39" value="<?php echo $alerta_campo1 ?>">
+<tr><td class="datos2"><?php echo $lang_label["field2"] ?> <a href='#' class='tip'>&nbsp;<span>
+<b>Macros:</b><br>
+_agent_<br>
+_timestamp_<br>
+_data_<br>
+</span></a>
+<td class="datos2"><input type="text" name="campo_2" size="39" value="<?php echo $alerta_campo2 ?>">
+<tr><td class="datos"><?php echo $lang_label["field3"] ?> <a href='#' class='tip'>&nbsp;<span>
+<b>Macros:</b><br>
+_agent_<br>
+_timestamp_<br>
+_data_<br>
+</span></a>
+<td class="datos"><textarea name="campo_3" style='height:55px;' cols="36" rows="2"><?php echo $alerta_campo3 ?></textarea>
+<tr><td class="datos2"><?php echo $lang_label["time_threshold"] ?>
+<td class="datos2">
 <select name="time_threshold" style="margin-right: 60px;">
 <?php
 	if ($alerta_time_threshold != ""){ 
@@ -188,17 +214,19 @@ while ($row=mysql_fetch_array($result)){
 &nbsp;&nbsp;&nbsp;
 <input type="text" name="other" size="5">
 
-<tr><td class="datos2"><?php echo $lang_label["min_alerts"] ?>
-<td class="datos2">
+<tr><td class="datos"><?php echo $lang_label["min_alerts"] ?>
+<td class="datos">
 <input type="text" name="min_alerts" size="5" value="<?php  if (isset($alerta_min_alerts)) {echo$alerta_min_alerts;} ?>" style="margin-right: 10px;">
 <?php echo $lang_label["max_alerts"] ?>
 &nbsp;&nbsp;&nbsp;
 <input type="text" name="max_alerts" size="5" value="<?php if (isset($alerta_max_alerts)) {echo $alerta_max_alerts;} ?>">
 
 
-<tr><td class="datos"><?php echo $lang_label["assigned_module"] ?>
-<td class="datos">
-<?php if ($update_alert != 1) {
+<tr><td class="datos2"><?php echo $lang_label["assigned_module"] ?>
+<td class="datos2">
+<?php
+
+if ($update_alert != 1) {
 	echo '<select name="agente_modulo"> ';
 	$sql2='SELECT id_agente_modulo, id_tipo_modulo, nombre FROM tagente_modulo WHERE id_agente = '.$id_agente;
 	$result2=mysql_query($sql2);
@@ -222,12 +250,10 @@ while ($row=mysql_fetch_array($result)){
 echo '<tr><td colspan="3"><div class="raya"></div></td></tr>';
 echo '<tr><td colspan="3" align="right">';
 	if ($update_alert== "1"){
-		echo '<input name="updbutton" type="submit" class="sub" value="'.$lang_label["update"].'">';
+		echo '<input name="updbutton" type="submit" class="sub upd" value="'.$lang_label["update"].'">';
 	} else {
-		echo '<input name="crtbutton" type="submit" class="sub" value="'.$lang_label["add"].'">';
+		echo '<input name="crtbutton" type="submit" class="sub wand" value="'.$lang_label["add"].'">';
 	}
 	echo '</form>';
-	
-	echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=".$id_agente."'><input type='submit' class='sub' name='crt' value='".$lang_label["cancel"]."'></form>";
 echo '</td></tr></table>';
 

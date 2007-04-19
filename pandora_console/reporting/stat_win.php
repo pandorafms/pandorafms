@@ -69,9 +69,11 @@ switch ($period) {
 			break;
 	case 21600: 	$period_label = "6 Hours";
 			break;
-	case 43200: 	$period_label = "12 Hous";
+	case 43200: 	$period_label = "12 Hours";
 			break;
 	case 86400: 	$period_label = "Day";
+			break;
+	case 172800: 	$period_label = "Two days";
 			break;
 	case 604800: 	$period_label = "Last Week";
 			break;
@@ -231,6 +233,7 @@ echo "<img src='fgraph.php?tipo=sparse&draw_alerts=$draw_alerts&draw_events=$dra
 			echo "<option value=21600>"."6 Hours";
 			echo "<option value=43200>"."12 Hours";
 			echo "<option value=86400>"."Last day";
+			echo "<option value=172800>"."Two days";
 			echo "<option value=604800>"."Last Week";
 			echo "<option value=1296000>"."15 days";
 			echo "<option value=2592000>"."Last Month";

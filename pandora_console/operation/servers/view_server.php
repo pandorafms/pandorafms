@@ -193,12 +193,13 @@ if (comprueba_login() == 0) {
 				$sql1 = "SELECT * FROM trecon_task WHERE id_network_server = $id_server";
 				$result1=mysql_query($sql1);
 				$nowtime = time();
-				$maxlag=0;
+				$maxlag=0;$maxlag2=0;
 				while ($row1=mysql_fetch_array($result1)){
-					if (($row1["utimestamp"] + $row1["interval_sweep"]) < $nowtime)
+					if (($row1["utimestamp"] + $row1["interval_sweep"]) < $nowtime){
 						$maxlag2 =  $nowtime - ($row1["utimestamp"] + $row1["interval_sweep"]);
 						if ($maxlag2 > $maxlag)
 							$maxlag = $maxlag2;
+					}
 				}
 				if ($maxlag < 60)
 					echo $maxlag." sec";

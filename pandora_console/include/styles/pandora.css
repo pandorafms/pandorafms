@@ -211,13 +211,26 @@ input.sub {
 	font-size: 11px;
 }
 input.next {
-	padding-right: 15px;
-	background: #e5e5e5 url(../../images/go.png) no-repeat right 2px;
+	padding-right: 21px;
+	background: #e5e5e5 url(../../images/go.png) no-repeat right 4px;
 }
+
 input.upd {
-	padding-right: 15px;
-	background: #e5e5e5 url(../../images/upd.png) no-repeat right 2px;
+	padding-right: 21px;
+	background: #e5e5e5 url(../../images/upd.png) no-repeat right 5px;
 }
+
+input.wand {
+	padding-right: 21px;
+	background: #e5e5e5 url(../../images/wand.png) no-repeat right 4px;
+}
+
+input.delete {
+	padding-right: 21px;
+	background: #e5e5e5 url(../../images/cross.png) no-repeat right 4px;
+}
+
+
 table, img {
 	border: 0px;
 }

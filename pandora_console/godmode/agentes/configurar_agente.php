@@ -81,6 +81,7 @@ $snmp_community="";
 $combo_snmp_oid="";
 $agent_created_ok = 0;
 $create_agent = 0;
+$alert_text = "";
 
 // ================================
 // Create AGENT
@@ -200,6 +201,7 @@ if (isset($_POST["insert_alert"])){ // if created alert
 	$maximo = entrada_limpia($_POST["maximo"]);
 	$minimo = entrada_limpia($_POST["minimo"]);
 	$tipo_alerta = entrada_limpia($_POST["tipo_alerta"]);
+	$alert_text = entrada_limpia($_POST["alert_text"]);
 	$time_threshold = entrada_limpia($_POST["time_threshold"]);
 	$max_alerts = entrada_limpia($_POST["max_alerts"]);
 	$min_alerts = entrada_limpia($_POST["min_alerts"]);
@@ -207,7 +209,21 @@ if (isset($_POST["insert_alert"])){ // if created alert
 	if ($time_threshold == -1) {
 		$time_threshold = $other;
 	}
-	$sql_insert="INSERT INTO talerta_agente_modulo (id_agente_modulo,id_alerta,al_campo1,al_campo2,al_campo3,descripcion,dis_max,dis_min,time_threshold,max_alerts, min_alerts) VALUES ('".$id_agente_modulo."','".$tipo_alerta."','".$campo_1."','".$campo_2."','".$campo_3."','".$descripcion."','".$maximo."','".$minimo."','".$time_threshold."','".$max_alerts."','".$min_alerts."')";
+	$sql_insert="INSERT INTO talerta_agente_modulo
+			(id_agente_modulo,id_alerta,al_campo1,al_campo2,al_campo3,descripcion,dis_max,dis_min,time_threshold,max_alerts, min_alerts, alert_text) VALUES
+			 ('$id_agente_modulo',
+			 '$tipo_alerta',
+			 '$campo_1',
+			 '$campo_2',
+			 '$campo_3',
+			 '$descripcion',
+			 '$maximo',
+			 '$minimo',
+			 '$time_threshold',
+			 '$max_alerts',
+			 '$min_alerts',
+			 '$alert_text')";
+
 	$result=mysql_query($sql_insert);	
 	if (! $result)
 		echo "<h3 class='error'>".$lang_label["create_alert_no"]."</h3>";
@@ -234,11 +250,24 @@ if (isset($_POST["update_alert"])){ // Update an existing alert
 	$max_alerts = entrada_limpia($_POST["max_alerts"]);
 	$min_alerts = entrada_limpia($_POST["min_alerts"]);
 	$other = entrada_limpia($_POST["other"]);
+	$alert_text = entrada_limpia($_POST["alert_text"]);
 	if ($time_threshold == -1) {
 		$time_threshold = $other;
 	}
 
-	$sql_insert="UPDATE talerta_agente_modulo SET id_alerta = ".$tipo_alerta.", max_alerts = '".$max_alerts."', min_alerts = '".$min_alerts."' ,time_threshold = '".$time_threshold."' ,dis_min = '".$minimo."' ,dis_max = '".$maximo."' ,al_campo3 = '".$campo_3."' ,al_campo2 = '".$campo_2."' ,al_campo1 = '".$campo_1."' , descripcion = '".$descripcion."' WHERE id_aam = ".$id_aam;
+	$sql_insert="UPDATE talerta_agente_modulo SET
+		id_alerta = $tipo_alerta,
+		max_alerts = '$max_alerts',
+		min_alerts = '$min_alerts' ,
+		time_threshold = '$time_threshold',
+		dis_min = '$minimo' ,
+		dis_max = '$maximo' ,
+		al_campo3 = '$campo_3' ,
+		al_campo2 = '$campo_2' ,
+		al_campo1 = '$campo_1' ,
+		descripcion = '$descripcion',
+		alert_text = '$alert_text'
+		WHERE id_aam = ".$id_aam;
 	$result=mysql_query($sql_insert);	
 	if (! $result) {
 		echo "<h3 class='error'>".$lang_label["update_alert_no"]."</h3>";
@@ -379,6 +408,7 @@ if (isset($_GET["update_alert"])){
 		$alerta_dis_max = $row["dis_max"];
 		$alerta_dis_min = $row["dis_min"];
 		$tipo_alerta = $row["id_alerta"];
+		$alert_text = $row["alert_text"];
 		$alerta_max_alerts = $row["max_alerts"];
 		$alerta_min_alerts = $row["min_alerts"];
 		$alerta_time_threshold = $row["time_threshold"];

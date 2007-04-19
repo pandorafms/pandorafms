@@ -48,11 +48,11 @@ $fecha_registro = "";
 $color=1;
 
 while ($rowdup=mysql_fetch_array($resq1)){
-	$name=$rowdup["id_usuario"];
-	$nivel=$rowdup["nivel"];
-	$real_name=$rowdup["nombre_real"];
-	$comments=$rowdup["comentarios"];
-	$fecha_registro =$rowdup["fecha_registro"];
+	$name = $rowdup["id_usuario"];
+	$nivel = $rowdup["nivel"];
+	$real_name = $rowdup["nombre_real"];
+	$comments = $rowdup["comentarios"];
+	$fecha_registro = $rowdup["fecha_registro"];
 	if ($color == 1){
 		$tdcolor = "datos";
 		$color = 0;
@@ -62,7 +62,7 @@ while ($rowdup=mysql_fetch_array($resq1)){
 		$color = 1;
 	}
 	echo "<tr><td class='$tdcolor'>";
-	echo "<a href='index.php?sec=gusuarios&sec2=godmode/usuarios/configurar_usuarios&id_usuario_mio=".$nombre."'><b>".$name."</b></a>";
+	echo "<a href='index.php?sec=gusuarios&sec2=godmode/usuarios/configurar_usuarios&id_usuario_mio=".$name."'><b>".$name."</b></a>";
 	echo "<td class='$tdcolor'>".$fecha_registro;
 	echo "<td class='$tdcolor'>";
 	if ($nivel == 1) 
@@ -84,7 +84,7 @@ while ($rowdup=mysql_fetch_array($resq1)){
 	
 	echo "<td class='$tdcolor' width='100'>".substr($real_name,0,16)."</td>";
 	echo "<td class='$tdcolor'>".$comments."</td>";
-	echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/usuarios/lista_usuarios&borrar_usuario=".$nombre."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cross.png'></a>";
+	echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/usuarios/lista_usuarios&borrar_usuario=".$name."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cross.png'></a>";
 }
 	echo "<tr><td colspan='6'><div class='raya'></div></td></tr>";
 	echo "<tr><td colspan='6' align='right'>";

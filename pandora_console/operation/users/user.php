@@ -54,7 +54,7 @@ while ($rowdup=mysql_fetch_array($resq1)){
 		$color = 1;
 		$tip = "tip2";
 	}
-	echo "<tr><td class='$tdcolor'><a href='index.php?sec=usuarios&sec2=operation/users/user_edit&ver=".$nombre."'><b>".$name."</b></a>";
+	echo "<tr><td class='$tdcolor'><a href='index.php?sec=usuarios&sec2=operation/users/user_edit&ver=".$name."'><b>".$name."</b></a>";
 	echo "<td class='$tdcolor'><font size=1>".$fecha_registro."</font>";
 	echo "<td class='$tdcolor'>";
 	if ($nivel == 1) 

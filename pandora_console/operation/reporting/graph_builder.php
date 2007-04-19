@@ -1,4 +1,5 @@
-<?PHP 
+// <?PHP
+
 // Pandora FMS - the Free monitoring system
 // ========================================
 // Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
@@ -22,13 +23,65 @@ $name = "Pandora FMS combined graph";
 $width = 550;
 $height = 210;
 $period = "";
-$alerts= "";
+//$alerts= "";
 $events = "";
 $factor = 1;
+$render=1; // by default
+
+// Login check
+$id_usuario=$_SESSION["id_usuario"];
+global $REMOTE_ADDR;
+
+if (comprueba_login() != 0) {
+	audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access graph builder");
+	include ("general/noaccess.php");
+	exit;
+}
+
+if (isset($_GET["store_graph"])){
+	$name = entrada_limpia($_POST["name"]);
+	$description = entrada_limpia($_POST["description"]);
+	$module_number = entrada_limpia($_POST["module_number"]);
+	$private = entrada_limpia($_POST["private"]);
+	$width = entrada_limpia($_POST["width"]);
+	$height = entrada_limpia($_POST["height"]);
+	$events = entrada_limpia($_POST["events"]);
+	$period = entrada_limpia($_POST["period"]);
+	// Create graph
+	$sql = "INSERT INTO tgraph
+		(id_user, name, description, period, width, height, private, events) VALUES
+		('$id_user',
+		'$name',
+		'$description',
+		$period,
+		$width,
+		$height,
+		$private,
+		$events)";
+		//echo "DEBUG $sql<br>";
+	$res = mysql_query($sql);
+	if ($res){
+		$id_graph = mysql_insert_id();
+		if ($id_graph){
+			for ($a=0; $a < $module_number; $a++){
+				$id_agentemodulo = entrada_limpia($_POST["module_".$a]);
+				$id_agentemodulo_w = entrada_limpia($_POST["module_weight_".$a]);
+				$sql = "INSERT INTO tgraph_source (id_graph, id_agent_module, weight) VALUES
+					($id_graph, $id_agentemodulo, $id_agentemodulo_w)";
+				//echo "DEBUG $sql<br>";
+				mysql_query($sql);
+			}
+			echo "<h3 class='suc'>".$lang_label["store_graph_suc"]."</h3>";
+		} else
+			echo "<h3 class='error'>".$lang_label["store_graph_error"]."</h3>";
+	} else 
+		echo "<h3 class='error'>".$lang_label["store_graph_error"]."</h3>";
+}
 
 if (isset($_GET["get_agent"])) {
  	$id_agent = $_POST["id_agent"];
-	$chunkdata = $_POST["chunk"];
+	if (isset($_POST["chunk"]))
+		$chunkdata = isset($_POST["chunk"]);
 }
 
 if (isset($_GET["delete_module"] )) {
@@ -87,10 +140,10 @@ if ( (isset($_GET["add_module"]))){
  	else
  		$factor = 1;
  	$period = $_POST["period"];
- 	$graphname = $_POST["graphname"];
  	$render = $_POST["render"];
- 	$alerts = $_POST["alerts"];
- 	$chunkdata = $_POST["chunk"];
+// 	$alerts = $_POST["alerts"];
+	if (isset($_POST["chunk"]))
+ 		$chunkdata = $_POST["chunk"];
 	$events = $_POST["events"];
 	$factor = $_POST["factor"];
  	if ($_POST["width"]!= "")
@@ -98,7 +151,7 @@ if ( (isset($_GET["add_module"]))){
  	if ($_POST["height"]!= "")
  		$height = $_POST["height"];
  	if ($id_module > 0){	
-		if ($chunkdata == "")
+		if (!isset($chunkdata) OR ($chunkdata == ""))
 			$chunkdata = "$id_agent,$id_module,$factor";
 		else
 			$chunkdata = $chunkdata."|$id_agent,$id_module,$factor";
@@ -143,8 +196,9 @@ if (isset($chunk1)) {
 		echo "<input type='hidden' name='chunk' value='$chunkdata'>";
 	if (isset($id_agent))
 		echo "<input type='hidden' name='id_agent' value='$id_agent'>";
-	echo "<table width='500' cellpadding=4 cellpadding=4>";
+	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
 	echo "<tr><th>Agent<th>Module<th>Weight<th>Delete";
+	$color=0;
 	for ($a=0; $a < count($module_array); $a++){
 		// Calculate table line color
 		if ($color == 1){
@@ -165,7 +219,7 @@ if (isset($chunk1)) {
 		echo "<td class='$tdcolor'>";
 		echo "<input style='height=2px;' type=checkbox name='delete_$a' value='".$module_array[$a]."'>";
 	}
-	echo "<tr><td colspan=4 align='right'><input type=submit name='update_agent' class=sub value='".$lang_label["delete"]."'>";
+	echo "<tr><td class=datos colspan=4 align='right'><input type=submit name='update_agent' class='sub delete'  value='".$lang_label["delete"]."'>";
 	echo "</table>";
 	echo "</form>";
 }
@@ -174,14 +228,14 @@ if (isset($chunk1)) {
 // SOURCE AGENT TABLE/FORM
 // -----------------------
 echo "<h3>".$lang_label["graph_builder"]."</h3>";
-echo "<table width='500' cellpadding=4 cellpadding=4>";
+echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
 echo "<form method='post' action='index.php?sec=reporting&sec2=operation/reporting/graph_builder&get_agent=1'>";
 echo "<tr>";
 echo "<td class='datos'><b>".$lang_label["source_agent"];
 echo "</b>";
 
 // Show combo with agents
-echo "<td class='datos'><select name='id_agent' style='width:180px;'>";
+echo "<td class='datos' colspan=2><select name='id_agent' style='width:180px;'>";
 if ($id_agent != 0)
 	echo "<option value='$id_agent'>".dame_nombre_agente($id_agent);
 $sql1='SELECT * FROM tagente order by nombre';
@@ -194,7 +248,7 @@ echo '</select>';
 if (isset($chunkdata))
 	echo "<input type='hidden' name='chunk' value='$chunkdata'>";
 
-echo "<td class='datos' colspan=2 align='right'><input type=submit name='update_agent' class=sub value='".$lang_label["get_info"]."'>";
+echo "<td class='datos' colspan=1 align='right'><input type=submit name='update_agent' class='sub upd' value='".$lang_label["get_info"]."'>";
 echo "</form>";
 
 // -----------------------
@@ -233,51 +287,8 @@ echo "<input type='text' name='width' value='$width' size=6>";
 
 
 echo "<tr><td class='datos2'>";
-echo "<b>Graph Name</b>";
-echo "<td class='datos2'>";
-echo "<input type='text' name='graphname' value='$name' size=25>";
-echo "<td class='datos2'>";
-echo "<b>Height</b>";
-echo "<td class='datos2'>";
-echo "<input type='text' name='height' value='$height' size=6>";
-
-
-echo "<tr><td class='datos'>";
-echo "<b>Period</b>";
-echo "<td class='datos'>";
-echo "<select name='period'>";
-if ($period != ""){
-	if ($period == 3600)
-		echo "<option value='".$period."'>Last Hour";
-	elseif ($period == 86400)
-		echo "<option value='".$period."'>Last day";
-	elseif ($period == 604800)
-		echo "<option value='".$period."'>Last week";
-	elseif ($period == 2592000)
-		echo "<option value='".$period."'>Last month";
-}
-echo "<option value=86400>Last day";
-echo "<option value=3600>Last hour";
-echo "<option value=604800>Last week";
-echo "<option value=2592000>Last month";
-echo "</select>";
-
-echo "<td class='datos'>";
-echo "<b>Show alert limit</b>";
-echo "<td class='datos'>";
-echo "<select name='alerts'>";
-if ($alerts == 1){
-	echo "<option value=1>Yes";
-	echo "<option value=0>No";
-} else {
-	echo "<option value=0>No";
-	echo "<option value=1>Yes";
-}
-echo "</select>";
-
-echo "<tr><td class='datos2'>";
 echo "<b>Render now</b>";
-echo "<td class='datos2'>";
+echo "<td class='datos2' >";
 echo "<select name='render'>";
 if ($render == 1){
 	echo "<option value=1>Yes";
@@ -287,6 +298,58 @@ if ($render == 1){
 	echo "<option value=1>Yes";
 }
 echo "</select>";
+echo "<td class='datos2'>";
+echo "<b>Height</b>";
+echo "<td class='datos2'>";
+echo "<input type='text' name='height' value='$height' size=6>";
+
+
+switch ($period) {
+	case 3600: 	$period_label = "Hour";
+			break;
+	case 21600: 	$period_label = "6 Hours";
+			break;
+	case 43200: 	$period_label = "12 Hours";
+			break;
+	case 86400: 	$period_label = "Day";
+			break;
+	case 172800: 	$period_label = "Two days";
+			break;
+	case 604800: 	$period_label = "Last Week";
+			break;
+	case 1296000: 	$period_label = "15 Days";
+			break;
+	case 2592000: 	$period_label = "Last Month";
+			break;
+	case 5184000: 	$period_label = "Two Month";
+			break;
+	case 15552000: 	$period_label = "Six Months";
+			break;
+	default: 	$period_label = "Day";
+}
+
+
+echo "<tr><td class='datos'>";
+echo "<b>Period</b>";
+echo "<td class='datos'>";
+
+echo "<select name='period'>";
+if ($period==0)
+	echo "<option value=86400>".$period_label;
+else
+	echo "<option value=$period>".$period_label;
+echo "<option value=3600>"."Hour";
+echo "<option value=21600>"."6 Hours";
+echo "<option value=43200>"."12 Hours";
+echo "<option value=86400>"."Last day";
+echo "<option value=172800>"."Two days";
+echo "<option value=604800>"."Last Week";
+echo "<option value=1296000>"."15 days";
+echo "<option value=2592000>"."Last Month";
+echo "<option value=5184000>"."Two Month";
+echo "<option value=15552000>"."Six Months";
+echo "</select>";
+
 echo "<td class='datos2'>";
 echo "<b>Show events</b>";
 echo "<td class='datos2'>";
@@ -300,27 +363,85 @@ if ($events == 1){
 }
 echo "</select>";
 
-echo "<tr><td colspan=4 align='right'><input type=submit name='update_agent' class=sub value='".$lang_label["add"]."/".$lang_label["redraw"]."'>";
+/*
+echo "<td class='datos'>";
+echo "<b>Show alert limit</b>";
+echo "<td class='datos'>";
+echo "<select name='alerts'>";
+if ($alerts == 1){
+	echo "<option value=1>Yes";
+	echo "<option value=0>No";
+} else {
+	echo "<option value=0>No";
+	echo "<option value=1>Yes";
+}
+echo "</select>";
+*/
+
+echo "<tr><td colspan=4 class=datos align='right'><input type=submit name='update_agent' class='sub upd' value='".$lang_label["add"]."/".$lang_label["redraw"]."'>";
 
 echo "</form>";
 echo "</table>";
 
-// Parse chunkdata and render graph
-if ($render == 1){
-	// parse chunk
-	echo "<h3>".$lang_label["combined_image"]."</h3>";
-	echo "<img  src='reporting/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&label=$graphname&height=$height&width=$width&period=$period' border=1 alt=''>";
+// -----------------------
+// STORE GRAPH FORM
+// -----------------------
 
-}
-/*
-if (isset($chunkdata)){
-	echo "<form method='post' action='index.php?sec=reporting&sec2=operation/reporting/graph_builder&save_graph=1'>";
-	echo "<input type='hidden' name='chunk' value='$chunkdata'>";
-	echo "<table width='500' cellpadding=4 cellpadding=4>";
-	echo "<tr><td class='datos2'>".$lang_name["custom_graph_name"];
-	echo "<td class='datos2'><input type='text' value='' size=20 name='graph_name'>";
-	echo "<td class='datos2'><input type=submit name='save' class=sub value='".$lang_label["save"]."'>";
+// If we have something to save..
+if (isset($module_array)){
+	echo "<h3>".$lang_label["graph_store"]."</h3>";
+	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
+	echo "<form method='post' action='index.php?sec=reporting&sec2=operation/reporting/graph_builder&store_graph=1'>";
+
+	// hidden fields with data begin
+	echo "<input type='hidden' name='module_number' value='".count($module_array)."'>";
+	echo "<input type='hidden' name='width' value='$width'>";
+	echo "<input type='hidden' name='height' value='$height'>";
+	echo "<input type='hidden' name='period' value='$period'>";
+	echo "<input type='hidden' name='events' value='$events'>";
+
+	for ($a=0; $a < count($module_array); $a++){
+			$id_agentemodulo = $module_array[$a];
+			$id_agentemodulo_w = $weight_array[$a];
+			echo "<input type='hidden' name='module_$a' value='$id_agentemodulo'>";
+			echo "<input type='hidden' name='module_weight_$a' value='$id_agentemodulo_w'>";
+	}
+	// hidden fields end
+
+	echo "<tr>";
+	echo "<td class='datos'><b>".$lang_label["name"];
+	echo "</b>";
+	echo "<td class='datos'><input type='text' name='name' size='35'>";
+
+	echo "<td class='datos'><b>".$lang_label["private"];
+	echo "</b>";
+	echo "<td class='datos'><select name='private'>";
+	echo "<option value=0>".$lang_label["no"];
+	echo "<option value=1>".$lang_label["yes"];
+	echo "</select>";
+
+	echo "<tr>";
+	echo "<td class='datos2'><b>".$lang_label["description"];
+	echo "</b>";
+	echo "<td class='datos2' colspan=4><textarea name='description' style='height:45px;' cols=55 rows=2>";
+	echo "</textarea>";
+
+	echo "<tr><td class=datos colspan=4 align='right'><input type=submit name='store' class='sub wand' value='".$lang_label["store"]."'>";
+
+
+	echo "</form>";
 	echo "</table>";
 }
-*/
+// --------------------------------------
+// Parse chunkdata and render graph
+// --------------------------------------
+if (($render == 1) && (isset($modules))) {
+	// parse chunk
+	echo "<h3>".$lang_label["combined_image"]."</h3>";
+	echo "<table class='databox_frame'>";
+	echo "<tr><td>";
+	echo "<img  src='reporting/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&label=Combined%20Sample%20Graph&height=$height&width=$width&period=$period' border=1 alt=''>";
+	echo "</td></tr></table>";
+
+}
 ?>

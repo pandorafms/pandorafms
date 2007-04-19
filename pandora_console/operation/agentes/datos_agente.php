@@ -87,7 +87,7 @@ function datos_raw($id_agente_modulo, $periodo){
 					$myvalue = $row["datos"];
 				echo format_for_graph($myvalue );
                         } else
-                               echo substr($row["datos"],0,12);
+                               echo salida_limpia($row["datos"]);
 		}
 		echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
 		echo "</table>";

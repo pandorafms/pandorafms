@@ -1,3 +1,48 @@
+2007-04-19  Sancho Lerena  <slerena@artica.es>
+
+	* pandora.css: added some classes for graphical input buttons.
+	
+	* languages/language_en.php: More strings to go !
+	
+	* include/config.php: Deleted from repo, now has no sense.
+	
+	* pandoradb.sql: Added `alert_text` to talerta_agent for new text
+	alerts. Added tables for custom graphs and reporting: tgraph,
+	tgraph_source, treport, and treport_content.
+	
+	* operation/users/user.php: Fixed problem with last Raul's commit.
+
+	* godmode/usuarios/lista_usuarios.php: Fixed problem with last
+	Raul's commit.
+	
+	* operation/agentes/estado_alertas.php: Code cleanup. Implemented
+	render for text alerts.
+	
+	* operation/agentes/datos_agente.php: Fixed small bug with text output.
+	
+	* operation/agentes/datos_agente_calendar.php: Added contribution
+	from Leandro Doctors. Need to work on it before use several
+	problems detected.
+	
+	* operation/servers/view_server.php: Fixed some bugs.
+	
+	* operation/reporting/graph_viewer.php: Added viewer for custom graphs.
+	
+	* operation/reporting/custom_reporting.php: Initial code, not
+	finished yet.
+	
+	* operation/reporting/graph_builder.php: Work for modules in the
+	same agent, several problems, but works.
+	
+	* operation/menu.php: Updated options for new reporting menu.
+	
+	* reporting/stat_win.php: New menu is great :-)
+	
+	* general/login_page.php: Updated login page.
+	
+	* godmode/agentes/alert_manager.php, configurar_agente.php: New
+	code for text alerts and better user help.       
+
 2007-04-18  Raul Mateos  <raulofpandora@gmail.com>
 
 	* pandoradb_data.sql, pandoradb.sql: Fixed small warnings.

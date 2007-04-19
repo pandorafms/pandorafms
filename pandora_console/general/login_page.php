@@ -28,7 +28,7 @@
 				<input class="login" type="text" name="nick" value="">
 				<div class="f9b">Password</div>
 				<input class="login" type="password" name="pass" value="">
-				<div><input type="submit" class="sub" value="Login"></div>
+				<div><input type="submit" class="sub next" value="Login"></div>
 			</form>
 		</div>
 		<div id="logo_box">

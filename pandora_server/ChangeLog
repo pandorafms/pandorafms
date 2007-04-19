@@ -1,3 +1,16 @@
+2007-04-19  Sancho Lerena  <slerena@artica.es>
+
+	* pandora_tools.pm: Now expor sqlWrap() function to parse " and '
+	chars in some SQL sentences. Use with careful.
+
+	* pandora_network.pm: Fixed little bug with undeclared variable
+	warning.
+
+	* pandora_db.pm: Implemented NEW text alerts with regexp. Internal
+	audit now uses macros for alerts. Fixed a bug in
+	crea_agente_modulo() when uses ' chars in name or module
+	description (using sqlWrap to clean text). General code cleanup.
+	
 2007-04-19  Manuel Arostegui <marostegui@artica.es>
 
 	* specs/fedoracore5/pandora_server: Added files of the

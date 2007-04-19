@@ -155,7 +155,8 @@ sub pandora_network_subsystem {
 	my $exec_sql; my $exec_sql2;  my $exec_sql3;
 	my $buffer;
 	my $running; 
-
+	my $timestamp_old = 0;
+	
 	$server_id = dame_server_id($pa_config, $pa_config->{'servername'}."_Net", $dbh);
 	while ( 1 ) {
 		logger ($pa_config,"Loop in Network Module Subsystem",10);

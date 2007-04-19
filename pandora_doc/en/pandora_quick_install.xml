@@ -107,6 +107,15 @@
       This binary gets the SNMP traps, generating a log that is
       parsed by the Pandora Server.
     </para>
+    <para>
+     If you are using apt-get shipped with Debian based-distros such
+     as Ubuntu, this line could do the trick and can very helpful to
+     install all the dependencies for the server in just one line:
+     <programlisting>
+       apt-get install libdate-manip-perl snmp libsnmp-perl libtime-format-perl  
+       libxml-simple-perl libnetaddr-ip-perl
+     </programlisting>
+     </para>
     </sect2>
 
     <sect2 id="installing_server"><title>Installing Pandora Server</title>

@@ -1,3 +1,19 @@
+2007-04-21  Sancho Lerena  <slerena@gmail.com>
+
+	* pandora_tools.pm: Fixed sqlWrap() function.
+
+	* pandora_db.pm: Many changes and fixes: data_inc process function
+	almost rewritten to fix a bug coming from 1.x? who causes to
+	insert as data the total value for first data arriving... so bad
+	:(. This is now fixed. crea_agente_modulo() now return id of
+	agent_module created so we skip another timeconsuming query
+	:). Added give_group_disabled() for next feature about Group
+	Disabled doesnt fire alerts nor events. Fixed crea_agente_modulo()
+	with many not defined checks.
+
+	* pandora_network.pm: Fixed terrible bug in reference parameters
+	that cause pandora_query_tcp() dont work properly.
+
 2007-04-19  Sancho Lerena  <slerena@artica.es>
 
 	* pandora_tools.pm: Now expor sqlWrap() function to parse " and '

@@ -1,10 +1,8 @@
 #!/bin/bash
 # Init script for Pandora FMS agent
-# Script de arranque del agente Pandora FMS
 # Generic GNU/Linux version
-# Version para GNU/Linux (generico)
-# Sancho Lerena, <slerena@artica.es>
-# v1.2
+# Sancho Lerena, <slerena@gmail.com>
+# v1.3   
 
 ### BEGIN INIT INFO
 # Provides: pandora_agent
@@ -19,11 +17,11 @@ PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
 PANDORA_PATH=/etc/pandora
 DAEMON=/usr/bin/pandora_agent
 PIDFILE=/var/run/pandora_agent.pid
-
+LOGFILE=/var/log/pandora_agent.log
 
 if [ ! -f $DAEMON ]
 then
-	echo "Pandora Agent not found at $DAEMON, please check setup"
+	echo "Pandora FMS Agent not found at $DAEMON, please check setup"
 	exit
 fi
 
@@ -31,12 +29,17 @@ case "$1" in
   start)
         if [ -f $PIDFILE ]
         then
-                echo "Pandora Agent is currently running on this machine. Aborting now..."
-                exit
+		PID_BA=`cat $PIDFILE`
+                if [ ! -z "`ps -Af | awk '{ print $2 }' | grep $PID_BA`" ]
+                then
+                        echo "Pandora FMS Agent is currently running on this machine with PID $PID_BA"
+                        echo "Cannot launch again. Aborting."
+                        exit
+                fi
         fi
-        $DAEMON $PANDORA_PATH >> $PANDORA_PATH/pandora.log &  MYPID=$!
+        $DAEMON $PANDORA_PATH 2> $LOGFILE & MYPID=$!
         echo $MYPID > $PIDFILE
-	echo "Pandora Agent is now running with PID $MYPID"
+	echo "Pandora FMS Agent is now running with PID $MYPID"
         ;;
   stop)
         if [ -f $PIDFILE ]
@@ -49,7 +52,7 @@ case "$1" in
 		fi
 		rm -f $PIDFILE 
         else
-		echo "Pandora Agent is not running, cannot stop it. Aborting now..."
+		echo "Pandora FMS Agent is not running, cannot stop it. Aborting now..."
         fi
         ;;
   force-reload|restart)
@@ -57,7 +60,7 @@ case "$1" in
         $0 start
         ;;
   *)
-        echo "Uso: /etc/init.d/pandora_agent {start|stop|restart|force-reload}"
+        echo "Uso: /etc/init.d/pandora_agent_daemon {start|stop|restart|force-reload}"
         exit 1
 esac
 

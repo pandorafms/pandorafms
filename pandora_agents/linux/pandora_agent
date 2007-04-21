@@ -2,13 +2,12 @@
 # **********************************************************************
 # Pandora FMS Generic Host Agent
 # GNU/Linux version 
-# (c) 2003-2006 Sancho Lerena <slerena@gmail.com>
+# (c) 2003-2007 Sancho Lerena <slerena@gmail.com>
 # with the help of many people. Please see http://pandora.sourceforge.net
-# Este codigo esta licenciado bajo la licencia GPL 2.0.
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 AGENT_VERSION=1.3-dev
-AGENT_BUILD=070320
+AGENT_BUILD=070421
 
 if [ -z "$1" ]
 then
@@ -42,6 +41,7 @@ CHECKSUM_MODE=1
 DEBUG_MODE=0
 SERVER_PORT=22
 INTERVAL=300
+TRANSFER_MODE=ssh
 if [ -z "`echo $LANG | grep '\.'`" ]
 then
 	ENCODING="iso-8859-1"
@@ -110,6 +110,11 @@ do
                 ENCODING=`echo $a | awk '{ print $2 }' `
                 echo "$TIMESTAMP - [SETUP] - Encoding is $ENCODING" >> $PANDORA_LOGFILE
         fi
+	if [ ! -z "`echo $a | grep -e '^transfer_mode'`" ]
+	then
+		TRANSFER_MODE=`echo $a | awk '{ print $2 }' `
+                echo "$TIMESTAMP - [SETUP] - Transfer Mode is $TRANSFER_MODE" >> $PANDORA_LOGFILE
+	fi
 done
 
 
@@ -145,14 +150,25 @@ else
 fi
 
 # Script banner at start
-echo "Pandora FMS Agent $AGENT_VERSION (c) Sancho Lerena, and others 2007"
+echo "Pandora FMS Agent $AGENT_VERSION (c) Sancho Lerena 2007"
 echo "This program is licensed under GPL2 Terms. http://pandora.sf.net"
 echo "Running in $NOMBRE_HOST at $TIMESTAMP"
 echo " "
 
+
+# Make some checks
+if [ "$TRANSFER_MODE" == "ftp" ]
+then
+	if [ ! -f $HOME/.netrc ]
+	then
+		echo "(EE) Transfer mode is FTP but there is no usable .netrc file. Aborting."    
+		exit
+	fi
+fi
+
 if [ "$DEBUG_MODE" == "1" ]
 then
-	echo "Warning: Running in DEBUG mode"
+	echo "(**) Warning: Running in DEBUG mode"
 fi
 
 # MAIN Program loop begin
@@ -302,14 +318,26 @@ do
 	if [ "$DEBUG_MODE" == "1" ]
 	then
 		echo "$TIMESTAMP - Finish writing XML $DATA" >> $PANDORA_LOGFILE
-		echo "Data file is at $DATA - Exiting now"
+		echo "(**) Data file is at $DATA - Exiting now"
 		echo " "
 		exit 0
 	fi
 	
 	# Send packets to server and detele it
- 	#scp -P $SERVER_PORT $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH > /dev/null 2>  $PANDORA_LOGFILE.err
-	cp $PANDORA_FILES /opt/pandora_server/data_in
+	if [ "$TRANSFER_MODE" == "ssh" ]
+	then
+ 		scp -P $SERVER_PORT $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH > /dev/null 2>  $PANDORA_LOGFILE.err
+	fi
+
+	if [ "$TRANSFER_MODE" == "ftp" ]
+        then
+                ftp SERVER_IP > /dev/null 2> $PANDORA_LOGFILE.err
+        fi
+
+	if [ "$TRANSFER_MODE" == "local" ]
+        then
+                cp $PANDORA_FILES $SERVER_PATH > /dev/null 2> $PANDORA_LOGFILE.err
+        fi
 
 	# Delete data
 	rm -f $PANDORA_FILES> /dev/null 2> $PANDORA_LOGFILE.err

@@ -164,10 +164,12 @@ sub limpia_cadena {
 ########################################################################################
 
 sub sqlWrap {
-     my $toBeWrapped = shift(@_);
-     $toBeWrapped =~ s/\'/\\\'/g;
-     $toBeWrapped =~ s/\"/\\\'/g;
-     return "'".$toBeWrapped."'";
+	my $toBeWrapped = shift(@_);
+	if (defined $toBeWrapped){
+     		$toBeWrapped =~ s/\'/\\\'/g;
+     		$toBeWrapped =~ s/\"/\\\'/g;
+     		return "'".$toBeWrapped."'";
+	}
 }
 
 ##########################################################################

@@ -213,17 +213,10 @@ if (comprueba_login() == 0) {
 				echo "&nbsp;<a href='index.php?sec=estado&amp;
 				sec2=operation/agentes/ver_agente&amp;id_agente=".$id_agente."'>
 				<b>".$nombre_agente."</b></a></td>";
-				if ( $agent_type == 0) {
-					// Show SO icon :)
-					echo "<td class='$tdcolor' align='center'>
-					<img border=0 src='images/".dame_so_icon($id_os)."' 
-					height=18 alt='".dame_so_name($id_os)."'></td>";
-				} elseif ($agent_type == 1) {
-					// Show network icon
-					echo "<td class='$tdcolor' align='center'>
-					<img border=0 src='images/network.gif' height=18 
-					alt='Network Agent'></td>";
-				}
+				// Show SO icon :)
+				echo "<td class='$tdcolor' align='center'>
+				<img border=0 src='images/".dame_so_icon($id_os)."' 
+				alt='".dame_so_name($id_os)."'></td>";
 				// If there are a module interval bigger than agent interval
 				if ($biginterval > $intervalo) {
 					echo "<td class='$tdcolor'>

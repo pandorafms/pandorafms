@@ -92,18 +92,19 @@ if (comprueba_login() == 0) {
 	echo "</select>";
 
 	
-	if ($agent_type == 0) {
+	//if ($agent_type == 0) {
 		echo '<tr>
 		<td class="datos"><b>'.$lang_label["os"].'</b></td>
 		<td class="datos" colspan=2>
 		<img src="images/'.dame_so_icon($id_os).'"> - '.dame_so_name($id_os);
 		if ($os_version != "")
 			echo ' '.salida_limpia($os_version);
+	/*
 	} elseif ($agent_type == 1) {
 		echo '<tr>
 		<td class="datos"><b>'.$lang_label["agent_type"].'</b></td>
 		<td class="datos" colspan=2><img src="images/network.gif">';
-	}
+	}*/
 	echo '</td>';
 	echo '</tr>';
 	echo '<tr>

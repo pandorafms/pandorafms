@@ -183,13 +183,10 @@ if (mysql_num_rows($result)){
 			// Description
 			echo "<td class='$tdcolor'>".$row["comentarios"]."</td>";
 			// Action
-			echo "<td class='$tdcolor' align='center'>
-			<a href='index.php?sec=gagente&
-			sec2=godmode/agentes/modificar_agente&
-			borrar_agente=".$row["id_agente"]."'
-			onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\'))
-			return false;'>
-			<img border='0' src='images/cross.png'></a></td>";
+			echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
+			borrar_agente=".$row["id_agente"]."'";
+			echo ' onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;">';
+			echo "<img border='0' src='images/cross.png'></a></td>";
 		}
 	}
 	echo "<tr><td colspan='5'><div class='raya'></div></td></tr>";
@@ -197,16 +194,17 @@ if (mysql_num_rows($result)){
 	$endline = "</td></tr></table>";
 } else {
 	$endline = "";
-	// If no data... let's show a beautiful button to create agent
-	// This is a piece of crap because we're duplicanting code above
-	// of this, don't do again.
 	echo "<div class='nf'>".$lang_label["no_agent_def"]."</div>";
+}
+	echo $endline;
 
+	// Create agent button
+	echo "<table cellpadding='4' cellspacing='4' width='700'>";
+	echo "<tr><td align=right>";
 	echo "<form method='post' action='index.php?sec=gagente&
 	sec2=godmode/agentes/configurar_agente&create_agent=1'>";
-	echo "<input type='submit' class='sub next' name='crt'
+	echo "<input type='submit' class='sub wand' name='crt'
 	value='".$lang_label["create_agent"]."'>";
 	echo "</form>";
-	echo $endline;
-}
+	echo "</table>";
 ?>

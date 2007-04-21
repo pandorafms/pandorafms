@@ -49,10 +49,10 @@ $sql1='SELECT * FROM tnetwork_profile ORDER BY name';
 $result=mysql_query($sql1);
 $color=0;
 if (mysql_num_rows($result)) {
-	echo "<table cellpadding=4 cellspacing=4 width=550>";
+	echo "<table cellpadding=4 cellspacing=4 width=650>";
 	echo "<th>".$lang_label["name"]."</th>";
 	echo "<th>".$lang_label["description"]."</th>";
-	echo "<th>".$lang_label["number_of_modules"]."</th>";
+	echo "<th>".$lang_label["action"]."</th>";
 }
 while ($row=mysql_fetch_array($result)){
 	if ($color == 1){

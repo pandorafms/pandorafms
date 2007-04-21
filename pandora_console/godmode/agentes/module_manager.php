@@ -171,7 +171,7 @@ echo "<h2>".$lang_label["agent_conf"]." &gt; ".$lang_label["assigned_modules"]."
 	echo "&nbsp;&nbsp;<a class='info' href='#module_assignment'> <span>".$lang_label["module_asociation_form"]."</span><img src='images/wand.png'></a>";
 	echo "</h2>";
 if ($row=mysql_num_rows($result)){
-	echo '<table width="700" cellpadding="3" cellspacing="3" class="fon">';
+	echo '<table width="750" cellpadding="3" cellspacing="3" class="fon">';
 	echo '<tr>';
 	echo "<th>".$lang_label["module_name"];
 	echo "<th>".$lang_label["type"];
@@ -179,7 +179,7 @@ if ($row=mysql_num_rows($result)){
 	echo "<th>".$lang_label["description"];
 	echo "<th>".$lang_label["module_group"];
 	echo "<th>".$lang_label["max_min"];
-	echo "<th width=50>".$lang_label["action"];
+	echo "<th width=65>".$lang_label["action"];
 	$color=1;$last_modulegroup = "0";
 	while ($row=mysql_fetch_array($result)){
 		if ($color == 1){
@@ -223,20 +223,19 @@ if ($row=mysql_num_rows($result)){
 		}
 		echo $module_max." / ".$module_min;
 		echo "<td class='$tdcolor'>";
-		if ($id_tipo != -1)
-		echo "<a href='index.php?sec=gagente&
-		tab=module&
-		sec2=godmode/agentes/configurar_agente&
-		id_agente=".$id_agente."&
-		delete_module=".$row["id_agente_modulo"]."'>
-		<img src='images/cross.png' border=0 alt='".$lang_label["delete"]."'>
-		</b></a> &nbsp; ";
-		echo "<a href='index.php?sec=gagente&
-		sec2=godmode/agentes/configurar_agente&
-		id_agente=".$id_agente."&
-		tab=module&
-		update_module=".$row["id_agente_modulo"]."#modules'>
-		<img src='images/config.gif' border=0 alt='".$lang_label["update"]."' onLoad='type_change()'></b></a>";
+		if ($id_tipo != -1){
+			echo "<a href='index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&delete_module=".$row["id_agente_modulo"]."'".' onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;">';
+			echo "<img src='images/cross.png' border=0 alt='".$lang_label["delete"]."'>";
+			echo "</b></a>&nbsp;";
+			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&tab=module&update_module=".$row["id_agente_modulo"]."#modules'>";
+			echo "<img src='images/config.gif' border=0 alt='".$lang_label["update"]."' onLoad='type_change()'></b></a>";
+		}
+		// Value arithmetical media fix
+		if (($id_tipo != 3) AND ($id_tipo != 10) AND ($id_tipo != 17)){
+			echo "&nbsp;";
+                        echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&tab=module&fix_module=".$row["id_agente_modulo"]."'".' onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;">';
+                        echo "<img src='images/chart_curve.png' border=0></b></a>";
+		}
 	}
 	echo "<tr><td colspan='7'><div class='raya'></div></td></tr>";
 	echo "</table>";

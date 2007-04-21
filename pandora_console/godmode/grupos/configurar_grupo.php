@@ -30,7 +30,7 @@ if (comprueba_login() == 0)
 	// Inic vars
 	$id_grupo = "";
 	$nombre = "";
-	
+	$id_parent = "";	
 	
 	if (isset($_GET["creacion_grupo"])){ //
 		$creacion_grupo = entrada_limpia($_GET["creacion_grupo"]);
@@ -40,11 +40,12 @@ if (comprueba_login() == 0)
 	if (isset($_GET["id_grupo"])){
 		// Conecto con la BBDD
 		$id_grupo = entrada_limpia($_GET["id_grupo"]);
-		$sql1='SELECT nombre, icon FROM tgrupo WHERE id_grupo = '.$id_grupo;
+		$sql1='SELECT * FROM tgrupo WHERE id_grupo = '.$id_grupo;
 		$result=mysql_query($sql1);
 		if ($row=mysql_fetch_array($result)){
 			$nombre = $row["nombre"];
 			$icono = $row["icon"];
+			$id_parent = entrada_limpia($row["parent"]);
 		} else
 			{
 			echo "<h3 class='error'>".$lang_label["group_error"]."</h3>";
@@ -72,50 +73,59 @@ sec2=godmode/grupos/lista_grupos">
 		echo "<input type='hidden' name='id_grupo' value='".$id_grupo."'>";
 	}
 ?>
-<tr><td class='lb' rowspan='3' width='5'>
+<tr><td class='lb' rowspan='4' width='5'>
 <tr><td class="datos"><?php echo $lang_label["group_name"] ?></td>
 <td class="datos">
 <input type="text" name="nombre" size="35" value="<?php echo $nombre ?>">
 </td></tr>
 <tr><td class='datos2'>
 <?PHP
-		echo $lang_label["icon"];
-		echo '<td class="datos2">';
-		
-		echo '<select name="icon">';
+	echo $lang_label["icon"];
+	echo '<td class="datos2">';
+	
+	echo '<select name="icon">';
 
-		if ($icono != ""){
-			echo '<option>' . $icono;
-		}
-		
-		$ficheros = list_files ('images/groups_small/', "png", 1, 0);
-		$size = count ($ficheros);
-		for ($i = 0; $i < $size; $i++) {
-			echo "<option>".substr($ficheros[$i],0,strlen($ficheros[$i])-4);
-		}
-		echo '</select>';
-?>
+	if ($icono != ""){
+		echo '<option>' . $icono;
+	}
+	
+	$ficheros = list_files ('images/groups_small/', "png", 1, 0);
+	$size = count ($ficheros);
+	for ($i = 0; $i < $size; $i++) {
+		echo "<option>".substr($ficheros[$i],0,strlen($ficheros[$i])-4);
+	}
+	echo '</select>';
 
+	//  Parent 
 
+	echo "<tr><td class='datos2'>";
+        echo $lang_label["parent"];
+        echo '<td class="datos2">';
+        echo '<select name="parent">';
+        if ($id_parent != ""){
+        	echo "<option value=$id_parent>".dame_nombre_grupo($id_parent);
+                $sql1='SELECT * FROM tgrupo WHERE id_grupo != '.$id_grupo;
+        } else {
+                $sql1='SELECT * FROM tgrupo';
+        } 
+        $result=mysql_query($sql1);
+        while ($row=mysql_fetch_array($result)){
+                $nombre = $row["nombre"];
+                $id_grupo2 = $row["id_grupo"];
+                echo "<option value=$id_grupo2>" . $nombre;
+        }
+        echo '</select>';
 
-<tr><td colspan='3'><div class='raya'></div></td></tr>
-<tr><td colspan="3" align="right">
-<?php 
-if (isset($_GET["creacion_grupo"])){
-	echo "<input name='crtbutton' type='submit' class='sub' 
-	value='".$lang_label["create"]."'>";
-	} else {
-	echo "<input name='uptbutton' type='submit' class='sub' 
-	value='".$lang_label["update"]."'>";
-	} 
-?>
-</form>
+	echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
+	echo '<tr><td colspan="3" align="right">';
+	if (isset($_GET["creacion_grupo"]))
+		echo "<input name='crtbutton' type='submit' class='sub wand' value='".$lang_label["create"]."'>";
+	else 
+		echo "<input name='uptbutton' type='submit' class='sub upd' value='".$lang_label["update"]."'>";
+	 
+	echo "</form></table>";
 
-</table>
-
-<?php
-   } // fin pagina
-else {
+} else {
 	audit_db($id_user,$REMOTE_ADDR, "ACL Violation",
 	"Trying to access Group Management2");
 	require ("general/noaccess.php");

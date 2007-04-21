@@ -85,7 +85,7 @@ if (comprueba_login() == 0){
 		}
 		// Network Profiles
 		if (isset($_GET["sec"]) && $_GET["sec"] == "gmodules"){
-			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/modules/manage_network_templates")
+			if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/modules/manage_network_templates" || $_GET["sec2"] == "godmode/modules/manage_network_templates_form" ))
 				echo "<div class='arrowgs'>";
 			else
 				echo "<div class='arrowg'>";

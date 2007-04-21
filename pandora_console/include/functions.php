@@ -72,6 +72,12 @@ function clean_output_breaks ($string){
 	
 }
 
+
+function output_clean_strict ($string){
+	$string = preg_replace('/[\|\@\$\%\/\(\)\=\?\*\&\#]/','',$string);
+	return $string;
+}
+
 // ---------------------------------------------------------------
 // This function reads a string and returns it "clean"
 // for use in DB, againts string XSS and so on

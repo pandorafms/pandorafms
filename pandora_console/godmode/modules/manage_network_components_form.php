@@ -154,8 +154,8 @@ if (isset($_GET["update"])){ // Edit mode
 	$name = $row["name"];
 	$type = $row["type"];
 	$description = $row["description"];
-	$max = $row["max"];
-	$min = $row["min"];
+	$modulo_max = $row["max"];
+	$modulo_min = $row["min"];
 	$module_interval = $row["module_interval"];
 	$tcp_port = $row["tcp_port"];
 	$tcp_rcv = $row["tcp_rcv"];
@@ -171,8 +171,8 @@ if (isset($_GET["update"])){ // Edit mode
 	$description = "";
 	$id_group = 1;
 	$oid = "";
-	$max = "0";
-	$min = "0";
+	$modulo_max = "0";
+	$modulo_min = "0";
 	$module_interval = "0";
 	$tcp_port = "";
 	$tcp_rcv = "";
@@ -188,9 +188,9 @@ echo '<table width="700" cellspacing="4" cellpadding="4">';
 
 // Different Form url if it's a create or if it's a update form
 if ($id_nc != -1)
-	echo "<form name='modulo' method='post' action='http://pandora.localhost/index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&update=1&id_nc=$id_nc'>";
+	echo "<form name='modulo' method='post' action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&update=1&id_nc=$id_nc'>";
 else
-	echo "<form name='modulo' method='post' action='http://pandora.localhost/index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&create=1'>";
+	echo "<form name='modulo' method='post' action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&create=1'>";
 echo "<tr><td class='lb' rowspan='10' width='5'>";
 
 echo "<tr>";

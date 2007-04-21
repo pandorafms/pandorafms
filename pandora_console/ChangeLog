@@ -1,3 +1,40 @@
+2007-04-21  Sancho Lerena  <slerena@gmail.com>
+
+	* include/languages/language_en.php: New strings added.
+	
+	* include/functions.php: Added function output_clean_strict().
+
+	* operation/agentes/estado_ultimopaquete.php: Fixed title when
+	some ugly characters used (like #).
+
+	* operation/agentes/estado_generalagente.php: OS icon show,
+	ignoring $agent_type parameter.
+
+	* operation/agentes/estado_agente.php: OS icon show, ignoring
+	agent_type variable.
+
+	* godmode/grupos/configurar_grupo.php: Now it's possible to define
+	parent group.
+
+	* godmode/grupos/lista_grupos.php: Parent for group and some code
+	cleanup. Added confirmation to group delete.
+
+	* godmode/agentes/module_manager.php: Added confirmation to some
+	items and added "data fix" new feature to delete data above 1.3 of
+	average value of graph.
+
+	* godmode/agentes/modificar_agente.php: Confirmation before delete
+	an agent.
+
+	* godmode/agentes/configurar_agente.php: Added fix module data
+	feature.
+
+	* godmode/modules/manage_network_components_form.php: Some fixes.
+
+	* godmode/modules/manage_network_templates.php: More fixes.
+
+	* godmode/menu.php: Fixed some navigation marks.
+
 2007-04-19  Sancho Lerena  <slerena@artica.es>
 
 	* pandora.css: added some classes for graphical input buttons.

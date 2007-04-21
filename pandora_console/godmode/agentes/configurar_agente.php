@@ -175,6 +175,25 @@ if (isset($_POST["create_agent"])){
 		echo "<h3 class='suc'>".$lang_label["create_agent_ok"]."</h3>";
 }
 
+
+// Fix module data
+// ===============
+if (isset($_GET["fix_module"])){ 
+        $id_module = $_GET["fix_module"];
+	$id_agent = $_GET["id_agente"];
+        // get info about this module
+        $sql1 = "SELECT AVG(datos) FROM tagente_datos WHERE id_agente_modulo = $id_module AND id_agente = $id_agent";
+        $result=mysql_query($sql1);
+        if ($row=mysql_fetch_array($result)){
+		$media = $row[0];
+		$media = $media * 1.3;
+		$sql1 = "DELETE FROM tagente_datos WHERE datos > $media AND id_agente_modulo = $id_module AND id_agente = $id_agent";
+	        $result=mysql_query($sql1);
+		echo "<h3 class='suc'>".$lang_label["delete_data_above"]." $media</h3>";
+	}
+}
+
+
 // Delete Alert
 // =============
 if (isset($_GET["delete_alert"])){ // if modified some parameter

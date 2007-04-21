@@ -765,6 +765,11 @@ $lang_label["custom_graphs"]="Custom graphs";
 $lang_label["custom_reporting"]="Custom reporting";
 $lang_label["alert_text"]="Alert text";
 $lang_label["text"]="Text";
+$lang_label["delete_data_above"]="Delete data above";
+
+
+
+
 global $lang_label; 
 global $help_label;
 ?>

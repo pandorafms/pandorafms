@@ -31,8 +31,9 @@ if (comprueba_login() == 0)
 	if (isset($_POST["crear_grupo"])){ // Create group
 		$nombre = entrada_limpia($_POST["nombre"]);
 		$icon = entrada_limpia($_POST["icon"]);
-		$sql_insert="INSERT INTO tgrupo (nombre, icon) 
-		VALUES ('".$nombre."', '".$icon."') ";
+		$parent = entrada_limpia($_POST["parent"]);
+		$sql_insert="INSERT INTO tgrupo (nombre, icon, parent) 
+			VALUES ('$nombre', '$icon', '$parent') ";
 		$result=mysql_query($sql_insert);	
 		if (! $result)
 			echo "<h3 class='error'>".$lang_label["create_group_no"]."</h3>";
@@ -46,9 +47,10 @@ if (comprueba_login() == 0)
 		$nombre = entrada_limpia($_POST["nombre"]);
 		$id_grupo = entrada_limpia($_POST["id_grupo"]);
 		$icon = entrada_limpia($_POST["icon"]);
-	    $sql_update ="UPDATE tgrupo 
-		SET nombre = '".$nombre."', icon = '".$icon."' 
-		WHERE id_grupo = '".$id_grupo."'";
+		$parent = entrada_limpia($_POST["parent"]);
+		$sql_update ="UPDATE tgrupo 
+			SET nombre = '$nombre', icon = '$icon', parent = '$parent' 
+			WHERE id_grupo = '$id_grupo'";
 		$result=mysql_query($sql_update);
 		if (! $result)
 			echo "<h3 class='error'>".$lang_label["modify_group_no"]."</h3>";
@@ -92,30 +94,19 @@ if (comprueba_login() == 0)
 			$color = 1;
 		}
 		if ($row["id_grupo"] != 1){
-			echo "
-			<tr>
-				<td class='$tdcolor' align='center'>
-				<img src='images/groups_small/".$row["icon"].".png'
-				border='0'>
-				</td>
-				<td class='$tdcolor'>
-				<b><a href='index.php?sec=gagente&
-				sec2=godmode/grupos/configurar_grupo&
-				id_grupo=".$row["id_grupo"]."'>".$row["nombre"]."</a>
-				</b></td>
-				<td class='$tdcolor'>
-				".dame_nombre_grupo ($row["parent"])."
-				</td>
-				<td class='$tdcolor' align='center'>
-				<a href='index.php?sec=gagente&
-				sec2=godmode/grupos/lista_grupos&
-				id_grupo=".$row["id_grupo"]."&
-				borrar_grupo=".$row["id_grupo"]."' 
-				onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) 
-				return false;'>
-				<img border='0' src='images/cross.png'></a>
-				</td>
-			</tr>";
+			echo "<tr><td class='$tdcolor' align='center'>";
+			echo "<img src='images/groups_small/".$row["icon"].".png' border='0'>";
+			echo "</td>";
+			echo "<td class='$tdcolor'>";
+			echo "<b><a href='index.php?sec=gagente&sec2=godmode/grupos/configurar_grupo&id_grupo=".$row["id_grupo"]."'>".$row["nombre"]."</a>";
+			echo "</b></td>";
+			echo "<td class='$tdcolor'>";
+			echo dame_nombre_grupo ($row["parent"]);
+			echo "</td>";
+			echo "<td class='$tdcolor' align='center'>";	
+			echo "<a href='index.php?sec=gagente&sec2=godmode/grupos/lista_grupos&id_grupo=".$row["id_grupo"]."&borrar_grupo=".$row["id_grupo"]."'";
+			echo ' onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;">';
+			echo "<img border='0' src='images/cross.png'></a></td></tr>";
 		}
 	}
 	echo "<tr><td colspan='4'><div class='raya'></div></td></tr>";
@@ -127,8 +118,8 @@ if (comprueba_login() == 0)
 
    } // Fin pagina
    else {
-			audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Group Management");
-			require ("general/noaccess.php");
+	audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Group Management");
+	require ("general/noaccess.php");
         }
 
 ?>

@@ -136,15 +136,13 @@ sub pandora_network_subsystem {
 	my $max; my $min; my $module_interval;
 	my $nombre; my $tcp_port; my $tcp_rcv; my $tcp_send; my $snmp_oid;
 	my $snmp_community; my $ip_target; my $id_module_group;
-	my $timestamp_old; # Stores timestamp from tagente_estado table
+	my $timestamp_old = 0; # Stores timestamp from tagente_estado table
 	my $id_agente_estado; # ID from tagente_estado table
 	my $estado_cambio; # store tagente_estado cambio field
 	my $estado_estado; # Store tagente_estado estado field
 	my $agent_name; # Agent name
 	my $agent_interval; # Agent interval
 	my $agent_disabled; # Contains disabled field of tagente
-	my $module_result; # Result of module exec.
-	my $module_data; # data for modulestado and dbInsert
 	my $agent_osdata; # Agent os data
 	my $server_id; # My server id
 	my $flag;
@@ -155,8 +153,7 @@ sub pandora_network_subsystem {
 	my $exec_sql; my $exec_sql2;  my $exec_sql3;
 	my $buffer;
 	my $running; 
-	my $timestamp_old = 0;
-	
+
 	$server_id = dame_server_id($pa_config, $pa_config->{'servername'}."_Net", $dbh);
 	while ( 1 ) {
 		logger ($pa_config,"Loop in Network Module Subsystem",10);
@@ -192,7 +189,7 @@ sub pandora_network_subsystem {
 			$exec_sql2->finish();
 		}	
 		# First: Checkout for enabled agents owned by this server
-		$query_sql2 = "select * from tagente where ( disabled = 0 and id_server = $server_id ) ".$buffer;
+		$query_sql2 = "SELECT * FROM tagente WHERE ( disabled = 0 AND id_server = $server_id ) ". $buffer;
 		$exec_sql2 = $dbh->prepare($query_sql2);
 		$exec_sql2 ->execute;
 		while (@sql_data2 = $exec_sql2->fetchrow_array()) {
@@ -263,7 +260,8 @@ sub pandora_network_subsystem {
 				$ip_target = $sql_data[13];
 				$id_module_group = $sql_data[14];
 				$flag = $sql_data[15];
-				if ($module_interval == 0) { # If module interval not defined, get value for agent interval instead
+				if ($module_interval == 0) { 
+					# If module interval not defined, get value for agent interval instead
 					$module_interval = $agent_interval;
 				}
 				# Look for an entry in tagente_estado 
@@ -276,10 +274,11 @@ sub pandora_network_subsystem {
 					$id_agente_estado = $sql_data3[0];
 					$estado_cambio = $sql_data3[4];
 					$estado_estado = $sql_data3[5];
-					$running = $sql_data3[11];
+					$running = $sql_data3[10];
 				} else {
 					$id_agente_estado = -1;
 					$estado_estado = -1;
+					$running = 0;
 				}
 				$exec_sql3->finish();
 				# if timestamp of tagente_modulo + module_interval <= timestamp actual, exec module
@@ -288,8 +287,10 @@ sub pandora_network_subsystem {
 				my $err;
 				my $limit1_timestamp = $timestamp_old + $module_interval;
 				my $limit2_timestamp = $timestamp_old + ($module_interval*2);
-				
-				if ( ($limit2_timestamp < $current_timestamp) || (($running == 0) && ( $limit1_timestamp < $current_timestamp)) || ($flag == 1) )  { # Exec module, we are out time limit !
+				if (    ($limit2_timestamp < $current_timestamp) || 
+					(($running == 0) && ( $limit1_timestamp < $current_timestamp)) || 
+					($flag == 1) )  
+				{ # Exec module, we are out time limit !
 					if ($flag == 1){ # Reset flag to 0
 						$query_sql3 = "UPDATE tagente_modulo SET flag=0 WHERE id_agente_modulo = $id_agente_modulo";
 						$exec_sql3 = $dbh->prepare($query_sql3);
@@ -302,7 +303,7 @@ sub pandora_network_subsystem {
 					$exec_sql3 ->execute;
 					$exec_sql3->finish();
 					logger ($pa_config, "Network Module Subsystem ($nettypedesc): Exec Netmodule '$nombre' ID $id_agente_modulo ",4);
-					exec_network_module( $id_agente, $id_agente_estado, $id_tipo_modulo, $nombre, $min, $max, $agent_interval, $tcp_port, $tcp_send, $tcp_rcv, $snmp_community, $snmp_oid, $ip_target, $module_result, $module_data, $estado_cambio, $estado_estado, $agent_name, $agent_osdata, $id_agente_modulo, $pa_config, $dbh);
+					exec_network_module( $id_agente, $id_agente_estado, $id_tipo_modulo, $nombre, $min, $max, $agent_interval, $tcp_port, $tcp_send, $tcp_rcv, $snmp_community, $snmp_oid, $ip_target, $estado_cambio, $estado_estado, $agent_name, $agent_osdata, $id_agente_modulo, $pa_config, $dbh);
 				} # Timelimit if
 			} # while
 			$exec_sql->finish();
@@ -337,7 +338,7 @@ sub pandora_ping_icmp {
 #			tcp_rcv, id_tipo_module, dbh)
 # Makes a call to TCP modules to get a value.
 ##########################################################################
-sub pandora_query_tcp {
+sub pandora_query_tcp (%$$$$$$$$) {
 	my $pa_config = $_[0];
 	my $tcp_port = $_[1];
 	my $ip_target = $_[2];
@@ -350,7 +351,7 @@ sub pandora_query_tcp {
 	
 	my $temp; my $temp2;
 	my $tam;
-	
+
 	my $handle=IO::Socket::INET->new(
 		Proto=>"tcp",
 		PeerAddr=>$ip_target,
@@ -366,7 +367,7 @@ sub pandora_query_tcp {
 			# Replace Carriage rerturn and line feed
 			$handle->send($tcp_send);
 		}
-		# we expect to receive data ?
+		# we expect to receive data ? (non proc types)
 		if (($tcp_rcv ne "") || ($id_tipo_modulo == 10) || ($id_tipo_modulo ==8) || ($id_tipo_modulo == 11)) {
 			# Receive data, non-blocking !!!! (VERY IMPORTANT!)
 			$temp2 = "";
@@ -380,39 +381,41 @@ sub pandora_query_tcp {
 			}
 			if ($id_tipo_modulo == 9){ # only for TCP Proc
 				if ($temp2 =~ /$tcp_rcv/i){ # String match !
-					$module_data = 1;
-					$module_result = 0;
+					$$module_data = 1;
+					$$module_result = 0;
 				} else {
-					$module_data = 0;
-					$module_result = 0;
+					$$module_data = 0;
+					$$module_result = 0;
 				}
 			} elsif ($id_tipo_modulo == 10 ){ # TCP String (no int conversion)!
-				$module_data = $temp2;
-				$module_result =0;
+				$$module_data = $temp2;
+				$$module_result =0;
 			} else { # TCP Data numeric (inc or data)
 				if ($temp2 ne ""){
 					if ($temp2 =~ /[A-Za-z\.\,\-\/\\\(\)\[\]]/){
-						$module_result=1; # init
-						$module_data = 0; # invalid data
+						$$module_result = 1;
+						$$module_data = 0; # invalid data
 					} else {
-						$module_data = int($temp2);
-						$module_result = 0; # Successful
+						$$module_data = int($temp2);
+						$$module_result = 0; # Successful
 					}
-				}
-				$module_result = 0; # Successful
+				} else {
+						$$module_result = 1; 
+                                                $$module_data = 0; # invalid data
+					}
 			}
 		} else { # No expected data to receive, if connected and tcp_proc type successful
 			if ($id_tipo_modulo == 9){ # TCP Proc
-				$module_result = 0;
-				$module_data = 1;
+				$$module_result = 0;
+				$$module_data = 1;
 			}
 		}
 		$handle->close();
 	} else { # Cannot connect (open sock failed)
-		$module_result = 1; # Fail
+		$$module_result = 1; # Fail
 		if ($id_tipo_modulo == 9){ # TCP Proc
-			$module_result = 0;
-			$module_data = 0; # Failed, but data exists
+			$$module_result = 0;
+			$$module_data = 0; # Failed, but data exists
 		}
 	}
 }
@@ -484,20 +487,20 @@ sub exec_network_module {
 	my $mysnmp_community = $_[10];
 	my $mysnmp_oid = $_[11];
 	my $ip_target = $_[12];
-	my $module_result = $_[13];
-	my $module_data = $_[14];
-	my $estado_cambio = $_[15];
-	my $estado_estado = $_[16];
-	my $agent_name = $_[17];
-	my $agent_osdata = $_[18];
-	my $id_agente_modulo = $_[19];
-	my $pa_config = $_[20];
-	my $dbh = $_[21];
+	my $estado_cambio = $_[13];
+	my $estado_estado = $_[14];
+	my $agent_name = $_[15];
+	my $agent_osdata = $_[16];
+	my $id_agente_modulo = $_[17];
+	my $pa_config = $_[18];
+	my $dbh = $_[19];
+
 	
 	my $error = "1";
 	my $query_sql2;
 	my $temp=0; my $tam; my $temp2;
-	$module_result = 1; # Fail by default
+	my $module_result = 1; # Fail by default
+	my $module_data = 0;
 
 	# ICMP Modules
 	# ------------
@@ -561,11 +564,12 @@ sub exec_network_module {
 	# ----------
 	} elsif (($id_tipo_modulo == 8) || ($id_tipo_modulo == 9) || ($id_tipo_modulo == 10) || ($id_tipo_modulo == 11)) { # TCP Module
 		if (($tcp_port < 65536) && ($tcp_port > 0)){ # Port check
-			pandora_query_tcp ($pa_config, $tcp_port, $ip_target, \$module_result, \$module_data, $tcp_send, $tcp_rcv, $id_tipo_modulo, $dbh)
+			pandora_query_tcp ($pa_config, $tcp_port, $ip_target, \$module_result, \$module_data, $tcp_send, $tcp_rcv, $id_tipo_modulo, $dbh);
 		} else { 
 			$module_result = 1;
 		}
    	}
+
 	# --------------------------------------------------------
 	# --------------------------------------------------------
 	if ($module_result == 0) {
@@ -576,18 +580,18 @@ sub exec_network_module {
 		$part{'max'}[0]=$max;
 		$part{'min'}[0]=$min;
 		my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
-		my $tipo_modulo = dame_nombretipomodulo_idagentemodulo($pa_config, $id_tipo_modulo,$dbh);
+		my $tipo_modulo = dame_nombretipomodulo_idagentemodulo ($pa_config, $id_tipo_modulo, $dbh);
 		if (($tipo_modulo eq 'remote_snmp') || ($tipo_modulo eq 'remote_icmp') || ($tipo_modulo eq 'remote_tcp') || ($tipo_modulo eq 'remote_udp'))  {
-			module_generic_data($pa_config, \%part,$timestamp,$agent_name,$tipo_modulo,$dbh);
+			module_generic_data ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
 		}
 		elsif ($tipo_modulo =~ /\_inc/ ) {
-			module_generic_data_inc($pa_config, \%part,$timestamp,$agent_name,$tipo_modulo,$dbh);
+			module_generic_data_inc ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
 		}
 		elsif ($tipo_modulo =~ /\_string/) {
-			module_generic_data_string($pa_config, \%part,$timestamp,$agent_name,$tipo_modulo,$dbh);
+			module_generic_data_string ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
 		}
 		elsif ($tipo_modulo =~ /\_proc/){
-			module_generic_proc($pa_config, \%part,$timestamp,$agent_name,$tipo_modulo,$dbh);
+			module_generic_proc ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
 		}
 		else {
 			logger ($pa_config, "Problem with unknown module type '$tipo_modulo'", 0);
@@ -596,8 +600,10 @@ sub exec_network_module {
 		# Update agent last contact
 		# Insert Pandora version as agent version
 		pandora_lastagentcontact ($pa_config, $timestamp, $agent_name,  $agent_osdata, $pa_config->{'version'}, $agent_interval, $dbh);
-	} else { # $module_result != 0)
+	} else { 
+		# $module_result != 0)
 		# Modules who cannot connect or something go bad, update last_try field
+		logger ($pa_config, "Cannot obtain exec Network Module $nombre from agent $agent_name", 4);
 		my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
 		my $utimestamp = &UnixDate("today","%s");
 		my $query_act = "UPDATE tagente_estado SET utimestamp = $utimestamp, timestamp = '$timestamp', last_try = '$timestamp' WHERE id_agente_estado = $id_agente_estado ";

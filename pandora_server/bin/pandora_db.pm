@@ -600,76 +600,70 @@ sub module_generic_data_inc (%$$$$$) {
 		if (ref($a_min) eq "HASH") {
 			$a_min = "";
 		}	
-		my $no_existe=0;
-		my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
-		# Algoritmo:
-		# 1) Buscamos el valor anterior en la base de datos
-		# 2) Si el dato nuevo es mayor o igual, guardamos en la tabla de datos general la diferencia y en la tabla de estado de datos incrementales, modificamos el valor por el actual.
-		# 3) Si el dato nuevo es menor, guardamos el valor completo en la tabla de datos general y en la tabla de estado de datos incrementales, modificamos el valor por el actual.
-		
-		# Luego:
-		# a) Obtener valor anterior, si no existe, el valor anterior sera 0
-		# b) Comparar ambos valores (anterior y actual)
-		# c) Actualizar tabla de estados de valores incrementales
-		# d) Insertar valor en tabla de valores de datos generales
+		# my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
+		# Algorith description:
+		# 1) Search prev. value in database
+                # 2) If new value is bigger than previous, store in tagente_datos differente between 
+		#    last value and actual value, and in aux. table tagente_datos_inc the last real value
+		# 3) If new data is lower than previous or no previous value (RESET), store 0 in tagente_datos and store
+		#    real value in aux. table, replacing the old one
 		
 		# Obtemos los ID's a traves del paquete de datos
-		my $id_agente = dame_agente_id($pa_config, $agent_name, $dbh);
-		my $id_modulo = dame_modulo_id($pa_config, $module_type, $dbh); # Fixed type here, its OK, dont change !
+		my $id_agente = dame_agente_id ($pa_config, $agent_name, $dbh);
+		my $id_modulo = dame_modulo_id ($pa_config, $module_type, $dbh); 
 		my $id_agente_modulo = dame_agente_modulo_id($pa_config,$id_agente,$id_modulo,$m_name,$dbh);
-		my $query_idag = "select * from tagente_datos_inc where id_agente_modulo = $id_agente_modulo";
+
 		# Take last real data from tagente_datos_inc
 		# in this table, store the last real data, not the difference who its stored in tagente_datos table and 
 		# tagente_estado table
-		my $s_idag = $dbh->prepare($query_idag);
-		my $diferencia; my @data_row; my $data_anterior;
-		$s_idag ->execute;
-		if ($s_idag->rows == 0) {
-			$diferencia = 0;
+
+		my $diferencia = 0; 
+		my $no_existe = 0;
+		my $need_reset = 0;
+		my $need_update = 0;
+		my $new_data = 0;
+		my $data_anterior;
+
+		if ($id_agente_modulo == -1) {
 			$no_existe = 1;
+			$id_agente_modulo = crea_agente_modulo ($pa_config, $agent_name, $module_type, $m_name, $a_max, $a_min, $a_desc, $dbh);
 		} else {
-			@data_row = $s_idag->fetchrow_array();
+			my $query_idag = "SELECT * FROM tagente_datos_inc WHERE id_agente_modulo = $id_agente_modulo";
+                	my $s_idag = $dbh->prepare($query_idag);
+			$s_idag->execute;
+			my @data_row = $s_idag->fetchrow_array();
 			$data_anterior = $data_row[2];
 			$diferencia = $m_data - $data_anterior;
-			if ($diferencia < 0){ # New value is lower than old value, resetting inc system
-				my $query2 = "update tagente_datos_inc set datos = '$m_data' where id_agente_modulo  = $id_agente_modulo";
-				my $queryexec = $dbh->prepare($query2);
-				$queryexec->execute;
-				$queryexec->finish();
-				$diferencia=0;
+			if ($diferencia < 0 ){
+				$need_reset = 1;
 			}
+			$s_idag -> finish();
 		}
-		$s_idag->finish();
-		# c) Actualizar tabla de estados de valores incrementales (se pone siempre el ultimo valor)
-		
-		# tagente_datos_inc stores real data, not incremental data
+	
+		# Update of tagente_datos_inx (AUX TABLE)	
 		if ($no_existe == 1){
-			my $query = "insert into tagente_datos_inc (id_agente_modulo,datos,timestamp) VALUES ($id_agente_modulo,'$m_data','$timestamp')";
+			my $query = "INSERT INTO tagente_datos_inc (id_agente_modulo,datos) VALUES ($id_agente_modulo, '$m_data')";
 			$dbh->do($query);
-		} else { # If exists, modfy
-			if ($diferencia > 0) {
-				my $query_idag = "update tagente_datos_inc set datos = '$m_data' where id_agente_modulo  = $id_agente_modulo";
-				$s_idag = $dbh->prepare($query_idag);
-				$s_idag ->execute;
-				$s_idag->finish();
+		} else {
+			# Data exists previously	
+			if ($diferencia != 0) {
+				my $query2 = "UPDATE tagente_datos_inc SET datos = '$m_data' WHERE id_agente_modulo  = $id_agente_modulo";
+				$dbh->do($query2);
 			}
 		}
-		my $nuevo_data = 0;
+
 		if ($diferencia >= 0) {
-			if ($no_existe==0) {
-				$nuevo_data = $diferencia;
-			}
-		} else { # Si diferencia = 0 o menor (problemilla?)
-			if ($no_existe !=0){
-				# Houston, we have a Problem !
-				logger($pa_config, "ERROR: Error inside data_inc algorithm, for Agent $agent_name and Type Generic_data_inc ",6);
-			}
+			$new_data = $diferencia;
+		} 
+
+		# Update of tagente_datos and tagente_estado ? (only where there is a difference (or reset))
+		if ($no_existe == 0){
+			pandora_writedata ($pa_config, $m_timestamp, $agent_name, $module_type, $m_name, $new_data, $a_max, $a_min, $a_desc, $dbh, \$bUpdateDatos);
+			# Inc status is always 100 (N/A)
+			pandora_writestate ($pa_config, $agent_name, $module_type, $m_name, $new_data, 100, $dbh, $bUpdateDatos);
 		}
-		pandora_writedata ($pa_config, $m_timestamp, $agent_name, $module_type, $m_name, $nuevo_data, $a_max, $a_min, $a_desc, $dbh, \$bUpdateDatos);
-		# Inc status is always 100 (N/A)
-		pandora_writestate ($pa_config, $agent_name, $module_type, $m_name, $nuevo_data, 100, $dbh, $bUpdateDatos);
 	} else {
-		logger ($pa_config, "(data_inc) Invalid data received from $agent_name, module $m_name",2);
+		logger ($pa_config, "(data_inc) Invalid data received from $agent_name, module $m_name", 2);
 	}
 }
 
@@ -732,6 +726,12 @@ sub pandora_writedata (%$$$$$$$$$$){
 	my $Ref_bUpdateDatos = $_[10];
 	my @data;
 
+	if (!defined($max)){
+		$max = "0";
+	}
+	if (!defined($min)){
+                $min = "0";
+        }
         # Obtenemos los identificadores
         my $id_agente = dame_agente_id($pa_config, $nombre_agente,$dbh);
         # Check if exists module and agent_module reference in DB, if not, and learn mode activated, insert module in DB
@@ -762,8 +762,7 @@ sub pandora_writedata (%$$$$$$$$$$){
 		if (dame_learnagente($pa_config, $id_agente,$dbh) eq "1"){
 			# Try to write a module and agent_module definition for that datablock
 			logger( $pa_config, "Pandora_insertdata will create module (learnmode) for agent $nombre_agente",6);
-			crea_agente_modulo ($pa_config, $nombre_agente, $tipo_modulo, $nombre_modulo, $max, $min, $descripcion, $dbh);
-			$id_agente_modulo = dame_agente_modulo_id ($pa_config, $id_agente, $id_modulo, $nombre_modulo, $dbh);
+			$id_agente_modulo = crea_agente_modulo ($pa_config, $nombre_agente, $tipo_modulo, $nombre_modulo, $max, $min, $descripcion, $dbh);
 			$needscreate = 1; # Really needs to be created
 		} else {
 			logger( $pa_config, "VERBOSE: pandora_insertdata cannot find module definition ($nombre_modulo / $tipo_modulo )for agent $nombre_agente - Use LEARN MODE for autocreate.",2);
@@ -1063,23 +1062,25 @@ sub pandora_audit (%$$$$) {
 ##########################################################################
 sub dame_agente_id (%$$) {
 	my $pa_config = $_[0];
-        my $nombre_agente = sqlWrap($_[1]);
+        my $agent_name = $_[1];
 	my $dbh = $_[2];
 
-        my $id_agente;my @data;
-	if (defined($nombre_agente)){
+	if ( (defined($agent_name)) && ($agent_name ne "") ){
+		my $id_agente;
+		my @data;
+		$agent_name = sqlWrap ($agent_name);
 		# Calculate agent ID using select by its name
-		my $query_idag = "SELECT id_agente FROM tagente WHERE nombre = $nombre_agente";
+		my $query_idag = "SELECT id_agente FROM tagente WHERE nombre = $agent_name";
 		my $s_idag = $dbh->prepare($query_idag);
 		$s_idag ->execute;
 		if ($s_idag->rows == 0) {
-			logger ($pa_config, "ERROR dame_agente_id(): Cannot find agent called $nombre_agente. Returning -1",1);
+			logger ($pa_config, "ERROR dame_agente_id(): Cannot find agent called $agent_name. Returning -1", 1);
 			logger ($pa_config, "ERROR: SQL Query is $query_idag ",2);
-			$data[0]=-1;
+			$id_agente = -1;
 		} else  {
 			@data = $s_idag->fetchrow_array();
+			$id_agente = $data[0];
 		}
-		$id_agente = $data[0];
 		$s_idag->finish();
 		return $id_agente;
 	} else {
@@ -1214,6 +1215,31 @@ sub dame_agente_nombre (%$$) {
         return $nombre_agente;
 }
 
+##########################################################################
+## SUB give_group_disabled (pa_config, id_group, dbh)
+## Return disabled field from tgrupo table given a id_grupo
+##########################################################################
+sub give_group_disabled (%$$) {
+	my $pa_config = $_[0];
+        my $id_group = $_[1];
+	my $dbh = $_[2];
+
+        my $disabled = 0; 
+	my @data;
+        my $query_idag = "SELECT disabled FROM tgrupo WHERE id_grupo = '$id_group'";
+        my $s_idag = $dbh->prepare($query_idag);
+        $s_idag ->execute;
+    	if ($s_idag->rows == 0) {
+        	logger($pa_config, "ERROR give_group_disabled(): Cannot find group id $id_group",2);
+        	logger($pa_config, "ERROR: SQL Query is $query_idag ",10);
+    	} else  {    
+    		@data = $s_idag->fetchrow_array();
+    		$disabled = $data[0];
+    	}
+    	$s_idag->finish();
+    	return $disabled;
+}
+
 
 ##########################################################################
 ## SUB dame_modulo_id (nombre_modulo)
@@ -1240,7 +1266,6 @@ sub dame_modulo_id (%$$) {
     	$s_idag->finish();
     	return $id_modulo;
 }
-
 
 ##########################################################################
 ## SUB dame_agente_modulo_id (id_agente, id_tipomodulo, nombre)
@@ -1468,15 +1493,15 @@ sub dame_ultimo_contacto (%$$) {
 
 ##########################################################################
 ## SUB crea_agente_modulo(nombre_agente, nombre_tipo_modulo, nombre_modulo)
-## create an entry in tagente_modulo
+## create an entry in tagente_modulo, return id of created tagente_modulo
 ##########################################################################
 sub crea_agente_modulo (%$$$$$$$) {
 	my $pa_config = $_[0];
 	my $nombre_agente = $_[1];
 	my $tipo_modulo = $_[2];
 	my $nombre_modulo = $_[3];
-	my $max = sqlWrap($_[4]);
-	my $min = sqlWrap($_[5]);
+	my $max = $_[4];
+	my $min = $_[5];
 	my $descripcion = $_[6];
 	my $dbh = $_[7];
 
@@ -1484,15 +1509,17 @@ sub crea_agente_modulo (%$$$$$$$) {
 	my $agente_id = dame_agente_id ($pa_config, $nombre_agente, $dbh);
 	
 	if ((!defined($max)) || ($max eq "")){
-		$max =0;
+		$max = 0;
 	}
 	if ((!defined($min)) || ($min eq "")){
-		$min =0;
+		$min = 0;
 	}
 	if ((!defined($descripcion)) || ($descripcion eq "")){
-		$descripcion="N/A";
+		$descripcion = "N/A";
 	}
 	$descripcion = sqlWrap ($descripcion. "(*)" );
+	$max = sqlWrap ($max);
+	$min = sqlWrap ($min);
 	$nombre_modulo = sqlWrap ($nombre_modulo);
 
 	my $query = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,max,min,descripcion) VALUES ($agente_id, $modulo_id, $nombre_modulo, $max, $min, $descripcion)";
@@ -1505,6 +1532,7 @@ sub crea_agente_modulo (%$$$$$$$) {
 	}
 	logger( $pa_config, "DEBUG: Query for autocreate : $query ", 8);	
     	$dbh->do($query);
+	return $dbh->{'mysql_insertid'};
 }
 
 

@@ -95,6 +95,12 @@ sub pandora_calcula_alerta (%$$$$$$) {
 	
 	# Get IDs from data packet
 	$id_agente = dame_agente_id($pa_config, $nombre_agente, $dbh);
+	my $id_group = dame_grupo_agente ($pa_config, $id_agente, $dbh);
+
+	# If this group is disabled (not in production, alert will not be checked)
+	if (give_group_disabled ($pa_config, $id_group, $dbh) == 1){
+		return;
+	}	
 	$id_modulo = dame_modulo_id($pa_config, $tipo_modulo, $dbh);
 	$id_agente_modulo = dame_agente_modulo_id ($pa_config, $id_agente, $id_modulo, $nombre_modulo, $dbh);
 	logger($pa_config, "DEBUG: calcula_alerta() Calculado id_agente_modulo a $id_agente_modulo", 6);

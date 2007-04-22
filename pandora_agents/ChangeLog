@@ -1,3 +1,29 @@
+2007-04-22  Sancho Lerena  <slerena@artica.es>
+
+	* linux/contrib/pandora_agent_installer: Fixed small bugs.
+
+	* linux/pandora_agent.conf: Fixed small bug.
+
+	This version of installer works fine in a Ubuntu 6.10 Server
+
+2007-04-21  Sancho Lerena  <slerena@artica.es>
+
+	* pandora_agent_daemon moved to contrib dir.
+
+	* deleted Doc dir.
+
+	* moved pandora_agent_installer to contrib dir.
+
+	* Added LICENCE with GPL data.
+
+	* Deleted README with old text stuff.
+
+	* Moved pandora_agent.sh to pandora_agent
+
+	* pandora_agent:  Added feature: TRANSFER_MODE.
+
+	* pandora_agent.conf: Added feature token.
+
 2007-04-19  Sancho Lerena  <slerena@artica.es>
 
 	At the moment, only linux agent changes, need to be propagated to

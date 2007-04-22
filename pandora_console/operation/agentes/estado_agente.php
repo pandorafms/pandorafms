@@ -213,6 +213,7 @@ if (comprueba_login() == 0) {
 				echo "&nbsp;<a href='index.php?sec=estado&amp;
 				sec2=operation/agentes/ver_agente&amp;id_agente=".$id_agente."'>
 				<b>".$nombre_agente."</b></a></td>";
+
 				// Show SO icon :)
 				echo "<td class='$tdcolor' align='center'>
 				<img border=0 src='images/".dame_so_icon($id_os)."' 
@@ -224,8 +225,13 @@ if (comprueba_login() == 0) {
 				} else {
 					echo "<td class='$tdcolor'>".$intervalo."</td>";
 				}
+
+				// Show GROUP icon
 				echo '<td class="'.$tdcolor.'" align="center">
-				<img src="images/groups_small/'.show_icon_group($id_grupo).'.png" title="'.dame_grupo($id_grupo).'"></td>';
+				<img src="images/groups_small/'.show_icon_group($id_grupo).'.png" title="'.dame_grupo($id_grupo).'">';
+				echo '</td>';
+
+
 				echo "<td class='$tdcolor'> ".
 				$numero_modulos." <b>/</b> ".$numero_monitor;
 				if ($monitor_bad <> 0) {
@@ -257,11 +263,14 @@ if (comprueba_login() == 0) {
 
 				// checks if an alert was fired recently
 				echo "<td class='$tdcolor' align='center'>";
-				if (check_alert_fired($id_agente) == 1) 
-					echo "<img src='images/dot_red.gif'>";
-				else
-					echo "<img src='images/dot_green.gif'>";
-				
+				if (give_disabled_group($id_grupo) == 1)
+                                        echo "&nbsp;<img src='images/flag_red.png' alt='".$lang_label["disabled"]."'>";
+				else {
+					if (check_alert_fired($id_agente) == 1) 
+						echo "<img src='images/dot_red.gif'>";
+					else
+						echo "<img src='images/dot_green.gif'>";
+				}				
 				echo "</td>";
 				echo "<td class='$tdcolor'>";
 				if ( $ultimo_contacto == "0000-00-00 00:00:00"){

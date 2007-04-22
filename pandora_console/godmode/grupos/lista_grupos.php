@@ -32,8 +32,9 @@ if (comprueba_login() == 0)
 		$nombre = entrada_limpia($_POST["nombre"]);
 		$icon = entrada_limpia($_POST["icon"]);
 		$parent = entrada_limpia($_POST["parent"]);
-		$sql_insert="INSERT INTO tgrupo (nombre, icon, parent) 
-			VALUES ('$nombre', '$icon', '$parent') ";
+		$disabled = entrada_limpia($_POST["disabled"]);
+		$sql_insert="INSERT INTO tgrupo (nombre, icon, parent, disabled) 
+			VALUES ('$nombre', '$icon', '$parent', $disabled) ";
 		$result=mysql_query($sql_insert);	
 		if (! $result)
 			echo "<h3 class='error'>".$lang_label["create_group_no"]."</h3>";
@@ -47,9 +48,10 @@ if (comprueba_login() == 0)
 		$nombre = entrada_limpia($_POST["nombre"]);
 		$id_grupo = entrada_limpia($_POST["id_grupo"]);
 		$icon = entrada_limpia($_POST["icon"]);
+		$disabled = entrada_limpia($_POST["disabled"]);
 		$parent = entrada_limpia($_POST["parent"]);
 		$sql_update ="UPDATE tgrupo 
-			SET nombre = '$nombre', icon = '$icon', parent = '$parent' 
+			SET nombre = '$nombre', icon = '$icon', disabled = $disabled, parent = '$parent' 
 			WHERE id_grupo = '$id_grupo'";
 		$result=mysql_query($sql_update);
 		if (! $result)
@@ -80,6 +82,7 @@ if (comprueba_login() == 0)
 	echo "<th>".$lang_label["icon"]."</th>";
 	echo "<th>".$lang_label["group_name"]."</th>";
 	echo "<th>".$lang_label["parent"]."</th>";
+	echo "<th>".$lang_label["alerts"]."</th>";
 	echo "<th>".$lang_label["delete"]."</th>";
 	$sql1='SELECT * FROM tgrupo ORDER BY nombre';
 	$result=mysql_query($sql1);
@@ -103,14 +106,23 @@ if (comprueba_login() == 0)
 			echo "<td class='$tdcolor'>";
 			echo dame_nombre_grupo ($row["parent"]);
 			echo "</td>";
+
+			// Disabled?
+			echo "<td class='$tdcolor' align='center'>";
+                        if ($row["disabled"]==1)
+				echo "<img src='images/flag_red.png'> ".$lang_label["disabled"];
+			else
+				echo "<img src='images/flag_green.png'> ".$lang_label["enabled"];
+                        echo "</td>";
+
 			echo "<td class='$tdcolor' align='center'>";	
 			echo "<a href='index.php?sec=gagente&sec2=godmode/grupos/lista_grupos&id_grupo=".$row["id_grupo"]."&borrar_grupo=".$row["id_grupo"]."'";
 			echo ' onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;">';
 			echo "<img border='0' src='images/cross.png'></a></td></tr>";
 		}
 	}
-	echo "<tr><td colspan='4'><div class='raya'></div></td></tr>";
-	echo "<tr><td colspan='4' align='right'>";
+	echo "<tr><td colspan='5'><div class='raya'></div></td></tr>";
+	echo "<tr><td colspan='5' align='right'>";
 	echo "<form method=post action='index.php?sec=gagente&
 	sec2=godmode/grupos/configurar_grupo&creacion_grupo=1'>";
 	echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create_group"]."'>";

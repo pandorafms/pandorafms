@@ -135,6 +135,22 @@ function dame_perfil($id){
 	return $cat; 
 }
 
+// ---------------------------------------------------------------
+// Returns disabled from a given group_id
+// ---------------------------------------------------------------
+
+function give_disabled_group($id){
+        require("config.php");
+        $query1="SELECT * FROM tgrupo WHERE id_grupo =".$id;
+        $resq1=mysql_query($query1);
+        if ($rowdup=mysql_fetch_array($resq1)){
+                $cat=$rowdup["disabled"];
+        }
+                else $cat = "";
+        return $cat;
+}
+
+
 
 // --------------------------------------------------------------- 
 // Returns group given ID

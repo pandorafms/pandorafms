@@ -1,3 +1,14 @@
+
+2007-04-22  Sancho Lerena  <slerena@artica.es>
+
+	* functions_db.php, language_en.php, estado_grupo.php
+	estado_agente.php configurar_grupo.php lista_grupos.php
+	modificar_server.php: New feature implemented: groups could be
+	configured to do not launch alerts (Disabled field). Any agent
+	inside this group does not fire alerts while disabled will be
+	activated. Useful for programmed non-service periods or programmed
+	shutdowns.
+
 2007-04-21  Sancho Lerena  <slerena@gmail.com>
 
 	* include/languages/language_en.php: New strings added.

@@ -159,6 +159,10 @@
 						$icono_type=$icono_type."
 						<img src='images/dot_white.gif' alt=''>";
 					}
+			
+					// Show red flag is group has disabled alert system
+					if (give_disabled_group($grupo[$real_count]["id_grupo"]) == 1)
+	                                        $icono_type = $icono_type."&nbsp;<img src='images/flag_red.png' alt='".$lang_label["disabled"]."'>";
 
 					// By default green border
 					$celda = "<td class='top' style='border: 3px solid #AEFF21;' width='100'>";

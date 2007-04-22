@@ -31,6 +31,7 @@ if (comprueba_login() == 0)
 	$id_grupo = "";
 	$nombre = "";
 	$id_parent = "";	
+ 	$disabled = 0;
 	
 	if (isset($_GET["creacion_grupo"])){ //
 		$creacion_grupo = entrada_limpia($_GET["creacion_grupo"]);
@@ -45,6 +46,7 @@ if (comprueba_login() == 0)
 		if ($row=mysql_fetch_array($result)){
 			$nombre = $row["nombre"];
 			$icono = $row["icon"];
+			$disabled = $row["disabled"];
 			$id_parent = entrada_limpia($row["parent"]);
 		} else
 			{
@@ -73,7 +75,7 @@ sec2=godmode/grupos/lista_grupos">
 		echo "<input type='hidden' name='id_grupo' value='".$id_grupo."'>";
 	}
 ?>
-<tr><td class='lb' rowspan='4' width='5'>
+<tr><td class='lb' rowspan='5' width='3'>
 <tr><td class="datos"><?php echo $lang_label["group_name"] ?></td>
 <td class="datos">
 <input type="text" name="nombre" size="35" value="<?php echo $nombre ?>">
@@ -115,6 +117,22 @@ sec2=godmode/grupos/lista_grupos">
                 echo "<option value=$id_grupo2>" . $nombre;
         }
         echo '</select>';
+
+	// Disabled
+	echo "<tr><td class='datos2'>";
+        echo $lang_label["alerts"];
+        echo '<td class="datos2">';
+        echo '<select name="disabled">';
+        if ($disabled == 1){
+                echo "<option value=1>".$lang_label["disabled"];
+		echo "<option value=0>".$lang_label["enabled"];
+        } else {
+		echo "<option value=0>".$lang_label["enabled"];
+		echo "<option value=1>".$lang_label["disabled"];
+	}
+	
+	echo "</select>";
+	
 
 	echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
 	echo '<tr><td colspan="3" align="right">';

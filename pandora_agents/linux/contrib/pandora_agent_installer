@@ -98,7 +98,6 @@ install () {
         
         echo "Setting secure permissions and ownership for all Pandora FMS Agent files..."
         chown -R root $PANDORA_HOME
-        chmod -R 700 $PANDORA_HOME/util
         chmod -R 600 $PANDORA_TEMP/data_out
         chmod -R 700 $PANDORA_HOME/contrib
         chmod 640 $PANDORA_LOG

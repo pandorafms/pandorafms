@@ -1,3 +1,10 @@
+2007-04-24  Sancho Lerena  <slerena@artica.es>
+
+	* pandora_db.pm: Added sanity checks to avoid problems when some
+	modules coming without names or cannot locate a valid agent.
+
+	* pandora_server.pl: Added sanity checks to avoid unnamed modules
+
 2007-04-21  Sancho Lerena  <slerena@gmail.com>
 
 	* pandora_tools.pm: Fixed sqlWrap() function.

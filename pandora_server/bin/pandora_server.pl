@@ -36,7 +36,7 @@ use pandora_tools;
 use pandora_db;
 
 # FLUSH in each IO, only for DEBUG, very slow !
-$| = 1;
+$| = 0;
 
 my %pa_config; 
 
@@ -58,19 +58,7 @@ if ($pa_config{"daemon"} eq "1" ){
 threads->new( \&pandora_keepalived, \%pa_config);
 
 # Module processor subsystem
-pandora_dataserver(\%pa_config);
-
-
-#------------------------------------------------------------------------------------
-#------------------------------------------------------------------------------------
-#------------------------------------------------------------------------------------
-#---------------------  Main Perl Code below this line-----------------------
-#------------------------------------------------------------------------------------
-#------------------------------------------------------------------------------------
-#------------------------------------------------------------------------------------
-
-
-
+pandora_dataserver (\%pa_config);
 
 ##########################################################################
 # Main loop
@@ -90,16 +78,19 @@ sub pandora_dataserver {
  		while (defined($onefile = readdir(DIR))){
    			push @file_list,$onefile; 	# Push in a stack all directory entries for this loop
  		}
-        	while (defined($onefile = pop @file_list)) {	# Begin to process files
-			threads->yield;
-                	$file_data = "$pa_config->{'incomingdir'}/$onefile";
-                	next if $onefile =~ /^\.\.?$/;     # Skip . and .. directory
-                	if ( $onefile =~ /([\-\:\;\.\,\_\s\a\*\=\(\)a-zA-Z0-9]*).data\z/ ) {  # First filter any file that doesnt like ".data"
+        while (defined($onefile = pop @file_list)) {	# Begin to process files
+		    threads->yield;
+            $file_data = "$pa_config->{'incomingdir'}/$onefile";
+            next if $onefile =~ /^\.\.?$/;     # Skip . and .. directory
+            
+            # First filter any file that doesnt like ".data"
+            if ( $onefile =~ /([\-\:\;\.\,\_\s\a\*\=\(\)a-zA-Z0-9]*).data\z/ ) {
    				$agent_filename = $1;
    				$file_md5 = "$pa_config->{'incomingdir'}/$agent_filename.checksum";
-				if (( -e $file_md5 ) or ($pa_config->{'pandora_check'} == 0)){ # If check is disabled, ignore if file_md5 exists
-    					# Verify integrity
-    					my $check_result;
+	            # If check is disabled, ignore if file_md5 exists
+                if (( -e $file_md5 ) or ($pa_config->{'pandora_check'} == 0)){
+                    # Verify integrity
+                    my $check_result;
 					$check_result = md5check ($file_data,$file_md5);
 					if (($pa_config->{'pandora_check'} == 0) || ($check_result == 1)){
 						# PERL cannot "free" memory on user demmand, so 
@@ -108,45 +99,45 @@ sub pandora_dataserver {
 						# In Pandora 1.1 in "standard" PERL Implementations, we could
 						# have a memory leak problem. This is solved now :-)
 						# Source : http://www.rocketaware.com/perl/perlfaq3/
-                                 		# Procesa_Datos its the main function to process datafile
+                        # Procesa_Datos its the main function to process datafile
 						my $config; # Hash Reference, used to store XML data
-                                        	# But first we needed to verify integrity of data file
-                                        	if ($pa_config->{'pandora_check'} == 1){
+                        # But first we needed to verify integrity of data file
+                        if ($pa_config->{'pandora_check'} == 1){
 							logger ($pa_config, "Integrity of Datafile using MD5 is verified: $file_data",3);
 						}
-     						eval { # XML Processing error catching procedure. Critical due XML was no validated
-                                  			logger ($pa_config, "Ready to parse $file_data",4);
-                                  			$config = XMLin($file_data, forcearray=>'module');
-                          			};
-                          			if ($@) {
-                                   			logger ($pa_config, "[ERROR] Error processing XML contents in $file_data",0);
-                                   			copy ($file_data,$file_data."_BADXML");
-                                   			if (($pa_config->{'pandora_check'} == 1) && ( -e $file_md5 )) {
-								copy ($file_md5,$file_md5."_BADCHECKSUM");
-							}
-                          			}
-						procesa_datos($pa_config, $config, $dbh); 
+                        eval { # XML Processing error catching procedure. Critical due XML was no validated
+                            logger ($pa_config, "Ready to parse $file_data",4);
+                            $config = XMLin($file_data, forcearray=>'module');
+                        };
+                        if ($@) {
+                            logger ($pa_config, "[ERROR] Error processing XML contents in $file_data",0);
+                            copy ($file_data,$file_data."_BADXML");
+                            if (($pa_config->{'pandora_check'} == 1) && ( -e $file_md5 )) {
+							    copy ($file_md5,$file_md5."_BADCHECKSUM");
+						    }
+                        }
+						procesa_datos ($pa_config, $config, $dbh); 
 						undef $config;
-                                        	# If _everything_ its ok..
+                        # If _everything_ its ok..
 						# delete files
                                         	unlink ($file_data);
                                         	if ( -e $file_md5 ) {
 							unlink ($file_md5);
 						}
-                                	} else { # md5 check fails
-     						logger ( $pa_config, "[ERROR] MD5 Checksum failed! for $file_data",0);
+                    } else { # md5 check fails
+     					logger ( $pa_config, "[ERROR] MD5 Checksum failed! for $file_data",0);
 						# delete files
-                                        	unlink ($file_data);
-                                        	if ( -e $file_md5 ) {
+                        unlink ($file_data);
+                        if ( -e $file_md5 ) {
 							unlink ($file_md5);
 						}
-    					}
+    				}
    				} # No checksum file, ignore file
-                	}
-        	}
-        	closedir(DIR);
+            }
+        }
+        closedir(DIR);
 		threads->yield;
-        	sleep $pa_config->{"server_threshold"};
+        sleep $pa_config->{"server_threshold"};
 	}
 } # End of main loop function
 
@@ -161,8 +152,8 @@ sub pandora_keepalived {
 	while ( 1 ){
 		sleep $pa_config->{"server_threshold"};
 		threads->yield;
-		keep_alive_check($pa_config,$dbh);
-		pandora_serverkeepaliver($pa_config,0,$dbh); # 0 for dataserver
+		keep_alive_check ($pa_config, $dbh);
+		pandora_serverkeepaliver ($pa_config, 0, $dbh); # 0 for dataserver
 	}
 }
 
@@ -173,14 +164,16 @@ sub pandora_keepalived {
 ##########################################################################
 
 sub keep_alive_check {
-        # Search of any defined alert for any agent/module table entry
+    # Search of any defined alert for any agent/module table entry
 	my $pa_config = $_[0];
 	my $dbh = $_[1];
     	
-    	my $query_idag = "select * from talerta_agente_modulo";
-    	my $s_idag = $dbh->prepare($query_idag);
-        $s_idag ->execute;
-        my @data; my $err; my $flag;
+    my $query_idag = "SELECT * FROM talerta_agente_modulo";
+    my $s_idag = $dbh->prepare($query_idag);
+    $s_idag ->execute;
+    my @data;
+    my $err;
+    my $flag;
 	
 	if ($s_idag->rows != 0) {
 	while (@data = $s_idag->fetchrow_array()) {
@@ -207,17 +200,23 @@ sub keep_alive_check {
 			# If we need to update MYSQL last_fired will use $ahora_mysql
 
 			# Calculate if INTERVAL x2 for this agent is bigger than sub last contact date with actual date
-			my $nombre_agente = dame_nombreagente_agentemodulo($pa_config, $id_agente_modulo, $dbh);
-			my $id_agente = dame_agente_id($pa_config, $nombre_agente, $dbh);
-			if (dame_desactivado($pa_config, $id_agente, $dbh) == 0){
-				my $fecha_ultimocontacto = dame_ultimo_contacto($pa_config,$id_agente,$dbh);
-				my $intervalo = dame_intervalo($pa_config, $id_agente, $dbh); # Seconds
-				my $intervalo_2 = $intervalo*2;
-				$fecha_ultimocontacto = ParseDate($fecha_ultimocontacto);
-				my $fecha_limite = DateCalc($fecha_ultimocontacto,"+ $intervalo_2 seconds",\$err);
-				$flag = Date_Cmp($fecha_actual,$fecha_limite);
-				if ( $flag >= 0) { $alert_fired = 1 } else { $alert_fired=0 } ;
-				if (( $flag >= 0 ) && ($max_alerts >= $times_fired)){ # Calculate if max_alerts for this time is exhausted
+			my $nombre_agente = dame_nombreagente_agentemodulo ($pa_config, $id_agente_modulo, $dbh);
+			my $id_agente = dame_agente_id ($pa_config, $nombre_agente, $dbh);
+			if (dame_desactivado ($pa_config, $id_agente, $dbh) == 0){
+				my $fecha_ultimocontacto = dame_ultimo_contacto ($pa_config,$id_agente,$dbh);
+				my $intervalo = dame_intervalo ($pa_config, $id_agente, $dbh); # Seconds
+				my $intervalo_2 = $intervalo * 2;
+				$fecha_ultimocontacto = ParseDate ($fecha_ultimocontacto);
+				my $fecha_limite = DateCalc ($fecha_ultimocontacto,"+ $intervalo_2 seconds", \$err);
+				$flag = Date_Cmp ($fecha_actual,$fecha_limite);
+				if ( $flag >= 0) {
+                    $alert_fired = 1;
+                } else {
+                    $alert_fired = 0;
+                }
+
+                # Calculate if max_alerts for this time is exhausted
+				if (( $flag >= 0 ) && ($max_alerts >= $times_fired)){ 
 					# Alert Trigger is ON !
 					# Check if alert is fired by event-success
 					my $time_threshold = $threshold; # from defined alert 
@@ -291,46 +290,60 @@ sub procesa_datos {
     	my $datos = $_[1]; 
 	my $dbh = $_[2];
 
-	my $tipo_modulo; my $agent_name; 
-	my $timestamp; my $interval; 
-	my $os_version; my $agent_version;
-    	my $id_agente; my $module_name;
+	my $tipo_modulo;
+    my $agent_name; 
+	my $timestamp;
+    my $interval; 
+	my $os_version;
+    my $agent_version;
+    my $id_agente;
+    my $module_name;
+    
 	$agent_name = $datos->{'agent_name'};
 	$timestamp = $datos->{'timestamp'};
 	$agent_version = $datos->{'version'};
 	$interval = $datos->{'interval'};
 	$os_version = $datos->{'os_version'};
-	# Check for parameteres, not all version agentes gives the same parameters ! 
-	if (length($interval) == 0){ $interval = -1; } # No update for interval !      
-	if (length($os_version) == 0){ $os_version = "N/A"; } # No update for interval ! 
+    
+	# Check for parameteres, not all version agents gives the same parameters !
+	if (length($interval) == 0){
+       $interval = -1; # No update for interval !
+    }
+    
+	if (length($os_version) == 0){
+       $os_version = "N/A";
+    }
+  
 	if (defined $agent_name){
 		$id_agente = dame_agente_id($pa_config,$agent_name,$dbh);
 		if ($id_agente > 0) {
-			pandora_lastagentcontact($pa_config, $timestamp, $agent_name, $os_version, $agent_version, $interval, $dbh);
+			pandora_lastagentcontact ($pa_config, $timestamp, $agent_name, $os_version, $agent_version, $interval, $dbh);
 			foreach my $part(@{$datos->{module}}) {
 				$tipo_modulo = $part->{type}->[0];
 				$module_name = $part->{name}->[0];
-				logger($pa_config, "Processing packet Name ( ".$module_name." ) type ( $tipo_modulo ) for agent ( $agent_name )",5);
-				if ($tipo_modulo eq 'generic_data') {
-					module_generic_data($pa_config, $part,$timestamp,$agent_name,"generic_data", $dbh);
-				}
-				elsif ($tipo_modulo eq 'generic_data_inc') {
-					module_generic_data_inc($pa_config, $part,$timestamp,$agent_name,"generic_data_inc", $dbh);
-				}
-				elsif ($tipo_modulo eq 'generic_data_string') {
-					module_generic_data_string($pa_config,$part,$timestamp,$agent_name,"generic_data_string", $dbh);
-				}
-				elsif ($tipo_modulo eq 'generic_proc') {
-					module_generic_proc($pa_config,$part,$timestamp,$agent_name,"generic_proc", $dbh);
-				}
-				else {
-					logger($pa_config,"ERROR: Received data from an unknown module ($tipo_modulo)",2);
-				}
+                if (defined($module_name)){ # Skip modules without names 
+				    logger($pa_config, "Processing module Name ( $module_name ) type ( $tipo_modulo ) for agent ( $agent_name )", 5);
+				    if ($tipo_modulo eq 'generic_data') {
+					    module_generic_data ($pa_config, $part, $timestamp, $agent_name, "generic_data", $dbh);
+				    }
+				    elsif ($tipo_modulo eq 'generic_data_inc') {
+					    module_generic_data_inc ($pa_config, $part, $timestamp, $agent_name,"generic_data_inc", $dbh);
+				    }
+				    elsif ($tipo_modulo eq 'generic_data_string') {
+					    module_generic_data_string ($pa_config, $part, $timestamp, $agent_name,"generic_data_string", $dbh);
+				    }
+				    elsif ($tipo_modulo eq 'generic_proc') {
+					    module_generic_proc ($pa_config, $part, $timestamp, $agent_name, "generic_proc", $dbh);
+				    }
+				    else {
+					    logger($pa_config, "ERROR: Received data from an unknown module ($tipo_modulo)", 2);
+				    }
+                }            
 			}
 		} else {
-			logger($pa_config,"ERROR: There is no agent defined with name $agent_name ($id_agente)",2);
+			logger($pa_config, "ERROR: There is no agent defined with name $agent_name ($id_agente)", 2);
 		}
 	} else {
-		logger($pa_config,"ERROR: Received data from an unnamed agent",1);
+		logger($pa_config, "ERROR: Received data from an unknown agent", 1);
 	}
 }

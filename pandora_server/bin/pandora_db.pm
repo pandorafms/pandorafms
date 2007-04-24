@@ -1275,24 +1275,33 @@ sub dame_modulo_id (%$$) {
 
 ##########################################################################
 ## SUB dame_agente_modulo_id (id_agente, id_tipomodulo, nombre)
-## Return agente_modulo ID, from tabla tagente_modulo, given id_agente, id_tipomodulo and name
+## Return agente_modulo ID, from tabla tagente_modulo,
+## given id_agente, id_tipomodulo and name
 ##########################################################################
 sub dame_agente_modulo_id (%$$$$) {
 	my $pa_config = $_[0];
-        my $id_agente = $_[1];
-        my $id_tipomodulo = $_[2];
-        my $nombre = $_[3];
+    my $id_agente = $_[1];
+    my $id_tipomodulo = $_[2];
+    my $name = $_[3];
 	my $dbh = $_[4];
-        my $id_agentemodulo;
+    my $id_agentemodulo;
 	my @data;
-	
+
+    # Sanity checks
+    if (!defined($name)){
+        return -1;
+    }   
+    if (!defined($id_agente) || ($id_agente < 0)){
+        return -1;
+    }
+        
         # Calculate agent ID using select by its name
-        my $query_idag = "select * from tagente_modulo where id_agente = '$id_agente' and id_tipo_modulo = '$id_tipomodulo' and nombre = '$nombre'";
+        my $query_idag = "select * from tagente_modulo where id_agente = '$id_agente' and id_tipo_modulo = '$id_tipomodulo' and nombre = '$name'";
         my $s_idag = $dbh->prepare($query_idag);
         $s_idag ->execute;
     	if ($s_idag->rows == 0) {
-        	logger($pa_config, "ERROR dame_agente_modulo_id(): Cannot find agente_modulo called $nombre",2);
-        	logger($pa_config, "ERROR: SQL Query is $query_idag ",2);
+        	logger($pa_config, "ERROR dame_agente_modulo_id(): Cannot find a module called $name", 2);
+        	logger($pa_config, "ERROR: SQL Query is $query_idag ",10);
         	$id_agentemodulo = -1;
     	} else  {    
     		@data = $s_idag->fetchrow_array(); 
@@ -1511,9 +1520,16 @@ sub crea_agente_modulo (%$$$$$$$) {
 	my $descripcion = $_[6];
 	my $dbh = $_[7];
 
+    # Sanity checks
+    if (!defined($nombre_modulo)){
+        return -1;
+    }   
+   
 	my $modulo_id = dame_modulo_id ($pa_config, $tipo_modulo, $dbh);
 	my $agente_id = dame_agente_id ($pa_config, $nombre_agente, $dbh);
-	
+    if (!defined($id_agente) || ($id_agente < 0)){
+        return -1;
+    }   
 	if ((!defined($max)) || ($max eq "")){
 		$max = 0;
 	}

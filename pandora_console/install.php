@@ -147,8 +147,8 @@ function random_name ($size){
 function install_step1() {
 	echo "
 	<div align='center' class='mt35'>
-	<h1>Pandora FMS instalation wizard. Step #1 of 4</h1>
-	<div id='wizard' style='height: 310px;'>
+	<h1>Pandora FMS installation wizard. Step #1 of 4</h1>
+	<div id='wizard' style='height: 300px;'>
 		<div id='install_box'>
 			<h1>Welcome to Pandora FMS installation Wizard</h1>
 			<p>This wizard helps you to quick install Pandora FMS console in your system.</p>
@@ -179,12 +179,11 @@ function install_step1() {
 }
 
 
-
 function install_step2() {
 	echo "
 	<div align='center' class='mt35'>
-	<h1>Pandora FMS console instalation wizard. Step #2 of 4</h1>
-	<div id='wizard' style='height: 250px;'>
+	<h1>Pandora FMS console installation wizard. Step #2 of 4</h1>
+	<div id='wizard' style='height: 300px;'>
 		<div id='install_box'>";
 		echo "<h1>Checking software dependencies</h1>";
 			echo "<table border=0 width=230>";
@@ -193,7 +192,7 @@ function install_step2() {
 			$res += check_extension("mysql","PHP MySQL extension");
 			//$res += check_extension("curl","PHP Curl extension");
 			$res += check_extension("gd","PHP gd extension");
-			$res += check_extension("snmp","PHP smmp extension");
+			$res += check_extension("snmp","PHP SNMP extension");
 			$res += check_extension("session","PHP session extension");
 			$res += check_include("PEAR.php","PEAR PHP Library");
 			//$res += check_exists ("/usr/bin/pdflatex","PDF Latex in /usr/bin/pdflatex");
@@ -227,7 +226,7 @@ function install_step2() {
 function install_step3() {
 	echo "
 	<div align='center' class='mt35'>
-	<h1>Pandora FMS console instalation wizard. Step #3 of 4 </h1>
+	<h1>Pandora FMS console installation wizard. Step #3 of 4 </h1>
 	<div id='wizard' style='height: 540px;'>
 		<div id='install_box'>
 			<h1>Environment and database setup</h1>
@@ -310,8 +309,8 @@ function install_step4() {
 	$step4=0; $step5=0; $step6=0; $step7=0;
 	echo "
 	<div align='center' class='mt35'>
-	<h1>Pandora FMS Console instalation wizard. Step #4 of 4 </h1>
-	<div id='wizard' style='height: 320px;'>
+	<h1>Pandora FMS Console installation wizard. Step #4 of 4</h1>
+	<div id='wizard' style='height: 300px;'>
 		<div id='install_box'>
 			<h1>Creating database and default configuration file</h1>
 			<table>";
@@ -399,7 +398,7 @@ $BASE_URL="'.$url.'";			// Base URL
 function install_step5() {
 	echo "
 	<div align='center' class='mt35'>
-	<h1>Pandora FMS console instalation wizard. Finished</h1>
+	<h1>Pandora FMS console installation wizard. Finished</h1>
 	<div id='wizard' style='height: 300px;'>
 		<div id='install_box'>
 			<h1>Installation complete</h1>

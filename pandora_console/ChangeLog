@@ -1,3 +1,8 @@
+2007-04-24  Raul Mateos  <raulofpandora@gmail.com>
+
+	* install.php: Changed typo in installation text. Homogenize boxes.
+	
+	* operation/modificar_agente.php: Deleted table and moved button to tr.
 
 2007-04-22  Sancho Lerena  <slerena@artica.es>
 

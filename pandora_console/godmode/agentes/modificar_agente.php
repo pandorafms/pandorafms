@@ -191,20 +191,15 @@ if (mysql_num_rows($result)){
 	}
 	echo "<tr><td colspan='5'><div class='raya'></div></td></tr>";
 	echo "<tr><td align='right' colspan='5'>";
-	$endline = "</td></tr></table>";
 } else {
-	$endline = "";
 	echo "<div class='nf'>".$lang_label["no_agent_def"]."</div>";
+	echo "&nbsp;</td></tr><tr><td>";
 }
-	echo $endline;
 
 	// Create agent button
-	echo "<table cellpadding='4' cellspacing='4' width='700'>";
-	echo "<tr><td align=right>";
 	echo "<form method='post' action='index.php?sec=gagente&
 	sec2=godmode/agentes/configurar_agente&create_agent=1'>";
 	echo "<input type='submit' class='sub wand' name='crt'
 	value='".$lang_label["create_agent"]."'>";
-	echo "</form>";
-	echo "</table>";
+	echo "</form></td></tr></table>";
 ?>

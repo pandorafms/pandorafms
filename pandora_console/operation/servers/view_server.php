@@ -221,7 +221,7 @@ if (comprueba_login() == 0) {
 				echo "&nbsp; <img src='images/snmp.gif'>";
 			}
 			if ($recon_server == 1){
-				echo "&nbsp; <img src='images/chart_organisation.png'>";
+				echo "&nbsp; <img src='images/recon.png'>";
 			}
 			if ($master == 1){
 				echo "&nbsp; <img src='images/master.gif'>";
@@ -238,7 +238,31 @@ if (comprueba_login() == 0) {
 			// if ($status ==0)
 				echo substr($keepalive,0,25)."</td>";
 		}
-		echo '<tr><td colspan="11"><div class="raya"></div></td></tr></table>';	
+		echo '<tr><td colspan="11"><div class="raya"></div>
+		</td></tr></table>';
+		echo "<table cellpadding=2 cellspacing=0>";
+		echo "
+		<tr>
+		 <td>
+		  <span class='net'>".$lang_label["network_server"]."</span>
+		 </td>
+		 <td>
+		  <span class='master'>".$lang_label["master"]."</span>
+		 </td>
+		 <td>
+		  <span class='data'>".$lang_label["data_server"]."</span>
+		 </td>
+		 <td>
+		  <span class='binary'>".$lang_label["md5_checksum"]."</span>
+		 </td>
+		 <td>
+		  <span class='snmp'>".$lang_label["snmp_console"]."</span>
+		 </td>
+		 <td>
+		  <span class='recon'>".$lang_label["recon_server"]."</span>
+		 </td>
+		</tr>";
+		echo "</table>";
 	} else {
 		echo "<div class='nf'>".$lang_label["no_server"]."</div>";
 	}
@@ -247,19 +271,6 @@ if (comprueba_login() == 0) {
 	audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Agent view");
 		require ("general/noaccess.php");
 	}
-	echo "<table cellpadding=4 cellspacing=4>";
-	echo "<tr><td>";
-	echo "<img src='images/network.gif'><td>".$lang_label["network_server"];
-	echo "<td>";
-	echo "<img src='images/master.gif'><td>".$lang_label["master"];
-	echo "<td>";
-	echo "<img src='images/data.gif'><td>".$lang_label["data_server"];
-	echo "<td>";
-	echo "<img src='images/binary.gif'><td>".$lang_label["md5_checksum"];
-	echo "<td>";
-	echo "<img src='images/snmp.gif'><td>".$lang_label["snmp_console"];
-	echo "<td>";
-	echo "<img src='images/chart_organisation.png'><td>".$lang_label["recon_server"];
-	echo "</table>";
+
 }
 ?>

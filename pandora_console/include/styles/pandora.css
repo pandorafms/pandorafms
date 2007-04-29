@@ -542,7 +542,6 @@ div.data_box {
 	text-decoration: none;
 }
 
-
 span.users {
 	background: url(../../images/group.png) no-repeat;
 }
@@ -558,7 +557,23 @@ span.alerts {
 span.time {
 	background: url(../../images/hourglass.png) no-repeat;
 }
-span.users, span.agents, span.data, span.alerts, span.time {
+span.net {
+	background: url(../../images/network.gif) no-repeat;
+}
+span.master {
+	background: url(../../images/master.gif) no-repeat;
+}
+span.snmp {
+	background: url(../../images/snmp.gif) no-repeat;
+}
+span.binary {
+	background: url(../../images/binary.gif) no-repeat;
+}
+span.recon {
+	background: url(../../images/recon.png) no-repeat;
+}
+span.users, span.agents, span.data, span.alerts, span.time, span.net,
+span.master, span.snmp, span.binary, span.recon {
 	margin-left: 4px;
 	margin-top: 10px;
 	padding: 4px 8px 12px 30px;

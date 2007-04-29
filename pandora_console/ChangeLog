@@ -1,3 +1,12 @@
+2007-04-29  Raul Mateos  <raulofpandora@gmail.com>
+
+	* images/recon.png: Renamed file from chart_organization.png
+
+	* include/pandora.css: Added styles for table in servers.
+
+	* operation/servers/view_server.php: Used style added. Change order
+	for table (now the legend is shown only if there are servers).
+
 2007-04-24  Raul Mateos  <raulofpandora@gmail.com>
 
 	* install.php: Changed typo in installation text. Homogenize boxes.

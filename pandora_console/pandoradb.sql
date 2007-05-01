@@ -290,7 +290,7 @@ CREATE TABLE `tgrupo` (
   `nombre` varchar(100) NOT NULL default '',
   `icon` varchar(50) default NULL,
   `parent` tinyint(4) NOT NULL default '-1',
-  `disabled` varchar(1) NOT NULL default '0',
+  `disabled` tinyint(4) NOT NULL default '0',
   PRIMARY KEY  (`id_grupo`)
 ) ENGINE=InnoDB;
 

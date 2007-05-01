@@ -1,4 +1,17 @@
+2007-04-22  slerena  <slerena@artica.es>
+
+    * pandoradb.sql: Fixed small problem with tgrupos
+
+
 2007-05-01  Raul Mateos  <raulofpandora@gmail.com>
+
+	* functions_db.php, language_en.php, estado_grupo.php
+	estado_agente.php configurar_grupo.php lista_grupos.php
+	modificar_server.php: New feature implemented: groups could be
+	configured to do not launch alerts (Disabled field). Any agent
+	inside this group does not fire alerts while disabled will be
+	activated. Useful for programmed non-service periods or programmed
+	shutdowns.
 
 	* images/bricks.png: Changed red colour to orange one.
 
@@ -31,6 +44,7 @@
 	
 	* operation/modificar_agente.php: Deleted table and moved button to tr.
 
+>>>>>>> .r446
 2007-04-22  Sancho Lerena  <slerena@artica.es>
 
 	* functions_db.php, language_en.php, estado_grupo.php
@@ -78,6 +92,7 @@
 
 	* godmode/menu.php: Fixed some navigation marks.
 
+>>>>>>> .r441
 2007-04-19  Sancho Lerena  <slerena@artica.es>
 
 	* pandora.css: added some classes for graphical input buttons.

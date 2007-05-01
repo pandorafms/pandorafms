@@ -36,15 +36,15 @@ UNLOCK TABLES;
 --
 
 LOCK TABLES `tgrupo` WRITE;
-INSERT INTO `tgrupo` VALUES (1,'All','world',0);
-INSERT INTO `tgrupo` VALUES (2,'Servers','server_database',0);
-INSERT INTO `tgrupo` VALUES (3,'IDS','eye',0);
-INSERT INTO `tgrupo` VALUES (4,'Firewalls','firewall',0);
-INSERT INTO `tgrupo` VALUES (8,'Databases','database_gear',0);
-INSERT INTO `tgrupo` VALUES (9,'Comms','transmit',0);
-INSERT INTO `tgrupo` VALUES (10,'Others','house',0);
-INSERT INTO `tgrupo` VALUES (11,'Workstations','computer',0);
-INSERT INTO `tgrupo` VALUES (12,'Applications','bricks',0);
+INSERT INTO `tgrupo` VALUES (1,'All','world',0,0);
+INSERT INTO `tgrupo` VALUES (2,'Servers','server_database',0,0);
+INSERT INTO `tgrupo` VALUES (3,'IDS','eye',0,0);
+INSERT INTO `tgrupo` VALUES (4,'Firewalls','firewall',0,0);
+INSERT INTO `tgrupo` VALUES (8,'Databases','database_gear',0,0);
+INSERT INTO `tgrupo` VALUES (9,'Comms','transmit',0,0);
+INSERT INTO `tgrupo` VALUES (10,'Others','house',0,0);
+INSERT INTO `tgrupo` VALUES (11,'Workstations','computer',0,0);
+INSERT INTO `tgrupo` VALUES (12,'Applications','bricks',0,0);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `tgrupo` ENABLE KEYS */;
 

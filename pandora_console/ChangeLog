@@ -1,3 +1,21 @@
+2007-05-01  Raul Mateos  <raulofpandora@gmail.com>
+
+	* images/bricks.png: Changed red colour to orange one.
+
+	* include/pandora.css: Changed background colour for View Mode tab.
+
+	* operation/agentes/estado_agente.php: Changed space between combo and
+	table, including the style into the table, deleting div.
+	
+	* operation/agentes/estado_grupo.php: Style correction.
+	
+	* operation/messages/message.php: Added style to some table cells.
+
+	* pandoradb.sql, pandoradb_data.sql: Added column disable to table tgrupo
+	and default value 0.
+	
+	* operation/snmpconsole/snmp_alert.php: Deleted duplicated br tag.
+
 2007-04-29  Raul Mateos  <raulofpandora@gmail.com>
 
 	* images/recon.png: Renamed file from chart_organization.png

@@ -296,10 +296,10 @@ if (give_acl($id_user, 0, "LW")==1) {
 			echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert">';
 			echo '<input name="add_alert" type="submit" class="sub next" value="'.$lang_label["create"].'">';
 			echo "</form>";
-			echo "</table>";
+			echo "</td></tr></table>";
 		} else {
 			echo "<div class='nf'>".$lang_label["no_snmp_alert"]."</div>";
-			echo "<br><br>";
+			echo "<br>";
 			echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert">';
 			echo '<input name="add_alert" type="submit" class="sub next" value="'.$lang_label["create"].'">';
 			echo "</form>";

@@ -104,15 +104,13 @@ if (comprueba_login() == 0) {
 	$result2=mysql_query($sql2);
 	$row2=mysql_fetch_array($result2);
 	$total_events = $row2[0];
-	echo "<div style='height: 10px'> </div>";
 	// Prepare pagination
 	
 	pagination ($total_events, "index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$group_id&refr=60", $offset);
 	// Show data.
-	echo "<div style='height: 20px'> </div>";
 	$result=mysql_query($sql);
 	if (mysql_num_rows($result)){
-		echo "<table cellpadding='3' cellspacing='3' width='700'>";
+		echo "<table cellpadding='3' cellspacing='3' width='700' style='margin-top: 10px'>";
 		echo "<th>".$lang_label["agent"]."</th>";
 		echo "<th>".$lang_label["os"]."</th>";
 		echo "<th>".$lang_label["interval"]."</th>";

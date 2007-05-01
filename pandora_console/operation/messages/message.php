@@ -87,7 +87,7 @@ if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
 		<form name="new_mes" method="POST" action="index.php?sec=messages&sec2=operation/messages/message&nuevo_mensaje=1">
 		<table>
 		<tr><td class="datos">'.$lang_label["m_from"].':</td><td class="datos"><b>'.$iduser.'</b></td></tr>
-		<tr><td class="datos2">'.$lang_label["m_to"].':</td><td>';
+		<tr><td class="datos2">'.$lang_label["m_to"].':</td><td class="datos2">';
 		if (isset($_POST["u_destino"])) {
 			echo '<b>'.$_POST["u_destino"].'</b><input type="hidden" name="u_destino" value='.$_POST["u_destino"].'>';
 			}
@@ -104,7 +104,7 @@ if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
 			}
 			else echo '<input name="subject" width="255px">';
 		echo '</td></tr>
-		<tr><td class="datos2">'.$lang_label["message"].':</td></tr>
+		<tr><td class="datos2" colspan="2">'.$lang_label["message"].':</td></tr>
 		<tr><td class="datos" colspan="4"><textarea name="mensaje" rows="10" width="540px">';
 			if (isset($_POST["mensaje"])) {
 				echo $_POST["mensaje"];

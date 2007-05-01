@@ -162,18 +162,19 @@
 			
 					// Show red flag is group has disabled alert system
 					if (give_disabled_group($grupo[$real_count]["id_grupo"]) == 1)
-	                                        $icono_type = $icono_type."&nbsp;<img src='images/flag_red.png' alt='".$lang_label["disabled"]."'>";
+						$icono_type = $icono_type."&nbsp;
+						<img src='images/flag_red.png' alt='".$lang_label["disabled"]."'>";
 
 					// By default green border
-					$celda = "<td class='top' style='border: 3px solid #AEFF21;' width='100'>";
+					$celda = "<td class='top' style='border: 3px solid #aeff21;' width='100'>";
 
 					// Grey border if agent down
       					if ($grupo[$real_count]["down"] > 0)
-						$celda = "<td class='top' style='border: 3px solid #AABBAA;'  width='100'>";
+						$celda = "<td class='top' style='border: 3px solid #aabbaa;' width='100'>";
 						
 					// Yellow border if agents with alerts
 					if ($grupo[$real_count]["alerts"] > 0)
-						$celda = "<td class='top' style='border: 3px solid #FFEA00;' width='100'>";
+						$celda = "<td class='top' style='border: 3px solid #ffea00;' width='100'>";
 
 					// Red border if agents bad
 					if ($grupo[$real_count]["bad"] > 0)
@@ -181,7 +182,7 @@
 
       					// Orange if alerts and down modules
       					if (($grupo[$real_count]["bad"] > 0) && ($grupo[$real_count]["alerts"] > 0))
-						$celda = "<td class='top' style='border: 3px solid #FFBB00;'  width='100'>";
+						$celda = "<td class='top' style='border: 3px solid #ffbb00;' width='100'>";
 
 						
 					$celda .= "<a href='index.php?sec=estado&amp;

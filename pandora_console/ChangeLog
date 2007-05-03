@@ -1,17 +1,59 @@
-2007-04-22  slerena  <slerena@artica.es>
+2007-05-03  Sancho Lerena <slerena@artica.es>
 
-    * pandoradb.sql: Fixed small problem with tgrupos
+	* include/FreeSans.ttf: Added to repos, should be here to use in graphs.
 
+	* include/functions_db.php: Deleted noaccess include from
+	comprueba_login(). This should return value, not render pages or
+	exit. 
+	
+	* include/config.inc.php: Modified some typos.
+	
+	* include/calendar.js: Added generic calendar javascript, to be
+	used on exportdata and incident management code.
+	
+	* include/languages/language_en.php: More strings.
+	
+	* install.php: In my render, box height is too low. PLEASE recheck
+	before changing this kind of properties because in other browsers
+	could have a bad render (Sophus!).
+	
+	* index.php: Added script call (need to be done on header).
+	
+	* operation/agentes/export_csv.php: Added new file to create a
+	standalone CSV on download icon / link.
+	
+	* operation/agentes/exportdata.php: New export data code, used
+	some code from Leando Doctors, and mixed with old code. Now have
+	three options to render export data.
+	
+	* operation/agentes/datos_agente_calendar.php: Deleted old code from Leandro.
+	
+	* operation/active_console/lib/extra_functions.php: Solved a lot
+	of warnings, but there are TONS of more warnings that need to be
+	corrected.
+	
+	* operation/active_console/lib/db_functions.php:Solved a lot of
+	warnings, but there are TONS of more warnings that need to be
+	corrected.
+	
+	* operation/active_console/index.php: Solved a lot of warnings,
+	but there are TONS of more warnings that need to be
+	corrected. This code DONT work if you are showing warning/notice
+	erros. This code is not ready for production usage, too buggy yet
+	:(
+	
+	* pandora_graphical_console_data.sql: Cleanup.
+		
+	* godmode/agentes/module_manager.php: Added wizard button.
+	
+	* pandora_graphical_console.sql: Cleanup.
+
+
+2007-04-22  Sancho Lerena  <slerena@artica.es>
+
+        * pandoradb.sql: Fixed small problem with tgrupos
 
 2007-05-01  Raul Mateos  <raulofpandora@gmail.com>
-
-	* functions_db.php, language_en.php, estado_grupo.php
-	estado_agente.php configurar_grupo.php lista_grupos.php
-	modificar_server.php: New feature implemented: groups could be
-	configured to do not launch alerts (Disabled field). Any agent
-	inside this group does not fire alerts while disabled will be
-	activated. Useful for programmed non-service periods or programmed
-	shutdowns.
 
 	* images/bricks.png: Changed red colour to orange one.
 
@@ -44,7 +86,6 @@
 	
 	* operation/modificar_agente.php: Deleted table and moved button to tr.
 
->>>>>>> .r446
 2007-04-22  Sancho Lerena  <slerena@artica.es>
 
 	* functions_db.php, language_en.php, estado_grupo.php
@@ -92,7 +133,6 @@
 
 	* godmode/menu.php: Fixed some navigation marks.
 
->>>>>>> .r441
 2007-04-19  Sancho Lerena  <slerena@artica.es>
 
 	* pandora.css: added some classes for graphical input buttons.

@@ -20,6 +20,10 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 require("../../include/config.php");
+// If you activate error reporting, Active Console don't work 
+// because it has MANY warnings and other kind of errors
+
+error_reporting(0);
 global $dbname;
 global $dbuser;
 global $dbpassword;
@@ -44,7 +48,8 @@ session_start();
 
 <?php	// Add this line to refresh each X seconds
 	// *TODO* Adjust a variable interval
-	if ($_GET["mode"] == "monitor"){
+	
+	if (isset($_GET["mode"]) && $_GET["mode"] == "monitor"){
 		echo ("<meta http-equiv=\"refresh\" content=\"10\">"); 
 	}
 ?>
@@ -256,7 +261,7 @@ while ($vista=mysql_fetch_array($vistas)){ //recorremos las vistas y creamos un 
 
 // Creamos las instancias de los objetos (que se corresponderan con los ids de los divs html)
 	$i=1;
-//global $aObjetos;
+	$aObjetos = array();
 //mysql_data_seek($objetos,0);
 
  	$objetos = dameObjetosVista($vista["idVista"]);
@@ -301,53 +306,22 @@ while ($vista=mysql_fetch_array($vistas)){ //recorremos las vistas y creamos un 
 	
 	$i=$i+1;
 	}
-
-// echo "var jg_doc = new jsGraphics();
-// 
-//   jg_doc.setColor('#ff0000'); // red
-//   jg_doc.drawLine(10, 113, 220, 55); // co-ordinates related to 'myCanvas'
-//   jg_doc.setColor('#0000ff'); // blue
-//   jg_doc.fillRect(110, 120, 30, 60);
-//   jg_doc.paint();
-// ";
-
-
 }
-//$objetos = dameObjetos();
-// echo "var aObjeto_count = 0;";
-// echo "aObjeto_count=1;";
-//echo "aObjeto = new Array(), aObjeto_count =".mysql_num_rows($objetos).";";
-
-
-
-
-
-
 
 echo "
-
-
-var tpg2;
-
-  tpg2 = new xTabPanelGroup('tpg2', 1000, 1000, 25, 'tabPanel', 'tabGroup', 'tabDefault', 'tabSelected');
- 
-
-tpg2.select(parseInt(vistaActiva)+1); 
-
-  FormSetup();
-
+	var tpg2;
+	tpg2 = new xTabPanelGroup('tpg2', 1000, 1000, 25, 'tabPanel', 'tabGroup', 'tabDefault', 'tabSelected');
+	tpg2.select(parseInt(vistaActiva)+1); 
+	FormSetup();
 }
 ";
-
-
 
 $vista_activa=obtenerVistaActiva();
 // Obtenemos la acción a realizar mediante los parametros GET y el nombre "action"
 
-
 // Una vez aparecido el formulario añadimos a la base de datos, los valores recogidos
-if ($_GET["action"]=="addagent")
-{
+if ($_GET["action"]=="addagent"){
+
 	$aSub[0]=$_POST["vista_MG"]; // Crear el objeto en forma de vista y que se cree una vista con los grupos de modulos que lo forman
 	$aSub[1]=$_POST["vista_M"]; // Crear el objeto en forma de vista y que se cree una vista con los modulos que lo forman
 	
@@ -1250,7 +1224,7 @@ $perfil = obtenerPerfilActivo();
 // Obtenemos las vistas asignadas al perfil especial activo con id igual a 2 y creamos un array JavaScript que contendrá las Vistas
 $vistas = dameVistasPerfilActivas($perfil);
 // mysql_data_seek($vistas,0);
-while ($vista=mysql_fetch_array($vistas)){
+if ($vista=mysql_fetch_array($vistas)){
 	$datos_vista=dameVista($vista["idVista"]);
 	$estado_vista=dameEstadoVista($vista["idVista"]);
 	$css_estado_vista="";

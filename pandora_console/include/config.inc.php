@@ -30,10 +30,10 @@ $pandora_version="v1.3 devel";
 //$dbhost="localhost";		// MySQL Host
 
 // This is used for reporting, please add "/" character at the end
-//$config_homedir = "/var/www/babel_console/";
+//$config_homedir = "/var/www/pandora_console/";
 
 // Do not display any ERROR
-//error_reporting(0);
+//error_reporting(0); // Need to use active console at this moment
 
 // Display ALL errors
 error_reporting(E_ALL);

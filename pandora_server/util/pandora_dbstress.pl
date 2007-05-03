@@ -18,9 +18,10 @@
 #Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ################################################################################
 
+# Configure here target (AGENT_ID for Stress)
+my $target_agent_id = 1; # -1 for all modules of that agent
 my $target_interval = 300;
-my $target_days = 30 ;
-my $target_agent = 640; # if -1, uses ALL agents
+my $target_days = 45;
 
 ################################################################################
 ################################################################################
@@ -40,7 +41,7 @@ use pandora_db;
 ################################################################################
 ################################################################################
 
-my $version = "1.3-dev 070312";
+my $version = "1.3-dev 070216";
 
 # FLUSH in each IO (only for debug, very slooow)
 # ENABLED in DEBUGMODE
@@ -58,9 +59,11 @@ pandora_loadconfig (\%pa_config,0); #Start like a data server
 # open database, only ONCE. We pass reference to DBI handler ($dbh) to all subprocess
 my $dbh = DBI->connect("DBI:mysql:pandora:$pa_config{'dbhost'}:3306",$pa_config{'dbuser'}, $pa_config{'dbpass'},	{ RaiseError => 1, AutoCommit => 1 });
 
+print " [*] Working for agent ID $target_agent_id \n";
 print " [*] Generating data of $target_days days ago \n";
 print " [*] Interval for this workload is $target_interval \n";
 
+# For each module of $target_agent_id
 my $query_idag;
 
 if ($target_agent ne -1){
@@ -72,12 +75,10 @@ if ($target_agent ne -1){
 my $s_idag = $dbh->prepare($query_idag);
 $s_idag ->execute;
 my @data;
-# Read all alerts and apply to this incoming trap 
 if ($s_idag->rows != 0) {
 	while (@data = $s_idag->fetchrow_array()) {
-print " [*] Working for agent ID ".$data[1]." \n";
 		# Fill this module with data !
-		process_module (\%pa_config, $data[0], $target_interval, $data[4], $target_days, $data[2], $data[1], $dbh);
+		process_module (\%pa_config, $data[0], $target_interval, $data[4], $target_days, $data[2], $target_agent_id, $dbh);
 	}
 }
 $s_idag->finish();
@@ -115,7 +116,7 @@ sub process_module(){
 	my $fecha_actual = &UnixDate("today","%Y-%m-%d %H:%M:%S");      
 	my $m_timestamp = DateCalc($fecha_actual,"- $target_days days",\$err);
 	my $mysql_date;
-
+	my $bUpdateDatos;
 	# Calculate how many iterations need to fill data range
 	# $target_days*min*sec / $target_interval 
 
@@ -145,8 +146,8 @@ sub process_module(){
 			}
 			pandora_lastagentcontact($pa_config, $mysql_date, $agent_name, "none","1.2", $target_interval, $dbh);
 			# print LOG $mysql_date, $target_name, $valor, "\n";
-			pandora_writedata($pa_config,$mysql_date,$agent_name,$target_type,$target_name,$valor,0,0,"",$dbh);			
-			pandora_writestate ($pa_config,$agent_name,$target_type,$target_name,$valor,100,$dbh);
+			pandora_writedata($pa_config,$mysql_date,$agent_name,$target_type,$target_name,$valor,0,0,"",$dbh,\$bUpdateDatos);			
+			pandora_writestate ($pa_config,$agent_name,$target_type,$target_name,$valor,100,$dbh,$bUpdateDatos);
 			}
 	}
 
@@ -164,8 +165,8 @@ sub process_module(){
 			}
 			pandora_lastagentcontact($pa_config, $mysql_date, $agent_name, "none","1.2", $target_interval, $dbh);
 			#print LOG $mysql_date, $target_name, $valor, "\n";
-			pandora_writedata($pa_config,$mysql_date,$agent_name,$target_type,$target_name,$valor,0,0,"",$dbh);			
-			pandora_writestate ($pa_config,$agent_name,$target_type,$target_name,$valor,100,$dbh);
+			pandora_writedata($pa_config,$mysql_date,$agent_name,$target_type,$target_name,$valor,0,0,"",$dbh,\$bUpdateDatos);			
+			pandora_writestate ($pa_config,$agent_name,$target_type,$target_name,$valor,100,$dbh,$bUpdateDatos);
 		}
 
 	}
@@ -186,8 +187,8 @@ sub process_module(){
 			}
 			pandora_lastagentcontact($pa_config, $mysql_date, $agent_name, "none","1.2", $target_interval, $dbh);
 			#print LOG $mysql_date, $target_name, $valor, "\n";
-			pandora_writedata($pa_config,$mysql_date,$agent_name,$target_type,$target_name,$valor,0,0,"",$dbh);
-			pandora_writestate ($pa_config,$agent_name,$target_type,$target_name,$valor,$valor,$dbh);
+			pandora_writedata($pa_config,$mysql_date,$agent_name,$target_type,$target_name,$valor,0,0,"",$dbh,\$bUpdateDatos);
+			pandora_writestate ($pa_config,$agent_name,$target_type,$target_name,$valor,$valor,$dbh,$bUpdateDatos);
 		}
 
 	}

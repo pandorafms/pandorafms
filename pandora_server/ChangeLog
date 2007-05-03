@@ -1,3 +1,11 @@
+2007-05-03  Sancho Lerena  <slerena@artica.es>
+
+	* bin/pandora_network.pl: Fix problem with ICMP timeouts.
+	
+	* util/pandora_dbstress.pl: Update for new needsupdate fix in some
+	DB code. Needs to be improved for specific module/agent selection.
+	
+
 2007-04-24  Sancho Lerena  <slerena@artica.es>
 
 	* pandora_db.pm: Added sanity checks to avoid problems when some

@@ -25,7 +25,7 @@ use Time::Local;            # DateTime basic manipulation
 use Net::Ping;				# For ICMP latency
 use Time::HiRes;			# For high precission timedate functions (Net::Ping)
 use IO::Socket;				# For TCP/UDP access
-use SNMP;				# For SNMP access (libnet-snmp-perl package!
+use SNMP;				# For SNMP access (libsnmp-perl PACKAGE!)
 use threads;
 
 # Pandora Modules
@@ -324,7 +324,7 @@ sub pandora_ping_icmp {
 	my $l_timeout = $_[1];
 
 	$p = Net::Ping->new("icmp",$l_timeout);
-	if ($p->ping($dest)) {
+	if ($p->ping($dest) == 1) {
 		$p->close();  
 		return 1;
 	} else {
@@ -510,7 +510,7 @@ sub exec_network_module {
 			$module_result = 0; # Successful
 			$module_data = 1;
 		} else {
-			$module_result = 1; # Error, cannot connect
+			$module_result = 0; # If cannot connect, its down.
 			$module_data = 0;
 		}
 	} elsif ($id_tipo_modulo == 7){ # ICMP (data for latency in ms)
@@ -576,9 +576,9 @@ sub exec_network_module {
 		my %part;
 		$part{'name'}[0]=$nombre;
 		$part{'description'}[0]="";
-		$part{'data'}[0]=$module_data;
-		$part{'max'}[0]=$max;
-		$part{'min'}[0]=$min;
+		$part{'data'}[0] = $module_data;
+		$part{'max'}[0] = $max;
+		$part{'min'}[0] = $min;
 		my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
 		my $tipo_modulo = dame_nombretipomodulo_idagentemodulo ($pa_config, $id_tipo_modulo, $dbh);
 		if (($tipo_modulo eq 'remote_snmp') || ($tipo_modulo eq 'remote_icmp') || ($tipo_modulo eq 'remote_tcp') || ($tipo_modulo eq 'remote_udp'))  {

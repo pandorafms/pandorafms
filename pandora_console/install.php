@@ -227,7 +227,7 @@ function install_step3() {
 	echo "
 	<div align='center' class='mt35'>
 	<h1>Pandora FMS console installation wizard. Step #3 of 4 </h1>
-	<div id='wizard' style='height: 540px;'>
+	<div id='wizard' style='height: 580px;'>
 		<div id='install_box'>
 			<h1>Environment and database setup</h1>
 			<p>

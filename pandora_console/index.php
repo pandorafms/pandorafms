@@ -5,11 +5,11 @@
 // Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
 // Main PHP/SQL code development and project architecture and management
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP additions
+// CSS and some PHP code additions
 // Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
 // Javascript Active Console code.
 // Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
-// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
+// Additions to code for Pandora FMS 1.2 graph code and new XML reporting template managemement
 // Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
 //
 // This program is free software; you can redistribute it and/or
@@ -25,9 +25,7 @@
 
 // Pandora FMS 1.x uses icons from famfamfam, licensed under CC Atr. 2.5
 // Silk icon set 1.3 (cc) Mark James, http://www.famfamfam.com/lab/icons/silk/
-
 // Pandora FMS 1.x uses Pear Image::Graph code
-
 // Pandora FMS shares much of it's code with project Babel Enterprise, also a
 // FreeSoftware Project coded by some of the people who makes Pandora FMS 
 
@@ -94,6 +92,7 @@ if (isset ($_GET["refr"])){
 <meta name="robots" content="index, follow">
 <link rel="icon" href="images/pandora.ico" type="image/ico">
 <link rel="stylesheet" href="include/styles/pandora.css" type="text/css">
+<script type='text/JavaScript' src='include/calendar.js'></script>
 </head>
 
 <?php

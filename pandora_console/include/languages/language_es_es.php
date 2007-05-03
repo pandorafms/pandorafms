@@ -296,8 +296,8 @@ $lang_label["add"]="A&ntilde;adir";
 $lang_label["db_purge_event"]="Limpieza de la Base de Datos de eventos";
 $lang_label["db_event"]="BBDD de eventos";
 $lang_label["max_min"]="M&aacute;x/M&iacute;n";
-$lang_label["max"]="Máximo";
-$lang_label["min"]="Mínimo";
+$lang_label["max"]="Mï¿½ximo";
+$lang_label["min"]="Mï¿½nimo";
 $lang_label["med"]="Media";
 $lang_label["month_graph"]="Gr&aacute;fico mensual";
 $lang_label["week_graph"]="Gr&aacute;fico semanal";
@@ -356,8 +356,8 @@ $lang_label["manage_config"]="Gestionar conf.";
 $lang_label["config_manage"]="Gesti&oacute;n de Configuraciones";
 $lang_label["get_info"]="Obtener info.";
 
-$lang_label["are_you_sure"]="¿Est&aacute; usted seguro?";
-$lang_label["users_msg"]="Los perfiles de usuario en Pandora definen qu&eacute; usuarios pueden acceder a Pandora y que puede hacer cada uno. Los grupos definen elementos en com&uacute;n, cada usuario puede pertenecer a uno o m&aacute;s grupos, y tiene asignado un perfil a cada grupo que pertenezca. Un perfil es una lista de lo que puede y no puede hacer cada grupo, como por ejemplo «ver incidentes» o «gestionar bases de datos». Abajo se muestra una lista de los perfiles disponibles (definidos por los administradores locales de Pandora)";
+$lang_label["are_you_sure"]="ï¿½Est&aacute; usted seguro?";
+$lang_label["users_msg"]="Los perfiles de usuario en Pandora definen qu&eacute; usuarios pueden acceder a Pandora y que puede hacer cada uno. Los grupos definen elementos en com&uacute;n, cada usuario puede pertenecer a uno o m&aacute;s grupos, y tiene asignado un perfil a cada grupo que pertenezca. Un perfil es una lista de lo que puede y no puede hacer cada grupo, como por ejemplo ï¿½ver incidentesï¿½ o ï¿½gestionar bases de datosï¿½. Abajo se muestra una lista de los perfiles disponibles (definidos por los administradores locales de Pandora)";
 
 $help_label["users_msg1"]="Este usuario es especial y tiene permiso para todo, pasando por encima de los privilegios asignados mediante grupos/perfiles";
 $help_label["users_msg2"]="Este usuario tiene permisos segregados para ver datos en los agente de su grupo, crear incidentes dentro de aquellos grupos sobre los que tenga acceso y a&ntilde;adir notas en incidentes propios o de terceros";
@@ -454,7 +454,7 @@ $lang_label["inagent"]=" en el agente ";
 $lang_label["you_must_select_modules"]="Se deben seleccionar m&oacute;dulos y/o alertas como objeto de la copia";
 $lang_label["packets_by_date"]="Paquetes por rangos de fecha";
 $lang_label["packets_by_agent"]="Paquetes por agente";
-$lang_label["modules_per_agent"]="Módulos por agente"; // Graphic title, dont use tildes
+$lang_label["modules_per_agent"]="Mï¿½dulos por agente"; // Graphic title, dont use tildes
 $lang_label["event_total"]="Eventos totales";
 $lang_label["events_per_user"]="Eventos por usuario";
 $lang_label["events_per_group"]="Eventos por grupo";
@@ -537,7 +537,7 @@ $lang_label["validate"]="Validar";
 $lang_label["incident_user"]="Autores de los incidentes";
 $lang_label["incident_source"]="Origenes de los incidentes";
 $lang_label["incident_group"]="Grupos de los incidentes";
-$lang_label["users_statistics"]="Estadísticas de actividad de los usuarios";
+$lang_label["users_statistics"]="Estadï¿½sticas de actividad de los usuarios";
 $lang_label["update_user_ok"]="Usuario actualizado correctamente";
 
 $lang_label["agent_detail"]="Detalle agente";
@@ -664,6 +664,7 @@ $lang_label["no_rtask"]="No hay ninguna tarea de reconocimiento configurada";
 
 //3 Apr 2007
 $lang_label["no_netprofiles"]="No hay ning&uacute;n perfil de red definido";
+
 
 global $lang_label;
 global $help_label;

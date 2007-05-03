@@ -638,7 +638,6 @@ function comprueba_login() {
 			return 0 ;	
 		}
 	}
-	require("general/noaccess.php");
 	return 1;	
 }
 
@@ -1069,5 +1068,19 @@ function give_agent_id_from_module_id ($id_module){
 	return $pro;
 }
 
+// --------------------------------------------------------------- 
+// Generic access to a field ($field) given a table
+// --------------------------------------------------------------- 
+
+function give_db_value ($field, $table, $field_search, $condition_value){
+	global $config;
+	$query = "SELECT $field FROM $table WHERE $field_search = '$condition_value' ";
+	$resq1 = mysql_query($query);
+	if ($rowdup = mysql_fetch_array($resq1))
+		$pro = $rowdup[0];
+	else
+		$pro = "";
+	return $pro;
+}
 
 ?>

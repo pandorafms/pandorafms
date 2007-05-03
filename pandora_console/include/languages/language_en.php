@@ -768,8 +768,21 @@ $lang_label["text"]="Text";
 $lang_label["delete_data_above"]="Delete data above";
 $lang_label["enabled"]="Enabled";
 
+// 3 may 2007
+$lang_label["csv"] = "Standalone CSV ascii file";
+$lang_label["average_per_hourday"] = "Average per hour/day";
+$lang_label["datatable"] = "Data table";
+$lang_label["export_type"] = "Export type";
 
-
+$lang_label["sunday"]="Sunday";
+$lang_label["monday"]="Monday";
+$lang_label["tuesday"]="Tuesday";
+$lang_label["wednesday"]="Wednesday";
+$lang_label["thurdsday"]="Thurdsday";
+$lang_label["friday"]="Friday";
+$lang_label["saturday"]="Saturday";
+$lang_label["hr"]="Hr";
+$lang_label["get_file"]="Download file";
 global $lang_label; 
 global $help_label;
 ?>

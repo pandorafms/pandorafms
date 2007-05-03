@@ -398,9 +398,9 @@ if (isset($_POST["oid"])){
 <?php
 	echo "<td colspan=5 align='right'>";
 	if ($update_module == "1"){
-		echo '<input name="updbutton" type="submit" class="sub" value="'.$lang_label["update"].'">';
+		echo '<input name="updbutton" type="submit" class="sub next" value="'.$lang_label["update"].'">';
 	} else {
-		echo '<input name="crtbutton" type="submit" class="sub" value="'.$lang_label["add"].'">';
+		echo '<input name="crtbutton" type="submit" class="sub wand" value="'.$lang_label["add"].'">';
 	}
 	echo "</form>";
 

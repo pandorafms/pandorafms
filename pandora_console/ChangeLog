@@ -1,3 +1,9 @@
+2007-05-03  Raul Mateos  <raulofpandora@gmail.com>
+
+	* images/reporting.png: Renamed from chart_pie.png.
+	
+	* include/op.css: Updated with reporting.png.
+
 2007-05-03  Sancho Lerena <slerena@artica.es>
 
 	* include/FreeSans.ttf: Added to repos, should be here to use in graphs.
@@ -49,7 +55,7 @@
 	* pandora_graphical_console.sql: Cleanup.
 
 
-2007-04-22  Sancho Lerena  <slerena@artica.es>
+2007-05-02  Sancho Lerena  <slerena@artica.es>
 
         * pandoradb.sql: Fixed small problem with tgrupos
 

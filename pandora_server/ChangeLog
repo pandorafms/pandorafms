@@ -1,3 +1,8 @@
+2007-05-07  Sancho Lerena  <slerena@artica.es>
+
+	* bin/pandora_db.pm: Fixed BUG #1714003 for data_inc unit division
+	(I hope), need testing.
+
 2007-05-03  Sancho Lerena  <slerena@artica.es>
 
 	* bin/pandora_network.pl: Fix problem with ICMP timeouts.

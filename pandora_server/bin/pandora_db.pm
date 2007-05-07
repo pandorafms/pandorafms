@@ -592,7 +592,7 @@ sub module_generic_data_inc (%$$$$$) {
 	my $a_desc = $datos->{description}->[0];
 	my $m_data = $datos->{data}->[0];
 	my $a_max = $datos->{max}->[0];
-    	my $a_min = $datos->{min}->[0];
+    my $a_min = $datos->{min}->[0];
 
 	if (ref($m_data) ne "HASH"){
 		$m_data =~ s/\,/\./g; # replace "," by "."
@@ -629,6 +629,9 @@ sub module_generic_data_inc (%$$$$$) {
 		my $need_update = 0;
 		my $new_data = 0;
 		my $data_anterior;
+		my $timestamp_diferencia;
+		my $timestamp_anterior;
+		my $m_utimestamp = &UnixDate($m_timestamp,"%s");
 
 		if ($id_agente_modulo == -1) {
 			$no_existe = 1;
@@ -639,7 +642,14 @@ sub module_generic_data_inc (%$$$$$) {
 			$s_idag->execute;
 			my @data_row = $s_idag->fetchrow_array();
 			$data_anterior = $data_row[2];
+			$timestamp_anterior = $data_row[4];
+		
 			$diferencia = $m_data - $data_anterior;
+			$timestamp_diferencia = $m_utimestamp - $timestamp_anterior;
+			# get seconds between last data and this data
+			if ($diferencia > 0){
+				$diferencia = $diferencia / $timestamp_diferencia;
+			}
 			if ($diferencia < 0 ){
 				$need_reset = 1;
 			}
@@ -648,12 +658,12 @@ sub module_generic_data_inc (%$$$$$) {
 	
 		# Update of tagente_datos_inx (AUX TABLE)	
 		if ($no_existe == 1){
-			my $query = "INSERT INTO tagente_datos_inc (id_agente_modulo,datos) VALUES ($id_agente_modulo, '$m_data')";
+			my $query = "INSERT INTO tagente_datos_inc (id_agente_modulo,datos, timestamp) VALUES ($id_agente_modulo, '$m_data', '$m_timestamp', $m_utimestamp)";
 			$dbh->do($query);
 		} else {
 			# Data exists previously	
 			if ($diferencia != 0) {
-				my $query2 = "UPDATE tagente_datos_inc SET datos = '$m_data' WHERE id_agente_modulo  = $id_agente_modulo";
+				my $query2 = "UPDATE tagente_datos_inc SET utimestamp = $m_utimestamp, datos = '$m_data' WHERE id_agente_modulo  = $id_agente_modulo";
 				$dbh->do($query2);
 			}
 		}

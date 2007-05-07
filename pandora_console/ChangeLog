@@ -1,3 +1,18 @@
+2007-05-07  Raul Mateos  <raulofpandora@gmail.com>
+
+	* general/header.php: Made smaller.
+	
+	* godmode/agentes/module_manager.php: Changed html anchor.
+	
+	* operation/snmpconsole/snmp_view.php, general/logon_ok.php,
+	operation/events/events.php, operation/incidents/incident.php,
+	operation/agentes/estado_alertas.php: Removed classes.
+	Now we use some styles at each page to simplify css.
+	
+	* operation/agentes/estado_generalagente.php: Changed table width.
+	
+	* include/pandora.css: Updated a lot of styles, deleted some not used.
+
 2007-05-03  Raul Mateos  <raulofpandora@gmail.com>
 
 	* images/reporting.png: Renamed from chart_pie.png.

@@ -18,7 +18,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-echo "<table width=100% border=0>";
+echo "<table width=100% border='0'>";
 echo "<tr>";
 if (isset ($_SESSION["id_usuario"])){
 	echo "<td width=40%>";
@@ -30,11 +30,11 @@ if (isset ($_SESSION["id_usuario"])){
 	echo $lang_label["has_connected"]. '
 	[<b class="f10">'. $id_usuario. '</b>]';
 	echo "<td width=30%>";
-	echo "<a href='index.php?sec=main'><img src='images/information.png' class='bot'> ". $lang_label["information"]."</A>";
+	echo "<a href='index.php?sec=main'><img src='images/information.png' class='bot'> ". $lang_label["information"]."</a>";
 	echo "<td width=20%>";
-	echo "<a href='help/en/toc.php'><img src='images/help.png' class='bot'> ". $lang_label["help"]."</A>";
+	echo "<a href='help/en/toc.php'><img src='images/help.png' class='bot'> ". $lang_label["help"]."</a>";
 	echo "<td align='right' width=10%>";
-	echo "<a href='index.php?bye=bye'><img src='images/lock.png' class='bot'> ". $lang_label["logout"]."</A>";
+	echo "<a href='index.php?bye=bye'><img src='images/lock.png' class='bot'> ". $lang_label["logout"]."</a>";
 }
 echo "</table>";
 ?>

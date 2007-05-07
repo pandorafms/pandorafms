@@ -28,11 +28,7 @@ if (comprueba_login() == 0){
 
 ?>
 
-<div class="bg3">
-	<div class="imgl"><img src="images/upper-left-corner.gif" width="5" height="5" alt=""></div>
-	<div class="tit">:: <?php echo $lang_label["godmode_header"] ?> ::</div>
-	<div class="imgr"><img src="images/upper-right-corner.gif" width="5" height="5" alt=""></div>
-</div>
+<div class="tit bg3">:: <?php echo $lang_label["godmode_header"] ?> ::</div>
 <div id="menug">
 	<div id="god">
 	

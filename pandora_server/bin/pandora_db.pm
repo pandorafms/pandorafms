@@ -327,7 +327,7 @@ sub pandora_writestate (%$$$$$$$) {
 	my $estado = $_[5];
 	my $dbh = $_[6];
 	my $needs_update = $_[7];
-	my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
+	my $timestamp = &UnixDate ("today", "%Y-%m-%d %H:%M:%S");
 	my $utimestamp; # integer version of timestamp	
 	$utimestamp = &UnixDate($timestamp,"%s"); # convert from human to integer
 	my @data;
@@ -544,8 +544,13 @@ sub module_generic_data (%$$$$$) {
 	my $m_name = $datos->{name}->[0];
 	my $a_desc = $datos->{description}->[0];
 	my $m_data = $datos->{data}->[0];
+    
 	my $bUpdateDatos = 0; # added, patch submitted by Dassing
 	if (ref($m_data) ne "HASH"){
+        if (!is_numeric($m_data)){
+            logger($pa_config, "(data) Invalid data (non-numeric) received from $agent_name, module $m_name", 1);
+            return -1;
+        }
 		if ($m_data =~ /[0-9]*/){
 			$m_data =~ s/\,/\./g; # replace "," by "."
 			$m_data = sprintf("%.2f", $m_data);	# Two decimal float. We cannot store more
@@ -628,10 +633,10 @@ sub module_generic_data_inc (%$$$$$) {
 		my $need_reset = 0;
 		my $need_update = 0;
 		my $new_data = 0;
-		my $data_anterior;
+		my $data_anterior = 0;
 		my $timestamp_diferencia;
 		my $timestamp_anterior;
-		my $m_utimestamp = &UnixDate($m_timestamp,"%s");
+		my $m_utimestamp = &UnixDate ($m_timestamp, "%s");
 
 		if ($id_agente_modulo == -1) {
 			$no_existe = 1;
@@ -647,7 +652,7 @@ sub module_generic_data_inc (%$$$$$) {
 			$diferencia = $m_data - $data_anterior;
 			$timestamp_diferencia = $m_utimestamp - $timestamp_anterior;
 			# get seconds between last data and this data
-			if ($diferencia > 0){
+			if (($timestamp_diferencia > 0) && ($diferencia > 0)) {
 				$diferencia = $diferencia / $timestamp_diferencia;
 			}
 			if ($diferencia < 0 ){
@@ -746,24 +751,24 @@ sub pandora_writedata (%$$$$$$$$$$){
 		$max = "0";
 	}
 	if (!defined($min)){
-                $min = "0";
-        }
-        # Obtenemos los identificadores
-        my $id_agente = dame_agente_id($pa_config, $nombre_agente,$dbh);
-        # Check if exists module and agent_module reference in DB, if not, and learn mode activated, insert module in DB
+		$min = "0";
+	}
+	# Obtenemos los identificadores
+	my $id_agente = dame_agente_id($pa_config, $nombre_agente,$dbh);
+	# Check if exists module and agent_module reference in DB, if not, and learn mode activated, insert module in DB
 	if ($id_agente eq "-1"){
 		goto fin_DB_insert_datos;
 	}
-        my $id_modulo = dame_modulo_id($pa_config, $tipo_modulo,$dbh);
-        my $id_agente_modulo = dame_agente_modulo_id($pa_config, $id_agente, $id_modulo, $nombre_modulo,$dbh);
-        # Pandora 1.3. Now uses integer to store timestamp in datatables
+	my $id_modulo = dame_modulo_id($pa_config, $tipo_modulo,$dbh);
+	my $id_agente_modulo = dame_agente_modulo_id($pa_config, $id_agente, $id_modulo, $nombre_modulo,$dbh);
+	# Pandora 1.3. Now uses integer to store timestamp in datatables
 	# much more faster to do comparations...
 	my $utimestamp; # integer version of timestamp
 	$utimestamp = &UnixDate($timestamp,"%s"); # convert from human to integer
 	my $needscreate = 0;
 
 	# take max and min values for this id_agente_module
-        if ($id_agente_modulo != -1){ # ID AgenteModulo does exists
+	if ($id_agente_modulo != -1){ # ID AgenteModulo does exists
 		my $query_idag = "SELECT * FROM tagente_modulo WHERE id_agente = $id_agente AND id_agente_modulo = ".$id_agente_modulo;
 		my $s_idag = $dbh->prepare($query_idag);
 		$s_idag ->execute;
@@ -803,13 +808,13 @@ sub pandora_writedata (%$$$$$$$$$$){
 		# Transform data (numeric types only)
 		if ($tipo_modulo =~ /string/){
 			$datos = $datos; # No change
-		} else { # Numeric change to real 
+		} else { # Numeric change to real
+			$datos =~ s/\,/\./g; # replace "," by "."
+			$data[2] =~ s/\,/\./g; # replace "," by "."
 			$datos = sprintf("%.2f", $datos);
 			$data[2] = sprintf("%.2f", $data[2]);
 			# Two decimal float. We cannot store more
 			# to change this, you need to change mysql structure
-			$datos =~ s/\,/\./g; # replace "," by "."
-			$data[2] =~ s/\,/\./g; # replace "," by "."
 		}
 		# Detect changes between stored data and adquired data.
 		if ($data[2] ne $datos){
@@ -842,8 +847,10 @@ sub pandora_writedata (%$$$$$$$$$$){
 			$$Ref_bUpdateDatos = 1; # true
 		}
 		if ($tipo_modulo =~ /string/) { # String module types
-			$datos = $dbh->quote($datos); # Parse data entry for adecuate SQL representation.
-			$query = "insert into tagente_datos_string (id_agente_modulo,datos,timestamp,utimestamp,id_agente) VALUES ($id_agente_modulo,$datos,'$timestamp',$utimestamp,$id_agente)";	
+			$datos = $dbh->quote($datos);
+			$timestamp = $dbh->quote($timestamp);
+			# Parse data entry for adecuate SQL representation.
+			$query = "INSERT INTO tagente_datos_string (id_agente_modulo, datos, timestamp, utimestamp, id_agente) VALUES ($id_agente_modulo, $datos, $timestamp, $utimestamp, $id_agente)";
 		} else {
 			if ($max != $min) {
 				if ($datos > $max) { 
@@ -857,8 +864,11 @@ sub pandora_writedata (%$$$$$$$$$$){
 					logger($pa_config, "DEBUG: MIN Value reached ($min) for agent $nombre_agente / $nombre_modulo",6);
 				}
 			}
-			$query = "insert into tagente_datos (id_agente_modulo, datos,timestamp, utimestamp, id_agente) VALUES ($id_agente_modulo, $datos, '$timestamp', $utimestamp, $id_agente)";
-		} # If data is out of limits, do not insert into database (Thanks for David Villanueva for his words)
+			$datos = $dbh->quote($datos);
+			$timestamp = $dbh->quote($timestamp);
+			# Parse data entry for adecuate SQL representation.
+			$query = "INSERT INTO tagente_datos (id_agente_modulo,  datos, timestamp, utimestamp, id_agente) VALUES ($id_agente_modulo, $datos, $timestamp, $utimestamp, $id_agente)";
+		} # If data is out of limits, do not insert into database
 		if ($outlimit == 0){
 			logger($pa_config, "DEBUG: pandora_insertdata Calculado id_agente_modulo a $id_agente_modulo",6);
 			logger($pa_config, "DEBUG: pandora_insertdata SQL : $query",10);

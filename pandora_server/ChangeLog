@@ -1,5 +1,16 @@
 2007-05-07  Sancho Lerena  <slerena@artica.es>
 
+	* bin/pandora_db.pm: Fixed some problems with quotes and other aditional
+	checks.
+
+	* bin/pandora_network.pl: Fixed some problems with quotes and other
+	aditional checks.  Detected a serious BUG in snmplib for Ubuntu Freeze
+	(already submitted as detected BUG with veryhigh priority). This makes
+	pandora network server unusable on feisty until fixed :(. Bug item is in
+	https://bugs.launchpad.net/ubuntu/+source/net-snmp/+bug/65047
+
+2007-05-07  Sancho Lerena  <slerena@artica.es>
+
 	* bin/pandora_db.pm: Fixed BUG #1714003 for data_inc unit division
 	(I hope), need testing.
 

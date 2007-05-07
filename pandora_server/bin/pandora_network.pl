@@ -319,17 +319,32 @@ sub pandora_network_subsystem {
 # pandora_ping_icmp (destination, timeout) - Do a ICMP scan, 1 if alive, 0 if not
 ##############################################################################
 sub pandora_ping_icmp {
-	my $p;
 	my $dest = $_[0];
 	my $l_timeout = $_[1];
+	# temporal vars.
+	my $result = 0;
+	my $p;
 
+	# Check for valid destination
+	if (!defined($dest)) {
+		return 0;
+	}
+	
 	$p = Net::Ping->new("icmp",$l_timeout);
-	if ($p->ping($dest) == 1) {
-		$p->close();  
+	$result = $p->ping($dest);
+	
+	# Check for valid result
+	if (!defined($result)) {
+		return 0;
+	}
+	
+	# Lets see the result
+	if ($result == 1) {
+		$p->close();
 		return 1;
 	} else {
-		$p->close();  
-	     	return 0;
+		$p->close();
+		return 0;
 	}
 }
 

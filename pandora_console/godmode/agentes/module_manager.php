@@ -246,8 +246,8 @@ if ($row=mysql_num_rows($result)){
 // Module assignment form
 // ==========================
 
-echo "<a name='module_assignment'>";
-echo "<h2>".$lang_label["agent_conf"]." &gt; ".$lang_label["module_asociation_form"]."</a><a href='help/".$help_code."/chap3.php#321' target='_help' class='help'>
+echo "<a name='module_assignment'></a>";
+echo "<h2>".$lang_label["agent_conf"]." &gt; ".$lang_label["module_asociation_form"]."<a href='help/".$help_code."/chap3.php#321' target='_help' class='help'>
 &nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 
 if ($update_module == "1")

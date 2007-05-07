@@ -232,7 +232,7 @@ if (isset($_POST['operacion'])){
 	</td>
 	<td valign="middle"><noscript><input type="submit" class="sub" value="<?php echo $lang_label["show"] ?>" border="0"></noscript>
 	</td>
-	<td rowspan="5" class="f9l30t">
+	<td rowspan="5" class="f9" style="padding-left: 30px; vertical-align: top;">
 	<h3><?php echo $lang_label["status"] ?></h3>
 	<img src='images/dot_red.gif'> - <?php echo $lang_label["opened_inc"] ?><br>
 	<img src='images/dot_yellow.gif'> - <?php echo $lang_label["openedcom_inc"] ?><br>
@@ -240,7 +240,7 @@ if (isset($_POST['operacion'])){
 	<img src='images/dot_green.gif'> - <?php echo $lang_label["closed_inc"] ?><br>
 	<img src='images/dot_white.gif'> - <?php echo $lang_label["exp_inc"] ?></td>
 
-	<td rowspan="5" class="f9l30t">
+	<td rowspan="5" class="f9" style="padding-left: 30px; vertical-align: top;">
 	<h3><?php echo $lang_label["priority"] ?></h3>
 	<img src='images/dot_red.gif'><img src='images/dot_red.gif'><img src='images/dot_red.gif'> - <?php echo $lang_label["very_serious"] ?><br>
 	<img src='images/dot_yellow.gif'><img src='images/dot_red.gif'><img src='images/dot_red.gif'> - <?php echo $lang_label["serious"] ?><br>

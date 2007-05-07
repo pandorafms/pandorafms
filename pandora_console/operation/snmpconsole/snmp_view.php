@@ -133,14 +133,14 @@ if (comprueba_login() == 0) {
 	if (mysql_num_rows($result2)){
 	
 		echo "<table><tr>";
-		echo "<td class='f9l30'>";
+		echo "<td class='f9' style='padding-left: 30px;'>";
 		echo "<img src='images/dot_green.gif'> - ".$lang_label["validated_event"];
 		echo "<br>";
 		echo "<img src='images/dot_red.gif'> - ".$lang_label["not_validated_event"];
 		echo "<br>";
 		echo "<img src='images/dot_yellow.gif'> - ".$lang_label["alert"];
 		echo "</td>";
-		echo "<td class='f9l20'>";  
+		echo "<td class='f9' style='padding-left: 20px;'>";  
 		echo "<img src='images/ok.png'> - ".$lang_label["validate_event"];
 		echo "<br>"; 
 		echo "<img src='images/cross.png '> - ".$lang_label["delete_event"];

@@ -172,12 +172,12 @@ if ( $ev_group > 1 ){
 echo "<option value=1>".dame_nombre_grupo(1)."</option>";
 list_group ($id_user);
 echo "</select>";
-echo "<td class='f9l30w17t'>";
+echo "<td class='f9' style='padding-left: 30px; line-height: 17px; vertical-align: top;'>";
 echo "<img src='images/dot_green.gif'> - ".$lang_label["validated_event"];
 echo "<br>";
 echo "<img src='images/dot_red.gif'> - ".$lang_label["not_validated_event"];
 echo "</td>";
-echo "<td class='f9l30w17t'>";
+echo "<td class='f9' style='padding-left: 30px; line-height: 17px; vertical-align: top;'>";
 echo "<img src='images/ok.png'> - ".$lang_label["validate_event"];
 echo "<br>";
 echo "<img src='images/cross.png'> - ".$lang_label["delete_event"];

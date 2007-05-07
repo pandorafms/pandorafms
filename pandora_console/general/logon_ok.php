@@ -102,7 +102,7 @@
 	}
 
 	// Site stats
-	echo '<h2 class="mgb25">' . $lang_label["stat_title"] . '</h2>';
+	echo '<h2 style="margin-bottom: 25px;">'. $lang_label["stat_title"].'</h2>';
 	echo '<table cellpadding="3" cellspacing="3" width="500"><tr>'; 
 	$query1 = "SELECT COUNT(id_usuario) FROM tusuario";
 	$result = mysql_query ($query1);

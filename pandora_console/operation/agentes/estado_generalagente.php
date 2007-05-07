@@ -59,7 +59,7 @@ if (comprueba_login() == 0) {
 	// Blank space below title
 	echo "<div style='height: 10px'> </div>";
 	
-	echo '<table cellspacing="0" cellpadding="0" width="800" border=0>';
+	echo '<table cellspacing="0" cellpadding="0" width="780" border=0>';
 	echo "<tr><td>";
 	echo '<table cellspacing="4" cellpadding="4" border=0>';
 	echo "<tr><td class='lb_view' rowspan='12' width='1'>";
@@ -146,7 +146,7 @@ if (comprueba_login() == 0) {
 		<td class="datos">
 		<b>'.$lang_label["last_contact"]." / ".$lang_label["remote"].'</b>
 		</td>
-		<td class="datosf9" colspan="2">';
+		<td class="datos f9" colspan="2">';
 	if ($ultima_act == "0000-00-00 00:00:00"){ 
 		echo $lang_label["never"];
 	} else {

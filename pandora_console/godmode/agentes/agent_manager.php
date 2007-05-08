@@ -176,11 +176,11 @@ while ($row=mysql_fetch_array($result)){
 <?php 
 if ($create_agent == 1){
 	echo "
-	<input name='crtbutton' type='submit' class='sub' value='".
+	<input name='crtbutton' type='submit' class='sub wand' value='".
 	$lang_label["create"]."'>";
 } else {
 	echo "
-	<input name='uptbutton' type='submit' class='sub' value='".
+	<input name='uptbutton' type='submit' class='sub upd' value='".
 	$lang_label["update"]."'>";
 }
 ?>

@@ -1,3 +1,20 @@
+2007-05-08  Raul Mateos  <raulofpandora@gmail.com>
+
+	* godmode/modules/*.php, godmode/agentes/*.php: Added icon to buttons.
+	
+	* godmode/grupos/configurar_grupo.php: Changed datos2 style to datos in
+	second row.
+	
+	* operation/agentes/estado_monitores.php: Added code to show "Never" if
+	timestamp is 00-00...
+	
+	* operation/agentes/estado_ultimopaquete.php: Added title to <td> tag,
+	to show name when is longer than 15 chars.
+	
+	* general/logon_ok.php: Closed some html tags. Reduce size of table.
+	
+	* include/styles/pandora.css: Changed some colours.
+
 2007-05-07  Raul Mateos  <raulofpandora@gmail.com>
 
 	* general/header.php: Made smaller.

@@ -191,7 +191,7 @@ if ($id_nc != -1)
 	echo "<form name='modulo' method='post' action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&update=1&id_nc=$id_nc'>";
 else
 	echo "<form name='modulo' method='post' action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&create=1'>";
-echo "<tr><td class='lb' rowspan='10' width='5'>";
+echo "<tr><td class='lb' rowspan='10' width='3'>";
 
 echo "<tr>";
 echo '<tr><td class="datos2">'.$lang_label["module_name"];
@@ -271,9 +271,9 @@ echo "<tr>";
 
 echo "<td colspan=5 align='right'>";
 if ($id_nc != "-1")
-	echo '<input name="updbutton" type="submit" class="sub" value="'.$lang_label["update"].'">';
+	echo '<input name="updbutton" type="submit" class="sub upd" value="'.$lang_label["update"].'">';
 else
-	echo '<input name="crtbutton" type="submit" class="sub" value="'.$lang_label["add"].'">';
+	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.$lang_label["add"].'">';
 echo "</form>";
 echo "</table>";
 

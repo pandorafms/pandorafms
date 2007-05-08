@@ -217,19 +217,19 @@ input.sub {
 }
 input.next {
 	padding-right: 21px;
-	background: #e5e5e5 url(../../images/go.png) no-repeat right 4px;
+	background: #e5e5e5 url(../../images/go.png) no-repeat right 2px;
 }
 input.upd {
 	padding-right: 21px;
-	background: #e5e5e5 url(../../images/upd.png) no-repeat right 5px;
+	background: #e5e5e5 url(../../images/upd.png) no-repeat right 3px;
 }
 input.wand {
 	padding-right: 21px;
-	background: #e5e5e5 url(../../images/wand.png) no-repeat right 4px;
+	background: #e5e5e5 url(../../images/wand.png) no-repeat right 3px;
 }
 input.delete {
 	padding-right: 21px;
-	background: #e5e5e5 url(../../images/cross.png) no-repeat right 4px;
+	background: #e5e5e5 url(../../images/cross.png) no-repeat right 3px;
 }
 table, img {
 	border: 0px;
@@ -240,21 +240,23 @@ th, td.lb {
 }
 td.lb_view {
 	color: #fff;
-	background-color: #7ba04a;
+	/*background-color: #7ba04a;*/
+	background-color: #778866;
 }
 td.lb, td.lb_view {
 	height: 16px;
 	padding-left: 3px;
 	font-weight: bold;
 }
-td.datos, td.datost, td.datosb, td.datos_id , td.datosf9 {
+td.datos, td.datost, td.datosb , td.datos_id, td.datosf9 {
 	background-color: #f9f9f9;
 }
 td.datos2, td.datos2t, td.datos2b, td.datos2_id , td.datos2f9 {
 	background-color: #efefef; 
 }
 td.datos3 {
-	background-color: #a7b896;
+	/*background-color: #a7b896;*/
+	background-color: #d4ddc6;
 }
 td.datos_id {
 	color: #1a313a;

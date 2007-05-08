@@ -58,7 +58,7 @@ if ($id_sg != -1)
 else
 	echo "<form name='snmp_c' method='post' action='http://pandora.localhost/index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&create=1'>";
 	
-echo "<tr><td class='lb' rowspan='3' width='5'>";
+echo "<tr><td class='lb' rowspan='3' width='3'>";
 echo "<td class='datos'>".$lang_label["name"];
 echo "<td class='datos'><input type='text' name='name' size=30 value='$name'>";
 
@@ -78,9 +78,9 @@ echo "	<tr><td colspan='3'><div class='raya'></div></td></tr>
 	<tr><td colspan='3' align='right'>";
 
 if ($id_sg == -1)
-	echo "<input name='crtbutton' type='submit' class='sub' value='".$lang_label["create"]."'>";
+	echo "<input name='crtbutton' type='submit' class='sub wand' value='".$lang_label["create"]."'>";
 else
-	echo "<input name='uptbutton' type='submit' class='sub' value='".$lang_label["update"]."'>";
+	echo "<input name='uptbutton' type='submit' class='sub upd' value='".$lang_label["update"]."'>";
 
 echo "</form></table>";
 

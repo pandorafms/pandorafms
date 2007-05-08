@@ -306,7 +306,7 @@ if (comprueba_login() == 0)
 			
 			<td align="right" class="datosb">
 			<input type="submit" name="copiar" class="sub" value="<?php echo $lang_label["copy"].'" onClick="if (!confirm("'.$lang_label["are_you_sure"].'")) return false;>'; ?>
-			<input type="submit" name="eliminar" class="sub" value="<?php echo $lang_label["delete"].'" onClick="if (!confirm("'.$lang_label["are_you_sure"].'")) return false;>'; ?>
+			<input type="submit" name="eliminar" class="sub delete" value="<?php echo $lang_label["delete"].'" onClick="if (!confirm("'.$lang_label["are_you_sure"].'")) return false;>'; ?>
 			<tr><td colspan=2>
 			</div></td></tr>
 			</table>

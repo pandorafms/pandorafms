@@ -125,7 +125,7 @@ $mis_grupos = list_group ($id_user); //Print combo for groups and set an array w
 echo "</select>";
 echo "<td valign='middle'>
 <noscript>
-<input name='uptbutton' type='submit' class='sub'
+<input name='uptbutton' type='submit' class='sub upd'
 value='".$lang_label["show"]."'>
 </noscript>
 </td>
@@ -199,7 +199,7 @@ if (mysql_num_rows($result)){
 	// Create agent button
 	echo "<form method='post' action='index.php?sec=gagente&
 	sec2=godmode/agentes/configurar_agente&create_agent=1'>";
-	echo "<input type='submit' class='sub wand' name='crt'
+	echo "<input type='submit' class='sub next' name='crt'
 	value='".$lang_label["create_agent"]."'>";
 	echo "</form></td></tr></table>";
 ?>

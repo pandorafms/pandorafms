@@ -134,7 +134,7 @@ if (comprueba_login() == 0) {
 			}
 			
 			$nombre_tipo_modulo = dame_nombre_tipo_modulo($row3["id_tipo_modulo"]);
-			echo "<td class='".$tdcolor."_id'>";
+			echo "<td class='".$tdcolor."_id' title='".salida_limpia($row3["nombre"])."'>";
 			echo salida_limpia(substr($row3["nombre"],0,15));
 			echo "<td class='".$tdcolor."'>";
 			echo "<img src='images/".show_icon_type($row3["id_tipo_modulo"])."' border=0>";
@@ -147,7 +147,7 @@ if (comprueba_login() == 0) {
 				$real_interval = $intervalo_agente;
 			}
 			//echo $nombre_tipo_modulo;
-			echo "<td class='".$tdcolor."f9' title='".$row3["descripcion"]."'>"; 
+			echo "<td class='".$tdcolor."f9' title='".salida_limpia($row3["descripcion"])."'>"; 
 			echo salida_limpia(substr($row3["descripcion"],0,32));
 			if (strlen($row3["descripcion"]) > 32){
 				echo "...";

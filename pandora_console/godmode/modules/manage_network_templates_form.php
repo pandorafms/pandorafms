@@ -173,9 +173,9 @@ echo "<table width=550>";
 echo '<tr><td><div class="raya"></div></td></tr>';
 echo '<tr><td align="right" >';
 if ($id_np == -1)
-	echo '<input name="crtbutton" type="submit" class="sub" value="'.$lang_label["create"].'">';
+	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.$lang_label["create"].'">';
 else
-	echo '<input name="crtbutton" type="submit" class="sub" value="'.$lang_label["update"].'">';
+	echo '<input name="updbutton" type="submit" class="sub upd" value="'.$lang_label["update"].'">';
 echo "</table>";
 echo "</form>";
 
@@ -194,7 +194,7 @@ if ($id_np != -1){
 	echo "</select>";
 
 	echo '<td valign="top">';
-	echo '<input name="crtbutton" type="submit" class="sub" value="'.$lang_label["add"].'">';
+	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.$lang_label["add"].'">';
 	echo "</table>";
 	echo "</form>";
 }

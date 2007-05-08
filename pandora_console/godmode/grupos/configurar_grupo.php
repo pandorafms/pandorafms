@@ -100,9 +100,9 @@ sec2=godmode/grupos/lista_grupos">
 
 	//  Parent 
 
-	echo "<tr><td class='datos2'>";
+	echo "<tr><td class='datos'>";
         echo $lang_label["parent"];
-        echo '<td class="datos2">';
+        echo '<td class="datos">';
         echo '<select name="parent">';
         if ($id_parent != ""){
         	echo "<option value=$id_parent>".dame_nombre_grupo($id_parent);

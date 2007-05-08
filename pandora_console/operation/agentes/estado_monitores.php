@@ -29,7 +29,12 @@ if (comprueba_login() == 0) {
 	if (mysql_num_rows ($result_t)) {
 		echo "<h3>".$lang_label["monitor_listing"]."<a href='help/".$help_code."/chap3.php#3323' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 		echo "<table width='750' cellpadding=3 cellspacing=3>";
-		echo "<tr><th>".$lang_label["type"]."<th>".$lang_label["module_name"]."<th>".$lang_label["description"]."<th>".$lang_label["status"]."<th>".$lang_label["interval"]."<th>".$lang_label["last_contact"];
+		echo "<tr><th>".$lang_label["type"]."</th>
+		<th>".$lang_label["module_name"]."</th>
+		<th>".$lang_label["description"]."</th>
+		<th>".$lang_label["status"]."</th>
+		<th>".$lang_label["interval"]."</th>
+		<th>".$lang_label["last_contact"]."</th>";
 		$color=0;
 		while ($row_t=mysql_fetch_array($result_t)){
 			# For evey module in the status table
@@ -87,7 +92,15 @@ if (comprueba_login() == 0) {
 				if ($agent_down == 1) { // If agent down, it's shown red and bold
 					echo  "<span class='redb'>";
 				}
-				echo $row_t["timestamp"]."</span></td>";
+				else {
+					echo "<span>";
+				}
+				if ($row_t["timestamp"]=='0000-00-00 00:00:00') {
+					echo $lang_label["never"];
+				} else {
+					echo $row_t["timestamp"];
+				}
+				echo "</span></td>";
 			}
 		}
 		echo '<tr><td colspan="7"><div class="raya"></div></td></tr></table>';

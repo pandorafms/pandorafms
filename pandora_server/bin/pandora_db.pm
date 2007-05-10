@@ -323,7 +323,7 @@ sub pandora_writestate (%$$$$$$$) {
 	my $nombre_agente = $_[1];
 	my $tipo_modulo = $_[2];
 	my $nombre_modulo = $_[3];
-	my $datos = $_[4]; # OJO, no pasa una estructura sino un valor discreto
+	my $datos = $_[4]; # Careful: Dont pass a hash, only a single value
 	my $estado = $_[5];
 	my $dbh = $_[6];
 	my $needs_update = $_[7];
@@ -331,28 +331,32 @@ sub pandora_writestate (%$$$$$$$) {
 	my $utimestamp; # integer version of timestamp	
 	$utimestamp = &UnixDate($timestamp,"%s"); # convert from human to integer
 	my @data;
-	my $cambio = 0; my $id_grupo;
+	my $cambio = 0; 
+	my $id_grupo;
 	my $server_name = $pa_config->{'servername'}.$pa_config->{"servermode"};
+
 	# Get id
 	# BE CAREFUL: We don't verify the strings chains
 	# TO DO: Verify errors
 	my $id_agente = dame_agente_id ($pa_config, $nombre_agente, $dbh);
 	my $id_modulo = dame_modulo_id ($pa_config, $tipo_modulo, $dbh);
 	my $id_agente_modulo = dame_agente_modulo_id($pa_config, $id_agente, $id_modulo, $nombre_modulo, $dbh);
-	if (($id_agente eq "-1") || ($id_agente_modulo eq "-1")) {
+	if (($id_agente ==  -1) || ($id_agente_modulo == -1)) {
 		goto fin_pandora_writestate;
 	}
 	# Seek for agent_interval or module_interval
-	my $query_idag = "SELECT * FROM tagente_modulo WHERE id_agente_modulo = " . $id_agente_modulo;;
+	my $query_idag = "SELECT * FROM tagente_modulo WHERE id_agente = $id_agente AND id_agente_modulo = " . $id_agente_modulo;;
 	my $s_idag = $dbh->prepare($query_idag);
 	$s_idag ->execute;
 	if ($s_idag->rows == 0) {
 		logger( $pa_config, "ERROR Cannot find agenteModulo $id_agente_modulo",4);
 		logger( $pa_config, "ERROR: SQL Query is $query_idag ",10);
-	} else  {    @data = $s_idag->fetchrow_array(); }
+	} else  {    
+		@data = $s_idag->fetchrow_array(); 
+	}
 	my $module_interval = $data[7];
 	if ($module_interval == 0){
-		$module_interval = dame_intervalo($pa_config, $id_agente, $dbh);
+		$module_interval = dame_intervalo ($pa_config, $id_agente, $dbh);
  	}
 	$s_idag->finish();
 	
@@ -360,13 +364,14 @@ sub pandora_writestate (%$$$$$$$) {
 	eval {
 		# Alerts checks for Agents, only for master servers
                 if ($pa_config->{"pandora_master"} == 1){
-			pandora_calcula_alerta($pa_config, $timestamp, $nombre_agente, $tipo_modulo, $nombre_modulo, $datos, $dbh);
+			pandora_calcula_alerta ($pa_config, $timestamp, $nombre_agente, $tipo_modulo, $nombre_modulo, $datos, $dbh);
 		}
 	};
 	if ($@) {
-			logger($pa_config, "ERROR: Error in SUB calcula_alerta(). ModuleName: $nombre_modulo ModuleType: $tipo_modulo AgentName: $nombre_agente",8);
-			logger($pa_config, "ERROR Code: $@",1)
+		logger($pa_config, "ERROR: Error in SUB calcula_alerta(). ModuleName: $nombre_modulo ModuleType: $tipo_modulo AgentName: $nombre_agente", 4);
+		logger($pa_config, "ERROR Code: $@",10)
 	}
+
 	# $id_agente is agent ID to update ".dame_nombreagente_agentemodulo ($id_agente_modulo)."
 	# Let's see if there is any entry at tagente_estado table
 	my $idages = "SELECT * from tagente_estado WHERE id_agente_modulo = $id_agente_modulo";
@@ -394,13 +399,13 @@ sub pandora_writestate (%$$$$$$$) {
 			if ( $estado == 1) {
 				$descripcion = "Monitor ($nombre_modulo) goes down";
 			}
-			pandora_event($pa_config, $descripcion, $id_grupo, $id_agente, $dbh);
+			pandora_event ($pa_config, $descripcion, $id_grupo, $id_agente, $dbh);
 	        }
 	        if ($needs_update == 1) {
-    			$query_act = "update tagente_estado set utimestamp = '$utimestamp', datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, last_try = '$timestamp', current_interval = '$module_interval', running_by = 0 where id_agente_modulo = '$id_agente_modulo'";
+    			$query_act = "UPDATE tagente_estado set utimestamp = '$utimestamp', datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, last_try = '$timestamp', current_interval = '$module_interval', running_by = 0 where id_agente_modulo = '$id_agente_modulo'";
     		} else { # dont update last_try field, that it's the field
     			 # we use to check last update time in database
-    			$query_act = "update tagente_estado set utimestamp = '$utimestamp', datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, current_interval = '$module_interval', running_by = 0 where id_agente_modulo = '$id_agente_modulo'";
+    			$query_act = "UPDATE tagente_estado set utimestamp = '$utimestamp', datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, current_interval = '$module_interval', running_by = 0 where id_agente_modulo = '$id_agente_modulo'";
     		}
     	}
 	my $a_idages = $dbh->prepare($query_act);
@@ -557,7 +562,6 @@ sub module_generic_data (%$$$$$) {
 		} else {
 			$m_data =0;
 		}
-		# to change this, you need to change mysql structure
 		$m_data =~ s/\,/\./g; # replace "," by "."
 		my $a_max = $datos->{max}->[0];
 		my $a_min = $datos->{min}->[0];
@@ -1518,8 +1522,8 @@ sub dame_ultimo_contacto (%$$) {
         my $s_idag = $dbh->prepare($query_idag);
         $s_idag ->execute;
     	if ($s_idag->rows == 0) {
-        	logger($pa_config, "ERROR dame_ultimo_contacto(): Cannot find agente $id_agente",1);
-      	 	logger($pa_config, "ERROR: SQL Query is $query_idag ",2);
+        	logger($pa_config, "ERROR dame_ultimo_contacto(): Cannot find agente $id_agente", 2);
+      	 	logger($pa_config, "ERROR: SQL Query is $query_idag ", 10);
     	} else  {    @data = $s_idag->fetchrow_array(); }
     	$tipo= $data[5];
     	$s_idag->finish();
@@ -1542,12 +1546,13 @@ sub crea_agente_modulo (%$$$$$$$) {
 
     # Sanity checks
     if (!defined($nombre_modulo)){
+	logger($pa_config, "ERROR crea_agente_modulo(): Undefined module name", 2);
         return -1;
     }   
    
 	my $modulo_id = dame_modulo_id ($pa_config, $tipo_modulo, $dbh);
 	my $agente_id = dame_agente_id ($pa_config, $nombre_agente, $dbh);
-    if (!defined($id_agente) || ($id_agente < 0)){
+    if (!defined($agente_id) || ($agente_id < 0)){
         return -1;
     }   
 	if ((!defined($max)) || ($max eq "")){
@@ -1572,7 +1577,7 @@ sub crea_agente_modulo (%$$$$$$$) {
 	} elsif ($min eq "") {
 		$query = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,min,descripcion) VALUES 	($agente_id, $modulo_id, $nombre_modulo, $min, $descripcion)";
 	}
-	logger( $pa_config, "DEBUG: Query for autocreate : $query ", 8);	
+	logger( $pa_config, "DEBUG: Query for autocreate : $query ", 10);	
     	$dbh->do($query);
 	return $dbh->{'mysql_insertid'};
 }

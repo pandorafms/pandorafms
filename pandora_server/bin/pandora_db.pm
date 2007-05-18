@@ -601,18 +601,17 @@ sub module_generic_data_inc (%$$$$$) {
 	my $a_desc = $datos->{description}->[0];
 	my $m_data = $datos->{data}->[0];
 	my $a_max = $datos->{max}->[0];
-    my $a_min = $datos->{min}->[0];
-
-	if (ref($m_data) ne "HASH"){
+	my $a_min = $datos->{min}->[0];
+	if (is_numeric($m_data)){
 		$m_data =~ s/\,/\./g; # replace "," by "."
 		$m_data = sprintf("%.2f", $m_data);	# Two decimal float. We cannot store more
 							# to change this, you need to change mysql structure
 		$m_data =~ s/\,/\./g; # replace "," by "."
 	
-		if (ref($a_max) eq "HASH") {
+		if (!is_numeric($a_max)) {
 			$a_max = "";
 		}
-		if (ref($a_min) eq "HASH") {
+		if (!is_numeric($a_min)) {
 			$a_min = "";
 		}	
 		# my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
@@ -650,8 +649,16 @@ sub module_generic_data_inc (%$$$$$) {
                 	my $s_idag = $dbh->prepare($query_idag);
 			$s_idag->execute;
 			my @data_row = $s_idag->fetchrow_array();
-			$data_anterior = $data_row[2];
-			$timestamp_anterior = $data_row[4];
+			if (is_numeric($data_row[2])){
+				$data_anterior = $data_row[2];
+			} else {
+				$data_anterior = 0;
+			}
+			if (is_numeric($data_row[4])){
+				$timestamp_anterior = $data_row[4];
+			} else {
+				$timestamp_anterior = 0;
+			}
 		
 			$diferencia = $m_data - $data_anterior;
 			$timestamp_diferencia = $m_utimestamp - $timestamp_anterior;
@@ -667,12 +674,12 @@ sub module_generic_data_inc (%$$$$$) {
 	
 		# Update of tagente_datos_inx (AUX TABLE)	
 		if ($no_existe == 1){
-			my $query = "INSERT INTO tagente_datos_inc (id_agente_modulo,datos, timestamp) VALUES ($id_agente_modulo, '$m_data', '$m_timestamp', $m_utimestamp)";
+			my $query = "INSERT INTO tagente_datos_inc (id_agente_modulo,datos, timestamp, utimestamp) VALUES ($id_agente_modulo, '$m_data', '$m_timestamp', $m_utimestamp)";
 			$dbh->do($query);
 		} else {
 			# Data exists previously	
 			if ($diferencia != 0) {
-				my $query2 = "UPDATE tagente_datos_inc SET utimestamp = $m_utimestamp, datos = '$m_data' WHERE id_agente_modulo  = $id_agente_modulo";
+				my $query2 = "UPDATE tagente_datos_inc SET timestamp='$m_timestamp', utimestamp = $m_utimestamp, datos = '$m_data' WHERE id_agente_modulo  = $id_agente_modulo";
 				$dbh->do($query2);
 			}
 		}
@@ -855,14 +862,14 @@ sub pandora_writedata (%$$$$$$$$$$){
 			$timestamp = $dbh->quote($timestamp);
 			# Parse data entry for adecuate SQL representation.
 			$query = "INSERT INTO tagente_datos_string (id_agente_modulo, datos, timestamp, utimestamp, id_agente) VALUES ($id_agente_modulo, $datos, $timestamp, $utimestamp, $id_agente)";
-		} else {
+		} elsif (is_numeric($datos)){
 			if ($max != $min) {
-				if ($datos > $max) { 
+				if (int($datos) > $max) { 
 					$datos = $max; 
 					$outlimit=1;
 					logger($pa_config,"DEBUG: MAX Value reached ($max) for agent $nombre_agente / $nombre_modulo",6);
 				}		
-				if ($datos < $min) { 
+				if (int($datos) < $min) { 
 					$datos = $min;
 					$outlimit = 1;
 					logger($pa_config, "DEBUG: MIN Value reached ($min) for agent $nombre_agente / $nombre_modulo",6);

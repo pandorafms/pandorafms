@@ -9,12 +9,12 @@
 	border-bottom: 1px solid #d4d4d4;
 	border-top: 1px solid #eee;
 }
-div#menuop {
+div.menuop {
 	background-color: #e6e9cd;
 	border: 1px solid #dadbdb;
 	/* border: 1px solid #4a6629; */
 	width: 155px;
-	margin-bottom: 15px;
+	margin-bottom: 5px;
 	}
 #op1 li, #op2 li, #op3 li, #op4 li, #op5 li, #op6 li, #op7 li, #op8 li, #op9 li,
 #op1s li, #op2s li, #op3s li, #op4s li, #op5s li, #op6s li, #op7s li, #op8s li, #op9s li {

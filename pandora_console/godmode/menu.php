@@ -29,8 +29,7 @@ if (comprueba_login() == 0){
 ?>
 
 <div class="tit bg3">:: <?php echo $lang_label["godmode_header"] ?> ::</div>
-<div id="menug">
-	<div id="god">
+<div class="menug" id="god">
 	
 <?PHP
 	if ((give_acl($id_user, 0, "AW")==1)){
@@ -216,7 +215,6 @@ if (comprueba_login() == 0){
 		}
 	}
 	?>
-	</div>
 </div>
 <?php
 	} // end verify access to this menu

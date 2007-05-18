@@ -171,7 +171,7 @@ echo "<h2>".$lang_label["agent_conf"]." &gt; ".$lang_label["assigned_modules"]."
 	echo "&nbsp;&nbsp;<a class='info' href='#module_assignment'> <span>".$lang_label["module_asociation_form"]."</span><img src='images/wand.png'></a>";
 	echo "</h2>";
 if ($row=mysql_num_rows($result)){
-	echo '<table width="750" cellpadding="3" cellspacing="3" class="fon">';
+	echo '<table width="750" cellpadding="4" cellspacing="4" class="databox">';
 	echo '<tr>';
 	echo "<th>".$lang_label["module_name"];
 	echo "<th>".$lang_label["type"];
@@ -237,7 +237,6 @@ if ($row=mysql_num_rows($result)){
                         echo "<img src='images/chart_curve.png' border=0></b></a>";
 		}
 	}
-	echo "<tr><td colspan='7'><div class='raya'></div></td></tr>";
 	echo "</table>";
 } else
 	echo "<div class='nf'>No modules</div>";
@@ -271,8 +270,7 @@ else { // Create
 }
 
 echo '<a name="modules"> <!-- Dont Delete !! -->';
-echo '<table width="700" cellpadding="3" cellspacing="3" class="fon">';
-echo "<tr><td class='lb' rowspan='11' width='1'>";
+echo '<table width="700" cellpadding="4" cellspacing="4" class="databox_color">';
 
 echo '<tr><td class="datos3">';
 echo $lang_label["network_component"];
@@ -375,7 +373,7 @@ if (isset($_POST["oid"])){
 }
 ?>
 </select>
-<td class="datos2"><input type="submit" name="oid" value="SNMP Walk">
+<td class="datos2"><input type="submit" class="sub next" name="oid" value="SNMP Walk">
 
 <tr><td class="datost"><?php echo $lang_label["tcp_send"] ?>
 <td class="datos"><textarea name="tcp_send" cols="22" rows="2"><?php echo $tcp_send ?></textarea>
@@ -393,19 +391,17 @@ if (isset($_POST["oid"])){
 <textarea name="descripcion" cols=71 rows=2>
 <?php echo $modulo_descripcion ?>
 </textarea>
-<tr><td colspan='5'><div class='raya'></div></td></tr>
-<tr>
 <?php
-	echo "<td colspan=5 align='right'>";
+	echo "</table>";
+	echo "<table width=700>";
+	echo "<td align='right'>";
 	if ($update_module == "1"){
 		echo '<input name="updbutton" type="submit" class="sub next" value="'.$lang_label["update"].'">';
 	} else {
 		echo '<input name="crtbutton" type="submit" class="sub wand" value="'.$lang_label["add"].'">';
 	}
 	echo "</form>";
-
+	echo "</table>";
 
 ?>
-
-</table>
 

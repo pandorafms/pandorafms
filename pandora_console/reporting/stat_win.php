@@ -45,6 +45,8 @@ echo '<style>';
 include("../include/styles/pandora.css");
 echo '</style>';
 
+echo "<body bgcolor=#ffffff>";
+
 // Get input parameters
 
 if (isset($_GET["label"]))

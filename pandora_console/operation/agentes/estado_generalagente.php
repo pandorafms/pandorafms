@@ -59,10 +59,9 @@ if (comprueba_login() == 0) {
 	// Blank space below title
 	echo "<div style='height: 10px'> </div>";
 	
-	echo '<table cellspacing="0" cellpadding="0" width="780" border=0>';
+	echo '<table cellspacing="0" cellpadding="0" width="780" border=0 class="databox">';
 	echo "<tr><td>";
-	echo '<table cellspacing="4" cellpadding="4" border=0>';
-	echo "<tr><td class='lb_view' rowspan='12' width='1'>";
+	echo '<table cellspacing="4" cellpadding="4" border=0 class="databox"> ';
 	echo '<tr>
 	<td class="datos"><b>'.$lang_label["agent_name"].'</b></td>
 	<td class="datos"><b>'.strtoupper(salida_limpia($nombre_agente));

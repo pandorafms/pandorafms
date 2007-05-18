@@ -1,3 +1,28 @@
+2007-05-18  Sancho Lerena  <slerena@gmail.com>
+
+	* include/styles/pandora.css : Some style changes.
+
+	* include/functions.php: Changed format_numeric and format_for_graph to show a 
+	better number formatting.
+
+	* index.php: Some minor changes in layout and bgcolor (not used style because 
+	some pages that don't have the same color uses main style, f.e: stat_win for graphs).
+
+	* godmode/agentes/module_manager.php
+	* operation/agentes/estado_ultimopaquete.php
+	* operation/agentes/estado_monitores.php
+	* operation/agentes/estado_generalagente.php
+	* operation/agentes/datos_agente.php, estado_ul: Updated output render and fixes 
+	some tables, added databox style, removed line.
+
+	* operation/menu.php: Removed active console. This don't go with 1.3 version 
+	finally due many unfixed bugs.
+
+	* reporting/stat_win.php: White background fixed.
+
+	* general/header.php
+	* general/footer.php: Some adjustments in styles.
+
 2007-05-18  Raul Mateos  <raulofpandora@gmail.com>
 
 	* images/header.png: New graphic image for header in the new design.

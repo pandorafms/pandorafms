@@ -377,7 +377,7 @@ function format_numeric ( $number, $decimals=2, $dec_point=".", $thousands_sep="
 		return 0;
 	// If has decimals
 	if (fmod($number , 1)> 0)
-		return number_format ($number, 2, $dec_point, $thousands_sep);
+		return number_format ($number, $decimals, $dec_point, $thousands_sep);
 	else
 		return number_format ($number, 0, $dec_point, $thousands_sep);
 }
@@ -385,12 +385,16 @@ function format_numeric ( $number, $decimals=2, $dec_point=".", $thousands_sep="
 // ---------------------------------------------------------------
 // Render numeric data in a easy way to the user
 // ---------------------------------------------------------------
-function format_for_graph ( $number ) {
+function format_for_graph ( $number , $decimals=2, $dec_point=".", $thousands_sep=",") {
 	if ($number > "1000000")
-		return number_format ($number/1000000, 1, ".", ",")." M";
+		return number_format ($number/1000000, $decimals, $dec_point, $thousands_sep)." M";
 	if ($number > "1000")
-		return number_format ($number/1000, 1, ".", ",")." K";
-	return $number;
+		return number_format ($number/1000, $decimals, $dec_point, $thousands_sep )." K";
+	// If has decimals
+        if (fmod($number , 1)> 0)
+                return number_format ($number, $decimals, $dec_point, $thousands_sep);
+        else
+                return number_format ($number, 0, $dec_point, $thousands_sep);	
 }
 
 

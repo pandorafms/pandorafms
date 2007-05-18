@@ -22,30 +22,32 @@ echo '
 <div id="head_r">
 	<span id="logo_text1">Pandora</span> <span id="logo_text2">FMS</span>
 </div>
-<div_id="head_l">
+<div id="head_l">
 	<a href="index.php"><img src="images/logo_menu.gif" border="0" alt="logo"></a>
 </div>
 
 ';
-/* echo "<table border='0' style='margin-right: 145px;margin-top: 20px;'>
+echo "<div id='head_m'>";
+
+echo "<table border='0'>
 	<tr>";
 if (isset ($_SESSION["id_usuario"])){
 	echo "<td width=40%>";
 	$id_usuario = entrada_limpia ($_SESSION["id_usuario"]);
-	if (dame_admin($id_usuario)==1)
+	if (dame_admin($_SESSION["id_usuario"])==1)
 		echo "<img src='images/user_suit.png' class='bot'> ";
 	else
 		echo "<img src='images/user_green.png' class='bot'> ";
-	echo $lang_label["has_connected"]. '
-	[<b class="f10">'. $id_usuario. '</b>]';
-	echo "<td width=30%>";
-	echo "<a href='index.php?sec=main'><img src='images/information.png' class='bot'> ". $lang_label["information"]."</a>";
-	echo "<td width=20%>";
-	echo "<a href='help/en/toc.php'><img src='images/help.png' class='bot'> ". $lang_label["help"]."</a>";
-	echo "<td align='right' width=10%>";
-	echo "<a href='index.php?bye=bye'><img src='images/lock.png' class='bot'> ". $lang_label["logout"]."</a>";
+	echo "<a class='white'>".$lang_label["has_connected"]. '
+	[<b>'. $id_usuario. '</b>]</a>';
+	echo "<br>";
+	echo "<a class='white_bold' href='index.php?bye=bye'><img src='images/lock.png' class='bot'> ". $lang_label["logout"]."</a>";
+	echo "</td><td width='25'> </td><td>";
+	echo "<a class='white_bold' href='index.php?sec=main'><img src='images/information.png' class='bot'> ". $lang_label["information"]."</a>";
+	echo "<br>";	
+	echo "<a class='white_bold' href='help/en/toc.php'><img src='images/help.png' class='bot'> ". $lang_label["help"]."</a>";
 }
 echo "</tr></table>";
-*/
+echo "</div>";
 
 ?>

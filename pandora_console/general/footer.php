@@ -15,25 +15,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-?>
-<p align='center'>
-
-<?PHP
-echo '
-<a target="_new" href="general/license/pandora_info_'.$language_code.'.html">
+echo "</center>";
+echo '<a class="white_bold" target="_new" href="general/license/pandora_info_'.$language_code.'.html">
 Pandora FMS '.$pandora_version.' Build '.$build_version.' '.
 $lang_label["gpl_notice"].'</a><br>';
-if (isset($_SESSION['id_usuario'])) {
-
 	if (isset($_SERVER['REQUEST_TIME'])) {
 		$time = $_SERVER['REQUEST_TIME'];
 	} else {
 		$time = time();
 	}
-	echo $lang_label["gen_date"]." ".date("D F d, Y H:i:s", $time)."<br>";
-}
+	echo "<a class='white'>".$lang_label["gen_date"]." ".date("D F d, Y H:i:s", $time)."</a><br>";
+echo "</center>";
 ?>
-
-<i>Pandora FMS is a <a target="_new" href="http://pandora.sourceforge.net">
-SourceForge registered project</a></i>
-</p>

@@ -97,7 +97,7 @@ if (isset ($_GET["refr"])){
 
 <?php
 	// Show custom background
-	echo '<body>';
+	echo '<body bgcolor=#555555>';
 	$REMOTE_ADDR = getenv ("REMOTE_ADDR");
    	global $REMOTE_ADDR;
 
@@ -188,10 +188,11 @@ if (isset ($_GET["refr"])){
 	session_write_close(); 
 ?>
 
-<div id='head'>
+<div style='border-left: solid 2px #000; width: 960px; border-right: solid 2px #000; border-top: solid 2px #000; margin-top: 5px;'>  
+<div id='head' style='border-bottom: solid 2px #555;'>
 	<?php require("general/header.php"); ?>
 </div>
-<div id="page">
+<div id="page" style='border-top: solid 5px #778855;'>
 	<div id="menu">
 		<?php require ("general/main_menu.php"); ?>
 	</div>
@@ -210,9 +211,10 @@ if (isset ($_GET["refr"])){
 	</div>
 	<div style="clear:both"></div>
 </div>
-
 <div id="foot">
 	<?php require("general/footer.php") ?>
 </div>
+</div>
+
 </body>
 </html>

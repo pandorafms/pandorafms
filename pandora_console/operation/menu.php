@@ -3,7 +3,7 @@
 // Pandora - the Free monitoring system
 // ====================================
 // Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L, info@artica.es
+// Copyright (c) 2005-2006 Artica Soluciones Tecnolï¿½gicas S.L, info@artica.es
 // Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -25,8 +25,7 @@ if (! isset($_SESSION["id_usuario"])) {
 
 ?>
 <div class="tit bg">:: <?php echo $lang_label["operation_header"] ?> ::</div>
-<div id="menuop">
-<div id="op">
+<div class="menuop" id="op">
 <?php
 
 // Agent read, Server read
@@ -241,4 +240,3 @@ if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 
 ?>		
 </div>
-</div>	

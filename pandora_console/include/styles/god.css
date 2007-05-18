@@ -9,11 +9,11 @@
 	border-bottom: 1px solid #d4d4d4;
 	border-top: 1px solid #ffffff;
 }
-div#menug {
+div.menug {
 	background-color: #f5f5dc;
 	border: 1px solid #dadbdc;
 	width: 155px;
-	margin-bottom: 15px;
+	margin-bottom: 5px;
 	}
 #god1 li, #god2 li, #god3 li, #god4 li, #god5 li, #god6 li, #god7 li, #god8 li, #god1s li, 
 #god2s li, #god3s li, #god4s li, #god5s li, #god6s li, #god7s li, #god8s li, #god_module li, #god_module_sel li {
@@ -49,7 +49,7 @@ div#god5s>ul, div#god6s>ul, div#god7s>ul, div#god8s>ul, div#god_module>ul, div#g
 	background: url(../../images/god8.gif) no-repeat 5px 3px;
 }
 #god_module li, #god_module li:hover, #god_module_sel li {
-	background: url(../../images/brick.png) no-repeat 4px 5px;
+	background: url(../../images/brick.png) no-repeat 6px 4px;
 }
 div.arrowg>ul, div.arrowgs>ul {
 	width: 74%;

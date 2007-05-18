@@ -1,3 +1,10 @@
+2007-05-18  Raul Mateos  <raulofpandora@gmail.com>
+
+	* images/header.png: New graphic image for header in the new design.
+
+	* Style / Graphic changes for new design (not finished).
+
+
 2007-05-08  Raul Mateos  <raulofpandora@gmail.com>
 
 	* godmode/modules/*.php, godmode/agentes/*.php: Added icon to buttons.

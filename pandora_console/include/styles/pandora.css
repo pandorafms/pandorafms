@@ -27,10 +27,13 @@
 @import url(god.css);
 @import url(link.css);
 @import url(tip.css);
-@import url(calendar.css);
 * {
 	font-family: Verdana, sans-serif, Arial, Helvetica;
 	font-size: 11px;
+}
+body {
+	background-color: #555;
+	margin-top: 0;
 }
 input, textarea {
 	border: 1px solid #eee;
@@ -149,29 +152,43 @@ div#db_ftxt {
 	float: right;
 	padding-top: 10px;
 }
-#page {
+div#page {
 	width: 960px;
+	background: #fff;
+	clear: both;
 }
-#main {
-	width: 780px;
+div#main {
+	width: 770px;
 	float: right;
+	border-top: 5px solid #778855;
+	padding-left: 20px;
+	padding-top: 0px;
+	padding-bottom: 20px;
+	margin-bottom: 25px;
+	background-color: #fefefe;
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-right: 0px;
 }
-#menu {
+div#menu {
 	width: 155px;
 	float: left;
 }
 div#page>div#menu {
 	width: 157px;
 }
-#head {
-	padding-bottom: 10px;
+div#head {
 	font-size: 10px;
-	width: 100%;
-	margin-left: 15px;
+	width: 960px;
+	height: 60px;
+	border-bottom: solid 3px #000;
+	background: url(../../images/header.jpg);
 }
-#foot {
-	padding-top: 25px;
+div#foot {
+	padding-top: 15px;
 	text-align: center;
+	background: #fff;
+	width: 960px;
 	clear: both;
 }
 #ver {
@@ -192,7 +209,7 @@ th > label {
 input:hover {
 	background-color: #d4dccd;
 }
-input.chk {
+input.chk {margin-right: 0px;
 	border: 0px none;
 	height: 14px;
 }
@@ -265,7 +282,7 @@ td.datos_jus, td.datos2_jus {
 	text-align: justify;
 }
 .bg , .bgt { /* op menu */
-	background-color: #4a6629;
+	background-color: #778855;
 }
 .bg2 { /* main page */
 	background-color: #d84437;
@@ -419,23 +436,6 @@ div.title_line {
 	height: 5px;
 	width: 762px;
 }
-div.data_box {
-	border-top: 5px solid #778855;
-	border-right: 1px solid #4e682c;
-	border-bottom: 1px solid #4e682c;
-	padding-left: 20px;
-	padding-top: 0px;
-	padding-bottom: 20px;
-	margin-bottom: 25px;
-	background-color: #fefefe;
-	/* border: 1px solid #dAdBdC; */
-	width: 790px;
-	float: left;
-	margin-top: 0px;
-	margin-left: 2px;
-	margin-right: 0px;
-	min-height: 470px;
-}
 #menu_tab .mn, #menu_tab ul, #menu_tab .mn ul {
 	padding: 0px;
 	list-style: none;
@@ -480,6 +480,7 @@ div.data_box {
 }
 #menu_tab_left li a, #menu_tab_left li.nomn a {
 	background: #ac4444;
+	background: #d84437;
 	padding: 2px 10px 2px 10px;
 	color: #fff;
 	font-weight: bold;
@@ -527,17 +528,37 @@ span.master, span.snmp, span.binary, span.recon {
 	display: block;
 }
 /* New styles for data box */
-.databox_color {
+.databox, .databox_color, .databox_frame {
 	margin: 10px 15px;
 	border: 1px solid #f2f2f2;
-	border-left: 3px solid #ec981f;
 }
 .databox {
-	margin: 10px 15px;
-	border: 1px solid #f2f2f2;
 	background-color: #fafafa;
 }
-.databox_frame {
-	margin: 10px 15px;
-	border: 1px solid #f2f2f2;
+.databox_color {
+	border-left: 3px solid #ec981f;
 }
+#head_l {
+	float: left;
+	margin: 0;
+	padding: 0;
+}
+#head_r {
+	float: right;
+	text-align: right;
+	margin-right: 10px;
+	padding-top: 10px;
+}
+span#logo_text1 {
+	font: bolder 3em Arial, Sans-serif;
+	letter-spacing: -2px;
+	color: #eee;
+}
+span#logo_text2 {
+	font: 3em Arial, Sans-serif;
+	letter-spacing: -2px;
+	color: #aaa;
+}
+
+
+

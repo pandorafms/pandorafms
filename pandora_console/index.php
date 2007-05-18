@@ -97,7 +97,7 @@ if (isset ($_GET["refr"])){
 
 <?php
 	// Show custom background
-	echo '<body background="images/backgrounds/' . $config_bgimage . '">';
+	echo '<body>';
 	$REMOTE_ADDR = getenv ("REMOTE_ADDR");
    	global $REMOTE_ADDR;
 
@@ -187,28 +187,32 @@ if (isset ($_GET["refr"])){
 	// Session locking concurrency speedup!
 	session_write_close(); 
 ?>
-<div id="page">
-	<div id="menu"><?php require ("general/main_menu.php"); ?></div>
-	<div id="main">	
-	<div id='head'><?php require("general/header.php"); ?></div>
-	<!-- <div style='height: 10px'> </div> -->
-	<div class='data_box'>
 
-	<?php
-		// Page loader / selector		
-		if ($pagina != ""){
-			if (file_exists ($pagina . ".php")) {
-				require ($pagina . ".php");
-			} else {
-				echo "<br><b class='error'>Sorry! I can't find the page!</b>";
-			}	
-		} else
-			require ("general/logon_ok.php");  //default
-		
-	?>
-		
-	</div>
+<div id='head'>
+	<?php require("general/header.php"); ?>
 </div>
-<div id="foot"><?php require("general/footer.php") ?></div>
+<div id="page">
+	<div id="menu">
+		<?php require ("general/main_menu.php"); ?>
+	</div>
+	<div id="main" style="background: url(images/backgrounds/<?php echo $config_bgimage; ?>)" >
+		<?php
+			// Page loader / selector
+			if ($pagina != ""){
+				if (file_exists ($pagina . ".php")) {
+					require ($pagina . ".php");
+				} else {
+					echo "<br><b class='error'>Sorry! I can't find the page!</b>";
+				}	
+			} else
+				require ("general/logon_ok.php");  //default
+		?>
+	</div>
+	<div style="clear:both"></div>
+</div>
+
+<div id="foot">
+	<?php require("general/footer.php") ?>
+</div>
 </body>
 </html>

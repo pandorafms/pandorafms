@@ -18,11 +18,9 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ?>
-<br>
-<a href="index.php"><img src="images/logo_menu.gif" border="0" alt="logo"></a>
-<div id='ver'><?php echo $pandora_version; ?></div>
 
-<?php 
+
+<?php
 require ("operation/menu.php");
 if (! isset ($_SESSION["id_usuario"])) {
 	echo '<div class="f10">' . $lang_label["not_connected"];

@@ -23,7 +23,7 @@
 	display: block;
 	color: #000;
 }
-div#menul {
+div.menul {
 	background-color: #e9f3d2;	
 	border: 1px solid #dadbdc;
 	width: 155px;

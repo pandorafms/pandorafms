@@ -18,8 +18,17 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-echo "<table width=100% border='0'>";
-echo "<tr>";
+echo '
+<div id="head_r">
+	<span id="logo_text1">Pandora</span> <span id="logo_text2">FMS</span>
+</div>
+<div_id="head_l">
+	<a href="index.php"><img src="images/logo_menu.gif" border="0" alt="logo"></a>
+</div>
+
+';
+/* echo "<table border='0' style='margin-right: 145px;margin-top: 20px;'>
+	<tr>";
 if (isset ($_SESSION["id_usuario"])){
 	echo "<td width=40%>";
 	$id_usuario = entrada_limpia ($_SESSION["id_usuario"]);
@@ -36,5 +45,7 @@ if (isset ($_SESSION["id_usuario"])){
 	echo "<td align='right' width=10%>";
 	echo "<a href='index.php?bye=bye'><img src='images/lock.png' class='bot'> ". $lang_label["logout"]."</a>";
 }
-echo "</table>";
+echo "</tr></table>";
+*/
+
 ?>

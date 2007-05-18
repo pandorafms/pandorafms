@@ -63,7 +63,7 @@ function datos_raw($id_agente_modulo, $periodo){
 	echo "<h3> $et <a href='help/".$help_code."/chap3.php#3322' target='_help' 
 	class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 	if (mysql_num_rows($result)){
-		echo "<table cellpadding='3' cellspacing='3' width='600'>";
+		echo "<table cellpadding='3' cellspacing='3' width='600' class='databox'>";
 		$color=1;
 		echo "<th>".$lang_label["timestamp"]."</th>";
 		echo "<th>".$lang_label["data"]."</th>";
@@ -89,7 +89,6 @@ function datos_raw($id_agente_modulo, $periodo){
                         } else
                                echo salida_limpia($row["datos"]);
 		}
-		echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
 		echo "</table>";
 	}
  	else  {

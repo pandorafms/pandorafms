@@ -32,11 +32,10 @@
 	font-size: 11px;
 }
 body {
-	background-color: #555;
 	margin-top: 0;
 }
 input, textarea {
-	border: 1px solid #eee;
+	border: 1px solid #ddd;
 	font: Verdana, sans-serif, Arial;
 }
 textarea {
@@ -55,8 +54,8 @@ input.button {
 	margin: 10px 15px;
 }
 select {
-	padding: 2px;
-	border:1px solid #eee;
+	padding: 0px;
+	border:1px solid #ddd;
 	font: normal 1em/1.5em Verdana, sans-serif;
 }
 checkbox {
@@ -64,13 +63,14 @@ checkbox {
 	border:1px solid #eee;
 	font: normal 1em/1.5em Verdana, sans-serif;
 }
-h1, h2 {
-	color: #103a3a;
+h1, h2, h3 {
+	font: bold 1em 'Trebuchet MS', Tahoma, Sans-serif;
+	text-transform: uppercase;
+	color: #778855;
 	padding-bottom: 15px;
 	padding-top: 10px;
 }
 h3 {
-	color: #3c566d;
 	font-size: 13px;
 }
 h1 {
@@ -87,6 +87,16 @@ a:hover {
 	color: #003a3a;
 	text-decoration: underline;
 }
+a.white_bold {
+	color: #eeeeee;
+	text-decoration: none;
+	font-weight: bold;
+}
+a.white {
+        color: #eeeeee;
+        text-decoration: none;
+}
+
 p.center {
 	text-align: center;
 }
@@ -156,12 +166,12 @@ div#page {
 	width: 960px;
 	background: #fff;
 	clear: both;
+	border-bottom: solid 5px #778855;
 }
 div#main {
-	width: 770px;
+	width: 780px;
 	float: right;
-	border-top: 5px solid #778855;
-	padding-left: 20px;
+	padding-left: 0px;
 	padding-top: 0px;
 	padding-bottom: 20px;
 	margin-bottom: 25px;
@@ -181,13 +191,13 @@ div#head {
 	font-size: 10px;
 	width: 960px;
 	height: 60px;
-	border-bottom: solid 3px #000;
 	background: url(../../images/header.jpg);
 }
 div#foot {
-	padding-top: 15px;
+	margin-top: solid 2px #000;
+	padding-top: 5px;
 	text-align: center;
-	background: #fff;
+	background: #000;
 	width: 960px;
 	clear: both;
 }
@@ -533,10 +543,11 @@ span.master, span.snmp, span.binary, span.recon {
 	border: 1px solid #f2f2f2;
 }
 .databox {
+	margin: 0px;   
 	background-color: #fafafa;
 }
 .databox_color {
-	border-left: 3px solid #ec981f;
+	border-left: 4px solid #778855;
 }
 #head_l {
 	float: left;
@@ -548,6 +559,12 @@ span.master, span.snmp, span.binary, span.recon {
 	text-align: right;
 	margin-right: 10px;
 	padding-top: 10px;
+}
+#head_m {
+	position: absolute;
+	padding-top: 7px;
+	padding-left: 210px;	
+	
 }
 span#logo_text1 {
 	font: bolder 3em Arial, Sans-serif;

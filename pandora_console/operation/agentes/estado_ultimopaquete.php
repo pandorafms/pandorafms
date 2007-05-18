@@ -62,8 +62,8 @@ if (comprueba_login() == 0) {
 	echo "<h3>".$lang_label["last_data_chunk"]."<a href='help/".$help_code."/chap3.php#3322' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 	$result3=mysql_query($sql3);
 	if (mysql_num_rows ($result3)) {
-	echo "<table width='750' cellpadding='3' cellspacing='3'>";
-	echo "<th>X</th>";
+	echo "<table width='750' cellpadding='3' cellspacing='3' class='databox'>";
+	echo "<th></th>";
 	echo "<th>".$lang_label["module_name"]."</th>";
 	echo "<th>".$lang_label["type"]."</th>";
 	echo "<th>".$lang_label["int"]."</th>";
@@ -165,7 +165,7 @@ if (comprueba_login() == 0) {
 						$myvalue = $row3["datos"];
 					echo format_for_graph($myvalue );
 				} else
-					echo substr($row3["datos"],0,12);
+					echo substr(salida_limpia($row3["datos"]),0,12);
 
 				$handle = "stat".$nombre_tipo_modulo."_".$row3["id_agente_modulo"];
 				$url = 'reporting/procesos.php?agente='.$row3["id_agente_modulo"];
@@ -209,7 +209,7 @@ if (comprueba_login() == 0) {
 			echo "</td></tr>";
  		//}
 	}
-	echo '<tr><td colspan="9"><div class="raya"></div></td></tr></table>';
+	echo '</table>';
 }
 else {
 	echo "<div class='nf'>".$lang_label["no_modules"]."</div>";

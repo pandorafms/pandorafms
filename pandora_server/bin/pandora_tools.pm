@@ -63,21 +63,25 @@ sub daemonize {
 # Return TRUE if given argument is numeric
 ##########################################################################
 
-sub getnum {
-        use POSIX qw(strtod);
-        my $str = shift;
-        $str =~ s/^\s+//;
-        $str =~ s/\s+$//;
-        $! = 0;
-        my($num, $unparsed) = strtod($str);
-        if (($str eq '') || ($unparsed != 0) || $!) {
-            return undef;
-        } else {
-            return $num;
-        } 
-    } 
-
-sub is_numeric { defined getnum($_[0]) }   
+sub is_numeric {
+	$x = $_[0];
+	if (!defined ($x)){
+		return 0;
+	}
+	if ($x eq ""){
+		return 0;
+	}
+	# Integer ?
+	if ($x =~ /^-?\d/) {
+		return 1;
+	}
+	# Float ?
+	if ($x =~ /^-?\d*\./){
+		return 1;
+	}
+	# If not, this thing is not a number
+	return 0;
+}
 
 ##########################################################################
 # SUB md5check (param_1, param_2)

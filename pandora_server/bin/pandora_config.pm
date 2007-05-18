@@ -163,11 +163,14 @@ sub pandora_loadconfig {
 		}
 	}
  	close (CFG);
+
  	# Process this array with commandline like options 
  	# Process input parameters
+
  	my @args = @command_line;
  	my $parametro;
- 	my $ltotal=$#args; my $ax;
+ 	my $ltotal=$#args; 
+	my $ax;
 
  	# Has read setup file ok ?
  	if ( $ltotal == 0 ) {
@@ -304,7 +307,7 @@ sub pandora_loadconfig {
 	# Dump all errors to errorlog
 	# DISABLED in DEBUGMODE
 	# ENABLE FOR PRODUCTION
-	# open STDERR, ">>$pa_config->{'errorlogfile'}" or die "Can't write to Errorlog : $!";
+	#open STDERR, ">>$pa_config->{'errorlogfile'}" or die "Can't write to Errorlog : $!";
 }
 
 # End of function declaration

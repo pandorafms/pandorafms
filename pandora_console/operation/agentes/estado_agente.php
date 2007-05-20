@@ -64,7 +64,7 @@ if (comprueba_login() == 0) {
 		&refr=60'>";
 	}
 
-	echo "<table cellpadding='3' cellspacing='3'><tr>";
+	echo "<table cellpadding='4' cellspacing='4' class='databox'><tr>";
 	echo "<td>".$lang_label["group"]."</td>";
 	echo "<td valign='middle'>";
 	echo "<select name='ag_group' onChange='javascript:this.form.submit();' 
@@ -110,7 +110,7 @@ if (comprueba_login() == 0) {
 	// Show data.
 	$result=mysql_query($sql);
 	if (mysql_num_rows($result)){
-		echo "<table cellpadding='3' cellspacing='3' width='700' style='margin-top: 10px'>";
+		echo "<table cellpadding='4' cellspacing='4' width='700' class='databox' style='margin-top: 10px'>";
 		echo "<th>".$lang_label["agent"]."</th>";
 		echo "<th>".$lang_label["os"]."</th>";
 		echo "<th>".$lang_label["interval"]."</th>";
@@ -290,7 +290,7 @@ if (comprueba_login() == 0) {
 				
 			} // If pertenece/belongs to group
 		}
-		echo "<tr><td colspan='8'><div class='raya'></div></td></tr>";
+		echo "<tr>";
 		echo "</table><br>";
 		require "bulbs.php";
 	}

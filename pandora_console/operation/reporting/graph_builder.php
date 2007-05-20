@@ -1,5 +1,4 @@
-// <?PHP
-
+<?PHP
 // Pandora FMS - the Free monitoring system
 // ========================================
 // Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
@@ -224,6 +223,19 @@ if (isset($chunk1)) {
 	echo "</form>";
 }
 
+// --------------------------------------
+// Parse chunkdata and render graph
+// --------------------------------------
+if (($render == 1) && (isset($modules))) {
+	// parse chunk
+	echo "<h3>".$lang_label["combined_image"]."</h3>";
+	echo "<table class='databox_frame'>";
+	echo "<tr><td>";
+	echo "<img  src='reporting/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&label=Combined%20Sample%20Graph&height=$height&width=$width&period=$period' border=1 alt=''>";
+	echo "</td></tr></table>";
+
+}
+
 // -----------------------
 // SOURCE AGENT TABLE/FORM
 // -----------------------
@@ -307,6 +319,10 @@ echo "<input type='text' name='height' value='$height' size=6>";
 switch ($period) {
 	case 3600: 	$period_label = "Hour";
 			break;
+	case 7200: 	$period_label = "2 Hours";
+			break;
+	case 10800: 	$period_label = "3 Hours";
+			break;
 	case 21600: 	$period_label = "6 Hours";
 			break;
 	case 43200: 	$period_label = "12 Hours";
@@ -314,6 +330,8 @@ switch ($period) {
 	case 86400: 	$period_label = "Day";
 			break;
 	case 172800: 	$period_label = "Two days";
+			break;
+	case 345600: 	$period_label = "Four days";
 			break;
 	case 604800: 	$period_label = "Last Week";
 			break;
@@ -324,6 +342,8 @@ switch ($period) {
 	case 5184000: 	$period_label = "Two Month";
 			break;
 	case 15552000: 	$period_label = "Six Months";
+			break;
+	case 31104000: 	$period_label = "One year";
 			break;
 	default: 	$period_label = "Day";
 }
@@ -339,6 +359,8 @@ if ($period==0)
 else
 	echo "<option value=$period>".$period_label;
 echo "<option value=3600>"."Hour";
+echo "<option value=7200>"."2 Hours";
+echo "<option value=10800>"."3 Hours";
 echo "<option value=21600>"."6 Hours";
 echo "<option value=43200>"."12 Hours";
 echo "<option value=86400>"."Last day";
@@ -432,16 +454,5 @@ if (isset($module_array)){
 	echo "</form>";
 	echo "</table>";
 }
-// --------------------------------------
-// Parse chunkdata and render graph
-// --------------------------------------
-if (($render == 1) && (isset($modules))) {
-	// parse chunk
-	echo "<h3>".$lang_label["combined_image"]."</h3>";
-	echo "<table class='databox_frame'>";
-	echo "<tr><td>";
-	echo "<img  src='reporting/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&label=Combined%20Sample%20Graph&height=$height&width=$width&period=$period' border=1 alt=''>";
-	echo "</td></tr></table>";
 
-}
 ?>

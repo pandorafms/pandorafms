@@ -59,7 +59,7 @@ if (comprueba_login() == 0) {
 	// Blank space below title
 	echo "<div style='height: 10px'> </div>";
 	
-	echo '<table cellspacing="0" cellpadding="0" width="780" border=0 class="databox">';
+	echo '<table cellspacing="0" cellpadding="0" width="750" border=0 class="databox">';
 	echo "<tr><td>";
 	echo '<table cellspacing="4" cellpadding="4" border=0 class="databox"> ';
 	echo '<tr>
@@ -191,7 +191,6 @@ if (comprueba_login() == 0) {
 	<img src='reporting/fgraph.php?tipo=progress&percent=".$percentil."&height=20&width=200'>
 	</td>
 	</tr>
-	<tr><td colspan='4'><div class='raya'></div></td></tr>
 	</table>
 
 	<td valign='top'>

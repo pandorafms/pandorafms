@@ -70,15 +70,20 @@ require "include/functions_db.php";
 <head>
 <?php
 // Refresh page
-if (isset ($_GET["refr"])){
-	$intervalo = entrada_limpia ($_GET["refr"]);
-	// Agent selection filters and refresh
- 	if (isset ($_POST["ag_group"])) {
-		$ag_group = $_POST["ag_group"];
-		$query = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] . '&ag_group_refresh=' . $ag_group;
-		echo '<meta http-equiv="refresh" content="' . $intervalo . '; URL=' . $query . '">';
-	} else 
-		echo '<meta http-equiv="refresh" content="' . $intervalo . '">';	
+if ( (isset ($_GET["refr"])) || (isset($_POST["refr"])) ){
+	if (isset ($_GET["refr"]))
+		$intervalo = entrada_limpia ($_GET["refr"]);
+	if (isset ($_POST["refr"]))
+		$intervalo = entrada_limpia ($_POST["refr"]);
+	if ($intervalo > 0){
+		// Agent selection filters and refresh
+		$query = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] . '&refr=' . $intervalo;
+		if (isset ($_POST["ag_group"])) {
+			$ag_group = $_POST["ag_group"];
+			$query = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] . '&ag_group_refresh=' . $ag_group;
+		} else 
+			echo '<meta http-equiv="refresh" content="' . $intervalo . '; URL=' . $query . '">';
+	}
 }
 ?>
 <title>Pandora FMS - <?php echo $lang_label["header_title"]; ?></title>
@@ -92,7 +97,8 @@ if (isset ($_GET["refr"])){
 <meta name="robots" content="index, follow">
 <link rel="icon" href="images/pandora.ico" type="image/ico">
 <link rel="stylesheet" href="include/styles/pandora.css" type="text/css">
-<script type='text/JavaScript' src='include/calendar.js'></script>
+<script type='text/JavaScript' src='include/javascript/calendar.js'></script>
+<script type="text/javascript" src="include/javascript/wz_jsgraphics.js"></script>
 </head>
 
 <?php
@@ -136,9 +142,6 @@ if (isset ($_GET["refr"])){
 				$pass = $primera . "****" . $ultima;
 				audit_db ($nick, $REMOTE_ADDR, "Logon Failed",
 					  "Incorrect password: " . $nick . " / " . $pass);
-				echo '<div id="foot">';
-				include "general/footer.php";
-				echo '</div>';
 				exit;
 			}
 		}
@@ -151,9 +154,6 @@ if (isset ($_GET["refr"])){
 			$pass = $primera . "****" . $ultima;
 			audit_db ($nick, $REMOTE_ADDR, "Logon Failed",
 				  "Invalid username: " . $nick . " / " . $pass);
-			echo '<div id="foot">';
-			include "general/footer.php";
-			echo '</div>';
 			exit;
 		}
 	} elseif (! isset ($_SESSION['id_usuario'])) {

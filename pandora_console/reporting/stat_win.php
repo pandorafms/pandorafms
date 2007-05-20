@@ -67,7 +67,9 @@ else
 	$period = 3600; // 1 hour (the most fast query possible)
 
 switch ($period) {
-	case 3600: 	$period_label = "Hour";
+	case 3600: 	$period_label = "1 Hour";
+			break;
+	case 7200: 	$period_label = "2 Hours";
 			break;
 	case 21600: 	$period_label = "6 Hours";
 			break;
@@ -94,6 +96,10 @@ if (isset($_GET["draw_alerts"]))
 	$draw_alerts = entrada_limpia($_GET["draw_alerts"]);
 else
 	$draw_alerts = 0;
+if (isset($_GET["avg_only"]))
+	$avg_only = entrada_limpia($_GET["avg_only"]);
+else
+	$avg_only = 0;
 if (isset($_GET["refresh"]))
 	$refresh = entrada_limpia($_GET["refresh"]);
 else
@@ -122,19 +128,29 @@ else
 
 if (isset($_GET["zoom"])){
 	$zoom = entrada_limpia ($_GET["zoom"]);
-	$height=$height*$zoom;
-	$width=$width*$zoom;
+	if ($zoom > 1){
+		$height=$height*($zoom/2.1);
+		$width=$width*($zoom/1.4);
+	}
 }
 else
 	$zoom = "1";
 
-echo "<img src='fgraph.php?tipo=sparse&draw_alerts=$draw_alerts&draw_events=$draw_events&id=$id&zoom=$zoom&label=$label&height=$height&width=$width&period=$period' border=0 alt=''>";
-
+echo "<img src='fgraph.php?tipo=sparse&draw_alerts=$draw_alerts&draw_events=$draw_events&id=$id&zoom=$zoom&label=$label&height=$height&width=$width&period=$period&avg_only=$avg_only' border=0 alt=''>";
+echo "<table width=450 cellspacing=1 cellpadding=1 class='databox' style='margin-left: 20px'>";
+	echo "<tr><td><b>";
+	echo $lang_label["max_value"]." </b>: ". format_for_graph(return_moduledata_max_value ($id, $period));
+	echo "</td><td><b>";
+	echo $lang_label["avg_value"]." </b>: ". format_for_graph(return_moduledata_avg_value ($id, $period));
+	echo "</td><td><b>";
+	echo $lang_label["min_value"]." </b>: ". format_for_graph(return_moduledata_min_value ($id, $period));
+	echo "</td></tr>";
+echo "</table>";
 ?>
 
-<script type='text/javascript' src='../operation/active_console/scripts/x_core.js'></script>
-<script type='text/javascript' src='../operation/active_console/scripts/x_event.js'></script>
-<script type='text/javascript' src='../operation/active_console/scripts/x_slide.js'></script>
+<script type='text/javascript' src='../include/javascript/x_core.js'></script>
+<script type='text/javascript' src='../include/javascript/x_event.js'></script>
+<script type='text/javascript' src='../include/javascript/x_slide.js'></script>
 <style type='text/css'><!--
 
 .menu {
@@ -213,8 +229,15 @@ echo "<img src='fgraph.php?tipo=sparse&draw_alerts=$draw_alerts&draw_events=$dra
 			<?php
 			echo "<tr><td>";
 			echo "Refresh time (sec)";
-			echo "<td>";
+			echo "<td colspan=2>";
 			echo "<input type='text' size=5 name='refresh' value='" . $refresh . "'>";
+
+			echo "&nbsp;&nbsp;&nbsp;".$lang_label["avg_only"];
+			if ($avg_only == 1)
+				echo "<input type='checkbox' name='avg_only' value=1 CHECKED>";
+			else
+				echo "<input type='checkbox' name='avg_only' value=1>";
+
 			echo "<tr><td>";
 			echo "Zoom factor (1x)";
 			echo "<td>";
@@ -232,6 +255,7 @@ echo "<img src='fgraph.php?tipo=sparse&draw_alerts=$draw_alerts&draw_events=$dra
 			echo "<select name='period'>";
 			echo "<option value=$period>".$period_label;
 			echo "<option value=3600>"."Hour";
+			echo "<option value=7200>"."2 Hours";
 			echo "<option value=21600>"."6 Hours";
 			echo "<option value=43200>"."12 Hours";
 			echo "<option value=86400>"."Last day";
@@ -250,6 +274,8 @@ echo "<img src='fgraph.php?tipo=sparse&draw_alerts=$draw_alerts&draw_events=$dra
 				echo "<input type='checkbox' name='draw_events' CHECKED  value=1>";
 			else
 				echo "<input type='checkbox' name='draw_events'  value=1>";
+
+		
 			
 			echo "<tr><td>";
 			echo "Show alert ";
@@ -258,6 +284,7 @@ echo "<img src='fgraph.php?tipo=sparse&draw_alerts=$draw_alerts&draw_events=$dra
 				echo "<input type='checkbox' name='draw_alerts' value=1  CHECKED>";
 			else
 				echo "<input type='checkbox' name='draw_alerts' value=1>";
+
 		
 			echo "<td>";
 			echo "<input type='submit' class='sub next' value='GO'>";

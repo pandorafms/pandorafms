@@ -1,65 +1,5 @@
 
--- Pandora FMS tables for active console (not officially included )
-
-CREATE TABLE `vistas_consola` (
-  `idVista` int(5) NOT NULL auto_increment,
-  `nombre` varchar(50) NOT NULL,
-  `descripcion` varchar(250) NOT NULL,
-  PRIMARY KEY  (`idVista`)
-) ENGINE=InnoDB;
-
-CREATE TABLE `estado_consola` (
-  `id_usuario` varchar(50) NOT NULL,
-  `idPerfilActivo` int(5) NOT NULL,
-  `idVistaActiva` int(5) NOT NULL,
-  `menuX` int(5) NOT NULL,
-  `menuY` int(5) NOT NULL,
-  PRIMARY KEY  (`id_usuario`)
-) ENGINE=InnoDB;
-
-
-CREATE TABLE `objeto_consola` (
-  `id_objeto` int(5) NOT NULL auto_increment,
-  `nom_img` varchar(50) NOT NULL,
-  `tipo` varchar(2) NOT NULL,
-  `left` int(5) NOT NULL,
-  `top` int(5) NOT NULL,
-  `id_tipo` varchar(20) NOT NULL,
-  `idVista` int(5) NOT NULL,
-  PRIMARY KEY  (`id_objeto`)
-) ENGINE=InnoDB;
-
-
-CREATE TABLE `perfil` (
-  `idPerfil` int(5) NOT NULL auto_increment,
-  `Nombre` varchar(50) NOT NULL,
-  `Descripcion` varchar(250) NOT NULL,
-  PRIMARY KEY  (`idPerfil`)
-) ENGINE=InnoDB;
-
-
-CREATE TABLE `perfil_vista` (
-  `idPerfil` int(5) NOT NULL,
-  `idVista` int(5) NOT NULL,
-  `activa` tinyint(1) NOT NULL default '1',
-  PRIMARY KEY  (`idPerfil`,`idVista`)
-) ENGINE=InnoDB;
-
-
-CREATE TABLE `relacion_estado` (
-  `id_objeto` int(5) NOT NULL,
-  `relacion` varchar(50) NOT NULL,
-  PRIMARY KEY  (`id_objeto`)
-) ENGINE=InnoDB;
-
-
-CREATE TABLE `relacion_objetos` (
-  `idObjeto1` int(5) NOT NULL,
-  `idObjeto2` int(5) NOT NULL,
-  PRIMARY KEY  (`idObjeto1`,`idObjeto2`)
-) ENGINE=InnoDB;
-
--- Pandora FMS official tables
+-- Pandora FMS official tables for 1.3 version
 
 CREATE TABLE `taddress` (
   `id_a` bigint(20) unsigned NOT NULL auto_increment,
@@ -124,6 +64,7 @@ CREATE TABLE `tagente_datos_inc` (
   `id_agente_modulo` bigint(20) NOT NULL default '0',
   `datos` bigint(12) default NULL,
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
+  `utimestamp` int(10) unsigned default '0',
   PRIMARY KEY  (`id_adi`),
   KEY `data_inc_index_1` (`id_agente_modulo`)
 ) ENGINE=InnoDB;
@@ -576,5 +517,34 @@ CREATE TABLE `treport_content` (
   `type` tinyint(1) UNSIGNED NOT NULL default 0,
   `period` int(11) NOT NULL default 0,
   PRIMARY KEY(`id_rc`)
+) ENGINE = InnoDB;
+
+CREATE TABLE `tlayout` (
+  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` varchar(50)  NOT NULL,
+  `id_group` INTEGER UNSIGNED NOT NULL,
+  `background` varchar(200)  NOT NULL,
+  `fullscreen` tinyint(1) UNSIGNED NOT NULL default 0,
+  `height` INTEGER UNSIGNED NOT NULL default 0,
+  `width` INTEGER UNSIGNED NOT NULL default 0,
+  PRIMARY KEY(`id`)
+)  ENGINE = InnoDB;
+
+CREATE TABLE `tlayout_data` (
+  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_layout` INTEGER UNSIGNED NOT NULL default 0,
+  `pos_x` INTEGER UNSIGNED NOT NULL default 0,
+  `pos_y` INTEGER UNSIGNED NOT NULL default 0,
+  `height` INTEGER UNSIGNED NOT NULL default 0,
+  `width` INTEGER UNSIGNED NOT NULL default 0,
+  `label` varchar(200) DEFAULT "",
+  `image` varchar(200) DEFAULT "",
+  `type` tinyint(1) UNSIGNED NOT NULL default 0,
+  `period` INTEGER UNSIGNED NOT NULL default 3600,
+  `id_agente_modulo` mediumint(8) unsigned NOT NULL default '0',
+  `id_layout_linked` INTEGER unsigned NOT NULL default '0',
+  `parent_item` INTEGER UNSIGNED NOT NULL default 0,
+  `label_color` varchar(20) DEFAULT "",
+  PRIMARY KEY(`id`)
 ) ENGINE = InnoDB;
 

@@ -1083,4 +1083,112 @@ function give_db_value ($field, $table, $field_search, $condition_value){
 	return $pro;
 }
 
+
+// ---------------------------------------------------------------
+// Return current status from a given agent module (1 alive, 0 down)
+// ---------------------------------------------------------------
+
+function return_status_agent_module ($id_agentmodule = 0){
+	require("config.php");
+	$query1="SELECT estado FROM tagente_estado WHERE id_agente_modulo = ".$id_agentmodule; 
+	$resq1=mysql_query($query1);
+	if ($resq1 != 0) {
+		$rowdup=mysql_fetch_array($resq1);
+		if ($rowdup[0] == 0)
+			return 1;
+		else 
+			return 0;
+		
+	} else 
+		return 0; 
+}
+
+// ---------------------------------------------------------------
+// Return current value from a given agent module 
+// ---------------------------------------------------------------
+
+function return_value_agent_module ($id_agentmodule = 0){
+	require("config.php");
+	$query1="SELECT datos FROM tagente_estado WHERE id_agente_modulo = ".$id_agentmodule; 
+	$resq1=mysql_query($query1);
+	if ($resq1 != 0) {
+		$rowdup=mysql_fetch_array($resq1);
+			return format_numeric($rowdup[0]);
+		
+	} else 
+		return 0; 
+}
+
+// ---------------------------------------------------------------
+// Return coordinate X from a layout item
+// ---------------------------------------------------------------
+
+function return_coordinate_X_layoutdata ($id_layoutdata){
+	require("config.php");
+	$query1="SELECT pos_x FROM tlayout_data WHERE id = ".$id_layoutdata; 
+	$resq1=mysql_query($query1);
+	if ($resq1 != 0) {
+		$rowdup=mysql_fetch_array($resq1);
+			return ($rowdup[0]);
+	} else 
+		return (0);
+}
+
+// ---------------------------------------------------------------
+// Return coordinate X from a layout item
+// ---------------------------------------------------------------
+
+function return_coordinate_y_layoutdata ($id_layoutdata){
+	require("config.php");
+	$query1="SELECT pos_y FROM tlayout_data WHERE id = ".$id_layoutdata; 
+	$resq1=mysql_query($query1);
+	if ($resq1 != 0) {
+		$rowdup=mysql_fetch_array($resq1);
+			return ($rowdup[0]);
+	} else 
+		return (0);
+}
+
+function return_moduledata_avg_value ($id_agent_module, $period){
+	require("config.php");
+	$datelimit = time() - $period; // limit date
+	$id_agent = give_db_value ("id_agente", "tagente_modulo", "id_agente_modulo", $id_agent_module);
+	$query1="SELECT AVG(datos) FROM tagente_datos WHERE id_agente = $id_agent AND id_agente_modulo = $id_agent_module AND utimestamp > $datelimit";
+	$resq1=mysql_query($query1);
+	if ($resq1 != 0) {
+		$rowdup=mysql_fetch_array($resq1);
+			return ($rowdup[0]);
+	} else 
+		return (0);
+}
+
+
+function return_moduledata_max_value ($id_agent_module, $period){
+	require("config.php");
+	$datelimit = time() - $period; // limit date
+	$id_agent = give_db_value ("id_agente", "tagente_modulo", "id_agente_modulo", $id_agent_module);
+	$query1="SELECT MAX(datos) FROM tagente_datos WHERE id_agente = $id_agent AND id_agente_modulo = $id_agent_module AND utimestamp > $datelimit";
+	$resq1=mysql_query($query1);
+	if ($resq1 != 0) {
+		$rowdup=mysql_fetch_array($resq1);
+			return ($rowdup[0]);
+	} else 
+		return (0);
+}
+
+
+function return_moduledata_min_value ($id_agent_module, $period){
+	require("config.php");
+	$datelimit = time() - $period; // limit date
+	$id_agent = give_db_value ("id_agente", "tagente_modulo", "id_agente_modulo", $id_agent_module);
+	$query1="SELECT MIN(datos) FROM tagente_datos WHERE id_agente = $id_agent AND id_agente_modulo = $id_agent_module AND utimestamp > $datelimit";
+	$resq1=mysql_query($query1);
+	if ($resq1 != 0) {
+		$rowdup=mysql_fetch_array($resq1);
+			return ($rowdup[0]);
+	} else 
+		return (0);
+}
+
+
 ?>

@@ -320,7 +320,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 }
 
 function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $show_event,
-				 $width, $height , $title, $unit_name, $show_alert ) {
+				 $width, $height , $title, $unit_name, $show_alert, $avg_only = 0 ) {
 	
 	include ("../include/config.php");
 	require ("../include/languages/language_".$language_code.".php");
@@ -488,13 +488,17 @@ function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $show_event,
 	// Create the dataset
 	// Merge data into a dataset object (sancho)
 	// $Dataset =& Image_Graph::factory('dataset');
-	$dataset[0] = Image_Graph::factory('dataset');
-	$dataset[0]->setName("Max.");
-	$dataset[1] = Image_Graph::factory('dataset');
-	$dataset[1]->setName("Avg.");
-	$dataset[2] = Image_Graph::factory('dataset');
-	$dataset[2]->setName("Min.");
-	
+	if ($avg_only == 1) {
+		$dataset[0] = Image_Graph::factory('dataset');
+		$dataset[0]->setName("Avg.");
+	} else {
+		$dataset[0] = Image_Graph::factory('dataset');
+		$dataset[0]->setName("Max.");
+		$dataset[1] = Image_Graph::factory('dataset');
+		$dataset[1]->setName("Avg.");
+		$dataset[2] = Image_Graph::factory('dataset');
+		$dataset[2]->setName("Min.");
+	}
 	// Event dataset creation
 	if ($show_event == 1){
 		$dataset_event = Image_Graph::factory('dataset');
@@ -503,17 +507,19 @@ function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $show_event,
 	// ... and populated with data ...
 	for ($cc=0; $cc <= $resolution; $cc++) {
 		$tdate = date('d/m', $valores[$cc][2])."\n".date('H:i', $valores[$cc][2]);
-		$dataset[1]->addPoint($tdate, $valores[$cc][0]);
-		$dataset[0]->addPoint($tdate, $valores[$cc][5]);
-		$dataset[2]->addPoint($tdate, $valores[$cc][4]);
+		if ($avg_only == 0) {
+			$dataset[1]->addPoint($tdate, $valores[$cc][0]);
+			$dataset[0]->addPoint($tdate, $valores[$cc][5]);
+			$dataset[2]->addPoint($tdate, $valores[$cc][4]);
+		} else {
+			$dataset[0]->addPoint($tdate, $valores[$cc][0]);
+		}
 		if (($show_event == 1) AND (isset($real_event[$cc]))) {
 			$dataset_event->addPoint($tdate, $valores[$cc][5]);
 		}
 	}
 
 	if ($max_value > 0){
-
-
 		// Show alert limits 
 		if ($show_alert == 1){
 			$Plot =& $Plotarea->addNew('Image_Graph_Axis_Marker_Area', IMAGE_GRAPH_AXIS_Y);
@@ -524,7 +530,12 @@ function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $show_event,
 
 		// create the 1st plot as smoothed area chart using the 1st dataset
 		$Plot =& $Plotarea->addNew('area', array(&$dataset));
-		$Plot->setLineColor('yellow@0.1');
+		if ($avg_only == 1){
+			$Plot->setLineColor('gray@0.4');
+		} else {
+			$Plot->setLineColor('yellow@0.1');
+		}
+
 		$AxisX =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_X);
 		// $AxisX->Hide();
 		
@@ -543,14 +554,19 @@ function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $show_event,
 		$GridY2->setFillColor('lightgray@0.05');
 		// set line colors
 		$FillArray =& Image_Graph::factory('Image_Graph_Fill_Array');
+
 		$Plot->setFillStyle($FillArray);
-		$FillArray->addColor('yellow@0.5'); 
-		$FillArray->addColor('orange@0.6'); 
-		$FillArray->addColor('brown@0.7');
-		$FillArray->addColor('red@0.7');
-		$FillArray->addColor('blue@0.7');
-		$FillArray->addColor('green@0.7');
-		$FillArray->addColor('black@0.7');
+		if ($avg_only == 1){
+			$FillArray->addColor('green@0.6');
+		} else {
+			$FillArray->addColor('yellow@0.5'); 
+			$FillArray->addColor('orange@0.6'); 
+			$FillArray->addColor('brown@0.7');
+			$FillArray->addColor('red@0.7');
+			$FillArray->addColor('blue@0.7');
+			$FillArray->addColor('green@0.7');
+			$FillArray->addColor('black@0.7');
+		}
 		$AxisY_Weather =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
 
 		// Show events !
@@ -1766,6 +1782,12 @@ if ( isset($_GET["draw_events"]))
 else
 	$draw_events = 0;
 
+// Average values only
+if ( isset($_GET["avg_only"]))
+	$avg_only = $_GET["avg_only"];
+else
+	$avg_only = 0;
+
 // Draw alert limits ?
 if ( isset($_GET["draw_alerts"])) 
 	$draw_alerts = $_GET["draw_alerts"];
@@ -1778,7 +1800,7 @@ else
 
 if (isset($_GET["tipo"])){
 	if ($_GET["tipo"] == "sparse"){
-		grafico_modulo_sparse($id, $period, $draw_events, $width, $height , $label, $unit_name, $draw_alerts);
+		grafico_modulo_sparse($id, $period, $draw_events, $width, $height , $label, $unit_name, $draw_alerts, $avg_only);
 	}
 	elseif ($_GET["tipo"] =="estado_incidente") 
 		grafico_incidente_estados();	

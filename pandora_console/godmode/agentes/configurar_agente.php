@@ -617,10 +617,21 @@ if (((!isset($_POST["nc"]) OR ($_POST["nc"]==-1)) ) 	&&
 		echo "<h3 class='suc'>".$lang_label["add_module_ok"]."</h3>";
 	}
 	// Init vars to null to avoid trash in forms 
-	$id_tipo_modulo = "";$nombre =  "";$descripcion = "";$modulo_max = "";
-	$modulo_min = "";// Pandora 1.2 new module data:
-	$tcp_send = "";$tcp_rcv = "";$tcp_port = "";$ip_target = "";
-	$snmp_oid = "";$snmp_community = "";$id_module_group = "";
+	$id_tipo_modulo = "";
+	$nombre =  "";
+	$modulo_nombre = "";
+	$descripcion = ""; 
+	$modulo_descripcion= ""; 
+	$modulo_max = "";
+	$modulo_min = "";
+	// Pandora 1.2 new module data:
+	$tcp_send = "";
+	$tcp_rcv = "";
+	$tcp_port = "";
+	$ip_target = "";
+	$snmp_oid = "";
+	$snmp_community = "";
+	$id_module_group = "";
 	$module_interval = "";
 }
 

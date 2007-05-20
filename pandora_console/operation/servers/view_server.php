@@ -49,7 +49,7 @@ if (comprueba_login() == 0) {
 	// Connect DataBase
 	$result=mysql_query($sql);
 	if (mysql_num_rows($result)){
-		echo "<table cellpadding='4' cellspacing='4' witdh='750'>";
+		echo "<table cellpadding='4' cellspacing='4' witdh='720' class='databox'>";
 		echo "<tr><th class='datos'>".$lang_label["name"]."</th>";
 		echo "<th class='datos'>".$lang_label['status']."</th>";
 		echo "<th class='datos'>".$lang_label['load']."</th>";
@@ -238,8 +238,7 @@ if (comprueba_login() == 0) {
 			// if ($status ==0)
 				echo substr($keepalive,0,25)."</td>";
 		}
-		echo '<tr><td colspan="11"><div class="raya"></div>
-		</td></tr></table>';
+		echo '</table>';
 		echo "<table cellpadding=2 cellspacing=0>";
 		echo "
 		<tr>

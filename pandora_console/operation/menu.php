@@ -74,13 +74,33 @@ if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 		echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/estadisticas' class='mn'>". $lang_label["statistics"]. "</a></li></ul></div>";
 	}
 
-/* Not ready to use :(
-
-	// Active console
-	echo '<div id="op9">';
+	// Visual console
+	if ( isset($_GET["sec2"]) && $_GET["sec2"] == "operation/visual_console/index") {
+		echo '<div id="op9s">';
+	} else {
+		echo '<div id="op9">';
+	}
 	echo '<ul class="mn"><li>';
-	echo '<a href="operation/active_console/index.php" class="mn"  target="_top">'.$lang_label["active_console"].'</a></li></ul></div>';
-*/
+	echo '<a href="index.php?sec=visualc&sec2=operation/visual_console/index"  class="mn">'.$lang_label["visual_console"].'</a></li></ul></div>';
+
+	if ( isset($_GET["sec"]) && $_GET["sec"]  == "visualc") {
+		$sql="SELECT * FROM tlayout";
+		$res=mysql_query($sql);
+		while ($row = mysql_fetch_array($res)){
+			if (isset($_GET["sec2"]) && $_GET["sec2"] == "operation/visual_console/render_view") {
+				if (isset($_GET["id"]) && $_GET["id"] == $row["id"])
+					echo "<div class='arrows'>";
+				else 
+					echo "<div class='arrow'>";
+			} else {
+				echo "<div class='arrow'>";
+			}
+			echo "<ul class='mn'><li><a href='index.php?sec=visualc&sec2=operation/visual_console/render_view&id=".$row["id"]."' class='mn'>". substr($row["name"],0,15). "</a></li></ul></div>";
+		}
+	}
+		
+
+
 	// Server view
 	if ( isset($_GET["sec2"]) && $_GET["sec2"] == "operation/servers/view_server") {
 		echo '<div id="op2s">';

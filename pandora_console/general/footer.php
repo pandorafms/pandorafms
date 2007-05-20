@@ -15,9 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-echo "</center>";
+echo "<center>";
 echo '<a class="white_bold" target="_new" href="general/license/pandora_info_'.$language_code.'.html">
-Pandora FMS '.$pandora_version.' Build '.$build_version.' '.
+Pandora FMS '.$pandora_version.' Build '.$build_version.'<br>'.
 $lang_label["gpl_notice"].'</a><br>';
 	if (isset($_SERVER['REQUEST_TIME'])) {
 		$time = $_SERVER['REQUEST_TIME'];

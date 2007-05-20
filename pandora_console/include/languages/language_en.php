@@ -5,10 +5,8 @@
 // Main PHP/SQL code development and project architecture and management
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
 // CSS and some PHP additions
-// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
-// Javascript Active Console code.
 // Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
-// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
+// Additions to Pandora FMS 1.2 graph code
 // Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
 //
 // This program is free software; you can redistribute it and/or
@@ -21,6 +19,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 $lang_label["view_agents"]="View Agents";
 $lang_label["manage_incidents"]="Manage Incidents";
 $lang_label["view_users"]= "View Users";
@@ -660,7 +659,6 @@ $lang_label["no_monitors_g"]="This group doesn't have any monitor";
 
 $lang_label["reporting"]="Reporting";
 $lang_label["agent_general_reporting"]="Agent overview";
-$lang_label["active_console"]="Active console";
 $lang_label["validate_event_failed"]="Event validation failed";
 $lang_label["load"]="Load";
 $lang_label["information"]="General information";
@@ -783,6 +781,16 @@ $lang_label["friday"]="Friday";
 $lang_label["saturday"]="Saturday";
 $lang_label["hr"]="Hr";
 $lang_label["get_file"]="Download file";
+
+// 19 May
+$lang_label["visual_console"]="Visual console";
+$lang_label["elements"]="Elements";
+$lang_label["minutes"]="minutes";
+
+$lang_label["avg_only"]="Avg.Only";
+$lang_label["avg_value"]="Avg. Value";
+$lang_label["auto_refresh_time"]="Autorefresh time";
+$lang_label["refresh"]="Refresh";
 global $lang_label; 
 global $help_label;
 ?>

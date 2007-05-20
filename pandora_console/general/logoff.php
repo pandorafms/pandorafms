@@ -17,17 +17,27 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ?>
-<div align='center'>
-	<h1 id="log"><?php echo $lang_label["logged_out"] ; ?></h1>
-	<div id='login'>	
-		<div id="login_box">
-			<?PHP echo $lang_label["logout_msg"]; ?>
-		</div>
-		<div id="logo_box">
-			<a href="index.php"><img src="images/logo_menu.gif" border="0" alt="logo"></a><br>
+
+<center>
+<div align='center' class='databox' style='margin-top:200px; width: 460px; border-left: solid 1px #000;border-top: solid 1px #000; border-bottom: solid 2px #000; border-right: solid 2px #000;'>
+	<h1 style='font-size: 18px; color: #000; margin-bottom: 0px;'>
+	<?php echo $lang_label["logged_out"]; ?></h1>
+	<div  class='databox' style='width: 400px;'>
+		<form method="post" action="index.php?login=1">
+		<table cellpadding=4 cellspacing=1 width=400>
+		<tr><td align='left'>
+			<a href="index.php">
+			<img src="images/pandora_logo.png" border="0" alt="logo"></a><br>
 			<?php echo $pandora_version; ?>
-		</div>
-		<div id="ip"><?php echo 'IP: <b class="f10">'.$REMOTE_ADDR.'</b>'; ?></div>
+		<td valign='bottom'>
+			<?PHP echo $lang_label["logout_msg"]; ?>
+		</table>
+		</form>
 	</div>
-	<div id="foot"><?php require("general/footer.php") ?></div>
+	<div id="ip"><?php echo 'IP: <b class="f10">'.$REMOTE_ADDR.'</b>'; ?></div>
 </div>
+</center>
+
+
+
+

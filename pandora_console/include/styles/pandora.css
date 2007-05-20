@@ -313,7 +313,7 @@ td.datos_jus, td.datos2_jus {
 	text-align: center;
 }
 .f9, .f9i, .f9b, td.f9, td.f9i, td.datosf9, td.datos2f9 {
-	font-size: 9px;
+	font-size: 8px;
 }
 .f9i, .redi {
 	font-style: italic;
@@ -548,6 +548,7 @@ span.master, span.snmp, span.binary, span.recon {
 }
 .databox_color {
 	border-left: 4px solid #778855;
+
 }
 #head_l {
 	float: left;

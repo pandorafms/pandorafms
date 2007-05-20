@@ -42,7 +42,7 @@ if (comprueba_login() == 0) {
 	} else {
 		echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60'>";
 	}
-	echo "<table cellspacing='3' cellpadding='3'>";
+	echo "<table cellspacing='4' cellpadding='4' width=650 class='databox'>";
 	echo "<tr><td valign='middle'>".$lang_label["group"]."</td>";
 	echo "<td valign='middle'>";
 	echo "<select name='ag_group' onChange='javascript:this.form.submit();' class='w130'>";
@@ -146,7 +146,10 @@ if (comprueba_login() == 0) {
 							$color =1;
 						}
 						if (!isset($string)) {$string='';}
-						$string=$string."<tr><td class='$tdcolor'><b>";
+						$string=$string. "<tr><td class='$tdcolor'>";
+						$string=$string. "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$data["id_agente"]."&id_agente_modulo=".$data["id_agente_modulo"]."&flag=1&tab=data&refr=60'>";
+						$string=$string."<img src='images/target.gif'></A>";
+						$string=$string. "<td class='$tdcolor'><b>";
 						$string=$string."<a href='index.php?sec=estado&
 						sec2=operation/agentes/ver_agente&
 						id_agente=".$data["id_agente"]."'>".
@@ -178,7 +181,7 @@ if (comprueba_login() == 0) {
 							$string=$string."<img src='images/b_red.gif'>";
 						}
 						$string=$string.
-						"<td class='".$tdcolor."f9' width='140'>".
+						"<td class='".$tdcolor."f9'>".
 						$data2["timestamp"]."</td>
 						</tr>";
 					}
@@ -187,8 +190,9 @@ if (comprueba_login() == 0) {
 			}
 		}
 		if (isset($string)) {
-		echo "<table cellpadding='3' cellspacing='3' width='750'>
+		echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>
 		<tr>
+		<th>
 		<th>".$lang_label["agent"]."</th>
 		<th>".$lang_label["type"]."</th>
 		<th>".$lang_label["name"]."</th>
@@ -198,7 +202,7 @@ if (comprueba_login() == 0) {
 		<th>".$lang_label["status"]."</th>
 		<th>".$lang_label["timestamp"]."</th>";
 		echo $string; //the built table of monitors
-		echo "<tr><td colspan='8'><div class='raya'></div></td></tr></table>";
+		echo "</table>";
 		}
 		else {
 		echo "<div class='nf'>".$lang_label["no_monitors_g"]."</div>";

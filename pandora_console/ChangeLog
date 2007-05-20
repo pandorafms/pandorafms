@@ -1,12 +1,85 @@
+2007-05-20  Sancho Lerena  <slerena@artica.es>
+
+	* pandoradb_data.sql: Uptated network component data.
+	
+	* include/styles/pandora.css: Few updates for style.
+	
+	* include/functions_db.php: Added functions for visual console
+	features.
+
+	* include/languages/language_en.php: New strings.
+	
+	* include/javascript: Moved all javascript files here.
+	
+	* include/javascript/x_slide.js, include/javascript/x_event.js:
+	  Copied from branch / console from Azabel.
+
+	* include/javascript/wz_jsgraphics.js: New functions to draw
+	lines.
+	
+	* pandoradb.sql: Created new tlayout and tlayout_data tables.
+
+	* index.php: Small changes. Added support to refresh any page via
+	POST.
+	
+	* operation/visual_console: Added Visual Console feature.
+	
+	* operation/agentes/estado_alertas.php: Updated styles and fixes
+	damm bug when no alert available.
+	
+	* operation/agentes/status_monitor.php: Updated styles.
+	
+	* operation/agentes/estado_generalagente.php: Update styles.
+	
+	* operation/agentes/estado_agente.php: Updated style.
+		
+	* operation/servers/view_server.php: Updated style.
+	
+	* operation/reporting/graph_builder.php: Fixed some minor
+	bugs. Needs to fix more bugs :(
+	
+	* operation/menu.php: Updated menu. Visual Console has dynamic items!.
+	
+	* images/pandora_logo_head.png: New header logo !
+	
+	* images/pandora_logo.png: New Pandora FMS 1.3 logo ! :-))
+
+	* images/console/background: More samples added.
+	
+	* images/console/icons: Icons to be used in visual console.
+	
+	* reporting/fgraph.php: New feature added to simple graph to show
+	only average values.
+	
+	* reporting/stat_win.php: Added support to avg_only and show avg,
+	max and min values from each graph. Zoom factor is more usable
+	now.
+	
+	* general/logoff.php: New style.
+	
+	* general/footer.php: Fixed style.
+	
+	* general/logon_failed.php: Fixed style.
+	
+	* general/login_page.php: New style.
+	
+	* general/header.php: Fixed style.
+	
+	* godmode/agentes/configurar_agente.php: Fixed styles.
+	
+	* godmode/agentes/agent_manager.php: Fixed styles.
+
+
 2007-05-18  Sancho Lerena  <slerena@gmail.com>
 
 	* include/styles/pandora.css : Some style changes.
 
-	* include/functions.php: Changed format_numeric and format_for_graph to show a 
-	better number formatting.
+	* include/functions.php: Changed format_numeric and
+	format_for_graph to show a better number formatting.
 
-	* index.php: Some minor changes in layout and bgcolor (not used style because 
-	some pages that don't have the same color uses main style, f.e: stat_win for graphs).
+	* index.php: Some minor changes in layout and bgcolor (not used
+	style because some pages that don't have the same color uses main
+	style, f.e: stat_win for graphs).
 
 	* godmode/agentes/module_manager.php
 	* operation/agentes/estado_ultimopaquete.php
@@ -15,8 +88,8 @@
 	* operation/agentes/datos_agente.php, estado_ul: Updated output render and fixes 
 	some tables, added databox style, removed line.
 
-	* operation/menu.php: Removed active console. This don't go with 1.3 version 
-	finally due many unfixed bugs.
+	* operation/menu.php: Removed active console. This don't go with
+	1.3 version finally due many unfixed bugs.
 
 	* reporting/stat_win.php: White background fixed.
 

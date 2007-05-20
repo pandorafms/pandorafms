@@ -58,8 +58,8 @@ if ($create_agent == 1) {
 	echo "<input type='hidden' name='update_agent' value='1'>";
 	echo "<input type='hidden' name='id_agente' value='".$id_agente."'>";
 }
-echo '<table width="650" cellpadding="3" cellspacing="3" class="fon">';
-echo "<tr><td class='lb' rowspan='9' width='1'>";
+echo '<table width="650" cellpadding="4" cellspacing="4" class="databox_color">';
+echo "<tr>";
 echo '<td class="datos"><b>'.$lang_label["agent_name"].'</b></td>
 <td class="datos">
 <input type="text" name="agente" size=30 value="'.$nombre_agente.'">';
@@ -170,10 +170,8 @@ while ($row=mysql_fetch_array($result)){
 		echo $lang_label["active"].'
 		<input type="radio" name="disabled" class="chk" value="0" checked>';
 	}
-?>
-<tr><td colspan='3'><div class='raya'></div></td></tr>
-<tr><td colspan="3" align="right">
-<?php 
+
+echo '</table><table width="650"><tr><td  align="right">';
 if ($create_agent == 1){
 	echo "
 	<input name='crtbutton' type='submit' class='sub wand' value='".
@@ -183,7 +181,6 @@ if ($create_agent == 1){
 	<input name='uptbutton' type='submit' class='sub upd' value='".
 	$lang_label["update"]."'>";
 }
+echo "</td></form></table>";
+
 ?>
-</td>
-</form>
-</table>

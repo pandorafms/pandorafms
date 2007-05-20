@@ -23,7 +23,7 @@ echo '
 	<span id="logo_text1">Pandora</span> <span id="logo_text2">FMS</span>
 </div>
 <div id="head_l">
-	<a href="index.php"><img src="images/logo_menu.gif" border="0" alt="logo"></a>
+	<a href="index.php"><img src="images/pandora_logo_head.png" border="0" alt="logo"></a>
 </div>
 
 ';

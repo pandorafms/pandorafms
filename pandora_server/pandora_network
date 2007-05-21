@@ -1,8 +1,9 @@
-#!/bin/sh
+#!/bin/bash
+
 # Pandora Network Server, startup script
 # Sancho Lerena, <slerena@gmail.com>
 # Linux Version (generico)
-# v1.2 (Ene/2006)
+# v1.3 
 
 # Configurable path and filenames
 PANDORA_HOME="/usr/share/pandora_server"

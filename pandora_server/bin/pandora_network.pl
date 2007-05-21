@@ -25,7 +25,7 @@ use Time::Local;            # DateTime basic manipulation
 use Net::Ping;				# For ICMP latency
 use Time::HiRes;			# For high precission timedate functions (Net::Ping)
 use IO::Socket;				# For TCP/UDP access
-use SNMP;				# For SNMP access (libsnmp-perl PACKAGE!)
+use SNMP;					# For SNMP access (libsnmp-perl PACKAGE!)
 use threads;
 
 # Pandora Modules
@@ -45,10 +45,13 @@ $SIG{'INT'} = 'pandora_shutdown';
 
 # Inicio del bucle principal de programa
 pandora_init(\%pa_config, "Pandora FMS Network Server");
+
 # Read config file for Global variables
 pandora_loadconfig (\%pa_config,1);
+
 # Audit server starting
 pandora_audit (\%pa_config, "Pandora FMS Network Daemon starting", "SYSTEM", "System");
+
 print " [*] Starting up network threads\n";
 
 if ( $pa_config{"daemon"} eq "1" ) {
@@ -350,7 +353,7 @@ sub pandora_ping_icmp {
 
 ##########################################################################
 # SUB pandora_query_tcp (pa_config, tcp_port. ip_target, result, data, tcp_send,
-#			tcp_rcv, id_tipo_module, dbh)
+#						 tcp_rcv, id_tipo_module, dbh)
 # Makes a call to TCP modules to get a value.
 ##########################################################################
 sub pandora_query_tcp (%$$$$$$$$) {
@@ -453,7 +456,7 @@ sub pandora_query_snmp {
                                 Version => 1);
    	if ((!defined($SESSION))&& ($snmp_community != "") && ($snmp_oid != "")) {
       		logger($pa_config, "SNMP ERROR SESSION for Target $snmp_target ", 4);
-		$_[4]="1";
+		$_[4] = "1";
    	} else {
 		# Perl uses different OID syntax than SNMPWALK or PHP's SNMP
 		# for example:
@@ -476,9 +479,10 @@ sub pandora_query_snmp {
 		my @OIDINFO = $SESSION->getnext($OIDLIST);
 		$output = $OIDINFO[0];
 		if ((!defined($output)) || ($output eq "")){
-			$_[4]="1";
+			$_[4] = "1";
+			return 0;
 		} else {
-			$_[4]="0";
+			$_[4] = "0";
 		}
 	}
 	return $output;
@@ -549,7 +553,7 @@ sub exec_network_module {
 			$module_result = 0; # Done but, with zero value
 			$module_data = 0;
 		}
-	# SNMP Modules (Proc, inc, data, string)
+	# SNMP Modules (Proc=18, inc, data, string)
 	# ------------
 	} elsif (($id_tipo_modulo == 15) || ($id_tipo_modulo == 18) || ($id_tipo_modulo == 16) || ($id_tipo_modulo == 17)) { # SNMP module
 		if ($mysnmp_oid ne ""){
@@ -561,9 +565,18 @@ sub exec_network_module {
 		# SUB pandora_query_snmp (pa_config, oid, community, target, error, dbh)
 		if ($error == 0) { # A correct SNMP Query
 			$module_result = 0;
-			if (($id_tipo_modulo == 15) ||  ($id_tipo_modulo == 18) || ($id_tipo_modulo == 16) ){ # Numeric SNMP modules and PROC
+			# SNMP_DATA_PROC
+			if ($id_tipo_modulo == 18){ #snmp_data_proc
+				if ($temp2 != 1){ # up state is 1, down state in SNMP is 2 ....
+					$temp2 = 0;
+				}
+				$module_data = $temp2;
+				$module_result = 0; # Successful
+			}
+			# SNMP_DATA and SNMP_DATA_INC
+			elsif (($id_tipo_modulo == 15) || ($id_tipo_modulo == 16) ){ 
 				if ($temp2 =~ /[A-Za-z\.\,\-\/\\\(\)\[\]]/){
-					$module_result = 1; # Alphanumeric dada, not numeric
+					$module_result = 1; # Alphanumeric data, not numeric
 				} else {
 					$module_data = int($temp2);
 					$module_result = 0; # Successful
@@ -573,6 +586,7 @@ sub exec_network_module {
 				$module_result=0;
 			}
 		} else { # Failed SNMP-GET
+			$module_data = 0;
 			$module_result = 1; # No data, cannot connect
 		}
 	# TCP Module
@@ -621,7 +635,8 @@ sub exec_network_module {
 		logger ($pa_config, "Cannot obtain exec Network Module $nombre from agent $agent_name", 4);
 		my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
 		my $utimestamp = &UnixDate("today","%s");
-		my $query_act = "UPDATE tagente_estado SET utimestamp = $utimestamp, timestamp = '$timestamp', last_try = '$timestamp' WHERE id_agente_estado = $id_agente_estado ";
+		#my $query_act = "UPDATE tagente_estado SET utimestamp = $utimestamp, timestamp = '$timestamp', last_try = '$timestamp' WHERE id_agente_estado = $id_agente_estado ";
+		my $query_act = "UPDATE tagente_estado SET last_try = '$timestamp' WHERE id_agente_estado = $id_agente_estado ";
 		my $a_idages = $dbh->prepare($query_act);
 		$a_idages->execute;
 		$a_idages->finish();

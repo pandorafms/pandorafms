@@ -642,32 +642,32 @@ sub module_generic_data_inc (%$$$$$) {
 		my $m_utimestamp = &UnixDate ($m_timestamp, "%s");
 
 		if ($id_agente_modulo == -1) {
-			$no_existe = 1;
 			$id_agente_modulo = crea_agente_modulo ($pa_config, $agent_name, $module_type, $m_name, $a_max, $a_min, $a_desc, $dbh);
+			$no_existe = 1;
 		} else {
 			my $query_idag = "SELECT * FROM tagente_datos_inc WHERE id_agente_modulo = $id_agente_modulo";
-                	my $s_idag = $dbh->prepare($query_idag);
+            my $s_idag = $dbh->prepare($query_idag);
 			$s_idag->execute;
-			my @data_row = $s_idag->fetchrow_array();
-			if (is_numeric($data_row[2])){
-				$data_anterior = $data_row[2];
+			if ($s_idag->rows == 0) {
+				# Does not exists entry in tagente_datos_inc yet
+				$no_existe = 1;
 			} else {
-				$data_anterior = 0;
-			}
-			if (is_numeric($data_row[4])){
-				$timestamp_anterior = $data_row[4];
-			} else {
-				$timestamp_anterior = 0;
-			}
-		
-			$diferencia = $m_data - $data_anterior;
-			$timestamp_diferencia = $m_utimestamp - $timestamp_anterior;
-			# get seconds between last data and this data
-			if (($timestamp_diferencia > 0) && ($diferencia > 0)) {
-				$diferencia = $diferencia / $timestamp_diferencia;
-			}
-			if ($diferencia < 0 ){
-				$need_reset = 1;
+				my @data_row = $s_idag->fetchrow_array();
+				if (is_numeric($data_row[2])){
+					$data_anterior = $data_row[2];
+				} 
+				if (is_numeric($data_row[4])){
+					$timestamp_anterior = $data_row[4];
+				} 
+				$diferencia = $m_data - $data_anterior;
+				$timestamp_diferencia = $m_utimestamp - $timestamp_anterior;
+				# get seconds between last data and this data
+				if (($timestamp_diferencia > 0) && ($diferencia > 0)) {
+					$diferencia = $diferencia / $timestamp_diferencia;
+				}
+				if ($diferencia < 0 ){
+					$need_reset = 1;
+				}
 			}
 			$s_idag -> finish();
 		}

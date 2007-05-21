@@ -1,12 +1,29 @@
+2007-05-21  Sancho Lerena  <slerena@artica.es>
+
+	* pandora_network: Version banner update.
+
+	* pandora_db.pm: Fixed problem in function
+	module_generic_data_inc() that doesn't create record on new
+	data_inc modules, only updates if already exists. Fixed and
+	tested.
+
+	* pandora_network.pm: pandora_query_snmp() function return 0 if
+	cannot stablish connection. Also, snmp_data_proc value of 2 (down)
+	is turned to 0 for Pandora FMS. Also, now when cannot connect,
+	ONLY UPDATE last_try field, not timestamp field in tagente_estado
+	table. I don't know why was in that way until this moment ¿?
+
 2007-05-07  Sancho Lerena  <slerena@artica.es>
 
-	* bin/pandora_db.pm: Fixed some problems with quotes and other aditional
-	checks.
+	* bin/pandora_db.pm: Fixed some problems with quotes and other
+	aditional checks.
 
-	* bin/pandora_network.pl: Fixed some problems with quotes and other
-	aditional checks.  Detected a serious BUG in snmplib for Ubuntu Freeze
-	(already submitted as detected BUG with veryhigh priority). This makes
-	pandora network server unusable on feisty until fixed :(. Bug item is in
+	* bin/pandora_network.pl: Fixed some problems with quotes and
+	other aditional checks.  Detected a serious BUG in snmplib for
+	Ubuntu Freeze
+	(already submitted as detected BUG with veryhigh priority). This
+	makes pandora network server unusable on feisty until fixed
+	:(. Bug item is in
 	https://bugs.launchpad.net/ubuntu/+source/net-snmp/+bug/65047
 
 2007-05-07  Sancho Lerena  <slerena@artica.es>

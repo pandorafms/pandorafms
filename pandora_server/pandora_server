@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Pandora Data Server startup script
 # Sancho Lerena, <slerena@gmail.com>
 # Linux Version (generic)

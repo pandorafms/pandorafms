@@ -1,3 +1,8 @@
+2007-05-22  Sancho Lerena  <slerena@artica.es>
+
+	* images/console/background/*: Some nice backgrounds added for new
+	visual console.
+
 2007-05-21 Sancho Lerena <slerena@artica.es>
 	
 	* operation/visual_console/index.php: Fixed SQL error when no data.

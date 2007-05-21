@@ -32,8 +32,8 @@ echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
 echo "<tr><th>".$lang_label["name"]."<th>".$lang_label["group"]."<th>".$lang_label["elements"]."<th>".$lang_label["view"];
 $color=1;
 $sql="SELECT * FROM tlayout";
-$res=mysql_query($sql);
-while ($row = mysql_fetch_array($res)){
+if ($res=mysql_query($sql))
+	while ($row = mysql_fetch_array($res)){
 		// Calculate table line color
 		if ($color == 1){
 			$tdcolor = "datos";
@@ -56,7 +56,7 @@ while ($row = mysql_fetch_array($res)){
 		echo "<td valign='top'align='center'  class='$tdcolor'>".$row2[0];
 		// View icon
 		echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=visualc&sec2=operation/visual_console/render_view&id=$id_layout'><img src='images/images.png'></A>";
-}
+	}
 echo "</table>";
 
 

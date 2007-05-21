@@ -96,6 +96,7 @@ if (comprueba_login() == 0) {
 				
 				case "main":	require "estado_generalagente.php";
 						require "estado_monitores.php";
+						require "estado_alertas.php";
 						break;
 						
 				case "data": 	require "estado_ultimopaquete.php";

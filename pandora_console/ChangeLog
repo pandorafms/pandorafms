@@ -1,3 +1,13 @@
+2007-05-21 Sancho Lerena <slerena@artica.es>
+	
+	* operation/visual_console/index.php: Fixed SQL error when no data.
+
+	* operation/agentes/estado_alertas.php: Style fix (databox).
+
+	* operation/agentes/ver_agente.php: Now main view shows also alert info.
+
+	* operation/menu.php: Fixed SQL error when there is no data.
+
 2007-05-21  Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/styles/pandora.css: Updated footer style.

@@ -45,13 +45,14 @@ if (comprueba_login() == 0) {
 			$disabled= $row["disabled"];
 			$agent_type= $row["agent_type"];
 			$server = $row["id_server"];
-		} else
-			{
+		} else {
 			echo "<h3 class='error'>".$lang_label["agent_error"]."</h3>";
 			echo "</table>";
+			echo "</div><div id='foot'>";
 				include ("general/footer.php");
-				exit;
-			}
+			echo "</div>";
+			exit;
+		}
 	}
 
 	echo "<h2>".$lang_label["ag_title"]." &gt; ".$lang_label["view_agent_general_data"]."<a href='help/".$help_code."/chap3.php#3321' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
@@ -81,12 +82,13 @@ if (comprueba_login() == 0) {
 	echo "<option>".salida_limpia($direccion_agente);
 	$sql_2='SELECT id_a FROM taddress_agent WHERE id_agent = '.$id_agente;
 	$result_t=mysql_query($sql_2);
-	while ($row=mysql_fetch_array($result_t)){	
+	while ($row=mysql_fetch_array($result_t)){
 		$sql_3='SELECT ip FROM taddress WHERE id_a = '.$row[0];
 		$result_3=mysql_query($sql_3);
 		$row3=mysql_fetch_array($result_3);
-		if ($direccion_agente != $row3[0])
-			echo "<option value='".salida_limpia($row3[0])."'>".salida_limpia($row3[0])."&nbsp;&nbsp;";
+		if ($direccion_agente != $row3[0]) {
+			echo "<option value='".salida_limpia($row3[0])."'>".salida_limpia($row3[0])."</option>";
+		}
 	}
 	echo "</select>";
 

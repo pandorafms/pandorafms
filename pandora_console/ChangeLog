@@ -1,3 +1,12 @@
+2007-05-21  Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/styles/pandora.css: Updated footer style.
+	
+	* operation/estado_generalagente.php: Closed div for footer if agent not
+	found.
+
+	* godmode/configurar_agente.php: Closed div for footer if agent not found.
+	
 2007-05-20  Sancho Lerena  <slerena@artica.es>
 
 	* pandoradb_data.sql: Uptated network component data.

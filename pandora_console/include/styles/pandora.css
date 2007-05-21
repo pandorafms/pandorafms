@@ -93,10 +93,9 @@ a.white_bold {
 	font-weight: bold;
 }
 a.white {
-        color: #eeeeee;
-        text-decoration: none;
+	color: #eeeeee;
+	text-decoration: none;
 }
-
 p.center {
 	text-align: center;
 }
@@ -128,13 +127,6 @@ div#login_f {
 	width: 48em;
 	margin-top: 5em;
 }
-div#db_f {
-	text-align: justify;
-	margin: auto;
-	padding: 0.5em;
-	width: 55em;
-	margin-top: 3em;
-}
 div#login_box {
 	float: right;
 	padding-right: 10px;
@@ -157,6 +149,13 @@ div#noa {
 	float: right;
 	padding-right: 50px;
 	margin-top: 25px;
+}
+div#db_f {
+	text-align: justify;
+	margin: auto;
+	padding: 0.5em;
+	width: 55em;
+	margin-top: 3em;
 }
 div#db_ftxt {
 	float: right;
@@ -196,6 +195,7 @@ div#head {
 div#foot {
 	margin-top: solid 2px #000;
 	padding-top: 5px;
+	padding-bottom: 5px;
 	text-align: center;
 	background: #000;
 	width: 960px;
@@ -548,7 +548,6 @@ span.master, span.snmp, span.binary, span.recon {
 }
 .databox_color {
 	border-left: 4px solid #778855;
-
 }
 #head_l {
 	float: left;
@@ -577,6 +576,3 @@ span#logo_text2 {
 	letter-spacing: -2px;
 	color: #aaa;
 }
-
-
-

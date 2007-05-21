@@ -362,8 +362,10 @@ if (isset($_GET["id_agente"])){
 			$disabled=$row["disabled"];
 		} else {
 			echo "<h3 class='error'>".$lang_label["agent_error"]."</h3>";
-				echo "</table>";
+			echo "</table>";
+			echo "</div><div id='foot'>";
 				include ("general/footer.php");
+			echo "</div>";
 			exit;
 		}
 	} else {

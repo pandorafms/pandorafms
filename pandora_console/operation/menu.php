@@ -85,7 +85,7 @@ if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 
 	if ( isset($_GET["sec"]) && $_GET["sec"]  == "visualc") {
 		$sql="SELECT * FROM tlayout";
-		$res=mysql_query($sql);
+		if($res=mysql_query($sql))
 		while ($row = mysql_fetch_array($res)){
 			if (isset($_GET["sec2"]) && $_GET["sec2"] == "operation/visual_console/render_view") {
 				if (isset($_GET["id"]) && $_GET["id"] == $row["id"])

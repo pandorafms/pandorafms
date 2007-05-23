@@ -1,5 +1,5 @@
-Pandora FMS Windows Agent v1.2
-==============================
+Pandora FMS Windows Agent v1.2.1
+================================
 
 For mode information, please refer to documentation, you can get it on our proyect website at http://pandora.sourceforge.net
 
@@ -73,6 +73,7 @@ module_type - Type of data of the module:
           Its value is 0 for a "bad" state and any number greater than 0 for the 
           "good" state.
 
-module_description - Description of the module :-D
+module_description - Description of the module
 
-For mode information, please refer to documentation, you can get it on our proyect website at http://pandora.sourceforge.net
+For mode information, please refer to documentation, you can get it on our 
+project website at http://pandora.sourceforge.net

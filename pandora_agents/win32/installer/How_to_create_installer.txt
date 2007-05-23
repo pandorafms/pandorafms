@@ -1,0 +1,47 @@
+First, install installjammer from http://installjammer.com/, then create the
+c:\pandora_installer folder.
+
+Copy the \bin directory to that folder and also copy the files from the installer
+directory to that folder.
+
+At the end, you must have the next directory structure:
+
+C:\pandora_installer
+		+--- LICENSE.txt
+		+--- README.txt
+		+--- logo.png
+		+--- pandora.ico
+		+--- pandora1.2.1.mpi
+		+--- bin
+			  +--- libeay32.dll
+			  +--- PandoraAgent.exe
+			  +--- pandora_agent.conf
+			  +--- README
+			  +--- zlib1.dll
+			  +--- help
+			  |		+--- how_to_keys.html
+		      |		+---images
+			  |			+--- 1.jpg
+			  |				+--- 2.jpg
+			  |				+--- 3.jpg
+			  |				+--- 4.jpg
+			  |				+--- 5.jpg
+			  |				+--- 6.jpg
+			  +--- util
+			  |		+--- cut.exe
+			  |		+--- date.exe
+			  |		+--- expr.exe
+			  |		+--- gawk.exe
+			  |		+--- grep.exe
+			  |		+--- head.exe
+			  |		+--- ls.exe
+			  |		+--- md5.exe
+			  |		+--- puttygen.exe
+			  |		+--- tail.exe
+			  |		+--- tr.exe
+			  |		+--- wc.exe
+			  +--- key
+			  |		+--- PUT_SSH_KEYS_HERE
+			  +--- scripts
+			  		+--- start_pandora_agent.bat
+			  		+--- stop_pandora_agent.bat

@@ -1,3 +1,17 @@
+2007-05-23 Raul Mateos <raulofpandora@gmail.com>
+
+	* installer/Pandora_Windows_Agent-1.2.1-Setup.exe: Updated installer.
+	Deleted old one.
+	
+	* installer/pandora1.2.1.mpi: Renamed installjammer file and updated
+	version. To use the file, you have to copy the ./bin and ./installer folder
+	to c:\pandora_installer folder. This is explained in the
+	how_to_create.installer.txt new file.
+	
+	* installer/how_to_create.installer.txt: New help file.
+	
+	* installer/README.txt: Updated file with 1.2.1 version.
+
 2006-12-05  Esteban Sanchez  <estebans@artica.es>
 
 	* pandora_windows_service.cc: Fixed a bug when the agent name is not

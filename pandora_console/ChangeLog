@@ -1,3 +1,7 @@
+2007-05-23  Sancho Lerena  <slerena@artica.es>
+
+	* pandoradb.sql: Added field to tlayout_data (no_link_color)
+
 2007-05-22  Sancho Lerena  <slerena@artica.es>
 
 	* images/console/background/*: Some nice backgrounds added for new
@@ -9,7 +13,8 @@
 
 	* operation/agentes/estado_alertas.php: Style fix (databox).
 
-	* operation/agentes/ver_agente.php: Now main view shows also alert info.
+	* operation/agentes/ver_agente.php: Now main view shows also alert
+	info.
 
 	* operation/menu.php: Fixed SQL error when there is no data.
 
@@ -17,10 +22,11 @@
 
 	* include/styles/pandora.css: Updated footer style.
 	
-	* operation/estado_generalagente.php: Closed div for footer if agent not
-	found.
+	* operation/estado_generalagente.php: Closed div for footer if
+	agent not found.
 
-	* godmode/configurar_agente.php: Closed div for footer if agent not found.
+	* godmode/configurar_agente.php: Closed div for footer if agent
+	not found.
 	
 2007-05-20  Sancho Lerena  <slerena@artica.es>
 

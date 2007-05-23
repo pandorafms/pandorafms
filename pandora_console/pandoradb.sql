@@ -545,6 +545,7 @@ CREATE TABLE `tlayout_data` (
   `id_layout_linked` INTEGER unsigned NOT NULL default '0',
   `parent_item` INTEGER UNSIGNED NOT NULL default 0,
   `label_color` varchar(20) DEFAULT "",
+  `no_link_color` tinyint(1) UNSIGNED NOT NULL default 0,
   PRIMARY KEY(`id`)
 ) ENGINE = InnoDB;
 

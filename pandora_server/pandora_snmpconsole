@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 # Startup script for Pandora SNMP Console
 # Sancho Lerena, <slerena@gmail.com>
-# Linux Version(generico)
-# v1.2 (Ene/2006)
+# Linux Version(generic)
+# v1.3 (May/2006)
 
 # Compatible with NetSNMP 5.1 or higher
 

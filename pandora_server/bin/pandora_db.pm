@@ -267,7 +267,7 @@ sub execute_alert (%$$$$$$$$$$) {
 		my @datarow;
 		if ($idag->rows != 0) {
 			while (@datarow = $idag->fetchrow_array()) {
-				$comand = $datarow[2];
+				$command = $datarow[2];
 				$alert_name = $datarow[1];		
 			}
 		}
@@ -276,26 +276,26 @@ sub execute_alert (%$$$$$$$$$$) {
 	
 	logger($pa_config, "Alert ($alert_name) TRIGGERED for $agent",2);
 	if ($id_alert != 3){ # id_alerta 3 is reserved for internal audit system
-		$comand =~ s/_field1_/"$field1"/ig;
-		$comand =~ s/_field2_/"$field2"/ig;
-		$comand =~ s/_field3_/"$field3"/ig;
-		$comand=~ s/_agent_/$agent/ig;
-		$comand =~ s/_timestamp_/$timestamp/ig;
-		$comand =~ s/_data_/$data/ig;
+		$command =~ s/_field1_/"$field1"/ig;
+		$command =~ s/_field2_/"$field2"/ig;
+		$command =~ s/_field3_/"$field3"/ig;
+		$command=~ s/_agent_/$agent/ig;
+		$command =~ s/_timestamp_/$timestamp/ig;
+		$command =~ s/_data_/$data/ig;
 		# Clean up some "tricky" characters
-		$comand =~ s/&gt;/>/g;
+		$command =~ s/&gt;/>/g;
 		# EXECUTING COMMAND !!!
 		eval {
-			my $exit_value = system ($comand);
+			my $exit_value = system ($command);
 			$exit_value  = $? >> 8; # Shift 8 bits to get a "classic" errorlevel
 			if ($exit_value != 0) {
 				logger($pa_config, "Executed command for triggered alert '$alert_name' had errors (errorlevel =! 0) ",1);
-				logger($pa_config, "Executed command was $comand ",2);
+				logger($pa_config, "Executed command was $command ",5);
 			}
 		};
 		if ($@){
-			logger($pa_config, "WARNING: Alert command don't retun from execution. ( $comand )", 0 );
-			logger($pa_config, "ERROR Code: $@",0);
+			logger($pa_config, "WARNING: Alert command don't retun from execution. ( $command )", 0 );
+			logger($pa_config, "ERROR Code: $@",1);
 		}
 	} else { # id_alerta = 3, is a internal system audit
 		logger($pa_config, "Internal audit lauch for agent name $agent",3);
@@ -305,8 +305,8 @@ sub execute_alert (%$$$$$$$$$$) {
 		pandora_audit ($pa_config, $field1, $agent, "User Alert ($alert_name)", $dbh);
 	}
 	my $evt_descripcion = "Alert fired ($agent $alert_name) $field1";
-	my $id_agente = dame_agente_id($pa_config,$agent,$dbh);
-	pandora_event($pa_config, $evt_descripcion, dame_grupo_agente($pa_config, $id_agente, $dbh), $id_agente, $dbh);
+	my $id_agente = dame_agente_id ($pa_config,$agent,$dbh);
+	pandora_event ($pa_config, $evt_descripcion, dame_grupo_agente($pa_config, $id_agente, $dbh), $id_agente, $dbh);
 }
 
 
@@ -776,6 +776,9 @@ sub pandora_writedata (%$$$$$$$$$$){
 	# much more faster to do comparations...
 	my $utimestamp; # integer version of timestamp
 	$utimestamp = &UnixDate($timestamp,"%s"); # convert from human to integer
+	if (! defined($utimestamp)){ # If problems getting timestamp data
+		$utimestamp = &UnixDate("today","%s");
+	}
 	my $needscreate = 0;
 
 	# take max and min values for this id_agente_module
@@ -1074,7 +1077,7 @@ sub pandora_audit (%$$$$) {
 	# In startup audit, DBH not passed
 	if (! defined($dbh)){
 		$local_dbh = 1;
-		$dbh = DBI->connect("DBI:mysql:pandora:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
+		$dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
 	}
         my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
 	my $utimestamp; # integer version of timestamp	

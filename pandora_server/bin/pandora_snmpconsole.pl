@@ -110,7 +110,7 @@ sub pandora_snmptrapd {
 		}
 	}
 	# open database, only ONCE. We pass reference to DBI handler ($dbh) to all subprocess
-	my $dbh = DBI->connect("DBI:mysql:pandora:$pa_config->{'dbhost'}:3306",$pa_config->{'dbuser'}, $pa_config->{'dbpass'},	{ RaiseError => 1, AutoCommit => 1 });
+	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306",$pa_config->{'dbuser'}, $pa_config->{'dbpass'},	{ RaiseError => 1, AutoCommit => 1 });
 
 	# Main loop for reading file
 	while ( 1 ){

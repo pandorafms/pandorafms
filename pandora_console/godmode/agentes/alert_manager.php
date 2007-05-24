@@ -25,7 +25,7 @@
 
 // ====================================================================================
 // VIEW ALERTS
-// ====================================================================================<br>
+// ====================================================================================
 
 $sql1='SELECT * FROM tagente_modulo WHERE id_agente = "'.$id_agente.'"';
 $result=mysql_query($sql1);
@@ -101,15 +101,15 @@ $result=mysql_query($sql1);
 			}
 		}
 		if (isset($string) & $string!='') {
-		echo "<table cellpadding='3' cellspacing='3' width='700' class='fon'>
+		echo "<table cellpadding='4' cellspacing='4' width='720' class='databox'>
 		<tr><th>".$lang_label["name_type"]."</th>
 		<th>".$lang_label["alert"]."</th>
-		<th>".$lang_label["time_threshold"]."</th>
+		<th>".$lang_label["threshold"]."</th>
 		<th>".$lang_label["min_max"]."</th>
 		<th>".$lang_label["description"]."</th>
 		<th width='50'>".$lang_label["action"]."</th></tr>";
 		echo $string;
-		echo "<tr><td colspan='6'><div class='raya'></div></td></tr></table>";
+		echo "</table>";
 		} else {
 			echo "<div class='nf'>".$lang_label["no_alerts"]."</div>";
 		}
@@ -136,8 +136,8 @@ if ($update_alert != 1) {
 }
 ?>
 <input type="hidden" name="id_agente" value="<?php echo $id_agente ?>">
-<table width=600 cellpadding="4" cellspacing="4" class="fon" border=0>
-<tr><td class='lb' rowspan='10' width='3'>
+<table width=600 cellpadding="4" cellspacing="4" class="databox_color" border=0>
+<tr>
 <td class="datos"><?php echo $lang_label["alert_type"]?>
 <td class="datos">
 <select name="tipo_alerta"> 
@@ -155,7 +155,14 @@ while ($row=mysql_fetch_array($result)){
 <a name="alerts"> <!-- Don't Delete !! -->
 
 <tr><td class="datos2"><?php echo $lang_label["min_value"] ?>
+<a href='#' class='tip'>&nbsp;<span>                                                                                          <?PHP echo $lang_label["min_valid_value_help"]; ?>                                                                             </span></a>
+
 <td class="datos2"><input type="text" name="minimo" size="5" value="<?php echo $alerta_dis_min ?>" style="margin-right: 70px;">
+
+<a href='#' class='tip'>&nbsp;<span>
+<?PHP echo $lang_label["max_valid_value_help"]; ?>
+ </span></a>
+
 <?php echo $lang_label["max_value"] ?> &nbsp;&nbsp;&nbsp;
 <input type="text" name="maximo" size="5" value="<?php echo $alerta_dis_max ?>">
 
@@ -188,8 +195,10 @@ _agent_<br>
 _timestamp_<br>
 _data_<br>
 </span></a>
-<td class="datos"><textarea name="campo_3" style='height:55px;' cols="36" rows="2"><?php echo $alerta_campo3 ?></textarea>
+<td class="datos"><textarea name="campo_3" style='height:85px;' cols="36" rows="4"><?php echo $alerta_campo3 ?></textarea>
 <tr><td class="datos2"><?php echo $lang_label["time_threshold"] ?>
+<a href='#' class='tip'>&nbsp;<span>                                                                                          <?PHP echo $lang_label["alert_time_threshold_help"]; ?>                                                                             </span></a>
+
 <td class="datos2">
 <select name="time_threshold" style="margin-right: 60px;">
 <?php
@@ -247,8 +256,9 @@ if ($update_alert != 1) {
 
  // End block only if $creacion_agente != 1;
 
-echo '<tr><td colspan="3"><div class="raya"></div></td></tr>';
-echo '<tr><td colspan="3" align="right">';
+echo "</table>";
+echo '<table width=605>';
+echo '<tr><td align="right">';
 	if ($update_alert== "1"){
 		echo '<input name="updbutton" type="submit" class="sub upd" value="'.$lang_label["update"].'">';
 	} else {

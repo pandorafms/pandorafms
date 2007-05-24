@@ -31,10 +31,10 @@
 		<td class='f9b'>
 				Login <br>
 		
-				<input class="login" type="text" name="nick" value="">
+				<input class="login" type="text" name="nick" value="demo">
 		<tr><td class='f9b'>
 				Password <br>
-				<input class="login" type="password" name="pass" value="">
+				<input class="login" type="password" name="pass" value="demo">
 		<tr><td align='center'>
 				<input type="submit" class="sub next" value="Login">	
 		</table>

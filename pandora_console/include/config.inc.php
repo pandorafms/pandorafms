@@ -20,17 +20,17 @@
 // This is the base config file
 
 //Pandora Version
-$build_version="PC070224"; //PCyymmdd
+$build_version="PC070524"; //PCyymmdd
 $pandora_version="v1.3 devel"; 
 
 // Database configuration (default ones)
-//$dbname="pandora";		// MySQL DataBase
+//$dbname="pandora13";		// MySQL DataBase
 //$dbuser="pandora";		// DB User 
 //$dbpassword="pandora";	// Password
 //$dbhost="localhost";		// MySQL Host
 
 // This is used for reporting, please add "/" character at the end
-//$config_homedir = "/var/www/pandora_console/";
+//$config_homedir = "/var/www/pandora2/";
 
 // Do not display any ERROR
 //error_reporting(0); // Need to use active console at this moment
@@ -55,7 +55,7 @@ if (! mysql_connect($dbhost,$dbuser,$dbpassword)){
 	</head><body><div align="center">
 	<div id="db_f">
 		<div>
-		<a href="index.php"><img src="images/logo_menu.gif" border="0"></a>
+		<a href="index.php"><img src="images/pandora_logo.png" border="0"></a>
 		</div>
 	<div id="db_ftxt">
 		<h1 id="db_fh1" class="error">Pandora Console Error DB-001</h1>
@@ -69,9 +69,9 @@ if (! mysql_connect($dbhost,$dbuser,$dbpassword)){
 	</div></body></html>');
 }
 mysql_select_db($dbname);
-$result2=mysql_query("SELECT * FROM tconfig");
-while ($row2=mysql_fetch_array($result2)){
-	switch ($row2["token"]) {
+if($result2=mysql_query("SELECT * FROM tconfig")){
+	while ($row2=mysql_fetch_array($result2)){
+		switch ($row2["token"]) {
 		case "language_code": $language_code=$row2["value"];
 						break;
 		case "block_size": $block_size=$row2["value"];
@@ -90,8 +90,27 @@ while ($row2=mysql_fetch_array($result2)){
 						break;
 		case "bgimage": $config_bgimage=$row2["value"];
 						break;
+		}
 	}
-}
+} else {
+	 exit ('<html><head><title>Pandora Error</title>
+	         <link rel="stylesheet" href="./include/styles/pandora.css" type="text/css">
+	         </head><body><div align="center">
+	         <div id="db_f">
+                 <div>
+                 <a href="index.php"><img src="images/pandora_logo.png" border="0"></a>
+                 </div>
+	         <div id="db_ftxt">
+                 <h1 id="db_fh1" class="error">Pandora Console Error DB-002</h1>
+                 Cannot load configuration variables. Please check your database setup in the
+                 <b>./include/config.php</b> file and read documentation.<i><br><br>
+                  Probably database schema is created but there are no data inside it or you have a problem with DB access credentials.
+                 </i><br>
+	         </div>
+	         </div></body></html>');
+}	
+
+
 if ($language_code == 'ast_es') {
 	$help_code='ast';
 	}

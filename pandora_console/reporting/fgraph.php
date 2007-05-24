@@ -542,11 +542,16 @@ function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $show_event,
 		$AxisY =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
 		$AxisY->setDataPreprocessor(Image_Graph::factory('Image_Graph_DataPreprocessor_Function', 'format_for_graph'));
 		$AxisY->setLabelOption("showtext",true);
-		$AxisY->setLabelInterval(ceil($max_value / 5));
+		$yinterval = $height / 30;
+		$AxisY->setLabelInterval(ceil($max_value / $yinterval));
 		$AxisY->showLabel(IMAGE_GRAPH_LABEL_ZERO);
 		if ($unit_name != "")
 			$AxisY->setTitle($unit_name, 'vertical');
-		$AxisX->setLabelInterval($resolution / 10);		
+		if ($periodo < 10000)
+			$xinterval = 8;
+		else
+			$xinterval = $resolution / 7 ;
+		$AxisX->setLabelInterval($xinterval) ;
 		//$AxisY->forceMinimum($minvalue);
 		$AxisY->forceMaximum($max_value+($max_value/12)) ;
 		$GridY2 =& $Plotarea->addNew('bar_grid', IMAGE_GRAPH_AXIS_Y_SECONDARY);

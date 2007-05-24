@@ -64,7 +64,7 @@ echo "<h3>";
 	<span>'.$lang_label["help"].'</span></a>';
 echo "</h3>";
  ?>
-<table width="500" cellspacing="3" cellpadding="3">
+<table width="500" cellspacing="4" cellpadding="4" class="databox_color">
 
 <form name="alerta" method="post" action="index.php?sec=galertas&sec2=godmode/alertas/modificar_alerta&id_alerta=<?php echo $id_alerta ?>">
 
@@ -76,8 +76,8 @@ echo "</h3>";
 		echo "<input type='hidden' name='id_alerta' value='".$id_alerta."'>";
 	}
 ?>
-<tr><td class='lb' rowspan='3' width='5'>
-<td class="datos"><?php echo $lang_label["alertname"] ?>
+
+<tr><td class="datos"><?php echo $lang_label["alertname"] ?>
 <td class="datos"><input type="text" name="nombre" size=30 value="<?php echo $nombre ?>">
 
 <tr>
@@ -97,8 +97,9 @@ _data_<br>
 <td class="datos"><textarea name="descripcion" cols="50" rows="7">
 <?php echo $descripcion ?>
 </textarea>
-<tr><td colspan='3'><div class='raya'></div></td></tr>
-<tr><td colspan="3" align="right">
+</table>
+<table width=500>
+<tr><td align="right">
 <?php 
 if (isset($_GET["creacion"])){
 	echo "<input name='crtbutton' type='submit' class='sub' value='".$lang_label["create"]."'>";

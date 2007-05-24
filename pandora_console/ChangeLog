@@ -1,6 +1,32 @@
-2007-05-23  Sancho Lerena  <slerena@artica.es>
+2007-05-24  Sancho Lerena  <slerena@artica.es>
 
-	* pandoradb.sql: Added field to tlayout_data (no_link_color)
+        * include/styles/pandora.css: Some margin adjustements for databox
+        classes and H1-3.
+
+        * include/config.inc.php: Added support to detect empty
+        configuration tokens in DB and abort.
+
+        * include/languages/language_en.php: More strings.
+
+        * operation/visual_console/render_view.php: Fixed static links to
+        images.
+
+        * operation/agentes/estado_alertas.php: Databox style fixed.
+
+        * operation/agentes/estado_monitores.php: Added image instead
+        label.
+
+        * operation/servers/view_server.php: Fixed divbyzero notice.
+
+        * operation/servers/view_server_detail.php: Fixed static image URL.
+
+        * reporting/fgraph.php: Fixed distribution of X axis ticks.
+
+        * general/login_page.php: Added "demo" user by default.
+
+        * godmode/agentes/alert_manager.php,
+        godmode/alertas/modificar_alerta.php
+        godmode/alertas/configurar_alerta.php: Style 'databox' update.
 
 2007-05-22  Sancho Lerena  <slerena@artica.es>
 
@@ -13,8 +39,7 @@
 
 	* operation/agentes/estado_alertas.php: Style fix (databox).
 
-	* operation/agentes/ver_agente.php: Now main view shows also alert
-	info.
+	* operation/agentes/ver_agente.php: Now main view shows also alert info.
 
 	* operation/menu.php: Fixed SQL error when there is no data.
 
@@ -22,11 +47,10 @@
 
 	* include/styles/pandora.css: Updated footer style.
 	
-	* operation/estado_generalagente.php: Closed div for footer if
-	agent not found.
+	* operation/estado_generalagente.php: Closed div for footer if agent not
+	found.
 
-	* godmode/configurar_agente.php: Closed div for footer if agent
-	not found.
+	* godmode/configurar_agente.php: Closed div for footer if agent not found.
 	
 2007-05-20  Sancho Lerena  <slerena@artica.es>
 

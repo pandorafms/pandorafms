@@ -83,7 +83,8 @@ h2 {
 	font-size: 15px;
 }
 a {
-	color: #486787;
+	color: #d81616;
+	font-weight: bold;
 	text-decoration: none;
 }
 a:hover {
@@ -193,7 +194,7 @@ div#head {
 	font-size: 8pt;
 	width: 960px;
 	height: 60px;
-	background: url(../../images/header.jpg);
+	background: url(../../images/header_red.jpg);
 }
 div#foot {
 	font-size: 7pt;
@@ -201,7 +202,7 @@ div#foot {
 	padding-top: 5px;
 	padding-bottom: 5px;
 	text-align: center;
-	background: #000;
+	background: #960003;
 	width: 960px;
 	clear: both;
 }

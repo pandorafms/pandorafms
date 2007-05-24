@@ -38,6 +38,7 @@ if (comprueba_login() == 0)
 		$config_bgimage=$_POST["bgimage"];
 		$config_show_unknown=$_POST["show_unknown"];
 		$config_show_lastalerts=$_POST["show_lastalerts"];
+		$config_style = $_POST["style"];
 		
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$block_size."' WHERE TOKEN='block_size'");
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$language_code."' WHERE TOKEN='language_code'");
@@ -48,12 +49,13 @@ if (comprueba_login() == 0)
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config_bgimage."' WHERE token='bgimage'");
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config_show_unknown."' WHERE token='show_unknown'");
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config_show_lastalerts."' WHERE token='show_lastalerts'");
+		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config_style."' WHERE token='style'");
 	}	
 	echo "<h2>".$lang_label["setup_screen"]."</h2>";
 	echo "<h3>".$lang_label["general_config"]."<a href='help/".$help_code."/chap9.php#9' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 	echo "<form name='setup' method='POST' action='index.php?sec=gsetup&amp;sec2=godmode/setup/setup&update=1'>";
-	echo '<table width="500" cellpadding="3" cellspacing="3">';
-	echo '<tr><td class="lb" rowspan="9" width="5"></td><td class="datos">'.$lang_label["language_code"];
+	echo '<table width="500" cellpadding="4" cellspacing="4" class="databox_color">';
+	echo '<tr><td class="datos">'.$lang_label["language_code"];
 	echo '<td class="datos"><select name="language_code" onChange="javascript:this.form.submit();" width="180px">';
 	
 	$sql="SELECT * FROM tlanguage";
@@ -122,8 +124,24 @@ if (comprueba_login() == 0)
 	}
 	echo '</select>';
 
-	echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
-	echo "<tr><td colspan='3' align='right'>";
+	echo '<tr><td class="datos">'.$lang_label["style_template"];
+	echo '<td class="datos">';
+	echo '<select name="style" class="w155">';
+	if ($config_bgimage!=""){
+		echo '<option>'.$config_style;
+      	}
+	$ficheros2 = list_files('include/styles/', "pandora",1, 0);
+        $a=0;
+        while (isset($ficheros2[$a])){
+		$fstyle = substr($ficheros2[$a],0,strlen($ficheros2[$a])-4);
+		if ($fstyle != $config_style)
+			echo "<option>".$fstyle;
+        	$a++;
+        }
+        echo '</select>';
+	echo "</table>";
+	echo "<table width=500>";
+	echo "<tr><td align='right'>";
 	echo '<input type="submit" class="sub upd" value="'.$lang_label["update"].'">';
 	echo "</table>";
 }

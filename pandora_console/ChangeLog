@@ -1,5 +1,24 @@
 2007-05-24  Sancho Lerena  <slerena@artica.es>
 
+        * include/styles/pandora_red.css: Added alternate sample style.
+
+        * include/styles/pandora.css: Some problems with fonts fixed (I
+        hope!)
+
+        * include/config.inc.php: Modified code to support custom Style in
+        DB config. By default uses "pandora".
+
+        * include/languages/language_en.php: new string to render style
+        setup.
+
+        * images/header_red.jpg: New image for red style.
+
+        * godmode/grupos/configurar_grupo.php: Updated styles.
+
+        * godmode/setup/setup.php: Added support for style selector.
+
+2007-05-24  Sancho Lerena  <slerena@artica.es>
+
         * include/styles/pandora.css: Some margin adjustements for databox
         classes and H1-3.
 

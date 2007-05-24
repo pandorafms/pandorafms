@@ -795,6 +795,7 @@ $lang_label["threshold"]="Threshold";
 $lang_label["min_valid_value_help"]="Min. possible value to consider 'valid' values, below this limit, Pandora FMS will fire the alert";
 $lang_label["max_valid_value_help"]="Max. possible value to consider 'valid' values, above this limit, Pandora FMS will fire the alert";
 $lang_label["alert_time_threshold_help"]="This value must be al least Module Interval * (Min.Number of Alerts + 1)";
+$lang_label["style_template"]="Style template";
 
 global $lang_label; 
 global $help_label;

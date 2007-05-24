@@ -46,6 +46,9 @@ $attachment_store=$config_homedir;
 // Default font used for graphics (a Free TrueType font included with Pandora FMS)
 $config_fontpath = $config_homedir."reporting/FreeSans.ttf";
 
+// Style (pandora by default)
+$config_style = "pandora";
+
 // Read remaining config tokens from DB
 if (! mysql_connect($dbhost,$dbuser,$dbpassword)){ 
 
@@ -90,6 +93,8 @@ if($result2=mysql_query("SELECT * FROM tconfig")){
 						break;
 		case "bgimage": $config_bgimage=$row2["value"];
 						break;
+		case "style": $config_style=$row2["value"];
+                                                break;
 		}
 	}
 } else {

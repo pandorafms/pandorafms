@@ -62,7 +62,7 @@ if (comprueba_login() == 0)
 	if (isset($_GET["id_grupo"])) {echo "<h3>".$lang_label["update_group"]."<a href='help/".$help_code."/chap3.php#31' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";}
 	
 ?>
-<table width="450">
+<table width="450" cellpadding=4 cellspacing=4 class='databox_color'>
 
 <form name="grupo" method="post" action="index.php?sec=gagente&
 sec2=godmode/grupos/lista_grupos">
@@ -75,7 +75,6 @@ sec2=godmode/grupos/lista_grupos">
 		echo "<input type='hidden' name='id_grupo' value='".$id_grupo."'>";
 	}
 ?>
-<tr><td class='lb' rowspan='5' width='3'>
 <tr><td class="datos"><?php echo $lang_label["group_name"] ?></td>
 <td class="datos">
 <input type="text" name="nombre" size="35" value="<?php echo $nombre ?>">
@@ -133,9 +132,9 @@ sec2=godmode/grupos/lista_grupos">
 	
 	echo "</select>";
 	
-
-	echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
-	echo '<tr><td colspan="3" align="right">';
+	echo "</table>";
+	echo "<table width=450>";
+	echo '<tr><td align="right">';
 	if (isset($_GET["creacion_grupo"]))
 		echo "<input name='crtbutton' type='submit' class='sub wand' value='".$lang_label["create"]."'>";
 	else 

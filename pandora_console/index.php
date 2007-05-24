@@ -96,7 +96,10 @@ if ( (isset ($_GET["refr"])) || (isset($_POST["refr"])) ){
 <meta name="keywords" content="pandora, monitoring, system, GPL, software">
 <meta name="robots" content="index, follow">
 <link rel="icon" href="images/pandora.ico" type="image/ico">
-<link rel="stylesheet" href="include/styles/pandora.css" type="text/css">
+<?PHP
+// Pandora FMS 1.3 custom style selection
+	echo '<link rel="stylesheet" href="include/styles/'.$config_style.'.css" type="text/css">';
+?>
 <script type='text/JavaScript' src='include/javascript/calendar.js'></script>
 <script type="text/javascript" src="include/javascript/wz_jsgraphics.js"></script>
 </head>

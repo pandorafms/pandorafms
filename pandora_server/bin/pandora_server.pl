@@ -71,7 +71,7 @@ sub pandora_dataserver {
 	my @file_list;
 	my $onefile; # Each item of incoming directory 
 	my $agent_filename;
-	my $dbh = DBI->connect("DBI:mysql:pandora:$pa_config->{'dbhost'}:3306",$pa_config->{"dbuser"}, $pa_config->{"dbpass"},{ RaiseError => 1, AutoCommit => 1 });
+	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306",$pa_config->{"dbuser"}, $pa_config->{"dbpass"},{ RaiseError => 1, AutoCommit => 1 });
 
 	while ( 1 ) { # Pandora module processor main loop
 		opendir(DIR, $pa_config->{'incomingdir'} ) or die "[FATAL] Cannot open Incoming data directory at $pa_config->{'incomingdir'}: $!";
@@ -148,7 +148,7 @@ sub pandora_dataserver {
 
 sub pandora_keepalived {
 	my $pa_config = $_[0];
-	my $dbh = DBI->connect("DBI:mysql:pandora:$pa_config->{'dbhost'}:3306",$pa_config->{"dbuser"}, $pa_config->{"dbpass"},{ RaiseError => 1, AutoCommit => 1 });
+	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306",$pa_config->{"dbuser"}, $pa_config->{"dbpass"},{ RaiseError => 1, AutoCommit => 1 });
 	while ( 1 ){
 		sleep $pa_config->{"server_threshold"};
 		threads->yield;
@@ -304,15 +304,20 @@ sub procesa_datos {
 	$agent_version = $datos->{'version'};
 	$interval = $datos->{'interval'};
 	$os_version = $datos->{'os_version'};
-    
+  
+  	# Set default interval if not defined in agent (This is very very odd whatever!).
+   	if (!defined($interval)){
+		$interval = 300;
+	}
+
 	# Check for parameteres, not all version agents gives the same parameters !
 	if (length($interval) == 0){
        $interval = -1; # No update for interval !
     }
-    
-	if (length($os_version) == 0){
-       $os_version = "N/A";
-    }
+   
+   	if ((!defined ($os_version)) || (length($os_version) == 0)){
+		$os_version = "N/A";
+	}
   
 	if (defined $agent_name){
 		$id_agente = dame_agente_id($pa_config,$agent_name,$dbh);

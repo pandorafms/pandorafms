@@ -83,7 +83,8 @@ print " [*] Threads loaded and running \n";
 # Last thread is the main process
 
 my $dbhost = $pa_config{'dbhost'};
-my $dbh = DBI->connect("DBI:mysql:pandora:$dbhost:3306", $pa_config{'dbuser'}, $pa_config{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
+my $dbname = $pa_config{'dbname'};
+my $dbh = DBI->connect("DBI:mysql:$dbname:$dbhost:3306", $pa_config{'dbuser'}, $pa_config{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
 
 while (1) {
 	pandora_serverkeepaliver (\%pa_config, 1, $dbh);
@@ -131,7 +132,7 @@ sub pandora_network_subsystem {
 	#                 SNMP DATA, SNMP DATA_STRING
 	my $nettypedesc;
 	# Connect ONCE to Database, we pass DBI handler to all subprocess.
-	my $dbh = DBI->connect("DBI:mysql:pandora:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
+	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
 
 	my $id_agente;
 	my $id_agente_modulo;

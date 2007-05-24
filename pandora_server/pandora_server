@@ -2,7 +2,7 @@
 # Pandora Data Server startup script
 # Sancho Lerena, <slerena@gmail.com>
 # Linux Version (generic)
-# v1.2 (Ene/2006)
+# v1.3 (May/2006)
 
 # Configurable path and filenames
 PANDORA_HOME="/usr/share/pandora_server"

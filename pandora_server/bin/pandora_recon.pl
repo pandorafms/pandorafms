@@ -56,7 +56,8 @@ my $pa_config = \%pa_config;
 my $dbhost = $pa_config->{'dbhost'};
 my $dbuser = $pa_config->{'dbuser'};
 my $dbpass = $pa_config->{'dbpass'};
-my $dbh = DBI->connect("DBI:mysql:pandora:$dbhost:3306", $dbuser, $dbpass, { RaiseError => 1, AutoCommit => 1 });
+my $dbname = $pa_config->{'dbname'};
+my $dbh = DBI->connect("DBI:mysql:$dbname:$dbhost:3306", $dbuser, $dbpass, { RaiseError => 1, AutoCommit => 1 });
 
 # Daemonize of configured
 if ( $pa_config{"daemon"} eq "1" ) {
@@ -92,7 +93,7 @@ while ( 1 ){
 sub pandora_recon_subsystem {
         # Init vars
 	my $pa_config = $_[0];
-	my $dbh = DBI->connect("DBI:mysql:pandora:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
+	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
 	my $server_id = dame_server_id($pa_config, $pa_config->{'servername'}."_Recon", $dbh);
 	my $query_sql; 			# for use in SQL
 	my $exec_sql; 			# for use in SQL
@@ -136,7 +137,7 @@ sub pandora_exec_task {
 	my $query_sql; 			# for use in SQL
 	my $exec_sql; 			# for use in SQL
 	my @sql_data;			# for use in SQL 
-	my $dbh = DBI->connect("DBI:mysql:pandora:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
+	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
 
 	$query_sql = "SELECT * FROM trecon_task WHERE id_rt = $id_task";	
 	$exec_sql = $dbh->prepare($query_sql);

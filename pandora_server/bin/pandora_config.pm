@@ -118,9 +118,10 @@ sub pandora_loadconfig {
 	# Default values
 	$pa_config->{'version'} = $pandora_version;
 	$pa_config->{'build'} = $pandora_build;
-	$pa_config->{"dbuser"} ="";
-	$pa_config->{"dbpass"} = "";
-	$pa_config->{"dbhost"} = "";
+	$pa_config->{"dbuser"} ="pandora";
+	$pa_config->{"dbpass"} = "pandora";
+	$pa_config->{"dbhost"} = "localhost";
+	$pa_config->{"dbname"} = "pandora";
 	$pa_config->{"basepath"}=$pa_config->{'pandora_path'}; # Compatibility with Pandora 1.1
 	$pa_config->{"incomingdir"}=$pa_config->{'pandora_path'}."/data_in";
 	$pa_config->{"server_threshold"}=30;
@@ -205,6 +206,7 @@ sub pandora_loadconfig {
 				$pa_config->{"errorlogfile"} = $tbuf;
 			}
 		}
+		elsif ($parametro =~ m/^dbname\s(.*)/i) { $pa_config->{'dbname'}= $1; }
 		elsif ($parametro =~ m/^dbuser\s(.*)/i) { $pa_config->{'dbuser'}= $1; }
   		elsif ($parametro =~ m/^dbpass\s(.*)/i) { $pa_config->{'dbpass'}= $1; }
   		elsif ($parametro =~ m/^dbhost\s(.*)/i) { $pa_config->{'dbhost'}= $1; }
@@ -291,7 +293,7 @@ sub pandora_loadconfig {
 	my $dbh;
 	# Check valid Database variables and update server status
 	eval {
-		$dbh = DBI->connect("DBI:mysql:pandora:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
+		$dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
 		pandora_updateserver ($pa_config, $pa_config->{'servername'},1, $opmode, $dbh); # Alive status
 	};
 	if ($@) {

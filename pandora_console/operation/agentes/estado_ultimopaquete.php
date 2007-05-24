@@ -132,7 +132,6 @@ if (comprueba_login() == 0) {
 					<b>".$nombre_grupomodulo."</b>";
 				}
 			}
-			
 			$nombre_tipo_modulo = dame_nombre_tipo_modulo($row3["id_tipo_modulo"]);
 			echo "<td class='".$tdcolor."_id' title='".salida_limpia($row3["nombre"])."'>";
 			echo salida_limpia(substr($row3["nombre"],0,15));

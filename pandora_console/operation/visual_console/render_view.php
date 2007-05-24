@@ -94,7 +94,7 @@ while ($row = mysql_fetch_array($res)){
 		if (($link_layout == "") OR ($link_layout == 0)){
 			$link_string = "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agent&tab=data'>";
 		} else {
-			$link_string = "<a href='http://localhost/pandora_console/index.php?sec=visualc&sec2=operation/visual_console/render_view&id=$link_layout'>";
+			$link_string = "<a href='index.php?sec=visualc&sec2=operation/visual_console/render_view&id=$link_layout'>";
 		}
 		// Draw image
 		echo "<div style='z-index: 1; color: #".$label_color."; position: absolute; margin-left: ".$pos_x."px; margin-top:".$pos_y."px; '>";
@@ -117,7 +117,7 @@ while ($row = mysql_fetch_array($res)){
 		if (($link_layout == "") OR ($link_layout == 0)){
 			$link_string = "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agent&tab=data'>";
 		} else {
-			$link_string = "<a href='http://localhost/pandora_console/index.php?sec=visualc&sec2=operation/visual_console/render_view&id=$link_layout'>";
+			$link_string = "<a href='http://index.php?sec=visualc&sec2=operation/visual_console/render_view&id=$link_layout'>";
 		}
 		// Draw image
 		echo "<div style='z-index: 1; color: #".$label_color."; position: absolute; margin-left: ".$pos_x."px; margin-top:".$pos_y."px; '>";

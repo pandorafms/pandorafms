@@ -791,6 +791,11 @@ $lang_label["avg_only"]="Avg.Only";
 $lang_label["avg_value"]="Avg. Value";
 $lang_label["auto_refresh_time"]="Autorefresh time";
 $lang_label["refresh"]="Refresh";
+$lang_label["threshold"]="Threshold";
+$lang_label["min_valid_value_help"]="Min. possible value to consider 'valid' values, below this limit, Pandora FMS will fire the alert";
+$lang_label["max_valid_value_help"]="Max. possible value to consider 'valid' values, above this limit, Pandora FMS will fire the alert";
+$lang_label["alert_time_threshold_help"]="This value must be al least Module Interval * (Min.Number of Alerts + 1)";
+
 global $lang_label; 
 global $help_label;
 ?>

@@ -149,7 +149,8 @@ if (comprueba_login() == 0) {
 				$total_modules = $row2[0];
 				if ($total_modules == 0)
 					$percentil = 0;
-				$percentil = $modules_server / ($total_modules / 100);
+				else	
+					$percentil = $modules_server / ($total_modules / 100);
 				$total_modules_temp = $total_modules;
 			}
 			else 

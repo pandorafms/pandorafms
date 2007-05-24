@@ -121,7 +121,7 @@ if (isset($_GET["id_agente"])){
 	} else {
 		echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/estado_alertas&refr=60'>";
 	}
-	echo "<table cellpadding='3' cellspacing='3'><tr>";
+	echo "<table cellpadding='4' cellspacing='4' class='databox'><tr>";
 	echo "<td>".$lang_label["group"]."</td>";
 	echo "<td valign='middle'>";
 	echo "<select name='ag_group' onChange='javascript:this.form.submit();' class='w130'>";
@@ -214,7 +214,7 @@ if (isset($_GET["id_agente"])){
 			echo "<img src='images/dot_green.gif'> - ".$lang_label["not_fired"];
 			echo "</td></tr></table>";
 			echo "<br>";
-			echo "<table cellpadding='3' cellspacing='3' width='700'>";
+			echo "<table cellpadding='4' cellspacing='4' width='700' class='databox'>";
 			echo "<tr>
 			<th>".$lang_label["agent"]."</th>
 			<th>".$lang_label["type"]."</th>
@@ -223,8 +223,7 @@ if (isset($_GET["id_agente"])){
 			<th>".$lang_label["times_fired"]."</th>
 			<th>".$lang_label["status"]."</th>";
 			echo $string; //built table of alerts
-			echo "<tr><td colspan='6'><div class='raya'></div></td></tr>
-			</table>";
+			echo "</table>";
 		}
 		else {
 			echo "</table><br><div class='nf'>".

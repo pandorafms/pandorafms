@@ -38,7 +38,7 @@ if (comprueba_login() == 0) {
 		$color=0;
 		while ($row_t=mysql_fetch_array($result_t)){
 			# For evey module in the status table
-			$est_modulo = $row_t["nombre"];
+			$est_modulo = substr($row_t["nombre"],0,25);
 			$est_tipo = dame_nombre_tipo_modulo($row_t["id_tipo_modulo"]);
 			$est_description = $row_t["descripcion"];
 			$est_timestamp = $row_t["timestamp"];
@@ -67,7 +67,9 @@ if (comprueba_login() == 0) {
 				else
 					$agent_down = 0;
 				
-				echo "<tr><td class='".$tdcolor."'>".$est_tipo."</td>";
+				echo "<tr><td class='".$tdcolor."'>";
+				
+				echo "<img src='images/".show_icon_type($row_t["id_tipo_modulo"])."' border=0>";	
 				echo "<td class='".$tdcolor."'>".$est_modulo."</td>";
 				echo "<td class='".$tdcolor."f9'>"
 				.substr($est_description,0,32)."</td>";

@@ -1009,7 +1009,7 @@
   </para>
   <para>
     The public key must be copied into the
-    <filename>/home/.pandora/authorized_keys</filename> file in the
+    <filename>/home/pandora/.ssh/authorized_keys</filename> file in the
     Pandora server. Before starting the Pandora agent the SSH
     authentication must be checked. To do this the following command
     must be executed on the agent machine:

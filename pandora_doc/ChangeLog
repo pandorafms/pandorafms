@@ -1,3 +1,8 @@
+2007-05-26 Manuel Arostegui <marostegui@artica.es>
+
+	* en/pandora_install.xml: Fixed a small typo related
+	  with one PATH.
+
 2007-04-19 Manuel Arostegui <marostegui@artica.es>
 
 	* en/pandora_quick_install.xml: Added some improvemnts

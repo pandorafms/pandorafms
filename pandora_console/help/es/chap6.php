@@ -19,17 +19,13 @@
 <html>
 <head>
 <title>Pandora - Sistema de monitorizaci&oacute;n de Software Libre - Ayuda - VI. Auditor&iacute;a del Sistema</title>
-<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css">
-<style>
-.ml25 {margin-left: 25px;}
-div.logo {float:left;}
-div.toc {padding-left: 200px;}
-div.rayah {border-top: 1px solid #708090; width: 100%;}
-div.rayah2 {clear:both; border-top: 1px solid #708090; width: 100%; padding-bottom: 35px;}
-</style>
+<link rel="stylesheet" href="../../include/styles/help.css" type="text/css">
+</head>
+
+<body>
 
 <div class='logo'>
-<img src="../../images/logo_menu.gif" alt='logo'><h1>Ayuda de Pandora v1.2</h1>
+<img src="../../images/logo_menu.gif" alt='logo'><h1>Ayuda de Pandora FMS 1.3</h1>
 </div>
 <div class="toc">
 <h1><a href="chap5.php">5. Eventos</a> « <a href="toc.php">&Iacute;ndice</a> » <a href="chap7.php">7. Servidores Pandora</a></h1>
@@ -41,7 +37,7 @@ div.rayah2 {clear:both; border-top: 1px solid #708090; width: 100%; padding-bott
 
 <p>En Pandora las entradas de auditor&iacute;a muestran las acciones realizadas por cada usuario, as&iacute; como los intentos de acceso fallidos al sistema.</p>
 
-<p>En la versi&oacute;n actual de Pandora (1.2),
+<p>En la versi&oacute;n actual de Pandora FMS (1.3),
 adem&aacute;s se muestran operaciones que de alguna manera han intentado eludir el
 sistema de seguridad, tales como intentos de borrar un incidente sobre el que
 el usuario no tiene permiso, cambio del perfil de usuario sin tener permiso de

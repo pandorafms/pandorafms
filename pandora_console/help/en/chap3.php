@@ -22,22 +22,12 @@
 <html>
 <head>
 <title>Pandora - The Free Monitoring System Help - III. Agents</title>
-<link rel="stylesheet" type="text/css" href="../../include/styles/pandora.css">
-<style>
-.ml15 {margin-left: 15px;}
-.ml25 {margin-left: 25px;}
-.ml35 {margin-left: 35px;}
-.ml75 {margin-left: 75px;}
-div.logo {float:left;}
-div.toc {padding-left: 200px;}
-div.rayah {border-top: 1px solid #708090; width: 100%;}
-div.rayah2 {clear:both; border-top: 1px solid #708090; width: 100%; padding-bottom: 35px;}
-</style>
+<link rel="stylesheet" type="text/css" href="../../include/styles/help.css">
 </head>
 
 <body>
 <div class='logo'>
-<img src="../../images/logo_menu.gif" alt='logo'><h1>Pandora Help v1.2</h1>
+<img src="../../images/logo_menu.gif" alt='logo'><h1>Pandora FMS Help 1.3</h1>
 </div>
 <div class="toc">
 <h1><a href="chap2.php">2. Users</a> « <a href="toc.php">Table of Contents</a> » <a href="chap4.php">4. Incident Management</a></h1>
@@ -478,7 +468,7 @@ values from the modules the agent sends after each time interval.</li>
       etc. With Traps is possible to know the problem when it happens.
     </p>
     <p>
-      In Pandora 1.2 there is a SNMP console to receive SNMP traps. 
+      In Pandora FMS 1.3 there is a SNMP console to receive SNMP traps. 
       It is possible configure any device to send SNMP traps to
 	  Pandora FMS, you only need the Pandora IP and Community. 
     </p>	

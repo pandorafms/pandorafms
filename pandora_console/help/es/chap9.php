@@ -19,17 +19,13 @@
 <html>
 <head>
 <title>Pandora - Sistema de monitorizaci&oacute;n de Software Libre - Ayuda - IX. Configuraci&oacute;n de Pandora</title>
-<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css">
-<style>
-.ml25 {margin-left: 25px;}
-div.logo {float:left;}
-div.toc {padding-left: 200px;}
-div.rayah {border-top: 1px solid #708090; width: 100%;}
-div.rayah2 {clear:both; border-top: 1px solid #708090; width: 100%; padding-bottom: 35px;}
-</style>
+<link rel="stylesheet" href="../../include/styles/help.css" type="text/css">
+</head>
+
+<body>
 
 <div class='logo'>
-<img src="../../images/logo_menu.gif" alt='logo'><h1>Ayuda de Pandora v1.2</h1>
+<img src="../../images/logo_menu.gif" alt='logo'><h1>Ayuda de Pandora FMS 1.3</h1>
 </div>
 <div class="toc">
 <h1><a href="chap8.php">8. Mantenimiento de la Base de Datos</a></h1> « <a href="toc.php">&Iacute;ndice</a></h1>

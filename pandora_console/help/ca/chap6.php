@@ -22,12 +22,10 @@
 <html>
 <head>
 <title>Pandora - Sistema de monitorizaci&oacute;n de Software Libre / Free Software Monitoring System</title>
-<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css">
-<style>
-div.logo {float:left;}
-div.toc {padding-left: 200px;}
-div.rayah {clear:both; border-top: 1px solid #708090; width: 100%;}
-</style>
+<link rel="stylesheet" href="../../include/styles/help.css" type="text/css">
+</head>
+
+<body>
 
 <div class='logo'>
 <img src="../../images/logo_menu.gif" alt='logo'><h1>Pandora 1.2 Help / Ayuda de Pandora v1.2</h1>

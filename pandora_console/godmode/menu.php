@@ -47,12 +47,12 @@ if (comprueba_login() == 0){
 			else echo "<div class='arrowg'>";
 			echo "<ul class='mn'><li><a href='index.php?sec=gagente&amp;sec2=godmode/agentes/manage_config' class='mn'>".$lang_label["manage_config"]."</a></li></ul></div>";
 			
-			if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/grupos/lista_grupos" || $_GET["sec2"] == "godmode/grupos/configurar_grupo")){
+			if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/groups/group_list" || $_GET["sec2"] == "godmode/groups/configure_group")){
 				echo "<div class='arrowgs'>";
 			}
 			else
 				echo "<div class='arrowg'>";
-			echo "<ul class='mn'><li><a href='index.php?sec=gagente&amp;sec2=godmode/grupos/lista_grupos' class='mn'>".$lang_label["manage_groups"]."</a></li></ul></div>";
+			echo "<ul class='mn'><li><a href='index.php?sec=gagente&amp;sec2=godmode/groups/group_list' class='mn'>".$lang_label["manage_groups"]."</a></li></ul></div>";
 		}
 	}
 
@@ -89,25 +89,25 @@ if (comprueba_login() == 0){
 	}
 	
 	if ((give_acl($id_user, 0, "LM")==1)){
-		if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/alertas/modificar_alerta" || $_GET["sec2"] == "godmode/alertas/configurar_alerta")){
+		if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/alerts/modify_alert" || $_GET["sec2"] == "godmode/alerts/configure_alert")){
 			echo '<div id="god2s">';
 		}
 		else echo '<div id="god2">';
-		echo '<ul class="mn"><li><a href="index.php?sec=galertas&amp;sec2=godmode/alertas/modificar_alerta" class="mn">'.$lang_label["manage_alerts"].'</a></li></ul></div>';
+		echo '<ul class="mn"><li><a href="index.php?sec=galertas&amp;sec2=godmode/alerts/modify_alert" class="mn">'.$lang_label["manage_alerts"].'</a></li></ul></div>';
 	}
 	if ((give_acl($id_user, 0, "UM")==1)){
-		if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/usuarios/lista_usuarios" || $_GET["sec2"] == "godmode/usuarios/configurar_usuarios")){
+		if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/users/user_list" || $_GET["sec2"] == "godmode/users/configure_user")){
 			echo '<div id="god3s">';
 		}
 		else echo '<div id="god3">';
-		echo '<ul class="mn"><li><a href="index.php?sec=gusuarios&amp;sec2=godmode/usuarios/lista_usuarios" class="mn">'.$lang_label["manage_users"].'</a></li></ul></div>';
+		echo '<ul class="mn"><li><a href="index.php?sec=gusuarios&amp;sec2=godmode/users/user_list" class="mn">'.$lang_label["manage_users"].'</a></li></ul></div>';
 	}
 	if ( (give_acl($id_user, 0, "PM")==1)){
-		if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/perfiles/lista_perfiles"){
+		if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/profiles/profile_list"){
 			echo '<div id="god4s">';
 		}
 		else echo '<div id="god4">';
-		echo '<ul class="mn"><li><a href="index.php?sec=gperfiles&amp;sec2=godmode/perfiles/lista_perfiles" class="mn">'.$lang_label["manage_profiles"].'</a></li></ul></div>';
+		echo '<ul class="mn"><li><a href="index.php?sec=gperfiles&amp;sec2=godmode/profiles/profile_list" class="mn">'.$lang_label["manage_profiles"].'</a></li></ul></div>';
 		
 		if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/servers/modificar_server"){
 			echo '<div id="god5s">';
@@ -117,44 +117,13 @@ if (comprueba_login() == 0){
 		echo '<ul class="mn"><li><a href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server" class="mn">'.$lang_label["manage_servers"].'</a></li></ul></div>';
 
 		if (isset($_GET["sec"]) && $_GET["sec"] == "gservers"){
-			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/servers/manage_recontask"){
+			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/servers/manage_recontask"|| $_GET["sec2"] == "godmode/servers/manage_recontask_form"){
 				echo "<div class='arrowgs'>";
 			} else
 				echo "<div class='arrowg'>";
 			echo "<ul class='mn'><li><a href='index.php?sec=gservers&sec2=godmode/servers/manage_recontask' class='mn'>".$lang_label["manage_recontask"]."</a></li></ul></div>";
 		}
-/*
-		if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/agentes/modificar_agente" || $_GET["sec2"] == "godmode/agentes/configurar_agente")){
-			echo '<div id="god1s">';
-		}
-		else
-			echo '<div id="god1">';
-		echo '<ul class="mn"><li><a href="index.php?sec=gagente&amp;sec2=godmode/agentes/modificar_agente" class="mn">'.$lang_label["manage_agents"].'</a></li></ul></div>';
-		
-		if (isset($_GET["sec"]) && $_GET["sec"] == "gagente"){
-			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/agentes/manage_config"){
-				echo "<div class='arrowgs'>";
-			}
-			else echo "<div class='arrowg'>";
-			echo "<ul class='mn'><li><a href='index.php?sec=gagente&amp;sec2=godmode/agentes/manage_config' class='mn'>".$lang_label["manage_config"]."</a></li></ul></div>";
-			
-			if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/grupos/lista_grupos" || $_GET["sec2"] == "godmode/grupos/configurar_grupo")){
-				echo "<div class='arrowgs'>";
-			}
-			else
-				echo "<div class='arrowg'>";
-			echo "<ul class='mn'><li><a href='index.php?sec=gagente&amp;sec2=godmode/grupos/lista_grupos' class='mn'>".$lang_label["manage_groups"]."</a></li></ul></div>";
-		}
-*/
-
-
-
-
-
-
-
-
-        
+       
 		if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/admin_access_logs"){
 			echo '<div id="god6s">';
 		}

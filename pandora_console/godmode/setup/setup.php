@@ -51,11 +51,11 @@ if (comprueba_login() == 0)
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config_show_lastalerts."' WHERE token='show_lastalerts'");
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config_style."' WHERE token='style'");
 	}	
-	echo "<h2>".$lang_label["setup_screen"]."</h2>";
-	echo "<h3>".$lang_label["general_config"]."<a href='help/".$help_code."/chap9.php#9' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	echo "<h2>".$lang_label["setup_screen"]." &gt; ";
+	echo $lang_label["general_config"]."<a href='help/".$help_code."/chap9.php#9' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 	echo "<form name='setup' method='POST' action='index.php?sec=gsetup&amp;sec2=godmode/setup/setup&update=1'>";
 	echo '<table width="500" cellpadding="4" cellspacing="4" class="databox_color">';
-	echo '<tr><td class="datos">'.$lang_label["language_code"];
+	echo '<tr><td class="datos">'.$lang_label["language_code"].'</td>';
 	echo '<td class="datos"><select name="language_code" onChange="javascript:this.form.submit();" width="180px">';
 	
 	$sql="SELECT * FROM tlanguage";
@@ -64,30 +64,30 @@ if (comprueba_login() == 0)
 	// This combo is dedicated to Raul... beautiful interface for dirty minds :-D
 	$result2=mysql_query("SELECT * FROM tlanguage WHERE id_language = '$language_code'");
 	if ($row2=mysql_fetch_array($result2)){
-		echo '<option value="'.$row2["id_language"].'">'.$row2["name"];
+		echo '<option value="'.$row2["id_language"].'">'.$row2["name"]."</option>";
 	}
 	while ($row=mysql_fetch_array($result)){
-		echo "<option value=".$row["id_language"].">".$row["name"];
+		echo "<option value=".$row["id_language"].">".$row["name"]."</option>";
 	}
-	echo '</select>';
+	echo '</select></td></tr>';
 			
 	echo '<tr><td class="datos2">'.$lang_label["block_size"];
-	echo '<td class="datos2"><input type="text" name="block_size" size=5 value="'.$block_size.'">';
+	echo '<td class="datos2"><input type="text" name="block_size" size=5 value="'.$block_size.'"></td></tr>';
 	
 	echo '<tr><td class="datos">'.$lang_label["days_compact"];
-	echo '<td class="datos"><input type="text" name="days_compact" size=5 value="'.$days_compact.'">';
+	echo '<td class="datos"><input type="text" name="days_compact" size=5 value="'.$days_compact.'"></td></tr>';
 	
 	echo '<tr><td class="datos2">'.$lang_label["days_purge"];
-	echo '<td class="datos2"><input type="text" name="days_purge" size=5 value="'.$days_purge.'">';
+	echo '<td class="datos2"><input type="text" name="days_purge" size=5 value="'.$days_purge.'"></td></tr>';
 	
 	echo '<tr><td class="datos">'.$lang_label["graph_res"];
-	echo '<td class="datos"><input type="text" name="graph_res" size=5 value="'.$config_graph_res.'">';
+	echo '<td class="datos"><input type="text" name="graph_res" size=5 value="'.$config_graph_res.'"></td></tr>';
 	
-	echo '<tr><td class="datos2">'.$lang_label["step_compact"];
-	echo '<td class="datos2"><input type="text" name="step_compact" size=5 value="'.$config_step_compact.'">';
+	echo '<tr><td class="datos2">'.$lang_label["step_compact"].'</td>';
+	echo '<td class="datos2"><input type="text" name="step_compact" size=5 value="'.$config_step_compact.'"></td></tr>';
 
 	
-	echo '<tr><td class="datos">'.$lang_label["show_unknown"];
+	echo '<tr><td class="datos">'.$lang_label["show_unknown"].'</td>';
 	echo '<td class="datos"><select name="show_unknown" class="w120">';
 	if ($config_show_unknown==1) {
 		echo '<option value="1">'.$lang_label["active"].'</option>';
@@ -109,33 +109,33 @@ if (comprueba_login() == 0)
 		echo '<option value="1">'.$lang_label["active"].'</option>';
 	}
 
-	echo '<tr><td class="datos">'.$lang_label["background_image"];
+	echo '<tr><td class="datos">'.$lang_label["background_image"].'</td>';
 	echo '<td class="datos">';
 	echo '<select name="bgimage" class="w155">';
 	if ($config_bgimage!=""){
-		echo '<option>'.$config_bgimage;
+		echo '<option>'.$config_bgimage."</option>";
 	}
 	
 	$ficheros = list_files('images/backgrounds/', "background",1, 0);
 	$a=0;
 	while (isset($ficheros[$a])){
-		echo "<option>".$ficheros[$a];
+		echo "<option>".$ficheros[$a]."</option>";
 		$a++;
 	}
 	echo '</select>';
 
-	echo '<tr><td class="datos">'.$lang_label["style_template"];
-	echo '<td class="datos">';
+	echo '<tr><td class="datos2">'.$lang_label["style_template"].'</td>';
+	echo '<td class="datos2">';
 	echo '<select name="style" class="w155">';
 	if ($config_bgimage!=""){
-		echo '<option>'.$config_style;
+		echo '<option>'.$config_style.'</option>';
       	}
 	$ficheros2 = list_files('include/styles/', "pandora",1, 0);
         $a=0;
         while (isset($ficheros2[$a])){
 		$fstyle = substr($ficheros2[$a],0,strlen($ficheros2[$a])-4);
 		if ($fstyle != $config_style)
-			echo "<option>".$fstyle;
+			echo "<option>".$fstyle."</option>";
         	$a++;
         }
         echo '</select>';
@@ -143,6 +143,7 @@ if (comprueba_login() == 0)
 	echo "<table width=500>";
 	echo "<tr><td align='right'>";
 	echo '<input type="submit" class="sub upd" value="'.$lang_label["update"].'">';
+	echo "</td></tr>";
 	echo "</table>";
 }
 else {

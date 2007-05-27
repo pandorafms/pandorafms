@@ -129,7 +129,7 @@ echo "<div id='menu_tab_left'>
 <ul class='mn'>	
 <li class='nomn'>";
 echo "<li class='nomn'>";
-echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'><img src='images/bricks.png' class='top' border=0>&nbsp; ".dame_nombre_agente($id_agente)." - ".$lang_label["setup_mode"]."</A>";
+echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'><img src='images/setup.png' class='top' border=0>&nbsp; ".dame_nombre_agente($id_agente)." - ".$lang_label["setup_mode"]."</a>";
 echo "</li>";
 echo "</ul></div>";
 

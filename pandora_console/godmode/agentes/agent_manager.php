@@ -147,12 +147,12 @@ while ($row=mysql_fetch_array($result)){
 <td class="datos2">
 	<?php if ($modo == "1"){
 		echo $lang_label["learning_mode"].'
-		<input type="radio" class="chk" name="modo" value="1" class="mr40" checked>';
+		<input type="radio" class="chk" name="modo" value="1" style="margin-right: 40px;" checked>';
 		echo $lang_label["normal_mode"].' 
 		<input type="radio" class="chk" name="modo" value="0">';
 	} else {
 		echo $lang_label["learning_mode"].'
-		<input type="radio" class="chk" name="modo" value="1" class="mr40">';
+		<input type="radio" class="chk" name="modo" value="1" style="margin-right: 40px;">';
 		echo $lang_label["normal_mode"].'
 		<input type="radio" name="modo" class="chk" value="0" checked>';
 	}
@@ -161,12 +161,12 @@ while ($row=mysql_fetch_array($result)){
 <td class="datos">
 <?php if ($disabled == "1"){
 		echo $lang_label["disabled"].'
-		<input type="radio" class="chk" name="disabled" value="1" class="mr40" checked>';
+		<input type="radio" class="chk" name="disabled" value="1" style="margin-right: 40px;" checked>';
 		echo $lang_label["active"].' 
 		<input class="chk" type="radio" name="disabled" value="0">';
 	} else {
 		echo $lang_label["disabled"].'
-		<input type="radio" class="chk" name="disabled" value="1" class="mr40">';
+		<input type="radio" class="chk" name="disabled" value="1" style="margin-right: 40px;">';
 		echo $lang_label["active"].'
 		<input type="radio" name="disabled" class="chk" value="0" checked>';
 	}

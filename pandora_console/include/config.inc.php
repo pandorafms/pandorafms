@@ -61,7 +61,7 @@ if (! mysql_connect($dbhost,$dbuser,$dbpassword)){
 		<a href="index.php"><img src="images/pandora_logo.png" border="0"></a>
 		</div>
 	<div id="db_ftxt">
-		<h1 id="db_fh1" class="error">Pandora Console Error DB-001</h1>
+		<h1 id="log_f" class="error">Pandora Console Error DB-001</h1>
 		Cannot connect with Database, please check your database setup in the 
 		<b>./include/config.php</b> file and read documentation.<i><br><br>
 		Probably any of your user/database/hostname values are incorrect or 
@@ -106,7 +106,7 @@ if($result2=mysql_query("SELECT * FROM tconfig")){
                  <a href="index.php"><img src="images/pandora_logo.png" border="0"></a>
                  </div>
 	         <div id="db_ftxt">
-                 <h1 id="db_fh1" class="error">Pandora Console Error DB-002</h1>
+                 <h1 id="log_f" class="error">Pandora Console Error DB-002</h1>
                  Cannot load configuration variables. Please check your database setup in the
                  <b>./include/config.php</b> file and read documentation.<i><br><br>
                   Probably database schema is created but there are no data inside it or you have a problem with DB access credentials.

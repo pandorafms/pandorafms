@@ -338,7 +338,7 @@ problema de comunicaci&oacute;n o a un «cuelgue» del sistema remoto.</p>
 		</div>
 <p><b>&Uacute;ltimo contacto</b>: Muestra la fecha y hora en que se recibieron los &uacute;ltimos datos del agente, utilizando una barra de progreso, de acuerdo con el valor del intervalo. Si se muestra la imagen <img src="../../images/outof.gif">, el agente no ha enviado datos al finalizar el intervalo. Si pasamos el rat&oacute;n encima de la imagen, se mostrar&aacute; el &uacute;ltimo contacto en formato de fecha y hora.</p>
 
-<p><b><u>Nota:</u></b> El icono <img src="../../images/setup.gif" width="15"> s&oacute;lo es visible si es usuario es administrador y es un enlace a la opci&oacute;n «Gestionar agentes» &gt; «Actualizar agente» del men&uacute; de administraci&oacute;n.</p>
+<p><b><u>Nota:</u></b> El icono <img src="../../images/setup.png" width="15"> s&oacute;lo es visible si es usuario es administrador y es un enlace a la opci&oacute;n «Gestionar agentes» &gt; «Actualizar agente» del men&uacute; de administraci&oacute;n.</p>
 
 <h3><a name="332">3.3.2. Acceso a los datos de un agente concreto</a></h3>
 

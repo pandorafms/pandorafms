@@ -253,11 +253,6 @@ $lang_label["checked_by"]="Valid&eacute; par";
 
 $lang_label["disabled"]="Desactiv&eacute;";
 $lang_label["active"]="Activ&eacute;";
-$lang_label["db_description"]="La base de donn&eacute;es est le noyau de Pandora . C'est sur cette base de donn&eacute;es qu'est gard&eacute;e tout l'information concernant l'entreprise, par exemlpe, toutes les donn&eacute;es r&eacute;unies par les agents, toute l'information d&eacute;finie par l'administrateur, tous les &eacute;v&eacute;nements, les incidents ou l'information de l'audit.
-<br><br>
-Le rendement et la fiabilit&eacute; de ce noyau est d'une importance vitale pour que Pandora fonctionne correctement. Il est n&eacute;cessaire de entretenir cette Base de Donn&eacute;es en utilisant des commandes standard MySQL.
-<br><br>
-La taille de la Base de Donn&eacute;es augmentera de fa&ccedil;on lin&eacute;aire. Nous utilisons une m&eacute;thode de compression afin de r&eacute;duire le nombre d'&eacute;v&eacute;nements archiv&eacute;s dans la base de donn&eacute;es sans perdre l'information necessaire. Cette compression est lanc&eacute; p&eacute;riodiquement (configurable)."; 
 
 $lang_label["begin_date"]="Date d&eacute;but (*)";
 $lang_label["end_date"]="Date fin (*)";

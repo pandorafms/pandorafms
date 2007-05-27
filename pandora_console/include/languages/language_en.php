@@ -64,7 +64,7 @@ $lang_label["in_openedby"]="Owner";
 $lang_label["in_openedwhen"]="Opened at";
 $lang_label["updated_at"]="Updated at";
 
-$lang_label["main_text"]="This is the Web Management System for Pandora. From here you can manage its agents, alerts and incidents. Session will be open while activity exists.";
+$lang_label["main_text"]="This is the Web Management System for Pandora FMS. From here you can manage its agents, alerts and incidents. Session is open while activity exists.";
 
 $lang_label["id_user"]="User ID";
 $lang_label["real_name"]="Real name";
@@ -164,7 +164,7 @@ $lang_label["logged_out"]="Logged Out";
 $lang_label["logout_msg"]="Your session is over. Please close your browser window to close session on Pandora.<br><br>";
 $lang_label["user_last_activity"]="This is your last activity in Pandora FMS console";
 $lang_label["err_auth"]="Authentication Error";
-$lang_label["err_auth_msg"]="Either, your password or your login are incorrect. Please check your CAPS LOCK key, username and password are case SeNSiTiVe.<br><br>All actions, included failed login attempts are logged in Pandora System logs, and these can be reviewed by each user, please report to admin any incident or malfunction.";
+$lang_label["err_auth_msg"]="Either, your password or your login are incorrect. Please check your CAPS LOCK key, username and password are case SeNSiTiVe.<br><br>All actions, included failed login attempts are logged in Pandora FMS System logs, and these can be reviewed by each user, please report to admin any incident or malfunction.";
 $lang_label["find_crit"]="Please select a search criterion";
 $lang_label["all"]="All";
 $lang_label["free_text_search"]="Free text for search (*)";
@@ -250,11 +250,6 @@ $lang_label["checked_by"]="Checked by";
 
 $lang_label["disabled"]="Disabled";
 $lang_label["active"]="Active";
-$lang_label["db_description"]="Database is the core of Pandora. In this database resides all the information of the enterprise, for example, all data gathered by agents, all configuration defined by administrator, all events, incidents, audit info... 
-<br><br>
-The performance and reliability of the core is vital for the correct use of Pandora. It's necessary to maintain correctly this Database using the MySQL standard commands.
-<br><br>
-The database size will increase in a linear way. We use a method to reduce the number of event stored in the database without losing the information we need, compacting data when every time configured in Pandora Setup.";
 
 $lang_label["begin_date"]="Begin date (*)";
 $lang_label["end_date"]="End date (*)";
@@ -262,7 +257,7 @@ $lang_label["resolution"]="Resolution (%)";
 $lang_label["date_format"]="(*) Please enter date with format yyyy/mm/dd hh:mm:ss";
 $lang_label["please_wait"]="Please be patient. This operation can be very long in time (5-10 minutes)";
 
-$lang_label["welcome_title"]="Welcome to Pandora Web Console";
+$lang_label["welcome_title"]="Welcome to Pandora FMS Web Console";
 $lang_label["incident_view_filter"]="Viewing incidents";
 $lang_label["there_are"]="There are ";
 $lang_label["user_defined"]="users defined in Pandora";
@@ -351,7 +346,7 @@ $lang_label["config_manage"]="Configuration Management";
 $lang_label["get_info"]="Get Info";
 
 $lang_label["are_you_sure"]="Are you sure?";
-$lang_label["users_msg"]="User profiles in Pandora define which users can access Pandora as well as what each user can do. Groups define elements in common among various users. Each user could be in one or more groups at any one time. Each group has user profiles which are defined and attached to it. A profile is a list of things a user can do, such as view incidents, manage database or other. A list of available profiles is defined below by the local Pandora administrators ";
+$lang_label["users_msg"]="User profiles in Pandora define which users can access Pandora as well as what each user can do. Groups define elements in common among various users. Each user could be in one or more groups at any one time. Each group has user profiles which are defined and attached to it. A profile is a list of things a user can do, such as view incidents, manage database or other. A list of available profiles is defined below by the local Pandora administrators";
 
 $help_label["users_msg1"]="This user has permissions to manage all. This is admin user and overwrites all permissions given in profiles/groups.";
 $help_label["users_msg2"]="This user has separated permissions to view data in his group agents, create incidents belong to his groups, add notes in another incidents, create personal assignments or reviews and other tasks, on different profiles";
@@ -360,7 +355,7 @@ $help_label["db_purge1"]="This button refresh info about database usage among ti
 $help_label["db_purge0"]="Use this combo to select agent for operation. You need to select an agent to purge data and to get info about database usage";
 
 $lang_label["profiles"] ="Profiles";
-$lang_label["current_dbsetup"]="This is your current database maintenance setup";
+$lang_label["current_dbsetup"]="Current database maintenance setup";
 $lang_label["dbsetup_info"]="Please check your Pandora Server setup and be sure that database maintenance daemon is running. It's very important to keep up-to-date database to get the best performance and results in Pandora";
 
 $lang_label["profile_title"]="Profile management";

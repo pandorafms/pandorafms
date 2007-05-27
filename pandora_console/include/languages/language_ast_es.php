@@ -227,11 +227,6 @@ $lang_label["total"]="Total";
 $lang_label["checked_by"]="Valid&aacute;u per";
 $lang_label["disabled"]="deshabilit&aacute;u";
 $lang_label["active"]="Activu";
-$lang_label["db_description"]="La base datos ye el n&uacute;cleu de Pandora. Nesta base de datos resire tola informaci&oacute;n de la empresa, por exemplu, tolos datos recopilaos pelos axentes, tola informaci&oacute;n defin&iacute;a pol alministrador, tolos eventos, incidentes o informaci&oacute;n d'auditor&iacute;a.
-<br><br>
-El rendimientu y fiabilid&aacute; d'esti n&uacute;cleu ye vital pal funcionamientu correutu de Pandora. Ye necesariu mantener esta Base de Datos utilizando comandos est&aacute;ndar de MySQL.
-<br><br>
-El tama&ntilde;u de la Base de Datos aumentar&aacute; de manera llineal. Utilizamos un m&eacute;todu de compactaci&oacute;n pa reducir el n&uacute;mberu d'eventos almacen&aacute;os na base de datos ensin perder l'informaci&oacute;n necesaria. Esta compautaci&oacute;n produzse cada ciertu tiempu.";
 $lang_label["begin_date"]="Fecha comienzu (*)";
 $lang_label["end_date"]="Fecha fin (*)";
 $lang_label["resolution"]="Resoluci&oacute;n (%)";

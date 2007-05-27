@@ -52,8 +52,7 @@ if ( (give_acl($id_user, 0, "LM")==1)){
 		$creacion_alerta = 1;
 	}
 	
-echo "<h2>".$lang_label["alert_config"]."</h2>";
-echo "<h3>";
+echo "<h2>".$lang_label["alert_config"]." &gt; ";
 	if (isset($_GET["creacion"])){
 		echo $lang_label["create_alert"];
 	}
@@ -62,11 +61,11 @@ echo "<h3>";
 	}
 	echo '<a href="help/'.$help_code.'/chap3.php#3221" target="_help" class="help">
 	<span>'.$lang_label["help"].'</span></a>';
-echo "</h3>";
+echo "</h2>";
  ?>
 <table width="500" cellspacing="4" cellpadding="4" class="databox_color">
 
-<form name="alerta" method="post" action="index.php?sec=galertas&sec2=godmode/alertas/modificar_alerta&id_alerta=<?php echo $id_alerta ?>">
+<form name="alerta" method="post" action="index.php?sec=galertas&sec2=godmode/alerts/modify_alert&id_alerta=<?php echo $id_alerta ?>">
 
 <?php
 	if ($creacion_alerta == 1)

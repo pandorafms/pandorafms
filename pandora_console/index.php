@@ -96,7 +96,7 @@ if ( (isset ($_GET["refr"])) || (isset($_POST["refr"])) ){
 <meta name="keywords" content="pandora, monitoring, system, GPL, software">
 <meta name="robots" content="index, follow">
 <link rel="icon" href="images/pandora.ico" type="image/ico">
-<?PHP
+<?php
 // Pandora FMS 1.3 custom style selection
 	echo '<link rel="stylesheet" href="include/styles/'.$config_style.'.css" type="text/css">';
 ?>
@@ -106,7 +106,7 @@ if ( (isset ($_GET["refr"])) || (isset($_POST["refr"])) ){
 
 <?php
 	// Show custom background
-	echo '<body bgcolor=#555555>';
+	echo '<body bgcolor="#555555">';
 	$REMOTE_ADDR = getenv ("REMOTE_ADDR");
    	global $REMOTE_ADDR;
 
@@ -191,32 +191,32 @@ if ( (isset ($_GET["refr"])) || (isset($_POST["refr"])) ){
 	session_write_close(); 
 ?>
 
-<div style='border-left: solid 2px #000; width: 960px; border-right: solid 2px #000; border-top: solid 2px #000; margin-top: 5px;'>  
-<div id='head' style='border-bottom: solid 2px #555;'>
-	<?php require("general/header.php"); ?>
-</div>
-<div id="page" style='border-top: solid 5px #778855;'>
-	<div id="menu">
-		<?php require ("general/main_menu.php"); ?>
+<div id="container">  
+	<div id='head'>
+		<?php require("general/header.php"); ?>
 	</div>
-	<div id="main" style="background: url(images/backgrounds/<?php echo $config_bgimage; ?>)" >
-		<?php
-			// Page loader / selector
-			if ($pagina != ""){
-				if (file_exists ($pagina . ".php")) {
-					require ($pagina . ".php");
-				} else {
-					echo "<br><b class='error'>Sorry! I can't find the page!</b>";
-				}	
-			} else
-				require ("general/logon_ok.php");  //default
-		?>
+	<div id="page">
+		<div id="menu">
+			<?php require ("general/main_menu.php"); ?>
+		</div>
+		<div id="main" style="background: url(images/backgrounds/<?php echo $config_bgimage; ?>)" >
+			<?php
+				// Page loader / selector
+				if ($pagina != ""){
+					if (file_exists ($pagina . ".php")) {
+						require ($pagina . ".php");
+					} else {
+						echo "<br><b class='error'>Sorry! I can't find the page!</b>";
+					}	
+				} else
+					require ("general/logon_ok.php");  //default
+			?>
+		</div>
+		<div style="clear:both"></div>
 	</div>
-	<div style="clear:both"></div>
-</div>
-<div id="foot">
-	<?php require("general/footer.php") ?>
-</div>
+	<div id="foot">
+		<?php require("general/footer.php") ?>
+	</div>
 </div>
 
 </body>

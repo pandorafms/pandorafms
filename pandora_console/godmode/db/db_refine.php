@@ -46,8 +46,8 @@ if (comprueba_login() == 0)
 			} //if copia modulos o alertas
 		} else { // Form view
 			?>
-			<h2><?php echo $lang_label["dbmain_title"]; ?></h2>
-			<h3><?php echo $lang_label["db_refine"]; ?><a href='help/<?php echo $help_code?>/chap8.php#831' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3> 
+			<h2><?php echo $lang_label["dbmain_title"]; ?> &gt; 
+			<?php echo $lang_label["db_refine"]; ?><a href='help/<?php echo $help_code?>/chap8.php#831' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h2> 
 			<form method="post" action="index.php?sec=gdbman&sec2=godmode/db/db_refine&operacion=1">
 			<table width='500' border='0' cellspacing='3' cellpadding='5'>
 			<tr>

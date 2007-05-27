@@ -48,8 +48,8 @@ if ( (give_acl($id_user, 0, "LM")==1)){
 		$result=mysql_query($sql_delete2);
 	}
 
-    echo "<h2>".$lang_label["alert_config"]."</h2>";
-	echo "<h3>".$lang_label["alert_defined2"]."<a href='help/".$help_code."/chap3.php#3221' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+    echo "<h2>".$lang_label["alert_config"]." &gt; ";
+	echo $lang_label["alert_defined2"]."<a href='help/".$help_code."/chap3.php#3221' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 	echo "<table width='500' cellpadding='4' cellspacing='4' class='databox'>";
 	echo "<th width='100px'>".$lang_label["alertname"]."</th>";
 	echo "<th>".$lang_label["description"]."</th>";
@@ -66,16 +66,16 @@ if ( (give_acl($id_user, 0, "LM")==1)){
 			$tdcolor = "datos2";
 			$color = 1;
 		}
-		echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=galertas&sec2=godmode/alertas/configurar_alerta&id_alerta=".$row["id_alerta"]."'>".$row["nombre"]."</a></b></td>";
+		echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=galertas&sec2=godmode/alerts/configure_alert&id_alerta=".$row["id_alerta"]."'>".$row["nombre"]."</a></b></td>";
 		echo "<td class='$tdcolor'>".$row["descripcion"]."</td>";
-		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/alertas/modificar_alerta&borrar_alerta=".$row["id_alerta"]."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cross.png'></a></td></tr>";
+		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/alerts/modify_alert&borrar_alerta=".$row["id_alerta"]."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cross.png'></a></td></tr>";
 	}
 
 	echo "</table>";
 	echo "<br>";
 	echo "<table width=500>";
 	echo "<tr><td align='right'>";
-	echo "<form method=post action='index.php?sec=galertas&sec2=godmode/alertas/configurar_alerta&creacion=1'>";
+	echo "<form method=post action='index.php?sec=galertas&sec2=godmode/alerts/configure_alert&creacion=1'>";
 	echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create_alert"]."'>";
 	echo "</form>";
 	echo "</td></tr></table>";

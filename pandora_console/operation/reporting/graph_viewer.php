@@ -61,8 +61,8 @@ if (isset($_GET["view_graph"])){
 				$weights = $weights.",".$weight;
 			}
 		}
-
-		echo "<h3>".$lang_label["combined_image"]."</h3>";
+		echo "<h2>".$lang_label["reporting"]." &gt; ";
+		echo $lang_label["combined_image"]."</h2>";
 		echo "<table class='databox_frame'>";
 		echo "<tr><td>";
 		echo "<img  src='reporting/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&label=$name&height=$height&width=$width&period=$period' border=1 alt=''>";
@@ -119,8 +119,8 @@ if (isset($_GET["view_graph"])){
 		echo "</form>";		
 	}
 }
-
-echo "<h3>".$lang_label["custom_graph_viewer"]."</h3>";
+echo "<h2>".$lang_label["reporting"]." &gt; ";
+echo  $lang_label["custom_graph_viewer"]."</h2>";
 echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
 echo "<tr><th>".$lang_label["graph_name"]."<th>".$lang_label["description"]."<th>".$lang_label["view"];
 $color=1;

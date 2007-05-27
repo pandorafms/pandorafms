@@ -23,8 +23,8 @@ require("include/config.php");
 if (comprueba_login() == 0) {
 	$id_usuario =$_SESSION["id_usuario"];
         if (give_acl($id_usuario, 0, "AR")==1) {
-		echo "<h2>".$lang_label["events"]."</h2>";
-		echo "<h3>".$lang_label["event_statistics"]."<a href='help/".$help_code."/chap5.php#51' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+		echo "<h2>".$lang_label["events"]." &gt; ";
+		echo $lang_label["event_statistics"]."<a href='help/".$help_code."/chap5.php#51' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 		echo '<img src="reporting/fgraph.php?tipo=total_events" border=0>';
 		echo "<br><br>";
 		echo '<img src="reporting/fgraph.php?tipo=user_events" border=0>';

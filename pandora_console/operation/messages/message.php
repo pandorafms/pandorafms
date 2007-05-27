@@ -28,9 +28,12 @@ function create_message($usuario_origen, $usuario_destino, $subject, $mensaje){
 	INSERT INTO tmensajes (id_usuario_origen, id_usuario_destino, subject, mensaje, timestamp)
 	VALUES ("'.$usuario_origen.'", "'.$usuario_destino.'", "'.$subject.'", "'.$mensaje.'","'.$ahora.'")';
 	$result=mysql_query($sql);
-	if ($result) echo "<h3 class='suc'>".$lang_label["message_ok"]."</h3>";
-	else echo "<h3 class='error'>".$lang_label["message_no"]."</h3>";
+	if ($result) {
+		echo "<h3 class='suc'>".$lang_label["message_ok"]."</h3>";
+	} else {
+		echo "<h3 class='error'>".$lang_label["message_no"]."</h3>";
 	}
+}
 
 function create_message_g($usuario_origen, $usuario_destino, $subject, $mensaje){
 	$ahora=date("Y/m/d H:i:s");
@@ -38,10 +41,13 @@ function create_message_g($usuario_origen, $usuario_destino, $subject, $mensaje)
 	require ("include/languages/language_".$language_code.".php");
 	$sql='INSERT INTO tmensajes (id_usuario_origen, id_usuario_destino, subject, mensaje, timestamp) VALUES ("'.$usuario_origen.'", "'.$usuario_destino.'", "'.$subject.'", "'.$mensaje.'","'.$ahora.'")';
 	$result=mysql_query($sql);
-	if ($result) $error=0;
-	else $error=1;
-	return $error;
+	if ($result)  {
+		$error=0;
+	} else {
+		$error=1;
 	}
+	return $error;
+}
 
 //First Queries
 $iduser=$_SESSION['id_usuario'];
@@ -53,7 +59,7 @@ $row2=mysql_fetch_array($resultado2);
 $sql3='SELECT * FROM tgrupo';
 $resultado3=mysql_query($sql3);
 	
-echo '<h1>'.$lang_label["messages"].'</h1>';
+echo '<h2>'.$lang_label["messages"].' &gt; ';
 if (isset($_GET["nuevo_mensaje"])){
 	// Create message
 	$usuario_destino = entrada_limpia($_POST["u_destino"]);
@@ -74,15 +80,19 @@ if (isset($_GET["nuevo_mensaje_g"])){
 		while ($row=mysql_fetch_array($result)){
 			$error=create_message_g($iduser, $row["id_usuario"], $subject, $mensaje);
 		}
-		if ($error==0) echo "<h3 class='suc'>".$lang_label["message_ok"]."</h3>";
-		else echo "<h3 class='error'>".$lang_label["message_no"]."</h3>";
+		if ($error==0)  {
+			echo "<h3 class='suc'>".$lang_label["message_ok"]."</h3>";
+		} else {
+			echo "<h3 class='error'>".$lang_label["message_no"]."</h3>";
+		}
+	} else {
+		echo "<h3 class='error'>".$lang_label["message_no"]."</h3>";
 	}
-	else {echo "<h3 class='error'>".$lang_label["message_no"]."</h3>";}
 }
 if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
 	if (isset($_GET["nuevo"])){ //create message
 	
-		echo '<h3>'.$lang_label["new_message"].'<a href="help/'.$help_code.'/chap2.php#25" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h3>';
+		echo  $lang_label["new_message"].'<a href="help/'.$help_code.'/chap2.php#25" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h2>';
 		echo '
 		<form name="new_mes" method="POST" action="index.php?sec=messages&sec2=operation/messages/message&nuevo_mensaje=1">
 		<table>
@@ -116,7 +126,7 @@ if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
 	}
 	
 	if (isset($_GET["nuevo_g"])){
-		echo '<h3>'.$lang_label["new_message_g"].'<a href="help/'.$help_code.'/chap2.php#251" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h3>';
+		echo $lang_label["new_message_g"].'<a href="help/'.$help_code.'/chap2.php#251" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h2>';
 		echo '
 		<form name="new_mes" method="post" action="index.php?sec=messages&sec2=operation/messages/message&nuevo_mensaje_g=1">
 		<table>
@@ -143,13 +153,16 @@ else {
 		$id_mensaje = $_GET["id_mensaje"];
 		$sql5='DELETE FROM tmensajes WHERE id_usuario_destino="'.$iduser.'" AND id_mensaje="'.$id_mensaje.'"';
 		$resultado5=mysql_query($sql5);
-		if ($resultado5) {echo "<h3 class='suc'>".$lang_label["del_message_ok"]."</h3>";}
-		else {echo "<h3 class='suc'>".$lang_label["del_message_no"]."</h3>";}
+		if ($resultado5) {
+			echo "<h3 class='suc'>".$lang_label["del_message_ok"]."</h3>";
+		} else {
+			echo "<h3 class='suc'>".$lang_label["del_message_no"]."</h3>";
+		}
 	}
 	
 	//List
 	
-	echo "<h3>".$lang_label["read_mes"]."<a href='help/".$help_code."/chap2.php#25' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	echo  $lang_label["read_mes"]."<a href='help/".$help_code."/chap2.php#25' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 	if ($row2["COUNT(*)"]!=0){
 		echo $lang_label["new_message_bra"]."<b> ".$row2["COUNT(*)"]."</b> <img src='images/mail.gif'>".$lang_label["new_message_ket"]."<br><br>";
 		}

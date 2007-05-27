@@ -146,7 +146,7 @@ function random_name ($size){
 
 function install_step1() {
 	echo "
-	<div align='center' class='mt35'>
+	<div align='center' style='margin-top: 35px;'>
 	<h1>Pandora FMS installation wizard. Step #1 of 4</h1>
 	<div id='wizard' style='height: 300px;'>
 		<div id='install_box'>
@@ -181,7 +181,7 @@ function install_step1() {
 
 function install_step2() {
 	echo "
-	<div align='center' class='mt35'>
+	<div align='center' style='margin-top: 35px'>
 	<h1>Pandora FMS console installation wizard. Step #2 of 4</h1>
 	<div id='wizard' style='height: 300px;'>
 		<div id='install_box'>";
@@ -225,7 +225,7 @@ function install_step2() {
 
 function install_step3() {
 	echo "
-	<div align='center' class='mt35'>
+	<div align='center' style='margin-top: 35px'>
 	<h1>Pandora FMS console installation wizard. Step #3 of 4 </h1>
 	<div id='wizard' style='height: 580px;'>
 		<div id='install_box'>
@@ -308,7 +308,7 @@ function install_step4() {
 	$step3=0;
 	$step4=0; $step5=0; $step6=0; $step7=0;
 	echo "
-	<div align='center' class='mt35'>
+	<div align='center' style='margin-top: 35px'>
 	<h1>Pandora FMS Console installation wizard. Step #4 of 4</h1>
 	<div id='wizard' style='height: 300px;'>
 		<div id='install_box'>
@@ -397,7 +397,7 @@ $BASE_URL="'.$url.'";			// Base URL
 
 function install_step5() {
 	echo "
-	<div align='center' class='mt35'>
+	<div align='center' style='margin-top: 35px'>
 	<h1>Pandora FMS console installation wizard. Finished</h1>
 	<div id='wizard' style='height: 300px;'>
 		<div id='install_box'>

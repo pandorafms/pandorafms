@@ -226,11 +226,6 @@ $lang_label["total"] = "Totale";
 $lang_label["checked_by"] = "Verificato da";
 $lang_label["disabled"] = "Disabilitato";
 $lang_label["active"] = "Attivo";
-$lang_label["db_description"] = "Il database &agrave; il nucleo di Pandora. In questo database risiedono tutte le informazioni dell'impresa, ad esempio, tutti i dati raccolti dagli agenti; tutte le configurazioni definite dall'amministratore, tutti gli eventi, avvenimenti, informazioni di verifica ...
-<br><br>
-Le prestazioni e l'affidabilit&agrave; del nucleo sono vitali per il corretto uso di Pandora. E' necessario gestire correttamente il Database usando i comandi standard di MySQL.
-<br><br>
-La dimensione del database aumenter&agrave; in modo lineare. Usiamo un metodo per ridurre il numero di eventi registrati nel database senza che vengano perse le informazioni necessarie, compattando i dati ogniqualvolta sia configurato nelle Impostazioni di Pandora";
 $lang_label["begin_date"] = "Data di inizio (*)";
 $lang_label["end_date"] = "Data di fine (*)";
 $lang_label["resolution"] = "Risoluzione (%)";

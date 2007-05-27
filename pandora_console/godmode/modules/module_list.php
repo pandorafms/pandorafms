@@ -56,8 +56,8 @@ if (give_acl($id_user, 0, "PM")==1) {
 		else
 			echo "<h3 class='suc'>".$lang_label["delete_group_ok"]."</h3>";
 	}*/
-	echo "<h2>".$lang_label["module_management"]."</h2>";
-	echo "<h3>".$lang_label["defined_modules"]."</h3>";
+	echo "<h2>".$lang_label["module_management"]." &gt; ";
+	echo $lang_label["defined_modules"]."</h2>";
 
 	echo "<table cellpadding=4 cellspacing=4 width=750>";
 	echo "<th>".$lang_label["icon"]."</th>";

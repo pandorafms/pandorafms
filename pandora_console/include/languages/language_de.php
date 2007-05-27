@@ -247,16 +247,6 @@ $lang_label["checked_by"]="&Uuml;berpr&uuml;ft durch";
 
 $lang_label["disabled"]="Inaktiv";
 $lang_label["active"]="Aktiv";
-$lang_label["db_description"]="Die Datenbasis ist das Kernelement von Pandora. In dieser Datenbasis sind all die Informationen des zu &uuml;berwachenden Systems gespeichert. Zu diesen Informationen geh&ouml;ren
-die Daten, die durch die Agenten gesammelt werden, die Konfigurationseinstellungen, die durch die Administratoren eingestellt wurden,
-alle Ereignisse, Vorf&auml;lle und &Uuml;berwachungsinformationen ... 
-<br><br>
-The performance and reliability of the core is vital for the correct use of Pandora. It's necessary to maintain correctly this Database using the MySQL standard commands.
-<br><br>
-Die Datenbasis vergr&ouml;sert sich linear. 
-Wir nutzen Methoden, um die Anzahl der Ereignisse, die in der Datenbasis gespeichert werden, zu minimieren,
-ohne ben&ouml;tigte Informationen zu verlieren. Die Daten werden zu Zeiten zusammengefasst, 
-die in der Konfiguration von Pandora definiert werden.";
 
 $lang_label["begin_date"]="Beginndatum (*)";
 $lang_label["end_date"]="Endedatum (*)";
@@ -264,7 +254,7 @@ $lang_label["resolution"]="Aufl&ouml;sung (%)";
 $lang_label["date_format"]="(*) Bitte geben Sie das Datum im folgenden Format ein: yyyy/mm/dd hh:mm:ss";
 $lang_label["please_wait"]="Bitte, haben Sie Geduld. Diese Operation kann sehr lange dauern (5-10 minutes)";
 
-$lang_label["welcome_title"]="Willkommen auf der Pandora Web Konsole";
+$lang_label["welcome_title"]="Willkommen auf der Pandora FMS Web Konsole";
 $lang_label["incident_view_filter"]="Sicht der Vorf&auml;lle";
 $lang_label["there_are"]="Es gibt ";
 $lang_label["user_defined"]="Nutzer, die in Pandora eingetragen sind";

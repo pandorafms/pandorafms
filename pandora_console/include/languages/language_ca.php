@@ -145,7 +145,7 @@ $lang_label["normal_user"]="Usuari Estandard";
 $lang_label["has_connected"]="Est&aacute;s conectat com";
 $lang_label["logged_out"]="Sessi&oacute; finalitzada";
 $lang_label["logout_msg"]="La teva sessi&oacute; ha caducat. Si us plau tanca el teu navegador web per finalitzar la sessi&oacute; del Pandora.<br><br>";
-$lang_label["user_last_activity"]="Aquesta es la teva &uacute;ltima activitat amb el Pandora";
+$lang_label["user_last_activity"]="Aquesta es la teva &uacute;ltima activitat amb el Pandora FMS";
 $lang_label["err_auth"]="Error d'autenticaci&oacute;";
 $lang_label["err_auth_msg"]="Pot ser que el teu usuari o contrasenya no sigui correcte. Si us plau tingues en compte que les contrasenyes diferencien MAJUSCULES i minuscules. Comproba que no tinguis la tecla de bloqueig de majuscules (CAPS LOCK).<br><br>Totes les accions, inclosos els intents de login fallides son enregistrats pel sistema de logs del Pandora, i aquests poden ser revisats per cada usuari. Si us plau notifica al administrador qualsevol incident o funcionament incorrecte.";
 $lang_label["find_crit"]="Si us plau selecciona un creiteri de cerca";
@@ -225,17 +225,12 @@ $lang_label["total"]="Total";
 $lang_label["checked_by"]="Comprobat per";
 $lang_label["disabled"]="Desabilitat";
 $lang_label["active"]="Actiu";
-$lang_label["db_description"]="La base de dades es el nucli de Pandora. En aquesta base de dades es trova tota la informaci&oacute; de l'empresa, per exemple, totes les dades recolectades pels agents, tots els events, incidents, informaci&oacute; d'auditories...
-<br><br>
-El rendiment y la fiabilitat del nucli es vital per poder utilitzar correctament Pandora. Es necessari mantenir correctament aquesta base de dades utilitzant el comandaments estandar de MySQL.
-<br><br>
-El tamany de la base de dades augmentar&agrave; de manera lineal. Estem utilitzant un m&egrave;tode per reduir el nombre d'events emmagatzemats en la base de dades sense perdre informaci&oacute;, compactant les dades cada vegada que es configura el Pandora en 'Configuraci&oacute; del Pandora'";
 $lang_label["begin_date"]="Comen&ccedil;ar data (*)";
 $lang_label["end_date"]="Finalitzar data (*)";
 $lang_label["resolution"]="Resoluci&oacute; (%)";
 $lang_label["date_format"]="(*) Si us plaus introdueix la data amb el seguent format yyyy/mm/dd hh:mm:ss";
 $lang_label["please_wait"]="Si us plau, sigues pacient. Aquesta operaci&oacute; por trigar molt de temps (5-10 minuts)";
-$lang_label["welcome_title"]="Benvingut a la Consola Web del Pandora";
+$lang_label["welcome_title"]="Benvingut a la Consola Web del Pandora FMS";
 $lang_label["incident_view_filter"]="Veure incidents filtrats";
 $lang_label["there_are"]="Hi ha ";
 $lang_label["user_defined"]="usuaris definits en el Pandora";

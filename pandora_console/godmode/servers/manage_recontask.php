@@ -87,7 +87,8 @@ if (isset($_GET["create"])) {
 // --------------------------------
 // SHOW TABLE WITH ALL RECON TASKs
 // --------------------------------
-echo "<h2>".$lang_label["manage_recontask"]."</h2>";
+echo "<h2>".$lang_label["view_servers"]." &gt; ";
+echo $lang_label["manage_recontask"]."</h2>";
 $query="SELECT * FROM trecon_task";
 $result=mysql_query($query);
 $color=1;

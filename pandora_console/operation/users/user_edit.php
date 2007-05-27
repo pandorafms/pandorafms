@@ -81,8 +81,8 @@ if (comprueba_login() == 0) {
 			echo "<h3 class='error'>".$lang_label["pass_nomatch"]."</h3>";
 		}
 	} 
-		echo "<h2>".$lang_label["users_"]."</h2>";
-		echo "<h3>".$lang_label["user_edit_title"]."<a href='help/".$help_code."/chap2.php#22' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+		echo "<h2>".$lang_label["users_"]." &gt; ";
+		echo $lang_label["user_edit_title"]."<a href='help/".$help_code."/chap2.php#22' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 
 	// Si no se obtiene la variable "modificado" es que se esta visualizando la informacion y
 	// preparandola para su modificacion, no se almacenan los datos

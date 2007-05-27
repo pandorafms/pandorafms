@@ -17,6 +17,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 include "include/config.php";
 if (file_exists("include/languages/language_".$language_code.".php")) {
 	 include "include/languages/language_".$language_code.".php";
@@ -48,7 +49,7 @@ if (file_exists("include/languages/language_".$language_code.".php")) {
 		<?php echo $pandora_version; ?>
 		</font>
 	</div>
-	<div class="msg"><br><br>For security reasons, normal operation is not possible until you delete installer file. Please delete <b>./install.php</b> file before running Pandora FMS Console.</div>
+	<div class="msg"><br><br>For security reasons, normal operation is not possible until you delete installer file. Please delete the <b>./install.php</b> file before running Pandora FMS Console.</div>
 </div>
 </div>
 </body>

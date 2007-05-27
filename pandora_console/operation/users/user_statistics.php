@@ -21,8 +21,8 @@
 require("include/config.php");
 
 if (comprueba_login() == 0) {
-echo "<h2>".$lang_label["users"]."</h2>";
-echo "<h3>".$lang_label["users_statistics"]."<a href='help/".$help_code."/chap2.php#24' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+echo "<h2>".$lang_label["users"]." &gt; ";
+echo $lang_label["users_statistics"]."<a href='help/".$help_code."/chap2.php#24' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 echo '<img src="reporting/fgraph.php?tipo=user_activity" border=0>';
 }
 ?>

@@ -1,51 +1,79 @@
+2007-05-26  Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/styles/pandora.css: Cleaned and updated some styles.
+	
+	* index.php: Updated, now the page is allways at the center.
+	
+	* general/login*.php: Updated login/logoff pages with new sytles
+	and clean code.
+	
+	* images/setup.png: New file (changed from setup.gif).
+	
+	* include/languages/*.php: Deleted old text about database and
+	updated some strings.
+	
+	* help/en/chapter3.php, help/es/chapter3.php: Changed image setup.gif
+	to the new setup.png file.
+	
+	* operation/*.php: Massive close HTML tags and changed all h3 to h2
+	for new console headings.
+	
+	* godmode/*.php	* include/styles/pandora.css
+	
+	* godmode/*.php: Changed name for directories and files: New ones are
+	alerts, profiles, groups and users, and now the files are named in
+	english. All features seem to be OK.
+	
+	* godmode/menu.php: Updated to include new names and some highlighting.
+
 2007-05-24  Sancho Lerena  <slerena@artica.es>
 
-        * include/styles/pandora_red.css: Added alternate sample style.
+	* include/styles/pandora_red.css: Added alternate sample style.
 
-        * include/styles/pandora.css: Some problems with fonts fixed (I
-        hope!)
+	* include/styles/pandora.css: Some problems with fonts fixed (I
+	hope!)
 
-        * include/config.inc.php: Modified code to support custom Style in
-        DB config. By default uses "pandora".
+	* include/config.inc.php: Modified code to support custom Style in
+	DB config. By default uses "pandora".
 
-        * include/languages/language_en.php: new string to render style
-        setup.
+	* include/languages/language_en.php: new string to render style
+	setup.
 
-        * images/header_red.jpg: New image for red style.
+	* images/header_red.jpg: New image for red style.
 
-        * godmode/grupos/configurar_grupo.php: Updated styles.
+	* godmode/grupos/configurar_grupo.php: Updated styles.
 
-        * godmode/setup/setup.php: Added support for style selector.
+	* godmode/setup/setup.php: Added support for style selector.
 
 2007-05-24  Sancho Lerena  <slerena@artica.es>
 
-        * include/styles/pandora.css: Some margin adjustements for databox
-        classes and H1-3.
+	* include/styles/pandora.css: Some margin adjustements for databox
+	classes and H1-3.
 
-        * include/config.inc.php: Added support to detect empty
-        configuration tokens in DB and abort.
+	* include/config.inc.php: Added support to detect empty
+	configuration tokens in DB and abort.
 
-        * include/languages/language_en.php: More strings.
+	* include/languages/language_en.php: More strings.
 
-        * operation/visual_console/render_view.php: Fixed static links to
-        images.
+	* operation/visual_console/render_view.php: Fixed static links to
+	images.
 
-        * operation/agentes/estado_alertas.php: Databox style fixed.
+	* operation/agentes/estado_alertas.php: Databox style fixed.
 
-        * operation/agentes/estado_monitores.php: Added image instead
-        label.
+	* operation/agentes/estado_monitores.php: Added image instead
+	label.
 
-        * operation/servers/view_server.php: Fixed divbyzero notice.
+	* operation/servers/view_server.php: Fixed divbyzero notice.
 
-        * operation/servers/view_server_detail.php: Fixed static image URL.
+	* operation/servers/view_server_detail.php: Fixed static image URL.
 
-        * reporting/fgraph.php: Fixed distribution of X axis ticks.
+	* reporting/fgraph.php: Fixed distribution of X axis ticks.
 
-        * general/login_page.php: Added "demo" user by default.
+	* general/login_page.php: Added "demo" user by default.
 
-        * godmode/agentes/alert_manager.php,
-        godmode/alertas/modificar_alerta.php
-        godmode/alertas/configurar_alerta.php: Style 'databox' update.
+	* godmode/agentes/alert_manager.php,
+	godmode/alertas/modificar_alerta.php
+	godmode/alertas/configurar_alerta.php: Style 'databox' update.
 
 2007-05-22  Sancho Lerena  <slerena@artica.es>
 

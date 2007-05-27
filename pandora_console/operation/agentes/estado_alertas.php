@@ -46,7 +46,14 @@ if (isset($_GET["id_agente"])){
 	$query_gen='SELECT talerta_agente_modulo.alert_text, talerta_agente_modulo.id_alerta, talerta_agente_modulo.descripcion, talerta_agente_modulo.last_fired, talerta_agente_modulo.times_fired, tagente_modulo.nombre, talerta_agente_modulo.dis_max, talerta_agente_modulo.dis_min, talerta_agente_modulo.max_alerts, talerta_agente_modulo.time_threshold, talerta_agente_modulo.min_alerts, talerta_agente_modulo.id_agente_modulo, tagente_modulo.id_agente_modulo FROM tagente_modulo, talerta_agente_modulo WHERE tagente_modulo.id_agente = '.$id_agente.' AND tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo ORDER BY tagente_modulo.nombre';
 	if ($result_gen=mysql_query($query_gen)){
 		echo "<table cellpadding='4' cellspacing='4' width=750 border=0 class='databox'>";
-		echo "<tr><th>".$lang_label["type"]."<th>".$lang_label["name"]."</th><th>".$lang_label["description"]."</th><th>".$lang_label["min_max"]."</th><th>".$lang_label["time_threshold"]."</th><th>".$lang_label["last_fired"]."</th><th>".$lang_label["times_fired"]."</th><th>".$lang_label["status"]."</th>";
+		echo "<tr>
+		<th>".$lang_label["type"]."<th>".$lang_label["name"]."</th>
+		<th>".$lang_label["description"]."</th>
+		<th>".$lang_label["min_max"]."</th>
+		<th>".$lang_label["time_threshold"]."</th>
+		<th>".$lang_label["last_fired"]."</th>
+		<th>".$lang_label["times_fired"]."</th>
+		<th>".$lang_label["status"]."</th>";
 		$color=1;
 		while ($data=mysql_fetch_array($result_gen)){
 			if ($color == 1){
@@ -102,8 +109,8 @@ if (isset($_GET["id_agente"])){
 	// SHOW ALL ALERTS (GENERAL PAGE)
 	// -------------------------------
 
-	echo "<h2>".$lang_label["ag_title"]."</h2>";
-	echo "<h3>".$lang_label["alert_listing"]."<a href='help/".$help_code."/chap3.php#335' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	echo "<h2>".$lang_label["ag_title"]." &gt; ";
+	echo $lang_label["alert_listing"]."<a href='help/".$help_code."/chap3.php#335' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 	$iduser_temp=$_SESSION['id_usuario'];
 	if (isset($_POST["ag_group"]))
 		$ag_group = $_POST["ag_group"];

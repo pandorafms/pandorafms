@@ -32,12 +32,12 @@ if (comprueba_login() == 0)
  		- A more powerful selection (by Agent, by Module, etc).
  	*/
 		
-	echo "<h2>".$lang_label["dbmain_title"]."</h2>";
-	echo "<h3>".$lang_label["db_stat_agent"]."</h3>";
+	echo "<h2>".$lang_label["dbmain_title"]." &gt; ";
+	echo  $lang_label["db_stat_agent"]."</h2>";
 	echo "<table cellspacing='3' cellpadding='3'>";
-	echo "<tr><th>".$lang_label["agent_name"];
-	echo "<th>".$lang_label["assigned_module"];
-	echo "<th>".$lang_label["total_data"];
+	echo "<tr><th>".$lang_label["agent_name"]."</th>";
+	echo "<th>".$lang_label["assigned_module"]."</th>";
+	echo "<th>".$lang_label["total_data"]."</th>";
 	$color=0;
 	
 	$result_2=mysql_query("SELECT id_agente FROM tagente");

@@ -124,16 +124,19 @@ if (comprueba_login() == 0)
 			}
 		 	unset($id_perfil);
 		}
-		echo '<h2>'.$lang_label["profile_title"].'</h2>';     
+		echo '<h2>'.$lang_label["profile_title"].' &gt; ';     
 		echo (isset($_GET["new_profile"]))?
-		('<h3>'.$lang_label["create_profile"].'<a href="help/'.$help_code.'/chap2.php#21" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h3>'):
-		((isset($_GET["edit_profile"]))?('<h3>'.$lang_label["update_profile"].'<a href="help/'.$help_code.'/chap2.php#21" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h3>'):
-		('<h3>'.$lang_label["definedprofiles"].'<a href="help/'.$help_code.'/chap2.php#21" target="_help"  class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h3>'));
+		($lang_label["create_profile"].'<a href="help/'.$help_code.'/chap2.php#21" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h2>'):
+		(
+		(isset($_GET["edit_profile"]))?
+		($lang_label["update_profile"].'<a href="help/'.$help_code.'/chap2.php#21" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h2>'):
+		($lang_label["definedprofiles"].'<a href="help/'.$help_code.'/chap2.php#21" target="_help"  class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h2>')
+		);
 		// Form to manage date
 		if (isset ($id_perfil)){ // There are values defined, let's show form with data for INSERT or UPDATE
 			echo "<table width='400' cellpadding='3' cellspacing='3'>";
 			echo "<tr><td class='lb' rowspan='11' width='5'>";
-			echo "<form method='post' action='index.php?sec=gperfiles&sec2=godmode/perfiles/lista_perfiles&update_data'>";
+			echo "<form method='post' action='index.php?sec=gperfiles&sec2=godmode/profiles/profile_list&update_data'>";
 			echo "<input type=hidden name=id_perfil value='".$id_perfil."'>";
 			echo "<td class=datos>".$lang_label["profile_name"]."<td class=datos><input name='name' type=text size='27' value='".$name."'>";
 			
@@ -216,7 +219,7 @@ echo "<tr><td colspan='3' align='right'><input name='uptbutton' type='submit' cl
 			$tdcolor = "datos2";
 			$color = 1;
 		}
-		echo "<td class='$tdcolor'><a href='index.php?sec=gperfiles&amp;sec2=godmode/perfiles/lista_perfiles&amp;edit_profile=".$id_perfil."'><b>".$nombre."</b></a>";
+		echo "<td class='$tdcolor'><a href='index.php?sec=gperfiles&amp;sec2=godmode/profiles/profile_list&amp;edit_profile=".$id_perfil."'><b>".$nombre."</b></a>";
 		
 		echo "<td class='$tdcolor'>";
 		if ($incident_view == 1) echo "<img src='images/ok.png' border=0>";
@@ -247,13 +250,13 @@ echo "<tr><td colspan='3' align='right'><input name='uptbutton' type='submit' cl
 			
 		echo "<td class='$tdcolor'>";
 		if ($pandora_management == 1) echo "<img src='images/ok.png' border=0>";
-		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/perfiles/lista_perfiles&delete_profile=".$id_perfil."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cross.png'></a></td></tr>";
+		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/profiles/profile_list&delete_profile=".$id_perfil."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cross.png'></a></td></tr>";
 		
 	}
 			echo "</div></td></tr>";
 			echo "<tr><td colspan='12'><div class='raya'></div></td></tr>";
 			echo "<tr><td colspan='12' align='right'>";
-			echo "<form method=post action='index.php?sec=gperfiles&sec2=godmode/perfiles/lista_perfiles&new_profile=1'>";
+			echo "<form method=post action='index.php?sec=gperfiles&sec2=godmode/profiles/profile_list&new_profile=1'>";
 			echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create_profile"]."'>";
 			echo "</form></table>";
 		}

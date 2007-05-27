@@ -118,13 +118,13 @@ if (give_acl($id_user, 0, "LW")==1) {
 	if (isset($_POST["add_alert"])){
 		$alert_add = 1;
 	}
-	echo "<h2>Pandora SNMP</h2>";
+	echo "<h2>Pandora SNMP &gt; ";
 	// Add alert form
 	if (($alert_update != 0) || ($alert_add == 1)) {
 	
 		echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&submit=1">';
 		echo '<input type="hidden" name="id_as" value="'.$id_as.'">'; // if known, if add will be undetermined (0).
-		echo '<h3>'.$lang_label["create_alert"]."<a href='help/".$help_code."/chap3.php#331' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+		echo $lang_label["create_alert"]."<a href='help/".$help_code."/chap3.php#331' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 		echo '<table cellpadding="3" cellspacing="3" width="650" class="fon">';
 		echo '<tr><td class="lb" rowspan="13" width=5>';
 		// Alert
@@ -203,7 +203,7 @@ if (give_acl($id_user, 0, "LW")==1) {
 		$sql1='SELECT * FROM talert_snmp';
 		$result=mysql_query($sql1);
 		
-		echo '<h3>'.$lang_label["snmp_assigned_alerts"]."<a href='help/".$help_code."/chap4.php#341' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";		
+		echo $lang_label["snmp_assigned_alerts"]."<a href='help/".$help_code."/chap4.php#341' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";		
 		if (mysql_num_rows($result)){
 
 			echo '<table cellpadding="3" cellspacing="3" width="750">';

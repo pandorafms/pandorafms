@@ -28,7 +28,7 @@ if (comprueba_login() == 0)
    $id_user = $_SESSION["id_usuario"];
    if (give_acl($id_user, 0, "PM")==1) {
    
-	if (isset($_POST["crear_grupo"])){ // Create group
+	if (isset($_POST["create_g"])){ // Create group
 		$nombre = entrada_limpia($_POST["nombre"]);
 		$icon = entrada_limpia($_POST["icon"]);
 		$parent = entrada_limpia($_POST["parent"]);
@@ -44,7 +44,7 @@ if (comprueba_login() == 0)
 		}
 	}
 
-	if (isset($_POST["update_grupo"])){ // if modified any parameter
+	if (isset($_POST["update_g"])){ // if modified any parameter
 		$nombre = entrada_limpia($_POST["nombre"]);
 		$id_grupo = entrada_limpia($_POST["id_grupo"]);
 		$icon = entrada_limpia($_POST["icon"]);
@@ -60,7 +60,7 @@ if (comprueba_login() == 0)
 			echo "<h3 class='suc'>".$lang_label["modify_group_ok"]."</h3>";
 	}
 	
-	if (isset($_GET["borrar_grupo"])){ // if delete
+	if (isset($_GET["delete_g"])){ // if delete
 		$id_borrar_modulo = entrada_limpia($_GET["id_grupo"]);
 		
 		// First delete from tagente_modulo
@@ -71,12 +71,11 @@ if (comprueba_login() == 0)
 		else
 			echo "<h3 class='suc'>".$lang_label["delete_group_ok"]."</h3>";
 	}
-	echo "<h2>".$lang_label["group_management"]."</h2>";	
-	echo "
-		<h3>".$lang_label["definedgroups"]."
+	echo "<h2>".$lang_label["group_management"]." &gt; ";	
+	echo $lang_label["definedgroups"]."
 		<a href='help/".$help_code."/chap3.php#31' target='_help' class='help'>
 		<span>".$lang_label["help"]."</span></a>
-		</h3>";
+		</h2>";
 
 	echo "<table cellpadding=3 cellspacing=3 width=400>";
 	echo "<th>".$lang_label["icon"]."</th>";
@@ -101,7 +100,7 @@ if (comprueba_login() == 0)
 			echo "<img src='images/groups_small/".$row["icon"].".png' border='0'>";
 			echo "</td>";
 			echo "<td class='$tdcolor'>";
-			echo "<b><a href='index.php?sec=gagente&sec2=godmode/grupos/configurar_grupo&id_grupo=".$row["id_grupo"]."'>".$row["nombre"]."</a>";
+			echo "<b><a href='index.php?sec=gagente&sec2=godmode/groups/configure_group&id_grupo=".$row["id_grupo"]."'>".$row["nombre"]."</a>";
 			echo "</b></td>";
 			echo "<td class='$tdcolor'>";
 			echo dame_nombre_grupo ($row["parent"]);
@@ -116,7 +115,7 @@ if (comprueba_login() == 0)
                         echo "</td>";
 
 			echo "<td class='$tdcolor' align='center'>";	
-			echo "<a href='index.php?sec=gagente&sec2=godmode/grupos/lista_grupos&id_grupo=".$row["id_grupo"]."&borrar_grupo=".$row["id_grupo"]."'";
+			echo "<a href='index.php?sec=gagente&sec2=godmode/groups/group_list&id_grupo=".$row["id_grupo"]."&delete_g=".$row["id_grupo"]."'";
 			echo ' onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;">';
 			echo "<img border='0' src='images/cross.png'></a></td></tr>";
 		}
@@ -124,7 +123,7 @@ if (comprueba_login() == 0)
 	echo "<tr><td colspan='5'><div class='raya'></div></td></tr>";
 	echo "<tr><td colspan='5' align='right'>";
 	echo "<form method=post action='index.php?sec=gagente&
-	sec2=godmode/grupos/configurar_grupo&creacion_grupo=1'>";
+	sec2=godmode/groups/configure_group&create_g=1'>";
 	echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create_group"]."'>";
 	echo "</form></td></tr></table>";
 

@@ -1,3 +1,15 @@
+2007-05-27  Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/styles/pandora.css: Cleaned and moved install styles
+	to a new file only using in install.php file.
+
+	* include/styles/pandora_red.css: Cleaned and moved install styles
+	to a new file only using in install.php file.
+	
+	* include/styles/install.css: New file.
+	
+	* install.php: Updated with new styles.
+
 2007-05-26  Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/styles/pandora.css: Cleaned and updated some styles.

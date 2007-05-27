@@ -242,7 +242,6 @@ if (isset($_POST["insert_alert"])){ // if created alert
 			 '$max_alerts',
 			 '$min_alerts',
 			 '$alert_text')";
-
 	$result=mysql_query($sql_insert);	
 	if (! $result)
 		echo "<h3 class='error'>".$lang_label["create_alert_no"]."</h3>";

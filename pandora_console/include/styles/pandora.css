@@ -289,7 +289,7 @@ td.datos_id {
 td.datos_jus, td.datos2_jus {
 	text-align: justify;
 }
-.bg  { /* op menu */
+.bg { /* op menu */
 	background-color: #786;
 }
 .bg2 { /* main page */
@@ -416,22 +416,6 @@ div.nf {
 	color: #ac4444;
 	margin-left: 7px;
 	padding: 2px 1px 6px 25px;
-}
-div#wizard {
-	text-align: left;
-	border: 1px solid #999;
-	margin-top: 3em;
-	margin-bottom: -1em;
-	padding: 20px;
-	width: 600px;
-	background-color: #fff;
-	background: url(../../images/background8.jpg);
-}
-div#install_box {
-	float: right;
-	padding-right: 20px;
-	margin-top: 10px;
-	width: 350px;
 }
 div.title_line {
 	background-color: #4e682c;

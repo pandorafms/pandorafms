@@ -125,7 +125,7 @@ $result=mysql_query($sql1);
 // ==================================================================================
 // Add alerts
 // ==================================================================================
-echo '<form name="agente" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">';
+echo '<form name="agente" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente='.$id_agente.'">';
 if (! isset($update_alert))
 	$update_alert = -1;
 if ($update_alert != 1) {

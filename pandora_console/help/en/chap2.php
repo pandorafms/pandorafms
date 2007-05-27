@@ -22,18 +22,12 @@
 <html>
 <head>
 <title>Pandora - The Free Monitoring System Help - II. Users</title>
-<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css">
-<style>
-div.logo {float:left;}
-div.toc {padding-left: 200px;}
-div.rayah {border-top: 1px solid #708090; width: 100%;}
-div.rayah2 {clear:both; border-top: 1px solid #708090; width: 100%; padding-bottom: 35px;}
-</style>
+<link rel="stylesheet" href="../../include/styles/help.css" type="text/css">
 </head>
 
 <body>
 <div class='logo'>
-<img src="../../images/logo_menu.gif" alt='logo'><h1>Pandora Help v1.2</h1>
+<img src="../../images/logo_menu.gif" alt='logo'><h1>Pandora FMS Help 1.3</h1>
 </div>
 <div class="toc">
 <h1><a href="chap1.php">1. Introduction</a> « <a href="toc.php">Table of Contents</a> » <a href="chap3.php">3. Agents</a></h1>

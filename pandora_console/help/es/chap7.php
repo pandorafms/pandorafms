@@ -19,17 +19,13 @@
 <html>
 <head>
 <title>Pandora - Sistema de monitorizaci&oacute;n de Software Libre - Ayuda - VII. Configuraci&oacute;n de Servidor</title>
-<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css">
-<style>
-.ml25 {margin-left: 25px;}
-div.logo {float:left;}
-div.toc {padding-left: 200px;}
-div.rayah {border-top: 1px solid #708090; width: 100%;}
-div.rayah2 {clear:both; border-top: 1px solid #708090; width: 100%; padding-bottom: 35px;}
-</style>
+<link rel="stylesheet" href="../../include/styles/help.css" type="text/css">
+</head>
+
+<body>
 
 <div class='logo'>
-<img src="../../images/logo_menu.gif" alt='logo'><h1>Ayuda de Pandora v1.2</h1>
+<img src="../../images/logo_menu.gif" alt='logo'><h1>Ayuda de Pandora FMS 1.3</h1>
 </div>
 <div class="toc">
 <h1><a href="chap6.php">6. Auditor&iacute;a del Sistema</a> « <a href="toc.php">&Iacute;ndice</a> » <a href="chap8.php">8. Mantenimiento de la Base de Datos</a></h1>
@@ -39,7 +35,7 @@ div.rayah2 {clear:both; border-top: 1px solid #708090; width: 100%; padding-bott
 
 <h1><a name="7">7. Servidores Pandora</a></h1>
 
-<p>En Pandora 1.2 hay tres tipos diferentes de servidores, Servidor de red, 
+<p>En Pandora FMS 1.3 hay tres tipos diferentes de servidores, Servidor de red, 
 Servidor de datos y servidor SNMP.</p>
 
 <p>Desde «Servidores Pandora» en el men&uacute; de operaci&oacute;n se puede

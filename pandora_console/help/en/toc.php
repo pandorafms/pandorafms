@@ -21,20 +21,14 @@
 <html>
 <head>
 <title>Pandora - The Free Monitoring System Help - Table Of Contents</title>
-<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/css">
-<style>
-dd.help_t1 {margin-left: 10px; margin-top: 6px; margin-bottom: 5px; font-size: 13px; font-weight: bold}
-dd.help_t2 {margin-left: 28px; margin-top: 3px;}
-dd.help_t3 {margin-left: 55px; margin-top: 4px;}
-dd.help_t4 {margin-left: 92px; margin-top: 3px; margin-bottom: 2px;}
-</style>
+<link rel="stylesheet" href="../../include/styles/help.css" type="text/css">
 </head>
 
 <body>
 <center>
 <img src="../../images/logo_menu.gif" alt='logo'>
 
-<p><h1>Pandora Help v1.2</h1></p>
+<p><h1>Pandora FMS Help 1.3</h1></p>
 <p>(Updated December, 15<sup>th</sup> 2006).</p>
 <p>Pandora FMS is Free Software Project, licensed under GPL terms.<br> &copy; Sancho Lerena 2003-2006, David villanueva 2004-2006, Alex Arnal 2005, Ra&uacute;l Mateos 2004-2006.</p>
 </center>

@@ -155,7 +155,7 @@ while ($row=mysql_fetch_array($result)){
 <a name="alerts"> <!-- Don't Delete !! -->
 
 <tr><td class="datos2"><?php echo $lang_label["min_value"] ?>
-<a href='#' class='tip'>&nbsp;<span>                                                                                          <?PHP echo $lang_label["min_valid_value_help"]; ?>                                                                             </span></a>
+<a href='#' class='tip'>&nbsp;<span><?PHP echo $lang_label["min_valid_value_help"]; ?></span></a>
 
 <td class="datos2"><input type="text" name="minimo" size="5" value="<?php echo $alerta_dis_min ?>" style="margin-right: 70px;">
 
@@ -197,7 +197,7 @@ _data_<br>
 </span></a>
 <td class="datos"><textarea name="campo_3" style='height:85px;' cols="36" rows="4"><?php echo $alerta_campo3 ?></textarea>
 <tr><td class="datos2"><?php echo $lang_label["time_threshold"] ?>
-<a href='#' class='tip'>&nbsp;<span>                                                                                          <?PHP echo $lang_label["alert_time_threshold_help"]; ?>                                                                             </span></a>
+<a href='#' class='tip'>&nbsp;<span><?PHP echo $lang_label["alert_time_threshold_help"]; ?></span></a>
 
 <td class="datos2">
 <select name="time_threshold" style="margin-right: 60px;">
@@ -225,10 +225,12 @@ _data_<br>
 
 <tr><td class="datos"><?php echo $lang_label["min_alerts"] ?>
 <td class="datos">
-<input type="text" name="min_alerts" size="5" value="<?php  if (isset($alerta_min_alerts)) {echo$alerta_min_alerts;} ?>" style="margin-right: 10px;">
+<input type="text" name="min_alerts" size="5" value="<?php  if (isset($alerta_min_alerts)) {
+echo $alerta_min_alerts;} ?>" style="margin-right: 10px;">
 <?php echo $lang_label["max_alerts"] ?>
 &nbsp;&nbsp;&nbsp;
-<input type="text" name="max_alerts" size="5" value="<?php if (isset($alerta_max_alerts)) {echo $alerta_max_alerts;} ?>">
+<input type="text" name="max_alerts" size="5" value="<?php if (isset($alerta_max_alerts)) {
+echo $alerta_max_alerts;} ?>">
 
 
 <tr><td class="datos2"><?php echo $lang_label["assigned_module"] ?>
@@ -241,10 +243,10 @@ if ($update_alert != 1) {
 	$result2=mysql_query($sql2);
 	while ($row2=mysql_fetch_array($result2)){
 		if ($row2["id_tipo_modulo"] != -1) {
-			$sql1='SELECT nombre FROM ttipo_modulo WHERE id_tipo = '.$row2["id_tipo_modulo"];
+			$sql1='SELECT nombre FROM ttipo_modulo WHERE id_tipo = '.$row2["id_tipo_modulo"].'</option>';
 			$result=mysql_query($sql1);
 			while ($row=mysql_fetch_array($result)){
-				echo "<option value='".$row2["id_agente_modulo"]."'>".$row["nombre"]."/".$row2["nombre"];
+				echo "<option value='".$row2["id_agente_modulo"]."'>".$row["nombre"]."/".$row2["nombre"]."</option>";
 			}
 		} else // for -1, is a special module, keep alive monitor !!
 			echo "<option value='".$row2["id_agente_modulo"]."'>".$row2["nombre"]."</option>";

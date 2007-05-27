@@ -8,8 +8,6 @@
 
 // Load global vars
 require("include/config.php");
-//require("include/functions.php");
-//require("include/functions_db.php");
 if (comprueba_login() == 0) 
 	if ((give_acl($id_user, 0, "DM")==1) or (dame_admin($id_user)==1)) {
  	// Todo for a good DB maintenance 
@@ -22,8 +20,8 @@ if (comprueba_login() == 0)
  		- A more powerful selection (by Agent, by Module, etc).
  	*/
 		
-	echo "<h2>".$lang_label["dbmain_title"]."</h2>";
-	echo "<h3>".$lang_label["db_info2"]."<a href='help/".$help_code."/chap8.php#81' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	echo "<h2>".$lang_label["dbmain_title"]." &gt; ";
+	echo $lang_label["db_info2"]."<a href='help/".$help_code."/chap8.php#81' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 	echo "<table border=0>";
 	echo "<tr><td><img src='reporting/fgraph.php?tipo=db_agente_modulo'><br>";
 	echo "<tr><td><br>";

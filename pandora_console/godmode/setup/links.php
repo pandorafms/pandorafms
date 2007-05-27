@@ -65,8 +65,8 @@ if (comprueba_login() == 0)
 		}
 
 		// Create link
-        echo "<h2>".$lang_label["setup_screen"]."</h2>";
-		echo "<h3>".$lang_label["link_management"]."<a href='help/".$help_code."/chap9.php#91' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+        echo "<h2>".$lang_label["setup_screen"]." &gt; ";
+		echo $lang_label["link_management"]."<a href='help/".$help_code."/chap9.php#91' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 		echo '<table class="fon" cellpadding="3" cellspacing="3" width="500">';   
 		echo '<form name="ilink" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/links">';
         	if ($creation_mode == 1)
@@ -85,8 +85,8 @@ if (comprueba_login() == 0)
 	}
 
 	else {  // Main list view for Links editor
-		echo "<h2>".$lang_label["setup_screen"]."</h2>";
-		echo "<h3>".$lang_label["link_management"]."<a href='help/".$help_code."/chap9.php#9' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+		echo "<h2>".$lang_label["setup_screen"]." &gt; ";
+		echo  $lang_label["link_management"]."<a href='help/".$help_code."/chap9.php#9' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 		echo "<table cellpadding=3 cellspacing=3>";
 		echo "<th width='180px'>".$lang_label["link_name"];
 		echo "<th width='80px'>".$lang_label["delete"];

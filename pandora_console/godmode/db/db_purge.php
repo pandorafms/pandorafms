@@ -8,8 +8,6 @@
 
 // Load global vars
 require("include/config.php");
-//require("include/functions.php");
-//require("include/functions_db.php");
 if (comprueba_login() == 0) 
    $id_usuario= $_SESSION["id_usuario"];
    if (give_acl($id_usuario, 0, "DM")==1){
@@ -22,8 +20,8 @@ if (comprueba_login() == 0)
  		- A more powerful selection (by Agent, by Module, etc).
  	*/
 	 ?>	
-	<h2><?php echo $lang_label["dbmain_title"] ?></h2>
-	<h3><?php echo $lang_label["db_purge"] ?><a href='help/<?php echo $help_code ?>/chap8.php#8' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
+	<h2><?php echo $lang_label["dbmain_title"] ?> &gt; 
+	<?php echo $lang_label["db_purge"] ?><a href='help/<?php echo $help_code ?>/chap8.php#8' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h2>
 	<img src="reporting/fgraph.php?tipo=db_agente_purge&id=-1"><br><br>
 	<h3><?php echo $lang_label["get_data_agent"] ?></h3>
 	<?php

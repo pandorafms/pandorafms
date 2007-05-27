@@ -75,8 +75,8 @@ if (isset($_GET["delete"])){ // if delete
 	
 	$result=mysql_query($sql_delete);
 }
-
-echo "<h2>".$lang_label["network_component_group_management"]."</h2>";
+echo "<h2>".$lang_label["module_management"]." &gt; ";
+echo $lang_label["network_component_group_management"]."</h2>";
 
 echo "<table cellpadding=4 cellspacing=4 width=550>";
 echo "<th>".$lang_label["name"]."</th>";

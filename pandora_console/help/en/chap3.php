@@ -311,7 +311,7 @@ all in black save the last one.</p>
 	</div>
 <p><b>Last contact:</b> Shows the time and date of the last data package sent by the agent, using a progress bar, according to value of the interval. If you see the image <img src="../../images/outof.gif">, the agent has not send data during the interval. Passing the mouse over the image will show you the last contact in time and date format.</p>
 
-<p><b><u>Note:</u></b> The icon <img src="../../images/setup.gif" width="15"> is only visible if you're and administrator and it's a link to the "Manage Agents" &gt; "Update Agent" option in the Administration menu.</p>
+<p><b><u>Note:</u></b> The icon <img src="../../images/setup.png" width="15"> is only visible if you're and administrator and it's a link to the "Manage Agents" &gt; "Update Agent" option in the Administration menu.</p>
 
 <h3><a name="332">3.3.2. Accessing the data of an agent</a></h3>
 

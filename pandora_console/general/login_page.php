@@ -18,29 +18,29 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 ?>
-<center>
-<div align='center' class='databox' style='margin-top:200px; width: 460px; border-left: solid 1px #000;border-top: solid 1px #000; border-bottom: solid 2px #000; border-right: solid 2px #000;'>
-	<h1 style='font-size: 18px; color: #000; margin-bottom: 0px;'><?php echo $lang_label['welcome_title']; ?></h1>
-	<div  class='databox' style='width: 400px;'>
+<div class='databox' id='login'>
+	<h1 id='log'><?php echo $lang_label['welcome_title']; ?></h1>
+	<div class='databox' id='login_in'>
 		<form method="post" action="index.php?login=1">
-		<table cellpadding=4 cellspacing=1 width=400>
-		<tr><td rowspan=5 align='left'>
+		<table cellpadding='4' cellspacing='1' width='400'>
+		<tr><td rowspan='3' align='left' style="border-right: solid 1px #678;">
 			<a href="index.php">
 			<img src="images/pandora_logo.png" border="0" alt="logo"></a><br>
 			<?php echo $pandora_version; ?>
 		<td class='f9b'>
-				Login <br>
-		
-				<input class="login" type="text" name="nick" value="demo">
+			Login <br>
+			<input class="login" type="text" name="nick" value="demo">
+		</td></tr>
 		<tr><td class='f9b'>
-				Password <br>
-				<input class="login" type="password" name="pass" value="demo">
+			Password <br>
+			<input class="login" type="password" name="pass" value="demo">
+		</td></tr>
 		<tr><td align='center'>
-				<input type="submit" class="sub next" value="Login">	
+			<input type="submit" class="sub next" value="Login">
+		</td></tr>
 		</table>
 		</form>
 	</div>
 	<div id="ip"><?php echo 'IP: <b class="f10">'.$REMOTE_ADDR.'</b>'; ?></div>
 
 </div>
-</center>

@@ -145,23 +145,23 @@ if (comprueba_login() == 0)
 		$id_usuario_mio = $nombre;
 		$modo ="edicion";
 	}
-		echo "<h2>".$lang_label["user_management"]."</h2>";
+		echo "<h2>".$lang_label["user_management"]." &gt; ";
 		if (isset($_GET["alta"])){
 				if ($_GET["alta"]==1){
-				echo '<h3>'.$lang_label["create_user"].'<a href="help/'.$help_code.'/chap2.php#22" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h3>';
+				echo $lang_label["create_user"].'<a href="help/'.$help_code.'/chap2.php#22" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h2>';
 				}
 		}
 		if (isset($_GET["id_usuario_mio"]) OR isset($_GET["nuevo_usuario"])){
-			echo '<h3>'.$lang_label["update_user"].'<a href="help/'.$help_code.'/chap2.php#22" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h3>';
+			echo $lang_label["update_user"].'<a href="help/'.$help_code.'/chap2.php#22" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h2>';
 		}
 
 ?> 
 	<table width='500' cellpadding='3' cellspacing='3'>
 	<?php 
 	if (isset($_GET["alta"]))
-		echo '<form name="new_user" method="post" action="index.php?sec=gusuarios&sec2=godmode/usuarios/configurar_usuarios&nuevo_usuario=1"><tr><td class="lb" rowspan="9" width="5">';
+		echo '<form name="new_user" method="post" action="index.php?sec=gusuarios&sec2=godmode/users/configure_user&nuevo_usuario=1"><tr><td class="lb" rowspan="9" width="5">';
 	else
-		echo '<form name="user_mod" method="post" action="index.php?sec=gusuarios&sec2=godmode/usuarios/configurar_usuarios&id_usuario_mio='.$id_usuario_mio.'"><tr><td class="lb" rowspan="11" width="5">';
+		echo '<form name="user_mod" method="post" action="index.php?sec=gusuarios&sec2=godmode/users/configure_user&id_usuario_mio='.$id_usuario_mio.'"><tr><td class="lb" rowspan="11" width="5">';
 	?>
 	<td class="datos"><?php echo $lang_label["id_user"] ?>
 	<td class="datos"><input type="text" name="nombre" value="<?php echo $id_usuario_mio ?>">
@@ -236,7 +236,7 @@ if (comprueba_login() == 0)
 				echo '<td class="'.$tdcolor.'">';
 				echo "<b style='margin-left:10px'>".dame_perfil($row["id_perfil"])."</b> / ";
 				echo "<b>".dame_grupo($row["id_grupo"])."</b>";
-				echo '<td class="'.$tdcolor.'t"><a href="index.php?sec=gusuarios&sec2=godmode/usuarios/configurar_usuarios&id_usuario_mio='.$id_usuario_mio.'&borrar_grupo='.$row["id_up"].' " onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;"><img border=0 src="images/cross.png"></a><tr>';
+				echo '<td class="'.$tdcolor.'t"><a href="index.php?sec=gusuarios&sec2=godmode/users/configure_user&id_usuario_mio='.$id_usuario_mio.'&borrar_grupo='.$row["id_up"].' " onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;"><img border=0 src="images/cross.png"></a><tr>';
 			}
 				echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
 		}

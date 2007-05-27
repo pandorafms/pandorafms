@@ -55,8 +55,8 @@ if (isset($_GET["update"])){ // Edit mode
 	$id_network_profile = 1;
 	$id_network_server_assigned = 0;
 }
-
-echo "<h2>".$lang_label["manage_recontask"]."</h2>";
+echo "<h2>".$lang_label["view_servers"]." &gt; ";
+echo $lang_label["manage_recontask"]."</h2>";
 echo '<table width="700" cellspacing="4" cellpadding="4">';
 
 // Different Form url if it's a create or if it's a update form

@@ -48,10 +48,9 @@ if (comprueba_login() == 0) {
 			if (give_acl($id_usuario,$id_grupo, "AR") == 1){
 
 				echo "<div id='menu_tab_left'>
-				<ul class='mn'>	
-				<li class='nomn'>";
-				echo "<li class='nomn'>";
-				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/bricks.png' class='top' border=0>&nbsp; ".dame_nombre_agente($id_agente)." - ".$lang_label["view_mode"]."</a>";
+				<ul class='mn'>
+				<li class='view'>
+				<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/bricks.png' class='top' border=0>&nbsp; ".dame_nombre_agente($id_agente)." - ".$lang_label["view_mode"]."</a>";
 				echo "</li>";
 				echo "</ul></div>";
 
@@ -63,7 +62,7 @@ if (comprueba_login() == 0) {
 				echo "<div id='menu_tab'><ul class='mn'>";
 				if (give_acl($id_usuario,$id_grupo, "AW") == 1){
 					// Manage agent
-					echo "<li class='nomn'><a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'><img src='images/setup.gif' width='16' class='top' border=0> ".$lang_label["Manage"]." </a>";
+					echo "<li class='nomn'><a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'><img src='images/setup.png' width='16' class='top' border=0> ".$lang_label["Manage"]." </a>";
 					echo "</li>";
 				}
 				// Main view

@@ -102,7 +102,9 @@ if (isset($_GET["id"])){
 			//echo "DEBUG: DELETING NOTE: ".$query."(----)".$query2;
 			mysql_query($query);
 			mysql_query($query2);
-			if (mysql_query($query)) echo "<h3 class='suc'>".$lang_label["del_note_ok"];
+			if (mysql_query($query)) {
+				echo "<h3 class='suc'>".$lang_label["del_note_ok"];
+			}
 		}
 	}
 
@@ -194,11 +196,11 @@ else
 if (isset($id_inc)) {
 	echo "<input type='hidden' name='id_inc' value='".$id_inc."'>";
 }
-echo "<h2>".$lang_label["incident_manag"]."</h2>";
+echo "<h2>".$lang_label["incident_manag"]." &gt; ";
 if (isset($id_inc)) {
-	echo "<h3>".$lang_label["rev_incident"]." # ".$id_inc." <a href='help/".$help_code."/chap4.php#42' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	echo $lang_label["rev_incident"]." # ".$id_inc." <a href='help/".$help_code."/chap4.php#42' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 } else {
-	echo "<h3>".$lang_label["create_incident"]."<a href='help/".$help_code."/chap4.php#41' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	echo $lang_label["create_incident"]."<a href='help/".$help_code."/chap4.php#41' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 }
 echo '<table cellpadding=3 cellspacing=3 border=0 width=600>';
 if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp))

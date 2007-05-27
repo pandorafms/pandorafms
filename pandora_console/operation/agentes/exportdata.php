@@ -53,9 +53,9 @@ function generate_average_table ($id_de_mi_agente, $id_agente_modulo, $fecha_ini
 	
 	// Table header
 	echo "<table border=0 cellpadding=4 cellspacing=4 width=600 class='databox'>";
-	echo "<tbody><TR><TH ROWSPAN=\"2\">".$lang_label["hour"]."</TH>";
-	echo "<TH COLSPAN=\"7\">".$lang_label["day"]."</TH></TR>";
-	echo "<TR>";
+	echo "<tbody><tr><th rowspan=\"2\">".$lang_label["hour"]."</th>";
+	echo "<th colspan=\"7\">".$lang_label["day"]."</Th></tr>";
+	echo "<tr>";
 	for ($dia=0;$dia<7;++$dia)
 		echo "<th>".$dias_de_la_semana[$dia]."</th>";
 	echo "</tr>";
@@ -106,7 +106,8 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 		$export_type = 3; // Standard table;
 
 	if ($export_type == 1) { // CSV
-		echo "<h3>".$lang_label["export_title"]."<a href='help/".$help_code."/chap3.php#336' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+		echo "<h2>".$lang_label["ag_title"]." &gt; ";
+		echo $lang_label["export_title"]."<a href='help/".$help_code."/chap3.php#336' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 
 		if (isset ($_POST["origen_modulo"])){
 			$origen = $_POST["origen"];
@@ -145,7 +146,8 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 			$to_date = $end_date." ".$end_time;
 
 			// Header
-			echo "<h3>".$lang_label["export_title"]."<a href='help/".$help_code."/chap3.php#336' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+			echo "<h2>".$lang_label["ag_title"]." &gt; ";
+			echo $lang_label["export_title"]."<a href='help/".$help_code."/chap3.php#336' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 			echo $lang_label["db_agent_bra"]. "<b>" . dame_nombre_agente($origen). "-  $agentmodule_name</b>". $lang_label["from2"]. "<b>". $from_date. "</b>". $lang_label["to2"]. "<b>". $to_date. "</b><br>";
 			echo "<br>";
 
@@ -161,7 +163,8 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 	}
 	
 	if ($export_type == 3) { // Standard table
-		echo "<h3>".$lang_label["export_title"]."<a href='help/".$help_code."/chap3.php#336' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+		echo "<h2>".$lang_label["ag_title"]." &gt; ";
+		echo $lang_label["export_title"]."<a href='help/".$help_code."/chap3.php#336' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 		if (isset ($_POST["origen_modulo"])){
 			$origen = $_POST["origen"];
 			if (give_acl($id_user,dame_id_grupo($origen),"AR")!=1) {
@@ -238,8 +241,8 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 			$date_to = $ahora;
 		
 
-	echo "<h2>".$lang_label["ag_title"]."</h2>";
-	echo "<h3>".$lang_label["export_data"]."<a href='help/$help_code/chap3.php#336' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	echo "<h2>".$lang_label["ag_title"]." &gt; ";
+	echo $lang_label["export_data"]."<a href='help/$help_code/chap3.php#336' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 
 	echo '<form method="post" action="index.php?sec=estado&sec2=operation/agentes/exportdata" name="export_form">';
 	echo '<table width=550 border=0 cellspacing=3 cellpadding=5 class=databox>';

@@ -94,8 +94,8 @@ if (comprueba_login() == 0)
 	}
 	# End of get parameters block
 	
-	echo "<h2>".$lang_label["dbmain_title"]."</h2>";
-	echo "<h3>".$lang_label["db_purge_audit"]."<a href='help/".$help_code."/chap8.php#841' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	echo "<h2>".$lang_label["dbmain_title"]." &gt; ";
+	echo  $lang_label["db_purge_audit"]."<a href='help/".$help_code."/chap8.php#841' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 
 	echo "<table cellpadding='4' cellspacing='4' border='0'>";
 	echo "<tr><td class='datos'>";

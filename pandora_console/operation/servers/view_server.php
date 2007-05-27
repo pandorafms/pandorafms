@@ -29,7 +29,7 @@ if (comprueba_login() == 0) {
 
 	$sql='SELECT * FROM tserver';
 	
-	echo "<h2>".$lang_label["view_servers"]." -&gt; ";
+	echo "<h2>".$lang_label["view_servers"]." &gt; ";
 	echo $lang_label["server_detail"]." <a href='help/".$help_code."/chap7.php#7' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 
 	// Get total modules defined (network)

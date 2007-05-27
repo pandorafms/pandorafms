@@ -41,8 +41,8 @@ if (isset($_GET["delete"])){ // if delete
 	
 	$result=mysql_query($sql_delete);
 }
-
-echo "<h2>".$lang_label["network_profile_management"]."</h2>";
+echo "<h2>".$lang_label["module_management"]." &gt; ";
+echo $lang_label["network_profile_management"]."</h2>";
 
 
 $sql1='SELECT * FROM tnetwork_profile ORDER BY name';

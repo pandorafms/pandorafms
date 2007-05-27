@@ -33,7 +33,7 @@
 		exit;
 	}
 
-	echo "<h2>".$lang_label["audit_title"]."</h2>";
+	echo "<h2>".$lang_label["audit_title"]." &gt; ";
 	if (isset($_GET["offset"]))
 		$offset=$_GET["offset"];
 	else
@@ -56,24 +56,27 @@
 
 	// generate select 
 
-	echo "<h3>".$lang_label["filter"];
+	echo $lang_label["filter"];
 	echo "<a href='help/".$help_code."/chap6.php#6' target='_help' class='help'>
-	&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 	echo "<form name='query_sel' method='post' action='index.php?sec=godmode&sec2=godmode/admin_access_logs'>";
 	echo "<table border='0'><tr><td valign='middle'>";
 	echo "<select name='tipo_log' onChange='javascript:this.form.submit();'>";
-	if (isset($tipo_log))
-		echo "<option>".$tipo_log;
-	echo "<option value='-1'>".$lang_label["all"];
+	if (isset($tipo_log)) {
+		echo "<option>".$tipo_log. "</option>";
+	}
+	echo "<option value='-1'>".$lang_label["all"]."</option>";
 	$sql3="SELECT DISTINCT (accion) FROM `tsesion`"; 
 	// Prepare index for pagination
 	$result3=mysql_query($sql3);
 	while ($row3=mysql_fetch_array($result3)){
 		if (isset($tipo_log)) {
-			if ($tipo_log != $row3[0])
-				echo "<option value='".$row3[0]."'>".$row3[0];
-		} else
-		echo "<option value='".$row3[0]."'>".$row3[0];
+			if ($tipo_log != $row3[0]) {
+				echo "<option value='".$row3[0]."'>".$row3[0]."</option>";
+			}
+		} else {
+			echo "<option value='".$row3[0]."'>".$row3[0]."</option>";
+		}
 	}
 	echo "</select>";
 	echo "<td valign='middle'><noscript><input name='uptbutton' type='submit' class='sub' value='".$lang_label["show"]."'></noscript>";

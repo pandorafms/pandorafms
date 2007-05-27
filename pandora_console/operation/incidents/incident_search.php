@@ -23,8 +23,8 @@ require("include/config.php");
 
 if (comprueba_login() == 0) {
 
-echo "<h2>".$lang_label["incident_manag"]."</h2>";
-echo "<h3>".$lang_label["find_crit"]." <a href='help/".$help_code."/chap4.php#43' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+echo "<h2>".$lang_label["incident_manag"]." &gt; ";
+echo $lang_label["find_crit"]." <a href='help/".$help_code."/chap4.php#43' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 echo "<div style='width:645'>";
 echo "<div style='float:right;'><img src='images/pulpo_lupa.gif' class='bot' align='left'></div>";	
 ?>

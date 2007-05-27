@@ -33,10 +33,10 @@ if (comprueba_login() == 0)
 	$id_parent = "";	
  	$disabled = 0;
 	
-	if (isset($_GET["creacion_grupo"])){ //
-		$creacion_grupo = entrada_limpia($_GET["creacion_grupo"]);
+	if (isset($_GET["create_g"])){ //
+		$create_g = entrada_limpia($_GET["create_g"]);
 	} else
-		$creacion_grupo = 0;
+		$create_g = 0;
 		
 	if (isset($_GET["id_grupo"])){
 		// Conecto con la BBDD
@@ -57,21 +57,25 @@ if (comprueba_login() == 0)
 			}
 	}
 
-	echo "<h2>".$lang_label["group_management"]."</h2>";
-	if (isset($_GET["creacion_grupo"])) {echo "<h3>".$lang_label["create_group"]."<a href='help/".$help_code."/chap3.php#31' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";}
-	if (isset($_GET["id_grupo"])) {echo "<h3>".$lang_label["update_group"]."<a href='help/".$help_code."/chap3.php#31' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";}
+	echo "<h2>".$lang_label["group_management"]." &gt; ";
+	if (isset($_GET["create_g"])) {
+		echo $lang_label["create_group"]."<a href='help/".$help_code."/chap3.php#31' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+	}
+	if (isset($_GET["id_grupo"])) {
+		echo $lang_label["update_group"]."<a href='help/".$help_code."/chap3.php#31' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+	}
 	
 ?>
 <table width="450" cellpadding=4 cellspacing=4 class='databox_color'>
 
 <form name="grupo" method="post" action="index.php?sec=gagente&
-sec2=godmode/grupos/lista_grupos">
+sec2=godmode/groups/group_list">
 
 <?php
-	if ($creacion_grupo == 1)
-		echo "<input type='hidden' name='crear_grupo' value='1'>";
+	if ($create_g == 1)
+		echo "<input type='hidden' name='create_g' value='1'>";
 	else {
-		echo "<input type='hidden' name='update_grupo' value='1'>";
+		echo "<input type='hidden' name='update_g' value='1'>";
 		echo "<input type='hidden' name='id_grupo' value='".$id_grupo."'>";
 	}
 ?>
@@ -135,7 +139,7 @@ sec2=godmode/grupos/lista_grupos">
 	echo "</table>";
 	echo "<table width=450>";
 	echo '<tr><td align="right">';
-	if (isset($_GET["creacion_grupo"]))
+	if (isset($_GET["create_g"]))
 		echo "<input name='crtbutton' type='submit' class='sub wand' value='".$lang_label["create"]."'>";
 	else 
 		echo "<input name='uptbutton' type='submit' class='sub upd' value='".$lang_label["update"]."'>";

@@ -187,9 +187,9 @@ if (! isset($_GET["delete_module"])){
 	}
 }
 
-
+	echo "<h2>".$lang_label["reporting"]." &gt; ";
 if (isset($chunk1)) {
-	echo "<h3>".$lang_label["graph_builder_modulelist"]."</h3>";
+	echo $lang_label["graph_builder_modulelist"]."</h2>";
 	echo "<form method='post' action='index.php?sec=reporting&sec2=operation/reporting/graph_builder&delete_module=1'>";
 	if (isset($chunkdata))
 		echo "<input type='hidden' name='chunk' value='$chunkdata'>";
@@ -228,10 +228,10 @@ if (isset($chunk1)) {
 // --------------------------------------
 if (($render == 1) && (isset($modules))) {
 	// parse chunk
-	echo "<h3>".$lang_label["combined_image"]."</h3>";
+	echo $lang_label["combined_image"]."</h2>";
 	echo "<table class='databox_frame'>";
 	echo "<tr><td>";
-	echo "<img  src='reporting/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&label=Combined%20Sample%20Graph&height=$height&width=$width&period=$period' border=1 alt=''>";
+	echo "<img src='reporting/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&label=Combined%20Sample%20Graph&height=$height&width=$width&period=$period' border=1 alt=''>";
 	echo "</td></tr></table>";
 
 }
@@ -239,7 +239,7 @@ if (($render == 1) && (isset($modules))) {
 // -----------------------
 // SOURCE AGENT TABLE/FORM
 // -----------------------
-echo "<h3>".$lang_label["graph_builder"]."</h3>";
+echo $lang_label["graph_builder"]."</h2>";
 echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
 echo "<form method='post' action='index.php?sec=reporting&sec2=operation/reporting/graph_builder&get_agent=1'>";
 echo "<tr>";

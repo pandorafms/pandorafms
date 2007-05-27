@@ -253,11 +253,6 @@ $lang_label["checked_by"]="Validado por";
 
 $lang_label["disabled"]="Desactivado";
 $lang_label["active"]="Activo";
-$lang_label["db_description"]="A base de datos &eacute; o n&uacute;cleo de Pandora. Nesta base de datos reside toda a informaci&oacute;n da empresa, por exemplo, t&oacute;dolos datos recopilados polos axentes, toda a informaci&oacute;n definida polo administrador, t&oacute;dolos eventos, incidentes ou informaci&oacute;n de auditor&iacute;a.
-<br><br>
-O rendemento e fiabilidade deste n&uacute;cleo &eacute; vital para o funcionamento correcto de Pandora. &Eacute; preciso manter esta Base de Datos empregando os comandos est&aacute;ndar de MySQL.
-<br><br>
-O tama&ntilde;o da base de datos aumentar&aacute; de xeito lineal. Empregamos un m&eacute;todo de compactaci&oacute;n para reducir o n&uacute;mero dos eventos almaceados na base de datos sen perder a informaci&oacute;n necesaria. Esta compactaci&oacute;n producese cada certo tempo (configurable)."; 
 
 $lang_label["begin_date"]="Data comezo (*)";
 $lang_label["end_date"]="Data fin (*)";

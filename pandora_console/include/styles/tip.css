@@ -13,6 +13,7 @@ a.help {
 	background: url(../../images/help.gif) no-repeat;
 	padding: 2px 2px 2px 12px;
 	left: 5px;
+	text-transform: capitalize;
 }
 a.info {
 	padding: 25px 0px 0px 0px;

@@ -18,22 +18,18 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ?>
 
-<center>
-<div align='center' class='databox' style='margin-top:200px; width: 460px; border-left: solid 1px #000;border-top: solid 1px #000; border-bottom: solid 2px #000; border-right: solid 2px #000;'>
-<div id='login_f' class='databox' style='width:400px; margin-top: 10px;'>
-	<h1 id="log_f" style='margin-top: 0px;' class="error"><?php echo $lang_label['err_auth']; ?></h1>
-	<div id='noa' style='width:50px' >
-		<img src='images/noaccess.gif'>
+<div class='databox' id='login'>
+	<div id='login_f' class='databox'>
+		<h1 id="log_f" style='margin-top: 0px;' class="error"><?php echo $lang_label['err_auth']; ?></h1>
+		<div id='noa' style='width:50px' >
+			<img src='images/noaccess.gif'>
+		</div>
+
+		<div style='width: 350px'>
+			<a href="index.php"><img src="images/pandora_logo.png" border="0"></a><br>
+			<?php echo $pandora_version; ?>
+		</div>
+
+		<div class="msg"><?php echo $lang_label["err_auth_msg"]; ?></div>
 	</div>
-
-	<div style='width: 350px'>
-		<a href="index.php"><img src="images/pandora_logo.png" border="0"></a><br>
-		<?php echo $pandora_version; ?>
-	</div>
-
-	<div class="msg"><?php echo $lang_label["err_auth_msg"]; ?></div>
 </div>
-<br>
-</div>
-</center>
-

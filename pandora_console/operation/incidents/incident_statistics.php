@@ -24,8 +24,8 @@ require("include/config.php");
 if (comprueba_login() == 0) {
 	$iduser=$_SESSION['id_usuario'];
 	if (give_acl($id_user, 0, "IR")==1) {	
-		echo "<h2>".$lang_label["incident_manag"]."</h2>";
-		echo "<h3>".$lang_label["statistics"]."<a href='help/".$help_code."/chap4.php#44' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+		echo "<h2>".$lang_label["incident_manag"]." &gt; ";
+		echo $lang_label["statistics"]."<a href='help/".$help_code."/chap4.php#44' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 ?>
 <img src="reporting/fgraph.php?tipo=estado_incidente" border=0>
 <br><br>

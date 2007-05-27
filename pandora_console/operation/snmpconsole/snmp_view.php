@@ -119,8 +119,8 @@ if (comprueba_login() == 0) {
 			audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to mass-validate SNMP Trap ID");
 		}
 	}
-	echo "<h2>Pandora SNMP</h2>";
-	echo "<h3>".$lang_label["SNMP_console"]."<a href='help/".$help_code."/chap3.php#34' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	echo "<h2>Pandora SNMP &gt; ";
+	echo $lang_label["SNMP_console"]."<a href='help/".$help_code."/chap3.php#34' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 
 	if (isset($_GET["offset"]))
 		$offset=$_GET["offset"];

@@ -155,8 +155,8 @@ if (isset($_GET["delete"])){ // if delete
 // ------------------
 // SHOW MODULES
 // ------------------
-
-echo "<h2>".$lang_label["network_component_management"]."</h2>";
+echo "<h2>".$lang_label["module_management"]." &gt; ";
+echo $lang_label["network_component_management"]."</h2>";
 
 // Show group selector
 if (isset($_POST["ncgroup"]))

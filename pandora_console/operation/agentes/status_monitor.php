@@ -21,9 +21,9 @@ require("include/config.php");
 if (comprueba_login() == 0) {
  	if ((give_acl($id_user, 0, "AR")==1) or (give_acl($id_user,0,"AW")) or (dame_admin($id_user)==1)) {
 	
-	echo "<h2>".$lang_label["ag_title"]."</h2>";
-	echo "<h3>".$lang_label["monitor_listing"]."<a href='help/".$help_code."/chap3.php#334' target='_help' class='help'>
-	&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	echo "<h2>".$lang_label["ag_title"]." &gt; ";
+	echo $lang_label["monitor_listing"]."<a href='help/".$help_code."/chap3.php#334' target='_help' class='help'>
+	&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 	
 
 	if (isset($_POST["ag_group"]))

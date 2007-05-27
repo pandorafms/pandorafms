@@ -27,7 +27,7 @@ if (comprueba_login() != 0) {
 	exit;
 }
 
-echo "<h3>".$lang_label["visual_console"]."</h3>";
+echo "<h2>".$lang_label["visual_console"]."</h2>";
 echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
 echo "<tr><th>".$lang_label["name"]."<th>".$lang_label["group"]."<th>".$lang_label["elements"]."<th>".$lang_label["view"];
 $color=1;

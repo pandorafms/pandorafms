@@ -225,11 +225,6 @@ $lang_label["total"] = "Total";
 $lang_label["checked_by"] = "Checado por";
 $lang_label["disabled"] = "Desativado";
 $lang_label["active"] = "Ativo";
-$lang_label["db_description"] = "A base de dados &eacute; o n&uacute;cleo do Pandora. Nesta base de dados residem todas as informa&ccedil;&otilde;es da empresa, por exemplo, todos os dados recompilados pelos agentes, todas as informa&ccedil;&otilde;es definidas pelo administrador, todos os eventos, incidentes ou informa&ccedil;&otilde;es de auditoria.
-<br><br>
-O desempenho e confiabilidade deste n&uacute;cleo s&atilde;o vitais para o funcionamento correto do Pandora. &eacute; necess&aacute;rio manter esta base de dados utilizando os comandos dispon&iacute;veis como padr&atilde;o no MySQL.
-<br><br>
-O tamanho da Base de Dados aumentar&aacute; de maneira linear. Utilizamos um m&eacute;todo de compacta&ccedil;&atilde;o para reduzir o n&uacute;mero de eventos armazenados na base de dados sem perder as informa&ccedil;&otilde;es necess&aacute;rias. Esta compacta&ccedil;&atilde;o ocorre dentro de certos intervalos de tempo. (configur&aacute;vel).";
 $lang_label["begin_date"] = "Data de in&iacute;cio";
 $lang_label["end_date"] = "Data final";
 $lang_label["resolution"] = "Resolu&ccedil;&atilde;o (%)";

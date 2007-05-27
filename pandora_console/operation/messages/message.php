@@ -59,7 +59,6 @@ $row2=mysql_fetch_array($resultado2);
 $sql3='SELECT * FROM tgrupo';
 $resultado3=mysql_query($sql3);
 	
-echo '<h2>'.$lang_label["messages"].' &gt; ';
 if (isset($_GET["nuevo_mensaje"])){
 	// Create message
 	$usuario_destino = entrada_limpia($_POST["u_destino"]);
@@ -91,7 +90,7 @@ if (isset($_GET["nuevo_mensaje_g"])){
 }
 if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
 	if (isset($_GET["nuevo"])){ //create message
-	
+		echo '<h2>'.$lang_label["messages"].' &gt; ';
 		echo  $lang_label["new_message"].'<a href="help/'.$help_code.'/chap2.php#25" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h2>';
 		echo '
 		<form name="new_mes" method="POST" action="index.php?sec=messages&sec2=operation/messages/message&nuevo_mensaje=1">
@@ -126,6 +125,7 @@ if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
 	}
 	
 	if (isset($_GET["nuevo_g"])){
+		echo '<h2>'.$lang_label["messages"].' &gt; ';
 		echo $lang_label["new_message_g"].'<a href="help/'.$help_code.'/chap2.php#251" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h2>';
 		echo '
 		<form name="new_mes" method="post" action="index.php?sec=messages&sec2=operation/messages/message&nuevo_mensaje_g=1">
@@ -161,7 +161,7 @@ else {
 	}
 	
 	//List
-	
+	echo '<h2>'.$lang_label["messages"].' &gt; ';	
 	echo  $lang_label["read_mes"]."<a href='help/".$help_code."/chap2.php#25' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 	if ($row2["COUNT(*)"]!=0){
 		echo $lang_label["new_message_bra"]."<b> ".$row2["COUNT(*)"]."</b> <img src='images/mail.gif'>".$lang_label["new_message_ket"]."<br><br>";
@@ -233,7 +233,14 @@ else {
 		<input type="submit" class="sub" name="send_mes" value="'.$lang_label["reply"].'">
 		</form></td></tr>';
 	}
-	else echo '<tr><td colspan="5"><div class="noraya"></div></td></tr><tr><td colspan="5" align="right"><form method="post" name="new_mes" action="index.php?sec=messages&sec2=operation/messages/message&nuevo"><input type="submit" class="sub next" name="send_mes" value="'.$lang_label["new_message"].'"></form></td></tr>';
+	else {
+	echo '
+	<tr><td colspan="5"><div class="noraya"></div></td></tr>
+	<tr><td colspan="5" align="right">
+	<form method="post" name="new_mes" action="index.php?sec=messages&sec2=operation/messages/message&nuevo">
+	<input type="submit" class="sub next" name="send_mes" value="'.$lang_label["new_message"].'"></form>
+	</td></tr>';
+	}
 }
  echo '</table>';
  ?>

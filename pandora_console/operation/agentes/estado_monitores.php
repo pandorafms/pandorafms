@@ -106,8 +106,9 @@ if (comprueba_login() == 0) {
 			}
 		}
 		echo '</table>';
-	}
-	else 
+
+	} else {
 		echo "<div class='nf'>".$lang_label["no_monitors"]."</div>";
+	}
 }
 ?>

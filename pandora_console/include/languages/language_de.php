@@ -175,6 +175,7 @@ $lang_label["profile"]="Profile";
 $lang_label["update_agent"]="Aktualisiere Agenten";
 $lang_label["create_agent"]="Kreiere Agent";
 $lang_label["create_alert"]="Kreiere Alarm";
+$lang_label["update_alert"]="Aktualisiere Alarm";
 $lang_label["create_user"]="F&uuml;ge neuen Nutzer hinzu";
 $lang_label["update_user"]="Aktualisiere Nutzer";
 $lang_label["alert_config"]="Konfiguration eines Alarms";

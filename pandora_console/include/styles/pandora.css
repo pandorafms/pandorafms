@@ -262,6 +262,10 @@ input.delete {
 	padding-right: 21px;
 	background: #e5e5e5 url(../../images/cross.png) no-repeat right 3px;
 }
+input.search {
+	padding-right: 21px;
+	background: #e5e5e5 url(../../images/zoom.png) no-repeat right 3px;
+}
 table, img {
 	border: 0px;
 }

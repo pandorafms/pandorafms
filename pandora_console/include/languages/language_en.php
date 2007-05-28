@@ -178,6 +178,7 @@ $lang_label["profile"]="Profile";
 $lang_label["update_agent"]="Update agent";
 $lang_label["create_agent"]="Create agent";
 $lang_label["create_alert"]="Create alert";
+$lang_label["update_alert"]="Update_alert";
 $lang_label["create_user"]="Create user";
 $lang_label["update_user"]="Update user";
 $lang_label["alert_config"]="Alert configuration";
@@ -758,7 +759,7 @@ $lang_label["custom_graphs"]="Custom graphs";
 $lang_label["custom_reporting"]="Custom reporting";
 $lang_label["alert_text"]="Alert text";
 $lang_label["text"]="Text";
-$lang_label["delete_data_above"]="Delete data above";
+$lang_label["delete_data_above"]="Deleted data above";
 $lang_label["enabled"]="Enabled";
 
 // 3 may 2007
@@ -782,7 +783,7 @@ $lang_label["visual_console"]="Visual console";
 $lang_label["elements"]="Elements";
 $lang_label["minutes"]="minutes";
 
-$lang_label["avg_only"]="Avg.Only";
+$lang_label["avg_only"]="Avg. Only";
 $lang_label["avg_value"]="Avg. Value";
 $lang_label["auto_refresh_time"]="Autorefresh time";
 $lang_label["refresh"]="Refresh";

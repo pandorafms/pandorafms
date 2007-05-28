@@ -180,6 +180,7 @@ $lang_label["profile"]="Profil";
 $lang_label["update_agent"]="Actualiser l'agent";
 $lang_label["create_agent"]="Cr&eacute;er un agent";
 $lang_label["create_alert"]="Cr&eacute;er une alerte";
+$lang_label["update_alert"]="Actualiser l'alerte";
 $lang_label["create_user"]="Cr&eacute;er un usager";
 $lang_label["update_user"]="Actualiser l'usager";
 $lang_label["alert_config"]="Configuration des alertes";

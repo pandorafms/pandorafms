@@ -139,7 +139,7 @@ echo "<div id='menu_tab'>
 <li class='nomn'>";
 
 echo "<li class='nomn'>";
-echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/zoom.png' width='16' class='top' border=0>&nbsp; View</A>";
+echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/zoom.png' width='16' class='top' border=0>&nbsp; View</a>";
 echo "</li>";
 
 echo "<li class='nomn'>";

@@ -122,9 +122,13 @@ if (give_acl($id_user, 0, "LW")==1) {
 	// Add alert form
 	if (($alert_update != 0) || ($alert_add == 1)) {
 	
+		if ($alert_update != 0) {
+			echo $lang_label["update_alert"]."<a href='help/".$help_code."/chap3.php#331' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+		} else {
+			echo $lang_label["create_alert"]."<a href='help/".$help_code."/chap3.php#331' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+		}
 		echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&submit=1">';
-		echo '<input type="hidden" name="id_as" value="'.$id_as.'">'; // if known, if add will be undetermined (0).
-		echo $lang_label["create_alert"]."<a href='help/".$help_code."/chap3.php#331' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+		echo '<input type="hidden" name="id_as" value="'.$id_as.'">'; // if known, if add will be undetermined (0).	
 		echo '<table cellpadding="3" cellspacing="3" width="650" class="fon">';
 		echo '<tr><td class="lb" rowspan="13" width=5>';
 		// Alert
@@ -185,11 +189,11 @@ if (give_acl($id_user, 0, "LW")==1) {
 		echo '<tr><td colspan="3"><div class="raya"></div></td></tr>';
 		// Update or Add button
 		if ($alert_update != 0) {
-			echo '<tr><td colspan="3" align="right"><input name="uptbutton" type="submit" class="sub" value="'.$lang_label["update"].'">';
+			echo '<tr><td colspan="3" align="right"><input name="uptbutton" type="submit" class="sub upd" value="'.$lang_label["update"].'">';
 			echo "<input type='hidden' name='update' value='1'>";
 			echo "<input type='hidden' name='create' value='0'>";
 		} else {
-			echo '<tr><td colspan="3" align="right"><input name="createbutton" type="submit" class="sub" value="'.$lang_label["create"].'">';
+			echo '<tr><td colspan="3" align="right"><input name="createbutton" type="submit" class="sub next" value="'.$lang_label["create"].'">';
 			echo "<input type='hidden' name='update' value='0'>";
 			echo "<input type='hidden' name='create' value='1'>";
 		}

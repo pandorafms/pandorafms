@@ -160,6 +160,7 @@ $lang_label["profile"]="Perfil";
 $lang_label["update_agent"]="Actualitzar agent";
 $lang_label["create_agent"]="Crear agent";
 $lang_label["create_alert"]="Crear alerta";
+$lang_label["update_alert"]="Actualitzar alerta";
 $lang_label["create_user"]="Crear usuari";
 $lang_label["update_user"]="Actualitzar usuari";
 $lang_label["alert_config"]="Configuraci&oacute; d'alerta";

@@ -121,7 +121,7 @@ if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
 		echo '</textarea></td></tr>
 		<tr><td colspan="2"><div class="noraya"></div></td></tr>
 		<tr><td colspan="2" align="right">
-		<input type="submit" class="sub" name="send_mes" value="'.$lang_label["send_mes"].'"></form></td></tr>';
+		<input type="submit" class="sub wand" name="send_mes" value="'.$lang_label["send_mes"].'"></form></td></tr>';
 	}
 	
 	if (isset($_GET["nuevo_g"])){
@@ -144,7 +144,7 @@ if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
 		<tr><td class="datos2">'.$lang_label["message"].':</td></tr>
 		<tr><td class="datos" colspan="4"><textarea name="mensaje" rows="10" width="540px"></textarea></td></tr>
 		<tr><td colspan="2" align="right">
-		<input type="submit" class="sub" name="send_mes" value="'.$lang_label["send_mes"].'"></form></td></tr>';
+		<input type="submit" class="sub wand" name="send_mes" value="'.$lang_label["send_mes"].'"></form></td></tr>';
 	}
 }
 else {

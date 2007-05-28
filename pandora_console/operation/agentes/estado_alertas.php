@@ -41,10 +41,19 @@ if (comprueba_login() != 0) {
 // Show alerts for specific agent
 // -------------------------------
 if (isset($_GET["id_agente"])){
-	echo "<h3>".$lang_label["alert_listing"]."<a href='help/".$help_code."/chap3.php#3324' target='_help' class='help'><span>".$lang_label["help"]."</span></a></h3>";
+
+	if (isset($_GET["tab"])){
+		echo "<h2>".$lang_label["ag_title"]." &gt; ".$lang_label["alert_listing"]."<a href='help/".$help_code."/chap3.php#3324' target='_help' class='help'><span>".$lang_label["help"]."</span></a></h2>";
+	}
 	$id_agente = $_GET["id_agente"];
 	$query_gen='SELECT talerta_agente_modulo.alert_text, talerta_agente_modulo.id_alerta, talerta_agente_modulo.descripcion, talerta_agente_modulo.last_fired, talerta_agente_modulo.times_fired, tagente_modulo.nombre, talerta_agente_modulo.dis_max, talerta_agente_modulo.dis_min, talerta_agente_modulo.max_alerts, talerta_agente_modulo.time_threshold, talerta_agente_modulo.min_alerts, talerta_agente_modulo.id_agente_modulo, tagente_modulo.id_agente_modulo FROM tagente_modulo, talerta_agente_modulo WHERE tagente_modulo.id_agente = '.$id_agente.' AND tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo ORDER BY tagente_modulo.nombre';
-	if ($result_gen=mysql_query($query_gen)){
+	$result_gen=mysql_query($query_gen);
+	if (mysql_num_rows ($result_gen)) {
+	
+		if (!isset($_GET["tab"])) {
+			echo "<h3>".$lang_label["alert_listing"]."<a href='help/".$help_code."/chap3.php#3324' target='_help' class='help'><span>".$lang_label["help"]."</span></a></h3>";
+		}
+	
 		echo "<table cellpadding='4' cellspacing='4' width=750 border=0 class='databox'>";
 		echo "<tr>
 		<th>".$lang_label["type"]."<th>".$lang_label["name"]."</th>
@@ -65,9 +74,9 @@ if (isset($_GET["id_agente"])){
 				$color = 1;
 			}
 			echo "<tr>";
-			echo "<td class='".$tdcolor."'>".dame_nombre_alerta($data["id_alerta"]);
-			echo "<td class='".$tdcolor."'>".$data["nombre"];
-			echo "<td class='".$tdcolor."'>".$data["descripcion"];
+			echo "<td class='".$tdcolor."'>".dame_nombre_alerta($data["id_alerta"])."</td>";
+			echo "<td class='".$tdcolor."'>".$data["nombre"]."</td>";
+			echo "<td class='".$tdcolor."'>".$data["descripcion"]."</td>";
 
 			$mytempdata = fmod($data["dis_min"], 1);
 			if ($mytempdata == 0)
@@ -84,25 +93,27 @@ if (isset($_GET["id_agente"])){
 			$mymax =  format_for_graph($mymax );
 			// Text alert ?
 			if ($data["alert_text"] != "")
-				echo "<td class='".$tdcolor."'>".$lang_label["text"];
+				echo "<td class='".$tdcolor."'>".$lang_label["text"]."</td>";
 			else 
-				echo "<td class='".$tdcolor."'>".$mymin." / ".$mymax;
+				echo "<td class='".$tdcolor."'>".$mymin." / ".$mymax."</td>";
 			echo "<td class='".$tdcolor."'>".$data["time_threshold"];
 			if ($data["last_fired"] == "0000-00-00 00:00:00") {
-				echo "<td class='".$tdcolor."f9'>".$lang_label["never"];
+				echo "<td class='".$tdcolor."f9'>".$lang_label["never"]."</td>";
 			}
 			else {
-				echo "<td class='".$tdcolor."f9'>".$data["last_fired"];
+				echo "<td class='".$tdcolor."f9'>".$data["last_fired"]."</td>";
 			}
-			echo "<td class='".$tdcolor."'>".$data["times_fired"];
+			echo "<td class='".$tdcolor."'>".$data["times_fired"]."</td>";
 			if ($data["times_fired"] <> 0)
-				echo "<td class='".$tdcolor."' align='center'><img src='images/dot_red.gif'>";
+				echo "<td class='".$tdcolor."' align='center'><img src='images/dot_red.gif'></td>";
 			else
-				echo "<td class='".$tdcolor."' align='center'><img src='images/dot_green.gif'>";
+				echo "<td class='".$tdcolor."' align='center'><img src='images/dot_green.gif'></td>";
 		}
 		echo '</table>';
+
+	} else {
+	echo "<div class='nf'>".$lang_label["no_alerts"]."</div>";
 	}
-	else echo "<div class='nf'>".$lang_label["no_alerts"]."</div>";
 
 } else {
 	// -------------------------------

@@ -93,14 +93,14 @@ echo '<tr><td class="datos"><b>'.$lang_label["group"].'</b>';
 echo '<td class="datos"><select name="grupo" class="w130">';
 
 if (isset($grupo)){
-echo "<option value='".$grupo."'>".dame_grupo($grupo);
+echo "<option value='".$grupo."'>".dame_grupo($grupo)."</option>";
 }
 $sql1='SELECT id_grupo, nombre FROM tgrupo ORDER BY nombre';
 $result=mysql_query($sql1);
 while ($row=mysql_fetch_array($result)){
 	// Group ALL cannot be selected
 	if ($row["id_grupo"] != 1){
-		echo "<option value='".$row["id_grupo"]."'>".$row["nombre"];
+		echo "<option value='".$row["id_grupo"]."'>".$row["nombre"]."</option>";
 	}
 }
 ?>
@@ -114,12 +114,12 @@ while ($row=mysql_fetch_array($result)){
 <select name="id_os" class="w130">
 <?php
 if (isset($id_os)){
-	echo "<option value='".$id_os."'>".dame_so_name($id_os);
+	echo "<option value='".$id_os."'>".dame_so_name($id_os)."</option>";
 }
 $sql1='SELECT id_os, name FROM tconfig_os ORDER BY name';
 $result=mysql_query($sql1);
 while ($row=mysql_fetch_array($result)){
-	echo "<option value='".$row["id_os"]."'>".$row["name"];
+	echo "<option value='".$row["id_os"]."'>".$row["name"]."</option>";
 }
 ?>
 </select>
@@ -129,10 +129,11 @@ while ($row=mysql_fetch_array($result)){
 <select name="id_server" class="w130">
 <?php
 echo "<option value='".$id_server."'>".give_server_name($id_server);
-$sql1='SELECT id_server, name FROM tserver where network_server = 1 ORDER BY name';
+$sql1='SELECT id_server, name FROM tserver where network_server = 1 
+ORDER BY name';
 $result=mysql_query($sql1);
 while ($row=mysql_fetch_array($result)){
-	echo "<option value='".$row["id_server"]."'>".$row["name"];
+	echo "<option value='".$row["id_server"]."'>".$row["name"]."</option>";
 }
 
 ?>

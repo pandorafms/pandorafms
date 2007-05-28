@@ -1,3 +1,20 @@
+2007-05-28  Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/styles/pandora.css, pandora_red.css: New style with icon
+	for search.
+	
+	* include/languages/*.php: New string for alert updating.
+	
+	* godmode/agentes/*.php: Updated h2 headers.
+	
+	* operation/agentes/estado_alertas.php, estado_monitores.php,
+	estado_ultimopaquete.php: Updated h2 headers. Added code for not showing
+	table headers if no alert defined. Add some icon to input buttons.
+	
+	* operation/incidents/incident_detail.php, incident_search.php,
+	operation/messages/message.php, operation/snmpconsole/snmp_alert.php:
+	Add some icon to input buttons.
+
 2007-05-27  Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/styles/help.css: New file only used in help pages.

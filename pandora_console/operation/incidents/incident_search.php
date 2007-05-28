@@ -50,7 +50,7 @@ echo "<div style='float:right;'><img src='images/pulpo_lupa.gif' class='bot' ali
 <tr><td class="datos" colspan="2"><i><?php echo $lang_label["free_text_search_msg"] ?></i></td></tr>
 <tr><td colspan='3'><div class='raya'></div></td></tr>
 <tr><td align="right" colspan="3">
-<?php echo "<input name='uptbutton' type='submit' class='sub' value='".$lang_label["search"]."'>"; ?>
+<?php echo "<input name='uptbutton' type='submit' class='sub search' value='".$lang_label["search"]."'>"; ?>
 
 </form>
 </table>

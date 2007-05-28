@@ -203,10 +203,11 @@ if (isset($id_inc)) {
 	echo $lang_label["create_incident"]."<a href='help/".$help_code."/chap4.php#41' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 }
 echo '<table cellpadding=3 cellspacing=3 border=0 width=600>';
-if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp))
+if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)) {
 	echo '<tr><td class="lb" rowspan="6" width="5"><td class="datos"><b>'.$lang_label["incident"].'</b><td colspan=3 class="datos"><input type="text" name="titulo" size=70 value="'.$titulo.'">';
-else
+} else {
 	echo '<tr><td class="datos"><b>'.$lang_label["incident"].'</b><td colspan=3 class="datos"><input type="text" name="titulo" size=70 value="'.$titulo.'" readonly>';
+	}
 echo '<tr><td class="datos2"><b>'.$lang_label["in_openedwhen"].'</b>';
 echo "<td class='datos2' <i>".$inicio."</i>";
 echo '<td class="datos2"><b>'.$lang_label["updated_at"].'</b>';
@@ -218,7 +219,7 @@ if ((give_acl($id_user, $id_grupo, "IM")==1) OR ($usuario == $id_user)) {
 	$sql1='SELECT * FROM tusuario ORDER BY id_usuario';
 	$result=mysql_query($sql1);
 	while ($row2=mysql_fetch_array($result)){
-		echo "<option value='".$row2["id_usuario"]."'>".$row2["id_usuario"]." - ".$row2["nombre_real"];
+		echo "<option value='".$row2["id_usuario"]."'>".$row2["id_usuario"]." - ".$row2["nombre_real"]."</option>";
 	}
 	echo "</select>";
 }
@@ -288,7 +289,7 @@ $sql1='SELECT * FROM tgrupo ORDER BY nombre';
 $result=mysql_query($sql1);
 while ($row=mysql_fetch_array($result)){
 	if (give_acl($iduser_temp, $row["id_grupo"], "IR")==1)
-		echo "<option value='".$row["id_grupo"]."'>".$row["nombre"];
+		echo "<option value='".$row["id_grupo"]."'>".$row["nombre"]."</option>";
 }
 
 echo '</select><tr>';
@@ -341,11 +342,11 @@ $iduser_temp=$_SESSION['id_usuario'];
 
 if ($creacion_incidente == 0){
 	if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)){
-		echo '<input type="submit" class="sub" name="accion" value="'.$lang_label["in_modinc"].'" border="0">';
+		echo '<input type="submit" class="sub upd" name="accion" value="'.$lang_label["in_modinc"].'" border="0">';
 	}
 } else {
 	if (give_acl($iduser_temp, $id_grupo, "IW")) {
-		echo '<input type="submit" class="sub" name="accion" value="'.$lang_label["create"].'" border="0">';
+		echo '<input type="submit" class="sub wand" name="accion" value="'.$lang_label["create"].'" border="0">';
 	}
 }
 echo "</form>";
@@ -355,7 +356,7 @@ if ($creacion_incidente == 0){
 	echo '
 	<form method="post" action="index.php?sec=incidencias&sec2=operation/incidents/incident_note&id_inc='.$id_inc.'">
 	<input type="hidden" name="nota" value="add">
-	<input align=right name="addnote" type="submit" class="sub" value="'.$lang_label["add_note"].'">
+	<input align=right name="addnote" type="submit" class="sub next" value="'.$lang_label["add_note"].'">
 	</form>';
 }
 echo "</tr></table><br>";
@@ -364,8 +365,8 @@ if ($creacion_incidente == 0){
 // Upload control
 	if (give_acl($iduser_temp, $id_grupo, "IW")==1){
 		echo '
+		<h3>'.$lang_label["attachfile"].'</h3>
 		<table cellpadding=3 cellspacing=3 border=0 width="400">
-		<tr><td colspan="3"><b>'.$lang_label["attachfile"].'</b>
 		<tr><td class="lb" rowspan="2" width="5">
 		<td class="datos">'.$lang_label["filename"].'</td>
 		<td class="datos"><form method="post" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'&upload_file=1" enctype="multipart/form-data">

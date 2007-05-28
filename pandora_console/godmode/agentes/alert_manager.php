@@ -27,6 +27,8 @@
 // VIEW ALERTS
 // ====================================================================================
 
+echo "<h2>".$lang_label["agent_conf"]." &gt; ".$lang_label["alerts"]."</h2>";
+
 $sql1='SELECT * FROM tagente_modulo WHERE id_agente = "'.$id_agente.'"';
 $result=mysql_query($sql1);
 	if ($row=mysql_num_rows($result)){

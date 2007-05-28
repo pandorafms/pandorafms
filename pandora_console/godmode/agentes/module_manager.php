@@ -162,14 +162,14 @@ if (give_acl($id_user, 0, "AW")!=1) {
 // MODULE VISUALIZATION TABLE
 // ==========================
 
+echo "<h2>".$lang_label["agent_conf"]." &gt; ".$lang_label["modules"]."</h2>"; 
 $sql1='SELECT * FROM tagente_modulo WHERE id_agente = "'.$id_agente.'"
 ORDER BY id_module_group, nombre ';
 $result=mysql_query($sql1);
-echo "<h2>".$lang_label["agent_conf"]." &gt; ".$lang_label["assigned_modules"]."
+echo "<h3>".$lang_label["assigned_modules"]."
 	<a href='help/".$help_code."/chap3.php#321' target='_help' class='help'>
 	<span>".$lang_label["help"]."</span></a>";
-	echo "&nbsp;&nbsp;<a class='info' href='#module_assignment'> <span>".$lang_label["module_asociation_form"]."</span><img src='images/wand.png'></a>";
-	echo "</h2>";
+	echo "&nbsp;&nbsp;<a class='info' href='#module_assignment'> <span>".$lang_label["module_asociation_form"]."</span><img src='images/wand.png'></a></h3>";
 if ($row=mysql_num_rows($result)){
 	echo '<table width="750" cellpadding="4" cellspacing="4" class="databox">';
 	echo '<tr>';
@@ -246,8 +246,8 @@ if ($row=mysql_num_rows($result)){
 // ==========================
 
 echo "<a name='module_assignment'></a>";
-echo "<h2>".$lang_label["agent_conf"]." &gt; ".$lang_label["module_asociation_form"]."<a href='help/".$help_code."/chap3.php#321' target='_help' class='help'>
-&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+echo "<h3>".$lang_label["module_asociation_form"]."<a href='help/".$help_code."/chap3.php#321' target='_help' class='help'>
+&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
 
 if ($update_module == "1")
 	echo '<form name="modulo" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'#module_assignment">';

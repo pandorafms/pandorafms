@@ -1,3 +1,23 @@
+2007-05-30  Sancho Lerena  <slerena@artica.es>
+
+	* pandoradb_data.sql: Added "style" token for default config.
+
+	* include/config.inc.php: Version primary information is now on
+	index.php. Here is only a "copy" used in aditional pages that do
+	not load index.php
+	
+	* index.php: Version information is now here.
+	
+	* operation/reporting/graph_builder.php: Solved other little bug.
+	
+	* reporting/Image/Canvas/GD.php: Now using Antialias !!!. This is
+	a BIG improve for graphs (and a bit slower on old systems).
+	
+	* reporting/fgraph.php: Changed colours in main graphs.
+	
+	* general/login_page.php: Small change in login screen.
+
+
 2007-05-28  Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/styles/pandora.css, pandora_red.css: New style with icon

@@ -6,10 +6,8 @@
 // Main PHP/SQL code development and project architecture and management
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
 // CSS and some PHP code additions
-// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
-// Javascript Active Console code.
-// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
-// Additions to code for Pandora FMS 1.2 graph code and new XML reporting template managemement
+// Copyright (c) 2006 Jose Navarro <jnavarro@jnavarro.net>
+// Additions to code for Pandora FMS 1.2 graph code 
 // Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
 //
 // This program is free software; you can redistribute it and/or
@@ -29,6 +27,13 @@
 // Pandora FMS shares much of it's code with project Babel Enterprise, also a
 // FreeSoftware Project coded by some of the people who makes Pandora FMS 
 
+//Pandora Version
+$build_version="PC070529";
+$pandora_version="v1.3 devel";
+global $build_version;
+global $pandora_version;
+
+// Set to 1 to do not check for installer or config file
 $develop_bypass = 1;
 
 if ($develop_bypass != 1){
@@ -58,12 +63,14 @@ if ($develop_bypass != 1){
 }
 
 // Real start
-session_start(); 
+session_start();
 include "include/config.php";
 include "include/languages/language_".$language_code.".php";
 require "include/functions.php"; // Including funcions.
 require "include/functions_db.php";
 ?>
+
+
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>

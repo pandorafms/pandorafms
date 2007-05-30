@@ -27,13 +27,14 @@
 			<a href="index.php">
 			<img src="images/pandora_logo.png" border="0" alt="logo"></a><br>
 			<?php echo $pandora_version; ?>
+		<td rowspan='3' width='5'>
 		<td class='f9b'>
 			Login <br>
-			<input class="login" type="text" name="nick" value="demo">
+			<input class="login" type="text" name="nick" value="">
 		</td></tr>
 		<tr><td class='f9b'>
 			Password <br>
-			<input class="login" type="password" name="pass" value="demo">
+			<input class="login" type="password" name="pass" value="">
 		</td></tr>
 		<tr><td align='center'>
 			<input type="submit" class="sub next" value="Login">

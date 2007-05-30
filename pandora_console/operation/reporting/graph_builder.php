@@ -21,7 +21,7 @@ $id_module = 0;
 $name = "Pandora FMS combined graph";
 $width = 550;
 $height = 210;
-$period = "";
+$period = 86401;
 //$alerts= "";
 $events = "";
 $factor = 1;
@@ -45,6 +45,8 @@ if (isset($_GET["store_graph"])){
 	$width = entrada_limpia($_POST["width"]);
 	$height = entrada_limpia($_POST["height"]);
 	$events = entrada_limpia($_POST["events"]);
+    if ($events == "") // Temporal workaround
+        $events = 0;
 	$period = entrada_limpia($_POST["period"]);
 	// Create graph
 	$sql = "INSERT INTO tgraph
@@ -80,7 +82,7 @@ if (isset($_GET["store_graph"])){
 if (isset($_GET["get_agent"])) {
  	$id_agent = $_POST["id_agent"];
 	if (isset($_POST["chunk"]))
-		$chunkdata = isset($_POST["chunk"]);
+		$chunkdata = $_POST["chunk"];
 }
 
 if (isset($_GET["delete_module"] )) {
@@ -130,7 +132,6 @@ if (isset($_GET["delete_module"] )) {
 	}
 }
 
-
 if ( (isset($_GET["add_module"]))){
  	$id_agent = $_POST["id_agent"];
  	$id_module = $_POST["id_module"];
@@ -160,7 +161,9 @@ if ( (isset($_GET["add_module"]))){
 // Parse CHUNK information into showable information
 // Split id to get all parameters
 if (! isset($_GET["delete_module"])){
-	if (isset($chunkdata)) {
+	if (isset($_POST["period"]))
+		$period = $_POST["period"];
+	if ((isset($chunkdata) )&& ($chunkdata != "")) {
 		$module_array = array();
 		$weight_array = array();
 		$agent_array = array();
@@ -195,6 +198,9 @@ if (isset($chunk1)) {
 		echo "<input type='hidden' name='chunk' value='$chunkdata'>";
 	if (isset($id_agent))
 		echo "<input type='hidden' name='id_agent' value='$id_agent'>";
+    if (isset($period))
+        echo "<input type='hidden' name='period' value='$period'>";
+
 	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
 	echo "<tr><th>Agent<th>Module<th>Weight<th>Delete";
 	$color=0;
@@ -242,6 +248,10 @@ if (($render == 1) && (isset($modules))) {
 echo $lang_label["graph_builder"]."</h2>";
 echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
 echo "<form method='post' action='index.php?sec=reporting&sec2=operation/reporting/graph_builder&get_agent=1'>";
+
+if (isset($period))
+    echo "<input type='hidden' name='period' value='$period'>";
+
 echo "<tr>";
 echo "<td class='datos'><b>".$lang_label["source_agent"];
 echo "</b>";

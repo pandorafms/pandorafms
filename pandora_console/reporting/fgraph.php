@@ -90,6 +90,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 	// Init tables
 	for ($y = 0; $y < $module_number; $y++){
 		$real_data[$y] = array();
+        $mod_data[$y] = 1; // Data multiplier to get the same scale on all modules
 		if ($show_event == 1)
 			$real_event[$y] = array();
 		if (isset($weight_list[$y])){
@@ -108,9 +109,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 		$id_agente = dame_agente_id($nombre_agente);
 		$nombre_modulo = dame_nombre_modulo_agentemodulo($id_agente_modulo);
 
-		$module_list_name[$y] = substr($nombre_agente,0,8)." - ".substr($nombre_modulo,0,8);
-		if ($weight_list[$y] != 1)
-			$module_list_name[$y] .= " (x".$weight_list[$y].")";
+		$module_list_name[$y] = substr($nombre_agente,0,8)."/".substr($nombre_modulo,0,8);
 		for ($x = 0; $x <= $resolution; $x++) {
 			$valores[$x][0] = 0; // SUM of all values for this interval
 			$valores[$x][1] = 0; // counter
@@ -195,14 +194,25 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 				$valores[$x][5] = $previous;
 			}
 			// Get max value for all graph
-			if ($valores[$x][5] * $weight_list[$y] > $max_value )
-				$max_value = $valores[$x][5] * $weight_list[$y];
+			if ($valores[$x][5] > $max_value ){
+				$max_value = $valores[$x][5];
+            }
+            // This stores in mod_data max values for each module
+            if ($mod_data[$y] < $valores[$x][5]){
+                $mod_data[$y] = $valores[$x][5];
+            }
 			// Take prev. value
 			// TODO: CHeck if there are more than 24hours between
 			// data, if there are > 24h, module down.
 			$previous = $valores[$x][0];
 		}
 	}
+
+    for ($y = 0; $y < $module_number; $y++){
+        $weight_list[$y] = ($max_value / $mod_data[$y]) + ($weight_list[$y]-1);
+        if ($weight_list[$y] != 1)
+            $module_list_name[$y] .= " (x". format_numeric($weight_list[$y],1).")";
+    }
 
 	// Create graph
 	// *************
@@ -257,7 +267,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 	for ($cc=0; $cc <= $resolution; $cc++) {
 		$tdate = date('d/m', $valores[$cc][2])."\n".date('H:i', $valores[$cc][2]);
 		for ($y = 0; $y < $module_number; $y++){
-			$dataset[$y]->addPoint($tdate, $real_data[$y][$cc]);
+			$dataset[$y]->addPoint($tdate, $real_data[$y][$cc] * $weight_list[$y]);
 			if (($show_event == 1) AND (isset($real_event[$cc]))) {
 				$dataset_event->addPoint($tdate, $max_value);
 			}
@@ -566,7 +576,7 @@ function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $show_event,
 		} else {
 			$FillArray->addColor('yellow@0.5'); 
 			$FillArray->addColor('orange@0.6'); 
-			$FillArray->addColor('brown@0.7');
+			$FillArray->addColor('#e37907@0.7');
 			$FillArray->addColor('red@0.7');
 			$FillArray->addColor('blue@0.7');
 			$FillArray->addColor('green@0.7');

@@ -1,3 +1,7 @@
+2007-05-31  Sancho Lerena <slerena@artica.es>
+
+	* fgraph.php: Small improvements in combined graphs.
+	
 2007-05-30  Sancho Lerena  <slerena@artica.es>
 
 	* pandoradb_data.sql: Added "style" token for default config.

@@ -109,7 +109,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 		$id_agente = dame_agente_id($nombre_agente);
 		$nombre_modulo = dame_nombre_modulo_agentemodulo($id_agente_modulo);
 
-		$module_list_name[$y] = substr($nombre_agente,0,8)."/".substr($nombre_modulo,0,8);
+		$module_list_name[$y] = substr($nombre_agente,0,8)."/".substr($nombre_modulo,0,18);
 		for ($x = 0; $x <= $resolution; $x++) {
 			$valores[$x][0] = 0; // SUM of all values for this interval
 			$valores[$x][1] = 0; // counter
@@ -212,6 +212,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
         $weight_list[$y] = ($max_value / $mod_data[$y]) + ($weight_list[$y]-1);
         if ($weight_list[$y] != 1)
             $module_list_name[$y] .= " (x". format_numeric($weight_list[$y],1).")";
+	$module_list_name[$y] = $module_list_name[$y]." (MAX: ".format_numeric($mod_data[$y]).")";
     }
 
 	// Create graph
@@ -240,7 +241,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
               		$Subtitle = Image_Graph::factory('title', array('     '.$title, 7)),
             		90
         	), 
-		Image_Graph::horizontal(
+		Image_Graph::vertical(
 			$Plotarea = Image_Graph::factory('plotarea'),
 			$Legend = Image_Graph::factory('legend'),
    			80

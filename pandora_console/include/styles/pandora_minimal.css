@@ -1,0 +1,96 @@
+/* 
+// Pandora FMS - the Free monitoring system
+// ========================================
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development and project architecture and management
+// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// CSS and some PHP additions
+// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
+// Javascript Active Console code.
+// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
+// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; version 2
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
+
+* {
+	font-family: verdana, sans-serif;
+	font-size: 8pt;
+}
+body {
+	text-align: center;
+}
+h1 {
+	font: bold 1em Arial, Sans-serif;
+	text-transform: uppercase;
+	color: #786;
+	padding-bottom: 5px;
+	padding-top: 7px;
+	font-size: 16px;
+}
+a {
+	color: #486787;
+	text-decoration: none;
+}
+a:hover {
+	color: #003a3a;
+	text-decoration: underline;
+}
+input {
+	padding: 2px 3px 4px 3px;
+	border: 1px solid #ddd;
+	font: verdana, sans-serif;
+	font-size: 8pt
+}
+input:hover {
+	background-color: #d4dccd;
+}
+input.login {
+	border-color: #786;
+	background-color: #f5f5f5;
+	margin: 2px 0 8px;
+	width: 90px;
+}
+table, img {
+	border: 0px;
+}
+.f9, .f9i, .f9b, td.f9, td.f9i, td.datosf9, td.datos2f9 {
+	font-size: 6.5pt;
+}
+.databox, .databox_frame {
+	margin-bottom: 15px;
+	margin-top: 5px;
+	margin-left: 0px;
+	border: 1px solid #f2f2f2;
+}
+.databox {
+	background-color: #fafafa;
+}
+.menu {
+	color:#000;
+	background:#ccc;
+	margin-left: 10px;
+	padding-left: 10px;
+	padding-top: 10px;
+	text-align: left;
+	font-family:arial,sans-serif,verdana; 
+	font-size:10px;
+	border:1px solid #000;
+	position:absolute;
+	margin:0; width:325px;
+	height:220px;
+	visibility:hidden;
+	filter:alpha(opacity=95);
+	-moz-opacity: 0.95;
+	opacity: 0.95;
+}

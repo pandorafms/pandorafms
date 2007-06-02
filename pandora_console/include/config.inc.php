@@ -21,7 +21,7 @@
 
 //Pandora Version
 if (!isset($build_version))
-	$build_version="PC070529";
+	$build_version="PC070602";
 if (!isset($pandora_version))
 	$pandora_version="v1.3 devel";
 	
@@ -43,7 +43,7 @@ error_reporting(E_ALL);
 //This is directory where placed "attachment" directory, to upload files stores. 
 // This MUST be writtable by http server user, and should be in pandora root. 
 // Please append "/" to the end.
-$attachment_store=$config_homedir;
+$attachment_store=$config_homedir."attachment/";
 
 // Default font used for graphics (a Free TrueType font included with Pandora FMS)
 $config_fontpath = $config_homedir."reporting/FreeSans.ttf";

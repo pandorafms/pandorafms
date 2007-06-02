@@ -40,12 +40,10 @@ if (comprueba_login() != 0) {
 if (isset($_GET['refresh']) and is_numeric($_GET['refresh']) and $_GET['refresh']>0) {
 	header( 'refresh: ' . $_GET['refresh'] );
 	}
-// Read styles
-echo '<style>';
-include("../include/styles/pandora.css");
-echo '</style>';
-
-echo "<body bgcolor=#ffffff>";
+echo '<html>
+<head><title>Pandora FMS Graph</title>
+<link rel="stylesheet" href="../include/styles/pandora_minimal.css" type="text/css">';
+;
 
 // Get input parameters
 
@@ -151,25 +149,6 @@ echo "</table>";
 <script type='text/javascript' src='../include/javascript/x_core.js'></script>
 <script type='text/javascript' src='../include/javascript/x_event.js'></script>
 <script type='text/javascript' src='../include/javascript/x_slide.js'></script>
-<style type='text/css'><!--
-
-.menu {
-	color:#000; background:#ccc;
-	margin-left: 10px;
-	padding-left: 10px; padding-top: 10px;
-	font-family:arial,sans-serif,verdana; font-size:10px;
-	border:1px solid #000;
-	position:absolute;
-	margin:0; width:325px; height:220px;
-	visibility:hidden;
-	filter:alpha(opacity=95);
-	-moz-opacity: 0.95;
-	opacity: 0.95;
-}
-
---></style>
-
-
 <script type='text/javascript'><!--
 	var defOffset = 2;
 	var defSlideTime = 200;
@@ -294,5 +273,6 @@ echo "</table>";
 	</form>
 	
 </div>
-
+</body>
+</html>
 

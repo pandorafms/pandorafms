@@ -1,3 +1,20 @@
+2007-06-02  Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/styles/pandora.css: Updated.
+
+	* include/styles/pandora_minimal.css: New file for install and graphs.
+
+	* include/config.inc.php: Updated build. Updated attachment directory.
+
+	* install.php: Added some text to clarify use of config directory in
+	step 3. Now we use the pandora_mininmal.css file. Updated logo. Closed
+	some HTML tags.
+
+	* reporting/stat_win.php: Now we use the pandora_minimal.css file. Closed
+	some HTML tags. Added title.
+
+	* reporting/Image/*.php: Converted end-line Windows format to Unix.
+
 2007-05-31  Sancho Lerena <slerena@artica.es>
 
 	* fgraph.php: Small improvements in combined graphs.

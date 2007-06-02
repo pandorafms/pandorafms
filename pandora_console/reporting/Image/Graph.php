@@ -112,7 +112,7 @@ class Image_Graph extends Image_Graph_Element
      * $Graph =& Image_Graph::factory('graph', array(array('width' => 400,
      * 'height' => 300, 'canvas' => 'jpg')));
      * 
-     * NB! In thïs case remember the "double" array (see {@link Image_Graph::
+     * NB! In thï¿½s case remember the "double" array (see {@link Image_Graph::
      * factory()})
      * 
      * 2) Use the canvas specified, pass a valid Image_Canvas as

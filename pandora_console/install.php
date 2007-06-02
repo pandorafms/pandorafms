@@ -33,7 +33,7 @@
 <meta name="keywords" content="pandora, fms, monitoring, network, system, GPL, software">
 <meta name="robots" content="index, follow">
 <link rel="icon" href="images/pandora.ico" type="image/ico">
-<link rel="stylesheet" href="include/styles/pandora.css" type="text/css">
+<link rel="stylesheet" href="include/styles/pandora_minimal.css" type="text/css">
 <link rel="stylesheet" href="include/styles/install.css" type="text/css">
 </head>
 
@@ -165,7 +165,7 @@ function install_step1() {
 		echo "
 		</div>
 		<div id='logo_img'>
-			<img src='images/logo_login.gif' border='0'><br><br>
+			<img src='images/pandora_logo.png' border='0'><br>
 			<img src='images/step0.png' border='0'>
 		</div>
 		<div id='install_img'>
@@ -200,7 +200,7 @@ function install_step2() {
 			echo "</table>
 		</div>
 		<div id='logo_img'>
-			<img src='images/logo_login.gif' border='0'' alt=''><br><br>
+			<img src='images/pandora_logo.png' border='0'' alt=''><br>
 			<img src='images/step1.png' border='0' alt=''>
 		</div>
 		<div id='install_img'>";
@@ -232,12 +232,14 @@ function install_step3() {
 		<div id='install_box'>
 			<h1>Environment and database setup</h1>
 			<p>
-			This wizard will create your Pandora FMS database, and populate it with all the data needed to run for the first time. 
-			You need a privileged user to create database schema, this is usually root user. 
-			Information about <i>root</i> user will not be used or stored anymore.
+			This wizard will create your Pandora FMS database, and populate it with all the data needed to run for the first time.
 			</p>
 			<p>
-			Now, please, complete all details to configure your database and enviroment setup. 
+			You need a privileged user to create database schema, this is usually <b>root</b> user.
+			Information about <b>root</b> user will not be used or stored anymore.
+			</p>
+			<p>
+			Now, please, complete all details to configure your database and enviroment setup.
 			</p>
 			<p>
 			<b>NOTICE</b> that database will be destroyed if it already exists!
@@ -255,12 +257,12 @@ function install_step3() {
 				<div>DB Name (pandora by default)</div>
 				<input class='login' type='text' name='dbname' value='pandora'>
 
-				<div>Full path to HTTP publication directory.<br>
-				<span class='f9b'>For example /var/www/pandora_console/</span>
+				<div>Full path to HTTP publication directory<br>
+				<span class='f9b'>For example /var/www/pandora_console/. Needed for graphs and attachments.</span>
 				</div>
 				<input class='login' type='text' name='path' style='width: 190px;' value='/var/www/pandora_console/'>
 
-				<div>Full local URL to Pandora FMS Console. <br>
+				<div>Full local URL to Pandora FMS Console<br>
 				<span class='f9b'>For example http://localhost/pandora_console</span>
 				</div>
 				<input class='login' type='text' name='url' style='width: 250px;' value='http://localhost/pandora_console'>
@@ -269,7 +271,7 @@ function install_step3() {
 			</form>
 			</div>
 			<div id='logo_img'>
-				<img src='images/logo_login.gif' border='0' alt=''><br><br>
+				<img src='images/pandora_logo.png' border='0' alt=''><br>
 				<img src='images/step2.png' border='0' alt=''>
 			</div>
 		</div>
@@ -368,7 +370,7 @@ $BASE_URL="'.$url.'";			// Base URL
 			}
 		echo "</table></div>
 		<div id='logo_img'>
-			<img src='images/logo_login.gif' border='0' alt=''><br><br>
+			<img src='images/pandora_logo.png' border='0' alt=''><br>
 			<img src='images/step3.png' border='0' alt=''>
 		</div>
 		
@@ -408,7 +410,7 @@ function install_step5() {
 			<p><a href='index.php'>Click here to access to your Pandora FMS console</a></p>
 		</div>
 		<div id='logo_img'>
-			<img src='images/logo_login.gif' border='0'><br><br>
+			<img src='images/pandora_logo.png' border='0'><br>
 			<img src='images/step4.png' border='0'><br>
 		</div>
 	</div>
@@ -441,3 +443,5 @@ if (! isset($_GET["step"])){
 }
 
 ?>
+</body>
+</html>

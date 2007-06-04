@@ -2,7 +2,7 @@
 # Startup script for Pandora SNMP Console
 # Sancho Lerena, <slerena@gmail.com>
 # Linux Version(generic)
-# v1.3 (May/2006)
+# v1.3 (May/2007)
 
 # Compatible with NetSNMP 5.1 or higher
 
@@ -44,7 +44,7 @@ case "$1" in
 
 	if [ -f $PANDORA_SNMP_PID ]
 	then
-		echo "Pandora SNMP Console is currently running on this machine. Aborting now..."
+		echo "Pandora FMS SNMP Server is currently running on this machine. Aborting now..."
 		exit
 	fi
 	
@@ -54,9 +54,9 @@ case "$1" in
 	if [ ! -z "$MYPID" ]
 	then
 		echo $MYPID > $PANDORA_SNMP_PID
-		echo "Pandora SNMP Console is now running with PID $MYPID"
+		echo "Pandora FMS SNMP Server is now running with PID $MYPID"
 	else
-		echo "Cannot start Pandora Network Server. Aborted"
+		echo "Cannot start Pandora FMS SNMP Server. Aborted"
 	fi
 	cd "$OLD_PATH"
         ;;
@@ -85,7 +85,7 @@ case "$1" in
 	   fi
            rm -f $PANDORA_SNMP_PID
 	else
-	  echo "Pandora SNMP Console is not running, cannot stop it."
+	  echo "Pandora FMS SNMP Console is not running, cannot stop it."
 	fi
         ;;
   force-reload|restart)

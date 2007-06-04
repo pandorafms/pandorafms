@@ -1,21 +1,25 @@
+2007-06-04  Raúl Mateos  <rmateos@netscape.net>
+
+	* pandora_server, pandora_network, pandora_snmpconsole: Added FMS text.
+
 2007-05-24  Sancho Lerena  <slerena@artica.es>
 
-        * conf/pandora_server.conf: Added support for dbname option.
+	* conf/pandora_server.conf: Added support for dbname option.
 
-        * pandora_snmpconsole: Version and bash header updated.
+	* pandora_snmpconsole: Version and bash header updated.
 
-        * bin/pandora_config.pm: Added support for dbname option. Added
-        some default options for DB.
+	* bin/pandora_config.pm: Added support for dbname option. Added
+	some default options for DB.
 
-        * bin/pandora_db.pm: Fixed stupid bug in alert execution.  Added
-        support for dbname option and other minor fixes.
+	* bin/pandora_db.pm: Fixed stupid bug in alert execution.  Added
+	support for dbname option and other minor fixes.
 
-        * bin/pandora_server.pl,
-        bin/pandora_network.pl,
-        bin/pandora_snmpconsole.pl,
-        bin/pandora_recon.pl:  Added support for dbname option.
+	* bin/pandora_server.pl,
+	bin/pandora_network.pl,
+	bin/pandora_snmpconsole.pl,
+	bin/pandora_recon.pl:  Added support for dbname option.
 
-        * pandora_server: Version update
+	* pandora_server: Version update
 
 2007-05-21  Sancho Lerena  <slerena@artica.es>
 

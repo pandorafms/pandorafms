@@ -333,8 +333,8 @@ sub pandora_ping_icmp {
 	if (!defined($dest)) {
 		return 0;
 	}
-	
-	$p = Net::Ping->new("icmp",$l_timeout);
+	// Some hosts don't accept ICMP with too small payload. Use 32Bytes	
+	$p = Net::Ping->new("icmp",$l_timeout,32);
 	$result = $p->ping($dest);
 	
 	# Check for valid result

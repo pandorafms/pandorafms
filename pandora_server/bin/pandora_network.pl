@@ -333,7 +333,7 @@ sub pandora_ping_icmp {
 	if (!defined($dest)) {
 		return 0;
 	}
-	// Some hosts don't accept ICMP with too small payload. Use 32Bytes	
+	# Some hosts don't accept ICMP with too small payload. Use 32Bytes	
 	$p = Net::Ping->new("icmp",$l_timeout,32);
 	$result = $p->ping($dest);
 	
@@ -536,7 +536,7 @@ sub exec_network_module {
 	} elsif ($id_tipo_modulo == 7){ # ICMP (data for latency in ms)
 		# This module only could be executed if executed as root
 		if ($> == 0){
-			my $nm = Net::Ping->new("icmp");
+			my $nm = Net::Ping->new("icmp", $pa_config->{'networktimeout'}, 32);
 			my $icmp_return;
 			my $icmp_reply;
 			my $icmp_ip;

@@ -2,7 +2,9 @@
 
 	* pandora_network.pm: Small bug that causes some hosts to do not reply
 	at ICMP request with a small payload (1 byte). Now uses by default 
-	32 bytes per reply.
+	32 bytes per reply. Also modified icmp_data for latency checks because 
+	was not using global timeout and has the same problems with small
+	payloads.
 
 2007-06-04  Raúl Mateos  <rmateos@netscape.net>
 

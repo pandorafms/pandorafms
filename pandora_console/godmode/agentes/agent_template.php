@@ -81,9 +81,7 @@ if (isset($_POST["template_id"])){
 			mysql_query ($module_sql);
 		}
 	}
-	echo "<div class='suc'>";
-	echo "Modules added successfully";
-	echo "</div>";
+	echo "<h3 class='suc'>".$lang_label["add_mod_ok"]."</h3>";
 }
 
 // Main header
@@ -96,17 +94,18 @@ echo "</h2>";
 // ==========================
 
 echo "<h3>".$lang_label["available_templates"]."</h3>";
-echo "<table width=300 border=0>";
-echo "<tr><td><br>";
-
 echo "<form method=post action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=template&id_agente=$id_agente'>";
-echo "<select name='template_id'>";
+
+echo "<table width='300' class='databox' cellpadding='4' cellspacing='4'>";
+echo "<tr><td>".$lang_label['template']."</td><td valign='middle'>";
+
+echo "<select name='template_id' class='w130'>";
 $sql1='SELECT * FROM tnetwork_profile ORDER BY name';
 $result=mysql_query($sql1);
 if (mysql_num_rows($result))
 	while ($row=mysql_fetch_array($result))
-		echo "<option value='".$row["id_np"]."'>".$row["name"];
-echo "</select>";
+		echo "<option value='".$row["id_np"]."'>".$row["name"]."</option>";
+echo "</select></td>";
 
 echo "<td>";
 echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["assign"]."'>";
@@ -122,12 +121,12 @@ $sql1='SELECT * FROM tagente_modulo WHERE id_agente = "'.$id_agente.'"
 ORDER BY id_module_group, nombre ';
 $result=mysql_query($sql1);
 if ($row=mysql_num_rows($result)){
-	echo '<table width="700" cellpadding="3" cellspacing="3" class="fon">';
+	echo '<table width="700" cellpadding="4" cellspacing="4" class="databox">';
 	echo '<tr>';
-	echo "<th>".$lang_label["module_name"];
-	echo "<th>".$lang_label["type"];
-	echo "<th>".$lang_label["description"];
-	echo "<th width=50>".$lang_label["action"];
+	echo "<th>".$lang_label["module_name"]."</th>";
+	echo "<th>".$lang_label["type"]."</th>";
+	echo "<th>".$lang_label["description"]."</th>";
+	echo "<th width=50>".$lang_label["action"]."</th>";
 	$color=1;$last_modulegroup = "0";
 	while ($row=mysql_fetch_array($result)){
 		if ($color == 1){
@@ -162,7 +161,7 @@ if ($row=mysql_num_rows($result)){
 		update_module=".$row["id_agente_modulo"]."#modules'>
 		<img src='images/config.gif' border=0 alt='".$lang_label["update"]."' onLoad='type_change()'></b></a>";
 	}
-	echo "<tr><td colspan='7'><div class='raya'></div></td></tr>";
+	echo "</td></tr>";
 	echo "</table>";
 } else
 	echo "<div class='nf'>No modules</div>";

@@ -59,7 +59,7 @@ if (give_acl($id_user, 0, "PM")==1) {
 	echo "<h2>".$lang_label["module_management"]." &gt; ";
 	echo $lang_label["defined_modules"]."</h2>";
 
-	echo "<table cellpadding=4 cellspacing=4 width=750>";
+	echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>";
 	echo "<th>".$lang_label["icon"]."</th>";
 	echo "<th>".$lang_label["name"]."</th>";
 	echo "<th>".$lang_label["type"]."</th>";
@@ -92,16 +92,17 @@ if (give_acl($id_user, 0, "PM")==1) {
 			".$row["descripcion"]."
 			</td>
 		</tr>";
-		
 	}
-	echo "<tr><td colspan='4'><div class='raya'></div></td></tr>";
-	echo "<tr><td colspan='4' align='right'>";
-	echo "<form method=post action='index.php?sec=gmodules&
-	sec2=godmode/modules/manage_modules&create=1'>";
+	echo "</table>";
+	
 	/* not used yet 
+	echo "<table>";
+	echo "<tr><td align='right'><form method=post action='index.php?sec=gmodules&
+	sec2=godmode/modules/manage_modules&create=1'>";
+
 	echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create_module"]."'>";
+	echo "</form></td></tr></table>
 	*/
-	echo "</form></td></tr></table>";
 
 } // Fin pagina
 else {

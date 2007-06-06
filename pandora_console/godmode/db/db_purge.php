@@ -121,7 +121,8 @@ if (comprueba_login() == 0)
 	# Select Agent for further operations.
 	?>
 	<form action='index.php?sec=gdbman&sec2=godmode/db/db_purge' method='post'>
-	<table><tr><td class='datos'>
+	<table class='databox'>
+	<tr><td class='datos'>
 	<select name='agent' class='w130'>
 	
 	<?php
@@ -135,7 +136,7 @@ if (comprueba_login() == 0)
 	?>
 	</select>
 	<a href="#" class="tip">&nbsp;<span><?php echo $help_label["db_purge0"] ?></span></a>
-	<td><input class='sub' type='submit' name='purgedb_ag' value='<?php echo $lang_label["get_data"] ?>'>
+	<td><input class='sub upd' type='submit' name='purgedb_ag' value='<?php echo $lang_label["get_data"] ?>'>
 	<a href="#" class="tip">&nbsp;<span><?php echo $help_label["db_purge1"] ?></span></a>
 	</table><br>
 	
@@ -173,7 +174,7 @@ if (comprueba_login() == 0)
 	
 ?>
 
-	<table width=300 border=0>
+	<table width='300' border='0' class='databox' cellspacing='4' cellpadding='4'>
 	<tr><td class=datos>
 	<?php echo $lang_label["rango3"]?>
 	</td>
@@ -225,7 +226,7 @@ if (comprueba_login() == 0)
 	</table>
 	<br>
 	<h3><?php echo $lang_label["purge_data"] ?></h3>
-	<table width=300 border=0>
+	<table width='300' border='0' class='databox' cellspacing='4' cellpadding='4'>
 	<tr><td>
 	<select name="date_purge" width="255px">
 	<option value="<?php echo $month3 ?>"><?php echo $lang_label["purge_90day"] ?>
@@ -236,7 +237,7 @@ if (comprueba_login() == 0)
 	<option value="<?php echo $d1 ?>"><?php echo $lang_label["purge_1day"] ?>
 	</select>
 	
-	<td><input class="sub" type="submit" name="purgedb" value="<?php echo $lang_label["doit"] ?>" onClick="if (!confirm('<?php  echo $lang_label["are_you_sure"] ?>')) return false;">
+	<td><input class="sub wand" type="submit" name="purgedb" value="<?php echo $lang_label["doit"] ?>" onClick="if (!confirm('<?php  echo $lang_label["are_you_sure"] ?>')) return false;">
 	</table>
 	</form>
 	

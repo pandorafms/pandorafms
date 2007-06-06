@@ -252,13 +252,13 @@ if (comprueba_login() == 0)
 			<h2><?php echo $lang_label["agent_conf"] ?> &gt; 
 			<?php echo $lang_label["config_manage"]; ?><a href="help/<?php echo $help_code;?>/chap3.php#323" target="_help" class="help">&nbsp;<span><?php echo $lang_label["help"]; ?></span></a></h2>
 			<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/manage_config&operacion=1">
-			<table width=450 border=0 cellspacing=3 cellpadding=5>
+			<table width='450' border='0' cellspacing='4' cellpadding='4' class='databox'>
 			<tr>
 			<td class="datost"><b><?php echo $lang_label["source_agent"]; ?></b><br><br>
 			<select name="origen" class="w130">
 			<?php
 			if ( (isset($_POST["update_agent"])) AND (isset($_POST["origen"])) ) {
-				echo "<option value=".$_POST["origen"].">".dame_nombre_agente($_POST["origen"]);
+				echo "<option value=".$_POST["origen"].">".dame_nombre_agente($_POST["origen"])."</option>";
 			}
 			// Show combo with agents
 			$sql1='SELECT * FROM tagente order by nombre';
@@ -266,12 +266,12 @@ if (comprueba_login() == 0)
 			while ($row=mysql_fetch_array($result)){
 				if ( (isset($_POST["update_agent"])) AND (isset($_POST["origen"])) ){
 					if ( $_POST["origen"] != $row["id_agente"])
-						echo "<option value=".$row["id_agente"].">".$row["nombre"];
+						echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
 				}
 				else
-					echo "<option value=".$row["id_agente"].">".$row["nombre"];
+					echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
 			}
-			echo '</select>&nbsp;&nbsp;<input type=submit name="update_agent" class=sub value="'.$lang_label["get_info"].'"><br><br>';
+			echo '</select>&nbsp;&nbsp;<input type=submit name="update_agent" class="sub upd" value="'.$lang_label["get_info"].'"><br><br>';
 			echo "<b>".$lang_label["modules"]."</b><br><br>";
 			echo "<select name='origen_modulo[]' size=3 multiple=yes class='w130'>";
 			if ( (isset($_POST["update_agent"])) AND (isset($_POST["origen"])) ) {

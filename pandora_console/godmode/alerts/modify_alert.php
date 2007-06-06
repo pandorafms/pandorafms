@@ -68,11 +68,10 @@ if ( (give_acl($id_user, 0, "LM")==1)){
 		}
 		echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=galertas&sec2=godmode/alerts/configure_alert&id_alerta=".$row["id_alerta"]."'>".$row["nombre"]."</a></b></td>";
 		echo "<td class='$tdcolor'>".$row["descripcion"]."</td>";
-		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/alerts/modify_alert&borrar_alerta=".$row["id_alerta"]."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cross.png'></a></td></tr>";
+		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/alerts/modify_alert&borrar_alerta=".$row["id_alerta"]."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cross.png'></a></td>";
 	}
 
-	echo "</table>";
-	echo "<br>";
+	echo "</tr></table>";
 	echo "<table width=500>";
 	echo "<tr><td align='right'>";
 	echo "<form method=post action='index.php?sec=galertas&sec2=godmode/alerts/configure_alert&creacion=1'>";

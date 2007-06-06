@@ -76,31 +76,31 @@ if (comprueba_login() == 0)
 	echo "<h2>".$lang_label["dbmain_title"]." &gt; ";
 	echo  $lang_label["db_purge_event"]."<a href='help/".$help_code."/chap8.php#842' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 
-	echo "<table cellpadding='4' cellspacing='4' border='0'>";
+	echo "<table cellpadding='4' cellspacing='4' class='databox'>";
 	echo "<tr><td class='datos'>";	
 	$result_t=mysql_query("SELECT COUNT(*) FROM tevento");
 	$row=mysql_fetch_array($result_t);
 	echo "<b>".$lang_label["total"]."</b>";
-	echo "<td class='datos'>".$row[0]." ".$lang_label["records"];
+	echo "<td class='datos'>".$row[0]." ".$lang_label["records"]."</td>";
 	
 	echo "<tr>";	
 	$result_t=mysql_query("SELECT min(timestamp) FROM tevento");
 	$row=mysql_fetch_array($result_t);
-	echo "<td class='datos2'><b>".$lang_label["first_date"]."</b>";
-	echo "<td class='datos2'>".$row[0];
+	echo "<td class='datos2'><b>".$lang_label["first_date"]."</b></td>";
+	echo "<td class='datos2'>".$row[0]."</td></tr>";
 	
 	
 	echo "<tr><td class='datos'>";
 	$result_t=mysql_query("SELECT max(timestamp) FROM tevento");
 	$row=mysql_fetch_array($result_t);
 	echo "<b>".$lang_label["latest_date"]."</b>";
-	echo "<td class='datos'>".$row[0];
+	echo "<td class='datos'>".$row[0]."</td>";
 	echo "</table>";
 ?>
 
 	<h3><?php echo $lang_label["purge_data"] ?></h3>
 	<form name="db_audit" method="post" action="index.php?sec=gdbman&sec2=godmode/db/db_event">
-	<table width='300' border='0'>
+	<table width='300' cellpadding='4' cellspacing='4' class='databox'>
 	<tr><td class='datos'>
 	<select name="date_purge" width="255px">
 	<option value="<?php echo $month3 ?>"><?php echo $lang_label["purge_event_90day"] ?>
@@ -113,7 +113,7 @@ if (comprueba_login() == 0)
 	</select>
 	
 	<td class="datos">
-	<input class="sub" type="submit" name="purgedb" value="<?php echo $lang_label["doit"] ?>" onClick="if (!confirm('<?php  echo $lang_label["are_you_sure"] ?>')) return false;">
+	<input class="sub wand" type="submit" name="purgedb" value="<?php echo $lang_label["doit"] ?>" onClick="if (!confirm('<?php  echo $lang_label["are_you_sure"] ?>')) return false;">
 	</table>
 	</form>
 	

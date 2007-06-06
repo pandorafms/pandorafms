@@ -156,26 +156,27 @@ if (comprueba_login() == 0)
 		}
 
 ?> 
-	<table width='500' cellpadding='3' cellspacing='3'>
+	<table width='500' cellpadding='4' cellspacing='4' class='databox'>
 	<?php 
 	if (isset($_GET["alta"]))
-		echo '<form name="new_user" method="post" action="index.php?sec=gusuarios&sec2=godmode/users/configure_user&nuevo_usuario=1"><tr><td class="lb" rowspan="9" width="5">';
+		echo '<form name="new_user" method="post" action="index.php?sec=gusuarios&sec2=godmode/users/configure_user&nuevo_usuario=1">';
 	else
-		echo '<form name="user_mod" method="post" action="index.php?sec=gusuarios&sec2=godmode/users/configure_user&id_usuario_mio='.$id_usuario_mio.'"><tr><td class="lb" rowspan="11" width="5">';
+		echo '<form name="user_mod" method="post" action="index.php?sec=gusuarios&sec2=godmode/users/configure_user&id_usuario_mio='.$id_usuario_mio.'">';
 	?>
-	<td class="datos"><?php echo $lang_label["id_user"] ?>
-	<td class="datos"><input type="text" name="nombre" value="<?php echo $id_usuario_mio ?>">
+	<tr>
+	<td class="datos"><?php echo $lang_label["id_user"] ?></td>
+	<td class="datos"><input type="text" name="nombre" value="<?php echo $id_usuario_mio ?>"></td>
 	<tr><td class="datos2"><?php echo $lang_label["real_name"] ?>
-	<td class="datos2"><input type="text" name="nombre_real" value="<?php echo $nombre_real ?>">
+	<td class="datos2"><input type="text" name="nombre_real" value="<?php echo $nombre_real ?>"></td>
 	<tr><td class="datos"><?php echo $lang_label["password"] ?>
-	<td class="datos"><input type="password" name="pass1" value="<?php echo $password ?>">
-	<tr><td class="datos2"><?php echo $lang_label["password"] ?> - <?php echo $lang_label["confirmation"] ?>
-	<td class="datos2"><input type="password" name="pass2" value="<?php echo $password ?>">
-	<tr><td class="datos">E-Mail
-	<td class="datos"><input type="text" name="direccion" size="40" value="<?php echo $direccion ?>">
-	<tr><td class="datos2"><?php echo $lang_label["telefono"] ?>
-	<td class="datos2"><input type="text" name="telefono" value="<?php echo $telefono ?>">
-	<tr><td class="datos"><?php echo $lang_label["global_profile"] ?>
+	<td class="datos"><input type="password" name="pass1" value="<?php echo $password ?>"></td>
+	<tr><td class="datos2"><?php echo $lang_label["password"] ?> - <?php echo $lang_label["confirmation"] ?></td>
+	<td class="datos2"><input type="password" name="pass2" value="<?php echo $password ?>"></td>
+	<tr><td class="datos">E-Mail</td>
+	<td class="datos"><input type="text" name="direccion" size="40" value="<?php echo $direccion ?>"></td>
+	<tr><td class="datos2"><?php echo $lang_label["telefono"] ?></td>
+	<td class="datos2"><input type="text" name="telefono" value="<?php echo $telefono ?>"></td>
+	<tr><td class="datos"><?php echo $lang_label["global_profile"] ?></td>
 	
 	<td class="datos">
 	<?php if ($nivel == "1"){
@@ -186,8 +187,10 @@ if (comprueba_login() == 0)
 		echo $lang_label["normal_user"].'<input type="radio" class="chk" name="nivel" value="0" checked><a href="#" class="tip">&nbsp;<span>'.$help_label["users_msg2"].'</span></a>';
 	}
 	?>		
-	<tr><td class="datos2" colspan="2"><?php echo $lang_label["comments"] ?>
-	<tr><td class="datos" colspan="2"><textarea name="comentarios" cols="60" rows="4"><?php echo $comentarios ?></textarea>
+	<tr><td class="datos2" colspan="2"><?php echo $lang_label["comments"] ?></td>
+	<tr><td class="datos" colspan="2">
+	<textarea name="comentarios" cols="60" rows="4"><?php echo $comentarios ?></textarea>
+	</td></tr>
 	
 	<?php
 	if ($modo == "edicion") { // Only show groups for existing users
@@ -195,26 +198,32 @@ if (comprueba_login() == 0)
 		echo '<input type="hidden" name="edicion" value="1">';
 		echo '<input type="hidden" name="id_usuario_antiguo" value="'.$id_usuario_mio.'">';
 		
-		echo '<tr><td class="datos2">'.$lang_label["group_avail"].'<td class="datos2"><select name="grupo" class="w155">';
+		echo '<tr><td class="datos2">'.$lang_label["group_avail"].'</td>
+		<td class="datos2">
+		<select name="grupo" class="w155">';
 		echo "<option value=''>".$lang_label["none"];
 		$sql1='SELECT * FROM tgrupo ORDER BY nombre';
 		$result=mysql_query($sql1);
 		while ($row=mysql_fetch_array($result)){
-			echo "<option value='".$row["id_grupo"]."'>".$row["nombre"];
+			echo "<option value='".$row["id_grupo"]."'>".$row["nombre"]."</option>";
 		}
 		echo '</select>';
 		
-		echo "<tr><td class='datos'>".$lang_label["profiles"];
-		echo "<td class='datos'><select name='perfil' class='w155'>";
+		echo '</td></tr>';
+		echo "<tr><td class='datos'>".$lang_label["profiles"]."</td>";
+		echo "<td class='datos'>
+		<select name='perfil' class='w155'>";
 		$sql1='SELECT * FROM tperfil ORDER BY name';
 		$result=mysql_query($sql1);
 		while ($row=mysql_fetch_array($result)){
-			echo "<option value='".$row["id_perfil"]."'>".$row["name"];
+			echo "<option value='".$row["id_perfil"]."'>".$row["name"]."</option>";
 		}
 		echo '</select>';
-		echo '<tr><td colspan="3"><div class="raya"></div></td></tr>';
-		echo '<tr><td align="right" colspan="3">';
-		echo "<input name='uptbutton' type='submit' class='sub' value='".$lang_label["update"]."'></table><br>";
+		echo '</td>';
+		echo '</tr></table>';
+		echo "<table width=500>";
+		echo "<tr><td align='right'>";
+		echo "<input name='uptbutton' type='submit' class='sub upd' value='".$lang_label["update"]."'></td></tr></table><br>";
 		// Show user profile / groups assigned
 		$sql1='SELECT * FROM tusuario_perfil WHERE id_usuario = "'.$id_usuario_mio.'"';
 		$result=mysql_query($sql1);
@@ -245,9 +254,10 @@ if (comprueba_login() == 0)
 	?>
 
 	<?php if (isset($_GET["alta"])){
-		echo '<tr><td colspan="3"><div class="raya"></div></td></tr>';
-		echo '<tr><td align="right" colspan="3">';
-		echo '<input name="crtbutton" type="submit" class="sub" value="'.$lang_label["create"].'">';
+		echo '</tr></table>';
+		echo '<table width="500">';
+		echo '<tr><td align="right">';
+		echo '<input name="crtbutton" type="submit" class="sub wand" value="'.$lang_label["create"].'">';
 	} 
 	?> 
 	</form>

@@ -1,3 +1,16 @@
+2007-06-06  Raul Mateos  <raulofpandora@gmail.com>
+
+	* godmode/*.php: Closed a lot of unclosed html tags. Updated near all of
+	files with new table style.
+	
+	* godmode/agentes/alert_manager.php: Solved stupid bugs added some days
+	ago due to an unclosed html tag.
+	
+	* images/groups_small/applications.png: New icon for applications group.
+	
+	* pandoradb_data.sql: Updated default applications icon name.
+
+
 2007-06-02  Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/styles/pandora.css: Updated.

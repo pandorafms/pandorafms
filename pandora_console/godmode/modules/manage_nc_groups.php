@@ -78,7 +78,7 @@ if (isset($_GET["delete"])){ // if delete
 echo "<h2>".$lang_label["module_management"]." &gt; ";
 echo $lang_label["network_component_group_management"]."</h2>";
 
-echo "<table cellpadding=4 cellspacing=4 width=550>";
+echo "<table cellpadding='4' cellspacing='4' width='550' class='databox'>";
 echo "<th>".$lang_label["name"]."</th>";
 echo "<th>".$lang_label["parent"]."</th>";
 echo "<th>".$lang_label["delete"]."</th>";
@@ -96,7 +96,7 @@ while ($row=mysql_fetch_array($result)){
 	}
 	echo "<tr>
 			<td class='$tdcolor'>
-			<b><a href='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups_form&edit=1&id_sg=".$row["id_sg"]."'>".$row["name"]."</A></B>
+			<b><a href='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups_form&edit=1&id_sg=".$row["id_sg"]."'>".$row["name"]."</a></b>
 			</td>
 			<td class='$tdcolor'>
 			".give_network_component_group_name ($row["parent"])."
@@ -110,8 +110,9 @@ while ($row=mysql_fetch_array($result)){
 		</tr>";
 
 }
-echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
-echo "<tr><td colspan='3' align='right'>";
+echo "</table>";
+echo '<table width="550">';
+echo '<tr><td align="right">';
 echo "<form method=post action='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups_form&create=1'>";
 echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create"]."'>";
 echo "</form></td></tr></table>";

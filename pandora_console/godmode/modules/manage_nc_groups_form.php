@@ -50,20 +50,20 @@ if (isset($_GET["edit"])){ // Edit mode
 }
 
 echo "<h2>".$lang_label["network_component_group_management"]."</h2>";
-echo '<table width="500" cellspacing="4" cellpadding="4">';
+echo '<table width="500" cellspacing="4" cellpadding="4" class="databox">';
 
 // Different Form url if it's a create or if it's a update form
 if ($id_sg != -1)
-	echo "<form name='snmp_c' method='post' action='http://pandora.localhost/index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&update=1&id_sg=$id_sg'>";
+	echo "<form name='snmp_c' method='post' action='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&update=1&id_sg=$id_sg'>";
 else
-	echo "<form name='snmp_c' method='post' action='http://pandora.localhost/index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&create=1'>";
+	echo "<form name='snmp_c' method='post' action='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&create=1'>";
 	
-echo "<tr><td class='lb' rowspan='3' width='3'>";
-echo "<td class='datos'>".$lang_label["name"];
-echo "<td class='datos'><input type='text' name='name' size=30 value='$name'>";
+echo "<tr>";
+echo "<td class='datos'>".$lang_label["name"]."</td>";
+echo "<td class='datos'><input type='text' name='name' size=30 value='$name'></td>";
 
 echo "<tr>";
-echo "<td class='datos2'>".$lang_label["parent"];
+echo "<td class='datos2'>".$lang_label["parent"]."</td>";
 echo "<td class='datos2'>";
 echo "<select name='parent'>";
 echo "<option value='$parent'>".give_network_component_group_name($parent);
@@ -73,15 +73,15 @@ while ($row=mysql_fetch_array($result))
 	echo "<option value='".$row["id_sg"]."'>".give_network_component_group_name($row["id_sg"]);
 echo "</select>";
 
-
-echo "	<tr><td colspan='3'><div class='raya'></div></td></tr>
-	<tr><td colspan='3' align='right'>";
+echo "</td></tr><table>";
+echo '<table width="500">';
+echo '<tr><td align="right">';
 
 if ($id_sg == -1)
 	echo "<input name='crtbutton' type='submit' class='sub wand' value='".$lang_label["create"]."'>";
 else
 	echo "<input name='uptbutton' type='submit' class='sub upd' value='".$lang_label["update"]."'>";
 
-echo "</form></table>";
+echo "</form></td></tr></table>";
 
 ?>

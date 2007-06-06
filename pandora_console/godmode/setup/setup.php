@@ -54,7 +54,7 @@ if (comprueba_login() == 0)
 	echo "<h2>".$lang_label["setup_screen"]." &gt; ";
 	echo $lang_label["general_config"]."<a href='help/".$help_code."/chap9.php#9' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 	echo "<form name='setup' method='POST' action='index.php?sec=gsetup&amp;sec2=godmode/setup/setup&update=1'>";
-	echo '<table width="500" cellpadding="4" cellspacing="4" class="databox_color">';
+	echo '<table width="500" cellpadding="4" cellspacing="4" class="databox">';
 	echo '<tr><td class="datos">'.$lang_label["language_code"].'</td>';
 	echo '<td class="datos"><select name="language_code" onChange="javascript:this.form.submit();" width="180px">';
 	

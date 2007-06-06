@@ -27,7 +27,7 @@ if (comprueba_login() == 0)
 		$id_link = entrada_limpia($_POST["id_link"]);
 		$name = entrada_limpia($_POST["name"]);
 		$link = entrada_limpia($_POST["link"]);
-    	$sql_update ="UPDATE tlink SET name = '".$name."', link ='".$link."'  WHERE id_link = '".$id_link."'";
+    	$sql_update ="UPDATE tlink SET name = '".$name."', link ='".$link."' WHERE id_link = '".$id_link."'";
 		$result=mysql_query($sql_update);
 		if (! $result)
 			echo "<h3 class='error'>".$lang_label["modify_link_no"]."</h3>";
@@ -67,7 +67,7 @@ if (comprueba_login() == 0)
 		// Create link
         echo "<h2>".$lang_label["setup_screen"]." &gt; ";
 		echo $lang_label["link_management"]."<a href='help/".$help_code."/chap9.php#91' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
-		echo '<table class="fon" cellpadding="3" cellspacing="3" width="500">';   
+		echo '<table class="databox" cellpadding="4" cellspacing="4" width="500">';   
 		echo '<form name="ilink" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/links">';
         	if ($creation_mode == 1)
 				echo "<input type='hidden' name='create' value='1'>";
@@ -77,19 +77,27 @@ if (comprueba_login() == 0)
 		<?php if (isset($id_link)) {echo $id_link;} ?>
 		<?php
 		echo "'>";
-		echo '<tr><td class="lb" rowspan="2" width="5"><td class="datos">'.$lang_label["link_name"].'<td class="datos"><input type="text" name="name" size="35" value="'.$nombre.'">';
-		echo '<tr><td class="datos2">'.$lang_label["link"].'<td class="datos2"><input type="text" name="link" size="35" value="'.$link.'">';
-		echo '<tr><td colspan="5"><div class="raya"></div></td></tr>';
-		echo "<tr><td colspan='3' align='right'><input name='crtbutton' type='submit' class='sub' value='".$lang_label["update"]."'>";
-		echo '</form></table>';
+		echo '<tr>
+		<td class="datos">'.$lang_label["link_name"].'</td>
+		<td class="datos"><input type="text" name="name" size="35" value="'.$nombre.'">';
+		echo '<tr>
+		<td class="datos2">'.$lang_label["link"].'</td>
+		<td class="datos2">
+		<input type="text" name="link" size="35" value="'.$link.'"></td>';
+		echo '</tr>';	
+		echo "</table>";
+		echo "<table width='500px'>";
+		echo "<tr><td align='right'>
+		<input name='crtbutton' type='submit' class='sub upd' value='".$lang_label["update"]."'>";
+		echo '</form></td></tr></table>';
 	}
 
 	else {  // Main list view for Links editor
 		echo "<h2>".$lang_label["setup_screen"]." &gt; ";
 		echo  $lang_label["link_management"]."<a href='help/".$help_code."/chap9.php#9' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
-		echo "<table cellpadding=3 cellspacing=3>";
-		echo "<th width='180px'>".$lang_label["link_name"];
-		echo "<th width='80px'>".$lang_label["delete"];
+		echo "<table cellpadding='4' cellspacing='4' class='databox'>";
+		echo "<th width='180px'>".$lang_label["link_name"]."</th>";
+		echo "<th width='80px'>".$lang_label["delete"]."</th>";
 		$sql1='SELECT * FROM tlink ORDER BY name';
 		$result=mysql_query($sql1);
 		$color=1;
@@ -102,11 +110,12 @@ if (comprueba_login() == 0)
 				$tdcolor = "datos2";
 				$color = 1;
 			}
-			echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=gsetup&sec2=godmode/setup/links&form_edit=1&id_link=".$row["id_link"]."'>".$row["name"]."</a></b>";
-			echo '<td class="'.$tdcolor.'" align="center"><a href="index.php?sec=gsetup&sec2=godmode/setup/links&id_link='.$row["id_link"].'&borrar='.$row["id_link"].'" onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;"><img border=0 src="images/cross.png"></a>';
+			echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=gsetup&sec2=godmode/setup/links&form_edit=1&id_link=".$row["id_link"]."'>".$row["name"]."</a></b></td>";
+			echo '<td class="'.$tdcolor.'" align="center"><a href="index.php?sec=gsetup&sec2=godmode/setup/links&id_link='.$row["id_link"].'&borrar='.$row["id_link"].'" onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;"><img border=0 src="images/cross.png"></a></td></tr>';
 		}
-			echo "<tr><td colspan='2'><div class='raya'></div></td>";
-			echo "<tr><td colspan='2' align='right'>";
+			echo "</table>";
+			echo "<table width='290px'>";
+			echo "<tr><td align='right'>";
 			echo "<form method='post' action='index.php?sec=gsetup&sec2=godmode/setup/links&form_add=1'>";
 			echo "<input type='submit' class='sub next' name='form_add' value='".$lang_label["add"]."'>";
 			echo "</form></table>";

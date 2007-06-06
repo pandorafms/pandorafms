@@ -49,7 +49,7 @@ if (comprueba_login() == 0)
 			<h2><?php echo $lang_label["dbmain_title"]; ?> &gt; 
 			<?php echo $lang_label["db_refine"]; ?><a href='help/<?php echo $help_code?>/chap8.php#831' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h2> 
 			<form method="post" action="index.php?sec=gdbman&sec2=godmode/db/db_refine&operacion=1">
-			<table width='500' border='0' cellspacing='3' cellpadding='5'>
+			<table width='500' border='0' cellspacing='4' cellpadding='4' class='databox'>
 			<tr>
 			<td class="datost"><b><?php echo $lang_label["source_agent"]; ?></b><br><br>
 			<select name="origen" class="w130">
@@ -63,12 +63,12 @@ if (comprueba_login() == 0)
 			while ($row=mysql_fetch_array($result)){
 				if ( (isset($_POST["update_agent"])) AND (isset($_POST["origen"])) ){
 					if ( $_POST["origen"] != $row["id_agente"])
-						echo "<option value=".$row["id_agente"].">".$row["nombre"];
+						echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
 				}
 				else
-					echo "<option value=".$row["id_agente"].">".$row["nombre"];
+					echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
 			}
-			echo '</select>&nbsp;&nbsp;<input type=submit name="update_agent" class=sub value="'.$lang_label["get_info"].'"><br><br>';
+			echo '</select>&nbsp;&nbsp;<input type=submit name="update_agent" class="sub upd" value="'.$lang_label["get_info"].'"><br><br>';
 			echo "<b>".$lang_label["modules"]."</b><br><br>";
 			echo "<select name='origen_modulo[]' size=5 multiple=yes class='w130'>";
 			if ( (isset($_POST["update_agent"])) AND (isset($_POST["origen"])) ) {
@@ -77,7 +77,7 @@ if (comprueba_login() == 0)
 				$sql1="SELECT * FROM tagente_modulo WHERE id_agente = ".$agente_modulo;
 				$result = mysql_query($sql1);
 				while ($row=mysql_fetch_array($result)){
-			 		echo "<option value=".$row["id_agente_modulo"].">".$row["nombre"];	
+			 		echo "<option value=".$row["id_agente_modulo"].">".$row["nombre"]."</option>";	
 				}
 			}
 			echo "</select>";
@@ -88,7 +88,7 @@ if (comprueba_login() == 0)
 				<tr class=datos><td><?php echo $lang_label["max"]; ?><td><input type="text" name="max" size=4 value=0>	
 				<tr><td></td></tr>
 				<tr><td class="bot" colspan="2" align="right">
-				<input type=submit name="eliminar" class=sub value="<?php echo $lang_label["delete"].'" onClick="if (!confirm("'.$lang_label["are_you_sure"].'")) return false;>'; ?>
+				<input type="submit" name="eliminar" class="sub delete" value="<?php echo $lang_label["delete"].'" onClick="if (!confirm("'.$lang_label["are_you_sure"].'")) return false;>'; ?>
 				</table>
 			</td></tr>
 

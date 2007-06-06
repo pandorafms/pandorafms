@@ -154,7 +154,6 @@ echo "</select>";
 // Incident
 echo "<tr>";
 echo "<td class='datos2'>".$lang_label["incident"];
-echo "<td class='datos2'>";
 echo "<select name='create_incident'>";
 if ($type == 1){
 	echo "<option value='1'>".$lang_label["yes"];
@@ -177,9 +176,9 @@ echo "<tr>";
 
 echo "<td colspan=5 align='right'>";
 if ($id_rt != "-1")
-	echo '<input name="updbutton" type="submit" class="sub" value="'.$lang_label["update"].'">';
+	echo '<input name="updbutton" type="submit" class="sub upd" value="'.$lang_label["update"].'">';
 else
-	echo '<input name="crtbutton" type="submit" class="sub" value="'.$lang_label["add"].'">';
+	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.$lang_label["add"].'">';
 echo "</form>";
 echo "</table>";
 

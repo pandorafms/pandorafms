@@ -245,7 +245,7 @@ if ($update_alert != 1) {
 	$result2=mysql_query($sql2);
 	while ($row2=mysql_fetch_array($result2)){
 		if ($row2["id_tipo_modulo"] != -1) {
-			$sql1='SELECT nombre FROM ttipo_modulo WHERE id_tipo = '.$row2["id_tipo_modulo"].'</option>';
+			$sql1='SELECT nombre FROM ttipo_modulo WHERE id_tipo = '.$row2["id_tipo_modulo"];
 			$result=mysql_query($sql1);
 			while ($row=mysql_fetch_array($result)){
 				echo "<option value='".$row2["id_agente_modulo"]."'>".$row["nombre"]."/".$row2["nombre"]."</option>";
@@ -260,7 +260,7 @@ if ($update_alert != 1) {
 
  // End block only if $creacion_agente != 1;
 
-echo "</table>";
+echo "</td></tr></table>";
 echo '<table width=605>';
 echo '<tr><td align="right">';
 	if ($update_alert== "1"){

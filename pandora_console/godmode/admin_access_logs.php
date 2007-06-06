@@ -60,10 +60,11 @@
 	echo "<a href='help/".$help_code."/chap6.php#6' target='_help' class='help'>
 	&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 	echo "<form name='query_sel' method='post' action='index.php?sec=godmode&sec2=godmode/admin_access_logs'>";
-	echo "<table border='0'><tr><td valign='middle'>";
+	echo "<table cellpadding='4' cellspacing='4' class='databox'>
+	<tr><td>".$lang_label["action"]."</td><td valign='middle'>";
 	echo "<select name='tipo_log' onChange='javascript:this.form.submit();'>";
 	if (isset($tipo_log)) {
-		echo "<option>".$tipo_log. "</option>";
+		echo "<option>".$tipo_log."</option>";
 	}
 	echo "<option value='-1'>".$lang_label["all"]."</option>";
 	$sql3="SELECT DISTINCT (accion) FROM `tsesion`"; 
@@ -95,7 +96,7 @@
 	pagination ($counter, $url, $offset);
 	echo '<br>';
 	// table header
-	echo '<table cellpadding="3" cellspacing="3" width=700>';
+	echo '<table cellpadding="4" cellspacing="4" width="700" class="databox">';
 	echo '<tr>';
 	echo '<th width="80px">'.$lang_label["user"].'</th>';
 	echo '<th>'.$lang_label["action"].'</th>';
@@ -137,6 +138,6 @@
 	}
 
 	// end table
-	echo "<tr><td colspan='5'><div class='raya'></div></td></tr></table>"; 
+	echo "</table>"; 
 
 ?>

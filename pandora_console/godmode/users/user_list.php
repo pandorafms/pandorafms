@@ -29,7 +29,7 @@ if (comprueba_login() == 0)
 <h2><?php echo $lang_label["user_management"] ?> &gt; 
 <?php echo $lang_label["users"] ?><a href="help/<?php echo $help_code; ?>/chap2.php#22" target="_help" class="help">&nbsp;<span><?php echo $lang_label["help"]; ?></span></a></h2>
  
-<table cellpadding="3" cellspacing="3" width="700">
+<table width="700" cellpadding="4" cellspacing="4" class="databox">
 <th width="80px"><?php echo $lang_label["user_ID"]?>
 <th width="155px"><?php echo $lang_label["last_contact"]?>
 <th width="45px"><?php echo $lang_label["profile"]?>
@@ -84,10 +84,11 @@ while ($rowdup=mysql_fetch_array($resq1)){
 	
 	echo "<td class='$tdcolor' width='100'>".substr($real_name,0,16)."</td>";
 	echo "<td class='$tdcolor'>".$comments."</td>";
-	echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/users/user_list&borrar_usuario=".$name."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cross.png'></a>";
+	echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/users/user_list&borrar_usuario=".$name."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cross.png'></a></td>";
 }
-	echo "<tr><td colspan='6'><div class='raya'></div></td></tr>";
-	echo "<tr><td colspan='6' align='right'>";
+	echo "</tr></table>";
+	echo "<table width=700>";
+	echo "<tr><td align='right'>";
 	echo "<form method=post action='index.php?sec=gusuarios&sec2=godmode/users/configure_user&alta=1'>";
 	echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create_user"]."'>";
 	echo "</form></td></tr></table>";

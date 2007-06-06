@@ -166,7 +166,7 @@ else
 echo "<form method='POST' action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components'>";
 
 
-echo "<table cellpadding='3' cellspacing='3'><tr>";
+echo "<table cellpadding='4' cellspacing='4' class='databox'><tr>";
 echo "<td>".$lang_label["group"]."</td>";
 echo "<td valign='middle'>";
 echo "<select name='ncgroup' onChange='javascript:this.form.submit();'>";
@@ -180,7 +180,7 @@ while ($row = mysql_fetch_array ($result))
 echo "</select>";
 echo "<td valign='middle'>";
 echo "<noscript><input name='uptbutton' type='submit' class='sub' value='".$lang_label["show"]."'></noscript>";
-echo "</td></form></table><br><br>";
+echo "</td></form></table><br>";
 
 if ($ncgroup != 0)
 	$sql1 = "SELECT * FROM tnetwork_component WHERE id_group = $ncgroup";
@@ -189,16 +189,16 @@ else
 	
 $result = mysql_query ($sql1);
 if ( $row = mysql_num_rows ($result)){
-	echo '<table width="750" cellpadding="4" cellspacing="4">';
+	echo '<table width="750" cellpadding="4" cellspacing="4" class="databox">';
 	echo '<tr>';
-	echo "<th>".$lang_label["module_name"];
-	echo "<th>".$lang_label["type"];
-	echo "<th>".$lang_label["interval"];
-	echo "<th>".$lang_label["description"];
-	echo "<th>".$lang_label["nc.group"];
+	echo "<th>".$lang_label["module_name"]."</th>";
+	echo "<th>".$lang_label["type"]."</th>";
+	echo "<th>".$lang_label["interval"]."</th>";
+	echo "<th>".$lang_label["description"]."</th>";
+	echo "<th>".$lang_label["nc.group"]."</th>";
 	//echo "<th>".$lang_label["module_group"];
-	echo "<th>".$lang_label["max_min"];
-	echo "<th width=50>".$lang_label["action"];
+	echo "<th>".$lang_label["max_min"]."</th>";
+	echo "<th width=50>".$lang_label["action"]."</th>";
 	$color=1;
 	while ($row=mysql_fetch_array($result)){
 		if ($color == 1){
@@ -218,7 +218,7 @@ if ( $row = mysql_num_rows ($result)){
 		$module_group2 = $row["id_module_group"];
 
 		echo "<tr><td class='".$tdcolor."_id'>";
-		echo "<a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components_form&update=1&id_nc=".$row["id_nc"]."'>".$nombre_modulo."</a>";
+		echo "<a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components_form&update=1&id_nc=".$row["id_nc"]."'>".$nombre_modulo."</a></td>";
 		echo "<td class='".$tdcolor."f9'>";
 		if ($id_tipo > 0) {
 			echo "<img src='images/".show_icon_type($id_tipo)."' border=0>";
@@ -228,6 +228,7 @@ if ( $row = mysql_num_rows ($result)){
 		} else {
 			echo "<td class='$tdcolor'> N/A";
 		}
+		echo "</td>";
 		echo "<td class='$tdcolor'>".substr($descripcion,0,30)."</td>";
 		echo "<td class='$tdcolor'>".give_network_component_group_name($id_group)."</td>";
 		//echo "<td class='$tdcolor'>".
@@ -240,10 +241,12 @@ if ( $row = mysql_num_rows ($result)){
 		echo $module_max." / ".$module_min;
 		echo "<td class='$tdcolor' align='center'>";
 		echo "<a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&delete=1&id_nc=".$row["id_nc"]."'>";
-		echo "<img src='images/cross.png' border=0 alt='".$lang_label["delete"]."'></A>";
+		echo "<img src='images/cross.png' border=0 alt='".$lang_label["delete"]."'></a></td>";
+		echo "</tr>";
 	}
-	echo "<tr><td colspan='7'><div class='raya'></div></td></tr>";
-	echo "<tr><td colspan='7' align='right'>";
+	echo "</table>";
+	echo "<table width='750px'>";
+	echo "<tr><td align='right'>";
 	echo "<form method=post action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components_form&create=1'>";
 	echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create"]."'>";
 	echo "</form></td></tr></table>";

@@ -184,44 +184,44 @@ if (isset($_GET["update"])){ // Edit mode
 }
 
 echo "<h2>".$lang_label["network_component_management"]."</h2>";
-echo '<table width="700" cellspacing="4" cellpadding="4">';
+echo '<table width="700" cellspacing="4" cellpadding="4" class="databox">';
 
 // Different Form url if it's a create or if it's a update form
-if ($id_nc != -1)
+if ($id_nc != -1) {
 	echo "<form name='modulo' method='post' action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&update=1&id_nc=$id_nc'>";
-else
+} else {
 	echo "<form name='modulo' method='post' action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&create=1'>";
-echo "<tr><td class='lb' rowspan='10' width='3'>";
-
+}
 echo "<tr>";
 echo '<tr><td class="datos2">'.$lang_label["module_name"];
 echo "<td class='datos2'><input type='text' name='name' size='25' value='$name'>";
 
 //-- Module type combobox
-echo "<td class='datos2'>".$lang_label["module_type"];
+echo "<td class='datos2'>".$lang_label["module_type"]."</td>";
 echo "<td class='datos2'>";
 echo '<select name="tipo" onChange="type_change()">';
 $sql1="SELECT id_tipo, nombre FROM ttipo_modulo WHERE id_tipo != '$type' ORDER BY nombre";
 $result=mysql_query($sql1);
 echo "<option value='$type'>". dame_nombre_tipo_modulo($type);
 while ($row=mysql_fetch_array($result)){
-	echo "<option value='".$row["id_tipo"]."'>".$row["nombre"];
+	echo "<option value='".$row["id_tipo"]."'>".$row["nombre"]."</option>";
 }
 echo "</select>";
 
+echo "</td></tr>";
 echo "<tr>";
-echo "<td class='datos'>".$lang_label["group"];
+echo "<td class='datos'>".$lang_label["group"]."</td>";
 echo "<td class='datos'>";
 echo "<select name='id_group'>";
-echo "<option value='$id_group'>".give_network_component_group_name($id_group);
+echo "<option value='$id_group'>".give_network_component_group_name($id_group)."</option>";
 $sql1 = "SELECT * FROM tnetwork_component_group where id_sg != '$id_group'";
 $result=mysql_query($sql1);
 while ($row=mysql_fetch_array($result))
-	echo "<option value='".$row["id_sg"]."'>".give_network_component_group_name($row["id_sg"]);
+	echo "<option value='".$row["id_sg"]."'>".give_network_component_group_name($row["id_sg"])."</option>";
 echo "</select>";
 
 
-echo "<td class='datos'>".$lang_label["module_group"];
+echo "<td class='datos'>".$lang_label["module_group"]."</td>";
 echo '<td class="datos">';
 echo '<select name="id_module_group">';
 if ($id_nc != -1 )
@@ -229,7 +229,7 @@ if ($id_nc != -1 )
 $sql1='SELECT * FROM tmodule_group';
 $result=mysql_query($sql1);
 while ($row=mysql_fetch_array($result))
-	echo "<option value='".$row["id_mg"]."'>".$row["name"];
+	echo "<option value='".$row["id_mg"]."'>".$row["name"]."</option>";
 echo "</select>";
 
 echo "<tr>";
@@ -238,27 +238,34 @@ echo '<td class="datos2">';
 echo '<input type="text" name="module_interval" size="5" value="'.$module_interval.'">';
 ?>
 
-<td class="datos2"><?php echo $lang_label["tcp_port"] ?>
-<td class="datos2"><input type="text" name="tcp_port" size="5" value="<?php echo $tcp_port ?>"> 
-
-<tr><td class="datos"><?php echo $lang_label["snmp_oid"] ?>
-<td class="datos"><input type="text" name="snmp_oid" size="25" value="<?php echo $snmp_oid ?>">
-
-<td class="datos"><?php echo $lang_label["snmp_community"] ?>
-<td class="datos"><input type="text" name="snmp_community" size="25" value="<?php echo $snmp_community ?>">
-
-
-<tr><td class="datos2t"><?php echo $lang_label["tcp_send"] ?>
-<td class="datos2"><textarea name="tcp_send" cols="20" rows="2"><?php echo $tcp_send ?></textarea>
-
-<td class="datos2t"><?php echo $lang_label["tcp_rcv"] ?>
-<td class="datos2"><textarea name="tcp_rcv" cols="20" rows="2"><?php echo $tcp_rcv ?></textarea>
-
-<tr><td class="datos"><?php echo $lang_label["mindata"] ?>
-<td class="datos"><input type="text" name="modulo_min" size="5" value="<?php echo $modulo_min ?>"> 
-<td class="datos"><?php echo $lang_label["maxdata"] ?>
-<td class="datos"><input type="text" name="modulo_max" size="5" value="<?php echo $modulo_max ?>">
-
+<td class="datos2"><?php echo $lang_label["tcp_port"] ?></td>
+<td class="datos2">
+<input type="text" name="tcp_port" size="5" value="<?php echo $tcp_port ?>">
+</td></tr>
+<tr><td class="datos"><?php echo $lang_label["snmp_oid"] ?></td>
+<td class="datos">
+<input type="text" name="snmp_oid" size="25" value="<?php echo $snmp_oid ?>">
+</td>
+<td class="datos"><?php echo $lang_label["snmp_community"] ?></td>
+<td class="datos">
+<input type="text" name="snmp_community" size="25" value="<?php echo $snmp_community ?>">
+</td></tr>
+<tr><td class="datos2t"><?php echo $lang_label["tcp_send"] ?></td>
+<td class="datos2">
+<textarea name="tcp_send" cols="20" rows="2"><?php echo $tcp_send ?></textarea>
+</td>
+<td class="datos2t"><?php echo $lang_label["tcp_rcv"] ?></td>
+<td class="datos2">
+<textarea name="tcp_rcv" cols="20" rows="2"><?php echo $tcp_rcv ?></textarea>
+</td></tr>
+<tr><td class="datos"><?php echo $lang_label["mindata"] ?></td>
+<td class="datos">
+<input type="text" name="modulo_min" size="5" value="<?php echo $modulo_min ?>">
+</td>
+<td class="datos"><?php echo $lang_label["maxdata"] ?></td>
+<td class="datos">
+<input type="text" name="modulo_max" size="5" value="<?php echo $modulo_max ?>">
+</td></tr>
 <?PHP
 
 echo '<tr><td class="datos2t">'.$lang_label["comments"];
@@ -266,15 +273,16 @@ echo '<td class="datos2" colspan=3>';
 echo '<textarea name="descripcion" cols=70 rows=2>';
 echo $description;
 echo "</textarea>";
-echo "<tr><td colspan='5'><div class='raya'></div></td></tr>";
-echo "<tr>";
+echo "</td></tr>";
+echo "</table>";
 
-echo "<td colspan=5 align='right'>";
+echo "<table width='700px'>";
+echo "</tr><td align='right'>";
 if ($id_nc != "-1")
 	echo '<input name="updbutton" type="submit" class="sub upd" value="'.$lang_label["update"].'">';
 else
 	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.$lang_label["add"].'">';
 echo "</form>";
-echo "</table>";
+echo "</td></tr></table>";
 
 ?>

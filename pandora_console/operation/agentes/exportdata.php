@@ -316,7 +316,6 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 	echo "</table>";
 	// Submit button
 
-	echo '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
 	echo "<table width=570>";
 	echo "<tr><td align='right'>";
 	echo "<input type=submit name='export' class='sub wand' value=".$lang_label["export"].">";

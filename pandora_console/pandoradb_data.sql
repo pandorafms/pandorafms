@@ -27,7 +27,7 @@ UNLOCK TABLES;
 
 /*!40000 ALTER TABLE `tconfig_os` DISABLE KEYS */;
 LOCK TABLES `tconfig_os` WRITE;
-INSERT INTO `tconfig_os` VALUES (1,'Linux','Linux: All versions','so_linux.gif'),(2,'Solaris','Sun Solaris','so_solaris.gif'),(3,'AIX','IBM AIX','so_aix.gif'),(4,'BSD','OpenBSD, FreeBSD and Others','so_bsd.gif'),(5,'HP-UX','HP-UX Unix OS','so_hpux.gif'),(6,'BeOS','BeOS','so_beos.gif'),(7,'Cisco','CISCO IOS','so_cisco.gif'),(8,'MacOS','MAC OS','so_mac.gif'),(9,'Windows','Microsoft Windows OS','so_win.gif'),(10,'Other','Other SO','so_other.gif'),(11,'Network','Pandora Network Agent','network.gif');
+INSERT INTO `tconfig_os` VALUES (1,'GNU/Linux','Linux: All versions','so_linux.gif'),(2,'Solaris','Sun Solaris','so_solaris.gif'),(3,'AIX','IBM AIX','so_aix.gif'),(4,'BSD','OpenBSD, FreeBSD and Others','so_bsd.gif'),(5,'HP-UX','HP-UX Unix OS','so_hpux.gif'),(6,'BeOS','BeOS','so_beos.gif'),(7,'Cisco','CISCO IOS','so_cisco.gif'),(8,'MacOS','MAC OS','so_mac.gif'),(9,'Windows','Microsoft Windows OS','so_win.gif'),(10,'Other','Other SO','so_other.gif'),(11,'Network','Pandora Network Agent','network.gif');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `tconfig_os` ENABLE KEYS */;
 
@@ -44,7 +44,7 @@ INSERT INTO `tgrupo` VALUES (8,'Databases','database_gear',0,0);
 INSERT INTO `tgrupo` VALUES (9,'Comms','transmit',0,0);
 INSERT INTO `tgrupo` VALUES (10,'Others','house',0,0);
 INSERT INTO `tgrupo` VALUES (11,'Workstations','computer',0,0);
-INSERT INTO `tgrupo` VALUES (12,'Applications','bricks',0,0);
+INSERT INTO `tgrupo` VALUES (12,'Applications','applications',0,0);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `tgrupo` ENABLE KEYS */;
 

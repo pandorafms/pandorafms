@@ -159,7 +159,7 @@ if (comprueba_login() == 0){
 			echo "<ul class='mn'><li><a href='index.php?sec=gdbman&amp;sec2=godmode/db/db_info' class='mn'>".$lang_label["db_info"]."</a></li></ul></div>";
 			
 			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/db/db_purge"){
-				echo "<div class='arrowg'>";
+				echo "<div class='arrowgs'>";
 			}
 			else echo "<div class='arrowg'>";			
 			echo "<ul class='mn'><li><a href='index.php?sec=gdbman&amp;sec2=godmode/db/db_purge' class='mn'>".$lang_label["db_purge"]."</a></li></ul></div>";

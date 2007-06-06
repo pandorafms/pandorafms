@@ -110,7 +110,7 @@ if (isset($_POST["ag_group"])){
 	action='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente'>";
 }
 
-echo "<table cellpadding='3' cellspacing='3'><tr>";
+echo "<table cellpadding='4' cellspacing='4' class='databox'><tr>";
 echo "<td>".$lang_label["group"]."</td>";
 echo "<td valign='middle'>";
 echo "<select name='ag_group' onChange='javascript:this.form.submit();'
@@ -150,12 +150,12 @@ pagination ($total_events, "index.php?sec=gagente&sec2=godmode/agentes/modificar
 echo "<div style='height: 20px'> </div>";
 
 if (mysql_num_rows($result)){
-	echo "<table cellpadding='4' cellspacing='4' width='700'>";
-	echo "<th>".$lang_label["agent_name"];
-	echo "<th>".$lang_label["os"];
-	echo "<th>".$lang_label["group"];
-	echo "<th>".$lang_label["description"];
-	echo "<th>".$lang_label["delete"];
+	echo "<table cellpadding='4' cellspacing='4' width='700' class='databox'>";
+	echo "<th>".$lang_label["agent_name"]."</th>";
+	echo "<th>".$lang_label["os"]."</th>";
+	echo "<th>".$lang_label["group"]."</th>";
+	echo "<th>".$lang_label["description"]."</th>";
+	echo "<th>".$lang_label["delete"]."</th>";
 	$color=1;
 	while ($row=mysql_fetch_array($result)){
 		$id_grupo = $row["id_grupo"];
@@ -189,8 +189,8 @@ if (mysql_num_rows($result)){
 			echo "<img border='0' src='images/cross.png'></a></td>";
 		}
 	}
-	echo "<tr><td colspan='5'><div class='raya'></div></td></tr>";
-	echo "<tr><td align='right' colspan='5'>";
+	echo "</table>";
+	echo "<table width='700'><tr><td align='right'>";
 } else {
 	echo "<div class='nf'>".$lang_label["no_agent_def"]."</div>";
 	echo "&nbsp;</td></tr><tr><td>";

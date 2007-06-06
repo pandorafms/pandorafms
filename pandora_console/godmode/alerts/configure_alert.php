@@ -63,9 +63,7 @@ echo "<h2>".$lang_label["alert_config"]." &gt; ";
 	<span>'.$lang_label["help"].'</span></a>';
 echo "</h2>";
  ?>
-<table width="500" cellspacing="4" cellpadding="4" class="databox_color">
-
-<form name="alerta" method="post" action="index.php?sec=galertas&sec2=godmode/alerts/modify_alert&id_alerta=<?php echo $id_alerta ?>">
+ <form name="alerta" method="post" action="index.php?sec=galertas&sec2=godmode/alerts/modify_alert&id_alerta=<?php echo $id_alerta ?>">
 
 <?php
 	if ($creacion_alerta == 1)
@@ -75,13 +73,15 @@ echo "</h2>";
 		echo "<input type='hidden' name='id_alerta' value='".$id_alerta."'>";
 	}
 ?>
-
-<tr><td class="datos"><?php echo $lang_label["alertname"] ?>
-<td class="datos"><input type="text" name="nombre" size=30 value="<?php echo $nombre ?>">
-
+<table width="500" cellspacing="4" cellpadding="4" class="databox">
+<tr><td class="datos"><?php echo $lang_label["alertname"] ?></td>
+<td class="datos">
+<input type="text" name="nombre" size=30 value="<?php echo $nombre ?>"></td>
+</tr>
 <tr>
-<td class="datos2"><?php echo $lang_label["command"] ?>
-<td class="datos2"><input type="text" name="comando" size="50" value="<?php echo $comando ?>">
+<td class="datos2"><?php echo $lang_label["command"] ?></td>
+<td class="datos2">
+<input type="text" name="comando" size="50" value="<?php echo $comando ?>">
 <a href='#' class='tip'>&nbsp;<span>
 <b>Macros:</b><br>
 _field1_<br>
@@ -91,19 +91,20 @@ _agent_<br>
 _timestamp_<br>
 _data_<br>
 </span></a>
-
-<tr><td class="datos"><?php echo $lang_label["description"] ?>
+</td></tr>
+<tr><td class="datos"><?php echo $lang_label["description"] ?></td>
 <td class="datos"><textarea name="descripcion" cols="50" rows="7">
 <?php echo $descripcion ?>
 </textarea>
+</td></tr>
 </table>
 <table width=500>
 <tr><td align="right">
 <?php 
 if (isset($_GET["creacion"])){
-	echo "<input name='crtbutton' type='submit' class='sub' value='".$lang_label["create"]."'>";
+	echo "<input name='crtbutton' type='submit' class='sub wand' value='".$lang_label["create"]."'>";
 } else {
-	echo "<input name='uptbutton' type='submit' class='sub' value='".$lang_label["update"]."'>";
+	echo "<input name='uptbutton' type='submit' class='sub upd' value='".$lang_label["update"]."'>";
 } ?>
 </form>
 

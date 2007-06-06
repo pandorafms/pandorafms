@@ -49,7 +49,7 @@ $sql1='SELECT * FROM tnetwork_profile ORDER BY name';
 $result=mysql_query($sql1);
 $color=0;
 if (mysql_num_rows($result)) {
-	echo "<table cellpadding=4 cellspacing=4 width=650>";
+	echo "<table cellpadding='4' cellspacing='4' width='650' class='databox'>";
 	echo "<th>".$lang_label["name"]."</th>";
 	echo "<th>".$lang_label["description"]."</th>";
 	echo "<th>".$lang_label["action"]."</th>";
@@ -63,29 +63,31 @@ while ($row=mysql_fetch_array($result)){
 		$tdcolor = "datos2";
 		$color = 1;
 	}
-	echo "<tr>
-			<td class='$tdcolor'>
-			<b><a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np=".$row["id_np"]."'>".$row["name"]."</A></B>
-			</td>
-			<td class='$tdcolor'>
-			".$row["description"]."
-			</td>
-			<td class='$tdcolor' align='center'>
-			<a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates&delete=".$row["id_np"]."'
-				onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\'))
-			return false;'>
-			<img border='0' src='images/cross.png'></a>
-			</td>
-		</tr>";
+	echo "
+	<tr>
+		<td class='$tdcolor'>
+		<b><a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np=".$row["id_np"]."'>".$row["name"]."</a></b>
+		</td>
+		<td class='$tdcolor'>
+		".$row["description"]."
+		</td>
+		<td class='$tdcolor' align='center'>
+		<a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates&delete=".$row["id_np"]."'
+			onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\'))
+		return false;'>
+		<img border='0' src='images/cross.png'></a>
+		</td>
+	</tr>";
 
 }
 if (mysql_num_rows($result)) {
-	echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
+	echo "</table>";
 } else {
 	echo "<div class='nf'>".$lang_label["no_netprofiles"]."</div>";
-	echo "<table>";
+
 }
-echo "<tr><td colspan='3' align='right'>";
+echo "<table width='650px'>";
+echo "<tr><td align='right'>";
 echo "<form method=post action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np=-1'>";
 echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create"]."'>";
 echo "</form></td></tr></table>";

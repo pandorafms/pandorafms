@@ -8,7 +8,16 @@
 	
 	* images/groups_small/applications.png: New icon for applications group.
 	
+	* images/copy.png: New icon for copy data.
+	
 	* pandoradb_data.sql: Updated default applications icon name.
+	
+	* include/styles/pandora.css: Added style for copy icon.
+	
+	* include/languages/language_en.php: Added template text.
+	
+	* godmode/agentes/agent_template.php, manage_config.php: Updated with new
+	table styles. Updated texts and closed html tags.
 
 
 2007-06-02  Raul Mateos  <raulofpandora@gmail.com>

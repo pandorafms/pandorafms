@@ -26,7 +26,7 @@ if (comprueba_login() == 0)
 		
 		if ((isset($_GET["operacion"])) AND (! isset($_POST["update_agent"]))){
 			// DATA COPY
-			if (isset($_POST["copiar"])) {
+			if (isset($_POST["copy"])) {
 				echo "<h2>".$lang_label["datacopy"]."</h2>";
 				// Initial checkings
 				
@@ -112,7 +112,7 @@ if (comprueba_login() == 0)
 									echo "<br>&nbsp;&nbsp;".$lang_label["copymod"]." ->".$o_nombre;
 								}
 							}
-						} 
+						}
 				 	}
 					if ($multiple == 0)
 							$b=-1;
@@ -176,11 +176,11 @@ if (comprueba_login() == 0)
 							} //while
 						} // for
 					} 
-				} 
+				}
 			} //end if copy modules or alerts
 
 			// DELETE DATA
-			elseif (isset($_POST["eliminar"])) {
+			elseif (isset($_POST["delete"])) {
 				echo "<h2>".$lang_label["deletedata"]."</h2>";
 				// Initial checkings
 				
@@ -209,7 +209,7 @@ if (comprueba_login() == 0)
 				for ($a=0;$a <count($destino); $a++){ // for each agent
 					$id_agente = $destino[$a];
 					if ($modulos == 1){
-						echo "<br>".$lang_label["deletingdata"]." -> ".dame_nombre_agente($id_agente);
+						echo "<br>".$lang_label["deleting_data"]." -> ".dame_nombre_agente($id_agente);
 					
 						// Deleting data
 						$sql1='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_agente;
@@ -233,7 +233,7 @@ if (comprueba_login() == 0)
 					}
 					// delete alerts definitions
 					if ($alertas == 1){ 
-						echo "<br>".$lang_label["deletingdata"]." -> ".dame_nombre_agente($id_agente);
+						echo "<br>".$lang_label["deleting_data"]." -> ".dame_nombre_agente($id_agente);
 					
 						// delete data
 						$sql1='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_agente;
@@ -280,7 +280,7 @@ if (comprueba_login() == 0)
 				$sql1="SELECT * FROM tagente_modulo WHERE id_agente = ".$agente_modulo. " order by nombre";	
 				$result = mysql_query($sql1);
 				while ($row=mysql_fetch_array($result)){
-			 		echo "<option value=".$row["id_agente_modulo"].">".$row["nombre"];	
+			 		echo "<option value=".$row["id_agente_modulo"].">".$row["nombre"]."</option>";	
 				}
 			}
 			echo "</select>";
@@ -299,14 +299,14 @@ if (comprueba_login() == 0)
 			$sql1='SELECT * FROM tagente';
 			$result=mysql_query($sql1);
 			while ($row=mysql_fetch_array($result)){
-				echo "<option value=".$row["id_agente"].">".$row["nombre"];
+				echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
 			}
 			?>
 			</select>
 			
 			<td align="right" class="datosb">
-			<input type="submit" name="copiar" class="sub" value="<?php echo $lang_label["copy"].'" onClick="if (!confirm("'.$lang_label["are_you_sure"].'")) return false;>'; ?>
-			<input type="submit" name="eliminar" class="sub delete" value="<?php echo $lang_label["delete"].'" onClick="if (!confirm("'.$lang_label["are_you_sure"].'")) return false;>'; ?>
+			<input type="submit" name="copy" class="sub copy" value="<?php echo $lang_label["copy"].'" onClick="if (!confirm("'.$lang_label["are_you_sure"].'")) return false;>'; ?>
+			<input type="submit" name="delete" class="sub delete" value="<?php echo $lang_label["delete"].'" onClick="if (!confirm("'.$lang_label["are_you_sure"].'")) return false;>'; ?>
 			<tr><td colspan=2>
 			</div></td></tr>
 			</table>

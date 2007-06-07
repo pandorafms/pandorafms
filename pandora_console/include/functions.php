@@ -397,5 +397,69 @@ function format_for_graph ( $number , $decimals=2, $dec_point=".", $thousands_se
                 return number_format ($number, 0, $dec_point, $thousands_sep);	
 }
 
+function give_parameter_get ( $name, $default = "" ){
+	$output = $default;
+	if (isset ($_GET[$name])){
+		$output = $_GET[$name];
+	}
+	return $output;
+}
+
+function give_parameter_post ( $name, $default = "" ){
+	$output = $default;
+	if (isset ($_POST[$name])){
+		$output = $_POST[$name];
+	}
+	return $output;
+}
+
+function human_time_comparation ( $timestamp ){
+	global $config;
+	require ("include/languages/language_".$config["language_code"].".php");
+	$ahora=date("Y/m/d H:i:s");
+	$seconds = strtotime($ahora) - strtotime($timestamp);
+	if ($seconds < 3600)
+		$render = format_numeric($seconds/60,2)." ".$lang_label["minutes"];
+	elseif (($seconds >= 3600) and ($seconds < 86400))
+		$render = format_numeric ($seconds/3600,2)." ".$lang_label["hours"];
+	elseif ($seconds >= 86400)
+		$render = format_numeric ($seconds/86400,2)." ".$lang_label["days"];
+	return $render;
+}
+
+function human_time_description ($period){
+	switch ($period) {
+		case 3600: 	$period_label = "Hour";
+				break;
+		case 7200: 	$period_label = "2 Hours";
+				break;
+		case 10800: 	$period_label = "3 Hours";
+				break;
+		case 21600: 	$period_label = "6 Hours";
+				break;
+		case 43200: 	$period_label = "12 Hours";
+				break;
+		case 86400: 	$period_label = "Day";
+				break;
+		case 172800: 	$period_label = "Two days";
+				break;
+		case 345600: 	$period_label = "Four days";
+				break;
+		case 604800: 	$period_label = "Last Week";
+				break;
+		case 1296000: 	$period_label = "15 Days";
+				break;
+		case 2592000: 	$period_label = "Last Month";
+				break;
+		case 5184000: 	$period_label = "Two Month";
+				break;
+		case 15552000: 	$period_label = "Six Months";
+				break;
+		case 31104000: 	$period_label = "One year";
+				break;
+		default: 	$period_label = "Day";
+	}
+	return $period_label;
+}
 
 ?>

@@ -96,7 +96,7 @@ if($result2=mysql_query("SELECT * FROM tconfig")){
 		case "bgimage": $config_bgimage=$row2["value"];
 						break;
 		case "style": $config_style=$row2["value"];
-                                                break;
+                        break;
 		}
 	}
 } else {

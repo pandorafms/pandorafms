@@ -23,6 +23,8 @@ require("include/config.php");
 function datos_raw($id_agente_modulo, $periodo){
 	require("include/config.php");
 	require("include/languages/language_".$language_code.".php");
+	$id_user = $_SESSION["id_usuario"];
+	$periodo_label = $periodo;
 	switch ($periodo) {
 		case "mes":
 				$periodo = 86400*30;
@@ -39,6 +41,7 @@ function datos_raw($id_agente_modulo, $periodo){
 	}
 	$periodo = time() - $periodo;
 	$id_agent = give_agent_id_from_module_id ($id_agente_modulo);
+	$id_group = give_db_value ("id_grupo", "tagente", "id_agente", $id_agent);
 	// Different query for string data type
 	$id_tipo_modulo = dame_id_tipo_modulo_agentemodulo($id_agente_modulo);
 	if ( (dame_nombre_tipo_modulo($id_tipo_modulo) == "generic_data_string" ) OR
@@ -65,6 +68,7 @@ function datos_raw($id_agente_modulo, $periodo){
 	if (mysql_num_rows($result)){
 		echo "<table cellpadding='3' cellspacing='3' width='600' class='databox'>";
 		$color=1;
+		echo "<th witdh=20>";
 		echo "<th>".$lang_label["timestamp"]."</th>";
 		echo "<th>".$lang_label["data"]."</th>";
 		while ($row=mysql_fetch_array($result)){
@@ -76,7 +80,13 @@ function datos_raw($id_agente_modulo, $periodo){
 				$tdcolor = "datos2";
 				$color = 1;
 			}
-			echo "<tr>";	
+			echo "<tr>";
+			if (give_acl($id_user, $id_group, "AW") ==1) {
+				echo "<td class='".$tdcolor."' width=20>";
+				echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=$periodo_label&id=$id_agente_modulo&delete=".$row["id_agente_datos"]."'><img src='images/cancel.gif' border=0>";
+			} else {
+				echo "<td class='".$tdcolor."'>";
+			}
 			echo "<td class='".$tdcolor."' style='width:150px'>".$row["timestamp"];
 			echo "<td class='".$tdcolor."'>";
 			if (is_numeric($row["datos"])) {
@@ -117,6 +127,12 @@ if (isset($_GET["tipo"]) AND isset($_GET["id"])) {
 } else {
 	echo "<h3 class='error'>".$lang_label["graf_error"]."</h3>";
 	exit;
+}
+
+if (isset($_GET["delete"])) {
+	$delete =$_GET["delete"];
+	$sql = "DELETE FROM tagente_datos WHERE id_agente_datos = $delete";
+	$result=mysql_query($sql);
 }
 
 datos_raw($id,$tipo);

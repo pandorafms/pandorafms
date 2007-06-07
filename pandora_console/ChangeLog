@@ -1,3 +1,47 @@
+2007-06-07  Sancho Lerena  <slerena@artica.es>
+
+	* include/styles/god.css: Added god51 (reporting).
+	
+	* include/styles/pandora.css: Added h4 (for reporting).
+	
+	* include/functions_db.php: 
+
+	* include/functions_reporting.php: Reporting functions should be
+	here. Now is SLA, tomorrow will be more ;)
+	
+	* include/functions.php: Added generic POST/GET parameter
+	management, and a few functions to mangle dates.
+	
+	* pandoradb.sql: A few changes on treport_content table.
+	
+	* operation/agentes/datos_agente.php: Added option to delete
+	individual data from here. Useful to purge bad data.
+	
+	* operation/reporting/reporting_viewer.php: New report viewer on
+	HTML.
+
+	* operation/reporting/custom_reporting.php: Moved.
+	
+	* operation/reporting/graph_builder.php: Moved to godmode
+	directory.
+	
+	* operation/menu.php: Added few options and removed other
+	(Reporting)
+	
+	* reporting/fgraph.php: Few changes to use graphs in reports
+	without titles.
+	
+	* godmode/reporting: Added.
+	
+	* godmode/reporting/reporting_builder.php: The Pandora FMS report
+	editor :-)
+	
+	* godmode/reporting/graph_builder.php: Graph builder almost done,
+	only a few bugs to finish.
+	
+	* godmode/menu.php: New reporting options in godmode menu.
+
+
 2007-06-06  Raul Mateos  <raulofpandora@gmail.com>
 
 	* godmode/*.php: Closed a lot of unclosed html tags. Updated near all of

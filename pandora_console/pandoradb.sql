@@ -516,8 +516,29 @@ CREATE TABLE `treport_content` (
   `id_agent_module` int(11) NOT NULL default 0,
   `type` tinyint(1) UNSIGNED NOT NULL default 0,
   `period` int(11) NOT NULL default 0,
+  `sla_max` int(11) NOT NULL default 0,
+  `sla_min` int(11) NOT NULL default 0,
+  `sla_limit` int(11) NOT NULL default 0,
   PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB;
+
+/*
+
+treport_content descripcion
+type valid values
+  0 - Simple graph
+  1 - User/Combined graph
+  2 - SLA
+  3 - Event report
+  4 - Alert report
+  5 - Monitor report
+  6 - Avg. value
+  7 - Max. value
+  8 - Min. value
+
+id_gs is for combined graph pprimary key id
+
+*/
 
 CREATE TABLE `tlayout` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,

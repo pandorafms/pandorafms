@@ -227,7 +227,7 @@ if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 	} else {
 		echo '<div id="op8">';
 	}
-	echo '<ul class="mn"><li><a href="index.php?sec=reporting&sec2=operation/reporting/custom_reporting" class="mn">'. $lang_label["reporting"].'</a></li></ul></div>';
+	echo '<ul class="mn"><li><a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer" class="mn">'. $lang_label["reporting"].'</a></li></ul></div>';
 
 	// Custom reporting
 	if (isset($_GET["sec"]) && $_GET["sec"] == "reporting"){
@@ -248,16 +248,7 @@ if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 		}
 		echo "<ul class='mn'><li><a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer' class='mn'>".$lang_label["custom_graphs"]."</a></li></ul></div>";
 	}
-	
-	// Custom graph builder
-	if (isset($_GET["sec"]) && $_GET["sec"] == "reporting"){
-		if (isset($_GET["sec2"]) && $_GET["sec2"] == "operation/reporting/graph_builder"){
-			echo "<div class='arrows'>";
-		} else {
-			echo "<div class='arrow'>";
-		}
-		echo "<ul class='mn'><li><a href='index.php?sec=reporting&sec2=operation/reporting/graph_builder' class='mn'>".$lang_label["graph_builder"]."</a></li></ul></div>";
-	}
+
 }
 
 ?>		

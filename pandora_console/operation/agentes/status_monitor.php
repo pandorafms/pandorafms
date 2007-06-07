@@ -42,7 +42,7 @@ if (comprueba_login() == 0) {
 	} else {
 		echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60'>";
 	}
-	echo "<table cellspacing='4' cellpadding='4' width=650 class='databox'>";
+	echo "<table cellspacing='4' cellpadding='4' width='600' class='databox'>";
 	echo "<tr><td valign='middle'>".$lang_label["group"]."</td>";
 	echo "<td valign='middle'>";
 	echo "<select name='ag_group' onChange='javascript:this.form.submit();' class='w130'>";
@@ -66,11 +66,9 @@ if (comprueba_login() == 0) {
 		sec2=operation/agentes/status_monitor&refr=60'>";
 	}
 	
-	echo "<td>&nbsp;</td>";
-	echo "<td>";
-	echo "<img src='images/b_green.gif'> - ".$lang_label["green_light"]."</td>
-	<td>&nbsp;</td>";
-	echo "<td>";
+	echo "<td class='f9' style='padding-left: 10px;'>";
+	echo "<img src='images/b_green.gif'> - ".$lang_label["green_light"]."</td>";
+	echo "<td class='f9' style='padding-left: 10px;'>";
 	echo "<img src='images/b_red.gif'> - ".$lang_label["red_light"]."</td>";
 	echo "</td>";
 	echo "</tr>";
@@ -81,7 +79,7 @@ if (comprueba_login() == 0) {
 	if ( isset($ag_modulename)){
 		echo "<option>".$ag_modulename."</option>";
 	} 
-	echo "<option>ALL</option>";
+	echo "<option>".$lang_label["all"]."</option>";
 	$sql='SELECT DISTINCT nombre 
 	FROM tagente_modulo 
 	WHERE (id_tipo_modulo = 2) 
@@ -112,7 +110,7 @@ if (comprueba_login() == 0) {
 	$color =1;
 	$result=mysql_query($sql);
 	if (mysql_num_rows($result)){
-		while ($row=mysql_fetch_array($result)){ //while there are agents	
+		while ($row=mysql_fetch_array($result)){ //while there are agents
 			if ($row["disabled"] == 0) {
 				if ((isset($ag_modulename)) && ($ag_modulename != "ALL"))
 					$query_gen='SELECT * FROM tagente_modulo 
@@ -190,7 +188,8 @@ if (comprueba_login() == 0) {
 			}
 		}
 		if (isset($string)) {
-		echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>
+		echo "
+		<table cellpadding='4' cellspacing='4' width='750' class='databox'>
 		<tr>
 		<th>
 		<th>".$lang_label["agent"]."</th>

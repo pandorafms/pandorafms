@@ -194,7 +194,7 @@ if (isset($_POST['operacion'])){
 
 ?>
 <form name='visualizacion' method='POST' action='index.php?sec=incidencias&sec2=operation/incidents/incident'>
-<table border="0" cellpadding=3 cellspacing=3>
+<table class="databox" cellpadding="4" cellspacing="4">
 <tr>
 <td valign="middle">
 <h3><?php echo $lang_label["filter"]; ?></h3>
@@ -214,23 +214,24 @@ if (isset($_POST['operacion'])){
 			$estado = $_POST["estado"];
 		echo "<option value='".$estado."'>";
 		switch ($estado){
-			case -1: echo $lang_label["all_inc"]; break;
-			case 0: echo $lang_label["opened_inc"]; break;
-			case 13: echo $lang_label["closed_inc"]; break;
-			case 2: echo $lang_label["rej_inc"]; break;
-			case 3: echo $lang_label["exp_inc"]; break;
+			case -1: echo $lang_label["all_inc"]."</option>"; break;
+			case 0: echo $lang_label["opened_inc"]."</option>"; break;
+			case 13: echo $lang_label["closed_inc"]."</option>"; break;
+			case 2: echo $lang_label["rej_inc"]."</option>"; break;
+			case 3: echo $lang_label["exp_inc"]."</option>"; break;
 		}
 	}
 
-	echo "<option value='-1'>".$lang_label["all_inc"];
-	echo "<option value='0'>".$lang_label["opened_inc"];
-	echo "<option value='13'>".$lang_label["closed_inc"];
-	echo "<option value='2'>".$lang_label["rej_inc"];
-	echo "<option value='3'>".$lang_label["exp_inc"];
+	echo "<option value='-1'>".$lang_label["all_inc"]."</option>";
+	echo "<option value='0'>".$lang_label["opened_inc"]."</option>";
+	echo "<option value='13'>".$lang_label["closed_inc"]."</option>";
+	echo "<option value='2'>".$lang_label["rej_inc"]."</option>";
+	echo "<option value='3'>".$lang_label["exp_inc"]."</option>";
 ?>
 	</select>
 	</td>
-	<td valign="middle"><noscript><input type="submit" class="sub" value="<?php echo $lang_label["show"] ?>" border="0"></noscript>
+	<td valign="middle">
+	<noscript><input type="submit" class="sub" value="<?php echo $lang_label["show"] ?>" border="0"></noscript>
 	</td>
 	<td rowspan="5" class="f9" style="padding-left: 30px; vertical-align: top;">
 	<h3><?php echo $lang_label["status"] ?></h3>
@@ -268,38 +269,45 @@ if ((isset($_GET["prioridad"])) OR (isset($_GET["prioridad"]))){
 		case 10: echo $lang_label["maintenance"]; break;
 	}
 }
-echo "<option value='-1'>".$lang_label["all"]." ".$lang_label["priority"]; // al priorities (default)
-echo '<option value="0">'.$lang_label["informative"];
-echo '<option value="1">'.$lang_label["low"];
-echo '<option value="2">'.$lang_label["medium"];
-echo '<option value="3">'.$lang_label["serious"];
-echo '<option value="4">'.$lang_label["very_serious"];
-echo '<option value="10">'.$lang_label["maintenance"];
-echo "</select></td><td valign='middle><noscript>";
-echo "<input type='submit' class='sub' value='".$lang_label["show"]."' border='0'></noscript>";
+echo "<option value='-1'>".$lang_label["all"]." ".$lang_label["priority"]."</option>"; // al priorities (default)
+echo '<option value="0">'.$lang_label["informative"]."</option>";
+echo '<option value="1">'.$lang_label["low"]."</option>";
+echo '<option value="2">'.$lang_label["medium"]."</option>";
+echo '<option value="3">'.$lang_label["serious"]."</option>";
+echo '<option value="4">'.$lang_label["very_serious"]."</option>";
+echo '<option value="10">'.$lang_label["maintenance"]."</option>";
+echo "</select></td>
+<td valign='middle>
+<noscript>
+<input type='submit' class='sub' value='".$lang_label["show"]."' border='0'>
+</noscript>";
 echo "</td>";
 echo '<tr><td><select name="grupo" onChange="javascript:this.form.submit();" class="w155">';
 
-if ((isset($_GET["grupo"])) OR (isset($_GET["grupo"]))){ 
+if ((isset($_GET["grupo"])) OR (isset($_GET["grupo"]))){
 	if (isset($_GET["grupo"]))
 		$grupo = $_GET["grupo"];
 	if (isset($_POST["grupo"]))
 		$grupo = $_POST["grupo"];
 	echo "<option value=".$grupo.">";
-
-	if ($grupo == -1)
+	if ($grupo == -1) {
 		echo $lang_label["all"]." ".$lang_label["groups"]; // all groups (default)
-	else
+	} else {
 		echo dame_nombre_grupo($grupo);
+	}
+	echo "</option>";
 }
-echo "<option value='-1'>".$lang_label["all"]." ".$lang_label["groups"]; // all groups (default)
+echo "<option value='-1'>".$lang_label["all"]." ".$lang_label["groups"]."</option>"; // all groups (default)
 $sql2="SELECT * FROM tgrupo";
 $result2=mysql_query($sql2);
 while ($row2=mysql_fetch_array($result2)){
-	echo "<option value=".$row2["id_grupo"].">".$row2["nombre"];
+	echo "<option value=".$row2["id_grupo"].">".$row2["nombre"]."</option>";
 }
 
-echo "</select></td><td valign='middle'><noscript><input type='submit' class='sub' value='".$lang_label["show"]."' border='0'></noscript></td>";
+echo "</select></td>
+<td valign='middle'>
+<noscript><input type='submit' class='sub' value='".$lang_label["show"]."' border='0'></noscript>
+</td>";
 
 // Pass search parameters for possible future filter searching by user
 if (isset($_GET["usuario"]))
@@ -322,6 +330,11 @@ $row2_count = mysql_fetch_array($result2_count);
 
 if ($row2_count[0] <= 0 ) {
 	echo '<div class="nf">'.$lang_label["no_incidents"].'</div><br></table>';
+	echo "<table>";
+	echo "<tr><td>";
+	echo "<form method='post' action='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&insert_form'>";
+	echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create_incident"]."'></form>";
+	echo "</td></tr></table>";
 } else {
 	// TOTAL incidents
 	$total_incidentes = $row2_count[0];
@@ -346,17 +359,17 @@ if ($row2_count[0] <= 0 ) {
 	echo '<br>';
 	// Show headers
 	
-	echo "<table cellpadding='3' cellspacing='3' width='770'>";
+	echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>";
 	echo "<tr>";
-	echo "<th width='43'>ID";
-	echo "<th>".$lang_label["status"];
-	echo "<th width='165'>".$lang_label["incident"];
-	echo "<th width='50'>".$lang_label["priority"];
-	echo "<th>".$lang_label["group"];
-	echo "<th width='150'>".$lang_label["updated_at"];
-	echo "<th>".$lang_label["source"];
-	echo "<th width='75'>".$lang_label["in_openedby"];
-	echo "<th>".$lang_label["delete"];
+	echo "<th width='43'>ID</th>";
+	echo "<th>".$lang_label["status"]."</th>";
+	echo "<th width='165'>".$lang_label["incident"]."</th>";
+	echo "<th width='50'>".$lang_label["priority"]."</th>";
+	echo "<th>".$lang_label["group"]."</th>";
+	echo "<th width='150'>".$lang_label["updated_at"]."</th>";
+	echo "<th>".$lang_label["source"]."</th>";
+	echo "<th width='75'>".$lang_label["in_openedby"]."</th>";
+	echo "<th>".$lang_label["delete"]."</th>";
 	$color = 1;
 
 	while ($row2=mysql_fetch_array($result2)){ 
@@ -372,7 +385,8 @@ if ($row2_count[0] <= 0 ) {
 			}
 			$note_number = dame_numero_notas($row2["id_incidencia"]);
 			echo "<tr>";
-			echo "<td class='$tdcolor' align='center'><a href='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id=".$row2["id_incidencia"]."'>".$row2["id_incidencia"]."</a>";
+			echo "<td class='$tdcolor' align='center'>
+			<a href='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id=".$row2["id_incidencia"]."'>".$row2["id_incidencia"]."</a>";
 
 			// Check for attachments in this incident
 			$result3=mysql_query("SELECT * FROM tattachment WHERE id_incidencia = ".$row2["id_incidencia"]);
@@ -434,14 +448,15 @@ if ($row2_count[0] <= 0 ) {
 			}
 		}
 	}
-	echo "<tr><td colspan='9'><div class='raya'></div>"	;
+	echo "</tr></table>";
+	if (give_acl($_SESSION["id_usuario"], 0, "IW")==1) {
+		echo "<table width='750px'>";
+		echo "<tr><td align='right'>";
+		echo "<form method='post' action='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&insert_form'>";
+		echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create_incident"]."'></form>";
 }
+	echo "</td></tr></table>";	
 
-if (give_acl($_SESSION["id_usuario"], 0, "IW")==1) {
-	echo "<tr><td align='right' colspan='9'>";
-	echo "<form method='post' action='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&insert_form'>";
-	echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create_incident"]."'></form>";
 }
-echo "</td></tr></table>";
 
 ?>

@@ -19,6 +19,8 @@
 	user (it uses PING from system).
 	
 	* bin/PandoraFMS: Now contains all .PM files for PandoraFMS.
+
+	* bin/pandora_recon.pl: Now uses ping() from PingExternal.
 	
 
 2007-06-05  Sancho Lerena <slerena@gmail.com>

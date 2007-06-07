@@ -21,11 +21,10 @@
 use strict;
 use warnings;
 
-use Date::Manip;                	# Needed to manipulate DateTime formats
-					# of input, output and compare
-use Time::Local;                	# DateTime basic manipulation
-use Net::Ping;				# ICMP
-use NetAddr::IP;			# To manage IP Addresses
+use Date::Manip;        # Needed to manipulate DateTime formats
+						# of input, output and compare
+use Time::Local;        # DateTime basic manipulation
+use NetAddr::IP;		# To manage IP Addresses
 use POSIX;				# to use ceil() function
 use Socket;				# to resolve address
 use threads;
@@ -34,6 +33,7 @@ use threads;
 use PandoraFMS::Config;
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
+use PandoraFMS::PingExternal;
 
 # FLUSH in each IO (only for debug, very slooow)
 # ENABLED in DEBUGMODE
@@ -222,17 +222,13 @@ sub pandora_exec_task {
 ##############################################################################
  
 sub scan_icmp {
-	my $p;
 	my $dest = $_[0];
 	my $l_timeout = $_[1];
-
-	$p = Net::Ping->new("icmp",$l_timeout);
-	if ($p->ping($dest)) {
-		$p->close();  
+ 	$result = ping(hostname => $dest, timeout => $l_timeout, size => 32, count => 1);
+	if ($result) {
 		return 1;
 	} else {
-		$p->close();  
-	     	return 0;
+	     return 0;
 	}
 }
 

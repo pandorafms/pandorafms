@@ -29,9 +29,8 @@ echo "<div style='width:645'>";
 echo "<div style='float:right;'><img src='images/pulpo_lupa.gif' class='bot' align='left'></div>";	
 ?>
 <div style='float:left;'>
-<table width="500" cellpadding="3" cellspacing="3">
+<table width="500" cellpadding="4" cellspacing="4" class='databox'>
 <form name="busqueda" method="post" action="index.php?sec=incidencias&sec2=operation/incidents/incident">
-<td class='lb' rowspan="4" width="5">
 <tr>
 <td class="datos"><?php echo $lang_label["user"] ?>
 <td class="datos">
@@ -48,7 +47,8 @@ echo "<div style='float:right;'><img src='images/pulpo_lupa.gif' class='bot' ali
 <tr><td class="datos2"><?php echo $lang_label["free_text_search"] ?>
 <td class="datos2"><input type="text" size="45" name="texto"></tr>
 <tr><td class="datos" colspan="2"><i><?php echo $lang_label["free_text_search_msg"] ?></i></td></tr>
-<tr><td colspan='3'><div class='raya'></div></td></tr>
+</table>
+<table width="500">
 <tr><td align="right" colspan="3">
 <?php echo "<input name='uptbutton' type='submit' class='sub search' value='".$lang_label["search"]."'>"; ?>
 

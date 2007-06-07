@@ -74,7 +74,8 @@ if (isset($_GET["id"])){
 		$nota = entrada_limpia($_POST["nota"]);
 		$id_usuario=$_SESSION["id_usuario"];
 
-		$sql1 = "INSERT INTO tnota (id_usuario,timestamp,nota) VALUES ('".$id_usuario."','".$timestamp."','".$nota."')";
+		$sql1 = "INSERT INTO tnota (id_usuario,timestamp,nota) 
+		VALUES ('".$id_usuario."','".$timestamp."','".$nota."')";
 		$res1=mysql_query($sql1);
 		if ($res1) { echo "<h3 class='suc'>".$lang_label["create_note_ok"]."</h3>"; }
 
@@ -202,9 +203,10 @@ if (isset($id_inc)) {
 } else {
 	echo $lang_label["create_incident"]."<a href='help/".$help_code."/chap4.php#41' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 }
-echo '<table cellpadding=3 cellspacing=3 border=0 width=600>';
+echo '<table cellpadding="4" cellspacing="4" class="databox" width="600">';
 if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)) {
-	echo '<tr><td class="lb" rowspan="6" width="5"><td class="datos"><b>'.$lang_label["incident"].'</b><td colspan=3 class="datos"><input type="text" name="titulo" size=70 value="'.$titulo.'">';
+	echo '<tr><td class="datos"><b>'.$lang_label["incident"].'</b></td>
+	<td colspan=3 class="datos"><input type="text" name="titulo" size=70 value="'.$titulo.'">';
 } else {
 	echo '<tr><td class="datos"><b>'.$lang_label["incident"].'</b><td colspan=3 class="datos"><input type="text" name="titulo" size=70 value="'.$titulo.'" readonly>';
 	}
@@ -215,7 +217,7 @@ echo "<td class='datos2'><i>".$actualizacion."</i>";
 echo '<tr><td class="datos"><b>'.$lang_label["in_openedby"].'</b><td class="datos">';
 if ((give_acl($id_user, $id_grupo, "IM")==1) OR ($usuario == $id_user)) {
 	echo "<select name='usuario_form' width='200px'>";
-	echo "<option value='".$usuario."'>".$usuario." - ".dame_nombre_real($usuario);
+	echo "<option value='".$usuario."'>".$usuario." - ".dame_nombre_real($usuario)."</option>";
 	$sql1='SELECT * FROM tusuario ORDER BY id_usuario';
 	$result=mysql_query($sql1);
 	while ($row2=mysql_fetch_array($result)){
@@ -236,10 +238,12 @@ else {
 
 if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)) {
 	echo '<td class="datos"><b>'.$lang_label["status"].'</b>
-	<td class="datos"><select name="estado_form" class="w135">';
+	<td class="datos">
+	<select name="estado_form" class="w135">';
 } else {
 	echo '<td class="datos"><b>'.$lang_label["status"].'</b>
-	<td class="datos"><select disabled name="estado_form" class="w135">';
+	<td class="datos">
+	<select disabled name="estado_form" class="w135">';
 }
 
 switch ( $estado ){
@@ -255,15 +259,17 @@ echo '<option value="0">'.$lang_label["in_state_0"];
 echo '<option value="2">'.$lang_label["in_state_2"];
 echo '<option value="3">'.$lang_label["in_state_3"];
 echo '<option value="13">'.$lang_label["in_state_13"];
-echo '</select>';
+echo '</select></td>';
 
 // Only owner could change source or user with Incident management privileges
 if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)) {
 	echo '<tr><td class="datos2"><b>'.$lang_label["source"].'</b></td>
-	<td class="datos2"><select name="origen_form" class="w135">';
+	<td class="datos2">
+	<select name="origen_form" class="w135">';
 } else {
 	echo '<tr><td class="datos2"><b>'.$lang_label["source"].'</b></td>
-	<td class="datos2"><select disabled name="origen_form" class="w135">';
+	<td class="datos2">
+	<select disabled name="origen_form" class="w135">';
 }
 // Fill combobox with source (origen)
 if ($origen != "")
@@ -273,15 +279,17 @@ $result=mysql_query($sql1);
 while ($row2=mysql_fetch_array($result)){
 	echo "<option value='".$row2["origen"]."'>".$row2["origen"]."</option>";
 }
-echo "</select>";
+echo "</select></td>";
 
 // Group combo
 if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)) {
 	echo '<td class="datos2"><b>'.$lang_label["group"].'</b></td>
-	<td class="datos2"><select name="grupo_form" class="w135">';
+	<td class="datos2">
+	<select name="grupo_form" class="w135">';
 } else {
 	echo '<td class="datos2"><b>'.$lang_label["group"].'</b></td>
-	<td class="datos2"><select disabled name="grupo_form" class="w135">';
+	<td class="datos2">
+	<select disabled name="grupo_form" class="w135">';
 }
 if ($id_grupo != 0)
 	echo "<option value='".$id_grupo."'>".$grupo;
@@ -292,7 +300,7 @@ while ($row=mysql_fetch_array($result)){
 		echo "<option value='".$row["id_grupo"]."'>".$row["nombre"]."</option>";
 }
 
-echo '</select><tr>';
+echo '</select></td></tr><tr>';
 if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)) {
 	echo '<td class="datos"><b>'.$lang_label["priority"].'</b></td>
 	<td class="datos"><select name="prioridad_form" class="w135">';
@@ -302,20 +310,20 @@ if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)) 
 }
 
 switch ( $prioridad ){
-	case 0: echo '<option value="0">'.$lang_label["informative"]; break;
-	case 1: echo '<option value="1">'.$lang_label["low"]; break;
-	case 2: echo '<option value="2">'.$lang_label["medium"]; break;
-	case 3: echo '<option value="3">'.$lang_label["serious"]; break;
-	case 4: echo '<option value="4">'.$lang_label["very_serious"]; break;
-	case 10: echo '<option value="10">'.$lang_label["maintenance"]; break;
+	case 0: echo '<option value="0">'.$lang_label["informative"].'</option>'; break;
+	case 1: echo '<option value="1">'.$lang_label["low"].'</option>'; break;
+	case 2: echo '<option value="2">'.$lang_label["medium"].'</option>'; break;
+	case 3: echo '<option value="3">'.$lang_label["serious"].'</option>'; break;
+	case 4: echo '<option value="4">'.$lang_label["very_serious"].'</option>'; break;
+	case 10: echo '<option value="10">'.$lang_label["maintenance"].'</option>'; break;
 }
 
-echo '<option value="0">'.$lang_label["informative"];
-echo '<option value="1">'.$lang_label["low"];
-echo '<option value="2">'.$lang_label["medium"];
-echo '<option value="3">'.$lang_label["serious"];
-echo '<option value="4">'.$lang_label["very_serious"];
-echo '<option value="10">'.$lang_label["maintenance"];
+echo '<option value="0">'.$lang_label["informative"].'</option>';
+echo '<option value="1">'.$lang_label["low"].'</option>';
+echo '<option value="2">'.$lang_label["medium"].'</option>';
+echo '<option value="3">'.$lang_label["serious"].'</option>';
+echo '<option value="4">'.$lang_label["very_serious"].'</option>';
+echo '<option value="10">'.$lang_label["maintenance"].'</option>';
 
 echo "<td class='datos'><b>Creator</b>
 <td class='datos'>".$id_creator." ( <i>".dame_nombre_real($id_creator)." </i>)";
@@ -334,8 +342,8 @@ if (isset($texto)) {
 }
 echo "</textarea></td></tr>";
 
-echo '<tr><td colspan="5"><div class="raya"></div></td></tr>';
-echo "<tr><td colspan='5' align='right'>";
+echo '</table><table width="600px">';
+echo "<tr><td align='right'>";
 // Only if user is the used who opened incident or (s)he is admin
 
 $iduser_temp=$_SESSION['id_usuario'];
@@ -366,8 +374,8 @@ if ($creacion_incidente == 0){
 	if (give_acl($iduser_temp, $id_grupo, "IW")==1){
 		echo '
 		<h3>'.$lang_label["attachfile"].'</h3>
-		<table cellpadding=3 cellspacing=3 border=0 width="400">
-		<tr><td class="lb" rowspan="2" width="5">
+		<table cellpadding="4" cellspacing="3" class="databox" width="400">
+		<tr>
 		<td class="datos">'.$lang_label["filename"].'</td>
 		<td class="datos"><form method="post" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'&upload_file=1" enctype="multipart/form-data">
 		<input type="file" name="userfile" value="userfile" class="sub" size="40">
@@ -375,9 +383,11 @@ if ($creacion_incidente == 0){
 		<tr><td class="datos2">'.$lang_label["description"].'</td>
 		<td class="datos2" colspan="3">
 		<input type="text" name="file_description" size="47">
-		<tr><td colspan="4"><div class="raya"></div></td></tr>
-		<tr><td colspan="4" style="text-align: right;">
-		<input type="submit" name="upload" value="'.$lang_label["upload"].'" class="sub">
+		</td></tr>
+		</table>
+		<table width="400px">
+		<tr><td style="text-align: right;">
+		<input type="submit" name="upload" value="'.$lang_label["upload"].'" class="sub wand">
 		</td></tr></table><br>';
 	}
 	// ************************************************************
@@ -389,7 +399,7 @@ if ($creacion_incidente == 0){
 
 	if (mysql_num_rows($att_fil))
 	{
-		echo "<table cellpadding='3' cellspacing='3' border='0' width='650'>";
+		echo "<table cellpadding='4' cellspacing='4' class='data_box' width='650'>";
 		echo "<tr><td>";
 		echo "<h3>".$lang_label["attached_files"]."</h3>";
 		echo "</td></tr><td>";
@@ -409,7 +419,7 @@ if ($creacion_incidente == 0){
 			}
 
 		}
-		echo "<tr><td colspan='4'><div class='raya'></div></td></tr></table></table><br>";
+		echo "</td></tr></table></table><br>";
 	}
 	// ********************************************************************
 	// Notes
@@ -419,10 +429,10 @@ if ($creacion_incidente == 0){
 	$res4=mysql_query($sql4);
 	while ($row2=mysql_fetch_array($res4)){
 		if ($cabecera == 0) { // Show head only one time
-			echo "<table cellpadding='3' cellspacing='3' border='0' width='550px'>";
+			echo "<table cellpadding='4' cellspacing='4' class='databox' width='550px'>";
 			echo "<tr><td>";
 			echo "<h3>".$lang_label["in_notas_t1"]."</h3>";
-			echo "<table cellpadding='3' cellspacing='3' border='0'>";
+			echo "<table cellpadding='' cellspacing='3' border='0'>";
 			echo "<tr><td>";
 			$cabecera = 1;
 		}

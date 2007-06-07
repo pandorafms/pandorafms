@@ -160,10 +160,27 @@ if (isset($_POST["event"]))
 	$event = entrada_limpia($_POST["event"]);
 
 echo "<h2>".$lang_label["events"]." &gt; ".$lang_label["event_main_view"]."<a href='help/".$help_code."/chap5.php#5' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
-echo "<table cellpadding='4' cellspacing='4'><tr>";
-
+echo "<table cellpadding='4' cellspacing='4' class='databox'>";
+echo "<tr>";
+echo "<td colspan='2' valign='top'>";
+echo "<h3>".$lang_label["filter"]."</h3>";
+echo "</td>";
+echo "<td rowspan='4' class='f9' style='padding-left: 30px; line-height: 17px; vertical-align: top;'>";
+echo "<h3>".$lang_label["status"]."</h3>";
+echo "<img src='images/dot_green.gif'> - ".$lang_label["validated_event"];
+echo "<br>";
+echo "<img src='images/dot_red.gif'> - ".$lang_label["not_validated_event"];
+echo "</td>";
+echo "<td rowspan='4' class='f9' style='padding-left: 30px; line-height: 17px; vertical-align: top;'>";
+echo "<h3>".$lang_label["action"]."</h3>";
+echo "<img src='images/ok.png'> - ".$lang_label["validate_event"];
+echo "<br>";
+echo "<img src='images/cross.png'> - ".$lang_label["delete_event"];
+echo "<br>";
+echo "<img src='images/page_lightning.png'> - ".$lang_label["create_incident"];
+echo "</td></tr>";
 echo "<form method='post' action='index.php?sec=eventos&sec2=operation/events/events&refr=60'>";
-echo "<td>".$lang_label["group"]."</td>";
+echo "<tr><td>".$lang_label["group"]."</td>";
 echo "<td>";
 echo "<select name='ev_group' onChange='javascript:this.form.submit();' class='w130'>";
 if ( $ev_group > 1 ){
@@ -172,16 +189,7 @@ if ( $ev_group > 1 ){
 echo "<option value=1>".dame_nombre_grupo(1)."</option>";
 list_group ($id_user);
 echo "</select>";
-echo "<td class='f9' style='padding-left: 30px; line-height: 17px; vertical-align: top;'>";
-echo "<img src='images/dot_green.gif'> - ".$lang_label["validated_event"];
-echo "<br>";
-echo "<img src='images/dot_red.gif'> - ".$lang_label["not_validated_event"];
-echo "</td>";
-echo "<td class='f9' style='padding-left: 30px; line-height: 17px; vertical-align: top;'>";
-echo "<img src='images/ok.png'> - ".$lang_label["validate_event"];
-echo "<br>";
-echo "<img src='images/cross.png'> - ".$lang_label["delete_event"];
-echo "</td>";
+
 echo "<tr><td valign='middle'>".$lang_label["events"]."</td>";
 echo "<td><form method='post' action='index.php?sec=eventos&sec2=operation/events/events&refr=60'>";
 echo "<select name='event' onChange='javascript:this.form.submit();' class='w155'>";

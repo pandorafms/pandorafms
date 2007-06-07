@@ -24,20 +24,23 @@ require("include/config.php");
 if (comprueba_login() == 0) {
 
 	$id_inc = $_GET["id_inc"];
-	$ahora=date("Y/m/d H:i:s");
+	$now=date("Y/m/d H:i:s");
 
 	// Create Note
-	echo "<h2>".$lang_label["incident_manag"]."</h2>";
-	echo "<h3>".$lang_label["note_title"]." #".$id_inc."<a href='help/".$help_code."/chap3.php#331' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
-	echo "<table cellpadding=3 cellspacing=3 border=0><form name='nota' method='post' action='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&insertar_nota=1&id=".$id_inc."'>";
-	echo "<tr><td class='lb' rowspan='2' width='5'><td class='datos'><b>".$lang_label["date"]."</b>";
-	echo "<td class='datos'>".$ahora;
-	echo "<input type='hidden' name='timestamp' value='".$ahora."'>";
+	echo "<h2>".$lang_label["incident_manag"]." &gt; ";
+	echo $lang_label["note_title"]." #".$id_inc."<a href='help/".$help_code."/chap3.php#331' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+	echo "<table cellpadding='4' cellspacing='4' class='databox' width='550px'>
+	<form name='nota' method='post' action='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&insertar_nota=1&id=".$id_inc."'>";
+	echo "<tr><td class='datos'><b>".$lang_label["date"]."</b>";
+	echo "<td class='datos'>".$now."</td>";
+	echo "<input type='hidden' name='timestamp' value='".$now."'>";
 	echo "<input type='hidden' name='id_inc' value='".$id_inc."'>";
-	echo '<tr><td colspan="3" class="datos2"><textarea name="nota" rows="20" cols="85">';
+	echo '<tr><td colspan="3" class="datos2"><textarea name="nota" rows="20" cols="80">';
 	echo '</textarea>';
-	echo '<tr><td colspan="3"><div class="raya"></div></td></tr>';
-	echo '<tr><td colspan="3" align="right"><input name="addnote" type="submit" class="sub" value="'.$lang_label["add"].'">';
+	echo '</td></tr>';
+	echo '</table><table width="550">';
+	echo '<tr><td align="right">
+	<input name="addnote" type="submit" class="sub wand" value="'.$lang_label["add"].'">';
 	echo '</table>';
 
 } // end page

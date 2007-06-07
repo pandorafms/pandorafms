@@ -6,10 +6,8 @@
 // Main PHP/SQL code development and project architecture and management
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
 // CSS and some PHP additions
-// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
-// Javascript Active Console code.
 // Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
-// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
+// Additions to Pandora FMS 1.2 graph code 
 // Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
 //
 // This program is free software; you can redistribute it and/or
@@ -1189,6 +1187,8 @@ function return_moduledata_min_value ($id_agent_module, $period){
 	} else 
 		return (0);
 }
+
+
 
 
 ?>

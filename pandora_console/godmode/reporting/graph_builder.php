@@ -193,7 +193,7 @@ if (! isset($_GET["delete_module"])){
 	echo "<h2>".$lang_label["reporting"]." &gt; ";
 if (isset($chunk1)) {
 	echo $lang_label["graph_builder_modulelist"]."</h2>";
-	echo "<form method='post' action='index.php?sec=reporting&sec2=operation/reporting/graph_builder&delete_module=1'>";
+	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&delete_module=1'>";
 	if (isset($chunkdata))
 		echo "<input type='hidden' name='chunk' value='$chunkdata'>";
 	if (isset($id_agent))
@@ -247,7 +247,7 @@ if (($render == 1) && (isset($modules))) {
 // -----------------------
 echo $lang_label["graph_builder"]."</h2>";
 echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
-echo "<form method='post' action='index.php?sec=reporting&sec2=operation/reporting/graph_builder&get_agent=1'>";
+echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&get_agent=1'>";
 
 if (isset($period))
     echo "<input type='hidden' name='period' value='$period'>";
@@ -276,7 +276,7 @@ echo "</form>";
 // -----------------------
 // SOURCE MODULE FORM
 // -----------------------
-echo "<form method='post' action='index.php?sec=reporting&sec2=operation/reporting/graph_builder&add_module=1'>";
+echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&add_module=1'>";
 if (isset($chunkdata))
 	echo "<input type='hidden' name='chunk' value='$chunkdata'>";
 
@@ -423,7 +423,7 @@ echo "</table>";
 if (isset($module_array)){
 	echo "<h3>".$lang_label["graph_store"]."</h3>";
 	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
-	echo "<form method='post' action='index.php?sec=reporting&sec2=operation/reporting/graph_builder&store_graph=1'>";
+	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&store_graph=1'>";
 
 	// hidden fields with data begin
 	echo "<input type='hidden' name='module_number' value='".count($module_array)."'>";

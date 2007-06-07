@@ -102,20 +102,55 @@ if (comprueba_login() == 0){
 		else echo '<div id="god3">';
 		echo '<ul class="mn"><li><a href="index.php?sec=gusuarios&amp;sec2=godmode/users/user_list" class="mn">'.$lang_label["manage_users"].'</a></li></ul></div>';
 	}
+	// Reporting
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	if ((give_acl($id_user, 0, "AW")==1)){
+			
+			echo '<div id="god51">';
+		
+			echo '<ul class="mn"><li><a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder" class="mn">'. $lang_label["manage_reporting"].'</a></li></ul></div>';
+
+			// Custom report builder
+			if (isset($_GET["sec"]) && $_GET["sec"] == "greporting"){
+				if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/reporting/reporting_builder"){
+					echo "<div class='arrowgs'>";
+				} else {
+					echo "<div class='arrowg'>";
+				}
+				echo "<ul class='mn'><li><a href='index.php?sec=greporting&sec2=godmode/reporting/reporting_builder' class='mn'>".$lang_label["report_builder"]."</a></li></ul></div>";
+			}
+			
+			// Custom graph builder
+			if (isset($_GET["sec"]) && $_GET["sec"] == "greporting"){
+				if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/reporting/graph_builder"){
+					echo "<div class='arrowgs'>";
+				} else {
+					echo "<div class='arrowg'>";
+				}
+				echo "<ul class='mn'><li><a href='index.php?sec=greporting&sec2=godmode/reporting/graph_builder' class='mn'>".$lang_label["graph_builder"]."</a></li></ul></div>";
+			}
+	}
+
+	// Manage profiles
+	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	
 	if ( (give_acl($id_user, 0, "PM")==1)){
 		if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/profiles/profile_list"){
 			echo '<div id="god4s">';
 		}
 		else echo '<div id="god4">';
 		echo '<ul class="mn"><li><a href="index.php?sec=gperfiles&amp;sec2=godmode/profiles/profile_list" class="mn">'.$lang_label["manage_profiles"].'</a></li></ul></div>';
-		
+
+		// SERVERS
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 		if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/servers/modificar_server"){
 			echo '<div id="god5s">';
         	} else
 			echo '<div id="god5">';
 			
 		echo '<ul class="mn"><li><a href="index.php?sec=gservers&amp;sec2=godmode/servers/modificar_server" class="mn">'.$lang_label["manage_servers"].'</a></li></ul></div>';
-
+		
 		if (isset($_GET["sec"]) && $_GET["sec"] == "gservers"){
 			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/servers/manage_recontask"|| $_GET["sec2"] == "godmode/servers/manage_recontask_form"){
 				echo "<div class='arrowgs'>";
@@ -123,13 +158,16 @@ if (comprueba_login() == 0){
 				echo "<div class='arrowg'>";
 			echo "<ul class='mn'><li><a href='index.php?sec=gservers&sec2=godmode/servers/manage_recontask' class='mn'>".$lang_label["manage_recontask"]."</a></li></ul></div>";
 		}
-       
+       	// AUDIT
+       	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/admin_access_logs"){
 			echo '<div id="god6s">';
 		}
 		else echo '<div id="god6">';
 		echo '<ul class="mn"><li><a href="index.php?sec=glog&amp;sec2=godmode/admin_access_logs" class="mn">'.$lang_label["system_audit"].'</a></li></ul></div>';
 		
+		// Main SETUP
+		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/setup/setup"){
 			echo '<div id="god7s">';
 		}

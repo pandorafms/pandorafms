@@ -15,13 +15,10 @@ div.menug {
 	width: 155px;
 	margin-bottom: 5px;
 	}
-#god1 li, #god2 li, #god3 li, #god4 li, #god5 li, #god6 li, #god7 li, #god8 li, #god1s li, 
-#god2s li, #god3s li, #god4s li, #god5s li, #god6s li, #god7s li, #god8s li, #god_module li, #god_module_sel li {
+#god1 li, #god2 li, #god3 li, #god4 li, #god5 li, #god51 li, #god6 li, #god7 li, #god8 li, #god1s li, #god2s li, #god3s li, #god4s li, #god5s li, #god51s li, #god6s li, #god7s li, #god8s li, #god_module li, #god_module_sel li {
 	padding: 0px 0px 0px 30px;
 }
-div#god1>ul, div#god2>ul, div#god3>ul, div#god4>ul, div#god5>ul, div#god6>ul, 
-div#god7>ul, div#god8>ul, div#god1s>ul, div#god2s>ul, div#god3s>ul, div#god4s>ul, 
-div#god5s>ul, div#god6s>ul, div#god7s>ul, div#god8s>ul, div#god_module>ul, div#god_module_sel>ul {
+div#god1>ul, div#god2>ul, div#god3>ul, div#god4>ul, div#god5>ul, div#god51>ul, div#god6>ul, div#god7>ul, div#god8>ul, div#god1s>ul, div#god2s>ul, div#god3s>ul, div#god4s>ul, div#god5s>ul, div#god51s>ul, div#god6s>ul, div#god7s>ul, div#god8s>ul, div#god_module>ul, div#god_module_sel>ul {
 	width: 124px;
 }
 #god1 li, #god1 li:hover, #god1s li  {
@@ -38,6 +35,9 @@ div#god5s>ul, div#god6s>ul, div#god7s>ul, div#god8s>ul, div#god_module>ul, div#g
 }
 #god5 li, #god5 li:hover, #god5s li {
 	background: url(../../images/god5.gif) no-repeat 3px 3px;
+}
+#god51 li, #god51 li:hover, #god51s li {
+	background: url(../../images/reporting.png) no-repeat 4px 4px;
 }
 #god6 li, #god6 li:hover, #god6s li {
 	background: url(../../images/god6.gif) no-repeat 4px 3px;
@@ -62,7 +62,7 @@ div.arrowg>ul, div.arrowgs>ul {
 #god a:hover,
 #god1 li:hover, #god1s li, #god2 li:hover, #god2s li, #god3 li:hover, #god3s li,
 #god4 li:hover, #god4s li, #god5 li:hover, #god5s li, #god6 li:hover, #god6s li,
-#god7 li:hover, #god7s li, #god8 li:hover, #god8s li, #god_module li:hover, #god_module_sel li, 
+#god7 li:hover, #god7s li, #god8 li:hover, #god8s li, #god_module li:hover, #god_module_sel li,  #god51 li:hover, #god51s li,
 .arrowg li:hover, .arrowgs li
  {
 	background-color: #efefbd;

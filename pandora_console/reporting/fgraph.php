@@ -6,10 +6,8 @@
 // Main PHP/SQL code development and project architecture and management
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
 // CSS and some PHP additions
-// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
-// Javascript Active Console code.
 // Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
-// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
+// Additions to Pandora FMS 1.2 graph code 
 // Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
 //
 // This program is free software; you can redistribute it and/or
@@ -72,7 +70,7 @@ function dame_fecha_grafico_timestamp ($timestamp) {
 	return date('d/m H:i', $timestamp);
 }
 
-function graphic_combined_module ($module_list, $weight_list, $periodo, $width, $height, $title, $unit_name, $show_event=0, $show_alert=0 ) {
+function graphic_combined_module ($module_list, $weight_list, $periodo, $width, $height, $title, $unit_name, $show_event=0, $show_alert=0, $pure =0 ) {
 	include ("../include/config.php");
 	require ("../include/languages/language_".$language_code.".php");
 	require_once 'Image/Graph.php';
@@ -159,7 +157,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 		while ($row=mysql_fetch_array($result)){
 			$datos = $row[0];
 			$utimestamp = $row[1];
-			if ($datos > 0) {
+			if ($datos >= 0) {
 				for ($i=0; $i <= $resolution; $i++) {
 					if ( ($utimestamp <= $valores[$i][3]) && ($utimestamp >= $valores[$i][2]) ){
 						$valores[$i][0]=$valores[$i][0]+$datos;
@@ -219,9 +217,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 	// *************
 	$Graph =& Image_Graph::factory('graph', array($width, $height));
 	// add a TrueType font
-	$Font =& $Graph->addNew('font', $config_fontpath);
-	$Font->setSize(6);
-	$Graph->setFont($Font);
+
 
 	if ($periodo == 86400)
 		$title_period = "Last day";
@@ -233,24 +229,40 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 		$title_period = "Last month";
 	else
 		$title_period = "Last ".format_numeric(($periodo / (3600*24)),2)." days";
-	
-	$Graph->add(
-	Image_Graph::vertical(
+	if ($pure == 0){
+		$Font =& $Graph->addNew('font', $config_fontpath);
+		$Font->setSize(6);
+		$Graph->setFont($Font);
+		$Graph->add(
 		Image_Graph::vertical(
-            		$Title = Image_Graph::factory('title', array('   Pandora FMS Graph - '. $title_period, 10)),
-              		$Subtitle = Image_Graph::factory('title', array('     '.$title, 7)),
-            		90
-        	), 
-		Image_Graph::vertical(
-			$Plotarea = Image_Graph::factory('plotarea'),
-			$Legend = Image_Graph::factory('legend'),
-   			80
-			),
-		20)
-	);
-	$Legend->setPlotarea($Plotarea);
-	$Title->setAlignment(IMAGE_GRAPH_ALIGN_LEFT);
-	$Subtitle->setAlignment(IMAGE_GRAPH_ALIGN_LEFT);
+			Image_Graph::vertical(
+						$Title = Image_Graph::factory('title', array('   Pandora FMS Graph - '. $title_period, 10)),
+						$Subtitle = Image_Graph::factory('title', array('     '.$title, 7)),
+						90
+				),
+			Image_Graph::vertical(
+				$Plotarea = Image_Graph::factory('plotarea'),
+				$Legend = Image_Graph::factory('legend'),
+				80
+				),
+			20)
+		);
+		$Legend->setPlotarea($Plotarea);
+		$Title->setAlignment(IMAGE_GRAPH_ALIGN_LEFT);
+		$Subtitle->setAlignment(IMAGE_GRAPH_ALIGN_LEFT);
+	} else {
+		$Font =& $Graph->addNew('font', $config_fontpath);
+		$Font->setSize(6);
+		$Graph->setFont($Font);
+		$Graph->add(
+			Image_Graph::vertical(
+				$Plotarea = Image_Graph::factory('plotarea'),
+				$Legend = Image_Graph::factory('legend'),
+				85
+				)
+		);
+		$Legend->setPlotarea($Plotarea);
+	}
 	// Create the dataset
 	// Merge data into a dataset object (sancho)
 	// $Dataset =& Image_Graph::factory('dataset');
@@ -331,7 +343,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 }
 
 function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $show_event,
-				 $width, $height , $title, $unit_name, $show_alert, $avg_only = 0 ) {
+				 $width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure=0 ) {
 	
 	include ("../include/config.php");
 	require ("../include/languages/language_".$language_code.".php");
@@ -420,7 +432,7 @@ function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $show_event,
 	while ($row=mysql_fetch_array($result)){
 		$datos = $row[0];
 		$utimestamp = $row[1];
-		if ($datos > 0) {
+		if ($datos >= 0) {
 			for ($i=0; $i <= $resolution; $i++) {
 				if ( ($utimestamp <= $valores[$i][3]) && ($utimestamp >= $valores[$i][2]) ){
 					$valores[$i][0]=$valores[$i][0]+$datos;
@@ -478,24 +490,27 @@ function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $show_event,
 		$title_period = "Last month";
 	else
 		$title_period = "Last ".format_numeric(($periodo / (3600*24)),2)." days";
-
-	$Graph->add(
-	Image_Graph::vertical(
+	if ($pure == 0){
+		$Graph->add(
 		Image_Graph::vertical(
-            		$Title = Image_Graph::factory('title', array('   Pandora FMS Graph - '.strtoupper($nombre_agente)." - ".$title_period, 10)),
-              		$Subtitle = Image_Graph::factory('title', array('     '.$title, 7)),
-            		90
-        	), 
-		Image_Graph::horizontal(
-			$Plotarea = Image_Graph::factory('plotarea'),
-			$Legend = Image_Graph::factory('legend'),
-			85
-			),
-		15)
-	);
-	$Legend->setPlotarea($Plotarea);
-	$Title->setAlignment(IMAGE_GRAPH_ALIGN_LEFT);
-	$Subtitle->setAlignment(IMAGE_GRAPH_ALIGN_LEFT);
+			Image_Graph::vertical(
+						$Title = Image_Graph::factory('title', array('   Pandora FMS Graph - '.strtoupper($nombre_agente)." - ".$title_period, 10)),
+						$Subtitle = Image_Graph::factory('title', array('     '.$title, 7)),
+						90
+				),
+			Image_Graph::horizontal(
+				$Plotarea = Image_Graph::factory('plotarea'),
+				$Legend = Image_Graph::factory('legend'),
+				85
+				),
+			15)
+		);
+		$Legend->setPlotarea($Plotarea);
+		$Title->setAlignment(IMAGE_GRAPH_ALIGN_LEFT);
+		$Subtitle->setAlignment(IMAGE_GRAPH_ALIGN_LEFT);
+	} else { // Pure, without title and legends
+		$Graph->add($Plotarea = Image_Graph::factory('plotarea'));
+	}
 	// Create the dataset
 	// Merge data into a dataset object (sancho)
 	// $Dataset =& Image_Graph::factory('dataset');
@@ -542,9 +557,9 @@ function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $show_event,
 		// create the 1st plot as smoothed area chart using the 1st dataset
 		$Plot =& $Plotarea->addNew('area', array(&$dataset));
 		if ($avg_only == 1){
-			$Plot->setLineColor('gray@0.4');
+			$Plot->setLineColor('black@0.1');
 		} else {
-			$Plot->setLineColor('yellow@0.1');
+			$Plot->setLineColor('yellow@0.2');
 		}
 
 		$AxisX =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_X);
@@ -1731,6 +1746,12 @@ if (isset($_GET["tipo"]))
 else
 	$tipo = ""; // 1 day default period
 
+// Pure (Without title and legend)
+if ( isset($_GET["pure"]))
+	$pure = $_GET["pure"];
+else
+	$pure = 0;
+
 
 if (isset($_GET["period"]))
 	$period = entrada_limpia($_GET["period"]);
@@ -1816,7 +1837,7 @@ else
 
 if (isset($_GET["tipo"])){
 	if ($_GET["tipo"] == "sparse"){
-		grafico_modulo_sparse($id, $period, $draw_events, $width, $height , $label, $unit_name, $draw_alerts, $avg_only);
+		grafico_modulo_sparse ($id, $period, $draw_events, $width, $height , $label, $unit_name, $draw_alerts, $avg_only, $pure);
 	}
 	elseif ($_GET["tipo"] =="estado_incidente") 
 		grafico_incidente_estados();	
@@ -1858,7 +1879,7 @@ if (isset($_GET["tipo"])){
 		$module_list = split ( ",", $id);
 		$weight_list = array();
 		$weight_list = split ( ",", $weight_l);
-		graphic_combined_module ($module_list, $weight_list, $period, $width, $height , $label, $unit_name );
+		graphic_combined_module ($module_list, $weight_list, $period, $width, $height , $label, $unit_name, $draw_events, $draw_alerts, $pure);
 	}
 	else
 		graphic_error ();

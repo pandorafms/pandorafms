@@ -792,9 +792,35 @@ $lang_label["min_valid_value_help"]="Min. possible value to consider 'valid' val
 $lang_label["max_valid_value_help"]="Max. possible value to consider 'valid' values, above this limit, Pandora FMS will fire the alert";
 $lang_label["alert_time_threshold_help"]="This value must be al least Module Interval * (Min.Number of Alerts + 1)";
 $lang_label["style_template"]="Style template";
+
+$lang_label["report_name"]="Report name";
+$lang_label["custom_reporting_builder"]="Custom reporting builder";
+$lang_label["report_builder"]="Report builder";
+$lang_label["manage_reporting"]="Manage reports";
+$lang_label["report_items"]="Report items";
+$lang_label["period"]="Period";
+$lang_label["reporting_item_add"]="Add item to report";
+
 $lang_label["template"]="Template";
 $lang_label["add_mod_ok"]="Modules added successfully";
 
+
+$lang_label["simple_graph"] = "Simple graph";
+$lang_label["custom_graph"] = "Custom graph";
+$lang_label["SLA"] = "S.L.A";
+$lang_label["event_report"] = "Event report";
+$lang_label["alert_report"] = "Alert report";
+$lang_label["monitor_report"] = "Monitor report";
+$lang_label["avg_value"]="Avg. Value";
+$lang_label["max_value"]="Max. Value";
+$lang_label["min_value"]="Min. Value";
+$lang_label["reporting_type"]="Reporting type";
+
+$lang_label["sla_max"] = "SLA Max. (value)";
+$lang_label["sla_min"] = "SLA Min. (value)";
+$lang_label["sla_limit"] = "SLA Limit (%)";
+$lang_label["up"]="Up";
+$lang_label["down"]="Down";
 global $lang_label; 
 global $help_label;
 ?>

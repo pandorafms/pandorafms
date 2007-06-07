@@ -66,11 +66,11 @@ checkbox {
 	padding: 4px;
 	border:1px solid #eee;
 }
-h1, h2, h3 {
+h1, h2, h3, h4 {
 	font: bold 1em Arial, Sans-serif;
 	text-transform: uppercase;
 	color: #786;
-	padding-bottom: 5px;
+	padding-bottom: 4px;
 	padding-top: 7px;
 }
 h1 {
@@ -80,8 +80,16 @@ h2 {
 	font-size: 15px;
 }
 h3 {
-	font-size: 13px;
+	font-size: 14px;
 }
+h4 {
+	margin-bottom: 2px;
+	padding-bottom: 0px;
+	padding-top: 5px;
+	font-size: 13px;
+	color: #000;
+}
+
 a {
 	color: #486787;
 	text-decoration: none;

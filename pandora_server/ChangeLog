@@ -21,7 +21,10 @@
 	* bin/PandoraFMS: Now contains all .PM files for PandoraFMS.
 
 	* bin/pandora_recon.pl: Now uses ping() from PingExternal.
-	
+
+	* bin/pandora_network.pl: Net::Ping::External does not solve our 
+	odd problems. Fallback again to Net::Ping interface, not using a 
+	double check to be sure that data is good. I hope this works :(
 
 2007-06-05  Sancho Lerena <slerena@gmail.com>
 

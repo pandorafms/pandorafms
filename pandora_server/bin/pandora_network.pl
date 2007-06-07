@@ -32,7 +32,6 @@ use threads;
 use PandoraFMS::Config;
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
-use PandoraFMS::PingExternal;  # Use Net:Ping:External (renamed to pandora_ping_external)
 
 # FLUSH in each IO (only for debug, very slooow)
 # ENABLED in DEBUGMODE
@@ -326,26 +325,35 @@ sub pandora_network_subsystem {
 sub pandora_ping_icmp {
 	my $dest = $_[0];
 	my $l_timeout = $_[1];
-	# temporal vars.
-	my $result = 0;
+ 	# temporal vars.
+ 	my $result = 0;
+	my $result2 = 0;
+ 	my $p;
+ 
+ 	# Check for valid destination
+ 	if (!defined($dest)) {
+ 		return 0;
+ 	}
+ 	# Some hosts don't accept ICMP with too small payload. Use 16 Bytes
+ 	$p = Net::Ping->new("icmp",$l_timeout,16);
+	$p->source_verify(1);
 
-	# Check for valid destination
-	if (!defined($dest)) {
-		return 0;
-	}
-    $result = ping(hostname => $dest, timeout => $l_timeout, size => 32, count => 1);
-	
-	# Check for valid result
-	if (!defined($result)) {
-		return 0;
-	}
-
-	# Lets see the result
-	if ($result == 1) {
-		return 1;
-	} else {
-		return 0;
-	}
+ 	$result = $p->ping($dest);
+	$result2 = $p->ping($dest);
+ 
+ 	# Check for valid result
+ 	if ((!defined($result)) || (!defined($result2))) {
+ 		return 0;
+ 	}
+ 
+ 	# Lets see the result
+ 	if (($result == 1) && ($result2 == 1)) {
+ 		$p->close();
+ 		return 1;
+ 	} else {
+ 		$p->close();
+ 		return 0;
+ 	}
 }
 
 ##########################################################################
@@ -548,7 +556,7 @@ sub exec_network_module {
 			$nm->close();
 		} else {
 			$module_result = 0; # Done but, with zero value
-			$module_data = 0;
+			$module_data = 0; # This should don't happen
 		}
 	# SNMP Modules (Proc=18, inc, data, string)
 	# ------------

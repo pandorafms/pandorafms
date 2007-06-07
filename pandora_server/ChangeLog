@@ -1,3 +1,26 @@
+2007-06-07  Sancho Lerena  <slerena@artica.es>
+
+	Important update. Now all PM files (library) goes on PandoraFMS
+	subdirectory from /bin. This should be copied/moved to system
+	default Perl libraries (like /usr/lib/perl). All .PM files changes
+	it's name.
+
+	We also replace Net::Ping for Alive checks because recently
+	problems discovered in packet lenght payload and problems with
+	threads. We fallback to Net::Ping::External, now rewrapped to
+	PandoraFMS::PingExternal and distributed with PandoraFMS for easy
+	deployment.
+
+	bin/*.pm: Renamed to equivalent files in ./bin/PandoraFMS dir
+	
+	* bin/pandora_network.pl: Now uses ping() from PingExternal to
+	make alive checks. Latency checks is the only function that
+	actually needs root now. External Ping could be executed from any
+	user (it uses PING from system).
+	
+	* bin/PandoraFMS: Now contains all .PM files for PandoraFMS.
+	
+
 2007-06-05  Sancho Lerena <slerena@gmail.com>
 
 	* pandora_network.pm: Small bug that causes some hosts to do not reply

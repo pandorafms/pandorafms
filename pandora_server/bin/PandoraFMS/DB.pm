@@ -1,4 +1,4 @@
-package pandora_db;
+package PandoraFMS::DB;
 ##########################################################################
 # Pandora FMS Database Package
 ##########################################################################
@@ -26,7 +26,7 @@ use XML::Simple;
 
 use POSIX qw(strtod);
 
-use pandora_tools;
+use PandoraFMS::Tools;
 
 require Exporter;
 
@@ -450,31 +450,33 @@ sub pandora_accessupdate (%$$) {
 	my $id_agent = $_[1];
 	my $dbh = $_[2];
 	
-	my $intervalo = dame_intervalo($pa_config, $id_agent, $dbh);
-	my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
-	my $temp = $intervalo / 2;
-	my $fecha_limite = DateCalc($timestamp,"- $temp seconds",\$err);
-	$fecha_limite = &UnixDate($fecha_limite,"%Y-%m-%d %H:%M:%S");
-	# Fecha limite has limit date, if there are records below this date
-	# we cannot insert any data in Database. We use a limit based on agent_interval / 2
-	# So if an agent has interval 300, could have a max of 24 records per hour in access_table
-	# This is to do not saturate database with access records (because if you hace a network module with interval 30, you have
-	# a new record each 30 seconds !
-	# Compare with tagente.ultimo_contacto (tagent_lastcontact in english), so this will have
-	# the latest update for this agent
-	
-	my $query = "select count(*) from tagent_access where id_agent = $id_agent and timestamp > '$fecha_limite'";
-	my $query_exec = $dbh->prepare($query);
-	my @data_row;
-	$query_exec ->execute;
-	@data_row = $query_exec->fetchrow_array();
-	$temp = $data_row[0];
-	$query_exec->finish();
-	if ( $temp == 0) { # We need update access time
-		my $query2 = "insert into tagent_access (id_agent, timestamp) VALUES ($id_agent,'$timestamp')";
-		$dbh->do($query2);	
-		logger($pa_config,"Updating tagent_access for agent id $id_agent",9);
-	}
+    if ($id_agent != -1){
+	    my $intervalo = dame_intervalo ($pa_config, $id_agent, $dbh);
+	    my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
+	    my $temp = $intervalo / 2;
+	    my $fecha_limite = DateCalc($timestamp,"- $temp seconds",\$err);
+	    $fecha_limite = &UnixDate($fecha_limite,"%Y-%m-%d %H:%M:%S");
+	    # Fecha limite has limit date, if there are records below this date
+	    # we cannot insert any data in Database. We use a limit based on agent_interval / 2
+	    # So if an agent has interval 300, could have a max of 24 records per hour in access_table
+	    # This is to do not saturate database with access records (because if you hace a network module with interval 30, you have
+	    # a new record each 30 seconds !
+	    # Compare with tagente.ultimo_contacto (tagent_lastcontact in english), so this will have
+	    # the latest update for this agent
+	    
+	    my $query = "select count(*) from tagent_access where id_agent = $id_agent and timestamp > '$fecha_limite'";
+	    my $query_exec = $dbh->prepare($query);
+	    my @data_row;
+	    $query_exec ->execute;
+	    @data_row = $query_exec->fetchrow_array();
+	    $temp = $data_row[0];
+	    $query_exec->finish();
+	    if ( $temp == 0) { # We need update access time
+		    my $query2 = "insert into tagent_access (id_agent, timestamp) VALUES ($id_agent,'$timestamp')";
+		    $dbh->do($query2);	
+		    logger($pa_config,"Updating tagent_access for agent id $id_agent",9);
+	    }
+    }
 }
 
 ##########################################################################
@@ -638,7 +640,7 @@ sub module_generic_data_inc (%$$$$$) {
 		my $new_data = 0;
 		my $data_anterior = 0;
 		my $timestamp_diferencia;
-		my $timestamp_anterior;
+		my $timestamp_anterior = 0;
 		my $m_utimestamp = &UnixDate ($m_timestamp, "%s");
 
 		if ($id_agente_modulo == -1) {
@@ -1014,7 +1016,7 @@ sub pandora_lastagentcontact (%$$$$$$) {
 		$query = "update tagente set intervalo = $interval, agent_version = '$agent_version', ultimo_contacto_remoto = '$timestamp', ultimo_contacto = '$time_now', os_version = '$os_data' where id_agente = $id_agente";
         }
         logger( $pa_config, "pandora_lastagentcontact: Updating Agent last contact data for $nombre_agente",6);
-	logger( $pa_config, "pandora_lastagentcontact: SQL Query: ".$query,10);
+	    logger( $pa_config, "pandora_lastagentcontact: SQL Query: ".$query,10);
         my $sag = $dbh->prepare($query);
         $sag ->execute;
     	$sag ->finish();
@@ -1470,23 +1472,26 @@ sub give_network_component_profile_name (%$$) {
 ## Return interval for id_agente
 ##########################################################################
 sub dame_intervalo (%$$) {
-	my $pa_config = $_[0];
-        my $id_agente = $_[1];
-	my $dbh = $_[2];
+    my $pa_config = $_[0];
+    my $id_agente = $_[1];
+    my $dbh = $_[2];
 
-        my $tipo; my @data;
-        # Calculate agent ID using select by its name
-        my $query_idag = "select * from tagente where id_agente = ".$id_agente;
-        my $s_idag = $dbh->prepare($query_idag);
-        $s_idag ->execute;
-    	if ($s_idag->rows == 0) {
-        	logger($pa_config, "ERROR dame_intervalo(): Cannot find agente $id_agente",1);
-      		logger($pa_config, "ERROR: SQL Query is $query_idag ",2);
-		$tipo = 0;
-    	} else  {    @data = $s_idag->fetchrow_array(); }
-    	$tipo= $data[7];
-    	$s_idag->finish();
-        return $tipo;
+    my $tipo = 0; 
+    my @data;
+    # Calculate agent ID using select by its name
+    my $query_idag = "select * from tagente where id_agente = ".$id_agente;
+    my $s_idag = $dbh->prepare($query_idag);
+    $s_idag ->execute;
+    if ($s_idag->rows == 0) {
+        logger($pa_config, "ERROR dame_intervalo(): Cannot find agente $id_agente",1);
+        logger($pa_config, "ERROR: SQL Query is $query_idag ",2);
+	    $tipo = 0;
+    } else  {    
+        @data = $s_idag->fetchrow_array(); 
+    }
+    $tipo= $data[7];
+    $s_idag->finish();
+    return $tipo;
 }
 
 ##########################################################################

@@ -29,9 +29,10 @@ use SNMP;					# For SNMP access (libsnmp-perl PACKAGE!)
 use threads;
 
 # Pandora Modules
-use pandora_config;
-use pandora_tools;
-use pandora_db;
+use PandoraFMS::Config;
+use PandoraFMS::Tools;
+use PandoraFMS::DB;
+use PandoraFMS::PingExternal;  # Use Net:Ping:External (renamed to pandora_ping_external)
 
 # FLUSH in each IO (only for debug, very slooow)
 # ENABLED in DEBUGMODE
@@ -327,27 +328,22 @@ sub pandora_ping_icmp {
 	my $l_timeout = $_[1];
 	# temporal vars.
 	my $result = 0;
-	my $p;
 
 	# Check for valid destination
 	if (!defined($dest)) {
 		return 0;
 	}
-	# Some hosts don't accept ICMP with too small payload. Use 32Bytes	
-	$p = Net::Ping->new("icmp",$l_timeout,32);
-	$result = $p->ping($dest);
+    $result = ping(hostname => $dest, timeout => $l_timeout, size => 32, count => 1);
 	
 	# Check for valid result
 	if (!defined($result)) {
 		return 0;
 	}
-	
+
 	# Lets see the result
 	if ($result == 1) {
-		$p->close();
 		return 1;
 	} else {
-		$p->close();
 		return 0;
 	}
 }

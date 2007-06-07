@@ -3,25 +3,26 @@
 # Pandora DB Stress tool
 ################################################################################
 # Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L
+# Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L
 #
-#This program is free software; you can redistribute it and/or
-#modify it under the terms of the GNU General Public License
-#as published by the Free Software Foundation; either version 2
-#of the License, or (at your option) any later version.
-#This program is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
-#You should have received a copy of the GNU General Public License
-#along with this program; if not, write to the Free Software
-#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation;  version 2
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ################################################################################
 
 # Configure here target (AGENT_ID for Stress)
-my $target_agent_id = 1; # -1 for all modules of that agent
-my $target_interval = 300;
-my $target_days = 45;
+
+my $target_module = -1; # -1 for all modules of that agent
+my $target_agent = -1;
+my $target_interval = 1200;
+my $target_days = 12;
 
 ################################################################################
 ################################################################################
@@ -34,14 +35,14 @@ use Date::Manip;		# Date/Time manipulation
 use Math::Trig;			# Math functions
 
 # Pandora Modules
-use pandora_config;
-use pandora_tools;
-use pandora_db;
+use PandoraFMS::Config;
+use PandoraFMS::Tools;
+use PandoraFMS::DB;
 
 ################################################################################
 ################################################################################
 
-my $version = "1.3-dev 070216";
+my $version = "1.3-dev 070526";
 
 # FLUSH in each IO (only for debug, very slooow)
 # ENABLED in DEBUGMODE
@@ -57,9 +58,9 @@ pandora_init(\%pa_config,"Pandora DB Stress tool");
 pandora_loadconfig (\%pa_config,0); #Start like a data server
 
 # open database, only ONCE. We pass reference to DBI handler ($dbh) to all subprocess
-my $dbh = DBI->connect("DBI:mysql:pandora:$pa_config{'dbhost'}:3306",$pa_config{'dbuser'}, $pa_config{'dbpass'},	{ RaiseError => 1, AutoCommit => 1 });
+my $dbh = DBI->connect("DBI:mysql:$pa_config{'dbname'}:$pa_config{'dbhost'}:3306",$pa_config{'dbuser'}, $pa_config{'dbpass'},	{ RaiseError => 1, AutoCommit => 1 });
 
-print " [*] Working for agent ID $target_agent_id \n";
+print " [*] Working for agent ID $target_agent \n";
 print " [*] Generating data of $target_days days ago \n";
 print " [*] Interval for this workload is $target_interval \n";
 
@@ -67,7 +68,11 @@ print " [*] Interval for this workload is $target_interval \n";
 my $query_idag;
 
 if ($target_agent ne -1){
-	$query_idag = "select * from tagente_modulo where id_agente = $target_agent";
+    if ($target_module ne -1){
+	    $query_idag = "select * from tagente_modulo where id_agente = $target_agent AND id_agente_modulo = $target_module";
+    } else {
+           $query_idag = "select * from tagente_modulo where id_agente = $target_agent";
+    }
 } else {
 	$query_idag = "select * from tagente_modulo";
 }
@@ -78,7 +83,7 @@ my @data;
 if ($s_idag->rows != 0) {
 	while (@data = $s_idag->fetchrow_array()) {
 		# Fill this module with data !
-		process_module (\%pa_config, $data[0], $target_interval, $data[4], $target_days, $data[2], $target_agent_id, $dbh);
+		process_module (\%pa_config, $data[0], $target_interval, $data[4], $target_days, $data[2], $data[1], $dbh);
 	}
 }
 $s_idag->finish();

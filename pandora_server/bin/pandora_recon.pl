@@ -31,9 +31,9 @@ use Socket;				# to resolve address
 use threads;
 
 # Pandora Modules
-use pandora_config;
-use pandora_tools;
-use pandora_db;
+use PandoraFMS::Config;
+use PandoraFMS::Tools;
+use PandoraFMS::DB;
 
 # FLUSH in each IO (only for debug, very slooow)
 # ENABLED in DEBUGMODE

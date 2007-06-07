@@ -1,12 +1,22 @@
 #!/usr/bin/perl
 
 ##################################################################################
-# Pandora DB Management
-##################################################################################
-# (c) Sancho Lerena, slerena@gmail.com
-# This code is licensed as GPL v2. Please, if you want to modify or use
-# for your own purposes, read before GPL v2 license  at www.gnu.org/licenses/gpl.txt
-##################################################################################
+# Pandora FMS DB Management
+################################################################################
+# Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+# Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation;  version 2
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+################################################################################
 
 # Includes list
 use strict;
@@ -15,10 +25,11 @@ use DBI;					# DB interface with MySQL
 use Date::Manip;			# Date/Time manipulation
 
 # version: define la version actual del programa
-my $version = "1.2beta";
+my $version = "1.3 dev";
 
 # Setup variables
 my $dirname="";
+my $dbname = 'pandora';
 my $dbhost ='';
 my $dbuser ='';
 my $verbosity ='';
@@ -56,11 +67,11 @@ sub pandora_purgedb {
 	# 2) Delete all elements below date limit
 	# 3) Insert last value in date_limit position
 
-        my $days = $_[0];
-        my $dbname = $_[1];
-        my $dbuser = $_[2];
-        my $dbpass = $_[3];
-        my $dbhost = $_[4];
+    my $days = $_[0];
+    my $dbname = $_[1];
+    my $dbuser = $_[2];
+    my $dbpass = $_[3];
+    my $dbhost = $_[4];
  	my @query;
  	my $counter;
 	my $buffer; my $buffer2; my $buffer3;
@@ -139,11 +150,11 @@ sub pandora_purgedb {
 ## SUB pandora_compactdb (days, dbname, dbuser, dbpass, dbhost)
 ##################################################################################
 sub pandora_compactdb {
-        my $days = $_[0];
-        my $dbname = $_[1];
-        my $dbuser = $_[2];
-        my $dbpass = $_[3];
-        my $dbhost = $_[4];
+	my $days = $_[0];
+	my $dbname = $_[1];
+	my $dbuser = $_[2];
+	my $dbpass = $_[3];
+	my $dbhost = $_[4];
  	my @data_item; # Array to get data from each record of DB
  	my %data_list; # Hash to store values (sum) for each id
  	my %data_list_items; # Hash to store total values for each id
@@ -308,7 +319,8 @@ sub pandora_loadconfig {
   		$parametro = $args[$ax];
   		if ($parametro =~ m/dirname\z/) {  $dirname = $args[$ax+1]; $ax++; } 
   		elsif ($parametro =~ m/dbuser\z/) { $dbuser  = $args[$ax+1]; $ax++; } 
-  		elsif ($parametro =~ m/dbpass\z/) { $dbpass = $args[$ax+1]; $ax++; } 
+  		elsif ($parametro =~ m/dbpass\z/) { $dbpass = $args[$ax+1]; $ax++; }
+  		elsif ($parametro =~ m/dbname\z/) { $dbname = $args[$ax+1]; $ax++; }
   		elsif ($parametro =~ m/dbhost\z/) { $dbhost  = $args[$ax+1]; $ax++; } 
   		elsif ($parametro =~ m/log_file\z/) { $log_file = $args[$ax+1]; $ax++; } 
   		elsif ($parametro =~ m/verbosity\z/) { $verbosity = $args[$ax+1]; $ax++; } 
@@ -374,7 +386,7 @@ sub pandora_loadconfig {
 ##############################################################################
 
 sub help_screen{
-	printf "\n\nSintax: \n  pandora_db.pl  fullpathname_to_pandora_server.conf \n\n";
+	printf "\n\nSintax: \n pandora_db.pl  fullpathname_to_pandora_server.conf \n\n";
 	exit;
 }
 
@@ -382,7 +394,7 @@ sub help_screen{
 # Program main begin 
 # #################################################################################
 sub pandoradb_main {
-	pandora_purgedb($config_days_purge,"pandora",$dbuser,$dbpass,$dbhost);
-        pandora_compactdb($config_days_compact,"pandora",$dbuser,$dbpass,$dbhost);
+	pandora_purgedb ($config_days_purge, $dbname, $dbuser, $dbpass, $dbhost);
+    pandora_compactdb ($config_days_compact, $dbname, $dbuser, $dbpass, $dbhost);
 	exit;
 }

@@ -26,50 +26,6 @@
 	echo $lang_label["main_text"];
 	echo "</p>";
 
-	echo "<div id='activity'>";
-	// Show last activity from this user
-	echo "<h2>" . $lang_label["user_last_activity"] . "</h2>";
-	// Show table header
-	echo '<table cellpadding="3" cellspacing="3" width="700"><tr>'; 
-	echo '<th>' . $lang_label["user"] . '</th>';
-	echo '<th>' . $lang_label["action"] . '</th>';
-	echo '<th width="130px">' . $lang_label["date"] . '</th>';
-	echo '<th>' . $lang_label["src_address"] . '</th>';
-	echo '<th width="200px">' . $lang_label["comments"] . '</th></tr>';
-
-	// Skip offset records
-	$query1="SELECT * FROM tsesion WHERE (TO_DAYS(fecha) > TO_DAYS(NOW()) - 7) 
-	AND ID_usuario = '" . $nick . "' ORDER BY fecha DESC limit 15";
-
-	$result = mysql_query ($query1);
-	$contador = 5; // Max items
-	$color = 1;
-	while (($row = mysql_fetch_array ($result)) and ($contador > 0)) {
-		
-		if ($color == 1){
-			$tdcolor = "datos";
-			$color = 0;
-		} else {
-			$tdcolor = "datos2";
-			$color = 1;
-		}
-		
-		$usuario = $row["ID_usuario"];
-		echo '<tr>';
-		echo '<td class="' . $tdcolor . 'f9"><b>' . $usuario . '</b></td>';
-		echo '<td class="' . $tdcolor . 'f9">' . $row["accion"]. '</td>';
-		echo '<td class="' . $tdcolor . 'f9">' . $row["fecha"]. '</td>';
-		echo '<td class="' . $tdcolor . 'f9">' . $row["IP_origen"]. '</td>';
-		echo '<td class="' . $tdcolor . 'f9">' . $row["descripcion"]. '</td>';
-		echo '</tr>';
-		
-		$contador--;
-	}
-
-	echo "<tr><td colspan='5'><div class='raya'></div>";
-	echo "</td></tr></table>";
-	echo "</div>"; // activity
-
 	// Private messages pending to read !
 
 	$sql='SELECT COUNT(*) FROM tmensajes WHERE id_usuario_destino="'.$nick.'" 
@@ -154,5 +110,50 @@
 	echo "</table>";
 
 	echo "</table>";
+
+	echo "<div id='activity'>";
+	// Show last activity from this user
+	echo "<h2>" . $lang_label["user_last_activity"] . "</h2>";
+	// Show table header
+	echo '<table cellpadding="3" cellspacing="3" width="700"><tr>'; 
+	echo '<th>' . $lang_label["user"] . '</th>';
+	echo '<th>' . $lang_label["action"] . '</th>';
+	echo '<th width="130px">' . $lang_label["date"] . '</th>';
+	echo '<th>' . $lang_label["src_address"] . '</th>';
+	echo '<th width="200px">' . $lang_label["comments"] . '</th></tr>';
+
+	// Skip offset records
+	$query1="SELECT * FROM tsesion WHERE (TO_DAYS(fecha) > TO_DAYS(NOW()) - 7) 
+	AND ID_usuario = '" . $nick . "' ORDER BY fecha DESC limit 15";
+
+	$result = mysql_query ($query1);
+	$contador = 5; // Max items
+	$color = 1;
+	while (($row = mysql_fetch_array ($result)) and ($contador > 0)) {
+		
+		if ($color == 1){
+			$tdcolor = "datos";
+			$color = 0;
+		} else {
+			$tdcolor = "datos2";
+			$color = 1;
+		}
+		
+		$usuario = $row["ID_usuario"];
+		echo '<tr>';
+		echo '<td class="' . $tdcolor . 'f9"><b>' . $usuario . '</b></td>';
+		echo '<td class="' . $tdcolor . 'f9">' . $row["accion"]. '</td>';
+		echo '<td class="' . $tdcolor . 'f9">' . $row["fecha"]. '</td>';
+		echo '<td class="' . $tdcolor . 'f9">' . $row["IP_origen"]. '</td>';
+		echo '<td class="' . $tdcolor . 'f9">' . $row["descripcion"]. '</td>';
+		echo '</tr>';
+		
+		$contador--;
+	}
+
+	echo "<tr><td colspan='5'><div class='raya'></div>";
+	echo "</td></tr></table>";
+	echo "</div>"; // activity
+
 	echo '</div>'; // class "jus"
 ?>

@@ -106,10 +106,10 @@ if (comprueba_login() == 0)
 		echo "<h2>".$lang_label["setup_screen"]." &gt; ";
 		echo  $lang_label["site_news_management"]."</h3>";
 		echo "<table cellpadding='4' cellspacing='4' class='databox' width=600>";
-		echo "<th width='180px'>".$lang_label["subject"]."</th>";
-		echo "<th width='180px'>".$lang_label["author"]."</th>";
-		echo "<th width='180px'>".$lang_label["timestamp"]."</th>";
-		echo "<th width='80px'>".$lang_label["delete"]."</th>";
+		echo "<th>".$lang_label["subject"]."</th>";
+		echo "<th>".$lang_label["author"]."</th>";
+		echo "<th>".$lang_label["timestamp"]."</th>";
+		echo "<th>".$lang_label["delete"]."</th>";
 		$sql1='SELECT * FROM tnews ORDER BY timestamp';
 		$result=mysql_query($sql1);
 		$color=1;

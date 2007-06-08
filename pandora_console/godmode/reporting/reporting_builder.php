@@ -275,7 +275,7 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_report"]))) {
 		echo "<b>".$lang_name["custom_graph_name"]."</b>";
 		echo "<td class='datos2' colspan=3>";
 		echo "<select name='id_custom_graph' size=1 style='width:180px;'>";
-		echo "<option value="-1">".$row["N/A"];
+		echo "<option value='-1'>".$row["N/A"];
 		$sql1="SELECT * FROM tgraph";
 		$result = mysql_query($sql1);
 		while ($row=mysql_fetch_array($result)){
@@ -391,7 +391,7 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_report"]))) {
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	echo "<h2>".$lang_label["reporting"]." &gt; ";
 	echo $lang_label["custom_reporting"]."</h2>";
-	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox'>";
+	echo "<table width='600' cellpadding=4 cellpadding=4 class='databox'>";
 	echo "<tr>
 	<th>".$lang_label["report_name"]."</th>
 	<th>".$lang_label["description"]."</th>
@@ -424,7 +424,7 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_report"]))) {
 		}
 	}
 	echo "</table>";
-	echo "<table width=500 cellpadding=4 cellpadding=4>";
+	echo "<table width=600 cellpadding=4 cellpadding=4>";
 	echo "<form method=post action='index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&create_report=1'>";
 	echo "<tr><td align='right'>";
 	echo "<input type=submit class='sub next' value='".$lang_label["add"]."'>";

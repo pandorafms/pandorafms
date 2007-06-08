@@ -126,6 +126,11 @@ echo "</td></tr></table>";
 
 if ($id_np != -1){
 	// Show associated modules, allow to delete, and to add
+
+	$sql1 = "SELECT * FROM tnetwork_profile_component where id_np = $id_np";
+	$result = mysql_query ($sql1);
+	if ($row=mysql_num_rows($result)) {
+	
 	echo '<table width="550" cellpadding="4" cellspacing="4" class="databox">';
 	echo '<tr>';
 	echo "<th>".$lang_label["module_name"]."</th>";
@@ -134,8 +139,7 @@ if ($id_np != -1){
 	echo "<th>".$lang_label["nc.group"]."</th>";
  	echo "<th>X</th>";
 	$color =0;
-	$sql1 = "SELECT * FROM tnetwork_profile_component where id_np = $id_np";
-	$result = mysql_query ($sql1);
+
 	while ( $row = mysql_fetch_array($result)) {
 		$id_nc = $row["id_nc"];
 		$id_npc = $row["id_npc"];
@@ -165,6 +169,9 @@ if ($id_np != -1){
 			echo "<td class='$tdcolor'>".give_network_component_group_name($id_group)."</td>";
 			echo "<td class='$tdcolor'><a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np=$id_np&delete_module=$id_npc'><img src='images/cross.png'></a></td>";
 		}
+	}
+	} else {
+		echo "<div class='nf'>No modules</div>";
 	}
 	echo "</table>";
 }

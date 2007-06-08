@@ -68,9 +68,9 @@ function datos_raw($id_agente_modulo, $periodo){
 	if (mysql_num_rows($result)){
 		echo "<table cellpadding='3' cellspacing='3' width='600' class='databox'>";
 		$color=1;
-		echo "<th witdh=20>";
+		echo "<th>".$lang_label["delete"]."</th>";
 		echo "<th>".$lang_label["timestamp"]."</th>";
-		echo "<th>".$lang_label["data"]."</th>";
+		echo "<th width='400'>".$lang_label["data"]."</th>";
 		while ($row=mysql_fetch_array($result)){
 			if ($color == 1){
 				$tdcolor = "datos";
@@ -83,11 +83,11 @@ function datos_raw($id_agente_modulo, $periodo){
 			echo "<tr>";
 			if (give_acl($id_user, $id_group, "AW") ==1) {
 				echo "<td class='".$tdcolor."' width=20>";
-				echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=$periodo_label&id=$id_agente_modulo&delete=".$row["id_agente_datos"]."'><img src='images/cancel.gif' border=0>";
+				echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=$periodo_label&id=$id_agente_modulo&delete=".$row["id_agente_datos"]."'><img src='images/cross.png' border=0>";
 			} else {
 				echo "<td class='".$tdcolor."'>";
 			}
-			echo "<td class='".$tdcolor."' style='width:150px'>".$row["timestamp"];
+			echo "<td class='".$tdcolor."' style='width:150px'>".$row["timestamp"]."</td>";
 			echo "<td class='".$tdcolor."'>";
 			if (is_numeric($row["datos"])) {
 				$mytempdata = fmod($row["datos"], 1);
@@ -96,8 +96,10 @@ function datos_raw($id_agente_modulo, $periodo){
 				else
 					$myvalue = $row["datos"];
 				echo format_for_graph($myvalue );
-                        } else
-                               echo salida_limpia($row["datos"]);
+			} else {
+				echo salida_limpia($row["datos"]);
+			}
+			echo "</td></tr>";
 		}
 		echo "</table>";
 	}

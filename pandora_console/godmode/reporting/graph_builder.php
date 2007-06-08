@@ -202,7 +202,11 @@ if (isset($chunk1)) {
         echo "<input type='hidden' name='period' value='$period'>";
 
 	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
-	echo "<tr><th>Agent<th>Module<th>Weight<th>Delete";
+	echo "<tr>
+	<th>".$lang_label["agent"]."</th>
+	<th>".$lang_label["module"]."</th>
+	<th>Weight</th>
+	<th>".$lang_label["delete"]."</th>";
 	$color=0;
 	for ($a=0; $a < count($module_array); $a++){
 		// Calculate table line color
@@ -216,15 +220,15 @@ if (isset($chunk1)) {
 		}
 
 		echo "<tr><td class='$tdcolor'>";
-		echo dame_nombre_agente($agent_array[$a]);
+		echo dame_nombre_agente($agent_array[$a])."</td>";
 		echo "<td class='$tdcolor'>";
-		echo dame_nombre_modulo_agentemodulo($module_array[$a]);
+		echo dame_nombre_modulo_agentemodulo($module_array[$a])."</td>";
 		echo "<td class='$tdcolor'>";
-		echo $weight_array[$a];
+		echo $weight_array[$a]."</td>";
 		echo "<td class='$tdcolor'>";
-		echo "<input style='height=2px;' type=checkbox name='delete_$a' value='".$module_array[$a]."'>";
+		echo "<input style='height=2px;' type=checkbox name='delete_$a' value='".$module_array[$a]."'></td></tr>";
 	}
-	echo "<tr><td class=datos colspan=4 align='right'><input type=submit name='update_agent' class='sub delete'  value='".$lang_label["delete"]."'>";
+	echo "<tr><td class=datos colspan=4 align='right'><input type=submit name='update_agent' class='sub delete' value='".$lang_label["delete"]."'>";
 	echo "</table>";
 	echo "</form>";
 }
@@ -234,7 +238,7 @@ if (isset($chunk1)) {
 // --------------------------------------
 if (($render == 1) && (isset($modules))) {
 	// parse chunk
-	echo $lang_label["combined_image"]."</h2>";
+	echo "<h3>".$lang_label["combined_image"]."</h3>";
 	echo "<table class='databox_frame'>";
 	echo "<tr><td>";
 	echo "<img src='reporting/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&label=Combined%20Sample%20Graph&height=$height&width=$width&period=$period' border=1 alt=''>";
@@ -245,7 +249,7 @@ if (($render == 1) && (isset($modules))) {
 // -----------------------
 // SOURCE AGENT TABLE/FORM
 // -----------------------
-echo $lang_label["graph_builder"]."</h2>";
+echo "<h3>".$lang_label["graph_builder"]."</h3>";
 echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
 echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&get_agent=1'>";
 
@@ -253,7 +257,7 @@ if (isset($period))
     echo "<input type='hidden' name='period' value='$period'>";
 
 echo "<tr>";
-echo "<td class='datos'><b>".$lang_label["source_agent"];
+echo "<td class='datos'><b>".$lang_label["source_agent"]."</td>";
 echo "</b>";
 
 // Show combo with agents
@@ -299,29 +303,29 @@ if ($id_agent != 0){
 echo "</select>";
 
 echo "<tr><td class='datos'>";
-echo "<b>Factor</b>";
+echo "<b>Factor</b></td>";
 echo "<td class='datos'>";
-echo "<input type='text' name='factor' value='$factor' size=6>";
+echo "<input type='text' name='factor' value='$factor' size=6></td>";
 echo "<td class='datos'>";
 echo "<b>Width</b>";
 echo "<td class='datos'>";
-echo "<input type='text' name='width' value='$width' size=6>";
+echo "<input type='text' name='width' value='$width' size=6></td>";
 
 
 echo "<tr><td class='datos2'>";
-echo "<b>Render now</b>";
-echo "<td class='datos2' >";
+echo "<b>Render now</b></td>";
+echo "<td class='datos2'>";
 echo "<select name='render'>";
 if ($render == 1){
-	echo "<option value=1>Yes";
-	echo "<option value=0>No";
+	echo "<option value=1>Yes</option>";
+	echo "<option value=0>No</option>";
 } else {
-	echo "<option value=0>No";
-	echo "<option value=1>Yes";
+	echo "<option value=0>No</option>";
+	echo "<option value=1>Yes</option>";
 }
-echo "</select>";
+echo "</select></td>";
 echo "<td class='datos2'>";
-echo "<b>Height</b>";
+echo "<b>Height</b></td>";
 echo "<td class='datos2'>";
 echo "<input type='text' name='height' value='$height' size=6>";
 
@@ -360,40 +364,41 @@ switch ($period) {
 
 
 echo "<tr><td class='datos'>";
-echo "<b>Period</b>";
+echo "<b>Period</b></td>";
 echo "<td class='datos'>";
 
 echo "<select name='period'>";
-if ($period==0)
-	echo "<option value=86400>".$period_label;
-else
-	echo "<option value=$period>".$period_label;
-echo "<option value=3600>"."Hour";
-echo "<option value=7200>"."2 Hours";
-echo "<option value=10800>"."3 Hours";
-echo "<option value=21600>"."6 Hours";
-echo "<option value=43200>"."12 Hours";
-echo "<option value=86400>"."Last day";
-echo "<option value=172800>"."Two days";
-echo "<option value=604800>"."Last Week";
-echo "<option value=1296000>"."15 days";
-echo "<option value=2592000>"."Last Month";
-echo "<option value=5184000>"."Two Month";
-echo "<option value=15552000>"."Six Months";
+if ($period==0) {
+	echo "<option value=86400>".$period_label."</option>";
+} else {
+	echo "<option value=$period>".$period_label."</option>";
+}
+echo "<option value=3600>"."Hour</option>";
+echo "<option value=7200>"."2 Hours</option>";
+echo "<option value=10800>"."3 Hours</option>";
+echo "<option value=21600>"."6 Hours</option>";
+echo "<option value=43200>"."12 Hours</option>";
+echo "<option value=86400>"."Last day</option>";
+echo "<option value=172800>"."Two days</option>";
+echo "<option value=604800>"."Last Week</option>";
+echo "<option value=1296000>"."15 days</option>";
+echo "<option value=2592000>"."Last Month</option>";
+echo "<option value=5184000>"."Two Month</option>";
+echo "<option value=15552000>"."Six Months</option>";
 echo "</select>";
 
-echo "<td class='datos2'>";
-echo "<b>Show events</b>";
-echo "<td class='datos2'>";
+echo "<td class='datos'>";
+echo "<b>Show events</b></td>";
+echo "<td class='datos'>";
 echo "<select name='events'>";
 if ($events == 1){
-	echo "<option value=1>Yes";
-	echo "<option value=0>No";
+	echo "<option value=1>Yes</option>";
+	echo "<option value=0>No</option>";
 } else {
-	echo "<option value=0>No";
-	echo "<option value=1>Yes";
+	echo "<option value=0>No</option>";
+	echo "<option value=1>Yes</option>";
 }
-echo "</select>";
+echo "</select></td>";
 
 /*
 echo "<td class='datos'>";

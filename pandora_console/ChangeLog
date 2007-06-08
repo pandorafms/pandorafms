@@ -11,6 +11,12 @@
 	* images/reporting_edit.png: Added icon for creating reports in 
 	administration mode.
 	
+	* godmode/reporting/graph_builder.php: Updated text styles.
+	
+	* operation/agentes/datos_agente.php: Updated table length and delete text.
+	
+	* godmode/modules/manage_network_templates_form.php: Updated with new table style.
+	
 2007-06-07  Raul Mateos  <raulofpandora@gmail.com>
 
 	* operation/agentes/status_monitor.php, estado_alertas.php,

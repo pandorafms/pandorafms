@@ -6,10 +6,8 @@
 // Main PHP/SQL code development and project architecture and management
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
 // CSS and some PHP additions
-// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
-// Javascript Active Console code.
 // Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
-// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
+// Additions to Pandora FMS 1.2 graph code 
 // Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
 //
 // This program is free software; you can redistribute it and/or
@@ -22,6 +20,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 	// Load global vars
 	require("include/config.php");
 	
@@ -61,6 +60,8 @@
 	$contador_grupo  = 0;
 	$contador_agente = 0;
 	$array_index     = 0;
+	$ahora=date("Y/m/d H:i:s");
+	$ahora_sec = strtotime($ahora);
 	// Prepare data to show
 	// For each valid group for this user, take data from agent and modules
 	foreach ($mis_grupos as $migrupo) {
@@ -83,26 +84,19 @@
 			if ($row0[0] > 0)
 				$existen_agentes = 1;
 
-			// Get timestamp status (down or not for each agent)
-			$sql1 = "SELECT intervalo, ultimo_contacto FROM tagente where id_grupo = $migrupo";
-			if ($result1 = mysql_query ($sql1))
-				while ($row1 = mysql_fetch_array ($result1)) {
-				// Check unknown contact status for whole agent
-					$ultimo_contacto = $row1[1];
-					$agent_interval = $row1[0];
-					$ahora=date("Y/m/d H:i:s");
-					$seconds = strtotime($ahora) - strtotime($ultimo_contacto);
-					if ($seconds >= ($agent_interval*2))
-						$grupo[$array_index]["down"]++;
-			}
 			// SQL Join to get monitor status for agents belong this group
-			$sql1 = "SELECT tagente.id_agente, tagente_estado.estado, tagente_estado.datos FROM tagente, tagente_estado WHERE tagente.disabled = 0 AND tagente.id_grupo = $migrupo AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.estado != 100";
+			$sql1 = "SELECT tagente.id_agente, tagente_estado.estado, tagente_estado.datos, tagente_estado.current_interval, tagente_estado.utimestamp, tagente_estado.id_agente_modulo FROM tagente, tagente_estado WHERE tagente.disabled = 0 AND tagente.id_grupo = $migrupo AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.estado != 100";
 			if ($result1 = mysql_query ($sql1)){
 				while ($row1 = mysql_fetch_array ($result1)) {
 					$id_agente = $row1[0];
 					$estado = $row1[1];
 					$datos = $row1[2];
-					if ($datos != 0) {
+					$module_interval = $row1[3];
+					$seconds = $ahora_sec - $row1[4];
+					$id_agente_modulo = $row1[5];
+					if ($seconds >= ($module_interval*2))
+						$grupo[$array_index]["down"]++;
+					elseif ($datos != 0) {
 						$grupo[$array_index]["ok"]++;
 					} else {
 						$grupo[$array_index]["bad"]++;

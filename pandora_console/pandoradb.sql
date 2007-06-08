@@ -474,7 +474,7 @@ CREATE TABLE `tnews` (
   `author` varchar(255)  NOT NULL DEFAULT '',
   `subject` varchar(255)  NOT NULL DEFAULT '',
   `text` TEXT NOT NULL,
-  `utimestamp` DATETIME  NOT NULL DEFAULT 0,
+  `timestamp` DATETIME  NOT NULL DEFAULT 0,
   PRIMARY KEY(`id_news`)
 ) ENGINE = InnoDB;
 

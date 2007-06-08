@@ -6,10 +6,8 @@
 // Main PHP/SQL code development and project architecture and management
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
 // CSS and some PHP additions
-// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
-// Javascript Active Console code.
 // Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
-// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
+// Additions to Pandora FMS 1.2 graph code 
 // Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
 //
 // This program is free software; you can redistribute it and/or
@@ -22,6 +20,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 if (comprueba_login() == 0){
 	$id_user = $_SESSION["id_usuario"];
 	if ( (give_acl($id_user, 0, "LM")==1) OR (give_acl($id_user, 0, "AW")==1 ) OR (give_acl($id_user, 0, "PM")==1) OR (give_acl($id_user, 0, "DM")==1) OR (give_acl($id_user, 0, "UM")==1 )){
@@ -129,6 +128,16 @@ if (comprueba_login() == 0){
 				}
 				echo "<ul class='mn'><li><a href='index.php?sec=greporting&sec2=godmode/reporting/graph_builder' class='mn'>".$lang_label["graph_builder"]."</a></li></ul></div>";
 			}
+
+			// Custom map builder
+			if (isset($_GET["sec"]) && $_GET["sec"] == "greporting"){
+				if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/reporting/map_builder"){
+					echo "<div class='arrowgs'>";
+				} else {
+					echo "<div class='arrowg'>";
+				}
+				echo "<ul class='mn'><li><a href='index.php?sec=greporting&sec2=godmode/reporting/map_builder' class='mn'>".$lang_label["map_builder"]."</a></li></ul></div>";
+			}
 	}
 
 	// Manage profiles
@@ -180,6 +189,14 @@ if (comprueba_login() == 0){
 			}
 			else echo "<div class='arrowg'>";
 			echo "<ul class='mn'><li><a href='index.php?sec=gsetup&amp;sec2=godmode/setup/links' class='mn'>".$lang_label["setup_links"]."</a></li></ul></div>";
+		}
+		
+		if (isset($_GET["sec"]) && $_GET["sec"] == "gsetup"){
+			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/setup/news"){
+				echo "<div class='arrowgs'>";
+			}
+			else echo "<div class='arrowg'>";
+			echo "<ul class='mn'><li><a href='index.php?sec=gsetup&amp;sec2=godmode/setup/news' class='mn'>".$lang_label["site_news"]."</a></li></ul></div>";
 		}
 	}
 	if ((give_acl($id_user, 0, "DM")==1)){

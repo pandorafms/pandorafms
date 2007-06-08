@@ -663,7 +663,10 @@ function graphic_agentmodules($id_agent, $width, $height) {
 
 	if ($cx > 0){
 		// create the graph
-		$Graph =& Image_Graph::factory('graph', array($width, $height));
+		$driver=& Image_Canvas::factory('png',array('width'=>$width,'height'=>$height,'antialias' => 'native'));
+		$Graph = & Image_Graph::factory('graph', $driver);
+			
+		//$Graph =& Image_Graph::factory('graph', array($width, $height));
 		// add a TrueType font
 		$Font =& $Graph->addNew('font', $config_fontpath);
 		// set the font size to 7 pixels
@@ -1731,6 +1734,100 @@ function graphic_test ($id, $period, $interval, $label, $width, $height){
 
 }
 
+function odo_tactic ($value1, $value2, $value3){
+	require_once 'Image/Graph.php';
+	include ("../include/config.php");
+	
+	// create the graph
+	$driver=& Image_Canvas::factory('png',array('width'=>350,'height'=>260,'antialias' => 'driver'));
+	$Graph = & Image_Graph::factory('graph', $driver);
+	// add a TrueType font
+	$Font =& $Graph->addNew('font', $config_fontpath);
+	// set the font size to 11 pixels
+	$Font->setSize(8);
+	$Graph->setFont($Font);
+
+
+	// create the plotarea
+	$Graph->add(
+			Image_Graph::vertical(
+				$Plotarea = Image_Graph::factory('plotarea'),
+				$Legend = Image_Graph::factory('legend'),
+    		80
+			)
+	);
+
+	$Legend->setPlotarea($Plotarea);
+	$Legend->setAlignment(IMAGE_GRAPH_ALIGN_HORIZONTAL);
+	/***************************Arrows************************/
+	$Arrows = & Image_Graph::factory('dataset');
+	$Arrows->addPoint('Global Health', $value1, 'GLOBAL');
+	$Arrows->addPoint('Data Health', $value2, 'DATA');
+	$Arrows->addPoint('Monitor Health', $value3, 'MONITOR');
+
+	/**************************PARAMATERS for PLOT*******************/
+
+	// create the plot as odo chart using the dataset
+	$Plot =& $Plotarea->addNew('Image_Graph_Plot_Odo',$Arrows);
+	$Plot->setRange(0, 100);
+	$Plot->setAngles(180, 180);
+	$Plot->setRadiusWidth(90);
+	$Plot->setLineColor('gray');//for range and outline
+
+	$Marker =& $Plot->addNew('Image_Graph_Marker_Value', IMAGE_GRAPH_VALUE_Y);
+	$Plot->setArrowMarker($Marker);
+
+	$Plotarea->hideAxis();
+	/***************************Axis************************/
+	// create a Y data value marker
+
+	$Marker->setFillColor('transparent');
+	$Marker->setBorderColor('transparent');
+	$Marker->setFontSize(7);
+	$Marker->setFontColor('black');
+
+	// create a pin-point marker type
+	$Plot->setTickLength(14);
+	$Plot->setAxisTicks(5);
+	/********************************color of arrows*************/
+	$FillArray = & Image_Graph::factory('Image_Graph_Fill_Array');
+	$FillArray->addColor('red@0.8', 'GLOBAL');
+	$FillArray->addColor('black.6', 'DATA');
+	$FillArray->addColor('blue@0.6', 'MONITOR');
+
+	// create a line array
+	$LineArray =& Image_Graph::factory('Image_Graph_Line_Array');
+	$LineArray->addColor('red', 'GLOBAL');
+	$LineArray->addColor('black', 'DATA');
+	$LineArray->addColor('blue', 'MONITOR');
+	$Plot->setArrowLineStyle($LineArray);
+	$Plot->setArrowFillStyle($FillArray);
+
+	/***************************MARKER OR ARROW************************/
+	// create a Y data value marker
+	$Marker =& $Plot->addNew('Image_Graph_Marker_Value', IMAGE_GRAPH_VALUE_Y);
+	$Marker->setFillColor('white');
+	$Marker->setBorderColor('white');
+	$Marker->setFontSize(7);
+	$Marker->setFontColor('black');
+	// create a pin-point marker type
+	$PointingMarker =& $Plot->addNew('Image_Graph_Marker_Pointing_Angular', array(20, &$Marker));
+	// and use the marker on the plot
+	$Plot->setMarker($PointingMarker);
+	/**************************RANGE*******************/
+	$Plot->addRangeMarker(0, 30);
+	$Plot->addRangeMarker(30, 70);
+	$Plot->addRangeMarker(70, 100);
+	// create a fillstyle for the ranges
+	$FillRangeArray = & Image_Graph::factory('Image_Graph_Fill_Array');
+	$FillRangeArray->addColor('red@0.8');
+	$FillRangeArray->addColor('yellow@0.8');
+	$FillRangeArray->addColor('green@0.8');
+	$Plot->setRangeMarkerFillStyle($FillRangeArray);
+	// output the Graph
+	$Graph->done();
+}
+
 
 // **************************************************************************
 // **************************************************************************
@@ -1830,6 +1927,21 @@ if ( isset($_GET["draw_alerts"]))
 	$draw_alerts = $_GET["draw_alerts"];
 else
 	$draw_alerts = 0;
+
+// Values 1 2 and 3
+if ( isset($_GET["value1"]))
+	$value1 = $_GET["value1"];
+else
+	$value1 = 0;
+if ( isset($_GET["value2"]))
+	$value2 = $_GET["value2"];
+else
+	$value2 = 0;
+if ( isset($_GET["value3"]))
+	$value3 = $_GET["value3"];
+else
+	$value3 = 0;
+
 	
 // Image handler
 // *****************
@@ -1872,6 +1984,9 @@ if (isset($_GET["tipo"])){
 	elseif ( $_GET["tipo"] =="progress"){
 		$percent= $_GET["percent"];
 		progress_bar($percent,$width,$height);
+	}
+	elseif ( $_GET["tipo"] == "odo_tactic"){
+		odo_tactic ( $value1, $value2, $value3 );
 	}
 	elseif ( $_GET["tipo"] =="combined"){
 		// Split id to get all parameters

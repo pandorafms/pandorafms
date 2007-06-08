@@ -24,15 +24,15 @@ if (comprueba_login() == 0) {
 
 ?>
 
-<h2><?php echo $lang_label["users_"] ?></h2>
-<h3><?php echo $lang_label["users"] ?><a href='help/<?php echo $help_code ?>/chap2.php#2' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
+<h2><?php echo $lang_label["users_"] ?> &gt; 
+<?php echo $lang_label["users"] ?><a href='help/<?php echo $help_code ?>/chap2.php#2' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h2>
 
-<table cellpadding="3" cellspacing="3" width="700">
-<th width="80px"><?php echo $lang_label["user_ID"]?>
-<th width="155px"><?php echo $lang_label["last_contact"]?>
-<th width="45px"><?php echo $lang_label["profile"]?>
-<th width="120px"><?php echo $lang_label["name"]?>
-<th><?php echo $lang_label["description"]?>
+<table cellpadding="4" cellspacing="4" width="700" class='databox'>
+<th width="80px"><?php echo $lang_label["user_ID"]?></th>
+<th width="155px"><?php echo $lang_label["last_contact"]?></th>
+<th width="45px"><?php echo $lang_label["profile"]?></th>
+<th width="120px"><?php echo $lang_label["name"]?></th>
+<th><?php echo $lang_label["description"]?></th>
 
 <?php
 $color = 1;
@@ -74,32 +74,54 @@ while ($rowdup=mysql_fetch_array($resq1)){
 	echo "</span></a>";
 	echo "<td class='$tdcolor' width='100'>".substr($real_name,0,16)."</td>";
 	echo "<td class='$tdcolor'>".$comments."</td>";
+	echo "</tr>";
 }
 
-echo "<tr><td colspan='5'><div class='raya'></div></td></tr></table><br>";
+echo "</table><br>";
 
 ?>
 
 
 <h3><?php echo $lang_label["definedprofiles"] ?><a href='help/<?php echo $help_code ?>/chap2.php#21' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
 
-<table cellpadding=3 cellspacing=3 border=0>
+<table cellpadding='4' cellspacing='4' class='databox'>
 <?php
 
 	$query_del1="SELECT * FROM tperfil";
 	$resq1=mysql_query($query_del1);
 	echo "<tr>";
-	echo "<th width='180px'><font size=1>".$lang_label["profiles"];
-	echo "<th width='40px'><font size=1>IR<a href='#' class='tipp'>&nbsp;<span>".$help_label["IR"]."</span></a>";
-	echo "<th width='40px'><font size=1>IW<a href='#' class='tipp'>&nbsp;<span>".$help_label["IW"]."</span></a>";
-	echo "<th width='40px'><font size=1>IM<a href='#' class='tipp'>&nbsp;<span>".$help_label["IM"]."</span></a>";
-	echo "<th width='40px'><font size=1>AR<a href='#' class='tipp'>&nbsp;<span>".$help_label["AR"]."</span></a>";
-	echo "<th width='40px'><font size=1>AW<a href='#' class='tipp'>&nbsp;<span>".$help_label["AW"]."</span></a>";
-	echo "<th width='40px'><font size=1>LW<a href='#' class='tipp'>&nbsp;<span>".$help_label["LW"]."</span></a>";
-	echo "<th width='40px'><font size=1>UM<a href='#' class='tipp'>&nbsp;<span>".$help_label["UM"]."</span></a>";
-	echo "<th width='40px'><font size=1>DM<a href='#' class='tipp'>&nbsp;<span>".$help_label["DM"]."</span></a>";
-	echo "<th width='40px'><font size=1>LM<a href='#' class='tipp'>&nbsp;<span>".$help_label["LM"]."</span></a>";
-	echo "<th width='40px'><font size=1>PM<a href='#' class='tipp'>&nbsp;<span>".$help_label["PM"]."</span></a>";
+	echo "<th width='180px'>
+	<font size=1>".$lang_label["profiles"]."</th>";
+	echo "<th width='40px'>
+	<font size=1>IR<a href='#' class='tipp'>&nbsp;<span>".$help_label["IR"]."</span></a>
+	</font></th>";
+	echo "<th width='40px'>
+	<font size=1>IW<a href='#' class='tipp'>&nbsp;<span>".$help_label["IW"]."</span></a>
+	</font></th>";
+	echo "<th width='40px'>
+	<font size=1>IM<a href='#' class='tipp'>&nbsp;<span>".$help_label["IM"]."</span></a>
+	</font></th>";
+	echo "<th width='40px'>
+	<font size=1>AR<a href='#' class='tipp'>&nbsp;<span>".$help_label["AR"]."</span></a>
+	</font></th>";
+	echo "<th width='40px'>
+	<font size=1>AW<a href='#' class='tipp'>&nbsp;<span>".$help_label["AW"]."</span></a>
+	</font></th>";
+	echo "<th width='40px'>
+	<font size=1>LW<a href='#' class='tipp'>&nbsp;<span>".$help_label["LW"]."</span></a>
+	</font></th>";
+	echo "<th width='40px'>
+	<font size=1>UM<a href='#' class='tipp'>&nbsp;<span>".$help_label["UM"]."</span></a>
+	</font></th>";
+	echo "<th width='40px'>
+	<font size=1>DM<a href='#' class='tipp'>&nbsp;<span>".$help_label["DM"]."</span></a>
+	</font></th>";
+	echo "<th width='40px'>
+	<font size=1>LM<a href='#' class='tipp'>&nbsp;<span>".$help_label["LM"]."</span></a>
+	</font></th>";
+	echo "<th width='40px'>
+	<font size=1>PM<a href='#' class='tipp'>&nbsp;<span>".$help_label["PM"]."</span></a>
+	</font></th>";
 	$color = 1;
 	while ($rowdup=mysql_fetch_array($resq1)){
 		$id_perfil = $rowdup["id_perfil"];
@@ -157,4 +179,4 @@ echo "<tr><td colspan='5'><div class='raya'></div></td></tr></table><br>";
 	}
 } //end of page
 ?>
-<tr><td colspan='11'><div class='raya'></div></td></tr></table>
+</tr></table>

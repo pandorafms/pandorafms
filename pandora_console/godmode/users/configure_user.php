@@ -229,9 +229,9 @@ if (comprueba_login() == 0)
 		$result=mysql_query($sql1);
 		
 		echo '<h3>'.$lang_label["listGroupUser"].'<a href="help/'.$help_code.'/chap2.php#22" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h3>';
-		echo "<table width='500' cellpadding='3' cellspacing='3' class='fon'>";
+		echo "<table width='500' cellpadding='4' cellspacing='4' class='databox'>";
 		if (mysql_num_rows($result)){
-			echo '<tr><td class="lb" rowspan="'.mysql_num_rows($result).'" width="5">';
+			echo '<tr>';
 			$color=1;
 			while ($row=mysql_fetch_array($result)){
 				if ($color == 1){
@@ -247,9 +247,10 @@ if (comprueba_login() == 0)
 				echo "<b>".dame_grupo($row["id_grupo"])."</b>";
 				echo '<td class="'.$tdcolor.'t"><a href="index.php?sec=gusuarios&sec2=godmode/users/configure_user&id_usuario_mio='.$id_usuario_mio.'&borrar_grupo='.$row["id_up"].' " onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;"><img border=0 src="images/cross.png"></a><tr>';
 			}
-				echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
 		}
-		else { echo '<tr><td class="red" colspan="3">'.$lang_label["no_profile"].'</td></tr>';}
+		else {
+			echo '<div class="nf">'.$lang_label["no_profile"].'</div>';
+		}
 	}	
 	?>
 

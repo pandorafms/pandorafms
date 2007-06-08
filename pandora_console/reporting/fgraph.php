@@ -1797,9 +1797,9 @@ function odo_tactic ($value1, $value2, $value3){
 
 	// create a line array
 	$LineArray =& Image_Graph::factory('Image_Graph_Line_Array');
-	$LineArray->addColor('red', 'GLOBAL');
+	$LineArray->addColor('black', 'GLOBAL');
 	$LineArray->addColor('black', 'DATA');
-	$LineArray->addColor('blue', 'MONITOR');
+	$LineArray->addColor('black', 'MONITOR');
 	$Plot->setArrowLineStyle($LineArray);
 	$Plot->setArrowFillStyle($FillArray);
 

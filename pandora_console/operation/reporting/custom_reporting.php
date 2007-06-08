@@ -29,9 +29,13 @@ if (comprueba_login() != 0) {
 
 //echo "SLA for Tato: %".return_module_SLA (50, 604800, 1, 1);
 
-echo "<h3>".$lang_label["custom_reporting"]."</h3>";
+echo "<h2>".$lang_label["reporting"]." &gt; ";
+echo $lang_label["custom_reporting"]."</h2>";
 echo "<table width='500' cellpadding=4 cellpadding=4 class='databox'>";
-echo "<tr><th>".$lang_label["report_name"]."<th>".$lang_label["description"]."<th>".$lang_label["view"];
+echo "<tr>
+<th>".$lang_label["report_name"]."</th>
+<th>".$lang_label["description"]."</th>
+<th>".$lang_label["view"]."</th>";
 $color=1;
 $sql="SELECT * FROM treport";
 $res=mysql_query($sql);
@@ -47,10 +51,13 @@ while ($row = mysql_fetch_array($res)){
 			$color = 1;
 		}
 		echo "<tr>";
-		echo "<td valign='top' class='$tdcolor'>".$row["name"];
-		echo "<td class='$tdcolor'>".$row["description"];
+		echo "<td valign='top' class='$tdcolor'>".$row["name"]."</td>";
+		echo "<td class='$tdcolor'>".$row["description"]."</td>";
 		$id_report = $row["id_report"];
-		echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=$id_report'><img src='images/reporting.png'></A>";
+		echo "<td valign='middle' class='$tdcolor' align='center'>
+		<a href='index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=$id_report'>
+		<img src='images/reporting.png'></a>
+		</td></tr>";
 	}
 }
 echo "</table>";

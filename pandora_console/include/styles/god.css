@@ -37,7 +37,7 @@ div#god1>ul, div#god2>ul, div#god3>ul, div#god4>ul, div#god5>ul, div#god51>ul, d
 	background: url(../../images/god5.gif) no-repeat 3px 3px;
 }
 #god51 li, #god51 li:hover, #god51s li {
-	background: url(../../images/reporting.png) no-repeat 4px 4px;
+	background: url(../../images/reporting_edit.png) no-repeat 4px 4px;
 }
 #god6 li, #god6 li:hover, #god6s li {
 	background: url(../../images/god6.gif) no-repeat 4px 3px;
@@ -62,7 +62,8 @@ div.arrowg>ul, div.arrowgs>ul {
 #god a:hover,
 #god1 li:hover, #god1s li, #god2 li:hover, #god2s li, #god3 li:hover, #god3s li,
 #god4 li:hover, #god4s li, #god5 li:hover, #god5s li, #god6 li:hover, #god6s li,
-#god7 li:hover, #god7s li, #god8 li:hover, #god8s li, #god_module li:hover, #god_module_sel li,  #god51 li:hover, #god51s li,
+#god7 li:hover, #god7s li, #god8 li:hover, #god8s li, 
+#god_module li:hover, #god_module_sel li,  #god51 li:hover, #god51s li,
 .arrowg li:hover, .arrowgs li
  {
 	background-color: #efefbd;

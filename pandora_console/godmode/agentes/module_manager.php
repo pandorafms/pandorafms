@@ -173,13 +173,13 @@ echo "<h3>".$lang_label["assigned_modules"]."
 if ($row=mysql_num_rows($result)){
 	echo '<table width="750" cellpadding="4" cellspacing="4" class="databox">';
 	echo '<tr>';
-	echo "<th>".$lang_label["module_name"];
-	echo "<th>".$lang_label["type"];
-	echo "<th>".$lang_label["interval"];
-	echo "<th>".$lang_label["description"];
-	echo "<th>".$lang_label["module_group"];
-	echo "<th>".$lang_label["max_min"];
-	echo "<th width=65>".$lang_label["action"];
+	echo "<th>".$lang_label["module_name"]."</th>";
+	echo "<th>".$lang_label["type"]."</th>";
+	echo "<th>".$lang_label["interval"]."</th>";
+	echo "<th>".$lang_label["description"]."</th>";
+	echo "<th>".$lang_label["module_group"]."</th>";
+	echo "<th>".$lang_label["max_min"]."</th>";
+	echo "<th width=65>".$lang_label["action"]."</th>";
 	$color=1;$last_modulegroup = "0";
 	while ($row=mysql_fetch_array($result)){
 		if ($color == 1){
@@ -368,7 +368,7 @@ if (isset($_POST["oid"])){
 		// y el cabron de PHP me devuelve indices a partir de 1 !!!!!!!
    		//echo "$i: $a[$i]<br />\n";
 		$snmp_output = substr($i,0,35)." - ".substr($snmpwalk[$i],0,20);
-		echo "<option value=$i>".salida_limpia(substr($snmp_output,0,55));
+		echo "<option value=$i>".salida_limpia(substr($snmp_output,0,55))."</option>";
 	}
 }
 ?>

@@ -41,9 +41,9 @@ if (isset($_GET["delete"])){
 	$id_content = $_GET["delete"];
 	$sql = "DELETE FROM treport_content WHERE id_rc = $id_content";
 	if ($res=mysql_query($sql))
-		$result = "<h2 class=suc>".$lang_label["delete_ok"]."</h2>";
+		$result = "<h3 class=suc>".$lang_label["delete_ok"]."</h3>";
 	else
-		$result = "<h2 class=error>".$lang_label["delete_no"]."</h2>";
+		$result = "<h3 class=error>".$lang_label["delete_no"]."</h3>";
 	echo $result;
 }
 
@@ -55,9 +55,9 @@ if (isset($_GET["delete_report"])){
 	$res=mysql_query($sql);
 	$res2=mysql_query($sql2);
 	if ($res AND $res2)
-		$result = "<h2 class=suc>".$lang_label["delete_ok"]."</h2>";
+		$result = "<h3 class=suc>".$lang_label["delete_reporting_ok"]."</h3>";
 	else
-		$result = "<h2 class=error>".$lang_label["delete_no"]."</h2>";
+		$result = "<h3 class=error>".$lang_label["delete_reporting_no"]."</h3>";
 	echo $result;
 }
 
@@ -86,9 +86,9 @@ if (isset($_GET["add_module"])){
 	
 	$sql = "INSERT INTO treport_content (id_report, id_gs, id_agent_module, type, sla_max, sla_min, sla_limit, period) VALUES ('$id_report', '$my_cg', '$my_id_module', '$my_type', '$my_slamax', '$my_slamin', '$my_slalimit', '$my_period')";
 	if ($res=mysql_query($sql))
-		$result = "<h2 class=suc>".$lang_label["create_ok"]."</h2>";
+		$result = "<h3 class=suc>".$lang_label["create_reporting_ok"]."</h3>";
 	else
-		$result = "<h2 class=error>".$lang_label["create_no"]."</h2>";
+		$result = "<h3 class=error>".$lang_label["create_reporting_no"]."</h3>";
 	echo $result;
 }
 
@@ -107,9 +107,9 @@ if (isset($_POST["createmode"])){
 		$form_id_user = $id_user;
 		$sql = "INSERT INTO treport (name, description, id_user, private) VALUES ('$form_report_name', '$form_report_description', '$form_id_user', '$form_report_private')";
 		if ($res=mysql_query($sql))
-			$result = "<h1 class=suc>".$lang_label["create_ok"]."</h1>";
+			$result = "<h3 class=suc>".$lang_label["create_reporting_ok"]."</h3>";
 		else
-			$result = "<h1 class=error>".$lang_label["create_no"]."</h1>";
+			$result = "<h3 class=error>".$lang_label["create_reporting_no"]."</h3>";
 		$id_report = mysql_insert_id();
 	// UPDATE REPORT DATA
 	} else {
@@ -159,8 +159,8 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_report"]))) {
 		$form_id_user = $id_user;
 		$createmode = 1;
 	}
-		
-	echo "<h1>".$lang_label["custom_reporting_builder"]."</h1>";
+	echo "<h2>".$lang_label["reporting"]." &gt; ";
+	echo $lang_label["custom_reporting_builder"]."</h2>";
 	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/reporting_builder'>";
 	echo "<input type='hidden' name=createmode value='$createmode'>";
 	if ($createmode == 0){
@@ -215,7 +215,7 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_report"]))) {
 		
 		echo "<tr>";
 		echo "<td class='datos'><b>".$lang_label["source_agent"];
-		echo "</b>";	
+		echo "</b></td>";	
 		echo "<td class='datos' colspan=2><select name='id_agent' style='width:180px;'>";
 		if ($id_agent != 0)
 			echo "<option value='$id_agent'>".dame_nombre_agente($id_agent);
@@ -223,13 +223,13 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_report"]))) {
 		$result=mysql_query($sql1);
 		while ($row=mysql_fetch_array($result)){
 			if ( $id_agent != $row["id_agente"])
-				echo "<option value=".$row["id_agente"].">".$row["nombre"];
+				echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
 		}
-		echo '</select>';
+		echo '</select></td>';
 
-
-		echo "<td class='datos' colspan=1 align='right'><input type=submit name='update_agent' class='sub upd' value='".$lang_label["get_info"]."'>";
-		echo "</form>";
+		echo "<td class='datos' colspan='1' align='right'>
+		<input type=submit name='update_agent' class='sub upd' value='".$lang_label["get_info"]."'>";
+		echo "</td></form>";
 
 		// Modules combo
 		// -----------------------
@@ -242,13 +242,13 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_report"]))) {
 		echo "<b>".$lang_label["modules"]."</b>";
 		echo "<td class='datos2' colspan=3>";
 		echo "<select name='id_module' size=1 style='width:180px;'>";
-				echo "<option value=-1> --";
+				echo "<option value=-1> -- </option>";
 		if ($id_agent != 0){
 			// Populate Module/Agent combo
-			$sql1="SELECT * FROM tagente_modulo WHERE id_agente = ".$id_agent. " order by nombre";
+			$sql1="SELECT * FROM tagente_modulo WHERE id_agente = ".$id_agent. " ORDER BY nombre";
 			$result = mysql_query($sql1);
 			while ($row=mysql_fetch_array($result)){
-				echo "<option value=".$row["id_agente_modulo"].">".$row["nombre"];
+				echo "<option value=".$row["id_agente_modulo"].">".$row["nombre"]."</option>";
 			}
 		}
 		echo "</select>";
@@ -258,15 +258,15 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_report"]))) {
 		echo "<b>".$lang_label["reporting_type"]."</b>";
 		echo "<td class='datos' colspan=3>";
 		echo "<select name='type' size=1 style='width:180px;'>";
-		echo "<option value=0>".$lang_label["simple_graph"];
-		echo "<option value=1>".$lang_label["custom_graph"];
-		echo "<option value=2>".$lang_label["SLA"];
-		echo "<option value=3>".$lang_label["event_report"];
-		echo "<option value=4>".$lang_label["alert_report"];
-		echo "<option value=5>".$lang_label["monitor_report"];
-		echo "<option value=6>".$lang_label["avg_value"];
-		echo "<option value=7>".$lang_label["max_value"];
-		echo "<option value=8>".$lang_label["min_value"];
+		echo "<option value=0>".$lang_label["simple_graph"]."</option>";
+		echo "<option value=1>".$lang_label["custom_graph"]."</option>";
+		echo "<option value=2>".$lang_label["SLA"]."</option>";
+		echo "<option value=3>".$lang_label["event_report"]."</option>";
+		echo "<option value=4>".$lang_label["alert_report"]."</option>";
+		echo "<option value=5>".$lang_label["monitor_report"]."</option>";
+		echo "<option value=6>".$lang_label["avg_value"]."</option>";
+		echo "<option value=7>".$lang_label["max_value"]."</option>";
+		echo "<option value=8>".$lang_label["min_value"]."</option>";
 		echo "</select>";
 
 		// Custom graph
@@ -288,39 +288,39 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_report"]))) {
 		echo "<b>".$lang_label["period"]."</b>";
 		echo "<td class='datos' colspan=3>";
 		echo "<select name='period'>";
-		echo "<option value=3600>"."Hour";
-		echo "<option value=7200>"."2 Hours";
-		echo "<option value=10800>"."3 Hours";
-		echo "<option value=21600>"."6 Hours";
-		echo "<option value=43200>"."12 Hours";
-		echo "<option value=86400>"."Last day";
-		echo "<option value=172800>"."Two days";
-		echo "<option value=604800>"."Last Week";
-		echo "<option value=1296000>"."15 days";
-		echo "<option value=2592000>"."Last Month";
-		echo "<option value=5184000>"."Two Month";
-		echo "<option value=15552000>"."Six Months";
+		echo "<option value=3600>"."Hour</option>";
+		echo "<option value=7200>"."2 Hours</option>";
+		echo "<option value=10800>"."3 Hours</option>";
+		echo "<option value=21600>"."6 Hours</option>";
+		echo "<option value=43200>"."12 Hours</option>";
+		echo "<option value=86400>"."Last day</option>";
+		echo "<option value=172800>"."Two days</option>";
+		echo "<option value=604800>"."Last Week</option>";
+		echo "<option value=1296000>"."15 days</option>";
+		echo "<option value=2592000>"."Last Month</option>";
+		echo "<option value=5184000>"."Two Month</option>";
+		echo "<option value=15552000>"."Six Months</option>";
 		echo "</select>";
 
 		// SLA Max
 		echo "<tr><td class='datos2'>";
-		echo "<b>".$lang_label["sla_max"]."</b>";
+		echo "<b>".$lang_label["sla_max"]."</b></td>";
 		echo "<td class='datos2'>";
-		echo "<input type=text size=6 name='sla_max'>";
+		echo "<input type=text size=6 name='sla_max'></td>";
 		// SLA Min
 		echo "<td class='datos2'>";
 		echo "<b>".$lang_label["sla_min"]."</b>";
 		echo "<td class='datos2'>";
-		echo "<input type=text size=6 name='sla_min'>";
+		echo "<input type=text size=6 name='sla_min'></td>";
 		
 		// SLA limit
 		echo "<tr><td class='datos'>";
 		echo "<b>".$lang_label["sla_limit"]."</b>";
 		echo "<td class='datos'>";
-		echo "<input type=text size=6 name='sla_limit'>";
+		echo "<input type='text' size='6' name='sla_limit'></td>";
 		echo "</table>";
 
-		echo "<table width=500 cellspacing=4 cellpading=4'>";
+		echo "<table width='500' cellspacing='4' cellpading='4'>";
 		echo "<tr><td align='right'>";
 		echo "<input type='submit' class='sub wand' value='".$lang_label["add"]."'>";
 		echo "</table>";
@@ -332,7 +332,12 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_report"]))) {
 
 		echo "<h2>".$lang_label["report_items"]."</h2>";
 		echo "<table width=500 cellspacing=4 cellpadding=4 class='databox'>";
-		echo "<tr><th>".$lang_label["type"]."<th>".$lang_label["agent_name"]."<th>".$lang_label["module_name"]."<th>".$lang_label["period"]."<th>".$lang_label["delete"];
+		echo "<tr>
+		<th>".$lang_label["type"]."</th>
+		<th>".$lang_label["agent_name"]."</th>
+		<th>".$lang_label["module_name"]."</th>
+		<th>".$lang_label["period"]."</th>
+		<th>".$lang_label["delete"]."</th>";
 		$sql = "SELECT * FROM treport_content WHERE id_report = $id_report";
 		$res=mysql_query($sql);
 		$color = 0;
@@ -374,7 +379,7 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_report"]))) {
 			echo "<td class='$tdcolor'>".$period;
 			echo "<td class='$tdcolor' align='center'>";
 			if ($form_id_user == $id_user){
-				echo "<a href='index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id=1&delete=$id_rc'><img src='images/cancel.gif'></A>";
+				echo "<a href='index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id=1&delete=$id_rc'><img src='images/cross.png'></a>";
 			}
 		}	
 		echo "</table>";
@@ -384,9 +389,14 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_report"]))) {
 	
 	// Report LIST
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	echo "<h3>".$lang_label["custom_reporting"]."</h3>";
+	echo "<h2>".$lang_label["reporting"]." &gt; ";
+	echo $lang_label["custom_reporting"]."</h2>";
 	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox'>";
-	echo "<tr><th>".$lang_label["report_name"]."<th>".$lang_label["description"]."<th>".$lang_label["Manage"]."<th>".$lang_label["delete"];
+	echo "<tr>
+	<th>".$lang_label["report_name"]."</th>
+	<th>".$lang_label["description"]."</th>
+	<th>".$lang_label["Manage"]."</th>
+	<th>".$lang_label["delete"]."</th>";
 	$color=1;
 	$sql="SELECT * FROM treport";
 	$res=mysql_query($sql);
@@ -405,15 +415,19 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_report"]))) {
 			echo "<td valign='top' class='$tdcolor'>".$row["name"];
 			echo "<td class='$tdcolor'>".$row["description"];
 			$id_report = $row["id_report"];
-			echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id=$id_report'><img src='images/setup.png'></A>";
-			echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&delete_report=$id_report'><img src='images/cancel.gif'></A>";
+			echo "<td valign='middle' class='$tdcolor' align='center'>
+			<a href='index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id=$id_report'>
+			<img src='images/setup.png'></a></td>";
+			echo "<td valign='middle' class='$tdcolor' align='center'>
+			<a href='index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&delete_report=$id_report'>
+			<img src='images/cross.png'></a></td>";
 		}
 	}
 	echo "</table>";
 	echo "<table width=500 cellpadding=4 cellpadding=4>";
 	echo "<form method=post action='index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&create_report=1'>";
 	echo "<tr><td align='right'>";
-	echo "<input type=submit class='sub wizard' value='".$lang_label["add"]."'>";
+	echo "<input type=submit class='sub next' value='".$lang_label["add"]."'>";
 	echo "</form>";
 	echo "</table>";
 }

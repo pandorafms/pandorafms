@@ -802,8 +802,7 @@ $lang_label["period"]="Period";
 $lang_label["reporting_item_add"]="Add item to report";
 
 $lang_label["template"]="Template";
-$lang_label["add_mod_ok"]="Modules added successfully";
-
+$lang_label["add_mod_ok"]="Modules successfully added ";
 
 $lang_label["simple_graph"] = "Simple graph";
 $lang_label["custom_graph"] = "Custom graph";
@@ -821,6 +820,12 @@ $lang_label["sla_min"] = "SLA Min. (value)";
 $lang_label["sla_limit"] = "SLA Limit (%)";
 $lang_label["up"]="Up";
 $lang_label["down"]="Down";
+
+$lang_label["create_reporting_ok"]="Reporting successfully created";
+$lang_label["create_reporting_no"]="There was a problem creating reporting";
+$lang_label["delete_reporting_ok"]="Reporting successfully deleted";
+$lang_label["delete_reporting_no"]="There was a problem deleting reporting";
+
 global $lang_label; 
 global $help_label;
 ?>

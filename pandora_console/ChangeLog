@@ -1,3 +1,38 @@
+2007-06-08  Sancho Lerena  <slerena@artica.es>
+
+	* include/languages/language_en.php: New strings
+	
+	* include/functions_reporting.php: Added generic function to parse
+	information of all monitors / data checks for statistical usage in
+	several sections of console.
+	
+	* pandoradb.sql: Updated field "timestamp" of tnews table.
+	
+	* operation/agentes/estado_grupo.php: Better management of unknown
+	monitors, this should fix odd behaviour detected.
+	
+	* operation/agentes/tactical.php: New tactical view.
+	
+	* operation/menu.php: New option for group view and
+	tactical. Default option now is tactical view.
+	
+	* images/backgrounds/background4.jpg: Updated background.
+	
+	* reporting/Image/Graph/Plot/Odo.php: Fixed warning in original code.
+	
+	* reporting/Image/Canvas/GD.php: Again playing with canvas options.
+	
+	* reporting/fgraph.php: New odo graph.
+	
+	* general/logon_ok.php: New welcome screen :-)
+	
+	* godmode/setup/news.php: New news manager.
+	
+	* godmode/reporting/map_builder.php: Future map/visual console
+	editor, not ready yet.
+	
+	* godmode/menu.php: Updated a few options.
+
 2007-06-08  Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/styles/god.css: Updated god51.
@@ -13,9 +48,11 @@
 	
 	* godmode/reporting/graph_builder.php: Updated text styles.
 	
-	* operation/agentes/datos_agente.php: Updated table length and delete text.
+	* operation/agentes/datos_agente.php: Updated table length and
+	delete text.
 	
-	* godmode/modules/manage_network_templates_form.php: Updated with new table style.
+	* godmode/modules/manage_network_templates_form.php: Updated with
+	new table style.
 	
 2007-06-07  Raul Mateos  <raulofpandora@gmail.com>
 

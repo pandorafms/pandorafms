@@ -87,8 +87,7 @@ class Image_Canvas_GD extends Image_Canvas_WithMap
      * @var string
      * @access private
      */
-// Pandora FMS: Beware of this, could be slow on old systems
-
+	// Pandora FMS: Beware of this, could be slow on old systems
     var $_antialias = 'driver';
 
     /**

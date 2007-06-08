@@ -733,6 +733,7 @@ $lang_label["Alerts"]="Alerts";
 $lang_label["Data"]="Data";
 $lang_label["Main"]="Main";
 $lang_label["version"]="Version";
+$lang_label["tactical_server_information"]="Tactical server information";
 
 //2 Apr 2007
 $lang_label["no_rtask"]="There are no recon task configured";
@@ -820,7 +821,17 @@ $lang_label["sla_min"] = "SLA Min. (value)";
 $lang_label["sla_limit"] = "SLA Limit (%)";
 $lang_label["up"]="Up";
 $lang_label["down"]="Down";
-
+$lang_label["map_builder"]="Map builder";
+$lang_label["map_name"]="Map name";
+$lang_label["tactical_view"]="Tactical view";
+$lang_label["tactical_indicator"]="Tactical indicator";
+$lang_label["monitor_checks"]="Monitor checks";
+$lang_label["data_checks"]="Data checks";
+$lang_label["group_view_menu"]="Group view";
+$lang_label["site_news"]="Site news";
+$lang_label["site_news_management"]="Site news management";
+$lang_label["Pandora_FMS_summary"]="Pandora FMS Overview";
+$lang_label["by"]="by";
 $lang_label["create_reporting_ok"]="Reporting successfully created";
 $lang_label["create_reporting_no"]="There was a problem creating reporting";
 $lang_label["delete_reporting_ok"]="Reporting successfully deleted";

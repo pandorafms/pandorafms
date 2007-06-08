@@ -30,14 +30,29 @@ if (! isset($_SESSION["id_usuario"])) {
 
 // Agent read, Server read
 if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
-	if (isset($_GET["sec2"]) && $_GET["sec2"] == "operation/agentes/estado_grupo") {
+	if (isset($_GET["sec2"]) && $_GET["sec2"] == "operation/agentes/tactical") {
 		echo '<div id="op1s">';
 	} else {
 		echo '<div id="op1">';
 	}
-	echo '<ul class="mn"><li><a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_grupo&amp;refr=60" class="mn">'.$lang_label["view_agents"].'</a></li></ul></div>';
+	echo '<ul class="mn"><li><a href="index.php?sec=estado&amp;sec2=operation/agentes/tactical&amp;refr=60" class="mn">'.$lang_label["view_agents"].'</a></li></ul></div>';
 
 	if (isset($_GET["sec"]) && $_GET["sec"] == "estado"){
+
+		if (isset($_GET["sec2"]) && $_GET["sec2"] == "operation/agentes/tactical"){
+			echo "<div class='arrows'>";
+		} else {
+			echo "<div class='arrow'>";
+		}
+		echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/tactical&refr=60' class='mn'>".$lang_label["tactical_view"]."</a></li></ul></div>";
+	
+		if (isset($_GET["sec2"]) && $_GET["sec2"] == "operation/agentes/estado_grupo"){
+			echo "<div class='arrows'>";
+		} else {
+			echo "<div class='arrow'>";
+		}
+		echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/estado_grupo&refr=60' class='mn'>".$lang_label["group_view_menu"]."</a></li></ul></div>";
+	
 		if (isset($_GET["sec2"]) && ($_GET["sec2"] == "operation/agentes/estado_agente" || $_GET["sec2"] == "operation/agentes/ver_agente" || $_GET["sec2"] == "operation/agentes/datos_agente")) {
 			echo "<div class='arrows'>";
 		} else {

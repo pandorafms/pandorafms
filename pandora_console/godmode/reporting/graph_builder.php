@@ -249,7 +249,12 @@ if (($render == 1) && (isset($modules))) {
 // -----------------------
 // SOURCE AGENT TABLE/FORM
 // -----------------------
-echo "<h3>".$lang_label["graph_builder"]."</h3>";
+
+if ( (!isset($_GET["add_module"]))){
+	echo $lang_label["graph_builder"]."</h2>";
+} else {
+	echo "<h3>".$lang_label["graph_builder"]."</h3>";
+}
 echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
 echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&get_agent=1'>";
 

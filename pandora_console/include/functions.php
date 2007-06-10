@@ -369,6 +369,7 @@ function pagination ($count, $url, $offset ) {
 	}
 }
 
+
 // ---------------------------------------------------------------
 // Render data in a fashion way :-)
 // ---------------------------------------------------------------
@@ -376,7 +377,7 @@ function format_numeric ( $number, $decimals=2, $dec_point=".", $thousands_sep="
 	if ($number == 0)
 		return 0;
 	// If has decimals
-	if (fmod($number , 1)> 0)
+	if (fmod($number , 1) > 0)
 		return number_format ($number, $decimals, $dec_point, $thousands_sep);
 	else
 		return number_format ($number, 0, $dec_point, $thousands_sep);
@@ -387,11 +388,18 @@ function format_numeric ( $number, $decimals=2, $dec_point=".", $thousands_sep="
 // ---------------------------------------------------------------
 function format_for_graph ( $number , $decimals=2, $dec_point=".", $thousands_sep=",") {
 	if ($number > "1000000")
-		return number_format ($number/1000000, $decimals, $dec_point, $thousands_sep)." M";
+		if (fmod ($number, 1000000) > 0)
+			return number_format ($number/1000000, $decimals, $dec_point, $thousands_sep)." M";
+		else
+			return number_format ($number/1000000, 0, $dec_point, $thousands_sep)." M";
+			
 	if ($number > "1000")
-		return number_format ($number/1000, $decimals, $dec_point, $thousands_sep )." K";
+		if (fmod ($number, 1000) > 0)
+			return number_format ($number/1000, $decimals, $dec_point, $thousands_sep )." K";
+		else
+			return number_format ($number/1000, 0, $dec_point, $thousands_sep )." K";
 	// If has decimals
-        if (fmod($number , 1)> 0)
+        if (fmod ($number , 1)> 0)
                 return number_format ($number, $decimals, $dec_point, $thousands_sep);
         else
                 return number_format ($number, 0, $dec_point, $thousands_sep);	

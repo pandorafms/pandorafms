@@ -273,7 +273,7 @@ if (comprueba_login() == 0)
 			}
 			echo '</select>&nbsp;&nbsp;<input type=submit name="update_agent" class="sub upd" value="'.$lang_label["get_info"].'"><br><br>';
 			echo "<b>".$lang_label["modules"]."</b><br><br>";
-			echo "<select name='origen_modulo[]' size=3 multiple=yes class='w130'>";
+			echo "<select name='origen_modulo[]' size=6 multiple=yes class='w130'>";
 			if ( (isset($_POST["update_agent"])) AND (isset($_POST["origen"])) ) {
 		        	// Populate Module/Agent combo
 				$agente_modulo = $_POST["origen"];

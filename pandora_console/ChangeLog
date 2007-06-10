@@ -1,3 +1,13 @@
+2007-06-09  Sancho Lerena  <slerena@artica.es>
+
+	* include/functions.php: Solved decimals problem in format_numeric() function
+
+	* operation/agentes/tactical.php: General indicator formula improvement.
+
+	* general/logon_ok.php: Tactical ODO graph update (the same that above).
+
+	* godmode/agentes/manage_config.php: Select list too small, bad render fixed.
+
 2007-06-08  Sancho Lerena  <slerena@artica.es>
 
 	* include/languages/language_en.php: New strings

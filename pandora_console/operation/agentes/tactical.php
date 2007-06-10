@@ -6,10 +6,8 @@
 // Main PHP/SQL code development and project architecture and management
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
 // CSS and some PHP additions
-// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
-// Javascript Active Console code.
 // Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
-// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
+// Additions to Pandora FMS 1.2 graph code 
 // Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
 //
 // This program is free software; you can redistribute it and/or
@@ -219,9 +217,9 @@
 
 	// Odometer Graph
 	// ~~~~~~~~~~~~~~~
-	$monitor_health = format_numeric (($monitor_ok / $monitor_checks) * 100,1);
+	$monitor_health = format_numeric ((($monitor_ok - $monitor_alert - $monitor_unknown)/ $monitor_checks) * 100,1);
 	$data_health = format_numeric ( (($data_checks -($data_unknown + $data_alert)) / $data_checks ) * 100,1);;
-	$global_health = format_numeric( ((($monitor_ok)+($data_checks -($data_unknown + $data_alert))) / ($data_checks + $monitor_checks)  ) * 100, 1);
+	$global_health = format_numeric( ((($monitor_ok -$monitor_alert - $monitor_unknown )+($data_checks -($data_unknown + $data_alert))) / ($data_checks + $monitor_checks)  ) * 100, 1);
 	echo "<h3>".$lang_label["tactical_indicator"]."</h3>";
 	echo "<img src='reporting/fgraph.php?tipo=odo_tactic&value1=$global_health&value2=$data_health&value3=$monitor_health'>";
 

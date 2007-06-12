@@ -2,7 +2,7 @@
 # Startup Script for Pandora Agent
 # Sancho Lerena, <slerena@gmail.com>
 # Version para AIX
-# v1.2
+# v1.3
 
 
 # DONT USE WITH OPENSSH
@@ -11,8 +11,6 @@
 
 # for example: pandora_agent.sh /usr/share/pandora_agent/ &
  
-exit
-
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
 PANDORA_PATH=/usr/share/pandora_agent/
 DAEMON=pandora_agent.sh
@@ -32,7 +30,7 @@ case "$1" in
                 echo "Pandora Agent is currently running on this machine. Aborting now..."
                 exit
         fi
-	$PANDORA_PATH/$DAEMON $PANDORA_PATH >> $PANDORA_PATH/pandora.log &  MYPID=$!
+	nohup $PANDORA_PATH/$DAEMON $PANDORA_PATH >> $PANDORA_PATH/pandora.log &  MYPID=$!
         echo $MYPID > $PIDFILE
 	#MYPID=`ps -Alf | grep $DAEMON | grep -v grep | awk '{ print $4 }' | tail -1`
 	echo $MYPID > $PIDFILE

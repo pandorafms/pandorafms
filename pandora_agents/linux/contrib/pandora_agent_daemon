@@ -37,7 +37,7 @@ case "$1" in
                         exit
                 fi
         fi
-        $DAEMON $PANDORA_PATH 2> $LOGFILE & MYPID=$!
+        nohup $DAEMON $PANDORA_PATH 2> $LOGFILE & MYPID=$!
         echo $MYPID > $PIDFILE
 	echo "Pandora FMS Agent is now running with PID $MYPID"
         ;;

@@ -237,7 +237,7 @@ if ($total_events > 0){
 		
 	echo "<br>";
 	echo "<br>";
-	echo "<table cellpadding='3' cellspacing='3' width='775'>";
+	echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>";
 	echo "<tr>";
 	echo "<th>".$lang_label["status"]."</th>";
 	echo "<th>".$lang_label["event_name"]."</th>";
@@ -319,7 +319,6 @@ if ($total_events > 0){
 		$offset_counter++;
 	}
 		
-	echo "<tr><td colspan='8'><div class='raya'></div></td></tr>";
 	echo "<tr><td colspan='8' align='right'>";
 	
 	echo "<input class='sub' type='submit' name='updatebt' value='".$lang_label["validate"]."'> ";

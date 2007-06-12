@@ -210,7 +210,7 @@ _data_<br>
 <select name="time_threshold" style="margin-right: 60px;">
 <?php
 	if ($alerta_time_threshold != ""){ 
-		echo "<option value='".$alerta_time_threshold."'>".give_human_time($alerta_time_threshold)."</option>";
+		echo "<option value='".$alerta_time_threshold."'>".human_time_description($alerta_time_threshold)."</option>";
 	}
 ?>
 <option value=300>5 Min.</option>

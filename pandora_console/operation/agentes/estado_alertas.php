@@ -99,7 +99,7 @@ if (isset($_GET["id_agente"])){
 				echo "<td class='".$tdcolor."'>".$mymin."</td>";
 				echo "<td class='".$tdcolor."'>".$mymax."</td>";
 			}
-			echo "<td  align='center' class='".$tdcolor."'>".human_time_comparation($data["time_threshold"]);
+			echo "<td  align='center' class='".$tdcolor."'>".human_time_description($data["time_threshold"]);
 
 			
 			if ($data["last_fired"] == "0000-00-00 00:00:00") {
@@ -169,7 +169,7 @@ if (isset($_GET["id_agente"])){
 		while ($row=mysql_fetch_array($result)){ //while there are agents
 			if ($row["disabled"] == 0) {
 				$id_agente = $row['id_agente'];
-				$nombre_agente = $row["nombre"];
+				$nombre_agente = strtoupper($row["nombre"]);
 				$query_gen='SELECT talerta_agente_modulo.id_alerta,
 				talerta_agente_modulo.descripcion,
 				talerta_agente_modulo.last_fired,

@@ -33,12 +33,10 @@
 	$resultado = mysql_query ($sql);
 	$row = mysql_fetch_array ($resultado);
 	if ($row["COUNT(*)"] != 0){
-		echo '
-		<div style="margin-left: 8px">' . $lang_label["new_message_bra"] . '
-		<b><a href="index.php?sec=messages&sec2=operation/messages/message">'
-		.$row["COUNT(*)"] . '</b> <img src="images/mail.gif" border="0">'
-		.$lang_label["new_message_ket"] . '</a>
-		</div>';
+		echo "<h2>". $lang_label["new_message_bra"] . ' 
+		<a href="index.php?sec=messages&sec2=operation/messages/message">'
+		.$row["COUNT(*)"] . ' <img src="images/email.png" border="0">'
+		.$lang_label["new_message_ket"] . '</a></h2>';
 	}
 
 	echo "<table width=95%>";
@@ -47,7 +45,7 @@
 	// Site news !
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	echo '<h2>' . $lang_label["site_news"] . '</h2>';
-	$sql_news = "SELECT * FROM tnews ORDER by timestamp LIMIT 3";
+	$sql_news = "SELECT * FROM tnews ORDER by timestamp DESC LIMIT 3";
 	if ($result_news = mysql_query ($sql_news)){
 		echo '<table cellpadding="4" cellspacing="4" width="270" class="databox">';
 		while ($row = mysql_fetch_array ($result_news)) {

@@ -81,12 +81,14 @@ if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 		}
 		echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/exportdata' class='mn'>".$lang_label["export_data"]."</a></li></ul></div>";
 
+	/*
 		if (isset($_GET["sec2"]) && $_GET["sec2"] == "operation/agentes/estadisticas") {
 			echo "<div class='arrows'>";
 		} else {
 			echo "<div class='arrow'>";
 		}
 		echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/estadisticas' class='mn'>". $lang_label["statistics"]. "</a></li></ul></div>";
+		*/
 	}
 
 	// Visual console

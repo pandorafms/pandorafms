@@ -482,4 +482,14 @@ function human_time_description ($period){
 	return $period_label;
 }
 
+// This function returns MYSQL Date from now - seconds passed as parameter
+
+function human_date_relative ( $seconds ) {
+	$ahora=date("Y/m/d H:i:s");
+	$ahora_s = date("U");
+	$ayer = date ("Y/m/d H:i:s", $ahora_s - $seconds);
+	return $ayer;
+}
+
+
 ?>

@@ -124,7 +124,7 @@ if (comprueba_login() == 0) {
 		while ($row=mysql_fetch_array($result)){
 			$intervalo = $row["intervalo"]; // Interval in seconds
 			$id_agente = $row['id_agente'];	
-			$nombre_agente = $row["nombre"];
+			$nombre_agente = strtoupper($row["nombre"]);
 			$direccion_agente =$row["direccion"];
 			$id_grupo=$row["id_grupo"];
 			$id_os = $row["id_os"];

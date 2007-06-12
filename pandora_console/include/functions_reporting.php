@@ -140,4 +140,98 @@ function general_stats ( $id_user, $id_group = 0) {
 	return $data;
 }
 
+function event_reporting ($id_agent, $period){
+	require("config.php");
+	require ("include/languages/language_".$language_code.".php");
+	$id_user=$_SESSION["id_usuario"];
+	global $REMOTE_ADDR;
+	$ahora = date("U");
+	$mytimestamp = $ahora - $period;
+	
+	echo "<table cellpadding='4' cellspacing='4' width='100%' class='databox'>";
+	echo "<tr>";
+	echo "<th>".$lang_label["status"]."</th>";
+	echo "<th>".$lang_label["event_name"]."</th>";
+	echo "<th>".$lang_label["id_user"]."</th>";
+	echo "<th>".$lang_label["timestamp"]."</th>";
+	$color = 1;
+	$id_evento = 0;
+	
+	$sql2="SELECT * FROM tevento WHERE id_agente = $id_agent AND utimestamp > '$mytimestamp'";
+	
+	// Make query for data (all data, not only distinct).
+	$result2=mysql_query($sql2);
+	while ($row2=mysql_fetch_array($result2)){
+		$id_grupo = $row2["id_grupo"];
+		if (give_acl($id_user, $id_grupo, "IR") == 1){ // Only incident read access to view data !
+			$id_group = $row2["id_grupo"];
+			if ($color == 1){
+				$tdcolor = "datos";
+				$color = 0;
+			}
+			else {
+				$tdcolor = "datos2";
+				$color = 1;
+			}
+			echo "<tr><td class='$tdcolor' align='center'>";
+			if ($row2["estado"] == 0)
+				echo "<img src='images/dot_red.gif'>";
+			else
+				echo "<img src='images/dot_green.gif'>";
+			echo "<td class='$tdcolor'>".$row2["evento"];
+			echo "<td class='$tdcolor'>";
+			if ($row2["estado"] <> 0)
+				echo substr($row2["id_usuario"],0,8)."<a href='#' class='tip'> <span>".dame_nombre_real($row2["id_usuario"])."</span></a>";
+			echo "<td class='".$tdcolor."f9'>".$row2["timestamp"];
+			echo "</td></tr>";
+		}
+	}
+	echo "</table>";
+}
+
+function alert_reporting ($id_agent_module){
+	require("config.php");
+	require ("include/languages/language_".$language_code.".php");
+
+	$query_gen='SELECT talerta_agente_modulo.alert_text, talerta_agente_modulo.id_alerta, talerta_agente_modulo.descripcion, talerta_agente_modulo.last_fired, talerta_agente_modulo.times_fired, tagente_modulo.nombre, talerta_agente_modulo.dis_max, talerta_agente_modulo.dis_min, talerta_agente_modulo.max_alerts, talerta_agente_modulo.time_threshold, talerta_agente_modulo.min_alerts, talerta_agente_modulo.id_agente_modulo, tagente_modulo.id_agente_modulo FROM tagente_modulo, talerta_agente_modulo WHERE tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo and talerta_agente_modulo.id_agente_modulo  = '.$id_agent_module.' ORDER BY tagente_modulo.nombre';
+	$result_gen=mysql_query($query_gen);
+	if (mysql_num_rows ($result_gen)) {
+		echo "<table cellpadding='4' cellspacing='4' width='100%' border=0 class='databox'>";
+		echo "<tr>
+		<th>".$lang_label["status"]."</th>
+		<th>".$lang_label["description"]."</th>
+		<th>".$lang_label["time_threshold"]."</th>
+		<th>".$lang_label["last_fired"]."</th>
+		<th>".$lang_label["times_fired"]."</th>";
+		
+		$color=1;
+		while ($data=mysql_fetch_array($result_gen)){
+			if ($color == 1){
+				$tdcolor = "datos";
+				$color = 0;
+			}
+			else {
+				$tdcolor = "datos2";
+				$color = 1;
+			}
+			echo "<tr>";
+			if ($data["times_fired"] <> 0)
+				echo "<td class='".$tdcolor."' align='center'><img src='images/dot_red.gif'></td>";
+			else
+				echo "<td class='".$tdcolor."' align='center'><img src='images/dot_green.gif'></td>";
+			echo "<td class='".$tdcolor."'>".$data["descripcion"]."</td>";
+			echo "<td  align='center' class='".$tdcolor."'>".human_time_description($data["time_threshold"]);
+			if ($data["last_fired"] == "0000-00-00 00:00:00") {
+				echo "<td align='center' class='".$tdcolor."f9'>".$lang_label["never"]."</td>";
+			}
+			else {
+				echo "<td align='center' class='".$tdcolor."f9'>".human_time_comparation ($data["last_fired"])."</td>";
+			}
+			echo "<td align='center' class='".$tdcolor."'>".$data["times_fired"]."</td>";
+
+		}
+		echo '</table>';
+	}
+}
+
 ?>

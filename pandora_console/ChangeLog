@@ -1,5 +1,37 @@
 2007-06-12  Sancho Lerena  <slerena@artica.es>
 
+	* include/functions_reporting.php: Added event reporting and alert
+	reporting items for user reports. Now user reports is fully
+	operative !
+	
+	* include/functions.php: Added new function to manage human
+	strings datetime timestamps with differences.
+	
+	* index.php: UTF-8 is now the codeset by default, also a few
+	comments adjusted, included last version number, now in index.php
+	
+	* operation/events/events.php: More minor adjusts in HTML.
+		
+	* operation/agentes/estado_alertas.php,
+	operation/agentes/status_monitor.php
+	operation/agentes/estado_agente.php: Agent names are in UPPERCASE
+	and other minor adjustements.
+	
+	* operation/messages/message.php: Fixed code, now uses table
+	styles and more width. Fixes many table endings !!
+	
+	* operation/reporting/reporting_viewer.php: Finished.
+	
+	* operation/menu.php: Removed old agent statistics from menu.
+	
+	* general/logon_ok.php: Better render of new messages. News shown
+	by timestamp order.
+	
+	* godmode/agentes/modificar_agente.php: Agent name in uppercase.
+	
+	* godmode/agentes/alert_manager.php: Threshold timestamp now uses
+	better function to do this.
+
 	* include/languages/language_en.php: New text
 
 	* include/functions.php: Now all functions to render timeframes

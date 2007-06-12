@@ -3,16 +3,15 @@
 // Pandora FMS - the Free monitoring system
 // ========================================
 // Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development and project architecture and management
+// Main PHP/SQL code development, project architecture and management.
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
 // CSS and some PHP code additions
 // Copyright (c) 2006 Jose Navarro <jnavarro@jnavarro.net>
-// Additions to code for Pandora FMS 1.2 graph code 
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
+// Additions to code for Pandora FMS 1.2 graph code
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
+// as published by the Free Software Foundation for version 2.
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -24,16 +23,14 @@
 // Pandora FMS 1.x uses icons from famfamfam, licensed under CC Atr. 2.5
 // Silk icon set 1.3 (cc) Mark James, http://www.famfamfam.com/lab/icons/silk/
 // Pandora FMS 1.x uses Pear Image::Graph code
-// Pandora FMS shares much of it's code with project Babel Enterprise, also a
-// FreeSoftware Project coded by some of the people who makes Pandora FMS 
 
-//Pandora Version
-$build_version="PC070529";
+//Pandora Version, if not defined here it would take from config.php
+$build_version="PC070612";
 $pandora_version="v1.3 devel";
 global $build_version;
 global $pandora_version;
 
-// Set to 1 to do not check for installer or config file
+// Set to 1 to do not check for installer or config file (for development!).
 $develop_bypass = 1;
 
 if ($develop_bypass != 1){
@@ -70,8 +67,6 @@ require "include/functions.php"; // Including funcions.
 require "include/functions_db.php";
 ?>
 
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
@@ -95,7 +90,7 @@ if ( (isset ($_GET["refr"])) || (isset($_POST["refr"])) ){
 ?>
 <title>Pandora FMS - <?php echo $lang_label["header_title"]; ?></title>
 <meta http-equiv="expires" content="0">
-<meta http-equiv="content-type" content="text/html; charset=ISO-8859-15">
+<meta http-equiv="content-type" content="text/html; charset=utf8">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="author" content="Sancho Lerena, Raul Mateos">

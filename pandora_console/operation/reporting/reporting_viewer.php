@@ -213,6 +213,8 @@ while ($row = mysql_fetch_array($res)){
 		case 3: // Event report
 				$module_name = give_db_value ("nombre", "tagente_modulo", "id_agente_modulo", $id_agent_module);
 				$agent_name = dame_nombre_agente_agentemodulo ($id_agent_module);
+
+				$id_agent = dame_agente_id ($agent_name);
 				
 				echo "<tr><td class='datos3'>";
 				echo "<h4>".$lang_label["event_report"]."</h4>";
@@ -221,14 +223,15 @@ while ($row = mysql_fetch_array($res)){
 				echo "<td class='datos3' >";
 				echo "<h4>".human_time_description($period)."</h4>";
 				echo "<tr>";
-				echo "<td colspan=2 class=datos>";
-				echo "<td class=datos valign='middle' align='right' >";
-				echo "Not ready yet ;-)";
+				echo "<td colspan=3 class=datos>";
+				event_reporting ($id_agent, $period);
+
 				echo "</td></tr>";
 				break;
 		case 4: // Alert report
 				$module_name = give_db_value ("nombre", "tagente_modulo", "id_agente_modulo", $id_agent_module);
 				$agent_name = dame_nombre_agente_agentemodulo ($id_agent_module);
+				
 				echo "<tr><td class='datos3'>";
 				echo "<h4>".$lang_label["alert_report"]."</h4>";
 				echo "<td class='datos3' >";
@@ -236,9 +239,8 @@ while ($row = mysql_fetch_array($res)){
 				echo "<td class='datos3' >";
 				echo "<h4>".human_time_description($period)."</h4>";
 				echo "<tr>";
-				echo "<td colspan=2 class=datos>";
-				echo "<td class=datos valign='middle' align='right' >";
-				echo "Not ready yet ;-)";
+				echo "<td colspan=3 class=datos>";
+				alert_reporting ($id_agent_module);
 				echo "</td></tr>";
 				break;
 	}

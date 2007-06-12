@@ -172,7 +172,7 @@ if (mysql_num_rows($result)){
 			echo "<tr><td class='$tdcolor'>
 			<b><a href='index.php?sec=gagente&
 			sec2=godmode/agentes/configurar_agente&tab=main&
-			id_agente=".$row["id_agente"]."'>".$row["nombre"]."</a></b></td>";
+			id_agente=".$row["id_agente"]."'>".strtoupper($row["nombre"])."</a></b></td>";
 			// Operating System icon
 			echo "<td class='$tdcolor' align='center'>
 			<img src='images/".dame_so_icon($row["id_os"])."'></td>";

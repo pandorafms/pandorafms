@@ -151,7 +151,7 @@ if (comprueba_login() == 0) {
 						$string=$string."<a href='index.php?sec=estado&
 						sec2=operation/agentes/ver_agente&
 						id_agente=".$data["id_agente"]."'>".
-						substr(dame_nombre_agente($data["id_agente"]),0,21)."</a></b></td>";
+						strtoupper(substr(dame_nombre_agente($data["id_agente"]),0,21))."</a></b></td>";
 						$string=$string."<td class='$tdcolor'>";
 						$string=$string."
 						<img src='images/".show_icon_type($data["id_tipo_modulo"])."' border=0>

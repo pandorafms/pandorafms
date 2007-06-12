@@ -142,7 +142,10 @@ if (isset($_GET["view_graph"])){
 echo "<h2>".$lang_label["reporting"]." &gt; ";
 echo  $lang_label["custom_graph_viewer"]."</h2>";
 echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
-echo "<tr><th>".$lang_label["graph_name"]."<th>".$lang_label["description"]."<th>".$lang_label["view"]."<th>";
+echo "<tr><th>".$lang_label["graph_name"]."<th>".$lang_label["description"]."<th>".$lang_label["view"];
+if ((give_acl($id_usuario,0,"AW") == 1 ) OR (dame_admin($id_user)==1)) 
+	echo "<th>";
+
 $color=1;
 $sql="SELECT * FROM tgraph";
 $res=mysql_query($sql);
@@ -163,8 +166,10 @@ while ($row = mysql_fetch_array($res)){
 		$id_graph =  $row["id_graph"];
 		echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=$id_graph'><img src='images/images.png'></A>";
 		
-		echo "<td class='$tdcolor'><a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&delete=$id_graph' ".'onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;">';
-		echo "<img src='images/cross.png'></a></td>";
+		if ((give_acl($id_usuario,0,"AW") == 1 ) OR (dame_admin($id_user)==1)) {
+			echo "<td class='$tdcolor'><a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&delete=$id_graph' ".'onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;">';
+			echo "<img src='images/cross.png'></a></td>";
+		}
 	}
 }
 echo "</table>";

@@ -1,12 +1,41 @@
+2007-06-12  Sancho Lerena  <slerena@artica.es>
+
+	* include/languages/language_en.php: New text
+
+	* include/functions.php: Now all functions to render timeframes
+	are using lang_label variable, some small adjustements and fixes.
+	
+	* operation/agentes/status_monitor.php, 
+	operation/agentes/estado_alertas.php,
+	operation/agentes/estado_ultimopaquete.php: A lot of many small
+	fixes and improvements on render output for all timestamp fields.
+
+	* operation/agentes/exportdata.php: Now predefine last 24
+	hours. Fixed a bad combo (too small).
+	
+	* operation/agentes/estado_monitores.php
+	operation/reporting/reporting_viewer.php
+	operation/reporting/graph_viewer.php reporting/stat_win.php
+	general/logon_ok.php godmode/agentes/alert_manager.php
+	godmode/reporting/reporting_builder.php
+	godmode/reporting/graph_builder.php: A lot of many small fixes and
+	improvements on render output for all timestamp fields and in
+	MIN/MAX, small icons for module types, and things like that.
+
+
 2007-06-09  Sancho Lerena  <slerena@artica.es>
 
-	* include/functions.php: Solved decimals problem in format_numeric() function
+	* include/functions.php: Solved decimals problem in
+	format_numeric() function
 
-	* operation/agentes/tactical.php: General indicator formula improvement.
+	* operation/agentes/tactical.php: General indicator formula
+	improvement.
 
-	* general/logon_ok.php: Tactical ODO graph update (the same that above).
+	* general/logon_ok.php: Tactical ODO graph update (the same that
+	above).
 
-	* godmode/agentes/manage_config.php: Select list too small, bad render fixed.
+	* godmode/agentes/manage_config.php: Select list too small, bad
+	render fixed.
 
 2007-06-08  Sancho Lerena  <slerena@artica.es>
 

@@ -399,10 +399,10 @@ function format_for_graph ( $number , $decimals=2, $dec_point=".", $thousands_se
 		else
 			return number_format ($number/1000, 0, $dec_point, $thousands_sep )." K";
 	// If has decimals
-        if (fmod ($number , 1)> 0)
-                return number_format ($number, $decimals, $dec_point, $thousands_sep);
-        else
-                return number_format ($number, 0, $dec_point, $thousands_sep);	
+	if (fmod ($number , 1)> 0)
+			return number_format ($number, $decimals, $dec_point, $thousands_sep);
+	else
+			return number_format ($number, 0, $dec_point, $thousands_sep);
 }
 
 function give_parameter_get ( $name, $default = "" ){
@@ -422,50 +422,62 @@ function give_parameter_post ( $name, $default = "" ){
 }
 
 function human_time_comparation ( $timestamp ){
-	global $config;
-	require ("include/languages/language_".$config["language_code"].".php");
+	global $lang_label;
 	$ahora=date("Y/m/d H:i:s");
 	$seconds = strtotime($ahora) - strtotime($timestamp);
+
+	if ($seconds < 3600)
+		$render = format_numeric($seconds/60,1)." ".$lang_label["minutes"];
+	elseif (($seconds >= 3600) and ($seconds < 86400))
+		$render = format_numeric ($seconds/3600,1)." ".$lang_label["hours"];
+	elseif (($seconds >= 86400) and ($seconds < 2592000))
+		$render = format_numeric ($seconds/86400,1)." ".$lang_label["days"];
+	elseif (($seconds >= 2592000)  and ($seconds < 15552000))
+		$render = format_numeric ($seconds/2592000,1)." ".$lang_label["months"];
+	elseif ($seconds >= 15552000)
+		$render = " +6 ".$lang_label["months"];
+	return $render;
+}
+
+function human_time_description_raw ($seconds){
+	global $lang_label;
 	if ($seconds < 3600)
 		$render = format_numeric($seconds/60,2)." ".$lang_label["minutes"];
 	elseif (($seconds >= 3600) and ($seconds < 86400))
 		$render = format_numeric ($seconds/3600,2)." ".$lang_label["hours"];
 	elseif ($seconds >= 86400)
 		$render = format_numeric ($seconds/86400,2)." ".$lang_label["days"];
-	return $render;
+	return $render;	
 }
 
 function human_time_description ($period){
+	global $lang_label;
 	switch ($period) {
-		case 3600: 	$period_label = "Hour";
-				break;
-		case 7200: 	$period_label = "2 Hours";
-				break;
-		case 10800: 	$period_label = "3 Hours";
-				break;
-		case 21600: 	$period_label = "6 Hours";
-				break;
-		case 43200: 	$period_label = "12 Hours";
-				break;
-		case 86400: 	$period_label = "Day";
-				break;
-		case 172800: 	$period_label = "Two days";
-				break;
-		case 345600: 	$period_label = "Four days";
-				break;
-		case 604800: 	$period_label = "Last Week";
-				break;
-		case 1296000: 	$period_label = "15 Days";
-				break;
-		case 2592000: 	$period_label = "Last Month";
-				break;
-		case 5184000: 	$period_label = "Two Month";
-				break;
-		case 15552000: 	$period_label = "Six Months";
-				break;
-		case 31104000: 	$period_label = "One year";
-				break;
-		default: 	$period_label = "Day";
+	case 3600: 	$period_label = $lang_label["hour"];
+			break;
+	case 7200: 	$period_label = $lang_label["2_hours"];
+			break;
+	case 21600: 	$period_label = $lang_label["6_hours"];
+			break;
+	case 43200: 	$period_label = $lang_label["12_hours"];
+			break;
+	case 86400: 	$period_label = $lang_label["last_day"];
+			break;
+	case 172800: 	$period_label = $lang_label["two_days"];
+			break;
+	case 432000: 	$period_label = $lang_label["five_days"];
+			break;
+	case 604800: 	$period_label = $lang_label["last_week"];
+			break;
+	case 1296000: 	$period_label = $lang_label["15_days"];
+			break;
+	case 2592000: 	$period_label = $lang_label["last_month"];
+			break;
+	case 5184000: 	$period_label = $lang_label["two_month"];
+			break;
+	case 15552000: 	$period_label = $lang_label["six_months"];
+			break;
+	default: 	$period_label = human_time_description_raw ($period);
 	}
 	return $period_label;
 }

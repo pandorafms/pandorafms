@@ -37,6 +37,12 @@ if (comprueba_login() != 0) {
 	exit;
 }
 
+if ((give_acl($id_user,0,"AW") != 1 ) AND (dame_admin($id_user)!=1)) {
+	audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access graph builder");
+	include ("general/noaccess.php");
+	exit;
+}
+
 if (isset($_GET["store_graph"])){
 	$name = entrada_limpia($_POST["name"]);
 	$description = entrada_limpia($_POST["description"]);

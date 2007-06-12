@@ -39,10 +39,7 @@ $result=mysql_query($sql1);
 		$string='';
 		while ($row=mysql_fetch_array($result)){  // All modules of this agent
 			$id_tipo = $row["id_tipo_modulo"];
-			$nombre_modulo =$row["nombre"];
-			$sql2='SELECT * FROM ttipo_modulo WHERE id_tipo = "'.$id_tipo.'"';
-			$result2=mysql_query($sql2);
-			$row2=mysql_fetch_array($result2);
+			$nombre_modulo = substr($row["nombre"],0,21);
 			//module type modulo is $row2["nombre"];
 			
 			$sql3='SELECT * 
@@ -62,11 +59,15 @@ $result=mysql_query($sql1);
 				$result4=mysql_query($sql4);
 				$row4=mysql_fetch_array($result4);
 				// Alert name defined by  $row4["nombre"]; 
-				$tipo_modulo = $row2["nombre"];
 				$nombre_alerta = $row4["nombre"];
-				$string = $string."<tr><td class='$tdcolor'>".$nombre_modulo."/".$tipo_modulo;
+				$string = $string."<tr><td class='$tdcolor'>".$nombre_modulo;
+				
+				if ($id_tipo > 0) {
+					$string .= "<td class='$tdcolor'><img src='images/".show_icon_type($id_tipo)."' border=0>";
+				}
+				
 				$string = $string."<td class=$tdcolor>".$nombre_alerta;
-				$string = $string."<td class='$tdcolor'>".$row3["time_threshold"];
+				$string = $string."<td class='$tdcolor'>".human_time_description($row3["time_threshold"]);
 		
 				$mytempdata = fmod($row3["dis_min"], 1);
 				if ($mytempdata == 0)
@@ -83,9 +84,11 @@ $result=mysql_query($sql1);
 				$mymax =  format_for_graph($mymax );
 				// We have alert text ?
 				if ($row3["alert_text"] != "")
-					$string = $string."<td class='$tdcolor'>".$lang_label["text"];
-				else	
-					$string = $string."<td class='$tdcolor'>".$mymin." / ".$mymax;
+					$string = $string."<td colspan=2 class='$tdcolor'>".$lang_label["text"];
+				else {
+					$string = $string."<td class='$tdcolor'>".$mymin;
+					$string = $string."<td class='$tdcolor'>".$mymax;
+				}
 				$string = $string."<td class='$tdcolor'>".salida_limpia($row3["descripcion"]);
 				$string = $string."<td class='$tdcolor'>";
 			 	$id_grupo = dame_id_grupo($id_agente);
@@ -104,10 +107,12 @@ $result=mysql_query($sql1);
 		}
 		if (isset($string) & $string!='') {
 		echo "<table cellpadding='4' cellspacing='4' width='720' class='databox'>
-		<tr><th>".$lang_label["name_type"]."</th>
+		<tr><th>".$lang_label["name"]."</th>
+		<th>".$lang_label["type"]."</th>
 		<th>".$lang_label["alert"]."</th>
 		<th>".$lang_label["threshold"]."</th>
-		<th>".$lang_label["min_max"]."</th>
+		<th>".$lang_label["min."]."</th>
+		<th>".$lang_label["max."]."</th>
 		<th>".$lang_label["description"]."</th>
 		<th width='50'>".$lang_label["action"]."</th></tr>";
 		echo $string;

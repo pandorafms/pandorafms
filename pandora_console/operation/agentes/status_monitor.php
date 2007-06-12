@@ -151,23 +151,28 @@ if (comprueba_login() == 0) {
 						$string=$string."<a href='index.php?sec=estado&
 						sec2=operation/agentes/ver_agente&
 						id_agente=".$data["id_agente"]."'>".
-						dame_nombre_agente($data["id_agente"])."</a></b></td>";
+						substr(dame_nombre_agente($data["id_agente"]),0,21)."</a></b></td>";
 						$string=$string."<td class='$tdcolor'>";
 						$string=$string."
 						<img src='images/".show_icon_type($data["id_tipo_modulo"])."' border=0>
 						</td>";
 						$string=$string."<td class='$tdcolor'>".
-						$data["nombre"]."</td>";
+						substr($data["nombre"],0,21)."</td>";
 						$string=$string."<td class='".$tdcolor."f9'>".
 						substr($data["descripcion"],0,30)."</td>";
-						$string=$string."<td class='$tdcolor' width=25>".
+						$string=$string."<td align='center' class='$tdcolor' width=25>";
+						if ($data["max"] == $data["min"])
+							$string .= "--";
+						else
 						$data["max"]."/".$data["min"]."</td>";
-						$string=$string."<td class='$tdcolor' width=25>";
+						$string=$string."<td class='$tdcolor' align='center' width=25>";
 						if ($data["module_interval"] == 0){
-							$string=$string.give_agentinterval($data["id_agente"]);
+							$my_interval = give_agentinterval($data["id_agente"]);
 						} else {
-							$string=$string.$data["module_interval"];
+							$my_interval = $data["module_interval"];						
 						}
+						$string .= $my_interval;
+						
 						$query_gen2='SELECT * FROM tagente_estado 
 						WHERE id_agente_modulo = '.$data["id_agente_modulo"];
 						$result_gen2=mysql_query($query_gen2);
@@ -178,10 +183,15 @@ if (comprueba_login() == 0) {
 						} else {
 							$string=$string."<img src='images/b_red.gif'>";
 						}
-						$string=$string.
-						"<td class='".$tdcolor."f9'>".
-						$data2["timestamp"]."</td>
-						</tr>";
+						
+						$string=$string."<td class='".$tdcolor."f9'>";
+						$seconds = time() - $data2["utimestamp"];
+						if ($seconds >= ($my_interval*2))
+							$string .= "<span class='redb'>";
+						else
+							$string .= "<span>";
+						
+						$string .= human_time_comparation($data2["timestamp"])."</td></tr>";
 					}
 				}
 				else if($ag_group>1) {unset($string);}

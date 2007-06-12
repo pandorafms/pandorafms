@@ -58,7 +58,8 @@ if (isset($_GET["id_agente"])){
 		echo "<tr>
 		<th>".$lang_label["type"]."<th>".$lang_label["name"]."</th>
 		<th>".$lang_label["description"]."</th>
-		<th>".$lang_label["min_max"]."</th>
+		<th>".$lang_label["min."]."</th>
+		<th>".$lang_label["max."]."</th>
 		<th>".$lang_label["time_threshold"]."</th>
 		<th>".$lang_label["last_fired"]."</th>
 		<th>".$lang_label["times_fired"]."</th>
@@ -75,7 +76,7 @@ if (isset($_GET["id_agente"])){
 			}
 			echo "<tr>";
 			echo "<td class='".$tdcolor."'>".dame_nombre_alerta($data["id_alerta"])."</td>";
-			echo "<td class='".$tdcolor."'>".$data["nombre"]."</td>";
+			echo "<td class='".$tdcolor."'>".substr($data["nombre"],0,21)."</td>";
 			echo "<td class='".$tdcolor."'>".$data["descripcion"]."</td>";
 
 			$mytempdata = fmod($data["dis_min"], 1);
@@ -93,17 +94,21 @@ if (isset($_GET["id_agente"])){
 			$mymax =  format_for_graph($mymax );
 			// Text alert ?
 			if ($data["alert_text"] != "")
-				echo "<td class='".$tdcolor."'>".$lang_label["text"]."</td>";
-			else 
-				echo "<td class='".$tdcolor."'>".$mymin." / ".$mymax."</td>";
-			echo "<td class='".$tdcolor."'>".$data["time_threshold"];
+				echo "<td class='".$tdcolor."' colspan=2>".$lang_label["text"]."</td>";
+			else {
+				echo "<td class='".$tdcolor."'>".$mymin."</td>";
+				echo "<td class='".$tdcolor."'>".$mymax."</td>";
+			}
+			echo "<td  align='center' class='".$tdcolor."'>".human_time_comparation($data["time_threshold"]);
+
+			
 			if ($data["last_fired"] == "0000-00-00 00:00:00") {
-				echo "<td class='".$tdcolor."f9'>".$lang_label["never"]."</td>";
+				echo "<td align='center' class='".$tdcolor."f9'>".$lang_label["never"]."</td>";
 			}
 			else {
-				echo "<td class='".$tdcolor."f9'>".$data["last_fired"]."</td>";
+				echo "<td align='center' class='".$tdcolor."f9'>".human_time_comparation ($data["last_fired"])."</td>";
 			}
-			echo "<td class='".$tdcolor."'>".$data["times_fired"]."</td>";
+			echo "<td align='center' class='".$tdcolor."'>".$data["times_fired"]."</td>";
 			if ($data["times_fired"] <> 0)
 				echo "<td class='".$tdcolor."' align='center'><img src='images/dot_red.gif'></td>";
 			else
@@ -193,21 +198,6 @@ if (isset($_GET["id_agente"])){
 						sec2=operation/agentes/ver_agente&
 						id_agente=".$id_agente."'>
 						<b>".$nombre_agente."</b>";
-
-						$string = $string."<td class='".$tdcolor."'>"
-						.dame_nombre_alerta($data["id_alerta"])."</td>";
-						$string=$string."<td class='".$tdcolor."'>".
-						$data["descripcion"]."</td>";
-						if ($data["last_fired"] == "0000-00-00 00:00:00") {
-						$string=$string."<td class='".$tdcolor."'>".
-						$lang_label["never"]."</td>";
-						}
-						else {
-						$string=$string."<td class='".$tdcolor."'>".
-						$data["last_fired"]."</td>";
-						}
-						$string=$string."<td class='".$tdcolor."'>".
-						$data["times_fired"]."</td>";
 						if ($data["times_fired"] <> 0)
 							$string=$string."<td class='".$tdcolor."'
 							align='center'>
@@ -216,6 +206,22 @@ if (isset($_GET["id_agente"])){
 							$string=$string."<td class='".$tdcolor."'
 							align='center'>
 							<img src='images/dot_green.gif'></td>";
+							
+						$string = $string."<td class='".$tdcolor."'>"
+						.dame_nombre_alerta($data["id_alerta"])."</td>";
+						$string=$string."<td class='".$tdcolor."'>".
+						$data["descripcion"]."</td>";
+						if ($data["last_fired"] == "0000-00-00 00:00:00") {
+							$string=$string."<td class='".$tdcolor."'>".
+							$lang_label["never"]."</td>";
+						} else {
+							$string=$string."<td class='".$tdcolor."'>".
+							human_time_comparation($data["last_fired"])."</td>";
+
+       
+						}
+						$string=$string."<td class='".$tdcolor."'>".
+						$data["times_fired"]."</td>";
 					}
 				}
 				else if($ag_group>1) {
@@ -234,11 +240,12 @@ if (isset($_GET["id_agente"])){
 			echo "<table cellpadding='4' cellspacing='4' width='700' class='databox'>";
 			echo "<tr>
 			<th>".$lang_label["agent"]."</th>
+			<th>".$lang_label["status"]."</th>
 			<th>".$lang_label["type"]."</th>
 			<th>".$lang_label["description"]."</th>
 			<th>".$lang_label["last_fired"]."</th>
-			<th>".$lang_label["times_fired"]."</th>
-			<th>".$lang_label["status"]."</th>";
+			<th>".$lang_label["times_fired"]."</th>";
+			
 			echo $string; //built table of alerts
 			echo "</table>";
 		}

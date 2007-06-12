@@ -65,29 +65,31 @@ else
 	$period = 3600; // 1 hour (the most fast query possible)
 
 switch ($period) {
-	case 3600: 	$period_label = "1 Hour";
+	case 3600: 	$period_label = $lang_label["hour"];
 			break;
-	case 7200: 	$period_label = "2 Hours";
+	case 7200: 	$period_label = $lang_label["2_hours"];
 			break;
-	case 21600: 	$period_label = "6 Hours";
+	case 21600: 	$period_label = $lang_label["6_hours"];
 			break;
-	case 43200: 	$period_label = "12 Hours";
+	case 43200: 	$period_label = $lang_label["12_hours"];
 			break;
-	case 86400: 	$period_label = "Day";
+	case 86400: 	$period_label = $lang_label["last_day"];
 			break;
-	case 172800: 	$period_label = "Two days";
+	case 172800: 	$period_label = $lang_label["two_days"];
 			break;
-	case 604800: 	$period_label = "Last Week";
+	case 432000: 	$period_label = $lang_label["five_days"];
 			break;
-	case 1296000: 	$period_label = "15 Days";
+	case 604800: 	$period_label = $lang_label["last_week"];
 			break;
-	case 2592000: 	$period_label = "Last Month";
+	case 1296000: 	$period_label = $lang_label["15_days"];
 			break;
-	case 5184000: 	$period_label = "Two Month";
+	case 2592000: 	$period_label = $lang_label["last_month"];
 			break;
-	case 15552000: 	$period_label = "Six Months";
+	case 5184000: 	$period_label = $lang_label["two_month"];
 			break;
-	default: 	$period_label = "--";
+	case 15552000: 	$period_label = $lang_label["six_months"];
+			break;
+	default: 	$period_label = human_time_description_raw ($period);
 }
 	
 if (isset($_GET["draw_alerts"]))
@@ -233,17 +235,18 @@ echo "</table>";
 			echo "<td>";
 			echo "<select name='period'>";
 			echo "<option value=$period>".$period_label;
-			echo "<option value=3600>"."Hour";
-			echo "<option value=7200>"."2 Hours";
-			echo "<option value=21600>"."6 Hours";
-			echo "<option value=43200>"."12 Hours";
-			echo "<option value=86400>"."Last day";
-			echo "<option value=172800>"."Two days";
-			echo "<option value=604800>"."Last Week";
-			echo "<option value=1296000>"."15 days";
-			echo "<option value=2592000>"."Last Month";
-			echo "<option value=5184000>"."Two Month";
-			echo "<option value=15552000>"."Six Months";
+			echo "<option value=3600>".$lang_label["hour"];
+			echo "<option value=7200>".$lang_label["2_hours"];
+			echo "<option value=21600>".$lang_label["6_hours"];
+			echo "<option value=43200>".$lang_label["12_hours"];
+			echo "<option value=86400>".$lang_label["last_day"];
+			echo "<option value=172800>".$lang_label["two_days"];
+			echo "<option value=432000>".$lang_label["five_days"];
+			echo "<option value=604800>".$lang_label["last_week"];
+			echo "<option value=1296000>".$lang_label["15_days"];
+			echo "<option value=2592000>".$lang_label["last_month"];
+			echo "<option value=5184000>".$lang_label["two_month"];
+			echo "<option value=15552000>".$lang_label["six_months"];
 			echo "</select>";
 			
 			echo "<tr><td>";

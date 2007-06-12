@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 # **********************************************************************
 # Pandora FMS Generic Host Agent
 # GNU/Linux version 
@@ -39,7 +39,11 @@ IFS=$'\n'
 # Default values
 CHECKSUM_MODE=1
 DEBUG_MODE=0
+MIN_HOUR=0
+MAX_HOUR=0
+DELAYED_STARTUP=0
 SERVER_PORT=22
+PANDORA_NICE=10
 INTERVAL=300
 TRANSFER_MODE=ssh
 if [ -z "`echo $LANG | grep '\.'`" ]
@@ -115,6 +119,27 @@ do
 		TRANSFER_MODE=`echo $a | awk '{ print $2 }' `
                 echo "$TIMESTAMP - [SETUP] - Transfer Mode is $TRANSFER_MODE" >> $PANDORA_LOGFILE
 	fi
+        if [ ! -z "`echo $a | grep -e '^min_hour'`" ]
+        then
+                MIN_HOUR=`echo $a | awk '{ print $2 }' `
+                echo "$TIMESTAMP - [SETUP] - MIN_HOUR is $MIN_HOUR" >> $PANDORA_LOGFILE
+        fi
+        if [ ! -z "`echo $a | grep -e '^max_hour'`" ]
+        then
+                MAX_HOUR=`echo $a | awk '{ print $2 }' `
+                echo "$TIMESTAMP - [SETUP] - MAX_HOUR is $MAX_HOUR" >> $PANDORA_LOGFILE
+        fi
+        if [ ! -z "`echo $a | grep -e '^delayed_startup'`" ]
+        then
+                DELAYED_STARTUP=`echo $a | awk '{ print $2 }' `
+                echo "$TIMESTAMP - [SETUP] - DELAYED_STARTUP is $DELAYED_STARTUP" >> $PANDORA_LOGFILE
+        fi
+        # CPU protection
+        if [ ! -z "`echo $a | grep -e '^pandora_nice'`" ]
+        then
+                PANDORA_NICE=`echo $a | awk '{ print $2 }' `
+                echo "$TIMESTAMP - [SETUP] - PandoraFMS Nice is $PANDORA_NICE" >> $PANDORA_LOGFILE
+	fi
 done
 
 
@@ -170,6 +195,28 @@ if [ "$DEBUG_MODE" == "1" ]
 then
 	echo "(**) Warning: Running in DEBUG mode"
 fi
+
+if [ $DELAYED_STARTUP != 0 ]
+then
+        echo "Delayed startup in $DELAYED_STARTUP minutes "
+        echo "Delayed startup in $DELAYED_STARTUP minutes" >> $PANDORA_LOGFILE.err
+        echo " "
+        sleep $(($DELAYED_STARTUP*60))
+fi
+
+while [ 1 ]
+do
+        # Check for an appropiate time to execute (5min intervals)
+        if [ $MAX_HOUR != $MIN_HOUR ]
+        CURRENT_HOUR=`date +"%H"`
+	then
+                while [ $CURRENT_HOUR -lt $MIN_HOUR ] || [ $CURRENT_HOUR -gt $MAX_HOUR ]
+                do
+                        echo "Waiting to valid time ($MIN_HOUR - $MAX_HOUR, current $CURRENT_HOUR)" >> $PANDORA_LOGFILE.err
+                        sleep 300
+                done
+        fi
+
 
 # MAIN Program loop begin
 
@@ -323,7 +370,7 @@ do
 		exit 0
 	fi
 	
-	# Send packets to server and detele it
+	# Send packets to server and delete it
 	if [ "$TRANSFER_MODE" == "ssh" ]
 	then
  		scp -P $SERVER_PORT $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH > /dev/null 2>  $PANDORA_LOGFILE.err
@@ -344,6 +391,6 @@ do
 	
 	# Go to bed :-)
 	sleep $INTERVAL
-
-done 
+done
+done
 # This runs forever! 

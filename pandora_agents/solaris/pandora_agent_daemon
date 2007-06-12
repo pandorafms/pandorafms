@@ -2,7 +2,7 @@
 # Startup Script for Pandora Agent
 # Sancho Lerena, <slerena@gmail.com>
 # Version para Solaris
-# v1.2
+# v1.3
 
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
@@ -24,7 +24,7 @@ case "$1" in
                 echo "Pandora Agent is currently running on this machine. Aborting now..."
                 exit
         fi
-	$PANDORA_PATH/$DAEMON $PANDORA_PATH >> $PANDORA_PATH/pandora.log &  MYPID=$!
+	nohup $PANDORA_PATH/$DAEMON $PANDORA_PATH >> $PANDORA_PATH/pandora.log &  MYPID=$!
         echo $MYPID > $PIDFILE
 	echo "Pandora Agent is now running with PID $MYPID"
         ;;

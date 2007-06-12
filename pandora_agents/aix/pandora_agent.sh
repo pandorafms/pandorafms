@@ -1,4 +1,4 @@
-#!/usr/bin/ksh
+#!/usr/bin/ksh 
 # **********************************************************************
 # Pandora Agent for AIX
 # v1.2
@@ -7,7 +7,7 @@
 # This code is licenced under GPL 2.0 licence or later
 # **********************************************************************
 
-AGENT_VERSION="1.2 Beta2"
+AGENT_VERSION="1.3"
 
 OLDIFS=$IFS
 # Stupid trick to use IFS in AIX ... doesnt work standard $'\n' :-?
@@ -22,7 +22,7 @@ then
     echo " "
     echo "FATAL ERROR: I need an argument to PANDORA AGENT home path"
     echo " "
-    echo " example:   /usr/share/pandora_ng/pandora_agent.sh /usr/share/pandora_ng  "
+    echo " example:   /usr/share/pandora_agent/pandora_agent.sh /etc/pandora "
     echo " "
     exit
 else
@@ -42,7 +42,11 @@ echo "$TIMESTAMP - Reading general config parameters from .conf file" >> $PANDOR
 # Default values
 DEBUG_MODE=0
 CHECKSUM_MODE=0
-
+MIN_HOUR=0
+MAX_HOUR=0
+DELAYED_STARTUP=0
+PANDORA_NICE=0
+TRANSFER_MODE=ssh
 IFS=$NEWIFS
 for a in `cat $PANDORA_HOME/pandora_agent.conf | grep -v "^#" | grep -v "^module" `
 do
@@ -83,7 +87,71 @@ do
         CHECKSUM_MODE=`echo $a | awk '{ print $2 }' `
         echo "$TIMESTAMP - [SETUP] - Checksum mode is $CHECKSUM_MODE " >> $PANDORA_HOME/pandora.log
     fi
+if [ ! -z "`echo $a | grep -e '^transfer_mode'`" ]
+        then
+                TRANSFER_MODE=`echo $a | awk '{ print $2 }' `
+                echo "$TIMESTAMP - [SETUP] - Transfer Mode is $TRANSFER_MODE" >> $PANDORA_LOGFILE
+        fi
+        if [ ! -z "`echo $a | grep -e '^min_hour'`" ]
+        then
+                MIN_HOUR=`echo $a | awk '{ print $2 }' `
+                echo "$TIMESTAMP - [SETUP] - MIN_HOUR is $MIN_HOUR" >> $PANDORA_LOGFILE
+        fi
+        if [ ! -z "`echo $a | grep -e '^max_hour'`" ]
+        then
+                MAX_HOUR=`echo $a | awk '{ print $2 }' `
+                echo "$TIMESTAMP - [SETUP] - MAX_HOUR is $MAX_HOUR" >> $PANDORA_LOGFILE
+        fi
+        if [ ! -z "`echo $a | grep -e '^delayed_startup'`" ]
+        then
+                DELAYED_STARTUP=`echo $a | awk '{ print $2 }' `
+                echo "$TIMESTAMP - [SETUP] - DELAYED_STARTUP is $DELAYED_STARTUP" >> $PANDORA_LOGFILE
+        fi
+        # CPU protection
+        if [ ! -z "`echo $a | grep -e '^pandora_nice'`" ]
+        then
+                PANDORA_NICE=`echo $a | awk '{ print $2 }' `
+                echo "$TIMESTAMP - [SETUP] - PandoraFMS Nice is $PANDORA_NICE" >> $PANDORA_LOGFILE
+        fi
+
 done
+
+# Make some checks
+if [ "$TRANSFER_MODE" = "ftp" ]
+then
+        if [ ! -f $HOME/.netrc ]
+        then
+                echo "(EE) Transfer mode is FTP but there is no usable .netrc file. Aborting."
+                exit
+        fi
+fi
+
+if [ "$DEBUG_MODE" = "1" ]
+then
+        echo "(**) Warning: Running in DEBUG mode"
+fi
+
+if [ $DELAYED_STARTUP != 0 ]
+then
+        echo "Delayed startup in $DELAYED_STARTUP minutes "
+        echo "Delayed startup in $DELAYED_STARTUP minutes" >> $PANDORA_LOGFILE.err
+        echo " "
+        sleep $(($DELAYED_STARTUP*60))
+fi
+
+while [ 1 ]
+do
+        # Check for an appropiate time to execute (5min intervals)
+        if [ $MAX_HOUR != $MIN_HOUR ]
+        CURRENT_HOUR=`date +"%H"`
+	then
+                while [ $CURRENT_HOUR -lt $MIN_HOUR ] || [ $CURRENT_HOUR -gt $MAX_HOUR ]
+                do
+        		echo "Waiting to valid time ($MIN_HOUR - $MAX_HOUR, current $CURRENT_HOUR)"
+	                echo "Waiting to valid time ($MIN_HOUR - $MAX_HOUR, current $CURRENT_HOUR)" >> $PANDORA_LOGFILE.err
+                        sleep 300
+                done
+        fi
 
 
 # MAIN Program loop begin
@@ -239,15 +307,36 @@ do
 	echo "NO MD5 CHECKSUM AVAILABLE" > $CHECKSUM
     fi
     # Send packets to server and delete it
-    scp $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH" 
-    if [ "$DEBUG_MODE" = 1 ] 
-    then
-  	echo "$TIMESTAMP - DEBUG :Copying $PANDORA_FILES to $SERVER_IP:$SERVER_PATH" >> $PANDORA_HOME/pandora.log
-    else
+   #scp $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH
+    #if [ "$DEBUG_MODE" = 1 ] 
+    #then
+  #	echo "$TIMESTAMP - DEBUG :Copying $PANDORA_FILES to $SERVER_IP:$SERVER_PATH" >> $PANDORA_HOME/pandora.log
+  #  else
+	        # Send packets to server and detele it
+        if [ "$TRANSFER_MODE" = "ssh" ]
+        then
+                scp -P $SERVER_PORT $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH > /dev/null 2>  $PANDORA_LOGFILE.err
+        fi
+
+        if [ "$TRANSFER_MODE" = "ftp" ]
+        then
+                ftp SERVER_IP > /dev/null 2> $PANDORA_LOGFILE.err
+        fi
+
+        if [ "$TRANSFER_MODE" = "local" ]
+        then
+                cp $PANDORA_FILES $SERVER_PATH > /dev/null 2> $PANDORA_LOGFILE.err
+        fi
+
+        # Delete data
+        rm -f $PANDORA_FILES > /dev/null 2> $PANDORA_LOGFILE.err
+
+
+
 	# Delete it 
   	rm -f $PANDORA_FILES> /dev/null
-    fi
     # Go to bed :-)
     sleep $INTERVAL
 done 
+done
 # forever! 

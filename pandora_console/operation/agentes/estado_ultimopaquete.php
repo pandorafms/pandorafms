@@ -27,7 +27,7 @@
 <script language="javascript1.2" type="text/javascript">
 <!--
 function winopeng(url,wid) {
-	nueva_ventana=open(url,wid,"width=580,height=250,status=no,toolbar=no,menubar=no");
+	nueva_ventana=open(url,wid,"width=530,height=275,status=no,toolbar=no,menubar=no");
 	// WARNING !! Internet Explorer DOESNT SUPPORT "-" CARACTERS IN WINDOW HANDLE VARIABLE
 	status =wid;
 }
@@ -201,10 +201,10 @@ if (comprueba_login() == 0) {
 					$ahora = time();
 					if ( ($ahora - $row3["utimestamp"]) > ($real_interval*2)) {
 						echo "<font color='red'>";
-						echo $row3["timestamp"];
+						echo human_time_comparation($row3["timestamp"]);
 						echo "</font>";
 					} else
-						echo $row3["timestamp"];
+						echo human_time_comparation($row3["timestamp"]);
 				}
 			echo "</td></tr>";
  		//}

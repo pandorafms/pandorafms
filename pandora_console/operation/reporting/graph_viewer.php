@@ -27,6 +27,23 @@ if (comprueba_login() != 0) {
 	exit;
 }
 
+// Delete module SQL code
+if (isset($_GET["delete"])){
+	$id = $_GET["delete"];
+	$sql = "DELETE FROM tgraph_source WHERE id_graph = $id";
+	if ($res=mysql_query($sql))
+		$result = "<h3 class=suc>".$lang_label["delete_ok"]."</h3>";
+	else
+		$result = "<h3 class=error>".$lang_label["delete_no"]."</h3>";
+	$sql = "DELETE FROM tgraph WHERE id_graph = $id";
+	if ($res=mysql_query($sql))
+		$result = "<h3 class=suc>".$lang_label["delete_ok"]."</h3>";
+	else
+		$result = "<h3 class=error>".$lang_label["delete_no"]."</h3>";
+	echo $result;
+}
+
+
 if (isset($_GET["view_graph"])){
 	$id_graph = $_GET["view_graph"];
 	$sql="SELECT * FROM tgraph WHERE id_graph = $id_graph";
@@ -67,29 +84,32 @@ if (isset($_GET["view_graph"])){
 		echo "<tr><td>";
 		echo "<img  src='reporting/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&label=$name&height=$height&width=$width&period=$period' border=1 alt=''>";
 		echo "</td></tr></table>";
-
 		switch ($period) {
-			case 3600: 	$period_label = "Hour";
+			case 3600: 	$period_label = $lang_label["hour"];
 					break;
-			case 21600: 	$period_label = "6 Hours";
+			case 7200: 	$period_label = $lang_label["2_hours"];
 					break;
-			case 43200: 	$period_label = "12 Hours";
+			case 21600: 	$period_label = $lang_label["6_hours"];
 					break;
-			case 86400: 	$period_label = "Day";
+			case 43200: 	$period_label = $lang_label["12_Hours"];
 					break;
-			case 172800: 	$period_label = "Two days";
+			case 86400: 	$period_label = $lang_label["last_day"];
 					break;
-			case 604800: 	$period_label = "Last Week";
+			case 172800: 	$period_label = $lang_label["two_days"];
 					break;
-			case 1296000: 	$period_label = "15 Days";
+			case 432000: 	$period_label = $lang_label["five_days"];
 					break;
-			case 2592000: 	$period_label = "Last Month";
+			case 604800: 	$period_label = $lang_label["last_week"];
 					break;
-			case 5184000: 	$period_label = "Two Month";
+			case 1296000: 	$period_label = $lang_label["15_days"];
 					break;
-			case 15552000: 	$period_label = "Six Months";
+			case 2592000: 	$period_label = $lang_label["last_month"];
 					break;
-			default: 	$period_label = "Day";
+			case 5184000: 	$period_label = $lang_label["two_month"];
+					break;
+			case 15552000: 	$period_label = $lang_label["six_months"];
+					break;
+			default: 	$period_label = "--";
 		}
 		echo "<form method='POST' action='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=$id_graph'>";
 		echo "<table class='databox_frame'>";
@@ -122,7 +142,7 @@ if (isset($_GET["view_graph"])){
 echo "<h2>".$lang_label["reporting"]." &gt; ";
 echo  $lang_label["custom_graph_viewer"]."</h2>";
 echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
-echo "<tr><th>".$lang_label["graph_name"]."<th>".$lang_label["description"]."<th>".$lang_label["view"];
+echo "<tr><th>".$lang_label["graph_name"]."<th>".$lang_label["description"]."<th>".$lang_label["view"]."<th>";
 $color=1;
 $sql="SELECT * FROM tgraph";
 $res=mysql_query($sql);
@@ -142,6 +162,9 @@ while ($row = mysql_fetch_array($res)){
 		echo "<td class='$tdcolor'>".$row["description"];
 		$id_graph =  $row["id_graph"];
 		echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=$id_graph'><img src='images/images.png'></A>";
+		
+		echo "<td class='$tdcolor'><a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&delete=$id_graph' ".'onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;">';
+		echo "<img src='images/cross.png'></a></td>";
 	}
 }
 echo "</table>";

@@ -224,13 +224,15 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 	// Option B: Print Form
 	// Form view
 	$ahora=date("Y/m/d H:i:s");
+	$ahora_s = date("U");
+	$ayer = date ("Y/m/d H:i:s", $ahora_s - 86400);
 	if (isset($_GET["date_from"])) 
 		$date_from=$_GET["date_from"];
 	else 
 		if (isset($_POST["from_date"])) 
 			$date_from = $_POST["from_date"];
 		else 
-			$date_from = $ahora;
+			$date_from = $ayer;
 
 	if (isset($_GET["date_to"])) 
 		$date_to = $_GET["date_to"];
@@ -279,7 +281,7 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 	
 	// Combo with modules
 	echo "<select name='origen_modulo[]' size=8 class='w130'>";
-	if ( (isset($_POST["update_agent"])) AND (isset($_POST["origen"])) ) {
+	if ((isset($_POST["update_agent"])) AND (isset($_POST["origen"])) ) {
 		// Populate Module/Agent combo
 		$agente_modulo = $_POST["origen"];
 		$sql1="SELECT * FROM tagente_modulo WHERE id_agente = ".$agente_modulo;
@@ -287,8 +289,10 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 		while ($row=mysql_fetch_array($result)){
 			echo "<option value=".$row["id_agente_modulo"].">".$row["nombre"];
 		}
+	} else {
+		echo "<option value=-1>".$lang_label["N/A"];
 	}
-		
+	echo "</select>";
 	
 	echo "<tr><td class='datos'>";
 	echo "<b>".$lang_label["begin_date"]."</b>";

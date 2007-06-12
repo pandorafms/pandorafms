@@ -26,6 +26,14 @@ if (comprueba_login() != 0) {
 	include ("general/noaccess.php");
 	exit;
 }
+
+if ((give_acl($id_user,0,"AW") != 1 ) AND (dame_admin($id_user)!=1)) {
+	audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access graph builder");
+	include ("general/noaccess.php");
+	exit;
+}
+
+
 $id_report = give_parameter_get ( 'id', $default = "");
 if ($id_report == ""){
 	audit_db($id_user,$REMOTE_ADDR, "HACK Attempt","Trying to access graph viewer withoud ID");
@@ -47,7 +55,7 @@ echo "<td>".$report_description."</td>";
 echo "</table>";
 
 echo "<table width=750 cellpadding=4 cellspacing=4 class='databox'>";
-$sql = "SELECT * FROM treport_content WHERE id_report = $id_report ORDER by type desc";
+$sql = "SELECT * FROM treport_content WHERE id_report = $id_report ORDER by type, id_agent_module DESC";
 $res=mysql_query($sql);
 while ($row = mysql_fetch_array($res)){
 	$type = $row["type"];

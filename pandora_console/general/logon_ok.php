@@ -53,7 +53,7 @@
 		while ($row = mysql_fetch_array ($result_news)) {
 			echo '<tr>';
 			echo "<th><b>".$row["subject"]."</b>";
-			echo "<tr><td>".$lang_label["by"]."<b>".$row["author"]. "</b> ".$lang_label["at"]." <i>".$row["timestamp"]."</i>";
+			echo "<tr><td>".$lang_label["by"]." <b>".$row["author"]. "</b> ".$lang_label["at"]." <i>".$row["timestamp"]."</i>";
 			echo '<tr><td class=datos>';
 			echo clean_output_breaks($row["text"]);
 		}

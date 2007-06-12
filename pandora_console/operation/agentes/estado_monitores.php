@@ -72,7 +72,7 @@ if (comprueba_login() == 0) {
 				echo "<img src='images/".show_icon_type($row_t["id_tipo_modulo"])."' border=0>";	
 				echo "<td class='".$tdcolor."'>".$est_modulo."</td>";
 				echo "<td class='".$tdcolor."f9'>"
-				.substr($est_description,0,32)."</td>";
+				.substr($est_description,0,35)."</td>";
 				// echo "<td class='datos'>".$row3["datos"];
 				if ($agent_down == 1)
 					echo  "<td class='".$tdcolor."' align='center'>
@@ -88,8 +88,11 @@ if (comprueba_login() == 0) {
 					else
 						echo  "<td class='".$tdcolor."' align='center'>
 						<img src='images/b_green.gif'></td>";
-				echo "<td class='".$tdcolor."'>";
-				echo  $temp_interval."</td>";
+				echo "<td align='center' class='".$tdcolor."'>";
+				if ($temp_interval != $intervalo)
+					echo $temp_interval."</td>";
+				else
+					echo "--";
 				echo  "<td class='".$tdcolor."f9'>";
 				if ($agent_down == 1) { // If agent down, it's shown red and bold
 					echo  "<span class='redb'>";
@@ -100,7 +103,7 @@ if (comprueba_login() == 0) {
 				if ($row_t["timestamp"]=='0000-00-00 00:00:00') {
 					echo $lang_label["never"];
 				} else {
-					echo $row_t["timestamp"];
+					echo human_time_comparation($row_t["timestamp"]);
 				}
 				echo "</span></td>";
 			}

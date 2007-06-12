@@ -1,5 +1,7 @@
 2007-06-12  Sancho Lerena  <slerena@artica.es>
 
+        * operation/reporting/reporting_viewer.php: Solved problems with ACL.
+	
 	* operation/reporting/graph_viewer.php: ACL to delete graph
 	
 	* include/functions_reporting.php: Added event reporting and alert

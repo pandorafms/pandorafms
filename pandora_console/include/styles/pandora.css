@@ -344,6 +344,11 @@ td.datos_jus, td.datos2_jus {
 	color: #fff;
 	text-align: center;
 }
+.suc {
+	color: #5a8629;
+	background: url(../../images/suc.gif) no-repeat 1px;
+	padding: 4px 1px 6px 30px;
+}
 .error {
 	background: url(../../images/error.gif) no-repeat;
 	padding: 4px 1px 6px 30px;
@@ -356,11 +361,7 @@ td.datos_jus, td.datos2_jus {
 	border-bottom: 1px solid #708090;
 	width: 100%;
 }
-.suc {
-	color: #5a8629;
-	background: url(../../images/suc.gif) no-repeat 1px;
-	padding: 4px 1px 6px 30px;
-}
+
 .green  {
 	color: #5a8629;
 }
@@ -563,7 +564,6 @@ span.master, span.snmp, span.binary, span.recon {
 	position: absolute;
 	padding-top: 7px;
 	padding-left: 210px;	
-	
 }
 span#logo_text1 {
 	font: bolder 3em Arial, Sans-serif;
@@ -574,4 +574,10 @@ span#logo_text2 {
 	font: 3em Arial, Sans-serif;
 	letter-spacing: -2px;
 	color: #aaa;
+}
+.bb0 {
+	border-bottom: 0px;
+}
+.bt0 {
+	border-top: 0px;
 }

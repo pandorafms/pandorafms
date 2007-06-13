@@ -156,7 +156,7 @@ if (comprueba_login() == 0)
 		}
 
 ?> 
-	<table width='500' cellpadding='4' cellspacing='4' class='databox'>
+	<table width='500' cellpadding='4' cellspacing='4' class='databox_color'>
 	<?php 
 	if (isset($_GET["alta"]))
 		echo '<form name="new_user" method="post" action="index.php?sec=gusuarios&sec2=godmode/users/configure_user&nuevo_usuario=1">';

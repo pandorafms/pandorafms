@@ -77,7 +77,7 @@ if (comprueba_login() == 0)
 		<span>".$lang_label["help"]."</span></a>
 		</h2>";
 
-	echo "<table cellpadding=3 cellspacing=3 width=400>";
+	echo "<table cellpadding=4 cellspacing=4 width='400' class='databox'>";
 	echo "<th>".$lang_label["icon"]."</th>";
 	echo "<th>".$lang_label["group_name"]."</th>";
 	echo "<th>".$lang_label["parent"]."</th>";
@@ -120,8 +120,9 @@ if (comprueba_login() == 0)
 			echo "<img border='0' src='images/cross.png'></a></td></tr>";
 		}
 	}
-	echo "<tr><td colspan='5'><div class='raya'></div></td></tr>";
-	echo "<tr><td colspan='5' align='right'>";
+	echo "</table>";
+	echo "<table cellpadding=4 cellspacing=4 width='400'>";
+	echo "<tr><td align='right'>";
 	echo "<form method=post action='index.php?sec=gagente&
 	sec2=godmode/groups/configure_group&create_g=1'>";
 	echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create_group"]."'>";

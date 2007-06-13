@@ -14,12 +14,12 @@ div.menug {
 	border: 1px solid #dadbdc;
 	width: 155px;
 	margin-bottom: 5px;
-	}
+}
 #god1 li, #god2 li, #god3 li, #god4 li, #god5 li, #god51 li, #god6 li, #god7 li, #god8 li, #god1s li, #god2s li, #god3s li, #god4s li, #god5s li, #god51s li, #god6s li, #god7s li, #god8s li, #god_module li, #god_module_sel li {
 	padding: 0px 0px 0px 30px;
 }
 div#god1>ul, div#god2>ul, div#god3>ul, div#god4>ul, div#god5>ul, div#god51>ul, div#god6>ul, div#god7>ul, div#god8>ul, div#god1s>ul, div#god2s>ul, div#god3s>ul, div#god4s>ul, div#god5s>ul, div#god51s>ul, div#god6s>ul, div#god7s>ul, div#god8s>ul, div#god_module>ul, div#god_module_sel>ul {
-	width: 124px;
+	width: 126px;
 }
 #god1 li, #god1 li:hover, #god1s li  {
 	background: url(../../images/god1.gif) no-repeat 4px 2px;
@@ -51,10 +51,10 @@ div#god1>ul, div#god2>ul, div#god3>ul, div#god4>ul, div#god5>ul, div#god51>ul, d
 #god_module li, #god_module li:hover, #god_module_sel li {
 	background: url(../../images/brick.png) no-repeat 6px 4px;
 }
-div.arrowg>ul, div.arrowgs>ul {
-	width: 74%;
+div.arrowg>ul, div.arrowgs>ul, div#arrowgl>ul, div#arrowgls>ul  {
+	width: 75%;
 }
-.arrowg li, .arrowg li:hover, .arrowgs li {
+.arrowg li, .arrowg li:hover, .arrowgs li, #arrowgl li, #arrowgl li:hover, #arrowgls li {
 	background: url(../../images/arrow.gif) no-repeat 2px 4px;
 	margin-left: 26px;
 	padding: 0px 0px 0px 14px;	
@@ -63,8 +63,14 @@ div.arrowg>ul, div.arrowgs>ul {
 #god1 li:hover, #god1s li, #god2 li:hover, #god2s li, #god3 li:hover, #god3s li,
 #god4 li:hover, #god4s li, #god5 li:hover, #god5s li, #god6 li:hover, #god6s li,
 #god7 li:hover, #god7s li, #god8 li:hover, #god8s li, 
-#god_module li:hover, #god_module_sel li,  #god51 li:hover, #god51s li,
-.arrowg li:hover, .arrowgs li
+#god_module li:hover, #god_module_sel li, #god51 li:hover, #god51s li,
+.arrowg li:hover, .arrowgs li, #arrowgl li:hover, #arrowgls li
  {
 	background-color: #efefbd;
+}
+#arrowgl li.bb0, #arrowgls li.bb0, #god8 li.bb0 {
+	border-bottom: 0px;
+}
+#god1 li.bt0, #god1s li.bt0 {
+	border-top: 0px;
 }

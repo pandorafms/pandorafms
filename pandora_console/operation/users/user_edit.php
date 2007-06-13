@@ -99,62 +99,70 @@ if (comprueba_login() == 0) {
 	$nombre_real=$rowdup["nombre_real"];
 
 	?>
-	<table cellpadding="3" cellspacing="3" class="fon" width="500px">
+	<table cellpadding="4" cellspacing="4" class="databox_color" width="500px">
 	<?php 
 	if ($view_mode == 0) 
 		echo '<form name="user_mod" method="post" action="index.php?sec=usuarios&sec2=operation/users/user_edit&ver='.$id_usuario.'&modificado=1">';
 	else 	
 		echo '<form name="user_mod" method="post" action="">';
 	?>
-	<tr><td class="lb" rowspan="8" width="5"><td class="datos"><?php echo $lang_label["id_user"] ?>
-	<td class="datos"><input class=input type="text" name="nombre" value="<?php echo $nombre ?>" disabled>
-	<tr><td class="datos2"><?php echo $lang_label["real_name"] ?>
-	<td class="dato2s"><input class=input type="text" name="nombre_real" value="<?php echo $nombre_real ?>">
-	<tr><td class="datos"><?php echo $lang_label["password"] ?>
-	<td class="datos"><input class=input type="password" name="pass1" value="<?php echo $password ?>">
-	<tr><td class="datos2"><?php echo $lang_label["password"]; echo " ".$lang_label["confirmation"]?>
-	<td class="datos2"><input class=input type="password" name="pass2" value="<?php echo $password ?>">
-	<tr><td class="datos">E-Mail
-	<td class="datos"><input class=input type="text" name="direccion" size="40" value="<?php echo $direccion ?>">
-	<tr><td class="datos2"><?php echo $lang_label["telefono"] ?>
+	<tr>
+	<td class="datos"><?php echo $lang_label["id_user"] ?></td>
+	<td class="datos"><input class=input type="text" name="nombre" value="<?php echo $nombre ?>" disabled></td>
+	<tr>
+	<td class="datos2"><?php echo $lang_label["real_name"] ?></td>
+	<td class="datos2">
+	<input class=input type="text" name="nombre_real" value="<?php echo $nombre_real ?>"></td>
+	<tr><td class="datos"><?php echo $lang_label["password"] ?></td>
+	<td class="datos">
+	<input class=input type="password" name="pass1" value="<?php echo $password ?>"></td>
+	<tr><td class="datos2">
+	<?php echo $lang_label["password"]; echo " ".$lang_label["confirmation"]?>
+	<td class="datos2">
+	<input class=input type="password" name="pass2" value="<?php echo $password ?>"></td>
+	<tr>
+	<td class="datos">E-Mail
+	<td class="datos">
+	<input class=input type="text" name="direccion" size="40" value="<?php echo $direccion ?>">
+	<tr>
+	<td class="datos2"><?php echo $lang_label["telefono"] ?>
 	<td class="datos2"><input class=input type="text" name="telefono" value="<?php echo $telefono ?>">
 	<tr><td class="datos" colspan="2"><?php echo $lang_label["comments"] ?>
 	<tr><td class="datos2" colspan="2"><textarea name="comentarios" cols="55" rows="4"><?php echo $comentarios ?></textarea>
-	<tr><td colspan='3'><div class='raya'></div></td></tr>
+	</table>
+	<table cellpadding="4" cellspacing="4" width="500px">
 	
 <?php
 		// Don't delete this!!
 	if ($view_mode ==0){
 		echo '<tr><td colspan="3" align="right">';
-		echo "<input name='uptbutton' type='submit' class='sub' value='".$lang_label["update"]."'></td></tr>";
+		echo "<input name='uptbutton' type='submit' class='sub upd' value='".$lang_label["update"]."'></td></tr>";
 	}
-	echo '</table><br>';
+	echo '</table></form><br>';
 	echo '<h3>'.$lang_label["listGroupUser"].'<a href="help/'.$help_code.'/chap2.php#22" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h3>';
-	echo "<table width='500' cellpadding='3' cellspacing='3' class='fon'>";
+	echo "<table width='500' cellpadding='4' cellspacing='4' class='databox'>";
 	$sql1='SELECT * FROM tusuario_perfil WHERE id_usuario = "'.$nombre.'"';
 	$result=mysql_query($sql1);
 	if (mysql_num_rows($result)){
-		echo '<tr><td class="lb" rowspan="'.mysql_num_rows($result).'" width="5">';
+		echo '<tr>';
 		$color=1;
 		while ($row=mysql_fetch_array($result)){
 			if ($color == 1){
-				$tdcolor = "datos";
+				$tdcolor = "datos2";
 				$color = 0;
 				}
 			else {
-				$tdcolor = "datos2";
+				$tdcolor = "datos";
 				$color = 1;
 			}
 			echo '<td class="'.$tdcolor.'">';
 			echo "<b>".dame_perfil($row["id_perfil"])."</b> / ";
 			echo "<b>".dame_grupo($row["id_grupo"])."</b><tr>";	
 		}
-			echo "<tr><td colspan='3'><div class='raya'></div></td></tr>";
+	} else { 
+		echo '<div class="nf">'.$lang_label["no_profile"].'</div>'; 
 	}
-	else { echo '<tr><td class="red" colspan="3">'.$lang_label["no_profile"]; }
-
-	echo '</form></td></tr></table> ';
-
+	echo '</table>';
 } // fin pagina
 
 ?>

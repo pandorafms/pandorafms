@@ -14,7 +14,7 @@ div.menuop {
 	border: 1px solid #dadbdb;
 	width: 155px;
 	margin-bottom: 5px;
-	}
+}
 #op1 li, #op2 li, #op3 li, #op4 li, #op5 li, #op6 li, #op7 li, #op8 li, #op9 li,
 #op1s li, #op2s li, #op3s li, #op4s li, #op5s li, #op6s li, #op7s li, #op8s li, #op9s li {
 	padding: 0px 0px 0px 28px;
@@ -22,7 +22,7 @@ div.menuop {
 div#op1>ul, div#op2>ul, div#op3>ul, div#op4>ul, div#op5>ul, div#op6>ul, div#op7>ul,
 div#op8>ul, div#op9>ul, div#op1s>ul, div#op2s>ul, div#op3s>ul, div#op4s>ul, div#op5s>ul, div#op6s>ul,
 div#op7s>ul, div#op8s>ul, div#op9s>ul {
-	width: 126px;
+	width: 127px;
 }
 #op1 li , #op1 li:hover, #op1s li {
 	background: url(../../images/bricks.png) no-repeat 4px 3px;
@@ -53,10 +53,10 @@ div#op7s>ul, div#op8s>ul, div#op9s>ul {
 #op9 li, #op9 li:hover, #op9s li  {
 	background: url(../../images/op9.gif) no-repeat 4px 3px;
 }
-div.arrow>ul, div.arrows>ul {
-	width: 74%;
+div.arrow>ul, div.arrows>ul, div#arrowl>ul, div#arrowls>ul {
+	width: 75%;
 }
-.arrow li, .arrow li:hover, .arrows li {
+.arrow li, .arrow li:hover, .arrows li, #arrowl li, #arrowl li:hover, #arrowls li  {
 	background: url(../../images/arrow.gif) no-repeat 2px 4px;
 	margin-left: 26px;
 	padding: 0px 0px 0px 14px;	
@@ -66,7 +66,13 @@ div.arrow>ul, div.arrows>ul {
 #op1 li:hover, #op1s li , #op2 li:hover, #op2s li , #op3 li:hover, #op3s li , 
 #op4 li:hover, #op4s li , #op5 li:hover, #op5s li , #op6 li:hover, #op6s li , 
 #op7 li:hover, #op7s li , #op8 li:hover, #op8s li, #op9 li:hover, #op9s li,
-.arrow li:hover, .arrows li
+.arrow li:hover, .arrows li, #arrowl li:hover, #arrowls li
 {
 	background-color: #d4ddc6;
+}
+#arrowl li.bb0, #arrowls li.bb0, #op8 li.bb0 {
+	border-bottom: 0px;
+}
+#op1 li.bt0, #op1s li.bt0 {
+	border-top: 0px;
 }

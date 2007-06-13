@@ -129,8 +129,7 @@ if (give_acl($id_user, 0, "LW")==1) {
 		}
 		echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&submit=1">';
 		echo '<input type="hidden" name="id_as" value="'.$id_as.'">'; // if known, if add will be undetermined (0).	
-		echo '<table cellpadding="3" cellspacing="3" width="650" class="fon">';
-		echo '<tr><td class="lb" rowspan="13" width=5>';
+		echo '<table cellpadding="4" cellspacing="4" width="650" class="databox_color">';
 		// Alert
 		echo '<tr><td class=datos>'.$lang_label["alert"].'<td class=datos><select name="alert_id">';
 		if ($alert_update != 0) { // calculate first item
@@ -156,49 +155,54 @@ if (give_acl($id_user, 0, "LW")==1) {
 			echo '<option value=2>SNMPAgent<option value=0>OID<option value=1>CustomOID/Value</select>';
 		}
 		// Description
-		echo '<tr><td class=datos>'.$lang_label["description"];
+		echo '<tr><td class=datos>'.$lang_label["description"].'</td>';
 		echo '<td class=datos><input type="text" size=60 name="description" value="'.$description.'">';
 
 		// OID
-		echo '<tr><td class="datos2">'.$lang_label["OID"];
+		echo '<tr><td class="datos2">'.$lang_label["OID"].'</td>';
 		echo '<td  class="datos2"><input type="text" size=30 name="oid" value="'.$oid.'">';
 
 		// OID Custom
-		echo '<tr><td class=datos>'.$lang_label["customvalue"];
+		echo '<tr><td class=datos>'.$lang_label["customvalue"].'</td>';
 		echo '<td class=datos><input type="text" size=30 name="custom" value="'.$custom_oid.'">';
 
 		// SNMP Agent
-		echo '<tr><td class="datos2">'.$lang_label["SNMP_agent"]." IP";
+		echo '<tr><td class="datos2">'.$lang_label["SNMP_agent"].' IP</td>';
 		echo '<td class="datos2"><input type="text" size=30 name="agent" value="'.$agent.'">';
 		
 		// Alert fields
-		echo '<tr><td class=datos>'.$lang_label["field1"];
-		echo '<td class=datos><input type="text" size=30 name="field1" value="'.$al_field1.'">';
-		echo '<tr><td class="datos2">'.$lang_label["field2"];
-		echo '<td class="datos2"><input type="text" size=40 name="field2" value="'.$al_field2.'">';
+		echo '<tr><td class=datos>'.$lang_label["field1"].'</td>';
+		echo '<td class=datos><input type="text" size=30 name="field1" value="'.$al_field1.'"></td>';
+		echo '<tr><td class="datos2">'.$lang_label["field2"].'</td>';
+		echo '<td class="datos2"><input type="text" size=40 name="field2" value="'.$al_field2.'"></td>';
 		echo '<tr><td class=datos>'.$lang_label["field3"];
-		echo '<td class=datos><input type="text" size=60 name="field3" value="'.$al_field3.'">';
+		echo '<td class=datos><input type="text" size=60 name="field3" value="'.$al_field3.'"></td>';
 		
 		// max & min alerts, time threshold
-		echo '<tr><td class="datos2">'.$lang_label["min_alerts"];
-		echo '<td class="datos2"><input type="text" size=3 name="min" value="'.$min_alerts.'">';
-		echo '<tr><td class=datos>'.$lang_label["max_alerts"];
-		echo '<td class=datos><input type="text" size=3 name="max" value="'.$max_alerts.'">';
-		echo '<tr><td class="datos2">'.$lang_label["time_threshold"];
-		echo '<td class="datos2"><input type="text" size=3 name="time" value="'.$time_threshold.'">';
-		echo '<tr><td colspan="3"><div class="raya"></div></td></tr>';
+		echo '<tr>
+		<td class="datos2">'.$lang_label["min_alerts"].'</td>';
+		echo '<td class="datos2"><input type="text" size=3 name="min" value="'.$min_alerts.'"></td>';
+		echo '<tr>
+		<td class="datos">'.$lang_label["max_alerts"].'</td>';
+		echo '<td class=datos><input type="text" size=3 name="max" value="'.$max_alerts.'"></td>';
+		echo '<tr>
+		<td class="datos2">'.$lang_label["time_threshold"].'</td>';
+		echo '<td class="datos2"><input type="text" size=3 name="time" value="'.$time_threshold.'"></td>';
+		echo '</tr></table>';
+		echo '<table cellpadding="4" cellspacing="4" width="650">
+		<tr><td align="right">';
 		// Update or Add button
 		if ($alert_update != 0) {
-			echo '<tr><td colspan="3" align="right"><input name="uptbutton" type="submit" class="sub upd" value="'.$lang_label["update"].'">';
+			echo '<input name="uptbutton" type="submit" class="sub upd" value="'.$lang_label["update"].'">';
 			echo "<input type='hidden' name='update' value='1'>";
 			echo "<input type='hidden' name='create' value='0'>";
 		} else {
-			echo '<tr><td colspan="3" align="right"><input name="createbutton" type="submit" class="sub next" value="'.$lang_label["create"].'">';
+			echo '<input name="createbutton" type="submit" class="sub next" value="'.$lang_label["create"].'">';
 			echo "<input type='hidden' name='update' value='0'>";
 			echo "<input type='hidden' name='create' value='1'>";
 		}
 		// Endtable
-		echo "</table>";
+		echo "</td></tr></table>";
 		$view_alert =0; // Do not show alert list
 	}
 

@@ -1,6 +1,18 @@
+2007-06-13  Raul Mateos  <raulofpandora@gmail.com>
+
+	* godmode/menu.php, operation/menu.php, include/pandora.css, include/op.css,
+	include/god.css: Updated with styles to avoid top and bottom border.
+	
+	* godmode/groups/group_list.php, godmode/users/*.php, operation/users/*.php,
+	godmode/servers/*.php, operation/snmpconsole/snmp_alert.php, 
+	godmode/reporting/map_builder.php, operation/messages/message.php:
+	Removed old raya style and changed to new style.
+	
+	* include/languages/language_en.php: Changed some typing error.
+
 2007-06-12  Sancho Lerena  <slerena@artica.es>
 
-        * operation/reporting/reporting_viewer.php: Solved problems with ACL.
+	* operation/reporting/reporting_viewer.php: Solved problems with ACL.
 	
 	* operation/reporting/graph_viewer.php: ACL to delete graph
 	

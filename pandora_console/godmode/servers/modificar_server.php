@@ -67,8 +67,8 @@ if (comprueba_login() == 0) {
 		$checksum = $row["checksum"];
 		$description = $row["description"];
 		echo '<form name="servers" method="POST" action="index.php?sec=gserver&sec2=godmode/servers/modificar_server&update=1">';
-		echo "<table cellpadding='3' cellspacing='3' width='450'>";
-		echo "<tr><td class='lb' rowspan='3' width='5'>";
+		echo "<table cellpadding='4' cellspacing='4' width='450' class='databox'>";
+		echo "<tr>";
 		echo "<td class='datos'>".$lang_label["name"]."</td><td class='datos'><input type='text' name='name' value='".$name."' width='200px'>";
 		echo "<tr><td class='datos2'>".$lang_label['ip_address']."</td><td class='datos2'><input type='text' name='address' value='".$address."' width='200px'>";
 		echo "<tr><td class='datos'>".$lang_label['description']."<td class='datos'><input type='text' name='description' value='".$description."'><input type='hidden' name='server' value='".entrada_limpia($_GET["server"])."'></input>";
@@ -76,9 +76,10 @@ if (comprueba_login() == 0) {
 	else {
 		echo "<div class='nf'>".$lang_label["no_server"]."</div>";
 		}
-	echo '<tr><td colspan="3"><div class="raya"></div></td></tr>';
-	echo '<tr><td colspan="3" align="right">';
-	echo '<input type="submit" class="sub" value="'.$lang_label["update"].'"></table>';
+	echo '</table>';
+	echo '<table cellpadding="4" cellspacing="4" width="450">';
+	echo '<tr><td align="right">';
+	echo '<input type="submit" class="sub upd" value="'.$lang_label["update"].'"></table>';
 	}
 	else
 	{

@@ -1,5 +1,16 @@
 2007-06-14  Manuel Arostegui <marostegui@artica.es>
 
+	* linux/pandora_agent.conf: Changed to disable 
+	  by default the delayed start up.
+        
+	* aix/pandora_agent.conf: Changed to disable
+          by default the delayed start up.
+        
+	* solaris/pandora_agent.conf: Changed to disable
+          by default the delayed start up.
+
+2007-06-14  Manuel Arostegui <marostegui@artica.es>
+
 	* linux/INSTALL: Added how to use the new installer.
       
 	* aix/pandora_agent_installer: Changed few things

@@ -1,3 +1,14 @@
+2007-06-14  Manuel Arostegui <marostegui@artica.es>
+
+	* linux/pandora_agent_installer, pandora_agent_daemon:
+	  moved to root directory of the agent directory.
+	
+	* linux/contrib: Deleted directory from the agent main
+	  directory:
+	
+	* linux/contrib/pandora_agent_daemon, pandora_agent_installer:
+	  Deleted from the contrib dir.
+
 2007-06-12  Manuel Arostegui <marostegui@artica.es>
 
       	* linux/contrib/pandora_agent_installer: Changed a PATH

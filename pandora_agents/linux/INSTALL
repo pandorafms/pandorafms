@@ -25,3 +25,18 @@ Pandora Agents use pandora_agent.conf to load initial data and load module data.
 pandora_user.conf is low level configuration. It will be executed in each iteration of pandora_agent.sh script. Please read it and see how it works.
 
 There are a startup script called "pandora_agent_daemon" used to load Pandora Agent at boot time, and to stop ip. It depends on what type of Unix are you running. Test it before including it your init level script directory, it accepts start / stop / restart commands, like usual in Unix System V systems.
+
+Installing Pandora Agent.
+=========================
+There's a installer for the pandora agent, which is called:
+pandora_agent_installer
+
+You can easily install the PandoraFMS Agent using:
+./pandora_agent_installer --install
+
+To uninstall the agent just use:
+./pandora_agent_installer --uninstall
+
+If you want to reinstall the pandora agent you already installed in your system:
+./pandora_agent_installer --force-install
+

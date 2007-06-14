@@ -9,11 +9,11 @@
 # DOESNT WORK WHEN MAKES A CALL THAT USE @ CHARACTER
 # USE DIRECTLY PANDORA AGENT SCRIPT
 
-# for example: pandora_agent.sh /usr/share/pandora_agent/ &
+# for example: pandora_agent /usr/share/pandora_agent/ &
  
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
 PANDORA_PATH=/usr/share/pandora_agent/
-DAEMON=pandora_agent.sh
+DAEMON=pandora_agent
 PIDFILE=/var/locks/pandora_agent.pid
 
 

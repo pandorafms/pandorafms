@@ -4,7 +4,7 @@
 # v1.2
 # (c) Sancho Lerena 2003-2006, slerena@gmail.com
 # Este codigo esta licenciado bajo la licencia GPL 2.0 o posterior
-# This code is licenced under GPL 2.0 licence or later
+# This code is licenced under GPL 2.0 licence
 # **********************************************************************
 
 AGENT_VERSION="1.3"
@@ -22,7 +22,7 @@ then
     echo " "
     echo "FATAL ERROR: I need an argument to PANDORA AGENT home path"
     echo " "
-    echo " example:   /usr/share/pandora_agent/pandora_agent.sh /etc/pandora  "
+    echo " example:   /usr/share/pandora_agent/pandora_agent /etc/pandora  "
     echo " "
     exit
 else

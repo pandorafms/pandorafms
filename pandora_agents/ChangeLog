@@ -1,5 +1,46 @@
 2007-06-14  Manuel Arostegui <marostegui@artica.es>
 
+	* linux/INSTALL: Added how to use the new installer.
+      
+	* aix/pandora_agent_installer: Changed few things
+	 to make it works with the new name of the agent.
+     	
+	* aix/pandora_agent: This is the old pandora_agent.sh
+	 which has been renamed to pandora_agent
+      	
+	* aix/pandora_agent_daemon: Changed few thing to make it
+	 works with the new name of the agent.
+      	
+	* aix/INSTALL: Added how to use the new installer.
+
+        * aix/pandora_agent.sh: Renamed to pandora_agent.
+      	
+	* hp-ux/pandora_agent: This is the old pandora_agent.sh
+         which has been renamed to pandora_agent
+      	
+	* hp-ux/pandora_agent_daemon: Changed few thing to make it
+         works with the new name of the agent.
+      	
+	* hp-ux/INSTALL: Added how to use the new installer.
+      	
+	* hp-ux/pandora_agent.sh: Renamed to pandora_agent.
+      	
+	* solaris/pandora_agent_installer: Changed few thing to make it
+         works with the new name of the agent.
+     	
+	* solaris/pandora_agent: This is the old pandora_agent.sh
+         which has been renamed to pandora_agent
+     	
+	* solaris/pandora_agent_daemon: Changed few thing to make it
+         works with the new name of the agent.
+     	
+	* solaris/INSTALL: Added how to use the new installer.
+     	
+	* solaris/pandora_agent.sh: Renamed to pandora_agent.
+
+
+2007-06-14  Manuel Arostegui <marostegui@artica.es>
+
 	* linux/pandora_agent_installer, pandora_agent_daemon:
 	  moved to root directory of the agent directory.
 	

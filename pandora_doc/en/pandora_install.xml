@@ -16,8 +16,8 @@
   <sect1 id="servers">
     <title>Pandora Servers</title>
     <para>
-      Pandora FMS 1.2 has three kind of servers: Data server, Network
-      Server and SNMP Server/Trap console. All of them could be
+      Pandora FMS 1.3 has four kind of servers: Data server, Network
+      Server, Recon Server  and SNMP Server/Trap console. All of them could be
       installed in the same machine or in different machines, also,
       you could setup many of them in a High Availability environment
       or using it to manage highs loads of data.
@@ -117,9 +117,9 @@
 
     <sect2 id="installing_server"><title>Installing Pandora Server</title>
     <para>
-      Create the <filename>/opt/pandora</filename> directory and
+      Create the <filename>/usr/share/pandora_server</filename> directory and
       "gunzip" and "untar" here the
-      <filename>pandora_server_1.2.tar.gz</filename> file.
+      <filename>pandora_server_1.3.tar.gz</filename> file.
     </para>
     <para>
       Create an user pandora in OS. Usually you do that in GNU/Linux
@@ -147,7 +147,7 @@
       Check launch scripts (pandora_network, pandora_server,
       pandora_snmp) and check for pathnames in the first two variables
       in script.  roa Server. This usually is
-      <filename>/opt/pandora_server</filename>
+      <filename>/usr/share/pandora_server</filename>
     </para>
   </sect2>
     
@@ -164,7 +164,7 @@
   </para>
   <para>
     Edit configuration file of Pandora Server, usually
-    <filename>/opt/pandora/conf/pandora_server.conf</filename> and
+    <filename>/usr/share/pandora_server/conf/pandora_server.conf</filename> and
     take a look at the lines:
     <programlisting>
       dbuser pandora
@@ -179,7 +179,7 @@
     filename and valid username, password and hostname.
   </para>
   <para>
-    Remember: you need to create the directory /opt/pandora/data_in
+    Remember: you need to create the directory /var/spool/pandora/data_in
     where Pandora Server will read and write data, sent by remote
     agents using ssh/scp. This directory must be owned or with
     permissions to write for user "pandora". If you don't have a
@@ -188,8 +188,8 @@
   <para>
     You can run Pandora Server with an user without privilegues, you
     can use the user "pandora", it only needs to run /usr/bin/perl and
-    access to <filename>/opt/pandora</filename> and
-    <filename>/opt/pandora/data_in</filename> directories.
+    access to <filename>/usr/share/pandora_server</filename> and
+    <filename>/var/spool/pandora/data_in</filename> directories.
   </para>
   <para>
     This is true with all the components but with Pandora SNMP Console
@@ -212,7 +212,7 @@
     (debian, Suse) and Solaris 8 systems. It has start|stop|restart
     parameters to include it in your default init level directory and
     it creates a logfile defined in $log_file variable (by default is
-    <filename>/opt/pandora/pandora.log</filename>):
+    <filename>/var/log/pandora/pandora.log</filename>):
     <programlisting>
       /etc/init.d/pandora_server start
     </programlisting>
@@ -226,7 +226,7 @@
       <filename>/home/pandora/.ssh/authorized_keys</filename>, so you
       need to create a user called "pandora" without privileges. This
       user will be used by agents to copy data into Pandora Data Server
-      <filename>/opt/pandora/data_in</filename> directory.
+      <filename>/var/spool/pandora/data_in</filename> directory.
     </para>
     <para>
       Please BE SURE that user "pandora" exists (if not, create with
@@ -237,7 +237,7 @@
     </para>
     <para>
       Please be sure that directory
-      <filename>/opt/pandora/data_in</filename> exists and pandora
+      <filename>/var/spool/pandora/data_in</filename> exists and pandora
       user is able to write in.
     </para>
     </sect3>
@@ -247,6 +247,17 @@
     <title>Pandora Console and Pandora database</title>
     <sect2 id="db_install"><title>Pandora database install</title>
     <para>
+      In the new 1.3 version of the Pandora Web Console the process
+      of creating and setting up the database can be easily made from
+      a browser following a Wizard, this process is described in the console install 
+      section below. We recommend you to use the Wizard instead of doing it
+      manually.
+      </para>
+      <para>
+      Anyways, this is the process to create all the database stuff from
+      the command line.
+      </para>
+      <para>
       Please look at MySQL install and management guide
       (http://dev.mysql.com/doc) to obtain information about how to
       create a MySQL database, how to manage mysql users and give
@@ -367,16 +378,11 @@
 	publishing directory and set perms to www-data or http user.
       </para>
       <para>
-	To setup Pandora Console, you only need to modify a file,
-	<filename>include/config.php</filename>, where the following
-	variables are included in .php code:
+        Then point your browser to:
+        <programlisting>
+          http://host:port/installdir/install.php
+        </programlisting>
       </para>
-      <programlisting>
-	$dbname="pandora";   // name of database for pandora)
-	$dbuser="pandora";   // mysql user to access db
-	$dbpassword="pandora";   // Password for mysql user
-	$dbhost="pandora";   // Hostname or IP of mySQL server
-      </programlisting>
       <para>
 	If database is defined and was correctly installed, you can
 	now access:
@@ -534,7 +540,7 @@
   <para>
     The data collection in the host system is the gathering of
     independent data units, which are defined in the
-    <filename>pandora_agent.conf</filename> file. The
+    <filename>/etc/pandora/pandora_agent.conf</filename> file. The
     pandora_agent.conf file is divided in two parts:
     <itemizedlist mark='bullet'>
       <listitem>
@@ -567,7 +573,7 @@
 	      <emphasis>server_path</emphasis>: The server path is the
 	      full path of the folder where the server stores the data
 	      sent by the agent. It is usually
-	      <filename>/opt/pandora/data_in</filename>.
+	      <filename>/var/spool/pandora/data_in</filename>.
 	    </para>
 	  </listitem>
 	  <listitem>
@@ -589,7 +595,7 @@
 	      flooding hard drive of the host system where the agent
 	      runs. The location of the local folder varies with the
 	      architecture of the host system. In Unix systems this is
-	      usually <filename>/opt/pandora/data_out</filename>, and
+	      usually <filename>/var/spool/pandora/data_out</filename>, and
 	      in Windows systems
 	      <filename>C:\pandora\data_out</filename>.
 
@@ -637,13 +643,58 @@
 	      in the server. Otherwise it could create problems.
 	    </para>
 	  </listitem>  
+	  <listitem>
+            <para>
+              <emphasis>Delayed Startup</emphasis>: This is parametrer
+	      let you configure the Pandora Agent to start running after 
+	      an amount of time (in minutes) after you run it manually.
+	      This could be useful for systems with lots of load. By default
+	      it is disable, that is, Pandora Agent will start running since you
+              you run it manually.
+            </para>
+          </listitem>
+	<listitem>
+            <para>
+              <emphasis>Server Port</emphasis>: This is parametrer
+              let you specify the remote ssh server port is listening
+	      in. By default it is 22, but just in case you set up your
+	      server in other port this is where you have to change the port
+	      if necessary.
+            </para>
+          </listitem>
+	 <listitem>
+            <para>
+              <emphasis>Min and Max Hour</emphasis>: These parametrers
+              let you specify the hours where the Pandora Agent can run.
+	      For instance if you set Min Hour 9 and Max Hour 18, if you try to
+              run Pandora Agent at 8, it will not run.
+            </para>
+          </listitem>
+	  <listitem>
+            <para>
+              <emphasis>Transfer Mode</emphasis>: This parametrer
+              let you specify which transfer mode is going to be set up
+	      to send the agent data to the server.
+	      Modes available are: ssh (using scp), ftp or local.
+	      Local mode it is only for systems where the agent run in the same
+              machine as the server does, cause it is basically a copy between
+	      directories.
+            </para>
+          </listitem>
+	   <listitem>
+            <para>
+              <emphasis>Pandora Nice</emphasis>: This parametrer
+              let you specify the priority the Pandora Agent process
+	      will have in your system.
+            </para>
+          </listitem>
   </itemizedlist>
   <para>
     An example of the general parameters from a Unix configuration would be.
     <screen>
       server_ip Pandora_Server
-      server_path  /opt/pandora/data_in
-      temporal /opt/pandora/data_out
+      server_path  /var/spool/pandora/data_in
+      temporal /var/spool/pandora/data_out
       interval 300
       agent_name  satellite_agent
       debug 1
@@ -794,7 +845,7 @@
     </sect4>
     <sect4><title>module_interval factor</title>
     <para>
-      Pandora 1.2 introduces this new feature. You can, for each
+      Since Pandora 1.2 introduces this new feature. You can, for each
       module, setup its own interval. This interval its calculated as
       a multiply factor for agent interval. For example, if your agent
       has interval 300 (5 minutes), and you want a module only be
@@ -933,52 +984,53 @@
 <sect2 id="unix_a_install"><title>Pandora Unix Agent install</title>
 <para>
   The software comes in a .tar.gz file. First of all the file needs
-  to be extracted into a folder, usually /opt/pandora_agent,
-  although any other folder may be used. If a different folder is
-  used, the daemon launcher must be modified by changing route to
-  $PANDORA_HOME.
+  to be extracted into a folder, usually /tmp. Then, once the file have
+  been extracted just run the Pandora Agent Installer, called: 
+  <filename>pandora_agent_installer</filename>
+  to install it: <filename>./pandora_agent_installer --install</file>
 </para>
 <para>
   There is hardly any difference between AIX, Solaris and Linux, and
   they all work around the hash MD5 generation binaries.
 </para>
 <para>
-  This is the structure of the installation in /opt/pandora_agent/
-  once the files have been extracted:
+  After running the installer the main directory is /usr/share/pandora_agent/
+  where Pandora Agent is installed.
 </para>
 <para>
-  <filename>/opt/pandora_agent/data_out</filename>, folder where the
+  <filename>/var/spool/pandora/data_out</filename>, folder where the
   data collected by the agents is stored.
   </para>
   <para>
-    <filename>/opt/pandora_agent/doc</filename>, folder with
+    <filename>/usr/share/pandora_agent/doc</filename>, folder with
     information about the agent and its license.
   </para>
   <para>
-    <filename>/opt/pandora_agent/pandora_agent.conf</filename>, file
+    <filename>/etc/pandora/pandora_agent.conf</filename>, file
     where the data to be collected is defined, along side the command
     to be executed for the data collection. This is the system 
     core, as it defines the main data to be collected in any Firewall.
   </para>
   <para>
-    <filename>/opt/pandora_agent/pandora_user.conf</filename>, file
+    <filename>/etc/pandora/pandora_user.conf</filename>, file
     where several of the parameters to collect data from the monitored
     system are defined in more detail.
   </para>
   <para>
-    <filename>/opt/pandora_agent/pandora_agent.sh</filename>, this is
+    <filename>/usr/share/pandora_agent/pandora_agent</filename>, this is
     the actual Pandora agent. This file is a shellscript that collects
     the data configured in the pandora_agent.conf and
     pandora_user.conf files. It also transfers the data packages to
     the Pandora server.
   </para>
   <para>
-    <filename>/opt/pandora_agent/pandora_agent_daemon</filename>,
-    start and stop script. It makes a call to pandora_agent.sh. It
+    <filename>/etc/init.d/pandora_agent_daemon</filename>,
+    start and stop script. It makes a call to pandora_agent. It
     offers two options, start and stop.
+    In AIX systems the daemon is: <filename>/etc/rc.pandora_agent_daemon</filename>
   </para>
   <para>
-    <filename>/opt/pandora_agent/pandora.log</filename>, text file
+    <filename>/var/log/pandora_agent/pandora.log</filename>, text file
     where the activity of the Pandora agent is saved, when the agent
     is executed in debugging mode.
   </para>
@@ -1023,8 +1075,8 @@
   <sect3 id="a_unix_run"><title>First running of the Unix agent</title>
   <para>
     To start the agent it is only necessary to execute
-    pandora_agent_daemon start from /opt/pandora_client. Pandora Agent
-    creates a file (/var/run/pandora.pid) with the PID number of the
+    <filename>/etc/init.d/pandora_agent_daemon start</filename>. 
+    Pandora Agent creates a file (/var/run/pandora.pid) with the PID number of the
     process when it is started.
   </para>
   <para>
@@ -1037,7 +1089,7 @@
     In BSD systems the maximum priority is +20 and the lowest -20.
   </para>
   <para>
-    To stop agent, execute pandora_agent_daemon stop from /opt/pandora_agent.
+    To stop agent, execute pandora_agent_daemon stop from /etc/init.d/.
   </para>
   </sect3>
   
@@ -1159,13 +1211,13 @@
       # General Parameters
       # ==================
       
-      server_ip 		192.168.100.45
-      server_path 	/opt/pandora/data_in
-      pandora_path 	/opt/pandora_ng/
-      temporal    	/opt/pandora_ng/data_out
+      server_ip 	 192.168.100.45
+      server_path 	/var/spool/pandora/data_in
+      pandora_path 	/usr/share/pandora_server/
+      temporal    	/var/spool/pandora/data_out
       interval    	300
       hostname		linuxbox01
-      debug			0
+      debug		0
       checksum		1
       
       # Module Definition
@@ -1371,7 +1423,7 @@
 	  # ==================
 	  
 	  server_ip 127.0.0.1
-	  server_path /opt/pandora_server/data_in
+	  server_path /var/spool/pandora/data_in
 	  temporal "c:\windows\temp"
 	  interval 300
 	  agent_name localhost

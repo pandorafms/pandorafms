@@ -73,7 +73,7 @@ echo "</h2>";
 		echo "<input type='hidden' name='id_alerta' value='".$id_alerta."'>";
 	}
 ?>
-<table width="500" cellspacing="4" cellpadding="4" class="databox">
+<table width="500" cellspacing="4" cellpadding="4" class="databox_color">
 <tr><td class="datos"><?php echo $lang_label["alertname"] ?></td>
 <td class="datos">
 <input type="text" name="nombre" size=30 value="<?php echo $nombre ?>"></td>
@@ -82,7 +82,7 @@ echo "</h2>";
 <td class="datos2"><?php echo $lang_label["command"] ?></td>
 <td class="datos2">
 <input type="text" name="comando" size="50" value="<?php echo $comando ?>">
-<a href='#' class='tip'>&nbsp;<span>
+<a href='#' class='tip2'>&nbsp;<span>
 <b>Macros:</b><br>
 _field1_<br>
 _field2_<br>

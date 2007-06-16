@@ -207,7 +207,7 @@ if (isset($chunk1)) {
     if (isset($period))
         echo "<input type='hidden' name='period' value='$period'>";
 
-	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
+	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox'>";
 	echo "<tr>
 	<th>".$lang_label["agent"]."</th>
 	<th>".$lang_label["module"]."</th>
@@ -231,10 +231,12 @@ if (isset($chunk1)) {
 		echo dame_nombre_modulo_agentemodulo($module_array[$a])."</td>";
 		echo "<td class='$tdcolor'>";
 		echo $weight_array[$a]."</td>";
-		echo "<td class='$tdcolor'>";
-		echo "<input style='height=2px;' type=checkbox name='delete_$a' value='".$module_array[$a]."'></td></tr>";
+		echo "<td class='$tdcolor' align='center'>";
+		echo "<input type=checkbox name='delete_$a' value='".$module_array[$a]."'></td></tr>";
 	}
-	echo "<tr><td class=datos colspan=4 align='right'><input type=submit name='update_agent' class='sub delete' value='".$lang_label["delete"]."'>";
+	echo "</table>";
+	echo "<table width='500px'>";
+	echo "<tr><td align='right'><input type=submit name='update_agent' class='sub delete' value='".$lang_label["delete"]."'>";
 	echo "</table>";
 	echo "</form>";
 }
@@ -245,7 +247,7 @@ if (isset($chunk1)) {
 if (($render == 1) && (isset($modules))) {
 	// parse chunk
 	echo "<h3>".$lang_label["combined_image"]."</h3>";
-	echo "<table class='databox_frame'>";
+	echo "<table class='databox'>";
 	echo "<tr><td>";
 	echo "<img src='reporting/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&label=Combined%20Sample%20Graph&height=$height&width=$width&period=$period' border=1 alt=''>";
 	echo "</td></tr></table>";
@@ -261,7 +263,7 @@ if ( (!isset($_GET["add_module"]))){
 } else {
 	echo "<h3>".$lang_label["graph_builder"]."</h3>";
 }
-echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
+echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_color'>";
 echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&get_agent=1'>";
 
 if (isset($period))
@@ -275,11 +277,11 @@ echo "</b>";
 echo "<td class='datos' colspan=2><select name='id_agent' style='width:180px;'>";
 if ($id_agent != 0)
 	echo "<option value='$id_agent'>".dame_nombre_agente($id_agent);
-$sql1='SELECT * FROM tagente order by nombre';
+$sql1='SELECT * FROM tagente ORDER BY nombre';
 $result=mysql_query($sql1);
 while ($row=mysql_fetch_array($result)){
 	if ( $id_agent != $row["id_agente"])
-		echo "<option value=".$row["id_agente"].">".$row["nombre"];
+		echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
 }
 echo '</select>';
 if (isset($chunkdata))
@@ -302,13 +304,13 @@ echo "<tr><td class='datos2'>";
 echo "<b>".$lang_label["modules"]."</b>";
 echo "<td class='datos2' colspan=3>";
 echo "<select name='id_module' size=1 style='width:180px;'>";
-		echo "<option value=-1> --";
+		echo "<option value=-1> -- </option>";
 if ($id_agent != 0){
 	// Populate Module/Agent combo
-	$sql1="SELECT * FROM tagente_modulo WHERE id_agente = ".$id_agent. " order by nombre";
+	$sql1="SELECT * FROM tagente_modulo WHERE id_agente = ".$id_agent. " ORDER BY nombre";
 	$result = mysql_query($sql1);
 	while ($row=mysql_fetch_array($result)){
-		echo "<option value=".$row["id_agente_modulo"].">".$row["nombre"];
+		echo "<option value=".$row["id_agente_modulo"].">".$row["nombre"]."</option>";
 	}
 }
 echo "</select>";
@@ -425,11 +427,12 @@ if ($alerts == 1){
 }
 echo "</select>";
 */
-
-echo "<tr><td colspan=4 class=datos align='right'><input type=submit name='update_agent' class='sub upd' value='".$lang_label["add"]."/".$lang_label["redraw"]."'>";
+echo "</tr></table>";
+echo "<table width='500px'>";
+echo "<tr><td align='right'><input type=submit name='update_agent' class='sub upd' value='".$lang_label["add"]."/".$lang_label["redraw"]."'>";
 
 echo "</form>";
-echo "</table>";
+echo "</td></tr></table>";
 
 // -----------------------
 // STORE GRAPH FORM
@@ -438,7 +441,7 @@ echo "</table>";
 // If we have something to save..
 if (isset($module_array)){
 	echo "<h3>".$lang_label["graph_store"]."</h3>";
-	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
+	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_color'>";
 	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&store_graph=1'>";
 
 	// hidden fields with data begin
@@ -457,24 +460,25 @@ if (isset($module_array)){
 	// hidden fields end
 
 	echo "<tr>";
-	echo "<td class='datos'><b>".$lang_label["name"];
+	echo "<td class='datos'><b>".$lang_label["name"]."</b></td>";
 	echo "</b>";
 	echo "<td class='datos'><input type='text' name='name' size='35'>";
 
-	echo "<td class='datos'><b>".$lang_label["private"];
+	echo "<td class='datos'><b>".$lang_label["private"]."</b></td>";
 	echo "</b>";
 	echo "<td class='datos'><select name='private'>";
-	echo "<option value=0>".$lang_label["no"];
-	echo "<option value=1>".$lang_label["yes"];
+	echo "<option value=0>".$lang_label["no"]."</option>";
+	echo "<option value=1>".$lang_label["yes"]."</option>";
 	echo "</select>";
-
+	echo "</td></tr>";
 	echo "<tr>";
-	echo "<td class='datos2'><b>".$lang_label["description"];
+	echo "<td class='datos2'><b>".$lang_label["description"]."</b></td>";
 	echo "</b>";
 	echo "<td class='datos2' colspan=4><textarea name='description' style='height:45px;' cols=55 rows=2>";
 	echo "</textarea>";
-
-	echo "<tr><td class=datos colspan=4 align='right'><input type=submit name='store' class='sub wand' value='".$lang_label["store"]."'>";
+	echo "</td></tr></table>";
+	echo "<table width='500px'>";
+	echo "<tr><td align='right'><input type=submit name='store' class='sub wand' value='".$lang_label["store"]."'>";
 
 
 	echo "</form>";

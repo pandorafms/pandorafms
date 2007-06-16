@@ -32,7 +32,8 @@
 		require ("general/noaccess.php");
 		exit;
 	}
-	echo "<h2>".$lang_label["tactical_view"]."</h2>";
+	echo "<h2>".$lang_label["ag_title"]." &gt; ";
+	echo $lang_label["tactical_view"]."</h2>";
 
 
 	/*
@@ -155,29 +156,29 @@
 	echo "<tr><td>";
 	echo "<table class='databox' celldpadding=4 cellspacing=4 width=250>";
 	echo "<th colspan=2>".$lang_label["monitor_checks"]."</th>";
-	echo "<tr><td class=datos2><b>"."Monitor checks";
-	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #000000;'>".$monitor_checks;
-	echo "<tr><td class=datos><b>"."Monitor OK";
-	echo "<td class=datos style='font: bold 2em Arial, Sans-serif; color: #000000;'>".$monitor_ok;
-	echo "<tr><td class=datos2><b>"."Monitor BAD";
-	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #ff0000;'>";
+	echo "<tr><td class=datos2><b>"."Monitor checks"."</b></td>";
+	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #000;'>".$monitor_checks."</td>";
+	echo "<tr><td class=datos><b>"."Monitor OK"."</b></td>";
+	echo "<td class=datos style='font: bold 2em Arial, Sans-serif; color: #000;'>".$monitor_ok."</td>";
+	echo "<tr><td class=datos2><b>"."Monitor BAD"."</b></td>";
+	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #f00;'>";
 	if ($monitor_bad > 0)
 		echo $monitor_bad;
 	else
 		echo "-";
-	echo "<tr><td class=datos><b>"."Monitor Unknown";
+	echo "</td></tr><tr><td class=datos><b>"."Monitor Unknown"."</b></td>";
 	echo "<td class=datos style='font: bold 2em Arial, Sans-serif; color: #888;'>";
 	if ($monitor_unknown > 0)
 		echo $monitor_unknown;
 	else
 		echo "-";
-	echo "<tr><td class=datos2><b>"."Alerts Fired";
+	echo "<tr><td class=datos2><b>"."Alerts Fired"."</b></td>";
 	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #ff0000;'>";
 	if ($monitor_alert > 0)
 		echo $monitor_alert;
 	else
 		echo "-";
-	echo "<tr><td class=datos><b>"."Alerts Total";
+	echo "<tr><td class=datos><b>"."Alerts Total"."</b></td>";
 	echo "<td class=datos style='font: bold 2em Arial, Sans-serif; color: #000000;'>".$monitor_alert_total;
 	echo "</table>";
 
@@ -185,42 +186,42 @@
 	// ~~~~~~~~~~~~~~~
 	echo "<table class='databox' celldpadding=4 cellspacing=4 width=250>";
 	echo "<th colspan=2>".$lang_label["data_checks"]."</th>";
-	echo "<tr><td class=datos2><b>"."Data checks";
+	echo "<tr><td class=datos2><b>"."Data checks"."</b></td>";
 	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #000000;'>".$data_checks;
-	echo "<tr><td class=datos><b>"."Data Unknown";
+	echo "<tr><td class=datos><b>"."Data Unknown"."</b></td>";
 	echo "<td class=datos style='font: bold 2em Arial, Sans-serif; color: #888;'>";
 	if ($data_unknown > 0)
 		echo $data_unknown;
 	else
 		echo "-";
-	echo "<tr><td class=datos2><b>"."Alerts Fired";
-	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #ff0000;'>";
+	echo "<tr><td class=datos2><b>"."Alerts Fired"."</b></td>";
+	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #f00;'>";
 	if ($data_alert > 0)
 		echo $data_alert;
 	else
 		echo "-";
 	echo "<tr><td class=datos><b>"."Alerts Total";
-	echo "<td class=datos style='font: bold 2em Arial, Sans-serif; color: #000000;'>".$data_alert_total;
+	echo "<td class=datos style='font: bold 2em Arial, Sans-serif; color: #000;'>".$data_alert_total;
 	echo "</table>";
 
 	// Summary
 	// ~~~~~~~~~~~~~~~
 	echo "<table class='databox' celldpadding=4 cellspacing=4 width=250>";
-	echo "<th colspan=2>".$lang_label["summary"]."</th>";
-	echo "<tr><td class=datos2><b>"."Total agents";
-	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #000000;'>".$total_agents;
-	echo "<tr><td class=datos2><b>"."Total checks";
-	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #000000;'>".$total_checks;
+	echo "<th colspan='2'>".$lang_label["summary"]."</th>";
+	echo "<tr><td class='datos2'><b>"."Total agents"."</b></td>";
+	echo "<td class='datos2' style='font: bold 2em Arial, Sans-serif; color: #000;'>".$total_agents;
+	echo "<tr><td class='datos'><b>"."Total checks"."</b></td>";
+	echo "<td class='datos' style='font: bold 2em Arial, Sans-serif; color: #000;'>".$total_checks;
 	echo "</table>";
 
-	echo "<td>";
+	echo "<td valign='top'>";
 
 	// Odometer Graph
 	// ~~~~~~~~~~~~~~~
 	$monitor_health = format_numeric ((($monitor_ok - $monitor_alert - $monitor_unknown)/ $monitor_checks) * 100,1);
 	$data_health = format_numeric ( (($data_checks -($data_unknown + $data_alert)) / $data_checks ) * 100,1);;
 	$global_health = format_numeric( ((($monitor_ok -$monitor_alert - $monitor_unknown )+($data_checks -($data_unknown + $data_alert))) / ($data_checks + $monitor_checks)  ) * 100, 1);
-	echo "<h3>".$lang_label["tactical_indicator"]."</h3>";
+	echo "<h2>".$lang_label["tactical_indicator"]."</h2>";
 	echo "<img src='reporting/fgraph.php?tipo=odo_tactic&value1=$global_health&value2=$data_health&value3=$monitor_health'>";
 
 	

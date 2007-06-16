@@ -50,7 +50,7 @@ if (isset($_GET["edit"])){ // Edit mode
 }
 
 echo "<h2>".$lang_label["network_component_group_management"]."</h2>";
-echo '<table width="500" cellspacing="4" cellpadding="4" class="databox">';
+echo '<table width="500" cellspacing="4" cellpadding="4" class="databox_color">';
 
 // Different Form url if it's a create or if it's a update form
 if ($id_sg != -1)

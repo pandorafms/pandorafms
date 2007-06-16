@@ -184,7 +184,7 @@ if (isset($_GET["update"])){ // Edit mode
 }
 
 echo "<h2>".$lang_label["network_component_management"]."</h2>";
-echo '<table width="700" cellspacing="4" cellpadding="4" class="databox">';
+echo '<table width="700" cellspacing="4" cellpadding="4" class="databox_color">';
 
 // Different Form url if it's a create or if it's a update form
 if ($id_nc != -1) {

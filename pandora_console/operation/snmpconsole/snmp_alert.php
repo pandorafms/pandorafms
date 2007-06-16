@@ -214,7 +214,7 @@ if (give_acl($id_user, 0, "LW")==1) {
 		echo $lang_label["snmp_assigned_alerts"]."<a href='help/".$help_code."/chap4.php#341' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";		
 		if (mysql_num_rows($result)){
 
-			echo '<table cellpadding="3" cellspacing="3" width="750">';
+			echo '<table cellpadding="4" cellspacing="4" width="750" class="databox">';
 			echo '<tr><th>'.$lang_label["alert"]."</th>";
 			echo '<th width=75>'.$lang_label["alert_type"]."</th>";	
 			echo '<th>'.$lang_label["SNMP_agent"]."</th>";
@@ -253,7 +253,7 @@ if (give_acl($id_user, 0, "LW")==1) {
 				
 				echo "<tr><td class='$tdcolor'>";
 				echo $nombre_alerta;
-				echo "<td class='$tdcolor'>";
+				echo "</td><td class='$tdcolor'>";
 				if ($alert_type == 0) {
 					$tipo_alerta = $lang_label["OID"];
 				} elseif ($alert_type == 1) {
@@ -264,43 +264,46 @@ if (give_acl($id_user, 0, "LW")==1) {
 					$tipo_alerta = "N/A";
 				}
 				echo $tipo_alerta;
-				echo "<td class='$tdcolor'>";
+				echo "</td><td class='$tdcolor'>";
 				if ($alert_type == 2) {
 					echo $agent;
 				} else { 
 					echo "N/A";
 				}
 	
-				echo "<td class='$tdcolor'>";
+				echo "</td><td class='$tdcolor'>";
 				if ($alert_type == 0) {
 					echo $oid;
 				} else { 
 					echo "N/A";
 				}
 				
-				echo "<td class='$tdcolor'>";
+				echo "</td><td class='$tdcolor'>";
 				if ($alert_type == 1) {
 					echo $custom_oid;
 				} else { 
 					echo "N/A";
 				}
 				
-				echo "<td class='$tdcolor'>";
+				echo "</td><td class='$tdcolor'>";
 				echo $description;
 				
-				echo "<td class='$tdcolor'>";
+				echo "</td><td class='$tdcolor'>";
 				echo $times_fired;
-				echo "<td class='$tdcolor'>";
+				echo "</td><td class='$tdcolor'>";
 				if ($last_fired != "0000-00-00 00:00:00")
 					echo $last_fired;
 				else
 					echo $lang_label["never"];
-				echo "<td class='$tdcolor'>";
-				echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&delete_alert=".$id_as."'><img src='images/cross.png' border=0 alt='".$lang_label["delete"]."'></b></a> &nbsp; ";
-				echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&update_alert=".$id_as."'><img src='images/config.gif' border=0 alt='".$lang_label["update"]."'></b></a>";
+				echo "</td><td class='$tdcolor'>";
+				echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&delete_alert=".$id_as."'>
+				<img src='images/cross.png' border=0 alt='".$lang_label["delete"]."'></b></a> &nbsp; ";
+				echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&update_alert=".$id_as."'>
+				<img src='images/config.gif' border=0 alt='".$lang_label["update"]."'></b></a></td></tr>";
 			}
-			echo "<tr><td colspan='9'><div class='raya'></div></td></tr>";
-			echo "<tr><td colspan=9 align='right'>";
+			echo "</table>";
+			echo "<table width='750px'>";
+			echo "<tr><td align='right'>";
 			echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert">';
 			echo '<input name="add_alert" type="submit" class="sub next" value="'.$lang_label["create"].'">';
 			echo "</form>";

@@ -31,7 +31,8 @@ a.tip:hover {
 }
 a.tip2:hover {
 	text-decoration: none;
-	background-color: #e6e9cd;
+/*	background-color: #e6e9cd;*/
+	background-color: #efefef
 }
 a.tipp:hover {
 	text-decoration: none;

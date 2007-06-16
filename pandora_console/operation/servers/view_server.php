@@ -57,9 +57,6 @@ if (comprueba_login() == 0) {
 		echo "<th class='datos'>".$lang_label['lag']."</th>";
 		echo "<th class='datos'>".$lang_label['description']."</th>";
 		echo "<th class='datos' width=80>".$lang_label['type']."</th>";
-		// echo "<th class='datos'>".$lang_label['master']."</th>";
-		//echo "<th class='datos'>".$lang_label['checksum']."</th>";
-		//echo "<th class='datos'>".$lang_label['laststart']."</th>";
 		echo "<th class='datos'>".$lang_label['version']."</th>";
 		echo "<th class='datos'>".$lang_label['lastupdate']."</th>";
 		$color=1;
@@ -210,7 +207,7 @@ if (comprueba_login() == 0) {
 					echo "+1 ".$lang_label["day"];
 			} else
 				echo "--";
-			echo "<td class='".$tdcolor."f9'>".substr($description,0,25);
+			echo "<td class='".$tdcolor."f9'>".substr($description,0,25)."</td>";
 			echo "<td class='$tdcolor' align='middle'>";			
 			if ($network_server == 1){
 				echo " <img src='images/network.gif'>";
@@ -230,16 +227,14 @@ if (comprueba_login() == 0) {
 			if ($checksum == 1){
 				echo "&nbsp; <img src='images/binary.gif'>";
 			}
-			//echo "<td class='".$tdcolor."f9' align='middle'>"
-			//.substr($laststart,0,25)."</td>";
-			echo "<td class='".$tdcolor."f9' align='middle'>";
+			echo "</td><td class='".$tdcolor."f9' align='middle'>";
 				echo $version;
 			
-			echo "<td class='".$tdcolor."f9' align='middle'>";
+			echo "</td><td class='".$tdcolor."f9' align='middle'>";
 			// if ($status ==0)
 				echo substr($keepalive,0,25)."</td>";
 		}
-		echo '</table>';
+		echo '</tr></table>';
 		echo "<table cellpadding=2 cellspacing=0>";
 		echo "
 		<tr>

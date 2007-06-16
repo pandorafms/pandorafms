@@ -93,7 +93,7 @@ $query="SELECT * FROM trecon_task";
 $result=mysql_query($query);
 $color=1;
 if (mysql_num_rows($result)){
-	echo "<table cellpadding='4' cellspacing='4' witdh='750'>";
+	echo "<table cellpadding='4' cellspacing='4' witdh='750' class='databox'>";
 	echo "<tr><th class='datos'>".$lang_label["name"];
 	echo "<th class='datos'>".$lang_label['type'];
 	echo "<th class='datos'>".$lang_label['network'];
@@ -130,51 +130,51 @@ while ($row=mysql_fetch_array($result)){
 	echo "<td class='$tdcolor'>";
 	echo "<a href='index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update=$id_rt'><b>$name</b></A>";
 	
-	echo "<td class='$tdcolor'>";
+	echo "</td><td class='$tdcolor'>";
 	if ($type ==1)
 		echo "ICMP";
 
 	// Network
-	echo "<td class='$tdcolor'>";
+	echo "</td><td class='$tdcolor'>";
 	echo $network;
 
 	// Network profile name
-	echo "<td class='$tdcolor'>";
+	echo "</td><td class='$tdcolor'>";
 	echo "<a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates&id=$id_network_profile'>".give_network_profile_name($id_network_profile)."</a>";
 
 	// GROUP
-	echo "<td class='$tdcolor' align='center'>";
-	echo "<img class='bot' src='images/groups_small/".show_icon_group($id_group).".png'>";
+	echo "</td><td class='$tdcolor' align='center'>";
+	echo "<img class='bot' src='images/groups_small/".show_icon_group($id_group).".png' alt=''>";
 	// INCIDENT
-	echo "<td class='$tdcolor'>";
+	echo "</td><td class='$tdcolor'>";
 	if ($create_incident == 1)
 		echo $lang_label["yes"];
 	else
 		echo $lang_label["no"];
 	// INTERVAL
-	echo "<td class='$tdcolor' align='center'>";
+	echo "</td><td class='$tdcolor' align='center'>";
 	echo $interval;
 	// Recon server
-	echo "<td class='$tdcolor'f9 >";
+	echo "</td><td class='$tdcolor'f9 >";
 	echo "<a href='index.php?sec=gserver&sec2=godmode/servers/modificar_server&server=$id_network_server'>".give_server_name($id_network_server)."</a>";
 	// Network server assigned
-	echo "<td class='$tdcolor'f9 >";
+	echo "</td><td class='$tdcolor'f9 >";
 	echo "<a href='index.php?sec=gserver&sec2=godmode/servers/modificar_server&server=$id_network_server_assigned'>".give_server_name($id_network_server_assigned)."</a>";;
 
 	// ACTION
-	echo "<td class='".$tdcolor."' align='center'><a href='index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete=$id_rt'><img src='images/cross.png' border='0'>";
-	
+	echo "</td><td class='".$tdcolor."' align='center'><a href='index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete=$id_rt'><img src='images/cross.png' border='0'></td></tr>";
 }
-if (mysql_num_rows($result)){
-	echo '<tr><td colspan="12"><div class="raya"></div></td></tr>';
-} else {
+echo "</table>";
+if (!mysql_num_rows($result)){
 	echo "<div class='nf'>".$lang_label["no_rtask"]."</div>";
 	echo "<table>";
+} else {
+	echo "<table width='700'>";
 }
-echo "<tr><td align='right' colspan='11'>";
+
+echo "<tr><td align='right'>";
 echo "<form method='post' action='index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&create'>";
-echo "<input type='submit' class='sub next' name='crt'
-value='".$lang_label["create"]."'>";
+echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create"]."'>";
 echo "</form></table>";
 
 ?>

@@ -188,7 +188,7 @@ if (comprueba_login() == 0) {
 		$offset=0;
 	}
 	echo "<br>";
-	echo "<table cellpadding='3' cellspacing='3' width='750'>";
+	echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>";
 	echo "<tr>";
 	echo "<th>".$lang_label["status"]."</th>";
 	echo "<th>".$lang_label["OID"]."</th>";
@@ -200,7 +200,8 @@ if (comprueba_login() == 0) {
 	echo "<th>".$lang_label["action"]."</th>";
 	echo "<th class='p10'>";
 	echo "<label for='checkbox' class='p21'>".$lang_label["all"]." </label>";
-	echo '<input type="checkbox" class="chk" name="allbox" onclick="CheckAll();"></th>';
+	echo '<input type="checkbox" class="chk" name="allbox" onclick="CheckAll();">
+	</th>';
 	echo "<form name='eventtable' method='POST' action='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&refr=60&offset=".$offset."'>";	
 	$id_trap = 0;
 	if ($offset !=0)
@@ -255,15 +256,15 @@ if (comprueba_login() == 0) {
 			}
 		}
 	}
-	echo "<tr><td colspan='9'><div class='raya'></div></td></tr>";
+	echo "</table>";
 	$offset_counter = 0;
-	echo "<tr><td colspan='9' align='right'>";
+	echo "<table width='750px'><tr><td align='right'>";
 	
 	echo "<input class='sub' type='submit' name='updatebt' value='".$lang_label["validate"]."'> ";
 	if (give_acl($id_usuario, 0,"IM") ==1){
 		echo "<input class='sub' type='submit' name='deletebt' value='".$lang_label["delete"]."'>";
 	}
-	echo "</form></table>";
+	echo "</form></td></tr></table>";
 
 	} else { 
 		echo "<div class='nf'>".$lang_label["no_snmp_agent"]."</div>";

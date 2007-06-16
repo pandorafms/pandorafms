@@ -91,21 +91,21 @@
 	
 	echo "<table class='databox' celldpadding=4 cellspacing=4 width=250>";
 	echo "<th colspan=2>".$lang_label["Pandora_FMS_summary"]."</th>";
-	echo "<tr><td class=datos2><b>"."Total agents";
-	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #000000;'>".$total_agents;
-	echo "<tr><td class=datos2><b>"."Total checks";
-	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #000000;'>".$total_checks;	
-	echo "<tr><td class=datos2><b>"."Monitor BAD";
-	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #ff0000;'>";
+	echo "<tr><td class='datos2'><b>"."Total agents"."</b></td>";
+	echo "<td class='datos2' style='font: bold 2em Arial, Sans-serif; color: #000;'>".$total_agents."</td>";
+	echo "</tr><tr><td class='datos'><b>"."Total checks"."</b></td>";
+	echo "<td class='datos' style='font: bold 2em Arial, Sans-serif; color: #000;'>".$total_checks."</td>";	
+	echo "</tr><tr><td class='datos2'><b>"."Monitor BAD"."</b></td>";
+	echo "<td class='datos2' style='font: bold 2em Arial, Sans-serif; color: #f00;'>";
 	if ($monitor_bad > 0)
 		echo $monitor_bad;
 	else
 		echo "-";
-	echo "<tr><td class=datos2><b>"."Alerts defined";
-	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #000000;'>".$total_alerts;
-	echo "<tr><td class=datos2><b>"."Total users";
-	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #000000;'>".$users_defined;
-	echo "</table>";
+	echo "</td></tr><tr><td class='datos'><b>"."Alerts defined"."</b></td>";
+	echo "<td class='datos' style='font: bold 2em Arial, Sans-serif; color: #000;'>".$total_alerts."</td>";
+	echo "</tr><tr><td class='datos2'><b>"."Total users"."</b></td>";
+	echo "<td class='datos2' style='font: bold 2em Arial, Sans-serif; color: #000;'>".$users_defined."</td>";
+	echo "</tr></table>";
 
 	echo "</table>";
 
@@ -113,7 +113,7 @@
 	// Show last activity from this user
 	echo "<h2>" . $lang_label["user_last_activity"] . "</h2>";
 	// Show table header
-	echo '<table cellpadding="3" cellspacing="3" width="700"><tr>'; 
+	echo '<table cellpadding="4" cellspacing="4" width="700" class="databox"><tr>'; 
 	echo '<th>' . $lang_label["user"] . '</th>';
 	echo '<th>' . $lang_label["action"] . '</th>';
 	echo '<th width="130px">' . $lang_label["date"] . '</th>';
@@ -149,8 +149,7 @@
 		$contador--;
 	}
 
-	echo "<tr><td colspan='5'><div class='raya'></div>";
-	echo "</td></tr></table>";
+	echo "</table>";
 	echo "</div>"; // activity
 
 	echo '</div>'; // class "jus"

@@ -53,8 +53,10 @@ function generate_average_table ($id_de_mi_agente, $id_agente_modulo, $fecha_ini
 	
 	// Table header
 	echo "<table border=0 cellpadding=4 cellspacing=4 width=600 class='databox'>";
-	echo "<tbody><tr><th rowspan=\"2\">".$lang_label["hour"]."</th>";
-	echo "<th colspan=\"7\">".$lang_label["day"]."</Th></tr>";
+	echo "<tr>
+	<th rowspan='2'>".$lang_label["hour"]."</th>";
+	echo "<th colspan='7'>".$lang_label["day"]."</th>
+	</tr>";
 	echo "<tr>";
 	for ($dia=0;$dia<7;++$dia)
 		echo "<th>".$dias_de_la_semana[$dia]."</th>";
@@ -72,11 +74,11 @@ function generate_average_table ($id_de_mi_agente, $id_agente_modulo, $fecha_ini
 		for ($dia=0; $dia<7; ++$dia){
 			echo "<td class='$tdcolor'>"; 
 			echo format_numeric (give_average_from_module ($id_de_mi_agente, $id_agente_modulo, $hora, $dia, $fecha_inicio, $fecha_fin));
-			echo "</td >";
+			echo "</td>";
 		}
 		echo "</tr>";
 	}
-	echo "</tbody></table>";
+	echo "</table>";
 }
 
 // ----------------------------------
@@ -184,7 +186,10 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 			echo $lang_label["db_agent_bra"]. "<b>" . dame_nombre_agente($origen). "-  $agentmodule_name</b>". $lang_label["from2"]. "<b>". $from_date. "</b>". $lang_label["to2"]. "<b>". $to_date. "</b><br>";
 
 			echo "<br><table cellpadding='4' cellspacing='4' width='600' class='databox'>";
-			echo "<tr><th class='datos'>".$lang_label["module"]."</th><th class=datos>".$lang_label["data"]."<th class='datos'>Timestamp</th>";
+			echo "<tr>
+			<th class='datos'>".$lang_label["module"]."</th>
+			<th class='datos'>".$lang_label["data"]."</th>
+			<th class='datos'>Timestamp</th>";
 	
 			// Begin the render !	
 			for ($a=0; $a <count($origen_modulo); $a++){ // For each module (not used multiple modules yet!)
@@ -247,16 +252,16 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 	echo $lang_label["export_data"]."<a href='help/$help_code/chap3.php#336' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 
 	echo '<form method="post" action="index.php?sec=estado&sec2=operation/agentes/exportdata" name="export_form">';
-	echo '<table width=550 border=0 cellspacing=3 cellpadding=5 class=databox>';
+	echo '<table width=550 border=0 cellspacing=3 cellpadding=5 class=databox_color>';
 	echo '<tr>';
-	echo "<td class='datos'><b>".$lang_label["source_agent"]."</b><br><br>";
+	echo "<td class='datos'><b>".$lang_label["source_agent"]."</b></td>";
 	echo "<td class='datos'>";	
 
 
 	// Show combo with agents
 	echo '<select name="origen" class="w130">';
 	if ( (isset($_POST["update_agent"])) AND (isset($_POST["origen"])) ) {
-		echo "<option value=".$_POST["origen"].">".dame_nombre_agente($_POST["origen"]);
+		echo "<option value=".$_POST["origen"].">".dame_nombre_agente($_POST["origen"])."</option>";
 	}
 	$sql1='SELECT * FROM tagente';
 	$result=mysql_query($sql1);
@@ -264,19 +269,19 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 		if ( (isset($_POST["update_agent"])) AND (isset($_POST["origen"])) ){
 			if (give_acl($id_user, $row["id_grupo"], "AR")==1)
 				if ( $_POST["origen"] != $row["id_agente"])
-					echo "<option value=".$row["id_agente"].">".$row["nombre"];
+					echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
 		}
 		else
 			if (give_acl($id_user, $row["id_grupo"], "AR")==1)
-				echo "<option value=".$row["id_agente"].">".$row["nombre"];
+				echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
 	}
 	echo "</select> &nbsp;&nbsp;";
-	echo "<input type=submit name='update_agent' class='sub next' value='".$lang_label["get_info"]."'><br><br>";
+	echo "<input type=submit name='update_agent' class='sub upd' value='".$lang_label["get_info"]."'>";
 
 	
 	echo '<tr>';
 	echo "<td class='datos2'>";
-	echo "<b>".$lang_label["modules"]."</b><br><br>";
+	echo "<b>".$lang_label["modules"]."</b>";
 	echo "<td class='datos2'>";
 	
 	// Combo with modules
@@ -290,7 +295,7 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 			echo "<option value=".$row["id_agente_modulo"].">".$row["nombre"];
 		}
 	} else {
-		echo "<option value=-1>".$lang_label["N/A"];
+		echo "<option value=-1>".$lang_label["N/A"]."</option>";
 	}
 	echo "</select>";
 	
@@ -313,14 +318,14 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 	echo "<td class='datos'>";
 	// Combo for data export type
 	echo "<select name='export_type'>";
-	echo "<option value=3>".$lang_label["datatable"];
-	echo "<option value=1>".$lang_label["csv"];
-	echo "<option value=2>".$lang_label["average_per_hourday"];
+	echo "<option value=3>".$lang_label["datatable"]."</option>";
+	echo "<option value=1>".$lang_label["csv"]."</option>";
+	echo "<option value=2>".$lang_label["average_per_hourday"]."</option>";
 	echo "</select>";
 	echo "</table>";
 	// Submit button
 
-	echo "<table width=570>";
+	echo "<table width=550>";
 	echo "<tr><td align='right'>";
 	echo "<input type=submit name='export' class='sub wand' value=".$lang_label["export"].">";
 	echo "</table>";

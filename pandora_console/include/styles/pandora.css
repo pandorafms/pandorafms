@@ -375,13 +375,6 @@ td.datos_jus, td.datos2_jus {
 .redb, .greenb, td.datos_id, td.datos2_id, f9b {
 	font-weight: bold;
 }
-.raya {
-	border-top: 1px solid #786;
-	width: 100%;
-}
-.raya, .noraya {
-	margin-bottom: -10px;
-}
 .p10 {
 	padding-top: 1px;
 	padding-bottom: 0px;

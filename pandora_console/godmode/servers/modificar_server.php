@@ -66,8 +66,8 @@ if (comprueba_login() == 0) {
 		$master = $row["master"];
 		$checksum = $row["checksum"];
 		$description = $row["description"];
-		echo '<form name="servers" method="POST" action="index.php?sec=gserver&sec2=godmode/servers/modificar_server&update=1">';
-		echo "<table cellpadding='4' cellspacing='4' width='450' class='databox'>";
+		echo '<form name="servers" method="POST" action="index.php?sec=gservers&sec2=godmode/servers/modificar_server&update=1">';
+		echo "<table cellpadding='4' cellspacing='4' width='450' class='databox_color'>";
 		echo "<tr>";
 		echo "<td class='datos'>".$lang_label["name"]."</td><td class='datos'><input type='text' name='name' value='".$name."' width='200px'>";
 		echo "<tr><td class='datos2'>".$lang_label['ip_address']."</td><td class='datos2'><input type='text' name='address' value='".$address."' width='200px'>";
@@ -90,21 +90,17 @@ if (comprueba_login() == 0) {
 
 	// Connect DataBase
 	$result=mysql_query($sql);
-	if (mysql_num_rows($result)){	
-	echo "<table cellpadding='3' cellspacing='3' witdh=550>";
-	echo "<tr><th class='datos'>".$lang_label["name"];
-	echo "<th class='datos'>".$lang_label['status'];
-	echo "<th class='datos'>".$lang_label['ip_address'];
-	echo "<th class='datos'>".$lang_label['description'];
-	echo "<th class='datos'>".$lang_label['network'];
-	echo "<th class='datos'>".$lang_label['data'];
-	echo "<th class='datos'>".$lang_label['snmp'];
-	echo "<th class='datos'>".$lang_label['master'];
-	echo "<th class='datos'>".$lang_label['checksum'];
-	echo "<th class='datos'>".$lang_label['laststart'];
-	echo "<th class='datos'>".$lang_label['lastupdate'];
-	echo "<th class='datos'>".$lang_label['delete'];
-	$color=1;
+	if (mysql_num_rows($result)){
+		echo "<table cellpadding='4' cellspacing='4' witdh='550' class='databox'>";
+		echo "<tr><th class='datos'>".$lang_label["name"]."</th>";
+		echo "<th class='datos'>".$lang_label['status']."</th>";
+		echo "<th class='datos'>".$lang_label['ip_address']."</th>";
+		echo "<th class='datos'>".$lang_label['description']."</th>";
+		echo "<th class='datos' width=80>".$lang_label['type']."</th>";
+		echo "<th class='datos'>".$lang_label['laststart']."</th>";
+		echo "<th class='datos'>".$lang_label['lastupdate']."</th>";
+		echo "<th class='datos'>".$lang_label['delete']."</th>";
+		$color=1;
 		while ($row=mysql_fetch_array($result)){
 			$name = $row["name"];
 			$address = $row["ip_address"];
@@ -128,41 +124,59 @@ if (comprueba_login() == 0) {
 				$color = 1;
 			}
 			echo "<tr><td class='$tdcolor'>";
-			echo "<a href='index.php?sec=gserver&sec2=godmode/servers/modificar_server&server=".$id_server."'><b>$name</b></a>";
-			echo "<td class='$tdcolor' align='middle'>";
+			echo "<a href='index.php?sec=gservers&sec2=godmode/servers/modificar_server&server=".$id_server."'><b>$name</b></a>";
+			echo "</td><td class='$tdcolor' align='middle'>";
 			if ($status ==0){
 				echo "<img src='images/dot_red.gif'>";
 			} else {
 				echo "<img src='images/dot_green.gif'>";
 			}
-			echo "<td class='$tdcolor' align='middle'>";
+			echo "</td><td class='$tdcolor' align='middle'>";
 			echo "$address";
-			echo "<td class='".$tdcolor."f9'>".substr($description,0,25);
-			echo "<td class='$tdcolor' align='middle'>";			
+			echo "</td><td class='".$tdcolor."f9'>".substr($description,0,25);
+			echo "</td><td class='$tdcolor' align='middle'>";			
 			if ($network_server == 1){
-				echo "<img src='images/network.gif'>";
-			}
-			echo "<td class='$tdcolor' align='middle'>";			
+				echo "&nbsp; <img src='images/network.gif'>";
+			}		
 			if ($data_server == 1){
-				echo "<img src='images/data.gif'>";
-			}
-			echo "<td class='$tdcolor' align='middle'>";			
+				echo "&nbsp; <img src='images/data.gif'>";
+			}		
 			if ($snmp_server == 1){
-				echo "<img src='images/snmp.gif'>";
-			}
-			echo "<td class='$tdcolor' align='middle'>";			
+				echo "&nbsp; <img src='images/snmp.gif'>";
+			}		
 			if ($master == 1){
-				echo "<img src='images/master.gif'>";
-			}
-			echo "<td class='$tdcolor' align='middle'>";			
+				echo "&nbsp; <img src='images/master.gif'>";
+			}		
 			if ($checksum == 1){
-				echo "<img src='images/binary.gif'>";
+				echo "&nbsp; <img src='images/binary.gif'>";
 			}
-			echo "<td class='".$tdcolor."f9' align='middle'>".substr($keepalive,0,25);
-			echo "<td class='".$tdcolor."f9' align='middle'>".substr($laststart,0,25);
-			echo "<td class='".$tdcolor."f9' align='middle'><a href='index.php?sec=gserver&sec2=godmode/servers/modificar_server&server_del=".$id_server."&delete'><img src='images/cross.png' border='0'>";
+			echo "</td><td class='".$tdcolor."f9' align='middle'>".substr($keepalive,0,25)."</td>";
+			echo "<td class='".$tdcolor."f9' align='middle'>".substr($laststart,0,25)."</td>";
+			echo "<td class='".$tdcolor."f9' align='middle'>
+			<a href='index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_del=".$id_server."&delete'>
+			<img src='images/cross.png' border='0'></td></tr>";
 		}
-		echo '<tr><td colspan="12"><div class="raya"></div></td></tr></table>';	
+		echo '</table>';
+		echo "<table cellpadding=2 cellspacing=0>";
+		echo "
+		<tr>
+		 <td>
+		  <span class='net'>".$lang_label["network_server"]."</span>
+		 </td>
+		 <td>
+		  <span class='master'>".$lang_label["master"]."</span>
+		 </td>
+		 <td>
+		  <span class='data'>".$lang_label["data_server"]."</span>
+		 </td>
+		 <td>
+		  <span class='binary'>".$lang_label["md5_checksum"]."</span>
+		 </td>
+		 <td>
+		  <span class='snmp'>".$lang_label["snmp_console"]."</span>
+		 </td>
+		</tr>";
+		echo "</table>";	
 	}
 	else {
 		echo "<div class='nf'>".$lang_label["no_server"]."</div>";

@@ -1,3 +1,23 @@
+2007-06-16  Raul Mateos  <raulofpandora@gmail.com>
+	
+	* godmode/menu.php: Updated component groups highlight.
+	
+	* operation/snmpconsole/*.php, general/logon_ok.php,
+	godmode/db/db_info_data.php, godmode/servers/manage_recontask.php,
+	godmode/servers/modificar_server.php, operation/agentes/exportdata.php:
+	Removed old raya style and changed to new style. 
+	Closed hundreds of unclosed html tags (review W3C standards)
+	
+	* operation/servers/view_server.php, godmode/reporting/graph_builder.php:
+	Closed html tags.
+	
+	* include/styles/pandora.css: Deleted definetely raya style.
+	
+	* include/styles/tip.css: Updated tip2 style to datos2 colour.
+	
+	* godmode/alerts/configure_alert.php, godmode/modules/manage*form.php:
+	Changed databox style to databox_color
+
 2007-06-13  Raul Mateos  <raulofpandora@gmail.com>
 
 	* godmode/menu.php, operation/menu.php, include/pandora.css, include/op.css,

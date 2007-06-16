@@ -63,7 +63,7 @@ if (comprueba_login() == 0){
 		echo '<ul class="mn"><li><a href="index.php?sec=gmodules&sec2=godmode/modules/module_list" class="mn">'.$lang_label["manage_modules"].'</a></li></ul></div>';
 
 		if (isset($_GET["sec"]) && $_GET["sec"] == "gmodules"){
-			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/modules/manage_nc_groups")
+			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/modules/manage_nc_groups" || $_GET["sec2"] == "godmode/modules/manage_nc_groups_form")
 				echo "<div class='arrowgs'>";
 			else
 				echo "<div class='arrowg'>";

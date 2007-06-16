@@ -104,7 +104,7 @@ if (isset($_GET["update"])){ // Update profile
 
 echo "<h2>".$lang_label["module_management"]." &gt; ";
 echo $lang_label["network_profile_management"]."</h2>";
-echo "<table width='550' cellpadding='4' cellspacing='4' class='databox'>";
+echo "<table width='550' cellpadding='4' cellspacing='4' class='databox_color'>";
 
 if ($id_np == -1)
 	echo '<form name="new_user" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&create=1">';

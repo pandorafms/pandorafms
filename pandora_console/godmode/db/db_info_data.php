@@ -34,8 +34,9 @@ if (comprueba_login() == 0)
 		
 	echo "<h2>".$lang_label["dbmain_title"]." &gt; ";
 	echo  $lang_label["db_stat_agent"]."</h2>";
-	echo "<table cellspacing='3' cellpadding='3'>";
-	echo "<tr><th>".$lang_label["agent_name"]."</th>";
+	echo "<table cellspacing='4' cellpadding='4' class='databox'>";
+	echo "<tr>
+	<th>".$lang_label["agent_name"]."</th>";
 	echo "<th>".$lang_label["assigned_module"]."</th>";
 	echo "<th>".$lang_label["total_data"]."</th>";
 	$color=0;
@@ -60,13 +61,15 @@ if (comprueba_login() == 0)
 			$tdcolor = "datos2";
 			$color = 1;
 		}
-		echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=gagente&sec2=operation/agentes/ver_agente&id_agente=".$row2["id_agente"]."'>".dame_nombre_agente($row2[0])."</a></b>";
-		echo "<td class='$tdcolor'>".$row3c[0];
-		echo "<td class='$tdcolor'>".$total_agente;
+		echo "<tr>
+		<td class='$tdcolor'>
+		<b><a href='index.php?sec=gagente&sec2=operation/agentes/ver_agente&id_agente=".$row2["id_agente"]."'>".dame_nombre_agente($row2[0])."</a></b></td>";
+		echo "<td class='$tdcolor'>".$row3c[0]."</td>";
+		echo "<td class='$tdcolor'>".$total_agente."</td></tr>";
 		flush();
    		//ob_flush();
 	}
-	echo "<tr><td colspan='3'><div class='raya'></div></td></tr></table>";
+	echo "</table>";
 }
 else {
 		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Database Management Info data");

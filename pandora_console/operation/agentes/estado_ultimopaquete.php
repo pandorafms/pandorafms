@@ -90,7 +90,8 @@ if (comprueba_login() == 0) {
 				// Render module group names  (fixed code)
 				$nombre_grupomodulo = dame_nombre_grupomodulo ($row3["id_module_group"]);
 				$last_modulegroup = $row3["id_module_group"];
-				echo "<tr><td class='datos3' align='center' colspan=9><b>".$nombre_grupomodulo."</b>";
+				echo "<tr><td class='datos3' align='center' colspan='9'>
+				<b>".$nombre_grupomodulo."</b></td></tr>";
 			}
 			
 			// Begin to render data ...
@@ -122,23 +123,24 @@ if (comprueba_login() == 0) {
 						<img src='images/refresh.gif' border=0></a>";
 					}
 				} 				
-			} 
+			}
+			echo "</td>";
 			$nombre_grupomodulo = dame_nombre_grupomodulo ($row3["id_module_group"]);
 			if ($nombre_grupomodulo != ""){
 				if (($label_group == 0) || ($last_label != $nombre_grupomodulo)){	// Show label module group
 					$label_group = -1;
 					$last_label = $nombre_grupomodulo;
 					$texto = $texto. "
-					<td class='$tdcolor' align='center' colspan=7>
-					<b>".$nombre_grupomodulo."</b>";
+					<td class='$tdcolor' align='center' colspan='7'>
+					<b>".$nombre_grupomodulo."</b></td>";
 				}
 			}
 			$nombre_tipo_modulo = dame_nombre_tipo_modulo($row3["id_tipo_modulo"]);
 			echo "<td class='".$tdcolor."_id' title='".salida_limpia($row3["nombre"])."'>";
 			echo salida_limpia(substr($row3["nombre"],0,15));
-			echo "<td class='".$tdcolor."'>";
+			echo "</td><td class='".$tdcolor."'>";
 			echo "<img src='images/".show_icon_type($row3["id_tipo_modulo"])."' border=0>";
-			echo "<td class='".$tdcolor."'>";
+			echo "</td><td class='".$tdcolor."'>";
 			if ($row3["module_interval"] != 0){
 				echo $row3["module_interval"];
 				$real_interval = $row3["module_interval"];
@@ -147,11 +149,12 @@ if (comprueba_login() == 0) {
 				$real_interval = $intervalo_agente;
 			}
 			//echo $nombre_tipo_modulo;
-			echo "<td class='".$tdcolor."f9' title='".salida_limpia($row3["descripcion"])."'>"; 
+			echo "</td><td class='".$tdcolor."f9' title='".salida_limpia($row3["descripcion"])."'>"; 
 			echo salida_limpia(substr($row3["descripcion"],0,32));
 			if (strlen($row3["descripcion"]) > 32){
 				echo "...";
 			}
+			echo "</td>";
 			// For types not string type (3 data_string, 9 tcp_string, 14 snmp_string)
 			if (($row3["id_tipo_modulo"] != 3) 
 			AND ($row3["id_tipo_modulo"] != 10) 

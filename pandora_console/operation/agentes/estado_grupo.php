@@ -194,16 +194,16 @@
 						<span>
 						<table cellspacing='2' cellpadding='0'
 						style='margin-left:2px;'>
-							<tr><td colspan='2' width='91' class='lb'>".
-							$lang_label["agents"].": </td></tr>
+							<tr><th colspan='2' width='91'>".
+							$lang_label["agents"].": </th></tr>
 							<tr><td colspan='2' class='datos' align='center'><b>".
 							$grupo[$real_count]["agent"]."</b></td></tr>
 						</table>
 						<table cellspacing='2' cellpadding='0'
 						style='margin-left:2px'>
 							<tr>
-							<td colspan='2' width='90' class='lb'>".
-							ucfirst($lang_label["monitors"]).":</td>
+							<th colspan='2' width='90'>".
+							ucfirst($lang_label["monitors"]).":</th>
 							</tr>
 							<tr>
 							<td class='datos'>
@@ -260,7 +260,6 @@
 	} else {
 		echo "<div class='nf'>".$lang_label["no_agent_def"]."</div>";
 	}
-
 
 
 ?>

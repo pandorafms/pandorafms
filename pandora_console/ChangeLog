@@ -1,5 +1,7 @@
 2007-06-17 Sancho Lerena  <slerena@artica.es>
 
+	* reporting/fgraph.php: Fixed ODOmeter problem with neg. values
+
 	* include/languages/language_en.php: Just a few words added.
 	
 	* pandoradb.sql: Added disable field for alerts.

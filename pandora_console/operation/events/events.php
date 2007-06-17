@@ -318,12 +318,12 @@ if ($total_events > 0){
 		}
 		$offset_counter++;
 	}
-		
-	echo "<tr><td colspan='8' align='right'>";
+	echo "</table>";
+	echo "<table width='750'><tr><td align='right'>";
 	
-	echo "<input class='sub' type='submit' name='updatebt' value='".$lang_label["validate"]."'> ";
+	echo "<input class='sub ok' type='submit' name='updatebt' value='".$lang_label["validate"]."'> ";
 	if (give_acl($id_user, 0,"IM") ==1){
-		echo "<input class='sub' type='submit' name='deletebt' value='".$lang_label["delete"]."'>";
+		echo "<input class='sub delete' type='submit' name='deletebt' value='".$lang_label["delete"]."'>";
 	}
 	echo "</form></table>";
 } // no events to show

@@ -1,3 +1,19 @@
+2007-06-17  Raul Mateos  <raulofpandora@gmail.com>
+	
+	* include/languages/language_en.php: Updated text.
+	
+	* include/styles/pandora.css: Removed lb style not uses. Added ok style.
+	
+	* operation/agentes/estado_grupo.php: Changed old td.lb style to th.
+	
+	* operation/agentes/status_full.php: Deleted old file.
+	
+	* operation/events/events.php: Use ok style. Closed table.
+	
+	* operation/agentes/estado_ultimopaquete.php,
+	godmode/agentes/configurar_agente.php, godmode/agentes/module_manager.php:
+	Closed html tags.
+
 2007-06-17 Sancho Lerena  <slerena@artica.es>
 
 	* reporting/fgraph.php: Fixed ODOmeter problem with neg. values
@@ -1107,11 +1123,8 @@
 
 2007-02-27  Sancho Lerena  <slerena@openideas.info>
 
-	* include/styles/god.css: Moved style block.
-	
-	* include/styles/link.css: Moved style block.
-	
-	* include/styles/op.css: Moved style block.
+	* include/styles/god.css, include/styles/link.css, include/styles/op.css:
+	Moved style block.
 	
 	* include/styles/pandora.css: Added some clases for new
 	appearance. Needs to be improved, not finished yet !.
@@ -1203,7 +1216,7 @@
 
 2007-02-20  Sancho Lerena  <slerena@artica.es>
 
-        * pandoradb.sql: Upgraded SQL. Improved lenght for some fields.
+	* pandoradb.sql: Upgraded SQL. Improved lenght for some fields.
 	
 	* index.php: Better permission checks
 	
@@ -1296,17 +1309,9 @@
 	syntax, and pagination works fine. Several issues fixed, and added
 	function to report incident from here.
 	
-	* images/ok.gif, cancel.gif: Changed icon.
-
-	* images/control_start_blue.png: Added.
-
-	* images/page_lightning.png: Added.
-	
-	* images/control_rewind_blue.png: Added.
-	
-	* images/control_end_blue.png: Added.
-	
-	* images/control_fastforward_blue.png: Added.
+	* images/ok.gif, cancel.gif, control_start_blue.png, page_lightning.png,
+	control_rewind_blue.png, control_end_blue.png, control_fastforward_blue.png:
+	Added.
 
 2007-02-02 Manuel Arostegui <marostegui@artica.es>
 
@@ -1661,11 +1666,10 @@
 
 2006-11-05 Sancho Lerena  <slerena@artica.es>
 
-        * images/outlimits.png: Static image for progress bar out of
-	limits.
+	* images/outlimits.png: Static image for progress bar out of limits.
 
-        * reporting/fgraph.php: Progress bar now show static image if there is
-          out of limits before calculating (faster).
+	* reporting/fgraph.php: Progress bar now show static image if there is
+	 out of limits before calculating (faster).
 
 2006-10-31 Raul Mateos  <raulofpandora@gmail.com>
 
@@ -1675,7 +1679,7 @@
 2006-10-21 Sancho Lerena <slerena@artica.es>
 
 	* include/functions.php: Change function no_permission () to show 
-	  noaccess.gif image correctly, due a path problem.
+	noaccess.gif image correctly, due a path problem.
 
 	* general/noaccess.php: Change code to show noaccess.gif correctly.
 
@@ -1687,18 +1691,14 @@
 	* operation/agentes/estado_alertas.php, estado_agente.php
 	, status_monitor.php: Changed select size.
 	
-	* operation/incidents/incident_search.php: Changed select size.
-	
-	* operation/messages/message.php: Changed select size.
-	
-	* godmode/usuarios/configurar_usuarios.php: Changed select size.
-	
-	* godmode/setup/setup.php: Changed select size.
+	* operation/incidents/incident_search.php, operation/messages/message.php, 
+	godmode/usuarios/configurar_usuarios.php, godmode/setup/setup.php:
+	Changed select size.
 
 2006-10-08 Sancho Lerena <slerena@artica.es>
 
 	* incident_detail.php: Fixed DOS newlines to UNIX newlines. Fixed
-	  help code. Fixed Background color for field "Source".
+	help code. Fixed Background color for field "Source".
  
 2006-10-04 Raul Mateos  <raulofpandora@gmail.com>
 
@@ -1711,17 +1711,17 @@
 2006-09-28  Sancho Lerena  <slerena@artica.es>
 
 	* languages/language_es_es.php: Fixed message "out of limits"
-          without tildes in spanish for jpgraph output.
+	without tildes in spanish for jpgraph output.
 
 	* pandoradb_1.1_to_1.2.sql: Fixed small issues: mod_data_inc was
-	  as mod_inc.gif in modify SQL sentence. Spanish language is
-	  _es_es not _es. Setup by default english language after
-	  migration. Added network agent as OS. Changed Build versions in
-	  DB Scheme and versions (1.1 in old one !!!).
+	as mod_inc.gif in modify SQL sentence. Spanish language is
+	_es_es not _es. Setup by default english language after
+	migration. Added network agent as OS. Changed Build versions in
+	DB Scheme and versions (1.1 in old one !!!).
 
 	* pandora_console/pandoradb_data.sql: Fixed version number and
-	  build.
-	  
+	build.
+
 2006-09-23 Raul Mateos  <raulofpandora@gmail.com>
 
 	* godmode/agentes/configurar_agente.php: Comment DEBUG code added
@@ -1746,7 +1746,7 @@
 2006-09-10 Raul Mateos  <raulofpandora@gmail.com>
 
 	* Massive upload several files, to reflect changes in help,
-		only text, no code changed
+	only text, no code changed
 	
 	* pandoradb.sql: change value of ultimo_contacto row in 
 	tagente table to 0000-00-00 00:00:00, to solve a small issue
@@ -1758,8 +1758,7 @@
 
 2006-09-04 Raul Mateos  <raulofpandora@gmail.com>
 
-	* help/es/image001.gif: Replaced old image
-	* help/en/image001.gif: Repladed old image
+	* help/es/image001.gif, help/en/image001.gif: Repladed old image
 
 2006-08-30 Sancho Lerena  <slerena@artica.es>
 
@@ -1771,24 +1770,18 @@
 	
 2006-07-20  Raul Mateos  <raulofpandora@gmail.com>
 
-	* language_fr.php. Update text.
-
-	* language_ca.php. Update text.
+	* language_fr.php, language_ca.php, language_pt_br.php, language_ast_es.php,
+	language_it.php: Update text.
 	
-	* language_pt_br.php. Update text.
-	
-	* language_ast_es.php. Update text.
-
-	* language_it.php. Update text.
-	
-	* snmp_alert.php. Add text when alert not created /updated / deleted. Add
+	* snmp_alert.php: Add text when alert not created /updated / deleted. Add
 	different colors between
 	rows (cosmetic changes).
 	
 
 2006-07-18  Raul Mateos  <raulofpandora@gmail.com>
 
-	* Some headers changed to show the "official" GPL Header info. No new features or solved bugs
+	* Some headers changed to show the "official" GPL Header info. 
+	No new features or solved bugs
 
 
 2006-07-17  Raul Mateos  <raulofpandora@gmail.com>
@@ -1799,7 +1792,8 @@
 
 	* Some headers changed to show the "official" GPL Header info
 	
-	* modificar_server.php. Add different colors between rows (cosmetic changes). Add line before the submit button. Add help.
+	* modificar_server.php. Add different colors between rows (cosmetic changes).
+	Add line before the submit button. Add help.
 
 	* configurar_agente.php. Solved small bug that only show the last alert when creating alert in an agent, but the alert was created into database.
 
@@ -1814,7 +1808,9 @@
 
 2006-07-12  Raul Mateos  <raulofpandora@gmail.com>
 
-	* datos_agente.php. Add new text about authors. Add a line between table and button. Add different colors between rows (cosmetic changes). Add Help.
+	* datos_agente.php. Add new text about authors.
+	Add a line between table and button. 
+	Add different colors between rows (cosmetic changes). Add Help.
 	
 	* user.php. Add new text about authors. Clean code.
 	
@@ -1822,7 +1818,8 @@
 
 	* pandora.css. Add new text about authors.
 	
-	* changed name from pandora_info_es.html to pandora_info_es_es.html and pandora_info_bb.html to pandora_info_ast_es.html
+	* changed name from pandora_info_es.html to pandora_info_es_es.html and 
+	pandora_info_bb.html to pandora_info_ast_es.html
 
 	* pandora_info_it.html. New file, GPL license in italian
 
@@ -1836,7 +1833,9 @@
 
 	* Moved FreeSans.ttf to the reporting directory
 	
-	* Modified config.php. Now only shows the font, $config_fontpath var is set without the path (it should look for the font in the reporting directory)
+	* Modified config.php. Now only shows the font, 
+	$config_fontpath var is set without the path 
+	(it should look for the font in the reporting directory)
 
 2006-07-11  Sancho Lerena  <slerena@gmail.com>
 
@@ -1854,19 +1853,13 @@
 
 	* user_edit.php: Add new text about authors. Add a line between table and button. Add different colors between rows (cosmetic changes).
 	
-	* menu.php: Add new text about authors. Add code to highlight "edit my user" when editing the user authenticated.
-
-	* index.php: Add new text about authors.
+	* menu.php: Add new text about authors. 
+	Add code to highlight "edit my user" when editing the user authenticated.
 	
 	* functions.php: Add new text about authors. Change PATH to noaccess.php file.
-	
-	* noaccess.php: Add new text about authors.
-	
-	* login_failed.php: Add new text about authors.
-	
-	* logoff.php: Add new text about authors.
-	
-	* config.php: Add new text about authors.
+
+	* index.php, noaccess.php, login_failed.php, logoff.php, config.php:
+	Add new text about authors.
 	
 	* configurar_usuarios.php: Add new text about authors. Clean code. Solve small bug that avoid creating a new user. Add a line between table and button. Add different colors between rows (cosmetic changes).
 	
@@ -1886,14 +1879,11 @@
 	
 	* setup.php: Add new text about authors and add a line between table and button (cosmetic change).
 	
-	* estado_grupo.php: Add new text about authors. Add new help icon; At this moment help for this item isn't available.
-	
-	* view_server.php: Add new text about authors. Add new help icon; At this moment help for this item isn't available.
+	* estado_grupo.php, view_server.php, snmp_view.php: Add new text about authors. 
+	Add new help icon.  At this moment help for this item isn't available.
 	
 	* snmp_alert.php: Add new text about authors. Add new help icon; At this moment help for this item isn't available. Cosmetic change, adding class 'suc' when creating alert is successful.
-	
-	* snmp_view.php: Add new text about authors. Add new help icon; At this moment help for this item isn't available.
-	
+
 	* tip.css: Change class padding to not showing error in Firefox Javascript Console.
 	
 	* message.php: Add new text about authors. Add new help icon; At this moment help for this item isn't available. Add a line between table and button (cosmetic change).
@@ -1901,7 +1891,6 @@
 	* incident_detail.php: Add new text about authors. Add a line between table and button. Add different colors between rows. Change button position (cosmetic changes).
 	
 	* incident_note.php: Add new text about authors. Add a line between table and button. Add different colors between rows (cosmetic changes).
-	
 
 	
 2006-07-09  Sancho Lerena  <slerena@artica.es>

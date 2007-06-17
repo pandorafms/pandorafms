@@ -278,17 +278,16 @@ input.copy {
 	padding-right: 21px;
 	background: #e5e5e5 url(../../images/copy.png) no-repeat right 3px;
 }
+input.ok {
+	padding-right: 21px;
+	background: #e5e5e5 url(../../images/ok.png) no-repeat right 3px;
+}
 table, img {
 	border: 0px;
 }
-th, td.lb, td.lb_view {
+th {
 	color: #fff;
 	background-color: #786;
-}
-td.lb, td.lb_view {
-	height: 16px;
-	padding-left: 3px;
-	font-weight: bold;
 }
 td.datos, td.datost, td.datosb , td.datos_id, td.datosf9 {
 	background-color: #f9f9f9;
@@ -361,7 +360,6 @@ td.datos_jus, td.datos2_jus {
 	border-bottom: 1px solid #708090;
 	width: 100%;
 }
-
 .green  {
 	color: #5a8629;
 }

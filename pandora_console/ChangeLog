@@ -1,3 +1,18 @@
+2007-06-17 Sancho Lerena  <slerena@artica.es>
+
+	* include/languages/language_en.php: Just a few words added.
+	
+	* pandoradb.sql: Added disable field for alerts.
+	
+	* operation/agentes/estado_alertas.php: Show disabled alerts.
+	
+	* godmode/agentes/configurar_agente.php,
+	godmode/agentes/alert_manager.php: Allow to disable individual
+	alerts.
+
+	* godmode/reporting/map_builder.php: First version of map
+	builder. It doesnt work yet, but has some features implemented.	
+
 2007-06-16  Raul Mateos  <raulofpandora@gmail.com>
 	
 	* godmode/menu.php: Updated component groups highlight.
@@ -20,11 +35,13 @@
 
 2007-06-13  Raul Mateos  <raulofpandora@gmail.com>
 
-	* godmode/menu.php, operation/menu.php, include/pandora.css, include/op.css,
-	include/god.css: Updated with styles to avoid top and bottom border.
+	* godmode/menu.php, operation/menu.php, include/pandora.css,
+	include/op.css, include/god.css: Updated with styles to avoid top
+	and bottom border.
 	
-	* godmode/groups/group_list.php, godmode/users/*.php, operation/users/*.php,
-	godmode/servers/*.php, operation/snmpconsole/snmp_alert.php, 
+	* godmode/groups/group_list.php, godmode/users/*.php,
+	operation/users/*.php, godmode/servers/*.php,
+	operation/snmpconsole/snmp_alert.php,
 	godmode/reporting/map_builder.php, operation/messages/message.php:
 	Removed old raya style and changed to new style.
 	

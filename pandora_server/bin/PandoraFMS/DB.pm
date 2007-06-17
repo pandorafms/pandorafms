@@ -78,7 +78,7 @@ our @EXPORT = qw( 	crea_agente_modulo
 
 sub pandora_calcula_alerta (%$$$$$$) {
 	my $pa_config = $_[0];
-    	my $timestamp = $_[1];
+    my $timestamp = $_[1];
 	my $nombre_agente = $_[2];
 	my $tipo_modulo = $_[3];
 	my $nombre_modulo = $_[4];
@@ -106,7 +106,7 @@ sub pandora_calcula_alerta (%$$$$$$) {
 	logger($pa_config, "DEBUG: calcula_alerta() Calculado id_agente_modulo a $id_agente_modulo", 6);
 
 	# If any alert from this combinatio of agent/module
-	my $query_idag1 = "SELECT * FROM talerta_agente_modulo WHERE id_agente_modulo = '$id_agente_modulo'";
+	my $query_idag1 = "SELECT * FROM talerta_agente_modulo WHERE id_agente_modulo = '$id_agente_modulo' AND disable = 0";
 	my $s_idag = $dbh->prepare($query_idag1);
 	$s_idag ->execute;
 	my @data;

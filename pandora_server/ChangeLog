@@ -1,3 +1,13 @@
+2007-06-17  Sancho Lerena  <slerena@artica.es>
+
+	* bin/pandora_server.pl: Now keepalive subprocess uses alert_check
+	function fon DB.pm
+	
+	* bin/PandoraFMS/Config.pm: Updated version number.
+	
+	* bin/PandoraFMS/DB.pm: alert_check function now support
+	individual alert disable.
+
 2007-06-07  Sancho Lerena  <slerena@artica.es>
 
 	Important update. Now all PM files (library) goes on PandoraFMS

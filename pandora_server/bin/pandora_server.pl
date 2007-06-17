@@ -167,115 +167,31 @@ sub keep_alive_check {
     # Search of any defined alert for any agent/module table entry
 	my $pa_config = $_[0];
 	my $dbh = $_[1];
-    	
-    my $query_idag = "SELECT * FROM talerta_agente_modulo";
+    
+	my $timestamp = &UnixDate ("today", "%Y-%m-%d %H:%M:%S");
+    my $query_idag = "SELECT tagente_modulo.id_agente_modulo, tagente_modulo.id_tipo_modulo, tagente_modulo.nombre, tagente_estado.datos FROM tagente_modulo, talerta_agente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo AND talerta_agente_modulo.disable = 0 AND tagente_modulo.id_tipo_modulo = -1 AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo";
     my $s_idag = $dbh->prepare($query_idag);
     $s_idag ->execute;
+
+	# data needed in loop (we'll reuse it)
     my @data;
-    my $err;
-    my $flag;
-	
+	my $nombre_agente;
+	my $id_agente_modulo;
+	my $tipo_modulo;
+	my $nombre_modulo;
+	my $datos;
+
 	if ($s_idag->rows != 0) {
-	while (@data = $s_idag->fetchrow_array()) {
-		threads->yield;
-		my $id_aam = $data[0];
-		my $id_alerta = $data[2];
-		my $id_agente_modulo = $data[1];
-		# Only checks keep_alive special modules (-1 on type)
-		if (dame_id_tipo_modulo($pa_config, $id_agente_modulo, $dbh) == -1) {
-			my $campo1 = $data[3];
-			my $campo2 = $data[4];
-			my $campo3 = $data[5];
-			my $dis_max = $data[7];
-			my $dis_min = $data[8];
-			my $threshold = $data[9];
-			my $last_fired = $data[10];
-			my $max_alerts = $data[11];
-			my $times_fired = $data[12];
-			my $alert_fired = 0;
-			my $fecha_ultima_alerta = ParseDate($last_fired);
-			my $ahora_mysql = &UnixDate("today","%Y-%m-%d %H:%M:%S");
-			my $timestamp = $ahora_mysql;
-			my $fecha_actual = ParseDate( $ahora_mysql );
-			# If we need to update MYSQL last_fired will use $ahora_mysql
-
-			# Calculate if INTERVAL x2 for this agent is bigger than sub last contact date with actual date
-			my $nombre_agente = dame_nombreagente_agentemodulo ($pa_config, $id_agente_modulo, $dbh);
-			my $id_agente = dame_agente_id ($pa_config, $nombre_agente, $dbh);
-			if (dame_desactivado ($pa_config, $id_agente, $dbh) == 0){
-				my $fecha_ultimocontacto = dame_ultimo_contacto ($pa_config,$id_agente,$dbh);
-				my $intervalo = dame_intervalo ($pa_config, $id_agente, $dbh); # Seconds
-				my $intervalo_2 = $intervalo * 2;
-				$fecha_ultimocontacto = ParseDate ($fecha_ultimocontacto);
-				my $fecha_limite = DateCalc ($fecha_ultimocontacto,"+ $intervalo_2 seconds", \$err);
-				$flag = Date_Cmp ($fecha_actual,$fecha_limite);
-				if ( $flag >= 0) {
-                    $alert_fired = 1;
-                } else {
-                    $alert_fired = 0;
-                }
-
-                # Calculate if max_alerts for this time is exhausted
-				if (( $flag >= 0 ) && ($max_alerts >= $times_fired)){ 
-					# Alert Trigger is ON !
-					# Check if alert is fired by event-success
-					my $time_threshold = $threshold; # from defined alert 
-					$fecha_limite = DateCalc($fecha_ultima_alerta,"+ $time_threshold seconds",\$err);
-					$flag = Date_Cmp($fecha_actual,$fecha_limite);
-					if ( $flag >= 0 ) {
-						# Alert Trigger is fired by time-threshold
-						# Get "command" string from Alert Definition in DB
-						my $comando = dame_comando_alerta($pa_config, $id_alerta, $dbh);
-						$times_fired = $times_fired + 1;
-						$query_idag = "update talerta_agente_modulo set times_fired = $times_fired, last_fired = '$ahora_mysql' where id_aam = $id_aam ";
-						my $s3_idag = $dbh->prepare($query_idag);
-						$s3_idag ->execute;
-						$s3_idag->finish();
-						my $nombre_agente = dame_nombreagente_agentemodulo($pa_config,$id_agente_modulo,$dbh);
-						logger($pa_config, "Alert (KeepAlive) TRIGGERED for $nombre_agente ! ",1);
-						my $id_grupo = dame_grupo_agente($pa_config,$id_agente,$dbh);
-						my $descripcion = "Agent down";
-						pandora_event($pa_config, $descripcion,$id_grupo,$id_agente,$dbh);
-						if ($id_alerta > 0){ # id_alerta 0 is reserved for internal audit system
-							$comando =~ s/_field1_/"$campo1"/gi;
-							$comando =~ s/_field2_/"$campo2"/gi;
-							$comando =~ s/_field3_/"$campo3"/gi;
-							$comando =~ s/_agent_/$nombre_agente/gi;
-							$comando =~ s/_timestamp_/$timestamp/gi;
-							$comando =~ s/\^M/\r\n/g; # Replace Carriage rerturn and line feed
-							# Clean up some "tricky" characters
-							$comando =~ s/&gt;/>/g;
-							# EXECUTING COMMAND !!!
-							eval {
-								my $exit_value = system ($comando);
-								$exit_value  = $? >> 8; # Shift 8 bits to get a "classic" errorlevel
-								if ($exit_value != 0) {
-									logger( $pa_config,"Executed command for triggered alert had errors (errorlevel =! 0) ",0);
-								}
-							};
-							if ($@){
-								logger($pa_config, "ERROR: Error executing alert command  ( $comando )",1);
-								logger($pa_config, "ERROR Code: $@",2);
-							}
-						} else { # id_alerta = 0, is a internal system audit
-								logger($pa_config, "Internal audit lauch for agent name $nombre_agente",2);
-								$campo1 =~ s/_timestamp_/$timestamp/g;
-								pandora_audit ($pa_config, $campo1, $nombre_agente, "User Alert",$dbh);
-						}
-					} # if $flag >=0 (for time-firing calculation)
-					} elsif (($alert_fired == 0) && ($times_fired != 0)){ # If alert doesnt fired and fired counter isnt zero, lets reset counter
-						$query_idag = "update talerta_agente_modulo set times_fired = 0 where id_aam = $id_aam ";
-						my $s3_idag = $dbh->prepare($query_idag);
-						$s3_idag ->execute;
-						$s3_idag ->finish();
-						my $id_grupo = dame_grupo_agente($pa_config, $id_agente, $dbh);
-						my $descripcion = "Agent up";
-						pandora_event($pa_config, $descripcion,$id_grupo,$id_agente, $dbh);
-					} # if $flag >= 0 (for time-threshold)
-				} # Disabled agent
-			} #if (dame_id_tipo_modulo($id_agente_modulo) == -1)
-		} # While
-	} # if ($s_idag->rows != 0) 
+		while (@data = $s_idag->fetchrow_array()) {
+			threads->yield;
+			$id_agente_modulo = $data[0];	
+			$nombre_agente = dame_nombreagente_agentemodulo ($pa_config, $id_agente_modulo, $dbh);
+			$nombre_modulo = $data[2];
+			$datos = $data[3];
+			$tipo_modulo = $data[1];
+			pandora_calcula_alerta ($pa_config, $timestamp, $nombre_agente, $tipo_modulo, $nombre_modulo, $datos, $dbh);
+		}
+	} 
 	$s_idag->finish();
 }
 

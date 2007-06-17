@@ -851,6 +851,24 @@ $lang_label["two_month"]="Two monts";
 $lang_label["six_months"]="Six months";
 $lang_label["min."]="Min.";
 $lang_label["max."]="Max.";
+$lang_label["alert_status"]="Alert status";
+$lang_label["background"]="Background";
+$lang_label["private"]="Private";
+$lang_label["width"]="Width";
+$lang_label["height"]="Height";
+$lang_label["static_graph"]="Static graph";
+$lang_label["line"]="Line";
+$lang_label["pos_x"]="Position X";
+$lang_label["pos_y"]="Position Y";
+$lang_label["image"]="Image";
+$lang_label["label"]="Label";
+$lang_label["parent_item"]="Parent item";
+$lang_label["map_linked"]="Map linked";
+$lang_label["link_color"]="Link color";
+$lang_label["label_color"]="Label color";
+$lang_label["white"]="White";
+$lang_label["black"]="Black";
+
 global $lang_label; 
 global $help_label;
 ?>

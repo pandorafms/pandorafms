@@ -46,7 +46,7 @@ if (isset($_GET["id_agente"])){
 		echo "<h2>".$lang_label["ag_title"]." &gt; ".$lang_label["alert_listing"]."<a href='help/".$help_code."/chap3.php#3324' target='_help' class='help'><span>".$lang_label["help"]."</span></a></h2>";
 	}
 	$id_agente = $_GET["id_agente"];
-	$query_gen='SELECT talerta_agente_modulo.alert_text, talerta_agente_modulo.id_alerta, talerta_agente_modulo.descripcion, talerta_agente_modulo.last_fired, talerta_agente_modulo.times_fired, tagente_modulo.nombre, talerta_agente_modulo.dis_max, talerta_agente_modulo.dis_min, talerta_agente_modulo.max_alerts, talerta_agente_modulo.time_threshold, talerta_agente_modulo.min_alerts, talerta_agente_modulo.id_agente_modulo, tagente_modulo.id_agente_modulo FROM tagente_modulo, talerta_agente_modulo WHERE tagente_modulo.id_agente = '.$id_agente.' AND tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo ORDER BY tagente_modulo.nombre';
+	$query_gen='SELECT talerta_agente_modulo.alert_text, talerta_agente_modulo.id_alerta, talerta_agente_modulo.descripcion, talerta_agente_modulo.last_fired, talerta_agente_modulo.times_fired, tagente_modulo.nombre, talerta_agente_modulo.dis_max, talerta_agente_modulo.dis_min, talerta_agente_modulo.max_alerts, talerta_agente_modulo.time_threshold, talerta_agente_modulo.min_alerts, talerta_agente_modulo.id_agente_modulo, tagente_modulo.id_agente_modulo FROM tagente_modulo, talerta_agente_modulo WHERE tagente_modulo.id_agente = '.$id_agente.' AND tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo AND talerta_agente_modulo.disable = 0 ORDER BY tagente_modulo.nombre';
 	$result_gen=mysql_query($query_gen);
 	if (mysql_num_rows ($result_gen)) {
 	
@@ -178,7 +178,8 @@ if (isset($_GET["id_agente"])){
 				tagente_modulo.id_agente_modulo
 				FROM tagente_modulo, talerta_agente_modulo
 				WHERE tagente_modulo.id_agente = '.$id_agente.'
-				AND tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo';
+				AND tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo
+				AND talerta_agente_modulo.disable = 0 ';
 				$result_gen=mysql_query($query_gen);
 				if (mysql_num_rows ($result_gen)) {
 					while ($data=mysql_fetch_array($result_gen)){

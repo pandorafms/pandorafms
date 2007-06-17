@@ -179,6 +179,7 @@ CREATE TABLE `talerta_agente_modulo` (
   `min_alerts` int(4) NOT NULL default '0',
   `internal_counter` int(4) default '0',
   `alert_text` varchar(255) default '',
+  `disable` int(4) default '0',
   PRIMARY KEY  (`id_aam`)
 ) ENGINE=InnoDB;
 

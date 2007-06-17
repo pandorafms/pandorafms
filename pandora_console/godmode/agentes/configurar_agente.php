@@ -65,7 +65,8 @@ $alerta_campo2 = "";
 $alerta_campo3 ="";
 $alerta_dis_max = "";
 $alerta_dis_min = "";
-$alerta_max_alerts = "";
+$alerta_min_alerts = "0";
+$alerta_max_alerts = "1";
 $alerta_time_threshold = "";
 $alerta_descripcion = "";
 $disabled="";
@@ -225,11 +226,12 @@ if (isset($_POST["insert_alert"])){ // if created alert
 	$max_alerts = entrada_limpia($_POST["max_alerts"]);
 	$min_alerts = entrada_limpia($_POST["min_alerts"]);
 	$other = entrada_limpia($_POST["other"]);
+	$disable_alert = entrada_limpia($_POST["disable_alert"]);
 	if ($time_threshold == -1) {
 		$time_threshold = $other;
 	}
 	$sql_insert="INSERT INTO talerta_agente_modulo
-			(id_agente_modulo,id_alerta,al_campo1,al_campo2,al_campo3,descripcion,dis_max,dis_min,time_threshold,max_alerts, min_alerts, alert_text) VALUES
+			(id_agente_modulo,id_alerta,al_campo1,al_campo2,al_campo3,descripcion,dis_max,dis_min,time_threshold,max_alerts, min_alerts, alert_text, disable) VALUES
 			 ('$id_agente_modulo',
 			 '$tipo_alerta',
 			 '$campo_1',
@@ -241,7 +243,8 @@ if (isset($_POST["insert_alert"])){ // if created alert
 			 '$time_threshold',
 			 '$max_alerts',
 			 '$min_alerts',
-			 '$alert_text')";
+			 '$alert_text',
+			 '$disable_alert')";
 	$result=mysql_query($sql_insert);	
 	if (! $result) {
 		echo "<h3 class='error'>".$lang_label["create_alert_no"]."</h3>";
@@ -270,6 +273,7 @@ if (isset($_POST["update_alert"])){ // Update an existing alert
 	$min_alerts = entrada_limpia($_POST["min_alerts"]);
 	$other = entrada_limpia($_POST["other"]);
 	$alert_text = entrada_limpia($_POST["alert_text"]);
+	$disable_alert = entrada_limpia($_POST["disable_alert"]);
 	if ($time_threshold == -1) {
 		$time_threshold = $other;
 	}
@@ -285,7 +289,8 @@ if (isset($_POST["update_alert"])){ // Update an existing alert
 		al_campo2 = '$campo_2' ,
 		al_campo1 = '$campo_1' ,
 		descripcion = '$descripcion',
-		alert_text = '$alert_text'
+		alert_text = '$alert_text',
+		disable = '$disable_alert'
 		WHERE id_aam = ".$id_aam;
 	$result=mysql_query($sql_insert);	
 	if (! $result) {
@@ -434,6 +439,8 @@ if (isset($_GET["update_alert"])){
 		$alerta_min_alerts = $row["min_alerts"];
 		$alerta_time_threshold = $row["time_threshold"];
 		$alerta_descripcion = $row["descripcion"];
+		$alerta_disable = $row["disable"];
+		$alerta_id_agentemodulo = $row["id_agente_modulo"]; // Only to show, cannot be changed
 	}
 
 }

@@ -47,9 +47,9 @@ if (isset($_GET["delete"])){
 	$id_content = $_GET["delete"];
 	$sql = "DELETE FROM tlayout_data WHERE id = $id_content";
 	if ($res=mysql_query($sql))
-		$result = "<h2 class=suc>".$lang_label["delete_ok"]."</h2>";
+		$result = "<h3 class=suc>".$lang_label["delete_ok"]."</h3>";
 	else
-		$result = "<h2 class=error>".$lang_label["delete_no"]."</h2>";
+		$result = "<h3 class=error>".$lang_label["delete_no"]."</h3>";
 	echo $result;
 }
 
@@ -61,14 +61,14 @@ if (isset($_GET["delete_report"])){
 	$res=mysql_query($sql);
 	$res2=mysql_query($sql2);
 	if ($res AND $res2)
-		$result = "<h2 class=suc>".$lang_label["delete_ok"]."</h2>";
+		$result = "<h3 class=suc>".$lang_label["delete_ok"]."</h3>";
 	else
-		$result = "<h2 class=error>".$lang_label["delete_no"]."</h2>";
+		$result = "<h3 class=error>".$lang_label["delete_no"]."</h3>";
 	echo $result;
 }
 
 // Create new report. First step
-if (isset($_GET["create_report"])){
+if (isset($_GET["create_graph"])){
 	$createmode = 2;
 }
 
@@ -92,9 +92,9 @@ if (isset($_GET["add_module"])){
 	
 	$sql = "INSERT INTO tlayout_data (id_layout, id_gs, id_agent_module, type, sla_max, sla_min, sla_limit, period) VALUES ('$id_report', '$my_cg', '$my_id_module', '$my_type', '$my_slamax', '$my_slamin', '$my_slalimit', '$my_period')";
 	if ($res=mysql_query($sql))
-		$result = "<h2 class=suc>".$lang_label["create_ok"]."</h2>";
+		$result = "<h3 class=suc>".$lang_label["create_ok"]."</h3>";
 	else
-		$result = "<h2 class=error>".$lang_label["create_no"]."</h2>";
+		$result = "<h3 class=error>".$lang_label["create_no"]."</h3>";
 	echo $result;
 }
 
@@ -112,18 +112,18 @@ if (isset($_POST["createmode"])){
 		$form_id_user = $id_user;
 		$sql = "INSERT INTO tlayout (name, background, width, height) VALUES ('$map_name', '$map_background', '$map_width', '$map_height')";
 		if ($res=mysql_query($sql))
-			$result = "<h1 class=suc>".$lang_label["create_ok"]."</h1>";
+			$result = "<h3 class=suc>".$lang_label["create_ok"]."</h3>";
 		else
-			$result = "<h1 class=error>".$lang_label["create_no"]."</h1>";
+			$result = "<h3 class=error>".$lang_label["create_no"]."</h3>";
 		$id_map = mysql_insert_id();
 	// UPDATE REPORT DATA
 	} else {
 		$id_map = entrada_limpia($_POST["id_map"]);
 		$sql = "UPDATE tlayout SET name = '$map_name', height= '$map_height', width = '$map_width', background = '$map_background' WHERE id = $id_map";
 		if ($res=mysql_query($sql))
-			$result = "<h2 class=suc>".$lang_label["modify_ok"]."</h2>";
+			$result = "<h3 class=suc>".$lang_label["modify_ok"]."</h3>";
 		else
-			$result = "<h2 class=error>".$lang_label["modify_no"]."</h2>";
+			$result = "<h3 class=error>".$lang_label["modify_no"]."</h3>";
 	}
 	echo $result;
 	if ($id_map != ""){

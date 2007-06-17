@@ -1759,6 +1759,12 @@ function odo_tactic ($value1, $value2, $value3){
 
 	$Legend->setPlotarea($Plotarea);
 	$Legend->setAlignment(IMAGE_GRAPH_ALIGN_HORIZONTAL);
+	if ($value1 <0)
+		$value1=0;
+	if ($value2 <0)
+                $value2=0;
+	if ($value3 <0)
+                $value3=0;
 	/***************************Arrows************************/
 	$Arrows = & Image_Graph::factory('dataset');
 	$Arrows->addPoint('Global Health', $value1, 'GLOBAL');

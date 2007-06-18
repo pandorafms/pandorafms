@@ -103,11 +103,15 @@ ln -s /usr/share/pandora_server/conf/pandora_server.conf /etc/pandora/pandora_se
 mkdir -p /usr/share/pandora_server/
 mkdir -p /usr/share/pandora_server/log/
 rm -fr /usr/share/pandora_server-1.3-1
-echo "Pandora Server binarys has been placed under /usr/bin/"
-echo "Pandora Server configuration is /etc/pandora/"
+echo "Pandora Server configuration is /etc/pandora/pandora_server.conf"
 echo "Pandora Server data has been placed under /var/spool/pandora/data_in/"
-echo "Pandora Server logs has benn placed under /var/log/pandora"
-echo "For further information please: man pandora or man pandora_server"
+echo "Pandora Server logs has benn placed under /var/log/"
+echo "Pandora Server main directory is /usr/share/pandora_server/"
+echo "To start Pandora Server: /etc/init.d/pandora_server start"
+echo "To start Pandora Network Server: /etc/init.d/pandora_network start"
+echo "To start Pandora Recon Server: /etc/init.d/pandora_recon start"
+echo "The manual can be reached at: man pandora or man pandora_server"
+echo "Pandora Documentation is in: http://pandora.sourceforge.net/en/index.php?sec=docs"
 %files
 %defattr(700,pandora,pandora)
 /usr/bin/pandora_server

@@ -1,3 +1,7 @@
+2007-06-18  Manuel Arostegui <marostegui@artica.es>
+
+	* specs/fedoracore5/pandora_server.spec: Ready for the 1.3 packaging.
+
 2007-06-17  Sancho Lerena  <slerena@artica.es>
 
 	* bin/pandora_server.pl: Now keepalive subprocess uses alert_check

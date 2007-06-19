@@ -131,111 +131,123 @@ sub pandora_calcula_alerta (%$$$$$$) {
 			my $min_alerts = $data[14];
 			my $internal_counter = $data[15];
 			my $alert_text = $data[16];
-			my $comando ="";
-			logger($pa_config, "Found an alert defined for $nombre_modulo, its ID $id_alerta",4);
-			# Here we process alert if conditions are ok
-			# Get data for defined alert given as $id_alerta
-			my $query_idag2 = "select * from talerta where id_alerta = '$id_alerta'";
-			my $s2_idag = $dbh->prepare($query_idag2);
-			$s2_idag ->execute;
-			my @data2;
-			if ($s2_idag->rows != 0) {
-				while (@data2 = $s2_idag->fetchrow_array()) {
-					$comando = $data2[2];
-					$alert_name = $data2[1];
+			my $alert_disable = $data[17];
+			my $alert_timefrom = $data[18];
+			my $alert_timeto = $data[19];
+			my $ahora_hour = &UnixDate("today","%H");
+			my $ahora_min = &UnixDate("today","%M");
+
+			# time check !
+			if (((($ahora_hour * 60)+$ahora_min) >= ($alert_timefrom * 30)) &&
+				((($ahora_hour * 60)+$ahora_min) <= ($alert_timeto * 30)) ) {
+				my $comando ="";
+				logger($pa_config, "Found an alert defined for $nombre_modulo, its ID $id_alerta",4);
+				# Here we process alert if conditions are ok
+				# Get data for defined alert given as $id_alerta
+				my $query_idag2 = "select * from talerta where id_alerta = '$id_alerta'";
+				my $s2_idag = $dbh->prepare($query_idag2);
+				$s2_idag ->execute;
+				my @data2;
+				if ($s2_idag->rows != 0) {
+					while (@data2 = $s2_idag->fetchrow_array()) {
+						$comando = $data2[2];
+						$alert_name = $data2[1];
+					}
 				}
-			}
-			$s2_idag->finish();
-              		# Get MAX and MIN value for this Alert. Only generate alerts if value is ABOVE MIN and BELOW MAX.
-			my @data_max; 
-                	my $query_idag_max = "select * from tagente_modulo where id_agente_modulo = ".$id_agente_modulo;
-                	my $s_idag_max = $dbh->prepare($query_idag_max);
-               	 	$s_idag_max ->execute;
-                	if ($s_idag_max->rows == 0) {
-                        	logger($pa_config, "ERROR Cannot find agenteModulo $id_agente_modulo",3);
-                        	logger($pa_config, "ERROR: SQL Query is $query_idag_max ",10);
-                	} else  {    @data = $s_idag_max->fetchrow_array(); }
-                	$max = $data_max[5];
-                	$min = $data_max[6];
-                	$s_idag_max->finish();
-			# Init values for alerts
-			my $alert_prefired = 0;
-			my $alert_fired = 0;
-			my $update_counter =0;
-			my $should_check_alert = 0;
-			my $id_tipo_modulo = dame_id_tipo_modulo ($pa_config, $id_agente_modulo, $dbh);
-			if (($id_tipo_modulo == 3) || ($id_tipo_modulo == 10) || ($id_tipo_modulo == 17)){
-				if ( $datos =~ m/$alert_text/i ){
+				$s2_idag->finish();
+						# Get MAX and MIN value for this Alert. Only generate alerts if value is ABOVE MIN and BELOW MAX.
+				my @data_max; 
+				my $query_idag_max = "select * from tagente_modulo where id_agente_modulo = ".$id_agente_modulo;
+				my $s_idag_max = $dbh->prepare($query_idag_max);
+				$s_idag_max ->execute;
+				if ($s_idag_max->rows == 0) {
+					logger($pa_config, "ERROR Cannot find agenteModulo $id_agente_modulo",3);
+					logger($pa_config, "ERROR: SQL Query is $query_idag_max ",10);
+				} else  {
+					@data = $s_idag_max->fetchrow_array();
+				}
+				$max = $data_max[5];
+				$min = $data_max[6];
+				$s_idag_max->finish();
+				# Init values for alerts
+				my $alert_prefired = 0;
+				my $alert_fired = 0;
+				my $update_counter =0;
+				my $should_check_alert = 0;
+				my $id_tipo_modulo = dame_id_tipo_modulo ($pa_config, $id_agente_modulo, $dbh);
+				if (($id_tipo_modulo == 3) || ($id_tipo_modulo == 10) || ($id_tipo_modulo == 17)){
+					if ( $datos =~ m/$alert_text/i ){
+						$should_check_alert = 1;
+					}
+				} elsif (($datos > $dis_max) || ($datos < $dis_min)) {
 					$should_check_alert = 1;
 				}
-			} elsif (($datos > $dis_max) || ($datos < $dis_min)) {
-				$should_check_alert = 1;
-			}
-			if ($should_check_alert == 1){
-				# Check timegap
-				my $fecha_ultima_alerta = ParseDate($last_fired);
-				my $fecha_actual = ParseDate( $timestamp );
-				my $ahora_mysql = &UnixDate("today","%Y-%m-%d %H:%M:%S");  # If we need to update MYSQL ast_fired will use $ahora_mysql
-				my $time_threshold = $threshold;
-				my $err; my $flag;
-				my $fecha_limite = DateCalc ($fecha_ultima_alerta, "+ $time_threshold seconds", \$err);
-				$flag = Date_Cmp ($fecha_actual, $fecha_limite);
-				# Check timer threshold for this alert
-				if ( $flag >= 0 ) { # Out limits !, reset $times_fired, but do not write to
-						    # database until a real alarm was fired
-					if ($times_fired > 1){ 
-						$times_fired = 0;
-						$internal_counter=0;
+				if ($should_check_alert == 1){
+					# Check timegap
+					my $fecha_ultima_alerta = ParseDate($last_fired);
+					my $fecha_actual = ParseDate( $timestamp );
+					my $ahora_mysql = &UnixDate("today","%Y-%m-%d %H:%M:%S");  # If we need to update MYSQL ast_fired will use $ahora_mysql
+					my $time_threshold = $threshold;
+					my $err; my $flag;
+					my $fecha_limite = DateCalc ($fecha_ultima_alerta, "+ $time_threshold seconds", \$err);
+					$flag = Date_Cmp ($fecha_actual, $fecha_limite);
+					# Check timer threshold for this alert
+					if ( $flag >= 0 ) { # Out limits !, reset $times_fired, but do not write to
+								# database until a real alarm was fired
+						if ($times_fired > 1){ 
+							$times_fired = 0;
+							$internal_counter=0;
+						}
+						logger ($pa_config, "Alarm out of timethreshold limits, resetting counters", 10);
 					}
-					logger ($pa_config, "Alarm out of timethreshold limits, resetting counters", 10);
+					# We are between limits marked by time_threshold or running a new time-alarm-interval 
+					# Caution: MIN Limit is related to triggered (in time-threshold limit) alerts
+					# but MAX limit is related to executed alerts, not only triggered. Because an alarm to be
+					# executed could be triggered X (min value) times to be executed.
+					if (($internal_counter >= $min_alerts) && ($times_fired  <= $max_alerts)){
+						# The new alert is between last valid time + threshold and between max/min limit to alerts in this gap of time.
+						$times_fired++;
+						$internal_counter++;
+						my $query_idag = "UPDATE talerta_agente_modulo SET times_fired = $times_fired, last_fired = '$ahora_mysql', internal_counter = $internal_counter WHERE id_aam = $id_aam ";
+						$dbh->do($query_idag);
+						my $nombre_agente = dame_nombreagente_agentemodulo ($pa_config, $id_agente_modulo, $dbh);
+						# --------------------------------------
+						# Now call to execute_alert to real exec
+						execute_alert ($pa_config, $id_alerta, $campo1, $campo2, $campo3, $nombre_agente, $timestamp, $datos, $comando, $alert_name, $dbh);
+						# --------------------------------------
+					} else { # Alert is in valid timegap but has too many alerts or too many little
+						$internal_counter++;
+						if ($internal_counter < $min_alerts){
+							# Now update the new value for times_fired & last_fired if we are below min limit for triggering this alert
+							my $query_idag = "UPDATE talerta_agente_modulo SET times_fired = $times_fired, internal_counter = $internal_counter WHERE id_aam = $id_aam ";
+							$dbh->do ($query_idag);
+							logger ($pa_config, "Alarm not fired because is below min limit",6);
+						} else { # Too many alerts fired (upper limit)
+							my $query_idag = "UPDATE talerta_agente_modulo SET times_fired = $times_fired,  internal_counter = $internal_counter WHERE id_aam = $id_aam ";
+							$dbh->do($query_idag);						
+							logger ($pa_config, "Alarm not fired because is above max limit",6);
+						}
+					}  
+				} # data between alert values
+				else {
+					# Check timegap
+					my $fecha_ultima_alerta = ParseDate($last_fired);
+					my $fecha_actual = ParseDate( $timestamp );
+					my $ahora_mysql = &UnixDate("today","%Y-%m-%d %H:%M:%S");
+					# If we need to update MYSQL ast_fired will use $ahora_mysql
+					my $time_threshold = $threshold;
+					my $err; my $flag;
+					my $fecha_limite = DateCalc($fecha_ultima_alerta,"+ $time_threshold seconds",\$err);
+					$flag = Date_Cmp ($fecha_actual, $fecha_limite);
+					# Check timer threshold for this alert
+					if ( $flag >= 0 ) {
+						# Out limits !, reset $times_fired, but do not write to
+						# database until a real alarm was fired
+						my $query_idag = "UPDATE talerta_agente_modulo SET times_fired = 0, internal_counter = 0 WHERE id_aam = $id_aam ";
+						$dbh->do($query_idag);
+					}	
 				}
-				# We are between limits marked by time_threshold or running a new time-alarm-interval 
-				# Caution: MIN Limit is related to triggered (in time-threshold limit) alerts
-				# but MAX limit is related to executed alerts, not only triggered. Because an alarm to be
-				# executed could be triggered X (min value) times to be executed.
-				if (($internal_counter >= $min_alerts) && ($times_fired  <= $max_alerts)){
-					# The new alert is between last valid time + threshold and between max/min limit to alerts in this gap of time.
-					$times_fired++;
-					$internal_counter++;
-					my $query_idag = "UPDATE talerta_agente_modulo SET times_fired = $times_fired, last_fired = '$ahora_mysql', internal_counter = $internal_counter WHERE id_aam = $id_aam ";
-					$dbh->do($query_idag);
-					my $nombre_agente = dame_nombreagente_agentemodulo ($pa_config, $id_agente_modulo, $dbh);
-					# --------------------------------------
-					# Now call to execute_alert to real exec
-					execute_alert ($pa_config, $id_alerta, $campo1, $campo2, $campo3, $nombre_agente, $timestamp, $datos, $comando, $alert_name, $dbh);
-					# --------------------------------------
-				} else { # Alert is in valid timegap but has too many alerts or too many little
-					$internal_counter++;
-					if ($internal_counter < $min_alerts){
-						# Now update the new value for times_fired & last_fired if we are below min limit for triggering this alert
-						my $query_idag = "UPDATE talerta_agente_modulo SET times_fired = $times_fired, internal_counter = $internal_counter WHERE id_aam = $id_aam ";
-						$dbh->do ($query_idag);
-						logger ($pa_config, "Alarm not fired because is below min limit",6);
-					} else { # Too many alerts fired (upper limit)
-						my $query_idag = "UPDATE talerta_agente_modulo SET times_fired = $times_fired,  internal_counter = $internal_counter WHERE id_aam = $id_aam ";
-						$dbh->do($query_idag);						
-						logger ($pa_config, "Alarm not fired because is above max limit",6);
-					}
-				}  
-			} # data between alert values
-			else {
-				# Check timegap
-				my $fecha_ultima_alerta = ParseDate($last_fired);
-				my $fecha_actual = ParseDate( $timestamp );
-				my $ahora_mysql = &UnixDate("today","%Y-%m-%d %H:%M:%S");
-				# If we need to update MYSQL ast_fired will use $ahora_mysql
-				my $time_threshold = $threshold;
-				my $err; my $flag;
-				my $fecha_limite = DateCalc($fecha_ultima_alerta,"+ $time_threshold seconds",\$err);
-				$flag = Date_Cmp ($fecha_actual, $fecha_limite);
-				# Check timer threshold for this alert
-				if ( $flag >= 0 ) {
-					# Out limits !, reset $times_fired, but do not write to
-					# database until a real alarm was fired
-					my $query_idag = "UPDATE talerta_agente_modulo SET times_fired = 0, internal_counter = 0 WHERE id_aam = $id_aam ";
-					$dbh->do($query_idag);
-				}	
-			}
+			} # timecheck
 		} # While principal
 	} # if there are valid records
 	$s_idag->finish();

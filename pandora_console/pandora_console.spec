@@ -55,7 +55,7 @@ Release:            %{release}
 License:            GPL
 Vendor:             Sancho Lerena <sancho.lerena@artica.es>
 Source0:            %{name}-%{version}.tar.gz
-URL:                http://www.pandorafms.net
+URL:                http://pandora.sf.net
 Group:              Productivity/Networking/Web/Utilities
 Packager:           Manuel Arostegui <marostegui@artica.es>
 
@@ -80,7 +80,7 @@ Requires:           httpd
 %endif
 Requires:           php >= 4.3.0
 Requires:           php-gd
-Requires:           mysql, mysql-server, php-mysql jpgraph 
+Requires:           mysql, mysql-server, php-mysql
 %endif
 
 Provides:           %{name}-%{version}

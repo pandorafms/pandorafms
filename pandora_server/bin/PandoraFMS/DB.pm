@@ -138,8 +138,8 @@ sub pandora_calcula_alerta (%$$$$$$) {
 			my $ahora_min = &UnixDate("today","%M");
 
 			# time check !
-			if (((($ahora_hour * 60)+$ahora_min) >= ($alert_timefrom * 30)) &&
-				((($ahora_hour * 60)+$ahora_min) <= ($alert_timeto * 30)) ) {
+			if ( (((($ahora_hour * 60)+$ahora_min) >= ($alert_timefrom * 30)) &&
+				((($ahora_hour * 60)+$ahora_min) <= ($alert_timeto * 30))) || ($alert_timefrom == $alert_timeto)) {
 				my $comando ="";
 				logger($pa_config, "Found an alert defined for $nombre_modulo, its ID $id_alerta",4);
 				# Here we process alert if conditions are ok

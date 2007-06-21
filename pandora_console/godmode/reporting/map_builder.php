@@ -16,7 +16,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
+?>
+<script language="javascript">
+	/* Function to hide/unhide a specific Div id */
+	function toggleDiv (divid){
+		if (document.getElementById(divid).style.display == 'none'){
+			document.getElementById(divid).style.display = 'block';
+		} else {
+			document.getElementById(divid).style.display = 'none';
+		}
+	}
+</script>
+<?PHP
 // Login check
 $id_user=$_SESSION["id_usuario"];
 global $REMOTE_ADDR;
@@ -54,8 +65,8 @@ if (isset($_GET["delete"])){
 }
 
 // Delete module SQL code
-if (isset($_GET["delete_report"])){
-	$id = $_GET["delete_report"];
+if (isset($_GET["delete_map"])){
+	$id = $_GET["delete_map"];
 	$sql = "DELETE FROM tlayout_data WHERE id_layout = $id";
 	$sql2 = "DELETE FROM tlayout WHERE id = $id";
 	$res=mysql_query($sql);
@@ -68,33 +79,75 @@ if (isset($_GET["delete_report"])){
 }
 
 // Create new report. First step
-if (isset($_GET["create_graph"])){
+if (isset($_GET["create_map"])){
 	$createmode = 2;
 }
 
-// Add module SQL code
-if (isset($_GET["add_module"])){
-	if (isset($_POST["id_report"]))
-		$id_report = $_POST["id_report"];
+if (isset($_GET["update_module"])){
+	if (isset($_GET["update_module"]))
+		$id_element = $_GET["update_module"];
 	else {
 		audit_db($id_user,$REMOTE_ADDR, "Hack attempt","Parameter trash in map builder");
 		include ("general/noaccess.php");
 		exit;
 	}
-	$my_id_agent = entrada_limpia($_POST["id_agent"]);
-	$my_id_module = entrada_limpia($_POST["id_module"]);
-	$my_period = entrada_limpia($_POST["period"]);
-	$my_type = entrada_limpia($_POST["type"]);
-	$my_cg = entrada_limpia($_POST["id_custom_graph"]);
-	$my_slamax = entrada_limpia($_POST["sla_max"]);
-	$my_slamin = entrada_limpia($_POST["sla_min"]);
-	$my_slalimit = entrada_limpia($_POST["sla_limit"]);
+	$pos_x = give_parameter_post ("pos_x",0);
+	$pos_y = give_parameter_post ("pos_y",0);
+	$my_height = give_parameter_post ("height");
+	$my_width = give_parameter_post ("width");
+	$my_label = give_parameter_post ("label");
+	$my_image = give_parameter_post ("image");
 	
-	$sql = "INSERT INTO tlayout_data (id_layout, id_gs, id_agent_module, type, sla_max, sla_min, sla_limit, period) VALUES ('$id_report', '$my_cg', '$my_id_module', '$my_type', '$my_slamax', '$my_slamin', '$my_slalimit', '$my_period')";
+	$sql = "UPDATE tlayout_data SET
+		 pos_x = '$pos_x',
+		 pos_y = '$pos_y',
+		 width = '$my_width',
+		 height = '$my_height',
+		 image = '$my_image',
+		 label = '$my_label'
+		WHERE id = $id_element";
+	if ($res=mysql_query($sql))
+		$result = "<h3 class=suc>".$lang_label["modify_ok"]."</h3>";
+	else {
+		$result = "<h3 class=error>".$lang_label["modify_no"]."</h3>";
+		echo $sql;
+		echo "<br><br>";
+	}
+	echo $result;
+	
+}
+// Add module SQL code
+if (isset($_GET["add_module"])){
+	if (isset($_POST["id_map"]))
+		$id_map = $_POST["id_map"];
+	else {
+		audit_db($id_user,$REMOTE_ADDR, "Hack attempt","Parameter trash in map builder");
+		include ("general/noaccess.php");
+		exit;
+	}
+	$my_id_map = give_parameter_post ("id_map",0);
+	$my_id_agent = give_parameter_post ("id_agent",0);
+	$my_id_module = give_parameter_post ("id_module",0);
+	$my_period = give_parameter_post ("period",3600);
+	$my_type = give_parameter_post ("type",0);
+	$my_pos_x = give_parameter_post ("pos_x",0);
+	$my_pos_y = give_parameter_post ("pos_y",0);
+	$my_height = give_parameter_post ("height");
+	$my_width = give_parameter_post ("width");
+	$my_label = give_parameter_post ("label");
+	$my_image = give_parameter_post ("image");
+	$my_map_linked = give_parameter_post ("map_linked");
+	$my_parent_item = give_parameter_post ("parent_item");
+	$my_label_color = give_parameter_post ("label_color","");
+	$my_link_color = give_parameter_post ("link_color",0);
+	$sql = "INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_layout_linked, parent_item, label_color, no_link_color) VALUES ('$my_id_map', '$my_pos_x', '$my_pos_y', '$my_height', '$my_width', '$my_label', '$my_image', '$my_type', '$my_period', '$my_id_module', '$my_map_linked', '$my_parent_item', '$my_label_color', '$my_link_color')";
 	if ($res=mysql_query($sql))
 		$result = "<h3 class=suc>".$lang_label["create_ok"]."</h3>";
-	else
+	else {
 		$result = "<h3 class=error>".$lang_label["create_no"]."</h3>";
+		echo $sql;
+		echo "<br><br>";
+	}
 	echo $result;
 }
 
@@ -110,7 +163,7 @@ if (isset($_POST["createmode"])){
 	// INSERT REPORT DATA
 	if ($createmode == 1){
 		$form_id_user = $id_user;
-		$sql = "INSERT INTO tlayout (name, background, width, height) VALUES ('$map_name', '$map_background', '$map_width', '$map_height')";
+		$sql = "INSERT INTO tlayout (name, background, width, height, id_group) VALUES ('$map_name', '$map_background', '$map_width', '$map_height', 1)";
 		if ($res=mysql_query($sql))
 			$result = "<h3 class=suc>".$lang_label["create_ok"]."</h3>";
 		else
@@ -166,7 +219,7 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_map"]))) {
 
 	echo "<h2>".$lang_label["reporting"]." &gt; ";
 	echo $lang_label["map_builder"]."</h2>";
-	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/map_builder'>";
+	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/map_builder&id=$id_map'>";
 	echo "<input type='hidden' name=createmode value='$createmode'>";
 	if ($createmode == 0){
 		echo "<input type='hidden' name=id_map value='$id_map'>";
@@ -182,7 +235,18 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_map"]))) {
 	echo "<tr><td class='datos'>";
 	echo $lang_label["background"];
 	echo "</td><td class='datos'>";
-	echo "<input type=text size=45 name='map_background' value='$map_background'>";
+	// echo "<input type=text size=45 name='map_background' value='$map_background'>";
+
+	echo '<select name="map_background" class="w155">';
+	if ($map_background != "")
+		echo "<option>".$map_background;
+	$ficheros2 = list_files('images/console/background/', "",0, 0);
+	$a=0;
+	while (isset($ficheros2[$a])){
+		echo "<option>".$ficheros2[$a]."</option>";
+		$a++;
+	}
+	echo '</select>';
 
 	echo "<tr><td class='datos'>";
 	echo $lang_label["width"];
@@ -209,13 +273,19 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_map"]))) {
 		// Part 2 - Add new items to report
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-		echo "<h2>".$lang_label["reporting_item_add"]."</h2>";
+		echo "<h2>".$lang_label["map_item_add"];
+		?>
+		<A HREF="javascript:;" onmousedown="toggleDiv('map_control');">
+		<?PHP
+		echo "<img src='images/wand.png'>";
+		echo "</a></h2>";
+		echo "<div id='map_control' style='display:none'>";
 
 		// Show combo with agents
 		// ----------------------
 		
 		echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_color'>";
-		echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/map_builder&get_agent=1'>";
+		echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/map_builder&get_agent=1&id=$id_map'>";
 		echo "<input type='hidden' name=id_map value='$id_map'>";
 		
 		echo "<tr>";
@@ -238,7 +308,7 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_map"]))) {
 
 		// Modules combo
 		// -----------------------
-		echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/map_builder&add_module=1'>";
+		echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/map_builder&add_module=1&id=$id_map'>";
 		echo "<input type='hidden' name=id_map value='$id_map'>";
 		if (isset($id_agent))
 			echo "<input type='hidden' name='id_agent' value='$id_agent'>";
@@ -263,8 +333,8 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_map"]))) {
 		echo "<b>".$lang_label["reporting_type"]."</b>";
 		echo "<td class='datos' colspan=3>";
 		echo "<select name='type' size=1 style='width:180px;'>";
-		echo "<option value=1>".$lang_label["simple_graph"]."</option>";
 		echo "<option value=0>".$lang_label["static_graph"]."</option>";
+		echo "<option value=1>".$lang_label["module_graph"]."</option>";
 		echo "<option value=2>".$lang_label["line"]."</option>";
 		echo "</select>";
 
@@ -308,7 +378,6 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_map"]))) {
 		echo "<td class='datos2'>";
 		echo "<input type=text size=6 name='width'>";
 
-
 		echo "<tr><td class='datos'>";
 		echo "<b>".$lang_label["label"]."</b></td>";
 		echo "<td class='datos' colspan=3>";
@@ -317,8 +386,17 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_map"]))) {
 		echo "<tr><td class='datos2'>";
 		echo "<b>".$lang_label["image"]."</b></td>";
 		echo "<td class='datos2' colspan=3>";
-		echo "<input type=text size=35 name='image'>";
 
+		echo '<select name="image" class="w155">';	
+		$ficheros = list_files('images/console/icons/', "",0, 0);
+		$a=0;
+		while (isset($ficheros[$a])){
+			$myfichero = substr($ficheros[$a],0,strlen($ficheros[$a])-4);
+			if ((strpos($myfichero,"_bad") == 0) && (strpos($myfichero,"_ok") == 0) && ($myfichero != "" ))
+				echo "<option>".$myfichero."</option>";
+			$a++;
+		}
+		echo '</select>';
 
 		echo "<tr><td class='datos'>";
 		echo "<b>".$lang_label["map_linked"]."</b>";
@@ -347,17 +425,17 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_map"]))) {
 		echo "<tr><td class='datos'>";
 		echo "<b>".$lang_label["label_color"]."</b>";
 		echo "<td class='datos'>";
-		echo "<select name='type' size=1>";
-		echo "<option value='#ffffff'>".$lang_label["white"]."</option>";
-		echo "<option value='#000000'>".$lang_label["black"]."</option>";
+		echo "<select name='label_color' size=1>";
+		echo "<option value='ffffff'>".$lang_label["white"]."</option>";
+		echo "<option value='000000'>".$lang_label["black"]."</option>";
 		echo "</select>";
 
 		echo "<td class='datos'>";
 		echo "<b>".$lang_label["link_color"]."</b>";
-		echo "<td class='datos'>";
-		echo "<select name='type' size=1 >";
-		echo "<option value=1>".$lang_label["yes"]."</option>";
-		echo "<option value=0>".$lang_label["no"]."</option>";
+		echo "<td class='link_color'>";
+		echo "<select name='link_color' size=1 >";
+		echo "<option value=0>".$lang_label["yes"]."</option>";
+		echo "<option value=1>".$lang_label["no"]."</option>";
 		echo "</select>";
 
 
@@ -370,19 +448,27 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_map"]))) {
 		echo "<input type='submit' class='sub wand' value='".$lang_label["add"]."'>";
 		echo "</td></tr></table>";
 		echo "</form>";
-		
+
+
+
+
+		echo "<br></div>";
 
 		// Part 3 - List of already assigned report items
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 		echo "<h2>".$lang_label["report_items"]."</h2>";
-		echo "<table width=500 cellspacing=4 cellpadding=4 class='databox'>";
+		echo "<table width=720 cellspacing=4 cellpadding=4 class='databox'>";
 		echo "<tr><th>".$lang_label["type"]."</th>
-		<th>".$lang_label["agent_name"]."</th>
 		<th>".$lang_label["module_name"]."</th>
+		<th>".$lang_label["label"]."</th>
+		<th>".$lang_label["image"]."</th>
 		<th>".$lang_label["pos_x"]."</th>
 		<th>".$lang_label["pos_y"]."</th>
+		<th>".$lang_label["width"]."</th>
+		<th>".$lang_label["height"]."</th>
 		<th>".$lang_label["delete"]."</th>
+		<th>".$lang_label["update"]."</th>
 		</tr>";
 		$sql = "SELECT * FROM tlayout_data WHERE id_layout = $id_map";
 		$res=mysql_query($sql);
@@ -404,10 +490,15 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_map"]))) {
 				case "1": $type_desc = "Module graph"; break;
 				case "2": $type_desc = "Line"; break;
 			}
+			$id_element = $row["id"];
 			$period = $row["period"];
 			$id_am = $row["id_agente_modulo"];
 			$x = $row["pos_x"];
 			$y = $row["pos_y"];
+			$myimage = $row["image"];
+			$width= $row["width"];
+			$height = $row["height"];
+			$label = $row["label"];
 			$name = "N/A";
 			$agent_name = "N/A";
 			if ($id_am != ""){
@@ -415,13 +506,42 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_map"]))) {
 				$module_name = dame_nombre_modulo_agentemodulo ($id_am);
 			}
 			echo "<tr>";
+			echo "<form method='POST' action='index.php?sec=greporting&sec2=godmode/reporting/map_builder&id=$id_map&update_module=$id_element'>";
 			echo "<td class='$tdcolor'>".$type_desc."</td>";
-			echo "<td class='$tdcolor'>".$agent_name."</td>";
-			echo "<td class='$tdcolor'>".$module_name."</td>";
-			echo "<td class='$tdcolor'>".$x."</td>";
-			echo "<td class='$tdcolor'>".$y."</td>";
+			
+			echo "<td class='$tdcolor'>".$agent_name." / ";
+			echo $module_name."</td>";
+
+			echo "<td class='$tdcolor'>";
+			echo "<input type=text size=4 name='label' value='$label'></td>";
+			
+			echo "<td class='$tdcolor'>";
+			echo '<select name="image">';
+			echo "<option>".$myimage;
+			$ficheros = list_files('images/console/icons/', "",0, 0);
+			$a=0;
+			while (isset($ficheros[$a])){
+				$myfichero = substr($ficheros[$a],0,strlen($ficheros[$a])-4);
+				if ((strpos($myfichero,"_bad") == 0) && (strpos($myfichero,"_ok") == 0) && ($myfichero != "" ))
+					echo "<option>".$myfichero."</option>";
+				$a++;
+			}
+			echo '</select>';
+
+		
+			echo "<td class='$tdcolor'>";
+			echo "<input type=text size=4 name=pos_x value='$x'></td>";
+			echo "<td class='$tdcolor'>";
+			echo "<input type=text size=4 name=pos_y value='$y'></td>";
+			echo "<td class='$tdcolor'>";
+			echo "<input type=text size=4 name='width' value='$width'></td>";
+			echo "<td class='$tdcolor'>";
+			echo "<input type=text size=4 name='height' value='$height'></td>";
+			echo "<td class='$tdcolor'>";
+			echo "<a href='index.php?sec=greporting&sec2=godmode/reporting/map_builder&id=$id_map&delete=$id_layoutdata'><img src='images/cancel.gif'></a>";
 			echo "<td class='$tdcolor' align='center'>";
-			echo "<a href='index.php?sec=greporting&sec2=godmode/reporting/map_builder&id=1&delete=$id_layoutdata'><img src='images/cancel.gif'></a>";
+			echo "<input type=submit class='sub next' value='".$lang_label["update"]."'>";
+			echo "</form>";
 		}	
 		echo "</table>";
 	}
@@ -458,12 +578,12 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_map"]))) {
 			echo "<td valign='top' class='$tdcolor'>".$row["width"]."x".$row["height"]."</td>";		
 			$id_map = $row["id"];
 			echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=greporting&sec2=godmode/reporting/map_builder&id=$id_map'><img src='images/setup.png'></a>";
-			echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=greporting&sec2=godmode/reporting/map_builder&delete_graph=$id_map'><img src='images/cancel.gif'></a>";
+			echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=greporting&sec2=godmode/reporting/map_builder&delete_map=$id_map'><img src='images/cancel.gif'></a>";
 		}
 	}
 	echo "</table>";
 	echo "<table width=500 cellpadding=4 cellpadding=4>";
-	echo "<form method=post action='index.php?sec=greporting&sec2=godmode/reporting/map_builder&create_graph=1'>";
+	echo "<form method=post action='index.php?sec=greporting&sec2=godmode/reporting/map_builder&create_map=1'>";
 	echo "<tr><td align='right'>";
 	echo "<input type=submit class='sub next' value='".$lang_label["add"]."'>";
 	echo "</form>";

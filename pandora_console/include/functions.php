@@ -491,5 +491,19 @@ function human_date_relative ( $seconds ) {
 	return $ayer;
 }
 
+function render_time ($lapse) {
+	$myhour = intval(($lapse*30)/60);
+	if ($myhour == 0)
+		$output = "00";
+	else
+		$output = $myhour;
+	$output .=":";
+	$mymin = fmod(($lapse*30),60);
+	if ($mymin == 0)
+		$output .= "00";
+	else
+		$output .= $mymin;
+	return $output;
+}
 
 ?>

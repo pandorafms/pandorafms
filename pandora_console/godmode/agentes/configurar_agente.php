@@ -83,6 +83,8 @@ $combo_snmp_oid="";
 $agent_created_ok = 0;
 $create_agent = 0;
 $alert_text = "";
+$time_from= "";
+$time_to = "";
 
 // ================================
 // Create AGENT
@@ -224,26 +226,30 @@ if (isset($_POST["insert_alert"])){ // if created alert
 	$time_threshold = entrada_limpia($_POST["time_threshold"]);
 	$max_alerts = entrada_limpia($_POST["max_alerts"]);
 	$min_alerts = entrada_limpia($_POST["min_alerts"]);
+	$time_from = entrada_limpia($_POST["time_from"]);
+	$time_to= entrada_limpia($_POST["time_to"]);
 	$other = entrada_limpia($_POST["other"]);
 	$disable_alert = entrada_limpia($_POST["disable_alert"]);
 	if ($time_threshold == -1) {
 		$time_threshold = $other;
 	}
 	$sql_insert="INSERT INTO talerta_agente_modulo
-			(id_agente_modulo,id_alerta,al_campo1,al_campo2,al_campo3,descripcion,dis_max,dis_min,time_threshold,max_alerts, min_alerts, alert_text, disable) VALUES
-			 ('$id_agente_modulo',
-			 '$tipo_alerta',
-			 '$campo_1',
-			 '$campo_2',
-			 '$campo_3',
-			 '$descripcion',
-			 '$maximo',
-			 '$minimo',
-			 '$time_threshold',
-			 '$max_alerts',
-			 '$min_alerts',
-			 '$alert_text',
-			 '$disable_alert')";
+			(id_agente_modulo,id_alerta,al_campo1,al_campo2,al_campo3,descripcion,dis_max,dis_min,time_threshold,max_alerts, min_alerts, alert_text, disable, time_from, time_to) VALUES
+			('$id_agente_modulo',
+			'$tipo_alerta',
+			'$campo_1',
+			'$campo_2',
+			'$campo_3',
+			'$descripcion',
+			'$maximo',
+			'$minimo',
+			'$time_threshold',
+			'$max_alerts',
+			'$min_alerts',
+			'$alert_text',
+			'$disable_alert',
+			'$time_from',
+			'$time_to' )";
 	$result=mysql_query($sql_insert);	
 	if (! $result) {
 		echo "<h3 class='error'>".$lang_label["create_alert_no"]."</h3>";
@@ -272,6 +278,8 @@ if (isset($_POST["update_alert"])){ // Update an existing alert
 	$min_alerts = entrada_limpia($_POST["min_alerts"]);
 	$other = entrada_limpia($_POST["other"]);
 	$alert_text = entrada_limpia($_POST["alert_text"]);
+	$time_from = entrada_limpia($_POST["time_from"]);
+	$time_to= entrada_limpia($_POST["time_to"]);
 	$disable_alert = entrada_limpia($_POST["disable_alert"]);
 	if ($time_threshold == -1) {
 		$time_threshold = $other;
@@ -289,6 +297,8 @@ if (isset($_POST["update_alert"])){ // Update an existing alert
 		al_campo1 = '$campo_1' ,
 		descripcion = '$descripcion',
 		alert_text = '$alert_text',
+		time_to = '$time_to',
+		time_from = '$time_from',
 		disable = '$disable_alert'
 		WHERE id_aam = ".$id_aam;
 	$result=mysql_query($sql_insert);	
@@ -439,6 +449,8 @@ if (isset($_GET["update_alert"])){
 		$alerta_time_threshold = $row["time_threshold"];
 		$alerta_descripcion = $row["descripcion"];
 		$alerta_disable = $row["disable"];
+		$time_from = $row["time_from"];
+		$time_to = $row["time_to"];
 		$alerta_id_agentemodulo = $row["id_agente_modulo"]; // Only to show, cannot be changed
 	}
 
@@ -641,6 +653,8 @@ if (((!isset($_POST["nc"]) OR ($_POST["nc"]==-1)) ) 	&&
 	$snmp_community = "";
 	$id_module_group = "";
 	$module_interval = "";
+	$time_to = "";
+	$time_from = "";
 }
 
 // MODULE DELETION

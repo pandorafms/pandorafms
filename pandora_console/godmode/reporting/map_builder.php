@@ -110,7 +110,6 @@ if (isset($_GET["update_module"])){
 		$result = "<h3 class=suc>".$lang_label["modify_ok"]."</h3>";
 	else {
 		$result = "<h3 class=error>".$lang_label["modify_no"]."</h3>";
-		echo $sql;
 		echo "<br><br>";
 	}
 	echo $result;
@@ -158,7 +157,6 @@ if (isset($_POST["createmode"])){
 	$map_background = entrada_limpia($_POST["map_background"]);
 	$map_width = entrada_limpia($_POST["map_width"]);
 	$map_height = entrada_limpia($_POST["map_height"]);
-	
 		
 	// INSERT REPORT DATA
 	if ($createmode == 1){

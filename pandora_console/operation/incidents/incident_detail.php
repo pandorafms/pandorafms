@@ -19,6 +19,19 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Load global vars
+?>
+<script language="javascript">
+	/* Function to hide/unhide a specific Div id */
+	function toggleDiv (divid){
+		if (document.getElementById(divid).style.display == 'none'){
+			document.getElementById(divid).style.display = 'block';
+		} else {
+			document.getElementById(divid).style.display = 'none';
+		}
+	}
+</script>
+<?PHP
+
 require("include/config.php");
 
 if (comprueba_login() != 0) {
@@ -68,7 +81,6 @@ if (isset($_GET["id"])){
 
 	// Note add
 	if (isset($_GET["insertar_nota"])){
-
 		$id_inc = entrada_limpia($_POST["id_inc"]);
 		$timestamp = entrada_limpia($_POST["timestamp"]);
 		$nota = entrada_limpia($_POST["nota"]);
@@ -123,7 +135,7 @@ if (isset($_GET["id"])){
 
 	// Upload file
 	if ((give_acl($iduser_temp, $id_grupo, "IW")==1) AND isset($_GET["upload_file"])) {
-		if (( $_FILES['userfile']['name'] != "" ) && ($userfile != "none")){ //if file
+		if (( $_FILES['userfile']['name'] != "" )){ //if file
 			$tipo = $_FILES['userfile']['type'];
 			if (isset($_POST["file_description"]))
 				$description = $_POST["file_description"];
@@ -331,18 +343,18 @@ echo "<td class='datos'><b>Creator</b>
 if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)) {
 	echo '</select>
 	<tr><td class="datos2" colspan="4">
-	<textarea name="descripcion" rows="15" cols="85">';
+	<textarea name="descripcion" rows="15" cols="85" style="height: 300px;">';
 } else {
 	echo '</select>
 	<tr><td class="datos2" colspan="4">
-	<textarea readonly name="descripcion" rows="15" cols="85">';
+	<textarea readonly name="descripcion" rows="15" cols="85" style="height: 300px;">';
 }
 if (isset($texto)) {
 	echo $texto;
 }
 echo "</textarea></td></tr>";
 
-echo '</table><table width="600px">';
+echo '</table><table width="650px">';
 echo "<tr><td align='right'>";
 // Only if user is the used who opened incident or (s)he is admin
 
@@ -360,7 +372,7 @@ if ($creacion_incidente == 0){
 echo "</form>";
 
 if ($creacion_incidente == 0){
-	echo "<tr><td colspan='7' style='text-align: right;'>";
+	echo "<tr><td align='right'>";
 	echo '
 	<form method="post" action="index.php?sec=incidencias&sec2=operation/incidents/incident_note&id_inc='.$id_inc.'">
 	<input type="hidden" name="nota" value="add">
@@ -370,11 +382,95 @@ if ($creacion_incidente == 0){
 echo "</tr></table><br>";
 
 if ($creacion_incidente == 0){
-// Upload control
+
+	// ********************************************************************
+	// Notes
+	// ********************************************************************
+	$cabecera=0;
+	$sql4='SELECT * FROM tnota_inc WHERE id_incidencia = '.$id_inc;
+	$res4=mysql_query($sql4);
+	while ($row2=mysql_fetch_array($res4)){
+		if ($cabecera == 0) { // Show head only one time
+			echo "<h3>".$lang_label["in_notas_t1"]."</h3>";
+			echo "<table cellpadding='4' cellspacing='4' class='databox' width='650'>";
+			echo "<tr><td>";
+			$cabecera = 1;
+		}
+
+		$sql3='SELECT * FROM tnota WHERE id_nota = '.$row2["id_nota"].' ORDER BY timestamp DESC';
+		$res3=mysql_query($sql3);
+		while ($row3=mysql_fetch_array($res3)){
+			$timestamp = $row3["timestamp"];
+			$nota = $row3["nota"];
+			$id_usuario_nota = $row3["id_usuario"];
+			// Show data
+			echo '<tr><td rowspan="3" class="top"><img src="images/page_white_text.png"></td><td class="datos" width=40><b>'.$lang_label["author"].': </b><td class="datos">';
+			$usuario = $id_usuario_nota;
+			$nombre_real = dame_nombre_real($usuario);
+			echo $usuario." - (<i><a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$usuario."'>".$nombre_real."</a></i>)";
+
+			// Delete comment, only for admins
+			if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)) {
+				$myurl="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id=".$id_inc."&id_nota=".$row2["id_nota"]."&id_nota_inc=".$row2["id_nota_inc"];
+				echo '<td rowspan="3" class="top" width="60" align="center"><a href="'.$myurl.'"><img src="images/cross.png" align="middle" border="0"></a>';
+			}
+			echo '<tr><td class="datos"><b>'.$lang_label["date"].': </b><td class="datos"><i>'.$timestamp.'</i></td></tr>';
+			echo '<tr><td colspan="2" class="datos"> ';
+			echo '<table border="0" cellpadding="4" cellspacing="4" style="width: 580px">';
+			echo '<tr><td class="datos2" align="justify">';
+			echo salida_limpia ($nota);
+			echo "</td></tr>";
+			echo '</table>';
+		}
+	}
+	if ($cabecera == 1){
+		echo "</table>"; // note table
+	}
+	echo "</form></table>";
+
+	// ************************************************************
+	// Files attached to this incident
+	// ************************************************************
+
+	// Attach head if there's attach for this incident
+	$att_fil=mysql_query("SELECT * FROM tattachment WHERE id_incidencia = ".$id_inc);
+
+	if (mysql_num_rows($att_fil)){
+		echo "<h3>".$lang_label["attached_files"]."</h3>";
+		echo "<table cellpadding='4' cellspacing='4' class='databox' width='650'>";
+		echo "<tr>
+			<th class=datos>".$lang_label["filename"]."</th>
+			<th class=datos>".$lang_label["description"]."</th>
+			<th class=datos>".$lang_label["size"]."</th>
+			<th class=datos>".$lang_label["delete"]."</th></tr>";
+
+		while ($row=mysql_fetch_array($att_fil)){
+			echo "<tr><td class=datos><img src='images/disk.png' border=0 align='top'> &nbsp;&nbsp;<a target='_new' href='attachment/pand".$row["id_attachment"]."_".$row["filename"]."'><b>".$row["filename"]."</b></a>";
+			echo "<td class=datos>".$row["description"];
+			echo "<td class=datos>".$row["size"];
+
+			if (give_acl($iduser_temp, $id_grupo, "IM")==1){ // Delete attachment
+				echo '<td class=datos align="center"><a href="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'&delete_file='.$row["id_attachment"].'"><img src="images/cross.png" border=0>';
+			}
+
+		}
+		echo "</td></tr></table>";
+	}
+	// ************************************************************
+	// Upload control
+	// ************************************************************
+
+	// Upload control
 	if (give_acl($iduser_temp, $id_grupo, "IW")==1){
-		echo '
-		<h3>'.$lang_label["attachfile"].'</h3>
-		<table cellpadding="4" cellspacing="3" class="databox" width="400">
+		echo "<h3>".$lang_label["attachfile"];
+		?>
+		<A HREF="javascript:;" onmousedown="toggleDiv('file_control');">
+		<?PHP
+		echo "<img src='images/disk.png'>";
+		echo "</a></h3>";
+		echo "<div id='file_control' style='display:none'>";
+		
+		echo '<table cellpadding="4" cellspacing="3" class="databox" width="400">
 		<tr>
 		<td class="datos">'.$lang_label["filename"].'</td>
 		<td class="datos"><form method="post" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'&upload_file=1" enctype="multipart/form-data">
@@ -389,83 +485,10 @@ if ($creacion_incidente == 0){
 		<tr><td style="text-align: right;">
 		<input type="submit" name="upload" value="'.$lang_label["upload"].'" class="sub wand">
 		</td></tr></table><br>';
+		echo "</div>";
 	}
-	// ************************************************************
-	// Files attached to this incident
-	// ************************************************************
 
-	// Attach head if there's attach for this incident
-	$att_fil=mysql_query("SELECT * FROM tattachment WHERE id_incidencia = ".$id_inc);
-
-	if (mysql_num_rows($att_fil))
-	{
-		echo "<table cellpadding='4' cellspacing='4' class='data_box' width='650'>";
-		echo "<tr><td>";
-		echo "<h3>".$lang_label["attached_files"]."</h3>";
-		echo "</td></tr><td>";
-		echo "<table width='650'><tr>
-		<th class=datos>".$lang_label["filename"]."</th>
-		<th class=datos>".$lang_label["description"]."</th>
-		<th class=datos>".$lang_label["size"]."</th>
-		<th class=datos>".$lang_label["delete"]."</th></tr>";
-
-		while ($row=mysql_fetch_array($att_fil)){
-			echo "<tr><td class=datos><a target='_new' href='attachment/pand".$row["id_attachment"]."_".$row["filename"]."'><img src='images/file.gif' border=0 align='middle'> ".$row["filename"]."</a>";
-			echo "<td class=datos>".$row["description"];
-			echo "<td class=datos>".$row["size"];
-
-			if (give_acl($iduser_temp, $id_grupo, "IM")==1){ // Delete attachment
-				echo '<td class=datos align="center"><a href="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'&delete_file='.$row["id_attachment"].'"><img src="images/delete.gif" border=0>';
-			}
-
-		}
-		echo "</td></tr></table></table><br>";
-	}
-	// ********************************************************************
-	// Notes
-	// ********************************************************************
-	$cabecera=0;
-	$sql4='SELECT * FROM tnota_inc WHERE id_incidencia = '.$id_inc;
-	$res4=mysql_query($sql4);
-	while ($row2=mysql_fetch_array($res4)){
-		if ($cabecera == 0) { // Show head only one time
-			echo "<table cellpadding='4' cellspacing='4' class='databox' width='550px'>";
-			echo "<tr><td>";
-			echo "<h3>".$lang_label["in_notas_t1"]."</h3>";
-			echo "<table cellpadding='' cellspacing='3' border='0'>";
-			echo "<tr><td>";
-			$cabecera = 1;
-		}
-
-		$sql3='SELECT * FROM tnota WHERE id_nota = '.$row2["id_nota"].' ORDER BY timestamp DESC';
-		$res3=mysql_query($sql3);
-		while ($row3=mysql_fetch_array($res3)){
-			$timestamp = $row3["timestamp"];
-			$nota = $row3["nota"];
-			$id_usuario_nota = $row3["id_usuario"];
-			// Show data
-			echo '<tr><td rowspan="3" class="top"><img src="images/nota.gif"></td><td class="datos" width=40><b>'.$lang_label["author"].': </b><td class="datos">';
-			$usuario = $id_usuario_nota;
-			$nombre_real = dame_nombre_real($usuario);
-			echo $usuario." - (<i><a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$usuario."'>".$nombre_real."</a></i>)";
-
-			// Delete comment, only for admins
-			if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)) {
-				$myurl="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id=".$id_inc."&id_nota=".$row2["id_nota"]."&id_nota_inc=".$row2["id_nota_inc"];
-				echo '<td rowspan="3" class="top" width="60" align="center"><a href="'.$myurl.'"><img src="images/delete.gif" align="middle" border="0"> '.$lang_label["delete"].'</a>';
-			}
-			echo '<tr><td class="datos"><b>'.$lang_label["date"].': </b><td class="datos"><i>'.$timestamp.'</i></td></tr>';
-			echo '<tr><td colspan="2" class="datos"> ';
-			echo '<table border="0" cellpadding="5" cellspacing="5" style="width: 450px"><tr><td class="f9" align="justify">';
-			echo salida_limpia($nota);
-			echo '</table>';
-			echo '<tr><td colspan="3"><div class="sep"></div></td></tr>';
-		}
-	}
-	if ($cabecera == 1){
-		echo "</table>"; // note table
-	}
-	echo "</form></table>";
+	
 } // create mode
 
 ?>

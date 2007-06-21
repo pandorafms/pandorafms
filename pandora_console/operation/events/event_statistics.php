@@ -25,11 +25,15 @@ if (comprueba_login() == 0) {
         if (give_acl($id_usuario, 0, "AR")==1) {
 		echo "<h2>".$lang_label["events"]." &gt; ";
 		echo $lang_label["event_statistics"]."<a href='help/".$help_code."/chap5.php#51' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+		echo "<br><br>";
+		echo "<h2>".$lang_label["graph_event_total"]."</h2>";
 		echo '<img src="reporting/fgraph.php?tipo=total_events" border=0>';
 		echo "<br><br>";
+		echo "<h2>".$lang_label["graph_event_user"]."</h2>";
 		echo '<img src="reporting/fgraph.php?tipo=user_events" border=0>';
 		echo "<br><br>";
-		echo '<img src="reporting/fgraph.php?tipo=group_events" border=0>';
+		echo "<h2>".$lang_label["graph_event_group"]."</h2>";
+		echo '<img src="reporting/fgraph.php?tipo=group_events&width=300&height=200" border=0>';
 		echo "<br><br>";
  	} else {
 		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access event viewer");

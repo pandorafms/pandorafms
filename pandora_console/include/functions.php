@@ -84,16 +84,9 @@ function output_clean_strict ($string){
 // ---------------------------------------------------------------
 
 function entrada_limpia ($texto){
-	// OJO: MagicQuotes en la configuracion de php.ini deberia estar activado y esta funcion solo deberiamos 
-	// llamarla al entrar datos para escribir datos en la base MYSQL no al reves.
-	//	$str = "A 'quote' is <b>bold</b>";
-	// Outputs: A 'quote' is &lt;b&gt;bold&lt;/b&gt;
-	// $filtro0 = utf8_decode($texto);
-	$filtro1 =  htmlentities($texto, ENT_QUOTES); // Primero evitamos el problema de las dobles comillas, comillas sueltas, etc.
-	$filtro2 = $filtro1;
-	// Sustituimos los caracteres siguientes ( ) : &
-	// $filtro2 = strtr($filtro1, array('&' => '&#38',':' => '58', '(' => '&#40;', ')' => '&#41;')); 
-	return $filtro2;							
+	$filtro0 = utf8_decode($texto);
+	$filtro1 =  htmlentities($filtro0, ENT_QUOTES); 
+	return $filtro1;
 }
 
 // ---------------------------------------------------------------

@@ -1,5 +1,34 @@
 2007-06-21  Sancho Lerena  <slerena@artica.es>
 
+	* include/languages/language_en.php: More strings.
+	
+	* include/functions.php: entrada_limpia() should work fine in UTF8.
+	
+	* operation/incidents/incident.php: Fixed many ugly things.
+	
+	* operation/incidents/incident_detail.php: Fixed many ugly things.
+	
+	* operation/incidents/incident_note.php: Fixed many ugly things.
+	
+	* operation/events/event_statistics.php: Fixed graphs.
+	
+	* operation/events/events.php: Fixed some legend position and header.
+	
+	* operation/agentes/tactical.php: Fixed divzero error.
+	
+	* operation/menu.php: SNMP Alert not shown to normal users anymore.
+	
+	* reporting/Image/Canvas/GD.php: Added errorlevel setting to 0
+	(disable warnings for graphs).
+	
+	* reporting/fgraph.php: MANY graphs migrated from jpgraph to peargraph.
+	
+	* general/header.php: More width for header information.
+	
+	* godmode/admin_access_logs.php: Added graph to header.
+	
+	* godmode/reporting/map_builder.php: Removed debug stuff
+
 	* images/op*.gif, god*.gif: deleted. Also deleted several other
 	GIF files.
 	

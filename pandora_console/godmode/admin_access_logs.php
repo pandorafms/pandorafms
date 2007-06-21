@@ -39,6 +39,9 @@
 	else
 		$offset=0;
 
+	echo "<table width=100%>";
+	echo "<tr><td>";
+	
 	// Manage GET/POST parameter for subselect on action type. POST parameter are proccessed before GET parameter (if passed)
 	if (isset($_GET["tipo_log"])){
 		$tipo_log = $_GET["tipo_log"];
@@ -82,6 +85,10 @@
 	echo "</select>";
 	echo "<td valign='middle'><noscript><input name='uptbutton' type='submit' class='sub' value='".$lang_label["show"]."'></noscript>";
 	echo "</table></form>";
+
+	echo "</td><td align='right'>";
+	echo "<img src='reporting/fgraph.php?tipo=user_activity&width=300&height=140'>";
+	echo "</table>";
 
 	$sql2="SELECT COUNT(*) FROM tsesion ".$tipo_log_select." ORDER BY fecha DESC";
 	$result2=mysql_query($sql2);

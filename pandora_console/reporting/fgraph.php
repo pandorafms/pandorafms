@@ -616,6 +616,67 @@ function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $show_event,
 		graphic_error ();
 }
 
+function generic_pie_graph ($width=300, $height=200, $data, $legend) {
+	require ("../include/config.php");
+	require_once 'Image/Graph.php';
+	require ("../include/languages/language_".$language_code.".php");
+	if (sizeof($data) > 0){
+		// create the graph
+		$driver=& Image_Canvas::factory('png',array('width'=>$width,'height'=>$height,'antialias' => 'native'));
+		$Graph = & Image_Graph::factory('graph', $driver);
+		// add a TrueType font
+		$Font =& $Graph->addNew('font', $config_fontpath);
+		// set the font size to 7 pixels
+		$Font->setSize(7);
+		$Graph->setFont($Font);
+		// create the plotarea
+		$Graph->add(
+			Image_Graph::horizontal(
+				$Plotarea = Image_Graph::factory('plotarea'),
+				$Legend = Image_Graph::factory('legend'),
+			50
+			)
+		);
+		$Legend->setPlotarea($Plotarea);
+		// Create the dataset
+		// Merge data into a dataset object (sancho)
+		$Dataset1 =& Image_Graph::factory('dataset');
+		for ($a=0;$a < sizeof($data); $a++){
+			$Dataset1->addPoint($legend[$a], $data[$a]);
+		}
+		$Plot =& $Plotarea->addNew('pie', $Dataset1);
+		$Plotarea->hideAxis();
+		// create a Y data value marker
+		$Marker =& $Plot->addNew('Image_Graph_Marker_Value', IMAGE_GRAPH_PCT_Y_TOTAL);
+		// create a pin-point marker type
+		$PointingMarker =& $Plot->addNew('Image_Graph_Marker_Pointing_Angular', array(1, &$Marker));
+		// and use the marker on the 1st plot
+		$Plot->setMarker($PointingMarker);
+		// format value marker labels as percentage values
+		$Marker->setDataPreprocessor(Image_Graph::factory('Image_Graph_DataPreprocessor_Formatted', '%0.1f%%'));
+		$Plot->Radius = 15;
+		$FillArray =& Image_Graph::factory('Image_Graph_Fill_Array');
+		$Plot->setFillStyle($FillArray);
+		
+		$FillArray->addColor('green@0.7');
+		$FillArray->addColor('yellow@0.7');
+		$FillArray->addColor('red@0.7');
+		$FillArray->addColor('orange@0.7');
+		$FillArray->addColor('blue@0.7');
+		$FillArray->addColor('purple@0.7');
+		$FillArray->addColor('lightgreen@0.7');
+		$FillArray->addColor('lightblue@0.7');
+		$FillArray->addColor('lightred@0.7');
+		$FillArray->addColor('grey@0.6', 'rest');
+		$Plot->explode(6);
+		$Plot->setStartingAngle(0);
+		// output the Graph
+		$Graph->done();
+	} else 
+		graphic_error ();
+}
+
+
 function graphic_agentmodules($id_agent, $width, $height) {
 	include ("../include/config.php");
 	require_once 'Image/Graph.php';
@@ -659,66 +720,9 @@ function graphic_agentmodules($id_agent, $width, $height) {
 			$bx++;
 		}
 	}
+	generic_pie_graph ($width, $height, $data2, $data_label2);
 
-
-	if ($cx > 0){
-		// create the graph
-		$driver=& Image_Canvas::factory('png',array('width'=>$width,'height'=>$height,'antialias' => 'native'));
-		$Graph = & Image_Graph::factory('graph', $driver);
-			
-		//$Graph =& Image_Graph::factory('graph', array($width, $height));
-		// add a TrueType font
-		$Font =& $Graph->addNew('font', $config_fontpath);
-		// set the font size to 7 pixels
-		$Font->setSize(7);
-		$Graph->setFont($Font);
-		// create the plotarea
-		$Graph->add(
-			Image_Graph::horizontal(
-				$Plotarea = Image_Graph::factory('plotarea'),
-				$Legend = Image_Graph::factory('legend'),
-			50
-			)
-		);
-		$Legend->setPlotarea($Plotarea);
-		// Create the dataset
-		// Merge data into a dataset object (sancho)
-		$Dataset1 =& Image_Graph::factory('dataset');
-		for ($a=0;$a < sizeof($data2); $a++){
-			$Dataset1->addPoint($data_label2[$a], $data2[$a]);
-		}
-		$Plot =& $Plotarea->addNew('pie', $Dataset1);
-		$Plotarea->hideAxis();
-		// create a Y data value marker
-		$Marker =& $Plot->addNew('Image_Graph_Marker_Value', IMAGE_GRAPH_PCT_Y_TOTAL);
-		// create a pin-point marker type
-		$PointingMarker =& $Plot->addNew('Image_Graph_Marker_Pointing_Angular', array(1, &$Marker));
-		// and use the marker on the 1st plot
-		$Plot->setMarker($PointingMarker);
-		// format value marker labels as percentage values
-		$Marker->setDataPreprocessor(Image_Graph::factory('Image_Graph_DataPreprocessor_Formatted', '%0.1f%%'));
-		$Plot->Radius = 15;
-		$FillArray =& Image_Graph::factory('Image_Graph_Fill_Array');
-		$Plot->setFillStyle($FillArray);
-		
-		$FillArray->addColor('green@0.7');
-		$FillArray->addColor('yellow@0.7');
-		$FillArray->addColor('red@0.7');
-		$FillArray->addColor('orange@0.7');
-		$FillArray->addColor('blue@0.7');
-		$FillArray->addColor('purple@0.7');
-		$FillArray->addColor('lightgreen@0.7');
-		$FillArray->addColor('lightblue@0.7');
-		$FillArray->addColor('lightred@0.7');
-		$FillArray->addColor('grey@0.6', 'rest');
-		$Plot->explode(6);
-		$Plot->setStartingAngle(145);
-		// output the Graph
-		$Graph->done();
-	} else 
-		graphic_error ();
 }
-
 
 function graphic_agentaccess($id_agent, $periodo, $width, $height){
 	include ("../include/config.php");
@@ -814,12 +818,8 @@ function graphic_agentaccess($id_agent, $periodo, $width, $height){
 	$Graph->done();
 }
 
-
 function grafico_incidente_estados() {
 	include ("../include/config.php");
-	include ("jpgraph/jpgraph.php");
-	include ("jpgraph/jpgraph_pie.php");
-	include ("jpgraph/jpgraph_pie3d.php");
 	require ("../include/languages/language_".$language_code.".php");
 
 	$data = array(0,0,0,0);
@@ -840,35 +840,19 @@ function grafico_incidente_estados() {
 			$data[3]=$data[3]+1;
 	}
 	$mayor = 0;
-        $mayor_data =0;
-        for ($a=0;$a < sizeof($data); $a++)
-                if ($data[$a] > $mayor_data){
-                        $mayor = $a;
-                        $mayor_data = $data[$a];
-                }
-	$graph = new PieGraph(370,180,"auto");
-	$graph->SetMarginColor('white@0.2');
-	$graph->title->Set($lang_label["incident_status"]);
-	$graph->title->SetFont(FF_FONT1,FS_BOLD);
-	$graph->setShadow();
-	$graph->SetAlphaBlending();	
-	$graph->SetFrame(true);
-	$p1 = new PiePlot3D($data);
- 	$p1->ExplodeSlice($mayor);
-	$p1->SetSize(0.4);
-	$p1->SetCenter(0.3);
+	$mayor_data =0;
+	for ($a=0;$a < sizeof($data); $a++){
+		if ($data[$a] > $mayor_data){
+			$mayor = $a;
+			$mayor_data = $data[$a];
+		}
+	}
 	$legend = array ("Open Incident", "Closed Incident", "Outdated", "Invalid");
-	$p1->SetLegends($legend);
-	$graph->Add($p1);
-	$graph->img->SetAntiAliasing();
-	$graph->Stroke();
+	generic_pie_graph (370, 180,$data, $legend);
 }
 
 function grafico_incidente_prioridad() {
 	include ("../include/config.php");
-	include ("jpgraph/jpgraph.php");
-	include ("jpgraph/jpgraph_pie.php");
-	include ("jpgraph/jpgraph_pie3d.php");
 	require ("../include/languages/language_".$language_code.".php");
 
 	$data = array(0,0,0,0,0,0);
@@ -894,95 +878,57 @@ function grafico_incidente_prioridad() {
 	}
 		
 	$mayor = 0;
-        $mayor_data =0;
-        for ($a=0;$a < sizeof($data); $a++)
-                if ($data[$a] > $mayor_data){
-                        $mayor = $a;
-                        $mayor_data = $data[$a];
-                }
-
-
-	$graph = new PieGraph(370,180,"auto");
-	$graph->SetMarginColor('white@0.2');
-	$graph->title->Set($lang_label["incident_priority"]);
-	$graph->title->SetFont(FF_FONT1,FS_BOLD);
-	$graph->SetShadow();
-	$graph->SetAlphaBlending();	
-	$graph->SetFrame(true);
-	$p1 = new PiePlot3D($data);
-  	$p1->ExplodeSlice($mayor);
-	$p1->SetSize(0.4);
-	$p1->SetCenter(0.3);
-	$legend = array ("Informative","Low","Medium","Serious", "Very serious", "Maintance");
-	$p1->SetLegends($legend);
-	$graph->Add($p1);
-	$graph->img->SetAntiAliasing();
-	$graph->Stroke();
+	$mayor_data =0;
+	for ($a=0;$a < sizeof($data); $a++)
+		if ($data[$a] > $mayor_data){
+				$mayor = $a;
+				$mayor_data = $data[$a];
+		}
+    $legend = array ("Informative","Low","Medium","Serious", "Very serious", "Maintance");
+	generic_pie_graph (320, 200, $data, $legend);
 }
 
 function graphic_incident_group() {
 	include ("../include/config.php");
-	include ("jpgraph/jpgraph.php");
-	include ("jpgraph/jpgraph_pie.php");
-	include ("jpgraph/jpgraph_pie3d.php");
 	require ("../include/languages/language_".$language_code.".php");
 
-        $data = array();
-        $legend = array();
-        $sql1="SELECT distinct id_grupo FROM tincidencia ";
-        $result=mysql_query($sql1);
-        while ($row=mysql_fetch_array($result)){
-                $sql1="SELECT COUNT(id_incidencia) FROM tincidencia WHERE id_grupo = ".$row[0];
-                $result2=mysql_query($sql1);
-                $row2=mysql_fetch_array($result2);
-                $data[] = $row2[0];
-                $legend[] = dame_nombre_grupo($row[0])."(".$row2[0].")";
-        }
-	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
-        // or much better, pay me to do a special version for you, highly optimized :-))))
-        for ($a=0;$a < sizeof($data);$a++){
-                for ($b=$a; $b <sizeof($data); $b++)
-                if ($data[$b] > $data[$a]){
-                        $temp = $data[$a];
-                        $temp_label = $legend[$a];
-                        $data[$a] = $data[$b];
-                        $legend[$a] = $legend[$b];
-                        $data[$b] = $temp;
-                        $legend[$b] = $temp_label;
-                }
-        }
-        $mayor = 0;
-        $mayor_data =0;
-        for ($a=0;$a < sizeof($data); $a++){
-                if ($data[$a] > $mayor_data){
-                        $mayor = $a;
-                        $mayor_data = $data[$a];
-                }
+	$data = array();
+	$legend = array();
+	$sql1="SELECT distinct id_grupo FROM tincidencia ";
+	$result=mysql_query($sql1);
+	while ($row=mysql_fetch_array($result)){
+			$sql1="SELECT COUNT(id_incidencia) FROM tincidencia WHERE id_grupo = ".$row[0];
+			$result2=mysql_query($sql1);
+			$row2=mysql_fetch_array($result2);
+			$data[] = $row2[0];
+			$legend[] = dame_nombre_grupo($row[0])."(".$row2[0].")";
 	}
-
-        $ajuste_altura = sizeof($data) * 20;
-        $graph = new PieGraph(370,80+$ajuste_altura,'auto');        
-        $graph->SetMarginColor('white@0.2');
-        $graph->title->Set($lang_label["incident_group"]);
-        $graph->title->SetFont(FF_FONT1,FS_BOLD);
-        $graph->SetShadow();
-        $graph->SetAlphaBlending();
-        $graph->SetFrame(true);
-        $p1 = new PiePlot3D($data);
-        $p1->ExplodeSlice($mayor);
-        $p1->SetSize(0.25);
-        $p1->SetCenter(0.3);
-        $p1->SetLegends($legend);
-        $graph->Add($p1);
-        $graph->img->SetAntiAliasing();
-        $graph->Stroke();
+// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
+	// or much better, pay me to do a special version for you, highly optimized :-))))
+	for ($a=0;$a < sizeof($data);$a++){
+			for ($b=$a; $b <sizeof($data); $b++)
+			if ($data[$b] > $data[$a]){
+					$temp = $data[$a];
+					$temp_label = $legend[$a];
+					$data[$a] = $data[$b];
+					$legend[$a] = $legend[$b];
+					$data[$b] = $temp;
+					$legend[$b] = $temp_label;
+			}
+	}
+	$mayor = 0;
+	$mayor_data =0;
+	for ($a=0;$a < sizeof($data); $a++){
+		if ($data[$a] > $mayor_data){
+				$mayor = $a;
+				$mayor_data = $data[$a];
+		}
+	}
+	generic_pie_graph (320, 200, $data, $legend);
 }
 
 function graphic_incident_user() {
 	include ("../include/config.php");
-	include ("jpgraph/jpgraph.php");
-	include ("jpgraph/jpgraph_pie.php");
-	include ("jpgraph/jpgraph_pie3d.php");
 	require ("../include/languages/language_".$language_code.".php");
 
 	$data = array();
@@ -990,57 +936,38 @@ function graphic_incident_user() {
 	$sql1="SELECT distinct id_usuario FROM tincidencia ";
 	$result=mysql_query($sql1);
 	while ($row=mysql_fetch_array($result)){
-			$sql1="SELECT COUNT(id_incidencia) FROM tincidencia WHERE id_usuario = '".$row[0]."'";
-			$result2=mysql_query($sql1);
-			$row2=mysql_fetch_array($result2);
-			$data[] = $row2[0];
-			$legend[] = $row[0]."(".$row2[0].")";
+		$sql1="SELECT COUNT(id_incidencia) FROM tincidencia WHERE id_usuario = '".$row[0]."'";
+		$result2=mysql_query($sql1);
+		$row2=mysql_fetch_array($result2);
+		$data[] = $row2[0];
+		$legend[] = $row[0]."(".$row2[0].")";
 	}
 	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
-        // or much better, pay me to do a special version for you, highly optimized :-))))
-        for ($a=0;$a < sizeof($data);$a++){
-                for ($b=$a; $b <sizeof($data); $b++)
-                if ($data[$b] > $data[$a]){
-                        $temp = $data[$a];
-                        $temp_label = $legend[$a];
-                        $data[$a] = $data[$b];
-                        $legend[$a] = $legend[$b];
-                        $data[$b] = $temp;
-                        $legend[$b] = $temp_label;
-                }
-        }
-        $mayor = 0;
-        $mayor_data =0;
-        for ($a=0;$a < sizeof($data); $a++){
-                if ($data[$a] > $mayor_data){
-                        $mayor = $a;
-                        $mayor_data = $data[$a];
-                }
-        }
-
-        $ajuste_altura = sizeof($data) * 20;
-        $graph = new PieGraph(370,80+$ajuste_altura,'auto');
-        $graph->SetMarginColor('white@0.2');
-        $graph->title->Set($lang_label["incident_user"]);
-        $graph->title->SetFont(FF_FONT1,FS_BOLD);
-        $graph->SetShadow();
-        $graph->SetAlphaBlending();
-        $graph->SetFrame(true);
-        $p1 = new PiePlot3D($data);
-        $p1->ExplodeSlice($mayor);
-        $p1->SetSize(0.25);
-        $p1->SetCenter(0.3);
-        $p1->SetLegends($legend);
-        $graph->Add($p1);
-        $graph->img->SetAntiAliasing();
-        $graph->Stroke();
+	// or much better, pay me to do a special version for you, highly optimized :-))))
+	for ($a=0;$a < sizeof($data);$a++){
+			for ($b=$a; $b <sizeof($data); $b++)
+			if ($data[$b] > $data[$a]){
+					$temp = $data[$a];
+					$temp_label = $legend[$a];
+					$data[$a] = $data[$b];
+					$legend[$a] = $legend[$b];
+					$data[$b] = $temp;
+					$legend[$b] = $temp_label;
+			}
+	}
+	$mayor = 0;
+	$mayor_data =0;
+	for ($a=0;$a < sizeof($data); $a++){
+			if ($data[$a] > $mayor_data){
+					$mayor = $a;
+					$mayor_data = $data[$a];
+			}
+	}
+	generic_pie_graph (320, 200, $data, $legend);
 }
 
-function graphic_user_activity() {
+function graphic_user_activity($width=300, $height=200) {
 	include ("../include/config.php");
-	include ("jpgraph/jpgraph.php");
-	include ("jpgraph/jpgraph_pie.php");
-	include ("jpgraph/jpgraph_pie3d.php");
 	require ("../include/languages/language_".$language_code.".php");
 
 	$data = array();
@@ -1048,12 +975,12 @@ function graphic_user_activity() {
 	$sql1="SELECT DISTINCT ID_usuario FROM tsesion ";
 	$result=mysql_query($sql1);
 	while ($row=mysql_fetch_array($result)){
-	$entrada= entrada_limpia($row[0]);
-			$sql1='SELECT COUNT(ID_usuario) FROM tsesion WHERE ID_usuario = "'.$entrada.'"';
-			$result2=mysql_query($sql1);
-			$row2=mysql_fetch_array($result2);
-			$data[] = $row2[0];
-			$legend[] = substr($row[0],0,16)."(".$row2[0].")";
+		$entrada= entrada_limpia($row[0]);
+		$sql1='SELECT COUNT(ID_usuario) FROM tsesion WHERE ID_usuario = "'.$entrada.'"';
+		$result2=mysql_query($sql1);
+		$row2=mysql_fetch_array($result2);
+		$data[] = $row2[0];
+		$legend[] = substr($row[0],0,16)."(".$row2[0].")";
 	}
 
 	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
@@ -1070,91 +997,56 @@ function graphic_user_activity() {
 		}
 	}
 
-        $mayor = 0;
-        $mayor_data =0;
-        for ($a=0;$a < sizeof($data); $a++){
-                if ($data[$a] > $mayor_data){
-                        $mayor = $a;
-                        $mayor_data = $data[$a];
-                }
-        }
-
-        $ajuste_altura = sizeof($data) * 20;
-        $graph = new PieGraph(500,80+$ajuste_altura,'auto');
-        $graph->SetMarginColor('white@0.2');
-        $graph->title->Set($lang_label["users_statistics"]);
-        $graph->title->SetFont(FF_FONT1,FS_BOLD);
-        $graph->SetShadow();
-        $graph->SetAlphaBlending();
-        $graph->SetFrame(true);
-        $p1 = new PiePlot3D($data);
-        $p1->ExplodeSlice($mayor);
-        $p1->SetSize(0.25);
-        $p1->SetCenter(0.3);
-        $p1->SetLegends($legend);
-	$graph->legend->Pos(0.05,0.49,"right","center");
-        $graph->Add($p1);
-        $graph->img->SetAntiAliasing();
-        $graph->Stroke();
+	// Take only the first 5 items
+	if (sizeof($data) >= 5){
+		for ($a=0;$a < 5;$a++){
+			$legend2[]= $legend[$a];
+			$data2[] = $data[$a];
+		}
+	 	generic_pie_graph ($width, $height, $data2, $legend2);
+	} else
+	 	generic_pie_graph ($width, $height, $data, $legend);
 }
 
-function graphic_incident_source() {
+function graphic_incident_source ($width=320, $height=200) {
 	include ("../include/config.php");
-	include ("jpgraph/jpgraph.php");
-	include ("jpgraph/jpgraph_pie.php");
-	include ("jpgraph/jpgraph_pie3d.php");
 	require ("../include/languages/language_".$language_code.".php");
 
-        $data = array();
-        $legend = array();
-        $sql1="SELECT DISTINCT origen FROM tincidencia";
-        $result=mysql_query($sql1);
-        while ($row=mysql_fetch_array($result)){
-                $sql1="SELECT COUNT(id_incidencia) FROM tincidencia WHERE origen = '".$row[0]."'";
-                $result2=mysql_query($sql1);
-                $row2=mysql_fetch_array($result2);
-                $data[] = $row2[0];
-                $legend[] = $row[0]."(".$row2[0].")";
-        }
-	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
-        // or much better, pay me to do a special version for you, highly optimized :-))))
-        for ($a=0;$a < sizeof($data);$a++){
-                for ($b=$a; $b <sizeof($data); $b++)
-                if ($data[$b] > $data[$a]){
-                        $temp = $data[$a];
-                        $temp_label = $legend[$a];
-                        $data[$a] = $data[$b];
-                        $legend[$a] = $legend[$b];
-                        $data[$b] = $temp;
-                        $legend[$b] = $temp_label;
-                }
-        }
-        $mayor = 0;
-        $mayor_data =0;
-        for ($a=0;$a < sizeof($data); $a++){
-                if ($data[$a] > $mayor_data){
-                        $mayor = $a;
-                        $mayor_data = $data[$a];
-                }
-        }
-
-        $ajuste_altura = sizeof($data) * 20;
-        $graph = new PieGraph(370,80+$ajuste_altura,'auto');
-        $graph->SetMarginColor('white@0.2');
-        $graph->title->Set($lang_label["incident_source"]);
-        $graph->title->SetFont(FF_FONT1,FS_BOLD);
-        $graph->SetShadow();
-        $graph->SetAlphaBlending();
-        $graph->SetFrame(true);
-        $p1 = new PiePlot3D($data);
-        $p1->ExplodeSlice($mayor);
-        $p1->SetSize(0.25);
-        $p1->SetCenter(0.3);
-        $p1->SetLegends($legend);
-        $graph->Add($p1);
-        $graph->img->SetAntiAliasing();
-        $graph->Stroke();
+	$data = array();
+	$legend = array();
+	$sql1="SELECT DISTINCT origen FROM tincidencia";
+	$result=mysql_query($sql1);
+	while ($row=mysql_fetch_array($result)){
+			$sql1="SELECT COUNT(id_incidencia) FROM tincidencia WHERE origen = '".$row[0]."'";
+			$result2=mysql_query($sql1);
+			$row2=mysql_fetch_array($result2);
+			$data[] = $row2[0];
+			$legend[] = $row[0]."(".$row2[0].")";
+	}
+// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
+	// or much better, pay me to do a special version for you, highly optimized :-))))
+	for ($a=0;$a < sizeof($data);$a++){
+			for ($b=$a; $b <sizeof($data); $b++)
+			if ($data[$b] > $data[$a]){
+					$temp = $data[$a];
+					$temp_label = $legend[$a];
+					$data[$a] = $data[$b];
+					$legend[$a] = $legend[$b];
+					$data[$b] = $temp;
+					$legend[$b] = $temp_label;
+			}
+	}
+	// Take only the first 5 items
+	if (sizeof($data) >= 5){
+		for ($a=0;$a < 5;$a++){
+			$legend2[]= $legend[$a];
+			$data2[] = $data[$a];
+		}
+	 	generic_pie_graph ($width, $height, $data2, $legend2);
+	} else
+	 	generic_pie_graph ($width, $height, $data, $legend);
 }
+
 function grafico_db_agentes_modulos() {
 	include ("../include/config.php");
 	include ("jpgraph/jpgraph.php");
@@ -1222,11 +1114,8 @@ function grafico_db_agentes_modulos() {
 
 }
 
-function grafico_eventos_usuario() {
+function grafico_eventos_usuario( $width=320, $height=200) {
 	include ("../include/config.php");
-	include ("jpgraph/jpgraph.php");
-	include ("jpgraph/jpgraph_pie.php");
-	include ("jpgraph/jpgraph_pie3d.php");
 	require ("../include/languages/language_".$language_code.".php");
 
 	$data = array();
@@ -1243,49 +1132,31 @@ function grafico_eventos_usuario() {
 		}
 	}
 	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
-        // or much better, pay me to do a special version for you, highly optimized :-))))
-        for ($a=0;$a < sizeof($data);$a++){
-                for ($b=$a; $b <sizeof($data); $b++)
-                if ($data[$b] > $data[$a]){
-                        $temp = $data[$a];
-                        $temp_label = $legend[$a];
-                        $data[$a] = $data[$b];
-                        $legend[$a] = $legend[$b];
-                        $data[$b] = $temp;
-                        $legend[$b] = $temp_label;
-                }
-        }
-	$mayor = 0;
-	$mayor_data =0;
-	for ($a=0;$a < sizeof($data); $a++)
-	if ($data[$a] > $mayor_data){
-   		$mayor = $a;
-   		$mayor_data = $data[$a];
+	// or much better, pay me to do a special version for you, highly optimized :-))))
+	for ($a=0;$a < sizeof($data);$a++){
+			for ($b=$a; $b <sizeof($data); $b++)
+			if ($data[$b] > $data[$a]){
+					$temp = $data[$a];
+					$temp_label = $legend[$a];
+					$data[$a] = $data[$b];
+					$legend[$a] = $legend[$b];
+					$data[$b] = $temp;
+					$legend[$b] = $temp_label;
+			}
 	}
-
-	$ajuste_altura = sizeof($data) * 17;
-	$graph = new PieGraph(430,170+$ajuste_altura,"auto");
-	$graph->SetMarginColor('white@0.2');
-	$graph->title->Set($lang_label["events_per_user"]);
-	$graph->title->SetFont(FF_FONT1,FS_BOLD);
-	$graph->SetShadow();
-	$graph->SetAlphaBlending();	
-	$graph->SetFrame(true);
-	$p1 = new PiePlot3D($data);
-	$p1->ExplodeSlice($mayor);
-	$p1->SetSize(0.2);
-	$p1->SetCenter(0.3);
-	$p1->SetLegends($legend);
-	$graph->Add($p1);
-	$graph->img->SetAntiAliasing();
-	$graph->Stroke();
+	// Take only the first 5 items
+	if (sizeof($data) >= 5){
+		for ($a=0;$a < 5;$a++){
+			$legend2[]= $legend[$a];
+			$data2[] = $data[$a];
+		}
+	 	generic_pie_graph ($width, $height, $data2, $legend2);
+	} else
+	 	generic_pie_graph ($width, $height, $data, $legend);
 }
 
 function grafico_eventos_total() {
-	include ("../include/config.php");
-	include ("jpgraph/jpgraph.php");
-	include ("jpgraph/jpgraph_pie.php");
-	include ("jpgraph/jpgraph_pie3d.php");
+	require ("../include/config.php");
 	require ("../include/languages/language_".$language_code.".php");
 
 	$data = array();
@@ -1307,47 +1178,29 @@ function grafico_eventos_total() {
 	$legend[] = "Not Revised ( $row[0] )";
 
 	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
-        // or much better, pay me to do a special version for you, highly optimized :-))))
-        for ($a=0;$a < sizeof($data);$a++){
-                for ($b=$a; $b <sizeof($data); $b++)
-                if ($data[$b] > $data[$a]){
-                        $temp = $data[$a];
-                        $temp_label = $legend[$a];
-                        $data[$a] = $data[$b];
-                        $legend[$a] = $legend[$b];
-                        $data[$b] = $temp;
-                        $legend[$b] = $temp_label;
-                }
-        }
+	// or much better, pay me to do a special version for you, highly optimized :-))))
+	for ($a=0;$a < sizeof($data);$a++){
+			for ($b=$a; $b <sizeof($data); $b++)
+			if ($data[$b] > $data[$a]){
+					$temp = $data[$a];
+					$temp_label = $legend[$a];
+					$data[$a] = $data[$b];
+					$legend[$a] = $legend[$b];
+					$data[$b] = $temp;
+					$legend[$b] = $temp_label;
+			}
+	}
 	$mayor=0; $mayor_data=0;
-        for ($a=0;$a < sizeof($data); $a++)
-        if ($data[$a] > $mayor_data){
-                $mayor = $a;
-                $mayor_data = $data[$a];
-        }
-	
-	$graph = new PieGraph(430,200,"auto");
-	$graph->SetMarginColor('white@0.2');
-	$graph->title->Set($lang_label["event_total"]." ( $total )");
-	$graph->title->SetFont(FF_FONT1,FS_BOLD);
-	$graph->SetShadow();
-	$graph->SetAlphaBlending();	
-	$graph->SetFrame(true);
-	$p1 = new PiePlot3D($data);
- 	$p1->ExplodeSlice($mayor);
-	$p1->SetSize(0.4);
-	$p1->SetCenter(0.28);
-	$p1->SetLegends($legend);
-	$graph->Add($p1);
-	$graph->img->SetAntiAliasing();
-	$graph->Stroke();
+	for ($a=0;$a < sizeof($data); $a++)
+	if ($data[$a] > $mayor_data){
+			$mayor = $a;
+			$mayor_data = $data[$a];
+	}
+	generic_pie_graph (320, 200, $data, $legend);
 }
 
-function grafico_eventos_grupo() {
+function grafico_eventos_grupo ($width = 300, $height = 200 ) {
 	include ("../include/config.php");
-	include ("jpgraph/jpgraph.php");
-	include ("jpgraph/jpgraph_pie.php");
-	include ("jpgraph/jpgraph_pie3d.php");
 	require ("../include/languages/language_".$language_code.".php");
 
 	$data = array();
@@ -1364,42 +1217,27 @@ function grafico_eventos_grupo() {
 		}
 	}
 	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
-        // or much better, pay me to do a special version for you, highly optimized :-))))
-        for ($a=0;$a < sizeof($data);$a++){
-                for ($b=$a; $b <sizeof($data); $b++)
-                if ($data[$b] > $data[$a]){
-                        $temp = $data[$a];
-                        $temp_label = $legend[$a];
-                        $data[$a] = $data[$b];
-                        $legend[$a] = $legend[$b];
-                        $data[$b] = $temp;
-                        $legend[$b] = $temp_label;
-                }
-        } 
-        $mayor=0; $mayor_data=0;
-        for ($a=0;$a < sizeof($data); $a++)
-        if ($data[$a] > $mayor_data){
-                $mayor = $a;
-                $mayor_data = $data[$a];
-        }
-	$total_grupos = sizeof($data);
-	$ajuste_altura = $total_grupos * 10;
-	
-	$graph = new PieGraph(430,150+$ajuste_altura,"auto");
-	$graph->SetMarginColor('white@0.2');
-	$graph->title->Set($lang_label["events_per_group"]);
-	$graph->title->SetFont(FF_FONT1,FS_BOLD);
-	$graph->SetShadow();
-	$graph->SetAlphaBlending();	
-	$graph->SetFrame(true);
-	$p1 = new PiePlot3D($data);
-	$p1->ExplodeSlice($mayor);
-	$p1->SetSize(0.35);
-	$p1->SetCenter(0.28);
-	$p1->SetLegends($legend);
-	$graph->Add($p1);
-	$graph->img->SetAntiAliasing();
-	$graph->Stroke();
+	// or much better, pay me to do a special version for you, highly optimized :-))))
+	for ($a=0;$a < sizeof($data);$a++){
+			for ($b=$a; $b <sizeof($data); $b++)
+			if ($data[$b] > $data[$a]){
+					$temp = $data[$a];
+					$temp_label = $legend[$a];
+					$data[$a] = $data[$b];
+					$legend[$a] = $legend[$b];
+					$data[$b] = $temp;
+					$legend[$b] = $temp_label;
+			}
+	}
+// Take only the first x items
+	if (sizeof($data) >= 7){
+		for ($a=0;$a < 7;$a++){
+			$legend2[]= $legend[$a];
+			$data2[] = $data[$a];
+		}
+	 	generic_pie_graph ($width, $height, $data2, $legend2);
+	} else
+	 	generic_pie_graph ($width, $height, $data, $legend);
 }
 
 function grafico_db_agentes_paquetes() {
@@ -1456,7 +1294,7 @@ function grafico_db_agentes_paquetes() {
         $graph->xaxis->SetLabelMargin(5);
         $graph->Set90AndMargin(100,20,50,30);
         $p1 = new BarPlot($data);
-	$p1->value->SetFormat('%.0f ');
+		$p1->value->SetFormat('%.0f ');
         $p1->value->Show();
         $p1->value->SetAlign('left','center');
         $p1->SetFillColor("#0000fd");
@@ -1968,7 +1806,7 @@ if (isset($_GET["tipo"])){
 	elseif ($_GET["tipo"] =="db_agente_purge")
 		grafico_db_agentes_purge(-1, $width, $height);
 	elseif ($_GET["tipo"] =="group_events")
-		grafico_eventos_grupo();
+		grafico_eventos_grupo($width, $height);
 	elseif ($_GET["tipo"] =="user_events")
 		grafico_eventos_usuario();
 	elseif ($_GET["tipo"] =="total_events")
@@ -1980,7 +1818,7 @@ if (isset($_GET["tipo"])){
 	elseif ($_GET["tipo"] =="source_incident")
                 graphic_incident_source();
 	elseif ($_GET["tipo"] =="user_activity")
-                graphic_user_activity();
+                graphic_user_activity($width,$height);
 	elseif ($_GET["tipo"] == "agentaccess")
 		graphic_agentaccess($_GET["id"], $_GET["periodo"], $width, $height);
 	elseif ($_GET["tipo"] == "agentmodules")

@@ -160,27 +160,14 @@ if (isset($_POST["event"]))
 	$event = entrada_limpia($_POST["event"]);
 
 echo "<h2>".$lang_label["events"]." &gt; ".$lang_label["event_main_view"]."<a href='help/".$help_code."/chap5.php#5' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
-echo "<table cellpadding='4' cellspacing='4' class='databox'>";
-echo "<tr>";
+echo "<table width=100%>";
+echo "<tr><td>";
+echo "<table cellpadding='4' cellspacing='4' class='databox' >";
 echo "<td colspan='2' valign='top'>";
 echo "<h3>".$lang_label["filter"]."</h3>";
-echo "</td>";
-echo "<td rowspan='4' class='f9' style='padding-left: 30px; line-height: 17px; vertical-align: top;'>";
-echo "<h3>".$lang_label["status"]."</h3>";
-echo "<img src='images/dot_green.gif'> - ".$lang_label["validated_event"];
-echo "<br>";
-echo "<img src='images/dot_red.gif'> - ".$lang_label["not_validated_event"];
-echo "</td>";
-echo "<td rowspan='4' class='f9' style='padding-left: 30px; line-height: 17px; vertical-align: top;'>";
-echo "<h3>".$lang_label["action"]."</h3>";
-echo "<img src='images/ok.png'> - ".$lang_label["validate_event"];
-echo "<br>";
-echo "<img src='images/cross.png'> - ".$lang_label["delete_event"];
-echo "<br>";
-echo "<img src='images/page_lightning.png'> - ".$lang_label["create_incident"];
-echo "</td></tr>";
+echo "<tr>";
 echo "<form method='post' action='index.php?sec=eventos&sec2=operation/events/events&refr=60'>";
-echo "<tr><td>".$lang_label["group"]."</td>";
+echo "<td>".$lang_label["group"]."</td>";
 echo "<td>";
 echo "<select name='ev_group' onChange='javascript:this.form.submit();' class='w130'>";
 if ( $ev_group > 1 ){
@@ -208,8 +195,16 @@ echo "</select>";
 echo "</form>";
 echo "<td valign='middle'>";
 echo "<noscript><input type='submit' class='sub' value='".$lang_label["show"]."'></noscript>";
-echo "</td></tr>";
+echo "</td>";
 echo "</table>";
+echo "<td align='right'>";
+echo "<table cellpadding=0 cellspacing=0 border=0>";
+echo "<tr><td>";
+echo "<img src='reporting/fgraph.php?tipo=group_events&width=300&height=130'>";
+echo "</td></tr></table>";
+
+echo "</table>";
+
 echo "<br>";
 	
 // How many events do I have in total ?
@@ -326,5 +321,21 @@ if ($total_events > 0){
 		echo "<input class='sub delete' type='submit' name='deletebt' value='".$lang_label["delete"]."'>";
 	}
 	echo "</form></table>";
+echo "<table>";
+echo "<tr>";
+echo "<td rowspan='4' class='f9' style='padding-left: 30px; line-height: 17px; vertical-align: top;'>";
+echo "<h3>".$lang_label["status"]."</h3>";
+echo "<img src='images/dot_green.gif'> - ".$lang_label["validated_event"];
+echo "<br>";
+echo "<img src='images/dot_red.gif'> - ".$lang_label["not_validated_event"];
+echo "</td>";
+echo "<td rowspan='4' class='f9' style='padding-left: 30px; line-height: 17px; vertical-align: top;'>";
+echo "<h3>".$lang_label["action"]."</h3>";
+echo "<img src='images/ok.png'> - ".$lang_label["validate_event"];
+echo "<br>";
+echo "<img src='images/cross.png'> - ".$lang_label["delete_event"];
+echo "<br>";
+echo "<img src='images/page_lightning.png'> - ".$lang_label["create_incident"];
+echo "</td></tr></table>";
 } // no events to show
 ?>

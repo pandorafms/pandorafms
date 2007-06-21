@@ -1,5 +1,18 @@
 2007-06-21  Sancho Lerena  <slerena@artica.es>
 
+	* images/op*.gif, god*.gif: deleted. Also deleted several other
+	GIF files.
+	
+	* images/god*.png: New png files in godmode icons.
+	
+	* include/sytles/god.css, op.css: Changed to new .png icons.
+	
+	* help/*, general/error*.php: Changed old .gif logo to new .png logo.
+	
+	* godmode/reporting/map_builder.php: Changed cancel.gif to cross.png.
+
+2007-06-21  Sancho Lerena  <slerena@artica.es>
+
 	* include/languages/language_en.php: More new tokens added.
 	
 	* include/functions.php: Added function render time for alert time

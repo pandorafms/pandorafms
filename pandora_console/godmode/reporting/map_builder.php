@@ -538,7 +538,7 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_map"]))) {
 			echo "<td class='$tdcolor'>";
 			echo "<input type=text size=4 name='height' value='$height'></td>";
 			echo "<td class='$tdcolor'>";
-			echo "<a href='index.php?sec=greporting&sec2=godmode/reporting/map_builder&id=$id_map&delete=$id_layoutdata'><img src='images/cancel.gif'></a>";
+			echo "<a href='index.php?sec=greporting&sec2=godmode/reporting/map_builder&id=$id_map&delete=$id_layoutdata'><img src='images/cross.png'></a>";
 			echo "<td class='$tdcolor' align='center'>";
 			echo "<input type=submit class='sub next' value='".$lang_label["update"]."'>";
 			echo "</form>";
@@ -578,7 +578,7 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_map"]))) {
 			echo "<td valign='top' class='$tdcolor'>".$row["width"]."x".$row["height"]."</td>";		
 			$id_map = $row["id"];
 			echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=greporting&sec2=godmode/reporting/map_builder&id=$id_map'><img src='images/setup.png'></a>";
-			echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=greporting&sec2=godmode/reporting/map_builder&delete_map=$id_map'><img src='images/cancel.gif'></a>";
+			echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=greporting&sec2=godmode/reporting/map_builder&delete_map=$id_map'><img src='images/cross.png'></a>";
 		}
 	}
 	echo "</table>";

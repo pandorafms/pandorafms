@@ -25,7 +25,7 @@
 <body>
 
 <div class='logo'>
-<img src="../../images/logo_menu.gif" alt='logo'><h1>Ayuda de Pandora FMS 1.3</h1>
+<img src="../../images/pandora_logo_head.png" alt='logo'><h1>Ayuda de Pandora FMS 1.3</h1>
 </div>
 <div class="toc">
 <h1><a href="chap5.php">5. Eventos</a> « <a href="toc.php">&Iacute;ndice</a> » <a href="chap7.php">7. Servidores Pandora</a></h1>

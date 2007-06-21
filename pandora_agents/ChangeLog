@@ -1,5 +1,10 @@
 2007-06-18  Manuel Arostegui <marostegui@artica.es>
 
+	* linux/pandora_agent_installer: Fixed a bug related
+	  with the copy of the pandora_agent_daemon file.
+
+2007-06-18  Manuel Arostegui <marostegui@artica.es>
+
 	* linux/pandora_agents.spec: Renamed to pandora_agent.spec
 
 	* linux/pandora_agent.spec: Ready to 1.3 version packagement.

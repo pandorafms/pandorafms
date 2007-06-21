@@ -22,31 +22,31 @@ div#god1>ul, div#god2>ul, div#god3>ul, div#god4>ul, div#god5>ul, div#god51>ul, d
 	width: 126px;
 }
 #god1 li, #god1 li:hover, #god1s li  {
-	background: url(../../images/god1.gif) no-repeat 4px 2px;
+	background: url(../../images/god1.png) no-repeat 4px 2px;
 }
 #god2 li, #god2 li:hover, #god2s li{
-	background: url(../../images/god2.gif) no-repeat 4px 3px;
+	background: url(../../images/god2.png) no-repeat 4px 3px;
 }
 #god3 li, #god3 li:hover, #god3s li {
-	background: url(../../images/god3.gif) no-repeat 5px 2px;
+	background: url(../../images/god3.png) no-repeat 5px 3px;
 }
 #god4 li, #god4 li:hover, #god4s li{
-	background: url(../../images/god4.gif) no-repeat 5px 4px;
+	background: url(../../images/god4.png) no-repeat 5px 4px;
 }
 #god5 li, #god5 li:hover, #god5s li {
-	background: url(../../images/god5.gif) no-repeat 3px 3px;
+	background: url(../../images/god5.png) no-repeat 3px 3px;
 }
 #god51 li, #god51 li:hover, #god51s li {
 	background: url(../../images/reporting_edit.png) no-repeat 4px 4px;
 }
 #god6 li, #god6 li:hover, #god6s li {
-	background: url(../../images/god6.gif) no-repeat 4px 3px;
+	background: url(../../images/god6.png) no-repeat 4px 3px;
 }
 #god7 li, #god7 li:hover, #god7s li {
-	background: url(../../images/god7.gif) no-repeat 4px 3px;
+	background: url(../../images/god7.png) no-repeat 4px 3px;
 }
 #god8 li, #god8 li:hover, #god8s li {
-	background: url(../../images/god8.gif) no-repeat 5px 3px;
+	background: url(../../images/god8.png) no-repeat 5px 4px;
 }
 #god_module li, #god_module li:hover, #god_module_sel li {
 	background: url(../../images/brick.png) no-repeat 6px 4px;

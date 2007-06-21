@@ -28,7 +28,7 @@
 <body>
 
 <div class='logo'>
-<img src="../../images/logo_menu.gif" alt='logo'><h1>Pandora FMS Help 1.3</h1>
+<img src="../../images/pandora_logo_head.png" alt='logo'><h1>Pandora FMS Help 1.3</h1>
 </div>
 <div class="toc">
 <h1><a href="toc.php">Table of Contents</a> » <a href="chap2.php">2. Users</a></h1>

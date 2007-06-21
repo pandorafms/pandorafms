@@ -26,7 +26,7 @@
 
 <body>
 <center>
-<img src="../../images/logo_menu.gif" alt='logo'>
+<img src="../../images/pandora_logo_head.png" alt='logo'>
 
 <p><h1>Pandora FMS Help 1.3</h1></p>
 <p>(Updated December, 15<sup>th</sup> 2006).</p>

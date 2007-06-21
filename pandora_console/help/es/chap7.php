@@ -25,7 +25,7 @@
 <body>
 
 <div class='logo'>
-<img src="../../images/logo_menu.gif" alt='logo'><h1>Ayuda de Pandora FMS 1.3</h1>
+<img src="../../images/pandora_logo_head.png" alt='logo'><h1>Ayuda de Pandora FMS 1.3</h1>
 </div>
 <div class="toc">
 <h1><a href="chap6.php">6. Auditor&iacute;a del Sistema</a> « <a href="toc.php">&Iacute;ndice</a> » <a href="chap8.php">8. Mantenimiento de la Base de Datos</a></h1>

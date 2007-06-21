@@ -28,7 +28,7 @@
 <body>
 
 <div class='logo'>
-<img src="../../images/logo_menu.gif" alt='logo'><h1>Pandora 1.2 Help / Ayuda de Pandora v1.2</h1>
+<img src="../../images/pandora_logo_head.png" alt='logo'><h1>Pandora 1.2 Help / Ayuda de Pandora v1.2</h1>
 </div>
 
 <div class="rayah">

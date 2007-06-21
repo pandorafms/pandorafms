@@ -210,16 +210,18 @@ if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 	}
 	echo '<ul class="mn"><li><a href="index.php?sec=snmpconsole&amp;sec2=operation/snmpconsole/snmp_view&amp;refr=30" class="mn">'.$lang_label["SNMP_console"].'</a></li></ul></div>';
 
-	// SNMP Console alert (submenu)
-	if (isset($_GET["sec"]) && $_GET["sec"] == "snmpconsole"){
-		if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/snmpconsole/snmp_alert") {
-			echo "<div class='arrows'>";
-		} else {
-			echo "<div class='arrow'>";
+	if ((give_acl($_SESSION["id_usuario"], 0, "AW")==1)){
+		// SNMP Console alert (submenu)
+		if (isset($_GET["sec"]) && $_GET["sec"] == "snmpconsole"){
+			if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/snmpconsole/snmp_alert") {
+				echo "<div class='arrows'>";
+			} else {
+				echo "<div class='arrow'>";
+			}
+			echo "<ul class='mn'><li><a href='index.php?sec=snmpconsole&amp;sec2=operation/snmpconsole/snmp_alert' class='mn'>".$lang_label["snmp_console_alert"]."</a></li></ul></div>";
 		}
-		echo "<ul class='mn'><li><a href='index.php?sec=snmpconsole&amp;sec2=operation/snmpconsole/snmp_alert' class='mn'>".$lang_label["snmp_console_alert"]."</a></li></ul></div>";
 	}
-
+	
 	// Messages
 	if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/messages/message" && !isset($_GET["nuevo_g"])) {
 		echo '<div id="op7s">';

@@ -873,6 +873,9 @@ $lang_label["time_to"]="Time to";
 $lang_label["time"]="Time";
 $lang_label["module_graph"] = "Module graph";
 $lang_label["map_item_add"] = "Add map item";
+$lang_label["graph_event_total"] = "Event graph";
+$lang_label["graph_event_group"] = "Event graph by group";
+$lang_label["graph_event_user"] = "Event graph by user";
 global $lang_label; 
 global $help_label;
 ?>

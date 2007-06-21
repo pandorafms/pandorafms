@@ -29,7 +29,7 @@ echo '
 ';
 echo "<div id='head_m'>";
 
-echo "<table border='0'>
+echo "<table width=620 border='0'>
 	<tr>";
 if (isset ($_SESSION["id_usuario"])){
 	echo "<td width=40%>";

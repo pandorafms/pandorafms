@@ -35,7 +35,7 @@ if (comprueba_login() == 0) {
 	echo "<td class='datos'>".$now."</td>";
 	echo "<input type='hidden' name='timestamp' value='".$now."'>";
 	echo "<input type='hidden' name='id_inc' value='".$id_inc."'>";
-	echo '<tr><td colspan="3" class="datos2"><textarea name="nota" rows="20" cols="80">';
+	echo '<tr><td colspan="3" class="datos2"><textarea name="nota" rows="20" cols="80" style="height: 300px;">';
 	echo '</textarea>';
 	echo '</td></tr>';
 	echo '</table><table width="550">';

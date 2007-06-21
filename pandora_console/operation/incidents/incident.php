@@ -363,12 +363,12 @@ if ($row2_count[0] <= 0 ) {
 	echo "<tr>";
 	echo "<th width='43'>ID</th>";
 	echo "<th>".$lang_label["status"]."</th>";
-	echo "<th width='165'>".$lang_label["incident"]."</th>";
-	echo "<th width='50'>".$lang_label["priority"]."</th>";
+	echo "<th >".$lang_label["incident"]."</th>";
+	echo "<th >".$lang_label["priority"]."</th>";
 	echo "<th>".$lang_label["group"]."</th>";
-	echo "<th width='150'>".$lang_label["updated_at"]."</th>";
+	echo "<th>".$lang_label["updated_at"]."</th>";
 	echo "<th>".$lang_label["source"]."</th>";
-	echo "<th width='75'>".$lang_label["in_openedby"]."</th>";
+	echo "<th width='50'>".$lang_label["in_openedby"]."</th>";
 	echo "<th>".$lang_label["delete"]."</th>";
 	$color = 1;
 
@@ -418,8 +418,8 @@ if ($row2_count[0] <= 0 ) {
 				case 13: echo "<img src='images/dot_green.gif'>";
 							break;
 			}
-			echo "<td class='$tdcolor'><a href='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id=".$row2["id_incidencia"]."'>".substr(salida_limpia($row2["titulo"]),0,25);
-			echo "<td class='$tdcolor'>";
+			echo "<td class='$tdcolor'><a href='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id=".$row2["id_incidencia"]."'>".substr(salida_limpia($row2["titulo"]),0,45);
+			echo "<td class='$tdcolor' align='center'>";
 			switch ( $row2["prioridad"] ){
 				case 0: echo "<img src='images/dot_green.gif'>"."<img src='images/dot_green.gif'>"."<img src='images/dot_yellow.gif'>"; break;
 				case 1: echo "<img src='images/dot_green.gif'>"."<img src='images/dot_yellow.gif'>"."<img src='images/dot_yellow.gif'>"; break;
@@ -436,10 +436,14 @@ if ($row2_count[0] <= 0 ) {
 			case 4: echo $lang_label["very_serious"]; break;
 			case 10: echo $lang_label["maintenance"]; break;
 			*/
-			echo "<td class='$tdcolor'>".dame_nombre_grupo($row2["id_grupo"]);
-			echo "<td class='$tdcolor'>".$row2["actualizacion"];
+			echo "<td class='$tdcolor' align='center'>";
+			$id_grupo = $row2["id_grupo"];
+			echo '<img src="images/groups_small/'.show_icon_group($id_grupo).'.png" title="'.dame_grupo($id_grupo).'">';
+			
+			
+			echo "<td class='$tdcolor'>".human_time_comparation($row2["actualizacion"]);
 			echo "<td class='$tdcolor'>".$row2["origen"];
-			echo "<td class='$tdcolor'><a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$row2["id_usuario"]."'><a href='#' class='tip'>&nbsp;<span>".dame_nombre_real($row2["id_usuario"])."</span></a>".substr($row2["id_usuario"], 0, 8)."</a></td>";
+			echo "<td class='$tdcolor'><a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$row2["id_usuario"]."'>".$row2["id_usuario"]."</td>";
 			$id_author_inc = $row2["id_usuario"];
 			if ((give_acl($id_usuario, $id_group, "IM") ==1) OR ($_SESSION["id_usuario"] == $id_author_inc) ){
 			// Only incident owners or incident manager

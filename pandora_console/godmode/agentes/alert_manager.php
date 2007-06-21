@@ -87,7 +87,7 @@ $result=mysql_query($sql1);
 				else
 					$mymax = $row3["dis_max"];
 				$mymax =  format_for_graph($mymax );
-
+				
 				// We have alert text ?
 				if ($row3["alert_text"] != "")
 					$string = $string."<td colspan=2 class='$tdcolor'>".$lang_label["text"];
@@ -95,6 +95,14 @@ $result=mysql_query($sql1);
 					$string = $string."<td class='$tdcolor'>".$mymin;
 					$string = $string."<td class='$tdcolor'>".$mymax;
 				}
+				$mytimefrom =$row3["time_from"];
+				$mytimeto =$row3["time_to"];
+				$string = $string."<td class='$tdcolor'>";
+				if ($mytimeto == $mytimefrom)
+					$string .= $lang_label["N/A"];
+				else
+					$string .= render_time($mytimefrom)." - ".render_time($mytimeto);
+				
 				$string = $string."<td class='$tdcolor'>".salida_limpia($row3["descripcion"]);
 				$string = $string."<td class='$tdcolor'>";
 			 	$id_grupo = dame_id_grupo($id_agente);
@@ -112,13 +120,14 @@ $result=mysql_query($sql1);
 			}
 		}
 		if (isset($string) & $string!='') {
-		echo "<table cellpadding='4' cellspacing='4' width='720' class='databox'>
+		echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>
 		<tr><th>".$lang_label["name"]."</th>
 		<th>".$lang_label["type"]."</th>
 		<th>".$lang_label["alert"]."</th>
 		<th>".$lang_label["threshold"]."</th>
 		<th>".$lang_label["min."]."</th>
 		<th>".$lang_label["max."]."</th>
+		<th>".$lang_label["time"]."</th>
 		<th>".$lang_label["description"]."</th>
 		<th width='50'>".$lang_label["action"]."</th></tr>";
 		echo $string;
@@ -234,36 +243,68 @@ _timestamp_<br>
 _data_<br>
 </span></a>
 
-<tr><td class="datos2"><?php echo $lang_label["time_threshold"] ?>
+<?PHP
+echo "<tr><td class='datos2'>".$lang_label["time_from"];	
+echo "<td class='datos2'><select name='time_from'>";
+if ($time_from != ""){
+	echo "<option value='$time_from'>".render_time($time_from);
+}
+
+for ($a=0; $a < 48; $a++){
+	echo "<option value='";
+	echo $a;
+	echo "'>";
+	echo render_time ($a);
+}
+echo "</select>";
+
+echo "<td class='datos2'>".$lang_label["time_to"];
+echo "<td class='datos2'><select name='time_to'>";
+if ($time_from != ""){
+	echo "<option value='$time_to'>".render_time($time_to);
+}
+
+for ($a=0; $a < 48; $a++){
+	echo "<option value='";
+	echo $a;
+	echo "'>";
+	echo render_time ($a);
+}
+echo "</select>";
+
+?>
+
+<tr><td class="datos"><?php echo $lang_label["time_threshold"] ?>
 <a href='#' class='tip'>&nbsp;<span><?PHP echo $lang_label["alert_time_threshold_help"]; ?></span></a>
 
-<td class="datos2" colspan=4>
+<td class="datos">
 <select name="time_threshold" style="margin-right: 60px;">
 <?php
 	if ($alerta_time_threshold != ""){ 
 		echo "<option value='".$alerta_time_threshold."'>".human_time_description($alerta_time_threshold)."</option>";
 	}
-?>
-<option value=300>5 Min.</option>
-<option value=600>10 Min.</option>
-<option value=900>15 Min.</option>
-<option value=1800>30 Min.</option>
-<option value=3600>1 Hour</option>
-<option value=7200>2 Hour</option>
-<option value=18000>5 Hour</option>
-<option value=43200>12 Hour</option>
-<option value=86400>1 Day</option>
-<option value=604800>1 Week</option>
-<option value=-1>Other value</option>
-</select>
-<?php echo $lang_label["other"] ?>
-&nbsp;&nbsp;
-<input type="text" name="other" size="5">
+	echo '
+	<option value=300>5 Min.</option>
+	<option value=600>10 Min.</option>
+	<option value=900>15 Min.</option>
+	<option value=1800>30 Min.</option>
+	<option value=3600>1 Hour</option>
+	<option value=7200>2 Hour</option>
+	<option value=18000>5 Hour</option>
+	<option value=43200>12 Hour</option>
+	<option value=86400>1 Day</option>
+	<option value=604800>1 Week</option>
+	<option value=-1>Other value</option>
+	</select>';
 
-<?PHP
-	// Max / Min alerts 
-	echo "<tr><td class='datos'>".$lang_label["min_alerts"];
 	echo '<td class="datos">';
+	echo $lang_label["other"];
+	echo '<td class="datos">';
+	echo '<input type="text" name="other" size="5">';
+
+	// Max / Min alerts 
+	echo "<tr><td class='datos2'>".$lang_label["min_alerts"];
+	echo '<td class="datos2">';
 	echo '<input type="text" name="min_alerts" size="5" value="';
 	if (isset($alerta_min_alerts)) 
 		echo $alerta_min_alerts;
@@ -272,9 +313,9 @@ _data_<br>
 	echo '" style="margin-right: 10px;">';
 
 
-	echo '<td class="datos">';
+	echo '<td class="datos2">';
 	echo $lang_label["max_alerts"];
-	echo '<td class="datos">';
+	echo '<td class="datos2">';
 	echo '<input type="text" name="max_alerts" size="5" value="';
 	if (isset($alerta_max_alerts)) 
 		echo $alerta_max_alerts;
@@ -283,8 +324,8 @@ _data_<br>
 	echo '" style="margin-right: 10px;">';
 ?>
 
-<tr><td class="datos2"><?php echo $lang_label["assigned_module"] ?>
-<td class="datos2" colspan=3>
+<tr><td class="datos"><?php echo $lang_label["assigned_module"] ?>
+<td class="datos" colspan=3>
 <?php
 
 if ($update_alert != 1) {

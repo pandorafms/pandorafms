@@ -1,3 +1,27 @@
+2007-06-21  Sancho Lerena  <slerena@artica.es>
+
+	* include/languages/language_en.php: More new tokens added.
+	
+	* include/functions.php: Added function render time for alert time
+	limiters format (multiplier of 30).
+	
+	* pandoradb.sql: Added support for alert time limiters format.
+	
+	* operation/visual_console/render_view.php: Added support for
+	single lines a few fixes.
+	
+	* images/console/background/globalmap.jpg: Nice world background.
+	
+	* images/console/icons/computer.png: Added new icon for workstation.
+	
+	* godmode/agentes/configurar_agente.ph,
+	godmode/agentes/alert_manager.php: Added support for alert time
+	limiters.
+	
+	* godmode/reporting/map_builder.php: Tool to build/manage maps
+	elements. Finished!.
+
+
 2007-06-19  Manuel Arostegui <marostegui@artica.es>
 
 	* pandora_console.spec: Ready for 1.3 packaging.
@@ -6,7 +30,8 @@
 	
 	* include/languages/language_en.php: Updated text.
 	
-	* include/styles/pandora.css: Removed lb style not uses. Added ok style.
+	* include/styles/pandora.css: Removed lb style not uses. Added ok
+	style.
 	
 	* operation/agentes/estado_grupo.php: Changed old td.lb style to th.
 	
@@ -15,8 +40,8 @@
 	* operation/events/events.php: Use ok style. Closed table.
 	
 	* operation/agentes/estado_ultimopaquete.php,
-	godmode/agentes/configurar_agente.php, godmode/agentes/module_manager.php:
-	Closed html tags.
+	godmode/agentes/configurar_agente.php,
+	godmode/agentes/module_manager.php: Closed html tags.
 
 2007-06-17 Sancho Lerena  <slerena@artica.es>
 

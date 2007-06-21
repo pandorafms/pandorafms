@@ -868,7 +868,11 @@ $lang_label["link_color"]="Link color";
 $lang_label["label_color"]="Label color";
 $lang_label["white"]="White";
 $lang_label["black"]="Black";
-
+$lang_label["time_from"]="Time from";
+$lang_label["time_to"]="Time to";
+$lang_label["time"]="Time";
+$lang_label["module_graph"] = "Module graph";
+$lang_label["map_item_add"] = "Add map item";
 global $lang_label; 
 global $help_label;
 ?>

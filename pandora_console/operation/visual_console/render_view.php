@@ -57,7 +57,6 @@ if (isset($_GET["id"])){
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 echo "<h1>".$layout_name."</h1>";
 
-
 echo "<div id='layout_db' style='z-index: 0; position:relative; background: url(images/console/background/".$background."); width:".$bwidth."px; height:".$bheight."px;'>";
 $sql="SELECT * FROM tlayout_data WHERE id_layout = $id_layout";
 $res=mysql_query($sql);
@@ -126,7 +125,15 @@ while ($row = mysql_fetch_array($res)){
 		echo "</A>";
 		echo "</div>";
 	}
-
+	if ($type == 2){
+		$lines_data[$lines][0]=$pos_x;
+		$lines_data[$lines][1]=$pos_y;
+		$lines_data[$lines][2]=$width;
+		$lines_data[$lines][3]=$height;
+		$lines_data[$lines][4]="#".$label_color;
+		$lines++;
+	}
+	
 	// Get parent relationship - Create line data
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	if (($parent_item != "") AND ($parent_item != 0)){
@@ -148,7 +155,10 @@ echo 'function myDrawFunction(){';
 
 for ($a=0; $a < $lines; $a++){
 	echo "	jg_doc_$a.setStroke(2);";
-	if ($lines_data[$a][4] >= 1)
+	
+	if (substr($lines_data[$a][4],0,1) == "#")
+		echo "	jg_doc_$a.setColor('".$lines_data[$a][4]."');"; // CUSTOM COLOR
+	elseif ($lines_data[$a][4] >= 1)
 		echo "	jg_doc_$a.setColor('00dd00');"; // GREEN
 	elseif ($lines_data[$a][4] == 0)
 		echo "	jg_doc_$a.setColor('#dd0000');"; // RED

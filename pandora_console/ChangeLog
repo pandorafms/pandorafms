@@ -9,6 +9,12 @@
 	
 	* godmode/reporting/*builder.php: Added code to show text
 	if no reporting defined.
+	
+	* operation/reporting/*.php: Added code to show text
+	if no reporting defined.
+	
+	* operation/menu.php: Added code to highlight custom reporting
+	if selected.
 
 2007-06-21  Sancho Lerena  <slerena@artica.es>
 

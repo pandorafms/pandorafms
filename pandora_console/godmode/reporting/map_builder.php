@@ -227,9 +227,9 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_map"]))) {
 	echo "<table width=500 cellspacing=4 cellpading=4 class='databox_color'>";
 	echo "<tr><td class='datos2'>";
 	echo $lang_label["report_name"];
-	echo "<td class='datos2'>";
+	echo "</td><td class='datos2'>";
 	echo "<input type=text size=35 name='map_name' value='$map_name'>";
-
+	echo "</td></tr>";
 	echo "<tr><td class='datos'>";
 	echo $lang_label["background"];
 	echo "</td><td class='datos'>";
@@ -237,14 +237,14 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_map"]))) {
 
 	echo '<select name="map_background" class="w155">';
 	if ($map_background != "")
-		echo "<option>".$map_background;
+		echo "<option>".$map_background."</option>";
 	$ficheros2 = list_files('images/console/background/', "",0, 0);
 	$a=0;
 	while (isset($ficheros2[$a])){
 		echo "<option>".$ficheros2[$a]."</option>";
 		$a++;
 	}
-	echo '</select>';
+	echo '</select></td></tr>';
 
 	echo "<tr><td class='datos'>";
 	echo $lang_label["width"];
@@ -273,7 +273,7 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_map"]))) {
 
 		echo "<h2>".$lang_label["map_item_add"];
 		?>
-		<A HREF="javascript:;" onmousedown="toggleDiv('map_control');">
+		<a href="javascript:;" onmousedown="toggleDiv('map_control');">
 		<?PHP
 		echo "<img src='images/wand.png'>";
 		echo "</a></h2>";
@@ -298,7 +298,7 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_map"]))) {
 			if ( $id_agent != $row["id_agente"])
 				echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
 		}
-		echo '</select>';
+		echo '</select></td>';
 
 
 		echo "<td class='datos' colspan=1 align='right'><input type=submit name='update_agent' class='sub upd' value='".$lang_label["get_info"]."'>";
@@ -310,7 +310,8 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_map"]))) {
 		echo "<input type='hidden' name=id_map value='$id_map'>";
 		if (isset($id_agent))
 			echo "<input type='hidden' name='id_agent' value='$id_agent'>";
-
+			
+		echo "</td></tr>";
 		echo "<tr><td class='datos2'>";
 		echo "<b>".$lang_label["modules"]."</b>";
 		echo "<td class='datos2' colspan=3>";

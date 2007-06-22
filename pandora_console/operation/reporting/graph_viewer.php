@@ -147,41 +147,46 @@ if (isset($_GET["view_graph"])){
 }
 echo "<h2>".$lang_label["reporting"]." &gt; ";
 echo  $lang_label["custom_graph_viewer"]."</h2>";
-echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
-echo "<tr><th>".$lang_label["graph_name"]."<th>".$lang_label["description"]."<th>".$lang_label["view"];
-if ((give_acl($id_usuario,0,"AW") == 1 ) OR (dame_admin($id_usuario)==1))
-	echo "<th>";
 
 $color=1;
 $sql="SELECT * FROM tgraph";
 $res=mysql_query($sql);
-while ($row = mysql_fetch_array($res)){
-	if (($row["private"]==0) || ($row["id_user"] == $id_user)){
-		// Calculate table line color
-		if ($color == 1){
-			$tdcolor = "datos";
-			$color = 0;
-		}
-		else {
-			$tdcolor = "datos2";
-			$color = 1;
-		}
-		echo "<tr>";
-		echo "<td valign='top' class='$tdcolor'>".$row["name"];
-		echo "<td class='$tdcolor'>".$row["description"];
-		$id_graph =  $row["id_graph"];
-		echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=$id_graph'><img src='images/images.png'></A>";
-		
-		if ((give_acl($id_usuario,0,"AW") == 1 ) OR (dame_admin($id_usuario)==1)) {
-			echo "<td class='$tdcolor'><a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&delete=$id_graph' ".'onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;">';
-			echo "<img src='images/cross.png'></a></td>";
+if (mysql_num_rows($res)) {
+	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
+	echo "<tr>
+		<th>".$lang_label["graph_name"]."</th>
+		<th>".$lang_label["description"]."</th>
+		<th>".$lang_label["view"]."</th>";
+	if ((give_acl($id_usuario,0,"AW") == 1 ) OR (dame_admin($id_usuario)==1))
+		echo "<th>".$lang_label["delete"]."</th>";
+	echo "</tr>";
+
+	while ($row = mysql_fetch_array($res)){
+		if (($row["private"]==0) || ($row["id_user"] == $id_user)){
+			// Calculate table line color
+			if ($color == 1){
+				$tdcolor = "datos";
+				$color = 0;
+			}
+			else {
+				$tdcolor = "datos2";
+				$color = 1;
+			}
+			echo "<tr>";
+			echo "<td valign='top' class='$tdcolor'>".$row["name"]."</td>";
+			echo "<td class='$tdcolor'>".$row["description"]."</td>";
+			$id_graph =  $row["id_graph"];
+			echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=$id_graph'><img src='images/images.png'></a>";
+			
+			if ((give_acl($id_usuario,0,"AW") == 1 ) OR (dame_admin($id_usuario)==1)) {
+				echo "<td class='$tdcolor' align='center'><a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&delete=$id_graph' ".'onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;">';
+				echo "<img src='images/cross.png'></a></td>";
+			}
 		}
 	}
+	echo "</table>";
+} else {
+	echo "<div class='nf'>".$lang_label["no_reporting_def"]."</div>";
 }
-echo "</table>";
-
-
-
-
 
 ?>

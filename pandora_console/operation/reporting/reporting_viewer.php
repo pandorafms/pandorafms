@@ -49,7 +49,10 @@ $report_private= give_db_value ("private", "treport", "id_report", $id_report);
 $report_user = give_db_value ("id_user", "treport", "id_report", $id_report);
 if (($report_user == $id_user) OR (dame_admin($id_user)==1) OR ($report_private == 0)) {
 	//echo "SLA for Tato: %".return_module_SLA (50, 604800, 1, 1);
-	echo "<h1>".$lang_label["custom_reporting"]." - ".$report_name."</h1>";
+	
+	echo "<h2>".$lang_label["reporting"]." &gt; ";
+	echo $lang_label["custom_reporting"]." - ";
+	echo $report_name."</h2>";
 
 	echo "<table class='databox' cellpadding= 4 cellspacing=4 width=750>";
 	echo "<tr>";

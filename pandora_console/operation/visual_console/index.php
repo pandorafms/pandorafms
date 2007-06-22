@@ -27,12 +27,20 @@ if (comprueba_login() != 0) {
 	exit;
 }
 
-echo "<h2>".$lang_label["visual_console"]."</h2>";
-echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
-echo "<tr><th>".$lang_label["name"]."<th>".$lang_label["group"]."<th>".$lang_label["elements"]."<th>".$lang_label["view"];
-$color=1;
+echo "<h2>".$lang_label["visual_console"]." &gt; ";
+echo $lang_label["summary"]."</h2>";
 $sql="SELECT * FROM tlayout";
-if ($res=mysql_query($sql))
+$res=mysql_query($sql);
+
+if (mysql_num_rows($res)) {
+
+	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
+	echo "<tr>
+	<th>".$lang_label["name"]."</th>
+	<th>".$lang_label["group"]."</th>
+	<th>".$lang_label["elements"]."</th>
+	<th>".$lang_label["view"]."</th>";
+	$color=1;
 	while ($row = mysql_fetch_array($res)){
 		// Calculate table line color
 		if ($color == 1){
@@ -45,22 +53,21 @@ if ($res=mysql_query($sql))
 		}
 		echo "<tr>";
 		// Name
-		echo "<td valign='top' class='$tdcolor'>".$row["name"];
+		echo "<td valign='top' class='$tdcolor'>".$row["name"]."</td>";
 		$id_layout =  $row["id"];
 		// Group
-		echo "<td valign='top' align='center' class='$tdcolor'><img src='images/".dame_grupo_icono($row["id_group"]).".png'>";
+		echo "<td valign='top' align='center' class='$tdcolor'><img src='images/".dame_grupo_icono($row["id_group"]).".png'></td>";
 		// # elements		
 		$sql2="SELECT COUNT(*) FROM tlayout_data WHERE id_layout = $id_layout";
 		$res2=mysql_query($sql2);
 		$row2 = mysql_fetch_array($res2);
-		echo "<td valign='top'align='center'  class='$tdcolor'>".$row2[0];
+		echo "<td valign='top'align='center' class='$tdcolor'>".$row2[0]."</td>";
 		// View icon
-		echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=visualc&sec2=operation/visual_console/render_view&id=$id_layout'><img src='images/images.png'></A>";
+		echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=visualc&sec2=operation/visual_console/render_view&id=$id_layout'><img src='images/images.png'></a></td></tr>";
 	}
-echo "</table>";
-
-
-
-
+	echo "</table>";
+} else {
+	echo "<div class='nf'>".$lang_label["no_layout_def"]."</div>";
+}
 
 ?>

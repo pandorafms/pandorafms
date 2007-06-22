@@ -876,6 +876,11 @@ $lang_label["map_item_add"] = "Add map item";
 $lang_label["graph_event_total"] = "Event graph";
 $lang_label["graph_event_group"] = "Event graph by group";
 $lang_label["graph_event_user"] = "Event graph by user";
+$lang_label["no_layout_def"] = "There are no defined layouts";
+$lang_label["no_reporting_def"] = "There are no defined reportings";
+$lang_label["no_map_def"] = "There are no defined maps";
+$lang_label["no_repitem_def"] = "There are no defined report items";
+
 global $lang_label; 
 global $help_label;
 ?>

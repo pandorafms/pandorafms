@@ -48,9 +48,9 @@ if (isset($_GET["delete"])){
 	$id_content = $_GET["delete"];
 	$sql = "DELETE FROM treport_content WHERE id_rc = $id_content";
 	if ($res=mysql_query($sql))
-		$result = "<h3 class=suc>".$lang_label["delete_ok"]."</h3>";
+		$result = "<h3 class='suc'>".$lang_label["delete_ok"]."</h3>";
 	else
-		$result = "<h3 class=error>".$lang_label["delete_no"]."</h3>";
+		$result = "<h3 class='error'>".$lang_label["delete_no"]."</h3>";
 	echo $result;
 }
 
@@ -124,9 +124,9 @@ if (isset($_POST["createmode"])){
 		$id_report = $form_id_report;
 		$sql = "UPDATE treport SET name = '$form_report_name', description = '$form_report_description', private = '$form_report_private' WHERE id_report = $form_id_report";
 		if ($res=mysql_query($sql))
-			$result = "<h2 class=suc>".$lang_label["modify_ok"]."</h2>";
+			$result = "<h3 class=suc>".$lang_label["modify_ok"]."</h3>";
 		else
-			$result = "<h2 class=error>".$lang_label["modify_no"]."</h2>";
+			$result = "<h3 class=error>".$lang_label["modify_no"]."</h3>";
 	}
 	echo $result;
 	if ($id_report != ""){
@@ -176,34 +176,35 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_report"]))) {
 	echo "<table width=500 cellspacing=4 cellpading=4 class='databox_color'>";
 
 	echo "<tr><td class='datos2'>";
-	echo $lang_label["report_name"];
+	echo $lang_label["report_name"]."</td>";
 	echo "<td class='datos2'>";
 	echo "<input type=text size=35 name='report_name' value='$form_report_name'>";
 
 	echo "<tr><td class='datos'>";
-	echo $lang_label["private"];
+	echo $lang_label["private"]."</td>";
 	echo "<td class='datos'>";
 	if ($form_report_private == 1)
 		echo "<input type=checkbox name='report_private' value=1 CHECKED>";
 	else
 		echo "<input type=checkbox name='report_private' value=1>";
-
+	echo "</td></tr>";
 	echo "<tr><td class='datos2' valign='top'>";
-	echo $lang_label["description"];
+	echo $lang_label["description"]."</td>";
 	echo "<td class='datos2'>";
 	echo "<textarea name='report_description' cols=40 rows=3>";
 	echo $form_report_description;
 	echo "</textarea>";
-
-
-	// Button
+	echo "</td></tr>";
 	echo "</table>";
+	
+	// Button
 	echo "<table width=500 cellspacing=4 cellpading=4'>";
 	echo "<tr><td align='right'>";
 	if ($createmode == 0)
 		echo "<input type='submit' class='sub next' value='".$lang_label["update"]."'>";
 	else
 		echo "<input type='submit' class='sub wand' value='".$lang_label["create"]."'>";
+	echo "</td></tr>";
 	echo "</table>";
 	echo "</form>";
 
@@ -221,8 +222,7 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_report"]))) {
 		echo "<input type='hidden' name=id_report value='$id_report'>";
 		
 		echo "<tr>";
-		echo "<td class='datos'><b>".$lang_label["source_agent"];
-		echo "</b></td>";	
+		echo "<td class='datos'><b>".$lang_label["source_agent"]."</b></td>";
 		echo "<td class='datos' colspan=2><select name='id_agent' style='width:180px;'>";
 		if ($id_agent != 0)
 			echo "<option value='$id_agent'>".dame_nombre_agente($id_agent);
@@ -247,6 +247,7 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_report"]))) {
 
 		echo "<tr><td class='datos2'>";
 		echo "<b>".$lang_label["modules"]."</b>";
+		echo "</td>";
 		echo "<td class='datos2' colspan=3>";
 		echo "<select name='id_module' size=1 style='width:180px;'>";
 				echo "<option value=-1> -- </option>";
@@ -258,11 +259,11 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_report"]))) {
 				echo "<option value=".$row["id_agente_modulo"].">".$row["nombre"]."</option>";
 			}
 		}
-		echo "</select>";
+		echo "</select></td></tr>";
 
 			// Component type
 		echo "<tr><td class='datos'>";
-		echo "<b>".$lang_label["reporting_type"]."</b>";
+		echo "<b>".$lang_label["reporting_type"]."</b></td>";
 		echo "<td class='datos' colspan=3>";
 		echo "<select name='type' size=1 style='width:180px;'>";
 		echo "<option value=0>".$lang_label["simple_graph"]."</option>";
@@ -274,25 +275,25 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_report"]))) {
 		echo "<option value=6>".$lang_label["avg_value"]."</option>";
 		echo "<option value=7>".$lang_label["max_value"]."</option>";
 		echo "<option value=8>".$lang_label["min_value"]."</option>";
-		echo "</select>";
+		echo "</select></td></tr>";
 
 		// Custom graph
 		// -----------------------
 		echo "<tr><td class='datos2'>";
-		echo "<b>".$lang_name["custom_graph_name"]."</b>";
+		echo "<b>".$lang_name["custom_graph_name"]."</b></td>";
 		echo "<td class='datos2' colspan=3>";
 		echo "<select name='id_custom_graph' size=1 style='width:180px;'>";
-		echo "<option value='-1'>".$row["N/A"];
+		echo "<option value='-1'>".$row["N/A"]."</option>";
 		$sql1="SELECT * FROM tgraph";
 		$result = mysql_query($sql1);
 		while ($row=mysql_fetch_array($result)){
-			echo "<option value=".$row["id_graph"].">".$row["name"];
+			echo "<option value=".$row["id_graph"].">".$row["name"]."</option>";
 		}
 		echo "</select>";
 
 		// Period
 		echo "<tr><td class='datos'>";
-		echo "<b>".$lang_label["period"]."</b>";
+		echo "<b>".$lang_label["period"]."</b></td>";
 		echo "<td class='datos' colspan=3>";
 		echo "<select name='period'>";
 		echo "<option value=3600>"."Hour</option>";
@@ -307,7 +308,7 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_report"]))) {
 		echo "<option value=2592000>"."Last Month</option>";
 		echo "<option value=5184000>"."Two Month</option>";
 		echo "<option value=15552000>"."Six Months</option>";
-		echo "</select>";
+		echo "</select></td></tr>";
 
 		// SLA Max
 		echo "<tr><td class='datos2'>";
@@ -316,20 +317,21 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_report"]))) {
 		echo "<input type=text size=6 name='sla_max'></td>";
 		// SLA Min
 		echo "<td class='datos2'>";
-		echo "<b>".$lang_label["sla_min"]."</b>";
+		echo "<b>".$lang_label["sla_min"]."</b></td>";
 		echo "<td class='datos2'>";
 		echo "<input type=text size=6 name='sla_min'></td>";
 		
 		// SLA limit
 		echo "<tr><td class='datos'>";
-		echo "<b>".$lang_label["sla_limit"]."</b>";
+		echo "<b>".$lang_label["sla_limit"]."</b></td>";
 		echo "<td class='datos'>";
 		echo "<input type='text' size='6' name='sla_limit'></td>";
-		echo "</table>";
+		echo "</tr></table>";
 
 		echo "<table width='500' cellspacing='4' cellpading='4'>";
 		echo "<tr><td align='right'>";
 		echo "<input type='submit' class='sub wand' value='".$lang_label["add"]."'>";
+		echo "</td></tr>";
 		echo "</table>";
 		echo "</form>";
 		
@@ -380,15 +382,16 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_report"]))) {
 				$module_name = dame_nombre_modulo_agentemodulo ($id_am);
 			}
 			echo "<tr>";
-			echo "<td class='$tdcolor'>".$type_desc;
-			echo "<td class='$tdcolor'>".$agent_name;
-			echo "<td class='$tdcolor'>".$module_name;
-			echo "<td class='$tdcolor'>".$period;
+			echo "<td class='$tdcolor'>".$type_desc."</td>";
+			echo "<td class='$tdcolor'>".$agent_name."</td>";
+			echo "<td class='$tdcolor'>".$module_name."</td>";
+			echo "<td class='$tdcolor'>".$period."</td>";
 			echo "<td class='$tdcolor' align='center'>";
 			if ($form_id_user == $id_user){
 				echo "<a href='index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id=1&delete=$id_rc'><img src='images/cross.png'></a>";
 			}
-		}	
+			echo "</td></tr>";
+		}
 		echo "</table>";
 	}
 } else {
@@ -398,15 +401,17 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_report"]))) {
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	echo "<h2>".$lang_label["reporting"]." &gt; ";
 	echo $lang_label["custom_reporting"]."</h2>";
+
+	$sql="SELECT * FROM treport";
+	$res=mysql_query($sql);
+	if (mysql_num_rows($res)) {
 	echo "<table width='600' cellpadding=4 cellpadding=4 class='databox'>";
 	echo "<tr>
 	<th>".$lang_label["report_name"]."</th>
 	<th>".$lang_label["description"]."</th>
 	<th>".$lang_label["Manage"]."</th>
 	<th>".$lang_label["delete"]."</th>";
-	$color=1;
-	$sql="SELECT * FROM treport";
-	$res=mysql_query($sql);
+	$color=1;	
 	while ($row = mysql_fetch_array($res)){
 		if (($row["private"]==0) || ($row["id_user"] == $id_user)){
 			// Calculate table line color
@@ -432,6 +437,10 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_report"]))) {
 	}
 	echo "</table>";
 	echo "<table width=600 cellpadding=4 cellpadding=4>";
+} else {
+	echo "<div class='nf'>".$lang_label["no_reporting_def"]."</div>";
+	echo "<table>";
+}
 	echo "<form method=post action='index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&create_report=1'>";
 	echo "<tr><td align='right'>";
 	echo "<input type=submit class='sub next' value='".$lang_label["add"]."'>";

@@ -55,7 +55,7 @@ UNLOCK TABLES;
 
 /*!40000 ALTER TABLE `tlanguage` DISABLE KEYS */;
 LOCK TABLES `tlanguage` WRITE;
-INSERT INTO `tlanguage` VALUES ('bb','Bable'),('ca','Catal&agrave;'),('de','German'),('en','English'),('es','Espa&ntilde;ol'),('es_gl','Gallego'),('es_la','Espa&ntilde;ol-Latinoam&eacute;rica'),('eu','Euskera'),('fr','Fran&ccedil;ais'),('pt_br','Portuguese-Brazil');
+INSERT INTO `tlanguage` VALUES ('bb','Bable'),('ca','Catal&agrave;'),('de','Deutch'),('en','English'),('es_es','Espa&ntilde;ol'),('es_gl','Gallego'),('es_la','Espa&ntilde;ol-Latinoam&eacute;rica'),('eu','Euskera'),('fr','Fran&ccedil;ais'),('pt_br','Portuguese-Brazil');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `tlanguage` ENABLE KEYS */;
 

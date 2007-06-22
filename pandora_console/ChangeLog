@@ -1,3 +1,15 @@
+2007-06-22  Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/languages/language_en.php: More strings.
+	
+	* pandoradb_data.sql: Solved small problem with language strings.
+	
+	* operation/visual_console/index.php: Added code to show
+	text if no layout defined.
+	
+	* godmode/reporting/*builder.php: Added code to show text
+	if no reporting defined.
+
 2007-06-21  Sancho Lerena  <slerena@artica.es>
 
 	* include/languages/language_en.php: More strings.
@@ -28,6 +40,8 @@
 	* godmode/admin_access_logs.php: Added graph to header.
 	
 	* godmode/reporting/map_builder.php: Removed debug stuff
+	
+2007-06-21  Raul Mateos  <raulofpandora@gmail.com>
 
 	* images/op*.gif, god*.gif: deleted. Also deleted several other
 	GIF files.
@@ -709,7 +723,7 @@
 	:(
 	
 	* pandora_graphical_console_data.sql: Cleanup.
-		
+
 	* godmode/agentes/module_manager.php: Added wizard button.
 	
 	* pandora_graphical_console.sql: Cleanup.
@@ -717,7 +731,7 @@
 
 2007-05-02  Sancho Lerena  <slerena@artica.es>
 
-        * pandoradb.sql: Fixed small problem with tgrupos
+	* pandoradb.sql: Fixed small problem with tgrupos
 
 2007-05-01  Raul Mateos  <raulofpandora@gmail.com>
 

@@ -31,18 +31,22 @@ if (comprueba_login() != 0) {
 
 echo "<h2>".$lang_label["reporting"]." &gt; ";
 echo $lang_label["custom_reporting"]."</h2>";
-echo "<table width='500' cellpadding=4 cellpadding=4 class='databox'>";
-echo "<tr>
-<th>".$lang_label["report_name"]."</th>
-<th>".$lang_label["description"]."</th>
-<th>".$lang_label["view"]."</th>";
+
 $color=1;
 $sql="SELECT * FROM treport";
 $res=mysql_query($sql);
-while ($row = mysql_fetch_array($res)){
-	if (($row["private"]==0) || ($row["id_user"] == $id_user)){
-		// Calculate table line color
-		if ($color == 1){
+if (mysql_num_rows($res)) {
+	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox'>";
+	echo "<tr>
+	<th>".$lang_label["report_name"]."</th>
+	<th>".$lang_label["description"]."</th>
+	<th>".$lang_label["view"]."</th>
+	</tr>";
+
+	while ($row = mysql_fetch_array($res)){
+		if (($row["private"]==0) || ($row["id_user"] == $id_user)){
+			// Calculate table line color
+			if ($color == 1){
 			$tdcolor = "datos";
 			$color = 0;
 		}
@@ -58,9 +62,11 @@ while ($row = mysql_fetch_array($res)){
 		<a href='index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=$id_report'>
 		<img src='images/reporting.png'></a>
 		</td></tr>";
+		}
 	}
+	echo "</table>";
+} else {
+	echo "<div class='nf'>".$lang_label["no_reporting_def"]."</div>";
 }
-echo "</table>";
-
 
 ?>

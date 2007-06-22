@@ -258,7 +258,9 @@ if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 
 	// Custom reporting
 	if (isset($_GET["sec"]) && $_GET["sec"] == "reporting"){
-		if (isset($_GET["sec2"]) && $_GET["sec2"] == "operation/reporting/custom_reporting"){
+		if (isset($_GET["sec2"]) && $_GET["sec2"] == 
+		"operation/reporting/custom_reporting" || $_GET["sec2"] == 
+		"operation/reporting/reporting_viewer"){
 			echo "<div class='arrows'>";
 		} else {
 			echo "<div class='arrow'>";

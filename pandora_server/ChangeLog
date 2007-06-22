@@ -1,3 +1,8 @@
+2007-06-22  Sancho Lerena  <slerena@artica.es>
+
+        * bin/pandora_recon.pl: This sould be final modifications for recon.
+	Fixed a bug reported by Enrique Verdes in the development list.
+
 2007-06-19  Sancho Lerena  <slerena@artica.es>
 
 	* bin/PandoraFMS/DB.pm: Added support to timeframe alerts.

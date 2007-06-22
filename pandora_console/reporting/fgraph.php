@@ -3,16 +3,15 @@
 // Pandora FMS - the Free monitoring system
 // ========================================
 // Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development and project architecture and management
+// Main PHP/SQL code development, project architecture and management.
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP additions
-// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
-// Additions to Pandora FMS 1.2 graph code 
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
+// CSS and some PHP code additions
+// Copyright (c) 2006 Jose Navarro <jnavarro@jnavarro.net>
+// Additions to code for Pandora FMS 1.2 graph code
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
+// as published by the Free Software Foundation for version 2.
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -20,7 +19,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-// Load global vars
+
+// Pandora FMS 1.x uses icons from famfamfam, licensed under CC Atr. 2.5
+// Silk icon set 1.3 (cc) Mark James, http://www.famfamfam.com/lab/icons/silk/
+// Pandora FMS 1.x uses Pear Image::Graph code
+
 include ("../include/config.php");
 include ("../include/functions.php");
 include ("../include/functions_db.php");
@@ -642,7 +645,7 @@ function generic_pie_graph ($width=300, $height=200, $data, $legend) {
 		// Merge data into a dataset object (sancho)
 		$Dataset1 =& Image_Graph::factory('dataset');
 		for ($a=0;$a < sizeof($data); $a++){
-			$Dataset1->addPoint($legend[$a], $data[$a]);
+			$Dataset1->addPoint(str_pad($legend[$a],15), $data[$a]);
 		}
 		$Plot =& $Plotarea->addNew('pie', $Dataset1);
 		$Plotarea->hideAxis();
@@ -966,7 +969,7 @@ function graphic_incident_user() {
 	generic_pie_graph (320, 200, $data, $legend);
 }
 
-function graphic_user_activity($width=300, $height=200) {
+function graphic_user_activity($width=350, $height=230) {
 	include ("../include/config.php");
 	require ("../include/languages/language_".$language_code.".php");
 
@@ -980,7 +983,7 @@ function graphic_user_activity($width=300, $height=200) {
 		$result2=mysql_query($sql1);
 		$row2=mysql_fetch_array($result2);
 		$data[] = $row2[0];
-		$legend[] = substr($row[0],0,16)."(".$row2[0].")";
+		$legend[] = str_pad(substr($row[0],0,16)."(".format_for_graph($row2[0],0).")", 15);
 	}
 
 	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
@@ -1047,10 +1050,8 @@ function graphic_incident_source ($width=320, $height=200) {
 	 	generic_pie_graph ($width, $height, $data, $legend);
 }
 
-function grafico_db_agentes_modulos() {
+function grafico_db_agentes_modulos($width, $height) {
 	include ("../include/config.php");
-	include ("jpgraph/jpgraph.php");
-	include ("jpgraph/jpgraph_bar.php");
 	require ("../include/languages/language_".$language_code.".php");
 
 	$data = array();
@@ -1065,56 +1066,22 @@ function grafico_db_agentes_modulos() {
 		$legend[] = $row["nombre"];
 	}
 	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
-        // or much better, pay me to do a special version for you, highly optimized :-))))
-        for ($a=0;$a < sizeof($data);$a++){
-                for ($b=$a; $b <sizeof($data); $b++)
-                if ($data[$b] > $data[$a]){
-                        $temp = $data[$a];
-                        $temp_label = $legend[$a];
-                        $data[$a] = $data[$b];
-                        $legend[$a] = $legend[$b];
-                        $data[$b] = $temp;
-                        $legend[$b] = $temp_label;
-                }
-        }
-	$mayor = 0;
-        $mayor_data =0;
-        for ($a=0;$a < sizeof($data); $a++)
-                if ($data[$a] > $mayor_data){
-                        $mayor = $a;
-                        $mayor_data = $data[$a];
-                }
-
-	$ajuste_altura = sizeof($data) * 20;	
-	//$graph = new PieGraph(400,140+$ajuste_altura,"auto");
-	$graph = new Graph(400,140+$ajuste_altura,'auto');
-	$graph->SetScale("textlin");
-	$graph->SetMarginColor('white@0.2');
-	$graph->title->Set($lang_label["modules_per_agent"]);
-	$graph->title->SetFont(FF_FONT1,FS_BOLD);
-	$graph->yaxis->scale->SetGrace(0);
-	$graph->yaxis->SetLabelAlign('center','bottom');
-	$graph->SetAlphaBlending();	
-	$graph->SetFrame(true);
-	$graph->xaxis->SetLabelMargin(5);
-	$graph->Set90AndMargin(100,20,50,30);
-	$p1 = new BarPlot($data);
-	$p1->value->SetFormat('%.0f ');
-	$p1->value->Show();
-	$p1->value->SetAlign('left','center');
-	$p1->SetFillColor("#00bf00");
-	$p1->SetWidth(0.6);
-	$p1->SetShadow();
-	$graph->yaxis->SetLabelFormat('%d');
-	$graph->xaxis->SetTickLabels($legend);
-	$graph->legend->Pos(0.05,0.49,"right","center");
-	$graph->Add($p1);
-	$graph->img->SetAntiAliasing();
-	$graph->Stroke();
-
+	// or much better, pay me to do a special version for you, highly optimized :-))))
+	for ($a=0;$a < sizeof($data);$a++){
+		for ($b=$a; $b <sizeof($data); $b++)
+		if ($data[$b] > $data[$a]){
+				$temp = $data[$a];
+				$temp_label = $legend[$a];
+				$data[$a] = $data[$b];
+				$legend[$a] = $legend[$b];
+				$data[$b] = $temp;
+				$legend[$b] = $temp_label;
+		}
+	}
+	generic_bar_graph ($width, $height, $data, $legend);
 }
 
-function grafico_eventos_usuario( $width=320, $height=200) {
+function grafico_eventos_usuario( $width=420, $height=200) {
 	include ("../include/config.php");
 	require ("../include/languages/language_".$language_code.".php");
 
@@ -1190,12 +1157,6 @@ function grafico_eventos_total() {
 					$legend[$b] = $temp_label;
 			}
 	}
-	$mayor=0; $mayor_data=0;
-	for ($a=0;$a < sizeof($data); $a++)
-	if ($data[$a] > $mayor_data){
-			$mayor = $a;
-			$mayor_data = $data[$a];
-	}
 	generic_pie_graph (320, 200, $data, $legend);
 }
 
@@ -1240,10 +1201,50 @@ function grafico_eventos_grupo ($width = 300, $height = 200 ) {
 	 	generic_pie_graph ($width, $height, $data, $legend);
 }
 
-function grafico_db_agentes_paquetes() {
+
+function generic_bar_graph ( $width =380, $height = 300, $data, $legend) {
 	include ("../include/config.php");
-	include ("jpgraph/jpgraph.php");
-	include ("jpgraph/jpgraph_bar.php");
+	require_once 'Image/Graph.php';
+	require ("../include/languages/language_".$language_code.".php");
+	
+	$ajuste_altura = sizeof($data) * 20;
+    if (sizeof($data) > 10){
+    	$height = $height + $ajuste_altura;
+    }
+
+	// create the graph
+	$Graph =& Image_Graph::factory('graph', array($width, $height));
+	// add a TrueType font
+	$Font =& $Graph->addNew('font', $config_fontpath);
+	// set the font size to 11 pixels
+	$Font->setSize(8);
+	$Graph->setFont($Font);
+	$Graph->add(
+		Image_Graph::vertical (
+			$Plotarea = Image_Graph::factory('plotarea',array('category', 'axis', 'horizontal')),
+			$Legend = Image_Graph::factory('legend'),
+			100
+		)
+	);
+	
+	$Legend->setPlotarea($Plotarea);
+	// Create the dataset
+	// Merge data into a dataset object (sancho)
+	$Dataset1 =& Image_Graph::factory('dataset');
+	for ($a=0;$a < sizeof($data); $a++){
+		$Dataset1->addPoint(str_pad($legend[$a],15), $data[$a]);
+	}
+	$Plot =& $Plotarea->addNew('bar', $Dataset1);
+	$GridY2 =& $Plotarea->addNew('bar_grid', IMAGE_GRAPH_AXIS_Y_SECONDARY);
+	$GridY2->setLineColor('gray');
+	$GridY2->setFillColor('lightgray@0.05');
+	$Plot->setLineColor('gray');
+	$Plot->setFillColor('blue@0.85');
+	$Graph->done(); 
+}
+
+function grafico_db_agentes_paquetes ($width = 380, $height = 300) {
+	include ("../include/config.php");
 	require ("../include/languages/language_".$language_code.".php");
 
 	$data = array();
@@ -1256,59 +1257,27 @@ function grafico_db_agentes_paquetes() {
 			$result3=mysql_query($sql1);
 			if ($row3=mysql_fetch_array($result3)){
 				$data[]= $row3[0];
-				$legend[] = dame_nombre_agente($row[0]);
+				$legend[] = str_pad(dame_nombre_agente($row[0]),15);
 			}
 		}
 	}
 	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
-        // or much better, pay me to do a special version for you, highly optimized :-))))
-        for ($a=0;$a < sizeof($data);$a++){
-                for ($b=$a; $b <sizeof($data); $b++)
-                if ($data[$b] > $data[$a]){
-                        $temp = $data[$a];
-                        $temp_label = $legend[$a];
-                        $data[$a] = $data[$b];
-                        $legend[$a] = $legend[$b];
-                        $data[$b] = $temp;
-                        $legend[$b] = $temp_label;
-                }
-        }
-	$mayor = 0;
-        $mayor_data =0;
-        for ($a=0;$a < sizeof($data); $a++)
-                if ($data[$a] > $mayor_data){
-                        $mayor = $a;
-                        $mayor_data = $data[$a];
-                }	
-
-        $ajuste_altura = sizeof($data) * 20;
-        $graph = new Graph(400,140+$ajuste_altura,'auto');
-        $graph->SetScale("textlin");
-        $graph->SetMarginColor('white@0.2');
-        $graph->title->Set($lang_label["packets_by_agent"]);
-        $graph->title->SetFont(FF_FONT1,FS_BOLD);
-        $graph->yaxis->scale->SetGrace(0);
-        $graph->yaxis->SetLabelAlign('center','bottom');
-        $graph->SetAlphaBlending();
-        $graph->SetFrame(true);
-        $graph->xaxis->SetLabelMargin(5);
-        $graph->Set90AndMargin(100,20,50,30);
-        $p1 = new BarPlot($data);
-		$p1->value->SetFormat('%.0f ');
-        $p1->value->Show();
-        $p1->value->SetAlign('left','center');
-        $p1->SetFillColor("#0000fd");
-        $p1->SetWidth(0.6);
-        $p1->SetShadow();
-        $graph->yaxis->SetLabelFormat('%d');
-        $graph->xaxis->SetTickLabels($legend);
-        $graph->legend->Pos(0.05,0.49,"right","center");
-        $graph->Add($p1);
-        $graph->img->SetAntiAliasing();
-        $graph->Stroke();
+	// or much better, pay me to do a special version for you, highly optimized :-))))
+	for ($a=0;$a < sizeof($data);$a++){
+		for ($b=$a; $b <sizeof($data); $b++)
+		if ($data[$b] > $data[$a]){
+				$temp = $data[$a];
+				$temp_label = $legend[$a];
+				$data[$a] = $data[$b];
+				$legend[$a] = $legend[$b];
+				$data[$b] = $temp;
+				$legend[$b] = $temp_label;
+		}
+	}
+	generic_bar_graph ($width, $height, $data, $legend);
 }
 
-function grafico_db_agentes_purge ($id_agente, $width, $height) {
+function grafico_db_agentes_purge ($id_agent, $width, $height) {
 	include ("../include/config.php");
 	require_once 'Image/Graph.php';
 	require ("../include/languages/language_".$language_code.".php");
@@ -1334,77 +1303,23 @@ function grafico_db_agentes_purge ($id_agente, $width, $height) {
 	
 	for ($a=0; $a < sizeof ($fechas); $a++){
 	// 4 x intervals will be enought, increase if your database is very very fast :)
-		if ($a==3)
-			$sql1="SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp >= ".$fechas[$a];
-		else
-			$sql1="SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp >= ".$fechas[$a]." AND utimestamp < ".$fechas[$a+1];
+		if ($a==3){
+			if ($id_agent == -1)
+				$sql1="SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp >= ".$fechas[$a];
+			else
+				$sql1="SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE id_agente = $id_agent AND utimestamp >= ".$fechas[$a];
+		} else {
+			if ($id_agent == -1)
+				$sql1="SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp >= ".$fechas[$a]." AND utimestamp < ".$fechas[$a+1];
+			else
+				$sql1="SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE id_agente = $id_agent AND utimestamp >= ".$fechas[$a]." AND utimestamp < ".$fechas[$a+1];
+		}
 		$result=mysql_query($sql1);
 		$row=mysql_fetch_array($result);
-		$data[] = $row[0];
-		$legend[]=$fechas_label[$a]." ( ".$row[0]." )";
+		$data[] =  $row[0];
+		$legend[]=$fechas_label[$a]." ( ".format_for_graph($row[0],0)." )";
 	}
-
-	$mayor = 0;
-	$mayor_data =0;
-	for ($a=0;$a < sizeof($data); $a++)
-		if ($data[$a] > $mayor_data){
-			$mayor = $a;
-			$mayor_data = $data[$a];
-		}
-	
-	if ($total> 1){
-		// create the graph
-		$Graph =& Image_Graph::factory('graph', array($width, $height));
-		// add a TrueType font
-		$Font =& $Graph->addNew('font', $config_fontpath);
-		// set the font size to 7 pixels
-		$Font->setSize(7);
-		$Graph->setFont($Font);
-		// create the plotarea
-		$Graph->add(
-			Image_Graph::horizontal(
-				$Plotarea = Image_Graph::factory('plotarea'),
-				$Legend = Image_Graph::factory('legend'),
-			70
-			)
-		);
-		$Legend->setPlotarea($Plotarea);
-		// Create the dataset
-		// Merge data into a dataset object (sancho)
-		$Dataset1 =& Image_Graph::factory('dataset');
-		for ($a=0;$a < sizeof($data); $a++){
-			$Dataset1->addPoint($legend[$a], $data[$a]);
-		}
-		$Plot =& $Plotarea->addNew('pie', $Dataset1);
-		$Plotarea->hideAxis();
-		// create a Y data value marker
-		$Marker =& $Plot->addNew('Image_Graph_Marker_Value', IMAGE_GRAPH_PCT_Y_TOTAL);
-		// create a pin-point marker type
-		$PointingMarker =& $Plot->addNew('Image_Graph_Marker_Pointing_Angular', array(1, &$Marker));
-		// and use the marker on the 1st plot
-		$Plot->setMarker($PointingMarker);
-		// format value marker labels as percentage values
-		$Marker->setDataPreprocessor(Image_Graph::factory('Image_Graph_DataPreprocessor_Formatted', '%0.1f%%'));
-		$Plot->Radius = 15;
-		$FillArray =& Image_Graph::factory('Image_Graph_Fill_Array');
-		$Plot->setFillStyle($FillArray);
-		
-		$FillArray->addColor('green@0.7');
-		$FillArray->addColor('yellow@0.7');
-		$FillArray->addColor('red@0.7');
-		$FillArray->addColor('orange@0.7');
-		$FillArray->addColor('blue@0.7');
-		$FillArray->addColor('purple@0.7');
-		$FillArray->addColor('lightgreen@0.7');
-		$FillArray->addColor('lightblue@0.7');
-		$FillArray->addColor('lightred@0.7');
-		$FillArray->addColor('grey@0.6', 'rest');
-		$Plot->explode(6);
-		$Plot->setStartingAngle(145);
-		// output the Graph
-		$Graph->done();
-	} else 
-		graphic_error ();
+	generic_pie_graph ($width, $height, $data, $legend);
 }
 
 function drawWarning($width,$height) {
@@ -1484,6 +1399,8 @@ function progress_bar($progress,$width,$height) {
    	} else 
    		drawRating($progress,$width,$height);
 }
+
+/*NOT USED !
 
 function graphic_test ($id, $period, $interval, $label, $width, $height){
 	require_once 'Image/Graph.php';
@@ -1571,6 +1488,7 @@ function graphic_test ($id, $period, $interval, $label, $width, $height){
 		$Graph->done();
 
 }
+*/
 
 function odo_tactic ($value1, $value2, $value3){
 	require_once 'Image/Graph.php';
@@ -1800,31 +1718,31 @@ if (isset($_GET["tipo"])){
 	elseif ($_GET["tipo"] =="prioridad_incidente") 
 		grafico_incidente_prioridad();	
 	elseif ($_GET["tipo"]=="db_agente_modulo")
-		grafico_db_agentes_modulos();
+		grafico_db_agentes_modulos($width, $height);
 	elseif ($_GET["tipo"]=="db_agente_paquetes")
-		grafico_db_agentes_paquetes();
+		grafico_db_agentes_paquetes($width, $height);
 	elseif ($_GET["tipo"] =="db_agente_purge")
-		grafico_db_agentes_purge(-1, $width, $height);
+		grafico_db_agentes_purge($id, $width, $height);
 	elseif ($_GET["tipo"] =="group_events")
 		grafico_eventos_grupo($width, $height);
 	elseif ($_GET["tipo"] =="user_events")
-		grafico_eventos_usuario();
+		grafico_eventos_usuario($width, $height);
 	elseif ($_GET["tipo"] =="total_events")
 		grafico_eventos_total();
 	elseif ($_GET["tipo"] =="group_incident")
 		graphic_incident_group();
 	elseif ($_GET["tipo"] =="user_incident")
-                graphic_incident_user();
+		graphic_incident_user();
 	elseif ($_GET["tipo"] =="source_incident")
-                graphic_incident_source();
+        graphic_incident_source();
 	elseif ($_GET["tipo"] =="user_activity")
-                graphic_user_activity($width,$height);
+        graphic_user_activity($width,$height);
 	elseif ($_GET["tipo"] == "agentaccess")
 		graphic_agentaccess($_GET["id"], $_GET["periodo"], $width, $height);
 	elseif ($_GET["tipo"] == "agentmodules")
 		graphic_agentmodules($_GET["id"], $width, $height);
-	elseif ($_GET["tipo"] == "gdirect")
-		graphic_test ($id, $period, $intervalo, $label, $width, $height);
+	//elseif ($_GET["tipo"] == "gdirect")
+//		graphic_test ($id, $period, $intervalo, $label, $width, $height);
 	elseif ( $_GET["tipo"] =="progress"){
 		$percent= $_GET["percent"];
 		progress_bar($percent,$width,$height);

@@ -76,9 +76,19 @@
 	$total_alerts = $data_alert_total + $monitor_alert_total;
 	$total_checks = $data_checks + $monitor_checks;
 
-	$monitor_health = format_numeric ((($monitor_ok - $monitor_alert - $monitor_unknown) / $monitor_checks) * 100,1);
-	$data_health = format_numeric ( (($data_checks -($data_unknown + $data_alert)) / $data_checks ) * 100,1);;
-	$global_health = format_numeric( ((($monitor_ok - $monitor_alert - $monitor_unknown)+($data_checks -($data_unknown + $data_alert))) / ($data_checks + $monitor_checks)  ) * 100, 1);
+	if ($monitor_checks > 0){
+		$monitor_health = format_numeric ((($monitor_ok - $monitor_alert - $monitor_unknown)/ $monitor_checks) * 100,1);
+	} else 
+		$monitor_health = 100;
+	if ($data_checks > 0){
+		$data_health = format_numeric ( (($data_checks -($data_unknown + $data_alert)) / $data_checks ) * 100,1);;
+	} else
+		$data_health = 100;
+	if (($data_checks != 0) OR ($data_checks != 0)){
+		$global_health = format_numeric( ((($monitor_ok -$monitor_alert - $monitor_unknown )+($data_checks -($data_unknown + $data_alert))) / ($data_checks + $monitor_checks)  ) * 100, 1);
+	} else
+		$global_health = 100;
+		
 	echo "<h3>".$lang_label["tactical_indicator"]."</h3>";
 	echo "<img src='reporting/fgraph.php?tipo=odo_tactic&value1=$global_health&value2=$data_health&value3=$monitor_health'>";
 

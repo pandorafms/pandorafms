@@ -19,12 +19,16 @@ if (comprueba_login() == 0)
  		
  		- A more powerful selection (by Agent, by Module, etc).
  	*/
-	 ?>	
-	<h2><?php echo $lang_label["dbmain_title"] ?> &gt; 
-	<?php echo $lang_label["db_purge"] ?><a href='help/<?php echo $help_code ?>/chap8.php#8' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h2>
-	<img src="reporting/fgraph.php?tipo=db_agente_purge&id=-1"><br><br>
-	<h3><?php echo $lang_label["get_data_agent"] ?></h3>
-	<?php
+	if (isset($_POST["agent"])){
+		$id_agent =$_POST["agent"];
+	} else
+		$id_agent = -1;
+	
+	echo '<h2>'.$lang_label["dbmain_title"].' &gt;'.$lang_label["db_purge"]."<a href='help/$help_code/chap8.php#8' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+	echo "<img src='reporting/fgraph.php?tipo=db_agente_purge&id=$id_agent'>";
+	echo "<br><br>";
+	echo '<h3>'.$lang_label["get_data_agent"].'</h3>';
+
 	// All data (now)
 	$purge_all=date("Y-m-d H:i:s",time());
 		
@@ -77,9 +81,7 @@ if (comprueba_login() == 0)
 	# ======================================
 	# Purge data using dates
 		
-	if (isset($_POST["agent"])){
-		$id_agent =$_POST["agent"];
-	} 
+
 	# Purge data using dates
 	if (isset($_POST["purgedb"])){
 		$from_date =$_POST["date_purge"];
@@ -148,8 +150,8 @@ if (comprueba_login() == 0)
 		$sql_2='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_agent;		
 		$result_t=mysql_query($sql_2);
 		while ($row=mysql_fetch_array($result_t)){	
-			flush();
-   			ob_flush();
+/*			flush();
+   			ob_flush(); */
 			$rango00=mysql_query('SELECT COUNT(*) FROM tagente_datos WHERE id_agente_modulo = '.$row["id_agente_modulo"].' and  timestamp > "'.$d1.'"');
 			$rango0=mysql_query('SELECT COUNT(*) FROM tagente_datos WHERE id_agente_modulo = '.$row["id_agente_modulo"].' and  timestamp > "'.$d3.'"');
 			$rango1=mysql_query('SELECT COUNT(*) FROM tagente_datos WHERE id_agente_modulo = '.$row["id_agente_modulo"].' and  timestamp > "'.$week.'"');

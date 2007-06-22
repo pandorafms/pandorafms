@@ -1,6 +1,6 @@
 <?php
 
-// Pandora FMS - the Free monitoring system
+// Pandora FMS - the Free Monitoring System
 // ========================================
 // Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
 // Main PHP/SQL code development, project architecture and management.
@@ -8,7 +8,7 @@
 // CSS and some PHP code additions
 // Copyright (c) 2006 Jose Navarro <jnavarro@jnavarro.net>
 // Additions to code for Pandora FMS 1.2 graph code
-//
+
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
@@ -25,13 +25,13 @@
 // Pandora FMS 1.x uses Pear Image::Graph code
 
 //Pandora Version, if not defined here it would take from config.php
-$build_version="PC070612";
-$pandora_version="v1.3 devel";
+$build_version="PC070622";
+$pandora_version="v1.3 Beta 1";
 global $build_version;
 global $pandora_version;
 
 // Set to 1 to do not check for installer or config file (for development!).
-$develop_bypass = 1;
+$develop_bypass = 0;
 
 if ($develop_bypass != 1){
 	// If no config file, automatically try to install

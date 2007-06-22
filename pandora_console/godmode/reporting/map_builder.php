@@ -110,6 +110,7 @@ if (isset($_GET["update_module"])){
 		$result = "<h3 class=suc>".$lang_label["modify_ok"]."</h3>";
 	else {
 		$result = "<h3 class=error>".$lang_label["modify_no"]."</h3>";
+		echo $sql;
 		echo "<br><br>";
 	}
 	echo $result;
@@ -144,8 +145,6 @@ if (isset($_GET["add_module"])){
 		$result = "<h3 class=suc>".$lang_label["create_ok"]."</h3>";
 	else {
 		$result = "<h3 class=error>".$lang_label["create_no"]."</h3>";
-		echo $sql;
-		echo "<br><br>";
 	}
 	echo $result;
 }
@@ -157,6 +156,7 @@ if (isset($_POST["createmode"])){
 	$map_background = entrada_limpia($_POST["map_background"]);
 	$map_width = entrada_limpia($_POST["map_width"]);
 	$map_height = entrada_limpia($_POST["map_height"]);
+	
 		
 	// INSERT REPORT DATA
 	if ($createmode == 1){
@@ -448,139 +448,150 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_map"]))) {
 		echo "</form>";
 
 
-
-
 		echo "<br></div>";
 
 		// Part 3 - List of already assigned report items
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 		echo "<h2>".$lang_label["report_items"]."</h2>";
-		echo "<table width=720 cellspacing=4 cellpadding=4 class='databox'>";
-		echo "<tr><th>".$lang_label["type"]."</th>
-		<th>".$lang_label["module_name"]."</th>
-		<th>".$lang_label["label"]."</th>
-		<th>".$lang_label["image"]."</th>
-		<th>".$lang_label["pos_x"]."</th>
-		<th>".$lang_label["pos_y"]."</th>
-		<th>".$lang_label["width"]."</th>
-		<th>".$lang_label["height"]."</th>
-		<th>".$lang_label["delete"]."</th>
-		<th>".$lang_label["update"]."</th>
-		</tr>";
 		$sql = "SELECT * FROM tlayout_data WHERE id_layout = $id_map";
 		$res=mysql_query($sql);
-		$color = 0;
-		while ($row = mysql_fetch_array($res)){
-			// Calculate table line color
-			if ($color == 1){
-				$tdcolor = "datos";
-				$color = 0;
-			}
-			else {
-				$tdcolor = "datos2";
-				$color = 1;
-			}
-			$id_layoutdata = $row["id"];
-			$type = $row["type"];
-			switch ($type){
-				case "0": $type_desc = "Single graph"; break;
-				case "1": $type_desc = "Module graph"; break;
-				case "2": $type_desc = "Line"; break;
-			}
-			$id_element = $row["id"];
-			$period = $row["period"];
-			$id_am = $row["id_agente_modulo"];
-			$x = $row["pos_x"];
-			$y = $row["pos_y"];
-			$myimage = $row["image"];
-			$width= $row["width"];
-			$height = $row["height"];
-			$label = $row["label"];
-			$name = "N/A";
-			$agent_name = "N/A";
-			if ($id_am != ""){
-				$agent_name = dame_nombre_agente_agentemodulo ($id_am);
-				$module_name = dame_nombre_modulo_agentemodulo ($id_am);
-			}
-			echo "<tr>";
-			echo "<form method='POST' action='index.php?sec=greporting&sec2=godmode/reporting/map_builder&id=$id_map&update_module=$id_element'>";
-			echo "<td class='$tdcolor'>".$type_desc."</td>";
-			
-			echo "<td class='$tdcolor'>".$agent_name." / ";
-			echo $module_name."</td>";
-
-			echo "<td class='$tdcolor'>";
-			echo "<input type=text size=4 name='label' value='$label'></td>";
-			
-			echo "<td class='$tdcolor'>";
-			echo '<select name="image">';
-			echo "<option>".$myimage;
-			$ficheros = list_files('images/console/icons/', "",0, 0);
-			$a=0;
-			while (isset($ficheros[$a])){
-				$myfichero = substr($ficheros[$a],0,strlen($ficheros[$a])-4);
-				if ((strpos($myfichero,"_bad") == 0) && (strpos($myfichero,"_ok") == 0) && ($myfichero != "" ))
-					echo "<option>".$myfichero."</option>";
-				$a++;
-			}
-			echo '</select>';
-
 		
-			echo "<td class='$tdcolor'>";
-			echo "<input type=text size=4 name=pos_x value='$x'></td>";
-			echo "<td class='$tdcolor'>";
-			echo "<input type=text size=4 name=pos_y value='$y'></td>";
-			echo "<td class='$tdcolor'>";
-			echo "<input type=text size=4 name='width' value='$width'></td>";
-			echo "<td class='$tdcolor'>";
-			echo "<input type=text size=4 name='height' value='$height'></td>";
-			echo "<td class='$tdcolor'>";
-			echo "<a href='index.php?sec=greporting&sec2=godmode/reporting/map_builder&id=$id_map&delete=$id_layoutdata'><img src='images/cross.png'></a>";
-			echo "<td class='$tdcolor' align='center'>";
-			echo "<input type=submit class='sub next' value='".$lang_label["update"]."'>";
-			echo "</form>";
-		}	
-		echo "</table>";
+		if (mysql_num_rows($res)) {
+			echo "<table width=720 cellspacing=4 cellpadding=4 class='databox'>";
+			echo "<tr><th>".$lang_label["type"]."</th>
+			<th>".$lang_label["module_name"]."</th>
+			<th>".$lang_label["label"]."</th>
+			<th>".$lang_label["image"]."</th>
+			<th>".$lang_label["pos_x"]."</th>
+			<th>".$lang_label["pos_y"]."</th>
+			<th>".$lang_label["width"]."</th>
+			<th>".$lang_label["height"]."</th>
+			<th>".$lang_label["delete"]."</th>
+			<th>".$lang_label["update"]."</th>
+			</tr>";
+
+			$color = 0;
+			while ($row = mysql_fetch_array($res)){
+				// Calculate table line color
+				if ($color == 1){
+					$tdcolor = "datos";
+					$color = 0;
+				}
+				else {
+					$tdcolor = "datos2";
+					$color = 1;
+				}
+				$id_layoutdata = $row["id"];
+				$type = $row["type"];
+				switch ($type){
+					case "0": $type_desc = "Single graph"; break;
+					case "1": $type_desc = "Module graph"; break;
+					case "2": $type_desc = "Line"; break;
+				}
+				$id_element = $row["id"];
+				$period = $row["period"];
+				$id_am = $row["id_agente_modulo"];
+				$x = $row["pos_x"];
+				$y = $row["pos_y"];
+				$myimage = $row["image"];
+				$width= $row["width"];
+				$height = $row["height"];
+				$label = $row["label"];
+				$name = "N/A";
+				$agent_name = "N/A";
+				if ($id_am != ""){
+					$agent_name = dame_nombre_agente_agentemodulo ($id_am);
+					$module_name = dame_nombre_modulo_agentemodulo ($id_am);
+				}
+				echo "<tr>";
+				echo "<form method='POST' action='index.php?sec=greporting&sec2=godmode/reporting/map_builder&id=$id_map&update_module=$id_element'>";
+				echo "<td class='$tdcolor'>".$type_desc."</td>";
+				
+				echo "<td class='$tdcolor'>".$agent_name." / ";
+				echo $module_name."</td>";
+
+				echo "<td class='$tdcolor'>";
+				echo "<input type=text size=4 name='label' value='$label'></td>";
+				
+				echo "<td class='$tdcolor'>";
+				echo '<select name="image">';
+				echo "<option>".$myimage."</option>";
+				$ficheros = list_files('images/console/icons/', "",0, 0);
+				$a=0;
+				while (isset($ficheros[$a])){
+					$myfichero = substr($ficheros[$a],0,strlen($ficheros[$a])-4);
+					if ((strpos($myfichero,"_bad") == 0) && (strpos($myfichero,"_ok") == 0) && ($myfichero != "" ))
+						echo "<option>".$myfichero."</option>";
+					$a++;
+				}
+				echo '</select></td>';
+			
+				echo "<td class='$tdcolor'>";
+				echo "<input type=text size=4 name=pos_x value='$x'></td>";
+				echo "<td class='$tdcolor'>";
+				echo "<input type=text size=4 name=pos_y value='$y'></td>";
+				echo "<td class='$tdcolor'>";
+				echo "<input type=text size=4 name='width' value='$width'></td>";
+				echo "<td class='$tdcolor'>";
+				echo "<input type=text size=4 name='height' value='$height'></td>";
+				echo "<td class='$tdcolor'>";
+				echo "<a href='index.php?sec=greporting&sec2=godmode/reporting/map_builder&id=$id_map&delete=$id_layoutdata'><img src='images/cross.png'></a>";
+				echo "<td class='$tdcolor' align='center'>";
+				echo "<input type=submit class='sub next' value='".$lang_label["update"]."'>";
+				echo "</form>";
+			}
+			echo "</table>";
+		} else {
+			echo "<div class='nf'>".$lang_label["no_repitem_def"]."</div>";
+		}
 	}
 } else {
 	// Map LIST Selection screen
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	echo "<h2>".$lang_label["reporting"]." &gt; ";
 	echo $lang_label["map_builder"]."</h2>";
-	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox'>";
-	echo "<tr>
-	<th>".$lang_label["map_name"]."</th>
-	<th>".$lang_label["background"]."</th>
-	<th>".$lang_label["size"]."</th>
-	<th>".$lang_label["Manage"]."</th>
-	<th>".$lang_label["delete"]."</th>
-	</tr>";
+
 	$color=1;
 	$sql="SELECT * FROM tlayout";
 	$res=mysql_query($sql);
-	while ($row = mysql_fetch_array($res)){
-		if ((dame_admin($id_user)==1)){
-			// Calculate table line color
-			if ($color == 1){
-				$tdcolor = "datos";
-				$color = 0;
+	
+	if (mysql_num_rows($res)) {
+		echo "<table width='500' cellpadding=4 cellpadding=4 class='databox'>";
+		echo "<tr>
+		<th>".$lang_label["map_name"]."</th>
+		<th>".$lang_label["background"]."</th>
+		<th>".$lang_label["size"]."</th>
+		<th>".$lang_label["Manage"]."</th>
+		<th>".$lang_label["delete"]."</th>
+		</tr>";
+
+		while ($row = mysql_fetch_array($res)){
+			if ((dame_admin($id_user)==1)){
+				// Calculate table line color
+				if ($color == 1){
+					$tdcolor = "datos";
+					$color = 0;
+				}
+				else {
+					$tdcolor = "datos2";
+					$color = 1;
+				}
+				echo "<tr>";
+				echo "<td valign='top' class='$tdcolor'>".$row["name"]."</td>";
+				echo "<td valign='top' class='$tdcolor'>".$row["background"]."</td>";
+				echo "<td valign='top' class='$tdcolor'>".$row["width"]."x".$row["height"]."</td>";		
+				$id_map = $row["id"];
+				echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=greporting&sec2=godmode/reporting/map_builder&id=$id_map'><img src='images/setup.png'></a></td>";
+				echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=greporting&sec2=godmode/reporting/map_builder&delete_map=$id_map'><img src='images/cross.png'></a></td></tr>";
 			}
-			else {
-				$tdcolor = "datos2";
-				$color = 1;
-			}
-			echo "<tr>";
-			echo "<td valign='top' class='$tdcolor'>".$row["name"]."</td>";
-			echo "<td valign='top' class='$tdcolor'>".$row["background"]."</td>";
-			echo "<td valign='top' class='$tdcolor'>".$row["width"]."x".$row["height"]."</td>";		
-			$id_map = $row["id"];
-			echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=greporting&sec2=godmode/reporting/map_builder&id=$id_map'><img src='images/setup.png'></a>";
-			echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=greporting&sec2=godmode/reporting/map_builder&delete_map=$id_map'><img src='images/cross.png'></a>";
 		}
+		echo "</table>";
+		echo "<table width=500 cellpadding=4 cellpadding=4>";
+	} else {
+		echo "<div class='nf'>".$lang_label["no_map_def"]."</div>";
+		echo "<table>";
 	}
-	echo "</table>";
-	echo "<table width=500 cellpadding=4 cellpadding=4>";
 	echo "<form method=post action='index.php?sec=greporting&sec2=godmode/reporting/map_builder&create_map=1'>";
 	echo "<tr><td align='right'>";
 	echo "<input type=submit class='sub next' value='".$lang_label["add"]."'>";

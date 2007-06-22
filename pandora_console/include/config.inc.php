@@ -1,15 +1,16 @@
 <?php
 // Pandora FMS - the Free monitoring system
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development, project architecture and management.
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
-// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
-
+// CSS and some PHP code additions
+// Copyright (c) 2006 Jose Navarro <jnavarro@jnavarro.net>
+// Additions to code for Pandora FMS 1.2 graph code
+//
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation version 2
+// as published by the Free Software Foundation for version 2.
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -17,13 +18,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-// This is the base config file
+
+// Pandora FMS 1.x uses icons from famfamfam, licensed under CC Atr. 2.5
+// Silk icon set 1.3 (cc) Mark James, http://www.famfamfam.com/lab/icons/silk/
+// Pandora FMS 1.x uses Pear Image::Graph code
 
 //Pandora Version
 if (!isset($build_version))
-	$build_version="PC070602";
+	$build_version="PC070622";
 if (!isset($pandora_version))
-	$pandora_version="v1.3 devel";
+	$pandora_version="v1.3 Beta 1";
 	
 // Database configuration (default ones)
 //$dbname="pandora13";		// MySQL DataBase
@@ -32,7 +36,7 @@ if (!isset($pandora_version))
 //$dbhost="localhost";		// MySQL Host
 
 // This is used for reporting, please add "/" character at the end
-//$config_homedir = "/var/www/pandora2/";
+//$config_homedir = "/var/www/pandora/";
 
 // Do not display any ERROR
 //error_reporting(0); // Need to use active console at this moment

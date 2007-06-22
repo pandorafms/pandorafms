@@ -876,6 +876,15 @@ $lang_label["map_item_add"] = "Add map item";
 $lang_label["graph_event_total"] = "Event graph";
 $lang_label["graph_event_group"] = "Event graph by group";
 $lang_label["graph_event_user"] = "Event graph by user";
+$lang_label["db_agente_paquetes"] = "Packets per agent";
+$lang_label["db_agente_modulo"] = "Modules per agent";
+
+$lang_label["inc_stat_status"] = "Incidents by status";
+$lang_label["inc_stat_priority"] = "Incidents by priority";
+$lang_label["inc_stat_user"] = "Incidents by user";
+$lang_label["inc_stat_source"] = "Incidents by source";
+$lang_label["inc_stat_group"] = "Incidents by group";
+
 $lang_label["no_layout_def"] = "There are no defined layouts";
 $lang_label["no_reporting_def"] = "There are no defined reportings";
 $lang_label["no_map_def"] = "There are no defined maps";

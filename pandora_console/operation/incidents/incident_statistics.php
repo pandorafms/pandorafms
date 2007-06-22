@@ -26,18 +26,25 @@ if (comprueba_login() == 0) {
 	if (give_acl($id_user, 0, "IR")==1) {	
 		echo "<h2>".$lang_label["incident_manag"]." &gt; ";
 		echo $lang_label["statistics"]."<a href='help/".$help_code."/chap4.php#44' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
-?>
-<img src="reporting/fgraph.php?tipo=estado_incidente" border=0>
-<br><br>
-<img src="reporting/fgraph.php?tipo=prioridad_incidente" border=0>
-<br><br>
-<img src="reporting/fgraph.php?tipo=group_incident" border=0>
-<br><br>
-<img src="reporting/fgraph.php?tipo=user_incident" border=0>
-<br><br>
-<img src="reporting/fgraph.php?tipo=source_incident" border=0>
-<br><br>
-<?php
+
+	echo "<table width = 90%>";
+	echo "<tr><td>";
+	echo '<h3>'.$lang_label["inc_stat_status"].'</h3>';
+	echo '<img src="reporting/fgraph.php?tipo=estado_incidente" border=0>';
+	echo "<td>";
+	echo '<h3>'.$lang_label["inc_stat_priority"].'</h3>';
+	echo '<img src="reporting/fgraph.php?tipo=prioridad_incidente" border=0>';
+	echo "<tr><td>";
+	echo '<h3>'.$lang_label["inc_stat_group"].'</h3>';
+	echo '<img src="reporting/fgraph.php?tipo=group_incident" border=0>';
+	echo "<td>";
+	echo '<h3>'.$lang_label["inc_stat_user"].'</h3>';
+	echo '<img src="reporting/fgraph.php?tipo=user_incident" border=0>';
+	echo "<tr><td>";
+	echo '<h3>'.$lang_label["inc_stat_source"].'</h3>';
+	echo '<img src="reporting/fgraph.php?tipo=source_incident" border=0>';
+	echo "<td>";
+	echo "</table>";
 	} else {
 			require ("general/noaccess.php");
 			audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Incident section");

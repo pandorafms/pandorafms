@@ -1,3 +1,37 @@
+2007-06-22  Sancho Lerena  <slerena@artica.es>
+
+	This commit should finish Pandora FMS Console 1.3 beta 1 :-)
+	
+	* pandoradb_data.sql: Added default news for new instalation.
+	
+	* include/styles/op.css: Changed icon for Visual Console.
+	
+	* include/config.inc.php: Some minimal changes for skeleton.
+	
+	* include/languages/language_en.php: Added final strings (hope!).
+	
+	* index.php: Adjusted some issues for production.
+	
+	* operation/incidents/incident_statistics.php: Added titles.
+	
+	* operation/events/event_statistics.php: Added titles.
+	
+	* operation/agentes/tactical.php: DivZero bug fixed.
+	
+	* images/image_problem.png: Updated image with new logo.
+	
+	* reporting/fgraph.php: Added generic_bar_graph and, at least, no
+	more jpgraph graph usage !. All graphs are using GD/Pear Graph
+	now.
+	
+	* general/logon_ok.php: Fixed the same bug that in tactical.
+	
+	* godmode/db/db_info.php: Added titles.
+	
+	* godmode/db/db_purge.php: Now render detailed info in graph for
+	each agent selected.
+
+
 2007-06-22  Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/languages/language_en.php: More strings.

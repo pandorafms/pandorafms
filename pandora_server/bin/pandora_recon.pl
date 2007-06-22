@@ -68,8 +68,8 @@ if ( $pa_config{"daemon"} eq "1" ) {
 # Runs main program (have a infinite loop inside)
 
 threads->new( \&pandora_recon_subsystem, \%pa_config);
-sleep(1);
 
+sleep(1);
 while ( 1 ){
 	pandora_serverkeepaliver ($pa_config, 3, $dbh);
 	threads->yield;
@@ -115,8 +115,7 @@ sub pandora_recon_subsystem {
 				logger($pa_config,"Recon Server: Executing task [$task_name]",8);
    				# EXEC TASK and mark as "in progress" != -1
    				pandora_update_reconstatus ($pa_config, $dbh, $id_task, 0);
-   				threads->new( \&pandora_exec_task, $pa_config, $id_task);
-				# pandora_exec_task ($pa_config, $id_task);
+				pandora_exec_task ($pa_config, $id_task);
 			}
       		}
       		$exec_sql->finish();
@@ -224,7 +223,10 @@ sub pandora_exec_task {
 sub scan_icmp {
 	my $dest = $_[0];
 	my $l_timeout = $_[1];
- 	$result = ping(hostname => $dest, timeout => $l_timeout, size => 32, count => 1);
+ 	my $result = ping(hostname => $dest, timeout => $l_timeout, size => 32, count => 1);
+	if (!defined($result)){
+		return 0;
+	}
 	if ($result) {
 		return 1;
 	} else {

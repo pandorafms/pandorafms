@@ -298,6 +298,7 @@ sub pandora_loadconfig {
 
 		logger ($pa_config, "Error connecting database in init Phase. Aborting startup.",0);
 		print (" [E] Error connecting database in init Phase. Aborting startup. \n\n");
+		print $@;
 		exit;
 	}
 	print " [*] Pandora FMS Server [".$pa_config->{'servername'}.$pa_config->{"servermode"}."] is running and operative \n";
@@ -307,7 +308,7 @@ sub pandora_loadconfig {
 	# Dump all errors to errorlog
 	# DISABLED in DEBUGMODE
 	# ENABLE FOR PRODUCTION
-	#open STDERR, ">>$pa_config->{'errorlogfile'}" or die "Can't write to Errorlog : $!";
+	open STDERR, ">>$pa_config->{'errorlogfile'}" or die "Can't write to Errorlog : $!";
 }
 
 # End of function declaration

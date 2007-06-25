@@ -22,7 +22,8 @@ use strict;
 use warnings;
 
 use Date::Manip;        # Needed to manipulate DateTime formats
-						# of input, output and compare
+			# of input, output and compare
+use Net::Ping;
 use Time::Local;        # DateTime basic manipulation
 use NetAddr::IP;		# To manage IP Addresses
 use POSIX;				# to use ceil() function
@@ -33,12 +34,11 @@ use threads;
 use PandoraFMS::Config;
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
-use PandoraFMS::PingExternal;
 
 # FLUSH in each IO (only for debug, very slooow)
 # ENABLED in DEBUGMODE
 # DISABLE FOR PRODUCTION
-$| = 1;
+$| = 0;
 
 my %pa_config;
 
@@ -102,7 +102,7 @@ sub pandora_recon_subsystem {
 		logger ($pa_config, "Loop in Recon Module Subsystem", 10);
 		$query_sql = "SELECT * FROM trecon_task WHERE id_network_server = $server_id AND status = -1";
 		$exec_sql = $dbh->prepare($query_sql);
-		$exec_sql ->execute;
+		$exec_sql->execute;
 		while (@sql_data = $exec_sql->fetchrow_array()) {
 			my $interval = $sql_data[11];
 			my $my_timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
@@ -117,8 +117,8 @@ sub pandora_recon_subsystem {
    				pandora_update_reconstatus ($pa_config, $dbh, $id_task, 0);
 				pandora_exec_task ($pa_config, $id_task);
 			}
-      		}
-      		$exec_sql->finish();
+      	}
+      	$exec_sql->finish();
 		sleep($pa_config->{"server_threshold"});
 	}
 }
@@ -216,22 +216,43 @@ sub pandora_exec_task {
 	pandora_task_set_utimestamp ($pa_config, $dbh, $id_task);
 }
 
+
+
 ##############################################################################
-# escaneo_icmp (destination, timeout) - Do a ICMP scan 
+# pandora_ping_icmp (destination, timeout) - Do a ICMP scan, 1 if alive, 0 if not
 ##############################################################################
- 
 sub scan_icmp {
-	my $dest = $_[0];
-	my $l_timeout = $_[1];
- 	my $result = ping(hostname => $dest, timeout => $l_timeout, size => 32, count => 1);
-	if (!defined($result)){
-		return 0;
-	}
-	if ($result) {
-		return 1;
-	} else {
-	     return 0;
-	}
+        my $dest = $_[0];
+        my $l_timeout = $_[1];
+        # temporal vars.
+        my $result = 0;
+        my $result2 = 0;
+        my $p;
+
+        # Check for valid destination
+        if (!defined($dest)) {
+                return 0;
+        }
+        # Some hosts don't accept ICMP with too small payload. Use 16 Bytes
+        $p = Net::Ping->new("icmp",$l_timeout,16);
+        $p->source_verify(1);
+
+        $result = $p->ping($dest);
+        $result2 = $p->ping($dest);
+
+        # Check for valid result
+        if ((!defined($result)) || (!defined($result2))) {
+                return 0;
+        }
+
+        # Lets see the result
+        if (($result == 1) && ($result2 == 1)) {
+                $p->close();
+                return 1;
+        } else {
+                $p->close();
+                return 0;
+        }
 }
 
 

@@ -1,3 +1,14 @@
+2007-06-25  Sancho Lerena  <slerena@artica.es>
+
+	* linux/pandora_agent_installer: Fixed problems with old "contrib"
+	subdir.
+	
+	* */pandora_agent: Removed from/to time run functionality. Added
+	renice call, fixed some default vars and fixed DEBUG mode
+	behaviour.
+	
+	* */pandora_agent.conf: Default are to no renice and not debug.
+	
 2007-06-18  Manuel Arostegui <marostegui@artica.es>
 
 	* linux/pandora_agent_installer: Fixed a bug related

@@ -1,3 +1,10 @@
+2007-06-25  Sancho Lerena  <slerena@artica.es>
+
+	First commit for Beta2 :-)
+
+	* reporting/fgraph.php: Fixed problem with combined graph that
+	makes long time graphs more smaller and slightly visible.
+
 2007-06-25  Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/sytles/pandora.css: Updated "error" and "success" messages

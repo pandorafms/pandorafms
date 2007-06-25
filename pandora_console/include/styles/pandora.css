@@ -345,11 +345,11 @@ td.datos_jus, td.datos2_jus {
 }
 .suc {
 	color: #5a8629;
-	background: url(../../images/suc.gif) no-repeat 1px;
+	background: url(../../images/suc.png) no-repeat 1px;
 	padding: 4px 1px 6px 30px;
 }
 .error {
-	background: url(../../images/error.gif) no-repeat;
+	background: url(../../images/err.png) no-repeat;
 	padding: 4px 1px 6px 30px;
 }
 .red , .redb, .redi, .error {

@@ -1,3 +1,9 @@
+2007-06-25  Manuel Arostegui <marostegui@artica.es>
+
+	* specs/fedoracore5/pandora_server.spec: Moving PandoraFMS
+	  perl modules to the perl directory instead of leaving them
+	  in the pandora_server main directory.
+
 2007-06-22  Sancho Lerena  <slerena@artica.es>
 
         * bin/pandora_recon.pl: This sould be final modifications for recon.

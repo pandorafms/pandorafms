@@ -70,10 +70,10 @@ mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/util/ $RPM_BUILD_ROOT/
 #mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/pandora_config.pm $RPM_BUILD_ROOT/usr/share/pandora_server/util/
 #mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/pandora_db.pm $RPM_BUILD_ROOT/usr/share/pandora_server/util/
 #mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/pandora_tools.pm $RPM_BUILD_ROOT/usr/share/pandora_server/util/
-cp $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/PandoraFMS/DB.pm $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/PandoraFMS
-cp $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/PandoraFMS/PingExternal.pm $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/PandoraFMS
-cp $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/PandoraFMS/Tools.pm $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/PandoraFMS
-cp $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/PandoraFMS/Config.pm $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/PandoraFMS
+mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/PandoraFMS/DB.pm $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/PandoraFMS
+mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/PandoraFMS/PingExternal.pm $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/PandoraFMS
+mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/PandoraFMS/Tools.pm $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/PandoraFMS
+mv $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/bin/PandoraFMS/Config.pm $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/PandoraFMS
 #cp $RPM_BUILD_ROOT/usr/share/pandora_server/util/pandora_config.pm $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/5.8.5/
 #cp $RPM_BUILD_ROOT/usr/share/pandora_server/util/pandora_db.pm $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/5.8.5/
 #cp $RPM_BUILD_ROOT/usr/share/pandora_server/util/pandora_tools.pm $RPM_BUILD_ROOT/usr/lib/perl5/site_perl/5.8.5/

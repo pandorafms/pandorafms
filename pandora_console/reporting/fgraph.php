@@ -280,7 +280,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 	}
 	
 	// ... and populated with data ...
-	for ($cc=0; $cc <= $resolution; $cc++) {
+	for ($cc=0; $cc < $resolution; $cc++) {
 		$tdate = date('d/m', $valores[$cc][2])."\n".date('H:i', $valores[$cc][2]);
 		for ($y = 0; $y < $module_number; $y++){
 			$dataset[$y]->addPoint($tdate, $real_data[$y][$cc] * $weight_list[$y]);
@@ -324,7 +324,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 			$AxisY->setTitle($unit_name, 'vertical');
 		$AxisX->setLabelInterval($resolution / 10);		
 		//$AxisY->forceMinimum($minvalue);
-		$AxisY->forceMaximum($max_value+($max_value/12)) ;
+		//$AxisY->forceMaximum($max_value+($max_value/12)) ;
 		$GridY2 =& $Plotarea->addNew('bar_grid', IMAGE_GRAPH_AXIS_Y_SECONDARY);
 		$GridY2->setLineColor('gray');
 		$GridY2->setFillColor('lightgray@0.05');

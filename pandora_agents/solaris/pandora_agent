@@ -1,7 +1,7 @@
 #!/usr/bin/ksh 
 # **********************************************************************
 # Pandora Agent for Solaris
-# v1.2
+# v1.3
 # (c) Sancho Lerena 2003-2006, slerena@gmail.com
 # Este codigo esta licenciado bajo la licencia GPL 2.0 o posterior
 # This code is licenced under GPL 2.0 licence
@@ -42,11 +42,9 @@ echo "$TIMESTAMP - Reading general config parameters from .conf file" >> $PANDOR
 # Default values
 DEBUG_MODE=0
 CHECKSUM_MODE=0
-MIN_HOUR=0
-MAX_HOUR=0
 DELAYED_STARTUP=0
 SERVER_PORT=22
-PANDORA_NICE=10
+PANDORA_NICE=20
 INTERVAL=300
 TRANSFER_MODE=ssh
 
@@ -91,28 +89,19 @@ do
         CHECKSUM_MODE=`echo $a | awk '{ print $2 }' `
         echo "$TIMESTAMP - [SETUP] - Checksum mode is $CHECKSUM_MODE " >> $PANDORA_HOME/pandora.log
     fi
-    if [ ! -z "`echo $a | grep  '^min_hour'`" ]
-        then
-                MIN_HOUR=`echo $a | awk '{ print $2 }' `
-                echo "$TIMESTAMP - [SETUP] - MIN_HOUR is $MIN_HOUR" >> $PANDORA_LOGFILE
-        fi
-        if [ ! -z "`echo $a | grep '^max_hour'`" ]
-        then
-                MAX_HOUR=`echo $a | awk '{ print $2 }' `
-                echo "$TIMESTAMP - [SETUP] - MAX_HOUR is $MAX_HOUR" >> $PANDORA_LOGFILE
-        fi
-        if [ ! -z "`echo $a | grep '^delayed_startup'`" ]
+    if [ ! -z "`echo $a | grep '^delayed_startup'`" ]
         then
                 DELAYED_STARTUP=`echo $a | awk '{ print $2 }' `
                 echo "$TIMESTAMP - [SETUP] - DELAYED_STARTUP is $DELAYED_STARTUP" >> $PANDORA_LOGFILE
-        fi
-        # CPU protection
-        if [ ! -z "`echo $a | grep '^pandora_nice'`" ]
-        then
-                PANDORA_NICE=`echo $a | awk '{ print $2 }' `
-                echo "$TIMESTAMP - [SETUP] - PandoraFMS Nice is $PANDORA_NICE" >> $PANDORA_LOGFILE
-        fi
-# Contribution of daggett
+    fi
+	# CPU protection
+	if [ ! -z "`echo $a | grep '^pandora_nice'`" ]
+	then
+	        PANDORA_NICE=`echo $a | awk '{ print $2 }' `
+	        echo "$TIMESTAMP - [SETUP] - PandoraFMS Nice is $PANDORA_NICE" >> $PANDORA_LOGFILE
+	fi
+
+	# Contribution of daggett
         if [ ! -z "`echo $a | grep '^server_port'`" ]
         then
                 SERVER_PORT=`echo $a | awk '{ print $2 }' `
@@ -146,19 +135,6 @@ then
         sleep $(($DELAYED_STARTUP*60))
 fi
 
-while [ 1 ]
-do
-        # Check for an appropiate time to execute (5min intervals)
-        if [ $MAX_HOUR != $MIN_HOUR ]
-        CURRENT_HOUR=`date +"%H"`
-        then
-                while [ $CURRENT_HOUR -lt $MIN_HOUR ] || [ $CURRENT_HOUR -gt $MAX_HOUR ]
-                do
-                        echo "Waiting to valid time ($MIN_HOUR - $MAX_HOUR, current $CURRENT_HOUR)" >> $PANDORA_LOGFILE.err
-                        sleep 300
-                done
-        fi
-
 # MAIN Program loop begin
 # OS Data
 OS_VERSION=`uname -v`
@@ -175,6 +151,9 @@ CONTADOR=0
 EXECUTE=1
 MODULE_END=0
 
+# Renice me
+renice $PANDORA_NICE $$
+
 while [ "1" = "1" ]
 do
     # Fecha y hora. Se genera un serial (numero de segundos desde 1970) para cada paquete generado.
@@ -186,47 +165,49 @@ do
     CHECKSUM=$TEMP/$NOMBRE_HOST.$SERIAL.checksum
     PANDORA_FILES="$TEMP/$NOMBRE_HOST.$SERIAL.*"
     DATA2=$TEMP/$NOMBRE_HOST.$SERIAL.data_temp
-# Make some checks
-if [ "$TRANSFER_MODE" = "ftp" ]
-then
-        if [ ! -f $HOME/.netrc ]
-        then
-                echo "(EE) Transfer mode is FTP but there is no usable .netrc file. Aborting."
-                exit
-        fi
-fi
-if [ "$DEBUG_MODE" = "1" ]
-then
-        echo "(**) Warning: Running in DEBUG mode"
-fi
 
-    # Makes data packet
-    echo "<agent_data os_name='$OS_NAME' os_version='$OS_VERSION' interval='$INTERVAL' version='$AGENT_VERSION' timestamp='$TIMESTAMP' agent_name='$NOMBRE_HOST'>" > $DATA 
-    if [ "$DEBUG_MODE" = "1" ]
-    then
-	echo "$TIMESTAMP - Reading module adquisition data from .conf file" >> $PANDORA_HOME/pandora.log
-	DEBUGOUTPUT=$PANDORA_HOME/pandora.log
-    else
-	DEBUGOUTPUT=/dev/null
-    fi
-    
-    for a in `cat $PANDORA_HOME/pandora_agent.conf | grep -v "^#" | grep "^module" ` 
-    do
-	a=`echo $a | tr -s " " " "`
-	
-        if [ ! -z "`echo $a | grep '^module_exec'`" ]
-        then
-	    if [ $EXECUTE -eq 0 ]
-	    then
-            	execution=`echo $a | cut -c 13-`
-            	res=`eval $execution 2> /dev/null`
-            	if [ -z "$flux_string" ]
-            	then
-             	    res=`eval expr $res 2> /dev/null`
-     		fi
-	        echo "<data>$res</data>" >> $DATA2
-	    fi
+# Make some checks
+	if [ "$TRANSFER_MODE" = "ftp" ]
+	then
+	        if [ ! -f $HOME/.netrc ]
+	        then
+	                echo "(EE) Transfer mode is FTP but there is no usable .netrc file. Aborting."
+	                exit
+	        fi
 	fi
+
+	if [ "$DEBUG_MODE" = "1" ]
+	then
+	        echo "(**) Warning: Running in DEBUG mode"
+	fi
+
+	# Makes data packet
+	echo "<agent_data os_name='$OS_NAME' os_version='$OS_VERSION' interval='$INTERVAL' version='$AGENT_VERSION' timestamp='$TIMESTAMP' agent_name='$NOMBRE_HOST'>" > $DATA 
+    	if [ "$DEBUG_MODE" = "1" ]
+	then
+		echo "$TIMESTAMP - Reading module adquisition data from .conf file" >> $PANDORA_HOME/pandora.log
+		DEBUGOUTPUT=$PANDORA_HOME/pandora.log
+	else
+		DEBUGOUTPUT=/dev/null
+	fi
+    
+	for a in `cat $PANDORA_HOME/pandora_agent.conf | grep -v "^#" | grep "^module" ` 
+	do
+		a=`echo $a | tr -s " " " "`
+	
+	        if [ ! -z "`echo $a | grep '^module_exec'`" ]
+	        then
+		    if [ $EXECUTE -eq 0 ]
+		    then
+	            	execution=`echo $a | cut -c 13-`
+	            	res=`eval $execution 2> /dev/null`
+	            	if [ -z "$flux_string" ]
+	            	then
+	             	    res=`eval expr $res 2> /dev/null`
+	     		fi
+		        echo "<data>$res</data>" >> $DATA2
+		    fi
+		fi
 	
 	if [ ! -z "`echo $a | grep '^module_name'`" ]
 	then
@@ -300,59 +281,62 @@ fi
     done
     # Count number of agent runs
     CONTADOR=`expr $CONTADOR + 1`
+
     # Keep a limit of 100 for overflow reasons
     if [ $CONTADOR -eq 100 ]
     then
 	CONTADOR=0
     fi
 
-    # Call for user-defined script for data adquisition
-    if [ -f "$PANDORA_HOME/pandora_user.conf" ]
-    then
-	/bin/sh $PANDORA_HOME/pandora_user.conf >> $DATA 2> /dev/null 
-    fi
+	# Call for user-defined script for data adquisition
+	if [ -f "$PANDORA_HOME/pandora_user.conf" ]
+	then
+		/bin/sh $PANDORA_HOME/pandora_user.conf >> $DATA 2> /dev/null 
+	fi
 
-    # Finish data packet
-    echo "</agent_data>" >> $DATA
-    echo "$TIMESTAMP - Finish writing XML $DATA" >> $DEBUGOUTPUT
-    # Calculate Checksum and prepare MD5 file
-    if [ "$CHECKSUM_MODE" = 1 ]
-    then
-	CHECKSUM_DATA=`cat $DATA | md5 `
-	echo $CHECKSUM_DATA $DATA> $CHECKSUM
-    else
-	echo "NO MD5 CHECKSUM AVAILABLE" > $CHECKSUM
-    fi
-    # Send packets to server and delete it
-#    scp $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH
-#    if [ "$DEBUG_MODE" = 1 ] 
-#    then
-#  	echo "$TIMESTAMP - DEBUG :Copying $PANDORA_FILES to $SERVER_IP:$SERVER_PATH" >> $PANDORA_HOME/pandora.log
-#    else
-	# Delete it 
-#  	rm -f $PANDORA_FILES> /dev/null
-#    fi
-     if [ "$TRANSFER_MODE" = "ssh" ]
+	# Finish data packet
+	echo "</agent_data>" >> $DATA
+	echo "$TIMESTAMP - Finish writing XML $DATA" >> $DEBUGOUTPUT
+
+	# Calculate Checksum and prepare MD5 file
+	if [ "$CHECKSUM_MODE" = 1 ]
+	then
+		CHECKSUM_DATA=`cat $DATA | md5 `
+		echo $CHECKSUM_DATA $DATA> $CHECKSUM
+	else
+		echo "NO MD5 CHECKSUM AVAILABLE" > $CHECKSUM
+	fi
+
+	# Debug mode
+	if [ "$DEBUG_MODE" = "1" ]
         then
-                scp -P $SERVER_PORT $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH > /dev/null 2>  $PANDORA_LOGFILE.err
+                echo "$TIMESTAMP - Finish writing XML $DATA" >> $PANDORA_LOGFILE
+                echo "(**) Data file is at $DATA - Exiting now"
+                echo " "
+                exit 0
+        fi
+
+	# Send packets to server and delete it
+	if [ "$TRANSFER_MODE" = "ssh" ]
+       	then
+	                scp -P $SERVER_PORT $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH > /dev/null 2>  $PANDORA_LOGFILE.err
         fi
 
         if [ "$TRANSFER_MODE" = "ftp" ]
         then
-                ftp SERVER_IP > /dev/null 2> $PANDORA_LOGFILE.err
+	                ftp SERVER_IP > /dev/null 2> $PANDORA_LOGFILE.err
         fi
 
         if [ "$TRANSFER_MODE" = "local" ]
         then
-                cp $PANDORA_FILES $SERVER_PATH > /dev/null 2> $PANDORA_LOGFILE.err
+	                cp $PANDORA_FILES $SERVER_PATH > /dev/null 2> $PANDORA_LOGFILE.err
         fi
 
-        # Delete data
-        rm -f $PANDORA_FILES> /dev/null 2> $PANDORA_LOGFILE.err
+	# Delete data
+	rm -f $PANDORA_FILES> /dev/null 2> $PANDORA_LOGFILE.err
 
+	# Go to bed :-)
+	sleep $INTERVAL
 
-    # Go to bed :-)
-    sleep $INTERVAL
-done 
 done
 # forever! 

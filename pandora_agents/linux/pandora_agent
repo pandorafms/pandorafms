@@ -1,13 +1,14 @@
 #!/bin/bash 
 # **********************************************************************
 # Pandora FMS Generic Host Agent
-# GNU/Linux version 
+# GNU/Linux version 1.3
 # (c) 2003-2007 Sancho Lerena <slerena@gmail.com>
 # with the help of many people. Please see http://pandora.sourceforge.net
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
-AGENT_VERSION=1.3-dev
-AGENT_BUILD=070421
+
+AGENT_VERSION=1.3
+AGENT_BUILD=070725
 
 if [ -z "$1" ]
 then
@@ -39,11 +40,9 @@ IFS=$'\n'
 # Default values
 CHECKSUM_MODE=1
 DEBUG_MODE=0
-MIN_HOUR=0
-MAX_HOUR=0
 DELAYED_STARTUP=0
 SERVER_PORT=22
-PANDORA_NICE=10
+PANDORA_NICE=0
 INTERVAL=300
 TRANSFER_MODE=ssh
 if [ -z "`echo $LANG | grep '\.'`" ]
@@ -52,6 +51,7 @@ then
 else
 	ENCODING=`echo $LANG | cut -f 2 -d "."`
 fi
+
 NOMBRE_HOST=`/bin/hostname`
 OS_NAME=`uname -s`
 PANDORA_LOGFILE=/var/log/pandora_agent.log
@@ -119,16 +119,6 @@ do
 		TRANSFER_MODE=`echo $a | awk '{ print $2 }' `
                 echo "$TIMESTAMP - [SETUP] - Transfer Mode is $TRANSFER_MODE" >> $PANDORA_LOGFILE
 	fi
-        if [ ! -z "`echo $a | grep -e '^min_hour'`" ]
-        then
-                MIN_HOUR=`echo $a | awk '{ print $2 }' `
-                echo "$TIMESTAMP - [SETUP] - MIN_HOUR is $MIN_HOUR" >> $PANDORA_LOGFILE
-        fi
-        if [ ! -z "`echo $a | grep -e '^max_hour'`" ]
-        then
-                MAX_HOUR=`echo $a | awk '{ print $2 }' `
-                echo "$TIMESTAMP - [SETUP] - MAX_HOUR is $MAX_HOUR" >> $PANDORA_LOGFILE
-        fi
         if [ ! -z "`echo $a | grep -e '^delayed_startup'`" ]
         then
                 DELAYED_STARTUP=`echo $a | awk '{ print $2 }' `
@@ -204,19 +194,8 @@ then
         sleep $(($DELAYED_STARTUP*60))
 fi
 
-while [ 1 ]
-do
-        # Check for an appropiate time to execute (5min intervals)
-        if [ $MAX_HOUR != $MIN_HOUR ]
-        CURRENT_HOUR=`date +"%H"`
-	then
-                while [ $CURRENT_HOUR -lt $MIN_HOUR ] || [ $CURRENT_HOUR -gt $MAX_HOUR ]
-                do
-                        echo "Waiting to valid time ($MIN_HOUR - $MAX_HOUR, current $CURRENT_HOUR)" >> $PANDORA_LOGFILE.err
-                        sleep 300
-                done
-        fi
-
+# Renice me
+renice $PANDORA_NICE $$
 
 # MAIN Program loop begin
 
@@ -391,6 +370,5 @@ do
 	
 	# Go to bed :-)
 	sleep $INTERVAL
-done
 done
 # This runs forever! 

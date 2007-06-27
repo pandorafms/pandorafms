@@ -165,7 +165,7 @@ Cualquier valor por debajo del m&iacute;nimo definido se interpretar&aacute; com
 <p>Desde aqu&iacute; se puede:</p>
 <ul>
 <li>borrar un m&oacute;dulo pinchando en el icono <img src="../../images/cross.png"></li>
-<li>o editarlo, pinchando en el icono <img src="../../images/config.gif"></li>
+<li>o editarlo, pinchando en el icono <img src="../../images/config.png"></li>
 </ul>
 
 <p>No ser&aacute; posible modificar el tipo de dato del m&oacute;dulo.</p>
@@ -282,7 +282,7 @@ todos los datos asociados a estos.</p>
 
 <p>Si pasamos el rat&oacute;n sobre cualquier imagen de grupo, veremos el n&uacute;mero de agentes que tiene el grupo adem&aacute;s del n&uacute;mero de monitores, organizado por estado.</p>
 
-<p>Si pulsamos el icono <img src="../../images/target.gif"> que aparece a la derecha de cada grupo, se refrescar&aacute; la informaci&oacute;n del grupo seleccionado.</p>
+<p>Si pulsamos el icono <img src="../../images/target.png"> que aparece a la derecha de cada grupo, se refrescar&aacute; la informaci&oacute;n del grupo seleccionado.</p>
 
 <h2><a name="33">3.3. Monitorizaci&oacute;n de agentes</a></h2>
 
@@ -315,21 +315,21 @@ estado incorrecto, aparecen tres valores: el n&uacute;mero de m&oacute;dulos, el
 monitores y el n&uacute;mero de monitores con estado incorrecto, &eacute;ste &uacute;ltimo en color rojo, el resto de color negro.</p>
 <p><b>Estado</b>: Muestra el estado «general» del agente mediante los siguientes iconos:</p>
 	<div class="ml35">
-		<p><img src="../../images/b_green.gif"> Cuando todos los monitores est&aacute;n OK. El estado ideal.</p>
-		<p><img src="../../images/b_white.gif"> Cuando no hay monitores definidos. A veces no monitorizamos nada que pueda estar «bien» o «mal», y simplemente reporta datos
+		<p><img src="../../images/b_green.png"> Cuando todos los monitores est&aacute;n OK. El estado ideal.</p>
+		<p><img src="../../images/b_white.png"> Cuando no hay monitores definidos. A veces no monitorizamos nada que pueda estar «bien» o «mal», y simplemente reporta datos
 num&eacute;ricos o de tipo texto.</p>
-		<p><img src="../../images/b_red.gif"> Cuando al menos un monitor falla. Generalmente queremos evitar esto y que todos nuestros sistemas tengan un saludable color verde.</p>
-		<p><img src="../../images/b_blue.gif"> Cuando el agente no tiene datos. Los agentes nuevos con un paquete vac&iacute;o pueden tener este estado.</p>
-		<p><img src="../../images/b_yellow.gif"> Cuando hay un cambio entre verde y rojo. Esto indica que un agente acaba de cambiar de estado, de «todo bien» a «tenemos un problema».</p>
-		<img src="../../images/b_down.gif"> Cuando el agente est&aacute; ca&iacute;do o no se ha recibido informaci&oacute;n de &eacute;l en el doble del Intervalo en segundos. Generalmente se debe a un
+		<p><img src="../../images/b_red.png"> Cuando al menos un monitor falla. Generalmente queremos evitar esto y que todos nuestros sistemas tengan un saludable color verde.</p>
+		<p><img src="../../images/b_blue.png"> Cuando el agente no tiene datos. Los agentes nuevos con un paquete vac&iacute;o pueden tener este estado.</p>
+		<p><img src="../../images/b_yellow.png"> Cuando hay un cambio entre verde y rojo. Esto indica que un agente acaba de cambiar de estado, de «todo bien» a «tenemos un problema».</p>
+		<img src="../../images/b_down.png"> Cuando el agente est&aacute; ca&iacute;do o no se ha recibido informaci&oacute;n de &eacute;l en el doble del Intervalo en segundos. Generalmente se debe a un
 problema de comunicaci&oacute;n o a un «cuelgue» del sistema remoto.</p>
 	</div>
 <p><b>Alertas:</b> Muestra si se han enviado alertas mediante los siguientes iconos:</p>
 		<div class="ml35">
-		<p><img src="../../images/dot_green.gif"> Cuando no se ha enviado ninguna alerta.</p>
-		<p><img src="../../images/dot_red.gif"> Cuando se ha enviado al menos una alerta en el per&iacute;odo definido como «time threshold» o «umbral de tiempo» en la alerta.</p>
+		<p><img src="../../images/dot_green.png"> Cuando no se ha enviado ninguna alerta.</p>
+		<p><img src="../../images/dot_red.png"> Cuando se ha enviado al menos una alerta en el per&iacute;odo definido como «time threshold» o «umbral de tiempo» en la alerta.</p>
 		</div>
-<p><b>&Uacute;ltimo contacto</b>: Muestra la fecha y hora en que se recibieron los &uacute;ltimos datos del agente, utilizando una barra de progreso, de acuerdo con el valor del intervalo. Si se muestra la imagen <img src="../../images/outof.gif">, el agente no ha enviado datos al finalizar el intervalo. Si pasamos el rat&oacute;n encima de la imagen, se mostrar&aacute; el &uacute;ltimo contacto en formato de fecha y hora.</p>
+<p><b>&Uacute;ltimo contacto</b>: Muestra la fecha y hora en que se recibieron los &uacute;ltimos datos del agente, utilizando una barra de progreso, de acuerdo con el valor del intervalo. Si se muestra la imagen <img src="../../images/outof.png">, el agente no ha enviado datos al finalizar el intervalo. Si pasamos el rat&oacute;n encima de la imagen, se mostrar&aacute; el &uacute;ltimo contacto en formato de fecha y hora.</p>
 
 <p><b><u>Nota:</u></b> El icono <img src="../../images/setup.png" width="15"> s&oacute;lo es visible si es usuario es administrador y es un enlace a la opci&oacute;n «Gestionar agentes» &gt; «Actualizar agente» del men&uacute; de administraci&oacute;n.</p>
 
@@ -364,23 +364,23 @@ y horarias (M, W, D y H, respectivamente).</p>
 los datos m&aacute;s antiguos.</p>
 
 <p>Las gr&aacute;ficas que se generan son:</p>
-<p class="ml75"> - <b>Gr&aacute;fico horario</b> (<img src="../../images/grafica_h.gif">) con un rango total de 60 minutos</p>
+<p class="ml75"> - <b>Gr&aacute;fico horario</b> (<img src="../../images/grafica_h.png">) con un rango total de 60 minutos</p>
 <p class="center"><img src="images/image018.png"></p>
 
-<p class="ml75"> - <b>Gr&aacute;fico diario</b> (<img src="../../images/grafica_d.gif">) con un rango total de 24 horas</p>
+<p class="ml75"> - <b>Gr&aacute;fico diario</b> (<img src="../../images/grafica_d.png">) con un rango total de 24 horas</p>
 <p class="center"><img src="images/image019.png"></p>
 
-<p class="ml75"> - <b>Gr&aacute;fico semanal</b> (<img src="../../images/grafica_w.gif">) con un rango total de 7 d&iacute;as</p>
+<p class="ml75"> - <b>Gr&aacute;fico semanal</b> (<img src="../../images/grafica_w.png">) con un rango total de 7 d&iacute;as</p>
 <p class="center"><img src="images/image020.png"></p>
 
-<p class="ml75"> - <b>Gr&aacute;fico mensual</b> (<img src="../../images/grafica_m.gif">) con un rango total de 30 d&iacute;as</p>
+<p class="ml75"> - <b>Gr&aacute;fico mensual</b> (<img src="../../images/grafica_m.png">) con un rango total de 30 d&iacute;as</p>
 <p class="center"><img src="images/image021.png"></p>
 
 <p><b>Datos</b>: Son, en bruto, los datos enviados por el agente:</p>
 
-<p class="ml25"> - <img src="../../images/data_m.gif"> El &uacute;ltimo mes</p>
-<p class="ml25"> - <img src="../../images/data_w.gif"> La &uacute;ltima semana</p>
-<p class="ml25"> - <img src="../../images/data_d.gif"> El &uacute;ltimo d&iacute;a</p>
+<p class="ml25"> - <img src="../../images/data_m.png"> El &uacute;ltimo mes</p>
+<p class="ml25"> - <img src="../../images/data_w.png"> La &uacute;ltima semana</p>
+<p class="ml25"> - <img src="../../images/data_d.png"> El &uacute;ltimo d&iacute;a</p>
 
 <h4><a name="3323">3.3.2.3. Lista completa de monitores</a></h4>
 
@@ -396,8 +396,8 @@ los datos m&aacute;s antiguos.</p>
 <p><b>Descripci&oacute;n:</b> Descripci&oacute;n del m&oacute;dulo configurado en el archivo de configuraci&oacute;n del agente.</p>
 <p><b>Estado:</b> Aparece el estado del agente mediante los siguientes iconos:</p>
 
-<p class="ml25"><img src="../../images/b_green.gif"> Cuando el monitor est&aacute; correcto</p>
-<p class="ml25"><img src="../../images/b_red.gif"> Cuando el monitor falla</p>
+<p class="ml25"><img src="../../images/b_green.png"> Cuando el monitor est&aacute; correcto</p>
+<p class="ml25"><img src="../../images/b_red.png"> Cuando el monitor falla</p>
 
 <p><b>&Uacute;ltimo contacto</b>: Aparece la fecha y hora en que se recibieron los &uacute;ltimos datos del agente.</p>
 
@@ -416,8 +416,8 @@ los datos m&aacute;s antiguos.</p>
 <p><b>N&uacute;mero de veces lanzada:</b> N&uacute;mero de veces que se ha lanzado la alerta.</p>
 <p><b>Estado:</b> Muestra si se han enviado alertas mediante los siguientes iconos:</p>
 
-<p class="ml25"><img src="../../images/dot_green.gif"> Cuando no se ha enviado ninguna alerta</p>
-<p class="ml25"><img src="../../images/dot_red.gif"> Cuando se ha enviado al menos una alerta</p>
+<p class="ml25"><img src="../../images/dot_green.png"> Cuando no se ha enviado ninguna alerta</p>
+<p class="ml25"><img src="../../images/dot_red.png"> Cuando se ha enviado al menos una alerta</p>
 
 <h3><a name="333">3.3.3. Detalle de grupos</a></h3>
 
@@ -434,10 +434,10 @@ simplemente con una r&aacute;pida mirada, gracias a un sistema de bombillas de d
 <p><b>Monitores:</b> N&uacute;mero de monitores configurados en el grupo.</p>
 <p><b>Estado:</b> Estado del agente, mediante los siguientes iconos:</p>
 
-<p class="ml25"><img src="../../images/b_green.gif"> Aparece cuando todos los monitores est&aacute;n correctos.</p>
-<p class="ml25"><img src="../../images/b_red.gif"> Aparece cuando al menos un monitor tiene alg&uacute;n fallo.</p>
-<p class="ml25"><img src="../../images/b_down.gif"> Aparece cuando al menos un monitor est&aacute; ca&iacute;do o no hay contacto.</p>
-<p class="ml25"><img src="../../images/b_white.gif"> Aparece cuando el agente no tiene ning&uacute;n monitor definido.</p>
+<p class="ml25"><img src="../../images/b_green.png"> Aparece cuando todos los monitores est&aacute;n correctos.</p>
+<p class="ml25"><img src="../../images/b_red.png"> Aparece cuando al menos un monitor tiene alg&uacute;n fallo.</p>
+<p class="ml25"><img src="../../images/b_down.png"> Aparece cuando al menos un monitor est&aacute; ca&iacute;do o no hay contacto.</p>
+<p class="ml25"><img src="../../images/b_white.png"> Aparece cuando el agente no tiene ning&uacute;n monitor definido.</p>
 
 <p><b>Ok:</b> N&uacute;mero de monitores que est&aacute;n correctos.</p>
 <p><b>Fallo:</b> N&uacute;mero de monitores que tienen alg&uacute;n fallo</p>

@@ -205,9 +205,9 @@
 				echo "<b>$name</b>";
 				echo "<td class='$tdcolor' align='middle'>";
 				if ($status ==0){
-					echo "<img src='images/dot_red.gif'>";
+					echo "<img src='images/dot_red.png'>";
 				} else {
-					echo "<img src='images/dot_green.gif'>";
+					echo "<img src='images/dot_green.png'>";
 				}
 				echo "<td class='$tdcolor' align='middle'>";
 				if (($network_server == 1) OR ($data_server == 1)){

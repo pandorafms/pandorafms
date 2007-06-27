@@ -247,7 +247,7 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 		else 
 			$date_to = $ahora;
 		
-
+	echo "<script type='text/javaScript' src='include/javascript/calendar.js'></script>";
 	echo "<h2>".$lang_label["ag_title"]." &gt; ";
 	echo $lang_label["export_data"]."<a href='help/$help_code/chap3.php#336' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 

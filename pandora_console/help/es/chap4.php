@@ -83,21 +83,21 @@ orden de actualizaci&oacute;n. Mediante los filtros se puede acceder s&oacute;lo
 <p><b>ID:</b> Identificador del incidente.</p>
 <p><b>Estado:</b> Estado en el que se encuentra el incidente mediante los siguientes iconos:</p>
 
-<p class="ml25"><img src="../../images/dot_red.gif"> Cuando el incidente est&aacute; activo</p>
-<p class="ml25"><img src="../../images/dot_yellow.gif"> Cuando el incidente est&aacute; activo y tiene comentarios</p>
-<p class="ml25"><img src="../../images/dot_blue.gif"> Cuando el incidente ha sido rechazado</p>
-<p class="ml25"><img src="../../images/dot_green.gif"> Cuando el incidente est&aacute; cerrado</p>
-<p class="ml25"><img src="../../images/dot_white.gif"> Cuando el incidente ha expirado</p>
+<p class="ml25"><img src="../../images/dot_red.png"> Cuando el incidente est&aacute; activo</p>
+<p class="ml25"><img src="../../images/dot_yellow.png"> Cuando el incidente est&aacute; activo y tiene comentarios</p>
+<p class="ml25"><img src="../../images/dot_blue.png"> Cuando el incidente ha sido rechazado</p>
+<p class="ml25"><img src="../../images/dot_green.png"> Cuando el incidente est&aacute; cerrado</p>
+<p class="ml25"><img src="../../images/dot_white.png"> Cuando el incidente ha expirado</p>
 
 <p><b>Nombre del Incidente:</b> Nombre que se le ha asignado al incidente</p>
 <p><b>Prioridad:</b> Aparece la prioridad que tiene asignada el incidente mediante los siguientes iconos:</p>
 
-<p class="ml25"><img src="../../images/dot_red.gif"><img src="../../images/dot_red.gif"><img src="../../images/dot_red.gif"> Prioridad muy alta</p>
-<p class="ml25"><img src="../../images/dot_yellow.gif"><img src="../../images/dot_red.gif"><img src="../../images/dot_red.gif"> Prioridad alta</p>
-<p class="ml25"><img src="../../images/dot_yellow.gif"><img src="../../images/dot_yellow.gif"><img src="../../images/dot_red.gif"> Prioridad media</p>
-<p class="ml25"><img src="../../images/dot_green.gif"><img src="../../images/dot_yellow.gif"><img src="../../images/dot_yellow.gif"> Prioridad baja</p>
-<p class="ml25"><img src="../../images/dot_green.gif"><img src="../../images/dot_green.gif"><img src="../../images/dot_yellow.gif"> Prioridad de tarea informativa</p>
-<p class="ml25"><img src="../../images/dot_green.gif"><img src="../../images/dot_green.gif"><img src="../../images/dot_green.gif"> Prioridad de tarea de Mantenimiento</p>
+<p class="ml25"><img src="../../images/dot_red.png"><img src="../../images/dot_red.png"><img src="../../images/dot_red.png"> Prioridad muy alta</p>
+<p class="ml25"><img src="../../images/dot_yellow.png"><img src="../../images/dot_red.png"><img src="../../images/dot_red.png"> Prioridad alta</p>
+<p class="ml25"><img src="../../images/dot_yellow.png"><img src="../../images/dot_yellow.png"><img src="../../images/dot_red.png"> Prioridad media</p>
+<p class="ml25"><img src="../../images/dot_green.png"><img src="../../images/dot_yellow.png"><img src="../../images/dot_yellow.png"> Prioridad baja</p>
+<p class="ml25"><img src="../../images/dot_green.png"><img src="../../images/dot_green.png"><img src="../../images/dot_yellow.png"> Prioridad de tarea informativa</p>
+<p class="ml25"><img src="../../images/dot_green.png"><img src="../../images/dot_green.png"><img src="../../images/dot_green.png"> Prioridad de tarea de Mantenimiento</p>
 
 <p><b>Grupo:</b> Define el grupo al que se ha asociado el incidente. Un
 incidente s&oacute;lo puede pertenecer a un &uacute;nico grupo.</p>

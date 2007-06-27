@@ -127,28 +127,28 @@ if (comprueba_login() == 0) {
 			echo "<a href='index.php?sec=gservers&sec2=godmode/servers/modificar_server&server=".$id_server."'><b>$name</b></a>";
 			echo "</td><td class='$tdcolor' align='middle'>";
 			if ($status ==0){
-				echo "<img src='images/dot_red.gif'>";
+				echo "<img src='images/dot_red.png'>";
 			} else {
-				echo "<img src='images/dot_green.gif'>";
+				echo "<img src='images/dot_green.png'>";
 			}
 			echo "</td><td class='$tdcolor' align='middle'>";
 			echo "$address";
 			echo "</td><td class='".$tdcolor."f9'>".substr($description,0,25);
 			echo "</td><td class='$tdcolor' align='middle'>";			
 			if ($network_server == 1){
-				echo "&nbsp; <img src='images/network.gif'>";
+				echo "&nbsp; <img src='images/network.png'>";
 			}		
 			if ($data_server == 1){
-				echo "&nbsp; <img src='images/data.gif'>";
+				echo "&nbsp; <img src='images/data.png'>";
 			}		
 			if ($snmp_server == 1){
-				echo "&nbsp; <img src='images/snmp.gif'>";
+				echo "&nbsp; <img src='images/snmp.png'>";
 			}		
 			if ($master == 1){
-				echo "&nbsp; <img src='images/master.gif'>";
+				echo "&nbsp; <img src='images/master.png'>";
 			}		
 			if ($checksum == 1){
-				echo "&nbsp; <img src='images/binary.gif'>";
+				echo "&nbsp; <img src='images/binary.png'>";
 			}
 			echo "</td><td class='".$tdcolor."f9' align='middle'>".substr($keepalive,0,25)."</td>";
 			echo "<td class='".$tdcolor."f9' align='middle'>".substr($laststart,0,25)."</td>";

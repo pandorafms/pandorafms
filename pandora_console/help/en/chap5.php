@@ -53,8 +53,8 @@ if the problem can be ignored or it's been already solved.</p>
 <p>The event information list shows the data in the following columns:</p>
 
 <p><b>Status:</b> The event status is represented by the icon bellow:</p>
-<p class="ml25"><img src="../../images/dot_green.gif"> The event has been validated</p>
-<p class="ml25"><img src="../../images/dot_red.gif"> The event hasn't been validated</p>
+<p class="ml25"><img src="../../images/dot_green.png"> The event has been validated</p>
+<p class="ml25"><img src="../../images/dot_red.png"> The event hasn't been validated</p>
 <p><b>Event name:</b> Name assigned to the event by Pandora.</p>
 <p><b>Agent name:</b> Agent where the event happend.</p>
 <p><b>Group name:</b> Group of the agent where the event has happened.</p>

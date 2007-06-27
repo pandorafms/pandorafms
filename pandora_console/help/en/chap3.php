@@ -146,7 +146,7 @@ user views.</li>
 <p>In this screen the modules can be:</p>
 <ul>
 <li>Deleted by clicking <img src="../../images/cross.png"></li>
-<li>Edited by clicking <img src="../../images/config.gif"></li>
+<li>Edited by clicking <img src="../../images/config.png"></li>
 </ul>
 
 <p>However, the type of data of the module can't be modified.</p>
@@ -250,7 +250,7 @@ deletion is performed, the data associated to them will also be deleted.</p>
 
 <p>If you pass the mouse over any group image, you'll see the number of agents of that group as well the number of monitors, organized by status.</p>
 
-<p>By pressing the icon <img src="../../images/target.gif"> at the right of any group image, you will update the info of that group.</p>
+<p>By pressing the icon <img src="../../images/target.png"> at the right of any group image, you will update the info of that group.</p>
 
 <h2><a name="33">3.3. Agent monitoring </a></h2>
 
@@ -283,23 +283,23 @@ modules, the number of monitors and the number of monitors with "incorrect" stat
 all in black save the last one.</p>
 <p><b>Status:</b> Shows the "general" status of the agent through the following icons:</p>
 	<div class='ml35'>
-		<p><img src="../../images/b_green.gif"> All the monitors OK. It's the ideal status.</p>
-		<p><img src="../../images/b_white.gif"> No defined monitors. Sometimes nothing is monitored
+		<p><img src="../../images/b_green.png"> All the monitors OK. It's the ideal status.</p>
+		<p><img src="../../images/b_white.png"> No defined monitors. Sometimes nothing is monitored
 		that could be right or wrong, and only numeric or text data is reported.</p>
-		<p><img src="../../images/b_red.gif"> At least one of the monitors is failing. Usually we
+		<p><img src="../../images/b_red.png"> At least one of the monitors is failing. Usually we
 		want to avoid this, and keep our systems in a healthy green colour.</p>
-		<p><img src="../../images/b_blue.gif"> The agent doesn't have <u>any</u> data. New agents with an empty data
+		<p><img src="../../images/b_blue.png"> The agent doesn't have <u>any</u> data. New agents with an empty data
 		package can have this status.</p>
-		<p><img src="../../images/b_yellow.gif"> Colour shifting from green to red. This icon indicates
+		<p><img src="../../images/b_yellow.png"> Colour shifting from green to red. This icon indicates
 		that the agent has just changed its status, from 'All OK' to 'we have a problem'.</p>
-		<img src="../../images/b_down.gif"> When an agent is down or there is no news from it for 2 times the Interval value in seconds. Usually it is due to a communication issue or a crashed remote system.</p>
+		<img src="../../images/b_down.png"> When an agent is down or there is no news from it for 2 times the Interval value in seconds. Usually it is due to a communication issue or a crashed remote system.</p>
 	</div>
 <p><b>Alerts:</b> Shows if any alerts have been sent through the following icons:</p>
 	<div class='ml35'>
-		<p><img src="../../images/dot_green.gif"> No alerts have been sent.</p>
-		<p><img src="../../images/dot_red.gif"> When at least one alert has been sent within the time threshold of the alert.</p>
+		<p><img src="../../images/dot_green.png"> No alerts have been sent.</p>
+		<p><img src="../../images/dot_red.png"> When at least one alert has been sent within the time threshold of the alert.</p>
 	</div>
-<p><b>Last contact:</b> Shows the time and date of the last data package sent by the agent, using a progress bar, according to value of the interval. If you see the image <img src="../../images/outof.gif">, the agent has not send data during the interval. Passing the mouse over the image will show you the last contact in time and date format.</p>
+<p><b>Last contact:</b> Shows the time and date of the last data package sent by the agent, using a progress bar, according to value of the interval. If you see the image <img src="../../images/outof.png">, the agent has not send data during the interval. Passing the mouse over the image will show you the last contact in time and date format.</p>
 
 <p><b><u>Note:</u></b> The icon <img src="../../images/setup.png" width="15"> is only visible if you're and administrator and it's a link to the "Manage Agents" &gt; "Update Agent" option in the Administration menu.</p>
 
@@ -331,23 +331,23 @@ the data sent by the agent against time.</p>
 <p>On the left hand side of the graph the newst data is represent, and on the right had side the oldest.</p>
 
 <p>The generated graphs are:
-<p class="ml75"> - <b>Hourly graph</b> (<img src="../../images/grafica_h.gif">) covers a 60 minute interval</p>
+<p class="ml75"> - <b>Hourly graph</b> (<img src="../../images/grafica_h.png">) covers a 60 minute interval</p>
 <p class="center"><img src="images/image018.png"></p>
 
-<p class="ml75"> - <b>Daily graph</b> (<img src="../../images/grafica_d.gif">) covers a 24 hour interval</p>
+<p class="ml75"> - <b>Daily graph</b> (<img src="../../images/grafica_d.png">) covers a 24 hour interval</p>
 <p class="center"><img src="images/image019.png"></p>
 
-<p class="ml75"> - <b>Weekly graph</b> (<img src="../../images/grafica_w.gif">) covers a 7 day interval</p>
+<p class="ml75"> - <b>Weekly graph</b> (<img src="../../images/grafica_w.png">) covers a 7 day interval</p>
 <p class="center"><img src="images/image020.png"></p>
 
-<p class="ml75"> - <b>Mothly graph</b> (<img src="../../images/grafica_m.gif">) covers a 30 day interval</p>
+<p class="ml75"> - <b>Mothly graph</b> (<img src="../../images/grafica_m.png">) covers a 30 day interval</p>
 <p class="center"><img src="images/image021.png"></p>
 
 <p><b>Raw Data:</b> This is the raw data sent by the agent</p>
 
-<p class="ml25"> - <img src="../../images/data_m.gif"> Last month</p>
-<p class="ml25"> - <img src="../../images/data_w.gif"> Last week</p>
-<p class="ml25"> - <img src="../../images/data_d.gif"> Last day</p>
+<p class="ml25"> - <img src="../../images/data_m.png"> Last month</p>
+<p class="ml25"> - <img src="../../images/data_w.png"> Last week</p>
+<p class="ml25"> - <img src="../../images/data_d.png"> Last day</p>
 
 <h4><a name="3323">3.3.2.3. Complete list of monitors</a></h4>
 
@@ -363,8 +363,8 @@ the data sent by the agent against time.</p>
 <p><b>Description:</b> Description given to the module in the agent's config file.</p>
 <p><b>Status:</b> The table shows the agent status through the following icons:</p>
 
-<p class="ml25"><img src="../../images/b_green.gif"> The monitor is OK</p>
-<p class="ml25"><img src="../../images/b_red.gif"> The monitor is failing</p>
+<p class="ml25"><img src="../../images/b_green.png"> The monitor is OK</p>
+<p class="ml25"><img src="../../images/b_red.png"> The monitor is failing</p>
 
 <p><b>Last contact:</b> Shows the time and date of the last data packaged received from the agent</p>
 
@@ -383,8 +383,8 @@ the data sent by the agent against time.</p>
 <p><b>Times Fired:</b> Number of times the alert was launched.</p>
 <p><b>Status:</b> Shows if the alert has been sent through the following icon:</p>
 
-<p class="ml25"><img src="../../images/dot_green.gif"> No alerts have been sent</p>
-<p class="ml25"><img src="../../images/dot_red.gif"> At least one alert has been sent</p>
+<p class="ml25"><img src="../../images/dot_green.png"> No alerts have been sent</p>
+<p class="ml25"><img src="../../images/dot_red.png"> At least one alert has been sent</p>
 
 <h3><a name="333">3.3.3. Group details</a></h3>
 
@@ -401,10 +401,10 @@ The groups are displayed ordered by the following columns:</p>
 <p><b>Monitors:</b> Number of monitors configured in the group.</p>
 <p><b>Status:</b> The status is described through the following icons:</p>
 
-<p class="ml25"><img src="../../images/b_green.gif"> All monitors are OK.</p>
-<p class="ml25"><img src="../../images/b_red.gif"> At least one monitor has failed.</p>
-<p class="ml25"><img src="../../images/b_down.gif"> At least one monitor is down and there is no contact with it.</p>
-<p class="ml25"><img src="../../images/b_white.gif"> This Agent doesn't have any monitor defined.</p>
+<p class="ml25"><img src="../../images/b_green.png"> All monitors are OK.</p>
+<p class="ml25"><img src="../../images/b_red.png"> At least one monitor has failed.</p>
+<p class="ml25"><img src="../../images/b_down.png"> At least one monitor is down and there is no contact with it.</p>
+<p class="ml25"><img src="../../images/b_white.png"> This Agent doesn't have any monitor defined.</p>
 
 <p><b>OK:</b> Number of monitors that are OK.</p>
 <p><b>Failed:</b> Number of failing monitors.</p>

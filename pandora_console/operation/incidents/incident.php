@@ -235,20 +235,20 @@ if (isset($_POST['operacion'])){
 	</td>
 	<td rowspan="5" class="f9" style="padding-left: 30px; vertical-align: top;">
 	<h3><?php echo $lang_label["status"] ?></h3>
-	<img src='images/dot_red.gif'> - <?php echo $lang_label["opened_inc"] ?><br>
-	<img src='images/dot_yellow.gif'> - <?php echo $lang_label["openedcom_inc"] ?><br>
-	<img src='images/dot_blue.gif'> - <?php echo $lang_label["rej_inc"] ?><br>
-	<img src='images/dot_green.gif'> - <?php echo $lang_label["closed_inc"] ?><br>
-	<img src='images/dot_white.gif'> - <?php echo $lang_label["exp_inc"] ?></td>
+	<img src='images/dot_red.png'> - <?php echo $lang_label["opened_inc"] ?><br>
+	<img src='images/dot_yellow.png'> - <?php echo $lang_label["openedcom_inc"] ?><br>
+	<img src='images/dot_blue.png'> - <?php echo $lang_label["rej_inc"] ?><br>
+	<img src='images/dot_green.png'> - <?php echo $lang_label["closed_inc"] ?><br>
+	<img src='images/dot_white.png'> - <?php echo $lang_label["exp_inc"] ?></td>
 
 	<td rowspan="5" class="f9" style="padding-left: 30px; vertical-align: top;">
 	<h3><?php echo $lang_label["priority"] ?></h3>
-	<img src='images/dot_red.gif'><img src='images/dot_red.gif'><img src='images/dot_red.gif'> - <?php echo $lang_label["very_serious"] ?><br>
-	<img src='images/dot_yellow.gif'><img src='images/dot_red.gif'><img src='images/dot_red.gif'> - <?php echo $lang_label["serious"] ?><br>
-	<img src='images/dot_yellow.gif'><img src='images/dot_yellow.gif'><img src='images/dot_red.gif'> - <?php echo $lang_label["medium"] ?><br>
-	<img src='images/dot_green.gif'><img src='images/dot_yellow.gif'><img src='images/dot_yellow.gif'> - <?php echo $lang_label["low"] ?><br>
-	<img src='images/dot_green.gif'><img src='images/dot_green.gif'><img src='images/dot_yellow.gif'> - <?php echo $lang_label["informative"] ?><br>
-	<img src='images/dot_green.gif'><img src='images/dot_green.gif'><img src='images/dot_green.gif'> - <?php echo $lang_label["maintenance"] ?><br>
+	<img src='images/dot_red.png'><img src='images/dot_red.png'><img src='images/dot_red.png'> - <?php echo $lang_label["very_serious"] ?><br>
+	<img src='images/dot_yellow.png'><img src='images/dot_red.png'><img src='images/dot_red.png'> - <?php echo $lang_label["serious"] ?><br>
+	<img src='images/dot_yellow.png'><img src='images/dot_yellow.png'><img src='images/dot_red.png'> - <?php echo $lang_label["medium"] ?><br>
+	<img src='images/dot_green.png'><img src='images/dot_yellow.png'><img src='images/dot_yellow.png'> - <?php echo $lang_label["low"] ?><br>
+	<img src='images/dot_green.png'><img src='images/dot_green.png'><img src='images/dot_yellow.png'> - <?php echo $lang_label["informative"] ?><br>
+	<img src='images/dot_green.png'><img src='images/dot_green.png'><img src='images/dot_green.png'> - <?php echo $lang_label["maintenance"] ?><br>
 	<tr><td>
 	<select name="prioridad" onChange="javascript:this.form.submit();" class="w155">
 <?php 
@@ -392,7 +392,7 @@ if ($row2_count[0] <= 0 ) {
 			$result3=mysql_query("SELECT * FROM tattachment WHERE id_incidencia = ".$row2["id_incidencia"]);
 			mysql_fetch_array($result3);
 			if (mysql_affected_rows() > 0)
-				echo '&nbsp;&nbsp;<img src="images/file.gif" align="middle">';
+				echo '&nbsp;&nbsp;<img src="images/file.png" align="middle">';
 
 				// Tipo de estado  (Type)
 				// 0 - Abierta / Sin notas (Open, no notes)
@@ -405,28 +405,28 @@ if ($row2_count[0] <= 0 ) {
 			if (($row2["estado"] == 0) && ($note_number >0 )){
 				$row2["estado"] = 1;
 			}
-			echo "<td class='$tdcolor' align='center'>";
+			echo "</td><td class='$tdcolor' align='center'>";
 			switch ($row2["estado"]) {
-				case 0: echo "<img src='images/dot_red.gif'>";
+				case 0: echo "<img src='images/dot_red.png'>";
 							break;
-				case 1: echo "<img src='images/dot_yellow.gif'>";
+				case 1: echo "<img src='images/dot_yellow.png'>";
 							break;
-				case 2: echo "<img src='images/dot_blue.gif'>";
+				case 2: echo "<img src='images/dot_blue.png'>";
 							break;
-				case 3: echo "<img src='images/dot_white.gif'>";
+				case 3: echo "<img src='images/dot_white.png'>";
 							break;
-				case 13: echo "<img src='images/dot_green.gif'>";
+				case 13: echo "<img src='images/dot_green.png'>";
 							break;
 			}
-			echo "<td class='$tdcolor'><a href='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id=".$row2["id_incidencia"]."'>".substr(salida_limpia($row2["titulo"]),0,45);
+			echo "</td><td class='$tdcolor'><a href='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id=".$row2["id_incidencia"]."'>".substr(salida_limpia($row2["titulo"]),0,45);
 			echo "<td class='$tdcolor' align='center'>";
 			switch ( $row2["prioridad"] ){
-				case 0: echo "<img src='images/dot_green.gif'>"."<img src='images/dot_green.gif'>"."<img src='images/dot_yellow.gif'>"; break;
-				case 1: echo "<img src='images/dot_green.gif'>"."<img src='images/dot_yellow.gif'>"."<img src='images/dot_yellow.gif'>"; break;
-				case 2: echo "<img src='images/dot_yellow.gif'>"."<img src='images/dot_yellow.gif'>"."<img src='images/dot_red.gif'>"; break;
-				case 3: echo "<img src='images/dot_yellow.gif'>"."<img src='images/dot_red.gif'>"."<img src='images/dot_red.gif'>"; break;
-				case 4: echo "<img src='images/dot_red.gif'>"."<img src='images/dot_red.gif'>"."<img src='images/dot_red.gif'>"; break;
-				case 10: echo "<img src='images/dot_green.gif'>"."<img src='images/dot_green.gif'>"."<img src='images/dot_green.gif'>"; break;
+				case 0: echo "<img src='images/dot_green.png'>"."<img src='images/dot_green.png'>"."<img src='images/dot_yellow.png'>"; break;
+				case 1: echo "<img src='images/dot_green.png'>"."<img src='images/dot_yellow.png'>"."<img src='images/dot_yellow.png'>"; break;
+				case 2: echo "<img src='images/dot_yellow.png'>"."<img src='images/dot_yellow.png'>"."<img src='images/dot_red.png'>"; break;
+				case 3: echo "<img src='images/dot_yellow.png'>"."<img src='images/dot_red.png'>"."<img src='images/dot_red.png'>"; break;
+				case 4: echo "<img src='images/dot_red.png'>"."<img src='images/dot_red.png'>"."<img src='images/dot_red.png'>"; break;
+				case 10: echo "<img src='images/dot_green.png'>"."<img src='images/dot_green.png'>"."<img src='images/dot_green.png'>"; break;
 			}
 			/*
 			case 0: echo $lang_label["informative"]; break;

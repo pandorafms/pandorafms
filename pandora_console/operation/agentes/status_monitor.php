@@ -67,9 +67,9 @@ if (comprueba_login() == 0) {
 	}
 	
 	echo "<td class='f9' style='padding-left: 10px;'>";
-	echo "<img src='images/b_green.gif'> - ".$lang_label["green_light"]."</td>";
+	echo "<img src='images/b_green.png'> - ".$lang_label["green_light"]."</td>";
 	echo "<td class='f9' style='padding-left: 10px;'>";
-	echo "<img src='images/b_red.gif'> - ".$lang_label["red_light"]."</td>";
+	echo "<img src='images/b_red.png'> - ".$lang_label["red_light"]."</td>";
 	echo "</td>";
 	echo "</tr>";
 	echo "<tr>";
@@ -146,13 +146,13 @@ if (comprueba_login() == 0) {
 						if (!isset($string)) {$string='';}
 						$string=$string. "<tr><td class='$tdcolor'>";
 						$string=$string. "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$data["id_agente"]."&id_agente_modulo=".$data["id_agente_modulo"]."&flag=1&tab=data&refr=60'>";
-						$string=$string."<img src='images/target.gif'></A>";
-						$string=$string. "<td class='$tdcolor'><b>";
-						$string=$string."<a href='index.php?sec=estado&
+						$string=$string."<img src='images/target.png'></a>";
+						$string=$string. "</td><td class='$tdcolor'>";
+						$string=$string."<b><a href='index.php?sec=estado&
 						sec2=operation/agentes/ver_agente&
 						id_agente=".$data["id_agente"]."'>".
-						strtoupper(substr(dame_nombre_agente($data["id_agente"]),0,21))."</a></b></td>";
-						$string=$string."<td class='$tdcolor'>";
+						strtoupper(substr(dame_nombre_agente($data["id_agente"]),0,21))."</a></b>";
+						$string=$string."</td><td class='$tdcolor'>";
 						$string=$string."
 						<img src='images/".show_icon_type($data["id_tipo_modulo"])."' border=0>
 						</td>";
@@ -179,9 +179,9 @@ if (comprueba_login() == 0) {
 						$data2=mysql_fetch_array($result_gen2);
 						$string=$string."<td class='$tdcolor' align='center' width=20>";
 						if ($data2["datos"] > 0){
-							$string=$string."<img src='images/b_green.gif'>";
+							$string=$string."<img src='images/b_green.png'>";
 						} else {
-							$string=$string."<img src='images/b_red.gif'>";
+							$string=$string."<img src='images/b_red.png'>";
 						}
 						
 						$string=$string."<td class='".$tdcolor."f9'>";

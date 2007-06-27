@@ -112,15 +112,14 @@ if (comprueba_login() == 0) {
 						flag=1&
 						tab=data&
 						refr=60'>
-						<img src='images/target.gif' border=0></a>";
+						<img src='images/target.png' border='0'></a>";
 					} else {
 						echo "<a href='index.php?sec=estado&
 						sec2=operation/agentes/ver_agente&
 						id_agente=".$id_agente."&
 						id_agente_modulo=".$row3["id_agente_modulo"]."&
-						tab=data&
-						refr=60'>
-						<img src='images/refresh.gif' border=0></a>";
+						tab=data&refr=60'>
+						<img src='images/refresh.png' border='0'></a>";
 					}
 				} 				
 			}
@@ -176,16 +175,16 @@ if (comprueba_login() == 0) {
 				echo "<td class=".$tdcolor." width='78'>";
 				$graph_label = output_clean_strict ($row3["nombre"]);
 				
-				echo "<a href='javascript:winopeng(\"reporting/stat_win.php?period=2419200&id=".$row3["id_agente_modulo"]."&label=".$graph_label."refresh=180000\", \"month_".$win_handle."\")'><img  src='images/grafica_m.gif' border=0></a>&nbsp;";
+				echo "<a href='javascript:winopeng(\"reporting/stat_win.php?period=2419200&id=".$row3["id_agente_modulo"]."&label=".$graph_label."refresh=180000\", \"month_".$win_handle."\")'><img src='images/grafica_m.png' border=0></a>&nbsp;";
 				
 				$link ="winopeng('reporting/stat_win.php?period=604800&id=".$row3["id_agente_modulo"]."&label=".$graph_label."&refresh=6000','week_".$win_handle."')";
-				echo '<a href="javascript:'.$link.'"><img src="images/grafica_w.gif" border=0></a>&nbsp;';
+				echo '<a href="javascript:'.$link.'"><img src="images/grafica_w.png" border=0></a>&nbsp;';
 				
 				$link ="winopeng('reporting/stat_win.php?period=86400&id=".$row3["id_agente_modulo"]."&label=".$graph_label."&refresh=600','day_".$win_handle."')";
-				echo '<a href="javascript:'.$link.'"><img src="images/grafica_d.gif" border=0></a>&nbsp;';
+				echo '<a href="javascript:'.$link.'"><img src="images/grafica_d.png" border=0></a>&nbsp;';
 
 				$link ="winopeng('reporting/stat_win.php?period=3600&id=".$row3["id_agente_modulo"]."&label=".$graph_label."&refresh=60','hour_".$win_handle."')";
-				echo '<a href="javascript:'.$link.'"><img src="images/grafica_h.gif" border=0></a>';
+				echo '<a href="javascript:'.$link.'"><img src="images/grafica_h.png" border=0></a>';
 			}
 			// STRING DATA
 			else { # Writing string data in different way :)
@@ -194,9 +193,9 @@ if (comprueba_login() == 0) {
 			}
 			
 			echo "<td class=".$tdcolor." width=70>";
-			echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=mes&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_m.gif'></a>&nbsp;&nbsp;";
-			echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=semana&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_w.gif'></a>&nbsp;&nbsp;";
-			echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=dia&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_d.gif'></a>";
+			echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=mes&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_m.png'></a>&nbsp;&nbsp;";
+			echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=semana&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_w.png'></a>&nbsp;&nbsp;";
+			echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=dia&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_d.png'></a>";
 			echo "<td class='".$tdcolor."f9'>";
 				if ($row3["timestamp"] == "0000-00-00 00:00:00"){ 
 					echo $lang_label["never"];

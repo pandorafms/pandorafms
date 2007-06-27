@@ -92,7 +92,7 @@ acceder a la lista de los Servidores Pandora.</p>
    </p>
    <p>
    Para modificar un servidor utilizamos el icono 
-	<img src="../../images/config.gif"> 
+	<img src="../../images/config.png"> 
    </p>
    <p>
     Si estamos modificando un servidor podemos cambiar las siguientes 

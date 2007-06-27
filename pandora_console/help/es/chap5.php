@@ -52,8 +52,8 @@ solucionado.</p>
 <p>En la lista de eventos, cada uno de ellos aparece con informaci&oacute;n distribuida en las siguientes columnas:</p>
 
 <p><b>Estado:</b> Estado en el que se encuentra el incidente mediante los siguientes iconos:</p>
-<p class="ml25"><img src="../../images/dot_green.gif"> Cuando el evento ha sido validado</p>
-<p class="ml25"><img src="../../images/dot_red.gif"> Cuando el evento no ha sido validado</p>
+<p class="ml25"><img src="../../images/dot_green.png"> Cuando el evento ha sido validado</p>
+<p class="ml25"><img src="../../images/dot_red.png"> Cuando el evento no ha sido validado</p>
 <p><b>Nombre del evento:</b> Nombre asociado por Pandora al evento.</p>
 <p><b>Nombre del agente:</b> Agente en el que ha ocurrido el evento.</p>
 <p><b>Nombre del grupo:</b> Grupo al que pertenece el agente en el que ha ocurrido el evento.</p>

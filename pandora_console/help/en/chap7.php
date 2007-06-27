@@ -93,7 +93,7 @@ in the Operation menu.</p>
    </p>
    <p>
     It is possible to change the server properties using the icon 
-	<img src="../../images/config.gif"> 
+	<img src="../../images/config.png"> 
    </p>
    <p>
     In a Server it is possible to modify: Name, IP Address and Description.

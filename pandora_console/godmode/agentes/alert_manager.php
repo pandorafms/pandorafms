@@ -90,10 +90,10 @@ $result=mysql_query($sql1);
 				
 				// We have alert text ?
 				if ($row3["alert_text"] != "")
-					$string = $string."<td colspan=2 class='$tdcolor'>".$lang_label["text"];
+					$string = $string."<td colspan=2 class='$tdcolor'>".$lang_label["text"]."</td>";
 				else {
-					$string = $string."<td class='$tdcolor'>".$mymin;
-					$string = $string."<td class='$tdcolor'>".$mymax;
+					$string = $string."<td class='$tdcolor'>".$mymin."</td>";
+					$string = $string."<td class='$tdcolor'>".$mymax."</td>";
 				}
 				$mytimefrom =$row3["time_from"];
 				$mytimeto =$row3["time_to"];
@@ -103,8 +103,8 @@ $result=mysql_query($sql1);
 				else
 					$string .= render_time($mytimefrom)." - ".render_time($mytimeto);
 				
-				$string = $string."<td class='$tdcolor'>".salida_limpia($row3["descripcion"]);
-				$string = $string."<td class='$tdcolor'>";
+				$string = $string."</td><td class='$tdcolor'>".salida_limpia($row3["descripcion"]);
+				$string = $string."</td><td class='$tdcolor'>";
 			 	$id_grupo = dame_id_grupo($id_agente);
 				if (give_acl($id_user, $id_grupo, "LW")==1){
 					$string = $string."<a href='index.php?sec=gagente&
@@ -114,7 +114,7 @@ $result=mysql_query($sql1);
 					$string = $string."<a href='index.php?sec=gagente&
 					sec2=godmode/agentes/configurar_agente&tab=alert&
 					id_agente=".$id_agente."&update_alert=".$row3["id_aam"]."#alerts'>
-					<img src='images/config.gif' border=0 alt='".$lang_label["update"]."'></a>";		
+					<img src='images/config.png' border=0 alt='".$lang_label["update"]."'></a>";		
 				}
 				$string = $string."</td>";
 			}

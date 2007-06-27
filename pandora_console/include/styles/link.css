@@ -38,8 +38,11 @@ div.linkli>ul {
 	width: 100%;
 }
 .linkli li, .linkli li:hover {
-	background: url(../../images/link.gif) no-repeat 3px 8px;
+	background: url(../../images/link.png) no-repeat 3px 8px;
 }
 #link a:hover, .linkli li:hover {
 	background-color: #cde0ad;
+}
+#link li.bb0 {
+	border-bottom: 0px;
 }

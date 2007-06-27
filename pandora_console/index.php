@@ -25,7 +25,7 @@
 // Pandora FMS 1.x uses Pear Image::Graph code
 
 //Pandora Version, if not defined here it would take from config.php
-$build_version="PC070623";
+$build_version="PC070627";
 $pandora_version="v1.3 Beta 2";
 global $build_version;
 global $pandora_version;
@@ -102,7 +102,7 @@ if ( (isset ($_GET["refr"])) || (isset($_POST["refr"])) ){
 // Pandora FMS 1.3 custom style selection
 	echo '<link rel="stylesheet" href="include/styles/'.$config_style.'.css" type="text/css">';
 ?>
-<script type='text/JavaScript' src='include/javascript/calendar.js'></script>
+
 <script type="text/javascript" src="include/javascript/wz_jsgraphics.js"></script>
 </head>
 

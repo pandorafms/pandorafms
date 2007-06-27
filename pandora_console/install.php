@@ -44,13 +44,13 @@ error_reporting(0);
 
 function check_extension ( $ext, $label ){
 	echo "<tr><td>";
-	echo "<img src='images/arrow.gif'> $label";
+	echo "<span class='arr'> $label </span>";
 	echo "</td><td>";
 	if (!extension_loaded($ext)){
-		echo "<img src='images/dot_red.gif'>";
+		echo "<img src='images/dot_red.png'>";
 		return 1;
 	} else {
-		echo "<img src='images/dot_green.gif'>";
+		echo "<img src='images/dot_green.png'>";
 		return 0;
 	}
 	echo "</td></tr>";
@@ -58,13 +58,13 @@ function check_extension ( $ext, $label ){
 
 function check_include ( $ext, $label ){
 	echo "<tr><td>";
-	echo "<img src='images/arrow.gif'> $label";
+	echo "<span class='arr'> $label </span>";
 	echo "</td><td>";
 	if (!include($ext)){
-		echo "<img src='images/dot_red.gif'>";
+		echo "<img src='images/dot_red.png'>";
 		return 1;
 	} else {
-		echo "<img src='images/dot_green.gif'>";
+		echo "<img src='images/dot_green.png'>";
 		return 0;
 	}
 	echo "</td></tr>";
@@ -72,13 +72,13 @@ function check_include ( $ext, $label ){
 
 function check_exists ( $file, $label ){
 	echo "<tr><td>";
-	echo "<img src='images/arrow.gif'> $label";
+	echo "<span class='arr'> $label </span>";
 	echo "</td><td>";
 	if (!file_exists ($file)){
-		echo " <img src='images/dot_red.gif'>";
+		echo " <img src='images/dot_red.png'>";
 		return 1;
 	} else {
-		echo " <img src='images/dot_green.gif'>";
+		echo " <img src='images/dot_green.png'>";
 		return 0;
 	}
 	echo "</td></tr>";
@@ -86,13 +86,13 @@ function check_exists ( $file, $label ){
 
 function check_generic ( $ok, $label ){
 	echo "<tr><td>";
-	echo "<img src='images/arrow.gif'> $label";
+	echo "<span class='arr'> $label </span>";
 	echo "</td><td>";
 	if ($ok == 0 ){
-		echo " <img src='images/dot_red.gif'>";
+		echo " <img src='images/dot_red.png'>";
 		return 1;
 	} else {
-		echo " <img src='images/dot_green.gif'>";
+		echo " <img src='images/dot_green.png'>";
 		return 0;
 	}
 	echo "</td></tr>";
@@ -100,21 +100,21 @@ function check_generic ( $ok, $label ){
 
 function check_variable ( $var, $value, $label, $mode ){
 	echo "<tr><td>";
-	echo "<img src='images/arrow.gif'> $label";
+	echo "<span class='arr'> $label </span>";
 	echo "</td><td>";
 	if ($mode == 1){
 		if ($var >= $value){
-			echo " <img src='images/dot_green.gif'>";
+			echo " <img src='images/dot_green.png'>";
 			return 0;
 		} else {
-			echo " <img src='images/dot_red.gif'>";
+			echo " <img src='images/dot_red.png'>";
 			return 1;
 		}
 	} elseif ($var == $value){
-			echo " <img src='images/dot_green.gif'>";
+			echo " <img src='images/dot_green.png'>";
 			return 0;
 	} else {
-		echo " <img src='images/dot_red.gif'>";
+		echo " <img src='images/dot_red.png'>";
 		return 1;
 	}
 	echo "</td></tr>";
@@ -249,7 +249,7 @@ function install_step3() {
 				<input class='login' type='text' name='user' value='root'>
 
 				<div>DB Password for this user</div>
-				<input class='login' type='passwordzx' name='pass' value=''>
+				<input class='login' type='password' name='pass' value=''>
 				
 				<div>DB Hostname of MySQL</div>
 				<input class='login' type='text' name='host' value='localhost'>
@@ -313,7 +313,7 @@ function install_step4() {
 	echo "
 	<div id='install_container'>
 	<h1>Pandora FMS Console installation wizard. Step #4 of 4</h1>
-	<div id='wizard' style='height: 300px;'>
+	<div id='wizard' style='height: 350px;'>
 		<div id='install_box'>
 			<h1>Creating database and default configuration file</h1>
 			<table>";
@@ -376,7 +376,7 @@ $BASE_URL="'.$url.'";			// Base URL
 		
 		<div id='install_img'>";
 			if ($everything_ok == 1) {
-				echo "<a href='install.php?step=5'><img align='right' src='images/arrow_next.png' border=0 class=''></a>";
+				echo "<br><br><a href='install.php?step=5'><img align='right' src='images/arrow_next.png' border=0 class=''></a>";
 			} else {
 				echo "<div class='warn'><b>There was some problems. Installation is not completed.</b> 
 				<p>Please correct failures before trying again.

@@ -76,18 +76,18 @@ if (comprueba_login() == 0) {
 				// echo "<td class='datos'>".$row3["datos"];
 				if ($agent_down == 1)
 					echo  "<td class='".$tdcolor."' align='center'>
-					<img src='images/b_down.gif'></td>";
+					<img src='images/b_down.png'></td>";
 				else	
 					if ($est_estado == 1)
 						if ($est_cambio ==1)
 							echo "<td class='".$tdcolor."' align='center'>
-							<img src='images/b_yellow.gif'></td>";
+							<img src='images/b_yellow.png'></td>";
 						else
 							echo  "<td class='".$tdcolor."' align='center'>
-							<img src='images/b_red.gif'></td>";
+							<img src='images/b_red.png'></td>";
 					else
 						echo  "<td class='".$tdcolor."' align='center'>
-						<img src='images/b_green.gif'></td>";
+						<img src='images/b_green.png'></td>";
 				echo "<td align='center' class='".$tdcolor."'>";
 				if ($temp_interval != $intervalo)
 					echo $temp_interval."</td>";

@@ -890,6 +890,10 @@ $lang_label["no_reporting_def"] = "There are no defined reportings";
 $lang_label["no_map_def"] = "There are no defined maps";
 $lang_label["no_repitem_def"] = "There are no defined report items";
 
+$lang_label["message_read"]= "Message already read";
+$lang_label["message_not_read"]= "Message not read";
+
+
 global $lang_label; 
 global $help_label;
 ?>

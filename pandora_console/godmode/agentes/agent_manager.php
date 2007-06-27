@@ -69,7 +69,7 @@ if (isset($_GET["creacion"])){
 	echo "
 	<a href='index.php?sec=estado&
 	sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'>
-	<img src='images/lupa.gif' border='0' align='middle'></a>";
+	<img src='images/lupa.png' border='0' align='middle' alt=''></a>";
 } 
 
 echo '<tr><td class="datos2">';

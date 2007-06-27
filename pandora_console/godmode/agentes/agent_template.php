@@ -159,7 +159,7 @@ if ($row=mysql_num_rows($result)){
 		id_agente=".$id_agente."&
 		tab=module&
 		update_module=".$row["id_agente_modulo"]."#modules'>
-		<img src='images/config.gif' border=0 alt='".$lang_label["update"]."' onLoad='type_change()'></b></a>";
+		<img src='images/config.png' border=0 alt='".$lang_label["update"]."' onLoad='type_change()'></b></a>";
 	}
 	echo "</td></tr>";
 	echo "</table>";

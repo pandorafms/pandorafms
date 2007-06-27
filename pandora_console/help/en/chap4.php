@@ -78,21 +78,21 @@ incidents the user is interested on.</p>
 <p><b>ID:</b> ID of the incident.</p>
 <p><b>Status:</b> The incident status is represented by the following icons:</p>
 
-<p class="ml25"><img src="../../images/dot_red.gif"> Active incident</p>
-<p class="ml25"><img src="../../images/dot_yellow.gif"> Active incident with comments</p>
-<p class="ml25"><img src="../../images/dot_blue.gif"> Rejected incident</p>
-<p class="ml25"><img src="../../images/dot_green.gif"> Closed incident</p>
-<p class="ml25"><img src="../../images/dot_white.gif"> Expired incident</p>
+<p class="ml25"><img src="../../images/dot_red.png"> Active incident</p>
+<p class="ml25"><img src="../../images/dot_yellow.png"> Active incident with comments</p>
+<p class="ml25"><img src="../../images/dot_blue.png"> Rejected incident</p>
+<p class="ml25"><img src="../../images/dot_green.png"> Closed incident</p>
+<p class="ml25"><img src="../../images/dot_white.png"> Expired incident</p>
 
 <p><b>Incident name:</b> Name given to the incident</p>
 <p><b>Priority:</b> The incident assigned priority is represented by the following icons:</p>
 
-<p class="ml25"><img src="../../images/dot_red.gif"><img src="../../images/dot_red.gif"><img src="../../images/dot_red.gif"> Very high priority</p>
-<p class="ml25"><img src="../../images/dot_yellow.gif"><img src="../../images/dot_red.gif"><img src="../../images/dot_red.gif"> High priority</p>
-<p class="ml25"><img src="../../images/dot_yellow.gif"><img src="../../images/dot_yellow.gif"><img src="../../images/dot_red.gif"> Medium priority</p>
-<p class="ml25"><img src="../../images/dot_green.gif"><img src="../../images/dot_yellow.gif"><img src="../../images/dot_yellow.gif"> Low priority</p>
-<p class="ml25"><img src="../../images/dot_green.gif"><img src="../../images/dot_green.gif"><img src="../../images/dot_yellow.gif"> Informative priority</p>
-<p class="ml25"><img src="../../images/dot_green.gif"><img src="../../images/dot_green.gif"><img src="../../images/dot_green.gif"> Maintenance priority</p>
+<p class="ml25"><img src="../../images/dot_red.png"><img src="../../images/dot_red.png"><img src="../../images/dot_red.png"> Very high priority</p>
+<p class="ml25"><img src="../../images/dot_yellow.png"><img src="../../images/dot_red.png"><img src="../../images/dot_red.png"> High priority</p>
+<p class="ml25"><img src="../../images/dot_yellow.png"><img src="../../images/dot_yellow.png"><img src="../../images/dot_red.png"> Medium priority</p>
+<p class="ml25"><img src="../../images/dot_green.png"><img src="../../images/dot_yellow.png"><img src="../../images/dot_yellow.png"> Low priority</p>
+<p class="ml25"><img src="../../images/dot_green.png"><img src="../../images/dot_green.png"><img src="../../images/dot_yellow.png"> Informative priority</p>
+<p class="ml25"><img src="../../images/dot_green.png"><img src="../../images/dot_green.png"><img src="../../images/dot_green.png"> Maintenance priority</p>
 
 <p><b>Group:</b> The name of the group the incident has been assigned to. One incident can only belong to a single group.</p>
 <p><b>Updated at:</b> This is the date/time the incident was updated for the last time.</p>

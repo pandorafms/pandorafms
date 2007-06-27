@@ -67,7 +67,7 @@ if (comprueba_login() == 0) {
 	<td class="datos"><b>'.$lang_label["agent_name"].'</b></td>
 	<td class="datos"><b>'.strtoupper(salida_limpia($nombre_agente));
 
-	echo "<td class='datos2' width='40'><a class='info' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."&refr=60'><span>".$lang_label["refresh_data"]."</span>"."<img src='images/refresh.gif' class='top' border=0></a>&nbsp;&nbsp;";
+	echo "<td class='datos2' width='40'><a class='info' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."&refr=60'><span>".$lang_label["refresh_data"]."</span>"."<img src='images/refresh.png' class='top' border=0></a>&nbsp;&nbsp;";
 	// Data base access graph
 	echo '</td>';
 	
@@ -104,7 +104,7 @@ if (comprueba_login() == 0) {
 	} elseif ($agent_type == 1) {
 		echo '<tr>
 		<td class="datos"><b>'.$lang_label["agent_type"].'</b></td>
-		<td class="datos" colspan=2><img src="images/network.gif">';
+		<td class="datos" colspan=2><img src="images/network.png">';
 	}*/
 	echo '</td>';
 	echo '</tr>';

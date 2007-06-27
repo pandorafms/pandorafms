@@ -57,11 +57,10 @@ div.arrow>ul, div.arrows>ul, div#arrowl>ul, div#arrowls>ul {
 	width: 75%;
 }
 .arrow li, .arrow li:hover, .arrows li, #arrowl li, #arrowl li:hover, #arrowls li  {
-	background: url(../../images/arrow.gif) no-repeat 2px 4px;
+	background: url(../../images/arrow.png) no-repeat 2px 4px;
 	margin-left: 26px;
 	padding: 0px 0px 0px 14px;	
 }
-
 #op a:hover ,
 #op1 li:hover, #op1s li , #op2 li:hover, #op2s li , #op3 li:hover, #op3s li , 
 #op4 li:hover, #op4s li , #op5 li:hover, #op5s li , #op6 li:hover, #op6s li , 

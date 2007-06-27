@@ -186,7 +186,7 @@ if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
 	}	
 	if ($row2["COUNT(*)"]!=0){
 		echo "<p>";
-		echo $lang_label["new_message_bra"]."<b> ".$row2["COUNT(*)"]."</b> <img src='images/mail.gif'>".$lang_label["new_message_ket"]."</p>";
+		echo $lang_label["new_message_bra"]."<b> ".$row2["COUNT(*)"]."</b> <img src='images/email.png'>".$lang_label["new_message_ket"]."</p>";
 		}
 	$sql3='SELECT * FROM tmensajes WHERE id_usuario_destino="'.$iduser.'" ORDER BY timestamp desc';
 	$resultado3=mysql_query($sql3);
@@ -213,7 +213,7 @@ if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
 			if ($row3["estado"]==1)
 				echo "<img src='images/email_open.png' border=0>";
 			else 
-				echo "<img src='images/email_go.png' border=0>";
+				echo "<img src='images/email.png' border=0>";
 			echo "</td>";
 			echo "<td class='$tdcolor'>";
 			echo "<a href=index.php?sec=usuarios&sec2=operation/users/user_edit&ver=".$row3["id_usuario_origen"].">".$row3["id_usuario_origen"]."</td><td class='".$tdcolor."'><a href='index.php?sec=messages&sec2=operation/messages/message&leer=1&id_mensaje=".$row3["id_mensaje"]."'><b>";
@@ -277,11 +277,11 @@ if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
         <input type="submit" class="sub next" name="send_mes" value="'.$lang_label["new_message"].'"></form>
         </td></tr></table>';
 	}
-	echo "<br><br>";
-	echo "<table>";
-	echo "<tr><td><img src='images/email_open.png'> Message already opened";
-	echo "<tr><td><img src='images/email_go.png'> Message unreaded";
-	echo "</table>";
+	if (mysql_num_rows($resultado3)) {
+		echo "";
+		echo "<span class='rmess'>".$lang_label["message_read"]."</span>";
+		echo "<span class='nrmess'>".$lang_label["message_not_read"]."</span>";
+	}
 }
 
 ?>

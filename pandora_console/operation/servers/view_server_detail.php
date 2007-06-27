@@ -73,7 +73,7 @@ if ((comprueba_login() == 0) AND (give_acl($id_user, 0, "AR")==1) ) {
 				echo "<tr>";
 				// Name
 				echo "<td class='$tdcolor'>";
-				echo "<a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=$id_server&force=$id_rt'><img src='images/target.gif' border='0'></A>";
+				echo "<a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=$id_server&force=$id_rt'><img src='images/target.png' border='0'></a>";
 				
 				echo "<td class='$tdcolor'>";
 				echo "<b>$name</b>";
@@ -120,14 +120,14 @@ if ((comprueba_login() == 0) AND (give_acl($id_user, 0, "AR")==1) ) {
 					echo '<img src="reporting/fgraph.php?tipo=progress&percent='.$status.'&height=20&width=100">';
 				
 				// Last execution
-				echo "<td class='".$tdcolor."f9' >";
+				echo "<td class='".$tdcolor."f9'>";
 				$keepalive = strftime ( "%m/%d/%y %H:%M:%S" , $utimestamp );
 				echo substr($keepalive,0,25)."</td>";
 
 				echo "<td class='$tdcolor'>";
 				if (give_acl($id_user, 0, "PM")==1){
 					echo "<a  href='index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update=$id_rt'>";
-					echo "<img src='images/wrench_orange.png'></A>";
+					echo "<img src='images/wrench_orange.png'></a>";
 				}	
 			}
 			echo "</table>";

@@ -243,21 +243,21 @@ if (comprueba_login() == 0) {
 				if ($numero_monitor <> 0){
 					if ($estado_general <> 0){
 						if ($estado_cambio == 0){
-							echo "<img src='images/b_red.gif'>";
+							echo "<img src='images/b_red.png'>";
 						} else {
-							echo "<img src='images/b_yellow.gif'>";
+							echo "<img src='images/b_yellow.png'>";
 						}
 					} elseif ($monitor_ok > 0) {
-						echo "<img src='images/b_green.gif'>";
+						echo "<img src='images/b_green.png'>";
 					}
 					elseif ($numero_datamodules > 0) {
-						echo "<img src='images/b_white.gif'>";
+						echo "<img src='images/b_white.png'>";
 					}
 					elseif ($monitor_down > 0) {
-						echo "<img src='images/b_down.gif'>"; 
+						echo "<img src='images/b_down.png'>"; 
 					}
 				} else 
-					echo "<img src='images/b_blue.gif'>";
+					echo "<img src='images/b_blue.png'>";
 
 				// checks if an alert was fired recently
 				echo "<td class='$tdcolor' align='center'>";
@@ -265,9 +265,9 @@ if (comprueba_login() == 0) {
                                         echo "&nbsp;<img src='images/flag_red.png' alt='".$lang_label["disabled"]."'>";
 				else {
 					if (check_alert_fired($id_agente) == 1) 
-						echo "<img src='images/dot_red.gif'>";
+						echo "<img src='images/dot_red.png'>";
 					else
-						echo "<img src='images/dot_green.gif'>";
+						echo "<img src='images/dot_green.png'>";
 				}				
 				echo "</td>";
 				echo "<td class='$tdcolor'>";

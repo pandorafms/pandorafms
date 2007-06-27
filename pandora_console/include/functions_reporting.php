@@ -175,9 +175,9 @@ function event_reporting ($id_agent, $period){
 			}
 			echo "<tr><td class='$tdcolor' align='center'>";
 			if ($row2["estado"] == 0)
-				echo "<img src='images/dot_red.gif'>";
+				echo "<img src='images/dot_red.png'>";
 			else
-				echo "<img src='images/dot_green.gif'>";
+				echo "<img src='images/dot_green.png'>";
 			echo "<td class='$tdcolor'>".$row2["evento"];
 			echo "<td class='$tdcolor'>";
 			if ($row2["estado"] <> 0)
@@ -216,9 +216,9 @@ function alert_reporting ($id_agent_module){
 			}
 			echo "<tr>";
 			if ($data["times_fired"] <> 0)
-				echo "<td class='".$tdcolor."' align='center'><img src='images/dot_red.gif'></td>";
+				echo "<td class='".$tdcolor."' align='center'><img src='images/dot_red.png'></td>";
 			else
-				echo "<td class='".$tdcolor."' align='center'><img src='images/dot_green.gif'></td>";
+				echo "<td class='".$tdcolor."' align='center'><img src='images/dot_green.png'></td>";
 			echo "<td class='".$tdcolor."'>".$data["descripcion"]."</td>";
 			echo "<td  align='center' class='".$tdcolor."'>".human_time_description($data["time_threshold"]);
 			if ($data["last_fired"] == "0000-00-00 00:00:00") {

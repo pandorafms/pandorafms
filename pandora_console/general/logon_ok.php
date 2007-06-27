@@ -89,7 +89,7 @@
 	} else
 		$global_health = 100;
 		
-	echo "<h3>".$lang_label["tactical_indicator"]."</h3>";
+	echo "<h2>".$lang_label["tactical_indicator"]."</h2>";
 	echo "<img src='reporting/fgraph.php?tipo=odo_tactic&value1=$global_health&value2=$data_health&value3=$monitor_health'>";
 
 	echo "<br>";

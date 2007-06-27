@@ -333,7 +333,7 @@ td.datos_jus, td.datos2_jus {
 	text-align: center;
 }
 .error {
-	background: url(../../images/error.gif) no-repeat;
+	background: url(../../images/error.png) no-repeat;
 	padding: 4px 1px 6px 30px;
 }
 .red , .redb, .redi, .error {
@@ -346,7 +346,7 @@ td.datos_jus, td.datos2_jus {
 }
 .suc {
 	color: #5a8629;
-	background: url(../../images/suc.gif) no-repeat 1px;
+	background: url(../../images/suc.png) no-repeat 1px;
 	padding: 4px 1px 6px 30px;
 }
 .green  {
@@ -452,7 +452,7 @@ div.title_line {
 	background: #cde0ad;
 }
 #menu_tab li:hover a {
-	background: #b2b08a url("../images/arrow.gif") no-repeat right 3px;
+	background: #b2b08a url("../images/arrow.png") no-repeat right 3px;
 }
 #menu_tab li:hover ul a, #menu_tab .mn ul {
 	background: #db6351;
@@ -493,7 +493,7 @@ span.agents {
 	background: url(../../images/bricks.png) no-repeat;
 }
 span.data {
-	background: url(../../images/data.gif) no-repeat;
+	background: url(../../images/data.png) no-repeat;
 }
 span.alerts {
 	background: url(../../images/bell.png) no-repeat;
@@ -502,25 +502,36 @@ span.time {
 	background: url(../../images/hourglass.png) no-repeat;
 }
 span.net {
-	background: url(../../images/network.gif) no-repeat;
+	background: url(../../images/network.png) no-repeat;
 }
 span.master {
-	background: url(../../images/master.gif) no-repeat;
+	background: url(../../images/master.png) no-repeat;
 }
 span.snmp {
-	background: url(../../images/snmp.gif) no-repeat;
+	background: url(../../images/snmp.png) no-repeat;
 }
 span.binary {
-	background: url(../../images/binary.gif) no-repeat;
+	background: url(../../images/binary.png) no-repeat;
 }
 span.recon {
 	background: url(../../images/recon.png) no-repeat;
+}
+span.rmess {
+	background: url(../../images/email_open.png) no-repeat;
+}
+span.nrmess {
+	background: url(../../images/email.png) no-repeat;
 }
 span.users, span.agents, span.data, span.alerts, span.time, span.net,
 span.master, span.snmp, span.binary, span.recon {
 	margin-left: 4px;
 	margin-top: 10px;
 	padding: 4px 8px 12px 30px;
+	display: block;
+}
+span.rmess, span.nrmess {
+	margin-left: 14px;
+	padding: 1px 0px 10px 30px;
 	display: block;
 }
 /* New styles for data box */

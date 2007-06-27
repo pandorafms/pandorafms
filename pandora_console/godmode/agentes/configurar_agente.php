@@ -157,7 +157,7 @@ echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=
 echo "</li>";
 
 echo "<li class='nomn'>";
-echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=template&id_agente=$id_agente'><img src='images/network.gif' width='16' class='top' border=0>&nbsp; NC Templates</a>";
+echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=template&id_agente=$id_agente'><img src='images/network.png' width='16' class='top' border=0>&nbsp; NC Templates</a>";
 echo "</li>";
 
 echo "</ul>";

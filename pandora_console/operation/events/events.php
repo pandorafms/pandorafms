@@ -280,9 +280,9 @@ if ($total_events > 0){
 			}
 			echo "<tr><td class='$tdcolor' align='center'>";
 			if ($row2["estado"] == 0)
-				echo "<img src='images/dot_red.gif'>";
+				echo "<img src='images/dot_red.png'>";
 			else
-				echo "<img src='images/dot_green.gif'>";
+				echo "<img src='images/dot_green.png'>";
 			echo "<td class='$tdcolor'>".$row2["evento"];
 			if ($row2["id_agente"] > 0){
 					echo "<td class='$tdcolor'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row2["id_agente"]."'><b>".dame_nombre_agente($row2["id_agente"])."</b></a>";
@@ -291,7 +291,7 @@ if ($total_events > 0){
 					echo "<td class='$tdcolor'>";
 			} else { // for SNMP generated alerts
 				echo "<td class='$tdcolor'>".$lang_label["alert"]." /  SNMP";
-				echo "<td class='$tdcolor' align='center'><img src='images/dot_white.gif' class='bot'>";
+				echo "<td class='$tdcolor' align='center'><img src='images/dot_white.png' class='bot'>";
 				echo "<td class='$tdcolor'>";
 			}
 			if ($row2["estado"] <> 0)
@@ -325,9 +325,9 @@ echo "<table>";
 echo "<tr>";
 echo "<td rowspan='4' class='f9' style='padding-left: 30px; line-height: 17px; vertical-align: top;'>";
 echo "<h3>".$lang_label["status"]."</h3>";
-echo "<img src='images/dot_green.gif'> - ".$lang_label["validated_event"];
+echo "<img src='images/dot_green.png'> - ".$lang_label["validated_event"];
 echo "<br>";
-echo "<img src='images/dot_red.gif'> - ".$lang_label["not_validated_event"];
+echo "<img src='images/dot_red.png'> - ".$lang_label["not_validated_event"];
 echo "</td>";
 echo "<td rowspan='4' class='f9' style='padding-left: 30px; line-height: 17px; vertical-align: top;'>";
 echo "<h3>".$lang_label["action"]."</h3>";

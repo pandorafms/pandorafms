@@ -22,21 +22,22 @@
 echo "
 <table cellpadding='3' cellspacing='3'>
 	<tr><td class='f9i'>
-	<img src='images/b_green.gif'> - ".$lang_label["green_light"]."</td>
+	<img src='images/b_green.png' alt=''> - ".$lang_label["green_light"]."</td>
 	<td class='f9i'>
-	<img src='images/b_red.gif'> - ".$lang_label["red_light"]."</td>
+	<img src='images/b_red.png' alt=''> - ".$lang_label["red_light"]."</td>
 	<td class='f9i'>
-	<img src='images/b_yellow.gif'> - ".$lang_label["yellow_light"]."</td>
+	<img src='images/b_yellow.png' alt=''> - ".$lang_label["yellow_light"]."</td>
 	<td class='f9i'>
-	<img src='images/dot_red.gif'> - ".$lang_label["fired"]."</td>
+	<img src='images/dot_red.png' alt=''> - ".$lang_label["fired"]."</td>
 	<tr><td class='f9i'>
-	<img src='images/b_white.gif'> - ".$lang_label["no_light"]."</td>
+	<img src='images/b_white.png' alt=''> - ".$lang_label["no_light"]."</td>
 	<td class='f9i'>
-	<img src='images/b_blue.gif'> - ".$lang_label["blue_light"]."</td>
+	<img src='images/b_blue.png' alt=''> - ".$lang_label["blue_light"]."</td>
 	<td class='f9i'>
-	<img src='images/b_down.gif'> - ".$lang_label["broken_light"]."</td>
+	<img src='images/b_down.png' alt=''> - ".$lang_label["broken_light"]."</td>
 	<td class='f9i'>
-	<img src='images/dot_green.gif'> - ".$lang_label["not_fired"]."</td>
+	<img src='images/dot_green.png' alt=''> - ".$lang_label["not_fired"]."</td>
+	</tr>
 	</table>
 ";
 ?>

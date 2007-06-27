@@ -1,3 +1,19 @@
+2007-06-27  Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/sytles/*.css: Updated "gif" references to the "png" refs.
+	
+	* include/language/language_en.php: Updated text.
+	
+	* images/*: Removed near all .gif files and created .png
+	
+	* operation/*.php, godmode/*.php, *.sql: 
+	Updated gif references to .png
+	
+	* install.php: Added feature request 1744237
+	
+	* index.php, operation/agentes/exportdata.php: Moved calendar jscript
+	from index to exportdata
+
 2007-06-25  Sancho Lerena  <slerena@artica.es>
 
 	First commit for Beta2 :-)

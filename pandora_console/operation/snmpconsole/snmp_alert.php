@@ -299,7 +299,7 @@ if (give_acl($id_user, 0, "LW")==1) {
 				echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&delete_alert=".$id_as."'>
 				<img src='images/cross.png' border=0 alt='".$lang_label["delete"]."'></b></a> &nbsp; ";
 				echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&update_alert=".$id_as."'>
-				<img src='images/config.gif' border=0 alt='".$lang_label["update"]."'></b></a></td></tr>";
+				<img src='images/config.png' border=0 alt='".$lang_label["update"]."'></b></a></td></tr>";
 			}
 			echo "</table>";
 			echo "<table width='750px'>";

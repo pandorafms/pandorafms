@@ -1,6 +1,6 @@
 a.tip, a.tip2, a.tipp {
 	cursor: help;
-	background: url(../../images/tip.gif) no-repeat;
+	background: url(../../images/tip.png) no-repeat;
 }
 a.tip , a.tip2 {
 	padding: 5px 2px 5px 12px;
@@ -10,7 +10,7 @@ a.tipp {
 }
 a.help {
 	cursor: help;
-	background: url(../../images/help.gif) no-repeat;
+	background: url(../../images/help2.png) no-repeat;
 	padding: 2px 2px 2px 12px;
 	left: 5px;
 	text-transform: capitalize;

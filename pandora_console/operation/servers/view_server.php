@@ -111,9 +111,9 @@ if (comprueba_login() == 0) {
 				echo "<b>$name</b>";
 			echo "<td class='$tdcolor' align='middle'>";
 			if ($status ==0){
-				echo "<img src='images/dot_red.gif'>";
+				echo "<img src='images/dot_red.png'>";
 			} else {
-				echo "<img src='images/dot_green.gif'>";
+				echo "<img src='images/dot_green.png'>";
 			}
 			echo "<td class='$tdcolor' align='middle'>";
 			if (($network_server == 1) OR ($data_server == 1)){
@@ -210,22 +210,22 @@ if (comprueba_login() == 0) {
 			echo "<td class='".$tdcolor."f9'>".substr($description,0,25)."</td>";
 			echo "<td class='$tdcolor' align='middle'>";			
 			if ($network_server == 1){
-				echo " <img src='images/network.gif'>";
+				echo " <img src='images/network.png'>";
 			}
 			if ($data_server == 1){
-				echo "&nbsp; <img src='images/data.gif'>";
+				echo "&nbsp; <img src='images/data.png'>";
 			}
 			if ($snmp_server == 1){
-				echo "&nbsp; <img src='images/snmp.gif'>";
+				echo "&nbsp; <img src='images/snmp.png'>";
 			}
 			if ($recon_server == 1){
 				echo "&nbsp; <img src='images/recon.png'>";
 			}
 			if ($master == 1){
-				echo "&nbsp; <img src='images/master.gif'>";
+				echo "&nbsp; <img src='images/master.png'>";
 			}
 			if ($checksum == 1){
-				echo "&nbsp; <img src='images/binary.gif'>";
+				echo "&nbsp; <img src='images/binary.png'>";
 			}
 			echo "</td><td class='".$tdcolor."f9' align='middle'>";
 				echo $version;

@@ -136,22 +136,22 @@
 					$icono_type  = "";
 					if ($grupo[$real_count]["bad"] > 0) {
 						$icono_type = $icono_type."
-						<img src='images/dot_red.gif' alt=''>";
+						<img src='images/dot_red.png' alt=''>";
 					}
 					if ($grupo[$real_count]["ok"] > 0) {
 						$icono_type = $icono_type."
-						<img src='images/dot_green.gif' alt=''>";
+						<img src='images/dot_green.png' alt=''>";
 					}
 					// Show yellow light if there are recent alerts fired for this group
 					if ($grupo[$real_count]["alerts"] > 0 ){
 						$icono_type=$icono_type."
-						<img src='images/dot_yellow.gif' alt=''>";
+						<img src='images/dot_yellow.png' alt=''>";
 					}
 					
 					// Show grey light if there are agent down for this group
 					if ($grupo[$real_count]["down"] > 0 ){
 						$icono_type=$icono_type."
-						<img src='images/dot_white.gif' alt=''>";
+						<img src='images/dot_white.png' alt=''>";
 					}
 			
 					// Show red flag is group has disabled alert system
@@ -207,7 +207,7 @@
 							</tr>
 							<tr>
 							<td class='datos'>
-							<img src='images/b_green.gif' align='top' alt='' >
+							<img src='images/b_green.png' align='top' alt='' >
 							".$lang_label["ok"].": </td>
 							<td class='datos'>
 							<font class='greenb'>".$grupo[$real_count]["ok"]."</font>
@@ -215,14 +215,14 @@
 							</tr>
 							<tr>
 							<td class='datos'>
-							<img src='images/b_red.gif' align='top' alt=''>
+							<img src='images/b_red.png' align='top' alt=''>
 							".$lang_label["fail"].": </td>
 							<td class='datos'><font class='redb'>".
 							$grupo[$real_count]["bad"]."</font></td>
 							</tr>
 							<tr>
 							<td class='datos'>
-							<img src='images/b_white.gif' align='top' alt=''>
+							<img src='images/b_white.png' align='top' alt=''>
 							".$lang_label["down"].": </td>
 							<td class='datos'><font class='redb'>".
 							$grupo[$real_count]["down"]."</font></td>
@@ -230,7 +230,7 @@
 					if ($config_show_lastalerts == 1)
 						$celda .= "<tr>
 						<td class='datos'>
-						<img src='images/b_yellow.gif' align='top' alt=''>
+						<img src='images/b_yellow.png' align='top' alt=''>
 						".$lang_label["alerts"].": </td>
 						<td class='datos'><font class='grey'>".
 						$grupo[$real_count]["alerts"]."</font></td>
@@ -244,7 +244,7 @@
 						sec=estado&
 						sec2=operation/agentes/estado_grupo&
 						update_netgroup=".$grupo[$real_count]["id_grupo"]."'>
-						<img src='images/target.gif'></a>";
+						<img src='images/target.png'></a>";
 					}
 					$celda .= "<br><br>".
 					$icono_type."<br><br>

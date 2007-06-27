@@ -55,7 +55,7 @@ div.arrowg>ul, div.arrowgs>ul, div#arrowgl>ul, div#arrowgls>ul  {
 	width: 75%;
 }
 .arrowg li, .arrowg li:hover, .arrowgs li, #arrowgl li, #arrowgl li:hover, #arrowgls li {
-	background: url(../../images/arrow.gif) no-repeat 2px 4px;
+	background: url(../../images/arrow.png) no-repeat 2px 4px;
 	margin-left: 26px;
 	padding: 0px 0px 0px 14px;	
 }

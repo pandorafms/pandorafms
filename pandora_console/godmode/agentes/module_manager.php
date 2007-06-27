@@ -228,7 +228,7 @@ if ($row=mysql_num_rows($result)){
 			echo "<img src='images/cross.png' border=0 alt='".$lang_label["delete"]."'>";
 			echo "</b></a>&nbsp;";
 			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&tab=module&update_module=".$row["id_agente_modulo"]."#modules'>";
-			echo "<img src='images/config.gif' border=0 alt='".$lang_label["update"]."' onLoad='type_change()'></b></a>";
+			echo "<img src='images/config.png' border=0 alt='".$lang_label["update"]."' onLoad='type_change()'></b></a>";
 		}
 		// Value arithmetical media fix
 		if (($id_tipo != 3) AND ($id_tipo != 10) AND ($id_tipo != 17)){

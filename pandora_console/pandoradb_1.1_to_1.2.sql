@@ -145,21 +145,21 @@ INSERT INTO `tmodule_group` VALUES (3,'Application');
 INSERT INTO `tmodule_group` VALUES (4,'System');
 INSERT INTO `tmodule_group` VALUES (5,'Miscellaneous');
 
-UPDATE ttipo_modulo set icon = "mod_data.gif" where nombre = "generic_data";
-UPDATE ttipo_modulo set icon = "mod_proc.gif" where nombre = "generic_proc";
-UPDATE ttipo_modulo set icon = "mod_string.gif" where nombre = "generic_data_string";
-UPDATE ttipo_modulo set icon = "mod_data_inc.gif" where nombre = "generic_data_inc";
-INSERT INTO `ttipo_modulo` VALUES (6,'remote_icmp_proc',3,'Remote ICMP network agent, boolean data','mod_icmp_proc.gif');
-INSERT INTO `ttipo_modulo` VALUES (7,'remote_icmp',2,'Remote ICMP network agent (latency)','mod_icmp_data.gif');
-INSERT INTO `ttipo_modulo` VALUES (8,'remote_tcp',2,'Remote TCP network agent, numeric data','mod_tcp_data.gif');
-INSERT INTO `ttipo_modulo` VALUES (9,'remote_tcp_proc',3,'Remote TCP network agent, boolean data','mod_tcp_proc.gif');
-INSERT INTO `ttipo_modulo` VALUES (10,'remote_tcp_string',2,'Remote TCP network agent, alphanumeric data','mod_tcp_string.gif');
-INSERT INTO `ttipo_modulo` VALUES (11,'remote_tcp_inc',2,'Remote TCP network agent, incremental data','mod_tcp_inc.gif');
-INSERT INTO `ttipo_modulo` VALUES (12,'remote_udp_proc',3,'Remote UDP network agent, boolean data','mod_udp_proc.gif');
-INSERT INTO `ttipo_modulo` VALUES (15,'remote_snmp',2,'Remote SNMP network agent, numeric data','mod_snmp_data.gif');
-INSERT INTO `ttipo_modulo` VALUES (16,'remote_snmp_inc',2,'Remote SNMP network agent, incremental data','mod_snmp_inc.gif');
-INSERT INTO `ttipo_modulo` VALUES (17,'remote_snmp_string',2,'Remote SNMP network agent, alphanumeric data','mod_snmp_string.gif');
-INSERT INTO `ttipo_modulo` VALUES (18,'remote_snmp_proc',1,'Remote SNMP network agent, boolean data','mod_snmp_proc.gif');
+UPDATE ttipo_modulo set icon = "mod_data.png" where nombre = "generic_data";
+UPDATE ttipo_modulo set icon = "mod_proc.png" where nombre = "generic_proc";
+UPDATE ttipo_modulo set icon = "mod_string.png" where nombre = "generic_data_string";
+UPDATE ttipo_modulo set icon = "mod_data_inc.png" where nombre = "generic_data_inc";
+INSERT INTO `ttipo_modulo` VALUES (6,'remote_icmp_proc',3,'Remote ICMP network agent, boolean data','mod_icmp_proc.png');
+INSERT INTO `ttipo_modulo` VALUES (7,'remote_icmp',2,'Remote ICMP network agent (latency)','mod_icmp_data.png');
+INSERT INTO `ttipo_modulo` VALUES (8,'remote_tcp',2,'Remote TCP network agent, numeric data','mod_tcp_data.png');
+INSERT INTO `ttipo_modulo` VALUES (9,'remote_tcp_proc',3,'Remote TCP network agent, boolean data','mod_tcp_proc.png');
+INSERT INTO `ttipo_modulo` VALUES (10,'remote_tcp_string',2,'Remote TCP network agent, alphanumeric data','mod_tcp_string.png');
+INSERT INTO `ttipo_modulo` VALUES (11,'remote_tcp_inc',2,'Remote TCP network agent, incremental data','mod_tcp_inc.png');
+INSERT INTO `ttipo_modulo` VALUES (12,'remote_udp_proc',3,'Remote UDP network agent, boolean data','mod_udp_proc.png');
+INSERT INTO `ttipo_modulo` VALUES (15,'remote_snmp',2,'Remote SNMP network agent, numeric data','mod_snmp_data.png');
+INSERT INTO `ttipo_modulo` VALUES (16,'remote_snmp_inc',2,'Remote SNMP network agent, incremental data','mod_snmp_inc.png');
+INSERT INTO `ttipo_modulo` VALUES (17,'remote_snmp_string',2,'Remote SNMP network agent, alphanumeric data','mod_snmp_string.png');
+INSERT INTO `ttipo_modulo` VALUES (18,'remote_snmp_proc',1,'Remote SNMP network agent, boolean data','mod_snmp_proc.png');
 
 UPDATE tgrupo set icon = "others";
 UPDATE tgrupo set icon = "servers" where nombre = "Servers";
@@ -170,7 +170,7 @@ UPDATE tgrupo set icon = "comms" where nombre = "Comms";
 UPDATE tgrupo set icon = "others" where nombre like "Other%";
 UPDATE tgrupo set icon = "workstation" where nombre = "Workstations";
 UPDATE tgrupo set icon = "apps" where nombre = "Applications";
-INSERT INTO `tconfig_os` VALUES ('Network','Pandora Network Agent','network.gif');
+INSERT INTO `tconfig_os` VALUES ('Network','Pandora Network Agent','network.png');
 
 DROP TABLE tagente_datos;
 CREATE TABLE `tagente_datos` (

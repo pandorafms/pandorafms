@@ -1,3 +1,9 @@
+2007-06-28 Manuel Arostegui <marostegui@artica.es>
+
+	* en/pandora_install.xml: Added explanation about
+	  the new directory which must be created to works 
+	  with the #1744248 feature request.
+
 2007-06-15 Manuel Arostegui <marostegui@artica.es>
 
 	* en/pandora_install.xml: Changes to adapt the

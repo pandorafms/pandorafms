@@ -49,7 +49,7 @@ if (file_exists("include/languages/language_".$language_code.".php")) {
 		<?php echo $pandora_version; ?>
 		</font>
 	</div>
-	<div class="msg"><br><br>For security reasons, <i>config.php</i> must have restrictive permissions, and "other" users cannot read or write to it. It could be writed only for owner (usually www-data or http daemon user), normal operation is not possible until you change permissions for <i>include/config.php</i>file. Please do it, it's for your security.</div>
+	<div class="msg"><br><br>For security reasons, <i>config.php</i> must have restrictive permissions, and "other" users cannot read or write to it. It could be writed only for owner (usually www-data or http daemon user), normal operation is not possible until you change permissions for <i>include/config.php</i> file. Please do it, it's for your security.</div>
 </div>
 </div>
 </body>

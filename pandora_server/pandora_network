@@ -7,7 +7,7 @@
 
 # Configurable path and filenames
 PANDORA_HOME="/usr/share/pandora_server"
-PANDORA_NETWORK_PID="$PANDORA_HOME/var/pandora_network.pid"
+PANDORA_NETWORK_PID="/var/run/pandora/pandora_network.pid"
 
 # Main script
 
@@ -34,7 +34,7 @@ case "$1" in
 		echo $MYPID > $PANDORA_NETWORK_PID
 		echo "Pandora Network Server is now running with PID $MYPID"
 	else
-		echo "Cannot start Pandora FMS Network Server. Aborted"
+		echo "Cannot start Pandora FMS Network Server. Aborted."
 	fi
 		cd "$OLD_PATH"
         ;;

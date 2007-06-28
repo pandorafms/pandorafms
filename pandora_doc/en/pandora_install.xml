@@ -192,6 +192,12 @@
     <filename>/var/spool/pandora/data_in</filename> directories.
   </para>
   <para>
+    You, also, have to create the directory <filename>/var/run/pandora/</filename>
+    and make sure that the permissions are set correctly, basically:
+    <filename>chown pandora:root /var/run/pandora</filename>. Otherwise, PandoraFMS
+    server will complain about either the missing directory or the wrong permissions.
+  </para>
+  <para>
     This is true with all the components but with Pandora SNMP Console
     needs root user to open UDP port 161 (this can be solved setting
     SUID0 to the snmptrapd binary) and running the rest of the Server

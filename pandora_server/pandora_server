@@ -6,7 +6,7 @@
 
 # Configurable path and filenames
 PANDORA_HOME="/usr/share/pandora_server"
-PANDORA_SERVER_PID="$PANDORA_HOME/var/pandora_server.pid"
+PANDORA_SERVER_PID="/var/run/pandora/pandora_server.pid"
 
 # Main script
 

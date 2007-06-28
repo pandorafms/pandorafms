@@ -1,3 +1,10 @@
+2007-06-28  Esteban Sanchez  <estebans@artica.es>
+	
+	* install.php: Change file permissions of config.php when it is
+	created.
+
+	* general/error_perms.php: Added a blank space.
+
 2007-06-27  Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/sytles/*.css: Updated "gif" references to the "png" refs.

@@ -362,6 +362,7 @@ $BASE_URL="'.$url.'";			// Base URL
 						$step7 = 1;
 					fclose ($cfgin);
 					fclose ($cfgout);
+					chmod ($pandora_config, 0600);
 					check_generic ($step7, "Created new config file at '".$pandora_config."'");
 				}
 			}

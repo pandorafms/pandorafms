@@ -1,11 +1,16 @@
+2007-06-29  Raul Mateos  <raulofpandora@gmail.com>
+
+	* conf/pandora_server.conf: Changed default incomming dir and log.
+	Fixed small bug with dbuser.
+
 2007-06-28  Manuel Arostegui <marostegui@artica.es>
 
-     	* conf/pandora_server.conf: Fixed bug #1744240 
-      
+	* conf/pandora_server.conf: Fixed bug #1744240 
+
 	* pandora_server: Added feature request #1744248
-      
+
 	* pandora_recon: Added feature request #1744248
-      
+
 	* pandora_network: Added feature request #1744248
 
 2007-06-25  Sancho Lerena  <slerena@artica.es>

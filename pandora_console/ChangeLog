@@ -1,3 +1,11 @@
+2007-06-29  Raul Mateos  <raulofpandora@gmail.com>
+
+	* images/lupa.png: better image
+	
+	* operation/reporting/reporting.php: New summary file for reportings
+	
+	* operation/menu.php: Changed code to show new reporting file.
+
 2007-06-28  Esteban Sanchez  <estebans@artica.es>
 	
 	* install.php: Change file permissions of config.php when it is

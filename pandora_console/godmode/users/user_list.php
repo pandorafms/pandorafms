@@ -55,10 +55,12 @@ while ($rowdup=mysql_fetch_array($resq1)){
 	$fecha_registro = $rowdup["fecha_registro"];
 	if ($color == 1){
 		$tdcolor = "datos";
+		$tip= "tip";
 		$color = 0;
 	}
 	else {
 		$tdcolor = "datos2";
+		$tip= "tip2";
 		$color = 1;
 	}
 	echo "<tr><td class='$tdcolor'>";
@@ -72,7 +74,7 @@ while ($rowdup=mysql_fetch_array($resq1)){
 	
 	$sql1='SELECT * FROM tusuario_perfil WHERE id_usuario = "'.$name.'"';
 	$result=mysql_query($sql1);
-	echo "<a href='#' class='tip'>&nbsp;<span>";
+	echo "<a href='#' class='$tip'>&nbsp;<span>";
 	if (mysql_num_rows($result)){
 		while ($row=mysql_fetch_array($result)){
 			echo dame_perfil($row["id_perfil"])."/ ";

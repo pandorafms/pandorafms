@@ -82,11 +82,12 @@ while ($row=mysql_fetch_array($result)){
 }
 if (mysql_num_rows($result)) {
 	echo "</table>";
+	echo "<table width='650px'>";
 } else {
 	echo "<div class='nf'>".$lang_label["no_netprofiles"]."</div>";
-
+	echo "<table>";
 }
-echo "<table width='650px'>";
+
 echo "<tr><td align='right'>";
 echo "<form method=post action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np=-1'>";
 echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create"]."'>";

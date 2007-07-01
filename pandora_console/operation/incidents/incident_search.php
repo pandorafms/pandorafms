@@ -26,7 +26,7 @@ if (comprueba_login() == 0) {
 echo "<h2>".$lang_label["incident_manag"]." &gt; ";
 echo $lang_label["find_crit"]." <a href='help/".$help_code."/chap4.php#43' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 echo "<div style='width:645'>";
-echo "<div style='float:right;'><img src='images/pulpo_lupa.gif' class='bot' align='left'></div>";	
+echo "<div style='float:right;'><img src='images/pulpo_lupa.png' class='bot' align='left'></div>";	
 ?>
 <div style='float:left;'>
 <table width="500" cellpadding="4" cellspacing="4" class='databox'>

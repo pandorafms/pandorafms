@@ -215,7 +215,7 @@ function no_permission () {
 	require("config.php");
 	require ("include/languages/language_".$language_code.".php");
 	echo "<h3 class='error'>".$lang_label["no_permission_title"]."</h3>";
-	echo "<img src='images/noaccess.gif' width='120'><br><br>";
+	echo "<img src='images/noaccess.png' alt='No access' width='120'><br><br>";
 	echo "<table width=550>";
 	echo "<tr><td>";
 	echo $lang_label["no_permission_text"];

@@ -22,7 +22,7 @@
 	<div align='center'>
 		<h2><?php echo $lang_label["no_access_title"] ?></h2>
 		<div>&nbsp;</div>
-		<img src='images/noaccess.gif'>
+		<img src='images/noaccess.png' alt='No access'>
 		<div>&nbsp;</div>
 		<div class="msg"><?php echo $lang_label["no_access_text"];?></div>
 	</div>

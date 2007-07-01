@@ -22,7 +22,7 @@
 	<div id='login_f' class='databox'>
 		<h1 id="log_f" style='margin-top: 0px;' class="error"><?php echo $lang_label['err_auth']; ?></h1>
 		<div id='noa' style='width:50px' >
-			<img src='images/noaccess.gif'>
+			<img src='images/noaccess.png' alt='No access'>
 		</div>
 
 		<div style='width: 350px'>

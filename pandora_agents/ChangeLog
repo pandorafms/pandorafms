@@ -1,3 +1,7 @@
+2007-07-02  Manuel Arostegui <marostegui@artica.es>
+
+	* linux/pandora_agent: Fixed bug: #1746327
+
 2007-06-29  Raul Mateos  <raulofpandora@gmail.com>
 
 	* linux/pandora_agent.conf: Changed log and temp paths.

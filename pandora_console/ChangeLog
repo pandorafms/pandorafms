@@ -1,3 +1,9 @@
+2007-07-02  Raul Mateos  <raulofpandora@gmail.com>
+
+	* operation/reporting/reporting.php: Reverting change.
+	
+	* operation/menu.php: Reverting change.	
+
 2007-06-29  Raul Mateos  <raulofpandora@gmail.com>
 
 	* images/lupa.png: better image

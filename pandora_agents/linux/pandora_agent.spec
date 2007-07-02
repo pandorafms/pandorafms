@@ -74,7 +74,7 @@ ln -s /etc/init.d/pandora_agent_daemon /etc/rc5.d/S99pandora_agent_daemon
 /usr/bin/pandora_agent
 %defattr(600,pandora,pandora)
 /var/log/pandora/
-/var/spool/pandora/
+/var/spool/pandora/data_out
 %defattr(755,pandora,pandora)
 /etc/init.d/pandora_agent_daemon
 %docdir %{prefix}/pandora_agents/docs

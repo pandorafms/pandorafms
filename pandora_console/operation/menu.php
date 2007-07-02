@@ -80,6 +80,7 @@ if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 			echo "<div class='arrow'>";
 		}
 		echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/exportdata' class='mn'>".$lang_label["export_data"]."</a></li></ul></div>";
+
 	}
 
 	// Visual console
@@ -106,9 +107,9 @@ if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 			echo "<ul class='mn'><li><a href='index.php?sec=visualc&sec2=operation/visual_console/render_view&id=".$row["id"]."' class='mn'>". substr($row["name"],0,15). "</a></li></ul></div>";
 		}
 	}
+	
 
-
-// Server view
+	// Server view
 	if ( isset($_GET["sec2"]) && $_GET["sec2"] == "operation/servers/view_server") {
 		echo '<div id="op2s">';
 	} else {
@@ -244,7 +245,7 @@ if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 	} else {
 		echo '<li class="bb0">';
 	}
-	echo '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting" class="mn">'. $lang_label["reporting"].'</a></li></ul></div>';
+	echo '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer" class="mn">'. $lang_label["reporting"].'</a></li></ul></div>';
 
 	// Custom reporting
 	if (isset($_GET["sec"]) && $_GET["sec"] == "reporting"){

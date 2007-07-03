@@ -1,3 +1,11 @@
+2007-07-03  Manuel Arostegui <marostegui@artica.es>
+
+	* hp-ux/pandora_agent_installer: Added to repository. 
+	  HP-UX Pandora Agent Installer.
+        
+	* hp-ux/data_out: Removed, no longer necesary in 
+	  1.3 version and later.
+
 2007-07-02  Manuel Arostegui <marostegui@artica.es>
 
 	* linux/pandora_agent: Fixed bug: #1746327

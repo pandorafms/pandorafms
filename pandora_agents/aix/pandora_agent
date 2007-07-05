@@ -303,7 +303,7 @@ do
 
 	if [ "$TRANSFER_MODE" = "ftp" ]
 	then
-		ftp SERVER_IP > /dev/null 2> $PANDORA_LOGFILE.err
+		ftp $SERVER_IP > /dev/null 2> $PANDORA_LOGFILE.err
 	fi
 
 	if [ "$TRANSFER_MODE" = "local" ]

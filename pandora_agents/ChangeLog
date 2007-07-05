@@ -1,3 +1,14 @@
+2007-07-05  Manuel Arostegui <marostegui@artica.es>
+
+	* linux/pandora_agent: Fixed small but important bug.
+	  which makes the ftp transfer mode useless.
+	
+	* aix/pandora_agent: Fixed small but important bug.
+          which makes the ftp transfer mode useless.
+        
+	* solaris/pandora_agent: Fixed small but important bug.
+          which makes the ftp transfer mode useless.
+
 2007-07-03  Manuel Arostegui <marostegui@artica.es>
 
 	* hp-ux/pandora_agent_installer: Added to repository. 

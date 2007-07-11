@@ -36,7 +36,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # FLUSH in each IO, only for DEBUG, very slow !
-$| = 0;
+$| = 1;
 
 my %pa_config; 
 
@@ -111,6 +111,7 @@ sub pandora_dataserver {
                         };
                         if ($@) {
                             logger ($pa_config, "[ERROR] Error processing XML contents in $file_data",0);
+				logger ($pa_config, "[ERROR] $@", 0);
                             copy ($file_data,$file_data."_BADXML");
                             if (($pa_config->{'pandora_check'} == 1) && ( -e $file_md5 )) {
 							    copy ($file_md5,$file_md5."_BADCHECKSUM");

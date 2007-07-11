@@ -1,3 +1,9 @@
+2007-07-11  Manuel Arostegui <marostegui@artica.es>
+
+        * bin/pandora_server.pl: Fixed a bug which make
+          impossible to figure out what the error was
+          (if there was) when launching the pandora_server.
+
 2007-06-29  Raul Mateos  <raulofpandora@gmail.com>
 
 	* conf/pandora_server.conf: Changed default incomming dir and log.

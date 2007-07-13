@@ -1,3 +1,13 @@
+2007-07-13  Sancho Lerena  <slerena@artica.es>
+
+	* operation/agentes/estado_ultimopaquete.php: Fixed problem with
+	modules in tagente_estado with no data (because they has not been
+	initializated, due from it's creation it cannot get real
+	data). This problem was detected because Recon don't create
+	instance for tagente_estado (this issue is also fixed in the next
+	commit). Now this page shown data for data that has a utimestamp
+	!= 0.
+
 2007-07-02  Raul Mateos  <raulofpandora@gmail.com>
 
 	* operation/reporting/reporting.php: Reverting change.

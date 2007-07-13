@@ -418,7 +418,14 @@ sub pandora_task_create_agentmodules {
 			$dbh->do($query_sql3);
 			my $last_id_agente_modulo = $dbh->{'mysql_insertid'};
 			logger($pa_config,"Recon Server: Creating module $name for agent $ip_adress",3);
-			my $query_sql4 = "INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, cambio, estado, id_agente, last_try, utimestamp, current_interval, running_by) VALUES ($last_id_agente_modulo, '', '0000-00-00 00:00:00', 0, 0, $agent_id, '0000-00-00 00:00:00', 0, $interval, 0)";
+			my $query_sql4;
+			if 	(($type == 2) || ($type == 6) || ($type == 9) || ($type == 12) || ($type == 18)) {
+				# for monitors
+				$query_sql4 = "INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, cambio, estado, id_agente, last_try, utimestamp, current_interval, running_by) VALUES ($last_id_agente_modulo, '', '0000-00-00 00:00:00', 0, 0, $agent_id, '0000-00-00 00:00:00', 0, $interval, 0)";
+			} else {
+				# not monitors
+				$query_sql4 = "INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, cambio, estado, id_agente, last_try, utimestamp, current_interval, running_by) VALUES ($last_id_agente_modulo, '', '0000-00-00 00:00:00', 0, 100, $agent_id, '0000-00-00 00:00:00', 0, $interval, 0)";
+			}
 			$dbh->do($query_sql4);
 		}
 		$exec_sql2->finish();

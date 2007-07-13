@@ -113,13 +113,15 @@ if (isset($_POST["create_agent"])) { // Create a new and shining agent
 		} else {
 			$sql_insert ="INSERT INTO tagente (nombre, direccion, id_grupo, intervalo, comentarios,modo, id_os, disabled) VALUES ('".$nombre_agente."', '".$direccion_agente."', '".$grupo."', '".$intervalo."', '".$comentarios."',".$modo.", ".$id_os.", '".$disabled."')";
 		}
-		$result=mysql_query($sql_insert);	
+		$result=mysql_query($sql_insert);
 		if ($result) {
 			$agent_created_ok = 1;
 			$id_agente = mysql_insert_id();
 			// Create special MODULE agent_keepalive
 			$sql_insert ="INSERT INTO tagente_modulo (nombre, id_agente, id_tipo_modulo, descripcion) VALUES ('agent_keepalive', ".$id_agente.",-1,'Agent Keepalive monitor')";		
 			$result=mysql_query($sql_insert);
+			// Create address for this agent in taddress
+			agent_add_address ($id_agente, $direccion_agente);
 		}
 		
 	}

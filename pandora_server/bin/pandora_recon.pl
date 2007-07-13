@@ -22,13 +22,14 @@ use strict;
 use warnings;
 
 use Date::Manip;        # Needed to manipulate DateTime formats
-			# of input, output and compare
+						# of input, output and compare
 use Net::Ping;
 use Time::Local;        # DateTime basic manipulation
 use NetAddr::IP;		# To manage IP Addresses
 use POSIX;				# to use ceil() function
 use Socket;				# to resolve address
 use threads;
+use threads::shared;
 
 # Pandora Modules
 use PandoraFMS::Config;
@@ -44,10 +45,23 @@ my %pa_config;
 
 # Inicio del bucle principal de programa
 pandora_init(\%pa_config, "Pandora FMS Recon server");
+
 # Read config file for Global variables
 pandora_loadconfig (\%pa_config, 3);
+
 # Audit server starting
 pandora_audit (\%pa_config, "Pandora FMS Recon Daemon starting", "SYSTEM", "System");
+sleep(1);
+
+# Daemonize of configured
+if ( $pa_config{"daemon"} eq "1" ) {
+	print " [*] Backgrounding...\n";
+	&daemonize;
+}
+
+# Runs main program (have a infinite loop inside)
+threads->new( \&pandora_recon_subsystem, \%pa_config);
+
 sleep(1);
 
 # Connect ONCE to Database, we cannot pass DBI handler to all subprocess because
@@ -59,17 +73,6 @@ my $dbpass = $pa_config->{'dbpass'};
 my $dbname = $pa_config->{'dbname'};
 my $dbh = DBI->connect("DBI:mysql:$dbname:$dbhost:3306", $dbuser, $dbpass, { RaiseError => 1, AutoCommit => 1 });
 
-# Daemonize of configured
-if ( $pa_config{"daemon"} eq "1" ) {
-	print " [*] Backgrounding...\n";
-	&daemonize;
-}
-
-# Runs main program (have a infinite loop inside)
-
-threads->new( \&pandora_recon_subsystem, \%pa_config);
-
-sleep(1);
 while ( 1 ){
 	pandora_serverkeepaliver ($pa_config, 3, $dbh);
 	threads->yield;
@@ -91,7 +94,7 @@ while ( 1 ){
 ##########################################################################
 
 sub pandora_recon_subsystem {
-        # Init vars
+	# Init vars
 	my $pa_config = $_[0];
 	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
 	my $server_id = dame_server_id($pa_config, $pa_config->{'servername'}."_Recon", $dbh);
@@ -160,7 +163,6 @@ sub pandora_exec_task {
 	my $list_host = "";
 	my $host_found = 0;
 	
-
 	# Asign target dir to netaddr object "space"
 	$space = new NetAddr::IP $target_network;
 	if (!defined($space)){
@@ -414,7 +416,10 @@ sub pandora_task_create_agentmodules {
 			
 			my $query_sql3 = "INSERT INTO tagente_modulo (id_agente, id_tipo_modulo, descripcion, nombre, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, ip_target, id_module_group, flag ) VALUES ( $agent_id, $type, '$description', '$name', $max, $min, $interval, $tcp_port, '$tcp_send', '$tcp_rcv', '$snmp_community', '$snmp_oid', '$ip_adress', $id_module_group, 1)";
 			$dbh->do($query_sql3);
+			my $last_id_agente_modulo = $dbh->{'mysql_insertid'};
 			logger($pa_config,"Recon Server: Creating module $name for agent $ip_adress",3);
+			my $query_sql4 = "INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, cambio, estado, id_agente, last_try, utimestamp, current_interval, running_by) VALUES ($last_id_agente_modulo, '', '0000-00-00 00:00:00', 0, 0, $agent_id, '0000-00-00 00:00:00', 0, $interval, 0)";
+			$dbh->do($query_sql4);
 		}
 		$exec_sql2->finish();
 	}

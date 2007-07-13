@@ -1,3 +1,12 @@
+2007-07-13  Sancho Lerena  <slerena@artica.es>
+
+	* bin/pandora_recon.pl: Testing changes for two items: (a) Bug
+	detected in forking startup (-D). (b) Bug detected due creation of
+	modules without inserting record in tagente_estado table.
+	
+	* bin/pandora_server.pl: Updated some flags (IO flush), and
+	indenting some code.
+
 2007-07-11  Manuel Arostegui <marostegui@artica.es>
 
         * bin/pandora_server.pl: Fixed a bug which make

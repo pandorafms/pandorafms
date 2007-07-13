@@ -1,5 +1,10 @@
 2007-07-13  Sancho Lerena  <slerena@artica.es>
 
+	* img/so_other.png: Fixed image.
+	
+	* estado_monitores.php: Not shown only initialized monitor data,
+	those whose utimestamp is zero, skipped (created but never used).
+	
 	* pandora_console/godmode/agentes/configurar_agente.php: Fixed
 	problem when creating manually an agent: does not create IP
 	address in tadress table, so Recon Server create again system with

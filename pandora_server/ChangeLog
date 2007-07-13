@@ -1,5 +1,9 @@
 2007-07-13  Sancho Lerena  <slerena@artica.es>
 
+	* bin/pandora_recon.pl: Another patch, to create records in
+	tagente_estado using different values for "estado" field, (100 for
+	non-monitors, 0 for monitors), in the same way console does.
+	
 	* bin/pandora_recon.pl: Testing changes for two items: (a) Bug
 	detected in forking startup (-D). (b) Bug detected due creation of
 	modules without inserting record in tagente_estado table.

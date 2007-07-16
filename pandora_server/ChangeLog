@@ -1,3 +1,7 @@
+2007-07-16  Sancho Lerena  <slerena@artica.es>
+
+	* bin/PandoraFMS/DB.pm: bugfix, was not updating running_by field !!
+
 2007-07-13  Sancho Lerena  <slerena@artica.es>
 
 	* bin/pandora_recon.pl: Another patch, to create records in

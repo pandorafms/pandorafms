@@ -346,6 +346,7 @@ sub pandora_writestate (%$$$$$$$) {
 	my $cambio = 0; 
 	my $id_grupo;
 	my $server_name = $pa_config->{'servername'}.$pa_config->{"servermode"};
+	my $id_server = dame_server_id($pa_config, $server_name, $dbh);
 
 	# Get id
 	# BE CAREFUL: We don't verify the strings chains
@@ -393,7 +394,7 @@ sub pandora_writestate (%$$$$$$$) {
 	my $query_act; # OJO que dentro de una llave solo tiene existencia en esa llave !!
 	if ($s_idages->rows == 0) { # Doesnt exist entry in table, lets make the first entry
 		logger($pa_config, "Create entry in tagente_estado for module $nombre_modulo",4);
-    		$query_act = "INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, cambio, id_agente, last_try, utimestamp, current_interval, running_by) VALUES ($id_agente_modulo,$datos,'$timestamp','$estado','1',$id_agente,'$timestamp',$utimestamp, $module_interval, 0)"; # Cuando se hace un insert, siempre hay un cambio de estado
+    		$query_act = "INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, cambio, id_agente, last_try, utimestamp, current_interval, running_by) VALUES ($id_agente_modulo,$datos,'$timestamp','$estado','1',$id_agente,'$timestamp',$utimestamp, $module_interval, $id_server)"; # Cuando se hace un insert, siempre hay un cambio de estado
     	} else { # There are an entry in table already
 	        @data = $s_idages->fetchrow_array();
 	        # Se supone que $data[5](estado) ( nos daria el estado ANTERIOR
@@ -414,10 +415,10 @@ sub pandora_writestate (%$$$$$$$) {
 			pandora_event ($pa_config, $descripcion, $id_grupo, $id_agente, $dbh);
 	        }
 	        if ($needs_update == 1) {
-    			$query_act = "UPDATE tagente_estado set utimestamp = '$utimestamp', datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, last_try = '$timestamp', current_interval = '$module_interval', running_by = 0 where id_agente_modulo = '$id_agente_modulo'";
+    			$query_act = "UPDATE tagente_estado set utimestamp = '$utimestamp', datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, last_try = '$timestamp', current_interval = '$module_interval', running_by = $id_server WHERE id_agente_modulo = '$id_agente_modulo'";
     		} else { # dont update last_try field, that it's the field
     			 # we use to check last update time in database
-    			$query_act = "UPDATE tagente_estado set utimestamp = '$utimestamp', datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, current_interval = '$module_interval', running_by = 0 where id_agente_modulo = '$id_agente_modulo'";
+    			$query_act = "UPDATE tagente_estado set utimestamp = '$utimestamp', datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, current_interval = '$module_interval', running_by = $id_server WHERE id_agente_modulo = '$id_agente_modulo'";
     		}
     	}
 	my $a_idages = $dbh->prepare($query_act);
@@ -840,7 +841,9 @@ sub pandora_writedata (%$$$$$$$$$$){
 			$datos =~ s/\,/\./g; # replace "," by "."
 			$data[2] =~ s/\,/\./g; # replace "," by "."
 			$datos = sprintf("%.2f", $datos);
-			$data[2] = sprintf("%.2f", $data[2]);
+			if (is_numeric($data[2])){
+				$data[2] = sprintf("%.2f", $data[2]);
+			}
 			# Two decimal float. We cannot store more
 			# to change this, you need to change mysql structure
 		}

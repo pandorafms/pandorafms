@@ -1,3 +1,29 @@
+2007-07-16  Sancho Lerena <slerena@gmail.com>
+
+	* include/functions_db.php: Bugfix; list_group and list_group2 funtions
+	now include all group in result. All group recheck should be done inside code, not in 
+	this function.
+	
+	* operation/agentes/estado_grupo.php: Fixed bug with ALL group.
+
+	* operation/agentes/estado_monitores.php: Bugfix, Now show only initialized modules.
+
+	* operation/agentes/estado_agente.php: Bugfixed, "All" group problem,
+        and agent names are truncated if > 18 chars.
+	
+	* operation/agentes/tactical.php: Bugfixed, now calculates LAG and module
+	count properly.
+
+	* operation/servers/view_server.php: Bugfixed, now calculates LAG and module
+        count properly.
+
+	* reporting/fgraph.php: Bugfix: Renamed static problem image.
+
+	*  godmode/agentes/configurar_agente.php: Bugfix, agent address management 
+	in manual creation.
+
+	* godmode/agentes/agent_manager.php: Bugfix, #1744913 (show icon in creation)
+
 2007-07-13  Sancho Lerena  <slerena@artica.es>
 
 	* img/so_other.png: Fixed image.

@@ -21,7 +21,7 @@
 require("include/config.php");
 
 $modules_server = 0;
-$total_modules = 0;
+$total_modules_network = 0;
 $total_modules_data = 0;
 
 if (comprueba_login() == 0) {
@@ -36,10 +36,10 @@ if (comprueba_login() == 0) {
 	$sql1='SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo > 4';
 	$result1=mysql_query($sql1);
 	$row1=mysql_fetch_array($result1);
-	$total_modules = $row1[0];
+	$total_modules_network = $row1[0];
 
 	// Get total modules defined (data)
-	$sql1='SELECT COUNT(processed_by_server) FROM tagente_estado WHERE processed_by_server LIKE "%_Data" ';
+	$sql1='SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo < 5 AND id_tipo_modulo != -1';
 	if ($result1=mysql_query($sql1)){
 		$row1=mysql_fetch_array($result1);
 		$total_modules_data = $row1[0];
@@ -88,7 +88,7 @@ if (comprueba_login() == 0) {
 			if (($network_server == 1) OR ($data_server == 1))
 				if ($network_server == 1){
 					// Get total modules defined for this server (network modules)
-					$sql1='SELECT * FROM tagente where id_server = '.$row["id_server"];
+					$sql1='SELECT * FROM tagente WHERE id_server = '.$row["id_server"];
 					$result1=mysql_query($sql1);
 					while ($row1=mysql_fetch_array($result1)){
 						$sql2='SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo > 4 AND id_agente = '.$row1["id_agente"];
@@ -119,13 +119,13 @@ if (comprueba_login() == 0) {
 			if (($network_server == 1) OR ($data_server == 1)){
 				// Progress bar calculations
 				if ($network_server == 1){
-					if ($total_modules == 0)
+					if ($total_modules_network == 0)
 						$percentil = 0;
-					if ($total_modules > 0)
-						$percentil = $modules_server / ($total_modules / 100);
+					if ($total_modules_network > 0)
+						$percentil = $modules_server / ($total_modules_network / 100);
 					else	
 						$percentil = 0;
-					$total_modules_temp = $total_modules;
+					$total_modules_temp = $total_modules_network;
 				} else {
 					if ($total_modules_data == 0)
 						$percentil = 0;
@@ -170,16 +170,16 @@ if (comprueba_login() == 0) {
 			// and calculate difference in seconds 
 			// Get total modules defined for this server
 			if (($network_server == 1) OR ($data_server == 1)){
-				$sql1 = "SELECT utimestamp, current_interval FROM tagente_estado WHERE  processed_by_server = '$name' AND estado < 100";
-	
+				$sql1 = "SELECT MIN(utimestamp),current_interval FROM tagente_estado WHERE utimestamp > 0 AND running_by=$id_server GROUP BY current_interval ORDER BY 1";
 				$nowtime = time();
 				$maxlag=0;
 				if ($result1=mysql_query($sql1))
 					while ($row1=mysql_fetch_array($result1)){
-						if (($row1["utimestamp"] + $row1["current_interval"]) < $nowtime)
-							$maxlag2 =  $nowtime - ($row1["utimestamp"] + $row1["current_interval"]);
+						if (($row1[0] + $row1[1]) < $nowtime){
+							$maxlag2 =  $nowtime - ($row1[0] + $row1[1]);
 							if ($maxlag2 > $maxlag)
 								$maxlag = $maxlag2;
+						}
 					}
 				if ($maxlag < 60)
 					echo $maxlag." sec";

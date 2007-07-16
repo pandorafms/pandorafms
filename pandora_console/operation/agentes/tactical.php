@@ -259,48 +259,49 @@
 					echo "-";
 
 				// LAG CHECK
-				echo "<td class='$tdcolor'>"; 
-				// Calculate lag: get oldest module of any proc_type, for this server,
-				// and calculate difference in seconds 
-				// Get total modules defined for this server
-				if (($network_server == 1) OR ($data_server == 1)){
-					$sql1 = "SELECT utimestamp, current_interval FROM tagente_estado WHERE  processed_by_server = '$name' AND estado < 100";
-		
-					$nowtime = time();
-					$maxlag=0;
-					if ($result1=mysql_query($sql1))
-						while ($row1=mysql_fetch_array($result1)){
-							if (($row1["utimestamp"] + $row1["current_interval"]) < $nowtime)
-								$maxlag2 =  $nowtime - ($row1["utimestamp"] + $row1["current_interval"]);
-								if ($maxlag2 > $maxlag)
-									$maxlag = $maxlag2;
-						}
-					if ($maxlag < 60)
-						echo $maxlag." sec";
-					elseif ($maxlag < 86400)
-						echo format_numeric($maxlag/60) . " min";
-					elseif ($maxlag > 86400)
-						echo "+1 ".$lang_label["day"];
-				} elseif ($recon_server == 1) {
-					$sql1 = "SELECT * FROM trecon_task WHERE id_network_server = $id_server";
-					$result1=mysql_query($sql1);
-					$nowtime = time();
-					$maxlag=0;$maxlag2=0;
-					while ($row1=mysql_fetch_array($result1)){
-						if (($row1["utimestamp"] + $row1["interval_sweep"]) < $nowtime){
-							$maxlag2 =  $nowtime - ($row1["utimestamp"] + $row1["interval_sweep"]);
-							if ($maxlag2 > $maxlag)
-								$maxlag = $maxlag2;
-						}
-					}
-					if ($maxlag < 60)
-						echo $maxlag." sec";
-					elseif ($maxlag < 86400)
-						echo format_numeric($maxlag/60) . " min";
-					elseif ($maxlag > 86400)
-						echo "+1 ".$lang_label["day"];
-				} else
-					echo "--";
+                        	echo "<td class='$tdcolor'>";
+	                        // Calculate lag: get oldest module of any proc_type, for this server,
+	                        // and calculate difference in seconds
+	                        // Get total modules defined for this server
+	                        if (($network_server == 1) OR ($data_server == 1)){
+	                                $sql1 = "SELECT MIN(utimestamp),current_interval FROM tagente_estado WHERE utimestamp > 0 AND running_by=$id_server GROUP BY current_interval ORDER BY 1";
+	                                $nowtime = time();
+	                                $maxlag=0;
+	                                if ($result1=mysql_query($sql1))
+	                                        while ($row1=mysql_fetch_array($result1)){
+	                                                if (($row1[0] + $row1[1]) < $nowtime){
+	                                                        $maxlag2 =  $nowtime - ($row1[0] + $row1[1]);
+	                                                        if ($maxlag2 > $maxlag)
+	                                                                $maxlag = $maxlag2;
+        	                                        }
+                	                        }
+                        	        if ($maxlag < 60)
+	                                        echo $maxlag." sec";
+	                                elseif ($maxlag < 86400)
+	                                        echo format_numeric($maxlag/60) . " min";
+	                                elseif ($maxlag > 86400)
+	                                        echo "+1 ".$lang_label["day"];
+	                        } elseif ($recon_server == 1) {
+        	                        $sql1 = "SELECT * FROM trecon_task WHERE id_network_server = $id_server";
+	                                $result1=mysql_query($sql1);
+	                                $nowtime = time();
+	                                $maxlag=0;$maxlag2=0;
+	                                while ($row1=mysql_fetch_array($result1)){
+	                                        if (($row1["utimestamp"] + $row1["interval_sweep"]) < $nowtime){
+	                                                $maxlag2 =  $nowtime - ($row1["utimestamp"] + $row1["interval_sweep"]);
+	                                                if ($maxlag2 > $maxlag)
+	                                                        $maxlag = $maxlag2;
+	                                        }
+	                                }
+	                                if ($maxlag < 60)
+	                                        echo $maxlag." sec";
+	                                elseif ($maxlag < 86400)
+	                                        echo format_numeric($maxlag/60) . " min";
+	                                elseif ($maxlag > 86400)
+	                                        echo "+1 ".$lang_label["day"];
+	                        } else
+	                                echo "--";
+
 			}
 		}
 		echo '</table>';

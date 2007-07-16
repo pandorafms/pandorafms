@@ -1392,7 +1392,7 @@ function progress_bar($progress,$width,$height) {
 	if ($progress > 100 || $progress < 0){
 		// HACK: This report a static image... will increase render in about 200% :-) useful for
 		// high number of realtime statusbar images creation (in main all agents view, for example
-		$imgPng = imageCreateFromPng("../images/outlimits.png");
+		$imgPng = imageCreateFromPng("../images/outof.png");
 		imageAlphaBlending($imgPng, true);
 		imageSaveAlpha($imgPng, true);
 		imagePng($imgPng); 

@@ -65,7 +65,7 @@
 	// Prepare data to show
 	// For each valid group for this user, take data from agent and modules
 	foreach ($mis_grupos as $migrupo) {
-		if ($migrupo != "") {
+		if (($migrupo != "") && ($migrupo != 1)) {
 			$existen_agentes = 0;	
 			$grupo[$array_index]["agent"]    = 0;
 			$grupo[$array_index]["ok"]       = 0;

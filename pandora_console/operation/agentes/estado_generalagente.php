@@ -174,7 +174,6 @@ if (comprueba_login() == 0) {
 	$ultima = strtotime($ultima_act);
 	$ahora = strtotime("now");
 	$diferencia = $ahora - $ultima;
-
 	// Get higher interval set for the set of modules from this agent
 	$sql_maxi ="SELECT MAX(module_interval) FROM tagente_modulo WHERE id_agente = ".$id_agente;
 	$result_maxi=mysql_query($sql_maxi);

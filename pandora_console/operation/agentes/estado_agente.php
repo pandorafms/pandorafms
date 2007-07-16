@@ -74,7 +74,6 @@ if (comprueba_login() == 0) {
 		echo "<option value='".$ag_group."'>".dame_nombre_grupo($ag_group).
 		"</option>";
 	}
-	echo "<option value=1>".dame_nombre_grupo(1)."</option>"; // Group all is always active 
 	$mis_grupos=list_group ($id_user); //Print combo for groups and set an array with all groups
 
 	echo "</select>";
@@ -124,7 +123,7 @@ if (comprueba_login() == 0) {
 		while ($row=mysql_fetch_array($result)){
 			$intervalo = $row["intervalo"]; // Interval in seconds
 			$id_agente = $row['id_agente'];	
-			$nombre_agente = strtoupper($row["nombre"]);
+			$nombre_agente = substr(strtoupper($row["nombre"]),0,18);
 			$direccion_agente =$row["direccion"];
 			$id_grupo=$row["id_grupo"];
 			$id_os = $row["id_os"];

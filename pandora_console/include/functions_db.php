@@ -772,7 +772,7 @@ function list_group ($id_user){
 	$sql='SELECT id_grupo FROM tgrupo';
 	$result=mysql_query($sql);
 	while ($row=mysql_fetch_array($result)){
-		if ($row["id_grupo"] != 1){
+		if ($row["id_grupo"] != 0){
 			if (give_acl($id_user,$row["id_grupo"], "AR") == 1){
 				array_push ($mis_grupos, $row["id_grupo"]); //Put in  an array all the groups the user belongs
 				echo "<option value='".$row["id_grupo"]."'>".
@@ -793,10 +793,8 @@ function list_group2 ($id_user){
 	$sql='SELECT id_grupo FROM tgrupo';
 	$result=mysql_query($sql);
 	while ($row=mysql_fetch_array($result)){
-		if ($row["id_grupo"] != 1){
-			if (give_acl($id_user,$row["id_grupo"], "AR") == 1){
-				$mis_grupos[]=$row["id_grupo"]; //Put in  an array all the groups the user belongs
-			}
+		if (give_acl($id_user,$row["id_grupo"], "AR") == 1){
+			$mis_grupos[]=$row["id_grupo"]; //Put in  an array all the groups the user belongs
 		}
 	}
 	return ($mis_grupos);

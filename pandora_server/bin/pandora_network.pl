@@ -27,6 +27,7 @@ use Time::HiRes;			# For high precission timedate functions (Net::Ping)
 use IO::Socket;				# For TCP/UDP access
 use SNMP;					# For SNMP access (libsnmp-perl PACKAGE!)
 use threads;
+use threads::shared;
 
 # Pandora Modules
 use PandoraFMS::Config;
@@ -36,9 +37,12 @@ use PandoraFMS::DB;
 # FLUSH in each IO (only for debug, very slooow)
 # ENABLED in DEBUGMODE
 # DISABLE FOR PRODUCTION
-$| = 0;
+$| = 1;
 
 my %pa_config;
+my @pending_task : shared;
+my %pending_task_hash : shared;
+my %current_task_hash : shared;
 
 $SIG{'TERM'} = 'pandora_shutdown';
 $SIG{'INT'} = 'pandora_shutdown';
@@ -59,32 +63,25 @@ if ( $pa_config{"daemon"} eq "1" ) {
 	&daemonize;
 }
 
-# Runs main program (have a infinite loop inside)
-# 111 for ICMP PROC high latency (Interval > 100)
-# 112 for ICMP PROC low latency (Interval < 100)
-# 201 for TCP PROC high latency (Interval > 100)
-# 202 for TCP PROC low latency (Interval < 100)
-# 331 for SNMP DATA_INC high latency (interval > 100)
-# 332 for SNMP DATA_INC low latency (interval < 100)
-# 12 for ICMP DATA
-# 32 for SNMP PROC
-# 0 for the rest: TCP DATA, TCP DATA_INC and TCP DATA_STRING
-#                 SNMP DATA, SNMP DATA_STRING
-threads->new( \&pandora_network_subsystem, \%pa_config, 111);
-threads->new( \&pandora_network_subsystem, \%pa_config, 112);
-threads->new( \&pandora_network_subsystem, \%pa_config, 201);
-threads->new( \&pandora_network_subsystem, \%pa_config, 202);
-threads->new( \&pandora_network_subsystem, \%pa_config, 331);
-threads->new( \&pandora_network_subsystem, \%pa_config, 332);
-threads->new( \&pandora_network_subsystem, \%pa_config, 12);
-threads->new( \&pandora_network_subsystem, \%pa_config, 32);
-threads->new( \&pandora_network_subsystem, \%pa_config, 0);
-print " [*] Threads loaded and running \n";
-# Last thread is the main process
+# Launch now all network threads
+# $ax is local thread id for this server
+for (my $ax=0; $ax < $pa_config{'network_threads'}; $ax++){
+	threads->new( \&pandora_network_consumer, \%pa_config, $ax);
+}
+
+# Launch now the network producer thread
+threads->new( \&pandora_network_producer, \%pa_config);
+
+print " [*] All threads loaded and running \n";
+# Last thread is the main process (this process)
 
 my $dbhost = $pa_config{'dbhost'};
 my $dbname = $pa_config{'dbname'};
-my $dbh = DBI->connect("DBI:mysql:$dbname:$dbhost:3306", $pa_config{'dbuser'}, $pa_config{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
+my $dbh = DBI->connect("DBI:mysql:$dbname:$dbhost:3306",
+						$pa_config{'dbuser'},
+						$pa_config{'dbpass'},
+						{ RaiseError => 1, AutoCommit => 1 });
+
 
 while (1) {
 	pandora_serverkeepaliver (\%pa_config, 1, $dbh);
@@ -115,214 +112,124 @@ sub pandora_shutdown {
 # Subsystem to process network modules
 # This module runs each X seconds (server threshold) checking for network modules status
 ##########################################################################
-
-sub pandora_network_subsystem {
-        # Init vars
+sub pandora_network_consumer ($$) {
 	my $pa_config = $_[0];
-	my $nettype = $_[1];
-	# 111 for ICMP PROC high latency (Interval > 100)
-	# 112 for ICMP PROC low latency (Interval < 100)
-	# 201 for TCP PROC high latency (Interval > 100)
-	# 202 for TCP PROC low latency (Interval < 100)
-	# 331 for SNMP DATA_INC high latency (interval > 100)
-	# 332 for SNMP DATA_INC low latency (interval < 100)
-	# 12 for ICMP DATA
-	# 32 for SNMP PROC
-	# 0 for the rest: TCP DATA, TCP DATA_INC and TCP DATA_STRING
-	#                 SNMP DATA, SNMP DATA_STRING
-	my $nettypedesc;
-	# Connect ONCE to Database, we pass DBI handler to all subprocess.
+	my $thread_id = $_[1];
+
+	print " [*] Starting up Network Consumer Thread # $thread_id \n";
+	
+	my $data_id_agent_module;
+	# Create Database handler
 	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
+	my $counter =0;
+	
+	while (1) {
+		if ($counter > $pa_config->{'server_threshold'}) {
+			sleep (1);
+			$counter = 0;
+		}
+		
+		# Take the first element on the shared queue
+		# Insert this element on the current task hash
+		if (scalar(@pending_task) > 0){
+			{
+				lock @pending_task;
+				$data_id_agent_module = shift(@pending_task);
+				lock %pending_task_hash;
+				delete($pending_task_hash{$data_id_agent_module});
+				lock %current_task_hash;
+				$current_task_hash{$data_id_agent_module}=1;
+			}
+			# Call network execution process
+#print "[D] EXECUTING $data_id_agent_module MODULE FROM CONSUMER $thread_id \n";
+			exec_network_module ( $pa_config, $data_id_agent_module, $dbh);
+			{
+				lock %current_task_hash;
+				delete($current_task_hash{$data_id_agent_module});
+			}
+			threads->yield;
+			$counter = 0;
+		} else {
+			$counter ++;
+		}
+	}
+}
 
-	my $id_agente;
-	my $id_agente_modulo;
-	my $id_tipo_modulo;
-	my $max; my $min; my $module_interval;
-	my $nombre; my $tcp_port; my $tcp_rcv; my $tcp_send; my $snmp_oid;
-	my $snmp_community; my $ip_target; my $id_module_group;
-	my $timestamp_old = 0; # Stores timestamp from tagente_estado table
-	my $id_agente_estado; # ID from tagente_estado table
-	my $estado_cambio; # store tagente_estado cambio field
-	my $estado_estado; # Store tagente_estado estado field
-	my $agent_name; # Agent name
-	my $agent_interval; # Agent interval
-	my $agent_disabled; # Contains disabled field of tagente
-	my $agent_osdata; # Agent os data
-	my $server_id; # My server id
-	my $flag;
-	my @sql_data2;
-	my @sql_data;
-	my @sql_data3;
-	my $query_sql; my $query_sql2; my $query_sql3;
-	my $exec_sql; my $exec_sql2;  my $exec_sql3;
-	my $buffer;
-	my $running; 
+sub pandora_network_producer ($) {
+	my $pa_config = $_[0];
+	print " [*] Starting up Network Producer Thread ...\n";
 
-	$server_id = dame_server_id($pa_config, $pa_config->{'servername'}."_Net", $dbh);
-	while ( 1 ) {
-		logger ($pa_config,"Loop in Network Module Subsystem",10);
-		# For each element
-		# -read net type module (type 5, 6 or 7) or group cathegory 2
-		# -read its last tagente_modulo table entry
-		# -if tagente_estado + module_interval  timestamp<= present timestamp
-		#     run module, sleep 15 secs. and continue
-		#     if ok, store data and status
-		# next element
-		# Calculate ID Agent from a select where module_type (id_tipo_modulo) > 4 (network modules)
-		# Check for MASTER SERVERS only: check another agents if their servers are gone
-		$buffer = "";		
-		if ($pa_config->{"pandora_master"} == 1){ 
-			my $id_server;
-			# I am the master, we need to check another agents
-			# if their server is down
-			# So look for servers down and keep their id_server
-			$query_sql2 = "select * from tagente where disabled = 0 and id_server != $server_id";
-			$exec_sql2 = $dbh->prepare($query_sql2);
-			$exec_sql2 ->execute;
-			while (@sql_data2 = $exec_sql2->fetchrow_array()) {
-				$id_agente = $sql_data2[0];
-				$id_server = $sql_data2[14];
-				# Check if Network Server of that agent is down
-				if (give_networkserver_status($pa_config, $id_server, $dbh) == 0) {
-					# I'm the master server, and there is an agent
-					# with its agent down, so ADD to list
-					$buffer = $buffer." OR id_agente = $id_agente ";
-					logger ($pa_config, "Added id_agente $id_agente for Master Network Server ".$pa_config->{"servername"}."_Net"." agent pool",10);
+	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
+	
+	my $server_id = $pa_config->{'server_id'};
+
+	# Initialize variables for posterior usage
+	my $query1;
+	my @sql_data1;
+	my $data_id_agente_modulo;
+	my $data_flag;
+	my $exec_sql1;
+	
+	while (1) {
+		if ($pa_config->{"pandora_master"} != 666) {
+			# Query for normal server, not MASTER server
+			$query1 = "SELECT
+				tagente_modulo.id_agente_modulo,
+				tagente_modulo.flag
+			FROM
+				tagente, tagente_modulo, tagente_estado
+			WHERE
+				id_server = $server_id
+			AND 
+				tagente_modulo.id_agente = tagente.id_agente
+			AND
+				tagente.disabled = 0
+			AND
+				tagente_modulo.id_tipo_modulo > 4
+			AND
+				tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+			AND (
+					tagente_estado.last_execution_try < (UNIX_TIMESTAMP() - tagente_estado.current_interval)
+				OR 
+					tagente_modulo.flag = 1
+			)				
+			ORDER BY
+					last_execution_try ASC  ";
+		} else {
+			# Query for master server
+			# PENDING TODO !
+		}
+		$exec_sql1 = $dbh->prepare($query1);
+		$exec_sql1 ->execute;
+		
+		while (@sql_data1 = $exec_sql1->fetchrow_array()) {			
+			$data_id_agente_modulo = $sql_data1[0];
+			$data_flag = $sql_data1[1];
+			if ((!defined($pending_task_hash{$data_id_agente_modulo})) &&
+				(!defined($current_task_hash{$data_id_agente_modulo}))) {
+#print "[D] PRODUCER IS INSERTING MODULE $data_id_agente_modulo \n";
+				if ($data_flag == 1){
+					$dbh->do("UPDATE tagente_modulo SET flag = 0 WHERE id_agente_modulo = $data_id_agente_modulo")
+				}
+				# Locking scope, do not remove redundant { }
+				{
+					lock @pending_task;
+					push (@pending_task, $data_id_agente_modulo);
+					lock %pending_task_hash;
+					$pending_task_hash {$data_id_agente_modulo}=1;
 				}
 			}
-			$exec_sql2->finish();
-		}	
-		# First: Checkout for enabled agents owned by this server
-		$query_sql2 = "SELECT * FROM tagente WHERE ( disabled = 0 AND id_server = $server_id ) ". $buffer;
-		$exec_sql2 = $dbh->prepare($query_sql2);
-		$exec_sql2 ->execute;
-		while (@sql_data2 = $exec_sql2->fetchrow_array()) {
-			$id_agente = $sql_data2[0];
-			$agent_name = $sql_data2[1];
-			$agent_interval = $sql_data2[7];
-			$agent_disabled = $sql_data2[12];
-			$agent_osdata =$sql_data2[8];
-			
-			# Second: Checkout for agent_modules with type = X
-			# (network modules) and owned by our selected agent
-			
-			# 111 for ICMP PROC high latency (Interval > 100)
-			# 112 for ICMP PROC low latency (Interval < 100)
-			# 201 for TCP PROC high latency (Interval > 100)
-			# 202 for TCP PROC low latency (Interval < 100)
-			# 331 for SNMP DATA_INC high latency (interval > 100)
-			# 332 for SNMP DATA_INC low latency (interval < 100)
-			# 12 for ICMP DATA
-			# 32 for SNMP PROC
-			# 0 for the rest: TCP DATA, TCP DATA_INC and TCP DATA_STRING
-			#                 SNMP DATA, SNMP DATA_STRING
-			if ($nettype == 111){ # icmp proc high lat
-				$query_sql = "select * from tagente_modulo where id_tipo_modulo = 6 AND (module_interval = 0 OR module_interval > 100) AND id_agente = $id_agente";
-				$nettypedesc="ICMP PROC HighLatency";
-			} elsif ($nettype == 112){ # icmp proc low lat
-				$query_sql = "select * from tagente_modulo where id_tipo_modulo = 6 AND module_interval != 0 AND module_interval < 100 AND id_agente = $id_agente";
-				$nettypedesc="ICMP PROC Low Latency";
-			} elsif ($nettype == 201){ # tcp proc high lat
-				$query_sql = "select * from tagente_modulo where id_tipo_modulo = 9 AND (module_interval = 0 OR module_interval > 100) AND id_agente = $id_agente";
-				$nettypedesc="TCP PROC High Latency";
-			} elsif ($nettype == 202){ # tcp proc low lat
-				$query_sql = "select * from tagente_modulo where id_tipo_modulo = 9 AND module_interval != 0 AND module_interval < 100 AND id_agente = $id_agente";
-				$nettypedesc="TCP PROC Low Latency";
-			} elsif ($nettype == 331){ # SNMP DATA_INC high latency
-				$query_sql = "select * from tagente_modulo where id_tipo_modulo = 16 AND ( module_interval = 0 OR module_interval > 100 ) AND id_agente = $id_agente";
-				$nettypedesc="SNMP DataInc High Latency";
-			} elsif ($nettype == 332){ # SNMP DATA_INC low latency
-				$query_sql = "select * from tagente_modulo where id_tipo_modulo = 16 AND module_interval != 0 AND module_interval < 100 AND id_agente = $id_agente";
-				$nettypedesc="SNMP DataInc Low Latency";
-			} elsif ($nettype == 12){ #icmp data
-				$query_sql = "select * from tagente_modulo where id_tipo_modulo = 7 AND id_agente = $id_agente";
-				$nettypedesc="ICMP DATA (Latency)";
-			} elsif ($nettype == 32){ #snmp proc
-				$query_sql = "select * from tagente_modulo where id_tipo_modulo = 18 AND id_agente = $id_agente";
-				$nettypedesc="SNMP PROC";
-			} elsif ($nettype == 0){
-			# TCP DATA, TCP DATA_INC and TCP DATA_STRING, UDP PROC
-			# SNMP DATA, SNMP DATA_STRING
-				$query_sql = "select * from tagente_modulo where ( id_tipo_modulo = 8 OR id_tipo_modulo = 10 OR id_tipo_modulo =11 OR id_tipo_modulo = 12 OR id_tipo_modulo = 15 OR id_tipo_modulo = 17 ) AND id_agente = $id_agente";
-				$nettypedesc="TCPData, TCPDataInc, TCPString, SNMPData, SNMPString";
-			}
-			$exec_sql = $dbh->prepare($query_sql);
-			$exec_sql ->execute; 
-			while (@sql_data = $exec_sql->fetchrow_array()) {
-				$id_agente_modulo = $sql_data[0];
-				$id_agente= $sql_data[1];
-				$id_tipo_modulo = $sql_data[2];
-				$nombre = $sql_data[4];
-				$min = $sql_data[6];
-				$max = $sql_data[5];
-				$module_interval = $sql_data[7];
-				$tcp_port = $sql_data[8];
-				$tcp_send = $sql_data[9];
-				$tcp_rcv = $sql_data[10];
-				$snmp_community = $sql_data[11];
-				$snmp_oid = $sql_data[12];
-				$ip_target = $sql_data[13];
-				$id_module_group = $sql_data[14];
-				$flag = $sql_data[15];
-				if ($module_interval == 0) { 
-					# If module interval not defined, get value for agent interval instead
-					$module_interval = $agent_interval;
-				}
-				# Look for an entry in tagente_estado 
-				$query_sql3 = "select * from tagente_estado where id_agente_modulo = $id_agente_modulo";
-				$exec_sql3 = $dbh->prepare($query_sql3);
-				$exec_sql3 ->execute;
-				if ($exec_sql3->rows > 0) { # Exist entry in tagente_estado
-					@sql_data3 = $exec_sql3->fetchrow_array();
-					$timestamp_old = $sql_data3[8]; # Now use utimestamp
-					$id_agente_estado = $sql_data3[0];
-					$estado_cambio = $sql_data3[4];
-					$estado_estado = $sql_data3[5];
-					$running = $sql_data3[10];
-				} else {
-					$id_agente_estado = -1;
-					$estado_estado = -1;
-					$running = 0;
-				}
-				$exec_sql3->finish();
-				# if timestamp of tagente_modulo + module_interval <= timestamp actual, exec module
-				
-				my $current_timestamp = &UnixDate("today","%s");
-				my $err;
-				my $limit1_timestamp = $timestamp_old + $module_interval;
-				my $limit2_timestamp = $timestamp_old + ($module_interval*2);
-				if (    ($limit2_timestamp < $current_timestamp) || 
-					(($running == 0) && ( $limit1_timestamp < $current_timestamp)) || 
-					($flag == 1) )  
-				{ # Exec module, we are out time limit !
-					if ($flag == 1){ # Reset flag to 0
-						$query_sql3 = "UPDATE tagente_modulo SET flag=0 WHERE id_agente_modulo = $id_agente_modulo";
-						$exec_sql3 = $dbh->prepare($query_sql3);
-						$exec_sql3 ->execute;
-						$exec_sql3->finish();
-					}
-					# Update running_by flag
-					$query_sql3 = "UPDATE tagente_estado SET running_by = ".$pa_config->{'server_id'}." WHERE id_agente_modulo = $id_agente_modulo";
-					$exec_sql3 = $dbh->prepare($query_sql3);
-					$exec_sql3 ->execute;
-					$exec_sql3->finish();
-					logger ($pa_config, "Network Module Subsystem ($nettypedesc): Exec Netmodule '$nombre' ID $id_agente_modulo ",4);
-					exec_network_module( $id_agente, $id_agente_estado, $id_tipo_modulo, $nombre, $min, $max, $agent_interval, $tcp_port, $tcp_send, $tcp_rcv, $snmp_community, $snmp_oid, $ip_target, $estado_cambio, $estado_estado, $agent_name, $agent_osdata, $id_agente_modulo, $pa_config, $dbh);
-				} # Timelimit if
-			} # while
-			$exec_sql->finish();
-		}	
-		$exec_sql2->finish();
+		}
+		$exec_sql1->finish();
 		threads->yield;
 		sleep($pa_config->{"server_threshold"});
-	}
-	$dbh->disconnect();
+	} # Main loop
 }
 
 ##############################################################################
 # pandora_ping_icmp (destination, timeout) - Do a ICMP scan, 1 if alive, 0 if not
 ##############################################################################
-sub pandora_ping_icmp {
+sub pandora_ping_icmp { 
 	my $dest = $_[0];
 	my $l_timeout = $_[1];
  	# temporal vars.
@@ -447,7 +354,7 @@ sub pandora_query_tcp (%$$$$$$$$) {
 # SUB pandora_query_snmp (pa_config, oid, community, target, error, dbh)
 # Makes a call to SNMP modules to get a value,
 ##########################################################################
-sub pandora_query_snmp {
+sub pandora_query_snmp { 
 	my $pa_config = $_[0];
 	my $snmp_oid = $_[1];
 	my $snmp_community =$_[2];
@@ -494,32 +401,50 @@ sub pandora_query_snmp {
 }
 
 ##########################################################################
-# SUB exec_network_module (many parameters...)
-# Execute network module task in separated thread
+# SUB exec_network_module (paconfig, id_agente_modulo, dbh )
+# Execute network module task 
 ##########################################################################
 sub exec_network_module {
-	my $id_agente = $_[0];
-	my $id_agente_estado = $_[1];
-	my $id_tipo_modulo= $_[2];
-	my $nombre= $_[3];
-	my $min= $_[4];
-	my $max= $_[5];
-	my $agent_interval= $_[6];
-	my $tcp_port = $_[7];
-	my $tcp_send = $_[8];
-	my $tcp_rcv = $_[9];
-	my $mysnmp_community = $_[10];
-	my $mysnmp_oid = $_[11];
-	my $ip_target = $_[12];
-	my $estado_cambio = $_[13];
-	my $estado_estado = $_[14];
-	my $agent_name = $_[15];
-	my $agent_osdata = $_[16];
-	my $id_agente_modulo = $_[17];
-	my $pa_config = $_[18];
-	my $dbh = $_[19];
+	my $pa_config = $_[0];
+	my $id_agente_modulo = $_[1];
+	my $dbh = $_[2];
+	# Init variables
+	my $id_agente;
+	my $id_tipo_modulo;
+	my $nombre;
+	my $min;
+	my $max;
+	my $module_interval;
+	my $tcp_port;
+	my $tcp_send;
+	my $tcp_rcv;
+	my $snmp_community;
+	my $snmp_oid;
+	my $ip_target;
+	my $id_module_group;
+	my $flag;
+	my @sql_data;
 
-	
+	my $query_sql = "SELECT * FROM tagente_modulo WHERE id_agente_modulo = $id_agente_modulo";
+	my $exec_sql = $dbh->prepare($query_sql);
+	$exec_sql ->execute;
+	if (@sql_data = $exec_sql->fetchrow_array()){
+		$id_agente= $sql_data[1];
+		$id_tipo_modulo = $sql_data[2];
+		$nombre = $sql_data[4];
+		$min = $sql_data[6];
+		$max = $sql_data[5];
+		$module_interval = $sql_data[7];
+		$tcp_port = $sql_data[8];
+		$tcp_send = $sql_data[9];
+		$tcp_rcv = $sql_data[10];
+		$snmp_community = $sql_data[11];
+		$snmp_oid = $sql_data[12];
+		$ip_target = $sql_data[13];
+		$id_module_group = $sql_data[14];
+		$flag = $sql_data[15];
+	}
+	my $agent_name = dame_agente_nombre ($pa_config, $id_agente, $dbh);
 	my $error = "1";
 	my $query_sql2;
 	my $temp=0; my $tam; my $temp2;
@@ -561,12 +486,11 @@ sub exec_network_module {
 	# SNMP Modules (Proc=18, inc, data, string)
 	# ------------
 	} elsif (($id_tipo_modulo == 15) || ($id_tipo_modulo == 18) || ($id_tipo_modulo == 16) || ($id_tipo_modulo == 17)) { # SNMP module
-		if ($mysnmp_oid ne ""){
-			$temp2 = pandora_query_snmp ($pa_config, $mysnmp_oid, $mysnmp_community, $ip_target, $error, $dbh);
+		if ($snmp_oid ne ""){
+			$temp2 = pandora_query_snmp ($pa_config, $snmp_oid, $snmp_community, $ip_target, $error, $dbh);
 		} else {
 			 $error = 1
 		}
-		
 		# SUB pandora_query_snmp (pa_config, oid, community, target, error, dbh)
 		if ($error == 0) { # A correct SNMP Query
 			$module_result = 0;
@@ -605,7 +529,6 @@ sub exec_network_module {
    	}
 
 	# --------------------------------------------------------
-	# --------------------------------------------------------
 	if ($module_result == 0) {
 		my %part;
 		$part{'name'}[0]=$nombre;
@@ -633,7 +556,7 @@ sub exec_network_module {
 		}
 		# Update agent last contact
 		# Insert Pandora version as agent version
-		pandora_lastagentcontact ($pa_config, $timestamp, $agent_name,  $agent_osdata, $pa_config->{'version'}, $agent_interval, $dbh);
+		pandora_lastagentcontact ($pa_config, $timestamp, $agent_name,  $pa_config->{'servername'}.$pa_config->{"servermode"}, $pa_config->{'version'}, -1, $dbh);
 	} else { 
 		# $module_result != 0)
 		# Modules who cannot connect or something go bad, update last_try field
@@ -641,11 +564,12 @@ sub exec_network_module {
 		my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
 		my $utimestamp = &UnixDate("today","%s");
 		#my $query_act = "UPDATE tagente_estado SET utimestamp = $utimestamp, timestamp = '$timestamp', last_try = '$timestamp' WHERE id_agente_estado = $id_agente_estado ";
-		my $query_act = "UPDATE tagente_estado SET last_try = '$timestamp' WHERE id_agente_estado = $id_agente_estado ";
+		my $query_act = "UPDATE tagente_estado SET last_execution_try = $utimestamp WHERE id_agente_modulo = $id_agente_modulo ";
 		my $a_idages = $dbh->prepare($query_act);
 		$a_idages->execute;
 		$a_idages->finish();
 	}
+	
 skipdb_execmod:
 	#$dbh->disconnect();
 }

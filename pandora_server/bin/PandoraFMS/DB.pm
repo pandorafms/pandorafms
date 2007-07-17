@@ -394,8 +394,8 @@ sub pandora_writestate (%$$$$$$$) {
 	my $query_act; # OJO que dentro de una llave solo tiene existencia en esa llave !!
 	if ($s_idages->rows == 0) { # Doesnt exist entry in table, lets make the first entry
 		logger($pa_config, "Create entry in tagente_estado for module $nombre_modulo",4);
-    		$query_act = "INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, cambio, id_agente, last_try, utimestamp, current_interval, running_by) VALUES ($id_agente_modulo,$datos,'$timestamp','$estado','1',$id_agente,'$timestamp',$utimestamp, $module_interval, $id_server)"; # Cuando se hace un insert, siempre hay un cambio de estado
-    	} else { # There are an entry in table already
+    		$query_act = "INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, cambio, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try) VALUES ($id_agente_modulo,$datos,'$timestamp','$estado','1',$id_agente,'$timestamp',$utimestamp, $module_interval, $id_server, $utimestamp)"; # Cuando se hace un insert, siempre hay un cambio de estado
+	} else { # There are an entry in table already
 	        @data = $s_idages->fetchrow_array();
 	        # Se supone que $data[5](estado) ( nos daria el estado ANTERIOR
 		# For xxxx_PROC type (boolean / monitor), create an event if state has changed
@@ -415,10 +415,10 @@ sub pandora_writestate (%$$$$$$$) {
 			pandora_event ($pa_config, $descripcion, $id_grupo, $id_agente, $dbh);
 	        }
 	        if ($needs_update == 1) {
-    			$query_act = "UPDATE tagente_estado set utimestamp = '$utimestamp', datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, last_try = '$timestamp', current_interval = '$module_interval', running_by = $id_server WHERE id_agente_modulo = '$id_agente_modulo'";
+    			$query_act = "UPDATE tagente_estado SET utimestamp = $utimestamp, datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, last_try = '$timestamp', current_interval = '$module_interval', running_by = $id_server, last_execution_try = $utimestamp WHERE id_agente_modulo = '$id_agente_modulo'";
     		} else { # dont update last_try field, that it's the field
     			 # we use to check last update time in database
-    			$query_act = "UPDATE tagente_estado set utimestamp = '$utimestamp', datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, current_interval = '$module_interval', running_by = $id_server WHERE id_agente_modulo = '$id_agente_modulo'";
+    			$query_act = "UPDATE tagente_estado SET utimestamp = $utimestamp, datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, current_interval = '$module_interval', running_by = $id_server, last_execution_try = $utimestamp WHERE id_agente_modulo = '$id_agente_modulo'";
     		}
     	}
 	my $a_idages = $dbh->prepare($query_act);
@@ -1013,13 +1013,13 @@ sub pandora_updateserver (%$$$) {
 ##########################################################################
 
 sub pandora_lastagentcontact (%$$$$$$) {
-        my $pa_config= $_[0];
-        my $timestamp = $_[1];
-        my $time_now = &UnixDate("today","%Y-%m-%d %H:%M:%S");
-        my $nombre_agente = $_[2];
-        my $os_data = $_[3];
-        my $agent_version = $_[4];
-        my $interval = $_[5];
+	my $pa_config= $_[0];
+	my $timestamp = $_[1];
+	my $time_now = &UnixDate("today","%Y-%m-%d %H:%M:%S");
+	my $nombre_agente = $_[2];
+	my $os_data = $_[3];
+	my $agent_version = $_[4];
+	my $interval = $_[5];
 	my $dbh = $_[6];
 
         my $id_agente = dame_agente_id($pa_config, $nombre_agente,$dbh);
@@ -1252,7 +1252,7 @@ sub dame_comando_alerta (%$$) {
 ##########################################################################
 sub dame_agente_nombre (%$$) {
 	my $pa_config = $_[0];
-        my $id_agente = $_[1];
+	my $id_agente = $_[1];
 	my $dbh = $_[2];
         
 	my $nombre_agente;
@@ -1608,10 +1608,31 @@ sub crea_agente_modulo (%$$$$$$$) {
 		$query = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,min,descripcion) VALUES 	($agente_id, $modulo_id, $nombre_modulo, $min, $descripcion)";
 	}
 	logger( $pa_config, "DEBUG: Query for autocreate : $query ", 10);	
-    	$dbh->do($query);
+    $dbh->do($query);
 	return $dbh->{'mysql_insertid'};
 }
 
+# ---------------------------------------------------------------
+# Generic access to a field ($field) given a table
+# ---------------------------------------------------------------
+sub give_db_value ($$$$$) {
+	my $field = $_[0];
+	my $table = $_[1];
+	my $field_search = $_[2];
+	my $condition_value= $_[3];
+	my $dbh = $_[4];
+	
+	my $query = "SELECT $field FROM $table WHERE $field_search = '$condition_value' ";
+	my $s_idag = $dbh->prepare($query);
+	$s_idag ->execute;
+	if ($s_idag->rows != 0) {
+		my @data = $s_idag->fetchrow_array();
+    	my $result = $data[0];
+    	$s_idag->finish();
+        return $result;
+	}
+	return -1;
+}
 
 # End of function declaration
 # End of defined Code

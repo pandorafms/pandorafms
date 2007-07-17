@@ -1,3 +1,17 @@
+2007-07-17  Sancho Lerena  <slerena@artica.es>
+
+	* pandora_server.pl: Small indenting changes.
+
+	* PandoraFMS/DB.pm: Added generic access to database using
+	give_db_value() function.
+
+	* pandora_network.pl: Porting code from 2.0 trunk, code from 1.3 was
+	too slow. Solved many issues of stability. Changed entire balancing
+	and task assigment algorithm. 
+
+	* PandoraFMS/Config.pm: Added network_thread config option to
+	fine-tune network server.
+
 2007-07-16  Sancho Lerena  <slerena@artica.es>
 
 	* bin/PandoraFMS/DB.pm: bugfix, was not updating running_by field !!

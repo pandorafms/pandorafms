@@ -34,8 +34,8 @@ our @EXPORT = qw( 	pandora_help_screen
 # There is no global vars, all variables (setup) passed as hash reference
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "1.3-dev";
-my $pandora_build="PS070615";
+my $pandora_version = "1.3-beta2";
+my $pandora_build="PS070717";
 our $VERSION = $pandora_version;
 
 # Setup hash
@@ -138,7 +138,7 @@ sub pandora_loadconfig {
 	$pa_config->{"dataserver"}=0;
 	$pa_config->{"reconserver"}=0;
 	$pa_config->{"servermode"}="";
-	$pa_config->{"network_threads"}=10; # Fixed default
+	$pa_config->{"network_threads"}=4; # Fixed default
 	$pa_config->{"keepalive"}=60; # 60 Seconds initially for server keepalive
 	$pa_config->{"keepalive_orig"} = $pa_config->{"keepalive"};
 	# Check for UID0
@@ -228,6 +228,7 @@ sub pandora_loadconfig {
   		elsif ($parametro =~ m/^server_threshold\s([0-9]*)/i) { $pa_config->{"server_threshold"}  = $1; } 
 		elsif ($parametro =~ m/^alert_threshold\s([0-9]*)/i) { $pa_config->{"alert_threshold"} = $1; } 
 		elsif ($parametro =~ m/^network_timeout\s([0-9]*)/i) { $pa_config->{'networktimeout'}= $1; }
+		elsif ($parametro =~ m/^network_threads\s([0-9]*)/i) { $pa_config->{'network_threads'}= $1; }
 		elsif ($parametro =~ m/^server_keepalive\s([0-9]*)/i) { $pa_config->{"keepalive"} = $1; $pa_config->{"keepalive_orig"} = $1; }
  	}
 	if ( $pa_config->{"verbosity"} > 0){
@@ -303,7 +304,6 @@ sub pandora_loadconfig {
 	}
 	print " [*] Pandora FMS Server [".$pa_config->{'servername'}.$pa_config->{"servermode"}."] is running and operative \n";
 	$pa_config->{'server_id'} = dame_server_id ($pa_config, $pa_config->{'servername'}.$pa_config->{"servermode"}, $dbh);
-
 	
 	# Dump all errors to errorlog
 	# DISABLED in DEBUGMODE

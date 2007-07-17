@@ -36,7 +36,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # FLUSH in each IO, only for DEBUG, very slow !
-$| = 0;
+$| = 1;
 
 my %pa_config; 
 
@@ -110,31 +110,31 @@ sub pandora_dataserver {
                             $config = XMLin($file_data, forcearray=>'module');
                         };
                         if ($@) {
-                            logger ($pa_config, "[ERROR] Error processing XML contents in $file_data",0);
-							logger ($pa_config, "[ERROR] $@", 0);
-                            copy ($file_data,$file_data."_BADXML");
-                            if (($pa_config->{'pandora_check'} == 1) && ( -e $file_md5 )) {
-							    copy ($file_md5,$file_md5."_BADCHECKSUM");
-						    }
+                        	logger ($pa_config, "[ERROR] Error processing XML contents in $file_data",0);
+				logger ($pa_config, "[ERROR] $@", 0);
+                            	copy ($file_data,$file_data."_BADXML");
+                            	if (($pa_config->{'pandora_check'} == 1) && ( -e $file_md5 )) {
+			    		copy ($file_md5,$file_md5."_BADCHECKSUM");
+				}
                         }
-						procesa_datos ($pa_config, $config, $dbh); 
-						undef $config;
+			procesa_datos ($pa_config, $config, $dbh); 
+			undef $config;
                         # If _everything_ its ok..
-						# delete files
-                                        	unlink ($file_data);
-                                        	if ( -e $file_md5 ) {
-							unlink ($file_md5);
-						}
-                    } else { # md5 check fails
-     					logger ( $pa_config, "[ERROR] MD5 Checksum failed! for $file_data",0);
-						# delete files
+			# delete files
                         unlink ($file_data);
                         if ( -e $file_md5 ) {
-							unlink ($file_md5);
-						}
-    				}
-   				} # No checksum file, ignore file
-            }
+				unlink ($file_md5);
+			}
+                    } else { # md5 check fails
+     			logger ( $pa_config, "[ERROR] MD5 Checksum failed! for $file_data",0);
+			# delete files
+                        unlink ($file_data);
+                        if ( -e $file_md5 ) {
+				unlink ($file_md5);
+			}
+    		}
+             } # No checksum file, ignore file
+          }
         }
         closedir(DIR);
 		threads->yield;

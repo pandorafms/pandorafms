@@ -85,7 +85,7 @@
 				$existen_agentes = 1;
 
 			// SQL Join to get monitor status for agents belong this group
-			$sql1 = "SELECT tagente.id_agente, tagente_estado.estado, tagente_estado.datos, tagente_estado.current_interval, tagente_estado.utimestamp, tagente_estado.id_agente_modulo FROM tagente, tagente_estado WHERE tagente.disabled = 0 AND tagente.id_grupo = $migrupo AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.estado != 100";
+			$sql1 = "SELECT tagente.id_agente, tagente_estado.estado, tagente_estado.datos, tagente_estado.current_interval, tagente_estado.utimestamp, tagente_estado.id_agente_modulo FROM tagente, tagente_estado WHERE tagente.disabled = 0 AND tagente.id_grupo = $migrupo AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.estado != 100 AND tagente_estado.utimestamp != 0";
 			if ($result1 = mysql_query ($sql1)){
 				while ($row1 = mysql_fetch_array ($result1)) {
 					$id_agente = $row1[0];

@@ -47,7 +47,8 @@
 	$data_alert = $data[8];
 	$data_alert_total = $data[9];
 	$monitor_alert_total = $data[10];
-	
+	$data_not_init = $data[11];
+	$monitor_not_init = $data[12];	
 	$total_checks = $data_checks + $monitor_checks;
 
 	// Monitor checks
@@ -72,6 +73,14 @@
 		echo $monitor_unknown;
 	else
 		echo "-";
+
+	echo "</td></tr><tr><td class=datos><b>"."Monitor Not Init"."</b></td>";
+        echo "<td class=datos style='font: bold 2em Arial, Sans-serif; color: #888;'>";
+        if ($monitor_unknown > 0)
+                echo $monitor_not_init;
+        else
+                echo "-";
+
 	echo "<tr><td class=datos2><b>"."Alerts Fired"."</b></td>";
 	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #ff0000;'>";
 	if ($monitor_alert > 0)
@@ -94,12 +103,18 @@
 		echo $data_unknown;
 	else
 		echo "-";
-	echo "<tr><td class=datos2><b>"."Alerts Fired"."</b></td>";
+	echo "<tr><td class=datos2><b>"."Data not init"."</b></td>";
 	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #f00;'>";
 	if ($data_alert > 0)
-		echo $data_alert;
+		echo $data_not_init;
 	else
 		echo "-";
+	echo "<tr><td class=datos2><b>"."Alerts Fired"."</b></td>";
+        echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #f00;'>";
+        if ($data_alert > 0)
+                echo $data_alert;
+        else
+                echo "-";
 	echo "<tr><td class=datos><b>"."Alerts Total";
 	echo "<td class=datos style='font: bold 2em Arial, Sans-serif; color: #000;'>".$data_alert_total;
 	echo "</table>";
@@ -264,7 +279,7 @@
 	                        // and calculate difference in seconds
 	                        // Get total modules defined for this server
 	                        if (($network_server == 1) OR ($data_server == 1)){
-	                                $sql1 = "SELECT MIN(utimestamp),current_interval FROM tagente_estado WHERE utimestamp > 0 AND running_by=$id_server GROUP BY current_interval ORDER BY 1";
+	                                $sql1 = "SELECT MIN(last_execution_try), current_interval FROM tagente_estado WHERE last_execution_try > 0 AND running_by=$id_server GROUP BY current_interval ORDER BY 1";
 	                                $nowtime = time();
 	                                $maxlag=0;
 	                                if ($result1=mysql_query($sql1))

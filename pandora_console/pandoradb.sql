@@ -95,6 +95,7 @@ CREATE TABLE `tagente_estado` (
   `utimestamp` bigint(20) NOT NULL default '0',
   `current_interval` int(10) unsigned NOT NULL default '0',
   `running_by` int(10) unsigned NULL default 0,
+  `last_execution_try` bigint(20) NOT NULL default '0',
   PRIMARY KEY  (`id_agente_estado`),
   KEY `status_index_1` (`id_agente_modulo`),
   KEY `status_index_2` (`id_agente_modulo`,`estado`)
@@ -572,4 +573,3 @@ CREATE TABLE `tlayout_data` (
   `no_link_color` tinyint(1) UNSIGNED NOT NULL default 0,
   PRIMARY KEY(`id`)
 ) ENGINE = InnoDB;
-

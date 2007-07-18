@@ -1,3 +1,27 @@
+2007-07-18  Sancho Lerena  <slerena@artica.es>
+
+        * include/functions_reporting.php: With last change in server, we
+        have control of not initilizated modules (those who never got
+        data/contact), we need to take care of them here.
+
+        * pandoradb.sql: last_execution_try field is added to
+        tagente_estado to be able to keep last execution try from network
+        server, later method was incompatible with automatic compatation
+        of data and with data server.
+
+        * operation/agentes/estado_grupo.php: Unknown data not includes
+        non initialized data. It's possible that need to make changes of
+        this kind in other files because the nature of the problem
+        detected.
+
+        * operation/agentes/tactical.php: BugFix: LAG is now correct and
+        makes reference to the oldest module that has been processed. Also
+        are shown non initialized data.
+
+
+        * operation/servers/view_server.php: BugFix: LAG is now correct
+        (see above).
+
 2007-07-16  Sancho Lerena <slerena@gmail.com>
 
 	* include/functions_db.php: Bugfix; list_group and list_group2 funtions

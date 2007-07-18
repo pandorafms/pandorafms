@@ -37,13 +37,15 @@ use PandoraFMS::DB;
 # FLUSH in each IO (only for debug, very slooow)
 # ENABLED in DEBUGMODE
 # DISABLE FOR PRODUCTION
-$| = 1;
+$| = 0;
 
 my %pa_config;
 my @pending_task : shared;
 my %pending_task_hash : shared;
 my %current_task_hash : shared;
+my $snmp_lock : shared;
 
+$ENV{'MIBS'}="ALL";  #Load all available MIBs only once
 $SIG{'TERM'} = 'pandora_shutdown';
 $SIG{'INT'} = 'pandora_shutdown';
 
@@ -124,7 +126,7 @@ sub pandora_network_consumer ($$) {
 	my $counter =0;
 	
 	while (1) {
-		if ($counter > $pa_config->{'server_threshold'}) {
+		if ($counter > 10) {
 			sleep (1);
 			$counter = 0;
 		}
@@ -147,7 +149,7 @@ sub pandora_network_consumer ($$) {
 				lock %current_task_hash;
 				delete($current_task_hash{$data_id_agent_module});
 			}
-			threads->yield;
+			
 			$counter = 0;
 		} else {
 			$counter ++;
@@ -189,7 +191,7 @@ sub pandora_network_producer ($) {
 			AND
 				tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 			AND (
-					tagente_estado.last_execution_try < (UNIX_TIMESTAMP() - tagente_estado.current_interval)
+					(tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP() 
 				OR 
 					tagente_modulo.flag = 1
 			)				
@@ -201,10 +203,11 @@ sub pandora_network_producer ($) {
 		}
 		$exec_sql1 = $dbh->prepare($query1);
 		$exec_sql1 ->execute;
-		
-		while (@sql_data1 = $exec_sql1->fetchrow_array()) {			
+#print "[D] Total number of items in this query ".$exec_sql1->rows." \n";	
+		while (@sql_data1 = $exec_sql1->fetchrow_array()) {	
 			$data_id_agente_modulo = $sql_data1[0];
 			$data_flag = $sql_data1[1];
+			# Skip modules already queued
 			if ((!defined($pending_task_hash{$data_id_agente_modulo})) &&
 				(!defined($current_task_hash{$data_id_agente_modulo}))) {
 #print "[D] PRODUCER IS INSERTING MODULE $data_id_agente_modulo \n";
@@ -221,7 +224,7 @@ sub pandora_network_producer ($) {
 			}
 		}
 		$exec_sql1->finish();
-		threads->yield;
+#print "[D] Items in pending task queue [ ".scalar(@pending_task)." ]\n";
 		sleep($pa_config->{"server_threshold"});
 	} # Main loop
 }
@@ -242,12 +245,19 @@ sub pandora_ping_icmp {
  		return 0;
  	}
  	# Some hosts don't accept ICMP with too small payload. Use 16 Bytes
- 	$p = Net::Ping->new("icmp",$l_timeout,16);
-	$p->source_verify(1);
-
+ 	$p = Net::Ping->new("icmp", $l_timeout, 16);
  	$result = $p->ping($dest);
+
+	# If first PING get valid and 1, let's exit (faster)
+ 	if (defined($result)){
+ 		if ($result == 1){
+ 			$p->close();
+ 			return 1;
+ 		}
+ 	}
+ 	
+	# If not, makes a second one to be sure
 	$result2 = $p->ping($dest);
- 
  	# Check for valid result
  	if ((!defined($result)) || (!defined($result2))) {
  		return 0;
@@ -354,7 +364,7 @@ sub pandora_query_tcp (%$$$$$$$$) {
 # SUB pandora_query_snmp (pa_config, oid, community, target, error, dbh)
 # Makes a call to SNMP modules to get a value,
 ##########################################################################
-sub pandora_query_snmp { 
+sub pandora_query_snmp {
 	my $pa_config = $_[0];
 	my $snmp_oid = $_[1];
 	my $snmp_community =$_[2];
@@ -362,12 +372,12 @@ sub pandora_query_snmp {
 	# $_[4] contains error var.
 	my $dbh = $_[5];
 	my $output ="";
-	$ENV{'MIBS'}="ALL";  #Load all available MIBs
 	my $SESSION = new SNMP::Session (DestHost =>  $snmp_target,
-                                Community => $snmp_community,
-                                Version => 1);
+									Timeout   => $pa_config->{"networktimeout"},
+                                	Community => $snmp_community,
+                                	Version   => 1);
    	if ((!defined($SESSION))&& ($snmp_community != "") && ($snmp_oid != "")) {
-      		logger($pa_config, "SNMP ERROR SESSION for Target $snmp_target ", 4);
+      	logger($pa_config, "SNMP ERROR SESSION for Target $snmp_target ", 4);
 		$_[4] = "1";
    	} else {
 		# Perl uses different OID syntax than SNMPWALK or PHP's SNMP
@@ -386,10 +396,14 @@ sub pandora_query_snmp {
 				$perl_oid = $local_oid.".".$local_oid_idx;
 			}
 		}
-		my $OIDLIST =  new SNMP::VarList([$perl_oid]);
-		# Pass the VarList to getnext building an array of the output
-		my @OIDINFO = $SESSION->getnext($OIDLIST);
-		$output = $OIDINFO[0];
+		# Locking for SNMP call. SNMP is not thread safe !!
+		{
+			lock $snmp_lock;
+			my $OIDLIST = new SNMP::VarList([$perl_oid]);
+			# Pass the VarList to getnext building an array of the output
+			my @OIDINFO = $SESSION->getnext($OIDLIST);
+			$output = $OIDINFO[0];
+		}
 		if ((!defined($output)) || ($output eq "")){
 			$_[4] = "1";
 			return 0;
@@ -443,7 +457,13 @@ sub exec_network_module {
 		$ip_target = $sql_data[13];
 		$id_module_group = $sql_data[14];
 		$flag = $sql_data[15];
+		$exec_sql->finish();
+	} else {
+		$exec_sql->finish();
+		logger (\%pa_config,"[ERROR] Processing data for invalid module",0);
+		return 0;
 	}
+	
 	my $agent_name = dame_agente_nombre ($pa_config, $id_agente, $dbh);
 	my $error = "1";
 	my $query_sql2;
@@ -529,6 +549,9 @@ sub exec_network_module {
    	}
 
 	# --------------------------------------------------------
+	# Write data section
+	my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
+	my $utimestamp = &UnixDate("today","%s");
 	if ($module_result == 0) {
 		my %part;
 		$part{'name'}[0]=$nombre;
@@ -536,7 +559,6 @@ sub exec_network_module {
 		$part{'data'}[0] = $module_data;
 		$part{'max'}[0] = $max;
 		$part{'min'}[0] = $min;
-		my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
 		my $tipo_modulo = dame_nombretipomodulo_idagentemodulo ($pa_config, $id_tipo_modulo, $dbh);
 		if (($tipo_modulo eq 'remote_snmp') || ($tipo_modulo eq 'remote_icmp') || ($tipo_modulo eq 'remote_tcp') || ($tipo_modulo eq 'remote_udp'))  {
 			module_generic_data ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
@@ -559,11 +581,8 @@ sub exec_network_module {
 		pandora_lastagentcontact ($pa_config, $timestamp, $agent_name,  $pa_config->{'servername'}.$pa_config->{"servermode"}, $pa_config->{'version'}, -1, $dbh);
 	} else { 
 		# $module_result != 0)
-		# Modules who cannot connect or something go bad, update last_try field
+		# Modules who cannot connect or something go bad, update last_execution_try field
 		logger ($pa_config, "Cannot obtain exec Network Module $nombre from agent $agent_name", 4);
-		my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
-		my $utimestamp = &UnixDate("today","%s");
-		#my $query_act = "UPDATE tagente_estado SET utimestamp = $utimestamp, timestamp = '$timestamp', last_try = '$timestamp' WHERE id_agente_estado = $id_agente_estado ";
 		my $query_act = "UPDATE tagente_estado SET last_execution_try = $utimestamp WHERE id_agente_modulo = $id_agente_modulo ";
 		my $a_idages = $dbh->prepare($query_act);
 		$a_idages->execute;

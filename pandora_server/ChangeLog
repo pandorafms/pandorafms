@@ -1,6 +1,13 @@
-2007-07-17  Sancho Lerena  <slerena@artica.es>
+2007-07-18  Sancho Lerena  <slerena@artica.es>
 
-	* pandora_server.pl: Small indenting changes.
+	* pandora_network.pl: BugFix: SNMP calls that was causing segfauls was
+ 	because NetSNMP (SNMP) library is not thread safe !. Simple locking
+	mechanism was enough to run code safely !. Main SQL sentence fixed,
+	removed some debug code. 
+
+	* pandora_server.conf: added sample of network_thread token
+
+2007-07-17  Sancho Lerena  <slerena@artica.es>
 
 	* PandoraFMS/DB.pm: Added generic access to database using
 	give_db_value() function.

@@ -44,6 +44,7 @@ my @pending_task : shared;
 my %pending_task_hash : shared;
 my %current_task_hash : shared;
 my $snmp_lock : shared;
+my $icmp_lock : shared;
 
 $ENV{'MIBS'}="ALL";  #Load all available MIBs only once
 $SIG{'TERM'} = 'pandora_shutdown';
@@ -143,7 +144,6 @@ sub pandora_network_consumer ($$) {
 				$current_task_hash{$data_id_agent_module}=1;
 			}
 			# Call network execution process
-#print "[D] EXECUTING $data_id_agent_module MODULE FROM CONSUMER $thread_id \n";
 			exec_network_module ( $pa_config, $data_id_agent_module, $dbh);
 			{
 				lock %current_task_hash;
@@ -203,14 +203,12 @@ sub pandora_network_producer ($) {
 		}
 		$exec_sql1 = $dbh->prepare($query1);
 		$exec_sql1 ->execute;
-#print "[D] Total number of items in this query ".$exec_sql1->rows." \n";	
 		while (@sql_data1 = $exec_sql1->fetchrow_array()) {	
 			$data_id_agente_modulo = $sql_data1[0];
 			$data_flag = $sql_data1[1];
 			# Skip modules already queued
 			if ((!defined($pending_task_hash{$data_id_agente_modulo})) &&
 				(!defined($current_task_hash{$data_id_agente_modulo}))) {
-#print "[D] PRODUCER IS INSERTING MODULE $data_id_agente_modulo \n";
 				if ($data_flag == 1){
 					$dbh->do("UPDATE tagente_modulo SET flag = 0 WHERE id_agente_modulo = $data_id_agente_modulo")
 				}
@@ -224,7 +222,6 @@ sub pandora_network_producer ($) {
 			}
 		}
 		$exec_sql1->finish();
-#print "[D] Items in pending task queue [ ".scalar(@pending_task)." ]\n";
 		sleep($pa_config->{"server_threshold"});
 	} # Main loop
 }
@@ -245,32 +242,47 @@ sub pandora_ping_icmp {
  		return 0;
  	}
  	# Some hosts don't accept ICMP with too small payload. Use 16 Bytes
- 	$p = Net::Ping->new("icmp", $l_timeout, 16);
- 	$result = $p->ping($dest);
+	{
+		lock $icmp_lock;
+ 		$p = Net::Ping->new("icmp", $l_timeout, 16);
+	 	$result = $p->ping($dest);
+	}
 
-	# If first PING get valid and 1, let's exit (faster)
  	if (defined($result)){
+		$p->close();
  		if ($result == 1){
- 			$p->close();
  			return 1;
  		}
  	}
- 	
-	# If not, makes a second one to be sure
-	$result2 = $p->ping($dest);
- 	# Check for valid result
- 	if ((!defined($result)) || (!defined($result2))) {
- 		return 0;
- 	}
- 
- 	# Lets see the result
- 	if (($result == 1) && ($result2 == 1)) {
- 		$p->close();
- 		return 1;
- 	} else {
- 		$p->close();
- 		return 0;
- 	}
+ 	return 0;
+}
+
+##############################################################################
+# pandora_ping_latency (destination, timeout, data, result) - Do a ICMP latency check
+##############################################################################
+sub pandora_ping_latency {
+        my $dest = $_[0];
+        my $l_timeout = $_[1]; 
+	my $module_data = $_[2];
+	my $module_result = $_[3];
+	
+        my $icmp_return;
+        my $icmp_reply;
+        my $icmp_ip;
+	my $nm = Net::Ping->new("icmp", $l_timeout, 32);
+	{
+		lock $icmp_lock;
+		$nm->hires();
+	        ($icmp_return, $icmp_reply, $icmp_ip) = $nm->ping ($dest,$l_timeout);
+	}
+        if ($icmp_return) {
+        	$$module_data = $icmp_reply * 1000; # milliseconds
+                $$module_result = 0; # Successful
+        } else {
+                $$module_result = 1; # Error.
+                $$module_data = 0;
+        }
+        $nm->close();
 }
 
 ##########################################################################
@@ -485,20 +497,7 @@ sub exec_network_module {
 	} elsif ($id_tipo_modulo == 7){ # ICMP (data for latency in ms)
 		# This module only could be executed if executed as root
 		if ($> == 0){
-			my $nm = Net::Ping->new("icmp", $pa_config->{'networktimeout'}, 32);
-			my $icmp_return;
-			my $icmp_reply;
-			my $icmp_ip;
-			$nm->hires();
-			($icmp_return, $icmp_reply, $icmp_ip) = $nm->ping ($ip_target,$pa_config->{"networktimeout"});
-			if ($icmp_return) {
-				$module_data = $icmp_reply * 1000; # milliseconds
-				$module_result = 0; # Successful		
-			} else {
-				$module_result = 1; # Error.
-				$module_data = 0;
-			}
-			$nm->close();
+			pandora_ping_latency ($ip_target, $pa_config->{"networktimeout"}, \$module_data, $module_result);
 		} else {
 			$module_result = 0; # Done but, with zero value
 			$module_data = 0; # This should don't happen

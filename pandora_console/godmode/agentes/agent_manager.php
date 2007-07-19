@@ -64,7 +64,7 @@ echo '<td class="datos"><b>'.$lang_label["agent_name"].'</b></td>
 <td class="datos">
 <input type="text" name="agente" size=30 value="'.$nombre_agente.'">';
 
-if (!isset($_GET["create_agent"])){
+if ((isset($id_agente)) && ($id_agente != "")){
 	echo "
 	<a href='index.php?sec=estado&
 	sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'>

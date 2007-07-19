@@ -1,3 +1,11 @@
+2007-07-19  Sancho Lerena  <slerena@artica.es>
+
+	* pandora_network.pl: Added concurrency locking for ICMP and
+	removed previos method (repeating tests). This sould work fine and
+	faster. ICMP Latency added as independent function. This sould go
+	on a new library for 1.4 or 2.0 version. Removed some debug
+	commented code.
+
 2007-07-18  Sancho Lerena  <slerena@artica.es>
 
 	* pandora_network.pl: BugFix: SNMP calls that was causing segfauls was

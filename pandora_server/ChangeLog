@@ -1,5 +1,7 @@
 2007-07-19  Sancho Lerena  <slerena@artica.es>
 
+	* bin/pandora_DBI_test.pl: This is in /util and shound not be there.
+
 	* pandora_network.pl: Added concurrency locking for ICMP and
 	removed previos method (repeating tests). This sould work fine and
 	faster. ICMP Latency added as independent function. This sould go

@@ -1,3 +1,15 @@
+2007-07-19  Sancho Lerena  <slerena@artica.es>
+
+
+	* godmode/agentes/agent_manager.php: Fixed problems not really
+	fixed in commit 563 (bug 1744913).
+
+	* operation/servers/view_server.php: Fixed Data information are
+	now more accurate (before get incorrect data for data server).
+
+	* operation/agentes/tactical.php: Fixed the same that above and
+	fixed total nomber of modules for data server that was 0 always :(
+
 2007-07-18  Sancho Lerena  <slerena@artica.es>
 
         * include/functions_reporting.php: With last change in server, we

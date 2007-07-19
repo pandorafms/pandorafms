@@ -163,12 +163,12 @@
 	$total_modules = $row1[0];
 
 	// Get total modules defined (data)
-	$sql1='SELECT COUNT(processed_by_server) FROM tagente_estado WHERE processed_by_server LIKE "%_Data" ';
-	if ($result1=mysql_query($sql1)){
-		$row1=mysql_fetch_array($result1);
-		$total_modules_data = $row1[0];
-	} else	
-		$total_modules_data = 0;
+        $sql1='SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo < 5 AND id_tipo_modulo != -1';
+        if ($result1=mysql_query($sql1)){
+                $row1=mysql_fetch_array($result1);
+                $total_modules_data = $row1[0];
+        } else
+                $total_modules_data = 0;
 
 	// Connect DataBase
 	$result=mysql_query($sql);
@@ -205,17 +205,11 @@
 			$version = $row["version"];
 			$modules_server = 0;
 			if (($network_server == 1) OR ($data_server == 1)){
-				if ($network_server == 1){
-					// Get total modules defined for this server (network modules)
-					$sql1='SELECT * FROM tagente where id_server = '.$row["id_server"];
-					$result1=mysql_query($sql1);
-					while ($row1=mysql_fetch_array($result1)){
-						$sql2='SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo > 4 AND id_agente = '.$row1["id_agente"];
-						$result2=mysql_query($sql2);
-						$row2=mysql_fetch_array($result2);
-						$modules_server = $modules_server + $row2[0];
-					}
-				}
+				// Get total modules defined for this server (data modules)
+                                $sql2 = "SELECT COUNT(running_by) FROM tagente_estado WHERE running_by = $id_server";
+                                $result2=mysql_query($sql2);
+                                $row2=mysql_fetch_array($result2);
+                                $modules_server = $row2[0];
 				echo "<tr><td class='$tdcolor'>";
 				echo "<b>$name</b>";
 				echo "<td class='$tdcolor' align='middle'>";

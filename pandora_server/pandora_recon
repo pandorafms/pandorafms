@@ -2,12 +2,11 @@
 # Pandora FMS Recon Server, startup script
 # Sancho Lerena, <slerena@gmail.com>
 # Linux Version (generic)
-# v1.3 (Mar/2007)
+# v1.3 (Jul/2007)
 
 # Configurable path and filenames
 PANDORA_HOME="/usr/share/pandora_server"
 PANDORA_PID="/var/run/pandora/pandora_recon.pid"
-#PANDORA_PID="$PANDORA_HOME/var/pandora_recon.pid"
 
 # Main script
 
@@ -31,8 +30,7 @@ case "$1" in
 	fi
 	
 	cd $PANDORA_HOME/bin
-	nohup ./pandora_recon.pl $PANDORA_HOME &
-	sleep 1
+	./pandora_recon.pl $PANDORA_HOME -D
 	MYPID=`ps aux | grep 'pandora_recon.pl' | grep -v grep | tail -1 | awk '{print $2}'`
 	if [ ! -z "$MYPID" ]
 	then

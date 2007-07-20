@@ -3,12 +3,11 @@
 # Pandora Network Server, startup script
 # Sancho Lerena, <slerena@gmail.com>
 # Linux Version (generico)
-# v1.3 
+# v1.3 (Jul/2007)
 
 # Configurable path and filenames
 PANDORA_HOME="/usr/share/pandora_server"
 PANDORA_NETWORK_PID="/var/run/pandora/pandora_network.pid"
-#PANDORA_NETWORK_PID="$PANDORA_HOME/var/pandora_network.pid"
 
 # Main script
 
@@ -28,14 +27,14 @@ case "$1" in
 	fi
 	
 	cd $PANDORA_HOME/bin
-	nohup ./pandora_network.pl $PANDORA_HOME -D 2> /dev/null
+	./pandora_network.pl $PANDORA_HOME -D
 	MYPID=`ps aux | grep 'pandora_network.pl' | grep -v grep | tail -1 | awk '{print $2}'`
 	if [ ! -z "$MYPID" ]
 	then
 		echo $MYPID > $PANDORA_NETWORK_PID
 		echo "Pandora Network Server is now running with PID $MYPID"
 	else
-		echo "Cannot start Pandora FMS Network Server. Aborted"
+		echo "Cannot start Pandora FMS Network Server. Aborted."
 	fi
 		cd "$OLD_PATH"
         ;;

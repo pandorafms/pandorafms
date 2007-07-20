@@ -7,6 +7,7 @@
 # Configurable path and filenames
 PANDORA_HOME="/usr/share/pandora_server"
 PANDORA_PID="/var/run/pandora/pandora_recon.pid"
+#PANDORA_PID="$PANDORA_HOME/var/pandora_recon.pid"
 
 # Main script
 
@@ -30,7 +31,8 @@ case "$1" in
 	fi
 	
 	cd $PANDORA_HOME/bin
-	./pandora_recon.pl $PANDORA_HOME -D
+	nohup ./pandora_recon.pl $PANDORA_HOME &
+	sleep 1
 	MYPID=`ps aux | grep 'pandora_recon.pl' | grep -v grep | tail -1 | awk '{print $2}'`
 	if [ ! -z "$MYPID" ]
 	then

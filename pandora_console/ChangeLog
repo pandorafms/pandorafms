@@ -1,5 +1,10 @@
-2007-07-19  Sancho Lerena  <slerena@artica.es>
+2007-07-20  Sancho Lerena  <slerena@artica.es>
 
+	* operation/servers/view_server.php: Fixed bug with Data Server lag check
+
+	* operation/agents/tactical.php: Fixed the same bug above.
+
+2007-07-19  Sancho Lerena  <slerena@artica.es>
 
 	* godmode/agentes/agent_manager.php: Fixed problems not really
 	fixed in commit 563 (bug 1744913).

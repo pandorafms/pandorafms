@@ -62,7 +62,7 @@ pandora_audit (\%pa_config, "Pandora FMS Network Daemon starting", "SYSTEM", "Sy
 print " [*] Starting up network threads\n";
 
 if ( $pa_config{"daemon"} eq "1" ) {
-	print " [*] Backgrounding Pandora FMS Network Server process.\n";
+	print " [*] Backgrounding Pandora FMS Network Server process.\n\n";
 	&daemonize;
 }
 
@@ -75,7 +75,7 @@ for (my $ax=0; $ax < $pa_config{'network_threads'}; $ax++){
 # Launch now the network producer thread
 threads->new( \&pandora_network_producer, \%pa_config);
 
-print " [*] All threads loaded and running \n";
+print " [*] All threads loaded and running \n\n";
 # Last thread is the main process (this process)
 
 my $dbhost = $pa_config{'dbhost'};
@@ -269,9 +269,12 @@ sub pandora_ping_latency {
         my $icmp_return;
         my $icmp_reply;
         my $icmp_ip;
-	my $nm = Net::Ping->new("icmp", $l_timeout, 32);
+	my $nm;
+
+	# Locking for use ICMP call safety
 	{
 		lock $icmp_lock;
+		$nm = Net::Ping->new("icmp", $l_timeout, 16);
 		$nm->hires();
 	        ($icmp_return, $icmp_reply, $icmp_ip) = $nm->ping ($dest,$l_timeout);
 	}
@@ -290,7 +293,7 @@ sub pandora_ping_latency {
 #						 tcp_rcv, id_tipo_module, dbh)
 # Makes a call to TCP modules to get a value.
 ##########################################################################
-sub pandora_query_tcp (%$$$$$$$$) {
+sub pandora_query_tcp (%$$$$$$$) {
 	my $pa_config = $_[0];
 	my $tcp_port = $_[1];
 	my $ip_target = $_[2];
@@ -299,7 +302,6 @@ sub pandora_query_tcp (%$$$$$$$$) {
 	my $tcp_send = $_[5];
 	my $tcp_rcv = $_[6];
 	my $id_tipo_modulo = $_[7];
-	my $dbh = $_[8];
 	
 	my $temp; my $temp2;
 	my $tam;
@@ -376,16 +378,16 @@ sub pandora_query_tcp (%$$$$$$$$) {
 # SUB pandora_query_snmp (pa_config, oid, community, target, error, dbh)
 # Makes a call to SNMP modules to get a value,
 ##########################################################################
-sub pandora_query_snmp {
+sub pandora_query_snmp (%$$$$) {
 	my $pa_config = $_[0];
 	my $snmp_oid = $_[1];
 	my $snmp_community =$_[2];
 	my $snmp_target = $_[3];
 	# $_[4] contains error var.
-	my $dbh = $_[5];
+
 	my $output ="";
 	my $SESSION = new SNMP::Session (DestHost =>  $snmp_target,
-									Timeout   => $pa_config->{"networktimeout"},
+					Timeout   => $pa_config->{"networktimeout"},
                                 	Community => $snmp_community,
                                 	Version   => 1);
    	if ((!defined($SESSION))&& ($snmp_community != "") && ($snmp_oid != "")) {
@@ -497,7 +499,7 @@ sub exec_network_module {
 	} elsif ($id_tipo_modulo == 7){ # ICMP (data for latency in ms)
 		# This module only could be executed if executed as root
 		if ($> == 0){
-			pandora_ping_latency ($ip_target, $pa_config->{"networktimeout"}, \$module_data, $module_result);
+			pandora_ping_latency ($ip_target, $pa_config->{"networktimeout"}, \$module_data, \$module_result);
 		} else {
 			$module_result = 0; # Done but, with zero value
 			$module_data = 0; # This should don't happen
@@ -506,11 +508,10 @@ sub exec_network_module {
 	# ------------
 	} elsif (($id_tipo_modulo == 15) || ($id_tipo_modulo == 18) || ($id_tipo_modulo == 16) || ($id_tipo_modulo == 17)) { # SNMP module
 		if ($snmp_oid ne ""){
-			$temp2 = pandora_query_snmp ($pa_config, $snmp_oid, $snmp_community, $ip_target, $error, $dbh);
+			$temp2 = pandora_query_snmp ($pa_config, $snmp_oid, $snmp_community, $ip_target, $error);
 		} else {
 			 $error = 1
 		}
-		# SUB pandora_query_snmp (pa_config, oid, community, target, error, dbh)
 		if ($error == 0) { # A correct SNMP Query
 			$module_result = 0;
 			# SNMP_DATA_PROC
@@ -519,19 +520,16 @@ sub exec_network_module {
 					$temp2 = 0;
 				}
 				$module_data = $temp2;
-				$module_result = 0; # Successful
 			}
 			# SNMP_DATA and SNMP_DATA_INC
 			elsif (($id_tipo_modulo == 15) || ($id_tipo_modulo == 16) ){ 
 				if ($temp2 =~ /[A-Za-z\.\,\-\/\\\(\)\[\]]/){
 					$module_result = 1; # Alphanumeric data, not numeric
 				} else {
-					$module_data = int($temp2);
-					$module_result = 0; # Successful
+					$module_data = $temp2; # Float values are also valid
 				} 
 			} else { # String SNMP
 				$module_data = $temp2;
-				$module_result=0;
 			}
 		} else { # Failed SNMP-GET
 			$module_data = 0;
@@ -541,8 +539,9 @@ sub exec_network_module {
 	# ----------
 	} elsif (($id_tipo_modulo == 8) || ($id_tipo_modulo == 9) || ($id_tipo_modulo == 10) || ($id_tipo_modulo == 11)) { # TCP Module
 		if (($tcp_port < 65536) && ($tcp_port > 0)){ # Port check
-			pandora_query_tcp ($pa_config, $tcp_port, $ip_target, \$module_result, \$module_data, $tcp_send, $tcp_rcv, $id_tipo_modulo, $dbh);
+			pandora_query_tcp ($pa_config, $tcp_port, $ip_target, \$module_result, \$module_data, $tcp_send, $tcp_rcv, $id_tipo_modulo);
 		} else { 
+			# Invalid port, get no check
 			$module_result = 1;
 		}
    	}

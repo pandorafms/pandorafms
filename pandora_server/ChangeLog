@@ -1,3 +1,7 @@
+2007-07-20 Sancho Lerena  <slerena@artica.es>
+
+	* pandora_network.pl: Fixed a typo in pandora_ping_latency function.
+
 2007-07-19  Sancho Lerena  <slerena@artica.es>
 
 	* bin/pandora_DBI_test.pl: This is in /util and shound not be there.

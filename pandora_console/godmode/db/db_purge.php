@@ -94,7 +94,7 @@ if (comprueba_login() == 0)
 				while ($row=mysql_fetch_array($result_t)){
 					echo $lang_label["deleting_records"].dame_nombre_modulo_agentemodulo($row["id_agente_modulo"]);
 					flush();
-					ob_flush();
+					//ob_flush();
 					echo "<br>";
 					$query = "DELETE FROM tagente_datos WHERE id_agente_modulo = ".$row["id_agente_modulo"]." and timestamp < '".$from_date."'";
 					mysql_query($query);

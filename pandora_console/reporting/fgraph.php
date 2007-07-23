@@ -1202,22 +1202,20 @@ function grafico_eventos_grupo ($width = 300, $height = 200 ) {
 }
 
 
-function generic_bar_graph ( $width =380, $height = 300, $data, $legend) {
+function generic_bar_graph ( $width =380, $height = 200, $data, $legend) {
 	include ("../include/config.php");
 	require_once 'Image/Graph.php';
 	require ("../include/languages/language_".$language_code.".php");
 	
-	$ajuste_altura = sizeof($data) * 20;
-    if (sizeof($data) > 10){
-    	$height = $height + $ajuste_altura;
-    }
+    	if (sizeof($data) > 10){
+    		$height = sizeof($legend) * 20;
+    	}
 
 	// create the graph
 	$Graph =& Image_Graph::factory('graph', array($width, $height));
 	// add a TrueType font
 	$Font =& $Graph->addNew('font', $config_fontpath);
-	// set the font size to 11 pixels
-	$Font->setSize(8);
+	$Font->setSize(9);
 	$Graph->setFont($Font);
 	$Graph->add(
 		Image_Graph::vertical (
@@ -1232,7 +1230,7 @@ function generic_bar_graph ( $width =380, $height = 300, $data, $legend) {
 	// Merge data into a dataset object (sancho)
 	$Dataset1 =& Image_Graph::factory('dataset');
 	for ($a=0;$a < sizeof($data); $a++){
-		$Dataset1->addPoint(str_pad($legend[$a],15), $data[$a]);
+		$Dataset1->addPoint(substr($legend[$a],0,22), $data[$a]);
 	}
 	$Plot =& $Plotarea->addNew('bar', $Dataset1);
 	$GridY2 =& $Plotarea->addNew('bar_grid', IMAGE_GRAPH_AXIS_Y_SECONDARY);
@@ -1256,8 +1254,11 @@ function grafico_db_agentes_paquetes ($width = 380, $height = 300) {
 			$sql1="SELECT COUNT(id_agente) FROM tagente_datos WHERE id_agente = ".$row["id_agente"];
 			$result3=mysql_query($sql1);
 			if ($row3=mysql_fetch_array($result3)){
-				$data[]= $row3[0];
-				$legend[] = str_pad(dame_nombre_agente($row[0]),15);
+				$agent_name = dame_nombre_agente($row[0]);
+				if ($agent_name != ""){
+					$data[]= $row3[0];
+					$legend[] = str_pad($agent_name,15);
+				}
 			}
 		}
 	}

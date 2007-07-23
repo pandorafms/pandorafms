@@ -1,3 +1,10 @@
+2007-07-23  Sancho Lerena  <slerena@artica.es>
+
+	* reporting/fgraph.php: Fixed problem in db information graphs due a 
+	problem checking height and getting data on orphan data modules.
+
+	* godmode/db/db_purge.php: Fixed notice warning for ob_fush() call.
+
 2007-07-20  Sancho Lerena  <slerena@artica.es>
 
 	* operation/servers/view_server.php: Fixed bug with Data Server lag check

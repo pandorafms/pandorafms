@@ -151,17 +151,18 @@ function install_step1() {
 	echo "
 	<div id='install_container'>
 	<h1>Pandora FMS installation wizard. Step #1 of 4</h1>
-	<div id='wizard' style='height: 300px;'>
+	<div id='wizard' style='height: 330px;'>
 		<div id='install_box'>
-			<h1>Welcome to Pandora FMS installation Wizard</h1>
+			<h1>Welcome to Pandora FMS 1.3 installation Wizard</h1>
 			<p>This wizard helps you to quick install Pandora FMS console in your system.</p>
-			<p>In three steps checks all dependencies and make your configuration for a quick installation.</p>
+			<p>In four steps checks all dependencies and make your configuration for a quick installation.</p>
 			<p>For more information, please refer to documentation.</p>
 			<i>Pandora FMS Development Team</i>
 		";
 		if (file_exists("include/config.php")){
 			echo "<div class='warn'><b>Warning:</b> You already have a config.php file. Configuration and database would be overwritten if you continued.</div>";
 		}
+		echo "<div class='warn'><b>Warning:</b> This installer will <b>overwrite and destroy</b> your existing Pandora FMS configuration and <b>Database</b>. Before contine, please <b>be sure that you have no valuable Pandora FMS data in your Database.</b><br></div>";
 		echo "
 		</div>
 		<div id='logo_img'>
@@ -173,8 +174,7 @@ function install_step1() {
 		</div>
 	</div>
 	<div id='foot_install'>
-		<i>Pandora FMS is a Free Software project registered at 
-		<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
+		<i>Pandora FMS is a Free Software project registered at <a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
 	</div>
 	</div>";
 }
@@ -241,9 +241,7 @@ function install_step3() {
 			<p>
 			Now, please, complete all details to configure your database and enviroment setup.
 			</p>
-			<p>
-			<b>NOTICE</b> that database will be destroyed if it already exists!
-			</p>
+			<div class='warn'><b>Warning:</b> This installer will <b>overwrite and destroy</b> your existing Pandora FMS configuration and <b>Database</b>. Before contine, please <b>be sure that you have no valuable Pandora FMS data in your Database.</b><br></div>
 			<form method='post' action='install.php?step=4'>
 				<div>DB User with privileges on MySQL</div>
 				<input class='login' type='text' name='user' value='root'>

@@ -67,9 +67,9 @@ if (comprueba_login() == 0) {
 	}
 	
 	echo "<td class='f9' style='padding-left: 10px;'>";
-	echo "<img src='images/b_green.png'> - ".$lang_label["green_light"]."</td>";
+	echo "<img src='images/pixel_green.png' width=40 height=18><br>".$lang_label["green_light"]."</td>";
 	echo "<td class='f9' style='padding-left: 10px;'>";
-	echo "<img src='images/b_red.png'> - ".$lang_label["red_light"]."</td>";
+	echo "<img src='images/pixel_red.png' width=40 height=18><br>".$lang_label["red_light"]."</td>";
 	echo "</td>";
 	echo "</tr>";
 	echo "<tr>";
@@ -179,9 +179,9 @@ if (comprueba_login() == 0) {
 						$data2=mysql_fetch_array($result_gen2);
 						$string=$string."<td class='$tdcolor' align='center' width=20>";
 						if ($data2["datos"] > 0){
-							$string=$string."<img src='images/b_green.png'>";
+							$string=$string."<img src='images/pixel_green.png' width=40 height=18>";
 						} else {
-							$string=$string."<img src='images/b_red.png'>";
+							$string=$string."<img src='images/pixel_red.png' width=40 height=18>";
 						}
 						
 						$string=$string."<td class='".$tdcolor."f9'>";

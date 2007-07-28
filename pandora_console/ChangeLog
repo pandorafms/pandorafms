@@ -1,3 +1,32 @@
+2007-07-28  Sancho Lerena  <slerena@artica.es>
+
+	* include/functions_db.php: Added return_status_layout() function to fix
+	problem in Visual Console, now recursive status of linked layouts works (Xavi)
+
+	* install.php: Add more warnings about Database destroy (Dagget)
+
+	* operation/visual_console/render_view.php: Fixed code to get recursive
+	status of linked layouts (Xavi).
+
+	* operation/agentes/estado_alertas.php: Fixed layout of lights. Much 
+	more visible for operators using large screens (Javier Carranza).
+
+	* operation/agentes/status_monitor.php: Fixed layout of lights. Much
+        more visible for operators using large screens (Javier Carranza).
+
+	* operation/agentes/estado_monitores.php: Fixed layout of lights. Much
+        more visible for operators using large screens (Javier Carranza).
+
+	* operation/agentes/estado_agente.php: Fixed layout of lights. Much
+        more visible for operators using large screens (Javier Carranza).
+
+	* images/pixel_*.png: Added for use in previous fixes.
+
+	* reporting/fgraph.php: Fixed problem with generic_pie without data.
+
+	* godmode/reporting/map_builder.php: Fixed problem (annoy feature) reported 
+	in lists (i cannot remember the name, sorry guy). Now modules expands by default
+
 2007-07-23  Sancho Lerena  <slerena@artica.es>
 
 	* reporting/fgraph.php: Fixed problem in db information graphs due a 

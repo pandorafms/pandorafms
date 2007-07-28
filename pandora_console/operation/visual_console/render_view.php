@@ -76,14 +76,19 @@ while ($row = mysql_fetch_array($res)){
 	$link_layout = $row["id_layout_linked"];
 	$no_link_color = $row["no_link_color"];
 
- 	$id_agent = give_db_value ("id_agente", "tagente_estado", "id_agente_modulo", $id_agentmodule);
-	$id_agent_module_parent = give_db_value ("id_agente_modulo", "tlayout_data", "id", $parent_item);
-	// Item value
-	$status = return_status_agent_module ($id_agentmodule);
-	if ($no_link_color == 1)
-		$status_parent = -1;
-	else
-		$status_parent = return_status_agent_module ($id_agent_module_parent);
+	// Linked to other layout ?? - Only if not module defined
+	if (($link_layout != 0) && ($id_agentmodule == 0)) { 
+		$status = return_status_layout ($link_layout);
+	} else {
+	 	$id_agent = give_db_value ("id_agente", "tagente_estado", "id_agente_modulo", $id_agentmodule);
+		$id_agent_module_parent = give_db_value ("id_agente_modulo", "tlayout_data", "id", $parent_item);
+		// Item value
+		$status = return_status_agent_module ($id_agentmodule);
+		if ($no_link_color == 1)
+			$status_parent = -1;
+		else
+			$status_parent = return_status_agent_module ($id_agent_module_parent);
+	}
 
 	// STATIC IMAGE (type = 0)
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

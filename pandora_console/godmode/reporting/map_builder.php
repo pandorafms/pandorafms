@@ -277,7 +277,7 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_map"]))) {
 		<?PHP
 		echo "<img src='images/wand.png'>";
 		echo "</a></h2>";
-		echo "<div id='map_control' style='display:none'>";
+		echo "<div id='map_control' style='display:all'>";
 
 		// Show combo with agents
 		// ----------------------
@@ -425,8 +425,8 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_map"]))) {
 		echo "<b>".$lang_label["label_color"]."</b>";
 		echo "<td class='datos'>";
 		echo "<select name='label_color' size=1>";
-		echo "<option value='ffffff'>".$lang_label["white"]."</option>";
 		echo "<option value='000000'>".$lang_label["black"]."</option>";
+		echo "<option value='ffffff'>".$lang_label["white"]."</option>";
 		echo "</select>";
 
 		echo "<td class='datos'>";

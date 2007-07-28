@@ -73,21 +73,15 @@ if (comprueba_login() == 0) {
 				echo "<td class='".$tdcolor."'>".$est_modulo."</td>";
 				echo "<td class='".$tdcolor."f9'>"
 				.substr($est_description,0,35)."</td>";
-				// echo "<td class='datos'>".$row3["datos"];
-				if ($agent_down == 1)
-					echo  "<td class='".$tdcolor."' align='center'>
-					<img src='images/b_down.png'></td>";
-				else	
-					if ($est_estado == 1)
-						if ($est_cambio ==1)
-							echo "<td class='".$tdcolor."' align='center'>
-							<img src='images/b_yellow.png'></td>";
-						else
-							echo  "<td class='".$tdcolor."' align='center'>
-							<img src='images/b_red.png'></td>";
+				echo "<td class='".$tdcolor."' align='center'>";
+				if ($est_estado == 1){
+					if ($est_cambio == 1) 
+						echo "<img src='images/pixel_yellow.png' width=40 height=18>";
 					else
-						echo  "<td class='".$tdcolor."' align='center'>
-						<img src='images/b_green.png'></td>";
+						echo "<img src='images/pixel_red.png' width=40 height=18>";
+				} else
+					echo "<img src='images/pixel_green.png' width=40 height=18>";
+
 				echo "<td align='center' class='".$tdcolor."'>";
 				if ($temp_interval != $intervalo)
 					echo $temp_interval."</td>";

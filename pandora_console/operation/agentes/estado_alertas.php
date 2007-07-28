@@ -199,14 +199,11 @@ if (isset($_GET["id_agente"])){
 						sec2=operation/agentes/ver_agente&
 						id_agente=".$id_agente."'>
 						<b>".$nombre_agente."</b>";
+						$string .= "<td class='$tdcolor' align='center'>";
 						if ($data["times_fired"] <> 0)
-							$string=$string."<td class='".$tdcolor."'
-							align='center'>
-							<img src='images/dot_red.png'></td>";
+							$string .= "<img src='images/pixel_red.png' width=40 height=18>";
 						else
-							$string=$string."<td class='".$tdcolor."'
-							align='center'>
-							<img src='images/dot_green.png'></td>";
+							$string .= "<img src='images/pixel_green.png' width=40 height=18>";
 							
 						$string = $string."<td class='".$tdcolor."'>"
 						.dame_nombre_alerta($data["id_alerta"])."</td>";
@@ -233,9 +230,9 @@ if (isset($_GET["id_agente"])){
 		} //end while
 		if (isset($string)) {
 			echo "<td class='f9' style='padding-left: 30px;'>";
-			echo "<img src='images/dot_red.png'> - ".$lang_label["fired"]."</td>";
+			echo "<img src='images/pixel_red.png' width=18 height=18> ".$lang_label["fired"]."</td>";
 			echo "<td class='f9' style='padding-left: 30px;'>";
-			echo "<img src='images/dot_green.png'> - ".$lang_label["not_fired"];
+			echo "<img src='images/pixel_green.png' width=18 height=18> ".$lang_label["not_fired"];
 			echo "</td></tr></table>";
 			echo "<br>";
 			echo "<table cellpadding='4' cellspacing='4' width='700' class='databox'>";

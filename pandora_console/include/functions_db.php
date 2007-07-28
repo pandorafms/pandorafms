@@ -1100,6 +1100,40 @@ function return_status_agent_module ($id_agentmodule = 0){
 }
 
 // ---------------------------------------------------------------
+// Return current status from a given layout
+// ---------------------------------------------------------------
+
+// This get's all data from it contained elements (including recursive calls to another nested 
+// layouts, and makes and AND to be sure that ALL items are OK. If any of them is down, then
+// result is down (0)
+
+function return_status_layout ($id_layout = 0){
+	$temp_status = 0;
+	$temp_total = 0;
+        require("config.php");
+	$sql="SELECT * FROM tlayout_data WHERE id_layout = $id_layout";
+	$res=mysql_query($sql);
+	while ($row = mysql_fetch_array($res)){
+	        $id_agentmodule = $row["id_agente_modulo"];
+	        $type = $row["type"];
+        	$parent_item = $row["parent_item"];
+	        $link_layout = $row["id_layout_linked"];
+		if (($link_layout != 0) && ($id_agentmodule == 0)) {
+                	$temp_status += return_status_layout ($link_layout);
+			$temp_total++;
+	        } else {
+	                $temp_status += return_status_agent_module ($id_agentmodule);
+			$temp_total++;
+		}
+	}
+	if ($temp_status == $temp_total)
+		return 1;
+	else
+		return 0;
+}
+
+
+// ---------------------------------------------------------------
 // Return current value from a given agent module 
 // ---------------------------------------------------------------
 

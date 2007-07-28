@@ -707,7 +707,8 @@ function graphic_agentmodules($id_agent, $width, $height) {
 			}
 		}		
 	}
-
+	$data2 = "";
+	$data_label2 = "";
 	$mayor = 0;
 	$mayor_data =0;
 	for ($a=0;$a < sizeof($data); $a++)

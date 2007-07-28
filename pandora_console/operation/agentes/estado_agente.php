@@ -237,36 +237,64 @@ if (comprueba_login() == 0) {
 				if ($monitor_down <> 0){
 					echo " <b>/</b> <span class='grey'>".$monitor_down."</span>";
 				}
-				echo "</td>
-				<td class='$tdcolor' align='center'>";	
+				echo "</td>";
+				/*
+				if ($numero_monitor <> 0){
+                                        if ($estado_general <> 0){
+                                                if ($estado_cambio == 0){
+                                                        // RED
+                                                        echo "<td class='$tdcolor' align='center' style='background: #ff1d21'>";
+                                                } else {
+                                                        // Yellow
+                                                        echo "<td class='$tdcolor' align='center' style='background: #ffe100'>";
+                                                }
+                                        } elseif ($monitor_ok > 0) {
+                                                // Green
+                                                echo "<td class='$tdcolor' align='center' style='background: #5fff1b'>";
+                                        }
+                                        elseif ($numero_datamodules > 0) {
+                                                // Grey #1
+                                                echo "<td class='$tdcolor' align='center' style='background: #d5d5d5'>";
+                                        }
+                                        elseif ($monitor_down > 0) {
+                                                // Grey - Red
+                                                echo "<td class='$tdcolor' align='center' style='background: #d5b3b3'>";
+                                        }
+                                } else {
+                                        // Blue
+                                        echo "<td class='$tdcolor' align='center' style='background: #4485d5'>";
+                                }
+				*/
+				
+				echo "<td class='$tdcolor' align='center'>";	
 				if ($numero_monitor <> 0){
 					if ($estado_general <> 0){
 						if ($estado_cambio == 0){
-							echo "<img src='images/b_red.png'>";
+							echo "<img src='images/pixel_red.png' width=40 height=18>";
 						} else {
-							echo "<img src='images/b_yellow.png'>";
+							echo "<img src='images/pixel_yellow.png' width=40 height=18>";
 						}
 					} elseif ($monitor_ok > 0) {
-						echo "<img src='images/b_green.png'>";
+						echo "<img src='images/pixel_green.png' width=40 height=18>";
 					}
 					elseif ($numero_datamodules > 0) {
-						echo "<img src='images/b_white.png'>";
+						echo "<img src='images/pixel_gray.png' width=40 height=18>";
 					}
 					elseif ($monitor_down > 0) {
-						echo "<img src='images/b_down.png'>"; 
+						echo "<img src='images/pixel_fucsia.png' width=40 height=18>"; 
 					}
 				} else 
-					echo "<img src='images/b_blue.png'>";
-
+					echo "<img src='images/pixel_blue.png' width=40 height=18>";
+				
 				// checks if an alert was fired recently
 				echo "<td class='$tdcolor' align='center'>";
 				if (give_disabled_group($id_grupo) == 1)
-                                        echo "&nbsp;<img src='images/flag_red.png' alt='".$lang_label["disabled"]."'>";
+					echo "<img src='images/pixel_gray.png' width=20 height=9>";
 				else {
 					if (check_alert_fired($id_agente) == 1) 
-						echo "<img src='images/dot_red.png'>";
+						echo "<img src='images/pixel_red.png' width=20 height=9>";
 					else
-						echo "<img src='images/dot_green.png'>";
+						echo "<img src='images/pixel_green.png' width=20 height=9>";
 				}				
 				echo "</td>";
 				echo "<td class='$tdcolor'>";
@@ -283,7 +311,7 @@ if (comprueba_login() == 0) {
 					}
 					echo "<a href='#' class='info2'>
 					<img src='reporting/fgraph.php?tipo=progress&amp;percent=".
-					$percentil."&amp;height=15&amp;width=80' border='0'>
+					$percentil."&amp;height=18&amp;width=80' border='0'>
 					&nbsp;<span>$ultimo_contacto</span></a>";
 				}
 				

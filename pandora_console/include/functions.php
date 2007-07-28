@@ -416,8 +416,11 @@ function give_parameter_post ( $name, $default = "" ){
 
 function human_time_comparation ( $timestamp ){
 	global $lang_label;
-	$ahora=date("Y/m/d H:i:s");
-	$seconds = strtotime($ahora) - strtotime($timestamp);
+	if ($timestamp != ""){
+		$ahora=date("Y/m/d H:i:s");
+		$seconds = strtotime($ahora) - strtotime($timestamp);
+	} else
+		$seconds = 0;
 
 	if ($seconds < 3600)
 		$render = format_numeric($seconds/60,1)." ".$lang_label["minutes"];

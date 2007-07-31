@@ -64,6 +64,7 @@ our @EXPORT = qw( 	crea_agente_modulo
 			execute_alert
 			give_network_component_profile_name
 			pandora_create_incident 
+			give_db_value
 		);
 
 # Spanish translation note:
@@ -375,10 +376,7 @@ sub pandora_writestate (%$$$$$$$) {
 	
 	# Check alert subroutine
 	eval {
-		# Alerts checks for Agents, only for master servers
-                if ($pa_config->{"pandora_master"} == 1){
-			pandora_calcula_alerta ($pa_config, $timestamp, $nombre_agente, $tipo_modulo, $nombre_modulo, $datos, $dbh);
-		}
+		pandora_calcula_alerta ($pa_config, $timestamp, $nombre_agente, $tipo_modulo, $nombre_modulo, $datos, $dbh);
 	};
 	if ($@) {
 		logger($pa_config, "ERROR: Error in SUB calcula_alerta(). ModuleName: $nombre_modulo ModuleType: $tipo_modulo AgentName: $nombre_agente", 4);
@@ -780,7 +778,7 @@ sub pandora_writedata (%$$$$$$$$$$){
 		$min = "0";
 	}
 	# Obtenemos los identificadores
-	my $id_agente = dame_agente_id($pa_config, $nombre_agente,$dbh);
+	my $id_agente = dame_agente_id ($pa_config, $nombre_agente,$dbh);
 	# Check if exists module and agent_module reference in DB, if not, and learn mode activated, insert module in DB
 	if ($id_agente eq "-1"){
 		goto fin_DB_insert_datos;
@@ -809,7 +807,7 @@ sub pandora_writedata (%$$$$$$$$$$){
 		$min = $data[6];
 		$s_idag->finish();
 	} else { # Id AgenteModulo DOESNT exist, it could need to be created...
-		if (dame_learnagente($pa_config, $id_agente,$dbh) eq "1"){
+		if (dame_learnagente($pa_config, $id_agente,$dbh) eq "1" ){
 			# Try to write a module and agent_module definition for that datablock
 			logger( $pa_config, "Pandora_insertdata will create module (learnmode) for agent $nombre_agente",6);
 			$id_agente_modulo = crea_agente_modulo ($pa_config, $nombre_agente, $tipo_modulo, $nombre_modulo, $max, $min, $descripcion, $dbh);

@@ -1,24 +1,36 @@
 #!/bin/bash
+
 # Startup script for Pandora SNMP Console
 # Sancho Lerena, <slerena@gmail.com>
-# Linux Version(generic)
-# v1.3 (May/2007)
+# Linux Version (generic)
+# v1.3 BUILD 070731 
 
 # Compatible with NetSNMP 5.1 or higher
 
 # Configurable path and filenames
+
 PANDORA_HOME="/usr/share/pandora_server"
-DAEMON_PATH="$PANDORA_HOME/util"
-DAEMON_LOG="$PANDORA_HOME/log/snmptrapd.log"
-DAEMON_PID="$PANDORA_HOME/var/snmptrapd.pid"
-PANDORA_SNMP_PID="$PANDORA_HOME/var/pandora_snmp.pid"
+PANDORA_PID_PATH="/var/run/pandora"
+PANDORA_PID=$PANDORA_PID_PATH/pandora_snmp.pid
 
-# Dont touch this call unless you know are doing.
-DAEMON="$DAEMON_PATH/snmptrapd -t -On -n -a -Lf $DAEMON_LOG -p $DAEMON_PID -F %4y-%02.2m-%l[**]%02.2h:%02.2j:%02.2k[**]%B[**]%N[**]%w[**]%W[**]%q[**]%v\n"
+DAEMON_LOG="/var/log/pandora/pandora_snmptrap.log"
+DAEMON_PID="$PANDORA_PID_PATH/pandora_snmptrapd.pid"
+DAEMON_PATH=/usr/sbin/snmptrapd
 
-if [ ! -f $DAEMON_PATH/snmptrapd ]
+# Dont touch this call unless you know are doing. For different versions of NetSNMP Trap daemon, it's possible you need to change some options
+# Please refer NetSNMP documentation in that case. 
+DAEMON_OPTIONS="-t -On -n -a -Lf $DAEMON_LOG -p $DAEMON_PID -F %4y-%02.2m-%l[**]%02.2h:%02.2j:%02.2k[**]%B[**]%N[**]%w[**]%W[**]%q[**]%v\n"
+DAEMON="$DAEMON_PATH $DAEMON_OPTIONS"
+
+if [ ! -d "$PANDORA_PID_PATH" ]
 then
-        echo "NetSNMP snmptrapd not found at $DAEMON_PATH/snmptrapd, please check setup and read manual"
+        echo "Pandora FMS cannot write it's PID file in $PANDORA_PID_PATH. Please create that directory"
+        exit
+fi
+
+if [ ! -f "$DAEMON_PATH" ]
+then
+        echo "NetSNMP snmptrapd not found at $DAEMON_PATH, please check setup and read manual"
         exit
 fi
 
@@ -26,13 +38,46 @@ case "$1" in
   start)
         if [ -f $DAEMON_PID ]
         then
-                echo "NetSNMP Trap daemon is currently running on this machine. Aborting now..."
+		CHECK_PID=`cat $DAEMON_PID`
+                CHECK_PID_RESULT=`ps aux | grep -v grep | grep "$CHECK_PID" | grep "snmp" | wc -l`
+                if [ $CHECK_PID_RESULT == 1 ]
+                then
+                        echo "NetSNMP Trap daemon is currently running on this machine with PID ($CHECK_PID). Aborting now..."
+                        exit
+                fi
+        fi
+
+	SNMP_WARNING=`ps aux | grep "snmptrapd" | grep -v grep | wc -l`
+	if [ $SNMP_WARNING == 1 ]
+	then
+		echo "WARNING: Seems to be already running a SNMP trap daemon on this system not associated with Pandora FMS"
+		echo "Check manually if their output logfile is been used for Pandora FMS and it's format is correct"
+	fi
+
+	# Launch SNMP TRAP Daemon
+	$DAEMON
+
+	sleep 1
+	if [ ! -f $DAEMON_LOG ]
+        then
+                echo "Problem with NetSNMP Trap daemon (Logfile $DAEMON_LOG not found!). Aborting"
                 exit
         fi
 
-	rm -f $DAEMON_LOG 2> /dev/null
-        $DAEMON 2> /dev/null
-	sleep 1
+	if [ -f $DAEMON_PID ]
+        then
+                CHECK_PID=`cat $DAEMON_PID`
+                CHECK_PID_RESULT=`ps aux | grep -v grep | grep "$CHECK_PID" | grep "snmp" | wc -l`
+                if [ $CHECK_PID_RESULT != 1 ]
+                then
+                        echo "Problem starting NetSNMP Trap daemon on this machine (PID File not correct). Aborting now..."
+                        exit
+                fi
+	else
+		echo "Problem starting NetSNMP Trap daemon on this machine (Cannot get PID File). Aborting now..."
+                exit
+        fi
+
 	RESULT="`cat $DAEMON_LOG | grep 'errno 13' 2> /dev/null`"
 	if [ -z "$RESULT" ]
 	then
@@ -41,19 +86,25 @@ case "$1" in
 		echo "NetSNMP cannot open port (udp/162). Please execute as root user"
 		rm -f $DAEMON_PID 2> /dev/null
 	fi
-
-	if [ -f $PANDORA_SNMP_PID ]
-	then
-		echo "Pandora FMS SNMP Server is currently running on this machine. Aborting now..."
-		exit
-	fi
 	
+	if [ -f $PANDORA_PID ]
+        then
+                CHECK_PID=`cat $PANDORA_PID`
+                CHECK_PID_RESULT=`ps aux | grep -v grep | grep "$CHECK_PID" | grep "pandora_snmpconsole.pl" | wc -l`
+                if [ $CHECK_PID_RESULT == 1 ]
+                then
+                        echo "Pandora FMS SNMP Server is currently running on this machine with PID ($CHECK_PID). Aborting now..."
+                        exit
+                fi
+        fi
+
 	cd $PANDORA_HOME/bin
 	./pandora_snmpconsole.pl $PANDORA_HOME -D
+
 	MYPID=`ps aux | grep 'pandora_snmpconsole.pl' | grep -v grep | tail -1 | awk '{print $2}'`
 	if [ ! -z "$MYPID" ]
 	then
-		echo $MYPID > $PANDORA_SNMP_PID
+		echo $MYPID > $PANDORA_PID
 		echo "Pandora FMS SNMP Server is now running with PID $MYPID"
 	else
 		echo "Cannot start Pandora FMS SNMP Server. Aborted"
@@ -75,15 +126,15 @@ case "$1" in
            echo "NetSNMP Trap daemon is not running, cannot stop it."
         fi
 
-	if [ -f $PANDORA_SNMP_PID ]
+	if [ -f $PANDORA_PID ]
 	then
 	   echo "Stopping Pandora SNMP Console"
-	   PID_2=`cat $PANDORA_SNMP_PID`
+	   PID_2=`cat $PANDORA_PID`
 	   if [ ! -z "`ps -F -p $PID_2 | grep -v grep | grep 'pandora_snmpconsole'`" ]
            then
-	       kill `cat $PANDORA_SNMP_PID` 2> /dev/null > /dev/null
+	       kill `cat $PANDORA_PID` 2> /dev/null > /dev/null
 	   fi
-           rm -f $PANDORA_SNMP_PID
+           rm -f $PANDORA_PID
 	else
 	  echo "Pandora FMS SNMP Console is not running, cannot stop it."
 	fi

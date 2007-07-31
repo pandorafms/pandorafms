@@ -1,3 +1,26 @@
+2007-07-31  Sancho Lerena  <slerena@gmail.com>
+
+        * pandora_snmpconsole: Fixed startup scripts. Many checks added to
+        manage NetSNMP Trap daemon. Now uses /usr/sbin/snmptrapd by
+        default. Solved many problems. This also solve bug #1763691.
+
+        * conf/pandora_server.conf: Added snmp_logfile token (before
+        inside CODE!, UGLY!).
+
+        * bin/pandora_network.pl: I hope Fixed BUG #1763305 with Master Server.
+
+        * bin/PandoraFMS/Config.pm: Support for config token snmp_logfile.
+
+        * bin/PandoraFMS/DB.pm: Fixed (stupid) BUG #1763304 with alerts.
+
+        * bin/pandora_snmpconsole.pl: Removed logfile filename from code
+        (VERY ugly!).
+
+        * pandora_server, pandora_network, pandora_recon: This also solve
+        bug #1763691. Some additional checks included.
+
+        * util/pandora_SNMP_test.pl: Removed, old stuff.
+
 2007-07-20 Sancho Lerena  <slerena@artica.es>
 
 	* pandora_network.pl: Fixed a typo in pandora_ping_latency function.

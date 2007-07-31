@@ -1,3 +1,7 @@
+2007-07-31  Sancho Lerena  <slerena@artica.es>
+
+	* operation/agentes/bulbs.php: Legend now shown updated image.
+
 2007-07-28  Sancho Lerena  <slerena@artica.es>
 
 	* include/functions_db.php: Added return_status_layout() function to fix

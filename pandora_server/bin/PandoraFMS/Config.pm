@@ -34,8 +34,8 @@ our @EXPORT = qw( 	pandora_help_screen
 # There is no global vars, all variables (setup) passed as hash reference
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "1.3-beta2";
-my $pandora_build="PS070717";
+my $pandora_version = "1.3-dev";
+my $pandora_build="PS070731";
 our $VERSION = $pandora_version;
 
 # Setup hash
@@ -138,7 +138,8 @@ sub pandora_loadconfig {
 	$pa_config->{"dataserver"}=0;
 	$pa_config->{"reconserver"}=0;
 	$pa_config->{"servermode"}="";
-	$pa_config->{"network_threads"}=4; # Fixed default
+	$pa_config->{'pandora_snmp_logfile'}="/var/log/pandora/pandora_snmptrap.log";
+	$pa_config->{"network_threads"}=5; # Fixed default
 	$pa_config->{"keepalive"}=60; # 60 Seconds initially for server keepalive
 	$pa_config->{"keepalive_orig"} = $pa_config->{"keepalive"};
 	# Check for UID0
@@ -204,6 +205,7 @@ sub pandora_loadconfig {
 				$pa_config->{"errorlogfile"} = $tbuf;
 			}
 		}
+		elsif ($parametro =~ m/^pandora_snmp_logfile\s(.*)/i) { $pa_config->{'pandora_snmp_logfile'}= $1; }
 		elsif ($parametro =~ m/^dbname\s(.*)/i) { $pa_config->{'dbname'}= $1; }
 		elsif ($parametro =~ m/^dbuser\s(.*)/i) { $pa_config->{'dbuser'}= $1; }
   		elsif ($parametro =~ m/^dbpass\s(.*)/i) { $pa_config->{'dbpass'}= $1; }

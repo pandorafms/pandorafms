@@ -37,7 +37,7 @@ use PandoraFMS::DB;
 # FLUSH in each IO (only for debug, very slooow)
 # ENABLED in DEBUGMODE
 # DISABLE FOR PRODUCTION
-$| = 0;
+$| = 1;
 
 my %pa_config;
 my @pending_task : shared;
@@ -173,7 +173,7 @@ sub pandora_network_producer ($) {
 	my $exec_sql1;
 	
 	while (1) {
-		if ($pa_config->{"pandora_master"} != 666) {
+		if ($pa_config->{"pandora_master"} != 1) {
 			# Query for normal server, not MASTER server
 			$query1 = "SELECT
 				tagente_modulo.id_agente_modulo,
@@ -198,8 +198,23 @@ sub pandora_network_producer ($) {
 			ORDER BY
 					last_execution_try ASC  ";
 		} else {
-			# Query for master server
-			# PENDING TODO !
+			# Query for MASTER SERVER !
+			$query1 = "SELECT
+					DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.flag
+				FROM
+					tagente, tagente_modulo, tagente_estado, tserver
+				WHERE
+				( 	(tagente.id_server = $server_id AND tagente_modulo.id_agente = tagente.id_agente) OR
+					(tagente.id_server != $server_id AND tagente_modulo.id_agente = tagente.id_agente AND tagente.id_server = tserver.id_server AND tserver.status = 0)
+				) AND
+					tagente.disabled = 0
+				AND
+					tagente_modulo.id_tipo_modulo > 4
+				AND
+					tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+				AND
+					((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP() OR tagente_modulo.flag = 1 )
+				ORDER BY last_execution_try ASC";
 		}
 		$exec_sql1 = $dbh->prepare($query1);
 		$exec_sql1 ->execute;
@@ -221,6 +236,7 @@ sub pandora_network_producer ($) {
 				}
 			}
 		}
+		#logger ($pa_config, "Items in Network Pending Queue: ".scalar(@pending_task),  5);
 		$exec_sql1->finish();
 		sleep($pa_config->{"server_threshold"});
 	} # Main loop
@@ -325,7 +341,7 @@ sub pandora_query_tcp (%$$$$$$$) {
 		if (($tcp_rcv ne "") || ($id_tipo_modulo == 10) || ($id_tipo_modulo ==8) || ($id_tipo_modulo == 11)) {
 			# Receive data, non-blocking !!!! (VERY IMPORTANT!)
 			$temp2 = "";
-			for ($tam=0; $tam<($pa_config->{'networktimeout'}/2); $tam++){
+			for ($tam=0; $tam<($pa_config->{'networktimeout'}); $tam++){
 				$handle->recv($temp,16000,0x40);
 				$temp2 = $temp2.$temp;
 				if ($temp ne ""){
@@ -452,7 +468,9 @@ sub exec_network_module {
 	my $id_module_group;
 	my $flag;
 	my @sql_data;
-
+	if ((!defined($id_agente_modulo)) || ($id_agente_modulo eq "")){
+		return;
+	}
 	my $query_sql = "SELECT * FROM tagente_modulo WHERE id_agente_modulo = $id_agente_modulo";
 	my $exec_sql = $dbh->prepare($query_sql);
 	$exec_sql ->execute;
@@ -579,9 +597,13 @@ sub exec_network_module {
 		pandora_lastagentcontact ($pa_config, $timestamp, $agent_name,  $pa_config->{'servername'}.$pa_config->{"servermode"}, $pa_config->{'version'}, -1, $dbh);
 	} else { 
 		# $module_result != 0)
+		
+		if ($module_interval == 0){
+                	$module_interval = dame_intervalo ($pa_config, $id_agente, $dbh);
+        	}
 		# Modules who cannot connect or something go bad, update last_execution_try field
 		logger ($pa_config, "Cannot obtain exec Network Module $nombre from agent $agent_name", 4);
-		my $query_act = "UPDATE tagente_estado SET last_execution_try = $utimestamp WHERE id_agente_modulo = $id_agente_modulo ";
+		my $query_act = "UPDATE tagente_estado SET current_interval = $module_interval,  last_execution_try = $utimestamp WHERE id_agente_modulo = $id_agente_modulo ";
 		my $a_idages = $dbh->prepare($query_act);
 		$a_idages->execute;
 		$a_idages->finish();

@@ -1,15 +1,22 @@
 #!/bin/bash
 
-# Pandora Network Server, startup script
+# Pandora FMS Network Server, startup script
 # Sancho Lerena, <slerena@gmail.com>
-# Linux Version (generico)
-# v1.3 (Jul/2007)
+# Linux Version (generic)
+# v1.3 Build 070731
 
 # Configurable path and filenames
 PANDORA_HOME="/usr/share/pandora_server"
-PANDORA_NETWORK_PID="/var/run/pandora/pandora_network.pid"
+PANDORA_PID_PATH="/var/run/pandora"
+PANDORA_PID=$PANDORA_PID_PATH/pandora_network.pid
 
 # Main script
+
+if [ ! -d "$PANDORA_PID_PATH" ]
+then
+	echo "Pandora FMS cannot write it's PID file in $PANDORA_PID_PATH. Please create that directory"
+	exit
+fi
 
 if [ ! -f $PANDORA_HOME/bin/pandora_network.pl ]
 then
@@ -20,34 +27,40 @@ fi
 case "$1" in
   start)
 	OLD_PATH="`pwd`"
-	if [ -f $PANDORA_NETWORK_PID ]
+	if [ -f $PANDORA_PID ]
 	then
-		echo "Pandora FMS Network Server is currently running on this machine. Aborting now..."
-		exit
+		CHECK_PID=`cat $PANDORA_PID`
+		CHECK_PID_RESULT=`ps aux | grep -v grep | grep "$CHECK_PID" | grep "pandora_network" | wc -l`
+		if [ $CHECK_PID_RESULT == 1 ]
+		then
+			echo "Pandora FMS Network Server is currently running on this machine with PID ($CHECK_PID). Aborting now..."
+			exit
+		fi
 	fi
 	
 	cd $PANDORA_HOME/bin
 	./pandora_network.pl $PANDORA_HOME -D
+
 	MYPID=`ps aux | grep 'pandora_network.pl' | grep -v grep | tail -1 | awk '{print $2}'`
 	if [ ! -z "$MYPID" ]
 	then
-		echo $MYPID > $PANDORA_NETWORK_PID
+		echo $MYPID > $PANDORA_PID
 		echo "Pandora Network Server is now running with PID $MYPID"
 	else
 		echo "Cannot start Pandora FMS Network Server. Aborted."
 	fi
-		cd "$OLD_PATH"
+	cd "$OLD_PATH"
         ;;
   stop)
-	if [ -f $PANDORA_NETWORK_PID ]
+	if [ -f $PANDORA_PID ]
 	then
 	   echo "Stopping Pandora FMS Network Server"
-	   PID_2=`cat $PANDORA_NETWORK_PID`
-	   if [ ! -z "`ps -F -p $PID_2 | grep -v grep | grep 'pandora_network'`" ]
+	   PID_2=`cat $PANDORA_PID`
+	   if [ ! -z "`ps -F -p $PID_2 | grep -v grep | grep 'pandora_network' `" ]
            then
-	       kill `cat $PANDORA_NETWORK_PID` 2> /dev/null > /dev/null
+	       kill `cat $PANDORA_PID` 2> /dev/null > /dev/null
 	   fi
-           rm -f $PANDORA_NETWORK_PID
+           rm -f $PANDORA_PID
 	else
 	  echo "Pandora FMS Network Server is not running, cannot stop it."
 	fi

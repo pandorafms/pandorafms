@@ -1,5 +1,7 @@
 2007-07-31  Sancho Lerena  <slerena@gmail.com>
 
+        * util/snmptrapd: Deleted binary.
+
         * pandora_snmpconsole: Fixed startup scripts. Many checks added to
         manage NetSNMP Trap daemon. Now uses /usr/sbin/snmptrapd by
         default. Solved many problems. This also solve bug #1763691.

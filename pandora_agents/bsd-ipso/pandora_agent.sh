@@ -2,12 +2,13 @@
 # **********************************************************************
 # Agente Generico Pandora
 # FreeBSD/IPSO version
-# (c) Sancho Lerena 2003-2005, slerena@gmail.com
+# (c) Sancho Lerena 2003-2007, slerena@gmail.com
 # Este codigo esta licenciado bajo la licencia GPL 2.0
 # This code is licenced under GPL 2.0 licence.
 # **********************************************************************
 
-AGENT_VERSION=1.2a
+AGENT_VERSION=1.3
+BUILD_VERSION=070801
 
 OLDIFS=$IFS
 # Stupid trick to use IFS in some unix ... doesnt work linux standard $'\n' :-?
@@ -40,13 +41,21 @@ fi
 echo "$TIMESTAMP - Reading general config parameters from .conf file" >> $PANDORA_HOME/pandora.log
 
 # Default values
-CHECKSUM_MODE=1
+CHECKSUM_MODE=0
 DEBUG_MODE=0
+PANDORA_HARMLESS=1
+INTERVAL=300
+
 
 IFS=$NEWIFS
 for a in `cat $PANDORA_HOME/pandora_agent.conf | grep -v "^#" | grep -v "^module" `
 do
-        a=`echo $a | tr -s " " " "`
+	if [ "$PANDORA_HARMLESS" = "1" ]
+	then
+		sleep 1
+	fi
+
+	a=`echo $a | tr -s " " " "`
         # Get general configuration parameters from config file
         if [ ! -z "`echo $a | grep '^server_ip'`" ]
         then
@@ -73,15 +82,20 @@ do
                 NOMBRE_HOST=`echo $a | awk '{ print $2 }' `
                 echo "$TIMESTAMP - [SETUP] - Agent name is $NOMBRE_HOST " >> $PANDORA_HOME/pandora.log
         fi
- if [ ! -z "`echo $a | grep '^debug'`" ]
+	if [ ! -z "`echo $a | grep '^debug'`" ]
                 then
                 DEBUG_MODE=`echo $a | awk '{ print $2 }' `
                 echo "$TIMESTAMP - [SETUP] - Debug mode is $DEBUG_MODE " >> $PANDORA_HOME/pandora.log
         fi
- if [ ! -z "`echo $a | grep '^checksum'`" ]
+	if [ ! -z "`echo $a | grep '^checksum'`" ]
                 then
                 CHECKSUM_MODE=`echo $a | awk '{ print $2 }' `
                 echo "$TIMESTAMP - [SETUP] - Checksum mode is $CHECKSUM_MODE " >> $PANDORA_HOME/pandora.log
+        fi
+	if [ ! -z "`echo $a | grep -e '^harmless_mode'`" ]
+        then
+                PANDORA_HARMLESS=`echo $a | awk '{ print $2 }' `
+                echo "$TIMESTAMP - [SETUP] - Pandora Harmless mode is $PANDORA_HARMLESS" >> $PANDORA_HOME/pandora.log
         fi
 done
 
@@ -110,13 +124,18 @@ do
 
         # Makes data packet
         echo "<agent_data os_name='$OS_NAME' os_version='$OS_VERSION' interval='$INTERVAL' version='$AGENT_VERSION' timestamp='$TIMESTAMP' agent_name='$NOMBRE_HOST'>" > $DATA
- if [ $DEBUG_MODE = 1 ]
-  then 
-    echo "$TIMESTAMP - Reading module adquisition data from .conf file" >> $PANDORA_HOME/pandora.log
-  fi
+	if [ $DEBUG_MODE = 1 ]
+	then 
+		echo "$TIMESTAMP - Reading module adquisition data from .conf file" >> $PANDORA_HOME/pandora.log
+	fi
 
         for a in `cat $PANDORA_HOME/pandora_agent.conf | grep -v "^#" | grep "^module" `
         do
+		if [ "$PANDORA_HARMLESS" = "1" ]
+        	then
+               		sleep 1
+        	fi
+
                 a=`echo $a | tr -s " " " "`
                 if [ ! -z "`echo $a | grep '^module_exec'`" ]
                 then
@@ -136,17 +155,21 @@ do
                    echo "<module>" >> $DATA
                 fi
 
-  if [ ! -z "`echo $a | grep '^module_max' `" ]
-                then
-                   max=`echo $a | awk '{ print $2 }' `
-                   echo "<max>$max</max>" >> $DATA
-                fi
+		if [ "$PANDORA_HARMLESS" = "0" ]
+		then
+  			if [ ! -z "`echo $a | grep '^module_max' `" ]
+	                then
+        	           max=`echo $a | awk '{ print $2 }' `
+               		    echo "<max>$max</max>" >> $DATA
+                	fi
 
-                if [ ! -z "`echo $a | grep '^module_min'`" ]
-                then
-                   min=`echo $a | awk '{ print $2 }' `
-                   echo "<min>$min</min>" >> $DATA
-                fi
+	                if [ ! -z "`echo $a | grep '^module_min'`" ]
+        	        then
+       		           min=`echo $a | awk '{ print $2 }' `
+               	   	   echo "<min>$min</min>" >> $DATA
+                	fi
+		fi
+
                 if [ ! -z "`echo $a | grep '^module_description'`" ]
                 then
                    desc=`echo $a | awk '{ print substr($0, 20)}' `
@@ -174,20 +197,20 @@ do
         echo "</agent_data>" >> $DATA
         # Calculate Checksum and prepare MD5 file
         if [ $CHECKSUM_MODE = 0 ]
- then
-         CHECKSUM_DATA="No valid checksum"
- else
-  CHECKSUM_DATA=`cat $DATA | /sbin/md5 `
- fi
+ 	then
+        	CHECKSUM_DATA="No valid checksum"
+ 	else
+  		CHECKSUM_DATA=`cat $DATA | /sbin/md5 `
+ 	fi
         echo $CHECKSUM_DATA $DATA> $CHECKSUM
   
- # Send packets to server and detele it
-  scp -B $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH > /dev/null 2> /dev/null 
+	# Send packets to server and detele it
+ 	scp -B $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH > /dev/null 2> /dev/null 
   
  if [ $DEBUG_MODE = 1 ]
   then
          echo "$TIMESTAMP - Copying $PANDORA_FILES to $SERVER_IP:$SERVER_PATH" >> $PANDORA_HOME/pandora.log
-  exit
+  	exit
   fi
   
         rm -f $PANDORA_FILES> /dev/null

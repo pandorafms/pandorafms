@@ -172,6 +172,7 @@ div#page {
 }
 div#main {
 	width: 780px;
+	min-height: 500px;
 	float: right;
 	padding-left: 0px;
 	padding-top: 0px;

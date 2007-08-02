@@ -32,7 +32,7 @@ my $dirname="";
 my $dbname = 'pandora';
 my $dbhost ='';
 my $dbuser ='';
-my $verbosity ='';
+my $verbosity =0;
 my $dbpass='';
 my $server_threshold='';
 my $log_file="";
@@ -249,8 +249,9 @@ sub pandora_compactdb {
 ##############################################################################
 
 sub pandora_init {
-	printf "\nPandora DB  $version, <slerena\@gmail.com>\n";
-	printf "This program is GPL Licensed, please use it freely\n";
+	print "\nPandora FMS DB Tool $version Copyright (c) 2004-2007 ArticaST\n";
+	print "This program is Free Software, licensed under the terms of GPL License v2\n";
+	print "You can download latest versions and documentation at http://pandora.sourceforge.net\n";
 
 	# Load config file from command line
 	if ($#ARGV == -1 ){
@@ -268,6 +269,7 @@ sub pandora_init {
 			elsif ($parametro =~ m/--help\z/i ) { help_screen();  }
 		elsif ($parametro =~ m/-v\z/i) { $verbosity=5; }
 		elsif ($parametro =~ m/-d\z/i) { $verbosity=10; }
+		elsif ($parametro =~ m/-d\z/i) { $verbosity=0; }
 		else { ($pandora_path = $parametro); }
 	}
 	if ($pandora_path eq ""){
@@ -323,7 +325,6 @@ sub pandora_loadconfig {
   		elsif ($parametro =~ m/dbname\z/) { $dbname = $args[$ax+1]; $ax++; }
   		elsif ($parametro =~ m/dbhost\z/) { $dbhost  = $args[$ax+1]; $ax++; } 
   		elsif ($parametro =~ m/log_file\z/) { $log_file = $args[$ax+1]; $ax++; } 
-  		elsif ($parametro =~ m/verbosity\z/) { $verbosity = $args[$ax+1]; $ax++; } 
   		elsif ($parametro =~ m/server_threshold\z/) { $server_threshold = $args[$ax+1]; $ax++; } 
  	}
  
@@ -387,6 +388,9 @@ sub pandora_loadconfig {
 
 sub help_screen{
 	printf "\n\nSintax: \n pandora_db.pl  fullpathname_to_pandora_server.conf \n\n";
+	print "             -d   Debug output (very verbose) \n";
+	print "             -v   Verbose output \n";
+	print "             -q   Quiet output \n";
 	exit;
 }
 

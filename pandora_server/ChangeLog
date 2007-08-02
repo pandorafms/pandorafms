@@ -1,3 +1,11 @@
+2007-08-02  Sancho Lerena  <slerena@gmail.com>
+
+	* lib: Linked to bin/PandoraFMS, for use in Makefile.PL
+
+	* Makefile.PL: Perl standard interface for make (to install)
+
+	* bin/pandora_db.pl: Some small fixes and information strings updated.
+
 2007-07-31  Sancho Lerena  <slerena@gmail.com>
 
         * util/snmptrapd: Deleted binary.

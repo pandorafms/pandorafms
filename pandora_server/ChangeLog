@@ -1,5 +1,15 @@
 2007-08-02  Sancho Lerena  <slerena@gmail.com>
 
+	* Makefile.PL: Missing dep updated and .pl extensions purged.
+
+	* All (4) startup scripts: Updated startup script.
+
+	* lib/PandoraFMS/Config.pm: Now servers dont get "Homedir" from command line, get 
+	config file directly
+
+	* bin/pandora_recon, bin/pandora_server, bin/pandora_network, bin/pandora_snmpconsole:
+	Renamed (deleted .pl).
+
 	* Final changes (link is now over bin, and lib is real dir, for work
 	with Makefile.PL).
 

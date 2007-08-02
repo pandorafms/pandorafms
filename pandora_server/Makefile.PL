@@ -6,6 +6,7 @@ WriteMakefile(
 	VERSION_FROM    => 'bin/PandoraFMS/Config.pm',
 	AUTHOR 		=> 'Sancho Lerena <slerena@gmail.com>',
 	PREREQ_PM 	=> {
+		NetAddr::IP => 0,
 		DBI => 0,
                 threads::shared => 0,
                 IO::Socket => 0,
@@ -19,7 +20,7 @@ WriteMakefile(
 		SNMP => 0
     },
     EXE_FILES 		=>
-[ 'bin/pandora_server.pl', 'bin/pandora_network.pl', 'bin/pandora_recon.pl', 'bin/pandora_snmpconsole.pl'],
+[ 'bin/pandora_server', 'bin/pandora_network', 'bin/pandora_recon', 'bin/pandora_snmpconsole'],
     PMLIBDIRS  		=> [ 'lib' ],
     'dist'		=> { 'TAR' => 'tar', 'TARFLAGS' => 'cvfz', 'SUFFIX'
 => '.gz', 'COMPRESS' => 'gzip'}

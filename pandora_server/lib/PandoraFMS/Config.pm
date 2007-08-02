@@ -48,7 +48,7 @@ my %pa_config;
 ##########################################################################
 
 sub help_screen {
-	printf "\n\nSyntax: \n  pandora_xxxxxxx.pl <fullpathname to PANDORA HOME directory> [ options ] \n\n";
+	printf "\n\nSyntax: \n  pandora_server < fullpathname to pandora server configuration file > [ options ] \n\n";
 	printf "Following options are optional : \n";
 	printf "            -v  :  Verbose mode activated, give more information in logfile \n";
 	printf "            -d  :  Debug mode activated, give extensive information in logfile \n";
@@ -75,7 +75,7 @@ sub pandora_init {
 
 	# Load config file from command line
 	if ($#ARGV == -1 ){
-		print "I Need at least one parameter: Complete path to Pandora FMS Server HOME Directory. \n";
+		print "I Need at least one parameter: Complete path to Pandora FMS Server configuration file. \n";
 		help_screen;
 		exit;
 	}
@@ -96,7 +96,7 @@ sub pandora_init {
 		else { ($pa_config->{"pandora_path"} = $parametro); }
 	}
 	if ($pa_config->{"pandora_path"} eq ""){
-		print "I Need at least one parameter: Complete path to Pandora FMS HOME Directory. \n";
+		print "I Need at least one parameter: Complete path to Pandora FMS configuration file. \n";
 		exit;
 	}
 }
@@ -108,7 +108,7 @@ sub pandora_init {
 sub pandora_loadconfig {
 	my $pa_config = $_[0];
 	my $opmode = $_[1]; # 0 dataserver, 1 network server, 2 snmp console, 3 recon server
-	my $archivo_cfg = $pa_config->{'pandora_path'}."/conf/pandora_server.conf";
+	my $archivo_cfg = $pa_config->{'pandora_path'};
 	my $buffer_line;
 	my @command_line;
 	my $tbuf;
@@ -121,14 +121,14 @@ sub pandora_loadconfig {
 	$pa_config->{"dbhost"} = "localhost";
 	$pa_config->{"dbname"} = "pandora";
 	$pa_config->{"basepath"}=$pa_config->{'pandora_path'}; # Compatibility with Pandora 1.1
-	$pa_config->{"incomingdir"}=$pa_config->{'pandora_path'}."/data_in";
+	$pa_config->{"incomingdir"}="/var/spool/pandor/data_in";
 	$pa_config->{"server_threshold"}=30;
 	$pa_config->{"alert_threshold"}=60;
-	$pa_config->{"logfile"}=$pa_config->{'pandora_path'}."/log/pandora_server.log";
-	$pa_config->{"errorlogfile"}=$pa_config->{'pandora_path'}."/log/pandora_server.error";
+	$pa_config->{"logfile"}="/var/log/pandora_server.log";
+	$pa_config->{"errorlogfile"}="/var/log/pandora_server.error";
 	$pa_config->{"networktimeout"}=15; 	# By default, not in config file yet
 	$pa_config->{"pandora_master"}=1; 	# on by default
-	$pa_config->{"pandora_check"}=1; 	# on by default
+	$pa_config->{"pandora_check"}=0; 	# on by default
 	$pa_config->{"snmpconsole"}=0; 	# off by default
 	$pa_config->{"version"}=$pandora_version;
 	$pa_config->{"build"}=$pandora_build;
@@ -138,7 +138,7 @@ sub pandora_loadconfig {
 	$pa_config->{"dataserver"}=0;
 	$pa_config->{"reconserver"}=0;
 	$pa_config->{"servermode"}="";
-	$pa_config->{'pandora_snmp_logfile'}="/var/log/pandora/pandora_snmptrap.log";
+	$pa_config->{'pandora_snmp_logfile'}="/var/log/pandora_snmptrap.log";
 	$pa_config->{"network_threads"}=5; # Fixed default
 	$pa_config->{"keepalive"}=60; # 60 Seconds initially for server keepalive
 	$pa_config->{"keepalive_orig"} = $pa_config->{"keepalive"};

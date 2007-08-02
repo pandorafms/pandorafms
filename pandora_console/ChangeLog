@@ -1,3 +1,7 @@
+2007-08-02  Sancho Lerena <slerena@artica.es>
+
+	* Fixed bug #1757084 for Data Server lag check.
+
 2007-07-31  Sancho Lerena  <slerena@artica.es>
 
 	* operation/agentes/bulbs.php: Legend now shown updated image.

@@ -161,7 +161,10 @@ if (comprueba_login() == 0) {
 				if ($network_server == 1)
 					$sql1 = "SELECT MIN(last_execution_try),current_interval FROM tagente_estado WHERE last_execution_try > 0 AND running_by=$id_server GROUP BY current_interval ORDER BY 1";
 				if ($data_server == 1)
-					$sql1 = "SELECT MAX(last_execution_try), current_interval, id_agente FROM tagente_estado WHERE last_execution_try > 0 AND running_by=$id_server GROUP BY id_agente ORDER BY 1 ASC";
+					// This only checks for agent with a last_execution_try of at 
+					// maximun: ten times it's interval.... if is bigger, it probably 
+					// will be because an agent down
+					$sql1 = "SELECT MAX(last_execution_try), current_interval, id_agente FROM tagente_estado WHERE last_execution_try > 0 AND (tagente_estado.last_execution_try + (tagente_estado.current_interval *10) > UNIX_TIMESTAMP()) AND running_by=$id_server GROUP BY id_agente ORDER BY 1 ASC LIMIT 1";
 				$nowtime = time();
 				$maxlag=0;
 				if ($result1=mysql_query($sql1))

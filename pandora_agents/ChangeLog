@@ -1,3 +1,7 @@
+2007-08-02  Sancho Lerena <slerena@artica.es> 
+
+	* bdf_ipso/pandora_agent.conf: Some modules updated.
+
 2007-08-01  Sancho Lerena <slerena@artica.es>
 
 	* bsd_ipso/*: Some fixes. Added harm_mode to avoid be unpolite

@@ -119,6 +119,7 @@ sec2=godmode/groups/group_list">
                 $id_grupo2 = $row["id_grupo"];
                 echo "<option value=$id_grupo2>" . $nombre;
         }
+	echo "<option value=0>None";
         echo '</select>';
 
 	// Disabled

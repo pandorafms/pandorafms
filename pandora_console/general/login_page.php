@@ -17,6 +17,18 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+$addr = "";
+if (isset($_GET['sec'])){
+	$addr = 'http://' . $_SERVER['SERVER_NAME']; // TODO: check https
+
+	if ($_SERVER['SERVER_PORT'] != 80)
+		$addr .= ":" . $_SERVER['SERVER_PORT'];
+
+	$addr .= $_SERVER['REQUEST_URI'];
+	
+	$addr = urlencode($addr);
+}
+
 ?>
 <div class='databox' id='login'>
 	<h1 id='log'><?php echo $lang_label['welcome_title']; ?></h1>
@@ -30,7 +42,7 @@
 		<td rowspan='3' width='5'>
 		<td class='f9b'>
 			Login <br>
-			<input class="login" type="text" name="nick" value="">
+			<input class="login" type="text" name="nick" id="nick" value="">
 		</td></tr>
 		<tr><td class='f9b'>
 			Password <br>
@@ -40,8 +52,16 @@
 			<input type="submit" class="sub next" value="Login">
 		</td></tr>
 		</table>
+		
+		<?php if (strlen($addr) > 0) { ?>
+			<input type="hidden" name="redirect" value="<?php echo $addr; ?>">
+		<?php } ?>
 		</form>
 	</div>
 	<div id="ip"><?php echo 'IP: <b class="f10">'.$REMOTE_ADDR.'</b>'; ?></div>
 
 </div>
+
+<script type="text/javascript">
+	document.getElementById('nick').focus();
+</script>

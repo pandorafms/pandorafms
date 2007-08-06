@@ -169,21 +169,29 @@ if (comprueba_login() == 0) {
 				} else
 					echo substr(salida_limpia($row3["datos"]),0,12);
 
+				if (($row3["id_tipo_modulo"] == 2)
+					OR ($row3["id_tipo_modulo"] == 6)
+					OR ($row3["id_tipo_modulo"] == 18)
+					OR ($row3["id_tipo_modulo"] == 9))
+						$graph_type = "boolean";
+				else
+					$graph_type = "sparse";
+					
 				$handle = "stat".$nombre_tipo_modulo."_".$row3["id_agente_modulo"];
 				$url = 'reporting/procesos.php?agente='.$row3["id_agente_modulo"];
 				$win_handle=dechex(crc32($row3["id_agente_modulo"].$row3["nombre"]));
 				echo "<td class=".$tdcolor." width='78'>";
 				$graph_label = output_clean_strict ($row3["nombre"]);
 				
-				echo "<a href='javascript:winopeng(\"reporting/stat_win.php?period=2419200&id=".$row3["id_agente_modulo"]."&label=".$graph_label."refresh=180000\", \"month_".$win_handle."\")'><img src='images/grafica_m.png' border=0></a>&nbsp;";
+				echo "<a href='javascript:winopeng(\"reporting/stat_win.php?type=$graph_type&period=2419200&id=".$row3["id_agente_modulo"]."&label=".$graph_label."refresh=180000\", \"month_".$win_handle."\")'><img src='images/grafica_m.png' border=0></a>&nbsp;";
 				
-				$link ="winopeng('reporting/stat_win.php?period=604800&id=".$row3["id_agente_modulo"]."&label=".$graph_label."&refresh=6000','week_".$win_handle."')";
+				$link ="winopeng('reporting/stat_win.php?type=$graph_type&period=604800&id=".$row3["id_agente_modulo"]."&label=".$graph_label."&refresh=6000','week_".$win_handle."')";
 				echo '<a href="javascript:'.$link.'"><img src="images/grafica_w.png" border=0></a>&nbsp;';
 				
-				$link ="winopeng('reporting/stat_win.php?period=86400&id=".$row3["id_agente_modulo"]."&label=".$graph_label."&refresh=600','day_".$win_handle."')";
+				$link ="winopeng('reporting/stat_win.php?type=$graph_type&period=86400&id=".$row3["id_agente_modulo"]."&label=".$graph_label."&refresh=600','day_".$win_handle."')";
 				echo '<a href="javascript:'.$link.'"><img src="images/grafica_d.png" border=0></a>&nbsp;';
 
-				$link ="winopeng('reporting/stat_win.php?period=3600&id=".$row3["id_agente_modulo"]."&label=".$graph_label."&refresh=60','hour_".$win_handle."')";
+				$link ="winopeng('reporting/stat_win.php?type=$graph_type&period=3600&id=".$row3["id_agente_modulo"]."&label=".$graph_label."&refresh=60','hour_".$win_handle."')";
 				echo '<a href="javascript:'.$link.'"><img src="images/grafica_h.png" border=0></a>';
 			}
 			// STRING DATA

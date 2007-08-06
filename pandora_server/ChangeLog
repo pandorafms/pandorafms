@@ -1,3 +1,8 @@
+2007-08-06  Sancho Lerena  <slerena@gmail.com>
+
+	* DB.pm: Alert time support uses TIME format instead numeric (changes requested
+	by esanchezm).
+
 2007-08-02  Sancho Lerena  <slerena@gmail.com>
 
 	* Makefile.PL: Missing dep updated and .pl extensions purged.

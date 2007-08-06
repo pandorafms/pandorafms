@@ -79,10 +79,20 @@ if ( (isset ($_GET["refr"])) || (isset($_POST["refr"])) ){
 		$intervalo = entrada_limpia ($_POST["refr"]);
 	if ($intervalo > 0){
 		// Agent selection filters and refresh
-		$query = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] . '&refr=' . $intervalo;
+		$query = 'http://' . $_SERVER['SERVER_NAME']; // TODO: Check for https
+
+		if ($_SERVER['SERVER_PORT'] != 80)
+			$query .= ":" . $_SERVER['SERVER_PORT'];
+		
+		$query .= $_SERVER['REQUEST_URI'];
+		if (isset ($_POST["refr"]))
+			$query .= '&refr=' . $intervalo;
 		if (isset ($_POST["ag_group"])) {
 			$ag_group = $_POST["ag_group"];
-			$query = 'http://' . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] . '&ag_group_refresh=' . $ag_group;
+			$query = 'http://' . $_SERVER['SERVER_NAME'];
+			if ($_SERVER['SERVER_PORT'] != 80)
+				$query .= ":" . $_SERVER['SERVER_PORT'];
+			$query .= $_SERVER['REQUEST_URI'] . '&ag_group_refresh=' . $ag_group;
 		} else 
 			echo '<meta http-equiv="refresh" content="' . $intervalo . '; URL=' . $query . '">';
 	}

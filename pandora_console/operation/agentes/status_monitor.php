@@ -82,11 +82,7 @@ if (comprueba_login() == 0) {
 	echo "<option>".$lang_label["all"]."</option>";
 	$sql='SELECT DISTINCT nombre 
 	FROM tagente_modulo 
-	WHERE (id_tipo_modulo = 2) 
-	OR (id_tipo_modulo = 9) 
-	OR (id_tipo_modulo = 12) 
-	OR (id_tipo_modulo = 18) 
-	OR (id_tipo_modulo = 6) ';
+	WHERE id_tipo_modulo in (2, 9, 12, 18, 6, 100)';
 	$result=mysql_query($sql);
 	while ($row=mysql_fetch_array($result)){
 		echo "<option>".$row['0']."</option>";
@@ -100,8 +96,7 @@ if (comprueba_login() == 0) {
 
 	// Show only selected names & groups
 	if ($ag_group > 1) 
-		$sql='SELECT * FROM tagente WHERE id_grupo='.$ag_group.' 
-		ORDER BY nombre';
+		$sql='SELECT * FROM tagente WHERE id_grupo='.$ag_group.' ORDER BY nombre';
 	else 
 		$sql='SELECT * FROM tagente ORDER BY id_grupo, nombre';
 		
@@ -112,27 +107,19 @@ if (comprueba_login() == 0) {
 	if (mysql_num_rows($result)){
 		while ($row=mysql_fetch_array($result)){ //while there are agents
 			if ($row["disabled"] == 0) {
-				if ((isset($ag_modulename)) && ($ag_modulename != "ALL"))
+				if ((isset($ag_modulename)) && ($ag_modulename != $lang_label["all"]))
 					$query_gen='SELECT * FROM tagente_modulo 
 					WHERE id_agente = '.$row["id_agente"].' 
 					AND nombre = "'.entrada_limpia($_POST["ag_modulename"]).'" 
-					AND (
-					(id_tipo_modulo = 2) 
-					OR (id_tipo_modulo = 9) 
-					OR (id_tipo_modulo = 12) 
-					OR (id_tipo_modulo = 18) 
-					OR (id_tipo_modulo = 6)
-					)';
+					AND
+					id_tipo_modulo in (2, 9, 12, 18, 6)';
+					// generic_proc, remote_tcp_proc, ??, remote_snmp_proc, remote_icmp_proc
 				else
 					$query_gen='SELECT * FROM tagente_modulo 
 					WHERE id_agente = '.$row["id_agente"].' 
-					AND (
-					(id_tipo_modulo = 2) 
-					OR (id_tipo_modulo = 9)
-					OR (id_tipo_modulo = 12) 
-					OR (id_tipo_modulo = 18)
-					OR (id_tipo_modulo = 6)
-					)';
+					AND
+					id_tipo_modulo in (2, 9, 12, 18, 6) ';
+
 				$result_gen=mysql_query($query_gen);
 				if (mysql_num_rows ($result_gen)) {
 					while ($data=mysql_fetch_array($result_gen)){

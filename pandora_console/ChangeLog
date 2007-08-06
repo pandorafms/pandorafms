@@ -1,3 +1,27 @@
+2007-08-06  Sancho Lerena  <slerena@artica.es>
+
+        * include/functions_db.php: Fixed unsorted render (E.Ross).
+
+        * index.php: Several fixes from E.Ross and me (HTTP port, REFR bug
+        #1756143).
+
+        * status_monitor.php: Small fixes for SQL sentences (E.Ross).
+
+        * estado_grupo.php: Small fixes for SQL sentnces (E.Ross).
+
+        * estado_ultimopaquete.php: Fix to use boolean graph from E.Ross.
+
+        * fgraph.php: Use simplified version of sparse to make a more
+        quick and simplified version of graph, useful for Boolean types
+        (E.Ross).
+
+        * stat_win.php: Fixed problem with resizing (E.Ross).
+
+        * godmode/groups/configure_group.php: Fixed code for Non-dependant
+        groups (E.Ross).
+
+        * login_page.php: Fixes for non 80 HTTP port (E.Ross).
+
 2007-08-06 Sancho Lerena <slerena@artica.es>
 
 	* CSS Fixes (min height).

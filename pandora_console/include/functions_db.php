@@ -769,7 +769,7 @@ function give_agentmodule_flag($id_agent_module){
 // ----------------------------------------------------------------------
 function list_group ($id_user){
 	$mis_grupos=array (); // Define array mis_grupos to put here all groups with Agent Read permission
-	$sql='SELECT id_grupo FROM tgrupo';
+	$sql='SELECT id_grupo FROM tgrupo order by nombre';
 	$result=mysql_query($sql);
 	while ($row=mysql_fetch_array($result)){
 		if ($row["id_grupo"] != 0){

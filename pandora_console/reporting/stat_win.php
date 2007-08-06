@@ -136,16 +136,31 @@ if (isset($_GET["zoom"])){
 else
 	$zoom = "1";
 
-echo "<img src='fgraph.php?tipo=sparse&draw_alerts=$draw_alerts&draw_events=$draw_events&id=$id&zoom=$zoom&label=$label&height=$height&width=$width&period=$period&avg_only=$avg_only' border=0 alt=''>";
-echo "<table width=450 cellspacing=1 cellpadding=1 class='databox' style='margin-left: 20px'>";
-	echo "<tr><td><b>";
-	echo $lang_label["max_value"]." </b>: ". format_for_graph(return_moduledata_max_value ($id, $period));
-	echo "</td><td><b>";
-	echo $lang_label["avg_value"]." </b>: ". format_for_graph(return_moduledata_avg_value ($id, $period));
-	echo "</td><td><b>";
-	echo $lang_label["min_value"]." </b>: ". format_for_graph(return_moduledata_min_value ($id, $period));
-	echo "</td></tr>";
-echo "</table>";
+if ($zoom > 1) {
+	echo "
+		<script type='text/javascript'>
+			window.resizeTo($width + 10, $height + 80);
+		</script>
+	";
+}
+
+$graph_type = "sparse";
+if (isset($_GET["type"]))
+	$graph_type = entrada_limpia($_GET["type"]);
+
+
+echo "<img src='fgraph.php?tipo=$graph_type&draw_alerts=$draw_alerts&draw_events=$draw_events&id=$id&zoom=$zoom&label=$label&height=$height&width=$width&period=$period&avg_only=$avg_only' border=0 alt=''>";
+
+	echo "<table width=450 cellspacing=1 cellpadding=1 class='databox' style='margin-left: 20px'>";
+		echo "<tr><td><b>";
+		echo $lang_label["max_value"]." </b>: ". format_for_graph(return_moduledata_max_value ($id, $period));
+		echo "</td><td><b>";
+		echo $lang_label["avg_value"]." </b>: ". format_for_graph(return_moduledata_avg_value ($id, $period));
+		echo "</td><td><b>";
+		echo $lang_label["min_value"]." </b>: ". format_for_graph(return_moduledata_min_value ($id, $period));
+		echo "</td></tr>";
+	echo "</table>";
+
 ?>
 
 <script type='text/javascript' src='../include/javascript/x_core.js'></script>
@@ -204,6 +219,8 @@ echo "</table>";
 	<?php
 	echo "<input type='hidden' name='id' value='$id'>";
 	echo "<input type='hidden' name='label' value='$label'>";
+	if (isset($_GET["type"]))
+		echo "<input type='hidden' name='type' value='".$_GET["type"]."'>";
 	?>
 		<TABLE class='databox_frame' cellspacing=5>
 		</td><td>

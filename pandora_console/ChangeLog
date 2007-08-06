@@ -1,3 +1,9 @@
+2007-08-06 Sancho Lerena <slerena@artica.es>
+
+	* CSS Fixes (min height).
+
+	* pandoradb_data.sql: Added some missing default alerts, fixed others.
+
 2007-08-02  Sancho Lerena <slerena@artica.es>
 
 	* Fixed bug #1757084 for Data Server lag check.

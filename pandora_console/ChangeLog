@@ -1,3 +1,9 @@
+
+2007-08-06  Sancho Lerena  <slerena@gmail.com>
+
+        * pandoradb.sql, alert_manager.php: Alert time support uses TIME format 
+	instead numeric (changes requested by esanchezm).
+
 2007-08-06  Sancho Lerena  <slerena@artica.es>
 
         * include/functions_db.php: Fixed unsorted render (E.Ross).

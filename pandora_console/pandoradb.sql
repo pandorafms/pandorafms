@@ -181,8 +181,8 @@ CREATE TABLE `talerta_agente_modulo` (
   `internal_counter` int(4) default '0',
   `alert_text` varchar(255) default '',
   `disable` int(4) default '0',
-  `time_from` int(8) default '0',
-  `time_to` int(8) default '0',
+  `time_from` TIME default '00:00:00',
+  `time_to` TIME default '00:00:00',
   PRIMARY KEY  (`id_aam`)
 ) ENGINE=InnoDB;
 

@@ -95,13 +95,13 @@ $result=mysql_query($sql1);
 					$string = $string."<td class='$tdcolor'>".$mymin."</td>";
 					$string = $string."<td class='$tdcolor'>".$mymax."</td>";
 				}
-				$mytimefrom =$row3["time_from"];
-				$mytimeto =$row3["time_to"];
+				$time_from_table =$row3["time_from"];
+				$time_to_table =$row3["time_to"];
 				$string = $string."<td class='$tdcolor'>";
-				if ($mytimeto == $mytimefrom)
+				if ($time_to_table == $time_from_table)
 					$string .= $lang_label["N/A"];
 				else
-					$string .= render_time($mytimefrom)." - ".render_time($mytimeto);
+					$string .= substr($time_from_table,0,5)." - ".substr($time_to_table,0,5);
 				
 				$string = $string."</td><td class='$tdcolor'>".salida_limpia($row3["descripcion"]);
 				$string = $string."</td><td class='$tdcolor'>";
@@ -150,6 +150,7 @@ $result=mysql_query($sql1);
 echo '<form name="agente" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente='.$id_agente.'">';
 if (! isset($update_alert))
 	$update_alert = -1;
+	
 if ($update_alert != 1) {
 	echo '<input type="hidden" name="insert_alert" value=1>';
 } else {
@@ -247,12 +248,12 @@ _data_<br>
 echo "<tr><td class='datos2'>".$lang_label["time_from"];	
 echo "<td class='datos2'><select name='time_from'>";
 if ($time_from != ""){
-	echo "<option value='$time_from'>".render_time($time_from);
+	echo "<option value='$time_from'>".substr($time_from,0,5);
 }
 
 for ($a=0; $a < 48; $a++){
 	echo "<option value='";
-	echo $a;
+	echo render_time ($a);
 	echo "'>";
 	echo render_time ($a);
 }
@@ -261,12 +262,12 @@ echo "</select>";
 echo "<td class='datos2'>".$lang_label["time_to"];
 echo "<td class='datos2'><select name='time_to'>";
 if ($time_from != ""){
-	echo "<option value='$time_to'>".render_time($time_to);
+	echo "<option value='$time_to'>".substr($time_to,0,5);
 }
 
 for ($a=0; $a < 48; $a++){
 	echo "<option value='";
-	echo $a;
+	echo render_time ($a);
 	echo "'>";
 	echo render_time ($a);
 }

@@ -20,6 +20,7 @@
 
 #include "pandora_file.h"
 #include <fstream>
+#include <iostream>
 #include <stdio.h>
 #include <windows.h>
 
@@ -105,4 +106,26 @@ Pandora_File::writeFile (const string filepath, const string data) {
         }
         file.write (data.c_str (), data.length ());
         file.close ();   
+}
+
+/** 
+ * Returns the filename of a complete filepath.
+ * 
+ * @param filepath 
+ */
+string
+Pandora_File::fileName (const string filepath)
+{
+	string filename;
+	int    pos;
+	
+	pos = filepath.find_last_of ("\\");
+
+	if (pos != string::npos) {
+		filename = filepath.substr (pos + 1);
+	} else {
+		filename = filepath;
+	}
+
+	return filename;
 }

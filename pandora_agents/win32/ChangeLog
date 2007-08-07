@@ -1,3 +1,30 @@
+2007-08-07  Esteban Sanchez  <estebans@artica.es>
+
+	* pandora.cc: Updated agent version.
+	
+	* pandora.h, modules/pandora_module_exec.cc: Redefine WINVER, so
+	CreateJobProject can be found without modifying windef.h.
+	
+	* pandora_agent_conf.cc: Rewritten a loop.
+
+	* ftp/pandora_ftp_client.[cc,h]: Added to repository. Implemented FTP
+	transfer protocol using libcurl. It adds a library dependency.
+
+	* pandora_windows_service.cc: Added support for FTP transfers. Select
+	between SSH (default) or FTP. Improved file structure to be cleaner.
+
+	* pandora_windows_service.h: Added new private functions and removed
+	unneccessary private attribute.
+
+	* misc/pandora_file.[cc,h]: Added a function to get the filename of a
+	path.
+	
+	* main.cc: Indentation fixed.
+
+	* bin/libcurl.dll: Added to repository. New dependency.
+
+	* bin/PandoraAgent.exe: Updated to last commit.
+
 2007-05-23 Raul Mateos <raulofpandora@gmail.com>
 
 	* installer/Pandora_Windows_Agent-1.2.1-Setup.exe: Updated installer.

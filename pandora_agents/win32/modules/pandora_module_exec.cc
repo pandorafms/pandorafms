@@ -64,7 +64,9 @@ Pandora_Module_Exec::run () {
         
         /* Create a job to kill the child tree if it become zombie */
         /* CAUTION: In order to work this, WINVER should be defined to 0x0500.
-                    It is defined in <windef.h> */
+                    This may need no change, since it was redefined by the 
+                    program, but if needed, the macro is defined 
+                    in <windef.h> */
         job = CreateJobObject (&attributes, this->module_name.c_str ());
         if (job == NULL) {
                 pandoraLog ("CreateJobObject bad. Err: %d", GetLastError ());

@@ -87,14 +87,14 @@ Pandora::Pandora_Agent_Conf::~Pandora_Agent_Conf () {
  *         If it could not be found then an empty string is returned.
  */
 string
-Pandora::Pandora_Agent_Conf::getValue (const string key) {
-        std::list<Key_Value>::iterator i = key_values->begin ();
+Pandora::Pandora_Agent_Conf::getValue (const string key)
+{
+        std::list<Key_Value>::iterator i;
         
-        while (i != key_values->end ()) {
+        for (i = key_values->begin (); i != key_values->end (); i++) {
                 if ((*i).getKey () == key) {
                         return (*i).getValue ();
                 }
-                i++;
         }
         
         return "";

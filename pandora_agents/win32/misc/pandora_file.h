@@ -54,6 +54,7 @@ namespace Pandora_File {
         string readFile   (const string filename);	
         void   removeFile (const string filename);
         void   writeFile  (const string filename, const string data);
+	string fileName   (const string filepath);
 }
 
 #endif

@@ -30,7 +30,7 @@ using namespace Pandora;
 using namespace Pandora_Strutils;
 
 #define PATH_SIZE    _MAX_PATH+1
-#define PANDORA_VERSION ("1.2Beta")
+#define PANDORA_VERSION ("1.3(Build 070807)")
 
 string pandora_path;
 string pandora_dir;
@@ -46,33 +46,33 @@ string pandora_version = PANDORA_VERSION;
  */
 void
 Key_Value::parseLine (string str) {
-        unsigned int           pos;
-        list<string>           tokens;
-        list<string>::iterator iter;
-        string                 trimmedstr;
+	unsigned int           pos;
+	list<string>           tokens;
+	list<string>::iterator iter;
+	string                 trimmedstr;
         
-        trimmedstr = trim (str);
+	trimmedstr = trim (str);
         
-        /* Check if the string has " */
-        pos = trimmedstr.find ("\"");
-        if (pos == string::npos) {
-                stringtok (tokens, trimmedstr, " \t");
-        } else {
-                stringtok (tokens, trimmedstr, "\"");
-        }
+/* Check if the string has " */
+	pos = trimmedstr.find ("\"");
+	if (pos == string::npos) {
+		stringtok (tokens, trimmedstr, " \t");
+	} else {
+		stringtok (tokens, trimmedstr, "\"");
+	}
         
-        /* Pick the first and the last value of the token list */
-        iter = tokens.begin ();
-        key = trim (*iter);
-        transform (key.begin(), key.end(), key.begin(), (int(*)(int)) tolower);
-        iter = tokens.end ();
-        iter--;
-        /* Check if the line has only one token */
-        if (iter != tokens.begin ()) {
-                value = trim (*iter);
-        } else {
-                value = "";
-        }
+/* Pick the first and the last value of the token list */
+	iter = tokens.begin ();
+	key = trim (*iter);
+	transform (key.begin(), key.end(), key.begin(), (int(*)(int)) tolower);
+	iter = tokens.end ();
+	iter--;
+/* Check if the line has only one token */
+	if (iter != tokens.begin ()) {
+		value = trim (*iter);
+	} else {
+		value = "";
+	}
 }
 
 /**
@@ -82,7 +82,7 @@ Key_Value::parseLine (string str) {
  */
 string
 Key_Value::getKey () {
-        return key;
+	return key;
 }
 
 /**
@@ -92,32 +92,32 @@ Key_Value::getKey () {
  */
 string
 Key_Value::getValue () {
-        return value;
+	return value;
 }
 
 void
 pandoraWriteLog (string filename, string line) {
-        string     buffer; 
-        char       str_time[25];
-        FILE      *file;
-        string     filepath;
-        time_t     now;
-        struct tm *gmtime;
+	string     buffer; 
+	char       str_time[25];
+	FILE      *file;
+	string     filepath;
+	time_t     now;
+	struct tm *gmtime;
         
-        now = time (0);
-        gmtime = localtime (&now);
-        strftime (str_time, 25, "%m-%d-%y %H:%M:%S: ", gmtime);
+	now = time (0);
+	gmtime = localtime (&now);
+	strftime (str_time, 25, "%m-%d-%y %H:%M:%S: ", gmtime);
         
-        buffer = (char *) str_time;
-        buffer += line;
+	buffer = (char *) str_time;
+	buffer += line;
         
-        filepath = pandora_dir + filename;
+	filepath = pandora_dir + filename;
         
-        file = fopen (filepath.c_str (), "a+");
-        if (file != NULL) {
-                fprintf (file, "%s\n", buffer.c_str ());
-                fclose (file);
-        }
+	file = fopen (filepath.c_str (), "a+");
+	if (file != NULL) {
+		fprintf (file, "%s\n", buffer.c_str ());
+		fclose (file);
+	}
 }
 
 /**
@@ -131,14 +131,14 @@ pandoraWriteLog (string filename, string line) {
  */
 void
 Pandora::pandoraLog (char *format, ...) {
-        va_list    args;
-        char       msg[5000];
+	va_list    args;
+	char       msg[5000];
         
-        va_start (args, format);
-        vsprintf (msg, format, args);
-        va_end (args);
+	va_start (args, format);
+	vsprintf (msg, format, args);
+	va_end (args);
         
-        pandoraWriteLog ("pandora-log.log", (char *) msg);
+	pandoraWriteLog ("pandora-log.log", (char *) msg);
 }
 
 /**
@@ -152,17 +152,17 @@ Pandora::pandoraLog (char *format, ...) {
  */
 void
 Pandora::pandoraDebug (char *format, ...) {
-        if (pandora_debug) {
-                va_list    args;
-                char       msg[5000];
+	if (pandora_debug) {
+		va_list    args;
+		char       msg[5000];
                 
-                va_start (args, format);
-                vsprintf (msg, format, args);
-                va_end (args);
+		va_start (args, format);
+		vsprintf (msg, format, args);
+		va_end (args);
                 
-                pandoraWriteLog ("pandora-debug.dbg", (char *) msg);
-        }
-        return;
+		pandoraWriteLog ("pandora-debug.dbg", (char *) msg);
+	}
+	return;
 }
 
 /**
@@ -172,9 +172,9 @@ Pandora::pandoraDebug (char *format, ...) {
  */
 void
 Pandora::pandoraFree (void * pointer) {
-        if (pointer != NULL)
-                free (pointer);
-        return;       
+	if (pointer != NULL)
+		free (pointer);
+	return;       
 }
 
 /**
@@ -189,7 +189,7 @@ Pandora::pandoraFree (void * pointer) {
  */
 void
 Pandora::setPandoraInstallDir (string dir) {
-        pandora_dir = dir;
+	pandora_dir = dir;
 }
 
 /**
@@ -204,7 +204,7 @@ Pandora::setPandoraInstallDir (string dir) {
  */
 string
 Pandora::getPandoraInstallDir () {
-        return pandora_dir;
+	return pandora_dir;
 }
 
 /**
@@ -218,7 +218,7 @@ Pandora::getPandoraInstallDir () {
  */
 void
 Pandora::setPandoraInstallPath (string path) {
-        pandora_path = path;
+	pandora_path = path;
 }
 
 /**
@@ -232,7 +232,7 @@ Pandora::setPandoraInstallPath (string path) {
  */
 string
 Pandora::getPandoraInstallPath () {
-        return pandora_path;
+	return pandora_path;
 }
 
 /**
@@ -247,7 +247,7 @@ Pandora::getPandoraInstallPath () {
  */
 void
 Pandora::setPandoraDebug  (bool dbg) {
-        pandora_debug = dbg;
+	pandora_debug = dbg;
 }
 
 /**
@@ -271,5 +271,5 @@ Pandora::getPandoraDebug  () {
  */
 string
 Pandora::getPandoraAgentVersion () {
-        return pandora_version;
+	return pandora_version;
 }

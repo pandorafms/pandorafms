@@ -36,14 +36,19 @@ namespace Pandora {
 	 */
 	class Pandora_Windows_Service : public Windows_Service {
 	private:
-		SSH::Pandora_Ssh_Client              *ssh_client;
 		Pandora_Agent_Conf                   *conf;
 		Pandora_Modules::Pandora_Module_List *modules;
 		long                                  execution_number;
 		string                                agent_name;
         
-		TiXmlElement  *getXmlHeader ();
-		void           copyDataFile (string filename);
+		TiXmlElement  *getXmlHeader    ();
+		void           copyDataFile    (string filename);
+		void           copyScpDataFile (string host,
+						string remote_path,
+						string filename);
+		void           copyFtpDataFile (string host,
+						string remote_path,
+						string filename);
 	
 		void           pandora_run  ();
 		void           pandora_init ();

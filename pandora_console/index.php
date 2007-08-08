@@ -6,8 +6,7 @@
 // Main PHP/SQL code development, project architecture and management.
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
 // CSS and some PHP code additions
-// Copyright (c) 2006 Jose Navarro <jnavarro@jnavarro.net>
-// Additions to code for Pandora FMS 1.2 graph code
+// Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -25,7 +24,7 @@
 // Pandora FMS 1.x uses Pear Image::Graph code
 
 //Pandora Version, if not defined here it would take from config.php
-$build_version="PC070806";
+$build_version="PC070808";
 $pandora_version="v1.3-dev";
 global $build_version;
 global $pandora_version;
@@ -37,7 +36,7 @@ if ($develop_bypass != 1){
 	// If no config file, automatically try to install
 	if (! file_exists("include/config.php")){
 		if (!file_exists("install.php")){
-			include "general/error_install.php";
+			include ("general/error_noconfig.php");
 			exit;
 		} else
 			include ("install.php");
@@ -57,6 +56,11 @@ if ($develop_bypass != 1){
 		include "general/error_perms.php";
 		exit;
 	}
+}
+
+if ((! file_exists("include/config.php")) OR (! is_readable("include/config.php"))){
+        include ("general/error_noconfig.php");
+        exit;
 }
 
 // Real start

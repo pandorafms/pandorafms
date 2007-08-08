@@ -1,8 +1,15 @@
+2007-08-08  Sancho Lerena  <slerena@gmail.com>
+
+	* reporting/stat_win.php, general/noaccess.php: Fixed problem with
+        paths outside index.php call.
+
+	* index.php: Some fixes in checks for problems in startup and needed files.
+
+	* general/*: Better layout of problems, some minimal fixes. New file added to
+	warn user of missed config.php file. Better treatment of fails.
+
 2007-08-06  Sancho Lerena  <slerena@gmail.com>
 	
-	* reporting/stat_win.php, general/noaccess.php: Fixed problem with
-	paths outside index.php call.
-
         * pandoradb.sql, alert_manager.php: Alert time support uses TIME format 
 	instead numeric (changes requested by esanchezm).
 

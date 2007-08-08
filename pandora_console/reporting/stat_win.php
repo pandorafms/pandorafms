@@ -32,7 +32,7 @@ include("../include/languages/language_".$language_code.".php");
 if (comprueba_login() != 0) {
 	$REMOTE_ADDR = getenv ("REMOTE_ADDR");
 	audit_db("Unknown",$REMOTE_ADDR, "ACL Violation","Trying to access graph window without auth");
-	require ("general/noaccess.php");
+	require ("../general/noaccess.php");
 	exit;
 }
 	

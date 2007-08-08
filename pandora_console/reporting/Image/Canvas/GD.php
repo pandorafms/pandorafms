@@ -90,7 +90,7 @@ class Image_Canvas_GD extends Image_Canvas_WithMap
      * @access private
      */
 	// Pandora FMS: Beware of this, could be slow on old systems
-    var $_antialias = 'driver';
+    var $_antialias = 'off';
 
     /**
      * Create the GD canvas.

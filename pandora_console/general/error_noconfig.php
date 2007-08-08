@@ -1,4 +1,5 @@
 <?php
+
 // Pandora FMS - the Free Monitoring System
 // ========================================
 // Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
@@ -18,7 +19,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
 include "include/languages/language_en.php";
 
 ?>
@@ -27,7 +27,7 @@ include "include/languages/language_en.php";
 <head>
 <title>Pandora FMS - The Free Monitoring System - Console error</title>
 <meta http-equiv="expires" content="0">
-<meta http-equiv="content-type" content="text/html; charset=ISO-8859-15">
+<meta http-equiv="content-type" content="text/html; charset=utf8">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="author" content="Sancho Lerena, Raul Mateos">
@@ -40,14 +40,16 @@ include "include/languages/language_en.php";
 <body>
 <div align='center'>
 <div id='login_f'>
-	<h1 id="log_f" class="error">Bad permission for include/config.php</h1>
+	<h1 id="log_f" class="error">No configuration file found</h1>
 	<div>
 		<img src="images/pandora_logo.png" border="0"></a><br><font size="1">
 		<?php echo $pandora_version; ?>
 		</font>
 	</div>
-	<div class="msg"><br><br>For security reasons, <i>config.php</i> must have restrictive permissions, and "other" users cannot read or write to it. It could be writed only for owner (usually www-data or http daemon user), normal operation is not possible until you change permissions for <i>include/config.php</i> file. Please do it, it's for your security.</div>
-</div>
+	<div class="msg">
+	<br><br>Pandora FMS Console cannot find <i>include/config.php</i> or this file has invalid
+	permissiones and HTTP server cannot read it. Please read documentation to fix this problem.</div>
+	</div>
 </div>
 </body>
 </html>

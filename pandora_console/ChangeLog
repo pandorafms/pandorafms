@@ -1,17 +1,25 @@
+2007-08-09  Sancho Lerena  <slerena@artica.es>
+
+	* upgrade_from_1.2.php, pandoradbdata_12_to_13.sql,
+	pandoradb_12_to_13.sql, migrate.php: Migration scripts and wizard
+	(DO NOT USE YET!). Not finished.
+
 2007-08-08  Sancho Lerena  <slerena@gmail.com>
 
 	* reporting/stat_win.php, general/noaccess.php: Fixed problem with
-        paths outside index.php call.
+	paths outside index.php call.
 
-	* index.php: Some fixes in checks for problems in startup and needed files.
+	* index.php: Some fixes in checks for problems in startup and
+	needed files.
 
-	* general/*: Better layout of problems, some minimal fixes. New file added to
-	warn user of missed config.php file. Better treatment of fails.
+	* general/*: Better layout of problems, some minimal fixes. New
+	file added to warn user of missed config.php file. Better
+	treatment of fails.
 
 2007-08-06  Sancho Lerena  <slerena@gmail.com>
 	
-        * pandoradb.sql, alert_manager.php: Alert time support uses TIME format 
-	instead numeric (changes requested by esanchezm).
+        * pandoradb.sql, alert_manager.php: Alert time support uses TIME
+	format instead numeric (changes requested by esanchezm).
 
 2007-08-06  Sancho Lerena  <slerena@artica.es>
 

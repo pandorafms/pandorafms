@@ -21,11 +21,13 @@
 #include "pandora.h"
 #include "pandora_windows_service.h"
 #include "ssh/pandora_ssh_test.h"
+#include "ftp/pandora_ftp_test.h"
 
 #define PATH_SIZE                         _MAX_PATH+1
 #define SERVICE_INSTALL_CMDLINE_PARAM    "--install"
 #define SERVICE_UNINSTALL_CMDLINE_PARAM  "--uninstall"
 #define SSH_TEST_CMDLINE_PARAM           "--test-ssh"
+#define FTP_TEST_CMDLINE_PARAM           "--test-ftp"
 #define HELP_CMDLINE_PARAM               "--help"
 
 int
@@ -72,8 +74,22 @@ main (int argc, char *argv[]) {
 			} catch (Pandora_Exception e) {
 				return 1;
 			}
+			
+			return 0;
+		} else if (_stricmp(argv[i], FTP_TEST_CMDLINE_PARAM) == 0) {
+			/* SSH test parameter */
+			FTP::Pandora_FTP_Test ftp_test;
+			
+			delete service;
+		
+			try {
+				ftp_test.test ();
+			} catch (Pandora_Exception e) {
+				return 1;
+			}
 		
 			return 0;
+		
 		}  else if (_stricmp(argv[i], HELP_CMDLINE_PARAM) == 0) {
 			/* Help parameter */
 			cout << "Usage: " << argv[0] << " [OPTION]" << endl << endl;
@@ -84,12 +100,17 @@ main (int argc, char *argv[]) {
 			cout << ": Uninstall the Pandora Agent service." << endl;
 			cout << "\t" << SSH_TEST_CMDLINE_PARAM;
 			cout << ":  Test the SSH Pandora Agent configuration." << endl;
+			cout << "\t" << FTP_TEST_CMDLINE_PARAM;
+			cout << ":  Test the FTP Pandora Agent configuration." << endl;
 		
 			return 0;
 		} else {
 			/* No parameter recognized */
 			cout << "Usage: " << argv[0] << " [" << SERVICE_INSTALL_CMDLINE_PARAM;
-			cout << "] [" << SERVICE_UNINSTALL_CMDLINE_PARAM << "]" << endl;
+			cout << "] [" << SERVICE_UNINSTALL_CMDLINE_PARAM;
+			cout << "] [" << SSH_TEST_CMDLINE_PARAM;
+			cout << "] [" << FTP_TEST_CMDLINE_PARAM;
+			cout << endl;
 			cout << "Run " << argv[0] << "with " << HELP_CMDLINE_PARAM;
 			cout << " parameter for more info." << endl;
 		

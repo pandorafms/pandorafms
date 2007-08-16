@@ -1,5 +1,16 @@
 2007-08-16  Esteban Sanchez  <estebans@artica.es>
 
+	* ftp/pandora_ftp_test.[cc,h]: Added to repository. Implements a FTP
+	test to be run on command line.
+
+	* main.cc: Added --test-ftp option to perform a FTP test.
+
+	* PandoraAgent.dev: Added new files.
+
+	* bin/PandoraAgent.exe: Updated to last commit.
+
+2007-08-16  Esteban Sanchez  <estebans@artica.es>
+
 	* pandora_windows_service.cc: Do not check debug flag if copying was
 	not successful.
 

@@ -1,7 +1,7 @@
 [Project]
 FileName=PandoraAgent.dev
 Name=PandoraAgent
-UnitCount=67
+UnitCount=69
 Type=1
 Ver=1
 ObjFiles=
@@ -709,6 +709,26 @@ BuildCmd=
 
 [Unit67]
 FileName=ftp\pandora_ftp_client.h
+CompileCpp=1
+Folder=FTP
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit68]
+FileName=ftp\pandora_ftp_test.cc
+CompileCpp=1
+Folder=FTP
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit69]
+FileName=ftp\pandora_ftp_test.h
 CompileCpp=1
 Folder=FTP
 Compile=1

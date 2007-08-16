@@ -1,3 +1,12 @@
+2007-08-16  Esteban Sanchez  <estebans@artica.es>
+
+	* pandora_windows_service.cc: Do not check debug flag if copying was
+	not successful.
+
+	* bin/README: Updated options.
+	
+	* bin/PandoraAgent.exe: Updated to last commit.
+
 2007-08-07  Esteban Sanchez  <estebans@artica.es>
 
 	* pandora.cc: Updated agent version.

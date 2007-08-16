@@ -280,19 +280,6 @@ Pandora_Windows_Service::copyDataFile (string filename)
 
 		pandoraLog ("Successfuly copied XML file to server.");
 	} catch (Pandora_Exception e) {
-                if (getPandoraDebug () == false) {
-			string filepath;
-			
-			filepath = conf->getValue ("temporal");
-			if (filepath[filepath.length () - 1] != '\\') {
-				filepath += "\\";
-			}
-			filepath += filename;
-			try {
-                        	Pandora_File::removeFile (filepath);
-	                } catch (Pandora_File::Delete_Error e) {
-	                }
-		}
 	}
 }
 

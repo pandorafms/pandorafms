@@ -17,6 +17,11 @@ server_ip - Hostname or Pandora Server IP where the gathered data will be sent.
 server_path - Path where the server will store the data sent by agent. 
 Usually is "/opt/pandora/data_in".
 
+transfer_mode - Transfer method from agent to server. Could be "ssh" or "ftp".
+
+ftp_password - In case transfer method is FTP, this key must be set to user
+ password on server.
+
 temporal - Path where the agent stores locally data before send them 
 to the Pandora Server. The agent deletes the data every time it tries 
 to connect to Pandora Server.

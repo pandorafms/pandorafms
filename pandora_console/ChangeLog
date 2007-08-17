@@ -1,5 +1,7 @@
 2007-08-17  Sancho Lerena  <slerena@artica.es>
 
+	* Updated Pandora FMS logo :-) (Thanks Silvia!)
+
 	* upgrade_from_1.2.php: Deleted file, code merged in migrate.php
 
 	* include/styles/install.css: Added style to show info in div.

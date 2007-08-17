@@ -28,8 +28,7 @@ ALTER TABLE tagente_modulo ADD COLUMN `alert_text` varchar(255) default '';
 ALTER TABLE tagente_modulo ADD COLUMN `disable` int(4) default '0';
 ALTER TABLE tagente_modulo ADD COLUMN `time_from` int(8) default '0';
 ALTER TABLE tagente_modulo ADD COLUMN `time_to` int(8) default '0';
-ALTER TABLE `tagente_modulo` DROP PRIMARY KEY ,
-ADD PRIMARY KEY ( `id_agente_modulo` , `id_agente` ) 
+ALTER TABLE `tagente_modulo` DROP PRIMARY KEY ,ADD PRIMARY KEY ( `id_agente_modulo` , `id_agente` );
 ALTER TABLE tevento ADD COLUMN `utimestamp` bigint(20) unsigned NOT NULL default '0';
 ALTER TABLE tgrupo ADD COLUMN `parent` tinyint(4) NOT NULL default '-1';
 ALTER TABLE tgrupo ADD COLUMN `disabled` tinyint(4) NOT NULL default '0';

@@ -80,6 +80,12 @@ div.warn {
 	margin-top: 7px;
 	padding: 2px 1px 6px 25px;
 }
+div.info {
+	background: url(../../images/information.png) no-repeat;
+        color: #000000;
+        margin-top: 7px;
+        padding: 2px 1px 6px 25px;
+}
 span.arr{
 	background: url(../../images/arrow.png) no-repeat;
 	margin-top: 2px;

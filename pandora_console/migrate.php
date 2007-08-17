@@ -4,9 +4,6 @@
 // ========================================
 // Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
 // Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
-// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -23,9 +20,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<title>Pandora FMS - Installation Wizard</title>
+<title>Pandora FMS - Migration Wizard</title>
 <meta http-equiv="expires" content="0">
-<meta http-equiv="content-type" content="text/html; charset=ISO-8859-15">
+<meta http-equiv="content-type" content="text/html; charset="utf-8">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="author" content="Sancho Lerena, Raul Mateos">
@@ -120,6 +117,45 @@ function check_variable ( $var, $value, $label, $mode ){
 	echo "</td></tr>";
 }
 
+function migrate_data (){
+
+	check_generic (1, "Updating tagente_datos table");
+	$sql1="SELECT * FROM tagente_datos WHERE utimestamp = 0 ";
+	$result1=mysql_query($sql1);
+	while ($row1=mysql_fetch_array($result1)){
+	        $id = $row1["id_agente_datos"];
+	        $timestamp = $row1["timestamp"];
+	        $utimestamp = strtotime($timestamp);
+	        $sql2="UPDATE tagente_datos SET utimestamp = '$utimestamp' WHERE id_agente_datos = $id";
+	        mysql_query($sql2);
+	}
+	flush();
+
+	check_generic (1,"Updating tagente_datos_string table");
+	$sql1="SELECT * FROM tagente_datos_string WHERE utimestamp = 0 ";
+	$result1=mysql_query($sql1);
+	while ($row1=mysql_fetch_array($result1)){
+	        $id = $row1["id_tagente_datos_string"];
+	        $timestamp = $row1["timestamp"];
+	        $utimestamp = strtotime($timestamp);
+	        $sql2="UPDATE tagente_datos SET utimestamp = '$utimestamp' WHERE id_tagente_datos_string = $id";
+	        mysql_query($sql2);
+	}
+	flush();
+
+	check_generic (1,"Updating tagente_estado table");
+	$sql1="SELECT * FROM tagente_estado WHERE utimestamp = 0";
+	$result1=mysql_query($sql1);
+	while ($row1=mysql_fetch_array($result1)){
+	        $id = $row1["id_agente_estado"];
+	        $timestamp = $row1["timestamp"];
+	        $utimestamp = strtotime($timestamp);
+	        $sql2="UPDATE tagente_estado SET utimestamp = '$utimestamp', last_execution_try = '$utimestamp' WHERE id_agente_estado = $id";
+	        mysql_query($sql2);
+	}
+
+}
+
 function parse_mysql_dump($url){
 	if (file_exists($url)){
    		$file_content = file($url);
@@ -150,19 +186,19 @@ function random_name ($size){
 function install_step1() {
 	echo "
 	<div id='install_container'>
-	<h1>Pandora FMS migration wizard. Step #1 of 4</h1>
-	<div id='wizard' style='height: 330px;'>
+	<h1>Pandora FMS migration wizard. Step #1 of 5</h1>
+	<div id='wizard' style='height: 390px;'>
 		<div id='install_box'>
 			<h1>Welcome to Pandora FMS 1.3 migration Wizard</h1>
-			<p>This wizard helps you to quick migrate Pandora FMS console in your system.</p>
-			<p>This tool is <b>only</b> to migrate Pandora FMS 1.2 to Pandora FMS 1.3</p>
+			<p>This wizard helps you to quick migrate Pandora FMS console in your system.This tool is <b>only</b> to migrate Pandora FMS 1.2 to Pandora FMS 1.3</p>
 			<p>For more information, please refer to documentation.</p>
 			<i>Pandora FMS Development Team</i>
-		";
+			<div class='info'>Before start with migration process. Please <b>STOP NOW all your Pandora FMS</b></div>";
+		
 		if (file_exists("include/config.php")){
 			echo "<div class='warn'><b>Warning:</b> You already have a config.php file in this directory, please backup and move it before continue.</div>";
 		}
-		echo "<div class='warn'><b>Warning:</b> This installer will <b>overwrite and change</b> your existing Pandora FMS <b>Database</b> and cannot be used by Pandora FMS 1.2, only for 1.3 version. Before contine, please <b>be sure that you have made a SQL backup using mysqldump system tool.</b><br></div>";
+		echo "<div class='warn'><b>Warning:</b> This migration tool will <b>overwrite and change</b> your existing Pandora FMS <b>Database</b> and only could be used to migrate fron Pandora FMS 1.2 to Pandora FMS 1.3. Before contine, please <b>be sure that you have made a SQL backup using mysqldump system tool as described in documentation.</b><br></div>";
 		echo "
 		</div>
 		<div id='logo_img'>
@@ -170,7 +206,7 @@ function install_step1() {
 			<img src='images/step0.png' border='0'>
 		</div>
 		<div id='install_img'>
-			<a href='install.php?step=2'><img align='right' src='images/arrow_next.png' border=0></a>
+			<a href='migrate.php?step=2'><img align='right' src='images/arrow_next.png' border=0></a>
 		</div>
 	</div>
 	<div id='foot_install'>
@@ -183,8 +219,8 @@ function install_step1() {
 function install_step2() {
 	echo "
 	<div id='install_container'>
-	<h1>Pandora FMS console migration wizard. Step #2 of 4</h1>
-	<div id='wizard' style='height: 300px;'>
+	<h1>Pandora FMS migration wizard. Step #2 of 5</h1>
+	<div id='wizard' style='height: 340px;'>
 		<div id='install_box'>";
 		echo "<h1>Checking software dependencies</h1>";
 			echo "<table border=0 width=230>";
@@ -198,7 +234,8 @@ function install_step2() {
 			$res += check_include("PEAR.php","PEAR PHP Library");
 			$step6 = is_writable("include");
 			check_generic ($step6, "Write permissions to save config file in './include'");
-			$res += $step6;
+			if ($step6 == 0)
+				$res++;
 			
 			//$res += check_exists ("/usr/bin/pdflatex","PDF Latex in /usr/bin/pdflatex");
 			echo "</table>
@@ -210,12 +247,12 @@ function install_step2() {
 		<div id='install_img'>";
 			if ($res > 0) {
 				echo "<div class='warn'>You have some uncomplete 
-				dependencies. Please correct them or this installer 
+				dependencies. Please correct them or this wizard tool 
 				will not be able to finish your installation.
-				</div>
-				Ignore it. <a href='install.php?step=3'>Force install Step #3</a>";
+				</div><br>
+				Ignore it. <a href='migrate.php?step=3'>Ignore it and go to Step #3</a>";
 			} else {
-				echo "<a href='install.php?step=3'><img align='right' src='images/arrow_next.png' border=0 alt=''></a>";
+				echo "<a href='migrate.php?step=3'><img align='right' src='images/arrow_next.png' border=0 alt=''></a>";
 			}
 			echo "
 		</div>
@@ -231,20 +268,16 @@ function install_step2() {
 function install_step3() {
 	echo "
 	<div id='install_container'>
-	<h1>Pandora FMS console migration wizard. Step #3 of 4 </h1>
-	<div id='wizard' style='height: 580px;'>
+	<h1>Pandora FMS migration wizard. Step #3 of 5 </h1>
+	<div id='wizard' style='height: 520px;'>
 		<div id='install_box'>
 			<h1>Environment and database setup</h1>
 			<p>
-			This wizard will transform your Pandora FMS database, and populate it with all the data needed to run for the first time, modifyng existing data to be used by the new version.
+			This wizard will transform your Pandora FMS database, and populate it with all the data needed to run for the first time, modifying existing data to be used by the new version.
 			</p>
 			<p>
-			You need a user to modify and create database schema, this is usually the existant <b>pandora</b> user.
-			</p>
-			<p>
-			Now, please, complete all details to configure your database and enviroment setup.
+			You need a user to modify and create database schema, this is usually the existant <b>pandora</b> user, you could check on config.php file of Pandora FMS 1.2 installation.
 			</p>";
-			echo "<div class='warn'><b>Warning:</b> This installer will <b>overwrite and change</b> your existing Pandora FMS <b>Database</b> and cannot be used by Pandora FMS 1.2, only for 1.3 version. Before contine, please <b>be sure that you have made a SQL backup using mysqldump system tool.</b><br></div>";
 			echo "<form method='post' action='migrate.php?step=4'>
 				<div>DB User with privileges on MySQL</div>
 				<input class='login' type='text' name='user' value='pandora'>
@@ -307,39 +340,36 @@ function install_step4() {
 			$path = "/var/www";
 	}
 	$everything_ok = 0;
-	$step1=0;
-	$step2=0;
-	$step3=0;
+	$step1=0; $step2=0; $step3=0;
 	$step4=0; $step5=0; $step6=0; $step7=0;
-	echo "
-	<div id='install_container'>
-	<h1>Pandora FMS Console migration wizard. Step #4 of 4</h1>
-	<div id='wizard' style='height: 350px;'>
+	echo "<div id='install_container'>
+	<h1>Pandora FMS migration wizard. Step #4 of 5</h1>
+	<div id='wizard' style='height: 540px;'>
 		<div id='install_box'>
-			<h1>Modifing database schema structure and converting data (this could be a long time...)</h1>
+			<h1>Modifing database schema and adding data</h1></2>This could take a while...please wait</h2>
 			<table>";
 			if (! mysql_connect ($dbhost,$dbuser,$dbpassword)) {
 				check_generic ( 0, "Connection with Database");
 			} else {
 				check_generic ( 1, "Connection with Database");
 				// Create schema
-				$step1 = mysql_query ("connect $dbname");
-				check_generic ($step1, "Connecting database '$dbname'");
-				if ($step1 == 1){
-					$step2 = mysql_select_db($dbname);
-					check_generic ($step2, "Opening database '$dbname'");
+				if (mysql_select_db($dbname))
+					$step2 = 1;
+				else
+					$step2 = 0;
+				check_generic ($step2, "Opening database '$dbname'");
 				flush();
-					$step3 = parse_mysql_dump("pandoradb_12_to_13.sql");
-					check_generic ($step3, "Schema manipulation");
+				$step3 = (parse_mysql_dump("pandoradb_12_to_13.sql"));
+				check_generic ($step3, "Schema manipulation");
 				flush();
-					$step4 = parse_mysql_dump("pandoradb_data_12_to_13.sql");
-					check_generic ($step4, "Populating new schema and converting data");
+				$step4 = parse_mysql_dump("pandoradbdata_12_to_13.sql");
+				check_generic ($step4, "Populating new schema and converting data");
 				flush();
-					$cfgin = fopen ("include/config.inc.php","r");
-					$cfgout = fopen ($pandora_config,"w");
-					$config_contents = fread ($cfgin, filesize("include/config.inc.php"));
+				$cfgin = fopen ("include/config.inc.php","r");
+				$cfgout = fopen ($pandora_config,"w");
+				$config_contents = fread ($cfgin, filesize("include/config.inc.php"));
 	
-					$config_new = '<?php
+				$config_new = '<?php
 // Begin of automatic config file
 $dbname="'.$dbname.'";			// MySQL DataBase name
 $dbuser="'.$dbuser.'";			// DB User
@@ -349,19 +379,21 @@ $config_homedir="'.$path.'";		// Config homedir
 $BASE_URL="'.$url.'";			// Base URL
 // End of automatic config file
 ?>';
-					$step7 = fputs ($cfgout, $config_new);
-					$step7 = $step7 + fputs ($cfgout, $config_contents);
-					if ($step7 > 0)
-						$step7 = 1;
-					fclose ($cfgin);
-					fclose ($cfgout);
-					chmod ($pandora_config, 0600);
-					check_generic ($step7, "Created new config file at '".$pandora_config."'");
-				}
+				$step5 = fputs ($cfgout, $config_new);
+				$step5 = $step5 + fputs ($cfgout, $config_contents);
+				if ($step5 > 0)
+					$step5 = 1;
+				fclose ($cfgin);
+				fclose ($cfgout);
+				chmod ($pandora_config, 0600);
+				check_generic ($step5, "Created new config file at '".$pandora_config."'");
+				
 			}
-			if (($step7 + $step6 + $step5 + $step4 + $step3 + $step2 + $step1) == 7) {
+			if (($step5 + $step4 + $step3 + $step2 ) == 4) {
 				$everything_ok = 1;
-			}
+				migrate_data();
+			} 
+
 		echo "</table></div>
 		<div id='logo_img'>
 			<img src='images/pandora_logo.png' border='0' alt=''><br>
@@ -370,16 +402,13 @@ $BASE_URL="'.$url.'";			// Base URL
 		
 		<div id='install_img'>";
 			if ($everything_ok == 1) {
-				echo "<br><br><a href='install.php?step=5'><img align='right' src='images/arrow_next.png' border=0 class=''></a>";
+				echo "<br><br><a href='migrate.php?step=5'><img align='right' src='images/arrow_next.png' border=0 class=''></a>";
 			} else {
 				echo "<div class='warn'><b>There was some problems. Installation is not completed.</b> 
-				<p>Please correct failures before trying again.
-				All database schemes created in this step have been dropped.</p></div>";
+				<p>Please correct failures, and restore original DB before trying again.</div>";
 
 				if (mysql_error() != "")
 					echo "<div class='warn'> <b>ERROR:</b> ". mysql_error().".</div>";
-
-				mysql_query ("DROP DATABASE $dbname");
 			}		
 		echo "
 		</div>
@@ -389,40 +418,17 @@ $BASE_URL="'.$url.'";			// Base URL
 		<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
 	</div>
 </div>";
+
 }
+
 function install_step5() {
 	echo "
 	<div id='install_container'>
-	<h1>Pandora FMS console migration wizard. Finished</h1>
+	<h1>Pandora FMS migration wizard. Finished</h1>
 	<div id='wizard' style='height: 300px;'>
 		<div id='install_box'>
-			<h1>Data conversion</h1>
-			<p>This step could be very long in time, so please be patieng</p>
-		</div>";
-
-	// PROCESAR upgrade_from_1.2.php
-
-		
-	echo "<div id='logo_img'>
-			<img src='images/pandora_logo.png' border='0'><br>
-			<img src='images/step4.png' border='0'><br>
-		</div>
-	</div>
-	<div id='foot_install'>
-		<i>Pandora FMS is a Free Software project registered at 
-		<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
-	</div>
-</div>";
-}
-
-function install_step6() {
-	echo "
-	<div id='install_container'>
-	<h1>Pandora FMS console installation wizard. Finished</h1>
-	<div id='wizard' style='height: 300px;'>
-		<div id='install_box'>
-			<h1>Installation complete</h1>
-			<p>You now must delete manually this installer ('<i>install.php</i>') file for security before trying to access to your Pandora FMS console.
+			<h1>Migration complete</h1>
+			<p>You now must delete manually installer and migration tool ('<i>install.php</i>, <i>migrate.php</i>') files for security before trying to access to your Pandora FMS console.
 			<p>Don't forget to check <a href='http://pandora.sourceforge.net'>http://pandora.sourceforge.net</a> for updates.
 			<p><a href='index.php'>Click here to access to your Pandora FMS console</a></p>
 		</div>
@@ -455,6 +461,8 @@ if (! isset($_GET["step"])){
 	case 4: install_step4();
 		break;
 	case 5: install_step5();
+		break;
+	case 6: install_step6();
 		break;
 	}
 }

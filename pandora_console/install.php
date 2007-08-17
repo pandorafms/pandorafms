@@ -151,7 +151,7 @@ function install_step1() {
 	echo "
 	<div id='install_container'>
 	<h1>Pandora FMS installation wizard. Step #1 of 4</h1>
-	<div id='wizard' style='height: 330px;'>
+	<div id='wizard' style='height: 360px;'>
 		<div id='install_box'>
 			<h1>Welcome to Pandora FMS 1.3 installation Wizard</h1>
 			<p>This wizard helps you to quick install Pandora FMS console in your system.</p>
@@ -163,6 +163,7 @@ function install_step1() {
 			echo "<div class='warn'><b>Warning:</b> You already have a config.php file. Configuration and database would be overwritten if you continued.</div>";
 		}
 		echo "<div class='warn'><b>Warning:</b> This installer will <b>overwrite and destroy</b> your existing Pandora FMS configuration and <b>Database</b>. Before contine, please <b>be sure that you have no valuable Pandora FMS data in your Database.</b><br></div>";
+		echo "<div class='info'>If you want to <b>upgrade</b> Pandora FMS 1.2 to 1.3 version, use the <a href='migrate.php'>automated migration wizard</a></div>";
 		echo "
 		</div>
 		<div id='logo_img'>

@@ -1684,29 +1684,28 @@ function grafico_modulo_boolean ( $id_agente_modulo, $periodo, $show_event,
 		$utimestamp = $row[1];
 		
 		$i = round(($utimestamp - $fechatope) / $horasint);
+		if (isset($valores[$i][0])){
+			$valores[$i][0] += $datos;
+			$valores[$i][1]++;
 		
-		//echo "$datos $utimestamp at $i<br>";
-		
-		$valores[$i][0] += $datos;
-		$valores[$i][1]++;
-		
-		if ($valores[$i][6] == -1)
-			$valores[$i][6]=$datos;
+			if ($valores[$i][6] == -1)
+				$valores[$i][6]=$datos;
 			
-		// Init min value
-		if ($valores[$i][4] == -1)
-			$valores[$i][4] = $datos;
-		else {
-			// Check min value
-			if ($datos < $valores[$i][4])
+			// Init min value
+			if ($valores[$i][4] == -1)
 				$valores[$i][4] = $datos;
-		}
-		// Check max value
-		if ($valores[$i][5] == -1)
-			$valores[$i][5] = $datos;
-		else
-			if ($datos > $valores[$i][5])
+			else {
+				// Check min value
+				if ($datos < $valores[$i][4])
+					$valores[$i][4] = $datos;
+			}
+			// Check max value
+			if ($valores[$i][5] == -1)
 				$valores[$i][5] = $datos;
+			else
+				if ($datos > $valores[$i][5])
+					$valores[$i][5] = $datos;
+		}
 	}
 	
 	

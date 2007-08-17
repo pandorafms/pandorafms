@@ -1,3 +1,19 @@
+2007-08-17  Sancho Lerena  <slerena@artica.es>
+
+	* upgrade_from_1.2.php: Deleted file, code merged in migrate.php
+
+	* include/styles/install.css: Added style to show info in div.
+
+	* pandoradbdata_12_to_13.sql: Fixed some items.
+
+	* install.php: Added link to migrate wizard.
+
+	* pandoradb_12_to_13.sql: Fixed some items.
+
+	* reporting/fgraph.php: Fixed problem (NOTICE string) rendering boolean graphs.
+
+	* migrate.php: Upgraded and finished migration tool from 1.2 to 1.3 :-)
+
 2007-08-09  Sancho Lerena  <slerena@artica.es>
 
 	* upgrade_from_1.2.php, pandoradbdata_12_to_13.sql,

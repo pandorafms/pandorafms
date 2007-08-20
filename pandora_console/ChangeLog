@@ -1,5 +1,15 @@
 2007-08-20  Sancho Lerena  <slerena@artica.es>
 
+        * pandoradb.sql: Used UTF-8 by default
+
+	* index.php. UTF-8 Default.
+	
+	* README: Updated texts for Readme.
+	
+	* INSTALL: Deteled old stuff
+	
+	* upgrade.php: Links fixed.
+	
 	* migrate.php renamed to upgrade.php
 
 	* Deleted old upgrade scripts from 1.1

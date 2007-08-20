@@ -104,7 +104,7 @@ if ( (isset ($_GET["refr"])) || (isset($_POST["refr"])) ){
 ?>
 <title>Pandora FMS - <?php echo $lang_label["header_title"]; ?></title>
 <meta http-equiv="expires" content="0">
-<meta http-equiv="content-type" content="text/html; charset=utf8">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="author" content="Sancho Lerena, Raul Mateos">

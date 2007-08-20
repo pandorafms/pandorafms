@@ -24,8 +24,8 @@
 // Pandora FMS 1.x uses Pear Image::Graph code
 
 //Pandora Version, if not defined here it would take from config.php
-$build_version="PC070808";
-$pandora_version="v1.3-dev";
+$build_version="PC070820";
+$pandora_version="v1.3 Beta2";
 global $build_version;
 global $pandora_version;
 

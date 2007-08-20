@@ -1,3 +1,14 @@
+2007-08-20  Sancho Lerena  <slerena@artica.es>
+
+	* migrate.php renamed to upgrade.php
+
+	* Deleted old upgrade scripts from 1.1
+
+	* Updated install.php.
+
+	* Updated Index.php version to Beta2 :-)
+	
+
 2007-08-17  Sancho Lerena  <slerena@artica.es>
 
 	* Updated Pandora FMS logo :-) (Thanks Silvia!)
@@ -12,7 +23,8 @@
 
 	* pandoradb_12_to_13.sql: Fixed some items.
 
-	* reporting/fgraph.php: Fixed problem (NOTICE string) rendering boolean graphs.
+	* reporting/fgraph.php: Fixed problem (NOTICE string) rendering
+	boolean graphs.
 
 	* migrate.php: Upgraded and finished migration tool from 1.2 to 1.3 :-)
 

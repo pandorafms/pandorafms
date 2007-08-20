@@ -33,7 +33,7 @@ CompressionMethod
 zlib
 
 Copyright
-{}
+{2004-2007 Sancho Lerena, Esteban Sanchez, Raul Mateos, and others}
 
 DefaultLanguage
 English
@@ -53,8 +53,29 @@ C:/pandora_installer/logo.png
 IncludeDebugging
 Yes
 
+InstallPassword
+{}
+
 InstallVersion
-1.0.0.5
+1.3.0.2
+
+Language,de
+Yes
+
+Language,en
+Yes
+
+Language,es
+Yes
+
+Language,fr
+Yes
+
+Language,pl
+Yes
+
+Language,pt_br
+Yes
 
 LaunchApplication
 Yes
@@ -83,14 +104,20 @@ PackageSummary
 PackageVersion
 <%MajorVersion%>.<%MinorVersion%>
 
+PreserveFilePermissions
+Yes
+
 ProjectID
 9A2D5834-BB98-4916-89A5-06C81E368C0A
 
 ProjectVersion
-1.1.2.0
+1.2.0.2
 
 SaveOnlyToplevelDirs
 No
+
+ScriptExt
+.bat
 
 ShortAppName
 {Pandora FMS}
@@ -111,7 +138,7 @@ UpgradeApplicationID
 {}
 
 Version
-1.2.1
+{1.3.0 Beta2}
 
 ViewReadme
 Yes
@@ -182,7 +209,7 @@ File ::7CE0D0A8-DF39-4A4F-B130-DD5A4550ADC7 -name puttygen.exe -parent 253702CB-
 File ::F6C0A697-316C-4F8D-A760-58C91C0520B7 -name tail.exe -parent 253702CB-C5FD-47A3-8C1B-BEE11167D259
 File ::1F4821FF-1F78-4621-B220-E837483D4724 -name tr.exe -parent 253702CB-C5FD-47A3-8C1B-BEE11167D259
 File ::8583B998-89A2-4DC9-A50B-3E09FC4A572F -name wc.exe -parent 253702CB-C5FD-47A3-8C1B-BEE11167D259
-File ::5C296981-DD34-430A-921F-1B392C4D9D4D -name C:/pandora_installer/bin/libeay32.dll -active 0 -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
+File ::5C296981-DD34-430A-921F-1B392C4D9D4D -name C:/pandora_installer/bin/libeay32.dll -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
 File ::5AE89E3D-CED2-4A3E-A6B2-3F078DD5AFF5 -name C:/pandora_installer/bin/pandora_agent.conf -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
 File ::F9B74871-5757-4867-8C4F-5C73BC52D864 -name C:/pandora_installer/bin/PandoraAgent.exe -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
 File ::51F64B0B-3CE8-4964-9FC5-970BEEEA0EA5 -name C:/pandora_installer/bin/zlib1.dll -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
@@ -198,9 +225,11 @@ File ::CB23E3A0-7C81-4D53-943A-54F3EC44AE73 -name 3.jpg -parent D6AA8CC0-30A8-44
 File ::98F7B423-85F2-4F86-AD12-723973C4A806 -name 4.jpg -parent D6AA8CC0-30A8-44E4-A888-8846C0E87BF4
 File ::D3DF2241-A8E4-4C4D-869C-CAF2CF20AE99 -name 5.jpg -parent D6AA8CC0-30A8-44E4-A888-8846C0E87BF4
 File ::1087E54B-C1D2-44DE-8E95-34CC903EF759 -name 6.jpg -parent D6AA8CC0-30A8-44E4-A888-8846C0E87BF4
+File ::487B3217-B0AD-4B7B-9FC6-49BB3EC1ACF7 -name Thumbs.db -active 0 -parent D6AA8CC0-30A8-44E4-A888-8846C0E87BF4
 File ::824789FD-D251-4D3F-9640-757BF22F2CD0 -type dir -name C:/pandora_installer/scripts -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
 File ::25DADAAA-7DA2-469C-870D-AD2D6017D46E -name start_pandora_agent.bat -parent 824789FD-D251-4D3F-9640-757BF22F2CD0
 File ::E68E6D0D-D735-4116-AA67-21419036343F -name stop_pandora_agent.bat -parent 824789FD-D251-4D3F-9640-757BF22F2CD0
+File ::7C39EFBE-B79D-487D-8A43-F8439B557D4B -name C:/pandora_installer/bin/libcurl.dll -parent AC33C2B4-AB01-4572-802B-BA89E7661C04
 Component ::10A1AE8A-A5C5-4F0E-8D15-FC176DF534B0 -setup Install -active Yes -platforms {Linux-x86 Windows AIX-ppc FreeBSD-4-x86 FreeBSD-x86 HPUX-hppa Solaris-sparc} -name Instalable -parent Components
 SetupType ::7080336B-65E6-4818-9201-068FFEA6FB3A -setup Install -active Yes -platforms Windows -name Typical -parent SetupTypes
 
@@ -1121,6 +1150,9 @@ AIX-ppc,DefaultFilePermission
 AIX-ppc,Executable
 <%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
 
+AIX-ppc,FallBackToConsole
+Yes
+
 AIX-ppc,InstallDir
 <%Home%>/<%ShortAppName%>
 
@@ -1454,6 +1486,9 @@ FreeBSD-4-x86,DefaultFilePermission
 FreeBSD-4-x86,Executable
 <%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
 
+FreeBSD-4-x86,FallBackToConsole
+Yes
+
 FreeBSD-4-x86,InstallDir
 <%Home%>/<%ShortAppName%>
 
@@ -1502,6 +1537,9 @@ FreeBSD-x86,DefaultFilePermission
 FreeBSD-x86,Executable
 <%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
 
+FreeBSD-x86,FallBackToConsole
+Yes
+
 FreeBSD-x86,InstallDir
 <%Home%>/<%ShortAppName%>
 
@@ -1549,6 +1587,9 @@ HPUX-hppa,DefaultFilePermission
 
 HPUX-hppa,Executable
 <%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
+
+HPUX-hppa,FallBackToConsole
+Yes
 
 HPUX-hppa,InstallDir
 <%Home%>/<%ShortAppName%>
@@ -1601,6 +1642,9 @@ Linux-x86,DefaultFilePermission
 Linux-x86,Executable
 <%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
 
+Linux-x86,FallBackToConsole
+Yes
+
 Linux-x86,InstallDir
 <%Home%>/<%ShortAppName%>
 
@@ -1648,6 +1692,9 @@ Solaris-sparc,DefaultFilePermission
 
 Solaris-sparc,Executable
 <%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
+
+Solaris-sparc,FallBackToConsole
+Yes
 
 Solaris-sparc,InstallDir
 <%Home%>/<%ShortAppName%>
@@ -1699,6 +1746,9 @@ TarArchive,DefaultFilePermission
 
 TarArchive,Executable
 <%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
+
+TarArchive,FallBackToConsole
+Yes
 
 TarArchive,InstallDir
 <%Home%>/<%ShortAppName%>

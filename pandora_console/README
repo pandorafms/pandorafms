@@ -1,41 +1,73 @@
-Pandora: The Free Distributed Monitoring System
+Pandora FMS : The Free Monitoring System (v1.3)
 ===============================================
 
-Version 1.2
+http://pandora.sourceforge.net
 
-What is Pandora DMS
+What is Pandora FMS
 -------------------
 
-Pandora are a Free Software set of programs that allows to analyze in a visual way status and performance of several parameters from different Operating Systems, servers, applications and hardware systems as Firewalls, Proxies, Data Bases, Web Servers or Routers. All integrated into an open and distributed architecture.
+Pandora watches your systems and applications, and allows you to know the status of any element of those systems. Pandora could detect a 
+network interface down, a defacement in your website, a memory leak in one of your server app, or the movement of any value of the NASDAQ 
+new technology market. If you want, Pandora could send out SMS message when your systems fails... or when Google's value drop below US$ 33.
 
-Pandora can be deployed in every Operating System. You have an agent for every platform. Pandora can monitor hardware systems with TCP/IP Stack, as load balancers, routers, switches, printers and so on.
+Pandora will adjust, like an octopus, to your systems and requirements, because has been designed to be open, modular, multiplattform and 
+easy to customize and use, all integrated into a scalable and distributed architecture.
 
-Pandora has six components: Pandora Data Server, Pandora Network Server, Pandora SNMP Console, Pandora Agents, Pandora Database and Pandora Web Management System (Web Console).
+Pandora runs on any operating system, with specific agents for each platform gathering data and sending it to a server, it has specific 
+agents for GNU/Linux, AIX, Solaris, HP-UX, BSD/IPSO, and Windows 2000, XP and 2003.
 
-Pandora Servers and SNMP Console
+Pandora can also monitor any kind of TCP/IP service, without the need to install agents, and monitor network systems such as load 
+balancers, routers, switches, operating systems, applications, or simply printers if you need. Pandora also supports SNMP for collecting 
+data and for receiving traps.
 
-They are the recipient of bundles of information and the generators of alerts; they are the brain of the system. We can have several servers for very big systems or a single server. They are developed in Perl and works under any platform, with the required modules. Nevertheless its "official" platform is GNU/Linux. They also insert the gathered data into the Database. You can have several Pandora Servers connected with the same Database.
+A few examples of common resources monitored by Pandora could be processor load, disk and memory usage, running processes, log files, 
+environmental factors such as temperature, or application values like strings contained in web pages or any possible way to collect data in 
+an automatic way. 
 
-Pandora Web Console
+Pandora FMS Features
+--------------------
 
-It allows to manage the system and to operate with it; it's the user interface of Pandora. We can have several Web Consoles in the same implantation. It is developed in PHP and leans on a Data Base and a Web Server, being able to work in any platform: GNU/Linux, Solaris, Win2000, AIX and others.
+    * Lightweigth agents. No need to install adicional software.
+    * Also could use network to collect data on remote systems.
+    * High availability for each component.
+    * Escalable architecture: no liminitation on number of servers you can setup for the same enviroment.
+    * Internal detection on Network Servers in case of failure, automatic takeover of secondary servers.
+    * Stores all data for many weeks or months
+    * Support for implementing redundant and distributed monitoring servers.
+    * Data is stored in a relational database (MySQL).
+    * Automatic database optimization for size, using interpolation and compression algorithms.
+    * Integrated alert systems: send mails, execute scripts, send SMS, or simply write to syslog are a few examples.
+    * Integrated graphical reporting system for any kind of collected data.
+    * SNMP Trap reception with Realtime Console.
+    * Granularity of accesses and user profiles for each group and each user.
+    * Integrated internal auditing for any operation.
+    * Alert filtering to avoid false positives.
+    * Event system with user validation for operation in teams.
+    * Integrated incident system with flows and different profiles.
+    * Any collected value can be displayed as graph or data table.
+    * Alerts can be triggered any kind of event, in many ways.
+    * WebConsole on line HTML contextual help.
+    * Integrated DB management: purge and DB compaction.
+    * Mass configuration/alert manager to copy and distribute agent-module and/or agents/alerts setup to other agents.
+    * Profiles could be personalized using up to eight security attributes without limitation on groups or profiles.
+    * Filters for collected data to avoid bad data.
 
-Pandora Database
+Install
+-------
 
-Core module of Pandora (as you can see in the architecture overview). In this database resides all the information of the enterprise, for example, all data gathered by agents, all configuration defined by administrator, all events, incidents, audit info... At this moment, only MySQL DataBase is supported. More Databases in the future.
+Please visit our online documentation site or download install guides at http://pandora.sourceforge.net
 
-Pandora Agents
-
-They can monitor any numeric parameter, boolean states, strings or numerical incremental data and/or condition. They have a centralized architecture based on lightweight design for agents (shellscript, wsh, perl) and light agents to collect data. They support all type of platforms (Microsoft, AIX, Solaris, GNU/Linux, IPSO, FreeBSD, etc) because the agents are completely free software, and they communicate using SSH, FTP, NFS or other good way, using an XML container to transport data. 
 
 What do I need?
 ---------------
-Perl, Perl Modules, MySQL, PHP, PHP Modules. See the Installation Documentation or go to http://pandora.sourceforge.net
+
+Perl 5.8, Some Perl modules, MySQL4x or higher, PHP5, and some PHP Modules. See the Installation Documentation or go to 
+http://pandora.sourceforge.net
 
 License
 -------
 
 The project is distributed under the GPL License v2 or later.
 
-Copyright (C) 2004-2006 Sancho Lerena.
+Copyright (C) 2004-2007 Pandora FMS development team
 

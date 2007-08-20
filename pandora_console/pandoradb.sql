@@ -6,7 +6,7 @@ CREATE TABLE `taddress` (
   `ip` varchar(15) NOT NULL default '',
   `ip_pack` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_a`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `taddress_agent` (
@@ -14,7 +14,7 @@ CREATE TABLE `taddress_agent` (
   `id_a` bigint(20) unsigned NOT NULL default '0',
   `id_agent` mediumint(8) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_ag`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tagent_access` (
@@ -24,7 +24,7 @@ CREATE TABLE `tagent_access` (
   `utimestamp` bigint(20) NOT NULL default '0',
   PRIMARY KEY  (`id_ac`),
   KEY `agent_index` (`id_agent`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tagente` (
@@ -44,7 +44,7 @@ CREATE TABLE `tagente` (
   `agent_type` int(2) unsigned NOT NULL default '0',
   `id_server` int(10) unsigned default '0',
   PRIMARY KEY  (`id_agente`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tagente_datos` (
@@ -56,7 +56,7 @@ CREATE TABLE `tagente_datos` (
   `utimestamp` int(10) unsigned default '0',
   PRIMARY KEY  (`id_agente_datos`),
   KEY `data_index2` (`id_agente`,`id_agente_modulo`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tagente_datos_inc` (
@@ -67,7 +67,7 @@ CREATE TABLE `tagente_datos_inc` (
   `utimestamp` int(10) unsigned default '0',
   PRIMARY KEY  (`id_adi`),
   KEY `data_inc_index_1` (`id_agente_modulo`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tagente_datos_string` (
@@ -80,7 +80,7 @@ CREATE TABLE `tagente_datos_string` (
   PRIMARY KEY  (`id_tagente_datos_string`),
   KEY `data_string_index_1` (`id_agente_modulo`),
   KEY `data_string_index_2` (`id_agente`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tagente_estado` (
@@ -99,14 +99,14 @@ CREATE TABLE `tagente_estado` (
   PRIMARY KEY  (`id_agente_estado`),
   KEY `status_index_1` (`id_agente_modulo`),
   KEY `status_index_2` (`id_agente_modulo`,`estado`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tmodule` (
   `id_module` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(100) NOT NULL default '',
   PRIMARY KEY (`id_module`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tagente_modulo` (
@@ -129,7 +129,7 @@ CREATE TABLE `tagente_modulo` (
   `id_modulo` int(11) unsigned NULL default 0,
   PRIMARY KEY (`id_agente_modulo`, `id_agente`),
   KEY `tam_agente` (`id_agente`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `talert_snmp` (
@@ -150,7 +150,7 @@ CREATE TABLE `talert_snmp` (
   `min_alerts` int(11) NOT NULL default '1',
   `internal_counter` int(2) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_as`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `talerta` (
@@ -159,7 +159,7 @@ CREATE TABLE `talerta` (
   `comando` varchar(100) default '',
   `descripcion` varchar(255) default '',
   PRIMARY KEY  (`id_alerta`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `talerta_agente_modulo` (
@@ -184,7 +184,7 @@ CREATE TABLE `talerta_agente_modulo` (
   `time_from` TIME default '00:00:00',
   `time_to` TIME default '00:00:00',
   PRIMARY KEY  (`id_aam`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tattachment` (
@@ -195,7 +195,7 @@ CREATE TABLE `tattachment` (
   `description` varchar(150) default '',
   `size` bigint(20) NOT NULL default '0',
   PRIMARY KEY  (`id_attachment`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tconfig` (
@@ -203,7 +203,7 @@ CREATE TABLE `tconfig` (
   `token` varchar(100) NOT NULL default '',
   `value` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`id_config`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tconfig_os` (
@@ -212,7 +212,7 @@ CREATE TABLE `tconfig_os` (
   `description` varchar(250) default '',
   `icon_name` varchar(100) default '',
   PRIMARY KEY  (`id_os`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tevento` (
@@ -227,7 +227,7 @@ CREATE TABLE `tevento` (
   PRIMARY KEY  (`id_evento`),
   KEY `indice_1` (`id_agente`,`id_evento`),
   KEY `indice_2` (`timestamp`,`id_evento`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tgrupo` (
@@ -237,7 +237,7 @@ CREATE TABLE `tgrupo` (
   `parent` tinyint(4) NOT NULL default '-1',
   `disabled` tinyint(4) NOT NULL default '0',
   PRIMARY KEY  (`id_grupo`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tincidencia` (
@@ -256,14 +256,14 @@ CREATE TABLE `tincidencia` (
   `notify_email` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_incidencia`),
   KEY `incident_index_1` (`id_usuario`,`id_incidencia`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tlanguage` (
   `id_language` varchar(6) NOT NULL default '',
   `name` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`id_language`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tlink` (
@@ -271,7 +271,7 @@ CREATE TABLE `tlink` (
   `name` varchar(100) NOT NULL default '',
   `link` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id_link`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tmensajes` (
@@ -283,14 +283,14 @@ CREATE TABLE `tmensajes` (
   `subject` varchar(255) NOT NULL default '',
   `estado` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_mensaje`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tmodule_group` (
   `id_mg` bigint(20) unsigned NOT NULL auto_increment,
   `name` varchar(150) NOT NULL default '',
   PRIMARY KEY  (`id_mg`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tnetwork_component` (
@@ -309,7 +309,7 @@ CREATE TABLE `tnetwork_component` (
   `snmp_oid` varchar(400) NOT NULL,
   `id_module_group` tinyint(4) NOT NULL default '0',
   PRIMARY KEY  (`id_nc`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tnetwork_component_group` (
@@ -317,7 +317,7 @@ CREATE TABLE `tnetwork_component_group` (
   `name` varchar(200) NOT NULL default '',
   `parent` mediumint(9) NOT NULL default '0',
   PRIMARY KEY  (`id_sg`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tnetwork_profile` (
@@ -325,7 +325,7 @@ CREATE TABLE `tnetwork_profile` (
   `name` varchar(100) NOT NULL default '',
   `description` varchar(250) default '',
   PRIMARY KEY  (`id_np`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tnetwork_profile_component` (
@@ -333,7 +333,7 @@ CREATE TABLE `tnetwork_profile_component` (
   `id_nc` mediumint(8) unsigned NOT NULL default '0',
   `id_np` mediumint(8) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_npc`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tnota` (
@@ -342,7 +342,7 @@ CREATE TABLE `tnota` (
   `timestamp` tinyblob NOT NULL,
   `nota` mediumtext NOT NULL,
   PRIMARY KEY  (`id_nota`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tnota_inc` (
@@ -350,12 +350,12 @@ CREATE TABLE `tnota_inc` (
   `id_incidencia` mediumint(9) NOT NULL default '0',
   `id_nota` mediumint(9) NOT NULL default '0',
   PRIMARY KEY  (`id_nota_inc`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `torigen` (
   `origen` varchar(100) NOT NULL default ''
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tperfil` (
@@ -372,7 +372,7 @@ CREATE TABLE `tperfil` (
   `alert_management` int(11) NOT NULL default '0',
   `pandora_management` int(11) NOT NULL default '0',
   PRIMARY KEY  (`id_perfil`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `trecon_task` (
@@ -390,7 +390,7 @@ CREATE TABLE `trecon_task` (
   `interval_sweep` int(10) unsigned NOT NULL default '0',
   `id_network_server_assigned` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_rt`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tserver` (
@@ -409,7 +409,7 @@ CREATE TABLE `tserver` (
   `recon_server` tinyint(3) unsigned NOT NULL default '0',
   `version` varchar(20) NOT NULL default '',
   PRIMARY KEY  (`id_server`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tsesion` (
@@ -421,7 +421,7 @@ CREATE TABLE `tsesion` (
   `fecha` datetime NOT NULL default '0000-00-00 00:00:00',
   `utimestamp` bigint(20) unsigned NOT NULL default '0',
   PRIMARY KEY  (`ID_sesion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `ttipo_modulo` (
@@ -431,7 +431,7 @@ CREATE TABLE `ttipo_modulo` (
   `descripcion` varchar(100) NOT NULL default '',
   `icon` varchar(100) default NULL,
   PRIMARY KEY  (`id_tipo`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `ttrap` (
@@ -448,7 +448,7 @@ CREATE TABLE `ttrap` (
   `id_usuario` varchar(150) default '',
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id_trap`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tusuario` (
@@ -460,7 +460,7 @@ CREATE TABLE `tusuario` (
   `direccion` varchar(100) default '',
   `telefono` varchar(100) default '',
   `nivel` tinyint(1) NOT NULL default '0'
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tusuario_perfil` (
@@ -470,7 +470,7 @@ CREATE TABLE `tusuario_perfil` (
   `id_grupo` int(11) NOT NULL default '0',
   `assigned_by` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`id_up`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `tnews` (
@@ -480,7 +480,7 @@ CREATE TABLE `tnews` (
   `text` TEXT NOT NULL,
   `timestamp` DATETIME  NOT NULL DEFAULT 0,
   PRIMARY KEY(`id_news`)
-) ENGINE = InnoDB;
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `tgraph` (
   `id_graph` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
@@ -493,7 +493,7 @@ CREATE TABLE `tgraph` (
   `private` tinyint(1) UNSIGNED NOT NULL default 0,
   `events` tinyint(1) UNSIGNED NOT NULL default 0,
   PRIMARY KEY(`id_graph`)
-) ENGINE = InnoDB;
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `tgraph_source` (
   `id_gs` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT,
@@ -501,7 +501,7 @@ CREATE TABLE `tgraph_source` (
   `id_agent_module` int(11) NOT NULL default 0,
   `weight` smallint(5) UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY(`id_gs`)
-) ENGINE = InnoDB;
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `treport` (
@@ -511,7 +511,7 @@ CREATE TABLE `treport` (
   `description` TEXT NOT NULL,
   `private` tinyint(1) UNSIGNED NOT NULL default 0,
   PRIMARY KEY(`id_report`)
-) ENGINE = InnoDB;
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `treport_content` (
   `id_rc` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -524,7 +524,7 @@ CREATE TABLE `treport_content` (
   `sla_min` int(11) NOT NULL default 0,
   `sla_limit` int(11) NOT NULL default 0,
   PRIMARY KEY(`id_rc`)
-) ENGINE = InnoDB;
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 /*
 
@@ -553,7 +553,7 @@ CREATE TABLE `tlayout` (
   `height` INTEGER UNSIGNED NOT NULL default 0,
   `width` INTEGER UNSIGNED NOT NULL default 0,
   PRIMARY KEY(`id`)
-)  ENGINE = InnoDB;
+)  ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `tlayout_data` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -572,4 +572,4 @@ CREATE TABLE `tlayout_data` (
   `label_color` varchar(20) DEFAULT "",
   `no_link_color` tinyint(1) UNSIGNED NOT NULL default 0,
   PRIMARY KEY(`id`)
-) ENGINE = InnoDB;
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;

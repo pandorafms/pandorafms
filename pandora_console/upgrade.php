@@ -20,7 +20,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<title>Pandora FMS - Migration Wizard</title>
+<title>Pandora FMS - Upgrade Wizard</title>
 <meta http-equiv="expires" content="0">
 <meta http-equiv="content-type" content="text/html; charset="utf-8">
 <meta name="resource-type" content="document">
@@ -186,19 +186,22 @@ function random_name ($size){
 function install_step1() {
 	echo "
 	<div id='install_container'>
-	<h1>Pandora FMS migration wizard. Step #1 of 5</h1>
+	<h1>Pandora FMS upgrad wizard. Step #1 of 5</h1>
 	<div id='wizard' style='height: 390px;'>
 		<div id='install_box'>
-			<h1>Welcome to Pandora FMS 1.3 migration Wizard</h1>
-			<p>This wizard helps you to quick migrate Pandora FMS console in your system.This tool is <b>only</b> to migrate Pandora FMS 1.2 to Pandora FMS 1.3</p>
+			<h1>Welcome to Pandora FMS 1.3 upgrade Wizard</h1>
+			<p>This wizard helps you to quick upgrade Pandora FMS console in your system. This tool is <b>only</b> to 
+upgrade Pandora FMS 1.2 to Pandora FMS 1.3</p>
 			<p>For more information, please refer to documentation.</p>
 			<i>Pandora FMS Development Team</i>
-			<div class='info'>Before start with migration process. Please <b>STOP NOW all your Pandora FMS</b></div>";
+			<div class='info'>Before start with upgrade process. Please <b>STOP NOW all your Pandora FMS</b></div>";
 		
 		if (file_exists("include/config.php")){
 			echo "<div class='warn'><b>Warning:</b> You already have a config.php file in this directory, please backup and move it before continue.</div>";
 		}
-		echo "<div class='warn'><b>Warning:</b> This migration tool will <b>overwrite and change</b> your existing Pandora FMS <b>Database</b> and only could be used to migrate fron Pandora FMS 1.2 to Pandora FMS 1.3. Before contine, please <b>be sure that you have made a SQL backup using mysqldump system tool as described in documentation.</b><br></div>";
+		echo "<div class='warn'><b>Warning:</b> This upgrade tool will <b>overwrite and change</b> your existing Pandora FMS
+<b>Database</b> and only could be used to upgrade fron Pandora FMS 1.2 to Pandora FMS 1.3. Before contine, please <b>be sure that you 
+have made a SQL backup using mysqldump system tool as described in documentation.</b><br></div>";
 		echo "
 		</div>
 		<div id='logo_img'>
@@ -206,7 +209,7 @@ function install_step1() {
 			<img src='images/step0.png' border='0'>
 		</div>
 		<div id='install_img'>
-			<a href='migrate.php?step=2'><img align='right' src='images/arrow_next.png' border=0></a>
+			<a href='upgrade.php?step=2'><img align='right' src='images/arrow_next.png' border=0></a>
 		</div>
 	</div>
 	<div id='foot_install'>
@@ -219,7 +222,7 @@ function install_step1() {
 function install_step2() {
 	echo "
 	<div id='install_container'>
-	<h1>Pandora FMS migration wizard. Step #2 of 5</h1>
+	<h1>Pandora FMS upgrade wizard. Step #2 of 5</h1>
 	<div id='wizard' style='height: 340px;'>
 		<div id='install_box'>";
 		echo "<h1>Checking software dependencies</h1>";
@@ -250,9 +253,9 @@ function install_step2() {
 				dependencies. Please correct them or this wizard tool 
 				will not be able to finish your installation.
 				</div><br>
-				Ignore it. <a href='migrate.php?step=3'>Ignore it and go to Step #3</a>";
+				Ignore it. <a href='upgrade.php?step=3'>Ignore it and go to Step #3</a>";
 			} else {
-				echo "<a href='migrate.php?step=3'><img align='right' src='images/arrow_next.png' border=0 alt=''></a>";
+				echo "<a href='upgrade.php?step=3'><img align='right' src='images/arrow_next.png' border=0 alt=''></a>";
 			}
 			echo "
 		</div>
@@ -268,7 +271,7 @@ function install_step2() {
 function install_step3() {
 	echo "
 	<div id='install_container'>
-	<h1>Pandora FMS migration wizard. Step #3 of 5 </h1>
+	<h1>Pandora FMS upgrade wizard. Step #3 of 5 </h1>
 	<div id='wizard' style='height: 520px;'>
 		<div id='install_box'>
 			<h1>Environment and database setup</h1>
@@ -278,7 +281,7 @@ function install_step3() {
 			<p>
 			You need a user to modify and create database schema, this is usually the existant <b>pandora</b> user, you could check on config.php file of Pandora FMS 1.2 installation.
 			</p>";
-			echo "<form method='post' action='migrate.php?step=4'>
+			echo "<form method='post' action='upgrade.php?step=4'>
 				<div>DB User with privileges on MySQL</div>
 				<input class='login' type='text' name='user' value='pandora'>
 
@@ -343,7 +346,7 @@ function install_step4() {
 	$step1=0; $step2=0; $step3=0;
 	$step4=0; $step5=0; $step6=0; $step7=0;
 	echo "<div id='install_container'>
-	<h1>Pandora FMS migration wizard. Step #4 of 5</h1>
+	<h1>Pandora FMS upgrade wizard. Step #4 of 5</h1>
 	<div id='wizard' style='height: 540px;'>
 		<div id='install_box'>
 			<h1>Modifing database schema and adding data</h1></2>This could take a while...please wait</h2>
@@ -402,7 +405,7 @@ $BASE_URL="'.$url.'";			// Base URL
 		
 		<div id='install_img'>";
 			if ($everything_ok == 1) {
-				echo "<br><br><a href='migrate.php?step=5'><img align='right' src='images/arrow_next.png' border=0 class=''></a>";
+				echo "<br><br><a href='upgrade.php?step=5'><img align='right' src='images/arrow_next.png' border=0 class=''></a>";
 			} else {
 				echo "<div class='warn'><b>There was some problems. Installation is not completed.</b> 
 				<p>Please correct failures, and restore original DB before trying again.</div>";
@@ -424,11 +427,11 @@ $BASE_URL="'.$url.'";			// Base URL
 function install_step5() {
 	echo "
 	<div id='install_container'>
-	<h1>Pandora FMS migration wizard. Finished</h1>
+	<h1>Pandora FMS upgrade wizard. Finished</h1>
 	<div id='wizard' style='height: 300px;'>
 		<div id='install_box'>
-			<h1>Migration complete</h1>
-			<p>You now must delete manually installer and migration tool ('<i>install.php</i>, <i>migrate.php</i>') files for security before trying to access to your Pandora FMS console.
+			<h1>Upgrade complete !</h1>
+			<p>You now must delete manually installer and upgrade tool ('<i>install.php</i>, <i>upgrade.php</i>') files for security before trying to access to your Pandora FMS console.
 			<p>Don't forget to check <a href='http://pandora.sourceforge.net'>http://pandora.sourceforge.net</a> for updates.
 			<p><a href='index.php'>Click here to access to your Pandora FMS console</a></p>
 		</div>

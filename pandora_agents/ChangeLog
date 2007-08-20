@@ -1,6 +1,20 @@
+2007-08-20  Sancho Lerena <slerena@artica.es>
+
+	New version of Pandora Agent for Windows (beta2).
+
+	* win32/bin/key/id_dsa*: Added sample keys.
+
+	* win32/installer/logo.png: Updated logo for installer.
+
+	* win32/installer/Pandora_Windows_Agent-1.3.0 Beta2-Setup.exe: New installer binary.
+
+	* win32/installer/Pandora_Windows_Agent-1.2.1-Setup.exe: Deleted old one
+
+	* win32/installer/pandora1.2.1.mpi: Updated (and need to be renamed on next commit)
+
 2007-08-02  Sancho Lerena <slerena@artica.es> 
 
-	* bdf_ipso/pandora_agent.conf: Some modules updated.
+	* bdd_ipso/pandora_agent.conf: Some modules updated.
 
 2007-08-01  Sancho Lerena <slerena@artica.es>
 

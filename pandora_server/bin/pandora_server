@@ -36,7 +36,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # FLUSH in each IO, only for DEBUG, very slow !
-$| = 1;
+$| = 0;
 
 my %pa_config; 
 

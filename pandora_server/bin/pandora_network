@@ -37,7 +37,7 @@ use PandoraFMS::DB;
 # FLUSH in each IO (only for debug, very slooow)
 # ENABLED in DEBUGMODE
 # DISABLE FOR PRODUCTION
-$| = 1;
+$| = 0;
 
 my %pa_config;
 my @pending_task : shared;

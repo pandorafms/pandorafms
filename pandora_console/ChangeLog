@@ -1,3 +1,10 @@
+2007-08-22  Sancho Lerena  <slerena@gmail.com>
+
+	* pandoradb_data.sql: Fixed undetermined problem with alert data load 
+	(rewritten in simple format), and removed all languages until finish 
+	official documentation.
+
+	This should be last commit before beta2 (I hope!)
 
 2007-08-21  Sancho Lerena  <slerena@artica.es>
 

@@ -1,3 +1,10 @@
+
+2007-08-21  Sancho Lerena  <slerena@artica.es>
+
+	* install.php: Fixed heigh in step3 box.
+
+	* upgrade.php: Typo at title in step1.
+
 2007-08-20  Sancho Lerena  <slerena@artica.es>
 
         * pandoradb.sql: Used UTF-8 by default

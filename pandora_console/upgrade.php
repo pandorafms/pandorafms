@@ -186,7 +186,7 @@ function random_name ($size){
 function install_step1() {
 	echo "
 	<div id='install_container'>
-	<h1>Pandora FMS upgrad wizard. Step #1 of 5</h1>
+	<h1>Pandora FMS upgrade wizard. Step #1 of 5</h1>
 	<div id='wizard' style='height: 390px;'>
 		<div id='install_box'>
 			<h1>Welcome to Pandora FMS 1.3 upgrade Wizard</h1>

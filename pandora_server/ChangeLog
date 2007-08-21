@@ -1,3 +1,11 @@
+2007-08-21  Sancho Lerena  <slerena@gmail.com>
+
+	* conf/pandora_server.conf: Final fixes for default file.
+
+	* lib/PandoraFMS/Config.pm: Fixed stupid typo in snmpconsole parameter.
+
+	* bin/*: Disabled flush for each I/O (ready for production).
+
 2007-08-06  Sancho Lerena  <slerena@gmail.com>
 
 	* DB.pm: Alert time support uses TIME format instead numeric (changes requested

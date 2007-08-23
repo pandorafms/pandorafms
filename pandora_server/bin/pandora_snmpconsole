@@ -62,7 +62,7 @@ pandora_snmptrapd (\%pa_config);
 
 sub pandora_snmptrapd {
 	my $pa_config = $_[0];
-	my $snmp_logfile = $pa_config->{'pandora_snmp_logfile'};
+	my $snmp_logfile = $pa_config->{'snmp_logfile'};
 	my $logfile_size; # Size of logfile, use for calculating index file
 	my @array;
 	my $datos;

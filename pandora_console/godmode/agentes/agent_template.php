@@ -79,6 +79,30 @@ if (isset($_POST["template_id"])){
 			'".$row2["id_module_group"]."'
 			)";
 			mysql_query ($module_sql);
+			$id_agente_modulo = mysql_insert_id();
+			
+			// Create with different estado if proc type or data type
+			$id_tipo_modulo = $row2["type"];
+			if (
+			($id_tipo_modulo == 2) || 
+			($id_tipo_modulo == 6) || 
+			($id_tipo_modulo == 9) || 
+			($id_tipo_modulo == 12) || 
+			($id_tipo_modulo == 18) 
+			){ 
+				$sql_insert = "INSERT INTO tagente_estado 
+				(id_agente_modulo,datos,timestamp,cambio,estado,id_agente, utimestamp) 
+				VALUES (
+				$id_agente_modulo, 0,'0000-00-00 00:00:00',0,0,'".$id_agente."',0
+				)";
+			} else { 
+				$sql_insert = "INSERT INTO tagente_estado 
+				(id_agente_modulo,datos,timestamp,cambio,estado,id_agente, utimestamp) 
+				VALUES (
+				$id_agente_modulo, 0,'0000-00-00 00:00:00',0,100,'".$id_agente."',0
+				)";
+			}
+			mysql_query ($sql_insert);
 		}
 	}
 	echo "<h3 class='suc'>".$lang_label["add_mod_ok"]."</h3>";

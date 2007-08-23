@@ -53,7 +53,7 @@ $direccion_agente = "";
 $intervalo = "300";
 $id_server = "";
 $max_alerts = 0;
-$modo = 0;
+$modo = 1;
 $update_module = 0;
 $modulo_id_agente = "";
 $modulo_id_tipo_modulo = "";
@@ -168,8 +168,7 @@ echo "</div>";
 
 // Make some space between tabs and title
 echo "<div style='height: 25px'> </div>";
-// Unset variable to allow operations to work
-$id_agente = "";
+
 
 // Show agent creation results
 if (isset($_POST["create_agent"])){
@@ -256,7 +255,7 @@ if (isset($_POST["insert_alert"])){ // if created alert
 	if (! $result) {
 		echo "<h3 class='error'>".$lang_label["create_alert_no"]."</h3>";
 	} else {
-		$id_agente = mysql_insert_id();
+		$id_alerta_agente_modulo = mysql_insert_id();
 		echo "<h3 class='suc'>".$lang_label["create_alert_ok"]."</h3>";
 	}
 	
@@ -310,8 +309,6 @@ if (isset($_POST["update_alert"])){ // Update an existing alert
 	}
 	else 
 		echo "<h3 class='suc'>".$lang_label["update_agent_ok"]."</h3>";
-
-		$id_agente = mysql_insert_id();
 }
 
 // ================
@@ -357,9 +354,13 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	}
 }
 
+if ((isset($agent_created_ok)) && ($agent_created_ok == 1)){
+	$_GET["id_agente"]= $id_agente;
+}
+
 // Read agent data
 // This should be at the end of all operation checks, to read the changes
-if (isset($_GET["id_agente"])){
+if (isset($_GET["id_agente"])) {
 	$id_agente = $_GET["id_agente"];
 	$id_grupo = dame_id_grupo($id_agente);
 	if (give_acl($id_user, $id_grupo, "AW")==1){

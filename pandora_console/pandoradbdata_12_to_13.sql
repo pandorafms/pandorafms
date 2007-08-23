@@ -27,27 +27,10 @@ UPDATE tgrupo SET icon = 'house', parent = 0, disabled = 0 WHERE id_grupo = 10;
 UPDATE tgrupo SET icon = 'computer', parent = 0, disabled = 0 WHERE id_grupo = 11;
 UPDATE tgrupo SET icon = 'applications', parent = 0, disabled = 0 WHERE id_grupo = 12;
 
-INSERT INTO `tnetwork_component` VALUES (1,'OS Total process','Total process in Operating System (UNIX MIB)',5,8,0,0,0,0,'','NULL','NULL','',0);
-INSERT INTO `tnetwork_component` VALUES (2,'OS CPU Load','CPU Load in Operating System (UNIX MIB)',5,9,0,0,0,0,'','NULL','NULL','',0);
 INSERT INTO `tnetwork_component` VALUES (3,'Sysname','Get name of system using SNMP standard MIB',1,17,0,0,900,0,'','','public','.1.3.6.1.2.1.1.1.0',1);
-INSERT INTO `tnetwork_component` VALUES (4,'OS Users','Active users in Operating System (UNIX MIB)',5,6,0,0,0,0,'','NULL','NULL','',0);
-INSERT INTO `tnetwork_component` VALUES (5,'CiscoAP Wifi traffic','Cisco AP AP120',9,6,0,0,0,0,'','NULL','NULL','',0);
-INSERT INTO `tnetwork_component` VALUES (6,'CiscoAP Wifi errors','Get errors con WiFi for Cisco AP AP120',9,16,0,0,300,0,'','','public','',2);
-INSERT INTO `tnetwork_component` VALUES (7,'CiscoAP RAM','Get RAM available on device',9,15,0,0,300,0,'','','public','',4);
-INSERT INTO `tnetwork_component` VALUES (8,'CiscoAP Ethernet OUT','Cisco AP AP120',9,6,0,0,0,0,'','NULL','NULL','',0);
-INSERT INTO `tnetwork_component` VALUES (9,'CiscoAP Ethernet IN','Cisco AP AP120',9,6,0,0,0,0,'','NULL','NULL','',0);
-INSERT INTO `tnetwork_component` VALUES (10,'CiscoAP CPU Usage','Cisco AP AP120',9,6,0,0,0,0,'','NULL','NULL','',0);
-INSERT INTO `tnetwork_component` VALUES (11,'Cisco Catalyst CPU Usage','Cisco Catalyst 3750',8,6,0,0,0,0,'','NULL','NULL','',0);
-INSERT INTO `tnetwork_component` VALUES (12,'FlashFree ','Cisco Catalyst 3750',8,6,0,0,0,0,'','NULL','NULL','',0);
-INSERT INTO `tnetwork_component` VALUES (13,'RAM_Usage','Cisco Catalyst 3750',8,6,0,0,0,0,'','NULL','NULL','',0);
-INSERT INTO `tnetwork_component` VALUES (16,'CPU Usage','',7,6,0,0,0,0,'','NULL','NULL','',0);
-INSERT INTO `tnetwork_component` VALUES (17,'Memory available','',7,6,0,0,0,0,'','NULL','NULL','',0);
-INSERT INTO `tnetwork_component` VALUES (18,'Configuration changes','',7,6,0,0,0,0,'','NULL','NULL','',0);
-INSERT INTO `tnetwork_component` VALUES (19,'Power #1','',6,18,0,0,180,0,'','','public',' .1.3.6.1.4.1.2334.2.1.5.8.0',4);
-INSERT INTO `tnetwork_component` VALUES (20,'Power #2','',6,18,0,0,180,0,'','','public',' .1.3.6.1.4.1.2334.2.1.5.10.0',4);
-INSERT INTO `tnetwork_component` VALUES (21,'User concurrence','',6,6,0,0,0,0,'','NULL','NULL','',0);
-INSERT INTO `tnetwork_component` VALUES (22,'HSRP Status','Get status of HSRP',2,18,0,0,180,0,'','','public','1.3.6.1.4.1.9.9.106.1.2.1.1.15.12.106',2);
-INSERT INTO `tnetwork_component` VALUES (23,'Num. of classes','',6,6,0,0,0,0,'','NULL','NULL','',0);
+INSERT INTO `tnetwork_component` VALUES (19,'Power #1','PowerSupply #1 status',6,18,0,0,300,0,'','','public',' .1.3.6.1.4.1.2334.2.1.5.8.0',4);
+INSERT INTO `tnetwork_component` VALUES (20,'Power #2','PowerSupply #2 status',6,18,0,0,300,0,'','','public',' .1.3.6.1.4.1.2334.2.1.5.10.0',4);
+INSERT INTO `tnetwork_component` VALUES (22,'HSRP Status','Get status of HSRP',2,18,0,0,300,0,'','','public','1.3.6.1.4.1.9.9.106.1.2.1.1.15.12.106',2);
 INSERT INTO `tnetwork_component` VALUES (24,'NIC #1 status','Status of NIC#1',10,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.1',2);
 INSERT INTO `tnetwork_component` VALUES (25,'NIC #2 status','Status of NIC #2',10,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.2',2);
 INSERT INTO `tnetwork_component` VALUES (26,'NIC #3 status','Status of NIC #3',10,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.3',2);
@@ -71,8 +54,29 @@ INSERT INTO `tnetwork_component` VALUES (45,'NIC #4 Status','Get status of NIC #
 INSERT INTO `tnetwork_component` VALUES (46,'NIC #5 Status','Get status of NIC #5',10,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.5',2);
 INSERT INTO `tnetwork_component` VALUES (47,'NIC #6 Status','Get status of NIC #6',10,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.6',2);
 INSERT INTO `tnetwork_component` VALUES (48,'NIC #7 Status','Get status of NIC #7',10,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.7',2);
+INSERT INTO `tnetwork_component` VALUES (49,'CPU User','Linux User CPU Usage  (%)',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.9.0',4);
+INSERT INTO `tnetwork_component` VALUES (50,'CPU System','Linux System CPU usage',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.10.0',4);
+INSERT INTO `tnetwork_component` VALUES (51,'System Context Change','Linux System Context changes ',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.8.0',4);
+INSERT INTO `tnetwork_component` VALUES (52,'System Interrupts','Linux system interrupts ',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.7.0',4);
+INSERT INTO `tnetwork_component` VALUES (53,'Sytem IO Sent','Linux System IO Sent ',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.5.0',4);
+INSERT INTO `tnetwork_component` VALUES (54,'System IO Recv','Linux System IO Recv ',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.6.0',4);
+INSERT INTO `tnetwork_component` VALUES (55,'System SwapIn ','Linux System Swap In',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.3.0',1);
+INSERT INTO `tnetwork_component` VALUES (56,'System Buffer Memory','Linux System Buffer Memory (used as available memory)',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.4.14.0',4);
+INSERT INTO `tnetwork_component` VALUES (57,'System Cached Memory','Linux System Cached Memory (used as free memory)',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.4.15.0',4);
+INSERT INTO `tnetwork_component` VALUES (58,'System Processes','Total system process on any host',12,15,0,0,180,0,'','','public','.1.3.6.1.2.1.25.1.6.0',4);
 
-INSERT INTO `tnetwork_component_group` VALUES (1,'General group',0),(2,'Cisco MIBs',10),(3,'Nortel MIBS',10),(4,'3COM MIBs',10),(5,'UNIX MIBs',12),(6,'Packetshaper MIBs',10),(7,'Nortel BPS 2000 MIBs',3),(8,'Cisco Catalyst3750 MIBs',2),(9,'Cisco AP120+',2),(10,'Network Management',0),(11,'Microsoft Windows MIB',12),(12,'Operating Systems',0);
+INSERT INTO `tnetwork_component_group` VALUES (1,'General group',0);
+INSERT INTO `tnetwork_component_group` VALUES (2,'Cisco MIBs',10);
+INSERT INTO `tnetwork_component_group` VALUES (3,'Nortel MIBS',10);
+INSERT INTO `tnetwork_component_group` VALUES (4,'3COM MIBs',10);
+INSERT INTO `tnetwork_component_group` VALUES (5,'UNIX MIBs',12);
+INSERT INTO `tnetwork_component_group` VALUES (6,'Packetshaper MIBs',10);
+INSERT INTO `tnetwork_component_group` VALUES (7,'Nortel BPS 2000 MIBs',3);
+INSERT INTO `tnetwork_component_group` VALUES (8,'Cisco Catalyst3750 MIBs',2);
+INSERT INTO `tnetwork_component_group` VALUES (9,'Cisco AP120+',2);
+INSERT INTO `tnetwork_component_group` VALUES (10,'Network Management',0);
+INSERT INTO `tnetwork_component_group` VALUES (11,'Microsoft Windows MIB',12);
+INSERT INTO `tnetwork_component_group` VALUES (12,'Operating Systems',0);
 
 UPDATE ttipo_modulo SET icon = 'mod_data.png' WHERE icon = 'mod_data.gif';
 UPDATE ttipo_modulo SET icon = 'mod_proc.png' WHERE icon = 'mod_proc.gif';
@@ -91,3 +95,25 @@ UPDATE ttipo_modulo SET icon = 'mod_snmp_string.png' WHERE icon = 'mod_snmp_stri
 UPDATE ttipo_modulo SET icon = 'mod_snmp_proc.png' WHERE icon = 'mod_snmp_proc.gif';
 
 INSERT INTO `tnews` VALUES (1,'admin','Welcome to Pandora FMS 1.3 !','This is our new console, a lot of new features has been added from last version. Please read documentation about it and be free to test any option.\r\n\r\nPandora FMS team.','2007-06-22 13:03:20');
+
+INSERT INTO `tnetwork_profile` VALUES (1,'SNMP Basic management','Basic SNMP management (only first interface)');
+INSERT INTO `tnetwork_profile` VALUES (2,'Basic Server','Check basic server services and network latency. This checks SSH, FTP and HTTP. Also a ICMP host alive check.');
+INSERT INTO `tnetwork_profile` VALUES (3,'Linux SNMP','Linux SNMP Management');
+
+INSERT INTO `tnetwork_profile_component` VALUES (1,24,1);
+INSERT INTO `tnetwork_profile_component` VALUES (2,27,1);
+INSERT INTO `tnetwork_profile_component` VALUES (3,30,1);
+INSERT INTO `tnetwork_profile_component` VALUES (4,37,2);
+INSERT INTO `tnetwork_profile_component` VALUES (5,38,2);
+INSERT INTO `tnetwork_profile_component` VALUES (6,39,2);
+INSERT INTO `tnetwork_profile_component` VALUES (7,36,2);
+INSERT INTO `tnetwork_profile_component` VALUES (8,34,2);
+INSERT INTO `tnetwork_profile_component` VALUES (9,51,3);
+INSERT INTO `tnetwork_profile_component` VALUES (10,52,3);
+INSERT INTO `tnetwork_profile_component` VALUES (11,53,3);
+INSERT INTO `tnetwork_profile_component` VALUES (12,54,3);
+INSERT INTO `tnetwork_profile_component` VALUES (13,55,3);
+INSERT INTO `tnetwork_profile_component` VALUES (14,56,3);
+INSERT INTO `tnetwork_profile_component` VALUES (15,57,3);
+
+

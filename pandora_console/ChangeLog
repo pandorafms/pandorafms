@@ -1,3 +1,18 @@
+2007-08-23  Sancho Lerena  <slerena@gmail.com>
+
+	* pandoradbdata_12_to_13.sql, pandoradb_data.sql: Fixed some problems with 
+	network components, and network	templates.
+
+	* README: Updated doc with Guick Install Guide.
+
+	* godmode/agentes/agent_template.php: Fixed BUG #1770888.
+
+	* godmode/agentes/configurar_agente.php: Fixed BUG# 1770895.
+
+	* godmode/agentes/agent_manager.php: Fixed BUG# 1770895 and other new bug not 
+	identified when creating an agent and try to access some items.
+
+
 2007-08-22  Sancho Lerena  <slerena@gmail.com>
 
 	* pandoradb_data.sql: Fixed undetermined problem with alert data load 

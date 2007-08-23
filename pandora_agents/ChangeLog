@@ -1,3 +1,11 @@
+2007-08-23  Sancho Lerena <slerena@artica.es>
+
+	* linux/pandora_agent_intaller: Fixed problem with /var/log/pandora
+
+	* linux/README: Added, replacing old INSTALL file.
+
+	* linux/pandora_agent: Fixed problem with old path /var/log/pandora_agent.log
+
 2007-08-20  Sancho Lerena <slerena@artica.es>
 
 	New version of Pandora Agent for Windows (beta2).

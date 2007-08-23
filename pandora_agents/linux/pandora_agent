@@ -54,7 +54,7 @@ fi
 
 NOMBRE_HOST=`/bin/hostname`
 OS_NAME=`uname -s`
-PANDORA_LOGFILE=/var/log/pandora_agent.log
+PANDORA_LOGFILE=/var/log/pandora/pandora_agent.log
 TEMP=/tmp
 
 # Read config file

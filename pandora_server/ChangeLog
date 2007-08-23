@@ -1,4 +1,9 @@
-2007-08-21  Sancho Lerena  <slerena@gmail.com>
+2007-08-23  Sancho Lerena  <slerena@gmail.com>
+
+	* lib/PandoraFMS/Config.pm, bin/pandora_snmpconsole: Real fix for problem in 
+	snmplogfile.
+
+2007-08-21 Sancho Lerena <slerena@gmail.com>
 
 	* conf/pandora_server.conf: Final fixes for default file.
 
@@ -6,18 +11,18 @@
 
 	* bin/*: Disabled flush for each I/O (ready for production).
 
-2007-08-06  Sancho Lerena  <slerena@gmail.com>
+2007-08-06 Sancho Lerena <slerena@gmail.com>
 
 	* DB.pm: Alert time support uses TIME format instead numeric (changes requested
 	by esanchezm).
 
-2007-08-02  Sancho Lerena  <slerena@gmail.com>
+2007-08-02 Sancho Lerena <slerena@gmail.com>
 
 	* Makefile.PL: Missing dep updated and .pl extensions purged.
 
 	* All (4) startup scripts: Updated startup script.
 
-	* lib/PandoraFMS/Config.pm: Now servers dont get "Homedir" from command line, get 
+	* lib/PandoraFMS/Config.pm: Now servers dont get "Homedir" from command line, get
 	config file directly
 
 	* bin/pandora_recon, bin/pandora_server, bin/pandora_network, bin/pandora_snmpconsole:

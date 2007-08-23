@@ -110,7 +110,7 @@ main (int argc, char *argv[]) {
 			cout << "] [" << SERVICE_UNINSTALL_CMDLINE_PARAM;
 			cout << "] [" << SSH_TEST_CMDLINE_PARAM;
 			cout << "] [" << FTP_TEST_CMDLINE_PARAM;
-			cout << endl;
+			cout << endl << endl;
 			cout << "Run " << argv[0] << "with " << HELP_CMDLINE_PARAM;
 			cout << " parameter for more info." << endl;
 		

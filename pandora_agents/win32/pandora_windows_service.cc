@@ -72,6 +72,7 @@ Pandora_Windows_Service::~Pandora_Windows_Service () {
         if (this->modules != NULL) {
                 delete this->modules;
         }
+	pandoraLog ("Pandora agent stopped");	
 }
 
 bool
@@ -98,6 +99,7 @@ Pandora_Windows_Service::pandora_init () {
         
         setPandoraDebug (true);
         
+        pandoraLog ("Pandora agent started");
         conf_file = Pandora::getPandoraInstallDir ();
         conf_file += "pandora_agent.conf";
         
@@ -112,8 +114,8 @@ Pandora_Windows_Service::pandora_init () {
 	
         if (interval != "") {
 		try {
-			interval_ms = strtoint (interval)
-				* 1000 /* miliseconds */;
+			/* miliseconds */
+			interval_ms = strtoint (interval) * 1000;
 		} catch (Invalid_Conversion e) {
 		}
         }
@@ -121,7 +123,7 @@ Pandora_Windows_Service::pandora_init () {
         srand ((unsigned) time (0));
         this->setSleepTime (interval_ms);
         
-        pandoraDebug ("Init end");
+        pandoraLog ("Pandora agent started");
 }
 
 TiXmlElement *
@@ -278,7 +280,7 @@ Pandora_Windows_Service::copyDataFile (string filename)
 				    "in configuration file.");
 		}
 
-		pandoraLog ("Successfuly copied XML file to server.");
+		pandoraDebug ("Successfuly copied XML file to server.");
 	} catch (Pandora_Exception e) {
 	}
 }
@@ -291,7 +293,7 @@ Pandora_Windows_Service::pandora_run () {
 	string         tmp_filename, tmp_filepath, interval;
         bool           saved;
         
-        pandoraLog ("Run begin");
+        pandoraDebug ("Run begin");
         
         agent = getXmlHeader ();
 	
@@ -357,7 +359,7 @@ Pandora_Windows_Service::pandora_run () {
 
 	/* Get the interval value (in minutes) */
         interval = conf->getValue ("interval");
-        pandoraLog ("Next execution on %s mins", interval.c_str ());
+        pandoraLog ("Next execution on %s seconds", interval.c_str ());
         
         return;
 }

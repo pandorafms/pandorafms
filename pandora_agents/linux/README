@@ -1,0 +1,209 @@
+Pandora FMS : The Free Monitoring System (v1.3)
+===============================================
+
+http://pandora.sourceforge.net
+
+What is Pandora FMS
+-------------------
+
+Pandora watches your systems and applications, and allows you to know the status of any element 
+of those systems. Pandora could detect a network interface down, a defacement in your website, 
+a memory leak in one of your server app, or the movement of any value of the NASDAQ new 
+technology market. If you want, Pandora could send out SMS message when your systems fails... 
+or when Google's value drop below US$ 33.
+
+Pandora will adjust, like an octopus, to your systems and requirements, because has been 
+designed to be open, modular, multiplattform and easy to customize and use, all integrated into 
+a scalable and distributed architecture.
+
+Pandora runs on any operating system, with specific agents for each platform gathering data and 
+sending it to a server, it has specific agents for GNU/Linux, AIX, Solaris, HP-UX, BSD/IPSO, 
+and Windows 2000, XP and 2003.
+
+Pandora can also monitor any kind of TCP/IP service, without the need to install agents, and 
+monitor network systems such as load balancers, routers, switches, operating systems, 
+applications, or simply printers if you need. Pandora also supports SNMP for collecting data 
+and for receiving traps.
+
+A few examples of common resources monitored by Pandora could be processor load, disk and 
+memory usage, running processes, log files, environmental factors such as temperature, or 
+application values like strings contained in web pages or any possible way to collect data in 
+an automatic way.
+
+Pandora FMS Features
+--------------------
+
+    * Lightweigth agents. No need to install adicional software.
+    * Also could use network to collect data on remote systems.
+    * High availability for each component.
+    * Escalable architecture: no liminitation on number of servers you can setup for the same enviroment.
+    * Internal detection on Network Servers in case of failure, automatic takeover of secondary servers.
+    * Stores all data for many weeks or months
+    * Support for implementing redundant and distributed monitoring servers.
+    * Data is stored in a relational database (MySQL).
+    * Automatic database optimization for size, using interpolation and compression algorithms.
+    * Integrated alert systems: send mails, execute scripts, send SMS, or simply write to syslog are a few examples.
+    * Integrated graphical reporting system for any kind of collected data.
+    * SNMP Trap reception with Realtime Console.
+    * Granularity of accesses and user profiles for each group and each user.
+    * Integrated internal auditing for any operation.
+    * Alert filtering to avoid false positives.
+    * Event system with user validation for operation in teams.
+    * Integrated incident system with flows and different profiles.
+    * Any collected value can be displayed as graph or data table.
+    * Alerts can be triggered any kind of event, in many ways.
+    * WebConsole on line HTML contextual help.
+    * Integrated DB management: purge and DB compaction.
+    * Mass configuration/alert manager to copy and distribute agent-module and/or agents/alerts setup to other agents.
+    * Profiles could be personalized using up to eight security attributes without limitation on groups or profiles.
+    * Filters for collected data to avoid bad data.
+
+Install
+-------
+
+Please visit our online documentation site or download install guides at 
+http://pandora.sourceforge.net.
+
+Quick Install Guide for Pandora FMS UNIX AGENTS 1.3
+---------------------------------------------------
+
+Installing Pandora FMS Agent for unix
+
+Untar agent tarball, for example at /tmp/pandora_agent
+
+As root, execute command line installer:
+
+    ./pandora_agent_installer --install
+
+This should install your agent, setup permissions and place files in their respective locations:
+
+    root@blackbox01:/tmp/pandora/pandora_agents/linux# ./pandora_agent_installer --install
+
+    Pandora FMS Agent Installer 1.0 (c) 2007 Sancho Lerena
+    This program is licensed under GPL2 Terms. http://pandora.sourceforge.net
+
+    Checking default dir /usr/share/pandora_agent...
+    Checking Pandora FMS Agent on /usr/bin/pandora_agent....
+    Creating Pandora FMS Agent home directory at /usr/share/pandora_agent ...
+    .
+    .
+    
+    Creating logfile at /var/log/pandora_agent.log...
+    Copying Pandora FMS Agent to /usr/bin/pandora_agent...
+    You have your startup script ready at /etc/init.d/pandora_agent_daemon
+    First you need to copy your public SSH keys (/home/slerena/.ssh/id_dsa)
+    under /home/pandora/.ssh/authorized_keys on your Pandora FMS Server host
+    You also need to setup your /etc/pandora/pandora_agent.conf config file
+
+Setup SSH authentication
+
+Due that Pandora FMS agent connect by SSH you need to setup SSH keys now. You also can use FTP method by 
+using .netrc file, but it's much more secure and better to use SFTP with SSH2).
+
+Probably you want to run Pandora FMS agent under root privileges to grab system data. It's possible that you 
+don't need to run as root to collect data you need, in that case, procedure are the same, but using another 
+user.
+
+Create ssh keys using DSA type for key:
+
+	ssh-keygen -t dsa
+
+And reply as follows to questions (enter to all questiosn):
+
+	Generating public/private dsa key pair.
+	Enter file in which to save the key (/root/.ssh/id_dsa):
+	Created directory '/root/.ssh'.
+	Enter passphrase (empty for no passphrase):
+	Enter same passphrase again:
+	Your identification has been saved in /root/.ssh/id_dsa.
+	Your public key has been saved in /root/.ssh/id_dsa.pub.
+	The key fingerprint is:
+	xx:xx:xx:xx:xx:xx:xx:xx:xx:2d:68:30:f7:53:2d:7e
+
+You need to add your PUBLIC key (/root/.ssh/id_dsa.pub) to /home/pandora/.ssh/authorized_keys file in each 
+Pandora FMS data server you want to use with this agent.
+
+Login to Pandora FMS data server, and add the key on /home/pandora/.ssh/authorized_keys file. You could use 
+cut and paste, for example, or copying file with scp or ftp from one system to another. Take care of 
+carriage returns. Public key "appearance" is like as:
+
+  ssh-dss AAAAB3NzaC1kc3MAAACBAMR4WOOvuT3UyZPKC/NcqBuduB/H8oKF2LRv52LX88YNO
+  kgdIPNOat+NeweCuQdVOaDUNvFTgnyYV6iBtApstzUl6ndKALZlDoZnBYULYTUtBF+cdRHq7v
+  n0bufIMRHFpg8ZvqR3dBulz6bVQqJu8nqZGQDyLgPEmkQ6O9 root@blackbox01
+
+The entire block MUST BE in a SINGLE LINE, if not, don't work. Also, /home/pandora/.ssh/ directory and 
+/home/pandora/.ssh/authorized_keys in server, should have "pandora" user ownership and permissions set to 
+700 for directory and 600 for authorized_keys file.
+
+For example, if you have copied id_dsa.pub to /tmp in server system:
+
+	cat /tmp/id_dsa.pub >> /home/pandora/.ssh/authorized_keys
+	chmod 600 /home/pandora/.ssh/authorized_keys
+	chmod 700 /home/pandora/.ssh/
+	chown -R pandora /home/pandora/
+
+Image:Warning.png Warning! Setting up SSH authentication is a mess due ANY step you missed, makes auth to 
+fails, so please don't skip nothing
+
+Always test this connection to check that SSH authentication is working. From your agent system, where 
+Pandora FMS agent is running, try to contact Pandora FMS server:
+
+	ssh pandora@server_ip
+
+First time a hostkey authentication changenge should show you something like:
+
+	The authenticity of host 'xxxxx (x.x.x.x)' can't be established.
+	RSA key fingerprint is 42:d4:a5:f2:a7:b8:1f:c3:d5:42:ab:c7:b5:5b:af:57.
+	Are you sure you want to continue connecting (yes/no)?     
+
+Reply yes, and you should see the system prompt for user pandora, WITHOUT asking for password, because SSH 
+automatic authentication, based on DSA Keys, should work and resolve authentication. If not, try to review 
+previous steps. Note that if you're using scponly protection, shell don't be available, but authentication 
+will be correct.
+
+If you have serious problems and get stuck, try to setup maximun verbosity of SSH Daemon on System running 
+Pandora FMS server:
+
+	vi /etc/ssh/sshd_config
+
+Replace LogLevel INFO for LogLevel DEBUG2
+
+Restart ssh
+
+	/etc/init.d/ssh restart
+
+Now you have MUCH MORE information about SSH problems. In debian this information is at /var/log/auth.log. 
+Dont forget to set again LogLevel INFO in your sshd_config and restart again SSH, or too much loggin will be 
+generated (and performance penalty).
+
+Configure Pandora FMS agent
+
+Your config file is at /etc/pandora/pandora_agent.conf, edit it and setup that variables:
+
+    * server_ip: put IP address of your Pandora FMS data server
+    * debug: set it to zero to not use debug mode. 
+
+Rest of parameters could be default values.
+
+Check out some of the default modules to have an idea of your agent will do and what kind of information 
+will report to Pandora FMS data server. This could be modified in any time (restarting agent).
+
+Run your Pandora FMS unix agent
+
+First to need to create your agent in your Pandora FMS console as described in "new agent" procedure (but 
+you don't need to create network modules), only create an agent with the SAME name that have your system. 
+After creating agent in console, you could launch agent:
+
+	/etc/init.d/pandora_agent_daemon start
+
+If you have problems, a good idea is restart Pandora FMS agent manually to check errors in startup:
+
+	pandora_agent /etc/pandora
+
+License
+-------
+
+The project is distributed under the GPL License v2 or later.
+
+Copyright (C) 2004-2007 Pandora FMS development team
+

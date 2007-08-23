@@ -12,7 +12,7 @@ PANDORA_BIN=/usr/bin/pandora_agent
 PANDORA_HOME=/usr/share/pandora_agent
 PANDORA_TEMP=/var/spool/pandora
 PANDORA_CFG=/etc/pandora
-PANDORA_LOG=/var/log/pandora_agent.log
+PANDORA_LOG=/var/log/pandora/pandora_agent.log
 PANDORA_STARTUP=/etc/init.d/pandora_agent_daemon
 FORCE=0
 LOG_TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`
@@ -63,6 +63,7 @@ install () {
         mkdir $PANDORA_TEMP
         mkdir $PANDORA_TEMP/data_out
         mkdir $PANDORA_CFG
+	mkdir /var/log/pandora
 
         # Create logfile
         if [ ! -z "`touch $PANDORA_LOG`" ]

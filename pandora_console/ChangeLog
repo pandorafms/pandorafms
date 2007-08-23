@@ -1,5 +1,7 @@
 2007-08-23  Sancho Lerena  <slerena@gmail.com>
 
+	* datos_agente.php: Fix delete button for String data.
+
 	* pandoradbdata_12_to_13.sql, pandoradb_data.sql: Fixed some problems with 
 	network components, and network	templates.
 

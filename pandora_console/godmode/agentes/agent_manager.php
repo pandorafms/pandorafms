@@ -75,18 +75,23 @@ echo '<tr><td class="datos2">';
 echo '<b>'.$lang_label["ip_address"].'</b>';
 echo '<td class="datos2">';
 echo '<input type="text" name="direccion" size="12" value="'.$direccion_agente.'">';
-echo "&nbsp;&nbsp;&nbsp;&nbsp;";
 
-echo '<select name="address_list">';
-$sql1 = "SELECT * FROM taddress, taddress_agent
-	WHERE taddress.id_a = taddress_agent.id_a
-	AND   taddress_agent.id_agent = $id_agente";
-if ($result=mysql_query($sql1))
-	while ($row=mysql_fetch_array($result)){
-		echo "<option value='".salida_limpia($row["ip"])."'>".salida_limpia($row["ip"])."&nbsp;&nbsp;";
-	}
-echo "<input name='delete_ip' type=checkbox value='1'> ".$lang_label["delete_sel"];
-echo "</td>";
+if ($create_agent != 1){
+	echo "&nbsp;&nbsp;&nbsp;&nbsp;";
+
+	echo '<select name="address_list">';
+	$sql1 = "SELECT * FROM taddress, taddress_agent
+		WHERE taddress.id_a = taddress_agent.id_a
+		AND   taddress_agent.id_agent = $id_agente";
+	if ($result=mysql_query($sql1))
+		while ($row=mysql_fetch_array($result)){
+			echo "<option value='".salida_limpia($row["ip"])."'>".salida_limpia($row["ip"])."&nbsp;&nbsp;";
+		}
+	echo "</select>";
+
+	echo "<input name='delete_ip' type=checkbox value='1'> ".$lang_label["delete_sel"];
+	echo "</td>";
+}
 
 echo '<tr><td class="datos"><b>'.$lang_label["group"].'</b>';
 echo '<td class="datos"><select name="grupo" class="w130">';

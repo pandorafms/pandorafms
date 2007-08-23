@@ -1,4 +1,6 @@
 2007-08-23  Sancho Lerena  <slerena@gmail.com>
+
+	* Fixed a BUG in daemon launcher scripts that makes to do not stop servers :(
 	
 	* Added a updated README.
 

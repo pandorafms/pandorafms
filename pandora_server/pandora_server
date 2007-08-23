@@ -42,7 +42,7 @@ case "$1" in
 	$PANDORA_DAEMON $PANDORA_HOME -D
 	sleep 1
 
-	MYPID=`ps aux | grep 'pandora_server' | grep -v grep | tail -1 | awk '{print $2}'`
+	MYPID=`ps aux | grep "$PANDORA_DAEMON" | grep -v grep | tail -1 | awk '{print $2}'`
 	if [ ! -z "$MYPID" ]
 	then
 		echo $MYPID > $PANDORA_PID

@@ -42,7 +42,7 @@ case "$1" in
 	$PANDORA_DAEMON $PANDORA_HOME -D
 	sleep 1
 
-	MYPID=`ps aux | grep 'pandora_network' | grep -v grep | tail -1 | awk '{print $2}'`
+	MYPID=`ps aux | grep "$PANDORA_DAEMON" | grep -v grep | tail -1 | awk '{ print $2 }'`
 	if [ ! -z "$MYPID" ]
 	then
 		echo $MYPID > $PANDORA_PID
@@ -60,6 +60,8 @@ case "$1" in
 	   if [ ! -z "`ps -F -p $PID_2 | grep -v grep | grep 'pandora_network' `" ]
            then
 	       kill `cat $PANDORA_PID` 2> /dev/null > /dev/null
+	   else
+	       echo "Pandora FMS Network Server is not executing with PID $PID_2, skip Killing step"
 	   fi
            rm -f $PANDORA_PID
 	else

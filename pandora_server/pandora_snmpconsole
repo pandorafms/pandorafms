@@ -47,7 +47,7 @@ case "$1" in
                 fi
         fi
 
-	SNMP_WARNING=`ps aux | grep "snmptrapd" | grep -v grep | wc -l`
+	SNMP_WARNING=`ps aux | grep "$DAEMON_PATH" | grep -v grep | wc -l`
 	if [ $SNMP_WARNING == 1 ]
 	then
 		echo "WARNING: Seems to be already running a SNMP trap daemon on this system not associated with Pandora FMS"
@@ -101,7 +101,7 @@ case "$1" in
 	$PANDORA_DAEMON $PANDORA_HOME -D
 	sleep 1
 
-	MYPID=`ps aux | grep 'pandora_snmpconsole' | grep -v grep | tail -1 | awk '{print $2}'`
+	MYPID=`ps aux | grep "$PANDORA_DAEMON" | grep -v grep | tail -1 | awk '{print $2}'`
 	if [ ! -z "$MYPID" ]
 	then
 		echo $MYPID > $PANDORA_PID

@@ -1,3 +1,11 @@
+2007-08-23  Esteban Sanchez  <estebans@artica.es>
+
+	* pandora_windows_service.cc: Reduced output log level in normal use.
+
+	* main.cc: Added a new line on help output.
+
+	* bin/PandoraAgent.exe: Updated to last commit.
+
 2007-08-16  Esteban Sanchez  <estebans@artica.es>
 
 	* ftp/pandora_ftp_test.[cc,h]: Added to repository. Implements a FTP

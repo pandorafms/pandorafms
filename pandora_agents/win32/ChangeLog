@@ -1,3 +1,7 @@
+2007-08-23  Sancho Lerena  <slerena@artica.es>
+
+	* bin/pandora_agent.conf: More comple sample config.
+
 2007-08-23  Esteban Sanchez  <estebans@artica.es>
 
 	* pandora_windows_service.cc: Reduced output log level in normal use.

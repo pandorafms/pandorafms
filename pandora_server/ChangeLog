@@ -1,4 +1,6 @@
 2007-08-23  Sancho Lerena  <slerena@gmail.com>
+	
+	* Added a updated README.
 
 	* lib/PandoraFMS/Config.pm, bin/pandora_snmpconsole: Real fix for problem in 
 	snmplogfile.

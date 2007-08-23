@@ -50,11 +50,13 @@ function datos_raw($id_agente_modulo, $periodo){
 		$sql1="SELECT * FROM tagente_datos_string WHERE id_agente_modulo = ".
 		$id_agente_modulo." AND id_agente = $id_agent AND utimestamp > '".$periodo."' 
 		ORDER BY timestamp DESC"; 
+		$string_type = 1;
 	}
 	else {
 		$sql1="SELECT * FROM tagente_datos WHERE id_agente_modulo = ".
 		$id_agente_modulo." AND id_agente = $id_agent AND utimestamp > '".$periodo."' 
 		ORDER BY timestamp DESC";
+		$string_type = 0;
 	}
 	
 	$result=mysql_query($sql1);
@@ -81,7 +83,7 @@ function datos_raw($id_agente_modulo, $periodo){
 				$color = 1;
 			}
 			echo "<tr>";
-			if (give_acl($id_user, $id_group, "AW") ==1) {
+			if ((give_acl($id_user, $id_group, "AW") ==1) AND ($string_type == 0)){
 				echo "<td class='".$tdcolor."' width=20>";
 				echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=$periodo_label&id=$id_agente_modulo&delete=".$row["id_agente_datos"]."'><img src='images/cross.png' border=0>";
 			} else {

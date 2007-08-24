@@ -159,40 +159,22 @@ Pandora_Wmi::getDiskFreeSpace (string disk_id) {
 	CDispPtr           wmi_svc, quickfixes;
 	string             id, space_str;
 	unsigned long long space = 0;
+	string             query;
 	
-        struct QFix {
-		CDhStringA id, free_space;
-	};
-        
+	query = "SELECT DeviceID, FreeSpace FROM Win32_LogicalDisk WHERE DeviceID = \"" + disk_id + "\"";
+
 	try {
                 dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
 		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
-                                     L".ExecQuery(%S)",
-                                     L"SELECT DeviceID, FreeSpace FROM Win32_LogicalDisk "));
+                                     L".ExecQuery(%T)",
+                                     query.c_str ()));
 
 		FOR_EACH (quickfix, quickfixes, NULL) {
-			QFix fix = { 0 };
-
-			dhGetValue (L"%s", &fix.id, quickfix,
-                                    L".DeviceID");
-
-			id = fix.id;
-			
-			if (disk_id == id) {
-				dhGetValue (L"%s", &fix.free_space, quickfix,
-					    L".FreeSpace");
-				
-				space_str = fix.free_space;
-				
-				try {
-					space = Pandora_Strutils::strtoulong (space_str);
-				} catch (Pandora_Exception e) {
-					throw Pandora_Wmi_Exception ();
-				}
-				
-				return space / 1024 / 1024;
-			}
-
+			dhGetValue (L"%d", &space, quickfix,
+				    L".FreeSpace");
+			cout << space << endl;
+						
+			return space / 1024 / 1024;
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
 		pandoraLog ("getDiskFreeSpace error. %s", errstr.c_str ());

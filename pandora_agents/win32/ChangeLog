@@ -1,3 +1,10 @@
+2007-08-24  Esteban Sanchez  <estebans@artica.es>
+
+	* win32/windows/pandora_wmi.cc: Fixed a bug when reading free space
+	from a read-only device such as CD-ROM by improving the WQL query.
+
+	* bin/PandoraAgent.exe: Updated to last commit.
+
 2007-08-23  Sancho Lerena  <slerena@artica.es>
 
 	* bin/pandora_agent.conf: More comple sample config.

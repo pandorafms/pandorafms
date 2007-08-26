@@ -405,7 +405,7 @@ $BASE_URL="'.$url.'";			// Base URL
 		
 		<div id='install_img'>";
 			if ($everything_ok == 1) {
-				echo "<br><br><a href='upgrade.php?step=5'><img align='right' src='images/arrow_next.png' border='0' class=''></a>";
+				echo "<br><br><a href='upgrade.php?step=5'><img align='right' src='images/arrow_next.png' border='0' alt=''></a>";
 			} else {
 				echo "<div class='warn'><b>There was some problems. Installation is not completed.</b> 
 				<p>Please correct failures, and restore original DB before trying again.</div>";

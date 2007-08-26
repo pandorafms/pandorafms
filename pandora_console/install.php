@@ -162,7 +162,7 @@ function install_step1() {
 		if (file_exists("include/config.php")){
 			echo "<div class='warn'><b>Warning:</b> You already have a config.php file. Configuration and database would be overwritten if you continued.</div>";
 		}
-		echo "<div class='warn'><b>Warning:</b> This installer will <b>overwrite and destroy</b> your existing Pandora FMS configuration and <b>Database</b>. Before contine, please <b>be sure that you have no valuable Pandora FMS data in your Database.</b><br></div>";
+		echo "<div class='warn'><b>Warning:</b> This installer will <b>overwrite and destroy</b> your existing Pandora FMS configuration and <b>Database</b>. Before continue, please <b>be sure that you have no valuable Pandora FMS data in your Database.</b><br></div>";
 		echo "<div class='info'>If you want to <b>upgrade</b> Pandora FMS 1.2 to 1.3 version, use the <a 
 href='upgrade.php'>automated update wizard</a></div>";
 		echo "
@@ -213,7 +213,7 @@ function install_step2() {
 				</div>
 				Ignore it. <a href='install.php?step=3'>Force install Step #3</a>";
 			} else {
-				echo "<a href='install.php?step=3'><img align='right' src='images/arrow_next.png' border=0 alt=''></a>";
+				echo "<a href='install.php?step=3'><img align='right' src='images/arrow_next.png' border='0' alt=''></a>";
 			}
 			echo "
 		</div>
@@ -243,7 +243,7 @@ function install_step3() {
 			<p>
 			Now, please, complete all details to configure your database and enviroment setup.
 			</p>
-			<div class='warn'><b>Warning:</b> This installer will <b>overwrite and destroy</b> your existing Pandora FMS configuration and <b>Database</b>. Before contine, please <b>be sure that you have no valuable Pandora FMS data in your Database.</b><br></div>
+			<div class='warn'><b>Warning:</b> This installer will <b>overwrite and destroy</b> your existing Pandora FMS configuration and <b>Database</b>. Before continue, please <b>be sure that you have no valuable Pandora FMS data in your Database.</b><br></div>
 			<form method='post' action='install.php?step=4'>
 				<div>DB User with privileges on MySQL</div>
 				<input class='login' type='text' name='user' value='root'>
@@ -377,7 +377,7 @@ $BASE_URL="'.$url.'";			// Base URL
 		
 		<div id='install_img'>";
 			if ($everything_ok == 1) {
-				echo "<br><br><a href='install.php?step=5'><img align='right' src='images/arrow_next.png' border=0 class=''></a>";
+				echo "<br><br><a href='install.php?step=5'><img align='right' src='images/arrow_next.png' border='0' alt=''></a>";
 			} else {
 				echo "<div class='warn'><b>There was some problems. Installation is not completed.</b> 
 				<p>Please correct failures before trying again.

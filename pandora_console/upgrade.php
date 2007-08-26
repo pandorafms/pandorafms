@@ -200,7 +200,7 @@ upgrade Pandora FMS 1.2 to Pandora FMS 1.3</p>
 			echo "<div class='warn'><b>Warning:</b> You already have a config.php file in this directory, please backup and move it before continue.</div>";
 		}
 		echo "<div class='warn'><b>Warning:</b> This upgrade tool will <b>overwrite and change</b> your existing Pandora FMS
-<b>Database</b> and only could be used to upgrade fron Pandora FMS 1.2 to Pandora FMS 1.3. Before contine, please <b>be sure that you 
+<b>Database</b> and only could be used to upgrade fron Pandora FMS 1.2 to Pandora FMS 1.3. Before continue, please <b>be sure that you 
 have made a SQL backup using mysqldump system tool as described in documentation.</b><br></div>";
 		echo "
 		</div>
@@ -244,7 +244,7 @@ function install_step2() {
 			echo "</table>
 		</div>
 		<div id='logo_img'>
-			<img src='images/pandora_logo.png' border='0'' alt=''><br>
+			<img src='images/pandora_logo.png' border='0' alt=''><br>
 			<img src='images/step1.png' border='0' alt=''>
 		</div>
 		<div id='install_img'>";
@@ -349,7 +349,7 @@ function install_step4() {
 	<h1>Pandora FMS upgrade wizard. Step #4 of 5</h1>
 	<div id='wizard' style='height: 540px;'>
 		<div id='install_box'>
-			<h1>Modifing database schema and adding data</h1></2>This could take a while...please wait</h2>
+			<h1>Modifing database schema and adding data</h1>This could take a while... please wait</h2>
 			<table>";
 			if (! mysql_connect ($dbhost,$dbuser,$dbpassword)) {
 				check_generic ( 0, "Connection with Database");
@@ -405,7 +405,7 @@ $BASE_URL="'.$url.'";			// Base URL
 		
 		<div id='install_img'>";
 			if ($everything_ok == 1) {
-				echo "<br><br><a href='upgrade.php?step=5'><img align='right' src='images/arrow_next.png' border=0 class=''></a>";
+				echo "<br><br><a href='upgrade.php?step=5'><img align='right' src='images/arrow_next.png' border='0' class=''></a>";
 			} else {
 				echo "<div class='warn'><b>There was some problems. Installation is not completed.</b> 
 				<p>Please correct failures, and restore original DB before trying again.</div>";
@@ -430,7 +430,7 @@ function install_step5() {
 	<h1>Pandora FMS upgrade wizard. Finished</h1>
 	<div id='wizard' style='height: 300px;'>
 		<div id='install_box'>
-			<h1>Upgrade complete !</h1>
+			<h1>Upgrade complete!</h1>
 			<p>You now must delete manually installer and upgrade tool ('<i>install.php</i>, <i>upgrade.php</i>') files for security before trying to access to your Pandora FMS console.
 			<p>Don't forget to check <a href='http://pandora.sourceforge.net'>http://pandora.sourceforge.net</a> for updates.
 			<p><a href='index.php'>Click here to access to your Pandora FMS console</a></p>

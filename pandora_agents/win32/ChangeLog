@@ -1,3 +1,12 @@
+2007-08-27  Esteban Sanchez  <estebans@artica.es>
+
+	* pandora.cc: Updated buildname.
+
+	* main.cc: Added a missing "]" character. Added version number when
+	showing the help. Fixes #1782569.
+
+	* bin/PandoraAgent.exe: Updated to last commit.
+
 2007-08-24  Esteban Sanchez  <estebans@artica.es>
 
 	* pandora.cc: Changed log and debug file to have the same name that
@@ -9,6 +18,7 @@
 
 	* win32/windows/pandora_wmi.cc: Fixed a bug when reading free space
 	from a read-only device such as CD-ROM by improving the WQL query.
+	(Fixes #1780455)
 
 	* bin/PandoraAgent.exe: Updated to last commit.
 

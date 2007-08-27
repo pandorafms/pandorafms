@@ -1,6 +1,11 @@
+2007-08-27  Raul Mateos  <raulofpandora@gmail.com>
+
+	* win32/installer/How_to_create_installer.txt: Changed mpi name.
+	Added libcurl.dll and more info.
+
 2007-08-23  Sancho Lerena <slerena@artica.es>
 
-	* linux/pandora_agent_intaller: Fixed problem with /var/log/pandora
+	* linux/pandora_agent_installer: Fixed problem with /var/log/pandora
 
 	* linux/README: Added, replacing old INSTALL file.
 

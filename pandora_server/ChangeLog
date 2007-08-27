@@ -1,3 +1,10 @@
+2007-08-27  Sancho Lerena  <slerena@gmail.com>
+
+        * lib/PandoraFMS/Config.pm: Updated version string.
+
+        * bin/pandora_network: Fixed BUG with SNMP Timeout (net-snmp uses MICROSECONDS
+        instead seconds!)
+
 2007-08-23  Sancho Lerena  <slerena@gmail.com>
 
 	* Fixed a BUG in daemon launcher scripts that makes to do not stop servers :(

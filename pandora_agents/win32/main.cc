@@ -92,6 +92,8 @@ main (int argc, char *argv[]) {
 		
 		}  else if (_stricmp(argv[i], HELP_CMDLINE_PARAM) == 0) {
 			/* Help parameter */
+			cout << "Pandora agent for Windows. ";
+			cout << "Version " << getPandoraAgentVersion () << endl;
 			cout << "Usage: " << argv[0] << " [OPTION]" << endl << endl;
 			cout << "Available options are:" << endl;
 			cout << "\t" << SERVICE_INSTALL_CMDLINE_PARAM;
@@ -106,18 +108,21 @@ main (int argc, char *argv[]) {
 			return 0;
 		} else {
 			/* No parameter recognized */
+			cout << "Pandora agent for Windows. ";
+			cout << "Version " << getPandoraAgentVersion () << endl;
 			cout << "Usage: " << argv[0] << " [" << SERVICE_INSTALL_CMDLINE_PARAM;
 			cout << "] [" << SERVICE_UNINSTALL_CMDLINE_PARAM;
 			cout << "] [" << SSH_TEST_CMDLINE_PARAM;
-			cout << "] [" << FTP_TEST_CMDLINE_PARAM;
+			cout << "] [" << FTP_TEST_CMDLINE_PARAM << "]";
 			cout << endl << endl;
-			cout << "Run " << argv[0] << "with " << HELP_CMDLINE_PARAM;
+			cout << "Run " << argv[0] << " with " << HELP_CMDLINE_PARAM;
 			cout << " parameter for more info." << endl;
 		
 			return 1;
 		}
 	}
-	service->run ();
+	service->pandora_init ();
+	service->pandora_run ();
 
 	delete service;
 

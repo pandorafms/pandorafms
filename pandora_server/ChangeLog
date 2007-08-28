@@ -1,3 +1,9 @@
+2007-08-28  Sancho Lerena  <slerena@gmail.com>
+
+	* util/pandora_db.pl: Added some fixes and new checks for database
+	consistency. Also purge non-init modules (needed to avoid unused modules 
+	that take too much time on network servers!).
+
 2007-08-27  Sancho Lerena  <slerena@gmail.com>
 
         * lib/PandoraFMS/Config.pm: Updated version string.

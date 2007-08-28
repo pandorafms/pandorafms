@@ -99,7 +99,6 @@ Pandora_Windows_Service::pandora_init () {
         
         setPandoraDebug (true);
         
-        pandoraLog ("Pandora agent started");
         conf_file = Pandora::getPandoraInstallDir ();
         conf_file += "pandora_agent.conf";
         
@@ -359,7 +358,7 @@ Pandora_Windows_Service::pandora_run () {
 
 	/* Get the interval value (in minutes) */
         interval = conf->getValue ("interval");
-        pandoraLog ("Next execution on %s seconds", interval.c_str ());
+        pandoraDebug ("Next execution on %s seconds", interval.c_str ());
         
         return;
 }

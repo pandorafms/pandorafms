@@ -121,8 +121,7 @@ main (int argc, char *argv[]) {
 			return 1;
 		}
 	}
-	service->pandora_init ();
-	service->pandora_run ();
+	service->run ();
 
 	delete service;
 

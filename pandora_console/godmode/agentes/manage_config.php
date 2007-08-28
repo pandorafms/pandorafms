@@ -50,7 +50,7 @@ if (comprueba_login() == 0)
 
 				// Source
 				$id_origen = $_POST["origen"];
-
+				
 				// If selected modules or alerts
 				if (isset($_POST["modules"]))
 					$modulos = 1;
@@ -89,7 +89,6 @@ if (comprueba_login() == 0)
 								$o_id_tipo_modulo = $row["id_tipo_modulo"];
 								$o_nombre = $row["nombre"];
 								$d_id_agente = $id_agente; // Rapelace with destination agent id
-								
 								// Read every module in source agent				
 								$o_descripcion = $row["descripcion"];
 								$o_max = $row["max"];
@@ -100,7 +99,9 @@ if (comprueba_login() == 0)
 								$o_tcp_rcv = $row["tcp_rcv"];
 								$o_snmp_community = $row["snmp_community"];
 								$o_snmp_oid = $row["snmp_oid"];
-								$o_ip_target = $row["ip_target"];
+								// Replace IP Address for main ip address of destination module
+								$real_ip_address = give_agent_address ($id_agente);
+								$o_ip_target = $real_ip_address;
 								$o_id_module_group = $row["id_module_group"];
 								
 								// Write every module in destination agent
@@ -108,7 +109,28 @@ if (comprueba_login() == 0)
 									$sql = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,descripcion,nombre, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, ip_target, id_module_group, flag) VALUES
 									(".$d_id_agente.",'".$o_id_tipo_modulo."','".$o_descripcion."','".$o_nombre."', '$o_max', '$o_min', '$o_module_interval', '$o_tcp_port','$o_tcp_send','$o_tcp_rcv','$o_snmp_community','$o_snmp_oid','$o_ip_target',$o_id_module_group, 1)";
 									$result2=mysql_query($sql);
-							 // echo "DEBUG INSERT $sql <br>";
+									$o_id_agente_modulo = mysql_insert_id();
+									
+									// Create with different estado if proc type or data type
+									if (
+									($o_id_tipo_modulo == 2) ||
+									($o_id_tipo_modulo == 6) || 
+									($o_id_tipo_modulo == 9) ||
+									($o_id_tipo_modulo == 12) || 
+									($o_id_tipo_modulo == 18)){
+										$sql_status_insert = "INSERT INTO tagente_estado 
+										(id_agente_modulo,datos,timestamp,cambio,estado,id_agente, utimestamp) 
+										VALUES (
+										$o_id_agente_modulo, 0,'0000-00-00 00:00:00',0,0,'".$d_id_agente."',0
+										)";
+									} else { 
+										$sql_status_insert = "INSERT INTO tagente_estado
+										(id_agente_modulo,datos,timestamp,cambio,estado,id_agente, utimestamp) 
+										VALUES (
+										$o_id_agente_modulo, 0,'0000-00-00 00:00:00',0,100,'".$d_id_agente."',0
+										)";
+									}
+									$result_status=mysql_query($sql_status_insert);
 									echo "<br>&nbsp;&nbsp;".$lang_label["copymod"]." ->".$o_nombre;
 								}
 							}
@@ -218,11 +240,9 @@ if (comprueba_login() == 0)
 							$sql_delete1="DELETE FROM tagente_datos WHERE id_agente_modulo=".$row["id_agente_modulo"];
 							$sql_delete2="DELETE FROM tagente_datos_inc WHERE id_agente_modulo=".$row["id_agente_modulo"];
 							$sql_delete3="DELETE FROM tagente_datos_string WHERE id_agente_modulo=".$row["id_agente_modulo"];
-							$sql_delete4 ="DELETE FROM talerta_agente_modulo WHERE id_agente_modulo = ".$row["id_agente_modulo"];
 							$result=mysql_query($sql_delete1);
 							$result=mysql_query($sql_delete2);
 							$result=mysql_query($sql_delete3);
-							$result=mysql_query($sql_delete4);
 						}
 					
 					// Delete conf
@@ -233,8 +253,6 @@ if (comprueba_login() == 0)
 					}
 					// delete alerts definitions
 					if ($alertas == 1){ 
-						echo "<br>".$lang_label["deleting_data"]." -> ".dame_nombre_agente($id_agente);
-					
 						// delete data
 						$sql1='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_agente;
 						$result1=mysql_query($sql1);
@@ -273,7 +291,7 @@ if (comprueba_login() == 0)
 			}
 			echo '</select>&nbsp;&nbsp;<input type=submit name="update_agent" class="sub upd" value="'.$lang_label["get_info"].'"><br><br>';
 			echo "<b>".$lang_label["modules"]."</b><br><br>";
-			echo "<select name='origen_modulo[]' size=6 multiple=yes class='w130'>";
+			echo "<select name='origen_modulo[]' size=10 multiple=yes style='width: 175px;'>";
 			if ( (isset($_POST["update_agent"])) AND (isset($_POST["origen"])) ) {
 		        	// Populate Module/Agent combo
 				$agente_modulo = $_POST["origen"];
@@ -293,7 +311,7 @@ if (comprueba_login() == 0)
 			
 			<tr><td class="datost">
 			<b><?php echo $lang_label["toagent"]; ?></b><br><br>
-			<select name=destino[] multiple=yes size=10 class="w130">
+			<select name=destino[] size=10 multiple=yes style='width: 175px;'>
 			<?php
 			// Show combo with agents
 			$sql1='SELECT * FROM tagente';

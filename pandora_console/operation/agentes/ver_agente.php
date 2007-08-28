@@ -50,7 +50,7 @@ if (comprueba_login() == 0) {
 				echo "<div id='menu_tab_left'>
 				<ul class='mn'>
 				<li class='view'>
-				<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/bricks.png' class='top' border=0>&nbsp; ".dame_nombre_agente($id_agente)." - ".$lang_label["view_mode"]."</a>";
+				<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/bricks.png' class='top' border=0>&nbsp; ".substr(dame_nombre_agente($id_agente),0,15)." - ".$lang_label["view_mode"]."</a>";
 				echo "</li>";
 				echo "</ul></div>";
 

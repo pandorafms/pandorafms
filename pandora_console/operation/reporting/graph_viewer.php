@@ -88,7 +88,7 @@ if (isset($_GET["view_graph"])){
 		echo $lang_label["combined_image"]."</h2>";
 		echo "<table class='databox_frame'>";
 		echo "<tr><td>";
-		echo "<img  src='reporting/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&label=$name&height=$height&width=$width&period=$period' border=1 alt=''>";
+		echo "<img src='reporting/fgraph.php?tipo=combined&height=$height&width=$width&id=$modules&period=$period&weight_l=$weights' border=1 alt=''>";
 		echo "</td></tr></table>";
 		switch ($period) {
 			case 3600: 	$period_label = $lang_label["hour"];

@@ -1,3 +1,15 @@
+2007-08-27  Sancho Lerena <slerena@artica.es>
+
+	* operation/agentes/ver_agente.php: Truncated too long agent names.
+
+	* operation/agentes/tactical.php: Fixed BUG: not initializated modules are now
+	correctly viewed.
+
+	* godmode/agentes/manage_config.php: Fixed BUG: copying modules also create
+	status record and some minor issues with visualization.
+
+	* godmode/agentes/configurar_agente.php: Truncated too long agent names.
+
 2007-08-26  Raul Mateos  <raulofpandora@gmail.com>
 
 	* upgrade.php, install.php: Corrected small typo and tag errors.

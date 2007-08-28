@@ -76,7 +76,7 @@
 
 	echo "</td></tr><tr><td class=datos><b>"."Monitor Not Init"."</b></td>";
         echo "<td class=datos style='font: bold 2em Arial, Sans-serif; color: #888;'>";
-        if ($monitor_unknown > 0)
+        if ($monitor_not_init> 0)
                 echo $monitor_not_init;
         else
                 echo "-";
@@ -105,7 +105,7 @@
 		echo "-";
 	echo "<tr><td class=datos2><b>"."Data not init"."</b></td>";
 	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #f00;'>";
-	if ($data_alert > 0)
+	if ($data_not_init > 0)
 		echo $data_not_init;
 	else
 		echo "-";

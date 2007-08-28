@@ -94,7 +94,7 @@ function general_stats ( $id_user, $id_group = 0) {
 						// Monitor check
 						$monitor_checks++;
 						if ($utimestamp == 0)
-                                                        $monitor_not_init++;
+							$monitor_not_init++;
 						elseif ($seconds >= ($module_interval*2))
 							$monitor_unknown++;
 						elseif ($datos != 0) {
@@ -136,6 +136,7 @@ function general_stats ( $id_user, $id_group = 0) {
 			}
 		}
 	}
+
 	$data =  array();
 	$data[0] = $monitor_checks;
 	$data[1] = $monitor_ok;

@@ -1,3 +1,12 @@
+2007-08-28  Esteban Sanchez  <estebans@artica.es>
+
+	* main.cc: Fixed an error with previous commit.
+
+	* pandora_windows_service.cc, ftp/pandora_ftp_client.cc: Reduced log
+	level.
+
+	* bin/PandoraAgent.exe: Updated to last commit.
+
 2007-08-27  Esteban Sanchez  <estebans@artica.es>
 
 	* pandora.cc: Updated buildname.

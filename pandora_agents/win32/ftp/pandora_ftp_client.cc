@@ -143,8 +143,8 @@ Pandora_Ftp_Client::ftpFileFilename (const string remote_filename,
 	this->curl = curl_easy_init ();
 	if (this->curl) {
 
-		pandoraLog ("Copying %s to %s%s", filepath.c_str (), this->host.c_str (),
-			    remote_filename.c_str ());
+		pandoraDebug ("Copying %s to %s%s", filepath.c_str (), this->host.c_str (),
+			      remote_filename.c_str ());
 		
 		operation1 = "RNFR " + filename;
 		headerlist = curl_slist_append (headerlist, operation1.c_str ());

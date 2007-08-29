@@ -3,23 +3,22 @@
 1) Install installjammer from http://installjammer.com/, then create the
 c:\pandora_installer folder.
 
-2) Copy the $SVN\pandora_agents\win32\bin directory to that folder and also copy the files from the installer
-directory ($SVN\pandora_agents\win32\installer\) to that folder.
+2) Copy the $SVN\pandora_agents\win32\bin directory to that folder and also copy the files from the installer directory ($SVN\pandora_agents\win32\installer\) to that folder.
 
 Doing that, you must have the next directory structure:
 
 C:\pandora_installer
-		+--- LICENSE.txt
-		+--- README.txt
-		+--- logo.png
-		+--- pandora.ico
+
 		+--- pandora_1.3.mpi
 		+--- bin
+			  +--- LICENSE.txt
+			  +--- README.txt
+			  +--- logo.png
+			  +--- pandora.ico
 			  +--- libeay32.dll
 			  +--- libcurl.dll
 			  +--- PandoraAgent.exe
 			  +--- pandora_agent.conf
-			  +--- README
 			  +--- zlib1.dll
 			  +--- help
 			  |		+--- how_to_keys.html

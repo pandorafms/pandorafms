@@ -48,13 +48,13 @@ Image
 C:/pandora_installer/logo.png
 
 IncludeDebugging
-Yes
+No
 
 InstallPassword
 {}
 
 InstallVersion
-1.3.0.0
+1.3.0.2
 
 Language,de
 Yes
@@ -99,7 +99,7 @@ PackageVersion
 <%MajorVersion%>.<%MinorVersion%>
 
 PreserveFilePermissions
-Yes
+No
 
 ProjectID
 0EA13B96-1BB2-4238-B248-101B4F906C15
@@ -117,7 +117,7 @@ ShortAppName
 {Pandora FMS}
 
 SkipUnusedFileGroups
-Yes
+No
 
 Theme
 Modern_Wizard
@@ -167,10 +167,10 @@ test
 {Testing Switch Yes No {} {run uninstaller without uninstalling any files}}
 
 }
-FileGroup ::946FC43B-0E32-4C38-86EF-4F9252C67E16 -setup Install -active Yes -platforms {Linux-x86 Windows TarArchive} -name {Program Files} -parent FileGroups
+FileGroup ::946FC43B-0E32-4C38-86EF-4F9252C67E16 -setup Install -active Yes -platforms {Linux-x86 Windows TarArchive AIX-ppc FreeBSD-4-x86 FreeBSD-x86 HPUX-hppa Solaris-sparc} -name {Program Files} -parent FileGroups
 File ::6605A291-B6B3-4A29-8FBF-EA669B76633C -type dir -name C:/pandora_installer/scripts -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
-File ::A76CA5F4-B6C7-4A82-AC24-F1E456C40AE3 -name start_pandora_agent.bat -parent 6605A291-B6B3-4A29-8FBF-EA669B76633C
-File ::F7A12AFD-CC27-409F-91A4-7416757A17C5 -name stop_pandora_agent.bat -parent 6605A291-B6B3-4A29-8FBF-EA669B76633C
+File ::D9E889AA-2A1C-4C82-8D08-7A5A6C12B275 -name start_pandora_agent.bat -parent 6605A291-B6B3-4A29-8FBF-EA669B76633C
+File ::95F52F92-9FC9-492D-914D-AC6FC0C265C4 -name stop_pandora_agent.bat -parent 6605A291-B6B3-4A29-8FBF-EA669B76633C
 File ::A917C2BF-3079-4FAC-9487-56873FCF8381 -type dir -name C:/pandora_installer/bin/help -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::9A0A7B55-1B33-4480-8D1B-3C7539A8529C -name how_to_keys.html -parent A917C2BF-3079-4FAC-9487-56873FCF8381
 File ::C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E -type dir -name images -parent A917C2BF-3079-4FAC-9487-56873FCF8381
@@ -180,7 +180,6 @@ File ::C9F309F1-BAF7-4EE2-BD1B-618AC91C4AF7 -name 3.jpg -parent C45C9DA9-48F1-4F
 File ::CD1E11AD-9689-4B20-9753-253F819416FF -name 4.jpg -parent C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E
 File ::B2CB62FE-55CB-478B-B981-174EDE18519A -name 5.jpg -parent C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E
 File ::7F26AC24-9EFC-45A8-A93C-DDCC7E7487B3 -name 6.jpg -parent C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E
-File ::B9C0724D-3317-4DF7-A1A1-3065CD67B97B -name Thumbs.db -parent C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E
 File ::7003FDCA-0EDA-4431-93E2-6FEA7E8660D6 -type dir -name C:/pandora_installer/bin/key -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::B33B08D0-C80C-49CB-9431-44C6B4E7858E -name id_dsa -parent 7003FDCA-0EDA-4431-93E2-6FEA7E8660D6
 File ::7E8B4918-C894-4FCE-98F0-1DDDBF9818F8 -name id_dsa.pub -parent 7003FDCA-0EDA-4431-93E2-6FEA7E8660D6
@@ -200,15 +199,14 @@ File ::306C9DF0-CC33-48DC-8AFC-2B99ED4E00A0 -name tr.exe -parent 6E5B73B7-8B81-4
 File ::1900A2B4-09F5-468A-90AD-75CBE17C727B -name wc.exe -parent 6E5B73B7-8B81-48D7-BF49-59D8D92FB830
 File ::EE3962D4-48B8-4715-B986-40794679FC89 -name C:/pandora_installer/bin/libcurl.dll -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::0C6E0B9F-E094-42D4-9376-EAC5E3E475F7 -name C:/pandora_installer/bin/libeay32.dll -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
-File ::E97D3830-363C-4AC7-B38D-915B34FEC5D3 -name C:/pandora_installer/bin/LICENSE.txt -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
-File ::8E231237-DEB5-4AE7-A5F6-AD89CE31E467 -name C:/pandora_installer/bin/pandora.ico -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::03A7EA5A-D6FC-4427-B35C-0288C07813B6 -name C:/pandora_installer/bin/pandora_agent.conf -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::71EFB181-1BAE-4749-B7E7-7837E378BA3D -name C:/pandora_installer/bin/PandoraAgent.exe -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
-File ::2A569671-8CE7-4D37-8A58-35D4AB17626D -name C:/pandora_installer/bin/README.txt -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::C36B2E54-801B-4FDE-A894-330D396AC100 -name C:/pandora_installer/bin/zlib1.dll -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
-Component ::FB96078B-BA3C-498C-8C20-B01C1F28ACA9 -setup Install -active Yes -platforms {Linux-x86 Windows} -name {Default Component} -parent Components
-SetupType ::A87C1A6B-ED26-4B07-8736-750725FF34E4 -setup Install -active Yes -platforms {Linux-x86 Windows} -name Typical -parent SetupTypes
-SetupType ::6057A263-437C-4EB8-93AB-DBC7055A759F -setup Install -active Yes -platforms {Linux-x86 Windows} -name Custom -parent SetupTypes
+File ::50980131-CDA1-4F32-86E0-FD53B1097F67 -name C:/pandora_installer/pandora.ico -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
+File ::3267E440-2104-4BA2-BDEB-DFDA32441FC2 -name C:/pandora_installer/LICENSE.txt -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
+File ::423325D1-5C33-41ED-965A-F7E1F2A2C32E -name C:/pandora_installer/README.txt -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
+Component ::FB96078B-BA3C-498C-8C20-B01C1F28ACA9 -setup Install -active Yes -platforms Windows -name {Default Component} -parent Components
+SetupType ::A87C1A6B-ED26-4B07-8736-750725FF34E4 -setup Install -active Yes -platforms Windows -name Typical -parent SetupTypes
 
 InstallComponent 1957048E-B498-4FFF-A8BA-F2DF640463B1 -setup Install -type pane -title {Welcome Screen} -component Welcome -active Yes -parent StandardInstall
 InstallComponent DE1D4DF7-A35C-4228-8A25-07106AD77C9E -setup Install -type pane -title {License Agreement} -component License -active Yes -parent StandardInstall
@@ -284,7 +282,7 @@ InstallComponent 9439434F-D9FB-4645-A50A-23D65C0A5E2C -setup Uninstall -type act
 InstallComponent 97F814AB-227B-4241-94E4-0E2061D62063 -setup Uninstall -type action -title {Delete File} -component DeleteFile -active Yes -parent F037AAD5-E79E-4544-B8C0-AA98CDF5438E
 InstallComponent 60FEFCD5-D31D-4DEA-86D7-E0246ABF0DF5 -setup Uninstall -type action -title {Execute Action} -component ExecuteAction -active Yes -parent F037AAD5-E79E-4544-B8C0-AA98CDF5438E
 InstallComponent 6B488B72-9080-4AF7-8690-8D823CCD86AE -setup Uninstall -type action -title {Move Forward} -component MoveForward -active Yes -parent F037AAD5-E79E-4544-B8C0-AA98CDF5438E
-InstallComponent 2C06B466-789E-4F18-B711-E8411E2CD80F -setup Uninstall -type pane -conditions 628E6478-81A8-4DF9-A4FE-EACEFAEA2E93 -title {Uninstall Details} -component UninstallDetails -command insert -active Yes -parent StandardUninstall
+InstallComponent 2C06B466-789E-4F18-B711-E8411E2CD80F -setup Uninstall -type pane -conditions 628E6478-81A8-4DF9-A4FE-EACEFAEA2E93 -title {Uninstall Details} -component UninstallDetails -command reorder -active Yes -parent StandardUninstall
 Condition 628E6478-81A8-4DF9-A4FE-EACEFAEA2E93 -active Yes -parent 2C06B466-789E-4F18-B711-E8411E2CD80F -title {String Is Condition} -component StringIsCondition
 InstallComponent C0AAD722-CF3D-4708-A62F-4EE9C92F7B24 -setup Uninstall -type pane -title {Uninstall Complete} -component UninstallComplete -active Yes -parent StandardUninstall
 InstallComponent C19EE9A4-6BBE-4631-8013-7B7DCA588367 -setup Uninstall -type action -title {Console Ask Yes Or No} -component ConsoleAskYesOrNo -active Yes -parent ConsoleUninstall
@@ -333,6 +331,9 @@ disabled
 
 183B25D6-4AD5-4300-BE27-6D2076CA8110,Conditions
 {0 conditions}
+
+183B25D6-4AD5-4300-BE27-6D2076CA8110,IconPath
+{<%InstallDir%>\pandora.ico}
 
 183B25D6-4AD5-4300-BE27-6D2076CA8110,ShortcutName
 {Stop Pandora FMS Agent Service}
@@ -533,7 +534,7 @@ No
 {<%AppName%> Editing Pandora FMS Agent configuration file}
 
 549C2B91-793B-4761-9A80-335929EB17F8,ProgramCommandLine
-{write pandora_agent.conf}
+{notepad pandora_agent.conf}
 
 549C2B91-793B-4761-9A80-335929EB17F8,WaitForProgram
 No
@@ -580,15 +581,6 @@ false
 5F2C50AB-0F5A-46B2-82A4-B4CB1D1A84BA,String
 <%UpgradeInstall%>
 
-6057A263-437C-4EB8-93AB-DBC7055A759F,Components
-FB96078B-BA3C-498C-8C20-B01C1F28ACA9
-
-6057A263-437C-4EB8-93AB-DBC7055A759F,Description,subst
-1
-
-6057A263-437C-4EB8-93AB-DBC7055A759F,Name
-Custom
-
 6059F771-3AA1-491C-8B84-788812912E73,BackButton,subst
 1
 
@@ -597,6 +589,9 @@ Custom
 
 6059F771-3AA1-491C-8B84-788812912E73,Caption,subst
 1
+
+6059F771-3AA1-491C-8B84-788812912E73,Conditions
+{0 conditions}
 
 6059F771-3AA1-491C-8B84-788812912E73,FileLabel,subst
 1
@@ -676,11 +671,17 @@ Finish
 6B06C7C2-97A8-4642-B286-3B089943F359,Caption,subst
 1
 
+6B06C7C2-97A8-4642-B286-3B089943F359,Conditions
+{0 conditions}
+
 6B06C7C2-97A8-4642-B286-3B089943F359,Message,subst
 1
 
 6B06C7C2-97A8-4642-B286-3B089943F359,NextButton,subst
 1
+
+6B488B72-9080-4AF7-8690-8D823CCD86AE,Conditions
+{0 conditions}
 
 702D114A-8A75-4F7C-B228-734D6DB1172C,Prompt
 <%ConsoleSelectDestinationText%>
@@ -736,6 +737,9 @@ Yes
 86342A9C-494A-4036-BA8E-E4BE8A7BB16C,Background
 white
 
+86342A9C-494A-4036-BA8E-E4BE8A7BB16C,Conditions
+{2 conditions}
+
 86342A9C-494A-4036-BA8E-E4BE8A7BB16C,Text,subst
 1
 
@@ -756,6 +760,9 @@ Finish
 
 922F877C-14DD-462F-8BB4-0CD378D81C95,Conditions
 {0 conditions}
+
+922F877C-14DD-462F-8BB4-0CD378D81C95,IconPath
+{<%InstallDir%>\pandora.ico}
 
 922F877C-14DD-462F-8BB4-0CD378D81C95,ShortcutName
 {Start Pandora FMS Agent Service}
@@ -785,7 +792,7 @@ Finish
 {Program Files}
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,Size
-3908623
+9063323
 
 96F7BA2D-A593-40DC-89C9-AE7895FD0984,CheckCondition
 {Before Action is Executed}
@@ -853,11 +860,65 @@ A87C1A6B-ED26-4B07-8736-750725FF34E4,Description,subst
 A87C1A6B-ED26-4B07-8736-750725FF34E4,Name
 Typical
 
+A87C1A6B-ED26-4B07-8736-750725FF34E4,ShowSetupType
+No
+
 AA00EDED-9979-419F-A32C-DF1480E9EFF0,Alias
 {Finish Actions}
 
 ACFFE9C0-C404-4FD9-AD70-8F60E822DE65,Conditions
 {0 conditions}
+
+AIX-ppc,Active
+No
+
+AIX-ppc,DefaultDirectoryPermission
+0755
+
+AIX-ppc,DefaultFilePermission
+0755
+
+AIX-ppc,Executable
+<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
+
+AIX-ppc,FallBackToConsole
+Yes
+
+AIX-ppc,InstallDir
+<%Home%>/<%ShortAppName%>
+
+AIX-ppc,InstallMode
+Standard
+
+AIX-ppc,InstallType
+Typical
+
+AIX-ppc,ProgramExecutable
+{}
+
+AIX-ppc,ProgramFolderAllUsers
+No
+
+AIX-ppc,ProgramFolderName
+<%AppName%>
+
+AIX-ppc,ProgramLicense
+<%InstallDir%>/LICENSE.txt
+
+AIX-ppc,ProgramName
+{}
+
+AIX-ppc,ProgramReadme
+<%InstallDir%>/README.txt
+
+AIX-ppc,PromptForRoot
+Yes
+
+AIX-ppc,RequireRoot
+No
+
+AIX-ppc,RootInstallDir
+/usr/local/<%ShortAppName%>
 
 B2E20690-C57D-4286-9977-F2541E04D71F,BackButton,subst
 1
@@ -924,6 +985,9 @@ C0AAD722-CF3D-4708-A62F-4EE9C92F7B24,CancelButton,subst
 
 C0AAD722-CF3D-4708-A62F-4EE9C92F7B24,Caption,subst
 1
+
+C0AAD722-CF3D-4708-A62F-4EE9C92F7B24,Conditions
+{0 conditions}
 
 C0AAD722-CF3D-4708-A62F-4EE9C92F7B24,Message,subst
 1
@@ -1135,6 +1199,9 @@ F037AAD5-E79E-4544-B8C0-AA98CDF5438E,CancelButton,subst
 F037AAD5-E79E-4544-B8C0-AA98CDF5438E,Caption,subst
 1
 
+F037AAD5-E79E-4544-B8C0-AA98CDF5438E,Conditions
+{0 conditions}
+
 F037AAD5-E79E-4544-B8C0-AA98CDF5438E,FileValue,subst
 1
 
@@ -1189,6 +1256,159 @@ FFB409C9-5ED9-4C0E-8FD6-7A0EE6982322,CheckCondition
 FFB409C9-5ED9-4C0E-8FD6-7A0EE6982322,String
 <%GuiMode%>
 
+FreeBSD-4-x86,Active
+No
+
+FreeBSD-4-x86,DefaultDirectoryPermission
+0755
+
+FreeBSD-4-x86,DefaultFilePermission
+0755
+
+FreeBSD-4-x86,Executable
+<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
+
+FreeBSD-4-x86,FallBackToConsole
+Yes
+
+FreeBSD-4-x86,InstallDir
+<%Home%>/<%ShortAppName%>
+
+FreeBSD-4-x86,InstallMode
+Standard
+
+FreeBSD-4-x86,InstallType
+Typical
+
+FreeBSD-4-x86,ProgramExecutable
+{}
+
+FreeBSD-4-x86,ProgramFolderAllUsers
+No
+
+FreeBSD-4-x86,ProgramFolderName
+<%AppName%>
+
+FreeBSD-4-x86,ProgramLicense
+<%InstallDir%>/LICENSE.txt
+
+FreeBSD-4-x86,ProgramName
+{}
+
+FreeBSD-4-x86,ProgramReadme
+<%InstallDir%>/README.txt
+
+FreeBSD-4-x86,PromptForRoot
+Yes
+
+FreeBSD-4-x86,RequireRoot
+No
+
+FreeBSD-4-x86,RootInstallDir
+/usr/local/<%ShortAppName%>
+
+FreeBSD-x86,Active
+No
+
+FreeBSD-x86,DefaultDirectoryPermission
+0755
+
+FreeBSD-x86,DefaultFilePermission
+0755
+
+FreeBSD-x86,Executable
+<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
+
+FreeBSD-x86,FallBackToConsole
+Yes
+
+FreeBSD-x86,InstallDir
+<%Home%>/<%ShortAppName%>
+
+FreeBSD-x86,InstallMode
+Standard
+
+FreeBSD-x86,InstallType
+Typical
+
+FreeBSD-x86,ProgramExecutable
+{}
+
+FreeBSD-x86,ProgramFolderAllUsers
+No
+
+FreeBSD-x86,ProgramFolderName
+<%AppName%>
+
+FreeBSD-x86,ProgramLicense
+<%InstallDir%>/LICENSE.txt
+
+FreeBSD-x86,ProgramName
+{}
+
+FreeBSD-x86,ProgramReadme
+<%InstallDir%>/README.txt
+
+FreeBSD-x86,PromptForRoot
+Yes
+
+FreeBSD-x86,RequireRoot
+No
+
+FreeBSD-x86,RootInstallDir
+/usr/local/<%ShortAppName%>
+
+HPUX-hppa,Active
+No
+
+HPUX-hppa,DefaultDirectoryPermission
+0755
+
+HPUX-hppa,DefaultFilePermission
+0755
+
+HPUX-hppa,Executable
+<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
+
+HPUX-hppa,FallBackToConsole
+Yes
+
+HPUX-hppa,InstallDir
+<%Home%>/<%ShortAppName%>
+
+HPUX-hppa,InstallMode
+Standard
+
+HPUX-hppa,InstallType
+Typical
+
+HPUX-hppa,ProgramExecutable
+{}
+
+HPUX-hppa,ProgramFolderAllUsers
+No
+
+HPUX-hppa,ProgramFolderName
+<%AppName%>
+
+HPUX-hppa,ProgramLicense
+<%InstallDir%>/LICENSE.txt
+
+HPUX-hppa,ProgramName
+{}
+
+HPUX-hppa,ProgramReadme
+<%InstallDir%>/README.txt
+
+HPUX-hppa,PromptForRoot
+Yes
+
+HPUX-hppa,RequireRoot
+No
+
+HPUX-hppa,RootInstallDir
+/usr/local/<%ShortAppName%>
+
 Linux-x86,Active
 No
 
@@ -1238,6 +1458,57 @@ Linux-x86,RequireRoot
 No
 
 Linux-x86,RootInstallDir
+/usr/local/<%ShortAppName%>
+
+Solaris-sparc,Active
+No
+
+Solaris-sparc,DefaultDirectoryPermission
+0755
+
+Solaris-sparc,DefaultFilePermission
+0755
+
+Solaris-sparc,Executable
+<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
+
+Solaris-sparc,FallBackToConsole
+Yes
+
+Solaris-sparc,InstallDir
+<%Home%>/<%ShortAppName%>
+
+Solaris-sparc,InstallMode
+Standard
+
+Solaris-sparc,InstallType
+Typical
+
+Solaris-sparc,ProgramExecutable
+{}
+
+Solaris-sparc,ProgramFolderAllUsers
+No
+
+Solaris-sparc,ProgramFolderName
+<%AppName%>
+
+Solaris-sparc,ProgramLicense
+<%InstallDir%>/LICENSE.txt
+
+Solaris-sparc,ProgramName
+{}
+
+Solaris-sparc,ProgramReadme
+<%InstallDir%>/README.txt
+
+Solaris-sparc,PromptForRoot
+Yes
+
+Solaris-sparc,RequireRoot
+No
+
+Solaris-sparc,RootInstallDir
 /usr/local/<%ShortAppName%>
 
 TarArchive,Active
@@ -1337,7 +1608,7 @@ Windows,ProgramReadme
 <%InstallDir%>/README.txt
 
 Windows,WindowsIcon
-{Setup Blue Screen.ico}
+C:/pandora_installer/pandora.ico
 
 }
 
@@ -1371,12 +1642,12 @@ Click Next to continue or Cancel to exit Setup.}
 <%InstallationCompleteText%>
 
 2B99A465-4666-445D-96BF-9C8F03CDAC60,Message
-{Pandora FMS could use SFTP/SSH2 method to copy XML data files to server.
+{Pandora FMS can use SFTP/SSH2 method to copy XML data files to server.
 
 If you want to use this method, please generate both Public and Private keys and 
-save them \nlike id_dsa.pub and id_dsa, OpenSSH format, into <%InstallDir%>\key folder.
+save them as id_dsa.pub and id_dsa, OpenSSH format, into <%InstallDir%>\key folder.
 
-Please, refer documentation for more information.}
+Please, review documentation for more information.}
 
 2B99A465-4666-445D-96BF-9C8F03CDAC60,Title
 {SSH Key Generation}

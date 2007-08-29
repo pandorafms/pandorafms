@@ -1,3 +1,12 @@
+2007-08-29  Raul Mateos  <raulofpandora@gmail.com>
+
+	* bin/help/how_to_keys.html: Added SSH string.
+	
+	* installer/pandora_1.3.mpi: Updated with small text changes.
+	
+ 	* installer/Pandora_Windows_Agent-1.3.0 Beta2-Setup.exe: Updated 
+	beta2 installer binary.
+	
 2007-08-29  Sancho Lerena  <slerena@artica.es>
 
 	* bin/README.txt replaced instead README.

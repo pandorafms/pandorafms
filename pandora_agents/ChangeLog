@@ -1,3 +1,7 @@
+2007-08-29  Raul Mateos  <raulofpandora@gmail.com>
+
+	* win32/bin/pandora_agent.conf: Added comments about usage and samples.
+
 2007-08-27  Raul Mateos  <raulofpandora@gmail.com>
 
 	* win32/installer/How_to_create_installer.txt: Changed mpi name.

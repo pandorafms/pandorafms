@@ -1,3 +1,14 @@
+2007-08-29  Esteban Sanchez  <estebans@artica.es>
+
+	* pandora_windows_service.cc: Fixed a typo. Disconnect ftp client when
+	an error happened.
+
+	* ftp/pandora_ftp_client.cc: Set network timeout and ftp timeout.
+	Ignore error when executing moving operations, this is compatible
+	with FTP jails
+
+	* windows/pandora_wmi.cc: Improved WQL queries and fixed some leaks.
+
 2007-08-28  Esteban Sanchez  <estebans@artica.es>
 
 	* main.cc: Fixed an error with previous commit.

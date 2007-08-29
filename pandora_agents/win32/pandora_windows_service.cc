@@ -238,18 +238,20 @@ Pandora_Windows_Service::copyFtpDataFile (string host,
 		ftp_client.ftpFileFilename (remote_path + filename,
 					    filepath);
 	} catch (FTP::Unknown_Host e) {
-		pandoraLog ("Failed when copying to %s (%s)", host.c_str (),
-			    ftp_client.getError ().c_str ());
+		pandoraLog ("Pandora Agent: Failed when copying to %s (%s)",
+			    host.c_str (), ftp_client.getError ().c_str ());
+		ftp_client.disconnect ();
 		throw e;
 	} catch (FTP::Authentication_Failed e) {
 		pandoraLog ("Pandora Agent: Authentication Failed "
 			    "when connecting to %s (%s)",
                             host.c_str (),  ftp_client.getError ().c_str ());
+		ftp_client.disconnect ();
 		throw e;
 	} catch (FTP::FTP_Exception e) {
 		pandoraLog ("Pandora Agent: Failed when copying to %s (%s)",
                             host.c_str (), ftp_client.getError ().c_str ());
-
+		ftp_client.disconnect ();
 		throw e;
 	}
 	
@@ -275,7 +277,7 @@ Pandora_Windows_Service::copyDataFile (string filename)
 			copyScpDataFile (host, remote_path, filename);
 		} else {
 			pandoraLog ("Invalid transfer mode: %s."
-				    "Please rechak transfer_mode option "
+				    "Please recheck transfer_mode option "
 				    "in configuration file.");
 		}
 

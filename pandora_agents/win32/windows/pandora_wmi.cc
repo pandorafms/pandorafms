@@ -24,6 +24,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cctype>
+#include <sstream>
 
 using namespace std;
 using namespace Pandora_Wmi;
@@ -35,10 +36,10 @@ getWmiStr (LPCWSTR computer) {
 	wcscpy (wmi_str, L"winmgmts:{impersonationLevel=impersonate}!\\\\");
 
 	if (computer) {
-                wcsncat (wmi_str, computer, 128);
+		wcsncat (wmi_str, computer, 128);
 	} else {
-                wcscat (wmi_str, L".");
-        }
+		wcscat (wmi_str, L".");
+	}
 
 	wcscat (wmi_str, L"\\root\\cimv2");
 
@@ -54,39 +55,27 @@ getWmiStr (LPCWSTR computer) {
  */
 int
 Pandora_Wmi::isProcessRunning (string process_name) {
-        CDhInitialize init;
+	CDhInitialize init;
 	CDispPtr      wmi_svc, quickfixes;
 	string        name;
 	int           result = 0;
-	
-        struct QFix {
-		CDhStringA name, description, state;
-	};
-                
+	string        query;
+
+	query = "SELECT * FROM Win32_Process WHERE Name=\"" + process_name + "\"";
+	cout << "Query: " << query << endl;
 	try {	
 		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
 		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
-                                     L".ExecQuery(%S)",
-                                     L"SELECT * FROM Win32_Process"));
-                
-                FOR_EACH (quickfix, quickfixes, NULL) {
-			QFix fix = { 0 };
-
-			dhGetValue (L"%s", &fix.name, quickfix,
-                                    L".Name");
-                        
-                        name = fix.name;
-                        transform (name.begin (), name.end (), name.begin (), 
-                                   (int (*) (int)) tolower);
-			
-                        if (process_name == name) {
-            			result++;
-                        }
+				     L".ExecQuery(%T)",
+				     query.c_str ()));
+	
+		FOR_EACH (quickfix, quickfixes, NULL) {
+			result++;
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
 		pandoraLog ("isProcessRunning error. %s", errstr.c_str ());
 	}
-        
+
 	return result;
 }
 
@@ -100,53 +89,40 @@ Pandora_Wmi::isProcessRunning (string process_name) {
  */
 int
 Pandora_Wmi::isServiceRunning (string service_name) {
-        CDhInitialize init;
+	CDhInitialize init;
 	CDispPtr      wmi_svc, quickfixes;
-	string        name, state;
-	
-        struct QFix {
-		CDhStringA name, state;
-	};
-                
+	string        query;
+	char         *state;
+	int           retval;
+
+	query = "SELECT * FROM Win32_Service WHERE Name = \"" + service_name + "\"";
+
 	try {	
 		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
 		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
-                                     L".ExecQuery(%S)",
-                                     L"SELECT * FROM Win32_Service"));
-                
-                FOR_EACH (quickfix, quickfixes, NULL) {
-			QFix fix = { 0 };
-
-			dhGetValue (L"%s", &fix.name, quickfix,
-                                    L".Name");
-                        
-                        name = fix.name;
-                        transform (name.begin (), name.end (), name.begin (), 
-                                   (int (*) (int)) tolower);
-                        
-                        if (service_name == name) {
-				dhGetValue (L"%s", &fix.state, quickfix,
-					    L".State");
-				state = fix.state;
-                                
-				if (state == "Running") {
-                                        return 1;
-                                } else {
-                                        return 0;
-                                }
-                        }
+				     L".ExecQuery(%T)",
+				     query.c_str ()));
+	
+		FOR_EACH (quickfix, quickfixes, NULL) {
+			dhGetValue (L"%s", &state, quickfix,
+				    L".State");
+		
+			retval = (state == "Running") ? 1 : 0;
+			dhFreeString (state);
+		
+			return retval;
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
 		pandoraLog ("isServiceRunning error. %s", errstr.c_str ());
 	}
-        
+
 	return 0;
 }
 
 /** 
  * Get the free space in a logical disk drive.
  * 
- * @param disk_id Disk drive letter (C.
+ * @param disk_id Disk drive letter (C: for example).
  * 
  * @return Free space amount in MB.
  *
@@ -160,26 +136,25 @@ Pandora_Wmi::getDiskFreeSpace (string disk_id) {
 	string             id, space_str;
 	unsigned long long space = 0;
 	string             query;
-	
+
 	query = "SELECT DeviceID, FreeSpace FROM Win32_LogicalDisk WHERE DeviceID = \"" + disk_id + "\"";
 
 	try {
-                dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
+		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
 		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
-                                     L".ExecQuery(%T)",
-                                     query.c_str ()));
-
+				     L".ExecQuery(%T)",
+				     query.c_str ()));
+	
 		FOR_EACH (quickfix, quickfixes, NULL) {
 			dhGetValue (L"%d", &space, quickfix,
 				    L".FreeSpace");
-			cout << space << endl;
-						
+		
 			return space / 1024 / 1024;
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
 		pandoraLog ("getDiskFreeSpace error. %s", errstr.c_str ());
 	}
-        
+
 	throw Pandora_Wmi_Exception ();
 }
 
@@ -197,42 +172,31 @@ int
 Pandora_Wmi::getCpuUsagePercentage (int cpu_id) {
 	CDhInitialize init;
 	CDispPtr      wmi_svc, quickfixes;
-	string        id, cpu_id_str;
-	
-	cpu_id_str = "CPU";
-        cpu_id_str += Pandora_Strutils::inttostr (cpu_id);
-	
-        struct QFix {
-		CDhStringA id;
-		long       load_percentage;
-	};
-        
+	string        query;
+	long          load_percentage;
+	std::ostringstream stm;
+
+	stm << cpu_id;
+	query = "SELECT * FROM Win32_Processor WHERE DeviceID = \"CPU" + stm.str () + "\"";
+
 	try {
-                dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
+		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
 		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
-                                     L".ExecQuery(%S)",
-                                     L"SELECT * FROM Win32_Processor "));
-
+				     L".ExecQuery(%T)",
+				     query.c_str ()));
+	
 		FOR_EACH (quickfix, quickfixes, NULL) {
-			QFix fix = { 0 };
-
-			dhGetValue (L"%s", &fix.id, quickfix,
-                                    L".DeviceID");
-
-			id = fix.id;
-			
-			if (cpu_id_str == id) {
-				dhGetValue (L"%d", &fix.load_percentage, quickfix,
-					    L".LoadPercentage");
-                                
-				return fix.load_percentage;
-			}
-
+			dhGetValue (L"%d", &load_percentage, quickfix,
+				    L".LoadPercentage");
+		
+			return load_percentage;
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
+		cout << query << endl;
+		cout << errstr << endl;
 		pandoraLog ("getCpuUsagePercentage error. %s", errstr.c_str ());
 	}
-        
+
 	throw Pandora_Wmi_Exception ();
 }
 
@@ -247,29 +211,24 @@ long
 Pandora_Wmi::getFreememory () {
 	CDhInitialize init;
 	CDispPtr      wmi_svc, quickfixes;
+	long          free_memory;
 
-        struct QFix {
-		long free_memory;
-	};
-        
 	try {
-                dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
+		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
 		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
-                                     L".ExecQuery(%S)",
-                                     L"SELECT * FROM Win32_PerfRawData_PerfOS_Memory "));
-
+				     L".ExecQuery(%S)",
+				     L"SELECT * FROM Win32_PerfRawData_PerfOS_Memory "));
+	
 		FOR_EACH (quickfix, quickfixes, NULL) {
-			QFix fix = { 0 };
-			
-			dhGetValue (L"%d", &fix.free_memory, quickfix,
-                                    L".AvailableMBytes");
-			
-			return fix.free_memory;
+			dhGetValue (L"%d", &free_memory, quickfix,
+				    L".AvailableMBytes");
+		
+			return free_memory;
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
 		pandoraLog ("getFreememory error. %s", errstr.c_str ());
 	}
-        
+
 	throw Pandora_Wmi_Exception ();	
 }
 
@@ -280,33 +239,29 @@ Pandora_Wmi::getFreememory () {
  */
 string
 Pandora_Wmi::getOSName () {
-        CDhInitialize init;
+	CDhInitialize init;
 	CDispPtr      wmi_svc, quickfixes;
+	char         *name = NULL;
 	string        ret;
-	
-        struct QFix {
-		CDhStringA name, state, description;
-	};
-        
+
 	try {
-                dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
+		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
 		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
-                                     L".ExecQuery(%S)",
-                                     L"SELECT * FROM Win32_OperatingSystem "));
-
+				     L".ExecQuery(%S)",
+				     L"SELECT * FROM Win32_OperatingSystem "));
+	
 		FOR_EACH (quickfix, quickfixes, NULL) {
-			QFix fix = { 0 };
-
-			dhGetValue (L"%s", &fix.name, quickfix,
-                                    L".Caption");
-                        
-                        ret = fix.name;
-
+			dhGetValue (L"%s", &name, quickfix,
+				    L".Caption");
+		
+			ret = name;
+			dhFreeString (name);
+		
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
 		pandoraLog ("getOSName error. %s", errstr.c_str ());
 	}
-        
+
 	return ret;
 }
 
@@ -317,33 +272,29 @@ Pandora_Wmi::getOSName () {
  */
 string
 Pandora_Wmi::getOSVersion () {
-        CDhInitialize init;
+	CDhInitialize init;
 	CDispPtr      wmi_svc, quickfixes;
+	char         *version = NULL;
 	string        ret;
-	
-        struct QFix {
-		CDhStringA name, state, description;
-	};
-        
+
 	try {
-                dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
+		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
 		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
-                                     L".ExecQuery(%S)",
-                                     L"SELECT * FROM Win32_OperatingSystem "));
-
+				     L".ExecQuery(%S)",
+				     L"SELECT * FROM Win32_OperatingSystem "));
+	
 		FOR_EACH (quickfix, quickfixes, NULL) {
-			QFix fix = { 0 };
-
-			dhGetValue (L"%s", &fix.name, quickfix,
-                                    L".CSDVersion");
-                        
-                        ret = fix.name;
-
+			dhGetValue (L"%s", &version, quickfix,
+				    L".CSDVersion");
+		
+			ret = version;
+			dhFreeString (version);
+		
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
 		pandoraLog ("getOSVersion error. %s", errstr.c_str ());
 	}
-        
+
 	return ret;
 }
 
@@ -354,28 +305,24 @@ Pandora_Wmi::getOSVersion () {
  */
 string
 Pandora_Wmi::getOSBuild () {
-        CDhInitialize init;
+	CDhInitialize init;
 	CDispPtr      wmi_svc, quickfixes;
+	char         *build = NULL;
 	string        ret;
-		
-        struct QFix {
-		CDhStringA name, state, description;
-	};
-        
+	
 	try {
-                dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
+		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
 		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
-                                     L".ExecQuery(%S)",
-                                     L"SELECT * FROM Win32_OperatingSystem "));
+				     L".ExecQuery(%S)",
+				     L"SELECT * FROM Win32_OperatingSystem "));
 
 		FOR_EACH (quickfix, quickfixes, NULL) {
-			QFix fix = { 0 };
-
-			dhGetValue (L"%s", &fix.name, quickfix,
-                                    L".Version");
+			dhGetValue (L"%s", &build, quickfix,
+				    L".Version");
                         
-                        ret = fix.name;
-
+			ret = build;
+			dhFreeString (build);
+			
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
 		pandoraLog ("getOSBuild error. %s", errstr.c_str ());
@@ -391,28 +338,24 @@ Pandora_Wmi::getOSBuild () {
  */
 string
 Pandora_Wmi::getSystemName () {
-        CDhInitialize init;
+	CDhInitialize init;
 	CDispPtr      wmi_svc, quickfixes;
+	char         *name = NULL;
 	string        ret;
 	
-        struct QFix {
-		CDhStringA name, state, description;
-	};
-        
 	try {
-                dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
+		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
 		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
-                                     L".ExecQuery(%S)",
-                                     L"SELECT * FROM Win32_OperatingSystem "));
+				     L".ExecQuery(%S)",
+				     L"SELECT * FROM Win32_OperatingSystem "));
 
 		FOR_EACH (quickfix, quickfixes, NULL) {
-			QFix fix = { 0 };
-
-			dhGetValue (L"%s", &fix.name, quickfix,
-                                    L".CSName");
+			dhGetValue (L"%s", &name, quickfix,
+				    L".CSName");
                         
-                        ret = fix.name;
-
+			ret = name;
+			dhFreeString (name);
+			
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
 		pandoraLog ("getSystemName error. %s", errstr.c_str ());

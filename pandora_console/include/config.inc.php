@@ -42,12 +42,13 @@ if (!isset($pandora_version))
 //error_reporting(0); // Need to use active console at this moment
 
 // Display ALL errors
-error_reporting(E_ALL);
+error_reporting(E_ERROR);
 
-//This is directory where placed "attachment" directory, to upload files stores. 
+// This is directory where placed "/attachment" directory, to upload files stores. 
 // This MUST be writtable by http server user, and should be in pandora root. 
-// Please append "/" to the end.
-$attachment_store=$config_homedir."/attachment/";
+// By default, Pandora adds /attachment to this, so by default is the pandora console home dir
+
+$attachment_store=$config_homedir;
 
 // Default font used for graphics (a Free TrueType font included with Pandora FMS)
 $config_fontpath = $config_homedir."/reporting/FreeSans.ttf";

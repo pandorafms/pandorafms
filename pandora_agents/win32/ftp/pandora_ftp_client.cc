@@ -155,6 +155,8 @@ Pandora_Ftp_Client::ftpFileFilename (const string remote_filename,
 		curl_easy_setopt (this->curl, CURLOPT_UPLOAD, 1) ;
 		curl_easy_setopt (this->curl, CURLOPT_URL, url.c_str ());
 		curl_easy_setopt (this->curl, CURLOPT_POSTQUOTE, headerlist);
+		curl_easy_setopt (this->curl, CURLOPT_TIMEOUT, 240);
+		curl_easy_setopt (this->curl, CURLOPT_FTP_RESPONSE_TIMEOUT, 60);
 		curl_easy_setopt (this->curl, CURLOPT_READFUNCTION, read_func);
 		curl_easy_setopt (this->curl, CURLOPT_READDATA, fd);
 		curl_easy_setopt (curl, CURLOPT_INFILESIZE_LARGE,
@@ -173,6 +175,8 @@ Pandora_Ftp_Client::ftpFileFilename (const string remote_filename,
 
 	switch (this->result) {
 	case CURLE_OK:
+	case CURLE_FTP_QUOTE_ERROR: /* These error happens when FTP is in a jail.
+				       Transfer was OK, moving wasn't. */
 		break;
 	case CURLE_COULDNT_CONNECT:
 		throw Unknown_Host ();

@@ -1,9 +1,29 @@
+2007-08-30  Sancho Lerena <slerena@artica.es>
 
-2008-08-29  Sancho Lerena <slerena@artica.es>
+	* pandoradb_data.sql: Added spanish (es_es) to available languages.
+
+	* include/languages/language_es_es.php: Added new strings for 1.3
+
+	* include/languages/extract_newlines.sh: (DEV) script to get new strings, comparing two 
+	language files. It should be used only by translators and developers.
+
+	* include/languages/language_en.php: Updated english language with some missing (was encoded 
+	in code) strings.
+
+	* godmode/setup/setup.php: Fix a bug when selecting special style "pandora_minimal". Added a 
+	code check
+
+	* godmode/modules/manage_network_templates_form.php: Fixed some "inline" text labels.
+
+	* godmode/reporting/graph_builder.php: Fixed some "inline" texts.
+
+	THIS IS FINAL COMMIT BEFORE PANDORA FMS 1.3 BETA2
+
+2007-08-29  Sancho Lerena <slerena@artica.es>
 
         * include/config.inc.php: Change defaults to avoid problems with attachments.
 
-2008-08-28  Sancho Lerena <slerena@artica.es>
+2007-08-28  Sancho Lerena <slerena@artica.es>
 
         * pandora_console/operation/reporting/graph_viewer.php: Fixed dimensions of graph
         view

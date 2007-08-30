@@ -316,17 +316,17 @@ if ($id_agent != 0){
 echo "</select>";
 
 echo "<tr><td class='datos'>";
-echo "<b>Factor</b></td>";
+echo "<b>".$lang_label["Factor"]."</b></td>";
 echo "<td class='datos'>";
 echo "<input type='text' name='factor' value='$factor' size=6></td>";
 echo "<td class='datos'>";
-echo "<b>Width</b>";
+echo "<b>".$lang_label["width"]."</b>";
 echo "<td class='datos'>";
 echo "<input type='text' name='width' value='$width' size=6></td>";
 
 
 echo "<tr><td class='datos2'>";
-echo "<b>Render now</b></td>";
+echo "<b>".$lang_label["render_now"]."</b></td>";
 echo "<td class='datos2'>";
 echo "<select name='render'>";
 if ($render == 1){
@@ -338,7 +338,7 @@ if ($render == 1){
 }
 echo "</select></td>";
 echo "<td class='datos2'>";
-echo "<b>Height</b></td>";
+echo "<b>".$lang_label["height"]."</b></td>";
 echo "<td class='datos2'>";
 echo "<input type='text' name='height' value='$height' size=6>";
 
@@ -377,7 +377,7 @@ switch ($period) {
 
 
 echo "<tr><td class='datos'>";
-echo "<b>Period</b></td>";
+echo "<b>".$lang_label["period"]."</b></td>";
 echo "<td class='datos'>";
 
 echo "<select name='period'>";
@@ -401,7 +401,7 @@ echo "<option value=15552000>"."Six Months</option>";
 echo "</select>";
 
 echo "<td class='datos'>";
-echo "<b>Show events</b></td>";
+echo "<b>".$lang_label["view_events"]."</b></td>";
 echo "<td class='datos'>";
 echo "<select name='events'>";
 if ($events == 1){

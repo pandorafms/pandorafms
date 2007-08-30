@@ -187,7 +187,7 @@ echo "</form>";
 
 
 if ($id_np != -1){ 
-	echo "<h3>"."Add module"."</h3>";
+	echo "<h3>".$lang_label["add"]." ".$lang_label["module"]."</h3>";
 	echo "<table class='databox'>";
 	echo '<tr><td>';
 	echo '<form name="add_module" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&add_module=1">';

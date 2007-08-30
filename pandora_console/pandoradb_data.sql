@@ -61,6 +61,7 @@ UNLOCK TABLES;
 LOCK TABLES `tlanguage` WRITE;
 -- INSERT INTO `tlanguage` VALUES ('bb','Bable'),('ca','Catal&agrave;'),('de','Deutch'),('en','English'),('es_es','Espa&ntilde;ol'),('es_gl','Gallego'),('es_la','Espa&ntilde;ol-Latinoam&eacute;rica'),('eu','Euskera'),('fr','Fran&ccedil;ais'),('pt_br','Portuguese-Brazil');
 INSERT INTO `tlanguage` VALUES ('en','English');
+INSERT INTO `tlanguage` VALUES ('es_es','Spanish');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `tlanguage` ENABLE KEYS */;
 

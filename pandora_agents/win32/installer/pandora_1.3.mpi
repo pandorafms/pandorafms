@@ -257,9 +257,6 @@ InstallComponent BAD74F82-1E82-46F5-861A-EFBF6EC6887A -setup Install -type actio
 InstallComponent 466DC16E-3453-409B-999C-CCDF853AA03D -setup Install -type action -title Exit -component Exit -active Yes -parent SilentInstall
 InstallComponent D567240B-2A30-47FD-97AA-3EDA09B64E9F -setup Install -type actiongroup -title {Setup Actions} -active Yes -parent ActionGroupsInstall
 InstallComponent 61B40FBC-EADB-4F4C-A49F-81B35B3774BB -setup Install -type actiongroup -title {Startup Actions} -active Yes -parent ActionGroupsInstall
-InstallComponent EC5B73CA-A6F4-445F-BA98-988670774CB3 -setup Install -type action -conditions {FFB409C9-5ED9-4C0E-8FD6-7A0EE6982322 4F66C16F-6FAC-4A36-B0EA-CCA2324B27DF} -title Exit -component Exit -command insert -active Yes -parent 61B40FBC-EADB-4F4C-A49F-81B35B3774BB
-Condition FFB409C9-5ED9-4C0E-8FD6-7A0EE6982322 -active Yes -parent EC5B73CA-A6F4-445F-BA98-988670774CB3 -title {String Is Condition} -component StringIsCondition
-Condition 4F66C16F-6FAC-4A36-B0EA-CCA2324B27DF -active Yes -parent EC5B73CA-A6F4-445F-BA98-988670774CB3 -title {Ask Yes or No} -component AskYesOrNo
 InstallComponent 65546717-3D31-4931-B445-220199767639 -setup Install -type action -title {Create Install Panes} -component CreateInstallPanes -active Yes -parent 61B40FBC-EADB-4F4C-A49F-81B35B3774BB
 InstallComponent 9C96DF15-FD21-468D-9996-76D96466D335 -setup Install -type actiongroup -title {Install Actions} -active Yes -parent ActionGroupsInstall
 InstallComponent 7FB76BFF-92E4-4210-9CFA-D6CDDB7C2288 -setup Install -type action -title {Install Selected Files} -component InstallSelectedFiles -active Yes -parent 9C96DF15-FD21-468D-9996-76D96466D335
@@ -282,7 +279,7 @@ InstallComponent 9439434F-D9FB-4645-A50A-23D65C0A5E2C -setup Uninstall -type act
 InstallComponent 97F814AB-227B-4241-94E4-0E2061D62063 -setup Uninstall -type action -title {Delete File} -component DeleteFile -active Yes -parent F037AAD5-E79E-4544-B8C0-AA98CDF5438E
 InstallComponent 60FEFCD5-D31D-4DEA-86D7-E0246ABF0DF5 -setup Uninstall -type action -title {Execute Action} -component ExecuteAction -active Yes -parent F037AAD5-E79E-4544-B8C0-AA98CDF5438E
 InstallComponent 6B488B72-9080-4AF7-8690-8D823CCD86AE -setup Uninstall -type action -title {Move Forward} -component MoveForward -active Yes -parent F037AAD5-E79E-4544-B8C0-AA98CDF5438E
-InstallComponent 2C06B466-789E-4F18-B711-E8411E2CD80F -setup Uninstall -type pane -conditions 628E6478-81A8-4DF9-A4FE-EACEFAEA2E93 -title {Uninstall Details} -component UninstallDetails -command reorder -active Yes -parent StandardUninstall
+InstallComponent 2C06B466-789E-4F18-B711-E8411E2CD80F -setup Uninstall -type pane -conditions 628E6478-81A8-4DF9-A4FE-EACEFAEA2E93 -title {Uninstall Details} -component UninstallDetails -command insert -active Yes -parent StandardUninstall
 Condition 628E6478-81A8-4DF9-A4FE-EACEFAEA2E93 -active Yes -parent 2C06B466-789E-4F18-B711-E8411E2CD80F -title {String Is Condition} -component StringIsCondition
 InstallComponent C0AAD722-CF3D-4708-A62F-4EE9C92F7B24 -setup Uninstall -type pane -title {Uninstall Complete} -component UninstallComplete -active Yes -parent StandardUninstall
 InstallComponent C19EE9A4-6BBE-4631-8013-7B7DCA588367 -setup Uninstall -type action -title {Console Ask Yes Or No} -component ConsoleAskYesOrNo -active Yes -parent ConsoleUninstall
@@ -515,18 +512,6 @@ stop_pandora_agent.bat
 4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Message,subst
 1
 
-4F66C16F-6FAC-4A36-B0EA-CCA2324B27DF,CheckCondition
-{Before Action is Executed}
-
-4F66C16F-6FAC-4A36-B0EA-CCA2324B27DF,Message,subst
-1
-
-4F66C16F-6FAC-4A36-B0EA-CCA2324B27DF,Title,subst
-1
-
-4F66C16F-6FAC-4A36-B0EA-CCA2324B27DF,TrueValue
-No
-
 549C2B91-793B-4761-9A80-335929EB17F8,Conditions
 {0 conditions}
 
@@ -641,6 +626,9 @@ ViewReadme
 61B40FBC-EADB-4F4C-A49F-81B35B3774BB,Alias
 {Startup Actions}
 
+61B40FBC-EADB-4F4C-A49F-81B35B3774BB,Conditions
+{0 conditions}
+
 61CE1D31-E460-4F25-BFA3-499F25E90FE0,Conditions
 {0 conditions}
 
@@ -658,6 +646,9 @@ disabled
 
 63A986C1-609D-430F-8119-EBEDFC8315EF,Widget
 {Back Button;Next Button}
+
+65546717-3D31-4931-B445-220199767639,Conditions
+{0 conditions}
 
 6ADB9508-5F82-4564-B6AC-1170A76B4CB9,ExitType
 Finish
@@ -792,7 +783,7 @@ Finish
 {Program Files}
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,Size
-9063323
+9054991
 
 96F7BA2D-A593-40DC-89C9-AE7895FD0984,CheckCondition
 {Before Action is Executed}
@@ -844,6 +835,9 @@ A4155ACD-0377-4A2C-B952-2C19BF592347,WorkingDirectory
 
 A518E166-9DC7-454F-8EFE-CD4461F093FB,Action
 {Uninstall Actions}
+
+A70C24DF-9653-42D5-8FA1-8E721E36E5C7,Conditions
+{0 conditions}
 
 A70C24DF-9653-42D5-8FA1-8E721E36E5C7,Default
 Yes
@@ -961,6 +955,9 @@ B923CC3C-CD18-4F8A-9648-51ADE1168D4A,Conditions
 
 BAD74F82-1E82-46F5-861A-EFBF6EC6887A,Action
 {Install Actions}
+
+BAD74F82-1E82-46F5-861A-EFBF6EC6887A,Conditions
+{0 conditions}
 
 BC4AB013-F50F-49BF-BF98-FF7EBE16BCA4,Alias
 {Cancel Actions}
@@ -1175,9 +1172,6 @@ disabled
 EAB473BD-3ECC-4FDE-AF62-B80B89DCAE38,Widget
 NextButton
 
-EC5B73CA-A6F4-445F-BA98-988670774CB3,Comment
-{Ask the user if they want to proceed with the install.}
-
 ED3D7C90-4A56-40EE-A2C5-E845C3A57C12,Alias
 {Setup Actions}
 
@@ -1249,12 +1243,6 @@ false
 
 FDC6FE35-3B6A-42CE-8790-C6057A17B75D,String
 <%UpgradeInstall%>
-
-FFB409C9-5ED9-4C0E-8FD6-7A0EE6982322,CheckCondition
-{Before Action is Executed}
-
-FFB409C9-5ED9-4C0E-8FD6-7A0EE6982322,String
-<%GuiMode%>
 
 FreeBSD-4-x86,Active
 No
@@ -1678,6 +1666,15 @@ Please, review documentation for more information.}
 
 86342A9C-494A-4036-BA8E-E4BE8A7BB16C,Text
 <%ViewReadmeText%>
+
+A84F44C7-9ABD-43C6-AA57-CF527E0C82A5,Caption
+{Please enter Server IP}
+
+A84F44C7-9ABD-43C6-AA57-CF527E0C82A5,Subtitle
+{Enter the IP of the server you want to connect}
+
+A84F44C7-9ABD-43C6-AA57-CF527E0C82A5,Title
+{Server IP}
 
 A87C1A6B-ED26-4B07-8736-750725FF34E4,Description
 <%TypicalInstallDescription%>

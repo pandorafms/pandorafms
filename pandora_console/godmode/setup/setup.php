@@ -134,7 +134,7 @@ if (comprueba_login() == 0)
         $a=0;
         while (isset($ficheros2[$a])){
 		$fstyle = substr($ficheros2[$a],0,strlen($ficheros2[$a])-4);
-		if ($fstyle != $config_style)
+		if (($fstyle != $config_style) AND ($fstyle != "pandora_minimal"))
 			echo "<option>".$fstyle."</option>";
         	$a++;
         }

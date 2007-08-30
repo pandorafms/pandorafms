@@ -69,7 +69,7 @@ Language,fr
 Yes
 
 Language,pl
-Yes
+No
 
 Language,pt_br
 Yes
@@ -783,7 +783,7 @@ Finish
 {Program Files}
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,Size
-9054991
+9055036
 
 96F7BA2D-A593-40DC-89C9-AE7895FD0984,CheckCondition
 {Before Action is Executed}

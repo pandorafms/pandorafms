@@ -333,7 +333,7 @@ disabled
 {<%InstallDir%>\pandora.ico}
 
 183B25D6-4AD5-4300-BE27-6D2076CA8110,ShortcutName
-{Stop Pandora FMS Agent Service}
+<%StopPandoraService%>
 
 183B25D6-4AD5-4300-BE27-6D2076CA8110,TargetFileName
 {<%InstallDir%>\scripts\stop_pandora_agent.bat}
@@ -343,6 +343,9 @@ disabled
 
 18774B81-6D13-4BD2-B6F2-852BF95814BD,Alias
 {Finish Actions}
+
+18774B81-6D13-4BD2-B6F2-852BF95814BD,Conditions
+{0 conditions}
 
 1957048E-B498-4FFF-A8BA-F2DF640463B1,BackButton,subst
 1
@@ -366,7 +369,7 @@ disabled
 {0 conditions}
 
 1D3EE8A2-B735-4756-9BB6-7BBC42077575,ShortcutName
-{Pandora FMS Readme}
+<%Readme%>
 
 1D3EE8A2-B735-4756-9BB6-7BBC42077575,TargetFileName
 <%ProgramReadme%>
@@ -548,6 +551,9 @@ disabled
 5EA75DE2-F9E1-405D-800E-B28FB96CDC61,CloseButton,subst
 1
 
+5EA75DE2-F9E1-405D-800E-B28FB96CDC61,Conditions
+{3 conditions}
+
 5EA75DE2-F9E1-405D-800E-B28FB96CDC61,Message,subst
 1
 
@@ -641,6 +647,9 @@ system
 628E6478-81A8-4DF9-A4FE-EACEFAEA2E93,String
 <%ErrorsOccurred%>
 
+63A986C1-609D-430F-8119-EBEDFC8315EF,Conditions
+{0 conditions}
+
 63A986C1-609D-430F-8119-EBEDFC8315EF,State
 disabled
 
@@ -648,6 +657,9 @@ disabled
 {Back Button;Next Button}
 
 65546717-3D31-4931-B445-220199767639,Conditions
+{0 conditions}
+
+66412B02-0460-4B2B-9D89-57A6BBF1328D,Conditions
 {0 conditions}
 
 6ADB9508-5F82-4564-B6AC-1170A76B4CB9,ExitType
@@ -690,7 +702,7 @@ InstallDir
 {0 conditions}
 
 736623D0-C176-476C-A899-35C05DD59147,ShortcutName
-{Help generating keys}
+<%HelpGeneratingSSHKeys%>
 
 736623D0-C176-476C-A899-35C05DD59147,TargetFileName
 <%InstallDir%>/help/how_to_keys.html
@@ -703,6 +715,9 @@ InstallDir
 
 73AB9FDF-9481-4EC3-8B31-C109BAA1086C,Conditions
 {0 conditions}
+
+75B1D869-C9BA-42C4-9C07-E1D156DA80A8,Conditions
+{1 condition}
 
 78DA1080-A7D6-4FC9-AEC0-E08A82E6E8A7,Conditions
 {0 conditions}
@@ -756,7 +771,7 @@ Finish
 {<%InstallDir%>\pandora.ico}
 
 922F877C-14DD-462F-8BB4-0CD378D81C95,ShortcutName
-{Start Pandora FMS Agent Service}
+<%StartPandoraService%>
 
 922F877C-14DD-462F-8BB4-0CD378D81C95,TargetFileName
 {<%InstallDir%>\scripts\start_pandora_agent.bat}
@@ -783,7 +798,7 @@ Finish
 {Program Files}
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,Size
-9055036
+3885980
 
 96F7BA2D-A593-40DC-89C9-AE7895FD0984,CheckCondition
 {Before Action is Executed}
@@ -821,11 +836,14 @@ Yes
 9F763EAB-21A4-41E7-B51B-EDC4ACF4C5C8,Conditions
 {0 conditions}
 
+A4155ACD-0377-4A2C-B952-2C19BF592347,Conditions
+{1 condition}
+
 A4155ACD-0377-4A2C-B952-2C19BF592347,FileName
 <%ShortAppName%>-uninstall
 
 A4155ACD-0377-4A2C-B952-2C19BF592347,ShortcutName
-{Uninstall <%AppName%>}
+<%UninstallApplicationText%>
 
 A4155ACD-0377-4A2C-B952-2C19BF592347,TargetFileName
 <%Uninstaller%>
@@ -1052,6 +1070,9 @@ CFF365EA-C5AD-4E16-9D09-E20AADED45ED,Alias
 D05D0C20-4972-455A-885D-69F24E9AF177,Action
 {Install Actions}
 
+D05D0C20-4972-455A-885D-69F24E9AF177,Conditions
+{0 conditions}
+
 D3D6A68D-37DE-4FC8-874D-33A762512634,CheckCondition
 {Before Action is Executed}
 
@@ -1071,7 +1092,7 @@ D6128B0E-6CFE-4626-87CC-64C883554F0F,Conditions
 {0 conditions}
 
 D6128B0E-6CFE-4626-87CC-64C883554F0F,ShortcutName
-{Pandora FMS License}
+<%PandoraLicense%>
 
 D6128B0E-6CFE-4626-87CC-64C883554F0F,TargetFileName
 <%ProgramLicense%>
@@ -1137,7 +1158,7 @@ E3AB45B0-A6A5-40AC-ADC7-7DD86403BFD0,Conditions
 {0 conditions}
 
 E3AB45B0-A6A5-40AC-ADC7-7DD86403BFD0,ShortcutName
-{Edit configuration}
+<%EditConfiguration%>
 
 E3AB45B0-A6A5-40AC-ADC7-7DD86403BFD0,TargetFileName
 {<%InstallDir%>\pandora_agent.conf}
@@ -1213,6 +1234,9 @@ F037AAD5-E79E-4544-B8C0-AA98CDF5438E,Subtitle,subst
 
 F037AAD5-E79E-4544-B8C0-AA98CDF5438E,Title,subst
 1
+
+F0BC8450-668B-41B2-A442-F1BE095D1BFB,Conditions
+{1 condition}
 
 F6A6DB43-C89D-4A19-98D3-1E24284260AE,Comment
 {Do not display this pane if this is an upgrade install unless there is more than one installation present}
@@ -1601,6 +1625,15 @@ C:/pandora_installer/pandora.ico
 }
 
 ::msgcat::mcmset de {
+1957048E-B498-4FFF-A8BA-F2DF640463B1,Message
+{Dies wird <%AppName%> Version <%Version%> auf Ihrem Computer installieren. 
+
+Es wird empfohlen, das Sie alle anderen Anwendungen schließen, bevor Sie fortfahren.
+
+Nach der Installierung sollten Sie Konfigurationsdatei editieren, um Server IP Adresse und andere Rahmen zu definieren.
+
+Klicken Sie auf Weiter um Fortzufahren oder auf  Abbrechen, um das Setup zu beenden.}
+
 1D572EE2-DD93-4F13-850E-DE0EEB1DA110,Message
 <%UninstallingApplicationText%>
 
@@ -1613,13 +1646,23 @@ C:/pandora_installer/pandora.ico
 BF861387-DA7F-4986-B5BB-F77358B58603,Message
 <%InstallingApplicationText%>
 
+EditConfiguration
+{Bearbeiten der Konfiguration}
+
+StartPandoraService
+{Startet <%AppName%> Dienst}
+
+StopPandoraService
+{Beendet <%AppName%> Dienst}
+
 }
 ::msgcat::mcmset en {
 1957048E-B498-4FFF-A8BA-F2DF640463B1,Message
 {This will install <%AppName%> version <%Version%> on your computer. 
 
-It is recommended that you close all other applications before  continuing. After installation, 
-you should edit default configuration file to define server IP address and other parameters.
+It is recommended that you close all other applications before  continuing. 
+
+After installation, you should edit default configuration file to define server IP address and other parameters.
 
 Click Next to continue or Cancel to exit Setup.}
 
@@ -1630,12 +1673,12 @@ Click Next to continue or Cancel to exit Setup.}
 <%InstallationCompleteText%>
 
 2B99A465-4666-445D-96BF-9C8F03CDAC60,Message
-{Pandora FMS can use SFTP/SSH2 method to copy XML data files to server.
+{By default, Pandora FMS agent for Windows uses FTP method to copy XML data files to server.
 
-If you want to use this method, please generate both Public and Private keys and 
+If you want to use SFTP/SSH2, please generate both Public and Private keys and 
 save them as id_dsa.pub and id_dsa, OpenSSH format, into <%InstallDir%>\key folder.
 
-Please, review documentation for more information.}
+Please, review the "<%HelpGeneratingSSHKeys%>" help file in the documentation folder for more information.}
 
 2B99A465-4666-445D-96BF-9C8F03CDAC60,Title
 {SSH Key Generation}
@@ -1685,13 +1728,16 @@ BF861387-DA7F-4986-B5BB-F77358B58603,Message
 C6CE92F8-3842-4E58-A3A2-5B5D2F7AFB4B,Message
 {Last step is to configure your Pandora FMS agent.
 
-Please change server IP address, and ftp_password if you want to use FTP
-transfer with Pandora FMS. Review all other parameters and save file.
+Now the pandora_agent.conf file will be open to change Pandora FMS Server IP address and agent name (used in Web Console).
 
-After that, you can safely start Pandora FMS Agent windows service.}
+If you use FTP method to transfer data files, configure ftp_password with the padnora user password in the FTP server. This user should have write permissions in the server directory, by default /var/spool/pandora/data_in.
+
+If you want to use SSH, comment FTP parameters and generate SSH Keys.
+
+One you have saved your changes, use link to start Pandora FMS Agent for Windows service.}
 
 C6CE92F8-3842-4E58-A3A2-5B5D2F7AFB4B,Title
-{Setup Pandora FMS}
+{Setup Pandora FMS Windows Agent}
 
 DAE5A5A9-35B4-44B5-89C0-F25FDD2771FB,Message
 <%UninstallStartupText%>
@@ -1793,36 +1839,128 @@ NO WARRANTY
 
 END OF TERMS AND CONDITIONS}
 
+EditConfiguration
+{Edit Configuration}
+
 FB96078B-BA3C-498C-8C20-B01C1F28ACA9,Description
 <%ProgramFilesDescription%>
 
+HelpGeneratingSSHKeys
+{Help Generating SSH Keys}
+
+PandoraLicense
+{Pandora FMS License}
+
+Readme
+Readme
+
+StartPandoraService
+{Start <%AppName%> Service}
+
+StopPandoraService
+{Stop <%AppName%> Service}
+
 }
 ::msgcat::mcmset es {
+1957048E-B498-4FFF-A8BA-F2DF640463B1,Message
+{Este programa instalará <%AppName%> versión <%Version%> en su equipo. 
+
+Se recomienda cerrar las demas aplicaciones antes de continuar.
+
+Al finalizar la instalación, debe editarse el fichero de configuración para definir la dirección IP del servidor y otros parámetros.
+
+Pulse siguiente para continuar o Cancelar para salir de la instalación.}
+
 1D572EE2-DD93-4F13-850E-DE0EEB1DA110,Message
 <%UninstallingApplicationText%>
 
 2073DDB6-50AB-4708-82AD-02A6C3F3EDE1,Message
 <%InstallationCompleteText%>
 
+2B99A465-4666-445D-96BF-9C8F03CDAC60,Message
+{Por defecto Pandora FMS  utiliza FTP para el envío de ficheros XML al servidor. Puede utilizarse también SFTP/SSH2.
+
+Si se utiliza este método, hay que generar previamente las claves públicas y privadas y guardarlas como id_dsa.pub e id_dsa, respectivamente en formato OpenSSH, dentro del directorio <%InstallDir%>\key.
+
+Más información en el documento "<%HelpGeneratingSSHKeys%>" (en inglés), que está incluido en la ayuda.}
+
+2B99A465-4666-445D-96BF-9C8F03CDAC60,Title
+{Generación de claves SSH}
+
 4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Message
 <%UninstallCompleteText%>
 
 BF861387-DA7F-4986-B5BB-F77358B58603,Message
 <%InstallingApplicationText%>
+
+C6CE92F8-3842-4E58-A3A2-5B5D2F7AFB4B,Message
+{El último paso es configurar el agente.
+
+Ahora se abrirá el fichero pandora_agent.conf para configurar la dirección IP del servidor y el nombre del agente (se utilizará en la consola web).
+
+Si el método de transferencia de ficheros que se va a utilizar es FTP, el parámetro ftp_password contiene la contraseña del usuario pandora, que debe tener permisos de escritura en el directorio del servidor, por defecto /var/spool/pandora/data_in.
+
+Si se quiere utilizar SSH, deben comentarse las entradas relativas a FTP y generar las claves SSH.
+
+Una vez finalizada la configuración, el servicio puede iniciarse con el enlace creado.}
+
+C6CE92F8-3842-4E58-A3A2-5B5D2F7AFB4B,Title
+{Configurar el agente Windows de Pandora FMS}
+
+EditConfiguration
+{Editar fichero de configuración}
+
+PandoraLicense
+{Licencia de Pandora FMS}
+
+Readme
+Readme
+
+StartPandoraService
+{Iniciar el servicio <%AppName%>}
+
+StopPandoraService
+{Parar el servicio <%AppName%>}
 
 }
 ::msgcat::mcmset fr {
+1957048E-B498-4FFF-A8BA-F2DF640463B1,Message
+{Ceci installera <%AppName%> version <%Version%> sur votre ordinateur. 
+
+Il est recommandé de fermer toutes les autres applications avant de continuer.
+
+Après avoir terminé l'installation, il faut éditer le fichier de configuration pour définir l'adresse IP du serveur ainsi que d'autres paramètres.
+
+Cliquez sur SUIVANT pour continuer ou ANNULER pour quitter l'installation.}
+
 1D572EE2-DD93-4F13-850E-DE0EEB1DA110,Message
 <%UninstallingApplicationText%>
 
 2073DDB6-50AB-4708-82AD-02A6C3F3EDE1,Message
 <%InstallationCompleteText%>
 
+2B99A465-4666-445D-96BF-9C8F03CDAC60,Message
+{Par défaut, l'agent de Pandora FMS pour Windows utilise la méthode FTP de copier des fichiers de données XML au serveur.
+
+Si vous voulez utiliser SFTP/SSH2, produisez s'il vous plaît des clés Publiques et Privées et 
+sauvez-les comme id_dsa.pub et id_dsa, avec le format d'OpenSSH, dans le réperotire <%InstallDir%>\key.
+
+S'il vous plaît, lisez le document "<%HelpGeneratingSSHKeys%>" dans la chemise de documentation pour plus de renseignements.}
+
 4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Message
 <%UninstallCompleteText%>
 
 BF861387-DA7F-4986-B5BB-F77358B58603,Message
 <%InstallingApplicationText%>
+
+EditConfiguration
+{Modifier la configuration}
+
+StartPandoraService
+{Démarre le service <%AppName%>}
+
+StopPandoraService
+{Arrête le service <%AppName%>}
 
 }
 ::msgcat::mcmset pl {
@@ -1840,17 +1978,42 @@ BF861387-DA7F-4986-B5BB-F77358B58603,Message
 
 }
 ::msgcat::mcmset pt_br {
+1957048E-B498-4FFF-A8BA-F2DF640463B1,Message
+{Será instalado <%AppName%> version <%Version%> em seu computador. 
+
+É recomendado que você feche todos os outros programas antes de continuar. 
+
+Depois da instalação, você deve editar o arquivo de configuração para definir o servidor endereço de IP e outros parâmetros.
+
+Clique em Próximo para continuar ou em Cancelar para sair da Instalação.}
+
 1D572EE2-DD93-4F13-850E-DE0EEB1DA110,Message
 <%UninstallingApplicationText%>
 
 2073DDB6-50AB-4708-82AD-02A6C3F3EDE1,Message
 <%InstallationCompleteText%>
 
+2B99A465-4666-445D-96BF-9C8F03CDAC60,Message
+{À revelia, o agente de Pandora FMS do Windows usa o método de FTP para copiar arquivos de dados de XML ao servidor.
+
+Se você quiser usar SFTP/SSH2, gere tanto chaves Públicas como Privadas e salve-os como id_dsa.pub e id_dsa, o formato de OpenSSH, no diretório <%InstallDir %>\key.
+
+Por favor, reveja a documentação (<%HelpGeneratingSSHKeys%>) para mais informação.}
+
 4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Message
 <%UninstallCompleteText%>
 
 BF861387-DA7F-4986-B5BB-F77358B58603,Message
 <%InstallingApplicationText%>
+
+EditConfiguration
+{Editar a configuração}
+
+StartPandoraService
+{Inicia o serviço <%AppName%>}
+
+StopPandoraService
+{Interrompe o serviço <%AppName%>}
 
 }
 

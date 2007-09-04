@@ -48,7 +48,7 @@ $lang_label["delete"]="Borrar";
 
 $lang_label["in_state_0"]="Abierta y activa";
 $lang_label["in_state_1"]="Abierta y con notas";
-$lang_label["in_state_2"]="No valida";
+$lang_label["in_state_2"]="No válida";
 $lang_label["in_state_3"]="Caducada";
 $lang_label["in_state_13"]="Cerrada";
 
@@ -126,7 +126,7 @@ $lang_label["src_address"]="IP Origen";
 $lang_label["alert_listing"]="Lista completa de alertas";
 $lang_label["monitor_listing"]="Lista completa de monitores";
 $lang_label["times_fired"]="Número de veces lanzada";
-$lang_label["description"] ="Descripción";
+$lang_label["description"]="Descripción";
 $lang_label["last_fired"]="Lanzada por última vez";
 $lang_label["type"]="Tipo";
 $lang_label["last_contact"]="Último contacto";
@@ -861,7 +861,7 @@ $lang_label["graph_event_total"]="Gráfica de eventos";
 $lang_label["graph_event_group"]="Gráfica de eventos por grupo";
 $lang_label["graph_event_user"]="Gráfica de eventos por usuario";
 $lang_label["db_agente_paquetes"]="Paquetes por agente";
-$lang_label["db_agente_módulo"]="Módulos por agente";
+$lang_label["db_agente_modulo"]="Módulos por agente";
 $lang_label["inc_stat_status"]="Incidente por estado";
 $lang_label["inc_stat_priority"]="Incidentes por prioridad";
 $lang_label["inc_stat_user"]="Incidentes por usuario";

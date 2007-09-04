@@ -22,7 +22,7 @@
 <head>
 <title>Pandora FMS - Upgrade Wizard</title>
 <meta http-equiv="expires" content="0">
-<meta http-equiv="content-type" content="text/html; charset="utf-8">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="author" content="Sancho Lerena, Raul Mateos">

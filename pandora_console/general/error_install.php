@@ -26,7 +26,7 @@ include "include/languages/language_en.php";
 <head>
 <title>Pandora FMS - The Free Monitoring System - Console Error</title>
 <meta http-equiv="expires" content="0">
-<meta http-equiv="content-type" content="text/html; charset=ISO-8859-15">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="author" content="Sancho Lerena, Raul Mateos">

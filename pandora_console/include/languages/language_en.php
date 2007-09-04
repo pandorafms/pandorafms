@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // Pandora FMS - the Free monitoring system
 // ========================================
 // Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
@@ -666,11 +666,11 @@ $lang_label["modify_module_ok"]="Module updated successfully";
 $lang_label["modify_module_no"]="Problem modifying module";
 $lang_label["module_management"]="Module management";
 $lang_label["defined_modules"]="Defined modules";
-$lang_label["cat_0"] = "Software agent data";
-$lang_label["cat_1"] = "Software agent monitor";
-$lang_label["cat_2"] = "Network agent data";
-$lang_label["cat_3"] = "Network agent monitor";
-$lang_label["unknown"] = "Unknown";
+$lang_label["cat_0"]="Software agent data";
+$lang_label["cat_1"]="Software agent monitor";
+$lang_label["cat_2"]="Network agent data";
+$lang_label["cat_3"]="Network agent monitor";
+$lang_label["unknown"]="Unknown";
 $lang_label["create_module"]="Create module";
 $lang_label["network_templates"]="Network templates";
 $lang_label["snmp_modules"]="SNMP modules";
@@ -764,10 +764,10 @@ $lang_label["delete_data_above"]="Deleted data above";
 $lang_label["enabled"]="Enabled";
 
 // 3 may 2007
-$lang_label["csv"] = "Standalone CSV ascii file";
-$lang_label["average_per_hourday"] = "Average per hour/day";
-$lang_label["datatable"] = "Data table";
-$lang_label["export_type"] = "Export type";
+$lang_label["csv"]="Standalone CSV ascii file";
+$lang_label["average_per_hourday"]="Average per hour/day";
+$lang_label["datatable"]="Data table";
+$lang_label["export_type"]="Export type";
 
 $lang_label["sunday"]="Sunday";
 $lang_label["monday"]="Monday";
@@ -805,19 +805,19 @@ $lang_label["reporting_item_add"]="Add item to report";
 $lang_label["template"]="Template";
 $lang_label["add_mod_ok"]="Modules successfully added ";
 
-$lang_label["simple_graph"] = "Simple graph";
-$lang_label["custom_graph"] = "Custom graph";
-$lang_label["SLA"] = "S.L.A";
-$lang_label["event_report"] = "Event report";
-$lang_label["alert_report"] = "Alert report";
-$lang_label["monitor_report"] = "Monitor report";
+$lang_label["simple_graph"]="Simple graph";
+$lang_label["custom_graph"]="Custom graph";
+$lang_label["SLA"]="S.L.A";
+$lang_label["event_report"]="Event report";
+$lang_label["alert_report"]="Alert report";
+$lang_label["monitor_report"]="Monitor report";
 $lang_label["max_value"]="Max. Value";
 $lang_label["min_value"]="Min. Value";
 $lang_label["reporting_type"]="Reporting type";
 
-$lang_label["sla_max"] = "SLA Max. (value)";
-$lang_label["sla_min"] = "SLA Min. (value)";
-$lang_label["sla_limit"] = "SLA Limit (%)";
+$lang_label["sla_max"]="SLA Max. (value)";
+$lang_label["sla_min"]="SLA Min. (value)";
+$lang_label["sla_limit"]="SLA Limit (%)";
 $lang_label["up"]="Up";
 $lang_label["down"]="Down";
 $lang_label["map_builder"]="Map builder";
@@ -869,24 +869,24 @@ $lang_label["black"]="Black";
 $lang_label["time_from"]="Time from";
 $lang_label["time_to"]="Time to";
 $lang_label["time"]="Time";
-$lang_label["module_graph"] = "Module graph";
-$lang_label["map_item_add"] = "Add map item";
-$lang_label["graph_event_total"] = "Event graph";
-$lang_label["graph_event_group"] = "Event graph by group";
-$lang_label["graph_event_user"] = "Event graph by user";
-$lang_label["db_agente_paquetes"] = "Packets per agent";
-$lang_label["db_agente_modulo"] = "Modules per agent";
+$lang_label["module_graph"]="Module graph";
+$lang_label["map_item_add"]="Add map item";
+$lang_label["graph_event_total"]="Event graph";
+$lang_label["graph_event_group"]="Event graph by group";
+$lang_label["graph_event_user"]="Event graph by user";
+$lang_label["db_agente_paquetes"]="Packets per agent";
+$lang_label["db_agente_módulo"]="Modules per agent";
 
-$lang_label["inc_stat_status"] = "Incidents by status";
-$lang_label["inc_stat_priority"] = "Incidents by priority";
-$lang_label["inc_stat_user"] = "Incidents by user";
-$lang_label["inc_stat_source"] = "Incidents by source";
-$lang_label["inc_stat_group"] = "Incidents by group";
+$lang_label["inc_stat_status"]="Incidents by status";
+$lang_label["inc_stat_priority"]="Incidents by priority";
+$lang_label["inc_stat_user"]="Incidents by user";
+$lang_label["inc_stat_source"]="Incidents by source";
+$lang_label["inc_stat_group"]="Incidents by group";
 
-$lang_label["no_layout_def"] = "There are no defined layouts";
-$lang_label["no_reporting_def"] = "There are no defined reportings";
-$lang_label["no_map_def"] = "There are no defined maps";
-$lang_label["no_repitem_def"] = "There are no defined report items";
+$lang_label["no_layout_def"]="There are no defined layouts";
+$lang_label["no_reporting_def"]="There are no defined reportings";
+$lang_label["no_map_def"]="There are no defined maps";
+$lang_label["no_repitem_def"]="There are no defined report items";
 
 $lang_label["message_read"]= "Message already read";
 $lang_label["message_not_read"]= "Message not read";

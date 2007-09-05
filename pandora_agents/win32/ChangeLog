@@ -1,3 +1,14 @@
+2007-09-05  Esteban Sanchez  <estebans@artica.es>
+
+	* windows/pandora_wmi.cc: Fixed a bug that return 0 in some cases of
+	free disk space.
+
+	* pandora.cc: Renamed debug file to pandora_debug.log
+
+	* pandora_windows_service.cc: Fixed a blank space.
+
+	* bin/PandoraAgent.exe: Updated to last commit.
+
 2007-09-03  Raul Mateos  <raulofpandora@gmail.com>
 
 	* installer/pandora_1.3.mpi: Updated texts in several languages. Now some

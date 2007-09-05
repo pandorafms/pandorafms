@@ -160,7 +160,7 @@ Pandora::pandoraDebug (char *format, ...) {
 		vsprintf (msg, format, args);
 		va_end (args);
                 
-		pandoraWriteLog ("pandora_agent.err", (char *) msg);
+		pandoraWriteLog ("pandora_debug.log", (char *) msg);
 	}
 	return;
 }

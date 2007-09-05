@@ -133,12 +133,16 @@ unsigned long
 Pandora_Wmi::getDiskFreeSpace (string disk_id) {
 	CDhInitialize      init;
 	CDispPtr           wmi_svc, quickfixes;
-	string             id, space_str;
 	unsigned long long space = 0;
+	string             space_str;
 	string             query;
 
-	query = "SELECT DeviceID, FreeSpace FROM Win32_LogicalDisk WHERE DeviceID = \"" + disk_id + "\"";
-
+	query = "SELECT FreeSpace FROM Win32_LogicalDisk WHERE DeviceID = \"" + disk_id + "\"";
+	
+	struct QFix {
+		CDhStringA free_space; 	 
+	};
+	
 	try {
 		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
 		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
@@ -146,9 +150,23 @@ Pandora_Wmi::getDiskFreeSpace (string disk_id) {
 				     query.c_str ()));
 	
 		FOR_EACH (quickfix, quickfixes, NULL) {
-			dhGetValue (L"%d", &space, quickfix,
+			QFix fix = { 0 };
+			dhGetValue (L"%s", &fix.free_space, quickfix,
 				    L".FreeSpace");
-		
+			
+			if (fix.free_space == NULL) 
+				return 0;
+			
+			space_str = fix.free_space;
+			dhFreeString (name);
+
+			try {
+	 			
+				space = Pandora_Strutils::strtoulong (space_str);
+			} catch (Pandora_Exception e) {
+				throw Pandora_Wmi_Exception (); 	 
+			}
+
 			return space / 1024 / 1024;
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
@@ -165,7 +183,7 @@ Pandora_Wmi::getDiskFreeSpace (string disk_id) {
  * 
  * @return The usage percentage of the CPU.
  *
- * @exception Pandora_Wmi_Exception Throwd if an error occured when reading
+ * @exception Pandora_Wmi_Exception Throwed if an error occured when reading
  *            from WMI database.
  */
 int
@@ -253,7 +271,7 @@ Pandora_Wmi::getOSName () {
 		FOR_EACH (quickfix, quickfixes, NULL) {
 			dhGetValue (L"%s", &name, quickfix,
 				    L".Caption");
-		
+			
 			ret = name;
 			dhFreeString (name);
 		

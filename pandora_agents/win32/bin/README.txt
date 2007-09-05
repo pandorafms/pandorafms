@@ -6,7 +6,7 @@ Understanding what is a Pandora FMS Agent
 
 Pandora FMS agents collect all system's data. They are executed in each local system, although they can also collect remote information by installing monitoring systems for the agent in several different machines - called satellite agents.
 
-They are developed to work under a given platform, making use of the specific tools of the language being used: VBSCript/Windows Scripting for Microsoft platforms (Win2000, WinXP y Win2003), ShellScripting for UNIX - which includes Linux, Solaris, AIX, HP-UX and BSD, as well as the Nokia's IPSO. Pandora agents can be developed in virtually any language, given its simple API system and being open source. There are branches of the Pandora project started for the creation of agents in Posix C, Perl and Java for those systems requiring closed agents.
+They are developed to work under a given platform, making use of the specific tools of the language being used: VBSCript/Windows Scripting for Microsoft platforms (Win2000, WinXP y Win2003), ShellScripting for UNIX - which includes GNU/Linux, Solaris, AIX, HP-UX and BSD, as well as the Nokia's IPSO. Pandora agents can be developed in virtually any language, given its simple API system and being open source. There are branches of the Pandora project started for the creation of agents in Posix C, Perl and Java for those systems requiring closed agents.
 
 Pandora Agents are Free Software, i.e., the way agents collect and sent information is documented. An agent can be recreated in any programming language, and can be upgraded easily, to improve aspects of the program not covered so far.
 
@@ -69,13 +69,13 @@ The general parameters of the agent configuration are defined in this section. S
 
 An example of the general parameters from a Unix configuration would be:
 
-     server_ip    192.168.12.12
-     server_path  /var/spool/pandora/data_in
-     temporal     /var/spool/pandora/data_out
-     interval     300
-     agent_name   dakotaSR01
-     debug 	   0
-     checksum     0
+	server_ip    192.168.12.12
+	server_path  /var/spool/pandora/data_in
+	temporal     /var/spool/pandora/data_out
+	interval     300
+	agent_name   dakotaSR01
+	debug 	   0
+	checksum     0
 
 Module definition
 -----------------

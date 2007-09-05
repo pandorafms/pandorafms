@@ -54,7 +54,7 @@ InstallPassword
 {}
 
 InstallVersion
-1.3.0.2
+1.3.0.3
 
 Language,de
 Yes
@@ -180,6 +180,8 @@ File ::C9F309F1-BAF7-4EE2-BD1B-618AC91C4AF7 -name 3.jpg -parent C45C9DA9-48F1-4F
 File ::CD1E11AD-9689-4B20-9753-253F819416FF -name 4.jpg -parent C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E
 File ::B2CB62FE-55CB-478B-B981-174EDE18519A -name 5.jpg -parent C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E
 File ::7F26AC24-9EFC-45A8-A93C-DDCC7E7487B3 -name 6.jpg -parent C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E
+File ::7FCFC7EE-2203-412D-9110-FF5FA54C1E4A -name logo.png -parent C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E
+File ::B674F886-6A1A-4B24-9DF3-A654EA1334AC -name how_to_keys_es.html -parent A917C2BF-3079-4FAC-9487-56873FCF8381
 File ::7003FDCA-0EDA-4431-93E2-6FEA7E8660D6 -type dir -name C:/pandora_installer/bin/key -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::B33B08D0-C80C-49CB-9431-44C6B4E7858E -name id_dsa -parent 7003FDCA-0EDA-4431-93E2-6FEA7E8660D6
 File ::7E8B4918-C894-4FCE-98F0-1DDDBF9818F8 -name id_dsa.pub -parent 7003FDCA-0EDA-4431-93E2-6FEA7E8660D6
@@ -210,7 +212,7 @@ SetupType ::A87C1A6B-ED26-4B07-8736-750725FF34E4 -setup Install -active Yes -pla
 
 InstallComponent 1957048E-B498-4FFF-A8BA-F2DF640463B1 -setup Install -type pane -title {Welcome Screen} -component Welcome -active Yes -parent StandardInstall
 InstallComponent DE1D4DF7-A35C-4228-8A25-07106AD77C9E -setup Install -type pane -title {License Agreement} -component License -active Yes -parent StandardInstall
-InstallComponent EAB473BD-3ECC-4FDE-AF62-B80B89DCAE38 -setup Install -type action -conditions {354871D2-65BD-4414-BB04-F466798FA027 0F1370DF-FF15-4CE7-ADF6-CA74BC642334} -title {Modify Widget} -component ModifyWidget -command insert -active Yes -parent DE1D4DF7-A35C-4228-8A25-07106AD77C9E
+InstallComponent EAB473BD-3ECC-4FDE-AF62-B80B89DCAE38 -setup Install -type action -conditions {354871D2-65BD-4414-BB04-F466798FA027 0F1370DF-FF15-4CE7-ADF6-CA74BC642334} -title {Modify Widget} -component ModifyWidget -command reorder -active Yes -parent DE1D4DF7-A35C-4228-8A25-07106AD77C9E
 Condition 354871D2-65BD-4414-BB04-F466798FA027 -active Yes -parent EAB473BD-3ECC-4FDE-AF62-B80B89DCAE38 -title {String Is Condition} -component StringIsCondition
 Condition 0F1370DF-FF15-4CE7-ADF6-CA74BC642334 -active Yes -parent EAB473BD-3ECC-4FDE-AF62-B80B89DCAE38 -title {String Is Condition} -component StringIsCondition
 InstallComponent B2E20690-C57D-4286-9977-F2541E04D71F -setup Install -type pane -conditions {F6A6DB43-C89D-4A19-98D3-1E24284260AE E8952A0A-82A0-4AD0-8FA8-8902870AF848} -title {Select Destination} -component SelectDestination -command insert -active Yes -parent StandardInstall
@@ -226,8 +228,8 @@ InstallComponent 183B25D6-4AD5-4300-BE27-6D2076CA8110 -setup Install -type actio
 InstallComponent 922F877C-14DD-462F-8BB4-0CD378D81C95 -setup Install -type action -title {Install Program Folder Shortcut} -component InstallProgramFolderShortcut -active Yes -parent 268B55D8-DE61-421A-AB68-A5D4821D981F
 InstallComponent 1D3EE8A2-B735-4756-9BB6-7BBC42077575 -setup Install -type action -title {Install Program Folder Shortcut} -component InstallProgramFolderShortcut -active Yes -parent 268B55D8-DE61-421A-AB68-A5D4821D981F
 InstallComponent 736623D0-C176-476C-A899-35C05DD59147 -setup Install -type action -title {Install Program Folder Shortcut} -component InstallProgramFolderShortcut -active Yes -parent 268B55D8-DE61-421A-AB68-A5D4821D981F
-InstallComponent D6128B0E-6CFE-4626-87CC-64C883554F0F -setup Install -type action -title {Install Program Folder Shortcut} -component InstallProgramFolderShortcut -active Yes -parent 268B55D8-DE61-421A-AB68-A5D4821D981F
 InstallComponent E3AB45B0-A6A5-40AC-ADC7-7DD86403BFD0 -setup Install -type action -title {Install Program Folder Shortcut} -component InstallProgramFolderShortcut -active Yes -parent 268B55D8-DE61-421A-AB68-A5D4821D981F
+InstallComponent D6128B0E-6CFE-4626-87CC-64C883554F0F -setup Install -type action -title {Install Program Folder Shortcut} -component InstallProgramFolderShortcut -active Yes -parent 268B55D8-DE61-421A-AB68-A5D4821D981F
 InstallComponent 8A1B144A-F5F6-430F-A334-C31494182599 -setup Install -type action -title {Move Forward} -component MoveForward -active Yes -parent 268B55D8-DE61-421A-AB68-A5D4821D981F
 InstallComponent 1F7BE720-7885-4150-9550-F25FB1C69423 -setup Install -type pane -title {Setup Complete} -component SetupComplete -active Yes -parent StandardInstall
 InstallComponent 2B99A465-4666-445D-96BF-9C8F03CDAC60 -setup Install -type action -title {Message Box} -component MessageBox -active Yes -parent 1F7BE720-7885-4150-9550-F25FB1C69423
@@ -244,15 +246,6 @@ InstallComponent 6B06C7C2-97A8-4642-B286-3B089943F359 -setup Install -type pane 
 InstallComponent 86342A9C-494A-4036-BA8E-E4BE8A7BB16C -setup Install -type action -conditions {E573F839-1FCD-4668-93F9-E39764B8CB78 D3D6A68D-37DE-4FC8-874D-33A762512634} -title {View Readme Checkbutton} -component AddWidget -command insert -active Yes -parent 6B06C7C2-97A8-4642-B286-3B089943F359
 Condition E573F839-1FCD-4668-93F9-E39764B8CB78 -active Yes -parent 86342A9C-494A-4036-BA8E-E4BE8A7BB16C -title {File Exists Condition} -component FileExistsCondition
 Condition D3D6A68D-37DE-4FC8-874D-33A762512634 -active Yes -parent 86342A9C-494A-4036-BA8E-E4BE8A7BB16C -title {String Is Condition} -component StringIsCondition
-InstallComponent A70C24DF-9653-42D5-8FA1-8E721E36E5C7 -setup Install -type action -title {Console Ask Yes Or No} -component ConsoleAskYesOrNo -active Yes -parent ConsoleInstall
-InstallComponent 3E18038E-4D99-4293-A6EB-33B2F6BAD1F5 -setup Install -type action -conditions BFA75CD3-3FEF-4F6C-87ED-6037AFEBD4CD -title Exit -component Exit -command insert -active Yes -parent ConsoleInstall
-Condition BFA75CD3-3FEF-4F6C-87ED-6037AFEBD4CD -active Yes -parent 3E18038E-4D99-4293-A6EB-33B2F6BAD1F5 -title {String Is Condition} -component StringIsCondition
-InstallComponent 702D114A-8A75-4F7C-B228-734D6DB1172C -setup Install -type action -conditions 32628AD2-37C5-499A-8ACF-34040197FF9D -title {Console Get User Input} -component ConsoleGetUserInput -command insert -active Yes -parent ConsoleInstall
-Condition 32628AD2-37C5-499A-8ACF-34040197FF9D -active Yes -parent 702D114A-8A75-4F7C-B228-734D6DB1172C -title {File Permission Condition} -component FilePermissionCondition
-InstallComponent BF861387-DA7F-4986-B5BB-F77358B58603 -setup Install -type action -title {Console Message} -component ConsoleMessage -active Yes -parent ConsoleInstall
-InstallComponent 42520460-6E1C-45A9-A912-5B25124C16FC -setup Install -type action -title {Execute Action} -component ExecuteAction -active Yes -parent ConsoleInstall
-InstallComponent 2073DDB6-50AB-4708-82AD-02A6C3F3EDE1 -setup Install -type action -title {Console Message} -component ConsoleMessage -active Yes -parent ConsoleInstall
-InstallComponent 87DDD23A-793E-41A9-9FC8-5582E7442A15 -setup Install -type action -title Exit -component Exit -active Yes -parent ConsoleInstall
 InstallComponent BAD74F82-1E82-46F5-861A-EFBF6EC6887A -setup Install -type action -title {Execute Action} -component ExecuteAction -active Yes -parent SilentInstall
 InstallComponent 466DC16E-3453-409B-999C-CCDF853AA03D -setup Install -type action -title Exit -component Exit -active Yes -parent SilentInstall
 InstallComponent D567240B-2A30-47FD-97AA-3EDA09B64E9F -setup Install -type actiongroup -title {Setup Actions} -active Yes -parent ActionGroupsInstall
@@ -260,12 +253,9 @@ InstallComponent 61B40FBC-EADB-4F4C-A49F-81B35B3774BB -setup Install -type actio
 InstallComponent 65546717-3D31-4931-B445-220199767639 -setup Install -type action -title {Create Install Panes} -component CreateInstallPanes -active Yes -parent 61B40FBC-EADB-4F4C-A49F-81B35B3774BB
 InstallComponent 9C96DF15-FD21-468D-9996-76D96466D335 -setup Install -type actiongroup -title {Install Actions} -active Yes -parent ActionGroupsInstall
 InstallComponent 7FB76BFF-92E4-4210-9CFA-D6CDDB7C2288 -setup Install -type action -title {Install Selected Files} -component InstallSelectedFiles -active Yes -parent 9C96DF15-FD21-468D-9996-76D96466D335
-InstallComponent F0BC8450-668B-41B2-A442-F1BE095D1BFB -setup Install -type action -conditions C26F2CA4-11A4-48B9-BEF0-DA6521FF67A8 -title {Install Uninstaller} -component InstallUninstaller -command insert -active Yes -parent 9C96DF15-FD21-468D-9996-76D96466D335
-Condition C26F2CA4-11A4-48B9-BEF0-DA6521FF67A8 -active Yes -parent F0BC8450-668B-41B2-A442-F1BE095D1BFB -title {String Is Condition} -component StringIsCondition
-InstallComponent 75B1D869-C9BA-42C4-9C07-E1D156DA80A8 -setup Install -type action -conditions 5F2C50AB-0F5A-46B2-82A4-B4CB1D1A84BA -title {Windows Uninstall Registry} -component AddWindowsUninstallEntry -command insert -active Yes -parent 9C96DF15-FD21-468D-9996-76D96466D335
-Condition 5F2C50AB-0F5A-46B2-82A4-B4CB1D1A84BA -active Yes -parent 75B1D869-C9BA-42C4-9C07-E1D156DA80A8 -title {String Is Condition} -component StringIsCondition
-InstallComponent A4155ACD-0377-4A2C-B952-2C19BF592347 -setup Install -type action -conditions FDC6FE35-3B6A-42CE-8790-C6057A17B75D -title {Uninstall Shortcut} -component InstallProgramFolderShortcut -command insert -active Yes -parent 9C96DF15-FD21-468D-9996-76D96466D335
-Condition FDC6FE35-3B6A-42CE-8790-C6057A17B75D -active Yes -parent A4155ACD-0377-4A2C-B952-2C19BF592347 -title {String Is Condition} -component StringIsCondition
+InstallComponent F0BC8450-668B-41B2-A442-F1BE095D1BFB -setup Install -type action -title {Install Uninstaller} -component InstallUninstaller -command reorder -active Yes -parent 9C96DF15-FD21-468D-9996-76D96466D335
+InstallComponent 75B1D869-C9BA-42C4-9C07-E1D156DA80A8 -setup Install -type action -title {Windows Uninstall Registry} -component AddWindowsUninstallEntry -command reorder -active Yes -parent 9C96DF15-FD21-468D-9996-76D96466D335
+InstallComponent A4155ACD-0377-4A2C-B952-2C19BF592347 -setup Install -type action -title {Uninstall Shortcut} -component InstallProgramFolderShortcut -command reorder -active Yes -parent 9C96DF15-FD21-468D-9996-76D96466D335
 InstallComponent 18774B81-6D13-4BD2-B6F2-852BF95814BD -setup Install -type actiongroup -title {Finish Actions} -active Yes -parent ActionGroupsInstall
 InstallComponent 5EA75DE2-F9E1-405D-800E-B28FB96CDC61 -setup Install -type action -conditions {EDB4771C-ED91-462E-84D9-66E4AE0A9D9C 5CC9615C-1568-415A-A9BA-8D48DD155F7E 9D5D32C2-9AEC-46C1-98CA-F9A535E6ED82} -title {View Readme Window} -component TextWindow -command insert -active Yes -parent 18774B81-6D13-4BD2-B6F2-852BF95814BD
 Condition EDB4771C-ED91-462E-84D9-66E4AE0A9D9C -active Yes -parent 5EA75DE2-F9E1-405D-800E-B28FB96CDC61 -title {String Is Condition} -component StringIsCondition
@@ -398,9 +388,6 @@ disabled
 1F7BE720-7885-4150-9550-F25FB1C69423,NextButton,subst
 1
 
-2073DDB6-50AB-4708-82AD-02A6C3F3EDE1,Message,subst
-1
-
 268B55D8-DE61-421A-AB68-A5D4821D981F,BackButton,subst
 1
 
@@ -467,18 +454,6 @@ disabled
 2C06B466-789E-4F18-B711-E8411E2CD80F,Title,subst
 1
 
-32628AD2-37C5-499A-8ACF-34040197FF9D,CheckCondition
-{Before Next Action is Executed}
-
-32628AD2-37C5-499A-8ACF-34040197FF9D,FailureMessage
-<%DirectoryPermissionText%>
-
-32628AD2-37C5-499A-8ACF-34040197FF9D,Filename
-<%InstallDir%>
-
-32628AD2-37C5-499A-8ACF-34040197FF9D,Permission
-{can create}
-
 354871D2-65BD-4414-BB04-F466798FA027,CheckCondition
 {Before Action is Executed}
 
@@ -493,9 +468,6 @@ false
 
 3AEDBF26-DF24-4328-B5AE-E93AA5F0617B,String
 <%InstallStopped%>
-
-42520460-6E1C-45A9-A912-5B25124C16FC,Action
-{Install Actions}
 
 466DC16E-3453-409B-999C-CCDF853AA03D,ExitType
 Finish
@@ -562,15 +534,6 @@ disabled
 
 5EA75DE2-F9E1-405D-800E-B28FB96CDC61,Title,subst
 1
-
-5F2C50AB-0F5A-46B2-82A4-B4CB1D1A84BA,CheckCondition
-{Before Action is Executed}
-
-5F2C50AB-0F5A-46B2-82A4-B4CB1D1A84BA,Operator
-false
-
-5F2C50AB-0F5A-46B2-82A4-B4CB1D1A84BA,String
-<%UpgradeInstall%>
 
 6059F771-3AA1-491C-8B84-788812912E73,BackButton,subst
 1
@@ -686,12 +649,6 @@ Finish
 6B488B72-9080-4AF7-8690-8D823CCD86AE,Conditions
 {0 conditions}
 
-702D114A-8A75-4F7C-B228-734D6DB1172C,Prompt
-<%ConsoleSelectDestinationText%>
-
-702D114A-8A75-4F7C-B228-734D6DB1172C,VirtualText
-InstallDir
-
 716175FD-DD14-46E4-AC3E-2E6483C6FF7D,Comment
 {Ask the user if they want to proceed with the uninstall.}
 
@@ -705,7 +662,7 @@ InstallDir
 <%HelpGeneratingSSHKeys%>
 
 736623D0-C176-476C-A899-35C05DD59147,TargetFileName
-<%InstallDir%>/help/how_to_keys.html
+<%InstallDir%>/help/<%HowTo%>
 
 736623D0-C176-476C-A899-35C05DD59147,WorkingDirectory
 <%InstallDir%>
@@ -717,7 +674,7 @@ InstallDir
 {0 conditions}
 
 75B1D869-C9BA-42C4-9C07-E1D156DA80A8,Conditions
-{1 condition}
+{0 conditions}
 
 78DA1080-A7D6-4FC9-AEC0-E08A82E6E8A7,Conditions
 {0 conditions}
@@ -761,9 +718,6 @@ ViewReadme
 86342A9C-494A-4036-BA8E-E4BE8A7BB16C,Y
 140
 
-87DDD23A-793E-41A9-9FC8-5582E7442A15,ExitType
-Finish
-
 922F877C-14DD-462F-8BB4-0CD378D81C95,Conditions
 {0 conditions}
 
@@ -798,7 +752,7 @@ Finish
 {Program Files}
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,Size
-3885980
+3919965
 
 96F7BA2D-A593-40DC-89C9-AE7895FD0984,CheckCondition
 {Before Action is Executed}
@@ -837,7 +791,7 @@ Yes
 {0 conditions}
 
 A4155ACD-0377-4A2C-B952-2C19BF592347,Conditions
-{1 condition}
+{0 conditions}
 
 A4155ACD-0377-4A2C-B952-2C19BF592347,FileName
 <%ShortAppName%>-uninstall
@@ -853,15 +807,6 @@ A4155ACD-0377-4A2C-B952-2C19BF592347,WorkingDirectory
 
 A518E166-9DC7-454F-8EFE-CD4461F093FB,Action
 {Uninstall Actions}
-
-A70C24DF-9653-42D5-8FA1-8E721E36E5C7,Conditions
-{0 conditions}
-
-A70C24DF-9653-42D5-8FA1-8E721E36E5C7,Default
-Yes
-
-A70C24DF-9653-42D5-8FA1-8E721E36E5C7,Prompt
-<%InstallStartupText%>
 
 A87C1A6B-ED26-4B07-8736-750725FF34E4,Components
 FB96078B-BA3C-498C-8C20-B01C1F28ACA9
@@ -980,18 +925,6 @@ BAD74F82-1E82-46F5-861A-EFBF6EC6887A,Conditions
 BC4AB013-F50F-49BF-BF98-FF7EBE16BCA4,Alias
 {Cancel Actions}
 
-BF861387-DA7F-4986-B5BB-F77358B58603,Message,subst
-1
-
-BFA75CD3-3FEF-4F6C-87ED-6037AFEBD4CD,CheckCondition
-{Before Action is Executed}
-
-BFA75CD3-3FEF-4F6C-87ED-6037AFEBD4CD,Operator
-false
-
-BFA75CD3-3FEF-4F6C-87ED-6037AFEBD4CD,String
-<%Answer%>
-
 C0AAD722-CF3D-4708-A62F-4EE9C92F7B24,BackButton,subst
 1
 
@@ -1015,15 +948,6 @@ Yes
 
 C19EE9A4-6BBE-4631-8013-7B7DCA588367,Prompt
 <%UninstallStartupText%>
-
-C26F2CA4-11A4-48B9-BEF0-DA6521FF67A8,CheckCondition
-{Before Action is Executed}
-
-C26F2CA4-11A4-48B9-BEF0-DA6521FF67A8,Operator
-false
-
-C26F2CA4-11A4-48B9-BEF0-DA6521FF67A8,String
-<%UpgradeInstall%>
 
 C6CE92F8-3842-4E58-A3A2-5B5D2F7AFB4B,Conditions
 {0 conditions}
@@ -1236,7 +1160,7 @@ F037AAD5-E79E-4544-B8C0-AA98CDF5438E,Title,subst
 1
 
 F0BC8450-668B-41B2-A442-F1BE095D1BFB,Conditions
-{1 condition}
+{0 conditions}
 
 F6A6DB43-C89D-4A19-98D3-1E24284260AE,Comment
 {Do not display this pane if this is an upgrade install unless there is more than one installation present}
@@ -1258,15 +1182,6 @@ FB96078B-BA3C-498C-8C20-B01C1F28ACA9,Name
 
 FB96078B-BA3C-498C-8C20-B01C1F28ACA9,RequiredComponent
 Yes
-
-FDC6FE35-3B6A-42CE-8790-C6057A17B75D,CheckCondition
-{Before Action is Executed}
-
-FDC6FE35-3B6A-42CE-8790-C6057A17B75D,Operator
-false
-
-FDC6FE35-3B6A-42CE-8790-C6057A17B75D,String
-<%UpgradeInstall%>
 
 FreeBSD-4-x86,Active
 No
@@ -1848,6 +1763,9 @@ FB96078B-BA3C-498C-8C20-B01C1F28ACA9,Description
 HelpGeneratingSSHKeys
 {Help Generating SSH Keys}
 
+HowTo
+how_to_keys.html
+
 PandoraLicense
 {Pandora FMS License}
 
@@ -1882,7 +1800,7 @@ Pulse siguiente para continuar o Cancelar para salir de la instalación.}
 
 Si se utiliza este método, hay que generar previamente las claves públicas y privadas y guardarlas como id_dsa.pub e id_dsa, respectivamente en formato OpenSSH, dentro del directorio <%InstallDir%>\key.
 
-Más información en el documento "<%HelpGeneratingSSHKeys%>" (en inglés), que está incluido en la ayuda.}
+Más información en el documento "<%HelpGeneratingSSHKeys%>", que está incluido en la ayuda.}
 
 2B99A465-4666-445D-96BF-9C8F03CDAC60,Title
 {Generación de claves SSH}
@@ -1910,11 +1828,17 @@ C6CE92F8-3842-4E58-A3A2-5B5D2F7AFB4B,Title
 EditConfiguration
 {Editar fichero de configuración}
 
+HelpGeneratingSSHKeys
+{Creación de claves SSH}
+
+HowTo
+how_to_keys_es.html
+
 PandoraLicense
-{Licencia de Pandora FMS}
+{Licencia de Pandora FMS (inglés)}
 
 Readme
-Readme
+{Léeme (inglés)}
 
 StartPandoraService
 {Iniciar el servicio <%AppName%>}

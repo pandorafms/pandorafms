@@ -1,0 +1,53 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>Pandora FMS - Generación de claves SSH en Windows paso por paso</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="author" content="Sancho Lerena, Raul Mateos y otros">
+<meta name="copyright" content="This is GPL software. Created by Sancho Lerena and others">
+</head>
+<body>
+<center>
+<img src="images/logo.png" alt="">
+</center>
+<h2 class="print">Generación de claves SSH en Windows paso por paso</h2>
+
+Extraído de las 
+<a href="http://www.openideas.info/wiki/index.php?title=Pandora:FAQ_ES#.C2.BF_C.C3.B3mo_puedo_generar_un_par_de_claves_SHH_para_el_agente_para_Windows_1.2_.3F">
+FAQ</a>.
+
+<ol>
+	<li>
+		Desde el directorio <code>.\util</code> del agente Pandora FMS para
+		windows ejecutamos <code>puttygen.exe</code>.<br>
+		Generamos claves SSH-2_DSA, 1024:<br><br>
+		<img src="images/1.jpg"><br><br>
+	</li>
+	<li>
+		Pulsamos «Generate»
+		para generar la clave.<br>
+		Exportamos la clave a formato OpenSSH<br><br>
+		<img src="images/2.jpg"><br><br>
+	</li>
+	<li>
+		No elegimos contraseña, con lo cual pulsamos «Sí»:<br><br>
+		<img src="images/3.jpg"><br><br>
+	</li>
+	<li>
+		Guardamos la clave como <code>C:\pandora\keys\id_dsa:</code><br><br>
+		<img src="images/4.jpg"><br><br>
+	</li>
+	<li>
+		Ahora copiamos la clave pública al portapapeles:<br><br>
+		<img src="images/5.jpg"><br><br>
+	</li>
+	<li>
+		Pegamos la clave en un nuevo fichero <code>C:\pandora_agent\keys\id_dsa.pub</code>,
+		y debemos también añadirla al fichero <code>/home/pandora/.ssh/authorized_keys</code>.
+		<br><br>
+		<img src="images/6.jpg"><br><br>
+	</li>
+</ol>
+</body></html>

@@ -245,7 +245,7 @@ Pandora_Windows_Service::copyFtpDataFile (string host,
 	} catch (FTP::Authentication_Failed e) {
 		pandoraLog ("Pandora Agent: Authentication Failed "
 			    "when connecting to %s (%s)",
-                            host.c_str (),  ftp_client.getError ().c_str ());
+                            host.c_str (), ftp_client.getError ().c_str ());
 		ftp_client.disconnect ();
 		throw e;
 	} catch (FTP::FTP_Exception e) {

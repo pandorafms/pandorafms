@@ -143,8 +143,9 @@ Pandora_Windows_Service::getXmlHeader () {
         agent->SetAttribute ("version", getPandoraAgentVersion ());
 
         GetSystemTime(&st);
-        sprintf (timestamp, "%d-%d-%d %d:%d:%d", st.wYear, st.wMonth, st.wDay,
+        sprintf (timestamp, "%d-%02d-%02d %02d:%02d:%02d", st.wYear, st.wMonth, st.wDay,
                  st.wHour, st.wMinute, st.wSecond);
+	
         agent->SetAttribute ("timestamp", timestamp);
 
 	value = conf->getValue ("interval");

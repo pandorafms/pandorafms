@@ -875,7 +875,7 @@ $lang_label["graph_event_total"]="Event graph";
 $lang_label["graph_event_group"]="Event graph by group";
 $lang_label["graph_event_user"]="Event graph by user";
 $lang_label["db_agente_paquetes"]="Packets per agent";
-$lang_label["db_agente_módulo"]="Modules per agent";
+$lang_label["db_agente_modulo"]="Modules per agent";
 
 $lang_label["inc_stat_status"]="Incidents by status";
 $lang_label["inc_stat_priority"]="Incidents by priority";

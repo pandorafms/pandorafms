@@ -1,3 +1,10 @@
+2007-09-07  Raul Mateos <raulofpandora@gmail.com>
+	
+	* include/languages/language_en.php: Solved bug due to adding accent
+	in string.
+	
+	* include/languages/language_gl.php: Translated complete to galician.
+
 2007-09-04  Raul Mateos <raulofpandora@gmail.com>
 
 	* install.php, upgrade.php: Changed default HTML encoding to UTF-8.

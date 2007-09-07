@@ -140,21 +140,6 @@ Yes
 }
 
 array set ::InstallJammer::InstallCommandLineOptions {
-debug
-{Debugging Switch Yes No {} {run installer in debug mode}}
-
-debugconsole
-{ShowConsole Switch Yes No {} {run installer with a debug console open}}
-
-mode
-{InstallMode Choice No No {Console Default Silent Standard} {set the mode to run the installer in}}
-
-prefix
-{InstallDir String No No {} {set the installation directory}}
-
-test
-{Testing Switch Yes No {} {run installer without installing any files}}
-
 }
 array set ::InstallJammer::UninstallCommandLineOptions {
 debugconsole
@@ -212,7 +197,7 @@ SetupType ::A87C1A6B-ED26-4B07-8736-750725FF34E4 -setup Install -active Yes -pla
 
 InstallComponent 1957048E-B498-4FFF-A8BA-F2DF640463B1 -setup Install -type pane -title {Welcome Screen} -component Welcome -active Yes -parent StandardInstall
 InstallComponent DE1D4DF7-A35C-4228-8A25-07106AD77C9E -setup Install -type pane -title {License Agreement} -component License -active Yes -parent StandardInstall
-InstallComponent EAB473BD-3ECC-4FDE-AF62-B80B89DCAE38 -setup Install -type action -conditions {354871D2-65BD-4414-BB04-F466798FA027 0F1370DF-FF15-4CE7-ADF6-CA74BC642334} -title {Modify Widget} -component ModifyWidget -command reorder -active Yes -parent DE1D4DF7-A35C-4228-8A25-07106AD77C9E
+InstallComponent EAB473BD-3ECC-4FDE-AF62-B80B89DCAE38 -setup Install -type action -conditions {354871D2-65BD-4414-BB04-F466798FA027 0F1370DF-FF15-4CE7-ADF6-CA74BC642334} -title {Modify Widget} -component ModifyWidget -command insert -active Yes -parent DE1D4DF7-A35C-4228-8A25-07106AD77C9E
 Condition 354871D2-65BD-4414-BB04-F466798FA027 -active Yes -parent EAB473BD-3ECC-4FDE-AF62-B80B89DCAE38 -title {String Is Condition} -component StringIsCondition
 Condition 0F1370DF-FF15-4CE7-ADF6-CA74BC642334 -active Yes -parent EAB473BD-3ECC-4FDE-AF62-B80B89DCAE38 -title {String Is Condition} -component StringIsCondition
 InstallComponent B2E20690-C57D-4286-9977-F2541E04D71F -setup Install -type pane -conditions {F6A6DB43-C89D-4A19-98D3-1E24284260AE E8952A0A-82A0-4AD0-8FA8-8902870AF848} -title {Select Destination} -component SelectDestination -command insert -active Yes -parent StandardInstall

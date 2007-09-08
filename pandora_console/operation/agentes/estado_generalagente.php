@@ -65,9 +65,10 @@ if (comprueba_login() == 0) {
 	echo '<table cellspacing="4" cellpadding="4" border=0 class="databox"> ';
 	echo '<tr>
 	<td class="datos"><b>'.$lang_label["agent_name"].'</b></td>
-	<td class="datos"><b>'.strtoupper(salida_limpia($nombre_agente));
+	<td class="datos"><b>'.strtoupper(salida_limpia($nombre_agente)).'</b></td>';
 
-	echo "<td class='datos2' width='40'><a class='info' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."&refr=60'><span>".$lang_label["refresh_data"]."</span>"."<img src='images/refresh.png' class='top' border=0></a>&nbsp;&nbsp;";
+	echo "<td class='datos2' width='40'>
+	<a class='info' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."&refr=60'><span>".$lang_label["refresh_data"]."</span><img src='images/refresh.png' class='top' border=0></a>&nbsp;&nbsp;";
 	// Data base access graph
 	echo '</td>';
 	
@@ -78,8 +79,8 @@ if (comprueba_login() == 0) {
 
 	
 	// Show all address for this agent, show first the main IP (taken from tagente table)
-	echo "<select style='padding:0px' name='notused' size=1>";
-	echo "<option>".salida_limpia($direccion_agente);
+	echo "<select style='padding:0px' name='notused' size='1'>";
+	echo "<option>".salida_limpia($direccion_agente)."</option>";
 	$sql_2='SELECT id_a FROM taddress_agent WHERE id_agent = '.$id_agente;
 	$result_t=mysql_query($sql_2);
 	while ($row=mysql_fetch_array($result_t)){
@@ -96,7 +97,7 @@ if (comprueba_login() == 0) {
 	//if ($agent_type == 0) {
 		echo '<tr>
 		<td class="datos"><b>'.$lang_label["os"].'</b></td>
-		<td class="datos" colspan=2>
+		<td class="datos" colspan="2">
 		<img src="images/'.dame_so_icon($id_os).'"> - '.dame_so_name($id_os);
 		if ($os_version != "")
 			echo ' '.salida_limpia($os_version);
@@ -113,12 +114,12 @@ if (comprueba_login() == 0) {
 	<td class="datos2" colspan=2>'.$intervalo.'</td>';
 	echo '</tr>';	
 	echo '<tr>
-	<td class="datos"><b>'.salida_limpia($lang_label["description"]).'</b></td>
+	<td class="datos"><b>'.$lang_label["description"].'</b></td>
 	<td class="datos" colspan=2>'.$comentarios.'</td>';
 
 	echo '</tr>';
 	echo '<tr>
-	<td class="datos2"><b>'.salida_limpia($lang_label["group"]).'</b></td>
+	<td class="datos2"><b>'.$lang_label["group"].'</b></td>
 	<td class="datos2" colspan="2">
 	<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.png" >&nbsp;&nbsp; '.dame_grupo($id_grupo).'</td></tr>';
 	if ($agent_type == 0) {	

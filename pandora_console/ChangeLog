@@ -1,3 +1,20 @@
+
+
+2007-09-08  Raul Mateos <raulofpandora@gmail.com>
+
+	* include/languages/language_en.php, language_es_es.php: Add two 
+	new texts.
+
+	* general/error_*.php: Changed default HTML encoding to UTF-8.
+
+	* operation/agentes/estadogeneralagente.php: Removed function
+	in label that causes some problems with UTF-8 texts.
+
+	* godmode/agentes/configurar_agente.php: Changed strings from code
+	to language includes.
+	
+	* index.php: Updated build, version and set develop pass to 1.
+
 2007-09-07  Raul Mateos <raulofpandora@gmail.com>
 	
 	* include/languages/language_en.php: Solved bug due to adding accent

@@ -134,7 +134,7 @@ echo "<div id='menu_tab_left'>
 <ul class='mn'>";
 echo "<li class='nomn'>";
 echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'>
-<img src='images/setup.png' class='top' border=0>&nbsp; ".substr(dame_nombre_agente($id_agente),0,15)." - ".$lang_label["setup_mode"]."</a>";
+<img src='images/setup.png' class='top' border='0'>&nbsp; ".substr(dame_nombre_agente($id_agente),0,15)." - ".$lang_label["setup_mode"]."</a>";
 echo "</li>";
 echo "</ul></div>";
 
@@ -143,23 +143,23 @@ echo "<div id='menu_tab'>
 <ul class='mn'>";
 
 echo "<li class='nomn'>";
-echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/zoom.png' width='16' class='top' border=0>&nbsp; View</a>";
+echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/zoom.png' width='16' class='top' border='0'>&nbsp;".$lang_label["view"]."</a>";
 echo "</li>";
 
 echo "<li class='nomn'>";
-echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=$id_agente'><img src='images/cog.png' width='16' class='top' border=0>&nbsp; Setup agent</a>";
+echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=$id_agente'><img src='images/cog.png' width='16' class='top' border='0'>&nbsp; ".$lang_label["setup_agent"]."</a>";
 echo "</li>";
 
 echo "<li class='nomn'>";
-echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente=$id_agente'><img src='images/lightbulb.png' width='16' class='top' border=0>&nbsp; Modules</a>";
+echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente=$id_agente'><img src='images/lightbulb.png' width='16' class='top' border='0'>&nbsp;".$lang_label["modules"]."</a>";
 echo "</li>";
 
 echo "<li class='nomn'>";
-echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=$id_agente'><img src='images/bell.png' width='16' class='top' border=0>&nbsp; Alerts</a>";
+echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=$id_agente'><img src='images/bell.png' width='16' class='top' border='0'>&nbsp;". $lang_label["Alerts"]."</a>";
 echo "</li>";
 
 echo "<li class='nomn'>";
-echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=template&id_agente=$id_agente'><img src='images/network.png' width='16' class='top' border=0>&nbsp; NC Templates</a>";
+echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=template&id_agente=$id_agente'><img src='images/network.png' width='16' class='top' border=0>&nbsp;".$lang_label["ntemplates"]."</a>";
 echo "</li>";
 
 echo "</ul>";

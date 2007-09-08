@@ -875,7 +875,7 @@ $lang_label["graph_event_total"]="Event graph";
 $lang_label["graph_event_group"]="Event graph by group";
 $lang_label["graph_event_user"]="Event graph by user";
 $lang_label["db_agente_paquetes"]="Packets per agent";
-$lang_label["db_agente_módulo"]="Modules per agent";
+$lang_label["db_agente_modulo"]="Modules per agent";
 
 $lang_label["inc_stat_status"]="Incidents by status";
 $lang_label["inc_stat_priority"]="Incidents by priority";
@@ -893,6 +893,9 @@ $lang_label["message_not_read"]= "Message not read";
 $lang_label["Factor"]="Factor";
 $lang_label["render_now"]="Render now";
 
-global $lang_label; 
+$lang_label["ntemplates"]="Net. Templates";
+$lang_label["setup_agent"]="Setup Agent";
+
+global $lang_label;
 global $help_label;
 ?>

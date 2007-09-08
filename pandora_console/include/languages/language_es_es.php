@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 // Pandora FMS - the Free monitoring system
 // ========================================
@@ -130,7 +130,7 @@ $lang_label["description"]="Descripción";
 $lang_label["last_fired"]="Lanzada por última vez";
 $lang_label["type"]="Tipo";
 $lang_label["last_contact"]="Último contacto";
-$lang_label["last_data_chunk"]="Contenido de los últimos paquetes enviados por el agente: ";
+$lang_label["last_data_chunk"]="Contenido de los últimos paquetes enviados por el agente";
 $lang_label["graph"]="Gráfico";
 $lang_label["raw_data"]="Datos";
 $lang_label["data"]="Datos";
@@ -423,7 +423,7 @@ $lang_label["definedprofiles"]="Perfiles definidos en Pandora";
 $lang_label["attachfile"]="Añadir archivo";
 $lang_label["filename"]="Nombre del archivo";
 $lang_label["size"]="Tamaño";
- 
+
 $lang_label["upload"]="Subir";
 $lang_label["module"]="Módulo";
 $lang_label["modules"]="Módulos";
@@ -661,11 +661,11 @@ $lang_label["no_rtask"]="No hay ninguna tarea de reconocimiento configurada";
 $lang_label["no_netprofiles"]="No hay ningún perfil de red definido";
 
 // PANDORA 1.3
- 
- $lang_label["dbprohelp"]="El proceso de borrado de la base de datos es usado para borrar aquellas entradas de la BBDD que por alguna razon necesitan ser borradas";
+
+$lang_label["dbprohelp"]="El proceso de borrado de la base de datos es usado para borrar aquellas entradas de la BBDD que por alguna razon necesitan ser borradas";
 $lang_label["valprohelp"]="El valor del módulo del agente mínimo y máximo que delimitan los valores válidos. Cualquier otro valor fuera de ese rango será eliminado";
 $lang_label["validate_event_failed"]="Validación de evento fallida";
-$lang_label["view_agent_general_data"]="Informaci´´on general del agente";
+$lang_label["view_agent_general_data"]="Información general del agente";
 $lang_label["information"]="Información general";
 $lang_label["load"]="Carga";
 $lang_label["tactical_server_information"]="Información táctica del servidor";
@@ -764,7 +764,7 @@ $lang_label["alert_text"]="Alerta de texto";
 $lang_label["text"]="Texto";
 $lang_label["delete_data_above"]="Dato borrado";
 $lang_label["enabled"]="Habilitado";
-$lang_label["average_per_hourday"]="Media por hora/dií";
+$lang_label["average_per_hourday"]="Media por hora/día";
 $lang_label["datatable"]="Tabla de datos";
 $lang_label["export_type"]="Tipo de exportación";
 $lang_label["sunday"]="Domingo";
@@ -875,6 +875,9 @@ $lang_label["message_read"]="Mensaje leído";
 $lang_label["message_not_read"]="Mensaje sin leer";
 $lang_label["Factor"]="Factor";
 $lang_label["render_now"]="Ver ahora";
+$lang_label["ntemplates"]="Plantillas Red";
+$lang_label["setup_agent"]="Configurar agente";
+
 global $lang_label;
 global $help_label;
 ?>

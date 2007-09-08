@@ -27,7 +27,7 @@ include "include/languages/language_en.php";
 <head>
 <title>Pandora FMS - The Free Monitoring System - Console error</title>
 <meta http-equiv="expires" content="0">
-<meta http-equiv="content-type" content="text/html; charset=ISO-8859-15">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
 <meta name="author" content="Sancho Lerena, Raul Mateos">
@@ -42,9 +42,8 @@ include "include/languages/language_en.php";
 <div id='login_f'>
 	<h1 id="log_f" class="error">Bad permission for include/config.php</h1>
 	<div>
-		<img src="images/pandora_logo.png" border="0"></a><br><font size="1">
-		<?php echo $pandora_version; ?>
-		</font>
+		<img src="images/pandora_logo.png" border="0"></a><br>
+		<font size="1"><?php echo $pandora_version; ?></font>
 	</div>
 	<div class="msg"><br><br>For security reasons, <i>config.php</i> must have restrictive permissions, and "other" users cannot read or write to it. It could be writed only for owner (usually www-data or http daemon user), normal operation is not possible until you change permissions for <i>include/config.php</i> file. Please do it, it's for your security.</div>
 </div>

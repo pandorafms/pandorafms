@@ -62,7 +62,7 @@ Pandora_Wmi::isProcessRunning (string process_name) {
 	string        query;
 
 	query = "SELECT * FROM Win32_Process WHERE Name=\"" + process_name + "\"";
-	cout << "Query: " << query << endl;
+	
 	try {	
 		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
 		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
@@ -93,6 +93,7 @@ Pandora_Wmi::isServiceRunning (string service_name) {
 	CDispPtr      wmi_svc, quickfixes;
 	string        query;
 	char         *state;
+	string        str_state;
 	int           retval;
 
 	query = "SELECT * FROM Win32_Service WHERE Name = \"" + service_name + "\"";
@@ -106,10 +107,10 @@ Pandora_Wmi::isServiceRunning (string service_name) {
 		FOR_EACH (quickfix, quickfixes, NULL) {
 			dhGetValue (L"%s", &state, quickfix,
 				    L".State");
-		
-			retval = (state == "Running") ? 1 : 0;
+			str_state = state;
+			retval = (str_state == "Running") ? 1 : 0;
 			dhFreeString (state);
-		
+
 			return retval;
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
@@ -166,7 +167,7 @@ Pandora_Wmi::getDiskFreeSpace (string disk_id) {
 			} catch (Pandora_Exception e) {
 				throw Pandora_Wmi_Exception (); 	 
 			}
-
+			
 			return space / 1024 / 1024;
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
@@ -210,8 +211,6 @@ Pandora_Wmi::getCpuUsagePercentage (int cpu_id) {
 			return load_percentage;
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
-		cout << query << endl;
-		cout << errstr << endl;
 		pandoraLog ("getCpuUsagePercentage error. %s", errstr.c_str ());
 	}
 

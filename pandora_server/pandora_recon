@@ -1,0 +1,77 @@
+#!/bin/bash
+
+# Pandora FMS Recon Server, startup script
+# Sancho Lerena, <slerena@gmail.com>
+# Linux Version (generic)
+# v1.3 Build 070731
+
+# Configurable path and filenames
+PANDORA_HOME="/etc/pandora/pandora_server.conf"
+PANDORA_PID_PATH="/var/run/pandora"
+PANDORA_PID=$PANDORA_PID_PATH/pandora_recon.pid
+PANDORA_DAEMON=/usr/bin/pandora_recon
+
+# Main script
+
+if [ ! -d "$PANDORA_PID_PATH" ]
+then
+	echo "Pandora FMS cannot write it's PID file in $PANDORA_PID_PATH. Please create that directory"
+	exit
+fi
+
+if [ ! -f $PANDORA_DAEMON ] 
+then
+        echo "Pandora FMS Recon Server not found, please check setup and read manual"
+        exit
+fi
+
+case "$1" in
+  start)
+	OLD_PATH="`pwd`"
+	if [ -f $PANDORA_PID ]
+	then
+		CHECK_PID=`cat $PANDORA_PID`
+		CHECK_PID_RESULT=`ps aux | grep -v grep | grep "$CHECK_PID" | grep "pandora_recon" | wc -l`
+		if [ $CHECK_PID_RESULT == 1 ]
+		then
+			echo "Pandora FMS Recon Server is currently running on this machine with PID ($CHECK_PID). Aborting now..."
+			exit
+		fi
+	fi
+	
+	$PANDORA_DAEMON $PANDORA_HOME -D
+	sleep 1
+
+	MYPID=`ps aux | grep "$PANDORA_DAEMON" | grep -v grep | tail -1 | awk '{print $2}'`
+	if [ ! -z "$MYPID" ]
+	then
+		echo $MYPID > $PANDORA_PID
+		echo "Pandora Recon Server is now running with PID $MYPID"
+	else
+		echo "Cannot start Pandora FMS Recon Server. Aborted."
+	fi
+	cd "$OLD_PATH"
+        ;;
+  stop)
+	if [ -f $PANDORA_PID ]
+	then
+	   echo "Stopping Pandora FMS Recon Server"
+	   PID_2=`cat $PANDORA_PID`
+	   if [ ! -z "`ps -F -p $PID_2 | grep -v grep | grep 'pandora_recon' `" ]
+           then
+	       kill `cat $PANDORA_PID` 2> /dev/null > /dev/null
+	   fi
+           rm -f $PANDORA_PID
+	else
+	  echo "Pandora FMS Recon Server is not running, cannot stop it."
+	fi
+        ;;
+  force-reload|restart)
+        $0 stop
+        $0 start
+        ;;
+  *)
+        echo "Usage: pandora_recon {start|stop|restart}"
+        exit 1
+esac
+

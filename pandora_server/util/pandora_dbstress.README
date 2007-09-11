@@ -1,0 +1,8 @@
+This small utility is make to test your database speed in Pandora Scheme.
+
+You need to create an agent and assing modules for automated data injection with this tool. Name this modules acording this:
+
+random - To generate "random" data.
+curve - To generate a math curve using trigonometrical functions, useful to see interpolation working with different intervals, etc
+boolean - Generate "random" boolean data.
+

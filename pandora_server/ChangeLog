@@ -1,0 +1,591 @@
+2007-08-28  Sancho Lerena  <slerena@gmail.com>
+
+	* util/pandora_db.pl: Added some fixes and new checks for database
+	consistency. Also purge non-init modules (needed to avoid unused modules 
+	that take too much time on network servers!).
+
+2007-08-27  Sancho Lerena  <slerena@gmail.com>
+
+        * lib/PandoraFMS/Config.pm: Updated version string.
+
+        * bin/pandora_network: Fixed BUG with SNMP Timeout (net-snmp uses MICROSECONDS
+        instead seconds!)
+
+2007-08-23  Sancho Lerena  <slerena@gmail.com>
+
+	* Fixed a BUG in daemon launcher scripts that makes to do not stop servers :(
+	
+	* Added a updated README.
+
+	* lib/PandoraFMS/Config.pm, bin/pandora_snmpconsole: Real fix for problem in 
+	snmplogfile.
+
+2007-08-21 Sancho Lerena <slerena@gmail.com>
+
+	* conf/pandora_server.conf: Final fixes for default file.
+
+	* lib/PandoraFMS/Config.pm: Fixed stupid typo in snmpconsole parameter.
+
+	* bin/*: Disabled flush for each I/O (ready for production).
+
+2007-08-06 Sancho Lerena <slerena@gmail.com>
+
+	* DB.pm: Alert time support uses TIME format instead numeric (changes requested
+	by esanchezm).
+
+2007-08-02 Sancho Lerena <slerena@gmail.com>
+
+	* Makefile.PL: Missing dep updated and .pl extensions purged.
+
+	* All (4) startup scripts: Updated startup script.
+
+	* lib/PandoraFMS/Config.pm: Now servers dont get "Homedir" from command line, get
+	config file directly
+
+	* bin/pandora_recon, bin/pandora_server, bin/pandora_network, bin/pandora_snmpconsole:
+	Renamed (deleted .pl).
+
+	* Final changes (link is now over bin, and lib is real dir, for work
+	with Makefile.PL).
+
+	* lib: Linked to bin/PandoraFMS, for use in Makefile.PL
+
+	* Makefile.PL: Perl standard interface for make (to install)
+
+	* bin/pandora_db.pl: Some small fixes and information strings updated.
+
+2007-07-31  Sancho Lerena  <slerena@gmail.com>
+
+        * util/snmptrapd: Deleted binary.
+
+        * pandora_snmpconsole: Fixed startup scripts. Many checks added to
+        manage NetSNMP Trap daemon. Now uses /usr/sbin/snmptrapd by
+        default. Solved many problems. This also solve bug #1763691.
+
+        * conf/pandora_server.conf: Added snmp_logfile token (before
+        inside CODE!, UGLY!).
+
+        * bin/pandora_network.pl: I hope Fixed BUG #1763305 with Master Server.
+
+        * bin/PandoraFMS/Config.pm: Support for config token snmp_logfile.
+
+        * bin/PandoraFMS/DB.pm: Fixed (stupid) BUG #1763304 with alerts.
+
+        * bin/pandora_snmpconsole.pl: Removed logfile filename from code
+        (VERY ugly!).
+
+        * pandora_server, pandora_network, pandora_recon: This also solve
+        bug #1763691. Some additional checks included.
+
+        * util/pandora_SNMP_test.pl: Removed, old stuff.
+
+2007-07-20 Sancho Lerena  <slerena@artica.es>
+
+	* pandora_network.pl: Fixed a typo in pandora_ping_latency function.
+
+2007-07-19  Sancho Lerena  <slerena@artica.es>
+
+	* bin/pandora_DBI_test.pl: This is in /util and shound not be there.
+
+	* pandora_network.pl: Added concurrency locking for ICMP and
+	removed previos method (repeating tests). This sould work fine and
+	faster. ICMP Latency added as independent function. This sould go
+	on a new library for 1.4 or 2.0 version. Removed some debug
+	commented code.
+
+2007-07-18  Sancho Lerena  <slerena@artica.es>
+
+	* pandora_network.pl: BugFix: SNMP calls that was causing segfauls was
+ 	because NetSNMP (SNMP) library is not thread safe !. Simple locking
+	mechanism was enough to run code safely !. Main SQL sentence fixed,
+	removed some debug code. 
+
+	* pandora_server.conf: added sample of network_thread token
+
+2007-07-17  Sancho Lerena  <slerena@artica.es>
+
+	* PandoraFMS/DB.pm: Added generic access to database using
+	give_db_value() function.
+
+	* pandora_network.pl: Porting code from 2.0 trunk, code from 1.3 was
+	too slow. Solved many issues of stability. Changed entire balancing
+	and task assigment algorithm. 
+
+	* PandoraFMS/Config.pm: Added network_thread config option to
+	fine-tune network server.
+
+2007-07-16  Sancho Lerena  <slerena@artica.es>
+
+	* bin/PandoraFMS/DB.pm: bugfix, was not updating running_by field !!
+
+2007-07-13  Sancho Lerena  <slerena@artica.es>
+
+	* bin/pandora_recon.pl: Another patch, to create records in
+	tagente_estado using different values for "estado" field, (100 for
+	non-monitors, 0 for monitors), in the same way console does.
+	
+	* bin/pandora_recon.pl: Testing changes for two items: (a) Bug
+	detected in forking startup (-D). (b) Bug detected due creation of
+	modules without inserting record in tagente_estado table.
+	
+	* bin/pandora_server.pl: Updated some flags (IO flush), and
+	indenting some code.
+
+2007-07-11  Manuel Arostegui <marostegui@artica.es>
+
+        * bin/pandora_server.pl: Fixed a bug which make
+          impossible to figure out what the error was
+          (if there was) when launching the pandora_server.
+
+2007-06-29  Raul Mateos  <raulofpandora@gmail.com>
+
+	* conf/pandora_server.conf: Changed default incomming dir and log.
+	Fixed small bug with dbuser.
+
+2007-06-28  Manuel Arostegui <marostegui@artica.es>
+
+	* conf/pandora_server.conf: Fixed bug #1744240 
+
+	* pandora_server: Added feature request #1744248
+
+	* pandora_recon: Added feature request #1744248
+
+	* pandora_network: Added feature request #1744248
+
+2007-06-25  Sancho Lerena  <slerena@artica.es>
+
+	This should be definitive commit for Beta1
+	
+	* General cleanup of unused or old stuff.
+
+	* bin/PandoraFMS/Config.pm: Now uses errorlog for each perl
+	error. Now render database bad connect string in connection phase
+	(useful to debug startup errors by blank spaces).
+	
+	* util/pandora_checkdep.pl: Small perl script to check all
+	dependencies.
+
+
+2007-06-25  Manuel Arostegui <marostegui@artica.es>
+
+	* specs/fedoracore5/pandora_server.spec: Moving PandoraFMS
+	  perl modules to the perl directory instead of leaving them
+	  in the pandora_server main directory.
+
+2007-06-22  Sancho Lerena  <slerena@artica.es>
+
+        * bin/pandora_recon.pl: This sould be final modifications for recon.
+	Fixed a bug reported by Enrique Verdes in the development list.
+
+2007-06-19  Sancho Lerena  <slerena@artica.es>
+
+	* bin/PandoraFMS/DB.pm: Added support to timeframe alerts.
+
+	* bin/pandora_recon.pl: Threads is not a good idea, we need to use
+	fork() in the future. At this moment, multithread disabled for
+	recon.
+
+2007-06-18  Manuel Arostegui <marostegui@artica.es>
+
+	* specs/fedoracore5/pandora_server.spec: Added some useful tips.
+
+2007-06-18  Manuel Arostegui <marostegui@artica.es>
+
+	* specs/fedoracore5/pandora_server.spec: Ready for the 1.3 packaging.
+
+2007-06-17  Sancho Lerena  <slerena@artica.es>
+
+	* bin/pandora_server.pl: Now keepalive subprocess uses alert_check
+	function fon DB.pm
+	
+	* bin/PandoraFMS/Config.pm: Updated version number.
+	
+	* bin/PandoraFMS/DB.pm: alert_check function now support
+	individual alert disable.
+
+2007-06-07  Sancho Lerena  <slerena@artica.es>
+
+	Important update. Now all PM files (library) goes on PandoraFMS
+	subdirectory from /bin. This should be copied/moved to system
+	default Perl libraries (like /usr/lib/perl). All .PM files changes
+	it's name.
+
+	We also replace Net::Ping for Alive checks because recently
+	problems discovered in packet lenght payload and problems with
+	threads. We fallback to Net::Ping::External, now rewrapped to
+	PandoraFMS::PingExternal and distributed with PandoraFMS for easy
+	deployment.
+
+	bin/*.pm: Renamed to equivalent files in ./bin/PandoraFMS dir
+	
+	* bin/pandora_network.pl: Now uses ping() from PingExternal to
+	make alive checks. Latency checks is the only function that
+	actually needs root now. External Ping could be executed from any
+	user (it uses PING from system).
+	
+	* bin/PandoraFMS: Now contains all .PM files for PandoraFMS.
+
+	* bin/pandora_recon.pl: Now uses ping() from PingExternal.
+
+	* bin/pandora_network.pl: Net::Ping::External does not solve our 
+	odd problems. Fallback again to Net::Ping interface, not using a 
+	double check to be sure that data is good. I hope this works :(
+
+2007-06-05  Sancho Lerena <slerena@gmail.com>
+
+	* pandora_network.pm: Small bug that causes some hosts to do not reply
+	at ICMP request with a small payload (1 byte). Now uses by default 
+	32 bytes per reply. Also modified icmp_data for latency checks because 
+	was not using global timeout and has the same problems with small
+	payloads.
+
+2007-06-04  Raúl Mateos  <rmateos@netscape.net>
+
+	* pandora_server, pandora_network, pandora_snmpconsole: Added FMS text.
+
+2007-05-24  Sancho Lerena  <slerena@artica.es>
+
+	* conf/pandora_server.conf: Added support for dbname option.
+
+	* pandora_snmpconsole: Version and bash header updated.
+
+	* bin/pandora_config.pm: Added support for dbname option. Added
+	some default options for DB.
+
+	* bin/pandora_db.pm: Fixed stupid bug in alert execution.  Added
+	support for dbname option and other minor fixes.
+
+	* bin/pandora_server.pl,
+	bin/pandora_network.pl,
+	bin/pandora_snmpconsole.pl,
+	bin/pandora_recon.pl:  Added support for dbname option.
+
+	* pandora_server: Version update
+
+2007-05-21  Sancho Lerena  <slerena@artica.es>
+
+	* pandora_network: Version banner update.
+
+	* pandora_db.pm: Fixed problem in function
+	module_generic_data_inc() that doesn't create record on new
+	data_inc modules, only updates if already exists. Fixed and
+	tested.
+
+	* pandora_network.pm: pandora_query_snmp() function return 0 if
+	cannot stablish connection. Also, snmp_data_proc value of 2 (down)
+	is turned to 0 for Pandora FMS. Also, now when cannot connect,
+	ONLY UPDATE last_try field, not timestamp field in tagente_estado
+	table. I don't know why was in that way until this moment ¿?
+
+2007-05-07  Sancho Lerena  <slerena@artica.es>
+
+	* bin/pandora_db.pm: Fixed some problems with quotes and other
+	aditional checks.
+
+	* bin/pandora_network.pl: Fixed some problems with quotes and
+	other aditional checks.  Detected a serious BUG in snmplib for
+	Ubuntu Freeze
+	(already submitted as detected BUG with veryhigh priority). This
+	makes pandora network server unusable on feisty until fixed
+	:(. Bug item is in
+	https://bugs.launchpad.net/ubuntu/+source/net-snmp/+bug/65047
+
+2007-05-07  Sancho Lerena  <slerena@artica.es>
+
+	* bin/pandora_db.pm: Fixed BUG #1714003 for data_inc unit division
+	(I hope), need testing.
+
+2007-05-03  Sancho Lerena  <slerena@artica.es>
+
+	* bin/pandora_network.pl: Fix problem with ICMP timeouts.
+	
+	* util/pandora_dbstress.pl: Update for new needsupdate fix in some
+	DB code. Needs to be improved for specific module/agent selection.
+	
+
+2007-04-24  Sancho Lerena  <slerena@artica.es>
+
+	* pandora_db.pm: Added sanity checks to avoid problems when some
+	modules coming without names or cannot locate a valid agent.
+
+	* pandora_server.pl: Added sanity checks to avoid unnamed modules
+
+2007-04-21  Sancho Lerena  <slerena@gmail.com>
+
+	* pandora_tools.pm: Fixed sqlWrap() function.
+
+	* pandora_db.pm: Many changes and fixes: data_inc process function
+	almost rewritten to fix a bug coming from 1.x? who causes to
+	insert as data the total value for first data arriving... so bad
+	:(. This is now fixed. crea_agente_modulo() now return id of
+	agent_module created so we skip another timeconsuming query
+	:). Added give_group_disabled() for next feature about Group
+	Disabled doesnt fire alerts nor events. Fixed crea_agente_modulo()
+	with many not defined checks.
+
+	* pandora_network.pm: Fixed terrible bug in reference parameters
+	that cause pandora_query_tcp() dont work properly.
+
+2007-04-19  Sancho Lerena  <slerena@artica.es>
+
+	* pandora_tools.pm: Now expor sqlWrap() function to parse " and '
+	chars in some SQL sentences. Use with careful.
+
+	* pandora_network.pm: Fixed little bug with undeclared variable
+	warning.
+
+	* pandora_db.pm: Implemented NEW text alerts with regexp. Internal
+	audit now uses macros for alerts. Fixed a bug in
+	crea_agente_modulo() when uses ' chars in name or module
+	description (using sqlWrap to clean text). General code cleanup.
+	
+2007-04-19  Manuel Arostegui <marostegui@artica.es>
+
+	* specs/fedoracore5/pandora_server: Added files of the
+	  new 1.3 version.
+
+2007-04-17  Manuel Arostegui <marostegui@artica.es>
+
+	* specs/fedoracore5/pandora_server.spec: Added code to evaluate
+	  the perl version using by the system.
+
+2007-04-11  Manuel Arostegui <marostegui@artica.es>
+
+	* conf/pandora_server.conf: Changed PATHS to adapt them to the
+          upcoming 1.3 release.
+
+	* INSTALL: Adapted instructions in order to work with new PATHS
+	  of the upcoming 1.3 version.
+
+2007-04-11  Manuel Arostegui <marostegui@artica.es>
+
+	* pandora_network, pandora_snmpconsole, pandora_server
+	  pandora_recon: Changed PATHS to adapt them to the 
+	  upcoming 1.3 release.
+
+	* specs/fedoracore5/pandora_server.spec: Changed
+          PATHS to adapt them to the upcoming 1.3 release.
+
+2007-03-29  Sancho Lerena  <slerena@artica.es>
+
+	* pandora_config.pm: Now stores $pa_config->{'server_id'}
+	available for any function in Pandora FMS Server.
+
+	* pandora_db.pm: Several verbosity level adjustements in logger
+	functions in all code. Some debug code purged. Alert code now
+	should store group correctly in events. Renamed
+	"processed_by_server" field from tagente_estado by "running_by",
+	updated some code. pandora_updateserver() now stores also server
+	version.
+
+	* pandora_network.pm: pandora_serverkeepaliver now run more
+	exactly and does not apply any delay. Module selection now uses
+	utimestamp AND the new running_by to know that other instance of
+	server is currently running this module. TCP code has moved to
+	function pandora_query_tcp() -code cleanup-. UDP code deleted
+	(doesn't work, and never used!). Fixed important bug in ICMP Proc
+	that causes constant FLIPFLOP in monitors since last commit. Fixed
+	also a problem from that version updating status timestamp. Lastry
+	field only be used now for checking 24hr without updating tdata
+	table.
+
+	* pandora_server.conf: Updated some text and formatting, more
+	clear now.
+	
+2007-03-23  Sancho Lerena  <slerena@artica.es>
+
+	* pandora_tools.pm: Added sqlWrap function to manage quotes.
+
+	* pandora_network.pm: MAJOR changes in internal architecture: Now
+	uses 10 threads for manage network tasks and one only to keep
+	server alive. Now catch TERM signal and log it. New function to
+	check UDP services. This should be enought for improve network
+	server performance until 2.0 version :-)
+
+	* pandora_db.pm: pandora_calcula_alerta now calls execute_alert
+	and clenanup alert code. Fixed bug with Internal audit
+	alert. Addded fix from Dassing to pandora_writestate and added
+	more fixes for 24hr data problem that include fix
+	odule_generic_data.. functions.  pandora_audit () now uses
+	utimestamp also.
+
+2007-03-19  Sancho Lerena  <slerena@artica.es>
+
+	* pandora_recon: Startup script for recon server.
+
+	* pandora_recon.pl: Major code cleanup. First "complete" version,
+	this sould be enought for a while. Works for me.
+
+	* pandora_db.pm: Added generic functions to add incident . Added
+	function give_network_component_profile_name(). Now updates
+	correctly recon server status in pandora_updateserver function
+	call.
+	
+	* pandora_network.pm: Replaced Net::Ping::External usage with
+	Net::Ping library. This should fix many problems with some
+	distros. Added pandora_ping_icmp() function to check ICMP boolean.
+	
+	
+2007-03-12  Sancho Lerena  <slerena@artica.es>
+
+	* util/pandora_dbstress.pl: Upgraded. Now admits one agent or all
+	agent.
+	
+	* bin/pandora_recon.pl: New network recon server, to autoexplore
+	new machines and add to monitorization automatically. Not
+	finished, first version, first commit to SVN :-)
+
+	* bin/pandora_db.pm: Now pandora_writestate() writes new fields
+	current_interval, processed_by_server into tagente_estado
+	table. This increase seeks for Unknown modules, and to know what
+	server manage the module (data or network).
+
+	* bin/pandora_server.pl: Small changes in banners.
+
+	* bin/pandora_network.pl: Small changes in banner. Small
+	optimization, now server_id is only checked once.
+
+	* bin/pandora_config.pm: Small changes in banner. Added support to
+	new reconserver, added config hash "servermode" to maintain a
+	single var with servertype. Now renders in console real server
+	name at startup and a "all correct" message after initializing.
+
+2007-02-22  Sancho Lerena  <slerena@artica.es>
+
+	* bin/pandora_dbstress.pl: Deleted, valid one is on /util
+
+	* util/crea_modulos_ping.php: This tool create two modules for
+	each existing agents. Used to create ICMP PROC and ICMP DATA
+	network module types to test new Network infraestructure.
+	
+	* util/lista_ip.txt: Our testing IP field :-)
+	
+	* util/agent_creator.php: This PHP console script create a bunch
+	of agents with it's modules (500 agents with 20 modules each by
+	default) to test huge environments.
+	
+	* util/pandora_dbstress.pl: Updated.
+
+2007-02-16  Sancho Lerena  <slerena@artica.es>
+
+	* pandora_db.pm: Now updates and uses utimestamp fields in
+	tagent_data, tagent_data_string and tagent_status.
+
+2007-02-01  Manuel Arostegui <marostegui@artica.es>
+
+	*  pandora_server/specs/fedoracore5/pandora_server.spec:
+	   Fixed small bugs with some .pm files behaviur and logs
+	   paths.
+
+2007-01-23  Manuel Arostegui <marostegui@artica.es>
+
+	*  pandora_server/specs/fedoracore5/pandora_server.spec:
+	   /var/log/pandora was not created with the correct perms,
+	   fixed.
+
+2007-01-20  Manuel Arostegui <marostegui@artica.es>
+	
+	*  pandora_server/specs/fedoracore5/pandora_server.spec:
+           Fixed more nosenses related with symlink
+
+2007-01-20  Manuel Arostegui <marostegui@artica.es>
+
+	*  pandora_server/specs/fedoracore5/pandora_server.spec:
+	   Fixed some nosenses
+
+2007-01-16  Manuel Arostegui <marostegui@artica.es>
+
+	* pandora_server/specs/fedoracore5/pandora_server.spec: Fixed
+	  bug #1636585.
+
+2007-01-08  Manuel Arostegui <marostegui@artica.es>
+
+	* pandora_server/specs/fedoracore5/pandora_server.spec: Changed group.
+
+2007-01-03  Manuel Arostegui <marostegui@artica.es>
+	
+	* pandora_server/specs/fedoracore5/pandora_server.spec: Added dependencies.
+
+2007-01-03  Manuel Arostegui <marostegui@artica.es>
+
+	* pandora_server/specs/fedoracore5/pandora_server.spec: Fixed small bug with .pm
+	  files. Fixed a PATH slip-up
+
+2007-01-02  Manuel Arostegui <marostegui@artica.es>
+
+	* pandora_server/specs/fedoracore5/pandora_server.spec: Added to reposistory.
+	  Completly re-write pandora server spec file, now it package everything.
+
+2006-12-22  Manuel Arostegui <marostegui@artica.es>
+
+	 * pandora_server/specs/fedoracore5/perl-Pandora-1.2.spec: Fixed some
+	   nonsenses.
+	
+	 * pandora_server/specs/rhel/perl-Pandora-1.2.spec: Much more polished
+	   spec file.
+
+2006-12-22  Manuel Arostegui <marostegui@artica.es>
+
+	* pandora_server/specs/fedoracore5/perl-Pandora-1.2.spec: Much more 
+	  polished spec file. Lot of changes made. Added notes as a remind
+	  after installation.
+
+2006-12-21  Manuel Arostegui <marostegui@artica.es>
+
+	* pandora_server/specs/fedoracore5/perl-Pandora-1.2.spec: Changed
+	  named, this is not a beta anymore. Also added Release:1
+
+	* pandora_server/specs/rhel/perl-Pandora-1.2.spec: Changed 
+          named, this is not a beta anymore. Also added Release:1
+
+2006-11-29  Sancho Lerena  <slerena@artica.es>
+
+	* pandora_server/pandora_server.pl: Fixed BUG #1604778.
+
+2006-11-27 Raul Mateos <raulofpandora@gmail.com>
+
+	* pandora_server/data_in: Removed old directory.
+
+	* pandora_server/config/pandora_server.conf: Changed data_in
+	directory to /var/spool/pandora/data_in.
+
+2006-11-27 Manuel Arostegui <marostegui@artica.es>
+
+	* pandora_server/specs/fedoracore5/perl-Pandora-1.2-beta3.spec:
+	  Missing Changelog section, added.
+	
+	* pandora_server/specs/rhel/perl-Pandora-1.2-beta3.speci: Missing 
+	  Changelog section, added.
+
+2006-11-23 Raul Mateos <raulofpandora@gmail.com>
+
+	* pandora_server/bin/pandora_config.pm: Updated some text from
+	Linux to GNU/Linux. Update build date and final version.
+
+	* pandora_server/config/pandora_server.conf: Changed servername
+	from "daeva" to localhost.
+
+2006-11-22 Manuel Arostegui <marostegui@artica.es>
+
+	* pandora_server/specs/fedoracore5/*, pandora_server/specs/rhel/*:
+	  Added to repository. Added specs files for Fedora Core 5 and
+	  RHEL.
+
+2006-11-13  Sancho Lerena  <slerena@artica.es>
+
+        * /bin/pandora_config.pm: Added $VERSION variable to be used for
+	        packagers.
+
+
+2006-09-29 Raul Mateos <raulofpandora@gmail.com>
+
+	* pandora_server/bin/*.pl and *.pm: Updated some comments from
+	Spanish to English. Update build date.
+
+2006-09-13 Sancho Lerena <slerena@artica.es>
+
+	* pandora_network.pl: Fixed problems with OID index. Perl needs to
+	referente a .0 index, like SNMPv2-MIB::sysDescr.0 as
+	SNMPv2-MIB::sysDescr. Also, other numerical indexes are referenced
+	different from system SNMP or PHP. IF-MIB::ifDescr.3 is
+	IF-MIB::ifDescr.2 for PERL's SNMP.

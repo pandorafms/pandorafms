@@ -1,3 +1,7 @@
+2007-09-14 Sancho Lerena <slerena@gmail.com>
+
+	* Deleted a lot of old stuff (licenses, readmes, etc). Put on agent root dir
+
 2007-08-29  Raul Mateos  <raulofpandora@gmail.com>
 
 	* win32/bin/pandora_agent.conf: Added comments about usage and samples.

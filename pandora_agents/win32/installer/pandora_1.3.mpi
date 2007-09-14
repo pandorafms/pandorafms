@@ -78,7 +78,7 @@ PackageDescription
 {Pandora FMS Windows Agent}
 
 PackageLicense
-GPL2
+{Gnu Public Licence v2 (GPL2)}
 
 PackageMaintainer
 {Esteban Sanchez <esteban.sanchez@artica.es>}
@@ -153,9 +153,6 @@ test
 
 }
 FileGroup ::946FC43B-0E32-4C38-86EF-4F9252C67E16 -setup Install -active Yes -platforms {Linux-x86 Windows TarArchive AIX-ppc FreeBSD-4-x86 FreeBSD-x86 HPUX-hppa Solaris-sparc} -name {Program Files} -parent FileGroups
-File ::6605A291-B6B3-4A29-8FBF-EA669B76633C -type dir -name C:/pandora_installer/scripts -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
-File ::D9E889AA-2A1C-4C82-8D08-7A5A6C12B275 -name start_pandora_agent.bat -parent 6605A291-B6B3-4A29-8FBF-EA669B76633C
-File ::95F52F92-9FC9-492D-914D-AC6FC0C265C4 -name stop_pandora_agent.bat -parent 6605A291-B6B3-4A29-8FBF-EA669B76633C
 File ::A917C2BF-3079-4FAC-9487-56873FCF8381 -type dir -name C:/pandora_installer/bin/help -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::9A0A7B55-1B33-4480-8D1B-3C7539A8529C -name how_to_keys.html -parent A917C2BF-3079-4FAC-9487-56873FCF8381
 File ::C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E -type dir -name images -parent A917C2BF-3079-4FAC-9487-56873FCF8381
@@ -166,6 +163,7 @@ File ::CD1E11AD-9689-4B20-9753-253F819416FF -name 4.jpg -parent C45C9DA9-48F1-4F
 File ::B2CB62FE-55CB-478B-B981-174EDE18519A -name 5.jpg -parent C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E
 File ::7F26AC24-9EFC-45A8-A93C-DDCC7E7487B3 -name 6.jpg -parent C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E
 File ::7FCFC7EE-2203-412D-9110-FF5FA54C1E4A -name logo.png -parent C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E
+File ::0AEA8805-CBBC-4CFC-A52B-630755DC757E -name Thumbs.db -active 0 -parent C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E
 File ::B674F886-6A1A-4B24-9DF3-A654EA1334AC -name how_to_keys_es.html -parent A917C2BF-3079-4FAC-9487-56873FCF8381
 File ::7003FDCA-0EDA-4431-93E2-6FEA7E8660D6 -type dir -name C:/pandora_installer/bin/key -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::B33B08D0-C80C-49CB-9431-44C6B4E7858E -name id_dsa -parent 7003FDCA-0EDA-4431-93E2-6FEA7E8660D6
@@ -192,6 +190,9 @@ File ::C36B2E54-801B-4FDE-A894-330D396AC100 -name C:/pandora_installer/bin/zlib1
 File ::50980131-CDA1-4F32-86E0-FD53B1097F67 -name C:/pandora_installer/pandora.ico -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::3267E440-2104-4BA2-BDEB-DFDA32441FC2 -name C:/pandora_installer/LICENSE.txt -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::423325D1-5C33-41ED-965A-F7E1F2A2C32E -name C:/pandora_installer/README.txt -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
+File ::9F4D1B79-C9AE-4F1F-AC50-876657B3361C -type dir -name C:/pandora_installer/bin/scripts -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
+File ::8C09E6D4-4B09-4AA5-B025-441389C76F70 -name start_pandora_agent.bat -parent 9F4D1B79-C9AE-4F1F-AC50-876657B3361C
+File ::BA05415F-E246-45AE-A0B1-21C7AB400402 -name stop_pandora_agent.bat -parent 9F4D1B79-C9AE-4F1F-AC50-876657B3361C
 Component ::FB96078B-BA3C-498C-8C20-B01C1F28ACA9 -setup Install -active Yes -platforms Windows -name {Default Component} -parent Components
 SetupType ::A87C1A6B-ED26-4B07-8736-750725FF34E4 -setup Install -active Yes -platforms Windows -name Typical -parent SetupTypes
 
@@ -737,7 +738,7 @@ ViewReadme
 {Program Files}
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,Size
-3919965
+3888504
 
 96F7BA2D-A593-40DC-89C9-AE7895FD0984,CheckCondition
 {Before Action is Executed}
@@ -810,57 +811,6 @@ AA00EDED-9979-419F-A32C-DF1480E9EFF0,Alias
 
 ACFFE9C0-C404-4FD9-AD70-8F60E822DE65,Conditions
 {0 conditions}
-
-AIX-ppc,Active
-No
-
-AIX-ppc,DefaultDirectoryPermission
-0755
-
-AIX-ppc,DefaultFilePermission
-0755
-
-AIX-ppc,Executable
-<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
-
-AIX-ppc,FallBackToConsole
-Yes
-
-AIX-ppc,InstallDir
-<%Home%>/<%ShortAppName%>
-
-AIX-ppc,InstallMode
-Standard
-
-AIX-ppc,InstallType
-Typical
-
-AIX-ppc,ProgramExecutable
-{}
-
-AIX-ppc,ProgramFolderAllUsers
-No
-
-AIX-ppc,ProgramFolderName
-<%AppName%>
-
-AIX-ppc,ProgramLicense
-<%InstallDir%>/LICENSE.txt
-
-AIX-ppc,ProgramName
-{}
-
-AIX-ppc,ProgramReadme
-<%InstallDir%>/README.txt
-
-AIX-ppc,PromptForRoot
-Yes
-
-AIX-ppc,RequireRoot
-No
-
-AIX-ppc,RootInstallDir
-/usr/local/<%ShortAppName%>
 
 B2E20690-C57D-4286-9977-F2541E04D71F,BackButton,subst
 1
@@ -1168,159 +1118,6 @@ FB96078B-BA3C-498C-8C20-B01C1F28ACA9,Name
 FB96078B-BA3C-498C-8C20-B01C1F28ACA9,RequiredComponent
 Yes
 
-FreeBSD-4-x86,Active
-No
-
-FreeBSD-4-x86,DefaultDirectoryPermission
-0755
-
-FreeBSD-4-x86,DefaultFilePermission
-0755
-
-FreeBSD-4-x86,Executable
-<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
-
-FreeBSD-4-x86,FallBackToConsole
-Yes
-
-FreeBSD-4-x86,InstallDir
-<%Home%>/<%ShortAppName%>
-
-FreeBSD-4-x86,InstallMode
-Standard
-
-FreeBSD-4-x86,InstallType
-Typical
-
-FreeBSD-4-x86,ProgramExecutable
-{}
-
-FreeBSD-4-x86,ProgramFolderAllUsers
-No
-
-FreeBSD-4-x86,ProgramFolderName
-<%AppName%>
-
-FreeBSD-4-x86,ProgramLicense
-<%InstallDir%>/LICENSE.txt
-
-FreeBSD-4-x86,ProgramName
-{}
-
-FreeBSD-4-x86,ProgramReadme
-<%InstallDir%>/README.txt
-
-FreeBSD-4-x86,PromptForRoot
-Yes
-
-FreeBSD-4-x86,RequireRoot
-No
-
-FreeBSD-4-x86,RootInstallDir
-/usr/local/<%ShortAppName%>
-
-FreeBSD-x86,Active
-No
-
-FreeBSD-x86,DefaultDirectoryPermission
-0755
-
-FreeBSD-x86,DefaultFilePermission
-0755
-
-FreeBSD-x86,Executable
-<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
-
-FreeBSD-x86,FallBackToConsole
-Yes
-
-FreeBSD-x86,InstallDir
-<%Home%>/<%ShortAppName%>
-
-FreeBSD-x86,InstallMode
-Standard
-
-FreeBSD-x86,InstallType
-Typical
-
-FreeBSD-x86,ProgramExecutable
-{}
-
-FreeBSD-x86,ProgramFolderAllUsers
-No
-
-FreeBSD-x86,ProgramFolderName
-<%AppName%>
-
-FreeBSD-x86,ProgramLicense
-<%InstallDir%>/LICENSE.txt
-
-FreeBSD-x86,ProgramName
-{}
-
-FreeBSD-x86,ProgramReadme
-<%InstallDir%>/README.txt
-
-FreeBSD-x86,PromptForRoot
-Yes
-
-FreeBSD-x86,RequireRoot
-No
-
-FreeBSD-x86,RootInstallDir
-/usr/local/<%ShortAppName%>
-
-HPUX-hppa,Active
-No
-
-HPUX-hppa,DefaultDirectoryPermission
-0755
-
-HPUX-hppa,DefaultFilePermission
-0755
-
-HPUX-hppa,Executable
-<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
-
-HPUX-hppa,FallBackToConsole
-Yes
-
-HPUX-hppa,InstallDir
-<%Home%>/<%ShortAppName%>
-
-HPUX-hppa,InstallMode
-Standard
-
-HPUX-hppa,InstallType
-Typical
-
-HPUX-hppa,ProgramExecutable
-{}
-
-HPUX-hppa,ProgramFolderAllUsers
-No
-
-HPUX-hppa,ProgramFolderName
-<%AppName%>
-
-HPUX-hppa,ProgramLicense
-<%InstallDir%>/LICENSE.txt
-
-HPUX-hppa,ProgramName
-{}
-
-HPUX-hppa,ProgramReadme
-<%InstallDir%>/README.txt
-
-HPUX-hppa,PromptForRoot
-Yes
-
-HPUX-hppa,RequireRoot
-No
-
-HPUX-hppa,RootInstallDir
-/usr/local/<%ShortAppName%>
-
 Linux-x86,Active
 No
 
@@ -1370,57 +1167,6 @@ Linux-x86,RequireRoot
 No
 
 Linux-x86,RootInstallDir
-/usr/local/<%ShortAppName%>
-
-Solaris-sparc,Active
-No
-
-Solaris-sparc,DefaultDirectoryPermission
-0755
-
-Solaris-sparc,DefaultFilePermission
-0755
-
-Solaris-sparc,Executable
-<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
-
-Solaris-sparc,FallBackToConsole
-Yes
-
-Solaris-sparc,InstallDir
-<%Home%>/<%ShortAppName%>
-
-Solaris-sparc,InstallMode
-Standard
-
-Solaris-sparc,InstallType
-Typical
-
-Solaris-sparc,ProgramExecutable
-{}
-
-Solaris-sparc,ProgramFolderAllUsers
-No
-
-Solaris-sparc,ProgramFolderName
-<%AppName%>
-
-Solaris-sparc,ProgramLicense
-<%InstallDir%>/LICENSE.txt
-
-Solaris-sparc,ProgramName
-{}
-
-Solaris-sparc,ProgramReadme
-<%InstallDir%>/README.txt
-
-Solaris-sparc,PromptForRoot
-Yes
-
-Solaris-sparc,RequireRoot
-No
-
-Solaris-sparc,RootInstallDir
 /usr/local/<%ShortAppName%>
 
 TarArchive,Active
@@ -1630,7 +1376,7 @@ C6CE92F8-3842-4E58-A3A2-5B5D2F7AFB4B,Message
 
 Now the pandora_agent.conf file will be open to change Pandora FMS Server IP address and agent name (used in Web Console).
 
-If you use FTP method to transfer data files, configure ftp_password with the padnora user password in the FTP server. This user should have write permissions in the server directory, by default /var/spool/pandora/data_in.
+If you use FTP method to transfer data files, configure ftp_password with the pandora user password in the FTP server. This user should have write permissions in the server directory, by default /var/spool/pandora/data_in.
 
 If you want to use SSH, comment FTP parameters and generate SSH Keys.
 

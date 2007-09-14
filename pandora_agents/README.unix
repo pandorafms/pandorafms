@@ -1,0 +1,460 @@
+Pandora FMS Agents
+==================
+
+Understanding what is a Pandora FMS Agent
+-----------------------------------------
+
+Pandora FMS agents collect all system's data. They are executed in each local
+system, although they can also collect remote information by installing
+monitoring systems for the agent in several different machines - called
+satellite agents.
+
+They are developed to work under a given platform, making use of the specific
+tools of the language being used: VBSCript/Windows Scripting for Microsoft
+platforms (Win2000, WinXP y Win2003), ShellScripting for UNIX - which includes
+Linux, Solaris, AIX, HP-UX and BSD, as well as the Nokia's IPSO. Pandora agents
+can be developed in virtually any language, given its simple API system and
+being open source. There are branches of the Pandora project started for the
+creation of agents in Posix C, Perl and Java for those systems requiring closed
+agents.
+
+Pandora Agents are Free Software, i.e., the way agents collect and sent
+information is documented. An agent can be recreated in any programming
+language, and can be upgraded easily, to improve aspects of the program not
+covered so far.
+
+This document describes the installation of agents in machines running over
+Windows and Unix operating systems.
+
+Generic role of the agents
+--------------------------
+
+Regardless the platform an agent is running on, this is formed of the following
+elements:
+
+A script (or binary application in Windows) that collects and sends the data to
+the server. For UNIX machines the script is called pandora_agent.sh and is
+executed directly from the Pandora agent folder.
+
+One or several configuration files where the values to be collected are defined.
+The file is called pandora_agent.conf both for Windows and Unix machines.
+
+This simple structure makes it easy the customisation of an agent. There is no
+need to code again the agent to modify the way it works, as the configuration
+file holds most of the parameters needed to do so.
+
+Pandora FMS Agent configuration
+------------------------------
+
+Main program
+~~~~~~~~~~~~
+
+The main script is the executable file that collects the data specified in the
+configuration file. It sends the data to the server in XML. In Windows machines
+application is installed as a service and is executed at the time intervals set
+in the configuration file. In machines running over UNIX the main script is run
+through a special script called pandora_agent, and runs continuously in the
+machine as a process.
+
+Configuration File
+~~~~~~~~~~~~~~~~~~
+
+The data collection in the host system is the gathering of independent data
+units, which are defined in the /etc/pandora/pandora_agent.conf file. The
+pandora_agent.conf file is divided in two parts:
+
+    * General parameters: Configure general options about server location, agent
+name, interval, and other general options.
+
+    * Module definitions: Configure and define the method of extraction for each
+piece of information that will be extracted from local host and sent to Pandora
+Server.
+
+General parameters
+~~~~~~~~~~~~~~~~~~
+
+The general parameters of the agent configuration are defined in this section.
+Some of these parameters are common for all systems and others specific for
+Windows or UNIX. The general parameters are:
+
+    * server_path: The server path is the full path of the folder where the
+server stores the data sent by the agent. It is usually
+/var/spool/pandora/data_in.
+
+    * server_ip: The server IP is the IP address or the host name of the Pandora
+server, where the data will be stored. The host must be reachable and must be
+listening to port 22 (SSH).
+
+    * temporal: This is the full path of the folder where the agent stores the
+data locally, before it is sent to the server. It must be said that the data
+packages are deleted once the agent tries to contact Pandora server, no matter
+if the communication was successful or not. This is done to avoid over flooding
+hard drive of the host system where the agent runs. The location of the local
+folder varies with the architecture of the host system. In Unix systems this is
+usually /var/spool/pandora/data_out, and in Windows systems C:\program
+files\pandora\data_out.
+
+    * interval: This is the time interval in seconds in which the agent will
+collect data from the host system and send the data packages to the server. The
+recommended value ranges from 300 (5 minutes) to 600 (10 minutes). This number
+could be larger, although it is important to consider the impact of a larger
+number on the database.
+
+    * debug: This parameter is used to test the generation of data files,
+forcing the agent to do not copy data file to server, so you can check data file
+contents and copy XML data file manually. It does not delete any data when the
+process is finished, so data file will be in temp directory. The activity is
+written in a log file. The file is named pandora_agent.log. This log file can be
+used to test the system and to investigate potential issues.
+
+    * agent_name: This is an alternative host name. This parameter is optional
+as if it is not declared the name is obtained directly from the system.
+
+    * checksum: This parameter can take two values. If the value is 1, the
+checksums are performed through MD5. If the value is 0, the checksum is not
+performed at all. This may be useful for systems where a MD5 tool cannot be
+implemented. If the checksum is deactivated in the agent it must be also
+disconnected in the server. Otherwise it could create problems.
+
+    * Transfer Mode: This parametrer let you specify which transfer mode is
+going to be set up to send the agent data to the server. Modes available are:
+ssh (using scp), ftp or local. Local mode it is only for systems where the agent
+run in the same machine as the server does, cause it is basically a copy between
+directories.
+
+	* ftp_password: Specify password for FTP transfer mode (Windows only).
+	
+    * encoding: Set the encoding type of your local system, like iso-8859-15, or
+utf-8.
+
+    * Pandora Nice: This parametrer let you specify the priority the Pandora
+Agent process will have in your system.
+
+An example of the general parameters from a Unix configuration would be:
+
+     server_ip    192.168.12.12
+     server_path  /var/spool/pandora/data_in
+     temporal     /var/spool/pandora/data_out
+     interval     300
+     agent_name   dakotaSR01
+     debug 	   0
+     checksum     0
+
+Module definition
+-----------------
+
+Each data item that is to be collected must be defined precisely in each module,
+using the exact syntax. As many values as necessary can be set to be collected,
+adding at the end of the general parameters as many modules as the number of
+values to collect. Each module is made of several directives. Following is a
+descriptive relation of all module marks available for Unix agents (almost all
+of them are applicable to Windows Agent too).
+
+
+module_begin
+
+Defines the beginning of the module.
+
+module_name <name>
+
+Name of the module. This is the id for this module, choose a name without blank
+spaces and not very long. There is no practical limitation (max of 250 chars)
+but will be more easier to manage if you use short names. This name CANNOT be
+duplicated with a similar name in the same agent. This name could be duplicated
+with other modules in other agents.
+
+module_type <type>
+
+Data type the module will handle. There are four data types for agents:
+
+    * Numeric (generic_data). Simple numeric data, float or integer. If the
+values are of the float type, they will be truncated to their integer value.
+
+    * Incremental (generic_date_inc). Integer numeric data equal to the
+differential between the actual value and the previous one. When this
+differential is negative the value is set to 0.
+
+    * Alphanumeric (generic_string). Text strings up to 255 characters. 
+
+    * Monitors (generic_proc). Stores numerically the status of the processes.
+This data type is called monitor because it assigns 0 to an "Incorrect" status
+and any value above 0 to any "Correct" status.
+
+module_exec <command>
+
+This is the generic "command to execute" directive. Both, for Unix and Windows
+agents there is only one directive to obtain data in a generic way, executing a
+single command (you could use pipes for redirecting execution to anoter
+command). This directive executes a command and stores the returned value. This
+method is also available on Windows agents. This is the "general purpose method"
+for both kind of agents.
+
+For a Windows agent there are more directives to obtain data, who are described
+following this lines.
+
+
+module_service <service>
+
+(Win32 Only)
+
+Checks if a given service name is running in this host. Remember to use " "
+characters if service name contains blank spaces.
+
+
+module_proc <process>
+
+(Win32 Only)
+
+Checks if a given processname is running in this host. If the process name
+contains blank spaces do not use " ". Also notice that the process name must
+have the .exe extension. The module will return the number of process running
+with this name.
+
+module_freedisk <drive_letter:>
+
+(Win32 Only)
+
+Checks free disk on drive letter (do not forget ":" after drive letter).
+
+module_cpuusage <cpu id>
+
+(Win32 Only)
+
+Returns CPU usage on CPU number cpu. If you only have one cpu, use 0 as value.
+
+module_freememory
+
+(Win32 Only)
+
+Return free memory in the whole system.
+
+module_min <value>
+
+This is the minimum valid value for the data generated in this module. If the
+module has not yet been defined in the web console this value will be taken from
+this directive. This directive is not compulsory. This value does not override
+the value defined in the agent if the module does not exist in the management
+console is created automatically when working on learning mode.
+
+module_max <value>
+
+It is the maximum valid value for the data generated in this module. If the
+module has not been defined in the web console this value will be taken from
+this directive. This directive is not compulsory and is not supported by the
+Windows agent. This value does not override the value defined in the agent if
+the module does not exist in the management console. This is created
+automatically when working on learning mode.
+
+
+module_description <text>
+
+This directive is used to add a comment to the module. This directive is not
+compulsory. This value does not override the value defined in the agent if the
+module does not exist in the management console. This is created automatically
+when working on learning mode.
+
+
+module_interval <factor>
+
+Since Pandora 1.2 introduces this new feature. You can, for each module, setup
+its own interval. This interval its calculated as a multiply factor for agent
+interval. For example, if your agent has interval 300 (5 minutes), and you want
+a module only be calculated each 15 minutes, you could add this line:
+module_interval 3. So this module will be calculated each 300sec x 3 = 900sec
+(15 minutes).
+
+
+module_end
+
+Ends module definition
+
+
+Examples
+
+An example of a Windows module, checking if EventLog service is alive, would be:
+
+       module_begin
+       module_name ServicioReg
+       module_type generic_proc
+       module_service Eventlog
+       module_description Eventlog service availability
+       module_end
+
+An example of a Unix module would be:
+
+       module_begin
+       module_name cpu_user
+       module_type generic_data
+       module_exec vmstat | tail -1 | awk '{ print $14 }'
+       module_min 0
+       module_max 100
+       module_description User CPU
+       module_end
+
+
+Agent types
+===========
+
+It is possible to monitor virtually any system with Pandora. This can be done
+either with a local agent collecting data directly from the system to be
+monitored, using a a satellite agent collecting data from a system by SNMP or
+using the new Pandora 1.2 agents, the remote agents, who can chack using remote
+network polling (TCP, UCP, ICMP/PING and SNMP) remote services, from the Pandora
+Network Server.
+
+The local agents can be either Windows or Unix agents. The satellite agents can
+be implemented using any of the agents above. The modules are configured to
+collect data from the external system by, for example, an SNMPGET tool.
+
+
+Quick Install Guide for Pandora FMS UNIX AGENTS 1.3
+===================================================
+
+Installing Pandora FMS Agent for unix
+-------------------------------------
+
+Untar agent tarball, for example at /tmp/pandora_agent
+
+As root, execute command line installer:
+
+    ./pandora_agent_installer --install
+
+This should install your agent, setup permissions and place files in their
+respective locations:
+
+    root@blackbox01:/tmp/pandora/pandora_agents/linux# ./pandora_agent_installer
+--install
+
+    Pandora FMS Agent Installer 1.0 (c) 2007 Sancho Lerena
+    This program is licensed under GPL2 Terms. http://pandora.sourceforge.net
+
+    Checking default dir /usr/share/pandora_agent...
+    Checking Pandora FMS Agent on /usr/bin/pandora_agent....
+    Creating Pandora FMS Agent home directory at /usr/share/pandora_agent ...
+    .
+    .
+    
+    Creating logfile at /var/log/pandora_agent.log...
+    Copying Pandora FMS Agent to /usr/bin/pandora_agent...
+    You have your startup script ready at /etc/init.d/pandora_agent_daemon
+    First you need to copy your public SSH keys (/home/slerena/.ssh/id_dsa)
+    under /home/pandora/.ssh/authorized_keys on your Pandora FMS Server host
+    You also need to setup your /etc/pandora/pandora_agent.conf config file
+
+Setup SSH authentication
+------------------------
+
+Due that Pandora FMS agent connect by SSH you need to setup SSH keys now. You
+also can use FTP method by using .netrc file, but it's much more secure and
+better to use SFTP with SSH2).
+
+Probably you want to run Pandora FMS agent under root privileges to grab system
+data. It's possible that you don't need to run as root to collect data you need,
+in that case, procedure are the same, but using another user.
+
+Create ssh keys using DSA type for key:
+
+	ssh-keygen -t dsa
+
+And reply as follows to questions (enter to all questiosn):
+
+	Generating public/private dsa key pair.
+	Enter file in which to save the key (/root/.ssh/id_dsa):
+	Created directory '/root/.ssh'.
+	Enter passphrase (empty for no passphrase):
+	Enter same passphrase again:
+	Your identification has been saved in /root/.ssh/id_dsa.
+	Your public key has been saved in /root/.ssh/id_dsa.pub.
+	The key fingerprint is:
+	xx:xx:xx:xx:xx:xx:xx:xx:xx:2d:68:30:f7:53:2d:7e
+
+You need to add your PUBLIC key (/root/.ssh/id_dsa.pub) to
+/home/pandora/.ssh/authorized_keys file in each Pandora FMS data server you want
+to use with this agent.
+
+Login to Pandora FMS data server, and add the key on
+/home/pandora/.ssh/authorized_keys file. You could use cut and paste, for
+example, or copying file with scp or ftp from one system to another. Take care
+of carriage returns. Public key "appearance" is like as:
+
+  ssh-dss AAAAB3NzaC1kc3MAAACBAMR4WOOvuT3UyZPKC/NcqBuduB/H8oKF2LRv52LX88YNO
+  kgdIPNOat+NeweCuQdVOaDUNvFTgnyYV6iBtApstzUl6ndKALZlDoZnBYULYTUtBF+cdRHq7v
+  n0bufIMRHFpg8ZvqR3dBulz6bVQqJu8nqZGQDyLgPEmkQ6O9 root@blackbox01
+
+The entire block MUST BE in a SINGLE LINE, if not, don't work. Also,
+/home/pandora/.ssh/ directory and /home/pandora/.ssh/authorized_keys in server,
+should have "pandora" user ownership and permissions set to 700 for directory
+and 600 for authorized_keys file.
+
+For example, if you have copied id_dsa.pub to /tmp in server system:
+
+	cat /tmp/id_dsa.pub >> /home/pandora/.ssh/authorized_keys
+	chmod 600 /home/pandora/.ssh/authorized_keys
+	chmod 700 /home/pandora/.ssh/
+	chown -R pandora /home/pandora/
+
+Image:Warning.png Warning! Setting up SSH authentication is a mess due ANY step
+you missed, makes auth to fails, so please don't skip nothing
+
+
+Always test this connection to check that SSH authentication is working. From
+your agent system, where Pandora FMS agent is running, try to contact Pandora
+FMS server:
+
+	ssh pandora@server_ip
+
+First time a hostkey authentication changenge should show you something like:
+
+	The authenticity of host 'xxxxx (x.x.x.x)' can't be established.
+	RSA key fingerprint is 42:d4:a5:f2:a7:b8:1f:c3:d5:42:ab:c7:b5:5b:af:57.
+	Are you sure you want to continue connecting (yes/no)?     
+	
+Reply yes, and you should see the system prompt for user pandora, WITHOUT asking
+for password, because SSH automatic authentication, based on DSA Keys, should
+work and resolve authentication. If not, try to review previous steps. Note that
+if you're using scponly protection, shell don't be available, but authentication
+will be correct.
+
+If you have serious problems and get stuck, try to setup maximun verbosity of
+SSH Daemon on System running Pandora FMS server:
+
+	vi /etc/ssh/sshd_config
+
+Replace LogLevel INFO for LogLevel DEBUG2
+
+Restart ssh
+
+	/etc/init.d/ssh restart
+
+Now you have MUCH MORE information about SSH problems. In debian this
+information is at /var/log/auth.log. Dont forget to set again LogLevel INFO in
+your sshd_config and restart again SSH, or too much loggin will be generated
+(and performance penalty).
+ Configure Pandora FMS agent
+
+Your config file is at /etc/pandora/pandora_agent.conf, edit it and setup that
+variables:
+
+    * server_ip: put IP address of your Pandora FMS data server
+    * debug: set it to zero to not use debug mode. 
+
+Rest of parameters could be default values.
+
+Check out some of the default modules to have an idea of your agent will do and
+what kind of information will report to Pandora FMS data server. This could be
+modified in any time (restarting agent).
+
+Run your Pandora FMS unix agent
+-------------------------------
+
+First to need to create your agent in your Pandora FMS console as described in
+"new agent" procedure (but you don't need to create network modules), only
+create an agent with the SAME name that have your system. After creating agent
+in console, you could launch agent:
+
+    /etc/init.d/pandora_agent_daemon start
+
+If you have problems, a good idea is restart Pandora FMS agent manually to check
+errors in startup:
+
+    pandora_agent /etc/pandora

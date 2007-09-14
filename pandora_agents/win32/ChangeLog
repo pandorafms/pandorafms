@@ -1,3 +1,13 @@
+2007-09-14  Sancho Lerena <slerena@gmail.com>
+
+        * pandora_agent.conf: Updated
+
+        * pandora_1.3.mpi: Updated and fixed some minor strings.
+
+        * Packaged lastest version of Pandora FMS Agent for windows.
+
+        This would be beta3 for Windows Agent.
+
 2007-09-11  Esteban Sanchez  <estebans@artica.es>
 
 	* windows/pandora_wmi.cc: Fixed an error when detecting running

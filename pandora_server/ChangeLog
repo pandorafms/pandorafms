@@ -1,3 +1,18 @@
+2007-09-18  Sancho Lerena  <slerena@gmail.com>
+
+	* lib/PandoraFMS/Config.pm. Defaul ping check is now 1
+
+	* bin/pandora_network: Improved version of multiple ping check, now skip checks
+	when at least one ping is successful.
+
+2007-09-11  Sancho Lerena  <slerena@gmail.com>
+
+	* Added a new option in network server: icmp_checks, to define
+	how many attempts want for each icmp_proc module. Useful in networks
+	with some packet loss or variable timeouts. It is a whole-system token.
+
+	This is the first commit for NG branch.
+
 2007-08-28  Sancho Lerena  <slerena@gmail.com>
 
 	* util/pandora_db.pl: Added some fixes and new checks for database

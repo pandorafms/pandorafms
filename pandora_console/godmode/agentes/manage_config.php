@@ -314,7 +314,7 @@ if (comprueba_login() == 0)
 			<select name=destino[] size=10 multiple=yes style='width: 175px;'>
 			<?php
 			// Show combo with agents
-			$sql1='SELECT * FROM tagente';
+			$sql1='SELECT * FROM tagente order by nombre';
 			$result=mysql_query($sql1);
 			while ($row=mysql_fetch_array($result)){
 				echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";

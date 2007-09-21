@@ -1,4 +1,8 @@
+2007-09-20  Sancho Lerena <slerena@gmail.com>
 
+	* view_server.php, tactical.php: Solved bug in lagcheck for down modules.
+
+	* godmode/agentes/manage_config.php: Agent ordered by name in destination box.
 
 2007-09-08  Raul Mateos <raulofpandora@gmail.com>
 

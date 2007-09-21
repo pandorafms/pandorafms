@@ -1,5 +1,7 @@
 2007-09-20  Sancho Lerena <slerena@gmail.com>
 
+	* operation/agentes/estado_alertas.php: Alert icon is now the box icon.
+
 	* view_server.php, tactical.php: Solved bug in lagcheck for down modules.
 
 	* godmode/agentes/manage_config.php: Agent ordered by name in destination box.

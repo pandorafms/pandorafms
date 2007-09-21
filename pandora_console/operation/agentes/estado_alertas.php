@@ -110,9 +110,9 @@ if (isset($_GET["id_agente"])){
 			}
 			echo "<td align='center' class='".$tdcolor."'>".$data["times_fired"]."</td>";
 			if ($data["times_fired"] <> 0)
-				echo "<td class='".$tdcolor."' align='center'><img src='images/dot_red.png'></td>";
+				echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_red.png'></td>";
 			else
-				echo "<td class='".$tdcolor."' align='center'><img src='images/dot_green.png'></td>";
+				echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_green.png'></td>";
 		}
 		echo '</table>';
 

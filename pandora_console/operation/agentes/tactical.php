@@ -286,8 +286,11 @@
 	                                        while ($row1=mysql_fetch_array($result1)){
 	                                                if (($row1[0] + $row1[1]) < $nowtime){
 	                                                        $maxlag2 =  $nowtime - ($row1[0] + $row1[1]);
-	                                                        if ($maxlag2 > $maxlag)
-	                                                                $maxlag = $maxlag2;
+								// More than 5 times module interval is not lag, is a big
+								// problem in agent, network or servers..
+								if ($maxlag2 < ($row1[1]*5))
+	                                                       	 	if ($maxlag2 > $maxlag)
+	                                                                	$maxlag = $maxlag2;
         	                                        }
                 	                        }
                         	        if ($maxlag < 60)

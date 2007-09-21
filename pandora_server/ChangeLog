@@ -1,3 +1,11 @@
+
+2007-09-20  Sancho Lerena  <slerena@gmail.com>
+
+	* pandora_network: Generic controls to check ipaddress, OID, SNMP Community and
+	port for network checks. Some fail when using incomplete modules would make a
+	network thread crash and make server inoperative. This should be merged with 1.3
+	( actual trunk version ).
+
 2007-09-18  Sancho Lerena  <slerena@gmail.com>
 
 	* lib/PandoraFMS/Config.pm. Defaul ping check is now 1

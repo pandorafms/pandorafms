@@ -1,3 +1,8 @@
+
+2007-09-24  Sancho Lerena <slerena@gmail.com>
+
+	* operation/agentes/estado_agente.php: Fixed BUG 1801301 thanks to Eric Ross.
+
 2007-09-20  Sancho Lerena <slerena@gmail.com>
 
 	* operation/agentes/estado_alertas.php: Alert icon is now the box icon.

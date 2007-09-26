@@ -105,7 +105,8 @@ if (comprueba_login() == 0) {
 	$total_events = $row2[0];
 	// Prepare pagination
 	
-	pagination ($total_events, "index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$group_id&refr=60", $offset);
+	pagination ($total_events, 
+"index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$ag_group&refr=60", $offset);
 	// Show data.
 	$result=mysql_query($sql);
 	if (mysql_num_rows($result)){

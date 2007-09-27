@@ -37,6 +37,18 @@ if (isset($_GET["offset"]))
 else
 	$offset = 0;
 
+if (isset($_GET["group_id"]))
+                $group_id = entrada_limpia($_GET["group_id"]);
+        else
+                $group_id = 0;
+
+        if (isset($_POST["ag_group"]))
+                        $ag_group = $_POST["ag_group"];
+                elseif (isset($_GET["group_id"]))
+                $ag_group = $_GET["group_id"];
+        else
+                $ag_group = -1;
+
 if (isset($_GET["borrar_agente"])){ // if delete agent
 	$id_agente = entrada_limpia($_GET["borrar_agente"]);
 	$agent_name = dame_nombre_agente($id_agente);
@@ -146,7 +158,7 @@ $row2=mysql_fetch_array($result2);
 $total_events = $row2[0];
 
 // Prepare pagination
-pagination ($total_events, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente", $offset);
+pagination ($total_events, "index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&group_id=$ag_group", $offset);
 echo "<div style='height: 20px'> </div>";
 
 if (mysql_num_rows($result)){

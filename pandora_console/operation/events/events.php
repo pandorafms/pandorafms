@@ -151,9 +151,18 @@ $offset=0;
 if (isset($_GET["offset"]))
 	$offset=$_GET["offset"];
 
-$ev_group = -1;
+if (isset($_GET["group_id"]))
+                $group_id = entrada_limpia($_GET["group_id"]);
+        else
+                $group_id = 0;
+
 if (isset($_POST["ev_group"]))
-	$ev_group = $_POST["ev_group"];
+                        $ev_group = $_POST["ev_group"];
+                elseif (isset($_GET["group_id"]))
+                $ev_group = $_GET["group_id"];
+        else
+                $ev_group = -1;
+
 
 $event="All";
 if (isset($_POST["event"]))
@@ -227,7 +236,7 @@ $total_events = $row3[0];
 // Show pagination header
 
 if ($total_events > 0){
-	pagination($total_events, "index.php?sec=eventos&sec2=operation/events/events", $offset);		
+	pagination ($total_events, "index.php?sec=eventos&sec2=operation/events/events&group_id=$ev_group&refr=60", $offset);		
 	// Show data.
 		
 	echo "<br>";

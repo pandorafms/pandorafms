@@ -79,7 +79,7 @@ our @EXPORT = qw( 	crea_agente_modulo
 
 sub pandora_calcula_alerta (%$$$$$$) {
 	my $pa_config = $_[0];
-    my $timestamp = $_[1];
+	my $timestamp = $_[1];
 	my $nombre_agente = $_[2];
 	my $tipo_modulo = $_[3];
 	my $nombre_modulo = $_[4];
@@ -246,9 +246,26 @@ sub pandora_calcula_alerta (%$$$$$$) {
 						# database until a real alarm was fired
 						my $query_idag = "UPDATE talerta_agente_modulo SET times_fired = 0, internal_counter = 0 WHERE id_aam = $id_aam ";
 						$dbh->do($query_idag);
+						my $evt_descripcion = "Alert ceased ($nombre_agente $descripcion)";
+						pandora_event ($pa_config, $evt_descripcion, $id_grupo, $id_agente, $dbh);	
 					}	
 				}
 			} # timecheck
+			else { # Outside operative alert timeslot
+				my $temp_aam_check = give_db_value ( "internal_counter", "talerta_agente_modulo", "id_aam", $id_aam, $dbh);
+				if ($temp_aam_check > 0){
+					my $query_idag = "UPDATE talerta_agente_modulo SET times_fired = 0, internal_counter = 0 WHERE id_aam = $id_aam ";
+                                	$dbh->do($query_idag);
+                                	my $evt_descripcion = "Alert ceased ($nombre_agente $descripcion)";
+                                	pandora_event ($pa_config, $evt_descripcion, $id_grupo, $id_agente, $dbh);
+				}
+			}
+
+			# Check for alert UP event. If any alert have $have_alert 0 
+			# we check if have a internal_counter value > 0. If it does
+			# reset internal and raise an event with "Alert UP".
+			
+
 		} # While principal
 	} # if there are valid records
 	$s_idag->finish();
@@ -654,7 +671,7 @@ sub module_generic_data_inc (%$$$$$) {
 		my $timestamp_anterior = 0;
 		my $m_utimestamp = &UnixDate ($m_timestamp, "%s");
 
-		if ($id_agente_modulo == -1) {
+		if (($id_agente_modulo == -1) && (dame_learnagente($pa_config, $id_agente, $dbh) eq "1" )) {
 			$id_agente_modulo = crea_agente_modulo ($pa_config, $agent_name, $module_type, $m_name, $a_max, $a_min, $a_desc, $dbh);
 			$no_existe = 1;
 		} else {
@@ -807,7 +824,7 @@ sub pandora_writedata (%$$$$$$$$$$){
 		$min = $data[6];
 		$s_idag->finish();
 	} else { # Id AgenteModulo DOESNT exist, it could need to be created...
-		if (dame_learnagente($pa_config, $id_agente,$dbh) eq "1" ){
+		if (dame_learnagente($pa_config, $id_agente, $dbh) eq "1" ){
 			# Try to write a module and agent_module definition for that datablock
 			logger( $pa_config, "Pandora_insertdata will create module (learnmode) for agent $nombre_agente",6);
 			$id_agente_modulo = crea_agente_modulo ($pa_config, $nombre_agente, $tipo_modulo, $nombre_modulo, $max, $min, $descripcion, $dbh);
@@ -1426,10 +1443,13 @@ sub dame_learnagente (%$$) {
     	if ($s_idag->rows == 0) {
         	logger( $pa_config, "ERROR dame_learnagente(): Cannot find agente $id_agente",2);
       		logger( $pa_config, "ERROR: SQL Query is $query ",2);
-    	} else  {    @data = $s_idag->fetchrow_array(); }
-    	my $learn= $data[6];
-    	$s_idag->finish();
-        return $learn;
+		return 0;
+    	} else  {    
+		@data = $s_idag->fetchrow_array();
+    		my $learn= $data[6];
+    		$s_idag->finish();
+        	return $learn;
+	}
 }
 
 

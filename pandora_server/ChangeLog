@@ -1,3 +1,10 @@
+2007-10-01  Sancho Lerena  <slerena@gmail.com>
+
+	* lib/PandoraFMS/DB.pm: Fixed bug for autoimported modules #1805654
+
+	* lib/PandoraFMS/DB.pm: Fixed problem with fixed alerts. Now reports when 
+	problem its fixed in event manager (after threshold expires!).
+
 2007-08-28  Sancho Lerena  <slerena@gmail.com>
 
 	* util/pandora_db.pl: Added some fixes and new checks for database

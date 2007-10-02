@@ -1,3 +1,13 @@
+2007-10-02  Sancho Lerena  <slerena@gmail.com>
+
+	* lib/PandoraFMS/DB.pm: Updated and fixed several problems with alerts. 
+	Now notification of alert ceased is properly implemented and works
+	inside threshold timegap. Event are fired using alert description and not
+	alert type, and automatically ceased alerts (depending on min_alert and 
+	internal counter) give up alert status and generate event.
+
+	* bin/pandora_snmpconsole: Updated call to execute_alert.
+
 2007-10-01  Sancho Lerena  <slerena@gmail.com>
 
 	* lib/PandoraFMS/DB.pm: Fixed bug for autoimported modules #1805654

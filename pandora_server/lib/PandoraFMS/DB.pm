@@ -214,7 +214,7 @@ sub pandora_calcula_alerta (%$$$$$$) {
 						my $nombre_agente = dame_nombreagente_agentemodulo ($pa_config, $id_agente_modulo, $dbh);
 						# --------------------------------------
 						# Now call to execute_alert to real exec
-						execute_alert ($pa_config, $id_alerta, $campo1, $campo2, $campo3, $nombre_agente, $timestamp, $datos, $comando, $alert_name, $dbh);
+						execute_alert ($pa_config, $id_alerta, $campo1, $campo2, $campo3, $nombre_agente, $timestamp, $datos, $comando, $alert_name, $descripcion, $dbh);
 						# --------------------------------------
 					} else { # Alert is in valid timegap but has too many alerts or too many little
 						$internal_counter++;
@@ -242,13 +242,30 @@ sub pandora_calcula_alerta (%$$$$$$) {
 					$flag = Date_Cmp ($fecha_actual, $fecha_limite);
 					# Check timer threshold for this alert
 					if ( $flag >= 0 ) {
+						my $temp_aam_check = give_db_value ( "internal_counter", "talerta_agente_modulo", "id_aam", $id_aam, $dbh);
+                                                if ($temp_aam_check > 0){
+                                                        my $evt_descripcion = "Alert ceased ($descripcion)";
+                                                        pandora_event ($pa_config, $evt_descripcion, $id_grupo, $id_agente, $dbh);
+                                                }
+
 						# Out limits !, reset $times_fired, but do not write to
 						# database until a real alarm was fired
 						my $query_idag = "UPDATE talerta_agente_modulo SET times_fired = 0, internal_counter = 0 WHERE id_aam = $id_aam ";
 						$dbh->do($query_idag);
-						my $evt_descripcion = "Alert ceased ($nombre_agente $descripcion)";
-						pandora_event ($pa_config, $evt_descripcion, $id_grupo, $id_agente, $dbh);	
-					}	
+					} else {
+						# We're running on timegap, so check if we're above limit or below
+						my $temp_aam_check = give_db_value ( "internal_counter", "talerta_agente_modulo", "id_aam", $id_aam, $dbh);
+						$temp_aam_check--;
+                                        	if ($temp_aam_check < $min_alerts){
+                                                	my $evt_descripcion = "Alert ceased ($descripcion)";
+                                                	pandora_event ($pa_config, $evt_descripcion, $id_grupo, $id_agente, $dbh);
+							my $query_idag = "UPDATE talerta_agente_modulo SET internal_counter = 0, times_fired =0 WHERE id_aam = $id_aam ";
+	                                                $dbh->do($query_idag);
+						}
+						# Decrease counter
+						my $query_idag = "UPDATE talerta_agente_modulo SET internal_counter = $temp_aam_check WHERE id_aam = $id_aam ";
+                                                $dbh->do($query_idag);
+                                        }
 				}
 			} # timecheck
 			else { # Outside operative alert timeslot
@@ -256,7 +273,7 @@ sub pandora_calcula_alerta (%$$$$$$) {
 				if ($temp_aam_check > 0){
 					my $query_idag = "UPDATE talerta_agente_modulo SET times_fired = 0, internal_counter = 0 WHERE id_aam = $id_aam ";
                                 	$dbh->do($query_idag);
-                                	my $evt_descripcion = "Alert ceased ($nombre_agente $descripcion)";
+                                	my $evt_descripcion = "Alert ceased ($descripcion)";
                                 	pandora_event ($pa_config, $evt_descripcion, $id_grupo, $id_agente, $dbh);
 				}
 			}
@@ -287,7 +304,8 @@ sub execute_alert (%$$$$$$$$$$) {
 	my $data = $_[7];
 	my $command = $_[8];
 	my $alert_name = $_[9];
-	my $dbh = $_[10];
+	my $alert_description = $_[10];
+	my $dbh = $_[11];
 
 	if (($command eq "") && ($alert_name eq "")){
 		# Get values for commandline, reading from talerta.
@@ -332,9 +350,9 @@ sub execute_alert (%$$$$$$$$$$) {
 		$field1 =~ s/_agent_/$agent/ig;
 		$field1 =~ s/_timestamp_/$timestamp/ig;
 		$field1 =~ s/_data_/$data/ig;
-		pandora_audit ($pa_config, $field1, $agent, "User Alert ($alert_name)", $dbh);
+		pandora_audit ($pa_config, $field1, $agent, "Alert ($alert_description)", $dbh);
 	}
-	my $evt_descripcion = "Alert fired ($agent $alert_name) $field1";
+	my $evt_descripcion = "Alert fired ($alert_description)";
 	my $id_agente = dame_agente_id ($pa_config,$agent,$dbh);
 	pandora_event ($pa_config, $evt_descripcion, dame_grupo_agente($pa_config, $id_agente, $dbh), $id_agente, $dbh);
 }

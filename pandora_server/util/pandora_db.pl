@@ -25,7 +25,7 @@ use DBI;					# DB interface with MySQL
 use Date::Manip;			# Date/Time manipulation
 
 # version: define la version actual del programa
-my $version = "1.3 PS070828";
+my $version = "1.3 PS071002";
 
 # Setup variables
 my $dirname="";
@@ -67,11 +67,11 @@ sub pandora_purgedb {
 	# 2) Delete all elements below date limit
 	# 3) Insert last value in date_limit position
 
-    my $days = $_[0];
-    my $dbname = $_[1];
-    my $dbuser = $_[2];
-    my $dbpass = $_[3];
-    my $dbhost = $_[4];
+	my $days = $_[0];
+	my $dbname = $_[1];
+	my $dbuser = $_[2];
+	my $dbpass = $_[3];
+	my $dbhost = $_[4];
  	my @query;
  	my $counter;
 	my $buffer; my $buffer2; my $buffer3;
@@ -81,9 +81,12 @@ sub pandora_purgedb {
  	my $limit_timestamp = DateCalc("today","-$days days",\$err);
 	my $limit_timestamp2 = DateCalc($limit_timestamp,"+1 minute",\$err);
  	$limit_timestamp = &UnixDate($limit_timestamp,"%Y-%m-%d %H:%M:%S");
-    my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
+	my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
 	my $limit_access = DateCalc("today","-24 hours",\$err);
 	$limit_access = &UnixDate($limit_access,"%Y-%m-%d %H:%M:%S");
+	print "[PURGE] Deleting old access data... \n";
+	$dbh->do("DELETE FROM tagent_access WHERE timestamp < '$limit_access'");
+
 	print "[PURGE] Deleting old data... \n";
 	# Lets insert the last value on $limit_timestamp + 1 minute for each id_agente_modulo
 	my $query_idag = "select count(distinct(id_agente_modulo)) from tagente_datos where timestamp < '$limit_timestamp'";
@@ -117,7 +120,7 @@ sub pandora_purgedb {
 			if ($idag2->rows != 0) {
 				while (@datarow2 = $idag2->fetchrow_array()) {
 					# Create Insert SQL for this data 
-					$buffer3 = "insert into tagente_datos (id_agente_modulo,datos,timestamp,id_agente) values ($buffer,$datarow[2],'$limit_timestamp',$datarow2[4])";
+					$buffer3 = "insert into tagente_datos (id_agente_modulo,datos,timestamp,id_agente) values ($buffer,$datarow2[2],'$limit_timestamp',$datarow2[4])";
 				}
 			}
 			# Execute DELETE
@@ -138,12 +141,7 @@ sub pandora_purgedb {
 	if ($verbosity > 0){	
 		print "[PURGE] Deleting static data until $limit_timestamp \n";
 	}
- 	$query[0] = "delete from tagente_datos_string where timestamp < '$limit_timestamp'";
-	$query[1] = "delete from tagent_access where timestamp < '$limit_access'";
- 	for ($counter=0;$counter <2; $counter++){
-  		#print "DEBUG SQL Query: $query[$counter] \n";
-  		$dbh->do($query[$a]);
- 	}
+ 	$dbh->do ("delete from tagente_datos_string where timestamp < '$limit_timestamp'");
         $dbh->disconnect();
 }
 
@@ -337,6 +335,7 @@ sub pandora_loadconfig {
  	# Check for valid token token values
  	if (( $dbuser eq "" ) || ( $log_file eq "" ) || ( $dbhost eq "")  || ($dbpass eq "" ) ) {
   		print "[ERROR] Bad Config values. Be sure that $archivo_cfg is a valid setup file";
+		print "\n\n";
   		exit;
  	}
 	
@@ -480,6 +479,11 @@ sub pandora_checkdb_consistency {
 	my $prep0 = $dbh->prepare($query0);
 	$prep0 ->execute;
 	$prep0->finish();
+
+	print "[CHECKDB] Deleting agentless data... \n";
+	# Delete from tagente_datos with id_agente = 0
+	$dbh->do ("DELETE FROM tagente_datos WHERE id_agente = 0");
+	$dbh->do ("DELETE FROM tagente_datos_string WHERE id_agente = 0");
 }
 
 ##############################################################################
@@ -502,8 +506,8 @@ sub help_screen{
 ###############################################################################
 sub pandoradb_main {
 	pandora_purgedb ($config_days_purge, $dbname, $dbuser, $dbpass, $dbhost);
-    pandora_compactdb ($config_days_compact, $dbname, $dbuser, $dbpass, $dbhost);
-    pandora_checkdb_consistency ($dbname, $dbuser, $dbpass, $dbhost);
-    print "\n";
+	pandora_checkdb_consistency ($dbname, $dbuser, $dbpass, $dbhost);
+	pandora_compactdb ($config_days_compact, $dbname, $dbuser, $dbpass, $dbhost);
+	print "\n";
 	exit;
 }

@@ -34,8 +34,18 @@ if (comprueba_login() == 0) {
 		$id_grupo = $row["id_grupo"];
 		$id_usuario=$_SESSION["id_usuario"];
 		if (give_acl($id_usuario, $id_grupo, "AR")==1){
-			// Get the user who makes this request
-			$id_usuario = $_SESSION["id_usuario"];
+		
+			// Check for validate alert request
+			$validate_alert = give_parameter_get ("validate_alert");
+			if ($validate_alert != ""){
+				if (give_acl($id_usuario, $id_grupo, "AW")==1){
+					$alert_name = give_db_value ("descripcion", "talerta_agente_modulo", "id_aam", $validate_alert);
+					event_insert ("Manual validation of alert for '$alert_name'", $id_grupo, $id_agente, 1, $id_usuario);
+					$sql='UPDATE talerta_agente_modulo SET times_fired = 0, internal_counter = 0 WHERE id_aam = '.$validate_alert;
+					$result=mysql_query($sql);
+				}
+			}
+
 			// Check for Network FLAG change request
 			if (isset($_GET["flag"])){
 				if ($_GET["flag"]==1){

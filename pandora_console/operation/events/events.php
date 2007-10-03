@@ -248,8 +248,8 @@ if ($total_events > 0){
 	echo "<th>".$lang_label["agent_name"]."</th>";
 	echo "<th>".$lang_label["group"]."</th>";
 	echo "<th>".$lang_label["id_user"]."</th>";
-	echo "<th>".$lang_label["timestamp"]."</th>";
-	echo "<th width='62'>".$lang_label["action"]."</th>";
+	echo "<th width='85'>".$lang_label["timestamp"]."</th>";
+	echo "<th width='80'>".$lang_label["action"]."</th>";
 	echo "<th class='p10'>";
 	echo "<label for='checkbox' class='p21'>".$lang_label["all"]." </label>";
 	echo '<input type="checkbox" class="chk" name="allbox" onclick="CheckAll();"></th>';

@@ -704,13 +704,14 @@ function existe($id){
 // event_insert - Insert event in eventable, using Id_grupo, Id_agente and Evento
 // --------------------------------------------------------------- 
 
-function event_insert($evento, $id_grupo, $id_agente){
+function event_insert($evento, $id_grupo, $id_agente, $status=0, $id_usuario=''){
 	require("config.php");
 	$today=date('Y-m-d H:i:s');
 	$utimestamp = time();
 	
-	$sql1='INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp) VALUES ('.$id_agente.','.$id_grupo.',"'.$evento.'","'.$today.'",0, $utimestamp)';
+	$sql1='INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, id_usuario) VALUES ('.$id_agente.','.$id_grupo.',"'.$evento.'","'.$today.'",'.$status.', '.$utimestamp.', "'.$id_usuario.'")';
 	$result=mysql_query($sql1);
+
 }
 
 // --------------------------------------------------------------- 

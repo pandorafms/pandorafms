@@ -41,12 +41,20 @@ if (comprueba_login() != 0) {
 // Show alerts for specific agent
 // -------------------------------
 if (isset($_GET["id_agente"])){
+	$id_agente = $_GET["id_agente"];
+
+	$id_grupo_alerta = give_db_value ("id_grupo", "tagente", "id_agente", $id_agente);
+	if (give_acl($id_user, $id_grupo_alerta, "AR") == 0) {
+		audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access alert view");
+		include ("general/noaccess.php");
+		exit;
+	}
 
 	if (isset($_GET["tab"])){
 		echo "<h2>".$lang_label["ag_title"]." &gt; ".$lang_label["alert_listing"]."<a href='help/".$help_code."/chap3.php#3324' target='_help' class='help'><span>".$lang_label["help"]."</span></a></h2>";
 	}
-	$id_agente = $_GET["id_agente"];
-	$query_gen='SELECT talerta_agente_modulo.alert_text, talerta_agente_modulo.id_alerta, talerta_agente_modulo.descripcion, talerta_agente_modulo.last_fired, talerta_agente_modulo.times_fired, tagente_modulo.nombre, talerta_agente_modulo.dis_max, talerta_agente_modulo.dis_min, talerta_agente_modulo.max_alerts, talerta_agente_modulo.time_threshold, talerta_agente_modulo.min_alerts, talerta_agente_modulo.id_agente_modulo, tagente_modulo.id_agente_modulo FROM tagente_modulo, talerta_agente_modulo WHERE tagente_modulo.id_agente = '.$id_agente.' AND tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo AND talerta_agente_modulo.disable = 0 ORDER BY tagente_modulo.nombre';
+	
+	$query_gen='SELECT talerta_agente_modulo.alert_text, talerta_agente_modulo.id_alerta, talerta_agente_modulo.descripcion, talerta_agente_modulo.last_fired, talerta_agente_modulo.times_fired, tagente_modulo.nombre, talerta_agente_modulo.dis_max, talerta_agente_modulo.dis_min, talerta_agente_modulo.max_alerts, talerta_agente_modulo.time_threshold, talerta_agente_modulo.min_alerts, talerta_agente_modulo.id_agente_modulo, tagente_modulo.id_agente_modulo, talerta_agente_modulo.id_aam FROM tagente_modulo, talerta_agente_modulo WHERE tagente_modulo.id_agente = '.$id_agente.' AND tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo AND talerta_agente_modulo.disable = 0 ORDER BY tagente_modulo.nombre';
 	$result_gen=mysql_query($query_gen);
 	if (mysql_num_rows ($result_gen)) {
 	
@@ -63,7 +71,8 @@ if (isset($_GET["id_agente"])){
 		<th>".$lang_label["time_threshold"]."</th>
 		<th>".$lang_label["last_fired"]."</th>
 		<th>".$lang_label["times_fired"]."</th>
-		<th>".$lang_label["status"]."</th>";
+		<th>".$lang_label["status"]."</th>
+		<th>".$lang_label["validate"]."</th>";
 		$color=1;
 		while ($data=mysql_fetch_array($result_gen)){
 			if ($color == 1){
@@ -109,9 +118,16 @@ if (isset($_GET["id_agente"])){
 				echo "<td align='center' class='".$tdcolor."f9'>".human_time_comparation ($data["last_fired"])."</td>";
 			}
 			echo "<td align='center' class='".$tdcolor."'>".$data["times_fired"]."</td>";
-			if ($data["times_fired"] <> 0)
-				echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_red.png'></td>";
-			else
+			if ($data["times_fired"] <> 0){
+				echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_red.png'>";
+				echo "</td>";
+				$id_grupo_alerta = give_db_value ("id_grupo", "tagente", "id_agente", $id_agente);
+				if (give_acl($id_user, $id_grupo_alerta, "AW") == 1) {
+					echo "<td align='center' class='".$tdcolor."'>";
+					echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&validate_alert=".$data["id_aam"]."'><img src='images/ok.png'></A>";
+					echo "</td>";
+				}
+			} else
 				echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_green.png'></td>";
 		}
 		echo '</table>';

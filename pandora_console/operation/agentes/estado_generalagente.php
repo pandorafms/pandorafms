@@ -111,7 +111,7 @@ if (comprueba_login() == 0) {
 	echo '</tr>';
 	echo '<tr>
 	<td class="datos2"><b>'.$lang_label["interval"].'</b></td>
-	<td class="datos2" colspan=2>'.$intervalo.'</td>';
+	<td class="datos2" colspan=2>'. human_time_description_raw($intervalo).'</td>';
 	echo '</tr>';	
 	echo '<tr>
 	<td class="datos"><b>'.$lang_label["description"].'</b></td>

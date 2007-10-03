@@ -1,5 +1,19 @@
 2007-10-03  Sancho Lerena <slerena@gmail.com>
 
+	* include/functions_db.php: Insert_event is now capable to store events already validated.
+
+	* operation/events/events.php: Adjusted column width.
+
+	* operation/agentes/estado_alertas.php: Added additional ACL check. Now user is able to validate
+	(Cease) manually an alert (new feature).
+
+	* operation/agentes/ver_agente.php. Now user is able to validate (Cease) manually an alert 
+	(new feature).
+
+	* operation/agentes/estado_generalagente.php: Render interval in human time insted in seconds.
+
+2007-10-03  Sancho Lerena <slerena@gmail.com>
+
 	* functions_db.php: Fixed problem in visual maps, alerts was not used 
 	to draw red icons. Fixed.
 

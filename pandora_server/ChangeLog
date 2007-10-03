@@ -1,3 +1,15 @@
+2007-10-03  Sancho lerena <slerena@gmail.com>
+
+	* lib/PandoraFMS/DB.pm: Fixed alert that fires always one time more than
+	max_alert defined. Also fixed several issues with "Ceased" support for alerts
+	and correct internal_counter problem. Now works fine !
+
+	* util/pandora_db.pl: Purge of tagent_access was not working fine, and fixed
+	another problem with id_agent 0 data in tagente_datos.
+
+	After about 12 hours of intense testing this seems to work very fine, probably
+	this server code will be the final ! :-)
+
 2007-10-02  Sancho Lerena  <slerena@gmail.com>
 
 	* lib/PandoraFMS/DB.pm: Updated and fixed several problems with alerts. 

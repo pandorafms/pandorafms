@@ -1085,17 +1085,28 @@ function give_db_value ($field, $table, $field_search, $condition_value){
 // ---------------------------------------------------------------
 
 function return_status_agent_module ($id_agentmodule = 0){
-	require("config.php");
-	$query1="SELECT estado FROM tagente_estado WHERE id_agente_modulo = ".$id_agentmodule; 
-	$resq1=mysql_query($query1);
+	require ("config.php");
+	$query1 = "SELECT estado FROM tagente_estado WHERE id_agente_modulo = " . $id_agentmodule; 
+	$resq1 = mysql_query ($query1);
 	if ($resq1 != 0) {
-		$rowdup=mysql_fetch_array($resq1);
-		if ($rowdup[0] == 0)
+		$rowdup = mysql_fetch_array($resq1);
+		if ($rowdup[0] == 100){
+			// We need to check if there are any alert on this item
+			$query2 = "SELECT SUM(times_fired) FROM talerta_agente_modulo WHERE id_agente_modulo = " . $id_agentmodule;
+			$resq2 = mysql_query($query2);
+			if ($resq2 != 0) {
+		                $rowdup2 = mysql_fetch_array ($resq2);
+				if ($rowdup2[0] > 0){
+					return 0;
+				}
+			}
+			// No alerts fired for this agent module
+			return 1;
+		} elseif ($rowdup[0] == 0) // 0 is ok for estado field
 			return 1;
 		else 
 			return 0;
-		
-	} else 
+	} else // asking for unknown module ?
 		return 0; 
 }
 

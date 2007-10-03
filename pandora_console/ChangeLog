@@ -1,3 +1,10 @@
+2007-10-03  Sancho Lerena <slerena@gmail.com>
+
+	* functions_db.php: Fixed problem in visual maps, alerts was not used 
+	to draw red icons. Fixed.
+
+	* Two maps added, one icon fixed, and one icon added for visual console.
+
 2007-09-27  Manuel Arostegui <marostegui@artica.es>
 
        * operation/events/events.php: Fixed some problems

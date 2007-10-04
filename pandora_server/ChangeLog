@@ -1,3 +1,12 @@
+2007-10-04  Sancho Lerena <slerena@gmail.com>
+
+	* conf/pandora_server.conf, lib/PandoraFMS/Config.pm, bin/pandora_network:
+
+	Merged code from NG branch: Added multiping check (global setting 'icmp_checks')
+	on network server because in some WAN enviroments with erratic packet loss on non TCP
+	connections would cause recurrent false positives. New config token added to config
+	file (icmp_checks).
+
 2007-10-03  Sancho lerena <slerena@gmail.com>
 
 	* lib/PandoraFMS/DB.pm: Fixed alert that fires always one time more than

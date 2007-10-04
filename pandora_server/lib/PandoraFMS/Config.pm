@@ -34,8 +34,8 @@ our @EXPORT = qw( 	pandora_help_screen
 # There is no global vars, all variables (setup) passed as hash reference
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "1.3beta2";
-my $pandora_build="PS070827";
+my $pandora_version = "1.3beta3";
+my $pandora_build="PS071004";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -136,6 +136,7 @@ sub pandora_loadconfig {
 	$pa_config->{"servername"}=~ s/\s//g; # Replace ' ' chars
 	$pa_config->{"networkserver"}=0;
 	$pa_config->{"dataserver"}=0;
+    $pa_config->{"icmp_checks"}=1;
 	$pa_config->{"reconserver"}=0;
 	$pa_config->{"servermode"}="";
 	$pa_config->{'snmp_logfile'}="/var/log/pandora/pandora_snmptrap.log";
@@ -222,7 +223,12 @@ sub pandora_loadconfig {
 		}
 		elsif ($parametro =~ m/^servername\s(.*)/i) { $pa_config->{'servername'}= $1; }
 		elsif ($parametro =~ m/^checksum\s([0-9])/i) { $pa_config->{"pandora_check"} = $1; }
-		elsif ($parametro =~ m/^master\s([0-9])/i) { $pa_config->{"pandora_master"} = $1; }
+		elsif ($parametro =~ m/^master\s([0-9])/i) { 
+			$pa_config->{"pandora_master"} = $1; 
+		}
+		elsif ($parametro =~ m/^icmp_checks\s([0-9])/i) { 
+			$pa_config->{"icmp_checks"} = $1; 
+		}
 		elsif ($parametro =~ m/^snmpconsole\s([0-9])/i) {
 			$pa_config->{"snmpconsole"} = $1;
 		}

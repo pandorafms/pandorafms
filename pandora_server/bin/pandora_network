@@ -243,65 +243,71 @@ sub pandora_network_producer ($) {
 }
 
 ##############################################################################
-# pandora_ping_icmp (destination, timeout) - Do a ICMP scan, 1 if alive, 0 if not
+# pandora_ping_icmp (config, destination, timeout)
+# Do a ICMP scan, return 1 if alive, 0 if not
 ##############################################################################
 sub pandora_ping_icmp { 
-	my $dest = $_[0];
-	my $l_timeout = $_[1];
+	my $pa_config = $_[0];
+	my $dest = $_[1];
+	my $l_timeout = $_[2];
  	# temporal vars.
  	my $result = 0;
 	my $result2 = 0;
+	my $temp;
  	my $p;
  
- 	# Check for valid destination
- 	if (!defined($dest)) {
- 		return 0;
- 	}
- 	# Some hosts don't accept ICMP with too small payload. Use 16 Bytes
-	{
-		lock $icmp_lock;
- 		$p = Net::Ping->new("icmp", $l_timeout, 16);
-	 	$result = $p->ping($dest);
+	if ($pa_config->{'icmp_checks'} eq ""){
+		$pa_config->{'icmp_checks'} = 1;
 	}
+	
+	# Make more than a single ping (as defined in icmp_checks
+	for ($temp =0; $temp < $pa_config->{'icmp_checks'}; $temp++){
+	 	# Some hosts don't accept ICMP with too small payload. Use 16 Bytes
+		{
+			lock $icmp_lock;
+	 		$p = Net::Ping->new("icmp", $l_timeout, 32);
+		 	$result = $p->ping($dest);
+		}
 
- 	if (defined($result)){
-		$p->close();
- 		if ($result == 1){
- 			return 1;
- 		}
- 	}
- 	return 0;
+	 	if (defined($result)){
+			$p->close();
+ 			if ($result == 1){
+	 			$result2 = 1;
+	 			$temp = $pa_config->{'icmp_checks'}; # Exit for
+			}
+		}
+	}
+	return $result2;
 }
 
 ##############################################################################
 # pandora_ping_latency (destination, timeout, data, result) - Do a ICMP latency check
 ##############################################################################
 sub pandora_ping_latency {
-        my $dest = $_[0];
-        my $l_timeout = $_[1]; 
-	my $module_data = $_[2];
-	my $module_result = $_[3];
-	
-        my $icmp_return;
-        my $icmp_reply;
-        my $icmp_ip;
-	my $nm;
+    my $dest = $_[0];
+    my $l_timeout = $_[1]; 
+    my $module_data = $_[2];
+    my $module_result = $_[3];
+    my $icmp_return;
+    my $icmp_reply;
+    my $icmp_ip;
+    my $nm;
 
 	# Locking for use ICMP call safety
 	{
 		lock $icmp_lock;
-		$nm = Net::Ping->new("icmp", $l_timeout, 16);
+		$nm = Net::Ping->new("icmp", $l_timeout, 32);
 		$nm->hires();
 	        ($icmp_return, $icmp_reply, $icmp_ip) = $nm->ping ($dest,$l_timeout);
 	}
-        if ($icmp_return) {
-        	$$module_data = $icmp_reply * 1000; # milliseconds
-                $$module_result = 0; # Successful
-        } else {
-                $$module_result = 1; # Error.
-                $$module_data = 0;
-        }
-        $nm->close();
+    if ($icmp_return) {
+        $$module_data = $icmp_reply * 1000; # milliseconds
+        $$module_result = 0; # Successful
+    } else {
+        $$module_result = 1; # Error.
+        $$module_data = 0;
+    }
+    $nm->close();
 }
 
 ##########################################################################
@@ -504,66 +510,69 @@ sub exec_network_module {
 	my $module_result = 1; # Fail by default
 	my $module_data = 0;
 
-	# ICMP Modules
-	# ------------
-	if ($id_tipo_modulo == 6){ # ICMP (Connectivity only: Boolean)
-		$temp = pandora_ping_icmp ($ip_target, $pa_config->{'networktimeout'});
-		if ($temp == 1 ){
-			$module_result = 0; # Successful
-			$module_data = 1;
-		} else {
-			$module_result = 0; # If cannot connect, its down.
-			$module_data = 0;
-		}
-	} elsif ($id_tipo_modulo == 7){ # ICMP (data for latency in ms)
-		# This module only could be executed if executed as root
-		if ($> == 0){
-			pandora_ping_latency ($ip_target, $pa_config->{"networktimeout"}, \$module_data, \$module_result);
-		} else {
-			$module_result = 0; # Done but, with zero value
-			$module_data = 0; # This should don't happen
-		}
-	# SNMP Modules (Proc=18, inc, data, string)
-	# ------------
-	} elsif (($id_tipo_modulo == 15) || ($id_tipo_modulo == 18) || ($id_tipo_modulo == 16) || ($id_tipo_modulo == 17)) { # SNMP module
-		if ($snmp_oid ne ""){
-			$temp2 = pandora_query_snmp ($pa_config, $snmp_oid, $snmp_community, $ip_target, $error);
-		} else {
-			 $error = 1
-		}
-		if ($error == 0) { # A correct SNMP Query
-			$module_result = 0;
-			# SNMP_DATA_PROC
-			if ($id_tipo_modulo == 18){ #snmp_data_proc
-				if ($temp2 != 1){ # up state is 1, down state in SNMP is 2 ....
-					$temp2 = 0;
-				}
-				$module_data = $temp2;
-			}
-			# SNMP_DATA and SNMP_DATA_INC
-			elsif (($id_tipo_modulo == 15) || ($id_tipo_modulo == 16) ){ 
-				if ($temp2 =~ /[A-Za-z\.\,\-\/\\\(\)\[\]]/){
-					$module_result = 1; # Alphanumeric data, not numeric
-				} else {
-					$module_data = $temp2; # Float values are also valid
-				} 
-			} else { # String SNMP
-				$module_data = $temp2;
-			}
-		} else { # Failed SNMP-GET
-			$module_data = 0;
-			$module_result = 1; # No data, cannot connect
-		}
-	# TCP Module
-	# ----------
-	} elsif (($id_tipo_modulo == 8) || ($id_tipo_modulo == 9) || ($id_tipo_modulo == 10) || ($id_tipo_modulo == 11)) { # TCP Module
-		if (($tcp_port < 65536) && ($tcp_port > 0)){ # Port check
-			pandora_query_tcp ($pa_config, $tcp_port, $ip_target, \$module_result, \$module_data, $tcp_send, $tcp_rcv, $id_tipo_modulo);
-		} else { 
-			# Invalid port, get no check
-			$module_result = 1;
-		}
-   	}
+    if ((defined($ip_target)) && ($ip_target ne "")) {
+
+	    # ICMP Modules
+	    # ------------
+	    if ($id_tipo_modulo == 6){ # ICMP (Connectivity only: Boolean)
+		    $temp = pandora_ping_icmp ($pa_config, $ip_target, $pa_config->{'networktimeout'});
+		    if ($temp == 1 ){
+			    $module_result = 0; # Successful
+			    $module_data = 1;
+		    } else {
+			    $module_result = 0; # If cannot connect, its down.
+			    $module_data = 0;
+		    }
+	    } elsif ($id_tipo_modulo == 7){ # ICMP (data for latency in ms)
+		    # This module only could be executed if executed as root
+		    if ($> == 0){
+			    pandora_ping_latency ($ip_target, $pa_config->{"networktimeout"}, \$module_data, \$module_result);
+		    } else {
+			    $module_result = 0; # Done but, with zero value
+			    $module_data = 0; # This should don't happen
+		    }
+	    # SNMP Modules (Proc=18, inc, data, string)
+	    # ------------
+	    } elsif (($id_tipo_modulo == 15) || ($id_tipo_modulo == 18) || ($id_tipo_modulo == 16) || ($id_tipo_modulo == 17)) { # SNMP module
+            if ((defined($snmp_oid)) && ($snmp_oid ne "") && (defined($snmp_community)) && ($snmp_community ne "")) { # Port check
+		    	    $temp2 = pandora_query_snmp ($pa_config, $snmp_oid, $snmp_community, $ip_target, $error);
+		    } else {
+			    $error = 1
+		    }
+		    if ($error == 0) { # A correct SNMP Query
+			    $module_result = 0;
+			    # SNMP_DATA_PROC
+			    if ($id_tipo_modulo == 18){ #snmp_data_proc
+				    if ($temp2 != 1){ # up state is 1, down state in SNMP is 2 ....
+					    $temp2 = 0;
+				    }
+				    $module_data = $temp2;
+			    }
+			    # SNMP_DATA and SNMP_DATA_INC
+			    elsif (($id_tipo_modulo == 15) || ($id_tipo_modulo == 16) ){ 
+				    if ($temp2 =~ /[A-Za-z\.\,\-\/\\\(\)\[\]]/){
+					    $module_result = 1; # Alphanumeric data, not numeric
+				    } else {
+					    $module_data = $temp2; # Float values are also valid
+				    } 
+			    } else { # String SNMP
+				    $module_data = $temp2;
+			    }
+		    } else { # Failed SNMP-GET
+			    $module_data = 0;
+			    $module_result = 1; # No data, cannot connect
+		    }
+	    # TCP Module
+	    # ----------
+	    } elsif (($id_tipo_modulo == 8) || ($id_tipo_modulo == 9) || ($id_tipo_modulo == 10) || ($id_tipo_modulo == 11)) { # TCP Module
+            if ((defined($tcp_port)) && ($tcp_port < 65536) && ($tcp_port > 0)) { # Port check
+			    pandora_query_tcp ($pa_config, $tcp_port, $ip_target, \$module_result, \$module_data, $tcp_send, $tcp_rcv, $id_tipo_modulo);
+		    } else { 
+			    # Invalid port, get no check
+			    $module_result = 1;
+		    }
+        }
+    }
 
 	# --------------------------------------------------------
 	# Write data section

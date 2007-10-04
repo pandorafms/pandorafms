@@ -1,5 +1,8 @@
 2007-10-04  Sancho Lerena <slerena@gmail.com>
 
+	* lib/PandoraFMS/DB.pm: Fixed a missing $ in sub header definition for args :( 
+	and some warnings also fixed.
+
 	* conf/pandora_server.conf, lib/PandoraFMS/Config.pm, bin/pandora_network:
 
 	Merged code from NG branch: Added multiping check (global setting 'icmp_checks')

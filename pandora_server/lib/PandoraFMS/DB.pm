@@ -293,7 +293,7 @@ sub pandora_calcula_alerta (%$$$$$$) {
 ## Do a execution of given alert with this parameters
 ##########################################################################
 
-sub execute_alert (%$$$$$$$$$$) {
+sub execute_alert (%$$$$$$$$$$$) {
 	my $pa_config = $_[0];
 	my $id_alert = $_[1];
 	my $field1 = $_[2];
@@ -353,7 +353,7 @@ sub execute_alert (%$$$$$$$$$$) {
 		pandora_audit ($pa_config, $field1, $agent, "Alert ($alert_description)", $dbh);
 	}
 	my $evt_descripcion = "Alert fired ($alert_description)";
-	my $id_agente = dame_agente_id ($pa_config,$agent,$dbh);
+	my $id_agente = dame_agente_id ($pa_config, $agent, $dbh);
 	pandora_event ($pa_config, $evt_descripcion, dame_grupo_agente($pa_config, $id_agente, $dbh), $id_agente, $dbh);
 }
 
@@ -950,13 +950,13 @@ sub pandora_serverkeepaliver (%$$) {
         my $pa_config= $_[0];
 	my $opmode = $_[1]; # 0 dataserver, 1 network server, 2 snmp console, 3 recon server
 	my $dbh = $_[2];
-	
+	my $version_data;
 	my $pandorasuffix;
 	my @data;
 	my $temp = $pa_config->{"keepalive"} - $pa_config->{"server_threshold"};
 	if ($temp <= 0){
 		my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
-		my $temp = $pa_config->{"keepalive_orig"} * 2; # Down if keepalive x 2 seconds unknown
+		$temp = $pa_config->{"keepalive_orig"} * 2; # Down if keepalive x 2 seconds unknown
 		my $fecha_limite = DateCalc($timestamp,"- $temp seconds",\$err);
 		$fecha_limite = &UnixDate($fecha_limite,"%Y-%m-%d %H:%M:%S");		
 		# Look updated servers and take down non updated servers
@@ -967,7 +967,7 @@ sub pandora_serverkeepaliver (%$$) {
 			while (@data = $s_idag->fetchrow_array()){
 				if ($data[3] != 0){ # only if it's currently not down
 					# Update server data
-					my $version_data = $pa_config->{"version"}." (P) ".$pa_config->{"build"};
+					$version_data = $pa_config->{"version"}." (P) ".$pa_config->{"build"};
 					my $sql_update = "UPDATE tserver SET status = 0, version = '".$version_data."' WHERE id_server = $data[0]";
 					$dbh->do($sql_update);
 					pandora_event($pa_config, "Server ".$data[1]." going Down", 0, 0, $dbh);
@@ -995,6 +995,8 @@ sub pandora_updateserver (%$$$) {
 	my $dbh = $_[4];
 	my $sql_update;
 	my $pandorasuffix;
+	my $version_data;
+
 	if ($opmode == 0){
 		$pandorasuffix = "_Data";
 	} elsif ($opmode == 1){
@@ -1007,7 +1009,7 @@ sub pandora_updateserver (%$$$) {
 	my $id_server = dame_server_id($pa_config, $servername.$pandorasuffix, $dbh);
 	if ($id_server == -1){ 
 		# Must create a server entry
-		my $version_data = $pa_config->{"version"}." (P) ".$pa_config->{"build"};
+		$version_data = $pa_config->{"version"}." (P) ".$pa_config->{"build"};
 		my $sql_server = "INSERT INTO tserver (name,description,version) VALUES ('$servername".$pandorasuffix."','Autocreated at startup','$version_data')";
 		$dbh->do($sql_server);
 		$id_server = dame_server_id($pa_config, $pa_config->{'servername'}.$pandorasuffix, $dbh);
@@ -1024,7 +1026,7 @@ sub pandora_updateserver (%$$$) {
 			}
 			# Update server data
 			my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
-			my $version_data = $pa_config->{"version"}." (P) ".$pa_config->{"build"};
+			$version_data = $pa_config->{"version"}." (P) ".$pa_config->{"build"};
 			if ($opmode == 0){
 				$sql_update = "update tserver set version = '$version_data', status = 1, laststart = '$timestamp', keepalive = '$timestamp', recon_server = 0, snmp_server = 0, network_server = 0, data_server = 1, master = $pa_config->{'pandora_master'}, checksum = $pa_config->{'pandora_check'} where id_server = $id_server";
 			} elsif ($opmode == 1){

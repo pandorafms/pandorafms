@@ -414,6 +414,28 @@ function give_parameter_post ( $name, $default = "" ){
 	return $output;
 }
 
+function give_parameter_get_numeric ( $name, $default = "-1" ){
+	$output = $default;
+	if (isset ($_GET[$name])){
+		$output = $_GET[$name];
+	}
+	if (is_numeric($output))
+		return $output;
+	else
+		return -1;
+}
+
+function give_parameter_post_numeric ( $name, $default = "" ){
+	$output = $default;
+	if (isset ($_POST[$name])){
+		$output = $_POST[$name];
+	}
+	if (is_numeric($output))
+		return $output;
+	else
+		return -1;
+}
+
 function human_time_comparation ( $timestamp ){
 	global $lang_label;
 	if ($timestamp != ""){

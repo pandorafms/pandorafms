@@ -1,5 +1,9 @@
 2007-10-03  Sancho Lerena <slerena@gmail.com>
 
+	* Security fix has been included in ver_agente.php, using a new function to validate
+	GET variables (checking for numeric data). This security isse was a SQL Blind URL Attack. This
+	is described in mailing list with more depth, including the patch.
+
 	* include/functions_db.php: Insert_event is now capable to store events already validated.
 
 	* operation/events/events.php: Adjusted column width.

@@ -25,8 +25,8 @@
 require("include/config.php");
 
 if (comprueba_login() == 0) {
-	if (isset($_GET["id_agente"])){
-		$id_agente = $_GET["id_agente"];
+	$id_agente = give_parameter_get_numeric("id_agente");
+	if ($id_agente != -1){
 		// get group for this id_agente
 		$query="SELECT * FROM tagente WHERE id_agente = ".$id_agente;
 		$res=mysql_query($query);

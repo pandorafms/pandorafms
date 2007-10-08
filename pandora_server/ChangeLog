@@ -1,3 +1,10 @@
+2007-10-08  Sancho Lerena <slerena@gmail.com>
+
+	* lib/PandoraFMS/Config.pm: Updated build number.
+
+	* lib/PandoraFMS/DB.pm: Fixed some problems with alert recovery/expired method, 
+	that causes to do not recognize expired alerts in some situations (min_alert=0).
+
 2007-10-04  Sancho Lerena <slerena@gmail.com>
 
 	* lib/PandoraFMS/DB.pm: Fixed a missing $ in sub header definition for args :( 

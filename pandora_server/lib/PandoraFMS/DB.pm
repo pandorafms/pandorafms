@@ -195,7 +195,7 @@ sub pandora_calcula_alerta (%$$$$$$) {
 					# Check timer threshold for this alert
 					if ( $flag >= 0 ) { # Out limits !, reset $times_fired, but do not write to
 								# database until a real alarm was fired
-						if ($times_fired > 1){ 
+						if ($times_fired > 0){ 
 							$times_fired = 0;
 							$internal_counter=0;
 						}
@@ -208,29 +208,31 @@ sub pandora_calcula_alerta (%$$$$$$) {
 					if (($internal_counter >= $min_alerts) && ($times_fired  < $max_alerts)){
 						# The new alert is between last valid time + threshold and between max/min limit to alerts in this gap of time.
 						$times_fired++;
-						# $internal_counter++; # No need increment this more
-						my $query_idag = "UPDATE talerta_agente_modulo SET times_fired = $times_fired, last_fired = '$ahora_mysql', internal_counter = $internal_counter WHERE id_aam = $id_aam ";
-						$dbh->do($query_idag);
+						if ($internal_counter == 0){
+							$internal_counter++; 
+						}
+						$dbh->do("UPDATE talerta_agente_modulo SET times_fired = $times_fired, last_fired = '$ahora_mysql', internal_counter = $internal_counter WHERE id_aam = $id_aam");
 						my $nombre_agente = dame_nombreagente_agentemodulo ($pa_config, $id_agente_modulo, $dbh);
 						# --------------------------------------
 						# Now call to execute_alert to real exec
 						execute_alert ($pa_config, $id_alerta, $campo1, $campo2, $campo3, $nombre_agente, $timestamp, $datos, $comando, $alert_name, $descripcion, $dbh);
 						# --------------------------------------
-					} else { # Alert is in valid timegap but has too many alerts or too many little
+					} else {
+						# Alert is in valid timegap but has too many alerts
+						# or too many little
 						if ($internal_counter < $min_alerts){
 							$internal_counter++;
-							# Now update the new value for times_fired & last_fired if we are below min limit for triggering this alert
-							my $query_idag = "UPDATE talerta_agente_modulo SET times_fired = $times_fired, internal_counter = $internal_counter WHERE id_aam = $id_aam ";
-							$dbh->do ($query_idag);
+							# Now update new value for times_fired & last_fired
+							# if we are below minlimit for triggering this alert
 							logger ($pa_config, "Alarm not fired because is below min limit",6);
 						} else { # Too many alerts fired (upper limit)
-							my $query_idag = "UPDATE talerta_agente_modulo SET times_fired = $times_fired,  internal_counter = $internal_counter WHERE id_aam = $id_aam ";
-							$dbh->do($query_idag);						
 							logger ($pa_config, "Alarm not fired because is above max limit",6);
 						}
-					}  
-				} # data between alert values
-				else { # This block is executed because actual data is OUTSIDE limits that trigger alert (so, valid data)
+						$dbh->do("UPDATE talerta_agente_modulo SET times_fired = $times_fired, internal_counter = $internal_counter WHERE id_aam = $id_aam");
+					}
+				} 
+				else {  # This block is executed because actual data is OUTSIDE
+						# limits that trigger alert (so, it is valid data)
 					# Check timegap
 					my $fecha_ultima_alerta = ParseDate($last_fired);
 					my $fecha_actual = ParseDate( $timestamp );
@@ -243,45 +245,32 @@ sub pandora_calcula_alerta (%$$$$$$) {
 					# Check timer threshold for this alert
 					if ( $flag >= 0 ) {
 						# This is late, we need to reset alert NOW
-						my $temp_aam_check = give_db_value ( "internal_counter", "talerta_agente_modulo", "id_aam", $id_aam, $dbh);
-                                                if ($temp_aam_check > 0){
-                                                        my $evt_descripcion = "Alert ceased - Expired ($descripcion)";
-                                                        pandora_event ($pa_config, $evt_descripcion, $id_grupo, $id_agente, $dbh);
-							# Out limits !, reset $times_fired, but do not write to
-	                                                # database until a real alarm was fired
-        	                                        my $query_idag = "UPDATE talerta_agente_modulo SET times_fired = 0, internal_counter = 0 WHERE id_aam = $id_aam ";
-                	                                $dbh->do($query_idag);
-                                                }
-					} else {
-						# We're running on timegap, so check if we're above limit or below
-						my $temp_aam_check = give_db_value ( "internal_counter", "talerta_agente_modulo", "id_aam", $id_aam, $dbh);
-						my $times_fired_check = give_db_value ( "times_fired", "talerta_agente_modulo", "id_aam", $id_aam, $dbh);
-						my $query_idag;
-						# If we don't have any alert fired, skip other checks
-						if ($times_fired_check > 0){
-							$temp_aam_check--;
-	                                        	if ($temp_aam_check <= 0) {
-        	                                        	my $evt_descripcion = "Alert ceased - Recovered ($descripcion)";
-                	                                	pandora_event ($pa_config, $evt_descripcion, $id_grupo, $id_agente, $dbh);
-								$query_idag = "UPDATE talerta_agente_modulo SET internal_counter = 0, times_fired =0 WHERE id_aam = $id_aam ";
-	                        	                        $dbh->do($query_idag);
-							} else {
-								# Decrease counter
-								$query_idag = "UPDATE talerta_agente_modulo SET internal_counter = $temp_aam_check WHERE id_aam = $id_aam ";
-	                	                                $dbh->do($query_idag);
-							}
+						# Create event for alert ceased only if has been fired.
+						# If not, simply restore counters to 0
+						if ($times_fired > 0){
+							my $evt_descripcion = "Alert ceased - Expired ($descripcion)";
+							pandora_event ($pa_config, $evt_descripcion, $id_grupo, $id_agente, $dbh);
 						}
-                                        }
+					} else {
+						# We're running on timegap, so check if we're above
+						# limit or below. If we don't have any alert fired,
+						# skip other checks
+						if ($times_fired > 0){
+							my $evt_descripcion = "Alert ceased - Recovered ($descripcion)";
+							pandora_event ($pa_config, $evt_descripcion, $id_grupo, $id_agente, $dbh);
+						}
+										}
+					if (($times_fired > 0) || ($internal_counter > 0)){
+						$dbh->do("UPDATE talerta_agente_modulo SET internal_counter = 0, times_fired =0 WHERE id_aam = $id_aam");
+					}
 				}
 			} # timecheck (outside time limits for this alert)
 			else { # Outside operative alert timeslot
-				my $temp_aam_check = give_db_value ( "internal_counter", "talerta_agente_modulo", "id_aam", $id_aam, $dbh);
-				if ($temp_aam_check > 0){
-					my $query_idag = "UPDATE talerta_agente_modulo SET times_fired = 0, internal_counter = 0 WHERE id_aam = $id_aam ";
-                                	$dbh->do($query_idag);
-                                	my $evt_descripcion = "Alert ceased - Run out of valid alert timegap ($descripcion)";
-                                	pandora_event ($pa_config, $evt_descripcion, $id_grupo, $id_agente, $dbh);
+				if ($times_fired > 0){
+					my $evt_descripcion2 = "Alert ceased - Run out of valid alert timegap ($descripcion)";
+					pandora_event ($pa_config, $evt_descripcion2, $id_grupo, $id_agente, $dbh);
 				}
+				$dbh->do("UPDATE talerta_agente_modulo SET internal_counter = 0, times_fired =0 WHERE id_aam = $id_aam");
 			}
 		} # While principal
 	} # if there are valid records

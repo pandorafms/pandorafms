@@ -19,7 +19,7 @@ DAEMON_PATH=/usr/sbin/snmptrapd
 
 # Dont touch this call unless you know are doing. For different versions of NetSNMP Trap daemon, it's possible you need to change some options
 # Please refer NetSNMP documentation in that case. 
-DAEMON_OPTIONS="-t -On -n -a -Lf $DAEMON_LOG -p $DAEMON_PID -F %4y-%02.2m-%l[**]%02.2h:%02.2j:%02.2k[**]%B[**]%N[**]%w[**]%W[**]%q[**]%v\n"
+DAEMON_OPTIONS="-t -On -n -a -Lf $DAEMON_LOG -p $DAEMON_PID -F %4y-%02.2m-%l[**]%02.2h:%02.2j:%02.2k[**]%a[**]%N[**]%w[**]%W[**]%q[**]%v\n"
 DAEMON="$DAEMON_PATH $DAEMON_OPTIONS"
 
 if [ ! -d "$PANDORA_PID_PATH" ]

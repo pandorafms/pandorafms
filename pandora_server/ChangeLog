@@ -1,3 +1,8 @@
+2007-10-09  Sancho Lerena <slerena@gmail.com>
+
+	* pandora_snmpconfole: Fixed parameter for snmptrapd call (%a instead %B). This
+	was causing problems (do not detect IP Address) on Redhat systems.
+
 2007-10-08  Sancho Lerena <slerena@gmail.com>
 
 	* lib/PandoraFMS/Config.pm: Updated build number.

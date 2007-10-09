@@ -1,4 +1,11 @@
-2007-10-03  Sancho Lerena <slerena@gmail.com>
+2007-10-09  Sancho Lerena <slerena@gmail.com>
+
+	* operation/reporting/reporting_viewer.php: Fixed small bug mixing min/max values of SLA render.
+
+	* godmode/reporting/reporting_builder.php: Fixed small bug deleting item from report, that
+	return user to another report.
+
+2007-10-08  Sancho Lerena <slerena@gmail.com>
 
 	* Security fix has been included in ver_agente.php, using a new function to validate
 	GET variables (checking for numeric data). This security isse was a SQL Blind URL Attack. This

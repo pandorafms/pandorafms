@@ -388,7 +388,7 @@ if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_report"]))) {
 			echo "<td class='$tdcolor'>".$period."</td>";
 			echo "<td class='$tdcolor' align='center'>";
 			if ($form_id_user == $id_user){
-				echo "<a href='index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id=1&delete=$id_rc'><img src='images/cross.png'></a>";
+				echo "<a href='index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id=$id_report&delete=$id_rc'><img src='images/cross.png'></a>";
 			}
 			echo "</td></tr>";
 		}

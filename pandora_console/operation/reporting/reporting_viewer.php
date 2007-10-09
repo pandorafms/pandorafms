@@ -48,7 +48,6 @@ $report_description = give_db_value ("description", "treport", "id_report", $id_
 $report_private= give_db_value ("private", "treport", "id_report", $id_report);
 $report_user = give_db_value ("id_user", "treport", "id_report", $id_report);
 if (($report_user == $id_user) OR (dame_admin($id_user)==1) OR ($report_private == 0)) {
-	//echo "SLA for Tato: %".return_module_SLA (50, 604800, 1, 1);
 	
 	echo "<h2>".$lang_label["reporting"]." &gt; ";
 	echo $lang_label["custom_reporting"]." - ";
@@ -76,7 +75,7 @@ if (($report_user == $id_user) OR (dame_admin($id_user)==1) OR ($report_private 
 			case 2: // SLA
 					$module_name = give_db_value ("nombre", "tagente_modulo", "id_agente_modulo", $id_agent_module);
 					$agent_name = dame_nombre_agente_agentemodulo ($id_agent_module);
-					$sla_result = format_numeric(return_module_SLA ($id_agent_module, $period, $sla_max, $sla_min), 2);
+					$sla_result = format_numeric(return_module_SLA ($id_agent_module, $period, $sla_min, $sla_max), 2);
 					
 					echo "<tr><td class='datos3'>";
 					echo "<h4>".$lang_label["SLA"]."</h4>";

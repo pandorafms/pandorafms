@@ -49,8 +49,7 @@ if (comprueba_login() == 0) {
 		$ag_group = $_GET["ag_group_refresh"];
 	}
 	
-	echo "<h2>".$lang_label["ag_title"]." &gt; ".$lang_label["summary"]."<a href='help/".$help_code."/chap3.php#331' target='_help' class='help'>
-	&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+	echo "<h2>".$lang_label["ag_title"]." &gt; ".$lang_label["summary"]."</h2>";
 	
 	// Show group selector
 	if (isset($_POST["ag_group"])){

@@ -49,7 +49,7 @@ if (comprueba_login() == 0) {
 	if (isset($_GET["server"])) {
 		$id_server=entrada_limpia($_GET["server"]);
 		echo "<h2>".$lang_label["view_servers"]." &gt; ";
-		echo $lang_label["update_server"]."<a href='help/".$help_code."/chap7.php#7' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+		echo $lang_label["update_server"]."</h2>";
 
 	$query="SELECT * FROM tserver WHERE id_server=".$id_server;
 	$result=mysql_query($query);
@@ -86,7 +86,7 @@ if (comprueba_login() == 0) {
 	$sql='SELECT * FROM tserver';
 	
 	echo "<h2>".$lang_label["view_servers"]." &gt; ";
-	echo $lang_label["manage_servers"]."<a href='help/".$help_code."/chap7.php#7' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+	echo $lang_label["manage_servers"]."</h2>";
 
 	// Connect DataBase
 	$result=mysql_query($sql);

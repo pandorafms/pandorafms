@@ -66,14 +66,14 @@ if (comprueba_login() == 0)
 
 		// Create link
         echo "<h2>".$lang_label["setup_screen"]." &gt; ";
-		echo $lang_label["link_management"]."<a href='help/".$help_code."/chap9.php#91' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
-		echo '<table class="databox" cellpadding="4" cellspacing="4" width="500">';   
+		echo $lang_label["link_management"]."</h2>";
+		echo '<table class="databox" cellpadding="4" cellspacing="4" width="500">';
 		echo '<form name="ilink" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/links">';
         	if ($creation_mode == 1)
 				echo "<input type='hidden' name='create' value='1'>";
 			else
 				echo "<input type='hidden' name='update' value='1'>";
-		echo "<input type='hidden' name='id_link' value='"; ?> 
+		echo "<input type='hidden' name='id_link' value='"; ?>
 		<?php if (isset($id_link)) {echo $id_link;} ?>
 		<?php
 		echo "'>";
@@ -94,7 +94,7 @@ if (comprueba_login() == 0)
 
 	else {  // Main list view for Links editor
 		echo "<h2>".$lang_label["setup_screen"]." &gt; ";
-		echo  $lang_label["link_management"]."<a href='help/".$help_code."/chap9.php#9' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+		echo  $lang_label["link_management"]."</h3>";
 		echo "<table cellpadding='4' cellspacing='4' class='databox'>";
 		echo "<th width='180px'>".$lang_label["link_name"]."</th>";
 		echo "<th width='80px'>".$lang_label["delete"]."</th>";

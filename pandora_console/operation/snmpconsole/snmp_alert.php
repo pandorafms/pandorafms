@@ -123,12 +123,12 @@ if (give_acl($id_user, 0, "LW")==1) {
 	if (($alert_update != 0) || ($alert_add == 1)) {
 	
 		if ($alert_update != 0) {
-			echo $lang_label["update_alert"]."<a href='help/".$help_code."/chap3.php#331' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+			echo $lang_label["update_alert"]."</h2>";
 		} else {
-			echo $lang_label["create_alert"]."<a href='help/".$help_code."/chap3.php#331' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+			echo $lang_label["create_alert"]."</h2>";
 		}
 		echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&submit=1">';
-		echo '<input type="hidden" name="id_as" value="'.$id_as.'">'; // if known, if add will be undetermined (0).	
+		echo '<input type="hidden" name="id_as" value="'.$id_as.'">'; // if known, if add will be undetermined (0).
 		echo '<table cellpadding="4" cellspacing="4" width="650" class="databox_color">';
 		// Alert
 		echo '<tr><td class=datos>'.$lang_label["alert"].'<td class=datos><select name="alert_id">';
@@ -136,24 +136,35 @@ if (give_acl($id_user, 0, "LW")==1) {
 			$sql0='SELECT * FROM talerta WHERE id_alerta = '.$id_alert;
 			$result0=mysql_query($sql0);
 			$row0=mysql_fetch_array($result0);
-			echo "<option value='".$row0["id_alerta"]."'>".$row0["nombre"];
+			echo "<option value='".$row0["id_alerta"]."'>".$row0["nombre"]."</option>";
 		}
 		$sql1='SELECT * FROM talerta';
 		$result1=mysql_query($sql1);
 		while ($row1=mysql_fetch_array($result1)){
-			echo "<option value='".$row1["id_alerta"]."'>".$row1["nombre"];
+			echo "<option value='".$row1["id_alerta"]."'>".$row1["nombre"]."</option>";
 		}
 		echo "</select>";
 		// Alert type		
 		echo '<tr><td class="datos2">'.$lang_label["alert_type"];
 		echo '<td class="datos2"><select name="alert_type">';
 		if ($alert_type == 0) {
-			echo '<option value=0>OID<option value=1>CustomOID/Value<option value=2>SNMPAgent</select>';
+			echo '
+			<option value=0>OID</option>
+			<option value=1>CustomOID/Value</option>
+			<option value=2>SNMPAgent</option>';
+		
 		} elseif ($alert_type == 1) {
-			echo '<option value=1>CustomOID/Value<option value=0>OID<option value=2>SNMPAgent</select>';
+			echo '
+			<option value=1>CustomOID/Value</option>
+			<option value=0>OID</option>
+			<option value=2>SNMPAgent</option>';
 		} else {
-			echo '<option value=2>SNMPAgent<option value=0>OID<option value=1>CustomOID/Value</select>';
+			echo '
+			<option value=2>SNMPAgent</option>
+			<option value=0>OID</option>
+			<option value=1>CustomOID/Value</option>';
 		}
+		echo '</select></td></tr>';
 		// Description
 		echo '<tr><td class=datos>'.$lang_label["description"].'</td>';
 		echo '<td class=datos><input type="text" size=60 name="description" value="'.$description.'">';
@@ -211,7 +222,7 @@ if (give_acl($id_user, 0, "LW")==1) {
 		$sql1='SELECT * FROM talert_snmp';
 		$result=mysql_query($sql1);
 		
-		echo $lang_label["snmp_assigned_alerts"]."<a href='help/".$help_code."/chap4.php#341' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";		
+		echo $lang_label["snmp_assigned_alerts"]."</h2>";
 		if (mysql_num_rows($result)){
 
 			echo '<table cellpadding="4" cellspacing="4" width="750" class="databox">';

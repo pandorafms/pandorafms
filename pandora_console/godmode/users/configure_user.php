@@ -2,7 +2,7 @@
 // Pandora - the Free monitoring system
 // ====================================
 // Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L, info@artica.es
+// Copyright (c) 2005-2006 Artica Soluciones Tecnolï¿½gicas S.L, info@artica.es
 // Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -147,13 +147,14 @@ if (comprueba_login() == 0)
 	}
 		echo "<h2>".$lang_label["user_management"]." &gt; ";
 		if (isset($_GET["alta"])){
-				if ($_GET["alta"]==1){
-				echo $lang_label["create_user"].'<a href="help/'.$help_code.'/chap2.php#22" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h2>';
-				}
+			if ($_GET["alta"]==1){
+				echo $lang_label["create_user"];
+			}
 		}
 		if (isset($_GET["id_usuario_mio"]) OR isset($_GET["nuevo_usuario"])){
-			echo $lang_label["update_user"].'<a href="help/'.$help_code.'/chap2.php#22" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h2>';
+			echo $lang_label["update_user"];
 		}
+	echo "</h2>";
 
 ?> 
 	<table width='500' cellpadding='4' cellspacing='4' class='databox_color'>
@@ -228,7 +229,7 @@ if (comprueba_login() == 0)
 		$sql1='SELECT * FROM tusuario_perfil WHERE id_usuario = "'.$id_usuario_mio.'"';
 		$result=mysql_query($sql1);
 		
-		echo '<h3>'.$lang_label["listGroupUser"].'<a href="help/'.$help_code.'/chap2.php#22" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h3>';
+		echo '<h3>'.$lang_label["listGroupUser"].'</h3>';
 		echo "<table width='500' cellpadding='4' cellspacing='4' class='databox'>";
 		if (mysql_num_rows($result)){
 			echo '<tr>';

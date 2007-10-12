@@ -21,7 +21,7 @@ if (comprueba_login() == 0)
  	*/
 		
 	echo "<h2>".$lang_label["dbmain_title"]." &gt; ";
-	echo $lang_label["db_info2"]."<a href='help/".$help_code."/chap8.php#81' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+	echo $lang_label["db_info2"]."</h2>";
 	echo "<table border=0>";
 	echo "<tr><td>";
 	echo '<h3>'.$lang_label["db_agente_modulo"].'</h3>';
@@ -32,7 +32,7 @@ if (comprueba_login() == 0)
 	echo "<img src='reporting/fgraph.php?tipo=db_agente_paquetes&width=600&height=200'><br>";
 	echo "<br><br><a href='index.php?sec=gdbman&sec2=godmode/db/db_info_data'>".$lang_label["press_db_info"]."</a>";
 	echo "</table>";
-	} 
+	}
 	else {
 		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Database Management Info");
 		require ("general/noaccess.php");

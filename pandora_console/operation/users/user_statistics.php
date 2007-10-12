@@ -3,7 +3,7 @@
 // Pandora - the Free monitoring system
 // ====================================
 // Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L, info@artica.es
+// Copyright (c) 2005-2006 Artica Soluciones Tecnolï¿½gicas S.L, info@artica.es
 // Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -22,7 +22,7 @@ require("include/config.php");
 
 if (comprueba_login() == 0) {
 echo "<h2>".$lang_label["users"]." &gt; ";
-echo $lang_label["users_statistics"]."<a href='help/".$help_code."/chap2.php#24' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+echo $lang_label["users_statistics"]."</h2>";
 echo '<img src="reporting/fgraph.php?tipo=user_activity" border=0>';
 }
 ?>

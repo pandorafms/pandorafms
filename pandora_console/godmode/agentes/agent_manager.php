@@ -39,13 +39,9 @@ if (give_acl($id_user, 0, "AW")!=1) {
 echo "<h2>".$lang_label["agent_conf"];
 if (isset($_GET["create_agent"])){
 	$create_agent = 1;
-	echo " &gt; ".$lang_label["create_agent"]."
-	<a href='help/".$help_code."/chap3.php#32' target='_help' class='help'>
-	&nbsp;<span>".$lang_label["help"]."</span></a>";
+	echo " &gt; ".$lang_label["create_agent"];
 } else {
-	echo " &gt; ".$lang_label["update_agent"]."
-	<a href='help/".$help_code."/chap3.php#32' target='_help' class='help'>
-	&nbsp;<span>".$lang_label["help"]."</span></a>";
+	echo " &gt; ".$lang_label["update_agent"];
 }
 echo "</h2>";
 echo "<div style='height: 5px'> </div>";

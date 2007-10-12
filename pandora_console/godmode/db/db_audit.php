@@ -3,7 +3,7 @@
 // Pandora - the Free monitoring system
 // ====================================
 // Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L, info@artica.es
+// Copyright (c) 2005-2006 Artica Soluciones Tecnolï¿½gicas S.L, info@artica.es
 // Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -89,13 +89,12 @@ if (comprueba_login() == 0)
 	if (isset($_POST["purgedb"])){	# Fixed 2005-1-13, nil
 		$from_date =$_POST["date_purge"];
 		$query = "DELETE FROM tsesion WHERE fecha < '".$from_date."'";
-		mysql_query($query);			
-
+		mysql_query($query);
 	}
 	# End of get parameters block
 	
 	echo "<h2>".$lang_label["dbmain_title"]." &gt; ";
-	echo  $lang_label["db_purge_audit"]."<a href='help/".$help_code."/chap8.php#841' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+	echo  $lang_label["db_purge_audit"]."</h2>";
 
 	echo "<table cellpadding='4' cellspacing='4' class='databox'>";
 	echo "<tr><td class='datos'>";
@@ -104,7 +103,7 @@ if (comprueba_login() == 0)
 	echo "<b>".$lang_label["total"]."</b></td>";
 	echo "<td class='datos'>".$row[0]." ".$lang_label["records"]."</td>";
 	
-	echo "<tr>";	
+	echo "<tr>";
 	$result_t=mysql_query("SELECT min(fecha) FROM tsesion");
 	$row=mysql_fetch_array($result_t);
 	echo "<td class='datos2'><b>".$lang_label["first_date"]."</b></td>";

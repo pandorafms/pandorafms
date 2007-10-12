@@ -24,17 +24,17 @@ if (comprueba_login() == 0) {
 	$id_usuario =$_SESSION["id_usuario"];
         if (give_acl($id_usuario, 0, "AR")==1) {
 		echo "<h2>".$lang_label["events"]." &gt; ";
-		echo $lang_label["event_statistics"]."<a href='help/".$help_code."/chap5.php#51' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+		echo $lang_label["event_statistics"]."</h2>";
 		echo "<br><br>";
 		echo "<table width=95%>";
-		echo "<tr><td>";
-		echo "<h2>".$lang_label["graph_event_total"]."</h2>";
+		echo "<tr><td valign='top'>";
+		echo "<h3>".$lang_label["graph_event_total"]."</h3>";
 		echo '<img src="reporting/fgraph.php?tipo=total_events&width=300&height=200" border=0>';
-		echo "<td>";
-		echo "<h2>".$lang_label["graph_event_user"]."</h2>";
+		echo "<td valign='top'>";
+		echo "<h3>".$lang_label["graph_event_user"]."</h3>";
 		echo '<img src="reporting/fgraph.php?tipo=user_events&width=300&height=200" border=0>';
 		echo "<tr><td>";
-		echo "<h2>".$lang_label["graph_event_group"]."</h2>";
+		echo "<h3>".$lang_label["graph_event_group"]."</h3>";
 		echo '<img src="reporting/fgraph.php?tipo=group_events&width=300&height=200" border=0>';
 		echo "</table>";
  	} else {

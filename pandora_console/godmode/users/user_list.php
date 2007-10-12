@@ -27,15 +27,15 @@ if (comprueba_login() == 0)
 ?>
 
 <h2><?php echo $lang_label["user_management"] ?> &gt; 
-<?php echo $lang_label["users"] ?><a href="help/<?php echo $help_code; ?>/chap2.php#22" target="_help" class="help">&nbsp;<span><?php echo $lang_label["help"]; ?></span></a></h2>
+<?php echo $lang_label["users"] ?></h2>
  
 <table width="700" cellpadding="4" cellspacing="4" class="databox">
-<th width="80px"><?php echo $lang_label["user_ID"]?>
-<th width="155px"><?php echo $lang_label["last_contact"]?>
-<th width="45px"><?php echo $lang_label["profile"]?>
-<th width="120px"><?php echo $lang_label["name"]?>
-<th><?php echo $lang_label["description"]?>
-<th width="30px"><?php echo $lang_label["delete"]?>
+<th width="80px"><?php echo $lang_label["user_ID"]?></th>
+<th width="155px"><?php echo $lang_label["last_contact"]?></th>
+<th width="45px"><?php echo $lang_label["profile"]?></th>
+<th width="120px"><?php echo $lang_label["name"]?></th>
+<th><?php echo $lang_label["description"]?></th>
+<th width="30px"><?php echo $lang_label["delete"]?></th>
 
 <?php
 $query1="SELECT * FROM tusuario";

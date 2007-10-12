@@ -106,7 +106,6 @@ $lang_label["medium"]="Media";
 $lang_label["serious"]="Grave";
 $lang_label["very_serious"]="Muy grave";
 $lang_label["maintenance"]="Mantenimiento";
-
 $lang_label["date"]="Fecha";
 
 $lang_label["incident_main_view"]="Vista principal de incidentes";
@@ -116,10 +115,10 @@ $lang_label["openedcom_inc"]="Incidentes activos, con comentarios";
 $lang_label["closed_inc"]="Incidentes cerrados";
 $lang_label["rej_inc"]="Incidentes rechazados";
 $lang_label["exp_inc"]="Incidentes expirados";
-
 $lang_label["rev_incident"]="Revisar incidente";
 $lang_label["note_title"]="Añadir nota al incidente";
-$lang_label["audit_title"]="Revisar logs de auditoría de Pandora";
+$lang_label["audit_title"]="Auditoría de Pandora";
+$lang_label["logs"]="Logs";
 $lang_label["user"]="Usuario";
 $lang_label["action"]="Acción";
 $lang_label["src_address"]="IP Origen";
@@ -334,8 +333,8 @@ $lang_label["purge_audit_7day"]="Borrar los datos de auditoría excepto la últi
 $lang_label["purge_audit_90day"]="Borrar los datos de auditoría excepto el último trimestre";
 $lang_label["purge_audit_14day"]="Borrar los datos de auditoría excepto las últimas dos semanas";
 $lang_label["purge_audit_3day"] ="Borrar los datos de auditoría excepto los últimos tres días";
-$lang_label["purge_audit_1day"]="Borrar los datos de autoría excepto el ultimo día";
-$lang_label["purge_audit_all"]="Borrar todos los datos de autoría";
+$lang_label["purge_audit_1day"]="Borrar los datos de auditoría excepto el ultimo día";
+$lang_label["purge_audit_all"]="Borrar todos los datos de auditoría";
 $lang_label["purge_event_30day"]="Borrar los datos de eventos excepto los últimos 30 días";
 $lang_label["purge_event_7day"]="Borrar los datos de eventos excepto la última semana";
 $lang_label["purge_event_90day"]="Borrar los datos de eventos excepto el último trimestre";

@@ -65,8 +65,7 @@ function datos_raw($id_agente_modulo, $periodo){
 	
 	echo "<h2>".$lang_label["data_received"]." 
 	'$nombre_agente' / '$nombre_modulo' </h2>";
-	echo "<h3> $et <a href='help/".$help_code."/chap3.php#3322' target='_help' 
-	class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+	echo "<h3>". $et ."</h3>";
 	if (mysql_num_rows($result)){
 		echo "<table cellpadding='3' cellspacing='3' width='600' class='databox'>";
 		$color=1;
@@ -140,5 +139,5 @@ if (isset($_GET["delete"])) {
 }
 
 datos_raw($id,$tipo);
-		
+
 ?>

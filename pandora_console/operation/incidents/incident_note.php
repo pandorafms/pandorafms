@@ -28,7 +28,7 @@ if (comprueba_login() == 0) {
 
 	// Create Note
 	echo "<h2>".$lang_label["incident_manag"]." &gt; ";
-	echo $lang_label["note_title"]." #".$id_inc."<a href='help/".$help_code."/chap3.php#331' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+	echo $lang_label["note_title"]." #".$id_inc."</h2>";
 	echo "<table cellpadding='4' cellspacing='4' class='databox' width='550px'>
 	<form name='nota' method='post' action='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&insertar_nota=1&id=".$id_inc."'>";
 	echo "<tr><td class='datos'><b>".$lang_label["date"]."</b>";

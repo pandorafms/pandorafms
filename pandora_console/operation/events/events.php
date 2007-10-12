@@ -168,23 +168,23 @@ $event="All";
 if (isset($_POST["event"]))
 	$event = entrada_limpia($_POST["event"]);
 
-echo "<h2>".$lang_label["events"]." &gt; ".$lang_label["event_main_view"]."<a href='help/".$help_code."/chap5.php#5' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+echo "<h2>".$lang_label["events"]." &gt; ".$lang_label["event_main_view"]."</h2>";
 echo "<table width=100%>";
 echo "<tr><td>";
-echo "<table cellpadding='4' cellspacing='4' class='databox' >";
+echo "<table cellpadding='4' cellspacing='4' class='databox'>";
 echo "<td colspan='2' valign='top'>";
-echo "<h3>".$lang_label["filter"]."</h3>";
+echo "<h3>".$lang_label["filter"]."</h3></td></tr>";
 echo "<tr>";
 echo "<form method='post' action='index.php?sec=eventos&sec2=operation/events/events&refr=60'>";
 echo "<td>".$lang_label["group"]."</td>";
 echo "<td>";
 echo "<select name='ev_group' onChange='javascript:this.form.submit();' class='w130'>";
 if ( $ev_group > 1 ){
-	echo "<option value='".$ev_group."'>".dame_nombre_grupo($ev_group);
+	echo "<option value='".$ev_group."'>".dame_nombre_grupo($ev_group)."</option>";
 }
 echo "<option value=1>".dame_nombre_grupo(1)."</option>";
 list_group ($id_user);
-echo "</select>";
+echo "</select></td></tr>";
 
 echo "<tr><td valign='middle'>".$lang_label["events"]."</td>";
 echo "<td><form method='post' action='index.php?sec=eventos&sec2=operation/events/events&refr=60'>";

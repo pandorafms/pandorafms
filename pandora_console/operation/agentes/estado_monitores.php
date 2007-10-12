@@ -24,10 +24,10 @@ if (comprueba_login() == 0) {
 		$id_agente = $_GET["id_agente"];
 	}
 	// Get all module from agent
-	$sql_t='SELECT * FROM tagente_estado, tagente_modulo WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.id_agente='.$id_agente.' and tagente_estado.estado != 100 AND tagente_estado.utimestamp != 0 order by tagente_modulo.nombre';
+	$sql_t='SELECT * FROM tagente_estado, tagente_modulo WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.id_agente='.$id_agente.' AND tagente_estado.estado != 100 AND tagente_estado.utimestamp != 0 ORDER BY tagente_modulo.nombre';
 	$result_t=mysql_query($sql_t);
 	if (mysql_num_rows ($result_t)) {
-		echo "<h3>".$lang_label["monitor_listing"]."<a href='help/".$help_code."/chap3.php#3323' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+		echo "<h3>".$lang_label["monitor_listing"]."</h3>";
 		echo "<table width='750' cellpadding=4 cellspacing=4 class='databox'>";
 		echo "<tr><th>".$lang_label["type"]."</th>
 		<th>".$lang_label["module_name"]."</th>

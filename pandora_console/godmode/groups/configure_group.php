@@ -27,7 +27,7 @@ require("include/config.php");
 if (comprueba_login() == 0)
    $id_user = $_SESSION["id_usuario"];
    if (give_acl($id_user, 0, "PM")==1) {
-	// Inic vars
+	// Init vars
 	$id_grupo = "";
 	$nombre = "";
 	$id_parent = "";	
@@ -39,7 +39,6 @@ if (comprueba_login() == 0)
 		$create_g = 0;
 		
 	if (isset($_GET["id_grupo"])){
-		// Conecto con la BBDD
 		$id_grupo = entrada_limpia($_GET["id_grupo"]);
 		$sql1='SELECT * FROM tgrupo WHERE id_grupo = '.$id_grupo;
 		$result=mysql_query($sql1);
@@ -51,19 +50,20 @@ if (comprueba_login() == 0)
 		} else
 			{
 			echo "<h3 class='error'>".$lang_label["group_error"]."</h3>";
-			echo "</table>";                                        
-			include ("general/footer.php");                       
+			echo "</table>"; 
+			include ("general/footer.php");
 			exit;
 			}
 	}
 
 	echo "<h2>".$lang_label["group_management"]." &gt; ";
 	if (isset($_GET["create_g"])) {
-		echo $lang_label["create_group"]."<a href='help/".$help_code."/chap3.php#31' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+		echo $lang_label["create_group"];
 	}
 	if (isset($_GET["id_grupo"])) {
-		echo $lang_label["update_group"]."<a href='help/".$help_code."/chap3.php#31' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+		echo $lang_label["update_group"];
 	}
+	echo "</h2>"
 	
 ?>
 <table width="450" cellpadding=4 cellspacing=4 class='databox_color'>

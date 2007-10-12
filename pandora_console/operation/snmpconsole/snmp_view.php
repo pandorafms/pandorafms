@@ -120,7 +120,7 @@ if (comprueba_login() == 0) {
 		}
 	}
 	echo "<h2>Pandora SNMP &gt; ";
-	echo $lang_label["SNMP_console"]."<a href='help/".$help_code."/chap3.php#34' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+	echo $lang_label["SNMP_console"]."</h2>";
 
 	if (isset($_GET["offset"]))
 		$offset=$_GET["offset"];

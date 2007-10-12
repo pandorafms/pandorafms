@@ -124,13 +124,13 @@ if (comprueba_login() == 0)
 			}
 		 	unset($id_perfil);
 		}
-		echo '<h2>'.$lang_label["profile_title"].' &gt; ';     
+		echo '<h2>'.$lang_label["profile_title"].' &gt; ';
 		echo (isset($_GET["new_profile"]))?
-		($lang_label["create_profile"].'<a href="help/'.$help_code.'/chap2.php#21" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h2>'):
+		($lang_label["create_profile"].'</h2>'):
 		(
 		(isset($_GET["edit_profile"]))?
-		($lang_label["update_profile"].'<a href="help/'.$help_code.'/chap2.php#21" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h2>'):
-		($lang_label["definedprofiles"].'<a href="help/'.$help_code.'/chap2.php#21" target="_help"  class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h2>')
+		($lang_label["update_profile"].'></h2>'):
+		($lang_label["definedprofiles"].'</h2>')
 		);
 		// Form to manage date
 		if (isset ($id_perfil)){ // There are values defined, let's show form with data for INSERT or UPDATE

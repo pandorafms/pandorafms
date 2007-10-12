@@ -187,7 +187,7 @@ $sql1=$sql0;
 $sql1=$sql1." LIMIT $offset, $block_size";
 
 echo "<h2>".$lang_label["incident_manag"]." &gt; ";
-echo $lang_label["manage_incidents"]."<a href='help/".$help_code."/chap4.php#4' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+echo $lang_label["manage_incidents"]."</h2>";
 if (isset($_POST['operacion'])){
 	echo $lang_label["incident_view_filter"]." - ".$_POST['operacion']."</h2>";
 }

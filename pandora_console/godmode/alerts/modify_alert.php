@@ -49,7 +49,7 @@ if ( (give_acl($id_user, 0, "LM")==1)){
 	}
 
     echo "<h2>".$lang_label["alert_config"]." &gt; ";
-	echo $lang_label["alert_defined2"]."<a href='help/".$help_code."/chap3.php#3221' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+	echo $lang_label["alert_defined2"]."</h2>";
 	echo "<table width='500' cellpadding='4' cellspacing='4' class='databox'>";
 	echo "<th width='100px'>".$lang_label["alertname"]."</th>";
 	echo "<th>".$lang_label["description"]."</th>";

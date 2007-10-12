@@ -33,7 +33,7 @@ $sql1='SELECT * FROM tagente_modulo WHERE id_agente = "'.$id_agente.'"';
 $result=mysql_query($sql1);
 	if ($row=mysql_num_rows($result)){
 
-		echo "<h3>".$lang_label["assigned_alerts"]."<a href='help/".$help_code."/chap3.php#3222' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h3>";
+		echo "<h3>".$lang_label["assigned_alerts"]."</h3>";
 
 		$color=1;
 		$string='';
@@ -140,7 +140,7 @@ $result=mysql_query($sql1);
 	}
 ?>
 
-<h3><?php echo $lang_label["alert_asociation_form"] ?><a href='help/<?php echo $help_code ?>/chap3.php#3222' target='_help' class='help'>&nbsp;<span><?php echo $lang_label["help"] ?></span></a></h3>
+<h3><?php echo $lang_label["alert_asociation_form"] ?></h3>
 
 
 <?php
@@ -326,7 +326,7 @@ echo "</select>";
 ?>
 
 <tr><td class="datos"><?php echo $lang_label["assigned_module"] ?>
-<td class="datos" colspan=3>
+<td class="datos" colspan="3">
 <?php
 
 if ($update_alert != 1) {

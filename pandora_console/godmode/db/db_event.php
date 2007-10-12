@@ -74,10 +74,10 @@ if (comprueba_login() == 0)
 	# End of get parameters block
 	
 	echo "<h2>".$lang_label["dbmain_title"]." &gt; ";
-	echo  $lang_label["db_purge_event"]."<a href='help/".$help_code."/chap8.php#842' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+	echo  $lang_label["db_purge_event"]."</h2>";
 
 	echo "<table cellpadding='4' cellspacing='4' class='databox'>";
-	echo "<tr><td class='datos'>";	
+	echo "<tr><td class='datos'>";
 	$result_t=mysql_query("SELECT COUNT(*) FROM tevento");
 	$row=mysql_fetch_array($result_t);
 	echo "<b>".$lang_label["total"]."</b>";

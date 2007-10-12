@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 // Pandora - Free monitoring system
 // ====================================
@@ -103,7 +103,6 @@ $lang_label["medium"]="Media";
 $lang_label["serious"]="Grave";
 $lang_label["very_serious"]="Moi grave";
 $lang_label["maintenance"]="Mantemento";
-
 $lang_label["date"]="Data";
 
 $lang_label["incident_main_view"]="Vista principal de incidentes";
@@ -113,10 +112,10 @@ $lang_label["openedcom_inc"]="Incidentes activos, con comentarios";
 $lang_label["closed_inc"]="Incidentes pechados";
 $lang_label["rej_inc"]="Incidentes rexeitados";
 $lang_label["exp_inc"]="Incidentes expirados";
-
 $lang_label["rev_incident"]="Revisar incidente";
 $lang_label["note_title"]="Engadir nota ao incidente";
-$lang_label["audit_title"]="Revisar logs de auditoría de Pandora";
+$lang_label["audit_title"]="Auditoría de Pandora";
+$lang_label["logs"]="Logs";
 $lang_label["user"]="Usuario";
 $lang_label["action"]="Acción";
 $lang_label["src_address"]="IP Orixe";

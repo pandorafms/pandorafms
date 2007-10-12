@@ -72,10 +72,7 @@ if (comprueba_login() == 0)
 			echo "<h3 class='suc'>".$lang_label["delete_group_ok"]."</h3>";
 	}
 	echo "<h2>".$lang_label["group_management"]." &gt; ";	
-	echo $lang_label["definedgroups"]."
-		<a href='help/".$help_code."/chap3.php#31' target='_help' class='help'>
-		<span>".$lang_label["help"]."</span></a>
-		</h2>";
+	echo $lang_label["definedgroups"]."</h2>";
 
 	echo "<table cellpadding=4 cellspacing=4 width='400' class='databox'>";
 	echo "<th>".$lang_label["icon"]."</th>";

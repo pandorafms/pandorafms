@@ -51,7 +51,7 @@ if (isset($_GET["id_agente"])){
 	}
 
 	if (isset($_GET["tab"])){
-		echo "<h2>".$lang_label["ag_title"]." &gt; ".$lang_label["alert_listing"]."<a href='help/".$help_code."/chap3.php#3324' target='_help' class='help'><span>".$lang_label["help"]."</span></a></h2>";
+		echo "<h2>".$lang_label["ag_title"]." &gt; ".$lang_label["alert_listing"]."</h2>";
 	}
 	
 	$query_gen='SELECT talerta_agente_modulo.alert_text, talerta_agente_modulo.id_alerta, talerta_agente_modulo.descripcion, talerta_agente_modulo.last_fired, talerta_agente_modulo.times_fired, tagente_modulo.nombre, talerta_agente_modulo.dis_max, talerta_agente_modulo.dis_min, talerta_agente_modulo.max_alerts, talerta_agente_modulo.time_threshold, talerta_agente_modulo.min_alerts, talerta_agente_modulo.id_agente_modulo, tagente_modulo.id_agente_modulo, talerta_agente_modulo.id_aam FROM tagente_modulo, talerta_agente_modulo WHERE tagente_modulo.id_agente = '.$id_agente.' AND tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo AND talerta_agente_modulo.disable = 0 ORDER BY tagente_modulo.nombre';
@@ -59,7 +59,7 @@ if (isset($_GET["id_agente"])){
 	if (mysql_num_rows ($result_gen)) {
 	
 		if (!isset($_GET["tab"])) {
-			echo "<h3>".$lang_label["alert_listing"]."<a href='help/".$help_code."/chap3.php#3324' target='_help' class='help'><span>".$lang_label["help"]."</span></a></h3>";
+			echo "<h3>".$lang_label["alert_listing"]."</h3>";
 		}
 	
 		echo "<table cellpadding='4' cellspacing='4' width=750 border=0 class='databox'>";
@@ -124,7 +124,7 @@ if (isset($_GET["id_agente"])){
 				$id_grupo_alerta = give_db_value ("id_grupo", "tagente", "id_agente", $id_agente);
 				if (give_acl($id_user, $id_grupo_alerta, "AW") == 1) {
 					echo "<td align='center' class='".$tdcolor."'>";
-					echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&validate_alert=".$data["id_aam"]."'><img src='images/ok.png'></A>";
+					echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&validate_alert=".$data["id_aam"]."'><img src='images/ok.png'></a>";
 					echo "</td>";
 				}
 			} else
@@ -142,7 +142,7 @@ if (isset($_GET["id_agente"])){
 	// -------------------------------
 
 	echo "<h2>".$lang_label["ag_title"]." &gt; ";
-	echo $lang_label["alert_listing"]."<a href='help/".$help_code."/chap3.php#335' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+	echo $lang_label["alert_listing"]."</h2>";
 	$iduser_temp=$_SESSION['id_usuario'];
 	if (isset($_POST["ag_group"]))
 		$ag_group = $_POST["ag_group"];

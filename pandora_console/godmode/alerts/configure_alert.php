@@ -59,8 +59,6 @@ echo "<h2>".$lang_label["alert_config"]." &gt; ";
 	if (isset($_GET["id_alerta"])){
 		echo $lang_label["mod_alert"];
 	}
-	echo '<a href="help/'.$help_code.'/chap3.php#3221" target="_help" class="help">
-	<span>'.$lang_label["help"].'</span></a>';
 echo "</h2>";
  ?>
  <form name="alerta" method="post" action="index.php?sec=galertas&sec2=godmode/alerts/modify_alert&id_alerta=<?php echo $id_alerta ?>">

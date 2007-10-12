@@ -31,10 +31,10 @@ function give_average_from_module ($id_agente, $id_agente_modulo, $hour, $day, $
 // Only valid for non-string kind of data.
 	require ("include/config.php");
 	$query1 = "SELECT AVG(datos)
-			FROM	tagente_datos
-			WHERE	id_agente_modulo = ". $id_agente_modulo."
-					AND	HOUR(timestamp) = ".$hour."
-					AND	WEEKDAY(timestamp) = ".$day."
+			FROM tagente_datos
+			WHERE id_agente_modulo = ". $id_agente_modulo."
+					AND HOUR(timestamp) = ".$hour."
+					AND WEEKDAY(timestamp) = ".$day."
 					AND timestamp >= '$start_date' 
 					AND timestamp <= '$end_date'";
 
@@ -107,9 +107,11 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 	else
 		$export_type = 3; // Standard table;
 
+	// Header
+	echo "<h2>".$lang_label["ag_title"]." &gt; ";
+	echo $lang_label["export_title"]."</h2>";
+
 	if ($export_type == 1) { // CSV
-		echo "<h2>".$lang_label["ag_title"]." &gt; ";
-		echo $lang_label["export_title"]."<a href='help/".$help_code."/chap3.php#336' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 
 		if (isset ($_POST["origen_modulo"])){
 			$origen = $_POST["origen"];
@@ -147,9 +149,6 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 			$from_date = $start_date." ".$start_time;
 			$to_date = $end_date." ".$end_time;
 
-			// Header
-			echo "<h2>".$lang_label["ag_title"]." &gt; ";
-			echo $lang_label["export_title"]."<a href='help/".$help_code."/chap3.php#336' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 			echo $lang_label["db_agent_bra"]. "<b>" . dame_nombre_agente($origen). "-  $agentmodule_name</b>". $lang_label["from2"]. "<b>". $from_date. "</b>". $lang_label["to2"]. "<b>". $to_date. "</b><br>";
 			echo "<br>";
 
@@ -165,8 +164,6 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 	}
 	
 	if ($export_type == 3) { // Standard table
-		echo "<h2>".$lang_label["ag_title"]." &gt; ";
-		echo $lang_label["export_title"]."<a href='help/".$help_code."/chap3.php#336' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
 		if (isset ($_POST["origen_modulo"])){
 			$origen = $_POST["origen"];
 			if (give_acl($id_user,dame_id_grupo($origen),"AR")!=1) {
@@ -249,7 +246,7 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 		
 	echo "<script type='text/javaScript' src='include/javascript/calendar.js'></script>";
 	echo "<h2>".$lang_label["ag_title"]." &gt; ";
-	echo $lang_label["export_data"]."<a href='help/$help_code/chap3.php#336' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+	echo $lang_label["export_data"]."</h2>";
 
 	echo '<form method="post" action="index.php?sec=estado&sec2=operation/agentes/exportdata" name="export_form">';
 	echo '<table width=550 border=0 cellspacing=3 cellpadding=5 class=databox_color>';

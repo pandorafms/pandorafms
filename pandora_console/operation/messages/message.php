@@ -139,7 +139,7 @@ if (isset($_GET["nuevo"]) || isset($_GET["nuevo_g"])){
 	}
 	
 	if (isset($_GET["nuevo_g"])){
-		echo $lang_label["new_message_g"].'<a href="help/'.$help_code.'/chap2.php#251" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h2>';
+		echo $lang_label["new_message_g"].'</h2>';
 		echo '
 		<form name="new_mes" method="post" action="index.php?sec=messages&sec2=operation/messages/message&nuevo_mensaje_g=1">
 		<table width=600 class="databox_color" cellpadding=4 cellspacing=4>

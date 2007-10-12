@@ -55,14 +55,14 @@ if (comprueba_login() == 0) {
 		}
 	}
 
-	echo "<h2>".$lang_label["ag_title"]." &gt; ".$lang_label["view_agent_general_data"]."<a href='help/".$help_code."/chap3.php#3321' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+	echo "<h2>".$lang_label["ag_title"]." &gt; ".$lang_label["view_agent_general_data"]."</h2>";
 
 	// Blank space below title
 	echo "<div style='height: 10px'> </div>";
 	
 	echo '<table cellspacing="0" cellpadding="0" width="750" border=0 class="databox">';
 	echo "<tr><td>";
-	echo '<table cellspacing="4" cellpadding="4" border=0 class="databox"> ';
+	echo '<table cellspacing="4" cellpadding="4" border=0 class="databox">';
 	echo '<tr>
 	<td class="datos"><b>'.$lang_label["agent_name"].'</b></td>
 	<td class="datos"><b>'.strtoupper(salida_limpia($nombre_agente)).'</b></td>';

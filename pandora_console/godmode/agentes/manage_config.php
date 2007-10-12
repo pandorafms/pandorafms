@@ -268,7 +268,7 @@ if (comprueba_login() == 0)
 			?>
 							
 			<h2><?php echo $lang_label["agent_conf"] ?> &gt; 
-			<?php echo $lang_label["config_manage"]; ?><a href="help/<?php echo $help_code;?>/chap3.php#323" target="_help" class="help">&nbsp;<span><?php echo $lang_label["help"]; ?></span></a></h2>
+			<?php echo $lang_label["config_manage"]; ?></h2>
 			<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/manage_config&operacion=1">
 			<table width='450' border='0' cellspacing='4' cellpadding='4' class='databox'>
 			<tr>
@@ -295,7 +295,7 @@ if (comprueba_login() == 0)
 			if ( (isset($_POST["update_agent"])) AND (isset($_POST["origen"])) ) {
 		        	// Populate Module/Agent combo
 				$agente_modulo = $_POST["origen"];
-				$sql1="SELECT * FROM tagente_modulo WHERE id_agente = ".$agente_modulo. " order by nombre";	
+				$sql1="SELECT * FROM tagente_modulo WHERE id_agente = ".$agente_modulo. " ORDER BY nombre";	
 				$result = mysql_query($sql1);
 				while ($row=mysql_fetch_array($result)){
 			 		echo "<option value=".$row["id_agente_modulo"].">".$row["nombre"]."</option>";	

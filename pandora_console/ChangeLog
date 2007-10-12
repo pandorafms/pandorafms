@@ -1,3 +1,14 @@
+2007-10-12  Raul Mateos <raulofpandora@gmail.com>
+
+	* Near ALL php: Removed remaining help icons. Closed some HTML tags.
+
+	* index.php, include/config.inc.php: Updated build.
+
+	* languages/*.php: Added text for "Logs".
+
+	* godmode/admin_access_logs.php: Solved small visual error with
+filter. Added Logs text.
+
 2007-10-09  Sancho Lerena <slerena@gmail.com>
 
 	* operation/reporting/reporting_viewer.php: Fixed small bug mixing min/max values of SLA render.

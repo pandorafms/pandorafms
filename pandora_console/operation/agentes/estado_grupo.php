@@ -33,10 +33,7 @@
 		require ("general/noaccess.php");
 		exit;
 	}
-	echo "<h2>".$lang_label["ag_title"]." &gt; ".$lang_label["group_view"]."
-	<a href='help/".$help_code."/chap3.php#324' target='_help' class='help'>
-	<span>".$lang_label["help"]."</span>
-	</a></h2>";
+	echo "<h2>".$lang_label["ag_title"]." &gt; ".$lang_label["group_view"]."</h2>";
 
 	// Get group list that user has access
 	$mis_grupos = list_group2 ($id_user);

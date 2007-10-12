@@ -24,7 +24,7 @@ require("include/config.php");
 if (comprueba_login() == 0) {
 
 echo "<h2>".$lang_label["incident_manag"]." &gt; ";
-echo $lang_label["find_crit"]." <a href='help/".$help_code."/chap4.php#43' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+echo $lang_label["find_crit"]."</h2>";
 echo "<div style='width:645'>";
 echo "<div style='float:right;'><img src='images/pulpo_lupa.png' class='bot' align='left'></div>";	
 ?>
@@ -35,12 +35,12 @@ echo "<div style='float:right;'><img src='images/pulpo_lupa.png' class='bot' ali
 <td class="datos"><?php echo $lang_label["user"] ?>
 <td class="datos">
 <select name="usuario" class="w120">
-	<option value=""><?php echo $lang_label["all"] ?>
+	<option value=""><?php echo $lang_label["all"] ?></option>
 	<?php 
 	$sql1='SELECT * FROM tusuario ORDER BY id_usuario';
 	$result=mysql_query($sql1);
 	while ($row=mysql_fetch_array($result)){
-		echo "<option>".$row["id_usuario"];
+		echo "<option>".$row["id_usuario"]."</option>";
 	}
 	?>
 </select>

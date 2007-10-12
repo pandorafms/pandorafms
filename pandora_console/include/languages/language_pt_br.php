@@ -1,9 +1,9 @@
-﻿<?php
+<?php
 
 // Pandora - the Free monitoring system
 // ====================================
 // Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnol�gicas S.L, info@artica.es
+// Copyright (c) 2005-2006 Artica Soluciones Tecnol�gicas S.L, info@artica.es
 // Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -17,7 +17,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-// Tradu��o para o Portugu�s do Brasil
+// Tradu��o para o Portugu�s do Brasil
 // Copyright (c) 2006 Rodrigo J. Dutra <rodrigo.dutra@gmail.com>
 
 $lang_label["view_agents"]="Ver agentes";
@@ -97,7 +97,8 @@ $lang_label["rej_inc"]="Incidentes recusados";
 $lang_label["exp_inc"]="Incidentes expirados";
 $lang_label["rev_incident"]="Revisar incidente";
 $lang_label["note_title"]="Adicionar nota ao incidente";
-$lang_label["audit_title"]="Revisar logs de auditoria do Pandora";
+$lang_label["audit_title"]="Revisar auditoria do Pandora";
+$lang_label["logs"]="Logs";
 $lang_label["user"]="Usuário";
 $lang_label["action"]="Açáo";
 $lang_label["src_address"]="IP Origem";
@@ -151,7 +152,7 @@ $lang_label["err_auth_msg"]="A combinaçáo usuário/senha é incorreta. Verifiq
 $lang_label["find_crit"]="Selecione um critério de busca";
 $lang_label["all"]="Tudo";
 $lang_label["free_text_search"]="Texto livre para busca (*)";
-$lang_label["free_text_search_msg"]="A busca pelo texto irá procurar por todas as palavras informadas como pará�metros, tanto no ídice de títulos, como na descriçáo de cada incidente";
+$lang_label["free_text_search_msg"]="A busca pelo texto irá procurar por todas as palavras informadas como pará�metros, tanto no ídice de títulos, como na descriçáo de cada incidente";
 $lang_label["confirmation"]="confirmaçáo";
 $lang_label["password"]="senha";
 $lang_label["users"]="Usuários definidos no Pandora";
@@ -253,9 +254,9 @@ $lang_label["add"]="Adicionar";
 $lang_label["db_purge_event"]="Limpeza da Base de Dados de eventos";
 $lang_label["db_event"]="BD de eventos";
 $lang_label["max_min"]="Máx/Mí";
-$lang_label["max"]="M�ximo";
-$lang_label["min"]="M�nimo";
-$lang_label["med"]="M�dia";
+$lang_label["max"]="M�ximo";
+$lang_label["min"]="M�nimo";
+$lang_label["med"]="M�dia";
 $lang_label["month_graph"]="Gráfico mensal";
 $lang_label["week_graph"]="Gráfico Semanal";
 $lang_label["day_graph"]="Gráfico Diário";
@@ -558,8 +559,8 @@ $lang_label["icon"]="ícone";
 $lang_label["agent_exists"]="O agente já existe";
 $lang_label["graph_order"]="Ordem do gráfico";
 $lang_label["truetype"]="Fontes truetype";
-$lang_label["right_left"]="Dir. à� Esq."; // direita à esquerda
-$lang_label["left_right"]="Esq. à� Dir."; // esquerda  à direita
+$lang_label["right_left"]="Dir. à� Esq."; // direita à esquerda
+$lang_label["left_right"]="Esq. à� Dir."; // esquerda  à direita
 $lang_label["cannot_read_snmp"]="Náo pode ser lido SNMP del origem";
 $lang_label["ok_read_snmp"]="El origem SNMP foi esquadrinhado";
 $lang_label["cancel"]="Cancelar";

@@ -1,4 +1,4 @@
-<?PHP 
+<?PHP
 // Pandora FMS - the Free monitoring system
 // ========================================
 // Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
@@ -60,7 +60,7 @@ if (comprueba_login() == 0) {
 	$label_group=0;
 	$last_label = "";
 	echo "<h2>".$lang_label["ag_title"]." &gt; ";
-	echo $lang_label["last_data_chunk"]."<a href='help/".$help_code."/chap3.php#3322' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+	echo $lang_label["last_data_chunk"]."</h2>";
 	$result3=mysql_query($sql3);
 	if (mysql_num_rows ($result3)) {
 	echo "<table width='750' cellpadding='3' cellspacing='3' class='databox'>";

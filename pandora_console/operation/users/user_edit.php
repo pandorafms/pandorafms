@@ -3,7 +3,7 @@
 // Pandora - the Free monitoring system
 // ====================================
 // Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnológicas S.L, info@artica.es
+// Copyright (c) 2005-2006 Artica Soluciones Tecnolï¿½gicas S.L, info@artica.es
 // Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -41,7 +41,7 @@ if (comprueba_login() == 0) {
 	// Get user ID to modify data of current user.
 
 	if (isset ($_GET["modificado"])){
-		// Se realiza la modificación
+		// Se realiza la modificaciï¿½n
 		if (isset ($_POST["pass1"])){
 			if ( isset($_POST["nombre"]) && ($_POST["nombre"] != $_SESSION["id_usuario"])) {
 				audit_db($_SESSION["id_usuario"],$REMOTE_ADDR,"Security Alert. Trying to modify another user: (".$_POST['nombre'].") ","Security Alert");
@@ -58,8 +58,8 @@ if (comprueba_login() == 0) {
 				echo "<h3 class='error'>".$lang_label["pass_nomatch"]."</h3>";
 			}
 			else {echo "<h3 class='suc'>".$lang_label["update_user_ok"]."</h3>";}
-			//echo "<br>DEBUG para ".$nombre;
-			//echo "<br>Comentarios:".$comentarios;	
+			//echo "<br>DEBUG for ".$nombre;
+			//echo "<br>Comments:".$comentarios;	
 			$comentarios = entrada_limpia($_POST["comentarios"]);
 			if (dame_password($nombre)!=$pass1){
 				// Only when change password
@@ -82,7 +82,7 @@ if (comprueba_login() == 0) {
 		}
 	} 
 		echo "<h2>".$lang_label["users_"]." &gt; ";
-		echo $lang_label["user_edit_title"]."<a href='help/".$help_code."/chap2.php#22' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+		echo $lang_label["user_edit_title"]."</h2>";
 
 	// Si no se obtiene la variable "modificado" es que se esta visualizando la informacion y
 	// preparandola para su modificacion, no se almacenan los datos
@@ -139,7 +139,7 @@ if (comprueba_login() == 0) {
 		echo "<input name='uptbutton' type='submit' class='sub upd' value='".$lang_label["update"]."'></td></tr>";
 	}
 	echo '</table></form><br>';
-	echo '<h3>'.$lang_label["listGroupUser"].'<a href="help/'.$help_code.'/chap2.php#22" target="_help" class="help">&nbsp;<span>'.$lang_label["help"].'</span></a></h3>';
+	echo '<h3>'.$lang_label["listGroupUser"].'</h3>';
 	echo "<table width='500' cellpadding='4' cellspacing='4' class='databox'>";
 	$sql1='SELECT * FROM tusuario_perfil WHERE id_usuario = "'.$nombre.'"';
 	$result=mysql_query($sql1);

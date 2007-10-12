@@ -211,10 +211,11 @@ if (isset($id_inc)) {
 }
 echo "<h2>".$lang_label["incident_manag"]." &gt; ";
 if (isset($id_inc)) {
-	echo $lang_label["rev_incident"]." # ".$id_inc." <a href='help/".$help_code."/chap4.php#42' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+	echo $lang_label["rev_incident"]." # ".$id_inc;
 } else {
-	echo $lang_label["create_incident"]."<a href='help/".$help_code."/chap4.php#41' target='_help' class='help'>&nbsp;<span>".$lang_label["help"]."</span></a></h2>";
+	echo $lang_label["create_incident"];
 }
+echo "</h2>";
 echo '<table cellpadding="4" cellspacing="4" class="databox" width="600">';
 if ((give_acl($iduser_temp, $id_grupo, "IM")==1) OR ($usuario == $iduser_temp)) {
 	echo '<tr><td class="datos"><b>'.$lang_label["incident"].'</b></td>

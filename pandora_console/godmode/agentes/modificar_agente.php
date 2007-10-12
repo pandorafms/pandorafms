@@ -108,9 +108,7 @@ if (isset($_GET["borrar_agente"])){ // if delete agent
 		exit;
 	}
 }
-echo "<h2>".$lang_label["agent_conf"]." &gt; ".$lang_label["agent_defined2"]."
-<a href='help/".$help_code."/chap3.php#3' target='_help' class='help'>
-<span>".$lang_label["help"]."</span></a></h2>";
+echo "<h2>".$lang_label["agent_conf"]." &gt; ".$lang_label["agent_defined2"]."</h2>";
 
 // Show group selector
 if (isset($_POST["ag_group"])){

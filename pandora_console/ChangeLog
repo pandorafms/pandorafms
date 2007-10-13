@@ -1,5 +1,11 @@
 2007-10-13  Raul Mateos <raulofpandora@gmail.com>
 
+	* styles/op.css, god.css, link.css: Simplify styles.
+
+	* godmode/menu.php: removed unused class.
+
+	* operation/menu.php: Updated license header.
+
 	* operation/incidents/indicent_statistics.php: Added vertical align to images.
 
 	* languages/language_es_es.php: Solved small text typo.

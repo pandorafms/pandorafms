@@ -37,7 +37,7 @@ if (comprueba_login() == 0){
 		}
 		else
 			echo '<div id="god1">';
-		echo '<ul class="mn"><li class="bt0"><a href="index.php?sec=gagente&amp;sec2=godmode/agentes/modificar_agente" class="mn">'.$lang_label["manage_agents"].'</a></li></ul></div>';
+		echo '<ul class="mn"><li><a href="index.php?sec=gagente&amp;sec2=godmode/agentes/modificar_agente" class="mn">'.$lang_label["manage_agents"].'</a></li></ul></div>';
 		
 		if (isset($_GET["sec"]) && $_GET["sec"] == "gagente"){
 			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/agentes/manage_config"){

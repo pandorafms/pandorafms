@@ -43,6 +43,6 @@ div.linkli>ul {
 #link a:hover, .linkli li:hover {
 	background-color: #cde0ad;
 }
-#link li.bb0 {
+#link {
 	border-bottom: 0px;
 }

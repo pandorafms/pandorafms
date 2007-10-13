@@ -28,10 +28,10 @@ if (comprueba_login() == 0) {
 		echo $lang_label["statistics"]."</h2>";
 
 	echo "<table width = 90%>";
-	echo "<tr><td>";
+	echo "<tr><td valign='top'>";
 	echo '<h3>'.$lang_label["inc_stat_status"].'</h3>';
 	echo '<img src="reporting/fgraph.php?tipo=estado_incidente" border=0>';
-	echo "<td>";
+	echo "<td valign='top'>";
 	echo '<h3>'.$lang_label["inc_stat_priority"].'</h3>';
 	echo '<img src="reporting/fgraph.php?tipo=prioridad_incidente" border=0>';
 	echo "<tr><td>";

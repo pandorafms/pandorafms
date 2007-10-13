@@ -165,18 +165,21 @@ else
 	$ncgroup = 0;
 echo "<form method='POST' action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components'>";
 
-
-echo "<table cellpadding='4' cellspacing='4' class='databox'><tr>";
-echo "<td>".$lang_label["group"]."</td>";
+echo "<table cellpadding='4' cellspacing='4' class='databox'>";
+echo "<td colspan='2' valign='top'>";
+echo "<h3>".$lang_label["filter"]."</h3></td></tr>";
+echo "<tr><td>".$lang_label["group"]."</td>";
 echo "<td valign='middle'>";
 echo "<select name='ncgroup' onChange='javascript:this.form.submit();'>";
-echo "<option value='$ncgroup'>".give_network_component_group_name($ncgroup);	
-if ($ncgroup != 0)
-	echo "<option value='0'>".$lang_label["all"];
+
+if ($ncgroup != 0){
+	echo "<option value='$ncgroup'>".give_network_component_group_name($ncgroup)."</option>";
+}
+echo "<option value='0'>".$lang_label["all"]."</option>";
 $sql1 = "SELECT * FROM tnetwork_component_group WHERE id_sg != '$ncgroup'";
 $result = mysql_query($sql1);
 while ($row = mysql_fetch_array ($result))
-	echo "<option value='" . $row["id_sg"] . "'>". give_network_component_group_name ($row["id_sg"]);
+	echo "<option value='" . $row["id_sg"] . "'>". give_network_component_group_name ($row["id_sg"])."</option>";
 echo "</select>";
 echo "<td valign='middle'>";
 echo "<noscript><input name='uptbutton' type='submit' class='sub' value='".$lang_label["show"]."'></noscript>";

@@ -1,3 +1,11 @@
+2007-10-13  Raul Mateos <raulofpandora@gmail.com>
+
+	* operation/incidents/indicent_statistics.php: Added vertical align to images.
+
+	* languages/language_es_es.php: Solved small text typo.
+
+	* godmode/modules/manage_network_components.php: Add text filter and improved filter.
+
 2007-10-12  Raul Mateos <raulofpandora@gmail.com>
 
 	* Near ALL php: Removed remaining help icons. Closed some HTML tags.

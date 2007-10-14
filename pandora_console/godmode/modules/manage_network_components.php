@@ -166,7 +166,7 @@ else
 echo "<form method='POST' action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components'>";
 
 echo "<table cellpadding='4' cellspacing='4' class='databox'>";
-echo "<td colspan='2' valign='top'>";
+echo "<tr><td colspan='2' valign='top'>";
 echo "<h3>".$lang_label["filter"]."</h3></td></tr>";
 echo "<tr><td>".$lang_label["group"]."</td>";
 echo "<td valign='middle'>";
@@ -224,7 +224,7 @@ if ( $row = mysql_num_rows ($result)){
 		echo "<a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components_form&update=1&id_nc=".$row["id_nc"]."'>".$nombre_modulo."</a></td>";
 		echo "<td class='".$tdcolor."f9'>";
 		if ($id_tipo > 0) {
-			echo "<img src='images/".show_icon_type($id_tipo)."' border=0>";
+			echo "<img src='images/".show_icon_type($id_tipo)."' border='0'>";
 		}
 		if ($module_interval2!=0){
 			echo "<td class='$tdcolor'>".$module_interval2;
@@ -258,4 +258,3 @@ if ( $row = mysql_num_rows ($result)){
 	echo "<div class='nf'>No modules</div>";
 
 ?>
-

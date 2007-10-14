@@ -828,7 +828,6 @@ $lang_label["tactical_indicator"]="Tactical indicator";
 $lang_label["monitor_checks"]="Monitor checks";
 $lang_label["data_checks"]="Data checks";
 $lang_label["group_view_menu"]="Group view";
-$lang_label["site_news"]="Site news";
 $lang_label["site_news_management"]="Site news management";
 $lang_label["Pandora_FMS_summary"]="Pandora FMS Overview";
 $lang_label["by"]="by";

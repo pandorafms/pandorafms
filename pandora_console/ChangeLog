@@ -1,3 +1,10 @@
+2007-10-14  Raul Mateos <raulofpandora@gmail.com>
+
+	* godmode/modules/manage_network_components.php: Added deleted table row.
+	
+	* include/languages/*.php: Removed duplicated lines. Updated some
+	languages.
+
 2007-10-13  Raul Mateos <raulofpandora@gmail.com>
 
 	* styles/op.css, god.css, link.css: Simplify styles.

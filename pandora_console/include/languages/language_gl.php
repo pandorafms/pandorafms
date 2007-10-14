@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 // Pandora - Free monitoring system
 // ====================================
@@ -792,7 +792,6 @@ $lang_label["event_report"]="Informe de eventos";
 $lang_label["alert_report"]="Informe de alertas";
 $lang_label["monitor_report"]="Informe de monitores";
 $lang_label["avg_value"]="Valor medio";
-$lang_label["avg_value"]="Valor medio";
 $lang_label["reporting_type"]="Tipo de informe";
 $lang_label["sla_max"]="Valor máximo para o SLA";
 $lang_label["sla_min"]="Valor mínimo para o SLA";
@@ -805,7 +804,6 @@ $lang_label["tactical_indicator"]="Indicador táctico";
 $lang_label["monitor_checks"]="Comprobaciones de monitor";
 $lang_label["data_checks"]="Comprobaciones de datos";
 $lang_label["group_view_menu"]="Vista de grupo";
-$lang_label["site_news"]="Noticias locais";
 $lang_label["site_news"]="Noticias del sistema";
 $lang_label["site_news_management"]="Xestión de noticias";
 $lang_label["Pandora_FMS_summary"]="Resumen de Pandora FMS";

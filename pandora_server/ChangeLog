@@ -1,3 +1,7 @@
+2007-11-19  Sancho Lerena <slerena@gmail.com>
+
+	* pandora_network: Fixed problem with default retries of SNMP library. Now is 0
+	
 2007-10-09  Sancho Lerena <slerena@gmail.com>
 
 	* pandora_snmpconfole: Fixed parameter for snmptrapd call (%a instead %B). This

@@ -1,3 +1,7 @@
+2007-11-19  Sancho Lerena <slerena@gmail.com>
+
+	* index.php: Included patch summited by Guru Evi (guruevi) for HTTPS support. THanks evi ! :)
+
 2007-10-14  Raul Mateos <raulofpandora@gmail.com>
 
 	* godmode/modules/manage_network_components.php: Added deleted table row.

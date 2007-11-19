@@ -83,8 +83,7 @@ if ( (isset ($_GET["refr"])) || (isset($_POST["refr"])) ){
 		$intervalo = entrada_limpia ($_POST["refr"]);
 	if ($intervalo > 0){
 		// Agent selection filters and refresh
-		$query = 'http://' . $_SERVER['SERVER_NAME']; // TODO: Check for https
-
+		$query = 'http' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '') . '://' . $_SERVER['SERVER_NAME'];
 		if ($_SERVER['SERVER_PORT'] != 80)
 			$query .= ":" . $_SERVER['SERVER_PORT'];
 		

@@ -1,3 +1,8 @@
+2007-11-20  Manuel Arostegui <marostegui@artica.es>
+
+	* pandora_snmpconsole,pandora_server,pandora_recon,pandora_network: Fixed
+	  bug #1822659.
+
 2007-11-19  Sancho Lerena <slerena@gmail.com>
 
 	* pandora_network: Fixed problem with default retries of SNMP library. Now is 0

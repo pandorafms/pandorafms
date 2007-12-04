@@ -34,8 +34,8 @@ our @EXPORT = qw( 	pandora_help_screen
 # There is no global vars, all variables (setup) passed as hash reference
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "1.3beta3";
-my $pandora_build="PS071008";
+my $pandora_version = "1.3.1";
+my $pandora_build="PS071203";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -136,7 +136,7 @@ sub pandora_loadconfig {
 	$pa_config->{"servername"}=~ s/\s//g; # Replace ' ' chars
 	$pa_config->{"networkserver"}=0;
 	$pa_config->{"dataserver"}=0;
-    $pa_config->{"icmp_checks"}=1;
+	$pa_config->{"icmp_checks"}=1; # Introduced on 1.3.1
 	$pa_config->{"reconserver"}=0;
 	$pa_config->{"servermode"}="";
 	$pa_config->{'snmp_logfile'}="/var/log/pandora/pandora_snmptrap.log";

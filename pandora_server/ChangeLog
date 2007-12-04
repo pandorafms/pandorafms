@@ -1,3 +1,9 @@
+2007-12-04  Sancho Lerena  <slerena@gmail.com>
+
+	*  lib/PandoraFMS/Config.pm, bin/pandora_network: This little portion of
+	code should fix problem detected in some very extrange module "blackout" 
+	effect reported by Corona. Need check and testing before get as final.
+
 2007-11-20  Manuel Arostegui <marostegui@artica.es>
 
 	* pandora_snmpconsole,pandora_server,pandora_recon,pandora_network: Fixed

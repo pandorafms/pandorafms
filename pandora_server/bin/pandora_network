@@ -143,13 +143,23 @@ sub pandora_network_consumer ($$) {
 				lock %current_task_hash;
 				$current_task_hash{$data_id_agent_module}=1;
 			}
-			# Call network execution process
-			exec_network_module ( $pa_config, $data_id_agent_module, $dbh);
+			
+			# Executing network task with unmanaged error trapping
+			eval {
+				# Call network execution process
+				exec_network_module ( $pa_config, $data_id_agent_module, $dbh);
+			};
+			if ($@){
+				logger ($pa_config, "[ERROR] Network Task for module $data_id_agent_module causes a system exception", 0);
+				logger ($pa_config, "ERROR Code: $@", 1);
+			}
+
+			# Remove from queue. If catch an error, probably data is
+			# not been processed, but has been freed from task queue
 			{
 				lock %current_task_hash;
 				delete($current_task_hash{$data_id_agent_module});
 			}
-			
 			$counter = 0;
 		} else {
 			$counter ++;
@@ -262,7 +272,7 @@ sub pandora_ping_icmp {
 	
 	# Make more than a single ping (as defined in icmp_checks
 	for ($temp =0; $temp < $pa_config->{'icmp_checks'}; $temp++){
-	 	# Some hosts don't accept ICMP with too small payload. Use 16 Bytes
+	 	# Some hosts don't accept ICMP with too small payload. Use 16 Bytes min
 		{
 			lock $icmp_lock;
 	 		$p = Net::Ping->new("icmp", $l_timeout, 32);
@@ -415,7 +425,7 @@ sub pandora_query_snmp (%$$$$) {
                                 	Community => $snmp_community,
                                 	Version   => 1);
    	if ( (!defined($SESSION)) && ($snmp_target != "") && ($snmp_community != "") && ($snmp_oid != "")) {
-      		logger($pa_config, "SNMP ERROR SESSION for Target $snmp_target ", 4);
+      		logger($pa_config, "SNMP ERROR SESSION for Target $snmp_target ", 2);
 		$_[4] = "1";
    	} else {
 		# Perl uses different OID syntax than SNMPWALK or PHP's SNMP
@@ -500,7 +510,7 @@ sub exec_network_module {
 		$exec_sql->finish();
 	} else {
 		$exec_sql->finish();
-		logger (\%pa_config,"[ERROR] Processing data for invalid module",0);
+		logger (\%pa_config,"[ERROR] Processing data for invalid module", 0);
 		return 0;
 	}
 	

@@ -1,3 +1,9 @@
+2007-12-14  Sancho Lerena <slerena@gmail.com>
+
+	* pandoradb.sql: BUG FIXED, generic_data_inc data don't work with 
+	small float data. Need to alter tagente_datos_inc table for field 
+	"datos.
+
 2007-11-19  Sancho Lerena <slerena@gmail.com>
 
 	* index.php: Included patch summited by Guru Evi (guruevi) for HTTPS support. THanks evi ! :)

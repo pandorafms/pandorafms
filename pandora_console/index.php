@@ -25,7 +25,7 @@
 
 //Pandora Version, if not defined here it would take from config.php
 $build_version="PC071216";
-$pandora_version="v1.4 Beta1";
+$pandora_version="v1.4dev";
 global $build_version;
 global $pandora_version;
 

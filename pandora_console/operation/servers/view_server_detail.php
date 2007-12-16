@@ -131,6 +131,8 @@ if ((comprueba_login() == 0) AND (give_acl($id_user, 0, "AR")==1) ) {
 				}	
 			}
 			echo "</table>";
+		} else {
+			echo "This server has no recon tasks assigned";
 		}
 	}
 }

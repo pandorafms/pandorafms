@@ -1,3 +1,19 @@
+2007-12-16  Sancho Lerena <slerena@gmail.com>
+
+	* pandoradb.sql: New field for tagente_modulo: disabled, to be
+	able to disable individual modules on an agent.
+
+	* index.php: Version number is now officially "1.4dev". There is
+	a long way to finish 1.4.
+
+	* operation/servers/view_server_detail.php: FIX. If no tasks, show
+	a little message.
+
+	* images/console/icons/smalldot*: New small graph for graph console.
+
+	* reporting/fgraph.php: FIX. Combined graphs with components of scale =1
+	does not readjust automatically.
+
 2007-12-16  Raul Mateos <raulofpandora@gmail.com>
 
 	* include/languages/language_en.php, language_es_es.php, language_fr.php,

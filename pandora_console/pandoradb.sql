@@ -127,6 +127,7 @@ CREATE TABLE `tagente_modulo` (
   `id_module_group` int(4) unsigned default '0',
   `flag` tinyint(3) unsigned default '1',
   `id_modulo` int(11) unsigned NULL default 0,
+  `disabled` tinyint(3) unsigned default '0',
   PRIMARY KEY (`id_agente_modulo`, `id_agente`),
   KEY `tam_agente` (`id_agente`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

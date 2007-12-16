@@ -210,7 +210,8 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 	}
 
     for ($y = 0; $y < $module_number; $y++){
-        $weight_list[$y] = ($max_value / $mod_data[$y]) + ($weight_list[$y]-1);
+	// Disabled autoadjusment, is not working fine :(
+        // $weight_list[$y] = ($max_value / $mod_data[$y]) + ($weight_list[$y]-1);
         if ($weight_list[$y] != 1)
             $module_list_name[$y] .= " (x". format_numeric($weight_list[$y],1).")";
 	$module_list_name[$y] = $module_list_name[$y]." (MAX: ".format_numeric($mod_data[$y]).")";

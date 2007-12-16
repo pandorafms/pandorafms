@@ -1,3 +1,12 @@
+2007-12-16  Raul Mateos <raulofpandora@gmail.com>
+
+	* include/languages/language_en.php, language_es_es.php, language_fr.php,
+	language_de.php, language_pt_br.php: Updated strings.
+
+	* pandoradb_data.sql: Updated to insert updated languages.
+
+	* index.php, include/config_inc.php: Updated version and build number.
+	
 2007-12-14  Sancho Lerena <slerena@gmail.com>
 
 	* pandoradb.sql: BUG FIXED, generic_data_inc data don't work with 

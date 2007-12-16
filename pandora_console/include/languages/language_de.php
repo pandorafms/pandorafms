@@ -1,10 +1,10 @@
-﻿<?php
+<?php
 // Pandora - the Free monitoring system
 // ====================================
-// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
-// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
-// German translation Copyright (c) 2006 Reiner Dassing, dassing <at> fs <dot> wettzell <dot> de
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas S.L, info@artica.es
+// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// German translation Copyright (c) 2006, 2007 Reiner Dassing, dassing <at> fs <dot> wettzell <dot> de
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2

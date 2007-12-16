@@ -1,10 +1,10 @@
-﻿<?php
+<?php
 
 // Pandora - the Free monitoring system
 // ====================================
-// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnol�gicas S.L, info@artica.es
-// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas S.L, info@artica.es
+// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
@@ -18,7 +18,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Translation to French
-// Copyright (c) 2006 Aline Jorand <jorand.aline@laposte.net>
+// Copyright (c) 2006, 2007 Aline Jorand <jorand.aline@laposte.net>
 
 $lang_label["view_agents"]="Voir agents";
 $lang_label["manage_incidents"]="Gérer incidents";
@@ -604,7 +604,7 @@ $lang_label["no_sel_mod"]="Aucun module n'a été sélectionné";
 $lang_label["no_event"]="Il n'y a pas d'événements";
 $lang_label["agent_access_rate"]="Accesibilité de l'agent (24h)";
 $lang_label["agent_module_shareout"]="Distribution de modules";
-$lang_label["int"]="Intv."; 
+$lang_label["int"]="Intv.";
 $lang_label["manage_servers"]="Gestion des serveurs";
 $lang_label["update_server"]="Actualiser le serveur";
 $lang_label["upd_server_ok"]="Serveur actualisé avec succès";
@@ -628,10 +628,231 @@ $lang_label["out_of_limits"]="Hors des limites";
 $lang_label["background_image"]="Image de base";
 $lang_label["help"]="Aide";
 $lang_label["no_monitors_g"]=" Cet groupe ne possède pas de moniteur designé";
+$lang_label["dbprohelp"]="Le processus d'élimination de la Base de données sert à éliminer les données inscrites sur celle-ci si elles";
+$lang_label["valprohelp"]="Les valeurs relatives à l'agent, au module, au minimum et au maximum définissent les données correctes. Toutes les données qui ne sont pas reconnues comme étant correctes seront éliminées";
+
+// PANDORA 1.3
 
 $lang_label["reporting"]="Rapports";
-
-$lang_label["active_console"]="Console active";
+$lang_label["agent_general_reporting"]="Sommaire Agent";
+$lang_label["validate_event_failed"]="La validation de cette commande a échoué";
+$lang_label["load"]="Ouvrir";
+$lang_label["information"]="Informations générales";
+$lang_label["parent"]="Parent";
+$lang_label["show_unknown"]="Afficher les modules inconnus en mode d’affichage global";
+$lang_label["show_lastalerts"]="Afficher les dernières alertes déclenchées en mode d’affichage global ";
+$lang_label["manage_modules"]="Gérer les modules";
+$lang_label["modify_module_ok"]="Le module a été actualisé avec succès ";
+$lang_label["modify_module_no"]="Le logiciel a rencontré un problème lors de la modification du module";
+$lang_label["module_management"]="Gestion des modules ";
+$lang_label["defined_modules"]="Modules définis ";
+$lang_label["cat_0"]="Données de l'agent logiciel";
+$lang_label["cat_1"]="Moniteur de l’agent logiciel";
+$lang_label["cat_2"]="Données sur le réseau agent";
+$lang_label["cat_3"]="Moniteur du réseau agent";
+$lang_label["unknown"]="Inconnu";
+$lang_label["create_module"]="Créer module";
+$lang_label["network_templates"]="Modèles réseau ";
+$lang_label["snmp_modules"]="Modules SNMP";
+$lang_label["network_components_groups"]="Groupes de composantes réseau ";
+$lang_label["network_components"]="Composantes réseau";
+$lang_label["create_ok"]="Création effectuée avec succès ";
+$lang_label["create_no"]="N’a pas été créé". Erreur lors de l’insertion des données”;
+$lang_label["modify_ok"]="Actualisation effectuée avec succès";
+$lang_label["modify_no"]="Non actualisé. Erreur lors de l’actualisation des données”;
+$lang_label["delete_no"]="Non éliminé. Erreur lors de l’élimination des données”;
+$lang_label["delete_ok"]="Elimination effectuée avec succès";
+$lang_label["network_component_group_management"]="Gestion des Groupes de composantes réseau ";
+$lang_label["network_component_management"]="Gestion des composantes réseau ";
+$lang_label["oid"]="OID";
+$lang_label["recon_server"]="Serveur Recon";
+$lang_label["snmp_console"]="Console SNMP";
+$lang_label["network_server"]="Serveur réseau ";
+$lang_label["data_server"]="Serveur de données";
+$lang_label["md5_checksum"]="Vérification MD5 ";
+$lang_label["nc_groups"]="Groupes de composantes ";
+$lang_label["nc.group"]="Groupe NC ";
+$lang_label["manual_config"]="Configuration manuelle ";
+$lang_label["network_component"]="Composante réseau";
+$lang_label["not_available_in_edit_mode"]="Cette option n’est pas disponible en mode Edition";
+$lang_label["using_network_component"]="Composante réseau en cours d’utilisation";
+$lang_label["view_mode"]="Mode d’affichage";
+$lang_label["setup_mode"]="Mode de configuration";
+$lang_label["refresh_data"]="Actualisation des données";
+$lang_label["lag"]="LAG";
+$lang_label["N/A"]="N'applique pas";
+$lang_label["done"]="Terminé";
+$lang_label["pending"]="En attente";
+$lang_label["progress"]="En cours";
+$lang_label["task_name"]="Nom de tâche";
+$lang_label["days"]="jours";
+$lang_label["day"]="jour";
+$lang_label["week"]="semaine";
+$lang_label["weeks"]="semaines";
+$lang_label["month"]="mois";
+$lang_label["months"]="mois";
+$lang_label["hours"]="heures";
+$lang_label["hour"]="heure";
+$lang_label["hour"]="Une heure";
+$lang_label["network_profile"]="Profil réseau ";
+$lang_label["manage_recontask"]="Gérer tâche recon";
+$lang_label["yes"]="Oui";
+$lang_label["no"]="Non";
+$lang_label["view"]="Voir";
+$lang_label["number_of_modules"]="# Modules";
+$lang_label["network_profile_management"]="Gestion de profil réseau";
+$lang_label["graph_builder"]="Constructeur de tableau";
+$lang_label["combined_image"]="Résultat de combination d’images";
+$lang_label["redraw"]="Redessiner";
+$lang_label["graph_builder_modulelist"]="Liste de modules de construction d’un tableau";
+$lang_label["seconds"]="Secondes";
+$lang_name["custom_graph_name"]="Nom de tableau personnalisé";
+$lang_label["save"]="Sauvegarder";
+$lang_label["Manage"]="Gérer";
+$lang_label["group_view_tab"]="Affichage groupe";
+$lang_label["alerts"]="alertes";
+$lang_label["Alerts"]="Alertes";
+$lang_label["data"]="Données";
+$lang_label["Data"]="Données";
+$lang_label["Main"]="Page principale";
+$lang_label["version"]="Version";
+$lang_label["tactical_server_information"]="Information sur le serveur tactique";
+$lang_label["no_rtask"]="Aucune tâche recon n’a été configurée";
+$lang_label["no_netprofiles"]="Aucun profil réseau n’a été défini";
+$lang_label["site_news"]="Nouveautés du site";
+$lang_label["site_news"]="Nouveautés du site";
+$lang_label["at"]="Á";
+$lang_label["says"]="dit";
+$lang_label["delete_sel"]="Effacer les éléments sélectionnés";
+$lang_label["available_templates"]="Modèles disponibles";
+$lang_label["assign"]="Attribuer";
+$lang_label["graph_store"]="Sauvegarde personnalisée du tableau";
+$lang_label["private"]="Privé";
+$lang_label["store"]="Garder";
+$lang_label["store_graph_suc"]="Tableau sauvegardé avec succès";
+$lang_label["store_graph_error"]="Pandora a rencontré un problème en sauvegardant le Tableau";
+$lang_label["custom_graph_viewer"]="Affichage personnalisé du tableau";
+$lang_label["graph_name"]="Nom du tableau";
+$lang_label["custom_graphs"]="Tableaux personnalisés";
+$lang_label["custom_reporting"]="Rapports personnalisés";
+$lang_label["alert_text"]="Texte d’alerte";
+$lang_label["text"]="Texte";
+$lang_label["delete_data_above"]="Donées éliminées en haut";
+$lang_label["enabled"]="Activé";
+$lang_label["average_per_hourday"]="Moyenne par heure/jour";
+$lang_label["datatable"]="Tableau de données";
+$lang_label["export_type"]="Type pour exportation";
+$lang_label["sunday"]="Dimanche";
+$lang_label["monday"]="Lundi";
+$lang_label["tuesday"]="Mardi";
+$lang_label["wednesday"]="Mercredi";
+$lang_label["thurdsday"]="Jeudi";
+$lang_label["friday"]="Vendredi";
+$lang_label["saturday"]="Samedi";
+$lang_label["hr"]="Hr";
+$lang_label["get_file"]="Télécharger le fichier";
+$lang_label["visual_console"]="Console visuelle";
+$lang_label["elements"]="Elements";
+$lang_label["minutes"]="minutes";
+$lang_label["avg_only"]="Moyenne  uniquement";
+$lang_label["lag"]="Valeur moyenne";
+$lang_label["auto_refresh_time"]="Temps d’actualisation";
+$lang_label["refresh"]="Actualiser";
+$lang_label["threshold"]="Seuil";
+$lang_label["min_valid_value_help"]="Valeur minimum requise pour être considérées comme des valeurs “valides”. En dessous de cette limite, Pandora FMS déclenchera une alerte";
+$lang_label["max_valid_value_help"]="Valeur maximum requise pour être considérées comme des valeurs “valides”. En dessus de cette limite, Pandora FMS déclenchera une alerte";
+$lang_label["alert_time_threshold_help"]="Cette valeur doit atteindre au moins l’Intervale du Module * (Nombre Min. d’Alertes + 1)";
+$lang_label["style_template"]="Modèle de style ";
+$lang_label["report_name"]="Nom du rapport";
+$lang_label["custom_reporting_builder"]="Créateur de rapports personnalisés";
+$lang_label["report_builder"]="Créateur de rapports";
+$lang_label["manage_reporting"]="Gérer les rapports";
+$lang_label["report_items"]="Éléments du rapport";
+$lang_label["period"]="Période";
+$lang_label["reporting_item_add"]="Ajouter un élément au rapport";
+$lang_label["template"]="Modèle";
+$lang_label["add_mod_ok"]="Les modules ont été ajoutés avec succès ";
+$lang_label["simple_graph"]="Tableau simple";
+$lang_label["custom_graph"]="Tableau personnalisé";
+$lang_label["SLA"]="S.L.A";
+$lang_label["event_report"]="Rapport d’une commande";
+$lang_label["alert_report"]="Rapport d’alerte";
+$lang_label["monitor_report"]="Rapport de contrôle";
+$lang_label["reporting_type"]="Type de rapport";
+$lang_label["sla_max"]="SLA Max. (valeur)";
+$lang_label["sla_min"]="SLA Min. (valeur)";
+$lang_label["sla_limit"]="Limite SLA (%)";
+$lang_label["up"]="Haut";
+$lang_label["map_builder"]="Créateur de cartes";
+$lang_label["map_name"]="Nom de la carte";
+$lang_label["tactical_view"]="Affichage tactique";
+$lang_label["tactical_indicator"]="Indicateur tactique";
+$lang_label["monitor_checks"]="Opérations de contrôle";
+$lang_label["data_checks"]="Contrôle des données";
+$lang_label["group_view_menu"]="Affichage groupe";
+$lang_label["site_news"]="Nouveautés du site";
+$lang_label["site_news"]="Nouveautés du site";
+$lang_label["site_news_management"]="Gérer les nouveautés du site";
+$lang_label["Pandora_FMS_summary"]="Généralités Pandora FMS";
+$lang_label["by"]="par";
+$lang_label["create_reporting_ok"]="Rapport créé avec succès";
+$lang_label["create_reporting_no"]="Pandora a rencontré un problème pendant la creation du rapport";
+$lang_label["delete_reporting_ok"]="Rapport efface avec succès";
+$lang_label["delete_reporting_no"]="Pandora a rencontré un problème en effaçant le rapport";
+$lang_label["hour"]="heure";
+$lang_label["hour"]="Une heure";
+$lang_label["2_hours"]="Deux heures";
+$lang_label["6_hours"]="Six heures";
+$lang_label["12_hours"]="12 heures";
+$lang_label["last_day"]="Un jour";
+$lang_label["two_days"]="Deux jours";
+$lang_label["five_days"]="Cinq jours";
+$lang_label["15_days"]="15 jours";
+$lang_label["two_month"]="Deux mois";
+$lang_label["six_months"]="Six mois";
+$lang_label["min."]="Min.";
+$lang_label["max."]="Max.";
+$lang_label["alert_status"]="État de l’alerte";
+$lang_label["background"]="Arrière-plan";
+$lang_label["width"]="Largeur";
+$lang_label["height"]="Hauteur";
+$lang_label["static_graph"]="Tableau statique";
+$lang_label["line"]="Ligne";
+$lang_label["pos_x"]="Position X";
+$lang_label["pos_y"]="Position Y";
+$lang_label["image"]="Image";
+$lang_label["label"]="Légende";
+$lang_label["parent_item"]="Élément parent";
+$lang_label["map_linked"]="En lien avec la carte";
+$lang_label["link_color"]="Couleur du lien";
+$lang_label["label_color"]="Couleur de la légende";
+$lang_label["white"]="Blanc";
+$lang_label["days"]="Noir";
+$lang_label["time_from"]="Temps depuis";
+$lang_label["time_to"]="Temps pour";
+$lang_label["time"]="Temps";
+$lang_label["module_graph"]="Tableau module";
+$lang_label["map_item_add"]="Ajouter un element sur la carte";
+$lang_label["graph_event_total"]="Tableau de commandes";
+$lang_label["graph_event_group"]="Tableaux des commandes effectuées par groupe";
+$lang_label["graph_event_user"]="Tableau des commandes effectuées par usager";
+$lang_label["db_agente_paquetes"]="Paquets  par agent";
+$lang_label["db_agente_modulo"]="Modules par agent";
+$lang_label["inc_stat_status"]="Incidents par statut";
+$lang_label["inc_stat_priority"]="Incidents par priorité";
+$lang_label["inc_stat_user"]="Incidents par usager";
+$lang_label["inc_stat_source"]="Incidents par source";
+$lang_label["inc_stat_group"]="Incidents par groupe";
+$lang_label["no_layout_def"]="Aucun plan n’a été défini";
+$lang_label["no_reporting_def"]="Aucun rapport n’a été défini";
+$lang_label["no_map_def"]="Aucune carte n’a été définie";
+$lang_label["no_repitem_def"]="Aucun élément du rapport n’a été défini";
+$lang_label["message_read"]= "Message lu";
+$lang_label["message_not_read"]= "Message non lu";
+$lang_label["Factor"]="Facteur";
+$lang_label["render_now"]="Produire les resultats maintenant";
+$lang_label["ntemplates"]="Modèles Net.";
+$lang_label["setup_agent"]="Agent de configuration";
 
 global $lang_label;
 global $help_label;

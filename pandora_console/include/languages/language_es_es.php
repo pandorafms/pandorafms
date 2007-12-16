@@ -646,27 +646,17 @@ $lang_label["out_of_limits"]="Fuera de limites";
 $lang_label["background_image"]="Imagen de fondo";
 $lang_label["help"]="Ayuda";
 $lang_label["no_monitors_g"]="Este grupo no tiene ningún monitor definido";
-
-$lang_label["reporting"]="Informes";
-$lang_label["agent_general_reporting"]="Agent overview";
-
-$lang_label["active_console"]="Consola activa";
-$lang_label["parent"]="Padre";
-
-//2 Apr 2007
-$lang_label["no_rtask"]="No hay ninguna tarea de reconocimiento configurada";
-
-//3 Apr 2007
-$lang_label["no_netprofiles"]="No hay ningún perfil de red definido";
+$lang_label["dbprohelp"]="El proceso de borrado de la base de datos es usado para borrar aquellas entradas de la BBDD que por alguna razon necesitan ser borradas";
+$lang_label["valprohelp"]="El valor del módulo del agente mínimo y máximo que delimitan los valores válidos. Cualquier otro valor fuera de ese rango será eliminado";
 
 // PANDORA 1.3
 
-$lang_label["dbprohelp"]="El proceso de borrado de la base de datos es usado para borrar aquellas entradas de la BBDD que por alguna razon necesitan ser borradas";
-$lang_label["valprohelp"]="El valor del módulo del agente mínimo y máximo que delimitan los valores válidos. Cualquier otro valor fuera de ese rango será eliminado";
-$lang_label["validate_event_failed"]="Validación de evento fallida";
-$lang_label["view_agent_general_data"]="Información general del agente";
-$lang_label["information"]="Información general";
+$lang_label["reporting"]="Informes";
+$lang_label["agent_general_reporting"]="Foto general";
 $lang_label["load"]="Carga";
+$lang_label["information"]="Información general";
+$lang_label["parent"]="Padre";
+$lang_label["validate_event_failed"]="Validación de evento fallida";
 $lang_label["tactical_server_information"]="Información táctica del servidor";
 $lang_label["show_unknown"]="Mostrar módulos desconocidos en vista global";
 $lang_label["show_lastalerts"]="Mostrar alertas disparadas en la vista global";
@@ -733,7 +723,7 @@ $lang_label["combined_image"]="Visualización de imágenes combinadas";
 $lang_label["redraw"]="Redibujar";
 $lang_label["graph_builder_modulelist"]="Lista del creador de imágenes";
 $lang_label["seconds"]="Segundos";
-$lang_name["custom_graph_name"]="Nombre de gráfica combinada";
+$lang_label["custom_graph_name"]="Nombre de gráfica combinada";
 $lang_label["save"]="Grabar";
 $lang_label["Manage"]="Gestionar";
 $lang_label["group_view_tab"]="Vista de grupo";
@@ -744,6 +734,8 @@ $lang_label["Data"]="Datos";
 $lang_label["Main"]="Principal";
 $lang_label["version"]="Versión";
 $lang_label["tactical_server_information"]="Vista táctica del servidor";
+$lang_label["no_rtask"]="No hay ninguna tarea de reconocimiento configurada";
+$lang_label["no_netprofiles"]="No hay ningún perfil de red definido";
 $lang_label["site_news"]="Noticias del sistema";
 $lang_label["at"]="A las";
 $lang_label["says"]="dijo";

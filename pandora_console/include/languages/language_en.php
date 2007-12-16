@@ -459,12 +459,6 @@ $lang_label["nomodules_selected"]="No modules has been selected";
 $lang_label["purge_below_limits"]="Purge data out these limits";
 $lang_label["max_eq_min"]="Maximum equal to minimum";
 
-$lang_label["dbprohelp"]="The process of Database purge is used to delete those database entries that for any reason
-(agent failure, real value but outside scale, tests, errors in the BD, etc) go out of the rank.
-Deleting false, incorrect or simply annoying data allows a more 'real' graphic scale.";
-$lang_label["valprohelp"]="The values of agent, module, minimum and maximum delimit the correct data. Any data out of the rank will be deleted.
-As an example, in a type of module that registers the number of processes, important values are those between 0 and 100. Maybe we have data
-with values higher that 100, but this will be an error, noise or special situations. Values like -1, 101 or 100000 will be deleted from Database.";
 $lang_label["agent_conf"]="Agent configuration";
 $lang_label["mod_alert"]="Modify alert";
 $lang_label["filter"]="Filter";
@@ -651,6 +645,12 @@ $lang_label["out_of_limits"]="Out of limits";
 $lang_label["background_image"]="Background image";
 $lang_label["help"]="Help";
 $lang_label["no_monitors_g"]="This group doesn't have any monitor";
+$lang_label["dbprohelp"]="The process of Database purge is used to delete those database entries that for any reason
+(agent failure, real value but outside scale, tests, errors in the BD, etc) go out of the rank.
+Deleting false, incorrect or simply annoying data allows a more 'real' graphic scale.";
+$lang_label["valprohelp"]="The values of agent, module, minimum and maximum delimit the correct data. Any data out of the rank will be deleted.
+As an example, in a type of module that registers the number of processes, important values are those between 0 and 100. Maybe we have data
+with values higher that 100, but this will be an error, noise or special situations. Values like -1, 101 or 100000 will be deleted from Database.";
 
 // New strings for 1.3 version
 
@@ -736,13 +736,9 @@ $lang_label["Main"]="Main";
 $lang_label["version"]="Version";
 $lang_label["tactical_server_information"]="Tactical server information";
 
-//2 Apr 2007
 $lang_label["no_rtask"]="There are no recon task configured";
-
-//3 Apr 2007
 $lang_label["no_netprofiles"]="There are no defined network profiles";
 
-//11 Apr 207
 $lang_label["site_news"]="Site news";
 $lang_label["at"]="At";
 $lang_label["says"]="says";
@@ -764,7 +760,6 @@ $lang_label["text"]="Text";
 $lang_label["delete_data_above"]="Deleted data above";
 $lang_label["enabled"]="Enabled";
 
-// 3 may 2007
 $lang_label["csv"]="Standalone CSV ascii file";
 $lang_label["average_per_hourday"]="Average per hour/day";
 $lang_label["datatable"]="Data table";
@@ -780,7 +775,6 @@ $lang_label["saturday"]="Saturday";
 $lang_label["hr"]="Hr";
 $lang_label["get_file"]="Download file";
 
-// 19 May
 $lang_label["visual_console"]="Visual console";
 $lang_label["elements"]="Elements";
 $lang_label["minutes"]="minutes";

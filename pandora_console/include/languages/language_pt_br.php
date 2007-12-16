@@ -1,10 +1,10 @@
-﻿<?php
+<?php
 
 // Pandora - the Free monitoring system
 // ====================================
-// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnol�gicas S.L, info@artica.es
-// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2007 Artica Soluciones Tecnol�gicas S.L, info@artica.es
+// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
@@ -17,8 +17,8 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-// Tradu��o para o Portugu�s do Brasil
-// Copyright (c) 2006 Rodrigo J. Dutra <rodrigo.dutra@gmail.com>
+// Tradução para o Português do Brasil
+// Copyright (c) 2006, 2007 Rodrigo J. Dutra <rodrigo.dutra@gmail.com>
 
 $lang_label["view_agents"] = "Ver agentes";
 $lang_label["manage_incidents"] = "Gestão de incidentes";
@@ -783,6 +783,8 @@ $lang_label["message_read"] = "Mensagem lida";
 $lang_label["message_not_read"] = "Mensagem não lida";
 $lang_label["Factor"] = "Fator";
 $lang_label["render_now"] = "Ver agora";
+$lang_label["ntemplates"]="Modelos de rede";
+$lang_label["setup_agent"]="Configuração do agent";
 
 global $lang_label;
 global $help_label;

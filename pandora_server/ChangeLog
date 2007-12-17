@@ -1,3 +1,11 @@
+2007-12-17  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/n2p.pl: Added to repository. Nagios to Pandora FMS migration
+	script.
+
+	* util/n2p.README: Added to repository. Nagios to Pandora FMS migration
+	guide.
+
 2007-12-04  Sancho Lerena  <slerena@gmail.com>
 
 	*  lib/PandoraFMS/Config.pm, bin/pandora_network: This little portion of

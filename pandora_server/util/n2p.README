@@ -1,0 +1,90 @@
+= NAGIOS 2.x TO PANDORA FMS 1.3 MIGRATION GUIDE =
+
+== Introduction ==
+
+Nagios and Pandora FMS have a similar goal, but they approach it in
+different ways. While Nagios is monolithic and event oriented, Pandora
+FMS is modular and data oriented.
+
+This guide will try to help you replicate your Nagios 2.x setup using
+an installed Pandora FMS 1.3, and assumes a basic knowledge of both
+tools. You should have read Pandora FMS's documentation by now :-)
+
+One of Nagios main disadvantages is it's text based configuration,
+and the fact that any change requires a complete service restart.
+
+For a large Nagios setup, going through all the configuration files can
+be a lengthy process. I have written a perl script that I hope will help
+you automate the process, you can get it from:
+
+It is in early development and far from perfect, any questions, comments
+or corrections are more than welcome. Please send them to
+rnovoa AT artica DOT es.
+
+== Hosts, Groups and Services ==
+
+There are at least three options to replicate the Nagios host and
+service setup:
+
+* If the number of hosts to monitor is small enough, you can manually
+create an agent for each host and a module for each service. You can
+even define a network template and assign it to each agent. This should
+be trivial.
+
+* If you want to monitor a network range, you can create a new recon
+task, define a network template, and let Pandora FMS's Recon Server do
+all the work.
+
+* If you have a large, custom setup, you can use the helper script to
+help you automate the process. More on that in the next chapter.
+
+If you are not using the helper script, you will have to manually create
+any new groups you want, but chances are Pandora FMS's default groups
+will suit your needs.
+
+== Using the helper script ==
+
+First of all, edit the script and change the variables $db_name, $db_host,
+$db_port, $db_user and $db_pass to point to Pandora FMS's database.
+
+You can run the script to see all the options:
+
+	$ ./n2p.pl
+
+The script takes as input any Nagios configuration files that have
+template, host, group, service or command definitions.
+
+Run the script with the following options and see the output. Pandora
+FMS's database will be left untouched:
+
+	$ ./n2p.pl -s -v <nagios_cfg_file> [nagios_cfg_file] ...
+
+File order is important for inheritance to work. If a host uses a host
+template, the file containing the template should be passed to the
+script first.
+
+If your Nagios setup was detected correctly, run the script again. This
+time Pandora FMS's database will be changed to replicate your setup:
+
+	$ ./n2p.pl -v -a <nagios_cfg_file> [nagios_cfg_file] ...
+
+Now you can log-in in Pandora FMS's web console and check the new
+setup. If you want to undo any changes done by the script to the database,
+just run it with the following options:
+
+	$ ./n2p.pl -v -u <nagios_cfg_file> [nagios_cfg_file] ...
+
+== Notifications ==
+
+Nagios notifications are equivalent to Pandora FMS's alerts.
+
+Right now the helper script only creates alerts of type 'Internal
+audit'. Any other alerts, like 'eMail' or 'SMS Text', have to be
+manually added.
+
+== Other Configuration Options ==
+
+There are some Nagios configuration options that do not have an equivalent
+in Pandora FMS or are not treated by the helper script. Again, feel free
+to send any request or suggestions to rnovoa AT artica DOT es.
+

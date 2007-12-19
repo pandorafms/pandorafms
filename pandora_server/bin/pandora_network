@@ -264,7 +264,6 @@ sub pandora_ping_icmp {
  	my $result = 0;
 	my $result2 = 0;
 	my $temp;
- 	my $p;
  
 	if ($pa_config->{'icmp_checks'} eq ""){
 		$pa_config->{'icmp_checks'} = 1;
@@ -272,6 +271,7 @@ sub pandora_ping_icmp {
 	
 	# Make more than a single ping (as defined in icmp_checks
 	for ($temp =0; $temp < $pa_config->{'icmp_checks'}; $temp++){
+		my $p;
 	 	# Some hosts don't accept ICMP with too small payload. Use 16 Bytes min
 		{
 			lock $icmp_lock;
@@ -286,6 +286,7 @@ sub pandora_ping_icmp {
 	 			$temp = $pa_config->{'icmp_checks'}; # Exit for
 			}
 		}
+		undef ($p);
 	}
 	return $result2;
 }
@@ -318,6 +319,7 @@ sub pandora_ping_latency {
         $$module_data = 0;
     }
     $nm->close();
+    undef($nm);
 }
 
 ##########################################################################
@@ -397,6 +399,7 @@ sub pandora_query_tcp (%$$$$$$$) {
 			}
 		}
 		$handle->close();
+		undef ($handle);
 	} else { # Cannot connect (open sock failed)
 		$$module_result = 1; # Fail
 		if ($id_tipo_modulo == 9){ # TCP Proc
@@ -424,7 +427,7 @@ sub pandora_query_snmp (%$$$$) {
 					Retries => 0,
                                 	Community => $snmp_community,
                                 	Version   => 1);
-   	if ( (!defined($SESSION)) && ($snmp_target != "") && ($snmp_community != "") && ($snmp_oid != "")) {
+   	if ( (!defined($SESSION)) && ($snmp_target ne "") && ($snmp_community ne "") && ($snmp_oid ne "")) {
       		logger($pa_config, "SNMP ERROR SESSION for Target $snmp_target ", 2);
 		$_[4] = "1";
    	} else {
@@ -451,6 +454,8 @@ sub pandora_query_snmp (%$$$$) {
 			# Pass the VarList to getnext building an array of the output
 			my @OIDINFO = $SESSION->getnext($OIDLIST);
 			$output = $OIDINFO[0];
+			undef ($OIDLIST);
+			
 		}
 		if ((!defined($output)) || ($output eq "")){
 			$_[4] = "1";
@@ -458,6 +463,7 @@ sub pandora_query_snmp (%$$$$) {
 		} else {
 			$_[4] = "0";
 		}
+		undef ($SESSION);
 	}
 	return $output;
 }

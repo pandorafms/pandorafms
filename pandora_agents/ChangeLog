@@ -1,3 +1,10 @@
+2008-01-02 Sancho lerena <slerena@gmail.com>
+
+	* openWRT/*: Added code for new ASYNC agent for OpenWRT/Arduino
+	agent, this would be the new SYNC/ASYNC agent for Pandora FMS 2.0.
+	This is first development version, DO NOT TEST YET. It has several
+	code specific for OpenWRT enviroment.
+
 2007-09-14 Sancho Lerena <slerena@gmail.com>
 
 	* Deleted a lot of old stuff (licenses, readmes, etc). Put on agent root dir

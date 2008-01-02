@@ -1,0 +1,17 @@
+#!/bin/sh
+# (c) Sancho Lerena 2008
+# Pandora FMS GetSync sample for OpenWRT/Arduino Pandora FMS Agent
+
+# pandora_sync should return a single line with Pandora FMS async module id 
+# separated with spaces. All ID's returned has "async" data pending to read
+# the way to get this data is left to user. In this sample is resolved
+# by an Arduino code that returns Digital signals with new async data by 
+# using code DD
+
+# This returns D9 if D9 gate needs to be readed due an asyncronous incoming signal
+# Could return D1 D5 D9 if gates D1, D5 and D9 needs to be readed
+# Could return 0 if no received signal since last time readed
+
+PANDORA_HOME=/opt/pandora
+
+$PANDORA_HOME/pandora_serialread DD

@@ -1,0 +1,8 @@
+#!/bin/sh
+# Pandora FMS preparation script for OpenWRT
+# (c) Sancho Lerena, Jorge Loza, 2007-2008
+
+mkdir /tmp/.ssh
+cp /opt/pandora/known_host /tmp/.ssh
+sh /opt/pandora/contrib/pandora_agent_daemon start
+

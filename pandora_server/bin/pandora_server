@@ -198,7 +198,7 @@ sub keep_alive_check {
                         $module_name = $data[5];
                         # Agent down - Keepalive utimestamp too low (2x)
                         if (($module_utimestamp + ($interval * 2)) < $utimestamp){
-                                pandora_writestate ($pa_config, $agent_name, "keep_alive", $module_name, 0, 0, $dbh, 1);
+                                pandora_writestate ($pa_config, $agent_name, "keep_alive", $module_name, 0, 1, $dbh, 1);
                         }
 		}
 	} 

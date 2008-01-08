@@ -1,3 +1,21 @@
+2008-01-08  Sancho Lerena  <slerena@gmail.com>
+
+        * Config.pm: Updated version to 1.3.1-dev
+        
+        * DB.pm: Added generic db function give_db_free(). keepalive modules area
+        managed differently. Now have type 100 and update only tagente_estado table
+        discarding historic data, but are managed like other module. Update data (OK)
+        when updating tagent_access. Old Keepalive modules are deprecated and not used
+        since from 1.2 version was not working :(
+
+        * pandora_snmpconsole: Some small fixes from unknown user.
+
+        * pandora_server: Ignore files with size 0 (expect to solve problems with 
+        zerobyte BADXML files, need more testing...). Keepalive module management
+        are now managed in a different way. This works for me but needs more testing.
+
+        * pandora_network: Minimal optimization in locking for SNMP threads.
+
 2007-12-19  Sancho Lerena <slerena@gmail.com>
 
 	* bin/pandora_network: Fixed bug #1854340, problem with file descriptors

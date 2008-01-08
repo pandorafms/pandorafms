@@ -485,33 +485,43 @@ sub pandora_accessupdate (%$$) {
 	my $id_agent = $_[1];
 	my $dbh = $_[2];
 	
-    if ($id_agent != -1){
-	    my $intervalo = dame_intervalo ($pa_config, $id_agent, $dbh);
-	    my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
-	    my $temp = $intervalo / 2;
-	    my $fecha_limite = DateCalc($timestamp,"- $temp seconds",\$err);
-	    $fecha_limite = &UnixDate($fecha_limite,"%Y-%m-%d %H:%M:%S");
-	    # Fecha limite has limit date, if there are records below this date
-	    # we cannot insert any data in Database. We use a limit based on agent_interval / 2
-	    # So if an agent has interval 300, could have a max of 24 records per hour in access_table
-	    # This is to do not saturate database with access records (because if you hace a network module with interval 30, you have
-	    # a new record each 30 seconds !
-	    # Compare with tagente.ultimo_contacto (tagent_lastcontact in english), so this will have
-	    # the latest update for this agent
-	    
-	    my $query = "select count(*) from tagent_access where id_agent = $id_agent and timestamp > '$fecha_limite'";
-	    my $query_exec = $dbh->prepare($query);
-	    my @data_row;
-	    $query_exec ->execute;
-	    @data_row = $query_exec->fetchrow_array();
-	    $temp = $data_row[0];
-	    $query_exec->finish();
-	    if ( $temp == 0) { # We need update access time
-		    my $query2 = "insert into tagent_access (id_agent, timestamp) VALUES ($id_agent,'$timestamp')";
-		    $dbh->do($query2);	
-		    logger($pa_config,"Updating tagent_access for agent id $id_agent",9);
-	    }
-    }
+        if ($id_agent != -1){
+	        my $intervalo = dame_intervalo ($pa_config, $id_agent, $dbh);
+	        my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
+	        my $temp = $intervalo / 2;
+	        my $fecha_limite = DateCalc($timestamp,"- $temp seconds",\$err);
+	        $fecha_limite = &UnixDate($fecha_limite,"%Y-%m-%d %H:%M:%S");
+	        # Fecha limite has limit date, if there are records below this date
+	        # we cannot insert any data in Database. We use a limit based on agent_interval / 2
+	        # So if an agent has interval 300, could have a max of 24 records per hour in access_table
+	        # This is to do not saturate database with access records (because if you hace a network module with interval 30, you have
+	        # a new record each 30 seconds !
+	        # Compare with tagente.ultimo_contacto (tagent_lastcontact in english), so this will have
+	        # the latest update for this agent
+	        
+	        my $query = "select count(*) from tagent_access where id_agent = $id_agent and timestamp > '$fecha_limite'";
+	        my $query_exec = $dbh->prepare($query);
+	        my @data_row;
+	        $query_exec ->execute;
+	        @data_row = $query_exec->fetchrow_array();
+	        $temp = $data_row[0];
+	        $query_exec->finish();
+	        if ( $temp == 0) { # We need update access time
+		        my $query2 = "insert into tagent_access (id_agent, timestamp) VALUES ($id_agent,'$timestamp')";
+		        $dbh->do($query2);	
+		        logger($pa_config,"Updating tagent_access for agent id $id_agent",9);
+
+                        
+	        }
+                # Update keepalive module (if present)
+                my $id_agent_module = give_db_free ("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = $id_agent AND id_tipo_modulo = 100", $dbh);
+                if ($id_agent_module ne -1){
+                        my $utimestamp = &UnixDate ("today", "%s");
+                        # Status = 0 is monitor OK
+                        $query2 = "UPDATE tagente_estado SET datos = 1, estado = 0, timestamp = '$timestamp', cambio = 0, last_try= '$timestamp', utimestamp = $utimestamp WHERE id_agente_modulo = $id_agent_module";
+                        $dbh->do ($query2);
+                }
+        }
 }
 
 ##########################################################################
@@ -1151,7 +1161,7 @@ sub dame_agente_id (%$$) {
 		my @data;
 		$agent_name = sqlWrap ($agent_name);
 		# Calculate agent ID using select by its name
-		my $query_idag = "SELECT id_agente FROM tagente WHERE nombre = $agent_name";
+		my $query_idag = "SELECT id_agente FROM tagente WHERE nombre = $agent_name OR direccion = $agent_name"; # Fixed 080108 by anon (used on snmpconsole...).
 		my $s_idag = $dbh->prepare($query_idag);
 		$s_idag ->execute;
 		if ($s_idag->rows == 0) {
@@ -1659,6 +1669,25 @@ sub give_db_value ($$$$$) {
         return $result;
 	}
 	return -1;
+}
+
+# ---------------------------------------------------------------
+# Generic access to a field ($field) given a table
+# ---------------------------------------------------------------
+sub give_db_free ($$) {
+        my $condition = $_[0];
+        my $dbh = $_[1];
+        
+        my $query = $condition;
+        my $s_idag = $dbh->prepare($query);
+        $s_idag ->execute;
+        if ($s_idag->rows != 0) {
+                my @data = $s_idag->fetchrow_array();
+                my $result = $data[0];
+                $s_idag->finish();
+                return $result;
+        }
+        return -1;
 }
 
 # End of function declaration

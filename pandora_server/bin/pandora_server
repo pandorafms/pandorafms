@@ -36,7 +36,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # FLUSH in each IO, only for DEBUG, very slow !
-$| = 0;
+$| = 1;
 
 my %pa_config; 
 
@@ -69,6 +69,7 @@ sub pandora_dataserver {
 	my $file_data;
 	my $file_md5;
 	my @file_list;
+        my $file_size;
 	my $onefile; # Each item of incoming directory 
 	my $agent_filename;
 	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306",$pa_config->{"dbuser"}, $pa_config->{"dbpass"},{ RaiseError => 1, AutoCommit => 1 });
@@ -76,68 +77,69 @@ sub pandora_dataserver {
 	while ( 1 ) { # Pandora module processor main loop
 		opendir(DIR, $pa_config->{'incomingdir'} ) or die "[FATAL] Cannot open Incoming data directory at $pa_config->{'incomingdir'}: $!";
  		while (defined($onefile = readdir(DIR))){
-   			push @file_list,$onefile; 	# Push in a stack all directory entries for this loop
- 		}
-        while (defined($onefile = pop @file_list)) {	# Begin to process files
-		    threads->yield;
-            $file_data = "$pa_config->{'incomingdir'}/$onefile";
-            next if $onefile =~ /^\.\.?$/;     # Skip . and .. directory
-            
-            # First filter any file that doesnt like ".data"
-            if ( $onefile =~ /([\-\:\;\.\,\_\s\a\*\=\(\)a-zA-Z0-9]*).data\z/ ) {
-   				$agent_filename = $1;
-   				$file_md5 = "$pa_config->{'incomingdir'}/$agent_filename.checksum";
-	            # If check is disabled, ignore if file_md5 exists
-                if (( -e $file_md5 ) or ($pa_config->{'pandora_check'} == 0)){
-                    # Verify integrity
-                    my $check_result;
-					$check_result = md5check ($file_data,$file_md5);
-					if (($pa_config->{'pandora_check'} == 0) || ($check_result == 1)){
-						# PERL cannot "free" memory on user demmand, so 
-						# we are declaring $config hash reference in inner loop
-						# to force PERL system to realloc memory in each loop.
-						# In Pandora 1.1 in "standard" PERL Implementations, we could
-						# have a memory leak problem. This is solved now :-)
-						# Source : http://www.rocketaware.com/perl/perlfaq3/
-                        # Procesa_Datos its the main function to process datafile
-						my $config; # Hash Reference, used to store XML data
-                        # But first we needed to verify integrity of data file
-                        if ($pa_config->{'pandora_check'} == 1){
-							logger ($pa_config, "Integrity of Datafile using MD5 is verified: $file_data",3);
-						}
-                        eval { # XML Processing error catching procedure. Critical due XML was no validated
-                            logger ($pa_config, "Ready to parse $file_data",4);
-                            $config = XMLin($file_data, forcearray=>'module');
-                        };
-                        if ($@) {
-                        	logger ($pa_config, "[ERROR] Error processing XML contents in $file_data",0);
-				logger ($pa_config, "[ERROR] $@", 0);
-                            	copy ($file_data,$file_data."_BADXML");
-                            	if (($pa_config->{'pandora_check'} == 1) && ( -e $file_md5 )) {
-			    		copy ($file_md5,$file_md5."_BADCHECKSUM");
-				}
+                        if (($onefile =~ /^[a-zA-Z0-9]*/) && ( ((stat($pa_config->{'incomingdir'}."/".$onefile))[7]) > 0 )) {
+   		        	push @file_list,$onefile; 	# Push in a stack all directory entries for this loop
                         }
-			procesa_datos ($pa_config, $config, $dbh); 
-			undef $config;
-                        # If _everything_ its ok..
-			# delete files
-                        unlink ($file_data);
-                        if ( -e $file_md5 ) {
-				unlink ($file_md5);
-			}
-                    } else { # md5 check fails
-     			logger ( $pa_config, "[ERROR] MD5 Checksum failed! for $file_data",0);
-			# delete files
-                        unlink ($file_data);
-                        if ( -e $file_md5 ) {
-				unlink ($file_md5);
-			}
-    		}
-             } # No checksum file, ignore file
-          }
-        }
+ 		}
+                while (defined($onefile = pop @file_list)) {	# Begin to process files
+	                threads->yield;
+                        $file_data = "$pa_config->{'incomingdir'}/$onefile";
+                        #next if $onefile =~ /^\.\.?$/;     # Skip . and .. directory
+                        # First filter any file that doesnt like ".data"
+                        if ( $onefile =~ /([\-\:\;\.\,\_\s\a\*\=\(\)a-zA-Z0-9]*).data\z/ ) {
+                                $agent_filename = $1;
+                                $file_md5 = "$pa_config->{'incomingdir'}/$agent_filename.checksum";
+	                        # If check is disabled, ignore if file_md5 exists
+                                if (( -e $file_md5 ) or ($pa_config->{'pandora_check'} == 0)){
+                                        # Verify integrity
+                                        my $check_result;
+				        $check_result = md5check ($file_data,$file_md5);
+				        if (($pa_config->{'pandora_check'} == 0) || ($check_result == 1)){
+					        # PERL cannot "free" memory on user demmand, so 
+					        # we are declaring $config hash reference in inner loop
+					        # to force PERL system to realloc memory in each loop.
+					        # In Pandora 1.1 in "standard" PERL Implementations, we could
+					        # have a memory leak problem. This is solved now :-)
+					        # Source : http://www.rocketaware.com/perl/perlfaq3/
+                                                # Procesa_Datos its the main function to process datafile
+                                                my $config; # Hash Reference, used to store XML data
+                                                # But first we needed to verify integrity of data file
+                                                if ($pa_config->{'pandora_check'} == 1){
+				                        logger ($pa_config, "Integrity of Datafile using MD5 is verified: $file_data",3);
+					        }
+                                                eval { # XML Processing error catching procedure. Critical due XML was no validated
+                                                        logger ($pa_config, "Ready to parse $file_data",4);
+                                                        $config = XMLin($file_data, forcearray=>'module');
+                                                };
+                                                if ($@) {
+                                                        logger ($pa_config, "[ERROR] Error processing XML contents in $file_data",0);
+				                        logger ($pa_config, "[ERROR] $@", 0);
+                                                        copy ($file_data,$file_data."_BADXML");
+                                                        if (($pa_config->{'pandora_check'} == 1) && ( -e $file_md5 )) {
+			                                        copy ($file_md5,$file_md5."_BADCHECKSUM");
+                                                        }
+                                                }
+			                        procesa_datos ($pa_config, $config, $dbh); 
+			                        undef $config;
+                                                # If _everything_ its ok..
+			                        # delete files
+                                                unlink ($file_data);
+                                                if ( -e $file_md5 ) {
+                                                        unlink ($file_md5);
+			                        }
+                                        } else { # md5 check fails
+                                                logger ( $pa_config, "[ERROR] MD5 Checksum failed! for $file_data",0);
+			                        # delete files
+                                                unlink ($file_data);
+                                                if ( -e $file_md5 ) {
+				                        unlink ($file_md5);
+			                        }
+                                        }
+                                } # No checksum file, ignore file
+                        }
+                }
         closedir(DIR);
-		threads->yield;
+	threads->yield;
         sleep $pa_config->{"server_threshold"};
 	}
 } # End of main loop function
@@ -170,27 +172,34 @@ sub keep_alive_check {
 	my $dbh = $_[1];
     
 	my $timestamp = &UnixDate ("today", "%Y-%m-%d %H:%M:%S");
-    my $query_idag = "SELECT tagente_modulo.id_agente_modulo, tagente_modulo.id_tipo_modulo, tagente_modulo.nombre, tagente_estado.datos FROM tagente_modulo, talerta_agente_modulo, tagente_estado WHERE tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo AND talerta_agente_modulo.disable = 0 AND tagente_modulo.id_tipo_modulo = -1 AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo";
-    my $s_idag = $dbh->prepare($query_idag);
-    $s_idag ->execute;
+        my $utimestamp = &UnixDate ("today", "%s");
+    
+        my $query_idag = "SELECT tagente_modulo.id_agente_modulo, tagente_estado.utimestamp, tagente_estado.id_agente, tagente.intervalo, tagente.nombre, tagente_modulo.nombre FROM tagente_modulo, talerta_agente_modulo, tagente_estado, tagente WHERE tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo AND talerta_agente_modulo.disable = 0 AND tagente_modulo.id_tipo_modulo = 100 AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.datos != 0";
+        my $s_idag = $dbh->prepare($query_idag);
+        $s_idag ->execute;
+
+        my $id_agent_module;
+        my $module_utimestamp;
+        my $id_agent;
+        my $interval;
+        my $agent_name;
+        my $module_name;
 
 	# data needed in loop (we'll reuse it)
-    my @data;
-	my $nombre_agente;
-	my $id_agente_modulo;
-	my $tipo_modulo;
-	my $nombre_modulo;
-	my $datos;
-
+        my @data;
 	if ($s_idag->rows != 0) {
 		while (@data = $s_idag->fetchrow_array()) {
 			threads->yield;
-			$id_agente_modulo = $data[0];	
-			$nombre_agente = dame_nombreagente_agentemodulo ($pa_config, $id_agente_modulo, $dbh);
-			$nombre_modulo = $data[2];
-			$datos = $data[3];
-			$tipo_modulo = $data[1];
-			pandora_calcula_alerta ($pa_config, $timestamp, $nombre_agente, $tipo_modulo, $nombre_modulo, $datos, $dbh);
+			$id_agent_module = $data[0];
+                        $module_utimestamp = $data[1];
+                        $id_agent = $data[2];
+                        $interval = $data[3];
+                        $agent_name = $data[4];
+                        $module_name = $data[5];
+                        # Agent down - Keepalive utimestamp too low (2x)
+                        if (($module_utimestamp + ($interval * 2)) < $utimestamp){
+                                pandora_writestate ($pa_config, $agent_name, "keep_alive", $module_name, 0, 0, $dbh, 1);
+                        }
 		}
 	} 
 	$s_idag->finish();

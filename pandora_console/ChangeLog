@@ -1,3 +1,15 @@
+2008-01-08  Sancho Lerena  <slerena@gmail.com>
+
+        * pandoradb_data.sql: Added keep_alive as module id 100 for the new keepalive
+        management. Old way (from 1.2) is now deprecated and not used.
+
+        * operation/agentes/estado_agente.php: Style changes, not code.
+
+        * images/mod_keepalive.png: Added new icon for keepalive moduletype.
+
+        * godmode/agentes/configurar_agente.php: Create an agent creates automatically 
+        a keepalive module AND a tagente_estado record.
+
 2007-12-16  Sancho Lerena <slerena@gmail.com>
 
 	* pandoradb.sql: New field for tagente_modulo: disabled, to be

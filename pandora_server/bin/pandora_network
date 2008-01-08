@@ -448,9 +448,9 @@ sub pandora_query_snmp (%$$$$) {
 			}
 		}
 		# Locking for SNMP call. SNMP is not thread safe !!
+		my $OIDLIST = new SNMP::VarList([$perl_oid]);
 		{
 			lock $snmp_lock;
-			my $OIDLIST = new SNMP::VarList([$perl_oid]);
 			# Pass the VarList to getnext building an array of the output
 			my @OIDINFO = $SESSION->getnext($OIDLIST);
 			$output = $OIDINFO[0];
@@ -493,7 +493,7 @@ sub exec_network_module {
 	my $flag;
 	my @sql_data;
 	if ((!defined($id_agente_modulo)) || ($id_agente_modulo eq "")){
-		return;
+		return 0;
 	}
 	my $query_sql = "SELECT * FROM tagente_modulo WHERE id_agente_modulo = $id_agente_modulo";
 	my $exec_sql = $dbh->prepare($query_sql);
@@ -527,7 +527,7 @@ sub exec_network_module {
 	my $module_result = 1; # Fail by default
 	my $module_data = 0;
 
-    if ((defined($ip_target)) && ($ip_target ne "")) {
+	if ((defined($ip_target)) && ($ip_target ne "")) {
 
 	    # ICMP Modules
 	    # ------------

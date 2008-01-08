@@ -177,11 +177,11 @@ if (comprueba_login() == 0) {
 							$numero_monitor++;
 						$monitor_down++;
 					}
-					elseif ($est_modulo <> 100) { // estado=100 are data modules
+					elseif ($est_modulo != 100) { // estado=100 are data modules
 						$estado_general = $estado_general + $est_modulo;
 						$estado_cambio = $estado_cambio + $row_t["cambio"]; 
 						$numero_monitor ++;
-						if ($est_modulo <> 0)
+						if ($est_modulo != 0)
 							$monitor_bad++;			
 						else
 							$monitor_ok++;

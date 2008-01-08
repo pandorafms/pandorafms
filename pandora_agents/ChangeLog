@@ -1,3 +1,7 @@
+2008-01-08 Sancho Lerena <slerena@gmail.com>
+
+	* mac_osx/*: Added code for Mac OsX Agent contributed by Evi Vanoost.
+
 2008-01-02 Sancho lerena <slerena@gmail.com>
 
 	* openWRT/*: Added code for new ASYNC agent for OpenWRT/Arduino

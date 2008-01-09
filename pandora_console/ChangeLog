@@ -1,3 +1,9 @@
+2008-01-09  Sancho Lerena  <slerena@gmail.com>
+
+	* fgraph.php: Solved problem in combined area render (ugly graphs most of times).
+	Now graphs are stacked by default (in the future could be choose between in 
+	stacked mode or plain (old one), as suggested in feature request #1835681.
+
 2008-01-08  Sancho Lerena  <slerena@gmail.com>
 
         * pandoradb_data.sql: Added keep_alive as module id 100 for the new keepalive

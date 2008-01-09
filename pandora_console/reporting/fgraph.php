@@ -91,7 +91,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 	// Init tables
 	for ($y = 0; $y < $module_number; $y++){
 		$real_data[$y] = array();
-        $mod_data[$y] = 1; // Data multiplier to get the same scale on all modules
+                $mod_data[$y] = 1; // Data multiplier to get the same scale on all modules
 		if ($show_event == 1)
 			$real_event[$y] = array();
 		if (isset($weight_list[$y])){
@@ -109,8 +109,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 		$nombre_agente = dame_nombre_agente_agentemodulo($id_agente_modulo);
 		$id_agente = dame_agente_id($nombre_agente);
 		$nombre_modulo = dame_nombre_modulo_agentemodulo($id_agente_modulo);
-
-		$module_list_name[$y] = substr($nombre_agente,0,8)."/".substr($nombre_modulo,0,18);
+		$module_list_name[$y] = substr($nombre_agente,0,9)." / ".substr($nombre_modulo,0,20);
 		for ($x = 0; $x <= $resolution; $x++) {
 			$valores[$x][0] = 0; // SUM of all values for this interval
 			$valores[$x][1] = 0; // counter
@@ -121,6 +120,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 			$valores[$x][6] = 0; // Event
 		}
 		// Init other general variables
+
 		if ($show_event == 1){
 			// If we want to show events in graphs
 			$sql1="SELECT utimestamp FROM tevento WHERE id_agente = $id_agente AND utimestamp > $fechatope";
@@ -147,47 +147,45 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 					$alert_low = $row["dis_min"];
 			}
 		}
-		
 		$previous=0;
 		// Get the first data outsite (to the left---more old) of the interval given
-		$sql1="SELECT datos,utimestamp FROM tagente_datos WHERE id_agente = $id_agente AND id_agente_modulo = $id_agente_modulo AND utimestamp < $fechatope ORDER BY utimestamp DESC LIMIT 1";
-		$result=mysql_query($sql1);
-		if ($row=mysql_fetch_array($result))
-			$previous=$row[0];
+		$sql1="SELECT datos, utimestamp FROM tagente_datos WHERE id_agente = $id_agente AND id_agente_modulo = $id_agente_modulo AND utimestamp < $fechatope ORDER BY utimestamp DESC LIMIT 1";
+		if ($result=mysql_query($sql1)){
+		        $row=mysql_fetch_array($result);
+			$previous = $row[0];
+                }
 		
-		$sql1="SELECT datos,utimestamp FROM tagente_datos WHERE id_agente = $id_agente AND id_agente_modulo = $id_agente_modulo AND utimestamp > $fechatope";
+		$sql1="SELECT datos,utimestamp FROM tagente_datos WHERE id_agente = $id_agente AND id_agente_modulo = $id_agente_modulo AND utimestamp >= $fechatope";
 		if ($result=mysql_query($sql1))
 		while ($row=mysql_fetch_array($result)){
 			$datos = $row[0];
 			$utimestamp = $row[1];
-			if ($datos >= 0) {
-				for ($i=0; $i <= $resolution; $i++) {
-					if ( ($utimestamp <= $valores[$i][3]) && ($utimestamp >= $valores[$i][2]) ){
-						$valores[$i][0]=$valores[$i][0]+$datos;
-						$valores[$i][1]++;
-						// Init min value
-						if ($valores[$i][4] == 0)
-							$valores[$i][4] = $datos;
-						else {
-							// Check min value
-							if ($datos < $valores[$i][4])
-							$valores[$i][4] = $datos;
-						}			
-						// Check max value
-						if ($datos > $valores[$i][5])
-							$valores[$i][5] = $datos;
-						$i = $resolution+1; // BREAK FOR
-					}
+			for ($i=0; $i <= $resolution; $i++) {
+				if ( ($utimestamp <= $valores[$i][3]) && ($utimestamp > $valores[$i][2]) ){
+					$valores[$i][0]=$valores[$i][0]+$datos;
+					$valores[$i][1]++;
+					// Init min value
+					if ($valores[$i][4] == 0)
+						$valores[$i][4] = $datos;
+					else {
+						// Check min value
+						if ($datos < $valores[$i][4])
+						$valores[$i][4] = $datos;
+					}			
+					// Check max value
+					if ($datos > $valores[$i][5])
+						$valores[$i][5] = $datos;
+					$i = $resolution+1; // BREAK FOR
 				}
-			}		
+			}
 		}
 
 		
 		// Calculate Average value for $valores[][0]
 		for ($x =0; $x <= $resolution; $x++) {
 			if ($valores[$x][1] > 0){
-				$valores[$x][0] = $valores[$x][0]/$valores[$x][1];
-				$real_data[$y][$x] =  $weight_list[$y]*($valores[$x][0]/$valores[$x][1]);
+				$real_data[$y][$x] =  $weight_list[$y] * ($valores[$x][0]/$valores[$x][1]);
+                                $valores[$x][0] = $valores[$x][0]/$valores[$x][1];
 			} else {
 				$valores[$x][0] = $previous;
 				$real_data[$y][$x] = $previous * $weight_list[$y];
@@ -196,12 +194,12 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 			}
 			// Get max value for all graph
 			if ($valores[$x][5] > $max_value ){
-				$max_value = $valores[$x][5];
-            }
-            // This stores in mod_data max values for each module
-            if ($mod_data[$y] < $valores[$x][5]){
-                $mod_data[$y] = $valores[$x][5];
-            }
+                                $max_value = $valores[$x][5];
+                        }
+                        // This stores in mod_data max values for each module
+                        if ($mod_data[$y] < $valores[$x][5]){
+                                $mod_data[$y] = $valores[$x][5];
+                        }
 			// Take prev. value
 			// TODO: CHeck if there are more than 24hours between
 			// data, if there are > 24h, module down.
@@ -209,13 +207,13 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 		}
 	}
 
-    for ($y = 0; $y < $module_number; $y++){
-	// Disabled autoadjusment, is not working fine :(
-        // $weight_list[$y] = ($max_value / $mod_data[$y]) + ($weight_list[$y]-1);
-        if ($weight_list[$y] != 1)
-            $module_list_name[$y] .= " (x". format_numeric($weight_list[$y],1).")";
-	$module_list_name[$y] = $module_list_name[$y]." (MAX: ".format_numeric($mod_data[$y]).")";
-    }
+        for ($y = 0; $y < $module_number; $y++){
+                // Disabled autoadjusment, is not working fine :(
+                // $weight_list[$y] = ($max_value / $mod_data[$y]) + ($weight_list[$y]-1);
+                if ($weight_list[$y] != 1)
+                        $module_list_name[$y] .= " (x". format_numeric($weight_list[$y],1).")";
+	        $module_list_name[$y] = $module_list_name[$y]." (MAX: ".format_numeric($mod_data[$y]).")";
+        }
 
 	// Create graph
 	// *************
@@ -284,13 +282,13 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 	for ($cc=0; $cc < $resolution; $cc++) {
 		$tdate = date('d/m', $valores[$cc][2])."\n".date('H:i', $valores[$cc][2]);
 		for ($y = 0; $y < $module_number; $y++){
-			$dataset[$y]->addPoint($tdate, $real_data[$y][$cc] * $weight_list[$y]);
+			$dataset[$y]->addPoint($tdate, $real_data[$y][$cc]);
 			if (($show_event == 1) AND (isset($real_event[$cc]))) {
 				$dataset_event->addPoint($tdate, $max_value);
 			}
 		}
 	}
-	
+
 	if ($max_value > 0){
 		// Show events !
 		if ($show_event == 1){
@@ -313,7 +311,10 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 		
 			
 		// create the 1st plot as smoothed area chart using the 1st dataset
-		$Plot =& $Plotarea->addNew('area', array(&$dataset));
+		// Non-stacked
+                // $Plot =& $Plotarea->addNew('area', array(&$dataset));
+                // Stacked (v1.4)
+                $Plot =& $Plotarea->addNew('Image_Graph_Plot_Area', array(&$dataset, 'stacked'));
 		$Plot->setLineColor('gray@0.4');
 		$AxisX =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_X);
 		// $AxisX->Hide();

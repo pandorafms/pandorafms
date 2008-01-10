@@ -197,21 +197,21 @@
 				echo "<td class='$tdcolor' align='middle'>";
 				if (($network_server == 1) OR ($data_server == 1)){
 					// Progress bar calculations
-					if ($network_server == 1){
-						if ($total_modules == 0)
-							$percentil = 0;
-						if ($total_modules > 0)
-							$percentil = $modules_server / ($total_modules / 100);
-						else	
-							$percentil = 0;
-						$total_modules_temp = $total_modules;
-					} else {
-						if ($total_modules_data == 0)
-							$percentil = 0;
-						else
-							$percentil = $modules_server / ($total_modules_data / 100);
-						$total_modules_temp = $total_modules_data;
-					}
+                                        if ($network_server == 1){
+                                                if ($modules_server == 0)
+                                                        $percentil = 0;
+                                                if ($modules_server > 0)
+                                                        $percentil = $modules_server / ($total_modules_network / 100);
+                                                else    
+                                                        $percentil = 0;
+                                                $total_modules_temp = $total_modules_network;
+                                        } else {
+                                                if ($total_modules_data == 0)
+                                                        $percentil = 0;
+                                                else
+                                                        $percentil = $modules_server / ($total_modules_data / 100);
+                                                $total_modules_temp = $total_modules_data;
+                                        }
 				} elseif ($recon_server == 1){
 				
 					$sql2 = "SELECT COUNT(id_rt) FROM trecon_task WHERE id_network_server = $id_server";

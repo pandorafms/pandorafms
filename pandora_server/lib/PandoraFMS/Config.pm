@@ -34,8 +34,8 @@ our @EXPORT = qw( 	pandora_help_screen
 # There is no global vars, all variables (setup) passed as hash reference
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "1.3.1dev";
-my $pandora_build="PS080108";
+my $pandora_version = "1.3.1";
+my $pandora_build="PS080110";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -66,7 +66,7 @@ sub help_screen {
 sub pandora_init {
 	my $pa_config = $_[0];
 	my $init_string = $_[1];
-	printf "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-2007 ArticaST\n";
+	printf "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-2008 ArticaST\n";
 	printf "This program is Free Software, licensed under the terms of GPL License v2.\n";
 	printf "You can download latest versions and documentation at http://pandora.sourceforge.net. \n\n";
 

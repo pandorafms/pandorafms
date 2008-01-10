@@ -1,3 +1,14 @@
+2008-01-10 Sancho Lerena <slerena@gmail.com>
+
+	* Config.pm: Version number update.
+	
+	* DB.pm: Support to manage keepalive modules in the correct way (more fixes)
+	
+	* pandora_server: Minimal improvement on zero data files, and new keepalive 	
+	mamagement (more fixes over yesterday code).
+	
+	This is the first 1.3.1 version commit (Server)
+
 2008-01-08  Sancho Lerena  <slerena@gmail.com>
 
         * Config.pm: Updated version to 1.3.1-dev

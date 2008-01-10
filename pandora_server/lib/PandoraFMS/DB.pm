@@ -513,7 +513,7 @@ sub pandora_accessupdate (%$$) {
 
                         
 	        }
-                # Update keepalive module (if present)
+                # Update keepalive module (if present, if there is more than one, only updates first one!).
                 my $id_agent_module = give_db_free ("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = $id_agent AND id_tipo_modulo = 100", $dbh);
                 if ($id_agent_module ne -1){
                         my $utimestamp = &UnixDate ("today", "%s");

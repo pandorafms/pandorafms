@@ -1,3 +1,9 @@
+2008-01-10 Sancho Lerena <slerena@gmail.com>
+
+	* Deleted from 1.3.1 repository code from mac_osx and openwrt.
+
+	* Win32: Deleted old installer exes.        
+
 2008-01-08 Sancho Lerena <slerena@gmail.com>
 
 	* mac_osx/*: Added code for Mac OsX Agent contributed by Evi Vanoost.

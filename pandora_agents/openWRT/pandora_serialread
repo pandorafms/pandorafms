@@ -1,0 +1,25 @@
+#!/bin/sh
+# (c) Jorge Loza, Sancho Lerena 2007-2008
+# Licensed under GPL2 Terms
+# Pandora FMS - http://pandora.sf.net
+
+TMPFILE=/tmp/pandora_async.tmp
+SERIALPORT=/dev/usb/tts/0
+
+variable=0
+rm $TMPFILE 2> /dev/null
+
+# Fork and let a process reading from serialport
+cat < $SERIALPORT > $TMPFILE &
+
+# Send gate read request to SERIALPORT
+echo $1  > $SERIALPORT
+
+until test -s $TMPFILE || test $variable -ge 200 
+do
+	variable=$(($variable + 1))
+done
+sleep 1
+cat $TMPFILE | head -1
+
+kill -0 $! && kill $!

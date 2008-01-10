@@ -598,11 +598,7 @@ function dame_email($id){
 // ---------------------------------------------------------------
 
 function dame_admin($id){
-	require("config.php");
-	$query1="SELECT * FROM tusuario WHERE id_usuario ='".$id."'";   
-	$rowdup=mysql_query($query1);
-	$rowdup2=mysql_fetch_array($rowdup);
-	$admin=$rowdup2["nivel"];
+        $admin = get_db_sql ("SELECT * FROM tusuario WHERE id_usuario ='$id'", "nivel");
 	return $admin;
 }
 
@@ -1068,18 +1064,23 @@ function give_db_value ($field, $table, $field_search, $condition_value){
 }
 
 // --------------------------------------------------------------- 
-// Generic access to SQL using a single sentence
+// Wrapper for old function name. Should be upgraded/renamed in next versions
 // --------------------------------------------------------------- 
 
-function get_db_sqlfree ($sentence){
+function get_db_value ($field, $table, $field_search, $condition_value){
+        give_db_value ($field, $table, $field_search, $condition_value);
+}
+
+// --------------------------------------------------------------- 
+// Generic access to single field using a free SQL sentence
+// --------------------------------------------------------------- 
+
+function get_db_sql ($sentence, $field = 0){
         global $config;
-        $query = $sentence;
-        $resq1 = mysql_query($query);
-        if ($rowdup = mysql_fetch_array($resq1))
-                $pro = $rowdup[0];
+        if ($rowdup = mysql_fetch_array(mysql_query($sentence)))
+                return $rowdup[$field];
         else
-                $pro = "";
-        return $pro;
+                return "";
 }
 
 // ---------------------------------------------------------------

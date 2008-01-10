@@ -1,5 +1,24 @@
 2008-01-10 Sancho Lerena <slerena@gmail.com>
 
+        * functions_db.php: Some changes in future generic SQL interface access.
+
+        * pandora_console/include/functions.php: Added generic acces to HTTP 
+        parameters.
+
+        * status_monitor.php: Fixed problems detected by Pierre Gaxatte.
+
+        * estado_agente.php: Fixed the same kind of problems (ACL / Group acces)
+        and added a Agent search field as request by J.Corona.
+
+        * tactical.php: Rename of generic SQL function access.
+        
+        * view_server.php: Rename of generic SQL function access.
+
+        * modificar_agente.php: Fixed some render problems, added a Agent search
+        option and better formatting.
+
+2008-01-10 Sancho Lerena <slerena@gmail.com>
+
 	* functions_db.php: Added generic SQL access function to get data using
 	a free SQL sentence.
 	

@@ -141,9 +141,9 @@
 	// Server information
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         // Get total modules defined (network)
-        $total_modules_network = get_db_sqlfree ("SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo > 4 AND id_tipo_modulo != 100");
+        $total_modules_network = get_db_sql  ("SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo > 4 AND id_tipo_modulo != 100");
         // Get total modules defined (data)
-        $total_modules_data = get_db_sqlfree ("SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo < 5 OR id_tipo_modulo = 100");
+        $total_modules_data = get_db_sql  ("SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo < 5 OR id_tipo_modulo = 100");
 	echo "<h2>".$lang_label["tactical_server_information"]."</h2>";
 	// Connect DataBase
         $sql='SELECT * FROM tserver';

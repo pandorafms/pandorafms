@@ -21,10 +21,10 @@ if (comprueba_login() == 0) {
 	echo $lang_label["server_detail"]."</h2>";
 
 	// Get total modules defined (network)
-	$total_modules_network = get_db_sqlfree ("SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo > 4 AND id_tipo_modulo != 100");
+	$total_modules_network = get_db_sql  ("SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo > 4 AND id_tipo_modulo != 100");
 
 	// Get total modules defined (data)
-	$total_modules_data = get_db_sqlfree ("SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo < 5 OR id_tipo_modulo = 100");
+	$total_modules_data = get_db_sql  ("SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo < 5 OR id_tipo_modulo = 100");
 
 	// Connect DataBase
         $sql='SELECT * FROM tserver';
@@ -68,7 +68,7 @@ if (comprueba_login() == 0) {
 			$modules_server = 0;
 			if (($network_server == 1) OR ($data_server == 1)){
 				// Get total modules defined for this server (data modules)	
-				$modules_server = get_db_sqlfree ("SELECT COUNT(running_by) FROM tagente_estado WHERE running_by = $id_server");
+				$modules_server = get_db_sql  ("SELECT COUNT(running_by) FROM tagente_estado WHERE running_by = $id_server");
 			}
 			echo "<tr><td class='$tdcolor'>";
 			if ($recon_server == 1)
@@ -100,8 +100,8 @@ if (comprueba_login() == 0) {
 					$total_modules_temp = $total_modules_data;
 				}
 			} elseif ($recon_server == 1){
-				$modules_server = get_db_sqlfree ("SELECT COUNT(id_rt) FROM trecon_task WHERE id_network_server = $id_server");
-				$total_modules = get_db_sqlfree ("SELECT COUNT(id_rt) FROM trecon_task");
+				$modules_server = get_db_sql  ("SELECT COUNT(id_rt) FROM trecon_task WHERE id_network_server = $id_server");
+				$total_modules = get_db_sql ("SELECT COUNT(id_rt) FROM trecon_task");
 				if ($total_modules == 0)
 					$percentil = 0;
 				else	

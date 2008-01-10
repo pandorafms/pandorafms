@@ -1,26 +1,11 @@
 <?PHP
-// Pandora FMS - the Free monitoring system
+// Pandora FMS - the Free Monitoring System
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development and project architecture and management
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development, project architecture and management.
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP additions
-// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
-// Javascript Active Console code.
-// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
-// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+// CSS and some PHP code additions
+// Please see http://pandora.sourceforge.net for full contribution list
 ?>
 
 <!-- Javascript  -->
@@ -103,7 +88,7 @@ if (comprueba_login() == 0) {
 			$id_grupo = $row_t["id_grupo"];
 			$id_usuario=$_SESSION["id_usuario"];
 			if (give_acl($id_usuario, $id_grupo, "AW")==1){
-				if ($row3["id_tipo_modulo"] > 4){
+				if ($row3["id_tipo_modulo"] > 4 AND ($row3["id_tipo_modulo"] < 100)){
 					if ($row3["flag"] == 0){
 						echo "<a href='index.php?sec=estado&
 						sec2=operation/agentes/ver_agente&
@@ -157,6 +142,7 @@ if (comprueba_login() == 0) {
 			// For types not string type (3 data_string, 9 tcp_string, 14 snmp_string)
 			if (($row3["id_tipo_modulo"] != 3) 
 			AND ($row3["id_tipo_modulo"] != 10) 
+                        AND ($row3["id_tipo_modulo"] != 100) // Type not keepalive (1.4)
 			AND ($row3["id_tipo_modulo"] != 17)){
 				echo "<td class=".$tdcolor.">";
 				if (is_numeric($row3["datos"])) {
@@ -201,9 +187,12 @@ if (comprueba_login() == 0) {
 			}
 			
 			echo "<td class=".$tdcolor." width=70>";
-			echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=mes&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_m.png'></a>&nbsp;&nbsp;";
-			echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=semana&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_w.png'></a>&nbsp;&nbsp;";
-			echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=dia&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_d.png'></a>";
+                        if ($row3["id_tipo_modulo"] != 100) {
+			        echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=mes&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_m.png'></a>&nbsp;&nbsp;";
+			        echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=semana&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_w.png'></a>&nbsp;&nbsp;";
+			        echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=dia&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_d.png'></a>";
+                        }
+
 			echo "<td class='".$tdcolor."f9'>";
 				if ($row3["timestamp"] == "0000-00-00 00:00:00"){ 
 					echo $lang_label["never"];

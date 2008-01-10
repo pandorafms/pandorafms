@@ -1,26 +1,13 @@
 <?php
 
-// Pandora FMS - the Free monitoring system
+// Pandora FMS - the Free Monitoring System
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development and project architecture and management
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development, project architecture and management.
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP additions
-// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
-// Additions to Pandora FMS 1.2 graph code 
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-// Database functions
+// CSS and some PHP code additions
+// Please see http://pandora.sourceforge.net for full contribution list
+
 
 // --------------------------------------------------------------- 
 // give_acl ()
@@ -611,11 +598,7 @@ function dame_email($id){
 // ---------------------------------------------------------------
 
 function dame_admin($id){
-	require("config.php");
-	$query1="SELECT * FROM tusuario WHERE id_usuario ='".$id."'";   
-	$rowdup=mysql_query($query1);
-	$rowdup2=mysql_fetch_array($rowdup);
-	$admin=$rowdup2["nivel"];
+        $admin = get_db_sql ("SELECT * FROM tusuario WHERE id_usuario ='$id'", "nivel");
 	return $admin;
 }
 
@@ -1080,6 +1063,25 @@ function give_db_value ($field, $table, $field_search, $condition_value){
 	return $pro;
 }
 
+// --------------------------------------------------------------- 
+// Wrapper for old function name. Should be upgraded/renamed in next versions
+// --------------------------------------------------------------- 
+
+function get_db_value ($field, $table, $field_search, $condition_value){
+        give_db_value ($field, $table, $field_search, $condition_value);
+}
+
+// --------------------------------------------------------------- 
+// Generic access to single field using a free SQL sentence
+// --------------------------------------------------------------- 
+
+function get_db_sql ($sentence, $field = 0){
+        global $config;
+        if ($rowdup = mysql_fetch_array(mysql_query($sentence)))
+                return $rowdup[$field];
+        else
+                return "";
+}
 
 // ---------------------------------------------------------------
 // Return current status from a given agent module (1 alive, 0 down)
@@ -1231,8 +1233,5 @@ function return_moduledata_min_value ($id_agent_module, $period){
 	} else 
 		return (0);
 }
-
-
-
 
 ?>

@@ -1,22 +1,11 @@
 <?php
-// Pandora FMS - the Free monitoring system
+// Pandora FMS - the Free Monitoring System
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development, project architecture and management.
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
-// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
-
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+// CSS and some PHP code additions
+// Please see http://pandora.sourceforge.net for full contribution list
 
 // Load global vars
 require("include/config.php");
@@ -28,30 +17,21 @@ if (comprueba_login() == 0) {
 		exit;
 	}
 
-	if (isset($_GET["offset"]))
-		$offset = entrada_limpia($_GET["offset"]);
-	else
-		$offset = 0;
-
-	if (isset($_GET["group_id"]))
-		$group_id = entrada_limpia($_GET["group_id"]);
-	else
-		$group_id = 0;
-
- 	if (isset($_POST["ag_group"]))
-			$ag_group = $_POST["ag_group"];
-		elseif (isset($_GET["group_id"]))
-		$ag_group = $_GET["group_id"];
-	else
-		$ag_group = -1;
-
+        // Take some parameters (GET)
+        $offset = get_parameter ("offset", 0);
+        $group_id = get_parameter ("group_id", 0);
+        $ag_group = get_parameter ("ag_group", -1);
+        if (($ag_group == -1) && ($group_id != 0))
+                $ag_group = $group_id;
 	if (isset($_GET["ag_group_refresh"])){
 		$ag_group = $_GET["ag_group_refresh"];
 	}
+        $search = get_parameter ("search", "");
+
 	
 	echo "<h2>".$lang_label["ag_title"]." &gt; ".$lang_label["summary"]."</h2>";
-	
-	// Show group selector
+
+	// Show group selector (POST)
 	if (isset($_POST["ag_group"])){
 		$ag_group = $_POST["ag_group"];
 		echo "<form method='post' 
@@ -64,8 +44,8 @@ if (comprueba_login() == 0) {
 	}
 
 	echo "<table cellpadding='4' cellspacing='4' class='databox'><tr>";
-	echo "<td>".$lang_label["group"]."</td>";
-	echo "<td valign='middle'>";
+	echo "<td valign='top'>".$lang_label["group"]."</td>";
+	echo "<td valign='top'>";
 	echo "<select name='ag_group' onChange='javascript:this.form.submit();' 
 	class='w130'>";
 
@@ -76,27 +56,48 @@ if (comprueba_login() == 0) {
 	$mis_grupos=list_group ($id_user); //Print combo for groups and set an array with all groups
 
 	echo "</select>";
-	echo "<td valign='middle'>
+	echo "<td valign='top'>
 	<noscript>
 	<input name='uptbutton' type='submit' class='sub' 
 	value='".$lang_label["show"]."'>
 	</noscript>
-	</td>
-	</form>
-	</table>";
+	</td></form><td valign='top'>";
+
+        echo $lang_label["free_text_search"];
+        echo "</td><td>";
+        echo "<form method='post'
+                action='index.php?sec=estado&sec2=operation/agentes/estado_agente
+                &refr=60'>";
+        echo "<input type=text name='search' size='15' >";
+        echo "</td><td valign='top'>";
+        echo "<input name='srcbutton' type='submit' class='sub' 
+        value='".$lang_label["search"]."'>";
+        echo "</form>";
+        echo "</td></table>";
 	
+
+        if ($search != ""){
+                $search_sql = " AND nombre LIKE '%$search%' ";
+        } else {
+                $search_sql = "";
+        }
+
 	// Show only selected groups	
 	if ($ag_group > 1){
 		$sql="SELECT * FROM tagente WHERE id_grupo=$ag_group
-		AND disabled = 0 ORDER BY nombre LIMIT $offset, $block_size ";
+		AND disabled = 0 $search_sql ORDER BY nombre LIMIT $offset, $block_size ";
 		$sql2="SELECT COUNT(id_agente) FROM tagente WHERE id_grupo=$ag_group 
-		AND disabled = 0 ORDER BY nombre";
-	}
-	else {
-		$sql="SELECT * FROM tagente WHERE disabled = 0
-		ORDER BY nombre, id_grupo LIMIT $offset, $block_size";
-		$sql2="SELECT COUNT(id_agente) FROM tagente WHERE disabled = 0
-		ORDER BY nombre, id_grupo";
+		AND disabled = 0 $search_sql ORDER BY nombre";
+	} else {
+                // Is admin user ??
+                if (get_db_sql ("SELECT * FROM tusuario WHERE id_usuario ='$id_user'", "nivel") == 1){
+                        $sql="SELECT * FROM tagente WHERE disabled = 0 $search_sql ORDER BY nombre, id_grupo LIMIT $offset, $block_size";
+                        $sql2="SELECT COUNT(id_agente) FROM tagente WHERE disabled = 0 $search_sql ORDER BY nombre, id_grupo";
+                } else {
+		        $sql="SELECT * FROM tagente WHERE disabled = 0 $search_sql AND id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='$id_user')
+		        ORDER BY nombre, id_grupo LIMIT $offset, $block_size";
+		        $sql2="SELECT COUNT(id_agente) FROM tagente WHERE disabled = 0 $search_sql AND id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='$id_user') ORDER BY nombre, id_grupo";
+                }
 	}
 
 	$result2=mysql_query($sql2);

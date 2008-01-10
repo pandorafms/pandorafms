@@ -453,7 +453,7 @@ div.title_line {
 }
 #menu_tab li.nomn:hover a, 
 #menu_tab li:hover ul a:hover {
-	background: #cde0ad;
+	background: #66AA44;
 }
 #menu_tab li:hover a {
 	background: #b2b08a url("../images/arrow.png") no-repeat right 3px;

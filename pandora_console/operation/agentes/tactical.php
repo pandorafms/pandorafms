@@ -1,25 +1,14 @@
 <?php
 
-// Pandora FMS - the Free monitoring system
+// Pandora FMS - the Free Monitoring System
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development and project architecture and management
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development, project architecture and management.
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP additions
-// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
-// Additions to Pandora FMS 1.2 graph code 
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+// CSS and some PHP code additions
+// Please see http://pandora.sourceforge.net for full contribution list
+
+
 
 	// Load global vars
 	require("include/config.php");
@@ -149,28 +138,15 @@
 	echo "<h2>".$lang_label["tactical_indicator"]."</h2>";
 	echo "<img src='reporting/fgraph.php?tipo=odo_tactic&value1=$global_health&value2=$data_health&value3=$monitor_health'>";
 
-	
-
 	// Server information
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-	$sql='SELECT * FROM tserver';
+        // Get total modules defined (network)
+        $total_modules_network = get_db_sql  ("SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo > 4 AND id_tipo_modulo != 100");
+        // Get total modules defined (data)
+        $total_modules_data = get_db_sql  ("SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo < 5 OR id_tipo_modulo = 100");
 	echo "<h2>".$lang_label["tactical_server_information"]."</h2>";
-	// Get total modules defined (network)
-	$sql1='SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo > 4';
-	$result1=mysql_query($sql1);
-	$row1=mysql_fetch_array($result1);
-	$total_modules = $row1[0];
-
-	// Get total modules defined (data)
-        $sql1='SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo < 5 AND id_tipo_modulo != -1';
-        if ($result1=mysql_query($sql1)){
-                $row1=mysql_fetch_array($result1);
-                $total_modules_data = $row1[0];
-        } else
-                $total_modules_data = 0;
-
 	// Connect DataBase
+        $sql='SELECT * FROM tserver';
 	$result=mysql_query($sql);
 	if (mysql_num_rows($result)){
 		echo "<table cellpadding='4' cellspacing='4' witdh='720' class='databox'>";

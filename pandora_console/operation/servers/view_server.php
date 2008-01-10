@@ -1,21 +1,12 @@
 <?php
 
-// Pandora - the Free monitoring system
-// ====================================
-// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
-// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+// Pandora FMS - the Free Monitoring System
+// ========================================
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development, project architecture and management.
+// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// CSS and some PHP code additions
+// Please see http://pandora.sourceforge.net for full contribution list
 
 // Load global vars
 require("include/config.php");
@@ -26,27 +17,17 @@ $total_modules_data = 0;
 
 if (comprueba_login() == 0) {
  	if ((give_acl($id_user, 0, "AR")==1) or (give_acl($id_user,0,"AW")) or (dame_admin($id_user)==1)) {
-
-	$sql='SELECT * FROM tserver';
-	
 	echo "<h2>".$lang_label["view_servers"]." &gt; ";
 	echo $lang_label["server_detail"]."</h2>";
 
 	// Get total modules defined (network)
-	$sql1='SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo > 4';
-	$result1=mysql_query($sql1);
-	$row1=mysql_fetch_array($result1);
-	$total_modules_network = $row1[0];
+	$total_modules_network = get_db_sql  ("SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo > 4 AND id_tipo_modulo != 100");
 
 	// Get total modules defined (data)
-	$sql1='SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo < 5 AND id_tipo_modulo != -1';
-	if ($result1=mysql_query($sql1)){
-		$row1=mysql_fetch_array($result1);
-		$total_modules_data = $row1[0];
-	} else	
-		$total_modules_data = 0;
+	$total_modules_data = get_db_sql  ("SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo < 5 OR id_tipo_modulo = 100");
 
 	// Connect DataBase
+        $sql='SELECT * FROM tserver';
 	$result=mysql_query($sql);
 	if (mysql_num_rows($result)){
 		echo "<table cellpadding='4' cellspacing='4' witdh='720' class='databox'>";
@@ -86,11 +67,8 @@ if (comprueba_login() == 0) {
 
 			$modules_server = 0;
 			if (($network_server == 1) OR ($data_server == 1)){
-				// Get total modules defined for this server (data modules)
-				$sql2 = "SELECT COUNT(running_by) FROM tagente_estado WHERE running_by = $id_server";
-				$result2=mysql_query($sql2);
-				$row2=mysql_fetch_array($result2);
-				$modules_server = $row2[0];
+				// Get total modules defined for this server (data modules)	
+				$modules_server = get_db_sql  ("SELECT COUNT(running_by) FROM tagente_estado WHERE running_by = $id_server");
 			}
 			echo "<tr><td class='$tdcolor'>";
 			if ($recon_server == 1)
@@ -122,16 +100,8 @@ if (comprueba_login() == 0) {
 					$total_modules_temp = $total_modules_data;
 				}
 			} elseif ($recon_server == 1){
-			
-				$sql2 = "SELECT COUNT(id_rt) FROM trecon_task WHERE id_network_server = $id_server";
-				$result2=mysql_query($sql2);
-				$row2=mysql_fetch_array($result2);
-				$modules_server = $row2[0];
-
-				$sql2 = "SELECT COUNT(id_rt) FROM trecon_task";
-				$result2=mysql_query($sql2);
-				$row2=mysql_fetch_array($result2);
-				$total_modules = $row2[0];
+				$modules_server = get_db_sql  ("SELECT COUNT(id_rt) FROM trecon_task WHERE id_network_server = $id_server");
+				$total_modules = get_db_sql ("SELECT COUNT(id_rt) FROM trecon_task");
 				if ($total_modules == 0)
 					$percentil = 0;
 				else	
@@ -164,7 +134,7 @@ if (comprueba_login() == 0) {
 					// This only checks for agent with a last_execution_try of at 
 					// maximun: ten times it's interval.... if is bigger, it probably 
 					// will be because an agent down
-					$sql1 = "SELECT MAX(last_execution_try), current_interval, id_agente FROM tagente_estado WHERE last_execution_try > 0 AND (tagente_estado.last_execution_try + (tagente_estado.current_interval *10) > UNIX_TIMESTAMP()) AND running_by=$id_server GROUP BY id_agente ORDER BY 1 ASC LIMIT 1";
+					$sql1 = "SELECT MAX(last_execution_try), current_interval, id_agente FROM tagente_estado WHERE last_execution_try > 0 AND (tagente_estado.last_execution_try + (tagente_estado.current_interval * 10) > UNIX_TIMESTAMP()) AND running_by=$id_server GROUP BY id_agente ORDER BY 1 ASC LIMIT 1";
 				$nowtime = time();
 				$maxlag=0;
 				if ($result1=mysql_query($sql1))

@@ -1,8 +1,12 @@
 <?php
 
-// Pandora - the Free monitoring system
-// ====================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Pandora FMS - the Free Monitoring System
+// ========================================
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development, project architecture and management.
+// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// CSS and some PHP code additions
+// Please see http://pandora.sourceforge.net for full contribution list
 
 // Load global vars
 require("include/config.php");

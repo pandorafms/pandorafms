@@ -20,7 +20,8 @@ INSERT INTO `talerta` VALUES (9,'Synthetized Speech','flite -t _FIELD2_','Uses c
 
 /*!40000 ALTER TABLE `tconfig` DISABLE KEYS */;
 LOCK TABLES `tconfig` WRITE;
-INSERT INTO `tconfig` VALUES (1,'language_code','en'),(3,'block_size','20'),(4,'days_purge','60'),(5,'days_compact','15'),(6,'graph_res','5'),(7,'step_compact','1'),(8,'db_scheme_version','1.3'),(9,'db_scheme_build','PD60525'),(12,'bgimage','background4.jpg'),(13,'show_unknown','0'),(14,'show_lastalerts','1'),(15,'style','pandora');
+INSERT INTO `tconfig` VALUES 
+(1,'language_code','en'),(3,'block_size','20'),(4,'days_purge','60'),(5,'days_compact','15'),(6,'graph_res','5'),(7,'step_compact','1'),(8,'db_scheme_version','1.3.1'),(9,'db_scheme_build','PD80110'),(12,'bgimage','background4.jpg'),(13,'show_unknown','0'),(14,'show_lastalerts','1'),(15,'style','pandora');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `tconfig` ENABLE KEYS */;
 
@@ -202,4 +203,6 @@ INSERT INTO `tnetwork_profile_component` VALUES (12,54,3);
 INSERT INTO `tnetwork_profile_component` VALUES (13,55,3);
 INSERT INTO `tnetwork_profile_component` VALUES (14,56,3);
 INSERT INTO `tnetwork_profile_component` VALUES (15,57,3);
+
+INSERT INTO `ttipo_modulo` VALUES (100,'keep_alive',-1,'KeepAlive','mod_keepalive.png');
 

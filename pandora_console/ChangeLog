@@ -1,3 +1,25 @@
+2008-01-10 Sancho Lerena <slerena@gmail.com>
+
+	* functions_db.php: Added generic SQL access function to get data using
+	a free SQL sentence.
+	
+	* estado_ultimopaquete.php: Uses new Keepalive implementation and render 
+	keepalive data in correct way.
+	
+	* view_server.php,
+	tactical.php: Uses new keepalive module to make correct calculations for
+	server load graphs and stats.
+	
+	* configurar_agente.php: Insert new keepalive module record in state table
+	
+	* pandoradb_data.sql: Updated scheme for 1.3.1
+	
+	* pandoradbdata_1.3_to_1.3.1.sql: Update SQL from 1.3 to 1.3.1
+	
+	* index.php: Version number update.
+
+	This is the first commit for 1.3.1 branch (Console code)
+
 2008-01-09  Sancho Lerena  <slerena@gmail.com>
 
 	* fgraph.php: Solved problem in combined area render (ugly graphs most of times).

@@ -1,3 +1,39 @@
+2008-01-10 Sancho Lerena <slerena@gmail.com>
+
+        Code merged from 1.3.1 branch:
+
+        * functions_db.php: Some changes in future generic SQL interface access.
+
+        * pandora_console/include/functions.php: Added generic acces to HTTP 
+        parameters.
+
+        * status_monitor.php: Fixed problems detected by Pierre Gaxatte.
+
+        * estado_agente.php: Fixed the same kind of problems (ACL / Group acces)
+        and added a Agent search field as request by J.Corona.
+
+        * tactical.php: Rename of generic SQL function access.
+        
+        * view_server.php: Rename of generic SQL function access.
+
+        * modificar_agente.php: Fixed some render problems, added a Agent search
+        option and better formatting.
+
+        * configurar_agente.php: New management for KeepAlive module.
+
+        New code for 1.4 development branch (trunk)
+
+        * pandoradbdata_13_to_14.sql: Migration SQL (data) code from 1.3 to 1.4
+
+        * pandoradb_13_to_14.sql: Migration SQL (schema) code frrom 1.3 to 1.4
+
+        * pandoradb_data.sql: Modified code to fresh install SQL data.
+
+        * pandoradb.sql: Modified code to fresh install SQL schema.
+
+        * index.php,
+        * install.php: new version info.
+
 2008-01-09  Sancho Lerena  <slerena@gmail.com>
 
 	* fgraph.php: Solved problem in combined area render (ugly graphs most of times).

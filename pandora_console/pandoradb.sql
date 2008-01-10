@@ -1,5 +1,6 @@
-
--- Pandora FMS official tables for 1.3 version
+--------------------------------------------------------------
+-- Pandora FMS official tables for 1.4 version              --
+--------------------------------------------------------------
 
 CREATE TABLE `taddress` (
   `id_a` bigint(20) unsigned NOT NULL auto_increment,
@@ -43,6 +44,7 @@ CREATE TABLE `tagente` (
   `disabled` tinyint(2) NOT NULL default '0',
   `agent_type` int(2) unsigned NOT NULL default '0',
   `id_server` int(10) unsigned default '0',
+  `id_parent` mediumint(8) unsigned default '0',
   PRIMARY KEY  (`id_agente`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -58,6 +60,17 @@ CREATE TABLE `tagente_datos` (
   KEY `data_index2` (`id_agente`,`id_agente_modulo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `tagent_data_image` (
+  `id` bigint(20) unsigned NOT NULL auto_increment,
+  `id_agente_modulo` mediumint(8) unsigned NOT NULL default '0',
+  `blob` blob NOT NULL,
+  `filename` varchar(255) default '',
+  `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
+  `id_agente` mediumint(8) unsigned NOT NULL default '0',
+  `utimestamp` int(10) unsigned default '0',
+  PRIMARY KEY  (`id`),
+  KEY `img_idx2` (`id_agente`,`id_agente_modulo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `tagente_datos_inc` (
   `id_adi` bigint(20) unsigned NOT NULL auto_increment,
@@ -102,13 +115,6 @@ CREATE TABLE `tagente_estado` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE `tmodule` (
-  `id_module` int(11) unsigned NOT NULL auto_increment,
-  `name` varchar(100) NOT NULL default '',
-  PRIMARY KEY (`id_module`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
 CREATE TABLE `tagente_modulo` (
   `id_agente_modulo` bigint(100) unsigned NOT NULL auto_increment,
   `id_agente` int(11) NOT NULL default '0',
@@ -128,6 +134,7 @@ CREATE TABLE `tagente_modulo` (
   `flag` tinyint(3) unsigned default '1',
   `id_modulo` int(11) unsigned NULL default 0,
   `disabled` tinyint(3) unsigned default '0',
+  `export` tinyint(3) unsigned default '0',
   PRIMARY KEY (`id_agente_modulo`, `id_agente`),
   KEY `tam_agente` (`id_agente`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -162,31 +169,45 @@ CREATE TABLE `talerta` (
   PRIMARY KEY  (`id_alerta`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
-CREATE TABLE `talerta_agente_modulo` (
-  `id_aam` int(11) unsigned NOT NULL auto_increment,
-  `id_agente_modulo` int(11) NOT NULL default '0',
-  `id_alerta` int(11) NOT NULL default '0',
-  `al_campo1` varchar(255) default '',
-  `al_campo2` varchar(255) default '',
-  `al_campo3` mediumtext NOT NULL,
-  `descripcion` varchar(255) default '',
-  `dis_max` double(18,2) default NULL,
-  `dis_min` double(18,2) default NULL,
-  `time_threshold` int(11) NOT NULL default '0',
-  `last_fired` datetime NOT NULL default '0000-00-00 00:00:00',
-  `max_alerts` int(4) NOT NULL default '1',
-  `times_fired` int(11) NOT NULL default '0',
-  `module_type` int(11) NOT NULL default '0',
-  `min_alerts` int(4) NOT NULL default '0',
-  `internal_counter` int(4) default '0',
-  `alert_text` varchar(255) default '',
-  `disable` int(4) default '0',
-  `time_from` TIME default '00:00:00',
-  `time_to` TIME default '00:00:00',
-  PRIMARY KEY  (`id_aam`)
+CREATE TABLE tnotification (
+        `id` int(11) unsigned NOT NULL auto_increment,
+        `name` varchar(255) default '',
+        `description` varchar(255) default '',
+        `id_alerta` int(11) NOT NULL default '0',
+        `id_agent` int(11) NOT NULL default '0',
+        `al_f1` varchar(255) default '',
+        `al_f2` mediumtext NOT NULL,
+        `al_f3` mediumtext NOT NULL,
+        `alrec_f1` varchar(255) default '',
+        `alrec_f2` mediumtext NOT NULL,
+        `alrec_f3` mediumtext NOT NULL,
+        `recovery_notify` tinyint(3) default '0',
+        `disabled` tinyint(3) default '0',
+        `last_fired` datetime NOT NULL default '0000-00-00 00:00:00',
+        PRIMARY KEY  (`id_aam`),
+        KEY `tnotif_indx_1` (`id_alerta`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `tnotification_component` (
+        `id` int(11) unsigned NOT NULL auto_increment,
+        `id_notification` int(11) NOT NULL default '0',
+        `id_agente_modulo` int(11) NOT NULL default '0',
+        `dis_max` double(18,2) default NULL,
+        `dis_min` double(18,2) default NULL,
+        `alert_text` varchar(255) default '',
+        `time_threshold` int(11) NOT NULL default '0',
+        `last_fired` datetime NOT NULL default '0000-00-00 00:00:00',
+        `max_alerts` int(4) NOT NULL default '1',
+        `times_fired` int(11) NOT NULL default '0',
+        `module_type` int(11) NOT NULL default '0',
+        `min_alerts` int(4) NOT NULL default '0',
+        `internal_counter` int(4) default '0',
+        `disabled` int(4) default '0',
+        `time_from` TIME default '00:00:00',
+        `time_to` TIME default '00:00:00',
+        PRIMARY KEY  (`id_aam`),
+        KEY `tnotifcom_indx_1` (`id_notification`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `tattachment` (
   `id_attachment` bigint(20) unsigned NOT NULL auto_increment,

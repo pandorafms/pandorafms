@@ -2,7 +2,7 @@
 
 // Pandora FMS - the Free Monitoring System
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
 // Main PHP/SQL code development, project architecture and management.
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
 // CSS and some PHP code additions
@@ -24,8 +24,8 @@
 // Pandora FMS 1.x uses Pear Image::Graph code
 
 //Pandora Version, if not defined here it would take from config.php
-$build_version="PC071216";
-$pandora_version="v1.4dev";
+$build_version="PC080109";
+$pandora_version="v1.4-dev";
 global $build_version;
 global $pandora_version;
 

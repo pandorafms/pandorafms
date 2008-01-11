@@ -1,3 +1,12 @@
+
+2008-01-11 Sancho Lerena <slerena@gmail.com>
+
+	* config.inc.php: Updated version number for config template.
+
+	* tactical.php: Fixed info from network server (merged from trunk).
+
+	* manage_recontask.php: recontask list better render of information.
+
 2008-01-10 Sancho Lerena <slerena@gmail.com>
 
         * functions_db.php: Some changes in future generic SQL interface access.

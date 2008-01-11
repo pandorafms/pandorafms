@@ -2,7 +2,7 @@
 # Init script for Pandora FMS agent
 # Generic GNU/Linux version
 # Sancho Lerena, <slerena@gmail.com>
-# v1.3   
+# v1.3.1
 
 ### BEGIN INIT INFO
 # Provides: pandora_agent
@@ -38,6 +38,7 @@ case "$1" in
                 fi
         fi
         nohup $DAEMON $PANDORA_PATH 2> $LOGFILE & MYPID=$!
+	rm -Rf nohup.out
         echo $MYPID > $PIDFILE
 	echo "Pandora FMS Agent is now running with PID $MYPID"
         ;;

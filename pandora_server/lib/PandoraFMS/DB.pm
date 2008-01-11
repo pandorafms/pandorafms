@@ -258,6 +258,11 @@ sub pandora_calcula_alerta (%$$$$$$) {
 						if ($times_fired > 0){
 							my $evt_descripcion = "Alert ceased - Recovered ($descripcion)";
 							pandora_event ($pa_config, $evt_descripcion, $id_grupo, $id_agente, $dbh);
+							# Specific patch for F. Corona
+							# This enable alert recovery notification by using the same alert definition but
+							# inserting WORD "RECOVERED" in second and third field of alert. To activate
+							# just uncomenting following line:
+							#execute_alert ($pa_config, $id_alerta, $campo1, "[RECOVERED ] - ".$campo2, "[ALERT CEASED - RECOVERED] - ".$campo3, $nombre_agente, $timestamp, $datos, $comando, $alert_name, $descripcion, $dbh);
 						}
 										}
 					if (($times_fired > 0) || ($internal_counter > 0)){
@@ -382,6 +387,7 @@ sub pandora_writestate (%$$$$$$$) {
 	if (($id_agente ==  -1) || ($id_agente_modulo == -1)) {
 		goto fin_pandora_writestate;
 	}
+
 	# Seek for agent_interval or module_interval
 	my $query_idag = "SELECT * FROM tagente_modulo WHERE id_agente = $id_agente AND id_agente_modulo = " . $id_agente_modulo;;
 	my $s_idag = $dbh->prepare($query_idag);
@@ -397,7 +403,6 @@ sub pandora_writestate (%$$$$$$$) {
 		$module_interval = dame_intervalo ($pa_config, $id_agente, $dbh);
  	}
 	$s_idag->finish();
-	
 	# Check alert subroutine
 	eval {
 		pandora_calcula_alerta ($pa_config, $timestamp, $nombre_agente, $tipo_modulo, $nombre_modulo, $datos, $dbh);
@@ -421,7 +426,7 @@ sub pandora_writestate (%$$$$$$$) {
 	        @data = $s_idages->fetchrow_array();
 	        # Se supone que $data[5](estado) ( nos daria el estado ANTERIOR
 		# For xxxx_PROC type (boolean / monitor), create an event if state has changed
-	        if (( $data[5] != $estado) && ($tipo_modulo =~ /proc/) ) {
+	        if (( $data[5] != $estado) && ( ($tipo_modulo =~/keep_alive/) || ($tipo_modulo =~ /proc/)) ) {
 	                # Cambio de estado detectado !
 	                $cambio = 1;
 	                # Este seria el momento oportuno de probar a saltar la alerta si estuviera definida
@@ -510,16 +515,15 @@ sub pandora_accessupdate (%$$) {
 		        my $query2 = "insert into tagent_access (id_agent, timestamp) VALUES ($id_agent,'$timestamp')";
 		        $dbh->do($query2);	
 		        logger($pa_config,"Updating tagent_access for agent id $id_agent",9);
-
-                        
 	        }
+
                 # Update keepalive module (if present, if there is more than one, only updates first one!).
                 my $id_agent_module = give_db_free ("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = $id_agent AND id_tipo_modulo = 100", $dbh);
                 if ($id_agent_module ne -1){
-                        my $utimestamp = &UnixDate ("today", "%s");
-                        # Status = 0 is monitor OK
-                        $query2 = "UPDATE tagente_estado SET datos = 1, estado = 0, timestamp = '$timestamp', cambio = 0, last_try= '$timestamp', utimestamp = $utimestamp WHERE id_agente_modulo = $id_agent_module";
-                        $dbh->do ($query2);
+                        my $agent_name = give_db_free ("SELECT nombre FROM tagente WHERE id_agente = $id_agent", $dbh);
+                        my $module_typename = "keep_alive";
+                        my $module_name = give_db_free ("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = $id_agent_module", $dbh);
+                        pandora_writestate ($pa_config, $agent_name, $module_typename, $module_name, 1, 0, $dbh, 1);
                 }
         }
 }

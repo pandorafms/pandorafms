@@ -2,8 +2,8 @@
 ##########################################################################
 # Pandora FMS Network Server
 ##########################################################################
-# Copyright (c) 2006-2007 Sancho Lerena, slerena@gmail.com
-#           (c) 2006-2007 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2006-2008 Sancho Lerena, slerena@gmail.com
+#           (c) 2006-2008 Artica Soluciones Tecnologicas S.L
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; version 2
@@ -25,7 +25,7 @@ use Time::Local;            # DateTime basic manipulation
 use Net::Ping;				# For ICMP latency
 use Time::HiRes;			# For high precission timedate functions (Net::Ping)
 use IO::Socket;				# For TCP/UDP access
-use SNMP;					# For SNMP access (libsnmp-perl PACKAGE!)
+use SNMP;				# For SNMP access (libsnmp-perl PACKAGE!)
 use threads;
 use threads::shared;
 
@@ -45,6 +45,7 @@ my %pending_task_hash : shared;
 my %current_task_hash : shared;
 my $snmp_lock : shared;
 my $icmp_lock : shared;
+my $queue_lock : shared;
 
 $ENV{'MIBS'}="ALL";  #Load all available MIBs only once
 $SIG{'TERM'} = 'pandora_shutdown';
@@ -136,11 +137,9 @@ sub pandora_network_consumer ($$) {
 		# Insert this element on the current task hash
 		if (scalar(@pending_task) > 0){
 			{
-				lock @pending_task;
+				lock $queue_lock;
 				$data_id_agent_module = shift(@pending_task);
-				lock %pending_task_hash;
 				delete($pending_task_hash{$data_id_agent_module});
-				lock %current_task_hash;
 				$current_task_hash{$data_id_agent_module}=1;
 			}
 			
@@ -157,7 +156,7 @@ sub pandora_network_consumer ($$) {
 			# Remove from queue. If catch an error, probably data is
 			# not been processed, but has been freed from task queue
 			{
-				lock %current_task_hash;
+				lock $queue_lock;
 				delete($current_task_hash{$data_id_agent_module});
 			}
 			$counter = 0;
@@ -239,9 +238,8 @@ sub pandora_network_producer ($) {
 				}
 				# Locking scope, do not remove redundant { }
 				{
-					lock @pending_task;
+					lock $queue_lock;
 					push (@pending_task, $data_id_agente_modulo);
-					lock %pending_task_hash;
 					$pending_task_hash {$data_id_agente_modulo}=1;
 				}
 			}

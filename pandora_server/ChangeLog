@@ -1,3 +1,12 @@
+
+2008-01-11 Sancho Lerena <slerena@gmail.com>
+
+	* DB.pm: Fixed alert management for KeepAlive module. (Optional) Code for 
+	notify on alert recovery.
+	
+	* pandora_network: Better management of thread locking. This should fix 
+	latests problems reported.
+	
 2008-01-10 Sancho Lerena <slerena@gmail.com>
 
 	* Config.pm: Version number update.

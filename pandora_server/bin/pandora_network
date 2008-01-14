@@ -575,7 +575,11 @@ sub exec_network_module {
 			    }
 		    } else { # Failed SNMP-GET
 			    $module_data = 0;
-			    $module_result = 1; # No data, cannot connect
+			    if ($id_tipo_modulo == 18){ # snmp_proc
+				    $module_result = 0;
+			    } else {
+			            $module_result = 1; # No data, cannot connect
+			    }
 		    }
 	    # TCP Module
 	    # ----------

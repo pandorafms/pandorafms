@@ -1,3 +1,23 @@
+2008-01-14 Sancho Lerena <slerena@gmail.com>
+
+	*  conf/pandora_server.conf: New token for activate alert recovery: 
+	alert_recovery 1/0 (disabled by default to retain compatibility).
+
+	* Config.pm: Support for new alert_recovery option.
+
+	* DB.pm: Implementation for alert_recovery option. Added flag to pass
+	to execute_alert function to do not create event on alert firing due
+	event is previously generated on calculate_alert function. Changes for
+	management of data_proc type. If data is invalid (void or "") now this
+	situation is managed as "invalid data" or "cannot get data" and set to
+	"BAD" status and data 0 to have the same behaviour that icmp_proc and 
+	tcp_proc (snmp_proc behaviour is also changed in pandora_network on this
+	commit also).
+
+	* pandora_snmpconsole: Fixes call for execute_alert (added flag to 1).
+
+	* pandora_network: snmp_proc returns 0 value and bad status if cannot
+	contact or cannot set SNMP session (read above).
 
 2008-01-11 Sancho Lerena <slerena@gmail.com>
 

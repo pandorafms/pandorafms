@@ -2,8 +2,8 @@ package PandoraFMS::Config;
 ##########################################################################
 # Pandora Config package
 ##########################################################################
-# Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2007 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+# Copyright (c) 2005-2008 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License 
@@ -34,8 +34,8 @@ our @EXPORT = qw( 	pandora_help_screen
 # There is no global vars, all variables (setup) passed as hash reference
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "1.3.1";
-my $pandora_build="PS080110";
+my $pandora_version = "1.3.1G";
+my $pandora_build="PS080114";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -143,6 +143,8 @@ sub pandora_loadconfig {
 	$pa_config->{"network_threads"}=5; # Fixed default
 	$pa_config->{"keepalive"}=60; # 60 Seconds initially for server keepalive
 	$pa_config->{"keepalive_orig"} = $pa_config->{"keepalive"};
+	$pa_config->{"alert_recovery"} = 0;
+
 	# Check for UID0
 	if ($> == 0){
 		printf " [W] It is not a good idea running Pandora FMS Server as root user, please DON'T DO IT!\n";
@@ -231,6 +233,9 @@ sub pandora_loadconfig {
 		}
 		elsif ($parametro =~ m/^snmpconsole\s([0-9])/i) {
 			$pa_config->{"snmpconsole"} = $1;
+		}
+		elsif ($parametro =~ m/^alert_recovery\s([0-9])/i) {
+			$pa_config->{"alert_recovery"} = $1;
 		}
   		elsif ($parametro =~ m/^verbosity\s([0-9]*)/i) { $pa_config->{"verbosity"} = $1; } 
   		elsif ($parametro =~ m/^server_threshold\s([0-9]*)/i) { $pa_config->{"server_threshold"}  = $1; } 

@@ -1,3 +1,8 @@
+2008-01-21 Sancho Lerena <slerena@gmail.com>
+	
+	* pandora_db.pl: Disable compactation until fix bug in compactation
+	function that currently delete data insted compacting it.  
+
 2008-01-14 Sancho Lerena <slerena@gmail.com>
 
 	*  conf/pandora_server.conf: New token for activate alert recovery: 

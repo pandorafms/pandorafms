@@ -507,7 +507,7 @@ sub help_screen{
 sub pandoradb_main {
 	pandora_purgedb ($config_days_purge, $dbname, $dbuser, $dbpass, $dbhost);
 	pandora_checkdb_consistency ($dbname, $dbuser, $dbpass, $dbhost);
-	pandora_compactdb ($config_days_compact, $dbname, $dbuser, $dbpass, $dbhost);
+	# pandora_compactdb ($config_days_compact, $dbname, $dbuser, $dbpass, $dbhost);
 	print "\n";
 	exit;
 }

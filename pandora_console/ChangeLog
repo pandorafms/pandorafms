@@ -1,3 +1,8 @@
+2008-01-21 Sancho Lerena <slerena@gmail.com>
+
+	* operation/visual_console/render_view.php: Applied some patches from
+	guruevi to improve graphic size and tooltil. Label is still displayed on
+	graphic canvas (it could be deleted in the future using an optional switch)
 
 2008-01-11 Sancho Lerena <slerena@gmail.com>
 

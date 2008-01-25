@@ -116,34 +116,38 @@ sub pandora_loadconfig {
 	# Default values
 	$pa_config->{'version'} = $pandora_version;
 	$pa_config->{'build'} = $pandora_build;
-	$pa_config->{"dbuser"} ="pandora";
+	$pa_config->{"dbuser"} = "pandora";
 	$pa_config->{"dbpass"} = "pandora";
 	$pa_config->{"dbhost"} = "localhost";
 	$pa_config->{"dbname"} = "pandora";
-	$pa_config->{"basepath"}=$pa_config->{'pandora_path'}; # Compatibility with Pandora 1.1
-	$pa_config->{"incomingdir"}="/var/spool/pandor/data_in";
-	$pa_config->{"server_threshold"}=30;
-	$pa_config->{"alert_threshold"}=60;
-	$pa_config->{"logfile"}="/var/log/pandora_server.log";
-	$pa_config->{"errorlogfile"}="/var/log/pandora_server.error";
-	$pa_config->{"networktimeout"}=15; 	# By default, not in config file yet
-	$pa_config->{"pandora_master"}=1; 	# on by default
-	$pa_config->{"pandora_check"}=0; 	# on by default
-	$pa_config->{"snmpconsole"}=0; 	# off by default
-	$pa_config->{"version"}=$pandora_version;
-	$pa_config->{"build"}=$pandora_build;
-	$pa_config->{"servername"}=`hostname`;
-	$pa_config->{"servername"}=~ s/\s//g; # Replace ' ' chars
-	$pa_config->{"networkserver"}=0;
-	$pa_config->{"dataserver"}=0;
-	$pa_config->{"icmp_checks"}=1; # Introduced on 1.3.1
-	$pa_config->{"reconserver"}=0;
-	$pa_config->{"servermode"}="";
-	$pa_config->{'snmp_logfile'}="/var/log/pandora/pandora_snmptrap.log";
-	$pa_config->{"network_threads"}=5; # Fixed default
-	$pa_config->{"keepalive"}=60; # 60 Seconds initially for server keepalive
+	$pa_config->{"basepath"} = $pa_config->{'pandora_path'}; # Compatibility with Pandora 1.1
+	$pa_config->{"incomingdir"} = "/var/spool/pandora/data_in";
+	$pa_config->{"server_threshold"} = 30;
+	$pa_config->{"alert_threshold"} = 60;
+	$pa_config->{"logfile"} = "/var/log/pandora_server.log";
+	$pa_config->{"errorlogfile"} = "/var/log/pandora_server.error";
+	$pa_config->{"networktimeout"} = 15; 	# By default, not in config file yet
+	$pa_config->{"pandora_master"} = 1; 	# on by default
+	$pa_config->{"pandora_check"} = 0; 	# on by default
+	$pa_config->{"snmpconsole"} = 0; 	# off by default
+	$pa_config->{"version"} = $pandora_version;
+	$pa_config->{"build"} = $pandora_build;
+	$pa_config->{"servername"} = `hostname`;
+	$pa_config->{"servername"} =~ s/\s//g; # Replace ' ' chars
+	$pa_config->{"networkserver"} = 0;
+	$pa_config->{"dataserver"} = 0;
+	$pa_config->{"icmp_checks"} = 1; # Introduced on 1.3.1
+	$pa_config->{"reconserver"} = 0;
+	$pa_config->{"servermode"} = "";
+	$pa_config->{'snmp_logfile'} = "/var/log/pandora/pandora_snmptrap.log";
+	$pa_config->{"network_threads"} = 5; # Fixed default
+	$pa_config->{"keepalive"} = 60; # 60 Seconds initially for server keepalive
 	$pa_config->{"keepalive_orig"} = $pa_config->{"keepalive"};
-	$pa_config->{"alert_recovery"} = 0;
+	$pa_config->{"alert_recovery"} = 0; # Introduced on 1.3.1
+        $pa_config->{"snmp_checks"} = 1; # Introduced on 1.3.1
+        $pa_config->{"snmp_timeout"} = 8; # Introduced on 1.3.1
+        $pa_config->{"tcp_checks"} = 1; # Introduced on 1.3.1
+        $pa_config->{"tcp_timeout"} = 20; # Introduced on 1.3.1
 
 	# Check for UID0
 	if ($> == 0){
@@ -237,6 +241,19 @@ sub pandora_loadconfig {
 		elsif ($parametro =~ m/^alert_recovery\s([0-9])/i) {
 			$pa_config->{"alert_recovery"} = $1;
 		}
+                elsif ($parametro =~ m/^snmp_checks\s([0-9])/i) {
+                        $pa_config->{"snmp_checks"} = $1;
+                }
+                elsif ($parametro =~ m/^snmp_timeout\s([0-9])/i) {
+                        $pa_config->{"snmp_timeout"} = $1;
+                }
+                elsif ($parametro =~ m/^tcp_checks\s([0-9])/i) {
+                        $pa_config->{"tcp_checks"} = $1;
+                }
+                elsif ($parametro =~ m/^tcp_timeout\s([0-9])/i) {
+                        $pa_config->{"tcp_timeout"} = $1;
+                }
+
   		elsif ($parametro =~ m/^verbosity\s([0-9]*)/i) { $pa_config->{"verbosity"} = $1; } 
   		elsif ($parametro =~ m/^server_threshold\s([0-9]*)/i) { $pa_config->{"server_threshold"}  = $1; } 
 		elsif ($parametro =~ m/^alert_threshold\s([0-9]*)/i) { $pa_config->{"alert_threshold"} = $1; } 

@@ -1,3 +1,8 @@
+2008-01-25 Sancho Lerena <slerena@gmail.com>
+
+	* lib/PandoraFMS/Config.pm, bin/pandora_network, 
+	conf/pandora_server.conf: New options for tcp/snmp retries and timout
+
 2008-01-21 Sancho Lerena <slerena@gmail.com>
 	
 	* pandora_db.pl: Disable compactation until fix bug in compactation

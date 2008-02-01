@@ -1,3 +1,10 @@
+2008-02-01  Raul Mateos  <raulofpandora@gmail.com>
+
+	* operation/agentes/estado_*.php: Added code to help admin user
+	to create agents and alerts, adding buttons to godmode.
+	
+	* include/languages/language_es_es.php: Updated text.
+
 2008-01-21 Sancho Lerena <slerena@gmail.com>
 
 	* operation/visual_console/render_view.php: Applied some patches from

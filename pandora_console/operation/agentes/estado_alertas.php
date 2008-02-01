@@ -1,9 +1,9 @@
 <?php
 // Pandora - the Free monitoring system
 // ====================================
-// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
 // Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
-// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
@@ -133,7 +133,11 @@ if (isset($_GET["id_agente"])){
 		echo '</table>';
 
 	} else {
-	echo "<div class='nf'>".$lang_label["no_alerts"]."</div>";
+		echo "<div class='nf'>".$lang_label["no_alerts"]."</div>";
+	      	$id_user = $_SESSION["id_usuario"];
+	if ( (give_acl($id_user, 0, "LM")==1) OR (give_acl($id_user, 0, "AW")==1 ) OR (give_acl($id_user, 0, "PM")==1) OR (give_acl($id_user, 0, "DM")==1) OR (give_acl($id_user, 0, "UM")==1 )){
+	      echo "&nbsp;<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=$id_agente'><input type='submit' class='sub next' name='crt' value='".$lang_label["create_alert"]."'></form>";
+	      }
 	}
 
 } else {
@@ -267,8 +271,10 @@ if (isset($_GET["id_agente"])){
 			echo "</table><br><div class='nf'>".
 			$lang_label["no_alert"]."</div>";
 		}
-	} else echo "</table><br><div class='nf'>".
-	$lang_label["no_agent"].$lang_label["no_agent_alert"]."</div>";
+	} else {
+		echo "</table><br><div class='nf'>".
+		$lang_label["no_agent"].$lang_label["no_agent_alert"]."</div>";
+	}
 }
 
 ?>

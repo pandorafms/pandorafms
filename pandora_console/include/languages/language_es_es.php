@@ -2,9 +2,9 @@
 
 // Pandora FMS - the Free monitoring system
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
 // Main PHP/SQL code development and project architecture and management
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
 // CSS and some PHP additions
 // Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
 // Javascript Active Console code.
@@ -589,7 +589,7 @@ $lang_label["general_config"]="Configuración general";
 $lang_label["no_profile"]="Este usuario no tiene ningún perfil/grupo asociado";
 $lang_label["no_agent"]="No hay ningún agente incluido en este grupo";
 $lang_label["no_change_field"]="Este campo no puede modificarse en el modo edición";
-$lang_label["no_alert"]="Ningún agente de este grupo tiene alguna alerta definida";
+$lang_label["no_alert"]="Ningún agente de este grupo tiene alertas definidas";
 $lang_label["total_data"]="Datos totales";
 
 $lang_label["no_incidents"]="Ningún incidente se ajusta a tu filtro de búsqueda";

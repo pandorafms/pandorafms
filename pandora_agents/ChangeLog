@@ -1,3 +1,12 @@
+
+2008-02-02 Sancho lerena <slerena@gmail.com>
+
+	* pandora_arduino.c: Added microcode for arduino.
+
+	* AUTHORS: Added Jorge to autors, was missing.
+
+	* pandora_serialread: Added sleep to improve serial read.
+
 2008-01-10 Sancho Lerena <slerena@gmail.com>
 
         * Win32: Deleted old installer exes. 

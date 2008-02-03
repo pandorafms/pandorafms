@@ -11,6 +11,7 @@ rm $TMPFILE 2> /dev/null
 
 # Fork and let a process reading from serialport
 cat < $SERIALPORT > $TMPFILE &
+sleep 1
 
 # Send gate read request to SERIALPORT
 echo $1  > $SERIALPORT

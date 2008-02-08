@@ -64,7 +64,7 @@ LOCK TABLES `tlanguage` WRITE;
 INSERT INTO `tlanguage` VALUES ('en','English');
 INSERT INTO `tlanguage` VALUES ('es_es','Espa&ntilde;ol');
 INSERT INTO `tlanguage` VALUES ('de','Deutch');
-INSERT INTO `tlanguage` VALUES ('fr','Fran&ccedil;ais')
+INSERT INTO `tlanguage` VALUES ('fr','Fran&ccedil;ais');
 INSERT INTO `tlanguage` VALUES ('pt_br','Portugu&ecirc;s-Brasil');
 
 UNLOCK TABLES;
@@ -203,6 +203,3 @@ INSERT INTO `tnetwork_profile_component` VALUES (12,54,3);
 INSERT INTO `tnetwork_profile_component` VALUES (13,55,3);
 INSERT INTO `tnetwork_profile_component` VALUES (14,56,3);
 INSERT INTO `tnetwork_profile_component` VALUES (15,57,3);
-
-INSERT INTO `ttipo_modulo` VALUES (100,'keep_alive',-1,'KeepAlive','mod_keepalive.png');
-

@@ -1,5 +1,10 @@
 2008-02-01  Raul Mateos  <raulofpandora@gmail.com>
 
+	* pandoradb_data.sql: Solved stupid bug with ending ";". Deleted duplicated
+	insert.
+
+2008-02-01  Raul Mateos  <raulofpandora@gmail.com>
+
 	* operation/agentes/estado_*.php: Added code to help admin user
 	to create agents and alerts, adding buttons to godmode.
 	

@@ -1,3 +1,7 @@
+2008-02-01  Raul Mateos  <raulofpandora@gmail.com>
+
+	* pandoradb_data.sql: Solved stupid bug with ending ";".
+
 2008-01-10 Sancho Lerena <slerena@gmail.com>
 
 	* pandoradbdata_13_to_14.sql: Correct build and version.

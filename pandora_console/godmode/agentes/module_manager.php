@@ -1,26 +1,11 @@
-<?PHP
-// Pandora FMS - the Free monitoring system
+<?php
+// Pandora FMS - the Free Monitoring System
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development and project architecture and management
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP additions
-// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
-// Javascript Active Console code.
-// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
-// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development, project architecture and management.
+// Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
+// CSS and some PHP code additions
+// Please see http://pandora.sourceforge.net for full contribution list
 ?>
 <script language="JavaScript" type="text/javascript">
 <!--
@@ -197,41 +182,43 @@ if ($row=mysql_num_rows($result)){
 			// Render module group names  (fixed code)
 			$nombre_grupomodulo = dame_nombre_grupomodulo ($module_group2);
 			$last_modulegroup = $module_group2;
-			echo "<tr><td class='datos3' align='center' colspan='9'><b>".$nombre_grupomodulo."</b>";
+			echo "<tr><td class='datos3' align='center' colspan='9'><b>".$nombre_grupomodulo."</b></td></tr>";
 		}
 
-		echo "<tr><td class='".$tdcolor."_id'>".$nombre_modulo;
+		echo "<tr><td class='".$tdcolor."_id'>".$nombre_modulo."</td>";
 		echo "<td class='".$tdcolor."f9'>";
 		if ($id_tipo > 0) {
 			echo "<img src='images/".show_icon_type($id_tipo)."' border=0>";
 		}
+		echo "</td>";
 		if ($module_interval2!=0){
-			echo "<td class='$tdcolor'>".$module_interval2;
+			echo "<td class='$tdcolor'>".$module_interval2."</td>";
 		} else {
-			echo "<td class='$tdcolor'> N/A";
+			echo "<td class='$tdcolor'> N/A </td>";
 		}
 		echo "<td class='$tdcolor' title='$descripcion'>".substr($descripcion,0,30)."</td>";
 		echo "<td class='$tdcolor'>".
 		substr(dame_nombre_grupomodulo($module_group2),0,15)."</td>";
 		echo "<td class='$tdcolor'>";
-		if ($module_max == $module_min) {
-			$module_max = "N/A";
-			$module_min = "N/A";
-		}
-		echo $module_max." / ".$module_min;
+			if ($module_max == $module_min) {
+				$module_max = "N/A";
+				$module_min = "N/A";
+			}
+			echo $module_max." / ".$module_min;
+		echo "</td>";
 		echo "<td class='$tdcolor'>";
 		if ($id_tipo != -1){
 			echo "<a href='index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&delete_module=".$row["id_agente_modulo"]."'".' onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;">';
-			echo "<img src='images/cross.png' border=0 alt='".$lang_label["delete"]."'>";
+			echo "<img src='images/cross.png' border=0 title='".$lang_label["delete"]."'>";
 			echo "</b></a>&nbsp;";
 			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&tab=module&update_module=".$row["id_agente_modulo"]."#modules'>";
-			echo "<img src='images/config.png' border=0 alt='".$lang_label["update"]."' onLoad='type_change()'></b></a>";
+			echo "<img src='images/config.png' border=0 title='".$lang_label["update"]."' onLoad='type_change()'></b></a>";
 		}
 		// Value arithmetical media fix
 		if (($id_tipo != 3) AND ($id_tipo != 10) AND ($id_tipo != 17)){
 			echo "&nbsp;";
 			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&tab=module&fix_module=".$row["id_agente_modulo"]."'".' onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;">';
-			echo "<img src='images/chart_curve.png' border=0></b></a>";
+			echo "<img src='images/chart_curve.png' border=0 title='Normalize'></b></a>";
 		}
 	}
 	echo "</table>";

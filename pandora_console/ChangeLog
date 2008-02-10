@@ -1,4 +1,9 @@
-2008-02-01  Raul Mateos  <raulofpandora@gmail.com>
+2008-02-11  Raul Mateos  <raulofpandora@gmail.com>
+
+	* pandora_console/godmode/agentes/module_manager.php: Closed some html tags.
+	Added title for the action icons.
+
+2008-02-09  Raul Mateos  <raulofpandora@gmail.com>
 
 	* pandoradb_data.sql: Solved stupid bug with ending ";".
 

@@ -34,8 +34,8 @@ our @EXPORT = qw( 	pandora_help_screen
 # There is no global vars, all variables (setup) passed as hash reference
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "1.3.1G";
-my $pandora_build="PS080114";
+my $pandora_version = "1.3.1GX";
+my $pandora_build="PS080210";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -148,15 +148,16 @@ sub pandora_loadconfig {
         $pa_config->{"snmp_timeout"} = 8; # Introduced on 1.3.1
         $pa_config->{"tcp_checks"} = 1; # Introduced on 1.3.1
         $pa_config->{"tcp_timeout"} = 20; # Introduced on 1.3.1
-
+	$pa_config->{"snmp_proc_deadresponse"} = 0; # Introduced on 1.3.1 10 Feb08
 	# Check for UID0
 	if ($> == 0){
-		printf " [W] It is not a good idea running Pandora FMS Server as root user, please DON'T DO IT!\n";
+		printf " [W] Not all Pandora FMS components need to be executed as root\n";
+		printf "     please consider starting it with a non-privileged user.\n";
 	}
 	# Check for file
 	if ( ! -e $archivo_cfg ) {
 		printf "\n[ERROR] Cannot open configuration file at $archivo_cfg. \n";
-		printf " Please specify a valid Pandora FMS Home Directory in command line. \n";
+		printf " Please specify a valid Pandora FMS configuration file in command line. \n";
 		exit 1;
 	}
 	# Collect items from config file and put in an array 
@@ -165,7 +166,7 @@ sub pandora_loadconfig {
 		$buffer_line = $_;
 		if ($buffer_line =~ /^[a-zA-Z]/){ # begins with letters
 			if ($buffer_line =~ m/([\w\-\_\.]+)\s([0-9\w\-\_\.\/\?\&\=\)\(\_\-\!\*\@\#\%\$\~\"\']+)/){
-				push @command_line,$buffer_line;
+				push @command_line, $buffer_line;
 			}
 		}
 	}
@@ -220,6 +221,9 @@ sub pandora_loadconfig {
   		elsif ($parametro =~ m/^daemon\s([0-9]*)/i) { $pa_config->{'daemon'}= $1;}
 		elsif ($parametro =~ m/^dataserver\s([0-9]*)/i) {
 			$pa_config->{'dataserver'}= $1;
+		}
+		elsif ($parametro =~ m/^snmp_proc_deadresponse\s([0-9]*)/i) { 
+			$pa_config->{"snmp_proc_deadresponse"} = $1;
 		}
 		elsif ($parametro =~ m/^reconserver\s([0-9]*)/i) {
 			$pa_config->{'reconserver'}= $1;

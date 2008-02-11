@@ -1,3 +1,15 @@
+2008-02-10 Sancho Lerena <slerena@gmail.com>
+
+	* Config.pm: Added support for new config token: 
+	snmp_proc_deadresponse. Used to report bad monitor status from
+	snmp if a snmp monitor request have errors (timeout or unknown OID)
+
+	* pandora_network: Fixed bug for float data in snmp_data modules and 
+	negative values. Code cleanup and trying a new method (more fast and 
+	simple) to get SNMP data (using get method instead getnext). Better
+	error detection and reporting. Pending to test in heavy loaded envi-
+	ronment locking mechanism for session contruction.
+
 2008-01-25 Sancho Lerena <slerena@gmail.com>
 
 	* lib/PandoraFMS/Config.pm, bin/pandora_network, 

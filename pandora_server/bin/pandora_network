@@ -48,6 +48,8 @@ my $icmp_lock : shared;
 my $queue_lock : shared;
 
 $ENV{'MIBS'}="ALL";  #Load all available MIBs only once
+&SNMP::initMib();
+
 $SIG{'TERM'} = 'pandora_shutdown';
 $SIG{'INT'} = 'pandora_shutdown';
 
@@ -430,51 +432,38 @@ sub pandora_query_snmp (%$$$$) {
         my $output ="";
         my $snmp_timeout = 1000 * 1000 * $pa_config->{"snmp_timeout"};
         my $snmp_retries = $pa_config->{'snmp_checks'};
-        $snmp_retries--; # First retry is implicit.
-                	
 	my $SESSION = new SNMP::Session (DestHost =>  $snmp_target,
 					Timeout   => $snmp_timeout,
-					Retries => $snmp_retries ,
+					Retries   => $snmp_retries,
                                 	Community => $snmp_community,
                                 	Version   => 1);
-   	if ( (!defined($SESSION)) && ($snmp_target ne "") && ($snmp_community ne "") && ($snmp_oid ne "")) {
-      		logger($pa_config, "SNMP ERROR SESSION for Target $snmp_target ", 2);
+	
+	if ($SESSION->{ErrorStr}) {
+		# print "DEBUG $snmp_target $snmp_timeout $snmp_retries $snmp_community \n";
+		# print "SESSION ERROR: ".$SESSION->{ErrorStr}."\n";
+      		logger($pa_config, "SNMP ERROR SESSION for Target $snmp_target ".$SESSION->{ErrorStr}, 2);
 		$_[4] = "1";
-   	} else {
-		# Perl uses different OID syntax than SNMPWALK or PHP's SNMP
-		# for example:
-		# SNMPv2-MIB::sysDescr for PERL SNMP
-		# is equivalent to SNMPv2-MIB::sysDescr.0 in SNMP and PHP/SNMP
-		# So we parse last byte and cut off if = 0 and delete 1 if != 0
-		my $perl_oid = $snmp_oid;
-		if ($perl_oid =~ m/(.*)\.([0-9]*)\z/){
-			my $local_oid = $1;
-			my $local_oid_idx = $2;
-			if ($local_oid_idx == 0){
-				$perl_oid = $local_oid; # Strip .0 from orig. OID
-			} else {
-				$local_oid_idx--;
-				$perl_oid = $local_oid.".".$local_oid_idx;
-			}
-		}
-		# Locking for SNMP call. SNMP is not thread safe !!
-		my $OIDLIST = new SNMP::VarList([$perl_oid]);
-		{
-			lock $snmp_lock;
-			# Pass the VarList to getnext building an array of the output
-			my @OIDINFO = $SESSION->getnext($OIDLIST);
-			$output = $OIDINFO[0];
-			undef ($OIDLIST);
-			
-		}
-		if ((!defined($output)) || ($output eq "")){
-			$_[4] = "1";
-			return 0;
-		} else {
-			$_[4] = "0";
-		}
 		undef ($SESSION);
+		return 0;
+   	} 
+	my $oid = SNMP::translateObj($snmp_oid);
+	# Locking for SNMP call. SNMP is not thread safe !!
+	{
+		lock $snmp_lock;
+		$output = $SESSION->get($oid);
 	}
+	if ($SESSION->{ErrorStr}) {
+               	# print "GET DEBUG $snmp_target $snmp_timeout $snmp_retries $snmp_community $snmp_oid \n";
+		# print "GET ERROR: ".$SESSION->{ErrorStr}."\n";
+               	logger($pa_config, "SNMP ERROR SNMPGET for Target $snmp_target ".$SESSION->{ErrorStr}, 2);
+               	$_[4] = "1";
+		undef ($SESSION);
+               	return 0;
+	}
+	# print "DEBUGOID $snmp_oid $snmp_target $snmp_community";
+	# print "DEBUG [$output] \n";
+	$_[4] = "0";
+	undef ($SESSION);
 	return $output;
 }
 
@@ -579,7 +568,7 @@ sub exec_network_module {
 			    }
 			    # SNMP_DATA and SNMP_DATA_INC
 			    elsif (($id_tipo_modulo == 15) || ($id_tipo_modulo == 16) ){ 
-				    if ($temp2 =~ /[A-Za-z\.\,\-\/\\\(\)\[\]]/){
+				    if ($temp2 =~ /[A-Za-z\/\\\(\)\[\]]/){
 					    $module_result = 1; # Alphanumeric data, not numeric
 				    } else {
 					    $module_data = $temp2; # Float values are also valid
@@ -590,7 +579,13 @@ sub exec_network_module {
 		    } else { # Failed SNMP-GET
 			    $module_data = 0;
 			    if ($id_tipo_modulo == 18){ # snmp_proc
-				    $module_result = 0;
+				    # Feature from 10Feb08. If snmp_proc_deadresponse = 1 and cannot contact by an error
+				    # this is a fail monitor
+				    if ($pa_config->{"snmp_proc_deadresponse"} eq "1"){
+				            $module_result = 0;
+				    } else {
+					    $module_result = 1;
+				    }
 			    } else {
 			            $module_result = 1; # No data, cannot connect
 			    }

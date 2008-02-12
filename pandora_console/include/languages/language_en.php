@@ -1,24 +1,11 @@
 <?php
-// Pandora FMS - the Free monitoring system
+// Pandora FMS - the Free Monitoring System
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development and project architecture and management
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP additions
-// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
-// Additions to Pandora FMS 1.2 graph code
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development, project architecture and management.
+// Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
+// CSS and some PHP code additions
+// Please see http://pandora.sourceforge.net for full contribution list
 
 $lang_label["view_agents"]="View Agents";
 $lang_label["manage_incidents"]="Manage Incidents";
@@ -840,7 +827,7 @@ $lang_label["five_days"]="Five days";
 $lang_label["last_week"]="One week";
 $lang_label["15_days"]="15 days";
 $lang_label["last_month"]="One month";
-$lang_label["two_month"]="Two monts";
+$lang_label["two_month"]="Two months";
 $lang_label["six_months"]="Six months";
 $lang_label["min."]="Min.";
 $lang_label["max."]="Max.";

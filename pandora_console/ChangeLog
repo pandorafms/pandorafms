@@ -1,6 +1,10 @@
+2008-02-12  Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/languages/language_en.php: Corrected typo.
+
 2008-02-11  Raul Mateos  <raulofpandora@gmail.com>
 
-	* pandora_console/godmode/agentes/module_manager.php: Closed some html tags.
+	* godmode/agentes/module_manager.php: Closed some html tags.
 	Added title for the action icons.
 
 2008-02-09  Raul Mateos  <raulofpandora@gmail.com>

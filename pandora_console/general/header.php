@@ -1,9 +1,9 @@
 <?php
 // Pandora FMS - the Free Monitoring System
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
 // Main PHP/SQL code development, project architecture and management.
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
 // CSS and some PHP code additions
 // Please see http://pandora.sourceforge.net for full contribution list
 
@@ -29,7 +29,7 @@ echo '
 ';
 echo "<div id='head_m'>";
 
-echo "<table width=620 border='0'>
+echo "<table width=550 border='0'>
 	<tr>";
 if (isset ($_SESSION["id_usuario"])){
 	echo "<td width=40%>";

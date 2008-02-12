@@ -3,7 +3,7 @@
 // ========================================
 // Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
 // Main PHP/SQL code development, project architecture and management.
-// Copyright (c) 2004-20078 Raul Mateos Martin, raulofpandora@gmail.com
+// Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
 // CSS and some PHP code additions
 // Please see http://pandora.sourceforge.net for full contribution list
 
@@ -64,11 +64,11 @@ if (comprueba_login() == 0) {
 	</td></form><td valign='top'>";
 
         echo $lang_label["free_text_search"];
-        echo "</td><td>";
+        echo "</td><td valign='top'>";
         echo "<form method='post'
                 action='index.php?sec=estado&sec2=operation/agentes/estado_agente
                 &refr=60'>";
-        echo "<input type=text name='search' size='15' >";
+        echo "<input type=text name='search' size='15'>";
         echo "</td><td valign='top'>";
         echo "<input name='srcbutton' type='submit' class='sub' 
         value='".$lang_label["search"]."'>";

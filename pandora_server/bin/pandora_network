@@ -432,15 +432,17 @@ sub pandora_query_snmp (%$$$$) {
         my $output ="";
         my $snmp_timeout = 1000 * 1000 * $pa_config->{"snmp_timeout"};
         my $snmp_retries = $pa_config->{'snmp_checks'};
-	my $SESSION = new SNMP::Session (DestHost =>  $snmp_target,
+	my $SESSION;
+	# Locking for SNMP call. SNMP is not thread safe !!
+	{
+		lock $snmp_lock;
+		$SESSION = new SNMP::Session (DestHost =>  $snmp_target,
 					Timeout   => $snmp_timeout,
 					Retries   => $snmp_retries,
                                 	Community => $snmp_community,
                                 	Version   => 1);
-	
+	}
 	if ($SESSION->{ErrorStr}) {
-		# print "DEBUG $snmp_target $snmp_timeout $snmp_retries $snmp_community \n";
-		# print "SESSION ERROR: ".$SESSION->{ErrorStr}."\n";
       		logger($pa_config, "SNMP ERROR SESSION for Target $snmp_target ".$SESSION->{ErrorStr}, 2);
 		$_[4] = "1";
 		undef ($SESSION);
@@ -452,16 +454,12 @@ sub pandora_query_snmp (%$$$$) {
 		lock $snmp_lock;
 		$output = $SESSION->get($oid);
 	}
-	if ($SESSION->{ErrorStr}) {
-               	# print "GET DEBUG $snmp_target $snmp_timeout $snmp_retries $snmp_community $snmp_oid \n";
-		# print "GET ERROR: ".$SESSION->{ErrorStr}."\n";
+	if ((!defined($SESSION)) || (!defined($output)) || ($output eq "") || ($SESSION->{ErrorStr})) {
                	logger($pa_config, "SNMP ERROR SNMPGET for Target $snmp_target ".$SESSION->{ErrorStr}, 2);
                	$_[4] = "1";
 		undef ($SESSION);
                	return 0;
 	}
-	# print "DEBUGOID $snmp_oid $snmp_target $snmp_community";
-	# print "DEBUG [$output] \n";
 	$_[4] = "0";
 	undef ($SESSION);
 	return $output;
@@ -568,10 +566,10 @@ sub exec_network_module {
 			    }
 			    # SNMP_DATA and SNMP_DATA_INC
 			    elsif (($id_tipo_modulo == 15) || ($id_tipo_modulo == 16) ){ 
-				    if ($temp2 =~ /[A-Za-z\/\\\(\)\[\]]/){
-					    $module_result = 1; # Alphanumeric data, not numeric
+				    if (!is_numeric($temp2)){		   
+					    $module_result = 1; 
 				    } else {
-					    $module_data = $temp2; # Float values are also valid
+					    $module_data = $temp2;
 				    } 
 			    } else { # String SNMP
 				    $module_data = $temp2;

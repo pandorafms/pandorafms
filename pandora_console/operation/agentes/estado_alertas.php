@@ -119,7 +119,7 @@ if (isset($_GET["id_agente"])){
 			}
 			echo "<td align='center' class='".$tdcolor."'>".$data["times_fired"]."</td>";
 			if ($data["times_fired"] <> 0){
-				echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_red.png'>";
+				echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_red.png' title='".$lang_label["fired"]."'>";
 				echo "</td>";
 				$id_grupo_alerta = give_db_value ("id_grupo", "tagente", "id_agente", $id_agente);
 				if (give_acl($id_user, $id_grupo_alerta, "AW") == 1) {
@@ -128,7 +128,7 @@ if (isset($_GET["id_agente"])){
 					echo "</td>";
 				}
 			} else
-				echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_green.png'></td>";
+				echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_green.png' title='".$lang_label["not_fired"]."'></td>";
 		}
 		echo '</table>';
 
@@ -170,19 +170,22 @@ if (isset($_GET["id_agente"])){
 	echo "<select name='ag_group' onChange='javascript:this.form.submit();' class='w130'>";
 
 	if ( $ag_group > 1 ){
-		echo "<option value='".$ag_group."'>".dame_nombre_grupo($ag_group)."</option>";
+		echo "<option value='".$ag_group."'>".dame_nombre_grupo($ag_group).
+		"</option>";
 	}
 	echo "<option value=1>".dame_nombre_grupo(1)."</option>";
 	list_group ($id_user);
 	echo "</select></td>";
-	echo "<td valign='middle'><noscript><input name='uptbutton' type='submit' class='sub' value='".$lang_label["show"]."'></noscript></td></form>";
+	echo "<td valign='middle'>
+	<noscript>
+	<input name='uptbutton' type='submit' class='sub' value='".$lang_label["show"]."'>
+	</noscript></td></form>";
 	// Show only selected groups
 
 	if ($ag_group > 1)
 		$sql='SELECT id_agente, nombre, disabled FROM tagente WHERE id_grupo='.$ag_group.' ORDER BY nombre';
 	else
 		$sql='SELECT id_agente, nombre, disabled FROM tagente ORDER BY id_grupo, nombre';
-
 	$result=mysql_query($sql);
 	if (mysql_num_rows($result)){
 		$color=1;
@@ -221,9 +224,9 @@ if (isset($_GET["id_agente"])){
 						<b>".$nombre_agente."</b>";
 						$string .= "<td class='$tdcolor' align='center'>";
 						if ($data["times_fired"] <> 0)
-							$string .= "<img src='images/pixel_red.png' width=40 height=18>";
+							$string .= "<img src='images/pixel_red.png' width=40 height=18 title='".$lang_label["fired"]."'>";
 						else
-							$string .= "<img src='images/pixel_green.png' width=40 height=18>";
+							$string .= "<img src='images/pixel_green.png' width=40 height=18 title='".$lang_label["not_fired"]."'>";
 							
 						$string = $string."<td class='".$tdcolor."'>"
 						.dame_nombre_alerta($data["id_alerta"])."</td>";

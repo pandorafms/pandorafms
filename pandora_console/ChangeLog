@@ -1,3 +1,8 @@
+2008-02-16  Raul Mateos  <raulofpandora@gmail.com>
+
+	* operation/agentes/estado_*.php: Improved usability adding titles in
+	images.
+
 2008-02-12  Raul Mateos  <raulofpandora@gmail.com>
 
 	* operation/agentes/estado_agente.php, general/header.php: small changes

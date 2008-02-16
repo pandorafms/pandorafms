@@ -271,21 +271,21 @@ if (comprueba_login() == 0) {
 				if ($numero_monitor <> 0){
 					if ($estado_general <> 0){
 						if ($estado_cambio == 0){
-							echo "<img src='images/pixel_red.png' width=40 height=18>";
+							echo "<img src='images/pixel_red.png' width=40 height=18 title='".$lang_label["red_light"]."'>";
 						} else {
-							echo "<img src='images/pixel_yellow.png' width=40 height=18>";
+							echo "<img src='images/pixel_yellow.png' width=40 height=18 title='".$lang_label["yellow_light"]."'>";
 						}
 					} elseif ($monitor_ok > 0) {
-						echo "<img src='images/pixel_green.png' width=40 height=18>";
+						echo "<img src='images/pixel_green.png' width=40 height=18 title='".$lang_label["green_light"]."'>";
 					}
 					elseif ($numero_datamodules > 0) {
-						echo "<img src='images/pixel_gray.png' width=40 height=18>";
+						echo "<img src='images/pixel_gray.png' width=40 height=18 title='".$lang_label["no_light"]."'>";
 					}
 					elseif ($monitor_down > 0) {
-						echo "<img src='images/pixel_fucsia.png' width=40 height=18>"; 
+						echo "<img src='images/pixel_fucsia.png' width=40 height=18 title='".$lang_label["broken_light"]."'>"; 
 					}
 				} else 
-					echo "<img src='images/pixel_blue.png' width=40 height=18>";
+					echo "<img src='images/pixel_blue.png' width=40 height=18 title='".$lang_label["blue_light"]."'>";
 				
 				// checks if an alert was fired recently
 				echo "<td class='$tdcolor' align='center'>";
@@ -293,9 +293,9 @@ if (comprueba_login() == 0) {
 					echo "<img src='images/pixel_gray.png' width=20 height=9>";
 				else {
 					if (check_alert_fired($id_agente) == 1) 
-						echo "<img src='images/pixel_red.png' width=20 height=9>";
+						echo "<img src='images/pixel_red.png' width=20 height=9 title='".$lang_label["fired"]."'>";
 					else
-						echo "<img src='images/pixel_green.png' width=20 height=9>";
+						echo "<img src='images/pixel_green.png' width=20 height=9 title='".$lang_label["not_fired"]."'>";
 				}				
 				echo "</td>";
 				echo "<td class='$tdcolor'>";

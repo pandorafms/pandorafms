@@ -133,9 +133,8 @@ if (mysql_num_rows($result)){
 				WHERE id_agente = '.$row["id_agente"].' 
 				AND
 				id_tipo_modulo in (2, 9, 12, 18, 6, 100)';
-				}
-echo $query_gen;
-						$result_gen=mysql_query($query_gen);
+						}
+				$result_gen=mysql_query($query_gen);
 			if (mysql_num_rows ($result_gen)) {
 				while ($data=mysql_fetch_array($result_gen)){
 					if ($color == 1){
@@ -188,8 +187,9 @@ echo $query_gen;
 						$string .= "<span class='redb'>";
 					else
 						$string .= "<span>";
-					
-					$string .= human_time_comparation($data2["timestamp"])."</td></tr>";
+
+					$string .= human_time_comparation($data2["timestamp"])."
+					</span></td></tr>";
 				}
 			}
 		}

@@ -1,3 +1,9 @@
+2008-02-19  Raul Mateos  <raulofpandora@gmail.com>
+
+	* operation/agentes/tactical.php: Solved small visual issue with rows.
+	
+	* include/languages/language_en.php: Changed CASE in menu texts.
+
 2008-02-16  Raul Mateos  <raulofpandora@gmail.com>
 
 	* operation/agentes/estado_*.php: Improved usability adding titles in

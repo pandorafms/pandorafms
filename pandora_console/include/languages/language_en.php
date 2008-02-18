@@ -7,18 +7,18 @@
 // CSS and some PHP code additions
 // Please see http://pandora.sourceforge.net for full contribution list
 
-$lang_label["view_agents"]="View Agents";
-$lang_label["manage_incidents"]="Manage Incidents";
-$lang_label["view_users"]= "View Users";
+$lang_label["view_agents"]="View agents";
+$lang_label["manage_incidents"]="Manage incidents";
+$lang_label["view_users"]= "View users";
 
 $lang_label["new_incident"]="New Incident";
-$lang_label["search_incident"]="Search Incident";
+$lang_label["search_incident"]="Search incident";
 $lang_label["index_myuser"]="Edit my user";
 
-$lang_label["manage_agents"]="Manage Agents";
-$lang_label["manage_alerts"]="Manage Alerts";
-$lang_label["manage_users"]="Manage Users";
-$lang_label["manage_groups"]="Manage Groups";
+$lang_label["manage_agents"]="Manage agents";
+$lang_label["manage_alerts"]="Manage alerts";
+$lang_label["manage_users"]="Manage users";
+$lang_label["manage_groups"]="Manage groups";
 $lang_label["system_audit"]="System Audit Log";
 
 $lang_label["ag_title"]="Pandora Agents";
@@ -217,19 +217,19 @@ $lang_label["deleting_data"]="Deleting data";
 $lang_label["while_delete_data"]="while deleting data for ";
 $lang_label["please_wait"]="Please wait";
 $lang_label["all_agents"]="All agents";
-$lang_label["db_purge"]="Database Purge";
-$lang_label["db_compact"]="Database Compact";
+$lang_label["db_purge"]="Database purge";
+$lang_label["db_compact"]="Database compact";
 $lang_label["db_stat_agent"]="Database Statistics per Agent";
 $lang_label["configure"]="Configure";
 
 $lang_label["event_main_view"]="Main Event View";
 $lang_label["event_name"]="Event name";
-$lang_label["view_events"]="View Events";
+$lang_label["view_events"]="View events";
 $lang_label["timestamp"]="Timestamp";
 $lang_label["links_header"]="Links";
 $lang_label["godmode_header"]="Administration";
 $lang_label["operation_header"]="Operation";
-$lang_label["db_audit"]="Database Audit";
+$lang_label["db_audit"]="Database audit";
 $lang_label["db_purge_audit"]="Database Audit purge";
 $lang_label["latest_date"]="Latest date";
 $lang_label["first_date"]="First date";
@@ -271,7 +271,7 @@ $lang_label["doit"]="Do it!";
 $lang_label["add"]="Add";
 
 $lang_label["db_purge_event"]="Event Database cleanup";
-$lang_label["db_event"]="Database Event";
+$lang_label["db_event"]="Database event";
 $lang_label["max_min"]="Max/Min";
 $lang_label["max"]="Maximum";
 $lang_label["min"]="Minimum";
@@ -330,7 +330,7 @@ $lang_label["purge_event_all"]="Purge all event data";
 $lang_label["deleting_records"]="Deleting records for module ";
 $lang_label["purge_task"]="Purge task launched for agent id ";
 
-$lang_label["manage_config"]="Manage Config.";
+$lang_label["manage_config"]="Manage config.";
 $lang_label["config_manage"]="Configuration Management";
 $lang_label["get_info"]="Get Info";
 
@@ -359,7 +359,7 @@ $lang_label["agent_edit"]="Edit agents";
 $lang_label["alert_edit"]="Edit alerts";
 $lang_label["global_profile"]="Global Profile";
 $lang_label["name"]="Name";
-$lang_label["manage_profiles"]="Manage Profiles";
+$lang_label["manage_profiles"]="Manage profiles";
 
 $lang_label["error_profile"]="ERROR: At this moment only Global Admin can manage profiles";
 $lang_label["never"]="Never";
@@ -440,7 +440,7 @@ $lang_label["events_per_user"]="Events per user";
 $lang_label["events_per_group"]="Events per group";
 $lang_label["multormod"]="Multiple source module";
  
-$lang_label["db_refine"]="Database Debug";
+$lang_label["db_refine"]="Database debug";
 $lang_label["filtering_datamodule"]="Filtering data module";
 $lang_label["nomodules_selected"]="No modules has been selected";
 $lang_label["purge_below_limits"]="Purge data out these limits";
@@ -522,10 +522,10 @@ $lang_label["users_statistics"]="User activity statistics";
 
 $lang_label["agent_detail"]="Agent detail";
 
-$lang_label["snmp_console_alert"]="SNMP Alerts";
+$lang_label["snmp_console_alert"]="SNMP alerts";
 $lang_label["OID"]="OID";
 $lang_label["SNMP_agent"]="SNMP Agent";
-$lang_label["SNMP_console"]="SNMP Console";
+$lang_label["SNMP_console"]="SNMP console";
 $lang_label["customvalue"]="Custom value";
 
 $lang_label["agent_type"]="Agent type";
@@ -586,7 +586,7 @@ $lang_label["no_snmp_agent"]="There are no SNMP traps in database";
 $lang_label["no_snmp_alert"]="There are no SNMP alerts";
 $lang_label["no_agent_def"]="There are no defined agents";
 
-$lang_label["view_servers"]="Pandora Servers";
+$lang_label["view_servers"]="Pandora servers";
 $lang_label["no_server"]="There are no servers configured into the database";
 $lang_label["master"]="Master";
 $lang_label["checksum"]="Check";
@@ -606,7 +606,7 @@ $lang_label["no_event"]="There are no events";
 $lang_label["agent_access_rate"]="Agent access rate (24h)";
 $lang_label["agent_module_shareout"]="Agent module share out";
 $lang_label["int"]="Itv."; // Sort name for interval
-$lang_label["manage_servers"]="Manage Servers";
+$lang_label["manage_servers"]="Manage servers";
 $lang_label["update_server"]="Update Server";
 $lang_label["upd_server_ok"]="Server updated successfully";
 $lang_label["upd_server_no"]="There was a problem updating server";

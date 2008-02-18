@@ -4,7 +4,7 @@
 // ========================================
 // Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
 // Main PHP/SQL code development, project architecture and management.
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
 // CSS and some PHP code additions
 // Please see http://pandora.sourceforge.net for full contribution list
 
@@ -63,21 +63,21 @@
 	else
 		echo "-";
 
-	echo "</td></tr><tr><td class=datos><b>"."Monitor Not Init"."</b></td>";
-        echo "<td class=datos style='font: bold 2em Arial, Sans-serif; color: #888;'>";
+	echo "</td></tr><tr><td class=datos2><b>"."Monitor Not Init"."</b></td>";
+        echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #888;'>";
         if ($monitor_not_init> 0)
                 echo $monitor_not_init;
         else
                 echo "-";
 
-	echo "<tr><td class=datos2><b>"."Alerts Fired"."</b></td>";
-	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #ff0000;'>";
+	echo "<tr><td class=datos><b>"."Alerts Fired"."</b></td>";
+	echo "<td class=datos style='font: bold 2em Arial, Sans-serif; color: #ff0000;'>";
 	if ($monitor_alert > 0)
 		echo $monitor_alert;
 	else
 		echo "-";
-	echo "<tr><td class=datos><b>"."Alerts Total"."</b></td>";
-	echo "<td class=datos style='font: bold 2em Arial, Sans-serif; color: #000000;'>".$monitor_alert_total;
+	echo "<tr><td class=datos2><b>"."Alerts Total"."</b></td>";
+	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #000000;'>".$monitor_alert_total;
 	echo "</table>";
 
 	// Data checks
@@ -98,14 +98,14 @@
 		echo $data_not_init;
 	else
 		echo "-";
-	echo "<tr><td class=datos2><b>"."Alerts Fired"."</b></td>";
-        echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #f00;'>";
+	echo "<tr><td class=datos><b>"."Alerts Fired"."</b></td>";
+        echo "<td class=datos style='font: bold 2em Arial, Sans-serif; color: #f00;'>";
         if ($data_alert > 0)
                 echo $data_alert;
         else
                 echo "-";
-	echo "<tr><td class=datos><b>"."Alerts Total";
-	echo "<td class=datos style='font: bold 2em Arial, Sans-serif; color: #000;'>".$data_alert_total;
+	echo "<tr><td class=datos2><b>"."Alerts Total";
+	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #000;'>".$data_alert_total;
 	echo "</table>";
 
 	// Summary

@@ -2,8 +2,8 @@
 ##########################################################################
 # Pandora Server. SNMP Console
 ##########################################################################
-# Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+# Copyright (c) 2005-2008 Artica Soluciones Tecnologicas S.L
 #
 #This program is free software; you can redistribute it and/or
 #modify it under the terms of the GNU General Public License
@@ -256,7 +256,8 @@ sub calcula_alerta_snmp {
 					$internal_counter++;
 					# ---------> EXECUTE ALERT <---------------
 					logger($pa_config,"Executing SNMP Trap alert for $agent - $alert_data",2);
-					execute_alert ($pa_config, $id_alert, $field1, $field2, $field3, $trap_agente, $timestamp, $alert_data, "", "", "", $dbh);
+					execute_alert ($pa_config, $id_alert, $field1, $field2, $field3, 
+$trap_agente, $timestamp, $alert_data, "", "", "", 1, $dbh);
 					# Now update the new value for times_fired, alert_fired, internal_counter and last_fired for this alert.
 					my $query_idag2 = "update talert_snmp set times_fired = $times_fired, last_fired = '$ahora_mysql', internal_counter = $internal_counter where id_as = $id_as ";
 					$dbh->do($query_idag2);

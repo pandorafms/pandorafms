@@ -2,8 +2,8 @@
 ##########################################################################
 # Pandora Data Server
 ##########################################################################
-# Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+# Copyright (c) 2005-2008 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -36,7 +36,7 @@ use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
 # FLUSH in each IO, only for DEBUG, very slow !
-$| = 1;
+$| = 0;
 
 my %pa_config; 
 
@@ -69,7 +69,6 @@ sub pandora_dataserver {
 	my $file_data;
 	my $file_md5;
 	my @file_list;
-        my $file_size;
 	my $onefile; # Each item of incoming directory 
 	my $agent_filename;
 	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306",$pa_config->{"dbuser"}, $pa_config->{"dbpass"},{ RaiseError => 1, AutoCommit => 1 });
@@ -167,13 +166,10 @@ sub pandora_keepalived {
 ##########################################################################
 
 sub keep_alive_check {
-    # Search of any defined alert for any agent/module table entry
 	my $pa_config = $_[0];
 	my $dbh = $_[1];
-    
 	my $timestamp = &UnixDate ("today", "%Y-%m-%d %H:%M:%S");
         my $utimestamp = &UnixDate ("today", "%s");
-    
         my $query_idag = "SELECT tagente_modulo.id_agente_modulo, tagente_estado.utimestamp, tagente_estado.id_agente, tagente.intervalo, tagente.nombre, tagente_modulo.nombre FROM tagente_modulo, talerta_agente_modulo, tagente_estado, tagente WHERE tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo AND talerta_agente_modulo.disable = 0 AND tagente_modulo.id_tipo_modulo = 100 AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.datos != 0";
         my $s_idag = $dbh->prepare($query_idag);
         $s_idag ->execute;
@@ -212,18 +208,18 @@ sub keep_alive_check {
 ## param_1 : XML datafile name
 
 sub procesa_datos {
-   	my $pa_config = $_[0];
-    	my $datos = $_[1]; 
-	my $dbh = $_[2];
-
-	my $tipo_modulo;
-    my $agent_name; 
-	my $timestamp;
-    my $interval; 
-	my $os_version;
-    my $agent_version;
-    my $id_agente;
-    my $module_name;
+        my $pa_config = $_[0];
+        my $datos = $_[1]; 
+        my $dbh = $_[2];
+        
+        my $tipo_modulo;
+        my $agent_name; 
+        my $timestamp;
+        my $interval; 
+        my $os_version;
+        my $agent_version;
+        my $id_agente;
+        my $module_name;
     
 	$agent_name = $datos->{'agent_name'};
 	$timestamp = $datos->{'timestamp'};

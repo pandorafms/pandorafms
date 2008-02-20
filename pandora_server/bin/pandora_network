@@ -2,8 +2,8 @@
 ##########################################################################
 # Pandora FMS Network Server
 ##########################################################################
-# Copyright (c) 2006-2007 Sancho Lerena, slerena@gmail.com
-#           (c) 2006-2007 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2006-2008 Sancho Lerena, slerena@gmail.com
+#           (c) 2006-2008 Artica Soluciones Tecnologicas S.L
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; version 2
@@ -25,7 +25,7 @@ use Time::Local;            # DateTime basic manipulation
 use Net::Ping;				# For ICMP latency
 use Time::HiRes;			# For high precission timedate functions (Net::Ping)
 use IO::Socket;				# For TCP/UDP access
-use SNMP;					# For SNMP access (libsnmp-perl PACKAGE!)
+use SNMP;				# For SNMP access (libsnmp-perl PACKAGE!)
 use threads;
 use threads::shared;
 
@@ -45,8 +45,11 @@ my %pending_task_hash : shared;
 my %current_task_hash : shared;
 my $snmp_lock : shared;
 my $icmp_lock : shared;
+my $queue_lock : shared;
 
 $ENV{'MIBS'}="ALL";  #Load all available MIBs only once
+&SNMP::initMib();
+
 $SIG{'TERM'} = 'pandora_shutdown';
 $SIG{'INT'} = 'pandora_shutdown';
 
@@ -136,11 +139,9 @@ sub pandora_network_consumer ($$) {
 		# Insert this element on the current task hash
 		if (scalar(@pending_task) > 0){
 			{
-				lock @pending_task;
+				lock $queue_lock;
 				$data_id_agent_module = shift(@pending_task);
-				lock %pending_task_hash;
 				delete($pending_task_hash{$data_id_agent_module});
-				lock %current_task_hash;
 				$current_task_hash{$data_id_agent_module}=1;
 			}
 			
@@ -157,7 +158,7 @@ sub pandora_network_consumer ($$) {
 			# Remove from queue. If catch an error, probably data is
 			# not been processed, but has been freed from task queue
 			{
-				lock %current_task_hash;
+				lock $queue_lock;
 				delete($current_task_hash{$data_id_agent_module});
 			}
 			$counter = 0;
@@ -239,9 +240,8 @@ sub pandora_network_producer ($) {
 				}
 				# Locking scope, do not remove redundant { }
 				{
-					lock @pending_task;
+					lock $queue_lock;
 					push (@pending_task, $data_id_agente_modulo);
-					lock %pending_task_hash;
 					$pending_task_hash {$data_id_agente_modulo}=1;
 				}
 			}
@@ -336,77 +336,86 @@ sub pandora_query_tcp (%$$$$$$$) {
 	my $tcp_send = $_[5];
 	my $tcp_rcv = $_[6];
 	my $id_tipo_modulo = $_[7];
-	
-	my $temp; my $temp2;
-	my $tam;
 
-	my $handle=IO::Socket::INET->new(
-		Proto=>"tcp",
-		PeerAddr=>$ip_target,
-		Timeout=>$pa_config->{'networktimeout'},
-		PeerPort=>$tcp_port,
-		Blocking=>0 ); # Non blocking !!, very important !
-		
-	if (defined($handle)){
-		if ($tcp_send ne ""){ # its Expected to sending data ?
-			# Send data
-			$handle->autoflush(1);
-			$tcp_send =~ s/\^M/\r\n/g;
-			# Replace Carriage rerturn and line feed
-			$handle->send($tcp_send);
-		}
-		# we expect to receive data ? (non proc types)
-		if (($tcp_rcv ne "") || ($id_tipo_modulo == 10) || ($id_tipo_modulo ==8) || ($id_tipo_modulo == 11)) {
-			# Receive data, non-blocking !!!! (VERY IMPORTANT!)
-			$temp2 = "";
-			for ($tam=0; $tam<($pa_config->{'networktimeout'}); $tam++){
-				$handle->recv($temp,16000,0x40);
-				$temp2 = $temp2.$temp;
-				if ($temp ne ""){
-					$tam++; # If doesnt receive data, increase counter
-				}
-				sleep(1);
-			}
-			if ($id_tipo_modulo == 9){ # only for TCP Proc
-				if ($temp2 =~ /$tcp_rcv/i){ # String match !
-					$$module_data = 1;
-					$$module_result = 0;
-				} else {
-					$$module_data = 0;
-					$$module_result = 0;
-				}
-			} elsif ($id_tipo_modulo == 10 ){ # TCP String (no int conversion)!
-				$$module_data = $temp2;
-				$$module_result =0;
-			} else { # TCP Data numeric (inc or data)
-				if ($temp2 ne ""){
-					if ($temp2 =~ /[A-Za-z\.\,\-\/\\\(\)\[\]]/){
-						$$module_result = 1;
-						$$module_data = 0; # invalid data
-					} else {
-						$$module_data = int($temp2);
-						$$module_result = 0; # Successful
-					}
-				} else {
-						$$module_result = 1; 
-                                                $$module_data = 0; # invalid data
-					}
-			}
-		} else { # No expected data to receive, if connected and tcp_proc type successful
-			if ($id_tipo_modulo == 9){ # TCP Proc
-				$$module_result = 0;
-				$$module_data = 1;
-			}
-		}
-		$handle->close();
-		undef ($handle);
-	} else { # Cannot connect (open sock failed)
-		$$module_result = 1; # Fail
-		if ($id_tipo_modulo == 9){ # TCP Proc
-			$$module_result = 0;
-			$$module_data = 0; # Failed, but data exists
-		}
-	}
+        my $counter; 
+        for ($counter =0; $counter < $pa_config->{'tcp_checks'}; $counter++){
+	        my $temp; my $temp2;
+	        my $tam;
+	        my $handle=IO::Socket::INET->new(
+		        Proto=>"tcp",
+		        PeerAddr=>$ip_target,
+		        Timeout=>$pa_config->{'tcp_timeout'},
+		        PeerPort=>$tcp_port,
+		        Blocking=>0 ); # Non blocking !!, very important !
+		        
+	        if (defined($handle)){
+		        if ($tcp_send ne ""){ # its Expected to sending data ?
+			        # Send data
+			        $handle->autoflush(1);
+			        $tcp_send =~ s/\^M/\r\n/g;
+			        # Replace Carriage rerturn and line feed
+			        $handle->send($tcp_send);
+		        }
+		        # we expect to receive data ? (non proc types)
+		        if (($tcp_rcv ne "") || ($id_tipo_modulo == 10) || ($id_tipo_modulo ==8) || ($id_tipo_modulo == 11)) {
+			        # Receive data, non-blocking !!!! (VERY IMPORTANT!)
+			        $temp2 = "";
+			        for ($tam=0; $tam<($pa_config->{'tcp_timeout'}); $tam++){
+				        $handle->recv($temp,16000,0x40);
+				        $temp2 = $temp2.$temp;
+				        if ($temp ne ""){
+					        $tam++; # If doesnt receive data, increase counter
+				        }
+				        sleep(1);
+			        }
+			        if ($id_tipo_modulo == 9){ # only for TCP Proc
+				        if ($temp2 =~ /$tcp_rcv/i){ # String match !
+					        $$module_data = 1;
+					        $$module_result = 0;
+                                                $counter = $pa_config->{'tcp_checks'};
+				        } else {
+					        $$module_data = 0;
+					        $$module_result = 0;
+                                                $counter = $pa_config->{'tcp_checks'};
+				        }
+			        } elsif ($id_tipo_modulo == 10 ){ # TCP String (no int conversion)!
+				        $$module_data = $temp2;
+				        $$module_result =0;
+			        } else { # TCP Data numeric (inc or data)
+				        if ($temp2 ne ""){
+					        if ($temp2 =~ /[A-Za-z\.\,\-\/\\\(\)\[\]]/){
+						        $$module_result = 1;
+						        $$module_data = 0; # invalid data
+                                                        $counter = $pa_config->{'tcp_checks'};
+					        } else {
+						        $$module_data = int($temp2);
+						        $$module_result = 0; # Successful
+                                                        $counter = $pa_config->{'tcp_checks'};
+					        }
+				        } else {
+						        $$module_result = 1; 
+                                                        $$module_data = 0; # invalid data
+                                                        $counter = $pa_config->{'tcp_checks'};
+					        }
+			        }
+		        } else { # No expected data to receive, if connected and tcp_proc type successful
+			        if ($id_tipo_modulo == 9){ # TCP Proc
+				        $$module_result = 0;
+				        $$module_data = 1;
+                                        $counter = $pa_config->{'tcp_checks'};
+			        }
+		        }
+		        $handle->close();
+		        undef ($handle);
+	        } else { # Cannot connect (open sock failed)
+		        $$module_result = 1; # Fail
+		        if ($id_tipo_modulo == 9){ # TCP Proc
+			        $$module_result = 0;
+			        $$module_data = 0; # Failed, but data exists
+                                $counter = $pa_config->{'tcp_checks'};
+		        }
+	        }
+        }
 }
 
 ##########################################################################
@@ -420,51 +429,39 @@ sub pandora_query_snmp (%$$$$) {
 	my $snmp_target = $_[3];
 	# $_[4] contains error var.
 
-	my $output ="";
-	my $snmp_timeout = 1000 * 1000 * $pa_config->{"networktimeout"};
-	my $SESSION = new SNMP::Session (DestHost =>  $snmp_target,
+        my $output ="";
+        my $snmp_timeout = 1000 * 1000 * $pa_config->{"snmp_timeout"};
+        my $snmp_retries = $pa_config->{'snmp_checks'};
+	my $SESSION;
+	# Locking for SNMP call. SNMP is not thread safe !!
+	{
+		lock $snmp_lock;
+		$SESSION = new SNMP::Session (DestHost =>  $snmp_target,
 					Timeout   => $snmp_timeout,
-					Retries => 0,
+					Retries   => $snmp_retries,
                                 	Community => $snmp_community,
                                 	Version   => 1);
-   	if ( (!defined($SESSION)) && ($snmp_target ne "") && ($snmp_community ne "") && ($snmp_oid ne "")) {
-      		logger($pa_config, "SNMP ERROR SESSION for Target $snmp_target ", 2);
-		$_[4] = "1";
-   	} else {
-		# Perl uses different OID syntax than SNMPWALK or PHP's SNMP
-		# for example:
-		# SNMPv2-MIB::sysDescr for PERL SNMP
-		# is equivalent to SNMPv2-MIB::sysDescr.0 in SNMP and PHP/SNMP
-		# So we parse last byte and cut off if = 0 and delete 1 if != 0
-		my $perl_oid = $snmp_oid;
-		if ($perl_oid =~ m/(.*)\.([0-9]*)\z/){
-			my $local_oid = $1;
-			my $local_oid_idx = $2;
-			if ($local_oid_idx == 0){
-				$perl_oid = $local_oid; # Strip .0 from orig. OID
-			} else {
-				$local_oid_idx--;
-				$perl_oid = $local_oid.".".$local_oid_idx;
-			}
-		}
-		# Locking for SNMP call. SNMP is not thread safe !!
-		my $OIDLIST = new SNMP::VarList([$perl_oid]);
-		{
-			lock $snmp_lock;
-			# Pass the VarList to getnext building an array of the output
-			my @OIDINFO = $SESSION->getnext($OIDLIST);
-			$output = $OIDINFO[0];
-			undef ($OIDLIST);
-			
-		}
-		if ((!defined($output)) || ($output eq "")){
-			$_[4] = "1";
-			return 0;
-		} else {
-			$_[4] = "0";
-		}
-		undef ($SESSION);
 	}
+	if ($SESSION->{ErrorStr}) {
+      		logger($pa_config, "SNMP ERROR SESSION for Target $snmp_target ".$SESSION->{ErrorStr}, 2);
+		$_[4] = "1";
+		undef ($SESSION);
+		return 0;
+   	} 
+	my $oid = SNMP::translateObj($snmp_oid);
+	# Locking for SNMP call. SNMP is not thread safe !!
+	{
+		lock $snmp_lock;
+		$output = $SESSION->get($oid);
+	}
+	if ((!defined($SESSION)) || (!defined($output)) || ($output eq "") || ($SESSION->{ErrorStr})) {
+               	logger($pa_config, "SNMP ERROR SNMPGET for Target $snmp_target ".$SESSION->{ErrorStr}, 2);
+               	$_[4] = "1";
+		undef ($SESSION);
+               	return 0;
+	}
+	$_[4] = "0";
+	undef ($SESSION);
 	return $output;
 }
 
@@ -560,6 +557,8 @@ sub exec_network_module {
 			    $module_result = 0;
 			    # SNMP_DATA_PROC
 			    if ($id_tipo_modulo == 18){ #snmp_data_proc
+                            # RFC1213-MIB where it says that: SYNTAX INTEGER { up(1), down(2), testing(3),
+                            # unknown(4), dormant(5), notPresent(6), lowerLayerDown(7) } 
 				    if ($temp2 != 1){ # up state is 1, down state in SNMP is 2 ....
 					    $temp2 = 0;
 				    }
@@ -567,17 +566,27 @@ sub exec_network_module {
 			    }
 			    # SNMP_DATA and SNMP_DATA_INC
 			    elsif (($id_tipo_modulo == 15) || ($id_tipo_modulo == 16) ){ 
-				    if ($temp2 =~ /[A-Za-z\.\,\-\/\\\(\)\[\]]/){
-					    $module_result = 1; # Alphanumeric data, not numeric
+				    if (!is_numeric($temp2)){		   
+					    $module_result = 1; 
 				    } else {
-					    $module_data = $temp2; # Float values are also valid
+					    $module_data = $temp2;
 				    } 
 			    } else { # String SNMP
 				    $module_data = $temp2;
 			    }
 		    } else { # Failed SNMP-GET
 			    $module_data = 0;
-			    $module_result = 1; # No data, cannot connect
+			    if ($id_tipo_modulo == 18){ # snmp_proc
+				    # Feature from 10Feb08. If snmp_proc_deadresponse = 1 and cannot contact by an error
+				    # this is a fail monitor
+				    if ($pa_config->{"snmp_proc_deadresponse"} eq "1"){
+				            $module_result = 0;
+				    } else {
+					    $module_result = 1;
+				    }
+			    } else {
+			            $module_result = 1; # No data, cannot connect
+			    }
 		    }
 	    # TCP Module
 	    # ----------

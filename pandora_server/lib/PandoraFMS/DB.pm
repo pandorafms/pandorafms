@@ -2,19 +2,19 @@ package PandoraFMS::DB;
 ##########################################################################
 # Pandora FMS Database Package
 ##########################################################################
-# Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2007 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+# Copyright (c) 2005-2008 Artica Soluciones Tecnologicas S.L
 #
-#This program is free software; you can redistribute it and/or
-#modify it under the terms of the GNU General Public License
-#as published by the Free Software Foundation; version 2
-#This program is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#GNU General Public License for more details.
-#You should have received a copy of the GNU General Public License
-#along with this program; if not, write to the Free Software
-#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; version 2
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ##########################################################################
 
 use warnings;
@@ -215,7 +215,8 @@ sub pandora_calcula_alerta (%$$$$$$) {
 						my $nombre_agente = dame_nombreagente_agentemodulo ($pa_config, $id_agente_modulo, $dbh);
 						# --------------------------------------
 						# Now call to execute_alert to real exec
-						execute_alert ($pa_config, $id_alerta, $campo1, $campo2, $campo3, $nombre_agente, $timestamp, $datos, $comando, $alert_name, $descripcion, $dbh);
+						execute_alert ($pa_config, $id_alerta, $campo1, $campo2, $campo3, 
+$nombre_agente, $timestamp, $datos, $comando, $alert_name, $descripcion, 1, $dbh);
 						# --------------------------------------
 					} else {
 						# Alert is in valid timegap but has too many alerts
@@ -258,6 +259,16 @@ sub pandora_calcula_alerta (%$$$$$$) {
 						if ($times_fired > 0){
 							my $evt_descripcion = "Alert ceased - Recovered ($descripcion)";
 							pandora_event ($pa_config, $evt_descripcion, $id_grupo, $id_agente, $dbh);
+							# Specific patch for F. Corona
+							# This enable alert recovery notification by using the same alert definition but
+							# inserting WORD "RECOVERED" in second and third field of 
+							# alert. To activate setup your .conf with new token
+ 							# "alert_recovery" and set to 1 (disabled by default) 
+							if ($pa_config->{"alert_recovery"} eq "1"){
+							        execute_alert ($pa_config, $id_alerta, $campo1, 
+"[RECOVERED ] - ".$campo2, "[ALERT CEASED - RECOVERED] - ".$campo3, $nombre_agente, $timestamp, $datos, $comando, 
+$alert_name, $descripcion, 0, $dbh);
+							}
 						}
 										}
 					if (($times_fired > 0) || ($internal_counter > 0)){
@@ -278,11 +289,12 @@ sub pandora_calcula_alerta (%$$$$$$) {
 }
 
 ##########################################################################
-## SUB execute_alert (id_alert, field1, field2, field3, agent, timestamp, data)
+## SUB execute_alert (id_alert, field1, field2, field3, agent, timestamp, data, 
+## command, $alert_name, $alert_description, create_event, dbh)
 ## Do a execution of given alert with this parameters
 ##########################################################################
 
-sub execute_alert (%$$$$$$$$$$$) {
+sub execute_alert (%$$$$$$$$$$$$) {
 	my $pa_config = $_[0];
 	my $id_alert = $_[1];
 	my $field1 = $_[2];
@@ -294,7 +306,8 @@ sub execute_alert (%$$$$$$$$$$$) {
 	my $command = $_[8];
 	my $alert_name = $_[9];
 	my $alert_description = $_[10];
-	my $dbh = $_[11];
+	my $create_event = $_[11];
+	my $dbh = $_[12];
 
 	if (($command eq "") && ($alert_name eq "")){
 		# Get values for commandline, reading from talerta.
@@ -341,9 +354,12 @@ sub execute_alert (%$$$$$$$$$$$) {
 		$field1 =~ s/_data_/$data/ig;
 		pandora_audit ($pa_config, $field1, $agent, "Alert ($alert_description)", $dbh);
 	}
-	my $evt_descripcion = "Alert fired ($alert_description)";
-	my $id_agente = dame_agente_id ($pa_config, $agent, $dbh);
-	pandora_event ($pa_config, $evt_descripcion, dame_grupo_agente($pa_config, $id_agente, $dbh), $id_agente, $dbh);
+	if ($create_event == 1){
+		my $evt_descripcion = "Alert fired ($alert_description)";
+		my $id_agente = dame_agente_id ($pa_config, $agent, $dbh);
+		pandora_event ($pa_config, $evt_descripcion, dame_grupo_agente($pa_config, $id_agente, $dbh), 
+$id_agente, $dbh);
+	}
 }
 
 
@@ -382,6 +398,7 @@ sub pandora_writestate (%$$$$$$$) {
 	if (($id_agente ==  -1) || ($id_agente_modulo == -1)) {
 		goto fin_pandora_writestate;
 	}
+
 	# Seek for agent_interval or module_interval
 	my $query_idag = "SELECT * FROM tagente_modulo WHERE id_agente = $id_agente AND id_agente_modulo = " . $id_agente_modulo;;
 	my $s_idag = $dbh->prepare($query_idag);
@@ -397,7 +414,6 @@ sub pandora_writestate (%$$$$$$$) {
 		$module_interval = dame_intervalo ($pa_config, $id_agente, $dbh);
  	}
 	$s_idag->finish();
-	
 	# Check alert subroutine
 	eval {
 		pandora_calcula_alerta ($pa_config, $timestamp, $nombre_agente, $tipo_modulo, $nombre_modulo, $datos, $dbh);
@@ -421,7 +437,7 @@ sub pandora_writestate (%$$$$$$$) {
 	        @data = $s_idages->fetchrow_array();
 	        # Se supone que $data[5](estado) ( nos daria el estado ANTERIOR
 		# For xxxx_PROC type (boolean / monitor), create an event if state has changed
-	        if (( $data[5] != $estado) && ($tipo_modulo =~ /proc/) ) {
+	        if (( $data[5] != $estado) && ( ($tipo_modulo =~/keep_alive/) || ($tipo_modulo =~ /proc/)) ) {
 	                # Cambio de estado detectado !
 	                $cambio = 1;
 	                # Este seria el momento oportuno de probar a saltar la alerta si estuviera definida
@@ -510,16 +526,15 @@ sub pandora_accessupdate (%$$) {
 		        my $query2 = "insert into tagent_access (id_agent, timestamp) VALUES ($id_agent,'$timestamp')";
 		        $dbh->do($query2);	
 		        logger($pa_config,"Updating tagent_access for agent id $id_agent",9);
-
-                        
 	        }
-                # Update keepalive module (if present)
+
+                # Update keepalive module (if present, if there is more than one, only updates first one!).
                 my $id_agent_module = give_db_free ("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = $id_agent AND id_tipo_modulo = 100", $dbh);
                 if ($id_agent_module ne -1){
-                        my $utimestamp = &UnixDate ("today", "%s");
-                        # Status = 0 is monitor OK
-                        $query2 = "UPDATE tagente_estado SET datos = 1, estado = 0, timestamp = '$timestamp', cambio = 0, last_try= '$timestamp', utimestamp = $utimestamp WHERE id_agente_modulo = $id_agent_module";
-                        $dbh->do ($query2);
+                        my $agent_name = give_db_free ("SELECT nombre FROM tagente WHERE id_agente = $id_agent", $dbh);
+                        my $module_typename = "keep_alive";
+                        my $module_name = give_db_free ("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = $id_agent_module", $dbh);
+                        pandora_writestate ($pa_config, $agent_name, $module_typename, $module_name, 1, 0, $dbh, 1);
                 }
         }
 }
@@ -545,34 +560,33 @@ sub module_generic_proc (%$$$$$) {
 	# Leemos datos de la estructura
 	my $a_datos = $datos->{data}->[0];
 
-	if ((ref($a_datos) ne "HASH")){
-		$a_datos = sprintf("%.2f", $a_datos);		# Two decimal float. We cannot store more
-								# to change this, you need to change mysql structure
-		$a_datos =~ s/\,/\./g; 				# replace "," by "." avoiding locale problems
-		my $a_name = $datos->{name}->[0];
-		my $a_desc = $datos->{description}->[0];
-		my $a_max = $datos->{max}->[0];
-		my $a_min = $datos->{min}->[0];
-
-		if (ref($a_max) eq "HASH") {
-			$a_max = "";
-		}
-		if (ref($a_min) eq "HASH") {
-			$a_min = "";
-		}
-		pandora_writedata($pa_config, $a_timestamp,$agent_name,$module_type,$a_name,$a_datos,$a_max,$a_min,$a_desc,$dbh, \$bUpdateDatos);
-
-		# Check for status: <1 state 1 (Bad), >= 1 state 0 (Good)
-		# Calculamos su estado
-		if ( $datos->{'data'}->[0] < 1 ) { 
-			$estado = 1;
-		} else { 
-			$estado=0;
-		}
-		pandora_writestate ($pa_config, $agent_name,$module_type,$a_name,$a_datos,$estado,$dbh, $bUpdateDatos);
+	if ((ref($a_datos) eq "HASH")){
+		$a_datos = 0;	# If get bad data, then this is bad value, not "unknown" (> 1.3 version)
 	} else {
-		logger ($pa_config, "(proc) Invalid data received from agent $agent_name", 2);
+		$a_datos = sprintf("%.2f", $a_datos);		# Two decimal float. We cannot store more
+	}							# to change this, you need to change mysql structure
+	$a_datos =~ s/\,/\./g; 				# replace "," by "." avoiding locale problems
+	my $a_name = $datos->{name}->[0];
+	my $a_desc = $datos->{description}->[0];
+	my $a_max = $datos->{max}->[0];
+	my $a_min = $datos->{min}->[0];
+
+	if (ref($a_max) eq "HASH") {
+		$a_max = "";
 	}
+	if (ref($a_min) eq "HASH") {
+		$a_min = "";
+	}
+	pandora_writedata($pa_config, $a_timestamp,$agent_name,$module_type,$a_name,$a_datos,$a_max,$a_min,$a_desc,$dbh, \$bUpdateDatos);
+
+	# Check for status: <1 state 1 (Bad), >= 1 state 0 (Good)
+	# Calculamos su estado
+	if ( $a_datos >= 1 ) { 
+		$estado = 0;
+	} else { 
+		$estado = 1;
+	}
+	pandora_writestate ($pa_config, $agent_name, $module_type, $a_name, $a_datos, $estado, $dbh, $bUpdateDatos);
 }
 
 ##########################################################################

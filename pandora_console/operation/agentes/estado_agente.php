@@ -3,7 +3,7 @@
 // ========================================
 // Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
 // Main PHP/SQL code development, project architecture and management.
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
 // CSS and some PHP code additions
 // Please see http://pandora.sourceforge.net for full contribution list
 
@@ -64,11 +64,11 @@ if (comprueba_login() == 0) {
 	</td></form><td valign='top'>";
 
         echo $lang_label["free_text_search"];
-        echo "</td><td>";
+        echo "</td><td valign='top'>";
         echo "<form method='post'
                 action='index.php?sec=estado&sec2=operation/agentes/estado_agente
                 &refr=60'>";
-        echo "<input type=text name='search' size='15' >";
+        echo "<input type=text name='search' size='15'>";
         echo "</td><td valign='top'>";
         echo "<input name='srcbutton' type='submit' class='sub' 
         value='".$lang_label["search"]."'>";
@@ -271,21 +271,21 @@ if (comprueba_login() == 0) {
 				if ($numero_monitor <> 0){
 					if ($estado_general <> 0){
 						if ($estado_cambio == 0){
-							echo "<img src='images/pixel_red.png' width=40 height=18>";
+							echo "<img src='images/pixel_red.png' width=40 height=18 title='".$lang_label["red_light"]."'>";
 						} else {
-							echo "<img src='images/pixel_yellow.png' width=40 height=18>";
+							echo "<img src='images/pixel_yellow.png' width=40 height=18 title='".$lang_label["yellow_light"]."'>";
 						}
 					} elseif ($monitor_ok > 0) {
-						echo "<img src='images/pixel_green.png' width=40 height=18>";
+						echo "<img src='images/pixel_green.png' width=40 height=18 title='".$lang_label["green_light"]."'>";
 					}
 					elseif ($numero_datamodules > 0) {
-						echo "<img src='images/pixel_gray.png' width=40 height=18>";
+						echo "<img src='images/pixel_gray.png' width=40 height=18 title='".$lang_label["no_light"]."'>";
 					}
 					elseif ($monitor_down > 0) {
-						echo "<img src='images/pixel_fucsia.png' width=40 height=18>"; 
+						echo "<img src='images/pixel_fucsia.png' width=40 height=18 title='".$lang_label["broken_light"]."'>"; 
 					}
 				} else 
-					echo "<img src='images/pixel_blue.png' width=40 height=18>";
+					echo "<img src='images/pixel_blue.png' width=40 height=18 title='".$lang_label["blue_light"]."'>";
 				
 				// checks if an alert was fired recently
 				echo "<td class='$tdcolor' align='center'>";
@@ -293,9 +293,9 @@ if (comprueba_login() == 0) {
 					echo "<img src='images/pixel_gray.png' width=20 height=9>";
 				else {
 					if (check_alert_fired($id_agente) == 1) 
-						echo "<img src='images/pixel_red.png' width=20 height=9>";
+						echo "<img src='images/pixel_red.png' width=20 height=9 title='".$lang_label["fired"]."'>";
 					else
-						echo "<img src='images/pixel_green.png' width=20 height=9>";
+						echo "<img src='images/pixel_green.png' width=20 height=9 title='".$lang_label["not_fired"]."'>";
 				}				
 				echo "</td>";
 				echo "<td class='$tdcolor'>";
@@ -324,6 +324,12 @@ if (comprueba_login() == 0) {
 	}
 	else {
 		echo '</table><br><div class="nf">'.$lang_label["no_agent"].'</div>';
+	      	$id_user = $_SESSION["id_usuario"];
+	if ( (give_acl($id_user, 0, "LM")==1) OR (give_acl($id_user, 0, "AW")==1 ) OR (give_acl($id_user, 0, "PM")==1) OR (give_acl($id_user, 0, "DM")==1) OR (give_acl($id_user, 0, "UM")==1 )){
+	      echo "&nbsp;<form method='post' action='index.php?sec=gagente&
+	sec2=godmode/agentes/configurar_agente&create_agent=1'><input type='submit' class='sub next' name='crt'
+	value='".$lang_label["create_agent"]."'></form>";
+	}
 	}
 
 } else {

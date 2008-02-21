@@ -65,8 +65,42 @@ CREATE TABLE `tnotification_component` (
         KEY `tnotifcom_indx_1` (`id_notification`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE tplugin (
+  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` varchar(200) NOT NULL,
+  `description` mediumtext default "",
+  `max_timeout` int(4) UNSIGNED NOT NULL default 0,
+  `execute`varchar(250) NOT NULL,
+  PRIMARY KEY('id')
+) ENGINE = InnoDB DEFAULT CHARSET=utf8; 
+
+CREATE TABLE `tagent_plugin` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `id_agent` int(11) NOT NULL default '0',
+  `id_plugin` int(11) NOT NULL default '0',
+  `net_dst` varchar(250) default '',
+  `net_port` varchar(250) default '',
+  `access_user` varchar(250) default '',
+  `access_pass` varchar(250) default '',
+  `field1` varchar(250) default '',
+  `field2` varchar(250) default '',
+  `field3` varchar(250) default '',
+  `field4` varchar(250) default '',
+  `field5` varchar(250) default ''
+
+  `id_module_group` int(4) unsigned default '0',
+  `flag` tinyint(3) unsigned default '1',
+  `disabled` tinyint(3) unsigned default '0',
+  `export` tinyint(3) unsigned default '0',
+  PRIMARY KEY (`id_agente_modulo`, `id_agente`),
+  KEY `tam_agente` (`id_agente`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- Updated tables
 
 ALTER TABLE tagente_modulo ADD COLUMN `disable` tinyint(3) unsigned NULL default 0;
 ALTER TABLE tagente_modulo ADD COLUMN `export` tinyint(3) unsigned default '0';
 ALTER TABLE tagente ADD COLUMN `id_parent` mediumint(8) unsigned default '0';
+
+ALTER TABLE tagente_estado ADD COLUMN `id_agent_plugin` int(20) NOT NULL default '0';
+ALTER TABLE tagente_modulo ADD COLUMN `predictive_id_module_source`  bigint(100) unsigned default 0;

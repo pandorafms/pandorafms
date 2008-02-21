@@ -1,9 +1,9 @@
 <?php
 // Pandora - the Free monitoring system
 // ====================================
-// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
 // Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
-// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
@@ -116,19 +116,25 @@ if (mysql_num_rows($result)){
 	while ($row=mysql_fetch_array($result)){ //while there are agents
 		if ($row["disabled"] == 0) {
 			if ((isset($ag_modulename)) && ($ag_modulename != $lang_label["all"])){
-				$query_gen='SELECT * FROM tagente_modulo 
+				$query_gen='SELECT
+				id_agente, id_tipo_modulo, module_interval, id_agente_modulo,
+				nombre, descripcion
+				FROM tagente_modulo 
 				WHERE id_agente = '.$row["id_agente"].' 
 				AND nombre = "'.entrada_limpia($_POST["ag_modulename"]).'" 
 				AND
 				id_tipo_modulo in (2, 9, 12, 18, 6, 100)';
 				// generic_proc, remote_tcp_proc, ??, remote_snmp_proc, remote_icmp_proc
-                        } else {
-				$query_gen='SELECT * FROM tagente_modulo 
+						} else {
+				$query_gen='SELECT
+				id_agente, id_tipo_modulo, module_interval, id_agente_modulo,
+				nombre, descripcion
+				FROM tagente_modulo 
 				WHERE id_agente = '.$row["id_agente"].' 
 				AND
 				id_tipo_modulo in (2, 9, 12, 18, 6, 100)';
-                        }
-			$result_gen=mysql_query($query_gen);
+						}
+				$result_gen=mysql_query($query_gen);
 			if (mysql_num_rows ($result_gen)) {
 				while ($data=mysql_fetch_array($result_gen)){
 					if ($color == 1){
@@ -153,7 +159,7 @@ if (mysql_num_rows($result)){
 					</td>";
 					$string=$string."<td class='$tdcolor'>".
 					substr($data["nombre"],0,21)."</td>";
-					$string=$string."<td class='".$tdcolor."f9'>".
+					$string=$string."<td class='".$tdcolor."f9' title='".$data["descripcion"]."'>".
 					substr($data["descripcion"],0,30)."</td>";
 					
 					$string=$string."<td class='$tdcolor' align='center' width=25>";
@@ -170,9 +176,9 @@ if (mysql_num_rows($result)){
 					$data2=mysql_fetch_array($result_gen2);
 					$string=$string."<td class='$tdcolor' align='center' width=20>";
 					if ($data2["datos"] > 0){
-						$string=$string."<img src='images/pixel_green.png' width=40 height=18>";
+						$string=$string."<img src='images/pixel_green.png' width=40 height=18 title='".$lang_label["green_light"]."'>";
 					} else {
-						$string=$string."<img src='images/pixel_red.png' width=40 height=18>";
+						$string=$string."<img src='images/pixel_red.png' width=40 height=18 title='".$lang_label["red_light"]."'>";
 					}
 					
 					$string=$string."<td class='".$tdcolor."f9'>";
@@ -181,8 +187,9 @@ if (mysql_num_rows($result)){
 						$string .= "<span class='redb'>";
 					else
 						$string .= "<span>";
-					
-					$string .= human_time_comparation($data2["timestamp"])."</td></tr>";
+
+					$string .= human_time_comparation($data2["timestamp"])."
+					</span></td></tr>";
 				}
 			}
 		}

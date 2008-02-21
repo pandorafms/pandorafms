@@ -20,7 +20,8 @@ INSERT INTO `talerta` VALUES (9,'Synthetized Speech','flite -t _FIELD2_','Uses c
 
 /*!40000 ALTER TABLE `tconfig` DISABLE KEYS */;
 LOCK TABLES `tconfig` WRITE;
-INSERT INTO `tconfig` VALUES (1,'language_code','en'),(3,'block_size','20'),(4,'days_purge','60'),(5,'days_compact','15'),(6,'graph_res','5'),(7,'step_compact','1'),(8,'db_scheme_version','1.3'),(9,'db_scheme_build','PD60525'),(12,'bgimage','background4.jpg'),(13,'show_unknown','0'),(14,'show_lastalerts','1'),(15,'style','pandora');
+INSERT INTO `tconfig` VALUES 
+(1,'language_code','en'),(3,'block_size','20'),(4,'days_purge','60'),(5,'days_compact','15'),(6,'graph_res','5'),(7,'step_compact','1'),(8,'db_scheme_version','1.4'),(9,'db_scheme_build','PD80110'),(12,'bgimage','background4.jpg'),(13,'show_unknown','0'),(14,'show_lastalerts','1'),(15,'style','pandora');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `tconfig` ENABLE KEYS */;
 
@@ -161,7 +162,7 @@ INSERT INTO `torigen` VALUES ('Operating System event'),('IDS events'),('Firewal
 -- Dumping data for table `ttipo_modulo`
 --
 
-INSERT INTO `ttipo_modulo` VALUES (1,'generic_data',0,'Generic module to adquire numeric data','mod_data.png'),(2,'generic_proc',1,'Generic module to adquire boolean data','mod_proc.png'),(3,'generic_data_string',0,'Generic module to adquire alphanumeric data','mod_string.png'),(4,'generic_data_inc',0,'Generic module to adquire numeric incremental data','mod_data_inc.png'),(6,'remote_icmp_proc',3,'Remote ICMP network agent, boolean data','mod_icmp_proc.png'),(7,'remote_icmp',2,'Remote ICMP network agent (latency)','mod_icmp_data.png'),(8,'remote_tcp',2,'Remote TCP network agent, numeric data','mod_tcp_data.png'),(9,'remote_tcp_proc',3,'Remote TCP network agent, boolean data','mod_tcp_proc.png'),(10,'remote_tcp_string',2,'Remote TCP network agent, alphanumeric data','mod_tcp_string.png'),(11,'remote_tcp_inc',2,'Remote TCP network agent, incremental data','mod_tcp_inc.png'),(15,'remote_snmp',2,'Remote SNMP network agent, numeric data','mod_snmp_data.png'),(16,'remote_snmp_inc',2,'Remote SNMP network agent, incremental data','mod_snmp_inc.png'),(17,'remote_snmp_string',2,'Remote SNMP network agent, alphanumeric data','mod_snmp_string.png'),(18,'remote_snmp_proc',1,'Remote SNMP network agent, boolean data','mod_snmp_proc.png'), (100,'keep_alive',-1,'KeepAlive','mod_keepalive.png'), (19, 'image_jpg',4,'Image JPG data', 'mod_image_jpg.png'), (20, 'image_png',4,'Image PNG data', 'mod_image_png.png'), (21, 'async_proc', 5, 'Asyncronous proc data', 'mod_async_proc.png'), (22, 'async_data', 5, 'Asyncronous numeric data', 'mod_async_data.png'), (23, 'async_string', 5, 'Asyncronous string data', 'mod_async_string.png');
+INSERT INTO `ttipo_modulo` VALUES (1,'generic_data',0,'Generic module to adquire numeric data','mod_data.png'),(2,'generic_proc',1,'Generic module to adquire boolean data','mod_proc.png'),(3,'generic_data_string',0,'Generic module to adquire alphanumeric data','mod_string.png'),(4,'generic_data_inc',0,'Generic module to adquire numeric incremental data','mod_data_inc.png'),(6,'remote_icmp_proc',3,'Remote ICMP network agent, boolean data','mod_icmp_proc.png'),(7,'remote_icmp',2,'Remote ICMP network agent (latency)','mod_icmp_data.png'),(8,'remote_tcp',2,'Remote TCP network agent, numeric data','mod_tcp_data.png'),(9,'remote_tcp_proc',3,'Remote TCP network agent, boolean data','mod_tcp_proc.png'),(10,'remote_tcp_string',2,'Remote TCP network agent, alphanumeric data','mod_tcp_string.png'),(11,'remote_tcp_inc',2,'Remote TCP network agent, incremental data','mod_tcp_inc.png'),(15,'remote_snmp',2,'Remote SNMP network agent, numeric data','mod_snmp_data.png'),(16,'remote_snmp_inc',2,'Remote SNMP network agent, incremental data','mod_snmp_inc.png'),(17,'remote_snmp_string',2,'Remote SNMP network agent, alphanumeric data','mod_snmp_string.png'),(18,'remote_snmp_proc',1,'Remote SNMP network agent, boolean data','mod_snmp_proc.png'), (100,'keep_alive',-1,'KeepAlive','mod_keepalive.png'), (19, 'image_jpg',4,'Image JPG data', 'mod_image_jpg.png'), (20, 'image_png',4,'Image PNG data', 'mod_image_png.png'), (21, 'async_proc', 5, 'Asyncronous proc data', 'mod_async_proc.png'), (22, 'async_data', 5, 'Asyncronous numeric data', 'mod_async_data.png'), (23, 'async_string', 5, 'Asyncronous string data', 'mod_async_string.png'), (24, 'predictive', 5, 'Predictive Estimation Data', 'mod_predictive.png');
 
 --
 -- Dumping data for table `tusuario`
@@ -202,4 +203,3 @@ INSERT INTO `tnetwork_profile_component` VALUES (12,54,3);
 INSERT INTO `tnetwork_profile_component` VALUES (13,55,3);
 INSERT INTO `tnetwork_profile_component` VALUES (14,56,3);
 INSERT INTO `tnetwork_profile_component` VALUES (15,57,3);
-

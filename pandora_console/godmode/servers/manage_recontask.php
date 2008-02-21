@@ -93,7 +93,7 @@ $query="SELECT * FROM trecon_task";
 $result=mysql_query($query);
 $color=1;
 if (mysql_num_rows($result)){
-	echo "<table cellpadding='4' cellspacing='4' witdh='750' class='databox'>";
+	echo "<table cellpadding='4' cellspacing='4' witdh='720' class='databox'>";
 	echo "<tr><th class='datos'>".$lang_label["name"];
 	echo "<th class='datos'>".$lang_label['type'];
 	echo "<th class='datos'>".$lang_label['network'];
@@ -101,7 +101,6 @@ if (mysql_num_rows($result)){
 	echo "<th class='datos'>".$lang_label['group'];
 	echo "<th class='datos'>".$lang_label['incident'];
 	echo "<th class='datos'>".$lang_label['interval'];
-	echo "<th class='datos'>".$lang_label['recon_server'];
 	echo "<th class='datos'>".$lang_label['network_server'];
 	echo "<th class='datos'>X";
 }
@@ -153,10 +152,8 @@ while ($row=mysql_fetch_array($result)){
 		echo $lang_label["no"];
 	// INTERVAL
 	echo "</td><td class='$tdcolor' align='center'>";
-	echo $interval;
-	// Recon server
-	echo "</td><td class='$tdcolor'f9 >";
-	echo "<a href='index.php?sec=gserver&sec2=godmode/servers/modificar_server&server=$id_network_server'>".give_server_name($id_network_server)."</a>";
+	echo human_time_description_raw($interval);
+
 	// Network server assigned
 	echo "</td><td class='$tdcolor'f9 >";
 	echo "<a href='index.php?sec=gserver&sec2=godmode/servers/modificar_server&server=$id_network_server_assigned'>".give_server_name($id_network_server_assigned)."</a>";;
@@ -165,13 +162,12 @@ while ($row=mysql_fetch_array($result)){
 	echo "</td><td class='".$tdcolor."' align='center'><a href='index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete=$id_rt'><img src='images/cross.png' border='0'></td></tr>";
 }
 echo "</table>";
+
 if (!mysql_num_rows($result)){
 	echo "<div class='nf'>".$lang_label["no_rtask"]."</div>";
-	echo "<table>";
-} else {
-	echo "<table width='700'>";
-}
+}	
 
+echo "<table width='680'>";
 echo "<tr><td align='right'>";
 echo "<form method='post' action='index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&create'>";
 echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create"]."'>";

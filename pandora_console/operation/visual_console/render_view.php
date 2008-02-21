@@ -2,9 +2,9 @@
 
 // Pandora FMS - the Free monitoring system
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
 // Main PHP/SQL code development and project architecture and management
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
+// Copyright (c) 2005-2008 Artica Soluciones Tecnologicas, info@artica.es
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -104,9 +104,15 @@ while ($row = mysql_fetch_array($res)){
 		echo "<div style='z-index: 1; color: #".$label_color."; position: absolute; margin-left: ".$pos_x."px; margin-top:".$pos_y."px; '>";
 		echo $link_string;
 		if ($status == 0){
-			echo "<img src='images/console/icons/".$image."_bad.png'>";	
+			if (($width != "") AND ($width != 0))
+				echo "<img src='images/console/icons/".$image."_bad.png' width='$width' height='$height' title='$label'>";
+			else
+				echo "<img src='images/console/icons/".$image."_bad.png' title='$label'>";	
 		} else {
-			echo "<img src='images/console/icons/".$image."_ok.png'>";	
+			if (($width != "") AND ($width != 0))
+				echo "<img src='images/console/icons/".$image."_ok.png' width='$width' height='$height' title='$label'>";
+			else
+				echo "<img src='images/console/icons/".$image."_ok.png' title='$label'>";	
 		}
 		echo "</A>";
 			

@@ -1,3 +1,10 @@
+2008-02-25  Sancho Lerena <slerena@gmail.com>
+
+	* pandoradb_data.sql, pandoradb.sql: Modified, added and altered 
+	SQL structure. This is a final aproximation to 1.4 version. Probably
+	more changes are coming in the next future before to close 1.4 database
+	definition.
+
 2008-02-21  Sancho Lerena <slerena@gmail.com>
 
 	* Added new structures for predictive module, plugin server, and other

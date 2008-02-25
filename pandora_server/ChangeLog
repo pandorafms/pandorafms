@@ -1,3 +1,19 @@
+2008-02-25 Sancho Lerena <slerena@gmail.com>
+
+	* conf/pandora_server.conf: Added new tokens.
+
+	* lib/PandoraFMS/Config.pm: Code cleanup and add support for 
+	new prediction and plugin server. Added better checks to clean
+	blank spaces inside config tokens.
+
+	* lib/PandoraFMS/DB.pm: Added comment to the only generic function
+	to database we have. 
+
+	* lib/PandoraFMS/Tools.pm: Created a new function to clean 
+	blank spaces, and used to clean setup file parsing.
+	
+	* bin/pandora_plugin: New plugin server skeleton, not functional
+	yet. Need much more improvement, but code skeleton is done.
 
 2008-02-20 Sancho Lerena <slerena@gmail.com>
 

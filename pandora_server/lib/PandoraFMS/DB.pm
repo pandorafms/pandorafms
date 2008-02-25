@@ -1665,6 +1665,7 @@ sub crea_agente_modulo (%$$$$$$$) {
 
 # ---------------------------------------------------------------
 # Generic access to a field ($field) given a table
+# give_db_value (field_name_to_be_returned, table, field_search, condition_value, dbh)
 # ---------------------------------------------------------------
 sub give_db_value ($$$$$) {
 	my $field = $_[0];

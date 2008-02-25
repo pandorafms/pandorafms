@@ -1,0 +1,394 @@
+#!/usr/bin/perl
+##########################################################################
+# Pandora FMS Plugin Server
+##########################################################################
+# Copyright (c) 2008 Sancho Lerena, slerena@gmail.com
+#           (c) 2008 Artica Soluciones Tecnologicas S.L
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; version 2 (only).
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+##########################################################################
+
+# Includes list
+use strict;
+use warnings;
+
+use Date::Manip;        # Needed to manipulate DateTime formats of input, output and compare
+use Time::Local;        # DateTime basic manipulation
+use threads;
+use threads::shared;
+
+# Pandora Modules
+use PandoraFMS::Config;
+use PandoraFMS::Tools;
+use PandoraFMS::DB;
+
+# Queue management
+my @pending_task : shared;
+my %pending_task_hash : shared;
+my %current_task_hash : shared;
+
+# FLUSH in each IO (only for debug, very slooow)
+# ENABLED in DEBUGMODE
+# DISABLE FOR PRODUCTION
+$| = 0;
+
+my %pa_config;
+
+$SIG{'TERM'} = 'pandora_shutdown';
+$SIG{'INT'} = 'pandora_shutdown';
+
+# Inicio del bucle principal de programa
+pandora_init(\%pa_config, "Pandora FMS Plugin Server");
+
+# Read config file for Global variables
+pandora_loadconfig (\%pa_config, 4);
+
+# Audit server starting
+pandora_audit (\%pa_config, "Pandora FMS Plugin server starting", "SYSTEM", "System");
+
+print " [*] Starting up plugin threads\n";
+
+if ( $pa_config{"daemon"} eq "1" ) {
+	print " [*] Backgrounding Pandora FMS Plugin Server process.\n\n";
+	&daemonize;
+}
+
+/*
+# Launch now all plugin threads
+# $ax is local thread id for this server
+for (my $ax=0; $ax < $pa_config{'plugin_threads'}; $ax++){
+	threads->new( \&pandora_plugin_consumer, \%pa_config, $ax);
+}
+
+# Launch now the producer thread
+threads->new( \&pandora_plugin_producer, \%pa_config);
+*/
+
+
+print " [*] All threads loaded and running \n\n";
+# Last thread is the main process (this process)
+
+my $dbhost = $pa_config{'dbhost'};
+my $dbname = $pa_config{'dbname'};
+my $dbh = DBI->connect("DBI:mysql:$dbname:$dbhost:3306",
+						$pa_config{'dbuser'},
+						$pa_config{'dbpass'},
+						{ RaiseError => 1, AutoCommit => 1 });
+
+
+# Server keepalive thread running in main thread on a infinite loop
+while (1) {
+	pandora_serverkeepaliver (\%pa_config, 1, $dbh);
+	threads->yield;
+	sleep ($pa_config{"server_threshold"});
+}
+
+#------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------
+#---------------------  Main Perl Code below this line-----------------------
+#------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------
+
+########################################################################################
+# pandora_shutdown ()
+# Close system on a received signal
+########################################################################################
+sub pandora_shutdown {
+	logger (\%pa_config,"Pandora FMS Plugin Server Shutdown by signal ",0);
+	print " [*] Shutting down Pandora FMS Plugin Server (received signal)...\n";
+	exit;
+}
+
+##########################################################################
+# SUB pandora_network_subsystem
+# Subsystem to process network modules
+# This module runs each X seconds (server threshold) checking for network modules status
+##########################################################################
+sub pandora_plugin_consumer ($$) {
+	my $pa_config = $_[0];
+	my $thread_id = $_[1];
+
+	print " [*] Starting up Plugin Consumer Thread # $thread_id \n";
+	
+	my $data_id_agent_module;
+	# Create Database handler
+	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
+	my $counter =0;
+	
+	while (1) {
+		if ($counter > 10) {
+			sleep (1);
+			$counter = 0;
+		}
+		
+		# Take the first element on the shared queue
+		# Insert this element on the current task hash
+		if (scalar(@pending_task) > 0){
+			{
+				lock $queue_lock;
+				$data_id_agent_module = shift(@pending_task);
+				delete($pending_task_hash{$data_id_agent_module});
+				$current_task_hash{$data_id_agent_module}=1;
+			}
+			
+			# Executing network task with unmanaged error trapping
+			eval {
+				# Call network execution process
+				exec_network_module ( $pa_config, $data_id_agent_module, $dbh);
+			};
+			if ($@){
+				logger ($pa_config, "[ERROR] Plugin Task for module $data_id_agent_module causes a system exception", 0);
+				logger ($pa_config, "ERROR Code: $@", 1);
+			}
+
+			# Remove from queue. If catch an error, probably data is
+			# not been processed, but has been freed from task queue
+			{
+				lock $queue_lock;
+				delete($current_task_hash{$data_id_agent_module});
+			}
+			$counter = 0;
+		} else {
+			$counter ++;
+		}
+	}
+}
+
+sub pandora_plugin_producer ($) {
+	my $pa_config = $_[0];
+	print " [*] Starting up Plugin Producer Thread ...\n";
+
+	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
+	
+	my $server_id = $pa_config->{'server_id'};
+
+	# Initialize variables for posterior usage
+	my $query1;
+	my @sql_data1;
+	my $data_id_agente_modulo;
+	my $data_flag;
+	my $exec_sql1;
+	
+	while (1) {
+		if ($pa_config->{"pandora_master"} != 1) {
+			# Query for normal server, not MASTER server
+			$query1 = "SELECT
+				tagente_modulo.id_agente_modulo,
+				tagente_modulo.flag
+			FROM
+				tagente, tagente_modulo, tagente_estado
+			WHERE
+				id_server = $server_id
+			AND 
+				tagente_modulo.id_agente = tagente.id_agente
+			AND
+				tagente.disabled = 0
+			AND
+				tagente_modulo.id_tipo_modulo > 4
+			AND
+				tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+			AND (
+					(tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP() 
+				OR 
+					tagente_modulo.flag = 1
+			)				
+			ORDER BY
+					last_execution_try ASC  ";
+		} else {
+			# Query for MASTER SERVER !
+			$query1 = "SELECT
+					DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.flag
+				FROM
+					tagente, tagente_modulo, tagente_estado, tserver
+				WHERE
+				( 	(tagente.id_server = $server_id AND tagente_modulo.id_agente = tagente.id_agente) OR
+					(tagente.id_server != $server_id AND tagente_modulo.id_agente = tagente.id_agente AND tagente.id_server = tserver.id_server AND tserver.status = 0)
+				) AND
+					tagente.disabled = 0
+				AND
+					tagente_modulo.id_tipo_modulo > 4
+				AND
+					tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+				AND
+					((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP() OR tagente_modulo.flag = 1 )
+				ORDER BY last_execution_try ASC";
+		}
+		$exec_sql1 = $dbh->prepare($query1);
+		$exec_sql1 ->execute;
+		while (@sql_data1 = $exec_sql1->fetchrow_array()) {	
+			$data_id_agente_modulo = $sql_data1[0];
+			$data_flag = $sql_data1[1];
+			# Skip modules already queued
+			if ((!defined($pending_task_hash{$data_id_agente_modulo})) &&
+				(!defined($current_task_hash{$data_id_agente_modulo}))) {
+				if ($data_flag == 1){
+					$dbh->do("UPDATE tagente_modulo SET flag = 0 WHERE id_agente_modulo = $data_id_agente_modulo")
+				}
+				# Locking scope, do not remove redundant { }
+				{
+					lock $queue_lock;
+					push (@pending_task, $data_id_agente_modulo);
+					$pending_task_hash {$data_id_agente_modulo}=1;
+				}
+			}
+		}
+		#logger ($pa_config, "Items in Network Pending Queue: ".scalar(@pending_task),  5);
+		$exec_sql1->finish();
+		sleep($pa_config->{"server_threshold"});
+	} # Main loop
+}
+
+
+##########################################################################
+# SUB exec_plugin_module (paconfig, id_agente_modulo, dbh )
+# Execute plugin module task 
+##########################################################################
+sub exec_plugin_module {
+    my $pa_config       = $_[0];
+    my $id_agent_plugin = $_[1];
+    my $dbh             = $_[2];
+
+    # Set global variables for this sub
+    my $timeout = $pa_config->{'plugin_timeout'};
+	my $agent_plugin; # hash container for tagent_plugin record
+    my $plugin; # hash container for tplugin
+
+    # Get a full hash for agent_plugin record reference ($agent_plugin)
+	my $query_sql = "SELECT * FROM tagent_plugin WHERE id = $id_agent_plugin";
+	my $exec_sql = $dbh->prepare($query_sql);
+	$exec_sql ->execute;
+	if (! $agent_plugin = $exec_sql->fetchrow_hashref){
+        # This piece of code should not be executed never.
+        $exec_sql->finish();
+        logger (\%pa_config,"[ERROR] Processing data for invalid plugin module", 0);
+        return 0;
+	}
+
+    # Get a full hash for plugin record reference ($plugin)
+    $query_sql = "SELECT * FROM tplugin WHERE id = ".$agent_plugin->{'id_plugin'};
+    $exec_sql = $dbh->prepare($query_sql);
+    $exec_sql ->execute;
+    if (! $plugin = $exec_sql->fetchrow_hashref){
+        # This piece of code should not be executed never.
+        $exec_sql->finish();
+        logger (\%pa_config,"[ERROR] Processing data for invalid plugin reference", 0);
+        return 0;
+    }
+
+    # Calculate min timeout for this call
+    if ($plugin->{'max_timeout'} < $timeout){
+        $timeout = $plugin->{'max_timeout'};
+    }
+
+    # Initialize another global sub variables.
+	my $agent_name = dame_agente_nombre ($pa_config, $agent_plugin->{'id_agente'}, $dbh);
+	my $module_result = 1;  # Fail by default
+	my $module_data = 0;    # 0 data for default
+
+    # Build execution command to plugin
+    my $exec_output = "";
+    my $plugin_command = $plugin->{"execute"};
+    if ($plugin->{'net_dst_opt'} ne ""){
+        $plugin_command = $plugin_command . " ". $plugin->{'net_dst_opt'} ." ". $agent_module->{'net_dst'};
+    } 
+    if ($plugin->{'net_port_opt'} ne "") {
+        $plugin_command = $plugin_command . " ". $plugin->{'net_port_opt'} ." ". $agent_module->{'net_port'};
+    }
+    if ($plugin->{'user_opt'} ne "") {
+        $plugin_command = $plugin_command . " ". $plugin->{'user_opt'} ." ". $agent_module->{'access_user'};
+    }
+    if ($plugin->{'pass_opt'} ne "") {
+        $plugin_command = $plugin_command . " ". $plugin->{'pass_opt'} ." ". $agent_module->{'access_pass'};
+    }
+
+    # Proccess field / optional / dynamic fields (5)
+    if ($agent_module->{'field1'} ne "") {
+        $plugin_command = $plugin_command . " \"". $agent_module->{'field1'}. "\"";
+    }
+    if ($agent_module->{'field2'} ne "") {
+        $plugin_command = $plugin_command . " \"". $agent_module->{'field2'}. "\"";
+    }
+    if ($agent_module->{'field3'} ne "") {
+        $plugin_command = $plugin_command . " \"". $agent_module->{'field3'}. "\"";
+    }
+    if ($agent_module->{'field4'} ne "") {
+        $plugin_command = $plugin_command . " \"". $agent_module->{'field4'}. "\"";
+    }
+    if ($agent_module->{'field5'} ne "") {
+        $plugin_command = $plugin_command . " \"". $agent_module->{'field5'}. "\"";
+    }
+
+    # Final command line execution is stored at "plugin_command"
+    eval {
+        alarm ($timeout);
+        $module_data = `$plugin_command`;
+        alarm(0); # Cancel the pending alarm if plugin call returns alive
+        $module_result = 0; # If comes here, this is a successfull exec
+    };
+    if ($@ =~ /PANDORA PLUGIN SERVER TIMED OUT/) {
+        logger ($pa_config, "[ERROR] Plugin Task for module ".$agent_plugin->{'id'}." causes a system timeout in exec", 1);
+        # resuming eval block...
+    } else {
+        logger ($pa_config, "[ERROR] Plugin Task for module ".$agent_plugin->{'id'}." causes an unknown system error", 1);
+        logger ($pa_config, "[ERROR] $@", 1);
+    }
+
+    sub timed_out {
+        die "PANDORA PLUGIN SERVER TIMED OUT";
+    }
+
+	# Get current timestamp
+	my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
+	my $utimestamp = &UnixDate("today","%s");
+    
+    # If module execution get a valid value
+	if ($module_result == 0) {
+		my %part;
+		$part{'name'}[0] = $agent_plugin->{'id_agent'};
+		$part{'description'}[0] = "";
+		$part{'data'}[0] = $module_data;
+		my $tipo_modulo = dame_nombretipomodulo_idagentemodulo ($pa_config, $agent_plugin->{'id_module_type'}, $dbh);
+
+		if ($tipo_modulo eq 'generic_data') {
+			module_generic_data ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
+		}
+		elsif ($tipo_modulo eq 'generic_data_inc' ) {
+			module_generic_data_inc ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
+		}
+		elsif ($tipo_modulo eq 'generic_data_string') {
+			module_generic_data_string ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
+		}
+		elsif ($tipo_modulo eq 'generic_data_proc') {
+			module_generic_proc ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
+		}
+		else {
+			logger ($pa_config, "Plugin Server Problem with unknown module type '$tipo_modulo'", 0);
+			goto skipdb_execmod;
+		}
+		# Update agent last contact
+		# Insert Pandora version as agent version
+		pandora_lastagentcontact ($pa_config, $timestamp, $agent_name,  $pa_config->{'servername'}.$pa_config->{"servermode"}, $pa_config->{'version'}, -1, $dbh);
+	} else { 
+        # If module execution get a INVALID value
+		if ($module_interval == 0){
+            $module_interval = dame_intervalo ($pa_config, $agent_plugin->{'id_agent'}, $dbh);
+        }
+		# Modules who cannot connect or something go bad, update last_execution_try field
+		logger ($pa_config, "Cannot obtain exec Network Module $nombre from agent $agent_name", 4);
+		my $query_act = "UPDATE tagente_estado SET current_interval = $module_interval,  last_execution_try = $utimestamp WHERE id_agente_modulo = $id_agente_modulo AND data_source = 2";
+        $dbh->do($query_act);
+	}
+skipdb_execmod:
+	$exec_sql->finish(); #close tagent_plugin hash reference
+}

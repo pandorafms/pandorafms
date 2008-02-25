@@ -35,7 +35,7 @@ our @EXPORT = qw( 	pandora_help_screen
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "1.4-dev";
-my $pandora_build="PS080220";
+my $pandora_build="PS080225";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -106,49 +106,54 @@ sub pandora_init {
 ##########################################################################
 
 sub pandora_loadconfig {
-	my $pa_config = $_[0];
-	my $opmode = $_[1]; # 0 dataserver, 1 network server, 2 snmp console, 3 recon server
-	my $archivo_cfg = $pa_config->{'pandora_path'};
-	my $buffer_line;
-	my @command_line;
-	my $tbuf;
+    my $pa_config = $_[0];
+    my $opmode = $_[1]; # 0 dataserver, 1 network server, 2 snmp console, 3 recon server, 4 plugin server, 5 prediction server
+    my $archivo_cfg = $pa_config->{'pandora_path'};
+    my $buffer_line;
+    my @command_line;
+    my $tbuf;
 
-	# Default values
-	$pa_config->{'version'} = $pandora_version;
-	$pa_config->{'build'} = $pandora_build;
-	$pa_config->{"dbuser"} = "pandora";
-	$pa_config->{"dbpass"} = "pandora";
-	$pa_config->{"dbhost"} = "localhost";
-	$pa_config->{"dbname"} = "pandora";
-	$pa_config->{"basepath"} = $pa_config->{'pandora_path'}; # Compatibility with Pandora 1.1
-	$pa_config->{"incomingdir"} = "/var/spool/pandora/data_in";
-	$pa_config->{"server_threshold"} = 30;
-	$pa_config->{"alert_threshold"} = 60;
-	$pa_config->{"logfile"} = "/var/log/pandora_server.log";
-	$pa_config->{"errorlogfile"} = "/var/log/pandora_server.error";
-	$pa_config->{"networktimeout"} = 15; 	# By default, not in config file yet
-	$pa_config->{"pandora_master"} = 1; 	# on by default
-	$pa_config->{"pandora_check"} = 0; 	# on by default
-	$pa_config->{"snmpconsole"} = 0; 	# off by default
-	$pa_config->{"version"} = $pandora_version;
-	$pa_config->{"build"} = $pandora_build;
-	$pa_config->{"servername"} = `hostname`;
-	$pa_config->{"servername"} =~ s/\s//g; # Replace ' ' chars
-	$pa_config->{"networkserver"} = 0;
-	$pa_config->{"dataserver"} = 0;
-	$pa_config->{"icmp_checks"} = 1; # Introduced on 1.3.1
-	$pa_config->{"reconserver"} = 0;
-	$pa_config->{"servermode"} = "";
-	$pa_config->{'snmp_logfile'} = "/var/log/pandora/pandora_snmptrap.log";
-	$pa_config->{"network_threads"} = 5; # Fixed default
-	$pa_config->{"keepalive"} = 60; # 60 Seconds initially for server keepalive
-	$pa_config->{"keepalive_orig"} = $pa_config->{"keepalive"};
-	$pa_config->{"alert_recovery"} = 0; # Introduced on 1.3.1
-        $pa_config->{"snmp_checks"} = 1; # Introduced on 1.3.1
-        $pa_config->{"snmp_timeout"} = 8; # Introduced on 1.3.1
-        $pa_config->{"tcp_checks"} = 1; # Introduced on 1.3.1
-        $pa_config->{"tcp_timeout"} = 20; # Introduced on 1.3.1
-	$pa_config->{"snmp_proc_deadresponse"} = 0; # Introduced on 1.3.1 10 Feb08
+    # Default values
+    $pa_config->{'version'} = $pandora_version;
+    $pa_config->{'build'} = $pandora_build;
+    $pa_config->{"dbuser"} = "pandora";
+    $pa_config->{"dbpass"} = "pandora";
+    $pa_config->{"dbhost"} = "localhost";
+    $pa_config->{"dbname"} = "pandora";
+    $pa_config->{"basepath"} = $pa_config->{'pandora_path'}; # Compatibility with Pandora 1.1
+    $pa_config->{"incomingdir"} = "/var/spool/pandora/data_in";
+    $pa_config->{"server_threshold"} = 30;
+    $pa_config->{"alert_threshold"} = 60;
+    $pa_config->{"logfile"} = "/var/log/pandora_server.log";
+    $pa_config->{"errorlogfile"} = "/var/log/pandora_server.error";
+    $pa_config->{"networktimeout"} = 15; 	# By default, not in config file yet
+    $pa_config->{"pandora_master"} = 1; 	# on by default
+    $pa_config->{"pandora_check"} = 0; 	# on by default
+    $pa_config->{"version"} = $pandora_version;
+    $pa_config->{"build"} = $pandora_build;
+    $pa_config->{"servername"} = `hostname`;
+    $pa_config->{"servername"} =~ s/\s//g; # Replace ' ' chars
+    $pa_config->{"dataserver"} = 0;
+    $pa_config->{"networkserver"} = 0;
+    $pa_config->{"snmpconsole"} = 0;
+    $pa_config->{"reconserver"} = 0;
+    $pa_config->{"pluginserver"} = 0; # Introduced on 1.4
+    $pa_config->{"predictionserver"} = 0; # Introduced on 1.4
+    $pa_config->{"servermode"} = "";
+    $pa_config->{'snmp_logfile'} = "/var/log/pandora_snmptrap.log";
+    $pa_config->{"network_threads"} = 5; # Fixed default
+    $pa_config->{"keepalive"} = 60; # 60 Seconds initially for server keepalive
+    $pa_config->{"keepalive_orig"} = $pa_config->{"keepalive"};
+    $pa_config->{"icmp_checks"} = 1; # Introduced on 1.3.1
+    $pa_config->{"alert_recovery"} = 0; # Introduced on 1.3.1
+    $pa_config->{"snmp_checks"} = 1; # Introduced on 1.3.1
+    $pa_config->{"snmp_timeout"} = 8; # Introduced on 1.3.1
+    $pa_config->{"tcp_checks"} = 1; # Introduced on 1.3.1
+    $pa_config->{"tcp_timeout"} = 20; # Introduced on 1.3.1
+    $pa_config->{"snmp_proc_deadresponse"} = 0; # Introduced on 1.3.1 10 Feb08
+    $pa_config->{"plugin_threads"} = 3; # Introduced on 1.4
+    $pa_config->{"plugin_timeout"} = 5; # Introduced on 1.
+
 	# Check for UID0
 	if ($> == 0){
 		printf " [W] Not all Pandora FMS components need to be executed as root\n";
@@ -156,8 +161,9 @@ sub pandora_loadconfig {
 	}
 	# Check for file
 	if ( ! -e $archivo_cfg ) {
-		printf "\n[ERROR] Cannot open configuration file at $archivo_cfg. \n";
-		printf " Please specify a valid Pandora FMS configuration file in command line. \n";
+		printf "\n [ERROR] Cannot open configuration file at $archivo_cfg. \n";
+		printf "  Please specify a valid Pandora FMS configuration file in command line.\n";
+        print  "  Standard configuration file is at /etc/pandora/pandora_server.conf \n";
 		exit 1;
 	}
 	# Collect items from config file and put in an array 
@@ -189,8 +195,7 @@ sub pandora_loadconfig {
  	for ($ax=0;$ax<=$ltotal;$ax++){
   		$parametro = $args[$ax];
 		if ($parametro =~ m/^incomingdir\s(.*)/i) {  
-			$pa_config->{"incomingdir"} = $1; 
-			$tbuf= $1;		
+			$tbuf= clean_blank($1); 
 			if ($tbuf =~ m/^\.(.*)/){
 				$pa_config->{"incomingdir"} =$pa_config->{"basepath"}.$1;
 			} else {
@@ -198,7 +203,7 @@ sub pandora_loadconfig {
 			}
 		}
 		elsif ($parametro =~ m/^log_file\s(.*)/i) { 
-			$tbuf= $1;		
+            $tbuf= clean_blank($1);	
 			if ($tbuf =~ m/^\.(.*)/){
 				$pa_config->{"logfile"} = $pa_config->{"basepath"}.$1;
 			} else {
@@ -206,65 +211,107 @@ sub pandora_loadconfig {
 			}
 		}
   		elsif ($parametro =~ m/^errorlog_file\s(.*)/i) { 
-			$tbuf= $1;		
+            $tbuf= clean_blank($1); 	
 			if ($tbuf =~ m/^\.(.*)/){
 				$pa_config->{"errorlogfile"} = $pa_config->{"basepath"}.$1;
 			} else {
 				$pa_config->{"errorlogfile"} = $tbuf;
 			}
 		}
-		elsif ($parametro =~ m/^snmp_logfile\s(.*)/i) { $pa_config->{'snmp_logfile'}= $1; }
-		elsif ($parametro =~ m/^dbname\s(.*)/i) { $pa_config->{'dbname'}= $1; }
-		elsif ($parametro =~ m/^dbuser\s(.*)/i) { $pa_config->{'dbuser'}= $1; }
-  		elsif ($parametro =~ m/^dbpass\s(.*)/i) { $pa_config->{'dbpass'}= $1; }
-  		elsif ($parametro =~ m/^dbhost\s(.*)/i) { $pa_config->{'dbhost'}= $1; }
-  		elsif ($parametro =~ m/^daemon\s([0-9]*)/i) { $pa_config->{'daemon'}= $1;}
-		elsif ($parametro =~ m/^dataserver\s([0-9]*)/i) {
-			$pa_config->{'dataserver'}= $1;
+        elsif ($parametro =~ m/^snmp_logfile\s(.*)/i) { 
+            $pa_config->{'snmp_logfile'}= clean_blank($1); 
+        }
+		elsif ($parametro =~ m/^dbname\s(.*)/i) { 
+            $pa_config->{'dbname'}= clean_blank($1); 
+        }
+		elsif ($parametro =~ m/^dbuser\s(.*)/i) { 
+            $pa_config->{'dbuser'}= clean_blank($1); 
+        }
+  		elsif ($parametro =~ m/^dbpass\s(.*)/i) {
+            $pa_config->{'dbpass'}= clean_blank($1); 
+        }
+  		elsif ($parametro =~ m/^dbhost\s(.*)/i) { 
+            $pa_config->{'dbhost'}= clean_blank($1); 
+        }
+  		elsif ($parametro =~ m/^daemon\s([0-9]*)/i) { 
+            $pa_config->{'daemon'}= clean_blank($1);
+        }
+		elsif ($parametro =~ m/^dataserver\s([0-9]*)/i){
+			$pa_config->{'dataserver'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^snmp_proc_deadresponse\s([0-9]*)/i) { 
-			$pa_config->{"snmp_proc_deadresponse"} = $1;
-		}
-		elsif ($parametro =~ m/^reconserver\s([0-9]*)/i) {
-			$pa_config->{'reconserver'}= $1;
-		}
-		elsif ($parametro =~ m/^networkserver\s([0-9]*)/i) {
-			$pa_config->{'networkserver'}= $1;
-		}
-		elsif ($parametro =~ m/^servername\s(.*)/i) { $pa_config->{'servername'}= $1; }
-		elsif ($parametro =~ m/^checksum\s([0-9])/i) { $pa_config->{"pandora_check"} = $1; }
-		elsif ($parametro =~ m/^master\s([0-9])/i) { 
-			$pa_config->{"pandora_master"} = $1; 
-		}
-		elsif ($parametro =~ m/^icmp_checks\s([0-9])/i) { 
-			$pa_config->{"icmp_checks"} = $1; 
-		}
-		elsif ($parametro =~ m/^snmpconsole\s([0-9])/i) {
-			$pa_config->{"snmpconsole"} = $1;
-		}
-		elsif ($parametro =~ m/^alert_recovery\s([0-9])/i) {
-			$pa_config->{"alert_recovery"} = $1;
-		}
-                elsif ($parametro =~ m/^snmp_checks\s([0-9])/i) {
-                        $pa_config->{"snmp_checks"} = $1;
-                }
-                elsif ($parametro =~ m/^snmp_timeout\s([0-9])/i) {
-                        $pa_config->{"snmp_timeout"} = $1;
-                }
-                elsif ($parametro =~ m/^tcp_checks\s([0-9])/i) {
-                        $pa_config->{"tcp_checks"} = $1;
-                }
-                elsif ($parametro =~ m/^tcp_timeout\s([0-9])/i) {
-                        $pa_config->{"tcp_timeout"} = $1;
-                }
+        elsif ($parametro =~ m/^pluginserver\s([0-9]*)/i){
+            $pa_config->{'pluginserver'}= clean_blank($1);
+        }
+        elsif ($parametro =~ m/^predictionserver\s([0-9]*)/i){
+            $pa_config->{'predictionserver'}= clean_blank($1);
+        }
+        elsif ($parametro =~ m/^reconserver\s([0-9]*)/i) {
+            $pa_config->{'reconserver'}= clean_blank($1);
+        }
+        elsif ($parametro =~ m/^networkserver\s([0-9]*)/i) {
+	        $pa_config->{'networkserver'}= clean_blank($1);
+        }
+        elsif ($parametro =~ m/^servername\s(.*)/i) { 
+            $pa_config->{'servername'}= clean_blank($1);
+        }
+        elsif ($parametro =~ m/^checksum\s([0-9])/i) { 
+            $pa_config->{"pandora_check"} = clean_blank($1); 
+        }
+        elsif ($parametro =~ m/^master\s([0-9])/i) { 
+	        $pa_config->{"pandora_master"} = clean_blank($1); 
+        }
+        elsif ($parametro =~ m/^icmp_checks\s([0-9])/i) { 
+	        $pa_config->{"icmp_checks"} = clean_blank($1); 
+        }
+        elsif ($parametro =~ m/^snmpconsole\s([0-9])/i) {
+	        $pa_config->{"snmpconsole"} = clean_blank($1);
+        }
+        elsif ($parametro =~ m/^alert_recovery\s([0-9])/i) {
+	        $pa_config->{"alert_recovery"} = clean_blank($1);
+        }
+        elsif ($parametro =~ m/^snmp_checks\s([0-9])/i) {
+            $pa_config->{"snmp_checks"} = clean_blank($1);
+        }
+        elsif ($parametro =~ m/^snmp_timeout\s([0-9])/i) {
+            $pa_config->{"snmp_timeout"} = clean_blank($1);
+        }
+        elsif ($parametro =~ m/^tcp_checks\s([0-9])/i) {
+            $pa_config->{"tcp_checks"} = clean_blank($1);
+        }
+        elsif ($parametro =~ m/^tcp_timeout\s([0-9])/i) {
+            $pa_config->{"tcp_timeout"} = clean_blank($1);
+        }
+        elsif ($parametro =~ m/^snmp_proc_deadresponse\s([0-9]*)/i) { 
+            $pa_config->{"snmp_proc_deadresponse"} = clean_blank($1);
+        }
+        elsif ($parametro =~ m/^verbosity\s([0-9]*)/i) {
+            $pa_config->{"verbosity"} = clean_blank($1); 
+        } 
+        elsif ($parametro =~ m/^server_threshold\s([0-9]*)/i) { 
+            $pa_config->{"server_threshold"} = clean_blank($1); 
+        } 
+        elsif ($parametro =~ m/^alert_threshold\s([0-9]*)/i) { 
+            $pa_config->{"alert_threshold"} = clean_blank($1); 
+        } 
+        elsif ($parametro =~ m/^network_timeout\s([0-9]*)/i) {
+            $pa_config->{'networktimeout'}= clean_blank($1); 
+        }
+        elsif ($parametro =~ m/^network_threads\s([0-9]*)/i) {
+            $pa_config->{'network_threads'}= clean_blank($1); 
+        }
+        elsif ($parametro =~ m/^plugin_threads\s([0-9]*)/i) {
+            $pa_config->{'plugin_threads'}= clean_blank($1); 
+        }
+        elsif ($parametro =~ m/^plugin_timeout\s([0-9]*)/i) {
+            $pa_config->{'plugin_timeout'}= clean_blank($1); 
+        }
+        elsif ($parametro =~ m/^server_keepalive\s([0-9]*)/i) {
+            $pa_config->{"keepalive"} = clean_blank($1);
+            $pa_config->{"keepalive_orig"} = clean_blank($1);
+        }
+    } # end of loop for parameter #
 
-  		elsif ($parametro =~ m/^verbosity\s([0-9]*)/i) { $pa_config->{"verbosity"} = $1; } 
-  		elsif ($parametro =~ m/^server_threshold\s([0-9]*)/i) { $pa_config->{"server_threshold"}  = $1; } 
-		elsif ($parametro =~ m/^alert_threshold\s([0-9]*)/i) { $pa_config->{"alert_threshold"} = $1; } 
-		elsif ($parametro =~ m/^network_timeout\s([0-9]*)/i) { $pa_config->{'networktimeout'}= $1; }
-		elsif ($parametro =~ m/^network_threads\s([0-9]*)/i) { $pa_config->{'network_threads'}= $1; }
-		elsif ($parametro =~ m/^server_keepalive\s([0-9]*)/i) { $pa_config->{"keepalive"} = $1; $pa_config->{"keepalive_orig"} = $1; }
- 	}
+
 	if ( $pa_config->{"verbosity"} > 0){
 		print " [*] Server basepath is ".$pa_config->{'basepath'}."\n";
 		print " [*] Server logfile at ".$pa_config->{"logfile"}."\n";
@@ -275,25 +322,33 @@ sub pandora_loadconfig {
 	}
  	# Check for valid token token values
  	if (( $pa_config->{"dbuser"} eq "" ) || ( $pa_config->{"basepath"} eq "" ) || ( $pa_config->{"incomingdir"} eq "" ) || ( $pa_config->{"logfile"} eq "" ) || ( $pa_config->{"dbhost"} eq "")  || ( $pa_config->{"pandora_master"} eq "") || ( $pa_config->{"dbpass"} eq "" ) ) {
-		print "[ERROR] Bad Config values. Be sure that $archivo_cfg is a valid setup file. \n\n";
+		print " [ERROR] Bad Config values. Be sure that $archivo_cfg is a valid setup file. \n\n";
 		exit;
 	}
-	if (($opmode ==0) && ($pa_config->{"dataserver"} ne 1)) {
-		print " [ERROR] You must enable Dataserver in setup file to run Pandora FMS Data Server. \n\n";
-		exit;
-	} 
-	if (($opmode ==1) && ($pa_config->{"networkserver"} ne 1)) {
-		print " [ERROR] You must enable NetworkServer in setup file to run Pandora FMS Network Server. \n\n";
-		exit;
-	}
-	if (($opmode ==2) && ($pa_config->{"snmpconsole"} ne 1)) {
-		print " [ERROR] You must enable SnmpConsole in setup file to run Pandora FMS SNMP Console. \n\n";
-		exit;
-	}
-	if (($opmode ==3) && ($pa_config->{"reconserver"} ne 1)) {
-		print " [ERROR] You must enable Recon server in setup file to run Pandora FMS Recon server. \n\n";
-		exit;
-	}
+    if (($opmode ==0) && ($pa_config->{"dataserver"} ne 1)) {
+	    print " [ERROR] You must enable Dataserver in setup file to run Pandora FMS Data Server. \n\n";
+	    exit;
+    } 
+    if (($opmode ==1) && ($pa_config->{"networkserver"} ne 1)) {
+	    print " [ERROR] You must enable NetworkServer in setup file to run Pandora FMS Network Server. \n\n";
+	    exit;
+    }
+    if (($opmode ==2) && ($pa_config->{"snmpconsole"} ne 1)) {
+	    print " [ERROR] You must enable SnmpConsole in setup file to run Pandora FMS SNMP Console. \n\n";
+	    exit;
+    }
+    if (($opmode ==3) && ($pa_config->{"reconserver"} ne 1)) {
+	    print " [ERROR] You must enable Recon server in setup file to run Pandora FMS Recon server. \n\n";
+	    exit;
+    }
+    if (($opmode ==4) && ($pa_config->{"pluginserver"} ne 1)) {
+        print " [ERROR] You must enable Plugin server in setup file to run Pandora FMS Plugin server. \n\n";
+        exit;
+    }
+    if (($opmode ==5) && ($pa_config->{"predictionserver"} ne 1)) {
+        print " [ERROR] You must enable Prediction server in setup file to run Pandora FMS Prediction server. \n\n";
+        exit;
+    }
 	if ($opmode == 0){
 		print " [*] You are running Pandora FMS Data Server. \n";
 		$parametro ="Pandora FMS Data Server";
@@ -314,6 +369,16 @@ sub pandora_loadconfig {
 		$parametro ="Pandora FMS Recon Server";
 		$pa_config->{"servermode"}="_Recon";
 	}
+    if ($opmode == 4){
+        print " [*] You are running Pandora FMS Plugin Server. \n";
+        $parametro ="Pandora FMS Plugin Server";
+        $pa_config->{"servermode"}="_Plugin";
+    }
+    if ($opmode == 3){
+        print " [*] You are running Pandora FMS Prediction Server. \n";
+        $parametro ="Pandora FMS Prediction Server";
+        $pa_config->{"servermode"}="_Prediction";
+    }
 	if ($pa_config->{"pandora_check"} == 1) {
 		print " [*] MD5 Security enabled.\n";
 	}
@@ -330,9 +395,8 @@ sub pandora_loadconfig {
 		pandora_updateserver ($pa_config, $pa_config->{'servername'},1, $opmode, $dbh); # Alive status
 	};
 	if ($@) {
-
 		logger ($pa_config, "Error connecting database in init Phase. Aborting startup.",0);
-		print (" [E] Error connecting database in init Phase. Aborting startup. \n\n");
+		print (" [ERROR] Error connecting database in init Phase. Aborting startup. \n\n");
 		print $@;
 		exit;
 	}
@@ -340,9 +404,9 @@ sub pandora_loadconfig {
 	$pa_config->{'server_id'} = dame_server_id ($pa_config, $pa_config->{'servername'}.$pa_config->{"servermode"}, $dbh);
 	
 	# Dump all errors to errorlog
-	# DISABLED in DEBUGMODE
-	# ENABLE FOR PRODUCTION
-	open STDERR, ">>$pa_config->{'errorlogfile'}" or die "Can't write to Errorlog : $!";
+	open STDERR, ">>$pa_config->{'errorlogfile'}" or die " [ERROR] Pandora FMS can't write to Errorlog. Aborting : \n    $!";
+    my $time_now = &UnixDate("today","%Y/%m/%d %H:%M:%S");
+    print STDERR "$time_now - ".$pa_config->{'servername'}." Starting Pandora FMS server. Error logging activated \n";
 }
 
 # End of function declaration

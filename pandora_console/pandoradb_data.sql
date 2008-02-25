@@ -60,12 +60,11 @@ UNLOCK TABLES;
 
 /*!40000 ALTER TABLE `tlanguage` DISABLE KEYS */;
 LOCK TABLES `tlanguage` WRITE;
--- INSERT INTO `tlanguage` VALUES ('bb','Bable'),('ca','Catal&agrave;'),('de','Deutch'),('en','English'),('es_es','Espa&ntilde;ol'),('es_gl','Gallego'),('es_la','Espa&ntilde;ol-Latinoam&eacute;rica'),('eu','Euskera'),('fr','Fran&ccedil;ais'),('pt_br','Portuguese-Brazil');
 INSERT INTO `tlanguage` VALUES ('en','English');
-INSERT INTO `tlanguage` VALUES ('es_es','Espa&ntilde;ol');
+/*INSERT INTO `tlanguage` VALUES ('es_es','Espa&ntilde;ol');
 INSERT INTO `tlanguage` VALUES ('de','Deutch');
 INSERT INTO `tlanguage` VALUES ('fr','Fran&ccedil;ais');
-INSERT INTO `tlanguage` VALUES ('pt_br','Portugu&ecirc;s-Brasil');
+INSERT INTO `tlanguage` VALUES ('pt_br','Portugu&ecirc;s-Brasil'); */
 
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `tlanguage` ENABLE KEYS */;
@@ -77,7 +76,7 @@ UNLOCK TABLES;
 
 /*!40000 ALTER TABLE `tlink` DISABLE KEYS */;
 LOCK TABLES `tlink` WRITE;
-INSERT INTO `tlink` VALUES (0000000001,'GeekTools','www.geektools.com'),(0000000002,'CentralOPS','http://www.centralops.net/'),(0000000003,'Pandora Project','http://pandora.sourceforge.net'),(0000000004,'Babel Project','http://babel.sourceforge.net'),(0000000005,'Google','http://www.google.com');
+INSERT INTO `tlink` VALUES (0000000001,'GeekTools','www.geektools.com'),(0000000002,'CentralOPS','http://www.centralops.net/'),(0000000003,'Pandora Project','http://pandora.sourceforge.net'),(0000000004,'Babel Project','http://babel.sourceforge.net'),(0000000005,'Google','http://www.google.com'),(0000000006,'ArticaST','http://www.artica.es');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `tlink` ENABLE KEYS */;
 
@@ -150,7 +149,6 @@ INSERT INTO `tnetwork_component_group` VALUES (10,'Network Management',0);
 INSERT INTO `tnetwork_component_group` VALUES (11,'Microsoft Windows MIB',12);
 INSERT INTO `tnetwork_component_group` VALUES (12,'Operating Systems',0);
 
-
 --
 -- Dumping data for table `torigen`
 --
@@ -162,19 +160,40 @@ INSERT INTO `torigen` VALUES ('Operating System event'),('IDS events'),('Firewal
 -- Dumping data for table `ttipo_modulo`
 --
 
-INSERT INTO `ttipo_modulo` VALUES (1,'generic_data',0,'Generic module to adquire numeric data','mod_data.png'),(2,'generic_proc',1,'Generic module to adquire boolean data','mod_proc.png'),(3,'generic_data_string',0,'Generic module to adquire alphanumeric data','mod_string.png'),(4,'generic_data_inc',0,'Generic module to adquire numeric incremental data','mod_data_inc.png'),(6,'remote_icmp_proc',3,'Remote ICMP network agent, boolean data','mod_icmp_proc.png'),(7,'remote_icmp',2,'Remote ICMP network agent (latency)','mod_icmp_data.png'),(8,'remote_tcp',2,'Remote TCP network agent, numeric data','mod_tcp_data.png'),(9,'remote_tcp_proc',3,'Remote TCP network agent, boolean data','mod_tcp_proc.png'),(10,'remote_tcp_string',2,'Remote TCP network agent, alphanumeric data','mod_tcp_string.png'),(11,'remote_tcp_inc',2,'Remote TCP network agent, incremental data','mod_tcp_inc.png'),(15,'remote_snmp',2,'Remote SNMP network agent, numeric data','mod_snmp_data.png'),(16,'remote_snmp_inc',2,'Remote SNMP network agent, incremental data','mod_snmp_inc.png'),(17,'remote_snmp_string',2,'Remote SNMP network agent, alphanumeric data','mod_snmp_string.png'),(18,'remote_snmp_proc',1,'Remote SNMP network agent, boolean data','mod_snmp_proc.png'), (100,'keep_alive',-1,'KeepAlive','mod_keepalive.png'), (19, 'image_jpg',4,'Image JPG data', 'mod_image_jpg.png'), (20, 'image_png',4,'Image PNG data', 'mod_image_png.png'), (21, 'async_proc', 5, 'Asyncronous proc data', 'mod_async_proc.png'), (22, 'async_data', 5, 'Asyncronous numeric data', 'mod_async_data.png'), (23, 'async_string', 5, 'Asyncronous string data', 'mod_async_string.png'), (24, 'predictive', 5, 'Predictive Estimation Data', 'mod_predictive.png');
+INSERT INTO `ttipo_modulo` VALUES 
+(1,'generic_data',0,'Generic module to adquire numeric data','mod_data.png'),
+(2,'generic_proc',1,'Generic module to adquire boolean data','mod_proc.png'),
+(3,'generic_data_string',0,'Generic module to adquire alphanumeric data','mod_string.png'),
+(4,'generic_data_inc',0,'Generic module to adquire numeric incremental data','mod_data_inc.png'),
+(6,'remote_icmp_proc',3,'Remote ICMP network agent, boolean data','mod_icmp_proc.png'),
+(7,'remote_icmp',2,'Remote ICMP network agent (latency)','mod_icmp_data.png'),
+(8,'remote_tcp',2,'Remote TCP network agent, numeric data','mod_tcp_data.png'),
+(9,'remote_tcp_proc',3,'Remote TCP network agent, boolean data','mod_tcp_proc.png'),
+(10,'remote_tcp_string',2,'Remote TCP network agent, alphanumeric data','mod_tcp_string.png'),
+(11,'remote_tcp_inc',2,'Remote TCP network agent, incremental data','mod_tcp_inc.png'),
+(15,'remote_snmp',2,'Remote SNMP network agent, numeric data','mod_snmp_data.png'),
+(16,'remote_snmp_inc',2,'Remote SNMP network agent, incremental data','mod_snmp_inc.png'),
+(17,'remote_snmp_string',2,'Remote SNMP network agent, alphanumeric data','mod_snmp_string.png'),
+(18,'remote_snmp_proc',3,'Remote SNMP network agent, boolean data','mod_snmp_proc.png'), 
+(19,'image_jpg',9,'Image JPG data', 'mod_image_jpg.png'), 
+(20,'image_png',9,'Image PNG data', 'mod_image_png.png'), 
+(21,'async_proc', 5, 'Asyncronous proc data', 'mod_async_proc.png'), 
+(22,'async_data', 4, 'Asyncronous numeric data', 'mod_async_data.png'), 
+(23,'async_string', 4, 'Asyncronous string data', 'mod_async_string.png'), 
+(24,'predictive', 6, 'Predictive Estimation Data', 'mod_predictive.png'),
+(100,'keep_alive',-1,'KeepAlive','mod_keepalive.png');
 
 --
 -- Dumping data for table `tusuario`
 --
 
-INSERT INTO `tusuario` VALUES ('admin','Default Admin','1da7ee7d45b96d0e1f45ee4ee23da560','Admin Pandora','2007-03-27 18:59:39','admin_pandora@nowhere.net','555-555-555',1),('demo','Demo user','fe01ce2a7fbac8fafaed7c982a04e229','Please don\\&#039;t change anything in this user, so other users can connect with it.\r\n\r\nThanks.','2007-03-20 13:00:05','demo@nowhere.net','+4555435435',0);
+INSERT INTO `tusuario` VALUES ('admin','Default Admin','1da7ee7d45b96d0e1f45ee4ee23da560','Admin Pandora','2007-03-27 18:59:39','admin_pandora@nowhere.net','555-555-555',1);
 
 --
 -- Dumping data for table `tusuario_perfil`
 --
 
-INSERT INTO `tusuario_perfil` VALUES (1,'demo',1,1,'admin'),(2,'admin',5,1,'admin');
+INSERT INTO `tusuario_perfil` VALUES (1,'admin',5,1,'admin');
 
 --
 -- Dumping data for table `tperfil`
@@ -182,7 +201,7 @@ INSERT INTO `tusuario_perfil` VALUES (1,'demo',1,1,'admin'),(2,'admin',5,1,'admi
 
 INSERT INTO `tperfil` VALUES (1,'Operator (Read)',0,1,0,1,0,0,0,0,0,0),(2,'Operator (Write)',1,1,0,1,0,0,0,0,0,0),(3,'Chief Operator',1,1,1,1,0,0,0,0,0,0),(4,'Group coordinator',1,1,1,1,1,1,1,0,0,0),(5,'Pandora Administrator',1,1,1,1,1,1,1,1,1,1);
 
-INSERT INTO `tnews` VALUES (1,'admin','Welcome to Pandora FMS 1.3 !','This is our new console, a lot of new features has been added from last version. Please read documentation about it and be free to test any option.\r\n\r\nPandora FMS team.','2007-06-22 13:03:20');
+INSERT INTO `tnews` VALUES (1,'admin','Welcome to Pandora FMS!','This is our new console, a lot of new features has been added from last version. Please read documentation about it and be free to test any option.\r\n\r\nPandora FMS team.','2007-06-22 13:03:20');
 
 INSERT INTO `tnetwork_profile` VALUES (1,'SNMP Basic management','Basic SNMP management (only first interface)');
 INSERT INTO `tnetwork_profile` VALUES (2,'Basic Server','Check basic server services and network latency. This checks SSH, FTP and HTTP. Also a ICMP host alive check.');

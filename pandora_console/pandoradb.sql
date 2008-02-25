@@ -49,6 +49,13 @@ CREATE TABLE `tagente` (
   PRIMARY KEY  (`id_agente`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+/* Data source field explanation (Pandora FMS 1.4.x)
+
+1 - Classic module data from tagente_modulo
+2 - New data coming from plugin modules
+3 - New data coming from predictive engine 
+.
+*/
 
 CREATE TABLE `tagente_datos` (
   `id_agente_datos` bigint(10) unsigned NOT NULL auto_increment,
@@ -57,20 +64,24 @@ CREATE TABLE `tagente_datos` (
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `id_agente` mediumint(8) unsigned NOT NULL default '0',
   `utimestamp` int(10) unsigned default '0',
+  `data_source` tinyint(3) unsigned default `1`,
   PRIMARY KEY  (`id_agente_datos`),
-  KEY `data_index2` (`id_agente`,`id_agente_modulo`)
+  KEY `data_index2` (`id_agente`,`id_agente_modulo`),
+  KEY `data_index3` (`data_source`,`id_agente_modulo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `tagent_data_image` (
   `id` bigint(20) unsigned NOT NULL auto_increment,
-  `id_agente_modulo` mediumint(8) unsigned NOT NULL default '0',
+  `id_agent_module` mediumint(8) unsigned NOT NULL default '0',
+  `id_agent` mediumint(8) unsigned NOT NULL default '0',
   `blob` mediumblob NOT NULL,
   `filename` varchar(255) default '',
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
-  `id_agente` mediumint(8) unsigned NOT NULL default '0',
   `utimestamp` int(10) unsigned default '0',
+  `data_source` tinyint(3) unsigned default `1`,
   PRIMARY KEY  (`id`),
-  KEY `img_idx2` (`id_agente`,`id_agente_modulo`)
+  KEY `img_idx1` (`id_agent`,`id_agent_module`),
+  KEY `img_idx2` (`data_source`,`id_agent_module`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `tagente_datos_inc` (
@@ -79,8 +90,10 @@ CREATE TABLE `tagente_datos_inc` (
   `datos` double(18,2) default NULL,
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `utimestamp` int(10) unsigned default '0',
+  `data_source` tinyint(3) unsigned default `1`,
   PRIMARY KEY  (`id_adi`),
-  KEY `data_inc_index_1` (`id_agente_modulo`)
+  KEY `data_inc_index_1` (`id_agente_modulo`),
+  KEY `data_inc_index3` (`data_source`,`id_agente_modulo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -91,9 +104,10 @@ CREATE TABLE `tagente_datos_string` (
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `id_agente` bigint(4) unsigned NOT NULL default '0',
   `utimestamp` int(10) unsigned NOT NULL default 0,
+  `data_source` tinyint(3) unsigned default `1`,
   PRIMARY KEY  (`id_tagente_datos_string`),
-  KEY `data_string_index_1` (`id_agente_modulo`),
-  KEY `data_string_index_2` (`id_agente`)
+  KEY `data_string_index_1` (`id_agente`,`id_agente_modulo`),
+  KEY `data_string_index_3` (`data_source`,`id_agente_modulo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -110,10 +124,11 @@ CREATE TABLE `tagente_estado` (
   `current_interval` int(10) unsigned NOT NULL default '0',
   `running_by` int(10) unsigned NULL default 0,
   `last_execution_try` bigint(20) NOT NULL default '0',
-  `id_agent_plugin` int(20) NOT NULL default '0',
+  `data_source` tinyint(3) unsigned default `1`,
   PRIMARY KEY  (`id_agente_estado`),
   KEY `status_index_1` (`id_agente_modulo`),
-  KEY `status_index_2` (`id_agente_modulo`,`estado`)
+  KEY `status_index_2` (`id_agente_modulo`,`estado`),
+  KEY `status_index_3` (`id_agente_modulo`,`data_source`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -137,7 +152,6 @@ CREATE TABLE `tagente_modulo` (
   `id_modulo` int(11) unsigned NULL default 0,
   `disabled` tinyint(3) unsigned default '0',
   `export` tinyint(3) unsigned default '0',
-  `predictive_id_module_source`  bigint(100) unsigned default 0,
   PRIMARY KEY (`id_agente_modulo`, `id_agente`),
   KEY `tam_agente` (`id_agente`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -220,15 +234,16 @@ CREATE TABLE `tnotification_component` (
         `id` int(11) unsigned NOT NULL auto_increment,
         `id_notification` int(11) NOT NULL default '0',
         `id_agente_modulo` int(11) NOT NULL default '0',
+        `data_source` tinyint(3) unsigned default `1`,
         `dis_max` double(18,2) default NULL,
         `dis_min` double(18,2) default NULL,
         `alert_text` varchar(255) default '',
         `time_threshold` int(11) NOT NULL default '0',
         `last_fired` datetime NOT NULL default '0000-00-00 00:00:00',
         `max_alerts` int(4) NOT NULL default '1',
+        `min_alerts` int(4) NOT NULL default '0',
         `times_fired` int(11) NOT NULL default '0',
         `module_type` int(11) NOT NULL default '0',
-        `min_alerts` int(4) NOT NULL default '0',
         `internal_counter` int(4) default '0',
         `disabled` int(4) default '0',
         `time_from` TIME default '00:00:00',
@@ -276,7 +291,7 @@ CREATE TABLE `tevento` (
   `utimestamp` bigint(20) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_evento`),
   KEY `indice_1` (`id_agente`,`id_evento`),
-  KEY `indice_2` (`timestamp`,`id_evento`)
+  KEY `indice_2` (`utimestamp`,`id_evento`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -625,18 +640,23 @@ CREATE TABLE `tlayout_data` (
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE tplugin (
-  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` varchar(200) NOT NULL,
-  `description` mediumtext default "",
-  `max_timeout` int(4) UNSIGNED NOT NULL default 0,
-  `execute`varchar(250) NOT NULL,
-  PRIMARY KEY('id')
+    `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+    `name` varchar(200) NOT NULL,
+    `description` mediumtext default "",
+    `max_timeout` int(4) UNSIGNED NOT NULL default 0,
+    `execute`varchar(250) NOT NULL,
+    `net_dst_opt` varchar(50) default '',
+    `net_port_opt` varchar(50) default '',
+    `user_opt` varchar(50) default '',
+    `pass_opt` varchar(50) default '',
+    PRIMARY KEY('id')
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8; 
 
 CREATE TABLE `tagent_plugin` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `id_agent` int(11) NOT NULL default '0',
   `id_plugin` int(11) NOT NULL default '0',
+  `id_module_type` int(11) NOT NULL default '0',
   `net_dst` varchar(250) default '',
   `net_port` varchar(250) default '',
   `access_user` varchar(250) default '',
@@ -646,12 +666,21 @@ CREATE TABLE `tagent_plugin` (
   `field3` varchar(250) default '',
   `field4` varchar(250) default '',
   `field5` varchar(250) default ''
-
   `id_module_group` int(4) unsigned default '0',
   `flag` tinyint(3) unsigned default '1',
   `disabled` tinyint(3) unsigned default '0',
   `export` tinyint(3) unsigned default '0',
-  PRIMARY KEY (`id_agente_modulo`, `id_agente`),
-  KEY `tam_agente` (`id_agente`)
+  PRIMARY KEY (`id`),
+  KEY `ag_plugin_idx1` (`id_agent`,`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `tagent_predictive` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `id_agent` int(11) NOT NULL default '0',
+  `id_module_group` int(4) unsigned default '0',
+  `flag` tinyint(3) unsigned default '1',
+  `disabled` tinyint(3) unsigned default '0',
+  `export` tinyint(3) unsigned default '0',
+  PRIMARY KEY (`id`),
+  KEY `ag_pred_idx1` (`id_agent`,`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -34,6 +34,7 @@ our @EXPORT = qw( 	daemonize
 			float_equal
 			sqlWrap
 			is_numeric
+            clean_blank
 		);
 
 
@@ -160,6 +161,15 @@ sub limpia_cadena {
     $micadena =~ s/[^\-\:\;\.\,\_\s\a\*\=\(\)a-zA-Z0-9]/ /g;
     $micadena =~ s/[\n\l\f]/ /g;
     return $micadena;
+}
+
+##########################################################################
+# clean_blank (string) - Purge a string for any blank spaces in it
+##########################################################################
+sub clean_blank {
+    my $input = $_[0];
+    $input =~ s/\s//g;
+    return $input;
 }
 
 ########################################################################################

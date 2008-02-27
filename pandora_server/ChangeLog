@@ -1,3 +1,11 @@
+2008-02-27 Manuel Arostegui <marostegui@artica.es>
+
+	* pandora_snmpconsole, pandora_recon, pandora_server
+	  pandora_network: Changed /var/run/ instead of /var/run/pandora
+	  as this last one is deleted during the start up of the system,
+	  causing the servers to do not load cause the PID file doesn't find
+	  its place.
+
 2008-02-26 Sancho Lerena <slerena@gmail.com>
 
 	* Some header adjustements. Removed detection of GNULinux in startup.

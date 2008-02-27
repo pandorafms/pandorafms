@@ -3,8 +3,8 @@
 ###############################################################################
 # Pandora FMS DB Management
 ###############################################################################
-# Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+# Copyright (c) 2005-2008 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,11 +21,11 @@
 # Includes list
 use strict;
 use Time::Local;			# DateTime basic manipulation
-use DBI;					# DB interface with MySQL
+use DBI;				# DB interface with MySQL
 use Date::Manip;			# Date/Time manipulation
 
 # version: define la version actual del programa
-my $version = "1.3 PS071002";
+my $version = "1.3.1 PS080226";
 
 # Setup variables
 my $dirname="";
@@ -492,7 +492,7 @@ sub pandora_checkdb_consistency {
 ##############################################################################
 
 sub help_screen{
-	printf "\n\nSintax: \n pandora_db.pl  fullpathname_to_pandora_server.conf \n\n";
+	printf "\n\nSintax: \n pandora_db  fullpathname_to_pandora_server.conf \n\n";
 	print "             -d   Debug output (very verbose) \n";
 	print "             -v   Verbose output \n";
 	print "             -q   Quiet output \n";

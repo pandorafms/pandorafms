@@ -1,3 +1,7 @@
+2008-02-26 Sancho Lerena <slerena@gmail.com>
+
+	* Some header adjustements. Removed detection of GNULinux in startup.
+
 2008-02-13 Sancho Lerena <slerena@gmail.com>
 
 	* pandora_server.conf: Added default entry for 

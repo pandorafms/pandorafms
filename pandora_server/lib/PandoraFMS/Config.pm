@@ -34,8 +34,8 @@ our @EXPORT = qw( 	pandora_help_screen
 # There is no global vars, all variables (setup) passed as hash reference
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "1.3.1GX";
-my $pandora_build="PS080210";
+my $pandora_version = "1.3.1-beta1";
+my $pandora_build="PS080226";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -69,9 +69,6 @@ sub pandora_init {
 	printf "\n$init_string $pandora_version Build $pandora_build Copyright (c) 2004-2008 ArticaST\n";
 	printf "This program is Free Software, licensed under the terms of GPL License v2.\n";
 	printf "You can download latest versions and documentation at http://pandora.sourceforge.net. \n\n";
-
-	# Check we are running GNU/Linux
-	die "[ERROR] This isn't GNU/Linux. Pandora FMS Servers are only OFFICIALLY supported in GNU/Linux.\nContact us if you require assistance running Pandora FMS Server in other OS.\n\n" unless ($^O =~ m/linux/i);
 
 	# Load config file from command line
 	if ($#ARGV == -1 ){

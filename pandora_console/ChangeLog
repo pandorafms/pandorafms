@@ -1,3 +1,8 @@
+2008-02-26 Sancho Lerena <slerena@gmail.com>
+
+	* pandoradb_data.sql, pandoradbdata_12_to_13.sql: Updated SQL for network 
+	components and other minor issue.
+
 2008-02-19  Raul Mateos  <raulofpandora@gmail.com>
 
 	* operation/agentes/tactical.php: Solved small visual issue with rows.

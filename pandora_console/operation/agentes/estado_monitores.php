@@ -1,9 +1,9 @@
 <?php 
 // Pandora - the Free monitoring system
 // ====================================
-// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
-// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2008 Artica Soluciones Tecnologicas S.L, info@artica.es
+// Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
@@ -76,11 +76,11 @@ if (comprueba_login() == 0) {
 				echo "<td class='".$tdcolor."' align='center'>";
 				if ($est_estado == 1){
 					if ($est_cambio == 1) 
-						echo "<img src='images/pixel_yellow.png' width=40 height=18>";
+						echo "<img src='images/pixel_yellow.png' width=40 height=18 title='".$lang_label["yellow_light"]."'>";
 					else
-						echo "<img src='images/pixel_red.png' width=40 height=18>";
+						echo "<img src='images/pixel_red.png' width=40 height=18 title='".$lang_label["red_light"]."'>";
 				} else
-					echo "<img src='images/pixel_green.png' width=40 height=18>";
+					echo "<img src='images/pixel_green.png' width=40 height=18 title='".$lang_label["green_light"]."'>";
 
 				echo "<td align='center' class='".$tdcolor."'>";
 				if ($temp_interval != $intervalo)

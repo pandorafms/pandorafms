@@ -1,4 +1,9 @@
-2008-02-25  Sancho Lerena <slerena@gmail.com>
+2008-02-28 Raul Mateos  <raulofpandora@gmail.com>
+
+	* operation/agentes/estado_monitores.php: Improved usability adding titles
+	in images.
+
+2008-02-25 Sancho Lerena <slerena@gmail.com>
 
 	* pandoradb_data.sql, pandoradb.sql: Modified, added and altered 
 	SQL structure. This is a final aproximation to 1.4 version. Probably

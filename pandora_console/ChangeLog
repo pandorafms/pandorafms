@@ -1,3 +1,9 @@
+2008-02-28 Sancho Lerena <slerena@gmail.com>
+
+	* operation/agentes/tactical.php, operation/servers/view_server.php: Fixed
+	stupid bug calculating progress percent due some modules missasigned to
+	a network server because are Keepalive modules.
+
 2008-02-28 Raul Mateos  <raulofpandora@gmail.com>
 
 	* operation/agentes/estado_monitores.php: Improved usability adding titles

@@ -1,21 +1,11 @@
 <?php
-
-// Pandora - the Free monitoring system
-// ====================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2007 Artica Soluciones Tecnol�gicas S.L, info@artica.es
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+// Pandora FMS - the Free Monitoring System
+// ========================================
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development, project architecture and management.
+// Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
+// CSS and some PHP code additions
+// Please see http://pandora.sourceforge.net for full contribution list
 
 // Tradução para o Português do Brasil
 // Copyright (c) 2006, 2007 Rodrigo J. Dutra <rodrigo.dutra@gmail.com>
@@ -538,7 +528,7 @@ $lang_label["lastupdate"] = "Atualizado em";
 $lang_label["network"] = "Rede";
 $lang_label["server_detail"] = "Detalhe da configuração";
 $lang_label["no_modules"] = "Este agente não tem nenhum módulo definido";
-$lang_label["no_monitors"] = "Este agente não tem nenhum monitor definido";
+$lang_label["no_monitors"] = "Este agente não tem nenhum monitor com dados";
 $lang_label["no_alerts"] = "Este agente não tem nenhum alerta definido";
 $lang_label["server"] = "Servidor";
 $lang_label["no_sel_mod"] = "Não foi selecionado nenhum módulo";

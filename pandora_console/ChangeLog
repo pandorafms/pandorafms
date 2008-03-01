@@ -1,3 +1,7 @@
+2008-03-01  Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/languages/language_*.php: Updated and cleared header.
+
 2008-02-28 Raul Mateos  <raulofpandora@gmail.com>
 
 	* operation/agentes/estado_monitores.php: Improved usability adding titles

@@ -1,21 +1,14 @@
 <?php
-// Pandora - the Free monitoring system
-// ====================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas S.L, info@artica.es
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// Pandora FMS - the Free Monitoring System
+// ========================================
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development, project architecture and management.
+// Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
+// CSS and some PHP code additions
+// Please see http://pandora.sourceforge.net for full contribution list
+
 // German translation Copyright (c) 2006, 2007 Reiner Dassing, dassing <at> fs <dot> wettzell <dot> de
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 
 $lang_label["view_agents"]="Agenten";
 $lang_label["manage_incidents"]="Verwalte Ereignisse";
@@ -620,7 +613,7 @@ $lang_label["lastupdate"]="Aktualisiert am ";
 $lang_label["network"]="Netwerk";
 $lang_label["server_detail"]="Konfigurationsdetails";
 $lang_label["no_modules"]="Dieser Agent besitzt kein Modul";
-$lang_label["no_monitors"]="Dieser Agent besitzt kein Überwachungssystem";
+$lang_label["no_monitors"]="Dieser Agent besitzt kein Überwachungssystem mit Daten";
 $lang_label["no_alerts"]="Diesem Agent ist kein Alarm zugewiesen";
 $lang_label["server"]="Server";
 

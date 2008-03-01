@@ -596,7 +596,7 @@ $lang_label["lastupdate"]="Updated at";
 $lang_label["network"]="Network";
 $lang_label["server_detail"]="Configuration detail";
 $lang_label["no_modules"]="This agent doesn't have any module";
-$lang_label["no_monitors"]="This agent doesn't have any monitor";
+$lang_label["no_monitors"]="This agent doesn't have any monitor with data";
 $lang_label["no_alerts"]="This agent doesn't have any alert";
 $lang_label["server"]="Server";
 

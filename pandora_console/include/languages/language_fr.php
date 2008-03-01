@@ -1,21 +1,11 @@
 <?php
-
 // Pandora - the Free monitoring system
 // ====================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas S.L, info@artica.es
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+// Main PHP/SQL code development, project architecture and management.
+// Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
+// CSS and some PHP code additions
+// Please see http://pandora.sourceforge.net for full contribution list
 
 // Translation to French
 // Copyright (c) 2006, 2007 Aline Jorand <jorand.aline@laposte.net>
@@ -580,7 +570,7 @@ $lang_label["no_profile"]="Cet usager n'a aucun profil/groupe associé";
 $lang_label["no_agent"]="Aucun agent n'a été mis dans ce groupe";
 $lang_label["no_change_field"]="Ce champ ne peut pas être modifié en mode édition";
 $lang_label["no_alert"]="Aucun agent de ce groupe n'a d'alerte designée";
-$lang_label["total_data"]="Total des Données";
+$lang_label["total_data"]="Total des données";
 $lang_label["no_incidents"]="Aucun incident ne correspond à votre recherche filtrée";
 $lang_label["no_agent_alert"]=", par conséquent il n'y a pas d'alertes";
 $lang_label["wrote"]=" a écrit";
@@ -597,8 +587,8 @@ $lang_label["lastupdate"]="Actualisé le";
 $lang_label["network"]="Réseau";
 $lang_label["server_detail"]="Detail de la Configuration";
 $lang_label["no_modules"]="Cet agent ne possède pas de module designé";
-$lang_label["no_monitors"]=" Cet agent ne possède pas de moniteur designé";
-$lang_label["no_alerts"]=" Cet agent ne possède pas d'alerte designée";
+$lang_label["no_monitors"]="Cet agent ne possède pas de moniteur avec des données";
+$lang_label["no_alerts"]="Cet agent ne possède pas d'alerte designée";
 $lang_label["server"]="Serveur";
 $lang_label["no_sel_mod"]="Aucun module n'a été sélectionné";
 $lang_label["no_event"]="Il n'y a pas d'événements";
@@ -657,10 +647,10 @@ $lang_label["snmp_modules"]="Modules SNMP";
 $lang_label["network_components_groups"]="Groupes de composantes réseau ";
 $lang_label["network_components"]="Composantes réseau";
 $lang_label["create_ok"]="Création effectuée avec succès ";
-$lang_label["create_no"]="N’a pas été créé". Erreur lors de l’insertion des données”;
+$lang_label["create_no"]="N’a pas été créé. Erreur lors de l’insertion des données";
 $lang_label["modify_ok"]="Actualisation effectuée avec succès";
-$lang_label["modify_no"]="Non actualisé. Erreur lors de l’actualisation des données”;
-$lang_label["delete_no"]="Non éliminé. Erreur lors de l’élimination des données”;
+$lang_label["modify_no"]="Non actualisé. Erreur lors de l’actualisation des données";
+$lang_label["delete_no"]="Non éliminé. Erreur lors de l’élimination des données";
 $lang_label["delete_ok"]="Elimination effectuée avec succès";
 $lang_label["network_component_group_management"]="Gestion des Groupes de composantes réseau ";
 $lang_label["network_component_management"]="Gestion des composantes réseau ";

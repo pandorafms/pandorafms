@@ -1,0 +1,88 @@
+#!/usr/bin/perl
+##########################################################################
+# Pandora FMS Plugin Server
+##########################################################################
+# Copyright (c) 2008 Sancho Lerena, slerena@gmail.com
+#           (c) 2008 Artica Soluciones Tecnologicas S.L
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; version 2 (only).
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+##########################################################################
+
+# Includes list
+use strict;
+use warnings;
+
+use Date::Manip;        # Needed to manipulate DateTime formats of input, output and compare
+use Time::Local;        # DateTime basic manipulation
+use threads;
+use threads::shared;
+
+# Pandora Modules
+use PandoraFMS::Config;
+use PandoraFMS::Tools;
+use PandoraFMS::DB;
+# use Win32::OLE qw(in);
+
+# Queue management
+my @pending_task : shared;
+my %pending_task_hash : shared;
+my %current_task_hash : shared;
+my $queue_lock : shared;
+
+# FLUSH in each IO (only for debug, very slooow)
+# ENABLED in DEBUGMODE
+# DISABLE FOR PRODUCTION
+$| = 0;
+
+my %pa_config;
+
+$SIG{'TERM'} = 'pandora_shutdown';
+$SIG{'INT'} = 'pandora_shutdown';
+
+# Inicio del bucle principal de programa
+pandora_init(\%pa_config, "Pandora FMS WMI Server");
+
+# Read config file for Global variables
+pandora_loadconfig (\%pa_config, 6);
+
+# Audit server starting
+pandora_audit (\%pa_config, "Pandora FMS WMI server starting", "SYSTEM", "System");
+
+print " [*] Starting up plugin threads\n";
+
+die ("hasta aqui hemos llegado");
+
+# This is a prototype, not real code !!!
+
+# Basic Skeleton to exec a WMI call remotely
+
+
+$Win32::OLE::Warn = 3;
+
+my $wmipath  = "root\\cimv2";
+my $user     = "administrador"; # if ADO needs DOMAIN\user
+my $pwd      = "none";
+my $computer = "192.168.50.121";
+
+
+my $wmiwebloc = Win32::OLE->new('WbemScripting.SWbemLocator') ||
+           die "Cannot access WMI on local machine: ", Win32::OLE->LastError;
+
+my $wmi = $wmiwebloc->ConnectServer($computer,$wmipath,$user,$pwd); 
+
+# get all the service objects
+my @services = in $wmi->InstancesOf("Win32_Service");
+
+# Take 10 first services
+for (my $a=0;$a<10;$a++){
+    print "Service ", $services[$a]->Name, " is ", $services[$a]->Status, "\n";
+}

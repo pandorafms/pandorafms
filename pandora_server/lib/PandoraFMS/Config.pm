@@ -34,8 +34,8 @@ our @EXPORT = qw( 	pandora_help_screen
 # There is no global vars, all variables (setup) passed as hash reference
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "1.4-dev";
-my $pandora_build="PS080225";
+my $pandora_version = "2.0-dev";
+my $pandora_build="PS080226";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -70,9 +70,6 @@ sub pandora_init {
 	printf "This program is Free Software, licensed under the terms of GPL License v2.\n";
 	printf "You can download latest versions and documentation at http://pandora.sourceforge.net. \n\n";
 
-	# Check we are running GNU/Linux
-	die "[ERROR] This isn't GNU/Linux. Pandora FMS Servers are only OFFICIALLY supported in GNU/Linux.\nContact us if you require assistance running Pandora FMS Server in other OS.\n\n" unless ($^O =~ m/linux/i);
-
 	# Load config file from command line
 	if ($#ARGV == -1 ){
 		print "I Need at least one parameter: Complete path to Pandora FMS Server configuration file. \n";
@@ -85,18 +82,27 @@ sub pandora_init {
 	# If there are not valid parameters
 	my $parametro;
 	my $ltotal=$#ARGV; my $ax;
-	for ($ax=0;$ax<=$ltotal;$ax++){
-		$parametro = $ARGV[$ax];
-		if ($parametro =~ m/-h\z/i ) { help_screen();  }
-		elsif ($parametro =~ m/-help\z/i ) { help_screen();  }
-		elsif ($parametro =~ m/-help\z/i ) { help_screen();  }
-		elsif ($parametro =~ m/-v\z/i) { $pa_config->{"verbosity"}=5; }
-		elsif ($parametro =~ m/-d\z/) { $pa_config->{"verbosity"}=10; }
-		elsif ($parametro =~ m/-D\z/) { $pa_config->{"daemon"}=1; }
-		else { ($pa_config->{"pandora_path"} = $parametro); }
-	}
+    for ($ax=0;$ax<=$ltotal;$ax++){
+        $parametro = $ARGV[$ax];
+        if (($parametro =~ m/-h\z/i ) || ($parametro =~ m/help\z/i )) { 
+            help_screen();  
+        }
+        elsif ($parametro =~ m/-v\z/i) { 
+            $pa_config->{"verbosity"}=5; 
+        }
+        elsif ($parametro =~ m/-d\z/) { 
+            $pa_config->{"verbosity"}=10; 
+        }
+        elsif ($parametro =~ m/-D\z/) { 
+            $pa_config->{"daemon"}=1; 
+        }
+        else { 
+            ($pa_config->{"pandora_path"} = $parametro); 
+        }
+    }
 	if ($pa_config->{"pandora_path"} eq ""){
-		print "I Need at least one parameter: Complete path to Pandora FMS configuration file. \n";
+		print " [ERROR] I Need at least one parameter: Complete path to Pandora FMS configuration file. \n";
+        print "         For example: ./pandora_server /etc/pandora/pandora_server.conf\n\n";
 		exit;
 	}
 }
@@ -107,7 +113,9 @@ sub pandora_init {
 
 sub pandora_loadconfig {
     my $pa_config = $_[0];
-    my $opmode = $_[1]; # 0 dataserver, 1 network server, 2 snmp console, 3 recon server, 4 plugin server, 5 prediction server
+    my $opmode = $_[1]; # 0 dataserver, 1 network server, 2 snmp console
+                        # 3 recon srv, 4 plugin srv, 5 prediction srv
+                        # 6 WMI server
     my $archivo_cfg = $pa_config->{'pandora_path'};
     my $buffer_line;
     my @command_line;
@@ -137,8 +145,9 @@ sub pandora_loadconfig {
     $pa_config->{"networkserver"} = 0;
     $pa_config->{"snmpconsole"} = 0;
     $pa_config->{"reconserver"} = 0;
-    $pa_config->{"pluginserver"} = 0; # Introduced on 1.4
-    $pa_config->{"predictionserver"} = 0; # Introduced on 1.4
+    $pa_config->{"wmiserver"} = 0; # Introduced on 2.0
+    $pa_config->{"pluginserver"} = 0; # Introduced on 2.0
+    $pa_config->{"predictionserver"} = 0; # Introduced on 2.0
     $pa_config->{"servermode"} = "";
     $pa_config->{'snmp_logfile'} = "/var/log/pandora_snmptrap.log";
     $pa_config->{"network_threads"} = 5; # Fixed default
@@ -151,8 +160,10 @@ sub pandora_loadconfig {
     $pa_config->{"tcp_checks"} = 1; # Introduced on 1.3.1
     $pa_config->{"tcp_timeout"} = 20; # Introduced on 1.3.1
     $pa_config->{"snmp_proc_deadresponse"} = 0; # Introduced on 1.3.1 10 Feb08
-    $pa_config->{"plugin_threads"} = 3; # Introduced on 1.4
-    $pa_config->{"plugin_timeout"} = 5; # Introduced on 1.
+    $pa_config->{"plugin_threads"} = 3; # Introduced on 2.0
+    $pa_config->{"plugin_timeout"} = 5; # Introduced on 2.0
+    $pa_config->{"wmi_threads"} = 3; # Introduced on 2.0
+    $pa_config->{"wmi_timeout"} = 5; # Introduced on 2.0
 
 	# Check for UID0
 	if ($> == 0){
@@ -248,8 +259,11 @@ sub pandora_loadconfig {
         elsif ($parametro =~ m/^reconserver\s([0-9]*)/i) {
             $pa_config->{'reconserver'}= clean_blank($1);
         }
-        elsif ($parametro =~ m/^networkserver\s([0-9]*)/i) {
-	        $pa_config->{'networkserver'}= clean_blank($1);
+        elsif ($parametro =~ m/^reconserver\s([0-9]*)/i) {
+            $pa_config->{'reconserver'}= clean_blank($1);
+        }
+        elsif ($parametro =~ m/^wmiserver\s([0-9]*)/i) {
+	        $pa_config->{'wmiserver'}= clean_blank($1);
         }
         elsif ($parametro =~ m/^servername\s(.*)/i) { 
             $pa_config->{'servername'}= clean_blank($1);
@@ -326,27 +340,31 @@ sub pandora_loadconfig {
 		exit;
 	}
     if (($opmode ==0) && ($pa_config->{"dataserver"} ne 1)) {
-	    print " [ERROR] You must enable Dataserver in setup file to run Pandora FMS Data Server. \n\n";
+	    print " [ERROR] You must enable 'dataserver' in setup file to run Pandora FMS Data Server. \n\n";
 	    exit;
     } 
     if (($opmode ==1) && ($pa_config->{"networkserver"} ne 1)) {
-	    print " [ERROR] You must enable NetworkServer in setup file to run Pandora FMS Network Server. \n\n";
+	    print " [ERROR] You must enable 'networkserver' in setup file to run Pandora FMS Network Server. \n\n";
 	    exit;
     }
     if (($opmode ==2) && ($pa_config->{"snmpconsole"} ne 1)) {
-	    print " [ERROR] You must enable SnmpConsole in setup file to run Pandora FMS SNMP Console. \n\n";
+	    print " [ERROR] You must enable 'snmpconsole' in setup file to run Pandora FMS SNMP Console. \n\n";
 	    exit;
     }
     if (($opmode ==3) && ($pa_config->{"reconserver"} ne 1)) {
-	    print " [ERROR] You must enable Recon server in setup file to run Pandora FMS Recon server. \n\n";
+	    print " [ERROR] You must enable 'reconserver' in setup file to run Pandora FMS Recon server. \n\n";
 	    exit;
     }
     if (($opmode ==4) && ($pa_config->{"pluginserver"} ne 1)) {
-        print " [ERROR] You must enable Plugin server in setup file to run Pandora FMS Plugin server. \n\n";
+        print " [ERROR] You must enable 'pluginserver' in setup file to run Pandora FMS Plugin server. \n\n";
         exit;
     }
     if (($opmode ==5) && ($pa_config->{"predictionserver"} ne 1)) {
-        print " [ERROR] You must enable Prediction server in setup file to run Pandora FMS Prediction server. \n\n";
+        print " [ERROR] You must enable 'predictionserver' in setup file to run Pandora FMS Prediction server. \n\n";
+        exit;
+    }
+    if (($opmode ==6) && ($pa_config->{"wmiserver"} ne 1)) {
+        print " [ERROR] You must enable 'wmiserver' in setup file to run Pandora FMS WMI server. \n\n";
         exit;
     }
 	if ($opmode == 0){
@@ -374,10 +392,15 @@ sub pandora_loadconfig {
         $parametro ="Pandora FMS Plugin Server";
         $pa_config->{"servermode"}="_Plugin";
     }
-    if ($opmode == 3){
+    if ($opmode == 5){
         print " [*] You are running Pandora FMS Prediction Server. \n";
         $parametro ="Pandora FMS Prediction Server";
         $pa_config->{"servermode"}="_Prediction";
+    }
+    if ($opmode == 6){
+        print " [*] You are running Pandora FMS WMI Server. \n";
+        $parametro ="Pandora FMS WMI Server";
+        $pa_config->{"servermode"}="_WMI";
     }
 	if ($pa_config->{"pandora_check"} == 1) {
 		print " [*] MD5 Security enabled.\n";

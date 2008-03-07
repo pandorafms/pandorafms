@@ -8,6 +8,27 @@
 // CSS and some PHP code additions
 // Please see http://pandora.sourceforge.net for full contribution list
 
+function check_login() { 
+    global $config;
+    if (!isset($config["homedir"])){
+        // No exists $config. Exit inmediatly
+        include ("general/noaccess.php");
+        exit;
+    }
+    if ((isset($_SESSION["id_usuario"])) AND ($_SESSION["id_usuario"] != "")) { 
+        $id = $_SESSION["id_usuario"];
+        $query1="SELECT id_usuario FROM tusuario WHERE id_usuario= '$id'";
+        $resq1 = mysql_query($query1);
+        $rowdup = mysql_fetch_array($resq1);
+        $nombre = $rowdup[0];
+        if ( $id == $nombre ){
+                return 0 ;
+        }
+    }
+    audit_db("N/A", getenv("REMOTE_ADDR"), "No session", "Trying to access without a valid session");
+    include ($config["homedir"]."/general/noaccess.php");
+    exit;
+}
 
 // --------------------------------------------------------------- 
 // give_acl ()
@@ -972,20 +993,18 @@ function agent_add_address ($id_agent, $ip_address) {
 // --------------------------------------------------------------- 
 
 function agent_delete_address ($id_agent, $ip_address) {
-	require("config.php");
 	$address_exist = 0;
 	$id_address =-1;
-	$query1="SELECT * FROM taddress_agent, taddress
-		WHERE taddress_agent.id_a = taddress.id_a
-			AND ip = '$ip_address'
-			AND id_agent = $id_agent";
-	if ($resq1=mysql_query($query1)){
-		$rowdup=mysql_fetch_array($resq1);
+	$query1 = "SELECT * FROM taddress_agent, taddress
+            WHERE taddress_agent.id_a = taddress.id_a
+            AND ip = '$ip_address'
+            AND id_agent = $id_agent";
+	if ($resq1 = mysql_query($query1)){
+		$rowdup = mysql_fetch_array($resq1);
 		$id_ag = $rowdup["id_ag"];
 		$id_a = $rowdup["id_a"];
-		$sql_3="DELETE FROM taddress_agent
-			WHERE id_ag = $id_ag";	
-		$result_3=mysql_query($sql_3);
+		$sql_3 = "DELETE FROM taddress_agent WHERE id_ag = $id_ag";	
+		$result_3 = mysql_query($sql_3);
 	}
 	// Need to change main address ? 
 	if (give_agent_address ($id_agent) == $ip_address){
@@ -1005,11 +1024,10 @@ function agent_delete_address ($id_agent, $ip_address) {
 // --------------------------------------------------------------- 
 
 function give_agent_address ($id_agent){
-	require("config.php");
-	$query1="SELECT * FROM tagente WHERE id_agente = $id_agent";
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1))
-		$pro=$rowdup["direccion"];
+	$query1 = "SELECT * FROM tagente WHERE id_agente = $id_agent";
+	$resq1 = mysql_query($query1);
+	if ($rowdup = mysql_fetch_array($resq1))
+		$pro = $rowdup["direccion"];
 	else
 		$pro = "";
 	return $pro;
@@ -1020,7 +1038,6 @@ function give_agent_address ($id_agent){
 // --------------------------------------------------------------- 
 
 function give_agent_address_from_list ($id_agent){
-	require("config.php");
 	$query1="SELECT * FROM taddress_agent, taddress
 		WHERE taddress_agent.id_a = taddress.id_a
 		AND id_agent = $id_agent";
@@ -1038,7 +1055,6 @@ function give_agent_address_from_list ($id_agent){
 // --------------------------------------------------------------- 
 
 function give_agent_id_from_module_id ($id_module){
-	require("config.php");
 	$query1="SELECT * FROM tagente_modulo WHERE id_agente_modulo = $id_module";
 	$resq1=mysql_query($query1);
 	if ($rowdup=mysql_fetch_array($resq1))
@@ -1052,23 +1068,27 @@ function give_agent_id_from_module_id ($id_module){
 // Generic access to a field ($field) given a table
 // --------------------------------------------------------------- 
 
-function give_db_value ($field, $table, $field_search, $condition_value){
-	global $config;
-	$query = "SELECT $field FROM $table WHERE $field_search = '$condition_value' ";
-	$resq1 = mysql_query($query);
-	if ($rowdup = mysql_fetch_array($resq1))
-		$pro = $rowdup[0];
-	else
-		$pro = "";
-	return $pro;
+function get_db_value ($field, $table, $field_search, $condition_value){
+    $query = "SELECT $field FROM $table WHERE $field_search = '$condition_value' ";
+    $resq1 = mysql_query($query);
+    if ($rowdup = mysql_fetch_array($resq1))
+        $pro = $rowdup[0];
+    else
+        $pro = "";
+    return $pro;
 }
 
 // --------------------------------------------------------------- 
 // Wrapper for old function name. Should be upgraded/renamed in next versions
 // --------------------------------------------------------------- 
 
-function get_db_value ($field, $table, $field_search, $condition_value){
-        give_db_value ($field, $table, $field_search, $condition_value);
+function get_db_row ($table, $field_search, $condition_value){
+    $query = "SELECT * FROM $table WHERE $field_search = '$condition_value' ";
+    $resq1 = mysql_query($query);
+    if ($rowdup = mysql_fetch_array($resq1))
+        return $rowdup;
+    else    
+        return 0;
 }
 
 // --------------------------------------------------------------- 
@@ -1076,7 +1096,6 @@ function get_db_value ($field, $table, $field_search, $condition_value){
 // --------------------------------------------------------------- 
 
 function get_db_sql ($sentence, $field = 0){
-        global $config;
         if ($rowdup = mysql_fetch_array(mysql_query($sentence)))
                 return $rowdup[$field];
         else
@@ -1088,7 +1107,6 @@ function get_db_sql ($sentence, $field = 0){
 // ---------------------------------------------------------------
 
 function return_status_agent_module ($id_agentmodule = 0){
-	require ("config.php");
 	$query1 = "SELECT estado FROM tagente_estado WHERE id_agente_modulo = " . $id_agentmodule; 
 	$resq1 = mysql_query ($query1);
 	if ($resq1 != 0) {
@@ -1124,7 +1142,6 @@ function return_status_agent_module ($id_agentmodule = 0){
 function return_status_layout ($id_layout = 0){
 	$temp_status = 0;
 	$temp_total = 0;
-        require("config.php");
 	$sql="SELECT * FROM tlayout_data WHERE id_layout = $id_layout";
 	$res=mysql_query($sql);
 	while ($row = mysql_fetch_array($res)){
@@ -1152,7 +1169,6 @@ function return_status_layout ($id_layout = 0){
 // ---------------------------------------------------------------
 
 function return_value_agent_module ($id_agentmodule = 0){
-	require("config.php");
 	$query1="SELECT datos FROM tagente_estado WHERE id_agente_modulo = ".$id_agentmodule; 
 	$resq1=mysql_query($query1);
 	if ($resq1 != 0) {
@@ -1168,7 +1184,6 @@ function return_value_agent_module ($id_agentmodule = 0){
 // ---------------------------------------------------------------
 
 function return_coordinate_X_layoutdata ($id_layoutdata){
-	require("config.php");
 	$query1="SELECT pos_x FROM tlayout_data WHERE id = ".$id_layoutdata; 
 	$resq1=mysql_query($query1);
 	if ($resq1 != 0) {
@@ -1183,7 +1198,6 @@ function return_coordinate_X_layoutdata ($id_layoutdata){
 // ---------------------------------------------------------------
 
 function return_coordinate_y_layoutdata ($id_layoutdata){
-	require("config.php");
 	$query1="SELECT pos_y FROM tlayout_data WHERE id = ".$id_layoutdata; 
 	$resq1=mysql_query($query1);
 	if ($resq1 != 0) {
@@ -1194,7 +1208,6 @@ function return_coordinate_y_layoutdata ($id_layoutdata){
 }
 
 function return_moduledata_avg_value ($id_agent_module, $period){
-	require("config.php");
 	$datelimit = time() - $period; // limit date
 	$id_agent = give_db_value ("id_agente", "tagente_modulo", "id_agente_modulo", $id_agent_module);
 	$query1="SELECT AVG(datos) FROM tagente_datos WHERE id_agente = $id_agent AND id_agente_modulo = $id_agent_module AND utimestamp > $datelimit";
@@ -1208,7 +1221,6 @@ function return_moduledata_avg_value ($id_agent_module, $period){
 
 
 function return_moduledata_max_value ($id_agent_module, $period){
-	require("config.php");
 	$datelimit = time() - $period; // limit date
 	$id_agent = give_db_value ("id_agente", "tagente_modulo", "id_agente_modulo", $id_agent_module);
 	$query1="SELECT MAX(datos) FROM tagente_datos WHERE id_agente = $id_agent AND id_agente_modulo = $id_agent_module AND utimestamp > $datelimit";
@@ -1222,7 +1234,6 @@ function return_moduledata_max_value ($id_agent_module, $period){
 
 
 function return_moduledata_min_value ($id_agent_module, $period){
-	require("config.php");
 	$datelimit = time() - $period; // limit date
 	$id_agent = give_db_value ("id_agente", "tagente_modulo", "id_agente_modulo", $id_agent_module);
 	$query1="SELECT MIN(datos) FROM tagente_datos WHERE id_agente = $id_agent AND id_agente_modulo = $id_agent_module AND utimestamp > $datelimit";
@@ -1234,4 +1245,12 @@ function return_moduledata_min_value ($id_agent_module, $period){
 		return (0);
 }
 
+function lang_string ($string){
+    global $config;
+    require ($config["homedir"]."/include/languages/language_".$config["language"].".php");
+    if (isset ($lang_label[$string]))
+        return $lang_label[$string];
+    else
+        return "[".$string."]";
+}
 ?>

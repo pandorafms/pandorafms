@@ -1,3 +1,61 @@
+2008-03-06  Sancho Lerena <slerena@gmail.com>
+
+        Pandora FMS 2.0 development first commit. 1.4 version is now 2.0
+
+        * pandoradb_data.sql: Added correct tnetwork_components, fixed
+        ttipo_modulo (categoria values).
+
+        * include/styles/pandora.css: Added some server icons, tab style
+        for module editor has been improved.
+
+        * include/functions_db.php: added new functions, lang_string and
+        check_login, and a first review of several functions that currently
+        need change for new config session parameters in array $config[]
+
+        * include/javascript/pandora.js: Added a new global include for
+        spare javascript functions before included into a few pages.
+
+        * include/languages/language_en.php: New tokens.
+
+        * include/help*: New contextual help system.
+
+        * include/config_process.php: New way to manage config.
+
+        * include/functions.php: Added new functions to manage global
+
+        * operation/agentes/estado_ultimopaquete.php: removed old javascript
+        code from there.
+
+        * operation/agentes/estado_agente.php: Removed references to deprecated
+        field "agent_type".
+
+        * operation/agentes/tactical.php: Some code cleanup and progressbar 
+        issues merged from 1.3.1 branch. Need to add support to new server 
+        types and new module types.
+
+        * operation/servers/view_server.php: Added support to new servers, code
+        cleanup.
+
+        * reporting/fgraph.php: Code cleanup, changes to use new config method,
+        and a lot of style change. 
+
+        * general/pandora_help.php: New source for contextual help in the way 
+        of moodle.
+
+        * general/footer.php, general/noaccess.php: Code cleanup and uses of
+         new config.
+
+        * module_manager_editor: New editors for each module family. Need
+         finish and implement EDITION of data, now only inserts data.
+
+        * godmode/agentes/agent_manager.php: Implemented new server assigment
+         and edition. 
+
+        * godmode/agentes/configurar_agente.php: Small changes that affects 
+        module management, visualization and agent management.
+
+
+
 2008-03-01  Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/languages/language_*.php: Updated and cleared header.

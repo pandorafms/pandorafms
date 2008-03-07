@@ -2,10 +2,7 @@
 
 // Pandora FMS - the Free Monitoring System
 // ========================================
-// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development, project architecture and management.
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP code additions
+// Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -19,13 +16,12 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-// Pandora FMS 1.x uses icons from famfamfam, licensed under CC Atr. 2.5
+// Pandora FMS uses icons from famfamfam, licensed under CC Atr. 2.5
 // Silk icon set 1.3 (cc) Mark James, http://www.famfamfam.com/lab/icons/silk/
-// Pandora FMS 1.x uses Pear Image::Graph code
+// Pandora FMS uses Pear Image::Graph code
 
-//Pandora Version, if not defined here it would take from config.php
-$build_version="PC080221";
-$pandora_version="v1.4-dev";
+$build_version="PC080226";
+$pandora_version="v2.0-dev";
 global $build_version;
 global $pandora_version;
 
@@ -50,8 +46,7 @@ if ($develop_bypass != 1){
 	// Check perms for config.php
 	if ((substr(sprintf('%o', fileperms('include/config.php')), -4) != "0600") &&
 	    (substr(sprintf('%o', fileperms('include/config.php')), -4) != "0660") &&
-	    (substr(sprintf('%o', fileperms('include/config.php')), -4) != "0640") &&
-	    (substr(sprintf('%o', fileperms('include/config.php')), -4) != "0600"))
+	    (substr(sprintf('%o', fileperms('include/config.php')), -4) != "0640"))
 	{
 		include "general/error_perms.php";
 		exit;
@@ -66,7 +61,7 @@ if ((! file_exists("include/config.php")) OR (! is_readable("include/config.php"
 // Real start
 session_start();
 include "include/config.php";
-include "include/languages/language_".$language_code.".php";
+include "include/languages/language_".$config["language"].".php";
 require "include/functions.php"; // Including funcions.
 require "include/functions_db.php";
 ?>
@@ -101,34 +96,34 @@ if ( (isset ($_GET["refr"])) || (isset($_POST["refr"])) ){
 	}
 }
 ?>
-<title>Pandora FMS - <?php echo $lang_label["header_title"]; ?></title>
+<title>Pandora FMS - <?php echo lang_string("header_title"); ?></title>
 <meta http-equiv="expires" content="0">
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
-<meta name="author" content="Sancho Lerena, Raul Mateos">
+<meta name="author" content="Sancho Lerena">
 <meta name="copyright" content="This is GPL software. Created by Sancho Lerena and others">
 <meta name="keywords" content="pandora, monitoring, system, GPL, software">
 <meta name="robots" content="index, follow">
 <link rel="icon" href="images/pandora.ico" type="image/ico">
 <?php
-// Pandora FMS 1.3 custom style selection
-	echo '<link rel="stylesheet" href="include/styles/'.$config_style.'.css" type="text/css">';
+    // Pandora FMS custom style selection
+	echo '<link rel="stylesheet" href="include/styles/'.$config['style'].'.css" type="text/css">';
 ?>
 
 <script type="text/javascript" src="include/javascript/wz_jsgraphics.js"></script>
+<script type="text/javascript" src="include/javascript/pandora.js"></script>
 </head>
 
 <?php
-	// Show custom background
-	echo '<body bgcolor="#555555">';
-	$REMOTE_ADDR = getenv ("REMOTE_ADDR");
-   	global $REMOTE_ADDR;
+    // Show custom background
+    echo '<body bgcolor="#555555">';
+    $REMOTE_ADDR = getenv ("REMOTE_ADDR");
 
-        // Login process 
-   	if ( (! isset ($_SESSION['id_usuario'])) AND (isset ($_GET["login"]))) {
-		$nick = entrada_limpia ($_POST["nick"]);
-		$pass = entrada_limpia ($_POST["pass"]);
+    // Login process 
+    if ( (! isset ($_SESSION['id_usuario'])) AND (isset ($_GET["login"]))) {
+	    $nick = get_parameter_post ("nick");
+		$pass = get_parameter_post ("pass");
 		
 		// Connect to Database
 		$sql1 = 'SELECT * FROM tusuario WHERE id_usuario = "'.$nick.'"';
@@ -178,7 +173,10 @@ if ( (isset ($_GET["refr"])) || (isset($_POST["refr"])) ){
 		// There is no user connected
 		include "general/login_page.php";
 		exit;
-	}
+	} else {
+        // There is session for id_usuario
+        $config["id_user"] = $_SESSION["id_usuario"];
+    }
 
 	// Log off
 	if (isset ($_GET["bye"])) {

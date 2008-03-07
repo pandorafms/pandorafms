@@ -9,6 +9,43 @@
 // Please see http://pandora.sourceforge.net for full contribution list
 
 
+function pandora_help ($id, $return = false) {
+    global $config;
+    $output = '<img src="'.$config['homeurl'].'images/help.png" onClick="pandora_help(\''.$id.'\')">';
+    if ($return)
+        return $return;
+    echo $output;
+}
+// ---------------------------------------------------------------
+// safe_output()
+// Write a string to screen, deleting all kind of problematic characters
+// This should be safe for XSS.
+// --------------------------------------------------------------- 
+
+function safe_output ($string) {
+        return preg_replace('/[^\x09\x0A\x0D\x20-\x7F]/e', '"&#".ord($0).";"', $string);
+}
+
+// ---------------------------------------------------------------
+// safe_input()
+// Get parameter, using UTF8 encoding, and cleaning bad codes
+// --------------------------------------------------------------- 
+
+function safe_input ($string) {
+        return htmlentities(utf8_decode($string), ENT_QUOTES); 
+}
+
+// ---------------------------------------------------------------
+// salida_sql: Parse \' for replace to ' character, prearing
+// SQL sentences to execute.
+// --------------------------------------------------------------- 
+
+function salida_sql ($string) {
+    $body = str_replace("\'", "'", $string);
+    return $body;
+}
+
+
 // input: var, string. 
 //          mesg, mesage to show, var content. 
 // --------------------------------------------------------------- 
@@ -199,7 +236,7 @@ function popup_help ($help_id){
 
 function no_permission () {
 	require("config.php");
-	require ("include/languages/language_".$language_code.".php");
+	require ("include/languages/language_".$config["language"].".php");
 	echo "<h3 class='error'>".$lang_label["no_permission_title"]."</h3>";
 	echo "<img src='images/noaccess.png' alt='No access' width='120'><br><br>";
 	echo "<table width=550>";
@@ -209,6 +246,26 @@ function no_permission () {
 	echo "<tr><td><td><td><td>";
 	include "general/footer.php";
 	exit;
+}
+
+// ---------------------------------------------------------------
+// unmanaged_error -  Display generic error message and stop execution
+// ---------------------------------------------------------------
+
+function unmanaged_error ($error = "") {
+    require("config.php");
+    require ("include/languages/language_".$config["language"].".php");
+    echo "<h3 class='error'>".lang_string("Unmanaged error")."</h3>";
+    echo "<img src='images/errror.png' alt='error'><br><br>";
+    echo "<table width=550>";
+    echo "<tr><td>";
+    echo lang_string("Unmanaged error_text");
+    echo "<tr><td>";
+    echo $error;
+    echo "</table>";
+    echo "<tr><td><td><td><td>";
+    include "general/footer.php";
+    exit;
 }
 
 function list_files($directory, $stringSearch, $searchHandler, $outputHandler) {
@@ -248,8 +305,8 @@ function list_files($directory, $stringSearch, $searchHandler, $outputHandler) {
 
 
 function pagination ($count, $url, $offset ) {
-	require ("config.php");
-	require ("include/languages/language_".$language_code.".php");
+	global $config;
+	require ("include/languages/language_".$config["language"].".php");
 	
 	/* 	URL passed render links with some parameter
 			&offset - Offset records passed to next page
@@ -259,7 +316,7 @@ function pagination ($count, $url, $offset ) {
 	   
 	*/
 	$block_limit = 15; // Visualize only $block_limit blocks
-	if ($count > $block_size){
+	if ($count > $config["block_size"]){
 		// If exists more registers than I can put in a page, calculate index markers
 		$index_counter = ceil($count/$block_size); // Number of blocks of block_size with data
 		$index_page = ceil($offset/$block_size)-(ceil($block_limit/2)); // block to begin to show data;
@@ -513,12 +570,30 @@ function render_time ($lapse) {
 function get_parameter ($name, $default = '') {
         // POST has precedence
         if (isset($_POST[$name]))
-                return give_parameter_post ($name);
+                return get_parameter_post ($name, $default);
         
         if (isset($_GET[$name]))
-                return give_parameter_get ($name);
+                return get_parameter_get ($name, $default);
         
         return $default;
 }
+
+function get_parameter_get ($name, $default = "") {
+    if ((isset ($_GET[$name])) && ($_GET[$name] != ""))
+        return safe_input ($_GET[$name]);
+    
+    return $default;
+}
+
+function get_parameter_post ( $name, $default = "" ){
+    if ((isset ($_POST[$name])) && ($_POST[$name] != ""))
+        return safe_input ($_POST[$name]);
+    
+    return $default;
+}
+
+
+
+
 
 ?>

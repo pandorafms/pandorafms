@@ -124,42 +124,86 @@ while ($row=mysql_fetch_array($result)){
 ?>
 </select>
 
-<tr><td class="datos2"><b><?php echo $lang_label["server"]?></b></td>
-<td class="datos2">
-<select name="id_server" class="w130">
-<?php
-echo "<option value='".$id_server."'>".give_server_name($id_server);
-$sql1='SELECT id_server, name FROM tserver where network_server = 1 
-ORDER BY name';
+<?PHP
+
+// Network server
+echo '<tr><td class="datos2"><b>';
+echo lang_string("Network server");
+echo '</b></td><td class="datos2">';
+echo '<select name="network_server" class="w130">';
+echo "<option value='".$id_network_server."'>".give_server_name($id_network_server);
+$sql1 = 'SELECT id_server, name FROM tserver where network_server = 1 ORDER BY name';
 $result=mysql_query($sql1);
 while ($row=mysql_fetch_array($result)){
 	echo "<option value='".$row["id_server"]."'>".$row["name"]."</option>";
 }
+echo '</select>';
+
+// Plugin Server
+echo '<tr><td class="datos"><b>';
+echo lang_string("Plugin server");
+echo '</b></td><td class="datos">';
+echo '<select name="plugin_server" class="w130">';
+echo "<option value='".$id_plugin_server."'>".give_server_name($id_plugin_server);
+$sql1 = 'SELECT id_server, name FROM tserver where plugin_server = 1 ORDER BY name';
+$result=mysql_query($sql1);
+while ($row=mysql_fetch_array($result)){
+    echo "<option value='".$row["id_server"]."'>".$row["name"]."</option>";
+}
+echo '</select>';
+
+// WMI Server
+echo '<tr><td class="datos2"><b>';
+echo lang_string("WMI server");
+echo '</b></td><td class="datos2">';
+echo '<select name="wmi_server" class="w130">';
+echo "<option value='".$id_wmi_server."'>".give_server_name($id_wmi_server);
+$sql1 = 'SELECT id_server, name FROM tserver where wmi_server = 1 ORDER BY name';
+$result=mysql_query($sql1);
+while ($row=mysql_fetch_array($result)){
+    echo "<option value='".$row["id_server"]."'>".$row["name"]."</option>";
+}
+echo '</select>';
+
+// Prediction Server
+echo '<tr><td class="datos"><b>';
+echo lang_string("Prediction server");
+echo '</b></td><td class="datos">';
+echo '<select name="prediction_server" class="w130">';
+echo "<option value='".$id_prediction_server."'>".give_server_name($id_prediction_server);
+$sql1 = 'SELECT id_server, name FROM tserver where prediction_server = 1 ORDER BY name';
+$result=mysql_query($sql1);
+while ($row=mysql_fetch_array($result)){
+    echo "<option value='".$row["id_server"]."'>".$row["name"]."</option>";
+}
+echo '</select>';
+
+// Description
+echo '<tr><td class="datos2"><b>';
+echo lang_string ("description");
+echo '</b><td class="datos2">';
+echo '<input type="text" name="comentarios" size="55" value="'.$comentarios.'"></td>';
+
+
+// Learn mode / Normal mode 
+echo '<tr><td class="datos"><b>';
+echo lang_string ("module_definition");
+echo '</b><td class="datos">';
+if ($modo == "1"){
+	echo $lang_label["learning_mode"].'
+	<input type="radio" class="chk" name="modo" value="1" style="margin-right: 40px;" checked>';
+	echo $lang_label["normal_mode"].' 
+	<input type="radio" class="chk" name="modo" value="0">';
+} else {
+	echo $lang_label["learning_mode"].'
+	<input type="radio" class="chk" name="modo" value="1" style="margin-right: 40px;">';
+	echo $lang_label["normal_mode"].'
+	<input type="radio" name="modo" class="chk" value="0" checked>';
+}
 
 ?>
-</select>
-
-
-<tr><td class="datos"><b><?php echo $lang_label["description"]?></b>
-<td class="datos">
-<input type="text" name="comentarios" size="55" value="
-<?php echo $comentarios ?>"></td>
-<tr><td class="datos2"><b><?php echo $lang_label["module_definition"]?></b>
+<tr><td class="datos2"><b><?php echo $lang_label["status"]?></b>
 <td class="datos2">
-	<?php if ($modo == "1"){
-		echo $lang_label["learning_mode"].'
-		<input type="radio" class="chk" name="modo" value="1" style="margin-right: 40px;" checked>';
-		echo $lang_label["normal_mode"].' 
-		<input type="radio" class="chk" name="modo" value="0">';
-	} else {
-		echo $lang_label["learning_mode"].'
-		<input type="radio" class="chk" name="modo" value="1" style="margin-right: 40px;">';
-		echo $lang_label["normal_mode"].'
-		<input type="radio" name="modo" class="chk" value="0" checked>';
-	}
-	?>
-<tr><td class="datos"><b><?php echo $lang_label["status"]?></b>
-<td class="datos">
 <?php if ($disabled == "1"){
 		echo $lang_label["disabled"].'
 		<input type="radio" class="chk" name="disabled" value="1" style="margin-right: 40px;" checked>';

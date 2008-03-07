@@ -4,10 +4,8 @@
 // ========================================
 // Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
 // Main PHP/SQL code development, project architecture and management.
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP code additions
 // Copyright (c) 2006 Jose Navarro <jnavarro@jnavarro.net>
-// Additions to code for Pandora FMS 1.2 graph code
+// Additions to graphical code (slide menu)
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -24,42 +22,32 @@
 // Silk icon set 1.3 (cc) Mark James, http://www.famfamfam.com/lab/icons/silk/
 // Pandora FMS 1.x uses Pear Image::Graph code
 
-include ("../include/config.php");
-include ("../include/functions.php");
-include ("../include/functions_db.php");
-require ("../include/languages/language_".$language_code.".php");
+include ('../include/config.php');
+include ($config["homedir"].'/include/functions.php');
+include ($config["homedir"].'/include/functions_db.php');
+require ($config["homedir"].'/include/languages/language_'.$config['language'].'.php');
+
+/**
+ * Show a brief error message in a PNG graph
+ */
 
 function graphic_error () {
-	Header("Content-type: image/png");
-	$imgPng = imageCreateFromPng("../images/image_problem.png");
+	Header('Content-type: image/png');
+	$imgPng = imageCreateFromPng('../images/image_problem.png');
 	imageAlphaBlending($imgPng, true);
 	imageSaveAlpha($imgPng, true);
 	imagePng($imgPng);
 }
 
-function dame_fecha_grafico ($mh, $format){ 
-	// Date 24x7x30 hours ago (one month)
-	$m_year = date("Y", time()-$mh*60);
-	$m_month = date("m", time()-$mh*60);
-	$m_month_word = date("M", time()-$mh*60);
-	$m_day = date ("d", time()-$mh*60);
-	$m_hour = date ("H", time()-$mh*60);
-	$m_min = date ("i", time()-$mh*60);
-	switch ($format) {
-		case 1: $m = $m_month."/".$m_day." ".$m_hour.":".$m_min;
-			break;
-		case 2: $m = $m_year."-".$m_month."-".$m_day;
-			break;
-		case 3: $m = $m_day."th -".$m_month_word."\n".$m_year;
-			break;
-		case 4: $m = $m_day."th -".$m_month_word;
-			break;
-	}
-	return $m;
-}
+/**
+ * Return a MySQL timestamp date, formatted with actual date MINUS X minutes, 
+ *
+ * @param int Date in unix format (timestamp)
+ *
+ * @return string Formatted date string (YY-MM-DD hh:mm:ss)
+ */
 
 function dame_fecha($mh){ 
-	// Return a MySQL timestamp date, formatted with actual date MINUS X minutes, given as parameter
 	$m_year = date("Y", time()-$mh*60); 
 	$m_month = date("m", time()-$mh*60);
 	$m_day = date ("d", time()-$mh*60);
@@ -69,15 +57,39 @@ function dame_fecha($mh){
 	return $m;	
 }
 
+/**
+ * Return a short timestamp data, D/M h:m
+ *
+ * @param int Date in unix format (timestamp)
+ *
+ * @return string Formatted date string
+ */
+
 function dame_fecha_grafico_timestamp ($timestamp) {
 	return date('d/m H:i', $timestamp);
 }
 
-function graphic_combined_module ($module_list, $weight_list, $periodo, $width, $height, $title, $unit_name, $show_event=0, $show_alert=0, $pure =0 ) {
+/**
+ * Produces a combined/user defined PNG graph
+ *
+ * @param array List of source modules
+ * @param array List of weighs for each module
+ * @param int Period (in seconds)
+ * @param int Width, in pixels
+ * @param int Height, in pixels
+ * @param string Title for graph
+ * @param string Unit name, for render in legend
+ * @param int Show events in graph (set to 1)
+ * @param int Show alerts in graph (set to 1)
+ * @param int Pure mode (without titles) (set to 1)
+ */
+
+function graphic_combined_module (  $module_list, $weight_list, $periodo,                          $width, $height, $title, $unit_name, $show_event=0, $show_alert=0, $pure =0 ){
+
 	include ("../include/config.php");
-	require ("../include/languages/language_".$language_code.".php");
+	require ("../include/languages/language_".$config['language'].".php");
 	require_once 'Image/Graph.php';
-	$resolution = $config_graph_res * 50; // Number of "slices" we want in graph
+	$resolution = $config['graph_res'] * 50; // Number of "slices" we want in graph
 	
 	//$unix_timestamp = strtotime($mysql_timestamp) // Convert MYSQL format tio utime
 	$fechatope = time() - $periodo; // limit date
@@ -232,7 +244,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 	else
 		$title_period = "Last ".format_numeric(($periodo / (3600*24)),2)." days";
 	if ($pure == 0){
-		$Font =& $Graph->addNew('font', $config_fontpath);
+		$Font =& $Graph->addNew('font', $config['fontpath']);
 		$Font->setSize(6);
 		$Graph->setFont($Font);
 		$Graph->add(
@@ -253,7 +265,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 		$Title->setAlignment(IMAGE_GRAPH_ALIGN_LEFT);
 		$Subtitle->setAlignment(IMAGE_GRAPH_ALIGN_LEFT);
 	} else {
-		$Font =& $Graph->addNew('font', $config_fontpath);
+		$Font =& $Graph->addNew('font', $config['fontpath']);
 		$Font->setSize(6);
 		$Graph->setFont($Font);
 		$Graph->add(
@@ -351,10 +363,10 @@ function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $show_event,
 				 $width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure=0 ) {
 	
 	include ("../include/config.php");
-	require ("../include/languages/language_".$language_code.".php");
+	require ("../include/languages/language_".$config['language'].".php");
 	require_once 'Image/Graph.php';
 
-	$resolution = $config_graph_res * 50; // Number of "slices" we want in graph
+	$resolution = $config["graph_res"] * 50; // Number of "slices" we want in graph
 	
 	//$unix_timestamp = strtotime($mysql_timestamp) // Convert MYSQL format tio utime
 	$fechatope = time() - $periodo; // limit date
@@ -481,7 +493,7 @@ function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $show_event,
 	// *************
 	$Graph =& Image_Graph::factory('graph', array($width, $height));
 	// add a TrueType font
-	$Font =& $Graph->addNew('font', $config_fontpath);
+	$Font =& $Graph->addNew('font', $config['fontpath']);
 	$Font->setSize(6);
 	$Graph->setFont($Font);
 
@@ -624,13 +636,13 @@ function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $show_event,
 function generic_pie_graph ($width=300, $height=200, $data, $legend) {
 	require ("../include/config.php");
 	require_once 'Image/Graph.php';
-	require ("../include/languages/language_".$language_code.".php");
+	require ("../include/languages/language_".$config['language'].".php");
 	if (sizeof($data) > 0){
 		// create the graph
 		$driver=& Image_Canvas::factory('png',array('width'=>$width,'height'=>$height,'antialias' => 'native'));
 		$Graph = & Image_Graph::factory('graph', $driver);
 		// add a TrueType font
-		$Font =& $Graph->addNew('font', $config_fontpath);
+		$Font =& $Graph->addNew('font', $config['fontpath']);
 		// set the font size to 7 pixels
 		$Font->setSize(7);
 		$Graph->setFont($Font);
@@ -685,7 +697,7 @@ function generic_pie_graph ($width=300, $height=200, $data, $legend) {
 function graphic_agentmodules($id_agent, $width, $height) {
 	include ("../include/config.php");
 	require_once 'Image/Graph.php';
-	require ("../include/languages/language_".$language_code.".php");
+	require ("../include/languages/language_".$config['language'].".php");
 
 	$sql1="SELECT * FROM ttipo_modulo";
 	$result=mysql_query($sql1);
@@ -733,11 +745,11 @@ function graphic_agentmodules($id_agent, $width, $height) {
 function graphic_agentaccess($id_agent, $periodo, $width, $height){
 	include ("../include/config.php");
 	require_once 'Image/Graph.php';
-	require ("../include/languages/language_".$language_code.".php");
+	require ("../include/languages/language_".$config['language'].".php");
 	$color ="#437722"; // Green pandora 1.1 octopus color
 	/*
 	$agent_interval = give_agentinterval($id_agent);
-	$intervalo = 30 * $config_graph_res; // Desired interval / range between dates
+	$intervalo = 30 * $config['graph_res']; // Desired interval / range between dates
 	$intervalo_real = (86400 / $agent_interval); // 60x60x24 secs
 	if ($intervalo_real < $intervalo ) {
 		$intervalo = $intervalo_real;
@@ -786,7 +798,7 @@ function graphic_agentaccess($id_agent, $periodo, $width, $height){
 	// create the graph
 	$Graph =& Image_Graph::factory('graph', array($width, $height));
 	// add a TrueType font
-	$Font =& $Graph->addNew('font', $config_fontpath);
+	$Font =& $Graph->addNew('font', $config['fontpath']);
 	$Font->setSize(6);
 	$Graph->setFont($Font);
 	$Graph->add(
@@ -826,7 +838,7 @@ function graphic_agentaccess($id_agent, $periodo, $width, $height){
 
 function grafico_incidente_estados() {
 	include ("../include/config.php");
-	require ("../include/languages/language_".$language_code.".php");
+	require ("../include/languages/language_".$config['language'].".php");
 
 	$data = array(0,0,0,0);
 	// 0 - Abierta / Sin notas
@@ -859,7 +871,7 @@ function grafico_incidente_estados() {
 
 function grafico_incidente_prioridad() {
 	include ("../include/config.php");
-	require ("../include/languages/language_".$language_code.".php");
+	require ("../include/languages/language_".$config['language'].".php");
 
 	$data = array(0,0,0,0,0,0);
 	// 0 - Abierta / Sin notas
@@ -896,7 +908,7 @@ function grafico_incidente_prioridad() {
 
 function graphic_incident_group() {
 	include ("../include/config.php");
-	require ("../include/languages/language_".$language_code.".php");
+	require ("../include/languages/language_".$config['language'].".php");
 
 	$data = array();
 	$legend = array();
@@ -935,7 +947,7 @@ function graphic_incident_group() {
 
 function graphic_incident_user() {
 	include ("../include/config.php");
-	require ("../include/languages/language_".$language_code.".php");
+	require ("../include/languages/language_".$config['language'].".php");
 
 	$data = array();
 	$legend = array();
@@ -974,7 +986,7 @@ function graphic_incident_user() {
 
 function graphic_user_activity($width=350, $height=230) {
 	include ("../include/config.php");
-	require ("../include/languages/language_".$language_code.".php");
+	require ("../include/languages/language_".$config['language'].".php");
 
 	$data = array();
 	$legend = array();
@@ -1016,7 +1028,7 @@ function graphic_user_activity($width=350, $height=230) {
 
 function graphic_incident_source ($width=320, $height=200) {
 	include ("../include/config.php");
-	require ("../include/languages/language_".$language_code.".php");
+	require ("../include/languages/language_".$config['language'].".php");
 
 	$data = array();
 	$legend = array();
@@ -1055,7 +1067,7 @@ function graphic_incident_source ($width=320, $height=200) {
 
 function grafico_db_agentes_modulos($width, $height) {
 	include ("../include/config.php");
-	require ("../include/languages/language_".$language_code.".php");
+	require ("../include/languages/language_".$config['language'].".php");
 
 	$data = array();
 	$legend = array();
@@ -1086,7 +1098,7 @@ function grafico_db_agentes_modulos($width, $height) {
 
 function grafico_eventos_usuario( $width=420, $height=200) {
 	include ("../include/config.php");
-	require ("../include/languages/language_".$language_code.".php");
+	require ("../include/languages/language_".$config['language'].".php");
 
 	$data = array();
 	$legend = array();
@@ -1127,7 +1139,7 @@ function grafico_eventos_usuario( $width=420, $height=200) {
 
 function grafico_eventos_total() {
 	require ("../include/config.php");
-	require ("../include/languages/language_".$language_code.".php");
+	require ("../include/languages/language_".$config['language'].".php");
 
 	$data = array();
 	$legend = array();
@@ -1165,7 +1177,7 @@ function grafico_eventos_total() {
 
 function grafico_eventos_grupo ($width = 300, $height = 200 ) {
 	include ("../include/config.php");
-	require ("../include/languages/language_".$language_code.".php");
+	require ("../include/languages/language_".$config['language'].".php");
 
 	$data = array();
 	$legend = array();
@@ -1208,7 +1220,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200 ) {
 function generic_bar_graph ( $width =380, $height = 200, $data, $legend) {
 	include ("../include/config.php");
 	require_once 'Image/Graph.php';
-	require ("../include/languages/language_".$language_code.".php");
+	require ("../include/languages/language_".$config['language'].".php");
 	
     	if (sizeof($data) > 10){
     		$height = sizeof($legend) * 20;
@@ -1217,7 +1229,7 @@ function generic_bar_graph ( $width =380, $height = 200, $data, $legend) {
 	// create the graph
 	$Graph =& Image_Graph::factory('graph', array($width, $height));
 	// add a TrueType font
-	$Font =& $Graph->addNew('font', $config_fontpath);
+	$Font =& $Graph->addNew('font', $config['fontpath']);
 	$Font->setSize(9);
 	$Graph->setFont($Font);
 	$Graph->add(
@@ -1246,7 +1258,7 @@ function generic_bar_graph ( $width =380, $height = 200, $data, $legend) {
 
 function grafico_db_agentes_paquetes ($width = 380, $height = 300) {
 	include ("../include/config.php");
-	require ("../include/languages/language_".$language_code.".php");
+	require ("../include/languages/language_".$config['language'].".php");
 
 	$data = array();
 	$legend = array();
@@ -1284,7 +1296,7 @@ function grafico_db_agentes_paquetes ($width = 380, $height = 300) {
 function grafico_db_agentes_purge ($id_agent, $width, $height) {
 	include ("../include/config.php");
 	require_once 'Image/Graph.php';
-	require ("../include/languages/language_".$language_code.".php");
+	require ("../include/languages/language_".$config['language'].".php");
 
 	// All data (now)
 	$purge_all=date("Y-m-d H:i:s",time());
@@ -1328,7 +1340,7 @@ function grafico_db_agentes_purge ($id_agent, $width, $height) {
 
 function drawWarning($width,$height) {
 	include ("../include/config.php");
-	require ("../include/languages/language_".$language_code.".php");
+	require ("../include/languages/language_".$config['language'].".php");
 	if ($width == 0) {
 		$width = 50;
 	}
@@ -1346,7 +1358,7 @@ function drawWarning($width,$height) {
 
 	ImageFilledRectangle($image,0,0,$width-1,$height-1,$back);
 	ImageRectangle($image,0,0,$width-1,$height-1,$border);
-	ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $border, $config_fontpath, $lang_label["no_data"]);
+	ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $border, $config['fontpath'], $lang_label["no_data"]);
 	imagePNG($image);
 	imagedestroy($image);
 }
@@ -1360,7 +1372,7 @@ function progress_bar($progress,$width,$height) {
    // Code ripped from Babel Project :-)
 	function drawRating($rating,$width,$height) {
 		include ("../include/config.php");
-		require ("../include/languages/language_".$language_code.".php");
+		require ("../include/languages/language_".$config['language'].".php");
 		if ($width == 0) {
 			$width = 150;
 		}
@@ -1384,11 +1396,11 @@ function progress_bar($progress,$width,$height) {
 		ImageRectangle($image,0,0,$width-1,$height-1,$border);
 		if ($rating > 50)
 			if ($rating > 100)
-				ImageTTFText($image, 8, 0, ($width/4), ($height/2)+($height/5), $back, $config_fontpath,$lang_label["out_of_limits"]);
+				ImageTTFText($image, 8, 0, ($width/4), ($height/2)+($height/5), $back, $config['fontpath'],$lang_label["out_of_limits"]);
 			else
-				ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $back, $config_fontpath, $rating."%");
+				ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $back, $config['fontpath'], $rating."%");
 		else
-			ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $border, $config_fontpath, $rating."%");
+			ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $border, $config['fontpath'], $rating."%");
 		imagePNG($image);
 		imagedestroy($image);
    	}
@@ -1456,7 +1468,7 @@ function graphic_test ($id, $period, $interval, $label, $width, $height){
 		// create the graph
 		$Graph =& Image_Graph::factory('graph', array($width, $height));
 		// add a TrueType font
-		$Font =& $Graph->addNew('font', $config_fontpath);
+		$Font =& $Graph->addNew('font', $config['fontpath']);
 		$Font->setSize(6);
 		$Graph->setFont($Font);
 		$Graph->add(
@@ -1502,7 +1514,7 @@ function odo_tactic ($value1, $value2, $value3){
 	$driver=& Image_Canvas::factory('png',array('width'=>350,'height'=>260,'antialias' => 'driver'));
 	$Graph = & Image_Graph::factory('graph', $driver);
 	// add a TrueType font
-	$Font =& $Graph->addNew('font', $config_fontpath);
+	$Font =& $Graph->addNew('font', $config['fontpath']);
 	// set the font size to 11 pixels
 	$Font->setSize(8);
 	$Graph->setFont($Font);
@@ -1598,10 +1610,10 @@ function grafico_modulo_boolean ( $id_agente_modulo, $periodo, $show_event,
 				 $width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure=0 ) {
 	
 	include ("../include/config.php");
-	require ("../include/languages/language_".$language_code.".php");
+	require ("../include/languages/language_".$config['language'].".php");
 	require_once 'Image/Graph.php';
 
-	$resolution = $config_graph_res * 50; // Number of "slices" we want in graph
+	$resolution = $config['graph_res'] * 50; // Number of "slices" we want in graph
 	
 	//$unix_timestamp = strtotime($mysql_timestamp) // Convert MYSQL format tio utime
 	$fechatope = time() - $periodo; // limit date
@@ -1746,7 +1758,7 @@ function grafico_modulo_boolean ( $id_agente_modulo, $periodo, $show_event,
 	// *************
 	$Graph =& Image_Graph::factory('graph', array($width, $height));
 	// add a TrueType font
-	$Font =& $Graph->addNew('font', $config_fontpath);
+	$Font =& $Graph->addNew('font', $config['fontpath']);
 	$Font->setSize(6);
 	$Graph->setFont($Font);
 

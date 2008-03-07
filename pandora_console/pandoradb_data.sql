@@ -91,69 +91,10 @@ INSERT INTO `tmodule_group` VALUES (1,'General'),(2,'Networking'),(3,'Applicatio
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `tmodule_group` ENABLE KEYS */;
 
---
--- Dumping data for table `tnetwork_component`
---
-
-INSERT INTO `tnetwork_component` VALUES (3,'Sysname','Get name of system using SNMP standard MIB',1,17,0,0,900,0,'','','public','.1.3.6.1.2.1.1.1.0',1);
-INSERT INTO `tnetwork_component` VALUES (19,'Power #1','PowerSupply #1 status',6,18,0,0,300,0,'','','public',' .1.3.6.1.4.1.2334.2.1.5.8.0',4);
-INSERT INTO `tnetwork_component` VALUES (20,'Power #2','PowerSupply #2 status',6,18,0,0,300,0,'','','public',' .1.3.6.1.4.1.2334.2.1.5.10.0',4);
-INSERT INTO `tnetwork_component` VALUES (22,'HSRP Status','Get status of HSRP',2,18,0,0,300,0,'','','public','1.3.6.1.4.1.9.9.106.1.2.1.1.15.12.106',2);
-INSERT INTO `tnetwork_component` VALUES (24,'NIC #1 status','Status of NIC#1',10,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.1',2);
-INSERT INTO `tnetwork_component` VALUES (25,'NIC #2 status','Status of NIC #2',10,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.2',2);
-INSERT INTO `tnetwork_component` VALUES (26,'NIC #3 status','Status of NIC #3',10,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.3',2);
-INSERT INTO `tnetwork_component` VALUES (27,'NIC #1 outOctects','Output throughtput on Interface #1',10,16,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.16.1',2);
-INSERT INTO `tnetwork_component` VALUES (28,'NIC #2 outOctects','Output troughtput on interface #2',10,16,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.16.2',1);
-INSERT INTO `tnetwork_component` VALUES (29,'NIC #3 outOctects','Output troughtput on Interface #3',10,16,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.16.3',2);
-INSERT INTO `tnetwork_component` VALUES (30,'NIC #1 inOctects','Input troughtput on Interface #1',10,16,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.10.1',2);
-INSERT INTO `tnetwork_component` VALUES (31,'NIC #2 inOctects','Input throughtput for interface #2',10,16,0,0,180,0,'','NULL','public','.1.3.6.1.2.1.2.2.1.10.2',2);
-INSERT INTO `tnetwork_component` VALUES (32,'NIC #3 inOctects','Input throught on interface #3',10,16,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.10.3',2);
-INSERT INTO `tnetwork_component` VALUES (34,'Host Alive','Check if host is alive using ICMP ping check.',10,6,0,0,120,0,'','','','',2);
-INSERT INTO `tnetwork_component` VALUES (36,'Host Latency','Get host network latency in miliseconds, using ICMP.',10,7,0,0,180,0,'','','','',2);
-INSERT INTO `tnetwork_component` VALUES (37,'Check HTTP Server','Test APACHE2 HTTP service remotely (Protocol response, not only openport)',10,9,0,0,300,80,'GET / HTTP/1.0^M^M','HTTP/1.1 200 OK','','',3);
-INSERT INTO `tnetwork_component` VALUES (38,'Check FTP Server','Check FTP protocol, not only check port.',10,9,0,0,300,21,'QUIT','221','','',3);
-INSERT INTO `tnetwork_component` VALUES (39,'Check SSH Server','Checks port 22 is opened',10,9,0,0,300,22,'','','','',2);
-INSERT INTO `tnetwork_component` VALUES (40,'Check Telnet server','Check telnet port',10,9,0,0,300,23,'','','','',2);
-INSERT INTO `tnetwork_component` VALUES (41,'Check SMTP server','Check if SMTP port it&#039;s open',10,9,0,0,300,25,'','','','',2);
-INSERT INTO `tnetwork_component` VALUES (42,'Check POP3 server','Check POP3 port.',10,9,0,0,300,110,'','','','',2);
-INSERT INTO `tnetwork_component` VALUES (43,'NIC #7 outOctects','Get outcoming octects from NIC #7',10,16,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.16.7',2);
-INSERT INTO `tnetwork_component` VALUES (44,'NIC #7 inOctects','Get incoming octects from NIC #7',10,16,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.10.7',2);
-INSERT INTO `tnetwork_component` VALUES (45,'NIC #4 Status','Get status of NIC #4',10,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.4',2);
-INSERT INTO `tnetwork_component` VALUES (46,'NIC #5 Status','Get status of NIC #5',10,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.5',2);
-INSERT INTO `tnetwork_component` VALUES (47,'NIC #6 Status','Get status of NIC #6',10,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.6',2);
-INSERT INTO `tnetwork_component` VALUES (48,'NIC #7 Status','Get status of NIC #7',10,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.7',2);
-INSERT INTO `tnetwork_component` VALUES (49,'CPU User','Linux User CPU Usage  (%)',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.9.0',4);
-INSERT INTO `tnetwork_component` VALUES (50,'CPU System','Linux System CPU usage',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.10.0',4);
-INSERT INTO `tnetwork_component` VALUES (51,'System Context Change','Linux System Context changes ',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.8.0',4);
-INSERT INTO `tnetwork_component` VALUES (52,'System Interrupts','Linux system interrupts ',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.7.0',4);
-INSERT INTO `tnetwork_component` VALUES (53,'Sytem IO Sent','Linux System IO Sent ',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.5.0',4);
-INSERT INTO `tnetwork_component` VALUES (54,'System IO Recv','Linux System IO Recv ',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.6.0',4);
-INSERT INTO `tnetwork_component` VALUES (55,'System SwapIn ','Linux System Swap In',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.3.0',1);
-INSERT INTO `tnetwork_component` VALUES (56,'System Buffer Memory','Linux System Buffer Memory (used as available memory)',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.4.14.0',4);
-INSERT INTO `tnetwork_component` VALUES (57,'System Cached Memory','Linux System Cached Memory (used as free memory)',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.4.15.0',4);
-INSERT INTO `tnetwork_component` VALUES (58,'System Processes','Total system process on any host',12,15,0,0,180,0,'','','public','.1.3.6.1.2.1.25.1.6.0',4);
-
---
--- Dumping data for table `tnetwork_component_group`
---
-INSERT INTO `tnetwork_component_group` VALUES (1,'General group',0);
-INSERT INTO `tnetwork_component_group` VALUES (2,'Cisco MIBs',10);
-INSERT INTO `tnetwork_component_group` VALUES (3,'Nortel MIBS',10);
-INSERT INTO `tnetwork_component_group` VALUES (4,'3COM MIBs',10);
-INSERT INTO `tnetwork_component_group` VALUES (5,'UNIX MIBs',12);
-INSERT INTO `tnetwork_component_group` VALUES (6,'Packetshaper MIBs',10);
-INSERT INTO `tnetwork_component_group` VALUES (7,'Nortel BPS 2000 MIBs',3);
-INSERT INTO `tnetwork_component_group` VALUES (8,'Cisco Catalyst3750 MIBs',2);
-INSERT INTO `tnetwork_component_group` VALUES (9,'Cisco AP120+',2);
-INSERT INTO `tnetwork_component_group` VALUES (10,'Network Management',0);
-INSERT INTO `tnetwork_component_group` VALUES (11,'Microsoft Windows MIB',12);
-INSERT INTO `tnetwork_component_group` VALUES (12,'Operating Systems',0);
 
 --
 -- Dumping data for table `torigen`
 --
-
-
 INSERT INTO `torigen` VALUES ('Operating System event'),('IDS events'),('Firewall records'),('Database event'),('Application data'),('Logfiles'),('Other data source'),('Pandora FMS Event'),('User report'),('Unknown source');
 
 --
@@ -163,25 +104,30 @@ INSERT INTO `torigen` VALUES ('Operating System event'),('IDS events'),('Firewal
 INSERT INTO `ttipo_modulo` VALUES 
 (1,'generic_data',0,'Generic module to adquire numeric data','mod_data.png'),
 (2,'generic_proc',1,'Generic module to adquire boolean data','mod_proc.png'),
-(3,'generic_data_string',0,'Generic module to adquire alphanumeric data','mod_string.png'),
+(3,'generic_data_string',2,'Generic module to adquire alphanumeric data','mod_string.png'),
 (4,'generic_data_inc',0,'Generic module to adquire numeric incremental data','mod_data_inc.png'),
-(6,'remote_icmp_proc',3,'Remote ICMP network agent, boolean data','mod_icmp_proc.png'),
-(7,'remote_icmp',2,'Remote ICMP network agent (latency)','mod_icmp_data.png'),
-(8,'remote_tcp',2,'Remote TCP network agent, numeric data','mod_tcp_data.png'),
-(9,'remote_tcp_proc',3,'Remote TCP network agent, boolean data','mod_tcp_proc.png'),
-(10,'remote_tcp_string',2,'Remote TCP network agent, alphanumeric data','mod_tcp_string.png'),
-(11,'remote_tcp_inc',2,'Remote TCP network agent, incremental data','mod_tcp_inc.png'),
-(15,'remote_snmp',2,'Remote SNMP network agent, numeric data','mod_snmp_data.png'),
-(16,'remote_snmp_inc',2,'Remote SNMP network agent, incremental data','mod_snmp_inc.png'),
-(17,'remote_snmp_string',2,'Remote SNMP network agent, alphanumeric data','mod_snmp_string.png'),
-(18,'remote_snmp_proc',3,'Remote SNMP network agent, boolean data','mod_snmp_proc.png'), 
+
+(6,'remote_icmp_proc',4,'Remote ICMP network agent, boolean data','mod_icmp_proc.png'),
+(7,'remote_icmp',3,'Remote ICMP network agent (latency)','mod_icmp_data.png'),
+(8,'remote_tcp',3,'Remote TCP network agent, numeric data','mod_tcp_data.png'),
+(9,'remote_tcp_proc',4,'Remote TCP network agent, boolean data','mod_tcp_proc.png'),
+(10,'remote_tcp_string',5,'Remote TCP network agent, alphanumeric data','mod_tcp_string.png'),
+(11,'remote_tcp_inc',3,'Remote TCP network agent, incremental data','mod_tcp_inc.png'),
+(15,'remote_snmp',3,'Remote SNMP network agent, numeric data','mod_snmp_data.png'),
+(16,'remote_snmp_inc',3,'Remote SNMP network agent, incremental data','mod_snmp_inc.png'),
+(17,'remote_snmp_string',5,'Remote SNMP network agent, alphanumeric data','mod_snmp_string.png'),
+(18,'remote_snmp_proc',4,'Remote SNMP network agent, boolean data','mod_snmp_proc.png'), 
+
 (19,'image_jpg',9,'Image JPG data', 'mod_image_jpg.png'), 
 (20,'image_png',9,'Image PNG data', 'mod_image_png.png'), 
-(21,'async_proc', 5, 'Asyncronous proc data', 'mod_async_proc.png'), 
-(22,'async_data', 4, 'Asyncronous numeric data', 'mod_async_data.png'), 
-(23,'async_string', 4, 'Asyncronous string data', 'mod_async_string.png'), 
-(24,'predictive', 6, 'Predictive Estimation Data', 'mod_predictive.png'),
+(21,'async_proc', 7, 'Asyncronous proc data', 'mod_async_proc.png'), 
+(22,'async_data', 6, 'Asyncronous numeric data', 'mod_async_data.png'), 
+(23,'async_string', 8, 'Asyncronous string data', 'mod_async_string.png'), 
+(24,'predictive', 10, 'Predictive Estimation Data', 'mod_predictive.png'),
 (100,'keep_alive',-1,'KeepAlive','mod_keepalive.png');
+
+/* Categoria field is used to segregate several types (plugin, agents, network) on their data
+  types, could be used or could be avoided and use directly primary key (id_tipo) */
 
 --
 -- Dumping data for table `tusuario`
@@ -201,24 +147,112 @@ INSERT INTO `tusuario_perfil` VALUES (1,'admin',5,1,'admin');
 
 INSERT INTO `tperfil` VALUES (1,'Operator (Read)',0,1,0,1,0,0,0,0,0,0),(2,'Operator (Write)',1,1,0,1,0,0,0,0,0,0),(3,'Chief Operator',1,1,1,1,0,0,0,0,0,0),(4,'Group coordinator',1,1,1,1,1,1,1,0,0,0),(5,'Pandora Administrator',1,1,1,1,1,1,1,1,1,1);
 
-INSERT INTO `tnews` VALUES (1,'admin','Welcome to Pandora FMS!','This is our new console, a lot of new features has been added from last version. Please read documentation about it and be free to test any option.\r\n\r\nPandora FMS team.','2007-06-22 13:03:20');
+INSERT INTO `tnews` VALUES (1,'admin','Welcome to Pandora FMS!','This is our new console, a lot of new features has been added from last version. Please read documentation about it and be free to test any option.\r\n\r\nPandora FMS team.','2008-02-26 13:03:20');
 
-INSERT INTO `tnetwork_profile` VALUES (1,'SNMP Basic management','Basic SNMP management (only first interface)');
-INSERT INTO `tnetwork_profile` VALUES (2,'Basic Server','Check basic server services and network latency. This checks SSH, FTP and HTTP. Also a ICMP host alive check.');
-INSERT INTO `tnetwork_profile` VALUES (3,'Linux SNMP','Linux SNMP Management');
+INSERT INTO tmodule VALUES (1,'Agent module');
+INSERT INTO tmodule VALUES (2,'Network module');
+INSERT INTO tmodule VALUES (4,'Plugin module');
+INSERT INTO tmodule VALUES (5,'IA module');
+INSERT INTO tmodule VALUES (6,'WMI module');
 
-INSERT INTO `tnetwork_profile_component` VALUES (1,24,1);
-INSERT INTO `tnetwork_profile_component` VALUES (2,27,1);
-INSERT INTO `tnetwork_profile_component` VALUES (3,30,1);
-INSERT INTO `tnetwork_profile_component` VALUES (4,37,2);
-INSERT INTO `tnetwork_profile_component` VALUES (5,38,2);
-INSERT INTO `tnetwork_profile_component` VALUES (6,39,2);
-INSERT INTO `tnetwork_profile_component` VALUES (7,36,2);
-INSERT INTO `tnetwork_profile_component` VALUES (8,34,2);
-INSERT INTO `tnetwork_profile_component` VALUES (9,51,3);
-INSERT INTO `tnetwork_profile_component` VALUES (10,52,3);
-INSERT INTO `tnetwork_profile_component` VALUES (11,53,3);
-INSERT INTO `tnetwork_profile_component` VALUES (12,54,3);
-INSERT INTO `tnetwork_profile_component` VALUES (13,55,3);
-INSERT INTO `tnetwork_profile_component` VALUES (14,56,3);
-INSERT INTO `tnetwork_profile_component` VALUES (15,57,3);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (1,'OS Total process','Total process in Operating System (UNIX MIB)',13,15,0,0,180,0,'','','public','HOST-RESOURCES-MIB::hrSystemProcesses.0 ',4);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (2,'OS CPU Load (1 min)','CPU Load in Operating System (UNIX MIB)',13,15,0,0,180,0,'','','public','UCD-SNMP-MIB::laLoad.1',4);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (3,'Sysname','Get name of system using SNMP standard MIB',1,17,0,0,900,0,'','','public','.1.3.6.1.2.1.1.1.0',1);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (4,'OS Users','Active users in Operating System (UNIX MIB)',13,15,0,0,180,0,'','','public','HOST-RESOURCES-MIB::hrSystemNumUsers.0',4);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (11,'Catalyst CPU Usage (5min)','Cisco Catalyst Switches CPU Usage. Taken from ftp://ftp.cisco.com/pub/mibs/oid/OLD-CISCO-CPU-MIB.oid',2,15,0,0,180,0,'','','public','1.3.6.1.4.1.9.2.1.58',4);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (22,'HSRP Status','Get status of HSRP',2,18,0,0,180,0,'','','public','1.3.6.1.4.1.9.9.106.1.2.1.1.15.12.106',2);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (24,'NIC #1 status','Status of NIC#1',10,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.1',2);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (25,'NIC #2 status','Status of NIC #2',10,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.2',2);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (26,'NIC #3 status','Status of NIC #3',10,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.3',2);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (27,'NIC #1 outOctects','Output throughtput on Interface #1',10,16,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.16.1',2);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (28,'NIC #2 outOctects','Output troughtput on interface #2',10,16,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.16.2',1);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (29,'NIC #3 outOctects','Output troughtput on Interface #3',10,16,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.16.3',2);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (30,'NIC #1 inOctects','Input troughtput on Interface #1',10,16,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.10.1',2);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (31,'NIC #2 inOctects','Input throughtput for interface #2',10,16,0,0,180,0,'','NULL','public','.1.3.6.1.2.1.2.2.1.10.2',2);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (32,'NIC #3 inOctects','Input throught on interface #3',10,16,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.10.3',2);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (34,'Host Alive','Check if host is alive using ICMP ping check.',10,6,0,0,120,0,'','','','',2);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (36,'Host Latency','Get host network latency in miliseconds, using ICMP.',10,7,0,0,180,0,'','','','',2);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (37,'Check HTTP Server','Test APACHE2 HTTP service remotely (Protocol response, not only openport)',10,9,0,0,300,80,'GET / HTTP/1.0^M^M','HTTP/1.1 200 OK','','',3);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (38,'Check FTP Server','Check FTP protocol, not only check port.',10,9,0,0,300,21,'QUIT','221','','',3);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (39,'Check SSH Server','Checks port 22 is opened',10,9,0,0,300,22,'','','','',2);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (40,'Check Telnet server','Check telnet port',10,9,0,0,300,23,'','','','',2);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (41,'Check SMTP server','Check if SMTP port it&#039;s open',10,9,0,0,300,25,'','','','',2);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (42,'Check POP3 server','Check POP3 port.',10,9,0,0,300,110,'','','','',2);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (43,'NIC #7 outOctects','Get outcoming octects from NIC #7',10,16,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.16.7',2);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (44,'NIC #7 inOctects','Get incoming octects from NIC #7',10,16,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.10.7',2);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (45,'NIC #4 Status','Get status of NIC #4',10,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.4',2);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (46,'NIC #5 Status','Get status of NIC #5',10,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.5',2);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (47,'NIC #6 Status','Get status of NIC #6',10,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.6',2);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (48,'NIC #7 Status','Get status of NIC #7',10,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.7',2);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (49,'OS CPU Load (5 min)','CPU load on a 5 min average interval. UCD-SNMP Mib (Usually for all Linux and some UNIX)',13,15,0,0,180,0,'','','public','UCD-SNMP-MIB::laLoad.2',4);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (50,'System Description','Get system description (all mibs).',1,17,0,0,9000,0,'','','public','SNMPv2-MIB::sysDescr.0',4);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (51,'OS Raw Interrupts','Get system raw interrupts from SO',13,16,0,0,180,0,'','','public','UCD-SNMP-MIB::ssRawInterrupts.0',4);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (52,'OS IO Signals sent','IO Signals sent by Kernel',13,16,0,0,180,0,'','','public','UCD-SNMP-MIB::ssIOSent.0',4);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (53,'System Uptime','Sistem uptime in timeticks',1,15,0,0,180,0,'','','public','HOST-RESOURCES-MIB::hrSystemUptime.0',4);
+INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (54,'Catalyst Free Mem','Taken from ftp://ftp.cisco.com/pub/mibs/oid/OLD-CISCO-MEMORY-MIB.oid',2,15,0,0,180,0,'','','public','1.3.6.1.4.1.9.2.1.8',4);
+
+--
+-- Dumping data for table `tnetwork_component_group`
+--
+
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (1,'General group',0);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (2,'Cisco MIBs',10);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (5,'UNIX MIBs',12);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (10,'Network Management',0);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (11,'Microsoft Windows MIB',12);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (12,'Operating Systems',0);
+INSERT INTO `tnetwork_component_group` (`id_sg`, `name`, `parent`) VALUES (13,'UCD Mibs (Linux, UCD-SNMP)',12);
+
+
+-- Network profile
+
+INSERT INTO `tnetwork_profile` (`id_np`, `name`, `description`) VALUES (1,'Basic Network Monitoring','This includes basic SNMP, ICMP, and TCP checks.');
+INSERT INTO `tnetwork_profile` (`id_np`, `name`, `description`) VALUES (2,'Basic Monitoring','Only ICMP check');
+INSERT INTO `tnetwork_profile` (`id_np`, `name`, `description`) VALUES (3,'Basic DMZ Server monitoring','This group of network checks, checks for default services located on DMZ servers...');
+INSERT INTO `tnetwork_profile` (`id_np`, `name`, `description`) VALUES (4,'Full SNMP Monitoring','');
+INSERT INTO `tnetwork_profile` (`id_np`, `name`, `description`) VALUES (5,'Linux Server','Full Monitoring of a Linux server services.');
+
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (1,24,1);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (2,25,1);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (3,27,1);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (4,28,1);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (5,30,1);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (6,31,1);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (7,34,1);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (8,39,1);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (9,34,2);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (10,34,3);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (11,37,3);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (12,39,3);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (13,38,3);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (14,24,3);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (15,3,4);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (16,24,4);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (17,25,4);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (18,26,4);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (19,27,4);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (20,28,4);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (21,29,4);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (22,30,4);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (23,31,4);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (24,32,4);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (25,45,4);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (26,46,4);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (27,47,4);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (28,48,4);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (29,3,5);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (30,50,5);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (31,53,5);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (32,24,5);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (33,30,5);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (34,27,5);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (35,34,5);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (36,1,5);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (37,2,5);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (38,49,5);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (39,4,5);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (40,51,5);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (41,52,5);
+INSERT INTO `tnetwork_profile_component` (`id_npc`, `id_nc`, `id_np`) VALUES (42,39,5);
+
+

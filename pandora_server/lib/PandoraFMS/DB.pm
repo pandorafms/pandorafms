@@ -1001,14 +1001,17 @@ sub pandora_serverkeepaliver (%$$) {
 ## Update server status
 ##########################################################################
 sub pandora_updateserver (%$$$) {
-    	my $pa_config= $_[0];
-	my $servername = $_[1];
-	my $status = $_[2];
-	my $opmode = $_[3]; # 0 dataserver, 1 network server, 2 snmp console, 3 recon
-	my $dbh = $_[4];
-	my $sql_update;
-	my $pandorasuffix;
-	my $version_data;
+    my $pa_config= $_[0];
+    my $servername = $_[1];
+    my $status = $_[2];
+    my $opmode = $_[3]; # 0 dataserver, 1 network server, 2 snmp console, 3 recon
+                        # 4 plugin, 5 prediction, 6 wmi
+    my $dbh = $_[4];
+
+
+    my $sql_update;
+    my $pandorasuffix;
+    my $version_data;
 
 	if ($opmode == 0){
 		$pandorasuffix = "_Data";
@@ -1018,7 +1021,18 @@ sub pandora_updateserver (%$$$) {
 		$pandorasuffix = "_SNMP";
 	} elsif ($opmode == 3){
 		$pandorasuffix = "_Recon";
-	}
+	} elsif ($opmode == 4){
+        $pandorasuffix = "_Plugin";
+    } elsif ($opmode == 5){
+        $pandorasuffix = "_IA";
+    } elsif ($opmode == 6){
+        $pandorasuffix = "_WMI";
+    } else {
+        logger ($pa_config, "Error: received a unknown server type. Aborting startup.",0);
+        print (" [ERROR] Received a unknown server type. Aborting startup \n\n");
+        exit;
+    }
+
 	my $id_server = dame_server_id($pa_config, $servername.$pandorasuffix, $dbh);
 	if ($id_server == -1){ 
 		# Must create a server entry
@@ -1028,7 +1042,7 @@ sub pandora_updateserver (%$$$) {
 		$id_server = dame_server_id($pa_config, $pa_config->{'servername'}.$pandorasuffix, $dbh);
 	}
 	my @data;
-	my $query_idag = "select * from tserver where id_server = $id_server";
+	my $query_idag = "SELECT * FROM tserver WHERE id_server = $id_server";
 	my $s_idag = $dbh->prepare($query_idag);
 	$s_idag ->execute;
 	if ($s_idag->rows != 0) {
@@ -1048,7 +1062,13 @@ sub pandora_updateserver (%$$$) {
 				$sql_update = "update tserver set version = '$version_data', status = 1, laststart = '$timestamp', keepalive = '$timestamp', recon_server = 0, snmp_server = 1, network_server = 0, data_server = 0, master = $pa_config->{'pandora_master'}, checksum = 0 where id_server = $id_server";
 			} elsif ($opmode == 3) {
 				$sql_update = "update tserver set version = '$version_data', status = 1, laststart = '$timestamp', keepalive = '$timestamp', recon_server = 1, snmp_server = 0, network_server = 0, data_server = 0, master =  $pa_config->{'pandora_master'}, checksum = 0 where id_server = $id_server";
-			}
+			} elsif ($opmode == 4) {
+                $sql_update = "update tserver set version = '$version_data', status = 1, laststart = '$timestamp', keepalive = '$timestamp', plugin_server = 1, master =  $pa_config->{'pandora_master'}, checksum = 0 where id_server = $id_server";
+            } elsif ($opmode == 5) {
+                $sql_update = "update tserver set version = '$version_data', status = 1, laststart = '$timestamp', keepalive = '$timestamp', prediction_server = 1, master =  $pa_config->{'pandora_master'}, checksum = 0 where id_server = $id_server";
+            } elsif ($opmode == 6) {
+                $sql_update = "update tserver set version = '$version_data', status = 1, laststart = '$timestamp', keepalive = '$timestamp', wmi_server = 1, master =  $pa_config->{'pandora_master'}, checksum = 0 where id_server = $id_server";
+            }
 			$dbh->do($sql_update);
 		}
 		$s_idag->finish();
@@ -1344,7 +1364,6 @@ sub give_group_disabled (%$$) {
     	$s_idag->finish();
     	return $disabled;
 }
-
 
 ##########################################################################
 ## SUB dame_modulo_id (nombre_modulo)

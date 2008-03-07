@@ -1,3 +1,17 @@
+2008-03-06  Sancho Lerena <slerena@gmail.com>
+
+        *  conf/pandora_server.conf: New tokens for the new servers.
+
+        * lib/PandoraFMS/Config.pm: Added support for WMI Server.
+
+        * lib/PandoraFMS/DB.pm: Updated pandora_updateserver function.
+
+        * bin/pandora_wmi: Skeleton of WMI server, not functional, only
+        a concept proof and initializacion for create a WMI server.
+
+        * bin/pandora_plugin: Almost functional code, fully skeleton,
+        initializacion and modules.
+
 2008-02-25 Sancho Lerena <slerena@gmail.com>
 
 	* conf/pandora_server.conf: Added new tokens.

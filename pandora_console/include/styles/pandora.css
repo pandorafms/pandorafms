@@ -430,6 +430,15 @@ div.title_line {
 	height: 5px;
 	width: 762px;
 }
+#menu_tab_frame {
+    background: #D84437; 
+    width: 805px; 
+    min-height: 22px; 
+    padding-left: 0x;
+    margin-left: -25px;
+    float:left; 
+    border-bottom: 1px solid #778866;
+}
 #menu_tab .mn, #menu_tab ul, #menu_tab .mn ul {
 	padding: 0px;
 	list-style: none;
@@ -443,17 +452,27 @@ div.title_line {
 	background: #d4ddc6;
 	padding: 2px 10px 2px 10px;
 	color: #333;
-	border-left: 1px solid #fff;
+	border-left: 2px solid #778866;
 	font-weight: bold;
 	line-height: 18px;
 }
+#menu_tab li.nomn_high a {
+    background: #799E48;
+    color: #fff;
+    padding: 2px 10px 2px 10px;
+    border-left: 2px solid #778866;
+    font-weight: bold;
+    line-height: 18px;
+}
+
 #menu_tab .mn li a {
 	display: block;
 	text-decoration: none;
 }
-#menu_tab li.nomn:hover a, 
+#menu_tab li.nomn:hover a,  li.nomn:hover_high a
 #menu_tab li:hover ul a:hover {
-	background: #cde0ad;
+	background: #799E48;
+    color: #fff;
 }
 #menu_tab li:hover a {
 	background: #b2b08a url("../images/arrow.png") no-repeat right 3px;
@@ -466,7 +485,7 @@ div.title_line {
 #menu_tab_left .mn, #menu_tab_left ul, #menu_tab_left .mn ul {
 	padding: 0px 0px 0px 0px;
 	list-style: none;
-	margin: 0px 0px 0px -20px;
+	margin: 0px 0px 0px 2px;
 }
 #menu_tab_left .mn li {
 	float: left;
@@ -511,6 +530,18 @@ span.net {
 span.master {
 	background: url(../../images/master.png) no-repeat;
 }
+span.wmi {
+    background: url(../../images/wmi.png) no-repeat;
+}
+span.prediction {
+    background: url(../../images/chart_bar.png) no-repeat;
+}
+span.plugin {
+    background: url(../../images/plugin.png) no-repeat;
+}
+span.export {
+    background: url(../../images/database_refresh.png) no-repeat;
+}
 span.snmp {
 	background: url(../../images/snmp.png) no-repeat;
 }
@@ -526,8 +557,14 @@ span.rmess {
 span.nrmess {
 	background: url(../../images/email.png) no-repeat;
 }
+
+/* This kind of span do not have any sense, should be replaced on PHP code
+by a real img in code. They are not useful because insert too much margin around
+(for example, not valid to use in the table of server view */
+
 span.users, span.agents, span.data, span.alerts, span.time, span.net,
-span.master, span.snmp, span.binary, span.recon {
+span.master, span.snmp, span.binary, span.recon, span.wmi, span.prediction,
+span.plugin, span.plugin, span.export {
 	margin-left: 4px;
 	margin-top: 10px;
 	padding: 4px 8px 12px 30px;

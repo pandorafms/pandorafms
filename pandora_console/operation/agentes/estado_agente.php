@@ -3,8 +3,6 @@
 // ========================================
 // Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
 // Main PHP/SQL code development, project architecture and management.
-// Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP code additions
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // Load global vars
@@ -85,17 +83,17 @@ if (comprueba_login() == 0) {
 	// Show only selected groups	
 	if ($ag_group > 1){
 		$sql="SELECT * FROM tagente WHERE id_grupo=$ag_group
-		AND disabled = 0 $search_sql ORDER BY nombre LIMIT $offset, $block_size ";
+		AND disabled = 0 $search_sql ORDER BY nombre LIMIT $offset, ".$config['block_size'];
 		$sql2="SELECT COUNT(id_agente) FROM tagente WHERE id_grupo=$ag_group 
 		AND disabled = 0 $search_sql ORDER BY nombre";
 	} else {
                 // Is admin user ??
                 if (get_db_sql ("SELECT * FROM tusuario WHERE id_usuario ='$id_user'", "nivel") == 1){
-                        $sql="SELECT * FROM tagente WHERE disabled = 0 $search_sql ORDER BY nombre, id_grupo LIMIT $offset, $block_size";
+                        $sql="SELECT * FROM tagente WHERE disabled = 0 $search_sql ORDER BY nombre, id_grupo LIMIT $offset, ".$config['block_size'];
                         $sql2="SELECT COUNT(id_agente) FROM tagente WHERE disabled = 0 $search_sql ORDER BY nombre, id_grupo";
                 } else {
 		        $sql="SELECT * FROM tagente WHERE disabled = 0 $search_sql AND id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='$id_user')
-		        ORDER BY nombre, id_grupo LIMIT $offset, $block_size";
+		        ORDER BY nombre, id_grupo LIMIT $offset, ".$config['block_size'];
 		        $sql2="SELECT COUNT(id_agente) FROM tagente WHERE disabled = 0 $search_sql AND id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='$id_user') ORDER BY nombre, id_grupo";
                 }
 	}
@@ -128,7 +126,6 @@ if (comprueba_login() == 0) {
 			$direccion_agente =$row["direccion"];
 			$id_grupo=$row["id_grupo"];
 			$id_os = $row["id_os"];
-			$agent_type = $row["agent_type"];
 			$ultimo_contacto = $row["ultimo_contacto"];
 			$biginterval=$intervalo;
 			foreach ($mis_grupos as $migrupo){ //Verifiy if the group this agent begins is one of the user groups

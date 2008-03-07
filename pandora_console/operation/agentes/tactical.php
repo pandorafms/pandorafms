@@ -232,9 +232,12 @@
 				else 
 					echo "-";
 
-				if (($network_server == 1) OR ($data_server == 1) OR ($recon_server == 1))
+				if (($network_server == 1) OR ($data_server == 1) OR ($recon_server == 1)){
+                    if ($percentil > 100)
+                        $percentil = 100;
 					// Progress bar render
 					echo '<img src="reporting/fgraph.php?tipo=progress&percent='.$percentil.'&height=18&width=80">';
+                }
 					
 				// Number of modules
 				echo "<td class='$tdcolor'>";

@@ -6,23 +6,6 @@
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
 // CSS and some PHP code additions
 // Please see http://pandora.sourceforge.net for full contribution list
-?>
-
-<!-- Javascript  -->
-<script language="javascript1.2" type="text/javascript">
-<!--
-function winopeng(url,wid) {
-	nueva_ventana=open(url,wid,"width=530,height=275,status=no,toolbar=no,menubar=no");
-	// WARNING !! Internet Explorer DOESNT SUPPORT "-" CARACTERS IN WINDOW HANDLE VARIABLE
-	status =wid;
-}
-function help_popup(help_id) {
-	nueva_ventana=open("general/pandora_help.php?id=1","width=300,height=100,status=no,toolbar=no,menubar=no");
-}
--->
-</script>
-
-<?php
 
 require("include/config.php");
 if (comprueba_login() == 0) {

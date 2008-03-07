@@ -148,17 +148,17 @@ if ($search != ""){
 // Show only selected groups    
 if ($ag_group > 1){
         $sql1="SELECT * FROM tagente WHERE id_grupo=$ag_group
-        AND disabled = 0 $search_sql ORDER BY nombre LIMIT $offset, $block_size ";
-        $sql2="SELECT COUNT(id_agente) FROM tagente WHERE id_grupo=$ag_group 
+        AND disabled = 0 $search_sql ORDER BY nombre LIMIT $offset, ".$config["block_size"];
+        $sql2="SELECT COUNT(id_agente) FROM tagente WHERE id_grupo = $ag_group 
         AND disabled = 0 $search_sql ORDER BY nombre";
 } else {
         // Is admin user ??
         if (get_db_sql ("SELECT * FROM tusuario WHERE id_usuario ='$id_user'", "nivel") == 1){
-                $sql1="SELECT * FROM tagente WHERE disabled = 0 $search_sql ORDER BY nombre, id_grupo LIMIT $offset, $block_size";
+                $sql1 = "SELECT * FROM tagente WHERE disabled = 0 $search_sql ORDER BY nombre, id_grupo LIMIT $offset, ".$config["block_size"];
                 $sql2="SELECT COUNT(id_agente) FROM tagente WHERE disabled = 0 $search_sql ORDER BY nombre, id_grupo";
         } else {
                 $sql1="SELECT * FROM tagente WHERE disabled = 0 $search_sql AND id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='$id_user')
-                ORDER BY nombre, id_grupo LIMIT $offset, $block_size";
+                ORDER BY nombre, id_grupo LIMIT $offset, ".$config["block_size"];
                 $sql2="SELECT COUNT(id_agente) FROM tagente WHERE disabled = 0 $search_sql AND id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='$id_user') ORDER BY nombre, id_grupo";
         }
 }

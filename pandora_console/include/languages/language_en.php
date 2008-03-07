@@ -877,6 +877,17 @@ $lang_label["render_now"]="Render now";
 $lang_label["ntemplates"]="Net. Templates";
 $lang_label["setup_agent"]="Setup Agent";
 
+// Pandora 2.0 new stringd
+
+$lang_label["Stand alone module"]="Stand alone module";
+$lang_label["help_error"]="Help system error";
+$lang_label["help_error_msg"]="Pandora FMS help system has been called with a help reference that currently don't exist. There is no help content to show.";
+$lang_label["export_server"]="Export server";
+$lang_label["post_process"]="Post process";
+$lang_label["max_timeout"]="Max. timeout";
+$lang_label["snmp_walk"]="SNMP walk";
+
+
 global $lang_label;
 global $help_label;
 ?>

@@ -1,3 +1,8 @@
+2008-03-07 Sancho Lerena <slerena@gmail.com>
+
+	* operation/agentes/tactical.php, operation/servers/view_server.php: Final
+	fix to problems in progress bar.
+
 2008-03-01  Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/languages/language_*.php: Updated and cleared header.

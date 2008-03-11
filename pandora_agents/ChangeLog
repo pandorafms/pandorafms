@@ -1,3 +1,7 @@
+2008-03-11 Manuel Arostegui <marostegui@artica.es>
+
+        * linux/pandora_agent_daemon: Added pidof checking to
+        check the PID of the process.
 
 2008-02-02 Sancho lerena <slerena@gmail.com>
 

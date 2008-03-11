@@ -7,7 +7,7 @@
 
 # Configurable path and filenames
 PANDORA_HOME="/etc/pandora/pandora_server.conf"
-PANDORA_PID_PATH="/var/run/pandora"
+PANDORA_PID_PATH="/var/run"
 PANDORA_PID=$PANDORA_PID_PATH/pandora_recon.pid
 PANDORA_DAEMON=/usr/local/bin/pandora_recon
 
@@ -28,42 +28,35 @@ fi
 case "$1" in
   start)
 	OLD_PATH="`pwd`"
-	if [ -f $PANDORA_PID ]
+	PANDORA_PID=$(pidof -x $PANDORA_DAEMON)
+        if [ ! -z $PANDORA_PID ]
 	then
-		CHECK_PID=`cat $PANDORA_PID`
-		CHECK_PID_RESULT=`ps aux | grep -v grep | grep "$CHECK_PID" | grep "pandora_recon" | wc -l`
-		if [ $CHECK_PID_RESULT == 1 ]
-		then
-			echo "Pandora FMS Recon Server is currently running on this machine with PID ($CHECK_PID). Aborting now..."
-			exit
-		fi
+		echo "Pandora FMS Recon Server is currently running on this machine with PID ($PANDORA_PID). Aborting now..."
+		exit 1
 	fi
 	
 	$PANDORA_DAEMON $PANDORA_HOME -D
 	sleep 1
 
-	MYPID=`ps aux | grep "$PANDORA_DAEMON" | grep -v grep | tail -1 | awk '{print $2}'`
-	if [ ! -z "$MYPID" ]
+	PANDORA_PID=$(pidof -x $PANDORA_DAEMON)
+        if [ ! -z "$PANDORA_PID" ]
 	then
-		echo $MYPID > $PANDORA_PID
-		echo "Pandora Recon Server is now running with PID $MYPID"
+		echo "Pandora Recon Server is now running with PID $PANDORA_PID"
 	else
 		echo "Cannot start Pandora FMS Recon Server. Aborted."
 	fi
 	cd "$OLD_PATH"
         ;;
   stop)
-	if [ -f $PANDORA_PID ]
+	PANDORA_PID=$(pidof -x $PANDORA_DAEMON)
+        if [ -z $PANDORA_PID ]
 	then
-	   echo "Stopping Pandora FMS Recon Server"
-	   PID_2=`cat $PANDORA_PID`
-	   if [ ! -z "`ps -F -p $PID_2 | grep -v grep | grep 'pandora_recon' `" ]
-           then
-	       kill `cat $PANDORA_PID` 2> /dev/null > /dev/null
-	   fi
-           rm -f $PANDORA_PID
+		echo "Pandora FMS Recon Server is not running, cannot stop it."
+		exit 1	
 	else
-	  echo "Pandora FMS Recon Server is not running, cannot stop it."
+	   	echo "Stopping Pandora FMS Recon Server"
+           	kill $PANDORA_PID > /dev/null 2>&1
+           	rm -f $PANDORA_PID
 	fi
         ;;
   force-reload|restart)

@@ -130,6 +130,34 @@ do
                 PANDORA_NICE=`echo $a | awk '{ print $2 }' `
                 echo "$TIMESTAMP - [SETUP] - PandoraFMS Nice is $PANDORA_NICE" >> $PANDORA_LOGFILE
 	fi
+	# Tentacle options
+	if [ ! -z "`echo $a | grep -e '^server_pwd'`" ]
+	then
+		SERVER_PWD=`echo $a | awk '{ print $2 }' `
+		if [ ! -z "$SERVER_PWD" ]
+		then
+			TENTACLE_OPTS="-x $SERVER_PWD $TENTACLE_OPTS"
+			echo "$TIMESTAMP - [SETUP] - Tentacle server password set" >> $PANDORA_LOGFILE
+		fi
+	fi
+	if [ ! -z "`echo $a | grep -e '^server_ssl'`" ]
+	then
+		SERVER_SSL=`echo $a | awk '{ print $2 }' `
+		if [ "$SERVER_SSL" == "yes" ]
+		then
+			TENTACLE_OPTS="-c $TENTACLE_OPTS"
+			echo "$TIMESTAMP - [SETUP] - OpenSSL enabled for Tentacle" >> $PANDORA_LOGFILE
+		fi
+	fi
+	if [ ! -z "`echo $a | grep -e '^server_opts'`" ]
+	then
+		SERVER_OPTS=`echo $a | awk -F'"' '{ print $2 }' `
+		if [ ! -z "$SERVER_OPTS" ]
+		then
+			TENTACLE_OPTS="$SERVER_OPTS $TENTACLE_OPTS"
+			echo "$TIMESTAMP - [SETUP] - Extra options for the Tentacle client $SERVER_OPTS" >> $PANDORA_LOGFILE
+		fi
+	fi
 done
 
 
@@ -350,6 +378,11 @@ do
 	fi
 	
 	# Send packets to server and delete it
+	if [ "$TRANSFER_MODE" == "tentacle" ]
+	then
+ 		eval tentacle_client -v -a $SERVER_IP -p $SERVER_PORT $TENTACLE_OPTS $PANDORA_FILES > /dev/null 2>  $PANDORA_LOGFILE.err
+	fi
+
 	if [ "$TRANSFER_MODE" == "ssh" ]
 	then
  		scp -P $SERVER_PORT $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH > /dev/null 2>  $PANDORA_LOGFILE.err

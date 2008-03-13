@@ -62,12 +62,19 @@ pandora_loadconfig (\%pa_config,1);
 # Audit server starting
 pandora_audit (\%pa_config, "Pandora FMS Network Daemon starting", "SYSTEM", "System");
 
-print " [*] Starting up network threads\n";
-
-if ( $pa_config{"daemon"} eq "1" ) {
-	print " [*] Backgrounding Pandora FMS Network Server process.\n\n";
-	&daemonize;
+# Thread startup
+if ($pa_config{"quiet"} == 0){
+    print " [*] Starting up network threads\n";
 }
+
+# Daemonize and put in background
+if ( $pa_config{"daemon"} eq "1" ){
+    if ($pa_config{"quiet"} eq "0"){
+        print " [*] Backgrounding Pandora FMS Network Server process.\n\n";
+    }
+    &pandora_daemonize ( \%pa_config);
+}
+
 
 # Launch now all network threads
 # $ax is local thread id for this server
@@ -78,9 +85,15 @@ for (my $ax=0; $ax < $pa_config{'network_threads'}; $ax++){
 # Launch now the network producer thread
 threads->new( \&pandora_network_producer, \%pa_config);
 
-print " [*] All threads loaded and running \n\n";
-# Last thread is the main process (this process)
 
+if ($pa_config{"quiet"} == 0){
+    print " [*] All threads loaded and running \n\n";
+}
+
+# Start Pandora FMS loggin 
+pandora_startlog (\%pa_config);
+
+# Last thread is the main process (this process)
 my $dbhost = $pa_config{'dbhost'};
 my $dbname = $pa_config{'dbname'};
 my $dbh = DBI->connect("DBI:mysql:$dbname:$dbhost:3306",
@@ -122,7 +135,9 @@ sub pandora_network_consumer ($$) {
 	my $pa_config = $_[0];
 	my $thread_id = $_[1];
 
-	print " [*] Starting up Network Consumer Thread # $thread_id \n";
+    if ($pa_config->{"quiet"} == 0){
+	    print " [*] Starting up Network Consumer Thread # $thread_id \n";
+    }
 	
 	my $data_id_agent_module;
 	# Create Database handler
@@ -170,7 +185,10 @@ sub pandora_network_consumer ($$) {
 
 sub pandora_network_producer ($) {
 	my $pa_config = $_[0];
-	print " [*] Starting up Network Producer Thread ...\n";
+
+    if ($pa_config->{"quiet"} == 0){
+	    print " [*] Starting up Network Producer Thread ...\n";
+    }
 
 	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
 	
@@ -192,13 +210,17 @@ sub pandora_network_producer ($) {
 			FROM
 				tagente, tagente_modulo, tagente_estado
 			WHERE
-				id_server = $server_id
+				id_network_server = $server_id
 			AND 
 				tagente_modulo.id_agente = tagente.id_agente
 			AND
 				tagente.disabled = 0
 			AND
-				tagente_modulo.id_tipo_modulo > 4
+				tagente_modulo.id_tipo_modulo > 4 
+            AND
+                tagente_modulo.id_tipo_modulo < 19 
+            AND
+                tagente_modulo.disabled = 0
 			AND
 				tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 			AND (
@@ -215,12 +237,16 @@ sub pandora_network_producer ($) {
 				FROM
 					tagente, tagente_modulo, tagente_estado, tserver
 				WHERE
-				( 	(tagente.id_server = $server_id AND tagente_modulo.id_agente = tagente.id_agente) OR
-					(tagente.id_server != $server_id AND tagente_modulo.id_agente = tagente.id_agente AND tagente.id_server = tserver.id_server AND tserver.status = 0)
+				( 	(tagente.id_network_server = $server_id AND tagente_modulo.id_agente = tagente.id_agente) OR
+					(tagente.id_network_server != $server_id AND tagente_modulo.id_agente = tagente.id_agente AND tagente.id_network_server = tserver.id_server AND tserver.status = 0)
 				) AND
 					tagente.disabled = 0
+                AND
+                    tagente_modulo.disabled = 0
 				AND
 					tagente_modulo.id_tipo_modulo > 4
+                AND
+                    tagente_modulo.id_tipo_modulo < 19 
 				AND
 					tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 				AND
@@ -600,10 +626,12 @@ sub exec_network_module {
         }
     }
 
-	# --------------------------------------------------------
+
 	# Write data section
 	my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
 	my $utimestamp = &UnixDate("today","%s");
+
+    # Is everything goes ok
 	if ($module_result == 0) {
 		my %part;
 		$part{'name'}[0]=$nombre;
@@ -626,17 +654,19 @@ sub exec_network_module {
 		}
 		else {
 			logger ($pa_config, "Problem with unknown module type '$tipo_modulo'", 0);
-			goto skipdb_execmod;
+			$module_result = 1;
 		}
 		# Update agent last contact
 		# Insert Pandora version as agent version
 		pandora_lastagentcontact ($pa_config, $timestamp, $agent_name,  $pa_config->{'servername'}.$pa_config->{"servermode"}, $pa_config->{'version'}, -1, $dbh);
-	} else { 
-		# $module_result != 0)
-		
+	}
+    
+    if ($module_result != 0) { 
+
 		if ($module_interval == 0){
-                	$module_interval = dame_intervalo ($pa_config, $id_agente, $dbh);
-        	}
+            $module_interval = dame_intervalo ($pa_config, $id_agente, $dbh);
+        }
+
 		# Modules who cannot connect or something go bad, update last_execution_try field
 		logger ($pa_config, "Cannot obtain exec Network Module $nombre from agent $agent_name", 4);
 		my $query_act = "UPDATE tagente_estado SET current_interval = $module_interval,  last_execution_try = $utimestamp WHERE id_agente_modulo = $id_agente_modulo ";
@@ -644,7 +674,4 @@ sub exec_network_module {
 		$a_idages->execute;
 		$a_idages->finish();
 	}
-	
-skipdb_execmod:
-	#$dbh->disconnect();
 }

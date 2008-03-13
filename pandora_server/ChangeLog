@@ -1,3 +1,25 @@
+2008-03-13  Sancho Lerena <slerena@gmail.com>
+
+    * lib/PandoraFMS/Config.pm: New pandora_startlog function. Added support to manage PID
+    in daemon mode. Added support for quiet mode. Added prediction_threads option. 
+
+    * lib/PandoraFMS/Tools.pm: daemonize function now manages PID and store in a file when
+    it forks. 
+
+    * lib/PandoraFMS/DB.pm: Removed some gotos.  Modified generic-access DB functions and 
+    added one to manage entire row in a hash: get_db_free_row ().
+
+    * bin/pandora_plugin: A lot of fixes. This code actually works fine :-)
+
+    * bin/pandora_prediction: First version of usable code. Works but not seriously tested.
+
+    * bin/pandora_network: Adjusted to work with new features (quiet mode) and new db 
+    schema. Some code cleanup.
+
+    * util/pandora_dbstress.pl: Updated default values.
+
+    * util/pandora_dbstress.README: Improved README documentation for dbstress tool.
+
 2008-03-11 Manuel Arostegui <marostegui@artica.es>
 
         * pandora_server, pandora_network, pandora_recon:

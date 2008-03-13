@@ -1,0 +1,413 @@
+#!/usr/bin/perl
+##########################################################################
+# Pandora FMS Prediction Server
+##########################################################################
+# Copyright (c) 2008 Sancho Lerena, slerena@gmail.com
+#           (c) 2008 Artica Soluciones Tecnologicas S.L
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; version 2.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+##########################################################################
+
+# Includes list
+use strict;
+use warnings;
+
+use Date::Manip;        # Needed to manipulate DateTime formats of input, output and compare
+use Time::Local;        # DateTime basic manipulation
+use threads;
+use threads::shared;
+
+# Pandora Modules
+use PandoraFMS::Config;
+use PandoraFMS::Tools;
+use PandoraFMS::DB;
+
+# Queue management
+my @pending_task : shared;
+my %pending_task_hash : shared;
+my %current_task_hash : shared;
+my $queue_lock : shared;
+
+
+# FLUSH in each IO (only for debug, very slooow)
+# ENABLED in DEBUGMODE
+# DISABLE FOR PRODUCTION
+$| = 0;
+
+my %pa_config;
+
+$SIG{'TERM'} = 'pandora_shutdown';
+$SIG{'INT'} = 'pandora_shutdown';
+
+# Inicio del bucle principal de programa
+pandora_init(\%pa_config, "Pandora FMS Prediction Server");
+
+# Read config file for Global variables
+pandora_loadconfig (\%pa_config, 5);
+
+# Audit server starting
+pandora_audit (\%pa_config, "Pandora FMS Prediction server starting", "SYSTEM", "System");
+
+# Daemonize and put in background
+if ( $pa_config{"daemon"} eq "1" ){
+    if ($pa_config{"quiet"} eq "0"){
+        print " [*] Backgrounding Pandora FMS Prediction Server process.\n\n";
+    }
+    &pandora_daemonize ( \%pa_config);
+}
+
+# Launch now all prediction threads
+# $ax is local thread id for this server
+for (my $ax=0; $ax < $pa_config{'prediction_threads'}; $ax++){
+    threads->new( \&pandora_prediction_consumer, \%pa_config, $ax);
+}
+
+# Launch now the producer thread
+threads->new( \&pandora_prediction_producer, \%pa_config);
+
+# Last thread is the main process (this process)
+if ($pa_config{"quiet"} == 0){
+    print " [*] All threads loaded and running \n";
+}
+
+# Start Pandora FMS loggin 
+pandora_startlog (\%pa_config);
+
+my $dbhost = $pa_config{'dbhost'};
+my $dbname = $pa_config{'dbname'};
+my $dbh = DBI->connect("DBI:mysql:$dbname:$dbhost:3306",
+                        $pa_config{'dbuser'},
+                        $pa_config{'dbpass'},
+                        { RaiseError => 1, AutoCommit => 1 });
+
+# Server keepalive thread running in main thread on a infinite loop
+while (1) {
+    pandora_serverkeepaliver (\%pa_config, 5, $dbh);
+    threads->yield;
+    sleep ($pa_config{"server_threshold"});
+}
+
+#------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------
+#---------------------  Main Perl Code below this line-----------------------
+#------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------
+
+########################################################################################
+# pandora_shutdown ()
+# Close system on a received signal
+########################################################################################
+sub pandora_shutdown {
+	logger (\%pa_config,"Pandora FMS Prediction Server Shutdown by signal ",0);
+	print " [*] Shutting down Pandora FMS Prediction Server (received signal)...\n";
+	exit;
+}
+
+
+sub pandora_prediction_consumer ($$) {
+	my $pa_config = $_[0];
+	my $thread_id = $_[1];
+
+    if ($pa_config->{"quiet"} == 0){
+	    print " [*] Starting up Prediction Consumer Thread # $thread_id \n";
+	}
+
+	my $data_id_agent_module;
+	# Create Database handler
+	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
+	my $counter =0;
+	
+	while (1) {
+		if ($counter > 10) {
+			sleep (1);
+			$counter = 0;
+		}
+		
+		# Take the first element on the shared queue
+		# Insert this element on the current task hash
+		if (scalar(@pending_task) > 0){
+			{
+				lock $queue_lock;
+				$data_id_agent_module = shift(@pending_task);
+print "[CLIENT] Pop out of queue module (pending queue) $data_id_agent_module \n";
+				delete($pending_task_hash{$data_id_agent_module});
+				$current_task_hash{$data_id_agent_module}=1;
+			}
+			
+			# Executing network task with unmanaged error trapping
+			eval {
+				# Call network execution process
+				# exec_network_module ( $pa_config, $data_id_agent_module, $dbh);
+print "[PREDICT-CLIENT] Executing module # $data_id_agent_module \n";
+                exec_prediction_module ($pa_config, $data_id_agent_module, $dbh);
+			};
+			if ($@){
+				logger ($pa_config, "[ERROR] Prediction Task for module $data_id_agent_module causes a system exception", 0);
+				logger ($pa_config, "ERROR Code: $@", 1);
+			}
+
+			# Remove from queue. If catch an error, probably data is
+			# not been processed, but has been freed from task queue
+			{
+				lock $queue_lock;
+print "[CLIENT] Removing from queue (current task) module $data_id_agent_module \n";
+				delete($current_task_hash{$data_id_agent_module});
+			}
+			$counter = 0;
+		} else {
+			$counter ++;
+		}
+	}
+}
+
+sub pandora_prediction_producer ($) {
+	my $pa_config = $_[0];
+
+	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
+	
+	my $server_id = $pa_config->{'server_id'};
+
+	# Initialize variables for posterior usage
+	my $query1;
+	my @sql_data1;
+	my $data_id_agente_modulo;
+	my $data_flag;
+	my $exec_sql1;
+	
+	while (1) {
+		if ($pa_config->{"pandora_master"} != 1) {
+			# Query for normal server, not MASTER server
+			$query1 = "SELECT
+				tagente_modulo.id_agente_modulo,
+				tagente_modulo.flag
+			FROM
+				tagente, tagente_modulo, tagente_estado
+			WHERE
+				id_prediction_server = $server_id
+			AND 
+				tagente_modulo.id_agente = tagente.id_agente
+			AND
+				tagente.disabled = 0
+            AND
+                tagente_modulo.prediction_module != 0
+			AND
+				tagente_modulo.disabled = 0
+			AND
+				tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+			AND (
+					(tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP() 
+				OR 
+					tagente_modulo.flag = 1
+			)				
+			ORDER BY
+					last_execution_try ASC  ";
+		} else {
+			# Query for MASTER SERVER !
+			$query1 = "SELECT
+					DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.flag
+				FROM
+					tagente, tagente_modulo, tagente_estado, tserver
+				WHERE
+				( 	(tagente.id_prediction_server = $server_id AND tagente_modulo.id_agente = tagente.id_agente) OR
+					(tagente.id_prediction_server != $server_id AND tagente_modulo.id_agente = tagente.id_agente AND tagente.id_prediction_server = tserver.id_server AND tserver.status = 0)
+				) AND
+					tagente.disabled = 0
+                AND 
+                    tagente_modulo.disabled = 0
+				AND
+					tagente_modulo.prediction_module != 0
+				AND
+					tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+				AND
+					((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP() OR tagente_modulo.flag = 1 )
+				ORDER BY last_execution_try ASC";
+		}
+# print "[DEBUG] SQL is $query1 \n";
+		$exec_sql1 = $dbh->prepare($query1);
+		$exec_sql1 ->execute;
+		while (@sql_data1 = $exec_sql1->fetchrow_array()) {	
+			$data_id_agente_modulo = $sql_data1[0];
+
+			$data_flag = $sql_data1[1];
+print "[DEBUG] Procesando candidato $data_id_agente_modulo\n";
+
+			# Skip modules already queued
+			if ((!defined($pending_task_hash{$data_id_agente_modulo})) &&
+				(!defined($current_task_hash{$data_id_agente_modulo}))) {
+				if ($data_flag == 1){
+					$dbh->do("UPDATE tagente_modulo SET flag = 0 WHERE id_agente_modulo = $data_id_agente_modulo")
+				}
+				# Locking scope, do not remove redundant { }
+				{
+print "[DEBUG] Metiendo $data_id_agente_modulo en cola \n";
+					lock $queue_lock;
+					push (@pending_task, $data_id_agente_modulo);
+					$pending_task_hash {$data_id_agente_modulo}=1;
+				}
+			}
+		}
+		#logger ($pa_config, "Items in Network Pending Queue: ".scalar(@pending_task),  5);
+print "[DEBUG] Items in Network Pending Queue: ".scalar(@pending_task);
+		$exec_sql1->finish();
+		sleep($pa_config->{"server_threshold"});
+	} # Main loop
+}
+
+
+##########################################################################
+# SUB exec_prediction_module (paconfig, id_agente_modulo, dbh )
+# Execute prediction module task 
+##########################################################################
+sub exec_prediction_module {
+    my $pa_config       = $_[0];
+    my $id_am           = $_[1];
+    my $dbh             = $_[2];
+
+    # This function internal variables
+    my $i; # Internal counter for loops
+    my $n = 0; # total of real data values
+
+    # Set global variables for this sub
+	my $agent_module; # hash reference for tagente_modulo record
+    my $target_module; # hash reference for targetted tagente_modulo
+
+    # Get a full hash for agent_module record reference ($agent_module)
+	my $query_sql = "SELECT * FROM tagente_modulo WHERE id_agente_modulo = $id_am";
+	my $exec_sql = $dbh->prepare($query_sql);
+	$exec_sql ->execute;
+	$agent_module = $exec_sql->fetchrow_hashref;
+
+    # Get a full hash for target agent_module record reference ($target_module)
+    $query_sql = "SELECT * FROM tagente_modulo WHERE id_agente_modulo = " . $agent_module->{'prediction_module'};
+    $exec_sql = $dbh->prepare($query_sql);
+    $exec_sql ->execute;
+    $target_module = $exec_sql->fetchrow_hashref;
+
+    # Prediction mode explanation
+    #
+    # 0 is for target type of generic_proc. It compares latest data with current data. Needs to get
+    # data on a "middle" interval, so if interval is 300, get data to compare with 150  before 
+    # and 150 in the future. If current data is ABOVE or BELOW average +- typical_deviation 
+    # this is a BAD value (0), if not is ok (1) and written in target module as is.
+    # more interval configured for this module, more "margin" has to compare data.
+    #
+    # 1 is for target type of generic_data. It get's data in the future, using the interval given in
+    # module. It gets average from current timestamp to INTERVAL in the future and gets average
+    # value. Typical deviation is not used here. 
+
+    my $prediction_mode;
+    if ($agent_module->{'id_tipo_modulo'} == 2){
+        $prediction_mode = 0; # proc 
+    } else {
+        $prediction_mode = 1; # data
+    }
+    
+    # Initialize another global sub variables.
+	my $agent_name = dame_agente_nombre ($pa_config, $agent_module->{'id_agente'}, $dbh);
+	my $module_data = 0;    # 0 data for default
+
+	# Get current timestamp
+	my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
+	my $utimestamp = &UnixDate("today","%s");
+
+    # Get different data from each week one month ago (4 values)
+    # $agent_module->{'module_interval'} uses a margin of interval to get average data from the past
+    my @week_data;
+    my @week_utimestamp;
+
+    for ($i=0; $i<4; $i++){
+        $week_utimestamp[$i] = $utimestamp - (84600*7*($i+1));
+        # Adjust for proc prediction
+        if ($prediction_mode == 0) {
+            $week_utimestamp[$i] = $week_utimestamp[$i] - ($agent_module->{'module_interval'} / 2);
+        }
+    }
+
+    # Let's calculate statistical average using past data
+    my $average = 0;
+    my $temp1 = 0;
+    for ($i=0; $i < 4; $i++){
+print "DEBUG HASH REF ".$target_module->{'id_agente_modulo'};
+print "\n";
+        $temp1 = $week_utimestamp[$i] + $agent_module->{'module_interval'};
+        # Get data for week $i in the past
+        $query_sql = 'SELECT AVG(datos) FROM tagente_datos WHERE id_agente_modulo = '. $target_module->{'id_agente_modulo'}. ' AND utimestamp > '.$week_utimestamp[$i].' AND utimestamp < '.$temp1;
+print "DEBUG SQL - $query_sql \n";
+        $week_data[$i] = get_db_free_field ($query_sql, $dbh);
+
+        # It's possible that one of the week_data[i] values was not valid (NULL)
+        # so recheck it and relay on n=0 for "no data" values set to 0 in result
+        # Calculate total ammount of valida data for each data sample
+        if ( (is_numeric($week_data[$i])) && ($week_data[$i] > 0) ){
+            $n++;
+            # Average SUM
+            $average = $average + $week_data[$i];
+        }
+    }
+
+    # Real average value
+print "Value of n is $n \n";
+    if ($n > 0){
+        $average = $average / $n;
+    } else {
+        $average = 0;
+    }
+
+    # Calculate typical deviation
+    my $typical_deviation = 0;
+    for ($i=0; $i< $n; $i++){
+        if ( (is_numeric($week_data[$i])) && ($week_data[$i] > 0) ) {
+            $typical_deviation = $typical_deviation + (($week_data[$i] - $average)**2);
+        }
+    }
+    $typical_deviation = sqrt ($typical_deviation / ($n-1));
+
+    # (PROC) Compare with current data
+    if ($prediction_mode == 0){
+        $query_sql = 'SELECT data FROM tagente_estado WHERE id_agente_modulo = '.$target_module->{'id_agente_modulo'};
+        my $current_value = get_db_free_field ($query_sql, $dbh);
+        if ( ($current_value >= ($average - $typical_deviation)) || ($current_value <= ($average + $typical_deviation)) ){
+            $module_data = 1; # OK !!
+        } else {
+            $module_data = 0; # Out of predictions
+        }
+    } else {
+        # Prediction based on data
+        $module_data = $average;
+    }
+
+    # Build data for insertion
+	my %part;
+	$part{'name'}[0] = $agent_module->{'nombre'};
+	$part{'description'}[0] = "";
+	$part{'data'}[0] = $module_data;
+    my $tipo_modulo = dame_nombretipomodulo_idagentemodulo ($pa_config, $agent_module->{'id_tipo_modulo'}, $dbh);
+
+    # 1 - generic_data
+    # 2 - generic_proc
+	if (1 == $agent_module->{'id_tipo_modulo'}) {
+		module_generic_data ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
+	}
+	elsif (2 == $agent_module->{'id_tipo_modulo'}) {
+		module_generic_data_inc ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
+	}
+	else { # Unknown module!, this IS a problem
+	    logger ($pa_config, "[FATAL] Prediction Server Problem with unknown module type '$tipo_modulo'", 0);
+        print "[DEBUG] Executing Prediction UNKONWN MODULE TYPE$@\n";
+        exit;
+	}
+	# Update agent last contact
+	# Insert Pandora version as agent version
+	pandora_lastagentcontact ($pa_config, $timestamp, $agent_name,  $pa_config->{'servername'}.$pa_config->{"servermode"}, $pa_config->{'version'}, -1, $dbh);
+}

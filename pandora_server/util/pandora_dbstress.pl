@@ -21,8 +21,8 @@
 
 my $target_module = -1; # -1 for all modules of that agent
 my $target_agent = -1;
-my $target_interval = 1200;
-my $target_days = 12;
+my $target_interval = 300;
+my $target_days = 30;
 
 ################################################################################
 ################################################################################

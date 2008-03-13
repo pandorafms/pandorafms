@@ -27,15 +27,16 @@ require Exporter;
 our @ISA = ("Exporter");
 our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
-our @EXPORT = qw( 	daemonize
-			logger
-			limpia_cadena
-			md5check
-			float_equal
-			sqlWrap
-			is_numeric
-            clean_blank
-		);
+our @EXPORT = qw( 	
+        pandora_daemonize
+        logger
+        limpia_cadena
+        md5check
+        float_equal
+        sqlWrap
+        is_numeric
+        clean_blank
+    );
 
 
 ##########################################################################
@@ -43,15 +44,23 @@ our @EXPORT = qw( 	daemonize
 # Put program in background (for daemon mode)
 ##########################################################################
 
-sub daemonize {
-    chdir '/tmp'                 or die "Can't chdir to /tmp: $!";
-    open STDIN, '/dev/null'   or die "Can't read /dev/null: $!";
-    open STDOUT, '>>/dev/null' or die "Can't write to /dev/null: $!";
-    open STDERR, '>>/dev/null' or die "Can't write to /dev/null: $!";
-    defined(my $pid = fork)   or die "Can't fork: $!";
+sub pandora_daemonize {
+    my $pa_config = $_[0];
+    open STDIN, '/dev/null'     or die "Can't read /dev/null: $!";
+    open STDOUT, '>>/dev/null'  or die "Can't write to /dev/null: $!";
+    open STDERR, '>>/dev/null'  or die "Can't write to /dev/null: $!";
+    chdir '/tmp'                or die "Can't chdir to /tmp: $!";
+    defined(my $pid = fork)     or die "Can't fork: $!";
     exit if $pid;
-    setsid                    or die "Can't start a new session: $!";
+    setsid                      or die "Can't start a new session: $!";
     umask 0;
+
+    # Store PID of this process in file presented by config token
+    if ($pa_config->{'PID'} ne ""){
+        open (FILE, "> ".$pa_config->{'PID'}) or die "[FATAL] Cannot open PIDfile at ".$pa_config->{'PID'};
+        print FILE "$$";
+        close (FILE);
+    }
 }
 
 

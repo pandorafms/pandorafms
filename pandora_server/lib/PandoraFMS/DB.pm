@@ -33,39 +33,42 @@ require Exporter;
 our @ISA = ("Exporter");
 our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
-our @EXPORT = qw( 	crea_agente_modulo			
-			dame_server_id				
-			dame_agente_id
-			dame_agente_modulo_id
-			dame_agente_nombre
-			dame_comando_alerta
-			dame_desactivado
-			dame_grupo_agente
-			dame_id_tipo_modulo
-			dame_intervalo
-			dame_learnagente
-			dame_modulo_id
-			dame_nombreagente_agentemodulo
-			dame_nombretipomodulo_idagentemodulo
-			dame_ultimo_contacto
-			give_networkserver_status
-			pandora_updateserver
-			pandora_serverkeepaliver
-			pandora_audit
-			pandora_event
-			pandora_lastagentcontact
-			pandora_writedata
-			pandora_writestate
-			pandora_calcula_alerta
-			module_generic_proc
-			module_generic_data
-			module_generic_data_inc
-			module_generic_data_string
-			execute_alert
-			give_network_component_profile_name
-			pandora_create_incident 
-			give_db_value
-		);
+our @EXPORT = qw( 	
+        crea_agente_modulo			
+		dame_server_id				
+		dame_agente_id
+		dame_agente_modulo_id
+		dame_agente_nombre
+		dame_comando_alerta
+		dame_desactivado
+		dame_grupo_agente
+		dame_id_tipo_modulo
+		dame_intervalo
+		dame_learnagente
+		dame_modulo_id
+		dame_nombreagente_agentemodulo
+		dame_nombretipomodulo_idagentemodulo
+		dame_ultimo_contacto
+		give_networkserver_status
+		pandora_updateserver
+		pandora_serverkeepaliver
+		pandora_audit
+		pandora_event
+		pandora_lastagentcontact
+		pandora_writedata
+		pandora_writestate
+		pandora_calcula_alerta
+		module_generic_proc
+		module_generic_data
+		module_generic_data_inc
+		module_generic_data_string
+		execute_alert
+		give_network_component_profile_name
+		pandora_create_incident 
+		get_db_value
+        get_db_free_row
+        get_db_free_field
+	);
 
 # Spanish translation note:
 # 'Crea' in spanish means 'create'
@@ -374,18 +377,22 @@ sub pandora_writestate (%$$$$$$$) {
 	# now we use only local timestamp to stamp state of modules
 	my $pa_config = $_[0];
 	my $nombre_agente = $_[1];
-	my $tipo_modulo = $_[2];
+	my $tipo_modulo = $_[2]; # passed as string
 	my $nombre_modulo = $_[3];
 	my $datos = $_[4]; # Careful: Dont pass a hash, only a single value
 	my $estado = $_[5];
 	my $dbh = $_[6];
 	my $needs_update = $_[7];
-	my $timestamp = &UnixDate ("today", "%Y-%m-%d %H:%M:%S");
-	my $utimestamp; # integer version of timestamp	
-	$utimestamp = &UnixDate($timestamp,"%s"); # convert from human to integer
+	
 	my @data;
 	my $cambio = 0; 
 	my $id_grupo;
+
+    # Get current timestamp / unix numeric time
+    my $timestamp = &UnixDate ("today", "%Y-%m-%d %H:%M:%S"); # string timestamp
+    my $utimestamp = &UnixDate($timestamp,"%s"); # convert from human to integer
+
+    # Get server id
 	my $server_name = $pa_config->{'servername'}.$pa_config->{"servermode"};
 	my $id_server = dame_server_id($pa_config, $server_name, $dbh);
 
@@ -395,8 +402,9 @@ sub pandora_writestate (%$$$$$$$) {
 	my $id_agente = dame_agente_id ($pa_config, $nombre_agente, $dbh);
 	my $id_modulo = dame_modulo_id ($pa_config, $tipo_modulo, $dbh);
 	my $id_agente_modulo = dame_agente_modulo_id($pa_config, $id_agente, $id_modulo, $nombre_modulo, $dbh);
+
 	if (($id_agente ==  -1) || ($id_agente_modulo == -1)) {
-		goto fin_pandora_writestate;
+		return 0;
 	}
 
 	# Seek for agent_interval or module_interval
@@ -432,38 +440,37 @@ sub pandora_writestate (%$$$$$$$) {
 	my $query_act; # OJO que dentro de una llave solo tiene existencia en esa llave !!
 	if ($s_idages->rows == 0) { # Doesnt exist entry in table, lets make the first entry
 		logger($pa_config, "Create entry in tagente_estado for module $nombre_modulo",4);
-    		$query_act = "INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, cambio, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try) VALUES ($id_agente_modulo,$datos,'$timestamp','$estado','1',$id_agente,'$timestamp',$utimestamp, $module_interval, $id_server, $utimestamp)"; # Cuando se hace un insert, siempre hay un cambio de estado
+        $query_act = "INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, cambio, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try) VALUES ($id_agente_modulo,$datos,'$timestamp','$estado','1',$id_agente,'$timestamp',$utimestamp, $module_interval, $id_server, $utimestamp)"; # Cuando se hace un insert, siempre hay un cambio de estado
 	} else { # There are an entry in table already
-	        @data = $s_idages->fetchrow_array();
-	        # Se supone que $data[5](estado) ( nos daria el estado ANTERIOR
-		# For xxxx_PROC type (boolean / monitor), create an event if state has changed
-	        if (( $data[5] != $estado) && ( ($tipo_modulo =~/keep_alive/) || ($tipo_modulo =~ /proc/)) ) {
-	                # Cambio de estado detectado !
-	                $cambio = 1;
-	                # Este seria el momento oportuno de probar a saltar la alerta si estuviera definida
-			# Makes an event entry, only if previous state changes, if new state, doesnt give any alert
-			$id_grupo = dame_grupo_agente($pa_config, $id_agente,$dbh);
-			my $descripcion;
- 			if ( $estado == 0) {
- 				$descripcion = "Monitor ($nombre_modulo) goes up ";
- 			}
-			if ( $estado == 1) {
-				$descripcion = "Monitor ($nombre_modulo) goes down";
-			}
-			pandora_event ($pa_config, $descripcion, $id_grupo, $id_agente, $dbh);
-	        }
-	        if ($needs_update == 1) {
-    			$query_act = "UPDATE tagente_estado SET utimestamp = $utimestamp, datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, last_try = '$timestamp', current_interval = '$module_interval', running_by = $id_server, last_execution_try = $utimestamp WHERE id_agente_modulo = '$id_agente_modulo'";
-    		} else { # dont update last_try field, that it's the field
-    			 # we use to check last update time in database
-    			$query_act = "UPDATE tagente_estado SET utimestamp = $utimestamp, datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, current_interval = '$module_interval', running_by = $id_server, last_execution_try = $utimestamp WHERE id_agente_modulo = '$id_agente_modulo'";
-    		}
-    	}
+	    @data = $s_idages->fetchrow_array();
+	    # Se supone que $data[5](estado) ( nos daria el estado ANTERIOR
+	# For xxxx_PROC type (boolean / monitor), create an event if state has changed
+	    if (( $data[5] != $estado) && ( ($tipo_modulo =~/keep_alive/) || ($tipo_modulo =~ /proc/)) ) {
+	        # Cambio de estado detectado !
+	        $cambio = 1;
+	        # Este seria el momento oportuno de probar a saltar la alerta si estuviera definida
+		# Makes an event entry, only if previous state changes, if new state, doesnt give any alert
+		$id_grupo = dame_grupo_agente($pa_config, $id_agente,$dbh);
+		my $descripcion;
+        if ( $estado == 0) {
+            $descripcion = "Monitor ($nombre_modulo) goes up ";
+        }
+		if ( $estado == 1) {
+			$descripcion = "Monitor ($nombre_modulo) goes down";
+		}
+		pandora_event ($pa_config, $descripcion, $id_grupo, $id_agente, $dbh);
+	    }
+	    if ($needs_update == 1) {
+            $query_act = "UPDATE tagente_estado SET utimestamp = $utimestamp, datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, last_try = '$timestamp', current_interval = '$module_interval', running_by = $id_server, last_execution_try = $utimestamp WHERE id_agente_modulo = $id_agente_modulo";
+        } else { # dont update last_try field, that it's the field
+                # we use to check last update time in database
+            $query_act = "UPDATE tagente_estado SET utimestamp = $utimestamp, datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, current_interval = '$module_interval', running_by = $id_server, last_execution_try = $utimestamp WHERE id_agente_modulo = $id_agente_modulo";
+        }
+    }
 	my $a_idages = $dbh->prepare($query_act);
 	$a_idages->execute;
 	$a_idages->finish();
-    	$s_idages->finish();
-fin_pandora_writestate:
+   	$s_idages->finish();
 }
 
 ##########################################################################
@@ -528,14 +535,14 @@ sub pandora_accessupdate (%$$) {
 		        logger($pa_config,"Updating tagent_access for agent id $id_agent",9);
 	        }
 
-                # Update keepalive module (if present, if there is more than one, only updates first one!).
-                my $id_agent_module = give_db_free ("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = $id_agent AND id_tipo_modulo = 100", $dbh);
-                if ($id_agent_module ne -1){
-                        my $agent_name = give_db_free ("SELECT nombre FROM tagente WHERE id_agente = $id_agent", $dbh);
-                        my $module_typename = "keep_alive";
-                        my $module_name = give_db_free ("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = $id_agent_module", $dbh);
-                        pandora_writestate ($pa_config, $agent_name, $module_typename, $module_name, 1, 0, $dbh, 1);
-                }
+            # Update keepalive module (if present, if there is more than one, only updates first one!).
+            my $id_agent_module = get_db_free_field ("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = $id_agent AND id_tipo_modulo = 100", $dbh);
+            if ($id_agent_module ne -1){
+                    my $agent_name = get_db_free_field ("SELECT nombre FROM tagente WHERE id_agente = $id_agent", $dbh);
+                    my $module_typename = "keep_alive";
+                    my $module_name = get_db_free_field ("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = $id_agent_module", $dbh);
+                    pandora_writestate ($pa_config, $agent_name, $module_typename, $module_name, 1, 0, $dbh, 1);
+            }
         }
 }
 
@@ -960,8 +967,10 @@ fin_DB_insert_datos:
 ## Update server status
 ##########################################################################
 sub pandora_serverkeepaliver (%$$) {
-        my $pa_config= $_[0];
-	my $opmode = $_[1]; # 0 dataserver, 1 network server, 2 snmp console, 3 recon server
+    my $pa_config= $_[0];
+	my $opmode = $_[1]; # 0 dataserver, 1 network server, 2 snmp console
+                        # 3 recon srv, 4 plugin srv, 5 prediction srv
+                        # 6 WMI server
 	my $dbh = $_[2];
 	my $version_data;
 	my $pandorasuffix;
@@ -1024,7 +1033,7 @@ sub pandora_updateserver (%$$$) {
 	} elsif ($opmode == 4){
         $pandorasuffix = "_Plugin";
     } elsif ($opmode == 5){
-        $pandorasuffix = "_IA";
+        $pandorasuffix = "_Prediction";
     } elsif ($opmode == 6){
         $pandorasuffix = "_WMI";
     } else {
@@ -1091,7 +1100,7 @@ sub pandora_lastagentcontact (%$$$$$$) {
 	my $dbh = $_[6];
 
         my $id_agente = dame_agente_id($pa_config, $nombre_agente,$dbh);
-	pandora_accessupdate ($pa_config, $id_agente, $dbh);
+	    pandora_accessupdate ($pa_config, $id_agente, $dbh);
         my $query = ""; 
         if ($interval == -1){ # no update for interval field (some old agents doest support it) 
 		$query = "update tagente set agent_version = '$agent_version', ultimo_contacto_remoto = '$timestamp', ultimo_contacto = '$time_now', os_version = '$os_data' where id_agente = $id_agente";                	
@@ -1370,25 +1379,25 @@ sub give_group_disabled (%$$) {
 ## Return module ID, given "nombre_modulo" as module name
 ##########################################################################
 sub dame_modulo_id (%$$) {
-	my $pa_config = $_[0];
-        my $nombre_modulo = $_[1];
-	my $dbh = $_[2];
+    my $pa_config = $_[0];
+    my $nombre_modulo = $_[1];
+    my $dbh = $_[2];
 
-        my $id_modulo; my @data;
-        # Calculate agent ID using select by its name
-        my $query_idag = "select * from ttipo_modulo where nombre = '$nombre_modulo'";
-        my $s_idag = $dbh->prepare($query_idag);
-        $s_idag ->execute;
-    	if ($s_idag->rows == 0) {
-        	logger($pa_config, "ERROR dame_modulo_id(): Cannot find module called $nombre_modulo ",1);
-        	logger($pa_config, "ERROR: SQL Query is $query_idag ",2);
-        	$id_modulo = -1;
-    	} else  {    
-    		@data = $s_idag->fetchrow_array();
-    		$id_modulo = $data[0];
-    	}
-    	$s_idag->finish();
-    	return $id_modulo;
+    my $id_modulo; my @data;
+    # Calculate agent ID using select by its name
+    my $query_idag = "select * from ttipo_modulo where nombre = '$nombre_modulo'";
+    my $s_idag = $dbh->prepare($query_idag);
+    $s_idag ->execute;
+    if ($s_idag->rows == 0) {
+        logger($pa_config, "ERROR dame_modulo_id(): Cannot find module called $nombre_modulo ",1);
+        logger($pa_config, "ERROR: SQL Query is $query_idag ",2);
+        $id_modulo = 0;
+    } else  {    
+        @data = $s_idag->fetchrow_array();
+        $id_modulo = $data[0];
+    }
+    $s_idag->finish();
+    return $id_modulo;
 }
 
 ##########################################################################
@@ -1686,7 +1695,7 @@ sub crea_agente_modulo (%$$$$$$$) {
 # Generic access to a field ($field) given a table
 # give_db_value (field_name_to_be_returned, table, field_search, condition_value, dbh)
 # ---------------------------------------------------------------
-sub give_db_value ($$$$$) {
+sub get_db_value ($$$$$) {
 	my $field = $_[0];
 	my $table = $_[1];
 	my $field_search = $_[2];
@@ -1706,9 +1715,10 @@ sub give_db_value ($$$$$) {
 }
 
 # ---------------------------------------------------------------
-# Generic access to a field ($field) given a table
+# Free SQL sentence. Return first field on exit
 # ---------------------------------------------------------------
-sub give_db_free ($$) {
+
+sub get_db_free_field ($$) {
         my $condition = $_[0];
         my $dbh = $_[1];
         
@@ -1720,6 +1730,28 @@ sub give_db_free ($$) {
                 my $result = $data[0];
                 $s_idag->finish();
                 return $result;
+        }
+        return -1;
+}
+
+
+
+# ---------------------------------------------------------------
+# Free SQL sentence. Return entire hash in row
+# ---------------------------------------------------------------
+
+sub get_db_free_row ($$) {
+        my $condition = $_[0];
+        my $dbh = $_[1];
+        my $rowref;
+
+        my $query = $condition;
+        my $s_idag = $dbh->prepare($query);
+        $s_idag ->execute;
+        if ($s_idag->rows != 0) {
+                $rowref = $s_idag->fetchrow_hashref;
+                $s_idag->finish();
+                return $rowref;
         }
         return -1;
 }

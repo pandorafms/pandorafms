@@ -1,26 +1,14 @@
 <?php
 // Pandora FMS - the Free monitoring system
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
 // Main PHP/SQL code development and project architecture and management
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP additions
-// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
-// Javascript Active Console code.
-// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
-// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
 // Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 // Load global vars
 require("include/config.php");
 
@@ -43,8 +31,7 @@ if (comprueba_login() == 0) {
 			$os_version = $row["os_version"];
 			$agent_version = $row["agent_version"];
 			$disabled= $row["disabled"];
-			$agent_type= $row["agent_type"];
-			$server = $row["id_server"];
+			$network_server = $row["id_network_server"];
 		} else {
 			echo "<h3 class='error'>".$lang_label["agent_error"]."</h3>";
 			echo "</table>";
@@ -122,27 +109,23 @@ if (comprueba_login() == 0) {
 	<td class="datos2"><b>'.$lang_label["group"].'</b></td>
 	<td class="datos2" colspan="2">
 	<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.png" >&nbsp;&nbsp; '.dame_grupo($id_grupo).'</td></tr>';
-	if ($agent_type == 0) {	
-		echo '<tr><td class="datos"><b>'.$lang_label["agentversion"].'</b>
-		<td class="datos" colspan=2>'.salida_limpia($agent_version).'</td>';
-	} else {
-		echo '<tr><td class="datos"><b>'.$lang_label["agentversion"].'</b>
-		<td class="datos" colspan=2>N/A</td>';
-	}
-
+	
+    // Agent version
+	echo '<tr><td class="datos"><b>'.lang_string ("agentversion"). '</b>';
+    echo '<td class="datos" colspan=2>'.salida_limpia($agent_version). '</td>';
+	
 	// Total packets
 	echo '<tr>
-	<td class="datos2"><b>'.$lang_label["total_packets"].'</b></td>
-	<td class="datos2" colspan=2>';
+	<td class="datos2"><b>'. lang_string ("total_packets"). '</b></td>';
+	echo '<td class="datos2" colspan=2>';
 	$total_paketes= 0;
-
 	$sql_3='SELECT COUNT(*) FROM tagente_datos WHERE id_agente = '.$id_agente;
 	$result_3=mysql_query($sql_3);
 	$row3=mysql_fetch_array($result_3);
 	$total_paketes = $row3[0];
-
 	echo $total_paketes;
 	echo '</td></tr>';
+
 	// Last contact
 	echo '<tr>
 		<td class="datos">
@@ -161,6 +144,7 @@ if (comprueba_login() == 0) {
 		echo $ultima_act_remota;
 	}
 	
+/*
 	// Asigned/active server
 	echo '<tr><td class="datos2"><b>'.$lang_label["server_asigned"].'</b></td>
 	<td class="datos2" colspan=2">';
@@ -169,6 +153,7 @@ if (comprueba_login() == 0) {
 	} else {
 		echo give_server_name($server);
 	}
+*/
 
 	// Next contact
 

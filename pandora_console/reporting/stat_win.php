@@ -21,12 +21,12 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Global & session management
-include ("../include/config.php");
+include ('../include/config.php');
 session_start();
 
-include ("../include/functions.php");
-include("../include/functions_db.php");
-include("../include/languages/language_".$language_code.".php");
+include ('../include/functions.php');
+include ('../include/functions_db.php');
+include ('../include/languages/language_'.$config['language'].'.php');
 
 // Access control
 if (comprueba_login() != 0) {

@@ -237,7 +237,6 @@ CREATE TABLE `tnotification_component` (
         `id` int(11) unsigned NOT NULL auto_increment,
         `id_notification` int(11) NOT NULL default '0',
         `id_agente_modulo` int(11) NOT NULL default '0',
-        `data_source` tinyint(3) unsigned default '1',
         `dis_max` double(18,2) default NULL,
         `dis_min` double(18,2) default NULL,
         `alert_text` varchar(255) default '',

@@ -833,6 +833,30 @@ function show_icon_type($id_tipo){
 	return $pro;
 }
 
+/**
+ * Return a string containing image tag for a given target id (server)
+ *
+ * @param int Server type id
+ * @return string Fully formatted  IMG HTML tag with icon
+ */
+
+function show_server_type ($id){ 
+    global $config;
+    switch ($id) {
+        case 1: return '<img src="'.$config["homeurl"].'/images/data.png" title="Pandora FMS Data server">';
+                break;
+        case 2: return '<img src="'.$config["homeurl"].'/images/network.png" title="Pandora FMS Network server">';
+                break;
+        case 4: return '<img src="'.$config["homeurl"].'/images/plugin.png" title="Pandora FMS Plugin server">';
+                break;
+        case 5: return '<img src="'.$config["homeurl"].'/images/chart_bar.png" title="Pandora FMS Prediction server">';
+                break;
+        case 6: return '<img src="'.$config["homeurl"].'/images/wmi.png" title="Pandora FMS WMI server">';
+                break;
+        default: return "--";
+    }
+}
+
 // ---------------------------------------------------------------
 // Return all childs groups of a given id_group inside array $child
 // ---------------------------------------------------------------
@@ -1209,7 +1233,7 @@ function return_coordinate_y_layoutdata ($id_layoutdata){
 
 function return_moduledata_avg_value ($id_agent_module, $period){
 	$datelimit = time() - $period; // limit date
-	$id_agent = give_db_value ("id_agente", "tagente_modulo", "id_agente_modulo", $id_agent_module);
+	$id_agent = get_db_value ("id_agente", "tagente_modulo", "id_agente_modulo", $id_agent_module);
 	$query1="SELECT AVG(datos) FROM tagente_datos WHERE id_agente = $id_agent AND id_agente_modulo = $id_agent_module AND utimestamp > $datelimit";
 	$resq1=mysql_query($query1);
 	if ($resq1 != 0) {
@@ -1222,7 +1246,7 @@ function return_moduledata_avg_value ($id_agent_module, $period){
 
 function return_moduledata_max_value ($id_agent_module, $period){
 	$datelimit = time() - $period; // limit date
-	$id_agent = give_db_value ("id_agente", "tagente_modulo", "id_agente_modulo", $id_agent_module);
+	$id_agent = get_db_value ("id_agente", "tagente_modulo", "id_agente_modulo", $id_agent_module);
 	$query1="SELECT MAX(datos) FROM tagente_datos WHERE id_agente = $id_agent AND id_agente_modulo = $id_agent_module AND utimestamp > $datelimit";
 	$resq1=mysql_query($query1);
 	if ($resq1 != 0) {
@@ -1235,7 +1259,7 @@ function return_moduledata_max_value ($id_agent_module, $period){
 
 function return_moduledata_min_value ($id_agent_module, $period){
 	$datelimit = time() - $period; // limit date
-	$id_agent = give_db_value ("id_agente", "tagente_modulo", "id_agente_modulo", $id_agent_module);
+	$id_agent = get_db_value ("id_agente", "tagente_modulo", "id_agente_modulo", $id_agent_module);
 	$query1="SELECT MIN(datos) FROM tagente_datos WHERE id_agente = $id_agent AND id_agente_modulo = $id_agent_module AND utimestamp > $datelimit";
 	$resq1=mysql_query($query1);
 	if ($resq1 != 0) {

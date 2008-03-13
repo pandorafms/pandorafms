@@ -1,3 +1,19 @@
+2008-03-13  Sancho Lerena <slerena@gmail.com>
+
+        * include/functions_db.php: Added show_server_type (): Return a string 
+        containing image tag for a given target id. Updated some generic db
+        access calls to new function names.
+
+        * pandoradb.sql: Removed unused field.
+
+        * operation/agentes/estado_generalagente.php: Some fixes for new schema
+
+        * reporting/stat_win.php: Uses new $config hash.
+
+        * godmode/agentes/module_manager.php: Some fixes. Added visualization
+        for module type (by server type).
+
+
 2008-03-06  Sancho Lerena <slerena@gmail.com>
 
         Pandora FMS 2.0 development first commit. 1.4 version is now 2.0

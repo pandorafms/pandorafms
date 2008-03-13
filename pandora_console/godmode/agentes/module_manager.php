@@ -71,10 +71,10 @@ if ($row=mysql_num_rows($result)){
     echo '<table width="750" cellpadding="4" cellspacing="4" class="databox">';
     echo '<tr>';
     echo "<th>".$lang_label["module_name"]."</th>";
-    echo "<th>".$lang_label["type"]."</th>";
+    echo '<th>'.lang_string('S').'</th>';
+    echo '<th>'.lang_string('type').'</th>';
     echo "<th>".$lang_label["interval"]."</th>";
     echo "<th>".$lang_label["description"]."</th>";
-    echo "<th>".$lang_label["module_group"]."</th>";
     echo "<th>".$lang_label["max_min"]."</th>";
     echo "<th width=65>".$lang_label["action"]."</th>";
     $color=1;$last_modulegroup = "0";
@@ -87,6 +87,7 @@ if ($row=mysql_num_rows($result)){
             $color =1;
         }
         $id_tipo = $row["id_tipo_modulo"];
+        $id_module  = $row["id_modulo"];
         $nombre_modulo =$row["nombre"];
         $descripcion = $row["descripcion"];
         $module_max = $row["max"];
@@ -101,19 +102,30 @@ if ($row=mysql_num_rows($result)){
         }
 
         echo "<tr><td class='".$tdcolor."_id'>".$nombre_modulo."</td>";
+        
+        // Module type (by server type )
+        echo "<td class='".$tdcolor."f9'>";
+        if ($id_module > 0) {
+            echo show_server_type ($id_module);
+            echo '&nbsp;';
+        }
+
+        // Module type (by data type)
         echo "<td class='".$tdcolor."f9'>";
         if ($id_tipo > 0) {
             echo "<img src='images/".show_icon_type($id_tipo)."' border=0>";
         }
         echo "</td>";
+
+        // Module interval
         if ($module_interval2!=0){
             echo "<td class='$tdcolor'>".$module_interval2."</td>";
         } else {
             echo "<td class='$tdcolor'> N/A </td>";
         }
         echo "<td class='$tdcolor' title='$descripcion'>".substr($descripcion,0,30)."</td>";
-        echo "<td class='$tdcolor'>".
-        substr(dame_nombre_grupomodulo($module_group2),0,15)."</td>";
+        
+        // MAX / MIN values
         echo "<td class='$tdcolor'>";
             if ($module_max == $module_min) {
                 $module_max = "N/A";
@@ -121,16 +133,18 @@ if ($row=mysql_num_rows($result)){
             }
             echo $module_max." / ".$module_min;
         echo "</td>";
+
+        // Delete module
         echo "<td class='$tdcolor'>";
-        if ($id_tipo != -1){
-            echo "<a href='index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&delete_module=".$row["id_agente_modulo"]."'".' onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;">';
-            echo "<img src='images/cross.png' border=0 title='".$lang_label["delete"]."'>";
-            echo "</b></a>&nbsp;";
-            echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&tab=module&update_module=".$row["id_agente_modulo"]."#modules'>";
-            echo "<img src='images/config.png' border=0 title='".$lang_label["update"]."' onLoad='type_change()'></b></a>";
-        }
-        // Value arithmetical media fix
-        if (($id_tipo != 3) AND ($id_tipo != 10) AND ($id_tipo != 17)){
+        echo "<a href='index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&delete_module=".$row["id_agente_modulo"]."'".' onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;">';
+        echo "<img src='images/cross.png' border=0 title='".$lang_label["delete"]."'>";
+        echo "</b></a>&nbsp;";
+        echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&tab=module&update_module=".$row["id_agente_modulo"]."#modules'>";
+        echo "<img src='images/config.png' border=0 title='".$lang_label["update"]."' onLoad='type_change()'></b></a>";
+        
+        // Make a data normalization
+        if (($id_tipo == 22 ) OR ($id_tipo == 1 ) OR ($id_tipo == 4 ) OR ($id_tipo == 7 ) OR
+        ($id_tipo == 8 ) OR ($id_tipo == 11 ) OR ($id_tipo == 16) OR ($id_tipo == 22 )) {
             echo "&nbsp;";
             echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&tab=module&fix_module=".$row["id_agente_modulo"]."'".' onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;">';
             echo "<img src='images/chart_curve.png' border=0 title='Normalize'></b></a>";

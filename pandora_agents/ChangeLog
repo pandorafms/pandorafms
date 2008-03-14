@@ -1,3 +1,8 @@
+2008-03-14  Ramon Novoa  <rnovoa@artica.es>
+
+	* win32/pandora_windows_service.cc: Added support for Tentacle file transfers.
+	* win32/pandora_windows_service.h: Added support for Tentacle file transfers.
+
 2008-03-11  Ramon Novoa  <rnovoa@artica.es>
 
 	* linux/pandora_agent: Added support for Tentacle file transfers.

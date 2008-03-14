@@ -161,6 +161,74 @@ Pandora_Windows_Service::getXmlHeader () {
 }
 
 void
+Pandora_Windows_Service::copyTentacleDataFile (string host,
+					  string filename)
+{
+	int                     rc;
+	string                  var, filepath;
+	string                  pubkey_file, privkey_file;
+	string			        tentacle_cmd;
+
+	var = conf->getValue ("temporal");
+	if (var[var.length () - 1] != '\\') {
+		var += "\\";
+	}
+
+        filepath = var + filename;
+
+	/* Build the command to launch the Tentacle client */
+	tentacle_cmd = "tentacle_client.exe -a " + host;
+    
+	var = conf->getValue ("server_port");	
+	if (var != "") {
+		tentacle_cmd += " -p " + var;
+	}
+
+	var = conf->getValue ("server_ssl");	
+	if (var == "1") {
+		tentacle_cmd += " -c";
+	}
+
+	var = conf->getValue ("server_pwd");
+	if (var != "") {
+		tentacle_cmd += " -x " + var;
+	}
+
+	var = conf->getValue ("server_opts");
+	if (var != "") {
+		tentacle_cmd += " " + var;
+	}
+
+	tentacle_cmd += " " +  filepath;
+
+	/* Copy the file */
+	pandoraDebug ("Remote copying XML %s on server %s",
+	               filepath.c_str (), host.c_str ());
+	pandoraDebug ("Command %s", tentacle_cmd.c_str());
+	
+	rc = system (tentacle_cmd.c_str());
+	switch (rc) {
+
+		/* system() error */
+		case -1:
+			pandoraLog ("Unable to copy %s", filename.c_str ());
+			throw Pandora_Exception ();
+
+		/* tentacle_client.exe returned OK */
+		case 0:
+			break;
+
+		/* tentacle_client.exe error */
+		default:
+			pandoraLog ("Tentacle client was unable to copy %s",
+			             filename.c_str ());
+			throw Pandora_Exception ();
+	}
+
+	return;
+}
+
+void
 Pandora_Windows_Service::copyScpDataFile (string host,
 					  string remote_path,
 					  string filename)
@@ -274,6 +342,8 @@ Pandora_Windows_Service::copyDataFile (string filename)
 	try {
 		if (mode == "ftp") {
 			copyFtpDataFile (host, remote_path, filename);
+		} else if (mode == "tentacle") {
+			copyTentacleDataFile (host, filename);
 		} else if (mode == "ssh" || mode == "") {
 			copyScpDataFile (host, remote_path, filename);
 		} else {

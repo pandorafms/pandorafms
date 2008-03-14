@@ -312,9 +312,9 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 			
 		// create the 1st plot as smoothed area chart using the 1st dataset
 		// Non-stacked
-                // $Plot =& $Plotarea->addNew('area', array(&$dataset));
-                // Stacked (v1.4)
-                $Plot =& $Plotarea->addNew('Image_Graph_Plot_Area', array(&$dataset, 'stacked'));
+        $Plot =& $Plotarea->addNew('area', array(&$dataset));
+        // Stacked (v1.4)
+        // $Plot =& $Plotarea->addNew('Image_Graph_Plot_Area', array(&$dataset, 'stacked'));
 		$Plot->setLineColor('gray@0.4');
 		$AxisX =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_X);
 		// $AxisX->Hide();

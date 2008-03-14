@@ -43,6 +43,8 @@ namespace Pandora {
         
 		TiXmlElement  *getXmlHeader    ();
 		void           copyDataFile    (string filename);
+		void           copyTentacleDataFile (string host,
+						string filename);
 		void           copyScpDataFile (string host,
 						string remote_path,
 						string filename);

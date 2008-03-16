@@ -113,6 +113,15 @@ if (($report_user == $id_user) OR (dame_admin($id_user)==1) OR ($report_private 
 					echo "</tr>";
 					break;
 			case 1: // Custom/Combined graph
+					// Clean variables because could have data if
+					// more than one combined graph in a report. 
+					// Bug reported by TurricanII in openideas forums
+					if (isset($modules)){
+						unset($modules);
+					}
+					if (isset($weights)){
+						unset($weights);
+					}
 					$module_name = give_db_value ("nombre", "tagente_modulo", "id_agente_modulo", $id_agent_module);
 					$agent_name = dame_nombre_agente_agentemodulo ($id_agent_module);
 					$graph_name = give_db_value ("name", "tgraph", "id_graph", $id_gs);

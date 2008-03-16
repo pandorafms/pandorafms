@@ -1,3 +1,9 @@
+2008-03-16 Sancho Lerena <slerena@gmail.com>
+
+	* reporting/reporting_viewer.php: Fixed bug that display combined graphs 
+	with modules from previous graphs is more than one was displayed in a report.
+	Thanks to TurricanII for reporting in openideas forums.
+
 2008-03-14 Sancho Lerena <slerena@gmail.com>
 
 	* reporting/fgraph.php: Removed stacked mode by default (could be enabled

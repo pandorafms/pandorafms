@@ -1,0 +1,113 @@
+#!/bin/bash
+
+# Tentacle server simple startup script (no pid file is written).
+# Ramon Novoa  <rnovoa@artica.es>
+# Linux Version (generic)
+# v0.1 Build 080307
+
+# chkconfig: 2345 55 25
+# description: Tentacle server
+# processname: tentacle_server
+
+# Pandora server settings
+PANDORA_SERVER_PATH="/var/spool/pandora/data_in"
+
+# Tentacle server settings
+TENTACLE_DAEMON="tentacle_server"
+TENTACLE_PATH="/usr/local/bin"
+TENTACLE_USER="pandora"
+
+TENTACLE_ADDR="localhost"
+TENTACLE_PORT="1998"
+TENTACLE_EXT_OPTS=""
+
+# Sets the shell variable TENTACLE_PID to the PID of the Tentacle server (empty
+# if not running). Can be a list of PIDs if multiple instances are running.
+function get_pid {
+	TENTACLE_PID=$(pidof -x $TENTACLE_DAEMON)
+}
+
+# Main script
+TENTACLE_OPTS="-a $TENTACLE_ADDR -p $TENTACLE_PORT -s $PANDORA_SERVER_PATH $TENTACLE_EXT_OPTS -d"
+
+# Fix TENTACLE_PATH
+case "$TENTACLE_PATH" in
+	*\/)
+	;;
+	*)
+		TENTACLE_PATH="${TENTACLE_PATH}/"
+	;;
+esac
+
+if [ ! -f "${TENTACLE_PATH}$TENTACLE_DAEMON" ]; then
+        echo "Tentacle server not found in ${TENTACLE_PATH}$TENTACLE_DAEMON."
+        exit 1
+fi
+
+case "$1" in
+  	start)
+		get_pid
+		if [ ! -z "$TENTACLE_PID" ]; then
+			echo "Tentacle server is already running with PID $TENTACLE_PID."
+			exit 1
+		else
+			rm -f $TENTACLE_PID_FILE
+		fi
+	
+		sudo -u $TENTACLE_USER ${TENTACLE_PATH}$TENTACLE_DAEMON $TENTACLE_OPTS
+		sleep 1
+
+		get_pid
+		if [ ! -z "$TENTACLE_PID" ]; then
+			echo "Tentacle server is now running with PID $TENTACLE_PID."
+		else
+			echo "Tentacle server could not be started."
+			exit 1
+		fi
+
+		exit 0
+        ;;
+	
+	stop)
+		get_pid
+		if [ -z "$TENTACLE_PID" ]; then
+			echo "Tentacle server does not seem to be running."
+			exit 1;
+		else
+			kill $TENTACLE_PID > /dev/null 2>&1
+			sleep 1
+
+			get_pid
+			if [ ! -z "$TENTACLE_PID" ]; then
+				echo "Tentacle server could not be stopped."
+				exit 1
+			fi
+
+			echo "Tentacle server stopped."
+		fi
+
+		exit 0
+	;;
+
+	force-reload|restart)
+        	$0 stop
+	        $0 start
+        ;;
+
+	status)
+		get_pid
+		if [ -z "$TENTACLE_PID" ]; then
+			echo "Tentacle server is not running."
+		else
+			echo "Tentacle server is running with PID $TENTACLE_PID."
+		fi
+		
+		exit 0
+        ;;
+
+	*)
+ 		echo "Usage: $0 {start|stop|restart|status}"
+		exit 1
+	;;
+esac
+

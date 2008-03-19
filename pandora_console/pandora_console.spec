@@ -2,7 +2,7 @@
 # Pandora Console
 #
 %define name        PandoraFMS_Console
-%define version     1.3.0
+%define version     1.3.1
 %define release     1
 
 
@@ -60,7 +60,7 @@ Group:              Productivity/Networking/Web/Utilities
 Packager:           Manuel Arostegui <marostegui@artica.es>
 
 %if "%{_vendor}" == "suse"
-Prefix:             /srv/www
+Prefix:             /srv/www/htdocs
 %else
 Prefix:             /var/www/html
 %endif
@@ -70,8 +70,10 @@ BuildArchitectures: noarch
 AutoReq:            0
 %if "%{_vendor}" == "suse"
 Requires:           apache2
+Requires:           php >= 4.3.0
+Requires:           php-gd
+Requires:           mysql, php-mysql, php-snmp, php-pear
 
-Requires:           mysql, php4-mysql
 %else
 %if %{is_apache}
 Requires:           apache
@@ -80,7 +82,7 @@ Requires:           httpd
 %endif
 Requires:           php >= 4.3.0
 Requires:           php-gd
-Requires:           mysql, mysql-server, php-mysql
+Requires:           mysql, mysql-server, php-mysql, php-snmp, php-pear
 %endif
 
 Provides:           %{name}-%{version}
@@ -102,12 +104,12 @@ rm -rf $RPM_BUILD_ROOT
 %install
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_console
-mkdir -p $RPM_BUILD_ROOT/usr/share/
-mkdir -p $RPM_BUILD_ROOT/usr/share/man/
-mkdir -p $RPM_BUILD_ROOT/usr/share/man/man1/
+#mkdir -p $RPM_BUILD_ROOT/usr/share/
+#mkdir -p $RPM_BUILD_ROOT/usr/share/man/
+#mkdir -p $RPM_BUILD_ROOT/usr/share/man/man1/
 cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_console
-cp pandora.1 $RPM_BUILD_ROOT/usr/share/man/man1/
-cp pandora_console.1 $RPM_BUILD_ROOT/usr/share/man/man1/
+#cp pandora.1 $RPM_BUILD_ROOT/usr/share/man/man1/
+#cp pandora_console.1 $RPM_BUILD_ROOT/usr/share/man/man1/
 if [ -f $RPM_BUILD_ROOT%{prefix}/%{name}/%{name}.spec ] ; then
     rm $RPM_BUILD_ROOT%{prefix}/%{name}/%{name}.spec
 fi
@@ -120,5 +122,5 @@ echo "Please, now, point your broswer to http://localhost/pandora_console/instal
 %defattr(0644,%{httpd_user},%{httpd_group},0755)
 %docdir %{prefix}/pandora_console/docs
 %{prefix}/pandora_console
-%{_mandir}/man1/pandora.1.gz
-%{_mandir}/man1/pandora_console.1.gz
+#%{_mandir}/man1/pandora.1.gz
+#%{_mandir}/man1/pandora_console.1.gz

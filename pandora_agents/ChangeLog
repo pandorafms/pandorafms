@@ -1,3 +1,8 @@
+2008-03-19  Manuel Arostegui <marostegui@artica.es>
+
+	* linux/pandora_agent.spec: Adapted to the new 1.3.X version
+	  of the Pandora Agents.
+
 2008-03-14  Ramon Novoa  <rnovoa@artica.es>
 
 	* win32/pandora_windows_service.cc: Added support for Tentacle file transfers.

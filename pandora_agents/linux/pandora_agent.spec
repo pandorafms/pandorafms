@@ -2,7 +2,7 @@
 # Pandora Agents
 #
 %define name        pandora_agents
-%define version	    1.3.0
+%define version	    1.3.1
 Summary:            Pandora Agents
 Name:               %{name}
 Version:            %{version}
@@ -37,8 +37,6 @@ mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_agent/
 mkdir -p $RPM_BUILD_ROOT/usr/
 mkdir -p $RPM_BUILD_ROOT/usr/share/
 mkdir -p $RPM_BUILD_ROOT/usr/share/pandora_agent
-mkdir -p $RPM_BUILD_ROOT/usr/share/man
-mkdir -p $RPM_BUILD_ROOT/usr/share/man/man1
 mkdir -p $RPM_BUILD_ROOT/usr/
 mkdir -p $RPM_BUILD_ROOT/usr/bin/
 mkdir -p $RPM_BUILD_ROOT/etc/
@@ -50,8 +48,8 @@ mkdir -p $RPM_BUILD_ROOT/var/log/pandora/
 cp -aRf * $RPM_BUILD_ROOT%{prefix}/pandora_agent/
 mv $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent $RPM_BUILD_ROOT/usr/bin/
 mv $RPM_BUILD_ROOT%{prefix}/pandora_agent/pandora_agent_daemon $RPM_BUILD_ROOT/etc/init.d/pandora_agent_daemon
-cp pandora.1 $RPM_BUILD_ROOT/usr/share/man/man1/
-cp pandora_agents.1 $RPM_BUILD_ROOT/usr/share/man/man1/
+#cp pandora.1 $RPM_BUILD_ROOT/usr/share/man/man1/
+#cp pandora_agents.1 $RPM_BUILD_ROOT/usr/share/man/man1/
 if [ -f $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/%{name}.spec ] ; then
     rm $RPM_BUILD_ROOT%{prefix}/%{name}-%{version}-%{release}/%{name}.spec
 fi
@@ -64,20 +62,26 @@ echo "Pandora Agent configuration file is /etc/pandora/pandora_agent.conf"
 echo "Pandora Agent Daemon has been placed in /etc/init.d/pandora_agent_daemon"
 mkdir -p /etc/pandora
 ln -s /usr/share/pandora_agent/pandora_agent.conf /etc/pandora/pandora_agent.conf
-ln -s /usr/share/pandora_agent/pandora_user.conf /etc/pandora/pandora_user.conf
+%if "%{_vendor}" == "suse"
+ln -s /etc/init.d/pandora_agent_daemon /etc/rc.d/rc3.d/S99pandora_agent_daemon
+ln -s /etc/init.d/pandora_agent_daemon /etc/rc.d/rc2.d/S99pandora_agent_daemon
+ln -s /etc/init.d/pandora_agent_daemon /etc/rc.d/rc6.d/K99pandora_agent_daemon
+ln -s /etc/init.d/pandora_agent_daemon /etc/rc.d/rc0.d/K99pandora_agent_daemon
+%else
 ln -s /etc/init.d/pandora_agent_daemon /etc/rc0.d/K99pandora_agent_daemon
 ln -s /etc/init.d/pandora_agent_daemon /etc/rc6.d/K99pandora_agent_daemon
 ln -s /etc/init.d/pandora_agent_daemon /etc/rc3.d/S99pandora_agent_daemon
 ln -s /etc/init.d/pandora_agent_daemon /etc/rc5.d/S99pandora_agent_daemon
+%endif
 %files
 %defattr(700,pandora,pandora)
 /usr/bin/pandora_agent
 %defattr(600,pandora,pandora)
 /var/log/pandora/
-/var/spool/pandora/data_out
+/var/spool/pandora/
 %defattr(755,pandora,pandora)
 /etc/init.d/pandora_agent_daemon
 %docdir %{prefix}/pandora_agents/docs
 %{prefix}/pandora_agent
-%{_mandir}/man1/pandora.1.gz
-%{_mandir}/man1/pandora_agents.1.gz
+#%{_mandir}/man1/pandora.1.gz
+#%{_mandir}/man1/pandora_agents.1.gz

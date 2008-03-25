@@ -1376,7 +1376,7 @@ C6CE92F8-3842-4E58-A3A2-5B5D2F7AFB4B,Message
 
 Now the pandora_agent.conf file will be open to change Pandora FMS Server IP address and agent name (used in Web Console).
 
-If you use FTP method to transfer data files, configure ftp_password with the pandora user password in the FTP server. This user should have write permissions in the server directory, by default /var/spool/pandora/data_in.
+If you use FTP method to transfer data files, configure server_pwd with the pandora user password in the FTP server. This user should have write permissions in the server directory, by default /var/spool/pandora/data_in.
 
 If you want to use SSH, comment FTP parameters and generate SSH Keys.
 
@@ -1547,7 +1547,7 @@ C6CE92F8-3842-4E58-A3A2-5B5D2F7AFB4B,Message
 
 Ahora se abrirá el fichero pandora_agent.conf para configurar la dirección IP del servidor y el nombre del agente (se utilizará en la consola web).
 
-Si el método de transferencia de ficheros que se va a utilizar es FTP, el parámetro ftp_password contiene la contraseña del usuario pandora, que debe tener permisos de escritura en el directorio del servidor, por defecto /var/spool/pandora/data_in.
+Si el método de transferencia de ficheros que se va a utilizar es FTP, el parámetro server_pwd contiene la contraseña del usuario pandora, que debe tener permisos de escritura en el directorio del servidor, por defecto /var/spool/pandora/data_in.
 
 Si se quiere utilizar SSH, deben comentarse las entradas relativas a FTP y generar las claves SSH.
 

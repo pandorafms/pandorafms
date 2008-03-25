@@ -82,10 +82,10 @@ Pandora_FTP_Test::test () {
 
 	remote_host = this->conf->getValue ("server_ip");
 	cout << "Connecting with " << remote_host << "..." << endl;
-	password = this->conf->getValue ("ftp_password");
+	password = this->conf->getValue ("server_pwd");
 	if (password == "") {
 		cout << "FTP password not found in configuration file." << endl;
-		cout << "Check that ftp_password variable is set." << endl;
+		cout << "Check that server_pwd variable is set." << endl;
 		return;
 	}
 	cout << "Username: pandora" << endl;

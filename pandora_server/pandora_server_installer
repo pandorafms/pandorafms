@@ -42,9 +42,9 @@ else
 	mkdir /var/log/pandora
 	chown pandora:root /var/spool/pandora/data_in
 	chmod 770 /var/spool/pandora/data_in
-	chmod 770 /etc/pandora/pandora_server.conf
 	mkdir /etc/pandora
 	cp conf/pandora_server.conf /etc/pandora/
+	chmod 770 /etc/pandora/pandora_server.conf
 	cp pandora_* /etc/init.d/
 	rm /etc/init.d/pandora_server_installer
 	ln -s /etc/init.d/pandora_server /etc/rc2.d/S90pandora_server

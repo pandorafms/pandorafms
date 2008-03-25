@@ -61,7 +61,7 @@ The general parameters of the agent configuration are defined in this section. S
 
     * Transfer Mode: This parametrer let you specify which transfer mode is going to be set up to send the agent data to the server. Modes available are: ssh (using scp), ftp or local. Local mode it is only for systems where the agent run in the same machine as the server does, cause it is basically a copy between directories. 
 
-	* ftp_password: Specify password for FTP transfer mode (Windows only).
+	* server_pwd: Specify password for FTP transfer mode (Windows only).
 	
     * encoding: Set the encoding type of your local system, like iso-8859-15, or utf-8. 
 
@@ -264,7 +264,7 @@ All setup is made in pandora_agent.conf. This file is a list of keys/values pair
          interval 300
          agent_name localhost
          transfer_mode ftp
-         ftp_password pandora123
+         server_pwd pandora123
 
          # Module Definition
          # =================

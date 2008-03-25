@@ -296,7 +296,7 @@ Pandora_Windows_Service::copyFtpDataFile (string host,
         }
         filepath += filename;
 
-	password = conf->getValue ("ftp_password");
+	password = conf->getValue ("server_pwd");
 	
 	ftp_client.connect (host,
 			    22,

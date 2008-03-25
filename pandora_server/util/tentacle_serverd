@@ -18,7 +18,7 @@ TENTACLE_PATH="/usr/local/bin"
 TENTACLE_USER="pandora"
 
 TENTACLE_ADDR="localhost"
-TENTACLE_PORT="1998"
+TENTACLE_PORT="41121"
 TENTACLE_EXT_OPTS=""
 
 # Sets the shell variable TENTACLE_PID to the PID of the Tentacle server (empty

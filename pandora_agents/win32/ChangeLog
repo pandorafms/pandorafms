@@ -1,5 +1,9 @@
 2008-03-25  Ramon Novoa  <rnovoa@artica.es>
 
+	*  bin/PandoraAgent.exe: Updated to r764.
+
+2008-03-25  Ramon Novoa  <rnovoa@artica.es>
+
 	* ftp/pandora_ftp_test.cc, installer/pandora_1.3.mpi,
 	  installer/README.txt, pandora_windows_service.cc,
 	  bin/pandora_agent.conf: Variable ftp_password removed from

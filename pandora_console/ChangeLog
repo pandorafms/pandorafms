@@ -1,3 +1,9 @@
+2008-03-23 Sancho Lerena  <slerena@gmail.com>
+	
+	* pandoradb.sql: Upgraded SQL schema for Pandora FMS 2.0
+
+	* pandoradb_13_to_20: Moved filename (renamed). This don't work yet.
+
 2008-03-19 Manuel Arostegui <marostegui@artica.es>
 
         * pandora_console.spec: Solved a problem with Suse based

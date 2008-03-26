@@ -1,6 +1,6 @@
 
 --------------------------------------------------------------
--- Pandora FMS official tables for 1.4 version              --
+-- Pandora FMS official tables for 2.0 version              --
 --------------------------------------------------------------
 
 CREATE TABLE `taddress` (
@@ -189,6 +189,12 @@ CREATE TABLE `talerta` (
   PRIMARY KEY  (`id_alerta`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `tcompound_alert` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `id_aam` int(11) NOT NULL default '0',
+  `operation` enum('NOP', 'AND','OR','XOR','NAND','NOR','NXOR'),
+  PRIMARY KEY  (`id`, `id_aam`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `talerta_agente_modulo` (
   `id_aam` int(11) unsigned NOT NULL auto_increment,
@@ -211,54 +217,16 @@ CREATE TABLE `talerta_agente_modulo` (
   `disable` int(4) default '0',
   `time_from` TIME default '00:00:00',
   `time_to` TIME default '00:00:00',
+  `id_agent` int(11) default NULL,
+  `monday` tinyint(3) default '0',
+  `tuesday` tinyint(3) default '0',
+  `wednesday` tinyint(3) default '0',
+  `thursday` tinyint(3) default '0',
+  `friday` tinyint(3) default '0',
+  `saturday` tinyint(3) default '0',
+  `sunday` tinyint(3) default '0',
+  `recovery_notify` tinyint(3) default '0',
   PRIMARY KEY  (`id_aam`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE tnotification (
-        `id` int(11) unsigned NOT NULL auto_increment,
-        `name` varchar(255) default '',
-        `description` varchar(255) default '',
-        `id_alerta` int(11) NOT NULL default '0',
-        `id_agent` int(11) NOT NULL default '0',
-        `al_f1` varchar(255) default '',
-        `al_f2` mediumtext NOT NULL,
-        `al_f3` mediumtext NOT NULL,
-        `alrec_f1` varchar(255) default '',
-        `alrec_f2` mediumtext NOT NULL,
-        `alrec_f3` mediumtext NOT NULL,
-        `recovery_notify` tinyint(3) default '0',
-        `disabled` tinyint(3) default '0',
-        `last_fired` datetime NOT NULL default '0000-00-00 00:00:00',
-        PRIMARY KEY  (`id`),
-        KEY `tnotif_indx_1` (`id_alerta`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE `tnotification_component` (
-        `id` int(11) unsigned NOT NULL auto_increment,
-        `id_notification` int(11) NOT NULL default '0',
-        `id_agente_modulo` int(11) NOT NULL default '0',
-        `dis_max` double(18,2) default NULL,
-        `dis_min` double(18,2) default NULL,
-        `alert_text` varchar(255) default '',
-        `time_threshold` int(11) NOT NULL default '0',
-        `last_fired` datetime NOT NULL default '0000-00-00 00:00:00',
-        `max_alerts` int(4) NOT NULL default '1',
-        `min_alerts` int(4) NOT NULL default '0',
-        `times_fired` int(11) NOT NULL default '0',
-        `module_type` int(11) NOT NULL default '0',
-        `internal_counter` int(4) default '0',
-        `disabled` int(4) default '0',
-        `time_from` TIME default '00:00:00',
-        `time_to` TIME default '00:00:00',
-        `monday` tinyint(3) default '0',
-        `tuesday` tinyint(3) default '0',
-        `wednesday` tinyint(3) default '0',
-        `thursday` tinyint(3) default '0',
-        `friday` tinyint(3) default '0',
-        `saturday` tinyint(3) default '0',
-        `sunday` tinyint(3) default '0',
-        PRIMARY KEY  (`id`),
-        KEY `tnotifcom_indx_1` (`id_notification`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `tattachment` (
@@ -463,6 +431,8 @@ CREATE TABLE `trecon_task` (
   `status` tinyint(4) NOT NULL default '0',
   `interval_sweep` int(10) unsigned NOT NULL default '0',
   `id_network_server_assigned` int(10) unsigned NOT NULL default '0',
+  `extended_info`  varchar(250) default NULL,
+  `extended_value` varchar(250) default NULL,
   PRIMARY KEY  (`id_rt`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -526,7 +496,6 @@ CREATE TABLE `ttrap` (
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id_trap`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 CREATE TABLE `tusuario` (
   `id_usuario` varchar(60) NOT NULL default '0',
@@ -691,3 +660,15 @@ CREATE TABLE `tquicksession` (
   `pwdhash` varchar(250) NOT NULL default '',
   PRIMARY KEY  (`id`)
 );
+
+CREATE TABLE `tserver_export_data` (
+  `id` int(20) unsigned NOT NULL auto_increment,
+  `id_export_server` int(10) unsigned default NULL,
+  `agent` varchar(100) NOT NULL default '',
+  `type` varchar(50) NOT NULL default '',
+  `module` varchar(100) NOT NULL default '',
+  `value` varchar(100) NOT NULL default '',
+  `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

@@ -1,3 +1,7 @@
+2008-03-27  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb_data.sql: Added 'Compound only' alert type.
+
 2008-03-23 Sancho Lerena  <slerena@gmail.com>
 	
 	* pandoradb.sql: Upgraded SQL schema for Pandora FMS 2.0

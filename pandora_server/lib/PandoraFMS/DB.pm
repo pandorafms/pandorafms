@@ -58,6 +58,8 @@ our @EXPORT = qw(
 		pandora_writedata
 		pandora_writestate
 		pandora_calcula_alerta
+		pandora_evaluate_compound_alert
+		pandora_evaluate_compound_alerts
 		module_generic_proc
 		module_generic_data
 		module_generic_data_inc
@@ -221,6 +223,9 @@ sub pandora_calcula_alerta (%$$$$$$) {
 						execute_alert ($pa_config, $id_alerta, $campo1, $campo2, $campo3, 
 $nombre_agente, $timestamp, $datos, $comando, $alert_name, $descripcion, 1, $dbh);
 						# --------------------------------------
+						
+						# Evaluate compound alerts, since an alert has changed its status.
+						pandora_evaluate_compound_alerts ($pa_config, $timestamp, $id_aam, $nombre_agente, 0, $dbh);
 					} else {
 						# Alert is in valid timegap but has too many alerts
 						# or too many little
@@ -233,6 +238,9 @@ $nombre_agente, $timestamp, $datos, $comando, $alert_name, $descripcion, 1, $dbh
 							logger ($pa_config, "Alarm not fired because is above max limit",6);
 						}
 						$dbh->do("UPDATE talerta_agente_modulo SET times_fired = $times_fired, internal_counter = $internal_counter WHERE id_aam = $id_aam");
+
+						# Evaluate compound alerts, since an alert has changed its status.
+						pandora_evaluate_compound_alerts ($pa_config, $timestamp, $id_aam, $nombre_agente, 0, $dbh);
 					}
 				} 
 				else {  # This block is executed because actual data is OUTSIDE
@@ -276,6 +284,9 @@ $alert_name, $descripcion, 0, $dbh);
 										}
 					if (($times_fired > 0) || ($internal_counter > 0)){
 						$dbh->do("UPDATE talerta_agente_modulo SET internal_counter = 0, times_fired =0 WHERE id_aam = $id_aam");
+
+						# Evaluate compound alerts, since an alert has changed its status.
+						pandora_evaluate_compound_alerts ($pa_config, $timestamp, $id_aam, $nombre_agente, 0, $dbh);
 					}
 				}
 			} # timecheck (outside time limits for this alert)
@@ -285,10 +296,174 @@ $alert_name, $descripcion, 0, $dbh);
 					pandora_event ($pa_config, $evt_descripcion2, $id_grupo, $id_agente, $dbh);
 				}
 				$dbh->do("UPDATE talerta_agente_modulo SET internal_counter = 0, times_fired =0 WHERE id_aam = $id_aam");
+
+				# Evaluate compound alerts, since an alert has changed its status.
+				pandora_evaluate_compound_alerts ($pa_config, $timestamp, $id_aam, $nombre_agente, 0, $dbh);
 			}
 		} # While principal
 	} # if there are valid records
 	$s_idag->finish();
+}
+
+##########################################################################
+## SUB pandora_evaluate_compound_alert
+## (paconfig,id,dbh)
+## Evaluate a given compound alert. Returns 1 if the alert should be
+## fired, 0 if not.
+##########################################################################
+sub pandora_evaluate_compound_alert (%$$) {
+	my $pa_config = $_[0];
+	my $id = $_[1];
+	my $dbh = $_[2];
+	
+	my @data;
+
+	# Return value
+	my $status = 0;
+
+	# Get all the alerts associated with this compound alert
+	my $query_id_aam = "SELECT id_aam, operation FROM tcompound_alert
+	                    WHERE id = '$id' ORDER BY operation";
+	my $s_id_aam = $dbh->prepare($query_id_aam);
+	$s_id_aam ->execute;
+
+	if ($s_id_aam->rows == 0) {
+		return 0;
+	}
+	
+	while (@data = $s_id_aam->fetchrow_array()) {
+
+		# Alert ID
+		my $id_aam = $data[0];
+
+		# Logical operation to perform
+		my $operation = $data[1];
+
+		# Get alert data
+		my $query_times_fired = "SELECT disable, times_fired FROM
+		                         talerta_agente_modulo WHERE id_aam =
+					 '$id_aam'";
+		my $s_times_fired = $dbh->prepare($query_times_fired);
+		$s_times_fired ->execute;
+		if ($s_id_aam->rows == 0) {
+			next;
+		}	
+	
+		my @data2 = $s_times_fired->fetchrow_array();
+		my $disable = $data2[0];
+
+		# Check whether the alert was fired
+		my $fired = $data2[1] > 0 ? 1 : 0;
+
+		$s_times_fired->finish();
+	
+		# Skip disabled alerts
+		if ($disable == 1) {
+			next;
+		}
+
+		# Operate...
+		if ($operation eq "AND") {
+			$status &= $fired;
+		}
+		elsif ($operation eq "OR") {
+			$status |= $fired;
+		}
+		elsif ($operation eq "XOR") {
+			$status ^= $fired;
+		}
+		elsif ($operation eq "NAND") {
+			$status &= ! $fired;
+		}
+		elsif ($operation eq "NOR") {
+			$status |= ! $fired;
+		}
+		elsif ($operation eq "NXOR") {
+			$status ^= ! $fired;
+		}
+		elsif ($operation eq "NOP") {
+			$status = $fired;
+		}
+	}
+
+	$s_id_aam->finish();
+	return $status;
+}
+
+##########################################################################
+## SUB pandora_evaluate_compound_alerts
+## (paconfig,timestamp,id_aam,nombre_agente,depth,dbh)
+## Evaluate compound alerts that depend on a given alert.
+##########################################################################
+
+sub pandora_evaluate_compound_alerts (%$$$$$) {
+	my $pa_config = $_[0];
+	my $timestamp = $_[1];
+	my $id_aam = $_[2];
+	my $nombre_agente = $_[3];
+	my $depth = $_[4];
+	my $dbh = $_[5];
+	
+	# Get all compound alerts that depend on this alert
+	my $query_id = "SELECT id FROM tcompound_alert WHERE id_aam = '$id_aam'";
+	my $s_id = $dbh->prepare($query_id);
+
+	$s_id ->execute;
+	if ($s_id->rows == 0) {
+		$s_id->finish();
+		return;
+	}
+
+	while (my @data = $s_id->fetchrow_array()) {
+		my $id = $data[0];
+
+		# Get compound alert parameters
+		my $query_data = "SELECT al_campo1, al_campo2, al_campo3, descripcion, alert_text, disable FROM talerta_agente_modulo WHERE id_aam = '$id'";
+		my $s_data = $dbh->prepare($query_data);
+
+		$s_data ->execute;
+		if ($s_data->rows == 0) {
+			next;
+		}
+
+		@data = $s_data->fetchrow_array();
+
+		my $field1 = $data[0];
+		my $field2 = $data[1];
+		my $field3 = $data[2];
+		my $description = $data[3];
+		my $text = $data[4];
+		my $disable = $data[5];
+
+		# Skip disabled alerts
+		if ($disable == 1) {
+			next;
+		}
+
+		# Evaluate the alert
+		my $status = pandora_evaluate_compound_alert($pa_config, $id, $dbh);
+		if ($status != 0) {
+			# Update the alert status
+			$dbh->do("UPDATE talerta_agente_modulo SET times_fired = 1 WHERE id_aam = $id");
+			my $command = dame_comando_alerta ($pa_config, $id, $dbh);
+
+			execute_alert ($pa_config, $id, $field1, $field2, $field3, $nombre_agente, $timestamp, $text, $command, '', $description, 1, $dbh);
+		}
+		else {
+			# Update the alert status
+			$dbh->do("UPDATE talerta_agente_modulo SET times_fired = 0 WHERE id_aam = $id");
+		}
+
+		# Evaluate nested compound alerts
+		if ($depth < $pa_config->{"compound_max_depth"}) {
+			&pandora_evaluate_compound_alerts ($pa_config, $timestamp, $id, $nombre_agente, $depth + 1, $dbh);
+		}
+		else {
+			logger($pa_config, "ERROR: Error in SUB pandora_evaluate_compound_alerts(): Maximum nested compound alert depth reached.", 2);
+		}
+	}
+
+	$s_id->finish();
 }
 
 ##########################################################################
@@ -311,6 +486,11 @@ sub execute_alert (%$$$$$$$$$$$$) {
 	my $alert_description = $_[10];
 	my $create_event = $_[11];
 	my $dbh = $_[12];
+
+	# Compound only
+	if ($id_alert == 0){
+		return;
+	}
 
 	if (($command eq "") && ($alert_name eq "")){
 		# Get values for commandline, reading from talerta.
@@ -1125,9 +1305,9 @@ sub pandora_event (%$$$$) {
         my $id_grupo = $_[2];
         my $id_agente = $_[3];
 	my $dbh = $_[4];
-	
         my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
 	my $utimestamp; # integer version of timestamp	
+
 	$utimestamp = &UnixDate($timestamp,"%s"); # convert from human to integer
         $evento = $dbh->quote($evento);
        	$timestamp = $dbh->quote($timestamp);

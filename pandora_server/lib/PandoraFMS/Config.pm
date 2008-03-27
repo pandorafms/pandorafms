@@ -178,6 +178,7 @@ sub pandora_loadconfig {
     $pa_config->{"plugin_timeout"} = 5; # Introduced on 2.0
     $pa_config->{"wmi_threads"} = 3; # Introduced on 2.0
     $pa_config->{"wmi_timeout"} = 5; # Introduced on 2.0
+    $pa_config->{"compound_max_depth"} = 5; # Maximum nested compound alert depth. Not in config file.
 
 	# Check for UID0
     if ($pa_config->{"quiet"} != 0){

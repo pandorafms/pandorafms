@@ -4,6 +4,7 @@
 	  Spanish translation.
 	* pandora_console/pandoradbdata_12_to_13.sql: Changed welcome message.
 	* pandora_console/pandoradb_data.sql: Changed welcome message.
+	* pandora_server/README: Removed duplicated dependency package.
 
 2008-08-10  Sancho Lerena  <slerena@gmail.com>
 

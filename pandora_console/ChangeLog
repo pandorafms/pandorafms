@@ -1,3 +1,58 @@
+2008-04-01 Sancho Lerena <slerena@gmail.com>
+
+    * pandoradb_data.sql: Alert type 0 is not 1. 1-3 are reserved. Removed 
+    prediction module (nosense since it uses normal modules).
+
+    * include/functions_db.php: Added wrapper give_db_value to get_db_value
+    because A LOT of code uses old syntax and this makes too many errors.
+
+    * include/functions.php: Fixed pagination issues with blocksize config.
+
+    * pandoradb.sql: Change alert command lenght and added some comments
+    for future implementation of alert criticity and others.
+ 
+    * operation/incidents/incident.php: Fixed some bugs calling to old
+    funcions / variables.
+
+    * operation/events/events.php: Fixed some bugs calling to old
+    funcions / variables. Removed graph and simplified header.
+
+    * operation/agentes/estado_alertas.php: Changed get_db_value call
+    and removed (Raul) button to create alert from here.
+
+    * operation/agentes/estado_grupo.php: Implemented support for optional
+    view of down modules and fired alerts.
+
+    * operation/agentes/ver_agente.php, 
+    operation/agentes/datos_agente.php: Uses of new get_db_value and
+    new session id variable.
+    
+    * images/mod_async_string.png: Added image.
+
+    * images/mod_async_inc.png: Added image.
+
+    * images/mod_image_png.png: Added image.
+
+    * images/mod_async_data.png: Added image.
+
+    * images/mod_async_proc.png: Added image.
+
+    * images/mod_image_jpg.png: Added image.
+
+    * godmode/setup/setup.php: Several fixes.
+
+    * godmode/agentes/alert_manager.php: Several changes for new alert manager. 
+    Not finished. Interim commit.
+
+    * godmode/agentes/configurar_agente.php: More changes needed to alert editor.
+
+    * godmode/agentes/alert_manager_editor.php: New file for alert management.
+
+    * godmode/modules/module_list.php: Some updates, removed invalid column.
+
+    * godmode/alerts/modify_alert.php: Alert types < 4 cannot be modified (this
+    includes combined, internal audit and Pandora FMS log).
+
 2008-04-01  Jorge Gonzalez  <jorge.gonzalez@artica.es>
 
 	* pandoradb_data.sql: Changed welcome message.

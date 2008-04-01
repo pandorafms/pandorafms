@@ -1,10 +1,7 @@
 <?php
 // Pandora FMS - the Free Monitoring System
 // ========================================
-// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development, project architecture and management.
-// Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP code additions
+// Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or

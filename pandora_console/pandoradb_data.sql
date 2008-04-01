@@ -2,16 +2,17 @@
 -- Dumping data for table `talerta`
 --
 
-INSERT INTO `talerta` VALUES (0,'Compound only', '', 'This alert will not be executed individually');
-INSERT INTO `talerta` VALUES (1,'eMail','echo _field3_ | sendmail -s _field2_ _field1_','Send email from Pandora Server. mail is a default command on all standard Unix systems, using:\r\n_field1_ as destination email address, and\r\n_field2_ as subject for message. \r\n_field3_ as text of message.');
-INSERT INTO `talerta` VALUES (2,'LogFile','echo _timestamp_ pandora _field1_ _field2_  &gt;&gt; /var/log/pandora_alert.log','This is a default alert to write alerts in a standard ASCII  plaintext log file in /var/log/pandora_alert.log\r\n');
+INSERT INTO `talerta` VALUES (1,'Compound only', '', 'This alert will not be executed individually');
+INSERT INTO `talerta` VALUES (2,'Pandora FMS Alertlog','echo _timestamp_ pandora _agent_ _data_ _field1_ _field2_ >> /var/log/pandora/pandora_alert.log','This is a default alert to write alerts in a standard ASCII  plaintext log file in /var/log/pandora/pandora_alert.log\r\n');
 INSERT INTO `talerta` VALUES (3,'Internal Audit','','This alert save alert in Pandora interal audit system. Fields are static and only _field1_ is used.');
-INSERT INTO `talerta` VALUES (4,'SNMP Trap','/usr/bin/snmptrap -v 1 -c trap_public 192.168.0.4 1.1.1.1.1.1.1.1 _agent_ _field1_','Send a SNMPTRAP to 192.168.0.4. Please review config and adapt to your needs, this is only a sample, not functional itself.');
-INSERT INTO `talerta` VALUES (5,'SMS Text','echo _field2_ | mail -s PANDORA_field1_ myuser@smsgateway.com','Send SMS via e-mail gateway. Use field1 for a short SMS text (35 chars) and field 2 for text message (full SMS)');
-INSERT INTO `talerta` VALUES (6,'Syslog','logger -p daemon.alert Pandora Alert _agent_ _field1_ _field2_','Uses field1 and field2 to generate Syslog alert in facility daemon with alert level.');
-INSERT INTO `talerta` VALUES (7,'Sound Alert','/usr/bin/play /usr/share/sounds/alarm.wav','');
-INSERT INTO `talerta` VALUES (8,'Jabber Alert','echo _field3_ | sendxmpp -r _field1_ --chatroom _field2_','Send jabber alert to chat room in a predefined server (configure first .sendxmpprc file). Uses field3 as text message, field1 as useralias for source message, and field2 for chatroom name');
-INSERT INTO `talerta` VALUES (9,'Synthetized Speech','flite -t _FIELD2_','Uses commandline voice synthetizer to \"speak\" text given as parameter 1 and 2');
+
+INSERT INTO `talerta` VALUES (4,'eMail','echo _field3_ | sendmail -s _field2_ _field1_','Send email from Pandora Server. mail is a default command on all standard Unix systems, using:\r\n_field1_ as destination email address, and\r\n_field2_ as subject for message. \r\n_field3_ as text of message.');
+INSERT INTO `talerta` VALUES (5,'SNMP Trap','/usr/bin/snmptrap -v 1 -c trap_public 192.168.0.4 1.1.1.1.1.1.1.1 _agent_ _field1_','Send a SNMPTRAP to 192.168.0.4. Please review config and adapt to your needs, this is only a sample, not functional itself.');
+INSERT INTO `talerta` VALUES (6,'SMS Text','echo _field2_ | mail -s PANDORA_field1_ myuser@smsgateway.com','Send SMS via e-mail gateway. Use field1 for a short SMS text (35 chars) and field 2 for text message (full SMS)');
+INSERT INTO `talerta` VALUES (7,'Syslog','logger -p daemon.alert Pandora Alert _agent_ _data_ _field1_ _field2_','Uses field1 and field2 to generate Syslog alert in facility daemon with "alert" level.');
+INSERT INTO `talerta` VALUES (8,'Sound Alert','/usr/bin/play /usr/share/sounds/alarm.wav','');
+INSERT INTO `talerta` VALUES (9,'Jabber Alert','echo _field3_ | sendxmpp -r _field1_ --chatroom _field2_','Send jabber alert to chat room in a predefined server (configure first .sendxmpprc file). Uses field3 as text message, field1 as useralias for source message, and field2 for chatroom name');
+INSERT INTO `talerta` VALUES (10,'Synthetized Speech','flite -t _FIELD2_','Uses commandline voice synthetizer to \"speak\" text given as parameter 1 and 2');
 
 --
 -- Dumping data for table `tconfig`
@@ -21,7 +22,7 @@ INSERT INTO `talerta` VALUES (9,'Synthetized Speech','flite -t _FIELD2_','Uses c
 /*!40000 ALTER TABLE `tconfig` DISABLE KEYS */;
 LOCK TABLES `tconfig` WRITE;
 INSERT INTO `tconfig` VALUES 
-(1,'language_code','en'),(3,'block_size','20'),(4,'days_purge','60'),(5,'days_compact','15'),(6,'graph_res','5'),(7,'step_compact','1'),(8,'db_scheme_version','1.4'),(9,'db_scheme_build','PD80110'),(12,'bgimage','background4.jpg'),(13,'show_unknown','0'),(14,'show_lastalerts','1'),(15,'style','pandora');
+(1,'language_code','en'),(3,'block_size','20'),(4,'days_purge','60'),(5,'days_compact','15'),(6,'graph_res','5'),(7,'step_compact','1'),(8,'db_scheme_version','2.0'),(9,'db_scheme_build','PD80401'),(13,'show_unknown','0'),(14,'show_lastalerts','1'),(15,'style','pandora');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `tconfig` ENABLE KEYS */;
 
@@ -122,8 +123,8 @@ INSERT INTO `ttipo_modulo` VALUES
 (20,'image_png',9,'Image PNG data', 'mod_image_png.png'), 
 (21,'async_proc', 7, 'Asyncronous proc data', 'mod_async_proc.png'), 
 (22,'async_data', 6, 'Asyncronous numeric data', 'mod_async_data.png'), 
-(23,'async_string', 8, 'Asyncronous string data', 'mod_async_string.png'), 
-(24,'predictive', 10, 'Predictive Estimation Data', 'mod_predictive.png'),
+(23,'async_string', 8, 'Asyncronous string data', 'mod_async_string.png'),
+(24,'async_inc', 6, 'Asyncronous incremental data', 'mod_async_inc.png'),  
 (100,'keep_alive',-1,'KeepAlive','mod_keepalive.png');
 
 /* Categoria field is used to segregate several types (plugin, agents, network) on their data

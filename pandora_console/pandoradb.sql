@@ -184,7 +184,7 @@ CREATE TABLE `talert_snmp` (
 CREATE TABLE `talerta` (
   `id_alerta` int(10) unsigned NOT NULL auto_increment,
   `nombre` varchar(100) NOT NULL default '',
-  `comando` varchar(100) default '',
+  `comando` varchar(255) default '',
   `descripcion` varchar(255) default '',
   PRIMARY KEY  (`id_alerta`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -228,6 +228,16 @@ CREATE TABLE `talerta_agente_modulo` (
   `recovery_notify` tinyint(3) default '0',
   PRIMARY KEY  (`id_aam`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/* next changes planned for talerta_agente_modulo
+
+  `al_f2_recovery` varchar(255) default '',
+  `al_f3_recovery` mediumtext NOT NULL,
+  `priority tinyint(4) default '0',
+
+Implementation of priority for alerts, and different fields for recovery notification
+
+*/
 
 CREATE TABLE `tattachment` (
   `id_attachment` bigint(20) unsigned NOT NULL auto_increment,

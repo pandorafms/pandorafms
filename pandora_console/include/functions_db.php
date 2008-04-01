@@ -2,11 +2,19 @@
 
 // Pandora FMS - the Free Monitoring System
 // ========================================
-// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development, project architecture and management.
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP code additions
+// Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation for version 2.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 function check_login() { 
     global $config;
@@ -913,7 +921,7 @@ function group_belong_group($id_group_a, $id_groupset){
 // ---------------------------------------------------------------
 function give_modulecategory_name ($value) {
 	require("config.php");
-	require ("include/languages/language_".$language_code.".php");
+	require ("include/languages/language_".$config["language"].".php");
 	switch ($value) {
 	   case 0: return $lang_label["cat_0"];
 	   	break;
@@ -1100,6 +1108,10 @@ function get_db_value ($field, $table, $field_search, $condition_value){
     else
         $pro = "";
     return $pro;
+}
+
+function give_db_value ($field, $table, $field_search, $condition_value){
+    get_db_value ($field, $table, $field_search, $condition_value);
 }
 
 // --------------------------------------------------------------- 

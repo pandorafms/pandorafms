@@ -221,7 +221,7 @@ sub pandora_calcula_alerta (%$$$$$$) {
 						# --------------------------------------
 						# Now call to execute_alert to real exec
 						execute_alert ($pa_config, $id_alerta, $campo1, $campo2, $campo3, 
-$nombre_agente, $timestamp, $datos, $comando, $alert_name, $descripcion, 1, $dbh);
+                        $nombre_agente, $timestamp, $datos, $comando, $alert_name, $descripcion, 1, $dbh);
 						# --------------------------------------
 						
 						# Evaluate compound alerts, since an alert has changed its status.
@@ -233,14 +233,8 @@ $nombre_agente, $timestamp, $datos, $comando, $alert_name, $descripcion, 1, $dbh
 							$internal_counter++;
 							# Now update new value for times_fired & last_fired
 							# if we are below minlimit for triggering this alert
-							logger ($pa_config, "Alarm not fired because is below min limit",6);
-						} else { # Too many alerts fired (upper limit)
-							logger ($pa_config, "Alarm not fired because is above max limit",6);
-						}
-						$dbh->do("UPDATE talerta_agente_modulo SET times_fired = $times_fired, internal_counter = $internal_counter WHERE id_aam = $id_aam");
-
-						# Evaluate compound alerts, since an alert has changed its status.
-						pandora_evaluate_compound_alerts ($pa_config, $timestamp, $id_aam, $nombre_agente, 0, $dbh);
+						} 
+						$dbh->do("UPDATE talerta_agente_modulo SET internal_counter = $internal_counter WHERE id_aam = $id_aam");
 					}
 				} 
 				else {  # This block is executed because actual data is OUTSIDE
@@ -277,11 +271,11 @@ $nombre_agente, $timestamp, $datos, $comando, $alert_name, $descripcion, 1, $dbh
  							# "alert_recovery" and set to 1 (disabled by default) 
 							if ($pa_config->{"alert_recovery"} eq "1"){
 							        execute_alert ($pa_config, $id_alerta, $campo1, 
-"[RECOVERED ] - ".$campo2, "[ALERT CEASED - RECOVERED] - ".$campo3, $nombre_agente, $timestamp, $datos, $comando, 
-$alert_name, $descripcion, 0, $dbh);
+                                    "[RECOVERED ] - ".$campo2, "[ALERT CEASED - RECOVERED] - ".$campo3, $nombre_agente, $timestamp, $datos, $comando, 
+                                    $alert_name, $descripcion, 0, $dbh);
 							}
 						}
-										}
+					}
 					if (($times_fired > 0) || ($internal_counter > 0)){
 						$dbh->do("UPDATE talerta_agente_modulo SET internal_counter = 0, times_fired =0 WHERE id_aam = $id_aam");
 
@@ -488,7 +482,7 @@ sub execute_alert (%$$$$$$$$$$$$) {
 	my $dbh = $_[12];
 
 	# Compound only
-	if ($id_alert == 0){
+	if ($id_alert == 1){
 		return;
 	}
 

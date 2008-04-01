@@ -1,7 +1,9 @@
 2008-04-01  Jorge Gonzalez  <jorge.gonzalez@artica.es>
 
-	* /pandora_console/include/languages/language_es_es.php: Updated
+	* pandora_console/include/languages/language_es_es.php: Updated
 	  Spanish translation.
+	* pandora_console/pandoradbdata_12_to_13.sql: Changed welcome message.
+	* pandora_console/pandoradb_data.sql: Changed welcome message.
 
 2008-08-10  Sancho Lerena  <slerena@gmail.com>
 

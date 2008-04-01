@@ -1,3 +1,8 @@
+2008-04-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/tentacle_serverd: Changed default port and address (now
+	  listens on all local interfaces by default).
+
 2008-04-01  Jorge Gonzalez  <jorge.gonzalez@artica.es>
 
 	* README: Removed duplicated dependency package.

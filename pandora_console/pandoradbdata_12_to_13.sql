@@ -94,7 +94,7 @@ UPDATE ttipo_modulo SET icon = 'mod_snmp_inc.png' WHERE icon = 'mod_snmp_inc.gif
 UPDATE ttipo_modulo SET icon = 'mod_snmp_string.png' WHERE icon = 'mod_snmp_string.gif';
 UPDATE ttipo_modulo SET icon = 'mod_snmp_proc.png' WHERE icon = 'mod_snmp_proc.gif';
 
-INSERT INTO `tnews` VALUES (1,'admin','Welcome to Pandora FMS 1.3 !','This is our new console, a lot of new features has been added from last version. Please read documentation about it and be free to test any option.\r\n\r\nPandora FMS team.','2007-06-22 13:03:20');
+INSERT INTO `tnews` VALUES (1,'admin','Welcome to Pandora FMS 1.3.1!','This is the new Pandora FMS Console. A lot of new features have been added since last version. Please read the documentation about it, and feel free to test any option.\r\n\r\nThe Pandora FMS Team.','2007-06-22 13:03:20');
 
 INSERT INTO `tnetwork_profile` VALUES (1,'SNMP Basic management','Basic SNMP management (only first interface)');
 INSERT INTO `tnetwork_profile` VALUES (2,'Basic Server','Check basic server services and network latency. This checks SSH, FTP and HTTP. Also a ICMP host alive check.');

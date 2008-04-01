@@ -1,3 +1,8 @@
+2008-04-01  Jorge Gonzalez  <jorge.gonzalez@artica.es>
+
+	* pandoradb_data.sql: Changed welcome message.
+	* pandoradbdata_12_to_13.sql: Changed welcome message.
+
 2008-03-27  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb_data.sql: Added 'Compound only' alert type.

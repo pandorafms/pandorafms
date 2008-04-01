@@ -1,16 +1,13 @@
 <?php
 
-// Pandora FMS - the Free monitoring system
+// Pandora FMS - the Free Monitoring System
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
-// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
+// Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
+// Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation version 2
+// as published by the Free Software Foundation for version 2.
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -18,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-// Load global vars
+
 $accion = "";
 require("include/config.php");
 if (comprueba_login() != 0) {
@@ -184,7 +181,7 @@ if (isset($_POST['estado']) OR (isset($_POST['grupo'])) OR (isset($_POST['priori
 $sql0="SELECT * FROM tincidencia ".$sql1." ORDER BY actualizacion DESC";
 $sql1_count="SELECT COUNT(id_incidencia) FROM tincidencia ".$sql1;
 $sql1=$sql0;
-$sql1=$sql1." LIMIT $offset, $block_size";
+$sql1=$sql1." LIMIT $offset, ".$config["block_size"];
 
 echo "<h2>".$lang_label["incident_manag"]." &gt; ";
 echo $lang_label["manage_incidents"]."</h2>";

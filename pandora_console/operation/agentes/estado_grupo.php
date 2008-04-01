@@ -1,17 +1,12 @@
 <?php
-// Pandora FMS - the Free monitoring system
+// Pandora FMS - the Free Monitoring System
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development and project architecture and management
-// Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP additions
-// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
-// Additions to Pandora FMS 1.2 graph code 
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
-//
+// Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
+// Please see http://pandora.sourceforge.net for full contribution list
+
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
+// as published by the Free Software Foundation for version 2.
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -23,8 +18,8 @@
 	// Load global vars
 	require("include/config.php");
 	
-	if (! isset($config_show_lastalerts))
-		$config_show_lastalerts=1;
+	if (! isset($config["show_lastalerts"]))
+		$config["show_lastalerts"]=1;
 
 	if (give_acl ($id_user, 0, "AR") != 1) {
 		audit_db ($id_user, $REMOTE_ADDR, "ACL Violation", 
@@ -98,9 +93,12 @@
 					$seconds = $ahora_sec - $row1[4];
 					$id_agente_modulo = $row1[5];
 					
-					if ($seconds >= ($module_interval*2))
-						$grupo[$array_index]["down"]++;
-					elseif ($datos != 0) {
+
+					if ($config["show_unknown"] > 0){
+                        if ($seconds >= ($module_interval*2)){
+						    $grupo[$array_index]["down"]++;
+                        }
+                    } elseif ($datos != 0) {
 						$grupo[$array_index]["ok"]++;
 					} else {
 						$grupo[$array_index]["bad"]++;
@@ -108,7 +106,7 @@
 				}
 			}
 	
-			if ($config_show_lastalerts == 1){
+			if ($config["show_lastalerts"] == 1){
 				// How many alerts has been fired recently for this group:
 				// SQL Join to get alert status for agents belong this group
 				$sql1 = "SELECT SUM(talerta_agente_modulo.times_fired)
@@ -167,9 +165,11 @@
 					$celda = "<td class='top' style='border: 3px solid #aeff21;' width='100'>";
 
 					// Grey border if agent down
+                    if ($config["show_unknown"] > 0){
       					if ($grupo[$real_count]["down"] > 0)
 						$celda = "<td class='top' style='border: 3px solid #aabbaa;' width='100'>";
-						
+					}
+
 					// Yellow border if agents with alerts
 					if ($grupo[$real_count]["alerts"] > 0)
 						$celda = "<td class='top' style='border: 3px solid #ffea00;' width='100'>";
@@ -223,15 +223,17 @@
 							".$lang_label["fail"].": </td>
 							<td class='datos'><font class='redb'>".
 							$grupo[$real_count]["bad"]."</font></td>
-							</tr>
-							<tr>
+							</tr>";
+                    if ($config["show_unknown"] > 0){
+                        $celda .= "
+                            <tr>
 							<td class='datos'>
 							<img src='images/b_white.png' align='top' alt=''>
 							".$lang_label["down"].": </td>
 							<td class='datos'><font class='redb'>".
-							$grupo[$real_count]["down"]."</font></td>
-							</tr>";
-					if ($config_show_lastalerts == 1)
+							$grupo[$real_count]["down"]."</font></td></tr>";
+                    }
+					if ($config["show_lastalerts"] == 1)
 						$celda .= "<tr>
 						<td class='datos'>
 						<img src='images/b_yellow.png' align='top' alt=''>
@@ -240,7 +242,6 @@
 						$grupo[$real_count]["alerts"]."</font></td>
 						</tr>";
 					$celda .= "</table></span></a>";
-
 			
 					// Render network exec module button, only when this group is writtable by user
 					if (give_acl ($id_user, $grupo[$real_count]["id_grupo"], "AW") == 1) {

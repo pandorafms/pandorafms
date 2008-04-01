@@ -43,7 +43,7 @@ if (comprueba_login() != 0) {
 if (isset($_GET["id_agente"])){
 	$id_agente = $_GET["id_agente"];
 
-	$id_grupo_alerta = give_db_value ("id_grupo", "tagente", "id_agente", $id_agente);
+	$id_grupo_alerta = get_db_value ("id_grupo", "tagente", "id_agente", $id_agente);
 	if (give_acl($id_user, $id_grupo_alerta, "AR") == 0) {
 		audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access alert view");
 		include ("general/noaccess.php");
@@ -121,7 +121,7 @@ if (isset($_GET["id_agente"])){
 			if ($data["times_fired"] <> 0){
 				echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_red.png' title='".$lang_label["fired"]."'>";
 				echo "</td>";
-				$id_grupo_alerta = give_db_value ("id_grupo", "tagente", "id_agente", $id_agente);
+				$id_grupo_alerta = get_db_value ("id_grupo", "tagente", "id_agente", $id_agente);
 				if (give_acl($id_user, $id_grupo_alerta, "AW") == 1) {
 					echo "<td align='center' class='".$tdcolor."'>";
 					echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&validate_alert=".$data["id_aam"]."'><img src='images/ok.png'></a>";
@@ -134,10 +134,6 @@ if (isset($_GET["id_agente"])){
 
 	} else {
 		echo "<div class='nf'>".$lang_label["no_alerts"]."</div>";
-	      	$id_user = $_SESSION["id_usuario"];
-	if ( (give_acl($id_user, 0, "LM")==1) OR (give_acl($id_user, 0, "AW")==1 ) OR (give_acl($id_user, 0, "PM")==1) OR (give_acl($id_user, 0, "DM")==1) OR (give_acl($id_user, 0, "UM")==1 )){
-	      echo "&nbsp;<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=$id_agente'><input type='submit' class='sub next' name='crt' value='".$lang_label["create_alert"]."'></form>";
-	      }
 	}
 
 } else {

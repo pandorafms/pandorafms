@@ -1,15 +1,12 @@
 <?php
-// Pandora FMS - the Free monitoring system
+// Pandora FMS - the Free Monitoring System
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
-// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
+// Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
+// Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation version 2
+// as published by the Free Software Foundation for version 2.
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -105,7 +102,7 @@ if (isset($_GET["check"])){
 // Mass-process DELETE
 if (isset($_POST["deletebt"])){
 	$count=0;
-	while ($count <= $block_size){
+	while ($count <= $config["block_size"]){
 		if (isset($_POST["eventid".$count])){
 			$event_id = $_POST["eventid".$count];
 			// Look for event_id following parameters: id_group.
@@ -124,7 +121,7 @@ if (isset($_POST["deletebt"])){
 // Mass-process UPDATE
 if (isset($_POST["updatebt"])){
 	$count=0;
-	while ($count <= $block_size){
+	while ($count <= $config["block_size"]){
 		if (isset($_POST["eventid".$count])){
 			$id_evento = $_POST["eventid".$count];
 			$id_group = gime_idgroup_from_idevent($id_evento);
@@ -170,10 +167,6 @@ if (isset($_POST["event"]))
 
 echo "<h2>".$lang_label["events"]." &gt; ".$lang_label["event_main_view"]."</h2>";
 echo "<table width=100%>";
-echo "<tr><td>";
-echo "<table cellpadding='4' cellspacing='4' class='databox'>";
-echo "<td colspan='2' valign='top'>";
-echo "<h3>".$lang_label["filter"]."</h3></td></tr>";
 echo "<tr>";
 echo "<form method='post' action='index.php?sec=eventos&sec2=operation/events/events&refr=60'>";
 echo "<td>".$lang_label["group"]."</td>";
@@ -204,13 +197,6 @@ echo "</select>";
 echo "</form>";
 echo "<td valign='middle'>";
 echo "<noscript><input type='submit' class='sub' value='".$lang_label["show"]."'></noscript>";
-echo "</td>";
-echo "</table>";
-echo "<td align='right'>";
-echo "<table cellpadding=0 cellspacing=0 border=0>";
-echo "<tr><td>";
-echo "<img src='reporting/fgraph.php?tipo=group_events&width=300&height=130'>";
-echo "</td></tr></table>";
 
 echo "</table>";
 
@@ -260,15 +246,15 @@ if ($total_events > 0){
 	// Prepare index for pagination. Prepare queries
 	if ($event=="All"){
 		if (isset($ev_group) && ($ev_group > 1)) {
-			$sql2="SELECT * FROM tevento WHERE id_grupo = '$ev_group' ORDER BY timestamp DESC LIMIT $offset, $block_size";
+			$sql2="SELECT * FROM tevento WHERE id_grupo = '$ev_group' ORDER BY timestamp DESC LIMIT $offset, ".$config["block_size"];
 		} else {
-			$sql2="SELECT * FROM tevento ORDER BY timestamp DESC LIMIT $offset, $block_size";
+			$sql2="SELECT * FROM tevento ORDER BY timestamp DESC LIMIT $offset, ".$config["block_size"];
 		}
 	} else {
 		if (isset($ev_group) && ($ev_group > 1)) {
-			$sql2="SELECT * FROM tevento WHERE evento = '$event' AND id_grupo = '$ev_group' ORDER BY timestamp DESC LIMIT $offset, $block_size";
+			$sql2="SELECT * FROM tevento WHERE evento = '$event' AND id_grupo = '$ev_group' ORDER BY timestamp DESC LIMIT $offset, ".$config["block_size"];
 		} else {
-			$sql2="SELECT * FROM tevento WHERE evento = '$event' ORDER BY timestamp DESC LIMIT $offset, $block_size";
+			$sql2="SELECT * FROM tevento WHERE evento = '$event' ORDER BY timestamp DESC LIMIT $offset, ".$config["block_size"];
 		}
 	}
 

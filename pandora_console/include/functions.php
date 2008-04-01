@@ -2,11 +2,19 @@
 
 // Pandora FMS - the Free Monitoring System
 // ========================================
-// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development, project architecture and management.
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP code additions
+// Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation for version 2.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 function pandora_help ($id, $return = false) {
@@ -318,8 +326,8 @@ function pagination ($count, $url, $offset ) {
 	$block_limit = 15; // Visualize only $block_limit blocks
 	if ($count > $config["block_size"]){
 		// If exists more registers than I can put in a page, calculate index markers
-		$index_counter = ceil($count/$block_size); // Number of blocks of block_size with data
-		$index_page = ceil($offset/$block_size)-(ceil($block_limit/2)); // block to begin to show data;
+		$index_counter = ceil($count/$config["block_size"]); // Number of blocks of block_size with data
+		$index_page = ceil($offset/$config["block_size"])-(ceil($block_limit/2)); // block to begin to show data;
 		if ($index_page < 0)
 			$index_page = 0;
 
@@ -352,7 +360,7 @@ function pagination ($count, $url, $offset ) {
 		echo "&nbsp;";
 		// Show PREVIOUS button
 		if ($index_page > 0){
-			$index_page_prev= ($index_page-(floor($block_limit/2)))*$block_size;
+			$index_page_prev= ($index_page-(floor($block_limit/2)))*$config["block_size"];
 			if ($index_page_prev < 0)
 				$index_page_prev = 0;
 			echo '<a href="'.$url.'&offset='.$index_page_prev.'"><img src="images/control_rewind_blue.png" class="bot"></a>';
@@ -361,10 +369,10 @@ function pagination ($count, $url, $offset ) {
 		// Draw blocks markers
 		// $i stores number of page
 		for ($i = $inicio_pag; $i < $index_limit; $i++) {
-			$inicio_bloque = ($i * $block_size);
-			$final_bloque = $inicio_bloque + $block_size;
+			$inicio_bloque = ($i * $config["block_size"]);
+			$final_bloque = $inicio_bloque + $config["block_size"];
 			if ($final_bloque > $count){ // if upper limit is beyond max, this shouldnt be possible !
-				$final_bloque = ($i-1)*$block_size + $count-(($i-1) * $block_size);
+				$final_bloque = ($i-1)*$config["block_size"] + $count-(($i-1) * $config["block_size"]);
 			}
 			echo "<span>";
 			
@@ -383,9 +391,9 @@ function pagination ($count, $url, $offset ) {
 		// Show NEXT PAGE (fast forward)
 		// Index_counter stores max of blocks
 		if (($paginacion_maxima == 1) AND (($index_counter - $i) > 0)) {
-				$prox_bloque = ($i+ceil($block_limit/2))*$block_size;
+				$prox_bloque = ($i+ceil($block_limit/2))*$config["block_size"];
 				if ($prox_bloque > $count)
-					$prox_bloque = ($count -1) - $block_size;
+					$prox_bloque = ($count -1) - $config["block_size"];
 				echo '<a href="'.$url.'&offset='.$prox_bloque.'">';
 				echo "<img class='bot' src='images/control_fastforward_blue.png'></a> ";
 				$i = $index_counter;
@@ -394,8 +402,8 @@ function pagination ($count, $url, $offset ) {
 		// get offset for index calculation
 		// Draw "last" block link, ajust for last block will be the same
 		// as painted in last block (last integer block).	
-		if (($count - $block_size) > 0){
-			$myoffset = floor(($count-1)/ $block_size)* $block_size;
+		if (($count - $config["block_size"]) > 0){
+			$myoffset = floor(($count-1)/ $config["block_size"])* $config["block_size"];
 			echo '<a href="'.$url.'&offset='.$myoffset.'">';
 			echo "<img class='bot' src='images/control_end_blue.png'>";
 			echo "</a>";

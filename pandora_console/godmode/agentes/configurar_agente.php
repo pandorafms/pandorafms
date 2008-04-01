@@ -1,11 +1,19 @@
 <?php
 // Pandora FMS - the Free Monitoring System
 // ========================================
-// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development, project architecture and management.
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP code additions
+// Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation for version 2.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
 require("include/config.php");
@@ -27,6 +35,7 @@ else {
 // Get passed variables
 $tab = get_parameter_get("tab","main");
 $form_moduletype = get_parameter_post ("form_moduletype");
+$form_alerttype = get_parameter_post ("form_alerttype");
 
 // Init vars
 $descripcion = "";
@@ -670,7 +679,11 @@ case "module":
         else 
             require "module_manager_editor.php";
 		break;
-case "alert": 	require "alert_manager.php";
+case "alert": 	
+        if ($form_alerttype == "")
+            require "alert_manager.php";
+        else
+            require "alert_manager_editor.php";
 		break;
 case "template":require "agent_template.php";
 		break;

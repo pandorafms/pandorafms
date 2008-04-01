@@ -21,9 +21,9 @@
 require("include/config.php");
 
 function datos_raw($id_agente_modulo, $periodo){
-	require("include/config.php");
-	require("include/languages/language_".$language_code.".php");
-	$id_user = $_SESSION["id_usuario"];
+    global $config;
+	require("include/languages/language_".$config["language"].".php");
+	$id_user = $config["id_user"];
 	$periodo_label = $periodo;
 	switch ($periodo) {
 		case "mes":
@@ -41,7 +41,7 @@ function datos_raw($id_agente_modulo, $periodo){
 	}
 	$periodo = time() - $periodo;
 	$id_agent = give_agent_id_from_module_id ($id_agente_modulo);
-	$id_group = give_db_value ("id_grupo", "tagente", "id_agente", $id_agent);
+	$id_group = get_db_value ("id_grupo", "tagente", "id_agente", $id_agent);
 	// Different query for string data type
 	$id_tipo_modulo = dame_id_tipo_modulo_agentemodulo($id_agente_modulo);
 	if ( (dame_nombre_tipo_modulo($id_tipo_modulo) == "generic_data_string" ) OR

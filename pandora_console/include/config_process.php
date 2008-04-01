@@ -1,12 +1,20 @@
 <?PHP
 
-// Pandora FMS - the Free monitoring system
+// Pandora FMS - the Free Monitoring System
 // ========================================
-// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development, project architecture and management.
+// Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
+// Please see http://pandora.sourceforge.net for full contribution list
+
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation for version 2.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 //Pandora Version
 if (!isset($build_version))
@@ -54,6 +62,10 @@ if($result2=mysql_query("SELECT * FROM tconfig")){
                         break;  
         case "style": $config["style"]=$row2["value"];
                         break;
+        case "show_unknown": $config["show_unknown"] = $row2["value"];
+                            break;
+        case "show_lastalerts": $config["show_lastalerts"] = $row2["value"];
+                            break;
         }
     }
 } else {

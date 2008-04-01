@@ -1,3 +1,11 @@
+2008-04-01  Sancho Lerena <slerena@gmail.com>
+
+	* bin/pandora_prediction: Fixed several problems with
+	prediction on anomaly detection. Tested and works fine for me.
+
+	* DB.pm: Fixed problem in combined alerts. Removed some
+	log entries.
+
 2008-04-01  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/tentacle_serverd: Changed default port and address (now

@@ -105,7 +105,7 @@ more packages, install using a similar command. Please refer documentation about
 prerequisites to know what packages you need).
 
 	apt-get install libdate-manip-perl snmp snmpd libsnmp-perl libtime-format-perl \
-	libxml-simple-perl libnetaddr-ip-perl libdbi-perl libxml-simple-perl libnetaddr-ip-perl
+	libxml-simple-perl libnetaddr-ip-perl libdbi-perl libxml-simple-perl
 
 If you have not installed developer tools, install with metapackage:
 

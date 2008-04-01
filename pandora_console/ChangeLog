@@ -1,3 +1,10 @@
+2008-04-01 Sancho Lerena <slerena@gmail.com>
+
+	* pandoradb_data.sql: Updated default Pandora FMS logfile alert.
+
+	* operation/agentes/estado_alertas.php: Button to create alert is not shown
+	anymore. 
+
 2008-03-19 Manuel Arostegui <marostegui@artica.es>
 
 	* pandora_console.spec: Solved a problem with Suse based

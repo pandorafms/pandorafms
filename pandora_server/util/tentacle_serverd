@@ -3,7 +3,7 @@
 # Tentacle server simple startup script (no pid file is written).
 # Ramon Novoa  <rnovoa@artica.es>
 # Linux Version (generic)
-# v0.1 Build 080307
+# v0.1 Build 010407
 
 # chkconfig: 2345 55 25
 # description: Tentacle server
@@ -17,8 +17,8 @@ TENTACLE_DAEMON="tentacle_server"
 TENTACLE_PATH="/usr/local/bin"
 TENTACLE_USER="pandora"
 
-TENTACLE_ADDR="localhost"
-TENTACLE_PORT="1998"
+TENTACLE_ADDR="0.0.0.0"
+TENTACLE_PORT="41121"
 TENTACLE_EXT_OPTS=""
 
 # Sets the shell variable TENTACLE_PID to the PID of the Tentacle server (empty

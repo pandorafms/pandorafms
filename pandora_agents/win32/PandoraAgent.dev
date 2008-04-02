@@ -1,7 +1,7 @@
 [Project]
 FileName=PandoraAgent.dev
 Name=PandoraAgent
-UnitCount=69
+UnitCount=71
 Type=1
 Ver=1
 ObjFiles=
@@ -12,7 +12,7 @@ ResourceIncludes=
 MakeIncludes=
 Compiler=
 CppCompiler=
-Linker=-lole32_@@_-loleaut32_@@_-luuid_@@_-lpsapi_@@_-lwsock32_@@_-lz_@@_-liphlpapi_@@_-lnetapi32_@@_-lws2_32_@@_-lcrypto_@@_-lgdi32_@@_-lcurldll_@@_
+Linker=-lole32_@@_-loleaut32_@@_-luuid_@@_-lpsapi_@@_-lwsock32_@@_-lz_@@_-liphlpapi_@@_-lnetapi32_@@_-lws2_32_@@_-lcrypto_@@_-lodbc++_@@_-lgdi32_@@_-lcurldll_@@_
 IsCpp=1
 Icon=
 ExeOutput=
@@ -27,7 +27,7 @@ CustomMakefile=
 IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=0
-CompilerSettings=0000000000000001000000
+CompilerSettings=0000000000000000000000
 
 [Unit1]
 FileName=main.cc
@@ -731,6 +731,26 @@ BuildCmd=
 FileName=ftp\pandora_ftp_test.h
 CompileCpp=1
 Folder=FTP
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit70]
+FileName=modules\pandora_module_odbc.cc
+CompileCpp=1
+Folder=Modules
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit71]
+FileName=modules\pandora_module_odbc.h
+CompileCpp=1
+Folder=Modules
 Compile=1
 Link=1
 Priority=1000

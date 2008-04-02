@@ -26,6 +26,7 @@
 #include "pandora_module_freedisk.h"
 #include "pandora_module_freememory.h"
 #include "pandora_module_cpuusage.h"
+#include "pandora_module_odbc.h"
 #include "../pandora_strutils.h"
 #include <list>
 
@@ -42,9 +43,11 @@ using namespace Pandora_Strutils;
 #define TOKEN_FREEDISK    ("module_freedisk ")
 #define TOKEN_FREEMEMORY  ("module_freememory")
 #define TOKEN_CPUUSAGE    ("module_cpuusage ")
+#define TOKEN_ODBC        ("module_odbc ")
 #define TOKEN_MAX         ("module_max ")
 #define TOKEN_MIN         ("module_min ")
 #define TOKEN_DESCRIPTION ("module_description ")
+#define TOKEN_ODBC_QUERY  ("module_odbc_query ")
 
 string
 parseLine (string line, string token) {
@@ -77,7 +80,8 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
         string                 module_name, module_type, module_exec;
         string                 module_min, module_max, module_description;
         string                 module_interval, module_proc, module_service;
-	string                 module_freedisk, module_cpuusage, module_freememory;
+	string                 module_freedisk, module_cpuusage, module_odbc;
+	string                 module_odbc_query, module_dsn, module_freememory;
         Pandora_Module        *module;
         bool                   numeric;
 	Module_Type            type;
@@ -91,6 +95,8 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_exec        = "";
 	module_proc        = "";
 	module_service     = "";
+	module_odbc        = "";
+	module_odbc_query  = "";
 
         stringtok (tokens, definition, "\n");
         
@@ -128,6 +134,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_cpuusage == "") {
                         module_cpuusage = parseLine (line, TOKEN_CPUUSAGE);
 		}
+		if (module_odbc == "") {
+                        module_odbc = parseLine (line, TOKEN_ODBC);
+                }
                 if (module_max == "") {
                         module_max = parseLine (line, TOKEN_MAX);
                 }
@@ -137,10 +146,14 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
                 if (module_description == "") {
                         module_description = parseLine (line, TOKEN_DESCRIPTION);
                 }
-                
+                if (module_odbc_query == "") {
+                        module_odbc_query = parseLine (line, TOKEN_ODBC_QUERY);
+                }
+		
                 iter++;
         }
-        
+
+	/* Create module objects */
         if (module_exec != "") {
                 module = new Pandora_Module_Exec (module_name,
                                                   module_exec);
@@ -153,10 +166,8 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	} else if (module_freedisk != "") {
                 module = new Pandora_Module_Freedisk (module_name,
 						      module_freedisk);
-		
 	} else if (module_freememory != "") {
                 module = new Pandora_Module_Freememory (module_name);
-		
 	} else if (module_cpuusage != "") {
 		int cpu_id;
 
@@ -170,12 +181,15 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		
                 module = new Pandora_Module_Cpuusage (module_name,
 						      cpu_id);
-		
-        }
-	else {
+
+	} else if (module_odbc != "") {
+		module = new Pandora_Module_Odbc (module_name,
+						  module_odbc,
+						  module_odbc_query);
+        } else {
                 return NULL;
         }
-	
+
 	if (module_description != "") {
                 module->setDescription (module_description);
         }

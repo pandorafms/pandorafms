@@ -37,7 +37,8 @@ Pandora_SSH_Test::Pandora_SSH_Test () {
         
         conf_file = Pandora::getPandoraInstallDir ();
         conf_file += "pandora_agent.conf";
-        conf = new Pandora::Pandora_Agent_Conf (conf_file);
+        conf = Pandora::Pandora_Agent_Conf::getInstance ();
+	conf->setFile (conf_file);
         
         ssh_client = new SSH::Pandora_Ssh_Client ();
 }

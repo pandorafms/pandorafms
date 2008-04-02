@@ -27,8 +27,29 @@ using namespace Pandora;
 
 #define MAX_KEYS 100
 
+Pandora::Pandora_Agent_Conf::Pandora_Agent_Conf () {
+        this->key_values = NULL;
+}
+
 /**
- * Creates a new Pandora_Agent_Conf.
+ * Destroy a Pandora_Agent_Conf object.
+ */
+Pandora::Pandora_Agent_Conf::~Pandora_Agent_Conf () {
+        delete key_values; 
+}
+
+Pandora_Agent_Conf *
+Pandora::Pandora_Agent_Conf::getInstance () {
+	static Pandora_Agent_Conf *conf = NULL;
+
+	if (conf)
+		return conf;
+	conf = new Pandora_Agent_Conf ();
+	return conf;
+}
+
+/**
+ * Sets configuration file to Pandora_Agent_Conf object instance.
  * 
  * It parses the filename and initialize the internal structures
  * of configuration values. The configuration file consist of a number of
@@ -38,11 +59,14 @@ using namespace Pandora;
  *
  * @param filename Configuration file to open.
  */
-Pandora::Pandora_Agent_Conf::Pandora_Agent_Conf (string filename) {
-        ifstream     file (filename.c_str ());
+void
+Pandora::Pandora_Agent_Conf::setFile (string filename) {
+	ifstream     file (filename.c_str ());
         string       buffer;
         unsigned int pos;
-        
+
+	if (this->key_values)
+		delete this->key_values;
         this->key_values = new list<Key_Value> ();
         
         if (!file.is_open ()) {
@@ -66,13 +90,6 @@ Pandora::Pandora_Agent_Conf::Pandora_Agent_Conf (string filename) {
                 }
         }
         file.close ();
-}
-
-/**
- * Destroy a Pandora_Agent_Conf object.
- */
-Pandora::Pandora_Agent_Conf::~Pandora_Agent_Conf () {
-        delete key_values; 
 }
 
 /**

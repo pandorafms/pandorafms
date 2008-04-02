@@ -94,6 +94,8 @@ Pandora_Module::parseModuleKindFromString (string kind) {
                 return MODULE_FREEMEMORY;
         } else if (kind == module_cpuusage_str) {
                 return MODULE_CPUUSAGE;
+	} else if (kind == module_odbc_str) {
+                return MODULE_ODBC;
         } else {
                 return MODULE_0;
         }

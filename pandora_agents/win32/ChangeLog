@@ -1,3 +1,8 @@
+2008-04-02  Manuel Arostegui <marostegui@artica.es>
+
+	* installer/pandora_1.3.mpi: Adapted for the 1.3.1 Windows Installer
+	  with the tentacle support and tentacle util included.
+
 2008-04-02  Ramon Novoa  <rnovoa@artica.es>
 
 	* bin/pandora_agent.conf: Changed default transfer mode

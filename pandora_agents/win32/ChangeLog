@@ -1,3 +1,8 @@
+2008-04-02  Ramon Novoa  <rnovoa@artica.es>
+
+	* bin/pandora_agent.conf: Changed default transfer mode
+	  to tentacle.
+
 2008-03-25  Ramon Novoa  <rnovoa@artica.es>
 
 	*  bin/PandoraAgent.exe: Updated to r764.

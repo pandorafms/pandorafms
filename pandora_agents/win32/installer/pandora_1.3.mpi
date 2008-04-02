@@ -11,6 +11,12 @@ ApplicationID
 ApplicationURL
 http://pandora.sourceforge.net
 
+AutoRefreshFiles
+Yes
+
+BuildFailureAction
+{Fail (recommended)}
+
 CancelledInstallAction
 {Rollback and Stop}
 
@@ -30,7 +36,7 @@ CompressionMethod
 zlib
 
 Copyright
-2004-2007
+2004-2008
 
 DefaultLanguage
 English
@@ -54,7 +60,7 @@ InstallPassword
 {}
 
 InstallVersion
-1.3.0.3
+1.3.1.0
 
 Language,de
 Yes
@@ -66,6 +72,15 @@ Language,es
 Yes
 
 Language,fr
+Yes
+
+Language,hu
+Yes
+
+Language,it
+Yes
+
+Language,nl
 Yes
 
 Language,pl
@@ -87,13 +102,13 @@ PackageName
 <%ShortAppName%>
 
 PackagePackager
-{Raul Mateos <raulofpandora@gmail.com>, Sancho Lerena <sancho.lerena@artica.es>}
+{Raul Mateos <raulofpandora@gmail.com>, Sancho Lerena <sancho.lerena@artica.es>, Manuel Arostegui <marostegui@artica.es>}
 
 PackageRelease
 <%PatchVersion%>
 
 PackageSummary
-{This is a installer for Pandora FMS agent for windows plattforms}
+{This is the installer for Pandora FMS agent for windows plattforms}
 
 PackageVersion
 <%MajorVersion%>.<%MinorVersion%>
@@ -105,7 +120,7 @@ ProjectID
 0EA13B96-1BB2-4238-B248-101B4F906C15
 
 ProjectVersion
-1.2.0.2
+1.2.5.1
 
 SaveOnlyToplevelDirs
 No
@@ -152,7 +167,7 @@ test
 {Testing Switch Yes No {} {run uninstaller without uninstalling any files}}
 
 }
-FileGroup ::946FC43B-0E32-4C38-86EF-4F9252C67E16 -setup Install -active Yes -platforms {Linux-x86 Windows TarArchive AIX-ppc FreeBSD-4-x86 FreeBSD-x86 HPUX-hppa Solaris-sparc} -name {Program Files} -parent FileGroups
+FileGroup ::946FC43B-0E32-4C38-86EF-4F9252C67E16 -setup Install -active Yes -platforms {Linux-x86 Windows TarArchive AIX-ppc FreeBSD-4-x86 FreeBSD-x86 HPUX-hppa Solaris-sparc AIX-ppc FreeBSD-4-x86 FreeBSD-x86 HPUX-hppa MacOS-X Solaris-sparc} -name {Program Files} -parent FileGroups
 File ::A917C2BF-3079-4FAC-9487-56873FCF8381 -type dir -name C:/pandora_installer/bin/help -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::9A0A7B55-1B33-4480-8D1B-3C7539A8529C -name how_to_keys.html -parent A917C2BF-3079-4FAC-9487-56873FCF8381
 File ::C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E -type dir -name images -parent A917C2BF-3079-4FAC-9487-56873FCF8381
@@ -182,6 +197,7 @@ File ::B47EAE44-63B4-4B6F-86A0-00089DDB2437 -name puttygen.exe -parent 6E5B73B7-
 File ::F792F4E1-B3E9-43AB-A17B-44E2B3013093 -name tail.exe -parent 6E5B73B7-8B81-48D7-BF49-59D8D92FB830
 File ::306C9DF0-CC33-48DC-8AFC-2B99ED4E00A0 -name tr.exe -parent 6E5B73B7-8B81-48D7-BF49-59D8D92FB830
 File ::1900A2B4-09F5-468A-90AD-75CBE17C727B -name wc.exe -parent 6E5B73B7-8B81-48D7-BF49-59D8D92FB830
+File ::B3D9FD4E-6021-45E6-B9B8-F81CC940540E -name tentacle_client.exe -parent 6E5B73B7-8B81-48D7-BF49-59D8D92FB830
 File ::EE3962D4-48B8-4715-B986-40794679FC89 -name C:/pandora_installer/bin/libcurl.dll -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::0C6E0B9F-E094-42D4-9376-EAC5E3E475F7 -name C:/pandora_installer/bin/libeay32.dll -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::03A7EA5A-D6FC-4427-B35C-0288C07813B6 -name C:/pandora_installer/bin/pandora_agent.conf -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
@@ -193,8 +209,8 @@ File ::423325D1-5C33-41ED-965A-F7E1F2A2C32E -name C:/pandora_installer/README.tx
 File ::9F4D1B79-C9AE-4F1F-AC50-876657B3361C -type dir -name C:/pandora_installer/bin/scripts -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::8C09E6D4-4B09-4AA5-B025-441389C76F70 -name start_pandora_agent.bat -parent 9F4D1B79-C9AE-4F1F-AC50-876657B3361C
 File ::BA05415F-E246-45AE-A0B1-21C7AB400402 -name stop_pandora_agent.bat -parent 9F4D1B79-C9AE-4F1F-AC50-876657B3361C
-Component ::FB96078B-BA3C-498C-8C20-B01C1F28ACA9 -setup Install -active Yes -platforms Windows -name {Default Component} -parent Components
-SetupType ::A87C1A6B-ED26-4B07-8736-750725FF34E4 -setup Install -active Yes -platforms Windows -name Typical -parent SetupTypes
+Component ::FB96078B-BA3C-498C-8C20-B01C1F28ACA9 -setup Install -active Yes -platforms {Windows AIX-ppc FreeBSD-4-x86 FreeBSD-x86 HPUX-hppa MacOS-X Solaris-sparc} -name {Default Component} -parent Components
+SetupType ::A87C1A6B-ED26-4B07-8736-750725FF34E4 -setup Install -active Yes -platforms {Windows AIX-ppc FreeBSD-4-x86 FreeBSD-x86 HPUX-hppa MacOS-X Solaris-sparc} -name Typical -parent SetupTypes
 
 InstallComponent 1957048E-B498-4FFF-A8BA-F2DF640463B1 -setup Install -type pane -title {Welcome Screen} -component Welcome -active Yes -parent StandardInstall
 InstallComponent DE1D4DF7-A35C-4228-8A25-07106AD77C9E -setup Install -type pane -title {License Agreement} -component License -active Yes -parent StandardInstall
@@ -734,11 +750,11 @@ ViewReadme
 946FC43B-0E32-4C38-86EF-4F9252C67E16,Destination
 <%InstallDir%>
 
+946FC43B-0E32-4C38-86EF-4F9252C67E16,FileSize
+10563561
+
 946FC43B-0E32-4C38-86EF-4F9252C67E16,Name
 {Program Files}
-
-946FC43B-0E32-4C38-86EF-4F9252C67E16,Size
-3888504
 
 96F7BA2D-A593-40DC-89C9-AE7895FD0984,CheckCondition
 {Before Action is Executed}
@@ -800,6 +816,9 @@ FB96078B-BA3C-498C-8C20-B01C1F28ACA9
 A87C1A6B-ED26-4B07-8736-750725FF34E4,Description,subst
 1
 
+A87C1A6B-ED26-4B07-8736-750725FF34E4,DisplayName,subst
+1
+
 A87C1A6B-ED26-4B07-8736-750725FF34E4,Name
 Typical
 
@@ -811,6 +830,57 @@ AA00EDED-9979-419F-A32C-DF1480E9EFF0,Alias
 
 ACFFE9C0-C404-4FD9-AD70-8F60E822DE65,Conditions
 {0 conditions}
+
+AIX-ppc,Active
+No
+
+AIX-ppc,DefaultDirectoryPermission
+0755
+
+AIX-ppc,DefaultFilePermission
+0755
+
+AIX-ppc,Executable
+<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
+
+AIX-ppc,FallBackToConsole
+Yes
+
+AIX-ppc,InstallDir
+<%Home%>/<%ShortAppName%>
+
+AIX-ppc,InstallMode
+Standard
+
+AIX-ppc,InstallType
+Typical
+
+AIX-ppc,ProgramExecutable
+{}
+
+AIX-ppc,ProgramFolderAllUsers
+No
+
+AIX-ppc,ProgramFolderName
+<%AppName%>
+
+AIX-ppc,ProgramLicense
+<%InstallDir%>/LICENSE.txt
+
+AIX-ppc,ProgramName
+{}
+
+AIX-ppc,ProgramReadme
+<%InstallDir%>/README.txt
+
+AIX-ppc,PromptForRoot
+Yes
+
+AIX-ppc,RequireRoot
+No
+
+AIX-ppc,RootInstallDir
+/usr/local/<%ShortAppName%>
 
 B2E20690-C57D-4286-9977-F2541E04D71F,BackButton,subst
 1
@@ -1109,6 +1179,9 @@ F71872ED-E931-4B96-B4F8-1F65356FE848,Action
 FB96078B-BA3C-498C-8C20-B01C1F28ACA9,Description,subst
 1
 
+FB96078B-BA3C-498C-8C20-B01C1F28ACA9,DisplayName,subst
+1
+
 FB96078B-BA3C-498C-8C20-B01C1F28ACA9,FileGroups
 946FC43B-0E32-4C38-86EF-4F9252C67E16
 
@@ -1117,6 +1190,159 @@ FB96078B-BA3C-498C-8C20-B01C1F28ACA9,Name
 
 FB96078B-BA3C-498C-8C20-B01C1F28ACA9,RequiredComponent
 Yes
+
+FreeBSD-4-x86,Active
+No
+
+FreeBSD-4-x86,DefaultDirectoryPermission
+0755
+
+FreeBSD-4-x86,DefaultFilePermission
+0755
+
+FreeBSD-4-x86,Executable
+<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
+
+FreeBSD-4-x86,FallBackToConsole
+Yes
+
+FreeBSD-4-x86,InstallDir
+<%Home%>/<%ShortAppName%>
+
+FreeBSD-4-x86,InstallMode
+Standard
+
+FreeBSD-4-x86,InstallType
+Typical
+
+FreeBSD-4-x86,ProgramExecutable
+{}
+
+FreeBSD-4-x86,ProgramFolderAllUsers
+No
+
+FreeBSD-4-x86,ProgramFolderName
+<%AppName%>
+
+FreeBSD-4-x86,ProgramLicense
+<%InstallDir%>/LICENSE.txt
+
+FreeBSD-4-x86,ProgramName
+{}
+
+FreeBSD-4-x86,ProgramReadme
+<%InstallDir%>/README.txt
+
+FreeBSD-4-x86,PromptForRoot
+Yes
+
+FreeBSD-4-x86,RequireRoot
+No
+
+FreeBSD-4-x86,RootInstallDir
+/usr/local/<%ShortAppName%>
+
+FreeBSD-x86,Active
+No
+
+FreeBSD-x86,DefaultDirectoryPermission
+0755
+
+FreeBSD-x86,DefaultFilePermission
+0755
+
+FreeBSD-x86,Executable
+<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
+
+FreeBSD-x86,FallBackToConsole
+Yes
+
+FreeBSD-x86,InstallDir
+<%Home%>/<%ShortAppName%>
+
+FreeBSD-x86,InstallMode
+Standard
+
+FreeBSD-x86,InstallType
+Typical
+
+FreeBSD-x86,ProgramExecutable
+{}
+
+FreeBSD-x86,ProgramFolderAllUsers
+No
+
+FreeBSD-x86,ProgramFolderName
+<%AppName%>
+
+FreeBSD-x86,ProgramLicense
+<%InstallDir%>/LICENSE.txt
+
+FreeBSD-x86,ProgramName
+{}
+
+FreeBSD-x86,ProgramReadme
+<%InstallDir%>/README.txt
+
+FreeBSD-x86,PromptForRoot
+Yes
+
+FreeBSD-x86,RequireRoot
+No
+
+FreeBSD-x86,RootInstallDir
+/usr/local/<%ShortAppName%>
+
+HPUX-hppa,Active
+No
+
+HPUX-hppa,DefaultDirectoryPermission
+0755
+
+HPUX-hppa,DefaultFilePermission
+0755
+
+HPUX-hppa,Executable
+<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
+
+HPUX-hppa,FallBackToConsole
+Yes
+
+HPUX-hppa,InstallDir
+<%Home%>/<%ShortAppName%>
+
+HPUX-hppa,InstallMode
+Standard
+
+HPUX-hppa,InstallType
+Typical
+
+HPUX-hppa,ProgramExecutable
+{}
+
+HPUX-hppa,ProgramFolderAllUsers
+No
+
+HPUX-hppa,ProgramFolderName
+<%AppName%>
+
+HPUX-hppa,ProgramLicense
+<%InstallDir%>/LICENSE.txt
+
+HPUX-hppa,ProgramName
+{}
+
+HPUX-hppa,ProgramReadme
+<%InstallDir%>/README.txt
+
+HPUX-hppa,PromptForRoot
+Yes
+
+HPUX-hppa,RequireRoot
+No
+
+HPUX-hppa,RootInstallDir
+/usr/local/<%ShortAppName%>
 
 Linux-x86,Active
 No
@@ -1167,6 +1393,108 @@ Linux-x86,RequireRoot
 No
 
 Linux-x86,RootInstallDir
+/usr/local/<%ShortAppName%>
+
+MacOS-X,Active
+No
+
+MacOS-X,DefaultDirectoryPermission
+0755
+
+MacOS-X,DefaultFilePermission
+0755
+
+MacOS-X,Executable
+<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
+
+MacOS-X,FallBackToConsole
+Yes
+
+MacOS-X,InstallDir
+<%Home%>/<%ShortAppName%>
+
+MacOS-X,InstallMode
+Standard
+
+MacOS-X,InstallType
+Typical
+
+MacOS-X,ProgramExecutable
+{}
+
+MacOS-X,ProgramFolderAllUsers
+No
+
+MacOS-X,ProgramFolderName
+<%AppName%>
+
+MacOS-X,ProgramLicense
+<%InstallDir%>/LICENSE.txt
+
+MacOS-X,ProgramName
+{}
+
+MacOS-X,ProgramReadme
+<%InstallDir%>/README.txt
+
+MacOS-X,PromptForRoot
+Yes
+
+MacOS-X,RequireRoot
+No
+
+MacOS-X,RootInstallDir
+/usr/local/<%ShortAppName%>
+
+Solaris-sparc,Active
+No
+
+Solaris-sparc,DefaultDirectoryPermission
+0755
+
+Solaris-sparc,DefaultFilePermission
+0755
+
+Solaris-sparc,Executable
+<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
+
+Solaris-sparc,FallBackToConsole
+Yes
+
+Solaris-sparc,InstallDir
+<%Home%>/<%ShortAppName%>
+
+Solaris-sparc,InstallMode
+Standard
+
+Solaris-sparc,InstallType
+Typical
+
+Solaris-sparc,ProgramExecutable
+{}
+
+Solaris-sparc,ProgramFolderAllUsers
+No
+
+Solaris-sparc,ProgramFolderName
+<%AppName%>
+
+Solaris-sparc,ProgramLicense
+<%InstallDir%>/LICENSE.txt
+
+Solaris-sparc,ProgramName
+{}
+
+Solaris-sparc,ProgramReadme
+<%InstallDir%>/README.txt
+
+Solaris-sparc,PromptForRoot
+Yes
+
+Solaris-sparc,RequireRoot
+No
+
+Solaris-sparc,RootInstallDir
 /usr/local/<%ShortAppName%>
 
 TarArchive,Active
@@ -1268,13 +1596,73 @@ Windows,ProgramReadme
 Windows,WindowsIcon
 C:/pandora_installer/pandora.ico
 
+ZipArchive,Active
+No
+
+ZipArchive,CompressionLevel
+6
+
+ZipArchive,DefaultDirectoryPermission
+0755
+
+ZipArchive,DefaultFilePermission
+0755
+
+ZipArchive,Executable
+<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
+
+ZipArchive,FallBackToConsole
+Yes
+
+ZipArchive,InstallDir
+<%Home%>/<%ShortAppName%>
+
+ZipArchive,InstallMode
+Standard
+
+ZipArchive,InstallType
+Typical
+
+ZipArchive,OutputFileName
+<%ShortAppName%>-<%Version%>.zip
+
+ZipArchive,ProgramExecutable
+{}
+
+ZipArchive,ProgramFolderAllUsers
+No
+
+ZipArchive,ProgramFolderName
+<%AppName%>
+
+ZipArchive,ProgramLicense
+<%InstallDir%>/LICENSE.txt
+
+ZipArchive,ProgramName
+{}
+
+ZipArchive,ProgramReadme
+<%InstallDir%>/README.txt
+
+ZipArchive,PromptForRoot
+Yes
+
+ZipArchive,RequireRoot
+No
+
+ZipArchive,RootInstallDir
+/usr/local/<%ShortAppName%>
+
+ZipArchive,VirtualTextMap
+{<%InstallDir%> <%ShortAppName%>}
+
 }
 
 ::msgcat::mcmset de {
 1957048E-B498-4FFF-A8BA-F2DF640463B1,Message
 {Dies wird <%AppName%> Version <%Version%> auf Ihrem Computer installieren. 
 
-Es wird empfohlen, das Sie alle anderen Anwendungen schließen, bevor Sie fortfahren.
+Es wird empfohlen, das Sie alle anderen Anwendungen schlieÃŸen, bevor Sie fortfahren.
 
 Nach der Installierung sollten Sie Konfigurationsdatei editieren, um Server IP Adresse und andere Rahmen zu definieren.
 
@@ -1319,7 +1707,9 @@ Click Next to continue or Cancel to exit Setup.}
 <%InstallationCompleteText%>
 
 2B99A465-4666-445D-96BF-9C8F03CDAC60,Message
-{By default, Pandora FMS agent for Windows uses FTP method to copy XML data files to server.
+{By default, the Windows version of the Pandora FMS agent uses tentacle as a file transfer protocol, make sure you have your tentacle server up an running in the remote machine.
+
+If you want to use FTP method, instead, to copy XML data files to server. Just change it in the pandora_agent.conf file.
 
 If you want to use SFTP/SSH2, please generate both Public and Private keys and 
 save them as id_dsa.pub and id_dsa, OpenSSH format, into <%InstallDir%>\key folder.
@@ -1512,13 +1902,13 @@ StopPandoraService
 }
 ::msgcat::mcmset es {
 1957048E-B498-4FFF-A8BA-F2DF640463B1,Message
-{Este programa instalará <%AppName%> versión <%Version%> en su equipo. 
+{Este programa instalarÃ¡ <%AppName%> versiÃ³n <%Version%> en su equipo. 
 
 Se recomienda cerrar las demas aplicaciones antes de continuar.
 
-Al finalizar la instalación, debe editarse el fichero de configuración para definir la dirección IP del servidor y otros parámetros.
+Al finalizar la instalaciÃ³n, debe editarse el fichero de configuraciÃ³n para definir la direcciÃ³n IP del servidor y otros parÃ¡metros.
 
-Pulse siguiente para continuar o Cancelar para salir de la instalación.}
+Pulse siguiente para continuar o Cancelar para salir de la instalaciÃ³n.}
 
 1D572EE2-DD93-4F13-850E-DE0EEB1DA110,Message
 <%UninstallingApplicationText%>
@@ -1527,14 +1917,14 @@ Pulse siguiente para continuar o Cancelar para salir de la instalación.}
 <%InstallationCompleteText%>
 
 2B99A465-4666-445D-96BF-9C8F03CDAC60,Message
-{Por defecto Pandora FMS  utiliza FTP para el envío de ficheros XML al servidor. Puede utilizarse también SFTP/SSH2.
+{Por defecto Pandora FMS  utiliza FTP para el envÃ­o de ficheros XML al servidor. Puede utilizarse tambiÃ©n SFTP/SSH2.
 
-Si se utiliza este método, hay que generar previamente las claves públicas y privadas y guardarlas como id_dsa.pub e id_dsa, respectivamente en formato OpenSSH, dentro del directorio <%InstallDir%>\key.
+Si se utiliza este mÃ©todo, hay que generar previamente las claves pÃºblicas y privadas y guardarlas como id_dsa.pub e id_dsa, respectivamente en formato OpenSSH, dentro del directorio <%InstallDir%>\key.
 
-Más información en el documento "<%HelpGeneratingSSHKeys%>", que está incluido en la ayuda.}
+MÃ¡s informaciÃ³n en el documento "<%HelpGeneratingSSHKeys%>", que estÃ¡ incluido en la ayuda.}
 
 2B99A465-4666-445D-96BF-9C8F03CDAC60,Title
-{Generación de claves SSH}
+{GeneraciÃ³n de claves SSH}
 
 4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Message
 <%UninstallCompleteText%>
@@ -1543,33 +1933,33 @@ BF861387-DA7F-4986-B5BB-F77358B58603,Message
 <%InstallingApplicationText%>
 
 C6CE92F8-3842-4E58-A3A2-5B5D2F7AFB4B,Message
-{El último paso es configurar el agente.
+{El Ãºltimo paso es configurar el agente.
 
-Ahora se abrirá el fichero pandora_agent.conf para configurar la dirección IP del servidor y el nombre del agente (se utilizará en la consola web).
+Ahora se abrirÃ¡ el fichero pandora_agent.conf para configurar la direcciÃ³n IP del servidor y el nombre del agente (se utilizarÃ¡ en la consola web).
 
-Si el método de transferencia de ficheros que se va a utilizar es FTP, el parámetro server_pwd contiene la contraseña del usuario pandora, que debe tener permisos de escritura en el directorio del servidor, por defecto /var/spool/pandora/data_in.
+Si el mÃ©todo de transferencia de ficheros que se va a utilizar es FTP, el parÃ¡metro server_pwd contiene la contraseÃ±a del usuario pandora, que debe tener permisos de escritura en el directorio del servidor, por defecto /var/spool/pandora/data_in.
 
 Si se quiere utilizar SSH, deben comentarse las entradas relativas a FTP y generar las claves SSH.
 
-Una vez finalizada la configuración, el servicio puede iniciarse con el enlace creado.}
+Una vez finalizada la configuraciÃ³n, el servicio puede iniciarse con el enlace creado.}
 
 C6CE92F8-3842-4E58-A3A2-5B5D2F7AFB4B,Title
 {Configurar el agente Windows de Pandora FMS}
 
 EditConfiguration
-{Editar fichero de configuración}
+{Editar fichero de configuraciÃ³n}
 
 HelpGeneratingSSHKeys
-{Creación de claves SSH}
+{CreaciÃ³n de claves SSH}
 
 HowTo
 how_to_keys_es.html
 
 PandoraLicense
-{Licencia de Pandora FMS (inglés)}
+{Licencia de Pandora FMS (inglÃ©s)}
 
 Readme
-{Léeme (inglés)}
+{LÃ©eme (inglÃ©s)}
 
 StartPandoraService
 {Iniciar el servicio <%AppName%>}
@@ -1582,9 +1972,9 @@ StopPandoraService
 1957048E-B498-4FFF-A8BA-F2DF640463B1,Message
 {Ceci installera <%AppName%> version <%Version%> sur votre ordinateur. 
 
-Il est recommandé de fermer toutes les autres applications avant de continuer.
+Il est recommandÃ© de fermer toutes les autres applications avant de continuer.
 
-Après avoir terminé l'installation, il faut éditer le fichier de configuration pour définir l'adresse IP du serveur ainsi que d'autres paramètres.
+AprÃ¨s avoir terminÃ© l'installation, il faut Ã©diter le fichier de configuration pour dÃ©finir l'adresse IP du serveur ainsi que d'autres paramÃ¨tres.
 
 Cliquez sur SUIVANT pour continuer ou ANNULER pour quitter l'installation.}
 
@@ -1595,12 +1985,12 @@ Cliquez sur SUIVANT pour continuer ou ANNULER pour quitter l'installation.}
 <%InstallationCompleteText%>
 
 2B99A465-4666-445D-96BF-9C8F03CDAC60,Message
-{Par défaut, l'agent de Pandora FMS pour Windows utilise la méthode FTP de copier des fichiers de données XML au serveur.
+{Par dÃ©faut, l'agent de Pandora FMS pour Windows utilise la mÃ©thode FTP de copier des fichiers de donnÃ©es XML au serveur.
 
-Si vous voulez utiliser SFTP/SSH2, produisez s'il vous plaît des clés Publiques et Privées et 
-sauvez-les comme id_dsa.pub et id_dsa, avec le format d'OpenSSH, dans le réperotire <%InstallDir%>\key.
+Si vous voulez utiliser SFTP/SSH2, produisez s'il vous plaÃ®t des clÃ©s Publiques et PrivÃ©es et 
+sauvez-les comme id_dsa.pub et id_dsa, avec le format d'OpenSSH, dans le rÃ©perotire <%InstallDir%>\key.
 
-S'il vous plaît, lisez le document "<%HelpGeneratingSSHKeys%>" dans la chemise de documentation pour plus de renseignements.}
+S'il vous plaÃ®t, lisez le document "<%HelpGeneratingSSHKeys%>" dans la chemise de documentation pour plus de renseignements.}
 
 4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Message
 <%UninstallCompleteText%>
@@ -1612,10 +2002,10 @@ EditConfiguration
 {Modifier la configuration}
 
 StartPandoraService
-{Démarre le service <%AppName%>}
+{DÃ©marre le service <%AppName%>}
 
 StopPandoraService
-{Arrête le service <%AppName%>}
+{ArrÃªte le service <%AppName%>}
 
 }
 ::msgcat::mcmset pl {
@@ -1634,13 +2024,13 @@ BF861387-DA7F-4986-B5BB-F77358B58603,Message
 }
 ::msgcat::mcmset pt_br {
 1957048E-B498-4FFF-A8BA-F2DF640463B1,Message
-{Será instalado <%AppName%> version <%Version%> em seu computador. 
+{SerÃ¡ instalado <%AppName%> version <%Version%> em seu computador. 
 
-É recomendado que você feche todos os outros programas antes de continuar. 
+Ã‰ recomendado que vocÃª feche todos os outros programas antes de continuar. 
 
-Depois da instalação, você deve editar o arquivo de configuração para definir o servidor endereço de IP e outros parâmetros.
+Depois da instalaÃ§Ã£o, vocÃª deve editar o arquivo de configuraÃ§Ã£o para definir o servidor endereÃ§o de IP e outros parÃ¢metros.
 
-Clique em Próximo para continuar ou em Cancelar para sair da Instalação.}
+Clique em PrÃ³ximo para continuar ou em Cancelar para sair da InstalaÃ§Ã£o.}
 
 1D572EE2-DD93-4F13-850E-DE0EEB1DA110,Message
 <%UninstallingApplicationText%>
@@ -1649,11 +2039,11 @@ Clique em Próximo para continuar ou em Cancelar para sair da Instalação.}
 <%InstallationCompleteText%>
 
 2B99A465-4666-445D-96BF-9C8F03CDAC60,Message
-{À revelia, o agente de Pandora FMS do Windows usa o método de FTP para copiar arquivos de dados de XML ao servidor.
+{Ã€ revelia, o agente de Pandora FMS do Windows usa o mÃ©todo de FTP para copiar arquivos de dados de XML ao servidor.
 
-Se você quiser usar SFTP/SSH2, gere tanto chaves Públicas como Privadas e salve-os como id_dsa.pub e id_dsa, o formato de OpenSSH, no diretório <%InstallDir %>\key.
+Se vocÃª quiser usar SFTP/SSH2, gere tanto chaves PÃºblicas como Privadas e salve-os como id_dsa.pub e id_dsa, o formato de OpenSSH, no diretÃ³rio <%InstallDir %>\key.
 
-Por favor, reveja a documentação (<%HelpGeneratingSSHKeys%>) para mais informação.}
+Por favor, reveja a documentaÃ§Ã£o (<%HelpGeneratingSSHKeys%>) para mais informaÃ§Ã£o.}
 
 4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Message
 <%UninstallCompleteText%>
@@ -1662,13 +2052,13 @@ BF861387-DA7F-4986-B5BB-F77358B58603,Message
 <%InstallingApplicationText%>
 
 EditConfiguration
-{Editar a configuração}
+{Editar a configuraÃ§Ã£o}
 
 StartPandoraService
-{Inicia o serviço <%AppName%>}
+{Inicia o serviÃ§o <%AppName%>}
 
 StopPandoraService
-{Interrompe o serviço <%AppName%>}
+{Interrompe o serviÃ§o <%AppName%>}
 
 }
 

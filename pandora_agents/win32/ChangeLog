@@ -1,7 +1,12 @@
+2008-04-02  Manuel Arostegui <marostegui@artica.es>
+
+	* installer/pandora_1.3.mpi: Adapted for the 1.3.1 Windows Installer
+	with the tentacle support and tentacle util included.
+
 2008-04-02  Ramon Novoa  <rnovoa@artica.es>
 
 	* bin/pandora_agent.conf: Changed default transfer mode
-      to tentacle.
+	to tentacle.
 
 2008-03-25  Ramon Novoa  <rnovoa@artica.es>
 
@@ -10,9 +15,9 @@
 2008-03-25  Ramon Novoa  <rnovoa@artica.es>
 
 	* ftp/pandora_ftp_test.cc, installer/pandora_1.3.mpi,
-          installer/README.txt, pandora_windows_service.cc,
-          bin/pandora_agent.conf: Variable ftp_password removed from
-          configuration file, server_pwd is used instead.
+	installer/README.txt, pandora_windows_service.cc,
+	bin/pandora_agent.conf: Variable ftp_password removed from
+	configuration file, server_pwd is used instead.
 
 2007-09-17  Raul Mateos  <raulofpandora@gmail.com>
 

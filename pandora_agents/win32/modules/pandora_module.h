@@ -64,8 +64,9 @@ namespace Pandora_Modules {
 				   *   service                         */
 		MODULE_FREEDISK,  /**< The module checks the free      */
 		MODULE_CPUUSAGE,  /**< The module checks the CPU usage */
-		MODULE_FREEMEMORY /**< The module checks the amount of 
+		MODULE_FREEMEMORY, /**< The module checks the amount of 
 				   *   freememory in the system        */
+		MODULE_ODBC       /**< The module performs a SQL query via ODBC */
         } Module_Kind;
         
         const string module_exec_str                = "module_exec";
@@ -74,6 +75,7 @@ namespace Pandora_Modules {
 	const string module_freedisk_str            = "module_freedisk";
 	const string module_freememory_str          = "module_freememory";
 	const string module_cpuusage_str            = "module_cpuusage";
+	const string module_odbc_str                = "module_odbc";
 
 	/**
 	 * Pandora module super-class exception.

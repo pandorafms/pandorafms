@@ -38,12 +38,14 @@ namespace Pandora {
 	class Pandora_Agent_Conf {
 	private:
 		list<Key_Value> *key_values;
+
+		Pandora_Agent_Conf             ();
 	public:
-		Pandora_Agent_Conf       (string filename);
+		static Pandora_Agent_Conf *getInstance ();
 		
-		~Pandora_Agent_Conf      ();
-		
-		string getValue        (const string key);
+		~Pandora_Agent_Conf            ();
+		void               setFile     (string filename);
+		string             getValue    (const string key);
 	};
 }
 

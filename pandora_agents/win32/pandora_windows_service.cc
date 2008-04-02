@@ -102,7 +102,8 @@ Pandora_Windows_Service::pandora_init () {
         conf_file = Pandora::getPandoraInstallDir ();
         conf_file += "pandora_agent.conf";
         
-        this->conf = new Pandora::Pandora_Agent_Conf (conf_file);
+        this->conf = Pandora::Pandora_Agent_Conf::getInstance ();
+        this->conf->setFile (conf_file);
         this->modules = new Pandora_Module_List (conf_file);
 
         /* Get the interval value (in minutes) and set it to the service */

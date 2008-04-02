@@ -26,6 +26,7 @@
 #include "pandora_module_freedisk.h"
 #include "pandora_module_freememory.h"
 #include "pandora_module_cpuusage.h"
+#include "pandora_module_odbc.h"
 #include <fstream>
 
 using namespace std;
@@ -113,10 +114,12 @@ Pandora_Modules::Pandora_Module_List::parseModuleDefinition (string definition) 
 	Pandora_Module_Freedisk   *module_freedisk;
 	Pandora_Module_Cpuusage   *module_cpuusage;
 	Pandora_Module_Freememory *module_freememory;
+	Pandora_Module_Odbc       *module_odbc;
         
         module = Pandora_Module_Factory::getModuleFromDefinition (definition);
         
         if (module != NULL) {
+		cout << module->getModuleKind () << endl;
                 switch (module->getModuleKind ()) {
                 case MODULE_EXEC:
                         module_exec = (Pandora_Module_Exec *) module;
@@ -150,7 +153,13 @@ Pandora_Modules::Pandora_Module_List::parseModuleDefinition (string definition) 
                         modules->push_back (module_cpuusage);
                         
                         break;
+		case MODULE_ODBC:
+			module_odbc = (Pandora_Module_Odbc *) module;
+                        modules->push_back (module_odbc);
+                        cout << "ASDS" << endl;
+                        break;
                 default:
+			cout << "NONE" << endl;
                         break;
                 }
         }

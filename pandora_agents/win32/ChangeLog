@@ -1,3 +1,23 @@
+2008-04-02  Esteban Sanchez  <estebans@artica.es>
+
+	* pandora_agent_conf.[cc,h]: Object adapted to be a singleton so it
+	could be used in many parts of the code who can't access to it before.
+
+	* ftp/pandora_ftp_test.cc, ssh/pandora_ssh_test.cc: Adapted to
+	configuration object singleton.
+
+	* modules/pandora_module_odbc.[cc,h]: Added to repository. Implements
+	a ODBC interface to make SQL queries.
+
+	* modules/pandora_module.[cc,h], modules/pandora_module_list.cc,
+	modules/pandora_module_factory.cc: Added ODBC module support.
+
+	* bin/pandora_agent.conf: Added a ODBC module example.
+
+	* PandoraAgent.dev: Added new files to project.
+
+	* bin/PandoraAgent.exe: Updated to last commit.
+
 2008-04-02  Manuel Arostegui <marostegui@artica.es>
 
 	* installer/pandora_1.3.mpi: Adapted for the 1.3.1 Windows Installer

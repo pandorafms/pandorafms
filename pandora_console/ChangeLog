@@ -1,4 +1,26 @@
-2008-04-03 Sancho Lerena <slerena@gmail.com>
+2008-04-03  Jorge Gonzalez  <jo[Brge.gonzalez@artica.es>
+
+	* include/functions_db.php: New functions added to handle plugins and
+	export servers.
+	
+	* include/languages/language_en.php: Updated English translation file.
+	
+	* general/header.php: Updated header.
+
+	* godmode/agentes/manage_config.php,
+	godmode/agentes/module_manager_editor_data.php,
+	godmode/agentes/module_manager_editor_network.php,
+	godmode/agentes/module_manager.php,
+	godmode/agentes/modificar_agente.php,
+	godmode/agentes/module_manager_editor_wmi.php,
+	godmode/agentes/configurar_agente.php,
+	godmode/agentes/module_manager_editor_plugin.php,
+	godmode/agentes/module_manager_editor.php,
+	godmode/agentes/module_manager_editor_prediction.php,
+	godmode/agentes/agent_manager.php, godmode/modules/module_list.php:
+	Added infrastructure to add/edit modules.
+
+2008-04-03  Sancho Lerena <slerena@gmail.com>
 
     * pandoradb_data.sql: IA to prediction in description.
 

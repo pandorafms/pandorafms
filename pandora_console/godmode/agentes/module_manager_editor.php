@@ -2,6 +2,7 @@
 // Pandora FMS - the Free Monitoring System
 // ========================================
 // Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2008 Jorge Gonzalez <jorge.gonzalez@artica.es>
 // Main PHP/SQL code development, project architecture and management.
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -21,15 +22,38 @@ if (give_acl($config["id_user"], 0, "AW")!=1) {
 
 // Following variables come from module_manager.php -> configurar_agente.php :
 //
-// $form_moduletype: could be networkserver, pluginserver, wmiserver, or predictionserver
+// $form_moduletype: could be [1] Agent module/Data server, [2] network server, [4] plugin server, [6] wmiserver, or [5] predictionserver
+// $moduletype: helper to fix get/post method; copy of $form_moduletype just to edit modules, not to create them
+
+if (($form_moduletype == "") && ($moduletype != "")){
+	switch ($moduletype) {
+		case "1":	
+			$form_moduletype = "dataserver";
+			break;
+		case "2":
+			$form_moduletype = "networkserver";
+			break;
+		case "4":
+			$form_moduletype = "pluginserver";
+			break;
+		case "5":
+			$form_moduletype = "predictionserver";
+			break;
+		case "6":
+			$form_moduletype = "wmiserver";
+			break;
+	}
+}
 
 // Get form (GET)
 $form_network_component = get_parameter_get("form_network_component", "");
+if($form_network_component == "")
+	$form_network_component = get_parameter_post("form_network_component", "");
 
 // Using network component to fill some fields
-if (($form_moduletype == "networkserver") && ($form_network_component != "")){
+if (($form_moduletype == "networkserver") && ($form_network_component != "") && (!isset($_POST['crtbutton'])) && (!isset($_POST['oid']))){
     // Preload data from template
-    $row = get_db_row ("tnetwork_component", $id_nc , $form_network_component);
+    $row = get_db_row ("tnetwork_component", 'id_nc', $form_network_component);
     if ($row == 0){
         unmanaged_error("Cannot load tnetwork_component reference from previous page");
     }
@@ -85,14 +109,9 @@ if (($form_moduletype == "networkserver") && ($form_network_component != "")){
     $form_plugin_parameter = "";
 }
 
-// WMI server
-if ($form_moduletype == "wmiserver"){
-    include $config["homedir"]."/godmode/agentes/module_manager_editor_wmi.php";
-}
-
-// Plugin server
-if ($form_moduletype == "pluginserver"){
-    include $config["homedir"]."/godmode/agentes/module_manager_editor_plugin.php";
+// Data Server
+if ($form_moduletype == "dataserver"){
+    include $config["homedir"]."/godmode/agentes/module_manager_editor_data.php";
 }
 
 // Network server
@@ -100,13 +119,18 @@ if ($form_moduletype == "networkserver"){
     include $config["homedir"]."/godmode/agentes/module_manager_editor_network.php";
 }
 
-// Data Server
-if ($form_moduletype == "dataserver"){
-    include $config["homedir"]."/godmode/agentes/module_manager_editor_data.php";
+// Plugin server
+if ($form_moduletype == "pluginserver"){
+    include $config["homedir"]."/godmode/agentes/module_manager_editor_plugin.php";
 }
 
 // Prediction server
 if ($form_moduletype == "predictionserver"){
     include $config["homedir"]."/godmode/agentes/module_manager_editor_prediction.php";
+}
+
+// WMI server
+if ($form_moduletype == "wmiserver"){
+    include $config["homedir"]."/godmode/agentes/module_manager_editor_wmi.php";
 }
 

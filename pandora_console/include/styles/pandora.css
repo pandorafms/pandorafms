@@ -102,6 +102,13 @@ a.white_bold {
 	text-decoration: none;
 	font-weight: bold;
 }
+
+a.white_grey_bold {
+    color: #999;
+    text-decoration: none;
+    font-weight: bold;
+}
+
 a.white {
 	color: #eee;
 	text-decoration: none;
@@ -439,6 +446,17 @@ div.title_line {
     float:left; 
     border-bottom: 1px solid #778866;
 }
+#menu_tab_frame_view {
+    background: #66AA44; 
+    width: 805px; 
+    min-height: 22px; 
+    padding-left: 0x;
+    margin-left: -25px;
+    float:left; 
+    border-bottom: 1px solid #778866;
+}
+
+
 #menu_tab .mn, #menu_tab ul, #menu_tab .mn ul {
 	padding: 0px;
 	list-style: none;
@@ -601,8 +619,8 @@ span.rmess, span.nrmess {
 }
 #head_m {
 	position: absolute;
-	padding-top: 7px;
-	padding-left: 210px;	
+	padding-top: 6px;
+	padding-left: 200px;	
 }
 span#logo_text1 {
 	font: bolder 3em Arial, Sans-serif;

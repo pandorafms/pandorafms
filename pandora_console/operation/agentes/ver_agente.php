@@ -1,19 +1,12 @@
 <?php
-// Pandora FMS - the Free monitoring system
+// Pandora FMS - the Free Monitoring System
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development and project architecture and management
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP additions
-// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
-// Javascript Active Console code.
-// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
-// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
-//
+// Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
+// Please see http://pandora.sourceforge.net for full contribution list
+
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
+// as published by the Free Software Foundation for version 2.
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -21,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 // Load global vars
 require("include/config.php");
 
@@ -56,7 +50,7 @@ if (comprueba_login() == 0) {
 				}
 			}
 			if (give_acl($id_usuario,$id_grupo, "AR") == 1){
-
+                echo "<div id='menu_tab_frame_view'>";
 				echo "<div id='menu_tab_left'>
 				<ul class='mn'>
 				<li class='view'>
@@ -71,22 +65,35 @@ if (comprueba_login() == 0) {
 					$tab = "main";
 				echo "<div id='menu_tab'><ul class='mn'>";
 				if (give_acl($id_usuario,$id_grupo, "AW") == 1){
+                    if ($tab == "manage")
+                        echo "<li class='nomn_high'>";
+                    else
+                        echo "<li class='nomn'>";
 					// Manage agent
-					echo "<li class='nomn'><a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'><img src='images/setup.png' width='16' class='top' border=0> ".$lang_label["Manage"]." </a>";
+					echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'><img src='images/setup.png' width='16' class='top' border=0> ".$lang_label["Manage"]." </a>";
 					echo "</li>";
 				}
 				// Main view
-				echo "<li class='nomn'>";
+                if ($tab == "main")
+                    echo "<li class='nomn_high'>";
+                else
+                    echo "<li class='nomn'>";
 				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/monitor.png' class='top' border=0> ".$lang_label["Main"]." </a>";
 				echo "</li>";
 
 				// Data
-				echo "<li class='nomn'>";
+                if ($tab == "data")
+                    echo "<li class='nomn_high'>";
+                else
+                    echo "<li class='nomn'>";
 				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data'><img src='images/lightbulb.png' class='top' border=0> ".$lang_label["Data"]." </a>";
 				echo "</li>";
 
 				// Alerts
-				echo "<li class='nomn'>";
+				if ($tab == "alert")
+                    echo "<li class='nomn_high'>";
+                else
+                    echo "<li class='nomn'>";
 				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=alert'><img src='images/bell.png' class='top' border=0> ".$lang_label["Alerts"]." </a>";
 				echo "</li>";
 
@@ -97,22 +104,27 @@ if (comprueba_login() == 0) {
 				
 				echo "</ul>";
 				echo "</div>";
+                echo "</div>";
 				echo "<div style='height: 25px'> </div>";
 				switch ($tab) {
 				/* http://pandora.localhost/index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=600 */
-				case "manage":	require "estado_generalagente.php";
-						break;
+				case "manage":	
+                    require "estado_generalagente.php";
+					break;
 				
-				case "main":	require "estado_generalagente.php";
-						require "estado_monitores.php";
-						require "estado_alertas.php";
-						break;
+				case "main":	
+                    require "estado_generalagente.php";
+					require "estado_monitores.php";
+					require "estado_alertas.php";
+					break;
 						
-				case "data": 	require "estado_ultimopaquete.php";
-						break;
+				case "data": 	
+                    require "estado_ultimopaquete.php";
+					break;
 						
-				case "alert": 	require "estado_alertas.php";
-						break;
+				case "alert": 	
+                    require "estado_alertas.php";
+					break;
 				}
 			} else {
 				audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to read data from agent ".dame_nombre_agente($id_agente));

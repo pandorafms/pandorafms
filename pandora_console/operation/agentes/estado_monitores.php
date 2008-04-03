@@ -29,7 +29,8 @@ if (comprueba_login() == 0) {
 	if (mysql_num_rows ($result_t)) {
 		echo "<h3>".$lang_label["monitor_listing"]."</h3>";
 		echo "<table width='750' cellpadding=4 cellspacing=4 class='databox'>";
-		echo "<tr><th>".$lang_label["type"]."</th>
+		echo "<tr><th>X</th>";
+        echo "<th>".$lang_label["type"]."</th>
 		<th>".$lang_label["module_name"]."</th>
 		<th>".$lang_label["description"]."</th>
 		<th>".$lang_label["status"]."</th>
@@ -67,8 +68,19 @@ if (comprueba_login() == 0) {
 				else
 					$agent_down = 0;
 				
+
+
+
 				echo "<tr><td class='".$tdcolor."'>";
-				
+
+                if (($row_t["id_modulo"] != 1) AND ($row_t["id_tipo_modulo"] < 100)) {
+                    if ($row_t["flag"] == 0){
+                        echo "<a href='index.php?sec=estado& sec2=operation/agentes/ver_agente& id_agente=".$id_agente."&id_agente_modulo=".$row_t["id_agente_modulo"]."&flag=1& tab=main&refr=60'><img src='images/target.png' border='0'></a>";
+                    } else {
+                        echo "<a href='index.php?sec=estado& sec2=operation/agentes/ver_agente&id_agente=".$id_agente."&id_agente_modulo=".$row_t["id_agente_modulo"]."&tab=main&refr=60'><img src='images/refresh.png' border='0'></a>";
+                    }
+                }
+				echo "<td class='".$tdcolor."'>";
 				echo "<img src='images/".show_icon_type($row_t["id_tipo_modulo"])."' border=0>";	
 				echo "<td class='".$tdcolor."'>".$est_modulo."</td>";
 				echo "<td class='".$tdcolor."f9'>"

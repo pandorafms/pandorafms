@@ -153,7 +153,7 @@ INSERT INTO `tnews` VALUES (1,'admin','Welcome to Pandora FMS 2.0!','This is the
 INSERT INTO tmodule VALUES (1,'Agent module');
 INSERT INTO tmodule VALUES (2,'Network module');
 INSERT INTO tmodule VALUES (4,'Plugin module');
-INSERT INTO tmodule VALUES (5,'IA module');
+INSERT INTO tmodule VALUES (5,'Prediction module');
 INSERT INTO tmodule VALUES (6,'WMI module');
 
 INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (1,'OS Total process','Total process in Operating System (UNIX MIB)',13,15,0,0,180,0,'','','public','HOST-RESOURCES-MIB::hrSystemProcesses.0 ',4);

@@ -1,3 +1,48 @@
+2008-04-03 Sancho Lerena <slerena@gmail.com>
+
+    * pandoradb_data.sql: IA to prediction in description.
+
+    * pandoradb.sql: Added priority to alert and custom recovery fields.
+
+    * include/styles/tip.css, include/styles/pandora.css: New styles
+    for tooltip info (combined and alerts) and some changes in frames for
+    agent management / view.
+
+    * include/functions_db.php: Added check_server_status() function to check
+    from console server status. If in 15 minutes there is no updated keepalive
+    from any server, they will be marked as down. And function return down. 
+    This function is now called on each page. Added funtions to display alert
+    status in a tooltip.
+
+    * include/languages/language_en.php: More strings.
+
+    * include/functions.php: Added several funtions to simplify alert report.
+
+    * operation/agentes/estado_alertas.php: Updated. Shows also combined 
+    alerts and give a lot of information in different tooltips.
+
+    * operation/agentes/estado_ultimopaquete.php: Clean blank spaces in URL.
+
+    * operation/agentes/estado_monitores.php: now is possible to force a
+    module refresh from main view.
+
+    * operation/agentes/ver_agente.php: Tab has been upgraded.
+
+    * images/mod_data.png,
+      images/mod_data_inc.png
+      images/mod_proc.png
+      images/mod_keepalive.png
+      images/mod_string.png: Added new type icons and updated old ones.
+
+    * general/header.php: Global check for servers and autorefresh control.
+
+    * godmode/agentes/alert_manager.php: New alert management for combined
+    alerts, visualization, etc.
+
+    * godmode/agentes/configurar_agente.php: Included new alert management.
+
+    * godmode/agentes/alert_manager_editor.php: New alert management editor.
+
 2008-04-01 Sancho Lerena <slerena@gmail.com>
 
     * pandoradb_data.sql: Alert type 0 is not 1. 1-3 are reserved. Removed 

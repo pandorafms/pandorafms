@@ -218,26 +218,20 @@ CREATE TABLE `talerta_agente_modulo` (
   `time_from` TIME default '00:00:00',
   `time_to` TIME default '00:00:00',
   `id_agent` int(11) default NULL,
-  `monday` tinyint(3) default '0',
-  `tuesday` tinyint(3) default '0',
-  `wednesday` tinyint(3) default '0',
-  `thursday` tinyint(3) default '0',
-  `friday` tinyint(3) default '0',
-  `saturday` tinyint(3) default '0',
-  `sunday` tinyint(3) default '0',
+  `monday` tinyint(3) default '1',
+  `tuesday` tinyint(3) default '1',
+  `wednesday` tinyint(3) default '1',
+  `thursday` tinyint(3) default '1',
+  `friday` tinyint(3) default '1',
+  `saturday` tinyint(3) default '1',
+  `sunday` tinyint(3) default '1',
   `recovery_notify` tinyint(3) default '0',
+  `priority` tinyint(4) default '0',
+  `al_f2_recovery` varchar(255) NOT NULL default '',
+  `al_f3_recovery` mediumtext NOT NULL default '',
   PRIMARY KEY  (`id_aam`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/* next changes planned for talerta_agente_modulo
-
-  `al_f2_recovery` varchar(255) default '',
-  `al_f3_recovery` mediumtext NOT NULL,
-  `priority tinyint(4) default '0',
-
-Implementation of priority for alerts, and different fields for recovery notification
-
-*/
 
 CREATE TABLE `tattachment` (
   `id_attachment` bigint(20) unsigned NOT NULL auto_increment,

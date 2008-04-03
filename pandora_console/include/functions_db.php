@@ -1289,4 +1289,126 @@ function lang_string ($string){
     else
         return "[".$string."]";
 }
+
+
+function check_server_status (){
+    global $config;
+    // This check assumes that server_keepalive should be AT LEAST 15 MIN
+    $sql = "SELECT COUNT(id_server) FROM tserver WHERE status = 1 AND keepalive > NOW() - INTERVAL 15 MINUTE";
+    $res = get_db_sql ($sql);
+    // Set servers to down
+    if ($res == 0){ 
+        $res2 = mysql_query("UPDATE tserver SET status = 0");
+    }
+    return $res;
+}
+
+function show_alert_row_mini ($id_combined_alert){
+    global $config;
+    global $lang_label;
+    
+    $color=1;
+    $sql_com = "SELECT talerta_agente_modulo.*, tcompound_alert.operation FROM talerta_agente_modulo, tcompound_alert WHERE tcompound_alert.id_aam = talerta_agente_modulo.id_aam AND tcompound_alert.id = ".$id_combined_alert;
+    $result_com = mysql_query ($sql_com);
+    echo "<table width=400 cellpadding=2 cellspacing=2 class='databox'>";
+    echo "<th>".lang_string("Name");
+    echo "<th>".lang_string("Oper");
+    echo "<th>".lang_string("Tt");
+    echo "<th>".lang_string("Firing");
+    echo "<th>".lang_string("Time");
+    echo "<th>".lang_string("Desc");
+    echo "<th>".lang_string("Recovery");
+    echo "<th>".lang_string("MinMax.Al");
+    echo "<th>".lang_string("Days");
+    echo "<th>".lang_string("Fired");
+    while ($row2=mysql_fetch_array($result_com)){
+
+        if ($color == 1){
+            $tdcolor = "datos";
+            $color = 0;
+        }
+        else {
+            $tdcolor = "datos2";
+            $color = 1;
+        }
+        echo "<tr>";    
+    
+        if ($row2["disable"] == 1){
+            $tdcolor = "datos3";
+        }
+        echo "<td class=$tdcolor>".get_db_sql("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo =".$row2["id_agente_modulo"]);
+        echo "<td class=$tdcolor>".$row2["operation"];
+        
+        echo "<td class='$tdcolor'>".human_time_description($row2["time_threshold"]);
+    
+        if ($row2["dis_min"]!=0){
+            $mytempdata = fmod($row2["dis_min"], 1);
+            if ($mytempdata == 0)
+                $mymin = intval($row2["dis_min"]);
+            else
+                $mymin = $row2["dis_min"];
+            $mymin = format_for_graph($mymin );
+        } else {
+            $mymin = 0;
+        }
+    
+        if ($row2["dis_max"]!=0){
+            $mytempdata = fmod($row2["dis_max"], 1);
+            if ($mytempdata == 0)
+                $mymax = intval($row2["dis_max"]);
+            else
+                $mymax = $row2["dis_max"];
+            $mymax =  format_for_graph($mymax );
+        } else {
+            $mymax = 0;
+        }
+    
+        if (($mymin == 0) && ($mymax == 0)){
+            $mymin = lang_string ("N/A");
+            $mymax = $mymin;
+        }
+    
+        // We have alert text ?
+        if ($row2["alert_text"]!= "") {
+            echo "<td colspan=2 class='$tdcolor'>".$lang_label["text"]."</td>";
+        } else {
+            echo "<td class='$tdcolor'>".$mymin."/".$mymax."</td>";
+        }
+    
+        // Alert times
+        echo "<td class='$tdcolor'>";
+        echo get_alert_times ($row2);
+    
+        // Description
+        echo "</td><td class='$tdcolor'>".substr($row2["descripcion"],0,20);
+    
+        // Has recovery notify activated ?
+        if ($row2["recovery_notify"] > 0)
+            $recovery_notify = lang_string("Yes");
+        else
+            $recovery_notify = lang_string("No");
+    
+        echo "</td><td class='$tdcolor'>".$recovery_notify;
+    
+        // calculare firing conditions
+        if ($row2["alert_text"] != ""){
+            $firing_cond = lang_string("text")."(".substr($row2["alert_text"],0,8).")";
+        } else {
+            $firing_cond = $row2["min_alerts"]." / ".$row2["max_alerts"];
+        }
+        echo "</td><td class='$tdcolor'>".$firing_cond;
+
+        // calculate days
+        $firing_days = get_alert_days ( $row2 );
+        echo "</td><td class='$tdcolor'>".$firing_days;
+
+        // Fired ?
+        if ($row2["times_fired"]>0)
+            echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_red.png' title='".lang_string("fired")."'></td>";
+        else
+            echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_green.png' title='".$lang_label["not_fired"]."'></td>";
+
+    }
+    echo "</table>";
+}
 ?>

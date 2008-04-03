@@ -78,23 +78,11 @@ if (comprueba_login() == 0) {
 			$id_grupo = $row_t["id_grupo"];
 			$id_usuario=$_SESSION["id_usuario"];
 			if (give_acl($id_usuario, $id_grupo, "AW")==1){
-				if ($row3["id_tipo_modulo"] > 4 AND ($row3["id_tipo_modulo"] < 100)){
+				if (($row3["id_modulo"] != 1) AND ($row3["id_tipo_modulo"] < 100)) {
 					if ($row3["flag"] == 0){
-						echo "<a href='index.php?sec=estado&
-						sec2=operation/agentes/ver_agente&
-						id_agente=".$id_agente."&
-						id_agente_modulo=".$row3["id_agente_modulo"]."&
-						flag=1&
-						tab=data&
-						refr=60'>
-						<img src='images/target.png' border='0'></a>";
+						echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."&id_agente_modulo=".$row3["id_agente_modulo"]."&flag=1&tab=data&refr=60'><img src='images/target.png' border='0'></a>";
 					} else {
-						echo "<a href='index.php?sec=estado&
-						sec2=operation/agentes/ver_agente&
-						id_agente=".$id_agente."&
-						id_agente_modulo=".$row3["id_agente_modulo"]."&
-						tab=data&refr=60'>
-						<img src='images/refresh.png' border='0'></a>";
+						echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."&id_agente_modulo=".$row3["id_agente_modulo"]."&tab=data&refr=60'><img src='images/refresh.png' border='0'></a>";
 					}
 				} 				
 			}

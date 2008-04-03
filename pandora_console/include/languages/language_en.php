@@ -155,7 +155,7 @@ $lang_label["log_filter"]="Log type filter";
 $lang_label["not_connected"]="You're not connected";
 $lang_label["administrator"]="Administrator";
 $lang_label["normal_user"]="Standard user";
-$lang_label["has_connected"]="You are connected as";
+$lang_label["has_connected"]="You are ";
 $lang_label["logged_out"]="Logged Out";
 $lang_label["logout_msg"]="Your session is over. Please close your browser window to close session on Pandora.<br><br>";
 $lang_label["user_last_activity"]="This is your last activity in Pandora FMS console";
@@ -894,6 +894,31 @@ $lang_label["export_server"]="Export server";
 $lang_label["post_process"]="Post process";
 $lang_label["max_timeout"]="Max. timeout";
 $lang_label["snmp_walk"]="SNMP walk";
+
+$lang_label["System ready"]="Sytem ready";
+$lang_label["System ready"]="Sytem ready";
+$lang_label["Server status: DOWN"]="Server status: DOWN";
+$lang_label["Autorefresh"]="Autorefresh";
+$lang_label["Autorefresh active"]="Autorefresh active";
+
+$lang_label["Mon"]="Mon";
+$lang_label["Tue"]="Tue";
+$lang_label["Wed"]="Wed";
+$lang_label["Thu"]="Thu";
+$lang_label["Fri"]="Fri";
+$lang_label["Sat"]="Sat";
+$lang_label["Sun"]="Sun";
+$lang_label["Days of week"] = "Days of week";
+$lang_label["Alert recovery"]="Alert recovery";
+$lang_label["Priority"]="Priority";
+$lang_label["Field #2 (Rec)"]="Field #2 (Rec)";
+$lang_label["Field #3 (Rec)"]="Field #3 (Rec)";
+$lang_label["Simple alerts"]="Simple alerts";
+$lang_label["Combined alerts"]="Combined alerts";
+$lang_label["Oper"]="Oper";
+$lang_label["info"]="info";
+$lang_label["Operation"]="Operation";
+$lang_label["Source Agent/Alert"]="Source Agent/Alert";
 
 
 global $lang_label;

@@ -1,0 +1,70 @@
+#!/bin/bash
+# Init script for Pandora FMS agent
+# Generic GNU/Linux version
+# (c) Sancho Lerena, <slerena@gmail.com>
+# (c) Evi Vanoost <vanooste@rcbi.rochester.edu> 
+# v1.3   
+
+### BEGIN INIT INFO
+# Provides: pandora_agent
+# Required-Start: $network
+# Required-Stop: $network
+# Default-Start:  S 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: start/stop pandora-agent daemon
+### END INIT INFO
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/local/bin
+PANDORA_PATH=/etc/pandora
+DAEMON=/usr/bin/pandora_agent
+PIDFILE=/var/run/pandora_agent.pid
+LOGFILE=/var/log/pandora_agent.log
+
+if [ ! -f $DAEMON ]
+then
+	echo "Pandora FMS Agent not found at $DAEMON, please check setup"
+	exit
+fi
+
+. /etc/rc.common
+
+StartService()
+{
+        if [ -f $PIDFILE ]
+        then
+		PID_BA=`cat $PIDFILE`
+                if [ ! -z "`ps -Af | awk '{ print $2 }' | grep $PID_BA`" ]
+                then
+                        echo "Pandora FMS Agent is currently running on this machine with PID $PID_BA"
+                        echo "Cannot launch again. Aborting."
+                        exit
+                fi
+        fi
+        nohup $DAEMON $PANDORA_PATH 2> $LOGFILE & MYPID=$!
+        echo $MYPID > $PIDFILE
+	echo "Pandora FMS Agent is now running with PID $MYPID"
+}
+
+StopService()
+{
+        if [ -f $PIDFILE ]
+        then
+		echo "Stopping Pandora Agent."
+		PID_2=`cat $PIDFILE`
+		if [ ! -z "`ps -f -p $PID_2 | grep -v grep | grep 'pandora_agent'`" ]
+		then
+			kill -9 $PID_2
+		fi
+		rm -f $PIDFILE 
+        else
+		echo "Pandora FMS Agent is not running, cannot stop it. Aborting now..."
+        fi
+}
+ 
+RestartService()
+{
+        $0 stop
+        $0 start
+}
+
+RunService "$1"

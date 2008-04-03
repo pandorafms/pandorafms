@@ -600,8 +600,307 @@ function get_parameter_post ( $name, $default = "" ){
     return $default;
 }
 
+function get_alert_priority ( $prio ){
+    $priority = "NORMAL";
+    switch ($prio){
+            case 0: 
+                $priority = "NORMAL";
+                break;
+            case 1:
+                $priority = "WARNING";
+                break;
+            case 2:
+                $priority = "MINOR";
+                break;
+            case 3:
+                $priority = "MAJOR";
+                break;
+            case 4:
+                $priority = "CRITICAL";
+                break;
+    }
+    return $priority;
+}
+
+function get_alert_days ( $row ){
+    global $config;
+    global $lang_label;
+    $days_output = "";
+
+    $check = $row["monday"] + $row["tuesday"] + $row["wednesday"] + $row["thursday"]+ $row["friday"] + $row["saturday"] + $row["sunday"];
+
+    if ($row["monday"] != 0)
+        $days_output .= "Mo";
+    if ($row["tuesday"] != 0)
+        $days_output .= "Tu";
+    if ($row["wednesday"] != 0)
+        $days_output .= "We";
+    if ($row["thursday"] != 0)
+        $days_output .= "Th";
+    if ($row["friday"] != 0)
+        $days_output .= "Fr";
+    if ($row["saturday"] != 0)
+        $days_output .= "Sa";
+    if ($row["sunday"] != 0)
+        $days_output .= "Su";
+    if ($days_output == "")
+        $days_output = lang_string ("none");
+    if ($check == 7)
+        $days_output = lang_string ("all");
+    return $days_output;
+}
+
+function get_alert_times ($row2){
+    global $config;
+    global $lang_label;
+
+    if ($row2["time_from"]){
+        $time_from_table = $row2["time_from"];
+    } else {
+        $time_from_table = lang_string("N/A");
+    }
+    if ($row2["time_to"]){
+        $time_to_table = $row2["time_to"];
+    } else {
+        $time_to_table = lang_string("N/A");
+    }
+    $string = "";
+    if ($time_to_table == $time_from_table)
+        $string .= $lang_label["N/A"];
+    else
+        $string .= substr($time_from_table,0,5)." - ".substr($time_to_table,0,5);
+    return $string;
+}
+
+function show_alert_row_edit ($row2, $tdcolor = "datos", $id_tipo_modulo = 1, $combined = 0){
+    global $config;
+    global $lang_label;
+
+    $string = "";
+    if ($row2["disable"] == 1){
+        $string .= "<td class='$tdcolor'><b><i>".$lang_label["disabled"]."</b></i>";
+    } elseif ($id_tipo_modulo != 0) {
+        $string .= "<td class='$tdcolor'><img src='images/".show_icon_type($id_tipo_modulo)."' border=0>";
+    } else {
+        $string .= "<td class='$tdcolor'>--";
+    }
+    
+    if (isset($row2["operation"])){
+        $string = $string."<td class=$tdcolor>".$row2["operation"];
+    } else {
+        $string = $string."<td class=$tdcolor>".get_db_sql("SELECT nombre FROM talerta WHERE id_alerta = ".$row2["id_alerta"]);
+    }
+
+    $string = $string."<td class='$tdcolor'>".human_time_description($row2["time_threshold"]);
+    if ($row2["dis_min"]!=0){
+        $mytempdata = fmod($row2["dis_min"], 1);
+        if ($mytempdata == 0)
+            $mymin = intval($row2["dis_min"]);
+        else
+            $mymin = $row2["dis_min"];
+        $mymin = format_for_graph($mymin );
+    } else {
+        $mymin = 0;
+    }
+
+    if ($row2["dis_max"]!=0){
+        $mytempdata = fmod($row2["dis_max"], 1);
+        if ($mytempdata == 0)
+            $mymax = intval($row2["dis_max"]);
+        else
+            $mymax = $row2["dis_max"];
+        $mymax =  format_for_graph($mymax );
+    } else {
+        $mymax = 0;
+    }
+
+    if (($mymin == 0) && ($mymax == 0)){
+        $mymin = lang_string ("N/A");
+        $mymax = $mymin;
+    }
+
+    // We have alert text ?
+    if ($row2["alert_text"]!= "") {
+        $string = $string."<td colspan=2 class='$tdcolor'>".$lang_label["text"]."</td>";
+    } else {
+        $string = $string."<td class='$tdcolor'>".$mymin."</td>";
+        $string = $string."<td class='$tdcolor'>".$mymax."</td>";
+    }
+
+    // Alert times
+    $string = $string."<td class='$tdcolor'>";
+    $string .= get_alert_times ($row2);
+
+    // Description
+    $string = $string."</td><td class='$tdcolor'>".salida_limpia ($row2["descripcion"]);
+
+    // Has recovery notify activated ?
+    if ($row2["recovery_notify"] > 0)
+        $recovery_notify = lang_string("Yes");
+    else
+        $recovery_notify = lang_string("No");
+    
+    // calculate priority
+    $priority = get_alert_priority ($row2["priority"]);
+
+    // calculare firing conditions
+    if ($row2["alert_text"] != ""){
+        $firing_cond = lang_string("text")."(".substr($row2["alert_text"],0,8).")";
+    } else {
+        $firing_cond = $row2["min_alerts"]." / ".$row2["max_alerts"];
+    }
+    // calculate days
+    $firing_days = get_alert_days ( $row2 );
+
+    // More details EYE tooltip
+    $string = $string."<td class='$tdcolor'>";
+    $string.= "<a href=# class=info><img class='top'
+    src='images/eye.png' alt=''>";
+
+    // Add float info table
+    $string.= "
+        <span>
+        <table cellspacing='2' cellpadding='0'
+        style='margin-left:2px;'>
+            <tr><th colspan='2' width='91'>".
+            lang_string("Recovery")."</th></tr>
+            <tr><td colspan='2' class='datos' align='center'><b>$recovery_notify</b></td></tr>
+            <tr><th colspan='2' width='91'>".
+            lang_string("Priority")."</th></tr>
+            <tr><td colspan='2' class='datos' align='center'><b>$priority</b></td></tr>
+            <tr><th colspan='2' width='91'>".
+            lang_string("Alert Ctrl.")."</th></tr>
+            <tr><td colspan='2' class='datos' align='center'><b>".$firing_cond."</b></td></tr>
+            <tr><th colspan='2' width='91'>".
+            lang_string("Firing days")."</th></tr>
+            <tr><td colspan='2' class='datos' align='center'><b>".$firing_days."</b></td></tr>
+        </table></span></A>";
 
 
+    return $string;
+}
+
+function show_alert_show_view ($data, $tdcolor = "datos", $combined = 0){
+    global $config;
+    global $lang_label;
+
+    if ($combined == 0){
+        $module_name = get_db_sql ("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = ".$data["id_agente_modulo"]);
+        $agent_name = get_db_sql ("SELECT tagente.nombre FROM tagente_modulo, tagente WHERE tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.id_agente_modulo = ".$data["id_agente_modulo"]);
+        $id_agente = get_db_sql ("SELECT id_agente FROM tagente_modulo WHERE id_agente_modulo = ".$data["id_agente_modulo"]);
+    } else {
+        $agent_name =  get_db_sql ("SELECT nombre FROM tagente WHERE id_agente =".$data["id_agent"]);
+        $id_agente = $data["id_agent"];
+    }
+    $alert_name = get_db_sql ("SELECT nombre FROM talerta WHERE id_alerta = ".$data["id_alerta"]);
+
+    echo "<td class='".$tdcolor."'>".$alert_name."</td>";
+    if ($combined == 0){
+        echo "<td class='".$tdcolor."'>".substr($module_name,0,21)."</td>";
+    } else {
+        echo "<td class='".$tdcolor."'>";
+        // More details EYE tooltip (combined)
+        echo " <a href='#' class='info_table'><img class='top' src='images/eye.png' alt=''><span>";
+        echo show_alert_row_mini ($data["id_aam"]);
+        echo "</span></a> ";
+        echo substr($agent_name,0,21)."</td>"; 
+    }
+
+    // Description
+    echo "<td class='".$tdcolor."'>".$data["descripcion"]."</td>";
+
+    // Extended info    
+    echo "<td class='".$tdcolor."'>";
+
+    // Has recovery notify activated ?
+    if ($data["recovery_notify"] > 0)
+        $recovery_notify = lang_string("Yes");
+    else
+        $recovery_notify = lang_string("No");
+    
+    // calculate priority
+    $priority = get_alert_priority ($data["priority"]);
+
+    // calculare firing conditions
+    if ($data["alert_text"] != ""){
+        $firing_cond = lang_string("text")."(".substr($data["alert_text"],0,8).")";
+    } else {
+        $firing_cond = $data["min_alerts"]." / ".$data["max_alerts"];
+    }
+    // calculate days
+    $firing_days = get_alert_days ($data);
+
+    // More details EYE tooltip
+    echo "<a href='#' class='info'><img class='top'
+    src='images/eye.png' alt=''>";
+
+    // Add float info table
+    echo "
+        <span>
+        <table cellspacing='2' cellpadding='0'
+        style='margin-left:2px;'>
+            <tr><th colspan='2' width='91'>".
+            lang_string("Recovery")."</th></tr>
+            <tr><td colspan='2' class='datos' align='center'><b>$recovery_notify</b></td></tr>
+            <tr><th colspan='2' width='91'>".
+            lang_string("Priority")."</th></tr>
+            <tr><td colspan='2' class='datos' align='center'><b>$priority</b></td></tr>
+            <tr><th colspan='2' width='91'>".
+            lang_string("Alert Ctrl.")."</th></tr>
+            <tr><td colspan='2' class='datos' align='center'><b>".$firing_cond."</b></td></tr>
+            <tr><th colspan='2' width='91'>".
+            lang_string("Firing days")."</th></tr>
+            <tr><td colspan='2' class='datos' align='center'><b>".$firing_days."</b></td></tr>
+        </table></span></A>";
+
+    $mytempdata = fmod($data["dis_min"], 1);
+    if ($mytempdata == 0)
+        $mymin = intval($data["dis_min"]);
+    else
+        $mymin = $data["dis_min"];
+    $mymin = format_for_graph($mymin );
+
+    $mytempdata = fmod($data["dis_max"], 1);
+    if ($mytempdata == 0)
+        $mymax = intval($data["dis_max"]);
+    else
+        $mymax = $data["dis_max"];
+    $mymax =  format_for_graph($mymax );
+    // Text alert ?
+    if ($data["alert_text"] != "")
+        echo "<td class='".$tdcolor."' colspan=2>".$lang_label["text"]."</td>";
+    else {
+        echo "<td class='".$tdcolor."'>".$mymin."</td>";
+        echo "<td class='".$tdcolor."'>".$mymax."</td>";
+    }
+    echo "<td  align='center' class='".$tdcolor."'>".human_time_description($data["time_threshold"]);
+    if ($data["last_fired"] == "0000-00-00 00:00:00") {
+        echo "<td align='center' class='".$tdcolor."f9'>".$lang_label["never"]."</td>";
+    }
+    else {
+        echo "<td align='center' class='".$tdcolor."f9'>".human_time_comparation ($data["last_fired"])."</td>";
+    }
+    echo "<td align='center' class='".$tdcolor."'>".$data["times_fired"]."</td>";
+    if ($data["times_fired"] <> 0){
+        echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_red.png' title='".$lang_label["fired"]."'>";
+        echo "</td>";
+        $id_grupo_alerta = get_db_value ("id_grupo", "tagente", "id_agente", $id_agente);
+        if (give_acl($config["id_user"], $id_grupo_alerta, "AW") == 1) {
+            echo "<td align='center' class='".$tdcolor."'>";
+            echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&validate_alert=".$data["id_aam"]."'><img src='images/ok.png'></a>";
+            echo "</td>";
+        }
+    } else
+        echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_green.png' title='".$lang_label["not_fired"]."'></td>";
+}
+
+function form_render_check ($name_form, $value_form = 1){
+    echo "<input name='$name_form' type='checkbox' ";
+    if ($value_form != 0){
+        echo "checked='1' ";
+    }
+    echo "value=1>";
+}
 
 
 ?>

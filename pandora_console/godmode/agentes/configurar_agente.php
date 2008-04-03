@@ -35,7 +35,7 @@ else {
 // Get passed variables
 $tab = get_parameter_get("tab","main");
 $form_moduletype = get_parameter_post ("form_moduletype");
-$form_alerttype = get_parameter_post ("form_alerttype");
+$form_alerttype = get_parameter ("form_alerttype");
 
 // Init vars
 $descripcion = "";
@@ -82,6 +82,18 @@ $create_agent = 0;
 $alert_text = "";
 $time_from= "";
 $time_to = "";
+$alerta_campo2_rec = "";
+$alerta_campo3_rec = "";
+$alert_id_agent = "";
+$alert_d1 = "1";
+$alert_d2 = "1";
+$alert_d3 = "1";
+$alert_d4 = "1";
+$alert_d5 = "1";
+$alert_d6 = "1";
+$alert_d7 = "1";
+$alert_recovery = "0";
+$alert_priority = "0";
 
 // ================================
 // Create AGENT
@@ -232,31 +244,60 @@ if (isset($_GET["delete_alert"])){ // if modified some parameter
 
 }
 
+// Delete Alert component (from a combined)
+// ==========================================
+if (isset($_GET["delete_alert_comp"])){ // if modified some parameter
+    $id_borrar_modulo = $_GET["delete_alert_comp"];
+    // get info about agent
+    $sql1='DELETE FROM tcompound_alert WHERE id_aam = '.$id_borrar_modulo;
+    $result=mysql_query($sql1);
+        if (! $result)
+            echo "<h3 class='error'>".$lang_label["delete_alert_no"]."</h3>";
+        else
+            echo "<h3 class='suc'>".$lang_label["delete_alert_ok"]."</h3>";
+}
+
 // Create alert
 // =============
 if (isset($_POST["insert_alert"])){ // if created alert
-	//$id_agente = $_POST["id_agente"];
-	$id_agente_modulo = entrada_limpia($_POST["agente_modulo"]);
-	$descripcion= entrada_limpia($_POST["descripcion"]);
-	$campo_1 = entrada_limpia($_POST["campo_1"]);
-	$campo_2 = entrada_limpia($_POST["campo_2"]);
-	$campo_3 = entrada_limpia($_POST["campo_3"]);
-	$maximo = entrada_limpia($_POST["maximo"]);
-	$minimo = entrada_limpia($_POST["minimo"]);
-	$tipo_alerta = entrada_limpia($_POST["tipo_alerta"]);
-	$alert_text = entrada_limpia($_POST["alert_text"]);
-	$time_threshold = entrada_limpia($_POST["time_threshold"]);
-	$max_alerts = entrada_limpia($_POST["max_alerts"]);
-	$min_alerts = entrada_limpia($_POST["min_alerts"]);
-	$time_from = entrada_limpia($_POST["time_from"]);
-	$time_to= entrada_limpia($_POST["time_to"]);
-	$other = entrada_limpia($_POST["other"]);
-	$disable_alert = entrada_limpia($_POST["disable_alert"]);
+	
+	$id_agente_modulo = get_parameter ("agente_modulo",0);
+    $maximo = get_parameter ("maximo",0);
+    $minimo = get_parameter ("minimo",0);
+	$descripcion= get_parameter ('descripcion', '');
+	$campo_1 = get_parameter ('campo_1', '');
+	$campo_2 = get_parameter ('campo_2', '');
+	$campo_3 = get_parameter ('campo_3', '');
+	$tipo_alerta = get_parameter ("tipo_alerta",3);
+	$alert_text = get_parameter ("alert_text",'');
+	$time_threshold = get_parameter ("time_threshold",900);
+	$max_alerts = get_parameter ("max_alerts",1);
+	$min_alerts = get_parameter ("min_alerts",0);
+	$time_from = get_parameter ("time_from");
+	$time_to= get_parameter ("time_to");
+	$other = get_parameter ("other",0);
+	$disable_alert = get_parameter ("disable_alert");
+    $alert_d1 = get_parameter("alert_d1",0);
+    $alert_d2 = get_parameter("alert_d2",0);
+    $alert_d3 = get_parameter("alert_d3",0);
+    $alert_d4 = get_parameter("alert_d4",0);
+    $alert_d5 = get_parameter("alert_d5",0);
+    $alert_d6 = get_parameter("alert_d6",0);
+    $alert_d7 = get_parameter("alert_d7",0);
+    $alert_recovery = get_parameter("alert_recovery", 1);
+    $alert_priority = get_parameter("alert_priority", 0);
+    $campo2_rec = get_parameter ("campo_2_rec","");
+    $campo3_rec = get_parameter ("campo_3_rec","");
+
+    if ((isset($combined)) AND ($combined == 1))
+        $alert_id_agent = $id_agente;
+    else
+        $alert_id_agent = 0;
 	if ($time_threshold == -1) {
 		$time_threshold = $other;
 	}
 	$sql_insert="INSERT INTO talerta_agente_modulo
-			(id_agente_modulo,id_alerta,al_campo1,al_campo2,al_campo3,descripcion,dis_max,dis_min,time_threshold,max_alerts, min_alerts, alert_text, disable, time_from, time_to) VALUES
+			(id_agente_modulo,id_alerta,al_campo1,al_campo2,al_campo3,descripcion,dis_max,dis_min,time_threshold,max_alerts, min_alerts, alert_text, disable, time_from, time_to, id_agent, monday, tuesday, wednesday, thursday, friday, saturday, sunday, recovery_notify, priority, al_f2_recovery, al_f3_recovery) VALUES
 			('$id_agente_modulo',
 			'$tipo_alerta',
 			'$campo_1',
@@ -271,7 +312,19 @@ if (isset($_POST["insert_alert"])){ // if created alert
 			'$alert_text',
 			'$disable_alert',
 			'$time_from',
-			'$time_to' )";
+			'$time_to',
+            $alert_id_agent,
+            $alert_d1,
+            $alert_d2,
+            $alert_d3,
+            $alert_d4,
+            $alert_d5,
+            $alert_d6,
+            $alert_d7,
+            $alert_recovery,
+            $alert_priority,
+            '$campo2_rec',
+            '$campo2_rec' )";
 	$result=mysql_query($sql_insert);	
 	if (! $result) {
 		echo "<h3 class='error'>".$lang_label["create_alert_no"]."</h3>";
@@ -281,28 +334,66 @@ if (isset($_POST["insert_alert"])){ // if created alert
 	}
 	
 }
+
+// Combined ALERT - Add component
+// ================================
+if (isset($_POST["add_alert_combined"])){ // Update an existing alert
+    $alerta_id_aam = get_parameter ("update_alert",-1);
+    $component_item = get_parameter ("component_item",-1);
+    $component_operation = get_parameter ("component_operation","AND");
+    $sql_insert = "INSERT INTO tcompound_alert (id, id_aam, operation) 
+    VALUES ($alerta_id_aam, $component_item, '$component_operation')";
+    $result=mysql_query($sql_insert);
+    if (! $result) {
+        echo "<h3 class='error'>".lang_string ("Problem adding component alert")."</h3>";
+    } else {
+        echo "<h3 class='suc'>".lang_string ("Alert component added ok")."</h3>";
+    }
+
+}
+
 // Update ALERT
 // =============
 if (isset($_POST["update_alert"])){ // Update an existing alert
-	$id_aam = entrada_limpia($_POST["id_aam"]);
-	$tipo_alerta = entrada_limpia($_POST["tipo_alerta"]);
-	if (isset($_POST["agente_modulo"])) {
-		$id_agente_modulo = entrada_limpia($_POST["agente_modulo"]);
-	}
-	$descripcion= entrada_limpia($_POST["descripcion"]);
-	$campo_1 = entrada_limpia($_POST["campo_1"]);
-	$campo_2 = entrada_limpia($_POST["campo_2"]);
-	$campo_3 = entrada_limpia($_POST["campo_3"]);
-	$maximo = entrada_limpia($_POST["maximo"]);
-	$minimo = entrada_limpia($_POST["minimo"]);
-	$time_threshold = entrada_limpia($_POST["time_threshold"]);
-	$max_alerts = entrada_limpia($_POST["max_alerts"]);
-	$min_alerts = entrada_limpia($_POST["min_alerts"]);
-	$other = entrada_limpia($_POST["other"]);
-	$alert_text = entrada_limpia($_POST["alert_text"]);
-	$time_from = entrada_limpia($_POST["time_from"]);
-	$time_to= entrada_limpia($_POST["time_to"]);
-	$disable_alert = entrada_limpia($_POST["disable_alert"]);
+	$id_agente_modulo = get_parameter ("agente_modulo",0);
+    $id_aam = get_parameter ("id_aam",0);
+    $maximo = get_parameter ("maximo",0);
+    $minimo = get_parameter ("minimo",0);
+    $descripcion= get_parameter ('descripcion', '');
+    $campo_1 = get_parameter ('campo_1', '');
+    $campo_2 = get_parameter ('campo_2', '');
+    $campo_3 = get_parameter ('campo_3', '');
+    $tipo_alerta = get_parameter ("tipo_alerta",3);
+    $alert_text = get_parameter ("alert_text",'');
+    $time_threshold = get_parameter ("time_threshold",900);
+    $max_alerts = get_parameter ("max_alerts",1);
+    $min_alerts = get_parameter ("min_alerts",0);
+    $time_from = get_parameter ("time_from");
+    $time_to= get_parameter ("time_to");
+    $other = get_parameter ("other",0);
+    $disable_alert = get_parameter ("disable_alert");
+    $alert_d1 = get_parameter("alert_d1",0);
+    $alert_d2 = get_parameter("alert_d2",0);
+    $alert_d3 = get_parameter("alert_d3",0);
+    $alert_d4 = get_parameter("alert_d4",0);
+    $alert_d5 = get_parameter("alert_d5",0);
+    $alert_d6 = get_parameter("alert_d6",0);
+    $alert_d7 = get_parameter("alert_d7",0);
+    $alert_recovery = get_parameter("alert_recovery", 1);
+    $alert_priority = get_parameter("alert_priority", 0);
+    $campo2_rec = get_parameter ("campo_2_rec","");
+    $campo3_rec = get_parameter ("campo_3_rec",""); 
+    $alert_d1 = get_parameter("alert_d1",0);
+    $alert_d2 = get_parameter("alert_d2",0);
+    $alert_d3 = get_parameter("alert_d3",0);
+    $alert_d4 = get_parameter("alert_d4",0);
+    $alert_d5 = get_parameter("alert_d5",0);
+    $alert_d6 = get_parameter("alert_d6",0);
+    $alert_d7 = get_parameter("alert_d7",0);
+    $alert_recovery = get_parameter("alert_recovery", 1);
+    $alert_priority = get_parameter("alert_priority", 0);
+    $campo2_rec = get_parameter ("campo_2_rec","");
+    $campo3_rec = get_parameter ("campo_3_rec","");
 	if ($time_threshold == -1) {
 		$time_threshold = $other;
 	}
@@ -321,7 +412,19 @@ if (isset($_POST["update_alert"])){ // Update an existing alert
 		alert_text = '$alert_text',
 		time_to = '$time_to',
 		time_from = '$time_from',
-		disable = '$disable_alert'
+		disable = '$disable_alert',
+        monday = '$alert_d1',
+        tuesday = '$alert_d2',
+        wednesday = '$alert_d3',
+        thursday = '$alert_d4',
+        friday = '$alert_d5',
+        saturday = '$alert_d6',
+        sunday = '$alert_d7',
+        recovery_notify = $alert_recovery,
+        priority = $alert_priority,
+        al_f2_recovery = '$campo2_rec',
+        al_f3_recovery = '$campo3_rec',
+        id_alerta = $tipo_alerta 
 		WHERE id_aam = ".$id_aam;
 	$result=mysql_query($sql_insert);	
 	if (! $result) {
@@ -446,7 +549,9 @@ if ((isset($_GET["update_module"])) && (!isset($_POST["oid"])) && (!isset($_POST
 			$modulo_min ="N/A";
 	}
 }
-// Read alert data if editing alert
+// Read ALERT data if editing alert
+// ==================================
+
 if (isset($_GET["update_alert"])){
 	$id_grupo = dame_id_grupo($id_agente);
 	if (give_acl($id_user, $id_grupo, "LW")==0){
@@ -465,6 +570,8 @@ if (isset($_GET["update_alert"])){
 		$alerta_campo1 = $row["al_campo1"];
 		$alerta_campo2 = $row["al_campo2"];
 		$alerta_campo3 = $row["al_campo3"];
+        $alerta_campo2_rec = $row["al_f2_recovery"];
+        $alerta_campo3_rec = $row["al_f3_recovery"];
 		$alerta_dis_max = $row["dis_max"];
 		$alerta_dis_min = $row["dis_min"];
 		$tipo_alerta = $row["id_alerta"];
@@ -477,8 +584,17 @@ if (isset($_GET["update_alert"])){
 		$time_from = $row["time_from"];
 		$time_to = $row["time_to"];
 		$alerta_id_agentemodulo = $row["id_agente_modulo"]; // Only to show, cannot be changed
-	}
-
+        $alert_id_agent = $row["id_agent"];
+        $alert_d1 = $row["monday"];
+        $alert_d2 = $row["tuesday"];
+        $alert_d3 = $row["wednesday"];
+        $alert_d4 = $row["thursday"];
+        $alert_d5 = $row["friday"];
+        $alert_d6 = $row["saturday"];
+        $alert_d7 = $row["sunday"];
+        $alert_recovery = $row["recovery_notify"];
+        $alert_priority = $row["priority"];
+    }
 }
 
 // GET DATA for MODULE UPDATE OR MODULE INSERT
@@ -680,7 +796,7 @@ case "module":
             require "module_manager_editor.php";
 		break;
 case "alert": 	
-        if ($form_alerttype == "")
+        if (($form_alerttype == "") AND (!isset($_GET["update_alert"])))
             require "alert_manager.php";
         else
             require "alert_manager_editor.php";

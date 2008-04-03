@@ -2,6 +2,7 @@
 // Pandora FMS - the Free Monitoring System
 // ========================================
 // Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
+// Copyright (c) 2008 Jorge Gonzalez <jorge.gonzalez@artica.es>
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -33,9 +34,10 @@ else {
 }
 
 // Get passed variables
-$tab = get_parameter_get("tab","main");
+$tab = get_parameter_get ("tab","main");
 $form_moduletype = get_parameter_post ("form_moduletype");
 $form_alerttype = get_parameter ("form_alerttype");
+$moduletype = get_parameter_get ("moduletype");
 
 // Init vars
 $descripcion = "";
@@ -98,7 +100,7 @@ $alert_priority = "0";
 // ================================
 // Create AGENT
 // ================================
-// We need to create agent BEFORE show tabs, because we need to get agent_id
+// We need to create agent BEFORE showing tabs, because we need to get agent_id
 // This is not very clean, but...
 if ( isset ($_POST["create_agent"])) { // Create a new and shining agent
 	$nombre_agente =  entrada_limpia ($_POST["agente"]);
@@ -108,13 +110,13 @@ if ( isset ($_POST["create_agent"])) { // Create a new and shining agent
 	$comentarios =  entrada_limpia ($_POST["comentarios"]);
 	$modo = entrada_limpia ($_POST["modo"]);
 	$id_network_server = get_parameter_post ($_POST["network_server"], 0);
-    $id_plugin_server = get_parameter_post ($_POST["plugin_server"], 0);
-    $id_prediction_server = get_parameter_post ($_POST["prediction_server"], 0);
-    $id_wmi_server = get_parameter_post ($_POST["wmi_server"], 0);
+	$id_plugin_server = get_parameter_post ($_POST["plugin_server"], 0);
+	$id_prediction_server = get_parameter_post ($_POST["prediction_server"], 0);
+	$id_wmi_server = get_parameter_post ($_POST["wmi_server"], 0);
 	$id_os = entrada_limpia ($_POST["id_os"]);
 	$disabled = entrada_limpia ($_POST["disabled"]);
 
-	// Check if agent exists (BUG WC-50518-2 )
+	// Check if agent exists (BUG WC-50518-2)
 	$sql1='SELECT nombre FROM tagente WHERE nombre = "'.$nombre_agente.'"';
 	$result=mysql_query($sql1);
 	if ($row=mysql_fetch_array($result)){
@@ -449,10 +451,10 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	$modo = entrada_limpia($_POST["modo"]);
 	$id_os = entrada_limpia($_POST["id_os"]);
 	$disabled = entrada_limpia($_POST["disabled"]);
-    $id_network_server = get_parameter ("network_server", 0);
-    $id_plugin_server = get_parameter ("plugin_server", 0);
-    $id_wmi_server = get_parameter ("wmi_server", 0);
-    $id_prediction_server = get_parameter ("prediction_server", 0);
+	$id_network_server = get_parameter ("network_server", 0);
+	$id_plugin_server = get_parameter ("plugin_server", 0);
+	$id_wmi_server = get_parameter ("wmi_server", 0);
+	$id_prediction_server = get_parameter ("prediction_server", 0);
 
 	if ($direccion_agente != $old_agent_address){
 		agent_add_address ($id_agente, $direccion_agente);
@@ -614,29 +616,29 @@ if ((isset($_POST["update_module"])) || (isset($_POST["insert_module"]))) {
 	}
 
 	$form_id_tipo_modulo = get_parameter ("form_id_tipo_modulo");
-    $form_name = get_parameter ("form_name");
-    $form_description = get_parameter ("form_description");
-    $form_id_module_group = get_parameter ("form_id_module_group",0);
-    $form_id_tipo_modulo = get_parameter ("form_id_tipo_modulo");
-    $form_post_process = get_parameter ("form_post_process",0);
-    $form_max_timeout = get_parameter ("form_max_timeout",0);
-    $form_minvalue = get_parameter_post ("form_minvalue",0);
-    $form_maxvalue = get_parameter ("form_maxvalue",0);
-    $form_interval = get_parameter ("form_interval",345345345);
-    $form_id_prediction_module = get_parameter ("form_id_prediction_module",0);
-    $form_id_plugin = get_parameter ("form_id_plugin",0);
-    $form_id_export = get_parameter ("form_id_export",0);
-    $form_disabled = get_parameter ("form_disabled",0);
-    $form_tcp_send = get_parameter ("form_tcp_send","");
-    $form_tcp_rcv = get_parameter ("form_tcp_rcv","");
-    $form_tcp_port = get_parameter ("form_tcp_port",0);
-    $form_snmp_community = get_parameter ("form_snmp_community","public");
-    $form_snmp_oid = get_parameter ("form_snmp_oid","");
-    $form_ip_target = get_parameter ("form_ip_target","");
-    $form_plugin_user = get_parameter ("form_plugin_user","");
-    $form_plugin_pass = get_parameter ("form_plugin_pass","");
-    $form_plugin_parameter = get_parameter ("form_plugin_parameter","");
-    $form_id_modulo = get_parameter ("form_id_modulo");
+	$form_name = get_parameter ("form_name");
+	$form_description = get_parameter ("form_description");
+	$form_id_module_group = get_parameter ("form_id_module_group",0);
+	$form_id_tipo_modulo = get_parameter ("form_id_tipo_modulo");
+	$form_post_process = get_parameter ("form_post_process",0);
+	$form_max_timeout = get_parameter ("form_max_timeout",0);
+	$form_minvalue = get_parameter_post ("form_minvalue",0);
+	$form_maxvalue = get_parameter ("form_maxvalue",0);
+	$form_interval = get_parameter ("form_interval",300);
+	$form_id_prediction_module = get_parameter ("form_id_prediction_module",0);
+	$form_id_plugin = get_parameter ("form_id_plugin",0);
+	$form_id_export = get_parameter ("form_id_export",0);
+	$form_disabled = get_parameter ("form_disabled",0);
+	$form_tcp_send = get_parameter ("form_tcp_send","");
+	$form_tcp_rcv = get_parameter ("form_tcp_rcv","");
+	$form_tcp_port = get_parameter ("form_tcp_port",0);
+	$form_snmp_community = get_parameter ("form_snmp_community","public");
+	$form_snmp_oid = get_parameter ("form_snmp_oid","");
+	$form_ip_target = get_parameter ("form_ip_target","");
+	$form_plugin_user = get_parameter ("form_plugin_user","");
+	$form_plugin_pass = get_parameter ("form_plugin_pass","");
+	$form_plugin_parameter = get_parameter ("form_plugin_parameter","");
+	$form_id_modulo = get_parameter ("form_id_modulo");
 }
 
 // MODULE UPDATE
@@ -649,25 +651,37 @@ if ((isset($_POST["update_module"])) && (!isset($_POST["oid"]))){ // if modified
 		}
 	}
 	$sql_update = "UPDATE tagente_modulo 
-	SET max ='".$modulo_max."', 
-	min = '".$modulo_min."', 
-	nombre='".$nombre."', 
-	descripcion='".$descripcion."', 
-	tcp_send = '$tcp_send', 
-	tcp_rcv = '$tcp_rcv', 
-	tcp_port = '$tcp_port', 
-	ip_target = '$ip_target', 
-	snmp_oid = '$snmp_oid', 
-	snmp_community = '$snmp_community', 
-	id_module_group = '$id_module_group', 
-	module_interval = '$module_interval' 
-	WHERE id_agente_modulo = ".$id_agente_modulo;
-	$result=mysql_query($sql_update);	
+	SET descripcion = '$form_description', 
+	nombre = '$form_name', 
+	max = '$form_maxvalue', 
+	min = '$form_minvalue', 
+	module_interval = '$form_interval', 
+	tcp_port = '$form_tcp_port', 
+	tcp_send = '$form_tcp_send', 
+	tcp_rcv = '$form_tcp_rcv', 
+	snmp_community = '$form_snmp_community', 
+	snmp_oid = '$form_snmp_oid', 
+	ip_target = '$form_ip_target', 
+	id_module_group = '$form_id_module_group', 
+	flag = '$form_flag', 
+	id_modulo = '$form_id_modulo', 
+	disabled = '$form_disabled', 
+	id_export = '$form_id_export', 
+	plugin_user = '$form_plugin_user', 
+	plugin_pass = '$form_plugin_pass', 
+	plugin_parameter = '$form_plugin_parameter', 
+	id_plugin = '$form_id_plugin', 
+	post_process = '$form_post_process', 
+	prediction_module = '$form_prediction_module', 
+	max_timeout = '$form_max_timeout' 
+	WHERE id_agente_modulo = '$id_agente_modulo'";
+	$result=mysql_query($sql_update);
 	if (! $result) {
 		echo "<h3 class='error'>".$lang_label["update_module_no"]."</h3>";
 	} else {
 		echo "<h3 class='suc'>".$lang_label["update_module_ok"]."</h3>";
 	}
+	/*
 	// Init vars to null to avoid trash in forms 
 	$id_tipo_modulo = "";$nombre =  "";$descripcion = "";$modulo_max = "";
 	$modulo_min = "";// Pandora 1.2 new module data:
@@ -675,14 +689,15 @@ if ((isset($_POST["update_module"])) && (!isset($_POST["oid"]))){ // if modified
 	$snmp_oid = "";$snmp_community = "";$id_module_group = "";
 	$module_interval = ""; $modulo_nombre = ""; $modulo_descripcion = "";
 	$update_module = 0;
+	*/
 }
 // =========================================================
 // OID Refresh button to get SNMPWALK from data in form
 // This code is also applied when submitting a new module (insert_module = 1)
 // =========================================================
 if (isset($_POST["oid"])){
-	snmp_set_quick_print(1);
-	if (! ($snmpwalk = snmprealwalk($ip_target, $snmp_community, ""))) {
+	snmp_set_quick_print(1);	
+	if (! ($snmpwalk = snmprealwalk($form_ip_target, $form_snmp_community, ""))) {
 		echo "<h3 class='error'>".$lang_label["cannot_read_snmp"]."</h3>";
 	} else {
 		echo "<h3 class='suc'>".$lang_label["ok_read_snmp"]."</h3>";
@@ -694,9 +709,7 @@ if (isset($_POST["oid"])){
 // MODULE INSERT
 // =========================================================
 
-if (((!isset($_POST["nc"]) OR ($_POST["nc"]==-1)) ) &&
-			(!isset($_POST["oid"]))		&&
-			(isset($_POST["insert_module"]))){
+if (((!isset($_POST["nc"]) OR ($_POST["nc"]==-1))) && (!isset($_POST["oid"])) && (isset($_POST["insert_module"])) && (isset($_POST['crtbutton']))){
 
 	if (isset($_POST["form_combo_snmp_oid"])) {
 		$combo_snmp_oid = entrada_limpia($_POST["form_combo_snmp_oid"]);
@@ -722,12 +735,12 @@ if (((!isset($_POST["nc"]) OR ($_POST["nc"]==-1)) ) &&
 	    $id_agente_modulo = mysql_insert_id();
 	    // Create with different estado if proc type or data type
 	    if ( 
-	    ($form_id_tipo_modulo == 2) ||   // data_proc
-	    ($form_id_tipo_modulo == 6) ||   // icmp_proc
-	    ($form_id_tipo_modulo == 9) ||   // tcp_proc
-	    ($form_id_tipo_modulo == 18) ||  //snmp proc
-        ($form_id_tipo_modulo == 21) ||  // async proc
-        ($form_id_tipo_modulo == 100)  // Keepalive
+			($form_id_tipo_modulo == 2) ||   // data_proc
+			($form_id_tipo_modulo == 6) ||   // icmp_proc
+			($form_id_tipo_modulo == 9) ||   // tcp_proc
+			($form_id_tipo_modulo == 18) ||  //snmp proc
+            ($form_id_tipo_modulo == 21) ||  // async proc
+            ($form_id_tipo_modulo == 100)  // Keepalive
 	    ){ 
 		    $sql_insert2 = "INSERT INTO tagente_estado 
 		    (id_agente_modulo,datos,timestamp,cambio,estado,id_agente, utimestamp) 
@@ -787,23 +800,23 @@ if (isset($_GET["delete_module"])){ // DELETE agent module !
 // -----------------------------------
 
 switch ($tab) {
-case "main":	require "agent_manager.php";
+	case "main":
+		require "agent_manager.php";
 		break;
-case "module": 	
-        if ($form_moduletype == "")
-            require "module_manager.php";
-        else 
-            require "module_manager_editor.php";
+	case "module":
+		if (($form_moduletype == "") && ($moduletype == ""))
+			require "module_manager.php";
+		else
+			require "module_manager_editor.php";
 		break;
-case "alert": 	
+	case "alert":
         if (($form_alerttype == "") AND (!isset($_GET["update_alert"])))
             require "alert_manager.php";
         else
             require "alert_manager_editor.php";
 		break;
-case "template":require "agent_template.php";
+	case "template":
+		require "agent_template.php";
 		break;
 }
-
-
 ?>

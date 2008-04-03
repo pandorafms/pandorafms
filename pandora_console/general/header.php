@@ -25,6 +25,7 @@ echo '
 
 ';
 echo "<div id='head_m'>";
+
 echo "<table width=520 border='0' cellpadding=3>
 	<tr>";
 if (isset ($_SESSION["id_usuario"])){

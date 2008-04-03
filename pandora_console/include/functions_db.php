@@ -352,6 +352,36 @@ function dame_nombre_grupomodulo($id){
 }
 
 // --------------------------------------------------------------- 
+// Returns name of a export server
+// --------------------------------------------------------------- 
+
+function dame_nombre_servidorexportacion($id){
+	require("config.php");
+	$query1="SELECT id, name FROM tserver_export WHERE id = ".$id; 
+	$resq1=mysql_query($query1);
+	if ($rowdup=mysql_fetch_array($resq1))
+		$pro=$rowdup["name"]; 
+	else
+		$pro = "";
+	return $pro;
+}
+
+// --------------------------------------------------------------- 
+// Returns name of a plugin module
+// --------------------------------------------------------------- 
+
+function dame_nombre_pluginid($id){
+	require("config.php");
+	$query1="SELECT id, name FROM tplugin WHERE id = ".$id; 
+	$resq1=mysql_query($query1);
+	if ($rowdup=mysql_fetch_array($resq1))
+		$pro=$rowdup["name"]; 
+	else
+		$pro = "";
+	return $pro;
+}
+
+// --------------------------------------------------------------- 
 // Returns agent name, given a ID of agente_module table
 // --------------------------------------------------------------- 
 
@@ -1289,7 +1319,6 @@ function lang_string ($string){
     else
         return "[".$string."]";
 }
-
 
 function check_server_status (){
     global $config;

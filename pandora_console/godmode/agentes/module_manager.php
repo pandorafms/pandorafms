@@ -2,6 +2,7 @@
 // Pandora FMS - the Free Monitoring System
 // ========================================
 // Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2008 Jorge Gonzalez <jorge.gonzalez@artica.es>
 // Main PHP/SQL code development, project architecture and management.
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -77,18 +78,18 @@ if ($row=mysql_num_rows($result)){
     echo "<th>".$lang_label["description"]."</th>";
     echo "<th>".$lang_label["max_min"]."</th>";
     echo "<th width=65>".$lang_label["action"]."</th>";
-    $color=1;$last_modulegroup = "0";
-    while ($row=mysql_fetch_array($result)){
+    $color=1; $last_modulegroup = "0";
+    while ($row = mysql_fetch_array($result)){
         if ($color == 1){
-            $tdcolor="datos";
-            $color =0;
+            $tdcolor = "datos";
+            $color = 0;
         } else {
-            $tdcolor="datos2";
-            $color =1;
+            $tdcolor = "datos2";
+            $color = 1;
         }
         $id_tipo = $row["id_tipo_modulo"];
         $id_module  = $row["id_modulo"];
-        $nombre_modulo =$row["nombre"];
+        $nombre_modulo = $row["nombre"];
         $descripcion = $row["descripcion"];
         $module_max = $row["max"];
         $module_min = $row["min"];
@@ -139,7 +140,8 @@ if ($row=mysql_num_rows($result)){
         echo "<a href='index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&delete_module=".$row["id_agente_modulo"]."'".' onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;">';
         echo "<img src='images/cross.png' border=0 title='".$lang_label["delete"]."'>";
         echo "</b></a>&nbsp;";
-        echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&tab=module&update_module=".$row["id_agente_modulo"]."#modules'>";
+	// Update module
+        echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&tab=module&update_module=".$row["id_agente_modulo"]."&moduletype=$id_module#modules'>";
         echo "<img src='images/config.png' border=0 title='".$lang_label["update"]."' onLoad='type_change()'></b></a>";
         
         // Make a data normalization
@@ -151,5 +153,6 @@ if ($row=mysql_num_rows($result)){
         }
     }
     echo "</table>";
+	
 } else
     echo "<div class='nf'>".lang_string("No available data to show")."</div>";

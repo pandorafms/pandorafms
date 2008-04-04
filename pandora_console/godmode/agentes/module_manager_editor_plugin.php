@@ -35,7 +35,6 @@ if (give_acl($config["id_user"], 0, "AW")!=1) {
 
 // Check whether we are updataing and get data if so
 if ($update_module_id != NULL){
-	echo "<p>UMid $update_module_id</p>";
     $row = get_db_row ("tagente_modulo", 'id_agente_modulo', $update_module_id);
     if ($row == 0){
         unmanaged_error("Cannot load tnetwork_component reference from previous page");
@@ -55,16 +54,16 @@ if ($update_module_id != NULL){
 		$form_snmp_oid = $row['snmp_oid'];
 		$form_ip_target = $row['ip_target'];
 		$form_id_module_group = $row['id_module_group'];
-		$tbl_flag = $row['flag']; // It doesn't matter
+		$form_flag = $row['flag'];
 		$tbl_id_modulo = $row['id_modulo']; // It doesn't matter
 		$tbl_disabled = $row['disabled'];
 		$form_id_export = $row['id_export'];
 		$form_plugin_user = $row['plugin_user'];
 		$form_plugin_pass = $row['plugin_pass'];
 		$form_plugin_parameter = $row['plugin_parameter'];
-		$form_id_plugin = $row['id_plugin']; // It doesn't matter
+		$form_id_plugin = $row['id_plugin'];
 		$form_post_process = $row['post_process'];
-		$tbl_prediction_module = $row['prediction_module']; // It doesn't matter
+		$form_prediction_module = $row['prediction_module'];
 		$form_max_timeout = $row['max_timeout'];
 
 		if ($tbl_disabled == 1){

@@ -1,4 +1,14 @@
-2008-04-03  Jorge Gonzalez  <jo[Brge.gonzalez@artica.es>
+2008-04-04  Jorge Gonzalez  <jorge.gonzalez@artica.es>
+
+	* godmode/agentes/module_manager_editor_data.php,
+	godmode/agentes/module_manager_editor_network.php,
+	godmode/agentes/module_manager_editor_wmi.php,
+	godmode/agentes/configurar_agente.php,
+	godmode/agentes/module_manager_editor_plugin.php,
+	godmode/agentes/module_manager_editor_prediction.php: Removed warning
+	messages due a lack of a variable in configurar_agente.php
+
+2008-04-03  Jorge Gonzalez  <jorge.gonzalez@artica.es>
 
 	* include/functions_db.php: New functions added to handle plugins and
 	export servers.

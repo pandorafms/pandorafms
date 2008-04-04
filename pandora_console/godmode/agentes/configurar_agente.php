@@ -619,8 +619,10 @@ if ((isset($_POST["update_module"])) || (isset($_POST["insert_module"]))) {
 	$form_name = get_parameter ("form_name");
 	$form_description = get_parameter ("form_description");
 	$form_id_module_group = get_parameter ("form_id_module_group",0);
+	$form_flag = get_parameter ("form_flag",0);
 	$form_id_tipo_modulo = get_parameter ("form_id_tipo_modulo");
 	$form_post_process = get_parameter ("form_post_process",0);
+	$form_prediction_module = get_parameter ("form_prediction_module",0);
 	$form_max_timeout = get_parameter ("form_max_timeout",0);
 	$form_minvalue = get_parameter_post ("form_minvalue",0);
 	$form_maxvalue = get_parameter ("form_maxvalue",0);

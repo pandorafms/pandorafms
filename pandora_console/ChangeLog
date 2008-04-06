@@ -1,3 +1,7 @@
+2008-04-09 Sancho Lerena <slerena@gmail.com>
+
+        * reporting_viewer.php: Round data for monitor SLA report.
+
 2008-04-01 Sancho Lerena <slerena@gmail.com>
 
 	* pandoradb_data.sql: Updated default Pandora FMS logfile alert.

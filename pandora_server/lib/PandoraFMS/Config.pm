@@ -38,7 +38,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "2.0-dev";
-my $pandora_build="PS080311";
+my $pandora_build="PS080404";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -128,7 +128,7 @@ sub pandora_loadconfig {
     my $pa_config = $_[0];
     my $opmode = $_[1]; # 0 dataserver, 1 network server, 2 snmp console
                         # 3 recon srv, 4 plugin srv, 5 prediction srv
-                        # 6 WMI server
+                        # 6 WMI server, 7 export server
     my $archivo_cfg = $pa_config->{'pandora_path'};
     my $buffer_line;
     my @command_line;
@@ -161,6 +161,7 @@ sub pandora_loadconfig {
     $pa_config->{"wmiserver"} = 0; # Introduced on 2.0
     $pa_config->{"pluginserver"} = 0; # Introduced on 2.0
     $pa_config->{"predictionserver"} = 0; # Introduced on 2.0
+    $pa_config->{"exportserver"} = 0; # 2.0
     $pa_config->{"servermode"} = "";
     $pa_config->{'snmp_logfile'} = "/var/log/pandora_snmptrap.log";
     $pa_config->{"network_threads"} = 5; # Fixed default
@@ -286,6 +287,9 @@ sub pandora_loadconfig {
         elsif ($parametro =~ m/^wmiserver\s([0-9]*)/i) {
 	        $pa_config->{'wmiserver'}= clean_blank($1);
         }
+        elsif ($parametro =~ m/^exportserver\s([0-9]*)/i) {
+            $pa_config->{'exportserver'}= clean_blank($1);
+        }
         elsif ($parametro =~ m/^servername\s(.*)/i) { 
             $pa_config->{'servername'}= clean_blank($1);
         }
@@ -394,7 +398,10 @@ sub pandora_loadconfig {
         print " [ERROR] You must enable 'wmiserver' in setup file to run Pandora FMS WMI server. \n\n";
         exit;
     }
-
+    if (($opmode ==7) && ($pa_config->{"exportserver"} ne 1)) {
+        print " [ERROR] You must enable 'exportserver' in setup file to run Pandora FMS Export server. \n\n";
+        exit;
+    }
     # Show some config options in startup
     if ($pa_config->{"quiet"} == 0){
 	    if ($opmode == 0){
@@ -431,6 +438,11 @@ sub pandora_loadconfig {
             print " [*] You are running Pandora FMS WMI Server. \n";
             $parametro ="Pandora FMS WMI Server";
             $pa_config->{"servermode"}="_WMI";
+        }
+        if ($opmode == 7){
+            print " [*] You are running Pandora FMS Export Server. \n";
+            $parametro ="Pandora FMS Export Server";
+            $pa_config->{"servermode"}="_Export";
         }
 	    if ($pa_config->{"pandora_check"} == 1) {
 		    print " [*] MD5 Security enabled.\n";

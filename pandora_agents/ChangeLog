@@ -1,3 +1,8 @@
+2008-04-09 Sancho Lerena <slerena@gmail.com>
+
+	* openWRT/pandora_arduino.c: Code for arduino, able to manage
+	pandora agent signals using serial interface.
+
 2008-03-19  Manuel Arostegui <marostegui@artica.es>
 
 	* linux/pandora_agent.spec: Adapted to the new 1.3.X version

@@ -209,7 +209,7 @@ if (($report_user == $id_user) OR (dame_admin($id_user)==1) OR ($report_private 
 					echo "<p style='font: bold 3em Arial, Sans-serif; color: #000000;'>";
 					echo $monitor_value." %"."<img src='images/b_green.png' height=32 width=32>";
 					echo "</p>";
-					$monitor_value2 = 100 - $monitor_value ;
+					$monitor_value2 = format_numeric(100 - $monitor_value,2) ;
 					echo "<p style='font: bold 3em Arial, Sans-serif; color: #ff0000;'>";
 					echo $monitor_value2." %"."<img src='images/b_red.png' height=32 width=32>";
 					echo "</p>";

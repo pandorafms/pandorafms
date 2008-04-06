@@ -1,3 +1,19 @@
+2008-04-09  Sancho Lerena <slerena@gmail.com>
+
+	* pandoradb.sql: New header.
+
+	* pandoradb_data.sql: Removed /**/ comments, due problems with
+	installer.
+
+	* install.php: Updated installer for 2.0 version.
+
+	* functions.php: Fix small problem in pandora_help() with icon.
+
+	* estado_alertas.php: Do not show header "combined alert" if there
+	is no complex alerts.
+
+	* reporting_viewer.php: Round data for monitor SLA report.
+
 2008-04-04  Jorge Gonzalez  <jorge.gonzalez@artica.es>
 
 	* godmode/agentes/module_manager_editor_data.php,

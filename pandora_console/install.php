@@ -128,6 +128,7 @@ function parse_mysql_dump($url){
 			if(trim($sql_line) != "" && strpos($sql_line, "--") === false){
 				$query .= $sql_line;
 				if(preg_match("/;[\040]*\$/", $sql_line)){
+                // echo "DEBUG $query <br>";
 					if (!$result = mysql_query($query))
 						return 0;
 					$query = "";
@@ -153,7 +154,7 @@ function install_step1() {
 	<h1>Pandora FMS installation wizard. Step #1 of 4</h1>
 	<div id='wizard' style='height: 380px;'>
 		<div id='install_box'>
-			<h1>Welcome to Pandora FMS 1.3 installation Wizard</h1>
+			<h1>Welcome to Pandora FMS 2.0 installation Wizard</h1>
 			<p>This wizard helps you to quick install Pandora FMS console in your system.</p>
 			<p>In four steps checks all dependencies and make your configuration for a quick installation.</p>
 			<p>For more information, please refer to documentation.</p>
@@ -163,7 +164,7 @@ function install_step1() {
 			echo "<div class='warn'><b>Warning:</b> You already have a config.php file. Configuration and database would be overwritten if you continued.</div>";
 		}
 		echo "<div class='warn'><b>Warning:</b> This installer will <b>overwrite and destroy</b> your existing Pandora FMS configuration and <b>Database</b>. Before continue, please <b>be sure that you have no valuable Pandora FMS data in your Database.</b><br></div>";
-		echo "<div class='info'>If you want to <b>upgrade</b> from Pandora FMS 1.2 to 1.3 version, 
+		echo "<div class='info'>If you want to <b>upgrade</b> from Pandora FMS 1.3.x to 2.0 version, 
 		use the <a href='upgrade.php'>automated update wizard</a></div>";
 		echo "
 		</div>
@@ -345,15 +346,14 @@ function install_step4() {
 					$cfgin = fopen ("include/config.inc.php","r");
 					$cfgout = fopen ($pandora_config,"w");
 					$config_contents = fread ($cfgin, filesize("include/config.inc.php"));
-	
 					$config_new = '<?php
 // Begin of automatic config file
-$dbname="'.$dbname.'";			// MySQL DataBase name
-$dbuser="pandora";			// DB User
-$dbpassword="'.$random_password.'";	// DB Password
-$dbhost="'.$dbhost.'";			// DB Host
-$config_homedir="'.$path.'";		// Config homedir
-$BASE_URL="'.$url.'";			// Base URL
+$config["dbname"]="'.$dbname.'";			// MySQL DataBase name
+$config["dbuser"]="pandora";			// DB User
+$config["dbpass"]="'.$random_password.'";	// DB Password
+$config["dbhost"]="'.$dbhost.'";			// DB Host
+$config["homedir"]="'.$path.'";		// Config homedir
+$config["homeurl"]="'.$url.'";			// Base URL
 // End of automatic config file
 ?>';
 					$step7 = fputs ($cfgout, $config_new);

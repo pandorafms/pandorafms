@@ -1,3 +1,27 @@
+-- Pandora FMS - the Free Monitoring System
+-- ========================================
+-- Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
+-- Please see http://pandora.sourceforge.net for full contribution list
+
+-- This program is free software; you can redistribute it and/or
+-- modify it under the terms of the GNU General Public License
+-- as published by the Free Software Foundation for version 2.
+-- This program is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+-- You should have received a copy of the GNU General Public License
+-- along with this program; if not, write to the Free Software
+-- Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+-- Database Data for Pandora FMS 2.0
+
+-- PLEASE NO NOT USE MULTILINE COMMENTS 
+-- Because Pandora Installer don't understand them
+-- and fails creating database !!!
+
+
+
 --
 -- Dumping data for table `talerta`
 --
@@ -62,10 +86,10 @@ UNLOCK TABLES;
 /*!40000 ALTER TABLE `tlanguage` DISABLE KEYS */;
 LOCK TABLES `tlanguage` WRITE;
 INSERT INTO `tlanguage` VALUES ('en','English');
-/*INSERT INTO `tlanguage` VALUES ('es_es','Espa&ntilde;ol');
-INSERT INTO `tlanguage` VALUES ('de','Deutch');
-INSERT INTO `tlanguage` VALUES ('fr','Fran&ccedil;ais');
-INSERT INTO `tlanguage` VALUES ('pt_br','Portugu&ecirc;s-Brasil'); */
+--INSERT INTO `tlanguage` VALUES ('es_es','Espa&ntilde;ol');
+--INSERT INTO `tlanguage` VALUES ('de','Deutch');
+--INSERT INTO `tlanguage` VALUES ('fr','Fran&ccedil;ais');
+--INSERT INTO `tlanguage` VALUES ('pt_br','Portugu&ecirc;s-Brasil'); 
 
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `tlanguage` ENABLE KEYS */;

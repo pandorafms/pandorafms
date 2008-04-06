@@ -19,7 +19,7 @@
 
 function pandora_help ($id, $return = false) {
     global $config;
-    $output = '<img src="'.$config['homeurl'].'images/help.png" onClick="pandora_help(\''.$id.'\')">';
+    $output = '<img src="'.$config['homeurl'].'/images/help.png" onClick="pandora_help(\''.$id.'\')">';
     if ($return)
         return $return;
     echo $output;

@@ -16,14 +16,16 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Database configuration (default ones)
 
-$config["dbname"]="pandora";
-$config["dbuser"]="pandora";
-$config["dbpass"]="pandora";
-$config["dbhost"]="localhost";
+// Default values
+
+// $config["dbname"]="pandora";
+// $config["dbuser"]="pandora";
+// $config["dbpass"]="pandora";
+// $config["dbhost"]="localhost";
 
 // This is used for reporting, please add "/" character at the end
-$config["homedir"]="/var/www/pandora_console/";
-$config["homeurl"]="/pandora_console/";
+// $config["homedir"]="/var/www/pandora_console/";
+// $config["homeurl"]="/pandora_console/";
 
 // Do not display any ERROR
 //error_reporting(0); // Need to use active console at this moment

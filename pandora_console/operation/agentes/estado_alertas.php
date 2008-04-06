@@ -87,9 +87,11 @@ if (isset($_GET["id_agente"])){
 			show_alert_show_view ($data, $tdcolor, 0);
 		}
 
-        echo "<tr><td colspan=11 class='datos3'><center>".lang_string("Combined alerts")."</center>";
         // Show combined alerts for this agent
         $result_com = mysql_query("SELECT * FROM talerta_agente_modulo WHERE id_agent = $id_agente");
+        if (mysql_num_rows ($result_com)) {
+            echo "<tr><td colspan=11 class='datos3'><center>".lang_string("Combined alerts")."</center>";
+        }
         while ($data_com=mysql_fetch_array($result_com)){
             if ($color == 1){
                 $tdcolor = "datos";

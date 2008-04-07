@@ -33,7 +33,7 @@ if (give_acl($id_user, 0, "AW")!=1) {
 // ==========================
 if (isset($_POST["template_id"])){
 	// Take agent data
-	$sql1='SELECT * FROM tagente WHERE id_agente = '.$id_agente;
+	$sql1="SELECT * FROM tagente WHERE id_agente = '.$id_agente.'";
 	$result=mysql_query($sql1);
 	if ($row=mysql_fetch_array($result)){
 		$intervalo = $row["intervalo"]; 
@@ -62,7 +62,7 @@ if (isset($_POST["template_id"])){
 		while ($row2=mysql_fetch_array($result2)){
 			// Insert each module from tnetwork_component into agent
 			$module_sql = "INSERT INTO tagente_modulo
-			(id_agente, id_tipo_modulo, descripcion, nombre, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, ip_target, id_module_group)
+			(id_agente, id_tipo_modulo, descripcion, nombre, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, ip_target, id_module_group, id_modulo)
 			VALUES ( $id_agente,
 			'".$row2["type"]."',
 			'".$row2["description"]."',
@@ -76,7 +76,8 @@ if (isset($_POST["template_id"])){
 			'".$row2["snmp_community"]."',
 			'".$row2["snmp_oid"]."',
 			'$direccion_agente',
-			'".$row2["id_module_group"]."'
+			'".$row2["id_module_group"]."',
+			'2'
 			)";
 			mysql_query ($module_sql);
 			$id_agente_modulo = mysql_insert_id();

@@ -1,4 +1,15 @@
-2008-04-09  Sancho Lerena <slerena@gmail.com>
+2006-04-07  Jorge Gonzalez  <jorge.gonzalez@artica.es>
+
+	* godmode/agentes/agent_template.php,
+	godmode/agentes/module_manager_editor_data.php,
+	godmode/agentes/module_manager_editor_network.php,
+	godmode/agentes/module_manager_editor_wmi.php,
+	godmode/agentes/module_manager_editor_plugin.php,
+	godmode/agentes/module_manager_editor.php,
+	godmode/agentes/module_manager_editor_prediction.php: Removed warning
+	messages, and fixed mdoule_type errors.
+
+2008-04-05  Sancho Lerena <slerena@gmail.com>
 
 	* pandoradb.sql: New header.
 

@@ -70,10 +70,6 @@ if (($form_moduletype == "networkserver") && ($form_network_component != "") && 
     $form_interval = $row["module_interval"];
     $form_maxvalue = $row["max"];
     $form_minvalue = $row["min"];
-    $form_export_id = $row["export_id"];
-    $form_disabled = $row["disabled"];
-    $form_post_process = $row["post_process"];
-    $form_max_timeout = $row["max_timeout"];
     $form_max_timeout = "";
     $form_id_export = 0;
     $form_disabled = 0;

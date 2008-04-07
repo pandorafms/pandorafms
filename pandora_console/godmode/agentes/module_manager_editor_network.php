@@ -25,6 +25,8 @@ check_login();
 $form_moduletype = get_parameter_post ("form_moduletype");
 // get the module to update
 $update_module_id = get_parameter_get ("update_module");
+// the variable that checks whether the module is disabled or not must be setcommitedversion
+$disabled_status = NULL;
 
 // Specific ACL check
 if (give_acl($config["id_user"], 0, "AW")!=1) {
@@ -140,12 +142,14 @@ echo '</tr>';
 echo '</tr><tr>';
 echo '<td class="datos2">'.lang_string ("module_type")."</td>";
 echo '<td class="datos2">';
-
 if ($update_module_id != NULL){
 	echo "<span class='redi'>Not available in edition mode</span>";
 	echo "<input type='hidden' name='form_id_tipo_modulo' value='".$form_id_tipo_modulo."'>";
 } else {
 	echo '<select name="form_id_tipo_modulo">';
+	if ($form_id_tipo_modulo != 0)
+		echo "<option value='".$form_id_tipo_modulo."'>".giveme_module_type($form_id_tipo_modulo)."</option>";
+		
 	$sql1='SELECT id_tipo, nombre FROM ttipo_modulo WHERE categoria IN (3,4,5) ORDER BY nombre;';
 	$result=mysql_query($sql1);
 	while ($row=mysql_fetch_array($result)){

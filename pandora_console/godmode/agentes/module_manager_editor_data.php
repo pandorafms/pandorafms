@@ -25,6 +25,8 @@ check_login();
 $form_moduletype = get_parameter_post ("form_moduletype");
 // get the module to update
 $update_module_id = get_parameter_get ("update_module");
+// the variable that checks whether the module is disabled or not must be setcommitedversion
+$disabled_status = NULL;
 
 // Specific ACL check
 if (give_acl ($config["id_user"], 0, "AW")!=1) {

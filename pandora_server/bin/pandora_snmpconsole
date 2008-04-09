@@ -46,14 +46,15 @@ pandora_loadconfig (\%pa_config,2);
 # Audit server starting
 pandora_audit (\%pa_config, "Pandora Server SNMP Console Daemon starting", "SYSTEM", "System");
 
-# Daemonize of configured
-if ( $pa_config{"daemon"} eq "1" ) {
-	print " [*] Backgrounding...\n";
-	&daemonize;
+# Daemonize and put in background
+if ( $pa_config{"daemon"} eq "1" ){
+    if ($pa_config{"quiet"} eq "0"){
+        print " [*] Backgrounding Pandora FMS SNMP Console process.\n\n";
+    }
+    &pandora_daemonize ( \%pa_config);
 }
 
 pandora_snmptrapd (\%pa_config);
-
 
 ##########################################################################
 ## SUB pandora_snmptrapd

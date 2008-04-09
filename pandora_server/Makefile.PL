@@ -20,7 +20,7 @@ WriteMakefile(
 		SNMP => 0
     },
     EXE_FILES 		=>
-[ 'bin/pandora_server', 'bin/pandora_network', 'bin/pandora_recon', 'bin/pandora_snmpconsole'],
+[ 'bin/pandora_server', 'bin/pandora_network', 'bin/pandora_recon', 'bin/pandora_snmpconsole' , 'bin/pandora_plugin', 'bin/pandora_export', 'bin/pandora_prediction'],
     PMLIBDIRS  		=> [ 'lib' ],
     'dist'		=> { 'TAR' => 'tar', 'TARFLAGS' => 'cvfz', 'SUFFIX'
 => '.gz', 'COMPRESS' => 'gzip'}

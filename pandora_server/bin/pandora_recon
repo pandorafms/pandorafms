@@ -53,10 +53,12 @@ pandora_loadconfig (\%pa_config, 3);
 pandora_audit (\%pa_config, "Pandora FMS Recon Daemon starting", "SYSTEM", "System");
 sleep(1);
 
-# Daemonize of configured
-if ( $pa_config{"daemon"} eq "1" ) {
-	print " [*] Backgrounding...\n";
-	&daemonize;
+# Daemonize and put in background
+if ( $pa_config{"daemon"} eq "1" ){
+    if ($pa_config{"quiet"} eq "0"){
+        print " [*] Backgrounding Pandora FMS Recon Server process.\n\n";
+    }
+    &pandora_daemonize ( \%pa_config);
 }
 
 # Runs main program (have a infinite loop inside)

@@ -47,11 +47,14 @@ pandora_init(\%pa_config,"Pandora FMS Data Server");
 pandora_loadconfig (\%pa_config,0);
 
 # Audit server starting
-pandora_audit (\%pa_config, "Pandora FMS data server Daemon starting", "SYSTEM", "System");
+pandora_audit (\%pa_config, "Pandora FMS Data Server Daemon starting", "SYSTEM", "System");
 
-# BE CAREFUL, if you daemonize, you need to launch threads BEFORE daemonizing.
-if ($pa_config{"daemon"} eq "1" ){
-	&daemonize;
+# Daemonize and put in background
+if ( $pa_config{"daemon"} eq "1" ){
+    if ($pa_config{"quiet"} eq "0"){
+        print " [*] Backgrounding Pandora FMS Data Server process.\n\n";
+    }
+    &pandora_daemonize ( \%pa_config);
 }
 
 # KeepAlive checks for Agents, only for master servers, in separate thread

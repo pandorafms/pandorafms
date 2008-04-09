@@ -52,6 +52,12 @@ pandora_loadconfig (\%pa_config, 7);
 # Audit server starting
 pandora_audit (\%pa_config, "Pandora FMS Export server starting", "SYSTEM", "System");
 
-print " [*] Starting up Export Server\n";
+# Daemonize and put in background
+if ( $pa_config{"daemon"} eq "1" ){
+    if ($pa_config{"quiet"} eq "0"){
+        print " [*] Backgrounding Pandora FMS Export Server process.\n\n";
+    }
+    &pandora_daemonize ( \%pa_config);
+}
 
 die ("There is no more program yet! :-)");

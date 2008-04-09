@@ -1,4 +1,8 @@
-2008-04-09 Sancho Lerena <slerena@gmail.com>
+2008-04-09 Sancho lerena <slerena@gmail.com>
+
+	* README, AUTHORS, COPYING: Updated on all agents.
+
+2008-04-08 Sancho Lerena <slerena@gmail.com>
 
 	* openWRT/pandora_arduino.c: Code for arduino, able to manage
 	pandora agent signals using serial interface.

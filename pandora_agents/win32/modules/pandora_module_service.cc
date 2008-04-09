@@ -57,5 +57,5 @@ Pandora_Module_Service::run () {
         }
         
         res = Pandora_Wmi::isServiceRunning (this->service_name);
-        this->output = inttostr (res);
+        this->setOutput (inttostr (res));
 }

@@ -29,6 +29,7 @@
 #include "ssh/pandora_ssh_client.h"
 
 using namespace std;
+using namespace Pandora_Modules;
 
 namespace Pandora {
 	/**
@@ -36,10 +37,13 @@ namespace Pandora {
 	 */
 	class Pandora_Windows_Service : public Windows_Service {
 	private:
-		Pandora_Agent_Conf                   *conf;
-		Pandora_Modules::Pandora_Module_List *modules;
-		long                                  execution_number;
-		string                                agent_name;
+		Pandora_Agent_Conf  *conf;
+		Pandora_Module_List *modules;
+		long                 execution_number;
+		string               agent_name;
+		long                 interval;
+		long                 elapsed_transfer_time;
+		long                 transfer_interval;
         
 		TiXmlElement  *getXmlHeader    ();
 		void           copyDataFile    (string filename);
@@ -51,7 +55,7 @@ namespace Pandora {
 		void           copyFtpDataFile (string host,
 						string remote_path,
 						string filename);
-	
+	public:
 		void           pandora_run  ();
 		void           pandora_init ();
 	public:

@@ -154,13 +154,16 @@ Pandora_Module_Odbc::doQuery () {
 	
 	if (results->next ()) {
 		if (this->getTypeInt () == TYPE_GENERIC_DATA_STRING) {
+			string output;
 			for (int i = 1; i <= columns; i++) {
-				this->output +=  results->getString (i);
+				output +=  results->getString (i);
 				if (i + 1 <= columns)
-					this->output += " | ";
+					output += " | ";
 			}
+
+			this->setOutput (output);
 		} else {
-			this->output = longtostr (results->getLong (1));
+			this->setOutput (longtostr (results->getLong (1)));
 		}
 	}
 }

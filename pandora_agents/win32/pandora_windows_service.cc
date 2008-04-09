@@ -1,7 +1,7 @@
 /* Pandora agents service for Win32.
    
    Copyright (C) 2006 Artica ST.
-   Written by Esteban Sanchez.
+   Written by Esteban Sanchez, Ramon Novoa.
   
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -56,9 +56,13 @@ Pandora_Windows_Service::Pandora_Windows_Service (const char * svc_name,
 			       &Pandora_Windows_Service::pandora_init);
         this->setRunFunction ((void (Windows_Service::*) ())
 			      &Pandora_Windows_Service::pandora_run);
-        execution_number = 0;
-        this->modules    = NULL;
-        this->conf       = NULL;
+	
+        execution_number            = 0;
+        this->modules               = NULL;
+        this->conf                  = NULL;
+	this->interval              = 60000;
+	this->transfer_interval     = this->interval;
+	this->elapsed_transfer_time = 0;
 }
 
 /** 
@@ -72,7 +76,7 @@ Pandora_Windows_Service::~Pandora_Windows_Service () {
         if (this->modules != NULL) {
                 delete this->modules;
         }
-	pandoraLog ("Pandora agent stopped");	
+	pandoraLog ("Pandora agent stopped");
 }
 
 bool
@@ -94,8 +98,7 @@ is_enabled (string value) {
 
 void
 Pandora_Windows_Service::pandora_init () {
-        int    interval_ms = 60000;
-        string conf_file, interval, debug;
+        string conf_file, interval, debug, transfer_interval;
         
         setPandoraDebug (true);
         
@@ -106,22 +109,35 @@ Pandora_Windows_Service::pandora_init () {
         this->conf->setFile (conf_file);
         this->modules = new Pandora_Module_List (conf_file);
 
-        /* Get the interval value (in minutes) and set it to the service */
+        /* Get the interval value (in seconds) and set it to the service */
         interval = conf->getValue ("interval");
-
+	transfer_interval = conf->getValue ("transfer_interval");
+	
 	debug = conf->getValue ("debug");
         setPandoraDebug (is_enabled (debug));
 	
         if (interval != "") {
 		try {
 			/* miliseconds */
-			interval_ms = strtoint (interval) * 1000;
+			this->interval = strtoint (interval) * 1000;
 		} catch (Invalid_Conversion e) {
 		}
         }
 	
+	if (transfer_interval == "") {
+		this->transfer_interval = this->interval;
+	} else {
+		try {
+			/* miliseconds */
+			this->transfer_interval = strtoint (transfer_interval) * 1000;
+		} catch (Invalid_Conversion e) {
+			this->transfer_interval = this->interval;
+		}
+	}
+	cout << "trans: " << this->transfer_interval << endl;
+	
         srand ((unsigned) time (0));
-        this->setSleepTime (interval_ms);
+        this->setSleepTime (this->interval);
         
         pandoraLog ("Pandora agent started");
 }
@@ -165,10 +181,10 @@ void
 Pandora_Windows_Service::copyTentacleDataFile (string host,
 					  string filename)
 {
-	int                     rc;
-	string                  var, filepath;
-	string                  pubkey_file, privkey_file;
-	string			        tentacle_cmd;
+	int     rc;
+	string  var, filepath;
+	string  pubkey_file, privkey_file;
+	string	tentacle_cmd;
 
 	var = conf->getValue ("temporal");
 	if (var[var.length () - 1] != '\\') {
@@ -363,76 +379,93 @@ Pandora_Windows_Service::pandora_run () {
         TiXmlDocument *doc;
         TiXmlElement  *local_xml, *agent;
         string         xml_filename, random_integer;
-	string         tmp_filename, tmp_filepath, interval;
+	string         tmp_filename, tmp_filepath;
         bool           saved;
         
         pandoraDebug ("Run begin");
         
-        agent = getXmlHeader ();
-	
         execution_number++;
-        
+	
         if (this->modules != NULL) {
                 this->modules->goFirst ();
                 
                 while (! this->modules->isLast ()) {
                         Pandora_Module *module;
-                        string          result;
                         
                         module = this->modules->getCurrentValue ();
                         
                         pandoraDebug ("Run %s", module->getName ().c_str ());
                         module->run ();
-                        
-                        local_xml = module->getXml ();
-                        if (local_xml != NULL) {
-                                agent->InsertEndChild (*local_xml);
-        			
-                                delete local_xml;
-                        }
+			
                         this->modules->goNext ();
                 }
         }
-	
-        random_integer = inttostr (rand());
-        tmp_filename = conf->getValue ("agent_name");
-	if (tmp_filename == "") {
-                tmp_filename = Pandora_Windows_Info::getSystemName ();
-        }
-        tmp_filename += "." + random_integer + ".data";
+
+        this->elapsed_transfer_time += interval;
+	cout << "interval time: " << interval << " transfer time:"  << this->transfer_interval << " time passed: " << this->elapsed_transfer_time << endl;
+	if (this->elapsed_transfer_time >= this->transfer_interval) {
+		agent = getXmlHeader ();
+		
+		if (this->modules != NULL) {
+			this->modules->goFirst ();
+			
+			while (! this->modules->isLast ()) {
+				Pandora_Module *module;
+				
+				module = this->modules->getCurrentValue ();
+				
+				local_xml = module->getXml ();
+				if (local_xml != NULL) {
+					agent->InsertEndChild (*local_xml);
+					
+					delete local_xml;
+				}
+				this->modules->goNext ();
+			}
+		}
+		
+		this->elapsed_transfer_time = 0;
+		/* Generate temporal filename */
+		random_integer = inttostr (rand());
+		tmp_filename = conf->getValue ("agent_name");
+		if (tmp_filename == "") {
+			tmp_filename = Pandora_Windows_Info::getSystemName ();
+		}
+		tmp_filename += "." + random_integer + ".data";
                 
-        xml_filename = conf->getValue ("temporal");
-        if (xml_filename[xml_filename.length () - 1] != '\\') {
-                xml_filename += "\\";
-        }
-        tmp_filepath = xml_filename + tmp_filename;
+		xml_filename = conf->getValue ("temporal");
+		if (xml_filename[xml_filename.length () - 1] != '\\') {
+			xml_filename += "\\";
+		}
+		tmp_filepath = xml_filename + tmp_filename;
 
-        /* Copy the XML to a temporal file */
-        pandoraDebug ("Copying XML on %s", tmp_filepath.c_str ());
-        doc = new TiXmlDocument (tmp_filepath);
-        doc->InsertEndChild (*agent);
-        saved = doc->SaveFile();
-        delete doc;
-        delete agent;
+		/* Copy the XML to temporal file */
+		pandoraDebug ("Copying XML on %s", tmp_filepath.c_str ());
+		doc = new TiXmlDocument (tmp_filepath);
+		doc->InsertEndChild (*agent);
+		saved = doc->SaveFile();
+		delete doc;
+		delete agent;
 	
-        if (!saved) {
-                pandoraLog ("Error when saving the XML in %s",
-                            tmp_filepath.c_str ());
-                return;
-        }
+		if (!saved) {
+			pandoraLog ("Error when saving the XML in %s",
+				    tmp_filepath.c_str ());
+			return;
+		}
 
-	if (getPandoraDebug () == false) {
-		this->copyDataFile (tmp_filename);
+		/* Only send if debug is not activated */
+		if (getPandoraDebug () == false) {
+			this->copyDataFile (tmp_filename);
 
-		try {
-	                Pandora_File::removeFile (tmp_filepath);
-	        } catch (Pandora_File::Delete_Error e) {
-	        }
+			try {
+				Pandora_File::removeFile (tmp_filepath);
+			} catch (Pandora_File::Delete_Error e) {
+			}
+		}
 	}
 
 	/* Get the interval value (in minutes) */
-        interval = conf->getValue ("interval");
-        pandoraDebug ("Next execution on %s seconds", interval.c_str ());
+        pandoraDebug ("Next execution on %d seconds", this->interval / 1000);
         
         return;
 }

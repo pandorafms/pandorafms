@@ -54,7 +54,7 @@ Pandora_Module_Cpuusage::run () {
 	try {
 		res = Pandora_Wmi::getCpuUsagePercentage (this->cpu_id);
 		
-		this->output = inttostr (res);
+		this->setOutput (inttostr (res));
 	} catch (Pandora_Wmi::Pandora_Wmi_Exception e) {
 		this->has_output = false;
 	}

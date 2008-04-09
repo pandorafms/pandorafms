@@ -37,10 +37,10 @@ Pandora_Module::Pandora_Module (string name) {
         this->module_name     = name;
         this->executions      = 0;
         this->module_interval = 1;
-        this->output          = "";
         this->max             = 0;
         this->min             = 0;
         this->has_limits      = false;
+        this->data_list       = NULL;
 }
 
 /** 
@@ -49,6 +49,28 @@ Pandora_Module::Pandora_Module (string name) {
  * Should be redefined by child classes.
  */
 Pandora_Module::~Pandora_Module () {
+	this->cleanDataList ();
+}
+
+
+void
+Pandora_Module::cleanDataList () {
+	Pandora_Data                  *data;
+	list<Pandora_Data *>::iterator iter;
+	
+	if (this->data_list) {
+		if (this->data_list->size () > 0) {
+			iter = this->data_list->begin ();
+			for (iter = this->data_list->begin ();
+			     iter != this->data_list->end ();
+			     iter++) {
+				data = *iter;
+				delete data;
+			}
+		}
+		delete this->data_list;
+		this->data_list = NULL;
+	}
 }
 
 /** 
@@ -174,30 +196,50 @@ Pandora_Module::getModuleType () const {
  *            the interval range.
  */
 string
-Pandora_Module::getOutput () const {
-        switch (this->module_type) {
-        case TYPE_GENERIC_DATA:
-        case TYPE_GENERIC_DATA_INC:
-        case TYPE_GENERIC_PROC:
-                int value;
-                
-                try {
-                        value = Pandora_Strutils::strtoint (this->output);
-                } catch (Pandora_Strutils::Invalid_Conversion e) {
-                        throw Output_Error ();
-                }
-                
-                if (this->has_limits) {
-                        if (value >= this->max || value <= this->min) {
-                                throw Value_Error ();
-                        }
-                }
-                
-                return Pandora_Strutils::inttostr (value);
-        default:
-                return this->output;
-        }
+Pandora_Module::getDataOutput (Pandora_Data *data) {
+	int value;
+	
+        if (this->module_type == TYPE_GENERIC_DATA_STRING) {
+		return data->getValue ();
+	}
+	
+	try {
+		value = Pandora_Strutils::strtoint (data->getValue ());
+	} catch (Pandora_Strutils::Invalid_Conversion e) {
+		pandoraLog ("Output error on module %s",
+			    this->module_name.c_str ());
+		throw Output_Error ();
+	}
+	
+	if (this->has_limits) {
+		if (value >= this->max || value <= this->min) {
+			pandoraLog ("The returned value was not in the interval on module %s",
+				    this->module_name.c_str ());
+			throw Value_Error ();
+		}
+	}
+	
+	return Pandora_Strutils::inttostr (value);
 }
+
+/** 
+ * Set the output of the module.
+ *
+ * If the function is called more than once before calling getXML, the
+ * output will be accumulated and added to a <datalist> tag.
+ *
+ * @param output Output to add.
+ */
+void
+Pandora_Module::setOutput (string output) {
+	Pandora_Data *data;
+
+	if (this->data_list == NULL)
+		this->data_list = new list<Pandora_Data *> ();
+	data = new Pandora_Data (output);
+	this->data_list->push_back (data);
+}
+
 
 /** 
  * Run the module and generates the output.
@@ -211,9 +253,6 @@ Pandora_Module::getOutput () const {
  */
 void
 Pandora_Module::run () {
-                    
-        this->output = "";
-        
         /* Check the interval */
         if (this->executions % this->module_interval != 0) {
                 pandoraDebug ("%s: Interval is not fulfilled",
@@ -248,29 +287,18 @@ Pandora_Module::run () {
  */
 TiXmlElement *
 Pandora_Module::getXml () {
-        string        data;
 	TiXmlElement *root;
 	TiXmlElement *element;
+	TiXmlElement *data_list_element;
+	TiXmlElement *data_element;
 	TiXmlText    *text;
-	string        item_str, data_str, desc_str;
+	string        item_clean, data_clean, desc_clean;
+	Pandora_Data *data;
+
 	
 	pandoraDebug ("%s getXML begin", module_name.c_str ());
 	
-	if (!this->has_output) {
-                return NULL;
-        }
-        
-        try {
-                data = this->getOutput ();
-        } catch (Output_Error e) {
-                pandoraLog ("Output error on module %s",
-                            this->module_name.c_str ());
-                            
-                return NULL;
-        } catch (Value_Error e) {
-                pandoraLog ("The returned value was not in the interval on module %s",
-                            this->module_name.c_str ());
-                
+	if (!this->has_output || (this->data_list && this->data_list->size () < 1)) {
                 return NULL;
         }
         
@@ -289,22 +317,57 @@ Pandora_Module::getXml () {
         root->InsertEndChild (*element);
         delete element;
         delete text;
-        
-        element = new TiXmlElement ("data");
-        data_str = strreplace (data, "%", "%%" );
-        text = new TiXmlText (data_str);
-        element->InsertEndChild (*text);
-        root->InsertEndChild (*element);
-        delete text;
-        delete element;
-        
+
+	if (this->data_list && this->data_list->size () > 1) {
+		list<Pandora_Data *>::iterator iter;
+
+		data_list_element = new TiXmlElement ("data_list");
+		
+		iter = this->data_list->begin ();
+		for (iter = this->data_list->begin ();
+		     iter != this->data_list->end ();
+		     iter++) {
+			data = *iter;
+			data_element = new TiXmlElement ("data");
+			element = new TiXmlElement ("value");
+			data_clean = strreplace (this->getDataOutput (data), "%", "%%" );
+			text = new TiXmlText (data_clean);
+			element->InsertEndChild (*text);
+			data_element->InsertEndChild (*element);
+			delete text;
+			delete element;
+			
+			element = new TiXmlElement ("timestamp");
+			text = new TiXmlText (data->getTimestamp ());
+			element->InsertEndChild (*text);
+			data_element->InsertEndChild (*element);
+			delete text;
+			delete element;
+
+			data_list_element->InsertEndChild (*data_element);
+		}
+
+		root->InsertEndChild (*data_list_element);
+		delete data_list_element;
+	} else {
+		data = data_list->front ();
+		element = new TiXmlElement ("data");
+		data_clean = strreplace (this->getDataOutput (data), "%", "%%" );
+		text = new TiXmlText (data_clean);
+		element->InsertEndChild (*text);
+		root->InsertEndChild (*element);
+		delete text;
+		delete element;
+	}
+		
         element = new TiXmlElement ("description");
         text = new TiXmlText (this->module_description);
         element->InsertEndChild (*text);
         root->InsertEndChild (*element);
         delete text;
         delete element;
-        
+
+	this->cleanDataList ();
         pandoraDebug ("%s getXML end", module_name.c_str ());
         return root;
 }

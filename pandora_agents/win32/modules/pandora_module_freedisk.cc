@@ -59,7 +59,7 @@ Pandora_Module_Freedisk::run () {
 	try {
 		res = Pandora_Wmi::getDiskFreeSpace (this->disk_id);
 			
-		this->output = longtostr (res);
+		this->setOutput (longtostr (res));
 	} catch (Pandora_Wmi::Pandora_Wmi_Exception e) {
 		this->has_output = false;
 	}

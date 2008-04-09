@@ -51,7 +51,7 @@ Pandora_Module_Freememory::run () {
 	try {
 		res = Pandora_Wmi::getFreememory ();
 		
-		this->output = longtostr (res);
+		this->setOutput (longtostr (res));
 	} catch (Pandora_Wmi::Pandora_Wmi_Exception e) {
 		this->has_output = false;
 	}

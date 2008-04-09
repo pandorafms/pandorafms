@@ -1,3 +1,35 @@
+2008-04-09  Esteban Sanchez  <estebans@artica.es>
+
+	* modules/pandora_data.[cc,h]: Added to repository. Implements a
+	Pandora_Data object, which holds a value and the timestamp when it
+	was created.
+
+	* modules/pandora_module.[cc,h]: It holds now a list of Pandora_Data
+	objects. The XML is generated based on the size of this list. Output
+	property has became obsolete and child modules must use setOutput().
+
+	* modules/pandora_module_cpuusage.cc,
+	modules/pandora_module_exec.cc,
+	modules/pandora_module_freedisk.cc,
+	modules/pandora_module_freememory.cc,
+	modules/pandora_module_odbc.cc, modules/pandora_module_proc.cc,
+	modules/pandora_module_service.cc: Updated to new Pandora_Module
+	parent class.
+
+	* modules/pandora_module_list.cc: Deleted debug output.
+
+	* pandora.cc: Now uses SYSTEMTIME instead of old time_t.
+
+	* pandora_windows_service.[cc,h]: Added Ramon Novoa to authors. Added
+	a new configuration token transfer_interval which sets the interval
+	where the data file will be sent to the server. If the current
+	interval token is lower than this transfer interval, the data will be
+	added into a data_list XML tag.
+	
+	* PandoraAgent.dev: Added new files.
+
+	* bin/PandoraAgent.exe: Updated to last commit.
+
 2008-04-02  Esteban Sanchez  <estebans@artica.es>
 
 	* pandora_agent_conf.[cc,h]: Object adapted to be a singleton so it

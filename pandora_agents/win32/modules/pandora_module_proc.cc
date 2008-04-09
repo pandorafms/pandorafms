@@ -56,5 +56,5 @@ Pandora_Module_Proc::run () {
         
 	res = Pandora_Wmi::isProcessRunning (this->process_name);
 	
-        this->output = inttostr (res);
+        this->setOutput (inttostr (res));
 }

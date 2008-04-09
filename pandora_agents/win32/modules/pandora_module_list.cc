@@ -156,10 +156,8 @@ Pandora_Modules::Pandora_Module_List::parseModuleDefinition (string definition) 
 		case MODULE_ODBC:
 			module_odbc = (Pandora_Module_Odbc *) module;
                         modules->push_back (module_odbc);
-                        cout << "ASDS" << endl;
                         break;
                 default:
-			cout << "NONE" << endl;
                         break;
                 }
         }

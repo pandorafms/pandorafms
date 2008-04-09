@@ -101,12 +101,11 @@ pandoraWriteLog (string filename, string line) {
 	char       str_time[25];
 	FILE      *file;
 	string     filepath;
-	time_t     now;
-	struct tm *gmtime;
+	SYSTEMTIME st;
         
-	now = time (0);
-	gmtime = localtime (&now);
-	strftime (str_time, 25, "%m-%d-%y %H:%M:%S: ", gmtime);
+	GetSystemTime(&st);
+    sprintf (str_time, "%d-%02d-%02d %02d:%02d:%02d ", st.wYear, st.wMonth, st.wDay,
+             st.wHour, st.wMinute, st.wSecond);
         
 	buffer = (char *) str_time;
 	buffer += line;

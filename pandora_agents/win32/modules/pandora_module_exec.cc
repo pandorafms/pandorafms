@@ -140,12 +140,14 @@ Pandora_Module_Exec::run () {
                 PeekNamedPipe (out_read, buffer, BUFSIZE, &read, &avail, NULL);
                 /* Read from the stdout */
                 if (read != 0) {
+			string output;
                         do {
                                 ReadFile (out_read, buffer, BUFSIZE, &read,
                                           NULL);
                                 buffer[read] = '\0';
-                                this->output += (char *) buffer;
+                                output += (char *) buffer;
                         } while (read >= BUFSIZE);
+			this->setOutput (output);
                 }
                 
                 /* Close job, process and thread handles. */

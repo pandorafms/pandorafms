@@ -22,9 +22,12 @@
 #define	__PANDORA_MODULE_H__
 
 #include "../pandora.h"
+#include "pandora_data.h"
 #include "../tinyxml/tinyxml.h"
 #include <list>
 #include <string>
+
+using namespace Pandora;
 
 /**
  * Definition of Pandora modules.
@@ -69,13 +72,13 @@ namespace Pandora_Modules {
 		MODULE_ODBC       /**< The module performs a SQL query via ODBC */
         } Module_Kind;
         
-        const string module_exec_str                = "module_exec";
-        const string module_proc_str                = "module_proc";
-	const string module_service_str             = "module_service";
-	const string module_freedisk_str            = "module_freedisk";
-	const string module_freememory_str          = "module_freememory";
-	const string module_cpuusage_str            = "module_cpuusage";
-	const string module_odbc_str                = "module_odbc";
+        const string module_exec_str       = "module_exec";
+        const string module_proc_str       = "module_proc";
+	const string module_service_str    = "module_service";
+	const string module_freedisk_str   = "module_freedisk";
+	const string module_freememory_str = "module_freememory";
+	const string module_cpuusage_str   = "module_cpuusage";
+	const string module_odbc_str       = "module_odbc";
 
 	/**
 	 * Pandora module super-class exception.
@@ -104,19 +107,19 @@ namespace Pandora_Modules {
 	 */
         class Pandora_Module {
 	private:
-		int         module_interval;
-                int         executions;
-                int         max, min;
-                bool        has_limits;
-		string      module_type_str;
-                Module_Type module_type;
-		string      module_kind_str;
-                Module_Kind module_kind;
+		int                   module_interval;
+                int                   executions;
+                int                   max, min;
+                bool                  has_limits;
+		string                module_type_str;
+                Module_Type           module_type;
+		string                module_kind_str;
+                Module_Kind           module_kind;
+		list<Pandora_Data *> *data_list;
+
+		string getDataOutput (Pandora_Data *data);
+		void   cleanDataList ();
         protected:
-		/**
-		 * Module output generated at execution.
-		 */
-		string      output;
 		/**
 		 * Indicates if the module generated output in
 		 * his last execution.
@@ -146,7 +149,7 @@ namespace Pandora_Modules {
                 
                 virtual void       run            ();
                 
-                virtual string     getOutput      () const;
+		virtual void       setOutput      (string output);
                 
                 string             getName        () const;
 		string             getDescription () const;

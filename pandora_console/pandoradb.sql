@@ -76,7 +76,8 @@ CREATE TABLE `tagente_datos` (
   `id_agente` mediumint(8) unsigned NOT NULL default '0',
   `utimestamp` int(10) unsigned default '0',
   PRIMARY KEY  (`id_agente_datos`),
-  KEY `data_index2` (`id_agente`,`id_agente_modulo`)
+  KEY `data_index2` (`id_agente`,`id_agente_modulo`),
+  KEY `data_index1` (`id_agente_modulo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `tagent_data_image` (

@@ -37,6 +37,9 @@
 <body>
 <?php
 
+echo "<h1>INSTALLER IS NOT WORKING YET. PLEASE DO NOT USE</h1>";
+exit;
+
 error_reporting(0);
 
 function check_extension ( $ext, $label ){

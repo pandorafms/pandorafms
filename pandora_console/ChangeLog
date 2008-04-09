@@ -1,3 +1,11 @@
+2008-04-09  Sancho Lerena <slerena@gmail.com>
+
+	* AUTHORS: Updated.
+
+	* pandoradb.sql: Added new index proposed for tagente_datos.
+
+	* upgrade.php: Disabled until was functional.
+
 2006-04-07  Jorge Gonzalez  <jorge.gonzalez@artica.es>
 
 	* godmode/agentes/agent_template.php,

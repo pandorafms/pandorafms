@@ -1,5 +1,17 @@
 2008-04-09  Sancho Lerena <slerena@gmail.com>
 
+	* AUTHORS, README: Updated.
+
+	* util/pandora_db.pl: Modified version of compactation funtion
+	needs to be tested, not functional yet.
+
+	* Makefile.PL: Updated install for new servers.
+
+	* bin/pandora_snmpconsole, pandora_export, pandora_recon,
+	pandora_server: Fix problem with old daemonize call.
+
+2008-04-08  Sancho Lerena <slerena@gmail.com>
+
 	*  pandora_server_installer: Updated some strings and version. 
 	Added new servers.
 	

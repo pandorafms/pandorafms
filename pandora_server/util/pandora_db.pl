@@ -21,11 +21,11 @@
 # Includes list
 use strict;
 use Time::Local;			# DateTime basic manipulation
-use DBI;					# DB interface with MySQL
+use DBI;				# DB interface with MySQL
 use Date::Manip;			# Date/Time manipulation
 
 # version: define la version actual del programa
-my $version = "1.3 PS071002";
+my $version = "1.3 PS080327";
 
 # Setup variables
 my $dirname="";
@@ -164,10 +164,13 @@ sub pandora_compactdb {
  	my $query;
  	my $query_ready;
  	my $limit_timestamp; # Define the high limit for timestamp query
+	my $limit_timestamp_numeric;
  	my $low_limit; # Define the low limit for timestamp query
  	my $key; # Used by foreach-loop
 	my $low_limit_timestamp; # temporal variable to store low limit timestamp
+	my $low_limit_timestamp_numeric;
 	my $oldest_timestamp;
+	my $oldest_timestamp_numeric;
 	my $flag; #temporal value to store diff between dats
 	
 	# Begin procedure (SQL open initizalizacion and initial timestamp calculation)
@@ -181,13 +184,15 @@ sub pandora_compactdb {
 	@data_item = $query_ready->fetchrow_array();
 	$oldest_timestamp = @data_item[0];
 	$query_ready->finish;
+	$oldest_timestamp_numeric = &UnixDate($oldest_timestamp,"%s");
 
 	# If no data, skip this step
-	if ($oldest_timestamp != ""){
+	if ($oldest_timestamp ne ""){
 		# We need to determine data ranges
-		# Calculate start limit for compactation, Today- X hour to older datetime 
+		# Calculate start limit for compactation
 		$limit_timestamp = DateCalc("today","-$days days",\$err);
-		$limit_timestamp = &UnixDate($limit_timestamp,"%Y-%m-%d %H:00:00");
+		$limit_timestamp = &UnixDate($limit_timestamp,"%Y-%m-%d %H:%M:%S");
+		$limit_timestamp_numeric = &UnixDate($limit_timestamp,"%s");
 		print "[COMPACT] Packing data from $limit_timestamp to $oldest_timestamp \n";
 		
 		# Main loop
@@ -195,12 +200,13 @@ sub pandora_compactdb {
 			# To get actual low limit, minus step_compact hours
 			$low_limit_timestamp = DateCalc("$limit_timestamp","-$config_step_compact hours",\$err);
 			$low_limit_timestamp = &UnixDate($low_limit_timestamp,"%Y-%m-%d %H:%M:%S");
+			$low_limit_timestamp_numeric = &UnixDate($low_limit_timestamp,"%s");
 			if ($verbosity > 0){
 				print "[COMPACT] Working at interval: $limit_timestamp -$low_limit_timestamp \n";
 			}
 
 			# DB Query to get data from DB based on timestamp limits
-			$query = "select * from tagente_datos where timestamp < '$limit_timestamp' and timestamp >= '$low_limit_timestamp'";
+			$query = "SELECT * FROM tagente_datos WHERE utimestamp < $limit_timestamp_numeric AND utimestamp >= $low_limit_timestamp_numeric";
 			$query_ready = $dbh->prepare($query);
 			$query_ready ->execute();
 			$rows_selected = $query_ready->rows;
@@ -220,17 +226,17 @@ sub pandora_compactdb {
 				# interval. Later we could insert the new record, and initialize hash for 
 				# reuse it in the next loop.
 				
-				$query = "delete from tagente_datos where timestamp < '$limit_timestamp' and timestamp >= '$low_limit_timestamp'  ";
+				$query = "DELETE FROM tagente_datos WHERE utimestamp < $limit_timestamp _numeric AND utimestamp >= $low_limit_timestamp_numeric";
 				$dbh->do($query);
-				
 				# print "DEBUG: Purge query $query \n";
+
 				my $value; my $value_timestamp;
 				foreach $key (keys (%data_list)) {
 					$value = int($data_list{$key} / $data_list_items{$key}); # Media aritmetica :-)
-					$query="insert into tagente_datos (id_agente_modulo, datos, timestamp) values ($key, $value, '$limit_timestamp')";
+					$query="INSERT INTO tagente_datos (id_agente_modulo, datos, timestamp, utimestamp) VALUES ($key, $value, '$limit_timestamp', $limit_timestamp_numeric)";
 					$dbh->do($query);
 					#if ($verbosity > 0){
-					#	print "[DEBUG]: Datos para el id_agente_modulo # $key : Numero de datos ( $data_list_items{$key} ) valor total ( $data_list{$key} media ($value)) \n";
+print "[DEBUG]: Datos para el id_agente_modulo # $key : Numero de datos ( $data_list_items{$key} ) valor total ( $data_list{$key} media ($value)) \n";
 					#}
 					# Purge hash
 					delete $data_list{$key};

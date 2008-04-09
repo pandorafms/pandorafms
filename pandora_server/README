@@ -1,287 +1,58 @@
-Pandora FMS : The Free Monitoring System (v1.3)
+Pandora FMS : The Free Monitoring System v1.3.1
 ===============================================
 
 http://pandora.sourceforge.net
 
-What is Pandora FMS
--------------------
+How to install
+--------------
 
-Pandora watches your systems and applications, and allows you to know the status of any element 
-of those systems. Pandora could detect a network interface down, a defacement in your website, 
-a memory leak in one of your server app, or the movement of any value of the NASDAQ new 
-technology market. If you want, Pandora could send out SMS message when your systems fails... 
-or when Google's value drop below US$ 33.
+Please refer to documentation on our website. This includes schemas, quick-install 
+guides and how to use preconfigured packages and installers for all components.
 
-Pandora will adjust, like an octopus, to your systems and requirements, because has been 
-designed to be open, modular, multiplattform and easy to customize and use, all integrated into 
-a scalable and distributed architecture.
-
-Pandora runs on any operating system, with specific agents for each platform gathering data and 
-sending it to a server, it has specific agents for GNU/Linux, AIX, Solaris, HP-UX, BSD/IPSO, 
-and Windows 2000, XP and 2003.
-
-Pandora can also monitor any kind of TCP/IP service, without the need to install agents, and 
-monitor network systems such as load balancers, routers, switches, operating systems, 
-applications, or simply printers if you need. Pandora also supports SNMP for collecting data 
-and for receiving traps.
-
-A few examples of common resources monitored by Pandora could be processor load, disk and 
-memory usage, running processes, log files, environmental factors such as temperature, or 
-application values like strings contained in web pages or any possible way to collect data in 
-an automatic way.
-
-Pandora FMS Features
+What is Pandora FMS?
 --------------------
 
-    * Lightweigth agents. No need to install adicional software.
-    * Also could use network to collect data on remote systems.
-    * High availability for each component.
-    * Escalable architecture: no liminitation on number of servers you can setup for the same enviroment.
-    * Internal detection on Network Servers in case of failure, automatic takeover of secondary servers.
-    * Stores all data for many weeks or months
-    * Support for implementing redundant and distributed monitoring servers.
-    * Data is stored in a relational database (MySQL).
-    * Automatic database optimization for size, using interpolation and compression algorithms.
-    * Integrated alert systems: send mails, execute scripts, send SMS, or simply write to syslog are a few examples.
-    * Integrated graphical reporting system for any kind of collected data.
-    * SNMP Trap reception with Realtime Console.
-    * Granularity of accesses and user profiles for each group and each user.
-    * Integrated internal auditing for any operation.
-    * Alert filtering to avoid false positives.
-    * Event system with user validation for operation in teams.
-    * Integrated incident system with flows and different profiles.
-    * Any collected value can be displayed as graph or data table.
-    * Alerts can be triggered any kind of event, in many ways.
-    * WebConsole on line HTML contextual help.
-    * Integrated DB management: purge and DB compaction.
-    * Mass configuration/alert manager to copy and distribute agent-module and/or agents/alerts setup to other agents.
-    * Profiles could be personalized using up to eight security attributes without limitation on groups or profiles.
-    * Filters for collected data to avoid bad data.
-
-QUICK INSTALL GUIDE - Pandora FMS Server 1.3
----------------------------------------------
-
-Installing from sources (SVN)
-
-This QIG is made using code from sources (valid also using tarball with latest code, 
-like 1.3beta2). It was made using Ubuntu 7.04 server, but using similar commands for 
-RPM systems, like Fedora or SuSe, should be very similar (using YUM instead APT, or 
-resolving dependencies manually installing RPM or using CPAN for PERL dependencies).
-
-Install your subversion client:
-
-	apt-get install subversion
-
-Checkout Pandora FMS repository
-
-	cd $HOME
-	svn co https://pandora.svn.sourceforge.net/svnroot/pandora/trunk
-	.
-	.
-	[MANY FILES]
-	.
-	.
-	A    trunk/pandora_server/util/pandora_dbstress.README
-	A    trunk/pandora_server/util/PandoraFMS
-	A    trunk/pandora_server/util/pandora_DBI_test.pl
-	A    trunk/pandora_server/util/pandora_snmp.README
-	Checked out revision 584.
-
-Now your "SOURCES" directory are under $HOME/trunk
-
-	root@gdrone:~# cd trunk/
-	root@gdrone:~/trunk# cd pandora_server/
-	root@gdrone:~/trunk/pandora_server# ls
-	AUTHORS  ChangeLog  COPYING  Makefile.PL      pandora_recon   pandora_snmpconsole  util
-	bin      conf       lib      pandora_network  pandora_server  specs
-	root@gdrone:~/trunk/pandora_server# perl Makefile.PL
-	Warning: prerequisite DBI 0 not found.
-	Warning: prerequisite SNMP 0 not found.
-	Warning: prerequisite XML::Simple 0 not found.
-	Writing Makefile for PandoraFMS
-
-Resolve dependencies installing missing packages, if your Debian/Ubuntu system needs 
-more packages, install using a similar command. Please refer documentation about 
-prerequisites to know what packages you need).
-
-	apt-get install libdate-manip-perl snmp snmpd libsnmp-perl libtime-format-perl \
-	libxml-simple-perl libnetaddr-ip-perl libdbi-perl libxml-simple-perl
-
-If you have not installed developer tools, install with metapackage:
-
-	apt-get install build-essential
-
-Run make
-
-	# make
-	cp lib/PandoraFMS/Tools.pm blib/lib/PandoraFMS/Tools.pm
-	cp lib/PandoraFMS/Config.pm blib/lib/PandoraFMS/Config.pm
-	cp lib/PandoraFMS/DB.pm blib/lib/PandoraFMS/DB.pm
-	cp bin/pandora_server.pl blib/script/pandora_server.pl
-	/usr/bin/perl "-MExtUtils::MY" -e "MY->fixin(shift)" blib/script/pandora_server.pl
-	cp bin/pandora_network.pl blib/script/pandora_network.pl
-	/usr/bin/perl "-MExtUtils::MY" -e "MY->fixin(shift)" blib/script/pandora_network.pl
-	cp bin/pandora_snmpconsole.pl blib/script/pandora_snmpconsole.pl
-	/usr/bin/perl "-MExtUtils::MY" -e "MY->fixin(shift)" blib/script/pandora_snmpconsole.pl
-	cp bin/pandora_recon.pl blib/script/pandora_recon.pl
-	/usr/bin/perl "-MExtUtils::MY" -e "MY->fixin(shift)" blib/script/pandora_recon.pl
-
-	# make install
-	Installing /usr/local/share/perl/5.8.7/PandoraFMS/Tools.pm
-	Installing /usr/local/share/perl/5.8.7/PandoraFMS/Config.pm
-	Installing /usr/local/share/perl/5.8.7/PandoraFMS/DB.pm
-	Writing /usr/local/lib/perl/5.8.7/auto/PandoraFMS/.packlist
-	Appending installation info to  /usr/local/lib/perl/5.8.7/perllocal.pod
-
-Test Pandora FMS data server
-
-	# pandora_server --help
-
-	Pandora FMS Data Server 1.3-dev Build PS070731 Copyright (c) 2004-2007 ArticaST
-	This program is Free Software, licensed under the terms of GPL License v2.
-	You can download latest versions and documentation at http://pandora.sourceforge.net.
-
- 	I Need at least one parameter: Complete path to Pandora FMS Config file
-
-	Syntax:
-	  pandora_server <fullpathname to pandora config file> [ options ]
-
-	Following options are optional :
-    	        -v  :  Verbose mode activated, give more information in logfile
-    	        -d  :  Debug mode activated, give extensive information in logfile
-    	        -D  :  Daemon mode (runs in backgroup)
-    	        -h  :  This screen, show a little help screen
-
-Configure Pandora FMS from sources
-
-Create directories:
-
-	mkdir /var/spool/pandora
-	mkdir /var/spool/pandora/data_in
-
-Create user pandora
-
-	useradd pandora
-
-Create homedir for user pandora and .ssh subdir
-
-	mkdir /home/pandora
-	mkdir /home/pandora/.ssh
-	chown -R slerena /home/pandora
-
-Create PID directory
-
-	mkdir /var/run/pandora
-
-Create Logfile directory
-
-	mkdir /var/log/pandora
-
-Make Pandora incoming dir writable for user "pandora"
-
-	chown pandora:root /var/spool/pandora/data_in
-	chmod 770 /var/spool/pandora/data_in
-
-(OPTIONAL) Use scponly to secure pandora user
-
-Install scponly:
-
-	apt-get install scponly
-
-Replace pandora user shell for scponly
-
-	usermod -s /usr/bin/scponly pandora
-
-Create /etc/pandora
-
-	mkdir /etc/pandora
-
-Copy default config to /etc/pandora directory
-
-	cp $HOME/trunk/pandora_server/conf/pandora_server.conf /etc/pandora/
-
-Edit /etc/pandora/pandora_server.conf file
-
-Copy startup daemons to /etc/init.d
-
-	cp $HOME/trunk/pandora_server/pandora_* /etc/init.d/
-
-(OPTIONAL) Create links to appropiate runlevel to be sure that Pandora FMS starts when system bootup
-
-	ln -s /etc/init.d/pandora_server /etc/rc2.d/S90pandora_server
-	ln -s /etc/init.d/pandora_recon /etc/rc2.d/S90pandora_recon
-	ln -s /etc/init.d/pandora_network /etc/rc2.d/S90pandora_network
-	ln -s /etc/init.d/pandora_snmpconsole /etc/rc2.d/S90pandora_snmpconsole
-
-(OPTIONAL) If you're making Pandora FMS server from sources (using PERL makefile), probably you need to link executables placed on /usr/local/bin to /usr/bin because launcher scripts look for Pandora FMS executables at /usr/bin:
-
-	ln -s /usr/local/bin/pandora_server /usr/bin/pandora_server
-	ln -s /usr/local/bin/pandora_snmpconsole /usr/bin/pandora_snmpconsole
-	ln -s /usr/local/bin/pandora_recon /usr/bin/pandora_recon
-	ln -s /usr/local/bin/pandora_network /usr/bin/pandora_network
-
-Create shared resources directory for Pandora FMS
-
-	mkdir /usr/share/pandora
-
-Copy util directory to /usr/share/pandora
-
-	cp -R $HOME/trunk/pandora_server/util /usr/share/pandora
-
-Copy doc directory to /usr/share/pandora
-
-	cp -R $HOME/trunk/pandora_server/doc /usr/share/pandora
-
-Final disposition of files for production usage
-
-Installated automatically with perl makefile at build process
-
-Main executables
-
-    * /usr/bin/pandora_network - Pandora FMS Network server
-    * /usr/bin/pandora_server - Pandora FMS Dataserver
-    * /usr/bin/pandora_recon - Pandora FMS Recon server
-    * /usr/bin/pandora_snmptraps - Pandora FMS SNMP Console for traps 
-
-Pandora FMS Perl (.pm) libraries
-
-(depends of your Linux distro and version) in my setup (Ubuntu 6.06 server):
-
-    * /usr/local/share/perl/5.8.7/PandoraFMS/Config.pm
-    * /usr/local/share/perl/5.8.7/PandoraFMS/DB.pm
-    * /usr/local/share/perl/5.8.7/PandoraFMS/Tools.pm 
-
-Manual install / Package install
-
-Startup scripts
-
-    * /etc/init.d/pandora_network
-    * /etc/init.d/pandora_server
-    * /etc/init.d/pandora_snmpconsole
-    * /etc/init.d/pandora_recon 
-
-Configuration files
-
-    * /etc/pandora/pandora_server.conf 
-
-Utilities
-
-    * /usr/share/pandora/util 
-
-Documentation and examples
-
-    * /usr/share/pandora/doc 
-
-Setting up Pandora FMS server
-
-You need to edit /etc/pandora/pandora_server.conf and setup some paths and 
-user/password items. If you dont remember passwords/users, let's take a look to your 
-Pandora FMS console setup at /var/www/pandora_console/include/config.php.
+Pandora FMS is a monitoring application to watch systems and applications.
+Pandora FMS allows to know the status of any element of your bussiness systems.
+Pandora FMS watches your hardware, your software, your multilayer system and, of
+course, your Operating System. Pandora FMS can detect a network interface down
+or the movement of any NASDAQ new technology market value. If you wish, Pandora
+FMS can send a SMS message when your system or your application fails... or when
+Google stock value drops below 330 US$.
+
+Pandora FMS will adjust, like an octopus, to your systems and requirements,
+because it has been designed to be open, modular, multiplattform and easy to
+customize. Pandora FMS is developed for system administrators.
+
+What else can Pandora FMS do?
+-----------------------------
+
+Pandora FMS is a monitoring tool that not only measures if a parameter is right
+or wrong. Pandora FMS can quantify the state (right or wrong), or store a value
+(numeric or alphanumeric) for months if necessary. Pandora FMS can measure
+performances, compare values among differen systems and set alarms over
+thresholds. Pandora FMS works against a Database so that it can generate
+reports, statistics, SLA and meausre anything: Operating Systems, aplications
+and hardware systems—such as firewalls, proxies, Databases, web servers, VPN,
+routers, switches, processes, services, remote accesses to servers, etc.
+everything integrated in a open and distributed architecture. Pandora FMS can be
+deployed over any Operating System, with specific agents for each platform.
+There are already agents for Windows (2000, XP, 2003), GNU/Linux, Solaris,
+HP-UX, BSD, AIX, IPSO and OpenWRT.
+
+Pandora FMS not only gathers information through its agents, but it can also
+monitor any hardware sistem with TCP/IP connectivity —such as load balancing
+systems, routers, switches, printers, etc.— through SNMP and TCP/ICMP checks.
+
+Often the question "What kind of things can be monitored?" shows up, since
+Pandora FMS can —virtually— monitor anthing, sometimes is convenient give some
+specific examples. Pandora FMS can monitor any process or system that, though a
+command, returns a value, and also any value inside a log file of the Operating
+System. 
 
 License
 -------
 
 The project is distributed under the GPL License v2 or later.
-
-Copyright (C) 2004-2007 Pandora FMS development team
+Copyright (C) 2004-2008 Pandora FMS development team
 

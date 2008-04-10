@@ -263,6 +263,8 @@ if (isset($_GET["delete_alert_comp"])){ // if modified some parameter
 // =============
 if (isset($_POST["insert_alert"])){ // if created alert
 	
+    
+    $combined = get_parameter ("combined",0);
 	$id_agente_modulo = get_parameter ("agente_modulo",0);
     $maximo = get_parameter ("maximo",0);
     $minimo = get_parameter ("minimo",0);
@@ -291,7 +293,7 @@ if (isset($_POST["insert_alert"])){ // if created alert
     $campo2_rec = get_parameter ("campo_2_rec","");
     $campo3_rec = get_parameter ("campo_3_rec","");
 
-    if ((isset($combined)) AND ($combined == 1))
+    if ($combined == 1)
         $alert_id_agent = $id_agente;
     else
         $alert_id_agent = 0;

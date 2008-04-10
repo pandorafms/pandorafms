@@ -60,8 +60,7 @@ if ($form_alerttype != "combined"){
         }
         echo "</select>";
     } else {
-        $agentmodule_name = give_db_value ("nombre", "tagente_modulo", "id_agente_modulo", $alerta_id_agentemodulo);
-echo "DEBUG $alerta_id_agentemodulo";
+        $agentmodule_name = get_db_sql ("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = $alerta_id_agentemodulo");
         echo $agentmodule_name;
     }
 } else {
@@ -267,11 +266,11 @@ echo lang_string ("Alert recovery");
 echo "<td class='datos2'>";
 echo '<select name="alert_recovery">';
 if ((isset($alert_recovery)) AND ($alert_recovery == "1")) {
-    echo "<option value='1'>".$lang_label["disabled"];
-    echo "<option value='0'>".$lang_label["enabled"];
+    echo "<option value='1'>".$lang_label["enabled"];
+    echo "<option value='0'>".$lang_label["disabled"];
 } else {
-    echo "<option value='0'>".$lang_label["enabled"];
-    echo "<option value='1'>".$lang_label["disabled"];
+    echo "<option value='0'>".$lang_label["disabled"];
+    echo "<option value='1'>".$lang_label["enabled"];
 }
 echo "</select>";
 

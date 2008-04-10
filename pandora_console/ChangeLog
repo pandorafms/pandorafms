@@ -1,3 +1,9 @@
+2008-04-10  Sancho Lerena <slerena@artica.es>
+
+	* godmode/agentes/alert_manager.php, godmode/agentes/configurar_agente.php,
+	godmode/agentes/alert_manager_editor.php: Fixed problem with combined alert
+	editor. Tested and works fine for me.
+
 2008-04-10  Jorge Gonzalez  <jorge.gonzalez@artica.es>
 
 	* include/functions_db.php: Added a new function solving the bug

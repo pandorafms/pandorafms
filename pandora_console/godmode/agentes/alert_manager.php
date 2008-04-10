@@ -130,70 +130,71 @@ echo "<h3>".lang_string("combined alerts")."</h3>";
 
 $sql1='SELECT * FROM talerta_agente_modulo WHERE id_agent = '.$id_agente;
 $result=mysql_query($sql1);
-    if ($row=mysql_num_rows($result)){
-        $color = 1;
-        $string = '';
-        while ($row=mysql_fetch_array($result)){  // All modules of this agent
-            // Show data for this combined alert
-            $string = "<tr><td class='datos3'>";
-            $string .= lang_string("Combined")." #".$row["id_aam"];
-            $string .= show_alert_row_edit ($row, "datos3", 0, 1);
-            $string .= '<td class="datos3">'; // action
-            if (give_acl($id_user, $id_grupo, "LW")==1){
-                $string .= "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=".$id_agente."&delete_alert=".$row["id_aam"]."'> <img src='images/cross.png' border=0 alt='".$lang_label["delete"]."'></a>  &nbsp; ";
-                $string .= "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=".$id_agente."&form_alerttype=combined&update_alert=".$row["id_aam"]."'>
-                <img src='images/config.png' border=0 alt='".$lang_label["update"]."'></a>";
+if (mysql_num_rows($result) == 0){
+    echo "<div class='nf'>".$lang_label["no_modules"]."</div>";
+    
+} else {
+    $color = 1;
+    $string = "";
+    while ($row=mysql_fetch_array($result)){  
+        // Show data for this combined alert
+        $string .= "<tr><td class='datos3'>";
+        $string .= lang_string("Combined")." #".$row["id_aam"];
+        $string .= show_alert_row_edit ($row, "datos3", 0, 1);
+        $string .= '<td class="datos3">'; // action
+        if (give_acl($id_user, $id_grupo, "LW")==1){
+            $string .= "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=".$id_agente."&delete_alert=".$row["id_aam"]."'> <img src='images/cross.png' border=0 alt='".$lang_label["delete"]."'></a>  &nbsp; ";
+            $string .= "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=".$id_agente."&form_alerttype=combined&update_alert=".$row["id_aam"]."'>
+            <img src='images/config.png' border=0 alt='".$lang_label["update"]."'></a>";
+        }
+        $id_aam = $row["id_aam"];
+        $sql2 = "SELECT * FROM tcompound_alert, talerta_agente_modulo WHERE tcompound_alert.id = $id_aam AND talerta_agente_modulo.id_aam = tcompound_alert.id_aam";
+        $result2=mysql_query($sql2);
+        while ($row2=mysql_fetch_array($result2)){  
+            // Show data for each component of this combined alert
+            if ($color == 1){
+                $tdcolor="datos";
+                $color =0;
+            } else {
+                $tdcolor="datos2";
+                $color =1;
             }
-            $id_aam = $row["id_aam"];
-            $sql2 = "SELECT * FROM tcompound_alert, talerta_agente_modulo WHERE tcompound_alert.id = $id_aam AND talerta_agente_modulo.id_aam = tcompound_alert.id_aam";
-            $result2=mysql_query($sql2);
-            while ($row2=mysql_fetch_array($result2)){  
-                // Show data for each component of this combined alert
-                if ($color == 1){
-                    $tdcolor="datos";
-                    $color =0;
-                } else {
-                    $tdcolor="datos2";
-                    $color =1;
-                }
-                $module = get_db_row ("tagente_modulo", "id_agente_modulo", $row2["id_agente_modulo"]);
-                $description = $row2["descripcion"];
-                $alert_mode = $row2["operation"];
-                $id_agente_name = get_db_value ("nombre", "tagente", "id_agente", $module["id_agente"]);
-                $string = $string."<tr style='color: #666;'><td class='$tdcolor'><a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=".$module["id_agente"]."'><b>".$id_agente_name." </b>- ".substr($module["nombre"],0,15)."</A>";
-                
-                $string .= show_alert_row_edit ($row2, $tdcolor, $module["id_tipo_modulo"],1);
+            $module = get_db_row ("tagente_modulo", "id_agente_modulo", $row2["id_agente_modulo"]);
+            $description = $row2["descripcion"];
+            $alert_mode = $row2["operation"];
+            $id_agente_name = get_db_value ("nombre", "tagente", "id_agente", $module["id_agente"]);
+            $string .= "<tr style='color: #666;'><td class='$tdcolor'><a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=".$module["id_agente"]."'><b>".$id_agente_name." </b>- ".substr($module["nombre"],0,15)."</A>";
+            
+            $string .= show_alert_row_edit ($row2, $tdcolor, $module["id_tipo_modulo"],1);
 
-                $string = $string."</td><td class='$tdcolor'>";
-                $id_grupo = dame_id_grupo($id_agente);
-                if (give_acl($id_user, $id_grupo, "LW")==1){
-                    $string = $string."<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=".$id_agente."&delete_alert_comp=".$row2["id_aam"]."'> <img src='images/cross.png' border=0 alt='".$lang_label["delete"]."'></a>  &nbsp; ";
-                    $string = $string."<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=".$id_agente."&update_alert=".$row2["id_aam"]."'>
-                    <img src='images/config.png' border=0 alt='".$lang_label["update"]."'></a>";        
-                }
-                $string = $string."</td>";
+            $string .= "</td><td class='$tdcolor'>";
+            $id_grupo = dame_id_grupo($id_agente);
+            if (give_acl($id_user, $id_grupo, "LW")==1){
+                $string .= "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=".$id_agente."&delete_alert_comp=".$row2["id_aam"]."'> <img src='images/cross.png' border=0 alt='".$lang_label["delete"]."'></a>  &nbsp; ";
+                $string .= "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=".$id_agente."&update_alert=".$row2["id_aam"]."'>
+                <img src='images/config.png' border=0 alt='".$lang_label["update"]."'></a>";        
             }
+            $string .= "</td>";
         }
-        if (isset($string) & $string!='') {
-        echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>
-        <tr><th>".$lang_label["name"]."</th>
-        <th>".$lang_label["type"]."</th>
-        <th>".lang_string ("Oper")."</th>
-        <th>".$lang_label["threshold"]."</th>
-        <th>".$lang_label["min."]."</th>
-        <th>".$lang_label["max."]."</th>
-        <th>".$lang_label["time"]."</th>
-        <th>".$lang_label["description"]."</th>
-        <th>".lang_string ("info")."</th>
-        <th width='50'>".$lang_label["action"]."</th></tr>";
-        echo $string;
-        echo "</table>";
-        } else {
-            echo "<div class='nf'>".$lang_label["no_alerts"]."</div>";
-        }
-    } else {
-        echo "<div class='nf'>".$lang_label["no_modules"]."</div>";
     }
+    if (isset($string) & $string != "") {
+    echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>
+    <tr><th>".$lang_label["name"]."</th>
+    <th>".$lang_label["type"]."</th>
+    <th>".lang_string ("Oper")."</th>
+    <th>".$lang_label["threshold"]."</th>
+    <th>".$lang_label["min."]."</th>
+    <th>".$lang_label["max."]."</th>
+    <th>".$lang_label["time"]."</th>
+    <th>".$lang_label["description"]."</th>
+    <th>".lang_string ("info")."</th>
+    <th width='50'>".$lang_label["action"]."</th></tr>";
+    echo $string;
+    echo "</table>";
+    } else {
+        echo "<div class='nf'>".$lang_label["no_alerts"]."</div>";
+    }
+} 
 
 ?>
 

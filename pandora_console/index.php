@@ -212,7 +212,7 @@ if ( (isset ($_GET["refr"])) || (isset($_POST["refr"])) ){
 		<div id="menu">
 			<?php require ("general/main_menu.php"); ?>
 		</div>
-		<div id="main" style="background: url(images/backgrounds/<?php echo $config_bgimage; ?>)" >
+		<div id="main">
 			<?php
 				// Page loader / selector
 				if ($pagina != ""){

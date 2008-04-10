@@ -109,10 +109,12 @@ if ( isset ($_POST["create_agent"])) { // Create a new and shining agent
 	$intervalo =  entrada_limpia ($_POST["intervalo"]);
 	$comentarios =  entrada_limpia ($_POST["comentarios"]);
 	$modo = entrada_limpia ($_POST["modo"]);
-	$id_network_server = get_parameter_post ($_POST["network_server"], 0);
-	$id_plugin_server = get_parameter_post ($_POST["plugin_server"], 0);
-	$id_prediction_server = get_parameter_post ($_POST["prediction_server"], 0);
-	$id_wmi_server = get_parameter_post ($_POST["wmi_server"], 0);
+
+	$id_network_server = get_parameter_post ("network_server", 0);
+	$id_plugin_server = get_parameter_post ("plugin_server", 0);
+	$id_prediction_server = get_parameter_post ("prediction_server", 0);
+	$id_wmi_server = get_parameter_post ("wmi_server", 0);
+
 	$id_os = entrada_limpia ($_POST["id_os"]);
 	$disabled = entrada_limpia ($_POST["disabled"]);
 

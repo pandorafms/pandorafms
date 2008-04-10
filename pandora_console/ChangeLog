@@ -1,3 +1,8 @@
+2008-04-10  Jorge Gonzalez  <jorge.gonzalez@artica.es>
+
+	* include/functions_db.php: Added a new function solving the bug
+	while adding network modules.
+	
 2008-04-09  Sancho Lerena <slerena@gmail.com>
 
 	* AUTHORS: Updated.

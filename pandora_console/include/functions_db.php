@@ -382,6 +382,21 @@ function dame_nombre_pluginid($id){
 }
 
 // --------------------------------------------------------------- 
+// Returns id of a moduletype
+// --------------------------------------------------------------- 
+
+function giveme_module_type($id){
+	require("config.php");
+	$query1="SELECT id_tipo, nombre FROM ttipo_modulo WHERE id_tipo = ".$id; 
+	$resq1=mysql_query($query1);
+	if ($rowdup=mysql_fetch_array($resq1))
+		$pro=$rowdup["nombre"]; 
+	else
+		$pro = "";
+	return $pro;
+}
+
+// --------------------------------------------------------------- 
 // Returns agent name, given a ID of agente_module table
 // --------------------------------------------------------------- 
 

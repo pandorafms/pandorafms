@@ -1,3 +1,7 @@
+2008-04-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DB.pm: Rewrote the alert engine. Small fixes.
+
 2008-04-09  Sancho Lerena <slerena@gmail.com>
 
 	* AUTHORS, README: Updated.

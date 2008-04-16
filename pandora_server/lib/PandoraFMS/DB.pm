@@ -343,23 +343,19 @@ sub pandora_evaluate_compound_alert (%$$) {
 		return 0;
 	}
 
+	my $query_alert = "SELECT disable, times_fired FROM
+                      talerta_agente_modulo WHERE id_aam = ? AND disable = 0";
+	my $handle_alert = $dbh->prepare($query_alert);
+
 	while (my $data_compound = $handle_compound->fetchrow_hashref()) {
 
 		# Get alert data if enabled
-		my $query_alert = "SELECT disable, times_fired FROM
-		                         talerta_agente_modulo WHERE id_aam = " .
-		                         $data_compound->{'id_aam'} .
-		                         " AND disable = 0";
-		my $handle_alert = $dbh->prepare($query_alert);
-
-		$handle_alert->execute;
+		$handle_alert->execute($data_compound->{'id_aam'});
 		if ($handle_alert->rows == 0) {
-			$handle_alert->finish();
 			next;
 		}
 
 		my $data_alert = $handle_alert->fetchrow_hashref();
-		$handle_alert->finish();
 
 		# Check whether the alert was fired
 		my $fired = $data_alert->{'times_fired'} > 0 ? 1 : 0;
@@ -390,6 +386,7 @@ sub pandora_evaluate_compound_alert (%$$) {
 		}
 	}
 
+	$handle_alert->finish();		
 	$handle_compound->finish();
 	return $status;
 }
@@ -424,21 +421,18 @@ sub pandora_generate_compound_alerts (%$$$$$$$) {
 		return;
 	}
 
+	my $query_alert = "SELECT * FROM talerta_agente_modulo WHERE id_aam = ?";
+	my $handle_alert = $dbh->prepare($query_alert);
+
 	while (my $data_compound = $handle_compound->fetchrow_hashref()) {
 
 		# Get compound alert parameters
-		my $query_alert = "SELECT * FROM talerta_agente_modulo WHERE id_aam =
-		                   '" . $data_compound->{'id'} . "'";
-		my $handle_alert = $dbh->prepare($query_alert);
-
-		$handle_alert->execute;
+		$handle_alert->execute($data_compound->{'id'});
 		if ($handle_alert->rows == 0) {
-			$handle_alert->finish();
 			next;
 		}
 
 		my $data_alert = $handle_alert->fetchrow_hashref();
-		$handle_alert->finish();
 
 		# Evaluate the alert
 		my $rc = pandora_evaluate_alert($pa_config, $timestamp, $data_alert,
@@ -460,6 +454,7 @@ sub pandora_generate_compound_alerts (%$$$$$$$) {
 		                                   $id_group, $depth + 1, $dbh);
 	}
 
+	$handle_alert->finish();
 	$handle_compound->finish();
 }
 

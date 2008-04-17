@@ -97,33 +97,26 @@
 	else
 		$url = "index.php?sec=godmode&sec2=godmode/admin_access_logs";
 
-	//echo "URLTipolog  $tipo_log";
-	pagination ($counter, $url, $offset);
-	echo '<br>';
-	// table header
-	echo '<table cellpadding="4" cellspacing="4" width="700" class="databox">';
-	echo '<tr>';
-	echo '<th width="80px">'.$lang_label["user"].'</th>';
-	echo '<th>'.$lang_label["action"].'</th>';
-	echo '<th width="130px">'.$lang_label["date"].'</th>';
-	echo '<th width="100px">'.$lang_label["src_address"].'</th>';
-	echo '<th width="200px">'.$lang_label["comments"].'</th>';
+  // Prepare query and pagination
+    $query1 = "SELECT * FROM tsesion " . $tipo_log_select." ORDER BY fecha DESC"; 
+    if ( $counter > $config["block_size"]) {
+        pagination ($counter, $url, $offset);
+        $query1 .= " LIMIT $offset , ".$config["block_size"];
+    }
+    $result=mysql_query($query1);
 
-	// Skip offset records
-	$query1="SELECT * FROM tsesion ".$tipo_log_select." ORDER BY fecha DESC";
-	$result=mysql_query($query1);
-	$offset_counter = 0;
-	while ($offset_counter < $offset){
-		if ($row=mysql_fetch_array($result))
-			$offset_counter++;
-		else
-			$offset_counter = $offset; //exit condition
-	}
+	    // table header
+    echo '<table cellpadding="4" cellspacing="4" width="700" class="databox">';
+    echo '<tr>';
+    echo '<th width="80px">'.$lang_label["user"].'</th>';
+    echo '<th>'.$lang_label["action"].'</th>';
+    echo '<th width="130px">'.$lang_label["date"].'</th>';
+    echo '<th width="100px">'.$lang_label["src_address"].'</th>';
+    echo '<th width="200px">'.$lang_label["comments"].'</th>';
 
-	$offset_counter = 0;
 	$color=1;
 	// Get data
-	while ($row=mysql_fetch_array($result) and ($offset_counter < $block_size) ){
+	while ($row=mysql_fetch_array($result)) {
 		if ($color == 1){
 			$tdcolor = "datos";
 			$color = 0;
@@ -132,14 +125,12 @@
 			$tdcolor = "datos2";
 			$color = 1;
 		}
-		$usuario=$row["ID_usuario"];
-		echo '<tr><td class="'.$tdcolor.'_id">'.$usuario;
+		echo '<tr><td class="'.$tdcolor.'_id">'.$row["ID_usuario"];
 		echo '<td class="'.$tdcolor.'">'.$row["accion"];
 		echo '<td class="'.$tdcolor.'f9">'.$row["fecha"];
 		echo '<td class="'.$tdcolor.'f9">'.$row["IP_origen"];
 		echo '<td class="'.$tdcolor.'">'.$row["descripcion"];
 		echo '</tr>';
-		$offset_counter++;
 	}
 
 	// end table

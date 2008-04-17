@@ -1,3 +1,34 @@
+
+
+2008-04-17  Sancho Lerena <slerena@artica.es>
+
+    * include/functions_db.php: Fixed problem in show_alert_row_mini()
+
+    * operation/agentes/status_monitor.php: Almost all code changed.
+    Added pagination, replaced query for a paginated version and a lot
+    more efficient. Added freetext search on name / description of 
+    monitors.
+
+    * operation/agentes/estado_ultimopaquete.php: Fixed problem with
+    refresh / push buttons on data server modules.
+
+    * godmode/admin_access_logs.php: Fixed several problems. Added a 
+    better pagination.
+
+    * godmode/agentes/module_manager_editor.php,
+    godmode/agentes/module_manager_editor_network.php: When pushed 
+    SNMP walk, lost all fields. Fixed. Also fixed problems with min/max.
+    
+    * godmode/agentes/module_manager_editor_data.php,
+    godmode/agentes/module_manager_editor_wmi.php,
+    godmode/agentes/module_manager_editor_plugin.php
+    godmode/agentes/module_manager_editor_prediction.php: Fixed problems
+    with inverted max/min.
+
+    * godmode/agentes/configurar_agente.php: Keepalive modules now are
+    from id_module=1 (data server). before was type 0 and that gives a lot
+    of problems.
+
 2008-04-10  Sancho Lerena <slerena@artica.es>
 
 	* godmode/agentes/configurar_agente.php: Fixe problem with server

@@ -51,7 +51,7 @@ my %pa_config;
 ##########################################################################
 
 sub help_screen {
-	printf "\nSyntax: \n\n  pandora_server < fullpathname to pandora server configuration file > [ options ] \n\n";
+	printf "\nSyntax: \n\n  pandora_server [ options ] < fullpathname to configuration file > \n\n";
 	printf "Following options are optional : \n";
 	printf "      -v        :  Verbose mode activated, give more information in logfile \n";
 	printf "      -d        :  Debug mode activated, give extensive information in logfile \n";

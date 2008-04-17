@@ -1856,15 +1856,14 @@ sub crea_agente_modulo (%$$$$$$$) {
 	$min = sqlWrap ($min);
 	$nombre_modulo = sqlWrap ($nombre_modulo);
 
-	my $query = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,max,min,descripcion) VALUES ($agente_id, $modulo_id, $nombre_modulo, $max, $min, $descripcion)";
+	my $query = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,max,min,descripcion, id_modulo) VALUES ($agente_id, $modulo_id, $nombre_modulo, $max, $min, $descripcion, 1)";
 	if (($max eq "") and ($min eq "")) {
-		$query = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,descripcion) VALUES ($agente_id, $modulo_id, $nombre_modulo, $descripcion)";
+		$query = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,descripcion, id_modulo) VALUES ($agente_id, $modulo_id, $nombre_modulo, $descripcion, 1)";
 	} elsif ($min eq "") {
-		$query = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,max,descripcion) VALUES ($agente_id, $modulo_id, $nombre_modulo, $max, $descripcion)";
+		$query = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,max,descripcion, id_modulo) VALUES ($agente_id, $modulo_id, $nombre_modulo, $max, $descripcion, 1)";
 	} elsif ($min eq "") {
-		$query = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,min,descripcion) VALUES 	($agente_id, $modulo_id, $nombre_modulo, $min, $descripcion)";
+		$query = "INSERT INTO tagente_modulo (id_agente,id_tipo_modulo,nombre,min,descripcion, id_modulo) VALUES 	($agente_id, $modulo_id, $nombre_modulo, $min, $descripcion, 1)";
 	}
-	logger( $pa_config, "DEBUG: Query for autocreate : $query ", 10);	
     $dbh->do($query);
 	return $dbh->{'mysql_insertid'};
 }

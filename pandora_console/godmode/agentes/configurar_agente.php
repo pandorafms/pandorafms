@@ -132,8 +132,8 @@ if ( isset ($_POST["create_agent"])) { // Create a new and shining agent
             $agent_creation_error = "";
             $id_agente = mysql_insert_id ();
             // Create special MODULE agent_keepalive
-            $sql_insert = "INSERT INTO tagente_modulo (nombre, id_agente, id_tipo_modulo, descripcion)
-                         VALUES ('agent_keepalive', ".$id_agente.",100,'Agent Keepalive monitor')";
+            $sql_insert = "INSERT INTO tagente_modulo (nombre, id_agente, id_tipo_modulo, descripcion, id_modulo)
+                         VALUES ('agent_keepalive', ".$id_agente.",100,'Agent Keepalive monitor',1)";
             $result=mysql_query($sql_insert);
             $id_agent_module = mysql_insert_id();
             // And create MODULE agent_keepalive in tagente_estado table 
@@ -264,8 +264,6 @@ if (isset($_GET["delete_alert_comp"])){ // if modified some parameter
 // Create alert
 // =============
 if (isset($_POST["insert_alert"])){ // if created alert
-	
-    
     $combined = get_parameter ("combined",0);
 	$id_agente_modulo = get_parameter ("agente_modulo",0);
     $maximo = get_parameter ("maximo",0);
@@ -618,13 +616,11 @@ if ((isset($_POST["update_module"])) || (isset($_POST["insert_module"]))) {
 		require ("general/footer.php");
 		exit;
 	}
-
 	$form_id_tipo_modulo = get_parameter ("form_id_tipo_modulo");
 	$form_name = get_parameter ("form_name");
 	$form_description = get_parameter ("form_description");
 	$form_id_module_group = get_parameter ("form_id_module_group",0);
 	$form_flag = get_parameter ("form_flag",0);
-	$form_id_tipo_modulo = get_parameter ("form_id_tipo_modulo");
 	$form_post_process = get_parameter ("form_post_process",0);
 	$form_prediction_module = get_parameter ("form_prediction_module",0);
 	$form_max_timeout = get_parameter ("form_max_timeout",0);

@@ -79,7 +79,7 @@ if (($form_moduletype == "networkserver") && ($form_network_component != "") && 
     $form_prediction_module = "";
     $form_id_plugin = "";
     $form_post_process = "";
-} else {
+} elseif (!isset($_POST['oid'])){
     // Clean up specific network modules fields
     $form_name = "";
     $form_description = "";

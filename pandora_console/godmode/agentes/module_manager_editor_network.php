@@ -20,6 +20,7 @@
 // General startup for established session
 global $config;
 check_login();
+global $form_snmp_community;
 
 // get the variable form_moduletype
 $form_moduletype = get_parameter_post ("form_moduletype");
@@ -35,6 +36,7 @@ if (give_acl($config["id_user"], 0, "AW")!=1) {
     exit;
 }
 
+
 // Check whether we are updataing and get data if so
 if ($update_module_id != NULL){
     $row = get_db_row ("tagente_modulo", 'id_agente_modulo', $update_module_id);
@@ -46,8 +48,8 @@ if ($update_module_id != NULL){
 		$form_id_tipo_modulo = $row['id_tipo_modulo']; // It doesn't matter
 		$form_description = $row['descripcion'];
 		$form_name = $row['nombre'];
-		$form_minvalue = $row['max'];
-		$form_maxvalue = $row['min'];
+		$form_minvalue = $row['min'];
+		$form_maxvalue = $row['max'];
 		$form_interval = $row['module_interval'];
 		$form_tcp_port = $row['tcp_port'];
 		$form_tcp_send = $row['tcp_send'];

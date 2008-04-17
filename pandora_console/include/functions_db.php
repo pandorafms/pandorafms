@@ -1414,7 +1414,7 @@ function show_alert_row_mini ($id_combined_alert){
     
         // We have alert text ?
         if ($row2["alert_text"]!= "") {
-            echo "<td colspan=2 class='$tdcolor'>".$lang_label["text"]."</td>";
+            echo "<td class='$tdcolor'>".$lang_label["text"]."</td>";
         } else {
             echo "<td class='$tdcolor'>".$mymin."/".$mymax."</td>";
         }

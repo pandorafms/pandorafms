@@ -167,7 +167,7 @@ test
 {Testing Switch Yes No {} {run uninstaller without uninstalling any files}}
 
 }
-FileGroup ::946FC43B-0E32-4C38-86EF-4F9252C67E16 -setup Install -active Yes -platforms {Linux-x86 Windows TarArchive AIX-ppc FreeBSD-4-x86 FreeBSD-x86 HPUX-hppa Solaris-sparc AIX-ppc FreeBSD-4-x86 FreeBSD-x86 HPUX-hppa MacOS-X Solaris-sparc} -name {Program Files} -parent FileGroups
+FileGroup ::946FC43B-0E32-4C38-86EF-4F9252C67E16 -setup Install -active Yes -platforms {AIX-ppc FreeBSD-4-x86 FreeBSD-x86 HPUX-hppa Linux-x86 MacOS-X Solaris-sparc TarArchive Windows} -name {Program Files} -parent FileGroups
 File ::A917C2BF-3079-4FAC-9487-56873FCF8381 -type dir -name C:/pandora_installer/bin/help -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::9A0A7B55-1B33-4480-8D1B-3C7539A8529C -name how_to_keys.html -parent A917C2BF-3079-4FAC-9487-56873FCF8381
 File ::C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E -type dir -name images -parent A917C2BF-3079-4FAC-9487-56873FCF8381
@@ -197,7 +197,7 @@ File ::B47EAE44-63B4-4B6F-86A0-00089DDB2437 -name puttygen.exe -parent 6E5B73B7-
 File ::F792F4E1-B3E9-43AB-A17B-44E2B3013093 -name tail.exe -parent 6E5B73B7-8B81-48D7-BF49-59D8D92FB830
 File ::306C9DF0-CC33-48DC-8AFC-2B99ED4E00A0 -name tr.exe -parent 6E5B73B7-8B81-48D7-BF49-59D8D92FB830
 File ::1900A2B4-09F5-468A-90AD-75CBE17C727B -name wc.exe -parent 6E5B73B7-8B81-48D7-BF49-59D8D92FB830
-File ::B3D9FD4E-6021-45E6-B9B8-F81CC940540E -name tentacle_client.exe -parent 6E5B73B7-8B81-48D7-BF49-59D8D92FB830
+File ::B3D9FD4E-6021-45E6-B9B8-F81CC940540E -directory <%WINDOWS%> -name tentacle_client.exe -parent 6E5B73B7-8B81-48D7-BF49-59D8D92FB830
 File ::EE3962D4-48B8-4715-B986-40794679FC89 -name C:/pandora_installer/bin/libcurl.dll -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::0C6E0B9F-E094-42D4-9376-EAC5E3E475F7 -name C:/pandora_installer/bin/libeay32.dll -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::03A7EA5A-D6FC-4427-B35C-0288C07813B6 -name C:/pandora_installer/bin/pandora_agent.conf -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
@@ -751,7 +751,7 @@ ViewReadme
 <%InstallDir%>
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,FileSize
-10563561
+8056963
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,Name
 {Program Files}

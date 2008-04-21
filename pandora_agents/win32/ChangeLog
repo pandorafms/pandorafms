@@ -1,3 +1,8 @@
+2008-04-21 Manuel Arostegui <marostegui@artica.es>
+
+	* installer/pandora_1.3.mpi: Changed tentacle_client.exe default
+	installtion directory, now it is %WINDOWS.
+
 2008-04-09  Esteban Sanchez  <estebans@artica.es>
 
 	* modules/pandora_data.[cc,h]: Added to repository. Implements a

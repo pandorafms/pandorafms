@@ -1,5 +1,11 @@
 2008-04-22  Ramon Novoa  <rnovoa@artica.es>
 
+	* bin/pandora_plugin, bin/pandora_prediction,
+	  bin/pandora_network: Consumer threads now check for data
+	  availability after lock() to avoid race conditions.
+
+2008-04-22  Ramon Novoa  <rnovoa@artica.es>
+
 	* bin/pandora_server: The data server now uses the producer/consumer
 	  model, like the rest of the servers. .checksum files are no longer
 	  used.

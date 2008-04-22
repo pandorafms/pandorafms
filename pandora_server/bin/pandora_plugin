@@ -132,7 +132,7 @@ sub pandora_plugin_consumer ($$) {
 	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
 	my $counter =0;
 	
-	while (1) {
+	LOOP: while (1) {
 		if ($counter > 10) {
 			sleep (1);
 			$counter = 0;
@@ -140,38 +140,39 @@ sub pandora_plugin_consumer ($$) {
 		
 		# Take the first element on the shared queue
 		# Insert this element on the current task hash
-		if (scalar(@pending_task) > 0){
-			{
-				lock $queue_lock;
-				$data_id_agent_module = shift(@pending_task);
-#print "[CLIENT] Pop out of queue module (pending queue) $data_id_agent_module \n";
-				delete($pending_task_hash{$data_id_agent_module});
-				$current_task_hash{$data_id_agent_module}=1;
-			}
-			
-			# Executing network task with unmanaged error trapping
-			eval {
-				# Call network execution process
-				# exec_network_module ( $pa_config, $data_id_agent_module, $dbh);
-print "[CLIENT] Executing module $data_id_agent_module \n";
-                exec_plugin_module ($pa_config, $data_id_agent_module, $dbh);
-			};
-			if ($@){
-				logger ($pa_config, "[ERROR] Plugin Task for module $data_id_agent_module causes a system exception", 0);
-				logger ($pa_config, "ERROR Code: $@", 1);
+		{
+			lock $queue_lock;
+			if (scalar(@pending_task) == 0){
+				$counter++;
+				next LOOP;
 			}
 
-			# Remove from queue. If catch an error, probably data is
-			# not been processed, but has been freed from task queue
-			{
-				lock $queue_lock;
-#print "[CLIENT] Removing from queue (current task) module $data_id_agent_module \n";
-				delete($current_task_hash{$data_id_agent_module});
-			}
-			$counter = 0;
-		} else {
-			$counter ++;
+			$data_id_agent_module = shift(@pending_task);
+#print "[CLIENT] Pop out of queue module (pending queue) $data_id_agent_module \n";
+			delete($pending_task_hash{$data_id_agent_module});
+			$current_task_hash{$data_id_agent_module}=1;
 		}
+			
+		# Executing network task with unmanaged error trapping
+		eval {
+			# Call network execution process
+			# exec_network_module ( $pa_config, $data_id_agent_module, $dbh);
+print "[CLIENT] Executing module $data_id_agent_module \n";
+        	        exec_plugin_module ($pa_config, $data_id_agent_module, $dbh);
+		};
+		if ($@){
+			logger ($pa_config, "[ERROR] Plugin Task for module $data_id_agent_module causes a system exception", 0);
+			logger ($pa_config, "ERROR Code: $@", 1);
+		}
+
+		# Remove from queue. If catch an error, probably data is
+		# not been processed, but has been freed from task queue
+		{
+			lock $queue_lock;
+#print "[CLIENT] Removing from queue (current task) module $data_id_agent_module \n";
+			delete($current_task_hash{$data_id_agent_module});
+		}
+		$counter = 0;
 	}
 }
 

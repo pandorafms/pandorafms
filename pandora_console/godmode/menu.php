@@ -91,8 +91,18 @@ if (comprueba_login() == 0){
 		if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/alerts/modify_alert" || $_GET["sec2"] == "godmode/alerts/configure_alert")){
 			echo '<div id="god2s">';
 		}
-		else echo '<div id="god2">';
+		else 
+            echo '<div id="god2">';
 		echo '<ul class="mn"><li><a href="index.php?sec=galertas&amp;sec2=godmode/alerts/modify_alert" class="mn">'.$lang_label["manage_alerts"].'</a></li></ul></div>';
+
+        if (isset($_GET["sec"]) && $_GET["sec"] == "galertas"){
+            if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/alerts/plugin"){
+                echo "<div class='arrowgs'>";
+            }
+            else echo "<div class='arrowg'>";
+
+            echo "<ul class='mn'><li><a href='index.php?sec=galertas&sec2=godmode/alerts/plugin' class='mn'>".lang_string("Manage plugins")."</a></li></ul></div>";
+        }
 	}
 	if ((give_acl($id_user, 0, "UM")==1)){
 		if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/users/user_list" || $_GET["sec2"] == "godmode/users/configure_user")){

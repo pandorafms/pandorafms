@@ -70,13 +70,13 @@ if (($report_user == $id_user) OR (dame_admin($id_user)==1) OR ($report_private 
 		$id_agent_module = $row["id_agent_module"];
 		$period = $row["period"];
 		$id_gs = $row["id_gs"];
-
+        unset ($modules);
+        unset ($weights);
+        $module_name = get_db_sql ("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = ". $id_agent_module);
+        $agent_name = dame_nombre_agente_agentemodulo ($id_agent_module);
 		switch($type){
 			case 2: // SLA
-					$module_name = give_db_value ("nombre", "tagente_modulo", "id_agente_modulo", $id_agent_module);
-					$agent_name = dame_nombre_agente_agentemodulo ($id_agent_module);
 					$sla_result = format_numeric(return_module_SLA ($id_agent_module, $period, $sla_min, $sla_max), 2);
-					
 					echo "<tr><td class='datos3'>";
 					echo "<h4>".$lang_label["SLA"]."</h4>";
 					echo "<td class='datos3' >";
@@ -100,8 +100,6 @@ if (($report_user == $id_user) OR (dame_admin($id_user)==1) OR ($report_private 
 					echo "</td></tr>";
 					break;
 			case 0: // Simple graph
-					$module_name = give_db_value ("nombre", "tagente_modulo", "id_agente_modulo", $id_agent_module);
-					$agent_name = dame_nombre_agente_agentemodulo ($id_agent_module);
 					echo "<tr><td class='datos3'>";
 					echo "<h4>".$lang_label["simple_graph"]."</h4>";
 					echo "<td class='datos3'>";
@@ -113,8 +111,6 @@ if (($report_user == $id_user) OR (dame_admin($id_user)==1) OR ($report_private 
 					echo "</tr>";
 					break;
 			case 1: // Custom/Combined graph
-					$module_name = give_db_value ("nombre", "tagente_modulo", "id_agente_modulo", $id_agent_module);
-					$agent_name = dame_nombre_agente_agentemodulo ($id_agent_module);
 					$graph_name = give_db_value ("name", "tgraph", "id_graph", $id_gs);
 					$sql2="SELECT * FROM tgraph_source WHERE id_graph = $id_gs";
 					$res2=mysql_query($sql2);
@@ -140,8 +136,6 @@ if (($report_user == $id_user) OR (dame_admin($id_user)==1) OR ($report_private 
 					echo "</tr>";
 					break;
 			case 6: // AVG value
-					$module_name = give_db_value ("nombre", "tagente_modulo", "id_agente_modulo", $id_agent_module);
-					$agent_name = dame_nombre_agente_agentemodulo ($id_agent_module);
 					$avg_value = format_for_graph(return_moduledata_avg_value ($id_agent_module, $period),2);
 					echo "<tr><td class='datos3'>";
 					echo "<h4>".$lang_label["avg_value"]."</h4>";
@@ -158,8 +152,6 @@ if (($report_user == $id_user) OR (dame_admin($id_user)==1) OR ($report_private 
 					echo "</td></tr>";
 					break;
 			case 7: // MAX value
-					$module_name = give_db_value ("nombre", "tagente_modulo", "id_agente_modulo", $id_agent_module);
-					$agent_name = dame_nombre_agente_agentemodulo ($id_agent_module);
 					$max_value = format_for_graph(return_moduledata_max_value ($id_agent_module, $period),2);
 					echo "<tr><td class='datos3'>";
 					echo "<h4>".$lang_label["max_value"]."</h4>";
@@ -176,8 +168,6 @@ if (($report_user == $id_user) OR (dame_admin($id_user)==1) OR ($report_private 
 					echo "</td></tr>";
 					break;
 			case 8: // MIN value
-					$module_name = give_db_value ("nombre", "tagente_modulo", "id_agente_modulo", $id_agent_module);
-					$agent_name = dame_nombre_agente_agentemodulo ($id_agent_module);
 					$min_value = format_for_graph(return_moduledata_min_value ($id_agent_module, $period),2);
 					echo "<tr><td class='datos3'>";
 					echo "<h4>".$lang_label["min_value"]."</h4>";
@@ -194,8 +184,6 @@ if (($report_user == $id_user) OR (dame_admin($id_user)==1) OR ($report_private 
 					echo "</td></tr>";
 					break;
 			case 5: // Monitor report
-					$module_name = give_db_value ("nombre", "tagente_modulo", "id_agente_modulo", $id_agent_module);
-					$agent_name = dame_nombre_agente_agentemodulo ($id_agent_module);
 					$monitor_value = $sla_result = format_numeric(return_module_SLA ($id_agent_module, $period, 1, 1), 2);
 					echo "<tr><td class='datos3'>";
 					echo "<h4>".$lang_label["monitor_report"]."</h4>";
@@ -216,11 +204,7 @@ if (($report_user == $id_user) OR (dame_admin($id_user)==1) OR ($report_private 
 					echo "</td></tr>";
 					break;
 			case 3: // Event report
-					$module_name = give_db_value ("nombre", "tagente_modulo", "id_agente_modulo", $id_agent_module);
-					$agent_name = dame_nombre_agente_agentemodulo ($id_agent_module);
-
 					$id_agent = dame_agente_id ($agent_name);
-					
 					echo "<tr><td class='datos3'>";
 					echo "<h4>".$lang_label["event_report"]."</h4>";
 					echo "<td class='datos3' >";
@@ -233,10 +217,7 @@ if (($report_user == $id_user) OR (dame_admin($id_user)==1) OR ($report_private 
 
 					echo "</td></tr>";
 					break;
-			case 4: // Alert report
-					$module_name = give_db_value ("nombre", "tagente_modulo", "id_agente_modulo", $id_agent_module);
-					$agent_name = dame_nombre_agente_agentemodulo ($id_agent_module);
-					
+			case 4: // Alert report					
 					echo "<tr><td class='datos3'>";
 					echo "<h4>".$lang_label["alert_report"]."</h4>";
 					echo "<td class='datos3' >";

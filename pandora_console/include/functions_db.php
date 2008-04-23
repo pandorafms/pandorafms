@@ -1149,14 +1149,14 @@ function get_db_value ($field, $table, $field_search, $condition_value){
     $query = "SELECT $field FROM $table WHERE $field_search = '$condition_value' ";
     $resq1 = mysql_query($query);
     if ($rowdup = mysql_fetch_array($resq1))
-        $pro = $rowdup[0];
+        $pro = $rowdup[$field];
     else
         $pro = "";
     return $pro;
 }
 
 function give_db_value ($field, $table, $field_search, $condition_value){
-    get_db_value ($field, $table, $field_search, $condition_value);
+    return get_db_value ($field, $table, $field_search, $condition_value);
 }
 
 // --------------------------------------------------------------- 
@@ -1332,7 +1332,7 @@ function lang_string ($string){
     if (isset ($lang_label[$string]))
         return $lang_label[$string];
     else
-        return "[".$string."]";
+        return $string;
 }
 
 function check_server_status (){

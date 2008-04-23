@@ -1,4 +1,34 @@
+2008-04-23  Sancho Lerena <slerena@artica.es>
 
+	* include/functions_reporting_pdf.php: New functions for PDF reporting.
+
+	* include/functions_reporting.php: Fixed alert & event reporting.
+
+	* include/functions_db.php: Fixed function give_db_value. Also 
+	label_string now don't show ][ characters.
+
+	* include/pdf: Added ezpdf class to generate PDF reports.
+
+	* operation/reporting/reporting_viewer.php,
+	operation/reporting/custom_reporting.php: A few fixes on 
+	reporting (event viewer, combined graph...)
+
+	* operation/reporting/reporting_viewer_pdf.php: render 
+	report on PDF.
+
+	* images/pdf.gif: PDF Icon.
+
+	* images/pandora_logo.jpg: JPG logo for PDF reports (header).
+
+	* godmode/agentes/module_manager_editor_plugin.php: Added
+	plugin port field (was missing).
+
+	* godmode/reporting/reporting_builder.php: Fixed problem
+	with event reporting type.
+
+	* godmode/alerts/plugin.php: Added plugin editor.
+
+	* godmode/menu.php: Added plugin editor to menu.
 
 2008-04-17  Sancho Lerena <slerena@artica.es>
 

@@ -176,7 +176,7 @@ if ($ncgroup != 0){
 	echo "<option value='$ncgroup'>".give_network_component_group_name($ncgroup)."</option>";
 }
 echo "<option value='0'>".$lang_label["all"]."</option>";
-$sql1 = "SELECT * FROM tnetwork_component_group WHERE id_sg != '$ncgroup'";
+$sql1 = "SELECT * FROM tnetwork_component_group WHERE id_sg != '$ncgroup' ORDER BY name";
 $result = mysql_query($sql1);
 while ($row = mysql_fetch_array ($result))
 	echo "<option value='" . $row["id_sg"] . "'>". give_network_component_group_name ($row["id_sg"])."</option>";
@@ -186,9 +186,9 @@ echo "<noscript><input name='uptbutton' type='submit' class='sub' value='".$lang
 echo "</td></form></table><br>";
 
 if ($ncgroup != 0)
-	$sql1 = "SELECT * FROM tnetwork_component WHERE id_group = $ncgroup";
+	$sql1 = "SELECT * FROM tnetwork_component WHERE id_group = $ncgroup ORDER BY name";
 else
-	$sql1 = "SELECT * FROM tnetwork_component ORDER BY id_group";
+	$sql1 = "SELECT * FROM tnetwork_component ORDER BY id_group,name";
 	
 $result = mysql_query ($sql1);
 if ( $row = mysql_num_rows ($result)){

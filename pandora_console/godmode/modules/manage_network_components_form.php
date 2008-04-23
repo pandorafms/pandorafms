@@ -148,7 +148,7 @@ if (give_acl($id_user, 0, "PM")!=1) {
 
 if (isset($_GET["update"])){ // Edit mode
 	$id_nc = entrada_limpia ($_GET["id_nc"]);
-	$sql1 = "SELECT * FROM tnetwork_component where id_nc = $id_nc";
+	$sql1 = "SELECT * FROM tnetwork_component where id_nc = $id_nc ORDER BY name";
 	$result=mysql_query($sql1);
 	$row=mysql_fetch_array($result);
 	$name = $row["name"];

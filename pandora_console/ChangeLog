@@ -1,3 +1,14 @@
+2008-04-24  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb_data.sql: Added several modules by Guguevi.
+
+	* operation/events/events_rss.php: Added RSS events page, contributed
+	by guruevi.
+
+	* manage_network_components_form.php, 
+	manage_network_templates_form.php,
+	modules/manage_network_components.php: Combos are classified by name.
+
 2008-04-23  Sancho Lerena <slerena@artica.es>
 
 	* include/functions_reporting_pdf.php: New functions for PDF reporting.

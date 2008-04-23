@@ -1,15 +1,24 @@
 <?php 
 
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2006
-// Raul Mateos <raulofpandora@gmail.com>, 2005-2006
+// Pandora FMS - the Free monitoring system
+// ========================================
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@openideas.info
+// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation version 2
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, U
 
 // Load global vars
-require("include/config.php");
-//require("include/functions.php");
-//require("include/functions_db.php");
+global $config;
+
 if (comprueba_login() == 0) 
 	if ((give_acl($id_user, 0, "DM")==1) or (dame_admin($id_user)==1)) {
  	// Todo for a good DB maintenance 
@@ -26,8 +35,8 @@ if (comprueba_login() == 0)
 	<?php echo $lang_label["current_dbsetup"] ?></h2>
 	<table width=550 cellspacing=3 cellpadding=3 border=0>
 	<tr><td>
-	<i><?php echo $lang_label["days_compact"]; ?>:</i>&nbsp;<b><?php echo $days_compact; ?></b><br><br>
-	<i><?php echo $lang_label["days_purge"]; ?>:</i>&nbsp;<b><?php echo $days_purge; ?></b><br><br>
+	<i><?php echo $lang_label["days_compact"]; ?>:</i>&nbsp;<b><?php echo $config["days_compact"]; ?></b><br><br>
+	<i><?php echo $lang_label["days_purge"]; ?>:</i>&nbsp;<b><?php echo $config["days_purge"]; ?></b><br><br>
 	<tr><td>
 	<div align='justify'>
 	<?php echo $lang_label["dbsetup_info"]; ?>

@@ -561,6 +561,7 @@ CREATE TABLE `tgraph` (
   `height` smallint(5) UNSIGNED NOT NULL DEFAULT 0,
   `private` tinyint(1) UNSIGNED NOT NULL default 0,
   `events` tinyint(1) UNSIGNED NOT NULL default 0,
+  `stacked` tinyint(1) UNSIGNED NOT NULL default 0,
   PRIMARY KEY(`id_graph`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 

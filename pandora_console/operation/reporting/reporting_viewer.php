@@ -111,7 +111,7 @@ if (($report_user == $id_user) OR (dame_admin($id_user)==1) OR ($report_private 
 					echo "</tr>";
 					break;
 			case 1: // Custom/Combined graph
-					$graph_name = give_db_value ("name", "tgraph", "id_graph", $id_gs);
+        			$graph = get_db_row ("tgraph", "id_graph", $id_gs);
 					$sql2="SELECT * FROM tgraph_source WHERE id_graph = $id_gs";
 					$res2=mysql_query($sql2);
 					while ( $row2 = mysql_fetch_array($res2)){
@@ -128,11 +128,12 @@ if (($report_user == $id_user) OR (dame_admin($id_user)==1) OR ($report_private 
 					echo "<tr><td class=datos3 >";
 					echo "<h4>".$lang_label["custom_graph"]."</h4>";
 					echo "<td class=datos3>";
-					echo "<h4>$graph_name</h4>";
+					echo "<h4>".$graph["name"]."</h4>";
+                    $stacked = $graph["stacked"];
 					echo "<td class=datos3>";
 					echo "<h4>".human_time_description($period)."</h4>";
 					echo "<tr><td colspan=3 class=datos valign='top' align='right'>";
-					echo "<img src='reporting/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&height=230&width=720&period=$period&pure=1' border=1 alt=''>";
+					echo "<img src='reporting/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&height=230&width=720&period=$period&stacked=$stacked&pure=1' border=1 alt=''>";
 					echo "</tr>";
 					break;
 			case 6: // AVG value

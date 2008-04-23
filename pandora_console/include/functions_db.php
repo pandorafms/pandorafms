@@ -1057,18 +1057,18 @@ function give_db_value ($field, $table, $field_search, $condition_value){
 	$query = "SELECT $field FROM $table WHERE $field_search = '$condition_value' ";
 	$resq1 = mysql_query($query);
 	if ($rowdup = mysql_fetch_array($resq1))
-		$pro = $rowdup[0];
+		$pro = $rowdup[$field];
 	else
 		$pro = "";
 	return $pro;
 }
-
+// 
 // --------------------------------------------------------------- 
 // Wrapper for old function name. Should be upgraded/renamed in next versions
 // --------------------------------------------------------------- 
 
 function get_db_value ($field, $table, $field_search, $condition_value){
-        give_db_value ($field, $table, $field_search, $condition_value);
+    return give_db_value ($field, $table, $field_search, $condition_value);
 }
 
 // --------------------------------------------------------------- 

@@ -225,10 +225,9 @@ if (($report_user == $id_user) OR (dame_admin($id_user)==1) OR ($report_private 
 					echo "</td></tr>";
 					break;
 			case 3: // Event report
-					$module_name = give_db_value ("nombre", "tagente_modulo", "id_agente_modulo", $id_agent_module);
-					$agent_name = dame_nombre_agente_agentemodulo ($id_agent_module);
-
-					$id_agent = dame_agente_id ($agent_name);
+					$module_name = "";
+					$agent_name = dame_nombre_agente ($id_agent_module);
+					$id_agent = dame_agente_id ($id_agent_module);
 					
 					echo "<tr><td class='datos3'>";
 					echo "<h4>".$lang_label["event_report"]."</h4>";

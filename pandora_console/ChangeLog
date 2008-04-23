@@ -1,3 +1,12 @@
+2008-04-23 Sancho Lerena <slerena@gmail.com>
+
+	* functions_db.php: Fixed a stupid bug in generic access to database.
+
+	* reporting_viewer.php: FIxed a problem rendering combined graphs and 
+	event reporting.
+
+	* reporting_builder.php: Event reporting component fixed.
+
 2008-04-09 Sancho Lerena <slerena@gmail.com>
 
         * reporting_viewer.php: Round data for monitor SLA report.

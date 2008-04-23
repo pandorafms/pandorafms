@@ -1,3 +1,23 @@
+2008-04-23  Sancho Lerena <slerena@artica.es>
+
+        * Config.pm: Added dataserver_thread config token
+
+        * bin/pandora_plugin: Some minimal thread improvements (yield)
+
+        * bin/pandora_server: Uses dataserver_thread token to set up
+        number of starting threads.
+
+        * bin/pandora_network: Added more thread yields.
+
+        * util/plugin: Added new directory for "standard" plugins. 
+        Added the first plugins here. Expect more in the future :-)
+
+        * plugin/openvpn_pandoraplugin.pl: Connects to openvpn daemon
+        and report number of active sessions.
+
+        * plugin/ssh-exec_pandoraplugin.pl: Execute a remote command
+        using Perl (Net::SSH::Perl) SSH functions.
+
 2008-04-22  Ramon Novoa  <rnovoa@artica.es>
 
 	* bin/pandora_plugin, bin/pandora_prediction,

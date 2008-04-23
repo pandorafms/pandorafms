@@ -38,7 +38,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "2.0-dev";
-my $pandora_build="PS080404";
+my $pandora_build="PS080422";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -180,6 +180,7 @@ sub pandora_loadconfig {
     $pa_config->{"wmi_threads"} = 3; # Introduced on 2.0
     $pa_config->{"wmi_timeout"} = 5; # Introduced on 2.0
     $pa_config->{"compound_max_depth"} = 5; # Maximum nested compound alert depth. Not in config file.
+    $pa_config->{"dataserver_threads"} = 3; # Introduced on 2.0
 
 	# Check for UID0
     if ($pa_config->{"quiet"} != 0){
@@ -346,6 +347,9 @@ sub pandora_loadconfig {
         }
         elsif ($parametro =~ m/^plugin_timeout\s([0-9]*)/i) {
             $pa_config->{'plugin_timeout'}= clean_blank($1); 
+        }
+        elsif ($parametro =~ m/^dataserver_threads\s([0-9]*)/i) {
+            $pa_config->{'dataserver_threads'}= clean_blank($1); 
         }
         elsif ($parametro =~ m/^server_keepalive\s([0-9]*)/i) {
             $pa_config->{"keepalive"} = clean_blank($1);

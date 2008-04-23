@@ -134,6 +134,7 @@ sub pandora_plugin_consumer ($$) {
 	
 	LOOP: while (1) {
 		if ($counter > 10) {
+            threads->yield;
 			sleep (1);
 			$counter = 0;
 		}
@@ -148,7 +149,6 @@ sub pandora_plugin_consumer ($$) {
 			}
 
 			$data_id_agent_module = shift(@pending_task);
-#print "[CLIENT] Pop out of queue module (pending queue) $data_id_agent_module \n";
 			delete($pending_task_hash{$data_id_agent_module});
 			$current_task_hash{$data_id_agent_module}=1;
 		}
@@ -157,7 +157,6 @@ sub pandora_plugin_consumer ($$) {
 		eval {
 			# Call network execution process
 			# exec_network_module ( $pa_config, $data_id_agent_module, $dbh);
-print "[CLIENT] Executing module $data_id_agent_module \n";
         	        exec_plugin_module ($pa_config, $data_id_agent_module, $dbh);
 		};
 		if ($@){
@@ -169,10 +168,10 @@ print "[CLIENT] Executing module $data_id_agent_module \n";
 		# not been processed, but has been freed from task queue
 		{
 			lock $queue_lock;
-#print "[CLIENT] Removing from queue (current task) module $data_id_agent_module \n";
 			delete($current_task_hash{$data_id_agent_module});
 		}
 		$counter = 0;
+        threads->yield;
 	}
 }
 
@@ -181,7 +180,6 @@ sub pandora_plugin_producer ($) {
 	print " [*] Starting up Plugin Producer Thread ...\n";
 
 	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
-	
 	my $server_id = $pa_config->{'server_id'};
 
 	# Initialize variables for posterior usage
@@ -239,13 +237,11 @@ sub pandora_plugin_producer ($) {
 					((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP() OR tagente_modulo.flag = 1 )
 				ORDER BY last_execution_try ASC";
 		}
-#print "[DEBUG] SQL is $query1 \n";
 		$exec_sql1 = $dbh->prepare($query1);
 		$exec_sql1 ->execute;
 		while (@sql_data1 = $exec_sql1->fetchrow_array()) {	
 			$data_id_agente_modulo = $sql_data1[0];
 			$data_flag = $sql_data1[1];
-print "[DEBUG] Procesando candidato $data_id_agente_modulo\n";
 
 			# Skip modules already queued
 			if ((!defined($pending_task_hash{$data_id_agente_modulo})) &&
@@ -255,16 +251,14 @@ print "[DEBUG] Procesando candidato $data_id_agente_modulo\n";
 				}
 				# Locking scope, do not remove redundant { }
 				{
-#print "[DEBUG] Metiendo $data_id_agente_modulo en cola \n";
 					lock $queue_lock;
 					push (@pending_task, $data_id_agente_modulo);
 					$pending_task_hash {$data_id_agente_modulo}=1;
 				}
 			}
 		}
-		#logger ($pa_config, "Items in Network Pending Queue: ".scalar(@pending_task),  5);
-#print "[DEBUG] Items in Network Pending Queue: ".scalar(@pending_task);
 		$exec_sql1->finish();
+        threads->yield;
 		sleep($pa_config->{"server_threshold"});
 	} # Main loop
 }
@@ -336,17 +330,15 @@ sub exec_plugin_module {
         $module_result = 0; # If comes here, this is a successfull exec
     };
 
-# print "[DEBUG] Output for $plugin_command is --$module_data-- \n";
     # Timeout 
     if ($@ =~ /PANDORA PLUGIN SERVER TIMED OUT/) {
         logger ($pa_config, "[ERROR] Plugin Task for module ".$agent_module->{'id_agente_modulo'}." causes a system timeout in exec", 1);
         logger ($pa_config, "Executing plugin command '$plugin_command'", 9);
-print "[DEBUG] Executing plugin TIMEOUT\n";
+
     # General error, not timed-out
     } elsif ($module_result == 1) { 
         logger ($pa_config, "[ERROR] Plugin Task for module ".$agent_module->{'id_agente_modulo'}." causes an unknown system error", 1);
         logger ($pa_config, "[ERROR] $@", 1);
-print "[DEBUG] Executing plugin ERROR $@\n";
     }
 
     sub timed_out {
@@ -359,7 +351,6 @@ print "[DEBUG] Executing plugin ERROR $@\n";
 
     # If module execution get a valid value
 	if ($module_result == 0) {
-print "[DEBUG] MODULERESULT = 0\n";
 		my %part;
 		$part{'name'}[0] = $agent_module->{'nombre'};
 		$part{'description'}[0] = "";
@@ -383,7 +374,6 @@ print "[DEBUG] MODULERESULT = 0\n";
 		}
         # Generic_proc
 		elsif (2 == $agent_module->{'id_tipo_modulo'}) {
-print "[DEBUG FINAL]: ".$agent_module->{'nombre'}."   ".$module_data."   ".$tipo_modulo."   ".$agent_name. "  ".$timestamp;
 			module_generic_proc ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
 		}
         elsif ( (19 == $agent_module->{'id_tipo_modulo'}) || (20 == $agent_module->{'id_tipo_modulo'}) ) {
@@ -391,7 +381,6 @@ print "[DEBUG FINAL]: ".$agent_module->{'nombre'}."   ".$module_data."   ".$tipo
         }
 		else { # Unknown module!, this IS a problem
 			logger ($pa_config, "Plugin Server Problem with unknown module type '$tipo_modulo'", 0);
-print "[DEBUG] Executing plugin UNKONWN MODULE TYPE$@\n";
             $module_result = 1;
 		}
 		# Update agent last contact
@@ -401,7 +390,6 @@ print "[DEBUG] Executing plugin UNKONWN MODULE TYPE$@\n";
 
     # If something went wrong in module processing...
     if ($module_result != 0){ 
-print "[DEBUG] MODULERESULT != 0\n";
 
         # If module execution get a INVALID value
 		if ($agent_module->{'intervalo'} == 0){

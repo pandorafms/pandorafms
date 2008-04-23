@@ -146,6 +146,7 @@ sub pandora_network_consumer ($$) {
 	
 	LOOP: while (1) {
 		if ($counter > 10) {
+            threads->yield;
 			sleep (1);
 			$counter = 0;
 		}

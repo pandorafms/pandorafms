@@ -3,6 +3,7 @@
 # Pandora Data Server
 ##########################################################################
 # Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+# Copyright (c) 2008 Ramon Novoa, rnovoa@artica.es
 # Copyright (c) 2005-2008 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
@@ -68,7 +69,7 @@ if ( $pa_config{"daemon"} eq "1" ){
 }
 
 # Launch all data_consumer threads
-for (my $ax=0; $ax < $pa_config{'plugin_threads'}; $ax++){
+for (my $ax=0; $ax < $pa_config{"dataserver_threads"}; $ax++){
 	threads->new( \&pandora_data_consumer, \%pa_config, $ax);
 }
 
@@ -186,7 +187,8 @@ sub pandora_data_consumer ($$) {
 	LOOP: while (1) {
 
 		if ($counter > 10) {
-			$counter = 0;			
+			$counter = 0;
+            threads->yield;		
 			sleep (1);
 		}
 

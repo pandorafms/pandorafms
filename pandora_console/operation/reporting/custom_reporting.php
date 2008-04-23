@@ -36,11 +36,12 @@ $color=1;
 $sql="SELECT * FROM treport";
 $res=mysql_query($sql);
 if (mysql_num_rows($res)) {
-	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox'>";
+	echo "<table width='580' cellpadding=4 cellpadding=4 class='databox'>";
 	echo "<tr>
 	<th>".$lang_label["report_name"]."</th>
 	<th>".$lang_label["description"]."</th>
-	<th>".$lang_label["view"]."</th>
+	<th>HTML</th>
+    <th>PDF</th>
 	</tr>";
 
 	while ($row = mysql_fetch_array($res)){
@@ -61,7 +62,10 @@ if (mysql_num_rows($res)) {
 		echo "<td valign='middle' class='$tdcolor' align='center'>
 		<a href='index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=$id_report'>
 		<img src='images/reporting.png'></a>
-		</td></tr>";
+		</td>";
+        
+        echo "<td valign='middle' class='$tdcolor' align='center'><a target='_new'  href='operation/reporting/reporting_viewer_pdf.php?id=$id_report&rtype=general'><img src='images/pdf.gif'></a></td>'";
+        echo "</tr>";
 		}
 	}
 	echo "</table>";

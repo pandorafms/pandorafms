@@ -86,6 +86,12 @@ if (isset($_GET["add_module"])){
 	$my_id_module = entrada_limpia($_POST["id_module"]);
 	$my_period = entrada_limpia($_POST["period"]);
 	$my_type = entrada_limpia($_POST["type"]);
+
+    // event reporting (use agent not module)
+    if ($my_type == 3){
+        $my_id_module = $my_id_agent;
+    }
+
 	$my_cg = entrada_limpia($_POST["id_custom_graph"]);
 	$my_slamax = entrada_limpia($_POST["sla_max"]);
 	$my_slamin = entrada_limpia($_POST["sla_min"]);

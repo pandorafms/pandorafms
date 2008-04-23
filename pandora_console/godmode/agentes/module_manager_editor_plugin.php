@@ -122,7 +122,10 @@ echo '</tr>';
 
 echo '</tr><tr>';
 echo '<td class="datos2">'.lang_string ("Plugin parameters")."</td>";
-echo '<td class="datos2" colspan=3><input type="text" name="form_plugin_parameter" size="40" value="'.$form_plugin_parameter.'"></td>';
+echo '<td class="datos2"><input type="text" name="form_plugin_parameter" size="30" value="'.$form_plugin_parameter.'"></td>';
+
+echo '<td class="datos2">'.lang_string ("Port")."</td>";
+echo '<td class="datos2"><input type="text" name="form_tcp_port" size="4" value="'.$form_tcp_port.'"></td>';
 
 // username / password
 echo '<tr>';

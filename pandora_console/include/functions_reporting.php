@@ -1,9 +1,20 @@
 <?php
 
-// Pandora FMS - the Free monitoring system
+// Pandora FMS - the Free Monitoring System
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development and project architecture and management
+// Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
+// Please see http://pandora.sourceforge.net for full contribution list
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation for version 2.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 function return_module_SLA ($id_agent_module, $period, $min_value, $max_value){
 	require("config.php");
@@ -156,7 +167,7 @@ function general_stats ( $id_user, $id_group = 0) {
 
 function event_reporting ($id_agent, $period){
 	require("config.php");
-	require ("include/languages/language_".$language_code.".php");
+	require ("include/languages/language_".$config["language"].".php");
 	$id_user=$_SESSION["id_usuario"];
 	global $REMOTE_ADDR;
 	$ahora = date("U");
@@ -204,8 +215,8 @@ function event_reporting ($id_agent, $period){
 }
 
 function alert_reporting ($id_agent_module){
-	require("config.php");
-	require ("include/languages/language_".$language_code.".php");
+	global $config;
+	require ("include/languages/language_".$config["language"].".php");
 
 	$query_gen='SELECT talerta_agente_modulo.alert_text, talerta_agente_modulo.id_alerta, talerta_agente_modulo.descripcion, talerta_agente_modulo.last_fired, talerta_agente_modulo.times_fired, tagente_modulo.nombre, talerta_agente_modulo.dis_max, talerta_agente_modulo.dis_min, talerta_agente_modulo.max_alerts, talerta_agente_modulo.time_threshold, talerta_agente_modulo.min_alerts, talerta_agente_modulo.id_agente_modulo, tagente_modulo.id_agente_modulo FROM tagente_modulo, talerta_agente_modulo WHERE tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo and talerta_agente_modulo.id_agente_modulo  = '.$id_agent_module.' ORDER BY tagente_modulo.nombre';
 	$result_gen=mysql_query($query_gen);

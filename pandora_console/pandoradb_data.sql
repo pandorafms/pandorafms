@@ -214,8 +214,6 @@ INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `t
 INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (51,'OS Raw Interrupts','Get system raw interrupts from SO',13,16,0,0,180,0,'','','public','UCD-SNMP-MIB::ssRawInterrupts.0',4);
 INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (52,'OS IO Signals sent','IO Signals sent by Kernel',13,16,0,0,180,0,'','','public','UCD-SNMP-MIB::ssIOSent.0',4);
 INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`) VALUES (53,'System Uptime','Sistem uptime in timeticks',1,15,0,0,180,0,'','','public','HOST-RESOURCES-MIB::hrSystemUptime.0',4);
-
-INSERT INTO `tnetwork_component` VALUES (53,'Sytem IO Sent','Linux System IO Sent ',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.5.0',4);
 INSERT INTO `tnetwork_component` VALUES (54,'System IO Recv','Linux System IO Recv ',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.6.0',4);
 INSERT INTO `tnetwork_component` VALUES (55,'System SwapIn ','Linux System Swap In',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.3.0',1);
 INSERT INTO `tnetwork_component` VALUES (56,'System Buffer Memory','Linux System Buffer Memory (used as available\nmemory)',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.4.14.0',4);

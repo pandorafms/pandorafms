@@ -1,6 +1,29 @@
 2008-04-24  Sancho Lerena <slerena@artica.es>
 
-	* pandoradb_data.sql: Added several modules by Guguevi.
+    * operation/reporting/reporting_viewer.php,
+    operation/reporting/graph_viewer.php
+    include/functions_reporting_pdf.php: Render stacked custom graphs.
+
+    * include/styles/pandora_red.css: Improved RED style :-)
+
+    * include/styles/pandora.css: Added background.
+
+    * include/languages/language_en.php: Added stacked token.
+
+    * pandoradb.sql: Added field "stacked" to custom graphs.
+
+    * images/backgrounds/background_red.gif: Added cool background ;)
+
+    * reporting/fgraph.php: stacked custom graph support.
+
+    * godmode/db/db_main.php: Uses new config tokens.
+
+    * godmode/db/db_purge.php: Works also with "all" agents (like 1.1)
+
+    * godmode/reporting/graph_builder.php: Able to define stacked or not.
+
+	* pandoradb_data.sql: Added several template modules contributed by 
+    Guguevi. 
 
 	* operation/events/events_rss.php: Added RSS events page, contributed
 	by guruevi.

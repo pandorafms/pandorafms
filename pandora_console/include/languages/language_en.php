@@ -920,6 +920,8 @@ $lang_label["info"]="info";
 $lang_label["Operation"]="Operation";
 $lang_label["Source Agent/Alert"]="Source Agent/Alert";
 
+$lang_label["Stacked"]="Stacked";
+
 
 global $lang_label;
 global $help_label;

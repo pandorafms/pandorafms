@@ -26,6 +26,7 @@ $period = 86401;
 $events = "";
 $factor = 1;
 $render=1; // by default
+$stacked = 0;
 
 // Login check
 $id_usuario=$_SESSION["id_usuario"];
@@ -51,12 +52,13 @@ if (isset($_GET["store_graph"])){
 	$width = entrada_limpia($_POST["width"]);
 	$height = entrada_limpia($_POST["height"]);
 	$events = entrada_limpia($_POST["events"]);
+	$stacked = get_parameter ("stacked",0);
     if ($events == "") // Temporal workaround
         $events = 0;
 	$period = entrada_limpia($_POST["period"]);
 	// Create graph
 	$sql = "INSERT INTO tgraph
-		(id_user, name, description, period, width, height, private, events) VALUES
+		(id_user, name, description, period, width, height, private, events, stacked) VALUES
 		('$id_user',
 		'$name',
 		'$description',
@@ -64,7 +66,8 @@ if (isset($_GET["store_graph"])){
 		$width,
 		$height,
 		$private,
-		$events)";
+		$events,
+        $stacked)";
 		//echo "DEBUG $sql<br>";
 	$res = mysql_query($sql);
 	if ($res){
@@ -147,6 +150,7 @@ if ( (isset($_GET["add_module"]))){
  		$factor = 1;
  	$period = $_POST["period"];
  	$render = $_POST["render"];
+ 	$stacked = get_parameter ("stacked",0);
 // 	$alerts = $_POST["alerts"];
 	if (isset($_POST["chunk"]))
  		$chunkdata = $_POST["chunk"];
@@ -249,7 +253,7 @@ if (($render == 1) && (isset($modules))) {
 	echo "<h3>".$lang_label["combined_image"]."</h3>";
 	echo "<table class='databox'>";
 	echo "<tr><td>";
-	echo "<img src='reporting/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&label=Combined%20Sample%20Graph&height=$height&width=$width&period=$period' border=1 alt=''>";
+	echo "<img src='reporting/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&label=Combined%20Sample%20Graph&height=$height&width=$width&stacked=$stacked&period=$period' border=1 alt=''>";
 	echo "</td></tr></table>";
 
 }
@@ -413,6 +417,21 @@ if ($events == 1){
 }
 echo "</select></td>";
 
+echo "<tr>";
+echo "<td class='datos2'>";
+echo "<b>".lang_string ("Stacked")."</b></td>";
+echo "<td class='datos2'>";
+echo "<select name='stacked'>";
+if ($stacked == 1){
+	echo "<option value=1>Yes</option>";
+	echo "<option value=0>No</option>";
+} else {
+	echo "<option value=0>No</option>";
+	echo "<option value=1>Yes</option>";
+}
+echo "</select></td>";
+
+
 /*
 echo "<td class='datos'>";
 echo "<b>Show alert limit</b>";
@@ -450,6 +469,7 @@ if (isset($module_array)){
 	echo "<input type='hidden' name='height' value='$height'>";
 	echo "<input type='hidden' name='period' value='$period'>";
 	echo "<input type='hidden' name='events' value='$events'>";
+	echo "<input type='hidden' name='stacked' value='$stacked'>";
 
 	for ($a=0; $a < count($module_array); $a++){
 			$id_agentemodulo = $module_array[$a];

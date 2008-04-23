@@ -1,11 +1,8 @@
 <?php
 // Pandora FMS - the Free monitoring system
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@openideas.info
 // Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
-// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -19,18 +16,12 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, U
 
 // Load global vars
-require("include/config.php");
+global $config;
+
 if (comprueba_login() == 0) 
    $id_usuario= $_SESSION["id_usuario"];
    if (give_acl($id_usuario, 0, "DM")==1){
- 	// Todo for a good DB maintenance 
- 	/* 
- 		
- 		- A function to "compress" data, and interpolate big chunks of data (1 month - 60000 registers) 
- 		  onto a small chunk of interpolated data (1 month - 600 registers)
- 		
- 		- A more powerful selection (by Agent, by Module, etc).
- 	*/
+
 	if (isset($_POST["agent"])){
 		$id_agent =$_POST["agent"];
 	} else
@@ -101,7 +92,10 @@ if (comprueba_login() == 0)
 			if ($id_agent != -1) {
 			echo $lang_label["purge_task"].$id_agent." / ".$from_date;
 				echo "<h3>".$lang_label["please_wait"]."<br>",$lang_label["while_delete_data"].$lang_label["agent"]."</h3>";
-				$sql_2='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_agent;
+                if ($id_agent == 0)
+                    $sql_2='SELECT * FROM tagente_modulo';
+                else
+                    $sql_2='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_agent;
 				$result_t=mysql_query($sql_2);
 				while ($row=mysql_fetch_array($result_t)){
 					echo $lang_label["deleting_records"].dame_nombre_modulo_agentemodulo($row["id_agente_modulo"]);
@@ -140,9 +134,15 @@ if (comprueba_login() == 0)
 	<select name='agent' class='w130'>
 	
 	<?php
-	if (isset($_POST["agent"]) and ($id_agent !=-1))
+	if (isset($_POST["agent"]) and ($id_agent > 0))
 		echo "<option value='".$_POST["agent"]."'>".dame_nombre_agente($_POST["agent"]);
-	echo "<option value=-1>".$lang_label["choose_agent"];
+	if (isset($_POST["agent"]) and ($id_agent == 0)){
+    	echo "<option value=0>".$lang_label["all_agents"];
+       	echo "<option value=-1>".$lang_label["choose_agent"];
+    } else {
+    	echo "<option value=-1>".$lang_label["choose_agent"];
+    	echo "<option value=0>".$lang_label["all_agents"];
+    }
 	$result_t=mysql_query("SELECT * FROM tagente");
 	while ($row=mysql_fetch_array($result_t)){	
 		echo "<option value='".$row["id_agente"]."'>".$row["nombre"];
@@ -159,7 +159,10 @@ if (comprueba_login() == 0)
 	
 	if (isset($_POST["agent"]) and ($id_agent !=-1)){
 		echo "<h3>".$lang_label["db_agent_bra"].dame_nombre_agente($id_agent).$lang_label["db_agent_ket"]."</h3>";
-		$sql_2='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_agent;		
+        if ($id_agent == 0)
+    		$sql_2='SELECT * FROM tagente_modulo';
+        else
+    		$sql_2='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_agent;		
 		$result_t=mysql_query($sql_2);
 		while ($row=mysql_fetch_array($result_t)){	
 /*			flush();

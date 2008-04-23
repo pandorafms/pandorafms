@@ -227,7 +227,9 @@ function general_report ($id_report){
                     break;
 
             case 1: // Custom/Combined graph
-                    $graph_name = give_db_value ("name", "tgraph", "id_graph", $id_gs);
+                    $graph = get_db_row ("tgraph", "id_graph", $id_gs);
+                    $graph_name = $graph["name"];
+                    $stacked = $graph["stacked"];
                     $sql2="SELECT * FROM tgraph_source WHERE id_graph = $id_gs";
                     $res2=mysql_query($sql2);
                     while ( $row2 = mysql_fetch_array($res2)){
@@ -243,8 +245,7 @@ function general_report ($id_report){
                     }
                     doTitle($pdf, lang_string("Custom graph").":  $graph_name");
                     $pdf->ezText (human_time_description($period)."\n",8);
-                    $image = $config["homeurl"]."/reporting/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&height=230&width=720&period=$period&pure=1";
-                    //ezImage(image,[padding],[width],[resize],[justification],[array border])
+                    $image = $config["homeurl"]."/reporting/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&height=230&width=720&stacked=$stacked&period=$period&pure=1";
                     $pdf->ezImage($image,0,470,'none','left');
                     $pdf->ezText ("\n",8);
                     break;

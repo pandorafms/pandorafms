@@ -64,6 +64,7 @@ if (isset($_GET["view_graph"])){
 			$period = $_POST["period"];
 		$events = $row["events"];
 		$description = $row["description"];
+        $stacked = $row["stacked"];
 		$name = $row["name"];
 		if (($row["private"]==1) && ($row["id_user"] != $id_user)){
 			audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access to a custom graph not allowed");
@@ -88,7 +89,7 @@ if (isset($_GET["view_graph"])){
 		echo $lang_label["combined_image"]."</h2>";
 		echo "<table class='databox_frame'>";
 		echo "<tr><td>";
-		echo "<img src='reporting/fgraph.php?tipo=combined&height=$height&width=$width&id=$modules&period=$period&weight_l=$weights' border=1 alt=''>";
+		echo "<img src='reporting/fgraph.php?tipo=combined&height=$height&width=$width&id=$modules&period=$period&stacked=$stacked&weight_l=$weights' border=1 alt=''>";
 		echo "</td></tr></table>";
 		switch ($period) {
 			case 3600: 	$period_label = $lang_label["hour"];

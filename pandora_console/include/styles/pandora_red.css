@@ -179,6 +179,7 @@ div#main {
 	padding-bottom: 20px;
 	margin-bottom: 25px;
 	background-color: #fefefe;
+    background-image: url(../../images/backgrounds/background_red.gif);
 	margin-top: 0px;
 	margin-left: 0px;
 	margin-right: 0px;
@@ -218,6 +219,8 @@ label {
 	float: left;
 	padding-top: 4px;
 }
+
+
 th > label {
 	padding-top: 7px;
 }
@@ -279,8 +282,11 @@ td.lb, td.lb_view {
 	padding-left: 3px;
 	font-weight: bold;
 }
+th {
+    background-color: #CC3333;
+}
 td.datos, td.datost, td.datosb , td.datos_id, td.datosf9 {
-	background-color: #f9f9f9;
+	background-color: #fff0f0;
 }
 td.datos2, td.datos2t, td.datos2b, td.datos2_id , td.datos2f9 {
 	background-color: #efefef; 
@@ -546,7 +552,7 @@ span.rmess, span.nrmess {
 	background-color: #fafafa;
 }
 .databox_color {
-	border-left: 4px solid #786;
+	border-left: 4px solid #FF7863;
 }
 #head_l {
 	float: left;

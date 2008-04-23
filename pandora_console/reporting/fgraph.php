@@ -78,7 +78,7 @@ function dame_fecha_grafico_timestamp ($timestamp) {
  * @param int Pure mode (without titles) (set to 1)
  */
 
-function graphic_combined_module (  $module_list, $weight_list, $periodo,                          $width, $height, $title, $unit_name, $show_event=0, $show_alert=0, $pure =0 ){
+function graphic_combined_module (  $module_list, $weight_list, $periodo,                          $width, $height, $title, $unit_name, $show_event=0, $show_alert=0, $pure =0, $stacked = 0){
 
 	include ("../include/config.php");
 	require ("../include/languages/language_".$config['language'].".php");
@@ -317,10 +317,13 @@ function graphic_combined_module (  $module_list, $weight_list, $periodo,       
 		
 			
 		// create the 1st plot as smoothed area chart using the 1st dataset
+        if ($stacked == 0){
 		// Non-stacked
-                // $Plot =& $Plotarea->addNew('area', array(&$dataset));
-                // Stacked (v1.4)
-                $Plot =& $Plotarea->addNew('Image_Graph_Plot_Area', array(&$dataset, 'stacked'));
+            $Plot =& $Plotarea->addNew('area', array(&$dataset));
+        } else {
+        // Stacked (> 2.0)
+            $Plot =& $Plotarea->addNew('Image_Graph_Plot_Area', array(&$dataset, 'stacked'));
+        }
 		$Plot->setLineColor('gray@0.4');
 		$AxisX =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_X);
 		// $AxisX->Hide();
@@ -1292,6 +1295,8 @@ function grafico_db_agentes_purge ($id_agent, $width, $height) {
 	require_once 'Image/Graph.php';
 	require ("../include/languages/language_".$config['language'].".php");
 
+    if ($id_agent == 0)
+        $id_agent = -1;
 	// All data (now)
 	$purge_all=date("Y-m-d H:i:s",time());
 	
@@ -2012,11 +2017,9 @@ if ( isset($_GET["value2"]))
 	$value2 = $_GET["value2"];
 else
 	$value2 = 0;
-if ( isset($_GET["value3"]))
-	$value3 = $_GET["value3"];
-else
-	$value3 = 0;
 
+$value3 = get_parameter("value3",0);
+$stacked = get_parameter ("stacked", 0);
 	
 // Image handler
 // *****************
@@ -2071,7 +2074,7 @@ if (isset($_GET["tipo"])){
 		$module_list = split ( ",", $id);
 		$weight_list = array();
 		$weight_list = split ( ",", $weight_l);
-		graphic_combined_module ($module_list, $weight_list, $period, $width, $height , $label, $unit_name, $draw_events, $draw_alerts, $pure);
+		graphic_combined_module ($module_list, $weight_list, $period, $width, $height , $label, $unit_name, $draw_events, $draw_alerts, $pure, $stacked);
 	}
 	else
 		graphic_error ();

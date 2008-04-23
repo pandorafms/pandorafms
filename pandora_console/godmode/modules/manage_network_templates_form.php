@@ -64,7 +64,8 @@ if (isset($_GET["refresh_module"])){  //Refresh module info from group combo
 if (isset($_GET["id_np"])){ // Read module data
 	$id_np = $_GET["id_np"];
 	if ($id_np != -1){
-		$sql1="SELECT * FROM tnetwork_profile WHERE id_np = $id_np";
+		$sql1="SELECT * FROM tnetwork_profile WHERE id_np = $id_np ORDER BY
+        name";
 		$result=mysql_query($sql1);
 		$row=mysql_fetch_array($result);
 		$description = $row["description"];
@@ -143,7 +144,7 @@ if ($id_np != -1){
 	while ( $row = mysql_fetch_array($result)) {
 		$id_nc = $row["id_nc"];
 		$id_npc = $row["id_npc"];
-		$sql2 = "SELECT * FROM tnetwork_component where id_nc = $id_nc";
+		$sql2 = "SELECT * FROM tnetwork_component where id_nc = $id_nc ORDER BY name";
 		$result2 = mysql_query ($sql2);
 		if ($row2=mysql_fetch_array($result2)){
 			if ($color == 1){
@@ -191,7 +192,7 @@ if ($id_np != -1){
 	echo "<table class='databox'>";
 	echo '<tr><td>';
 	echo '<form name="add_module" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&add_module=1">';
-	$sql1 = "SELECT * FROM tnetwork_component ORDER BY id_group";
+	$sql1 = "SELECT * FROM tnetwork_component ORDER BY id_group, name";
 	$result = mysql_query ($sql1);
 	echo "<select name='component'>";
 	while ($row = mysql_fetch_array($result)) {

@@ -119,8 +119,9 @@ sub pandora_purgedb {
 			my @datarow2;
 			if ($idag2->rows != 0) {
 				while (@datarow2 = $idag2->fetchrow_array()) {
-					# Create Insert SQL for this data 
-					$buffer3 = "insert into tagente_datos (id_agente_modulo,datos,timestamp,id_agente) values ($buffer,$datarow2[2],'$limit_timestamp',$datarow2[4])";
+					# Create Insert SQL for this data
+					my $limit_utimestamp = &UnixDate($limit_timestamp,"%s");
+					$buffer3 = "insert into tagente_datos (id_agente_modulo,datos,timestamp,utimestamp,id_agente) values ($buffer,$datarow2[2],'$limit_timestamp',$limit_utimestamp,$datarow2[4])";
 				}
 			}
 			# Execute DELETE
@@ -154,102 +155,115 @@ sub pandora_compactdb {
 	my $dbuser = $_[2];
 	my $dbpass = $_[3];
 	my $dbhost = $_[4];
- 	my @data_item; # Array to get data from each record of DB
- 	my %data_list; # Hash to store values (sum) for each id
- 	my %data_list_items; # Hash to store total values for each id
-	my $err; # error code in datecalc function
 
- 	my $rows_selected = 0; # Calculate how many rows are selected in this loop
- 	my $dbh; # database handler
- 	my $query;
- 	my $query_ready;
- 	my $limit_timestamp; # Define the high limit for timestamp query
-	my $limit_timestamp_numeric;
- 	my $low_limit; # Define the low limit for timestamp query
- 	my $key; # Used by foreach-loop
-	my $low_limit_timestamp; # temporal variable to store low limit timestamp
-	my $low_limit_timestamp_numeric;
-	my $oldest_timestamp;
-	my $oldest_timestamp_numeric;
-	my $flag; #temporal value to store diff between dats
-	
-	# Begin procedure (SQL open initizalizacion and initial timestamp calculation)
-	$dbh = DBI->connect("DBI:mysql:$dbname:$dbhost:3306",$dbuser, $dbpass,{ RaiseError => 1, AutoCommit => 1 });
-	
-	
-	# Get the first (oldest) timestamp in database to make it the marker for the end of query
-	$query = "SELECT min(timestamp) FROM tagente_datos ";
-	$query_ready = $dbh->prepare($query);
-	$query_ready ->execute();
-	@data_item = $query_ready->fetchrow_array();
-	$oldest_timestamp = @data_item[0];
-	$query_ready->finish;
-	$oldest_timestamp_numeric = &UnixDate($oldest_timestamp,"%s");
+	my %count_hash;
+	my %id_agent_hash;
+	my %value_hash;
+	my $err;
 
-	# If no data, skip this step
-	if ($oldest_timestamp ne ""){
-		# We need to determine data ranges
-		# Calculate start limit for compactation
-		$limit_timestamp = DateCalc("today","-$days days",\$err);
-		$limit_timestamp = &UnixDate($limit_timestamp,"%Y-%m-%d %H:%M:%S");
-		$limit_timestamp_numeric = &UnixDate($limit_timestamp,"%s");
-		print "[COMPACT] Packing data from $limit_timestamp to $oldest_timestamp \n";
-		
-		# Main loop
-		do { # Makes a query for each days from $limit_timestamp (now is set $days from today)
-			# To get actual low limit, minus step_compact hours
-			$low_limit_timestamp = DateCalc("$limit_timestamp","-$config_step_compact hours",\$err);
-			$low_limit_timestamp = &UnixDate($low_limit_timestamp,"%Y-%m-%d %H:%M:%S");
-			$low_limit_timestamp_numeric = &UnixDate($low_limit_timestamp,"%s");
-			if ($verbosity > 0){
-				print "[COMPACT] Working at interval: $limit_timestamp -$low_limit_timestamp \n";
-			}
+	# Connect to the database
+	my $dbh = DBI->connect("DBI:mysql:$dbname:$dbhost:3306",$dbuser, $dbpass,
+	                       { RaiseError => 1, AutoCommit => 1 });
 
-			# DB Query to get data from DB based on timestamp limits
-			$query = "SELECT * FROM tagente_datos WHERE utimestamp < $limit_timestamp_numeric AND utimestamp >= $low_limit_timestamp_numeric";
-			$query_ready = $dbh->prepare($query);
-			$query_ready ->execute();
-			$rows_selected = $query_ready->rows;
-
-			if ($rows_selected > 0) {
-				# Init hashes
-				%data_list=();
-				%data_list_items=();
-				# Create a hash data_list with id_agente_mopulo as index
-				# and creating a summatory of values for this inverval
-				# storing the total number of dif. values in data_list_items hash
-				while (@data_item = $query_ready->fetchrow_array()) {
-					$data_list{$data_item[1]}= $data_list{$data_item[1]} + $data_item[2];
-					$data_list_items{$data_item[1]}=$data_list_items{$data_item[1]} + 1;
-				}
-				# Once we has filled the hast, let's delete records processed for this
-				# interval. Later we could insert the new record, and initialize hash for 
-				# reuse it in the next loop.
-				
-				$query = "DELETE FROM tagente_datos WHERE utimestamp < $limit_timestamp _numeric AND utimestamp >= $low_limit_timestamp_numeric";
-				$dbh->do($query);
-				# print "DEBUG: Purge query $query \n";
-
-				my $value; my $value_timestamp;
-				foreach $key (keys (%data_list)) {
-					$value = int($data_list{$key} / $data_list_items{$key}); # Media aritmetica :-)
-					$query="INSERT INTO tagente_datos (id_agente_modulo, datos, timestamp, utimestamp) VALUES ($key, $value, '$limit_timestamp', $limit_timestamp_numeric)";
-					$dbh->do($query);
-					#if ($verbosity > 0){
-print "[DEBUG]: Datos para el id_agente_modulo # $key : Numero de datos ( $data_list_items{$key} ) valor total ( $data_list{$key} media ($value)) \n";
-					#}
-					# Purge hash
-					delete $data_list{$key};
-					delete $data_list_items{$key};
-				}
-			}
-			$limit_timestamp = $low_limit_timestamp; # To the next day !!
-			$flag = Date_Cmp($oldest_timestamp,$limit_timestamp);
-		} until ($flag >= 0);
-	} else {
-		print "[COMPACT] No data to pack ! \n";
+	if ($config_step_compact < 1) {
+		return;
 	}
-	$query_ready->finish();
+
+	# Compact interval length in seconds
+	# $config_step_compact varies between 1 (36 samples/day) and
+	# 20 (1.8 samples/day)
+	my $step = $config_step_compact * 2400;
+
+	# The oldest timestamp will be the lower limit
+	my $query = "SELECT min(utimestamp) as min FROM tagente_datos";
+	my $query_st = $dbh->prepare($query);
+	$query_st->execute();
+	if ($query_st->rows == 0) {
+		return;
+	}
+
+	my $data = $query_st->fetchrow_hashref();
+	my $limit_utime = $data->{'min'};
+	$query_st->finish();
+
+	if ($limit_utime < 1) {
+		return;
+	}
+
+	# Calculate the start date
+	my $start_date = DateCalc("today","-$days days",\$err);
+	my $start_utime = &UnixDate($start_date,"%s");
+	my $stop_date;
+	my $stop_utime;
+
+	print "[COMPACT] Compacting data until $start_date\n";
+
+	# Prepare the query to retrieve data from an interval
+	$query = "SELECT * FROM tagente_datos WHERE utimestamp < ? AND
+	            utimestamp >= ?";
+	$query_st = $dbh->prepare($query);
+
+	while (1) {
+
+			# Calculate the stop date for the interval
+			$stop_utime = $start_utime - $step;
+
+			# Out of limits
+			if ($start_utime < $limit_utime) {
+				return;
+			}
+
+			$query_st->execute($start_utime, $stop_utime);
+			$query_st->rows;
+			if ($query_st->rows == 0) {
+				# No data, move to the next interval
+				$start_utime = $stop_utime;
+				next;
+			}
+
+			# Get interval data
+			while ($data = $query_st->fetchrow_hashref()) {
+				my $id_module = $data->{'id_agente_modulo'};
+
+
+				if (! defined($value_hash{$id_module})) {
+					$value_hash{$id_module} = 0;
+					$count_hash{$id_module} = 0;
+
+					if (! defined($id_agent_hash{$id_module})) {
+						$id_agent_hash{$id_module} = $data->{'id_agente'};
+					}
+				}
+
+				$value_hash{$id_module} += $data->{'datos'};
+				$count_hash{$id_module}++;
+			}
+
+			# Delete interval from the database
+			$dbh->do("DELETE FROM tagente_datos WHERE utimestamp < $start_utime
+			         AND utimestamp >= $stop_utime");
+
+			# Insert interval average value
+			foreach my $key (keys(%value_hash)) {
+				$value_hash{$key} /= $count_hash{$key};
+				$stop_date = localtime($stop_utime);
+				$stop_date = &UnixDate($stop_date,
+				                       "%Y-%m-%d %H:%M:%S");
+
+				$dbh->do("INSERT INTO tagente_datos (id_agente_modulo,
+				         id_agente, datos, timestamp, utimestamp) VALUES
+				         ($key, $id_agent_hash{$key}, $value_hash{$key} ,
+				         '$stop_date', $stop_utime)");
+
+				delete($value_hash{$key});
+				delete($count_hash{$key});
+			}
+
+			# Move to the next interval
+			$start_utime = $stop_utime;
+	}
+
+	$query_st->finish();
 	$dbh->disconnect();
 }
 
@@ -513,7 +527,7 @@ sub help_screen{
 sub pandoradb_main {
 	pandora_purgedb ($config_days_purge, $dbname, $dbuser, $dbpass, $dbhost);
 	pandora_checkdb_consistency ($dbname, $dbuser, $dbpass, $dbhost);
-	# pandora_compactdb ($config_days_compact, $dbname, $dbuser, $dbpass, $dbhost);
+	pandora_compactdb ($config_days_compact, $dbname, $dbuser, $dbpass, $dbhost);
 	print "\n";
 	exit;
 }

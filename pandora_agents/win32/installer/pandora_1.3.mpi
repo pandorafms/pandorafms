@@ -3,7 +3,7 @@ AllowLanguageSelection
 Yes
 
 AppName
-{Pandora FMS Windows Agent}
+{Pandora FMS Windows Agent v1.3.1}
 
 ApplicationID
 17E3D2CF-CA02-406B-8A80-9D31C17BD08F
@@ -54,7 +54,7 @@ Image
 C:/pandora_installer/logo.png
 
 IncludeDebugging
-No
+0
 
 InstallPassword
 {}
@@ -147,7 +147,7 @@ UpgradeApplicationID
 {}
 
 Version
-1.3
+1.3.1
 
 ViewReadme
 Yes

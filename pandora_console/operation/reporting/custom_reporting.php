@@ -64,7 +64,7 @@ if (mysql_num_rows($res)) {
 		<img src='images/reporting.png'></a>
 		</td>";
         
-        echo "<td valign='middle' class='$tdcolor' align='center'><a target='_new'  href='operation/reporting/reporting_viewer_pdf.php?id=$id_report&rtype=general'><img src='images/pdf.gif'></a></td>'";
+        echo "<td valign='middle' class='$tdcolor' align='center'><a target='_new'  href='operation/reporting/reporting_viewer_pdf.php?id=$id_report&rtype=general'><img src='images/pdf.png'></a></td>'";
         echo "</tr>";
 		}
 	}

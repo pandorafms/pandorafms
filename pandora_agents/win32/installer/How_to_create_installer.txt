@@ -9,7 +9,7 @@ Doing that, you must have the next directory structure:
 
 C:\pandora_installer
 
-		+--- pandora_1.3.mpi
+		+--- pandora_1.3.1.mpi
 		+--- bin
 			  +--- LICENSE.txt
 			  +--- README.txt
@@ -40,14 +40,20 @@ C:\pandora_installer
 			  |		+--- md5.exe
 			  |		+--- puttygen.exe
 			  |		+--- tail.exe
+			  |		+--- tentacle_client.exe
 			  |		+--- tr.exe
 			  |		+--- wc.exe
 			  +--- key
+			  |		+--- id_dsa
+			  |		+--- id_dsa.pub			  
 			  |		+--- PUT_SSH_KEYS_HERE
 			  +--- scripts
 			  		+--- start_pandora_agent.bat
 			  		+--- stop_pandora_agent.bat
 
-3) Execute InstallJammer program, and open the file C:\pandora_installer\pandora_1.3.mpi
+3) Change any thing you want in your pandora_agent.conf file and also you can 
+(you MUST) change your own keys to distribute them with your agents.
 
-4) Just go to Build menu and select Build Install (Ctrl + B).
+4) Execute InstallJammer program, and open the file C:\pandora_installer\pandora_1.3.1.mpi
+
+5) Just go to Build menu and select Build Install (Ctrl + B).

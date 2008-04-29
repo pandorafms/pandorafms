@@ -1,5 +1,9 @@
 2008-04-29  Ramon Novoa  <rnovoa@artica.es>
 
+	* bin/PandoraAgent.exe: Updated to r831.
+
+2008-04-29  Ramon Novoa  <rnovoa@artica.es>
+
 	* pandora.cc: Updated version information.
 
 2008-04-29 Sancho Lerena  <slerena@gmail.com>

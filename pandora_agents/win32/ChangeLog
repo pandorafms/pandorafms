@@ -1,3 +1,7 @@
+2008-04-29  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora.cc: Updated version information.
+
 2008-04-29 Sancho Lerena  <slerena@gmail.com>
 
 	* Fixed version string and some small details in default .conf

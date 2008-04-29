@@ -3,7 +3,7 @@ AllowLanguageSelection
 Yes
 
 AppName
-{Pandora FMS Windows Agent}
+{Pandora FMS Windows Agent 1.3.1}
 
 ApplicationID
 17E3D2CF-CA02-406B-8A80-9D31C17BD08F
@@ -30,13 +30,16 @@ Company
 ArticaST
 
 CompressionLevel
-6
+7
 
 CompressionMethod
 zlib
 
 Copyright
 2004-2008
+
+DefaultDirectoryLocation
+{}
 
 DefaultLanguage
 English
@@ -54,7 +57,7 @@ Image
 C:/pandora_installer/logo.png
 
 IncludeDebugging
-No
+0
 
 InstallPassword
 {}
@@ -84,9 +87,12 @@ Language,nl
 Yes
 
 Language,pl
-No
+Yes
 
 Language,pt_br
+Yes
+
+Language,ru
 Yes
 
 PackageDescription
@@ -108,7 +114,7 @@ PackageRelease
 <%PatchVersion%>
 
 PackageSummary
-{This is the installer for Pandora FMS agent for windows plattforms}
+{This is the installer for Pandora FMS agent for windows platforms}
 
 PackageVersion
 <%MajorVersion%>.<%MinorVersion%>
@@ -120,7 +126,7 @@ ProjectID
 0EA13B96-1BB2-4238-B248-101B4F906C15
 
 ProjectVersion
-1.2.5.1
+1.2.6.0
 
 SaveOnlyToplevelDirs
 No
@@ -147,10 +153,16 @@ UpgradeApplicationID
 {}
 
 Version
-1.3
+{}
 
 ViewReadme
 Yes
+
+WizardHeight
+365
+
+WizardWidth
+500
 
 }
 
@@ -167,19 +179,7 @@ test
 {Testing Switch Yes No {} {run uninstaller without uninstalling any files}}
 
 }
-FileGroup ::946FC43B-0E32-4C38-86EF-4F9252C67E16 -setup Install -active Yes -platforms {AIX-ppc FreeBSD-4-x86 FreeBSD-x86 HPUX-hppa Linux-x86 MacOS-X Solaris-sparc TarArchive Windows} -name {Program Files} -parent FileGroups
-File ::A917C2BF-3079-4FAC-9487-56873FCF8381 -type dir -name C:/pandora_installer/bin/help -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
-File ::9A0A7B55-1B33-4480-8D1B-3C7539A8529C -name how_to_keys.html -parent A917C2BF-3079-4FAC-9487-56873FCF8381
-File ::C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E -type dir -name images -parent A917C2BF-3079-4FAC-9487-56873FCF8381
-File ::FDA1A3B2-EAD2-4EDF-9C4B-00508F5A5DA1 -name 1.jpg -parent C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E
-File ::998FA77A-EF66-4309-A6B7-4EACEFB2EB1F -name 2.jpg -parent C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E
-File ::C9F309F1-BAF7-4EE2-BD1B-618AC91C4AF7 -name 3.jpg -parent C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E
-File ::CD1E11AD-9689-4B20-9753-253F819416FF -name 4.jpg -parent C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E
-File ::B2CB62FE-55CB-478B-B981-174EDE18519A -name 5.jpg -parent C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E
-File ::7F26AC24-9EFC-45A8-A93C-DDCC7E7487B3 -name 6.jpg -parent C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E
-File ::7FCFC7EE-2203-412D-9110-FF5FA54C1E4A -name logo.png -parent C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E
-File ::0AEA8805-CBBC-4CFC-A52B-630755DC757E -name Thumbs.db -active 0 -parent C45C9DA9-48F1-4FB2-B1B3-6811CFE2536E
-File ::B674F886-6A1A-4B24-9DF3-A654EA1334AC -name how_to_keys_es.html -parent A917C2BF-3079-4FAC-9487-56873FCF8381
+FileGroup ::946FC43B-0E32-4C38-86EF-4F9252C67E16 -setup Install -active Yes -platforms Windows -name {Program Files} -parent FileGroups
 File ::7003FDCA-0EDA-4431-93E2-6FEA7E8660D6 -type dir -name C:/pandora_installer/bin/key -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::B33B08D0-C80C-49CB-9431-44C6B4E7858E -name id_dsa -parent 7003FDCA-0EDA-4431-93E2-6FEA7E8660D6
 File ::7E8B4918-C894-4FCE-98F0-1DDDBF9818F8 -name id_dsa.pub -parent 7003FDCA-0EDA-4431-93E2-6FEA7E8660D6
@@ -209,8 +209,19 @@ File ::423325D1-5C33-41ED-965A-F7E1F2A2C32E -name C:/pandora_installer/README.tx
 File ::9F4D1B79-C9AE-4F1F-AC50-876657B3361C -type dir -name C:/pandora_installer/bin/scripts -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::8C09E6D4-4B09-4AA5-B025-441389C76F70 -name start_pandora_agent.bat -parent 9F4D1B79-C9AE-4F1F-AC50-876657B3361C
 File ::BA05415F-E246-45AE-A0B1-21C7AB400402 -name stop_pandora_agent.bat -parent 9F4D1B79-C9AE-4F1F-AC50-876657B3361C
-Component ::FB96078B-BA3C-498C-8C20-B01C1F28ACA9 -setup Install -active Yes -platforms {Windows AIX-ppc FreeBSD-4-x86 FreeBSD-x86 HPUX-hppa MacOS-X Solaris-sparc} -name {Default Component} -parent Components
-SetupType ::A87C1A6B-ED26-4B07-8736-750725FF34E4 -setup Install -active Yes -platforms {Windows AIX-ppc FreeBSD-4-x86 FreeBSD-x86 HPUX-hppa MacOS-X Solaris-sparc} -name Typical -parent SetupTypes
+File ::94EE5172-C243-4F11-80CE-C356D9055323 -type dir -name C:/pandora_installer/bin/help -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
+File ::38108568-E397-4360-9FDD-BBD7574607E0 -name how_to_keys.html -parent 94EE5172-C243-4F11-80CE-C356D9055323
+File ::096DCAC9-2E8F-4765-9EC5-E40DAFC26B36 -name how_to_keys_es.html -parent 94EE5172-C243-4F11-80CE-C356D9055323
+File ::550F286E-2409-4221-A51A-CA980C9EA9DC -type dir -name images -parent 94EE5172-C243-4F11-80CE-C356D9055323
+File ::6FDE9DD9-ADE8-455A-B864-FA7C2B903604 -name 1.jpg -parent 550F286E-2409-4221-A51A-CA980C9EA9DC
+File ::0AFE05E1-E200-4650-8F9E-ED83C9E9ADD4 -name 2.jpg -parent 550F286E-2409-4221-A51A-CA980C9EA9DC
+File ::46E928DC-6919-4EC1-86EA-F161C098449D -name 3.jpg -parent 550F286E-2409-4221-A51A-CA980C9EA9DC
+File ::5EA49A68-6952-43BF-9A54-1CDF8E48C3D8 -name 4.jpg -parent 550F286E-2409-4221-A51A-CA980C9EA9DC
+File ::0C33AC8D-503A-4A9C-801F-2FDEF9FA98C0 -name 5.jpg -parent 550F286E-2409-4221-A51A-CA980C9EA9DC
+File ::1B81E274-2375-4287-90D7-953BE3F71FA7 -name 6.jpg -parent 550F286E-2409-4221-A51A-CA980C9EA9DC
+File ::C2E02994-9B4E-430C-B399-E93986DD9B0F -name logo.png -parent 550F286E-2409-4221-A51A-CA980C9EA9DC
+Component ::FB96078B-BA3C-498C-8C20-B01C1F28ACA9 -setup Install -active Yes -platforms Windows -name {Default Component} -parent Components
+SetupType ::A87C1A6B-ED26-4B07-8736-750725FF34E4 -setup Install -active Yes -platforms {Solaris-sparc Windows} -name Typical -parent SetupTypes
 
 InstallComponent 1957048E-B498-4FFF-A8BA-F2DF640463B1 -setup Install -type pane -title {Welcome Screen} -component Welcome -active Yes -parent StandardInstall
 InstallComponent DE1D4DF7-A35C-4228-8A25-07106AD77C9E -setup Install -type pane -title {License Agreement} -component License -active Yes -parent StandardInstall
@@ -751,7 +762,7 @@ ViewReadme
 <%InstallDir%>
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,FileSize
-8056963
+11264957
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,Name
 {Program Files}
@@ -1561,7 +1572,7 @@ Windows,Active
 Yes
 
 Windows,Executable
-<%AppName%>-<%Version%>-Setup<%Ext%>
+<%AppName%>-Setup<%Ext%>
 
 Windows,IncludeTWAPI
 No
@@ -1660,7 +1671,7 @@ ZipArchive,VirtualTextMap
 
 ::msgcat::mcmset de {
 1957048E-B498-4FFF-A8BA-F2DF640463B1,Message
-{Dies wird <%AppName%> Version <%Version%> auf Ihrem Computer installieren. 
+{Dies wird <%AppName%> auf Ihrem Computer installieren. 
 
 Es wird empfohlen, das Sie alle anderen Anwendungen schließen, bevor Sie fortfahren.
 
@@ -1692,7 +1703,7 @@ StopPandoraService
 }
 ::msgcat::mcmset en {
 1957048E-B498-4FFF-A8BA-F2DF640463B1,Message
-{This will install <%AppName%> version <%Version%> on your computer. 
+{This will install <%AppName%> on your computer. 
 
 It is recommended that you close all other applications before  continuing. 
 
@@ -1766,14 +1777,17 @@ C6CE92F8-3842-4E58-A3A2-5B5D2F7AFB4B,Message
 
 Now the pandora_agent.conf file will be open to change Pandora FMS Server IP address and agent name (used in Web Console).
 
-If you use FTP method to transfer data files, configure server_pwd with the pandora user password in the FTP server. This user should have write permissions in the server directory, by default /var/spool/pandora/data_in.
+If you use FTP method to transfer data files, configure "server_pwd" parameter with the pandora user password in the FTP server. This user "pandora" should have write permissions in the server directory, by default /var/spool/pandora/data_in.
 
-If you want to use SSH, comment FTP parameters and generate SSH Keys.
+If you want to use SSH, comment Tentacle (FTP) parameters and generate SSH Keys.
 
 One you have saved your changes, use link to start Pandora FMS Agent for Windows service.}
 
 C6CE92F8-3842-4E58-A3A2-5B5D2F7AFB4B,Title
 {Setup Pandora FMS Windows Agent}
+
+C862BDC0-8F67-4546-B658-4A9A8ADCE385,Caption
+{Setup has enough information to start copying the program files. If you want to review or change any settings, click Back.  If you are satisfied with the settings, click Next to begin copying files.}
 
 DAE5A5A9-35B4-44B5-89C0-F25FDD2771FB,Message
 <%UninstallStartupText%>
@@ -1902,13 +1916,13 @@ StopPandoraService
 }
 ::msgcat::mcmset es {
 1957048E-B498-4FFF-A8BA-F2DF640463B1,Message
-{Este programa instalará <%AppName%> versión <%Version%> en su equipo. 
+{Este programa instalará <%AppName%> en su equipo. 
 
 Se recomienda cerrar las demas aplicaciones antes de continuar.
 
 Al finalizar la instalación, debe editarse el fichero de configuración para definir la dirección IP del servidor y otros parámetros.
 
-Pulse siguiente para continuar o Cancelar para salir de la instalación.}
+Pulse Siguiente para continuar o Cancelar para salir de la instalación.}
 
 1D572EE2-DD93-4F13-850E-DE0EEB1DA110,Message
 <%UninstallingApplicationText%>
@@ -1917,7 +1931,7 @@ Pulse siguiente para continuar o Cancelar para salir de la instalación.}
 <%InstallationCompleteText%>
 
 2B99A465-4666-445D-96BF-9C8F03CDAC60,Message
-{Por defecto Pandora FMS  utiliza FTP para el envío de ficheros XML al servidor. Puede utilizarse también SFTP/SSH2.
+{Por defecto Pandora FMS utiliza el protocolo Tentacle para el envío de ficheros XML al servidor. Puede utilizarse también SFTP/SSH2.
 
 Si se utiliza este método, hay que generar previamente las claves públicas y privadas y guardarlas como id_dsa.pub e id_dsa, respectivamente en formato OpenSSH, dentro del directorio <%InstallDir%>\key.
 
@@ -1929,6 +1943,17 @@ Más información en el documento "<%HelpGeneratingSSHKeys%>", que está incluid
 4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Message
 <%UninstallCompleteText%>
 
+6B06C7C2-97A8-4642-B286-3B089943F359,Message
+{InstallJammer ha instalado <%AppName%> con éxito.  Pulse Finalizar para salir de este instalador.}
+
+B2E20690-C57D-4286-9977-F2541E04D71F,BrowseText
+{Pulse Siguiente para continuar. Si desea seleccionar una carpeta diferente, pulse Examinar.}
+
+B2E20690-C57D-4286-9977-F2541E04D71F,Caption
+{Se instalará <%AppName%> en la siguiente carpeta.
+
+Para instalar en esa carpeta, pulse Siguiente. Para instalar en una carpeta diferente, pulse Examinar y seleccione otra.}
+
 BF861387-DA7F-4986-B5BB-F77358B58603,Message
 <%InstallingApplicationText%>
 
@@ -1937,14 +1962,20 @@ C6CE92F8-3842-4E58-A3A2-5B5D2F7AFB4B,Message
 
 Ahora se abrirá el fichero pandora_agent.conf para configurar la dirección IP del servidor y el nombre del agente (se utilizará en la consola web).
 
-Si el método de transferencia de ficheros que se va a utilizar es FTP, el parámetro server_pwd contiene la contraseña del usuario pandora, que debe tener permisos de escritura en el directorio del servidor, por defecto /var/spool/pandora/data_in.
+Si el método de transferencia de ficheros que se va a utilizar es FTP, el parámetro "server_pwd" contiene la contraseña del usuario "pandora", que debe tener permisos de escritura en el directorio del servidor, por defecto /var/spool/pandora/data_in.
 
-Si se quiere utilizar SSH, deben comentarse las entradas relativas a FTP y generar las claves SSH.
+Si se quiere utilizar SSH, deben comentarse las entradas relativas a Tentacle (FTP) y generar las claves SSH.
 
 Una vez finalizada la configuración, el servicio puede iniciarse con el enlace creado.}
 
 C6CE92F8-3842-4E58-A3A2-5B5D2F7AFB4B,Title
 {Configurar el agente Windows de Pandora FMS}
+
+C862BDC0-8F67-4546-B658-4A9A8ADCE385,Caption
+{Se ha recopilado la información necesaria para comenzar a copiar los archivos del programa. Si desea revisar o cambiar la configuración, pulse Atrás. Si esta conforme con la configuración, pulse Siguiente para comenzar a copiar los archivos.}
+
+DE1D4DF7-A35C-4228-8A25-07106AD77C9E,Subtitle
+{Por favor lea atentamente el siguiente acuerdo de licencia (en inglés).}
 
 EditConfiguration
 {Editar fichero de configuración}
@@ -1970,7 +2001,7 @@ StopPandoraService
 }
 ::msgcat::mcmset fr {
 1957048E-B498-4FFF-A8BA-F2DF640463B1,Message
-{Ceci installera <%AppName%> version <%Version%> sur votre ordinateur. 
+{Ceci installera <%AppName%> sur votre ordinateur. 
 
 Il est recommandé de fermer toutes les autres applications avant de continuer.
 
@@ -1985,7 +2016,7 @@ Cliquez sur SUIVANT pour continuer ou ANNULER pour quitter l'installation.}
 <%InstallationCompleteText%>
 
 2B99A465-4666-445D-96BF-9C8F03CDAC60,Message
-{Par défaut, l'agent de Pandora FMS pour Windows utilise la méthode FTP de copier des fichiers de données XML au serveur.
+{Par défaut, l'agent de Pandora FMS pour Windows utilise la méthode tentacle de copier des fichiers de données XML au serveur.
 
 Si vous voulez utiliser SFTP/SSH2, produisez s'il vous plaît des clés Publiques et Privées et 
 sauvez-les comme id_dsa.pub et id_dsa, avec le format d'OpenSSH, dans le réperotire <%InstallDir%>\key.
@@ -2008,7 +2039,39 @@ StopPandoraService
 {Arrête le service <%AppName%>}
 
 }
+::msgcat::mcmset hu {
+1957048E-B498-4FFF-A8BA-F2DF640463B1,Message
+{Ez a <%AppName%> verzióját fogja telepíteni  a számítógépére.
+
+ Javasoljuk, hogy zárjon be minden alkalmazást,  mielőtt folytatná.
+
+ Kattintson a <%Next%> gombra a folytatáshoz  vagy a <%Cancel%> gombra kilépéshez.}
+
+}
+::msgcat::mcmset it {
+1957048E-B498-4FFF-A8BA-F2DF640463B1,Message
+{Si sta per installare <%AppName%> sul computer. 
+
+E' consigliata la chiusura di tutte le altre applicazioni prima di  proseguire.
+
+Premere su Avanti per continuare o su Annulla per uscire dall'installazione.}
+
+}
+::msgcat::mcmset nl {
+1957048E-B498-4FFF-A8BA-F2DF640463B1,Message
+{Het is aan te raden alle overige applicaties te sluiten alvorens verder te gaan met deze installatie.
+
+Klik op <%Next%> om verder  te gaan of op <%Cancel%> om deze installatie af te breken}
+
+}
 ::msgcat::mcmset pl {
+1957048E-B498-4FFF-A8BA-F2DF640463B1,Message
+{Zainstaluje on <%AppName%> na twoim komputerze. 
+
+Zalecane jest zamkniÄ™cie wszystkich programÃ³w przed instalacjÄ….  
+
+Kliknij Dalej, aby kontynuowaÄ‡ lub Anuluj, aby opuÅ›ciÄ‡ instalator.}
+
 1D572EE2-DD93-4F13-850E-DE0EEB1DA110,Message
 <%UninstallingApplicationText%>
 
@@ -2059,6 +2122,15 @@ StartPandoraService
 
 StopPandoraService
 {Interrompe o serviço <%AppName%>}
+
+}
+::msgcat::mcmset ru {
+1957048E-B498-4FFF-A8BA-F2DF640463B1,Message
+{Ìàñòåð InstallJammer óñòàíîâèò <%AppName%> íà âàøåì êîìïüþòåðå. 
+
+Ïåðåä íà÷àëîì óñòàíîâêè ðåêîìåíäóåòñÿ çàêðûòü âñå äðóãèå ðàáîòàþùèå  ïðîãðàììû.
+
+×òîáû ïðîäîëæèòü, âûáåðèòå <%Next%>, èëè âûáåðèòå <%Cancel%> äëÿ âûõîäà.}
 
 }
 

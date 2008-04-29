@@ -40,6 +40,7 @@ C:\pandora_installer
 			  |		+--- md5.exe
 			  |		+--- puttygen.exe
 			  |		+--- tail.exe
+			  |		+--- tentacle_client.exe
 			  |		+--- tr.exe
 			  |		+--- wc.exe
 			  +--- key
@@ -48,6 +49,6 @@ C:\pandora_installer
 			  		+--- start_pandora_agent.bat
 			  		+--- stop_pandora_agent.bat
 
-3) Execute InstallJammer program, and open the file C:\pandora_installer\pandora_1.3.mpi
+3) Execute InstallJammer program, and open the file C:\pandora_installer\pandora_1.3.1.mpi
 
 4) Just go to Build menu and select Build Install (Ctrl + B).

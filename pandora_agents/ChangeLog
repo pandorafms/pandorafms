@@ -1,3 +1,13 @@
+2008-05-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* linux/pandora_agent_installer: Added plugin installation.
+	* linux/plugins: Added to repository. Plugins directory.
+	* linux/plugins/grep_log: Added to repository. Plugin to search log
+	  files for a matching pattern.
+	* linux/pandora_agent: Added support for plugin execution. Removed
+	  support for pandora_user.conf.
+	* linux/pandora_user.conf: Deleted from repository. Not used anymore.
+
 2008-04-09 Sancho lerena <slerena@gmail.com>
 
 	* README, AUTHORS, COPYING: Updated on all agents.

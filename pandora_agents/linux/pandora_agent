@@ -322,6 +322,19 @@ do
               		EXECUTE=`expr \( $CONTADOR + 1 \) % $MODULEINTERVAL`
   		fi
 
+		# Plugin execution
+  		if [ ! -z "`echo $a | grep '^module_plugin'`" ]
+  		then
+  			PLUGIN=`echo $a | cut -d" " -f2`
+  			PARAMS=`echo $a | cut -d" " -f3-`
+			if [ -f $PANDORA_HOME/plugins/$PLUGIN ]
+			then
+				eval $PANDORA_HOME/plugins/$PLUGIN $PARAMS >> $DATA
+			else
+				echo "$PANDORA_HOME/plugins/$PLUGIN not found"
+			fi
+		fi
+
 		# If module ends, and execute for this module is enabled
 		# then write 
 
@@ -343,11 +356,6 @@ do
 		CONTADOR=0
 	fi
 
-	# Call for user-defined script for data adquisition
-	if [ -f "$PANDORA_HOME/pandora_user.conf" ]
-	then
-		/bin/bash $PANDORA_HOME/pandora_user.conf >> $DATA
-	fi
 	
 	# Checking MD5
 	if [ "$CHECKSUM_MODE" == "1" ]

@@ -1,3 +1,8 @@
+2008-05-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* bin/pandora_server: Added support to process multiple data
+	  from a single module.
+
 2008-04-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/pandora_db.pl: Rewrote and enabled pandora_compactdb.

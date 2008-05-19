@@ -349,27 +349,72 @@ sub procesa_datos {
 				$module_name = $part->{name}->[0];
                 if (defined($module_name)){ # Skip modules without names 
 				    logger($pa_config, "Processing module Name ( $module_name ) type ( $tipo_modulo ) for agent ( $agent_name )", 5);
-				    if ($tipo_modulo eq 'generic_data') {
-					    module_generic_data ($pa_config, $part, $timestamp, $agent_name, "generic_data", $dbh);
+				    
+				    # Data list
+				    if (defined $part->{datalist}) {
+				    	foreach my $datalist (@{$part->{datalist}}) {
+				    		if (! defined $datalist->{data}) {
+				    			next;
+				    		}
+				    		
+				    		foreach my $data (@{$datalist->{data}}) {
+								if (! defined $data->{value}) {
+									next;
+								}
+								
+								$part->{data} = $data->{value};
+							
+								# Data has its own timestamp
+								if (defined $data->{timestamp}) {
+									process_module_data($pa_config, $data->{timestamp}->[0], $agent_name, $tipo_modulo, $part, $dbh);
+								}
+								else {
+									process_module_data($pa_config, $timestamp, $agent_name, $tipo_modulo, $part, $dbh);
+								}
+							}
+						}
 				    }
-				    elsif ($tipo_modulo eq 'generic_data_inc') {
-					    module_generic_data_inc ($pa_config, $part, $timestamp, $agent_name,"generic_data_inc", $dbh);
-				    }
-				    elsif ($tipo_modulo eq 'generic_data_string') {
-					    module_generic_data_string ($pa_config, $part, $timestamp, $agent_name,"generic_data_string", $dbh);
-				    }
-				    elsif ($tipo_modulo eq 'generic_proc') {
-					    module_generic_proc ($pa_config, $part, $timestamp, $agent_name, "generic_proc", $dbh);
-				    }
+					# Single data
 				    else {
-					    logger($pa_config, "ERROR: Received data from an unknown module ($tipo_modulo)", 2);
-				    }
-                }            
+						process_module_data($pa_config, $timestamp, $agent_name, $tipo_modulo, $part, $dbh);
+					}
+                }
 			}
 		} else {
 			logger($pa_config, "ERROR: There is no agent defined with name $agent_name ($id_agente)", 2);
 		}
 	} else {
 		logger($pa_config, "ERROR: Received data from an unknown agent", 1);
+	}
+}
+
+##########################################################################
+## SUB process_module_data ()
+## ($pa_config, $timestamp, $agent_name, $tipo_modulo, $module, $dbh)
+## Process module data according to the module type.
+##########################################################################
+
+sub process_module_data {
+	my $pa_config = $_[0];
+	my $timestamp = $_[1];
+	my $agent_name = $_[2];
+	my $tipo_modulo = $_[3];
+	my $module = $_[4];
+	my $dbh = $_[5];
+
+	if ($tipo_modulo eq 'generic_data') {
+		module_generic_data ($pa_config, $module, $timestamp, $agent_name, "generic_data", $dbh);
+	}
+	elsif ($tipo_modulo eq 'generic_data_inc') {
+		module_generic_data_inc ($pa_config, $module, $timestamp, $agent_name,"generic_data_inc", $dbh);
+	}
+	elsif ($tipo_modulo eq 'generic_data_string') {
+		module_generic_data_string ($pa_config, $module, $timestamp, $agent_name,"generic_data_string", $dbh);
+	}
+	elsif ($tipo_modulo eq 'generic_proc') {
+		module_generic_proc ($pa_config, $module, $timestamp, $agent_name, "generic_proc", $dbh);
+	}
+	else {
+		logger($pa_config, "ERROR: Received data from an unknown module ($tipo_modulo)", 2);
 	}
 }

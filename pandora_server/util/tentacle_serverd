@@ -3,7 +3,7 @@
 # Tentacle server simple startup script (no pid file is written).
 # Ramon Novoa  <rnovoa@artica.es>
 # Linux Version (generic)
-# v0.1 Build 010407
+# v0.1 Build 210508
 
 # chkconfig: 2345 55 25
 # description: Tentacle server
@@ -50,8 +50,6 @@ case "$1" in
 		if [ ! -z "$TENTACLE_PID" ]; then
 			echo "Tentacle server is already running with PID $TENTACLE_PID."
 			exit 1
-		else
-			rm -f $TENTACLE_PID_FILE
 		fi
 	
 		sudo -u $TENTACLE_USER ${TENTACLE_PATH}$TENTACLE_DAEMON $TENTACLE_OPTS

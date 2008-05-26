@@ -1,3 +1,11 @@
+2008-05-25 Sancho Lerena <slerena@artica.es>
+
+	* linux/pandora_agent: New cron mode, new ftp mode that do not use
+	.netrc anymore, uses password embedded into .conf. Also a few fixes
+	and removed checksum mode (deprecated!).
+
+	* linux/pandora_agent.conf: Updated .conf
+
 2008-05-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* linux/pandora_agent_installer: Added plugin installation.

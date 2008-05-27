@@ -1,3 +1,7 @@
+2008-05-27  Ramon Novoa  <rnovoa@artica.es>
+
+	* linux/pandora_agent.conf: Added a plugin declaration example.
+
 2008-05-25 Sancho Lerena <slerena@artica.es>
 
 	* linux/pandora_agent: New cron mode, new ftp mode that do not use

@@ -51,13 +51,13 @@ else
 	ln -s /etc/init.d/pandora_recon /etc/rc2.d/S90pandora_recon
 	ln -s /etc/init.d/pandora_network /etc/rc2.d/S90pandora_network
 	ln -s /etc/init.d/pandora_snmpconsole /etc/rc2.d/S90pandora_snmpconsole
-	ln -s /usr/bin/pandora_server /usr/local/bin/pandora_server
-        ln -s /usr/bin/pandora_snmpconsole /usr/local/bin/pandora_snmpconsole
-        ln -s /usr/bin/pandora_recon /usr/local/bin/pandora_recon
-        ln -s /usr/bin/pandora_network /usr/local/bin/pandora_network
-	ln -s /usr/bin/pandora_prediction /usr/local/bin/pandora_prediction
-	ln -s /usr/bin/pandora_plugin /usr/local/bin/pandora_plugin
-	ln -s /usr/bin/pandora_export /usr/local/bin/pandora_export
+	ln -s /usr/local/bin/pandora_server /usr/bin/pandora_server
+        ln -s /usr/local/bin/pandora_snmpconsole /usr/bin/pandora_snmpconsole
+        ln -s /usr/local/bin/pandora_recon /usr/bin/pandora_recon
+        ln -s /usr/local/bin/pandora_network /usr/bin/pandora_network
+	ln -s /usr/local/bin/pandora_prediction /usr/bin/pandora_prediction
+	ln -s /usr/local/bin/pandora_plugin /usr/bin/pandora_plugin
+	ln -s /usr/local/bin/pandora_export /usr/bin/pandora_export
 	mkdir /usr/share/pandora
 	cp -R util /usr/share/pandora
 	echo "perl /usr/share/pandora/util/pandora_db /etc/pandora/pandora_server.conf" > /etc/cron.daily/pandora_purge_db	

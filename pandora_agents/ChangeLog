@@ -1,3 +1,19 @@
+2008-05-29  Sancho Lerena <slerena@gmail.com>
+
+	* openWRT/README.openwrt: Some additional information about wput command
+	replacing old SSH transfer method.
+	
+	* openWRT/pandora_agent: Updated to use ftp(wput) instead of buggy ssh.
+
+	* openWRT/pandora_agent.conf: Deleted ssh method and unused stuff for
+	this little agent.
+
+	* linux/plugins/grep_log: Updated plugin to use a module name for each
+	call, passed as 2th argument.
+
+	* linux/pandora_agent.conf: Deleted checksum reference and commented
+        plugin sample, and using the new syntax for plugin.
+
 2008-05-27  Ramon Novoa  <rnovoa@artica.es>
 
 	* linux/pandora_agent.conf: Added a plugin declaration example.

@@ -1,13 +1,14 @@
 #!/bin/sh
 # **********************************************************************
-# Pandora FMS Generic Host Agent
-# GNU/Linux version 
-# (c) 2003-2007 Sancho Lerena <slerena@gmail.com>
+# Pandora FMS Agent
+# OpenWRT version 
+# (c) 2003-2008 Sancho Lerena <slerena@gmail.com>
+# (c) 2007-2008 Jorge Loza <jorge@netberry.es>
 # with the help of many people. Please see http://pandora.sourceforge.net
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
-AGENT_VERSION=1.3-dev
-AGENT_BUILD=070421
+AGENT_VERSION=2.0
+AGENT_BUILD=080529
 
 if [ -z "$1" ]
 then
@@ -16,7 +17,7 @@ then
  	echo " "
  	echo " example: pandora_agent /etc/pandora  "
  	echo " "
- 	exit -1
+ 	exit 
 else
  	PANDORA_HOME=$1
 fi
@@ -26,7 +27,7 @@ then
 	echo " "
 	echo "FATAL ERROR: Cannot load $PANDORA_HOME/pandora_agent.conf"
 	echo " "
-	exit -1
+	exit 
 fi
 
 # Init internal variables
@@ -40,9 +41,10 @@ IFS="
 # Default values
 CHECKSUM_MODE=1
 DEBUG_MODE=0
-SERVER_PORT=22
+SERVER_PORT=21
 INTERVAL=300
-TRANSFER_MODE=ssh
+TRANSFER_MODE=ftp
+SERVER_PWD=pandora123
 if [ -z "`echo $LANG | grep '\.'`" ]
 then
 	ENCODING="iso-8859-1"
@@ -94,46 +96,32 @@ do
                DEBUG_MODE=`echo $a | awk '{ print $2 }' `
          	echo "$TIMESTAMP - [SETUP] - Debug mode is $DEBUG_MODE " >> $PANDORA_LOGFILE
         fi
- 	if [ ! -z "`echo $a | grep -e '^checksum'`" ]
-        then
-               CHECKSUM_MODE=`echo $a | awk '{ print $2 }' `
-         	echo "$TIMESTAMP - [SETUP] - Checksum is $CHECKSUM_MODE " >> $PANDORA_LOGFILE
-        fi
 	# Contribution of daggett
 	if [ ! -z "`echo $a | grep -e '^server_port'`" ]
         then
                 SERVER_PORT=`echo $a | awk '{ print $2 }' `
                 echo "$TIMESTAMP - [SETUP] - Server Port is $SERVER_PORT" >> $PANDORA_LOGFILE
         fi
+        
 	# Contribution of daggett
 	if [ ! -z "`echo $a | grep -e '^encoding'`" ]
         then
                 ENCODING=`echo $a | awk '{ print $2 }' `
                 echo "$TIMESTAMP - [SETUP] - Encoding is $ENCODING" >> $PANDORA_LOGFILE
         fi
-	if [ ! -z "`echo $a | grep -e '^transfer_mode'`" ]
-	then
-		TRANSFER_MODE=`echo $a | awk '{ print $2 }' `
-                echo "$TIMESTAMP - [SETUP] - Transfer Mode is $TRANSFER_MODE" >> $PANDORA_LOGFILE
-	fi
+        if [ ! -z "`echo $a | grep -e '^server_pwd'`" ]
+        then
+                SERVER_PWD=`echo $a | awk '{ print $2 }' `
+                echo "$TIMESTAMP - [SETUP] - Server password set (FTP)" >> $PANDORA_LOGFILE
+        fi
 done
 
 
 # Script banner at start
-echo "Pandora FMS Agent / Linksys $AGENT_VERSION (c) Sancho Lerena, Jorge Loza 2007"
+echo "Pandora FMS Agent / Linksys $AGENT_VERSION (c) Sancho Lerena, Jorge Loza 2008"
 echo "This program is licensed under GPL2 Terms. http://pandora.sf.net"
 echo "Running in $NOMBRE_HOST at $TIMESTAMP"
 echo " "
-
-# Make some checks
-if [ "$TRANSFER_MODE" = "ftp" ]
-then
-	if [ ! -f $HOME/.netrc ]
-	then
-		echo "(EE) Transfer mode is FTP but there is no usable .netrc file. Aborting."    
-		exit
-	fi
-fi
 
 if [ "$DEBUG_MODE" = "1" ]
 then
@@ -154,8 +142,6 @@ do
  	# File names
  	DATA=$TEMP/$NOMBRE_HOST.$SERIAL.data
  	DATA2=$TEMP/$NOMBRE_HOST.$SERIAL.data_temp
- 	CHECKSUM=$TEMP/$NOMBRE_HOST.$SERIAL.checksum
- 	PANDORA_FILES="$TEMP/$NOMBRE_HOST.$SERIAL.*"
  
  	# Makes data packet
 	echo "<?xml version=\"1.0\" encoding=\"$ENCODING\"?> " > $DATA
@@ -264,17 +250,6 @@ do
 		/bin/sh $PANDORA_HOME/pandora_user.conf >> $DATA
 	fi
 	
-	# Checking MD5
-	if [ "$CHECKSUM_MODE" = "1" ]
-	then
-		# Calculate Checksum and prepare MD5 file
-		CHECKSUM_DATA=`md5sum $DATA`
-		echo $CHECKSUM_DATA > $CHECKSUM 
-	else
-		CHECKSUM_DATA="No valid checksum"
-		echo $CHECKSUM_DATA > $CHECKSUM
-	fi
-
 	# Finish data packet
 	echo "</agent_data>" >> $DATA
 	echo "" >> $DATA
@@ -291,25 +266,11 @@ do
 		echo " "
 		exit 0
 	fi
-	
-	# Send packets to server and detele it
-	if [ "$TRANSFER_MODE" = "ssh" ]
-	 then
- 		scp -i /opt/pandora/ssh  $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH > /dev/null 2>  $PANDORA_LOGFILE.err
-	fi
 
-	if [ "$TRANSFER_MODE" = "ftp" ]
-        then
-                ftp SERVER_IP > /dev/null 2> $PANDORA_LOGFILE.err
-        fi
-
-	if [ "$TRANSFER_MODE" = "local" ]
-        then
-                cp $PANDORA_FILES $SERVER_PATH > /dev/null 2> $PANDORA_LOGFILE.err
-        fi
-
+        cd $TEMP
+       	wput -q $NOMBRE_HOST.$SERIAL.data ftp://pandora:$SERVER_PWD@$SERVER_IP:$SERVER_PORT
 	# Delete data
-	rm -f $PANDORA_FILES 2> $PANDORA_LOGFILE.err
+	rm -f $DATA 2> $PANDORA_LOGFILE.err
 	
 	# Go to bed :-)
 	sleep $INTERVAL

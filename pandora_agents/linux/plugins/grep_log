@@ -27,10 +27,13 @@ use File::Basename;
 my $Verbose = 0;
 
 # Index file storage directory, with a trailing '/'
-my $Idx_dir='/var/pandora/';
+my $Idx_dir='/tmp/';
 
 # Log file
 my $Log_file = '';
+
+# Module name
+my $Module_name = "default_log";
 
 # Index file
 my $Idx_file = '';
@@ -63,7 +66,7 @@ sub error_msg ($) {
 # Print a help message.
 ###############################################################################
 sub print_help () {
-	print "Usage: $0 <log_file> <pattern>\n";
+	print "Usage: $0 <log_file> <module_name> <pattern>\n";
 }
 
 ###############################################################################
@@ -169,7 +172,7 @@ sub parse_log () {
 	seek(LOGFILE, $Idx_pos, 0);
 
 	print (stdout "<module>\n");
-	print (stdout "<name><![CDATA[" . basename($0) . "]]></name>\n");
+	print (stdout "<name><![CDATA[" . $Module_name . "]]></name>\n");
 	print (stdout "<type><![CDATA[generic_data_string]]></type>\n");
 	print (stdout "<datalist>\n");
 
@@ -208,7 +211,8 @@ if ($#ARGV != 1) {
 }
 
 $Log_file = $ARGV[0];
-$Reg_exp = $ARGV[1];
+$Module_name = $ARGV[1];
+$Reg_exp = $ARGV[2];
 
 # Create index file storage directory
 if ( ! -d $Idx_dir) {

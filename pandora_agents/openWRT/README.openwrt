@@ -1,0 +1,3 @@
+wput replaces scp/ssh to copy using FTP. A future addition of tentacle is expected. You will need to install wput on your OpenWRT system and setup a FTP server in Pandora Server to work (dont forget to secure your ftp server!).
+
+

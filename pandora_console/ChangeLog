@@ -1,3 +1,13 @@
+2008-06-09  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb_data.sql: Added missing parenthesis.
+	* include/styles/pandora.css: Added style for the remote configuration
+	  editor.
+	* godmode/agentes/agent_disk_conf_editor.php: Added to repository.
+	  Remote configuration editor.
+	* godmode/agentes/agent_manager.php: Added support to edit remote
+	  agent configurations.
+
 2008-06-10  Sancho Lerena <slerena@artica.es>
 
     * pandoradb.sql: Updated tevent structure. Added criticity and 

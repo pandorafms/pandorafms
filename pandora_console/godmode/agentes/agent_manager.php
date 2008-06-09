@@ -40,6 +40,13 @@ if (isset($_GET["create_agent"])){
 echo "</h2>";
 echo "<div style='height: 5px'> </div>";
 
+// Agent remote configuration editor
+$agent_md5 = md5($nombre_agente, FALSE);
+if (isset($_GET["disk_conf"])){
+	require ("agent_disk_conf_editor.php");
+	exit;
+}
+
 echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&
 sec2=godmode/agentes/configurar_agente">';
 if ($create_agent == 1) {
@@ -60,6 +67,12 @@ if ((isset($id_agente)) && ($id_agente != "")){
 	sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'>
 	<img src='images/lupa.png' border='0' align='middle' alt=''></a>";
 } 
+// Remote configuration available
+if (file_exists($config["remote_config"] . "/" . $agent_md5 . ".md5")) {
+	echo "
+	<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=".$id_agente."&disk_conf=" . $agent_md5 . "'>
+	<img src='images/application_edit.png' border='0' align='middle' alt=''></a>";	
+}
 
 echo '<tr><td class="datos2">';
 echo '<b>'.$lang_label["ip_address"].'</b>';

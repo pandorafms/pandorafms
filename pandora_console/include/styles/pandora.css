@@ -45,6 +45,13 @@ textarea {
 	font-family: verdana, sans-serif;
 	font-size: 8pt;
 }
+textarea.conf_editor {
+	padding: 5px;
+	width: 650;
+	height: 350;
+	font-family: verdana, sans-serif;
+	font-size: 8pt;
+}
 input {
 	padding: 2px 3px 4px 3px;
 }

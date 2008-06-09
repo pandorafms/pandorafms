@@ -130,7 +130,7 @@ if (isset($_GET["id"])){
 		$filename = $row2["filename"];
 		$sql2 = "DELETE FROM tattachment WHERE id_attachment = ".$file_id;
 		$res2=mysql_query($sql2);
-		unlink ($attachment_store."attachment/pand".$file_id."_".$filename);
+		unlink ($config["attachment_store"]."attachment/pand".$file_id."_".$filename);
 	}
 
 	// Upload file
@@ -151,7 +151,7 @@ if (isset($_GET["id"])){
 			$id_attachment=mysql_insert_id();
 
 			// Copy file to directory and change name
-		$nombre_archivo = $attachment_store."attachment/pand".$id_attachment."_".$filename;
+		$nombre_archivo = $config["attachment_store"]."attachment/pand".$id_attachment."_".$filename;
 
 			if (!(copy($_FILES['userfile']['tmp_name'], $nombre_archivo ))){
 					echo "<h3 class=error>".$lang_label["attach_error"]."</h3>";

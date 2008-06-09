@@ -357,7 +357,7 @@ function graphic_combined_module (  $module_list, $weight_list, $periodo,       
 }
 
 function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $show_event,
-				 $width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure=0 ) {
+				 $width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure=0, $time_reference = "" ) {
 	
 	include ("../include/config.php");
 	require ("../include/languages/language_".$config['language'].".php");
@@ -365,8 +365,13 @@ function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $show_event,
 
 	$resolution = $config["graph_res"] * 50; // Number of "slices" we want in graph
 	
-	//$unix_timestamp = strtotime($mysql_timestamp) // Convert MYSQL format tio utime
-	$fechatope = time() - $periodo; // limit date
+    if ($time_reference != ""){
+	    $unix_timestamp = strtotime($time_reference);
+        $fechatope = $unix_timestamp - $periodo;
+    }
+    else
+	    $fechatope = time() - $periodo; // limit date
+
 	$horasint = $periodo / $resolution; // Each intervalo is $horasint seconds length
 	$nombre_agente = dame_nombre_agente_agentemodulo($id_agente_modulo);
 	$id_agente = dame_agente_id($nombre_agente);
@@ -2020,14 +2025,15 @@ else
 
 $value3 = get_parameter("value3",0);
 $stacked = get_parameter ("stacked", 0);
-	
+$time_reference = get_parameter ("time_reference", "");
+
 // Image handler
 // *****************
 
 
 if (isset($_GET["tipo"])){
 	if ($_GET["tipo"] == "sparse"){
-		grafico_modulo_sparse ($id, $period, $draw_events, $width, $height , $label, $unit_name, $draw_alerts, $avg_only, $pure);
+		grafico_modulo_sparse ($id, $period, $draw_events, $width, $height , $label, $unit_name, $draw_alerts, $avg_only, $pure, $time_reference);
 	}
 	elseif ($_GET["tipo"] =="boolean") 
 		grafico_modulo_boolean ($id, $period, $draw_events, $width, $height , $label, $unit_name, $draw_alerts, 1, $pure);
@@ -2059,6 +2065,7 @@ if (isset($_GET["tipo"])){
 		graphic_agentaccess($_GET["id"], $_GET["periodo"], $width, $height);
 	elseif ($_GET["tipo"] == "agentmodules")
 		graphic_agentmodules($_GET["id"], $width, $height);
+
 	//elseif ($_GET["tipo"] == "gdirect")
 //		graphic_test ($id, $period, $intervalo, $label, $width, $height);
 	elseif ( $_GET["tipo"] =="progress"){

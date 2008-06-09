@@ -23,7 +23,7 @@ require("include/config.php");
 function create_message($usuario_origen, $usuario_destino, $subject, $mensaje){
 	$ahora=date("Y/m/d H:i:s");
 	require ("include/config.php");
-	require ("include/languages/language_".$language_code.".php");
+	require ("include/languages/language_".$config["language"].".php");
 	$sql='
 	INSERT INTO tmensajes (id_usuario_origen, id_usuario_destino, subject, mensaje, timestamp)
 	VALUES ("'.$usuario_origen.'", "'.$usuario_destino.'", "'.$subject.'", "'.$mensaje.'","'.$ahora.'")';
@@ -38,7 +38,7 @@ function create_message($usuario_origen, $usuario_destino, $subject, $mensaje){
 function create_message_g($usuario_origen, $usuario_destino, $subject, $mensaje){
 	$ahora=date("Y/m/d H:i:s");
 	require ("include/config.php");
-	require ("include/languages/language_".$language_code.".php");
+	require ("include/languages/language_".$config["language"].".php");
 	$sql='INSERT INTO tmensajes (id_usuario_origen, id_usuario_destino, subject, mensaje, timestamp) VALUES ("'.$usuario_origen.'", "'.$usuario_destino.'", "'.$subject.'", "'.$mensaje.'","'.$ahora.'")';
 	$result=mysql_query($sql);
 	if ($result)  {

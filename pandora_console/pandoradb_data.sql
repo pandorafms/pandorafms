@@ -46,7 +46,7 @@ INSERT INTO `talerta` VALUES (10,'Synthetized Speech','flite -t _FIELD2_','Uses 
 /*!40000 ALTER TABLE `tconfig` DISABLE KEYS */;
 LOCK TABLES `tconfig` WRITE;
 INSERT INTO `tconfig` VALUES 
-(1,'language_code','en'),(3,'block_size','20'),(4,'days_purge','60'),(5,'days_compact','15'),(6,'graph_res','5'),(7,'step_compact','1'),(8,'db_scheme_version','2.0'),(9,'db_scheme_build','PD80401'),(13,'show_unknown','0'),(14,'show_lastalerts','1'),(15,'style','pandora');
+(1,'language_code','en'),(3,'block_size','20'),(4,'days_purge','60'),(5,'days_compact','15'),(6,'graph_res','5'),(7,'step_compact','1'),(8,'db_scheme_version','2.0'),(9,'db_scheme_build','PD80401'),(13,'show_unknown','0'),(14,'show_lastalerts','1'),(15,'style','pandora', 16, 'remote_config', '/var/spool/pandora/data_in');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `tconfig` ENABLE KEYS */;
 

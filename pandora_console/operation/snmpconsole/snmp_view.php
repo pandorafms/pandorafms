@@ -91,7 +91,7 @@ if (comprueba_login() == 0) {
 	if (isset($_POST["deletebt"])){
 		$count=0;
 		if (give_acl($id_usuario, 0, "IW") ==1){
-			while ($count <= $block_size){
+			while ($count <= $config["block_size"]){
 				if (isset($_POST["snmptrapid".$count])){
 					$trap_id = $_POST["snmptrapid".$count];
 					mysql_query("DELETE FROM ttrap WHERE id_trap =".$trap_id);
@@ -107,7 +107,7 @@ if (comprueba_login() == 0) {
 	if (isset($_POST["updatebt"])){
 		$count=0;
 		if (give_acl($id_usuario, 0, "IW") ==1){
-			while ($count <= $block_size){
+			while ($count <= $config["block_size"]){
 				if (isset($_POST["snmptrapid".$count])){
 					$id_trap = $_POST["snmptrapid".$count];
 					$sql2="UPDATE ttrap SET status=1, id_usuario = '".$id_usuario."' WHERE status = 0 and id_trap = ".$id_trap;
@@ -158,12 +158,12 @@ if (comprueba_login() == 0) {
 	$total_traps = count($trap_list);
 	pagination($total_traps, "index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view", $offset);
 	/*
-	if ($total_eventos > $block_size){ 
+	if ($total_eventos > $config["block_size"]){ 
 		// If existes more registers tha$row["id_usuario"]n i can put in a page, calculate index markers
-		$index_counter = ceil($total_eventos/$block_size);
+		$index_counter = ceil($total_eventos/$config["block_size"]);
 		for ($i = 1; $i <= $index_counter; $i++) {
-			$inicio_bloque = ($i * $block_size - $block_size);
-			$final_bloque = $i * $block_size;
+			$inicio_bloque = ($i * $config["block_size"] - $config["block_size"]);
+			$final_bloque = $i * $config["block_size"];
 			if ($total_eventos < $final_bloque)
 				$final_bloque = $total_eventos;
 			echo '<a href="index.php?sec=eventos&sec2=eventos/eventos&offset='.$inicio_bloque.'">';
@@ -175,7 +175,7 @@ if (comprueba_login() == 0) {
 			echo '</a> ';
 		}
 		echo "<br><br>";
-		// if exists more registers than i can put in a page (defined by $block_size config parameter)
+		// if exists more registers than i can put in a page (defined by $config["block_size"] config parameter)
 		// get offset for index calculation
 	}
 
@@ -209,7 +209,7 @@ if (comprueba_login() == 0) {
 	else
 		$offset_limit = $offset;
 	// Skip offset records
-	for ($a=$offset_limit;$a < ($block_size + $offset + 1);$a++){
+	for ($a=$offset_limit;$a < ($config["block_size"] + $offset + 1);$a++){
 		if (isset($trap_list[$a])){
 			$id_trap = $trap_list[$a];
 			$sql="SELECT * FROM ttrap WHERE id_trap = $id_trap";

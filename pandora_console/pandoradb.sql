@@ -289,6 +289,11 @@ CREATE TABLE `tevento` (
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `evento` varchar(255) NOT NULL default '',
   `utimestamp` bigint(20) unsigned NOT NULL default '0',
+  `event_type` ENUM('unknown', 'monitor_up', 'monitor_down', 'alert_fired', 'alert_recovered', 'alert_ceased', 'alert_manual_validation', 'recon_host_detected', 'system', 'error') default 'unknown',
+  `id_agentmodule` bigint(20) NOT NULL default '0',
+  `id_alert_am` bigint(20) NOT NULL default '0',  
+  `criticity` int(4) unsigned NOT NULL default 0,
+  
   PRIMARY KEY  (`id_evento`),
   KEY `indice_1` (`id_agente`,`id_evento`),
   KEY `indice_2` (`utimestamp`,`id_evento`)

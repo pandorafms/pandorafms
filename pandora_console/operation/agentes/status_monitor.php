@@ -110,6 +110,12 @@ $SQL = " FROM tagente, tagente_modulo WHERE tagente.id_agente = tagente_modulo.i
 // Agent group selector
 if ($ag_group > 1)
     $SQL .=" AND tagente.id_grupo = ".$ag_group;
+else {
+     // User has explicit permission on group 1 ?
+    $all_group = get_db_sql ("SELECT COUNT(id_grupo) FROM tusuario_perfil WHERE id_usuario='$id_user' AND id_grupo = 1");
+    if ($all_group == 0)
+        $SQL .=" AND tagente.id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='$id_user') ";
+}
 
 // Module name selector
 // This code thanks for an idea from Nikum, nikun_h@hotmail.com
@@ -120,7 +126,6 @@ if ($ag_modulename != "")
 if ($ag_freestring != "")
     $SQL .= " AND ( tagente_modulo.nombre LIKE '%".$ag_freestring."%' OR tagente_modulo.descripcion LIKE '%".$ag_freestring."%') ";
 $SQL .= " ORDER BY tagente.id_grupo, tagente.nombre";
-
 
 // Build final SQL sentences
 $SQL_FINAL = $SQL_pre . $SQL;

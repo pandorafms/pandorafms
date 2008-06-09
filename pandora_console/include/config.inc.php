@@ -9,9 +9,9 @@
 
 //Pandora Version
 if (!isset($build_version))
-	$build_version="PC080111";
+	$build_version="PC080429";
 if (!isset($pandora_version))
-	$pandora_version="v1.3.1-dev";
+	$pandora_version="v1.3.1";
 	
 // Database configuration (default ones)
 //$dbname="pandora";		// MySQL DataBase

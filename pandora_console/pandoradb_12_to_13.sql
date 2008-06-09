@@ -200,3 +200,5 @@ CREATE TABLE `tlayout_data` (
   `no_link_color` tinyint(1) UNSIGNED NOT NULL default 0,
   PRIMARY KEY(`id`)
 ) ENGINE = InnoDB;
+
+ALTER TABLE tagente_datos ADD INDEX `data_index1` (`id_agente_modulo`);

@@ -1,11 +1,17 @@
 <?php
-// Pandora FMS - the Free Monitoring System
+// Pandora FMS - the Free monitoring system
 // ========================================
-// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development, project architecture and management.
-// Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP code additions
-// Please see http://pandora.sourceforge.net for full contribution list
+// Copyright (c) 2004-2008 Sancho Lerena, <slerena@gmail.com>
+// Copyright (c) 2005-2008 Artica Soluciones Tecnologicas
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation version 2
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
 
 // Load global vars
 require("include/config.php");
@@ -88,16 +94,32 @@ if (comprueba_login() == 0) {
 		AND disabled = 0 $search_sql ORDER BY nombre LIMIT $offset, $block_size ";
 		$sql2="SELECT COUNT(id_agente) FROM tagente WHERE id_grupo=$ag_group 
 		AND disabled = 0 $search_sql ORDER BY nombre";
+		
+	// Not selected any specific group
 	} else {
-                // Is admin user ??
-                if (get_db_sql ("SELECT * FROM tusuario WHERE id_usuario ='$id_user'", "nivel") == 1){
-                        $sql="SELECT * FROM tagente WHERE disabled = 0 $search_sql ORDER BY nombre, id_grupo LIMIT $offset, $block_size";
-                        $sql2="SELECT COUNT(id_agente) FROM tagente WHERE disabled = 0 $search_sql ORDER BY nombre, id_grupo";
-                } else {
-		        $sql="SELECT * FROM tagente WHERE disabled = 0 $search_sql AND id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='$id_user')
-		        ORDER BY nombre, id_grupo LIMIT $offset, $block_size";
-		        $sql2="SELECT COUNT(id_agente) FROM tagente WHERE disabled = 0 $search_sql AND id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='$id_user') ORDER BY nombre, id_grupo";
-                }
+        // Is admin user ??
+        if (get_db_sql ("SELECT * FROM tusuario WHERE id_usuario ='$id_user'", "nivel") == 1){
+                $sql="SELECT * FROM tagente WHERE disabled = 0 $search_sql ORDER BY nombre, id_grupo LIMIT $offset, $block_size";
+                $sql2="SELECT COUNT(id_agente) FROM tagente WHERE disabled = 0 $search_sql ORDER BY nombre, id_grupo";
+
+        // standard user
+        } else {
+            
+            // User has explicit permission on group 1 ?
+            $all_group = get_db_sql ("SELECT COUNT(id_grupo) FROM tusuario_perfil WHERE id_usuario='$id_user' AND id_grupo = 1");
+
+            if ($all_group > 0){
+                $sql="SELECT * FROM tagente WHERE disabled = 0 $search_sql 
+                ORDER BY nombre, id_grupo LIMIT $offset, $block_size";
+                $sql2="SELECT COUNT(id_agente) FROM tagente WHERE disabled = 0 $search_sql  
+                ORDER BY nombre, id_grupo";
+            } else {
+		        $sql="SELECT * FROM tagente WHERE disabled = 0 $search_sql AND id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='$id_user') 
+		        ORDER BY nombre, id_grupo LIMIT $offset,$block_size";
+		        $sql2="SELECT COUNT(id_agente) FROM tagente WHERE disabled = 0 $search_sql AND id_grupo IN (SELECT id_grupo  FROM tusuario_perfil WHERE id_usuario='$id_user') ORDER BY nombre, id_grupo";
+            }
+            
+        }
 	}
 
 	$result2=mysql_query($sql2);
@@ -329,7 +351,7 @@ if (comprueba_login() == 0) {
 	      echo "&nbsp;<form method='post' action='index.php?sec=gagente&
 	sec2=godmode/agentes/configurar_agente&create_agent=1'><input type='submit' class='sub next' name='crt'
 	value='".$lang_label["create_agent"]."'></form>";
-	}
+		}
 	}
 
 } else {
@@ -338,3 +360,4 @@ if (comprueba_login() == 0) {
 }
 
 ?>
+

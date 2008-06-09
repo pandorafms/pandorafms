@@ -2,8 +2,8 @@
 
 // Pandora FMS - the Free monitoring system
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@openideas.info
+// Copyright (c) 2005-2008 Artica Soluciones Tecnologicas
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -25,7 +25,7 @@
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
-<meta name="author" content="Sancho Lerena, Raul Mateos">
+<meta name="author" content="Sancho Lerena, ArticaST">
 <meta name="copyright" content="This is GPL software. Created by Sancho Lerena and others">
 <meta name="keywords" content="pandora, fms, monitoring, network, system, GPL, software">
 <meta name="robots" content="index, follow">
@@ -164,8 +164,10 @@ function parse_mysql_dump($url){
 			if(trim($sql_line) != "" && strpos($sql_line, "--") === false){
 				$query .= $sql_line;
 				if(preg_match("/;[\040]*\$/", $sql_line)){
-					if (!$result = mysql_query($query))
+					if (!$result = mysql_query($query)){
+                        echo "SQL Error: $query<br>";
 						return 0;
+                    }
 					$query = "";
 				}
 			}
@@ -200,7 +202,7 @@ upgrade Pandora FMS 1.2 to Pandora FMS 1.3</p>
 			echo "<div class='warn'><b>Warning:</b> You already have a config.php file in this directory, please backup and move it before continue.</div>";
 		}
 		echo "<div class='warn'><b>Warning:</b> This upgrade tool will <b>overwrite and change</b> your existing Pandora FMS
-<b>Database</b> and only could be used to upgrade fron Pandora FMS 1.2 to Pandora FMS 1.3. Before continue, please <b>be sure that you 
+<b>Database</b> and only could be used to upgrade fron Pandora FMS 1.2 to Pandora FMS 1.3.1 Before continue, please <b>be sure that you 
 have made a SQL backup using mysqldump system tool as described in documentation.</b><br></div>";
 		echo "
 		</div>

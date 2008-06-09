@@ -2,12 +2,9 @@
 
 // Pandora FMS - the Free monitoring system
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2004-2008 Sancho Lerena <slerena@gmail.com>
 // Main PHP/SQL code development, project architecture and management.
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP code additions
-// Copyright (c) 2006 Jose Navarro <jnavarro@jnavarro.net>
-// Additions to code for Pandora FMS 1.2 graph code
+// Copyright (c) 2006-2008 Artica ST <info@artica.es>
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -348,7 +345,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 }
 
 function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $show_event,
-				 $width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure=0 ) {
+				 $width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure=0, $time_reference = "") {
 	
 	include ("../include/config.php");
 	require ("../include/languages/language_".$language_code.".php");
@@ -356,8 +353,13 @@ function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $show_event,
 
 	$resolution = $config_graph_res * 50; // Number of "slices" we want in graph
 	
-	//$unix_timestamp = strtotime($mysql_timestamp) // Convert MYSQL format tio utime
-	$fechatope = time() - $periodo; // limit date
+	if ($time_reference != ""){
+        $unix_timestamp = strtotime($time_reference);
+        $fechatope = $unix_timestamp - $periodo;
+    }
+    else
+        $fechatope = time() - $periodo; // limit date
+
 	$horasint = $periodo / $resolution; // Each intervalo is $horasint seconds length
 	$nombre_agente = dame_nombre_agente_agentemodulo($id_agente_modulo);
 	$id_agente = dame_agente_id($nombre_agente);
@@ -2011,6 +2013,7 @@ if ( isset($_GET["value3"]))
 else
 	$value3 = 0;
 
+$time_reference = get_parameter ("time_reference", "");
 	
 // Image handler
 // *****************
@@ -2018,7 +2021,7 @@ else
 
 if (isset($_GET["tipo"])){
 	if ($_GET["tipo"] == "sparse"){
-		grafico_modulo_sparse ($id, $period, $draw_events, $width, $height , $label, $unit_name, $draw_alerts, $avg_only, $pure);
+		grafico_modulo_sparse ($id, $period, $draw_events, $width, $height , $label, $unit_name, $draw_alerts, $avg_only, $pure, $time_reference);
 	}
 	elseif ($_GET["tipo"] =="boolean") 
 		grafico_modulo_boolean ($id, $period, $draw_events, $width, $height , $label, $unit_name, $draw_alerts, 1, $pure);

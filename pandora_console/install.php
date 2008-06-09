@@ -2,11 +2,8 @@
 
 // Pandora FMS - the Free monitoring system
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
-// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
+// Copyright (c) 2004-2008 Sancho Lerena, <slerena@gmail.com>
+// Copyright (c) 2005-2008 Artica Soluciones Tecnologicas
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -15,9 +12,7 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -28,7 +23,7 @@
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
-<meta name="author" content="Sancho Lerena, Raul Mateos">
+<meta name="author" content="Sancho Lerena, ArticaST">
 <meta name="copyright" content="This is GPL software. Created by Sancho Lerena and others">
 <meta name="keywords" content="pandora, fms, monitoring, network, system, GPL, software">
 <meta name="robots" content="index, follow">
@@ -128,8 +123,10 @@ function parse_mysql_dump($url){
 			if(trim($sql_line) != "" && strpos($sql_line, "--") === false){
 				$query .= $sql_line;
 				if(preg_match("/;[\040]*\$/", $sql_line)){
-					if (!$result = mysql_query($query))
+					if (!$result = mysql_query($query)){
+                        echo "SQL Error: $query<br>";
 						return 0;
+                    }
 					$query = "";
 				}
 			}
@@ -151,7 +148,7 @@ function install_step1() {
 	echo "
 	<div id='install_container'>
 	<h1>Pandora FMS installation wizard. Step #1 of 4</h1>
-	<div id='wizard' style='height: 380px;'>
+	<div id='wizard' style='height: 405px;'>
 		<div id='install_box'>
 			<h1>Welcome to Pandora FMS 1.3 installation Wizard</h1>
 			<p>This wizard helps you to quick install Pandora FMS console in your system.</p>
@@ -163,8 +160,10 @@ function install_step1() {
 			echo "<div class='warn'><b>Warning:</b> You already have a config.php file. Configuration and database would be overwritten if you continued.</div>";
 		}
 		echo "<div class='warn'><b>Warning:</b> This installer will <b>overwrite and destroy</b> your existing Pandora FMS configuration and <b>Database</b>. Before continue, please <b>be sure that you have no valuable Pandora FMS data in your Database.</b><br></div>";
-		echo "<div class='info'>If you want to <b>upgrade</b> from Pandora FMS 1.2 to 1.3 version, 
-		use the <a href='upgrade.php'>automated update wizard</a></div>";
+		echo "<div class='info'>If you want to <b>upgrade</b> from Pandora FMS 1.3 to 1.3.1 version, 
+		use the <a href='upgrade_from_1.3.php'>automated update wizard</a></div>";
+        echo "<div class='info'>If you want to <b>upgrade</b> from Pandora FMS 1.2 to 1.3.1 version, 
+        use the <a href='upgrade.php'>automated update wizard</a></div>";
 		echo "
 		</div>
 		<div id='logo_img'>

@@ -1,11 +1,9 @@
 <?php
 // Pandora FMS - the Free monitoring system
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@openideas.info
+// Copyright (c) 2005-2008 Artica Soluciones Tecnologicas
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
-// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License

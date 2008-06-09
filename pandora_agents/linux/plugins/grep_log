@@ -205,7 +205,7 @@ sub parse_log () {
 ###############################################################################
 
 # Check command line parameters
-if ($#ARGV != 1) {
+if ($#ARGV != 2) {
 	print_help();
 	exit 1;
 }

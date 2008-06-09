@@ -1,10 +1,21 @@
+2008-06-09  Sancho Lerena <slerena@gmail.com>
+
+        * operation/agentes/status_monitor.php, 
+        operation/agentes/estado_agente.php: Data was presented for users with
+        access to specific groups (fixed also in 1.3.1 branch).
+
+        * godmode/users/configure_user.php: Better management of password.  
+
 2008-06-09  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb_data.sql: Added missing parenthesis.
+
 	* include/styles/pandora.css: Added style for the remote configuration
 	  editor.
+
 	* godmode/agentes/agent_disk_conf_editor.php: Added to repository.
 	  Remote configuration editor.
+
 	* godmode/agentes/agent_manager.php: Added support to edit remote
 	  agent configurations.
 

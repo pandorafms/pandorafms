@@ -2,7 +2,7 @@
 // Pandora - the Free monitoring system
 // ====================================
 // Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnol�gicas S.L, info@artica.es
+// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
 // Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -26,6 +26,7 @@ if (comprueba_login() == 0)
 	$direccion = "";
 	$telefono = "";
 	$password = "";
+    $password2 = "";
 	$id_usuario_mio = "";
 	$nombre_real = "";
 	$nivel = 0;
@@ -53,7 +54,8 @@ if (comprueba_login() == 0)
 			exit;
 			}
 		else
-		$password=$rowdup["password"];
+		$password="";
+        $password2="";
 		$comentarios=$rowdup["comentarios"];
 		$direccion=$rowdup["direccion"];
 		$telefono=$rowdup["telefono"]; 
@@ -80,7 +82,7 @@ if (comprueba_login() == 0)
 			$telefono = entrada_limpia($_POST["telefono"]);
 			$comentarios = entrada_limpia($_POST["comentarios"]);
 			
-			if (dame_password($nombre_viejo)!=$password){
+            if ($password != ""){
 				$password=md5($password);
 				$sql = "UPDATE tusuario SET nombre_real ='".$nombre_real."', id_usuario ='".$nombre."', password = '".$password."', telefono ='".$telefono."', direccion ='".$direccion." ', nivel = '".$nivel."', comentarios = '".$comentarios."' WHERE id_usuario = '".$nombre_viejo."'";
 			}
@@ -103,7 +105,8 @@ if (comprueba_login() == 0)
 			$id_usuario_mio = $nombre;
 			$resq1=mysql_query($query1);
 			$rowdup=mysql_fetch_array($resq1);
-			$password=$rowdup["password"];
+			$password="";
+            $password2= "";
 			$comentarios=$rowdup["comentarios"];
 			$direccion=$rowdup["direccion"];
 			$telefono=$rowdup["telefono"]; 
@@ -144,6 +147,8 @@ if (comprueba_login() == 0)
 			}
 		$id_usuario_mio = $nombre;
 		$modo ="edicion";
+        $password = "";
+        $password2 = "";
 	}
 		echo "<h2>".$lang_label["user_management"]." &gt; ";
 		if (isset($_GET["alta"])){
@@ -169,11 +174,18 @@ if (comprueba_login() == 0)
 	<td class="datos"><input type="text" name="nombre" value="<?php echo $id_usuario_mio ?>"></td>
 	<tr><td class="datos2"><?php echo $lang_label["real_name"] ?>
 	<td class="datos2"><input type="text" name="nombre_real" value="<?php echo $nombre_real ?>"></td>
-	<tr><td class="datos"><?php echo $lang_label["password"] ?>
-	<td class="datos"><input type="password" name="pass1" value="<?php echo $password ?>"></td>
-	<tr><td class="datos2"><?php echo $lang_label["password"] ?> - <?php echo $lang_label["confirmation"] ?></td>
-	<td class="datos2"><input type="password" name="pass2" value="<?php echo $password ?>"></td>
-	<tr><td class="datos">E-Mail</td>
+
+<?PHP
+    echo '<tr><td class="datos">';
+    echo lang_string ("password");
+    echo '<td class="datos">';
+    echo '<input type="password" name="pass1" value="'.$password.'"></td>';
+    echo '<tr><td class="datos2">';
+    echo lang_string ("password"). " ". lang_string ("confirmation").'</td>';
+	echo '<td class="datos">';
+    echo '<input type="password" name="pass2" value="'.$password2.'"></td>';
+	echo '<tr><td class="datos">E-Mail</td>';
+?>
 	<td class="datos"><input type="text" name="direccion" size="40" value="<?php echo $direccion ?>"></td>
 	<tr><td class="datos2"><?php echo $lang_label["telefono"] ?></td>
 	<td class="datos2"><input type="text" name="telefono" value="<?php echo $telefono ?>"></td>

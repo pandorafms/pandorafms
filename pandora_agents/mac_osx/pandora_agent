@@ -1,14 +1,15 @@
 #!/bin/bash 
 # **********************************************************************
 # Pandora FMS Generic Host Agent
-# GNU/Linux version 1.3
-# (c) 2003-2007 Sancho Lerena <slerena@gmail.com>
+# macOS version 1.3.1
+# (c) 2003-2008 Sancho Lerena <slerena@gmail.com>
+# (c) 2007-2008 Evi Vanoost <vanooste@rcbi.rochester.edu> 
 # with the help of many people. Please see http://pandora.sourceforge.net
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-AGENT_VERSION=1.3
-AGENT_BUILD=070725
+AGENT_VERSION=1.3.1
+AGENT_BUILD=080111
 
 if [ -z "$1" ]
 then
@@ -130,15 +131,50 @@ do
                 PANDORA_NICE=`echo $a | awk '{ print $2 }' `
                 echo "$TIMESTAMP - [SETUP] - PandoraFMS Nice is $PANDORA_NICE" >> $PANDORA_LOGFILE
 	fi
+	# Tentacle options
+	if [ ! -z "`echo $a | grep -e '^server_pwd'`" ]
+	then
+		SERVER_PWD=`echo $a | awk '{ print $2 }' `
+		if [ ! -z "$SERVER_PWD" ]
+		then
+			TENTACLE_OPTS="-x $SERVER_PWD $TENTACLE_OPTS"
+			echo "$TIMESTAMP - [SETUP] - Tentacle server password set" >> $PANDORA_LOGFILE
+		fi
+	fi
+	if [ ! -z "`echo $a | grep -e '^server_ssl'`" ]
+	then
+		SERVER_SSL=`echo $a | awk '{ print $2 }' `
+		if [ "$SERVER_SSL" == "yes" ]
+		then
+			TENTACLE_OPTS="-c $TENTACLE_OPTS"
+			echo "$TIMESTAMP - [SETUP] - OpenSSL enabled for Tentacle" >> $PANDORA_LOGFILE
+		fi
+	fi
+	if [ ! -z "`echo $a | grep -e '^server_opts'`" ]
+	then
+		SERVER_OPTS=`echo $a | awk -F'"' '{ print $2 }' `
+		if [ ! -z "$SERVER_OPTS" ]
+		then
+			TENTACLE_OPTS="$SERVER_OPTS $TENTACLE_OPTS"
+			echo "$TIMESTAMP - [SETUP] - Extra options for the Tentacle client $SERVER_OPTS" >> $PANDORA_LOGFILE
+		fi
+	fi
 done
 
 
-# Get kernel name (Darwin) and version (9.0.0) = Leopard
-OS_VERSION=`uname -r`
-LINUX_DISTRO=`uname -s`
+# Get Distro type and version
+if [ $OS_NAME = "Darwin" ]
+then
+	LINUX_DISTRO="Mac OS X"
+	OS_VERSION=`sw_vers | awk 'NR==2 {print $2}'`
+else
+	LINUX_DISTRO=$OS_NAME
+	OS_VERSION=`uname -r`
+fi
+
 
 # Script banner at start
-echo "Pandora FMS Agent $AGENT_VERSION (c) Sancho Lerena 2007"
+echo "Pandora FMS Agent $AGENT_VERSION (c) Sancho Lerena 2004-2008"
 echo "This program is licensed under GPL2 Terms. http://pandora.sf.net"
 echo "Running in $NOMBRE_HOST at $TIMESTAMP"
 echo " "
@@ -168,10 +204,12 @@ then
 fi
 
 # Renice me
-renice $PANDORA_NICE $$
+if [ "$PANDORA_NICE" != "0" ]
+then
+	renice $PANDORA_NICE $$ 2> /dev/null > /dev/null
+fi
 
 # MAIN Program loop begin
-
 while [ "1" == "1" ]
 do
 	# Deleted debug / error info on each run to avoid giant logs
@@ -323,6 +361,11 @@ do
 	fi
 	
 	# Send packets to server and delete it
+	if [ "$TRANSFER_MODE" == "tentacle" ]
+	then
+ 		eval tentacle_client -v -a $SERVER_IP -p $SERVER_PORT $TENTACLE_OPTS $PANDORA_FILES > /dev/null 2>  $PANDORA_LOGFILE.err
+	fi
+
 	if [ "$TRANSFER_MODE" == "ssh" ]
 	then
  		scp -P $SERVER_PORT $PANDORA_FILES pandora@$SERVER_IP:$SERVER_PATH > /dev/null 2>  $PANDORA_LOGFILE.err

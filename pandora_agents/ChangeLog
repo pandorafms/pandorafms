@@ -1,3 +1,9 @@
+2008-06-09  Ramon Novoa  <rnovoa@artica.es>
+
+	* linux/plugins/grep_log: Fixed command line parameter check.
+	* linux/pandora_agent: Added support for remote configuration.
+	* linux/pandora_agent.conf: Added remote_config option.
+
 2008-05-29  Sancho Lerena <slerena@gmail.com>
 
 	* openWRT/README.openwrt: Some additional information about wput command

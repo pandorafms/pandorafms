@@ -31,7 +31,9 @@ if (comprueba_login() == 0)
 		$config["show_unknown"]=$_POST["show_unknown"];
 		$config["show_lastalerts"]=$_POST["show_lastalerts"];
 		$config["style"] = $_POST["style"];
+        $config["remote_config"] = $_POST["remote_config"];
 		
+        $result2=mysql_query("UPDATE tconfig SET VALUE='".$config["remote_config"]."' WHERE TOKEN='remote_config'");
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config["block_size"]."' WHERE TOKEN='block_size'");
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config["language"]."' WHERE TOKEN='language_code'");
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config["days_purge"]."' WHERE TOKEN='days_purge'");
@@ -52,7 +54,6 @@ if (comprueba_login() == 0)
 	$sql="SELECT * FROM tlanguage";
 	$result=mysql_query($sql);
 
-	// This combo is dedicated to Raul... beautiful interface for dirty minds :-D
 	$result2=mysql_query("SELECT * FROM tlanguage WHERE id_language = '".$config["language"]."'");
 	if ($row2=mysql_fetch_array($result2)){
 		echo '<option value="'.$row2["id_language"].'">'.$row2["name"]."</option>";
@@ -61,9 +62,9 @@ if (comprueba_login() == 0)
 		echo "<option value=".$row["id_language"].">".$row["name"]."</option>";
 	}
 	echo '</select></td></tr>';
-			
-	echo '<tr><td class="datos2">'.$lang_label["block_size"];
-	echo '<td class="datos2"><input type="text" name="block_size" size=5 value="'.$config["block_size"].'"></td></tr>';
+
+    echo '<tr><td class="datos2">'.lang_string ("Remote config directory");
+    echo '<td class="datos2"><input type="text" name="remote_config" size=30 value="'.$config["remote_config"].'"></td></tr>';
 	
 	echo '<tr><td class="datos">'.$lang_label["days_compact"];
 	echo '<td class="datos"><input type="text" name="days_compact" size=5 value="'.$config["days_compact"].'"></td></tr>';
@@ -115,6 +116,11 @@ if (comprueba_login() == 0)
         	$a++;
         }
         echo '</select>';
+
+
+    echo '<tr><td class="datos">'.$lang_label["block_size"];
+    echo '<td class="datos"><input type="text" name="block_size" size=5 value="'.$config["block_size"].'"></td></tr>';
+
 	echo "</table>";
 	echo "<table width=500>";
 	echo "<tr><td align='right'>";

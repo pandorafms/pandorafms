@@ -4,8 +4,8 @@ $config["dbname"]="pandora";			// MySQL DataBase name
 $config["dbuser"]="pandora";			// DB User
 $config["dbpass"]="swfvnldt";	// DB Password
 $config["dbhost"]="localhost";			// DB Host
-$config["homedir"]="/var/www/pandora/";		// Config homedir
-$config["homeurl"]="http://localhost/pandora";			// Base URL
+$config["homedir"]="/var/www/pandora_console/";		// Config homedir
+$config["homeurl"]="http://localhost/pandora_console";			// Base URL
 // End of automatic config file
 ?><?php
 // Pandora FMS - the Free Monitoring System
@@ -40,7 +40,7 @@ $config["homeurl"]="http://localhost/pandora";			// Base URL
 //error_reporting(0); // Need to use active console at this moment
 
 // Display ALL errors
-error_reporting(E_ERROR);
+error_reporting(E_ALL);
 
 // This is directory where placed "/attachment" directory, to upload files stores. 
 // This MUST be writtable by http server user, and should be in pandora root. 

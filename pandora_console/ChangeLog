@@ -1,3 +1,22 @@
+2008-06-10  Sancho Lerena <slerena@artica.es>
+
+    * pandoradb.sql: Updated tevent structure. Added criticity and 
+    other important and new fields.
+
+    * pandoradb_data.sql: Added "remote_config" token for setup.
+
+    * setup.php: Added support for token remote_config.
+
+    * config_process.php: Added support for token remote_config.
+
+    * incident_detail.php: Solved small problems in attachment.
+
+    * snmp_view.php: Solved small problems in pagination.
+
+    * fgraph.php: Added support to generate graphs on any interval 
+    in time, not only "last XX". Need to implement user interface
+    controls to work with it.
+
 2008-04-24  Sancho Lerena <slerena@artica.es>
 
     * operation/reporting/reporting_viewer.php,

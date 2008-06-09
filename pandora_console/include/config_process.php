@@ -18,7 +18,7 @@
 
 //Pandora Version
 if (!isset($build_version))
-    $build_version="PC080227";
+    $build_version="PC080610";
 if (!isset($pandora_version))
     $pandora_version="v2.0-dev";
 
@@ -65,6 +65,8 @@ if($result2=mysql_query("SELECT * FROM tconfig")){
         case "show_unknown": $config["show_unknown"] = $row2["value"];
                             break;
         case "show_lastalerts": $config["show_lastalerts"] = $row2["value"];
+                            break;
+        case "remote_config": $config["remote_config"] = $row2["value"];
                             break;
         }
     }

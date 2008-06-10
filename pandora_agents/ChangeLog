@@ -1,5 +1,9 @@
 2008-06-10  Ramon Novoa  <rnovoa@artica.es>
 
+	* win32/pandora.cc: Updated version information.
+
+2008-06-10  Ramon Novoa  <rnovoa@artica.es>
+
 	* win32/PandoraAgent.dev: Updated.
 	* win32/misc/md5.c, win32/misc/md5.h: Added to repository.
 	  Implementation of MD5 (RFC 1321).

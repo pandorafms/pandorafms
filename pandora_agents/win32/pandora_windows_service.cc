@@ -31,6 +31,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
+#include <direct.h>
 
 using namespace std;
 using namespace Pandora;
@@ -183,7 +184,6 @@ Pandora_Windows_Service::copyTentacleDataFile (string host,
 {
 	int     rc;
 	string  var, filepath;
-	string  pubkey_file, privkey_file;
 	string	tentacle_cmd;
 
 	var = conf->getValue ("temporal");
@@ -375,6 +375,232 @@ Pandora_Windows_Service::copyDataFile (string filename)
 }
 
 void
+Pandora_Windows_Service::recvTentacleDataFile (string host,
+					  string filename)
+{
+	int     rc;
+	string  var;
+	string	tentacle_cmd;
+
+	/* Change directory to "temporal" */
+	var = conf->getValue ("temporal");
+	if (_chdir(var.c_str()) != 0) {
+		pandoraDebug ("Error changing directory to %s", var.c_str());
+		throw Pandora_Exception ();
+	}
+
+	/* Build the command to launch the Tentacle client */
+	tentacle_cmd = "tentacle_client.exe -g -a " + host;
+    
+	var = conf->getValue ("server_port");
+	if (var != "") {
+		tentacle_cmd += " -p " + var;
+	}
+
+	var = conf->getValue ("server_ssl");	
+	if (var == "1") {
+		tentacle_cmd += " -c";
+	}
+
+	var = conf->getValue ("server_pwd");
+	if (var != "") {
+		tentacle_cmd += " -x " + var;
+	}
+
+	var = conf->getValue ("server_opts");
+	if (var != "") {
+		tentacle_cmd += " " + var;
+	}
+
+	tentacle_cmd += " " +  filename;
+
+	/* Copy the file */
+	pandoraDebug ("Requesting file %s from server %s",
+	               filename.c_str (), host.c_str ());
+	pandoraDebug ("Command %s", tentacle_cmd.c_str());
+	
+	rc = system (tentacle_cmd.c_str());
+	switch (rc) {
+
+		/* system() error */
+		case -1:
+			pandoraLog ("Unable to receive file %s", filename.c_str ());
+			throw Pandora_Exception ();
+
+		/* tentacle_client.exe returned OK */
+		case 0:
+			break;
+
+		/* tentacle_client.exe error */
+		default:
+			pandoraLog ("Tentacle client was unable to receive file %s",
+			             filename.c_str ());
+			throw Pandora_Exception ();
+	}
+
+	return;
+}
+
+void
+Pandora_Windows_Service::recvDataFile (string filename) {
+	string mode, host, remote_path;
+	
+	mode = conf->getValue ("transfer_mode");
+	host = conf->getValue ("server_ip");
+	remote_path = conf->getValue ("server_path");
+	if (remote_path[remote_path.length () - 1] != '/') {
+		remote_path += "/";
+	}
+        
+	try {
+		if (mode == "tentacle") {
+			recvTentacleDataFile (host, filename);
+		} else {
+			pandoraLog ("Transfer mode %s does not support file retrieval.");
+			throw Pandora_Exception ();
+		}
+	}
+	catch (Pandora_Exception e) {
+		throw e;
+	}
+}
+
+void
+Pandora_Windows_Service::checkConfig () {
+	int i, conf_size;
+	char *conf_str = NULL, *remote_conf_str = NULL, *remote_conf_md5 = NULL;
+    char agent_md5[33], conf_md5[33], flag;
+	string conf_file, conf_tmp_file, md5_tmp_file, temp_dir, tmp;
+
+	tmp = conf->getValue ("remote_config");
+	if (tmp != "1") {
+        pandoraDebug ("Pandora_Windows_Service::checkConfig: Remote configuration disabled");
+		return;
+	}
+
+	/* Get temporal directory */
+	temp_dir = conf->getValue ("temporal");
+	if (temp_dir[temp_dir.length () - 1] != '\\') {
+		temp_dir += "\\";
+	}
+
+	/* Get base install directory */
+	conf_file = Pandora::getPandoraInstallDir ();
+    conf_file += "pandora_agent.conf";
+    
+	/* Get agent name */
+	tmp = conf->getValue ("agent_name");
+	if (tmp == "") {
+		tmp = Pandora_Windows_Info::getSystemName ();
+	}
+	
+	Pandora_File::md5 (tmp.c_str(), tmp.size(), agent_md5);
+
+    /* Calculate md5 hashes */
+	try {
+		conf_size = Pandora_File::readBinFile (conf_file, &conf_str);
+		Pandora_File::md5 (conf_str, conf_size, conf_md5);
+	} catch (...) {
+        pandoraDebug ("Pandora_Windows_Service::checkConfig: Error calculating configuration md5");
+        if (conf_str != NULL) {
+                delete[] conf_str;
+        }
+		return;
+	}
+
+	/* Compose file names from the agent name hash */
+    conf_tmp_file = agent_md5;
+    conf_tmp_file += ".conf";
+    md5_tmp_file = agent_md5;
+    md5_tmp_file += ".md5";
+
+	/* Get md5 file from server */
+	try {
+		recvDataFile (md5_tmp_file);
+	} catch (...) {
+		/* Not found, upload the configuration */
+		try {
+			tmp = temp_dir;
+			tmp += conf_tmp_file;
+			Pandora_File::writeBinFile (tmp, conf_str, conf_size);
+			copyDataFile (conf_tmp_file);
+			Pandora_File::removeFile (tmp);
+			
+			tmp = temp_dir;
+			tmp += md5_tmp_file;
+			Pandora_File::writeBinFile (tmp, conf_md5, 32);
+			copyDataFile (md5_tmp_file);
+			Pandora_File::removeFile (tmp);
+		} catch (...) {
+			pandoraDebug ("Pandora_Windows_Service::checkConfig: Error uploading configuration to server");
+		}
+		
+		delete[] conf_str;
+		return;
+	}
+	
+	delete[] conf_str;
+	conf_str = NULL;
+	
+	/* Read remote configuration file md5 */
+	try {
+		tmp = temp_dir;
+		tmp += md5_tmp_file;
+		if (Pandora_File::readBinFile (tmp, &remote_conf_md5) < 32) {
+			pandoraDebug ("Pandora_Windows_Service::checkConfig: Invalid remote md5", tmp.c_str());
+    	    if (remote_conf_md5 != NULL) {
+                delete[] remote_conf_md5;
+        	}		
+			return;		   	
+        }
+		Pandora_File::removeFile (tmp);
+	} catch (...) {
+        pandoraDebug ("Pandora_Windows_Service::checkConfig: Error checking remote configuration md5", tmp.c_str());
+		return;
+	}
+
+	/* Check for configuration changes */
+	flag = 0;
+	for (i = 0; i < 32; i++) {
+        if (remote_conf_md5[i] != conf_md5[i]) {
+           flag = 1;
+           break;
+        }
+	}
+	
+	delete[] remote_conf_md5;
+
+	/* Configuration has not changed */
+	if (flag == 0) {
+		return;
+	}
+	
+	pandoraLog("Pandora_Windows_Service::checkConfig: Configuration has changed");
+		
+	/* Get configuration file from server */
+	try {
+		recvDataFile (conf_tmp_file);
+		tmp = temp_dir;
+		tmp += conf_tmp_file;
+		conf_size = Pandora_File::readBinFile (tmp, &conf_str);
+		Pandora_File::removeFile (tmp);
+		/* Save new configuration */
+		Pandora_File::writeBinFile (conf_file, conf_str, conf_size);
+	} catch (...) {		
+		pandoraDebug("Pandora_Windows_Service::checkConfig: Error retrieving configuration file from server");
+	    if (conf_str != NULL) {
+            delete[] conf_str;
+    	}
+		return;
+	}
+	
+	delete[] conf_str;
+
+	/* Reload configuration */
+	this->pandora_init ();
+}
+
+void
 Pandora_Windows_Service::pandora_run () {
         TiXmlDocument *doc;
         TiXmlElement  *local_xml, *agent;
@@ -383,6 +609,9 @@ Pandora_Windows_Service::pandora_run () {
         bool           saved;
         
         pandoraDebug ("Run begin");
+        
+        /* Check for configuration changes */
+        this->checkConfig ();
         
         execution_number++;
 	

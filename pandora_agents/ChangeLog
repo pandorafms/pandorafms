@@ -1,3 +1,13 @@
+2008-06-10  Ramon Novoa  <rnovoa@artica.es>
+
+	* win32/PandoraAgent.dev: Updated.
+	* win32/misc/md5.c, win32/misc/md5.h: Added to repository.
+	  Implementation of MD5 (RFC 1321).
+	* win32/misc/pandora_file.cc, win32/misc/pandora_file.h: Added remote
+	  configuration checking related functions.
+	* win32/pandora_windows_service.cc, win32/pandora_windows_service.h:
+	  Added support for remote configuration checking.
+
 2008-06-09  Sancho Lerena <slerena@gmail.com>
 
 	macOS agent update.

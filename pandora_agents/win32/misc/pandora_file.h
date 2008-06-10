@@ -23,6 +23,7 @@
 
 #include <string>
 #include "../pandora.h"
+#include "md5.h"
 
 using namespace std;
 
@@ -52,9 +53,13 @@ namespace Pandora_File {
 
 	bool   fileExists (const string filename);
         string readFile   (const string filename);	
+        int    readBinFile (const string filepath, char **buffer);
         void   removeFile (const string filename);
         void   writeFile  (const string filename, const string data);
+        void   writeBinFile (const string filepath, const char *buffer, int size);
+        
 	string fileName   (const string filepath);
+    void   md5 (const char *data, int size, char *buffer);
 }
 
 #endif

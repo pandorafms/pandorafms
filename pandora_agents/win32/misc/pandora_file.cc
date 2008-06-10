@@ -75,6 +75,51 @@ Pandora_File::readFile (const string filepath) {
 }
 
 /**
+ * Reads a binary file and returns its content.
+ *
+ * @param filepath Path of the file to read.
+ *
+ * @exception File_Not_Found throwed if the path is incorrect or the
+ *            file does not exists or could not be opened.
+ *
+ * @note Memory allocated by this function must be freed at some point.
+ **/
+int
+Pandora_File::readBinFile (const string filepath, char **buffer) {
+  int length;
+  ifstream file;
+
+  if (buffer == NULL) {
+    throw File_Exception ();
+  }
+
+  file.open (filepath.c_str(), ios::binary );  
+  if (! file.is_open ()) {
+    throw File_Not_Found ();
+  }
+
+  /* Get file length */
+  file.seekg (0, ios::end);
+  length = file.tellg ();
+  if (length < 1) {
+     throw File_Exception ();
+  }
+
+  file.seekg (0, ios::beg);
+
+  *buffer = new char [length];
+  if (*buffer == NULL) {
+    throw File_Exception ();
+  }
+
+  /* Read data */
+  file.read (*buffer, length);
+  file.close ();
+
+  return length;
+}
+
+/**
  * Delete a file from a directory.
  *
  * @param filepath Path of the file to delete.
@@ -105,7 +150,33 @@ Pandora_File::writeFile (const string filepath, const string data) {
                 throw File_Not_Found ();
         }
         file.write (data.c_str (), data.length ());
-        file.close ();   
+        file.close ();
+}
+
+/**
+ * Write binary data into a file.
+ *
+ * @param filepath Path of the file to write in.
+ * @param data Data to be written.
+ * @param size Data size in bytes.
+ *
+ * @exception File_Not_Found throwed if the path is incorrect or the
+ *            file does not exists or could not be opened.
+ */
+void
+Pandora_File::writeBinFile (const string filepath, const char *buffer, int size) {
+        ofstream  file;
+        
+        if (buffer == NULL) {
+            throw File_Exception ();
+        }
+        
+        file.open(filepath.c_str (), ios_base::binary | ios_base::trunc);
+        if (! file.is_open ()) {
+                throw File_Not_Found ();
+        }
+        file.write (buffer, size);
+        file.close ();
 }
 
 /** 
@@ -128,4 +199,35 @@ Pandora_File::fileName (const string filepath)
 	}
 
 	return filename;
+}
+
+/** 
+ * Returns the 32 digit hexadecimal representation of the md5 hash
+ * of the given data.
+ * 
+ * @param data Data.
+ * @param data Data size.
+ * @param buffer Buffer where the 32 digit hex md5 will be stored.
+ *               Must be big enough to hold it!
+ */
+void
+Pandora_File::md5 (const char *data, int size, char *buffer)
+{
+	int i;
+	md5_state_t pms;
+	md5_byte_t digest[16];
+
+	if (buffer == NULL) {
+		throw File_Exception ();
+	}
+	
+	/* md5 hash */
+	md5_init (&pms);
+	md5_append (&pms, (unsigned char *)data, size);
+	md5_finish (&pms, digest);
+
+	/* 32 digit hexadecimal representation */
+	for (i = 0; i < 16; i++) {
+		snprintf (buffer + (i << 1), 3, "%.2x", (unsigned int)(digest[i]));
+	}
 }

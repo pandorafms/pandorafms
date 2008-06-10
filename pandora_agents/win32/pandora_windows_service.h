@@ -55,6 +55,10 @@ namespace Pandora {
 		void           copyFtpDataFile (string host,
 						string remote_path,
 						string filename);
+        void           recvDataFile (string filename);
+		void           recvTentacleDataFile (string host,
+						string filename);
+		void           checkConfig ();
 	public:
 		void           pandora_run  ();
 		void           pandora_init ();

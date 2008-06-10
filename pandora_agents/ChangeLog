@@ -1,5 +1,9 @@
 2008-06-10  Ramon Novoa  <rnovoa@artica.es>
 
+	*  win32/bin/PandoraAgent.exe: Updated to r849.
+
+2008-06-10  Ramon Novoa  <rnovoa@artica.es>
+
 	* win32/pandora.cc: Updated version information.
 
 2008-06-10  Ramon Novoa  <rnovoa@artica.es>

@@ -120,6 +120,25 @@ Pandora_Strutils::strtoint (const string str) {
 }
 
 /** 
+ * Returns the double precision floating-point value of a given string.
+ * 
+ * @param str The string.
+ * 
+ * @return The double precision floating-point value of the string.
+ *
+ * @exception Invalid_Conversion thrown on error.
+ */
+double
+Pandora_Strutils::strtodouble (const string str) {
+        double result;
+        
+        if (! std::sscanf (str.c_str (), "%le", &result)) {
+                throw Invalid_Conversion ();
+        }
+        return result;
+}
+
+/** 
  * Tranform a string into a long integer.
  * 
  * @param str String to convert.

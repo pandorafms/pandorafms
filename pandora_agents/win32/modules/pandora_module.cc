@@ -197,14 +197,14 @@ Pandora_Module::getModuleType () const {
  */
 string
 Pandora_Module::getDataOutput (Pandora_Data *data) {
-	int value;
+	double value;
 	
         if (this->module_type == TYPE_GENERIC_DATA_STRING) {
 		return data->getValue ();
 	}
 	
 	try {
-		value = Pandora_Strutils::strtoint (data->getValue ());
+		value = Pandora_Strutils::strtodouble (data->getValue ());
 	} catch (Pandora_Strutils::Invalid_Conversion e) {
 		pandoraLog ("Output error on module %s",
 			    this->module_name.c_str ());
@@ -219,7 +219,7 @@ Pandora_Module::getDataOutput (Pandora_Data *data) {
 		}
 	}
 	
-	return Pandora_Strutils::inttostr (value);
+	return data->getValue ();
 }
 
 /** 

@@ -48,6 +48,7 @@ namespace Pandora_Strutils {
         string             longtohex   (const long i);
         
         int                strtoint    (const string str);
+        double             strtodouble (const string str);
 	unsigned long long strtoulong  (const string str);
         
         string             strreplace  (string in, string pattern, string rep);

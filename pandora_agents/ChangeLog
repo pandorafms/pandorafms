@@ -1,3 +1,7 @@
+2008-06-11  Ramon Novoa  <rnovoa@artica.es>
+
+	* win32/bin/pandora_agent.conf: Added remote_config option.
+
 2008-06-10  Ramon Novoa  <rnovoa@artica.es>
 
 	*  win32/bin/PandoraAgent.exe: Updated to r849.

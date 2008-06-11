@@ -119,7 +119,6 @@ Pandora_Modules::Pandora_Module_List::parseModuleDefinition (string definition) 
         module = Pandora_Module_Factory::getModuleFromDefinition (definition);
         
         if (module != NULL) {
-		cout << module->getModuleKind () << endl;
                 switch (module->getModuleKind ()) {
                 case MODULE_EXEC:
                         module_exec = (Pandora_Module_Exec *) module;

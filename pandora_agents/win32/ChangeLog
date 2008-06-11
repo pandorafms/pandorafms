@@ -1,3 +1,14 @@
+2008-06-11  Esteban Sanchez  <estebans@artica.es>
+
+	* pandora_windows_service.cc, modules/pandora_module_list.cc: Deleted
+	debug output.
+
+	* modules/pandora_module_exec.cc: Reindented the code. Add blank
+	output to the module if there were nothing to read (like when the
+	executions return nothing).
+
+	* bin/PandoraAgent.exe: Updated to commit.
+
 2008-06-11  Esteban Sanchez <estebans@artica.es>
 
 	* bin/libodbc++.dll: Added to repository. Needed to run agent since

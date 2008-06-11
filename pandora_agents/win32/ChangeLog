@@ -1,5 +1,10 @@
 2008-06-11  Esteban Sanchez  <estebans@artica.es>
 
+	* bin/PandoraAgent.exe: Updated to commit, fixed an error when
+	building that was causing to not work as a service.
+
+2008-06-11  Esteban Sanchez  <estebans@artica.es>
+
 	* pandora_windows_service.cc, modules/pandora_module_list.cc: Deleted
 	debug output.
 

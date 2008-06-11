@@ -135,7 +135,6 @@ Pandora_Windows_Service::pandora_init () {
 			this->transfer_interval = this->interval;
 		}
 	}
-	cout << "trans: " << this->transfer_interval << endl;
 	
         srand ((unsigned) time (0));
         this->setSleepTime (this->interval);
@@ -631,7 +630,7 @@ Pandora_Windows_Service::pandora_run () {
         }
 
         this->elapsed_transfer_time += interval;
-	cout << "interval time: " << interval << " transfer time:"  << this->transfer_interval << " time passed: " << this->elapsed_transfer_time << endl;
+
 	if (this->elapsed_transfer_time >= this->transfer_interval) {
 		agent = getXmlHeader ();
 		

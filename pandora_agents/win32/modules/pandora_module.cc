@@ -294,7 +294,6 @@ Pandora_Module::getXml () {
 	TiXmlText    *text;
 	string        item_clean, data_clean, desc_clean;
 	Pandora_Data *data;
-
 	
 	pandoraDebug ("%s getXML begin", module_name.c_str ());
 	
@@ -317,7 +316,7 @@ Pandora_Module::getXml () {
         root->InsertEndChild (*element);
         delete element;
         delete text;
-
+	
 	if (this->data_list && this->data_list->size () > 1) {
 		list<Pandora_Data *>::iterator iter;
 

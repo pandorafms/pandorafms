@@ -9,7 +9,7 @@
 
 # Configurable path and filenames
 PANDORA_HOME="/etc/pandora/pandora_server.conf"
-PANDORA_PID_PATH="/var/run/pandora"
+PANDORA_PID_PATH="/var/run/"
 PANDORA_PID=$PANDORA_PID_PATH/pandora_snmp.pid
 PANDORA_DAEMON=/usr/local/bin/pandora_snmpconsole
 

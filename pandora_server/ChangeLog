@@ -1,3 +1,8 @@
+2008-06-12  Manuel Arostegui <marostegui@artica.es>
+
+	* pandora_snmpconsole: Removed "/var/run/pandora" we are
+	not using that directory anymore, but "/var/run".
+
 2008-05-27  Manuel Arostegui <marostegui@artica.es>
 
 	* pandora_server_installer: Fixed stupid bug related with

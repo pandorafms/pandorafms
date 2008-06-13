@@ -37,7 +37,7 @@ function display_config () {
 	echo 		'<td class="datos"><b>' . $lang_label["agent_name"] . '</b></td>';
 	echo 		'<td class="datos">';
 	echo			'<input disabled type="text" name="agente" size=30 value="' . $nombre_agente . '">';
-	echo 			'<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente="' . $id_agente . '">';
+	echo 			'<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=' . $id_agente . '">';
 	echo				'<img src="images/lupa.png" border="0" align="middle" alt="">';
 	echo			'</a>';
 	echo 			'<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=' . $id_agente . '">';

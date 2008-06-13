@@ -11,6 +11,10 @@ require("include/config.php");
 if ( (give_acl($id_user, 0, "LM")==1)){
 	if (isset($_POST["update_alerta"])){ // if modified any parameter
 		$id_alerta = entrada_limpia($_POST["id_alerta"]);
+        if ($id_alerta < 4){
+            audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Alert Management");
+            require ("general/noaccess.php");
+        }
 	    $nombre =  entrada_limpia($_POST["nombre"]);
 	    $comando =  entrada_limpia($_POST["comando"]);
 	    $descripcion=  entrada_limpia($_POST["descripcion"]);
@@ -37,6 +41,10 @@ if ( (give_acl($id_user, 0, "LM")==1)){
 	
 	if (isset($_GET["borrar_alerta"])){ // if delete alert
 		$id_alerta = entrada_limpia($_GET["borrar_alerta"]);
+        if ($id_alerta < 4){
+            audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Alert Management");
+            require ("general/noaccess.php");
+        }
 		$sql_delete= "DELETE FROM talerta WHERE id_alerta = ".$id_alerta;
 		$result=mysql_query($sql_delete);		
 		if (! $result)
@@ -55,7 +63,7 @@ if ( (give_acl($id_user, 0, "LM")==1)){
 	echo "<th>".$lang_label["description"]."</th>";
 	echo "<th>".$lang_label["delete"]."</th>";
 	$color=1;
-	$sql1='SELECT * FROM talerta ORDER BY nombre';
+	$sql1='SELECT * FROM talerta';
 	$result=mysql_query($sql1);
 	while ($row=mysql_fetch_array($result)){
 		if ($color == 1){
@@ -66,7 +74,7 @@ if ( (give_acl($id_user, 0, "LM")==1)){
 			$tdcolor = "datos2";
 			$color = 1;
 		}
-        if ($row[0] > 3){
+        if ($row[0] > 4){
 		    echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=galertas&sec2=godmode/alerts/configure_alert&id_alerta=".$row["id_alerta"]."'>".$row["nombre"]."</a></b></td>";
 		    echo "<td class='$tdcolor'>".$row["descripcion"]."</td>";
 		    echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/alerts/modify_alert&borrar_alerta=".$row["id_alerta"]."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cross.png'></a></td>";

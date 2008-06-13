@@ -188,13 +188,15 @@ if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 		}
 		echo "<ul class='mn'><li><a href='index.php?sec=usuarios&amp;sec2=operation/users/user_edit&amp;ver=".$_SESSION["id_usuario"]."' class='mn'>".$lang_label["index_myuser"]."</a></li></ul></div>";
 
-		// User statistic
-		if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/users/user_statistics") {
-			echo "<div class='arrows'>";
-		} else {
-			echo "<div class='arrow'>";
-		}
-		echo "<ul class='mn'><li><a href='index.php?sec=usuarios&amp;sec2=operation/users/user_statistics' class='mn'>".$lang_label["statistics"]."</a></li></ul></div>";
+        // User statistics require UM
+        if (give_acl($_SESSION["id_usuario"], 0, "UM")==1) {
+		    if(isset($_GET["sec2"]) && $_GET["sec2"] == "operation/users/user_statistics") {
+			    echo "<div class='arrows'>";
+		    } else {
+			    echo "<div class='arrow'>";
+		    }
+		    echo "<ul class='mn'><li><a href='index.php?sec=usuarios&amp;sec2=operation/users/user_statistics' class='mn'>".$lang_label["statistics"]."</a></li></ul></div>";
+        }
 	}
 
 	// SNMP console

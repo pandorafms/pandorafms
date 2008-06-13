@@ -196,6 +196,7 @@ CREATE TABLE `talert_snmp` (
   `max_alerts` int(11) NOT NULL default '1',
   `min_alerts` int(11) NOT NULL default '1',
   `internal_counter` int(2) unsigned NOT NULL default '0',
+  `priority` tinyint(4) default '0',
   PRIMARY KEY  (`id_as`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -252,6 +253,12 @@ CREATE TABLE `talerta_agente_modulo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+-- Priority : 0 - Maintance (grey)
+-- Priority : 1 - Low (green)
+-- Priority : 2 - Normal (blue)
+-- Priority : 3 - Warning (yellow)
+-- Priority : 4 - Critical (red)
+
 CREATE TABLE `tattachment` (
   `id_attachment` bigint(20) unsigned NOT NULL auto_increment,
   `id_incidencia` bigint(20) NOT NULL default '0',
@@ -293,12 +300,16 @@ CREATE TABLE `tevento` (
   `id_agentmodule` bigint(20) NOT NULL default '0',
   `id_alert_am` bigint(20) NOT NULL default '0',  
   `criticity` int(4) unsigned NOT NULL default 0,
-  
   PRIMARY KEY  (`id_evento`),
   KEY `indice_1` (`id_agente`,`id_evento`),
   KEY `indice_2` (`utimestamp`,`id_evento`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- Criticity: 0 - Maintance (grey)
+-- Criticity: 1 - Low (green)
+-- Criticity: 2 - Normal (blue)
+-- Criticity: 3 - Warning (yellow)
+-- Criticity: 4 - Critical (red)
 
 CREATE TABLE `tgrupo` (
   `id_grupo` mediumint(8) unsigned NOT NULL auto_increment,

@@ -600,23 +600,23 @@ function get_parameter_post ( $name, $default = "" ){
     return $default;
 }
 
-function get_alert_priority ( $prio ){
-    $priority = "NORMAL";
+function get_alert_priority ( $prio = 0){
+    global $config;
     switch ($prio){
             case 0: 
-                $priority = "NORMAL";
+                $priority = lang_string("Maintenance");
                 break;
             case 1:
-                $priority = "WARNING";
+                $priority = lang_string("Informational");
                 break;
             case 2:
-                $priority = "MINOR";
+                $priority = lang_string("Normal");
                 break;
             case 3:
-                $priority = "MAJOR";
+                $priority = lang_string("Warning");
                 break;
             case 4:
-                $priority = "CRITICAL";
+                $priority = lang_string("Critical");
                 break;
     }
     return $priority;
@@ -903,4 +903,116 @@ function form_render_check ($name_form, $value_form = 1){
 }
 
 
+function form_event_type_combo ($name_form, $value_form = ""){
+    echo "<select name='$name_form'>";
+    if ($value_form != ""){
+        echo "<option>".$value_form;
+    } else {
+        echo "<option>all";;
+    }
+    echo "<option>unknown";
+    echo "<option>monitor_up";
+    echo "<option>monitor_down";
+    echo "<option>alert_fired";
+    echo "<option>alert_recovered";
+    echo "<option>alert_ceased";
+    echo "<option>alert_manual_validation";
+
+    echo "<option>recon_host_detected";
+    echo "<option>system";
+    echo "<option>error";
+    echo "</select>";
+}
+
+
+function form_priority ($priority = 0, $form_name = "priority", $show_all = 0){
+    global $config;
+    
+    echo '<select name="'.$form_name.'">';
+    switch ($priority) {
+        case 0: 
+            echo "<option value=0>".lang_string("Maintenance");
+            echo "<option value=1>".lang_string("Informational");
+            echo "<option value=2>".lang_string("Normal");
+            echo "<option value=3>".lang_string("Warning");
+            echo "<option value=4>".lang_string("Critical");
+            break;
+        case 1: 
+            echo "<option value=1>".lang_string("Informational");
+            echo "<option value=0>".lang_string("Maintenance");
+            echo "<option value=2>".lang_string("Normal");
+            echo "<option value=3>".lang_string("Warning");
+            echo "<option value=4>".lang_string("Critical");
+            break;
+        case 2: 
+            echo "<option value=2>".lang_string("Normal");
+            echo "<option value=0>".lang_string("Maintenance");
+            echo "<option value=1>".lang_string("Informational");
+            echo "<option value=3>".lang_string("Warning");
+            echo "<option value=4>".lang_string("Critical");
+            break;
+        case 3: 
+            echo "<option value=3>".lang_string("Warning");
+            echo "<option value=0>".lang_string("Maintenance");
+            echo "<option value=1>".lang_string("Informational");
+            echo "<option value=2>".lang_string("Normal");
+            echo "<option value=4>".lang_string("Critical");
+            break;
+        case 4: 
+            echo "<option value=4>".lang_string("Critical");
+            echo "<option value=0>".lang_string("Maintenance");
+            echo "<option value=1>".lang_string("Informational");
+            echo "<option value=2>".lang_string("Normal");
+            echo "<option value=3>".lang_string("Warning");
+            break;
+        case -1: 
+            echo "<option value=-1>".lang_string("All");
+            echo "<option value=4>".lang_string("Critical");
+            echo "<option value=0>".lang_string("Maintenance");
+            echo "<option value=1>".lang_string("Informational");
+            echo "<option value=2>".lang_string("Normal");
+            echo "<option value=3>".lang_string("Warning");
+            break;
+    }
+    if ($show_all == 1)
+        echo "<option value=-1>".lang_string("All");
+    echo "</select>";    
+}
+
+
+function return_priority ($priority){
+    global $config;
+    
+    switch ($priority) {
+        case 0: 
+            return lang_string("Maintenance");
+        case 1: 
+            return lang_string("Informational");
+        case 2: 
+            return lang_string("Normal");
+        case 3: 
+            return lang_string("Warning");
+        case 4: 
+            return lang_string("Critical");
+        case -1: 
+            return lang_string("All");
+    }
+}
+
+// Show combo with agents
+function form_agent_combo ($id_agent = 0, $form_name = "id_agent"){
+    global $config;
+    echo '<select name="'.$form_name.'" style="width:120px">';
+    if ($id_agent != 0)
+        echo "<option value='".$id_agent."'>".dame_nombre_agente($id_agent)."</option>";
+    else
+        echo "<option value='0'>".lang_string("None")."</option>";
+    $sql1='SELECT * FROM tagente';
+    $result=mysql_query($sql1);
+    while ($row=mysql_fetch_array($result)){
+        // if (give_acl($config["id_user"], $row["id_grupo"], "AR")==1)
+            echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
+    }
+    echo "</select>";
+}
 ?>

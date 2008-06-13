@@ -19,22 +19,26 @@
 require("include/config.php");
 
 if (comprueba_login() == 0) {
-	$id_agente = give_parameter_get_numeric("id_agente");
+	$id_agente = get_parameter("id_agente",-1);
 	if ($id_agente != -1){
 		// get group for this id_agente
 		$query="SELECT * FROM tagente WHERE id_agente = ".$id_agente;
 		$res=mysql_query($query);
 		$row=mysql_fetch_array($res); 
 		$id_grupo = $row["id_grupo"];
-		$id_usuario=$_SESSION["id_usuario"];
+		$id_usuario=$config["id_user"];
 		if (give_acl($id_usuario, $id_grupo, "AR")==1){
 		
 			// Check for validate alert request
 			$validate_alert = give_parameter_get ("validate_alert");
 			if ($validate_alert != ""){
 				if (give_acl($id_usuario, $id_grupo, "AW")==1){
-					$alert_name = get_db_value ("descripcion", "talerta_agente_modulo", "id_aam", $validate_alert);
-					event_insert ("Manual validation of alert for '$alert_name'", $id_grupo, $id_agente, 1, $id_usuario);
+					$alert_row = get_db_row ("talerta_agente_modulo", "id_aam", $validate_alert);
+                    $am_row = get_db_row ("tagente_modulo", "id_agente_modulo", $alert_row["id_agente_modulo"]);
+                    $ag_row = get_db_row ("tagente", "id_agente", $am_row["id_agente"]);
+                    $alert_name = $alert_row["descripcion"];
+
+                    event_insert("Manual validation of alert for '$alert_name'", $ag_row["id_grupo"], $am_row["id_agente"], 1, $id_usuario, "alert_manual_validation", 1, $alert_row["id_agente_modulo"], $validate_alert);
 					$sql='UPDATE talerta_agente_modulo SET times_fired = 0, internal_counter = 0 WHERE id_aam = '.$validate_alert;
 					$result=mysql_query($sql);
 				}
@@ -116,6 +120,7 @@ if (comprueba_login() == 0) {
                     require "estado_generalagente.php";
 					require "estado_monitores.php";
 					require "estado_alertas.php";
+                    require "status_events.php";
 					break;
 						
 				case "data": 	

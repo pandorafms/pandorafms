@@ -55,7 +55,7 @@ while($row=mysql_fetch_array($result,MYSQL_ASSOC)) {
 			$rss_feed .= '<br /><br />Validated by ' . $row['validated_by'];
 		}
 	$rss_feed .= '</description><link>';
-		$rss_feed .= $url . "/operation/events/view_event?id=" . $event_id;
+		$rss_feed .= $url . "/operation/events/view_event?id=" . $row["event_id"];
 	$rss_feed .= '</link>';
 //The rest is optional
 	$rss_feed .= '<pubDate>' . date(DATE_RFC822, $row['unix_timestamp']) . '</pubDate>';

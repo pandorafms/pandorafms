@@ -21,6 +21,17 @@ include ($config["homedir"].'/include/functions.php');
 include ($config["homedir"].'/include/functions_db.php');
 require ($config["homedir"].'/include/languages/language_'.$config['language'].'.php');
 
+global $config;
+
+if (!isset($_SESSION["id_user"])){
+    session_start();
+    session_write_close();
+}
+$config ["id_user"] = $_SESSION["id_usuario"];
+
+// Session check
+check_login ();
+
 /**
  * Show a brief error message in a PNG graph
  */
@@ -129,7 +140,7 @@ function graphic_combined_module (  $module_list, $weight_list, $periodo,       
 
 		if ($show_event == 1){
 			// If we want to show events in graphs
-			$sql1="SELECT utimestamp FROM tevento WHERE id_agente = $id_agente AND utimestamp > $fechatope";
+			$sql1="SELECT utimestamp FROM tevento WHERE id_agentmodule = $id_agente_modulo AND utimestamp > $fechatope";
 			$result=mysql_query($sql1);
 			while ($row=mysql_fetch_array($result)){
 				$utimestamp = $row[0];
@@ -377,8 +388,19 @@ function grafico_modulo_sparse ( $id_agente_modulo, $periodo, $show_event,
 	$id_agente = dame_agente_id($nombre_agente);
 	$nombre_modulo = dame_nombre_modulo_agentemodulo($id_agente_modulo);
 
-	if ($show_event == 1)
-		$real_event = array();
+	if ($show_event == 1){
+        // If we want to show events in graphs
+        $sql1="SELECT utimestamp FROM tevento WHERE id_agentmodule = $id_agente_modulo AND utimestamp > $fechatope";
+        $result=mysql_query($sql1);
+        while ($row=mysql_fetch_array($result)){
+            $utimestamp = $row[0];
+            for ($i=0; $i <= $resolution; $i++) {
+                if ( ($utimestamp <= $valores[$i][3]) && ($utimestamp >= $valores[$i][2]) ){
+                    $real_event[$i]=1;
+                }
+            }
+        }
+	}
 
 	if ($show_alert == 1){
 		$alert_high = 0;
@@ -1139,27 +1161,48 @@ function grafico_eventos_usuario( $width=420, $height=200) {
 	 	generic_pie_graph ($width, $height, $data, $legend);
 }
 
-function grafico_eventos_total() {
+function grafico_eventos_total( $filter = "") {
 	require ("../include/config.php");
 	require ("../include/languages/language_".$config['language'].".php");
-
+    $filter = str_replace  ( "\\" , "", $filter);
 	$data = array();
 	$legend = array();
 	$total = 0;
 	
-	$sql1="SELECT COUNT(id_evento) FROM tevento WHERE estado = 1 ";
+	$sql1="SELECT COUNT(id_evento) FROM tevento WHERE criticity = 0 $filter";
 	$result=mysql_query($sql1);
 	$row=mysql_fetch_array($result);
 	$data[] = $row[0];
-	$legend[] = "Revised ( $row[0] )";
+	$legend[] = lang_string("Maintenance")." ( $row[0] )";
 	$total = $row[0];
 	
-	$sql1="SELECT COUNT(id_evento) FROM tevento WHERE estado = 0 ";
+	$sql1="SELECT COUNT(id_evento) FROM tevento WHERE criticity = 1 $filter";
 	$result=mysql_query($sql1);
 	$row=mysql_fetch_array($result);
 	$data[] = $row[0];
 	$total = $total + $row[0];
-	$legend[] = "Not Revised ( $row[0] )";
+	$legend[] = lang_string("Informational")."( $row[0] )";
+
+    $sql1="SELECT COUNT(id_evento) FROM tevento WHERE criticity = 2 $filter";
+    $result=mysql_query($sql1);
+    $row=mysql_fetch_array($result);
+    $data[] = $row[0];
+    $total = $total + $row[0];
+    $legend[] = lang_string("Normal")." ( $row[0] )";
+
+    $sql1="SELECT COUNT(id_evento) FROM tevento WHERE criticity = 3 $filter";
+    $result=mysql_query($sql1);
+    $row=mysql_fetch_array($result);
+    $data[] = $row[0];
+    $total = $total + $row[0];
+    $legend[] = lang_string("Warning")." ( $row[0] )";
+
+    $sql1="SELECT COUNT(id_evento) FROM tevento WHERE criticity = 4 $filter";
+    $result=mysql_query($sql1);
+    $row=mysql_fetch_array($result);
+    $data[] = $row[0];
+    $total = $total + $row[0];
+    $legend[] = lang_string("Critical")." ( $row[0] )";
 
 	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
 	// or much better, pay me to do a special version for you, highly optimized :-))))
@@ -1177,23 +1220,83 @@ function grafico_eventos_total() {
 	generic_pie_graph (320, 200, $data, $legend);
 }
 
-function grafico_eventos_grupo ($width = 300, $height = 200 ) {
+
+
+function graph_event_module ($width = 300, $height = 200, $id_agent ) {
+    include ("../include/config.php");
+    require ("../include/languages/language_".$config['language'].".php");
+    global $config;
+
+    // Need ACL check
+    $data = array();
+    $legend = array();
+    $sql1="SELECT * FROM tagente_modulo WHERE id_agente = $id_agent AND disabled = 0";
+    $result=mysql_query($sql1);
+    while ($row=mysql_fetch_array($result)){
+        $sql1="SELECT COUNT(*) FROM tevento WHERE id_agentmodule = ".$row["id_agente_modulo"];
+        if ($result2=mysql_query($sql1))
+        $row2=mysql_fetch_array($result2);
+        if ($row2[0] > 0){
+            $data[] = $row2[0];
+            $legend[] = substr($row["nombre"],0,15)." ( $row2[0] )";
+        }
+    }
+    // Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
+    // or much better, pay me to do a special version for you, highly optimized :-))))
+    for ($a=0;$a < sizeof($data);$a++){
+            for ($b=$a; $b <sizeof($data); $b++)
+            if ($data[$b] > $data[$a]){
+                    $temp = $data[$a];
+                    $temp_label = $legend[$a];
+                    $data[$a] = $data[$b];
+                    $legend[$a] = $legend[$b];
+                    $data[$b] = $temp;
+                    $legend[$b] = $temp_label;
+            }
+    }
+    $max_items = 6;
+    // Take only the first x items
+    if (sizeof($data) >= $max_items){
+        for ($a=0;$a < $max_items;$a++){
+            $legend2[]= $legend[$a];
+            $data2[] = $data[$a];
+        }
+        generic_pie_graph ($width, $height, $data2, $legend2);
+    } else
+        generic_pie_graph ($width, $height, $data, $legend);
+}
+
+
+function grafico_eventos_grupo ($width = 300, $height = 200, $url = "" ) {
 	include ("../include/config.php");
 	require ("../include/languages/language_".$config['language'].".php");
-
+    global $config;
+    $url = str_replace  ( "\\" , "", $url);
 	$data = array();
 	$legend = array();
-	$sql1="SELECT * FROM tgrupo";
+	$sql1="SELECT * FROM tagente";
 	$result=mysql_query($sql1);
 	while ($row=mysql_fetch_array($result)){
-		$sql1="SELECT COUNT(id_evento) fROM tevento WHERE id_grupo = ".$row["id_grupo"];
-		$result2=mysql_query($sql1);
-		$row2=mysql_fetch_array($result2);
-		if ($row2[0] > 0){
-			$data[] = $row2[0];
-			$legend[] = $row["nombre"]." ( $row2[0] )";
-		}
+        if (give_acl($config["id_user"], $row["id_grupo"], "AR") == 1){
+		    $sql1="SELECT COUNT(id_evento) FROM tevento WHERE 1=1 $url AND id_agente = ".$row["id_agente"];
+		    if ($result2=mysql_query($sql1))
+            $row2=mysql_fetch_array($result2);
+		    if ($row2[0] > 0){
+	    		$data[] = $row2[0];
+    			$legend[] = substr($row["nombre"],0,15)." ( $row2[0] )";
+    		}
+        }
 	}
+
+    // System events
+    $sql1="SELECT COUNT(id_evento) FROM tevento WHERE 1=1 $url AND id_agente = 0";
+    if ($result2=mysql_query($sql1))
+    $row2=mysql_fetch_array($result2);
+    if ($row2[0] > 0){
+        $data[] = $row2[0];
+        $legend[] = "SYSTEM"." ( $row2[0] )";
+    }
+
 	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
 	// or much better, pay me to do a special version for you, highly optimized :-))))
 	for ($a=0;$a < sizeof($data);$a++){
@@ -1207,9 +1310,10 @@ function grafico_eventos_grupo ($width = 300, $height = 200 ) {
 					$legend[$b] = $temp_label;
 			}
 	}
-// Take only the first x items
-	if (sizeof($data) >= 7){
-		for ($a=0;$a < 7;$a++){
+    $max_items = 6;
+    // Take only the first x items
+	if (sizeof($data) >= $max_items){
+		for ($a=0;$a < $max_items;$a++){
 			$legend2[]= $legend[$a];
 			$data2[] = $data[$a];
 		}
@@ -1368,147 +1472,87 @@ function drawWarning($width,$height) {
 }
 
 
-function progress_bar($progress,$width,$height) {
-   // Copied from the PHP manual:
-   // http://us3.php.net/manual/en/function.imagefilledrectangle.php
-   // With some adds from sdonie at lgc dot com
-   // Get from official documentation PHP.net website. Thanks guys :-)
-   // Code ripped from Babel Project :-)
-	function drawRating($rating,$width,$height) {
-		include ("../include/config.php");
-		require ("../include/languages/language_".$config['language'].".php");
-		if ($width == 0) {
-			$width = 150;
-		}
-		if ($height == 0) {
-			$height = 20;
-		}
-		//$rating = $_GET['rating'];
-		$ratingbar = (($rating/100)*$width)-2;
-		$image = imagecreate($width,$height);
-		//colors
-		$back = ImageColorAllocate($image,255,255,255);
-		$border = ImageColorAllocate($image,0,0,0);
-		$red = ImageColorAllocate($image,255,60,75);
-		$fill = ImageColorAllocate($image,44,81,150);
-		$rating = format_numeric ( $rating, 2);
-		ImageFilledRectangle($image,0,0,$width-1,$height-1,$back);
-		if ($rating > 100)
-			ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$red);
-		else
-			ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$fill);
-		ImageRectangle($image,0,0,$width-1,$height-1,$border);
-		if ($rating > 50)
-			if ($rating > 100)
-				ImageTTFText($image, 8, 0, ($width/4), ($height/2)+($height/5), $back, $config['fontpath'],$lang_label["out_of_limits"]);
-			else
-				ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $back, $config['fontpath'], $rating."%");
-		else
-			ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $border, $config['fontpath'], $rating."%");
-		imagePNG($image);
-		imagedestroy($image);
-   	}
-   	Header("Content-type: image/png");
-	if ($progress > 100 || $progress < 0){
-		// HACK: This report a static image... will increase render in about 200% :-) useful for
-		// high number of realtime statusbar images creation (in main all agents view, for example
-		$imgPng = imageCreateFromPng("../images/outof.png");
-		imageAlphaBlending($imgPng, true);
-		imageSaveAlpha($imgPng, true);
-		imagePng($imgPng); 
-   	} else 
-   		drawRating($progress,$width,$height);
+// ***************************************************************************
+// Draw a dynamic progress bar using GDlib directly
+// ***************************************************************************
+
+function progress_bar ($progress, $width, $height, $mode = 1) {
+    // Copied from the PHP manual:
+    // http://us3.php.net/manual/en/function.imagefilledrectangle.php
+    // With some adds from sdonie at lgc dot com
+    // Get from official documentation PHP.net website. Thanks guys :-)
+    function drawRating($rating, $width, $height, $mode) {
+        include ("../include/config.php");
+        require ("../include/languages/language_".$config["language"].".php");
+        $rating = format_numeric($rating,1);
+        if ($width == 0) {
+            $width = 150;
+        }
+        if ($height == 0) {
+            $height = 20;
+        }
+
+        //$rating = $_GET['rating'];
+        $ratingbar = (($rating/100)*$width)-2;
+
+        $image = imagecreate($width,$height);
+        //colors
+        $back = ImageColorAllocate($image,255,255,255);
+        $border = ImageColorAllocate($image,140,140,140);
+        $textcolor = ImageColorAllocate($image,60,60,60);
+        $red = ImageColorAllocate($image,255,60,75);
+
+        if ($mode == 0){
+            if ($rating > 70) 
+                $fill = ImageColorAllocate($image,176,255,84); // Green
+            elseif ($rating > 50)
+                $fill = ImageColorAllocate($image,255,230,84); // Yellow
+            elseif ($rating > 30)
+                $fill = ImageColorAllocate($image,255,154,83); // Orange
+            else
+                $fill = ImageColorAllocate($image,255,0,0); // Red
+        }
+        else
+            $fill = ImageColorAllocate($image,44,81,150);
+        
+
+        $grey = ImageColorAllocate($image,230,230,210);
+
+        if ($mode == 1){
+            ImageFilledRectangle($image,0,0,$width-1,$height-1,$back);
+        } else {
+            ImageFilledRectangle($image,0,0,$width-1,$height-1,$grey);
+        }
+        if ($rating > 100)
+            ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$red);
+        else
+            ImageFilledRectangle($image,1,1,$ratingbar,$height-1,$fill);
+        if ($mode == 1){
+            ImageRectangle($image,0,0,$width-1,$height-1,$border);
+        }
+        if ($mode == 1){
+            if ($rating > 50)
+                if ($rating > 100)
+                    ImageTTFText($image, 8, 0, ($width/4), ($height/2)+($height/5), $back, $config["fontpath"], lang_string ("out_of_limits"));
+                else
+                    ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $back, $config["fontpath"], $rating."%");
+            else
+                ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $textcolor, $config["fontpath"], $rating."%");
+        }
+        imagePNG($image);
+        imagedestroy($image);
+    }
+    Header("Content-type: image/png");
+    if ($progress > 100 || $progress < 0){
+        // HACK: This report a static image... will increase render in about 200% :-) useful for
+        // high number of realtime statusbar images creation (in main all agents view, for example
+        $imgPng = imageCreateFromPng("../images/outof.png");
+        imageAlphaBlending($imgPng, true);
+        imageSaveAlpha($imgPng, true);
+        imagePng($imgPng); 
+    } else 
+        drawRating($progress,$width,$height,$mode);
 }
-
-/*NOT USED !
-
-function graphic_test ($id, $period, $interval, $label, $width, $height){
-	require_once 'Image/Graph.php';
-	include ("../include/config.php");
-	$color ="#437722"; // Green pandora 1.1 octopus color
-
-	$intervalo = 500; // We want 30 slices for graph resolution.
-	$now_date = dame_fecha(0);
-	$horasint = $period / $intervalo;
-	$top_date = dame_fecha($period);
-
-	// Para crear las graficas vamos a crear un array de Ax4 elementos, donde
-	// A es el numero de posiciones diferentes en la grafica (30 para un mes, 7 para una semana, etc)
-	// y los 4 valores en el ejeY serian los detallados a continuacion:
-	// Rellenamos la tabla con un solo select, y los calculos se hacen todos sobre memoria
-	// esto acelera el tiempo de calculo al maximo, aunque complica el algoritmo :-)
-
-	$total_items=5000;
-	$factor = rand(1,10); $b=0;
-	// This is my temporal data (only a simple static test by now)
-	for ($a=0; $a < $total_items; $a++){
-		$valor = 1 + cos(deg2rad($b));
-		$b = $b + $factor/10;
-		if ($b > 180){
-			$b =0;
-		}
-		$valor = $valor * $b ;
-		$valores[$a][0] = $valor;
-		$valores[$a][1] = $a;
-	}
-
-	
-	// Creamos la tabla (array) con los valores para el grafico. Inicializacion
-	$valor_maximo = 0;
-	$maxvalue=0;
-	$minvalue=100000000;
-	for ($i = $intervalo-1; $i >0; $i--) { // 30 entries in graph, one by day
-		$grafica[]=$valores[$i][0];
-		$legend[]=$valores[$i][1];
-		if ($valores[$i][0] < $minvalue)
-			$minvalue = $valores[$i][0];
-		if ($valores[$i][0] > $maxvalue)
-			$maxvalue = $valores[$i][0];
-	}
-
-	// Create graph 
-	
-		// Create graph
-		// create the graph
-		$Graph =& Image_Graph::factory('graph', array($width, $height));
-		// add a TrueType font
-		$Font =& $Graph->addNew('font', $config['fontpath']);
-		$Font->setSize(6);
-		$Graph->setFont($Font);
-		$Graph->add(
-		Image_Graph::vertical(
-			Image_Graph::factory('title', array("", 2)),
-			$Plotarea = Image_Graph::factory('plotarea'),
-			0)
-		);
-		// Create the dataset
-		// Merge data into a dataset object (sancho)
-		$Dataset =& Image_Graph::factory('dataset');
-		for ($a=0;$a < sizeof($grafica); $a++){
-			$Dataset->addPoint($legend[$a],$grafica[$a]);
-		}
-		// create the 1st plot as smoothed area chart using the 1st dataset
-		$Plot =& $Plotarea->addNew('area', array(&$Dataset));
-		// set a line color
-		$Plot->setLineColor('gray');
-		// set a standard fill style
-		$Plot->setFillColor('green@0.4');
-		// $Plotarea->hideAxis();
-		$AxisX =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_X);
-		// $AxisX->Hide();
-		$AxisY =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
-		$AxisY->setLabelOption("showtext",true);
-		$AxisY->setLabelInterval(ceil(($maxvalue-$minvalue)/4));
-		$AxisX->setLabelInterval($intervalo / 5);
-		$AxisY->forceMinimum($minvalue);
-		$GridY2 =& $Plotarea->addNew('bar_grid', IMAGE_GRAPH_AXIS_Y_SECONDARY);
-		$GridY2->setLineColor('blue');
-		$GridY2->setFillColor('blue@0.1');
-		$AxisY2 =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y_SECONDARY);
-		$Graph->done();
-
-}
-*/
 
 function odo_tactic ($value1, $value2, $value3){
 	require_once 'Image/Graph.php';
@@ -2023,10 +2067,13 @@ if ( isset($_GET["value2"]))
 else
 	$value2 = 0;
 
+$mode = get_parameter ("mode", 1); // Progress
+
 $value3 = get_parameter("value3",0);
 $stacked = get_parameter ("stacked", 0);
 $time_reference = get_parameter ("time_reference", "");
-
+$url = get_parameter ("url", "");
+$id_agent = get_parameter ("id_agent", "");
 // Image handler
 // *****************
 
@@ -2048,11 +2095,11 @@ if (isset($_GET["tipo"])){
 	elseif ($_GET["tipo"] =="db_agente_purge")
 		grafico_db_agentes_purge($id, $width, $height);
 	elseif ($_GET["tipo"] =="group_events")
-		grafico_eventos_grupo($width, $height);
+		grafico_eventos_grupo($width, $height, $url);
 	elseif ($_GET["tipo"] =="user_events")
 		grafico_eventos_usuario($width, $height);
 	elseif ($_GET["tipo"] =="total_events")
-		grafico_eventos_total();
+		grafico_eventos_total($url);
 	elseif ($_GET["tipo"] =="group_incident")
 		graphic_incident_group();
 	elseif ($_GET["tipo"] =="user_incident")
@@ -2070,11 +2117,14 @@ if (isset($_GET["tipo"])){
 //		graphic_test ($id, $period, $intervalo, $label, $width, $height);
 	elseif ( $_GET["tipo"] =="progress"){
 		$percent= $_GET["percent"];
-		progress_bar($percent,$width,$height);
+		progress_bar($percent,$width,$height,$mode);
 	}
 	elseif ( $_GET["tipo"] == "odo_tactic"){
 		odo_tactic ( $value1, $value2, $value3 );
 	}
+    elseif ( $_GET["tipo"] == "event_module"){
+        graph_event_module  ($width, $height, $id_agent);
+    }
 	elseif ( $_GET["tipo"] =="combined"){
 		// Split id to get all parameters
 		$module_list = array();

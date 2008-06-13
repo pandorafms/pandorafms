@@ -95,16 +95,19 @@ if (mysql_num_rows($result)){
         
         // Recon server detail
 		if ($recon_server == 1)
-			echo "<b><a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=$id_server'>$name</a></b> ";
+            if (give_acl($id_user, 0, "PM")==1)
+			    echo "<b><a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=$id_server'>$name</a></b> ";
+            else
+                echo "<b>$name</b>";
 		else
 			echo "<b>$name</b>";
         
         // Status (bad or good)
 		echo "<td class='$tdcolor' align='middle'>";
 		if ($status ==0){
-			echo "<img src='images/dot_red.png'>";
+			echo "<img src='images/pixel_red.png' width=20 height=20>";
 		} else {
-			echo "<img src='images/dot_green.png'>";
+			echo "<img src='images/pixel_green.png' width=20 height=20>";
 		}
 
 		echo "<td class='$tdcolor' align='middle'>";
@@ -248,7 +251,8 @@ if (mysql_num_rows($result)){
 		
 		echo "</td><td class='".$tdcolor."f9' align='middle'>";
 		// if ($status ==0)
-			echo substr($keepalive,0,25)."</td>";
+        
+			echo human_date_relative($keepalive)."</td>";
 	}
 	echo '</tr></table>';
 	echo "<table cellpadding=2 cellspacing=0>";

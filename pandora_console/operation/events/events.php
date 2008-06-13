@@ -27,6 +27,7 @@
 		e.checked = 1;
 	  }
 	}
+
 	function OpConfirm(text, conf)
 	{
 	  for (var i=0;i<document.pageform.elements.length;i++)
@@ -42,6 +43,15 @@
 	  }
 	  return false;
 	}
+
+    /* Function to hide/unhide a specific Div id */
+    function toggleDiv (divid){
+        if (document.getElementById(divid).style.display == 'none'){
+            document.getElementById(divid).style.display = 'block';
+        } else {
+            document.getElementById(divid).style.display = 'none';
+        }
+    }
 //-->
 </script>
 
@@ -55,8 +65,8 @@ if (comprueba_login() != 0) {
 }
 
 $accion = "";
-if (give_acl($id_user, 0, "AR")!=1) {
-	audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access event viewer");
+if (give_acl($config["id_user"], 0, "AR")!=1) {
+	audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to access event viewer");
 	no_permission();
 }
 	
@@ -84,12 +94,12 @@ if (isset($_GET["check"])){
 	$id_evento = $_GET["check"];
 	// Look for event_id following parameters: id_group.
 	$id_group = gime_idgroup_from_idevent($id_evento);
-	if (give_acl($id_user, $id_group, "IW") ==1){
-		$sql2="UPDATE tevento SET estado = 1, id_usuario = '".$id_user."' WHERE id_evento = ".$id_evento;
+	if (give_acl($config["id_user"], $id_group, "IW") ==1){
+		$sql2="UPDATE tevento SET estado = 1, id_usuario = '".$config["id_user"]."' WHERE id_evento = ".$id_evento;
 		$result2=mysql_query($sql2);
 		if ($result2) {
 			echo "<h3 class='suc'>".$lang_label["validate_event_ok"]."</h3>";
-			audit_db($id_user,$REMOTE_ADDR, "Event validated","Validate event: ".return_event_description ($id_evento));
+			audit_db($config["id_user"],$REMOTE_ADDR, "Event validated","Validate event: ".return_event_description ($id_evento));
 		} else {
 			echo "<h3 class='error'>".$lang_label["validate_event_failed"]."</h3>";
 		}
@@ -144,165 +154,269 @@ if (isset($_POST["updatebt"])){
 
 // Get data
 
-$offset=0;
-if (isset($_GET["offset"]))
-	$offset=$_GET["offset"];
+$offset = get_parameter ( "offset",0);
+$ev_group = get_parameter ("ev_group", 0); // group
+$search = get_parameter ("search", ""); // free search
+$event_type = get_parameter ("event_type", "all"); // 0 all
+$severity = get_parameter ("severity", -1); // -1 all
+$status = get_parameter ("status", 0); // -1 all, 0 only red, 1 only green
+$id_agent = get_parameter ("id_agent", -1);
 
-if (isset($_GET["group_id"]))
-                $group_id = entrada_limpia($_GET["group_id"]);
-        else
-                $group_id = 0;
+$sql_post = "";
+if ($ev_group > 1)
+    $sql_post .= " AND id_grupo = $ev_group";
+if ($status == 1)
+    $sql_post .= " AND estado = 1";
+if ($status == 0)
+    $sql_post .= " AND estado = 0";
+if ($search != "")
+    $sql_post .= " AND evento LIKE '%$search%'";
+if ($event_type != "all")
+    $sql_post .= " AND event_type = '$event_type'";
+if ($severity != -1)
+    $sql_post .= " AND criticity >= $severity";
+if ($id_agent != -1)
+    $sql_post .= " AND id_agente = $id_agent";
+$url = "index.php?sec=eventos&sec2=operation/events/events&search=$search&event_type=$event_type&severity=$severity&status=$status&ev_group=$ev_group&refr=60&id_agent=$id_agent";
 
-if (isset($_POST["ev_group"]))
-                        $ev_group = $_POST["ev_group"];
-                elseif (isset($_GET["group_id"]))
-                $ev_group = $_GET["group_id"];
-        else
-                $ev_group = -1;
+echo "<h2>".$lang_label["events"]." &gt; ".lang_string ("event_main_view"). "&nbsp";
 
+if ($config["pure"] == 1)
+    echo "<a target='_top' href='$url&pure=0'><img src='images/monitor.png' title='".lang_string("Normal screen")."'></a>";
+else
+    echo "<a target='_top' href='$url&pure=1'><img src='images/monitor.png' title='".lang_string("Full screen")."'></a>";
+echo "</h2>";
 
-$event="All";
-if (isset($_POST["event"]))
-	$event = entrada_limpia($_POST["event"]);
+echo "<a href=\"javascript:;\" onmousedown=\"toggleDiv('event_control');\">";
+echo "<b>".lang_string("Event control filter")." ".'<img src="images/wand.png"></A></b>';
 
-echo "<h2>".$lang_label["events"]." &gt; ".$lang_label["event_main_view"]."</h2>";
-echo "<table width=100%>";
+if ($config["pure"] == 1)
+    echo "<div id='event_control' style='display:none'>";
+else
+    echo "<div id='event_control' style='display:all'>";
+
+// Table who separate control and graph
+echo "<table width=99% cellpadding=0 cellspacing=2 border=0>";
+echo "<tr><td width=500>";
+
+// Table for filter controls
+echo "<table width=500 cellpadding=4 cellspacing=4 class=databox>";
 echo "<tr>";
-echo "<form method='post' action='index.php?sec=eventos&sec2=operation/events/events&refr=60'>";
-echo "<td>".$lang_label["group"]."</td>";
+echo "<form method='post' action='index.php?sec=eventos&sec2=operation/events/events&refr=60&id_agent=$id_agent&pure=".$config["pure"]."'>";
+
+// Group combo
+echo "<td>".lang_string ("group")."</td>";
 echo "<td>";
 echo "<select name='ev_group' onChange='javascript:this.form.submit();' class='w130'>";
 if ( $ev_group > 1 ){
 	echo "<option value='".$ev_group."'>".dame_nombre_grupo($ev_group)."</option>";
 }
 echo "<option value=1>".dame_nombre_grupo(1)."</option>";
-list_group ($id_user);
-echo "</select></td></tr>";
+list_group ($config["id_user"]);
+echo "</select></td>";
 
-echo "<tr><td valign='middle'>".$lang_label["events"]."</td>";
-echo "<td><form method='post' action='index.php?sec=eventos&sec2=operation/events/events&refr=60'>";
-echo "<select name='event' onChange='javascript:this.form.submit();' class='w155'>";
-echo "<option value='All'>".$lang_label["all"]."</option>";
+// Event type
+echo "<td>".lang_string ("Event type")."</td>";
+echo "<td>";
+echo form_event_type_combo ("event_type", $event_type);
+echo "<tr>";
 
-// Fill event type combo (DISTINCT!)
-if (isset($ev_group) && ($ev_group > 1))
-	$sql="SELECT DISTINCT evento FROM tevento WHERE id_grupo = '$ev_group'";
-else
-	$sql="SELECT DISTINCT evento FROM tevento";
-$result=mysql_query($sql);
-// Make query for distinct (to fill combo)
-while ($row=mysql_fetch_array($result))
-	echo "<option value='".$row["evento"]."'>".$row["evento"]."</option>";
-echo "</select>";
-echo "</form>";
-echo "<td valign='middle'>";
-echo "<noscript><input type='submit' class='sub' value='".$lang_label["show"]."'></noscript>";
+// Severity
+echo "<td>".lang_string ("Severity")."</td>";
+echo "<td>";
+echo form_priority ($severity, "severity", 1);
 
-echo "</table>";
-
-echo "<br>";
-	
-// How many events do I have in total ?
-if ($event=="All"){
-	if (isset($ev_group) && ($ev_group > 1)) {
-		$sql3="SELECT COUNT(id_evento) FROM tevento WHERE id_grupo = '$ev_group' ";
-	} else {
-		$sql3="SELECT COUNT(id_evento) FROM tevento";
-	}
-} else {
-	if (isset($ev_group) && ($ev_group > 1)) {
-		$sql3="SELECT COUNT(id_evento) FROM tevento WHERE evento = '$event' AND id_grupo = '$ev_group'";
-	} else {
-		$sql3="SELECT COUNT(id_evento) FROM tevento WHERE evento = '$event' ";
-	}
+// Status
+echo "<td>".lang_string ("Event status")."</td>";
+echo "<td>";
+echo "<select name='status' onChange='javascript:this.form.submit();'>";
+if ($status == 1){
+    echo "<option value=1>". lang_string ("Only validated");
+    echo "<option value=-1>". lang_string ("All event");
+    echo "<option value=0>". lang_string ("Only pending");
+} elseif ($status == 0) {
+    echo "<option value=0>". lang_string ("Only pending");
+    echo "<option value=1>". lang_string ("Only validated");
+    echo "<option value=-1>". lang_string ("All event");
+} elseif ($status == -1) {
+    echo "<option value=-1>". lang_string ("All event");
+    echo "<option value=0>". lang_string ("Only pending");
+    echo "<option value=1>". lang_string ("Only validated");
 }
+echo "</select></td>";
+echo "<tr>";
+
+// Free search
+echo "<td>".lang_string ("Free search")."</td>";
+echo "<td>";
+echo "<input type='text' size=15 value='".$search."' name='search'>";
+echo "<td>";
+echo "<input type=submit value='".lang_string("Update")."' class='sub upd'>";
+echo "</table>";
+echo "</form>";
+echo "<td>";
+echo '<img src="reporting/fgraph.php?tipo=group_events&width=250&height=180&url='.$sql_post.'" border=0>';
+echo "</table>";
+echo "</div>";
+
+$sql2 = "SELECT * FROM tevento WHERE 1=1 ";
+$sql2 .= $sql_post . " ORDER BY timestamp DESC LIMIT $offset, ".$config["block_size"];
+$sql3 = "SELECT COUNT(id_evento) FROM tevento WHERE 1=1 ";
+$sql3 .= $sql_post;
+
 $result3=mysql_query($sql3);
 $row3=mysql_fetch_array($result3);
 $total_events = $row3[0];
-// Show pagination header
 
+// Show pagination header
 if ($total_events > 0){
-	pagination ($total_events, "index.php?sec=eventos&sec2=operation/events/events&group_id=$ev_group&refr=60", $offset);		
+
+    $offset = get_parameter ( "offset",0);
+	pagination ($total_events, $url."&pure=".$config["pure"], $offset);		
 	// Show data.
 		
 	echo "<br>";
 	echo "<br>";
-	echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>";
+    if ($config["pure"] == 0)
+	    echo "<table cellpadding='4' cellspacing='4' width='765' class='databox'>";
+    else
+        echo "<table cellpadding='4' cellspacing='4' class='databox'>";
 	echo "<tr>";
-	echo "<th>".$lang_label["status"]."</th>";
-	echo "<th>".$lang_label["event_name"]."</th>";
-	echo "<th>".$lang_label["agent_name"]."</th>";
-	echo "<th>".$lang_label["group"]."</th>";
-	echo "<th>".$lang_label["id_user"]."</th>";
-	echo "<th width='85'>".$lang_label["timestamp"]."</th>";
-	echo "<th width='80'>".$lang_label["action"]."</th>";
+    echo "<th class=f9>".lang_string ("St")."</th>";
+    echo "<th class=f9>".lang_string ("Type")."</th>";
+	echo "<th class=f9>".$lang_label["event_name"]."</th>";
+	echo "<th class=f9>".$lang_label["agent_name"]."</th>";
+	echo "<th class=f9>".lang_string ("source")."</th>";
+    echo "<th class=f9>".$lang_label["group"]."</th>";
+	echo "<th class=f9>".$lang_label["id_user"]."</th>";
+	echo "<th class=f9>".$lang_label["timestamp"]."</th>";
+	echo "<th class=f9>".$lang_label["action"]."</th>";
 	echo "<th class='p10'>";
 	echo "<label for='checkbox' class='p21'>".$lang_label["all"]." </label>";
 	echo '<input type="checkbox" class="chk" name="allbox" onclick="CheckAll();"></th>';
-	echo "<form name='eventtable' method='POST' action='index.php?sec=eventos&sec2=operation/events/events&refr=60&offset=".$offset."'>";
-	$color = 1;
+	echo "<form name='eventtable' method='POST' action='$url&pure=".$config["pure"]."'>";
 	$id_evento = 0;
 	
-	// Prepare index for pagination. Prepare queries
-	if ($event=="All"){
-		if (isset($ev_group) && ($ev_group > 1)) {
-			$sql2="SELECT * FROM tevento WHERE id_grupo = '$ev_group' ORDER BY timestamp DESC LIMIT $offset, ".$config["block_size"];
-		} else {
-			$sql2="SELECT * FROM tevento ORDER BY timestamp DESC LIMIT $offset, ".$config["block_size"];
-		}
-	} else {
-		if (isset($ev_group) && ($ev_group > 1)) {
-			$sql2="SELECT * FROM tevento WHERE evento = '$event' AND id_grupo = '$ev_group' ORDER BY timestamp DESC LIMIT $offset, ".$config["block_size"];
-		} else {
-			$sql2="SELECT * FROM tevento WHERE evento = '$event' ORDER BY timestamp DESC LIMIT $offset, ".$config["block_size"];
-		}
-	}
-
 	$offset_counter=0;
 	// Make query for data (all data, not only distinct).
 	$result2=mysql_query($sql2);
 	while ($row2=mysql_fetch_array($result2)){
 		$id_grupo = $row2["id_grupo"];
-		if (give_acl($id_user, $id_grupo, "IR") == 1){ // Only incident read access to view data !
+		if (give_acl($config["id_user"], $id_grupo, "AR") == 1){ // Only incident read access to view data !
 			$id_group = $row2["id_grupo"];
-			if ($color == 1){
-				$tdcolor = "datos";
-				$color = 0;
-			}
-			else {
-				$tdcolor = "datos2";
-				$color = 1;
-			}
-			echo "<tr><td class='$tdcolor' align='center'>";
-			if ($row2["estado"] == 0)
-				echo "<img src='images/dot_red.png'>";
-			else
-				echo "<img src='images/dot_green.png'>";
-			echo "<td class='$tdcolor'>".$row2["evento"];
-			if ($row2["id_agente"] > 0){
-					echo "<td class='$tdcolor'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row2["id_agente"]."'><b>".dame_nombre_agente($row2["id_agente"])."</b></a>";
 
-					echo "<td class='$tdcolor' align='center'><img src='images/groups_small/".show_icon_group($id_group).".png' class='bot'></td>";
-					echo "<td class='$tdcolor'>";
-			} else { // for SNMP generated alerts
-				echo "<td class='$tdcolor'>".$lang_label["alert"]." /  SNMP";
-				echo "<td class='$tdcolor' align='center'><img src='images/dot_white.png' class='bot'>";
-				echo "<td class='$tdcolor'>";
+            switch ($row2["criticity"]) {
+                case 0: 
+                    $tdclass = "datos_blue";
+                    break;
+                case 1: 
+                    $tdclass = "datos_grey";
+                    break;
+                case 2: 
+                    $tdclass = "datos_green";
+                    break;
+                case 3: 
+                    $tdclass = "datos_yellow";
+                    break;
+                case 4: 
+                    $tdclass = "datos_red";
+                    break;
+                default:
+                    $tdclass = "datos_grey";
+            }
+            $criticity_label = return_priority ($row2["criticity"]);
+            // Colored box 
+			echo "<tr><td class='$tdclass' title='$criticity_label' align='center'>";
+			if ($row2["estado"] == 0)
+				echo "<img src='images/pixel_red.png' width=20 height=35>";
+			else
+				echo "<img src='images/pixel_green.png' width=20 height=35>";
+
+            // Event type
+            echo "<td class='".$tdclass."' title='".$row2["event_type"]."'>";
+            switch ($row2["event_type"]){
+                case "unknown": 
+                    echo "<img src='images/err.png'>";
+                    break;
+                case "alert_recovered": 
+                    echo "<img src='images/error.png'>";
+                    break;
+                case "alert_manual_validation": 
+                    echo "<img src='images/eye.png'>";
+                    break;
+                case "monitor_up":
+                    echo "<img src='images/lightbulb.png'>";
+                    break;
+                case "monitor_down":
+                    echo "<img src='images/lightbulb_off.png'>";
+                    break;
+                case "alert_fired":
+                    echo "<img src='images/bell.png'>";
+                    break;
+                case "system";
+                    echo "<img src='images/cog.png'>";
+                    break;
+                case "recon_host_detected";
+                    echo "<img src='images/network.png'>";
+                    break;
+            }
+
+            // Event description
+			echo "<td class='".$tdclass."f9' title='".$row2["evento"]."'>";
+            echo substr($row2["evento"],0,45);
+            if (strlen($row2["evento"]) > 45)
+                echo "..";
+			if ($row2["id_agente"] > 0){
+                    // Agent name
+                    $agent_name = dame_nombre_agente($row2["id_agente"]);
+					echo "<td class='".$tdclass."f9' title='$agent_name'><a href='$url&pure=".$config["pure"]."&id_agent=".$row2["id_agente"]."'><b>";
+                    echo substr($agent_name, 0, 14);
+                    if (strlen($agent_name) > 14)
+                        echo "..";
+                    echo "</b></a>";
+                    
+                    // Module name / Alert
+                    echo "<td class='$tdclass'>";
+                    if ($row2["id_agentmodule"] != 0)
+                        echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row2["id_agente"]."&tab=data'><img src='images/bricks.png' border=0></A>";
+                    echo "&nbsp;";
+                    if ($row2["id_alert_am"] != 0)
+                        echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row2["id_agente"]."&tab=alert'><img src='images/bell.png' border=0></a>";
+
+                    // Group icon
+					echo "<td class='$tdclass' align='center'><img src='images/groups_small/".show_icon_group($id_group).".png' class='bot'></td>";
+
+            // for System or SNMP generated alerts
+			} else { 
+                if ($row2["event_type"] == "system"){
+                    echo "<td class='$tdclass' colspan=3>".lang_string("System");
+                } else {
+				    echo "<td class='$tdclass' colspan=3>".$lang_label["alert"]."SNMP";
+                }
 			}
+
+            // User who validated event
+            echo "<td class='$tdclass'>";
 			if ($row2["estado"] <> 0)
 				echo "<a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$row2["id_usuario"]."'>".substr($row2["id_usuario"],0,8)."<a href='#' class='tip'> <span>".dame_nombre_real($row2["id_usuario"])."</span></a></a>";
-			echo "<td class='".$tdcolor."f9'>".$row2["timestamp"];
-			echo "<td class='$tdcolor' align='right'>";
-	
-			if (($row2["estado"] == 0) and (give_acl($id_user,$id_group,"IW") ==1))
-				echo "<a href='index.php?sec=eventos&sec2=operation/events/events&offset=".$offset."&check=".$row2["id_evento"]."'><img src='images/ok.png' border='0'></a> ";
-			if (give_acl($id_user,$id_group,"IM") ==1)
-				echo "<a href='index.php?sec=eventos&sec2=operation/events/events&delete=".$row2["id_evento"]."&refr=60&offset=".$offset."'><img src='images/cross.png' border=0></a> ";
-					
-			if (give_acl($id_user,$id_group,"IW") == 1)
+
+            // Timestamp
+			echo "<td class='".$tdclass."f9' title='".$row2["timestamp"]."'>";
+            echo human_time_comparation($row2["timestamp"]);
+
+            // Several options grouped here
+			echo "<td class='$tdclass' align='right'>";
+            // Validate event
+			if (($row2["estado"] == 0) and (give_acl($config["id_user"], $id_group,"IW") ==1))
+				echo "<a href='$url&check=".$row2["id_evento"]."&pure=".$config["pure"]."'><img src='images/ok.png' border='0'></a> ";
+            // Delete event
+			if (give_acl($config["id_user"], $id_group,"IM") ==1)
+				echo "<a href='$url&delete=".$row2["id_evento"]."&pure=".$config["pure"]."'><img src='images/cross.png' border=0></a> ";
+            // Create incident from this event			
+			if (give_acl($config["id_user"], $id_group,"IW") == 1)
 				echo "<a href='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&insert_form&from_event=".$row2["id_evento"]."'><img src='images/page_lightning.png' border=0></a>";
-					
-			echo "<td class='$tdcolor' align='center'>";
+            // Checbox					
+			echo "<td class='$tdclass' align='center'>";
 			echo "<input type='checkbox' class='chk' name='eventid".$offset_counter."' value='".$row2["id_evento"]."'>";
 			echo "</td></tr>";
 		}
@@ -312,7 +426,7 @@ if ($total_events > 0){
 	echo "<table width='750'><tr><td align='right'>";
 	
 	echo "<input class='sub ok' type='submit' name='updatebt' value='".$lang_label["validate"]."'> ";
-	if (give_acl($id_user, 0,"IM") ==1){
+	if (give_acl($config["id_user"], 0,"IM") ==1){
 		echo "<input class='sub delete' type='submit' name='deletebt' value='".$lang_label["delete"]."'>";
 	}
 	echo "</form></table>";

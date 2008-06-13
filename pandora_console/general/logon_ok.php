@@ -1,9 +1,9 @@
 <?php
 
-// Pandora - the Free monitoring system
+// Pandora FMS
 // ====================================
-// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas, info@artica.es
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2008 Artica Soluciones Tecnologicas, info@artica.es
 // Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -73,26 +73,53 @@
 	$data_alert = $data[8];
 	$data_alert_total = $data[9];
 	$monitor_alert_total = $data[10];
-	$total_alerts = $data_alert_total + $monitor_alert_total;
-	$total_checks = $data_checks + $monitor_checks;
+    $data_not_init = $data[11];
+    $monitor_not_init = $data[12];
+	// Calculate global indicators
 
-	if ($monitor_checks > 0){
-		$monitor_health = format_numeric ((($monitor_ok - $monitor_alert - $monitor_unknown)/ $monitor_checks) * 100,1);
-	} else 
-		$monitor_health = 100;
-	if ($data_checks > 0){
-		$data_health = format_numeric ( (($data_checks -($data_unknown + $data_alert)) / $data_checks ) * 100,1);;
-	} else
-		$data_health = 100;
-	if (($data_checks != 0) OR ($data_checks != 0)){
-		$global_health = format_numeric( ((($monitor_ok -$monitor_alert - $monitor_unknown )+($data_checks -($data_unknown + $data_alert))) / ($data_checks + $monitor_checks)  ) * 100, 1);
-	} else
-		$global_health = 100;
+    $total_checks = $data_checks + $monitor_checks;
+    $notinit_percentage = (($data_not_init + $monitor_not_init) / ($total_checks / 100));
+    $module_sanity = format_numeric (100 - $notinit_percentage);
+    $total_alerts = $data_alert + $monitor_alert;
+    $total_fired_alerts = $monitor_alert_total+$data_alert_total;
+    $alert_level = format_numeric (100 - ($total_alerts / ($total_fired_alerts / 100)));
+    
+    if ($monitor_checks > 0){
+        $monitor_health = format_numeric (  100- (($monitor_bad + $monitor_unknown) / ($monitor_checks/100)) , 1);
+    } else 
+        $monitor_health = 100;
+    if ($data_checks > 0){
+        $data_health = format_numeric ( (($data_checks -($data_unknown + $data_alert)) / $data_checks ) * 100,1);;
+    } else
+        $data_health = 100;
+    if (($data_checks != 0) OR ($data_checks != 0)){
+        $global_health = format_numeric ((($data_health * $data_checks) + ($monitor_health * $monitor_checks)) / $total_checks);
+    } else
+        $global_health = 100;
+
 		
-	echo "<h2>".$lang_label["tactical_indicator"]."</h2>";
-	echo "<img src='reporting/fgraph.php?tipo=odo_tactic&value1=$global_health&value2=$data_health&value3=$monitor_health'>";
+echo "<table class='databox' celldpadding=4 cellspacing=4 width=250>";
+        
+    //echo "<h2>".$lang_label["tactical_indicator"]."</h2>";
+    //echo "<img src='reporting/fgraph.php?tipo=odo_tactic&value1=$global_health&value2=$data_health&value3=$monitor_health'>";
+    
+    echo "<tr><td colspan='2'>".lang_string("Monitor health")."</th>";
+    echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$monitor_health' title='$monitor_health % ".lang_string("of monitors UP")."'>";
 
-	echo "<br>";
+    echo "<tr><td colspan='2'>".lang_string("Data health")."</th>";
+    echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$data_health' title='$data_health % ".lang_string("of modules with updated data")."'>";
+
+    echo "<tr><td colspan='2'>".lang_string("Global health")."</th>";
+    echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$global_health' title='$global_health % ".lang_string("of modules with good data")."'>";
+
+    echo "<tr><td colspan='2'>".lang_string("Module sanity")."</th>";
+    echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$module_sanity ' title='$module_sanity % ".lang_string("of well initialized modules")."'>";
+   
+
+    echo "<tr><td colspan='2'>".lang_string("Alert level")."</th>";
+    echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$alert_level' title='$alert_level % ".lang_string("of non-fired alerts")."'>";
+
+    echo "</table>";
 
 	$query1 = "SELECT COUNT(id_usuario) FROM tusuario";
 	$result = mysql_query ($query1);

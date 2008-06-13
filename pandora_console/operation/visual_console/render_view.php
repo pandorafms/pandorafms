@@ -19,11 +19,11 @@
 
 
 // Login check
-$id_usuario=$_SESSION["id_usuario"];
+global $config;
 global $REMOTE_ADDR;
 
 if (comprueba_login() != 0) {
-	audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access graph builder");
+	audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to access graph builder");
 	include ("general/noaccess.php");
 	exit;
 }
@@ -52,10 +52,29 @@ if (isset($_GET["id"])){
 	exit;
 }
 
+$refr = get_parameter ("refr", 0);
+$pure_url = "&pure=".$config["pure"];
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // RENDER MAP !
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-echo "<h1>".$layout_name."</h1>";
+echo "<h1>".$layout_name;
+
+if ($config["pure"] == 0){
+    echo lang_string("Full screen mode");
+    echo "&nbsp;";
+    echo "<a href='index.php?sec=visualc&sec2=operation/visual_console/render_view&id=$id_layout&refr=$refr&pure=1'>";
+    echo "<img src='images/monitor.png' title='".lang_string("Full screen mode")."'>";
+    echo "</a>";
+} else {
+    echo lang_string("Back to normal mode");
+    echo "&nbsp;";
+    echo "<a href='index.php?sec=visualc&sec2=operation/visual_console/render_view&id=$id_layout&pure=0&refr=$refr'>";
+    echo "<img src='images/monitor.png' title='".lang_string("Back to normal mode")."'>";
+    echo "</a>";
+}
+
+echo "</h1>";
 
 echo "<div id='layout_db' style='z-index: 0; position:relative; background: url(images/console/background/".$background."); width:".$bwidth."px; height:".$bheight."px;'>";
 $sql="SELECT * FROM tlayout_data WHERE id_layout = $id_layout";
@@ -98,7 +117,7 @@ while ($row = mysql_fetch_array($res)){
 		if (($link_layout == "") OR ($link_layout == 0)){
 			$link_string = "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agent&tab=data'>";
 		} else {
-			$link_string = "<a href='index.php?sec=visualc&sec2=operation/visual_console/render_view&id=$link_layout'>";
+			$link_string = "<a href='index.php?sec=visualc&sec2=operation/visual_console/render_view$pure_url&id=$link_layout'>";
 		}
 		// Draw image
 		echo "<div style='z-index: 1; color: #".$label_color."; position: absolute; margin-left: ".$pos_x."px; margin-top:".$pos_y."px; '>";
@@ -127,7 +146,7 @@ while ($row = mysql_fetch_array($res)){
 		if (($link_layout == "") OR ($link_layout == 0)){
 			$link_string = "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agent&tab=data'>";
 		} else {
-			$link_string = "<a href='http://index.php?sec=visualc&sec2=operation/visual_console/render_view&id=$link_layout'>";
+			$link_string = "<a href='http://index.php?sec=visualc&sec2=operation/visual_console/render_view$pure_url&id=$link_layout'>";
 		}
 		// Draw image
 		echo "<div style='z-index: 1; color: #".$label_color."; position: absolute; margin-left: ".$pos_x."px; margin-top:".$pos_y."px; '>";
@@ -194,18 +213,13 @@ echo "</div>";
 echo "<div style='height:30px'>";
 echo "</div>";
 
-echo "<form method='post' action='index.php?sec=visualc&sec2=operation/visual_console/render_view&id=$id_layout'>";
+echo "<form method='post' action='index.php?sec=visualc&sec2=operation/visual_console/render_view$pure_url&id=$id_layout'>";
 echo "<table width=300 cellpadding=4 cellspacing=4 class='databox'>";
 echo "<tr><td>";
 echo $lang_label["auto_refresh_time"];
 echo "<td>";
 echo "<select name='refr'>";
-if (isset ($_POST["refr"])){
-	$refr=$_POST["refr"];
-	echo "<option value=$refr> $refr ".$lang_label["seconds"];
-}
-if (isset ($_GET["refr"])){
-	$refr=$_GET["refr"];
+if ($refr > 0){
 	echo "<option value=$refr> $refr ".$lang_label["seconds"];
 }
 
@@ -221,4 +235,5 @@ echo "</select>";
 echo "<td>";
 echo "<input type='submit' class='sub next' value='".$lang_label["refresh"]."'>";
 echo "</table>";
+
 echo "</form>";

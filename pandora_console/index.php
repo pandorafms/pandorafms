@@ -70,12 +70,11 @@ require "include/functions_db.php";
 <html>
 <head>
 <?php
-// Refresh page
-if ( (isset ($_GET["refr"])) || (isset($_POST["refr"])) ){
-	if (isset ($_GET["refr"]))
-		$intervalo = entrada_limpia ($_GET["refr"]);
-	if (isset ($_POST["refr"]))
-		$intervalo = entrada_limpia ($_POST["refr"]);
+    // Pure mode (without menu, header and footer).
+    $config["pure"] = get_parameter("pure",0);
+
+    // Auto Refresh page
+	$intervalo = get_parameter ("refr",0);
 	if ($intervalo > 0){
 		// Agent selection filters and refresh
 		$query = 'http' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '') . '://' . $_SERVER['SERVER_NAME'];
@@ -94,7 +93,7 @@ if ( (isset ($_GET["refr"])) || (isset($_POST["refr"])) ){
 		} else 
 			echo '<meta http-equiv="refresh" content="' . $intervalo . '; URL=' . $query . '">';
 	}
-}
+
 ?>
 <title>Pandora FMS - <?php echo lang_string("header_title"); ?></title>
 <meta http-equiv="expires" content="0">
@@ -117,7 +116,11 @@ if ( (isset ($_GET["refr"])) || (isset($_POST["refr"])) ){
 
 <?php
     // Show custom background
-    echo '<body bgcolor="#555555">';
+    if ($config["pure"] == 0)
+        echo '<body bgcolor="#555555">';
+    else
+        echo '<body bgcolor="#FFFFFF">';
+
     $REMOTE_ADDR = getenv ("REMOTE_ADDR");
 
     // Login process 
@@ -176,6 +179,8 @@ if ( (isset ($_GET["refr"])) || (isset($_POST["refr"])) ){
 	} else {
         // There is session for id_usuario
         $config["id_user"] = $_SESSION["id_usuario"];
+        //$id_usuario = entrada_limpia ($_SESSION["id_usuario"]);
+        //$id_user = entrada_limpia ($_SESSION["id_usuario"]);
     }
 
 	// Log off
@@ -202,35 +207,51 @@ if ( (isset ($_GET["refr"])) || (isset($_POST["refr"])) ){
 	// http://es2.php.net/manual/en/ref.session.php#64525
 	// Session locking concurrency speedup!
 	session_write_close(); 
+
+    // Header
+    if ($config["pure"] == 0){
+        echo '<div id="container">';
+        echo '<div id="head">';
+        require("general/header.php"); 
+        echo '</div>';
+	    echo '<div id="page">';
+	    echo '	<div id="menu">';
+	    require ("general/main_menu.php");
+        echo '	</div>';
+    } else {
+        echo '<div id="main_pure">';
+    }
+    
+    // Main block of content
+    if ($config["pure"] == 0){
+        echo '<div id="main">';
+    }
+
+    // Page loader / selector
+    if ($pagina != ""){
+	    if (file_exists ($pagina . ".php")) {
+		    require ($pagina . ".php");
+	    } else {
+		    echo "<br><b class='error'>".lang_string("Sorry! I can't find the page!")."</b>";
+	    }	
+    } else
+	    require ("general/logon_ok.php");  //default
+
+    if ($config["pure"] == 0){    
+        echo '</div>'; // main
+        echo '<div style="clear:both"></div>';
+        echo '</div>'; // page
+    } else {
+        echo "</div>";
+    }
+    
+    if ($config["pure"] == 0){
+        echo '<div id="foot">';
+	    require("general/footer.php");
+	    echo '</div>';
+        echo '</div>';
+    }
+    
+    echo '</body></html>';
+
 ?>
-
-<div id="container">  
-	<div id='head'>
-		<?php require("general/header.php"); ?>
-	</div>
-	<div id="page">
-		<div id="menu">
-			<?php require ("general/main_menu.php"); ?>
-		</div>
-		<div id="main">
-			<?php
-				// Page loader / selector
-				if ($pagina != ""){
-					if (file_exists ($pagina . ".php")) {
-						require ($pagina . ".php");
-					} else {
-						echo "<br><b class='error'>Sorry! I can't find the page!</b>";
-					}	
-				} else
-					require ("general/logon_ok.php");  //default
-			?>
-		</div>
-		<div style="clear:both"></div>
-	</div>
-	<div id="foot">
-		<?php require("general/footer.php") ?>
-	</div>
-</div>
-
-</body>
-</html>

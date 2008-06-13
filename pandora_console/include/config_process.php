@@ -22,6 +22,18 @@ if (!isset($build_version))
 if (!isset($pandora_version))
     $pandora_version="v2.0-dev";
 
+// This is directory where placed "/attachment" directory, to upload files stores. 
+// This MUST be writtable by http server user, and should be in pandora root. 
+// By default, Pandora adds /attachment to this, so by default is the pandora console home dir
+
+$config["attachment_store"]=$config["homedir"];
+
+// Default font used for graphics (a Free TrueType font included with Pandora FMS)
+$config["fontpath"] = $config["homedir"]."/reporting/FreeSans.ttf";
+
+// Style (pandora by default)
+$config["style"] = "pandora";
+
 // Read remaining config tokens from DB
 if (! mysql_connect($config["dbhost"],$config["dbuser"],$config["dbpass"])){ 
 

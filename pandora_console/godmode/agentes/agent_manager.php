@@ -77,7 +77,7 @@ if (file_exists($config["remote_config"] . "/" . $agent_md5 . ".md5")) {
 echo '<tr><td class="datos2">';
 echo '<b>'.$lang_label["ip_address"].'</b>';
 echo '<td class="datos2">';
-echo '<input type="text" name="direccion" size="12" value="'.$direccion_agente.'">';
+echo '<input type="text" name="direccion" size="16" value="'.$direccion_agente.'">';
 
 if ($create_agent != 1){
 	echo "&nbsp;&nbsp;&nbsp;&nbsp;";
@@ -96,34 +96,39 @@ if ($create_agent != 1){
 	echo "</td>";
 }
 
+
+
+echo '<tr><td class="datos"><b>'.lang_string ("Parent").'</b>';
+echo '<td class="datos">';
+if ($create_agent != 1){
+    form_agent_combo ($id_parent, "id_parent");
+}
+else
+    form_agent_combo (0, "id_parent");
+
+
 echo '<tr><td class="datos"><b>'.$lang_label["group"].'</b>';
 echo '<td class="datos"><select name="grupo" class="w130">';
 
 if (isset($grupo)){
 echo "<option value='".$grupo."'>".dame_grupo($grupo)."</option>";
 }
-$sql1='SELECT id_grupo, nombre FROM tgrupo ORDER BY nombre';
-$result=mysql_query($sql1);
-while ($row=mysql_fetch_array($result)){
-	// Group ALL cannot be selected
-	if ($row["id_grupo"] != 1){
-		echo "<option value='".$row["id_grupo"]."'>".$row["nombre"]."</option>";
-	}
-}
-?>
-</select>
-<tr><td class="datos2"><b><?php echo $lang_label["interval"]?></b></td>
-<td class="datos2">
-<input type="text" name="intervalo" size="15" value="
-<?php echo $intervalo?>"></td>
-<tr><td class="datos"><b><?php echo $lang_label["os"]?></b></td>
-<td class="datos">
-<select name="id_os" class="w130">
-<?php
+list_group ($id_user);
+echo "</select>";
+
+echo "<tr><td class='datos2'>";
+echo "<b>".lang_string("interval")."</b></td>";
+echo '<td class="datos2">';
+
+echo '<input type="text" name="intervalo" size="15" value="'.$intervalo.'"></td>';
+echo '<tr><td class="datos"><b>'.lang_string("os").'</b></td>';
+echo '<td class="datos">';
+echo '<select name="id_os" class="w130">';
+
 if (isset($id_os)){
 	echo "<option value='".$id_os."'>".dame_so_name($id_os)."</option>";
 }
-$sql1='SELECT id_os, name FROM tconfig_os ORDER BY name';
+$sql1='SELECT id_os, name FROM tconfig_os';
 $result=mysql_query($sql1);
 while ($row=mysql_fetch_array($result)){
 	echo "<option value='".$row["id_os"]."'>".$row["name"]."</option>";
@@ -208,20 +213,31 @@ if ($modo == "1"){
 	<input type="radio" name="modo" class="chk" value="0" checked>';
 }
 
-?>
-<tr><td class="datos2"><b><?php echo $lang_label["status"]?></b>
-<td class="datos2">
-<?php if ($disabled == "1"){
-		echo $lang_label["disabled"].'
-		<input type="radio" class="chk" name="disabled" value="1" style="margin-right: 40px;" checked>';
-		echo $lang_label["active"].' 
-		<input class="chk" type="radio" name="disabled" value="0">';
-	} else {
-		echo $lang_label["disabled"].'
-		<input type="radio" class="chk" name="disabled" value="1" style="margin-right: 40px;">';
-		echo $lang_label["active"].'
-		<input type="radio" name="disabled" class="chk" value="0" checked>';
-	}
+
+// Status (Disabled / Enabled)
+echo '<tr><td class="datos2"><b>'.lang_string("status").'</b>';
+echo '<td class="datos2">';
+if ($disabled == "1"){
+	echo $lang_label["disabled"].'
+	<input type="radio" class="chk" name="disabled" value="1" style="margin-right: 40px;" checked>';
+	echo $lang_label["active"].' 
+	<input class="chk" type="radio" name="disabled" value="0">';
+} else {
+	echo $lang_label["disabled"].'
+	<input type="radio" class="chk" name="disabled" value="1" style="margin-right: 40px;">';
+	echo $lang_label["active"].'
+	<input type="radio" name="disabled" class="chk" value="0" checked>';
+}
+
+// Remote configuration
+echo '<tr><td class="datos"><b>'.lang_string("Remote configuration").'</b>';
+echo '<td class="datos">';
+$filename = $config["remote_config"] . "/" . $agent_md5 . ".md5";
+if (file_exists($filename)){
+    echo date("F d Y H:i:s.", fileatime($filename));
+} else {
+    echo '<i>'.lang_string("Not available").'</i>';
+}
 
 echo '</table><table width="650"><tr><td  align="right">';
 if ($create_agent == 1){

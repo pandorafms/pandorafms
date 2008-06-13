@@ -581,3 +581,43 @@ span#logo_text2 {
 	letter-spacing: -2px;
 	color: #aaa;
 }
+
+
+
+td.datos_green, td.datos_greenf9 {
+    background-color: #C7EAD5;
+    padding: 5px 5px 5px 5px;
+}
+
+td.datos_red, td.datos_redf9 {
+    background-color: #FFC0B5;
+    padding: 5px 5px 5px 5px;
+}
+
+td.datos_yellow, td.datos_yellowf9 {
+    background-color: #F4FFBF;
+    padding: 5px 5px 5px 5px;
+}
+
+td.datos_blue, td.datos_bluef9 {
+    background-color: #CDE2EA;
+    padding: 5px 5px 5px 5px;
+}
+
+td.datos_grey, td.datos_greyf9 {
+    background-color: #DCDCDC;
+    padding: 5px 5px 5px 5px;
+}
+
+td.datos_greyf9, td.datos_bluef9, td.datos_greenf9, td.datos_redf9, td.datos_yellowf9 {
+    font-size: 6.5pt;
+}
+
+div#main_pure {
+    background-color: #fefefe;
+    text-align: left;
+    margin-bottom: 25px;
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+}

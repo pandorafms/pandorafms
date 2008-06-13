@@ -34,6 +34,7 @@ if (comprueba_login() == 0) {
 			$comentarios = $row["comentarios"];
 			$id_grupo = $row["id_grupo"];
 			$id_os= $row["id_os"];
+            $id_parent= $row["id_parent"];  
 			$os_version = $row["os_version"];
 			$agent_version = $row["agent_version"];
 			$disabled= $row["disabled"];
@@ -42,7 +43,7 @@ if (comprueba_login() == 0) {
 			echo "<h3 class='error'>".$lang_label["agent_error"]."</h3>";
 			echo "</table>";
 			echo "</div><div id='foot'>";
-				include ("general/footer.php");
+			include ("general/footer.php");
 			echo "</div>";
 			exit;
 		}
@@ -102,28 +103,40 @@ if (comprueba_login() == 0) {
 	}*/
 	echo '</td>';
 	echo '</tr>';
-	echo '<tr>
-	<td class="datos2"><b>'.$lang_label["interval"].'</b></td>
-	<td class="datos2" colspan=2>'. human_time_description_raw($intervalo).'</td>';
-	echo '</tr>';	
-	echo '<tr>
-	<td class="datos"><b>'.$lang_label["description"].'</b></td>
-	<td class="datos" colspan=2>'.$comentarios.'</td>';
+	
+    // Parent
+    echo '<tr>
+    <td class="datos2"><b>'.lang_string("Parent").'</b></td>
+    <td class="datos2" colspan=2>';
+    echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_parent'>";
+    echo dame_nombre_agente($id_parent).'</a></td>';
 
+    // Agent Interval
+    echo '<tr>
+	<td class="datos"><b>'.$lang_label["interval"].'</b></td>
+	<td class="datos" colspan=2>'. human_time_description_raw($intervalo).'</td>';
+	echo '</tr>';	
+	
+    // Comments
+    echo '<tr>
+	<td class="datos2"><b>'.$lang_label["description"].'</b></td>
+	<td class="datos2" colspan=2>'.$comentarios.'</td>';
 	echo '</tr>';
+
+    // Group
 	echo '<tr>
-	<td class="datos2"><b>'.$lang_label["group"].'</b></td>
-	<td class="datos2" colspan="2">
+	<td class="datos"><b>'.$lang_label["group"].'</b></td>
+	<td class="datos" colspan="2">
 	<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.png" >&nbsp;&nbsp; '.dame_grupo($id_grupo).'</td></tr>';
 	
     // Agent version
-	echo '<tr><td class="datos"><b>'.lang_string ("agentversion"). '</b>';
-    echo '<td class="datos" colspan=2>'.salida_limpia($agent_version). '</td>';
+	echo '<tr><td class="datos2"><b>'.lang_string ("agentversion"). '</b>';
+    echo '<td class="datos2" colspan=2>'.salida_limpia($agent_version). '</td>';
 	
 	// Total packets
 	echo '<tr>
-	<td class="datos2"><b>'. lang_string ("total_packets"). '</b></td>';
-	echo '<td class="datos2" colspan=2>';
+	<td class="datos"><b>'. lang_string ("total_packets"). '</b></td>';
+	echo '<td class="datos" colspan=2>';
 	$total_paketes= 0;
 	$sql_3='SELECT COUNT(*) FROM tagente_datos WHERE id_agente = '.$id_agente;
 	$result_3=mysql_query($sql_3);
@@ -134,10 +147,10 @@ if (comprueba_login() == 0) {
 
 	// Last contact
 	echo '<tr>
-		<td class="datos">
+		<td class="datos2">
 		<b>'.$lang_label["last_contact"]." / ".$lang_label["remote"].'</b>
 		</td>
-		<td class="datos f9" colspan="2">';
+		<td class="datos2 f9" colspan="2">';
 	if ($ultima_act == "0000-00-00 00:00:00"){ 
 		echo $lang_label["never"];
 	} else {
@@ -150,17 +163,6 @@ if (comprueba_login() == 0) {
 		echo $ultima_act_remota;
 	}
 	
-/*
-	// Asigned/active server
-	echo '<tr><td class="datos2"><b>'.$lang_label["server_asigned"].'</b></td>
-	<td class="datos2" colspan=2">';
-	if ($server == ""){ 
-		echo "N/A";
-	} else {
-		echo give_server_name($server);
-	}
-*/
-
 	// Next contact
 
 	$ultima = strtotime($ultima_act);
@@ -196,8 +198,8 @@ if (comprueba_login() == 0) {
 		</td>
 	</tr><tr>
 		<td><div style='height:25px'> </div>
-		<b>".$lang_label["agent_module_shareout"]."</b><br><br>
-		<img src='reporting/fgraph.php?id=".$id_agente."&tipo=agentmodules&height=150&width=280' >
+		<b>".lang_string("Events generated -by module-")."</b><br><br>
+		<img src='reporting/fgraph.php?tipo=event_module&width=250&height=180&id_agent=".$id_agente."' >
 		</td></tr>
 	</table></td></tr>
 	</table>

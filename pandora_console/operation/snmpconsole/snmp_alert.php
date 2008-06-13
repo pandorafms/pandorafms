@@ -42,6 +42,7 @@ if (give_acl($id_user, 0, "LW")==1) {
 	$last_fired = "";
 	$max_alerts = "";
 	$min_alerts = "";
+    $priority = "";
 
 	// Alert Delete
 	// =============
@@ -72,16 +73,17 @@ if (give_acl($id_user, 0, "LW")==1) {
 		$field1 = entrada_limpia($_POST["field1"]);
 		$field2 = entrada_limpia($_POST["field2"]);
 		$field3 = entrada_limpia($_POST["field3"]);
+        $priority = get_parameter ("priority",0);
 		
 		if ($create == 1){
-			$sql = "INSERT INTO talert_snmp (id_alert,al_field1,al_field2,al_field3,description,alert_type,agent,custom_oid,oid,time_threshold,max_alerts,min_alerts) VALUES ($alert_id,'$field1','$field2','$field3','$description', $alert_type, '$agent', '$custom', '$oid', $time, $max, $min)";
+			$sql = "INSERT INTO talert_snmp (id_alert,al_field1,al_field2,al_field3,description,alert_type,agent,custom_oid,oid,time_threshold,max_alerts,min_alerts, priority) VALUES ($alert_id,'$field1','$field2','$field3','$description', $alert_type, '$agent', '$custom', '$oid', $time, $max, $min, $priority)";
 			$result=mysql_query($sql);
 			if (!$result)
 				echo "<h3 class='error'>".$lang_label["create_alert_no"]."</h3>";
 			else
 				echo "<h3 class='suc'>".$lang_label["create_alert_ok"]."</h3>";
 		} else { 
-			$sql = "UPDATE talert_snmp set id_alert= $alert_id, al_field1 = '$field1', al_field2 = '$field2', al_field3 = '$field3', description = '$description', alert_type = $alert_type, agent = '$agent', custom_oid = '$custom', oid = '$oid', time_threshold = $time, max_alerts = '$max', min_alerts = '$min' WHERE id_as = $id_as";
+			$sql = "UPDATE talert_snmp set priority = $priority, id_alert= $alert_id, al_field1 = '$field1', al_field2 = '$field2', al_field3 = '$field3', description = '$description', alert_type = $alert_type, agent = '$agent', custom_oid = '$custom', oid = '$oid', time_threshold = $time, max_alerts = '$max', min_alerts = '$min' WHERE id_as = $id_as";
 			$result=mysql_query($sql);
 			if (!$result)
 				echo "<h3 class='error'>".$lang_label["update_alert_no"]."</h3>";
@@ -113,6 +115,7 @@ if (give_acl($id_user, 0, "LW")==1) {
 			$last_fired = $row["last_fired"];
 			$max_alerts = $row["max_alerts"];
 			$min_alerts = $row["min_alerts"];
+            $priority = $row["priority"];
 		}
 	}
 	if (isset($_POST["add_alert"])){
@@ -186,19 +189,44 @@ if (give_acl($id_user, 0, "LW")==1) {
 		echo '<td class=datos><input type="text" size=30 name="field1" value="'.$al_field1.'"></td>';
 		echo '<tr><td class="datos2">'.$lang_label["field2"].'</td>';
 		echo '<td class="datos2"><input type="text" size=40 name="field2" value="'.$al_field2.'"></td>';
-		echo '<tr><td class=datos>'.$lang_label["field3"];
-		echo '<td class=datos><input type="text" size=60 name="field3" value="'.$al_field3.'"></td>';
+		echo '<tr><td class=datos valign="top">'.$lang_label["field3"];
+		echo '<td class=datos><textarea rows=4 style="width:400px" name="field3">'.$al_field3.'</textarea>';
 		
-		// max & min alerts, time threshold
+		// Max / Min alerts
 		echo '<tr>
 		<td class="datos2">'.$lang_label["min_alerts"].'</td>';
 		echo '<td class="datos2"><input type="text" size=3 name="min" value="'.$min_alerts.'"></td>';
 		echo '<tr>
 		<td class="datos">'.$lang_label["max_alerts"].'</td>';
 		echo '<td class=datos><input type="text" size=3 name="max" value="'.$max_alerts.'"></td>';
+
+        // Time THreshold
 		echo '<tr>
 		<td class="datos2">'.$lang_label["time_threshold"].'</td>';
-		echo '<td class="datos2"><input type="text" size=3 name="time" value="'.$time_threshold.'"></td>';
+		echo '<td class="datos2">';
+        echo '<select name="time" style="margin-right: 60px;">';
+        if ($time_threshold != ""){ 
+            echo "<option value='".$time_threshold."'>".human_time_description($time_threshold)."</option>";
+        }
+        echo '
+        <option value=300>5 Min.</option>
+        <option value=600>10 Min.</option>
+        <option value=900>15 Min.</option>
+        <option value=1800>30 Min.</option>
+        <option value=3600>1 Hour</option>
+        <option value=7200>2 Hour</option>
+        <option value=18000>5 Hour</option>
+        <option value=43200>12 Hour</option>
+        <option value=86400>1 Day</option>
+        <option value=604800>1 Week</option>
+        <option value=-1>Other value</option>
+        </select>';
+
+        // Priority
+        echo '<tr><td class="datos">'.lang_string("Priority");
+        echo '<td class="datos">';
+        echo form_priority ($priority);
+
 		echo '</tr></table>';
 		echo '<table cellpadding="4" cellspacing="4" width="650">
 		<tr><td align="right">';

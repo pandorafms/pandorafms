@@ -36,7 +36,13 @@ if (comprueba_login() == 0) {
 
 <?php
 $color = 1;
-$query1="SELECT * FROM tusuario";
+
+
+if (give_acl($config["id_user"], 0, "UM") == 1)
+    $query1="SELECT * FROM tusuario";
+else
+    $query1="SELECT * FROM tusuario WHERE id_usuario = '".$config["id_user"]."'";
+
 $resq1=mysql_query($query1);
 while ($rowdup=mysql_fetch_array($resq1)){
 	$name=$rowdup["id_usuario"];

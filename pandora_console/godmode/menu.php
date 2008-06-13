@@ -2,7 +2,7 @@
 
 // Pandora FMS - the Free monitoring system
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
 // Main PHP/SQL code development and project architecture and management
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
 // CSS and some PHP additions
@@ -46,16 +46,20 @@ if (comprueba_login() == 0){
 			else echo "<div class='arrowg'>";
 			echo "<ul class='mn'><li><a href='index.php?sec=gagente&amp;sec2=godmode/agentes/manage_config' class='mn'>".$lang_label["manage_config"]."</a></li></ul></div>";
 			
-			if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/groups/group_list" || $_GET["sec2"] == "godmode/groups/configure_group")){
-				echo "<div class='arrowgs'>";
-			}
-			else
-				echo "<div class='arrowg'>";
-			echo "<ul class='mn'><li><a href='index.php?sec=gagente&amp;sec2=godmode/groups/group_list' class='mn'>".$lang_label["manage_groups"]."</a></li></ul></div>";
-		}
-	}
 
-	if ((give_acl($id_user, 0, "AW")==1)){
+            // Manage groups
+            if ((give_acl($id_user, 0, "PM")==1)){
+			    if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/groups/group_list" || $_GET["sec2"] == "godmode/groups/configure_group")){
+				    echo "<div class='arrowgs'>";
+			    }
+			    else
+				    echo "<div class='arrowg'>";
+			    echo "<ul class='mn'><li><a href='index.php?sec=gagente&amp;sec2=godmode/groups/group_list' class='mn'>".$lang_label["manage_groups"]."</a></li></ul></div>";
+		    }
+	    }
+    }
+
+	if ((give_acl($id_user, 0, "PM")==1)){
 		if (isset($_GET["sec"]) && ($_GET["sec"] == "gmodules"))
 			echo '<div id="god_module_sel">';
 		else
@@ -113,7 +117,7 @@ if (comprueba_login() == 0){
 	}
 	// Reporting
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	if ((give_acl($id_user, 0, "AW")==1)){
+	if ((give_acl($id_user, 0, "PM")==1)){
 			
 			echo '<div id="god51">';
 		

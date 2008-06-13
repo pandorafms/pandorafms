@@ -24,7 +24,7 @@
 	echo "<h2>".$lang_label["ag_title"]." &gt; ";
 	echo $lang_label["tactical_view"]."</h2>";
 
-	$data = general_stats($id_user,0);
+	$data = general_stats ($id_user,-1);
 	$monitor_checks = $data[0];
 	$monitor_ok = $data[1];
 	$monitor_bad = $data[2];
@@ -37,14 +37,51 @@
 	$data_alert_total = $data[9];
 	$monitor_alert_total = $data[10];
 	$data_not_init = $data[11];
-	$monitor_not_init = $data[12];	
-	$total_checks = $data_checks + $monitor_checks;
+	$monitor_not_init = $data[12];
 
+    // Calculate global indicators
+
+	$total_checks = $data_checks + $monitor_checks;
+    $notinit_percentage = (($data_not_init + $monitor_not_init) / ($total_checks / 100));
+    $module_sanity = format_numeric (100 - $notinit_percentage);
+    $total_alerts = $data_alert + $monitor_alert;
+    $total_fired_alerts = $monitor_alert_total+$data_alert_total;
+    $alert_level = format_numeric (100 - ($total_alerts / ($total_fired_alerts / 100)));
+    
+    if ($monitor_checks > 0){
+        $monitor_health = format_numeric (  100- (($monitor_bad + $monitor_unknown) / ($monitor_checks/100)) , 1);
+    } else 
+        $monitor_health = 100;
+    if ($data_checks > 0){
+        $data_health = format_numeric ( (($data_checks -($data_unknown + $data_alert)) / $data_checks ) * 100,1);;
+    } else
+        $data_health = 100;
+    if (($data_checks != 0) OR ($data_checks != 0)){
+        $global_health = format_numeric ((($data_health * $data_checks) + ($monitor_health * $monitor_checks)) / $total_checks);
+    } else
+        $global_health = 100;
+    
 	// Monitor checks
 	// ~~~~~~~~~~~~~~~
-	echo "<table width=700 border=0>";
+	echo "<table width=770 border=0>";
 	echo "<tr><td>";
 	echo "<table class='databox' celldpadding=4 cellspacing=4 width=250>";
+
+// Summary
+    
+    echo "<tr><td colspan='2'><b>".lang_string("Monitor health")."</th>";
+    echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$monitor_health' title='$monitor_health % ".lang_string("of monitors UP")."'>";
+    echo "<tr><td colspan='2'><b>".lang_string("Data health")."</th>";
+    echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$data_health' title='$data_health % ".lang_string("of modules with updated data")."'>";
+    echo "<tr><td colspan='2'><b>".lang_string("Global health")."</th>";
+    echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$global_health' title='$global_health % ".lang_string("of modules with good data")."'>";
+    echo "<tr><td colspan='2'><b>".lang_string("Module sanity")."</th>";
+    echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$module_sanity ' title='$module_sanity % ".lang_string("of well initialized modules")."'>";
+    echo "<tr><td colspan='2'><b>".lang_string("Alert level")."</th>";
+    echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$alert_level' title='$alert_level % ".lang_string("of non-fired alerts")."'>";
+    
+
+    echo "<tr>";
 	echo "<th colspan=2>".$lang_label["monitor_checks"]."</th>";
 	echo "<tr><td class=datos2><b>"."Monitor checks"."</b></td>";
 	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #000;'>".$monitor_checks."</td>";
@@ -64,7 +101,7 @@
 		echo "-";
 
 	echo "</td></tr><tr><td class=datos2><b>"."Monitor Not Init"."</b></td>";
-        echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #888;'>";
+        echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #FF8C00;'>";
         if ($monitor_not_init> 0)
                 echo $monitor_not_init;
         else
@@ -78,12 +115,12 @@
 		echo "-";
 	echo "<tr><td class=datos2><b>"."Alerts Total"."</b></td>";
 	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #000000;'>".$monitor_alert_total;
-	echo "</table>";
+	
 
 	// Data checks
 	// ~~~~~~~~~~~~~~~
-	echo "<table class='databox' celldpadding=4 cellspacing=4 width=250>";
-	echo "<th colspan=2>".$lang_label["data_checks"]."</th>";
+    
+	echo "<tr><th colspan=2>".$lang_label["data_checks"]."</th>";
 	echo "<tr><td class=datos2><b>"."Data checks"."</b></td>";
 	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #000000;'>".$data_checks;
 	echo "<tr><td class=datos><b>"."Data Unknown"."</b></td>";
@@ -93,7 +130,7 @@
 	else
 		echo "-";
 	echo "<tr><td class=datos2><b>"."Data not init"."</b></td>";
-	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #f00;'>";
+	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #FF8C00;'>";
 	if ($data_not_init > 0)
 		echo $data_not_init;
 	else
@@ -106,55 +143,45 @@
                 echo "-";
 	echo "<tr><td class=datos2><b>"."Alerts Total";
 	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #000;'>".$data_alert_total;
-	echo "</table>";
+
 
 	// Summary
 	// ~~~~~~~~~~~~~~~
-	echo "<table class='databox' celldpadding=4 cellspacing=4 width=250>";
-	echo "<th colspan='2'>".$lang_label["summary"]."</th>";
+
+	echo "<tr><th colspan='2'>".$lang_label["summary"]."</th>";
 	echo "<tr><td class='datos2'><b>"."Total agents"."</b></td>";
 	echo "<td class='datos2' style='font: bold 2em Arial, Sans-serif; color: #000;'>".$total_agents;
 	echo "<tr><td class='datos'><b>"."Total checks"."</b></td>";
 	echo "<td class='datos' style='font: bold 2em Arial, Sans-serif; color: #000;'>".$total_checks;
+
+    echo "<tr><td class='datos2'><b>"."Server sanity"."</b></td>";
+    echo "<td class='datos2' style='font: bold 2em Arial, Sans-serif; color: #000;'";
+    echo format_numeric($notinit_percentage);
+    echo "% ".lang_string("Uninitialized modules");
+
 	echo "</table>";
 
 	echo "<td valign='top'>";
 
-	// Odometer Graph
-	// ~~~~~~~~~~~~~~~
-	if ($monitor_checks > 0){
-		$monitor_health = format_numeric ((($monitor_ok - $monitor_alert - $monitor_unknown)/ $monitor_checks) * 100,1);
-	} else 
-		$monitor_health = 100;
-	if ($data_checks > 0){
-		$data_health = format_numeric ( (($data_checks -($data_unknown + $data_alert)) / $data_checks ) * 100,1);;
-	} else
-		$data_health = 100;
-	if (($data_checks != 0) OR ($data_checks != 0)){
-		$global_health = format_numeric( ((($monitor_ok -$monitor_alert - $monitor_unknown )+($data_checks -($data_unknown + $data_alert))) / ($data_checks + $monitor_checks)  ) * 100, 1);
-	} else
-		$global_health = 100;
-		
-	echo "<h2>".$lang_label["tactical_indicator"]."</h2>";
-	echo "<img src='reporting/fgraph.php?tipo=odo_tactic&value1=$global_health&value2=$data_health&value3=$monitor_health'>";
-
 	// Server information
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        // Get total modules defined (network)
-        $total_modules_network = get_db_sql  ("SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo > 4 AND id_tipo_modulo != 100");
-        // Get total modules defined (data)
-        $total_modules_data = get_db_sql  ("SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo < 5 OR id_tipo_modulo = 100");
-	echo "<h2>".$lang_label["tactical_server_information"]."</h2>";
+    // Get total modules defined (network)
+    $total_modules_network = get_db_sql  ("SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo > 4 AND id_tipo_modulo < 19 AND id_tipo_modulo != 100");
+
+    // Get total modules defined (data)
+    $total_modules_data = get_db_sql  ("SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo < 5 OR id_tipo_modulo = 100");
 	// Connect DataBase
-        $sql='SELECT * FROM tserver';
+    $sql='SELECT * FROM tserver';
 	$result=mysql_query($sql);
 	if (mysql_num_rows($result)){
-		echo "<table cellpadding='4' cellspacing='4' witdh='720' class='databox'>";
-		echo "<tr><th class='datos'>".$lang_label["name"]."</th>";
-		echo "<th class='datos'>".$lang_label['status']."</th>";
-		echo "<th class='datos'>".$lang_label['load']."</th>";
-		echo "<th class='datos'>".$lang_label['modules']."</th>";
-		echo "<th class='datos'>".$lang_label['lag']."</th>";
+		echo "<table cellpadding='4' cellspacing='4' witdh='440' class='databox'>";
+        echo "<tr><th colspan=5>";
+        echo lang_string("tactical_server_information");
+		echo "<tr><td class='datos3'>".$lang_label["name"]."</th>";
+		echo "<td class='datos3'>".$lang_label['status']."</th>";
+		echo "<td class='datos3'>".$lang_label['load']."</th>";
+		echo "<td class='datos3'>".$lang_label['modules']."</th>";
+		echo "<td class='datos3'>".$lang_label['lag']."</th>";
 		$color=1;
 		while ($row=mysql_fetch_array($result)){
 			if ($color == 1){
@@ -190,14 +217,15 @@
 				echo "<b>$name</b>";
 				echo "<td class='$tdcolor' align='middle'>";
 				if ($status ==0){
-					echo "<img src='images/dot_red.png'>";
+					echo "<img src='images/pixel_red.png' width=20 height=20>";
 				} else {
-					echo "<img src='images/dot_green.png'>";
+					echo "<img src='images/pixel_green.png' width=20 height=20>";
 				}
 				echo "<td class='$tdcolor' align='middle'>";
 				if (($network_server == 1) OR ($data_server == 1)){
 					// Progress bar calculations
                                         if ($network_server == 1){
+                                                $total_modules_network_LAG = get_db_sql  ("SELECT COUNT( tagente_modulo.id_agente_modulo) FROM tagente, tagente_modulo, tagente_estado WHERE id_network_server = $id_server AND  tagente_modulo.id_agente = tagente.id_agente AND tagente.disabled = 0 AND tagente_modulo.id_tipo_modulo > 4 AND tagente_modulo.id_tipo_modulo < 19 AND tagente_modulo.disabled = 0 AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND (((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP()) OR tagente_modulo.flag = 1 );");
                                                 if ($modules_server == 0)
                                                         $percentil = 0;
                                                 if ($modules_server > 0)
@@ -206,6 +234,7 @@
                                                         $percentil = 0;
                                                 $total_modules_temp = $total_modules_network;
                                         } else {
+                                                $total_modules_network_LAG = get_db_sql  ("SELECT COUNT( tagente_modulo.id_agente_modulo) FROM tagente, tagente_modulo, tagente_estado WHERE tagente_estado.running_by = $id_server AND  tagente_modulo.id_agente = tagente.id_agente AND tagente.disabled = 0 AND tagente_modulo.disabled = 0 AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND (((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP()) OR tagente_modulo.flag = 1 );");
                                                 if ($total_modules_data == 0)
                                                         $percentil = 0;
                                                 else
@@ -245,6 +274,7 @@
 					echo $modules_server . " / ". $total_modules_temp;
 				else
 					echo "-";
+                
 
 				// LAG CHECK
                         	echo "<td class='$tdcolor'>";
@@ -252,7 +282,7 @@
 	                        // and calculate difference in seconds
 	                        // Get total modules defined for this server
 	                        if (($network_server == 1) OR ($data_server == 1)){
-					if ($network_server == 1)
+					                if ($network_server == 1)
 	                                        $sql1 = "SELECT MIN(last_execution_try),current_interval FROM tagente_estado WHERE last_execution_try > 0 AND running_by=$id_server GROUP BY current_interval ORDER BY 1";
 	                                if ($data_server == 1)
 						// This only checks for agent with a last_execution_try of at
@@ -265,12 +295,12 @@
 	                                        while ($row1=mysql_fetch_array($result1)){
 	                                                if (($row1[0] + $row1[1]) < $nowtime){
 	                                                        $maxlag2 =  $nowtime - ($row1[0] + $row1[1]);
-								// More than 5 times module interval is not lag, is a big
-								// problem in agent, network or servers..
-								if ($maxlag2 < ($row1[1]*5))
-	                                                       	 	if ($maxlag2 > $maxlag)
-	                                                                	$maxlag = $maxlag2;
-        	                                        }
+								                            // More than 5 times module interval is not lag, is a big
+								                            // problem in agent, network or servers..
+								                            if ($maxlag2 < ($row1[1]*5))
+	                                                            if ($maxlag2 > $maxlag)
+	                                                                $maxlag = $maxlag2;
+        	                                        }   
                 	                        }
                         	        if ($maxlag < 60)
 	                                        echo $maxlag." sec";
@@ -278,6 +308,7 @@
 	                                        echo format_numeric($maxlag/60) . " min";
 	                                elseif ($maxlag > 86400)
 	                                        echo "+1 ".$lang_label["day"];
+                                    echo " - ".$total_modules_network_LAG ." ".lang_string("modules");
 	                        } elseif ($recon_server == 1) {
         	                        $sql1 = "SELECT * FROM trecon_task WHERE id_network_server = $id_server";
 	                                $result1=mysql_query($sql1);
@@ -302,6 +333,10 @@
 			}
 		}
 		echo '</table>';
+
+    // Event information
+    smal_event_table ("", 10, 440);
+
 	}
 	echo "</table>";
 

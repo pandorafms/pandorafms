@@ -2,7 +2,7 @@
 // Begin of automatic config file
 $config["dbname"]="pandora";			// MySQL DataBase name
 $config["dbuser"]="pandora";			// DB User
-$config["dbpass"]="swfvnldt";	// DB Password
+$config["dbpass"]="pandora";	// DB Password
 $config["dbhost"]="localhost";			// DB Host
 $config["homedir"]="/var/www/pandora_console/";		// Config homedir
 $config["homeurl"]="http://localhost/pandora_console";			// Base URL
@@ -42,17 +42,7 @@ $config["homeurl"]="http://localhost/pandora_console";			// Base URL
 // Display ALL errors
 error_reporting(E_ALL);
 
-// This is directory where placed "/attachment" directory, to upload files stores. 
-// This MUST be writtable by http server user, and should be in pandora root. 
-// By default, Pandora adds /attachment to this, so by default is the pandora console home dir
 
-$config["attachment_store"]=$config["homedir"];
-
-// Default font used for graphics (a Free TrueType font included with Pandora FMS)
-$config["fontpath"] = $config["homedir"]."/reporting/FreeSans.ttf";
-
-// Style (pandora by default)
-$config["style"] = "pandora";
 
 include ("config_process.php");
 ?>

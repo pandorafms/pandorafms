@@ -4,6 +4,8 @@
 // Pandora FMS - the Free Monitoring System
 // ========================================
 // Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
+// Copyright (c) 2008 Sancho Lerena <slerena@gmail.com>
+
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -68,16 +70,12 @@ if ($form_alerttype != "combined"){
 }
 echo '<td class="datos3">';
 echo lang_string ("Priority");
-echo '<td class="datos3"><select name="alert_priority">';
+echo '<td class="datos3">';
+
 if (isset($alert_priority)){
-    echo "<option value='".$alert_priority."'>".get_alert_priority ($alert_priority)."</option>";
-} else {
-    $alert_priority = 0;
+    $alert_priority = 3; // Warning by default
 }
-for ($i=0; $i<5; $i++){
-    if ($i != $alert_priority)
-        echo "<option value='".$i."'>".get_alert_priority ($i)."</option>";
-}
+echo form_priority ($alert_priority, "alert_priority");
 
 // Alert type
 echo '<tr><td class="datos">';
@@ -195,7 +193,7 @@ echo '<b>Macros:</b><br>_agent_<br>_timestamp_<br>_data_<br></span></a>';
 //Field3
 echo '<tr><td class="datos">'.lang_string ("field3");
 echo '<td class="datos" colspan=4>';
-echo '<textarea name="campo_3" style="height:85px;" cols="36" rows="4">';
+echo '<textarea name="campo_3" style="height:85px; width: 380px" rows="4">';
 echo $alerta_campo3;
 echo '</textarea><a href="#" class="tip"><span><b>Macros:</b><br>_agent_<br>';
 echo '_timestamp_<br>_data_<br></span></a>';
@@ -213,6 +211,7 @@ for ($a=0; $a < 48; $a++){
     echo "'>";
     echo render_time ($a);
 }
+echo "<option value='23:59'>23:59";
 echo "</select>";
 
 echo "<td class='datos2'>".$lang_label["time_to"];
@@ -227,6 +226,7 @@ for ($a=0; $a < 48; $a++){
     echo "'>";
     echo render_time ($a);
 }
+echo "<option value='23:59'>23:59";
 echo "</select>";
     
 // Days of week

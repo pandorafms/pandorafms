@@ -756,15 +756,16 @@ function existe($id){
 }
 
 // --------------------------------------------------------------- 
-// event_insert - Insert event in eventable, using Id_grupo, Id_agente and Evento
+// event_insert - Insert generic event in eventable
 // --------------------------------------------------------------- 
 
-function event_insert($evento, $id_grupo, $id_agente, $status=0, $id_usuario=''){
+function event_insert($evento, $id_grupo, $id_agente, $status=0, $id_usuario='', $event_type = "unknown", $priority = 0, $id_agent_module, $id_aam){
 	require("config.php");
 	$today=date('Y-m-d H:i:s');
 	$utimestamp = time();
-	
-	$sql1='INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, id_usuario) VALUES ('.$id_agente.','.$id_grupo.',"'.$evento.'","'.$today.'",'.$status.', '.$utimestamp.', "'.$id_usuario.'")';
+
+	$sql1='INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, id_usuario, event_type, criticity, id_agentmodule, id_alert_am) VALUES ('.$id_agente.','.$id_grupo.',"'.$evento.'","'.$today.'",'.$status.', '.$utimestamp.', "'.$id_usuario.'", "'.$event_type.'", '.$priority.', '.$id_agent_module.', '.$id_aam.')';
+
 	$result=mysql_query($sql1);
 
 }
@@ -1450,6 +1451,117 @@ function show_alert_row_mini ($id_combined_alert){
         else
             echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_green.png' title='".$lang_label["not_fired"]."'></td>";
 
+    }
+    echo "</table>";
+}
+function smal_event_table ($filter = "", $limit = 10, $width=440){
+    global $config;
+    global $lang_label;
+
+    $sql2 = "SELECT * FROM tevento $filter ORDER BY timestamp DESC LIMIT $limit";
+    echo "<table cellpadding='4' cellspacing='4' width='$width' border=0 class='databox'>";
+    echo "<tr>";
+    echo "<th colspan=6>".lang_string("Latest events");
+    echo "<tr>";
+    echo "<td class='datos3 f9'>".lang_string ("St")."</th>";
+    echo "<td class='datos3 f9'>".lang_string ("Type")."</th>";
+    echo "<td class='datos3 f9'>".$lang_label["event_name"]."</th>";
+    echo "<td class='datos3 f9'>".$lang_label["agent_name"]."</th>";
+    echo "<td class='datos3 f9'>".$lang_label["id_user"]."</th>";
+    echo "<td class='datos3 f9'>".$lang_label["timestamp"]."</th>";
+    $result2=mysql_query($sql2);
+    while ($row2=mysql_fetch_array($result2)){
+        $id_grupo = $row2["id_grupo"];
+        if (give_acl($config["id_user"], $id_grupo, "AR") == 1){ // Only incident read access to view data !
+            switch ($row2["criticity"]) {
+                case 0: 
+                    $tdclass = "datos_blue";
+                    break;
+                case 1: 
+                    $tdclass = "datos_grey";
+                    break;
+                case 2: 
+                    $tdclass = "datos_green";
+                    break;
+                case 3: 
+                    $tdclass = "datos_yellow";
+                    break;
+                case 4: 
+                    $tdclass = "datos_red";
+                    break;
+                default:
+                    $tdclass = "datos_grey";
+            }
+            $criticity_label = return_priority ($row2["criticity"]);
+            // Colored box 
+            echo "<tr><td class='$tdclass' title='$criticity_label' align='center'>";
+            if ($row2["estado"] == 0)
+                echo "<img src='images/pixel_red.png' width=20 height=20>";
+            else
+                echo "<img src='images/pixel_green.png' width=20 height=20>";
+    
+            // Event type
+            echo "<td class='".$tdclass."' title='".$row2["event_type"]."'>";
+            switch ($row2["event_type"]){
+                case "unknown": 
+                    echo "<img src='images/err.png'>";
+                    break;
+                case "alert_recovered": 
+                    echo "<img src='images/error.png'>";
+                    break;
+                case "alert_manual_validation": 
+                    echo "<img src='images/eye.png'>";
+                    break;
+                case "monitor_up":
+                    echo "<img src='images/lightbulb.png'>";
+                    break;
+                case "monitor_down":
+                    echo "<img src='images/lightbulb_off.png'>";
+                    break;
+                case "alert_fired":
+                    echo "<img src='images/bell.png'>";
+                    break;
+                case "system";
+                    echo "<img src='images/cog.png'>";
+                    break;
+                case "recon_host_detected";
+                    echo "<img src='images/network.png'>";
+                    break;
+            }
+    
+            // Event description
+            echo "<td class='".$tdclass."f9' title='".$row2["evento"]."'>";
+            echo substr($row2["evento"],0,45);
+            if (strlen($row2["evento"]) > 45)
+                echo "..";
+            if ($row2["id_agente"] > 0){
+                    // Agent name
+                    $agent_name = dame_nombre_agente($row2["id_agente"]);
+                    echo "<td class='".$tdclass."f9' title='$agent_name'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row2["id_agente"]."'><b>";
+                    echo substr($agent_name, 0, 14);
+                    if (strlen($agent_name) > 14)
+                        echo "..";
+                    echo "</b></a>";
+    
+            // for System or SNMP generated alerts
+            } else { 
+                if ($row2["event_type"] == "system"){
+                    echo "<td class='$tdclass'>".lang_string("System");
+                } else {
+                    echo "<td class='$tdclass'>".$lang_label["alert"]."SNMP";
+                }
+            }
+    
+            // User who validated event
+            echo "<td class='$tdclass'>";
+            if ($row2["estado"] <> 0)
+                echo "<a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$row2["id_usuario"]."'>".substr($row2["id_usuario"],0,8)."<a href='#' class='tip'> <span>".dame_nombre_real($row2["id_usuario"])."</span></a></a>";
+    
+            // Timestamp
+            echo "<td class='".$tdclass."f9' title='".$row2["timestamp"]."'>";
+            echo human_time_comparation($row2["timestamp"]);
+    
+        }
     }
     echo "</table>";
 }

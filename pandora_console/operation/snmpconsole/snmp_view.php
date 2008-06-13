@@ -131,14 +131,13 @@ if (comprueba_login() == 0) {
 	$result2=mysql_query($sql2);
 	
 	if (mysql_num_rows($result2)){
-	
 		echo "<table><tr>";
 		echo "<td class='f9' style='padding-left: 30px;'>";
-		echo "<img src='images/dot_green.png'> - ".$lang_label["validated_event"];
+		echo "<img src='images/pixel_green.png' width=20 height=20> - ".$lang_label["validated_event"];
 		echo "<br>";
-		echo "<img src='images/dot_red.png'> - ".$lang_label["not_validated_event"];
-		echo "<br>";
-		echo "<img src='images/dot_yellow.png'> - ".$lang_label["alert"];
+		echo "<img src='images/pixel_red.png' width=20 height=20> - ".$lang_label["not_validated_event"];
+		//echo "<br>";
+		//echo "<img src='images/pixel_yellow.png' width=20 height=35> - ".$lang_label["alert"];
 		echo "</td>";
 		echo "<td class='f9' style='padding-left: 20px;'>";  
 		echo "<img src='images/ok.png'> - ".$lang_label["validate_event"];
@@ -219,10 +218,10 @@ if (comprueba_login() == 0) {
 				echo "<tr>";
 				echo "<td class='datos' align='center'>";
 				if ($row["status"] == 0){
-					echo "<img src='images/dot_red.png'>";
+					echo "<img src='images/pixel_red.png' width=20 height=20>";
 				}
 				else {
-					echo "<img src='images/dot_green.png'>";
+					echo "<img src='images/pixel_green.png' width=20 height=20>";
 				}
 				echo "<td class='datos'>".$row["oid"];
 				$sql="SELECT * FROM tagente WHERE direccion = '".$row["source"]."'";

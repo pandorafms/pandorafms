@@ -3,6 +3,7 @@
 // ========================================
 // Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
 // Copyright (c) 2008 Jorge Gonzalez <jorge.gonzalez@artica.es>
+// Copyright (c) 2008 Sancho Lerena <sancho.lerena@artica.es>
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -69,6 +70,7 @@ $alerta_max_alerts = "1";
 $alerta_time_threshold = "";
 $alerta_descripcion = "";
 $disabled="";
+$id_parent="0";
 $modulo_max="";
 $modulo_min='';
 $module_interval = "";
@@ -109,7 +111,7 @@ if ( isset ($_POST["create_agent"])) { // Create a new and shining agent
 	$intervalo =  entrada_limpia ($_POST["intervalo"]);
 	$comentarios =  entrada_limpia ($_POST["comentarios"]);
 	$modo = entrada_limpia ($_POST["modo"]);
-
+    $id_parent = get_parameter_post ("id_parent", 0);
 	$id_network_server = get_parameter_post ("network_server", 0);
 	$id_plugin_server = get_parameter_post ("plugin_server", 0);
 	$id_prediction_server = get_parameter_post ("prediction_server", 0);
@@ -125,7 +127,7 @@ if ( isset ($_POST["create_agent"])) { // Create a new and shining agent
         $agent_creation_error  =  lang_string("agent_exists");
         $agent_created_ok = 0;
     } else {
-		$sql_insert ="INSERT INTO tagente (nombre, direccion, id_grupo, intervalo, comentarios,modo, id_os, disabled, id_network_server, id_plugin_server, id_wmi_server, id_prediction_server) VALUES ('$nombre_agente', '$direccion_agente', $grupo , $intervalo , '$comentarios',$modo, $id_os, $disabled, $id_network_server, $id_plugin_server, $id_wmi_server, $id_prediction_server)";
+		$sql_insert ="INSERT INTO tagente (nombre, direccion, id_grupo, intervalo, comentarios,modo, id_os, disabled, id_network_server, id_plugin_server, id_wmi_server, id_prediction_server, id_parent) VALUES ('$nombre_agente', '$direccion_agente', $grupo , $intervalo , '$comentarios',$modo, $id_os, $disabled, $id_network_server, $id_plugin_server, $id_wmi_server, $id_prediction_server, $id_parent)";
 		$result = mysql_query($sql_insert);
 		if ($result) {
             $agent_created_ok = 1;
@@ -456,13 +458,14 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	$id_network_server = get_parameter ("network_server", 0);
 	$id_plugin_server = get_parameter ("plugin_server", 0);
 	$id_wmi_server = get_parameter ("wmi_server", 0);
-	$id_prediction_server = get_parameter ("prediction_server", 0);
+	$id_prediction_server = get_parameter_post ("prediction_server", 0);
+    $id_parent = get_parameter_post ("id_parent", 0);
 
 	if ($direccion_agente != $old_agent_address){
 		agent_add_address ($id_agente, $direccion_agente);
 	}
 	$sql_update ="UPDATE tagente 
-		SET disabled = ".$disabled." , id_os = ".$id_os." , modo = ".$modo." , nombre = '".$nombre_agente."', direccion = '".$direccion_agente."', id_grupo = '".$grupo."', intervalo = '".$intervalo."', comentarios = '".$comentarios."', id_network_server = '$id_network_server', id_plugin_server = $id_plugin_server, id_wmi_server = $id_wmi_server,
+		SET disabled = ".$disabled.", id_parent = $id_parent, id_os = ".$id_os." , modo = ".$modo." , nombre = '".$nombre_agente."', direccion = '".$direccion_agente."', id_grupo = '".$grupo."', intervalo = '".$intervalo."', comentarios = '".$comentarios."', id_network_server = '$id_network_server', id_plugin_server = $id_plugin_server, id_wmi_server = $id_wmi_server,
         id_prediction_server = $id_prediction_server 
 		WHERE id_agente = '".$id_agente."'";
 
@@ -506,6 +509,7 @@ if (isset($_GET["id_agente"])) {
 			$modo = $row["modo"];
 			$id_os = $row["id_os"];
 			$disabled=$row["disabled"];
+            $id_parent = $row["id_parent"];
 		} else {
 			echo "<h3 class='error'>".$lang_label["agent_error"]."</h3>";
 			echo "</table>";

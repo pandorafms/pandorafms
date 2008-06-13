@@ -29,16 +29,14 @@ echo "<div id='head_m'>";
 echo "<table width=520 border='0' cellpadding=3>
 	<tr>";
 if (isset ($_SESSION["id_usuario"])){
-	
     // Fist column
     echo "<td width=30%>";
-	$id_usuario = entrada_limpia ($_SESSION["id_usuario"]);
 	if (dame_admin($_SESSION["id_usuario"])==1)
 		echo "<img src='images/user_suit.png' class='bot'> ";
 	else
 		echo "<img src='images/user_green.png' class='bot'> ";
 	echo "<a class='white'>".$lang_label["has_connected"]. '
-	[<b>'. $id_usuario. '</b>]</a>';
+	[<b>'. $_SESSION["id_usuario"]. '</b>]</a>';
 
     // Second column 
     echo "<td>";

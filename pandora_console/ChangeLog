@@ -1,5 +1,7 @@
 2008-06-13  Sancho Lerena <slerena@gmail.com>
 
+    * status_events: added to view new events in agentg view
+
     * index.php: Added pure (Fullscreen). HTML code cleanup and user session.
     
     * pandoradb.sql: talert_snmp: Added priority field. 

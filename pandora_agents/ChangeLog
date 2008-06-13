@@ -1,5 +1,9 @@
 2008-06-13  Ramon Novoa  <rnovoa@artica.es>
 
+	* win32/bin/PandoraAgent.exe: Updated to r857.
+
+2008-06-13  Ramon Novoa  <rnovoa@artica.es>
+
 	* win32/PandoraAgent.dev: Updated.
 	* win32/windows/pandora_wmi.cc, win32/windows/pandora_wmi.h,
 	  win32/pandora_windows_service.cc, win32/modules/pandora_module.h,

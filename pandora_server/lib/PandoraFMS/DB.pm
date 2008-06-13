@@ -257,7 +257,8 @@ sub pandora_process_alert (%$$$$$%$$) {
 		# Generate an event
 		pandora_event ($pa_config, "Alert ceased (" .
 		               $alert_data->{'descripcion'} . ")", $id_group,
-		               $id_agent, $dbh);
+		               $id_agent, $alert_data->{'priority'}, $alert_data->{'id_aam'}, $alert_data->{'id_agente_modulo'}, 
+                       "alert_recovered", $dbh);
 		return;
 	}
 
@@ -269,12 +270,8 @@ sub pandora_process_alert (%$$$$$%$$) {
 		         internal_counter = 0 WHERE id_aam = " .
 		         $alert_data->{'id_aam'});
 
-		execute_alert ($pa_config, $timestamp, $alert_data->{'id_alerta'},
-		               $id_agent, $id_group, $alert_data->{'al_campo1'},
-		               $alert_data->{'al_f2_recovery'},
-		               $alert_data->{'al_f3_recovery'},	$agent_name,
-		               $module_data, '', '', $alert_data->{'descripcion'}, 1,
-		               $dbh);
+		execute_alert ($pa_config, $alert_data, $id_agent, $id_group, $agent_name,
+		               $module_data, 0, $dbh);
 		return;
 	}
 
@@ -308,11 +305,8 @@ sub pandora_process_alert (%$$$$$%$$) {
 		         $alert_data->{'internal_counter'} . " WHERE id_aam = " .
 		         $alert_data->{'id_aam'});
 
-		execute_alert ($pa_config, $timestamp, $alert_data->{'id_alerta'},
-		               $id_agent, $id_group, $alert_data->{'al_campo1'},
-		               $alert_data->{'al_campo2'}, $alert_data->{'al_campo3'},
-		               $agent_name, $module_data, '', '',
-		               $alert_data->{'descripcion'}, 1, $dbh);
+		execute_alert ($pa_config, $alert_data, $id_agent, $id_group, $agent_name, 
+                        $module_data, 1, $dbh);
 		return;
 	}
 }
@@ -459,55 +453,67 @@ sub pandora_generate_compound_alerts (%$$$$$$$) {
 }
 
 ##########################################################################
-## SUB execute_alert (pa_config, timestamp, id_alert, id_agent, id_group,
-## field1, field2, field3, agent, data, command, alert_name, alert_description,
-## create_event, dbh)
+## SUB execute_alert 
 ## Do a execution of given alert with this parameters
 ##########################################################################
 
 sub execute_alert (%$$$$$$$$$$$$$$$) {
 	my $pa_config = $_[0];
-	my $timestamp = $_[1];
-	my $id_alert = $_[2];
-	my $id_agent = $_[3];
-	my $id_group = $_[4];
-	my $field1 = $_[5];
-	my $field2 = $_[6];
-	my $field3 = $_[7];
-	my $agent = $_[8];
-	my $data = $_[9];
-	my $command = $_[10];
-	my $alert_name = $_[11];
-	my $alert_description = $_[12];
-	my $create_event = $_[13];
-	my $dbh = $_[14];
+    my $data_alert = $_[1];
+    my $id_agent = $_[2];
+	my $id_group = $_[3];
+	my $agent = $_[4];
+	my $data = $_[5];
+    my $alert_mode = $_[6]; # 0 is recovery, 1 is normal
+	my $dbh = $_[7];
 
+    # Some variable init
+
+    my $create_event = 1;
+    my $command = "";
+    my $alert_name = "";
+    my $field1;
+    my $field2;
+    my $field3;
+    my $id_alert = $data_alert->{'id_alerta'};
+    my $id_agent_module = $data_alert->{'id_agente_modulo'};
+    my $timestamp = &UnixDate ("today", "%Y-%m-%d %H:%M:%S"); # string timestamp
+    my $alert_description = $data_alert->{'descripcion'};
+    
 	# Compound only
 	if ($id_alert == 1){
 		return;
 	}
+    
+    if ($alert_mode == 1){
+        $field1 = $data_alert->{'al_campo1'};
+        $field2 = $data_alert->{'al_campo2'};
+        $field3 = $data_alert->{'al_campo3'};
+    } else {
+        $field1 = $data_alert->{'al_campo1'};
+        $field2 = $data_alert->{'al_f2_recovery'};
+        $field3 = $data_alert->{'al_f3_recovery'};
+    }
 
-	if (($command eq "") && ($alert_name eq "")){
-		# Get values for commandline, reading from talerta.
-		my $query_idag = "SELECT * FROM talerta WHERE id_alerta = '$id_alert'";
-		my $idag = $dbh->prepare($query_idag);
-		$idag ->execute;
-		my @datarow;
-		if ($idag->rows != 0) {
-			while (@datarow = $idag->fetchrow_array()) {
-				$command = $datarow[2];
-				$alert_name = $datarow[1];
-			}
+	# Get values for commandline, reading from talerta.
+	my $query_idag = "SELECT * FROM talerta WHERE id_alerta = '$id_alert'";
+	my $idag = $dbh->prepare($query_idag);
+	$idag ->execute;
+	my @datarow;
+	if ($idag->rows != 0) {
+		while (@datarow = $idag->fetchrow_array()) {
+			$command = $datarow[2];
+			$alert_name = $datarow[1];
 		}
-		$idag->finish();
 	}
-
+	$idag->finish();
+	
 	logger($pa_config, "Alert ($alert_name) TRIGGERED for $agent",2);
-	if ($id_alert != 3){ # id_alerta 3 is reserved for internal audit system
+	if ($id_alert > 4) { # Skip internal alerts
 		$command =~ s/_field1_/"$field1"/ig;
 		$command =~ s/_field2_/"$field2"/ig;
 		$command =~ s/_field3_/"$field3"/ig;
-		$command=~ s/_agent_/$agent/ig;
+		$command =~ s/_agent_/$agent/ig;
 		$command =~ s/_timestamp_/$timestamp/ig;
 		$command =~ s/_data_/$data/ig;
 		# Clean up some "tricky" characters
@@ -522,19 +528,34 @@ sub execute_alert (%$$$$$$$$$$$$$$$) {
 			}
 		};
 		if ($@){
-			logger($pa_config, "WARNING: Alert command don't retun from execution. ( $command )", 0 );
-			logger($pa_config, "ERROR Code: $@",1);
+			logger($pa_config, "WARNING: Alert command don't return from execution. ( $command )", 0 );
+			logger($pa_config, "ERROR Code: $@",2);
 		}
-	} else { # id_alerta = 3, is a internal system audit
+	} elsif ($id_alert == 3) { # id_alerta = 3, is a internal system audit
 		logger($pa_config, "Internal audit lauch for agent name $agent",3);
 		$field1 =~ s/_agent_/$agent/ig;
 		$field1 =~ s/_timestamp_/$timestamp/ig;
 		$field1 =~ s/_data_/$data/ig;
 		pandora_audit ($pa_config, $field1, $agent, "Alert ($alert_description)", $dbh);
-	}
+        $create_event = 0;
+	} elsif ($id_alert == 2) { # email
+        $field3 =~ s/_agent_/$agent/ig;
+        $field3 =~ s/_timestamp_/$timestamp/ig;
+        $field3 =~ s/_data_/$data/ig;
+        pandora_sendmail ( $pa_config, $field1, $field2, $field3);
+    } elsif ($id_alert == 4) { # internal event
+        $create_event = 1;
+    }
+
 	if ($create_event == 1){
 		my $evt_descripcion = "Alert fired ($alert_description)";
-		pandora_event ($pa_config, $evt_descripcion, $id_group, $id_agent, $dbh);
+        if ($alert_mode == 0){ # recovery
+            pandora_event ($pa_config, $evt_descripcion, $id_group, $id_agent, $data_alert->{'priority'}, $data_alert->{'id_aam'}, 
+            $data_alert->{'id_agente_modulo'}, 'alert_recovered',  $dbh);
+        } else {
+            pandora_event ($pa_config, $evt_descripcion, $id_group, $id_agent, $data_alert->{'priority'}, $data_alert->{'id_aam'}, 
+            $data_alert->{'id_agente_modulo'}, 'alert_fired',  $dbh);
+        }
 	}
 }
 
@@ -552,7 +573,7 @@ sub pandora_writestate (%$$$$$$$) {
 	my $nombre_agente = $_[1];
 	my $tipo_modulo = $_[2]; # passed as string
 	my $nombre_modulo = $_[3];
-	my $datos = $_[4]; # Careful: Dont pass a hash, only a single value
+	my $datos = $_[4]; # Careful: This don't reference a hash, only a single value
 	my $estado = $_[5];
 	my $dbh = $_[6];
 	my $needs_update = $_[7];
@@ -562,7 +583,7 @@ sub pandora_writestate (%$$$$$$$) {
 
     # Get current timestamp / unix numeric time
     my $timestamp = &UnixDate ("today", "%Y-%m-%d %H:%M:%S"); # string timestamp
-    my $utimestamp = &UnixDate($timestamp,"%s"); # convert from human to integer
+    my $utimestamp = &UnixDate($timestamp, "%s"); # convert from human to integer
 
     # Get server id
 	my $server_name = $pa_config->{'servername'}.$pa_config->{"servermode"};
@@ -574,15 +595,15 @@ sub pandora_writestate (%$$$$$$$) {
 	my $id_agente = dame_agente_id ($pa_config, $nombre_agente, $dbh);
 	my $id_modulo = dame_modulo_id ($pa_config, $tipo_modulo, $dbh);
 	my $id_agente_modulo = dame_agente_modulo_id($pa_config, $id_agente, $id_modulo, $nombre_modulo, $dbh);
-
 	if (($id_agente ==  -1) || ($id_agente_modulo == -1)) {
 		return 0;
 	}
 
-	my $id_grupo = dame_grupo_agente($pa_config, $id_agente,$dbh);
+
+    my $id_grupo = dame_grupo_agente($pa_config, $id_agente,$dbh);
 
 	# Seek for agent_interval or module_interval
-	my $query_idag = "SELECT * FROM tagente_modulo WHERE id_agente = $id_agente AND id_agente_modulo = " . $id_agente_modulo;;
+	my $query_idag = "SELECT * FROM tagente_modulo WHERE id_agente = $id_agente AND id_agente_modulo = " . $id_agente_modulo;
 	my $s_idag = $dbh->prepare($query_idag);
 	$s_idag ->execute;
 	if ($s_idag->rows == 0) {
@@ -591,6 +612,7 @@ sub pandora_writestate (%$$$$$$$) {
 	} else  {
 		@data = $s_idag->fetchrow_array();
 	}
+
 	my $id_module_type	= $data[2];
 	my $module_interval = $data[7];
 	if ($module_interval == 0){
@@ -612,28 +634,42 @@ sub pandora_writestate (%$$$$$$$) {
 	my $s_idages = $dbh->prepare($idages);
 	$s_idages ->execute;
 	$datos = $dbh->quote($datos); # Parse data entry for adecuate SQL representation.
+
 	my $query_act; # OJO que dentro de una llave solo tiene existencia en esa llave !!
 	if ($s_idages->rows == 0) { # Doesnt exist entry in table, lets make the first entry
 		logger($pa_config, "Create entry in tagente_estado for module $nombre_modulo",4);
         $query_act = "INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, cambio, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try) VALUES ($id_agente_modulo,$datos,'$timestamp','$estado','1',$id_agente,'$timestamp',$utimestamp, $module_interval, $id_server, $utimestamp)"; # Cuando se hace un insert, siempre hay un cambio de estado
+
 	} else { # There are an entry in table already
 	    @data = $s_idages->fetchrow_array();
+        if ( $data[11] == 0){
+            $needs_update = 1;
+        }
+
 	    # Se supone que $data[5](estado) ( nos daria el estado ANTERIOR
-	# For xxxx_PROC type (boolean / monitor), create an event if state has changed
+    	# For xxxx_PROC type (boolean / monitor), create an event if state has changed
 	    if (( $data[5] != $estado) && ( ($tipo_modulo =~/keep_alive/) || ($tipo_modulo =~ /proc/)) ) {
 	        # Cambio de estado detectado !
 	        $cambio = 1;
+            $needs_update = 1;
 	        # Este seria el momento oportuno de probar a saltar la alerta si estuviera definida
-		# Makes an event entry, only if previous state changes, if new state, doesnt give any alert
-		my $descripcion;
-        if ( $estado == 0) {
-            $descripcion = "Monitor ($nombre_modulo) goes up ";
-        }
-		if ( $estado == 1) {
-			$descripcion = "Monitor ($nombre_modulo) goes down";
-		}
-		pandora_event ($pa_config, $descripcion, $id_grupo, $id_agente, $dbh);
+		    # Makes an event entry, only if previous state changes, if new state, doesnt give any alert
+		    my $descripcion;
+            my $event_type;
+            if ( $estado == 0) {
+                $descripcion = "Monitor ($nombre_modulo) goes up ";
+                $event_type = "monitor_up";
+            }
+		    if ( $estado == 1) {
+    			$descripcion = "Monitor ($nombre_modulo) goes down";
+                $event_type = "monitor_down";
+		    }
+
+            pandora_event ($pa_config, $descripcion, $id_grupo,
+                        $id_agente, 2, 0, $id_agente_modulo, 
+                        $event_type, $dbh);
 	    }
+
 	    if ($needs_update == 1) {
             $query_act = "UPDATE tagente_estado SET utimestamp = $utimestamp, datos = $datos, cambio = '$cambio', timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, last_try = '$timestamp', current_interval = '$module_interval', running_by = $id_server, last_execution_try = $utimestamp WHERE id_agente_modulo = $id_agente_modulo";
         } else { # dont update last_try field, that it's the field
@@ -759,7 +795,8 @@ sub module_generic_proc (%$$$$$) {
 	if (ref($a_min) eq "HASH") {
 		$a_min = "";
 	}
-	pandora_writedata($pa_config, $a_timestamp,$agent_name,$module_type,$a_name,$a_datos,$a_max,$a_min,$a_desc,$dbh, \$bUpdateDatos);
+	pandora_writedata ($pa_config, $a_timestamp, $agent_name, $module_type, $a_name, 
+                        $a_datos, $a_max, $a_min, $a_desc, $dbh, \$bUpdateDatos);
 
 	# Check for status: <1 state 1 (Bad), >= 1 state 0 (Good)
 	# Calculamos su estado
@@ -1126,7 +1163,7 @@ sub pandora_writedata (%$$$$$$$$$$){
 			$datos = $dbh->quote($datos);
 			$timestamp = $dbh->quote($timestamp);
 			# Parse data entry for adecuate SQL representation.
-			$query = "INSERT INTO tagente_datos (id_agente_modulo,  datos, timestamp, utimestamp, id_agente) VALUES ($id_agente_modulo, $datos, $timestamp, $utimestamp, $id_agente)";
+			$query = "INSERT INTO tagente_datos (id_agente_modulo, datos, timestamp, utimestamp, id_agente) VALUES ($id_agente_modulo, $datos, $timestamp, $utimestamp, $id_agente)";
 		} # If data is out of limits, do not insert into database
 		if ($outlimit == 0){
 			logger($pa_config, "DEBUG: pandora_insertdata Calculado id_agente_modulo a $id_agente_modulo",6);
@@ -1170,7 +1207,11 @@ sub pandora_serverkeepaliver (%$$) {
 					$version_data = $pa_config->{"version"}." (P) ".$pa_config->{"build"};
 					my $sql_update = "UPDATE tserver SET status = 0, version = '".$version_data."' WHERE id_server = $data[0]";
 					$dbh->do($sql_update);
-					pandora_event($pa_config, "Server ".$data[1]." going Down", 0, 0, $dbh);
+
+
+                    pandora_event ($pa_config, "Server ".$data[1]." going Down", 0,
+                                   0, 4, 0, 0, "system", $dbh);
+
 					logger( $pa_config, "Server ".$data[1]." going Down ",1);
 				}
 			}
@@ -1235,7 +1276,6 @@ sub pandora_updateserver (%$$$) {
 	if ($s_idag->rows != 0) {
 		if (@data = $s_idag->fetchrow_array()){
 			if ($data[3] == 0){ # If down, update to get up the server
-				pandora_event($pa_config, "Server ".$data[1]." going UP", 0, 0, $dbh);
 				logger( $pa_config, "Server ".$data[1]." going UP ",1);
 			}
 			# Update server data
@@ -1293,25 +1333,31 @@ sub pandora_lastagentcontact (%$$$$$$) {
 }
 
 ##########################################################################
-## SUB pandora_event (pa_config, evento, id_grupo, id_agente, dbh)
+## SUB pandora_event 
 ## Write in internal audit system an entry.
+## Params: config_hash, event_title, group, agent_id, severity, id_alertam
+##         id_agentmodule, event_type (from a set, as string), db_handle
 ##########################################################################
 
-sub pandora_event (%$$$$) {
-	my $pa_config = $_[0];
-        my $evento = $_[1];
-        my $id_grupo = $_[2];
-        my $id_agente = $_[3];
-	my $dbh = $_[4];
-        my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
+sub pandora_event (%$$$$$$$$) {
+    my $pa_config = $_[0];
+    my $evento = $_[1];
+    my $id_grupo = $_[2];
+    my $id_agente = $_[3];
+    my $severity = $_[4]; # new in 2.0
+    my $id_alert_am = $_[5]; # new in 2.0
+    my $id_agentmodule = $_[6]; # new in 2.0
+    my $event_type = $_[7]; # new in 2.0
+	my $dbh = $_[8];
+    my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
 	my $utimestamp; # integer version of timestamp	
 
 	$utimestamp = &UnixDate($timestamp,"%s"); # convert from human to integer
-        $evento = $dbh->quote($evento);
-       	$timestamp = $dbh->quote($timestamp);
-	my $query = "INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp) VALUES ($id_agente, $id_grupo, $evento, $timestamp, 0, $utimestamp)";
-	logger ($pa_config,"EVENT Insertion: $query", 5);
-        $dbh->do($query);	
+    $evento = $dbh->quote($evento);
+    $event_type = $dbh->quote($event_type);
+    $timestamp = $dbh->quote($timestamp);
+	my $query = "INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity) VALUES ($id_agente, $id_grupo, $evento, $timestamp, 0, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity)";
+    $dbh->do($query);	
 }
 
 ##########################################################################

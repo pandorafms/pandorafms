@@ -79,10 +79,66 @@ my $wmiwebloc = Win32::OLE->new('WbemScripting.SWbemLocator') ||
 
 my $wmi = $wmiwebloc->ConnectServer($computer,$wmipath,$user,$pwd); 
 
+
+# New samples
+
+# Process executing (return PID)
+# SELECT ProcessId FROM Win32_Process WHERE Caption = "spoolsv.exe"
+
+# Service State of a service (Running or Stopped)
+# SELECT State FROM Win32_Service WHERE Name = "Eventlog"
+
+# CPU de CPU0
+# SELECT LoadPercentage from Win32_Processor WHERE DeviceID = "CPU0"
+
+# Available memory (bytes)
+# SELECT AvailableBytes from Win32_PerfRawData_PerfOS_Memory
+
+# Available cache memory (bytes)
+# SELECT CacheBytes from Win32_PerfRawData_PerfOS_Memory
+
+# AvgDiskBytesPerTransfer 
+# DiskReadsPersec
+# DiskTransfersPersec
+# FreeMegabytes
+# SELECT * from Win32_PerfRawData_PerfDisk_LogicalDisk WHERE Name = "F:"
+
+
+# FragmentedDatagramsPersec
+# FragmentationFailures
+# DatagramsReceivedPersec
+# DatagramsSentPersec
+# SELECT * from Win32_PerfFormattedData_Tcpip_IP
+
+my $colItems = $wmi->ExecQuery ("SELECT State FROM Win32_Service WHERE Name = 'Eventlog'");
+foreach my $objItem (in $colItems){ 
+	print $objItem->{State};
+	print "\n";
+}
 # get all the service objects
 my @services = in $wmi->InstancesOf("Win32_Service");
 
 # Take 10 first services
 for (my $a=0;$a<10;$a++){
     print "Service ", $services[$a]->Name, " is ", $services[$a]->Status, "\n";
+}
+
+#------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------
+#---------------------  Main Perl Code below this line-----------------------
+#------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------
+
+########################################################################################
+# pandora_shutdown ()
+# Close system
+########################################################################################
+sub pandora_shutdown {
+    logger (\%pa_config,"Pandora FMS Server '".$pa_config{'servername'}.$pa_config{"servermode"}."' Shutdown by signal ",0);
+    print " [*] Shutting down ".$pa_config{'servername'}.$pa_config{"servermode"} ."(received signal)...\n";
+    pandora_event (\%pa_config, $pa_config{'servername'}.$pa_config{"servermode"}." going Down", 0,
+                                   0, 4, 0, 0, "system", $dbh);
+    exit;
 }

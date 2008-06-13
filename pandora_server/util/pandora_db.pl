@@ -84,8 +84,14 @@ sub pandora_purgedb {
 	my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
 	my $limit_access = DateCalc("today","-24 hours",\$err);
 	$limit_access = &UnixDate($limit_access,"%Y-%m-%d %H:%M:%S");
-	print "[PURGE] Deleting old access data... \n";
+	print "[PURGE] Deleting old access data (More than 24hr) \n";
 	$dbh->do("DELETE FROM tagent_access WHERE timestamp < '$limit_access'");
+
+
+    my $limit_event = DateCalc("today","-$config_days_purge days",\$err);
+    $limit_event = &UnixDate($limit_event,"%Y-%m-%d %H:%M:%S");
+    print "[PURGE] Deleting old event data (More than $config_days_purge days)... \n";
+    $dbh->do("DELETE FROM tevent WHERE timestamp < '$limit_event'");
 
 	print "[PURGE] Deleting old data... \n";
 	# Lets insert the last value on $limit_timestamp + 1 minute for each id_agente_modulo

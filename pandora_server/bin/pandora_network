@@ -116,15 +116,6 @@ while (1) {
 #------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------
 
-########################################################################################
-# pandora_shutdown ()
-# Close system
-########################################################################################
-sub pandora_shutdown {
-	logger (\%pa_config,"Pandora FMS Network Server Shutdown by signal ",0);
-	print " [*] Shutting down Pandora FMS Network Server (received signal)...\n";
-	exit;
-}
 
 ##########################################################################
 # SUB pandora_network_subsystem
@@ -226,16 +217,16 @@ sub pandora_network_producer ($) {
 			AND
 				tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 			AND (
-					(tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP() 
+					((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP())
 				OR 
 					tagente_modulo.flag = 1
 			)				
 			ORDER BY
-					last_execution_try ASC  ";
+					last_execution_try ASC ";
 		} else {
 			# Query for MASTER SERVER !
 			$query1 = "SELECT
-					DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.flag
+					DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.flag, tagente_estado.last_execution_try
 				FROM
 					tagente, tagente_modulo, tagente_estado, tserver
 				WHERE
@@ -251,9 +242,13 @@ sub pandora_network_producer ($) {
                     tagente_modulo.id_tipo_modulo < 19 
 				AND
 					tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-				AND
-					((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP() OR tagente_modulo.flag = 1 )
-				ORDER BY last_execution_try ASC";
+				AND (
+					((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP() ) 
+                    OR 
+                    tagente_modulo.flag = 1 
+                )
+				ORDER BY 
+                    last_execution_try ASC";
 		}
 		$exec_sql1 = $dbh->prepare($query1);
 		$exec_sql1 ->execute;
@@ -457,9 +452,9 @@ sub pandora_query_snmp (%$$$$) {
 	my $snmp_target = $_[3];
 	# $_[4] contains error var.
 
-        my $output ="";
-        my $snmp_timeout = 1000 * 1000 * $pa_config->{"snmp_timeout"};
-        my $snmp_retries = $pa_config->{'snmp_checks'};
+    my $output ="";
+    my $snmp_timeout = 1000 * 1000 * $pa_config->{"snmp_timeout"};
+    my $snmp_retries = $pa_config->{'snmp_checks'};
 	my $SESSION;
 	# Locking for SNMP call. SNMP is not thread safe !!
 	{
@@ -467,13 +462,16 @@ sub pandora_query_snmp (%$$$$) {
 		$SESSION = new SNMP::Session (DestHost =>  $snmp_target,
 					Timeout   => $snmp_timeout,
 					Retries   => $snmp_retries,
-                                	Community => $snmp_community,
-                                	Version   => 1);
+                    Community => $snmp_community,
+                    Version   => 1);
 	}
-	if ($SESSION->{ErrorStr}) {
-      		logger($pa_config, "SNMP ERROR SESSION for Target $snmp_target ".$SESSION->{ErrorStr}, 2);
+
+	if ((!defined($SESSION)) || ($SESSION->{ErrorStr})) {
+        logger($pa_config, "SNMP ERROR SESSION for Target $snmp_target ".$SESSION->{ErrorStr}, 2);
 		$_[4] = "1";
-		undef ($SESSION);
+        if (defined($SESSION)){
+		    undef ($SESSION);
+        }
 		return 0;
    	} 
 	my $oid = SNMP::translateObj($snmp_oid);
@@ -482,10 +480,10 @@ sub pandora_query_snmp (%$$$$) {
 		lock $snmp_lock;
 		$output = $SESSION->get($oid);
 	}
-	if ((!defined($SESSION)) || (!defined($output)) || ($output eq "") || ($SESSION->{ErrorStr})) {
+	if ((!defined($output)) || ($output eq "")) {
                	logger($pa_config, "SNMP ERROR SNMPGET for Target $snmp_target ".$SESSION->{ErrorStr}, 2);
                	$_[4] = "1";
-		undef ($SESSION);
+		        undef ($SESSION);
                	return 0;
 	}
 	$_[4] = "0";
@@ -628,7 +626,6 @@ sub exec_network_module {
         }
     }
 
-
 	# Write data section
 	my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
 	my $utimestamp = &UnixDate("today","%s");
@@ -642,7 +639,7 @@ sub exec_network_module {
 		$part{'max'}[0] = $max;
 		$part{'min'}[0] = $min;
 		my $tipo_modulo = dame_nombretipomodulo_idagentemodulo ($pa_config, $id_tipo_modulo, $dbh);
-		if (($tipo_modulo eq 'remote_snmp') || ($tipo_modulo eq 'remote_icmp') || ($tipo_modulo eq 'remote_tcp') || ($tipo_modulo eq 'remote_udp'))  {
+		if (($tipo_modulo eq 'remote_snmp') || ($tipo_modulo eq 'remote_icmp') || ($tipo_modulo eq 'remote_tcp'))  {
 			module_generic_data ($pa_config, \%part, $timestamp, $agent_name, $tipo_modulo, $dbh);
 		}
 		elsif ($tipo_modulo =~ /\_inc/ ) {
@@ -661,19 +658,31 @@ sub exec_network_module {
 		# Update agent last contact
 		# Insert Pandora version as agent version
 		pandora_lastagentcontact ($pa_config, $timestamp, $agent_name,  $pa_config->{'servername'}.$pa_config->{"servermode"}, $pa_config->{'version'}, -1, $dbh);
-	}
-    
-    if ($module_result != 0) { 
+	
+    } else {
 
 		if ($module_interval == 0){
             $module_interval = dame_intervalo ($pa_config, $id_agente, $dbh);
         }
 
 		# Modules who cannot connect or something go bad, update last_execution_try field
-		logger ($pa_config, "Cannot obtain exec Network Module $nombre from agent $agent_name", 4);
-		my $query_act = "UPDATE tagente_estado SET current_interval = $module_interval,  last_execution_try = $utimestamp WHERE id_agente_modulo = $id_agente_modulo ";
+		logger ($pa_config, "Cannot obtain exec Network Module $nombre from agent $agent_name", 3);
+		my $query_act = "UPDATE tagente_estado SET current_interval = ($module_interval*5), last_execution_try = $utimestamp WHERE id_agente_modulo = $id_agente_modulo ";
 		my $a_idages = $dbh->prepare($query_act);
 		$a_idages->execute;
 		$a_idages->finish();
 	}
 }
+
+########################################################################################
+# pandora_shutdown ()
+# Close system
+########################################################################################
+sub pandora_shutdown {
+    logger (\%pa_config,"Pandora FMS Server '".$pa_config{'servername'}.$pa_config{"servermode"}."' Shutdown by signal ",0);
+    print " [*] Shutting down ".$pa_config{'servername'}.$pa_config{"servermode"} ."(received signal)...\n";
+    pandora_event (\%pa_config, $pa_config{'servername'}.$pa_config{"servermode"}." going Down", 0,
+                                   0, 4, 0, 0, "system", $dbh);
+    exit;
+}
+

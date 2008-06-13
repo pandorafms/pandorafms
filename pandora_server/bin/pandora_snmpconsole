@@ -38,6 +38,9 @@ $| = 0;
 
 my %pa_config;
 
+$SIG{'TERM'} = 'pandora_shutdown';
+$SIG{'INT'} = 'pandora_shutdown';
+
 # Inicio del bucle principal de programa
 pandora_init(\%pa_config,"Pandora SNMP Console");
 # Read config file for Global variables
@@ -255,10 +258,21 @@ sub calcula_alerta_snmp {
 					# The new alert is between last valid time + threshold and between max/min limit to alerts in this gap of time.
 					$times_fired++;
 					$internal_counter++;
-					# ---------> EXECUTE ALERT <---------------
 					logger($pa_config,"Executing SNMP Trap alert for $agent - $alert_data",2);
-					execute_alert ($pa_config, $id_alert, $field1, $field2, $field3, 
-$trap_agente, $timestamp, $alert_data, "", "", "", 1, $dbh);
+
+                    # Create a hash for passing to execute_alert
+                    my %data_alert;
+                    $data_alert{'id_aam'} = 0;
+                    $data_alert{'id_agente_modulo'} = 0;
+                    $data_alert{'id_alerta'} = $id_alert;
+                    $data_alert{'al_campo1'} = $field1;
+                    $data_alert{'al_campo2'} = $field2;
+                    $data_alert{'al_campo3'} = $field3;
+                    $data_alert{'descripcion'} = $description;
+
+                    # Execute alert
+					execute_alert ($pa_config, \%data_alert, $agent, $id_group, $agent, $trap_agente, 1, $dbh);
+
 					# Now update the new value for times_fired, alert_fired, internal_counter and last_fired for this alert.
 					my $query_idag2 = "update talert_snmp set times_fired = $times_fired, last_fired = '$ahora_mysql', internal_counter = $internal_counter where id_as = $id_as ";
 					$dbh->do($query_idag2);
@@ -287,4 +301,16 @@ $trap_agente, $timestamp, $alert_data, "", "", "", 1, $dbh);
 		} # While
 	} # if
 	$s_idag->finish();
+}
+
+########################################################################################
+# pandora_shutdown ()
+# Close system
+########################################################################################
+sub pandora_shutdown {
+    logger (\%pa_config,"Pandora FMS Server '".$pa_config{'servername'}.$pa_config{"servermode"}."' Shutdown by signal ",0);
+    print " [*] Shutting down ".$pa_config{'servername'}.$pa_config{"servermode"} ."(received signal)...\n";
+    pandora_event (\%pa_config, $pa_config{'servername'}.$pa_config{"servermode"}." going Down", 0,
+                                   0, 4, 0, 0, "system", $dbh);
+    exit;
 }

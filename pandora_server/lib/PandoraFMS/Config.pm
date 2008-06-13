@@ -182,6 +182,14 @@ sub pandora_loadconfig {
     $pa_config->{"compound_max_depth"} = 5; # Maximum nested compound alert depth. Not in config file.
     $pa_config->{"dataserver_threads"} = 3; # Introduced on 2.0
 
+    # Internal MTA for alerts, each server need its own config.
+    $pa_config->{"mta_address"} = '127.0.0.1'; # Introduced on 2.0
+    $pa_config->{"mta_port"} = '25'; # Introduced on 2.0
+    $pa_config->{"mta_user"} = ''; # Introduced on 2.0
+    $pa_config->{"mta_pass"} = ''; # Introduced on 2.0
+    $pa_config->{"mta_auth"} = 'none'; # Introduced on 2.0  (Support LOGIN PLAIN CRAM-MD5 DIGEST-MD)
+    $pa_config->{"mta_from"} = 'pandora@localhost'; # Introduced on 2.0  
+
 	# Check for UID0
     if ($pa_config->{"quiet"} != 0){
 	    if ($> == 0){
@@ -249,6 +257,27 @@ sub pandora_loadconfig {
 				$pa_config->{"errorlogfile"} = $tbuf;
 			}
 		}
+
+        # MTA setup (2.0)
+        elsif ($parametro =~ m/^mta_user\s(.*)/i) { 
+            $pa_config->{'mta_user'}= clean_blank($1); 
+        }
+        elsif ($parametro =~ m/^mta_pass\s(.*)/i) { 
+            $pa_config->{'mta_pass'}= clean_blank($1); 
+        }
+        elsif ($parametro =~ m/^mta_address\s(.*)/i) { 
+            $pa_config->{'mta_address'}= clean_blank($1); 
+        }
+        elsif ($parametro =~ m/^mta_port\s(.*)/i) { 
+            $pa_config->{'mta_port'}= clean_blank($1); 
+        }
+        elsif ($parametro =~ m/^mta_auth\s(.*)/i) { 
+            $pa_config->{'mta_auth'}= clean_blank($1); 
+        }
+        elsif ($parametro =~ m/^mta_from\s(.*)/i) { 
+            $pa_config->{'mta_from'}= clean_blank($1); 
+        }
+
         elsif ($parametro =~ m/^snmp_logfile\s(.*)/i) { 
             $pa_config->{'snmp_logfile'}= clean_blank($1); 
         }
@@ -474,6 +503,8 @@ sub pandora_loadconfig {
 	    print " [*] Pandora FMS Server [".$pa_config->{'servername'}.$pa_config->{"servermode"}."] is running and operative \n";
     }
 	$pa_config->{'server_id'} = dame_server_id ($pa_config, $pa_config->{'servername'}.$pa_config->{"servermode"}, $dbh);
+    pandora_event ($pa_config, $pa_config->{'servername'}.$pa_config->{"servermode"}." going UP", 0,
+                                   0, 3, 0, 0, "system", $dbh);
 }
 
 

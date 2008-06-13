@@ -25,6 +25,7 @@
 #include <algorithm>
 #include <cctype>
 #include <sstream>
+#include <ctime>
 
 using namespace std;
 using namespace Pandora_Wmi;
@@ -379,4 +380,118 @@ Pandora_Wmi::getSystemName () {
 	}
         
 	return ret;
+}
+
+/** 
+ * Get a list of events that match a given pattern.
+ * 
+ * @return The list of events.
+ */
+void
+Pandora_Wmi::getEventList (string source, string type, string pattern, int interval, list<string> &event_list) {
+	CDhInitialize init;
+	CDispPtr      wmi_svc, quickfixes;
+	char         *value = NULL;
+	string        event, limit, message, query, timestamp;
+
+    limit = getTimestampLimit(interval);    
+    if (limit.empty()) {
+		pandoraDebug ("Pandora_Wmi::getEventList: getTimestampLimit error");
+        return;
+    }
+    
+	// Build the WQL query
+	query = "SELECT * FROM Win32_NTLogEvent WHERE TimeWritten >= '" + limit + "'";
+    if (! source.empty()) {
+        query += " AND Logfile = '" + source + "'";
+    }    
+    if (! type.empty()) {
+        query += " AND Type = '" + type + "'";
+    }
+
+	try {
+		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
+		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
+				     L".ExecQuery(%s)",
+				     query.c_str()));
+
+		FOR_EACH (quickfix, quickfixes, NULL) {
+            // Timestamp
+			dhGetValue (L"%s", &value, quickfix,
+				    L".TimeWritten");
+			timestamp = value;
+			dhFreeString (value);
+			
+            // Message
+			dhGetValue (L"%s", &value, quickfix,
+				    L".Message");
+           	message = value;
+			dhFreeString (value);
+			
+            // LIKE is not always available, we have to filter ourselves
+            if (pattern.empty() || (message.find(pattern) != string::npos)) {
+                event = convertWMIDate(timestamp) + " " + message;
+                event_list.push_back(event);
+            }
+
+		} NEXT_THROW (quickfix);
+	} catch (string errstr) {
+		pandoraDebug ("Pandora_Wmi::getEventList: error: %s", errstr.c_str ());
+	}
+
+	return;
+}
+
+/** 
+ * Returns the limit date (WMI format) for event searches.
+ * 
+ * @return The timestamp in WMI format.
+ */
+string
+Pandora_Wmi::getTimestampLimit (int interval) {
+    char limit_str[26];    
+    time_t limit_time;
+    struct tm *limit_tm = NULL;
+
+    // Get current time
+    limit_time = time(0);
+    if (limit_time == (time_t)-1) {
+        return "";
+    }
+    
+    // Substract the agent interval
+    limit_time -= interval;
+    
+    limit_tm = localtime (&limit_time);
+    if (limit_tm == NULL) {
+        return "";
+    }
+    
+    // WMI date format: yyyymmddHHMMSS.xxxxxx+UUU
+    snprintf (limit_str, 26, "%.4d%.2d%.2d%.2d%.2d%.2d.000000+000",
+              limit_tm->tm_year + 1900, limit_tm->tm_mon + 1,
+              limit_tm->tm_mday, limit_tm->tm_hour,
+              limit_tm->tm_min, limit_tm->tm_sec);
+
+    return string (limit_str);
+}
+
+/*
+ * Converts a date in WMI format to 'dd-mm-YYYY HH:MM:SS'
+ * 
+ * @return The date in the new format.
+ */
+string
+Pandora_Wmi::convertWMIDate (string wmi_date) {
+    string year, month, day, hour, minute, second;
+    
+    year = wmi_date.substr (0, 4);
+    month = wmi_date.substr (4, 2);
+    day = wmi_date.substr (6, 2);
+    hour = wmi_date.substr (8, 2);
+    minute = wmi_date.substr (10, 2);
+    second = wmi_date.substr (12, 2);
+    
+    return string (year + "-" + month + "-" + day + " " +
+                   hour + ":" + minute + ":" + second);
 }

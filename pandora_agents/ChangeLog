@@ -1,3 +1,17 @@
+2008-06-13  Ramon Novoa  <rnovoa@artica.es>
+
+	* win32/PandoraAgent.dev: Updated.
+	* win32/windows/pandora_wmi.cc, win32/windows/pandora_wmi.h,
+	  win32/pandora_windows_service.cc, win32/modules/pandora_module.h,
+	  win32/modules/pandora_module_logevent.cc,
+	  win32/modules/pandora_module_logevent.h,
+	  win32/modules/pandora_module_factory.cc,
+	  win32/modules/pandora_module_list.cc,
+	  win32/modules/pandora_module.c: Added a new module that checks for
+	  log events using WMI queries.
+	* bin/pandora_agent.conf: Added encoding option and a Logevent module
+	  declaration example.
+
 2008-06-11  Ramon Novoa  <rnovoa@artica.es>
 
 	* win32/pandora_strutils.cc, win32/pandora_strutils.h,

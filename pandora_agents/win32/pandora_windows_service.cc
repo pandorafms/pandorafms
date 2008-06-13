@@ -236,7 +236,7 @@ Pandora_Windows_Service::copyTentacleDataFile (string host,
 
 		/* tentacle_client.exe error */
 		default:
-			pandoraLog ("Tentacle client was unable to copy %s",
+			pandoraDebug ("Tentacle client was unable to copy %s",
 			             filename.c_str ());
 			throw Pandora_Exception ();
 	}
@@ -432,7 +432,7 @@ Pandora_Windows_Service::recvTentacleDataFile (string host,
 
 		/* tentacle_client.exe error */
 		default:
-			pandoraLog ("Tentacle client was unable to receive file %s",
+			pandoraDebug ("Tentacle client was unable to receive file %s",
 			             filename.c_str ());
 			throw Pandora_Exception ();
 	}
@@ -601,17 +601,19 @@ Pandora_Windows_Service::checkConfig () {
 
 void
 Pandora_Windows_Service::pandora_run () {
+        TiXmlDeclaration *decl;    
         TiXmlDocument *doc;
         TiXmlElement  *local_xml, *agent;
         string         xml_filename, random_integer;
 	string         tmp_filename, tmp_filepath;
+        string encoding;
         bool           saved;
         
         pandoraDebug ("Run begin");
         
         /* Check for configuration changes */
         this->checkConfig ();
-        
+
         execution_number++;
 	
         if (this->modules != NULL) {
@@ -668,8 +670,15 @@ Pandora_Windows_Service::pandora_run () {
 		tmp_filepath = xml_filename + tmp_filename;
 
 		/* Copy the XML to temporal file */
+		encoding = conf->getValue ("encoding");
+		if (encoding == "") {
+            encoding = "ISO-8859-1";
+        }
+
 		pandoraDebug ("Copying XML on %s", tmp_filepath.c_str ());
+		decl = new TiXmlDeclaration( "1.0", encoding.c_str(), "" );
 		doc = new TiXmlDocument (tmp_filepath);
+		doc->InsertEndChild (*decl);			
 		doc->InsertEndChild (*agent);
 		saved = doc->SaveFile();
 		delete doc;

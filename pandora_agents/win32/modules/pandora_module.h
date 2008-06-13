@@ -69,7 +69,8 @@ namespace Pandora_Modules {
 		MODULE_CPUUSAGE,  /**< The module checks the CPU usage */
 		MODULE_FREEMEMORY, /**< The module checks the amount of 
 				   *   freememory in the system        */
-		MODULE_ODBC       /**< The module performs a SQL query via ODBC */
+		MODULE_ODBC,       /**< The module performs a SQL query via ODBC */
+		MODULE_LOGEVENT       /**< The module checks for log events */		
         } Module_Kind;
         
         const string module_exec_str       = "module_exec";
@@ -79,6 +80,7 @@ namespace Pandora_Modules {
 	const string module_freememory_str = "module_freememory";
 	const string module_cpuusage_str   = "module_cpuusage";
 	const string module_odbc_str       = "module_odbc";
+	const string module_logevent_str       = "module_logevent";	
 
 	/**
 	 * Pandora module super-class exception.
@@ -144,6 +146,7 @@ namespace Pandora_Modules {
 			parseModuleKindFromString (string kind);
 		
                 void               setInterval    (int interval);
+                int                getInterval    ();
                 
                 TiXmlElement      *getXml         ();
                 

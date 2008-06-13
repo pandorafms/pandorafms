@@ -47,6 +47,11 @@ namespace Pandora_Wmi {
         string        getOSVersion          ();
         string        getOSBuild            ();
         string        getSystemName         ();
+    void          getEventList              (string source, string type, string pattern, int interval, list<string> &event_list);
+    string        getTimestampLimit         (int interval);
+    string        convertWMIDate            (string wmi_date);
+    
+        
 };
 
 #endif

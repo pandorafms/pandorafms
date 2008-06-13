@@ -27,6 +27,7 @@
 #include "pandora_module_freememory.h"
 #include "pandora_module_cpuusage.h"
 #include "pandora_module_odbc.h"
+#include "pandora_module_logevent.h"
 #include "../pandora_strutils.h"
 #include <list>
 
@@ -48,6 +49,10 @@ using namespace Pandora_Strutils;
 #define TOKEN_MIN         ("module_min ")
 #define TOKEN_DESCRIPTION ("module_description ")
 #define TOKEN_ODBC_QUERY  ("module_odbc_query ")
+#define TOKEN_LOGEVENT    ("module_logevent")
+#define TOKEN_SOURCE      ("module_source ")
+#define TOKEN_EVENTTYPE   ("module_eventtype ")
+#define TOKEN_PATTERN     ("module_pattern ")
 
 string
 parseLine (string line, string token) {
@@ -82,6 +87,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
         string                 module_interval, module_proc, module_service;
 	string                 module_freedisk, module_cpuusage, module_odbc;
 	string                 module_odbc_query, module_dsn, module_freememory;
+    string                 module_logevent, module_source, module_eventtype, module_pattern;
         Pandora_Module        *module;
         bool                   numeric;
 	Module_Type            type;
@@ -97,6 +103,11 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_service     = "";
 	module_odbc        = "";
 	module_odbc_query  = "";
+	module_odbc        = "";
+    module_logevent    = "";
+    module_source      = "";
+    module_eventtype   = "";
+    module_pattern     = "";
 
         stringtok (tokens, definition, "\n");
         
@@ -149,6 +160,18 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
                 if (module_odbc_query == "") {
                         module_odbc_query = parseLine (line, TOKEN_ODBC_QUERY);
                 }
+        if (module_logevent == "") {
+            module_logevent = parseLine (line, TOKEN_LOGEVENT);
+        }                
+        if (module_source == "") {
+            module_source = parseLine (line, TOKEN_SOURCE);
+        }                
+        if (module_eventtype == "") {
+            module_eventtype = parseLine (line, TOKEN_EVENTTYPE);
+        }                
+        if (module_pattern == "") {
+            module_pattern = parseLine (line, TOKEN_PATTERN);
+        }                
 		
                 iter++;
         }
@@ -186,6 +209,11 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		module = new Pandora_Module_Odbc (module_name,
 						  module_odbc,
 						  module_odbc_query);
+	} else if (module_logevent != "") {
+		module = new Pandora_Module_Logevent (module_name,
+		                  module_source,
+		                  module_eventtype,
+		                  module_pattern);
         } else {
                 return NULL;
         }

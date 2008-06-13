@@ -118,6 +118,9 @@ Pandora_Module::parseModuleKindFromString (string kind) {
                 return MODULE_CPUUSAGE;
 	} else if (kind == module_odbc_str) {
                 return MODULE_ODBC;
+        } else if (kind == module_logevent_str) {
+
+                return MODULE_LOGEVENT;                
         } else {
                 return MODULE_0;
         }
@@ -219,7 +222,7 @@ Pandora_Module::getDataOutput (Pandora_Data *data) {
 		}
 	}
 	
-	return data->getValue ();
+	return trim(data->getValue ());
 }
 
 /** 
@@ -320,7 +323,7 @@ Pandora_Module::getXml () {
 	if (this->data_list && this->data_list->size () > 1) {
 		list<Pandora_Data *>::iterator iter;
 
-		data_list_element = new TiXmlElement ("data_list");
+		data_list_element = new TiXmlElement ("datalist");
 		
 		iter = this->data_list->begin ();
 		for (iter = this->data_list->begin ();
@@ -427,6 +430,16 @@ Pandora_Module::setKind (string kind) {
 void
 Pandora_Module::setInterval (int interval) {
         this->module_interval = interval;
+}
+
+/** 
+ * Get the execution interval.
+ * 
+ * @return The execution interval.
+ */
+int
+Pandora_Module::getInterval () {
+        return this->module_interval;
 }
 
 /** 

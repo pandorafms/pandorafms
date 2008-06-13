@@ -1,3 +1,28 @@
+2008-06-13  Sancho Lerena <slerena@artica.es>
+
+    * conf/pandora_server.conf: Added new internal MTA feature config tokens .
+    
+    * pandora_server_installer: Copy default plugins to /usr/share/pandora/util
+    
+    * Config.pm: New MTA feature tokens, and added event when starting server.
+    
+    * DB.pm: Changes in execute_alert function (now passes several hash refs).
+    Alerts and events now use new format of events. Add support for new inter-
+    nal MTA/SMTP alert feature. Discovered and FIXED a very annoying bug on
+    need_update usage in write_state function that was making a HUGE 
+    degradation when too many non-init modules in network server.
+        
+    * Tools.pm: Added pandora_sendmail() function. Needs Mail::Sendmail dep.
+    
+    * All servers: Support for pandora_shutdown notify on event database.
+    
+    * pandora_snmpconsole: Updated SNMP alert mechanism. Need to be tested!.
+    
+    * pandora_recon: Now generate an event when discover a new host.
+    
+    * util/pandora_db.pl: Added support to automatically delete events.
+
+
 2008-06-12  Manuel Arostegui <marostegui@artica.es>
 
 	* pandora_snmpconsole: Removed "/var/run/pandora" we are

@@ -106,12 +106,14 @@ while (1) {
 
 ########################################################################################
 # pandora_shutdown ()
-# Close system on a received signal
+# Close system
 ########################################################################################
 sub pandora_shutdown {
-	logger (\%pa_config,"Pandora FMS Plugin Server Shutdown by signal ",0);
-	print " [*] Shutting down Pandora FMS Plugin Server (received signal)...\n";
-	exit;
+    logger (\%pa_config,"Pandora FMS Server '".$pa_config{'servername'}.$pa_config{"servermode"}."' Shutdown by signal ",0);
+    print " [*] Shutting down ".$pa_config{'servername'}.$pa_config{"servermode"} ."(received signal)...\n";
+    pandora_event (\%pa_config, $pa_config{'servername'}.$pa_config{"servermode"}." going Down", 0,
+                                   0, 4, 0, 0, "system", $dbh);
+    exit;
 }
 
 ##########################################################################

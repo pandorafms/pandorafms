@@ -60,6 +60,7 @@ else
 	ln -s /usr/local/bin/pandora_export /usr/bin/pandora_export
 	mkdir /usr/share/pandora
 	cp -R util /usr/share/pandora
+	cp -R plugin /usr/share/pandora
 	echo "perl /usr/share/pandora/util/pandora_db /etc/pandora/pandora_server.conf" > /etc/cron.daily/pandora_purge_db	
 	chmod +x /etc/cron.daily/pandora_purge_db
 	rm output

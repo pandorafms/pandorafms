@@ -21,6 +21,7 @@ use warnings;
 use Time::Local;
 use Date::Manip;                	# Needed to manipulate DateTime formats of input, output and compare
 use POSIX qw(setsid);
+use Mail::Sendmail;             # New in 2.0. Used to sendmail internally, without external scripts
 
 require Exporter;
 
@@ -36,6 +37,7 @@ our @EXPORT = qw(
         sqlWrap
         is_numeric
         clean_blank
+        pandora_sendmail
     );
 
 
@@ -67,6 +69,41 @@ sub pandora_daemonize {
 # -------------------------------------------+
 # Pandora other General functions  |
 # -------------------------------------------+
+
+##########################################################################
+# SUB pandora_sendmail
+# Send a mail, connecting directly to MTA
+# param1 - config hash
+# param2 - Destination email addres
+# param3 - Email subject
+# param4 - Email Message body
+##########################################################################
+
+sub pandora_sendmail {                  # added in 2.0 version
+    my $pa_config = $_[0];
+    my $to_address = $_[1];
+    my $subject = $_[2];
+    my $message = $_[3];
+
+    my %mail = ( To   => $to_address,
+              Message => $message,
+              Subject => $subject,
+              Smtp    => $pa_config->{"mta_address"},
+              Port    => $pa_config->{"mta_port"},
+              From    => $pa_config->{"mta_from"},
+    );
+
+    if ($pa_config->{"mta_user"} ne ""){
+        $mail{auth} = {user=>$config->{"mta_user"}, password=>$config->{"mta_pass"}, method=>$config->{"mta_auth"}, required=>0 }
+    }
+    eval {
+        sendmail(%mail);
+    };
+    if ($@){
+        logger ($pa_config, "[ERROR] Sending email to $to_address with subject $subject", 1);
+        logger ($pa_config, "ERROR Code: $@", 4);
+    }
+}
 
 ##########################################################################
 # SUB is_numeric

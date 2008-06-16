@@ -218,7 +218,7 @@ echo "</select></td>";
 // Event type
 echo "<td>".lang_string ("Event type")."</td>";
 echo "<td>";
-echo form_event_type_combo ("event_type", $event_type);
+echo print_select (get_event_types (), 'event_type', $event_type, '', 'all', 0);
 echo "<tr>";
 
 // Severity

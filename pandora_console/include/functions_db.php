@@ -15,25 +15,25 @@
 
 
 function check_login() { 
-    global $config;
-    if (!isset($config["homedir"])){
-        // No exists $config. Exit inmediatly
-        include ("general/noaccess.php");
-        exit;
-    }
-    if ((isset($_SESSION["id_usuario"])) AND ($_SESSION["id_usuario"] != "")) { 
-        $id = $_SESSION["id_usuario"];
-        $query1="SELECT id_usuario FROM tusuario WHERE id_usuario= '$id'";
-        $resq1 = mysql_query($query1);
-        $rowdup = mysql_fetch_array($resq1);
-        $nombre = $rowdup[0];
-        if ( $id == $nombre ){
-                return 0 ;
-        }
-    }
-    audit_db("N/A", getenv("REMOTE_ADDR"), "No session", "Trying to access without a valid session");
-    include ($config["homedir"]."/general/noaccess.php");
-    exit;
+	global $config;
+	if (!isset($config["homedir"])){
+		// No exists $config. Exit inmediatly
+		include ("general/noaccess.php");
+		exit;
+	}
+	if ((isset($_SESSION["id_usuario"])) AND ($_SESSION["id_usuario"] != "")) { 
+		$id = $_SESSION["id_usuario"];
+		$query1="SELECT id_usuario FROM tusuario WHERE id_usuario= '$id'";
+		$resq1 = mysql_query($query1);
+		$rowdup = mysql_fetch_array($resq1);
+		$nombre = $rowdup[0];
+		if ( $id == $nombre ){
+			return 0 ;
+		}
+	}
+	audit_db("N/A", getenv("REMOTE_ADDR"), "No session", "Trying to access without a valid session");
+	include ($config["homedir"]."/general/noaccess.php");
+	exit;
 }
 
 // --------------------------------------------------------------- 
@@ -136,30 +136,16 @@ function logoff_db($id,$ip){
 // Returns profile given ID
 // --------------------------------------------------------------- 
 
-function dame_perfil($id){ 
-	require("config.php");
-	$query1="SELECT * FROM tperfil WHERE id_perfil =".$id;
-	$resq1=mysql_query($query1);  
-	if ($rowdup=mysql_fetch_array($resq1)){
-		$cat=$rowdup["name"]; 
-	}
-		else $cat = "";
-	return $cat; 
+function dame_perfil ($id_profile) {
+	return (string) get_db_value ('name', 'tperfil', 'id_perfil', (int) $id_profile);
 }
 
 // ---------------------------------------------------------------
 // Returns disabled from a given group_id
 // ---------------------------------------------------------------
 
-function give_disabled_group($id){
-        require("config.php");
-        $query1="SELECT * FROM tgrupo WHERE id_grupo =".$id;
-        $resq1=mysql_query($query1);
-        if ($rowdup=mysql_fetch_array($resq1)){
-                $cat=$rowdup["disabled"];
-        }
-                else $cat = "";
-        return $cat;
+function give_disabled_group ($id_group) {
+	return (bool) get_db_value ('disabled', 'tgroup', 'id_grupo', (int) $id_group);
 }
 
 
@@ -168,45 +154,24 @@ function give_disabled_group($id){
 // Returns group given ID
 // --------------------------------------------------------------- 
 
-function dame_grupo($id){ 
-	require("config.php");
-	$query1="SELECT * FROM tgrupo WHERE id_grupo =".$id;
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1)){
-		$cat=$rowdup["nombre"];
-	}
-		else $cat = "";
-	return $cat; 
+function dame_grupo ($id_group) {
+	return (string) get_db_value ('nombre', 'tgrupo', 'id_grupo', (int) $id_group);
 }
 
 // --------------------------------------------------------------- 
 // Returns icon name given group ID
 // --------------------------------------------------------------- 
 
-function dame_grupo_icono($id){
-	require("config.php");
-	$query1="SELECT * FROM tgrupo WHERE id_grupo =".$id;
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1)){
-		$cat=$rowdup["icon"];
-	}
-		else $cat = "";
-	return $cat;
+function dame_grupo_icono ($id_group) {
+	return (string) get_db_value ('icon', 'tgrupo', 'id_grupo', (int) $id_group);
 }
 
 // --------------------------------------------------------------- 
 // Return agent id given name of agent
 // --------------------------------------------------------------- 
 
-function dame_agente_id($nombre){
-	require("config.php");
-	$query1="SELECT * FROM tagente WHERE nombre = '".$nombre."'";
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1))
-		$pro=$rowdup["id_agente"];
-	else
-		$pro = "";
-	return $pro;
+function dame_agente_id ($agent_name) {
+	return (int) get_db_value ('id_agente', 'tagente', 'nombre', $agent_name);
 }
 
 
@@ -214,15 +179,8 @@ function dame_agente_id($nombre){
 // Returns userid given name an note id
 // --------------------------------------------------------------- 
 
-function give_note_author ($id_note){ 
-	require("config.php");
-	$query1="SELECT * FROM tnota WHERE id_nota = ".$id_note;
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1))
-		$pro=$rowdup["id_usuario"];
-	else
-		$pro = "";
-	return $pro;
+function give_note_author ($id_note) {
+	return (int) get_db_value ('id_usuario', 'tnota', 'id_nota', (int) $id_note);
 }
 
 
@@ -230,15 +188,12 @@ function give_note_author ($id_note){
 // Returns agent id given name of agent
 // --------------------------------------------------------------- 
 
-function dame_agente_modulo_id($id_agente, $id_tipomodulo, $nombre){
-	require("config.php");
-	$query1="SELECT * FROM tagente_modulo WHERE id_agente = ".$id_agente." and id_tipo_modulo = ".$id_tipomodulo." and nombre = '".$nombre."'";
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1))
-		$pro=$rowdup["id_agente_modulo"];
-	else
-		$pro = "";
-	return $pro;
+function dame_agente_modulo_id ($id_agente, $id_tipomodulo, $nombre) {
+	$sql = sprintf ('SELECT id_agente_modulo FROM tagente_modulo 
+			WHERE id_agente = %d
+			AND id_tipo_modulo = %d AND nombre = "%s"',
+			$id_agent, $id_tipomodulo, $nombre);
+	return get_db_sql ($sql);
 }
 
 
@@ -398,30 +353,18 @@ function giveme_module_type($id){
 // Returns agent name, given a ID of agente_module table
 // --------------------------------------------------------------- 
 
-function dame_nombre_agente_agentemodulo($id_agente_modulo){
-	require("config.php");
-	$query1="SELECT * FROM tagente_modulo WHERE id_agente_modulo = ".$id_agente_modulo;
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1))
-		$pro = dame_nombre_agente($rowdup["id_agente"]);
-	else
-		$pro = "";
-	return $pro;
+function dame_nombre_agente_agentemodulo ($id_agente_modulo) {
+	$id_agent = get_db_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agente_modulo);
+	if ($id_agent)
+		return dame_nombre_agente ($id_agent);
+	return '';
 }
 
 // --------------------------------------------------------------- 
 // Return agent module name, given a ID of agente_module table
 // --------------------------------------------------------------- 
-
-function dame_nombre_modulo_agentemodulo($id_agente_modulo){
-	require("config.php"); 
-	$query1="SELECT * FROM tagente_modulo WHERE id_agente_modulo = ".$id_agente_modulo; 
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1))
-		$pro = $rowdup["nombre"];
-	else
-		$pro = "";
-	return $pro;
+function dame_nombre_modulo_agentemodulo ($id_agente_modulo) {
+	return get_db_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $id_agente_modulo);
 }
 
 
@@ -674,24 +617,10 @@ function dame_admin($id){
 	return $admin;
 }
 
-// --------------------------------------------------------------- 
-// Gives error message and stops execution if user 
-//doesn't have an open session and this session is from an valid user
-// --------------------------------------------------------------- 
 
+// Wrapper function since we change all functions to english
 function comprueba_login() { 
-	if (isset($_SESSION["id_usuario"])){
-		$id = $_SESSION["id_usuario"];
-		require("config.php");
-		$query1="SELECT * FROM tusuario WHERE id_usuario = '".$id."'";
-		$resq1=mysql_query($query1);
-		$rowdup=mysql_fetch_array($resq1);
-		$nombre=$rowdup["id_usuario"];
-		if ( $id == $nombre ){
-			return 0 ;	
-		}
-	}
-	return 1;	
+	return check_login ();
 }
 
 // --------------------------------------------------------------- 
@@ -699,7 +628,7 @@ function comprueba_login() {
 //doesn't have an open session and this session is from an administrator
 // --------------------------------------------------------------- 
 
-function comprueba_admin() {
+function check_admin () {
 	if (isset($_SESSION["id_usuario"])){
 		$iduser=$_SESSION['id_usuario'];
 		if (dame_admin($iduser)==1){
@@ -718,6 +647,9 @@ function comprueba_admin() {
 	return 1;
 }
 
+function comprueba_admin() {
+	return check_admin ();
+}
 
 // ---------------------------------------------------------------
 // Returns number of alerts fired by this agent
@@ -1144,43 +1076,110 @@ function give_agent_id_from_module_id ($id_module){
 // Generic access to a field ($field) given a table
 // --------------------------------------------------------------- 
 
-function get_db_value ($field, $table, $field_search, $condition_value){
-    $query = "SELECT $field FROM $table WHERE $field_search = '$condition_value' ";
-    $resq1 = mysql_query($query);
-    if ($rowdup = mysql_fetch_array($resq1))
-        $pro = $rowdup[$field];
-    else
-        $pro = "";
-    return $pro;
-}
-
-function give_db_value ($field, $table, $field_search, $condition_value){
-    return get_db_value ($field, $table, $field_search, $condition_value);
+function get_db_value ($field, $table, $field_search, $condition){
+	if (is_int ($condition)) {
+		$sql = sprintf ('SELECT %s FROM %s WHERE %s = %d', $field, $table, $field_search, $condition);
+	} else if (is_float ($condition) || is_double ($condition)) {
+		$sql = sprintf ('SELECT %s FROM %s WHERE %s = %f', $field, $table, $field_search, $condition);
+	} else {
+		$sql = sprintf ('SELECT %s FROM %s WHERE %s = "%s"', $field, $table, $field_search, $condition);
+	}
+	
+	$result = mysql_query ($sql);
+	if (! $result) {
+		echo '<strong>Error:</strong> get_db_value("'.$sql.'") :'. mysql_error ().'<br />';
+		return NULL;
+	}
+	if ($row = mysql_fetch_array ($result))
+		return $row[0];
+	
+	return NULL;
 }
 
 // --------------------------------------------------------------- 
 // Wrapper for old function name. Should be upgraded/renamed in next versions
 // --------------------------------------------------------------- 
+function give_db_value ($field, $table, $field_search, $condition) {
+    return get_db_value ($field, $table, $field_search, $condition);
+}
 
-function get_db_row ($table, $field_search, $condition_value){
-    $query = "SELECT * FROM $table WHERE $field_search = '$condition_value' ";
-    $resq1 = mysql_query($query);
-    if ($rowdup = mysql_fetch_array($resq1))
-        return $rowdup;
-    else    
-        return 0;
+
+function get_db_row ($table, $field_search, $condition) {
+	global $config;
+	
+	if (is_int ($condition)) {
+		$sql = sprintf ('SELECT * FROM %s WHERE %s = %d', $table, $field_search, $condition);
+	} else if (is_float ($condition) || is_double ($condition)) {
+		$sql = sprintf ('SELECT * FROM %s WHERE %s = %f', $table, $field_search, $condition);
+	} else {
+		$sql = sprintf ('SELECT * FROM %s WHERE %s = "%s"', $table, $field_search, $condition);
+	}
+	
+	$result = mysql_query ($sql);
+	if (! $result) {
+		echo '<strong>Error:</strong> get_db_row("'.$sql.'") :'. mysql_error ().'<br />';
+		return NULL;
+	}
+	if ($row = mysql_fetch_array ($result))
+		return $row;
+	
+	return NULL;
 }
 
 // --------------------------------------------------------------- 
 // Generic access to single field using a free SQL sentence
 // --------------------------------------------------------------- 
 
-function get_db_sql ($sentence, $field = 0){
-        if ($rowdup = mysql_fetch_array(mysql_query($sentence)))
-                return $rowdup[$field];
-        else
-                return "";
+function get_db_sql ($sql, $field = 0){
+	global $config;
+	
+	$result = mysql_query ($sql);
+	if (! $result) {
+		echo '<strong>Error:</strong> get_db_sql ("'.$sql.'") :'. mysql_error ().'<br />';
+		return NULL;
+	}
+	if ($row = mysql_fetch_array ($result))
+		return $row[$field];
+	
+	return NULL;
 }
+
+function get_db_all_rows_sqlfree ($sql) {
+	global $config;
+	$retval = array ();
+	$result = mysql_query ($sql);
+	
+	if (! $result) {
+		echo mysql_error ();
+		return array();
+	}
+	while ($row = mysql_fetch_array ($result)) {
+		array_push ($retval, $row);
+	}
+	return $retval;
+}
+
+function get_db_all_rows_in_table ($table) {
+	return get_db_all_rows_sqlfree ('SELECT * FROM '.$table);
+}
+
+function get_db_all_rows_field_filter ($table, $field, $condition) {
+	if (is_int ($condition)) {
+		$sql = sprintf ('SELECT * FROM %s WHERE %s = %d', $table, $field, $condition);
+	} else if (is_float ($condition) || is_double ($condition)) {
+		$sql = sprintf ('SELECT * FROM %s WHERE %s = %f', $table, $field, $condition);
+	} else {
+		$sql = sprintf ('SELECT * FROM %s WHERE %s = "%s"', $table, $field, $condition);
+	}
+	
+	return get_db_all_rows_sqlfree ($sql);
+}
+
+function get_db_all_fields_in_table ($table, $field) {
+	return get_db_all_rows_sqlfree ('SELECT '.$field.' FROM '. $table);
+}
+
+
 
 // ---------------------------------------------------------------
 // Return current status from a given agent module (1 alive, 0 down)
@@ -1287,172 +1286,228 @@ function return_coordinate_y_layoutdata ($id_layoutdata){
 		return (0);
 }
 
-function return_moduledata_avg_value ($id_agent_module, $period){
-	$datelimit = time() - $period; // limit date
+function return_moduledata_avg_value ($id_agent_module, $period, $date = 0) {
+	if (! $date)
+		$date = time ();
+	$datelimit = $date - $period; // limit date
 	$id_agent = get_db_value ("id_agente", "tagente_modulo", "id_agente_modulo", $id_agent_module);
-	$query1="SELECT AVG(datos) FROM tagente_datos WHERE id_agente = $id_agent AND id_agente_modulo = $id_agent_module AND utimestamp > $datelimit";
-	$resq1=mysql_query($query1);
-	if ($resq1 != 0) {
-		$rowdup=mysql_fetch_array($resq1);
-			return ($rowdup[0]);
-	} else 
-		return (0);
+	$sql = sprintf ("SELECT AVG(datos) FROM tagente_datos 
+			WHERE id_agente = %d AND id_agente_modulo = %d 
+			AND utimestamp > %d AND utimestamp <= %d",
+			$id_agent, $id_agent_module, $datelimit, $date);
+	return (float) get_db_sql ($sql);
 }
 
 
-function return_moduledata_max_value ($id_agent_module, $period){
-	$datelimit = time() - $period; // limit date
+function return_moduledata_max_value ($id_agent_module, $period, $date = 0) {
+	if (! $date)
+		$date = time ();
+	$datelimit = $date - $period; // limit date
 	$id_agent = get_db_value ("id_agente", "tagente_modulo", "id_agente_modulo", $id_agent_module);
-	$query1="SELECT MAX(datos) FROM tagente_datos WHERE id_agente = $id_agent AND id_agente_modulo = $id_agent_module AND utimestamp > $datelimit";
-	$resq1=mysql_query($query1);
-	if ($resq1 != 0) {
-		$rowdup=mysql_fetch_array($resq1);
-			return ($rowdup[0]);
-	} else 
-		return (0);
+	$sql = sprintf ("SELECT MAX(datos) FROM tagente_datos 
+			WHERE id_agente = %d AND id_agente_modulo = %d 
+			AND utimestamp > %d  AND utimestamp <= %d",
+			$id_agent, $id_agent_module, $datelimit, $date);
+	return (float) get_db_sql ($sql);
 }
 
-
-function return_moduledata_min_value ($id_agent_module, $period){
-	$datelimit = time() - $period; // limit date
+function return_moduledata_min_value ($id_agent_module, $period, $date = 0) {
+	if (! $date)
+		$date = time ();
+	$datelimit = $date - $period; // limit date
 	$id_agent = get_db_value ("id_agente", "tagente_modulo", "id_agente_modulo", $id_agent_module);
-	$query1="SELECT MIN(datos) FROM tagente_datos WHERE id_agente = $id_agent AND id_agente_modulo = $id_agent_module AND utimestamp > $datelimit";
-	$resq1=mysql_query($query1);
-	if ($resq1 != 0) {
-		$rowdup=mysql_fetch_array($resq1);
-			return ($rowdup[0]);
-	} else 
-		return (0);
+	$sql = sprintf ("SELECT MIN(datos) FROM tagente_datos 
+			WHERE id_agente = %d AND id_agente_modulo = %d 
+			AND utimestamp > %d AND utimestamp <= %d",
+			$id_agent, $id_agent_module, $datelimit, $date);
+	return (float) get_db_sql ($sql);
 }
 
-function lang_string ($string){
-    global $config;
-    require ($config["homedir"]."/include/languages/language_".$config["language"].".php");
-    if (isset ($lang_label[$string]))
-        return $lang_label[$string];
-    else
-        return $string;
+function return_moduledata_sum_value ($id_agent_module, $period, $date = 0) {
+	if (! $date)
+		$date = time ();
+	$datelimit = $date - $period; // limit date
+	$agent_module = get_db_row ('tagente_modulo', 'id_agente_modulo', $id_agent_module);
+	$module_name = get_db_value ('nombre', 'ttipo_modulo', 'id_tipo', $agent_module['id_tipo_modulo']);
+	echo $module_name;
+	if (is_module_data_string ($module_name)) {
+		return lang_string ('wrong_module_type');
+	}
+	$interval = get_db_value ('current_interval', 'tagente_estado', 'id_agente_modulo', $id_agent_module);
+	
+	// Get the whole interval of data
+	$sql = sprintf ('SELECT * FROM tagente_datos 
+			WHERE id_agente = %d AND id_agente_modulo = %d 
+			AND utimestamp > %d AND utimestamp <= %d',
+			$agent_module['id_agente'], $id_agent_module, $datelimit, $date);
+	$datas = get_db_all_rows_sqlfree ($sql);
+	$last_data = "";
+	$total_badtime = 0;
+	$interval_begin = 0;
+	$interval_last = 0;
+
+	if (sizeof ($datas) == 0) {
+		return 0;
+	}
+	$sum = 0;
+	$previous_data = 0;
+	foreach ($datas as $data) {
+		if ($interval_begin != 0) {
+			$interval_last = $data["utimestamp"];
+			$elapsed = $interval_last - $interval_begin;
+			$times = intval ($elapsed / $interval);
+		} else {
+			$times = 1;
+		}
+		if (is_module_data_proc ($module_name)) {
+			$previous_data = $data['datos'] * $interval;
+		} else {
+			$previous_data = $data['datos'];
+		}
+		
+		$interval_begin = $data["utimestamp"];
+	}
+
+	/* The last interval value must be get from tagente_estado, but
+	   it will count only if it's not older than date demanded
+	*/
+	$interval_last = give_db_value ('utimestamp', 'tagente_estado', 'id_agente_modulo', $id_agent_module);
+	if ($interval_last <= $datelimit) {
+		$elapsed = $interval_last - $interval_begin;
+		$times = intval ($elapsed / $interval);
+		$sum += $times * $previous_data;
+	}
+	
+	return (float) $sum;
 }
 
-function check_server_status (){
-    global $config;
-    // This check assumes that server_keepalive should be AT LEAST 15 MIN
-    $sql = "SELECT COUNT(id_server) FROM tserver WHERE status = 1 AND keepalive > NOW() - INTERVAL 15 MINUTE";
-    $res = get_db_sql ($sql);
-    // Set servers to down
-    if ($res == 0){ 
-        $res2 = mysql_query("UPDATE tserver SET status = 0");
-    }
-    return $res;
+function lang_string ($string) {
+	global $config;
+	require ($config["homedir"]."/include/languages/language_".$config["language"].".php");
+	if (isset ($lang_label[$string]))
+		return $lang_label[$string];
+	return $string;
+}
+
+function check_server_status () {
+	global $config;
+	// This check assumes that server_keepalive should be AT LEAST 15 MIN
+	$sql = "SELECT COUNT(id_server) FROM tserver WHERE status = 1 AND keepalive > NOW() - INTERVAL 15 MINUTE";
+	$res = get_db_sql ($sql);
+	// Set servers to down
+	if ($res == 0){ 
+		$res2 = mysql_query ("UPDATE tserver SET status = 0");
+	}
+	return $res;
 }
 
 function show_alert_row_mini ($id_combined_alert){
-    global $config;
-    global $lang_label;
-    
-    $color=1;
-    $sql_com = "SELECT talerta_agente_modulo.*, tcompound_alert.operation FROM talerta_agente_modulo, tcompound_alert WHERE tcompound_alert.id_aam = talerta_agente_modulo.id_aam AND tcompound_alert.id = ".$id_combined_alert;
-    $result_com = mysql_query ($sql_com);
-    echo "<table width=400 cellpadding=2 cellspacing=2 class='databox'>";
-    echo "<th>".lang_string("Name");
-    echo "<th>".lang_string("Oper");
-    echo "<th>".lang_string("Tt");
-    echo "<th>".lang_string("Firing");
-    echo "<th>".lang_string("Time");
-    echo "<th>".lang_string("Desc");
-    echo "<th>".lang_string("Recovery");
-    echo "<th>".lang_string("MinMax.Al");
-    echo "<th>".lang_string("Days");
-    echo "<th>".lang_string("Fired");
-    while ($row2=mysql_fetch_array($result_com)){
+	global $config;
+	global $lang_label;
 
-        if ($color == 1){
-            $tdcolor = "datos";
-            $color = 0;
-        }
-        else {
-            $tdcolor = "datos2";
-            $color = 1;
-        }
-        echo "<tr>";    
-    
-        if ($row2["disable"] == 1){
-            $tdcolor = "datos3";
-        }
-        echo "<td class=$tdcolor>".get_db_sql("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo =".$row2["id_agente_modulo"]);
-        echo "<td class=$tdcolor>".$row2["operation"];
-        
-        echo "<td class='$tdcolor'>".human_time_description($row2["time_threshold"]);
-    
-        if ($row2["dis_min"]!=0){
-            $mytempdata = fmod($row2["dis_min"], 1);
-            if ($mytempdata == 0)
-                $mymin = intval($row2["dis_min"]);
-            else
-                $mymin = $row2["dis_min"];
-            $mymin = format_for_graph($mymin );
-        } else {
-            $mymin = 0;
-        }
-    
-        if ($row2["dis_max"]!=0){
-            $mytempdata = fmod($row2["dis_max"], 1);
-            if ($mytempdata == 0)
-                $mymax = intval($row2["dis_max"]);
-            else
-                $mymax = $row2["dis_max"];
-            $mymax =  format_for_graph($mymax );
-        } else {
-            $mymax = 0;
-        }
-    
-        if (($mymin == 0) && ($mymax == 0)){
-            $mymin = lang_string ("N/A");
-            $mymax = $mymin;
-        }
-    
-        // We have alert text ?
-        if ($row2["alert_text"]!= "") {
-            echo "<td class='$tdcolor'>".$lang_label["text"]."</td>";
-        } else {
-            echo "<td class='$tdcolor'>".$mymin."/".$mymax."</td>";
-        }
-    
-        // Alert times
-        echo "<td class='$tdcolor'>";
-        echo get_alert_times ($row2);
-    
-        // Description
-        echo "</td><td class='$tdcolor'>".substr($row2["descripcion"],0,20);
-    
-        // Has recovery notify activated ?
-        if ($row2["recovery_notify"] > 0)
-            $recovery_notify = lang_string("Yes");
-        else
-            $recovery_notify = lang_string("No");
-    
-        echo "</td><td class='$tdcolor'>".$recovery_notify;
-    
-        // calculare firing conditions
-        if ($row2["alert_text"] != ""){
-            $firing_cond = lang_string("text")."(".substr($row2["alert_text"],0,8).")";
-        } else {
-            $firing_cond = $row2["min_alerts"]." / ".$row2["max_alerts"];
-        }
-        echo "</td><td class='$tdcolor'>".$firing_cond;
+	$color=1;
+	$sql_com = "SELECT talerta_agente_modulo.*, tcompound_alert.operation FROM talerta_agente_modulo, tcompound_alert WHERE tcompound_alert.id_aam = talerta_agente_modulo.id_aam AND tcompound_alert.id = ".$id_combined_alert;
+	$result_com = mysql_query ($sql_com);
+	echo "<table width=400 cellpadding=2 cellspacing=2 class='databox'>";
+	echo "<th>".lang_string("Name");
+	echo "<th>".lang_string("Oper");
+	echo "<th>".lang_string("Tt");
+	echo "<th>".lang_string("Firing");
+	echo "<th>".lang_string("Time");
+	echo "<th>".lang_string("Desc");
+	echo "<th>".lang_string("Recovery");
+	echo "<th>".lang_string("MinMax.Al");
+	echo "<th>".lang_string("Days");
+	echo "<th>".lang_string("Fired");
+	while ($row2=mysql_fetch_array($result_com)){
 
-        // calculate days
-        $firing_days = get_alert_days ( $row2 );
-        echo "</td><td class='$tdcolor'>".$firing_days;
+		if ($color == 1){
+			$tdcolor = "datos";
+			$color = 0;
+		}
+		else {
+			$tdcolor = "datos2";
+			$color = 1;
+		}
+		echo "<tr>";    
 
-        // Fired ?
-        if ($row2["times_fired"]>0)
-            echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_red.png' title='".lang_string("fired")."'></td>";
-        else
-            echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_green.png' title='".$lang_label["not_fired"]."'></td>";
+		if ($row2["disable"] == 1){
+			$tdcolor = "datos3";
+		}
+		echo "<td class=$tdcolor>".get_db_sql("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo =".$row2["id_agente_modulo"]);
+		echo "<td class=$tdcolor>".$row2["operation"];
 
-    }
-    echo "</table>";
+		echo "<td class='$tdcolor'>".human_time_description($row2["time_threshold"]);
+
+		if ($row2["dis_min"]!=0){
+			$mytempdata = fmod($row2["dis_min"], 1);
+		if ($mytempdata == 0)
+			$mymin = intval($row2["dis_min"]);
+		else
+			$mymin = $row2["dis_min"];
+			$mymin = format_for_graph($mymin );
+		} else {
+			$mymin = 0;
+		}
+
+		if ($row2["dis_max"]!=0){
+			$mytempdata = fmod($row2["dis_max"], 1);
+		if ($mytempdata == 0)
+			$mymax = intval($row2["dis_max"]);
+		else
+			$mymax = $row2["dis_max"];
+			$mymax =  format_for_graph($mymax );
+		} else {
+			$mymax = 0;
+		}
+
+		if (($mymin == 0) && ($mymax == 0)){
+			$mymin = lang_string ("N/A");
+			$mymax = $mymin;
+		}
+
+		// We have alert text ?
+		if ($row2["alert_text"]!= "") {
+			echo "<td class='$tdcolor'>".$lang_label["text"]."</td>";
+		} else {
+			echo "<td class='$tdcolor'>".$mymin."/".$mymax."</td>";
+		}
+
+		// Alert times
+		echo "<td class='$tdcolor'>";
+		echo get_alert_times ($row2);
+
+		// Description
+		echo "</td><td class='$tdcolor'>".substr($row2["descripcion"],0,20);
+
+		// Has recovery notify activated ?
+		if ($row2["recovery_notify"] > 0)
+			$recovery_notify = lang_string("Yes");
+		else
+			$recovery_notify = lang_string("No");
+
+		echo "</td><td class='$tdcolor'>".$recovery_notify;
+
+		// calculare firing conditions
+		if ($row2["alert_text"] != ""){
+			$firing_cond = lang_string("text")."(".substr($row2["alert_text"],0,8).")";
+		} else {
+			$firing_cond = $row2["min_alerts"]." / ".$row2["max_alerts"];
+		}
+		echo "</td><td class='$tdcolor'>".$firing_cond;
+
+		// calculate days
+		$firing_days = get_alert_days ( $row2 );
+		echo "</td><td class='$tdcolor'>".$firing_days;
+
+		// Fired ?
+		if ($row2["times_fired"]>0)
+		echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_red.png' title='".lang_string("fired")."'></td>";
+		else
+		echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_green.png' title='".$lang_label["not_fired"]."'></td>";
+
+	}
+	echo "</table>";
 }
 function smal_event_table ($filter = "", $limit = 10, $width=440){
     global $config;

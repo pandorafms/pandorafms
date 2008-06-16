@@ -598,7 +598,7 @@ function get_parameter_post ( $name, $default = "" ){
 
 function get_alert_priority ($priority = 0) {
 	global $config;
-	switch ($prio) {
+	switch ($priority) {
 	case 0: 
 		return lang_string("Maintenance");
 		break;
@@ -698,6 +698,7 @@ function show_alert_row_edit ($row2, $tdcolor = "datos", $id_tipo_modulo = 1, $c
 		$mymin = 0;
 	}
 
+
 	if ($row2["dis_max"]!=0){
 		$mytempdata = fmod($row2["dis_max"], 1);
 		if ($mytempdata == 0)
@@ -709,10 +710,6 @@ function show_alert_row_edit ($row2, $tdcolor = "datos", $id_tipo_modulo = 1, $c
 		$mymax = 0;
 	}
 
-	if (($mymin == 0) && ($mymax == 0)) {
-		$mymin = lang_string ("N/A");
-		$mymax = $mymin;
-	}
 
 	// We have alert text ?
 	if ($row2["alert_text"]!= "") {

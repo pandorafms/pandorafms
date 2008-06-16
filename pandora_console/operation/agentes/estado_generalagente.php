@@ -62,7 +62,9 @@ if (comprueba_login() == 0) {
 	<td class="datos"><b>'.strtoupper(salida_limpia($nombre_agente)).'</b></td>';
 
 	echo "<td class='datos2' width='40'>
-	<a class='info' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."&refr=60'><span>".$lang_label["refresh_data"]."</span><img src='images/refresh.png' class='top' border=0></a>&nbsp;&nbsp;";
+	<a class='info' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."&refr=60'><span>".$lang_label["refresh_data"]."</span><img src='images/refresh.png' class='top' border=0></a>&nbsp;";
+
+	echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&flag_agent=1&id_agente=$id_agente'><img src='images/target.png' border=0></A>";
 	// Data base access graph
 	echo '</td>';
 	
@@ -88,19 +90,12 @@ if (comprueba_login() == 0) {
 	echo "</select>";
 
 	
-	//if ($agent_type == 0) {
-		echo '<tr>
-		<td class="datos"><b>'.$lang_label["os"].'</b></td>
-		<td class="datos" colspan="2">
-		<img src="images/'.dame_so_icon($id_os).'"> - '.dame_so_name($id_os);
-		if ($os_version != "")
-			echo ' '.salida_limpia($os_version);
-	/*
-	} elseif ($agent_type == 1) {
-		echo '<tr>
-		<td class="datos"><b>'.$lang_label["agent_type"].'</b></td>
-		<td class="datos" colspan=2><img src="images/network.png">';
-	}*/
+	echo '<tr>
+	<td class="datos"><b>'.$lang_label["os"].'</b></td>
+	<td class="datos" colspan="2">
+	<img src="images/'.dame_so_icon($id_os).'"> - '.dame_so_name($id_os);
+	if ($os_version != "")
+		echo ' '.salida_limpia($os_version);
 	echo '</td>';
 	echo '</tr>';
 	
@@ -147,7 +142,7 @@ if (comprueba_login() == 0) {
 
 	// Last contact
 	echo '<tr>
-		<td class="datos2">
+		<td class="datos2f9">
 		<b>'.$lang_label["last_contact"]." / ".$lang_label["remote"].'</b>
 		</td>
 		<td class="datos2 f9" colspan="2">';
@@ -182,7 +177,7 @@ if (comprueba_login() == 0) {
 	}
 	echo "<tr>
 	<td class='datos'><b>".$lang_label['next_contact']."</b>
-	<td class='datos' colspan=2>
+	<td class='datosf9' colspan=2>
 	<img src='reporting/fgraph.php?tipo=progress&percent=".$percentil."&height=20&width=200'>
 	</td>
 	</tr>

@@ -33,6 +33,10 @@ if (comprueba_login() == 0)
 		$config["style"] = $_POST["style"];
         $config["remote_config"] = $_POST["remote_config"];
 		
+		$config["graph_color1"] = $_POST["graph_color1"];
+		$config["graph_color2"] = $_POST["graph_color2"];
+		$config["graph_color3"] = $_POST["graph_color3"];
+
         $result2=mysql_query("UPDATE tconfig SET VALUE='".$config["remote_config"]."' WHERE TOKEN='remote_config'");
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config["block_size"]."' WHERE TOKEN='block_size'");
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config["language"]."' WHERE TOKEN='language_code'");
@@ -43,6 +47,10 @@ if (comprueba_login() == 0)
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config["show_unknown"]."' WHERE token='show_unknown'");
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config["show_lastalerts"]."' WHERE token='show_lastalerts'");
 		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config["style"]."' WHERE token='style'");
+		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config["graph_color1"]."' WHERE token='graph_color1'");
+		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config["graph_color2"]."' WHERE token='graph_color2'");
+		$result2=mysql_query("UPDATE tconfig SET VALUE='".$config["graph_color3"]."' WHERE token='graph_color3'");
+
 	}	
 	echo "<h2>".$lang_label["setup_screen"]." &gt; ";
 	echo $lang_label["general_config"]."</h2>";
@@ -66,21 +74,29 @@ if (comprueba_login() == 0)
     echo '<tr><td class="datos2">'.lang_string ("Remote config directory");
     echo '<td class="datos2"><input type="text" name="remote_config" size=30 value="'.$config["remote_config"].'"></td></tr>';
 	
-	echo '<tr><td class="datos">'.$lang_label["days_compact"];
-	echo '<td class="datos"><input type="text" name="days_compact" size=5 value="'.$config["days_compact"].'"></td></tr>';
-	
-	echo '<tr><td class="datos2">'.$lang_label["days_purge"];
-	echo '<td class="datos2"><input type="text" name="days_purge" size=5 value="'.$config["days_purge"].'"></td></tr>';
-	
-	echo '<tr><td class="datos">'.$lang_label["graph_res"];
-	echo '<td class="datos"><input type="text" name="graph_res" size=5 value="'.$config["graph_res"].'"></td></tr>';
-	
-	echo '<tr><td class="datos2">'.$lang_label["step_compact"].'</td>';
-	echo '<td class="datos2"><input type="text" name="step_compact" size=5 value="'.$config["step_compact"].'"></td></tr>';
+	echo '<tr><td class="datos">'.lang_string("Graph color (min)");
+	echo '<td class="datos"><input type="text" name="graph_color1" size=8 value="'.$config["graph_color1"].'"></td></tr>';
 
+	echo '<tr><td class="datos2">'.lang_string("Graph color (avg)");
+	echo '<td class="datos2"><input type="text" name="graph_color2" size=8 value="'.$config["graph_color2"].'"></td></tr>';
+
+	echo '<tr><td class="datos">'.lang_string("Graph color (max)");
+	echo '<td class="datos"><input type="text" name="graph_color3" size=8 value="'.$config["graph_color3"].'"></td></tr>';
+
+	echo '<tr><td class="datos2">'.$lang_label["days_compact"];
+	echo '<td class="datos2"><input type="text" name="days_compact" size=5 value="'.$config["days_compact"].'"></td></tr>';
 	
-	echo '<tr><td class="datos">'.$lang_label["show_unknown"].'</td>';
-	echo '<td class="datos"><select name="show_unknown" class="w120">';
+	echo '<tr><td class="datos">'.$lang_label["days_purge"];
+	echo '<td class="datos"><input type="text" name="days_purge" size=5 value="'.$config["days_purge"].'"></td></tr>';
+	
+	echo '<tr><td class="datos2">'.$lang_label["graph_res"];
+	echo '<td class="datos2"><input type="text" name="graph_res" size=5 value="'.$config["graph_res"].'"></td></tr>';
+	
+	echo '<tr><td class="datos">'.$lang_label["step_compact"].'</td>';
+	echo '<td class="datos"><input type="text" name="step_compact" size=5 value="'.$config["step_compact"].'"></td></tr>';
+
+	echo '<tr><td class="datos2">'.$lang_label["show_unknown"].'</td>';
+	echo '<td class="datos2"><select name="show_unknown" class="w120">';
 	if ($config["show_unknown"]==1) {
 		echo '<option value="1">'.$lang_label["active"].'</option>';
 		echo '<option value="0">'.$lang_label["disabled"].'</option>';
@@ -90,8 +106,8 @@ if (comprueba_login() == 0)
 		echo '<option value="1">'.$lang_label["active"].'</option>';
 	}
 
-	echo '<tr><td class="datos2">'.$lang_label["show_lastalerts"];
-	echo '<td class="datos2"><select name="show_lastalerts" class="w120">';
+	echo '<tr><td class="datos">'.$lang_label["show_lastalerts"];
+	echo '<td class="datos"><select name="show_lastalerts" class="w120">';
 	if ($config["show_lastalerts"]==1) {
 		echo '<option value="1">'.$lang_label["active"].'</option>';
 		echo '<option value="0">'.$lang_label["disabled"].'</option>';

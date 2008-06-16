@@ -360,9 +360,10 @@ if ($total_events > 0){
                     echo "<img src='images/network.png'>";
                     break;
             }
-
+ 
             // Event description
-			echo "<td class='".$tdclass."f9' title='".$row2["evento"]."'>";
+			$event_title = safe_input ($row2["evento"]);
+			echo "<td class='".$tdclass."f9' title='$event_title'>";
             echo substr($row2["evento"],0,45);
             if (strlen($row2["evento"]) > 45)
                 echo "..";

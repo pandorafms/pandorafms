@@ -587,7 +587,7 @@ function grafico_modulo_sparse ($id_agente_modulo, $periodo, $show_event,
 		// Show alert limits 
 		if ($show_alert == 1){
 			$Plot =& $Plotarea->addNew('Image_Graph_Axis_Marker_Area', IMAGE_GRAPH_AXIS_Y);
-			$Plot->setFillColor( 'blue@0.1' );
+			$Plot->setFillColor( 'gray@0.1' );
 			$Plot->setLowerBound( $alert_low);
 			$Plot->setUpperBound( $alert_high );
 		}
@@ -626,15 +626,13 @@ function grafico_modulo_sparse ($id_agente_modulo, $periodo, $show_event,
 
 		$Plot->setFillStyle($FillArray);
 		if ($avg_only == 1){
-			$FillArray->addColor('green@0.6');
+			$FillArray->addColor($config["graph_color1"]);
 		} else {
-			$FillArray->addColor('yellow@0.5'); 
-			$FillArray->addColor('orange@0.6'); 
-			$FillArray->addColor('#e37907@0.7');
-			$FillArray->addColor('red@0.7');
-			$FillArray->addColor('blue@0.7');
-			$FillArray->addColor('green@0.7');
-			$FillArray->addColor('black@0.7');
+			$FillArray->addColor($config["graph_color3"]); 
+			$FillArray->addColor($config["graph_color2"]); 
+			$FillArray->addColor($config["graph_color1"]);
+			
+
 		}
 		$AxisY_Weather =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
 
@@ -1963,6 +1961,7 @@ function grafico_modulo_boolean ( $id_agente_modulo, $periodo, $show_event,
 // Generic parameter handling
 // **************************
 
+$id_agent = (int) get_parameter ('id_agent');
 $tipo = (string) get_parameter ('tipo');
 $pure = (bool) get_parameter ('pure');
 $period = (int) get_parameter ('period', 86400);
@@ -2013,6 +2012,8 @@ if ($graphic_type) {
 	case "db_agente_purge":
 		grafico_db_agentes_purge($id, $width, $height);
 		break;
+	case "event_module":
+		graph_event_module ($width, $height, $id_agent);
 	case "group_events":
 		grafico_eventos_grupo($width, $height);
 		break;

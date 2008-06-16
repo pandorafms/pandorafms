@@ -1,8 +1,8 @@
 <?php
 // Pandora - the Free monitoring system
 // ====================================
-// Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2005-2008 Artica Soluciones Tecnologicas S.L, info@artica.es
 // Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
 // Javascript Active Console code.
 // Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
@@ -22,7 +22,10 @@
 
 // Global & session management
 include ('../include/config.php');
-session_start();
+if (!isset($_SESSION["id_user"])){
+	session_start();
+	session_write_close();
+}
 
 include ('../include/functions.php');
 include ('../include/functions_db.php');
@@ -37,32 +40,25 @@ if (comprueba_login() != 0) {
 }
 	
 // Parsing the refresh before sending any header
-if (isset($_GET['refresh']) and is_numeric($_GET['refresh']) and $_GET['refresh']>0) {
+$refresh = get_parameter ("refresh", -1);
+if ($refresh != -1)
 	header( 'refresh: ' . $_GET['refresh'] );
-	}
+
 echo '<html>
 <head><title>Pandora FMS Graph</title>
 <link rel="stylesheet" href="../include/styles/pandora_minimal.css" type="text/css">';
-;
+echo "<script type='text/javaScript' src='../include/javascript/calendar.js'></script>";
+echo "</head><body>";
 
 // Get input parameters
 
-if (isset($_GET["label"]))
-	$label = entrada_limpia($_GET["label"]);
-	
+$label = get_parameter ("label","");	
 if (!isset($_GET["period"]) OR (!isset($_GET["id"]))) {
 	echo "<h3 class='error'>".$lang_label["graf_error"]."</h3>";
 	exit;
 }
-if (isset($_GET["draw_events"]))
-	$draw_events = entrada_limpia($_GET["draw_events"]);
-else
-	$draw_events = 0;
 
-if (isset($_GET["period"]))
-	$period = entrada_limpia($_GET["period"]);
-else
-	$period = 3600; // 1 hour (the most fast query possible)
+$period = get_parameter ( "period", 3600);
 
 switch ($period) {
 	case 3600: 	$period_label = $lang_label["hour"];
@@ -92,49 +88,22 @@ switch ($period) {
 	default: 	$period_label = human_time_description_raw ($period);
 }
 	
-if (isset($_GET["draw_alerts"]))
-	$draw_alerts = entrada_limpia($_GET["draw_alerts"]);
-else
-	$draw_alerts = 0;
-if (isset($_GET["avg_only"]))
-	$avg_only = entrada_limpia($_GET["avg_only"]);
-else
-	$avg_only = 0;
-if (isset($_GET["refresh"]))
-	$refresh = entrada_limpia($_GET["refresh"]);
-else
-	$refresh = 0;
-if (isset($_GET["period"]))
-	$period = entrada_limpia($_GET["period"]);
-else
-	$period = 86400; // 1 day default period
-if (isset($_GET["id"]))
-	$id = entrada_limpia($_GET["id"]);
-else
-	$id = 0;
-if (isset($_GET["width"]))
-	$width = entrada_limpia($_GET["width"]);
-else
-	$width = 525;
-if (isset($_GET["height"]))
-	$height = entrada_limpia ($_GET["height"]);
-else
-	$height = 220;
 
-if (isset($_GET["label"]))
-	$label = entrada_limpia ($_GET["label"]);
-else
-	$label = "";
-
-if (isset($_GET["zoom"])){
-	$zoom = entrada_limpia ($_GET["zoom"]);
-	if ($zoom > 1){
-		$height=$height*($zoom/2.1);
-		$width=$width*($zoom/1.4);
-	}
+$draw_alerts = get_parameter("draw_alerts", 0);
+$avg_only = get_parameter ("avg_only", 0);
+$period = get_parameter ("period", 86400);
+$id = get_parameter ("id", 0);
+$width = get_parameter ("width", 555);
+$height = get_parameter ("height", 245);
+$label = get_parameter ("label", "");
+$start_date = get_parameter ("start_date", date("Y-m-d"));
+$draw_events = get_parameter ("draw_events", 0);
+$graph_type = get_parameter ("type", "sparse");
+$zoom = get_parameter ("zoom", 1);
+if ($zoom > 1){
+	$height=$height*($zoom/2.1);
+	$width=$width*($zoom/1.4);
 }
-else
-	$zoom = "1";
 
 if ($zoom > 1) {
 	echo "
@@ -144,12 +113,12 @@ if ($zoom > 1) {
 	";
 }
 
-$graph_type = "sparse";
-if (isset($_GET["type"]))
-	$graph_type = entrada_limpia($_GET["type"]);
-
-
-echo "<img src='fgraph.php?tipo=$graph_type&draw_alerts=$draw_alerts&draw_events=$draw_events&id=$id&zoom=$zoom&label=$label&height=$height&width=$width&period=$period&avg_only=$avg_only' border=0 alt=''>";
+$current = date("Y-m-d");
+if ($start_date != $current){
+	$utime = strtotime ($start_date);
+	echo "<img src='fgraph.php?tipo=$graph_type&draw_alerts=$draw_alerts&draw_events=$draw_events&id=$id&zoom=$zoom&label=$label&height=$height&width=$width&period=$period&avg_only=$avg_only&date=$utime' border=0 alt=''>";
+} else 
+	echo "<img src='fgraph.php?tipo=$graph_type&draw_alerts=$draw_alerts&draw_events=$draw_events&id=$id&zoom=$zoom&label=$label&height=$height&width=$width&period=$period&avg_only=$avg_only' border=0 alt=''>";
 
 	echo "<table width=450 cellspacing=1 cellpadding=1 class='databox' style='margin-left: 20px'>";
 		echo "<tr><td><b>";
@@ -168,11 +137,11 @@ echo "<img src='fgraph.php?tipo=$graph_type&draw_alerts=$draw_alerts&draw_events
 <script type='text/javascript' src='../include/javascript/x_slide.js'></script>
 <script type='text/javascript'><!--
 	var defOffset = 2;
-	var defSlideTime = 200;
+	var defSlideTime = 220;
 	var tnActive = 0;
-	var visibleMargin = 3;
+	var visibleMargin = 5;
 	var menuW = 325;
-	var menuH = 220;
+	var menuH = 310;
 	window.onload = function() {
 		var d;
 		d = xGetElementById('divmenu');
@@ -226,7 +195,7 @@ echo "<img src='fgraph.php?tipo=$graph_type&draw_alerts=$draw_alerts&draw_events
 		</td><td>
 			<?php
 			echo "<tr><td>";
-			echo "Refresh time (sec)";
+			echo lang_string("Refresh time");
 			echo "<td colspan=2>";
 			echo "<input type='text' size=5 name='refresh' value='" . $refresh . "'>";
 
@@ -237,7 +206,12 @@ echo "<img src='fgraph.php?tipo=$graph_type&draw_alerts=$draw_alerts&draw_events
 				echo "<input type='checkbox' name='avg_only' value=1>";
 
 			echo "<tr><td>";
-			echo "Zoom factor (1x)";
+			echo lang_string("Begin date");
+			echo "<td>";
+			echo "<input type='text' id='start_date' name='start_date' size=10 value='".substr($start_date,0,10)."'><img src='../images/calendar_view_day.png' onclick='scwShow(scwID(\"start_date\"),this);'> ";
+
+			echo "<tr><td>";
+			echo lang_string("Zoom factor");
 			echo "<td>";
 			echo "<select name=zoom>";
 			echo "<option value='$zoom'>"."x".$zoom;
@@ -248,7 +222,7 @@ echo "<img src='fgraph.php?tipo=$graph_type&draw_alerts=$draw_alerts&draw_events
 			echo "</select>";
 
 			echo "<tr><td>";
-			echo "Range of time";
+			echo lang_string("Time range");
 			echo "<td>";
 			echo "<select name='period'>";
 			echo "<option value=$period>".$period_label;
@@ -267,17 +241,16 @@ echo "<img src='fgraph.php?tipo=$graph_type&draw_alerts=$draw_alerts&draw_events
 			echo "</select>";
 			
 			echo "<tr><td>";
-			echo "Show events ";
+			echo lang_string("Show events");
 			echo "<td>";
 			if ($draw_events == 1)
 				echo "<input type='checkbox' name='draw_events' CHECKED  value=1>";
 			else
 				echo "<input type='checkbox' name='draw_events'  value=1>";
 
-		
-			
+	
 			echo "<tr><td>";
-			echo "Show alert ";
+			echo lang_string("Show alert");
 			echo "<td>";
 			if ($draw_alerts == 1)
 				echo "<input type='checkbox' name='draw_alerts' value=1  CHECKED>";
@@ -287,6 +260,7 @@ echo "<img src='fgraph.php?tipo=$graph_type&draw_alerts=$draw_alerts&draw_events
 		
 			echo "<td>";
 			echo "<input type='submit' class='sub next' value='GO'>";
+echo "<br>";
 			?>
 		</td></tr>
 		</table>

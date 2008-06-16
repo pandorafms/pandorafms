@@ -1,13 +1,57 @@
-2008-06-15  Esteban Sanchez  <estebans@artica.es>
+2008-06-16  Sancho Lerena <slerena@gmail.com>
+
+	* pandoradb_data.sql: Updated some new config tokens (graph colors), 
+	updated group default names and icons, 
+
+	* manage_config_remote.php, godmode/menu.php: Added new config to 
+	manage/copy remote config from one agent to other(s).
+
+	* agent_manager.php: When create a new agent, cannot select group "ALL".
+
+	* agent_template.php: Fixed a weird bug that creates two tagente_estado
+	records when using a module template.
+
+	* alert_manager_editor.php: Fixed ACL problem assigning combined alert
+	components. Better management of NOP in combined alerts (Automated NOP 
+	when create the first component. Added NAND, NXOR y NOR).
+
+	* manage_config.php: Solved some bugs copying configuration with new
+	modules (Added support for new module types). Added filter for group and
+	fixed ACL problems. Code cleanup and better layout.
+
+	* module_manager_editor_prediction.php: ACL checks added.
+
+	* config_process.php, setup.php: Support to choose color graphs.
+
+	* functions.php: Fixed typo and removed N/A for alerts with min/max = 0
+	
+	* functions_db.php: Fixed another typo in give_disabled_group(), and added
+	feature to list_group() combo to render or now group "ALL".
+
+	* estado_generalagente.php: Added network push button for whole agent.
+
+	* tactical.php: Some minor layout improvement.
+
+	* ver_agente.php: Network FLAG change request for whole group, and fixed
+	manual validation on combined alerts.
+
+	* events.php: Event description don't show with " ' "characters. Fixed.
+
+	* fgraph.php: graph_event_module() restored (was missing in last commit),
+	added user-defined color support.
+
+	* stat_win.php: Added support to choose another date for graph. 
+
+2008-06-16  Esteban Sanchez  <estebans@artica.es>
 
 	* reporting/fgraph.php: Fixed a regresion bug with progress bar mode.
 
-2008-06-15  Esteban Sanchez  <estebans@artica.es>
+2008-06-16  Esteban Sanchez  <estebans@artica.es>
 
 	* reporting/fgraph.php: Fixed bug with graphic_combined_module() that
 	was causing not to work right.
 
-2008-06-15  Esteban Sanchez  <estebans@artica.es>
+2008-06-16  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions_html.php: Added to repository. Implements HTML
 	functions.

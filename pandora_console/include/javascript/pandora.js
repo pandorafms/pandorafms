@@ -9,7 +9,7 @@ function toggleDiv (divid){
 }
 
 function winopeng(url,wid) {
-    nueva_ventana=open(url,wid,"width=530,height=275,status=no,toolbar=no,menubar=no");
+    nueva_ventana=open(url,wid,"width=570,height=310,status=no,toolbar=no,menubar=no,scrollbar=no");
     // WARNING !! Internet Explorer DOESNT SUPPORT "-" CARACTERS IN WINDOW HANDLE VARIABLE
     status =wid;
 }

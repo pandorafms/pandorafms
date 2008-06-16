@@ -64,7 +64,7 @@
 	// Monitor checks
 	// ~~~~~~~~~~~~~~~
 	echo "<table width=770 border=0>";
-	echo "<tr><td>";
+	echo "<tr><td valign=top>";
 	echo "<table class='databox' celldpadding=4 cellspacing=4 width=250>";
 
 // Summary
@@ -79,6 +79,7 @@
     echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$module_sanity ' title='$module_sanity % ".lang_string("of well initialized modules")."'>";
     echo "<tr><td colspan='2'><b>".lang_string("Alert level")."</th>";
     echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$alert_level' title='$alert_level % ".lang_string("of non-fired alerts")."'>";
+	echo "<br><br>";
     
 
     echo "<tr>";

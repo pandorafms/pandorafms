@@ -145,7 +145,7 @@ function dame_perfil ($id_profile) {
 // ---------------------------------------------------------------
 
 function give_disabled_group ($id_group) {
-	return (bool) get_db_value ('disabled', 'tgroup', 'id_grupo', (int) $id_group);
+	return (bool) get_db_value ('disabled', 'tgrupo', 'id_grupo', (int) $id_group);
 }
 
 
@@ -756,16 +756,18 @@ function give_agentmodule_flag($id_agent_module){
 // Returns a combo with the groups and defines an array 
 // to put all groups with Agent Read permission
 // ----------------------------------------------------------------------
-function list_group ($id_user){
+function list_group ($id_user, $show_all = 1){
 	$mis_grupos=array (); // Define array mis_grupos to put here all groups with Agent Read permission
-	$sql='SELECT id_grupo FROM tgrupo order by nombre';
+	$sql='SELECT id_grupo, nombre FROM tgrupo';
 	$result=mysql_query($sql);
 	while ($row=mysql_fetch_array($result)){
 		if ($row["id_grupo"] != 0){
 			if (give_acl($id_user,$row["id_grupo"], "AR") == 1){
-				array_push ($mis_grupos, $row["id_grupo"]); //Put in  an array all the groups the user belongs
-				echo "<option value='".$row["id_grupo"]."'>".
-				dame_nombre_grupo($row["id_grupo"])."</option>";
+				if (($row["id_grupo"] != 1) OR ($show_all == 1)){
+					array_push ($mis_grupos, $row["id_grupo"]); //Put in  an array all the groups the user belongs
+					echo "<option value='".$row["id_grupo"]."'>".
+					$row["nombre"]."</option>";
+				}
 			}
 		}
 	}

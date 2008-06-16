@@ -1,3 +1,7 @@
+2008-06-16  Sancho Lerena <slerena@artica.es>
+
+	* pandora_snmpconsole: Solved a few bugs detected by Manu.
+
 2008-06-13  Sancho Lerena <slerena@artica.es>
 
     * conf/pandora_server.conf: Added new internal MTA feature config tokens .

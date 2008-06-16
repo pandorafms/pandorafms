@@ -1,67 +1,111 @@
+2008-06-15  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_html.php: Added to repository. Implements HTML
+	functions.
+
+	* reporting/fgraph.php: Many style correction fixes, including those
+	regardings tabs and blank spaces, variable names and indentation
+	levels for checkings. Improved dame_fecha(). Added date support to
+	graphic_combined_module(), grafico_modulo_sparse(). The selection of
+	the graphic to show based on parameters has been replaced by a switch.
+	The parameters are parsed with get_parameter()
+
+	* include/functions_db.php: Style correction of tabs and blanks
+	spaces. Use Pandora database functions on simple querying functions
+	such as dame_perfil(), give_disabled_group(), dame_grupo(),
+	give_note_author(), dame_agente_id(), dame_agente_modulo_id() and many
+	more, there are a lot more to change. Function comprueba_admin()
+	renamed to check_admin (wrap created for old function). Added some
+	checks to get_db_value(), get_db_row() so the SQL is build based on
+	the parameter types. Added get_db_all_rows_sqlfree(),
+	get_db_all_rows_in_table(), get_db_all_rows_field_filter(),
+	get_db_all_fields_in_table(). Added date support to
+	return_moduledata_avg_value(), return_moduledata_max_value(),
+	return_moduledata_min_value(). Added function
+	return_moduledata_sum_value() to get the sum of the values in a
+	module.
+
+	* include/functions.php: If input is numeric on safe_input, do not
+	clean it, since it's safe by itself. Use mysql_escape_string() on
+	salida_sql(). Added get_report_types(), get_report_name(),
+	get_report_type_data_source() relatives to reports. Added also
+	is_module_data(), is_module_proc(), is_module_inc(),
+	is_module_data_string() to know if a module is from a type. Replaced
+	form_priority() with get_event_types() so the caller of this function
+	will print the select (using print_select).
+
+	* operation/events/events.php: Replaced form_priorit() with
+	get_event_types().
+
+	* ChangeLog: Tab style correction with previous commit.
+
 2008-06-13  Sancho Lerena <slerena@gmail.com>
 
-    * status_events: added to view new events in agentg view
+	* status_events: added to view new events in agentg view.
 
-    * index.php: Added pure (Fullscreen). HTML code cleanup and user session.
-    
-    * pandoradb.sql: talert_snmp: Added priority field. 
-    
-    * pandoradb_data.sql: Changes default values in talerta. tconfig_os, tgrupo
-    and some links.
-    
-    * header.php: Fixed some user session management.
-    
-    * logon_ok.php: New design for welcome screen, odometer is over.
-    
-    * menu.php, godmode/menu.php: Some ACL improvements.
-    
-    * agent_disk_conf_editor.php: Minor fix in view link.
-    
-    * configurar_agente.php, agent_manager.php: Added parent combo and better
-    ACL checks. New remote configuration control for get timestamp info of
-    config file.
-    
-    * modify_alert.php: Changes to use new internal Mail alert.
-    
-    * config.php: Some items moved to config_process. (font, attachment and 
-    default style).
-    
-    * functions.php: Added form_agent_combo(), form_event_type_combo(),
-    form_priority() and return_priority() functions.
-    
-    * functions_db.php: Added smal_event_table() to render a variable table
-    with latest events (filtered).
-    
-    * pandora.css. Added pure and priority colors.
-    
-    * estado_alertas.php: Fixed ACL problems.
-    
-    * stado_generalagente.php: Graph of modules now represents modules that
-    has generated events. Old graph is not used anymore. Also display parent.
-    
-    * estado_grupo.php: Border of boxes is now thicker.
-    
-    * tactical.php: New screen, almost all code changed. Odometer is not used
-    anymore, added some new items, like module LAG meter, module sanity, and
-    other general metrics.
-    
-    * ver_agente.php: Now renders also event for each agent view. Alert manual
-    validation generate a new event.
-    
-    * events.php: New event system. 90% new code. A LOT of new features, 
-    including full screen, coloured (by priority) and filters by six fields.
-    
-    * snmp_alert.php: Added support for alert priority.
-    
-    * operation/users/user.php: No longer a user with UM privileges could
-    see any other user.
-    
-    * render_view.php: Added fullscreen support for visual maps.
-    
-    * fgraph.php: Added support for session checking in graphs (at least!).
-    New graphics for events (some changed it's function like events by group),
-    and feature added to progress GD implementation. 
-    
+	* index.php: Added pure (Fullscreen). HTML code cleanup and user
+	session.
+
+	* pandoradb.sql: talert_snmp: Added priority field. 
+
+	* pandoradb_data.sql: Changes default values in talerta. tconfig_os,
+	tgrupo and some links.
+
+	* header.php: Fixed some user session management.
+
+	* logon_ok.php: New design for welcome screen, odometer is over.
+
+	* menu.php, godmode/menu.php: Some ACL improvements.
+
+	* agent_disk_conf_editor.php: Minor fix in view link.
+
+	* configurar_agente.php, agent_manager.php: Added parent combo and
+	better ACL checks. New remote configuration control for get timestamp
+	info of config file.
+
+	* modify_alert.php: Changes to use new internal Mail alert.
+
+	* config.php: Some items moved to config_process. (font, attachment
+	and default style).
+
+	* functions.php: Added form_agent_combo(), form_event_type_combo(),
+	form_priority() and return_priority() functions.
+
+	* functions_db.php: Added smal_event_table() to render a variable
+	table with latest events (filtered).
+
+	* pandora.css: Added pure and priority colors.
+
+	* estado_alertas.php: Fixed ACL problems.
+
+	* stado_generalagente.php: Graph of modules now represents modules
+	that has generated events. Old graph is not used anymore. Also display
+	parent.
+
+	* estado_grupo.php: Border of boxes is now thicker.
+
+	* tactical.php: New screen, almost all code changed. Odometer is not
+	used anymore, added some new items, like module LAG meter, module
+	sanity, and other general metrics.
+
+	* ver_agente.php: Now renders also event for each agent view. Alert
+	manual validation generate a new event.
+
+	* events.php: New event system. 90% new code. A LOT of new features,
+	including full screen, coloured (by priority) and filters by six
+	fields.
+
+	* snmp_alert.php: Added support for alert priority.
+
+	* operation/users/user.php: No longer a user with UM privileges could
+	see any other user.
+
+	* render_view.php: Added fullscreen support for visual maps.
+
+	* fgraph.php: Added support for session checking in graphs (at
+	least!). New graphics for events (some changed it's function like
+	events by group), and feature added to progress GD implementation.
+
 2008-06-09  Sancho Lerena <slerena@gmail.com>
 
     * operation/agentes/status_monitor.php, 

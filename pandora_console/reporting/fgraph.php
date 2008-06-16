@@ -1988,6 +1988,7 @@ $value3 = get_parameter("value3", 0);
 $stacked = get_parameter ("stacked", 0);
 $date = get_parameter ("date");
 $graphic_type = (string) get_parameter ('tipo');
+$mode = get_parameter ("mode", 1);
 
 if ($graphic_type) {
 	switch ($graphic_type) {
@@ -2043,7 +2044,7 @@ if ($graphic_type) {
 //		graphic_test ($id, $period, $intervalo, $label, $width, $height);
 	case "progress": 
 		$percent = $_GET["percent"];
-		progress_bar($percent,$width,$height);
+		progress_bar ($percent,$width,$height, $mode);
 		break;
 	case "odo_tactic":
 		odo_tactic ( $value1, $value2, $value3 );

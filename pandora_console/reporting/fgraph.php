@@ -169,40 +169,40 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 		}
 		$previous=0;
 		// Get the first data outsite (to the left---more old) of the interval given
-		$sql1="SELECT datos, utimestamp FROM tagente_datos WHERE id_agente = $id_agente AND id_agente_modulo = $id_agente_modulo AND utimestamp < $fechatope AND utimestamp >= $date ORDER BY utimestamp DESC LIMIT 1";
-		if ($result=mysql_query($sql1)){
-			$row=mysql_fetch_array($result);
+		$sql = "SELECT datos, utimestamp FROM tagente_datos WHERE id_agente = $id_agente AND id_agente_modulo = $id_agente_modulo AND utimestamp < $fechatope AND utimestamp >= $date ORDER BY utimestamp DESC LIMIT 1";
+		if ($result = mysql_query($sql)) {
+			$row = mysql_fetch_array($result);
 			$previous = $row[0];
 		}
 		
 		$sql1="SELECT datos,utimestamp FROM tagente_datos WHERE id_agente = $id_agente AND id_agente_modulo = $id_agente_modulo AND utimestamp >= $fechatope AND utimestamp < $date";
-		if ($result=mysql_query($sql1))
-		while ($row=mysql_fetch_array($result)){
+		if ($result = mysql_query($sql1))
+		while ($row = mysql_fetch_array ($result)) {
 			$datos = $row[0];
 			$utimestamp = $row[1];
-			for ($i=0; $i <= $resolution; $i++) {
-				if ( ($utimestamp <= $valores[$i][3]) && ($utimestamp > $valores[$i][2]) ){
-					$valores[$i][0]=$valores[$i][0]+$datos;
-					$valores[$i][1]++;
+			for ($j = 0; $j <= $resolution; $j++) {
+				if ($utimestamp <= $valores[$j][3] && $utimestamp > $valores[$j][2]) {
+					$valores[$j][0]=$valores[$j][0]+$datos;
+					$valores[$j][1]++;
 					// Init min value
-					if ($valores[$i][4] == 0)
-						$valores[$i][4] = $datos;
+					if ($valores[$j][4] == 0)
+						$valores[$j][4] = $datos;
 					else {
 						// Check min value
-						if ($datos < $valores[$i][4])
-						$valores[$i][4] = $datos;
+						if ($datos < $valores[$j][4])
+						$valores[$j][4] = $datos;
 					}			
 					// Check max value
-					if ($datos > $valores[$i][5])
-						$valores[$i][5] = $datos;
-					$i = $resolution+1; // BREAK FOR
+					if ($datos > $valores[$j][5])
+						$valores[$j][5] = $datos;
+					break;
 				}
 			}
 		}
 
 		
 		// Calculate Average value for $valores[][0]
-		for ($j =0; $j <= $resolution; $j++) {
+		for ($j = 0; $j <= $resolution; $j++) {
 			if ($valores[$j][1] > 0){
 				$real_data[$i][$j] =  $weight_list[$i] * ($valores[$j][0]/$valores[$j][1]);
 				$valores[$j][0] = $valores[$j][0]/$valores[$j][1];
@@ -249,7 +249,8 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 	elseif ($periodo == 2419200)
 		$title_period = "Last month";
 	else
-		$title_period = "Last ".format_numeric(($periodo / (3600*24)),2)." days";
+		$title_period = "Last ".format_numeric (($periodo / (3600 * 24)), 2)." days";
+	
 	if ($pure == 0){
 		$Font =& $Graph->addNew('font', $config['fontpath']);
 		$Font->setSize(6);
@@ -284,6 +285,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 		);
 		$Legend->setPlotarea($Plotarea);
 	}
+	
 	// Create the dataset
 	// Merge data into a dataset object (sancho)
 	// $Dataset =& Image_Graph::factory('dataset');
@@ -292,7 +294,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 		$dataset[$i] = Image_Graph::factory('dataset');
 		$dataset[$i] -> setName($module_list_name[$i]);
 	}
-	if ($show_event == 1){
+	if ($show_event == 1) {
 		$dataset_event = Image_Graph::factory('dataset');
 		$dataset_event -> setName("Event Fired");
 	}
@@ -300,14 +302,14 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 	// ... and populated with data ...
 	for ($i = 0; $i < $resolution; $i++) {
 		$tdate = date('d/m', $valores[$i][2])."\n".date('H:i', $valores[$i][2]);
-		for ($i = 0; $i < $module_number; $i++){
-			$dataset[$i]->addPoint($tdate, $real_data[$i][$i]);
+		for ($j = 0; $j < $module_number; $j++) {
+			$dataset[$j]->addPoint($tdate, $real_data[$j][$i]);
 			if (($show_event == 1) AND (isset($real_event[$i]))) {
 				$dataset_event->addPoint($tdate, $max_value);
 			}
 		}
 	}
-
+	
 	if ($max_value <= 0) {
 		graphic_error ();
 		return;

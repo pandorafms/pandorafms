@@ -1,5 +1,10 @@
 2008-06-15  Esteban Sanchez  <estebans@artica.es>
 
+	* reporting/fgraph.php: Fixed bug with graphic_combined_module() that
+	was causing not to work right.
+
+2008-06-15  Esteban Sanchez  <estebans@artica.es>
+
 	* include/functions_html.php: Added to repository. Implements HTML
 	functions.
 

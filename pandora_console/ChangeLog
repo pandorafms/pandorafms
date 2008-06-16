@@ -1,5 +1,9 @@
 2008-06-15  Esteban Sanchez  <estebans@artica.es>
 
+	* reporting/fgraph.php: Fixed a regresion bug with progress bar mode.
+
+2008-06-15  Esteban Sanchez  <estebans@artica.es>
+
 	* reporting/fgraph.php: Fixed bug with graphic_combined_module() that
 	was causing not to work right.
 

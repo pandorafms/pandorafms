@@ -271,7 +271,7 @@ sub calcula_alerta_snmp {
                     $data_alert{'descripcion'} = $description;
 
                     # Execute alert
-					execute_alert ($pa_config, \%data_alert, $agent, $id_group, $agent, $trap_agente, 1, $dbh);
+					execute_alert ($pa_config, \%data_alert, $agent, 0, $agent, $trap_agente, 1, $dbh);
 
 					# Now update the new value for times_fired, alert_fired, internal_counter and last_fired for this alert.
 					my $query_idag2 = "update talert_snmp set times_fired = $times_fired, last_fired = '$ahora_mysql', internal_counter = $internal_counter where id_as = $id_as ";
@@ -310,6 +310,7 @@ sub calcula_alerta_snmp {
 sub pandora_shutdown {
     logger (\%pa_config,"Pandora FMS Server '".$pa_config{'servername'}.$pa_config{"servermode"}."' Shutdown by signal ",0);
     print " [*] Shutting down ".$pa_config{'servername'}.$pa_config{"servermode"} ."(received signal)...\n";
+	my $dbh = DBI->connect("DBI:mysql:$pa_config{'dbname'}:$pa_config{'dbhost'}:3306",$pa_config{'dbuser'}, $pa_config{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
     pandora_event (\%pa_config, $pa_config{'servername'}.$pa_config{"servermode"}." going Down", 0,
                                    0, 4, 0, 0, "system", $dbh);
     exit;

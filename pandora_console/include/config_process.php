@@ -80,6 +80,16 @@ if($result2=mysql_query("SELECT * FROM tconfig")){
                             break;
         case "remote_config": $config["remote_config"] = $row2["value"];
                             break;
+		case "graph_color1": 
+			$config["graph_color1"] = $row2["value"];
+			break;
+		case "graph_color2": 
+			$config["graph_color2"] = $row2["value"];
+			break;
+		case "graph_color3": 
+			$config["graph_color3"] = $row2["value"];
+			break;
+
         }
     }
 } else {

@@ -97,9 +97,7 @@
     } else
         $global_health = 100;
 
-		
-echo "<table class='databox' celldpadding=4 cellspacing=4 width=250>";
-        
+    echo "<table class='databox' celldpadding=4 cellspacing=4 width=250>";
     //echo "<h2>".$lang_label["tactical_indicator"]."</h2>";
     //echo "<img src='reporting/fgraph.php?tipo=odo_tactic&value1=$global_health&value2=$data_health&value3=$monitor_health'>";
     
@@ -118,7 +116,6 @@ echo "<table class='databox' celldpadding=4 cellspacing=4 width=250>";
 
     echo "<tr><td colspan='2'>".lang_string("Alert level")."</th>";
     echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$alert_level' title='$alert_level % ".lang_string("of non-fired alerts")."'>";
-
     echo "</table>";
 
 	$query1 = "SELECT COUNT(id_usuario) FROM tusuario";

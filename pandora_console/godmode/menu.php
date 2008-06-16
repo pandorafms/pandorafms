@@ -43,9 +43,16 @@ if (comprueba_login() == 0){
 			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/agentes/manage_config"){
 				echo "<div class='arrowgs'>";
 			}
-			else echo "<div class='arrowg'>";
-			echo "<ul class='mn'><li><a href='index.php?sec=gagente&amp;sec2=godmode/agentes/manage_config' class='mn'>".$lang_label["manage_config"]."</a></li></ul></div>";
+			else 
+				echo "<div class='arrowg'>";
+				echo "<ul class='mn'><li><a href='index.php?sec=gagente&amp;sec2=godmode/agentes/manage_config' class='mn'>".lang_string ("manage_config")."</a></li></ul></div>";
 			
+			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/agentes/manage_config_remote"){
+				echo "<div class='arrowgs'>";
+			}
+			else 
+				echo "<div class='arrowg'>";
+				echo "<ul class='mn'><li><a href='index.php?sec=gagente&amp;sec2=godmode/agentes/manage_config_remote' class='mn'>".lang_string ("Duplicate config")."</a></li></ul></div>";
 
             // Manage groups
             if ((give_acl($id_user, 0, "PM")==1)){

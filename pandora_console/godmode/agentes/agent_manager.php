@@ -109,11 +109,10 @@ else
 
 echo '<tr><td class="datos"><b>'.$lang_label["group"].'</b>';
 echo '<td class="datos"><select name="grupo" class="w130">';
-
 if (isset($grupo)){
 echo "<option value='".$grupo."'>".dame_grupo($grupo)."</option>";
 }
-list_group ($id_user);
+list_group ($id_user, 0);
 echo "</select>";
 
 echo "<tr><td class='datos2'>";

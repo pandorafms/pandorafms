@@ -313,30 +313,44 @@ if (($form_alerttype == "combined") AND ($update_alert != -1)){
     echo "<select name='component_item'>";
     
     // Add to combo single alerts
-    $result_alert = mysql_query("SELECT tagente_modulo.id_agente_modulo, tagente.nombre, tagente_modulo.nombre, id_aam FROM talerta_agente_modulo, tagente_modulo, tagente WHERE talerta_agente_modulo.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.id_agente = tagente.id_agente");
+    $result_alert = mysql_query("SELECT tagente_modulo.id_agente_modulo, tagente.nombre, tagente_modulo.nombre, id_aam, tagente.id_grupo FROM talerta_agente_modulo, tagente_modulo, tagente WHERE talerta_agente_modulo.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.id_agente = tagente.id_agente");
     while ($alertrow = mysql_fetch_array($result_alert)){ 
-        echo "<option value='".$alertrow[3]."'>(S) ".$alertrow[1]." - ".$alertrow[2];
+		if (give_acl ($config["id_user"], $alertrow[4], "AR") == 1)
+        	echo "<option value='".$alertrow[3]."'>(S) ".$alertrow[1]." - ".$alertrow[2];
     }
 
     // Add to combo combined alerts
-    $result_alert = mysql_query("SELECT * FROM talerta_agente_modulo WHERE id_agent != '' OR id_agent >0");
+    $result_alert = mysql_query("SELECT tagente.id_grupo, tagente.nombre, talerta_agente_modulo.id_aam, talerta_agente_modulo.descripcion FROM talerta_agente_modulo, tagente WHERE talerta_agente_modulo.id_agent = tagente.id_agente AND tagente.id_agente != '' AND tagente.id_agente > 0");
+
+
     while ($alertrow = mysql_fetch_array($result_alert)){ 
-        echo "<option value='".$alertrow["id_aam"]."'>(C) ".get_db_sql("SELECT nombre from tagente where id_agente = ".$alertrow["id_agent"])." - ".substr($alertrow["descripcion"],0,20);
+		if (give_acl ($config["id_user"], $alertrow[0], "AR"))
+        	echo "<option value='".$alertrow[2]."'>(C) ".$alertrow[1]." - ".$alertrow[3];
     }
 
     echo "</select>";
-    echo "<td>";
-    echo lang_string ("Operation");
-    echo "<td>";
-    echo "<select name='component_operation'>";
-    echo "<option>NOP";
-    echo "<option>OR";
-    echo "<option>AND";
-    echo "<option>NOT";
-    echo "<option>XOR";
-    echo "<option>XAND";
-    echo "</select>";
-    echo "<td>";
+
+
+	// there is any component already in this alert ?
+
+ 	$result = mysql_query ("SELECT COUNT(*) FROM tcompound_alert, talerta_agente_modulo WHERE tcompound_alert.id = $id_aam AND talerta_agente_modulo.id_aam = tcompound_alert.id_aam");
+    $row=mysql_fetch_array($result);
+	if ($row[0] > 0){
+		echo "<td>";
+		echo lang_string ("Operation");
+		echo "<td>";
+		echo "<select name='component_operation'>";
+		echo "<option>OR";
+		echo "<option>AND";
+		echo "<option>XOR";
+		echo "<option>NOR";
+		echo "<option>NAND";
+		echo "<option>NXOR";
+		echo "</select>";
+	} else {
+		echo "<input type=hidden name='component_operation' value='NOP'>";
+	}
+	echo "<td>";
     echo '<input name="crtbutton" type="submit" class="sub wand" value="'.$lang_label["add"].'">';
     echo "</form>";
     echo "</table>";

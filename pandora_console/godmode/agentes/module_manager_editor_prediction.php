@@ -105,10 +105,11 @@ echo '<tr>';
 echo '<td class="datos">'.lang_string ("source_module")."</td>";
 echo '<td class="datos" colspan=3>';
 echo '<select name="form_id_prediction_module">';
-$sql1='SELECT id_agente_modulo, nombre, id_agente FROM tagente_modulo WHERE id_tipo_modulo NOT IN (100,24,19,20,21,22,23,17,10,2) ORDER BY nombre, id_agente';
+$sql1='SELECT id_agente_modulo, tagente_modulo.nombre, tagente.id_agente, tagente.id_grupo, tagente.nombre FROM tagente_modulo, tagente WHERE id_tipo_modulo NOT IN (100,24,19,20,21,22,23,17,10,2) AND tagente.id_agente = tagente_modulo.id_agente ORDER BY tagente.nombre';
 $result=mysql_query($sql1);
 while ($row=mysql_fetch_array($result)){
-    echo "<option value='".$row[0]."'>".$row["nombre"]." / ".dame_nombre_agente($row["id_agente"]);
+	if (give_acl($config["id_user"], $row[3], "AR"))
+    	echo "<option value='".$row[0]."'>".$row[1]. " / ". $row[4];
 }
 echo "</select>";
 echo "</tr>";

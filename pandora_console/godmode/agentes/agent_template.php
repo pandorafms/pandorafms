@@ -47,8 +47,6 @@ if (isset($_POST["template_id"])){
 		$os_version = $row["os_version"];
 		$agent_version = $row["agent_version"];
 		$disabled= $row["disabled"];
-		$agent_type= $row["agent_type"];
-		$server = $row["id_server"];
 	}
 
 	$id_np = $_POST["template_id"];
@@ -104,6 +102,7 @@ if (isset($_POST["template_id"])){
 				)";
 			}
 			mysql_query ($sql_insert);
+			$sql_insert = "";
 		}
 	}
 	echo "<h3 class='suc'>".$lang_label["add_mod_ok"]."</h3>";
@@ -125,7 +124,7 @@ echo "<table width='300' class='databox' cellpadding='4' cellspacing='4'>";
 echo "<tr><td>".$lang_label['template']."</td><td valign='middle'>";
 
 echo "<select name='template_id' class='w130'>";
-$sql1='SELECT * FROM tnetwork_profile ORDER BY name';
+$sql1 = 'SELECT * FROM tnetwork_profile ORDER BY name';
 $result=mysql_query($sql1);
 if (mysql_num_rows($result))
 	while ($row=mysql_fetch_array($result))

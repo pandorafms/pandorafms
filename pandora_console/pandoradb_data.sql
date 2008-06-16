@@ -46,7 +46,22 @@ INSERT INTO `talerta` VALUES (9,'Jabber Alert','echo _field3_ | sendxmpp -r _fie
 /*!40000 ALTER TABLE `tconfig` DISABLE KEYS */;
 LOCK TABLES `tconfig` WRITE;
 INSERT INTO `tconfig` VALUES 
-(1,'language_code','en'),(3,'block_size','20'),(4,'days_purge','60'),(5,'days_compact','15'),(6,'graph_res','5'),(7,'step_compact','1'),(8,'db_scheme_version','2.0'),(9,'db_scheme_build','PD80401'),(13,'show_unknown','0'),(14,'show_lastalerts','1'),(15,'style','pandora'),(16, 'remote_config', '/var/spool/pandora/data_in');
+(1,'language_code','en'),
+(3,'block_size','20'),
+(4,'days_purge','60'),
+(5,'days_compact','15'),
+(6,'graph_res','5'),
+(7,'step_compact','1'),
+(8,'db_scheme_version','2.0'),
+(9,'db_scheme_build','PD80401'),
+(13,'show_unknown','0'),
+(14,'show_lastalerts','1'),
+(15,'style','pandora'),
+(16, 'remote_config', '/var/spool/pandora/data_in'),
+(17, 'graph_color1', '#38B800'),
+(18, 'graph_color2', '#42D100'),
+(19, 'graph_color3', '#89FF09')
+;
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `tconfig` ENABLE KEYS */;
 
@@ -66,15 +81,15 @@ UNLOCK TABLES;
 --
 
 LOCK TABLES `tgrupo` WRITE;
-INSERT INTO `tgrupo` VALUES (1,'All','world',0,0);
-INSERT INTO `tgrupo` VALUES (2,'Servers','server_database',0,0);
-INSERT INTO `tgrupo` VALUES (3,'IDS','eye',0,0);
-INSERT INTO `tgrupo` VALUES (4,'Firewalls','firewall',0,0);
-INSERT INTO `tgrupo` VALUES (8,'Databases','database_gear',0,0);
-INSERT INTO `tgrupo` VALUES (9,'Network','transmit',0,0);
-INSERT INTO `tgrupo` VALUES (10,'Not classified','house',0,0);
-INSERT INTO `tgrupo` VALUES (11,'Workstations','computer',0,0);
-INSERT INTO `tgrupo` VALUES (12,'Applications','applications',0,0);
+INSERT INTO `tgrupo` VALUES 
+(1,'All','world',0,0),
+(2,'Servers','server_database',0,0),
+(4,'Firewalls','firewall',0,0),
+(8,'Databases','database_gear',0,0),
+(9,'Network','transmit',0,0),
+(10,'Unknown','world',0,0),
+(11,'Workstations','computer',0,0),
+(12,'Applications','applications',0,0);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `tgrupo` ENABLE KEYS */;
 

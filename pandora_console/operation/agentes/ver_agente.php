@@ -34,11 +34,22 @@ if (comprueba_login() == 0) {
 			if ($validate_alert != ""){
 				if (give_acl($id_usuario, $id_grupo, "AW")==1){
 					$alert_row = get_db_row ("talerta_agente_modulo", "id_aam", $validate_alert);
-                    $am_row = get_db_row ("tagente_modulo", "id_agente_modulo", $alert_row["id_agente_modulo"]);
-                    $ag_row = get_db_row ("tagente", "id_agente", $am_row["id_agente"]);
+					if ($alert_row["id_agente_modulo"] != 0){
+                    	$am_row = get_db_row ("tagente_modulo", "id_agente_modulo", $alert_row["id_agente_modulo"]);
+						$ag_row = get_db_row ("tagente", "id_agente", $am_row["id_agente"]);
+					} else {
+						$ag_row = get_db_row ("tagente", "id_agente", $alert_row ["id_agent"]);
+					}
                     $alert_name = $alert_row["descripcion"];
 
-                    event_insert("Manual validation of alert for '$alert_name'", $ag_row["id_grupo"], $am_row["id_agente"], 1, $id_usuario, "alert_manual_validation", 1, $alert_row["id_agente_modulo"], $validate_alert);
+					// Single alerts
+					if ($alert_row["id_agente_modulo"] != 0){
+                    	event_insert("Manual validation of alert for '$alert_name'", $ag_row["id_grupo"], $am_row["id_agente"], 1, $config["id_user"], "alert_manual_validation", 1, $alert_row["id_agente_modulo"], $validate_alert);
+
+					// Combined alerts
+					} else {
+						event_insert("Manual validation of alert for '$alert_name'", $ag_row["id_grupo"], $alert_row ["id_agent"], 1, $config["id_user"], "alert_manual_validation", 1, 0, $validate_alert);
+					}
 					$sql='UPDATE talerta_agente_modulo SET times_fired = 0, internal_counter = 0 WHERE id_aam = '.$validate_alert;
 					$result=mysql_query($sql);
 				}
@@ -53,6 +64,15 @@ if (comprueba_login() == 0) {
 					}
 				}
 			}
+			// Check for Network FLAG change request
+			if (isset($_GET["flag_agent"])){
+				if ($_GET["flag_agent"]==1){
+					if (give_acl($id_usuario, $id_grupo, "AW")==1){
+						$query ="UPDATE tagente_modulo SET flag=1 WHERE id_agente = ". $id_agente;
+						$res=mysql_query($query);
+					}
+				}
+			}
 			if (give_acl($id_usuario,$id_grupo, "AR") == 1){
                 echo "<div id='menu_tab_frame_view'>";
 				echo "<div id='menu_tab_left'>
@@ -61,7 +81,6 @@ if (comprueba_login() == 0) {
 				<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/bricks.png' class='top' border=0>&nbsp; ".substr(dame_nombre_agente($id_agente),0,15)." - ".$lang_label["view_mode"]."</a>";
 				echo "</li>";
 				echo "</ul></div>";
-
 			
 				if (isset($_GET["tab"]))
 					$tab = $_GET["tab"];

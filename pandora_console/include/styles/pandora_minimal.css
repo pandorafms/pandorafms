@@ -78,7 +78,7 @@ table, img {
 }
 .menu {
 	color:#000;
-	background:#ccc;
+	background:#ddd;
 	margin-left: 10px;
 	padding-left: 10px;
 	padding-top: 10px;
@@ -87,10 +87,10 @@ table, img {
 	font-size:10px;
 	border:1px solid #000;
 	position:absolute;
-	margin:0; width:325px;
-	height:220px;
+	margin:0; width:315px;
+	height:240px;
 	visibility:hidden;
-	filter:alpha(opacity=95);
-	-moz-opacity: 0.95;
-	opacity: 0.95;
+	filter:alpha(opacity=90);
+	-moz-opacity: 0.90;
+	opacity: 0.90;
 }

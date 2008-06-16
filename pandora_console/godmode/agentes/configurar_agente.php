@@ -134,8 +134,7 @@ if ( isset ($_POST["create_agent"])) { // Create a new and shining agent
             $agent_creation_error = "";
             $id_agente = mysql_insert_id ();
             // Create special MODULE agent_keepalive
-            $sql_insert = "INSERT INTO tagente_modulo (nombre, id_agente, id_tipo_modulo, descripcion, id_modulo)
-                         VALUES ('agent_keepalive', ".$id_agente.",100,'Agent Keepalive monitor',1)";
+            $sql_insert = "INSERT INTO tagente_modulo (nombre, id_agente, id_tipo_modulo, descripcion, id_modulo) VALUES ('agent_keepalive', ".$id_agente.",100,'Agent Keepalive monitor',1)";
             $result=mysql_query($sql_insert);
             $id_agent_module = mysql_insert_id();
             // And create MODULE agent_keepalive in tagente_estado table 
@@ -435,7 +434,6 @@ if (isset($_POST["update_alert"])){ // Update an existing alert
 	$result=mysql_query($sql_insert);	
 	if (! $result) {
 		echo "<h3 class='error'>".$lang_label["update_alert_no"]."</h3>";
-		// echo "SQL DEBUG  ".$sql_insert;
 	}
 	else 
 		echo "<h3 class='suc'>".$lang_label["update_agent_ok"]."</h3>";

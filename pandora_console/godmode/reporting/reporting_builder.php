@@ -170,10 +170,10 @@ if ($create_report) {
 // Update report
 if ($update_report) {
 	$sql = sprintf ('UPDATE treport SET name = "%s", 
-			description = "%s", private = %d, id_group = %d
+			description = "%s", private = %d
 			WHERE id_report = %d',
 			$report_name, $report_description,
-			$report_private, $report_id_group, $id_report);
+			$report_private, $id_report);
 	$result = mysql_query ($sql);
 	if ($result)
 		echo "<h3 class=suc>".lang_string ('modify_ok')."</h3>";
@@ -320,9 +320,14 @@ if ($edit_sla_report_content) {
 	$table->data[0][0] = lang_string ('report_name');
 	$table->data[0][1] = print_input_text ('report_name', $report_name, '', 35, 150, true);
 	$table->data[1][0] = lang_string ('group');
-	$table->data[1][1] = print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo ORDER BY nombre',
-							'report_id_group', $report_id_group, '', '--', 0, true);
-	$table->data[1][1] .= '<span id="icon_preview">';
+	if ($report_id_group) {
+		/* Changing the group is not allowed. */
+		$table->data[1][1] = dame_grupo ($report_id_group);
+	} else {
+		$table->data[1][1] = print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo ORDER BY nombre',
+								'report_id_group', $report_id_group, '', '--', 0, true);
+	}
+	$table->data[1][1] .= ' <span id="icon_preview">';
 	if ($report_id_group) {
 		$table->data[1][1] .= '<img src="images/groups_small/'.dame_grupo_icono ($report_id_group).'.png" />';
 	}
@@ -618,7 +623,7 @@ function group_changed () {
 $(document).ready (function () {
 	$('#id_agent').change (agent_changed);
 	$('#type').change (report_type_changed);
-	$('#id_group').change (group_changed);
+	$('#report_id_group').change (group_changed);
 }); 
 </script>
 

@@ -1,5 +1,12 @@
 2008-06-17  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/reporting/reporting_builder.php: Changing the group of a
+	report is not allowed. It will imply removing all the report contents
+	that belongs to an agent of the group. Fixed an error on javascript
+	changing the group.
+
+2008-06-17  Esteban Sanchez  <estebans@artica.es>
+
 	* ajax.php: Added to repository. AJAX interface for Pandora. A new
 	time is coming...
 

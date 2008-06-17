@@ -1,3 +1,8 @@
+2008-06-17  Sancho Lerena <slerena@artica.es>
+
+	* pandora_recon: First code to implement traceroute functionality
+	using Pureperl module.
+
 2008-06-16  Sancho Lerena <slerena@artica.es>
 
 	* pandora_snmpconsole: Solved a few bugs detected by Manu.

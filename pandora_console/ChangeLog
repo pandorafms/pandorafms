@@ -1,3 +1,88 @@
+2008-06-17  Esteban Sanchez  <estebans@artica.es>
+
+	* ajax.php: Added to repository. AJAX interface for Pandora. A new
+	time is coming...
+
+	* pandoradb.sql: Added id_group to treport. A report is now assigned
+	to a group of agents. Changes in treport_content to add an order
+	field, drop sla fields and use an enum for the type. NOTE: This will
+	break all your current defined reports, update under your
+	responsabillity. Added table treport_content_sla_combined to define
+	SLAs in the SLA types reports.
+
+	* godmode/reporting/graph_builder.php: Use Pandora functions. Adde
+	javascript code to display the module icon when changing from the
+	dropdown menu.
+
+	* godmode/reporting/reporting_builder.php: Almost complet rewritten to
+	use Pandora HTML functions. Style correction.
+
+	* include/functions.php: Added new report types. Style correction.
+
+	* include/functions_db.php: Use Pandora database functions to get
+	simple values. Added functions get_agents_in_group(),
+	get_modules_in_agent(), get_simple_alerts_in_agent(),
+	get_combined_alerts_in_agent(), get_alerts_in_agent(),
+	get_monitor_downs_in_period(),
+	get_monitor_last_down_timestamp_in_period(),
+	get_alert_fires_in_period(),
+	get_alert_last_fire_timestamp_in_period(). Deleted debug output and
+	fixed calling to an inexistent function in
+	return_moduledata_sum_value().
+
+	* include/functions_html.php: Tab style correction. Thanks to Ramon
+	for the advice. Fixed some errors on print_table that was causing not
+	to work fine if rowclass or colspan was defined.
+
+	* include/functions_reporting.php: Adde date support to
+	return_module_SLA(), event_reporting(). Added alert_reporting(),
+	monitor_health_reporting(), general_group_reporting() and
+	agents_detailed_reporting() to implement new report types. Style
+	correction.
+
+	* include/javascript/pandora.js: Added html_entity_decode() function
+	to decode some AJAX results.
+
+	* javascript/jquery.js: Added to repository. jQuery version 1.2.4a
+
+	* include/javascript/jquery.timeentry.js: jQuery plugin to manage time
+	inputs.
+
+	* include/javascript/jquery.ui.datepicker.js: jQuery plugin to manage
+	date inputs in a dropdown calendar.
+
+	* include/languages/date_*.js, include/languages/time_*.js: Added to
+	repository. Translation of date and time strings for the new calendar
+	javascript support.
+
+	* include/languages/language_en.php: Added new strings relatives to
+	reports.
+
+	* include/languages/language_de.php,
+	include/languages/language_fr.php, include/languages/language_gl.php,
+	include/languages/language_pt_br.php: Fixed a variable name.
+
+	* godmode/groups/group_list.php: Avoid the use of an extra indentation
+	by returning if no success on comprueba_login().
+
+	* include/styles/pandora.css: Add some classes. Tab style correction.
+
+	* operation/agentes/ver_agente.php: Added AJAX support to agent
+	operations.
+
+	* operation/reporting/graph_viewer.php: Period dropdown selection
+	improved and printed with Pandora functions.
+
+	* operation/reporting/reporting_viewer.php: Massive rewritten.
+	Implemented date and time support, added new report types, use Pandora
+	functions...
+
+	* reporting/fgraph.php: Documentation fix. Added a new graphic to show
+	monitors health.
+
+	* godmode/agentes/agent_manager.php,
+	operation/reporting/custom_reporting.php: Style correction.
+
 2008-06-16  Sancho Lerena <slerena@gmail.com>
 
 	* pandoradb_data.sql: Updated some new config tokens (graph colors), 

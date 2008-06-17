@@ -31,32 +31,32 @@
 function print_select ($fields, $name, $selected = '', $script = '', $nothing = 'select', $nothing_value = '0', $return = false) {
 	$output = "\n";
 	
-        $attributes = ($script) ? 'onchange="'. $script .'"' : '';
-        $output .= '<select id="'.$name.'" name="'.$name.'" '.$attributes.">\n";
+	$attributes = ($script) ? 'onchange="'. $script .'"' : '';
+	$output .= '<select id="'.$name.'" name="'.$name.'" '.$attributes.">\n";
 
-        if ($nothing != '') {
-                $output .= '   <option value="'.$nothing_value.'"';
-                if ($nothing_value == $selected) {
-                        $output .= " selected";
-                }
-                $output .= '>'.lang_string ($nothing)."</option>\n";
-        }
+	if ($nothing != '') {
+		$output .= '   <option value="'.$nothing_value.'"';
+		if ($nothing_value == $selected) {
+			$output .= " selected";
+		}
+		$output .= '>'.lang_string ($nothing)."</option>\n";
+	}
 
-        if (!empty ($fields)) {
-                foreach ($fields as $value => $label) {
-                        $output .= '   <option value="'. $value .'"';
-                        if ($value == $selected) {
-                                $output .= ' selected';
-                        }
-                        if ($label === '') {
-                                $output .= '>'. $value ."</option>\n";
-                        } else {
-                                $output .= '>'. $label ."</option>\n";
-                        }
-                }
-        }
+	if (!empty ($fields)) {
+		foreach ($fields as $value => $label) {
+			$output .= '   <option value="'. $value .'"';
+			if ($value == $selected) {
+				$output .= ' selected';
+			}
+			if ($label === '') {
+				$output .= '>'. $value ."</option>\n";
+			} else {
+				$output .= '>'. $label ."</option>\n";
+			}
+		}
+	}
 
-        $output .= "</select>\n";
+	$output .= "</select>\n";
 
 	if ($return)
 		return $output;
@@ -287,12 +287,12 @@ function print_table ($table, $return = false) {
 	}
 	if (isset ($table->rowclass)) {
 		foreach ($table->rowclass as $key => $class) {
-			$rowclass[$key] = $st;
+			$rowclass[$key] = $class;
 		}
 	}
 	if (isset ($table->colspan)) {
-		foreach ($table->colspan as $keyrow => $colspan) {
-			foreach ($colspan as $key => $span) {
+		foreach ($table->colspan as $keyrow => $cspan) {
+			foreach ($cspan as $key => $span) {
 				$colspan[$keyrow][$key] = ' colspan="'.$span.'"';
 			}
 		}
@@ -366,7 +366,7 @@ function print_table ($table, $return = false) {
 				if (!isset ($size[$key])) {
 					$size[$key] = '';
 				}
-				if (!isset ($colspan[$key])) {
+				if (!isset ($colspan[$keyrow][$key])) {
 					$colspan[$keyrow][$key] = '';
 				}
 				if (!isset ($align[$key])) {
@@ -382,7 +382,7 @@ function print_table ($table, $return = false) {
 					$style[$key] = '';
 				}
 				
-				$output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'. $style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key] .'" '.$colspan[$key].' class="datos'.($oddeven ? "" : "2").'">'. $item .'</td>'."\n";
+				$output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'. $style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key] .'" '.$colspan[$keyrow][$key].' class="'.$class.'">'. $item .'</td>'."\n";
 			}
 			$output .= '</tr>'."\n";
 		}

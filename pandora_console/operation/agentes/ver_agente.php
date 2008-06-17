@@ -18,6 +18,29 @@
 // Load global vars
 require("include/config.php");
 
+
+if (defined ('AJAX')) {
+	$get_agent_json = (bool) get_parameter ('get_agent_json');
+	$get_agent_modules_json = (bool) get_parameter ('get_agent_modules_json');
+
+	if ($get_agent_json) {
+		$id_agent = (int) get_parameter ('id_agent');
+		$agent = get_db_row ('tagente', 'id_agente', $id_agent);
+		
+		echo json_encode ($agent);
+		exit ();
+	}
+
+	if ($get_agent_modules_json) {
+		$id_agent = (int) get_parameter ('id_agent');
+		$agent_modules = get_db_all_rows_field_filter ('tagente_modulo', 'id_agente', $id_agent);
+		
+		echo json_encode ($agent_modules);
+		exit ();
+	}
+	exit ();
+}
+
 if (comprueba_login() == 0) {
 	$id_agente = get_parameter("id_agente",-1);
 	if ($id_agente != -1){

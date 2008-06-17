@@ -28,7 +28,7 @@ if (give_acl($id_user, 0, "AW")!=1) {
 	audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access agent manager");
 	require ("general/noaccess.php");
 	exit;
-};
+}
 
 echo "<h2>".$lang_label["agent_conf"];
 if (isset($_GET["create_agent"])){

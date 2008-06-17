@@ -771,11 +771,11 @@ function show_alert_row_edit ($row2, $tdcolor = "datos", $id_tipo_modulo = 1, $c
 	return $string;
 }
 
-function show_alert_show_view ($data, $tdcolor = "datos", $combined = 0){
+function show_alert_show_view ($data, $tdcolor = "datos", $combined = 0) {
 	global $config;
 	global $lang_label;
 
-	if ($combined == 0){
+	if ($combined == 0) {
 		$module_name = get_db_sql ("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = ".$data["id_agente_modulo"]);
 		$agent_name = get_db_sql ("SELECT tagente.nombre FROM tagente_modulo, tagente WHERE tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.id_agente_modulo = ".$data["id_agente_modulo"]);
 		$id_agente = get_db_sql ("SELECT id_agente FROM tagente_modulo WHERE id_agente_modulo = ".$data["id_agente_modulo"]);
@@ -912,6 +912,8 @@ function get_report_types () {
 	$types['min_value'] = lang_string ('min_value');
 	$types['sumatory'] = lang_string ('sumatory');
 	$types['general_group_report'] = lang_string ('general_group_report');
+	$types['monitor_health'] = lang_string ('monitor_health');
+	$types['agents_detailed'] = lang_string ('agents_detailed');
 
 	return $types;
 }
@@ -963,6 +965,10 @@ function get_report_type_data_source ($type) {
 	case 'monitor_report':
 	case 11:
 	case 'general_group_report':
+	case 12:
+	case 'monitor_health':
+	case 13:
+	case 'agents_detailed':
 		return 'agent-group';
 	}
 	return 'unknown';
@@ -973,7 +979,7 @@ function get_report_type_data_source ($type) {
  *
  * @param $module_name Module name to check.
  *
- * @return true if the module is of type "date"
+ * @return true if the module is of type "data"
  */
 function is_module_data ($module_name) {
 	$result = ereg ("^(.*_data)$", $module_name);

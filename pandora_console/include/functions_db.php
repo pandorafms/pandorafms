@@ -148,7 +148,67 @@ function give_disabled_group ($id_group) {
 	return (bool) get_db_value ('disabled', 'tgrupo', 'id_grupo', (int) $id_group);
 }
 
+/**
+ * Get all the agents in a group.
+ *
+ * @param $id_group Group id to get all agents.
+ *
+ * @return An array with all agents in the group.
+ */
+function get_agents_in_group ($id_group) {
+	return get_db_all_rows_field_filter ('tagente', 'id_grupo', (int) $id_group);
+}
 
+/**
+ * Get all the modules in an agent.
+ *
+ * @param $id_agent Agent id to get all modules.
+ *
+ * @return An array with all modules in the agent.
+ */
+function get_modules_in_agent ($id_agent) {
+	return get_db_all_rows_field_filter ('tagente_modulo', 'id_agente', (int) $id_agent);
+}
+
+/**
+ * Get all the simple alerts of an agent.
+ *
+ * @param $id_agent Agent id to get all simple alerts.
+ *
+ * @return An array with all simple alerts defined for an agent.
+ */
+function get_simple_alerts_in_agent ($id_agent) {
+	$sql = sprintf ('SELECT talerta_agente_modulo.*
+			FROM talerta_agente_modulo, tagente_modulo
+			WHERE talerta_agente_modulo.id_agente_modulo = tagente_modulo.id_agente_modulo
+			AND tagente_modulo.id_agente = %d', $id_agent);
+	return get_db_all_rows_sqlfree ($sql);
+}
+
+/**
+ * Get all the combined alerts of an agent.
+ *
+ * @param $id_agent Agent id to get all combined alerts.
+ *
+ * @return An array with all combined alerts defined for an agent.
+ */
+function get_combined_alerts_in_agent ($id_agent) {
+	return get_db_all_rows_field_filter ('talerta_agente_modulo', 'id_agent', (int) $id_agent);
+}
+
+/**
+ * Get all the alerts of an agent, simple and combined.
+ *
+ * @param $id_agent Agent id to get all alerts.
+ *
+ * @return An array with all alerts defined for an agent.
+ */
+function get_alerts_in_agent ($id_agent) {
+	$simple_alerts = get_simple_alerts_in_agent ($id_agent);
+	$combined_alerts = get_combined_alerts_in_agent ($id_agent);
+	
+	return array_merge ($simple_alerts, $combined_alerts);
+}
 
 // --------------------------------------------------------------- 
 // Returns group given ID
@@ -201,29 +261,16 @@ function dame_agente_modulo_id ($id_agente, $id_tipomodulo, $nombre) {
 // Returns event description given it's id
 // --------------------------------------------------------------- 
 
-function return_event_description ($id_event){
-	require("config.php");
-	$query1="SELECT evento FROM tevento WHERE id_evento = $id_event";
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1))
-		$pro=$rowdup[0];
-	else
-		$pro = "";
-	return $pro;
+function return_event_description ($id_event) {
+	return (string) get_db_value ('evento', 'tevento', 'id_evento', (int) $id_event);
 }
 
 // --------------------------------------------------------------- 
 // Return ID_Group from an event given as id_event
 // --------------------------------------------------------------- 
 
-function gime_idgroup_from_idevent($id_event){
-	require("config.php");
-	$query1="SELECT * FROM tevento WHERE id_evento = ".$id_event;
-	$pro = -1;
-	if ($resq1=mysql_query($query1))
-		if ($rowdup=mysql_fetch_array($resq1))
-			$pro=$rowdup["id_grupo"]; 
-	return $pro;
+function gime_idgroup_from_idevent ($id_event) {
+	return (int) get_db_value ('id_grupo', 'tevento', 'id_evento', (int) $id_event);
 }
 
 
@@ -231,15 +278,8 @@ function gime_idgroup_from_idevent($id_event){
 // Return module id given name of module type
 // --------------------------------------------------------------- 
 
-function dame_module_id($nombre){
-	require("config.php"); 
-	$query1="SELECT * FROM ttipo_modulo WHERE nombre = '".$nombre."'"; 
-	$resq1=mysql_query($query1);  
-	if ($rowdup=mysql_fetch_array($resq1))
-		$pro=$rowdup["id_tipo"]; 
-	else
-		$pro = "";
-	return $pro; 
+function dame_module_id ($nombre){
+	return (int) get_db_value ('id_tipo', 'ttipo_modulo', 'nombre', $nombre);
 }
 
 
@@ -247,106 +287,56 @@ function dame_module_id($nombre){
 // Returns agent name when given its ID
 // --------------------------------------------------------------- 
 
-function dame_nombre_agente ($id){
-	require("config.php"); 
-	$query1="SELECT * FROM tagente WHERE id_agente = ".$id; 
-	$resq1=mysql_query($query1);  
-	if ($rowdup=mysql_fetch_array($resq1))
-		$pro=$rowdup["nombre"]; 
-	else
-		$pro = "";
-	return $pro;
+function dame_nombre_agente ($id_agente) {
+	return (string) get_db_value ('nombre', 'tagente', 'id_agente', (int) $id_agente);
 }
 
 // --------------------------------------------------------------- 
 // Returns password (HASH) given user_id
 // --------------------------------------------------------------- 
 
-function dame_password($id_usuario){
-	require("config.php"); 
-	$query1="SELECT * FROM tusuario WHERE id_usuario= '".$id_usuario."'"; 
-	$resq1=mysql_query($query1);  
-	if ($rowdup=mysql_fetch_array($resq1))
-		$pro=$rowdup["password"]; 
-	else
-		$pro = "";
-	return $pro; 
+function dame_password ($id_usuario) {
+	return (string) get_db_value ('password', 'tusuario', 'id_usuario', (int) $id_usuario);
 }
-
 
 // --------------------------------------------------------------- 
 // Returns name of an alert given ID
 // --------------------------------------------------------------- 
 
-function dame_nombre_alerta($id){
-	require("config.php");
-	$query1="SELECT * FROM talerta WHERE id_alerta = ".$id;
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1))
-		$pro=$rowdup["nombre"]; 
-	else
-		$pro = "";
-	return $pro;
+function dame_nombre_alerta ($id_alert) {
+	return (string) get_db_value ('nombre', 'talerta', 'id_alerta', (int) $id_alert);
 }
 
 // --------------------------------------------------------------- 
 // Returns name of a modules group
 // --------------------------------------------------------------- 
 
-function dame_nombre_grupomodulo($id){
-	require("config.php");
-	$query1="SELECT * FROM tmodule_group WHERE id_mg = ".$id; 
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1))
-		$pro=$rowdup["name"]; 
-	else
-		$pro = "";
-	return $pro;
+function dame_nombre_grupomodulo ($id_module_group) {
+	return (string) get_db_value ('name', 'tmodule_group', 'id_mg', (int) $id_module_group);
 }
 
 // --------------------------------------------------------------- 
 // Returns name of a export server
 // --------------------------------------------------------------- 
 
-function dame_nombre_servidorexportacion($id){
-	require("config.php");
-	$query1="SELECT id, name FROM tserver_export WHERE id = ".$id; 
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1))
-		$pro=$rowdup["name"]; 
-	else
-		$pro = "";
-	return $pro;
+function dame_nombre_servidorexportacion ($id_server) {
+	return (string) get_db_value ('name', 'tserver_export', 'id', (int) $id_server);
 }
 
 // --------------------------------------------------------------- 
 // Returns name of a plugin module
 // --------------------------------------------------------------- 
 
-function dame_nombre_pluginid($id){
-	require("config.php");
-	$query1="SELECT id, name FROM tplugin WHERE id = ".$id; 
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1))
-		$pro=$rowdup["name"]; 
-	else
-		$pro = "";
-	return $pro;
+function dame_nombre_pluginid ($id_plugin) {
+	return (string) get_db_value ('name', 'tplugin', 'id', (int) $id_plugin);
 }
 
 // --------------------------------------------------------------- 
 // Returns id of a moduletype
 // --------------------------------------------------------------- 
 
-function giveme_module_type($id){
-	require("config.php");
-	$query1="SELECT id_tipo, nombre FROM ttipo_modulo WHERE id_tipo = ".$id; 
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1))
-		$pro=$rowdup["nombre"]; 
-	else
-		$pro = "";
-	return $pro;
+function giveme_module_type ($id_type) {
+	return (string) get_db_value ('nombre', 'ttipo_modulo', 'id_tipo', (int) $id_type);
 }
 
 // --------------------------------------------------------------- 
@@ -364,7 +354,7 @@ function dame_nombre_agente_agentemodulo ($id_agente_modulo) {
 // Return agent module name, given a ID of agente_module table
 // --------------------------------------------------------------- 
 function dame_nombre_modulo_agentemodulo ($id_agente_modulo) {
-	return get_db_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $id_agente_modulo);
+	return (string) get_db_value ('nombre', 'tagente_modulo', 'id_agente_modulo', (int) $id_agente_modulo);
 }
 
 
@@ -372,46 +362,112 @@ function dame_nombre_modulo_agentemodulo ($id_agente_modulo) {
 // Return agent module, given a ID of agente_module table
 // --------------------------------------------------------------- 
 
-function dame_id_tipo_modulo_agentemodulo($id_agente_modulo){
-	require("config.php"); 
-	$query1="SELECT * FROM tagente_modulo WHERE id_agente_modulo = ".$id_agente_modulo; 
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1))
-		$pro = $rowdup["id_tipo_modulo"];
-	else
-		$pro = "";
-	return $pro;
+function dame_id_tipo_modulo_agentemodulo ($id_agente_modulo) {
+	return (int) get_db_value ('id_tipo_modulo', 'tagente_modulo', 'id_agente_modulo', (int) $id_agente_modulo);
 }
 
 // --------------------------------------------------------------- 
 // Returns name of the user when given ID
 // --------------------------------------------------------------- 
 
-function dame_nombre_real($id){
-	require("config.php");
-	$query1="SELECT * FROM tusuario WHERE id_usuario = '".$id."'";
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1))
-		$pro=$rowdup["nombre_real"];
-	else
-		$pro = "";
-	return $pro;
+function dame_nombre_real ($id_user) {
+	return (string) get_db_value ('nombre_real', 'tusuario', 'id_usuario', (int) $id_user);
 }
 
+/**
+ * Get all the times a monitor went down during a period.
+ * 
+ * @param $id_agent_module Agent module of the monitor.
+ * @param $period Period timed to check from date
+ * @param $date Date to check (now by default)
+ *
+ * @return The number of times a monitor went down.
+ */
+function get_monitor_downs_in_period ($id_agent_module, $period, $date = 0) {
+	if (!$date)
+		$date = time ();
+	$datelimit = $date - $period;
+	$sql = sprintf ('SELECT COUNT(*) FROM tevento WHERE
+			event_type = "monitor_down" 
+			AND id_agentmodule = %d
+			AND utimestamp > %d AND utimestamp <= %d',
+			$id_agent_module, $datelimit, $date);
+	$down = get_db_sql ($sql);
+	return $down;
+}
+
+/**
+ * Get the last time a monitor went down during a period.
+ * 
+ * @param $id_agent_module Agent module of the monitor.
+ * @param $period Period timed to check from date
+ * @param $date Date to check (now by default)
+ *
+ * @return The last time a monitor went down.
+ */
+function get_monitor_last_down_timestamp_in_period ($id_agent_module, $period, $date = 0) {
+	if (!$date)
+		$date = time ();
+	$datelimit = $date - $period;
+	$sql = sprintf ('SELECT MAX(timestamp) FROM tevento WHERE
+			event_type = "monitor_down" 
+			AND id_agentmodule = %d
+			AND utimestamp > %d AND utimestamp <= %d',
+			$id_agent_module, $datelimit, $date);
+	$timestamp = get_db_sql ($sql);
+	return $timestamp;
+}
+
+/**
+ * Get all the times an alerts fired during a period.
+ * 
+ * @param $id_agent_module Agent module of the alert.
+ * @param $period Period timed to check from date
+ * @param $date Date to check (now by default)
+ *
+ * @return The number of times an alert fired.
+ */
+function get_alert_fires_in_period ($id_agent_module, $period, $date = 0) {
+	if (!$date)
+		$date = time ();
+	$datelimit = $date - $period;
+	$sql = sprintf ('SELECT COUNT(*) FROM tevento WHERE
+			event_type = "alert_fired" 
+			AND id_agentmodule = %d
+			AND utimestamp > %d AND utimestamp <= %d',
+			$id_agent_module, $datelimit, $date);
+	$down = get_db_sql ($sql);
+	return (int) $down;
+}
+
+/**
+ * Get the last time an alert fired during a period.
+ * 
+ * @param $id_agent_module Agent module of the monitor.
+ * @param $period Period timed to check from date
+ * @param $date Date to check (now by default)
+ *
+ * @return The last time an alert fired.
+ */
+function get_alert_last_fire_timestamp_in_period ($id_agent_module, $period, $date = 0) {
+	if (!$date)
+		$date = time ();
+	$datelimit = $date - $period;
+	$sql = sprintf ('SELECT MAX(timestamp) FROM tevento WHERE
+			event_type = "alert_fired" 
+			AND id_agentmodule = %d
+			AND utimestamp > %d AND utimestamp <= %d',
+			$id_agent_module, $datelimit, $date);
+	$timestamp = get_db_sql ($sql);
+	return $timestamp;
+}
 
 // --------------------------------------------------------------- 
 // This function returns ID of user who has created incident
 // --------------------------------------------------------------- 
 
-function give_incident_author($id){
-	require("include/config.php");
-	$query1="SELECT * FROM tincidencia WHERE id_incidencia = '".$id."'";
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1))
-		$pro=$rowdup["id_usuario"];
-	else
-		$pro = "";
-	return $pro;
+function give_incident_author ($id_incident) {
+	return (string) get_db_value ('id_usuario', 'tincidencia', 'id_incidencia', (int) $id_incident);
 }
 
 // --------------------------------------------------------------- 
@@ -1146,6 +1202,13 @@ function get_db_sql ($sql, $field = 0){
 	return NULL;
 }
 
+/**
+ * Get all the result rows using an SQL statement.
+ * 
+ * @param $sql SQL statement to execute.
+ *
+ * @return A matrix with all the values returned from the SQL statement
+ */
 function get_db_all_rows_sqlfree ($sql) {
 	global $config;
 	$retval = array ();
@@ -1161,10 +1224,26 @@ function get_db_all_rows_sqlfree ($sql) {
 	return $retval;
 }
 
+/**
+ * Get all the rows in a table of the database.
+ * 
+ * @param $table Database table name.
+ *
+ * @return A matrix with all the values in the table
+ */
 function get_db_all_rows_in_table ($table) {
 	return get_db_all_rows_sqlfree ('SELECT * FROM '.$table);
 }
 
+/**
+ * Get all the rows in a table of the databes filtering from a field.
+ * 
+ * @param $table Database table name.
+ * @param $field Field of the table.
+ * @param $condition Condition the field must have to be selected.
+ *
+ * @return A matrix with all the values in the table that matches the condition in the field
+ */
 function get_db_all_rows_field_filter ($table, $field, $condition) {
 	if (is_int ($condition)) {
 		$sql = sprintf ('SELECT * FROM %s WHERE %s = %d', $table, $field, $condition);
@@ -1177,6 +1256,15 @@ function get_db_all_rows_field_filter ($table, $field, $condition) {
 	return get_db_all_rows_sqlfree ($sql);
 }
 
+/**
+ * Get all the rows in a table of the databes filtering from a field.
+ * 
+ * @param $table Database table name.
+ * @param $field Field of the table.
+ * @param $condition Condition the field must have to be selected.
+ *
+ * @return A matrix with all the values in the table that matches the condition in the field
+ */
 function get_db_all_fields_in_table ($table, $field) {
 	return get_db_all_rows_sqlfree ('SELECT '.$field.' FROM '. $table);
 }
@@ -1331,7 +1419,7 @@ function return_moduledata_sum_value ($id_agent_module, $period, $date = 0) {
 	$datelimit = $date - $period; // limit date
 	$agent_module = get_db_row ('tagente_modulo', 'id_agente_modulo', $id_agent_module);
 	$module_name = get_db_value ('nombre', 'ttipo_modulo', 'id_tipo', $agent_module['id_tipo_modulo']);
-	echo $module_name;
+	
 	if (is_module_data_string ($module_name)) {
 		return lang_string ('wrong_module_type');
 	}
@@ -1361,7 +1449,7 @@ function return_moduledata_sum_value ($id_agent_module, $period, $date = 0) {
 		} else {
 			$times = 1;
 		}
-		if (is_module_data_proc ($module_name)) {
+		if (is_module_proc ($module_name)) {
 			$previous_data = $data['datos'] * $interval;
 		} else {
 			$previous_data = $data['datos'];

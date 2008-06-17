@@ -595,39 +595,38 @@ CREATE TABLE `treport` (
   `name` varchar(150) NOT NULL default '',
   `description` TEXT NOT NULL,
   `private` tinyint(1) UNSIGNED NOT NULL default 0,
-  PRIMARY KEY(`id_report`)
+  `id_group` mediumint(8) unsigned NULL default NULL,
+  PRIMARY KEY(`id_report`),
+  FOREIGN KEY (`id_group`) REFERENCES tgrupo(`id_grupo`)
+   ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `treport_content` (
   `id_rc` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_report` INTEGER UNSIGNED NOT NULL default 0,
-  `id_gs` INTEGER UNSIGNED NOT NULL default 0,
-  `id_agent_module` int(11) NOT NULL default 0,
-  `type` tinyint(1) UNSIGNED NOT NULL default 0,
+  `id_gs` INTEGER UNSIGNED NULL default NULL,
+  `id_agent_module` bigint(14) unsigned NULL default NULL,
+  `type` enum ('simple_graph', 'custom_graph', 'SLA', 'event_report', 'alert_report', 'monitor_report', 'avg_value', 'max_value', 'min_value', 'sumatory', 'general_group_report', 'monitor_health', 'agents_detailed') default 'simple_graph',
   `period` int(11) NOT NULL default 0,
+  `order` int (11) NOT NULL default 0,
+  PRIMARY KEY(`id_rc`),
+  FOREIGN KEY (`id_agent`) REFERENCES tagente(`id_agente`)
+   ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `treport_content_sla_combined` (
+  `id` INTEGER UNSIGNED NOT NULL auto_increment,
+  `id_report_content` INTEGER UNSIGNED NOT NULL,
+  `id_agent_module` bigint(14) unsigned NOT NULL,
   `sla_max` int(11) NOT NULL default 0,
   `sla_min` int(11) NOT NULL default 0,
   `sla_limit` int(11) NOT NULL default 0,
-  PRIMARY KEY(`id_rc`)
+  PRIMARY KEY(`id`),
+  FOREIGN KEY (`id_report_content`) REFERENCES treport_content(`id_rc`)
+   ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (`id_agent_module`) REFERENCES tagente_modulo(`id_agente_modulo`)
+   ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
-
-/*
-
-treport_content descripcion
-type valid values
-  0 - Simple graph
-  1 - User/Combined graph
-  2 - SLA
-  3 - Event report
-  4 - Alert report
-  5 - Monitor report
-  6 - Avg. value
-  7 - Max. value
-  8 - Min. value
-
-id_gs is for combined graph pprimary key id
-
-*/
 
 CREATE TABLE `tlayout` (
   `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,

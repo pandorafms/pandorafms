@@ -28,6 +28,8 @@ $factor = 1;
 $render=1; // by default
 $stacked = 0;
 
+$add_module = (bool) get_parameter ('add_module');
+
 // Login check
 $id_usuario=$_SESSION["id_usuario"];
 global $REMOTE_ADDR;
@@ -141,7 +143,7 @@ if (isset($_GET["delete_module"] )) {
 	}
 }
 
-if ( (isset($_GET["add_module"]))){
+if ($add_module) {
  	$id_agent = $_POST["id_agent"];
  	$id_module = $_POST["id_module"];
  	if (isset($_POST["factor"]))
@@ -262,14 +264,14 @@ if (($render == 1) && (isset($modules))) {
 // SOURCE AGENT TABLE/FORM
 // -----------------------
 
-if ( (!isset($_GET["add_module"]))){
+if ($add_module) {
 	echo $lang_label["graph_builder"]."</h2>";
 } else {
 	echo "<h3>".$lang_label["graph_builder"]."</h3>";
 }
 echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_color'>";
-echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&get_agent=1'>";
-
+echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder'>";
+print_input_hidden ('add_module', 1);
 if (isset($period))
     echo "<input type='hidden' name='period' value='$period'>";
 
@@ -278,26 +280,15 @@ echo "<td class='datos'><b>".$lang_label["source_agent"]."</td>";
 echo "</b>";
 
 // Show combo with agents
-echo "<td class='datos' colspan=2><select name='id_agent' style='width:180px;'>";
-if ($id_agent != 0)
-	echo "<option value='$id_agent'>".dame_nombre_agente($id_agent);
-$sql1='SELECT * FROM tagente ORDER BY nombre';
-$result=mysql_query($sql1);
-while ($row=mysql_fetch_array($result)){
-	if ( $id_agent != $row["id_agente"])
-		echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
-}
-echo '</select>';
+echo "<td class='datos' colspan=2>";
+
+print_select_from_sql ('SELECT id_agente, nombre FROM tagente ORDER BY nombre', 'id_agent', $id_agent, '', '--', 0);
 if (isset($chunkdata))
 	echo "<input type='hidden' name='chunk' value='$chunkdata'>";
-
-echo "<td class='datos' colspan=1 align='right'><input type=submit name='update_agent' class='sub upd' value='".$lang_label["get_info"]."'>";
-echo "</form>";
 
 // -----------------------
 // SOURCE MODULE FORM
 // -----------------------
-echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&add_module=1'>";
 if (isset($chunkdata))
 	echo "<input type='hidden' name='chunk' value='$chunkdata'>";
 
@@ -307,7 +298,7 @@ if (isset($id_agent))
 echo "<tr><td class='datos2'>";
 echo "<b>".$lang_label["modules"]."</b>";
 echo "<td class='datos2' colspan=3>";
-echo "<select name='id_module' size=1 style='width:180px;'>";
+echo "<select id='id_module' name='id_module' size=1 style='width:180px;'>";
 		echo "<option value=-1> -- </option>";
 if ($id_agent != 0){
 	// Populate Module/Agent combo
@@ -506,3 +497,43 @@ if (isset($module_array)){
 }
 
 ?>
+
+
+<script type="text/javascript" src="include/javascript/jquery.js"></script>
+
+<script language="javascript" type="text/javascript">
+
+function agent_changed () {
+	var id_agent = this.value;
+	$('#id_module').fadeOut ('normal', function () {
+		$('#id_module').empty ();
+		var inputs = [];
+		inputs.push ("id_agent=" + id_agent);
+		inputs.push ("get_agent_modules_json=1");
+		inputs.push ("page=operation/agentes/ver_agente");
+		jQuery.ajax ({
+			data: inputs.join ("&"),
+			type: 'GET',
+			url: action="ajax.php",
+			timeout: 10000,
+			dataType: 'json',
+			success: function (data) {
+				$('#id_module').append ($('<option></option>').attr ('value', 0).text ("--"));
+				jQuery.each (data, function (i, val) {
+					if (val['descripcion'] == "") {
+						s = html_entity_decode (val['nombre']);
+					} else {
+						s = html_entity_decode (val['descripcion']);
+					}
+					$('#id_module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s));
+				});
+				$('#id_module').fadeIn ('normal');
+			}
+		});
+	});
+}
+
+$(document).ready (function () {
+	$('#id_agent').change (agent_changed);
+}); 
+</script>

@@ -1,4 +1,4 @@
-<?PHP
+<?php
 
 // Pandora FMS - the Free monitoring system
 // ========================================

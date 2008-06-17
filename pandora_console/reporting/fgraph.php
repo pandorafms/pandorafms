@@ -782,8 +782,8 @@ function graphic_agentaccess ($id_agent, $periodo, $width, $height) {
 	// $intervalo now stores "ideal" interval			}
 	// interval is the number of rows that will store data. more rows, more resolution
 
-	// Para crear las graficas vamos a crear un array de Ax4 elementos, donde
-	// A es el numero de posiciones diferentes en la grafica (30 para un mes, 7 para una semana, etc)
+	// Para crear las graficas vamos a crear un array de Ix4 elementos, donde
+	// I es el numero de posiciones diferentes en la grafica (30 para un mes, 7 para una semana, etc)
 	// y los 4 valores en el ejeY serian los detallados a continuacion:
 	// Rellenamos la tabla con un solo select, y los calculos se hacen todos sobre memoria
 	// esto acelera el tiempo de calculo al maximo, aunque complica el algoritmo :-)
@@ -2061,11 +2061,20 @@ if ($graphic_type) {
 		break;
 	case "alerts_fired_pipe":
 		$data = array ();
-		$data[0] = get_parameter ('fired');
-		$data[1] = get_parameter ('not_fired');
+		$data[0] = (float) get_parameter ('fired');
+		$data[1] = (float) get_parameter ('not_fired');
 		$legends = array ();
 		$legends[0] = lang_string ('fired_alerts');
 		$legends[1] = lang_string ('not_fired_alerts');
+		generic_pie_graph ($width, $height, $data, $legends);
+		break;
+	case 'monitors_health_pipe':
+		$data = array ();
+		$data[0] = (float) get_parameter ('down');
+		$data[1] = (float) get_parameter ('not_down');
+		$legends = array ();
+		$legends[0] = lang_string ('monitors_ok');
+		$legends[1] = lang_string ('monitors_bad');
 		generic_pie_graph ($width, $height, $data, $legends);
 		break;
 	default:

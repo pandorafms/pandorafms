@@ -59,12 +59,13 @@ if (isset($_GET["view_graph"])){
 		$private = $row["private"];
 		$width = $row["width"];
 		$height = $row["height"];
-		$period = $row["period"];
-		if (isset($_POST["period"]))
-			$period = $_POST["period"];
+		$period = (int) get_parameter ('period');
+		if (! $period)
+			$period = $row["period"];
+		else 
+			$period = 3600 * $period;
 		$events = $row["events"];
 		$description = $row["description"];
-        $stacked = $row["stacked"];
 		$name = $row["name"];
 		if (($row["private"]==1) && ($row["id_user"] != $id_user)){
 			audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access to a custom graph not allowed");
@@ -89,57 +90,26 @@ if (isset($_GET["view_graph"])){
 		echo $lang_label["combined_image"]."</h2>";
 		echo "<table class='databox_frame'>";
 		echo "<tr><td>";
-		echo "<img src='reporting/fgraph.php?tipo=combined&height=$height&width=$width&id=$modules&period=$period&stacked=$stacked&weight_l=$weights' border=1 alt=''>";
+		echo "<img src='reporting/fgraph.php?tipo=combined&height=$height&width=$width&id=$modules&period=$period&weight_l=$weights' border=1 alt=''>";
 		echo "</td></tr></table>";
-		switch ($period) {
-			case 3600: 	$period_label = $lang_label["hour"];
-					break;
-			case 7200: 	$period_label = $lang_label["2_hours"];
-					break;
-			case 21600: 	$period_label = $lang_label["6_hours"];
-					break;
-			case 43200: 	$period_label = $lang_label["12_Hours"];
-					break;
-			case 86400: 	$period_label = $lang_label["last_day"];
-					break;
-			case 172800: 	$period_label = $lang_label["two_days"];
-					break;
-			case 432000: 	$period_label = $lang_label["five_days"];
-					break;
-			case 604800: 	$period_label = $lang_label["last_week"];
-					break;
-			case 1296000: 	$period_label = $lang_label["15_days"];
-					break;
-			case 2592000: 	$period_label = $lang_label["last_month"];
-					break;
-			case 5184000: 	$period_label = $lang_label["two_month"];
-					break;
-			case 15552000: 	$period_label = $lang_label["six_months"];
-					break;
-			default: 	$period_label = "--";
-		}
+		$period_label = human_time_description ($period);
 		echo "<form method='POST' action='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=$id_graph'>";
 		echo "<table class='databox_frame'>";
 		echo "<tr><td class='datos'>";
-		echo "<b>Period</b>";
+		echo "<b>".lang_string ('period')."</b>";
 		echo "<td class='datos'>";
-		echo "<select name='period'>";
-		if ($period==0)
-			echo "<option value=86400>".$period_label;
-		else
-			echo "<option value=$period>".$period_label;
-		echo "<option value=3600>"."Hour";
-		echo "<option value=21600>"."6 Hours";
-		echo "<option value=43200>"."12 Hours";
-		echo "<option value=86400>"."Last day";
-		echo "<option value=172800>"."Two days";
-		echo "<option value=604800>"."Last Week";
-		echo "<option value=1296000>"."15 days";
-		echo "<option value=2592000>"."Last Month";
-		echo "<option value=5184000>"."Two Month";
-		echo "<option value=15552000>"."Six Months";
-		echo "</select>";
-		
+		$periods = array ();
+		$periods[1] = lang_string ('hour');
+		$periods[2] = '2 '.lang_string ('hours');
+		$periods[3] = '3 '.lang_string ('hours');
+		$periods[6] = '6 '.lang_string ('hours');
+		$periods[12] = '12 '.lang_string ('hours');
+		$periods[24] = lang_string ('last_day');
+		$periods[48] = lang_string ('two_days');
+		$periods[360] = lang_string ('last_week');
+		$periods[720] = lang_string ('last_month');
+		$periods[4320] = lang_string ('six_months');
+		print_select ($periods, 'period', intval ($period / 3600), '', '', 0);
 		echo "<td class='datos'>";
 		echo "<input type=submit value='".$lang_label["update"]."' class='sub upd'>";
 		echo "</table>";

@@ -134,6 +134,52 @@ sub pandora_recon_subsystem {
 }
 
 ##########################################################################
+# SUB pandora_detect_os (paconfig, host)
+# Detect OS using xprobe2 tool. Return tconfig_os id code.
+##########################################################################
+
+sub pandora_detect_os {
+    my $pa_config = $_[0];
+	my $host = $_[1];
+
+    # my $pa_config->{"xprobe2"} = "/usr/bin/xprobe2";
+    # my $xprobe2 = $pa_config->{"xprobe2"};
+    my $xprobe2 = "/usr/bin/xprobe2";
+    if (! -e $xprobe2){
+        return 10;
+	}
+	my $command = `$xprobe2 $host 2> /dev/null | grep "Running OS" | head -1`;
+	
+	if ($command =~ m/Windows/i){
+		return 9;
+	}
+	elsif ($command =~ m/Linux/i){
+		return 1;
+	}
+	elsif ($command =~ m/BSD/i){
+		return 4;
+	}
+	elsif ($command =~ m/Cisco/i){
+		return 7;
+	}
+	elsif ($command =~ m/SunOS/i){
+		return 2;
+	}
+	elsif ($command =~ m/Solaris/i){
+		return 2;
+	}
+	elsif ($command =~ m/AIX/i){
+		return 3;
+	}
+	elsif ($command =~ m/HP-UX/i){
+		return 5;
+	}
+	else {
+		return 10;
+	}
+
+}
+##########################################################################
 # SUB pandora_exec_task (pa_config, id_task)
 # Execute task
 ##########################################################################

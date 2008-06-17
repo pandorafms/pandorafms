@@ -1,7 +1,8 @@
 2008-06-17  Sancho Lerena <slerena@artica.es>
 
 	* pandora_recon: First code to implement traceroute functionality
-	using Pureperl module.
+	using Pureperl module.  Added code for remote OS fingerprinting.
+
 
 2008-06-16  Sancho Lerena <slerena@artica.es>
 

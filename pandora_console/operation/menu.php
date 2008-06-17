@@ -56,6 +56,13 @@ if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 			echo "<div class='arrow'>";
 		}
 		echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/estado_grupo&refr=60' class='mn'>".$lang_label["group_view_menu"]."</a></li></ul></div>";
+
+		if (isset($_GET["sec2"]) && $_GET["sec2"] == "operation/agentes/networkmap"){
+			echo "<div class='arrows'>";
+		} else {
+			echo "<div class='arrow'>";
+		}
+		echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/networkmap' class='mn'>".lang_string("Network Map")."</a></li></ul></div>";
 	
 		if (isset($_GET["sec2"]) && ($_GET["sec2"] == "operation/agentes/estado_agente" || $_GET["sec2"] == "operation/agentes/ver_agente" || $_GET["sec2"] == "operation/agentes/datos_agente")) {
 			echo "<div class='arrows'>";

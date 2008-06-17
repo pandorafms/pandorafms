@@ -24,19 +24,18 @@ function generate_dot() {
 	$group_id = -1;
 	
 	// Open Graph
-	$graph = open_graph('Pandora_FMS');
+	$graph = open_graph();
 
 	// Get agent data	
 	$agents = mysql_query('SELECT * FROM tagente ORDER BY id_grupo');
 	while ($agent = mysql_fetch_array($agents)) {
 		
-		// Save node and parent information to define edges later
-		$nodes[$agent['id_agente']] = $agent['nombre'];
+		// Save node parent information to define edges later
 		if ($agent['id_parent'] != "0") {
-			$parents[$agent['nombre']] = $agent['id_parent'];
+			$parents[$agent['id_agente']] = $agent['id_parent'];
 		}
 		else {
-			$orphans[$agent['nombre']] = 1;
+			$orphans[$agent['id_agente']] = 1;
 		}
 	
 		// Start a new subgraph for the group
@@ -61,18 +60,17 @@ function generate_dot() {
 
 	// Create a central node if orphan nodes exist
 	if (count($orphans) > 0) {
-		$graph .= create_pandora_node ('Pandora_FMS');	
+		$graph .= create_pandora_node ('Pandora FMS');	
 	}
 	
 	// Define edges
 	foreach ($parents as $node => $parent_id) {
-		$graph .= create_edge($node, $nodes[$parent_id]);
-	
+		$graph .= create_edge($node, $parent_id);
 	}
 
 	// Define edges for orphan nodes
 	foreach(array_keys($orphans) as $node) {
-		$graph .= create_edge('Pandora_FMS', $node);
+		$graph .= create_edge('0', $node);
 	}
 	
 	// Close graph
@@ -84,7 +82,7 @@ function generate_dot() {
 // Returns an edge definition
 function create_edge($head, $tail) {
 
-	$edge = str_replace("-", "_", $head) . ' -- ' . str_replace("-", "_", $tail) . '[color="grey35", headclip=false, tailclip=false];';
+	$edge = $head . ' -- ' . $tail . '[color="grey35", headclip=false, tailclip=false];';
 	return $edge;
 }
 
@@ -113,9 +111,9 @@ function create_node($agent) {
 		$img_node = 'images/networkmap/0.png';
 	}
 	
-	$node = str_replace("-", "_", $agent['nombre']) . ' [ color="' . $status_color . '", fontsize=10, style="filled", fixedsize=true, width=0.6, height=0.6, label=<<TABLE BORDER="0">
+	$node = $agent['id_agente'] . ' [ color="' . $status_color . '", fontsize=10, style="filled", fixedsize=true, width=0.6, height=0.6, label=<<TABLE BORDER="0">
 		  <TR><TD><IMG SRC="' . $img_node . '"/></TD></TR>
-		  <TR><TD>\N</TD></TR></TABLE>>,
+		  <TR><TD>' . $agent['nombre'] . '</TD></TR></TABLE>>,
 		  shape="ellipse", tooltip="' . $agent['nombre'] . ' (' . $agent['direccion'] . ')", URL="'
 		  . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='
 		  . $agent['id_agente'] . '"];';
@@ -126,9 +124,9 @@ function create_node($agent) {
 // Returns the definition of the central module
 function create_pandora_node($name) {
 
-	$node = $name . ' [ color="black", fontsize=10, style="filled", fixedsize=true, width=1.4, height=0.6, label=<<TABLE BORDER="0">
+	$node = '0 [ color="black", fontsize=10, style="filled", fixedsize=true, width=1.4, height=0.6, label=<<TABLE BORDER="0">
 		  <TR><TD><IMG SRC="images/networkmap/pandora_node.png"/></TD></TR>
-		  <TR><TD BGCOLOR="white">\N</TD></TR></TABLE>>,
+		  <TR><TD BGCOLOR="white">' . $name . '</TD></TR></TABLE>>,
 		  shape="ellipse", tooltip="' . $name . '", URL="index.php?sec=estado&sec2=operation/agentes/estado_grupo" ];';
 
 	return $node;
@@ -155,7 +153,7 @@ function close_group() {
 }
 
 // Opens a graph definition
-function open_graph($root) {
+function open_graph() {
 	global $config, $layout, $nooverlap, $pure, $zoom;
 	$overlap = 'compress';
 	$size_x = 8;
@@ -178,8 +176,7 @@ function open_graph($root) {
 	$size = $size_x . ',' . $size_y;
 
 	$head = 'graph networkmap { labeljust=l; outputorder="edgesfirst"; overlap=' .
-	        $overlap . '; ratio="fill"; root="' . $root .
-	        '"; size="' . $size . '"; ';
+	        $overlap . '; ratio="fill"; root="0"; size="' . $size . '"; ';
 	
 	return $head;
 }	

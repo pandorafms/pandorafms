@@ -26,6 +26,7 @@ use Date::Manip;        # Needed to manipulate DateTime formats
 use Net::Ping;
 use Time::Local;        # DateTime basic manipulation
 use NetAddr::IP;		# To manage IP Addresses
+use Net::Traceroute::PurePerl; # Traceroute in rawsockets (need root) 
 use POSIX;				# to use ceil() function
 use Socket;				# to resolve address
 use threads;
@@ -124,7 +125,7 @@ sub pandora_recon_subsystem {
 				logger($pa_config,"Recon Server: Executing task [$task_name]",8);
    				# EXEC TASK and mark as "in progress" != -1
    				pandora_update_reconstatus ($pa_config, $dbh, $id_task, 0);
-				pandora_exec_task ($pa_config, $id_task);
+				pandora_recon_exec_task ($pa_config, $id_task);
 			}
       	}
       	$exec_sql->finish();
@@ -136,7 +137,7 @@ sub pandora_recon_subsystem {
 # SUB pandora_exec_task (pa_config, id_task)
 # Execute task
 ##########################################################################
-sub pandora_exec_task {
+sub pandora_recon_exec_task {
 	my $pa_config = $_[0];
 	my $id_task = $_[1];
 	my $target_ip; 			# Real ip to check
@@ -440,6 +441,41 @@ sub pandora_task_create_agentmodules {
 	$exec_sql->finish();
 }
 
+sub pandora_traceroute {
+
+    my $t = new Net::Traceroute::PurePerl(
+         backend        => 'PurePerl', # this optional
+         host           => '192.168.50.2',
+         debug          => 0,
+         max_ttl        => 15,
+         query_timeout  => 2,
+         packetlen      => 40,
+         protocol       => 'icmp', # udp or icmp
+    );
+
+	my $timeout = 15;
+	my $success = 0;
+
+    eval {
+        local $SIG{ALRM} = sub { die "alarm" };
+        alarm $timeout;
+        $success = $t->traceroute();
+        alarm 0;
+    };
+	if ($@){
+		print "Traceroute timed out\n" if ($@ and $@ eq "alarm");
+	}
+
+    if ($success){
+        print "Total of ".$t->hops." hops for that target \n";
+        for (my $ax=1; $ax <= $t->hops; $ax++){
+            print $t->hop_query_host($ax, 0);
+            print "\n";
+        }
+    }
+
+}
+
 ########################################################################################
 # pandora_shutdown ()
 # Close system
@@ -447,7 +483,6 @@ sub pandora_task_create_agentmodules {
 sub pandora_shutdown {
     logger (\%pa_config,"Pandora FMS Server '".$pa_config{'servername'}.$pa_config{"servermode"}."' Shutdown by signal ",0);
     print " [*] Shutting down ".$pa_config{'servername'}.$pa_config{"servermode"} ."(received signal)...\n";
-    pandora_event (\%pa_config, $pa_config{'servername'}.$pa_config{"servermode"}." going Down", 0,
-                                   0, 4, 0, 0, "system", $dbh);
+    pandora_event (\%pa_config, $pa_config{'servername'}.$pa_config{"servermode"}." going Down", 0, 0, 4, 0, 0, "system", $dbh);
     exit;
 }

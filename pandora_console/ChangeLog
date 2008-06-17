@@ -1,3 +1,23 @@
+2008-06-17  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandora_console/operation/agentes/networkmap.php: Added to
+          repository. Network Map.
+	* pandora_console/operation/menu.php: Added an entry for Network Map.
+	* pandora_console/images/networkmap
+	  pandora_console/images/networkmap/0.png
+	  pandora_console/images/networkmap/router.png
+	  pandora_console/images/networkmap/10.png
+	  pandora_console/images/networkmap/1.png
+	  pandora_console/images/networkmap/2.png
+	  pandora_console/images/networkmap/11.png
+	  pandora_console/images/networkmap/printer.png
+	  pandora_console/images/networkmap/firewall.png
+	  pandora_console/images/networkmap/server.png
+	  pandora_console/images/networkmap/9.png
+	  pandora_console/images/networkmap/pandora_node.png
+	  pandora_console/images/networkmap/server_hpux.png: Added to
+          repository. Network Map icons.
+
 2008-06-17  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/reporting/reporting_builder.php: Changing the group of a

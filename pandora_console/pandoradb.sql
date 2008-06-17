@@ -609,9 +609,7 @@ CREATE TABLE `treport_content` (
   `type` enum ('simple_graph', 'custom_graph', 'SLA', 'event_report', 'alert_report', 'monitor_report', 'avg_value', 'max_value', 'min_value', 'sumatory', 'general_group_report', 'monitor_health', 'agents_detailed') default 'simple_graph',
   `period` int(11) NOT NULL default 0,
   `order` int (11) NOT NULL default 0,
-  PRIMARY KEY(`id_rc`),
-  FOREIGN KEY (`id_agent`) REFERENCES tagente(`id_agente`)
-   ON UPDATE CASCADE ON DELETE CASCADE
+  PRIMARY KEY(`id_rc`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `treport_content_sla_combined` (

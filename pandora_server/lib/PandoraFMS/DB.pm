@@ -53,7 +53,6 @@ our @EXPORT = qw(
 		pandora_updateserver
 		pandora_serverkeepaliver
 		pandora_audit
-		pandora_event
 		pandora_lastagentcontact
 		pandora_writedata
 		pandora_writestate
@@ -1332,33 +1331,7 @@ sub pandora_lastagentcontact (%$$$$$$) {
     	$sag ->finish();
 }
 
-##########################################################################
-## SUB pandora_event 
-## Write in internal audit system an entry.
-## Params: config_hash, event_title, group, agent_id, severity, id_alertam
-##         id_agentmodule, event_type (from a set, as string), db_handle
-##########################################################################
 
-sub pandora_event (%$$$$$$$$) {
-    my $pa_config = $_[0];
-    my $evento = $_[1];
-    my $id_grupo = $_[2];
-    my $id_agente = $_[3];
-    my $severity = $_[4]; # new in 2.0
-    my $id_alert_am = $_[5]; # new in 2.0
-    my $id_agentmodule = $_[6]; # new in 2.0
-    my $event_type = $_[7]; # new in 2.0
-	my $dbh = $_[8];
-    my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
-	my $utimestamp; # integer version of timestamp	
-
-	$utimestamp = &UnixDate($timestamp,"%s"); # convert from human to integer
-    $evento = $dbh->quote($evento);
-    $event_type = $dbh->quote($event_type);
-    $timestamp = $dbh->quote($timestamp);
-	my $query = "INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity) VALUES ($id_agente, $id_grupo, $evento, $timestamp, 0, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity)";
-    $dbh->do($query);	
-}
 
 ##########################################################################
 ## SUB pandora_incident (pa_config, dbh, title, text, priority, status, origin, id_group
@@ -1420,7 +1393,7 @@ sub pandora_audit (%$$$$) {
 ##########################################################################
 sub dame_agente_id (%$$) {
 	my $pa_config = $_[0];
-        my $agent_name = $_[1];
+	my $agent_name = $_[1];
 	my $dbh = $_[2];
 
 	if ( (defined($agent_name)) && ($agent_name ne "") ){
@@ -1944,9 +1917,7 @@ sub get_db_value ($$$$$) {
 sub get_db_free_field ($$) {
         my $condition = $_[0];
         my $dbh = $_[1];
-        
-        my $query = $condition;
-        my $s_idag = $dbh->prepare($query);
+        my $s_idag = $dbh->prepare($condition);
         $s_idag ->execute;
         if ($s_idag->rows != 0) {
                 my @data = $s_idag->fetchrow_array();

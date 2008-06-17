@@ -309,19 +309,19 @@ sub keep_alive_check {
 ## param_1 : XML datafile name
 
 sub procesa_datos {
-        my $pa_config = $_[0];
-        my $datos = $_[1]; 
-        my $dbh = $_[2];
-        
-        my $tipo_modulo;
-        my $agent_name; 
-        my $timestamp;
-        my $interval; 
-        my $os_version;
-        my $agent_version;
-        my $id_agente;
-        my $module_name;
-    
+	my $pa_config = $_[0];
+	my $datos = $_[1]; 
+	my $dbh = $_[2];	
+	my $tipo_modulo;
+	my $agent_name; 
+	my $timestamp;
+	my $interval; 
+	my $os_version;
+	my $os; 
+	my $agent_version;
+	my $id_agente;
+	my $module_name;
+
 	$agent_name = $datos->{'agent_name'};
 	$timestamp = $datos->{'timestamp'};
 	$agent_version = $datos->{'version'};
@@ -341,9 +341,22 @@ sub procesa_datos {
    	if ((!defined ($os_version)) || (length($os_version) == 0)){
 		$os_version = "N/A";
 	}
+
   
 	if (defined $agent_name){
 		$id_agente = dame_agente_id($pa_config,$agent_name,$dbh);
+
+		if ($id_agente == -1){
+			if ($pa_config->{'autocreate'} == 1){
+				$os = pandora_get_os ($datos->{'os'});
+				$id_agente = pandora_create_agent ($pa_config, $dbh, "", 0, $pa_config->{'autocreate_group'}, 0, $datos->{'agent_name'}, 0, $os);
+				# Always create event about this detected IP
+                
+			} else {
+				logger($pa_config, "ERROR: There is no agent defined with name $agent_name", 2);
+			}
+		}
+
 		if ($id_agente > 0) {
 			pandora_lastagentcontact ($pa_config, $timestamp, $agent_name, $os_version, $agent_version, $interval, $dbh);
 			foreach my $part(@{$datos->{module}}) {
@@ -382,9 +395,7 @@ sub procesa_datos {
 					}
                 }
 			}
-		} else {
-			logger($pa_config, "ERROR: There is no agent defined with name $agent_name ($id_agente)", 2);
-		}
+		} 
 	} else {
 		logger($pa_config, "ERROR: Received data from an unknown agent", 1);
 	}

@@ -1,5 +1,20 @@
 2008-06-17  Sancho Lerena <slerena@artica.es>
 
+	* config.pm: Added options for xprobe2, and autocreate.
+
+	* tools.pm: Added functions pandora_create_agent(), pandora_get_os(),
+	and pandora_event() (this has been moved from DB.pm).
+
+	* pandora_server.conf: Added options for xprobe2, autocreate and
+	autocreate_group.
+
+	* pandora_network: Added support for TCP scanning (not implemented in
+	console yet), parent detection using traceroute, OS fingerprinting with
+	xprobe2, event creation using central functions, and some optimizations.
+
+	* pandora_server: Added support for agent autocreation, OS detection from
+	the XML header, and event notification "new_agent" type.
+
 	* pandora_recon: First code to implement traceroute functionality
 	using Pureperl module.  Added code for remote OS fingerprinting.
 

@@ -147,7 +147,7 @@ sub pandora_loadconfig {
     $pa_config->{"alert_threshold"} = 60;
     $pa_config->{"logfile"} = "/var/log/pandora_server.log";
     $pa_config->{"errorlogfile"} = "/var/log/pandora_server.error";
-    $pa_config->{"networktimeout"} = 15; 	# By default, not in config file yet
+    $pa_config->{"networktimeout"} = 5; 	# By default, not in config file yet
     $pa_config->{"pandora_master"} = 1; 	# on by default
     $pa_config->{"pandora_check"} = 0; 	# on by default
     $pa_config->{"version"} = $pandora_version;
@@ -189,6 +189,11 @@ sub pandora_loadconfig {
     $pa_config->{"mta_pass"} = ''; # Introduced on 2.0
     $pa_config->{"mta_auth"} = 'none'; # Introduced on 2.0  (Support LOGIN PLAIN CRAM-MD5 DIGEST-MD)
     $pa_config->{"mta_from"} = 'pandora@localhost'; # Introduced on 2.0  
+
+	# Xprobe2 for recon OS fingerprinting (optional feature to detect OS)
+	$pa_config->{"xprobe2"} = "/usr/bin/xprobe2";
+	$pa_config->{'autocreate_group'} = 2;
+	$pa_config->{'autocreate'} = 1;
 
 	# Check for UID0
     if ($pa_config->{"quiet"} != 0){
@@ -277,7 +282,6 @@ sub pandora_loadconfig {
         elsif ($parametro =~ m/^mta_from\s(.*)/i) { 
             $pa_config->{'mta_from'}= clean_blank($1); 
         }
-
         elsif ($parametro =~ m/^snmp_logfile\s(.*)/i) { 
             $pa_config->{'snmp_logfile'}= clean_blank($1); 
         }
@@ -384,6 +388,16 @@ sub pandora_loadconfig {
             $pa_config->{"keepalive"} = clean_blank($1);
             $pa_config->{"keepalive_orig"} = clean_blank($1);
         }
+        elsif ($parametro =~ m/^xprobe2\s([.*]*)/i) {
+            $pa_config->{'xprobe2'}= clean_blank($1); 
+        }
+		elsif ($parametro =~ m/^autocreate\s([0-9*]*)/i) {
+            $pa_config->{'autocreate'}= clean_blank($1); 
+        }
+		elsif ($parametro =~ m/^autocreate_group\s([0-9*]*)/i) {
+            $pa_config->{'autocreate_group'}= clean_blank($1); 
+        }
+
     } # end of loop for parameter #
 
 

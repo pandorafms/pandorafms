@@ -1,3 +1,8 @@
+2008-06-17  Ramon Novoa  <rnovoa@artica.es>
+
+	* operation/agentes/networkmap.php: Agent IDs are used to define
+	  nodes in the graph.
+
 2008-06-17  Esteban Sanchez  <estebans@artica.es>
 
 	* pandoradb.sql: Drop foreign key of inexistent column.

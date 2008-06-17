@@ -1,8 +1,21 @@
+2008-06-17  Esteban Sanchez  <estebans@artica.es>
+
+	* pandoradb.sql: Drop foreign key of inexistent column.
+
+	* godmode/reporting/reporting_builder.php: Fixed order when deleting a
+	report content. Deleted id_agent reference from treport (local
+	inconsistence is the reason why I couldn't see it before), also
+	id_user insertion was failing. Added a link to view group on report
+	form. Added module column on report content list. Use id_user from
+	config object.
+
 2008-06-17  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandora_console/operation/agentes/networkmap.php: Added to
-          repository. Network Map.
+	repository. Network Map.
+
 	* pandora_console/operation/menu.php: Added an entry for Network Map.
+
 	* pandora_console/images/networkmap
 	  pandora_console/images/networkmap/0.png
 	  pandora_console/images/networkmap/router.png
@@ -16,7 +29,7 @@
 	  pandora_console/images/networkmap/9.png
 	  pandora_console/images/networkmap/pandora_node.png
 	  pandora_console/images/networkmap/server_hpux.png: Added to
-          repository. Network Map icons.
+	  repository. Network Map icons.
 
 2008-06-17  Esteban Sanchez  <estebans@artica.es>
 

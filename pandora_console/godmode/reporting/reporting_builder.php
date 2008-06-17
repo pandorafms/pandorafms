@@ -69,6 +69,9 @@ if (isset($_GET["get_agent"])) {
 // Delete module SQL code
 if ($delete_report_content) {
 	$id_report_content = (int) get_parameter ('id_report_content');
+	$order = get_db_value ('`order`', 'treport_content', 'id_rc', $id_report_content);
+	$sql = sprintf ('UPDATE treport_content SET `order` = `order` -1 WHERE id_report = %d AND `order` > %d', $id_report, $order);
+	mysql_query ($sql);
 	$sql = sprintf ('DELETE FROM treport_content WHERE id_rc = %d', $id_report_content);
 	$result = mysql_query ($sql);
 	if ($result)
@@ -121,7 +124,6 @@ if ($add_content) {
 		include ("general/noaccess.php");
 		exit ();
 	}
-	$id_agent = (int) get_parameter ('id_agent');
 	$id_agent_module = (int) get_parameter ('id_module');
 	$period = (int) get_parameter ('period');
 	$type = (string) get_parameter ('type');
@@ -130,12 +132,11 @@ if ($add_content) {
 	$order = (int) get_db_value ('COUNT(*)', 'treport_content', 'id_report', $id_report);
 
 	$sql = sprintf ('INSERT INTO treport_content (id_report, id_gs, id_agent_module,
-			`order`, id_agent, type, period) 
-			VALUES (%d, %s, %s, %d, %s, "%s", %d)',
+			`order`, type, period) 
+			VALUES (%d, %s, %s, %d, "%s", %d)',
 			$id_report, $id_custom_graph ? $id_custom_graph : "NULL",
 			$id_agent_module ? $id_agent_module : "NULL",
-			$order, $id_agent ? $id_agent : "NULL",
-			$type, $period * 3600);
+			$order, $type, $period * 3600);
 	if ($result = mysql_query($sql)) {
 		echo "<h3 class=suc>".lang_string ('create_reporting_ok')."</h3>";
 		$id_agent = 0;
@@ -155,10 +156,9 @@ if ($add_content) {
 
 // Create report
 if ($create_report) {
-	$form_id_user = $id_user;
 	$sql = sprintf ('INSERT INTO treport (name, description, id_user, private, id_group) 
-			VALUES ("%s", "%s", %d, %d, %d)',
-			$report_name, $report_description, $form_id_user, $report_private, $report_id_group);
+			VALUES ("%s", "%s", "%s", %d, %d)',
+			$report_name, $report_description, $config['id_user'], $report_private, $report_id_group);
 	$result = mysql_query ($sql);
 	if ($result)
 		echo "<h3 class=suc>".lang_string ('create_reporting_ok')."</h3>";
@@ -322,7 +322,8 @@ if ($edit_sla_report_content) {
 	$table->data[1][0] = lang_string ('group');
 	if ($report_id_group) {
 		/* Changing the group is not allowed. */
-		$table->data[1][1] = dame_grupo ($report_id_group);
+		$table->data[1][1] = '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.
+				$report_id_group.'">'.dame_grupo ($report_id_group).'</a>';
 	} else {
 		$table->data[1][1] = print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo ORDER BY nombre',
 								'report_id_group', $report_id_group, '', '--', 0, true);
@@ -413,20 +414,22 @@ if ($edit_sla_report_content) {
 		// Part 3 - List of already assigned report items
 		echo "<h2>".lang_string ('report_items')."</h2>";
 		$table->id = 'table-assigned-reports';
+		$table->width = '90%';
 		$table->data = array ();
 		$table->head = array ();
 		$table->size = array ();
 		$table->rowstyle = array ();
 		$table->head[0] = lang_string ('order');
 		$table->head[1] = lang_string ('type');
-		$table->head[2] = lang_string ('period');
-		$table->head[3] = lang_string ('Options');
+		$table->head[2] = lang_string ('module');
+		$table->head[3] = lang_string ('period');
+		$table->head[4] = lang_string ('Options');
 		$table->align = array ();
 		$table->align[0] = 'center';
-		$table->align[3] = 'center';
+		$table->align[4] = 'center';
 		if ($report_id_user == $config['id_user']) {
-			$table->align[4] = 'center';
-			$table->head[4] = lang_string ('delete');
+			$table->align[5] = 'center';
+			$table->head[5] = lang_string ('delete');
 		}
 		
 
@@ -450,13 +453,16 @@ if ($edit_sla_report_content) {
 						'"><img src="images/down.png" title="'.lang_string ('down').'"></a>';
 			}
 			$data[1] = get_report_name ($report_content['type']);
-			$data[2] = human_time_description ($report_content['period']);
-			$data[3] = '';
+			$data[2] = '--';
+			if (get_report_type_data_source ($report_content['type']) == 'module')
+				$data[2] = get_db_value ('descripcion', 'tagente_modulo', 'id_agente_modulo', $report_content['id_agent_module']);
+			$data[3] = human_time_description ($report_content['period']);
+			$data[4] = '';
 			if ($report_content['type'] == 'SLA') {
-				$data[3] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id_report='.$id_report.'&edit_sla_report_content=1&id_report_content='.$report_content['id_rc'].'"><img src="images/setup.png"></a>';
+				$data[4] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id_report='.$id_report.'&edit_sla_report_content=1&id_report_content='.$report_content['id_rc'].'"><img src="images/setup.png"></a>';
 			}
 			if ($report_id_user == $config['id_user']) {
-				$data[4] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id_report='.$id_report.'&delete_report_content=1&id_report_content='.$report_content['id_rc'].'"><img src="images/cross.png"></a>';
+				$data[5] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id_report='.$id_report.'&delete_report_content=1&id_report_content='.$report_content['id_rc'].'"><img src="images/cross.png"></a>';
 			}
 			
 			array_push ($table->data, $data);
@@ -469,11 +475,8 @@ if ($edit_sla_report_content) {
 	echo lang_string ('custom_reporting')."</h2>";
 
 	$reports = get_db_all_rows_in_table ('treport');
-	$sql = "SELECT * FROM treport";
-	$res = mysql_query($sql);
 	$table->width = '0px';
 	if (sizeof ($reports)) {
-		
 		$table->id = 'report_list';
 		$table->width = '600px';
 		$table->head = array ();
@@ -485,7 +488,7 @@ if ($edit_sla_report_content) {
 		$table->head[2] = lang_string ('delete');
 		
 		foreach ($reports as $report) {
-			if ($report["private"] || $report["id_user"] != $id_user)
+			if ($report["private"] || $report["id_user"] != $config['id_user'])
 				continue;
 			$data = array ();
 			$data[0] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&edit_report=1&id_report='.

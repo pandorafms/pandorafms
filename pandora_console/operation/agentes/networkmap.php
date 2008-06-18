@@ -22,6 +22,8 @@ require("include/config.php");
 // Generate a dot graph definition for graphviz
 function generate_dot() {
 	$group_id = -1;
+	$parents = array();
+	$orphans = array();
 	
 	// Open Graph
 	$graph = open_graph();
@@ -97,10 +99,10 @@ function create_node($agent) {
 
 	// Set node status
 	if (mysql_num_rows($bad_modules) > 0) {
-		$status_color = "orangered1";
+		$status_color = '#FF1D1D';
 	}
 	else {
-		$status_color = "chartreuse1";
+		$status_color = '#8DFF1D';
 	}
 
 	// Set node icon
@@ -113,7 +115,7 @@ function create_node($agent) {
 	
 	$node = $agent['id_agente'] . ' [ color="' . $status_color . '", fontsize=10, style="filled", fixedsize=true, width=0.6, height=0.6, label=<<TABLE BORDER="0">
 		  <TR><TD><IMG SRC="' . $img_node . '"/></TD></TR>
-		  <TR><TD>' . $agent['nombre'] . '</TD></TR></TABLE>>,
+		  <TR><TD BGCOLOR="white">' . $agent['nombre'] . '</TD></TR></TABLE>>,
 		  shape="ellipse", tooltip="' . $agent['nombre'] . ' (' . $agent['direccion'] . ')", URL="'
 		  . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='
 		  . $agent['id_agente'] . '"];';
@@ -124,7 +126,7 @@ function create_node($agent) {
 // Returns the definition of the central module
 function create_pandora_node($name) {
 
-	$node = '0 [ color="black", fontsize=10, style="filled", fixedsize=true, width=1.4, height=0.6, label=<<TABLE BORDER="0">
+	$node = '0 [ color="black", fontsize=10, style="filled", fixedsize=true, width=0.8, height=0.6, label=<<TABLE BORDER="0">
 		  <TR><TD><IMG SRC="images/networkmap/pandora_node.png"/></TD></TR>
 		  <TR><TD BGCOLOR="white">' . $name . '</TD></TR></TABLE>>,
 		  shape="ellipse", tooltip="' . $name . '", URL="index.php?sec=estado&sec2=operation/agentes/estado_grupo" ];';
@@ -232,10 +234,10 @@ if ((give_acl($id_user, 0, "AR") != 1 ) AND (dame_admin($id_user) !=1 )) {
 
 echo '<h2>' . $lang_label['ag_title'] . ' &gt; ' . lang_string("Network Map") . '&nbsp';
 if ($pure == 1) {
-    echo '<a href="index.php?sec=reporting&sec2=operation/agentes/networkmap&pure=0"><img src="images/monitor.png" title="' . lang_string('Normal screen') . '"></a>';
+    echo '<a href="index.php?sec=estado&sec2=operation/agentes/networkmap&pure=0"><img src="images/monitor.png" title="' . lang_string('Normal screen') . '"></a>';
 }
 else {
-    echo '<a href="index.php?sec=reporting&sec2=operation/agentes/networkmap&pure=1"><img src="images/monitor.png" title="' . lang_string('Full screen') . '"></a>';
+    echo '<a href="index.php?sec=estado&sec2=operation/agentes/networkmap&pure=1"><img src="images/monitor.png" title="' . lang_string('Full screen') . '"></a>';
 }
 echo '</h2>';
 
@@ -248,7 +250,7 @@ $layout_array = array (
 	'flat' => 'flat',
 );
 
-echo '<form name="input" action="index.php?sec=reporting&sec2=operation/agentes/networkmap&pure=' . $pure . '" method="post">';
+echo '<form name="input" action="index.php?sec=estado&sec2=operation/agentes/networkmap&pure=' . $pure . '" method="post">';
 echo '<table cellpadding="4" cellspacing="4" class="databox">';
 echo '<tr>';
 echo '<td valign="top">' . lang_string('Layout') . ' &nbsp';
@@ -264,7 +266,7 @@ if ($pure == "1") {
 		'3' => 'x3',
 	);
 
-	echo '<td valign="top">' . lang_string('Layout') . ' &nbsp';
+	echo '<td valign="top">' . lang_string('Zoom') . ' &nbsp';
 	print_select ($zoom_array, 'zoom', $zoom, '', '', '');
 	echo '</td>';
 	echo '<td valign="top">' . lang_string('No Overlap') . ' &nbsp';

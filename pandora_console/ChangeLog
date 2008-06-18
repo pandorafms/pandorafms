@@ -1,3 +1,8 @@
+2008-06-18  Ramon Novoa  <rnovoa@artica.es>
+
+	* operation/agentes/networkmap.php: Small fixes.
+	* images/networkmap/pandora_node.png: Changed icon.
+
 2008-06-17  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/agentes/networkmap.php: Agent IDs are used to define

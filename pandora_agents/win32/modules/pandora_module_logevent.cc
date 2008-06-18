@@ -52,7 +52,12 @@ Pandora_Module_Logevent::run () {
     }
         
     Pandora_Wmi::getEventList (this->source, this->type, this->pattern, this->getInterval (), event_list);
-    
+
+    if (event_list.size () < 1) {
+        this->setOutput ("");
+        return;
+    }
+
     for(event = event_list.begin (); event != event_list.end(); ++event) {
         this->setOutput (*event);        
     }

@@ -1,5 +1,9 @@
 2008-06-18  Ramon Novoa  <rnovoa@artica.es>
 
+	* win32/modules/pandora_module_logevent.cc: Fixed execution interval.
+
+2008-06-18  Ramon Novoa  <rnovoa@artica.es>
+
 	* win32/modules/pandora_module_logevent.cc: Now returns "empty" data
 	  when no data is available.
 

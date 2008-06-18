@@ -21,6 +21,7 @@
 
 #include "pandora_module_logevent.h"
 #include "../windows/pandora_wmi.h"
+#include "../pandora_windows_service.h"
 
 using namespace Pandora;
 using namespace Pandora_Modules;
@@ -42,9 +43,24 @@ Pandora_Module_Logevent::Pandora_Module_Logevent (string name, string source, st
 
 void
 Pandora_Module_Logevent::run () {
+    int interval, module_interval;
+    string value;
     list<string> event_list;
     list<string>::iterator event;
+	Pandora_Agent_Conf::Pandora_Agent_Conf *conf;
 
+	conf = Pandora_Agent_Conf::getInstance ();
+    
+    // Get execution interval
+    value = conf->getValue ("interval");
+    interval = atoi(value.c_str ());
+    
+    module_interval = this->getInterval ();    
+    if (module_interval > 0) {
+        interval *= module_interval;
+    }
+
+	// Run
 	try {
         Pandora_Module::run ();
     } catch (Interval_Not_Fulfilled e) {
@@ -53,6 +69,7 @@ Pandora_Module_Logevent::run () {
         
     Pandora_Wmi::getEventList (this->source, this->type, this->pattern, this->getInterval (), event_list);
 
+	// No data
     if (event_list.size () < 1) {
         this->setOutput ("");
         return;

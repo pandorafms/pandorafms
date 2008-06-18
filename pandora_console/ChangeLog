@@ -1,3 +1,11 @@
+2008-06-18  Esteban Sanchez  <estebans@artica.es>
+
+	* include/styles/datepicker.css, include/styles/timeentry.css: Added
+	to repository, date and time style sheets.
+
+	* images/time-entry.png, images/down.png, images/up.png: Added to
+	repository. Images of up and down arrows and time selection.
+
 2008-06-18  Ramon Novoa  <rnovoa@artica.es>
 
 	* operation/agentes/networkmap.php: Small fixes.

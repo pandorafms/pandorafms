@@ -176,6 +176,7 @@ sub pandora_recon_consumer ($$) {
 	LOOP: while (1) {
 		if ($counter > 10) {
             threads->yield;
+			sleep($pa_config->{"server_threshold"});
 			$counter = 0;
 		}
 		

@@ -1234,7 +1234,7 @@ function get_db_all_rows_sqlfree ($sql) {
 		return array();
 	}
 	while ($row = mysql_fetch_array ($result)) {
-		array_push ($retval, &$row);
+		array_push ($retval, $row);
 	}
 	
 	return $retval;

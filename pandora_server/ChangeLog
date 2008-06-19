@@ -1,7 +1,10 @@
+2008-06-19  Sancho Lerena <slerena@gmail.com>
 
-2008-06-19  Sancho Lerena  <slerena@gmail.com>
+	* pandora_plugin: Added startup script.
 
-    * pandora_recon: Added sleep to main loop to save CPU.
+	* Makefile.PL: Added new perl dependencies.
+
+	* pandora_recon: Added sleep to main loop to save CPU.
 
 2008-06-18  Sancho Lerena  <slerena@gmail.com>
 

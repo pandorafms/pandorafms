@@ -17,6 +17,8 @@ WriteMakefile(
 		Net::Ping => 0,
 		Time::HiRes => 0,
 		IO::Socket => 0,
+		Mail::Sendmail => 0,
+		Net::Traceroute::PurePerl => 0,
 		SNMP => 0
     },
     EXE_FILES 		=>

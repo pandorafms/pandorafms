@@ -61,7 +61,7 @@ if (comprueba_login() == 0) {
 			//echo "<br>DEBUG for ".$nombre;
 			//echo "<br>Comments:".$comentarios;	
 			$comentarios = entrada_limpia($_POST["comentarios"]);
-			if (dame_password($nombre)!=$pass1){
+			if (get_user_password($nombre)!=$pass1){
 				// Only when change password
 				$pass1=md5($pass1);
 				$sql = "UPDATE tusuario SET nombre_real = '".$nombre_real."', password = '".$pass1."', telefono ='".$telefono."', direccion ='".$direccion." ', comentarios = '".$comentarios."' WHERE id_usuario = '".$nombre."'";

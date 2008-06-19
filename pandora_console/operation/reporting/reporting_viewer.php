@@ -184,7 +184,8 @@ foreach ($contents as $content) {
 		$n = array_push ($table->data, $data);
 		$table->rowclass[$n - 1] = 'datos3';
 		
-		$slas = get_db_all_rows_field_filter ('treport_content_sla_combined', 'id_report_content', $content['id_rc']);
+		$slas = get_db_all_rows_field_filter ('treport_content_sla_combined',
+							'id_report_content', $content['id_rc']);
 		if (sizeof ($slas) == 0) {
 			$data = array ();
 			$table->colspan[$n][0] = 3;
@@ -193,21 +194,28 @@ foreach ($contents as $content) {
 		}
 		foreach ($slas as $sla) {
 			$data = array ();
-			$sla_result = format_numeric (return_module_SLA ($sla['id_agent_module'], $content['period'],
-									$sla['sla_min'], $sla['sla_max'], $datetime));
-			$table->colspan[$n][0] = 2;
-			$table->data[0] = '<span style="font-size: 0.6em">';
-			$table->data[0] .= lang_string ('sla_max')." : ".$sla['sla_max']."<br>";
-			$table->data[0] .= lang_string ('sla_min')." : ".$sla['sla_min']."<br>";
-			$table->data[0] .= lang_string ('sla_limit')." : ".$sla['sla_limit']."<br>";
-			$table->data[0] .= "</span>";
 			
-			if ($sla_result >= $sla['sla_limit'])
-				$table->data[1] = "<span style='font: bold 3em Arial, Sans-serif; color: #000000;'>";
-			else
-				$table->data[1] = "<span style='font: bold 3em Arial, Sans-serif; color: #ff0000;'>";
-			$table->data[1] .= $sla_result. " %";
-			$table->data[1] .= "</span>";
+			$table->colspan[$n][0] = 2;
+			$data[0] = '<span style="font-size: 0.6em">';
+			$data[0] .= lang_string ('sla_max')." : ".$sla['sla_max']."<br>";
+			$data[0] .= lang_string ('sla_min')." : ".$sla['sla_min']."<br>";
+			$data[0] .= lang_string ('sla_limit')." : ".$sla['sla_limit']."<br>";
+			$data[0] .= "</span>";
+			
+			$sla_value = return_module_SLA ($sla['id_agent_module'], $content['period'],
+							$sla['sla_min'], $sla['sla_max'], $datetime);
+			if ($sla_value === false) {
+				$data[1] = '<span style="font: bold 3em Arial, Sans-serif; color: #0000FF;">';
+				$data[1] .= lang_string ('unknown');
+			} else {
+				if ($sla_value >= $sla['sla_limit'])
+					$data[1] = '<span style="font: bold 3em Arial, Sans-serif; color: #000000;">';
+				else
+					$data[1] = '<span style="font: bold 3em Arial, Sans-serif; color: #ff0000;">';
+				$data[1] .= format_numeric ($sla_value). " %";
+			}
+			$data[1] .= "</span>";
+			
 			$n = array_push ($table->data, $data);
 		}
 		

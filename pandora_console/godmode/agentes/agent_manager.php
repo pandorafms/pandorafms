@@ -70,14 +70,14 @@ echo '<td class="datos"><b>'.$lang_label["agent_name"].'</b></td>
 <td class="datos">
 <input type="text" name="agente" size=30 value="'.$nombre_agente.'">';
 
-if ((isset($id_agente)) && ($id_agente != "")){
+if (isset ($id_agente) && $id_agente != "") {
 	echo "
 	<a href='index.php?sec=estado&
 	sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'>
 	<img src='images/lupa.png' border='0' align='middle' alt=''></a>";
 } 
 // Remote configuration available
-if (file_exists($config["remote_config"] . "/" . $agent_md5 . ".md5")) {
+if (file_exists ($config["remote_config"] . "/" . $agent_md5 . ".md5")) {
 	echo "
 	<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=".$id_agente."&disk_conf=" . $agent_md5 . "'>
 	<img src='images/application_edit.png' border='0' align='middle' alt=''></a>";	
@@ -88,7 +88,7 @@ echo '<b>'.$lang_label["ip_address"].'</b>';
 echo '<td class="datos2">';
 echo '<input type="text" name="direccion" size="16" value="'.$direccion_agente.'">';
 
-if ($create_agent != 1){
+if ($create_agent != 1) {
 	echo "&nbsp;&nbsp;&nbsp;&nbsp;";
 
 	echo '<select name="address_list">';
@@ -109,12 +109,13 @@ if ($create_agent != 1){
 
 echo '<tr><td class="datos"><b>'.lang_string ("Parent").'</b>';
 echo '<td class="datos">';
-if ($create_agent != 1){
-    form_agent_combo ($id_parent, "id_parent");
+if ($create_agent != 1) {
+	print_select_from_sql ('SELECT id_agente, nombre FROM tagente',
+				'id_parent', $id_agente, '', '', '');
+} else {
+	print_select_from_sql ('SELECT id_agente, nombre FROM tagente',
+				'id_parent', 0, '', 'None', '0');
 }
-else
-    form_agent_combo (0, "id_parent");
-
 
 echo '<tr><td class="datos"><b>'.$lang_label["group"].'</b>';
 echo '<td class="datos"><select name="grupo" class="w130">';
@@ -242,11 +243,11 @@ echo '<tr><td class="datos"><b>'.lang_string("Remote configuration").'</b>';
 echo '<td class="datos">';
 $filename = $config["remote_config"] . "/" . $agent_md5 . ".md5";
 if (file_exists($filename)){
-    echo date("F d Y H:i:s.", fileatime($filename));
+	echo date("F d Y H:i:s.", fileatime($filename));
 	// Delete remote configuration
 	echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&disk_conf_delete=1&id_agente=$id_agente'><img src='images/cross.png'></A>";
 } else {
-    echo '<i>'.lang_string("Not available").'</i>';
+	echo '<i>'.lang_string("Not available").'</i>';
 }
 
 echo '</table><table width="650"><tr><td  align="right">';

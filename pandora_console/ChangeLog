@@ -1,38 +1,82 @@
+2008-06-18  Esteban Sanchez  <estebans@artica.es>
+
+	* functions.php: Added documentation to all the functions in JavaDoc
+	format, which is an facto-standard. Deleted unused functions. Improved
+	the code of some functions. Tab and blankspaces style correction.
+	Replaced old lang_label with lang_string(). Some functions to print
+	selects were replaced with a functio to get an array with all the
+	possible values so the caller will use print_select() with them.
+
+	* godmode/agentes/agent_manager.php: Use print_select() instead of
+	deleted function.
+
+	* godmode/agentes/alert_manager_editor.php: Use print_select() instead
+	of deleted function. Use print_checkbox(). Style correction
+
+	* godmode/reporting/map_builder.php, operation/agentes/ver_agente.php,
+	operation/messages/message.php,
+	operation/reporting/reporting_viewer_pdf.php:
+	Replaced deleted functions with their equivalents.
+
+	* include/functions_db.php: Documented some functions, some work is
+	still required. Added get_reports() to get all the reports a user can
+	see. Deleted unused functions. Replaced deleted functions with their
+	equivalents. Added get_db_row_sql(), get_previous_data(). Fixed errors
+	when calculating average, max, min and sum values of an agent module.
+
+	* include/functions_reporting.php: Fixed errors when calculating SLA.
+
+	* operation/events/events.php: Tab and blankspaces correction.
+	Replaced form_priority with print_select(). Style correction.
+
+	* operation/reporting/custom_reporting.php: Show all the reports a
+	user can see. Use Pandora functions.
+
+	* operation/reporting/reporting_viewer.php: Show unknown label if SLA
+	can not be calculated.
+
+	* operation/snmpconsole/snmp_alert.php: Avoid an extra indentation
+	level by using check_login() properly. Tab and blankspaces correction.
+
+	* index.php, operation/users/user_edit.php: Adopted to renamed
+	function.
+
+	* godmode/db/db_sanity.php, reporting/fgraph.php: Style correction.
 
 2008-06-18  Sancho Lerena  <slerena@gmail.com>
- 
-    * pandoradbdata_13_to_20.sql: prototype. not functional.
 
-    * operation/events/export_csv.php: Event export to CSV. Support
-    passed filters.
+	* pandoradbdata_13_to_20.sql: prototype. not functional.
 
-    * images/networkmap/*.png: Updated icons for network map.
+	* operation/events/export_csv.php: Event export to CSV. Support passed
+	filters.
 
-    * godmode/menu.php,
-    * godmode/db/db_sanity.php: New sanity tool for database in interactive
-    mode using console (ported from pandora_db.pl).
+	* images/networkmap/*.png: Updated icons for network map.
 
-    * reporting/fgraph.php: Added graphs for string data types. Fixed
-    event by agent/module graph for system events.
+	* godmode/menu.php, godmode/db/db_sanity.php: New sanity tool for
+	database in interactive mode using console (ported from
+	pandora_db.pl).
 
-    * general/logon_ok.php, tactica.php: Fixed a div0.
+	* reporting/fgraph.php: Added graphs for string data types. Fixed
+	event by agent/module graph for system events.
 
-    * godmode/agentes/manage_config.php: Several fixes, and added a new
-    option to mass-deletion of agents.
+	* general/logon_ok.php, tactica.php: Fixed a div0.
 
-    * godmode/agentes/agent_manager.php,
-    godmode/agentes/modificar_agente.php: Delete of remote configuration
-	when delete an agent and manually, by user. 
+	* godmode/agentes/manage_config.php: Several fixes, and added a new
+	option to mass-deletion of agents.
 
-    * operation/servers/view_server_detail.php: Added refresh option and 
-    fixed layout.
+	* godmode/agentes/agent_manager.php,
+	godmode/agentes/modificar_agente.php: Delete of remote configuration
+	when delete an agent and manually, by user..
 
-    * status_monitor.php: Added new filter by state, most code rewritten.
-    Added pagination fixes, and corrected labels and legends.
+	* operation/servers/view_server_detail.php: Added refresh option and
+	fixed layout.
 
-    * operation/agentes/networkmap.php: Several fixes and modification to 
-    render small maps and huge (>200 agents) maps. This should be fine by
-    now. Need "Group/Section" drawing /by click into section line/.
+	* status_monitor.php: Added new filter by state, most code rewritten.
+	Added pagination fixes, and corrected labels and legends.
+
+	* operation/agentes/networkmap.php: Several fixes and modification to
+	render small maps and huge (>200 agents) maps. This should be fine by
+	now. Need "Group/Section" drawing /by click into section line/.
 
 2008-06-18  Esteban Sanchez  <estebans@artica.es>
 

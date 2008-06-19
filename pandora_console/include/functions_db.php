@@ -14,7 +14,14 @@
 // GNU General Public License for more details.
 
 
-function check_login() { 
+/** 
+ * Check if login session variables are set.
+ *
+ * It will stop the execution if those variables were not set
+ * 
+ * @return 0 on success
+ */
+function check_login () { 
 	global $config;
 	if (!isset($config["homedir"])){
 		// No exists $config. Exit inmediatly
@@ -28,7 +35,7 @@ function check_login() {
 		$rowdup = mysql_fetch_array($resq1);
 		$nombre = $rowdup[0];
 		if ( $id == $nombre ){
-			return 0 ;
+			return 0;
 		}
 	}
 	audit_db("N/A", getenv("REMOTE_ADDR"), "No session", "Trying to access without a valid session");
@@ -36,13 +43,28 @@ function check_login() {
 	exit;
 }
 
-// --------------------------------------------------------------- 
-// give_acl ()
-// Main Function to get access to resources
-// Return 0 if no access, > 0  if access
-// --------------------------------------------------------------- 
-
-function give_acl($id_user, $id_group, $access){	
+/** 
+ * Check access privileges to resources
+ *
+ * Access can be:
+ * IR - Incident Read
+ * IW - Incident Write
+ * IM - Incident Management
+ * AR - Agent Read
+ * AW - Agent Write
+ * LW - Alert Write
+ * UM - User Management
+ * DM - DB Management
+ * LM - Alert Management
+ * PM - Pandora Management
+ * 
+ * @param id_user User id to check
+ * @param id_group Agents group id to check access
+ * @param access Access privilege to check
+ * 
+ * @return 1 if the user has privileges, 0 if not.
+ */
+function give_acl ($id_user, $id_group, $access) {
 	// IF user is level = 1 then always return 1
 	// Access can be:
 	/*	
@@ -64,44 +86,76 @@ function give_acl($id_user, $id_group, $access){
 	$res=mysql_query($query1);
 	$row=mysql_fetch_array($res);
 	if ($row["nivel"] == 1)
-		$result = 1;
-	else {
-		if ($id_group == 0) // Group doesnt matter, any group, for check permission to do at least an action in a group
-			$query1="SELECT * FROM tusuario_perfil WHERE id_usuario = '".$id_user."'";	// GroupID = 0, group doesnt matter (use with caution!)
-		else
-			$query1="SELECT * FROM tusuario_perfil WHERE id_usuario = '".$id_user."' and ( id_grupo =".$id_group." OR id_grupo = 1)";	// GroupID = 1 ALL groups      
-		$resq1=mysql_query($query1);  
-		$result = 0; 
-		while ($rowdup=mysql_fetch_array($resq1)){
-			$id_perfil=$rowdup["id_perfil"];
-			// For each profile for this pair of group and user do...
-			$query2="SELECT * FROM tperfil WHERE id_perfil = ".$id_perfil;    
-			$resq2=mysql_query($query2);  
-			if ($rowq2=mysql_fetch_array($resq2)){
-				switch ($access) {
-					case "IR": $result = $result + $rowq2["incident_view"]; break;
-					case "IW": $result = $result + $rowq2["incident_edit"]; break;
-					case "IM": $result = $result + $rowq2["incident_management"]; break;
-					case "AR": $result = $result + $rowq2["agent_view"]; break;
-					case "AW": $result = $result + $rowq2["agent_edit"]; break;
-					case "LW": $result = $result + $rowq2["alert_edit"]; break;
-					case "LM": $result = $result + $rowq2["alert_management"]; break;
-					case "PM": $result = $result + $rowq2["pandora_management"]; break;
-					case "DM": $result = $result + $rowq2["db_management"]; break;
-					case "UM": $result = $result + $rowq2["user_management"]; break;
-				}
-			} 
-		}
-	} // else
+		return 1;
+	if ($id_group == 0) // Group doesnt matter, any group, for check permission to do at least an action in a group
+		$query1="SELECT * FROM tusuario_perfil WHERE id_usuario = '".$id_user."'";	// GroupID = 0, group doesnt matter (use with caution!)
+	else
+		$query1="SELECT * FROM tusuario_perfil WHERE id_usuario = '".$id_user."' and ( id_grupo =".$id_group." OR id_grupo = 1)";	// GroupID = 1 ALL groups      
+	$resq1=mysql_query($query1);  
+	$result = 0; 
+	while ($rowdup=mysql_fetch_array($resq1)){
+		$id_perfil=$rowdup["id_perfil"];
+		// For each profile for this pair of group and user do...
+		$query2="SELECT * FROM tperfil WHERE id_perfil = ".$id_perfil;    
+		$resq2=mysql_query($query2);  
+		if ($rowq2=mysql_fetch_array($resq2)){
+			switch ($access) {
+			case "IR":
+				$result = $result + $rowq2["incident_view"];
+				
+				break;
+			case "IW":
+				$result = $result + $rowq2["incident_edit"];
+				
+				break;
+			case "IM":
+				$result = $result + $rowq2["incident_management"];
+				
+				break;
+			case "AR":
+				$result = $result + $rowq2["agent_view"];
+				
+				break;
+			case "AW":
+				$result = $result + $rowq2["agent_edit"];
+				
+				break;
+			case "LW":
+				$result = $result + $rowq2["alert_edit"];
+				
+				break;
+			case "LM":
+				$result = $result + $rowq2["alert_management"];
+				
+				break;
+			case "PM":
+				$result = $result + $rowq2["pandora_management"];
+				
+				break;
+			case "DM":
+				$result = $result + $rowq2["db_management"];
+				
+				break;
+			case "UM":
+				$result = $result + $rowq2["user_management"];
+				
+				break;
+			}
+		} 
+	}
 	if ($result > 1)
 		$result = 1;
         return $result; 
 } 
 
-// --------------------------------------------------------------- 
-// audit_db, update audit log
-// --------------------------------------------------------------- 
-
+/** 
+ * Adds an audit log entry.
+ * 
+ * @param id User id that makes the incident
+ * @param ip Client IP who makes the incident
+ * @param accion Action description
+ * @param descripcion Long action description
+ */
 function audit_db ($id, $ip, $accion, $descripcion){
 	require("config.php");
 	$today=date('Y-m-d H:i:s');
@@ -110,32 +164,38 @@ function audit_db ($id, $ip, $accion, $descripcion){
 	$result=mysql_query($sql1);
 }
 
-
-// --------------------------------------------------------------- 
-// logon_db, update entry in logon audit
-// --------------------------------------------------------------- 
-
-function logon_db($id,$ip){
-	require("config.php");
-	audit_db($id,$ip,"Logon","Logged in");
+/**
+ * Log in a user into Pandora.
+ *
+ * @param id_user User id
+ * @param ip Client user IP address.
+ */
+function logon_db ($id_user, $ip) {
+	require  ("config.php");
+	audit_db ($id_user, $ip, "Logon", "Logged in");
 	// Update last registry of user to get last logon
-	$sql2='UPDATE tusuario fecha_registro = $today WHERE id_usuario = "$id"';
-	$result=mysql_query($sql2);
+	$sql = 'UPDATE tusuario fecha_registro = $today WHERE id_usuario = "$id_user"';
+	$result = mysql_query ($sql);
 }
 
-// --------------------------------------------------------------- 
-// logoff_db, also adds audit log
-// --------------------------------------------------------------- 
-
-function logoff_db($id,$ip){
-	require("config.php");
-	audit_db($id,$ip,"Logoff","Logged out");
+/**
+ * Log out a user into Pandora.
+ *
+ * @param id_user User id
+ * @param ip Client user IP address.
+ */
+function logoff_db ($id_user, $ip) {
+	require ("config.php");
+	audit_db ($id_user, $ip, "Logoff", "Logged out");
 }
 
-// --------------------------------------------------------------- 
-// Returns profile given ID
-// --------------------------------------------------------------- 
-
+/**
+ * Get profile name from id.
+ * 
+ * @param id_profile Id profile in tperfil
+ * 
+ * @return Profile name of the given id
+ */
 function dame_perfil ($id_profile) {
 	return (string) get_db_value ('name', 'tperfil', 'id_perfil', (int) $id_profile);
 }
@@ -210,107 +270,142 @@ function get_alerts_in_agent ($id_agent) {
 	return array_merge ($simple_alerts, $combined_alerts);
 }
 
-// --------------------------------------------------------------- 
-// Returns group given ID
-// --------------------------------------------------------------- 
+/**
+ * Get a list of the reports the user can view.
+ *
+ * A user can view a report by two ways:
+ *  - The user created the report (id_user field in treport)
+ *  - The report is not private and the user has reading privileges on 
+ *    the group associated to the report
+ *
+ * @param $id_user User id to get the reports.
+ *
+ * @return An array with all the reports the user can view.
+ */
+function get_reports ($id_user) {
+	$user_reports = array ();
+	$all_reports = get_db_all_rows_in_table ('treport');
+	if (sizeof ($all_reports) == 0) {
+		return $user_reports;
+	}
+	foreach ($all_reports as $report) {
+		/* The report is private and it does not belong to the user */
+		if ($report['private'] && $report['id_user'] != $id_user)
+			continue;
+		/* Check ACL privileges on report group */
+		if (! give_acl ($id_user, $report['id_group'], 'AR'))
+			continue;
+		array_push ($user_reports, $report);
+	}
+	return $user_reports;
+}
 
+/** 
+ * Get group name from group.
+ * 
+ * @param id_group Id group to get the name.
+ * 
+ * @return The name of the given group
+ */
 function dame_grupo ($id_group) {
 	return (string) get_db_value ('nombre', 'tgrupo', 'id_grupo', (int) $id_group);
 }
 
-// --------------------------------------------------------------- 
-// Returns icon name given group ID
-// --------------------------------------------------------------- 
-
+/** 
+ * Get group icon from group.
+ * 
+ * @param id_group Id group to get the icon
+ * 
+ * @return Icon path of the given group
+ */
 function dame_grupo_icono ($id_group) {
 	return (string) get_db_value ('icon', 'tgrupo', 'id_grupo', (int) $id_group);
 }
 
-// --------------------------------------------------------------- 
-// Return agent id given name of agent
-// --------------------------------------------------------------- 
-
+/** 
+ * Get agent id from an agent name.
+ * 
+ * @param agent_name Agent name to get its id.
+ * 
+ * @return Id from the agent of the given name.
+ */
 function dame_agente_id ($agent_name) {
 	return (int) get_db_value ('id_agente', 'tagente', 'nombre', $agent_name);
 }
 
-
-// --------------------------------------------------------------- 
-// Returns userid given name an note id
-// --------------------------------------------------------------- 
-
+/** 
+ * Get user id of a note.
+ * 
+ * @param id_note Note id.
+ * 
+ * @return User id of the given note.
+ */
 function give_note_author ($id_note) {
 	return (int) get_db_value ('id_usuario', 'tnota', 'id_nota', (int) $id_note);
 }
 
-
-// --------------------------------------------------------------- 
-// Returns agent id given name of agent
-// --------------------------------------------------------------- 
-
-function dame_agente_modulo_id ($id_agente, $id_tipomodulo, $nombre) {
-	$sql = sprintf ('SELECT id_agente_modulo FROM tagente_modulo 
-			WHERE id_agente = %d
-			AND id_tipo_modulo = %d AND nombre = "%s"',
-			$id_agent, $id_tipomodulo, $nombre);
-	return get_db_sql ($sql);
-}
-
-
-// --------------------------------------------------------------- 
-// Returns event description given it's id
-// --------------------------------------------------------------- 
-
+/** 
+ * Get description of an event.
+ * 
+ * @param id_event Event id.
+ * 
+ * @return Description of the given event.
+ */
 function return_event_description ($id_event) {
 	return (string) get_db_value ('evento', 'tevento', 'id_evento', (int) $id_event);
 }
 
-// --------------------------------------------------------------- 
-// Return ID_Group from an event given as id_event
-// --------------------------------------------------------------- 
-
+/** 
+ * Get group id of an event.
+ * 
+ * @param id_event Event id
+ * 
+ * @return Group id of the given event.
+ */
 function gime_idgroup_from_idevent ($id_event) {
 	return (int) get_db_value ('id_grupo', 'tevento', 'id_evento', (int) $id_event);
 }
 
-
-// --------------------------------------------------------------- 
-// Return module id given name of module type
-// --------------------------------------------------------------- 
-
-function dame_module_id ($nombre){
-	return (int) get_db_value ('id_tipo', 'ttipo_modulo', 'nombre', $nombre);
-}
-
-
-// --------------------------------------------------------------- 
-// Returns agent name when given its ID
-// --------------------------------------------------------------- 
-
+/** 
+ * Get name of an agent.
+ * 
+ * @param id_agente Agent id.
+ * 
+ * @return Name of the given agent.
+ */
 function dame_nombre_agente ($id_agente) {
 	return (string) get_db_value ('nombre', 'tagente', 'id_agente', (int) $id_agente);
 }
 
-// --------------------------------------------------------------- 
-// Returns password (HASH) given user_id
-// --------------------------------------------------------------- 
-
-function dame_password ($id_usuario) {
+/** 
+ * Get password of an user.
+ * 
+ * @param id_usuario User id.
+ * 
+ * @return Password of an user.
+ */
+function get_user_password ($id_usuario) {
 	return (string) get_db_value ('password', 'tusuario', 'id_usuario', (int) $id_usuario);
 }
 
-// --------------------------------------------------------------- 
-// Returns name of an alert given ID
-// --------------------------------------------------------------- 
-
+/** 
+ * Get name of an alert
+ * 
+ * @param id_alert Alert id.
+ * 
+ * @return Name of the alert.
+ */
 function dame_nombre_alerta ($id_alert) {
 	return (string) get_db_value ('nombre', 'talerta', 'id_alerta', (int) $id_alert);
 }
 
-// --------------------------------------------------------------- 
-// Returns name of a modules group
-// --------------------------------------------------------------- 
-
+/** 
+ * Get name of a module group.
+ * 
+ * @param id_module_group Module group id.
+ * 
+ * @return Name of the given module group.
+ */
 function dame_nombre_grupomodulo ($id_module_group) {
 	return (string) get_db_value ('name', 'tmodule_group', 'id_mg', (int) $id_module_group);
 }
@@ -920,13 +1015,9 @@ function agent_belong_group($id_agent, $id_group){
         // Conexion con la base Datos 
 	$child[] = "";
 	$child[] = $id_group;
-	give_groupchild($id_group,$child);
-	$id_agent_group = give_group_id($id_agent);
-	if (array_in($child,$id_agent_group)==1){
-		return 1; 
-	} else {
-		return 0;
-	}
+	give_groupchild ($id_group, $child);
+	$id_agent_group = give_group_id ($id_agent);
+	return in_array ($child, $id_agent_group);
 }
 
 // ---------------------------------------------------------------
@@ -944,10 +1035,7 @@ function group_belong_group($id_group_a, $id_groupset){
 		    (group_belong_group($id_group_a, $value) == 1))
 			return 1;
   	}
-	if (array_in ($childgroup, $id_group_a) == 1)
-		return 1; 
-	else 
-		return 0;
+	return in_array ($childgroup, $id_group_a);
 }
 
 // ---------------------------------------------------------------
@@ -1161,6 +1249,18 @@ function give_db_value ($field, $table, $field_search, $condition) {
     return get_db_value ($field, $table, $field_search, $condition);
 }
 
+function get_db_row_sql ($sql) {
+	$result = mysql_query ($sql);
+	if (! $result) {
+		echo '<strong>Error:</strong> get_db_row("'.$sql.'") :'. mysql_error ().'<br />';
+		return NULL;
+	}
+	if ($row = mysql_fetch_array ($result))
+		return $row;
+	
+	return NULL;
+}
+
 
 function get_db_row ($table, $field_search, $condition) {
 	global $config;
@@ -1173,15 +1273,7 @@ function get_db_row ($table, $field_search, $condition) {
 		$sql = sprintf ('SELECT * FROM %s WHERE %s = "%s"', $table, $field_search, $condition);
 	}
 	
-	$result = mysql_query ($sql);
-	if (! $result) {
-		echo '<strong>Error:</strong> get_db_row("'.$sql.'") :'. mysql_error ().'<br />';
-		return NULL;
-	}
-	if ($row = mysql_fetch_array ($result))
-		return $row;
-	
-	return NULL;
+	return get_db_row_sql ($sql);
 }
 
 // --------------------------------------------------------------- 
@@ -1314,15 +1406,15 @@ function return_status_layout ($id_layout = 0){
 	$sql="SELECT * FROM tlayout_data WHERE id_layout = $id_layout";
 	$res=mysql_query($sql);
 	while ($row = mysql_fetch_array($res)){
-	        $id_agentmodule = $row["id_agente_modulo"];
-	        $type = $row["type"];
-        	$parent_item = $row["parent_item"];
-	        $link_layout = $row["id_layout_linked"];
+		$id_agentmodule = $row["id_agente_modulo"];
+		$type = $row["type"];
+		$parent_item = $row["parent_item"];
+		$link_layout = $row["id_layout_linked"];
 		if (($link_layout != 0) && ($id_agentmodule == 0)) {
-                	$temp_status += return_status_layout ($link_layout);
+			$temp_status += return_status_layout ($link_layout);
 			$temp_total++;
-	        } else {
-	                $temp_status += return_status_agent_module ($id_agentmodule);
+		} else {
+			$temp_status += return_status_agent_module ($id_agentmodule);
 			$temp_total++;
 		}
 	}
@@ -1376,48 +1468,91 @@ function return_coordinate_y_layoutdata ($id_layoutdata){
 		return (0);
 }
 
+/**
+ * Get the previous data to the timestamp provided.
+ *
+ * It's useful to know the first value of a module in an interval, 
+ * since it will be the last value in the 
+ *
+ * @param $id_agent_module Agent module id to look.
+ * @param $utimestamp The timestamp to look backwards from and get the data.
+ *
+ * @return The row of tagente_datos of the last period. NULL if there were no data.
+ */
+function get_previous_data ($id_agent_module, $utimestamp) {
+	$sql = sprintf ('SELECT * FROM tagente_datos 
+			WHERE id_agente_modulo = %d 
+			AND utimestamp <= %d 
+			ORDER by utimestamp DESC LIMIT 1',
+			$id_agent_module, $utimestamp);
+	return get_db_row_sql ($sql);
+}
+
 function return_moduledata_avg_value ($id_agent_module, $period, $date = 0) {
 	if (! $date)
 		$date = time ();
-	$datelimit = $date - $period; // limit date
-	$id_agent = get_db_value ("id_agente", "tagente_modulo", "id_agente_modulo", $id_agent_module);
-	$sql = sprintf ("SELECT AVG(datos) FROM tagente_datos 
-			WHERE id_agente = %d AND id_agente_modulo = %d 
-			AND utimestamp > %d AND utimestamp <= %d",
-			$id_agent, $id_agent_module, $datelimit, $date);
-	return (float) get_db_sql ($sql);
+	$datelimit = $date - $period;
+	
+	$sql = sprintf ("SELECT SUM(datos), COUNT(*) FROM tagente_datos 
+			WHERE id_agente_modulo = %d 
+			AND utimestamp > %d AND utimestamp <= %d 
+			ORDER BY utimestamp ASC",
+			$id_agent_module, $datelimit, $date);
+	$values = get_db_row_sql ($sql);
+	$sum = (float) $values[0];
+	$total = (int) $values[1];
+	
+	/* Get also the previous data before the selected interval. */
+	$previous_data = get_previous_data ($id_agent_module, $datelimit);
+	if ($previous_data)
+		return ($previous_data['datos'] + $sum) / ($total + 1);
+	return $sum / $total;
 }
 
 
 function return_moduledata_max_value ($id_agent_module, $period, $date = 0) {
 	if (! $date)
 		$date = time ();
-	$datelimit = $date - $period; // limit date
-	$id_agent = get_db_value ("id_agente", "tagente_modulo", "id_agente_modulo", $id_agent_module);
+	$datelimit = $date - $period;
+	
 	$sql = sprintf ("SELECT MAX(datos) FROM tagente_datos 
-			WHERE id_agente = %d AND id_agente_modulo = %d 
-			AND utimestamp > %d  AND utimestamp <= %d",
-			$id_agent, $id_agent_module, $datelimit, $date);
-	return (float) get_db_sql ($sql);
+			WHERE id_agente_modulo = %d 
+			AND utimestamp > %d  AND utimestamp <= %d 
+			ORDER BY utimestamp ASC",
+			$id_agent_module, $datelimit, $date);
+	$max = (float) get_db_sql ($sql);
+	
+	/* Get also the previous report before the selected interval. */
+	$previous_data = get_previous_data ($id_agent_module, $datelimit);
+	if ($previous_data)
+		return max ($previous_data['datos'], $max);
+	
+	return max ($previous_data, $max);
 }
 
 function return_moduledata_min_value ($id_agent_module, $period, $date = 0) {
 	if (! $date)
 		$date = time ();
-	$datelimit = $date - $period; // limit date
-	$id_agent = get_db_value ("id_agente", "tagente_modulo", "id_agente_modulo", $id_agent_module);
+	$datelimit = $date - $period;
+	
 	$sql = sprintf ("SELECT MIN(datos) FROM tagente_datos 
-			WHERE id_agente = %d AND id_agente_modulo = %d 
-			AND utimestamp > %d AND utimestamp <= %d",
-			$id_agent, $id_agent_module, $datelimit, $date);
-	return (float) get_db_sql ($sql);
+			WHERE id_agente_modulo = %d 
+			AND utimestamp > %d AND utimestamp <= %d 
+			ORDER BY utimestamp ASC",
+			$id_agent_module, $datelimit, $date);
+	$min = (float) get_db_sql ($sql);
+	
+	/* Get also the previous data before the selected interval. */
+	$previous_data = get_previous_data ($id_agent_module, $datelimit);
+	if ($previous_data)
+		return min ($previous_data['datos'], $min);
+	return $min;
 }
 
 function return_moduledata_sum_value ($id_agent_module, $period, $date = 0) {
 	if (! $date)
 		$date = time ();
 	$datelimit = $date - $period; // limit date
-	$agent_module = get_db_row ('tagente_modulo', 'id_agente_modulo', $id_agent_module);
 	$module_name = get_db_value ('nombre', 'ttipo_modulo', 'id_tipo', $agent_module['id_tipo_modulo']);
 	
 	if (is_module_data_string ($module_name)) {
@@ -1427,10 +1562,17 @@ function return_moduledata_sum_value ($id_agent_module, $period, $date = 0) {
 	
 	// Get the whole interval of data
 	$sql = sprintf ('SELECT * FROM tagente_datos 
-			WHERE id_agente = %d AND id_agente_modulo = %d 
+			WHERE id_agente_modulo = %d 
 			AND utimestamp > %d AND utimestamp <= %d',
-			$agent_module['id_agente'], $id_agent_module, $datelimit, $date);
+			$id_agent_module, $datelimit, $date);
 	$datas = get_db_all_rows_sqlfree ($sql);
+	
+	/* Get also the previous data before the selected interval. */
+	$previous_data = get_previous_data ($id_agent_module, $datelimit);
+	if ($previous_data) {
+		/* Add data to the beginning */
+		array_unshift ($datas, $previous_data);
+	}
 	$last_data = "";
 	$total_badtime = 0;
 	$interval_begin = 0;
@@ -1491,13 +1633,13 @@ function check_server_status () {
 	return $res;
 }
 
-function show_alert_row_mini ($id_combined_alert){
+function show_alert_row_mini ($id_combined_alert) {
 	global $config;
 	global $lang_label;
 
 	$color=1;
-	$sql_com = "SELECT talerta_agente_modulo.*, tcompound_alert.operation FROM talerta_agente_modulo, tcompound_alert WHERE tcompound_alert.id_aam = talerta_agente_modulo.id_aam AND tcompound_alert.id = ".$id_combined_alert;
-	$result_com = mysql_query ($sql_com);
+	$sql = "SELECT talerta_agente_modulo.*, tcompound_alert.operation FROM talerta_agente_modulo, tcompound_alert WHERE tcompound_alert.id_aam = talerta_agente_modulo.id_aam AND tcompound_alert.id = ".$id_combined_alert;
+	$result = mysql_query ($sql);
 	echo "<table width=400 cellpadding=2 cellspacing=2 class='databox'>";
 	echo "<th>".lang_string("Name");
 	echo "<th>".lang_string("Oper");
@@ -1509,9 +1651,9 @@ function show_alert_row_mini ($id_combined_alert){
 	echo "<th>".lang_string("MinMax.Al");
 	echo "<th>".lang_string("Days");
 	echo "<th>".lang_string("Fired");
-	while ($row2=mysql_fetch_array($result_com)){
+	while ($row2 = mysql_fetch_array ($result)) {
 
-		if ($color == 1){
+		if ($color == 1) {
 			$tdcolor = "datos";
 			$color = 0;
 		}
@@ -1599,118 +1741,116 @@ function show_alert_row_mini ($id_combined_alert){
 	}
 	echo "</table>";
 }
-function smal_event_table ($filter = "", $limit = 10, $width=440){
-    global $config;
-    global $lang_label;
 
-    $sql2 = "SELECT * FROM tevento $filter ORDER BY timestamp DESC LIMIT $limit";
-    echo "<table cellpadding='4' cellspacing='4' width='$width' border=0 class='databox'>";
-    echo "<tr>";
-    echo "<th colspan=6>".lang_string("Latest events");
-    echo "<tr>";
-    echo "<td class='datos3 f9'>".lang_string ("St")."</th>";
-    echo "<td class='datos3 f9'>".lang_string ("Type")."</th>";
-    echo "<td class='datos3 f9'>".$lang_label["event_name"]."</th>";
-    echo "<td class='datos3 f9'>".$lang_label["agent_name"]."</th>";
-    echo "<td class='datos3 f9'>".$lang_label["id_user"]."</th>";
-    echo "<td class='datos3 f9'>".$lang_label["timestamp"]."</th>";
-    $result2=mysql_query($sql2);
-    while ($row2=mysql_fetch_array($result2)){
-        $id_grupo = $row2["id_grupo"];
-        if (give_acl($config["id_user"], $id_grupo, "AR") == 1){ // Only incident read access to view data !
-            switch ($row2["criticity"]) {
-                case 0: 
-                    $tdclass = "datos_blue";
-                    break;
-                case 1: 
-                    $tdclass = "datos_grey";
-                    break;
-                case 2: 
-                    $tdclass = "datos_green";
-                    break;
-                case 3: 
-                    $tdclass = "datos_yellow";
-                    break;
-                case 4: 
-                    $tdclass = "datos_red";
-                    break;
-                default:
-                    $tdclass = "datos_grey";
-            }
-            $criticity_label = return_priority ($row2["criticity"]);
-            // Colored box 
-            echo "<tr><td class='$tdclass' title='$criticity_label' align='center'>";
-            if ($row2["estado"] == 0)
-                echo "<img src='images/pixel_red.png' width=20 height=20>";
-            else
-                echo "<img src='images/pixel_green.png' width=20 height=20>";
-    
-            // Event type
-            echo "<td class='".$tdclass."' title='".$row2["event_type"]."'>";
-            switch ($row2["event_type"]){
-                case "unknown": 
-                    echo "<img src='images/err.png'>";
-                    break;
-                case "alert_recovered": 
-                    echo "<img src='images/error.png'>";
-                    break;
-                case "alert_manual_validation": 
-                    echo "<img src='images/eye.png'>";
-                    break;
-                case "monitor_up":
-                    echo "<img src='images/lightbulb.png'>";
-                    break;
-                case "monitor_down":
-                    echo "<img src='images/lightbulb_off.png'>";
-                    break;
-                case "alert_fired":
-                    echo "<img src='images/bell.png'>";
-                    break;
-                case "system";
-                    echo "<img src='images/cog.png'>";
-                    break;
-                case "recon_host_detected";
-                    echo "<img src='images/network.png'>";
-                    break;
-				case "new_agent":
-					echo "<img src='images/wand.png'>";
-                    break;
-            }
-    
-            // Event description
-            echo "<td class='".$tdclass."f9' title='".$row2["evento"]."'>";
-            echo substr($row2["evento"],0,45);
-            if (strlen($row2["evento"]) > 45)
-                echo "..";
-            if ($row2["id_agente"] > 0){
-                    // Agent name
-                    $agent_name = dame_nombre_agente($row2["id_agente"]);
-                    echo "<td class='".$tdclass."f9' title='$agent_name'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row2["id_agente"]."'><b>";
-                    echo substr($agent_name, 0, 14);
-                    if (strlen($agent_name) > 14)
-                        echo "..";
-                    echo "</b></a>";
-    
-            // for System or SNMP generated alerts
-            } else { 
-                if ($row2["event_type"] == "system"){
-                    echo "<td class='$tdclass'>".lang_string("System");
-                } else {
-                    echo "<td class='$tdclass'>".$lang_label["alert"]."SNMP";
-                }
-            }
-    
-            // User who validated event
-            echo "<td class='$tdclass'>";
-            if ($row2["estado"] <> 0)
-                echo "<a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$row2["id_usuario"]."'>".substr($row2["id_usuario"],0,8)."<a href='#' class='tip'> <span>".dame_nombre_real($row2["id_usuario"])."</span></a></a>";
-    
-            // Timestamp
-            echo "<td class='".$tdclass."f9' title='".$row2["timestamp"]."'>";
-            echo human_time_comparation($row2["timestamp"]);
-    
-        }
-    }
-    echo "</table>";
+function smal_event_table ($filter = "", $limit = 10, $width = 440) {
+	global $config;
+	global $lang_label;
+
+	$sql2 = "SELECT * FROM tevento $filter ORDER BY timestamp DESC LIMIT $limit";
+	echo "<table cellpadding='4' cellspacing='4' width='$width' border=0 class='databox'>";
+	echo "<tr>";
+	echo "<th colspan=6>".lang_string("Latest events");
+	echo "<tr>";
+	echo "<th class='datos3 f9'>".lang_string ("St")."</th>";
+	echo "<th class='datos3 f9'>".lang_string ("Type")."</th>";
+	echo "<th class='datos3 f9'>".$lang_label["event_name"]."</th>";
+	echo "<th class='datos3 f9'>".$lang_label["agent_name"]."</th>";
+	echo "<th class='datos3 f9'>".$lang_label["id_user"]."</th>";
+	echo "<th class='datos3 f9'>".$lang_label["timestamp"]."</th>";
+	$result2=mysql_query($sql2);
+	while ($row2=mysql_fetch_array($result2)){
+		$id_grupo = $row2["id_grupo"];
+		if (give_acl($config["id_user"], $id_grupo, "AR") == 1){ // Only incident read access to view data !
+			switch ($row2["criticity"]) {
+			case 0: 
+				$tdclass = "datos_blue";
+				break;
+			case 1: 
+				$tdclass = "datos_grey";
+				break;
+			case 2: 
+				$tdclass = "datos_green";
+				break;
+			case 3: 
+				$tdclass = "datos_yellow";
+				break;
+			case 4: 
+				$tdclass = "datos_red";
+				break;
+			default:
+				$tdclass = "datos_grey";
+			}
+			$criticity_label = return_priority ($row2["criticity"]);
+			// Colored box 
+			echo "<tr><td class='$tdclass' title='$criticity_label' align='center'>";
+			if ($row2["estado"] == 0)
+				echo "<img src='images/pixel_red.png' width=20 height=20>";
+			else
+				echo "<img src='images/pixel_green.png' width=20 height=20>";
+		
+			// Event type
+			echo "<td class='".$tdclass."' title='".$row2["event_type"]."'>";
+			switch ($row2["event_type"]){
+			case "unknown": 
+				echo "<img src='images/err.png'>";
+				break;
+			case "alert_recovered": 
+				echo "<img src='images/error.png'>";
+				break;
+			case "alert_manual_validation": 
+				echo "<img src='images/eye.png'>";
+				break;
+			case "monitor_up":
+				echo "<img src='images/lightbulb.png'>";
+				break;
+			case "monitor_down":
+				echo "<img src='images/lightbulb_off.png'>";
+				break;
+			case "alert_fired":
+				echo "<img src='images/bell.png'>";
+				break;
+			case "system";
+			echo "<img src='images/cog.png'>";
+			break;
+			case "recon_host_detected";
+			echo "<img src='images/network.png'>";
+			break;
+			}
+		
+			// Event description
+			echo "<td class='".$tdclass."f9' title='".$row2["evento"]."'>";
+			echo substr($row2["evento"],0,45);
+			if (strlen($row2["evento"]) > 45)
+				echo "..";
+			if ($row2["id_agente"] > 0){
+				// Agent name
+				$agent_name = dame_nombre_agente($row2["id_agente"]);
+				echo "<td class='".$tdclass."f9' title='$agent_name'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row2["id_agente"]."'><b>";
+				echo substr($agent_name, 0, 14);
+				if (strlen($agent_name) > 14)
+					echo "..";
+				echo "</b></a>";
+			
+				// for System or SNMP generated alerts
+			} else { 
+				if ($row2["event_type"] == "system"){
+					echo "<td class='$tdclass'>".lang_string("System");
+				} else {
+					echo "<td class='$tdclass'>".$lang_label["alert"]."SNMP";
+				}
+			}
+		
+			// User who validated event
+			echo "<td class='$tdclass'>";
+			if ($row2["estado"] <> 0)
+				echo "<a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$row2["id_usuario"]."'>".substr($row2["id_usuario"],0,8)."<a href='#' class='tip'> <span>".dame_nombre_real($row2["id_usuario"])."</span></a></a>";
+		
+			// Timestamp
+			echo "<td class='".$tdclass."f9' title='".$row2["timestamp"]."'>";
+			echo human_time_comparation($row2["timestamp"]);
+		
+		}
+	}
+	echo "</table>";
 }
 ?>

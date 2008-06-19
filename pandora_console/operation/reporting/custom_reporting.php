@@ -29,48 +29,38 @@ if (comprueba_login() != 0) {
 
 //echo "SLA for Tato: %".return_module_SLA (50, 604800, 1, 1);
 
-echo "<h2>".$lang_label["reporting"]." &gt; ";
-echo $lang_label["custom_reporting"]."</h2>";
+echo "<h2>".lang_string ('reporting')." &gt; ";
+echo lang_string ('custom_reporting')."</h2>";
 
-$color=1;
-$sql="SELECT * FROM treport";
-$res=mysql_query($sql);
-if (mysql_num_rows($res)) {
-	echo "<table width='580' cellpadding=4 cellpadding=4 class='databox'>";
-	echo "<tr>
-	<th>".$lang_label["report_name"]."</th>
-	<th>".$lang_label["description"]."</th>
-	<th>HTML</th>
-    <th>PDF</th>
-	</tr>";
+$reports = get_reports ($config['id_user']);
 
-	while ($row = mysql_fetch_array($res)){
-		if (($row["private"]==0) || ($row["id_user"] == $id_user)){
-			// Calculate table line color
-			if ($color == 1){
-			$tdcolor = "datos";
-			$color = 0;
-		}
-		else {
-			$tdcolor = "datos2";
-			$color = 1;
-		}
-		echo "<tr>";
-		echo "<td valign='top' class='$tdcolor'>".$row["name"]."</td>";
-		echo "<td class='$tdcolor'>".$row["description"]."</td>";
-		$id_report = $row["id_report"];
-		echo "<td valign='middle' class='$tdcolor' align='center'>
-		<a href='index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id=$id_report'>
-		<img src='images/reporting.png'></a>
-		</td>";
-        
-        echo "<td valign='middle' class='$tdcolor' align='center'><a target='_new'  href='operation/reporting/reporting_viewer_pdf.php?id=$id_report&rtype=general'><img src='images/pdf.png'></a></td>'";
-        echo "</tr>";
-		}
-	}
-	echo "</table>";
-} else {
+if (sizeof ($reports) == 0) {
 	echo "<div class='nf'>".$lang_label["no_reporting_def"]."</div>";
+	return;
 }
 
+$table->width = '580px';
+$table->head = array ();
+$table->head[0] = lang_string ('report_name');
+$table->head[1] = lang_string ('description');
+$table->head[2] = lang_string ('HTML');
+$table->head[3] = lang_string ('PDF');
+$table->align = array ();
+$table->align[2] = 'center';
+$table->align[3] = 'center';
+$table->data = array ();
+
+foreach ($reports as $report) {
+	$data = array ();
+	
+	$data[0] = $report['name'];
+	$data[1] = $report['description'];
+	$data[2] = '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$report['id_report'].'">
+			<img src="images/reporting.png"></a>';
+	$data[3] = '<a href="operation/reporting/reporting_viewer_pdf.php?id='.$report['id_report'].'&rtype=general"
+			target="_new"><img src="images/pdf.png"></a>';
+	array_push ($table->data, $data);
+}
+
+print_table ($table);
 ?>

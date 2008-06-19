@@ -1,4 +1,4 @@
-<?PHP
+<?php
 
 // Pandora FMS - the Free monitoring system
 // ========================================
@@ -91,12 +91,12 @@ if (isset($_GET["update_module"])){
 		include ("general/noaccess.php");
 		exit;
 	}
-	$pos_x = give_parameter_post ("pos_x",0);
-	$pos_y = give_parameter_post ("pos_y",0);
-	$my_height = give_parameter_post ("height");
-	$my_width = give_parameter_post ("width");
-	$my_label = give_parameter_post ("label");
-	$my_image = give_parameter_post ("image");
+	$pos_x = get_parameter ("pos_x",0);
+	$pos_y = get_parameter ("pos_y",0);
+	$my_height = get_parameter ("height");
+	$my_width = get_parameter ("width");
+	$my_label = get_parameter ("label");
+	$my_image = get_parameter ("image");
 	
 	$sql = "UPDATE tlayout_data SET
 		 pos_x = '$pos_x',
@@ -125,21 +125,21 @@ if (isset($_GET["add_module"])){
 		include ("general/noaccess.php");
 		exit;
 	}
-	$my_id_map = give_parameter_post ("id_map",0);
-	$my_id_agent = give_parameter_post ("id_agent",0);
-	$my_id_module = give_parameter_post ("id_module",0);
-	$my_period = give_parameter_post ("period",3600);
-	$my_type = give_parameter_post ("type",0);
-	$my_pos_x = give_parameter_post ("pos_x",0);
-	$my_pos_y = give_parameter_post ("pos_y",0);
-	$my_height = give_parameter_post ("height");
-	$my_width = give_parameter_post ("width");
-	$my_label = give_parameter_post ("label");
-	$my_image = give_parameter_post ("image");
-	$my_map_linked = give_parameter_post ("map_linked");
-	$my_parent_item = give_parameter_post ("parent_item");
-	$my_label_color = give_parameter_post ("label_color","");
-	$my_link_color = give_parameter_post ("link_color",0);
+	$my_id_map = get_parameter ("id_map",0);
+	$my_id_agent = get_parameter ("id_agent",0);
+	$my_id_module = get_parameter ("id_module",0);
+	$my_period = get_parameter ("period",3600);
+	$my_type = get_parameter ("type",0);
+	$my_pos_x = get_parameter ("pos_x",0);
+	$my_pos_y = get_parameter ("pos_y",0);
+	$my_height = get_parameter ("height");
+	$my_width = get_parameter ("width");
+	$my_label = get_parameter ("label");
+	$my_image = get_parameter ("image");
+	$my_map_linked = get_parameter ("map_linked");
+	$my_parent_item = get_parameter ("parent_item");
+	$my_label_color = get_parameter ("label_color","");
+	$my_link_color = get_parameter ("link_color",0);
 	$sql = "INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_layout_linked, parent_item, label_color, no_link_color) VALUES ('$my_id_map', '$my_pos_x', '$my_pos_y', '$my_height', '$my_width', '$my_label', '$my_image', '$my_type', '$my_period', '$my_id_module', '$my_map_linked', '$my_parent_item', '$my_label_color', '$my_link_color')";
 	if ($res=mysql_query($sql))
 		$result = "<h3 class=suc>".$lang_label["create_ok"]."</h3>";

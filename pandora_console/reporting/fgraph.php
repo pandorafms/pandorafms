@@ -1363,7 +1363,6 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 			}
 	}
 
-
 	$max_items = 6;
 	// Take only the first x items
 	if (sizeof($data) >= $max_items) {

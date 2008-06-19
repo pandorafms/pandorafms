@@ -165,7 +165,7 @@ function give_human_time ($int_seconds) {
 			$build[] = $temp.' '.$key.($temp != 1 ? 's' : null);
 
 			// set flag to false, to allow 0's in lower periods
-			$flag_hide_zero = false;
+			$flag_hide_zero = true;
 		}
 
 		// get the remainder of seconds

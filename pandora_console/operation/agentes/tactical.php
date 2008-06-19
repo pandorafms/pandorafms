@@ -159,7 +159,7 @@
 	echo "<td class='datos' style='font: bold 2em Arial, Sans-serif; color: #000;'>".$total_checks;
 
     echo "<tr><td class='datos2'><b>"."Server sanity"."</b></td>";
-    echo "<td class='datos2' style='font: bold 2em Arial, Sans-serif; color: #000;'";
+    echo "<td class='datos2' style='font: bold 1em Arial, Sans-serif; color: #000;'>";
     echo format_numeric($notinit_percentage);
     echo "% ".lang_string("Uninitialized modules");
 

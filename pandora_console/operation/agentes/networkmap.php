@@ -30,7 +30,7 @@ function generate_dot( $simple = 0) {
 	$graph = open_graph();
 
 	// Get agent data	
-	$agents = mysql_query('SELECT * FROM tagente ORDER BY id_grupo');
+	$agents = mysql_query('SELECT * FROM tagente WHERE disabled = 0 ORDER BY id_grupo');
 	while ($agent = mysql_fetch_array($agents)) {
 		if (give_acl($config["id_user"], $agent["id_grupo"], "AR") == 0)
 			continue;
@@ -96,6 +96,7 @@ function create_node($agent, $simple = 0) {
 	                           WHERE m.id_agente=' . $agent['id_agente'] . 
 	                           ' AND m.id_tipo_modulo in (2, 6, 9, 18, 21, 100)
 	                           AND e.id_agente_modulo = m.id_agente_modulo
+				   AND m.disabled = 0 
 	                           AND e.estado = 1');
 
 	// Set node status
@@ -169,8 +170,8 @@ function close_group() {
 function open_graph() {
 	global $config, $layout, $nooverlap, $pure, $zoom, $ranksep;
 	$overlap = 'compress';
-	$size_x = 8.1;
-	$size_y = 6.5;
+	$size_x = 8;
+	$size_y = 5.4;
 	$size = '';
 
 	if ($layout == '' || $layout == 'radial') {

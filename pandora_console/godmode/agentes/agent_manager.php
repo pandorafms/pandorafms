@@ -108,8 +108,7 @@ if ($create_agent != 1) {
 echo '<tr><td class="datos"><b>'.lang_string ("Parent").'</b>';
 echo '<td class="datos">';
 print_select_from_sql ('SELECT id_agente, nombre FROM tagente',
-			'id_parent', $id_parent, '', 'None', '0');
-
+				'id_parent', $id_parent, '', 'None', '0');
 
 echo '<tr><td class="datos"><b>'.$lang_label["group"].'</b>';
 echo '<td class="datos"><select name="grupo" class="w130">';

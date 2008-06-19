@@ -2,10 +2,11 @@
 // Begin of automatic config file
 $config["dbname"]="pandora";			// MySQL DataBase name
 $config["dbuser"]="pandora";			// DB User
-$config["dbpass"]="pandora";	// DB Password
+$config["dbpass"]="dstxhvec";			// DB Password
 $config["dbhost"]="localhost";			// DB Host
-$config["homedir"]="/var/www/pandora_console/";		// Config homedir
-$config["homeurl"]="http://localhost/pandora_console";			// Base URL
+$config["homedir"]="/var/www/pandora/";		// Config homedir
+$config["homeurl"]="http://localhost/pandora";	// Base URL
+
 // End of automatic config file
 ?><?php
 // Pandora FMS - the Free Monitoring System
@@ -41,7 +42,6 @@ $config["homeurl"]="http://localhost/pandora_console";			// Base URL
 
 // Display ALL errors
 error_reporting(E_ALL);
-
 
 
 include ("config_process.php");

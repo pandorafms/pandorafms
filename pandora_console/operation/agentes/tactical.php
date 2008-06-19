@@ -63,7 +63,10 @@
         $global_health = format_numeric ((($data_health * $data_checks) + ($monitor_health * $monitor_checks)) / $total_checks);
     } else
         $global_health = 100;
-    
+   
+	if ($global_health < 0)
+		$global_health;
+ 
 	// Monitor checks
 	// ~~~~~~~~~~~~~~~
 	echo "<table width=770 border=0>";

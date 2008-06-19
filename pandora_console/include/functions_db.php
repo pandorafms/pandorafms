@@ -1110,7 +1110,7 @@ function give_agent_address_from_list ($id_agent){
  * @return The agent if of the given module.
  */
 function give_agent_id_from_module_id ($id_agent_module) {
-	return (int) get_db_value ('id_agente', 'tagent_modulo', 'id_agente_modulo', $id_agent_module);
+	return (int) get_db_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
 }
 
 /** 

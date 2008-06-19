@@ -93,7 +93,7 @@ if (give_acl($id_user, 0, "AW")!=1) {
 
 // Update configuration
 if (isset($_POST["disk_conf"])) {
-	save_config(str_replace("\r\n", "\n", stripslashes($_POST["disk_conf"])));
+	save_config(str_replace("\r\n", "\n", $_POST["disk_conf"]));
 	echo "<h3 class='suc'>" . $lang_label["update_agent_ok"] . "</h3>";
 }
 

@@ -100,6 +100,9 @@
     } else
         $global_health = 100;
 
+        if ($global_health < 0)
+                $global_health;
+
     echo "<table class='databox' celldpadding=4 cellspacing=4 width=250>";
     //echo "<h2>".$lang_label["tactical_indicator"]."</h2>";
     //echo "<img src='reporting/fgraph.php?tipo=odo_tactic&value1=$global_health&value2=$data_health&value3=$monitor_health'>";

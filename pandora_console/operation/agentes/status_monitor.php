@@ -40,21 +40,24 @@ $ag_freestring = get_parameter ("ag_freestring", "");
 $ag_modulename = get_parameter ("ag_modulename", "");
 $ag_group = get_parameter ("ag_group", -1);
 $offset = get_parameter ("offset", 0);
+$status = get_parameter ("status", 0);
 
 $URL = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60";
 echo "<form method='post' action='";
 if ($ag_group != -1)
-	$URL .= "&ag_group_refresh=".$ag_group;
+	$URL .= "&ag_group=".$ag_group;
 
 // Module name selector
 // This code thanks for an idea from Nikum, nikun_h@hotmail.com
 if ($ag_modulename != "")
     $URL .= "&ag_modulename=".$ag_modulename;
 
-
 // Freestring selector
 if ($ag_freestring != "")
     $URL .= "&ag_freestring=".$ag_freestring ;
+
+// Status selector
+$URL .= "&status=$status";
 
 echo $URL;
 
@@ -73,6 +76,26 @@ echo "<option value=1>".dame_nombre_grupo(1)."</option>";
 list_group ($id_user);
 echo "</select>";
 echo "</td>";
+
+echo "<td>";
+echo lang_string ("Monitor status");
+echo "<td>";
+echo "<select name='status'>";
+if ($status == -1){
+    echo "<option value=-1>".lang_string("All");
+    echo "<option value=0>".lang_string("Monitors down");
+    echo "<option value=1>".lang_string("Monitors up");
+} elseif ($status == 0){
+    echo "<option value=0>".lang_string("Monitors down");
+    echo "<option value=-1>".lang_string("All");
+    echo "<option value=1>".lang_string("Monitors up");
+} else {
+    echo "<option value=1>".lang_string("Monitors up");
+    echo "<option value=0>".lang_string("Monitors down");
+    echo "<option value=-1>".lang_string("All");
+}
+echo "</select>";
+
 echo "</tr>";
 echo "<tr>";
 echo "<td valign='middle'>".$lang_label["module_name"]."</td>";
@@ -84,7 +107,7 @@ if ( isset($ag_modulename)){
 echo "<option>".$lang_label["all"]."</option>";
 $sql='SELECT DISTINCT nombre 
 FROM tagente_modulo 
-WHERE id_tipo_modulo in (2, 9, 12, 18, 6, 100)';
+WHERE id_tipo_modulo in (2, 6, 9, 18, 21, 100)';
 $result=mysql_query($sql);
 while ($row=mysql_fetch_array($result)){
 	echo "<option>".$row['0']."</option>";
@@ -92,8 +115,8 @@ while ($row=mysql_fetch_array($result)){
 echo "</select>";
 echo "<td valign='middle'>";
 echo lang_string ("Free text");
-
-echo "&nbsp;<input type=text name='ag_freestring' size=15 value='$ag_freestring'>";
+echo "<td valign='middle'>";
+echo "<input type=text name='ag_freestring' size=15 value='$ag_freestring'>";
 echo "<td valign='middle'>";
 echo "<input name='uptbutton' type='submit' class='sub' value='".$lang_label["show"]."'";
 echo "</form>";
@@ -105,7 +128,7 @@ $SQL_pre = "SELECT tagente_modulo.id_agente_modulo, tagente.nombre, tagente_modu
 
 $SQL_pre_count = "SELECT count(tagente_modulo.id_agente_modulo) ";
 
-$SQL = " FROM tagente, tagente_modulo WHERE tagente.id_agente = tagente_modulo.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_tipo_modulo in (2, 9, 12, 18, 6, 100) ";
+$SQL = " FROM tagente, tagente_modulo, tagente_estado WHERE tagente.id_agente = tagente_modulo.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_tipo_modulo in (2, 9, 12, 18, 6, 100) AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo ";
 
 // Agent group selector
 if ($ag_group > 1)
@@ -124,7 +147,15 @@ if ($ag_modulename != "")
 
 // Freestring selector
 if ($ag_freestring != "")
-    $SQL .= " AND ( tagente_modulo.nombre LIKE '%".$ag_freestring."%' OR tagente_modulo.descripcion LIKE '%".$ag_freestring."%') ";
+    $SQL .= " AND ( tagente.nombre LIKE '%".$ag_freestring."%' OR tagente_modulo.nombre LIKE '%".$ag_freestring."%' OR tagente_modulo.descripcion LIKE '%".$ag_freestring."%') ";
+
+// Status selector
+if ($status == 1)
+    $SQL .= " AND tagente_estado.estado = 0 ";
+elseif ($status == 0)
+    $SQL .= " AND tagente_estado.estado = 1 ";
+
+// Final order
 $SQL .= " ORDER BY tagente.id_grupo, tagente.nombre";
 
 // Build final SQL sentences
@@ -189,9 +220,9 @@ if ($counter > 0){
 	    $data2=mysql_fetch_array($result_gen2);
 	    echo "<td class='$tdcolor' align='center' width=20>";
 	    if ($data2["datos"] > 0){
-		    echo "<img src='images/pixel_green.png' width=40 height=18 title='".$lang_label["green_light"]."'>";
+		    echo "<img src='images/pixel_green.png' width=40 height=18 title='".lang_string("Monitor up")."'>";
 	    } else {
-		    echo "<img src='images/pixel_red.png' width=40 height=18 title='".$lang_label["red_light"]."'>";
+		    echo "<img src='images/pixel_red.png' width=40 height=18 title='".lang_string ("Monitor down")."'>";
 	    }
 	    
 	    echo  "<td class='".$tdcolor."f9'>";
@@ -212,9 +243,9 @@ if ($counter > 0){
 echo "<table width=700 border=0>";
 echo "<tr>";
 echo "<td class='f9'>";
-echo "<img src='images/pixel_green.png' width=40 height=18>&nbsp;&nbsp;".$lang_label["green_light"]."</td>";
+echo "<img src='images/pixel_green.png' width=40 height=18>&nbsp;&nbsp;".lang_string("Monitor up")."</td>";
 echo "<td class='f9'";
-echo "<img src='images/pixel_red.png' width=40 height=18>&nbsp;&nbsp;".$lang_label["red_light"]."</td>";
+echo "<img src='images/pixel_red.png' width=40 height=18>&nbsp;&nbsp;".lang_string("Monitor down")."</td>";
 echo "</table>";
 
 ?>

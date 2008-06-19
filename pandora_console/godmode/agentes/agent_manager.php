@@ -47,6 +47,15 @@ if (isset($_GET["disk_conf"])){
 	exit;
 }
 
+// Agent remote configuration DELETE
+if (isset($_GET["disk_conf_delete"])){
+	$agent_md5 = md5($nombre_agente, FALSE);
+	$file_name = $config["remote_config"] . "/" . $agent_md5 . ".conf";
+	unlink ($file_name);
+	$file_name = $config["remote_config"] . "/" . $agent_md5 . ".md5";
+	unlink ($file_name);
+}
+
 echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&
 sec2=godmode/agentes/configurar_agente">';
 if ($create_agent == 1) {
@@ -234,6 +243,8 @@ echo '<td class="datos">';
 $filename = $config["remote_config"] . "/" . $agent_md5 . ".md5";
 if (file_exists($filename)){
     echo date("F d Y H:i:s.", fileatime($filename));
+	// Delete remote configuration
+	echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&disk_conf_delete=1&id_agente=$id_agente'><img src='images/cross.png'></A>";
 } else {
     echo '<i>'.lang_string("Not available").'</i>';
 }

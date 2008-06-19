@@ -72,7 +72,17 @@ UNLOCK TABLES;
 
 /*!40000 ALTER TABLE `tconfig_os` DISABLE KEYS */;
 LOCK TABLES `tconfig_os` WRITE;
-INSERT INTO `tconfig_os` VALUES (1,'Linux','Linux: All versions','so_linux.png'),(2,'Solaris','Sun Solaris','so_solaris.png'),(3,'AIX','IBM AIX','so_aix.png'),(4,'BSD','OpenBSD, FreeBSD and Others','so_bsd.png'),(5,'HP-UX','HP-UX Unix OS','so_hpux.png'),(7,'Cisco','CISCO IOS','so_cisco.png'),(8,'MacOS','MAC OS','so_mac.png'),(9,'Windows','Microsoft Windows OS','so_win.png'),(10,'Other','Other SO','so_other.png'),(11,'Network','Pandora Network Agent','network.png');
+INSERT INTO `tconfig_os` VALUES 
+(1,'Linux','Linux: All versions','so_linux.png'),
+(2,'Solaris','Sun Solaris','so_solaris.png'),
+(3,'AIX','IBM AIX','so_aix.png'),
+(4,'BSD','OpenBSD, FreeBSD and Others','so_bsd.png'),
+(5,'HP-UX','HP-UX Unix OS','so_hpux.png'),
+(7,'Cisco','CISCO IOS','so_cisco.png'),
+(8,'MacOS','MAC OS','so_mac.png'),
+(9,'Windows','Microsoft Windows OS','so_win.png'),
+(10,'Other','Other SO','so_other.png'),
+(11,'Network','Pandora Network Agent','network.png');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `tconfig_os` ENABLE KEYS */;
 
@@ -134,7 +144,12 @@ UNLOCK TABLES;
 
 /*!40000 ALTER TABLE `tmodule_group` DISABLE KEYS */;
 LOCK TABLES `tmodule_group` WRITE;
-INSERT INTO `tmodule_group` VALUES (1,'General'),(2,'Networking'),(3,'Application'),(4,'System'),(5,'Miscellaneous');
+INSERT INTO `tmodule_group` VALUES 
+(1,'General'),
+(2,'Networking'),
+(3,'Application'),
+(4,'System'),
+(5,'Miscellaneous');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `tmodule_group` ENABLE KEYS */;
 

@@ -328,6 +328,8 @@ if (comprueba_login() == 0) {
 					$ultima = strtotime($ultimo_contacto);
 					$ahora = strtotime("now");
 					$diferencia = $ahora - $ultima;
+                    echo human_time_comparation($ultimo_contacto);
+/*
 					if ($biginterval > 0){
 						$percentil = round($diferencia/(($biginterval*2) / 100));	
 					} else {
@@ -336,7 +338,7 @@ if (comprueba_login() == 0) {
 					echo "<a href='#' class='info2'>
 					<img src='reporting/fgraph.php?tipo=progress&amp;percent=".
 					$percentil."&amp;height=18&amp;width=80' border='0'>
-					&nbsp;<span>$ultimo_contacto</span></a>";
+					&nbsp;<span>$ultimo_contacto</span></a>";*/
 				}
 				
 			} // If pertenece/belongs to group

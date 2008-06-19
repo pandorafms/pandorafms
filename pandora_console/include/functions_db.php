@@ -1672,6 +1672,9 @@ function smal_event_table ($filter = "", $limit = 10, $width=440){
                 case "recon_host_detected";
                     echo "<img src='images/network.png'>";
                     break;
+				case "new_agent":
+					echo "<img src='images/wand.png'>";
+                    break;
             }
     
             // Event description

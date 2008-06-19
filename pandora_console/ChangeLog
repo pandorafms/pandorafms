@@ -1,3 +1,39 @@
+
+2008-06-18  Sancho Lerena  <slerena@gmail.com>
+ 
+    * pandoradbdata_13_to_20.sql: prototype. not functional.
+
+    * operation/events/export_csv.php: Event export to CSV. Support
+    passed filters.
+
+    * images/networkmap/*.png: Updated icons for network map.
+
+    * godmode/menu.php,
+    * godmode/db/db_sanity.php: New sanity tool for database in interactive
+    mode using console (ported from pandora_db.pl).
+
+    * reporting/fgraph.php: Added graphs for string data types. Fixed
+    event by agent/module graph for system events.
+
+    * general/logon_ok.php, tactica.php: Fixed a div0.
+
+    * godmode/agentes/manage_config.php: Several fixes, and added a new
+    option to mass-deletion of agents.
+
+    * godmode/agentes/agent_manager.php,
+    godmode/agentes/modificar_agente.php: Delete of remote configuration
+	when delete an agent and manually, by user. 
+
+    * operation/servers/view_server_detail.php: Added refresh option and 
+    fixed layout.
+
+    * status_monitor.php: Added new filter by state, most code rewritten.
+    Added pagination fixes, and corrected labels and legends.
+
+    * operation/agentes/networkmap.php: Several fixes and modification to 
+    render small maps and huge (>200 agents) maps. This should be fine by
+    now. Need "Group/Section" drawing /by click into section line/.
+
 2008-06-18  Esteban Sanchez  <estebans@artica.es>
 
 	* include/styles/datepicker.css, include/styles/timeentry.css: Added

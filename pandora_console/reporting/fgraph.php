@@ -856,6 +856,109 @@ function graphic_agentaccess ($id_agent, $periodo, $width, $height) {
 	$Graph->done();
 }
 
+function graphic_string_data ($id_agent_module, $periodo, $width, $height, $pure = 0, $date = "") {
+	include ("../include/config.php");
+	require_once 'Image/Graph.php';
+	require ("../include/languages/language_".$config['language'].".php");
+	// $color = $config["color_graph1"]; //#437722"; // Green pandora 1.1 octopus color
+	$color = "#437722";
+
+
+	if ($date == "")
+		$date = time ();
+	$resolution = $config["graph_res"] * 5; // Number of "slices" we want in graph
+	$fechatope = $date - $periodo;
+	$horasint = $periodo / $resolution; // Each intervalo is $horasint seconds length
+
+
+	// Creamos la tabla (array) con los valores para el grafico. Inicializacion
+	for ($i = 0; $i <$resolution; $i++) {
+		$valores[$i][0] = 0; // [0] Valor (contador)
+		$valores[$i][1] = dame_fecha_grafico_timestamp ($fechatope + ($horasint * $i));
+		$valores[$i][2] = $fechatope + ($horasint * $i); // [2] Top limit for this range
+		$valores[$i][3] = $fechatope + ($horasint * ($i + 1)); // [3] Botom limit
+	}
+	$sql1="SELECT utimestamp FROM tagente_datos_string WHERE id_agente_modulo = ".$id_agent_module." and utimestamp > '".$fechatope."'";
+
+	$result=mysql_query($sql1);
+	while ($row=mysql_fetch_array($result)){
+		for ($i = 0; $i < $resolution; $i++){
+			if (($row[0] < $valores[$i][3]) and ($row[0] >= $valores[$i][2]) ){ 
+				// entra en esta fila
+				$valores[$i][0]++;
+			}
+		} 
+		
+	}
+	$valor_maximo = 0;
+	for ($i = 0; $i < $resolution; $i++) { // 30 entries in graph, one by day
+//echo $valores[$i][2]. " - ". $valores[$i][3] ." | ". $valores[$i][1]." - ".$valores[$i][0];
+//echo "<br>";
+		$grafica[]=$valores[$i][0];
+		if ($valores[$i][0] > $valor_maximo)
+			$valor_maximo = $valores[$i][0];
+	}
+
+    if ($valor_maximo <= 0) {
+		graphic_error ();
+		return;
+	}
+
+    $nombre_agente = dame_nombre_agente_agentemodulo ($id_agent_module);
+	$id_agente = dame_agente_id ($nombre_agente);
+	$nombre_modulo = dame_nombre_modulo_agentemodulo ($id_agent_module);
+
+if ($pure == 0){
+    $Graph =& Image_Graph::factory('graph', array($width, $height));
+    // add a TrueType font
+	$Font =& $Graph->addNew('font', $config['fontpath']);
+	$Font->setSize(7);
+	$Graph->setFont($Font);
+
+	$Graph->add(
+	Image_Graph::vertical(
+		Image_Graph::vertical(
+					$Title = Image_Graph::factory('title', array('   Pandora FMS Graph - '.strtoupper($nombre_agente)." - ".give_human_time ($periodo), 10)),
+					$Subtitle = Image_Graph::factory('title', array('     '.lang_string("Data occurrence for module ").$nombre_modulo, 7)),
+					90
+			),
+		Image_Graph::horizontal(
+			$Plotarea = Image_Graph::factory('plotarea'),
+			$Legend = Image_Graph::factory('legend'),
+			100
+			),
+		15)
+	);
+	$Legend->setPlotarea($Plotarea);
+	$Title->setAlignment(IMAGE_GRAPH_ALIGN_LEFT);
+	$Subtitle->setAlignment(IMAGE_GRAPH_ALIGN_LEFT);
+
+
+} else { // Pure, without title and legends
+	$Graph->add($Plotarea = Image_Graph::factory('plotarea'));
+}
+
+	//$Legend->setPlotarea($Plotarea);
+	// Create the dataset
+	// Merge data into a dataset object (sancho)
+	$Dataset1 =& Image_Graph::factory('dataset');
+	for ($i = 0; $i < $resolution; $i++) {
+		$Dataset1->addPoint($valores[$i][1], $valores[$i][0]);
+	}
+	$Plot =& $Plotarea->addNew('bar', $Dataset1);
+	$GridY2 =& $Plotarea->addNew('bar_grid', IMAGE_GRAPH_AXIS_Y_SECONDARY);
+	$GridY2->setLineColor('gray');
+	$GridY2->setFillColor('lightgray@0.05');
+	$Plot->setLineColor('gray');
+	$Plot->setFillColor($color."@0.70");
+	$AxisX =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_X);
+	$AxisY =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);
+	$AxisY->setLabelInterval($valor_maximo / 2);
+	$AxisX->setLabelInterval($resolution / 5);
+	$Graph->done(); 
+}
+
+
 function grafico_incidente_estados() {
 	include ("../include/config.php");
 	require ("../include/languages/language_".$config['language'].".php");
@@ -1236,6 +1339,16 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 			$legend[] = substr($row["nombre"],0,15)." ( $row2[0] )";
 		}
 	}
+
+	$sql1="SELECT COUNT(*) FROM tevento WHERE id_agentmodule = 0 AND id_agente = $id_agent";
+	if ($result2=mysql_query($sql1))
+		$row2=mysql_fetch_array($result2);
+	if ($row2[0] > 0) {
+		$data[] = $row2[0];
+		$legend[] = lang_string("System")." ( $row2[0] )";
+	}
+
+
 	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
 	// or much better, pay me to do a special version for you, highly optimized :-))))
 	for ($i = 0; $i < sizeof ($data); $i++) {
@@ -1249,6 +1362,8 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 				$legend[$j] = $temp_label;
 			}
 	}
+
+
 	$max_items = 6;
 	// Take only the first x items
 	if (sizeof($data) >= $max_items) {
@@ -1991,6 +2106,8 @@ $mode = get_parameter ("mode", 1);
 
 if ($graphic_type) {
 	switch ($graphic_type) {
+	case 'string':
+		graphic_string_data ($id, $period, $width, $height, $date);
 	case 'sparse': 
 		grafico_modulo_sparse ($id, $period, $draw_events, $width, $height , $label, $unit_name, $draw_alerts, $avg_only, $pure, $date);
 		break;

@@ -88,6 +88,16 @@ if (isset($_GET["borrar_agente"])){ // if delete agent
 		$sql = "DELETE FROM taddress_agent  where id_agent = $id_agente";
 		$result=mysql_query($sql);
 		audit_db($id_user,$REMOTE_ADDR, "Agent '$agent_name' deleted", "Agent Management");
+
+		// Delete remote configuration
+		$agent_md5 = md5($agent_name, FALSE);
+		if (file_exists($config["remote_config"] . "/" . $agent_md5 . ".md5")){
+		// Agent remote configuration editor
+			$file_name = $config["remote_config"] . "/" . $agent_md5 . ".conf";
+			unlink ($file_name);
+			$file_name = $config["remote_config"] . "/" . $agent_md5 . ".md5";
+			unlink ($file_name);
+		}
 	} else { // NO permissions.
 		audit_db($id_user,$REMOTE_ADDR, "ACL Violation",
 		"Trying to delete agent '$agent_name'");
@@ -183,6 +193,7 @@ echo "<div style='height: 20px'> </div>";
 if (mysql_num_rows($result)){
 	echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>";
 	echo "<th>".$lang_label["agent_name"]."</th>";
+	echo "<th title='".lang_string("Remote agent configuration")."'>".lang_string ("R")."</th>";
 	echo "<th>".$lang_label["os"]."</th>";
 	echo "<th>".$lang_label["group"]."</th>";
 	echo "<th>".$lang_label["description"]."</th>";
@@ -204,6 +215,16 @@ if (mysql_num_rows($result)){
 			<b><a href='index.php?sec=gagente&
 			sec2=godmode/agentes/configurar_agente&tab=main&
 			id_agente=".$row["id_agente"]."'>".substr(strtoupper($row["nombre"]),0,20)."</a></b></td>";
+
+			echo "<td align='center' class='$tdcolor'>";
+			// Has remote configuration ?
+			$agent_md5 = md5($row["nombre"], FALSE);
+			if (file_exists($config["remote_config"] . "/" . $agent_md5 . ".md5")){
+				echo "<img src='images/application_edit.png' border='0' align='middle' alt=''>";
+			}
+			echo "</td>";
+
+
 			// Operating System icon
 			echo "<td class='$tdcolor' align='center'>
 			<img src='images/".dame_so_icon($row["id_os"])."'></td>";

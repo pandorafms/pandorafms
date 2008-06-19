@@ -430,7 +430,7 @@ Pandora_Wmi::getEventList (string source, string type, string pattern, int inter
 			
             // LIKE is not always available, we have to filter ourselves
             if (pattern.empty() || (message.find(pattern) != string::npos)) {
-                event = convertWMIDate(timestamp) + " " + message;
+                event = timestamp + " " + message;
                 event_list.push_back(event);
             }
 
@@ -449,9 +449,9 @@ Pandora_Wmi::getEventList (string source, string type, string pattern, int inter
  */
 string
 Pandora_Wmi::getTimestampLimit (int interval) {
-    char limit_str[26];    
-    time_t limit_time;
-    struct tm *limit_tm = NULL;
+    char limit_str[26], diff_sign;
+    time_t limit_time, limit_time_utc, limit_diff;
+    struct tm *limit_tm = NULL, *limit_tm_utc = NULL;
 
     // Get current time
     limit_time = time(0);
@@ -459,39 +459,49 @@ Pandora_Wmi::getTimestampLimit (int interval) {
         return "";
     }
     
-    // Substract the agent interval
-    limit_time -= interval;
+    // Get UTC time
+    limit_tm_utc = gmtime (&limit_time);
+    limit_time_utc = mktime (limit_tm_utc);
     
-    limit_tm = localtime (&limit_time);
+    // Calculate the difference in minutes
+    limit_diff = limit_time - limit_time_utc;
+    if (limit_diff >= 0) {
+        diff_sign = '+';
+    }
+    else {
+        diff_sign = '-';
+    }
+    limit_diff = abs(limit_diff);
+    limit_diff /= 60;
+
+    // Substract the agent interval
+    limit_time_utc -= interval;
+    
+    limit_tm = localtime (&limit_time_utc);
     if (limit_tm == NULL) {
         return "";
     }
-    
+
     // WMI date format: yyyymmddHHMMSS.xxxxxx+UUU
-    snprintf (limit_str, 26, "%.4d%.2d%.2d%.2d%.2d%.2d.000000+000",
+    snprintf (limit_str, 26, "%.4d%.2d%.2d%.2d%.2d%.2d.000000%c%.3d",
               limit_tm->tm_year + 1900, limit_tm->tm_mon + 1,
               limit_tm->tm_mday, limit_tm->tm_hour,
-              limit_tm->tm_min, limit_tm->tm_sec);
+              limit_tm->tm_min, limit_tm->tm_sec, diff_sign, limit_diff);
+    limit_str[25] = '\0';
 
     return string (limit_str);
 }
 
 /*
- * Converts a date in WMI format to 'dd-mm-YYYY HH:MM:SS'
- * 
- * @return The date in the new format.
+ * Converts a date in WMI format to SYSTEMTIME format.
  */
-string
-Pandora_Wmi::convertWMIDate (string wmi_date) {
-    string year, month, day, hour, minute, second;
-    
-    year = wmi_date.substr (0, 4);
-    month = wmi_date.substr (4, 2);
-    day = wmi_date.substr (6, 2);
-    hour = wmi_date.substr (8, 2);
-    minute = wmi_date.substr (10, 2);
-    second = wmi_date.substr (12, 2);
-    
-    return string (year + "-" + month + "-" + day + " " +
-                   hour + ":" + minute + ":" + second);
+void
+Pandora_Wmi::convertWMIDate (string wmi_date, SYSTEMTIME *system_time) {
+
+    system_time->wYear = atoi(wmi_date.substr (0, 4).c_str());
+    system_time->wMonth = atoi(wmi_date.substr (4, 2).c_str());
+    system_time->wDay = atoi(wmi_date.substr (6, 2).c_str());
+    system_time->wHour = atoi(wmi_date.substr (8, 2).c_str());
+    system_time->wMinute = atoi(wmi_date.substr (10, 2).c_str());
+    system_time->wSecond = atoi(wmi_date.substr (12, 2).c_str());
 }

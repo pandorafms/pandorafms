@@ -48,6 +48,7 @@ Pandora_Module_Logevent::run () {
     list<string> event_list;
     list<string>::iterator event;
 	Pandora_Agent_Conf::Pandora_Agent_Conf *conf;
+    SYSTEMTIME system_time;
 
 	conf = Pandora_Agent_Conf::getInstance ();
     
@@ -67,7 +68,7 @@ Pandora_Module_Logevent::run () {
         return;
     }
         
-    Pandora_Wmi::getEventList (this->source, this->type, this->pattern, this->getInterval (), event_list);
+    Pandora_Wmi::getEventList (this->source, this->type, this->pattern, interval, event_list);
 
 	// No data
     if (event_list.size () < 1) {
@@ -76,6 +77,16 @@ Pandora_Module_Logevent::run () {
     }
 
     for(event = event_list.begin (); event != event_list.end(); ++event) {
-        this->setOutput (*event);        
+        // No WMI timestamp?
+        if (event->size () < 26) {
+            this->setOutput (*event);
+            continue;
+        }
+        
+        // Get the timestamp
+        Pandora_Wmi::convertWMIDate(event->substr (0, 26), &system_time);
+        
+        // Store the data
+        this->setOutput (event->substr (26), &system_time);
     }
 }

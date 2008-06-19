@@ -243,6 +243,24 @@ Pandora_Module::setOutput (string output) {
 	this->data_list->push_back (data);
 }
 
+/** 
+ * Set the output of the module.
+ *
+ * If the function is called more than once before calling getXML, the
+ * output will be accumulated and added to a <datalist> tag.
+ *
+ * @param output Output to add.
+ * @param system_time Timestamp. 
+ */
+void
+Pandora_Module::setOutput (string output, SYSTEMTIME *system_time) {
+	Pandora_Data *data;
+
+	if (this->data_list == NULL)
+		this->data_list = new list<Pandora_Data *> ();
+	data = new Pandora_Data (output, system_time);
+	this->data_list->push_back (data);
+}
 
 /** 
  * Run the module and generates the output.

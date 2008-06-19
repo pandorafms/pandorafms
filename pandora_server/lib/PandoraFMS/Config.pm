@@ -175,6 +175,7 @@ sub pandora_loadconfig {
     $pa_config->{"tcp_timeout"} = 20; # Introduced on 1.3.1
     $pa_config->{"snmp_proc_deadresponse"} = 0; # Introduced on 1.3.1 10 Feb08
     $pa_config->{"plugin_threads"} = 3; # Introduced on 2.0
+    $pa_config->{"recon_threads"} = 3; # Introduced on 2.0
     $pa_config->{"prediction_threads"} = 3; # Introduced on 2.0
     $pa_config->{"plugin_timeout"} = 5; # Introduced on 2.0
     $pa_config->{"wmi_threads"} = 3; # Introduced on 2.0
@@ -194,6 +195,7 @@ sub pandora_loadconfig {
 	$pa_config->{"xprobe2"} = "/usr/bin/xprobe2";
 	$pa_config->{'autocreate_group'} = 2;
 	$pa_config->{'autocreate'} = 1;
+    $pa_config{'recon_threads'} = 3;
 
 	# Check for UID0
     if ($pa_config->{"quiet"} != 0){
@@ -396,6 +398,9 @@ sub pandora_loadconfig {
         }
 		elsif ($parametro =~ m/^autocreate_group\s([0-9*]*)/i) {
             $pa_config->{'autocreate_group'}= clean_blank($1); 
+        }
+        elsif ($parametro =~ m/^recon_threads\s([0-9]*)/i) {
+            $pa_config->{'recon_threads'}= clean_blank($1); 
         }
 
     } # end of loop for parameter #

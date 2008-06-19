@@ -1,3 +1,15 @@
+2008-06-18  Sancho Lerena  <slerena@gmail.com>
+
+    * pandora_dbstress.pl: Added suppor for "text" moduletypes.
+    
+    * pandora_recon: Now is multithreaded. Better management of already
+    registered IP's. Better status update. Some fixes (xprobe2 crash).
+
+    * Config.pm: Added support for recon_threads token.
+
+    * Tools.pm: added pandora_trash_ascii(), autocreate
+    set agent in learning mode automatically.
+
 2008-06-17  Sancho Lerena <slerena@artica.es>
 
 	* config.pm: Added options for xprobe2, and autocreate.

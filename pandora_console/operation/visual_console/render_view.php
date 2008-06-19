@@ -99,8 +99,8 @@ while ($row = mysql_fetch_array($res)){
 	if (($link_layout != 0) && ($id_agentmodule == 0)) { 
 		$status = return_status_layout ($link_layout);
 	} else {
-	 	$id_agent = give_db_value ("id_agente", "tagente_estado", "id_agente_modulo", $id_agentmodule);
-		$id_agent_module_parent = give_db_value ("id_agente_modulo", "tlayout_data", "id", $parent_item);
+	 	$id_agent = get_db_value ("id_agente", "tagente_estado", "id_agente_modulo", $id_agentmodule);
+		$id_agent_module_parent = get_db_value ("id_agente_modulo", "tlayout_data", "id", $parent_item);
 		// Item value
 		$status = return_status_agent_module ($id_agentmodule);
 		if ($no_link_color == 1)

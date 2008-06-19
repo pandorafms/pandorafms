@@ -58,8 +58,8 @@ if ($id_report == ""){
 	exit;
 }
 
-$report_private= give_db_value ("private", "treport", "id_report", $id_report);
-$report_user = give_db_value ("id_user", "treport", "id_report", $id_report);
+$report_private= get_db_value ("private", "treport", "id_report", $id_report);
+$report_user = get_db_value ("id_user", "treport", "id_report", $id_report);
 
 if (($report_user == $id_user) OR (dame_admin($id_user)==1) OR ($report_private == 0)) {
     // Without report type parameter: ABORT

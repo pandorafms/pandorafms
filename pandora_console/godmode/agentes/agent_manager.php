@@ -105,17 +105,11 @@ if ($create_agent != 1) {
 	echo "</td>";
 }
 
-
-
 echo '<tr><td class="datos"><b>'.lang_string ("Parent").'</b>';
 echo '<td class="datos">';
-if ($create_agent != 1) {
-	print_select_from_sql ('SELECT id_agente, nombre FROM tagente',
-				'id_parent', $id_agente, '', '', '');
-} else {
-	print_select_from_sql ('SELECT id_agente, nombre FROM tagente',
-				'id_parent', 0, '', 'None', '0');
-}
+print_select_from_sql ('SELECT id_agente, nombre FROM tagente',
+			'id_parent', $id_parent, '', 'None', '0');
+
 
 echo '<tr><td class="datos"><b>'.$lang_label["group"].'</b>';
 echo '<td class="datos"><select name="grupo" class="w130">';
@@ -167,6 +161,7 @@ echo '</b></td><td class="datos">';
 echo '<select name="plugin_server" class="w130">';
 echo "<option value='".$id_plugin_server."'>".give_server_name($id_plugin_server);
 $sql1 = 'SELECT id_server, name FROM tserver where plugin_server = 1 ORDER BY name';
+echo $sql1;
 $result=mysql_query($sql1);
 while ($row=mysql_fetch_array($result)){
     echo "<option value='".$row["id_server"]."'>".$row["name"]."</option>";

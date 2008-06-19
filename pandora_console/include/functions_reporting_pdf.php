@@ -161,11 +161,11 @@ function general_report ($id_report){
     require ($config["homedir"]."/include/functions_reporting.php");
     $session_id = session_id();
 
-    $report_name = html_entity_decode(give_db_value ("name", "treport", "id_report", $id_report), ENT_COMPAT, "iso-8859-15");
-    $report_description = html_entity_decode (give_db_value ("description", "treport", "id_report", $id_report), ENT_COMPAT, "iso-8859-15");
+    $report_name = html_entity_decode(get_db_value ("name", "treport", "id_report", $id_report), ENT_COMPAT, "iso-8859-15");
+    $report_description = html_entity_decode (get_db_value ("description", "treport", "id_report", $id_report), ENT_COMPAT, "iso-8859-15");
 
-    $report_private= html_entity_decode( give_db_value ("private", "treport", "id_report", $id_report), ENT_COMPAT, "iso-8859-15");
-    $report_user = html_entity_decode( give_db_value ("id_user", "treport", "id_report", $id_report), ENT_COMPAT, "iso-8859-15");
+    $report_private= html_entity_decode( get_db_value ("private", "treport", "id_report", $id_report), ENT_COMPAT, "iso-8859-15");
+    $report_user = html_entity_decode( get_db_value ("id_user", "treport", "id_report", $id_report), ENT_COMPAT, "iso-8859-15");
 
 
 	$date_today = date("Y/m/d H:i:s");
@@ -299,7 +299,7 @@ function general_report ($id_report){
                     $pdf->ezText ("\n",8);
                     break;
             case 4: // Alert report
-                    $module_name = give_db_value ("nombre", "tagente_modulo", "id_agente_modulo", $id_agent_module);
+                    $module_name = get_db_value ("nombre", "tagente_modulo", "id_agente_modulo", $id_agent_module);
                     $agent_name = dame_nombre_agente_agentemodulo ($id_agent_module);
                     $table_data = array();
                     $table_label[0] = $lang_label["status"];

@@ -328,6 +328,9 @@ if (comprueba_login() == 0) {
 					$ultima = strtotime($ultimo_contacto);
 					$ahora = strtotime("now");
 					$diferencia = $ahora - $ultima;
+					if ( $diferencia > ($biginterval*2))
+						echo "<font color='#ff0000'>";
+			
                     echo human_time_comparation($ultimo_contacto);
 /*
 					if ($biginterval > 0){

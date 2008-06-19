@@ -1,5 +1,9 @@
 2008-06-19  Ramon Novoa  <rnovoa@artica.es>
 
+	* win32/bin/PandoraAgent.exe: Updated to r888.
+
+2008-06-19  Ramon Novoa  <rnovoa@artica.es>
+
 	* win32/windows/pandora_wmi.cc, win32/windows/pandora_wmi.h,
 	  win32/modules/pandora_module.h, 
 	  win32/modules/pandora_module_logevent.cc,

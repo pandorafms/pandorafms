@@ -943,7 +943,6 @@ function show_icon_type ($id_type) {
  * @param int Server type id
  * @return string Fully formatted  IMG HTML tag with icon
  */
-<<<<<<< .mine
 
 function show_server_type ($id){ 
     global $config;

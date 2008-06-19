@@ -1,5 +1,7 @@
 2008-06-19  Sancho Lerena  <slerena@gmail.com>
 
+	* Fixed bad conflict resolution commit in functions_db.php
+
 	* include/functions_reporting.php
 	include/config.php
 	include/functions.php

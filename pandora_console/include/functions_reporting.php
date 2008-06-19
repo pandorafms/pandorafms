@@ -21,7 +21,7 @@ function return_module_SLA ($id_agent_module, $period, $min_value, $max_value, $
 	if (! $date)
 		$date = time ();
 	$datelimit = $date - $period; // limit date
-	$id_agent = give_db_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
+	$id_agent = get_db_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
 	/* Get all the data in the interval */
 	$sql = sprintf ('SELECT * FROM tagente_datos 
 			WHERE id_agente = %d AND id_agente_modulo = %d 
@@ -418,7 +418,7 @@ function monitor_health_reporting ($id_group, $period = 0, $date = 0, $return = 
  */
 function general_group_reporting ($id_group, $return = false) {
 	$output = '';
-	$agents = give_db_value ('COUNT(*)', 'tagente', 'id_grupo', $id_group);
+	$agents = get_db_value ('COUNT(*)', 'tagente', 'id_grupo', $id_group);
 	$output .= '<strong>'.lang_string ('agents_in_group').': '.$agents.'</strong><br />';
 	
 	if (!$return)
@@ -436,7 +436,7 @@ function general_group_reporting ($id_group, $return = false) {
  */
 function agents_detailed_reporting ($id_group, $period = 0, $date = 0, $return = false) {
 	$output = '';
-	$agents = give_db_value ('COUNT(*)', 'tagente', 'id_grupo', $id_group);
+	$agents = get_db_value ('COUNT(*)', 'tagente', 'id_grupo', $id_group);
 	
 	$table_modules->width = '750px';
 	$table_alerts->width = '750px';

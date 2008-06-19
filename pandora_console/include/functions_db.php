@@ -58,9 +58,9 @@ function check_login () {
  * LM - Alert Management
  * PM - Pandora Management
  * 
- * @param id_user User id to check
- * @param id_group Agents group id to check access
- * @param access Access privilege to check
+ * @param id_user User id 
+ * @param id_group Agents group id
+ * @param access Access privilege
  * 
  * @return 1 if the user has privileges, 0 if not.
  */
@@ -151,8 +151,8 @@ function give_acl ($id_user, $id_group, $access) {
 /** 
  * Adds an audit log entry.
  * 
- * @param id User id that makes the incident
- * @param ip Client IP who makes the incident
+ * @param id User id
+ * @param ip Client IP
  * @param accion Action description
  * @param descripcion Long action description
  */
@@ -200,10 +200,13 @@ function dame_perfil ($id_profile) {
 	return (string) get_db_value ('name', 'tperfil', 'id_perfil', (int) $id_profile);
 }
 
-// ---------------------------------------------------------------
-// Returns disabled from a given group_id
-// ---------------------------------------------------------------
-
+/** 
+ * Get disabled field of a group
+ * 
+ * @param id_group Group id
+ * 
+ * @return Disabled field of given group
+ */
 function give_disabled_group ($id_group) {
 	return (bool) get_db_value ('disabled', 'tgrupo', 'id_grupo', (int) $id_group);
 }
@@ -211,7 +214,7 @@ function give_disabled_group ($id_group) {
 /**
  * Get all the agents in a group.
  *
- * @param $id_group Group id to get all agents.
+ * @param $id_group Group id
  *
  * @return An array with all agents in the group.
  */
@@ -222,7 +225,7 @@ function get_agents_in_group ($id_group) {
 /**
  * Get all the modules in an agent.
  *
- * @param $id_agent Agent id to get all modules.
+ * @param $id_agent Agent id
  *
  * @return An array with all modules in the agent.
  */
@@ -233,7 +236,7 @@ function get_modules_in_agent ($id_agent) {
 /**
  * Get all the simple alerts of an agent.
  *
- * @param $id_agent Agent id to get all simple alerts.
+ * @param $id_agent Agent id
  *
  * @return An array with all simple alerts defined for an agent.
  */
@@ -248,7 +251,7 @@ function get_simple_alerts_in_agent ($id_agent) {
 /**
  * Get all the combined alerts of an agent.
  *
- * @param $id_agent Agent id to get all combined alerts.
+ * @param $id_agent Agent id
  *
  * @return An array with all combined alerts defined for an agent.
  */
@@ -259,7 +262,7 @@ function get_combined_alerts_in_agent ($id_agent) {
 /**
  * Get all the alerts of an agent, simple and combined.
  *
- * @param $id_agent Agent id to get all alerts.
+ * @param $id_agent Agent id
  *
  * @return An array with all alerts defined for an agent.
  */
@@ -278,7 +281,7 @@ function get_alerts_in_agent ($id_agent) {
  *  - The report is not private and the user has reading privileges on 
  *    the group associated to the report
  *
- * @param $id_user User id to get the reports.
+ * @param $id_user User id
  *
  * @return An array with all the reports the user can view.
  */
@@ -410,61 +413,82 @@ function dame_nombre_grupomodulo ($id_module_group) {
 	return (string) get_db_value ('name', 'tmodule_group', 'id_mg', (int) $id_module_group);
 }
 
-// --------------------------------------------------------------- 
-// Returns name of a export server
-// --------------------------------------------------------------- 
-
+/** 
+ * Get the name of an exporting server
+ * 
+ * @param id_server Server id
+ * 
+ * @return The name of given server.
+ */
 function dame_nombre_servidorexportacion ($id_server) {
 	return (string) get_db_value ('name', 'tserver_export', 'id', (int) $id_server);
 }
 
-// --------------------------------------------------------------- 
-// Returns name of a plugin module
-// --------------------------------------------------------------- 
-
+/** 
+ * Get the name of a plugin
+ * 
+ * @param id_plugin Plugin id.
+ * 
+ * @return The name of the given plugin
+ */
 function dame_nombre_pluginid ($id_plugin) {
 	return (string) get_db_value ('name', 'tplugin', 'id', (int) $id_plugin);
 }
 
-// --------------------------------------------------------------- 
-// Returns id of a moduletype
-// --------------------------------------------------------------- 
-
+/** 
+ * Get the name of a module type
+ * 
+ * @param id_type Type id
+ * 
+ * @return The name of the given type.
+ */
 function giveme_module_type ($id_type) {
 	return (string) get_db_value ('nombre', 'ttipo_modulo', 'id_tipo', (int) $id_type);
 }
 
-// --------------------------------------------------------------- 
-// Returns agent name, given a ID of agente_module table
-// --------------------------------------------------------------- 
-
+/** 
+ * Get agent name of an agent module.
+ * 
+ * @param id_agente_modulo Agent module id.
+ * 
+ * @return The name of the given agent module.
+ */
 function dame_nombre_agente_agentemodulo ($id_agente_modulo) {
-	$id_agent = get_db_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agente_modulo);
+	$id_agent = get_db_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', (int) $id_agente_modulo);
 	if ($id_agent)
 		return dame_nombre_agente ($id_agent);
 	return '';
 }
 
-// --------------------------------------------------------------- 
-// Return agent module name, given a ID of agente_module table
-// --------------------------------------------------------------- 
+/** 
+ * Get the module name of an agent module.
+ * 
+ * @param id_agente_modulo Agent module id.
+ * 
+ * @return Name of the given agent module.
+ */
 function dame_nombre_modulo_agentemodulo ($id_agente_modulo) {
 	return (string) get_db_value ('nombre', 'tagente_modulo', 'id_agente_modulo', (int) $id_agente_modulo);
 }
 
-
-// --------------------------------------------------------------- 
-// Return agent module, given a ID of agente_module table
-// --------------------------------------------------------------- 
-
+/** 
+ * Get the module type of an agent module.
+ * 
+ * @param id_agente_modulo Agent module id.
+ * 
+ * @return Module type of the given agent module.
+ */
 function dame_id_tipo_modulo_agentemodulo ($id_agente_modulo) {
 	return (int) get_db_value ('id_tipo_modulo', 'tagente_modulo', 'id_agente_modulo', (int) $id_agente_modulo);
 }
 
-// --------------------------------------------------------------- 
-// Returns name of the user when given ID
-// --------------------------------------------------------------- 
-
+/** 
+ * Get the real name of an user.
+ * 
+ * @param id_user User id
+ * 
+ * @return Real name of given user.
+ */
 function dame_nombre_real ($id_user) {
 	return (string) get_db_value ('nombre_real', 'tusuario', 'id_usuario', (int) $id_user);
 }
@@ -487,8 +511,8 @@ function get_monitor_downs_in_period ($id_agent_module, $period, $date = 0) {
 			AND id_agentmodule = %d
 			AND utimestamp > %d AND utimestamp <= %d',
 			$id_agent_module, $datelimit, $date);
-	$down = get_db_sql ($sql);
-	return $down;
+	 
+	return get_db_sql ($sql);
 }
 
 /**
@@ -509,8 +533,8 @@ function get_monitor_last_down_timestamp_in_period ($id_agent_module, $period, $
 			AND id_agentmodule = %d
 			AND utimestamp > %d AND utimestamp <= %d',
 			$id_agent_module, $datelimit, $date);
-	$timestamp = get_db_sql ($sql);
-	return $timestamp;
+	
+	return get_db_sql ($sql);
 }
 
 /**
@@ -531,8 +555,7 @@ function get_alert_fires_in_period ($id_agent_module, $period, $date = 0) {
 			AND id_agentmodule = %d
 			AND utimestamp > %d AND utimestamp <= %d',
 			$id_agent_module, $datelimit, $date);
-	$down = get_db_sql ($sql);
-	return (int) $down;
+	return (int) get_db_sql ($sql);
 }
 
 /**
@@ -553,369 +576,310 @@ function get_alert_last_fire_timestamp_in_period ($id_agent_module, $period, $da
 			AND id_agentmodule = %d
 			AND utimestamp > %d AND utimestamp <= %d',
 			$id_agent_module, $datelimit, $date);
-	$timestamp = get_db_sql ($sql);
-	return $timestamp;
+	return get_db_sql ($sql);
 }
 
-// --------------------------------------------------------------- 
-// This function returns ID of user who has created incident
-// --------------------------------------------------------------- 
-
+/** 
+ * Get the author of an incident.
+ * 
+ * @param id_incident Incident id.
+ * 
+ * @return The author of an incident
+ */
 function give_incident_author ($id_incident) {
 	return (string) get_db_value ('id_usuario', 'tincidencia', 'id_incidencia', (int) $id_incident);
 }
 
-// --------------------------------------------------------------- 
-// This function returns name of server
-// --------------------------------------------------------------- 
-
-function give_server_name($id_server){
-	require("include/config.php");
-	$query1="SELECT * FROM tserver WHERE id_server  = '".$id_server."'";
-	$resq1=mysql_query($query1);  
-	if ($rowdup=mysql_fetch_array($resq1))
-		$pro=$rowdup["name"];
-	else
-		$pro = "";
-	return $pro;
+/** 
+ * Get the server name.
+ * 
+ * @param id_server Server id.
+ * 
+ * @return Name of the given server
+ */
+function give_server_name ($id_server) {
+	return (string) get_db_value ('name', 'tserver', 'id_server', $id_server);
 }
 
-// --------------------------------------------------------------- 
-// Return name of a module type when given ID
-// --------------------------------------------------------------- 
-
-function dame_nombre_tipo_modulo ($id){
-	require("config.php");
-	$query1="SELECT * FROM ttipo_modulo WHERE id_tipo =".$id;
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1)){
-		$pro=$rowdup["nombre"];
-	}
-	else $pro = "";
-	return $pro;
+/** 
+ * Get the module type name.
+ * 
+ * @param id_type Type id
+ * 
+ * @return Name of the given type.
+ */
+function dame_nombre_tipo_modulo ($id_type) {
+	return (string) get_db_value ('nombre', 'ttipo_modulo', 'id_tipo', $id_type);
 } 
 
-// --------------------------------------------------------------- 
-// Return name of a group when given ID
-// --------------------------------------------------------------- 
+/** 
+ * Get group name from the id
+ * 
+ * @param id_group Group id
+ * 
+ * @return The name of the given group
+ */
+function dame_nombre_grupo ($id_group) {
+	return (string) get_db_value ('nombre', 'tgrupo', 'id_grupo', $id_group);
+} 
 
-function dame_nombre_grupo ($id){
+/** 
+ * Get group id of an agent.
+ * 
+ * @param id_agent Agent id
+ * 
+ * @return Group of the given agent
+ */
+function dame_id_grupo ($id_agent) {
+	return (int) get_db_value ('id_grupo', 'tagente', 'id_agente', $id_agent);
+}
+
+/** 
+ * Get the number of notes in a incident.
+ * 
+ * @param id_incident Incident id
+ * 
+ * @return The number of notes in given incident.
+ */
+function dame_numero_notas ($id_incident) {
+	return (int) get_db_value ('COUNT(*)', 'tnota_inc', 'id_incidencia', $id_incident);
+}
+
+/** 
+ * Get the number of pandora data in the database.
+ * 
+ * @return 
+ */
+function dame_numero_datos () {
+	return (int) get_db_sql ('SELECT COUNT(*) FROM tagente_datos');
+}
+
+/** 
+ * Get the data value of a agent module of string type.
+ * 
+ * @param id Agent module string id
+ * 
+ * @return Data value of the agent module.
+ */
+function dame_generic_string_data ($id) {
+	return (string) get_db_value ('datos', 'tagente_datos_string', 'id_tagente_datos_string', $id);
+}
+
+/** 
+ * Delete an incident of the database.
+ * 
+ * @param id_inc Incident id
+ */
+function borrar_incidencia ($id_inc) {
 	require ("config.php");
-	$query1 = "SELECT * FROM tgrupo WHERE id_grupo = ".$id;
-	$resq1 = mysql_query($query1);
-	if ($rowdup = mysql_fetch_array ($resq1))
-		$pro = $rowdup["nombre"];
-	else
-		$pro = "";
-	return $pro;
-} 
-
-// --------------------------------------------------------------- 
-// This function return group_id given an agent_id
-// --------------------------------------------------------------- 
-
-function dame_id_grupo($id_agente){
-	require("config.php");
-	$query1="SELECT * FROM tagente WHERE id_agente =".$id_agente;
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1)){
-		$pro=$rowdup["id_grupo"];
-	}
-	else $pro = "";
-	return $pro;
-} 
-
-
-// --------------------------------------------------------------- 
-// Returns number of notes from a given incident
-// --------------------------------------------------------------- 
-
-function dame_numero_notas($id){
-	require("config.php"); 
-	$query1="select COUNT(*) from tnota_inc WHERE id_incidencia =".$id;
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1)){
-		$pro=$rowdup["COUNT(*)"]; 
-	}
-	else $pro = "0";
-	return $pro;
-}
-
-
-// --------------------------------------------------------------- 
-// Returns number of registries from table of data agents
-// --------------------------------------------------------------- 
-
-function dame_numero_datos(){
-	require("config.php");
-	$query1="select COUNT(*) from tagente_datos";
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1)){
-		$pro=$rowdup["COUNT(*)"];
-	}
-	else $pro = "0";
-	return $pro; 
-}
-
-
-// --------------------------------------------------------------- 
-// Returns string packet type given ID
-// --------------------------------------------------------------- 
-
-function dame_generic_string_data($id){ 
-	// Conexion con la base Datos 
-	require("config.php");
-	$query1="SELECT * FROM tagente_datos_string WHERE id_tagente_datos_string = ".$id;
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1)){
-		$pro=$rowdup["datos"];
-	}
-	return $pro;
-}
-
-// --------------------------------------------------------------- 
-// Delete incident given its id and all its notes
-// --------------------------------------------------------------- 
-
-
-function borrar_incidencia($id_inc){
-	require("config.php");
-	$sql1="DELETE FROM tincidencia WHERE id_incidencia = ".$id_inc;
-	$result=mysql_query($sql1);
-	$sql3="SELECT * FROM tnota_inc WHERE id_incidencia = ".$id_inc;
-	$res2=mysql_query($sql3);
-	while ($row2=mysql_fetch_array($res2)){
+	$sql = "DELETE FROM tincidencia WHERE id_incidencia = ".$id_inc;
+	mysql_query ($sql);
+	$sql = "SELECT * FROM tnota_inc WHERE id_incidencia = ".$id_inc;
+	$res2 = mysql_query ($sql);
+	while ($row2 = mysql_fetch_array ($res2)) {
 		// Delete all note ID related in table
-		$sql4 = "DELETE FROM tnota WHERE id_nota = ".$row2["id_nota"];
-		$result4 = mysql_query($sql4);
+		$sql = "DELETE FROM tnota WHERE id_nota = ".$row2["id_nota"];
+		mysql_query ($sql);
 	}
-	$sql6="DELETE FROM tnota_inc WHERE id_incidencia = ".$id_inc;
-	$result6=mysql_query($sql6);
+	$sql = "DELETE FROM tnota_inc WHERE id_incidencia = ".$id_inc;
+	mysql_query ($sql);
 	// Delete attachments
-	$sql1="SELECT * FROM tattachment WHERE id_incidencia = ".$id_inc;
-	$result=mysql_query($sql1);
-	while ($row=mysql_fetch_array($result)){
+	$sql = "SELECT * FROM tattachment WHERE id_incidencia = ".$id_inc;
+	$result = mysql_query ($sql);
+	while ($row = mysql_fetch_array ($result)) {
 		// Unlink all attached files for this incident
 		$file_id = $row["id_attachment"];
 		$filename = $row["filename"];
 		unlink ($attachment_store."attachment/pand".$file_id."_".$filename);
 	}
-	$sql1="DELETE FROM tattachment WHERE id_incidencia = ".$id_inc;
-	$result=mysql_query($sql1);
+	$sql = "DELETE FROM tattachment WHERE id_incidencia = ".$id_inc;
+	mysql_query ($sql);
 }
 
-// --------------------------------------------------------------- 
-// Return SO name given its ID
-// --------------------------------------------------------------- 
-
-function dame_so_name($id){
-	require("config.php");
-	$query1="SELECT * FROM tconfig_os WHERE id_os = ".$id;
-	$resq1=mysql_query($query1);  
-	if ($rowdup=mysql_fetch_array($resq1))
-		$pro=$rowdup["name"];
-	else
-		$pro = "";
-	return $pro;
-}
-// --------------------------------------------------------------- 
-//  Update "contact" field in User table for username $nick
-// --------------------------------------------------------------- 
-
-function update_user_contact($nick){	// Sophus simply insist too much in this function... ;)
-	require("config.php");
-	$today=date("Y-m-d H:i:s",time());
-	$query1="UPDATE tusuario set fecha_registro ='".$today."' WHERE id_usuario = '".$nick."'";
-	$resq1=mysql_query($query1);
+/** 
+ * Get the operating system name.
+ * 
+ * @param id_os Operating system id.
+ * 
+ * @return Name of the given operating system.
+ */
+function dame_so_name ($id_os) {
+	return (string) get_db_value ('name', 'tconfig_os', 'id_os', $id_os);
 }
 
-// --------------------------------------------------------------- 
-// Return SO iconname given its ID
-// --------------------------------------------------------------- 
-
-function dame_so_icon($id){ 
-	require("config.php");
-	$query1="SELECT * FROM tconfig_os WHERE id_os = ".$id;
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1))
-		$pro=$rowdup["icon_name"];
-	else
-		$pro = "";
-	return $pro;
+/** 
+ * Update user last login timestamp.
+ * 
+ * @param id_user User id
+ */
+function update_user_contact ($id_user) {
+	$sql = "UPDATE tusuario set fecha_registro = NOW() WHERE id_usuario = '".$id_user."'";
+	mysql_query ($sql);
 }
 
-
-// --------------------------------------------------------------- 
-// Return email of a user given ID 
-// --------------------------------------------------------------- 
-
-function dame_email($id){ 
-	require("config.php");
-	$query1="SELECT * FROM tusuario WHERE id_usuario =".$id;
-	$resq1=mysql_query($query1);
-	$rowdup=mysql_fetch_array($resq1);
-	$nombre=$rowdup["direccion"];
-	return $nombre;
-} 
-
-
-// ---------------------------------------------------------------
-// Returns Admin value (0 no admin, 1 admin)
-// ---------------------------------------------------------------
-
-function dame_admin($id){
-        $admin = get_db_sql ("SELECT * FROM tusuario WHERE id_usuario ='$id'", "nivel");
-	return $admin;
+/** 
+ * Get the icon of an operating system.
+ *
+ * The path of the icons is 'images/' which must be append by the
+ * caller (including slash and filename extension .png)
+ * 
+ * @param id_os Operating system id
+ * 
+ * @return Icon filename of the operating system
+ */
+function dame_so_icon ($id_os) {
+	return (string) get_db_value ('icon_name', 'tconfig_os', 'id_os', $id_os);
 }
 
+/** 
+ * Get the user email
+ * 
+ * @param id_user User id.
+ * 
+ * @return Get the email address of an user
+ */
+function dame_email ($id_user) {
+	return (string) get_db_value ('direccion', 'tusuario', 'id_usuario', $id_user);
+}
 
-// Wrapper function since we change all functions to english
+/** 
+ * Checks if a user is administrator.
+ * 
+ * @param id_user User id.
+ * 
+ * @return True is the user is admin
+ */
+function dame_admin ($id_user) {
+	$level = get_db_value ('nivel', 'tusuario', 'id_usuario', $id_user);
+	if ($level)
+		return true;
+	return false;
+}
+
+/** 
+ * WARNING: This is a deprectad function and must not be used
+ */
 function comprueba_login() { 
 	return check_login ();
 }
 
-// --------------------------------------------------------------- 
-// Gives error message and stops execution if user 
-//doesn't have an open session and this session is from an administrator
-// --------------------------------------------------------------- 
-
-function check_admin () {
-	if (isset($_SESSION["id_usuario"])){
-		$iduser=$_SESSION['id_usuario'];
-		if (dame_admin($iduser)==1){
-			$id = $_SESSION["id_usuario"];
-			require("config.php");
-			$query1="SELECT * FROM tusuario WHERE id_usuario = '".$id."'";
-			$resq1=mysql_query($query1);
-			$rowdup=mysql_fetch_array($resq1);
-			$nombre=$rowdup["id_usuario"];
-			$nivel=$rowdup["nivel"];
-			if (( $id == $nombre) and ($nivel ==1))
-				return 0;
-		}
-	}
-	require("../general/no_access.php");
-	return 1;
+/** 
+ * Check if an agent has alerts fired.
+ * 
+ * @param id_agent Agent id.
+ * 
+ * @return True if the agent has fired alerts.
+ */
+function check_alert_fired ($id_agent) {
+	$sql = "SELECT COUNT(*) FROM talerta_agente_modulo, tagente_modulo
+		WHERE talerta_agente_modulo.id_agente_modulo = tagente_modulo.id_agente_modulo
+		AND times_fired > 0 AND id_agente = ".$id_agent;
+	
+	$value = get_db_sql ($sql);
+	if ($value > 0)
+		return true;
+	return false;
 }
 
-function comprueba_admin() {
-	return check_admin ();
+/** 
+ * Check is a user exists in the system
+ * 
+ * @param id_user User id.
+ * 
+ * @return True if the user exists.
+ */
+function existe ($id_user) {
+	$user = get_db_row ('tusuario', 'id_usuario', $id_user);
+	if (! $user)
+		return false;
+	return true;
 }
 
-// ---------------------------------------------------------------
-// Returns number of alerts fired by this agent
-// ---------------------------------------------------------------
+/** 
+ * Insert a event in the event log system.
+ * 
+ * @param evento 
+ * @param id_grupo 
+ * @param id_agente 
+ * @param status 
+ * @param id_usuario 
+ * @param event_type 
+ * @param priority 
+ * @param id_agent_module 
+ * @param id_aam 
+ */
+function event_insert ($evento, $id_grupo, $id_agente, $status = 0,
+			$id_usuario = '', $event_type = "unknown", $priority = 0,
+			$id_agent_module = 0, $id_aam = 0) {
+	$sql = 'INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, 
+		estado, utimestamp, id_usuario, event_type, criticity, id_agentmodule, id_alert_am) 
+		VALUES ('.$id_agente.','.$id_grupo.',"'.$evento.'",NOW(),'.$status.
+		', '.$utimestamp.', "'.$id_usuario.'", "'.$event_type.'", '.$priority.
+		', '.$id_agent_module.', '.$id_aam.')';
 
-function check_alert_fired($id_agente){
-	require("config.php");
-	$query1="SELECT * FROM tagente_modulo WHERE id_agente ='".$id_agente."'";   
-	$rowdup=mysql_query($query1);
-	while ($data=mysql_fetch_array($rowdup)){
-		$query2="SELECT COUNT(*) FROM talerta_agente_modulo WHERE times_fired > 0 AND id_agente_modulo =".$data["id_agente_modulo"];
-		$rowdup2=mysql_query($query2);
-		$data2=mysql_fetch_array($rowdup2);
-		if ($data2[0] > 0)
-			return 1;
-	}
-	return 0;
+	mysql_query ($sql);
 }
 
-// ---------------------------------------------------------------
-// 0 if it doesn't exist, 1 if it does, when given email
-// ---------------------------------------------------------------
-
-function existe($id){
-	require("config.php");
-	$query1="SELECT * FROM tusuario WHERE id_usuario = '".$id."'";   
-	$resq1=mysql_query($query1);
-	if ($resq1 != 0) {
-		if ($rowdup=mysql_fetch_array($resq1)){ 
-			return 1; 
-		}
-		else {
-			return 0; 
-		}
-	} else { return 0 ; }
+/** 
+ * Get the interval value of an agent module.
+ *
+ * If the module interval is not set, the agent interval is returned
+ * 
+ * @param id_agentmodule Id agent module to get the interval value.
+ * 
+ * @return 
+ */
+function give_moduleinterval ($id_agentmodule) {
+	$interval = (int) get_db_value ('module_interval', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
+	
+	if ($interval)
+		return $interval;
+	
+	$id_agent = (int) give_agentinterval ($id_agent);get_db_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
+	return (int) give_agentinterval ($id_agent);
 }
 
-// --------------------------------------------------------------- 
-// event_insert - Insert generic event in eventable
-// --------------------------------------------------------------- 
-
-function event_insert($evento, $id_grupo, $id_agente, $status=0, $id_usuario='', $event_type = "unknown", $priority = 0, $id_agent_module, $id_aam){
-	require("config.php");
-	$today=date('Y-m-d H:i:s');
-	$utimestamp = time();
-
-	$sql1='INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, id_usuario, event_type, criticity, id_agentmodule, id_alert_am) VALUES ('.$id_agente.','.$id_grupo.',"'.$evento.'","'.$today.'",'.$status.', '.$utimestamp.', "'.$id_usuario.'", "'.$event_type.'", '.$priority.', '.$id_agent_module.', '.$id_aam.')';
-
-	$result=mysql_query($sql1);
-
+/** 
+ * Get the interval of an agent.
+ * 
+ * @param id_agent Agent id.
+ * 
+ * @return The interval value of a given agent
+ */
+function give_agentinterval ($id_agent) {
+	return (int) get_db_value ('intervalo', 'tagente', 'id_agente', $id_agent);
 }
 
-// --------------------------------------------------------------- 
-// Return module interval or agent interval if first not defined
-// ---------------------------------------------------------------
-
-function give_moduleinterval($id_agentmodule){ 
-	require("config.php");
-	$query1="SELECT * FROM tagente_modulo WHERE id_agente_modulo = ".$id_agentmodule;
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1)){
-		if ($rowdup["module_interval"] == 0){ // no module interval defined
-			$query2="SELECT * FROM tagente WHERE id_agente = ".$rowdup["id_agente"];
-			$resq2=mysql_query($query2);
-			if ($rowdup2=mysql_fetch_array($resq2)){
-				$interval=$rowdup2["intervalo"];
-			}
-		} else {
-			$interval=$rowdup["module_interval"];
-		}
-	}
-	return $interval;
+/** 
+ * Get the flag value of an agent module.
+ * 
+ * @param id_agent_module Agent module id.
+ * 
+ * @return The flag value of an agent module.
+ */
+function give_agentmodule_flag ($id_agent_module) {
+	return get_db_value ('flag', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
 }
 
-// --------------------------------------------------------------- 
-// Return agent interval 
-// ---------------------------------------------------------------
-
-function give_agentinterval($id_agent){ 
-	require("config.php");
-	$query1="SELECT * FROM tagente WHERE id_agente = ".$id_agent;
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1)){
-		$interval=$rowdup["intervalo"];
-	}
-	return $interval;
-}
-
-// --------------------------------------------------------------- 
-// Return agent_module flag (for network push modules)
-// ---------------------------------------------------------------
-
-function give_agentmodule_flag($id_agent_module){ 
-	require("config.php");
-	$query1="SELECT * FROM tagente_modulo WHERE id_agente_modulo = ".$id_agent_module;
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1)){
-		$interval=$rowdup["flag"];
-	}
-	return $interval;
-}
-
-// ---------------------------------------------------------------------- 
-// Returns a combo with the groups and defines an array 
-// to put all groups with Agent Read permission
-// ----------------------------------------------------------------------
+/** 
+ * Prints a list of <options> HTML tags with the groups the user has
+ * reading privileges.
+ * 
+ * @param id_user User id
+ * @param show_all Flag to show all the groups or not. True by default.
+ * 
+ * @return An array with all the groups
+ */
 function list_group ($id_user, $show_all = 1){
-	$mis_grupos=array (); // Define array mis_grupos to put here all groups with Agent Read permission
-	$sql='SELECT id_grupo, nombre FROM tgrupo';
-	$result=mysql_query($sql);
-	while ($row=mysql_fetch_array($result)){
-		if ($row["id_grupo"] != 0){
-			if (give_acl($id_user,$row["id_grupo"], "AR") == 1){
-				if (($row["id_grupo"] != 1) OR ($show_all == 1)){
-					array_push ($mis_grupos, $row["id_grupo"]); //Put in  an array all the groups the user belongs
+	$mis_grupos = array (); // Define array mis_grupos to put here all groups with Agent Read permission
+	$sql = 'SELECT id_grupo, nombre FROM tgrupo';
+	$result = mysql_query ($sql);
+	while ($row = mysql_fetch_array ($result)) {
+		if ($row["id_grupo"] != 0) {
+			if (give_acl($id_user,$row["id_grupo"], "AR") == 1) {
+				if (($row["id_grupo"] != 1) || ($show_all == 1)) {
+					//Put in  an array all the groups the user belongs to
+					array_push ($mis_grupos, $row["id_grupo"]);
 					echo "<option value='".$row["id_grupo"]."'>".
 					$row["nombre"]."</option>";
 				}
@@ -925,49 +889,52 @@ function list_group ($id_user, $show_all = 1){
 	return ($mis_grupos);
 }
 
-// ---------------------------------------------------------------------- 
-// Defines an array 
-// to put all groups with Agent Read permission
-// ----------------------------------------------------------------------
-
-function list_group2 ($id_user){
+/** 
+ * Get a list of the groups a user has reading privileges.
+ * 
+ * @param id_user User id
+ * 
+ * @return A list of the groups the user has reading privileges.
+ */
+function list_group2 ($id_user) {
 	$mis_grupos[]=""; // Define array mis_grupos to put here all groups with Agent Read permission
-	$sql='SELECT id_grupo FROM tgrupo';
-	$result=mysql_query($sql);
-	while ($row=mysql_fetch_array($result)){
-		if (give_acl($id_user,$row["id_grupo"], "AR") == 1){
+	$sql = 'SELECT id_grupo FROM tgrupo';
+	$result = mysql_query ($sql);
+	while ($row = mysql_fetch_array ($result)) {
+		if (give_acl ($id_user, $row["id_grupo"], "AR") == 1) {
 			$mis_grupos[]=$row["id_grupo"]; //Put in  an array all the groups the user belongs
 		}
 	}
 	return ($mis_grupos);
 }
 
-// --------------------------------------------------------------- 
-// Return Group iconname given its name
-// --------------------------------------------------------------- 
-
-function show_icon_group($id_group){ 
-	$sql="SELECT icon FROM tgrupo WHERE id_grupo='$id_group'";
-	$result=mysql_query($sql);
-	if ($row=mysql_fetch_array($result))
-		$pro=$row["icon"];
-	else
-		$pro = "";
-	return $pro;
+/** 
+ * Get group icon
+ *
+ * The path of the icons is 'images/' or 'images/group_small/', which
+ * must be append by the caller (including slash and filename
+ * extension .png)
+ * 
+ * @param id_group Group id
+ * 
+ * @return Icon filename of the given group
+ */
+function show_icon_group ($id_group) {
+	return (string) get_db_value ('icon', 'tgrupo', 'id_grupo', $id_group);
 }
 
-// --------------------------------------------------------------- 
-// Return Type iconname given its name
-// --------------------------------------------------------------- 
-
-function show_icon_type($id_tipo){ 
-	$sql="SELECT id_tipo, icon FROM ttipo_modulo WHERE id_tipo='$id_tipo'";
-	$result=mysql_query($sql);
-	if ($row=mysql_fetch_array($result))
-		$pro=$row["icon"];
-	else
-		$pro = "";
-	return $pro;
+/** 
+ * Get module type icon.
+ *
+ * The path of the icons is 'images/', which must be append by the
+ * caller (including final slash).
+ * 
+ * @param id_tipo Module type id
+ * 
+ * @return Icon filename of the given group
+ */
+function show_icon_type ($id_type) { 
+	return (string) get_db_value ('icon', 'ttipo_modulo', 'id_tipo', $id_type);
 }
 
 /**
@@ -976,252 +943,191 @@ function show_icon_type($id_tipo){
  * @param int Server type id
  * @return string Fully formatted  IMG HTML tag with icon
  */
-
-function show_server_type ($id){ 
-    global $config;
-    switch ($id) {
-        case 1: return '<img src="'.$config["homeurl"].'/images/data.png" title="Pandora FMS Data server">';
-                break;
-        case 2: return '<img src="'.$config["homeurl"].'/images/network.png" title="Pandora FMS Network server">';
-                break;
-        case 4: return '<img src="'.$config["homeurl"].'/images/plugin.png" title="Pandora FMS Plugin server">';
-                break;
-        case 5: return '<img src="'.$config["homeurl"].'/images/chart_bar.png" title="Pandora FMS Prediction server">';
-                break;
-        case 6: return '<img src="'.$config["homeurl"].'/images/wmi.png" title="Pandora FMS WMI server">';
-                break;
-        default: return "--";
-    }
-}
-
-// ---------------------------------------------------------------
-// Return all childs groups of a given id_group inside array $child
-// ---------------------------------------------------------------
-
-function give_groupchild($id_group, &$child){
-        // Conexion con la base Datos 
-        $query1="select * from tgrupo where parent = ".$id_group;
-        $resq1=mysql_query($query1);  
-        while ($resq1 != NULL && $rowdup=mysql_fetch_array($resq1)){
-        	$child[]=$rowdup["id_grupo"];
-        }
-}
-
-// ---------------------------------------------------------------
-// Return true (1) if agent belongs to given group or one of this childs
-// ---------------------------------------------------------------
-
-function agent_belong_group($id_agent, $id_group){ 
-        // Conexion con la base Datos 
-	$child[] = "";
-	$child[] = $id_group;
-	give_groupchild ($id_group, $child);
-	$id_agent_group = give_group_id ($id_agent);
-	return in_array ($child, $id_agent_group);
-}
-
-// ---------------------------------------------------------------
-// Return true (1) if given group (a) belongs to given groupset
-// ---------------------------------------------------------------
-
-function group_belong_group($id_group_a, $id_groupset){
-        // Conexion con la base Datos 
-	$childgroup[] = "";
-	if ($id_group_a == $id_groupset)
-		return 1;
-	give_groupchild($id_groupset, $childgroup);
-	foreach ($childgroup as $key => $value){
-		if (($value != $id_groupset) AND
-		    (group_belong_group($id_group_a, $value) == 1))
-			return 1;
-  	}
-	return in_array ($childgroup, $id_group_a);
-}
-
-// ---------------------------------------------------------------
-// Return category name
-// ---------------------------------------------------------------
-function give_modulecategory_name ($value) {
-	require("config.php");
-	require ("include/languages/language_".$config["language"].".php");
-	switch ($value) {
-	   case 0: return $lang_label["cat_0"];
-	   	break;
-	   case 1: return $lang_label["cat_1"];
-	   	break;
-	   case 2: return $lang_label["cat_2"];
-	   	break;
-	   case 3: return $lang_label["cat_3"];
-	   	break;
+function show_server_type ($id) {
+	global $config;
+	switch ($id) {
+	case 1:
+		return '<img src="'.$config["homeurl"].'/images/data.png" title="Pandora FMS Data server">';
+		break;
+	case 2:
+		return '<img src="'.$config["homeurl"].'/images/network.png" title="Pandora FMS Network server">';
+		break;
+	case 4:
+		return '<img src="'.$config["homeurl"].'/images/plugin.png" title="Pandora FMS Plugin server">';
+		break;
+	case 5:
+		return '<img src="'.$config["homeurl"].'/images/chart_bar.png" title="Pandora FMS Prediction server">';
+		break;
+	case 6:
+		return '<img src="'.$config["homeurl"].'/images/wmi.png" title="Pandora FMS WMI server">';
+		break;
+	default:
+		return "--";
 	}
-	return $lang_label["unknown"]; 
 }
 
-// --------------------------------------------------------------- 
-// Return network component group name given its ID
-// --------------------------------------------------------------- 
-
-function give_network_component_group_name ($id){
-	require("config.php");
-	$query1="SELECT * FROM tnetwork_component_group WHERE id_sg= ".$id;
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1))
-		$pro=$rowdup["name"];
-	else
-		$pro = "";
-	return $pro;
+/** 
+ * Get a module category name
+ * 
+ * @param id_category Id category
+ * 
+ * @return Name of the given category
+ */
+function give_modulecategory_name ($id_category) {
+	switch ($id_category) {
+	case 0: 
+		return lang_string ("cat_0");
+		break;
+	case 1: 
+		return lang_string ("cat_1");
+		break;
+	case 2: 
+		return lang_string ("cat_2");
+		break;
+	case 3: 
+		return lang_string ("cat_3");
+		break;
+	}
+	return lang_string ("unknown");
 }
 
-// --------------------------------------------------------------- 
-// Return network profile name name given its ID
-// --------------------------------------------------------------- 
-
-function give_network_profile_name ($id_np){
-	require("config.php");
-	$query1="SELECT * FROM tnetwork_profile WHERE id_np= ".$id_np;
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1))
-		$pro=$rowdup["name"];
-	else
-		$pro = "";
-	return $pro;
+/** 
+ * Get a network component group name
+ * 
+ * @param id_network_component_group Id network component group.
+ * 
+ * @return Name of the given network component group
+ */
+function give_network_component_group_name ($id_network_component_group) {
+	return (string) get_db_value ('name', 'tnetwork_component_group', 'id_sg', $id_network_component_group);
 }
 
-// --------------------------------------------------------------- 
-// Associate IP address to an agent
-// --------------------------------------------------------------- 
+/** 
+ * Get a network profile name.
+ * 
+ * @param id_network_profile Id network profile
+ * 
+ * @return Name of the given network profile.
+ */
+function give_network_profile_name ($id_network_profile) {
+	return (string) get_db_value ('name', 'tnetwork_profile', 'id_np', $id_network_profile);
+}
 
+/** 
+ * Assign an IP address to an agent.
+ * 
+ * @param id_agent Agent id
+ * @param ip_address IP address to assign
+ */
 function agent_add_address ($id_agent, $ip_address) {
-	require("config.php");
 	$address_exist = 0;
 	$id_address =-1;
 	$address_attached = 0;
 
 	// Check if already is attached to agent
-	$query1="SELECT * FROM taddress_agent, taddress
+	$sql = "SELECT * FROM taddress_agent, taddress
 		WHERE taddress_agent.id_a = taddress.id_a
-			AND ip = '$ip_address'
-			AND id_agent = $id_agent";
-	if ($resq1=mysql_query($query1)){
-		if ($rowdup=mysql_fetch_array($resq1)){
-			$address_attached = 1;
-		}
-	}
-	if ($address_attached == 1)
+		AND ip = '$ip_address'
+		AND id_agent = $id_agent";
+	$current_address = get_db_sql_row ($sql);
+	if ($current_address)
 		return;
+	
 	// Look for a record with this IP Address
-	$query1="SELECT * FROM taddress WHERE ip = '$ip_address'";
-	if ($resq1=mysql_query($query1)){
-		if ($rowdup=mysql_fetch_array($resq1)){
-			$id_address = $rowdup["id_a"];
-			$address_exist = 1;
-		}
-	}
-
-	if ($address_exist == 0){
+	$id_address = (int) get_db_value ('id_a', 'taddress', 'ip', $ip_address);
+	
+	if (! $id_address) {
 		// Create IP address in tadress table
-		$query = "INSERT INTO taddress
-			  	(ip) VALUES
-			  	('$ip_address')";
-		$res = mysql_query ($query);
+		$sql = "INSERT INTO taddress (ip) VALUES ('$ip_address')";
+		mysql_query ($sql);
 		$id_address = mysql_insert_id ();
 	}
-	// Add address to agent
-	$query = "INSERT INTO taddress_agent
-			(id_a, id_agent) VALUES
-			($id_address,$id_agent)";
-	$res = mysql_query ($query);
 	
-	// Change main address in agent to whis one
-	/* Not needed, configurar_agente does automatically on every update
-	$query = "UPDATE tagente 
-		  	(direccion) VALUES
-			($ip_address)
-			WHERE id_agente = $id_agent ";
-	$res = mysql_query ($query);
-	*/
+	// Add address to agent
+	$sql = "INSERT INTO taddress_agent
+			(id_a, id_agent) VALUES
+			($id_address, $id_agent)";
+	mysql_query ($sql);
 }
 
-// --------------------------------------------------------------- 
-// De-associate IP address to an agent (delete)
-// --------------------------------------------------------------- 
-
+/** 
+ * Unassign an IP address from an agent.
+ * 
+ * @param id_agent Agent id
+ * @param ip_address IP address to unassign
+ */
 function agent_delete_address ($id_agent, $ip_address) {
 	$address_exist = 0;
 	$id_address =-1;
-	$query1 = "SELECT * FROM taddress_agent, taddress
-            WHERE taddress_agent.id_a = taddress.id_a
-            AND ip = '$ip_address'
-            AND id_agent = $id_agent";
-	if ($resq1 = mysql_query($query1)){
+	$sql = "SELECT * FROM taddress_agent, taddress
+		WHERE taddress_agent.id_a = taddress.id_a
+		AND ip = '$ip_address'
+		AND id_agent = $id_agent";
+	if ($resq1 = mysql_query ($sql)) {
 		$rowdup = mysql_fetch_array($resq1);
 		$id_ag = $rowdup["id_ag"];
 		$id_a = $rowdup["id_a"];
-		$sql_3 = "DELETE FROM taddress_agent WHERE id_ag = $id_ag";	
-		$result_3 = mysql_query($sql_3);
+		$sql = "DELETE FROM taddress_agent WHERE id_ag = $id_ag";	
+		mysql_query ($sql);
 	}
 	// Need to change main address ? 
-	if (give_agent_address ($id_agent) == $ip_address){
+	if (give_agent_address ($id_agent) == $ip_address) {
 		$new_ip = give_agent_address_from_list ($id_agent);
 		// Change main address in agent to whis one
 		$query = "UPDATE tagente 
-				(direccion) VALUES
-				($new_ip)
-				WHERE id_agente = $id_agent ";
-		$res = mysql_query ($query);
+			(direccion) VALUES
+			($new_ip)
+			WHERE id_agente = $id_agent ";
+		mysql_query ($query);
 	}
-
 }
 
-// --------------------------------------------------------------- 
-// Returns (main) agent address given id
-// --------------------------------------------------------------- 
-
-function give_agent_address ($id_agent){
-	$query1 = "SELECT * FROM tagente WHERE id_agente = $id_agent";
-	$resq1 = mysql_query($query1);
-	if ($rowdup = mysql_fetch_array($resq1))
-		$pro = $rowdup["direccion"];
-	else
-		$pro = "";
-	return $pro;
+/** 
+ * Get address of an agent.
+ * 
+ * @param id_agent Agent id
+ * 
+ * @return The address of the given agent 
+ */
+function give_agent_address ($id_agent) {
+	return (string) get_db_value ('direccion', 'tagente', 'id_agente', $id_agent);
 }
 
-// --------------------------------------------------------------- 
-// Returns the first agent address given id taken from associated addresses
-// --------------------------------------------------------------- 
-
+/** 
+ * Get IP address of an agent from address list
+ * 
+ * @param id_agent Agent id
+ * 
+ * @return The IP address of the given agent.
+ */
 function give_agent_address_from_list ($id_agent){
-	$query1="SELECT * FROM taddress_agent, taddress
+	$sql = "SELECT ip FROM taddress_agent, taddress
 		WHERE taddress_agent.id_a = taddress.id_a
 		AND id_agent = $id_agent";
-	if ($resq1=mysql_query($query1)){
-		$rowdup=mysql_fetch_array($resq1);
-		$pro=$rowdup["ip"];
-	}
-	else
-		$pro = "";
-	return $pro;
+	return (string) get_db_sql ($sql);
 }
 
-// --------------------------------------------------------------- 
-// Returns agent id given name of agent
-// --------------------------------------------------------------- 
-
-function give_agent_id_from_module_id ($id_module){
-	$query1="SELECT * FROM tagente_modulo WHERE id_agente_modulo = $id_module";
-	$resq1=mysql_query($query1);
-	if ($rowdup=mysql_fetch_array($resq1))
-		$pro=$rowdup["id_agente"];
-	else
-		$pro = "";
-	return $pro;
+/** 
+ * Get agent id from an agent module.
+ * 
+ * @param id_agent_module Id of the agent module.
+ * 
+ * @return The agent if of the given module.
+ */
+function give_agent_id_from_module_id ($id_agent_module) {
+	return (int) get_db_value ('id_agente', 'tagent_modulo', 'id_agente_modulo', $id_agent_module);
 }
 
-// --------------------------------------------------------------- 
-// Generic access to a field ($field) given a table
-// --------------------------------------------------------------- 
-
+/** 
+ * Get the first value of the first row of a table in the database.
+ * 
+ * @param field Field name to get
+ * @param table Table to retrieve the data
+ * @param field_search Field to filter elements
+ * @param condition Condition the field must have.
+ * 
+ * @return 
+ */
 function get_db_value ($field, $table, $field_search, $condition){
 	if (is_int ($condition)) {
 		$sql = sprintf ('SELECT %s FROM %s WHERE %s = %d', $field, $table, $field_search, $condition);
@@ -1230,6 +1136,7 @@ function get_db_value ($field, $table, $field_search, $condition){
 	} else {
 		$sql = sprintf ('SELECT %s FROM %s WHERE %s = "%s"', $field, $table, $field_search, $condition);
 	}
+	$sql .= ' LIMIT 1';
 	
 	$result = mysql_query ($sql);
 	if (! $result) {
@@ -1242,13 +1149,13 @@ function get_db_value ($field, $table, $field_search, $condition){
 	return NULL;
 }
 
-// --------------------------------------------------------------- 
-// Wrapper for old function name. Should be upgraded/renamed in next versions
-// --------------------------------------------------------------- 
-function give_db_value ($field, $table, $field_search, $condition) {
-    return get_db_value ($field, $table, $field_search, $condition);
-}
-
+/** 
+ * Get the first row of an SQL database query.
+ * 
+ * @param sql SQL select statement to execute.
+ * 
+ * @return The first row of the result.
+ */
 function get_db_row_sql ($sql) {
 	$result = mysql_query ($sql);
 	if (! $result) {
@@ -1261,7 +1168,18 @@ function get_db_row_sql ($sql) {
 	return NULL;
 }
 
-
+/** 
+ * Get the first row of a database query into a table.
+ *
+ * The SQL statement executed would be something like:
+ * "SELECT * FROM $table WHERE $field_search = $condition"
+ *
+ * @param table Table to get the row
+ * @param field_search Field to filter elementes
+ * @param condition Condition the field must have.
+ * 
+ * @return The first row of a database query.
+ */
 function get_db_row ($table, $field_search, $condition) {
 	global $config;
 	
@@ -1272,15 +1190,20 @@ function get_db_row ($table, $field_search, $condition) {
 	} else {
 		$sql = sprintf ('SELECT * FROM %s WHERE %s = "%s"', $table, $field_search, $condition);
 	}
+	$sql .= ' LIMIT 1';
 	
 	return get_db_row_sql ($sql);
 }
 
-// --------------------------------------------------------------- 
-// Generic access to single field using a free SQL sentence
-// --------------------------------------------------------------- 
-
-function get_db_sql ($sql, $field = 0){
+/** 
+ * Get a single field in the databse from a SQL query.
+ *
+ * @param sql SQL statement to execute
+ * @param field Field number to get, beggining by 0. Default: 0
+ * 
+ * @return The selected field of the first row in a select statement.
+ */
+function get_db_sql ($sql, $field = 0) {
 	global $config;
 	
 	$result = mysql_query ($sql);
@@ -1311,8 +1234,9 @@ function get_db_all_rows_sqlfree ($sql) {
 		return array();
 	}
 	while ($row = mysql_fetch_array ($result)) {
-		array_push ($retval, $row);
+		array_push ($retval, &$row);
 	}
+	
 	return $retval;
 }
 
@@ -1361,51 +1285,55 @@ function get_db_all_fields_in_table ($table, $field) {
 	return get_db_all_rows_sqlfree ('SELECT '.$field.' FROM '. $table);
 }
 
-
-
-// ---------------------------------------------------------------
-// Return current status from a given agent module (1 alive, 0 down)
-// ---------------------------------------------------------------
-
+/** 
+ * Get the status of an alert assigned to an agent module.
+ * 
+ * @param id_agentmodule Id agent module to check.
+ * 
+ * @return True if there were alerts fired.
+ */
 function return_status_agent_module ($id_agentmodule = 0){
 	$query1 = "SELECT estado FROM tagente_estado WHERE id_agente_modulo = " . $id_agentmodule; 
 	$resq1 = mysql_query ($query1);
 	if ($resq1 != 0) {
 		$rowdup = mysql_fetch_array($resq1);
-		if ($rowdup[0] == 100){
+		if ($rowdup[0] == 100) {
 			// We need to check if there are any alert on this item
 			$query2 = "SELECT SUM(times_fired) FROM talerta_agente_modulo WHERE id_agente_modulo = " . $id_agentmodule;
 			$resq2 = mysql_query($query2);
 			if ($resq2 != 0) {
 		                $rowdup2 = mysql_fetch_array ($resq2);
 				if ($rowdup2[0] > 0){
-					return 0;
+					return false;
 				}
 			}
 			// No alerts fired for this agent module
-			return 1;
+			return true;
 		} elseif ($rowdup[0] == 0) // 0 is ok for estado field
-			return 1;
-		else 
-			return 0;
-	} else // asking for unknown module ?
-		return 0; 
+			return true;
+		return false;
+	}
+
+	return true;
 }
 
-// ---------------------------------------------------------------
-// Return current status from a given layout
-// ---------------------------------------------------------------
-
-// This get's all data from it contained elements (including recursive calls to another nested 
-// layouts, and makes and AND to be sure that ALL items are OK. If any of them is down, then
-// result is down (0)
-
-function return_status_layout ($id_layout = 0){
+/** 
+ * Get the status of a layout.
+ *
+ * It gets all the data of the contained elements (including nested
+ * layouts), and makes an AND operation to be sure that all the items
+ * are OK. If any of them is down, then result is down (0)
+ * 
+ * @param id_layout Id of the layout
+ * 
+ * @return The status of the given layout.
+ */
+function return_status_layout ($id_layout = 0) {
 	$temp_status = 0;
 	$temp_total = 0;
-	$sql="SELECT * FROM tlayout_data WHERE id_layout = $id_layout";
-	$res=mysql_query($sql);
-	while ($row = mysql_fetch_array($res)){
+	$sql = "SELECT * FROM tlayout_data WHERE id_layout = $id_layout";
+	$res = mysql_query ($sql);
+	while ($row = mysql_fetch_array ($res)) {
 		$id_agentmodule = $row["id_agente_modulo"];
 		$type = $row["type"];
 		$parent_item = $row["parent_item"];
@@ -1420,52 +1348,40 @@ function return_status_layout ($id_layout = 0){
 	}
 	if ($temp_status == $temp_total)
 		return 1;
-	else
-		return 0;
+	return 0;
 }
 
-
-// ---------------------------------------------------------------
-// Return current value from a given agent module 
-// ---------------------------------------------------------------
-
-function return_value_agent_module ($id_agentmodule = 0){
-	$query1="SELECT datos FROM tagente_estado WHERE id_agente_modulo = ".$id_agentmodule; 
-	$resq1=mysql_query($query1);
-	if ($resq1 != 0) {
-		$rowdup=mysql_fetch_array($resq1);
-			return format_numeric($rowdup[0]);
-		
-	} else 
-		return 0; 
+/** 
+ * Get the current value of an agent module.
+ * 
+ * @param id_agentmodule 
+ * 
+ * @return 
+ */
+function return_value_agent_module ($id_agentmodule) {
+	return format_numeric (get_db_value ('datos', 'tagente_estado', 'id_agente_modulo', $id_agentmodule));
 }
 
-// ---------------------------------------------------------------
-// Return coordinate X from a layout item
-// ---------------------------------------------------------------
-
-function return_coordinate_X_layoutdata ($id_layoutdata){
-	$query1="SELECT pos_x FROM tlayout_data WHERE id = ".$id_layoutdata; 
-	$resq1=mysql_query($query1);
-	if ($resq1 != 0) {
-		$rowdup=mysql_fetch_array($resq1);
-			return ($rowdup[0]);
-	} else 
-		return (0);
+/** 
+ * Get the X axis coordinate of a layout item
+ * 
+ * @param id_layoutdata Id of the layout to get.
+ * 
+ * @return The X axis coordinate value.
+ */
+function return_coordinate_X_layoutdata ($id_layoutdata) {
+	return (float) get_db_value ('pos_x', 'tlayout_data', 'id', $id_layoutdata);
 }
 
-// ---------------------------------------------------------------
-// Return coordinate X from a layout item
-// ---------------------------------------------------------------
-
+/** 
+ * Get the X axis coordinate of a layout item
+ * 
+ * @param id_layoutdata Id of the layout to get.
+ * 
+ * @return The X axis coordinate value.
+ */
 function return_coordinate_y_layoutdata ($id_layoutdata){
-	$query1="SELECT pos_y FROM tlayout_data WHERE id = ".$id_layoutdata; 
-	$resq1=mysql_query($query1);
-	if ($resq1 != 0) {
-		$rowdup=mysql_fetch_array($resq1);
-			return ($rowdup[0]);
-	} else 
-		return (0);
+	return (float) get_db_value ('pos_y', 'tlayout_data', 'id', $id_layoutdata);
 }
 
 /**
@@ -1474,7 +1390,7 @@ function return_coordinate_y_layoutdata ($id_layoutdata){
  * It's useful to know the first value of a module in an interval, 
  * since it will be the last value in the 
  *
- * @param $id_agent_module Agent module id to look.
+ * @param $id_agent_module Agent module id
  * @param $utimestamp The timestamp to look backwards from and get the data.
  *
  * @return The row of tagente_datos of the last period. NULL if there were no data.
@@ -1488,6 +1404,15 @@ function get_previous_data ($id_agent_module, $utimestamp) {
 	return get_db_row_sql ($sql);
 }
 
+/** 
+ * Get the average value of an agent module in a period of time.
+ * 
+ * @param id_agent_module Agent module id
+ * @param period Period of time to check (in seconds)
+ * @param date Top date to check the values. Default current time.
+ * 
+ * @return The average module value in the interval.
+ */
 function return_moduledata_avg_value ($id_agent_module, $period, $date = 0) {
 	if (! $date)
 		$date = time ();
@@ -1509,7 +1434,15 @@ function return_moduledata_avg_value ($id_agent_module, $period, $date = 0) {
 	return $sum / $total;
 }
 
-
+/** 
+ * Get the maximum value of an agent module in a period of time.
+ * 
+ * @param id_agent_module Agent module id to get the maximum value.
+ * @param period Period of time to check (in seconds)
+ * @param date Top date to check the values. Default current time.
+ * 
+ * @return The maximum module value in the interval.
+ */
 function return_moduledata_max_value ($id_agent_module, $period, $date = 0) {
 	if (! $date)
 		$date = time ();
@@ -1530,6 +1463,15 @@ function return_moduledata_max_value ($id_agent_module, $period, $date = 0) {
 	return max ($previous_data, $max);
 }
 
+/** 
+ * Get the minimum value of an agent module in a period of time.
+ * 
+ * @param id_agent_module Agent module id to get the minimum value.
+ * @param period Period of time to check (in seconds)
+ * @param date Top date to check the values. Default current time.
+ * 
+ * @return The minimum module value of the module
+ */
 function return_moduledata_min_value ($id_agent_module, $period, $date = 0) {
 	if (! $date)
 		$date = time ();
@@ -1549,6 +1491,15 @@ function return_moduledata_min_value ($id_agent_module, $period, $date = 0) {
 	return $min;
 }
 
+/** 
+ * Get the sumatory of values of an agent module in a period of time.
+ * 
+ * @param id_agent_module Agent module id to get the sumatory.
+ * @param period Period of time to check (in seconds)
+ * @param date Top date to check the values. Default current time.
+ * 
+ * @return The sumatory of the module values in the interval.
+ */
 function return_moduledata_sum_value ($id_agent_module, $period, $date = 0) {
 	if (! $date)
 		$date = time ();
@@ -1603,7 +1554,7 @@ function return_moduledata_sum_value ($id_agent_module, $period, $date = 0) {
 	/* The last interval value must be get from tagente_estado, but
 	   it will count only if it's not older than date demanded
 	*/
-	$interval_last = give_db_value ('utimestamp', 'tagente_estado', 'id_agente_modulo', $id_agent_module);
+	$interval_last = get_db_value ('utimestamp', 'tagente_estado', 'id_agente_modulo', $id_agent_module);
 	if ($interval_last <= $datelimit) {
 		$elapsed = $interval_last - $interval_begin;
 		$times = intval ($elapsed / $interval);
@@ -1613,6 +1564,13 @@ function return_moduledata_sum_value ($id_agent_module, $period, $date = 0) {
 	return (float) $sum;
 }
 
+/** 
+ * Get a translated string.
+ * 
+ * @param string String to translate
+ * 
+ * @return The translated string. If not defined, the same string will be returned
+ */
 function lang_string ($string) {
 	global $config;
 	require ($config["homedir"]."/include/languages/language_".$config["language"].".php");
@@ -1621,22 +1579,31 @@ function lang_string ($string) {
 	return $string;
 }
 
+/** 
+ * Get the numbers of servers up.
+ *
+ * This check assumes that server_keepalive should be at least 15 minutes.
+ * 
+ * @return The number of agents alive.
+ */
 function check_server_status () {
-	global $config;
-	// This check assumes that server_keepalive should be AT LEAST 15 MIN
 	$sql = "SELECT COUNT(id_server) FROM tserver WHERE status = 1 AND keepalive > NOW() - INTERVAL 15 MINUTE";
-	$res = get_db_sql ($sql);
+	$status = get_db_sql ($sql);
 	// Set servers to down
-	if ($res == 0){ 
-		$res2 = mysql_query ("UPDATE tserver SET status = 0");
+	if ($status == 0){ 
+		mysql_query ("UPDATE tserver SET status = 0");
 	}
-	return $res;
+	return $status;
 }
 
+/** 
+ * 
+ * 
+ * @param id_combined_alert 
+ * 
+ * @return 
+ */
 function show_alert_row_mini ($id_combined_alert) {
-	global $config;
-	global $lang_label;
-
 	$color=1;
 	$sql = "SELECT talerta_agente_modulo.*, tcompound_alert.operation FROM talerta_agente_modulo, tcompound_alert WHERE tcompound_alert.id_aam = talerta_agente_modulo.id_aam AND tcompound_alert.id = ".$id_combined_alert;
 	$result = mysql_query ($sql);
@@ -1700,7 +1667,7 @@ function show_alert_row_mini ($id_combined_alert) {
 
 		// We have alert text ?
 		if ($row2["alert_text"]!= "") {
-			echo "<td class='$tdcolor'>".$lang_label["text"]."</td>";
+			echo "<td class='$tdcolor'>".lang_string ('text')."</td>";
 		} else {
 			echo "<td class='$tdcolor'>".$mymin."/".$mymax."</td>";
 		}
@@ -1714,9 +1681,9 @@ function show_alert_row_mini ($id_combined_alert) {
 
 		// Has recovery notify activated ?
 		if ($row2["recovery_notify"] > 0)
-			$recovery_notify = lang_string("Yes");
+			$recovery_notify = lang_string ("Yes");
 		else
-			$recovery_notify = lang_string("No");
+			$recovery_notify = lang_string ("No");
 
 		echo "</td><td class='$tdcolor'>".$recovery_notify;
 
@@ -1734,122 +1701,134 @@ function show_alert_row_mini ($id_combined_alert) {
 
 		// Fired ?
 		if ($row2["times_fired"]>0)
-		echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_red.png' title='".lang_string("fired")."'></td>";
+			echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_red.png' title='".lang_string("fired")."'></td>";
 		else
-		echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_green.png' title='".$lang_label["not_fired"]."'></td>";
+			echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_green.png' title='".lang_string ('not_fired')."'></td>";
 
 	}
 	echo "</table>";
 }
 
+/** 
+ * 
+ * 
+ * @param filter 
+ * @param limit 
+ * @param width 
+ * 
+ * @return 
+ */
 function smal_event_table ($filter = "", $limit = 10, $width = 440) {
 	global $config;
 	global $lang_label;
 
-	$sql2 = "SELECT * FROM tevento $filter ORDER BY timestamp DESC LIMIT $limit";
+	$sql = "SELECT * FROM tevento $filter ORDER BY timestamp DESC LIMIT $limit";
 	echo "<table cellpadding='4' cellspacing='4' width='$width' border=0 class='databox'>";
 	echo "<tr>";
-	echo "<th colspan=6>".lang_string("Latest events");
+	echo "<th colspan=6>".lang_string ("Latest events");
 	echo "<tr>";
 	echo "<th class='datos3 f9'>".lang_string ("St")."</th>";
 	echo "<th class='datos3 f9'>".lang_string ("Type")."</th>";
-	echo "<th class='datos3 f9'>".$lang_label["event_name"]."</th>";
-	echo "<th class='datos3 f9'>".$lang_label["agent_name"]."</th>";
-	echo "<th class='datos3 f9'>".$lang_label["id_user"]."</th>";
-	echo "<th class='datos3 f9'>".$lang_label["timestamp"]."</th>";
-	$result2=mysql_query($sql2);
-	while ($row2=mysql_fetch_array($result2)){
-		$id_grupo = $row2["id_grupo"];
-		if (give_acl($config["id_user"], $id_grupo, "AR") == 1){ // Only incident read access to view data !
-			switch ($row2["criticity"]) {
-			case 0: 
-				$tdclass = "datos_blue";
-				break;
-			case 1: 
-				$tdclass = "datos_grey";
-				break;
-			case 2: 
-				$tdclass = "datos_green";
-				break;
-			case 3: 
-				$tdclass = "datos_yellow";
-				break;
-			case 4: 
-				$tdclass = "datos_red";
-				break;
-			default:
-				$tdclass = "datos_grey";
-			}
-			$criticity_label = return_priority ($row2["criticity"]);
-			// Colored box 
-			echo "<tr><td class='$tdclass' title='$criticity_label' align='center'>";
-			if ($row2["estado"] == 0)
-				echo "<img src='images/pixel_red.png' width=20 height=20>";
-			else
-				echo "<img src='images/pixel_green.png' width=20 height=20>";
+	echo "<th class='datos3 f9'>".lang_string ('event_name')."</th>";
+	echo "<th class='datos3 f9'>".lang_string ('agent_name')."</th>";
+	echo "<th class='datos3 f9'>".lang_string ('id_user')."</th>";
+	echo "<th class='datos3 f9'>".lang_string ('timestamp')."</th>";
+	$result = mysql_query ($sql);
+	while ($event = mysql_fetch_array ($result)) {
+		$id_grupo = $event["id_grupo"];
+		if (! give_acl ($config["id_user"], $id_grupo, "AR")) {
+			continue;
+		}
 		
-			// Event type
-			echo "<td class='".$tdclass."' title='".$row2["event_type"]."'>";
-			switch ($row2["event_type"]){
-			case "unknown": 
-				echo "<img src='images/err.png'>";
-				break;
-			case "alert_recovered": 
-				echo "<img src='images/error.png'>";
-				break;
-			case "alert_manual_validation": 
-				echo "<img src='images/eye.png'>";
-				break;
-			case "monitor_up":
-				echo "<img src='images/lightbulb.png'>";
-				break;
-			case "monitor_down":
-				echo "<img src='images/lightbulb_off.png'>";
-				break;
-			case "alert_fired":
-				echo "<img src='images/bell.png'>";
-				break;
-			case "system";
+		/* Only incident read access to view data ! */
+		switch ($event["criticity"]) {
+		case 0: 
+			$tdclass = "datos_blue";
+			break;
+		case 1: 
+			$tdclass = "datos_grey";
+			break;
+		case 2: 
+			$tdclass = "datos_green";
+			break;
+		case 3: 
+			$tdclass = "datos_yellow";
+			break;
+		case 4: 
+			$tdclass = "datos_red";
+			break;
+		default:
+			$tdclass = "datos_grey";
+		}
+		
+		$criticity_label = return_priority ($event["criticity"]);
+		/* Colored box */
+		echo "<tr><td class='$tdclass' title='$criticity_label' align='center'>";
+		if ($event["estado"] == 0)
+			echo "<img src='images/pixel_red.png' width=20 height=20>";
+		else
+			echo "<img src='images/pixel_green.png' width=20 height=20>";
+	
+		/* Event type */
+		echo "<td class='".$tdclass."' title='".$event["event_type"]."'>";
+		switch ($event["event_type"]) {
+		case "unknown": 
+			echo "<img src='images/err.png'>";
+			break;
+		case "alert_recovered": 
+			echo "<img src='images/error.png'>";
+			break;
+		case "alert_manual_validation": 
+			echo "<img src='images/eye.png'>";
+			break;
+		case "monitor_up":
+			echo "<img src='images/lightbulb.png'>";
+			break;
+		case "monitor_down":
+			echo "<img src='images/lightbulb_off.png'>";
+			break;
+		case "alert_fired":
+			echo "<img src='images/bell.png'>";
+			break;
+		case "system";
 			echo "<img src='images/cog.png'>";
 			break;
-			case "recon_host_detected";
+		case "recon_host_detected";
 			echo "<img src='images/network.png'>";
 			break;
-			}
-		
-			// Event description
-			echo "<td class='".$tdclass."f9' title='".$row2["evento"]."'>";
-			echo substr($row2["evento"],0,45);
-			if (strlen($row2["evento"]) > 45)
-				echo "..";
-			if ($row2["id_agente"] > 0){
-				// Agent name
-				$agent_name = dame_nombre_agente($row2["id_agente"]);
-				echo "<td class='".$tdclass."f9' title='$agent_name'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row2["id_agente"]."'><b>";
-				echo substr($agent_name, 0, 14);
-				if (strlen($agent_name) > 14)
-					echo "..";
-				echo "</b></a>";
-			
-				// for System or SNMP generated alerts
-			} else { 
-				if ($row2["event_type"] == "system"){
-					echo "<td class='$tdclass'>".lang_string("System");
-				} else {
-					echo "<td class='$tdclass'>".$lang_label["alert"]."SNMP";
-				}
-			}
-		
-			// User who validated event
-			echo "<td class='$tdclass'>";
-			if ($row2["estado"] <> 0)
-				echo "<a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$row2["id_usuario"]."'>".substr($row2["id_usuario"],0,8)."<a href='#' class='tip'> <span>".dame_nombre_real($row2["id_usuario"])."</span></a></a>";
-		
-			// Timestamp
-			echo "<td class='".$tdclass."f9' title='".$row2["timestamp"]."'>";
-			echo human_time_comparation($row2["timestamp"]);
-		
 		}
+	
+		// Event description
+		echo "<td class='".$tdclass."f9' title='".$event["evento"]."'>";
+		echo substr($event["evento"],0,45);
+		if (strlen($event["evento"]) > 45)
+			echo "..";
+		if ($event["id_agente"] > 0) {
+			// Agent name
+			$agent_name = dame_nombre_agente ($event["id_agente"]);
+			echo "<td class='".$tdclass."f9' title='$agent_name'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$event["id_agente"]."'><b>";
+			echo substr ($agent_name, 0, 14);
+			if (strlen ($agent_name) > 14)
+				echo "..";
+			echo "</b></a>";
+		
+			// for System or SNMP generated alerts
+		} else { 
+			if ($event["event_type"] == "system") {
+				echo "<td class='$tdclass'>".lang_string ("System");
+			} else {
+				echo "<td class='$tdclass'>".lang_string ("alert")."SNMP";
+			}
+		}
+	
+		// User who validated event
+		echo "<td class='$tdclass'>";
+		if ($event["estado"] != 0)
+			echo "<a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$event["id_usuario"]."'>".substr($event["id_usuario"],0,8)."<a href='#' class='tip'> <span>".dame_nombre_real ($event["id_usuario"])."</span></a></a>";
+	
+		// Timestamp
+		echo "<td class='".$tdclass."f9' title='".$event["timestamp"]."'>";
+		echo human_time_comparation ($event["timestamp"]);
 	}
 	echo "</table>";
 }

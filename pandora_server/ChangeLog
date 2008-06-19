@@ -1,3 +1,8 @@
+
+2008-06-19  Sancho Lerena  <slerena@gmail.com>
+
+    * pandora_recon: Added sleep to main loop to save CPU.
+
 2008-06-18  Sancho Lerena  <slerena@gmail.com>
 
     * pandora_dbstress.pl: Added suppor for "text" moduletypes.

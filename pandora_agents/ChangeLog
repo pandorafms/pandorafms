@@ -1,3 +1,12 @@
+2008-06-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* win32/windows/pandora_wmi.cc, win32/windows/pandora_wmi.h,
+	  win32/modules/pandora_module.h, 
+	  win32/modules/pandora_module_logevent.cc,
+	  win32/modules/pandora_data.cc, win32/modules/pandora_data.h,
+	  win32/modules/pandora_module.cc: Data timestamps are taken from
+	  the log file itself.
+
 2008-06-18  Ramon Novoa  <rnovoa@artica.es>
 
 	* win32/modules/pandora_module_logevent.cc: Fixed execution interval.

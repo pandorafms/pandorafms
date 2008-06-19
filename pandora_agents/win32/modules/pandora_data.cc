@@ -36,6 +36,24 @@ Pandora_Data::Pandora_Data (string value) {
 }
 
 /** 
+ * Pandora_Data constructor.
+ *
+ * Set all attributes
+ * 
+ * @param value Data value.
+ * @param system_time Timestamp.
+ */
+Pandora_Data::Pandora_Data (string value, SYSTEMTIME *system_time) {
+    this->value = value;
+    this->timestamp.wYear = system_time->wYear;
+    this->timestamp.wMonth = system_time->wMonth;
+    this->timestamp.wDay = system_time->wDay;
+    this->timestamp.wHour = system_time->wHour;
+    this->timestamp.wMinute = system_time->wMinute;
+    this->timestamp.wSecond = system_time->wSecond;
+}
+
+/** 
  * Pandora_Data default constructor
  * 
  * Set all parameters to blank

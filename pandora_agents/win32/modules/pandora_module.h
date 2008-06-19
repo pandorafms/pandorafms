@@ -153,6 +153,8 @@ namespace Pandora_Modules {
                 virtual void       run            ();
                 
 		virtual void       setOutput      (string output);
+        virtual void       setOutput      (string output, SYSTEMTIME *system_time);
+
                 
                 string             getName        () const;
 		string             getDescription () const;

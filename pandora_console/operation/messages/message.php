@@ -60,17 +60,17 @@ $resultado3=mysql_query($sql3);
 
 if (isset($_GET["nuevo_mensaje"])){
 	// Create message
-	$usuario_destino = give_parameter_post ("u_destino");
-	$subject = give_parameter_post ("subject");
-	$mensaje = give_parameter_post ("mensaje");
+	$usuario_destino = get_parameter ("u_destino");
+	$subject = get_parameter ("subject");
+	$mensaje = get_parameter ("mensaje");
 	create_message($iduser, $usuario_destino, $subject, $mensaje);
 }
 
 if (isset($_GET["nuevo_mensaje_g"])){
 	// Create message to groups
-	$grupo_destino = give_parameter_post ("g_destino");
-	$subject = give_parameter_post ("subject");
-	$mensaje = give_parameter_post ("mensaje");
+	$grupo_destino = get_parameter ("g_destino");
+	$subject = get_parameter ("subject");
+	$mensaje = get_parameter ("mensaje");
 	$sql= 'SELECT id_usuario FROM tusuario_perfil WHERE id_grupo ='. $grupo_destino;
 	$result = mysql_query($sql);
 

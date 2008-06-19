@@ -193,13 +193,15 @@ require "include/functions_db.php";
 	}
 	$pagina = "";
 	if (isset ($_GET["sec2"])){
-		$sec2 = parametro_limpio ($_GET["sec2"]);
+		$sec2 = get_parameter_get ('sec2');
+		$sec2 = parameter_extra_clean ($sec2);
 		$pagina = $sec2;
 	} else
 		$sec2 = "";
 		
 	if (isset ($_GET["sec"])){
-		$sec = parametro_limpio ($_GET["sec"]);
+		$sec = get_parameter_get ('sec');
+		$sec = parameter_extra_clean ($sec);
 		$pagina = $sec2;
 	}
 	else

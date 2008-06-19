@@ -22,37 +22,58 @@ function return_module_SLA ($id_agent_module, $period, $min_value, $max_value, $
 		$date = time ();
 	$datelimit = $date - $period; // limit date
 	$id_agent = give_db_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
-	// Get the whole interval of data
+	/* Get all the data in the interval */
 	$sql = sprintf ('SELECT * FROM tagente_datos 
 			WHERE id_agente = %d AND id_agente_modulo = %d 
-			AND utimestamp > %d AND utimestamp <= %d',
+			AND utimestamp > %d AND utimestamp <= %d 
+			ORDER BY utimestamp ASC',
 			$id_agent, $id_agent_module, $datelimit, $date);
-	$result = mysql_query ($sql);
+	$datas = get_db_all_rows_sqlfree ($sql);
 	$last_data = "";
 	$total_badtime = 0;
 	$interval_begin = 0;
-	$interval_last = 0;
-
-	if (! $result) {
-		return 100;
+	$interval_last = $date;
+	$previous_data_timestamp = 0;
+	
+	/* Get also the previous data before the selected interval. */
+	$previous_data = get_previous_data ($id_agent_module, $datelimit);
+	if ($previous_data) {
+		/* Add data to the beginning */
+		array_unshift ($datas, $previous_data);
+		$previous_data_timestamp = $previous_data['utimestamp'];
 	}
-	while ($row = mysql_fetch_array ($result)) {
-		if ( ($row["datos"] > $max_value) || ($row["datos"] < $min_value)) {
+	if (sizeof ($datas) == 0) {
+		return false;
+	}
+	
+	foreach ($datas as $data) {
+		if ($data["datos"] > $max_value || $data["datos"] < $min_value) {
 			if ($interval_begin == 0) {
-				$interval_begin = $row["utimestamp"];
+				$interval_begin = $data["utimestamp"];
 			}
-		} elseif ($interval_begin != 0){
+		} elseif ($interval_begin != 0) {
 			// Here ends interval with data outside valid values,
 			// Need to add this time to counter
-			$interval_last = $row["utimestamp"];
+			$interval_last = $data["utimestamp"];
 			$temp_time = $interval_last - $interval_begin;
-			$total_badtime = $total_badtime + $temp_time;
+			$total_badtime += $temp_time;
 			$interval_begin = 0;
 			$interval_last = 0;
 		}
 	}
+	
+	/* Check the last interval, if any */
+	if ($interval_begin != 0) {
+		/* The last time was the time of the previous data in the 
+		interval. That means that in all the interval, the data was 
+		not between the expected values, so the SLA is zero. */
+		if ($interval_begin = $previous_data_timestamp)
+			return 0;
+		$total_badtime += $interval_last - $interval_begin;
+	}
+	
 	$result = 100 - ($total_badtime / $period) * 100;
-	return $result;
+	return max ($result, 0);
 }
 
 function general_stats ( $id_user, $id_group = 0) {
@@ -192,10 +213,10 @@ function event_reporting ($id_agent, $period, $date = 0, $return = false) {
 	$sql2="SELECT * FROM tevento WHERE id_agente = $id_agent AND utimestamp > '$mytimestamp'";
 	
 	// Make query for data (all data, not only distinct).
-	$result2=mysql_query($sql2);
-	while ($row2=mysql_fetch_array($result2)){
+	$result2 = mysql_query($sql2);
+	while ($row2 = mysql_fetch_array($result2)) {
 		$id_grupo = $row2["id_grupo"];
-		if (give_acl($id_user, $id_grupo, "IR") == 1){ // Only incident read access to view data !
+		if (give_acl($id_user, $id_grupo, "IR") == 1) { // Only incident read access to view data !
 			$id_group = $row2["id_grupo"];
 			if ($color == 1){
 				$tdcolor = "datos";

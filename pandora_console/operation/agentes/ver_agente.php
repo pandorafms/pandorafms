@@ -53,7 +53,7 @@ if (comprueba_login() == 0) {
 		if (give_acl($id_usuario, $id_grupo, "AR")==1){
 		
 			// Check for validate alert request
-			$validate_alert = give_parameter_get ("validate_alert");
+			$validate_alert = get_parameter ("validate_alert");
 			if ($validate_alert != ""){
 				if (give_acl($id_usuario, $id_grupo, "AW")==1){
 					$alert_row = get_db_row ("talerta_agente_modulo", "id_aam", $validate_alert);

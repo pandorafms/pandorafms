@@ -27,13 +27,13 @@ echo "<h2>".lang_string("Database sanity tool")."</h2>";
 
 $sanity = get_parameter ("sanity", 0);
 
-if ($sanity == 1){
+if ($sanity == 1) {
 	// Create tagente estado when missing
 	// ----------------------------------
-	echo "<h2>".lang_string("Checking tagente_estado table")."</h2>";
+	echo "<h2>".lang_string ("Checking tagente_estado table")."</h2>";
 	$sql = "SELECT * FROM tagente_modulo";
-	$result=mysql_query($sql);
-	while ($row=mysql_fetch_array($result)){
+	$result = mysql_query ($sql);
+	while ($row = mysql_fetch_array ($result)) {
 		$id_agente_modulo = $row[0];
 		$id_agente = $row["id_agente"];
 		// check if exist in tagente_estado and create if not
@@ -49,37 +49,36 @@ if ($sanity == 1){
 	
 	echo "<h3>".lang_string("Checking database consistency")."</h2>";
 	$query1 = "SELECT * FROM tagente_estado";
-	$result=mysql_query($query1);
-	while ($row=mysql_fetch_array($result)){
+	$result = mysql_query($query1);
+	while ($row = mysql_fetch_array ($result)) {
 		$id_agente_modulo = $row[1];
 		# check if exist in tagente_estado and create if not
 		$query2 = "SELECT COUNT(*) FROM tagente_modulo WHERE id_agente_modulo = $id_agente_modulo";
-		$result2=mysql_query($query2);
-		$row2=mysql_fetch_array($result2);
-		if ($row2[0] == 0){
+		$result2 = mysql_query ($query2);
+		$row2 = mysql_fetch_array ($result2);
+		if ($row2[0] == 0) {
 			$query3 = "DELETE FROM tagente_estado WHERE id_agente_modulo = $id_agente_modulo";
 			echo "Deleting non-existing module $id_agente_modulo in state table <br>";
 			mysql_query($query3);
 		}
 	}
-}
-elseif ($sanity == 2){
+} elseif ($sanity == 2) {
 	echo "<h3>".lang_string("Deleting non-init data")."</h2>";
 	$query1 = "SELECT * FROM tagente_estado WHERE utimestamp = 0";
-	$result=mysql_query($query1);
-	while ($row=mysql_fetch_array($result)){
+	$result = mysql_query ($query1);
+	while ($row = mysql_fetch_array ($result)) {
 		$id_agente_modulo = $row[1];
-		$query0 = "DELETE FROM tagente_modulo WHERE id_agente_modulo = $id_agente_modulo";
-		$query1 = "DELETE FROM tagente_estado WHERE id_agente_modulo = $id_agente_modulo";
 		echo "Deleting non init module $id_agente_modulo <br>";
-		mysql_query($query0);
-		mysql_query($query1);
+		$sql = "DELETE FROM tagente_modulo WHERE id_agente_modulo = $id_agente_modulo";
+		mysql_query ($sql);
+		$sql = "DELETE FROM tagente_estado WHERE id_agente_modulo = $id_agente_modulo";
+		mysql_query ($sql);
 	}
 } 
 
 echo "<br>";
 echo "<div style='width:520px'>";
-echo lang_string("Pandora FMS Sanity tool is used to remove bad database structure data, created modules with missing status, or modules that cannot be initialized (and don't report any valid data) but retry each it's own interval to get data. This kind of bad modules could degrade performance of Pandora FMS. This database sanity tool is also implemented in the <b>pandora_db.pl</b> that you should be running each day or week. This console sanity DONT compact your database, only delete bad structured data.");
+echo lang_string ("Pandora FMS Sanity tool is used to remove bad database structure data, created modules with missing status, or modules that cannot be initialized (and don't report any valid data) but retry each it's own interval to get data. This kind of bad modules could degrade performance of Pandora FMS. This database sanity tool is also implemented in the <b>pandora_db.pl</b> that you should be running each day or week. This console sanity DONT compact your database, only delete bad structured data.");
 	
 echo "<br><br>";
 echo "<b><a href='index.php?sec=gdbman&sec2=godmode/db/db_sanity&sanity=1'>";
@@ -91,7 +90,7 @@ echo "</a></b>";
 echo "<br><br>";
 echo "<b><a href='index.php?sec=gdbman&sec2=godmode/db/db_sanity&sanity=2'>";
 echo "<img src='images/status_away.png'> &nbsp;";
-echo lang_string("Delete non-initialized modules now");
+echo lang_string ("Delete non-initialized modules now");
 echo "</a></b>";
 
 echo "</div>";

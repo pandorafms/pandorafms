@@ -51,7 +51,7 @@ if ((give_acl($id_user,0,"AR") != 1 ) AND (dame_admin($id_user)!=1)) {
 }
 
 
-$id_report = give_parameter_get ( 'id', $default = "");
+$id_report = get_parameter ('id');
 if ($id_report == ""){
 	audit_db($id_user,$REMOTE_ADDR, "HACK Attempt","Trying to access graph viewer withoud ID");
 	include ("general/noaccess.php");

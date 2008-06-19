@@ -165,9 +165,9 @@ if (comprueba_login() == 0) {
 			if ($pertenece == 1) { // Si el agente pertenece a uno de los grupos que el usuario puede visualizar
 				// Obtenemos la lista de todos los modulos de cada agente
 				$sql_t="SELECT * FROM tagente_estado, tagente_modulo 
-				WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
+				WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND 
+				tagente_modulo.disabled = 0 
 				AND tagente_modulo.id_agente=".$id_agente;
-				// $sql_t="SELECT * FROM tagente_estado WHERE id_agente=".$id_agente;
 				$result_t=mysql_query($sql_t);
 				$estado_general = 0; 
 				$numero_modulos = 0; 

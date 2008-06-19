@@ -101,8 +101,11 @@ if ($row=mysql_num_rows($result)){
             $last_modulegroup = $module_group2;
             echo "<tr><td class='datos3' align='center' colspan='9'><b>".$nombre_grupomodulo."</b></td></tr>";
         }
-
-        echo "<tr><td class='".$tdcolor."_id'>".$nombre_modulo."</td>";
+	
+	if ($row["disabled"] == 0)
+        	echo "<tr><td class='".$tdcolor."_id'>".$nombre_modulo."</td>";
+	else
+		echo "<tr><td class='$tdcolor'><i>$nombre_modulo</i></td>";
         
         // Module type (by server type )
         echo "<td class='".$tdcolor."f9'>";

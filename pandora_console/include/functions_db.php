@@ -943,27 +943,23 @@ function show_icon_type ($id_type) {
  * @param int Server type id
  * @return string Fully formatted  IMG HTML tag with icon
  */
-function show_server_type ($id) {
-	global $config;
-	switch ($id) {
-	case 1:
-		return '<img src="'.$config["homeurl"].'/images/data.png" title="Pandora FMS Data server">';
-		break;
-	case 2:
-		return '<img src="'.$config["homeurl"].'/images/network.png" title="Pandora FMS Network server">';
-		break;
-	case 4:
-		return '<img src="'.$config["homeurl"].'/images/plugin.png" title="Pandora FMS Plugin server">';
-		break;
-	case 5:
-		return '<img src="'.$config["homeurl"].'/images/chart_bar.png" title="Pandora FMS Prediction server">';
-		break;
-	case 6:
-		return '<img src="'.$config["homeurl"].'/images/wmi.png" title="Pandora FMS WMI server">';
-		break;
-	default:
-		return "--";
-	}
+<<<<<<< .mine
+
+function show_server_type ($id){ 
+    global $config;
+    switch ($id) {
+        case 1: return '<img src="images/data.png" title="Pandora FMS Data server">';
+                break;
+        case 2: return '<img src="images/network.png" title="Pandora FMS Network server">';
+                break;
+        case 4: return '<img src="images/plugin.png" title="Pandora FMS Plugin server">';
+                break;
+        case 5: return '<img src="images/chart_bar.png" title="Pandora FMS Prediction server">';
+                break;
+        case 6: return '<img src="images/wmi.png" title="Pandora FMS WMI server">';
+                break;
+        default: return "--";
+    }
 }
 
 /** 

@@ -116,7 +116,7 @@ function general_stats ( $id_user, $id_group = 0) {
 				$existen_agentes = 1;
 
 			// SQL Join to get monitor status for agents belong this group
-			$sql1 = "SELECT tagente.id_agente, tagente_estado.estado, tagente_estado.datos, tagente_estado.current_interval, tagente_estado.utimestamp, tagente_estado.id_agente_modulo FROM tagente, tagente_estado WHERE tagente.disabled = 0 AND tagente.id_grupo = $migrupo AND tagente.id_agente = tagente_estado.id_agente ";
+			$sql1 = "SELECT tagente.id_agente, tagente_estado.estado, tagente_estado.datos, tagente_estado.current_interval, tagente_estado.utimestamp, tagente_estado.id_agente_modulo FROM tagente, tagente_estado, tagente_modulo WHERE tagente.disabled = 0 AND tagente.id_grupo = $migrupo AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 ";
 			if ($result1 = mysql_query ($sql1)){
 				while ($row1 = mysql_fetch_array ($result1)) {
 					$id_agente = $row1[0];

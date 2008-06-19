@@ -1,3 +1,17 @@
+2008-06-19  Sancho Lerena  <slerena@gmail.com>
+
+	* include/functions_reporting.php
+	include/config.php
+	include/functions.php
+	include/functions_db.php
+	operation/agentes/estado_grupo.php
+	operation/agentes/estado_agente.php
+	operation/agentes/estado_monitores.php
+	operation/agentes/tactical.php
+	operation/agentes/networkmap.php
+	godmode/agentes/module_manager.php
+	godmode/agentes/agent_manager.php: Several fixes for module disabled issue
+
 2008-06-18  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions_db.php: Fixed an error on

@@ -1,5 +1,10 @@
 2008-06-18  Esteban Sanchez  <estebans@artica.es>
 
+	* include/functions_db.php: Fixed an error on
+	get_db_all_rows_sqlfree().
+
+2008-06-18  Esteban Sanchez  <estebans@artica.es>
+
 	* include/functions_db.php: Added documentation to all the functions
 	using javadoc style. Deleted unused and useless functions. Style
 	correction. User pandora database functions in functions that getss

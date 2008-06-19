@@ -2,8 +2,8 @@
 ##########################################################################
 # Pandora FMS Recon Server
 ##########################################################################
-# Copyright (c) 2007 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2007 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2007-2008 Sancho Lerena, slerena@gmail.com
+# Copyright (c) 2007-2008 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -37,6 +37,13 @@ use PandoraFMS::Config;
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
 
+# Queue management
+my @pending_task : shared;
+my %pending_task_hash : shared;
+my %current_task_hash : shared;
+my $queue_lock : shared;
+
+
 # FLUSH in each IO (only for debug, very slooow)
 # ENABLED in DEBUGMODE
 # DISABLE FOR PRODUCTION
@@ -67,8 +74,15 @@ if ( $pa_config{"daemon"} eq "1" ){
     &pandora_daemonize ( \%pa_config);
 }
 
-# Runs main program (have a infinite loop inside)
-threads->new( \&pandora_recon_subsystem, \%pa_config);
+# Launch now all plugin threads
+# $ax is local thread id for this server
+
+for (my $ax=0; $ax < $pa_config{'recon_threads'}; $ax++){
+	threads->new( \&pandora_recon_consumer, \%pa_config, $ax);
+}
+
+# Launch now the producer thread
+threads->new( \&pandora_recon_producer, \%pa_config);
 
 sleep(1);
 
@@ -96,44 +110,109 @@ while ( 1 ){
 #------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------
 
-##########################################################################
-# SUB pandora_recon_subsystem
-# This module runs each X seconds (server threshold) checking for new
-# recon tasks pending to do
-##########################################################################
-
-sub pandora_recon_subsystem {
-	# Init vars
+sub pandora_recon_producer ($) {
 	my $pa_config = $_[0];
+	print " [*] Starting up Recon Producer Thread ...\n";
+
 	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
-	my $server_id = dame_server_id($pa_config, $pa_config->{'servername'}."_Recon", $dbh);
-	my $query_sql; 			# for use in SQL
-	my $exec_sql; 			# for use in SQL
-	my @sql_data;			# for use in SQL 
-	while ( 1 ) {
-		logger ($pa_config, "Loop in Recon Module Subsystem", 10);
-		$query_sql = "SELECT * FROM trecon_task WHERE id_network_server = $server_id AND status = -1";
-		$exec_sql = $dbh->prepare($query_sql);
-		$exec_sql->execute;
-		while (@sql_data = $exec_sql->fetchrow_array()) {
-			my $interval = $sql_data[11];
-			my $my_timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
-			my $my_utimestamp = &UnixDate($my_timestamp, "%s"); # convert from human to integer
-			my $utimestamp = $sql_data[9];
-    			my $id_task = $sql_data[0];
-    			my $task_name = $sql_data[1];
-			# Need to exec this task ?
-			if (($utimestamp + $interval) < $my_utimestamp){
-				logger($pa_config,"Recon Server: Executing task [$task_name]",8);
-   				# EXEC TASK and mark as "in progress" != -1
-   				pandora_update_reconstatus ($pa_config, $dbh, $id_task, 0);
-				pandora_recon_exec_task ($pa_config, $id_task);
+	my $server_id = $pa_config->{'server_id'};
+
+	# Initialize variables for posterior usage
+	my $query_sql;
+	my @sql_data1;
+	my $data_id_task;
+	my $exec_sql1;
+	
+	while (1) {
+		$query_sql = "SELECT * FROM trecon_task 
+                    WHERE 
+                        id_network_server = $server_id 
+                    AND 
+                        status = -1
+					AND
+                        (utimestamp + interval_sweep) < UNIX_TIMESTAMP() 
+                    ";
+
+		$exec_sql1 = $dbh->prepare($query_sql);
+		$exec_sql1 ->execute;
+		while (@sql_data1 = $exec_sql1->fetchrow_array()) {	
+			$data_id_task = $sql_data1[0];
+
+			# Skip modules already queued
+			if ((!defined($pending_task_hash{$data_id_task})) &&
+				(!defined($current_task_hash{$data_id_task}))) {
+                pandora_update_reconstatus ($pa_config, $dbh, $data_id_task, 0);
+				# Locking scope, do not remove redundant { }
+				{
+					lock $queue_lock;
+					push (@pending_task, $data_id_task);
+					$pending_task_hash {$data_id_task}=1;
+				}
 			}
-      	}
-      	$exec_sql->finish();
+		}
+		$exec_sql1->finish();
+        threads->yield;
 		sleep($pa_config->{"server_threshold"});
+	} # Main loop
+}
+
+##########################################################################
+# SUB pandora_recon_consumer
+# This module runs each X seconds (server threshold) checking for recon task
+##########################################################################
+sub pandora_recon_consumer ($$) {
+	my $pa_config = $_[0];
+	my $thread_id = $_[1];
+
+    if ($pa_config->{"quiet"} == 0){
+	    print " [*] Starting up Recon Consumer Thread # $thread_id \n";
+    }
+	
+	my $data_id_task;
+	# Create Database handler
+	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
+	my $counter =0;
+	
+	LOOP: while (1) {
+		if ($counter > 10) {
+            threads->yield;
+			$counter = 0;
+		}
+		
+		# Take the first element on the shared queue
+		# Insert this element on the current task hash
+		{
+			lock $queue_lock;
+			if (scalar(@pending_task) == 0){
+				$counter++;
+				next LOOP;
+			}
+
+			$data_id_task = shift(@pending_task);
+			delete($pending_task_hash{$data_id_task});
+			$current_task_hash{$data_id_task}=1;
+		}
+			
+		# Executing recon task with unmanaged error trapping
+		eval {
+			pandora_recon_exec_task ($pa_config, $data_id_task, $dbh);
+		};
+		if ($@){
+			logger ($pa_config, "[ERROR] Recon Task for Task ID $data_id_task causes a system exception", 0);
+			logger ($pa_config, "ERROR Code: $@", 1);
+		}
+
+		# Remove from queue. If catch an error, probably data is
+		# not been processed, but has been freed from task queue
+		{
+			lock $queue_lock;
+			delete($current_task_hash{$data_id_task});
+		}
+		$counter = 0;
+        threads->yield;
 	}
 }
+
 
 ##########################################################################
 # SUB pandora_detect_os (paconfig, host)
@@ -146,9 +225,15 @@ sub pandora_detect_os {
 
     my $xprobe2 = $pa_config->{"xprobe2"};
     if (! -e $xprobe2){
-        return 10;
+        return 10; # other
 	}
-	my $command = `$xprobe2 $host 2> /dev/null | grep "Running OS" | head -1`;
+    my $command= "";
+    eval {
+        $command = `$xprobe2 $host 2> /dev/null | grep "Running OS" | head -1`;
+    };
+    if ($@){
+        return 10;
+    }
 	return pandora_get_os ($command);
 }
 ##########################################################################
@@ -158,14 +243,15 @@ sub pandora_detect_os {
 sub pandora_recon_exec_task {
 	my $pa_config = $_[0];
 	my $id_task = $_[1];
+    my $dbh = $_[2];
+
 	my $target_ip; 			# Real ip to check
 	my @ip2; 			# temp array for NetAddr::IP
 	my $space;			# temp var to store space of ip's for netaddr::ip
 	my $query_sql; 			# for use in SQL
 	my $exec_sql; 			# for use in SQL
 	my @sql_data;			# for use in SQL 
-	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
-
+	
 	$query_sql = "SELECT * FROM trecon_task WHERE id_rt = $id_task";	
 	$exec_sql = $dbh->prepare($query_sql);
 	$exec_sql ->execute;
@@ -209,20 +295,21 @@ sub pandora_recon_exec_task {
 		$space++; $position++;
 		
 		$add_host = 0;
-		# Check ICMP for this IP
-		if (($task_type == 1) && (scan_icmp ($target_ip, $pa_config->{'networktimeout'}) == 1)){
-			$add_host = 1;
-		}
-		# Check TCP port for this IP
-		elsif (($task_type == 2) && (scan_icmp ($target_ip, $pa_config->{'networktimeout'}) == 1)) {
-			if (scan_tcp ($target_ip, $pa_config->{'networktimeout'}, $extended_value) == 1){
+		# Is this IP listed for any agent ?
+        if (pandora_check_ip ($pa_config, $dbh, $target_ip) == 0){
+
+			# Check ICMP for this IP
+			if (($task_type == 1) && (scan_icmp ($target_ip, $pa_config->{'networktimeout'}) == 1)){
 				$add_host = 1;
 			}
-		}
-		
-		if ($add_host == 1){
-			# Is this IP listed for any agent ?
-			if (pandora_check_ip ($pa_config, $dbh, $target_ip) == 0){
+			# Check TCP port for this IP
+			elsif (($task_type == 2) && (scan_icmp ($target_ip, $pa_config->{'networktimeout'}) == 1)) {
+				if (scan_tcp ($target_ip, $pa_config->{'networktimeout'}, $extended_value) == 1){
+					$add_host = 1;
+				}
+			}
+			
+			if ($add_host == 1){
 				$host_found ++;
 				my $target_ip_resolved = resolv_ip2name($target_ip);
 				$list_ip = $list_ip." ".$target_ip;
@@ -248,7 +335,8 @@ sub pandora_recon_exec_task {
 		}
 
 		my $progress = ceil($position / ($total_hosts / 100));
-		pandora_update_reconstatus ($pa_config, $dbh, $id_task, $progress);		
+		pandora_update_reconstatus ($pa_config, $dbh, $id_task, $progress);
+        pandora_task_set_utimestamp ($pa_config, $dbh, $id_task);
 	} while ($space < $space->broadcast); # fin del buclie principal de iteracion de Ips
 
 	# Create incident
@@ -276,27 +364,27 @@ sub scan_icmp {
         my $l_timeout = $_[1];
         # temporal vars.
         my $result = 0;
-        my $result2 = 0;
         my $p;
 
         # Check for valid destination
         if (!defined($dest)) {
                 return 0;
         }
+        # Thread safe
         # Some hosts don't accept ICMP with too small payload. Use 16 Bytes
-        $p = Net::Ping->new("icmp",$l_timeout,16);
-        $p->source_verify(1);
-
-        $result = $p->ping($dest);
-        $result2 = $p->ping($dest);
+        {
+            $p = Net::Ping->new("icmp",$l_timeout,16);
+            $p->source_verify(1);
+            $result = $p->ping($dest);
+        }
 
         # Check for valid result
-        if ((!defined($result)) || (!defined($result2))) {
+        if (!defined($result)) {
                 return 0;
         }
 
         # Lets see the result
-        if (($result == 1) && ($result2 == 1)) {
+        if ($result == 1) {
                 $p->close();
                 return 1;
         } else {
@@ -326,6 +414,9 @@ sub scan_tcp {
 		}
 		alarm 0;
 	};
+    if ($@){
+		return 0;
+	}
 	return $opened;
 }
 
@@ -530,14 +621,7 @@ sub pandora_getparent ($$){
     );
 
 	my $success = 0;
-    eval {
-        alarm $pa_config->{"networktimeout"};
-        $success = $t->traceroute();
-        alarm 0;
-    };
-	if ($@){
-		return 0;
-	}
+	$success = $t->traceroute();
 	if ($t->hops > 1){
 		if ($success){
 			my $parent_ip = $t->hop_query_host($t->hops-1,0);

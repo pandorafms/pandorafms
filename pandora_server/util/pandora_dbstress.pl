@@ -197,6 +197,23 @@ sub process_module(){
 		}
 
 	}
+	
+	# Generate pseudo-random data for boolean data
+	if ( $target_name =~ /text/i ){
+		for ($a=1;$a<$iterations;$a++){
+			$valor = pandora_trash_ascii (rand(100)+50);
+			$m_timestamp = DateCalc($m_timestamp,"+ $target_interval seconds",\$err);
+			$mysql_date = &UnixDate($m_timestamp,"%Y-%m-%d %H:%M:%S");
+			if ($a % 20 eq 0) {
+				print "\r   -> ".int($a / ($iterations / 100))."% generated for ($target_name)                                                     ";
+			}
+			pandora_lastagentcontact($pa_config, $mysql_date, $agent_name, "none","1.2", $target_interval, $dbh);
+			#print LOG $mysql_date, $target_name, $valor, "\n";
+			pandora_writedata($pa_config,$mysql_date,$agent_name,$target_type,$target_name,$valor,0,0,"",$dbh,\$bUpdateDatos);
+			pandora_writestate ($pa_config,$agent_name,$target_type,$target_name,$valor,100,$dbh,$bUpdateDatos);
+		}
+	}
+
 	close (LOG);
 	print "\n";
 }

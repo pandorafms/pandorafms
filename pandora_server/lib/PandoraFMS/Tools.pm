@@ -41,7 +41,24 @@ our @EXPORT = qw(
 		pandora_create_agent
 		pandora_get_os
 		pandora_event
+		pandora_trash_ascii
     );
+
+##########################################################################
+## SUB pandora_trash_ascii 
+# Generate random ascii strings with variable lenght
+##########################################################################
+
+sub pandora_trash_ascii {
+    my $config_depth = $_[0];
+    my $a;
+    my $output;
+
+    for ($a=0;$a<$config_depth;$a++){
+	    $output = $output.chr(int(rand(25)+97));
+    }
+    return $output
+}
 
 ##########################################################################
 ## SUB pandora_event 
@@ -157,7 +174,7 @@ sub pandora_create_agent {
 
 	my $server = $pa_config->{'servername'}.$pa_config->{"servermode"};
 	logger($pa_config,"$server: Creating agent $name $target_ip ", 1);
-	my $query_sql2 = "INSERT INTO tagente (nombre, direccion, comentarios, id_grupo, id_os, id_network_server, intervalo, id_parent) VALUES  ('$name', '$target_ip', 'Created by $server', $id_group, $id_os, $id_server, 300, $id_parent)";
+	my $query_sql2 = "INSERT INTO tagente (nombre, direccion, comentarios, id_grupo, id_os, id_network_server, intervalo, id_parent, modo) VALUES  ('$name', '$target_ip', 'Created by $server', $id_group, $id_os, $id_server, 300, $id_parent, 1)";
 	$dbh->do ($query_sql2);
 	my $lastid = $dbh->{'mysql_insertid'};
 

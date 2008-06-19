@@ -560,7 +560,8 @@ sub execute_alert (%$$$$$$$$$$$$$$$) {
 
 
 ##########################################################################
-## SUB pandora_writestate (pa_config, nombre_agente,tipo_modulo,nombre_modulo,valor_datos, estado)
+## SUB pandora_writestate (pa_config, nombre_agente,tipo_modulo,
+#							nombre_modulo,valor_datos, estado, dbh, needupdate)
 ## Alter data, chaning status of modules in state table
 ##########################################################################
 
@@ -1001,9 +1002,9 @@ sub module_generic_data_string (%$$$$$) {
 	my $m_data = $datos->{data}->[0];
 	my $a_desc = $datos->{description}->[0];
 	my $a_max = $datos->{max}->[0];
-        my $a_min = $datos->{min}->[0];
+	my $a_min = $datos->{min}->[0];
 	if (ref($m_data) eq "HASH") {
-    		$m_data = XMLout($m_data, RootName=>undef);
+		$m_data = XMLout($m_data, RootName=>undef);
  	}
 	if (ref($a_max) eq "HASH") {
                 $a_max = "";
@@ -1018,19 +1019,20 @@ sub module_generic_data_string (%$$$$$) {
 
 
 ##########################################################################
-## SUB pandora_writedata (pa_config, timestamp,nombre_agente,tipo_modulo,nombre_modulo,datos)
+## SUB pandora_writedata (pa_config, timestamp,nombre_agente,tipo_modulo, 
+#							nombre_modulo, datos, max, min, descripcion, dbh, update)
 ## Insert data in main table: tagente_datos
        
 ##########################################################################
 
 sub pandora_writedata (%$$$$$$$$$$){
 	my $pa_config = $_[0];
-    	my $timestamp = $_[1];
-        my $nombre_agente = $_[2];
-        my $tipo_modulo = $_[3];
-        my $nombre_modulo = $_[4];
-        my $datos = $_[5];
-        my $max = $_[6];
+	my $timestamp = $_[1];
+	my $nombre_agente = $_[2];
+	my $tipo_modulo = $_[3];
+	my $nombre_modulo = $_[4];
+	my $datos = $_[5];
+	my $max = $_[6];
 	my $min = $_[7];
 	my $descripcion = $_[8];
 	my $dbh = $_[9];

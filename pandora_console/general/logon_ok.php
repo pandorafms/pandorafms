@@ -82,7 +82,10 @@
     $module_sanity = format_numeric (100 - $notinit_percentage);
     $total_alerts = $data_alert + $monitor_alert;
     $total_fired_alerts = $monitor_alert_total+$data_alert_total;
-    $alert_level = format_numeric (100 - ($total_alerts / ($total_fired_alerts / 100)));
+	if ( $total_fired_alerts > 0)
+    	$alert_level = format_numeric (100 - ($total_alerts / ($total_fired_alerts / 100)));
+	else
+		$alert_level = 100;
     
     if ($monitor_checks > 0){
         $monitor_health = format_numeric (  100- (($monitor_bad + $monitor_unknown) / ($monitor_checks/100)) , 1);

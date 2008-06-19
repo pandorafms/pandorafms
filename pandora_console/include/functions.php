@@ -217,7 +217,7 @@ function give_human_time ($int_seconds){
 			$build[] = $temp.' '.$key.($temp!=1?'s':null);
 
 			// set flag to false, to allow 0's in lower periods
-			$flag_hide_zero = false;
+			$flag_hide_zero = true;
 		}
 
 		// get the remainder of seconds
@@ -1040,9 +1040,9 @@ function get_event_types () {
 	$types['alert_ceased'] = lang_string ('alert_ceased');
 	$types['alert_manual_validation'] = lang_string ('alert_manual_validation');
 	$types['recon_host_detected'] = lang_string ('recon_host_detected');
+	$types['new_agent'] = lang_string ('new_agent');
 	$types['system'] = lang_string ('sytem');
 	$types['error'] = lang_string ('error');
-	
 	return $types;
 }
 

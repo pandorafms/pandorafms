@@ -28,21 +28,26 @@ if ((comprueba_login() == 0) AND (give_acl($id_user, 0, "AR")==1) ) {
 		}
 	}
 
-	$id_server = $_GET["server_id"];
+	$id_server = get_parameter ("server_id", -1);
 	$sql = "SELECT * FROM tserver where id_server = $id_server";
 	$result=mysql_query($sql);
 	$row=mysql_fetch_array($result);
 	$server_name = $row["name"];
 	$id_server = $row[0];
 	
-	echo "<h2>".$lang_label["server_detail"]." - $server_name </h2>";
+	echo "<h2>".$lang_label["server_detail"]." - $server_name ";
+    echo "&nbsp;";
+    echo "<a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=$id_server'>";
+    echo "<img src='images/refresh.png'>";
+    echo "</A>";
+    echo "</h2>";
 	// Show network tasks for Recon Server
 	if ($row["recon_server"]){
 		$sql = "SELECT * FROM trecon_task where id_network_server = $id_server";
 		// Connect DataBase
 		$result=mysql_query($sql);
 		if (mysql_num_rows($result)){
-			echo "<table cellpadding='4' cellspacing='4' withd='800'>";
+			echo "<table cellpadding='4' cellspacing='4' width='760' class='databox'>";
 			echo "<tr><th class='datos'><th class='datos'>".$lang_label["task_name"]."</th>";
 			echo "<th class='datos'>".$lang_label['interval']."</th>";
 			echo "<th class='datos'>".$lang_label['network']."</th>";
@@ -100,7 +105,7 @@ if ((comprueba_login() == 0) AND (give_acl($id_user, 0, "AR")==1) ) {
 					echo "ICMP";
 				}
 				elseif ($type == 2){
-					echo "SNMP";
+					echo "TCP Port";
 				}
 				// status
 				echo "<td class='$tdcolor' align='center'>";

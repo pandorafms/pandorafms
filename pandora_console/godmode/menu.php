@@ -266,6 +266,12 @@ if (comprueba_login() == 0){
 			} else 
 				echo "<div id='arrowgl'>";			
 			echo "<ul class='mn'><li class='bb0'><a href='index.php?sec=gdbman&amp;sec2=godmode/db/db_event' class='mn'>".$lang_label["db_event"]."</a></li></ul></div>";
+
+			if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/db/db_sanity"){
+				echo "<div id='arrowgls'>";
+			} else 
+				echo "<div id='arrowgl'>";			
+			echo "<ul class='mn'><li class='bb0'><a href='index.php?sec=gdbman&sec2=godmode/db/db_sanity' class='mn'>".lang_string ("Database sanity")."</a></li></ul></div>";
 		}
 	}
 	?>

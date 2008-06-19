@@ -148,7 +148,6 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 							$o_id_plugin, '$o_plugin_parameter', '$o_plugin_user',
 							'$o_plugin_pass', $o_id_modulo
 							)";
-echo "DEBUG SQL: $sql <br>";
 							$result2=mysql_query($sql);
 							if (! $result2)
 								echo "<h3 class=error>".lang_string("Problem updating database")."</h3>";
@@ -253,7 +252,6 @@ echo "DEBUG SQL: $sql <br>";
 								$o_recovery_notify, $o_priority, '$o_al_f2_recovery', 
 								'$o_al_f3_recovery' )";
 								$result_al=mysql_query($sql_al);
-					echo "DEBUG SQL: $sql_al <br>";
 								echo "<br>&nbsp;&nbsp;".$lang_label["copyale"]." ->".$o_descripcion;
 							}
 						} else 
@@ -289,11 +287,7 @@ echo "DEBUG SQL: $sql <br>";
 			$alertas = 1;
 		else
 			$alertas = 0;			
-		if (($alertas + $modulos) == 0){
-			echo "<h3 class='error'>ERROR: ".$lang_label["del_sel_err"]."</h3>";
-			break;
-		}		
-		
+		if (($alertas + $modulos) >= 0)
 		// Delete
 		for ($a=0;$a <count($destino); $a++){ // for each agent
 			$id_agente = $destino[$a];
@@ -330,7 +324,56 @@ echo "DEBUG SQL: $sql <br>";
 			}//if 
 		}// for
 	}//delete
+	elseif (isset($_POST["delete_agent"])) {
+		echo "<h2>".lang_string("delete_agents")."</h2>";
+		// Initial checkings
+		
+		//  if selected more than 0 agents
+		$destino = $_POST["destino"];
+		if (count($destino) <= 0){
+			echo "<h3 class='error'>ERROR: ".$lang_label["noagents_del"]."</h3>";
+			break;
+		}
+		
+		// Delete
+		for ($a=0;$a <count($destino); $a++){ // for each agent
+			$id_agente = $destino[$a];
 			
+			echo "<br>".$lang_label["deleting_data"]." -> ".dame_nombre_agente($id_agente);
+		
+			// Deleting data
+			$sql1='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_agente;
+			$result1=mysql_query($sql1);
+			while ($row=mysql_fetch_array($result1)){
+				$sql_delete1="DELETE FROM tagente_datos WHERE id_agente_modulo=".$row["id_agente_modulo"];
+				$sql_delete2="DELETE FROM tagente_datos_inc WHERE id_agente_modulo=".$row["id_agente_modulo"];
+				$sql_delete3="DELETE FROM tagente_datos_string WHERE id_agente_modulo=".$row["id_agente_modulo"];
+				$result=mysql_query($sql_delete1);
+				$result=mysql_query($sql_delete2);
+				$result=mysql_query($sql_delete3);
+			}
+			
+			// Delete conf
+			$sql_delete5 ="DELETE FROM tagente_modulo WHERE id_agente = ".$id_agente; // delete from table tagente_modulo
+			$sql_delete6 ="DELETE FROM tagente_estado WHERE id_agente = ".$id_agente; // detele from table tagente_estado
+			$result=mysql_query($sql_delete5);
+			$result=mysql_query($sql_delete6);		
+			
+			// delete alerts definitions
+			
+			// delete data
+			$sql1='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_agente;
+			$result1=mysql_query($sql1);
+			while ($row=mysql_fetch_array($result1)){
+				$sql_delete1="DELETE FROM talerta_agente_modulo WHERE id_agente_modulo=".$row["id_agente_modulo"];
+				$result = mysql_query($sql_delete1);
+			} // while			
+			
+            // delete agent
+            $sql1='DELETE FROM tagente WHERE id_agente = '.$id_agente;
+			$result1=mysql_query($sql1);
+		}// for
+	}//delete
 
 	// ============	
 	// Form view
@@ -415,9 +458,14 @@ echo "DEBUG SQL: $sql <br>";
 		echo '</select>';
 		
 		// Form buttons
-		echo '<td align="right" class="datosb">';
+		echo '<td align="left" class="datosb">';
+        echo "<br><br>";
 		echo '<input type="submit" name="copy" class="sub copy" value="'.lang_string ("copy").'" onClick="if (!confirm("'.lang_string ("are_you_sure").'")) return false;>';
+        echo "<br><br>";
 		echo '<input type="submit" name="delete" class="sub delete" value="'. lang_string("delete").'" onClick="if (!confirm("'.lang_string ("are_you_sure").'")) return false;>';
+        echo "<br><br>";
+        echo '<input type="submit" name="delete_agent" class="sub delete" value="'. lang_string("Delete Agents").'" onClick="if (!confirm("'.lang_string ("are_you_sure").'")) return false;>';
+
 		echo '<tr><td colspan=2>';
 		echo '</div></td></tr>';
 		echo '</table>';

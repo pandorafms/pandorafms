@@ -157,7 +157,7 @@ if (isset($_POST["updatebt"])){
 $offset = get_parameter ( "offset",0);
 $ev_group = get_parameter ("ev_group", 0); // group
 $search = get_parameter ("search", ""); // free search
-$event_type = get_parameter ("event_type", "all"); // 0 all
+$event_type = get_parameter ("event_type", ''); // 0 all
 $severity = get_parameter ("severity", -1); // -1 all
 $status = get_parameter ("status", 0); // -1 all, 0 only red, 1 only green
 $id_agent = get_parameter ("id_agent", -1);
@@ -171,7 +171,7 @@ if ($status == 0)
     $sql_post .= " AND estado = 0";
 if ($search != "")
     $sql_post .= " AND evento LIKE '%$search%'";
-if ($event_type != "all")
+if ($event_type != "")
     $sql_post .= " AND event_type = '$event_type'";
 if ($severity != -1)
     $sql_post .= " AND criticity >= $severity";
@@ -218,7 +218,7 @@ echo "</select></td>";
 // Event type
 echo "<td>".lang_string ("Event type")."</td>";
 echo "<td>";
-echo print_select (get_event_types (), 'event_type', $event_type, '', 'all', 0);
+echo print_select (get_event_types (), 'event_type', $event_type, '', 'all', "");
 echo "<tr>";
 
 // Severity
@@ -250,8 +250,12 @@ echo "<tr>";
 echo "<td>".lang_string ("Free search")."</td>";
 echo "<td>";
 echo "<input type='text' size=15 value='".$search."' name='search'>";
-echo "<td>";
+echo "<td colspan=2>";
 echo "<input type=submit value='".lang_string("Update")."' class='sub upd'>";
+echo "&nbsp;&nbsp;&nbsp;";
+echo "<a href='operation/events/export_csv.php?ev_group=$ev_group&event_type=$event_type&search=$search&severity=$severity&status=$status&id_agent=$id_agent'>";
+echo "<img src='images/wand.png' title='Export to CSV file'></A>";
+
 echo "</table>";
 echo "</form>";
 echo "<td>";
@@ -358,6 +362,9 @@ if ($total_events > 0){
                     break;
                 case "recon_host_detected";
                     echo "<img src='images/network.png'>";
+                    break;
+ 				case "new_agent";
+                    echo "<img src='images/wand.png'>";
                     break;
             }
  

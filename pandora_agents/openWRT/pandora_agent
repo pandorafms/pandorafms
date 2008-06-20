@@ -41,9 +41,9 @@ IFS="
 # Default values
 CHECKSUM_MODE=1
 DEBUG_MODE=0
-SERVER_PORT=21
+SERVER_PORT=41121
 INTERVAL=300
-TRANSFER_MODE=ftp
+TRANSFER_MODE=tentacle
 SERVER_PWD=pandora123
 if [ -z "`echo $LANG | grep '\.'`" ]
 then
@@ -113,6 +113,11 @@ do
         then
                 SERVER_PWD=`echo $a | awk '{ print $2 }' `
                 echo "$TIMESTAMP - [SETUP] - Server password set (FTP)" >> $PANDORA_LOGFILE
+        fi
+        if [ ! -z "`echo $a | grep -e '^transfer_mode'`" ]
+        then
+                TRANSFER_MODE=`echo $a | awk '{ print $2 }' `
+                echo "$TIMESTAMP - [SETUP] - Transfer mode is $TRANSFER_MODE" >> $PANDORA_LOGFILE
         fi
 done
 
@@ -267,8 +272,14 @@ do
 		exit 0
 	fi
 
-        cd $TEMP
-       	wput -q $NOMBRE_HOST.$SERIAL.data ftp://pandora:$SERVER_PWD@$SERVER_IP:$SERVER_PORT
+    cd $TEMP
+    if [ "$TRANSFER_MODE" = "ftp" ]
+    then
+        wput -q $NOMBRE_HOST.$SERIAL.data ftp://pandora:$SERVER_PWD@$SERVER_IP:$SERVER_PORT
+    else
+        tentacle_client -a $SERVER_IP -p $SERVER_PORT $NOMBRE_HOST.$SERIAL.data
+    fi
+
 	# Delete data
 	rm -f $DATA 2> $PANDORA_LOGFILE.err
 	

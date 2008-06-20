@@ -825,17 +825,16 @@ function event_insert ($evento, $id_grupo, $id_agente, $status = 0,
  *
  * If the module interval is not set, the agent interval is returned
  * 
- * @param id_agentmodule Id agent module to get the interval value.
+ * @param id_agent_module Id agent module to get the interval value.
  * 
  * @return 
  */
-function give_moduleinterval ($id_agentmodule) {
+function get_module_interval ($id_agent_module) {
 	$interval = (int) get_db_value ('module_interval', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
-	
 	if ($interval)
 		return $interval;
+	$id_agent = get_db_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', (int) $id_agent_module);
 	
-	$id_agent = (int) give_agentinterval ($id_agent);get_db_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
 	return (int) give_agentinterval ($id_agent);
 }
 
@@ -1383,7 +1382,9 @@ function return_coordinate_y_layoutdata ($id_layoutdata){
  * Get the previous data to the timestamp provided.
  *
  * It's useful to know the first value of a module in an interval, 
- * since it will be the last value in the 
+ * since it will be the last value in the table which has a timestamp 
+ * before the beginning of the interval. All this calculation is due
+ * to the data compression algorithm.
  *
  * @param $id_agent_module Agent module id
  * @param $utimestamp The timestamp to look backwards from and get the data.
@@ -1391,11 +1392,14 @@ function return_coordinate_y_layoutdata ($id_layoutdata){
  * @return The row of tagente_datos of the last period. NULL if there were no data.
  */
 function get_previous_data ($id_agent_module, $utimestamp) {
+	$interval = get_module_interval ($id_agent_module);
 	$sql = sprintf ('SELECT * FROM tagente_datos 
 			WHERE id_agente_modulo = %d 
 			AND utimestamp <= %d 
-			ORDER by utimestamp DESC LIMIT 1',
-			$id_agent_module, $utimestamp);
+			AND utimestamp > %d
+			ORDER BY utimestamp DESC LIMIT 1',
+			$id_agent_module, $utimestamp, $utimestamp - $interval);
+	
 	return get_db_row_sql ($sql);
 }
 
@@ -1445,8 +1449,7 @@ function return_moduledata_max_value ($id_agent_module, $period, $date = 0) {
 	
 	$sql = sprintf ("SELECT MAX(datos) FROM tagente_datos 
 			WHERE id_agente_modulo = %d 
-			AND utimestamp > %d  AND utimestamp <= %d 
-			ORDER BY utimestamp ASC",
+			AND utimestamp > %d  AND utimestamp <= %d",
 			$id_agent_module, $datelimit, $date);
 	$max = (float) get_db_sql ($sql);
 	
@@ -1474,8 +1477,7 @@ function return_moduledata_min_value ($id_agent_module, $period, $date = 0) {
 	
 	$sql = sprintf ("SELECT MIN(datos) FROM tagente_datos 
 			WHERE id_agente_modulo = %d 
-			AND utimestamp > %d AND utimestamp <= %d 
-			ORDER BY utimestamp ASC",
+			AND utimestamp > %d AND utimestamp <= %d",
 			$id_agent_module, $datelimit, $date);
 	$min = (float) get_db_sql ($sql);
 	
@@ -1504,12 +1506,12 @@ function return_moduledata_sum_value ($id_agent_module, $period, $date = 0) {
 	if (is_module_data_string ($module_name)) {
 		return lang_string ('wrong_module_type');
 	}
-	$interval = get_db_value ('current_interval', 'tagente_estado', 'id_agente_modulo', $id_agent_module);
 	
 	// Get the whole interval of data
-	$sql = sprintf ('SELECT * FROM tagente_datos 
+	$sql = sprintf ('SELECT utimestamp, datos FROM tagente_datos 
 			WHERE id_agente_modulo = %d 
-			AND utimestamp > %d AND utimestamp <= %d',
+			AND utimestamp > %d AND utimestamp <= %d 
+			ORDER BY utimestamp ASC',
 			$id_agent_module, $datelimit, $date);
 	$datas = get_db_all_rows_sqlfree ($sql);
 	
@@ -1519,40 +1521,39 @@ function return_moduledata_sum_value ($id_agent_module, $period, $date = 0) {
 		/* Add data to the beginning */
 		array_unshift ($datas, $previous_data);
 	}
-	$last_data = "";
-	$total_badtime = 0;
-	$interval_begin = 0;
-	$interval_last = 0;
-
 	if (sizeof ($datas) == 0) {
 		return 0;
 	}
+	
+	$last_data = "";
+	$total_badtime = 0;
+	$module_interval = get_module_interval ($id_agent_module);
+	$timestamp_begin = $datelimit + module_interval;
+	$timestamp_end = 0;
 	$sum = 0;
-	$previous_data = 0;
+	$data_value = 0;
 	foreach ($datas as $data) {
-		if ($interval_begin != 0) {
-			$interval_last = $data["utimestamp"];
-			$elapsed = $interval_last - $interval_begin;
-			$times = intval ($elapsed / $interval);
+		$timestamp_end = $data["utimestamp"];
+		$elapsed = $timestamp_end - $timestamp_begin;
+		$times = intval ($elapsed / $module_interval);
+			
+		if (is_module_inc ($module_name)) {
+			$data_value = $data['datos'] * $module_interval;
 		} else {
-			$times = 1;
-		}
-		if (is_module_proc ($module_name)) {
-			$previous_data = $data['datos'] * $interval;
-		} else {
-			$previous_data = $data['datos'];
+			$data_value = $data['datos'];
 		}
 		
-		$interval_begin = $data["utimestamp"];
+		$sum += $times * $data_value;
+		$timestamp_begin = $data["utimestamp"];
 	}
 
-	/* The last interval value must be get from tagente_estado, but
+	/* The last value must be get from tagente_estado, but
 	   it will count only if it's not older than date demanded
 	*/
-	$interval_last = get_db_value ('utimestamp', 'tagente_estado', 'id_agente_modulo', $id_agent_module);
-	if ($interval_last <= $datelimit) {
-		$elapsed = $interval_last - $interval_begin;
-		$times = intval ($elapsed / $interval);
+	$timestamp_end = get_db_value ('utimestamp', 'tagente_estado', 'id_agente_modulo', $id_agent_module);
+	if ($timestamp_end <= $datelimit) {
+		$elapsed = $timestamp_end - $timestamp_begin;
+		$times = intval ($elapsed / $module_interval);
 		$sum += $times * $previous_data;
 	}
 	

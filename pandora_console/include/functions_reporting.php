@@ -291,7 +291,7 @@ function alert_reporting ($id_group, $period = 0, $date = 0, $return = false) {
 	}
 	$fired_percentage = round (sizeof ($alerts_fired) / sizeof ($alerts) * 100, 2);
 	$not_fired_percentage = 100 - $fired_percentage;
-	$output .= '<img src="http://localhost/pandora/reporting/fgraph.php?tipo=alerts_fired_pipe&height=150&width=280&fired='.
+	$output .= '<img src="reporting/fgraph.php?tipo=alerts_fired_pipe&height=150&width=280&fired='.
 		$fired_percentage.'&not_fired='.$not_fired_percentage.'" style="float: right; border: 1px solid black">';
 	
 	$output .= '<strong>'.lang_string ('agents_with_fired_alerts').': '.sizeof ($agents).'</strong><br />';
@@ -308,6 +308,8 @@ function alert_reporting ($id_group, $period = 0, $date = 0, $return = false) {
 	$table->head[1] = lang_string ('alert_description');
 	$table->head[2] = lang_string ('times_fired');
 	$table->head[3] = lang_string ('priority');
+	$table->align = array ();
+	$table->align[2] = 'center';
 	
 	foreach ($agents as $alerts) {		
 		$data = array ();
@@ -318,7 +320,7 @@ function alert_reporting ($id_group, $period = 0, $date = 0, $return = false) {
 				$data[0] = '';
 			$data[1] = $alert['descripcion'];
 			$data[2] = $alerts_fired[$alert['id_aam']];
-			$data[3] = $alert['priority'];
+			$data[3] = get_alert_priority ($alert['priority']);
 			array_push ($table->data, $data);
 		}
 	}
@@ -375,7 +377,7 @@ function monitor_health_reporting ($id_group, $period = 0, $date = 0, $return = 
 	}
 	$down_percentage = round ($monitors_down / sizeof ($monitors) * 100, 2);
 	$not_down_percentage = 100 - $down_percentage;
-	$output .= '<img src="http://localhost/pandora/reporting/fgraph.php?tipo=monitors_health_pipe&height=150&width=280&down='.
+	$output .= '<img src="reporting/fgraph.php?tipo=monitors_health_pipe&height=150&width=280&down='.
 		$down_percentage.'&not_down='.$not_down_percentage.'" style="float: right; border: 1px solid black">';
 	
 	$output .= '<strong>'.lang_string ('total_monitors').': '.sizeof ($monitors).'</strong><br />';

@@ -128,7 +128,7 @@ $SQL_pre = "SELECT tagente_modulo.id_agente_modulo, tagente.nombre, tagente_modu
 
 $SQL_pre_count = "SELECT count(tagente_modulo.id_agente_modulo) ";
 
-$SQL = " FROM tagente, tagente_modulo, tagente_estado WHERE tagente.id_agente = tagente_modulo.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_tipo_modulo in (2, 9, 12, 18, 6, 100) AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo ";
+$SQL = " FROM tagente, tagente_modulo, tagente_estado WHERE tagente.id_agente = tagente_modulo.id_agente AND tagente_modulo.disabled = 0 AND tagente.disabled = 0 AND tagente_modulo.id_tipo_modulo in (2, 9, 12, 18, 6, 100) AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo ";
 
 // Agent group selector
 if ($ag_group > 1)

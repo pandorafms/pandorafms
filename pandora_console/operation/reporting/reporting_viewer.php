@@ -261,7 +261,7 @@ foreach ($contents as $content) {
 		$table->rowclass[$n - 1] = 'datos3';
 		
 		$data = array ();
-		$monitor_value = $sla_result = format_numeric (return_module_SLA ($content['id_agent_module'], $content['period'], 1, 1, $datetime));
+		$monitor_value = format_numeric (return_module_SLA ($content['id_agent_module'], $content['period'], 1, 1, $datetime));
 		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">';
 		$data[0] .= $monitor_value.' % <img src="images/b_green.png" height="32" width="32"></p>';
 		$monitor_value2 = format_numeric (100 - $monitor_value, 2) ;
@@ -281,7 +281,7 @@ foreach ($contents as $content) {
 		
 		$data = array ();
 		$table->colspan[$n][0] = 2;
-		$value = format_for_graph (return_moduledata_avg_value ($content['id_agent_module'], $content['period'], $datetime));
+		$value = format_numeric (return_moduledata_avg_value ($content['id_agent_module'], $content['period'], $datetime));
 		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
 		array_push ($table->data, $data);
 		
@@ -297,7 +297,7 @@ foreach ($contents as $content) {
 		
 		$data = array ();
 		$table->colspan[$n][0] = 2;
-		$value = format_for_graph (return_moduledata_max_value ($content['id_agent_module'], $content['period'], $datetime));
+		$value = format_numeric (return_moduledata_max_value ($content['id_agent_module'], $content['period'], $datetime));
 		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
 		array_push ($table->data, $data);
 		
@@ -313,7 +313,7 @@ foreach ($contents as $content) {
 		
 		$data = array ();
 		$table->colspan[$n][0] = 2;
-		$value = format_for_graph (return_moduledata_min_value ($content['id_agent_module'], $content['period'], $datetime));
+		$value = format_numeric (return_moduledata_min_value ($content['id_agent_module'], $content['period'], $datetime));
 		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
 		array_push ($table->data, $data);
 		
@@ -329,7 +329,7 @@ foreach ($contents as $content) {
 		
 		$data = array ();
 		$table->colspan[$n][0] = 2;
-		$value = format_for_graph (return_moduledata_sum_value ($content['id_agent_module'], $content['period'], $datetime));
+		$value = format_numeric (return_moduledata_sum_value ($content['id_agent_module'], $content['period'], $datetime));
 		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
 		array_push ($table->data, $data);
 		
@@ -344,7 +344,7 @@ foreach ($contents as $content) {
 		
 		$data = array ();
 		$table->colspan[$n][0] = 2;
-		$value = format_for_graph (return_moduledata_sum_value ($content['id_agent_module'], $content['period'], $datetime));
+		$value = format_numeric (return_moduledata_sum_value ($content['id_agent_module'], $content['period'], $datetime));
 		$data[0] = general_group_reporting ($report['id_group'], true);
 		array_push ($table->data, $data);
 		

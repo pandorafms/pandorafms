@@ -1,3 +1,23 @@
+2008-06-20  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_reporting.php: Deleted reference to localhost. Align 
+	times fired colum. Show priority string instead on alerts.
+
+	* include/functions.php: Show only one decimal by default on 
+	format_numeric() and format_for_graph(). Cut alert name, agent name 
+	and module name. Style correction.
+
+	* include/functions_db.php: Function give_moduleinterval() renamed to 
+	get_module_interval() and fixed a typo with variable name. On 
+	get_previous_data() get the data if it's not older than the interval.
+	Order datas on min, max and sum calculation by the timestamp. Fixed and 
+	improved the sumatory calculation.
+
+	* operation/agentes/status_monitor.php: Ignore disabled modules.
+
+	* operation/reporting/reporting_viewer.php: Do not use format_for_graph(),
+	but format_numeric() instead.
+
 2008-06-19  Sancho Lerena  <slerena@gmail.com>
 
 	* Fixed some typos.

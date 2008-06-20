@@ -386,13 +386,13 @@ function pagination ($count, $url, $offset) {
  * shown. Otherwise, the number of decimals are given in the call.
  * 
  * @param number Number to be rendered
- * @param decimals Number of decimals to be shown. Default value: 2
+ * @param decimals Number of decimals to be shown. Default value: 1
  * @param dec_point Decimal separator string. Default value: .
  * @param thousands_sep Thousands separator string. Default value: ,
  * 
  * @return 
  */
-function format_numeric ($number, $decimals = 2, $dec_point = ".", $thousands_sep = ",") {
+function format_numeric ($number, $decimals = 1, $dec_point = ".", $thousands_sep = ",") {
 	if ($number == 0)
 		return 0;
 	
@@ -408,23 +408,23 @@ function format_numeric ($number, $decimals = 2, $dec_point = ".", $thousands_se
  * It adds magnitude suffix to the number (M for millions, K for thousands...)
  * 
  * @param number Number to be rendered
- * @param decimals Number of decimals to display
+ * @param decimals Number of decimals to display. Default value: 1
  * @param dec_point Decimal separator character. Default value: .
  * @param thousands_sep Thousands separator character. Default value: ,
  * 
  * @return A number rendered to be displayed gently on a graph.
  */
-function format_for_graph ($number , $decimals = 2, $dec_point = ".", $thousands_sep = ",") {
-	if ($number > "1000000") {
+function format_for_graph ($number , $decimals = 1, $dec_point = ".", $thousands_sep = ",") {
+	if ($number > 1000000) {
 		if (fmod ($number, 1000000) > 0)
 			return number_format ($number / 1000000, $decimals, $dec_point, $thousands_sep)." M";
 		return number_format ($number / 1000000, 0, $dec_point, $thousands_sep)." M";
 	}
 	
-	if ($number > "1000") {
+	if ($number > 1000) {
 		if (fmod ($number, 1000) > 0)
 			return number_format ($number / 1000, $decimals, $dec_point, $thousands_sep )." K";
-		return number_format ($number/1000, 0, $dec_point, $thousands_sep )." K";
+		return number_format ($number / 1000, 0, $dec_point, $thousands_sep )." K";
 	}
 	/* If it has decimals */
 	if (fmod ($number , 1))
@@ -854,16 +854,16 @@ function show_alert_show_view ($data, $tdcolor = "datos", $combined = 0) {
 	}
 	$alert_name = get_db_sql ("SELECT nombre FROM talerta WHERE id_alerta = ".$data["id_alerta"]);
 
-	echo "<td class='".$tdcolor."'>".$alert_name."</td>";
+	echo "<td class='".$tdcolor."f9' title='$alert_name'>".substr($alert_name,0,15)."</td>";
 	if ($combined == 0) {
-		echo "<td class='".$tdcolor."'>".substr($module_name,0,21)."</td>";
+		echo "<td class='".$tdcolor."'>".substr($module_name,0,12)."</td>";
 	} else {
 		echo "<td class='".$tdcolor."'>";
 		// More details EYE tooltip (combined)
 		echo " <a href='#' class='info_table'><img class='top' src='images/eye.png' alt=''><span>";
 		echo show_alert_row_mini ($data["id_aam"]);
 		echo "</span></a> ";
-		echo substr($agent_name,0,21)."</td>"; 
+		echo substr($agent_name,0,16)."</td>"; 
 	}
 
 	// Description

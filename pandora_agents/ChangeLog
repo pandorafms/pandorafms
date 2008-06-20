@@ -1,3 +1,8 @@
+2008-06-20  Ramon Novoa  <rnovoa@artica.es>
+
+	* openWRT/pandora_agent, openWRT/pandora_agent.conf: Added support for
+	  Tentacle.
+
 2008-06-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* win32/bin/PandoraAgent.exe: Updated to r888.

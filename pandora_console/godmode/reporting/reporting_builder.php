@@ -190,6 +190,13 @@ if ($id_report) {
 	$report_id_group = $report['id_group'];
 }
 
+$all_agents = get_agents_in_group ($report_id_group);
+$agents = array ();
+foreach ($all_agents as $agent) {
+	$agents[$agent['id_agente']] = $agent['nombre'];
+}
+asort ($agents);
+
 if ($edit_sla_report_content) {
 	/* Edit SLA report form */
 	$add_sla = (bool) get_parameter ('add_sla');
@@ -280,9 +287,8 @@ if ($edit_sla_report_content) {
 	$table->size[0] = '150px';
 	$table->head = array ();
 	$table->style[0] = 'font-weight: bold';
-	$sql = sprintf ('SELECT id_agente, nombre FROM tagente WHERE id_grupo = %d ORDER BY nombre', $report_id_group);
 	$table->data[0][0] = lang_string ('agent');
-	$table->data[0][1] = print_select_from_sql ($sql, 'id_agent', 0, '', '--', 0, true);
+	$table->data[0][1] = print_select ($agents, 'id_agent', 0, '', '--', 0, true);
 	$table->data[1][0] = lang_string ('module');
 	$table->data[1][1] = print_select (array (), 'id_module', 0, '', '--', 0, true);
 	$table->data[2][0] = lang_string ('sla_min');
@@ -387,8 +393,7 @@ if ($edit_sla_report_content) {
 		$table->data[1][1] = print_select ($periods, 'period', 0, '', '--', 0, true);
 
 		$table->data[2][0] = lang_string ('source_agent');
-		$sql = sprintf ('SELECT id_agente, nombre FROM tagente WHERE id_grupo = %d ORDER BY nombre', $report_id_group);
-		$table->data[2][1] = print_select_from_sql ($sql, 'id_agent', $id_agent, '', '--', 0, true);
+		$table->data[2][1] = print_select ($agents, 'id_agent', $id_agent, '', '--', 0, true);
 		
 		$table->data[3][0] = lang_string ('module');
 		$modules = array ();
@@ -421,15 +426,16 @@ if ($edit_sla_report_content) {
 		$table->rowstyle = array ();
 		$table->head[0] = lang_string ('order');
 		$table->head[1] = lang_string ('type');
-		$table->head[2] = lang_string ('module');
-		$table->head[3] = lang_string ('period');
-		$table->head[4] = lang_string ('Options');
+		$table->head[2] = lang_string ('agent');
+		$table->head[3] = lang_string ('module');
+		$table->head[4] = lang_string ('period');
+		$table->head[5] = lang_string ('Options');
 		$table->align = array ();
 		$table->align[0] = 'center';
-		$table->align[4] = 'center';
+		$table->align[5] = 'center';
 		if ($report_id_user == $config['id_user']) {
-			$table->align[5] = 'center';
-			$table->head[5] = lang_string ('delete');
+			$table->align[6] = 'center';
+			$table->head[6] = lang_string ('delete');
 		}
 		
 
@@ -454,15 +460,18 @@ if ($edit_sla_report_content) {
 			}
 			$data[1] = get_report_name ($report_content['type']);
 			$data[2] = '--';
-			if (get_report_type_data_source ($report_content['type']) == 'module')
-				$data[2] = get_db_value ('descripcion', 'tagente_modulo', 'id_agente_modulo', $report_content['id_agent_module']);
-			$data[3] = human_time_description ($report_content['period']);
-			$data[4] = '';
+			$data[3] = '--';
+			if (get_report_type_data_source ($report_content['type']) == 'module') {
+				$data[2] = dame_nombre_agente_agentemodulo ($report_content['id_agent_module']);
+				$data[3] = get_db_value ('descripcion', 'tagente_modulo', 'id_agente_modulo', $report_content['id_agent_module']);
+			}
+			$data[4] = human_time_description ($report_content['period']);
+			$data[5] = '';
 			if ($report_content['type'] == 'SLA') {
-				$data[4] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id_report='.$id_report.'&edit_sla_report_content=1&id_report_content='.$report_content['id_rc'].'"><img src="images/setup.png"></a>';
+				$data[5] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id_report='.$id_report.'&edit_sla_report_content=1&id_report_content='.$report_content['id_rc'].'"><img src="images/setup.png"></a>';
 			}
 			if ($report_id_user == $config['id_user']) {
-				$data[5] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id_report='.$id_report.'&delete_report_content=1&id_report_content='.$report_content['id_rc'].'"><img src="images/cross.png"></a>';
+				$data[6] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id_report='.$id_report.'&delete_report_content=1&id_report_content='.$report_content['id_rc'].'"><img src="images/cross.png"></a>';
 			}
 			
 			array_push ($table->data, $data);
@@ -534,7 +543,7 @@ function agent_changed () {
 		jQuery.ajax ({
 			data: inputs.join ("&"),
 			type: 'GET',
-			url: action="ajax.php",
+			url: "ajax.php",
 			timeout: 10000,
 			dataType: 'json',
 			success: function (data) {

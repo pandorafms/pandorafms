@@ -1,5 +1,15 @@
 2008-06-20  Esteban Sanchez  <estebans@artica.es>
 
+	* functions_db.php: Fixed get_agents_in_group() to handle "All" group
+	properly and make it capable to get disabled agents or not. Style
+	correction. Fixed a typo in agent_add_address().
+
+	* godmode/reporting/reporting_builder.php: Use get_agents_in_group()
+	to get the agents in the group of the report, specially group "All".
+	Added agent and module column to report content list when applies.
+
+2008-06-20  Esteban Sanchez  <estebans@artica.es>
+
 	* include/functions_reporting.php: Deleted reference to localhost. Align 
 	times fired colum. Show priority string instead on alerts.
 

@@ -214,12 +214,25 @@ function give_disabled_group ($id_group) {
 /**
  * Get all the agents in a group.
  *
- * @param $id_group Group id
+ * @param id_group Group id
+ * @param disabled Add disabled agents to agents. Default: False.
  *
  * @return An array with all agents in the group.
  */
-function get_agents_in_group ($id_group) {
-	return get_db_all_rows_field_filter ('tagente', 'id_grupo', (int) $id_group);
+function get_agents_in_group ($id_group, $disabled = false) {
+	echo "GROUP: ".$id_group;
+	/* 'All' group must return all agents */
+	if ($id_group == 1) {
+		if ($disabled)
+			return get_db_all_rows_in_table ('tagente');
+		return get_db_all_rows_field_filter ('tagente', 'disabled', 0);
+	}
+	if ($disabled)
+		return get_db_all_rows_field_filter ('tagente', 'id_grupo', (int) $id_group);
+	$sql = sprintf ('SELECT * FROM tagente 
+			WHERE id_grupo = %d AND disabled = 0',
+			$id_group);
+	return get_db_all_rows_sqlfree ($sql);
 }
 
 /**
@@ -942,22 +955,26 @@ function show_icon_type ($id_type) {
  * @param int Server type id
  * @return string Fully formatted  IMG HTML tag with icon
  */
-
 function show_server_type ($id){ 
-    global $config;
-    switch ($id) {
-        case 1: return '<img src="images/data.png" title="Pandora FMS Data server">';
-                break;
-        case 2: return '<img src="images/network.png" title="Pandora FMS Network server">';
-                break;
-        case 4: return '<img src="images/plugin.png" title="Pandora FMS Plugin server">';
-                break;
-        case 5: return '<img src="images/chart_bar.png" title="Pandora FMS Prediction server">';
-                break;
-        case 6: return '<img src="images/wmi.png" title="Pandora FMS WMI server">';
-                break;
-        default: return "--";
-    }
+	global $config;
+	switch ($id) {
+	case 1:
+		return '<img src="images/data.png" title="Pandora FMS Data server">';
+		break;
+	case 2:
+		return '<img src="images/network.png" title="Pandora FMS Network server">';
+		break;
+	case 4:
+		return '<img src="images/plugin.png" title="Pandora FMS Plugin server">';
+		break;
+	case 5:
+		return '<img src="images/chart_bar.png" title="Pandora FMS Prediction server">';
+		break;
+	case 6:
+		return '<img src="images/wmi.png" title="Pandora FMS WMI server">';
+		break;
+	default: return "--";
+	}
 }
 
 /** 
@@ -1023,7 +1040,7 @@ function agent_add_address ($id_agent, $ip_address) {
 		WHERE taddress_agent.id_a = taddress.id_a
 		AND ip = '$ip_address'
 		AND id_agent = $id_agent";
-	$current_address = get_db_sql_row ($sql);
+	$current_address = get_db_row_sql ($sql);
 	if ($current_address)
 		return;
 	

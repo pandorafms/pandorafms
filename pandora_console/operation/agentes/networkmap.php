@@ -112,7 +112,6 @@ function create_node($agent, $simple = 0) {
 	if (strlen($name) > 12)
 		$name = substr($name,0,12);
 
-
     if ($simple == 0){
 		// Set node icon
 		if (file_exists('images/networkmap/' . $agent['id_os'] . '.png')) { 

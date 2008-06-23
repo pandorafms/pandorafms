@@ -449,14 +449,6 @@ function grafico_modulo_sparse ($id_agente_modulo, $periodo, $show_event,
 	$max_value = 0;
 	$min_value = 0;
 
-	// DEBUG ONLY (to get number of items for this graph)
-	/*
-	// Make "THE" query. Very HUGE.
-		$sql1="SELECT COUNT(datos) FROM tagente_datos WHERE id_agente = $id_agente AND id_agente_modulo = $id_agente_modulo AND utimestamp > $fechatope";
-		$result=mysql_query($sql1);
-		$row=mysql_fetch_array($result);
-		$title=$title." [C] ".$row[0];
-	*/
 	// Get the first data outsite (to the left---more old) of the interval given
 	$sql = sprintf ('SELECT datos, utimestamp FROM tagente_datos 
 			WHERE id_agente = %d AND id_agente_modulo = %d 
@@ -470,26 +462,25 @@ function grafico_modulo_sparse ($id_agente_modulo, $periodo, $show_event,
 	while ($row = mysql_fetch_array ($result)) {
 		$datos = $row[0];
 		$utimestamp = $row[1];
-		if ($datos >= 0) {
-			for ($i = 0; $i <= $resolution; $i++) {
-				if ( ($utimestamp <= $valores[$i][3]) && ($utimestamp >= $valores[$i][2]) ){
-					$valores[$i][0]=$valores[$i][0]+$datos;
-					$valores[$i][1]++;
-					// Init min value
-					if ($valores[$i][4] == 0)
+		for ($i = 0; $i <= $resolution; $i++) {
+			if ( ($utimestamp <= $valores[$i][3]) && ($utimestamp >= $valores[$i][2]) ){
+				$valores[$i][0]=$valores[$i][0]+$datos;
+				$valores[$i][1]++;
+				// Init min value
+				if ($valores[$i][4] == 0)
+					$valores[$i][4] = $datos;
+				else {
+					// Check min value
+					if ($datos < $valores[$i][4])
 						$valores[$i][4] = $datos;
-					else {
-						// Check min value
-						if ($datos < $valores[$i][4])
-						 $valores[$i][4] = $datos;
-					}			
-					// Check max value
-					if ($datos > $valores[$i][5])
-						 $valores[$i][5] = $datos;
-					break;
-				}
+				}			
+				// Check max value
+				if ($datos > $valores[$i][5])
+						$valores[$i][5] = $datos;
+				break;
 			}
-		}		
+		}
+				
 	}
 	
 	// Calculate Average value for $valores[][0]
@@ -504,6 +495,10 @@ function grafico_modulo_sparse ($id_agente_modulo, $periodo, $show_event,
 		// Get max value for all graph
 		if ($valores[$i][5] > $max_value)
 			$max_value = $valores[$i][5];
+		// Get min value for all graph
+		if ($valores[$i][5] < $min_value)
+			$min_value = $valores[$i][5];
+
 		// Take prev. value
 		// TODO: CHeck if there are more than 24hours between
 		// data, if there are > 24h, module down.
@@ -568,6 +563,7 @@ function grafico_modulo_sparse ($id_agente_modulo, $periodo, $show_event,
 		$dataset_event = Image_Graph::factory('dataset');
 		$dataset_event -> setName("Event Fired");
 	}
+
 	// ... and populated with data ...
 	for ($i = 0; $i <= $resolution; $i++) {
 		$tdate = date('d/m', $valores[$i][2])."\n".date('H:i', $valores[$i][2]);
@@ -583,7 +579,7 @@ function grafico_modulo_sparse ($id_agente_modulo, $periodo, $show_event,
 		}
 	}
 
-	if ($max_value > 0){
+	if ($max_value != $min_value){
 		// Show alert limits 
 		if ($show_alert == 1){
 			$Plot =& $Plotarea->addNew('Image_Graph_Axis_Marker_Area', IMAGE_GRAPH_AXIS_Y);
@@ -607,15 +603,23 @@ function grafico_modulo_sparse ($id_agente_modulo, $periodo, $show_event,
 		$AxisY->setDataPreprocessor(Image_Graph::factory('Image_Graph_DataPreprocessor_Function', 'format_for_graph'));
 		$AxisY->setLabelOption("showtext",true);
 		$yinterval = $height / 30;
-		$AxisY->setLabelInterval(ceil($max_value / $yinterval));
-		$AxisY->showLabel(IMAGE_GRAPH_LABEL_ZERO);
-		if ($unit_name != "")
-			$AxisY->setTitle($unit_name, 'vertical');
-		if ($periodo < 10000)
-			$xinterval = 8;
+
+
+		if (($min_value < 0) AND ($max_value > 0))
+			$AxisY->setLabelInterval( -1 * ceil(($min_value - $max_value)/ $yinterval ));
+		elseif ($min_value < 0)
+			$AxisY->setLabelInterval( -1 * ceil($min_value / $yinterval));
 		else
+			$AxisY->setLabelInterval(ceil($max_value / $yinterval));
+
+		$AxisY->showLabel(IMAGE_GRAPH_LABEL_ZERO);
+		if ($unit_name != ""){
+			$AxisY->setTitle($unit_name, 'vertical');		if ($periodo < 10000)
+			$xinterval = 8;
+		} else
 			$xinterval = $resolution / 7 ;
 		$AxisX->setLabelInterval($xinterval) ;
+
 		//$AxisY->forceMinimum($minvalue);
 		$AxisY->forceMaximum($max_value+($max_value/12)) ;
 		$GridY2 =& $Plotarea->addNew('bar_grid', IMAGE_GRAPH_AXIS_Y_SECONDARY);

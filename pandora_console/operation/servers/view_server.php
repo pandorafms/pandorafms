@@ -36,13 +36,6 @@ if ((give_acl($id_user, 0, "AR")==0) AND (give_acl($id_user,0,"AW") == 0) AND (d
 echo "<h2>".$lang_label["view_servers"]." &gt; ";
 echo $lang_label["server_detail"]."</h2>";
 
-// Get total modules defined (network)
-$total_modules_network = get_db_sql  ("SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo > 4 AND id_tipo_modulo != 100");
-
-// Get total modules defined (data)
-$total_modules_data = get_db_sql  ("SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_tipo_modulo < 5 OR id_tipo_modulo = 100");
-
-// Connect DataBase
 $sql='SELECT * FROM tserver';
 $result=mysql_query($sql);
 if (mysql_num_rows($result)){
@@ -87,133 +80,42 @@ if (mysql_num_rows($result)){
 		$description = $row["description"];
 		$version = $row["version"];
 
-		$modules_server = 0;
-		// Get total modules defined for this server (data modules)	
-		$modules_server = get_db_sql  ("SELECT COUNT(running_by) FROM tagente_estado WHERE running_by = $id_server");
-		
-		echo "<tr><td class='$tdcolor'>";
-        
-        // Recon server detail
-		if ($recon_server == 1)
-            if (give_acl($id_user, 0, "PM")==1)
-			    echo "<b><a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=$id_server'>$name</a></b> ";
-            else
-                echo "<b>$name</b>";
-		else
-			echo "<b>$name</b>";
-        
-        // Status (bad or good)
-		echo "<td class='$tdcolor' align='middle'>";
-		if ($status ==0){
-			echo "<img src='images/pixel_red.png' width=20 height=20>";
-		} else {
-			echo "<img src='images/pixel_green.png' width=20 height=20>";
-		}
 
-		echo "<td class='$tdcolor' align='middle'>";
-		if (($snmp_server == 0) OR ($recon_server == 0)){
-			// Progress bar calculations
-			if ($network_server == 1){
-				if ($total_modules_network == 0)
-					$percentil = 0;
-				if ($total_modules_network > 0)
-					$percentil = $modules_server / ($total_modules_network / 100);
-				else	
-					$percentil = 0;
-				$total_modules_temp = $total_modules_network;
+		$serverinfo = server_status ($id_server);
+
+			// Name of server
+			echo "<tr><td class='$tdcolor'>";
+			echo $name;
+
+			// Status
+			echo "<td class='$tdcolor' align='middle'>";
+			if ($status ==0){
+				echo "<img src='images/pixel_red.png' width=20 height=20>";
 			} else {
-				if ($total_modules_data == 0)
-					$percentil = 0;
-				else
-					$percentil = $modules_server / ($total_modules_data / 100);
-				$total_modules_temp = $total_modules_data;
+				echo "<img src='images/pixel_green.png' width=20 height=20>";
 			}
-		} elseif ($recon_server == 1){
-			$modules_server = get_db_sql  ("SELECT COUNT(id_rt) FROM trecon_task WHERE id_network_server = $id_server");
-			$total_modules = get_db_sql ("SELECT COUNT(id_rt) FROM trecon_task");
-			if ($total_modules == 0)
+			
+			// Load
+			echo "<td class='$tdcolor' align='middle'>";
+			if ($serverinfo["modules_total"] > 0)
+				$percentil = $serverinfo["modules"] / ( $serverinfo["modules_total"]/ 100);
+			else
 				$percentil = 0;
-			else	
-				$percentil = $modules_server / ($total_modules / 100);
-			$total_modules_temp = $total_modules;
-		}
-		else 
-			echo "-";
+			if ($percentil > 100)
+				$percentil = 100;
+			// Progress bar render
 
-        // Progress bar render
-        if ($snmp_server == 0) {
-            // Check bad values for percentile
-            if ($percentil > 100){
-                    $percentil = 100;
-            }
-            if ($percentil < 0){
-                    $percentil = 0;
-            }
-            echo '<img src="reporting/fgraph.php?tipo=progress&percent='.$percentil.'&height=18&width=80">';
-        }
+			echo '<img src="reporting/fgraph.php?tipo=progress&percent='.$percentil.'&height=18&width=80">';
 
-		// Number of modules
-		echo "<td class='$tdcolor'>";
-		if (($recon_server ==1) OR ($network_server == 1) OR ($data_server == 1)){
-			echo $modules_server . ' / '. $total_modules_temp;
-        } else {
-			echo "-";
-        }
+			// Modules
+			echo "<td class='$tdcolor' align='middle'>";
+			echo $serverinfo["modules"] . " ".lang_string("of")." ". $serverinfo["modules_total"];
 
-		// LAG CHECK 
-		echo "<td class='$tdcolor'>"; 
-		// Calculate lag: get oldest module of any proc_type, for this server,
-		// and calculate difference in seconds 
-		// Get total modules defined for this server
-		if (($network_server == 1) OR ($data_server == 1) OR ($wmi_server == 1) OR ($plugin_server == 1)) {
-			if (($network_server == 1) OR ($wmi_server == 1) OR ($plugin_server == 1)) {
-				$sql1 = "SELECT MIN(last_execution_try),current_interval FROM tagente_estado WHERE last_execution_try > 0 AND running_by=$id_server GROUP BY current_interval ORDER BY 1";
-            } elseif ($data_server == 1){
-				// This only checks for agent with a last_execution_try of at 
-				// maximun: ten times it's interval.... if is bigger, it probably 
-				// will be because an agent down
-				$sql1 = "SELECT MAX(last_execution_try), current_interval, id_agente FROM tagente_estado WHERE last_execution_try > 0 AND (tagente_estado.last_execution_try + (tagente_estado.current_interval * 10) > UNIX_TIMESTAMP()) AND running_by=$id_server GROUP BY id_agente ORDER BY 1 ASC LIMIT 1";
-            }
-			$nowtime = time();
-			$maxlag=0;
-			if ($result1=mysql_query($sql1))
-			while ($row1=mysql_fetch_array($result1)){
-				if (($row1[0] + $row1[1]) < $nowtime){
-					$maxlag2 =  $nowtime - ($row1[0] + $row1[1]);
-					// More than 5 times module interval is not lag, is a big
-					// problem in agent, network or servers..
-					if ($maxlag2 < ($row1[1]*5))
-						if ($maxlag2 > $maxlag)
-							$maxlag = $maxlag2;
-				}
-			}
-			if ($maxlag < 60)
-				echo $maxlag." sec";
-			elseif ($maxlag < 86400)
-				echo format_numeric($maxlag/60) . " min";
-			elseif ($maxlag > 86400)
-				echo "+1 ".$lang_label["day"];
-		} elseif ($recon_server == 1) {
-			$sql1 = "SELECT * FROM trecon_task WHERE id_network_server = $id_server";
-			$result1=mysql_query($sql1);
-			$nowtime = time();
-			$maxlag=0;$maxlag2=0;
-			while ($row1=mysql_fetch_array($result1)){
-				if (($row1["utimestamp"] + $row1["interval_sweep"]) < $nowtime){
-					$maxlag2 =  $nowtime - ($row1["utimestamp"] + $row1["interval_sweep"]);
-					if ($maxlag2 > $maxlag)
-						$maxlag = $maxlag2;
-				}
-			}
-			if ($maxlag < 60)
-				echo $maxlag." sec";
-			elseif ($maxlag < 86400)
-				echo format_numeric($maxlag/60) . " min";
-			elseif ($maxlag > 86400)
-				echo "+1 ".$lang_label["day"];
-		} else {
-			echo "--";
-        }
+			// Lag
+			echo "<td class='$tdcolor' align='middle'>";
+			echo human_time_description_raw ($serverinfo["lag"]) . " / ". $serverinfo["module_lag"];
+
+
 		echo "<td class='".$tdcolor."f9'>".substr($description,0,25)."</td>";
 		echo "<td class='$tdcolor' align='middle'>";			
 		if ($network_server == 1){

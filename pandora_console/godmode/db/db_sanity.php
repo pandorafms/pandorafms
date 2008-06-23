@@ -74,6 +74,9 @@ if ($sanity == 1) {
 		$sql = "DELETE FROM tagente_estado WHERE id_agente_modulo = $id_agente_modulo";
 		mysql_query ($sql);
 	}
+	echo "Deleting bad module (id 0)<br>";
+	$sql = "DELETE FROM tagente_modulo WHERE id_modulo = 0";
+	mysql_query ($sql);
 } 
 
 echo "<br>";

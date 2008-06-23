@@ -78,12 +78,15 @@ if (isset($_GET["view_graph"])){
 		while ( $row2 = mysql_fetch_array($res2)){
 			$weight = $row2["weight"];
 			$id_agent_module = $row2["id_agent_module"];
-			if (!isset($modules)){
-				$modules = $id_agent_module;
-				$weights = $weight;
-			} else {
-				$modules = $modules.",".$id_agent_module;
-				$weights = $weights.",".$weight;
+			$id_grupo = get_db_sql ("SELECT id_grupo FROM tagente, tagente_modulo WHERE tagente_modulo.id_agente_modulo = $id_agent_module AND tagente.id_agente = tagente_modulo.id_agente");
+			if (give_acl($config["id_user"], $id_grupo, "AR")==1){
+				if (!isset($modules)){
+					$modules = $id_agent_module;
+					$weights = $weight;
+				} else {
+					$modules = $modules.",".$id_agent_module;
+					$weights = $weights.",".$weight;
+				}
 			}
 		}
 		echo "<h2>".$lang_label["reporting"]." &gt; ";

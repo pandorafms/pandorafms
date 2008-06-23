@@ -1,6 +1,12 @@
-
-
 2008-06-23  Sancho Lerena <slerena@gmail.com>
+
+	*  include/functions.php, 
+	agent_disk_conf_editor.php: FINALLY, fixed problem with slashes due
+	to MAGIC_QUOTES. Some special input will be processed with new 
+	function "unsafe_string" that detect MAGIC_QUOTES status and run
+	stripslashes over string. Could be interesting to pass over some
+	"safe" inputs (on godmode section only), where possible conflicting
+	characters like "\" or "" can be passed as parameters.
 
 	* pandoradb.sql: Removed table "tquicksession". Not ever used.
 

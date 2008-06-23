@@ -1151,4 +1151,16 @@ function return_priority ($priority) {
 		return lang_string ("All");
 	}
 }
+
+/**
+ * Avoid magic_quotes protection
+ *
+ * @param string Text string to be stripped of magic_quotes protection
+ */
+
+function unsafe_string ($string){
+	if (get_magic_quotes_gpc() == 1) 
+    	$string = stripslashes ($string);
+	return $string;
+}
 ?>

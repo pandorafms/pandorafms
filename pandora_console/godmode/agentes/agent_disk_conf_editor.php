@@ -27,7 +27,7 @@ function display_config () {
 	// Read configuration file
 	$file_name = $config["remote_config"] . "/" . $agent_md5 . ".conf";
 	$file = fopen($file_name, "rb");
-	$agent_config = fread($file, filesize($file_name));
+	$agent_config = unsafe_string (fread($file, filesize($file_name)));
 	fclose($file);
 
 	// Display it

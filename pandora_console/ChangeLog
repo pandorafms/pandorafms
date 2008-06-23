@@ -1,5 +1,11 @@
 2008-06-23  Esteban Sanchez  <estebans@artica.es>
 
+	* include/functions_reporting.php: Do not show alert tables if there's
+	no fired alerts in the alert report. Use get_agents_in_group() in
+	general_group_reporting() and agents_detailed_reporting().
+
+2008-06-23  Esteban Sanchez  <estebans@artica.es>
+
 	* include/functions_db.php: Deleted a debug output. list_group2 marked
 	as deprecated function. Added get_user_groups(). Fixed an undefined
 	variable in return_moduledata_sum_value().

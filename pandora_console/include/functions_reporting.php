@@ -298,34 +298,33 @@ function alert_reporting ($id_group, $period = 0, $date = 0, $return = false) {
 	$output .= '<strong>'.lang_string ('fired_alerts').': '.sizeof ($alerts_fired).'</strong><br />';
 	$output .= '<strong>'.lang_string ('total_alerts_monitored').': '.sizeof ($alerts).'</strong><br />';
 
-	$table->width = '100%';
-	$table->class = 'databox';
-	$table->size = array ();
-	$table->size[0] = '100px';
-	$table->data = array ();
-	$table->head = array ();
-	$table->head[0] = lang_string ('agent');
-	$table->head[1] = lang_string ('alert_description');
-	$table->head[2] = lang_string ('times_fired');
-	$table->head[3] = lang_string ('priority');
-	$table->align = array ();
-	$table->align[2] = 'center';
-	
-	foreach ($agents as $alerts) {		
-		$data = array ();
-		foreach ($alerts as $alert) {
-			if (! isset ($data[0]))
-				$data[0] = '<strong>'.dame_nombre_agente_agentemodulo ($alert['id_agente_modulo']).'</strong>';
-			else
-				$data[0] = '';
-			$data[1] = $alert['descripcion'];
-			$data[2] = $alerts_fired[$alert['id_aam']];
-			$data[3] = get_alert_priority ($alert['priority']);
-			array_push ($table->data, $data);
+	if ($alerts_fired) {
+		$table->width = '100%';
+		$table->class = 'databox';
+		$table->size = array ();
+		$table->size[0] = '100px';
+		$table->data = array ();
+		$table->head = array ();
+		$table->head[0] = lang_string ('agent');
+		$table->head[1] = lang_string ('alert_description');
+		$table->head[2] = lang_string ('times_fired');
+		$table->head[3] = lang_string ('priority');
+		
+		foreach ($agents as $alerts) {		
+			$data = array ();
+			foreach ($alerts as $alert) {
+				if (! isset ($data[0]))
+					$data[0] = '<strong>'.dame_nombre_agente_agentemodulo ($alert['id_agente_modulo']).'</strong>';
+				else
+					$data[0] = '';
+				$data[1] = $alert['descripcion'];
+				$data[2] = $alerts_fired[$alert['id_aam']];
+				$data[3] = get_alert_priority ($alert['priority']);
+				array_push ($table->data, $data);
+			}
 		}
+		$output .= print_table ($table, true);
 	}
-	$output .= print_table ($table, true);
-	
 	if (!$return)
 		echo $output;
 	return $output;
@@ -420,8 +419,8 @@ function monitor_health_reporting ($id_group, $period = 0, $date = 0, $return = 
  */
 function general_group_reporting ($id_group, $return = false) {
 	$output = '';
-	$agents = get_db_value ('COUNT(*)', 'tagente', 'id_grupo', $id_group);
-	$output .= '<strong>'.lang_string ('agents_in_group').': '.$agents.'</strong><br />';
+	$agents = get_agents_in_group ($id_group);
+	$output .= '<strong>'.lang_string ('agents_in_group').': '.sizeof ($agents).'</strong><br />';
 	
 	if (!$return)
 		echo $output;
@@ -438,7 +437,7 @@ function general_group_reporting ($id_group, $return = false) {
  */
 function agents_detailed_reporting ($id_group, $period = 0, $date = 0, $return = false) {
 	$output = '';
-	$agents = get_db_value ('COUNT(*)', 'tagente', 'id_grupo', $id_group);
+	$agents = get_agents_in_group ($id_group);
 	
 	$table_modules->width = '750px';
 	$table_alerts->width = '750px';

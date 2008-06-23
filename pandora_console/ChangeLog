@@ -1,4 +1,34 @@
-2008-06-20  Esteban Sanchez  <estebans@artica.es>
+
+
+2008-06-23  Sancho Lerena <slerena@gmail.com>
+
+	* pandoradb.sql: Removed table "tquicksession". Not ever used.
+
+	* pandoradb_data.sql: Updated Scheme build.
+
+	* agent_manager.php: Removed a debug "echo".
+
+	* db_sanity.php: Added feature to delete id_module 0 modules.
+
+	* 3.png: Added image for AIX in network maps.
+
+	* functions_db.php: Fixed a div0 in return_moduledata_avg_value(). 
+	Added server_status() that calculate modules for each server kind,
+	and return a consistent LAG calculation.
+
+	* menu.php: Better Server view menu visualization.
+
+	* estado_ultimopaquete.php: Don't show disabled modules anymore.
+
+	* vier_server.php,
+	tactical.php: Removed old server status code, and used server_status()
+	function to get all data.
+
+	* graph_viewer.php: Added ACL checks for each graph element.
+
+	* fgraph.php: Negative values are now rendered in single graphs.
+
+2008-06-23  Esteban Sanchez  <estebans@artica.es>
 
 	* functions_db.php: Fixed get_agents_in_group() to handle "All" group
 	properly and make it capable to get disabled agents or not. Style

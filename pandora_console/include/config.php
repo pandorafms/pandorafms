@@ -2,10 +2,10 @@
 // Begin of automatic config file
 $config["dbname"]="pandora";			// MySQL DataBase name
 $config["dbuser"]="pandora";			// DB User
-$config["dbpass"]="dstxhvec";			// DB Password
+$config["dbpass"]="pandora";			// DB Password
 $config["dbhost"]="localhost";			// DB Host
-$config["homedir"]="/var/www/pandora/";		// Config homedir
-$config["homeurl"]="http://localhost/pandora";	// Base URL
+$config["homedir"]="/var/www/pandora_console/";		// Config homedir
+$config["homeurl"]="http://localhost/pandora_console";	// Base URL
 
 // End of automatic config file
 ?><?php

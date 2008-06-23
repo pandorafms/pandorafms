@@ -121,7 +121,7 @@ if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 	
 
 	// Server view
-	if ( isset($_GET["sec2"]) && $_GET["sec2"] == "operation/servers/view_server") {
+	if ( isset($_GET["sec"]) && $_GET["sec"] == "estado_server") {
 		echo '<div id="op2s">';
 	} else {
 		echo '<div id="op2">';

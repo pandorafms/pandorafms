@@ -688,15 +688,6 @@ CREATE TABLE `tserver_export` (
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Used to implement fast login (using a predefined hash)
-
-CREATE TABLE `tquicksession` (
-  `id` int(20) unsigned NOT NULL auto_increment,
-  `id_user` varchar(250) NOT NULL default '',
-  `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
-  `pwdhash` varchar(250) NOT NULL default '',
-  PRIMARY KEY  (`id`)
-);
 
 CREATE TABLE `tserver_export_data` (
   `id` int(20) unsigned NOT NULL auto_increment,

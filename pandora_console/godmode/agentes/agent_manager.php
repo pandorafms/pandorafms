@@ -160,7 +160,6 @@ echo '</b></td><td class="datos">';
 echo '<select name="plugin_server" class="w130">';
 echo "<option value='".$id_plugin_server."'>".give_server_name($id_plugin_server);
 $sql1 = 'SELECT id_server, name FROM tserver where plugin_server = 1 ORDER BY name';
-echo $sql1;
 $result=mysql_query($sql1);
 while ($row=mysql_fetch_array($result)){
     echo "<option value='".$row["id_server"]."'>".$row["name"]."</option>";

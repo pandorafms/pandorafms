@@ -220,7 +220,6 @@ function give_disabled_group ($id_group) {
  * @return An array with all agents in the group.
  */
 function get_agents_in_group ($id_group, $disabled = false) {
-	echo "GROUP: ".$id_group;
 	/* 'All' group must return all agents */
 	if ($id_group == 1) {
 		if ($disabled)
@@ -903,6 +902,8 @@ function list_group ($id_user, $show_all = 1){
 
 /** 
  * Get a list of the groups a user has reading privileges.
+ *
+ * DEPRECATED: Use get_user_groups () instead
  * 
  * @param id_user User id
  * 
@@ -919,6 +920,26 @@ function list_group2 ($id_user) {
 	}
 	return ($mis_grupos);
 }
+
+/** 
+ * Get all the groups a user has reading privileges.
+ * 
+ * @param id_user User id
+ * 
+ * @return A list of the groups the user has reading privileges.
+ */
+function get_user_groups ($id_user) {
+	$user_groups = array ();
+	$groups = get_db_all_rows_in_table ('tgrupo');
+	foreach ($groups as $group) {
+		if (! give_acl ($id_user, $group["id_grupo"], "AR"))
+			continue;
+		$user_groups[$group['id_grupo']] = $group['nombre'];
+	}
+	
+	return $user_groups;
+}
+
 
 /** 
  * Get group icon
@@ -1521,7 +1542,9 @@ function return_moduledata_sum_value ($id_agent_module, $period, $date = 0) {
 	if (! $date)
 		$date = time ();
 	$datelimit = $date - $period; // limit date
-	$module_name = get_db_value ('nombre', 'ttipo_modulo', 'id_tipo', $agent_module['id_tipo_modulo']);
+	$id_module_type = get_db_value ('id_tipo_modulo', 'tagente_modulo',
+				'id_agente_modulo', $id_agent_module);
+	$module_name = get_db_value ('nombre', 'ttipo_modulo', 'id_tipo', $id_module_type);
 	
 	if (is_module_data_string ($module_name)) {
 		return lang_string ('wrong_module_type');

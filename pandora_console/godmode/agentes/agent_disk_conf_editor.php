@@ -27,7 +27,7 @@ function display_config () {
 	// Read configuration file
 	$file_name = $config["remote_config"] . "/" . $agent_md5 . ".conf";
 	$file = fopen($file_name, "rb");
-	$agent_config = unsafe_string (fread($file, filesize($file_name)));
+	$agent_config = fread($file, filesize($file_name));
 	fclose($file);
 
 	// Display it
@@ -48,7 +48,7 @@ function display_config () {
 	echo 	'<tr>';
 	echo 		'<td class="datos2" colspan="2">';
 	echo 			'<textarea class="conf_editor" name="disk_conf">';
-	echo entrada_limpia($agent_config);
+	echo $agent_config;
 	echo 			'</textarea>';
 	echo 		'</td>';
 	echo 	'</tr>';
@@ -66,7 +66,8 @@ function display_config () {
 // Saves the configuration and the md5 hash
 function save_config ($agent_config) {
 	global $agent_md5, $config;
-	
+
+	$agent_config = unsafe_string ($agent_config);	
 	// Save configuration
 	$file = fopen($config["remote_config"] . "/" . $agent_md5 . ".conf", "wb");
 	fwrite($file, $agent_config);

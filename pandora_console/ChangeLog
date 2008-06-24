@@ -1,3 +1,15 @@
+2008-06-24  Sancho Lerena  <slerena@gmail.com>
+
+	* include/functions_db.php: Fixed typo.
+
+	* include/languages/language_es_es.php: Too long string fixed.
+
+	* operation/agentes/tactical.php: Div0 fixed.
+
+	* godmode/agentes/agent_disk_conf_editor.php: Check should be done 
+	after reading (when updating file, because binary reads don't be afected
+	by magic_quotes. This SHOULD fix the problem.
+
 2008-06-23  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions_reporting.php: Do not show alert tables if there's

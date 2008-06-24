@@ -59,6 +59,8 @@
         $data_health = format_numeric ( (($data_checks -($data_unknown + $data_alert)) / $data_checks ) * 100,1);;
     } else
         $data_health = 100;
+    if ($data_health < 0)
+	$data_health =0;
     if (($data_checks != 0) OR ($data_checks != 0)){
         $global_health = format_numeric ((($data_health * $data_checks) + ($monitor_health * $monitor_checks)) / $total_checks);
     } else

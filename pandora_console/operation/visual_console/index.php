@@ -29,45 +29,39 @@ if (comprueba_login() != 0) {
 
 echo "<h2>".$lang_label["visual_console"]." &gt; ";
 echo $lang_label["summary"]."</h2>";
-$sql="SELECT * FROM tlayout";
-$res=mysql_query($sql);
 
-if (mysql_num_rows($res)) {
+$layouts = get_db_all_rows_in_table ('tlayout');
 
-	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
-	echo "<tr>
-	<th>".$lang_label["name"]."</th>
-	<th>".$lang_label["group"]."</th>
-	<th>".$lang_label["elements"]."</th>
-	<th>".$lang_label["view"]."</th>";
-	$color=1;
-	while ($row = mysql_fetch_array($res)){
-		// Calculate table line color
-		if ($color == 1){
-			$tdcolor = "datos";
-			$color = 0;
-		}
-		else {
-			$tdcolor = "datos2";
-			$color = 1;
-		}
-		echo "<tr>";
-		// Name
-		echo "<td valign='top' class='$tdcolor'>".$row["name"]."</td>";
-		$id_layout =  $row["id"];
-		// Group
-		echo "<td valign='top' align='center' class='$tdcolor'><img src='images/".dame_grupo_icono($row["id_group"]).".png'></td>";
-		// # elements		
-		$sql2="SELECT COUNT(*) FROM tlayout_data WHERE id_layout = $id_layout";
-		$res2=mysql_query($sql2);
-		$row2 = mysql_fetch_array($res2);
-		echo "<td valign='top'align='center' class='$tdcolor'>".$row2[0]."</td>";
-		// View icon
-		echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=visualc&sec2=operation/visual_console/render_view&id=$id_layout'><img src='images/images.png'></a></td></tr>";
-	}
-	echo "</table>";
-} else {
+if (sizeof ($layouts) == 0) {
 	echo "<div class='nf'>".$lang_label["no_layout_def"]."</div>";
+	return;
 }
+
+$table->width = '500px';
+$table->data = array ();
+$table->head = array ();
+$table->head[0] = lang_string ('name');
+$table->head[1] = lang_string ('group');
+$table->head[2] = lang_string ('elements');
+$table->head[3] = lang_string ('view');
+$table->align = array ();
+$table->align[2] = 'center';
+$table->align[3] = 'center';
+
+foreach ($layouts as $layout) {
+	$data = array ();
+	
+	$data[0] = $layout['name'];
+	$data[1] = '<img src="images/'.dame_grupo_icono($layout["id_group"]).'.png" 
+		title="'.dame_nombre_grupo ($layout["id_group"]).'"> ';
+	$data[1] .= dame_nombre_grupo ($layout["id_group"]);
+	$data[2] = get_db_value ('COUNT(*)', 'tlayout_data', 'id_layout', $layout['id']);
+	$data[3] = '<a href="index.php?sec=visualc&sec2=operation/visual_console/render_view&id='.
+		$layout['id'].'"><img src="images/images.png"></a>';
+	
+	array_push ($table->data, $data);
+}
+
+print_table ($table);
 
 ?>

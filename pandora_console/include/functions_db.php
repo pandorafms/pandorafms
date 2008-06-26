@@ -1401,7 +1401,7 @@ function return_value_agent_module ($id_agentmodule) {
  * 
  * @return The X axis coordinate value.
  */
-function return_coordinate_X_layoutdata ($id_layoutdata) {
+function get_layoutdata_x ($id_layoutdata) {
 	return (float) get_db_value ('pos_x', 'tlayout_data', 'id', $id_layoutdata);
 }
 
@@ -1412,7 +1412,7 @@ function return_coordinate_X_layoutdata ($id_layoutdata) {
  * 
  * @return The X axis coordinate value.
  */
-function return_coordinate_y_layoutdata ($id_layoutdata){
+function get_layoutdata_y ($id_layoutdata){
 	return (float) get_db_value ('pos_y', 'tlayout_data', 'id', $id_layoutdata);
 }
 
@@ -1470,8 +1470,7 @@ function return_moduledata_avg_value ($id_agent_module, $period, $date = 0) {
 		return ($previous_data['datos'] + $sum) / ($total + 1);
 	if ($total > 0)
 		return $sum / $total;
-	else
-		return 0;
+	return 0;
 }
 
 /** 

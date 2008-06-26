@@ -428,7 +428,7 @@ function print_radio_button_extended ($name, $value, $label, $checkedvalue, $dis
 	$output .= ' />';
 	
 	if ($label != '') {
-                $output .= '<label for="'.$htmlid.'">'.  $label .'</label>' .  "\n";
+		$output .= '<label for="'.$htmlid.'">'.  $label .'</label>' .  "\n";
 	}
 	
 	if ($return)

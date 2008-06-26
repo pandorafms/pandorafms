@@ -45,6 +45,13 @@ function pandora_help ($help_id, $return = false) {
 function safe_input ($value) {
 	if (is_numeric ($value))
 		return $value;
+	if (is_array ($value)) {
+		$retval = array ();
+		foreach ($value as $id => $val) {
+			$retval[$id] = htmlentities (utf8_decode ($val), ENT_QUOTES);
+		}
+		return $retval;
+	}
 	return htmlentities (utf8_decode ($value), ENT_QUOTES); 
 }
 
@@ -238,27 +245,27 @@ function unmanaged_error ($error = "") {
  */
 function list_files ($directory, $stringSearch, $searchHandler, $return) {
 	$errorHandler = false;
-	$result = array();
+	$result = array ();
 	if (! $directoryHandler = @opendir ($directory)) {
 		echo ("<pre>\nerror: directory \"$directory\" doesn't exist!\n</pre>\n");
 		return $errorHandler = true;
 	}
 	if ($searchHandler == 0) {
 		while (false !== ($fileName = @readdir ($directoryHandler))) {
-			@array_push ($result, $fileName);
+			$result[$fileName] = $fileName;
 		}
 	}
 	if ($searchHandler == 1) {
 		while(false !== ($fileName = @readdir ($directoryHandler))) {
 			if(@substr_count ($fileName, $stringSearch) > 0) {
-				@array_push ($result, $fileName);
+				$result[$fileName] = $fileName;
 			}
 		}
 	}
 	if (($errorHandler == true) &&  (@count ($result) === 0)) {
 		echo ("<pre>\nerror: no filetype \"$fileExtension\" found!\n</pre>\n");
 	} else {
-		sort ($result);
+		asort ($result);
 		if ($return == 0) {
 			return $result;
 		}

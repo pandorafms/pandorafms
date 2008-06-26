@@ -16,587 +16,553 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-?>
-<script language="javascript">
-	/* Function to hide/unhide a specific Div id */
-	function toggleDiv (divid){
-		if (document.getElementById(divid).style.display == 'none'){
-			document.getElementById(divid).style.display = 'block';
-		} else {
-			document.getElementById(divid).style.display = 'none';
-		}
-	}
-</script>
-<?PHP
-// Login check
-$id_user=$_SESSION["id_usuario"];
-global $REMOTE_ADDR;
 
-if (comprueba_login() != 0) {
-	audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access map builder");
+if (comprueba_login () != 0) {
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access map builder");
 	include ("general/noaccess.php");
 	exit;
 }
 
-if (give_acl($id_user, 0, "AW")!=1){
-	audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access map builder");
+if (! give_acl ($config['id_user'], 0, "AW")) {
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access map builder");
 	include ("general/noaccess.php");
 	exit;
 }
 
-$form_report_name = "";
-$form_report_private=0;
-$form_report_description = "";
-$createmode = 1;
+require ('include/functions_visual_map.php');
 
-if (isset($_GET["get_agent"])) {
- 	$id_agent = $_POST["id_agent"];
-}
+$id_layout = (int) get_parameter ('id_layout');
+$edit_layout = (bool) get_parameter ('edit_layout');
+$create_layout = (bool) get_parameter ('create_layout');
+$update_layout = (bool) get_parameter ('update_layout');
+$delete_layout = (bool) get_parameter ('delete_layout');
+$create_layout_data = (bool) get_parameter ('create_layout_data');
+$update_layout_data = (bool) get_parameter ('update_layout_data');
+$delete_layout_data = (bool) get_parameter ('delete_layout_data');
+$update_layout_data_coords = (bool) get_parameter ('update_layout_data_coords');
+$get_layout_data = (bool) get_parameter ('get_layout_data');
+$get_background_info = (bool) get_parameter ('get_background_info');
 
-// Delete module SQL code
-if (isset($_GET["delete"])){
-	$id_content = $_GET["delete"];
-	$sql = "DELETE FROM tlayout_data WHERE id = $id_content";
-	if ($res=mysql_query($sql))
-		$result = "<h3 class=suc>".$lang_label["delete_ok"]."</h3>";
-	else
-		$result = "<h3 class=error>".$lang_label["delete_no"]."</h3>";
-	echo $result;
-}
+$name = '';
+$id_group = 0;
+$width = 0;
+$height = 0;
+$background = '';
 
-// Delete module SQL code
-if (isset($_GET["delete_map"])){
-	$id = $_GET["delete_map"];
-	$sql = "DELETE FROM tlayout_data WHERE id_layout = $id";
-	$sql2 = "DELETE FROM tlayout WHERE id = $id";
-	$res=mysql_query($sql);
-	$res2=mysql_query($sql2);
-	if ($res AND $res2)
-		$result = "<h3 class=suc>".$lang_label["delete_ok"]."</h3>";
-	else
-		$result = "<h3 class=error>".$lang_label["delete_no"]."</h3>";
-	echo $result;
-}
-
-// Create new report. First step
-if (isset($_GET["create_map"])){
-	$createmode = 2;
-}
-
-if (isset($_GET["update_module"])){
-	if (isset($_GET["update_module"]))
-		$id_element = $_GET["update_module"];
-	else {
-		audit_db($id_user,$REMOTE_ADDR, "Hack attempt","Parameter trash in map builder");
-		include ("general/noaccess.php");
+if ($create_layout) {
+	$name = (string) get_parameter ('name');
+	$id_group = (int) get_parameter ('id_group');
+	$width = (int) get_parameter ('width');
+	$height = (int) get_parameter ('height');
+	$background = (string) get_parameter ('background');
+	if ($background != '') {
+		$bg_info = getimagesize ('images/console/background/'.$background);
+		$width = $bg_info[0];
+		$height = $bg_info[1];
+	}
+	$sql = sprintf ('INSERT INTO tlayout (name, id_group, background, height, width)
+			VALUES ("%s", %d, "%s", %d, %d)',
+			$name, $id_group, $background, $height, $width);
+	$result = mysql_query ($sql);
+	if ($result) {
+		echo '<h3 class="suc">'.lang_string ("create_ok").'</h3>';
+		$id_layout = mysql_insert_id ();
+	} else {
+		echo '<h3 class="err">'.lang_string ("create_no").'</h3>';
+	}
+	if (defined ('AJAX')) {
 		exit;
 	}
-	$pos_x = get_parameter ("pos_x",0);
-	$pos_y = get_parameter ("pos_y",0);
-	$my_height = get_parameter ("height");
-	$my_width = get_parameter ("width");
-	$my_label = get_parameter ("label");
-	$my_image = get_parameter ("image");
-	
-	$sql = "UPDATE tlayout_data SET
-		 pos_x = '$pos_x',
-		 pos_y = '$pos_y',
-		 width = '$my_width',
-		 height = '$my_height',
-		 image = '$my_image',
-		 label = '$my_label'
-		WHERE id = $id_element";
-	if ($res=mysql_query($sql))
-		$result = "<h3 class=suc>".$lang_label["modify_ok"]."</h3>";
-	else {
-		$result = "<h3 class=error>".$lang_label["modify_no"]."</h3>";
-		echo $sql;
-		echo "<br><br>";
-	}
-	echo $result;
-	
 }
-// Add module SQL code
-if (isset($_GET["add_module"])){
-	if (isset($_POST["id_map"]))
-		$id_map = $_POST["id_map"];
-	else {
-		audit_db($id_user,$REMOTE_ADDR, "Hack attempt","Parameter trash in map builder");
-		include ("general/noaccess.php");
+
+if ($delete_layout) {
+	$sql = sprintf ('DELETE FROM tlayout_data WHERE id_layout = %d', $id_layout);
+	mysql_query ($sql);
+	$sql = sprintf ('DELETE FROM tlayout WHERE id = %d', $id_layout);
+	$result = mysql_query ($sql);
+	if ($result) {
+		echo '<h3 class="suc">'.lang_string ("delete_ok").'</h3>';
+	} else {
+		echo '<h3 class="err">'.lang_string ("delete_no").'</h3>';
+	}
+	$id_layout = 0;
+}
+
+if ($update_layout) {
+	$name = (string) get_parameter ('name');
+	$id_group = (int) get_parameter ('id_group');
+	$width = (int) get_parameter ('width');
+	$height = (int) get_parameter ('height');
+	$background = (string) get_parameter ('background');
+	$bg_info = getimagesize ('images/console/background/'.$background);
+	if (! $width)
+		$width = $bg_info[0];
+	if (! $height)
+		$height = $bg_info[1];
+	$sql = sprintf ('UPDATE tlayout SET name = "%s", background = "%s", 
+			height = %d, width = %d
+			WHERE id = %d',
+			$name, $background, $height, $width, $id_layout);
+	$result = mysql_query ($sql);
+	if ($result) {
+		echo '<h3 class="suc">'.lang_string ("update_ok").'</h3>';
+	} else {
+		echo '<h3 class="err">'.lang_string ("update_no").'</h3>';
+	}
+	if (defined ('AJAX')) {
 		exit;
 	}
-	$my_id_map = get_parameter ("id_map",0);
-	$my_id_agent = get_parameter ("id_agent",0);
-	$my_id_module = get_parameter ("id_module",0);
-	$my_period = get_parameter ("period",3600);
-	$my_type = get_parameter ("type",0);
-	$my_pos_x = get_parameter ("pos_x",0);
-	$my_pos_y = get_parameter ("pos_y",0);
-	$my_height = get_parameter ("height");
-	$my_width = get_parameter ("width");
-	$my_label = get_parameter ("label");
-	$my_image = get_parameter ("image");
-	$my_map_linked = get_parameter ("map_linked");
-	$my_parent_item = get_parameter ("parent_item");
-	$my_label_color = get_parameter ("label_color","");
-	$my_link_color = get_parameter ("link_color",0);
-	$sql = "INSERT INTO tlayout_data (id_layout, pos_x, pos_y, height, width, label, image, type, period, id_agente_modulo, id_layout_linked, parent_item, label_color, no_link_color) VALUES ('$my_id_map', '$my_pos_x', '$my_pos_y', '$my_height', '$my_width', '$my_label', '$my_image', '$my_type', '$my_period', '$my_id_module', '$my_map_linked', '$my_parent_item', '$my_label_color', '$my_link_color')";
-	if ($res=mysql_query($sql))
-		$result = "<h3 class=suc>".$lang_label["create_ok"]."</h3>";
-	else {
-		$result = "<h3 class=error>".$lang_label["create_no"]."</h3>";
-	}
-	echo $result;
 }
 
-// Create item SQL code
-if (isset($_POST["createmode"])){
-	$createmode = $_POST["createmode"];
-	$map_name = entrada_limpia($_POST["map_name"]);
-	$map_background = entrada_limpia($_POST["map_background"]);
-	$map_width = entrada_limpia($_POST["map_width"]);
-	$map_height = entrada_limpia($_POST["map_height"]);
+if ($get_background_info) {
+	$file = (string) get_parameter ('background');
 	
-		
-	// INSERT REPORT DATA
-	if ($createmode == 1){
-		$form_id_user = $id_user;
-		$sql = "INSERT INTO tlayout (name, background, width, height, id_group) VALUES ('$map_name', '$map_background', '$map_width', '$map_height', 1)";
-		if ($res=mysql_query($sql))
-			$result = "<h3 class=suc>".$lang_label["create_ok"]."</h3>";
-		else
-			$result = "<h3 class=error>".$lang_label["create_no"]."</h3>";
-		$id_map = mysql_insert_id();
-	// UPDATE REPORT DATA
-	} else {
-		$id_map = entrada_limpia($_POST["id_map"]);
-		$sql = "UPDATE tlayout SET name = '$map_name', height= '$map_height', width = '$map_width', background = '$map_background' WHERE id = $id_map";
-		if ($res=mysql_query($sql))
-			$result = "<h3 class=suc>".$lang_label["modify_ok"]."</h3>";
-		else
-			$result = "<h3 class=error>".$lang_label["modify_no"]."</h3>";
-	}
-	echo $result;
-	if ($id_map != ""){
-		$_GET["id"] = $id_map;
-		$createmode=0;
+	$info = getimagesize ('images/console/background/'.$file);
+	$info['width'] = $info[0];
+	$info['height'] = $info[1];
+	if (defined ('AJAX')) {
+		echo json_encode ($info);
+		exit;
 	}
 }
 
-// GET DATA OF REPORT
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-if ($createmode==2 OR isset($_GET["id"]) OR (isset($_POST["id_map"]))) {
-	if (isset($_GET["id"]))
-		$id_map = $_GET["id"];
-	elseif (isset($_POST["id_map"]))
-		$id_map = $_POST["id_map"];
-	else
-		$id_map = -1;
-		
-	if (isset($_POST["id_agent"]))
-		$id_agent = $_POST["id_agent"];
-	else
-		$id_agent = 0;
-	if ($createmode != 2){
-		$createmode = 0;
-		$sql = "SELECT * FROM tlayout WHERE id = $id_map";
-		$res=mysql_query($sql);
-		if ($row = mysql_fetch_array($res)){
-			$map_name = $row["name"];
-			$map_background = $row["background"];
-			$map_width = $row["width"];
-			$map_height = $row["height"];
-		}
+if ($get_layout_data) {
+	$id_layout_data = (int) get_parameter ('id_layout_data');
+	$layout_data = get_db_row ('tlayout_data', 'id', $id_layout_data);
+	$layout_data['id_agent'] = give_agent_id_from_module_id ($layout_data['id_agente_modulo']);
+	if (defined ('AJAX')) {
+		echo json_encode ($layout_data);
+		exit;
+	}
+}
+
+if ($create_layout_data) {
+	$layout_data_type = (string) get_parameter ("type");
+	$layout_data_label = (string) get_parameter ("label");
+	$layout_data_image = (string) get_parameter ("image");
+	$layout_data_id_agent_module = (int) get_parameter ("module");
+	$layout_data_label_color = (string) get_parameter ("label_color");
+	$layout_data_parent_item = (int) get_parameter ("parent_item");
+	$layout_data_period = (int) get_parameter ("period");
+	$layout_data_map_linked = (int) get_parameter ("map_linked");
+	
+	$sql = sprintf ('INSERT INTO tlayout_data (id_layout, label, id_layout_linked,
+			label_color, image, type, id_agente_modulo, parent_item, period, link_color) 
+			VALUES (%d, "%s", %d, "%s", "%s", %d, %d, %d, %d, 1)',
+			$id_layout, $layout_data_label,
+			$layout_data_map_linked,
+			$layout_data_label_color,
+			$layout_data_image, $layout_data_type,
+			$layout_data_id_agent_module,
+			$layout_data_parent_item, $layout_data_period * 3600);
+	$result = mysql_query ($sql);
+	
+	if ($result) {
+		echo '<h3 class="suc">'.lang_string ("create_ok").'</h3>';
 	} else {
-		$map_name = "";
-		$map_background = "";
-		$map_width = "";
-		$map_height = "";
-		$createmode = 1;
+		echo '<h3 class="error">'.lang_string ("create_no").'</h3>';
 	}
-
-	echo "<h2>".$lang_label["reporting"]." &gt; ";
-	echo $lang_label["map_builder"]."</h2>";
-	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/map_builder&id=$id_map'>";
-	echo "<input type='hidden' name=createmode value='$createmode'>";
-	if ($createmode == 0){
-		echo "<input type='hidden' name=id_map value='$id_map'>";
+	if (defined ('AJAX')) {
+		exit;
 	}
+}
 
-
-	echo "<table width=500 cellspacing=4 cellpading=4 class='databox_color'>";
-	echo "<tr><td class='datos2'>";
-	echo $lang_label["report_name"];
-	echo "</td><td class='datos2'>";
-	echo "<input type=text size=35 name='map_name' value='$map_name'>";
-	echo "</td></tr>";
-	echo "<tr><td class='datos'>";
-	echo $lang_label["background"];
-	echo "</td><td class='datos'>";
-	// echo "<input type=text size=45 name='map_background' value='$map_background'>";
-
-	echo '<select name="map_background" class="w155">';
-	if ($map_background != "")
-		echo "<option>".$map_background."</option>";
-	$ficheros2 = list_files('images/console/background/', "",0, 0);
-	$a=0;
-	while (isset($ficheros2[$a])){
-		echo "<option>".$ficheros2[$a]."</option>";
-		$a++;
+if ($update_layout_data_coords) {
+	$id_layout_data = (int) get_parameter ('id_layout_data');
+	$layout_data_x = (int) get_parameter ("coord_x");
+	$layout_data_y = (int) get_parameter ("coord_y");
+	$sql = sprintf ('UPDATE tlayout_data SET
+			pos_x = %d, pos_y = %d
+			WHERE id = %d',
+			$layout_data_x, $layout_data_y, $id_layout_data);
+	$result = mysql_query ($sql);
+	
+	if (defined ('AJAX')) {
+		exit;
 	}
-	echo '</select></td></tr>';
+}
 
-	echo "<tr><td class='datos'>";
-	echo $lang_label["width"];
-	echo "</td><td class='datos'>";
-	echo "<input type=text size=10 name='map_width' value='$map_width'>";
-
-	echo "<tr><td class='datos'>";
-	echo $lang_label["height"];
-	echo "</td><td class='datos'>";
-	echo "<input type=text size=10 name='map_height' value='$map_height'>";
-
-	// Button
-	echo "</table>";
-	echo "<table width=500 cellspacing=4 cellpading=4'>";
-	echo "<tr><td align='right'>";
-	if ($createmode == 0)
-		echo "<input type='submit' class='sub next' value='".$lang_label["update"]."'>";
-	else
-		echo "<input type='submit' class='sub wand' value='".$lang_label["create"]."'>";
-	echo "</td></tr></table>";
-	echo "</form>";
-
-	if ($createmode == 0){
-		// Part 2 - Add new items to report
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-		echo "<h2>".$lang_label["map_item_add"];
-		?>
-		<a href="javascript:;" onmousedown="toggleDiv('map_control');">
-		<?PHP
-		echo "<img src='images/wand.png'>";
-		echo "</a></h2>";
-		echo "<div id='map_control' style='display:all'>";
-
-		// Show combo with agents
-		// ----------------------
-		
-		echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_color'>";
-		echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/map_builder&get_agent=1&id=$id_map'>";
-		echo "<input type='hidden' name=id_map value='$id_map'>";
-		
-		echo "<tr>";
-		echo "<td class='datos'><b>".$lang_label["source_agent"]."</b>";
-		echo "</td>";	
-		echo "<td class='datos' colspan=2><select name='id_agent' style='width:180px;'>";
-		if ($id_agent != 0)
-			echo "<option value='$id_agent'>".dame_nombre_agente($id_agent);
-		$sql1='SELECT * FROM tagente order by nombre';
-		$result=mysql_query($sql1);
-		while ($row=mysql_fetch_array($result)){
-			if ( $id_agent != $row["id_agente"])
-				echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
-		}
-		echo '</select></td>';
-
-
-		echo "<td class='datos' colspan=1 align='right'><input type=submit name='update_agent' class='sub upd' value='".$lang_label["get_info"]."'>";
-		echo "</form>";
-
-		// Modules combo
-		// -----------------------
-		echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/map_builder&add_module=1&id=$id_map'>";
-		echo "<input type='hidden' name=id_map value='$id_map'>";
-		if (isset($id_agent))
-			echo "<input type='hidden' name='id_agent' value='$id_agent'>";
-			
-		echo "</td></tr>";
-		echo "<tr><td class='datos2'>";
-		echo "<b>".$lang_label["modules"]."</b>";
-		echo "<td class='datos2' colspan=3>";
-		echo "<select name='id_module' size=1 style='width:180px;'>";
-				echo "<option value=-1> -- </option>";
-		if ($id_agent != 0){
-			// Populate Module/Agent combo
-			$sql1="SELECT * FROM tagente_modulo WHERE id_agente = ".$id_agent. " order by nombre";
-			$result = mysql_query($sql1);
-			while ($row=mysql_fetch_array($result)){
-				echo "<option value=".$row["id_agente_modulo"].">".$row["nombre"]."</option>";
-			}
-		}
-		echo "</select>";
-
-			// Component type
-		echo "<tr><td class='datos'>";
-		echo "<b>".$lang_label["reporting_type"]."</b>";
-		echo "<td class='datos' colspan=3>";
-		echo "<select name='type' size=1 style='width:180px;'>";
-		echo "<option value=0>".$lang_label["static_graph"]."</option>";
-		echo "<option value=1>".$lang_label["module_graph"]."</option>";
-		echo "<option value=2>".$lang_label["line"]."</option>";
-		echo "</select>";
-
-		// Period
-		echo "<tr><td class='datos2'>";
-		echo "<b>".$lang_label["period"]."</b>";
-		echo "<td class='datos2' colspan=3>";
-		echo "<select name='period'>";
-		echo "<option value=3600>"."Hour"."</option>";
-		echo "<option value=7200>"."2 Hours"."</option>";
-		echo "<option value=10800>"."3 Hours"."</option>";
-		echo "<option value=21600>"."6 Hours"."</option>";
-		echo "<option value=43200>"."12 Hours"."</option>";
-		echo "<option value=86400>"."Last day"."</option>";
-		echo "<option value=172800>"."Two days"."</option>";
-		echo "<option value=604800>"."Last Week"."</option>";
-		echo "<option value=1296000>"."15 days"."</option>";
-		echo "<option value=2592000>"."Last Month"."</option>";
-		echo "<option value=5184000>"."Two Month"."</option>";
-		echo "<option value=15552000>"."Six Months"."</option>";
-		echo "</select>";
-
-		echo "<tr><td class='datos'>";
-		echo "<b>".$lang_label["pos_x"]."</b></td>";
-		echo "<td class='datos'>";
-		echo "<input type=text size=6 name='pos_x'>";
-		
-		echo "<td class='datos'>";
-		echo "<b>".$lang_label["pos_y"]."</b></td>";
-		echo "<td class='datos'>";
-		echo "<input type=text size=6 name='pos_y'>";
-		
-
-		echo "<tr><td class='datos2'>";
-		echo "<b>".$lang_label["height"]."</b></td>";
-		echo "<td class='datos2'>";
-		echo "<input type=text size=6 name='height'>";
-		
-		echo "<td class='datos2'>";
-		echo "<b>".$lang_label["width"]."</b></td>";
-		echo "<td class='datos2'>";
-		echo "<input type=text size=6 name='width'>";
-
-		echo "<tr><td class='datos'>";
-		echo "<b>".$lang_label["label"]."</b></td>";
-		echo "<td class='datos' colspan=3>";
-		echo "<input type=text size=25 name='label'>";
-
-		echo "<tr><td class='datos2'>";
-		echo "<b>".$lang_label["image"]."</b></td>";
-		echo "<td class='datos2' colspan=3>";
-
-		echo '<select name="image" class="w155">';	
-		$ficheros = list_files('images/console/icons/', "",0, 0);
-		$a=0;
-		while (isset($ficheros[$a])){
-			$myfichero = substr($ficheros[$a],0,strlen($ficheros[$a])-4);
-			if ((strpos($myfichero,"_bad") == 0) && (strpos($myfichero,"_ok") == 0) && ($myfichero != "" ))
-				echo "<option>".$myfichero."</option>";
-			$a++;
-		}
-		echo '</select>';
-
-		echo "<tr><td class='datos'>";
-		echo "<b>".$lang_label["map_linked"]."</b>";
-		echo "<td class='datos' colspan=3>";
-		echo "<select name='map_linked' size=1 style='width:180px;'>";
-		$sql_pi = "SELECT * FROM tlayout";
-		$res_pi=mysql_query($sql_pi);
-		echo "<option value='0'>".$row_pi["N/A"];
-		while ($row_pi = mysql_fetch_array($res_pi)){
-			echo "<option value='".$row_pi["id"]."'>".$row_pi["name"];
-		}
-		echo "</select>";
-
-		echo "<tr><td class='datos2'>";
-		echo "<b>".$lang_label["parent_item"]."</b>";
-		echo "<td class='datos2' colspan=3>";
-		echo "<select name='parent_item' size=1 style='width:180px;'>";
-		$sql_pi = "SELECT * FROM tlayout_data WHERE id_layout = $id_map";
-		$res_pi=mysql_query($sql_pi);
-		echo "<option value='0'>".$row_pi["N/A"];
-		while ($row_pi = mysql_fetch_array($res_pi)){
-			echo "<option value='".$row_pi["id"]."'>".$row_pi["label"];
-		}
-		echo "</select>";
-
-		echo "<tr><td class='datos'>";
-		echo "<b>".$lang_label["label_color"]."</b>";
-		echo "<td class='datos'>";
-		echo "<select name='label_color' size=1>";
-		echo "<option value='000000'>".$lang_label["black"]."</option>";
-		echo "<option value='ffffff'>".$lang_label["white"]."</option>";
-		echo "</select>";
-
-		echo "<td class='datos'>";
-		echo "<b>".$lang_label["link_color"]."</b>";
-		echo "<td class='link_color'>";
-		echo "<select name='link_color' size=1 >";
-		echo "<option value=0>".$lang_label["yes"]."</option>";
-		echo "<option value=1>".$lang_label["no"]."</option>";
-		echo "</select>";
-
-
-
-		echo "</table>";
-		
-
-		echo "<table width=500 cellspacing=4 cellpading=4'>";
-		echo "<tr><td align='right'>";
-		echo "<input type='submit' class='sub wand' value='".$lang_label["add"]."'>";
-		echo "</td></tr></table>";
-		echo "</form>";
-
-
-		echo "<br></div>";
-
-		// Part 3 - List of already assigned report items
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-		echo "<h2>".$lang_label["report_items"]."</h2>";
-		$sql = "SELECT * FROM tlayout_data WHERE id_layout = $id_map";
-		$res=mysql_query($sql);
-		
-		if (mysql_num_rows($res)) {
-			echo "<table width=720 cellspacing=4 cellpadding=4 class='databox'>";
-			echo "<tr><th>".$lang_label["type"]."</th>
-			<th>".$lang_label["module_name"]."</th>
-			<th>".$lang_label["label"]."</th>
-			<th>".$lang_label["image"]."</th>
-			<th>".$lang_label["pos_x"]."</th>
-			<th>".$lang_label["pos_y"]."</th>
-			<th>".$lang_label["width"]."</th>
-			<th>".$lang_label["height"]."</th>
-			<th>".$lang_label["delete"]."</th>
-			<th>".$lang_label["update"]."</th>
-			</tr>";
-
-			$color = 0;
-			while ($row = mysql_fetch_array($res)){
-				// Calculate table line color
-				if ($color == 1){
-					$tdcolor = "datos";
-					$color = 0;
-				}
-				else {
-					$tdcolor = "datos2";
-					$color = 1;
-				}
-				$id_layoutdata = $row["id"];
-				$type = $row["type"];
-				switch ($type){
-					case "0": $type_desc = "Single graph"; break;
-					case "1": $type_desc = "Module graph"; break;
-					case "2": $type_desc = "Line"; break;
-				}
-				$id_element = $row["id"];
-				$period = $row["period"];
-				$id_am = $row["id_agente_modulo"];
-				$x = $row["pos_x"];
-				$y = $row["pos_y"];
-				$myimage = $row["image"];
-				$width= $row["width"];
-				$height = $row["height"];
-				$label = $row["label"];
-				$name = "N/A";
-				$agent_name = "N/A";
-				if ($id_am != ""){
-					$agent_name = dame_nombre_agente_agentemodulo ($id_am);
-					$module_name = dame_nombre_modulo_agentemodulo ($id_am);
-				}
-				echo "<tr>";
-				echo "<form method='POST' action='index.php?sec=greporting&sec2=godmode/reporting/map_builder&id=$id_map&update_module=$id_element'>";
-				echo "<td class='$tdcolor'>".$type_desc."</td>";
-				
-				echo "<td class='$tdcolor'>".$agent_name." / ";
-				echo $module_name."</td>";
-
-				echo "<td class='$tdcolor'>";
-				echo "<input type=text size=4 name='label' value='$label'></td>";
-				
-				echo "<td class='$tdcolor'>";
-				echo '<select name="image">';
-				echo "<option>".$myimage."</option>";
-				$ficheros = list_files('images/console/icons/', "",0, 0);
-				$a=0;
-				while (isset($ficheros[$a])){
-					$myfichero = substr($ficheros[$a],0,strlen($ficheros[$a])-4);
-					if ((strpos($myfichero,"_bad") == 0) && (strpos($myfichero,"_ok") == 0) && ($myfichero != "" ))
-						echo "<option>".$myfichero."</option>";
-					$a++;
-				}
-				echo '</select></td>';
-			
-				echo "<td class='$tdcolor'>";
-				echo "<input type=text size=4 name=pos_x value='$x'></td>";
-				echo "<td class='$tdcolor'>";
-				echo "<input type=text size=4 name=pos_y value='$y'></td>";
-				echo "<td class='$tdcolor'>";
-				echo "<input type=text size=4 name='width' value='$width'></td>";
-				echo "<td class='$tdcolor'>";
-				echo "<input type=text size=4 name='height' value='$height'></td>";
-				echo "<td class='$tdcolor'>";
-				echo "<a href='index.php?sec=greporting&sec2=godmode/reporting/map_builder&id=$id_map&delete=$id_layoutdata'><img src='images/cross.png'></a>";
-				echo "<td class='$tdcolor' align='center'>";
-				echo "<input type=submit class='sub next' value='".$lang_label["update"]."'>";
-				echo "</form>";
-			}
-			echo "</table>";
-		} else {
-			echo "<div class='nf'>".$lang_label["no_repitem_def"]."</div>";
-		}
+if ($delete_layout_data) {
+	$ids_layout_data = (array) get_parameter ('ids_layout_data');
+	
+	foreach ($ids_layout_data as $id_layout_data) {
+		$sql = sprintf ('UPDATE tlayout_data SET parent_item = 0 WHERE parent_item = %d',
+				$id_layout_data);
+		$result = mysql_query ($sql);
+		$sql = sprintf ('DELETE FROM tlayout_data WHERE id = %d',
+				$id_layout_data);
+		$result = mysql_query ($sql);
 	}
+	
+	if (defined ('AJAX')) {
+		exit;
+	}
+}
+
+if ($update_layout_data) {
+	$id_layout_data = (int) get_parameter ('id_layout_data');
+	$layout_data_type = (int) get_parameter ("type");
+	$layout_data_label = (string) get_parameter ("label");
+	$layout_data_image = (string) get_parameter ("image");
+	$layout_data_id_agent_module = (int) get_parameter ("module");
+	$layout_data_label_color = (string) get_parameter ("label_color");
+	$layout_data_parent_item = (int) get_parameter ("parent_item");
+	$layout_data_period = (int) get_parameter ("period");
+	$layout_data_map_linked = (int) get_parameter ("map_linked");
+	
+	$sql = sprintf ('UPDATE tlayout_data SET
+			image = "%s", label = "%s",
+			label_color = "%s",
+			id_agente_modulo = %d,
+			type = %d, parent_item = %d,
+			period = %d, id_layout_linked = %d
+			WHERE id = %d',
+			$layout_data_image, $layout_data_label,
+			$layout_data_label_color,
+			$layout_data_id_agent_module,
+			$layout_data_type, $layout_data_parent_item,
+			$layout_data_period * 3600,
+			$layout_data_map_linked,
+			$id_layout_data);
+	$result = mysql_query ($sql);
+	
+	if ($result) {
+		echo '<h3 class="suc">'.lang_string ("modify_ok").'</h3>';
+	} else {
+		echo '<h3 class="error">'.lang_string ("modify_no").'</h3>';
+	}
+}
+
+if ($id_layout) {
+	$layout = get_db_row ('tlayout', 'id', $id_layout);
+	$name = $layout['name'];
+	$background = $layout['background'];
+	$id_group = $layout['id_group'];
+	$width = $layout['width'];
+	$height = $layout['height'];
+}
+
+if (! $edit_layout && ! $id_layout) {
+	echo "<h2>".lang_string ("reporting")." &gt; ".lang_string ("map_builder")."</h2>";
+	
+	$table->width = '500px';
+	$table->data = array ();
+	$table->head = array ();
+	$table->head[0] = lang_string ('map_name');
+	$table->head[1] = lang_string ('group');
+	$table->head[2] = lang_string ('delete');
+	$table->align = array ();
+	$table->align[2] = 'center';
+	
+	$maps = get_db_all_rows_in_table ('tlayout');
+	foreach ($maps as $map) {
+		$data = array ();
+		
+		$data[0] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/map_builder&id_layout='.$map['id'].'">'.$map['name'].'</a>';
+		$data[1] = '<img src="images/'.dame_grupo_icono ($map['id_group']).'" /> ';
+		$data[1] .= dame_nombre_grupo ($map['id_group']);
+		$data[2] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/map_builder&id_layout='.$map['id'].'&delete_layout=1">
+			<img src="images/cross.png"></a>';
+		array_push ($table->data, $data);
+	}
+	print_table ($table);
+	
+	echo '<div class="action-buttons" style="width: '.$table->width.'">';
+	echo '<form action="index.php?sec=greporting&sec2=godmode/reporting/map_builder" method="post">';
+	print_input_hidden ('edit_layout', 1);
+	print_submit_button (lang_string ('create'), '', false, 'class="sub wand"');
+	echo '</form>';
+	echo '</div>';
 } else {
-	// Map LIST Selection screen
-	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	echo "<h2>".$lang_label["reporting"]." &gt; ";
-	echo $lang_label["map_builder"]."</h2>";
-
-	$color=1;
-	$sql="SELECT * FROM tlayout";
-	$res=mysql_query($sql);
+	echo "<h2>".lang_string ("reporting")." &gt; ";
+	echo lang_string ("map_builder")."</h2>";
 	
-	if (mysql_num_rows($res)) {
-		echo "<table width='500' cellpadding=4 cellpadding=4 class='databox'>";
-		echo "<tr>
-		<th>".$lang_label["map_name"]."</th>
-		<th>".$lang_label["background"]."</th>
-		<th>".$lang_label["size"]."</th>
-		<th>".$lang_label["Manage"]."</th>
-		<th>".$lang_label["delete"]."</th>
-		</tr>";
-
-		while ($row = mysql_fetch_array($res)){
-			if ((dame_admin($id_user)==1)){
-				// Calculate table line color
-				if ($color == 1){
-					$tdcolor = "datos";
-					$color = 0;
-				}
-				else {
-					$tdcolor = "datos2";
-					$color = 1;
-				}
-				echo "<tr>";
-				echo "<td valign='top' class='$tdcolor'>".$row["name"]."</td>";
-				echo "<td valign='top' class='$tdcolor'>".$row["background"]."</td>";
-				echo "<td valign='top' class='$tdcolor'>".$row["width"]."x".$row["height"]."</td>";		
-				$id_map = $row["id"];
-				echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=greporting&sec2=godmode/reporting/map_builder&id=$id_map'><img src='images/setup.png'></a></td>";
-				echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=greporting&sec2=godmode/reporting/map_builder&delete_map=$id_map'><img src='images/cross.png'></a></td></tr>";
-			}
-		}
-		echo "</table>";
-		echo "<table width=500 cellpadding=4 cellpadding=4>";
-	} else {
-		echo "<div class='nf'>".$lang_label["no_map_def"]."</div>";
-		echo "<table>";
+	$backgrounds_list = list_files ('images/console/background/', "jpg", 1, 0);
+	$backgrounds_list = array_merge ($backgrounds_list, list_files ('images/console/background/', "png", 1, 0));
+	$groups = get_user_groups ($config['id_user']);
+	
+	$table->width = '300px';
+	$table->data = array ();
+	$table->data[0][0] = lang_string ('name');
+	$table->data[0][1] = print_input_text ('name', $name, '', 15, 50, true);
+	$table->data[1][0] = lang_string ('group');
+	$table->data[1][1] = print_select ($groups, 'id_group', $id_group, '', '', '', true);
+	$table->data[2][0] = lang_string ('background');
+	$table->data[2][1] = print_select ($backgrounds_list, 'background', $background, '', 'None', '', true);
+	
+	if ($id_layout) {
+		$table->data[3][0] = lang_string ('width');
+		$table->data[3][1] = print_input_text ('width', $width, '', 3, 5, true);
+		$table->data[4][0] = lang_string ('height');
+		$table->data[4][1] = print_input_text ('height', $height, '', 3, 5, true);
 	}
-	echo "<form method=post action='index.php?sec=greporting&sec2=godmode/reporting/map_builder&create_map=1'>";
-	echo "<tr><td align='right'>";
-	echo "<input type=submit class='sub next' value='".$lang_label["add"]."'>";
-	echo "</form>";
-	echo "</table>";
+	echo '<form action="index.php?sec=greporting&sec2=godmode/reporting/map_builder" method="post">';
+	print_table ($table);
+	
+	echo '<div style="width: '.$table->width.'" class="action-buttons">';
+	if ($id_layout) {
+		print_submit_button (lang_string ('update'), 'update_layout', false, 'class="sub upd"');
+		print_input_hidden ('update_layout', 1);
+		print_input_hidden ('id_layout', $id_layout);
+	} else {
+		print_submit_button (lang_string ('create'), 'create_layout', false, 'class="sub wand"');
+		print_input_hidden ('create_layout', 1);
+	}
+	echo '</div>';
+	echo '</form>';
+	
+	if ($id_layout) {
+		/* Show visual map preview */
+		echo '<h1>'.lang_string ('preview').'</h1>';
+		print_pandora_visual_map ($id_layout, false, true);
+		
+		$images_list = array ();
+		$all_images = list_files ('images/console/icons/', "png", 1, 0);
+		foreach ($all_images as $image_file) {
+			if (strpos ($image_file, "_bad"))
+				continue;
+			if (strpos ($image_file, "_ok"))
+				continue;
+			$image_file = substr ($image_file, 0, strlen ($image_file) - 4);
+			$images_list[$image_file] = $image_file;
+		}
+		
+		echo '<div style="width: 770px">';
+		/* Layout data trash */
+		echo '<form id="form_layout_data_trash" action="" method="post">';
+		echo '<div id="layout_trash_drop">';
+		echo '<h1>'.lang_string ('Map element trash').'</h1>';	
+		echo lang_string ('Drag an element here to delete from the map');
+		echo '<span id="elements"> </span>';
+		print_input_hidden ('delete_layout_data', 1);
+		print_input_hidden ('id_layout', $id_layout);
+		
+		echo '<div class="action-buttons" style="margin-top: 180px">';
+		print_submit_button (lang_string ('delete'), 'delete_buttons', true, 'class="sub delete"');
+		echo '</div>';
+		echo '</div>';
+		echo '</form>';
+		
+		/* Layout_data editor form */
+		$intervals = array ();
+		$intervals[1] = lang_string ('Hour');
+		$intervals[2] = "2 ".lang_string ('Hours');
+		$intervals[3] = "3 ".lang_string ('Hours');
+		$intervals[6] = "6 ".lang_string ('Hours');
+		$intervals[12] = "12 ".lang_string ('Hours');
+		$intervals[24] = lang_string ('Last day');
+		$intervals[48] = "2 ". lang_string ('days');
+		$intervals[168] = lang_string ('Last week');
+		$intervals[360] = lang_string ('15 days');
+		$intervals[720] = lang_string ('Last Month');
+		$intervals[1440] = lang_string ('Two Months');
+		$intervals[4320] = lang_string ('Six Months');
+		
+		$all_agents = get_agents_in_group ($id_group);
+		$agents = array ();
+		foreach ($all_agents as $agent) {
+			$agents[$agent['id_agente']] = $agent['nombre'];
+		}
+		asort ($agents);
+		
+		echo '<div id="layout_editor_drop">';
+		echo '<h1>'.lang_string ('Map element editor').'</h1>';
+		echo lang_string ('Drag an element here to edit the properties');
+		
+		$table->data = array ();
+		$table->id = 'table_layout_data';
+		
+		$table->data[0][0] = lang_string ('label');
+		$table->data[0][1] = print_input_text ('label', '', '', 20, 200, true);
+		$table->data[1][0] = lang_string ('label_color');
+		$table->data[1][1] = print_input_text ('label_color', '#000000', '', 7, 7, true);
+		$table->data[2][0] = lang_string ('type');
+		$table->data[2][1] = print_select (get_layout_data_types (), 'type', '', '', '', '', true);
+		$table->data[3][0] = lang_string ('agent');
+		$table->data[3][1] = print_select ($agents, 'agent', '', '', '--', 0, true);
+		$table->data[4][0] = lang_string ('module');
+		$table->data[4][1] = print_select (array (), 'module', '', '', '--', 0, true);
+		$table->data[5][0] = lang_string ('period');
+		$table->data[5][1] = print_select ($intervals, 'period', '', '', '--', 0, true);
+		$table->data[6][0] = lang_string ('image');
+		$table->data[6][1] = print_select ($images_list, 'image', '', '', 'None', '', true);
+		$table->data[6][1] .= '<div id="image_preview"> </div>';
+		$table->data[7][0] = lang_string ('parent');
+		$table->data[7][1] = print_select_from_sql ('SELECT id, label FROM tlayout_data WHERE id_layout = '.$id_layout,
+							'parent_item', '', '', 'None', '', true);
+		$table->data[8][0] = lang_string ('map_linked');
+		$table->data[8][1] = print_select_from_sql ('SELECT id, name FROM tlayout WHERE id != '.$id_layout,
+							'map_linked', '', '', 'None', '', true);
+		
+		echo '<form id="form_layout_data_editor" method="post" action="index.php?sec=greporting&sec2=godmode/reporting/map_builder">';
+		print_table ($table);
+		print_input_hidden ('create_layout_data', 1);
+		print_input_hidden ('update_layout_data', 0);
+		print_input_hidden ('id_layout', $id_layout);
+		print_input_hidden ('id_layout_data', 0);
+		echo '<div style="width: '.$table->width.'" class="action-buttons">';
+		print_submit_button (lang_string ('create'), 'create_layout_data_button', false, 'class="sub wand"');
+		echo '</div>';
+		echo '</form>';
+		echo '</div>';
+		echo '</div>';
+	}
 }
 ?>
+
+<link rel="stylesheet" href="include/styles/color-picker.css" type="text/css" />
+<script type="text/javascript" src="include/javascript/jquery.js"></script>
+<script type="text/javascript" src="include/javascript/pandora_visual_console.js"></script>
+<script type="text/javascript" src="include/javascript/pandora_visual_console.js"></script>
+<script type="text/javascript" src="include/javascript/jquery.ui.core.js"></script>
+<script type="text/javascript" src="include/javascript/jquery.ui.draggable.js"></script>
+<script type="text/javascript" src="include/javascript/jquery.ui.droppable.js"></script>
+<script type="text/javascript" src="include/javascript/jquery.colorpicker.js"></script>
+
+<script language="javascript" type="text/javascript">
+
+function agent_changed (event, id_agent, selected) {
+	if (id_agent == undefined)
+		id_agent = this.value;
+	$('#form_layout_data_editor #module').attr ('disabled', 1);
+	$('#form_layout_data_editor #module').empty ();
+	$('#form_layout_data_editor #module').append ($('<option></option>').attr ('value', 0).text ("<?=lang_string ('Loading')?>..."));
+	jQuery.post ('ajax.php', 
+		{page: "operation/agentes/ver_agente",
+		get_agent_modules_json: 1,
+		id_agent: id_agent
+		},
+		function (data) {
+			$('#form_layout_data_editor #module').empty ();
+			$('#form_layout_data_editor #module').append ($('<option></option>').attr ('value', 0).text ("--"));
+			jQuery.each (data, function (i, val) {
+				if (val['descripcion'] == "") {
+					s = html_entity_decode (val['nombre']);
+				} else {
+					s = html_entity_decode (val['descripcion']);
+				}
+				$('#form_layout_data_editor #module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s));
+				$('#form_layout_data_editor #module').fadeIn ('normal');
+			});
+			if (selected != undefined)
+				$('#form_layout_data_editor #module').attr ('value', selected);
+			$('#form_layout_data_editor #module').attr ('disabled', 0);
+		},
+		"json"
+	);
+}
+
+$(document).ready (function () {
+	if (lines)
+		draw_lines (lines, 'layout_map');
+	$('#background').change (function () {
+		background = this.value;
+		if (background == '')
+			return;
+		/* We have to get the info using AJAX because it was not 
+		  possible to kwown the image dimensions using javascript 
+		  in some cases where the image was not loaded */
+		jQuery.post ('ajax.php', 
+			{page: "godmode/reporting/map_builder",
+			get_background_info: 1,
+			background: background
+			},
+			function (data) {
+				$("#layout_map").css ('backgroundImage', 'url(images/console/background/' + background + ')');
+				$("#layout_map").css ('width', data['width'] + 'px');
+				$("#layout_map").css ('height', data['height'] + 'px');
+				$('#text-width').attr ('value', data['width']);
+				$('#text-height').attr ('value', data['height']);
+			},
+			"json"
+		);
+	});
+	$('#text-width').keyup (function () {
+		$("#layout_map").css ('width', this.value + 'px');
+	});
+	$('#text-height').keyup (function () {
+		$("#layout_map").css ('height', this.value + 'px');
+	});
+	$(".layout-data").draggable ({helper: 'clone'});
+	$("#layout_map").droppable ({
+		accept: ".layout-data",
+		drop: function (ev, ui) {
+			margin_left = parseInt ($(ui.draggable[0]).css ('margin-left'));
+			margin_top = parseInt ($(ui.draggable[0]).css ('margin-top'));
+			coord_x = margin_left + ui.position.left;
+			coord_y = margin_top + ui.position.top;
+			$(ui.draggable[0]).css ('margin-left', coord_x + 'px');
+			$(ui.draggable[0]).css ('margin-top', coord_y + 'px');
+			id = ui.draggable[0].id.split ("-").pop ();
+			jQuery.post ('ajax.php', 
+				{page: "godmode/reporting/map_builder",
+				update_layout_data_coords: 1,
+				id_layout_data: id,
+				coord_x: coord_x,
+				coord_y: coord_y
+				},
+				function () {
+					refresh_lines (lines, 'layout_map');
+				},
+				"html"
+			);
+		}
+	});
+	$("#layout_editor_drop").droppable ({
+		accept: ".layout-data",
+		drop: function (ev, ui) {
+			id = ui.draggable[0].id.split ("-").pop ();
+			jQuery.post ('ajax.php', 
+				{page: "godmode/reporting/map_builder",
+				get_layout_data: 1,
+				id_layout_data: id
+				},
+				function (data) {
+					$("#form_layout_data_editor #text-label").attr ('value', data['label']);
+					$("#form_layout_data_editor #type").attr ('value', data['type']);
+					$("#form_layout_data_editor #image").attr ('value', data['image']);
+					$("#form_layout_data_editor #image").change ();
+					$("#form_layout_data_editor #id_layout_data").attr ('value', data['id']);
+					$("#form_layout_data_editor #period").attr ('value', data['period'] / 3600);
+					$("#form_layout_data_editor #agent").attr ('value', data['id_agent']);
+					$("#form_layout_data_editor #map_linked").attr ('value', data['id_layout_linked']);
+					$("#form_layout_data_editor #hidden-update_layout_data").attr ('value', 1);
+					$("#form_layout_data_editor #hidden-create_layout_data").attr ('value', 0);
+					$("#form_layout_data_editor #hidden-id_layout_data").attr ('value', id);
+					$("#form_layout_data_editor #submit-create_layout_data_button").attr ('value', "<?=lang_string ('update')?>").removeClass ('wand').addClass ('upd');
+					$("#form_layout_data_editor #text-label_color").attr ('value', data['label_color']);
+					$(".ColorPickerDivSample").css ('background-color', data['label_color']);
+					agent_changed (null, data['id_agent'], data['id_agente_modulo']);
+				},
+				"json"
+			);
+		}
+	});
+	$("#layout_trash_drop").droppable ({
+		accept: ".layout-data",
+		drop: function (ev, ui) {
+			image = $('#'+ ui.draggable[0].id + " img").eq (0);
+			elements = $("#" + this.id + " img").length;
+			id = ui.draggable[0].id.split ("-").pop ();
+			$(ui.draggable[0]).clone ().css ('margin-left', 60 * elements).
+				css ('margin-top', 0). attr ('id', 'delete-layout-data-' + id).
+				appendTo ("#"+this.id + " #elements");
+			$(ui.draggable[0]).remove ();
+			$('<input type="hidden" name="ids_layout_data[]" />').attr ('value', id).
+				appendTo ($("#form_layout_data_trash"));
+			$("#form_layout_data_trash #submit-delete_buttons").removeAttr ('disabled');
+			setTimeout (function() { refresh_lines (lines, 'layout_map'); }, 1000);
+		}
+	});
+	$("#form_layout_data_editor #image").change (function () {
+		$("#image_preview").empty ();
+		if (this.value != '') {
+			$("#image_preview").append ($('<img />').attr ('src', 'images/console/icons/' + this.value + '.png'));
+			$("#image_preview").append ($('<img />').attr ('src', 'images/console/icons/' + this.value + '_ok.png'));
+			$("#image_preview").append ($('<img />').attr ('src', 'images/console/icons/' + this.value + '_bad.png'));
+		}
+	});
+	$("#form_layout_data_editor #agent").change (agent_changed);
+	$("#form_layout_data_editor #text-label_color").attachColorPicker();
+});
+</script>

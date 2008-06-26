@@ -400,13 +400,13 @@ td.datos_jus, td.datos2_jus {
 .w120 {
 	width: 120px;
 }
-.w130 {
+.w130, #table-agent-configuration select {
 	width: 130px;
 }
 .w135 {
 	width: 135px;
 }
-.w155 {
+.w155, #table_layout_data select {
 	width: 155px;
 }
 .top, .top_red, .bgt, td.datost, td.datos2t {
@@ -692,4 +692,28 @@ div#main_pure {
 	margin-top: 10px;
 	margin-left: 10px;
 	margin-right: 10px;
+}
+
+#table-agent-configuration radio {
+	margin-right: 40px;
+}
+
+.ui-draggable {
+	cursor:move;
+}
+
+#layout_trash_drop {
+	float: right;
+	width: 300px;
+	height: 180px;
+	background: #fff url("../../images/trash.png") no-repeat bottom left;
+}
+
+#layout_trash_drop div {
+	display: block;
+}
+
+#layout_editor_drop {
+	float: left;
+	width: 300px;
 }

@@ -47,6 +47,7 @@ define ('AJAX', true);
 
 $page = (string) get_parameter ('page');
 $page .= '.php';
+$config["id_user"] = $_SESSION["id_usuario"];
 session_write_close ();
 if (file_exists ($page)) {
 	$id_user = $_SESSION["id_usuario"];

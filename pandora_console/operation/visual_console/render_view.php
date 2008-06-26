@@ -120,7 +120,6 @@ $(document).ready (function () {
 <?php if ($refr) : ?>
 	t = new Date();
 	t.setTime (t.getTime() + <?=$refr * 1000?>);
-	console.log (t);
 	$.countdown.setDefaults($.countdown.regional["<?=$config['language']?>"]);
 	$("#countdown").countdown({until: t, format: 'MS', description: '<?=lang_string ("Until refresh")?>'});
 <?php endif; ?>

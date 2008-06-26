@@ -30,12 +30,12 @@ if (give_acl($id_user, 0, "AW")!=1) {
 	exit;
 }
 
-echo "<h2>".$lang_label["agent_conf"];
+echo "<h2>".lang_string ("agent_conf");
 if (isset($_GET["create_agent"])){
 	$create_agent = 1;
-	echo " &gt; ".$lang_label["create_agent"];
+	echo " &gt; ".lang_string ("create_agent");
 } else {
-	echo " &gt; ".$lang_label["update_agent"];
+	echo " &gt; ".lang_string ("update_agent");
 }
 echo "</h2>";
 echo "<div style='height: 5px'> </div>";
@@ -58,17 +58,10 @@ if (isset($_GET["disk_conf_delete"])){
 
 echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&
 sec2=godmode/agentes/configurar_agente">';
-if ($create_agent == 1) {
-	echo "<input type='hidden' name='create_agent' value='1'>";
-} else {
-	echo "<input type='hidden' name='update_agent' value='1'>";
-	echo "<input type='hidden' name='id_agente' value='".$id_agente."'>";
-}
-echo '<table width="650" cellpadding="4" cellspacing="4" class="databox_color">';
+echo '<table width="650" id="table-agent-configuration" cellpadding="4" cellspacing="4" class="databox_color">';
 echo "<tr>";
-echo '<td class="datos"><b>'.$lang_label["agent_name"].'</b></td>
-<td class="datos">
-<input type="text" name="agente" size=30 value="'.$nombre_agente.'">';
+echo '<td class="datos"><b>'.lang_string ("agent_name").'</b></td><td class="datos">';
+print_input_text ('agente', $nombre_agente, '', 30, 100);
 
 if (isset ($id_agente) && $id_agente != "") {
 	echo "
@@ -84,9 +77,9 @@ if (file_exists ($config["remote_config"] . "/" . $agent_md5 . ".md5")) {
 }
 
 echo '<tr><td class="datos2">';
-echo '<b>'.$lang_label["ip_address"].'</b>';
+echo '<b>'.lang_string ("ip_address").'</b>';
 echo '<td class="datos2">';
-echo '<input type="text" name="direccion" size="16" value="'.$direccion_agente.'">';
+print_input_text ('direccion', $direccion_agente, '', 16, 100);
 
 if ($create_agent != 1) {
 	echo "&nbsp;&nbsp;&nbsp;&nbsp;";
@@ -101,7 +94,7 @@ if ($create_agent != 1) {
 		}
 	echo "</select>";
 
-	echo "<input name='delete_ip' type=checkbox value='1'> ".$lang_label["delete_sel"];
+	echo "<input name='delete_ip' type=checkbox value='1'> ".lang_string ("delete_sel");
 	echo "</td>";
 }
 
@@ -110,13 +103,10 @@ echo '<td class="datos">';
 print_select_from_sql ('SELECT id_agente, nombre FROM tagente',
 				'id_parent', $id_parent, '', 'None', '0');
 
-echo '<tr><td class="datos"><b>'.$lang_label["group"].'</b>';
-echo '<td class="datos"><select name="grupo" class="w130">';
-if (isset($grupo)){
-echo "<option value='".$grupo."'>".dame_grupo($grupo)."</option>";
-}
-list_group ($id_user, 0);
-echo "</select>";
+echo '<tr><td class="datos"><b>'.lang_string ("group").'</b>';
+echo '<td class="datos">';
+print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo ORDER BY nombre',
+			'grupo', $grupo, '', '', '');
 
 echo "<tr><td class='datos2'>";
 echo "<b>".lang_string("interval")."</b></td>";
@@ -125,111 +115,84 @@ echo '<td class="datos2">';
 echo '<input type="text" name="intervalo" size="15" value="'.$intervalo.'"></td>';
 echo '<tr><td class="datos"><b>'.lang_string("os").'</b></td>';
 echo '<td class="datos">';
-echo '<select name="id_os" class="w130">';
-
-if (isset($id_os)){
-	echo "<option value='".$id_os."'>".dame_so_name($id_os)."</option>";
-}
-$sql1='SELECT id_os, name FROM tconfig_os';
-$result=mysql_query($sql1);
-while ($row=mysql_fetch_array($result)){
-	echo "<option value='".$row["id_os"]."'>".$row["name"]."</option>";
-}
-?>
-</select>
-
-<?PHP
+print_select_from_sql ('SELECT id_os, name FROM tconfig_os ORDER BY name',
+			'id_os', $id_os, '', '', '');
 
 // Network server
 echo '<tr><td class="datos2"><b>';
 echo lang_string("Network server");
 echo '</b></td><td class="datos2">';
-echo '<select name="network_server" class="w130">';
-echo "<option value='".$id_network_server."'>".give_server_name($id_network_server);
-$sql1 = 'SELECT id_server, name FROM tserver where network_server = 1 ORDER BY name';
-$result=mysql_query($sql1);
-while ($row=mysql_fetch_array($result)){
-	echo "<option value='".$row["id_server"]."'>".$row["name"]."</option>";
+$none = '';
+$none_value = '';
+if ($id_network_server == 0) {
+	$none = lang_string ('None');
+	$none_value = 0;
 }
-echo '</select>';
+print_select_from_sql ('SELECT id_server, name FROM tserver WHERE network_server = 1 ORDER BY name',
+			'network_server', $id_network_server, '', $none, $none_value);
 
 // Plugin Server
 echo '<tr><td class="datos"><b>';
 echo lang_string("Plugin server");
 echo '</b></td><td class="datos">';
-echo '<select name="plugin_server" class="w130">';
-echo "<option value='".$id_plugin_server."'>".give_server_name($id_plugin_server);
-$sql1 = 'SELECT id_server, name FROM tserver where plugin_server = 1 ORDER BY name';
-$result=mysql_query($sql1);
-while ($row=mysql_fetch_array($result)){
-    echo "<option value='".$row["id_server"]."'>".$row["name"]."</option>";
+$none_str = lang_string ('None');
+$none = '';
+$none_value = '';
+if ($id_plugin_server == 0) {
+	$none = $none_str;
+	$none_value = 0;
 }
-echo '</select>';
+print_select_from_sql ('SELECT id_server, name FROM tserver WHERE plugin_server = 1 ORDER BY name',
+			'plugin_server', $id_plugin_server, '', $none, $none_value);
 
 // WMI Server
 echo '<tr><td class="datos2"><b>';
 echo lang_string("WMI server");
 echo '</b></td><td class="datos2">';
-echo '<select name="wmi_server" class="w130">';
-echo "<option value='".$id_wmi_server."'>".give_server_name($id_wmi_server);
-$sql1 = 'SELECT id_server, name FROM tserver where wmi_server = 1 ORDER BY name';
-$result=mysql_query($sql1);
-while ($row=mysql_fetch_array($result)){
-    echo "<option value='".$row["id_server"]."'>".$row["name"]."</option>";
+$none = '';
+$none_value = '';
+if ($id_plugin_server == 0) {
+	$none = $none_str;
+	$none_value = 0;
 }
-echo '</select>';
+print_select_from_sql ('SELECT id_server, name FROM tserver WHERE wmi_server = 1 ORDER BY name',
+			'wmi_server', $id_wmi_server, '', $none, $none_value);
 
 // Prediction Server
 echo '<tr><td class="datos"><b>';
 echo lang_string("Prediction server");
 echo '</b></td><td class="datos">';
-echo '<select name="prediction_server" class="w130">';
-echo "<option value='".$id_prediction_server."'>".give_server_name($id_prediction_server);
-$sql1 = 'SELECT id_server, name FROM tserver where prediction_server = 1 ORDER BY name';
-$result=mysql_query($sql1);
-while ($row=mysql_fetch_array($result)){
-    echo "<option value='".$row["id_server"]."'>".$row["name"]."</option>";
+$none = '';
+$none_value = '';
+if ($id_prediction_server == 0) {
+	$none = $none_str;
+	$none_value = 0;
 }
-echo '</select>';
+print_select_from_sql ('SELECT id_server, name FROM tserver WHERE prediction_server = 1 ORDER BY name',
+			'prediction_server', $id_prediction_server, '', $none, $none_value);
 
 // Description
 echo '<tr><td class="datos2"><b>';
 echo lang_string ("description");
 echo '</b><td class="datos2">';
-echo '<input type="text" name="comentarios" size="55" value="'.$comentarios.'"></td>';
-
+print_input_text ('comentarios', $comentarios, '', 55, 255);
 
 // Learn mode / Normal mode 
 echo '<tr><td class="datos"><b>';
 echo lang_string ("module_definition");
 echo '</b><td class="datos">';
-if ($modo == "1"){
-	echo $lang_label["learning_mode"].'
-	<input type="radio" class="chk" name="modo" value="1" style="margin-right: 40px;" checked>';
-	echo $lang_label["normal_mode"].' 
-	<input type="radio" class="chk" name="modo" value="0">';
-} else {
-	echo $lang_label["learning_mode"].'
-	<input type="radio" class="chk" name="modo" value="1" style="margin-right: 40px;">';
-	echo $lang_label["normal_mode"].'
-	<input type="radio" name="modo" class="chk" value="0" checked>';
-}
-
+echo lang_string ("learning_mode");
+print_radio_button_extended ("modo", 1, '', $modo, false, '', 'style="margin-right: 40px;"');
+echo lang_string ("normal_mode");
+print_radio_button_extended ("modo", 0, '', $modo, false, '', 'style="margin-right: 40px;"');
 
 // Status (Disabled / Enabled)
 echo '<tr><td class="datos2"><b>'.lang_string("status").'</b>';
 echo '<td class="datos2">';
-if ($disabled == "1"){
-	echo $lang_label["disabled"].'
-	<input type="radio" class="chk" name="disabled" value="1" style="margin-right: 40px;" checked>';
-	echo $lang_label["active"].' 
-	<input class="chk" type="radio" name="disabled" value="0">';
-} else {
-	echo $lang_label["disabled"].'
-	<input type="radio" class="chk" name="disabled" value="1" style="margin-right: 40px;">';
-	echo $lang_label["active"].'
-	<input type="radio" name="disabled" class="chk" value="0" checked>';
-}
+echo lang_string ("disabled");
+print_radio_button_extended ("disabled", 1, '', $disabled, false, '', 'style="margin-right: 40px;"');
+echo lang_string ("active");
+print_radio_button_extended ("disabled", 0, '', $disabled, false, '', 'style="margin-right: 40px;"');
 
 // Remote configuration
 echo '<tr><td class="datos"><b>'.lang_string("Remote configuration").'</b>';
@@ -244,15 +207,15 @@ if (file_exists($filename)){
 }
 
 echo '</table><table width="650"><tr><td  align="right">';
-if ($create_agent == 1){
-	echo "
-	<input name='crtbutton' type='submit' class='sub wand' value='".
-	$lang_label["create"]."'>";
+if ($create_agent == 1) {
+	print_submit_button (lang_string ('create'), 'crtbutton', false, 'class="sub wand"');
+	print_input_hidden ('create_agent', 1);
 } else {
-	echo "
-	<input name='uptbutton' type='submit' class='sub upd' value='".
-	$lang_label["update"]."'>";
+	print_submit_button (lang_string ('update'), 'updbutton', false, 'class="sub upd"');
+	print_input_hidden ('update_agent', 1);
+	print_input_hidden ('id_agente', $id_agente);
 }
+
 echo "</td></form></table>";
 
 ?>

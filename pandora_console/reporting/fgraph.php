@@ -373,7 +373,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 }
 
 function grafico_modulo_sparse ($id_agente_modulo, $periodo, $show_event,
-				$width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure = 0, $date = 0 ) {
+				$width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure = 0, $date = 0) {
 	include ("../include/config.php");
 	require ("../include/languages/language_".$config['language'].".php");
 	require_once 'Image/Graph.php';	
@@ -459,6 +459,10 @@ function grafico_modulo_sparse ($id_agente_modulo, $periodo, $show_event,
 			WHERE id_agente = %d AND id_agente_modulo = %d AND utimestamp > %d',
 			$id_agente, $id_agente_modulo, $fechatope);
 	$result = mysql_query ($sql);
+	if (mysql_num_rows ($result) == 0) {
+		graphic_error ();
+		return;
+	}
 	while ($row = mysql_fetch_array ($result)) {
 		$datos = $row[0];
 		$utimestamp = $row[1];

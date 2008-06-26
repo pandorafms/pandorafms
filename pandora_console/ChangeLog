@@ -1,3 +1,105 @@
+2008-06-26  Esteban Sanchez  <estebans@artica.es>
+
+	* ajax.php: Sed id_user in config array.
+
+	* godmode/menu.php, general/header.php, operation/menu.php: Replaced
+	lang_label with lang_string().
+
+	* general/logon_ok.php: Reduced one indentation level.
+
+	* godmode/agentes/agent_manager.php: Replaced lang_label with
+	lang_string(). Use pandora functions.
+
+	* include/functions_html.php, godmode/agentes/configurar_agente.php:
+	Tab and blankspaces style correction.
+
+	* godmode/reporting/map_builder.php: Complete rewritten to provide an
+	intuitive way of build the maps. It's cool, useful and very simple.
+
+	* godmode/reporting/reporting_builder.php: Deleted an output debug.
+
+	* godmode/setup/setup.php: Rewritten to use pandora functions. Added a
+	colorpicker for color settings.
+
+	* include/config.php: Reset pandora password. We must solve things
+	with this file...
+
+	* include/functions.php: Check if input is an array on safe_input().
+	Use filename as id in array returned by list_files().
+
+	* include/functions_db.php: Renamed return_coordinate_* functions.
+	Style correction.
+
+	* include/javascript/jquery.js: Updated to 1.2.6.
+
+	* include/javascript/jquery.ui.datepicker.js: Code minimized.
+	
+	* include/javascript/pandora.js: Style correction.
+
+	* include/javascript/wz_jsgraphics.js: Added a class to the elements
+	of a line, so it can be modified using javascript.
+
+	* /include/styles/pandora.css: Added style to some tables dropdowns.
+	Added new styles relative to visual map editor.
+
+	* operation/reporting/reporting_viewer.php: Style correction. Added
+	jQuery UI.
+
+	* operation/visual_console/index.php: Use Pandora functions.
+
+	* operation/visual_console/render_view.php: Drawing the map is now on
+	functions_visual_map.php. Added a countdown if a refresh time is set.
+	Use pandora functions. Style correction.
+
+	* reporting/fgraph.php: Style correction. Use graphic_error() if
+	there's no data on grafico_modulo_sparse().
+
+	* images/trash.png: Added to repository. Image used on trash area on
+	visual map editor.
+
+	* images/console/background/africa.jpg,
+	images/console/background/asia.jpg,
+	images/console/background/europe.jpg, 
+	images/console/background/north_america.jpg, 
+	images/console/background/oceania.jpg, 
+	images/console/background/shouth_america.jpg, 
+	images/console/background/world.jpg: Added to repository. Useful and
+	cool map backgrounds.
+
+	* include/functions_visual_map.php: Added to repository. Implements
+	visual map functions like drawing the map.
+
+	* include/javascript/jquery.colorpicker.js: Added to repository.
+	Implements a color picker widget.
+
+	* /include/javascript/jquery.countdown.js: Added to repository.
+	Implements a countdown widget.
+
+	* include/javascript/jquery.ui.core.js: Added to repository. jQuery UI
+	core.
+
+	* include/javascript/jquery.ui.draggable.js: Added to repository.
+	jQuery draggable plugin.
+
+	* include/javascript/jquery.ui.droppable.js: Added to repository.
+	jQuery droppable plugin.
+
+	* include/javascript/pandora_visual_console.js: Added to repository.
+	Function useful to visual map interface.
+
+	* include/languages/countdown_*.js: Added to repository. Countdown
+	localization.
+
+	* include/languages/date_es_la.js, include/languages/date_gl.js,
+	include/languages/time_es_la.js, include/languages/time_gl.js: Added
+	to repository. Missing localizations.
+
+	* include/styles/color-picker.css: Added to repository. Colorpicker
+	style sheet.
+
+	* include/styles/countdown.css: Added to repository. Countdown style
+	sheet.
+
 2008-06-24  Sancho Lerena  <slerena@gmail.com>
 
 	* include/functions_db.php: Fixed typo.

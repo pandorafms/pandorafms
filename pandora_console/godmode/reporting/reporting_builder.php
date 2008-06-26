@@ -229,7 +229,6 @@ if ($edit_sla_report_content) {
 	if ($delete_sla) {
 		$id_sla = (int) get_parameter ('id_sla');
 		$sql = sprintf ('DELETE FROM treport_content_sla_combined WHERE id = %d', $id_sla);
-		echo $sql;
 		$result = mysql_query ($sql);
 		if ($result)
 			echo "<h3 class=suc>".lang_string ('delete_sla_ok')."</h3>";
@@ -308,7 +307,6 @@ if ($edit_sla_report_content) {
 	print_submit_button (lang_string ('create'), 'add', false, 'class="sub wand"');
 	echo '</div>';
 	echo '</form>';
-
 } else if ($edit_report || $id_report) {
 	 /* Edit and creation report form */
 	if (isset($_POST["id_agent"]))
@@ -438,7 +436,6 @@ if ($edit_sla_report_content) {
 			$table->head[6] = lang_string ('delete');
 		}
 		
-
 		$sql = sprintf ('SELECT * FROM treport_content WHERE id_report = %d ORDER BY `order`', $id_report);
 		$report_contents = get_db_all_rows_sqlfree ($sql);
 		if (sizeof ($report_contents)) {

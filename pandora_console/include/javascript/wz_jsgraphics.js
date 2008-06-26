@@ -87,7 +87,7 @@ function pntN()
 
 function mkDiv(x, y, w, h)
 {
-	this.htm += '<div style="position:absolute;'+
+	this.htm += '<div class="map-line" style="position:absolute;'+
 		'left:' + x + 'px;'+
 		'top:' + y + 'px;'+
 		'width:' + w + 'px;'+

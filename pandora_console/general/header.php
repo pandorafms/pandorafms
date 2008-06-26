@@ -35,12 +35,12 @@ if (isset ($_SESSION["id_usuario"])){
 		echo "<img src='images/user_suit.png' class='bot'> ";
 	else
 		echo "<img src='images/user_green.png' class='bot'> ";
-	echo "<a class='white'>".$lang_label["has_connected"]. '
+	echo "<a class='white'>".lang_string ("has_connected"). '
 	[<b>'. $_SESSION["id_usuario"]. '</b>]</a>';
 
     // Second column 
     echo "<td>";
-	echo "<a class='white_bold' href='index.php?sec=main'><img src='images/information.png' class='bot'> ". $lang_label["information"]."</a>";
+	echo "<a class='white_bold' href='index.php?sec=main'><img src='images/information.png' class='bot'> ". lang_string ("information")."</a>";
 	
     // Third column 
     echo "<td>";
@@ -53,7 +53,7 @@ if (isset ($_SESSION["id_usuario"])){
 
 
     echo "<tr><td>";
-    echo "<a class='white_bold' href='index.php?bye=bye'><img src='images/lock.png' class='bot'> ". $lang_label["logout"]."</a>";
+    echo "<a class='white_bold' href='index.php?bye=bye'><img src='images/lock.png' class='bot'> ". lang_string ("logout")."</a>";
     
     echo "<td>";
     $server_status = check_server_status ();

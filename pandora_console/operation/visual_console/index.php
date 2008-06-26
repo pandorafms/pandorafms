@@ -43,21 +43,18 @@ $table->head = array ();
 $table->head[0] = lang_string ('name');
 $table->head[1] = lang_string ('group');
 $table->head[2] = lang_string ('elements');
-$table->head[3] = lang_string ('view');
 $table->align = array ();
 $table->align[2] = 'center';
-$table->align[3] = 'center';
 
 foreach ($layouts as $layout) {
 	$data = array ();
 	
-	$data[0] = $layout['name'];
+	$data[0] = '<a href="index.php?sec=visualc&sec2=operation/visual_console/render_view&id='.
+		$layout['id'].'">'.$layout['name'].'</a>';
 	$data[1] = '<img src="images/'.dame_grupo_icono($layout["id_group"]).'.png" 
 		title="'.dame_nombre_grupo ($layout["id_group"]).'"> ';
 	$data[1] .= dame_nombre_grupo ($layout["id_group"]);
 	$data[2] = get_db_value ('COUNT(*)', 'tlayout_data', 'id_layout', $layout['id']);
-	$data[3] = '<a href="index.php?sec=visualc&sec2=operation/visual_console/render_view&id='.
-		$layout['id'].'"><img src="images/images.png"></a>';
 	
 	array_push ($table->data, $data);
 }

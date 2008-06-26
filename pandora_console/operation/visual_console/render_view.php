@@ -23,8 +23,8 @@ global $REMOTE_ADDR;
 
 require ('include/functions_visual_map.php');
 
-if (comprueba_login() != 0) {
-	audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to access graph builder");
+if (comprueba_login () != 0) {
+	audit_db ($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to access graph builder");
 	include ("general/noaccess.php");
 	exit;
 }
@@ -35,7 +35,7 @@ $refr = (int) get_parameter ('refr');
 // Get input parameter for layout id
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 if (! $id_layout) {
-	audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access visual console without id layout");
+	audit_db ($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to access visual console without id layout");
 	include ("general/noaccess.php");
 	exit;
 }
@@ -43,7 +43,7 @@ if (! $id_layout) {
 $layout = get_db_row ('tlayout', 'id', $id_layout);
 
 if (! $layout) {
-	audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access visual console without id layout");
+	audit_db ($config["id_user"], $REMOTE_ADDR, "ACL Violation","Trying to access visual console without id layout");
 	include ("general/noaccess.php");
 	exit;
 }
@@ -57,10 +57,8 @@ $bheight = $layout["height"];
 
 $pure_url = "&pure=".$config["pure"];
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// RENDER MAP !
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-echo "<h1>".$layout_name;
+// Render map
+echo "<h1>".$layout_name."</h1>";
 
 if ($config["pure"] == 0){
 	echo lang_string("Full screen mode");
@@ -75,9 +73,7 @@ if ($config["pure"] == 0){
 	echo "<img src='images/monitor.png' title='".lang_string("Back to normal mode")."'>";
 	echo "</a>";
 }
-
-echo "</h1>";
-
+echo '<br />';
 if ($refr) {
 	echo '<div id="countdown">';
 	echo '</div>';

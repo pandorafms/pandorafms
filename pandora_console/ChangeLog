@@ -1,5 +1,17 @@
 2008-06-26  Esteban Sanchez  <estebans@artica.es>
 
+	* general/logon_ok.php: Use pandora functions to show last sessions.
+
+	* index.php: Tab and blankspaces style correction.
+
+	* godmode/reporting/map_builder.php: Fixed field name when inserting a
+	layout_data. Fixed group icon on list.
+
+	* operation/visual_console/render_view.php: Deleted firebug debug
+	which was causing not to work on browsers without that extension.
+
+2008-06-26  Esteban Sanchez  <estebans@artica.es>
+
 	* ajax.php: Sed id_user in config array.
 
 	* godmode/menu.php, general/header.php, operation/menu.php: Replaced

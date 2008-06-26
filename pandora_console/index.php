@@ -115,145 +115,143 @@ require "include/functions_db.php";
 </head>
 
 <?php
-    // Show custom background
-    if ($config["pure"] == 0)
-        echo '<body bgcolor="#555555">';
-    else
-        echo '<body bgcolor="#FFFFFF">';
+// Show custom background
+if ($config["pure"] == 0)
+echo '<body bgcolor="#555555">';
+else
+echo '<body bgcolor="#FFFFFF">';
 
-    $REMOTE_ADDR = getenv ("REMOTE_ADDR");
+$REMOTE_ADDR = getenv ("REMOTE_ADDR");
 
-    // Login process 
-    if ( (! isset ($_SESSION['id_usuario'])) AND (isset ($_GET["login"]))) {
-	    $nick = get_parameter_post ("nick");
-		$pass = get_parameter_post ("pass");
-		
-		// Connect to Database
-		$sql1 = 'SELECT * FROM tusuario WHERE id_usuario = "'.$nick.'"';
-		$result = mysql_query ($sql1);
-		
-		// For every registry
-		if ($row = mysql_fetch_array ($result)){
-			if ($row["password"] == md5 ($pass)){
-				// Login OK
-				// Nick could be uppercase or lowercase (select in MySQL
-				// is not case sensitive)
-				// We get DB nick to put in PHP Session variable,
-				// to avoid problems with case-sensitive usernames.
-				// Thanks to David Muñiz for Bug discovery :)
-				$nick = $row["id_usuario"];
-				unset ($_GET["sec2"]);
-				$_GET["sec"] = "general/logon_ok";
-				update_user_contact ($nick);
-				logon_db ($nick, $REMOTE_ADDR);
-				$_SESSION['id_usuario'] = $nick;
-				
-			} else {
-				// Login failed (bad password)
-				unset ($_GET["sec2"]);
-				include "general/logon_failed.php";
-				// change password to do not show all string
-				$primera = substr ($pass,0,1);
-				$ultima = substr ($pass, strlen ($pass) - 1, 1);
-				$pass = $primera . "****" . $ultima;
-				audit_db ($nick, $REMOTE_ADDR, "Logon Failed",
-					  "Incorrect password: " . $nick . " / " . $pass);
-				exit;
-			}
-		}
-		else {
-			// User not known
+// Login process 
+if ( (! isset ($_SESSION['id_usuario'])) && (isset ($_GET["login"]))) {
+	$nick = get_parameter_post ("nick");
+	$pass = get_parameter_post ("pass");
+	
+	// Connect to Database
+	$sql1 = 'SELECT * FROM tusuario WHERE id_usuario = "'.$nick.'"';
+	$result = mysql_query ($sql1);
+	
+	// For every registry
+	if ($row = mysql_fetch_array ($result)){
+		if ($row["password"] == md5 ($pass)){
+			// Login OK
+			// Nick could be uppercase or lowercase (select in MySQL
+			// is not case sensitive)
+			// We get DB nick to put in PHP Session variable,
+			// to avoid problems with case-sensitive usernames.
+			// Thanks to David Muñiz for Bug discovery :)
+			$nick = $row["id_usuario"];
+			unset ($_GET["sec2"]);
+			$_GET["sec"] = "general/logon_ok";
+			update_user_contact ($nick);
+			logon_db ($nick, $REMOTE_ADDR);
+			$_SESSION['id_usuario'] = $nick;
+			
+		} else {
+			// Login failed (bad password)
 			unset ($_GET["sec2"]);
 			include "general/logon_failed.php";
-			$primera = substr ($pass, 0, 1);
+			// change password to do not show all string
+			$primera = substr ($pass,0,1);
 			$ultima = substr ($pass, strlen ($pass) - 1, 1);
 			$pass = $primera . "****" . $ultima;
 			audit_db ($nick, $REMOTE_ADDR, "Logon Failed",
-				  "Invalid username: " . $nick . " / " . $pass);
+				  "Incorrect password: " . $nick . " / " . $pass);
 			exit;
 		}
-	} elseif (! isset ($_SESSION['id_usuario'])) {
-		// There is no user connected
-		include "general/login_page.php";
+	}
+	else {
+		// User not known
+		unset ($_GET["sec2"]);
+		include "general/logon_failed.php";
+		$primera = substr ($pass, 0, 1);
+		$ultima = substr ($pass, strlen ($pass) - 1, 1);
+		$pass = $primera . "****" . $ultima;
+		audit_db ($nick, $REMOTE_ADDR, "Logon Failed",
+			  "Invalid username: " . $nick . " / " . $pass);
 		exit;
+	}
+} elseif (! isset ($_SESSION['id_usuario'])) {
+	// There is no user connected
+	include "general/login_page.php";
+	exit;
+} else {
+	// There is session for id_usuario
+	$config["id_user"] = $_SESSION["id_usuario"];
+}
+
+// Log off
+if (isset ($_GET["bye"])) {
+	include "general/logoff.php";
+	$iduser = $_SESSION["id_usuario"];
+	logoff_db ($iduser, $REMOTE_ADDR);
+	session_unregister ("id_usuario");
+	exit;
+}
+$pagina = "";
+if (isset ($_GET["sec2"])){
+	$sec2 = get_parameter_get ('sec2');
+	$sec2 = parameter_extra_clean ($sec2);
+	$pagina = $sec2;
+} else
+	$sec2 = "";
+	
+if (isset ($_GET["sec"])){
+	$sec = get_parameter_get ('sec');
+	$sec = parameter_extra_clean ($sec);
+	$pagina = $sec2;
+}
+else
+	$sec = "";
+// http://es2.php.net/manual/en/ref.session.php#64525
+// Session locking concurrency speedup!
+session_write_close(); 
+
+// Header
+if ($config["pure"] == 0){
+	echo '<div id="container">';
+	echo '<div id="head">';
+	require("general/header.php"); 
+	echo '</div>';
+	echo '<div id="page">';
+	echo '	<div id="menu">';
+	require ("general/main_menu.php");
+	echo '	</div>';
+} else {
+	echo '<div id="main_pure">';
+}
+
+// Main block of content
+if ($config["pure"] == 0){
+	echo '<div id="main">';
+}
+
+// Page loader / selector
+if ($pagina != ""){
+	if (file_exists ($pagina . ".php")) {
+		require ($pagina . ".php");
 	} else {
-        // There is session for id_usuario
-        $config["id_user"] = $_SESSION["id_usuario"];
-        //$id_usuario = entrada_limpia ($_SESSION["id_usuario"]);
-        //$id_user = entrada_limpia ($_SESSION["id_usuario"]);
-    }
+		echo "<br><b class='error'>".lang_string("Sorry! I can't find the page!")."</b>";
+	}	
+} else
+	require ("general/logon_ok.php");  //default
 
-	// Log off
-	if (isset ($_GET["bye"])) {
-		include "general/logoff.php";
-		$iduser = $_SESSION["id_usuario"];
-		logoff_db ($iduser, $REMOTE_ADDR);
-		session_unregister ("id_usuario");
-		exit;
-	}
-	$pagina = "";
-	if (isset ($_GET["sec2"])){
-		$sec2 = get_parameter_get ('sec2');
-		$sec2 = parameter_extra_clean ($sec2);
-		$pagina = $sec2;
-	} else
-		$sec2 = "";
-		
-	if (isset ($_GET["sec"])){
-		$sec = get_parameter_get ('sec');
-		$sec = parameter_extra_clean ($sec);
-		$pagina = $sec2;
-	}
-	else
-		$sec = "";
-	// http://es2.php.net/manual/en/ref.session.php#64525
-	// Session locking concurrency speedup!
-	session_write_close(); 
+if ($config["pure"] == 0){    
+	echo '</div>'; // main
+	echo '<div style="clear:both"></div>';
+	echo '</div>'; // page
+} else {
+	echo "</div>";
+}
 
-    // Header
-    if ($config["pure"] == 0){
-        echo '<div id="container">';
-        echo '<div id="head">';
-        require("general/header.php"); 
-        echo '</div>';
-	    echo '<div id="page">';
-	    echo '	<div id="menu">';
-	    require ("general/main_menu.php");
-        echo '	</div>';
-    } else {
-        echo '<div id="main_pure">';
-    }
-    
-    // Main block of content
-    if ($config["pure"] == 0){
-        echo '<div id="main">';
-    }
+if ($config["pure"] == 0) {
+	echo '<div id="foot">';
+	require("general/footer.php");
+	echo '</div>';
+	echo '</div>';
+}
 
-    // Page loader / selector
-    if ($pagina != ""){
-	    if (file_exists ($pagina . ".php")) {
-		    require ($pagina . ".php");
-	    } else {
-		    echo "<br><b class='error'>".lang_string("Sorry! I can't find the page!")."</b>";
-	    }	
-    } else
-	    require ("general/logon_ok.php");  //default
-
-    if ($config["pure"] == 0){    
-        echo '</div>'; // main
-        echo '<div style="clear:both"></div>';
-        echo '</div>'; // page
-    } else {
-        echo "</div>";
-    }
-    
-    if ($config["pure"] == 0){
-        echo '<div id="foot">';
-	    require("general/footer.php");
-	    echo '</div>';
-        echo '</div>';
-    }
-    
-    echo '</body></html>';
+echo '</body></html>';
 
 ?>

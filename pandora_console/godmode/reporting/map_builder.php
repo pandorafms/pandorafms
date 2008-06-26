@@ -147,7 +147,7 @@ if ($create_layout_data) {
 	$layout_data_map_linked = (int) get_parameter ("map_linked");
 	
 	$sql = sprintf ('INSERT INTO tlayout_data (id_layout, label, id_layout_linked,
-			label_color, image, type, id_agente_modulo, parent_item, period, link_color) 
+			label_color, image, type, id_agente_modulo, parent_item, period, no_link_color) 
 			VALUES (%d, "%s", %d, "%s", "%s", %d, %d, %d, %d, 1)',
 			$id_layout, $layout_data_label,
 			$layout_data_map_linked,
@@ -259,7 +259,7 @@ if (! $edit_layout && ! $id_layout) {
 		$data = array ();
 		
 		$data[0] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/map_builder&id_layout='.$map['id'].'">'.$map['name'].'</a>';
-		$data[1] = '<img src="images/'.dame_grupo_icono ($map['id_group']).'" /> ';
+		$data[1] = '<img src="images/'.dame_grupo_icono ($map['id_group']).'.png" /> ';
 		$data[1] .= dame_nombre_grupo ($map['id_group']);
 		$data[2] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/map_builder&id_layout='.$map['id'].'&delete_layout=1">
 			<img src="images/cross.png"></a>';

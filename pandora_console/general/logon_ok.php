@@ -158,44 +158,36 @@ echo "</table>";
 echo "<div id='activity'>";
 // Show last activity from this user
 echo "<h2>" . $lang_label["user_last_activity"] . "</h2>";
-// Show table header
-echo '<table cellpadding="4" cellspacing="4" width="700" class="databox"><tr>'; 
-echo '<th>' . $lang_label["user"] . '</th>';
-echo '<th>' . $lang_label["action"] . '</th>';
-echo '<th width="130px">' . $lang_label["date"] . '</th>';
-echo '<th>' . $lang_label["src_address"] . '</th>';
-echo '<th width="200px">' . $lang_label["comments"] . '</th></tr>';
 
-// Skip offset records
-$query1="SELECT * FROM tsesion WHERE (TO_DAYS(fecha) > TO_DAYS(NOW()) - 7) 
-AND ID_usuario = '" . $nick . "' ORDER BY fecha DESC limit 15";
-
-$result = mysql_query ($query1);
-$contador = 5; // Max items
 $color = 1;
-while ($row = mysql_fetch_array ($result) && $contador > 0) {
-	
-	if ($color == 1){
-		$tdcolor = "datos";
-		$color = 0;
-	} else {
-		$tdcolor = "datos2";
-		$color = 1;
-	}
-	
-	$usuario = $row["ID_usuario"];
-	echo '<tr>';
-	echo '<td class="' . $tdcolor . 'f9"><b>' . $usuario . '</b></td>';
-	echo '<td class="' . $tdcolor . 'f9">' . $row["accion"]. '</td>';
-	echo '<td class="' . $tdcolor . 'f9">' . $row["fecha"]. '</td>';
-	echo '<td class="' . $tdcolor . 'f9">' . $row["IP_origen"]. '</td>';
-	echo '<td class="' . $tdcolor . 'f9">' . $row["descripcion"]. '</td>';
-	echo '</tr>';
-	
-	$contador--;
-}
 
-echo "</table>";
+$table->width = '700px';
+$table->data = array ();
+$table->size = array ();
+$table->size[2] = '130px';
+$table->size[4] = '200px';
+$table->head = array ();
+$table->head[0] = lang_string ('user');
+$table->head[1] = lang_string ('action');
+$table->head[2] = lang_string ('date');
+$table->head[3] = lang_string ('src_address');
+$table->head[4] = lang_string ('comments');
+
+$sql = sprintf ('SELECT * FROM tsesion WHERE (TO_DAYS(fecha) > TO_DAYS(NOW()) - 7) 
+	AND ID_usuario = "%s" ORDER BY fecha DESC LIMIT 5', $nick);
+$sessions = get_db_all_rows_sqlfree ($sql);
+foreach ($sessions as $session) {
+	$data = array ();
+	
+	$data[0] = '<strong>'.$session['ID_usuario'].'</strong>';
+	$data[1] = $session['accion'];
+	$data[2] = $session['fecha'];
+	$data[3] = $session['IP_origen'];
+	$data[4] = $session['descripcion'];
+	
+	array_push ($table->data, $data);
+}
+print_table ($table);
 echo "</div>"; // activity
 
 echo '</div>'; // class "jus"

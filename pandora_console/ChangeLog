@@ -1,5 +1,24 @@
 2008-06-26  Esteban Sanchez  <estebans@artica.es>
 
+	* images/console/background/africa.jpg,
+	images/console/background/asia.jpg,
+	images/console/background/europe.jpg,
+	images/console/background/north_america.jpg,
+	images/console/background/south_america.jpg,
+	images/console/background/world.jpg,
+	images/console/background/oceania.jpg: Resized to fit better in
+	Pandora default theme.
+
+	* operation/visual_console/index.php: Delete view column and use a
+	link in the name instead.
+
+	* operation/visual_console/render_view.php: Replaced id_usuario with
+	config variable.
+
+	* operation/menu.php: Changed default option in reporting menu.
+
+2008-06-26  Esteban Sanchez  <estebans@artica.es>
+
 	* general/logon_ok.php: Use pandora functions to show last sessions.
 
 	* index.php: Tab and blankspaces style correction.

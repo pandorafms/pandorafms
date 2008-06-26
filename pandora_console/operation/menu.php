@@ -258,7 +258,8 @@ if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 	} else {
 		echo '<li class="bb0">';
 	}
-	echo '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer" class="mn">'. lang_string ("reporting").'</a></li></ul></div>';
+	echo '<a href="index.php?sec=reporting&sec2=operation/reporting/custom_reporting" class="mn">'.
+		lang_string ("reporting").'</a></li></ul></div>';
 
 	// Custom reporting
 	if (isset($_GET["sec"]) && $_GET["sec"] == "reporting"){

@@ -1,3 +1,18 @@
+2008-06-27  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_db.php: Renamed variable from spanish.
+
+	* include/functions_reporting.php: Splitted
+	agents_detailed_reporting() into agent_detailed_reporting() so now
+	it's possible to get the report of a single agent. Also the table
+	width of this report was reduced a bit to fit well in the console.
+
+	* include/styles/pandora.css: Added style to agent reportings,
+	basically a border.
+
+	* operation/reporting/reporting_viewer.php: Separate each report into
+	its own table. Flush the result to improve speed. Style correction.
+
 2008-06-26  Esteban Sanchez  <estebans@artica.es>
 
 	* images/console/background/africa.jpg,

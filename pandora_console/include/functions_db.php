@@ -384,12 +384,12 @@ function gime_idgroup_from_idevent ($id_event) {
 /** 
  * Get name of an agent.
  * 
- * @param id_agente Agent id.
+ * @param id_agent Agent id.
  * 
  * @return Name of the given agent.
  */
-function dame_nombre_agente ($id_agente) {
-	return (string) get_db_value ('nombre', 'tagente', 'id_agente', (int) $id_agente);
+function dame_nombre_agente ($id_agent) {
+	return (string) get_db_value ('nombre', 'tagente', 'id_agente', (int) $id_agent);
 }
 
 /** 

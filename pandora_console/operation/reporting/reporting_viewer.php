@@ -113,19 +113,18 @@ if ($datetime > time ()) {
 	return;
 }
 
-$table->data = array ();
 $table->size = array ();
 $table->style = array ();
 $table->width = '750px';
-$table->class = 'databox';
+$table->class = 'databox report_table';
 $table->rowclasses = array ();
 
 $group_name = dame_grupo ($report['id_group']);
 $sql = sprintf ('SELECT * FROM treport_content WHERE id_report = %d ORDER BY `order`', $id_report);
 $contents = get_db_all_rows_sqlfree ($sql);
 foreach ($contents as $content) {
-	unset ($modules);
-	unset ($weights);
+	$table->data = array ();
+	
 	$module_name = get_db_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']);
 	$agent_name = dame_nombre_agente_agentemodulo ($content['id_agent_module']);
 	
@@ -155,7 +154,7 @@ foreach ($contents as $content) {
 		while ($content2 = mysql_fetch_array($res2)) {
 			$weight = $content2["weight"];
 			$content['id_agent_module'] = $content2["id_agent_module"];
-			if (!isset($modules)){
+			if (!isset ($modules)) {
 				$modules = $content['id_agent_module'];
 				$weights = $weight;
 			} else {
@@ -163,6 +162,8 @@ foreach ($contents as $content) {
 				$weights = $weights.",".$weight;
 			}
 		}
+		unset ($modules);
+		unset ($weights);
 		$data = array ();
 		$data[0] = '<h4>'.lang_string ('custom_graph').'</h4>';
 		$data[1] = "<h4>".$graph["name"]."</h4>";
@@ -381,8 +382,8 @@ foreach ($contents as $content) {
 		
 		break;
 	}
+	print_table ($table);
+	flush ();
 }
-
-print_table ($table);
 
 ?>

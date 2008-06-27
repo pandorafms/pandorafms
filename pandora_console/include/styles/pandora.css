@@ -717,3 +717,12 @@ div#main_pure {
 	float: left;
 	width: 300px;
 }
+
+.agent_reporting {
+	margin: 5px;
+	padding: 5px;
+}
+
+.report_table, .agent_reporting {
+	border: #CCC outset 3px;
+}

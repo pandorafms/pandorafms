@@ -1,12 +1,21 @@
 <?php
 
-// Pandora FMS - the Free Monitoring System
-// ========================================
+// Pandora FMS
+// ====================================
 // Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development, project architecture and management.
-// Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP code additions
-// Please see http://pandora.sourceforge.net for full contribution list
+// Copyright (c) 2005-2008 Artica Soluciones Tecnologicas, info@artica.es
+// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 
@@ -98,10 +107,13 @@
 	echo "<td class=datos style='font: bold 2em Arial, Sans-serif; color: #000;'>".$monitor_ok."</td>";
 	echo "<tr><td class=datos2><b>"."Monitor BAD"."</b></td>";
 	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #f00;'>";
+	echo "<a style='text-decoration: none; font: bold 1em Arial, Sans-serif; color: #f00;' href='index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60'>";
 	if ($monitor_bad > 0)
 		echo $monitor_bad;
 	else
 		echo "-";
+	echo "</A>";
+
 	echo "</td></tr><tr><td class=datos><b>"."Monitor Unknown"."</b></td>";
 	echo "<td class=datos style='font: bold 2em Arial, Sans-serif; color: #888;'>";
 	if ($monitor_unknown > 0)
@@ -118,10 +130,12 @@
 
 	echo "<tr><td class=datos><b>"."Alerts Fired"."</b></td>";
 	echo "<td class=datos style='font: bold 2em Arial, Sans-serif; color: #ff0000;'>";
+	echo "<a style='text-decoration: none; font: bold 1em Arial, Sans-serif; color: #ff0000;' href='index.php?sec=eventos&sec2=operation/events/events&search=&event_type=alert_fired'>";
 	if ($monitor_alert > 0)
 		echo $monitor_alert;
 	else
 		echo "-";
+	echo "</A>";
 	echo "<tr><td class=datos2><b>"."Alerts Total"."</b></td>";
 	echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #000000;'>".$monitor_alert_total;
 	

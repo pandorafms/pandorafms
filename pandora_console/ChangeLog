@@ -1,5 +1,19 @@
 2008-06-30  Jorge Gonzalez  <jorge.gonzalez@artica.es>
 
+	* include/help/en/help_recontask.php: Added help page for Recon tasks.
+
+	* include/languages/language_en.php: Added some strings.
+
+	* godmode/agentes/module_manager_editor_wmi.php,
+	godmode/servers/manage_recontask_form.php: Added support for inline
+	help.
+
+	* godmode/agentes/module_manager_editor_plugin.php,
+	godmode/agentes/module_manager_editor_data.php: Fixed buggy table,
+	modified previously.
+
+2008-06-30  Jorge Gonzalez  <jorge.gonzalez@artica.es>
+
 	* include/styles/pandora.css: Added cursor style for inline help.
 
 	* include/help/en/help_manage_alerts.php: Added help page for Alert

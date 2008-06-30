@@ -120,7 +120,9 @@ echo '</tr>';
 
 // module type / max timeout
 echo '</tr><tr>';
-echo '<td class="datos">'.lang_string ("module_type")."</td>";
+echo '<td class="datos">'.$lang_label["module_type"];
+pandora_help("module_type");
+echo '</td>';
 echo '<td class="datos">';
 if ($update_module_id != NULL){
 	echo "<span class='redi'>Not available in edition mode</span>";

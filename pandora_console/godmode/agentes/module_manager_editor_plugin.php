@@ -140,6 +140,7 @@ echo '</tr><tr>';
 echo '<td class="datos2">'.lang_string ("module_type");
 pandora_help("module_type");
 echo '</td>';
+echo '<td class="datos2">';
 
 if ($update_module_id != NULL){
 	echo "<span class='redi'>Not available in edition mode</span>";

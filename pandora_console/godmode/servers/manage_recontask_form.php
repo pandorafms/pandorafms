@@ -55,8 +55,10 @@ if (isset($_GET["update"])){ // Edit mode
 	$id_network_profile = 1;
 	$id_network_server_assigned = 0;
 }
-echo "<h2>".$lang_label["view_servers"]." &gt; ";
-echo $lang_label["manage_recontask"]."</h2>";
+echo '<h2>'.$lang_label["view_servers"].' &gt; ';
+echo $lang_label["manage_recontask"];
+pandora_help ("recontask");
+echo '</h2>';
 echo '<table width="700" cellspacing="4" cellpadding="4" class="databox_color">';
 
 // Different Form url if it's a create or if it's a update form
@@ -71,6 +73,7 @@ echo "<td class='datos2'><input type='text' name='name' size='25' value='$name'>
 //-- Recon server
 
 echo "<td class='datos2'>".$lang_label["recon_server"];
+echo '<a href="#" class="tip">&nbsp;<span>'.$lang_label["recon_server_help"].'</span></a>';
 echo "<td class='datos2'>";
 echo '<select name="id_server">';
 echo "<option value='$id_network_server'>". give_server_name($id_network_server);
@@ -120,6 +123,7 @@ while ($row=mysql_fetch_array($result))
 echo "</select></td>";
 //-- Network server
 echo "<td class='datos2'>".$lang_label["network_server"];
+echo '<a href="#" class="tip">&nbsp;<span>'.$lang_label["network_server2_help"].'</span></a>';
 echo "<td class='datos2'>";
 echo '<select name="server_assigned">';
 $sql1="SELECT id_server, name FROM tserver WHERE network_server = 1 ORDER BY name ";

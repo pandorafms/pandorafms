@@ -145,16 +145,20 @@ if ($create_layout_data) {
 	$layout_data_parent_item = (int) get_parameter ("parent_item");
 	$layout_data_period = (int) get_parameter ("period");
 	$layout_data_map_linked = (int) get_parameter ("map_linked");
+	$layout_data_width = (int) get_parameter ("width");
+	$layout_data_height = (int) get_parameter ("height");
 	
 	$sql = sprintf ('INSERT INTO tlayout_data (id_layout, label, id_layout_linked,
-			label_color, image, type, id_agente_modulo, parent_item, period, no_link_color) 
-			VALUES (%d, "%s", %d, "%s", "%s", %d, %d, %d, %d, 1)',
+			label_color, image, type, id_agente_modulo, parent_item, period, no_link_color,
+			width, height) 
+			VALUES (%d, "%s", %d, "%s", "%s", %d, %d, %d, %d, 1, %d, %d)',
 			$id_layout, $layout_data_label,
 			$layout_data_map_linked,
 			$layout_data_label_color,
 			$layout_data_image, $layout_data_type,
 			$layout_data_id_agent_module,
-			$layout_data_parent_item, $layout_data_period * 3600);
+			$layout_data_parent_item, $layout_data_period * 3600,
+			$layout_data_width, $layout_data_height);
 	$result = mysql_query ($sql);
 	
 	if ($result) {
@@ -171,6 +175,7 @@ if ($update_layout_data_coords) {
 	$id_layout_data = (int) get_parameter ('id_layout_data');
 	$layout_data_x = (int) get_parameter ("coord_x");
 	$layout_data_y = (int) get_parameter ("coord_y");
+	
 	$sql = sprintf ('UPDATE tlayout_data SET
 			pos_x = %d, pos_y = %d
 			WHERE id = %d',
@@ -209,13 +214,16 @@ if ($update_layout_data) {
 	$layout_data_parent_item = (int) get_parameter ("parent_item");
 	$layout_data_period = (int) get_parameter ("period");
 	$layout_data_map_linked = (int) get_parameter ("map_linked");
+	$layout_data_width = (int) get_parameter ("width");
+	$layout_data_height = (int) get_parameter ("height");
 	
 	$sql = sprintf ('UPDATE tlayout_data SET
 			image = "%s", label = "%s",
 			label_color = "%s",
 			id_agente_modulo = %d,
 			type = %d, parent_item = %d,
-			period = %d, id_layout_linked = %d
+			period = %d, id_layout_linked = %d,
+			width = %d, height = %d
 			WHERE id = %d',
 			$layout_data_image, $layout_data_label,
 			$layout_data_label_color,
@@ -223,6 +231,7 @@ if ($update_layout_data) {
 			$layout_data_type, $layout_data_parent_item,
 			$layout_data_period * 3600,
 			$layout_data_map_linked,
+			$layout_data_width, $layout_data_height,
 			$id_layout_data);
 	$result = mysql_query ($sql);
 	
@@ -371,6 +380,9 @@ if (! $edit_layout && ! $id_layout) {
 		
 		$table->data = array ();
 		$table->id = 'table_layout_data';
+		$table->rowstyle = array ();
+		$table->rowstyle[3] = 'display: none';
+		$table->rowstyle[4] = 'display: none';
 		
 		$table->data[0][0] = lang_string ('label');
 		$table->data[0][1] = print_input_text ('label', '', '', 20, 200, true);
@@ -378,20 +390,24 @@ if (! $edit_layout && ! $id_layout) {
 		$table->data[1][1] = print_input_text ('label_color', '#000000', '', 7, 7, true);
 		$table->data[2][0] = lang_string ('type');
 		$table->data[2][1] = print_select (get_layout_data_types (), 'type', '', '', '', '', true);
-		$table->data[3][0] = lang_string ('agent');
-		$table->data[3][1] = print_select ($agents, 'agent', '', '', '--', 0, true);
-		$table->data[4][0] = lang_string ('module');
-		$table->data[4][1] = print_select (array (), 'module', '', '', '--', 0, true);
-		$table->data[5][0] = lang_string ('period');
-		$table->data[5][1] = print_select ($intervals, 'period', '', '', '--', 0, true);
-		$table->data[6][0] = lang_string ('image');
-		$table->data[6][1] = print_select ($images_list, 'image', '', '', 'None', '', true);
-		$table->data[6][1] .= '<div id="image_preview"> </div>';
-		$table->data[7][0] = lang_string ('parent');
-		$table->data[7][1] = print_select_from_sql ('SELECT id, label FROM tlayout_data WHERE id_layout = '.$id_layout,
+		$table->data[3][0] = lang_string ('height');
+		$table->data[3][1] = print_input_text ('height', '', '', 5, 5, true);
+		$table->data[4][0] = lang_string ('width');
+		$table->data[4][1] = print_input_text ('width', '', '', 5, 5, true);
+		$table->data[5][0] = lang_string ('agent');
+		$table->data[5][1] = print_select ($agents, 'agent', '', '', '--', 0, true);
+		$table->data[6][0] = lang_string ('module');
+		$table->data[6][1] = print_select (array (), 'module', '', '', '--', 0, true);
+		$table->data[7][0] = lang_string ('period');
+		$table->data[7][1] = print_select ($intervals, 'period', '', '', '--', 0, true);
+		$table->data[8][0] = lang_string ('image');
+		$table->data[8][1] = print_select ($images_list, 'image', '', '', 'None', '', true);
+		$table->data[8][1] .= '<div id="image_preview"> </div>';
+		$table->data[9][0] = lang_string ('parent');
+		$table->data[9][1] = print_select_from_sql ('SELECT id, label FROM tlayout_data WHERE id_layout = '.$id_layout,
 							'parent_item', '', '', 'None', '', true);
-		$table->data[8][0] = lang_string ('map_linked');
-		$table->data[8][1] = print_select_from_sql ('SELECT id, name FROM tlayout WHERE id != '.$id_layout,
+		$table->data[10][0] = lang_string ('map_linked');
+		$table->data[10][1] = print_select_from_sql ('SELECT id, name FROM tlayout WHERE id != '.$id_layout,
 							'map_linked', '', '', 'None', '', true);
 		
 		echo '<form id="form_layout_data_editor" method="post" action="index.php?sec=greporting&sec2=godmode/reporting/map_builder">';
@@ -518,13 +534,18 @@ $(document).ready (function () {
 				id_layout_data: id
 				},
 				function (data) {
+				console.log (data);
 					$("#form_layout_data_editor #text-label").attr ('value', data['label']);
 					$("#form_layout_data_editor #type").attr ('value', data['type']);
+					$("#form_layout_data_editor #type").change ();
 					$("#form_layout_data_editor #image").attr ('value', data['image']);
+					$("#form_layout_data_editor #width").attr ('value', data['width']);
+					$("#form_layout_data_editor #height").attr ('value', data['height']);
 					$("#form_layout_data_editor #image").change ();
 					$("#form_layout_data_editor #id_layout_data").attr ('value', data['id']);
 					$("#form_layout_data_editor #period").attr ('value', data['period'] / 3600);
 					$("#form_layout_data_editor #agent").attr ('value', data['id_agent']);
+					$("#form_layout_data_editor #parent_item").attr ('value', data['parent_item']);
 					$("#form_layout_data_editor #map_linked").attr ('value', data['id_layout_linked']);
 					$("#form_layout_data_editor #hidden-update_layout_data").attr ('value', 1);
 					$("#form_layout_data_editor #hidden-create_layout_data").attr ('value', 0);
@@ -563,6 +584,16 @@ $(document).ready (function () {
 		}
 	});
 	$("#form_layout_data_editor #agent").change (agent_changed);
+	$("#form_layout_data_editor #type").change (function () {
+		if (this.value == 0) {
+			$("#table_layout_data #table_layout_data-3, #table_layout_data #table_layout_data-4").fadeOut ();
+			$("#table_layout_data #table_layout_data-8").fadeIn ();
+		} else {
+			$("#table_layout_data #table_layout_data-3, #table_layout_data #table_layout_data-4").fadeIn ();
+			$("#table_layout_data #table_layout_data-8").fadeOut ();
+		}
+		
+	});
 	$("#form_layout_data_editor #text-label_color").attachColorPicker();
 });
 </script>

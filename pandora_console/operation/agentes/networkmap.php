@@ -112,8 +112,7 @@ function create_node ($agent, $simple = 0) {
 		 shape="ellipse", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'",
 		 tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
 	} else {
-		$node = $agent['id_agente'].' [ color="'.$status_color.'", fontsize=7, style="filled", fixedsize=true, width=0.20, height=0.20, label="", 
-		tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
+		$node = $agent['id_agente'] . ' [ color="' . $status_color . '", fontsize=7, style="filled", fixedsize=true, width=0.20, height=0.20, label="", tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
 	}
 	return $node;
 }
@@ -156,32 +155,35 @@ function open_graph () {
 	$size_y = 5.4;
 	$size = '';
 
-	if ($layout == '' || $layout == 'radial') {
+	if ($layout == "")
+		$layout = "radial";
+
+	if ($layout == 'radial') 
 		$overlap = 'true';
-	}
+	
+	if (($layout == 'flat') OR ($layout == 'spring1') OR ($layout == "spring2"))
+		if ($nooverlap != '')
+			$overlap = 'scalexy';
 
-	if ($nooverlap != '') {
-		$overlap = 'scalexy';
-	}
-
+	
 	if ($pure == 1  && $zoom > 1 && $zoom <= 3) {
 			$size_x *= $zoom;
 			$size_y *= $zoom;
 	}
 	$size = $size_x . ',' . $size_y;
 
+
+
 	// BEWARE: graphwiz DONT use single ('), you need double (")
-	$head = "graph networkmap { 
-		labeljust=l;  
-		margin=0; 
-		ranksep=\"$ranksep\";
-		outputorder=edgesfirst;
+	$head = "graph networkmap { labeljust=l; margin=0; ";
+	if ($nooverlap != '')
+		$head .= "ranksep=\"$ranksep\";";
+	$head .= "outputorder=edgesfirst;
 		overlap=\"$overlap\";
 		ratio=fill;
 		root=0;
 		size=\"$size\";
 		";
-	
 	return $head;
 }
 
@@ -283,8 +285,7 @@ if ($pure == "1") {
 }
 //echo '  Display groups  <input type="checkbox" name="group" value="group" class="chk"/>';
 echo '<td>';
-echo '<input name="updbutton" type="submit" class="sub upd" value="'.
-	lang_string ("update").'">';
+echo '<input name="updbutton" type="submit" class="sub upd" value="'. lang_string ("update"). '">';
 echo '</td>';
 echo '</table>';
 echo '</form>';

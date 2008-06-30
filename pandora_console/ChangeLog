@@ -72,6 +72,16 @@
 
 2008-06-30  Sancho Lerena <slerena@artica.es>
 
+	* config_process.php, pandoradb_data.sql, setup.php: Added global 
+	"sla_period" for default Monitor SLA calculation (in sec).
+	
+	* estado_monitores.php: By default now shows a SLA based on "sla_period"
+	period. 
+
+	* networkmap.php: Fixed layout to use overlap in all modes using different
+	techniques, depending on graph type. Tested with different map layouts in
+	size, topology and dimension.
+
 	* agent_manager.php: Agent names are now show in order.
 
 	* functions.php: Added a blank space in Help icon.

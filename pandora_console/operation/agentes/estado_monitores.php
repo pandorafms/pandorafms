@@ -19,6 +19,10 @@
 // Load globar vars
 require("include/config.php");
 if (comprueba_login() == 0) {
+
+
+	require ("include/functions_reporting.php");
+
 	// $id_agente can be obtained as global variable or GET param.
 	if (isset($_GET["id_agente"])){
 		$id_agente = $_GET["id_agente"];
@@ -32,7 +36,7 @@ if (comprueba_login() == 0) {
 		echo "<tr><th>X</th>";
         echo "<th>".$lang_label["type"]."</th>
 		<th>".$lang_label["module_name"]."</th>
-		<th>".$lang_label["description"]."</th>
+		<th>".$lang_label["SLA"]."</th>
 		<th>".$lang_label["status"]."</th>
 		<th>".$lang_label["interval"]."</th>
 		<th>".$lang_label["last_contact"]."</th>";
@@ -82,9 +86,15 @@ if (comprueba_login() == 0) {
                 }
 				echo "<td class='".$tdcolor."'>";
 				echo "<img src='images/".show_icon_type($row_t["id_tipo_modulo"])."' border=0>";	
-				echo "<td class='".$tdcolor."'>".$est_modulo."</td>";
-				echo "<td class='".$tdcolor."f9'>"
-				.substr($est_description,0,35)."</td>";
+				echo "<td class='".$tdcolor."' title='".$est_description."'>".$est_modulo."</td>";
+				echo "<td class='$tdcolor'>";
+
+				$temp = return_module_SLA ($row_t["id_agente_modulo"], $config["sla_period"], 1, 2147483647);
+				if ($temp === false)
+					echo lang_string("N/A");
+				else
+					echo "$temp %</td>";;
+
 				echo "<td class='".$tdcolor."' align='center'>";
 				if ($est_estado == 1){
 					if ($est_cambio == 1) 

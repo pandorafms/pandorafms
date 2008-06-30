@@ -60,7 +60,8 @@ INSERT INTO `tconfig` VALUES
 (16, 'remote_config', '/var/spool/pandora/data_in'),
 (17, 'graph_color1', '#38B800'),
 (18, 'graph_color2', '#42D100'),
-(19, 'graph_color3', '#89FF09')
+(19, 'graph_color3', '#89FF09'),
+(20, 'sla_period', '604800');
 ;
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `tconfig` ENABLE KEYS */;

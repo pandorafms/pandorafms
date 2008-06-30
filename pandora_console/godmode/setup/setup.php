@@ -43,8 +43,9 @@ if ($update_settings) {
 	$config["remote_config"] = (string) get_parameter ('remote_config');
 	$config["graph_color1"] = (string) get_parameter ('graph_color1');
 	$config["graph_color2"] = (string) get_parameter ('graph_color2');
-	$config["graph_color3"] = (string) get_parameter ('graph_color3');
-	
+	$config["graph_color3"] = (string) get_parameter ('graph_color3');	
+	$config["sla_period"] = (int) get_parameter ("sla_period");
+
 	$config["style"] = substr ($config["style"], 0, strlen ($config["style"]) - 4);
 	mysql_query ("UPDATE tconfig SET VALUE='".$config["remote_config"]."' WHERE token = 'remote_config'");
 	mysql_query ("UPDATE tconfig SET VALUE='".$config["block_size"]."' WHERE token = 'block_size'");
@@ -59,6 +60,7 @@ if ($update_settings) {
 	mysql_query ("UPDATE tconfig SET VALUE='".$config["graph_color1"]."' WHERE token = 'graph_color1'");
 	mysql_query ("UPDATE tconfig SET VALUE='".$config["graph_color2"]."' WHERE token = 'graph_color2'");
 	mysql_query ("UPDATE tconfig SET VALUE='".$config["graph_color3"]."' WHERE token = 'graph_color3'");
+	mysql_query ("UPDATE tconfig SET VALUE='".$config["sla_period"]."' WHERE token = 'sla_period'");
 }
 
 echo "<h2>".lang_string ("setup_screen")." &gt; ";
@@ -78,6 +80,8 @@ $table->data[3][0] = lang_string ('Graph color (avg)');
 $table->data[3][1] = print_input_text ('graph_color2', $config["graph_color2"], '', 8, 8, true);
 $table->data[4][0] = lang_string ('Graph color (max)');
 $table->data[4][1] = print_input_text ('graph_color3', $config["graph_color3"], '', 8, 8, true);
+$table->data[5][0] = lang_string ('sla_period');
+$table->data[5][1] = print_input_text ('sla_period', $config["sla_period"], '', 5, 5, true);
 $table->data[5][0] = lang_string ('days_compact');
 $table->data[5][1] = print_input_text ('days_compact', $config["days_compact"], '', 5, 5, true);
 $table->data[6][0] = lang_string ('days_purge');

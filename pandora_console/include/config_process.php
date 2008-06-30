@@ -34,6 +34,9 @@ $config["fontpath"] = $config["homedir"]."/reporting/FreeSans.ttf";
 // Style (pandora by default)
 $config["style"] = "pandora";
 
+// Default period (in secs) for auto SLA calculation (for monitors)
+$config["sla_period"] = 604800;
+
 // Read remaining config tokens from DB
 if (! mysql_connect($config["dbhost"],$config["dbuser"],$config["dbpass"])){ 
 
@@ -79,6 +82,8 @@ if($result2=mysql_query("SELECT * FROM tconfig")){
         case "show_lastalerts": $config["show_lastalerts"] = $row2["value"];
                             break;
         case "remote_config": $config["remote_config"] = $row2["value"];
+                            break;
+		case "sla_period": $config["sla_period"] = $row2["value"];
                             break;
 		case "graph_color1": 
 			$config["graph_color1"] = $row2["value"];

@@ -1,3 +1,7 @@
+2008-06-30  Sancho Lerena <slerena@artica.es>
+
+	*  pandora_agents/win32/installer/pandora_2.0.mpi: New installer for 2.0
+
 2008-06-20  Ramon Novoa  <rnovoa@artica.es>
 
 	* openWRT/pandora_agent, openWRT/pandora_agent.conf: Added support for

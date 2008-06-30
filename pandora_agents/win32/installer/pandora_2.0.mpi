@@ -3,7 +3,7 @@ AllowLanguageSelection
 Yes
 
 AppName
-{Pandora FMS Windows Agent 1.3.1}
+{Pandora FMS Windows Agent 2.0 (Beta1)}
 
 ApplicationID
 17E3D2CF-CA02-406B-8A80-9D31C17BD08F
@@ -63,7 +63,7 @@ InstallPassword
 {}
 
 InstallVersion
-1.3.1.0
+2.0.0.1
 
 Language,de
 Yes
@@ -126,7 +126,7 @@ ProjectID
 0EA13B96-1BB2-4238-B248-101B4F906C15
 
 ProjectVersion
-1.2.6.0
+1.2.5.1
 
 SaveOnlyToplevelDirs
 No
@@ -220,6 +220,8 @@ File ::5EA49A68-6952-43BF-9A54-1CDF8E48C3D8 -name 4.jpg -parent 550F286E-2409-42
 File ::0C33AC8D-503A-4A9C-801F-2FDEF9FA98C0 -name 5.jpg -parent 550F286E-2409-4221-A51A-CA980C9EA9DC
 File ::1B81E274-2375-4287-90D7-953BE3F71FA7 -name 6.jpg -parent 550F286E-2409-4221-A51A-CA980C9EA9DC
 File ::C2E02994-9B4E-430C-B399-E93986DD9B0F -name logo.png -parent 550F286E-2409-4221-A51A-CA980C9EA9DC
+File ::1E2AD0BC-1D4C-4C45-BFCF-9CECF7BA3952 -name Thumbs.db -parent 550F286E-2409-4221-A51A-CA980C9EA9DC
+File ::9E5D6A00-E82C-49B4-B654-3F36D4D48A83 -name C:/pandora_installer/bin/libodbc++.dll -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 Component ::FB96078B-BA3C-498C-8C20-B01C1F28ACA9 -setup Install -active Yes -platforms Windows -name {Default Component} -parent Components
 SetupType ::A87C1A6B-ED26-4B07-8736-750725FF34E4 -setup Install -active Yes -platforms {Solaris-sparc Windows} -name Typical -parent SetupTypes
 
@@ -731,6 +733,9 @@ ViewReadme
 86342A9C-494A-4036-BA8E-E4BE8A7BB16C,Y
 140
 
+8A1B144A-F5F6-430F-A334-C31494182599,Conditions
+{0 conditions}
+
 922F877C-14DD-462F-8BB4-0CD378D81C95,Conditions
 {0 conditions}
 
@@ -762,7 +767,7 @@ ViewReadme
 <%InstallDir%>
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,FileSize
-11264957
+7838828
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,Name
 {Program Files}
@@ -2122,15 +2127,6 @@ StartPandoraService
 
 StopPandoraService
 {Interrompe o serviço <%AppName%>}
-
-}
-::msgcat::mcmset ru {
-1957048E-B498-4FFF-A8BA-F2DF640463B1,Message
-{Ìàñòåð InstallJammer óñòàíîâèò <%AppName%> íà âàøåì êîìïüþòåðå. 
-
-Ïåðåä íà÷àëîì óñòàíîâêè ðåêîìåíäóåòñÿ çàêðûòü âñå äðóãèå ðàáîòàþùèå  ïðîãðàììû.
-
-×òîáû ïðîäîëæèòü, âûáåðèòå <%Next%>, èëè âûáåðèòå <%Cancel%> äëÿ âûõîäà.}
 
 }
 

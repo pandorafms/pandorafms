@@ -100,8 +100,9 @@ echo '</tr><tr>';
 
 // module type / max timeout
 echo '</tr><tr>';
-echo '<td class="datos">'. lang_string ("module_type")."</td>";
-echo '<td class="datos">';
+echo '<td class="datos2">'.lang_string ("module_type");
+pandora_help("module_type");
+echo '</td>';
 
 if ($update_module_id != NULL){
 	echo "<span class='redi'>Not available in edition mode</span>";
@@ -119,10 +120,10 @@ echo '</tr>';
 
 // Post process / Export server
 echo '<tr>';
-echo '<td class="datos2">'.lang_string ("post_process")."</td>";
-echo '<td class="datos2"><input type="text" name="form_post_process" size="5" value="'.$form_post_process.'">';
+echo '<td class="datos2">'.lang_string ("post_process");
 pandora_help("postprocess");
-echo "</td>";
+echo '</td>';
+echo '<td class="datos2"><input type="text" name="form_post_process" size="5" value="'.$form_post_process.'"></td>';
 echo '<td class="datos2">'.lang_string ("export_server")."</td>";
 echo '<td class="datos2"><select name="form_id_export">';
 if ($form_id_export != 0){

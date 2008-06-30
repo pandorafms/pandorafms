@@ -284,7 +284,9 @@ if (! $edit_layout && ! $id_layout) {
 	echo '</div>';
 } else {
 	echo "<h2>".lang_string ("reporting")." &gt; ";
-	echo lang_string ("map_builder")."</h2>";
+	echo lang_string ("map_builder");
+	pandora_help ("map_builder");
+	echo "</h2>";
 	
 	$backgrounds_list = list_files ('images/console/background/', "jpg", 1, 0);
 	$backgrounds_list = array_merge ($backgrounds_list, list_files ('images/console/background/', "png", 1, 0));

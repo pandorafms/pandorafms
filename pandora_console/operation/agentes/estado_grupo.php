@@ -264,12 +264,11 @@
 		}
 		echo "</table>";
 	} else {
-		echo "<div class='nf'>".$lang_label["no_agent_def"]."</div>";
+		echo "<div class='nf'>".$lang_label["no_group_def"]."</div>";
 	      	$id_user = $_SESSION["id_usuario"];
 	if ( (give_acl($id_user, 0, "LM")==1) OR (give_acl($id_user, 0, "AW")==1 ) OR (give_acl($id_user, 0, "PM")==1) OR (give_acl($id_user, 0, "DM")==1) OR (give_acl($id_user, 0, "UM")==1 )){
-	      echo "&nbsp;<form method='post' action='index.php?sec=gagente&
-	sec2=godmode/agentes/configurar_agente&create_agent=1'><input type='submit' class='sub next' name='crt'
-	value='".$lang_label["create_agent"]."'></form>";
+	      echo "&nbsp;<form method='post' action='index.php?sec=gagente&sec2=godmode/groups/configure_group&create_g=1'><input type='submit' class='sub next' name='crt'
+	value='".$lang_label["create_group"]."'></form>";
 	}
 	}
 

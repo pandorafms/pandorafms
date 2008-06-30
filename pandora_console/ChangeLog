@@ -1,3 +1,49 @@
+2008-06-30  Jorge Gonzalez  <jorge.gonzalez@artica.es>
+
+	* include/styles/pandora.css: Added cursor style for inline help.
+
+	* include/help/en/help_manage_alerts.php: Added help page for Alert
+	management.
+
+	* include/help/en/help_snmpcommunity.php: Added help page for SNMP
+	community.
+
+	* include/help/en/help_map_builder.php: Added help page for map
+	builder.
+
+	* include/help/en/help_postprocess.php: Checked spelling.
+
+	* include/help/en/help_module_type.php: Added help page for Module
+	type.
+
+	* include/help/en/help_snmpoid.php: Added help page for SNMP OID.
+
+	* include/help/en/help_alerts.php: Added help page for Alert
+	configuration.
+
+	* include/help/en/help_module_definition.php: Added help page for
+	Module definition.
+
+	* include/functions.php: Added cursor style for inline help.
+
+	* include/languages/language_en.php: Added new strings.
+
+	* operation/agentes/estado_grupo.php: Fixed wrong link and text, it is
+	a group, not an agent.
+
+	* operation/agentes/tactical.php: Fixed bug for empty values.
+
+	* godmode/agentes/module_manager_editor_network.php,
+	godmode/agentes/module_manager_editor_wmi.php,
+	godmode/agentes/module_manager_editor_plugin.php,
+	godmode/agentes/module_manager_editor_prediction.php,
+	godmode/agentes/alert_manager_editor.php,
+	godmode/agentes/module_manager_editor_data.php,
+	godmode/agentes/agent_manager.php,
+	godmode/modules/manage_network_components_form.php,
+	godmode/reporting/map_builder.php, godmode/alerts/plugin.php,
+	godmode/alerts/configure_alert.php: Added suppot for inline help.
+
 2008-06-30  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/reporting/reporting_builder.php: Removed debug output.

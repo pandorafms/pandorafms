@@ -19,7 +19,9 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 $add_component = get_parameter ("add_component",0);
-echo "<h3>".$lang_label["alert_asociation_form"]."</h3>";
+echo "<h3>".$lang_label["alert_asociation_form"];
+pandora_help("alerts");
+echo "</h3>";
 
 echo '<form name="agente" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente='.$id_agente.'">';
 

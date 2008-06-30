@@ -5,7 +5,7 @@ $config["dbuser"]="pandora";			// DB User
 $config["dbpass"]="pandora";			// DB Password
 $config["dbhost"]="localhost";			// DB Host
 $config["homedir"]="/var/www/pandora_console/";		// Config homedir
-$config["homeurl"]="http://192.168.13.211/pandora_console";	// Base URL
+$config["homeurl"]="http://localhost/pandora_console";	// Base URL
 
 // End of automatic config file
 ?><?php

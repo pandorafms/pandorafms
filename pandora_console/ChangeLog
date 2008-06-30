@@ -1,3 +1,11 @@
+2008-06-30  Sancho Lerena <slerena@artica.es>
+
+	* agent_manager.php: Agent names are now show in order.
+
+	* functions.php: Added a blank space in Help icon.
+
+	* tactical.php: Added a few links in tactical view.
+
 2008-06-30  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions_db.php: Renamed get_db_all_rows_sqlfree() to

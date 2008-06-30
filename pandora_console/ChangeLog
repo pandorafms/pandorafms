@@ -1,3 +1,25 @@
+2008-06-30  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/groups/configure_group.php: Complete rewritten. Use Pandora
+	functions and added javascript support.
+
+	* godmode/groups/group_list.php: Rewrite to use Pandora functions.
+	Code cleanup.
+
+	* godmode/reporting/map_builder.php: Added width and height support to
+	graphics layout items type.
+
+	* godmode/reporting/reporting_builder.php: Style correction.
+
+	* operation/agentes/networkmap.php: Unused code cleanup. Style
+	correction. Use hex color codes instead of names, because graphviz was
+	complaining about them.	Avoid a warning on graphviz about "color" in a
+	TD. Replaced lang_label with lang_string(). Show error if map could
+	not be generated.
+
+	* operation/reporting/reporting_viewer_pdf.php: Style correction and
+	code cleanup.
+
 2008-06-30  Sancho Lerena <slerena@artica.es>
 
 	* agent_manager.php: Agent names are now show in order.

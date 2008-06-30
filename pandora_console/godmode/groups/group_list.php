@@ -51,101 +51,97 @@ if (defined ('AJAX')) {
 	exit ();
 }
 
-if (isset($_POST["create_g"])) { // Create group
-	$nombre = entrada_limpia($_POST["nombre"]);
-	$icon = entrada_limpia($_POST["icon"]);
-	$parent = entrada_limpia($_POST["parent"]);
-	$disabled = entrada_limpia($_POST["disabled"]);
-	$sql_insert="INSERT INTO tgrupo (nombre, icon, parent, disabled) 
-		VALUES ('$nombre', '$icon', '$parent', $disabled) ";
-	$result=mysql_query($sql_insert);	
-	if (! $result)
-		echo "<h3 class='error'>".$lang_label["create_group_no"]."</h3>";
-	else {
-		echo "<h3 class='suc'>".$lang_label["create_group_ok"]."</h3>"; 
-		$id_grupo = mysql_insert_id();
-	}
+$create_group = (bool) get_parameter ('create_group');
+$update_group = (bool) get_parameter ('update_group');
+$delete_group = (bool) get_parameter ('delete_group');
+
+/* Create group */
+if ($create_group) {
+	$name = (string) get_parameter ('name');
+	$icon = (string) get_parameter ('icon');
+	$id_parent = (int) get_parameter ('id_parent');
+	$alerts_disabled = (bool) get_parameter ('alerts_disabled');
+
+	$sql = sprintf ('INSERT INTO tgrupo (nombre, icon, parent, disabled) 
+			VALUES ("%s", "%s", %d, %d)',
+			$name, substr ($icon, 0, -4), $id_parent, $alerts_disabled);
+	$result = mysql_query ($sql);
+	if ($result) {
+		echo "<h3 class='suc'>".lang_string ("create_group_ok")."</h3>"; 
+	} else {
+		echo "<h3 class='error'>".lang_string ("create_group_no")."</h3>";	}
 }
 
-if (isset($_POST["update_g"])){ // if modified any parameter
-	$nombre = entrada_limpia($_POST["nombre"]);
-	$id_grupo = entrada_limpia($_POST["id_grupo"]);
-	$icon = entrada_limpia($_POST["icon"]);
-	$disabled = entrada_limpia($_POST["disabled"]);
-	$parent = entrada_limpia($_POST["parent"]);
-	$sql_update ="UPDATE tgrupo 
-		SET nombre = '$nombre', icon = '$icon', disabled = $disabled, parent = '$parent' 
-		WHERE id_grupo = '$id_grupo'";
-	$result=mysql_query($sql_update);
-	if (! $result)
-		echo "<h3 class='error'>".$lang_label["modify_group_no"]."</h3>";
-	else
-		echo "<h3 class='suc'>".$lang_label["modify_group_ok"]."</h3>";
-}
-
-if (isset($_GET["delete_g"])){ // if delete
-	$id_borrar_modulo = entrada_limpia($_GET["id_grupo"]);
+/* Update group */
+if ($update_group) {
+	$id_group = (int) get_parameter ('id_group');
+	$name = (string) get_parameter ('name');
+	$icon = (string) get_parameter ('icon');
+	$id_parent = (int) get_parameter ('id_parent');
+	$alerts_enabled = (bool) get_parameter ('alerts_enabled');
 	
-	// First delete from tagente_modulo
-	$sql_delete= "DELETE FROM tgrupo WHERE id_grupo = ".$id_borrar_modulo;
-	$result=mysql_query($sql_delete);
+	$sql = sprintf ('UPDATE tgrupo  SET nombre = "%s",
+			icon = "%s", disabled = %d, parent = %d 
+			WHERE id_grupo = %d',
+			$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $id_group);
+	$result = mysql_query ($sql);
+	if ($result) {
+		echo "<h3 class='suc'>".lang_string ("modify_group_ok")."</h3>";
+	} else {
+		echo "<h3 class='error'>".lang_string ("modify_group_no")."</h3>";
+	}
+}
+
+/* Delete group */
+if ($delete_group) {
+	$id_group = (int) get_parameter ('id_group');
+	
+	$sql = sprintf ('UPDATE tagente set id_grupo = 1 WHERE id_grupo = %d', $id_group);
+	$result = mysql_query ($sql);
+	$sql = sprintf ('DELETE FROM tgrupo WHERE id_grupo = %d', $id_group);
+	$result = mysql_query ($sql);
 	if (! $result)
-		echo "<h3 class='error'>".$lang_label["delete_group_no"]."</h3>"; 
+		echo "<h3 class='error'>".lang_string ("delete_group_no")."</h3>"; 
 	else
-		echo "<h3 class='suc'>".$lang_label["delete_group_ok"]."</h3>";
+		echo "<h3 class='suc'>".lang_string ("delete_group_ok")."</h3>";
 }
-echo "<h2>".$lang_label["group_management"]." &gt; ";	
-echo $lang_label["definedgroups"]."</h2>";
 
-echo "<table cellpadding=4 cellspacing=4 width='400' class='databox'>";
-echo "<th>".$lang_label["icon"]."</th>";
-echo "<th>".$lang_label["group_name"]."</th>";
-echo "<th>".$lang_label["parent"]."</th>";
-echo "<th>".$lang_label["alerts"]."</th>";
-echo "<th>".$lang_label["delete"]."</th>";
-$sql1='SELECT * FROM tgrupo ORDER BY nombre';
-$result=mysql_query($sql1);
-$color=0;
-while ($row=mysql_fetch_array($result)){
-	if ($color == 1){
-		$tdcolor = "datos";
-		$color = 0;
-		}
-	else {
-		$tdcolor = "datos2";
-		$color = 1;
-	}
-	if ($row["id_grupo"] != 1){
-		echo "<tr><td class='$tdcolor' align='center'>";
-		echo "<img src='images/groups_small/".$row["icon"].".png' border='0'>";
-		echo "</td>";
-		echo "<td class='$tdcolor'>";
-		echo "<b><a href='index.php?sec=gagente&sec2=godmode/groups/configure_group&id_grupo=".$row["id_grupo"]."'>".$row["nombre"]."</a>";
-		echo "</b></td>";
-		echo "<td class='$tdcolor'>";
-		echo dame_nombre_grupo ($row["parent"]);
-		echo "</td>";
+echo "<h2>".lang_string ("group_management")." &gt; ";	
+echo lang_string ("definedgroups")."</h2>";
 
-		// Disabled?
-		echo "<td class='$tdcolor' align='center'>";
-                if ($row["disabled"]==1)
-			echo "<img src='images/flag_red.png'> ".$lang_label["disabled"];
-		else
-			echo "<img src='images/flag_green.png'> ".$lang_label["enabled"];
-                echo "</td>";
+$table->width = '400px';
+$table->head = array ();
+$table->head[0] = lang_string ("icon");
+$table->head[1] = lang_string ("name");
+$table->head[2] = lang_string ("parent");
+$table->head[3] = lang_string ("alerts");
+$table->head[4] = lang_string ("delete");
+$table->align = array ();
+$table->align[4] = 'center';
+$table->data = array ();
 
-		echo "<td class='$tdcolor' align='center'>";	
-		echo "<a href='index.php?sec=gagente&sec2=godmode/groups/group_list&id_grupo=".$row["id_grupo"]."&delete_g=".$row["id_grupo"]."'";
-		echo ' onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;">';
-		echo "<img border='0' src='images/cross.png'></a></td></tr>";
-	}
+$groups = get_user_groups ($config['id_user']);
+
+foreach ($groups as $id_group => $group_name) {
+	$data = array ();
+	
+	$group = get_db_row ('tgrupo', 'id_grupo', $id_group);
+	
+	$data[0] = '<img src="images/groups_small/'.$group["icon"].'.png" border="0">';
+	$data[1] = '<strong><a href="index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$id_group.'">'.$group_name.'</a></strong>';
+	$data[2] = dame_nombre_grupo ($group["parent"]);
+	$data[3] = $group['disabled'] ? lang_string ('disabled') : lang_string ('enabled');
+	$data[4] = '<a href="index.php?sec=gagente&sec2=godmode/groups/group_list&id_group='.$id_group.'&delete_group=1" onClick="if (!confirm(\' '.lang_string ("are_you_sure").'\')) return false;"><img border="0" src="images/cross.png"></a>';
+	
+	array_push ($table->data, $data);
 }
-echo "</table>";
-echo "<table cellpadding=4 cellspacing=4 width='400'>";
-echo "<tr><td align='right'>";
-echo "<form method=post action='index.php?sec=gagente&
-sec2=godmode/groups/configure_group&create_g=1'>";
-echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create_group"]."'>";
-echo "</form></td></tr></table>";
+
+print_table ($table);
+
+echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/groups/configure_group">';
+echo '<div class="action-buttons" style="width: '.$table->width.'">';
+print_submit_button (lang_string ("create_group"), 'crt', false, 'class="sub next"');
+echo '</div>';
+echo '</form>';
 
 ?>

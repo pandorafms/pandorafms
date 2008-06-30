@@ -45,39 +45,24 @@ function generate_dot ($simple = 0) {
 		else {
 			$orphans[$agent['id_agente']] = 1;
 		}
-	
-		// Start a new subgraph for the group
-		//if ($group_id != $agent['id_grupo'] && isset($_POST['group'])) {
-			// Close the previous group
-			//if ($group_id != -1) {
-			//	$graph .= close_group();
-			//}
-			//$group_id = $agent['id_grupo'];	
-			//$graph .= open_group($group_id);
-		//}
-	
+		
 		// Add node
-		$graph .= create_node($agent , $simple);
+		$graph .= create_node($agent , $simple)."\n\t\t";
 	}
 
-	// Close the last subgraph
-	//if (isset($_POST['group'])) {
-	//	$graph .= close_group();
-	//}
-
 	// Create a central node if orphan nodes exist
-	if (count($orphans) > 0) {
+	if (count ($orphans)) {
 		$graph .= create_pandora_node ($pandora_name);
 	}
 	
 	// Define edges
 	foreach ($parents as $node => $parent_id) {
-		$graph .= create_edge($node, $parent_id);
+		$graph .= create_edge ($node, $parent_id);
 	}
 
 	// Define edges for orphan nodes
-	foreach(array_keys($orphans) as $node) {
-		$graph .= create_edge('0', $node);
+	foreach (array_keys($orphans) as $node) {
+		$graph .= create_edge ('0', $node);
 	}
 	
 	// Close graph
@@ -88,7 +73,7 @@ function generate_dot ($simple = 0) {
 
 // Returns an edge definition
 function create_edge ($head, $tail) {
-	$edge = $head . ' -- ' . $tail . '[color="#BDBDBD", headclip=false, tailclip=false];';
+	$edge = $head.' -- '.$tail.'[color="#BDBDBD", headclip=false, tailclip=false];';
 	return $edge;
 }
 
@@ -112,27 +97,23 @@ function create_node ($agent, $simple = 0) {
 
 	// Short name
 	$name = strtolower ($agent["nombre"]);
-	if (strlen($name) > 12)
-		$name = substr($name,0,12);
+	if (strlen ($name) > 12)
+		$name = substr ($name, 0, 12);
 
 	if ($simple == 0){
 		// Set node icon
-		if (file_exists('images/networkmap/' . $agent['id_os'] . '.png')) { 
-			$img_node = 'images/networkmap/' . $agent['id_os'] . '.png';
+		if (file_exists ('images/networkmap/'.$agent['id_os'].'.png')) { 
+			$img_node = 'images/networkmap/'.$agent['id_os'].'.png';
 		} else {
 			$img_node = 'images/networkmap/0.png';
 		}
-
-		$node = $agent['id_agente'] . ' [ color="' . $status_color . '", fontsize=9, style="filled", fixedsize=true, width=0.40, height=0.40, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0">
-		 <TR><TD><IMG SRC="' . $img_node . '"/></TD></TR>
-		 <TR><TD color="green">' . $name . '</TD></TR></TABLE>>,
+		$node = $agent['id_agente'].' [ color="'.$status_color.'", fontsize=9, style="filled", fixedsize=true, width=0.40, height=0.40, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD><IMG SRC="'.$img_node.'"/></TD></TR>
+		 <TR><TD>'.$name.'</TD></TR></TABLE>>,
 		 shape="ellipse", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'",
-		 tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='
-		 . $agent['id_agente'].'"];';
+		 tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
 	} else {
-		$node = $agent['id_agente'] . ' [ color="' . $status_color . '", fontsize=7, style="filled", fixedsize=true, width=0.20, height=0.20, label="", 
-		tooltip="ajax.php?page=operation/agentes/ver_agente&
-			get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
+		$node = $agent['id_agente'].' [ color="'.$status_color.'", fontsize=7, style="filled", fixedsize=true, width=0.20, height=0.20, label="", 
+		tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
 	}
 	return $node;
 }
@@ -141,8 +122,8 @@ function create_node ($agent, $simple = 0) {
 function create_pandora_node ($name) {
 	$node = '0 [ color="#364D1F", fontsize=10, style="filled", fixedsize=true, width=0.8, height=0.6, label=<<TABLE BORDER="0">
 		<TR><TD><IMG SRC="images/networkmap/pandora_node.png"/></TD></TR>
-		<TR><TD BGCOLOR="white">' . $name . '</TD></TR></TABLE>>,
-		shape="ellipse", tooltip="' . $name . '", URL="index.php?sec=estado&sec2=operation/agentes/estado_grupo" ];';
+		<TR><TD BGCOLOR="#FFFFFF">'.$name.'</TD></TR></TABLE>>,
+		shape="ellipse", tooltip="'.$name.'", URL="index.php?sec=estado&sec2=operation/agentes/estado_grupo" ];';
 
 	return $node;
 }
@@ -154,8 +135,8 @@ function open_group ($id) {
 	
 	$group = 'subgraph cluster_' . $id . 
 		' { style=filled; color=darkolivegreen3; label=<<TABLE BORDER="0">
-		<TR><TD><IMG SRC="' . $img . '"/></TD><TD>' . $name . '</TD></TR>
-		</TABLE>>; tooltip="' . $name . '";
+		<TR><TD><IMG SRC="'.$img.'"/></TD><TD>'.$name.'</TD></TR>
+		</TABLE>>; tooltip="'.$name.'";
 		URL="index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id='
 		. $id . '";';
 
@@ -168,7 +149,7 @@ function close_group () {
 }
 
 // Opens a graph definition
-function open_graph() {
+function open_graph () {
 	global $config, $layout, $nooverlap, $pure, $zoom, $ranksep;
 	$overlap = 'compress';
 	$size_x = 8;
@@ -205,12 +186,12 @@ function open_graph() {
 }
 
 // Closes a graph definition
-function close_graph() {
+function close_graph () {
 	return '}';
 }
 
 // Returns the filter used to achieve the desired layout
-function set_filter() {	
+function set_filter () {	
 	global $layout;
 	
 	switch($layout) {
@@ -254,7 +235,7 @@ if ((give_acl($id_user, 0, "AR") != 1 ) && (dame_admin($id_user) !=1 )) {
 	exit;
 }
 
-echo '<h2>' . $lang_label['ag_title'].' &gt; '.lang_string("Network Map").'&nbsp';
+echo '<h2>'.lang_string ('ag_title').' &gt; '.lang_string("Network Map").'&nbsp';
 if ($pure == 1) {
 	echo '<a href="index.php?sec=estado&sec2=operation/agentes/networkmap&pure=0"><img src="images/monitor.png" title="' . lang_string('Normal screen') . '"></a>';
 } else {
@@ -303,7 +284,7 @@ if ($pure == "1") {
 //echo '  Display groups  <input type="checkbox" name="group" value="group" class="chk"/>';
 echo '<td>';
 echo '<input name="updbutton" type="submit" class="sub upd" value="'.
-	$lang_label["update"] . '">';
+	lang_string ("update").'">';
 echo '</td>';
 echo '</table>';
 echo '</form>';
@@ -328,6 +309,10 @@ if ($result !== false) {
 	}
 	echo '<img src="attachment/networkmap.png" usemap="#networkmap"/>';
 	include $config["attachment_store"]."/networkmap.map";
+} else {
+	echo '<h2 class="err">'.lang_string ('Map could not be generated').'</h2>';
+	echo $result;
+	return;
 }
 ?>
 

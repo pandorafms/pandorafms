@@ -59,6 +59,7 @@ echo "<h2>".$lang_label["alert_config"]." &gt; ";
 	if (isset($_GET["id_alerta"])){
 		echo $lang_label["mod_alert"];
 	}
+pandora_help("manage_alerts");
 echo "</h2>";
  ?>
  <form name="alerta" method="post" action="index.php?sec=galertas&sec2=godmode/alerts/modify_alert&id_alerta=<?php echo $id_alerta ?>">
@@ -80,15 +81,6 @@ echo "</h2>";
 <td class="datos2"><?php echo $lang_label["command"] ?></td>
 <td class="datos2">
 <input type="text" name="comando" size="50" value="<?php echo $comando ?>">
-<a href='#' class='tip2'>&nbsp;<span>
-<b>Macros:</b><br>
-_field1_<br>
-_field2_<br>
-_field3_<br>
-_agent_<br>
-_timestamp_<br>
-_data_<br>
-</span></a>
 </td></tr>
 <tr><td class="datos"><?php echo $lang_label["description"] ?></td>
 <td class="datos"><textarea name="descripcion" cols="50" rows="7">

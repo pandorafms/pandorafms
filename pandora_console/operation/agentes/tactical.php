@@ -51,10 +51,14 @@
     // Calculate global indicators
 
 	$total_checks = $data_checks + $monitor_checks;
-    $notinit_percentage = (($data_not_init + $monitor_not_init) / ($total_checks / 100));
-    $module_sanity = format_numeric (100 - $notinit_percentage);
-    $total_alerts = $data_alert + $monitor_alert;
-    $total_fired_alerts = $monitor_alert_total+$data_alert_total;
+	if($total_checks != 0){
+		$notinit_percentage = (($data_not_init + $monitor_not_init) / ($total_checks / 100));
+	} else {
+		$notinit_percentage = 0;
+	}
+	$module_sanity = format_numeric (100 - $notinit_percentage);
+	$total_alerts = $data_alert + $monitor_alert;
+	$total_fired_alerts = $monitor_alert_total+$data_alert_total;
 	if ($total_fired_alerts > 0)
     	$alert_level = format_numeric (100 - ($total_alerts / ($total_fired_alerts / 100)));
 	else

@@ -128,6 +128,7 @@ $lang_label["graph"]="Graph";
 $lang_label["raw_data"]="Raw Data";
 $lang_label["data"]="Data";
 $lang_label["agent_name"]="Agent name";
+$lang_label["agent_name_help"]="The Agent's name must be the same as the one defined at the Console";
 $lang_label["ip_address"]="IP Address";
 $lang_label["interval"]="Interval";
 $lang_label["group"]="Group";
@@ -600,6 +601,7 @@ $lang_label["wrote"]=" wrote";
 $lang_label["no_snmp_agent"]="There are no SNMP traps in database";
 $lang_label["no_snmp_alert"]="There are no SNMP alerts";
 $lang_label["no_agent_def"]="There are no defined agents";
+$lang_label["no_group_def"]="There are no defined groups";
 
 $lang_label["view_servers"]="Pandora servers";
 $lang_label["no_server"]="There are no servers configured into the database";
@@ -691,6 +693,7 @@ $lang_label["oid"]="OID";
 $lang_label["recon_server"]="Recon Server";
 $lang_label["snmp_console"]="SNMP Console";
 $lang_label["network_server"]="Network Server";
+$lang_label["network_server_help"]="You must select a Network Server for the Agent, so it can work properly with this kind of modules";
 $lang_label["data_server"]="Data Server";
 $lang_label["md5_checksum"]="MD5 Check";
 $lang_label["nc_groups"]="Component groups";
@@ -949,6 +952,15 @@ $lang_label["Oper"]="Oper";
 $lang_label["info"]="info";
 $lang_label["Operation"]="Operation";
 $lang_label["Source Agent/Alert"]="Source Agent/Alert";
+
+$lang_label["plugin_server"] = "Plugin Server";
+$lang_label["plugin_server_help"] = "You must select a Plugin Server for the Agent, so it can work properly with this kind of modules";
+$lang_label["wmi_server"] = "WMI Server";
+$lang_label["wmi_server_help"] = "You must select a WMI Server for the Agent, so it can work properly with this kind of modules";
+$lang_label["prediction_server"] = "Prediction Server";
+$lang_label["prediction_server_help"] = "You must select a Prediction Server for the Agent, so it can work properly with this kind of modules";
+
+$lang_label["no_plugins"] = "There are no plugins in the system";
 
 $lang_label["Stacked"]="Stacked";
 

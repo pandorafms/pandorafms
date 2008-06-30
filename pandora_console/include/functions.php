@@ -28,7 +28,7 @@ require ('functions_html.php');
  */
 function pandora_help ($help_id, $return = false) {
 	global $config;
-	$output = '&nbsp;<img src="images/help.png" onClick="pandora_help(\''.$help_id.'\')">';
+	$output = '&nbsp;<img class="img_help" src="images/help.png" onClick="pandora_help(\''.$help_id.'\')">';
 	if ($return)
 		return $return;
 	echo $output;

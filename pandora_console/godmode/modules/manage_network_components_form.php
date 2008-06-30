@@ -242,7 +242,7 @@ echo '<input type="text" name="module_interval" size="5" value="'.$module_interv
 <td class="datos2">
 <input type="text" name="tcp_port" size="5" value="<?php echo $tcp_port ?>">
 </td></tr>
-<tr><td class="datos"><?php echo $lang_label["snmp_oid"] ?></td>
+<tr><td class="datos"><?php echo $lang_label["snmp_oid"] ?><?php pandora_help("snmpoid"); ?></td>
 <td class="datos">
 <input type="text" name="snmp_oid" size="25" value="<?php echo $snmp_oid ?>">
 </td>

@@ -60,7 +60,7 @@ echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&
 sec2=godmode/agentes/configurar_agente">';
 echo '<table width="650" id="table-agent-configuration" cellpadding="4" cellspacing="4" class="databox_color">';
 echo "<tr>";
-echo '<td class="datos"><b>'.lang_string ("agent_name").'</b></td><td class="datos">';
+echo '<td class="datos"><b>'.lang_string ("agent_name").'</b><a href="#" class="tip">&nbsp;<span>' . $lang_label["agent_name_help"] . '</span></a></td><td class="datos">';
 print_input_text ('agente', $nombre_agente, '', 30, 100);
 
 if (isset ($id_agente) && $id_agente != "") {
@@ -120,7 +120,8 @@ print_select_from_sql ('SELECT id_os, name FROM tconfig_os ORDER BY name',
 
 // Network server
 echo '<tr><td class="datos2"><b>';
-echo lang_string("Network server");
+echo $lang_label["network_server"];
+echo '<a href="#" class="tip">&nbsp;<span>'.$lang_label["network_server_help"].'</span></a>';
 echo '</b></td><td class="datos2">';
 $none = '';
 $none_value = '';
@@ -133,7 +134,8 @@ print_select_from_sql ('SELECT id_server, name FROM tserver WHERE network_server
 
 // Plugin Server
 echo '<tr><td class="datos"><b>';
-echo lang_string("Plugin server");
+echo $lang_label["plugin_server"];
+echo '<a href="#" class="tip">&nbsp;<span>'.$lang_label["plugin_server_help"].'</span></a>';
 echo '</b></td><td class="datos">';
 $none_str = lang_string ('None');
 $none = '';
@@ -147,7 +149,8 @@ print_select_from_sql ('SELECT id_server, name FROM tserver WHERE plugin_server 
 
 // WMI Server
 echo '<tr><td class="datos2"><b>';
-echo lang_string("WMI server");
+echo $lang_label["wmi_server"];
+echo '<a href="#" class="tip">&nbsp;<span>'.$lang_label["wmi_server_help"].'</span></a>';
 echo '</b></td><td class="datos2">';
 $none = '';
 $none_value = '';
@@ -160,7 +163,8 @@ print_select_from_sql ('SELECT id_server, name FROM tserver WHERE wmi_server = 1
 
 // Prediction Server
 echo '<tr><td class="datos"><b>';
-echo lang_string("Prediction server");
+echo $lang_label["prediction_server"];
+echo '<a href="#" class="tip">&nbsp;<span>'.$lang_label["prediction_server_help"].'</span></a>';
 echo '</b></td><td class="datos">';
 $none = '';
 $none_value = '';
@@ -175,11 +179,12 @@ print_select_from_sql ('SELECT id_server, name FROM tserver WHERE prediction_ser
 echo '<tr><td class="datos2"><b>';
 echo lang_string ("description");
 echo '</b><td class="datos2">';
-print_input_text ('comentarios', $comentarios, '', 55, 255);
+print_input_text ('comentarios', $comentarios, '', 45, 255);
 
 // Learn mode / Normal mode 
 echo '<tr><td class="datos"><b>';
 echo lang_string ("module_definition");
+pandora_help("module_definition");
 echo '</b><td class="datos">';
 echo lang_string ("learning_mode");
 print_radio_button_extended ("modo", 1, '', $modo, false, '', 'style="margin-right: 40px;"');

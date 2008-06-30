@@ -726,3 +726,7 @@ div#main_pure {
 .report_table, .agent_reporting {
 	border: #CCC outset 3px;
 }
+
+.img_help {
+	cursor: help;
+}

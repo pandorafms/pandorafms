@@ -198,7 +198,7 @@ if (($create != "") OR ($view != "")){
 
 else {
 // If not edition or insert, then list available plugins
-    echo "<h2>".lang_string ("Plugins available in system")."</h2>";
+    echo "<h2>".$lang_label["no_plugins"]."</h2>";
     $sql1='SELECT * FROM tplugin ORDER BY name';
     $result=mysql_query($sql1);
     if (mysql_num_rows($result) > 0){

@@ -1,3 +1,8 @@
+2008-06-30  Sancho Lerena <slerena@gmail.com>
+
+	* util/plugin/udp_nmap_plugin.sh: Added UDP port check plugin
+	that uses NMAP to check if UDP ports are open.      
+
 2008-06-19  Sancho Lerena <slerena@gmail.com>
 
 	* pandora_plugin: Added startup script.

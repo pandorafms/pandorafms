@@ -534,7 +534,6 @@ $(document).ready (function () {
 				id_layout_data: id
 				},
 				function (data) {
-				console.log (data);
 					$("#form_layout_data_editor #text-label").attr ('value', data['label']);
 					$("#form_layout_data_editor #type").attr ('value', data['type']);
 					$("#form_layout_data_editor #type").change ();

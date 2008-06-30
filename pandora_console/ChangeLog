@@ -1,5 +1,9 @@
 2008-06-30  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/reporting/reporting_builder.php: Removed debug output.
+
+2008-06-30  Esteban Sanchez  <estebans@artica.es>
+
 	* godmode/groups/configure_group.php: Complete rewritten. Use Pandora
 	functions and added javascript support.
 

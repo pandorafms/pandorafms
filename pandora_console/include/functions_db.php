@@ -231,7 +231,7 @@ function get_agents_in_group ($id_group, $disabled = false) {
 	$sql = sprintf ('SELECT * FROM tagente 
 			WHERE id_grupo = %d AND disabled = 0',
 			$id_group);
-	return get_db_all_rows_sqlfree ($sql);
+	return get_db_all_rows_sql ($sql);
 }
 
 /**
@@ -257,7 +257,7 @@ function get_simple_alerts_in_agent ($id_agent) {
 			FROM talerta_agente_modulo, tagente_modulo
 			WHERE talerta_agente_modulo.id_agente_modulo = tagente_modulo.id_agente_modulo
 			AND tagente_modulo.id_agente = %d', $id_agent);
-	return get_db_all_rows_sqlfree ($sql);
+	return get_db_all_rows_sql ($sql);
 }
 
 /**
@@ -1256,7 +1256,7 @@ function get_db_sql ($sql, $field = 0) {
  *
  * @return A matrix with all the values returned from the SQL statement
  */
-function get_db_all_rows_sqlfree ($sql) {
+function get_db_all_rows_sql ($sql) {
 	global $config;
 	$retval = array ();
 	$result = mysql_query ($sql);
@@ -1280,7 +1280,7 @@ function get_db_all_rows_sqlfree ($sql) {
  * @return A matrix with all the values in the table
  */
 function get_db_all_rows_in_table ($table) {
-	return get_db_all_rows_sqlfree ('SELECT * FROM '.$table);
+	return get_db_all_rows_sql ('SELECT * FROM '.$table);
 }
 
 /**
@@ -1301,7 +1301,7 @@ function get_db_all_rows_field_filter ($table, $field, $condition) {
 		$sql = sprintf ('SELECT * FROM %s WHERE %s = "%s"', $table, $field, $condition);
 	}
 	
-	return get_db_all_rows_sqlfree ($sql);
+	return get_db_all_rows_sql ($sql);
 }
 
 /**
@@ -1314,7 +1314,7 @@ function get_db_all_rows_field_filter ($table, $field, $condition) {
  * @return A matrix with all the values in the table that matches the condition in the field
  */
 function get_db_all_fields_in_table ($table, $field) {
-	return get_db_all_rows_sqlfree ('SELECT '.$field.' FROM '. $table);
+	return get_db_all_rows_sql ('SELECT '.$field.' FROM '. $table);
 }
 
 /** 
@@ -1555,7 +1555,7 @@ function return_moduledata_sum_value ($id_agent_module, $period, $date = 0) {
 			AND utimestamp > %d AND utimestamp <= %d 
 			ORDER BY utimestamp ASC',
 			$id_agent_module, $datelimit, $date);
-	$datas = get_db_all_rows_sqlfree ($sql);
+	$datas = get_db_all_rows_sql ($sql);
 	
 	/* Get also the previous data before the selected interval. */
 	$previous_data = get_previous_data ($id_agent_module, $datelimit);

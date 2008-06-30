@@ -15,13 +15,17 @@
 // Load global vars
 require("include/config.php");
 
+$pandora_name = 'Pandora FMS';
+
 ///////////////////////////////////////////////////////////////////////////////
 // DOT related functions
 ///////////////////////////////////////////////////////////////////////////////
 
 // Generate a dot graph definition for graphviz
-function generate_dot( $simple = 0) {
-    global $config;
+function generate_dot ($simple = 0) {
+	global $config;
+	global $pandora_name;
+	
 	$group_id = -1;
 	$parents = array();
 	$orphans = array();
@@ -63,7 +67,7 @@ function generate_dot( $simple = 0) {
 
 	// Create a central node if orphan nodes exist
 	if (count($orphans) > 0) {
-		$graph .= create_pandora_node ('Pandora FMS');	
+		$graph .= create_pandora_node ($pandora_name);
 	}
 	
 	// Define edges
@@ -83,85 +87,83 @@ function generate_dot( $simple = 0) {
 }
 
 // Returns an edge definition
-function create_edge($head, $tail) {
-
+function create_edge ($head, $tail) {
 	$edge = $head . ' -- ' . $tail . '[color="#BDBDBD", headclip=false, tailclip=false];';
 	return $edge;
 }
 
 // Returns a node definition
-function create_node($agent, $simple = 0) {
-	$bad_modules = mysql_query('SELECT estado FROM tagente_estado AS e,
-	                           tagente_modulo AS m
-	                           WHERE m.id_agente=' . $agent['id_agente'] . 
-	                           ' AND m.id_tipo_modulo in (2, 6, 9, 18, 21, 100)
-	                           AND e.id_agente_modulo = m.id_agente_modulo
-				   AND m.disabled = 0 
-	                           AND e.estado = 1');
-
+function create_node ($agent, $simple = 0) {
+	$sql = sprintf ('SELECT COUNT(*) FROM tagente_estado,
+			tagente_modulo
+			WHERE tagente_modulo.id_agente = %d
+			AND tagente_modulo.id_tipo_modulo in (2, 6, 9, 18, 21, 100)
+			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+			AND tagente_modulo.disabled = 0 
+			AND tagente_estado.estado = 1', $agent['id_agente']);
+	$bad_modules = get_db_sql ($sql);
+	
 	// Set node status
-	if (mysql_num_rows($bad_modules) > 0) {
+	if ($bad_modules) {
 		$status_color = '#FF1D1D';
-	}
-	else {
+	} else {
 		$status_color = '#8DFF1D';
 	}
 
-    // Short name
-	$name = strtolower($agent["nombre"]);
+	// Short name
+	$name = strtolower ($agent["nombre"]);
 	if (strlen($name) > 12)
 		$name = substr($name,0,12);
 
-    if ($simple == 0){
+	if ($simple == 0){
 		// Set node icon
 		if (file_exists('images/networkmap/' . $agent['id_os'] . '.png')) { 
 			$img_node = 'images/networkmap/' . $agent['id_os'] . '.png';
-		}
-		else {
+		} else {
 			$img_node = 'images/networkmap/0.png';
 		}
-        
+
 		$node = $agent['id_agente'] . ' [ color="' . $status_color . '", fontsize=9, style="filled", fixedsize=true, width=0.40, height=0.40, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0">
-		  <TR><TD><IMG SRC="' . $img_node . '"/></TD></TR>
-		  <TR><TD color="green">' . $name . '</TD></TR></TABLE>>,
-		  shape="ellipse", tooltip="' . $agent["nombre"] . ' (' . $agent['direccion'] . ')", URL="'
-		  . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='
-		  . $agent['id_agente'] . '"];';
-    } else {
-		$node = $agent['id_agente'] . ' [ color="' . $status_color . '", fontsize=7, style="filled", fixedsize=true, width=0.20, height=0.20, label="", URL="'
-		  . 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='
-		  . $agent['id_agente'] . '"];';
-    }
+		 <TR><TD><IMG SRC="' . $img_node . '"/></TD></TR>
+		 <TR><TD color="green">' . $name . '</TD></TR></TABLE>>,
+		 shape="ellipse", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'",
+		 tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='
+		 . $agent['id_agente'].'"];';
+	} else {
+		$node = $agent['id_agente'] . ' [ color="' . $status_color . '", fontsize=7, style="filled", fixedsize=true, width=0.20, height=0.20, label="", 
+		tooltip="ajax.php?page=operation/agentes/ver_agente&
+			get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
+	}
 	return $node;
 }
 
 // Returns the definition of the central module
-function create_pandora_node($name) {
+function create_pandora_node ($name) {
 	$node = '0 [ color="#364D1F", fontsize=10, style="filled", fixedsize=true, width=0.8, height=0.6, label=<<TABLE BORDER="0">
-		  <TR><TD><IMG SRC="images/networkmap/pandora_node.png"/></TD></TR>
-		  <TR><TD BGCOLOR="white">' . $name . '</TD></TR></TABLE>>,
-		  shape="ellipse", tooltip="' . $name . '", URL="index.php?sec=estado&sec2=operation/agentes/estado_grupo" ];';
+		<TR><TD><IMG SRC="images/networkmap/pandora_node.png"/></TD></TR>
+		<TR><TD BGCOLOR="white">' . $name . '</TD></TR></TABLE>>,
+		shape="ellipse", tooltip="' . $name . '", URL="index.php?sec=estado&sec2=operation/agentes/estado_grupo" ];';
 
 	return $node;
 }
 
 // Opens a group definition
-function open_group($id) {
+function open_group ($id) {
 	$img = 'images/' . dame_grupo_icono($id) . '.png';
 	$name = dame_nombre_grupo($id);
 	
 	$group = 'subgraph cluster_' . $id . 
-	         ' { style=filled; color=darkolivegreen3; label=<<TABLE BORDER="0">
-		     <TR><TD><IMG SRC="' . $img . '"/></TD><TD>' . $name . '</TD></TR>
-		     </TABLE>>; tooltip="' . $name . '";
-		     URL="index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id='
-			 . $id . '";';
+		' { style=filled; color=darkolivegreen3; label=<<TABLE BORDER="0">
+		<TR><TD><IMG SRC="' . $img . '"/></TD><TD>' . $name . '</TD></TR>
+		</TABLE>>; tooltip="' . $name . '";
+		URL="index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id='
+		. $id . '";';
 
 	return $group;
 }
 
 // Closes a group definition
-function close_group() {
+function close_group () {
 	return '}';
 }
 
@@ -187,48 +189,47 @@ function open_graph() {
 	}
 	$size = $size_x . ',' . $size_y;
 
-    // BEWARE: graphwiz DONT use single ('), you need double (")
+	// BEWARE: graphwiz DONT use single ('), you need double (")
 	$head = "graph networkmap { 
-                labeljust=l;  
-                margin=0; 
-                ranksep=\"$ranksep\";
-                outputorder=edgesfirst;
-                overlap=\"$overlap\";
-                ratio=fill;
-                root=0;
-                size=\"$size\";
-             ";
+		labeljust=l;  
+		margin=0; 
+		ranksep=\"$ranksep\";
+		outputorder=edgesfirst;
+		overlap=\"$overlap\";
+		ratio=fill;
+		root=0;
+		size=\"$size\";
+		";
 	
 	return $head;
-}	
+}
 
 // Closes a graph definition
 function close_graph() {
 	return '}';
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// General purpose functions
-///////////////////////////////////////////////////////////////////////////////
-
 // Returns the filter used to achieve the desired layout
 function set_filter() {	
 	global $layout;
 	
 	switch($layout) {
-		case 'flat':		return 'dot';		
-		case 'radial':		return 'twopi';
-		case 'circular':	return 'circo';
-		case 'spring1':		return 'neato';
-		case 'spring2':		return 'fdp';
-		default:			return 'twopi';
+	case 'flat':
+		return 'dot';
+	case 'radial':
+		return 'twopi';
+	case 'circular':
+		return 'circo';
+	case 'spring1':
+		return 'neato';
+	case 'spring2':
+		return 'fdp';
+	default:
+		return 'twopi';
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// Main code
-///////////////////////////////////////////////////////////////////////////////
-
+/* Main code */
 // Load variables
 $layout = (string) get_parameter ('layout');
 $nooverlap = (boolean) get_parameter ('nooverlap');
@@ -247,29 +248,26 @@ if (comprueba_login() != 0) {
 	exit;
 }
 
-if ((give_acl($id_user, 0, "AR") != 1 ) AND (dame_admin($id_user) !=1 )) {
+if ((give_acl($id_user, 0, "AR") != 1 ) && (dame_admin($id_user) !=1 )) {
 	audit_db($id_user, $REMOTE_ADDR, "ACL Violation", "Trying to access node graph builder");
 	include("general/noaccess.php");
 	exit;
 }
 
-echo '<h2>' . $lang_label['ag_title'] . ' &gt; ' . lang_string("Network Map") . '&nbsp';
+echo '<h2>' . $lang_label['ag_title'].' &gt; '.lang_string("Network Map").'&nbsp';
 if ($pure == 1) {
-    echo '<a href="index.php?sec=estado&sec2=operation/agentes/networkmap&pure=0"><img src="images/monitor.png" title="' . lang_string('Normal screen') . '"></a>';
-}
-else {
-    echo '<a href="index.php?sec=estado&sec2=operation/agentes/networkmap&pure=1"><img src="images/monitor.png" title="' . lang_string('Full screen') . '"></a>';
+	echo '<a href="index.php?sec=estado&sec2=operation/agentes/networkmap&pure=0"><img src="images/monitor.png" title="' . lang_string('Normal screen') . '"></a>';
+} else {
+	echo '<a href="index.php?sec=estado&sec2=operation/agentes/networkmap&pure=1"><img src="images/monitor.png" title="' . lang_string('Full screen') . '"></a>';
 }
 echo '</h2>';
 
 // Layout selection
-$layout_array = array (
-	'radial' => 'radial',
-	'circular' => 'circular',
-	'spring1' => 'spring 1',
-	'spring2' => 'spring 2',
-	'flat' => 'flat',
-);
+$layout_array = array ('radial' => 'radial',
+			'circular' => 'circular',
+			'spring1' => 'spring 1',
+			'spring2' => 'spring 2',
+			'flat' => 'flat');
 
 echo '<form name="input" action="index.php?sec=estado&sec2=operation/agentes/networkmap&pure=' . $pure . '" method="post">';
 echo '<table cellpadding="4" cellspacing="4" class="databox">';
@@ -294,7 +292,7 @@ if ($pure == "1") {
 		'1.6' => 'x3',
 		'2' => 'x4',
 		'2.5' => 'x5',
-        '5' => 'x10',
+		'5' => 'x10',
 	);
 
 	echo '<td valign="top">' . lang_string('Zoom') . ' &nbsp;';
@@ -305,7 +303,7 @@ if ($pure == "1") {
 //echo '  Display groups  <input type="checkbox" name="group" value="group" class="chk"/>';
 echo '<td>';
 echo '<input name="updbutton" type="submit" class="sub upd" value="'.
-     $lang_label["update"] . '">';
+	$lang_label["update"] . '">';
 echo '</td>';
 echo '</table>';
 echo '</form>';
@@ -316,18 +314,35 @@ $filter = set_filter();
 // Generate dot file
 $graph = generate_dot($simple);
 
-//DEBUG
-//$fh = fopen("networkmap.dot", 'w') or die("can't open file");
-//fwrite($fh, $graph);
-//fclose($fh);
-
 // Generate image and map
 $cmd = "echo " . escapeshellarg($graph) . 
-       " | $filter -Tcmapx -o".$config["attachment_store"]."/networkmap.map -Tpng -o".$config["attachment_store"]."/networkmap.png";
-       
-if (system($cmd) !== false) {
+	" | $filter -Tcmapx -o".$config["attachment_store"]."/networkmap.map -Tpng -o".$config["attachment_store"]."/networkmap.png";
+
+$result = system ($cmd);
+
+if ($result !== false) {
+	if (! file_exists ($config["attachment_store"]."/networkmap.map")) {
+		echo '<h2 class="err">'.lang_string ('Map could not be generated').'</h2>';
+		echo $result;
+		return;
+	}
 	echo '<img src="attachment/networkmap.png" usemap="#networkmap"/>';
 	include $config["attachment_store"]."/networkmap.map";
 }
-
 ?>
+
+<link rel="stylesheet" href="include/styles/cluetip.css" type="text/css" />
+<script type="text/javascript" src="include/javascript/jquery.js"></script>
+<script type="text/javascript" src="include/javascript/jquery.js"></script>
+<script type="text/javascript" src="include/javascript/jquery.cluetip.js"></script>
+
+<script language="javascript" type="text/javascript">
+$(document).ready (function () {
+	$("area[title!='<?=$pandora_name?>']").cluetip ({
+		arrows: true,
+		attribute: 'title',
+		cluetipClass: 'default',
+		fx: { open: 'fadeIn', openSpeed: 'slow' },
+	});
+});
+</script>

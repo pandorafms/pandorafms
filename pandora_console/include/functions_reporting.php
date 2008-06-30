@@ -28,7 +28,7 @@ function return_module_SLA ($id_agent_module, $period, $min_value, $max_value, $
 			AND utimestamp > %d AND utimestamp <= %d 
 			ORDER BY utimestamp ASC',
 			$id_agent, $id_agent_module, $datelimit, $date);
-	$datas = get_db_all_rows_sqlfree ($sql);
+	$datas = get_db_all_rows_sql ($sql);
 	$last_data = "";
 	$total_badtime = 0;
 	$interval_begin = 0;
@@ -352,7 +352,7 @@ function monitor_health_reporting ($id_group, $period = 0, $date = 0, $return = 
 			AND tagente.id_agente = tagente_modulo.id_agente
 			AND ttipo_modulo.nombre like "%%_proc"
 			AND tagente.id_grupo = %d', $id_group);
-	$monitors = get_db_all_rows_sqlfree ($sql);
+	$monitors = get_db_all_rows_sql ($sql);
 	if (sizeof ($monitors) == 0)
 		return;
 

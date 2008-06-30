@@ -22,6 +22,7 @@ require("include/config.php");
 if (defined ('AJAX')) {
 	$get_agent_json = (bool) get_parameter ('get_agent_json');
 	$get_agent_modules_json = (bool) get_parameter ('get_agent_modules_json');
+	$get_agent_status_tooltip = (bool) get_parameter ("get_agent_status_tooltip");
 
 	if ($get_agent_json) {
 		$id_agent = (int) get_parameter ('id_agent');
@@ -38,6 +39,52 @@ if (defined ('AJAX')) {
 		echo json_encode ($agent_modules);
 		exit ();
 	}
+	
+	if ($get_agent_status_tooltip) {
+		$id_agent = (int) get_parameter ('id_agent');
+		$agent = get_db_row ('tagente', 'id_agente', $id_agent);
+		echo '<h3>'.$agent['nombre'].'</h3>';
+		echo '<strong>'.lang_string ('IP').':</strong> '.$agent['direccion'].'<br />';
+		echo '<strong>'.lang_string ('Last contact').':</strong> '.$agent['ultimo_contacto'].'<br />';
+		echo '<strong>'.lang_string ('Last remote contact').':</strong> '.$agent['ultimo_contacto_remoto'].'<br />';
+		echo '<strong>'.lang_string ('Group').':</strong> ';
+		echo '<img src="images/groups_small/'.dame_grupo_icono ($agent['id_grupo']).'.png" /> ';
+		echo dame_nombre_grupo ($agent['id_grupo']).'<br />';
+		
+		$sql = sprintf ('SELECT tagente_modulo.descripcion, tagente_modulo.nombre
+				FROM tagente_estado, tagente_modulo
+				WHERE tagente_modulo.id_agente = %d
+				AND tagente_modulo.id_tipo_modulo in (2, 6, 9, 18, 21, 100)
+				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+				AND tagente_modulo.disabled = 0 
+				AND tagente_estado.estado = 1', $id_agent);
+		$bad_modules = get_db_all_rows_sql ($sql);
+		$sql = sprintf ('SELECT COUNT(*)
+				FROM tagente_modulo
+				WHERE id_agente = %d
+				AND id_tipo_modulo in (2, 6, 9, 18, 21, 100)', $id_agent);
+		$total_modules = get_db_sql ($sql);
+		echo '<strong>'.lang_string ('Monitors down').':</strong> '.sizeof ($bad_modules).' / '.$total_modules;
+		if (sizeof ($bad_modules)) {
+			echo '<ul>';
+			foreach ($bad_modules as $module) {
+				echo '<li>';
+				if ($module['descripcion'] != '')
+					$name = $module['descripcion'];
+				else
+					$name = $module['nombre'];
+				echo substr ($name, 0, 25);
+				if (strlen ($name) > 25)
+					echo '(...)';
+				echo '</li>';
+			}
+			echo '</ul>';
+		}
+		echo '<br />';
+		
+		exit ();
+	}
+
 	exit ();
 }
 

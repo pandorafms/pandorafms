@@ -435,7 +435,7 @@ function grafico_modulo_sparse ($id_agente_modulo, $periodo, $show_event,
 	if ($show_event){
 		// If we want to show events in graphs
 		$sql = sprintf ('SELECT utimestamp FROM tevento WHERE id_agente = %d AND utimestamp > %d', $id_agente, $fechatope);
-		$eventos = get_db_all_rows_sqlfree ($sql);
+		$eventos = get_db_all_rows_sql ($sql);
 		foreach ($eventos as $row) {
 			$utimestamp = $row[0];
 			for ($i = 0; $i <= $resolution; $i++) {

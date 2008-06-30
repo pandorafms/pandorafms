@@ -1,3 +1,37 @@
+2008-06-30  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_db.php: Renamed get_db_all_rows_sqlfree() to
+	get_db_all_rows_sql(). Replaced all occurrences of old function name.
+
+	* general/logon_ok.php, godmode/reporting/reporting_builder.php,
+	operation/reporting/reporting_viewer.php, reporting/fgraph.php,
+	include/functions_reporting.php: Replaced all occurrences
+	ofget_db_all_rows_sqlfree() with get_db_all_rows_sql().
+
+	* include/config_process.php: Do not add a slash to attachment_store
+	config variable.
+
+	* include/functions.php: Style correction.
+
+	* operation/agentes/estado_agente.php: Reduced one indentation level
+	by using comprueba_login() propperly.
+
+	* include/javascript/jquery.cluetip.js: Added to repository. jQuery
+	plugin to add cute tips support.
+
+	* images/darrowdown.gif, images/darrowright.gif, images/darrowup.gif,
+	images/darrowleft.gif, images/wait.gif, include/styles/cluetip.css:
+	Added to repository. Cute tips styling.
+
+	* operation/agentes/networkmap.php: Added support to pretty tips to
+	each node of the network map. Use a variable to define the name of
+	Pandora FMS node (maybe it would be a nice idea to let the user
+	configure it). Added an extra check for file existance when generating
+	the graphic. Use pandora functions in some cases. Style correction.
+
+	* operation/agentes/ver_agente.php: Added AJAX support to get the
+	current status of an agent to suit in a tooltip.
+
 2008-06-27  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions_db.php: Renamed variable from spanish.

@@ -551,7 +551,7 @@ function human_time_description ($period) {
  * 
  * @return The current time minus the seconds given.
  */
-function human_date_relative ( $seconds ) {
+function human_date_relative ($seconds) {
 	$ahora=date("Y/m/d H:i:s");
 	$ahora_s = date("U");
 	$ayer = date ("Y/m/d H:i:s", $ahora_s - $seconds);

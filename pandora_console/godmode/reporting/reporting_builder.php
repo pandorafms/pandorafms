@@ -397,7 +397,7 @@ if ($edit_sla_report_content) {
 		$modules = array ();
 		if ($id_agent) {
 			$sql = sprintf ('SELECT * FROM tagente_modulo WHERE id_agente = %d ORDER BY nombre', $id_agent);
-			$modules = get_db_all_rows_sqlfree ($sql);
+			$modules = get_db_all_rows_sql ($sql);
 		}
 		$table->data[3][1] = print_select ($modules, 'id_module', 0, '', '--', 0, true);
 		
@@ -437,7 +437,7 @@ if ($edit_sla_report_content) {
 		}
 		
 		$sql = sprintf ('SELECT * FROM treport_content WHERE id_report = %d ORDER BY `order`', $id_report);
-		$report_contents = get_db_all_rows_sqlfree ($sql);
+		$report_contents = get_db_all_rows_sql ($sql);
 		if (sizeof ($report_contents)) {
 			$first_id = $report_contents[0]['id_rc'];
 			$last_id = $report_contents[sizeof ($report_contents) - 1]['id_rc'];

@@ -175,7 +175,7 @@ $table->head[4] = lang_string ('comments');
 
 $sql = sprintf ('SELECT * FROM tsesion WHERE (TO_DAYS(fecha) > TO_DAYS(NOW()) - 7) 
 	AND ID_usuario = "%s" ORDER BY fecha DESC LIMIT 5', $nick);
-$sessions = get_db_all_rows_sqlfree ($sql);
+$sessions = get_db_all_rows_sql ($sql);
 foreach ($sessions as $session) {
 	$data = array ();
 	

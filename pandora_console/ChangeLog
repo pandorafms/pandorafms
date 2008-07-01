@@ -1,3 +1,16 @@
+2008-07-01  Sancho Lerena <slerena@gmail.com>
+
+	* include/config_process.php: Default back to 1 week.
+
+	* estado_monitores.php: Removed SLA check from there. Too slow for a 
+	main view.
+
+	* operation/agentes/ver_agente.php: Modified tabs to have SLA view.
+
+	* operation/agentes/sla_view.php: New SLA specific view, show all
+	automatic SLA coming from monitor data and add's individual items
+	from a SLA report defined for any module of this agent.
+
 2008-07-01  Jorge Gonzalez  <jorgegonz@artica>
 
 	* images/help.png: new help image.

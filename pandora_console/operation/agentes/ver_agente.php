@@ -152,10 +152,7 @@ if (comprueba_login() == 0) {
 				echo "</li>";
 				echo "</ul></div>";
 			
-				if (isset($_GET["tab"]))
-					$tab = $_GET["tab"];
-				else
-					$tab = "main";
+				$tab = get_parameter ("tab", "main");
 				echo "<div id='menu_tab'><ul class='mn'>";
 				if (give_acl($id_usuario,$id_grupo, "AW") == 1){
                     if ($tab == "manage")
@@ -190,9 +187,9 @@ if (comprueba_login() == 0) {
 				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=alert'><img src='images/bell.png' class='top' border=0> ".$lang_label["Alerts"]." </a>";
 				echo "</li>";
 
-				// Go to group view
+				// Go to SLA view
 				echo "<li class='nomn'>";
-				echo "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_grupo&refr=60'><img src='images/images.png' class='top' border=0> ".$lang_label["group_view_tab"]." </a>";
+				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sla&id_agente=$id_agente'><img src='images/images.png' class='top' border=0> ".lang_string("SLA")." </a>";
 				echo "</li>";
 				
 				echo "</ul>";
@@ -200,11 +197,12 @@ if (comprueba_login() == 0) {
                 echo "</div>";
 				echo "<div style='height: 25px'> </div>";
 				switch ($tab) {
-				/* http://pandora.localhost/index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=600 */
+				case "sla":
+					require "sla_view.php";
+					break;
 				case "manage":	
                     require "estado_generalagente.php";
 					break;
-				
 				case "main":	
                     require "estado_generalagente.php";
 					require "estado_monitores.php";

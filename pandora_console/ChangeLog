@@ -1,3 +1,7 @@
+2008-07-01  Jorge Gonzalez  <jorgegonz@artica>
+
+	* images/help.png: new help image.
+
 2008-07-01  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* godmode/agentes/agent_manager.php: changed $lang_label () to function

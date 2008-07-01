@@ -8,7 +8,7 @@ To create a map, you must first fill the form providing:
 	<li>A size (width/height)</li>
 </ul>
 One you have filled it, click on "Update" so the map will be loaded.
-<br><br>
+<br /><br />
 To add items to the map, go to the form below the background image, and fill it, providing, for each element:
 <ul>
 	<li>A label and a color for it</li>
@@ -21,6 +21,6 @@ To add items to the map, go to the form below the background image, and fill it,
 	<li>A linked map, in case you want to link the item with another map</li>
 </ul>
 To edit the properties of an already created item, just drag the item to the form "MAP ELEMENT EDITOR" and drop it there, the form will load the element's properties.
-<br><br>
+<br /><br />
 To delete an element of the map, just drag and drop it into the recycle bin icon. Then click on "Delete".
 

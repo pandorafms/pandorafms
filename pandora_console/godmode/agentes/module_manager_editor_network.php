@@ -98,6 +98,7 @@ echo "<input type='hidden' name='form_id_modulo' value='2'>";
 // Network component usage
 echo "<tr><td class='datos3'>";
 echo lang_string ("using_network_component");
+pandora_help ("network_component");
 echo "</td><td class='datos3' colspan=2>";
 
 if ($update_module_id != NULL){
@@ -143,7 +144,7 @@ echo '</tr>';
 // module type / max timeout
 echo '</tr><tr>';
 echo '<td class="datos2">'.lang_string ("module_type");
-pandora_help("module_type");
+pandora_help ("module_type");
 echo '</td>';
 
 echo '<td class="datos2">';
@@ -185,7 +186,9 @@ echo '</select>';
 
 // Snmp walk
 echo '<tr>';
-echo '<td class="datos2">'.lang_string ("snmp_walk")."</td>";
+echo '<td class="datos2">'.lang_string ("snmp_walk");
+pandora_help ("snmpwalk");
+echo '</td>';
 echo '<td class="datos2" colspan=2>';
 echo '<select name="form_combo_snmp_oid">';
 // FILL OID Combobox
@@ -205,7 +208,7 @@ echo '<input type="submit" class="sub next" name="oid" value="SNMP Walk">';
 // Snmp Oid / community
 echo '<tr>';
 echo '<td class="datos">'.lang_string ("snmp_oid");
-pandora_help("snmpoid");
+pandora_help ("snmpoid");
 echo '</td>';
 echo '<td class="datos"><input type="text" name="form_snmp_oid" size="25" value="'.$form_snmp_oid.'"></td>';
 echo '<td class="datos">'.lang_string ("snmp_community")."</td>";
@@ -223,7 +226,7 @@ echo '</tr>';
 // Post process / Export server
 echo '<tr>';
 echo '<td class="datos">'.lang_string ("post_process");
-pandora_help("postprocess");
+pandora_help ("postprocess");
 echo '</td>';
 echo '<td class="datos"><input type="text" name="form_post_process" size="5" value="'.$form_post_process.'"></td>';
 echo '<td class="datos">'.lang_string ("export_server")."</td>";

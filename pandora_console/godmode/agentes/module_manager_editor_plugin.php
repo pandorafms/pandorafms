@@ -121,7 +121,9 @@ echo '</select>';
 echo '</tr>';
 
 echo '</tr><tr>';
-echo '<td class="datos2">'.lang_string ("Plugin parameters")."</td>";
+echo '<td class="datos2">'.lang_string ("Plugin parameters");
+pandora_help ("plugin_parameters");
+echo '</td>';
 echo '<td class="datos2"><input type="text" name="form_plugin_parameter" size="30" value="'.$form_plugin_parameter.'"></td>';
 
 echo '<td class="datos2">'.lang_string ("Port")."</td>";
@@ -138,7 +140,7 @@ echo '</tr>';
 // module type / max timeout
 echo '</tr><tr>';
 echo '<td class="datos2">'.lang_string ("module_type");
-pandora_help("module_type");
+pandora_help ("module_type");
 echo '</td>';
 echo '<td class="datos2">';
 
@@ -186,7 +188,7 @@ echo '</tr>';
 // Post process / Export server
 echo '<tr>';
 echo '<td class="datos">'.lang_string ("post_process");
-pandora_help("postprocess");
+pandora_help ("postprocess");
 echo '</td>';
 echo '<td class="datos"><input type="text" name="form_post_process" size="5" value="'.$form_post_process.'"></td>';
 echo '<td class="datos">'.lang_string ("export_server")."</td>";

@@ -60,20 +60,21 @@ echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&
 sec2=godmode/agentes/configurar_agente">';
 echo '<table width="650" id="table-agent-configuration" cellpadding="4" cellspacing="4" class="databox_color">';
 echo "<tr>";
-echo '<td class="datos"><b>'.lang_string ("agent_name").'</b><a href="#" class="tip">&nbsp;<span>' . $lang_label["agent_name_help"] . '</span></a></td><td class="datos">';
+echo '<td class="datos"><b>'.lang_string ("agent_name").'</b><a href="#" class="tip">&nbsp;<span>'.lang_string ("agent_name_help").'</span></a></td><td class="datos">';
 print_input_text ('agente', $nombre_agente, '', 30, 100);
 
 if (isset ($id_agente) && $id_agente != "") {
 	echo "
 	<a href='index.php?sec=estado&
 	sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'>
-	<img src='images/lupa.png' border='0' align='middle' title='".lang_string("agent_detail")."'></a>";
+	<img src='images/lupa.png' border='0' align='middle' title='".lang_string ("agent_detail")."'></a>";
 } 
 // Remote configuration available
 if (file_exists ($config["remote_config"] . "/" . $agent_md5 . ".md5")) {
 	echo "
 	<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=".$id_agente."&disk_conf=" . $agent_md5 . "'>
-	<img src='images/application_edit.png' border='0' align='middle' title='".lang_string("Edit remote config")."'></a>";	
+	<img src='images/application_edit.png' border='0' align='middle' title='".lang_string ("This agent can be remotely configured")."'></a>";	
+	echo '<a href="#" class="tip">&nbsp;<span>'.lang_string ("You can remotely edit this agent configuration").'</span></a>';
 }
 
 echo '<tr><td class="datos2">';
@@ -109,20 +110,19 @@ print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo ORDER BY nombre',
 			'grupo', $grupo, '', '', '');
 
 echo "<tr><td class='datos2'>";
-echo "<b>".lang_string("interval")."</b></td>";
+echo "<b>".lang_string ("interval")."</b></td>";
 echo '<td class="datos2">';
 
 echo '<input type="text" name="intervalo" size="15" value="'.$intervalo.'"></td>';
-echo '<tr><td class="datos"><b>'.lang_string("os").'</b></td>';
+echo '<tr><td class="datos"><b>'.lang_string ("os").'</b></td>';
 echo '<td class="datos">';
 print_select_from_sql ('SELECT id_os, name FROM tconfig_os ORDER BY name',
 			'id_os', $id_os, '', '', '');
 
 // Network server
-echo '<tr><td class="datos2"><b>';
-echo $lang_label["network_server"];
-echo '<a href="#" class="tip">&nbsp;<span>'.$lang_label["network_server_help"].'</span></a>';
-echo '</b></td><td class="datos2">';
+echo '<tr><td class="datos2"><b>'.lang_string ("network_server").'</b>';
+echo '<a href="#" class="tip">&nbsp;<span>'.lang_string ("network_server_help").'</span></a>';
+echo '</td><td class="datos2">';
 $none = '';
 $none_value = '';
 if ($id_network_server == 0) {
@@ -133,10 +133,9 @@ print_select_from_sql ('SELECT id_server, name FROM tserver WHERE network_server
 			'network_server', $id_network_server, '', $none, $none_value);
 
 // Plugin Server
-echo '<tr><td class="datos"><b>';
-echo $lang_label["plugin_server"];
-echo '<a href="#" class="tip">&nbsp;<span>'.$lang_label["plugin_server_help"].'</span></a>';
-echo '</b></td><td class="datos">';
+echo '<tr><td class="datos"><b>'.lang_string ("plugin_server").'</b>';
+echo '<a href="#" class="tip">&nbsp;<span>'.lang_string ("plugin_server_help").'</span></a>';
+echo '</td><td class="datos">';
 $none_str = lang_string ('None');
 $none = '';
 $none_value = '';
@@ -148,10 +147,9 @@ print_select_from_sql ('SELECT id_server, name FROM tserver WHERE plugin_server 
 			'plugin_server', $id_plugin_server, '', $none, $none_value);
 
 // WMI Server
-echo '<tr><td class="datos2"><b>';
-echo $lang_label["wmi_server"];
-echo '<a href="#" class="tip">&nbsp;<span>'.$lang_label["wmi_server_help"].'</span></a>';
-echo '</b></td><td class="datos2">';
+echo '<tr><td class="datos2"><b>'.lang_string ("wmi_server").'</b>';
+echo '<a href="#" class="tip">&nbsp;<span>'.lang_string ("wmi_server_help").'</span></a>';
+echo '</td><td class="datos2">';
 $none = '';
 $none_value = '';
 if ($id_plugin_server == 0) {
@@ -162,10 +160,9 @@ print_select_from_sql ('SELECT id_server, name FROM tserver WHERE wmi_server = 1
 			'wmi_server', $id_wmi_server, '', $none, $none_value);
 
 // Prediction Server
-echo '<tr><td class="datos"><b>';
-echo $lang_label["prediction_server"];
-echo '<a href="#" class="tip">&nbsp;<span>'.$lang_label["prediction_server_help"].'</span></a>';
-echo '</b></td><td class="datos">';
+echo '<tr><td class="datos"><b>'.lang_string ("prediction_server").'</b>';
+echo '<a href="#" class="tip">&nbsp;<span>'.lang_string ("prediction_server_help").'</span></a>';
+echo '</td><td class="datos">';
 $none = '';
 $none_value = '';
 if ($id_prediction_server == 0) {
@@ -192,7 +189,7 @@ echo lang_string ("normal_mode");
 print_radio_button_extended ("modo", 0, '', $modo, false, '', 'style="margin-right: 40px;"');
 
 // Status (Disabled / Enabled)
-echo '<tr><td class="datos2"><b>'.lang_string("status").'</b>';
+echo '<tr><td class="datos2"><b>'.lang_string ("status").'</b>';
 echo '<td class="datos2">';
 echo lang_string ("disabled");
 print_radio_button_extended ("disabled", 1, '', $disabled, false, '', 'style="margin-right: 40px;"');
@@ -200,7 +197,7 @@ echo lang_string ("active");
 print_radio_button_extended ("disabled", 0, '', $disabled, false, '', 'style="margin-right: 40px;"');
 
 // Remote configuration
-echo '<tr><td class="datos"><b>'.lang_string("Remote configuration").'</b>';
+echo '<tr><td class="datos"><b>'.lang_string ("Remote configuration").'</b>';
 echo '<td class="datos">';
 $filename = $config["remote_config"] . "/" . $agent_md5 . ".md5";
 if (file_exists($filename)){
@@ -208,7 +205,7 @@ if (file_exists($filename)){
 	// Delete remote configuration
 	echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&disk_conf_delete=1&id_agente=$id_agente'><img src='images/cross.png'></A>";
 } else {
-	echo '<i>'.lang_string("Not available").'</i>';
+	echo '<i>'.lang_string ("Not available").'</i>';
 }
 
 echo '</table><table width="650"><tr><td  align="right">';

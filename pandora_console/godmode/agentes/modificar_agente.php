@@ -220,7 +220,7 @@ if (mysql_num_rows($result)){
 			// Has remote configuration ?
 			$agent_md5 = md5($row["nombre"], FALSE);
 			if (file_exists($config["remote_config"] . "/" . $agent_md5 . ".md5")){
-				echo "<img src='images/application_edit.png' border='0' align='middle' alt=''>";
+				echo "<img src='images/application_edit.png' border='0' align='middle' title='".lang_string("Edit remote config")."'>";
 			}
 			echo "</td>";
 

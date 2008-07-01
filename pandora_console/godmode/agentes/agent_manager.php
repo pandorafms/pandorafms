@@ -67,13 +67,13 @@ if (isset ($id_agente) && $id_agente != "") {
 	echo "
 	<a href='index.php?sec=estado&
 	sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'>
-	<img src='images/lupa.png' border='0' align='middle' alt=''></a>";
+	<img src='images/lupa.png' border='0' align='middle' title='".lang_string("agent_detail")."'></a>";
 } 
 // Remote configuration available
 if (file_exists ($config["remote_config"] . "/" . $agent_md5 . ".md5")) {
 	echo "
 	<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=".$id_agente."&disk_conf=" . $agent_md5 . "'>
-	<img src='images/application_edit.png' border='0' align='middle' alt=''></a>";	
+	<img src='images/application_edit.png' border='0' align='middle' title='".lang_string("Edit remote config")."'></a>";	
 }
 
 echo '<tr><td class="datos2">';

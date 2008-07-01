@@ -102,8 +102,10 @@ echo '</tr>';
 
 
 echo '<tr>';
-echo '<td class="datos">'.lang_string ("source_module")."</td>";
-echo '<td class="datos" colspan=3>';
+echo '<td class="datos">'.lang_string ("source_module");
+pandora_help ("prediction_source_module");
+echo '</td>';
+echo '<td class="datos" colspan="3">';
 echo '<select name="form_id_prediction_module">';
 $sql1='SELECT id_agente_modulo, tagente_modulo.nombre, tagente.id_agente, tagente.id_grupo, tagente.nombre FROM tagente_modulo, tagente WHERE id_tipo_modulo NOT IN (100,24,19,20,21,22,23,17,10,2) AND tagente.id_agente = tagente_modulo.id_agente ORDER BY tagente.nombre';
 $result=mysql_query($sql1);
@@ -116,9 +118,7 @@ echo "</tr>";
 
 // module type
 echo '</tr><tr>';
-echo '<td class="datos2">'.lang_string ("module_type");
-pandora_help("module_type");
-echo '</td>';
+echo '<td class="datos2">'. lang_string ("module_type") .'</td>';
 echo '<td class="datos2">';
 if ($update_module_id != NULL){
 	echo "<span class='redi'>Not available in edition mode</span>";

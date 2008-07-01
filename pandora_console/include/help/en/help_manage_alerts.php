@@ -1,9 +1,9 @@
 <h1>Alerts</h1>
 
 Alerts in Pandora FMS react to an "out of range" module value. The alert can consist of sending an e-mail or an SMS to the administrator, sending a SNMP trap, write the incident into the system log or into Pandora FMS log ﬁle, etc. Basically, an alert can be anything that can be triggered by a script conﬁgured in the Operating System where Pandora FMS Servers run.
-<br><br>
+<br /><br />
 The values "_ﬁeld1_", "_ﬁeld2_" and "_ﬁeld3_" of the customized alerts are used to build the command line that will be executed.
-<br><br>
+<br /><br />
 When a new alert is created the following fields must be filled in:
 
 <ul>

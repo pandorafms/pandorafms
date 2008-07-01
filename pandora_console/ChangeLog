@@ -1,3 +1,26 @@
+2008-07-01  Jorge Gonzalez  <jorge.gonzalez@artica.es>
+
+	* include/help/en/help_plugin_parameters.php,
+	include/help/en/help_alert_recovery.php,
+	include/help/en/help_prediction_source_module.php,
+	include/help/en/help_snmpwalk.php,
+	include/help/en/help_alert_type.php,
+	include/help/en/help_network_component.php: Added new help pages.
+
+	* include/help/en/help_map_builder.php,
+	include/help/en/help_postprocess.php,
+	include/help/en/help_recontask.php, include/help/en/help_alerts.php,
+	include/help/en/help_manage_alerts.php: modified HTML tag.
+
+	* godmode/agentes/module_manager_editor_network.php,
+	godmode/agentes/module_manager_editor_plugin.php,
+	godmode/agentes/module_manager_editor_prediction.php,
+	godmode/agentes/alert_manager_editor.php,
+	godmode/agentes/module_manager_editor_data.php,
+	godmode/agentes/modificar_agente.php,
+	godmode/agentes/agent_manager.php, godmode/alerts/configure_alert.php:
+	Added/modified help support.
+
 2008-06-30  Jorge Gonzalez  <jorge.gonzalez@artica.es>
 
 	* include/help/en/help_recontask.php: Added help page for Recon tasks.

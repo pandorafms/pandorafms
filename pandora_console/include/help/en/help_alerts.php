@@ -3,9 +3,9 @@
 Assigning Alerts to modules
 Adding new alert to a module
 Adding new alert to a module
-<br></br>
+<br /><br />
 The next step after adding an agent, having configured its modules, and defined the alerts, is assigning those alerts to the agent. This step is necessary to establish alert conditions in those desired cases. This is done by clicking on the agent to be conﬁgured in the "Manage agents" option, from Administration menu, or using the edition mode and selecting the tab "Alerts", from the agent view.
-<br></br>
+<br /><br />
 The next fields must be filled to assign an alert:
 <ul>
 	<li>Alert type: This can be selected from the alert list previously generated.</li>
@@ -23,9 +23,9 @@ The next fields must be filled to assign an alert:
 	<li>Assigned module: Module to be monitored by the alert.</li>
 </ul>
 All the alerts of an agent can be seen using the "Alerts" tab. Let's see an example:
-<br><br>
+<br /><br />
 "I want to ﬁre an alert when XXX goes down, and please, dont't disturb me again at least for one hour. After that time, if it is still down, ﬁre another alert and wait another hour".
-<br><br>
+<br /><br />
 You need to setup:
 <ul>
 	<li>Time threshold 3600 (1 hour).</li>

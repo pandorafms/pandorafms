@@ -4,6 +4,7 @@
 // ========================================
 // Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
 // Copyright (c) 2008 Sancho Lerena <slerena@gmail.com>
+// Copyright (c) 2008 Jorge González <jorge.gonzalez@artica.es>
 
 // Please see http://pandora.sourceforge.net for full contribution list
 
@@ -20,7 +21,7 @@
 
 $add_component = get_parameter ("add_component",0);
 echo "<h3>".$lang_label["alert_asociation_form"];
-pandora_help("alerts");
+pandora_help ("alerts");
 echo "</h3>";
 
 echo '<form name="agente" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente='.$id_agente.'">';
@@ -79,8 +80,9 @@ if (! isset($alert_priority)) {
 print_select (get_priorities (), "alert_priority", $alert_priority, '', '', '');
 
 // Alert type
-echo '<tr><td class="datos">';
-echo $lang_label["alert_type"];
+echo '<tr><td class="datos">'. lang_string ("alert_type");
+pandora_help ("alert_type");
+echo '</td>';
 echo '<td class="datos"><select name="tipo_alerta">';
 if (isset($tipo_alerta)){
 	echo "<option value='".$tipo_alerta."'>".dame_nombre_alerta($tipo_alerta)."</option>";
@@ -260,8 +262,9 @@ echo '<td class="datos2">';
 echo '<input type="text" name="campo_2_rec" size="20" value="'.$alerta_campo2_rec.'">';
 
 // Alert recovery disable / enable
-echo "<td class='datos2'>";
-echo lang_string ("Alert recovery");
+echo '<td class="datos2">'. lang_string ("Alert recovery");
+pandora_help ("alert_recovery");
+echo '</td>';
 echo "<td class='datos2'>";
 echo '<select name="alert_recovery">';
 if ((isset($alert_recovery)) AND ($alert_recovery == "1")) {

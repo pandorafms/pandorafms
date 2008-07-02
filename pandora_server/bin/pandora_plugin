@@ -117,9 +117,9 @@ sub pandora_shutdown {
 }
 
 ##########################################################################
-# SUB pandora_network_subsystem
-# Subsystem to process network modules
-# This module runs each X seconds (server threshold) checking for network modules status
+# SUB pandora_plugin_consumer_subsystem
+# Subsystem to process Plugin modules
+# This module runs each X seconds (server threshold) checking for Plugin modules status
 ##########################################################################
 sub pandora_plugin_consumer ($$) {
 	my $pa_config = $_[0];

@@ -824,7 +824,7 @@ function existe ($id_user) {
 function event_insert ($event, $id_group, $id_agent, $status = 0,
 			$id_user = '', $event_type = "unknown", $priority = 0,
 			$id_agent_module = 0, $id_aam = 0) {
-	$sql = sprint ('INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, 
+	$sql = sprintf ('INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, 
 			estado, utimestamp, id_usuario, event_type, criticity,
 			id_agentmodule, id_alert_am) 
 			VALUES (%d, %d, "%s", NOW(), %d, NOW(), "%s", "%s", %d, %d, %d)',

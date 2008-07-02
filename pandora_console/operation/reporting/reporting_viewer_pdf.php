@@ -24,9 +24,9 @@ require_once ("../../include/functions_db.php");
 require_once ("../../include/languages/language_".$config["language"].".php");
 require_once ("../../include/functions_reporting_pdf.php");
 
-if (!isset ($_SESSION["id_usuario"])) {
-	session_start();
-	session_write_close();
+if (! isset ($_SESSION["id_usuario"])) {
+	session_start ();
+	session_write_close ();
 }
 
 // Session check
@@ -34,44 +34,38 @@ check_login ();
 
 // Login check
 global $REMOTE_ADDR;
+$config['id_user'] = $_SESSION["id_usuario"];
 
 if (comprueba_login ()) {
-	audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access graph builder");
+	audit_db ($config["id_user"], $REMOTE_ADDR, "ACL Violation", "Trying to access graph builder");
 	include ("general/noaccess.php");
 	exit;
 }
 
-if (! give_acl ($id_user, 0, "AR") && ! dame_admin ($id_user)) {
-	audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access graph builder");
+if (! give_acl ($config["id_user"], 0, "AR") && ! dame_admin ($config["id_user"])) {
+	audit_db ($config["id_user"], $REMOTE_ADDR, "ACL Violation", "Trying to access graph builder");
 	include ("general/noaccess.php");
 	exit;
 }
 
-$id_report = (int) get_parameter ('id');
+$id_report = (int) get_parameter ('id_report');
 if (! $id_report) {
-	audit_db ($id_user, $REMOTE_ADDR, "HACK Attempt", "Trying to access graph viewer withoud ID");
+	audit_db ($config["id_user"], $REMOTE_ADDR, "HACK Attempt", "Trying to access graph viewer withoud ID");
 	include ("general/noaccess.php");
 	exit;
 }
 
-$report_private= get_db_value ("private", "treport", "id_report", $id_report);
-$report_user = get_db_value ("id_user", "treport", "id_report", $id_report);
+$report = get_db_row ("treport", "id_report", $id_report);
 
-if ($report_user == $id_user || dame_admin ($id_user) || ! $report_private) {
-	$report_type = get_parameter ("rtype"); 
-	// Without report type parameter: ABORT
-	if (! $report_type) {
-		echo "<h2>No access without report type</h2>";
-		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access report without specify reportype");
-		exit;
-	}
-
-	// Available PDF reports:
-	switch ($report_type) {
-	case "general": 
-		general_report ($id_report);
-		break;
-	}
+if ($report['id_user'] != $config["id_user"] && ! give_acl ($config["id_user"], $report['id_group'], 'AR')) {
+	echo "<h2>No access without report type</h2>";
+	audit_db ($config["id_user"], $REMOTE_ADDR, "ACL Violation", "Trying to access unauthorized report");
+	exit;
 }
+
+include ('../../include/pdf/class.ezpdf.php');
+require ('../../include/functions_reporting.php');
+
+get_pdf_report ($report);
 
 ?>

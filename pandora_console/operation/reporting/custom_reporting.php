@@ -57,8 +57,8 @@ foreach ($reports as $report) {
 	$data[1] = $report['description'];
 	$data[2] = '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$report['id_report'].'">
 			<img src="images/reporting.png"></a>';
-	$data[3] = '<a href="operation/reporting/reporting_viewer_pdf.php?id='.$report['id_report'].'&rtype=general"
-			target="_new"><img src="images/pdf.png"></a>';
+	$data[3] = '<a href="operation/reporting/reporting_viewer_pdf.php?id_report='.$report['id_report'].'" '.
+		'target="_new"><img src="images/pdf.png"></a>';
 	array_push ($table->data, $data);
 }
 

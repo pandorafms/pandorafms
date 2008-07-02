@@ -54,45 +54,54 @@ if ($develop_bypass != 1){
 }
 
 if ((! file_exists("include/config.php")) OR (! is_readable("include/config.php"))){
-        include ("general/error_noconfig.php");
-        exit;
+	include ("general/error_noconfig.php");
+	exit;
 }
 
 // Real start
 session_start();
-include "include/config.php";
-include "include/languages/language_".$config["language"].".php";
-require "include/functions.php"; // Including funcions.
-require "include/functions_db.php";
+include_once ("include/config.php");
+include_once ("include/languages/language_".$config["language"].".php");
+require_once ("include/functions.php");
+require_once ("include/functions_db.php");
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
 <?php
-    // Pure mode (without menu, header and footer).
-    $config["pure"] = get_parameter("pure",0);
+// Pure mode (without menu, header and footer).
+$config["pure"] = get_parameter("pure",0);
 
-    // Auto Refresh page
-	$intervalo = get_parameter ("refr",0);
-	if ($intervalo > 0){
-		// Agent selection filters and refresh
-		$query = 'http' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '') . '://' . $_SERVER['SERVER_NAME'];
+// Auto Refresh page
+$intervalo = get_parameter ("refr",0);
+if ($intervalo > 0){
+	// Agent selection filters and refresh
+	$query = 'http' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '') . '://' . $_SERVER['SERVER_NAME'];
+	if ($_SERVER['SERVER_PORT'] != 80)
+		$query .= ":" . $_SERVER['SERVER_PORT'];
+	
+	$query .= $_SERVER['SCRIPT_NAME'];
+	if (isset ($_REQUEST["refr"])) {
+		$query .= '?';
+		
+		foreach ($_POST as $key => $value) {
+			$query .= '&'.$key.'='.$value;
+		}
+		foreach ($_GET as $key => $value) {
+			$query .= '&'.$key.'='.$value;
+		}
+	}
+	if (isset ($_POST["ag_group"])) {
+		$ag_group = $_POST["ag_group"];
+		$query = 'http://' . $_SERVER['SERVER_NAME'];
 		if ($_SERVER['SERVER_PORT'] != 80)
 			$query .= ":" . $_SERVER['SERVER_PORT'];
-		
-		$query .= $_SERVER['REQUEST_URI'];
-		if (isset ($_POST["refr"]))
-			$query .= '&refr=' . $intervalo;
-		if (isset ($_POST["ag_group"])) {
-			$ag_group = $_POST["ag_group"];
-			$query = 'http://' . $_SERVER['SERVER_NAME'];
-			if ($_SERVER['SERVER_PORT'] != 80)
-				$query .= ":" . $_SERVER['SERVER_PORT'];
-			$query .= $_SERVER['REQUEST_URI'] . '&ag_group_refresh=' . $ag_group;
-		} else 
-			echo '<meta http-equiv="refresh" content="' . $intervalo . '; URL=' . $query . '">';
+		$query .= $_SERVER['REQUEST_URI'] . '&ag_group_refresh=' . $ag_group;
+	} else {
+		echo '<meta http-equiv="refresh" content="' . $intervalo . '; URL=' . $query . '">';
 	}
+}
 
 ?>
 <title>Pandora FMS - <?php echo lang_string("header_title"); ?></title>
@@ -105,10 +114,7 @@ require "include/functions_db.php";
 <meta name="keywords" content="pandora, monitoring, system, GPL, software">
 <meta name="robots" content="index, follow">
 <link rel="icon" href="images/pandora.ico" type="image/ico">
-<?php
-    // Pandora FMS custom style selection
-	echo '<link rel="stylesheet" href="include/styles/'.$config['style'].'.css" type="text/css">';
-?>
+<link rel="stylesheet" href="include/styles/<?=$config['style']?>.css" type="text/css">
 
 <script type="text/javascript" src="include/javascript/wz_jsgraphics.js"></script>
 <script type="text/javascript" src="include/javascript/pandora.js"></script>
@@ -117,11 +123,10 @@ require "include/functions_db.php";
 <?php
 // Show custom background
 if ($config["pure"] == 0)
-echo '<body bgcolor="#555555">';
+	echo '<body bgcolor="#555555">';
 else
-echo '<body bgcolor="#FFFFFF">';
-
-$REMOTE_ADDR = getenv ("REMOTE_ADDR");
+	echo '<body bgcolor="#FFFFFF">';
+$REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
 
 // Login process 
 if ( (! isset ($_SESSION['id_usuario'])) && (isset ($_GET["login"]))) {
@@ -201,9 +206,10 @@ if (isset ($_GET["sec"])){
 	$sec = get_parameter_get ('sec');
 	$sec = parameter_extra_clean ($sec);
 	$pagina = $sec2;
-}
-else
+} else {
 	$sec = "";
+}
+
 // http://es2.php.net/manual/en/ref.session.php#64525
 // Session locking concurrency speedup!
 session_write_close(); 
@@ -212,12 +218,12 @@ session_write_close();
 if ($config["pure"] == 0){
 	echo '<div id="container">';
 	echo '<div id="head">';
-	require("general/header.php"); 
+	require ("general/header.php"); 
 	echo '</div>';
 	echo '<div id="page">';
-	echo '	<div id="menu">';
+	echo '<div id="menu">';
 	require ("general/main_menu.php");
-	echo '	</div>';
+	echo '</div>';
 } else {
 	echo '<div id="main_pure">';
 }
@@ -229,8 +235,8 @@ if ($config["pure"] == 0){
 
 // Page loader / selector
 if ($pagina != ""){
-	if (file_exists ($pagina . ".php")) {
-		require ($pagina . ".php");
+	if (file_exists ($pagina.".php")) {
+		require ($pagina.".php");
 	} else {
 		echo "<br><b class='error'>".lang_string("Sorry! I can't find the page!")."</b>";
 	}	
@@ -247,7 +253,7 @@ if ($config["pure"] == 0){
 
 if ($config["pure"] == 0) {
 	echo '<div id="foot">';
-	require("general/footer.php");
+	require ("general/footer.php");
 	echo '</div>';
 	echo '</div>';
 }

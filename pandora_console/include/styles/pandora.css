@@ -176,7 +176,7 @@ div#db_ftxt {
 }
 div#container {
 	margin: 0 auto;
-	width: 960px;
+	width: 95%;
 	text-align: left;
 	border-left: solid 2px #000;
 	border-right: solid 2px #000;
@@ -184,25 +184,22 @@ div#container {
 	margin-top: 5px;
 }
 div#page {
-	width: 960px;
 	background: #fff;
 	clear: both;
 	border-bottom: solid 5px #786;
 	border-top: solid 5px #786;
+	background: #FFF;
 }
 div#main {
-	width: 780px;
+	width: 80%;
 	min-height: 500px;
-	float: right;
+	float: both;
 	padding-left: 0px;
 	padding-top: 0px;
 	padding-bottom: 20px;
-	margin-bottom: 25px;
+	margin-left: 180px;
 	background-color: #fefefe;
-    background-image: url(../../images/backgrounds/background4.jpg);
-	margin-top: 0px;
-	margin-left: 0px;
-	margin-right: 0px;
+	background-image: url(../../images/backgrounds/background4.jpg);
 }
 
 div#menu {
@@ -226,7 +223,6 @@ div#foot {
 	padding-bottom: 5px;
 	text-align: center;
 	background: #000;
-	width: 960px;
 	clear: both;
 }
 #ver {

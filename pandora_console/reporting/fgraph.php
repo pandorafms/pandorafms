@@ -16,10 +16,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-include ('../include/config.php');
-include ($config["homedir"].'/include/functions.php');
-include ($config["homedir"].'/include/functions_db.php');
-require ($config["homedir"].'/include/languages/language_'.$config['language'].'.php');
+require_once ('../include/config.php');
+require_once ($config["homedir"].'/include/functions.php');
+require_once ($config["homedir"].'/include/functions_db.php');
+require_once ('Image/Graph.php');
 
 global $config;
 
@@ -27,7 +27,7 @@ if (!isset($_SESSION["id_user"])){
 	session_start();
 	session_write_close();
 }
-$config ["id_user"] = $_SESSION["id_usuario"];
+$config["id_user"] = $_SESSION["id_usuario"];
 
 // Session check
 check_login ();
@@ -92,8 +92,8 @@ function dame_fecha_grafico_timestamp ($timestamp) {
 function graphic_combined_module ($module_list, $weight_list, $periodo, $width, $height,
 				$title, $unit_name, $show_event = 0, $show_alert = 0, $pure = 0, $stacked = 0, $date = 0) {
 
-	include ("../include/config.php");
-	require ("../include/languages/language_".$config['language'].".php");
+	global $config;
+	
 	require_once 'Image/Graph.php';
 	$resolution = $config['graph_res'] * 50; // Number of "slices" we want in graph
 	
@@ -375,7 +375,6 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 function grafico_modulo_sparse ($id_agente_modulo, $periodo, $show_event,
 				$width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure = 0, $date = 0) {
 	include ("../include/config.php");
-	require ("../include/languages/language_".$config['language'].".php");
 	require_once 'Image/Graph.php';	
 
 	if (! $date)
@@ -661,9 +660,8 @@ function grafico_modulo_sparse ($id_agente_modulo, $periodo, $show_event,
 }
 
 function generic_pie_graph ($width = 300, $height = 200, $data, $legend) {
-	require ("../include/config.php");
-	require_once 'Image/Graph.php';
-	require ("../include/languages/language_".$config['language'].".php");
+	global $config;
+	
 	if (sizeof($data) == 0) {
 		graphic_error ();
 		return;
@@ -723,9 +721,7 @@ function generic_pie_graph ($width = 300, $height = 200, $data, $legend) {
 
 
 function graphic_agentmodules($id_agent, $width, $height) {
-	include ("../include/config.php");
-	require_once 'Image/Graph.php';
-	require ("../include/languages/language_".$config['language'].".php");
+	global $config;
 
 	$sql1="SELECT * FROM ttipo_modulo";
 	$result=mysql_query($sql1);
@@ -771,9 +767,8 @@ function graphic_agentmodules($id_agent, $width, $height) {
 }
 
 function graphic_agentaccess ($id_agent, $periodo, $width, $height) {
-	include ("../include/config.php");
-	require_once 'Image/Graph.php';
-	require ("../include/languages/language_".$config['language'].".php");
+	global $config;
+	
 	$color ="#437722"; // Green pandora 1.1 octopus color
 	/*
 	$agent_interval = give_agentinterval($id_agent);
@@ -865,9 +860,8 @@ function graphic_agentaccess ($id_agent, $periodo, $width, $height) {
 }
 
 function graphic_string_data ($id_agent_module, $periodo, $width, $height, $pure = 0, $date = "") {
-	include ("../include/config.php");
-	require_once 'Image/Graph.php';
-	require ("../include/languages/language_".$config['language'].".php");
+	global $config;
+	
 	// $color = $config["color_graph1"]; //#437722"; // Green pandora 1.1 octopus color
 	$color = "#437722";
 
@@ -907,44 +901,44 @@ function graphic_string_data ($id_agent_module, $periodo, $width, $height, $pure
 			$valor_maximo = $valores[$i][0];
 	}
 
-    if ($valor_maximo <= 0) {
+	if ($valor_maximo <= 0) {
 		graphic_error ();
 		return;
 	}
 
-    $nombre_agente = dame_nombre_agente_agentemodulo ($id_agent_module);
+	$nombre_agente = dame_nombre_agente_agentemodulo ($id_agent_module);
 	$id_agente = dame_agente_id ($nombre_agente);
 	$nombre_modulo = dame_nombre_modulo_agentemodulo ($id_agent_module);
 
-if ($pure == 0){
-    $Graph =& Image_Graph::factory('graph', array($width, $height));
-    // add a TrueType font
-	$Font =& $Graph->addNew('font', $config['fontpath']);
-	$Font->setSize(7);
-	$Graph->setFont($Font);
+	if ($pure == 0) {
+		$Graph =& Image_Graph::factory('graph', array($width, $height));
+		// add a TrueType font
+		$Font =& $Graph->addNew('font', $config['fontpath']);
+		$Font->setSize(7);
+		$Graph->setFont($Font);
 
-	$Graph->add(
-	Image_Graph::vertical(
+		$Graph->add(
 		Image_Graph::vertical(
-					$Title = Image_Graph::factory('title', array('   Pandora FMS Graph - '.strtoupper($nombre_agente)." - ".give_human_time ($periodo), 10)),
-					$Subtitle = Image_Graph::factory('title', array('     '.lang_string("Data occurrence for module ").$nombre_modulo, 7)),
-					90
-			),
-		Image_Graph::horizontal(
-			$Plotarea = Image_Graph::factory('plotarea'),
-			$Legend = Image_Graph::factory('legend'),
-			100
-			),
-		15)
-	);
-	$Legend->setPlotarea($Plotarea);
-	$Title->setAlignment(IMAGE_GRAPH_ALIGN_LEFT);
-	$Subtitle->setAlignment(IMAGE_GRAPH_ALIGN_LEFT);
+			Image_Graph::vertical(
+						$Title = Image_Graph::factory('title', array('   Pandora FMS Graph - '.strtoupper($nombre_agente)." - ".give_human_time ($periodo), 10)),
+						$Subtitle = Image_Graph::factory('title', array('     '.lang_string("Data occurrence for module ").$nombre_modulo, 7)),
+						90
+				),
+			Image_Graph::horizontal(
+				$Plotarea = Image_Graph::factory('plotarea'),
+				$Legend = Image_Graph::factory('legend'),
+				100
+				),
+			15)
+		);
+		$Legend->setPlotarea($Plotarea);
+		$Title->setAlignment(IMAGE_GRAPH_ALIGN_LEFT);
+		$Subtitle->setAlignment(IMAGE_GRAPH_ALIGN_LEFT);
 
 
-} else { // Pure, without title and legends
-	$Graph->add($Plotarea = Image_Graph::factory('plotarea'));
-}
+	} else { // Pure, without title and legends
+		$Graph->add($Plotarea = Image_Graph::factory('plotarea'));
+	}
 
 	//$Legend->setPlotarea($Plotarea);
 	// Create the dataset
@@ -968,9 +962,6 @@ if ($pure == 0){
 
 
 function grafico_incidente_estados() {
-	include ("../include/config.php");
-	require ("../include/languages/language_".$config['language'].".php");
-
 	$data = array(0,0,0,0);
 	// 0 - Abierta / Sin notas
 	// 2 - Descartada
@@ -1001,29 +992,18 @@ function grafico_incidente_estados() {
 }
 
 function grafico_incidente_prioridad () {
-	include ("../include/config.php");
-	require ("../include/languages/language_".$config['language'].".php");
-
-	$data = array(0,0,0,0,0,0);
+	$data = array (0, 0, 0, 0, 0, 0);
 	// 0 - Abierta / Sin notas
 	// 2 - Descartada
 	// 3 - Caducada 
 	// 13 - Cerrada
-	$sql1="SELECT * FROM tincidencia";
-	$result=mysql_query($sql1);
-	while ($row=mysql_fetch_array($result)){
-		if ($row["prioridad"] == 0)
-			$data[0]=$data[0]+1;
-		if ($row["prioridad"] == 1)
-			$data[1]=$data[1]+1;
-		if ($row["prioridad"] == 2)
-			$data[2]=$data[2]+1;
-		if ($row["prioridad"] == 3)
-			$data[3]=$data[3]+1;
-		if ($row["prioridad"] == 4)
-			$data[4]=$data[4]+1;
-		if ($row["prioridad"] == 10)
-			$data[5]=$data[5]+1;
+	$sql = "SELECT * FROM tincidencia";
+	$result = mysql_query ($sql);
+	while ($row = mysql_fetch_array ($result)){
+		if ($row["prioridad"] < 10)
+			$data[$row["prioridad"]] += 1;
+		else
+			$data[5] += 1;
 	}
 		
 	$mayor = 0;
@@ -1033,26 +1013,28 @@ function grafico_incidente_prioridad () {
 				$mayor = $i;
 				$mayor_data = $data[$i];
 		}
-    $legend = array ("Informative","Low","Medium","Serious", "Very serious", "Maintance");
+	$legend = array (lang_string ("Informative"),
+			lang_string ("Low"),
+			lang_string ("Medium"),
+			lang_string ("Serious"),
+			lang_string ("Very serious"),
+			lang_string ("Maintance"));
 	generic_pie_graph (320, 200, $data, $legend);
 }
 
-function graphic_incident_group() {
-	include ("../include/config.php");
-	require ("../include/languages/language_".$config['language'].".php");
-
+function graphic_incident_group () {
 	$data = array();
 	$legend = array();
-	$sql1="SELECT distinct id_grupo FROM tincidencia ";
-	$result=mysql_query($sql1);
-	while ($row=mysql_fetch_array($result)){
-			$sql1="SELECT COUNT(id_incidencia) FROM tincidencia WHERE id_grupo = ".$row[0];
-			$result2=mysql_query($sql1);
-			$row2=mysql_fetch_array($result2);
+	$sql = "SELECT distinct id_grupo FROM tincidencia ";
+	$result = mysql_query ($sql);
+	while ($row = mysql_fetch_array($result)) {
+			$sql="SELECT COUNT(id_incidencia) FROM tincidencia WHERE id_grupo = ".$row[0];
+			$result2=mysql_query ($sql);
+			$row2 = mysql_fetch_array($result2);
 			$data[] = $row2[0];
 			$legend[] = dame_nombre_grupo($row[0])."(".$row2[0].")";
 	}
-// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
+	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
 	// or much better, pay me to do a special version for you, highly optimized :-))))
 	for ($i = 0; $i < sizeof($data); $i++) {
 			for ($j = $i; $j <sizeof($data); $j++)
@@ -1077,9 +1059,6 @@ function graphic_incident_group() {
 }
 
 function graphic_incident_user() {
-	include ("../include/config.php");
-	require ("../include/languages/language_".$config['language'].".php");
-
 	$data = array();
 	$legend = array();
 	$sql1="SELECT distinct id_usuario FROM tincidencia ";
@@ -1115,10 +1094,7 @@ function graphic_incident_user() {
 	generic_pie_graph (320, 200, $data, $legend);
 }
 
-function graphic_user_activity($width=350, $height=230) {
-	include ("../include/config.php");
-	require ("../include/languages/language_".$config['language'].".php");
-
+function graphic_user_activity ($width = 350, $height = 230) {
 	$data = array();
 	$legend = array();
 	$sql1="SELECT DISTINCT ID_usuario FROM tsesion ";
@@ -1158,9 +1134,6 @@ function graphic_user_activity($width=350, $height=230) {
 }
 
 function graphic_incident_source ($width=320, $height=200) {
-	include ("../include/config.php");
-	require ("../include/languages/language_".$config['language'].".php");
-
 	$data = array();
 	$legend = array();
 	$sql1="SELECT DISTINCT origen FROM tincidencia";
@@ -1197,9 +1170,6 @@ function graphic_incident_source ($width=320, $height=200) {
 }
 
 function grafico_db_agentes_modulos($width, $height) {
-	include ("../include/config.php");
-	require ("../include/languages/language_".$config['language'].".php");
-
 	$data = array();
 	$legend = array();
 	$sql1="SELECT * FROM tagente";
@@ -1228,9 +1198,6 @@ function grafico_db_agentes_modulos($width, $height) {
 }
 
 function grafico_eventos_usuario( $width=420, $height=200) {
-	include ("../include/config.php");
-	require ("../include/languages/language_".$config['language'].".php");
-
 	$data = array();
 	$legend = array();
 	$sql1="SELECT * FROM tusuario";
@@ -1269,10 +1236,7 @@ function grafico_eventos_usuario( $width=420, $height=200) {
 }
 
 function grafico_eventos_total ($filter = "") {
-	require ("../include/config.php");
-	require ("../include/languages/language_".$config['language'].".php");
-
-    $filter = str_replace  ( "\\" , "", $filter);
+	$filter = str_replace  ( "\\" , "", $filter);
 	$data = array();
 	$legend = array();
 	$total = 0;
@@ -1329,10 +1293,6 @@ function grafico_eventos_total ($filter = "") {
 }
 
 function graph_event_module ($width = 300, $height = 200, $id_agent) {
-	include ("../include/config.php");
-	require ("../include/languages/language_".$config['language'].".php");
-	global $config;
-
 	// Need ACL check
 	$data = array();
 	$legend = array();
@@ -1385,10 +1345,8 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 
 
 function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
-	include ("../include/config.php");
-	require ("../include/languages/language_".$config['language'].".php");
-
 	global $config;
+	
 	$url = str_replace  ( "\\" , "", $url);
 	$data = array();
 	$legend = array();
@@ -1441,9 +1399,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 
 
 function generic_bar_graph ( $width =380, $height = 200, $data, $legend) {
-	include ("../include/config.php");
-	require_once 'Image/Graph.php';
-	require ("../include/languages/language_".$config['language'].".php");
+	global $config;
 	
 	if (sizeof($data) > 10){
 		$height = sizeof($legend) * 20;
@@ -1480,9 +1436,6 @@ function generic_bar_graph ( $width =380, $height = 200, $data, $legend) {
 }
 
 function grafico_db_agentes_paquetes ($width = 380, $height = 300) {
-	include ("../include/config.php");
-	require ("../include/languages/language_".$config['language'].".php");
-
 	$data = array();
 	$legend = array();
 	$sql1="SELECT distinct (id_agente) FROM tagente_datos";
@@ -1517,10 +1470,6 @@ function grafico_db_agentes_paquetes ($width = 380, $height = 300) {
 }
 
 function grafico_db_agentes_purge ($id_agent, $width, $height) {
-	include ("../include/config.php");
-	require_once 'Image/Graph.php';
-	require ("../include/languages/language_".$config['language'].".php");
-
 	if ($id_agent == 0)
 		$id_agent = -1;
 	// All data (now)
@@ -1564,8 +1513,8 @@ function grafico_db_agentes_purge ($id_agent, $width, $height) {
 }
 
 function drawWarning($width,$height) {
-	include ("../include/config.php");
-	require ("../include/languages/language_".$config['language'].".php");
+	global $config;
+	
 	if ($width == 0) {
 		$width = 50;
 	}
@@ -1583,7 +1532,7 @@ function drawWarning($width,$height) {
 
 	ImageFilledRectangle($image,0,0,$width-1,$height-1,$back);
 	ImageRectangle($image,0,0,$width-1,$height-1,$border);
-	ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $border, $config['fontpath'], $lang_label["no_data"]);
+	ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $border, $config['fontpath'], lang_string ("no_data"));
 	imagePNG($image);
 	imagedestroy($image);
 }
@@ -1599,8 +1548,8 @@ function progress_bar ($progress, $width, $height, $mode = 1) {
 	// With some adds from sdonie at lgc dot com
 	// Get from official documentation PHP.net website. Thanks guys :-)
 	function drawRating($rating, $width, $height, $mode) {
-		include ("../include/config.php");
-		require ("../include/languages/language_".$config["language"].".php");
+		global $config;
+		
 		$rating = format_numeric($rating,1);
 		if ($width == 0) {
 			$width = 150;
@@ -1672,8 +1621,7 @@ function progress_bar ($progress, $width, $height, $mode = 1) {
 }
 
 function odo_tactic ($value1, $value2, $value3) {
-	require_once 'Image/Graph.php';
-	include ("../include/config.php");
+	global $config;
 	
 	// create the graph
 	$driver=& Image_Canvas::factory('png',array('width'=>350,'height'=>260,'antialias' => 'driver'));
@@ -1773,9 +1721,7 @@ function odo_tactic ($value1, $value2, $value3) {
 function grafico_modulo_boolean ( $id_agente_modulo, $periodo, $show_event,
 				 $width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure=0 ) {
 	
-	include ("../include/config.php");
-	require ("../include/languages/language_".$config['language'].".php");
-	require_once 'Image/Graph.php';
+	global $config;
 
 	$resolution = $config['graph_res'] * 50; // Number of "slices" we want in graph
 	
@@ -1917,12 +1863,12 @@ function grafico_modulo_boolean ( $id_agente_modulo, $periodo, $show_event,
 		//echo $valores[$i][6];
 		//echo "<br>";
 	}
-//exit;
+	
 	// Create graph
 	// *************
 	$Graph =& Image_Graph::factory('graph', array($width, $height));
 	// add a TrueType font
-	$Font =& $Graph->addNew('font', $config['fontpath']);
+	$Font =& $Graph->addNew ('font', $config['fontpath']);
 	$Font->setSize(6);
 	$Graph->setFont($Font);
 
@@ -2115,64 +2061,83 @@ if ($graphic_type) {
 	switch ($graphic_type) {
 	case 'string':
 		graphic_string_data ($id, $period, $width, $height, $date);
+		
+		break;
 	case 'sparse': 
-		grafico_modulo_sparse ($id, $period, $draw_events, $width, $height , $label, $unit_name, $draw_alerts, $avg_only, $pure, $date);
+		grafico_modulo_sparse ($id, $period, $draw_events, $width, $height,
+					$label, $unit_name, $draw_alerts, $avg_only, $pure, $date);
 		break;
 	case "boolean":
 		grafico_modulo_boolean ($id, $period, $draw_events, $width, $height , $label, $unit_name, $draw_alerts, 1, $pure);
+		
 		break;
 	case "estado_incidente":
 		grafico_incidente_estados ();
+		
 		break;
 	case "prioridad_incidente":
 		grafico_incidente_prioridad ();
+		
 		break;
 	case "db_agente_modulo":
 		grafico_db_agentes_modulos($width, $height);
+		
 		break;
 	case "db_agente_paquetes":
 		grafico_db_agentes_paquetes($width, $height);
+		
 		break;
 	case "db_agente_purge":
 		grafico_db_agentes_purge($id, $width, $height);
+		
 		break;
 	case "event_module":
 		graph_event_module ($width, $height, $id_agent);
+		
 	case "group_events":
 		grafico_eventos_grupo($width, $height);
+		
 		break;
 	case "user_events":
 		grafico_eventos_usuario($width, $height);
+		
 		break;
 	case "total_events":
 		grafico_eventos_total();
+		
 		break;
 	case "group_incident":
 		graphic_incident_group();
+		
 		break;
 	case "user_incident":
 		graphic_incident_user();
+		
 		break;
 	case "source_incident":
 		graphic_incident_source();
+		
 		break;
 	case "user_activity":
 		graphic_user_activity($width,$height);
+		
 		break;
 	case "agentaccess":
 		graphic_agentaccess ($_GET["id"], $_GET["periodo"], $width, $height);
+		
 		break;
 	case "agentmodules":
 		graphic_agentmodules($_GET["id"], $width, $height);
+		
 		break;
-	//elseif ($_GET["tipo"] == "gdirect")
-//		graphic_test ($id, $period, $intervalo, $label, $width, $height);
 	case "progress": 
 		$percent = $_GET["percent"];
 		progress_bar ($percent,$width,$height, $mode);
+		
 		break;
 	case "odo_tactic":
 		odo_tactic ( $value1, $value2, $value3 );
+		
 		break;
 	case "combined":
 		// Split id to get all parameters
@@ -2182,6 +2147,7 @@ if ($graphic_type) {
 		$weight_list = split (",", $weight_l);
 		graphic_combined_module ($module_list, $weight_list, $period, $width, $height,
 					$label, $unit_name, $draw_events, $draw_alerts, $pure, $stacked, $date);
+		
 		break;
 	case "alerts_fired_pipe":
 		$data = array ();
@@ -2191,6 +2157,7 @@ if ($graphic_type) {
 		$legends[0] = lang_string ('fired_alerts');
 		$legends[1] = lang_string ('not_fired_alerts');
 		generic_pie_graph ($width, $height, $data, $legends);
+		
 		break;
 	case 'monitors_health_pipe':
 		$data = array ();
@@ -2200,6 +2167,7 @@ if ($graphic_type) {
 		$legends[0] = lang_string ('monitors_ok');
 		$legends[1] = lang_string ('monitors_bad');
 		generic_pie_graph ($width, $height, $data, $legends);
+		
 		break;
 	default:
 		graphic_error ();

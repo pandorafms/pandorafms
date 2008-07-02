@@ -22,10 +22,10 @@
 
 
 if ((! file_exists("include/config.php")) || (! is_readable("include/config.php"))) {
-        exit;
+	exit;
 }
 
-require ('include/config.php');
+require_once ('include/config.php');
 
 // Check for correct language file presence
 if (file_exists ('include/languages/language_'.$config['language'].'.php')) {
@@ -34,8 +34,8 @@ if (file_exists ('include/languages/language_'.$config['language'].'.php')) {
 	include "include/languages/language_en.php";
 }
 
-require ('include/functions.php');
-require ('include/functions_db.php');
+require_once ('include/functions.php');
+require_once ('include/functions_db.php');
 
 // Real start
 session_start();
@@ -51,7 +51,7 @@ $config["id_user"] = $_SESSION["id_usuario"];
 session_write_close ();
 if (file_exists ($page)) {
 	$id_user = $_SESSION["id_usuario"];
-	require ($page);
+	require_once ($page);
 } else {
 	echo "<br><b class='error'>Sorry! I can't find the page $page!</b>";
 }

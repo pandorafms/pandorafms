@@ -122,11 +122,11 @@ if ($start_date != $current){
 
 	echo "<table width=450 cellspacing=1 cellpadding=1 class='databox' style='margin-left: 20px'>";
 		echo "<tr><td><b>";
-		echo $lang_label["max_value"]." </b>: ". format_for_graph(return_moduledata_max_value ($id, $period));
+		echo $lang_label["max_value"]." </b>: ". format_for_graph(get_agent_module_value_max ($id, $period));
 		echo "</td><td><b>";
-		echo $lang_label["avg_value"]." </b>: ". format_for_graph(return_moduledata_avg_value ($id, $period));
+		echo $lang_label["avg_value"]." </b>: ". format_for_graph(get_agent_module_value_average ($id, $period));
 		echo "</td><td><b>";
-		echo $lang_label["min_value"]." </b>: ". format_for_graph(return_moduledata_min_value ($id, $period));
+		echo $lang_label["min_value"]." </b>: ". format_for_graph(get_agent_module_value_min ($id, $period));
 		echo "</td></tr>";
 	echo "</table>";
 

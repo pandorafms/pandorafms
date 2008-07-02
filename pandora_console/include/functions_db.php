@@ -80,8 +80,8 @@ function give_acl ($id_user, $id_group, $access) {
 		PM - Pandora Management
 	*/
 	
-	// Conexion con la base Datos 
-	require("config.php");
+	global $config;
+	
 	$query1="SELECT * FROM tusuario WHERE id_usuario = '".$id_user."'";
 	$res=mysql_query($query1);
 	$row=mysql_fetch_array($res);
@@ -157,7 +157,6 @@ function give_acl ($id_user, $id_group, $access) {
  * @param descripcion Long action description
  */
 function audit_db ($id, $ip, $accion, $descripcion){
-	require("config.php");
 	$today=date('Y-m-d H:i:s');
 	$utimestamp = time();
 	$sql1='INSERT INTO tsesion (ID_usuario, accion, fecha, IP_origen,descripcion, utimestamp) VALUES ("'.$id.'","'.$accion.'","'.$today.'","'.$ip.'","'.$descripcion.'", '.$utimestamp.')';
@@ -171,10 +170,11 @@ function audit_db ($id, $ip, $accion, $descripcion){
  * @param ip Client user IP address.
  */
 function logon_db ($id_user, $ip) {
-	require  ("config.php");
-	audit_db ($id_user, $ip, "Logon", "Logged in");
+	global $config;
+	
+	audit_db ($config['id_user'], $ip, "Logon", "Logged in");
 	// Update last registry of user to get last logon
-	$sql = 'UPDATE tusuario fecha_registro = $today WHERE id_usuario = "$id_user"';
+	$sql = sprintf ('UPDATE tusuario fecha_registro = $today WHERE id_usuario = "%s"', $id_user);
 	$result = mysql_query ($sql);
 }
 
@@ -185,8 +185,8 @@ function logon_db ($id_user, $ip) {
  * @param ip Client user IP address.
  */
 function logoff_db ($id_user, $ip) {
-	require ("config.php");
-	audit_db ($id_user, $ip, "Logoff", "Logged out");
+	global $config;
+	audit_db ($config['id_user'], $ip, "Logoff", "Logged out");
 }
 
 /**
@@ -683,7 +683,8 @@ function dame_generic_string_data ($id) {
  * @param id_inc Incident id
  */
 function borrar_incidencia ($id_inc) {
-	require ("config.php");
+	global $config;
+	
 	$sql = "DELETE FROM tincidencia WHERE id_incidencia = ".$id_inc;
 	mysql_query ($sql);
 	$sql = "SELECT * FROM tnota_inc WHERE id_incidencia = ".$id_inc;
@@ -810,24 +811,25 @@ function existe ($id_user) {
 /** 
  * Insert a event in the event log system.
  * 
- * @param evento 
- * @param id_grupo 
- * @param id_agente 
+ * @param event 
+ * @param id_group 
+ * @param id_agent 
  * @param status 
- * @param id_usuario 
+ * @param id_user 
  * @param event_type 
  * @param priority 
  * @param id_agent_module 
  * @param id_aam 
  */
-function event_insert ($evento, $id_grupo, $id_agente, $status = 0,
-			$id_usuario = '', $event_type = "unknown", $priority = 0,
+function event_insert ($event, $id_group, $id_agent, $status = 0,
+			$id_user = '', $event_type = "unknown", $priority = 0,
 			$id_agent_module = 0, $id_aam = 0) {
-	$sql = 'INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, 
-		estado, utimestamp, id_usuario, event_type, criticity, id_agentmodule, id_alert_am) 
-		VALUES ('.$id_agente.','.$id_grupo.',"'.$evento.'",NOW(),'.$status.
-		', '.$utimestamp.', "'.$id_usuario.'", "'.$event_type.'", '.$priority.
-		', '.$id_agent_module.', '.$id_aam.')';
+	$sql = sprint ('INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, 
+			estado, utimestamp, id_usuario, event_type, criticity,
+			id_agentmodule, id_alert_am) 
+			VALUES (%d, %d, "%s", NOW(), %d, NOW(), "%s", "%s", %d, %d, %d)',
+			$id_agent, $id_group, $event, $status, $id_user, $event_type,
+			$priority, $id_agent_module, $id_aam);
 
 	mysql_query ($sql);
 }
@@ -1450,7 +1452,7 @@ function get_previous_data ($id_agent_module, $utimestamp) {
  * 
  * @return The average module value in the interval.
  */
-function return_moduledata_avg_value ($id_agent_module, $period, $date = 0) {
+function get_agent_module_value_average ($id_agent_module, $period, $date = 0) {
 	if (! $date)
 		$date = time ();
 	$datelimit = $date - $period;
@@ -1482,7 +1484,7 @@ function return_moduledata_avg_value ($id_agent_module, $period, $date = 0) {
  * 
  * @return The maximum module value in the interval.
  */
-function return_moduledata_max_value ($id_agent_module, $period, $date = 0) {
+function get_agent_module_value_max ($id_agent_module, $period, $date = 0) {
 	if (! $date)
 		$date = time ();
 	$datelimit = $date - $period;
@@ -1510,7 +1512,7 @@ function return_moduledata_max_value ($id_agent_module, $period, $date = 0) {
  * 
  * @return The minimum module value of the module
  */
-function return_moduledata_min_value ($id_agent_module, $period, $date = 0) {
+function get_agent_module_value_min ($id_agent_module, $period, $date = 0) {
 	if (! $date)
 		$date = time ();
 	$datelimit = $date - $period;
@@ -1537,7 +1539,7 @@ function return_moduledata_min_value ($id_agent_module, $period, $date = 0) {
  * 
  * @return The sumatory of the module values in the interval.
  */
-function return_moduledata_sum_value ($id_agent_module, $period, $date = 0) {
+function get_agent_module_value_sumatory ($id_agent_module, $period, $date = 0) {
 	if (! $date)
 		$date = time ();
 	$datelimit = $date - $period; // limit date
@@ -1596,7 +1598,12 @@ function return_moduledata_sum_value ($id_agent_module, $period, $date = 0) {
 	if ($timestamp_end <= $datelimit) {
 		$elapsed = $timestamp_end - $timestamp_begin;
 		$times = intval ($elapsed / $module_interval);
-		$sum += $times * $previous_data;
+		if (is_module_inc ($module_name)) {
+			$data_value = $data['datos'] * $module_interval;
+		} else {
+			$data_value = $data['datos'];
+		}
+		$sum += $times * $data_value;
 	}
 	
 	return (float) $sum;

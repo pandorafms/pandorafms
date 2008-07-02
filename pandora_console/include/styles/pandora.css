@@ -211,7 +211,6 @@ div#page>div#menu {
 }
 div#head {
 	font-size: 8pt;
-	width: 960px;
 	height: 60px;
 	background: url(../../images/header.jpg);
 	border-bottom: solid 2px #555;

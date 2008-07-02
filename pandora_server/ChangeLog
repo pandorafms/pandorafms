@@ -1,3 +1,11 @@
+2008-07-02  Sancho Lerena <slerena@gmail.com>
+
+	* pandora_wmi: Finished first functional version. Uses wmic from
+	samba project (Ubuntu has in official repos). This is a first 
+	functional prototype, not to be tested on production sites.
+
+	* pandora_plugin: fixed some bad strings.
+
 2008-06-30  Sancho Lerena <slerena@gmail.com>
 
 	* util/plugin/udp_nmap_plugin.sh: Added UDP port check plugin

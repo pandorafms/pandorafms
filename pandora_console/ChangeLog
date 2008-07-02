@@ -1,3 +1,23 @@
+
+
+2008-07-01  Sancho Lerena <slerena@gmail.com>
+
+	* pandoradb.sql: Added several indexes, patch from Guruevi.
+
+	* configurar_agente.php: Default "public" for snmp_community
+	was causing a fail on blank communities (snmp community is used
+	on WMI modules as filter key). Default value is now "" due the way
+	get_parameter works, and don't want to change a global function.
+
+	* module_manager_editor_wmi.php: Added two new fields: filter key
+	for WMI output (using snmp_community to store it) and WMI response
+	field number (using tcp_port to store it).
+
+	* setup.php: Added global "sla_period" item to setup page.
+
+	* sla_view.php: Fixed code to be more close on our coding standards. 
+	Need to improve and uses the global table functions on functions_html.
+
 2008-07-02  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions_db.php: Fixed typo in event_insert().

@@ -642,7 +642,7 @@ if ((isset($_POST["update_module"])) || (isset($_POST["insert_module"]))) {
 	$form_tcp_send = get_parameter ("form_tcp_send","");
 	$form_tcp_rcv = get_parameter ("form_tcp_rcv","");
 	$form_tcp_port = get_parameter ("form_tcp_port",0);
-	$form_snmp_community = get_parameter ("form_snmp_community","public");
+	$form_snmp_community = get_parameter ("form_snmp_community","");
 	$form_snmp_oid = get_parameter ("form_snmp_oid","");
 	$form_ip_target = get_parameter ("form_ip_target","");
 	$form_plugin_user = get_parameter ("form_plugin_user","");
@@ -691,15 +691,7 @@ if ((isset($_POST["update_module"])) && (!isset($_POST["oid"]))){ // if modified
 	} else {
 		echo "<h3 class='suc'>".$lang_label["update_module_ok"]."</h3>";
 	}
-	/*
-	// Init vars to null to avoid trash in forms 
-	$id_tipo_modulo = "";$nombre =  "";$descripcion = "";$modulo_max = "";
-	$modulo_min = "";// Pandora 1.2 new module data:
-	$tcp_send = "";$tcp_rcv = "";$tcp_port = "";$ip_target = "";
-	$snmp_oid = "";$snmp_community = "";$id_module_group = "";
-	$module_interval = ""; $modulo_nombre = ""; $modulo_descripcion = "";
-	$update_module = 0;
-	*/
+
 }
 // =========================================================
 // OID Refresh button to get SNMPWALK from data in form

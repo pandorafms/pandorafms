@@ -1,5 +1,11 @@
 2008-07-02  Esteban Sanchez  <estebans@artica.es>
 
+	* include/styles/pandora.css: Removed width on header div.
+
+	* include/functions_db.php: Use id_user parameter in logon_db().
+
+2008-07-02  Esteban Sanchez  <estebans@artica.es>
+
 	* general/logon_ok.php: Style correction.
 
 	* include/languages/language_en.php: Added a couple of strings.

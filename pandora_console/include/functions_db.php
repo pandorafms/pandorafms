@@ -172,7 +172,7 @@ function audit_db ($id, $ip, $accion, $descripcion){
 function logon_db ($id_user, $ip) {
 	global $config;
 	
-	audit_db ($config['id_user'], $ip, "Logon", "Logged in");
+	audit_db ($id_user, $ip, "Logon", "Logged in");
 	// Update last registry of user to get last logon
 	$sql = sprintf ('UPDATE tusuario fecha_registro = $today WHERE id_usuario = "%s"', $id_user);
 	$result = mysql_query ($sql);

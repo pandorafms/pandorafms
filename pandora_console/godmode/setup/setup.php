@@ -98,6 +98,8 @@ $table->data[11][0] = lang_string ('style_template');
 $table->data[11][1] = print_select ($file_styles, 'style', $config["style"], '', '', '', true);
 $table->data[12][0] = lang_string ('block_size');
 $table->data[12][1] = print_input_text ('block_size', $config["block_size"], '', 5, 5, true);
+$table->data[13][0] = lang_string ('sla_period');
+$table->data[13][1] = print_input_text ('sla_period', $config["sla_period"], '', 5, 5, true);
 
 echo '<form id="form_setup" method="POST" action="index.php?sec=gsetup&amp;sec2=godmode/setup/setup">';
 print_input_hidden ('update_settings', 1);

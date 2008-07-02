@@ -108,6 +108,13 @@ echo '<td class="datos">'.lang_string ("WMI Query")."</td>";
 echo '<td class="datos"><input type="text" name="form_snmp_oid" size="25" value="'.$form_snmp_oid.'"></td>';
 echo '</tr>';
 
+// Specific string and field number
+echo '<tr>';
+echo '<td class="datos2">'.lang_string ("Key string")."</td>";
+echo '<td class="datos2"><input type="text" name="form_snmp_community" size="20" value="'.$form_snmp_community.'"></td>';
+echo '<td class="datos2">'.lang_string ("Answer field number")."</td>";
+echo '<td class="datos2"><input type="text" name="form_tcp_port" size="3" value="'.$form_tcp_port.'"></td>';
+echo '</tr>';
 
 // username / password
 echo '<tr>';

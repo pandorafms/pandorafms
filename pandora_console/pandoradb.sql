@@ -65,7 +65,10 @@ CREATE TABLE `tagente` (
   `id_prediction_server` int(4) unsigned default '0',
   `id_wmi_server` int(4) unsigned default '0',
   `id_parent` mediumint(8) unsigned default '0',
-  PRIMARY KEY  (`id_agente`)
+  PRIMARY KEY  (`id_agente`),
+	KEY `nombre` (`nombre`),
+	KEY `direccion` (`direccion`),
+	KEY `disabled` (`disabled`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `tagente_datos` (
@@ -129,8 +132,10 @@ CREATE TABLE `tagente_estado` (
   `running_by` int(10) unsigned NULL default 0,
   `last_execution_try` bigint(20) NOT NULL default '0',
   PRIMARY KEY  (`id_agente_estado`),
-  KEY `status_index_1` (`id_agente_modulo`),
-  KEY `status_index_2` (`id_agente_modulo`,`estado`)
+  	KEY `status_index_1` (`id_agente_modulo`),
+  	KEY `status_index_2` (`id_agente_modulo`,`estado`),
+	KEY `current_interval` (`current_interval`),
+	KEY `last_execution_try` (`last_execution_try`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /* 
@@ -173,8 +178,9 @@ CREATE TABLE `tagente_modulo` (
   `prediction_module` bigint(14) default '0',
   `max_timeout` tinyint(3) unsigned default '0',
   PRIMARY KEY (`id_agente_modulo`, `id_agente`),
-  KEY `tam_agente` (`id_agente`),
-  KEY `tam_plugin` (`id_plugin`)
+  	KEY `tam_agente` (`id_agente`),
+	KEY `id_tipo_modulo` (`id_tipo_modulo`),
+  	KEY `tam_plugin` (`id_plugin`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- snmp_oid is also used for WMI query
@@ -249,7 +255,9 @@ CREATE TABLE `talerta_agente_modulo` (
   `priority` tinyint(4) default '0',
   `al_f2_recovery` varchar(255) NOT NULL default '',
   `al_f3_recovery` mediumtext NOT NULL default '',
-  PRIMARY KEY  (`id_aam`)
+  PRIMARY KEY  (`id_aam`),
+	KEY `id_agente_modulo` (`id_agente_modulo`),
+	KEY `disable` (`disable`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -495,7 +503,10 @@ CREATE TABLE `tserver` (
   `prediction_server` tinyint(3) unsigned NOT NULL default '0',
   `wmi_server` tinyint(3) unsigned NOT NULL default '0',
   `export_server` tinyint(3) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id_server`)
+  PRIMARY KEY  (`id_server`),
+	KEY `name` (`name`),
+	KEY `keepalive` (`keepalive`),
+	KEY `status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `tsesion` (

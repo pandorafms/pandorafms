@@ -1,3 +1,57 @@
+2008-07-02  Esteban Sanchez  <estebans@artica.es>
+
+	* general/logon_ok.php: Style correction.
+
+	* include/languages/language_en.php: Added a couple of strings.
+	
+	* include/styles/pandora.css: Container div has now variable width, so
+	Pandora console is wider now.
+
+	* include/config.php: Replaced default values from last commit. Change
+	homeurl variable, which now points to base url directory.
+
+	* include/config_process.php: Style correction. Use pandora functions
+	and indent the code properly.
+
+	* reporting/fgraph.php, include/functions.php, ajax.php: Use
+	require_once instead of require which speeds up the code parsing.
+	
+	* index.php: Use require_once instead of require which speeds up the
+	code parsing. Add all GET and POST variables when refreshing a page.
+	Style corrections. Use $_SERVER instead getenv.
+
+	* include/functions_db.php: Avoid including config.php and use global
+	instead. Replaced some id_user with the respective variable holds in
+	config array. Replaced SQL syntax, removed an undeclared variable and
+	renamed to english in event_insert(). Renamed
+	return_moduledata_*_value() to get_agent_module_value_*(). Fixed an
+	error in the sumatory when the module is incremental.
+
+	* include/functions_reporting.php: Renamed return_module_SLA() to
+	get_agent_module_sla().
+
+	* include/functions_reporting_pdf.php: Tabs and blankspaces
+	correction. Style correction. Added new reports rendering, and fixed
+	images references. Removed old and deprecated functions.
+
+	* operation/agentes/networkmap.php: Style correction.
+
+	* operation/agentes/sla_view.php, reporting/stat_win.php: Use renamed
+	functions.
+
+	* operation/reporting/reporting_viewer.php: Table reports width are
+	now wider. Fixed some colspan problems. Generate custom graph ids
+	better. Added agent and module name to SLAs. Style correction in the
+	use of rowclass structure since now each content has its own table.
+
+	* operation/reporting/custom_reporting.php: Removed unused variable
+	for PDF reporting generation link.
+
+	* operation/reporting/reporting_viewer_pdf.php: Rewrite the code to
+	make style corrections and use pandora functions.
+
+	* operation/menu.php: Tabs and blankspaces correction.
+
 2008-07-01  Sancho Lerena <slerena@gmail.com>
 
 	* include/config_process.php: Default back to 1 week.

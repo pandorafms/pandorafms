@@ -17,10 +17,6 @@ require("include/config.php");
 
 $pandora_name = 'Pandora FMS';
 
-///////////////////////////////////////////////////////////////////////////////
-// DOT related functions
-///////////////////////////////////////////////////////////////////////////////
-
 // Generate a dot graph definition for graphviz
 function generate_dot ($simple = 0) {
 	global $config;
@@ -167,8 +163,8 @@ function open_graph () {
 
 	
 	if ($pure == 1  && $zoom > 1 && $zoom <= 3) {
-			$size_x *= $zoom;
-			$size_y *= $zoom;
+		$size_x *= $zoom;
+		$size_y *= $zoom;
 	}
 	$size = $size_x . ',' . $size_y;
 

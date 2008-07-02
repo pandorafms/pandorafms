@@ -99,7 +99,7 @@ require ("include/functions_reporting.php");
 				echo "<td class='".$tdcolor."' title='".$est_description."'>".$est_modulo."</td>";
 				echo "<td class='$tdcolor'>";
 
-				$temp = return_module_SLA ($row_t["id_agente_modulo"], $config["sla_period"], 1, 2147483647);
+				$temp = get_agent_module_sla ($row_t["id_agente_modulo"], $config["sla_period"], 1, 2147483647);
 				if ($temp === false)
 					echo lang_string("N/A");
 				else {
@@ -182,7 +182,7 @@ require ("include/functions_reporting.php");
 			echo " ($sla_min/$sla_max/$sla_limit) </td>";
 			echo "<td class='$tdcolor'>";
 
-			$temp = return_module_SLA ($row_t["id_agente_modulo"], $config["sla_period"], $sla_min, $sla_max);
+			$temp = get_agent_module_sla ($row_t["id_agente_modulo"], $config["sla_period"], $sla_min, $sla_max);
 			if ($temp === false){
 				echo lang_string("N/A");
 				echo "<td class='$tdcolor'>";

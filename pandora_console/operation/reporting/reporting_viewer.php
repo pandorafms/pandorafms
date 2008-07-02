@@ -57,7 +57,7 @@ echo "<h2>".lang_string ('reporting')." &gt; ";
 echo lang_string ('custom_reporting')." - ";
 echo $report['name']."</h2>";
 
-$table->width = '750px';
+$table->width = '99%';
 $table->class = 'databox';
 $table->style = array ();
 $table->style[0] = 'font-weight: bold';
@@ -115,15 +115,19 @@ if ($datetime > time ()) {
 
 $table->size = array ();
 $table->style = array ();
-$table->width = '750px';
+$table->width = '99%';
 $table->class = 'databox report_table';
-$table->rowclasses = array ();
+$table->rowclass = array ();
+$table->rowclass[0] = 'datos3';
 
 $group_name = dame_grupo ($report['id_group']);
 $sql = sprintf ('SELECT * FROM treport_content WHERE id_report = %d ORDER BY `order`', $id_report);
 $contents = get_db_all_rows_sql ($sql);
 foreach ($contents as $content) {
 	$table->data = array ();
+	$table->head = array ();
+	$table->style = array ();
+	$table->colspan = array ();
 	
 	$module_name = get_db_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']);
 	$agent_name = dame_nombre_agente_agentemodulo ($content['id_agent_module']);
@@ -131,16 +135,13 @@ foreach ($contents as $content) {
 	switch ($content["type"]) {
 	case 1:
 	case 'simple_graph':
-		$table->colspan[1][0] = 3;
+		$table->colspan[1][0] = 4;
 		$data = array ();
 		$data[0] = '<h4>'.lang_string ('simple_graph').'</h4>';
 		$data[1] = '<h4>'.$agent_name.' - '.$module_name.'</h4>';
 		$data[2] = '<h4>'.human_time_description($content['period']).'</h4>';
-		$n = array_push ($table->data, $data);
-		$table->rowclass[$n - 1] = 'datos3';
+		array_push ($table->data, $data);
 		
-		// $n is the number of elements in the array, so it will be the index of the next element
-		$table->colspan[$n][0] = 3;
 		$data = array ();
 		$data[0] = '<img src="reporting/fgraph.php?tipo=sparse&id='.$content['id_agent_module'].'&height=230&width=720&period='.$content['period'].'&date='.$datetime.'&avg_only=1&pure=1" border="0" alt="">';
 		array_push ($table->data, $data);
@@ -148,63 +149,59 @@ foreach ($contents as $content) {
 		break;
 	case 2:
 	case 'custom_graph':
-		$graph = get_db_row ("tgraph", "id_graph", $content['id_gs']);
-		$sql2 = sprintf ('SELECT * FROM tgraph_source WHERE id_graph = %d', $content['id_gs']);
-		$res2 = mysql_query($sql2);
-		while ($content2 = mysql_fetch_array($res2)) {
-			$weight = $content2["weight"];
-			$content['id_agent_module'] = $content2["id_agent_module"];
-			if (!isset ($modules)) {
-				$modules = $content['id_agent_module'];
-				$weights = $weight;
-			} else {
-				$modules = $modules.",".$content['id_agent_module'];
-				$weights = $weights.",".$weight;
-			}
-		}
-		unset ($modules);
-		unset ($weights);
 		$data = array ();
 		$data[0] = '<h4>'.lang_string ('custom_graph').'</h4>';
 		$data[1] = "<h4>".$graph["name"]."</h4>";
-		$data[2] = "<h4>".human_time_description($content['period'])."</h4>";
-		$n = array_push ($table->data, $data);
-		$table->rowclass[$n - 1] = 'datos3';
+		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
+		array_push ($table->data, $data);
 		
-		$table->colspan[$n][0] = 3;
+		$graph = get_db_row ("tgraph", "id_graph", $content['id_gs']);
+		$sql2 = sprintf ('SELECT * FROM tgraph_source WHERE id_graph = %d', $content['id_gs']);
+		$res2 = mysql_query($sql2);
+		$modules = array ();
+		$weights = array ();
+		while ($content2 = mysql_fetch_array($res2)) {
+			array_push ($modules, $content2['id_agent_module']);
+			array_push ($weights, $content2["weight"]);
+		}
+		
+		$table->colspan[1][0] = 4;
 		$data = array ();
-		$data[0] = '<img src="reporting/fgraph.php?tipo=combined&id='.$modules.'&weight_l='.$weights.'&height=230&width=720&period='.$content['period'].'&date='.$datetime.'&stacked='.$graph["stacked"].'&pure=1" border="1" alt="">';
+		$data[0] = '<img src="reporting/fgraph.php?tipo=combined&id='.implode (',', $modules).'&weight_l='.implode (',', $weights).'&height=230&width=720&period='.$content['period'].'&date='.$datetime.'&stacked='.$graph["stacked"].'&pure=1" border="1" alt="">';
 		array_push ($table->data, $data);
 		
 		break;
 	case 3:
 	case 'SLA':
+		$table->colspan[0][0] = 2;
+		$table->style[1] = 'text-align: right';
 		$data = array ();
 		$data[0] = '<h4>'.lang_string ('SLA').'</h4>';
-		$data[1] = '<h4>'.$group_name.'</h4>';
-		$data[2] = '<h4>'.human_time_description ($content['period']).'</h4>';
+		$data[1] = '<h4>'.human_time_description ($content['period']).'</h4>';;
 		$n = array_push ($table->data, $data);
-		$table->rowclass[$n - 1] = 'datos3';
 		
 		$slas = get_db_all_rows_field_filter ('treport_content_sla_combined',
 							'id_report_content', $content['id_rc']);
 		if (sizeof ($slas) == 0) {
 			$data = array ();
-			$table->colspan[$n][0] = 3;
+			$table->colspan[1][0] = 3;
 			$data[0] = lang_string ('no_defined_slas');
 			array_push ($table->data, $data);
 		}
+		
+		$sla_failed = false;
 		foreach ($slas as $sla) {
 			$data = array ();
 			
 			$table->colspan[$n][0] = 2;
 			$data[0] = '<span style="font-size: 0.6em">';
-			$data[0] .= lang_string ('sla_max')." : ".$sla['sla_max']."<br>";
-			$data[0] .= lang_string ('sla_min')." : ".$sla['sla_min']."<br>";
-			$data[0] .= lang_string ('sla_limit')." : ".$sla['sla_limit']."<br>";
+			$data[0] .= lang_string ('agent')." : ".dame_nombre_agente_agentemodulo ($sla['id_agent_module'])."<br />";
+			$data[0] .= lang_string ('module')." : ".dame_nombre_modulo_agentemodulo ($sla['id_agent_module'])."<br />";
+			$data[0] .= lang_string ('sla_max')." : ".$sla['sla_max']."<br />";
+			$data[0] .= lang_string ('sla_min')." : ".$sla['sla_min']."<br />";
 			$data[0] .= "</span>";
 			
-			$sla_value = return_module_SLA ($sla['id_agent_module'], $content['period'],
+			$sla_value = get_agent_module_sla ($sla['id_agent_module'], $content['period'],
 							$sla['sla_min'], $sla['sla_max'], $datetime);
 			if ($sla_value === false) {
 				$data[1] = '<span style="font: bold 3em Arial, Sans-serif; color: #0000FF;">';
@@ -212,29 +209,43 @@ foreach ($contents as $content) {
 			} else {
 				if ($sla_value >= $sla['sla_limit'])
 					$data[1] = '<span style="font: bold 3em Arial, Sans-serif; color: #000000;">';
-				else
+				else {
+					$sla_failed = true;
 					$data[1] = '<span style="font: bold 3em Arial, Sans-serif; color: #ff0000;">';
+				}
 				$data[1] .= format_numeric ($sla_value). " %";
 			}
 			$data[1] .= "</span>";
 			
 			$n = array_push ($table->data, $data);
 		}
+		if (sizeof ($slas)) {
+			$data = array ();
+			if ($sla_failed)
+				$data[0] = '<span style="font: bold 3em Arial, Sans-serif; color: #000000;">'.lang_string ('Ok').'</span>';
+			else
+				$data[0] = '<span style="font: bold 3em Arial, Sans-serif; color: #ff0000;">'.lang_string ('Fail').'</span>';
+			$n = array_push ($table->data, $data);
+			$table->colspan[$n - 1][0] = 3;
+			$table->rowstyle[$n - 1] = 'text-align: right';
+		}
 		
 		break;
 	case 4:
 	case 'event_report':
+		$table->colspan[0][0] = 2;
 		$id_agent = dame_agente_id ($agent_name);
 		$data = array ();
 		$data[0] = "<h4>".lang_string ('event_report')."</h4>";
-		$data[1] = "<h4>$agent_name - $module_name</h4>";
-		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
-		$n = array_push ($table->data, $data);
-		$table->rowclass[$n - 1] = 'datos3';
+		$data[1] = "<h4>".human_time_description ($content['period'])."</h4>";
+		array_push ($table->data, $data);
 		
-		$table->colspan[$n][0] = 3;
+		$table->colspan[1][0] = 3;
 		$data = array ();
-		$data[0] = event_reporting ($id_agent, $content['period'], $datetime, true);
+		$table_report = event_reporting ($report['id_group'], $content['period'], $datetime, true);
+		$table_report->class = 'databox';
+		$table_report->width = '100%';
+		$data[0] = print_table ($table_report, true);
 		array_push ($table->data, $data);
 		
 		break;
@@ -244,11 +255,10 @@ foreach ($contents as $content) {
 		$data[0] = "<h4>".lang_string ('alert_report')."</h4>";
 		$data[1] = "<h4>$group_name</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
-		$n = array_push ($table->data, $data);
-		$table->rowclass[$n - 1] = 'datos3';
+		array_push ($table->data, $data);
 		
 		$data = array ();
-		$table->colspan[$n][0] = 3;
+		$table->colspan[1][0] = 3;
 		$data[0] = alert_reporting ($report['id_group'], $content['period'], $datetime, true);
 		array_push ($table->data, $data);
 		
@@ -259,11 +269,10 @@ foreach ($contents as $content) {
 		$data[0] = "<h4>".lang_string ('monitor_report')."</h4>";
 		$data[1] = "<h4>$agent_name - $module_name</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
-		$n = array_push ($table->data, $data);
-		$table->rowclass[$n - 1] = 'datos3';
+		array_push ($table->data, $data);
 		
 		$data = array ();
-		$monitor_value = format_numeric (return_module_SLA ($content['id_agent_module'], $content['period'], 1, 1, $datetime));
+		$monitor_value = format_numeric (get_agent_module_sla ($content['id_agent_module'], $content['period'], 1, 1, $datetime));
 		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">';
 		$data[0] .= $monitor_value.' % <img src="images/b_green.png" height="32" width="32"></p>';
 		$monitor_value2 = format_numeric (100 - $monitor_value, 2) ;
@@ -278,12 +287,11 @@ foreach ($contents as $content) {
 		$data[0] = "<h4>".lang_string ('avg_value')."</h4>";
 		$data[1] = "<h4>$agent_name - $module_name</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
-		$n = array_push ($table->data, $data);
-		$table->rowclass[$n - 1] = 'datos3';
+		array_push ($table->data, $data);
 		
 		$data = array ();
-		$table->colspan[$n][0] = 2;
-		$value = format_numeric (return_moduledata_avg_value ($content['id_agent_module'], $content['period'], $datetime));
+		$table->colspan[1][0] = 2;
+		$value = format_numeric (get_agent_module_value_average ($content['id_agent_module'], $content['period'], $datetime));
 		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
 		array_push ($table->data, $data);
 		
@@ -294,12 +302,11 @@ foreach ($contents as $content) {
 		$data[0] = "<h4>".lang_string ('max_value')."</h4>";
 		$data[1] = "<h4>$agent_name - $module_name</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
-		$n = array_push ($table->data, $data);
-		$table->rowclass[$n - 1] = 'datos3';
+		array_push ($table->data, $data);
 		
 		$data = array ();
-		$table->colspan[$n][0] = 2;
-		$value = format_numeric (return_moduledata_max_value ($content['id_agent_module'], $content['period'], $datetime));
+		$table->colspan[1][0] = 2;
+		$value = format_numeric (get_agent_module_value_max ($content['id_agent_module'], $content['period'], $datetime));
 		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
 		array_push ($table->data, $data);
 		
@@ -310,12 +317,11 @@ foreach ($contents as $content) {
 		$data[0] = "<h4>".lang_string ('min_value')."</h4>";
 		$data[1] = "<h4>$agent_name - $module_name</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
-		$n = array_push ($table->data, $data);
-		$table->rowclass[$n - 1] = 'datos3';
+		array_push ($table->data, $data);
 		
 		$data = array ();
-		$table->colspan[$n][0] = 2;
-		$value = format_numeric (return_moduledata_min_value ($content['id_agent_module'], $content['period'], $datetime));
+		$table->colspan[1][0] = 2;
+		$value = format_numeric (get_agent_module_value_min ($content['id_agent_module'], $content['period'], $datetime));
 		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
 		array_push ($table->data, $data);
 		
@@ -326,12 +332,11 @@ foreach ($contents as $content) {
 		$data[0] = "<h4>".lang_string ('sumatory')."</h4>";
 		$data[1] = "<h4>$agent_name - $module_name</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
-		$n = array_push ($table->data, $data);
-		$table->rowclass[$n - 1] = 'datos3';
+		array_push ($table->data, $data);
 		
 		$data = array ();
-		$table->colspan[$n][0] = 2;
-		$value = format_numeric (return_moduledata_sum_value ($content['id_agent_module'], $content['period'], $datetime));
+		$table->colspan[1][0] = 2;
+		$value = format_numeric (get_agent_module_value_sumatory ($content['id_agent_module'], $content['period'], $datetime));
 		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
 		array_push ($table->data, $data);
 		
@@ -341,12 +346,10 @@ foreach ($contents as $content) {
 		$data = array ();
 		$data[0] = "<h4>".lang_string ('group')."</h4>";
 		$data[1] = "<h4>$group_name</h4>";
-		$n = array_push ($table->data, $data);
-		$table->rowclass[$n - 1] = 'datos3';
+		array_push ($table->data, $data);
 		
 		$data = array ();
-		$table->colspan[$n][0] = 2;
-		$value = format_numeric (return_moduledata_sum_value ($content['id_agent_module'], $content['period'], $datetime));
+		$table->colspan[1][0] = 2;
 		$data[0] = general_group_reporting ($report['id_group'], true);
 		array_push ($table->data, $data);
 		
@@ -357,11 +360,10 @@ foreach ($contents as $content) {
 		$data[0] = "<h4>".lang_string ('monitor_health')."</h4>";
 		$data[1] = "<h4>$group_name</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
-		$n = array_push ($table->data, $data);
-		$table->rowclass[$n - 1] = 'datos3';
+		array_push ($table->data, $data);
 		
 		$data = array ();
-		$table->colspan[$n][0] = 3;
+		$table->colspan[1][0] = 4;
 		$data[0] = monitor_health_reporting ($report['id_group'], $content['period'], $datetime, true);
 		array_push ($table->data, $data);
 		
@@ -371,13 +373,12 @@ foreach ($contents as $content) {
 		$data = array ();
 		$data[0] = "<h4>".lang_string ('agents_detailed')."</h4>";
 		$data[1] = "<h4>$group_name</h4>";
-		$data[2] = "";
-		$n = array_push ($table->data, $data);
-		$table->rowclass[$n - 1] = 'datos3';
+		array_push ($table->data, $data);
+		$table->colspan[0][0] = 2;
 		
 		$data = array ();
-		$table->colspan[$n][0] = 3;
-		$data[0] = agents_detailed_reporting ($report['id_group'], $content['period'], $datetime, true);
+		$table->colspan[1][0] = 3;
+		$data[0] = get_agents_detailed_reporting ($report['id_group'], $content['period'], $datetime, true);
 		array_push ($table->data, $data);
 		
 		break;

@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-function return_module_SLA ($id_agent_module, $period, $min_value, $max_value, $date = 0) {
+function get_agent_module_sla ($id_agent_module, $period, $min_value, $max_value, $date = 0) {
 	require("config.php");
 	if (! $date)
 		$date = time ();
@@ -190,60 +190,110 @@ function general_stats ( $id_user, $id_group = 0) {
 	return $data;
 }
 
-function event_reporting ($id_agent, $period, $date = 0, $return = false) {
-	require("config.php");
-	require ("include/languages/language_".$config["language"].".php");
+function event_reporting ($id_group, $period, $date = 0, $return = false) {
+	global $config;
 
-	$output = '';
-	$id_user = $_SESSION["id_usuario"];
-	global $REMOTE_ADDR;
 	if (! $date)
 		$date = time ();
-	$mytimestamp = $date - $period;
+	$datelimit = $date - $period;
 	
-	$output .= "<table cellpadding='4' cellspacing='4' width='100%' class='databox'>";
-	$output .= "<tr>";
-	$output .= "<th>".$lang_label["status"]."</th>";
-	$output .= "<th>".$lang_label["event_name"]."</th>";
-	$output .= "<th>".$lang_label["id_user"]."</th>";
-	$output .= "<th>".$lang_label["timestamp"]."</th>";
-	$color = 1;
-	$id_evento = 0;
+	$table->data = array ();
+	$table->head = array ();
+	$table->head[0] = lang_string ('status');
+	$table->head[1] = lang_string ('event_name');
+	$table->head[2] = lang_string ('id_user');
+	$table->head[3] = lang_string ('timestamp');
 	
-	$sql2="SELECT * FROM tevento WHERE id_agente = $id_agent AND utimestamp > '$mytimestamp'";
-	
-	// Make query for data (all data, not only distinct).
-	$result2 = mysql_query($sql2);
-	while ($row2 = mysql_fetch_array($result2)) {
-		$id_grupo = $row2["id_grupo"];
-		if (give_acl($id_user, $id_grupo, "IR") == 1) { // Only incident read access to view data !
-			$id_group = $row2["id_grupo"];
-			if ($color == 1){
-				$tdcolor = "datos";
-				$color = 0;
-			}
-			else {
-				$tdcolor = "datos2";
-				$color = 1;
-			}
-			$output .= "<tr><td class='$tdcolor' align='center'>";
-			if ($row2["estado"] == 0)
-				$output .= "<img src='images/dot_red.png'>";
-			else
-				$output .= "<img src='images/dot_green.png'>";
-			$output .= "<td class='$tdcolor'>".$row2["evento"];
-			$output .= "<td class='$tdcolor'>";
-			if ($row2["estado"] <> 0)
-				$output .= substr($row2["id_usuario"],0,8)."<a href='#' class='tip'> <span>".dame_nombre_real($row2["id_usuario"])."</span></a>";
-			$output .= "<td class='".$tdcolor."f9'>".$row2["timestamp"];
-			$output .= "</td></tr>";
-		}
+	$sql = sprintf ('SELECT * FROM tevento 
+			WHERE id_agente = %d
+			AND utimestamp > %d AND utimestamp <= %d
+			AND id_grupo = %d
+			ORDER BY utimestamp ASC',
+			$id_group, $datelimit, $date, $id_group);
+	$events = get_db_all_rows_sql ($sql);
+	foreach ($events as $event) {
+		$data = array ();
+		if ($event["estado"] == 0)
+			$data[0] = '<img src="images/dot_red.png">';
+		else
+			$data[0] = '<img src="images/dot_green.png">';
+		$data[1] = $event['evento'];
+		$data[2] = $event['id_usuario'] != '0' ? $event['id_usuario'] : '';
+		$data[3] = $event["timestamp"];
+		array_push ($table->data, $data);
 	}
-	$output .= "</table>";
 
 	if (!$return)
-		echo $output;
-	return $output;
+		print_table ($table);
+	return $table;
+}
+
+function get_alerts_in_group ($id_group) {
+	$alerts = array ();
+	$agents = get_agents_in_group ($id_group);
+	foreach ($agents as $agent) {
+		$agent_alerts = get_alerts_in_agent ($agent['id_agente']);
+		$alerts = array_merge ($alerts, $agent_alerts);
+	}
+	
+	return $alerts;
+}
+
+function get_alerts_fired ($alerts, $period = 0, $date = 0) {
+	if (! $date)
+		$date = time ();
+	$datelimit = $date - $period;
+
+	$alerts_fired = array ();
+	$agents = array ();
+	foreach ($alerts as $alert) {
+		$fires = get_alert_fires_in_period ($alert['id_agente_modulo'], $period, $date);
+		if (! $fires) {
+			continue;
+		}
+		$alerts_fired[$alert['id_aam']] = $fires;
+	}
+	return $alerts_fired;
+}
+
+function get_fired_alerts_reporting_table ($alerts_fired, $return = false) {
+	$agents = array ();
+	
+	foreach (array_keys ($alerts_fired) as $id_alert) {
+		$alert = get_db_row ('talerta_agente_modulo', 'id_aam', $id_alert);
+		
+		/* Add alerts fired to $agents_fired_alerts indexed by id_agent */
+		$id_agent = $alert['id_agent'];
+		if (!isset ($agents[$id_agent])) {
+			$agents[$id_agent] = array ();
+		}
+		array_push ($agents[$id_agent], $alert);
+	}
+	
+	$table->data = array ();
+	$table->head = array ();
+	$table->head[0] = lang_string ('agent');
+	$table->head[1] = lang_string ('alert_description');
+	$table->head[2] = lang_string ('times_fired');
+	$table->head[3] = lang_string ('priority');
+	
+	foreach ($agents as $alerts) {
+		$data = array ();
+		foreach ($alerts as $alert) {
+			if (! isset ($data[0]))
+				$data[0] = dame_nombre_agente_agentemodulo ($alert['id_agente_modulo']);
+			else
+				$data[0] = '';
+			$data[1] = $alert['descripcion'];
+			$data[2] = $alerts_fired[$alert['id_aam']];
+			$data[3] = get_alert_priority ($alert['priority']);
+			array_push ($table->data, $data);
+		}
+	}
+	
+	if (!$return)
+		print_table ($table);
+	return $table;
 }
 
 /**
@@ -258,73 +308,32 @@ function event_reporting ($id_agent, $period, $date = 0, $return = false) {
  * @param $return Flag to return or echo the report (by default).
  */
 function alert_reporting ($id_group, $period = 0, $date = 0, $return = false) {
-	if (! $date)
-		$date = time ();
-	$datelimit = $date - $period;
 	$output = '';
-	$alerts = array ();
+	$alerts = get_alerts_in_group ($id_group);
+	$alerts_fired = get_alerts_fired ($alerts, $period, $date);
 	
-	$agents = get_agents_in_group ($id_group);
-	foreach ($agents as $agent) {
-		$agent_alerts = get_alerts_in_agent ($agent['id_agente']);
-		$alerts = array_merge ($alerts, $agent_alerts);
-	}
-	if (sizeof ($alerts) == 0)
-		return;
-
-	$alerts_fired = array ();
-	$agents = array ();
-	foreach ($alerts as $alert) {
-		$fires = get_alert_fires_in_period ($alert['id_agente_modulo'], $period, $date);
-		if (! $fires) {
-			continue;
-		}
-		$alerts_fired[$alert['id_aam']] = $fires;
-		$data = array ();
-		
-		/* Add alerts fired to $agents_fired_alerts indexed by id_agent */
-		$id_agent = $alert['id_agent'];
-		if (!isset ($agents[$id_agent])) {
-			$agents[$id_agent] = array ();
-		}
-		array_push ($agents[$id_agent], $alert);
-	}
 	$fired_percentage = round (sizeof ($alerts_fired) / sizeof ($alerts) * 100, 2);
 	$not_fired_percentage = 100 - $fired_percentage;
 	$output .= '<img src="reporting/fgraph.php?tipo=alerts_fired_pipe&height=150&width=280&fired='.
 		$fired_percentage.'&not_fired='.$not_fired_percentage.'" style="float: right; border: 1px solid black">';
 	
-	$output .= '<strong>'.lang_string ('agents_with_fired_alerts').': '.sizeof ($agents).'</strong><br />';
 	$output .= '<strong>'.lang_string ('fired_alerts').': '.sizeof ($alerts_fired).'</strong><br />';
 	$output .= '<strong>'.lang_string ('total_alerts_monitored').': '.sizeof ($alerts).'</strong><br />';
 
-	if ($alerts_fired) {
-		$table->width = '100%';
-		$table->class = 'databox';
-		$table->size = array ();
-		$table->size[0] = '100px';
-		$table->data = array ();
-		$table->head = array ();
-		$table->head[0] = lang_string ('agent');
-		$table->head[1] = lang_string ('alert_description');
-		$table->head[2] = lang_string ('times_fired');
-		$table->head[3] = lang_string ('priority');
-		
-		foreach ($agents as $alerts) {		
-			$data = array ();
-			foreach ($alerts as $alert) {
-				if (! isset ($data[0]))
-					$data[0] = '<strong>'.dame_nombre_agente_agentemodulo ($alert['id_agente_modulo']).'</strong>';
-				else
-					$data[0] = '';
-				$data[1] = $alert['descripcion'];
-				$data[2] = $alerts_fired[$alert['id_aam']];
-				$data[3] = get_alert_priority ($alert['priority']);
-				array_push ($table->data, $data);
-			}
-		}
-		$output .= print_table ($table, true);
+	if (! sizeof ($alerts_fired)) {
+		if (!$return)
+			echo $output;
+		return $output;
 	}
+	$table = get_fired_alerts_reporting_table ($alerts_fired, true);
+	$table->width = '100%';
+	$table->class = 'databox';
+	$table->size = array ();
+	$table->size[0] = '100px';
+	$table->style = array ();
+	$table->style[0] = 'font-weight: bold';
+	
+	$output .= print_table ($table, true);
 	if (!$return)
 		echo $output;
 	return $output;
@@ -347,24 +356,54 @@ function monitor_health_reporting ($id_group, $period = 0, $date = 0, $return = 
 	$datelimit = $date - $period;
 	$output = '';
 	
-	$sql = sprintf ('SELECT * FROM tagente_modulo, ttipo_modulo, tagente
-			WHERE id_tipo_modulo = id_tipo
-			AND tagente.id_agente = tagente_modulo.id_agente
-			AND ttipo_modulo.nombre like "%%_proc"
-			AND tagente.id_grupo = %d', $id_group);
-	$monitors = get_db_all_rows_sql ($sql);
+	$monitors = get_monitors_in_group ($id_group);
 	if (sizeof ($monitors) == 0)
 		return;
+	$monitors_down = get_monitors_down ($monitors, $period, $date);
+	$down_percentage = round (sizeof ($monitors_down) / sizeof ($monitors) * 100, 2);
+	$not_down_percentage = 100 - $down_percentage;
+	$output .= '<img src="reporting/fgraph.php?tipo=monitors_health_pipe&height=150&width=280&down='.
+		$down_percentage.'&not_down='.$not_down_percentage.'" style="float: right; border: 1px solid black">';
+	
+	$output .= '<strong>'.lang_string ('total_monitors').': '.sizeof ($monitors).'</strong><br />';
+	$output .= '<strong>'.lang_string ('monitors_down_on_period').': '.sizeof ($monitors_down).'</strong><br />';
+	
+	$table = get_monitors_down_reporting_table ($monitors_down, true);
+	$table->width = '100%';
+	$table->class = 'databox';
+	$table->size = array ();
+	$table->size[0] = '100px';
+	$table->style = array ();
+	$table->style[0] = 'font-weight: bold';
+	
+	$table->size = array ();
+	$table->size[0] = '100px';
+	
+	$output .= print_table ($table, true);
+	
+	if (!$return)
+		echo $output;
+	return $output;
+}
 
-	$monitors_down = 0;
-	$agents = array ();
+function get_monitors_down ($monitors, $period = 0, $date = 0) {
+	$monitors_down = array ();
 	foreach ($monitors as $monitor) {
 		$down = get_monitor_downs_in_period ($monitor['id_agente_modulo'], $period, $date);
-		if (! $down) {
-			continue;
-		}
-		$data = array ();
-		
+		if ($down)
+			array_push ($monitors_down, $monitor);
+	}
+	return $monitors_down;
+}
+
+function get_monitors_down_reporting_table ($monitors_down, $return = false) {
+	$table->data = array ();
+	$table->head = array ();
+	$table->head[0] = lang_string ('agent');
+	$table->head[1] = lang_string ('monitor');
+	
+	$agents = array ();
+	foreach ($monitors_down as $monitor) {
 		/* Add monitors fired to $agents_fired_alerts indexed by id_agent */
 		$id_agent = $monitor['id_agente'];
 		if (!isset ($agents[$id_agent])) {
@@ -374,39 +413,25 @@ function monitor_health_reporting ($id_group, $period = 0, $date = 0, $return = 
 		
 		$monitors_down++;
 	}
-	$down_percentage = round ($monitors_down / sizeof ($monitors) * 100, 2);
-	$not_down_percentage = 100 - $down_percentage;
-	$output .= '<img src="reporting/fgraph.php?tipo=monitors_health_pipe&height=150&width=280&down='.
-		$down_percentage.'&not_down='.$not_down_percentage.'" style="float: right; border: 1px solid black">';
-	
-	$output .= '<strong>'.lang_string ('total_monitors').': '.sizeof ($monitors).'</strong><br />';
-	$output .= '<strong>'.lang_string ('monitors_down_on_period').': '.$monitors_down.'</strong><br />';
-
-	$table->width = '100%';
-	$table->class = 'databox';
-	$table->size = array ();
-	$table->size[0] = '100px';
-	$table->data = array ();
-	$table->head = array ();
-	$table->head[0] = lang_string ('agent');
-	$table->head[1] = lang_string ('alert_description');
-	
-	foreach ($agents as $monitors) {		
+	foreach ($agents as $id_agent => $monitors) {
 		$data = array ();
 		foreach ($monitors as $monitor) {
 			if (! isset ($data[0]))
-				$data[0] = '<strong>'.$monitor['nombre'].'</strong>';
+				$data[0] = dame_nombre_agente ($id_agent);
 			else
 				$data[0] = '';
-			$data[1] = $monitor['descripcion'];
+			if ($monitor['descripcion'] != '') {
+				$data[1] = $monitor['descripcion'];
+			} else {
+				$data[1] = $monitor['nombre'];
+			}
 			array_push ($table->data, $data);
 		}
 	}
-	$output .= print_table ($table, true);
 	
 	if (!$return)
-		echo $output;
-	return $output;
+		print_table ($table);
+	return $table;
 }
 
 /**
@@ -427,42 +452,37 @@ function general_group_reporting ($id_group, $return = false) {
 	return $output;
 }
 
-/**
- * Get a detailed report of an agent
- *
- * @param $id_agent Agent to get the report.
- * @param $period Period of time of the desired report.
- * @param $date Beggining date of the report (current date by default).
- * @param $return Flag to return or echo the report (by default).
- */
-function agent_detailed_reporting ($id_agent, $period = 0, $date = 0, $return = false) {
-	$output = '';
-	$n_a_string = lang_string ('N/A').'(*)';
-	$monitors = array ();
-	$table_modules->data = array ();
-	$table_modules->head = array ();
-	$table_alerts->data = array ();
+function get_monitors_in_group ($id_group) {
+	$sql = sprintf ('SELECT tagente_modulo.*
+			FROM tagente_modulo, ttipo_modulo, tagente
+			WHERE id_tipo_modulo = id_tipo
+			AND tagente.id_agente = tagente_modulo.id_agente
+			AND ttipo_modulo.nombre like "%%_proc"
+			AND tagente.id_grupo = %d', $id_group);
+	return get_db_all_rows_sql ($sql);
+}
+
+function get_monitors_in_agent ($id_agent) {
+	$sql = sprintf ('SELECT tagente_modulo.*
+			FROM tagente_modulo, ttipo_modulo, tagente
+			WHERE id_tipo_modulo = id_tipo
+			AND tagente.id_agente = tagente_modulo.id_agente
+			AND ttipo_modulo.nombre like "%%_proc"
+			AND tagente.id_agente = %d', $id_agent);
+	return get_db_all_rows_sql ($sql);
+}
+
+function get_agent_alerts_reporting_table ($id_agent, $period = 0, $date = 0, $return = false) {
+	$table->data = array ();
+	$table->head = array ();
+	$table->head[0] = lang_string ('type');
+	$table->head[1] = lang_string ('description');
+	$table->head[2] = lang_string ('min');
+	$table->head[3] = lang_string ('max');
+	$table->head[4] = lang_string ('threshold');
+	$table->head[5] = lang_string ('last_fired');
+	$table->head[6] = lang_string ('times_fired');
 	
-	/* Show modules in agent */
-	$modules = get_modules_in_agent ($id_agent);
-	$output .= '<div class="agent_reporting">';
-	$output .= '<h3 style="text-decoration: underline">'.lang_string ('agent').' - '.dame_nombre_agente ($id_agent).'</h3>';
-	$output .= '<h4>'.lang_string ('modules').'</h3>';
-	$data = array ();
-	foreach ($modules as $module) {
-		if ($module['descripcion'] != $n_a_string && $module['descripcion'] != '')
-			$data[0] = $module['descripcion'];
-		else
-			$data[0] = $module['nombre'];
-		$module_name = giveme_module_type ($module['id_tipo_modulo']);
-		if (is_module_proc ($module_name)) {
-			array_push ($monitors, $module);
-		}
-		array_push ($table_modules->data, $data);
-	}
-	$output .= print_table ($table_modules, true);
-	
-	/* Show alerts in agent */
 	$alerts = get_alerts_in_agent ($id_agent);
 	foreach ($alerts as $alert) {
 		$fires = get_alert_fires_in_period ($alert['id_agente_modulo'], $period, $date);
@@ -479,21 +499,21 @@ function agent_detailed_reporting ($id_agent, $period = 0, $date = 0, $return = 
 		$data[5] = get_alert_last_fire_timestamp_in_period ($alert['id_agente_modulo'], $period, $date);
 		$data[6] = $fires;
 		
-		array_push ($table_alerts->data, $data);
+		array_push ($table->data, $data);
 	}
-	if (sizeof ($table_alerts->data)) {
-		$output .= '<h4>'.lang_string ('alerts').'</h4>';
-		$output .= print_table ($table_alerts, true);
-	}
+	if (!$return)
+		print_table ($table);
+	return $table;
+}
+
+function get_agent_monitors_reporting_table ($id_agent, $period = 0, $date = 0, $return = false) {
+	$n_a_string = lang_string ('N/A').'(*)';
+	$table->head = array ();
+	$table->head[0] = lang_string ('monitor');
+	$table->head[1] = lang_string ('last_failure');
+	$table->data = array ();
+	$monitors = get_monitors_in_agent ($id_agent);
 	
-	/* Show monitor status in agent (if any) */
-	if (sizeof ($monitors) == 0) {
-		$output .= '</div>';
-		if (! $return)
-			echo $output;
-		return $output;
-	}
-	$table_monitors->data = array ();
 	foreach ($monitors as $monitor) {
 		$downs = get_monitor_downs_in_period ($monitor['id_agente_modulo'], $period, $date);
 		if (! $downs) {
@@ -505,12 +525,75 @@ function agent_detailed_reporting ($id_agent, $period = 0, $date = 0, $return = 
 		else
 			$data[0] = $monitor['nombre'];
 		$data[1] = get_monitor_last_down_timestamp_in_period ($monitor['id_agente_modulo'], $period, $date);
-		array_push ($table_monitors->data, $data);
+		array_push ($table->data, $data);
 	}
-	if (sizeof ($table_monitors->data)) {
-		$output .= '<h4>'.lang_string ('monitors').'</h4>';
-		$output .= print_table ($table_monitors, true);
+	if (!$return)
+		print_table ($table);
+	return $table;
+}
+
+function get_agent_modules_reporting_table ($id_agent, $period = 0, $date = 0, $return = false) {
+	$table->data = array ();
+	$n_a_string = lang_string ('N/A').'(*)';
+	$modules = get_modules_in_agent ($id_agent);
+	$data = array ();
+	
+	foreach ($modules as $module) {
+		if ($module['descripcion'] != $n_a_string && $module['descripcion'] != '')
+			$data[0] = $module['descripcion'];
+		else
+			$data[0] = $module['nombre'];
+		array_push ($table->data, $data);
 	}
+	if (!$return)
+		print_table ($table);
+	return $table;
+}
+
+/**
+ * Get a detailed report of an agent
+ *
+ * @param $id_agent Agent to get the report.
+ * @param $period Period of time of the desired report.
+ * @param $date Beggining date of the report (current date by default).
+ * @param $return Flag to return or echo the report (by default).
+ */
+function get_agent_detailed_reporting ($id_agent, $period = 0, $date = 0, $return = false) {
+	$output = '';
+	$n_a_string = lang_string ('N/A').'(*)';
+	
+	/* Show modules in agent */
+	$output .= '<div class="agent_reporting">';
+	$output .= '<h3 style="text-decoration: underline">'.lang_string ('agent').' - '.dame_nombre_agente ($id_agent).'</h3>';
+	$output .= '<h4>'.lang_string ('modules').'</h3>';
+	$table_modules = get_agent_modules_reporting_table ($id_agent, $period, $date, true);
+	$table_modules->width = '99%';
+	$output .= print_table ($table_modules, true);
+	
+	/* Show alerts in agent */
+	$table_alerts = get_agent_alerts_reporting_table ($id_agent, $period, $date, true);
+	$table_alerts->width = '99%';
+	if (sizeof ($table_alerts->data)) {
+		$output .= '<h4>'.lang_string ('alerts').'</h4>';
+		$output .= print_table ($table_alerts, true);
+	}
+	
+	/* Show monitor status in agent (if any) */
+	$table_monitors = get_agent_monitors_reporting_table ($id_agent, $period, $date, true);
+	if (sizeof ($table_monitors->data) == 0) {
+		$output .= '</div>';
+		if (! $return)
+			echo $output;
+		return $output;
+	}
+	$table_monitors->width = '99%';
+	$table_monitors->align = array ();
+	$table_monitors->align[1] = 'right';
+	$table_monitors->size = array ();
+	$table_monitors->align[1] = '10%';
+	$output .= '<h4>'.lang_string ('monitors').'</h4>';
+	$output .= print_table ($table_monitors, true);
+	
 	$output .= '</div>';
 	
 	if (! $return)
@@ -524,30 +607,12 @@ function agent_detailed_reporting ($id_agent, $period = 0, $date = 0, $return = 
  * @param $id_group Group to get the report
  * @param $return Flag to return or echo the report (by default).
  */
-function agents_detailed_reporting ($id_group, $period = 0, $date = 0, $return = false) {
+function get_agents_detailed_reporting ($id_group, $period = 0, $date = 0, $return = false) {
 	$output = '';
 	$agents = get_agents_in_group ($id_group);
 	
-	$table_modules->width = '700px';
-	$table_alerts->width = '700px';
-	$table_monitors->width = '700px';
-	$table_monitors->align = array ();
-	$table_monitors->align[1] = 'right';
-	$table_monitors->head = array ();
-	$table_monitors->head[0] = lang_string ('monitor');
-	$table_monitors->head[1] = lang_string ('last_failure');
-	$table_alerts->head = array ();
-	$table_alerts->head[0] = lang_string ('type');
-	$table_alerts->head[1] = lang_string ('description');
-	$table_alerts->head[2] = lang_string ('min');
-	$table_alerts->head[3] = lang_string ('max');
-	$table_alerts->head[4] = lang_string ('threshold');
-	$table_alerts->head[5] = lang_string ('last_fired');
-	$table_alerts->head[6] = lang_string ('times_fired');
-
-	$agents = get_agents_in_group ($id_group);
 	foreach ($agents as $agent) {
-		$output .= agent_detailed_reporting ($agent['id_agente'], $period, $date, true);
+		$output .= get_agent_detailed_reporting ($agent['id_agente'], $period, $date, true);
 		if (!$return) {
 			echo $output;
 			$output = '';

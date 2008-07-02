@@ -842,6 +842,7 @@ $lang_label["delete_sla_no"]="There was a problem deleting SLA";
 $lang_label["sla_module_is_null"]="Module is not set";
 $lang_label["no_defined_slas"]="There are no SLAs defined";
 $lang_label["defined_slas"]="SLAs defined";
+$lang_label["sla_result"]="SLA result";
 $lang_label["up"]="Up";
 $lang_label["down"]="Down";
 $lang_label["map_builder"]="Map builder";
@@ -952,6 +953,7 @@ $lang_label["Simple alerts"]="Simple alerts";
 $lang_label["Combined alerts"]="Combined alerts";
 $lang_label["Oper"]="Oper";
 $lang_label["info"]="info";
+$lang_label["Info"]="Info";
 $lang_label["Operation"]="Operation";
 $lang_label["Source Agent/Alert"]="Source Agent/Alert";
 

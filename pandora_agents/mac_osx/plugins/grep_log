@@ -1,0 +1,241 @@
+#!/usr/bin/perl
+###############################################################################
+#
+# Copyright (c) 2008  Ramon Novoa  <rnovoa@artica.es>
+# Copyright (c) 2008  Artica Soluciones Tecnologicas S.L.
+#
+# grep_log	Perl script to search log files for a matching pattern. The last
+#           searched position is saved in an index file so that consecutive
+#           runs do not return the same results. The log file inode number is 
+#           also saved to detect log rotation.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.	
+#
+###############################################################################
+
+use strict;
+use File::Basename;
+
+# Be verbose
+my $Verbose = 0;
+
+# Index file storage directory, with a trailing '/'
+my $Idx_dir='/tmp/';
+
+# Log file
+my $Log_file = '';
+
+# Module name
+my $Module_name = "default_log";
+
+# Index file
+my $Idx_file = '';
+
+# Log file position index
+my $Idx_pos = 0;
+
+# Log file inode number
+my $Idx_ino = '';
+
+# Regular expression to be matched
+my $Reg_exp = '';
+
+###############################################################################
+# SUB error_msg
+# Print an error message and exit.
+###############################################################################
+sub error_msg ($) {
+	my $err_msg = $_[0];
+
+	if (! -z $err_msg) {
+		print(stderr "[error] $err_msg.\n");
+	}
+
+	exit 1;
+}
+
+###############################################################################
+# SUB print_help
+# Print a help message.
+###############################################################################
+sub print_help () {
+	print "Usage: $0 <log_file> <module_name> <pattern>\n";
+}
+
+###############################################################################
+# SUB log_msg
+# Print a log message.
+###############################################################################
+sub log_msg ($) {
+	my $log_msg = $_[0];
+
+	if (! -z $log_msg && $Verbose == 1) {
+		print(stdout "[log] $log_msg.\n");
+	}
+}
+
+###############################################################################
+# SUB load_idx
+# Load index file.
+###############################################################################
+sub load_idx () {
+	my $line;
+	my $current_ino;
+
+	log_msg("Loading index file $Idx_file");
+
+	open(IDXFILE, $Idx_file) || error_msg("Error opening file $Idx_file: " .
+	                                         $!);
+
+	# Read position and date
+	$line = <IDXFILE>;
+	($Idx_pos, $Idx_ino) = split(' ', $line);
+
+	close(IDXFILE);
+
+	# Reset the file index if the file has changed
+	$current_ino = (stat($Log_file))[1];
+	if ($current_ino != $Idx_ino) {
+		log_msg("File changed, resetting index");
+
+		$Idx_pos = 0;
+		$Idx_ino = $current_ino;
+	}
+
+	return;
+}
+
+###############################################################################
+# SUB save_idx
+# Save index file.
+###############################################################################
+sub save_idx () {
+
+	log_msg("Saving index file $Idx_file");
+
+	open(IDXFILE, "> $Idx_file") || error_msg("Error opening file $Idx_file: "
+	                                          . $!);
+	print (IDXFILE $Idx_pos . " " . $Idx_ino);
+	close(IDXFILE);
+
+	return;
+}
+
+###############################################################################
+# SUB create_idx
+# Create index file.
+###############################################################################
+sub create_idx () {
+	my $first_line;
+
+	log_msg("Creating index file $Idx_file");
+
+	open(LOGFILE, $Log_file) || error_msg("Error opening file $Log_file: " .
+	                                     $!);
+
+	# Go to EOF and save the position
+	seek(LOGFILE, 0, 2);
+	$Idx_pos = tell(LOGFILE);
+
+	close(LOGFILE);
+
+	# Save the file inode number
+	$Idx_ino = (stat($Log_file))[1];
+
+	# Save the index file
+	save_idx();
+
+	return;
+}
+
+###############################################################################
+# SUB parse_log
+# Parse log file starting from position $Idx_pos.
+###############################################################################
+sub parse_log () {
+	my $line;
+
+	log_msg("Parsing log file $Log_file");
+
+	# Open log file for reading
+	open(LOGFILE, $Log_file) || error_msg("Error opening file $Log_file: " .
+	                                     $!);
+
+	# Go to starting position
+	seek(LOGFILE, $Idx_pos, 0);
+
+	print (stdout "<module>\n");
+	print (stdout "<name><![CDATA[" . $Module_name . "]]></name>\n");
+	print (stdout "<type><![CDATA[generic_data_string]]></type>\n");
+	print (stdout "<datalist>\n");
+
+	# Parse log file
+	while ($line = <LOGFILE>) {
+		if ($line =~ m/$Reg_exp/i) {
+			# Remove the trailing '\n'
+			chop($line);
+
+			print (stdout "<data><value><![CDATA[$line]]></value></data>\n");
+		}
+	}
+
+	print (stdout "</datalist>\n");
+	print (stdout "</module>\n");
+
+	$Idx_pos = tell(LOGFILE);
+	close(LOGFILE);
+
+	# Save the index file
+	save_idx();
+
+	return;
+}
+
+###############################################################################
+###############################################################################
+## Main
+###############################################################################
+###############################################################################
+
+# Check command line parameters
+if ($#ARGV != 2) {
+	print_help();
+	exit 1;
+}
+
+$Log_file = $ARGV[0];
+$Module_name = $ARGV[1];
+$Reg_exp = $ARGV[2];
+
+# Create index file storage directory
+if ( ! -d $Idx_dir) {
+	mkdir($Idx_dir) || error_msg("Error creating directory $Idx_dir: "
+	                             . $!);
+}
+
+# Check that log file exists
+if (! -e $Log_file) {
+	error_msg("File $Log_file does not exist");
+}
+
+# Create index file if it does not exist
+$Idx_file=$Idx_dir . basename($Log_file) . ".idx";
+if (! -e $Idx_file) {
+	create_idx();
+	exit 0;
+}
+
+# Load index file
+load_idx();
+
+# Parse log file
+parse_log();
+
+exit 0;

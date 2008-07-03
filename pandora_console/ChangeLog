@@ -1,5 +1,10 @@
 2008-07-02  Esteban Sanchez  <estebans@artica.es>
 
+	* operation/agentes/estado_grupo.php: Fixed missing variable on lag
+	calculation.
+
+2008-07-02  Esteban Sanchez  <estebans@artica.es>
+
 	* include/functions_html.php: Fixed a typo in print_table() that was
 	causing to show nothing on IE.
 

@@ -49,8 +49,7 @@ if (isset ($_GET["update_netgroup"])) {
 $groups = get_user_groups ($id_user);
 $groups_info = array ();
 $total_agents = 0;
-$ahora = date("Y/m/d H:i:s");
-$ahora_sec = strtotime($ahora);
+$now = time ();
 // Prepare data to show
 // For each valid group for this user, take data from agent and modules
 foreach ($groups as $id_group => $group_name) {
@@ -73,7 +72,8 @@ foreach ($groups as $id_group => $group_name) {
 			'name' => $group_name);
 	
 	// SQL Join to get monitor status for agents belong this group
-	$sql = sprintf ("SELECT tagente_estado.datos, tagente_estado.current_interval
+	$sql = sprintf ("SELECT tagente_estado.datos, tagente_estado.current_interval,
+			tagente_estado.utimestamp
 			FROM tagente, tagente_estado, tagente_modulo 
 			WHERE tagente.disabled = 0 AND tagente.id_grupo = %d 
 			AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.estado != 100
@@ -83,7 +83,8 @@ foreach ($groups as $id_group => $group_name) {
 			$id_group);
 	$result = mysql_query ($sql);
 	while ($module = mysql_fetch_array ($result)) {
-		if ($config["show_unknown"] > 0){
+		if ($config["show_unknown"] > 0) {
+			$seconds = $now - $module['utimestamp'];
 			if ($seconds >= ($module['current_interval'] * 2)) {
 				$group_info["down"]++;
 			}

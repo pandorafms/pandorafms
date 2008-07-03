@@ -525,8 +525,8 @@ if ($edit_sla_report_content) {
 <script language="javascript" type="text/javascript">
 
 function refresh_table () {
-	$('##table-add-item > tbody > tr:odd td').removeClass('datos2').addClass('datos');
-	$('##table-add-item > tbody > tr:even td').removeClass('datos').addClass('datos2');
+	$('#table-add-item > tbody > tr:odd td').removeClass('datos2').addClass('datos');
+	$('#table-add-item > tbody > tr:even td').removeClass('datos').addClass('datos2');
 }
 
 function agent_changed () {

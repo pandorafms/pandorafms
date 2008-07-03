@@ -1,4 +1,19 @@
+2008-07-02  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/reporting/reporting_builder.php: Removed extra "#" in
+	javascript.
+
+	* godmode/reporting/map_builder.php: Changes to try working in
+	Internet Explorer (not completed yet, it's really hard).
+
+	* include/functions_db.php: Changed sever_status() It won't longer
+	return all the modules in pandora, since it's not need in this
+	function, also replaced a strange SQL which was using MAX() with a more
+	logical DISTINCT(). Style correction.
+
+	* include/styles/pandora.css: Removed #main width, so it's as wider as
+	the parent. Fixed menu_tab_fram and menu_tab_frame_view divs to the
+	new template, aligned to the right. Tab and blankspaces correction.
 
 2008-07-01  Sancho Lerena <slerena@gmail.com>
 

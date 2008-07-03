@@ -1,5 +1,24 @@
 2008-07-02  Esteban Sanchez  <estebans@artica.es>
 
+	* include/functions_html.php: Fixed a typo in print_table() that was
+	causing to show nothing on IE.
+
+	* include/styles/pandora.css: Rollback to #909 since it was not
+	working properly in IE. Need more discusion.
+
+	* include/styles/pandora_width.css: Added to repository. Testing style
+	to have porcentual widths.
+
+	* operation/agentes/estado_grupo.php: Rewritten to make the code
+	cleaner and a bit smarter. Future work will be required to make the
+	tooltips or the table better.
+
+	* reporting/stat_win.php: Replaced include with require_once to
+	speed up the code parsing, besides it was not working with the
+	includes.
+
+2008-07-02  Esteban Sanchez  <estebans@artica.es>
+
 	* godmode/reporting/reporting_builder.php: Removed extra "#" in
 	javascript.
 

@@ -325,7 +325,7 @@ function print_table ($table, $return = false) {
 
 	$output .= '<table width="'.$table->width.'" ';
 	$output .= " cellpadding=\"$table->cellpadding\" cellspacing=\"$table->cellspacing\" ";
-	$output .= " border=\"$table->border\" 'class=\"$table->class\" id=\"$tableid\" >\n";
+	$output .= " border=\"$table->border\" class=\"$table->class\" id=\"$tableid\" >\n";
 	$countcols = 0;
 
 	if (!empty ($table->head)) {

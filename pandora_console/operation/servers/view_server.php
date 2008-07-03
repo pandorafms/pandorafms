@@ -24,176 +24,100 @@ $total_modules_network = 0;
 $total_modules_data = 0;
 
 if (comprueba_login() != 0) {
-    audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to access Agent view");
-    require ($config["homeurl"]."/general/noaccess.php");
+	audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to access Agent view");
+	require ($config["homeurl"]."/general/noaccess.php");
 }
 
 if ((give_acl($id_user, 0, "AR")==0) AND (give_acl($id_user,0,"AW") == 0) AND (dame_admin($id_user) == 0) ){
-    audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to access Agent view");
-    require ($config["homeurl"]."/general/noaccess.php");
+	audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to access Agent view");
+	require ($config["homeurl"]."/general/noaccess.php");
 }
 
-echo "<h2>".$lang_label["view_servers"]." &gt; ";
-echo $lang_label["server_detail"]."</h2>";
+echo "<h2>".lang_string ("view_servers")." &gt; ";
+echo lang_string ("server_detail")."</h2>";
 
-$sql='SELECT * FROM tserver';
-$result=mysql_query($sql);
-if (mysql_num_rows($result)){
-	echo "<table cellpadding='4' cellspacing='4' witdh='720' class='databox'>";
-	echo "<tr><th class='datos'>".$lang_label["name"]."</th>";
-	echo "<th class='datos'>".$lang_label['status']."</th>";
-	echo "<th class='datos'>".$lang_label['load']."</th>";
-	echo "<th class='datos'>".$lang_label['modules']."</th>";
-	echo "<th class='datos'>".$lang_label['lag']."</th>";
-	echo "<th class='datos'>".$lang_label['description']."</th>";
-	echo "<th class='datos' width=80>".$lang_label['type']."</th>";
-	echo "<th class='datos'>".$lang_label['version']."</th>";
-	echo "<th class='datos'>".$lang_label['lastupdate']."</th>";
-	$color=1;
-	while ($row=mysql_fetch_array($result)){
-		if ($color == 1){
-			$tdcolor = "datos";
-			$color = 0;
-			}
-		else {
-			$tdcolor = "datos2";
-			$color = 1;
-		}
-		$id_server = $row["id_server"];
-		$name = $row["name"];
-		$address = $row["ip_address"];
-		$status = $row["status"];
-		$laststart = $row["laststart"];
-		$keepalive = $row["keepalive"];
-		$network_server = $row["network_server"];
-		$data_server = $row["data_server"];
-		$snmp_server = $row["snmp_server"];
-		$recon_server = $row["recon_server"];
+$total_modules = (int) get_db_sql ("SELECT COUNT(*)
+				FROM tagente_modulo
+				WHERE tagente_modulo.disabled = 0");
+$servers = get_db_all_rows_in_table ('tserver');
+if (sizeof ($servers) == 0)
+	return;
 
-        $wmi_server = $row["wmi_server"];
-        $plugin_server = $row["plugin_server"];
-        $prediction_server = $row["prediction_server"];
-        $export_server = $row["export_server"];
+$table->width = '90%';
+$table->size = array ();
+$table->size[6] = '60';
+$table->align = array ();
+$table->align[1] = 'center';
+$table->align[6] = 'center';
+$table->head = array ();
+$table->head[0] = lang_string ("name");
+$table->head[1] = lang_string ('status');
+$table->head[2] = lang_string ('load');
+$table->head[3] = lang_string ('modules');
+$table->head[4] = lang_string ('lag');
+$table->head[5] = lang_string ('description');
+$table->head[6] = lang_string ('type');
+$table->head[7] = lang_string ('version');
+$table->head[8] = lang_string ('lastupdate');
+$table->data = array ();
 
-		$master = $row["master"];
-		$checksum = $row["checksum"];
-		$description = $row["description"];
-		$version = $row["version"];
-
-
-		$serverinfo = server_status ($id_server);
-
-			// Name of server
-			echo "<tr><td class='$tdcolor'>";
-			echo $name;
-
-			// Status
-			echo "<td class='$tdcolor' align='middle'>";
-			if ($status ==0){
-				echo "<img src='images/pixel_red.png' width=20 height=20>";
-			} else {
-				echo "<img src='images/pixel_green.png' width=20 height=20>";
-			}
-			
-			// Load
-			echo "<td class='$tdcolor' align='middle'>";
-			if ($serverinfo["modules_total"] > 0)
-				$percentil = $serverinfo["modules"] / ( $serverinfo["modules_total"]/ 100);
-			else
-				$percentil = 0;
-			if ($percentil > 100)
-				$percentil = 100;
-			// Progress bar render
-
-			echo '<img src="reporting/fgraph.php?tipo=progress&percent='.$percentil.'&height=18&width=80">';
-
-			// Modules
-			echo "<td class='$tdcolor' align='middle'>";
-			echo $serverinfo["modules"] . " ".lang_string("of")." ". $serverinfo["modules_total"];
-
-			// Lag
-			echo "<td class='$tdcolor' align='middle'>";
-			echo human_time_description_raw ($serverinfo["lag"]) . " / ". $serverinfo["module_lag"];
-
-
-		echo "<td class='".$tdcolor."f9'>".substr($description,0,25)."</td>";
-		echo "<td class='$tdcolor' align='middle'>";			
-		if ($network_server == 1){
-			echo '<img src="images/network.png" title="network">';
-		}
-		if ($data_server == 1){
-			echo '&nbsp; <img src="images/data.png" title="data server">';
-		}
-		if ($snmp_server == 1){
-			echo "&nbsp; <img src='images/snmp.png' title='snmp console'>";
-		}
-		if ($recon_server == 1){
-			echo "&nbsp; <img src='images/recon.png' title='recon'>";
-		}
-        if ($export_server == 1){
-            echo "&nbsp; <img src='images/database_refresh.png' title='export'>";
-        }
-        if ($wmi_server == 1){
-            echo "&nbsp; <img src='images/wmi.png' title='WMI'>";
-        }
-        if ($prediction_server == 1){
-            echo "&nbsp; <img src='images/chart_bar.png' title='prediction'>";
-        }
-        if ($plugin_server == 1){
-            echo "&nbsp;  <img src='images/plugin.png' title='plugin'>";
-        }
-		if ($master == 1){
-			echo "&nbsp; <img src='images/master.png' title='master'>";
-		}
-		if ($checksum == 1){
-			echo "&nbsp; <img src='images/binary.png' title='checksum'>";
-		}
-		echo "</td><td class='".$tdcolor."f9' align='middle'>";
-			echo $version;
-		
-		echo "</td><td class='".$tdcolor."f9' align='middle'>";
-		// if ($status ==0)
-        
-			echo human_date_relative($keepalive)."</td>";
+foreach ($servers as $server) {
+	$data = array ();
+	$serverinfo = server_status ($server['id_server']);
+	
+	$data[0] = $server['name'];
+	if ($server['status'] == 0){
+		$data[1] = '<img src="images/pixel_red.png" width="20" height="20">';
+	} else {
+		$data[1] = '<img src="images/pixel_green.png" width="20" height="20">';
 	}
-	echo '</tr></table>';
-	echo "<table cellpadding=2 cellspacing=0>";
-	echo "
-	<tr>
-		<td>
-		<span class='net'>".$lang_label["network_server"]."</span>
-		</td>
-		<td>
-		<span class='data'>".$lang_label["data_server"]."</span>
-		</td>
-        <td>
-        <span class='plugin'>".lang_string ("plugin_server")."</span>
-        </td>
-        <td>
-        <span class='wmi'>".lang_string ("wmi_server")."</span>
-        </td>
-        <td>
-        <span class='prediction'>".lang_string ("prediction_server")."</span>
-        </td>
-    </tr>
-    <tr>
-    <td>
-        <span class='export'>".lang_string ("export_server"). "</span>
-        </td>
-		<td>
-		<span class='snmp'>".lang_string ("snmp_console"). "</span>
-		</td>
-		<td>
-		<span class='recon'>".lang_string ("recon_server"). "</span>
-		</td>    
-    <td>  
-        <span class='binary'>".lang_string ("md5_checksum"). "</span>
-        </td>
-        <td>
-        <span class='master'>".lang_string ("master"). "</span>
-        </td>
-    </tr>";
-	echo "</table>";
+	// Load
+	if ($total_modules > 0)
+		$load_percent = $serverinfo["modules"] / ($total_modules / 100);
+	else
+		$load_percent = 0;
+	if ($load_percent > 100)
+		$load_percent = 100;
+	$data[2] = '<img src="reporting/fgraph.php?tipo=progress&percent='.$load_percent.'&height=18&width=80">';
+	$data[3] = $serverinfo["modules"] . " ".lang_string("of")." ". $total_modules;
+	$data[4] = human_time_description_raw ($serverinfo["lag"]) . " / ". $serverinfo["module_lag"];
+	$data[5] = '<span title="'.$server['description'].'">'.substr ($server['description'], 0, 25).'</span>';
+	$data[6] = '';
+	if ($server['network_server'] == 1) {
+		$data[6] .= ' <img src="images/network.png" title="'.lang_string ('network_server').'">';
+	}
+	if ($server['data_server'] == 1) {
+		$data[6] .= ' <img src="images/data.png" title="'.lang_string ('data_server').'">';
+	}
+	if ($server['snmp_server'] == 1) {
+		$data[6] .= ' <img src="images/snmp.png" title="'.lang_string ('snmp_server').'">';
+	}
+	if ($server['recon_server'] == 1) {
+		$data[6] .= ' <img src="images/recon.png" title="'.lang_string ('recon_server').'">';
+	}
+	if ($server['export_server'] == 1) {
+		$data[6] .= ' <img src="images/database_refresh.png" title="'.lang_string ('export_server').'">';
+	}
+	if ($server['wmi_server'] == 1) {
+		$data[6] .= ' <img src="images/wmi.png" title="'.lang_string ('wmi_server').'">';
+	}
+	if ($server['prediction_server'] == 1) {
+		$data[6] .= ' <img src="images/chart_bar.png" title="'.lang_string ('prediction_server').'">';
+	}
+	if ($server['plugin_server'] == 1) {
+		$data[6] .= ' <img src="images/plugin.png" title="'.lang_string ('plugin_server').'">';
+	}
+	if ($server['master'] == 1) {
+		$data[6] .= ' <img src="images/master.png" title="'.lang_string ('master_server').'">';
+	}
+	if ($server['checksum'] == 1){
+		$data[6] .= ' <img src="images/binary.png" title="'.lang_string ('checksum').'">';
+	}
+	$data[7] = $server['version'];
+	$data[8] = human_date_relative ($server['keepalive'])."</td>";
+	
+	array_push ($table->data, $data);
 }
 
+print_table ($table);
 ?>

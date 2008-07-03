@@ -444,7 +444,7 @@ function agent_changed (event, id_agent, selected) {
 		id_agent = this.value;
 	$('#form_layout_data_editor #module').attr ('disabled', 1);
 	$('#form_layout_data_editor #module').empty ();
-	$('#form_layout_data_editor #module').append ($('<option></option>').attr ('value', 0).text ("<?=lang_string ('Loading')?>..."));
+	$('#form_layout_data_editor #module').append (new Option ("<?=lang_string ('Loading')?>...", 0));
 	jQuery.post ('ajax.php', 
 		{page: "operation/agentes/ver_agente",
 		get_agent_modules_json: 1,
@@ -452,14 +452,14 @@ function agent_changed (event, id_agent, selected) {
 		},
 		function (data) {
 			$('#form_layout_data_editor #module').empty ();
-			$('#form_layout_data_editor #module').append ($('<option></option>').attr ('value', 0).text ("--"));
+			$('#form_layout_data_editor #module').append (new Option ("--", 0));
 			jQuery.each (data, function (i, val) {
 				if (val['descripcion'] == "") {
 					s = html_entity_decode (val['nombre']);
 				} else {
 					s = html_entity_decode (val['descripcion']);
 				}
-				$('#form_layout_data_editor #module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s));
+				$('#form_layout_data_editor #module').append (new Option (s, val['id_agente_modulo']));
 				$('#form_layout_data_editor #module').fadeIn ('normal');
 			});
 			if (selected != undefined)

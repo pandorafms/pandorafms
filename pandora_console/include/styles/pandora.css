@@ -191,7 +191,6 @@ div#page {
 	background: #FFF;
 }
 div#main {
-	width: 80%;
 	min-height: 500px;
 	float: both;
 	padding-left: 0px;
@@ -442,22 +441,22 @@ div.title_line {
 	width: 762px;
 }
 #menu_tab_frame {
-    background: #D84437; 
-    width: 805px; 
-    min-height: 22px; 
-    padding-left: 0x;
-    margin-left: -25px;
-    float:left; 
-    border-bottom: 1px solid #778866;
+	background: #D84437; 
+	width: 100%;
+	min-height: 22px; 
+	padding-left: 0x;
+	margin-left: -25px;
+	float:right; 
+	border-bottom: 1px solid #778866;
 }
 #menu_tab_frame_view {
-    background: #66AA44; 
-    width: 805px; 
-    min-height: 22px; 
-    padding-left: 0x;
-    margin-left: -25px;
-    float:left; 
-    border-bottom: 1px solid #778866;
+	background: #66AA44; 
+	width: 100%; 
+	min-height: 22px; 
+	padding-left: 0x;
+	margin-left: -25px;
+	float:right; 
+	border-bottom: 1px solid #778866;
 }
 
 

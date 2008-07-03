@@ -1885,46 +1885,67 @@ function smal_event_table ($filter = "", $limit = 10, $width = 440) {
  * @param id_server 
  *
  * @return : Serverifo array with following keys:
- 	type 			- Type of server (descriptive)
- 	modules_total 	- Total of modules for this kind of servers
- 	modules			- Modules running on this server
-	module_lag		- Nº of modules of time
-	lag				- Lag time in sec
+ 	type 		- Type of server (descriptive)
+ 	modules		- Modules running on this server
+	module_lag	- Number of modules of time
+	lag		- Lag time in sec
 */
 function server_status ($id_server) {
 	$server = get_db_row_sql ( "SELECT * FROM tserver WHERE id_server = $id_server" );
 	$serverinfo = array();
 	
 	if ($server["network_server"] == 1)
-		$serverinfo["type"]="network";
+		$serverinfo["type"] = "network";
 	elseif ($server["data_server"] == 1)
-		$serverinfo["type"]="data";
+		$serverinfo["type"] = "data";
 	elseif ($server["plugin_server"] == 1)
-		$serverinfo["type"]="plugin";
+		$serverinfo["type"] = "plugin";
 	elseif ($server["wmi_server"] == 1)
-		$serverinfo["type"]="wmi";
+		$serverinfo["type"] = "wmi";
 	elseif ($server["recon_server"] == 1)
-		$serverinfo["type"]="recon";
+		$serverinfo["type"] = "recon";
 	elseif ($server["snmp_server"] == 1)
-		$serverinfo["type"]="snmp";
+		$serverinfo["type"] = "snmp";
 	elseif ($server["prediction_server"] == 1)
-		$serverinfo["type"]="prediction";
-
+		$serverinfo["type"] = "prediction";
 	
-	// Get type of modules that runs this server 
-	$moduletype = get_db_sql ("SELECT MAX(id_modulo) FROM tagente_estado, tagente_modulo  WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND tagente_modulo.disabled = 0 AND tagente_estado.running_by = $id_server ORDER BY tagente_modulo.id_agente_modulo ");
-	
-	if ($moduletype != ""){
+	// Get type of modules that runs this server
+	$sql = sprintf ("SELECT DISTINCT(id_modulo) 
+			FROM tagente_estado, tagente_modulo
+			WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+			AND tagente_modulo.disabled = 0
+			AND tagente_estado.running_by = %d
+			ORDER BY tagente_modulo.id_agente_modulo",
+			$id_server);
+	$moduletype = get_db_all_rows_sql ($sql);
+	if ($moduletype) {
+		$serverinfo["modules"] = get_db_sql ("SELECT COUNT(*)
+						FROM tagente_estado, tagente_modulo
+						WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+						AND tagente_modulo.disabled = 0
+						AND tagente_estado.running_by = $id_server");
 
-		$serverinfo["modules_total"] = get_db_sql ("SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE tagente_modulo.disabled = 0 AND tagente_modulo.id_modulo = $moduletype");
+		$serverinfo["module_lag"] = get_db_sql ("SELECT COUNT(*)
+						FROM tagente_estado, tagente_modulo, tagente
+						WHERE tagente_estado.last_execution_try > 0
+						AND tagente_estado.running_by = $id_server
+						AND tagente_modulo.id_agente = tagente.id_agente
+						AND tagente.disabled = 0
+						AND tagente_modulo.disabled = 0
+						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+						AND (UNIX_TIMESTAMP() - tagente_estado.last_execution_try - tagente_estado.current_interval < 1200)");
 
-		$serverinfo["modules"] = get_db_sql ("SELECT COUNT(tagente_estado.running_by) FROM tagente_estado, tagente_modulo WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND  tagente_modulo.disabled = 0 AND tagente_modulo.id_modulo = $moduletype AND tagente_estado.running_by = $id_server");
-
-		$serverinfo["module_lag"] = get_db_sql ("SELECT COUNT(tagente_estado.last_execution_try) FROM tagente_estado, tagente_modulo, tagente WHERE tagente_estado.last_execution_try > 0 AND tagente_estado.running_by=$id_server  AND  tagente_modulo.id_agente = tagente.id_agente AND tagente.disabled = 0 AND tagente_modulo.id_modulo = $moduletype AND tagente_modulo.disabled = 0 AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND (UNIX_TIMESTAMP() - tagente_estado.last_execution_try - tagente_estado.current_interval < 1200) ");
-
-		// Lag over 1200 secons is not lag, is module without contacting data in several time.or with a 
+		// Lag over 1200 seconds is not lag, is module without contacting data in several time.or with a 
 		// 1200 sec is 20 min
-		$serverinfo["lag"] = get_db_sql ("SELECT MAX(tagente_estado.last_execution_try - tagente_estado.current_interval) FROM tagente_estado, tagente_modulo, tagente WHERE tagente_estado.last_execution_try > 0 AND tagente_estado.running_by=$id_server  AND  tagente_modulo.id_agente = tagente.id_agente AND tagente.disabled = 0 AND tagente_modulo.id_modulo = $moduletype AND tagente_modulo.disabled = 0 AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND (UNIX_TIMESTAMP() - tagente_estado.last_execution_try - tagente_estado.current_interval < 1200) ");
+		$serverinfo["lag"] = get_db_sql ("SELECT MAX(tagente_estado.last_execution_try - tagente_estado.current_interval)
+						FROM tagente_estado, tagente_modulo, tagente
+						WHERE tagente_estado.last_execution_try > 0
+						AND tagente_estado.running_by = $id_server
+						AND tagente_modulo.id_agente = tagente.id_agente
+						AND tagente.disabled = 0
+						AND tagente_modulo.disabled = 0
+						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+						AND (UNIX_TIMESTAMP() - tagente_estado.last_execution_try - tagente_estado.current_interval < 1200)");
 
 		if ($serverinfo["lag"] == "")
 			$serverinfo["lag"] = 0;

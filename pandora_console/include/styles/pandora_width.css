@@ -176,7 +176,7 @@ div#db_ftxt {
 }
 div#container {
 	margin: 0 auto;
-	width: 960px;
+	width: 95%;
 	text-align: left;
 	border-left: solid 2px #000;
 	border-right: solid 2px #000;
@@ -184,25 +184,22 @@ div#container {
 	margin-top: 5px;
 }
 div#page {
-	width: 960px;
 	background: #fff;
 	clear: both;
 	border-bottom: solid 5px #786;
 	border-top: solid 5px #786;
+	background: #FFF;
 }
 div#main {
-	width: 780px;
-	min-height: 500px;
-	float: right;
+	width: auto;
+	min-height: 800px;
+	float: both;
 	padding-left: 0px;
 	padding-top: 0px;
 	padding-bottom: 20px;
-	margin-bottom: 25px;
+	margin-left: 180px;
 	background-color: #fefefe;
-    background-image: url(../../images/backgrounds/background4.jpg);
-	margin-top: 0px;
-	margin-left: 0px;
-	margin-right: 0px;
+	background-image: url(../../images/backgrounds/background4.jpg);
 }
 
 div#menu {
@@ -214,7 +211,6 @@ div#page>div#menu {
 }
 div#head {
 	font-size: 8pt;
-	width: 960px;
 	height: 60px;
 	background: url(../../images/header.jpg);
 	border-bottom: solid 2px #555;
@@ -226,7 +222,6 @@ div#foot {
 	padding-bottom: 5px;
 	text-align: center;
 	background: #000;
-	width: 960px;
 	clear: both;
 }
 #ver {
@@ -447,25 +442,19 @@ div.title_line {
 	width: 762px;
 }
 #menu_tab_frame {
-    background: #D84437; 
-    width: 805px; 
-    min-height: 22px; 
-    padding-left: 0x;
-    margin-left: -25px;
-    float:left; 
-    border-bottom: 1px solid #778866;
+	background: #D84437; 
+	min-height: 22px; 
+	padding-left: 0px;
+	float:right; 
+	border-bottom: 1px solid #778866;
 }
 #menu_tab_frame_view {
-    background: #66AA44; 
-    width: 805px; 
-    min-height: 22px; 
-    padding-left: 0x;
-    margin-left: -25px;
-    float:left; 
-    border-bottom: 1px solid #778866;
+	background: #66AA44; 
+	min-height: 22px;
+	padding-left: 0px;
+	float:right; 
+	border-bottom: 1px solid #778866;
 }
-
-
 #menu_tab .mn, #menu_tab ul, #menu_tab .mn ul {
 	padding: 0px;
 	list-style: none;

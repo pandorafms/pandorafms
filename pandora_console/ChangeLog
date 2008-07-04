@@ -1,3 +1,10 @@
+2008-07-04 Esteban Sanchez  <estebans@artica.es>
+
+	* operation/reporting/reporting_viewer.php: Fixed error when showing
+	final SLA result.
+
+	* include/functions_reporting_pdf.php: Added final SLA result.
+
 2008-07-02  Esteban Sanchez  <estebans@artica.es>
 
 	* operation/agentes/estado_grupo.php: Fixed missing variable on lag

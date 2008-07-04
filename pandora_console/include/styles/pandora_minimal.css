@@ -94,3 +94,12 @@ table, img {
 	-moz-opacity: 0.90;
 	opacity: 0.90;
 }
+#loading {
+	position:fixed;
+	width: 200px;
+	margin-left: 35%;
+	text-align:center;
+	top:300px;
+	background-color: #999999;
+	padding: 20px;
+}

@@ -79,6 +79,11 @@ print_table ($table);
 print_input_hidden ('id_report', $id_report);
 echo '</form>';
 
+echo '<div id="loading">';
+echo '<img src="images/wait.gif" border="0"><br />';
+echo '<strong>'.lang_string ('Loading').'...</strong>';
+echo '</div>';
+
 /* We must add javascript here. Otherwise, the date picker won't 
    work if the date is not correct because php is returning. */
 ?>
@@ -93,7 +98,9 @@ echo '</form>';
 <script src="include/javascript/jquery.timeentry.js"></script>
 
 <script language="javascript" type="text/javascript">
+
 $(document).ready (function () {
+	$("#loading").slideUp ();
 	$("#text-time").timeEntry ({spinnerImage: 'images/time-entry.png', spinnerSize: [20, 20, 0]});
 	$("#text-date").datepicker ();
 	$.datepicker.regional["<?= $config['language'] ?>"];
@@ -128,6 +135,7 @@ foreach ($contents as $content) {
 	$table->head = array ();
 	$table->style = array ();
 	$table->colspan = array ();
+	$table->rowstyle = array ();
 	
 	$module_name = get_db_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']);
 	$agent_name = dame_nombre_agente_agentemodulo ($content['id_agent_module']);
@@ -149,13 +157,13 @@ foreach ($contents as $content) {
 		break;
 	case 2:
 	case 'custom_graph':
+		$graph = get_db_row ("tgraph", "id_graph", $content['id_gs']);
 		$data = array ();
 		$data[0] = '<h4>'.lang_string ('custom_graph').'</h4>';
 		$data[1] = "<h4>".$graph["name"]."</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
 		
-		$graph = get_db_row ("tgraph", "id_graph", $content['id_gs']);
 		$sql2 = sprintf ('SELECT * FROM tgraph_source WHERE id_graph = %d', $content['id_gs']);
 		$res2 = mysql_query($sql2);
 		$modules = array ();

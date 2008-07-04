@@ -1,4 +1,12 @@
-2008-07-04 Esteban Sanchez  <estebans@artica.es>
+2008-07-04  Esteban Sanchez  <estebans@artica.es>
+
+	* operation/reporting/reporting_viewer.php: Added a loading div that
+	appears while the page is loading and dissapear once it's completed.
+
+	* include/styles/pandora.css, include/styles/pandora_minimal.css,
+	include/styles/pandora_width.css: Added style to loading div.
+
+2008-07-04  Esteban Sanchez  <estebans@artica.es>
 
 	* operation/reporting/reporting_viewer.php: Fixed error when showing
 	final SLA result.

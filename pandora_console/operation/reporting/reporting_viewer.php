@@ -221,7 +221,7 @@ foreach ($contents as $content) {
 		}
 		if (sizeof ($slas)) {
 			$data = array ();
-			if ($sla_failed)
+			if (! $sla_failed)
 				$data[0] = '<span style="font: bold 3em Arial, Sans-serif; color: #000000;">'.lang_string ('Ok').'</span>';
 			else
 				$data[0] = '<span style="font: bold 3em Arial, Sans-serif; color: #ff0000;">'.lang_string ('Fail').'</span>';

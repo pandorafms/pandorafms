@@ -174,6 +174,7 @@ function get_pdf_report ($report) {
 			$table->data = array ();
 			$table->head = array (lang_string ('Info'),
 						lang_string ('sla_result'));
+			$sla_failed = false;
 			foreach ($slas as $sla) {
 				$data = array ();
 				
@@ -187,14 +188,23 @@ function get_pdf_report ($report) {
 				if ($sla_value === false) {
 					$data[1] = lang_string ('unknown');
 				} else {
-					if ($sla_value < $sla['sla_limit'])
+					if ($sla_value < $sla['sla_limit']) {
 						$pdf->setColor (0, 1, 0, 0); // Red
+						$sla_failed = true;
+					}
 					$data[1] = format_numeric ($sla_value). " %";
 					$pdf->setColor (0, 0, 0, 1); // Black
 				}
+				
 				array_push ($table->data, $data);
 			}
 			$pdf->ezTable ($table->data, $table->head, "", $table_options);
+			
+			if (! $sla_failed) {
+				$pdf->ezText ('<b>'.lang_string ('ok').'</b>', 8);
+			} else {
+				$pdf->ezText ('<b>'.lang_string ('fail').'</b>', 8);
+			}
 			unset ($slas);
 			
 			break;

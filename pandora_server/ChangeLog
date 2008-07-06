@@ -1,3 +1,8 @@
+2008-07-06  Sancho Lerena <slerena@gmail.com>
+
+	* pandora_network: Added a patch from godzone-nz, to implement
+	in TCP remote checks a multi-request method.
+
 2008-04-01  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/tentacle_serverd: Changed default address (now listens

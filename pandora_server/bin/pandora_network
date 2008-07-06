@@ -372,6 +372,14 @@ sub pandora_query_tcp (%$$$$$$$) {
 		        Blocking=>0 ); # Non blocking !!, very important !
 		        
 	        if (defined($handle)){
+			# Multi request patch, submitted by Glen Eustace (new zealand)
+			my @tcp_send = split( /\|/, $tcp_send );
+                        my @tcp_rcv  = split( /\|/, $tcp_rcv );
+
+next_pair:
+			$tcp_send = shift( @tcp_send );
+			$tcp_rcv  = shift( @tcp_rcv );
+
 		        if ($tcp_send ne ""){ # its Expected to sending data ?
 			        # Send data
 			        $handle->autoflush(1);
@@ -393,7 +401,10 @@ sub pandora_query_tcp (%$$$$$$$) {
 			        }
 			        if ($id_tipo_modulo == 9){ # only for TCP Proc
 				        if ($temp2 =~ /$tcp_rcv/i){ # String match !
-					        $$module_data = 1;
+						if ( @tcp_send ) { # still more pairs
+							goto next_pair;
+						}
+ 					        $$module_data = 1;
 					        $$module_result = 0;
                                                 $counter = $pa_config->{'tcp_checks'};
 				        } else {

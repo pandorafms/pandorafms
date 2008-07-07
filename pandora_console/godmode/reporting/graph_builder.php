@@ -40,13 +40,13 @@ if (comprueba_login() != 0) {
 	exit;
 }
 
-if ((give_acl($id_user,0,"AW") != 1 ) AND (dame_admin($id_user)!=1)) {
+if ((give_acl($id_user,0,"AW") != 1 ) && (dame_admin($id_user)!=1)) {
 	audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access graph builder");
 	include ("general/noaccess.php");
 	exit;
 }
 
-if (isset($_GET["store_graph"])){
+if (isset($_GET["store_graph"])) {
 	$name = entrada_limpia($_POST["name"]);
 	$description = entrada_limpia($_POST["description"]);
 	$module_number = entrada_limpia($_POST["module_number"]);
@@ -55,8 +55,8 @@ if (isset($_GET["store_graph"])){
 	$height = entrada_limpia($_POST["height"]);
 	$events = entrada_limpia($_POST["events"]);
 	$stacked = get_parameter ("stacked",0);
-    if ($events == "") // Temporal workaround
-        $events = 0;
+	if ($events == "") // Temporal workaround
+		$events = 0;
 	$period = entrada_limpia($_POST["period"]);
 	// Create graph
 	$sql = "INSERT INTO tgraph
@@ -69,7 +69,7 @@ if (isset($_GET["store_graph"])){
 		$height,
 		$private,
 		$events,
-        $stacked)";
+		$stacked)";
 		//echo "DEBUG $sql<br>";
 	$res = mysql_query($sql);
 	if ($res){
@@ -91,7 +91,7 @@ if (isset($_GET["store_graph"])){
 }
 
 if (isset($_GET["get_agent"])) {
- 	$id_agent = $_POST["id_agent"];
+	$id_agent = $_POST["id_agent"];
 	if (isset($_POST["chunk"]))
 		$chunkdata = $_POST["chunk"];
 }
@@ -144,32 +144,32 @@ if (isset($_GET["delete_module"] )) {
 }
 
 if ($add_module) {
- 	$id_agent = $_POST["id_agent"];
- 	$id_module = $_POST["id_module"];
- 	if (isset($_POST["factor"]))
- 		$factor = $_POST["factor"];
- 	else
- 		$factor = 1;
- 	$period = $_POST["period"];
- 	$render = $_POST["render"];
- 	$stacked = get_parameter ("stacked",0);
+	$id_agent = $_POST["id_agent"];
+	$id_module = $_POST["id_module"];
+	if (isset($_POST["factor"]))
+		$factor = $_POST["factor"];
+	else
+		$factor = 1;
+	$period = $_POST["period"];
+	$render = $_POST["render"];
+	$stacked = get_parameter ("stacked",0);
 // 	$alerts = $_POST["alerts"];
 	if (isset($_POST["chunk"]))
- 		$chunkdata = $_POST["chunk"];
+		$chunkdata = $_POST["chunk"];
 	$events = $_POST["events"];
 	$factor = $_POST["factor"];
- 	if ($_POST["width"]!= "")
- 		$width = $_POST["width"];
- 	if ($_POST["height"]!= "")
- 		$height = $_POST["height"];
- 	if ($id_module > 0){	
+	if ($_POST["width"]!= "")
+		$width = $_POST["width"];
+	if ($_POST["height"]!= "")
+		$height = $_POST["height"];
+	if ($id_module > 0){	
 		if (!isset($chunkdata) OR ($chunkdata == ""))
 			$chunkdata = "$id_agent,$id_module,$factor";
 		else
 			$chunkdata = $chunkdata."|$id_agent,$id_module,$factor";
 	}
 }
- 
+
 // Parse CHUNK information into showable information
 // Split id to get all parameters
 if (! isset($_GET["delete_module"])){
@@ -210,8 +210,8 @@ if (isset($chunk1)) {
 		echo "<input type='hidden' name='chunk' value='$chunkdata'>";
 	if (isset($id_agent))
 		echo "<input type='hidden' name='id_agent' value='$id_agent'>";
-    if (isset($period))
-        echo "<input type='hidden' name='period' value='$period'>";
+	if (isset($period))
+		echo "<input type='hidden' name='period' value='$period'>";
 
 	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox'>";
 	echo "<tr>
@@ -339,35 +339,50 @@ echo "<input type='text' name='height' value='$height' size=6>";
 
 
 switch ($period) {
-	case 3600: 	$period_label = "Hour";
-			break;
-	case 7200: 	$period_label = "2 Hours";
-			break;
-	case 10800: 	$period_label = "3 Hours";
-			break;
-	case 21600: 	$period_label = "6 Hours";
-			break;
-	case 43200: 	$period_label = "12 Hours";
-			break;
-	case 86400: 	$period_label = "Day";
-			break;
-	case 172800: 	$period_label = "Two days";
-			break;
-	case 345600: 	$period_label = "Four days";
-			break;
-	case 604800: 	$period_label = "Last Week";
-			break;
-	case 1296000: 	$period_label = "15 Days";
-			break;
-	case 2592000: 	$period_label = "Last Month";
-			break;
-	case 5184000: 	$period_label = "Two Month";
-			break;
-	case 15552000: 	$period_label = "Six Months";
-			break;
-	case 31104000: 	$period_label = "One year";
-			break;
-	default: 	$period_label = "Day";
+	case 3600:
+		$period_label = "Hour";
+		break;
+	case 7200:
+		$period_label = "2 Hours";
+		break;
+	case 10800:
+		$period_label = "3 Hours";
+		break;
+	case 21600:
+		$period_label = "6 Hours";
+		break;
+	case 43200:
+		$period_label = "12 Hours";
+		break;
+	case 86400:
+		$period_label = "Day";
+		break;
+	case 172800:
+		$period_label = "Two days";
+		break;
+	case 345600:
+		$period_label = "Four days";
+		break;
+	case 604800:
+		$period_label = "Last Week";
+		break;
+	case 1296000:
+		$period_label = "15 Days";
+		break;
+	case 2592000:
+		$period_label = "Last Month";
+		break;
+	case 5184000:
+		$period_label = "Two Month";
+		break;
+	case 15552000:
+		$period_label = "Six Months";
+		break;
+	case 31104000:
+		$period_label = "One year";
+		break;
+	default:
+		$period_label = "Day";
 }
 
 

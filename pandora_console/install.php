@@ -128,9 +128,11 @@ function parse_mysql_dump($url){
 			if(trim($sql_line) != "" && strpos($sql_line, "--") === false){
 				$query .= $sql_line;
 				if(preg_match("/;[\040]*\$/", $sql_line)){
-                // echo "DEBUG $query <br>";
-					if (!$result = mysql_query($query))
+                			//echo "DEBUG $query <br>"; //Uncomment for debug
+					if (!$result = mysql_query($query)) {
+					//	echo mysql_errno() . ": " . mysql_error(); //Uncomment for debug
 						return 0;
+					}
 					$query = "";
 				}
 			}

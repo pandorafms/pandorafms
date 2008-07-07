@@ -550,6 +550,61 @@ function get_monitor_last_down_timestamp_in_period ($id_agent_module, $period, $
 }
 
 /**
+ * Get all the monitors defined in an group.
+ * 
+ * @param id_group Group id to get all the monitors.
+ * 
+ * @return An array with all the monitors defined in the group (tagente_modulo).
+ */
+function get_monitors_in_group ($id_group) {
+	$sql = sprintf ('SELECT tagente_modulo.*
+			FROM tagente_modulo, ttipo_modulo, tagente
+			WHERE id_tipo_modulo = id_tipo
+			AND tagente.id_agente = tagente_modulo.id_agente
+			AND ttipo_modulo.nombre like "%%_proc"
+			AND tagente.id_grupo = %d', $id_group);
+	return get_db_all_rows_sql ($sql);
+}
+
+/** 
+ * Get all the monitors defined in an agent.
+ * 
+ * @param id_agent Agent id to get all the monitors.
+ * 
+ * @return An array with all the monitors defined (tagente_modulo).
+ */
+function get_monitors_in_agent ($id_agent) {
+	$sql = sprintf ('SELECT tagente_modulo.*
+			FROM tagente_modulo, ttipo_modulo, tagente
+			WHERE id_tipo_modulo = id_tipo
+			AND tagente.id_agente = tagente_modulo.id_agente
+			AND ttipo_modulo.nombre like "%%_proc"
+			AND tagente.id_agente = %d', $id_agent);
+	return get_db_all_rows_sql ($sql);
+}
+
+/** 
+ * Get all the monitors down during a period of time.
+ * 
+ * @param monitors An array with all the monitors to check. Each
+ * element of the array must be a dictionary.
+ * @param period Period of time to check the monitors.
+ * @param date Beginning date to check the monitors.
+ * 
+ * @return An array with all the monitors that went down in that
+ * period of time.
+ */
+function get_monitors_down ($monitors, $period = 0, $date = 0) {
+	$monitors_down = array ();
+	foreach ($monitors as $monitor) {
+		$down = get_monitor_downs_in_period ($monitor['id_agente_modulo'], $period, $date);
+		if ($down)
+			array_push ($monitors_down, $monitor);
+	}
+	return $monitors_down;
+}
+
+/**
  * Get all the times an alerts fired during a period.
  * 
  * @param $id_agent_module Agent module of the alert.
@@ -568,6 +623,53 @@ function get_alert_fires_in_period ($id_agent_module, $period, $date = 0) {
 			AND utimestamp > %d AND utimestamp <= %d',
 			$id_agent_module, $datelimit, $date);
 	return (int) get_db_sql ($sql);
+}
+
+/** 
+ * Get all the alerts defined in a group.
+ *
+ * It gets all the alerts of all the agents on a given group.
+ * 
+ * @param id_group Group id to check.
+ * 
+ * @return An array with alerts dictionaries defined in a group.
+ */
+function get_alerts_in_group ($id_group) {
+	$alerts = array ();
+	$agents = get_agents_in_group ($id_group);
+	foreach ($agents as $agent) {
+		$agent_alerts = get_alerts_in_agent ($agent['id_agente']);
+		$alerts = array_merge ($alerts, $agent_alerts);
+	}
+	
+	return $alerts;
+}
+
+/** 
+ * Get all the alerts fired during a period, given a list of alerts.
+ * 
+ * @param alerts A list of alerts to check. See get_alerts_in_group()
+ * @param period Period of time to check fired alerts.
+ * @param date Beginning date to check fired alerts in UNIX format (current date by default)
+ * 
+ * @return An array with the alert id as key and the number of times
+ * the alert was fired (only included if it was fired).
+ */
+function get_alerts_fired ($alerts, $period = 0, $date = 0) {
+	if (! $date)
+		$date = time ();
+	$datelimit = $date - $period;
+
+	$alerts_fired = array ();
+	$agents = array ();
+	foreach ($alerts as $alert) {
+		$fires = get_alert_fires_in_period ($alert['id_agente_modulo'], $period, $date);
+		if (! $fires) {
+			continue;
+		}
+		$alerts_fired[$alert['id_aam']] = $fires;
+	}
+	return $alerts_fired;
 }
 
 /**

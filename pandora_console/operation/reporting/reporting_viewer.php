@@ -202,12 +202,14 @@ foreach ($contents as $content) {
 			$data = array ();
 			
 			$table->colspan[$n][0] = 2;
-			$data[0] = '<span style="font-size: 0.6em">';
-			$data[0] .= lang_string ('agent')." : ".dame_nombre_agente_agentemodulo ($sla['id_agent_module'])."<br />";
-			$data[0] .= lang_string ('module')." : ".dame_nombre_modulo_agentemodulo ($sla['id_agent_module'])."<br />";
-			$data[0] .= lang_string ('sla_max')." : ".$sla['sla_max']."<br />";
-			$data[0] .= lang_string ('sla_min')." : ".$sla['sla_min']."<br />";
-			$data[0] .= "</span>";
+			$data[0] = '<strong>'.lang_string ('agent')."</strong> : ";
+			$data[0] .= dame_nombre_agente_agentemodulo ($sla['id_agent_module'])."<br />";
+			$data[0] .= '<strong>'.lang_string ('module')."</strong> : ";
+			$data[0] .= dame_nombre_modulo_agentemodulo ($sla['id_agent_module'])."<br />";
+			$data[0] .= '<strong>'.lang_string ('sla_max')."</strong> : ";
+			$data[0] .= $sla['sla_max']."<br />";
+			$data[0] .= '<strong>'.lang_string ('sla_min')."</strong> : ";
+			$data[0] .= $sla['sla_min']."<br />";
 			
 			$sla_value = get_agent_module_sla ($sla['id_agent_module'], $content['period'],
 							$sla['sla_min'], $sla['sla_max'], $datetime);

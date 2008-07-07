@@ -514,7 +514,7 @@ if ($edit_sla_report_content) {
 	echo '<form method="post" action="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder">';
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
 	print_input_hidden ('edit_report', 1);
-	print_submit_button (lang_string ('add'), 'create', false, 'class="sub next"');
+	print_submit_button (lang_string ('Create report'), 'create', false, 'class="sub next"');
 	echo "</div>";
 	echo "</form>";
 }

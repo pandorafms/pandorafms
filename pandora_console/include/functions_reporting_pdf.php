@@ -234,7 +234,7 @@ function get_pdf_report ($report) {
 			$pdf->ezText ('<b>'.lang_string ('total_alerts_monitored').': '.sizeof ($alerts).'</b>', 8);
 			$pdf->ezText ("\n", 8);
 			
-			$table_alerts = get_fired_alerts_reporting_table ($alerts_fired, true);
+			$table_alerts = get_fired_alerts_reporting_table ($alerts_fired);
 			$pdf->ezTable ($table_alerts->data, $table_alerts->head, 
 					"", $table_options);
 			unset ($alerts);
@@ -310,7 +310,7 @@ function get_pdf_report ($report) {
 			$pdf->ezText ('<b>'.lang_string ('monitors_down_on_period').': '.sizeof ($monitors_down).'</b>', 8);
 			$pdf->ezText ("\n", 8);
 			
-			$table_monitors = get_monitors_down_reporting_table ($monitors_down, true);
+			$table_monitors = get_monitors_down_reporting_table ($monitors_down);
 			$pdf->ezTable ($table_monitors->data, $table_monitors->head, 
 					"", $table_options);
 			unset ($monitors);
@@ -323,19 +323,19 @@ function get_pdf_report ($report) {
 				$group_name.' '.lang_string ('group'));
 			foreach ($agents as $agent) {
 				$pdf->ezText ("<b>".$agent['nombre']."</b>", 18);
-				$table = get_agent_modules_reporting_table ($agent['id_agente'], $content['period'], 0, true);
+				$table = get_agent_modules_reporting_table ($agent['id_agente'], $content['period']);
 				$pdf->ezText ("<b>".lang_string ('modules')."</b>", 12);
 				$pdf->ezText ("\n", 3);
 				$pdf->ezTable ($table->data, array (lang_string ('name')), "", $table_options);
 				
-				$table = get_agent_alerts_reporting_table ($agent['id_agente'], $content['period'], 0, true);
+				$table = get_agent_alerts_reporting_table ($agent['id_agente'], $content['period']);
 				if (sizeof ($table->data)) {
 					$pdf->ezText ("<b>".lang_string ('alerts')."</b>", 12);
 					$pdf->ezText ("\n", 3);
 					$pdf->ezTable ($table->data, $table->head, "", $table_options);
 				}
 				
-				$table = get_agent_monitors_reporting_table ($agent['id_agente'], $content['period'], 0, true);
+				$table = get_agent_monitors_reporting_table ($agent['id_agente'], $content['period']);
 				if (sizeof ($table->data)) {
 					$pdf->ezText ("<b>".lang_string ('monitors')."</b>", 12);
 					$pdf->ezText ("\n", 3);

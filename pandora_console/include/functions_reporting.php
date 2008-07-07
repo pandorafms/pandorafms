@@ -16,6 +16,17 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+/** 
+ * Get SLA of a module.
+ * 
+ * @param id_agent_module Agent module to calculate SLA
+ * @param period Period to check the SLA compliance.
+ * @param min_value Minimum data value the module in the right interval
+ * @param max_value Maximum data value the module in the right interval
+ * @param date Beginning date of the report in UNIX time (current date by default).
+ * 
+ * @return SLA percentage of the requested module.
+ */
 function get_agent_module_sla ($id_agent_module, $period, $min_value, $max_value, $date = 0) {
 	require("config.php");
 	if (! $date)
@@ -76,7 +87,15 @@ function get_agent_module_sla ($id_agent_module, $period, $min_value, $max_value
 	return max ($result, 0);
 }
 
-function general_stats ( $id_user, $id_group = 0) {
+/** 
+ * Get a general stats info.
+ * 
+ * @param id_user 
+ * @param id_group 
+ * 
+ * @return 
+ */
+function general_stats ($id_user, $id_group = 0) {
 	if ($id_group <= 0)
 		// Get group list that user has access
 		$mis_grupos = list_group2 ($id_user);
@@ -190,6 +209,19 @@ function general_stats ( $id_user, $id_group = 0) {
 	return $data;
 }
 
+/** 
+ * Get an event reporting table.
+ *
+ * It construct a table object with all the events happened in a group
+ * during a period of time.
+ * 
+ * @param id_group Group id to get the report.
+ * @param period Period of time to get the report.
+ * @param date Beginning date of the report in UNIX time (current date by default).
+ * @param return Flag to return or echo the report table (echo by default).
+ * 
+ * @return A table object if return variable is true.
+ */
 function event_reporting ($id_group, $period, $date = 0, $return = false) {
 	global $config;
 
@@ -228,35 +260,14 @@ function event_reporting ($id_group, $period, $date = 0, $return = false) {
 	return $table;
 }
 
-function get_alerts_in_group ($id_group) {
-	$alerts = array ();
-	$agents = get_agents_in_group ($id_group);
-	foreach ($agents as $agent) {
-		$agent_alerts = get_alerts_in_agent ($agent['id_agente']);
-		$alerts = array_merge ($alerts, $agent_alerts);
-	}
-	
-	return $alerts;
-}
-
-function get_alerts_fired ($alerts, $period = 0, $date = 0) {
-	if (! $date)
-		$date = time ();
-	$datelimit = $date - $period;
-
-	$alerts_fired = array ();
-	$agents = array ();
-	foreach ($alerts as $alert) {
-		$fires = get_alert_fires_in_period ($alert['id_agente_modulo'], $period, $date);
-		if (! $fires) {
-			continue;
-		}
-		$alerts_fired[$alert['id_aam']] = $fires;
-	}
-	return $alerts_fired;
-}
-
-function get_fired_alerts_reporting_table ($alerts_fired, $return = false) {
+/** 
+ * Get a table report from a alerts fired array.
+ * 
+ * @param alerts_fired Alerts fired array. See get_alerts_fired()
+ * 
+ * @return A table object with a report of the fired alerts.
+ */
+function get_fired_alerts_reporting_table ($alerts_fired) {
 	$agents = array ();
 	
 	foreach (array_keys ($alerts_fired) as $id_alert) {
@@ -291,8 +302,6 @@ function get_fired_alerts_reporting_table ($alerts_fired, $return = false) {
 		}
 	}
 	
-	if (!$return)
-		print_table ($table);
 	return $table;
 }
 
@@ -305,14 +314,16 @@ function get_fired_alerts_reporting_table ($alerts_fired, $return = false) {
  * @param $id_group Group to get info of the alerts.
  * @param $period Period of time of the desired alert report.
  * @param $date Beggining date of the report (current date by default).
- * @param $return Flag to return or echo the report (by default).
+ * @param $return Flag to return or echo the report (echo by default).
  */
 function alert_reporting ($id_group, $period = 0, $date = 0, $return = false) {
 	$output = '';
 	$alerts = get_alerts_in_group ($id_group);
 	$alerts_fired = get_alerts_fired ($alerts, $period, $date);
 	
-	$fired_percentage = round (sizeof ($alerts_fired) / sizeof ($alerts) * 100, 2);
+	$fired_percentage = 0;
+	if (sizeof ($alerts) > 0)
+		$fired_percentage = round (sizeof ($alerts_fired) / sizeof ($alerts) * 100, 2);
 	$not_fired_percentage = 100 - $fired_percentage;
 	$output .= '<img src="reporting/fgraph.php?tipo=alerts_fired_pipe&height=150&width=280&fired='.
 		$fired_percentage.'&not_fired='.$not_fired_percentage.'" style="float: right; border: 1px solid black">';
@@ -325,7 +336,7 @@ function alert_reporting ($id_group, $period = 0, $date = 0, $return = false) {
 			echo $output;
 		return $output;
 	}
-	$table = get_fired_alerts_reporting_table ($alerts_fired, true);
+	$table = get_fired_alerts_reporting_table ($alerts_fired);
 	$table->width = '100%';
 	$table->class = 'databox';
 	$table->size = array ();
@@ -334,6 +345,7 @@ function alert_reporting ($id_group, $period = 0, $date = 0, $return = false) {
 	$table->style[0] = 'font-weight: bold';
 	
 	$output .= print_table ($table, true);
+	
 	if (!$return)
 		echo $output;
 	return $output;
@@ -347,7 +359,7 @@ function alert_reporting ($id_group, $period = 0, $date = 0, $return = false) {
  *
  * @param $id_group Group to get info of the monitors.
  * @param $period Period of time of the desired monitor report.
- * @param $date Beggining date of the report (current date by default).
+ * @param $date Beginning date of the report in UNIX time (current date by default).
  * @param $return Flag to return or echo the report (by default).
  */
 function monitor_health_reporting ($id_group, $period = 0, $date = 0, $return = false) {
@@ -368,7 +380,7 @@ function monitor_health_reporting ($id_group, $period = 0, $date = 0, $return = 
 	$output .= '<strong>'.lang_string ('total_monitors').': '.sizeof ($monitors).'</strong><br />';
 	$output .= '<strong>'.lang_string ('monitors_down_on_period').': '.sizeof ($monitors_down).'</strong><br />';
 	
-	$table = get_monitors_down_reporting_table ($monitors_down, true);
+	$table = get_monitors_down_reporting_table ($monitors_down);
 	$table->width = '100%';
 	$table->class = 'databox';
 	$table->size = array ();
@@ -386,17 +398,15 @@ function monitor_health_reporting ($id_group, $period = 0, $date = 0, $return = 
 	return $output;
 }
 
-function get_monitors_down ($monitors, $period = 0, $date = 0) {
-	$monitors_down = array ();
-	foreach ($monitors as $monitor) {
-		$down = get_monitor_downs_in_period ($monitor['id_agente_modulo'], $period, $date);
-		if ($down)
-			array_push ($monitors_down, $monitor);
-	}
-	return $monitors_down;
-}
-
-function get_monitors_down_reporting_table ($monitors_down, $return = false) {
+/** 
+ * Get a report table with all the monitors down.
+ * 
+ * @param monitors_down An array with all the monitors down. See
+ * get_monitors_down()
+ * 
+ * @return A table object with a monitors down report.
+ */
+function get_monitors_down_reporting_table ($monitors_down) {
 	$table->data = array ();
 	$table->head = array ();
 	$table->head[0] = lang_string ('agent');
@@ -429,8 +439,6 @@ function get_monitors_down_reporting_table ($monitors_down, $return = false) {
 		}
 	}
 	
-	if (!$return)
-		print_table ($table);
 	return $table;
 }
 
@@ -452,27 +460,16 @@ function general_group_reporting ($id_group, $return = false) {
 	return $output;
 }
 
-function get_monitors_in_group ($id_group) {
-	$sql = sprintf ('SELECT tagente_modulo.*
-			FROM tagente_modulo, ttipo_modulo, tagente
-			WHERE id_tipo_modulo = id_tipo
-			AND tagente.id_agente = tagente_modulo.id_agente
-			AND ttipo_modulo.nombre like "%%_proc"
-			AND tagente.id_grupo = %d', $id_group);
-	return get_db_all_rows_sql ($sql);
-}
-
-function get_monitors_in_agent ($id_agent) {
-	$sql = sprintf ('SELECT tagente_modulo.*
-			FROM tagente_modulo, ttipo_modulo, tagente
-			WHERE id_tipo_modulo = id_tipo
-			AND tagente.id_agente = tagente_modulo.id_agente
-			AND ttipo_modulo.nombre like "%%_proc"
-			AND tagente.id_agente = %d', $id_agent);
-	return get_db_all_rows_sql ($sql);
-}
-
-function get_agent_alerts_reporting_table ($id_agent, $period = 0, $date = 0, $return = false) {
+/** 
+ * Get a report table of the fired alerts group by agents.
+ * 
+ * @param id_agent Agent id to generate the report.
+ * @param period Period of time of the report.
+ * @param date Beginning date of the report in UNIX time (current date by default).
+ * 
+ * @return A table object with the alert reporting..
+ */
+function get_agent_alerts_reporting_table ($id_agent, $period = 0, $date = 0) {
 	$table->data = array ();
 	$table->head = array ();
 	$table->head[0] = lang_string ('type');
@@ -501,12 +498,19 @@ function get_agent_alerts_reporting_table ($id_agent, $period = 0, $date = 0, $r
 		
 		array_push ($table->data, $data);
 	}
-	if (!$return)
-		print_table ($table);
 	return $table;
 }
 
-function get_agent_monitors_reporting_table ($id_agent, $period = 0, $date = 0, $return = false) {
+/** 
+ * Get a report of monitors in an agent.
+ * 
+ * @param id_agent Agent id to get the report
+ * @param period Period of time of the report.
+ * @param date Beginning date of the report in UNIX time (current date by default).
+ * 
+ * @return A table object with the report.
+ */
+function get_agent_monitors_reporting_table ($id_agent, $period = 0, $date = 0) {
 	$n_a_string = lang_string ('N/A').'(*)';
 	$table->head = array ();
 	$table->head[0] = lang_string ('monitor');
@@ -527,12 +531,20 @@ function get_agent_monitors_reporting_table ($id_agent, $period = 0, $date = 0, 
 		$data[1] = get_monitor_last_down_timestamp_in_period ($monitor['id_agente_modulo'], $period, $date);
 		array_push ($table->data, $data);
 	}
-	if (!$return)
-		print_table ($table);
+	
 	return $table;
 }
 
-function get_agent_modules_reporting_table ($id_agent, $period = 0, $date = 0, $return = false) {
+/** 
+ * Get a report of all the modules in an agent.
+ * 
+ * @param id_agent Agent id to get the report.
+ * @param period Period of time of the report
+ * @param date Beginning date of the report in UNIX time (current date by default).
+ * 
+ * @return 
+ */
+function get_agent_modules_reporting_table ($id_agent, $period = 0, $date = 0) {
 	$table->data = array ();
 	$n_a_string = lang_string ('N/A').'(*)';
 	$modules = get_modules_in_agent ($id_agent);
@@ -545,8 +557,7 @@ function get_agent_modules_reporting_table ($id_agent, $period = 0, $date = 0, $
 			$data[0] = $module['nombre'];
 		array_push ($table->data, $data);
 	}
-	if (!$return)
-		print_table ($table);
+	
 	return $table;
 }
 
@@ -555,7 +566,7 @@ function get_agent_modules_reporting_table ($id_agent, $period = 0, $date = 0, $
  *
  * @param $id_agent Agent to get the report.
  * @param $period Period of time of the desired report.
- * @param $date Beggining date of the report (current date by default).
+ * @param $date Beginning date of the report in UNIX time (current date by default).
  * @param $return Flag to return or echo the report (by default).
  */
 function get_agent_detailed_reporting ($id_agent, $period = 0, $date = 0, $return = false) {
@@ -566,12 +577,12 @@ function get_agent_detailed_reporting ($id_agent, $period = 0, $date = 0, $retur
 	$output .= '<div class="agent_reporting">';
 	$output .= '<h3 style="text-decoration: underline">'.lang_string ('agent').' - '.dame_nombre_agente ($id_agent).'</h3>';
 	$output .= '<h4>'.lang_string ('modules').'</h3>';
-	$table_modules = get_agent_modules_reporting_table ($id_agent, $period, $date, true);
+	$table_modules = get_agent_modules_reporting_table ($id_agent, $period, $date);
 	$table_modules->width = '99%';
 	$output .= print_table ($table_modules, true);
 	
 	/* Show alerts in agent */
-	$table_alerts = get_agent_alerts_reporting_table ($id_agent, $period, $date, true);
+	$table_alerts = get_agent_alerts_reporting_table ($id_agent, $period, $date);
 	$table_alerts->width = '99%';
 	if (sizeof ($table_alerts->data)) {
 		$output .= '<h4>'.lang_string ('alerts').'</h4>';
@@ -579,7 +590,7 @@ function get_agent_detailed_reporting ($id_agent, $period = 0, $date = 0, $retur
 	}
 	
 	/* Show monitor status in agent (if any) */
-	$table_monitors = get_agent_monitors_reporting_table ($id_agent, $period, $date, true);
+	$table_monitors = get_agent_monitors_reporting_table ($id_agent, $period, $date);
 	if (sizeof ($table_monitors->data) == 0) {
 		$output .= '</div>';
 		if (! $return)

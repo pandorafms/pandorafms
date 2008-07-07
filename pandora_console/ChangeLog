@@ -1,3 +1,22 @@
+2008-07-07  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/reporting/graph_builder.php: Tab style correction.
+
+	* godmode/reporting/reporting_builder.php: Button label renamed.
+
+	* include/functions_db.php: Added functions from
+	functions_reporting.php.
+
+	* include/functions_reporting.php: Added missing documentation. Added
+	check to avoid division by zero on alert_reporting(). Avoid $return
+	flag as parameter in some functions.
+
+	* include/functions_reporting_pdf.php: Avoid $return flag when calling
+	some functions.
+	
+	* operation/reporting/reporting_viewer.php: Do not use a span with
+	font-size when showing sla report.
+
 2008-07-04  Esteban Sanchez  <estebans@artica.es>
 
 	* operation/reporting/reporting_viewer.php: Added a loading div that

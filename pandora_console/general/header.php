@@ -45,10 +45,10 @@ if (isset ($_SESSION["id_usuario"])){
     // Third column 
     echo "<td>";
     // Autorefresh
-    if ((isset($_GET["refr"])) OR (isset($_POST["refr"]))) {
-        echo "<a class='white_grey_bold' href='".$_SERVER['REQUEST_URI']."&refr=0'><img src='images/page_lightning.png' class='bot'> ". lang_string("Autorefresh")."</a>";
+    if ((isset($_GET["refr"]) AND $_GET["refr"] != 0) OR (isset($_POST["refr"]) AND $_POST["refr"] != 0)) {
+        echo "<a class='white_grey_bold' href='".((substr($_SERVER['REQUEST_URI'],-1) != "/") ? $_SERVER['REQUEST_URI'] : "index.php?" )."&refr=0'><img src='images/page_lightning.png' class='bot'> ". lang_string("Autorefresh")."</a>";
     } else {
-        echo "<a class='white_bold' href='".$_SERVER['REQUEST_URI']."&refr=5'><img src='images/page_lightning.png' class='bot'> ". lang_string("Autorefresh")."</a>";
+        echo "<a class='white_bold' href='".((substr($_SERVER['REQUEST_URI'],-1) != "/") ? $_SERVER['REQUEST_URI'] : "index.php?" )."&refr=5'><img src='images/page_lightning.png' class='bot'> ". lang_string("Autorefresh")."</a>";
     }
 
 

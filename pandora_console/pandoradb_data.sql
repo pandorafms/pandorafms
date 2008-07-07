@@ -62,7 +62,6 @@ INSERT INTO `tconfig` VALUES
 (18, 'graph_color2', '#42D100'),
 (19, 'graph_color3', '#89FF09'),
 (20, 'sla_period', '604800');
-;
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `tconfig` ENABLE KEYS */;
 

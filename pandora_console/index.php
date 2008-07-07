@@ -114,7 +114,7 @@ if ($intervalo > 0){
 <meta name="keywords" content="pandora, monitoring, system, GPL, software">
 <meta name="robots" content="index, follow">
 <link rel="icon" href="images/pandora.ico" type="image/ico">
-<link rel="stylesheet" href="include/styles/<?=$config['style']?>.css" type="text/css">
+<link rel="stylesheet" href="include/styles/<?php echo $config['style']; ?>.css" type="text/css">
 
 <script type="text/javascript" src="include/javascript/wz_jsgraphics.js"></script>
 <script type="text/javascript" src="include/javascript/pandora.js"></script>

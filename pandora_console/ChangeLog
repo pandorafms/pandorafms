@@ -1,5 +1,14 @@
 2008-07-08  Sancho Lerena <slerena@artica.es>
 
+	*  include/functions_reporting.php: Basic support for async modules.
+	General stats (tactical), do not shown async modules as uknown anymore.
+
+	* operation/agentes/estado_agente.php,
+	operation/agentes/estado_ultimopaquete.php: Support for async modules.
+
+	* godmode/agentes/modificar_agente.php: Fixed stupid bug in search
+	field in last commit.
+
 	* operation/reporting/graph_viewer.php: Added controls to view in the
 	new combined graphic mode (lines), and to change size to three pre-
 	defined sizes.

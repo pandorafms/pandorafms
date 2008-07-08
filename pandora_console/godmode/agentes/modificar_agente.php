@@ -158,7 +158,7 @@ echo "</form>";
 echo "</td></table>";
 
 if ($search != ""){
-        $search_sql = " AND nombre LIKE '%$search%' ";
+        $search_sql = " nombre LIKE '%$search%' ";
 } else {
         $search_sql = " 1 = 1";
 }

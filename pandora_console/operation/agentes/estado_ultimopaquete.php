@@ -189,12 +189,16 @@ if (mysql_num_rows ($result3)) {
 			echo $lang_label["never"];
 		} else {
 			$ahora = time();
-			if ( ($ahora - $row3["utimestamp"]) > ($real_interval*2)) {
-				echo "<font color='red'>";
-				echo human_time_comparation($row3["timestamp"]);
-				echo "</font>";
-			} else
-				echo human_time_comparation($row3["timestamp"]);
+			if (($row3["id_tipo_modulo"] > 20) AND ($row3["id_tipo_modulo"] < 100)){
+				 echo human_time_comparation($row3["timestamp"]);
+			} else {
+				if ( ($ahora - $row3["utimestamp"]) > ($real_interval*2)) {
+					echo "<font color='red'>";
+					echo human_time_comparation($row3["timestamp"]);
+					echo "</font>";
+				} else
+					echo human_time_comparation($row3["timestamp"]);
+			}
 		}
 		echo "</td></tr>";
     }

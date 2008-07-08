@@ -135,7 +135,7 @@ function general_stats ($id_user, $id_group = 0) {
 				$existen_agentes = 1;
 
 			// SQL Join to get monitor status for agents belong this group
-			$sql1 = "SELECT tagente.id_agente, tagente_estado.estado, tagente_estado.datos, tagente_estado.current_interval, tagente_estado.utimestamp, tagente_estado.id_agente_modulo FROM tagente, tagente_estado, tagente_modulo WHERE tagente.disabled = 0 AND tagente.id_grupo = $migrupo AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 ";
+			$sql1 = "SELECT tagente.id_agente, tagente_estado.estado, tagente_estado.datos, tagente_estado.current_interval, tagente_estado.utimestamp, tagente_estado.id_agente_modulo, tagente_modulo.id_tipo_modulo FROM tagente, tagente_estado, tagente_modulo WHERE tagente.disabled = 0 AND tagente.id_grupo = $migrupo AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.disabled = 0 ";
 			if ($result1 = mysql_query ($sql1)){
 				while ($row1 = mysql_fetch_array ($result1)) {
 					$id_agente = $row1[0];
@@ -145,6 +145,11 @@ function general_stats ($id_user, $id_group = 0) {
 					$utimestamp = $row1[4];
 					$seconds = $ahora_sec - $utimestamp;
 					$id_agente_modulo = $row1[5];
+					$module_type = $row1[6];
+					if (($module_type < 21) OR ($module_type == 100))
+						$async = 0;
+					else
+						$async = 1;
 					if ($estado != 100){
 						// Monitor check
 						$monitor_checks++;
@@ -172,7 +177,7 @@ function general_stats ($id_user, $id_group = 0) {
 						// Data check
 						if ($utimestamp == 0)
 							$data_not_init++;
-						elseif ($seconds >= ($module_interval*2))
+						elseif (($seconds >= ($module_interval*2)) AND ($async == 0))
 							$data_unknown++;
 						$data_checks++;
 						// Alert

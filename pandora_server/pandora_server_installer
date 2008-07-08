@@ -28,31 +28,51 @@ then
 	echo " "
 	echo "	$ yum perl-XML-SAX* perl-Tie* perl-XML-Simple* perl-DateManip* perl-IO-Socket* perl-Time-modules* perl-NetAddr-IP* perl-GD* perl-DateTime* perl-ExtUtils"
 	echo " "
-	echo "  $ cpan install Digest::MD5 Time::Local DBI threads threads::shared IO::Socket Time::HiRes Time::Format Net::Ping NetAddr::IP "
+	echo "To get it from source through CPAN do"
+	echo " "
+	echo "  $ cpan Digest::MD5 Time::Local DBI threads threads::shared IO::Socket Time::HiRes Time::Format Net::Ping NetAddr::IP Mail::Sendmail Net::Traceroute::PurePerl"
+	echo " "
 	rm output
 else
 	make
 	make install
 	mkdir /var/spool/pandora
 	mkdir /var/spool/pandora/data_in
-	useradd pandora
-	mkdir /home/pandora
-	mkdir /home/pandora/.ssh
-	chown -R pandora /home/pandora
+	id pandora
+	if [ $? -eq 0 ]; then
+		echo " "
+		echo "User pandora does exist, make sure the SSH directories are correct"
+	else
+		useradd pandora
+		mkdir /home/pandora
+		mkdir /home/pandora/.ssh
+		chown -R pandora /home/pandora
+	fi
 	mkdir /var/log/pandora
-	chown pandora:root /var/spool/pandora/data_in
+	chown pandora:wheel /var/spool/pandora/data_in
 	chmod 770 /var/spool/pandora/data_in
 	mkdir /etc/pandora
+	if [ -e /etc/pandora/pandora_server.conf ]; then
+		echo "Old installation detected, backing up pandora_server.conf"
+		mv /etc/pandora/pandora_server.conf /etc/pandora/pandora_server.conf.bak
+	fi
 	cp conf/pandora_server.conf /etc/pandora/
 	chmod 770 /etc/pandora/pandora_server.conf
-	cp pandora_* /etc/init.d/
-	rm /etc/init.d/pandora_server_installer
-	ln -s /etc/init.d/pandora_server /etc/rc2.d/S90pandora_server
-	ln -s /etc/init.d/pandora_recon /etc/rc2.d/S90pandora_recon
-	ln -s /etc/init.d/pandora_network /etc/rc2.d/S90pandora_network
-	ln -s /etc/init.d/pandora_snmpconsole /etc/rc2.d/S90pandora_snmpconsole
-	ln -s /etc/init.d/pandora_plugin /etc/rc2.d/S90pandora_plugin
-	ln -s /etc/init.d/pandora_prediction /etc/rc2.d/S90pandora_prediction
+	if [ "`uname -s`" != "Linux" ]; then
+		echo "This is not a Linux-based distro. The installer will not create files for automatic startup."
+		echo "Copying the binaries into /usr/local/bin"
+		cp pandora_* /usr/local/bin
+		rm /usr/local/bin/pandora_server_installer
+	else 
+		cp pandora_* /etc/init.d/
+		rm /etc/init.d/pandora_server_installer
+		ln -s /etc/init.d/pandora_server /etc/rc2.d/S90pandora_server
+		ln -s /etc/init.d/pandora_recon /etc/rc2.d/S90pandora_recon
+		ln -s /etc/init.d/pandora_network /etc/rc2.d/S90pandora_network
+		ln -s /etc/init.d/pandora_snmpconsole /etc/rc2.d/S90pandora_snmpconsole
+		ln -s /etc/init.d/pandora_plugin /etc/rc2.d/S90pandora_plugin
+		ln -s /etc/init.d/pandora_prediction /etc/rc2.d/S90pandora_prediction
+	fi
 
 	if [ -e /usr/local/bin/pandora_server ]
 	then
@@ -74,19 +94,33 @@ else
 	mkdir /usr/share/pandora
 	cp -R util /usr/share/pandora
 	cp -R plugin /usr/share/pandora
-	echo "perl /usr/share/pandora/util/pandora_db /etc/pandora/pandora_server.conf" > /etc/cron.daily/pandora_purge_db	
-	chmod +x /etc/cron.daily/pandora_purge_db
+	if [ -d /etc/cron.daily ]
+	then
+		echo "perl /usr/share/pandora/util/pandora_db /etc/pandora/pandora_server.conf" > /etc/cron.daily/pandora_purge_db	
+		chmod +x /etc/cron.daily/pandora_purge_db
+	else
+		echo "You're probably not using cron for automatic scheduling. You should schedule the following command to run frequently (daily) on your master server:"
+		echo "   perl /usr/share/pandora/util/pandora_db /etc/pandora/pandora_server.conf"
+	fi
 	rm output
 fi
 
 }
 
 uninstall () {
-        echo "Removing Pandora Servers"
+        if [ "`uname -s`" != "Linux" ]; then
+                echo "This is not a Linux-based distro. Uninstaller is currently not working for your OS"
+	fi
+	echo "Removing Pandora Servers"
         rm -Rf /var/spool/pandora/data_in/
-        rm -Rf /home/pandora/
-	userdel pandora 
-        rm -Rf /var/log/pandora/
+
+	echo "If the user Pandora is not being used for any other operations, please delete using the following commands:"
+	echo "   userdel pandora"
+	echo "   rm -Rf /home/pandora/"
+        ## Just to clarify here. Some people (like me) are using the pandora user for other purposes and/or using an LDAP-based user management
+	## I would hate to have a script clear out this users' information without any notification
+
+	rm -Rf /var/log/pandora/
         rm -Rf /etc/pandora/pandora_server.conf
         rm -Rf /etc/init.d/pandora_server
 	rm -Rf /etc/init.d/pandora_network

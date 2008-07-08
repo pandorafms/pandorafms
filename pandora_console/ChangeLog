@@ -1,3 +1,9 @@
+2008-07-08  Sancho Lerena <slerena@artica.es>
+
+	* include/config.php: Deleted. This file should not be included in SVN
+	
+	* images/so_aix.png: New icon for AIX systems.
+
 2008-07-07  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/reporting/graph_builder.php: Tab style correction.

@@ -1,3 +1,20 @@
+2008-07-08  Sancho Lerena <slerena@gmail.com>
+
+	* linux/plugins/grep_log: Changed default type to "async_string"
+
+2008-07-07  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* pandora_agents/tools
+	pandora_agents/linux/plugins
+	pandora_agents/mac_osx/plugins: Moved tools into the plugin sections of 
+	compatible agents. The plugins in subdirectories have dependencies that 
+	can be found in the README file while plugins directly in the directory
+	can be used directly when Pandora agent prerequisites are met (Perl & Bash)
+
+        * pandora_agents/mac_osx/pandora_user.conf
+        pandora_agents/mac_osx/plugins/ppc_sensors: Moved pandora_user.conf 
+	into the new plugins section
+
 2008-06-30  Sancho Lerena <slerena@artica.es>
 
 	*  pandora_agents/win32/installer/pandora_2.0.mpi: New installer for 2.0

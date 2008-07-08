@@ -173,7 +173,7 @@ sub parse_log () {
 
 	print (stdout "<module>\n");
 	print (stdout "<name><![CDATA[" . $Module_name . "]]></name>\n");
-	print (stdout "<type><![CDATA[generic_data_string]]></type>\n");
+	print (stdout "<type><![CDATA[async_string]]></type>\n");
 	print (stdout "<datalist>\n");
 
 	# Parse log file

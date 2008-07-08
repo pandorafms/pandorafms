@@ -1,3 +1,7 @@
+2008-07-08  Sancho Lerena <slerena@gmail.com>
+
+	* pandora_server: An event is generated if a BAD XML is detected.
+
 2008-07-06  Sancho Lerena <slerena@gmail.com>
 
         * pandora_network: Added a patch from godzone-nz, to implement

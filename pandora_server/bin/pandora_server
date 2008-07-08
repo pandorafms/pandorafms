@@ -241,6 +241,10 @@ sub pandora_data_consumer ($$) {
 					delete($active_task_hash{$file_name});
 					delete($incomplete_task_hash{$file_name});
 					rename($file, $file . "_BADXML");
+
+                    # Create event
+                    pandora_event ($pa_config, "Unable to process XML data file ($file)", 0, 0, 0, 0, 0, 'error', $dbh);
+
 				}
 			}
 

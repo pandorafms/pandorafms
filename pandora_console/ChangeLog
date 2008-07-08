@@ -1,3 +1,19 @@
+2008-07-08  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+       * pandora/console/install.php:  Added mysql_error debugging that can be u
+ncommented when something goes wrong for clearer troubleshooting
+
+       * pandora_console/pandoradb_data.sql: Fixed a line that had an extra semi
+colon (;) which caused the installer to fail
+
+       * pandora_console/index.php: Fixed the code that displays the custom CSS 
+code. Now the Console looks good.
+
+       * pandora_console/general/header.php: Fixed the Autorefresh code. Now the
+ Autorefresh link switches correctly between grey and white instead of staying w
+hite. Also fixed the autorefresh in case that there is no correct $_SERVER['REQU
+EST_URI'] so that it doesn't go 404.
+
 2008-07-08  Sancho Lerena <slerena@artica.es>
 
 	*  include/functions_reporting.php: Basic support for async modules.

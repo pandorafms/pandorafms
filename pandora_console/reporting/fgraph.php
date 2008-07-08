@@ -253,7 +253,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 	
 	if ($pure == 0){
 		$Font =& $Graph->addNew('font', $config['fontpath']);
-		$Font->setSize(6);
+		$Font->setSize(7);
 		$Graph->setFont($Font);
 		$Graph->add(
 		Image_Graph::vertical(
@@ -274,7 +274,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 		$Subtitle->setAlignment(IMAGE_GRAPH_ALIGN_LEFT);
 	} else {
 		$Font =& $Graph->addNew('font', $config['fontpath']);
-		$Font->setSize(6);
+		$Font->setSize(7);
 		$Graph->setFont($Font);
 		$Graph->add(
 			Image_Graph::vertical(
@@ -333,16 +333,42 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 		$Plot->setUpperBound( $alert_high );
 	}
 	
-	
+
 	// create the 1st plot as smoothed area chart using the 1st dataset
-	if ($stacked == 0) {
-	// Non-stacked
-		$Plot =& $Plotarea->addNew('area', array(&$dataset));
-	} else {
-		// Stacked (> 2.0)
-		$Plot =& $Plotarea->addNew('Image_Graph_Plot_Area', array(&$dataset, 'stacked'));
+        if ($stacked == 0) {
+
+                // Non-stacked
+                $Plot =& $Plotarea->addNew('area', array(&$dataset));
+
+        } elseif ($stacked == 1) {
+
+                // Stacked (> 2.0)
+                $Plot =& $Plotarea->addNew('Image_Graph_Plot_Area', array(&$dataset, 'stacked'));
+
+        } else {
+
+		$color_array[0] = "red";
+		$color_array[1] = "blue";
+		$color_array[2] = "green";
+		$color_array[3] = 'yellow'; // yellow
+        	$color_array[4] = '#FF5FDF'; // pink
+        	$color_array[5] = 'orange'; // orange
+		$color_array[6] = '#FE00DA'; // magenta
+		$color_array[7]	= '#00E2FF'; // cyan
+		$color_array[8]	= '#000000'; // Black
+
+                // Single lines, new in 2.0 (Jul08)
+		for ($i = 0; $i < $module_number; $i++){
+	                $Plot =& $Plotarea->addNew('line', array(&$dataset[$i]));
+			$Plot->setLineColor($color_array[$i]); 
+		}
+        }
+
+	// Color management
+	if ($stacked != 2){
+		$Plot->setLineColor('gray@0.4');
 	}
-	$Plot->setLineColor('gray@0.4');
+		
 	$AxisX =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_X);
 	// $AxisX->Hide();
 	$AxisY =& $Plotarea->getAxis(IMAGE_GRAPH_AXIS_Y);

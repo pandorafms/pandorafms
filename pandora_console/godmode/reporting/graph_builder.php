@@ -282,7 +282,7 @@ echo "</b>";
 // Show combo with agents
 echo "<td class='datos' colspan=2>";
 
-print_select_from_sql ('SELECT id_agente, nombre FROM tagente ORDER BY nombre', 'id_agent', $id_agent, '', '--', 0);
+print_select_from_sql ('SELECT id_agente, nombre FROM tagente WHERE disabled = 0 ORDER BY nombre', 'id_agent', $id_agent, '', '--', 0);
 if (isset($chunkdata))
 	echo "<input type='hidden' name='chunk' value='$chunkdata'>";
 
@@ -427,15 +427,13 @@ echo "<tr>";
 echo "<td class='datos2'>";
 echo "<b>".lang_string ("Stacked")."</b></td>";
 echo "<td class='datos2'>";
-echo "<select name='stacked'>";
-if ($stacked == 1){
-	echo "<option value=1>Yes</option>";
-	echo "<option value=0>No</option>";
-} else {
-	echo "<option value=0>No</option>";
-	echo "<option value=1>Yes</option>";
-}
-echo "</select></td>";
+
+
+$stackeds[0] = lang_string ('Area');
+$stackeds[1] = lang_string ('Stacked area');
+$stackeds[2] = lang_string ('Line');
+print_select ($stackeds, 'stacked', $stacked, '', '', 0);
+echo "</td>";
 
 
 /*
@@ -452,6 +450,8 @@ if ($alerts == 1){
 }
 echo "</select>";
 */
+
+
 echo "</tr></table>";
 echo "<table width='500px'>";
 echo "<tr><td align='right'><input type=submit name='update_agent' class='sub upd' value='".$lang_label["add"]."/".$lang_label["redraw"]."'>";
@@ -535,11 +535,7 @@ function agent_changed () {
 			success: function (data) {
 				$('#id_module').append ($('<option></option>').attr ('value', 0).text ("--"));
 				jQuery.each (data, function (i, val) {
-					if (val['descripcion'] == "") {
-						s = html_entity_decode (val['nombre']);
-					} else {
-						s = html_entity_decode (val['descripcion']);
-					}
+					s = html_entity_decode (val['nombre']);
 					$('#id_module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s));
 				});
 				$('#id_module').fadeIn ('normal');

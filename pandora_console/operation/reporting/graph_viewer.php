@@ -58,7 +58,24 @@ if (isset($_GET["view_graph"])){
 		$id_user = $row["id_user"];
 		$private = $row["private"];
 		$width = $row["width"];
-		$height = $row["height"];
+                $height = $row["height"];
+		$zoom = (int) get_parameter ('zoom', 0);
+		if ($zoom > 0){
+			switch ($zoom){
+			case 1: 
+				$width = 500;
+				$height = 210;
+				break;
+			case 2:  
+                                $width = 650;
+                                $height = 310;
+                                break;
+			case 3:  
+                                $width = 770;
+                                $height = 400;
+                                break;
+			}
+		}
 		$period = (int) get_parameter ('period');
 		if (! $period)
 			$period = $row["period"];
@@ -66,6 +83,10 @@ if (isset($_GET["view_graph"])){
 			$period = 3600 * $period;
 		$events = $row["events"];
 		$description = $row["description"];
+		$stacked = (int) get_parameter ('stacked');
+		if (! $stacked)
+			$stacked = $row["stacked"];
+
 		$name = $row["name"];
 		if (($row["private"]==1) && ($row["id_user"] != $id_user)){
 			audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access to a custom graph not allowed");
@@ -91,13 +112,15 @@ if (isset($_GET["view_graph"])){
 		}
 		echo "<h2>".$lang_label["reporting"]." &gt; ";
 		echo $lang_label["combined_image"]."</h2>";
-		echo "<table class='databox_frame'>";
+		echo "<table class='databox_frame' cellpadding=0 cellspacing=0>";
 		echo "<tr><td>";
-		echo "<img src='reporting/fgraph.php?tipo=combined&height=$height&width=$width&id=$modules&period=$period&weight_l=$weights' border=1 alt=''>";
+		echo "<img 
+src='reporting/fgraph.php?tipo=combined&height=$height&width=$width&id=$modules&period=$period&weight_l=$weights&stacked=$stacked' 
+border=1 alt=''>";
 		echo "</td></tr></table>";
 		$period_label = human_time_description ($period);
 		echo "<form method='POST' action='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=$id_graph'>";
-		echo "<table class='databox_frame'>";
+		echo "<table class='databox_frame' cellpadding=4 cellspacing=4>";
 		echo "<tr><td class='datos'>";
 		echo "<b>".lang_string ('period')."</b>";
 		echo "<td class='datos'>";
@@ -114,13 +137,30 @@ if (isset($_GET["view_graph"])){
 		$periods[4320] = lang_string ('six_months');
 		print_select ($periods, 'period', intval ($period / 3600), '', '', 0);
 		echo "<td class='datos'>";
+		$stackeds = array ();
+                $stackeds[0] = lang_string ('Area');
+                $stackeds[1] = lang_string ('Stacked area');
+                $stackeds[2] = lang_string ('Line');
+
+		print_select ($stackeds, 'stacked', $stacked , '', '', 0);
+                echo "<td class='datos'>";
+
+		$zooms = array();
+		$zooms[0] = lang_string ('Graph defined');
+	 	$zooms[1] = lang_string ('Zoom x1');
+                $zooms[2] = lang_string ('Zoom x2');
+                $zooms[3] = lang_string ('Zoom x3');
+
+		print_select ($zooms, 'zoom', $zoom , '', '', 0);
+                echo "<td class='datos'>";
+
 		echo "<input type=submit value='".$lang_label["update"]."' class='sub upd'>";
 		echo "</table>";
 		echo "</form>";		
 	}
 }
-echo "<h2>".$lang_label["reporting"]." &gt; ";
-echo  $lang_label["custom_graph_viewer"]."</h2>";
+echo "<h2>" . lang_string ("reporting") . " &gt; ";
+echo lang_string ("custom_graph_viewer") . "</h2>";
 
 $color=1;
 $sql="SELECT * FROM tgraph";

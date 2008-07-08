@@ -1,5 +1,20 @@
 2008-07-08  Sancho Lerena <slerena@artica.es>
 
+	* operation/reporting/graph_viewer.php: Added controls to view in the
+	new combined graphic mode (lines), and to change size to three pre-
+	defined sizes.
+
+	* reporting/fgraph.php: Stacked mode support was missing by unknown
+	reason. Reactivated. Added a mode to view combined graphs in "wired"
+	mode (lines only).
+	
+	* godmode/agentes/modificar_agente.php: Disabled agents was not shown,
+	so was unable to activate again. Fixed. 
+
+	* godmode/reporting/graph_builder.php: Added support for line mode.
+	Disabled agents don't shown in combo. Some other minor fixes. Changed
+	to show the name of the module, instead of description.
+
 	* include/config.php: Deleted. This file should not be included in SVN
 	
 	* images/so_aix.png: New icon for AIX systems.

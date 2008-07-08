@@ -160,24 +160,24 @@ echo "</td></table>";
 if ($search != ""){
         $search_sql = " AND nombre LIKE '%$search%' ";
 } else {
-        $search_sql = "";
+        $search_sql = " 1 = 1";
 }
 
 // Show only selected groups    
 if ($ag_group > 1){
-        $sql1="SELECT * FROM tagente WHERE id_grupo=$ag_group
-        AND disabled = 0 $search_sql ORDER BY nombre LIMIT $offset, ".$config["block_size"];
+        $sql1="SELECT * FROM tagente WHERE id_grupo = $ag_group
+        AND $search_sql ORDER BY nombre LIMIT $offset, ".$config["block_size"];
         $sql2="SELECT COUNT(id_agente) FROM tagente WHERE id_grupo = $ag_group 
-        AND disabled = 0 $search_sql ORDER BY nombre";
+        AND $search_sql ORDER BY nombre";
 } else {
         // Is admin user ??
         if (get_db_sql ("SELECT * FROM tusuario WHERE id_usuario ='$id_user'", "nivel") == 1){
-                $sql1 = "SELECT * FROM tagente WHERE disabled = 0 $search_sql ORDER BY nombre, id_grupo LIMIT $offset, ".$config["block_size"];
-                $sql2="SELECT COUNT(id_agente) FROM tagente WHERE disabled = 0 $search_sql ORDER BY nombre, id_grupo";
+                $sql1 = "SELECT * FROM tagente WHERE $search_sql ORDER BY nombre, id_grupo LIMIT $offset, ".$config["block_size"];
+                $sql2="SELECT COUNT(id_agente) FROM tagente WHERE $search_sql ORDER BY nombre, id_grupo";
         } else {
-                $sql1="SELECT * FROM tagente WHERE disabled = 0 $search_sql AND id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='$id_user')
+                $sql1="SELECT * FROM tagente WHERE $search_sql AND id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='$id_user')
                 ORDER BY nombre, id_grupo LIMIT $offset, ".$config["block_size"];
-                $sql2="SELECT COUNT(id_agente) FROM tagente WHERE disabled = 0 $search_sql AND id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='$id_user') ORDER BY nombre, id_grupo";
+                $sql2="SELECT COUNT(id_agente) FROM tagente WHERE $search_sql AND id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='$id_user') ORDER BY nombre, id_grupo";
         }
 }
 
@@ -211,10 +211,17 @@ if (mysql_num_rows($result)){
 		}
 		if (give_acl($id_user, $id_grupo, "AW")==1){
 			// Agent name
-			echo "<tr><td class='$tdcolor'>
-			<b><a href='index.php?sec=gagente&
+			echo "<tr><td class='$tdcolor'>";
+			if ($row["disabled"] == 1){
+				echo "<i>";
+			}
+			echo "<b><a href='index.php?sec=gagente&
 			sec2=godmode/agentes/configurar_agente&tab=main&
-			id_agente=".$row["id_agente"]."'>".substr(strtoupper($row["nombre"]),0,20)."</a></b></td>";
+			id_agente=".$row["id_agente"]."'>".substr(strtoupper($row["nombre"]),0,20)."</a></b>";
+			if ($row["disabled"] == 1){
+                                echo "<i>";
+                        }
+			echo "</td>";
 
 			echo "<td align='center' class='$tdcolor'>";
 			// Has remote configuration ?

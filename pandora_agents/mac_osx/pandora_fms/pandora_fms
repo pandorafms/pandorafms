@@ -24,7 +24,7 @@ StartService()
         if [ -f $PIDFILE ]
         then
 		PID_BA=`cat $PIDFILE`
-                if [ ! -z "`ps -Af | awk '{ print $2 }' | grep $PID_BA`" ]
+                if [ ! -z "`ps -A | awk '{ print $1 }' | grep $PID_BA`" ]
                 then
                         echo "Pandora FMS Agent is currently running on this machine with PID $PID_BA"
                         echo "Cannot launch again. Aborting."
@@ -43,7 +43,7 @@ StopService()
         then
 		echo "Stopping Pandora Agent."
 		PID_2=`cat $PIDFILE`
-		if [ ! -z "`ps -f -p $PID_2 | grep -v grep | grep 'pandora_agent'`" ]
+		if [ ! -z "`ps -A | grep -v grep | grep 'pandora_agent'`" ]
 		then
 			kill -9 $PID_2
 		fi

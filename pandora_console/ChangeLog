@@ -1,3 +1,7 @@
+2008-07-09  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+        * pandoradb.sql: Updated indexes
+
 2008-07-09  Sancho LErena <slerena@gmail.com>
 
 	* include/functions_html.php, include/functions_db.php,

@@ -1,4 +1,8 @@
-2008-07-08  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+2008-07-09  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* pandora_agents/mac_osx: Updated pieces here and there including the installer and startup scripts to make them more compatible and reliable
+
+2008-07-08  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
         * pandora_agents/tools
           pandora_agents/linux/plugins

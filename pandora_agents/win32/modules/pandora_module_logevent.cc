@@ -43,50 +43,50 @@ Pandora_Module_Logevent::Pandora_Module_Logevent (string name, string source, st
 
 void
 Pandora_Module_Logevent::run () {
-    int interval, module_interval;
-    string value;
-    list<string> event_list;
-    list<string>::iterator event;
+	int interval, module_interval;
+	string value;
+	list<string> event_list;
+	list<string>::iterator event;
 	Pandora_Agent_Conf::Pandora_Agent_Conf *conf;
-    SYSTEMTIME system_time;
-
+	SYSTEMTIME system_time;
+	
 	conf = Pandora_Agent_Conf::getInstance ();
-    
-    // Get execution interval
-    value = conf->getValue ("interval");
-    interval = atoi(value.c_str ());
-    
-    module_interval = this->getInterval ();    
-    if (module_interval > 0) {
-        interval *= module_interval;
-    }
-
+	
+	// Get execution interval
+	value = conf->getValue ("interval");
+	interval = atoi(value.c_str ());
+	
+	module_interval = this->getInterval ();    
+	if (module_interval > 0) {
+		interval *= module_interval;
+	}
+	
 	// Run
 	try {
-        Pandora_Module::run ();
-    } catch (Interval_Not_Fulfilled e) {
-        return;
-    }
-        
-    Pandora_Wmi::getEventList (this->source, this->type, this->pattern, interval, event_list);
-
+		Pandora_Module::run ();
+	} catch (Interval_Not_Fulfilled e) {
+		return;
+	}
+	
+	Pandora_Wmi::getEventList (this->source, this->type, this->pattern, interval, event_list);
+	
 	// No data
-    if (event_list.size () < 1) {
-        this->setOutput ("");
-        return;
-    }
-
-    for(event = event_list.begin (); event != event_list.end(); ++event) {
-        // No WMI timestamp?
-        if (event->size () < 26) {
-            this->setOutput (*event);
-            continue;
-        }
-        
-        // Get the timestamp
-        Pandora_Wmi::convertWMIDate(event->substr (0, 26), &system_time);
-        
-        // Store the data
-        this->setOutput (event->substr (26), &system_time);
-    }
+	if (event_list.size () < 1) {
+		this->setOutput ("");
+		return;
+	}
+	
+	for (event = event_list.begin (); event != event_list.end(); ++event) {
+		// No WMI timestamp?
+		if (event->size () < 26) {
+			this->setOutput (*event);
+			continue;
+		}
+		
+		// Get the timestamp
+		Pandora_Wmi::convertWMIDate (event->substr (0, 26), &system_time);
+		
+		// Store the data
+		this->setOutput (event->substr (26), &system_time);
+	}
 }

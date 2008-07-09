@@ -392,23 +392,25 @@ Pandora_Wmi::getEventList (string source, string type, string pattern, int inter
 	CDhInitialize init;
 	CDispPtr      wmi_svc, quickfixes;
 	char         *value = NULL;
+	WCHAR        *unicode_value;
 	string        event, limit, message, query, timestamp;
-
-    limit = getTimestampLimit(interval);    
-    if (limit.empty()) {
+	char         *encode;
+	
+	limit = getTimestampLimit (interval);    
+	if (limit.empty()) {
 		pandoraDebug ("Pandora_Wmi::getEventList: getTimestampLimit error");
-        return;
-    }
-    
+		return;
+	}
+	
 	// Build the WQL query
 	query = "SELECT * FROM Win32_NTLogEvent WHERE TimeWritten >= '" + limit + "'";
-    if (! source.empty()) {
-        query += " AND Logfile = '" + source + "'";
-    }    
-    if (! type.empty()) {
-        query += " AND Type = '" + type + "'";
-    }
-
+	if (! source.empty()) {
+		query += " AND Logfile = '" + source + "'";
+	}    
+	if (! type.empty()) {
+		query += " AND Type = '" + type + "'";
+	}
+	
 	try {
 		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
 		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
@@ -416,30 +418,29 @@ Pandora_Wmi::getEventList (string source, string type, string pattern, int inter
 				     query.c_str()));
 
 		FOR_EACH (quickfix, quickfixes, NULL) {
-            // Timestamp
+			// Timestamp
 			dhGetValue (L"%s", &value, quickfix,
 				    L".TimeWritten");
 			timestamp = value;
 			dhFreeString (value);
 			
-            // Message
-			dhGetValue (L"%s", &value, quickfix,
+			// Message
+			dhGetValue (L"%S", &unicode_value, quickfix,
 				    L".Message");
-           	message = value;
+			value = Pandora_Strutils::strUnicodeToAnsi (unicode_value);
+			message = Pandora_Strutils::trim (value);
 			dhFreeString (value);
 			
-            // LIKE is not always available, we have to filter ourselves
-            if (pattern.empty() || (message.find(pattern) != string::npos)) {
-                event = timestamp + " " + message;
-                event_list.push_back(event);
-            }
-
+			// LIKE is not always available, we have to filter ourselves
+			if (pattern.empty () || (message.find (pattern) != string::npos)) {
+				event = timestamp + " " + message;
+				event_list.push_back(event);
+			}
+			
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
 		pandoraDebug ("Pandora_Wmi::getEventList: error: %s", errstr.c_str ());
 	}
-
-	return;
 }
 
 /** 
@@ -449,59 +450,62 @@ Pandora_Wmi::getEventList (string source, string type, string pattern, int inter
  */
 string
 Pandora_Wmi::getTimestampLimit (int interval) {
-    char limit_str[26], diff_sign;
-    time_t limit_time, limit_time_utc, limit_diff;
-    struct tm *limit_tm = NULL, *limit_tm_utc = NULL;
-
-    // Get current time
-    limit_time = time(0);
-    if (limit_time == (time_t)-1) {
-        return "";
-    }
-    
-    // Get UTC time
-    limit_tm_utc = gmtime (&limit_time);
-    limit_time_utc = mktime (limit_tm_utc);
-    
-    // Calculate the difference in minutes
-    limit_diff = limit_time - limit_time_utc;
-    if (limit_diff >= 0) {
-        diff_sign = '+';
-    }
-    else {
-        diff_sign = '-';
-    }
-    limit_diff = abs(limit_diff);
-    limit_diff /= 60;
-
-    // Substract the agent interval
-    limit_time_utc -= interval;
-    
-    limit_tm = localtime (&limit_time_utc);
-    if (limit_tm == NULL) {
-        return "";
-    }
-
-    // WMI date format: yyyymmddHHMMSS.xxxxxx+UUU
-    snprintf (limit_str, 26, "%.4d%.2d%.2d%.2d%.2d%.2d.000000%c%.3d",
-              limit_tm->tm_year + 1900, limit_tm->tm_mon + 1,
-              limit_tm->tm_mday, limit_tm->tm_hour,
-              limit_tm->tm_min, limit_tm->tm_sec, diff_sign, limit_diff);
-    limit_str[25] = '\0';
-
-    return string (limit_str);
+	char limit_str[26], diff_sign;
+	time_t limit_time, limit_time_utc, limit_diff;
+	struct tm *limit_tm = NULL, *limit_tm_utc = NULL;
+	
+	// Get current time
+	limit_time = time(0);
+	if (limit_time == (time_t)-1) {
+		return "";
+	}
+	
+	// Get UTC time
+	limit_tm_utc = gmtime (&limit_time);
+	limit_time_utc = mktime (limit_tm_utc);
+	
+	// Calculate the difference in minutes
+	limit_diff = limit_time - limit_time_utc;
+	if (limit_diff >= 0) {
+		diff_sign = '+';
+	}
+	else {
+		diff_sign = '-';
+	}
+	limit_diff = abs(limit_diff);
+	limit_diff /= 60;
+	
+	// Substract the agent interval
+	limit_time_utc -= interval;
+	
+	limit_tm = localtime (&limit_time_utc);
+	if (limit_tm == NULL) {
+		return "";
+	}
+	
+	// WMI date format: yyyymmddHHMMSS.xxxxxx+UUU
+	snprintf (limit_str, 26, "%.4d%.2d%.2d%.2d%.2d%.2d.000000%c%.3d",
+		  limit_tm->tm_year + 1900, limit_tm->tm_mon + 1,
+		  limit_tm->tm_mday, limit_tm->tm_hour,
+		  limit_tm->tm_min, limit_tm->tm_sec, diff_sign, limit_diff);
+	limit_str[25] = '\0';
+	
+	return string (limit_str);
 }
 
-/*
+/** 
  * Converts a date in WMI format to SYSTEMTIME format.
+ * 
+ * @param wmi_date Date in WMI format
+ * @param system_time Output system time variable
  */
 void
-Pandora_Wmi::convertWMIDate (string wmi_date, SYSTEMTIME *system_time) {
-
-    system_time->wYear = atoi(wmi_date.substr (0, 4).c_str());
-    system_time->wMonth = atoi(wmi_date.substr (4, 2).c_str());
-    system_time->wDay = atoi(wmi_date.substr (6, 2).c_str());
-    system_time->wHour = atoi(wmi_date.substr (8, 2).c_str());
-    system_time->wMinute = atoi(wmi_date.substr (10, 2).c_str());
-    system_time->wSecond = atoi(wmi_date.substr (12, 2).c_str());
+Pandora_Wmi::convertWMIDate (string wmi_date, SYSTEMTIME *system_time)
+{
+	system_time->wYear = atoi (wmi_date.substr (0, 4).c_str());
+	system_time->wMonth = atoi (wmi_date.substr (4, 2).c_str());
+	system_time->wDay = atoi (wmi_date.substr (6, 2).c_str());
+	system_time->wHour = atoi (wmi_date.substr (8, 2).c_str());
+	system_time->wMinute = atoi (wmi_date.substr (10, 2).c_str());
+	system_time->wSecond = atoi (wmi_date.substr (12, 2).c_str());
 }

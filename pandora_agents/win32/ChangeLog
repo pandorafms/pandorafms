@@ -1,3 +1,16 @@
+2008-07-09  Esteban Sanchez  <estebans@artica.es>
+
+	* pandora_strutils.[cc,h]: Added strUnicodeToAnsi().
+
+	* modules/pandora_module_logevent.cc, pandora_windows_service.[cc,h],
+	windows/pandora_wmi.h: Tabs and blankspace style correction.
+
+	* windows/pandora_wmi.cc: Convert result in getEventList() to ANSI,
+	which was causing some BADXML errors on server. Tabs and blankspace
+	style correction.
+
+	* bin/PandoraAgent.exe: Updated to last commit.
+
 2008-06-11  Esteban Sanchez  <estebans@artica.es>
 
 	* bin/PandoraAgent.exe: Updated to commit, fixed an error when

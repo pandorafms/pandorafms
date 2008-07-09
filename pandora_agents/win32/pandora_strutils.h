@@ -43,6 +43,8 @@ namespace Pandora_Strutils {
 	
         string             trim        (const string str);
 
+	LPSTR              strUnicodeToAnsi (LPCWSTR s);
+	
         string             inttostr    (const int i);
         string             longtostr   (const long i);
         string             longtohex   (const long i);

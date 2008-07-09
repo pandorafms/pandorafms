@@ -25,9 +25,9 @@ CREATE TABLE `taddress` (
   `id_a` bigint(20) unsigned NOT NULL auto_increment,
   `ip` varchar(15) NOT NULL default '',
   `ip_pack` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id_a`)
+  PRIMARY KEY  (`id_a`),
+  KEY `ip` (`ip`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 CREATE TABLE `taddress_agent` (
   `id_ag` bigint(20) unsigned NOT NULL auto_increment,
@@ -49,7 +49,7 @@ CREATE TABLE `tagent_access` (
 CREATE TABLE `tagente` (
   `id_agente` mediumint(8) unsigned NOT NULL auto_increment,
   `nombre` varchar(100) NOT NULL default '',
-  `direccion` varchar(100) default '',
+  `direccion` varchar(100) default NULL,
   `comentarios` varchar(255) default '',
   `id_grupo` int(10) unsigned NOT NULL default '0',
   `ultimo_contacto` datetime NOT NULL default '0000-00-00 00:00:00',
@@ -66,10 +66,11 @@ CREATE TABLE `tagente` (
   `id_wmi_server` int(4) unsigned default '0',
   `id_parent` mediumint(8) unsigned default '0',
   PRIMARY KEY  (`id_agente`),
-	KEY `nombre` (`nombre`),
-	KEY `direccion` (`direccion`),
-	KEY `disabled` (`disabled`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  KEY `nombre` (`nombre`),
+  KEY `direccion` (`direccion`),
+  KEY `disabled` (`disabled`),
+  KEY `id_grupo` (`id_grupo`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 CREATE TABLE `tagente_datos` (
   `id_agente_datos` bigint(10) unsigned NOT NULL auto_increment,
@@ -117,7 +118,6 @@ CREATE TABLE `tagente_datos_string` (
   KEY `data_string_index_1` (`id_agente`,`id_agente_modulo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
 CREATE TABLE `tagente_estado` (
   `id_agente_estado` int(10) unsigned NOT NULL auto_increment,
   `id_agente_modulo` int(20) NOT NULL default '0',
@@ -129,14 +129,15 @@ CREATE TABLE `tagente_estado` (
   `last_try` datetime default NULL,
   `utimestamp` bigint(20) NOT NULL default '0',
   `current_interval` int(10) unsigned NOT NULL default '0',
-  `running_by` int(10) unsigned NULL default 0,
+  `running_by` int(10) unsigned default '0',
   `last_execution_try` bigint(20) NOT NULL default '0',
   PRIMARY KEY  (`id_agente_estado`),
-  	KEY `status_index_1` (`id_agente_modulo`),
-  	KEY `status_index_2` (`id_agente_modulo`,`estado`),
-	KEY `current_interval` (`current_interval`),
-	KEY `last_execution_try` (`last_execution_try`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  KEY `status_index_1` (`id_agente_modulo`),
+  KEY `status_index_2` (`id_agente_modulo`,`estado`),
+  KEY `current_interval` (`current_interval`),
+  KEY `running_by` (`running_by`),
+  KEY `last_execution_try` (`last_execution_try`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 /* 
 
@@ -167,21 +168,22 @@ CREATE TABLE `tagente_modulo` (
   `ip_target` varchar(100) default '',
   `id_module_group` int(4) unsigned default '0',
   `flag` tinyint(3) unsigned default '1',
-  `id_modulo` int(11) unsigned NULL default 0,
+  `id_modulo` int(11) unsigned default '0',
   `disabled` tinyint(3) unsigned default '0',
   `id_export` tinyint(3) unsigned default '0',
   `plugin_user` varchar(250) default '',
   `plugin_pass` varchar(250) default '',
-  `plugin_parameter` text default '',
+  `plugin_parameter` text,
   `id_plugin` int(11) default '0',
   `post_process` double(18,2) default NULL,
   `prediction_module` bigint(14) default '0',
   `max_timeout` tinyint(3) unsigned default '0',
-  PRIMARY KEY (`id_agente_modulo`, `id_agente`),
-  	KEY `tam_agente` (`id_agente`),
-	KEY `id_tipo_modulo` (`id_tipo_modulo`),
-  	KEY `tam_plugin` (`id_plugin`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  PRIMARY KEY  (`id_agente_modulo`,`id_agente`),
+  KEY `tam_agente` (`id_agente`),
+  KEY `id_tipo_modulo` (`id_tipo_modulo`),
+  KEY `tam_plugin` (`id_plugin`),
+  KEY `disabled` (`disabled`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- snmp_oid is also used for WMI query
 
@@ -463,7 +465,6 @@ CREATE TABLE `tperfil` (
   PRIMARY KEY  (`id_perfil`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
 CREATE TABLE `trecon_task` (
   `id_rt` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(100) NOT NULL default '',
@@ -478,11 +479,11 @@ CREATE TABLE `trecon_task` (
   `status` tinyint(4) NOT NULL default '0',
   `interval_sweep` int(10) unsigned NOT NULL default '0',
   `id_network_server_assigned` int(10) unsigned NOT NULL default '0',
-  `extended_info`  varchar(250) default NULL,
+  `extended_info` varchar(250) default NULL,
   `extended_value` varchar(250) default NULL,
-  PRIMARY KEY  (`id_rt`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
+  PRIMARY KEY  (`id_rt`),
+  KEY `recon_task_daemon` (`id_network_server`,`utimestamp`,`status`,`interval_sweep`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 CREATE TABLE `tserver` (
   `id_server` int(10) unsigned NOT NULL auto_increment,

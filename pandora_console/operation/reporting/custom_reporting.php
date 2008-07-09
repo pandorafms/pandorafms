@@ -27,8 +27,6 @@ if (comprueba_login() != 0) {
 	exit;
 }
 
-//echo "SLA for Tato: %".return_module_SLA (50, 604800, 1, 1);
-
 echo "<h2>".lang_string ('reporting')." &gt; ";
 echo lang_string ('custom_reporting')."</h2>";
 

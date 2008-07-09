@@ -43,6 +43,7 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 	}
 
 	if (!empty ($fields)) {
+		asort ($fields);
 		foreach ($fields as $value => $label) {
 			$output .= '   <option value="'. $value .'"';
 			if ($value == $selected) {

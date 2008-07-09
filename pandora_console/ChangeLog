@@ -1,3 +1,13 @@
+2008-07-09  Sancho LErena <slerena@gmail.com>
+
+	* include/functions_html.php, include/functions_db.php,
+	operation/agentes/ver_agente.php, operation/reporting/graph_viewer.php
+	operation/reporting/custom_reporting.php, 
+	godmode/reporting/reporting_builder.php: Some issues with ordered list
+	resolved. Some strings are now converted to lowercase to have a real
+	ordered (alphabetical) list.
+
+
 2008-07-08  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
        * pandora/console/install.php:  Added mysql_error debugging that can be u

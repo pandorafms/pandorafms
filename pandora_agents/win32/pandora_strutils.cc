@@ -42,18 +42,53 @@ Pandora_Strutils::trim (const string str) {
         string            result = str;
         string::size_type index = result.find_last_not_of (delims);
         
-        if(index != string::npos) {
+        if (index != string::npos) {
                 result.erase (++index);
         }
         
         index = result.find_first_not_of (delims);
-        if(index != std::string::npos) {
+        if (index != std::string::npos) {
                 result.erase (0, index);
         } else {
                 result.erase ();
         }
         
         return result;
+}
+
+/** 
+ * Convert an unicode string to a ANSI string.
+ * 
+ * @param s String to convert
+ * 
+ * @return String converted into ANSI code
+ */
+LPSTR
+Pandora_Strutils::strUnicodeToAnsi (LPCWSTR s) {
+	if (s == NULL)
+		return NULL;
+	
+	int cw = lstrlenW (s);
+	if (cw == 0) {
+		CHAR *psz = new CHAR[1];
+		*psz='\0';
+		return psz;
+	}
+
+	int cc = WideCharToMultiByte (CP_ACP,0, s, cw, NULL, 0, NULL, NULL);
+	if (cc==0)
+		return NULL;
+
+	CHAR *psz = new CHAR[cc+1];
+	cc = WideCharToMultiByte (CP_ACP, 0, s, cw, psz, cc, NULL, NULL);
+
+	if (cc == 0) {
+		delete[] psz;
+		return NULL;
+	}
+	psz[cc]='\0';
+	
+	return psz;
 }
 
 /** 

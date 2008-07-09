@@ -44,20 +44,20 @@ namespace Pandora {
 		long                 interval;
 		long                 elapsed_transfer_time;
 		long                 transfer_interval;
-        
+		
 		TiXmlElement  *getXmlHeader    ();
 		void           copyDataFile    (string filename);
 		void           copyTentacleDataFile (string host,
-						string filename);
+						     string filename);
 		void           copyScpDataFile (string host,
 						string remote_path,
 						string filename);
 		void           copyFtpDataFile (string host,
 						string remote_path,
 						string filename);
-        void           recvDataFile (string filename);
+		void           recvDataFile (string filename);
 		void           recvTentacleDataFile (string host,
-						string filename);
+						     string filename);
 		void           checkConfig ();
 	public:
 		void           pandora_run  ();

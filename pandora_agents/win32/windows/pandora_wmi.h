@@ -36,23 +36,20 @@ namespace Pandora_Wmi {
 	/**
 	 * Exception super-class when doing a WMI operation.
 	 */
-        class Pandora_Wmi_Exception : public Pandora_Exception { };
+	class Pandora_Wmi_Exception : public Pandora_Exception { };
 	
-        int           isProcessRunning      (string process_name);
+	int           isProcessRunning      (string process_name);
 	int           isServiceRunning      (string service_name);
 	unsigned long getDiskFreeSpace      (string disk_id);
 	int           getCpuUsagePercentage (int cpu_id);
 	long          getFreememory         ();
 	string        getOSName             ();
-        string        getOSVersion          ();
-        string        getOSBuild            ();
-        string        getSystemName         ();
-    void          getEventList              (string source, string type, string pattern, int interval, list<string> &event_list);
-    string        getTimestampLimit         (int interval);
-    void          convertWMIDate            (string wmi_date, SYSTEMTIME *system_time);
-
-    
-        
+	string        getOSVersion          ();
+	string        getOSBuild            ();
+	string        getSystemName         ();
+	void          getEventList              (string source, string type, string pattern, int interval, list<string> &event_list);
+	string        getTimestampLimit         (int interval);
+	void          convertWMIDate            (string wmi_date, SYSTEMTIME *system_time);
 };
 
 #endif

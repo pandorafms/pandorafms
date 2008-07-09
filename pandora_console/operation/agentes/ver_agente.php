@@ -34,7 +34,7 @@ if (defined ('AJAX')) {
 
 	if ($get_agent_modules_json) {
 		$id_agent = (int) get_parameter ('id_agent');
-		$agent_modules = get_db_all_rows_field_filter ('tagente_modulo', 'id_agente', $id_agent);
+		$agent_modules = get_db_all_rows_field_filter ('tagente_modulo', 'id_agente', $id_agent, "nombre");
 		
 		echo json_encode ($agent_modules);
 		exit ();

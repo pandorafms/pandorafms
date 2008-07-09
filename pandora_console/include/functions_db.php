@@ -223,7 +223,7 @@ function get_agents_in_group ($id_group, $disabled = false) {
 	/* 'All' group must return all agents */
 	if ($id_group == 1) {
 		if ($disabled)
-			return get_db_all_rows_in_table ('tagente');
+			return get_db_all_rows_in_table ('tagente', 'nombre');
 		return get_db_all_rows_field_filter ('tagente', 'disabled', 0);
 	}
 	if ($disabled)
@@ -299,7 +299,7 @@ function get_alerts_in_agent ($id_agent) {
  */
 function get_reports ($id_user) {
 	$user_reports = array ();
-	$all_reports = get_db_all_rows_in_table ('treport');
+	$all_reports = get_db_all_rows_in_table ('treport', 'name');
 	if (sizeof ($all_reports) == 0) {
 		return $user_reports;
 	}
@@ -1034,7 +1034,7 @@ function list_group2 ($id_user) {
  */
 function get_user_groups ($id_user) {
 	$user_groups = array ();
-	$groups = get_db_all_rows_in_table ('tgrupo');
+	$groups = get_db_all_rows_in_table ('tgrupo', 'nombre');
 	foreach ($groups as $group) {
 		if (! give_acl ($id_user, $group["id_grupo"], "AR"))
 			continue;
@@ -1383,8 +1383,11 @@ function get_db_all_rows_sql ($sql) {
  *
  * @return A matrix with all the values in the table
  */
-function get_db_all_rows_in_table ($table) {
-	return get_db_all_rows_sql ('SELECT * FROM '.$table);
+function get_db_all_rows_in_table ($table, $order_field = "") {
+	if ($order_field != "")
+		return get_db_all_rows_sql ('SELECT * FROM ' . $table . " ORDER BY $order_field ");
+	else	
+		return get_db_all_rows_sql ('SELECT * FROM '.$table);
 }
 
 /**
@@ -1396,7 +1399,7 @@ function get_db_all_rows_in_table ($table) {
  *
  * @return A matrix with all the values in the table that matches the condition in the field
  */
-function get_db_all_rows_field_filter ($table, $field, $condition) {
+function get_db_all_rows_field_filter ($table, $field, $condition, $order_field = "") {
 	if (is_int ($condition)) {
 		$sql = sprintf ('SELECT * FROM %s WHERE %s = %d', $table, $field, $condition);
 	} else if (is_float ($condition) || is_double ($condition)) {
@@ -1404,7 +1407,9 @@ function get_db_all_rows_field_filter ($table, $field, $condition) {
 	} else {
 		$sql = sprintf ('SELECT * FROM %s WHERE %s = "%s"', $table, $field, $condition);
 	}
-	
+
+	if ($order_field != "")
+		$sql .= " ORDER BY ".$order_field;	
 	return get_db_all_rows_sql ($sql);
 }
 

@@ -163,7 +163,7 @@ echo "<h2>" . lang_string ("reporting") . " &gt; ";
 echo lang_string ("custom_graph_viewer") . "</h2>";
 
 $color=1;
-$sql="SELECT * FROM tgraph";
+$sql="SELECT * FROM tgraph ORDER by name";
 $res=mysql_query($sql);
 if (mysql_num_rows($res)) {
 	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";

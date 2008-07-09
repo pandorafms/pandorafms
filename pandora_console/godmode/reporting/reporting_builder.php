@@ -193,7 +193,7 @@ if ($id_report) {
 $all_agents = get_agents_in_group ($report_id_group);
 $agents = array ();
 foreach ($all_agents as $agent) {
-	$agents[$agent['id_agente']] = $agent['nombre'];
+	$agents[$agent['id_agente']] = strtolower($agent['nombre']);
 }
 asort ($agents);
 
@@ -396,7 +396,7 @@ if ($edit_sla_report_content) {
 		$table->data[3][0] = lang_string ('module');
 		$modules = array ();
 		if ($id_agent) {
-			$sql = sprintf ('SELECT * FROM tagente_modulo WHERE id_agente = %d ORDER BY nombre', $id_agent);
+			$sql = sprintf ('SELECT id_agente_modulo, LOWER(nombre) FROM tagente_modulo WHERE id_agente = %d ORDER BY nombre', $id_agent);
 			$modules = get_db_all_rows_sql ($sql);
 		}
 		$table->data[3][1] = print_select ($modules, 'id_module', 0, '', '--', 0, true);
@@ -459,8 +459,8 @@ if ($edit_sla_report_content) {
 			$data[2] = '--';
 			$data[3] = '--';
 			if (get_report_type_data_source ($report_content['type']) == 'module') {
-				$data[2] = dame_nombre_agente_agentemodulo ($report_content['id_agent_module']);
-				$data[3] = get_db_value ('descripcion', 'tagente_modulo', 'id_agente_modulo', $report_content['id_agent_module']);
+				$data[2] = strtolower (dame_nombre_agente_agentemodulo ($report_content['id_agent_module']));
+				$data[3] = strtolower (get_db_value ('descripcion', 'tagente_modulo', 'id_agente_modulo', $report_content['id_agent_module']));
 			}
 			$data[4] = human_time_description ($report_content['period']);
 			$data[5] = '';
@@ -480,7 +480,7 @@ if ($edit_sla_report_content) {
 	echo "<h2>".lang_string ('reporting')." &gt; ";
 	echo lang_string ('custom_reporting')."</h2>";
 
-	$reports = get_db_all_rows_in_table ('treport');
+	$reports = get_db_all_rows_in_table ('treport', 'name');
 	$table->width = '0px';
 	if (sizeof ($reports)) {
 		$table->id = 'report_list';
@@ -546,12 +546,8 @@ function agent_changed () {
 			success: function (data) {
 				$('#id_module').append ($('<option></option>').attr ('value', 0).text ("--"));
 				jQuery.each (data, function (i, val) {
-					if (val['descripcion'] == "") {
-						s = html_entity_decode (val['nombre']);
-					} else {
-						s = html_entity_decode (val['descripcion']);
-					}
-					$('#id_module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s));
+					s = html_entity_decode (val['nombre']);
+					$('#id_module').append ($('<option></option>').attr ('value', val['id_agente_modulo']).text (s.toLowerCase()));
 				});
 				$('#id_module').fadeIn ('normal');
 			}

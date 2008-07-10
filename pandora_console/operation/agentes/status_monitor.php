@@ -85,13 +85,21 @@ if ($status == -1){
     echo "<option value=-1>".lang_string("All");
     echo "<option value=0>".lang_string("Monitors down");
     echo "<option value=1>".lang_string("Monitors up");
+	echo "<option value=2>".lang_string("Monitors unknown");
 } elseif ($status == 0){
+    echo "<option value=0>".lang_string("Monitors down");
+    echo "<option value=-1>".lang_string("All");
+    echo "<option value=1>".lang_string("Monitors up");
+	echo "<option value=2>".lang_string("Monitors unknown");
+} elseif ($status == 2){
+	echo "<option value=2>".lang_string("Monitors unknown");
     echo "<option value=0>".lang_string("Monitors down");
     echo "<option value=-1>".lang_string("All");
     echo "<option value=1>".lang_string("Monitors up");
 } else {
     echo "<option value=1>".lang_string("Monitors up");
     echo "<option value=0>".lang_string("Monitors down");
+    echo "<option value=2>".lang_string("Monitors unknown");
     echo "<option value=-1>".lang_string("All");
 }
 echo "</select>";
@@ -124,7 +132,7 @@ echo "</table>";
 
 // Begin Build SQL sentences
 
-$SQL_pre = "SELECT tagente_modulo.id_agente_modulo, tagente.nombre, tagente_modulo.nombre, tagente_modulo.descripcion, tagente.id_grupo, tagente.id_agente, tagente_modulo.id_tipo_modulo, tagente_modulo.module_interval ";
+$SQL_pre = "SELECT tagente_modulo.id_agente_modulo, tagente.nombre, tagente_modulo.nombre, tagente_modulo.descripcion, tagente.id_grupo, tagente.id_agente, tagente_modulo.id_tipo_modulo, tagente_modulo.module_interval, tagente_estado.datos, tagente_estado.utimestamp, tagente_estado.timestamp ";
 
 $SQL_pre_count = "SELECT count(tagente_modulo.id_agente_modulo) ";
 
@@ -154,6 +162,8 @@ if ($status == 1)
     $SQL .= " AND tagente_estado.estado = 0 ";
 elseif ($status == 0)
     $SQL .= " AND tagente_estado.estado = 1 ";
+elseif ($status == 2)
+	$SQL .= " AND (UNIX_TIMESTAMP()-tagente_estado.utimestamp ) > (tagente_estado.current_interval * 2)";
 
 // Final order
 $SQL .= " ORDER BY tagente.id_grupo, tagente.nombre";
@@ -193,7 +203,19 @@ if ($counter > 0){
 		    $tdcolor="datos2";
 		    $color =1;
 	    }
-    
+    	if ($data[7] == 0){
+		    $my_interval = give_agentinterval($data[5]);
+	    } else {
+		    $my_interval = $data[7];						
+	    }
+
+		if ($status == 2){
+			 $seconds = time() - $data[9];
+
+		    if ($seconds < ($my_interval*2))
+			    continue;
+		}
+
 	    echo "<tr><td class='$tdcolor'>";
 	    echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$data["id_agente"]."&id_agente_modulo=".$data[0]."&flag=1&tab=data&refr=60'>";
 	    echo "<img src='images/target.png'></a>";
@@ -207,32 +229,23 @@ if ($counter > 0){
 	    echo "<td class='$tdcolor'>". substr($data[2],0,21). "</td>";
 	    echo "<td class='".$tdcolor."f9' title='".$data[3]."'>".substr($data[3],0,30)."</td>";
 	    echo "<td class='$tdcolor' align='center' width=25>";
-	    if ($data[7] == 0){
-		    $my_interval = give_agentinterval($data[5]);
-	    } else {
-		    $my_interval = $data[7];						
-	    }
 	    echo $my_interval;
 				    
-	    $query_gen2='SELECT * FROM tagente_estado 
-	    WHERE id_agente_modulo = '.$data[0];
-	    $result_gen2=mysql_query($query_gen2);
-	    $data2=mysql_fetch_array($result_gen2);
 	    echo "<td class='$tdcolor' align='center' width=20>";
-	    if ($data2["datos"] > 0){
+	    if ($data[8] > 0){
 		    echo "<img src='images/pixel_green.png' width=40 height=18 title='".lang_string("Monitor up")."'>";
 	    } else {
 		    echo "<img src='images/pixel_red.png' width=40 height=18 title='".lang_string ("Monitor down")."'>";
 	    }
 	    
 	    echo  "<td class='".$tdcolor."f9'>";
-	    $seconds = time() - $data2["utimestamp"];
+	    $seconds = time() - $data[9];
 	    if ($seconds >= ($my_interval*2))
 		    echo "<span class='redb'>";
 	    else
 		    echo "<span>";
     
-	    echo  human_time_comparation($data2["timestamp"]);
+	    echo  human_time_comparation($data[10]);
         echo  "</span></td></tr>";
     }
     echo "</table>";

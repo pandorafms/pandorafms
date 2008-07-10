@@ -1,3 +1,46 @@
+2008-07-10  Sancho Lerena <slerena@gmail.com>
+
+	* include/styles/pandora_red.css: Updated.
+
+	* include/styles/pandora_black.css: New style with BLACK blackground.
+
+	* include/styles/pandora.css: Updated.
+
+	* include/functions_db.php: Added auto order combos and queries.
+	
+	* include/functions_visual_map.php: Added overlap on down elements if
+	there are more than one in the same position (This could allow to cluster
+	elements to shown the down status first). Removed unused code.
+
+	* operation/events/events.php: Added tooltip for group name.
+
+	* operation/visual_console/render_view.php: Adjusted controls position.
+
+	* operation/agentes/status_monitor.php: Added status for unknown monitors.
+	Added some database search improvement.
+
+	* operation/agentes/sla_view.php: Sorted list of items.
+
+	* operation/agentes/ver_agente.php: Updated AJAX code for network map
+	detail view of an agent. Added alert data.
+
+	* operation/agentes/tactical.php: Removed 'fixed' styles, now using CSS.
+
+	* operation/agentes/networkmap.php: Added ransep and font selectors. 
+	Added alert under yellow color. Minor improvements.
+
+	* operation/reporting/graph_viewer.php: Style update.
+
+	* operation/menu.php: Visual console maps sort by name
+
+	* images/background-li.gif: This sould replace <li> image.
+
+	* general/login_page.php: Added build version on develop mode.
+
+	* godmode/reporting/map_builder.php: Sorted lists, and shown module name 
+	instead description.
+
+
 2008-07-09  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
         * pandoradb.sql: Updated indexes

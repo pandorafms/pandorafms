@@ -58,31 +58,21 @@ $bheight = $layout["height"];
 $pure_url = "&pure=".$config["pure"];
 
 // Render map
-echo "<h1>".$layout_name."</h1>";
+echo "<h1>".$layout_name."&nbsp;&nbsp;";
 
 if ($config["pure"] == 0){
-	echo lang_string("Full screen mode");
-	echo "&nbsp;";
 	echo "<a href='index.php?sec=visualc&sec2=operation/visual_console/render_view&id=$id_layout&refr=$refr&pure=1'>";
 	echo "<img src='images/monitor.png' title='".lang_string("Full screen mode")."'>";
 	echo "</a>";
 } else {
-	echo lang_string("Back to normal mode");
-	echo "&nbsp;";
 	echo "<a href='index.php?sec=visualc&sec2=operation/visual_console/render_view&id=$id_layout&pure=0&refr=$refr'>";
 	echo "<img src='images/monitor.png' title='".lang_string("Back to normal mode")."'>";
 	echo "</a>";
 }
-echo '<br />';
-if ($refr) {
-	echo '<div id="countdown">';
-	echo '</div>';
-}
+
+echo '</h1>';
 
 print_pandora_visual_map ($id_layout);
-
-echo "<div style='height:30px'>";
-echo "</div>";
 
 $refresh_values = array ();
 $refresh_values[5] = "5 ". lang_string ('seconds');
@@ -93,11 +83,22 @@ $refresh_values[300] = "5 ". lang_string ('minutes');
 $refresh_values[600] = "10 ". lang_string ('minutes');
 $refresh_values[1800] = "30 ". lang_string ('minutes');
 
-$table->width = '300px';
+$table->width = '500px';
 $table->data = array ();
 $table->data[0][0] = lang_string ('auto_refresh_time');
 $table->data[0][1] = print_select ($refresh_values, 'refr', $refr, '', 'N/A', 0, true);
 $table->data[0][2] = print_submit_button (lang_string ('refresh'), '', false, 'class="sub next"', true);
+
+echo "<div style='height:30px'>";
+echo "</div>";
+
+if ($refr) {
+	echo '<div id="countdown">';
+	echo '</div>';
+}
+
+echo "<div style='height:30px'>";
+echo "</div>";
 
 echo '<form method="post" action="index.php?sec=visualc&sec2=operation/visual_console/render_view">';
 print_input_hidden ('pure', $config["pure"]);

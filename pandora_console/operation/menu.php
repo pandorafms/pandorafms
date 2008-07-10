@@ -104,7 +104,7 @@ if (give_acl($_SESSION["id_usuario"], 0, "AR")) {
 	echo '<a href="index.php?sec=visualc&sec2=operation/visual_console/index"  class="mn">'.lang_string ("visual_console").'</a></li></ul></div>';
 
 	if ( isset($_GET["sec"]) && $_GET["sec"]  == "visualc") {
-		$sql="SELECT * FROM tlayout";
+		$sql="SELECT * FROM tlayout ORDER BY name";
 		if($res=mysql_query($sql))
 		while ($row = mysql_fetch_array($res)){
 			if (isset($_GET["sec2"]) && $_GET["sec2"] == "operation/visual_console/render_view") {

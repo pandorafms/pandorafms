@@ -263,7 +263,7 @@ if (! $edit_layout && ! $id_layout) {
 	$table->align = array ();
 	$table->align[2] = 'center';
 	
-	$maps = get_db_all_rows_in_table ('tlayout');
+	$maps = get_db_all_rows_in_table ('tlayout','name');
 	foreach ($maps as $map) {
 		$data = array ();
 		
@@ -372,10 +372,10 @@ if (! $edit_layout && ! $id_layout) {
 		$all_agents = get_agents_in_group ($id_group);
 		$agents = array ();
 		foreach ($all_agents as $agent) {
-			$agents[$agent['id_agente']] = $agent['nombre'];
+			$agents[$agent['id_agente']] = strtolower($agent['nombre']);
 		}
-		asort ($agents);
-		
+		asort($agents);
+
 		echo '<div id="layout_editor_drop">';
 		echo '<h1>'.lang_string ('Map element editor').'</h1>';
 		echo lang_string ('Drag an element here to edit the properties');
@@ -454,11 +454,7 @@ function agent_changed (event, id_agent, selected) {
 			$('#form_layout_data_editor #module').empty ();
 			$('#form_layout_data_editor #module').append (new Option ("--", 0));
 			jQuery.each (data, function (i, val) {
-				if (val['descripcion'] == "") {
-					s = html_entity_decode (val['nombre']);
-				} else {
-					s = html_entity_decode (val['descripcion']);
-				}
+				s = html_entity_decode (val['nombre']);
 				$('#form_layout_data_editor #module').append (new Option (s, val['id_agente_modulo']));
 				$('#form_layout_data_editor #module').fadeIn ('normal');
 			});

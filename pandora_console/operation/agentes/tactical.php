@@ -102,28 +102,46 @@ echo "<tr><td colspan='2'><b>".lang_string("Alert level")."</th>";
 echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$alert_level' title='$alert_level % ".lang_string("of non-fired alerts")."'>";
 echo "<br><br>";
 
-
+// Monitor checks
 echo "<tr>";
 echo "<th colspan=2>".lang_string ("monitor_checks")."</th>";
 echo "<tr><td class=datos2><b>"."Monitor checks"."</b></td>";
-echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #000;'>".$monitor_checks."</td>";
+echo "<td style='font: bold 2em Arial' class='datos2'>";
+echo "<a class='big_data' href='index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=-1'>";
+echo $monitor_checks."</A></td>";
+
+// Monitor OK
 echo "<tr><td class=datos><b>"."Monitor OK"."</b></td>";
-echo "<td class=datos style='font: bold 2em Arial, Sans-serif; color: #000;'>".$monitor_ok."</td>";
+echo "<td style='font: bold 2em Arial' class='datos'>";
+echo "<a style='color:#0f0;' class='big_data' href='index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=1'>";
+if ($monitor_ok > 0)
+	echo $monitor_ok;
+else
+	echo "-";
+echo "</A>";
+
+// Monitor BAD
 echo "<tr><td class=datos2><b>"."Monitor BAD"."</b></td>";
-echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #f00;'>";
-echo "<a style='text-decoration: none; font: bold 1em Arial, Sans-serif; color: #f00;' href='index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60'>";
+echo "<td class='datos2' style='font: bold 2em Arial' >";
+echo "<a style='color:#f00;' class='big_data'  href='index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=0'>";
 if ($monitor_bad > 0)
 	echo $monitor_bad;
 else
 	echo "-";
 echo "</A>";
 
-echo "</td></tr><tr><td class=datos><b>"."Monitor Unknown"."</b></td>";
-echo "<td class=datos style='font: bold 2em Arial, Sans-serif; color: #888;'>";
+echo "</td></tr>";
+
+// Monitor unknown
+echo "<tr><td class=datos>";
+echo "<b>"."Monitor Unknown"."</b></td>";
+echo "<td class='datos' style='font: bold 2em Arial' >";
+echo "<a style='color:#aaa;' class='big_data'  href='index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=2'>";
 if ($monitor_unknown > 0)
 	echo $monitor_unknown;
 else
 	echo "-";
+echo "</A>";
 
 echo "</td></tr><tr><td class=datos2><b>"."Monitor Not Init"."</b></td>";
 echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #FF8C00;'>";
@@ -133,15 +151,15 @@ else
 	echo "-";
 
 echo "<tr><td class=datos><b>"."Alerts Fired"."</b></td>";
-echo "<td class=datos style='font: bold 2em Arial, Sans-serif; color: #ff0000;'>";
-echo "<a style='text-decoration: none; font: bold 1em Arial, Sans-serif; color: #ff0000;' href='index.php?sec=eventos&sec2=operation/events/events&search=&event_type=alert_fired'>";
+echo "<td class=datos style='font: bold 2em Arial'>";
+echo "<a style=color:#f00' class='big_data'  href='index.php?sec=eventos&sec2=operation/events/events&search=&event_type=alert_fired'>";
 if ($monitor_alert > 0)
 	echo $monitor_alert;
 else
 	echo "-";
 echo "</A>";
 echo "<tr><td class=datos2><b>"."Alerts Total"."</b></td>";
-echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #000000;'>".$monitor_alert_total;
+echo "<td class=datos2 style='font: bold 2em Arial'>".$monitor_alert_total;
 
 
 // Data checks
@@ -149,27 +167,27 @@ echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #000000;'
 
 echo "<tr><th colspan=2>".lang_string ("data_checks")."</th>";
 echo "<tr><td class=datos2><b>"."Data checks"."</b></td>";
-echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #000000;'>".$data_checks;
+echo "<td class=datos2 style='font: bold 2em Arial'>".$data_checks;
 echo "<tr><td class=datos><b>"."Data Unknown"."</b></td>";
-echo "<td class=datos style='font: bold 2em Arial, Sans-serif; color: #888;'>";
+echo "<td class=datos style='font: bold 2em Arial; color: #aaa;'>";
 if ($data_unknown > 0)
 	echo $data_unknown;
 else
 	echo "-";
 echo "<tr><td class=datos2><b>"."Data not init"."</b></td>";
-echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #FF8C00;'>";
+echo "<td class=datos2 style='font: bold 2em Arial'>";
 if ($data_not_init > 0)
 	echo $data_not_init;
 else
 	echo "-";
 echo "<tr><td class=datos><b>"."Alerts Fired"."</b></td>";
-echo "<td class=datos style='font: bold 2em Arial, Sans-serif; color: #f00;'>";
+echo "<td class=datos style='font: bold 2em Arial; color: #f00;'>";
 if ($data_alert > 0)
 	echo $data_alert;
 else
 	echo "-";
 echo "<tr><td class=datos2><b>"."Alerts Total";
-echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #000;'>".$data_alert_total;
+echo "<td class=datos2 style='font: bold 2em Arial'>".$data_alert_total;
 
 
 // Summary
@@ -177,12 +195,12 @@ echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #000;'>".
 
 echo "<tr><th colspan='2'>".lang_string ("summary")."</th>";
 echo "<tr><td class='datos2'><b>"."Total agents"."</b></td>";
-echo "<td class='datos2' style='font: bold 2em Arial, Sans-serif; color: #000;'>".$total_agents;
+echo "<td class='datos2' style='font: bold 2em Arial, Sans-serif;'>".$total_agents;
 echo "<tr><td class='datos'><b>"."Total checks"."</b></td>";
-echo "<td class='datos' style='font: bold 2em Arial, Sans-serif; color: #000;'>".$total_checks;
+echo "<td class='datos' style='font: bold 2em Arial, Sans-serif;'>".$total_checks;
 
 echo "<tr><td class='datos2'><b>"."Server sanity"."</b></td>";
-echo "<td class='datos2' style='font: bold 1em Arial, Sans-serif; color: #000;'>";
+echo "<td class='datos2' style='font: bold 1em Arial, Sans-serif;'>";
 echo format_numeric($notinit_percentage);
 echo "% ".lang_string("Uninitialized modules");
 

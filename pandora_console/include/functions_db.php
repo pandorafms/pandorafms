@@ -224,12 +224,12 @@ function get_agents_in_group ($id_group, $disabled = false) {
 	if ($id_group == 1) {
 		if ($disabled)
 			return get_db_all_rows_in_table ('tagente', 'nombre');
-		return get_db_all_rows_field_filter ('tagente', 'disabled', 0);
+		return get_db_all_rows_field_filter ('tagente', 'disabled', 0, 'nombre');
 	}
 	if ($disabled)
-		return get_db_all_rows_field_filter ('tagente', 'id_grupo', (int) $id_group);
+		return get_db_all_rows_field_filter ('tagente', 'id_grupo', (int) $id_group, 'nombre');
 	$sql = sprintf ('SELECT * FROM tagente 
-			WHERE id_grupo = %d AND disabled = 0',
+			WHERE id_grupo = %d AND disabled = 0 ORDER BY nombre',
 			$id_group);
 	return get_db_all_rows_sql ($sql);
 }
@@ -1445,17 +1445,17 @@ function return_status_agent_module ($id_agentmodule = 0){
 			if ($resq2 != 0) {
 		                $rowdup2 = mysql_fetch_array ($resq2);
 				if ($rowdup2[0] > 0){
-					return false;
+					return 0;
 				}
 			}
 			// No alerts fired for this agent module
-			return true;
+			return 1;
 		} elseif ($rowdup[0] == 0) // 0 is ok for estado field
-			return true;
-		return false;
+			return 1;
+		return 0;
 	}
 
-	return true;
+	return 1;
 }
 
 /** 

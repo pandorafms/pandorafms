@@ -44,12 +44,13 @@ if (defined ('AJAX')) {
 		$id_agent = (int) get_parameter ('id_agent');
 		$agent = get_db_row ('tagente', 'id_agente', $id_agent);
 		echo '<h3>'.$agent['nombre'].'</h3>';
-		echo '<strong>'.lang_string ('IP').':</strong> '.$agent['direccion'].'<br />';
-		echo '<strong>'.lang_string ('Last contact').':</strong> '.$agent['ultimo_contacto'].'<br />';
-		echo '<strong>'.lang_string ('Last remote contact').':</strong> '.$agent['ultimo_contacto_remoto'].'<br />';
+		echo '<strong>'.lang_string ('Main IP').':</strong> '.$agent['direccion'].'<br />';
 		echo '<strong>'.lang_string ('Group').':</strong> ';
 		echo '<img src="images/groups_small/'.dame_grupo_icono ($agent['id_grupo']).'.png" /> ';
 		echo dame_nombre_grupo ($agent['id_grupo']).'<br />';
+
+		echo '<strong>'.lang_string ('Last contact').':</strong> '.human_time_comparation($agent['ultimo_contacto']).'<br />';
+		echo '<strong>'.lang_string ('Last remote contact').':</strong> '.human_time_comparation($agent['ultimo_contacto_remoto']).'<br />';
 		
 		$sql = sprintf ('SELECT tagente_modulo.descripcion, tagente_modulo.nombre
 				FROM tagente_estado, tagente_modulo
@@ -64,15 +65,14 @@ if (defined ('AJAX')) {
 				WHERE id_agente = %d
 				AND id_tipo_modulo in (2, 6, 9, 18, 21, 100)', $id_agent);
 		$total_modules = get_db_sql ($sql);
-		echo '<strong>'.lang_string ('Monitors down').':</strong> '.sizeof ($bad_modules).' / '.$total_modules;
+	
+		// Modules down
 		if (sizeof ($bad_modules)) {
+			echo '<strong>'.lang_string ('Monitors down').':</strong> '.sizeof ($bad_modules).' / '.$total_modules;
 			echo '<ul>';
 			foreach ($bad_modules as $module) {
 				echo '<li>';
-				if ($module['descripcion'] != '')
-					$name = $module['descripcion'];
-				else
-					$name = $module['nombre'];
+				$name = $module['nombre'];
 				echo substr ($name, 0, 25);
 				if (strlen ($name) > 25)
 					echo '(...)';
@@ -80,7 +80,27 @@ if (defined ('AJAX')) {
 			}
 			echo '</ul>';
 		}
-		echo '<br />';
+
+		// Alerts (if present)
+		$sql = sprintf ('SELECT COUNT(talerta_agente_modulo.id_aam) FROM talerta_agente_modulo, tagente_modulo, tagente WHERE tagente.id_agente = %d AND tagente.disabled = 0 AND tagente.id_agente = tagente_modulo.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo AND talerta_agente_modulo.times_fired > 0 ', $id_agent);
+		$alert_modules = get_db_sql ($sql);
+		if ($alert_modules > 0){
+			$sql = sprintf ('SELECT tagente_modulo.nombre, talerta_agente_modulo.last_fired FROM talerta_agente_modulo, tagente_modulo, tagente WHERE tagente.id_agente = %d AND tagente.disabled = 0 AND tagente.id_agente = tagente_modulo.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo AND talerta_agente_modulo.times_fired > 0 ', $id_agent);
+			$alerts = get_db_all_rows_sql ($sql);
+			echo '<strong>'.lang_string ('Alerts fired').':</strong>';
+			echo "<ul>";
+			foreach ($alerts as $alert_item) {
+				echo '<li>';
+				$name = $alert_item[0];
+				echo substr ($name, 0, 25);
+				if (strlen ($name) > 25)
+					echo '(...)';
+				echo "&nbsp;";
+				echo human_time_comparation($alert_item[1]);
+				echo '</li>';
+			}
+			echo '</ul>';
+		}
 		
 		exit ();
 	}

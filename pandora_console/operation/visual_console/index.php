@@ -30,7 +30,7 @@ if (comprueba_login() != 0) {
 echo "<h2>".$lang_label["visual_console"]." &gt; ";
 echo $lang_label["summary"]."</h2>";
 
-$layouts = get_db_all_rows_in_table ('tlayout');
+$layouts = get_db_all_rows_in_table ('tlayout','name');
 
 if (sizeof ($layouts) == 0) {
 	echo "<div class='nf'>".$lang_label["no_layout_def"]."</div>";

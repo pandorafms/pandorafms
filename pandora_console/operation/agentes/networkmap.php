@@ -18,7 +18,7 @@ require("include/config.php");
 $pandora_name = 'Pandora FMS';
 
 // Generate a dot graph definition for graphviz
-function generate_dot ($simple = 0) {
+function generate_dot ($simple = 0, $font_size) {
 	global $config;
 	global $pandora_name;
 	
@@ -43,12 +43,12 @@ function generate_dot ($simple = 0) {
 		}
 		
 		// Add node
-		$graph .= create_node($agent , $simple)."\n\t\t";
+		$graph .= create_node($agent , $simple, $font_size)."\n\t\t";
 	}
 
 	// Create a central node if orphan nodes exist
 	if (count ($orphans)) {
-		$graph .= create_pandora_node ($pandora_name);
+		$graph .= create_pandora_node ($pandora_name, $font_size);
 	}
 	
 	// Define edges
@@ -74,7 +74,7 @@ function create_edge ($head, $tail) {
 }
 
 // Returns a node definition
-function create_node ($agent, $simple = 0) {
+function create_node ($agent, $simple = 0, $font_size = 10) {
 	$sql = sprintf ('SELECT COUNT(*) FROM tagente_estado,
 			tagente_modulo
 			WHERE tagente_modulo.id_agente = %d
@@ -91,6 +91,12 @@ function create_node ($agent, $simple = 0) {
 		$status_color = '#8DFF1D';
 	}
 
+	// Check for alert
+	$sql = sprintf ('SELECT COUNT(talerta_agente_modulo.id_aam) from talerta_agente_modulo, tagente_modulo, tagente WHERE tagente.id_agente = %d AND tagente.disabled = 0 AND tagente.id_agente = tagente_modulo.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo AND talerta_agente_modulo.times_fired > 0 ', $agent['id_agente']);
+	$alert_modules = get_db_sql ($sql);
+	if ($alert_modules) 
+		$status_color = '#FFE308';
+
 	// Short name
 	$name = strtolower ($agent["nombre"]);
 	if (strlen ($name) > 12)
@@ -103,22 +109,28 @@ function create_node ($agent, $simple = 0) {
 		} else {
 			$img_node = 'images/networkmap/0.png';
 		}
-		$node = $agent['id_agente'].' [ color="'.$status_color.'", fontsize=9, style="filled", fixedsize=true, width=0.40, height=0.40, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD><IMG SRC="'.$img_node.'"/></TD></TR>
+		$node = $agent['id_agente'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.40, height=0.40, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD><IMG SRC="'.$img_node.'"/></TD></TR>
 		 <TR><TD>'.$name.'</TD></TR></TABLE>>,
 		 shape="ellipse", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'",
 		 tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
 	} else {
-		$node = $agent['id_agente'] . ' [ color="' . $status_color . '", fontsize=7, style="filled", fixedsize=true, width=0.20, height=0.20, label="", tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
+		$node = $agent['id_agente'] . ' [ color="' . $status_color . '", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.20, height=0.20, label="", tooltip="ajax.php?page=operation/agentes/ver_agente&get_agent_status_tooltip=1&id_agent='.$agent['id_agente'].'"];';
 	}
 	return $node;
 }
 
 // Returns the definition of the central module
-function create_pandora_node ($name) {
-	$node = '0 [ color="#364D1F", fontsize=10, style="filled", fixedsize=true, width=0.8, height=0.6, label=<<TABLE BORDER="0">
-		<TR><TD><IMG SRC="images/networkmap/pandora_node.png"/></TD></TR>
-		<TR><TD BGCOLOR="#FFFFFF">'.$name.'</TD></TR></TABLE>>,
-		shape="ellipse", tooltip="'.$name.'", URL="index.php?sec=estado&sec2=operation/agentes/estado_grupo" ];';
+function create_pandora_node ($name, $font_size = 10) {
+	global $simple;
+	$img = '<TR><TD><IMG SRC="images/networkmap/pandora_node.png"/></TD></TR>';
+	$name = '<TR><TD BGCOLOR="#FFFFFF">'.$name.'</TD></TR>';
+	$label = '<TABLE BORDER="0">'.$img.$name.'</TABLE>';
+	if ($simple == 1){
+		$label = "";
+	}
+
+	$node = '0 [ color="#364D1F", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.8, height=0.6, label=<'.$label.'>,
+		shape="ellipse", URL="index.php?sec=estado&sec2=operation/agentes/estado_grupo" ];';
 
 	return $node;
 }
@@ -145,41 +157,43 @@ function close_group () {
 
 // Opens a graph definition
 function open_graph () {
-	global $config, $layout, $nooverlap, $pure, $zoom, $ranksep;
+	global $config, $layout, $nooverlap, $pure, $zoom, $ranksep, $font_size;
 	$overlap = 'compress';
 	$size_x = 8;
 	$size_y = 5.4;
 	$size = '';
 
-	if ($layout == "")
-		$layout = "radial";
-
 	if ($layout == 'radial') 
 		$overlap = 'true';
 	
-	if (($layout == 'flat') OR ($layout == 'spring1') OR ($layout == "spring2"))
+	if (($layout == 'flat') OR ($layout == 'radial') OR ($layout == 'spring1')  OR ($layout == "spring2"))
 		if ($nooverlap != '')
 			$overlap = 'scalexy';
 
 	
-	if ($pure == 1  && $zoom > 1 && $zoom <= 3) {
+	if ($pure == 1  && $zoom > 1 ) {
 		$size_x *= $zoom;
 		$size_y *= $zoom;
 	}
 	$size = $size_x . ',' . $size_y;
-
-
-
+// 
+/*
+echo "SIZE $size <br>";
+echo "NO OVERLAP $nooverlap <br>";
+echo "LAYOUT $layout <br>";
+echo "FONTSIZE $font_size <br>";
+echo "RANKSEP  $ranksep <br>";
+*/
 	// BEWARE: graphwiz DONT use single ('), you need double (")
 	$head = "graph networkmap { labeljust=l; margin=0; ";
-	if ($nooverlap != '')
+	if ($nooverlap != ''){
+		$head .= "overlap=\"$overlap\";";
 		$head .= "ranksep=\"$ranksep\";";
-	$head .= "outputorder=edgesfirst;
-		overlap=\"$overlap\";
-		ratio=fill;
-		root=0;
-		size=\"$size\";
-		";
+		$head .= "outputorder=edgesfirst;";
+	} 
+	$head .= "ratio=fill;";
+	$head .= "root=0;";
+	$head .= "size=\"$size\";";
 	return $head;
 }
 
@@ -210,12 +224,13 @@ function set_filter () {
 
 /* Main code */
 // Load variables
-$layout = (string) get_parameter ('layout');
-$nooverlap = (boolean) get_parameter ('nooverlap');
+$layout = (string) get_parameter ('layout', 'radial');
+$nooverlap = (boolean) get_parameter ('nooverlap', 0);
 $pure = (int) get_parameter ('pure');
 $zoom = (float) get_parameter ('zoom');
 $ranksep = (float) get_parameter ('ranksep', 2.5);
 $simple = (int) get_parameter ('simple', 0);
+$font_size = (int) get_parameter ('font_size', 12);
 
 // Login check
 $id_user = $_SESSION["id_usuario"];
@@ -242,8 +257,9 @@ if ($pure == 1) {
 echo '</h2>';
 
 // Layout selection
-$layout_array = array ('radial' => 'radial',
+$layout_array = array (
 			'circular' => 'circular',
+			'radial' => 'radial',
 			'spring1' => 'spring 1',
 			'spring2' => 'spring 2',
 			'flat' => 'flat');
@@ -256,7 +272,7 @@ print_select ($layout_array, 'layout', $layout, '', '', '');
 echo '</td>';
 
 echo '<td valign="top">' . lang_string('No Overlap') . ' &nbsp;';
-print_checkbox ('nooverlap', 'nooverlap', $nooverlap);
+print_checkbox ('nooverlap', '1', $nooverlap);
 echo '</td>';
 
 echo '<td valign="top">' . lang_string('Simple') . ' &nbsp;';
@@ -279,6 +295,18 @@ if ($pure == "1") {
 	echo '</td>';
 	
 }
+
+if ($nooverlap == 1){
+	echo "<td>";
+	echo lang_string('Distance between nodes') . ' &nbsp;';
+	print_input_text ('ranksep', $ranksep, $alt = 'Separation between elements in the map (in Non-overlap mode)', 3, 4, 0);
+}
+
+echo "<td>";
+echo lang_string('Font size') . ' &nbsp;';
+print_input_text ('font_size', $font_size, $alt = 'Font size (in pt)', 3, 4, 0);
+
+
 //echo '  Display groups  <input type="checkbox" name="group" value="group" class="chk"/>';
 echo '<td>';
 echo '<input name="updbutton" type="submit" class="sub upd" value="'. lang_string ("update"). '">';
@@ -290,7 +318,7 @@ echo '</form>';
 $filter = set_filter();
 
 // Generate dot file
-$graph = generate_dot($simple);
+$graph = generate_dot ($simple, $font_size);
 
 // Generate image and map
 $cmd = "echo " . escapeshellarg($graph) . 

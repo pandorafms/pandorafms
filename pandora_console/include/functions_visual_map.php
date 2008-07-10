@@ -42,11 +42,18 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 		// STATIC IMAGE (type = 0)
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		if ($layout_data['type'] == 0) {
+
 			// Link image
 			//index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=1
-		
+			if ($status == 0) // Bad monitor
+				$z_index = 2;
+			elseif ($status == 2) // Alert
+				$z_index = 3;
+			else
+				$z_index =  1; // Print BAD over good
+
 			// Draw image
-			echo '<div style="z-index: 1; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
+			echo '<div style="z-index: '.$z_index.'; color: '.$layout_data['label_color'].'; position: absolute; margin-left: '.$layout_data['pos_x'].'px; margin-top:'.$layout_data['pos_y'].'px;" id="layout-data-'.$layout_data['id'].'" class="layout-data">';
 			if ($show_links) {
 				if ($layout_data['id_layout_linked'] == "" || $layout_data['id_layout_linked'] == 0) {
 					echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agent&tab=data'>";
@@ -103,13 +110,9 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 		// Get parent relationship - Create line data
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		if ($layout_data["parent_item"] != "" && $layout_data["parent_item"] != 0) {
-			$parent_x = get_layoutdata_x ($layout_data["parent_item"]);
-			$parent_y = get_layoutdata_y ($layout_data["parent_item"]);
 			$line['id'] = $layout_data['id'];
 			$line['node_begin'] = 'layout-data-'.$layout_data["parent_item"];
 			$line['node_end'] = 'layout-data-'.$layout_data["id"];
-			$line['width'] = $parent_x + 15;
-			$line['height'] = $parent_y + 15;
 			$line['color'] = $status_parent ? '#00dd00' : '#dd0000';
 			array_push ($lines, $line);
 		}

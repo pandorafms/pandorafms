@@ -389,7 +389,8 @@ if ($total_events > 0){
 				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row2["id_agente"]."&tab=alert'><img src='images/bell.png' border=0></a>";
 
 			// Group icon
-			echo "<td class='$tdclass' align='center'><img src='images/groups_small/".show_icon_group($id_group).".png' class='bot'></td>";
+			$group_name = (string) get_db_value ('nombre', 'tgrupo', 'id_grupo', $id_group);
+			echo "<td class='$tdclass' align='center'><img src='images/groups_small/".show_icon_group($id_group).".png' title='$group_name' class='bot'></td>";
 
 			// for System or SNMP generated alerts
 			} else { 

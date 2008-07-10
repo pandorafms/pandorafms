@@ -38,7 +38,12 @@ if (isset($_GET['sec'])){
 		<tr><td rowspan='3' align='left' style="border-right: solid 1px #678;">
 			<a href="index.php">
 			<img src="images/pandora_logo.png" border="0" alt="logo"></a><br>
-			<?php echo $pandora_version; ?>
+			<?php 
+				echo $pandora_version;
+				if ($develop_bypass == 1){
+					echo " Build " . $build_version;
+				}
+			?>
 		<td rowspan='3' width='5'>
 		<td class='f9b'>
 			Login <br>

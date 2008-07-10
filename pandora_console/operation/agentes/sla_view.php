@@ -142,7 +142,8 @@ $sql_t = "SELECT tagente_modulo.id_agente_modulo, sla_max, sla_min, sla_limit, t
 $result_t=mysql_query($sql_t);
 if (mysql_num_rows ($result_t)) {
 	$color=0;
-	echo "<h3>".lang_string ("User-defined SLA items")."</h3>";
+	echo "<h3>".lang_string ("User-defined SLA items")." - ";
+	echo human_time_description_raw($config["sla_period"]). " </h3>";
 	echo "<table width='750' cellpadding=4 cellspacing=4 class='databox'>";
 	echo "<tr>";
 	echo "<th>" . lang_string ("type") . "</th>";
@@ -185,7 +186,7 @@ if (mysql_num_rows ($result_t)) {
 			echo format_numeric($temp)." %</td>";
 			echo "<td class='$tdcolor'>";
 			if ($temp > $sla_limit)
-				echo "<img src='images/pixel_green.png' width=40 height=18 title='" . lang_label("green_light") . "'>";
+				echo "<img src='images/pixel_green.png' width=40 height=18 title='" . lang_string ("green_light") . "'>";
 			else
 				echo "<img src='images/pixel_red.png' width=40 height=18 title='" . lang_string ("red_light") . "'>";
 		}

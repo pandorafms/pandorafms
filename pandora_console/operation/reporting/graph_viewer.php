@@ -136,24 +136,23 @@ border=1 alt=''>";
 		$periods[720] = lang_string ('last_month');
 		$periods[4320] = lang_string ('six_months');
 		print_select ($periods, 'period', intval ($period / 3600), '', '', 0);
+
 		echo "<td class='datos'>";
 		$stackeds = array ();
-                $stackeds[0] = lang_string ('Area');
-                $stackeds[1] = lang_string ('Stacked area');
-                $stackeds[2] = lang_string ('Line');
-
+		$stackeds[0] = lang_string ('Area');
+		$stackeds[1] = lang_string ('Stacked area');
+		$stackeds[2] = lang_string ('Line');
 		print_select ($stackeds, 'stacked', $stacked , '', '', 0);
-                echo "<td class='datos'>";
 
+		echo "<td class='datos'>";
 		$zooms = array();
 		$zooms[0] = lang_string ('Graph defined');
 	 	$zooms[1] = lang_string ('Zoom x1');
-                $zooms[2] = lang_string ('Zoom x2');
-                $zooms[3] = lang_string ('Zoom x3');
-
+		$zooms[2] = lang_string ('Zoom x2');
+		$zooms[3] = lang_string ('Zoom x3');
 		print_select ($zooms, 'zoom', $zoom , '', '', 0);
-                echo "<td class='datos'>";
 
+		echo "<td class='datos'>";
 		echo "<input type=submit value='".$lang_label["update"]."' class='sub upd'>";
 		echo "</table>";
 		echo "</form>";		

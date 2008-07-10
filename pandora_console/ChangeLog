@@ -1,3 +1,12 @@
+2008-07-10  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* pandora_console/operation/agentes/estado_grupo.php: Fixed some extra spaces that made the URL look ugly
+
+        * pandora_console/operation/agentes/status_monitor.php: Made a nested SQL query out of the flagging operation, much faster now.
+		There is still a bug here that I was trying to fix. Everything is 0-ed on this page. I will find out why tomorrow        
+
+        * pandora_console/images/console/background: Added some backgrounds
+
 2008-07-10  Sancho Lerena <slerena@gmail.com>
 
 	* include/styles/pandora_red.css: Updated.

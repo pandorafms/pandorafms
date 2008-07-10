@@ -220,10 +220,7 @@ if ($counter > 0){
 	    echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$data["id_agente"]."&id_agente_modulo=".$data[0]."&flag=1&tab=data&refr=60'>";
 	    echo "<img src='images/target.png'></a>";
 	    echo  "</td><td class='$tdcolor'>";
-	    echo  "<b><a href='index.php?sec=estado&
-	    sec2=operation/agentes/ver_agente&
-	    id_agente=".$data[5]."'>".
-	    strtoupper(substr($data[1],0,21))."</a></b>";
+	    echo  "<b><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$data[5]."'>".strtoupper(substr($data[1],0,21))."</a></b>";
 	    echo "</td><td class='$tdcolor'>";
 	    echo "<img src='images/".show_icon_type($data[6])."' border=0></td>";
 	    echo "<td class='$tdcolor'>". substr($data[2],0,21). "</td>";

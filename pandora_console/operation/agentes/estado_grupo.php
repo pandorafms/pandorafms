@@ -31,17 +31,11 @@ echo "<h2>".$lang_label["ag_title"]." &gt; ".$lang_label["group_view"]."</h2>";
 
 // Update network modules for this group
 // Check for Network FLAG change request
+// Made it a subquery, much faster on both the database and server side
 if (isset ($_GET["update_netgroup"])) {
 	if (give_acl ($id_user, $_GET["update_netgroup"], "AW") == 1) {
-		$sql = "SELECT * FROM tagente WHERE id_grupo = ".
-		$_GET["update_netgroup"];
-		$result = mysql_query ($sql);
-		while ($row = mysql_fetch_array ($result)) {
-			$id_agente = $row["id_agente"];
-			$query2 ="UPDATE tagente_modulo SET flag=1
-			WHERE id_agente = ".$id_agente;
-			$res = mysql_query ($query2);
-		}
+		$sql = sprintf ("UPDATE tagente_modulo SET `flag` = '1' WHERE `id_agente` = ANY(SELECT id_agente FROM tagente WHERE `id_grupo` =  '%d')",$_GET["update_netgroup"]);
+		mysql_query ($sql);
 	}
 }
 

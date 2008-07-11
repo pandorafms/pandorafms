@@ -1,4 +1,7 @@
 #!/usr/bin/perl
+
+eval 'exec /usr/bin/perl  -S $0 ${1+"$@"}'
+    if 0; # not running under some shell
 ##########################################################################
 # Pandora FMS Prediction Server
 ##########################################################################
@@ -189,50 +192,52 @@ sub pandora_prediction_producer ($) {
 	while (1) {
 		if ($pa_config->{"pandora_master"} != 1) {
 			# Query for normal server, not MASTER server
-			$query1 = "SELECT
-				tagente_modulo.id_agente_modulo,
-				tagente_modulo.flag
-			FROM
-				tagente, tagente_modulo, tagente_estado
-			WHERE
-				id_prediction_server = $server_id
-			AND 
-				tagente_modulo.id_agente = tagente.id_agente
-			AND
-				tagente.disabled = 0
+                        $query1 = "SELECT
+                                tagente_modulo.id_agente_modulo,
+                                tagente_modulo.flag
+                        FROM
+                                tagente, tagente_modulo, tagente_estado
+                        WHERE
+                                id_prediction_server = $server_id
+                        AND
+                                tagente_modulo.id_agente = tagente.id_agente
+                        AND
+                                tagente.disabled = 0
             AND
                 tagente_modulo.prediction_module != 0
-			AND
-				tagente_modulo.disabled = 0
-			AND
-				tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-			AND (
-					(tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP() 
-				OR 
-					tagente_modulo.flag = 1
-			)				
-			ORDER BY
-					last_execution_try ASC  ";
-		} else {
-			# Query for MASTER SERVER !
-			$query1 = "SELECT
-					DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.flag
-				FROM
-					tagente, tagente_modulo, tagente_estado, tserver
-				WHERE
-				( 	(tagente.id_prediction_server = $server_id AND tagente_modulo.id_agente = tagente.id_agente) OR
-					(tagente.id_prediction_server != $server_id AND tagente_modulo.id_agente = tagente.id_agente AND tagente.id_prediction_server = tserver.id_server AND tserver.status = 0)
-				) AND
-					tagente.disabled = 0
-                AND 
-                    tagente_modulo.disabled = 0
-				AND
-					tagente_modulo.prediction_module != 0
-				AND
-					tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-				AND
-					((tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP() OR tagente_modulo.flag = 1 )
-				ORDER BY last_execution_try ASC";
+                        AND
+                                tagente_modulo.disabled = 0
+                        AND
+                                tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+                        AND (
+                                        tagente_modulo.flag = 1
+                                OR
+                                        (tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP()
+                        )
+                        ORDER BY
+                                        last_execution_try ASC  ";
+                } else {
+                        # Query for MASTER SERVER !
+                        $query1 = "SELECT
+                                        DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.flag
+                                FROM
+                                        tagente, tagente_modulo, tagente_estado
+                                WHERE
+                                (       (tagente.id_prediction_server = $server_id) OR
+                                        (tagente.id_prediction_server = ANY(SELECT id_server FROM tserver WHERE status = 0 AND id_server != $server_id AND prediction_server = 1) )
+                                ) AND
+                                        tagente_modulo.id_agente = tagente.id_agente
+                                AND
+                                        tagente.disabled = 0
+                                AND
+                                        tagente_modulo.disabled = 0
+                                AND
+                                        tagente_modulo.prediction_module != 0
+                                AND
+                                        tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+                                AND
+                                        (tagente_modulo.flag = 1 OR (tagente_estado.last_execution_try + tagente_estado.current_interval) < UNIX_TIMESTAMP())
+                                ORDER BY last_execution_try ASC";
 		}
 		$exec_sql1 = $dbh->prepare($query1);
 		$exec_sql1 ->execute;

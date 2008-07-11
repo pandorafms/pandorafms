@@ -69,19 +69,24 @@ foreach ($groups as $id_group => $group_name) {
 	$sql = sprintf ("SELECT tagente_estado.datos, tagente_estado.current_interval,
 			tagente_estado.utimestamp
 			FROM tagente, tagente_estado, tagente_modulo 
-			WHERE tagente.disabled = 0 AND tagente.id_grupo = %d 
-			AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.estado != 100
+			WHERE tagente.disabled = 0 
+			AND tagente.id_grupo = %d 
+			AND tagente.id_agente = tagente_estado.id_agente 
+			AND tagente_estado.estado != 100
 			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 			AND tagente_modulo.disabled = 0
 			AND tagente_estado.utimestamp != 0",
 			$id_group);
 	$result = mysql_query ($sql);
-	while ($module = mysql_fetch_array ($result)) {
-		if ($config["show_unknown"] > 0) {
-			$seconds = $now - $module['utimestamp'];
-			if ($seconds >= ($module['current_interval'] * 2)) {
-				$group_info["down"]++;
-			}
+	while ($module = mysql_fetch_assoc ($result)) {
+		//if ($config["show_unknown"] > 0) {
+		//this needs to be filled out somehow, but this was a serious bug. If that config var is set, it would short circuit both ok++ and bad++ returning empty for everything
+		//}
+		$seconds = $now - $module['utimestamp'];
+		// Down = module/agent down (as in it didn't monitor in time)
+		// Bad  = module bad  (as in it did monitor but it returned 0)
+		if ($seconds >= ($module['current_interval'] * 2)) {
+			$group_info["down"]++;
 		} elseif ($module['datos'] != 0) {
 			$group_info["ok"]++;
 		} else {
@@ -101,7 +106,6 @@ foreach ($groups as $id_group => $group_name) {
 				$id_group);
 		$group_info["alerts"] = get_db_sql ($sql);
 	}
-	
 	array_push ($groups_info, $group_info);
 }
 

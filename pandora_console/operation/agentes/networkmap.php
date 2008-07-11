@@ -30,8 +30,8 @@ function generate_dot ($simple = 0, $font_size) {
 	$graph = open_graph();
 
 	// Get agent data	
-	$agents = mysql_query('SELECT * FROM tagente WHERE disabled = 0 ORDER BY id_grupo');
-	while ($agent = mysql_fetch_array($agents)) {
+	$agents = mysql_query('SELECT id_grupo, id_parent, id_agente FROM tagente WHERE disabled = 0 ORDER BY id_grupo');
+	while ($agent = mysql_fetch_assoc($agents)) {
 		if (give_acl($config["id_user"], $agent["id_grupo"], "AR") == 0)
 			continue;
 		// Save node parent information to define edges later
@@ -75,7 +75,7 @@ function create_edge ($head, $tail) {
 
 // Returns a node definition
 function create_node ($agent, $simple = 0, $font_size = 10) {
-	$sql = sprintf ('SELECT COUNT(*) FROM tagente_estado,
+	$sql = sprintf ('SELECT COUNT(tagente_modulo.id_agente) FROM tagente_estado,
 			tagente_modulo
 			WHERE tagente_modulo.id_agente = %d
 			AND tagente_modulo.id_tipo_modulo in (2, 6, 9, 18, 21, 100)
@@ -229,7 +229,8 @@ $nooverlap = (boolean) get_parameter ('nooverlap', 0);
 $pure = (int) get_parameter ('pure');
 $zoom = (float) get_parameter ('zoom');
 $ranksep = (float) get_parameter ('ranksep', 2.5);
-$simple = (int) get_parameter ('simple', 0);
+$simple = (boolean) get_parameter ('simple', 0);
+$regen = (boolean) get_parameter ('regen',0);
 $font_size = (int) get_parameter ('font_size', 12);
 
 // Login check
@@ -279,6 +280,10 @@ echo '<td valign="top">' . lang_string('Simple') . ' &nbsp;';
 print_checkbox ('simple', '1', $simple);
 echo '</td>';
 
+echo '<td valign="top">' . lang_string('Regenerate') . ' &nbsp;';
+print_checkbox ('regen', '1', $regen);
+echo '</td>';
+
 if ($pure == "1") {
 	// Zoom
 	$zoom_array = array (
@@ -321,22 +326,43 @@ $filter = set_filter();
 $graph = generate_dot ($simple, $font_size);
 
 // Generate image and map
-$cmd = "echo " . escapeshellarg($graph) . 
-	" | $filter -Tcmapx -o".$config["attachment_store"]."/networkmap.map -Tpng -o".$config["attachment_store"]."/networkmap.png";
+// If image was generated just a few minutes ago, then don't regenerate (it takes long) unless regen checkbox is set
+$filename_map = $config["attachment_store"]."/networkmap_".$layout;
+$filename_img = "attachment/networkmap_".$layout."_".$font_size;
+if($simple) {
+	$filename_map .= "_simple";
+	$filename_img .= "_simple";
+}
+if($nooverlap) {
+	$filename_map .= "_nooverlap";
+	$filename_img .= "_nooverlap";
+}
+$filename_map .= ".map";
+$filename_img .= ".png";
 
-$result = system ($cmd);
+if($regen != 1 && filemtime($filename_img) > time() - 300) {
+	$result = true;
+} else {
+	$cmd = "echo " . escapeshellarg($graph) . " | $filter -Tcmapx -o".$filename_map." -Tpng -o".$filename_img;
+	$result = system ($cmd);
+}
 
 if ($result !== false) {
-	if (! file_exists ($config["attachment_store"]."/networkmap.map")) {
+	if (! file_exists ($filename_map)) {
 		echo '<h2 class="err">'.lang_string ('Map could not be generated').'</h2>';
 		echo $result;
-		return;
+		echo "<br /> Apparently something went wrong reading the output.<br /> Is ".$filter." (usually part of GraphViz) installed and able to be executed by the webserver?";
+		echo "<br /> Is ".$config["attachment_store"]." writeable by the webserver?";
+        	return;
 	}
-	echo '<img src="attachment/networkmap.png" usemap="#networkmap"/>';
-	include $config["attachment_store"]."/networkmap.map";
+	echo '<img src="'.$filename_img.'" usemap="#networkmap" />';
+	include $filename_map;
 } else {
 	echo '<h2 class="err">'.lang_string ('Map could not be generated').'</h2>';
 	echo $result;
+	echo "<br /> Apparently something went wrong executing the command.";
+	echo "<br /> Is ".$filter." (usually part of GraphViz) and echo installed and able to be executed by the webserver?";
+	echo "<br /> Is your webserver restricted from executing command line tools through the system() call (PHP Safe Mode or SELinux)";
 	return;
 }
 ?>

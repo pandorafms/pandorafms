@@ -1,3 +1,9 @@
+2008-07-11  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* pandora_console/operation/agentes/estado_grupo.php: Fixed the issue where all data was 0-ed out. There was an if-then-else construction that wasn't working well
+
+	* pandora_console/operation/agentes/networkmap.php: Made more extensive error messages that explains WHY it wasn't generating. Then also made it so the image is cached instead of regenerated every time (currently hardcoded at 5 min.).
+
 2008-07-10  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* pandora_console/operation/agentes/estado_grupo.php: Fixed some extra spaces that made the URL look ugly

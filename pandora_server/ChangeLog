@@ -1,3 +1,10 @@
+2008-07-11  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* pandora_server/pandora_network
+	* pandora_server/pandora_recon
+	* pandora_server/pandora_plugin
+	* pandora_server/pandora_prediction: Updated the queries it performs. Made the MASTER server query a nested query, that way you don't join thousands of records (it was up to 6000 in my environment) while you only need a few records. It won't log as a slow query (indexes are used)
+
 2008-07-10  Evi Vanoost <vanooste@rcbi.rochester.edu>
 	
 	* pandora_server_installer: Some typos

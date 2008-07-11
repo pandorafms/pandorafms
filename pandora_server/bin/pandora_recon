@@ -1,4 +1,7 @@
 #!/usr/bin/perl
+
+eval 'exec /usr/bin/perl  -S $0 ${1+"$@"}'
+    if 0; # not running under some shell
 ##########################################################################
 # Pandora FMS Recon Server
 ##########################################################################
@@ -128,7 +131,7 @@ sub pandora_recon_producer ($) {
                     WHERE 
                         id_network_server = $server_id 
                     AND 
-                        status = -1
+                        status = 1
 					AND
                         (utimestamp + interval_sweep) < UNIX_TIMESTAMP() 
                     ";

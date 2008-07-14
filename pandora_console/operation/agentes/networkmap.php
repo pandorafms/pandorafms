@@ -30,7 +30,7 @@ function generate_dot ($simple = 0, $font_size) {
 	$graph = open_graph();
 
 	// Get agent data	
-	$agents = mysql_query('SELECT id_grupo, id_parent, id_agente FROM tagente WHERE disabled = 0 ORDER BY id_grupo');
+	$agents = mysql_query('SELECT id_grupo, nombre, id_os, id_parent, id_agente FROM tagente WHERE disabled = 0 ORDER BY id_grupo');
 	while ($agent = mysql_fetch_assoc($agents)) {
 		if (give_acl($config["id_user"], $agent["id_grupo"], "AR") == 0)
 			continue;

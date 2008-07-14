@@ -18,18 +18,16 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-$sql1='SELECT * FROM tlink ORDER BY name';
+$sql1='SELECT link,name FROM tlink ORDER BY name';
 $result=mysql_query($sql1);
 if ($row=mysql_fetch_array($result)){
 ?>
 	<div class="tit bg4">:: <?php echo $lang_label["links_header"] ?> ::</div>
 	<div class="menul" id="link">
 <?php
-	$sql1='SELECT * FROM tlink ORDER BY name';
-	$result2=mysql_query($sql1);
-		while ($row2=mysql_fetch_array($result2)){
-			echo "<div class='linkli'><ul class='mn'><li><a href='".$row2["link"]."' target='_new' class='mn'>".$row2["name"]."</a></li></ul></div>";
-		}
+	while ($row=mysql_fetch_array($result)){
+		echo "<div class='linkli'><ul class='mn'><li><a href='".$row["link"]."' target='_new' class='mn'>".$row["name"]."</a></li></ul></div>";
+	}
 	echo "</div>";
 }
 ?>

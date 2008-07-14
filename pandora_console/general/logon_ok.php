@@ -28,14 +28,13 @@ echo "</p>";
 
 // Private messages pending to read !
 
-$sql='SELECT COUNT(*) FROM tmensajes WHERE id_usuario_destino="'.$nick.'" 
-AND estado="FALSE";';
+$sql='SELECT COUNT('id_mensaje') AS count FROM tmensajes WHERE id_usuario_destino="'.$nick.'" AND estado="FALSE";';
 $resultado = mysql_query ($sql);
 $row = mysql_fetch_array ($resultado);
-if ($row["COUNT(*)"] != 0){
+if ($row["count"] != 0){
 	echo "<h2>". $lang_label["new_message_bra"] . ' 
 	<a href="index.php?sec=messages&sec2=operation/messages/message">'
-	.$row["COUNT(*)"] . ' <img src="images/email.png" border="0">'
+	.$row["count"] . ' <img src="images/email.png" border="0">'
 	.$lang_label["new_message_ket"] . '</a></h2>';
 }
 
@@ -45,7 +44,7 @@ echo "<tr><td valign='top'>";
 // Site news !
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 echo '<h2>' . $lang_label["site_news"] . '</h2>';
-$sql_news = "SELECT * FROM tnews ORDER by timestamp DESC LIMIT 3";
+$sql_news = "SELECT subject,timestamp,text FROM tnews ORDER by timestamp DESC LIMIT 3";
 if ($result_news = mysql_query ($sql_news)){
 	echo '<table cellpadding="4" cellspacing="4" width="270" class="databox">';
 	while ($row = mysql_fetch_array ($result_news)) {
@@ -173,7 +172,7 @@ $table->head[2] = lang_string ('date');
 $table->head[3] = lang_string ('src_address');
 $table->head[4] = lang_string ('comments');
 
-$sql = sprintf ('SELECT * FROM tsesion WHERE (TO_DAYS(fecha) > TO_DAYS(NOW()) - 7) 
+$sql = sprintf ('SELECT ID_usuario,accion,fecha,IP_origen,descripcion FROM tsesion WHERE (utimestamp > UNIX_TIMESTAMP(NOW()) - 604800) 
 	AND ID_usuario = "%s" ORDER BY fecha DESC LIMIT 5', $nick);
 $sessions = get_db_all_rows_sql ($sql);
 foreach ($sessions as $session) {

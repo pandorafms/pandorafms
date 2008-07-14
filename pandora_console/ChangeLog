@@ -1,3 +1,13 @@
+2008-07-12  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* pandora_console/operation/agentes/networkmap.php: Some minor bugfixes introduced with my changes yesterday
+
+	* pandora_console/general/links_menu.php: 2 queries for a menu? Changed it to a single query. This list will likely never be empty - if it is, Links section won't be generated
+
+	* pandora_console/general/logon_ok.php: Updated the queries to go faster. Changed the timestamp calculation to an indexed query using utimestamp and UNIXTIME(NOW())-604800
+
+	* pandora_console/images/networkmap/8.png: Added the Mac OS X icon..
+
 2008-07-11  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* pandora_console/operation/agentes/estado_grupo.php: Fixed the issue where all data was 0-ed out. There was an if-then-else construction that wasn't working well

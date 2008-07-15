@@ -21,21 +21,21 @@
  * @return 0 on success
  */
 function check_login () {
-        global $config;
-        if (!isset($config["homedir"])){
-                // No exists $config. Exit inmediatly
-                include("general/noaccess.php");
-                exit;
-        }
-        if ((isset($_SESSION["id_usuario"])) AND ($_SESSION["id_usuario"] != "")) {
-                $id = get_db_value("id_usuario","tusuario","id_usuario",$_SESSION["id_usuario"]);
-                if ( $_SESSION["id_usuario"] == $id ){
-                        return 0;
-                }
-        }
-        audit_db("N/A", getenv("REMOTE_ADDR"), "No session", "Trying to access without a valid session");
-        include ($config["homedir"]."/general/noaccess.php");
-        exit;
+	global $config;
+	if (!isset($config["homedir"])){
+		// No exists $config. Exit inmediatly
+		include("general/noaccess.php");
+		exit;
+	}
+	if ((isset($_SESSION["id_usuario"])) AND ($_SESSION["id_usuario"] != "")) {
+		$id = get_db_value("id_usuario","tusuario","id_usuario",$_SESSION["id_usuario"]);
+		if ( $_SESSION["id_usuario"] == $id) {
+			return 0;
+		}
+	}
+	audit_db("N/A", getenv("REMOTE_ADDR"), "No session", "Trying to access without a valid session");
+	include ($config["homedir"]."/general/noaccess.php");
+	exit;
 }
 
 	
@@ -61,20 +61,21 @@ function check_login () {
  * @return 1 if the user has privileges, 0 if not.
 **/
 function give_acl ($id_user, $id_group, $access) {
-        // IF user is level = 1 then always return 1
+	// IF user is level = 1 then always return 1
 
-        global $config;
-        $nivel = get_db_value("nivel","tusuario","id_usuario",$id_user);
-        if ($nivel == 1) {
-                return 1;
-                //Apparently nivel is 1 if user has full admin access        
-	}        
+	global $config;
+	$nivel = get_db_value("nivel","tusuario","id_usuario",$id_user);
+	if ($nivel == 1) {
+		return 1;
+		//Apparently nivel is 1 if user has full admin access
+	} 
 	
 	//Joined multiple queries into one. That saves on the query overhead and query cache.
-        if ($id_group == 0) {
-                $query1=sprintf("SELECT `tperfil`.`incident_view`,`tperfil`.`incident_edit`,`tperfil`.`incident_management`,`tperfil`.`agent_view`,`tperfil`.`agent_edit`,`tperfil`.`alert_edit`,`tperfil`.`alert_management`,`tperfil`.`pandora_management`,`tperfil`.`db_management`,`tperfil`.`user_management` FROM `tusuario_perfil`,`tperfil` WHERE `tusuario_perfil`.`id_perfil` = `tperfil`.`id_perfil` AND `tusuario_perfil`.`id_usuario` = '%s'",$id_user);                //GroupID = 0, access doesnt matter (use with caution!) - Any user gets access to group 0
-        } else {
-                $query1=sprintf("SELECT `tperfil`.`incident_view`,`tperfil`.`incident_edit`,`tperfil`.`incident_management`,`tperfil`.`agent_view`,`tperfil`.`agent_edit`,`tperfil`.`alert_edit`,`tperfil`.`alert_management`,`tperfil`.`pandora_management`,`tperfil`.`db_management`,`tperfil`.`user_management` FROM `tusuario_perfil`,`tperfil` WHERE `tusuario_perfil`.`id_perfil` = `tperfil`.`id_perfil` 
+	if ($id_group == 0) {
+		$query1=sprintf("SELECT `tperfil`.`incident_view`,`tperfil`.`incident_edit`,`tperfil`.`incident_management`,`tperfil`.`agent_view`,`tperfil`.`agent_edit`,`tperfil`.`alert_edit`,`tperfil`.`alert_management`,`tperfil`.`pandora_management`,`tperfil`.`db_management`,`tperfil`.`user_management` FROM `tusuario_perfil`,`tperfil` WHERE `tusuario_perfil`.`id_perfil` = `tperfil`.`id_perfil` AND `tusuario_perfil`.`id_usuario` = '%s'",$id_user);
+		//GroupID = 0, access doesnt matter (use with caution!) - Any user gets access to group 0
+	} else {
+		$query1=sprintf("SELECT `tperfil`.`incident_view`,`tperfil`.`incident_edit`,`tperfil`.`incident_management`,`tperfil`.`agent_view`,`tperfil`.`agent_edit`,`tperfil`.`alert_edit`,`tperfil`.`alert_management`,`tperfil`.`pandora_management`,`tperfil`.`db_management`,`tperfil`.`user_management` FROM `tusuario_perfil`,`tperfil` WHERE `tusuario_perfil`.`id_perfil` = `tperfil`.`id_perfil` 
 AND `tusuario_perfil`.`id_usuario` = '%s' AND (`tusuario_perfil`.`id_grupo` = '%d' OR `tusuario_perfil`.`id_grupo`= 1)",$id_user,$id_group);
 	}
 
@@ -119,7 +120,7 @@ AND `tusuario_perfil`.`id_usuario` = '%s' AND (`tusuario_perfil`.`id_grupo` = '%
 	}
 	if ($result > 1)
 		$result = 1;
-        return $result; 
+	return $result; 
 } 
 
 /** 
@@ -1241,11 +1242,11 @@ $sql_cache=array('saved' => 0);
 function get_db_value ($field, $table, $field_search=1, $condition=1){
 
 	if (is_int ($condition)) {
-		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = '%d'", $field, $table, $field_search, $condition);
+		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = '%d' LIMIT 1", $field, $table, $field_search, $condition);
 	} else if (is_float ($condition) || is_double ($condition)) {
-		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = '%f'", $field, $table, $field_search, $condition);
+		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = '%f' LIMIT 1", $field, $table, $field_search, $condition);
 	} else {
-		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = '%s'", $field, $table, $field_search, $condition);
+		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = '%s' LIMIT 1", $field, $table, $field_search, $condition);
 	}
 	$sql .= " LIMIT 1";
 	$result = get_db_all_rows_sql($sql);
@@ -1283,11 +1284,11 @@ function get_db_row_sql ($sql) {
 function get_db_row ($table, $field_search, $condition) {
 	
 	if (is_int ($condition)) {
-		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = '%d'", $table, $field_search, $condition);
+		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = '%d' LIMIT 1", $table, $field_search, $condition);
 	} else if (is_float ($condition) || is_double ($condition)) {
-		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = '%f'", $table, $field_search, $condition);
+		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = '%f' LIMIT 1", $table, $field_search, $condition);
 	} else {
-		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = '%s'", $table, $field_search, $condition);
+		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = '%s' LIMIT 1", $table, $field_search, $condition);
 	}
 	$sql .= ' LIMIT 1';
 	
@@ -1318,25 +1319,25 @@ function get_db_sql ($sql, $field = 0) {
  */
 function get_db_all_rows_sql ($sql) {
 	global $config;
-        global $sql_cache;
-        $retval = array();
+	global $sql_cache;
+	$retval = array();
 	
 	if($sql_cache[$sql]) {
-        	$retval = $sql_cache[$sql];    
-        	$sql_cache[saved]++;
+		$retval = $sql_cache[$sql];    
+		$sql_cache[saved]++;
 	} else {
-                $result = mysql_query($sql);
-	        if (!$result) {
-        	        echo '<strong>Error:</strong> get_db_all_rows_sql ("'.$sql.'") :'. mysql_error ().'<br />';
-                	return $retval;
-        	}
-                while ($row = mysql_fetch_array ($result)) {
-                        array_push ($retval, $row);
-                }
+		$result = mysql_query($sql);
+		if (!$result) {
+			echo '<strong>Error:</strong> get_db_all_rows_sql ("'.$sql.'") :'. mysql_error ().'<br />';
+			return $retval;
+		}
+		while ($row = mysql_fetch_array ($result)) {
+			array_push ($retval, $row);
+		}
 		$sql_cache[$sql] = $retval;
 	}
 	if(!empty($retval))	
-        	return $retval;
+		return $retval;
 	return ""; //Return empty because NULL is a possible database value
 }
 
@@ -1408,7 +1409,7 @@ function return_status_agent_module ($id_agentmodule = 0){
 			$query2 = "SELECT SUM(times_fired) FROM talerta_agente_modulo WHERE id_agente_modulo = " . $id_agentmodule;
 			$resq2 = mysql_query($query2);
 			if ($resq2 != 0) {
-		                $rowdup2 = mysql_fetch_array ($resq2);
+				$rowdup2 = mysql_fetch_array ($resq2);
 				if ($rowdup2[0] > 0){
 					return 0;
 				}

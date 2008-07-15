@@ -1,10 +1,25 @@
+2008-07-13  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* pandora_console/general/logon_ok.php: Made the query use sprintf (for security purposes)
+	
+	* pandora_console/include/functions_db.php: Made all the database queries relying on a single query function for simpler management
+		Also made sure that no functions returned NULL because NULL is a valid database value.
+		Also made a simple query cache array so that duplicate queries to generate a single page won't be repeated (ACL queries)
+		Also updated some other queries and functions (see the diff) and removed some old code
+
+	* pandora_console/estado_grupo.php: Now with working agents counter!
+
+	* pandora_console/general/footer.php: Just made a fancy counter that displays how much queries weren't duplicated (90 on some pages!!)
+	
 2008-07-12  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* pandora_console/operation/agentes/networkmap.php: Some minor bugfixes introduced with my changes yesterday
 
-	* pandora_console/general/links_menu.php: 2 queries for a menu? Changed it to a single query. This list will likely never be empty - if it is, Links section won't be generated
+	* pandora_console/general/links_menu.php: 2 queries for a menu? Changed it to a single query. 
+			This list will likely never be empty - if it is, Links section won't be generated
 
-	* pandora_console/general/logon_ok.php: Updated the queries to go faster. Changed the timestamp calculation to an indexed query using utimestamp and UNIXTIME(NOW())-604800
+	* pandora_console/general/logon_ok.php: Updated the queries to go faster. 
+			Changed the timestamp calculation to an indexed query using utimestamp and UNIXTIME(NOW())-604800
 
 	* pandora_console/images/networkmap/8.png: Added the Mac OS X icon..
 
@@ -12,7 +27,8 @@
 
 	* pandora_console/operation/agentes/estado_grupo.php: Fixed the issue where all data was 0-ed out. There was an if-then-else construction that wasn't working well
 
-	* pandora_console/operation/agentes/networkmap.php: Made more extensive error messages that explains WHY it wasn't generating. Then also made it so the image is cached instead of regenerated every time (currently hardcoded at 5 min.).
+	* pandora_console/operation/agentes/networkmap.php: Made more extensive error messages that explains WHY it wasn't generating. 
+		Then also made it so the image is cached instead of regenerated every time (currently hardcoded at 5 min.).
 
 2008-07-10  Evi Vanoost <vanooste@rcbi.rochester.edu>
 

@@ -28,7 +28,7 @@ echo "</p>";
 
 // Private messages pending to read !
 
-$sql='SELECT COUNT('id_mensaje') AS count FROM tmensajes WHERE id_usuario_destino="'.$nick.'" AND estado="FALSE";';
+$sql=sprintf("SELECT COUNT('id_mensaje') AS count FROM tmensajes WHERE id_usuario_destino='%s' AND estado='FALSE';",$nick);
 $resultado = mysql_query ($sql);
 $row = mysql_fetch_array ($resultado);
 if ($row["count"] != 0){

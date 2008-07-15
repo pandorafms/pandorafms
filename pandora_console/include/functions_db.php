@@ -13,7 +13,6 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 
-
 /** 
  * Check if login session variables are set.
  *
@@ -21,29 +20,26 @@
  * 
  * @return 0 on success
  */
-function check_login () { 
-	global $config;
-	if (!isset($config["homedir"])){
-		// No exists $config. Exit inmediatly
-		include ("general/noaccess.php");
-		exit;
-	}
-	if ((isset($_SESSION["id_usuario"])) AND ($_SESSION["id_usuario"] != "")) { 
-		$id = $_SESSION["id_usuario"];
-		$query1="SELECT id_usuario FROM tusuario WHERE id_usuario= '$id'";
-		$resq1 = mysql_query($query1);
-		$rowdup = mysql_fetch_array($resq1);
-		$nombre = $rowdup[0];
-		if ( $id == $nombre ){
-			return 0;
-		}
-	}
-	audit_db("N/A", getenv("REMOTE_ADDR"), "No session", "Trying to access without a valid session");
-	include ($config["homedir"]."/general/noaccess.php");
-	exit;
+function check_login () {
+        global $config;
+        if (!isset($config["homedir"])){
+                // No exists $config. Exit inmediatly
+                include("general/noaccess.php");
+                exit;
+        }
+        if ((isset($_SESSION["id_usuario"])) AND ($_SESSION["id_usuario"] != "")) {
+                $id = get_db_value("id_usuario","tusuario","id_usuario",$_SESSION["id_usuario"]);
+                if ( $_SESSION["id_usuario"] == $id ){
+                        return 0;
+                }
+        }
+        audit_db("N/A", getenv("REMOTE_ADDR"), "No session", "Trying to access without a valid session");
+        include ($config["homedir"]."/general/noaccess.php");
+        exit;
 }
 
-/** 
+	
+/**
  * Check access privileges to resources
  *
  * Access can be:
@@ -57,91 +53,69 @@ function check_login () {
  * DM - DB Management
  * LM - Alert Management
  * PM - Pandora Management
- * 
- * @param id_user User id 
+ *
+ * @param id_user User id
  * @param id_group Agents group id
  * @param access Access privilege
- * 
+ *
  * @return 1 if the user has privileges, 0 if not.
- */
+**/
 function give_acl ($id_user, $id_group, $access) {
-	// IF user is level = 1 then always return 1
-	// Access can be:
-	/*	
-		IR - Incident Read
-		IW - Incident Write
-		IM - Incident Management
-		AR - Agent Read
-		AW - Agent Write
-		LW - Alert Write
-		UM - User Management
-		DM - DB Management
-		LM - Alert Management
-		PM - Pandora Management
-	*/
+        // IF user is level = 1 then always return 1
+
+        global $config;
+        $nivel = get_db_value("nivel","tusuario","id_usuario",$id_user);
+        if ($nivel == 1) {
+                return 1;
+                //Apparently nivel is 1 if user has full admin access        
+	}        
 	
-	global $config;
-	
-	$query1="SELECT * FROM tusuario WHERE id_usuario = '".$id_user."'";
-	$res=mysql_query($query1);
-	$row=mysql_fetch_array($res);
-	if ($row["nivel"] == 1)
-		return 1;
-	if ($id_group == 0) // Group doesnt matter, any group, for check permission to do at least an action in a group
-		$query1="SELECT * FROM tusuario_perfil WHERE id_usuario = '".$id_user."'";	// GroupID = 0, group doesnt matter (use with caution!)
-	else
-		$query1="SELECT * FROM tusuario_perfil WHERE id_usuario = '".$id_user."' and ( id_grupo =".$id_group." OR id_grupo = 1)";	// GroupID = 1 ALL groups      
-	$resq1=mysql_query($query1);  
-	$result = 0; 
-	while ($rowdup=mysql_fetch_array($resq1)){
-		$id_perfil=$rowdup["id_perfil"];
+	//Joined multiple queries into one. That saves on the query overhead and query cache.
+        if ($id_group == 0) {
+                $query1=sprintf("SELECT `tperfil`.`incident_view`,`tperfil`.`incident_edit`,`tperfil`.`incident_management`,`tperfil`.`agent_view`,`tperfil`.`agent_edit`,`tperfil`.`alert_edit`,`tperfil`.`alert_management`,`tperfil`.`pandora_management`,`tperfil`.`db_management`,`tperfil`.`user_management` FROM `tusuario_perfil`,`tperfil` WHERE `tusuario_perfil`.`id_perfil` = `tperfil`.`id_perfil` AND `tusuario_perfil`.`id_usuario` = '%s'",$id_user);                //GroupID = 0, access doesnt matter (use with caution!) - Any user gets access to group 0
+        } else {
+                $query1=sprintf("SELECT `tperfil`.`incident_view`,`tperfil`.`incident_edit`,`tperfil`.`incident_management`,`tperfil`.`agent_view`,`tperfil`.`agent_edit`,`tperfil`.`alert_edit`,`tperfil`.`alert_management`,`tperfil`.`pandora_management`,`tperfil`.`db_management`,`tperfil`.`user_management` FROM `tusuario_perfil`,`tperfil` WHERE `tusuario_perfil`.`id_perfil` = `tperfil`.`id_perfil` 
+AND `tusuario_perfil`.`id_usuario` = '%s' AND (`tusuario_perfil`.`id_grupo` = '%d' OR `tusuario_perfil`.`id_grupo`= 1)",$id_user,$id_group);
+	}
+
+	$rowdup = get_db_all_rows_sql($query1);
+	$result = 0;
+	$i = 0;
+	while($rowdup[$i]){
 		// For each profile for this pair of group and user do...
-		$query2="SELECT * FROM tperfil WHERE id_perfil = ".$id_perfil;    
-		$resq2=mysql_query($query2);  
-		if ($rowq2=mysql_fetch_array($resq2)){
 			switch ($access) {
 			case "IR":
-				$result = $result + $rowq2["incident_view"];
-				
+				$result += $rowdup[$i]["incident_view"];
 				break;
 			case "IW":
-				$result = $result + $rowq2["incident_edit"];
-				
+				$result += $rowdup[$i]["incident_edit"];
 				break;
 			case "IM":
-				$result = $result + $rowq2["incident_management"];
-				
+				$result += $rowdup[$i]["incident_management"];
 				break;
 			case "AR":
-				$result = $result + $rowq2["agent_view"];
-				
+				$result += $rowdup[$i]["agent_view"];
 				break;
 			case "AW":
-				$result = $result + $rowq2["agent_edit"];
-				
+				$result += $rowdup[$i]["agent_edit"];
 				break;
 			case "LW":
-				$result = $result + $rowq2["alert_edit"];
-				
+				$result += $rowdup[$i]["alert_edit"];
 				break;
 			case "LM":
-				$result = $result + $rowq2["alert_management"];
-				
+				$result += $rowdup[$i]["alert_management"];
 				break;
 			case "PM":
-				$result = $result + $rowq2["pandora_management"];
-				
+				$result += $rowdup[$i]["pandora_management"];
 				break;
 			case "DM":
-				$result = $result + $rowq2["db_management"];
-				
+				$result += $rowdup[$i]["db_management"];
 				break;
 			case "UM":
-				$result = $result + $rowq2["user_management"];
-				
+				$result += $rowdup[$i]["user_management"];
 				break;
 			}
-		} 
+		$i++;
 	}
 	if ($result > 1)
 		$result = 1;
@@ -157,9 +131,9 @@ function give_acl ($id_user, $id_group, $access) {
  * @param descripcion Long action description
  */
 function audit_db ($id, $ip, $accion, $descripcion){
-	$today=date('Y-m-d H:i:s');
 	$utimestamp = time();
-	$sql1='INSERT INTO tsesion (ID_usuario, accion, fecha, IP_origen,descripcion, utimestamp) VALUES ("'.$id.'","'.$accion.'","'.$today.'","'.$ip.'","'.$descripcion.'", '.$utimestamp.')';
+	$today=date('Y-m-d H:i:s',$utimestamp);
+	$sql1='INSERT INTO tsesion (ID_usuario, accion, fecha, IP_origen,descripcion, utimestamp) VALUES ("'.$id.'","'.$accion.'","'.$today.'","'.$ip.'","'.$descripcion.'", "'.$utimestamp.'")';
 	$result=mysql_query($sql1);
 }
 
@@ -171,11 +145,11 @@ function audit_db ($id, $ip, $accion, $descripcion){
  */
 function logon_db ($id_user, $ip) {
 	global $config;
-	
+
 	audit_db ($id_user, $ip, "Logon", "Logged in");
-	// Update last registry of user to get last logon
-	$sql = sprintf ('UPDATE tusuario fecha_registro = $today WHERE id_usuario = "%s"', $id_user);
-	$result = mysql_query ($sql);
+	// Update last registry of user to set last logon. How do we audit when the user was created then?
+	$sql = sprintf ('UPDATE tusuario SET fecha_registro = $today WHERE id_usuario = "%s"', $id_user);
+	mysql_query ($sql);
 }
 
 /**
@@ -185,8 +159,7 @@ function logon_db ($id_user, $ip) {
  * @param ip Client user IP address.
  */
 function logoff_db ($id_user, $ip) {
-	global $config;
-	audit_db ($config['id_user'], $ip, "Logoff", "Logged out");
+	audit_db ($id_user, $ip, "Logoff", "Logged out");
 }
 
 /**
@@ -1260,29 +1233,26 @@ function give_agent_id_from_module_id ($id_agent_module) {
  * @param field Field name to get
  * @param table Table to retrieve the data
  * @param field_search Field to filter elements
- * @param condition Condition the field must have.
+ * @param condition Condition the field must have
  * 
  * @return 
  */
-function get_db_value ($field, $table, $field_search, $condition){
+$sql_cache=array('saved' => 0);
+function get_db_value ($field, $table, $field_search=1, $condition=1){
+
 	if (is_int ($condition)) {
-		$sql = sprintf ('SELECT %s FROM %s WHERE %s = %d', $field, $table, $field_search, $condition);
+		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = '%d'", $field, $table, $field_search, $condition);
 	} else if (is_float ($condition) || is_double ($condition)) {
-		$sql = sprintf ('SELECT %s FROM %s WHERE %s = %f', $field, $table, $field_search, $condition);
+		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = '%f'", $field, $table, $field_search, $condition);
 	} else {
-		$sql = sprintf ('SELECT %s FROM %s WHERE %s = "%s"', $field, $table, $field_search, $condition);
+		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = '%s'", $field, $table, $field_search, $condition);
 	}
-	$sql .= ' LIMIT 1';
+	$sql .= " LIMIT 1";
+	$result = get_db_all_rows_sql($sql);
+	if(is_array($result))	
+		return $result[0][$field];
 	
-	$result = mysql_query ($sql);
-	if (! $result) {
-		echo '<strong>Error:</strong> get_db_value("'.$sql.'") :'. mysql_error ().'<br />';
-		return NULL;
-	}
-	if ($row = mysql_fetch_array ($result))
-		return $row[0];
-	
-	return NULL;
+	return "";
 }
 
 /** 
@@ -1290,18 +1260,12 @@ function get_db_value ($field, $table, $field_search, $condition){
  * 
  * @param sql SQL select statement to execute.
  * 
- * @return The first row of the result.
+ * @return The first row of the result or something empty.
  */
 function get_db_row_sql ($sql) {
-	$result = mysql_query ($sql);
-	if (! $result) {
-		echo '<strong>Error:</strong> get_db_row("'.$sql.'") :'. mysql_error ().'<br />';
-		return NULL;
-	}
-	if ($row = mysql_fetch_array ($result))
-		return $row;
+	$result = get_db_all_rows_sql($sql);
 	
-	return NULL;
+	return $result[0];
 }
 
 /** 
@@ -1317,18 +1281,19 @@ function get_db_row_sql ($sql) {
  * @return The first row of a database query.
  */
 function get_db_row ($table, $field_search, $condition) {
-	global $config;
 	
 	if (is_int ($condition)) {
-		$sql = sprintf ('SELECT * FROM %s WHERE %s = %d', $table, $field_search, $condition);
+		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = '%d'", $table, $field_search, $condition);
 	} else if (is_float ($condition) || is_double ($condition)) {
-		$sql = sprintf ('SELECT * FROM %s WHERE %s = %f', $table, $field_search, $condition);
+		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = '%f'", $table, $field_search, $condition);
 	} else {
-		$sql = sprintf ('SELECT * FROM %s WHERE %s = "%s"', $table, $field_search, $condition);
+		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = '%s'", $table, $field_search, $condition);
 	}
 	$sql .= ' LIMIT 1';
 	
-	return get_db_row_sql ($sql);
+	$result = get_db_all_rows_sql ($sql);
+		
+	return $result[0];
 }
 
 /** 
@@ -1336,21 +1301,12 @@ function get_db_row ($table, $field_search, $condition) {
  *
  * @param sql SQL statement to execute
  * @param field Field number to get, beggining by 0. Default: 0
- * 
+ * @param cache Cache the query while generating this page. Default: 1
  * @return The selected field of the first row in a select statement.
  */
 function get_db_sql ($sql, $field = 0) {
-	global $config;
-	
-	$result = mysql_query ($sql);
-	if (! $result) {
-		echo '<strong>Error:</strong> get_db_sql ("'.$sql.'") :'. mysql_error ().'<br />';
-		return NULL;
-	}
-	if ($row = mysql_fetch_array ($result))
-		return $row[$field];
-	
-	return NULL;
+	$row = get_db_all_rows_sql($sql);
+	return $row[0][$field];
 }
 
 /**
@@ -1362,18 +1318,26 @@ function get_db_sql ($sql, $field = 0) {
  */
 function get_db_all_rows_sql ($sql) {
 	global $config;
-	$retval = array ();
-	$result = mysql_query ($sql);
+        global $sql_cache;
+        $retval = array();
 	
-	if (! $result) {
-		echo mysql_error ();
-		return array();
+	if($sql_cache[$sql]) {
+        	$retval = $sql_cache[$sql];    
+        	$sql_cache[saved]++;
+	} else {
+                $result = mysql_query($sql);
+	        if (!$result) {
+        	        echo '<strong>Error:</strong> get_db_all_rows_sql ("'.$sql.'") :'. mysql_error ().'<br />';
+                	return $retval;
+        	}
+                while ($row = mysql_fetch_array ($result)) {
+                        array_push ($retval, $row);
+                }
+		$sql_cache[$sql] = $retval;
 	}
-	while ($row = mysql_fetch_array ($result)) {
-		array_push ($retval, $row);
-	}
-	
-	return $retval;
+	if(!empty($retval))	
+        	return $retval;
+	return ""; //Return empty because NULL is a possible database value
 }
 
 /**
@@ -1384,10 +1348,11 @@ function get_db_all_rows_sql ($sql) {
  * @return A matrix with all the values in the table
  */
 function get_db_all_rows_in_table ($table, $order_field = "") {
-	if ($order_field != "")
-		return get_db_all_rows_sql ('SELECT * FROM ' . $table . " ORDER BY $order_field ");
-	else	
-		return get_db_all_rows_sql ('SELECT * FROM '.$table);
+	if ($order_field != "") {
+		return get_db_all_rows_sql("SELECT * FROM `".$table."` ORDER BY `".$order_field."` ");
+	} else {	
+		return get_db_all_rows_sql("SELECT * FROM `".$table."`");
+	}
 }
 
 /**

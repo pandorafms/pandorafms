@@ -56,7 +56,7 @@ foreach ($groups as $id_group => $group_name) {
 		continue;
 	
 	$total_agents += $agents;
-	$group_info = array ('agent' => 0,
+	$group_info = array ('agent' => $agents,
 			'ok' => 0,
 			'bad' => 0,
 			'alerts' => 0,

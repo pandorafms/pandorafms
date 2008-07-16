@@ -1,5 +1,4 @@
 <?php 
-
 // Pandora - the Free monitoring system
 // ====================================
 // Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
@@ -18,12 +17,12 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
-require("include/config.php");
+require ("include/config.php");
+check_login ();
 
-if (comprueba_login() == 0) 
-	if ((give_acl($id_user, 0, "DM")==1) or (dame_admin($id_user)==1)) {
- 	// Todo for a good DB maintenance 
- 	/* 
+if ((give_acl ($id_user, 0, "DM")==1) or (dame_admin ($id_user)==1)) {
+	// Todo for a good DB maintenance 
+	/* 
  		- Delete too on datos_string and and datos_inc tables 
  		
  		- A function to "compress" data, and interpolate big chunks of data (1 month - 60000 registers) 
@@ -41,12 +40,11 @@ if (comprueba_login() == 0)
 	echo "<th>".$lang_label["total_data"]."</th>";
 	$color=0;
 	
-	$result_2=mysql_query("SELECT id_agente FROM tagente");
-	while ($row2=mysql_fetch_array($result_2)){
+	$result_2=get_db_all_fields_in_table("tagente","id_agente");
+	foreach($result_2 as $rownum => $row2) {
 		$total_agente=0;
-		$result_3c=mysql_query("SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_agente = ".$row2["id_agente"]);
-		$row3c=mysql_fetch_array($result_3c);
-		$result_3=mysql_query("SELECT * FROM tagente_modulo WHERE id_agente = ".$row2["id_agente"]);
+		$result_3=mysql_query("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ".$row2["id_agente"]);
+		$row3c = mysql_num_rows($result_3);
 		// for all data_modules belongs to an agent
 		while ($row3=mysql_fetch_array($result_3)){	
 			$result_4=mysql_query("SELECT COUNT(id_agente_modulo) FROM tagente_datos WHERE id_agente_modulo = ".$row3["id_agente_modulo"]);
@@ -64,15 +62,14 @@ if (comprueba_login() == 0)
 		echo "<tr>
 		<td class='$tdcolor'>
 		<b><a href='index.php?sec=gagente&sec2=operation/agentes/ver_agente&id_agente=".$row2["id_agente"]."'>".dame_nombre_agente($row2[0])."</a></b></td>";
-		echo "<td class='$tdcolor'>".$row3c[0]."</td>";
+		echo "<td class='$tdcolor'>".$row3c."</td>";
 		echo "<td class='$tdcolor'>".$total_agente."</td></tr>";
 		flush();
    		//ob_flush();
 	}
 	echo "</table>";
+} else {
+	audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Database Management Info data");
+	require ("general/noaccess.php");
 }
-else {
-		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Database Management Info data");
-		require ("general/noaccess.php");
-	}
 ?>

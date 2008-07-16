@@ -670,29 +670,32 @@ function get_alert_priority ($priority = 0) {
  */
 function get_alert_days ($row) {
 	global $config;
-	global $lang_label;
 	$days_output = "";
 
-	$check = $row["monday"] + $row["tuesday"] + $row["wednesday"] + $row["thursday"]+ $row["friday"] + $row["saturday"] + $row["sunday"];
-	
-	if ($row["monday"] != 0)
-		return "Mo";
-	if ($row["tuesday"] != 0)
-		return "Tu";
-	if ($row["wednesday"] != 0)
-		return "We";
-	if ($row["thursday"] != 0)
-		return "Th";
-	if ($row["friday"] != 0)
-		return "Fr";
-	if ($row["saturday"] != 0)
-		return "Sa";
-	if ($row["sunday"] != 0)
-		return "Su";
-	if ($check == 7)
+	$check = $row["monday"] + $row["tuesday"] + $row["wednesday"] + $row["thursday"] + $row["friday"] + $row["saturday"] + $row["sunday"];
+	if ($check == 7) {
 		return lang_string ("all");
-	
-	return lang_string ("none");
+	} elseif ($check == 0) {
+		return lang_string ("none");
+	} 
+	if ($row["monday"] != 0)
+		$days_output .= "Mo ";
+	if ($row["tuesday"] != 0)
+		$days_output .= "Tu ";
+	if ($row["wednesday"] != 0)
+		$days_output .= "We ";
+	if ($row["thursday"] != 0)
+		$days_output .= "Th ";
+	if ($row["friday"] != 0)
+		$days_output .= "Fr ";
+	if ($row["saturday"] != 0)
+		$days_output .= "Sa ";
+	if ($row["sunday"] != 0)
+		$days_output .= "Su ";
+	if ($check > 1) {	
+		return str_replace (" ",", ",$days_output);
+	}
+	return rtrim ($days_output);
 }
 
 /** 
@@ -703,9 +706,6 @@ function get_alert_days ($row) {
  * @return 
  */
 function get_alert_times ($row2) {
-	global $config;
-	global $lang_label;
-
 	if ($row2["time_from"]){
 		$time_from_table = $row2["time_from"];
 	} else {
@@ -716,12 +716,10 @@ function get_alert_times ($row2) {
 	} else {
 		$time_to_table = lang_string ("N/A");
 	}
-	$string = "";
 	if ($time_to_table == $time_from_table)
-		$string .= lang_string ('N/A');
-	else
-		$string .= substr ($time_from_table, 0, 5)." - ".substr ($time_to_table, 0, 5);
-	return $string;
+		return lang_string ('N/A');
+		
+	return substr ($time_from_table, 0, 5)." - ".substr ($time_to_table, 0, 5);
 }
 
 /** 
@@ -852,11 +850,14 @@ function show_alert_show_view ($data, $tdcolor = "datos", $combined = 0) {
 	global $lang_label;
 
 	if ($combined == 0) {
-		$module_name = get_db_sql ("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = ".$data["id_agente_modulo"]);
-		$agent_name = get_db_sql ("SELECT tagente.nombre FROM tagente_modulo, tagente WHERE tagente_modulo.id_agente = tagente.id_agente AND tagente_modulo.id_agente_modulo = ".$data["id_agente_modulo"]);
-		$id_agente = get_db_sql ("SELECT id_agente FROM tagente_modulo WHERE id_agente_modulo = ".$data["id_agente_modulo"]);
+		$sql = sprintf ("SELECT tagente.nombre AS agent_name, tagente_modulo.nombre AS module_name, tagente_modulo.id_agente FROM `tagente_modulo`, `tagente` WHERE `tagente_modulo`.`id_agente` = `tagente`.`id_agente` AND `tagente_modulo`.`id_agente_modulo` = '%d'",$data["id_agente_modulo"]);
+		$result = get_db_all_rows_sql ($sql);
+		$agent_name = $result[0]["agent_name"]; 
+		$id_agente = $result[0]["id_agente"];
+		$module_name = $result[0]["module_name"];
 	} else {
-		$agent_name =  get_db_sql ("SELECT nombre FROM tagente WHERE id_agente =".$data["id_agent"]);
+		$sql = sprintf ("SELECT `nombre` FROM `tagente` WHERE `id_agente` = '%d'",$data["id_agent"]);
+		$agent_name =  get_db_sql ($sql);
 		$id_agente = $data["id_agent"];
 	}
 	$alert_name = get_db_sql ("SELECT nombre FROM talerta WHERE id_alerta = ".$data["id_alerta"]);

@@ -17,10 +17,11 @@
 
 // Load global vars
 global $config;
+check_login ();
 
-if (comprueba_login() == 0) 
-   $id_usuario= $_SESSION["id_usuario"];
-   if (give_acl($id_usuario, 0, "DM")==1){
+$id_usuario= $_SESSION["id_usuario"];
+
+if (give_acl($id_usuario, 0, "DM")==1){
 
 	if (isset($_POST["agent"])){
 		$id_agent =$_POST["agent"];
@@ -35,49 +36,8 @@ if (comprueba_login() == 0)
 	// All data (now)
 	$purge_all=date("Y-m-d H:i:s",time());
 		
-	// 1 day ago
-	$d1_year = date("Y", time()-28800);
-	$d1_month = date("m", time()-28800);
-	$d1_day = date ("d", time()-28800);
-	$d1_hour = date ("H", time()-28800);
-	$minuto = date("i",time());
-	$segundo = date("s",time());
-	$d1 = $d1_year."-".$d1_month."-".$d1_day." ".$d1_hour.":".$minuto.":".$segundo."";
+	require("godmode/db/times_incl.php");
 	
-	// 3 days ago
-	$d3_year = date("Y", time()-86400);
-	$d3_month = date("m", time()-86400);
-	$d3_day = date ("d", time()-86400);
-	$d3_hour = date ("H", time()-86400);
-	$d3 = $d3_year."-".$d3_month."-".$d3_day." ".$d3_hour.":".$minuto.":".$segundo."";
-	
-	// Date 24x7 Hours ago (a week)
-	$week_year = date("Y", time()-604800);
-	$week_month = date("m", time()-604800);
-	$week_day = date ("d", time()-604800);
-	$week_hour = date ("H", time()-604800);
-	$week = $week_year."-".$week_month."-".$week_day." ".$week_hour.":".$minuto.":".$segundo."";
-	
-	// Date 24x7x2 Hours ago (two weeks)
-	$week2_year = date("Y", time()-1209600);
-	$week2_month = date("m", time()-1209600);
-	$week2_day = date ("d", time()-1209600);
-	$week2_hour = date ("H", time()-1209600);
-	$week2 = $week2_year."-".$week2_month."-".$week2_day." ".$week2_hour.":".$minuto.":".$segundo."";
-		
-	// Date 24x7x30 Hours ago (one month)
-	$month_year = date("Y", time()-2592000);
-	$month_month = date("m", time()-2592000);
-	$month_day = date ("d", time()-2592000);
-	$month_hour = date ("H", time()-2592000);
-	$month = $month_year."-".$month_month."-".$month_day." ".$month_hour.":".$minuto.":".$segundo."";
-	
-	// Three months
-	$month3_year = date("Y", time()-7257600);
-	$month3_month = date("m", time()-7257600);
-	$month3_day = date ("d", time()-7257600);
-	$month3_hour = date ("H", time()-7257600);
-	$month3 = $month3_year."-".$month3_month."-".$month3_day." ".$month3_hour.":".$minuto.":".$segundo."";
 	$datos_rango3=0;$datos_rango2=0;$datos_rango1=0;$datos_rango0=0; $datos_rango00=0; $datos_rango11=0; $datos_total=0;
 
 	# ADQUIRE DATA PASSED AS FORM PARAMETERS
@@ -259,8 +219,8 @@ if (comprueba_login() == 0)
 	</form>
 	
 <?php
-   } else {
+} else {
    	audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access to Database Purge Section");
 	include ("general/noaccess.php");
-   }
+}
 ?>

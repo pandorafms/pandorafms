@@ -20,9 +20,9 @@
 
 // Load global vars
 require("include/config.php");
-if (comprueba_login() == 0) 
-	$id_user = $_SESSION["id_usuario"];
- 	if ((give_acl($id_user, 0, "DM")==1) or (dame_admin($id_user)==1)) {
+check_login ();	
+$id_user = $_SESSION["id_usuario"];
+if ((give_acl($id_user, 0, "DM")==1) or (dame_admin($id_user)==1)) {
 		if ((isset($_GET["operacion"])) AND (! isset($_POST["update_agent"]))){
 			// DATA COPY
 			if (isset($_POST["eliminar"])) {
@@ -109,8 +109,8 @@ if (comprueba_login() == 0)
 			
 			<?php
 		}
-	} else {
-		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Database Debug Admin section");
-		require ("general/noaccess.php");
-	}
+} else {
+	audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Database Debug Admin section");
+	require ("general/noaccess.php");
+}
 ?>

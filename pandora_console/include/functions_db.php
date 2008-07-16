@@ -1,5 +1,4 @@
 <?php
-
 // Pandora FMS - the Free monitoring system
 // ========================================
 // Copyright (c) 2004-2008 Sancho Lerena, <slerena@gmail.com>
@@ -37,7 +36,6 @@ function check_login () {
 	include ($config["homedir"]."/general/noaccess.php");
 	exit;
 }
-
 	
 /**
  * Check access privileges to resources
@@ -132,10 +130,8 @@ AND `tusuario_perfil`.`id_usuario` = '%s' AND (`tusuario_perfil`.`id_grupo` = '%
  * @param descripcion Long action description
  */
 function audit_db ($id, $ip, $accion, $descripcion){
-	$utimestamp = time();
-	$today=date('Y-m-d H:i:s',$utimestamp);
-	$sql1='INSERT INTO tsesion (ID_usuario, accion, fecha, IP_origen,descripcion, utimestamp) VALUES ("'.$id.'","'.$accion.'","'.$today.'","'.$ip.'","'.$descripcion.'", "'.$utimestamp.'")';
-	$result=mysql_query($sql1);
+	$sql1 = sprintf ("INSERT INTO `tsesion` (ID_usuario, accion, fecha, IP_origen,descripcion, utimestamp) VALUES ('%s','%s',NOW(),'%s','%s',UNIX_TIMESTAMP(NOW()))",$id,$accion,$ip,$descripcion);
+	mysql_query($sql1);
 }
 
 /**
@@ -145,11 +141,9 @@ function audit_db ($id, $ip, $accion, $descripcion){
  * @param ip Client user IP address.
  */
 function logon_db ($id_user, $ip) {
-	global $config;
-
 	audit_db ($id_user, $ip, "Logon", "Logged in");
 	// Update last registry of user to set last logon. How do we audit when the user was created then?
-	$sql = sprintf ('UPDATE tusuario SET fecha_registro = $today WHERE id_usuario = "%s"', $id_user);
+	$sql = sprintf ("UPDATE `tusuario` SET `fecha_registro` = NOW() WHERE `id_usuario` = '%s'", $id_user);
 	mysql_query ($sql);
 }
 
@@ -196,16 +190,17 @@ function give_disabled_group ($id_group) {
 function get_agents_in_group ($id_group, $disabled = false) {
 	/* 'All' group must return all agents */
 	if ($id_group == 1) {
-		if ($disabled)
+		if ($disabled) {
 			return get_db_all_rows_in_table ('tagente', 'nombre');
-		return get_db_all_rows_field_filter ('tagente', 'disabled', 0, 'nombre');
-	}
-	if ($disabled)
+		} else {
+			return get_db_all_rows_field_filter ('tagente', 'disabled', 0, 'nombre');
+		}
+	} elseif ($disabled && $id_group != 1) {
 		return get_db_all_rows_field_filter ('tagente', 'id_grupo', (int) $id_group, 'nombre');
-	$sql = sprintf ('SELECT * FROM tagente 
-			WHERE id_grupo = %d AND disabled = 0 ORDER BY nombre',
-			$id_group);
-	return get_db_all_rows_sql ($sql);
+	} else {
+		$sql = sprintf ("SELECT * FROM `tagente` WHERE `id_grupo` = '%d' AND `disabled` = '0' ORDER BY `nombre`",$id_group);
+		return get_db_all_rows_sql ($sql);
+	}
 }
 
 /**
@@ -227,10 +222,7 @@ function get_modules_in_agent ($id_agent) {
  * @return An array with all simple alerts defined for an agent.
  */
 function get_simple_alerts_in_agent ($id_agent) {
-	$sql = sprintf ('SELECT talerta_agente_modulo.*
-			FROM talerta_agente_modulo, tagente_modulo
-			WHERE talerta_agente_modulo.id_agente_modulo = tagente_modulo.id_agente_modulo
-			AND tagente_modulo.id_agente = %d', $id_agent);
+	$sql = sprintf ("SELECT talerta_agente_modulo.* FROM talerta_agente_modulo, tagente_modulo WHERE talerta_agente_modulo.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.id_agente = %d", $id_agent);
 	return get_db_all_rows_sql ($sql);
 }
 
@@ -489,14 +481,15 @@ function dame_nombre_real ($id_user) {
  * @return The number of times a monitor went down.
  */
 function get_monitor_downs_in_period ($id_agent_module, $period, $date = 0) {
-	if (!$date)
+	if ($date == 0) {
 		$date = time ();
+	}
 	$datelimit = $date - $period;
-	$sql = sprintf ('SELECT COUNT(*) FROM tevento WHERE
-			event_type = "monitor_down" 
-			AND id_agentmodule = %d
-			AND utimestamp > %d AND utimestamp <= %d',
-			$id_agent_module, $datelimit, $date);
+	$sql = sprintf ("SELECT COUNT(`id_agentmodule`) FROM `tevento` WHERE 
+			`event_type` = 'monitor_down' 
+			AND `id_agentmodule` = '%d' 
+			AND `utimestamp` > '%d' 
+			AND `utimestamp` <= '%d'",$id_agent_module, $datelimit, $date);
 	 
 	return get_db_sql ($sql);
 }
@@ -511,14 +504,15 @@ function get_monitor_downs_in_period ($id_agent_module, $period, $date = 0) {
  * @return The last time a monitor went down.
  */
 function get_monitor_last_down_timestamp_in_period ($id_agent_module, $period, $date = 0) {
-	if (!$date)
+	if ($date == 0) {
 		$date = time ();
+	}
 	$datelimit = $date - $period;
-	$sql = sprintf ('SELECT MAX(timestamp) FROM tevento WHERE
-			event_type = "monitor_down" 
-			AND id_agentmodule = %d
-			AND utimestamp > %d AND utimestamp <= %d',
-			$id_agent_module, $datelimit, $date);
+	$sql = sprintf ("SELECT MAX(`timestamp`) FROM `tevento` WHERE 
+			event_type = 'monitor_down' 
+			AND `id_agentmodule` = '%d' 
+			AND `utimestamp` > '%d' 
+			AND `utimestamp` <= '%d'",$id_agent_module, $datelimit, $date);
 	
 	return get_db_sql ($sql);
 }
@@ -531,12 +525,11 @@ function get_monitor_last_down_timestamp_in_period ($id_agent_module, $period, $
  * @return An array with all the monitors defined in the group (tagente_modulo).
  */
 function get_monitors_in_group ($id_group) {
-	$sql = sprintf ('SELECT tagente_modulo.*
-			FROM tagente_modulo, ttipo_modulo, tagente
-			WHERE id_tipo_modulo = id_tipo
-			AND tagente.id_agente = tagente_modulo.id_agente
-			AND ttipo_modulo.nombre like "%%_proc"
-			AND tagente.id_grupo = %d', $id_group);
+	$sql = sprintf ("SELECT `tagente_modulo`.* FROM `tagente_modulo`, `ttipo_modulo`, `tagente` WHERE 
+			`id_tipo_modulo` = `id_tipo` 
+			AND `tagente`.`id_agente` = `tagente_modulo`.`id_agente` 
+			AND `ttipo_modulo`.`nombre` LIKE '%%_proc' 
+			AND `tagente`.`id_grupo` = '%d'", $id_group);
 	return get_db_all_rows_sql ($sql);
 }
 
@@ -548,12 +541,12 @@ function get_monitors_in_group ($id_group) {
  * @return An array with all the monitors defined (tagente_modulo).
  */
 function get_monitors_in_agent ($id_agent) {
-	$sql = sprintf ('SELECT tagente_modulo.*
-			FROM tagente_modulo, ttipo_modulo, tagente
-			WHERE id_tipo_modulo = id_tipo
-			AND tagente.id_agente = tagente_modulo.id_agente
-			AND ttipo_modulo.nombre like "%%_proc"
-			AND tagente.id_agente = %d', $id_agent);
+	$sql = sprintf ("SELECT `tagente_modulo`.*
+			FROM `tagente_modulo`, `ttipo_modulo`, `tagente`
+			WHERE `id_tipo_modulo` = `id_tipo`
+			AND `tagente`.`id_agente` = `tagente_modulo`.`id_agente`
+			AND `ttipo_modulo.nombre` LIKE '%%_proc'
+			AND `tagente`.`id_agente` = '%d'", $id_agent);
 	return get_db_all_rows_sql ($sql);
 }
 
@@ -591,11 +584,11 @@ function get_alert_fires_in_period ($id_agent_module, $period, $date = 0) {
 	if (!$date)
 		$date = time ();
 	$datelimit = $date - $period;
-	$sql = sprintf ('SELECT COUNT(*) FROM tevento WHERE
-			event_type = "alert_fired" 
-			AND id_agentmodule = %d
-			AND utimestamp > %d AND utimestamp <= %d',
-			$id_agent_module, $datelimit, $date);
+	$sql = sprintf ("SELECT COUNT(`id_agentmodule`) FROM `tevento` WHERE
+			`event_type` = 'alert_fired'
+			AND `id_agentmodule` = '%d'
+			AND `utimestamp` > '%d' 
+			AND `utimestamp` <= '%d'",$id_agent_module, $datelimit, $date);
 	return (int) get_db_sql ($sql);
 }
 
@@ -612,7 +605,7 @@ function get_alerts_in_group ($id_group) {
 	$alerts = array ();
 	$agents = get_agents_in_group ($id_group);
 	foreach ($agents as $agent) {
-		$agent_alerts = get_alerts_in_agent ($agent['id_agente']);
+		$agent_alerts = get_alerts_in_agent ($agent["id_agente"]);
 		$alerts = array_merge ($alerts, $agent_alerts);
 	}
 	
@@ -656,14 +649,15 @@ function get_alerts_fired ($alerts, $period = 0, $date = 0) {
  * @return The last time an alert fired.
  */
 function get_alert_last_fire_timestamp_in_period ($id_agent_module, $period, $date = 0) {
-	if (!$date)
+	if ($date == 0) {
 		$date = time ();
+	}
 	$datelimit = $date - $period;
-	$sql = sprintf ('SELECT MAX(timestamp) FROM tevento WHERE
-			event_type = "alert_fired" 
-			AND id_agentmodule = %d
-			AND utimestamp > %d AND utimestamp <= %d',
-			$id_agent_module, $datelimit, $date);
+	$sql = sprintf ("SELECT MAX(`timestamp`) FROM `tevento` WHERE
+			`event_type` = 'alert_fired'
+			AND `id_agentmodule` = '%d'
+			AND `utimestamp` > '%d' 
+			AND `utimestamp` <= '%d'",$id_agent_module, $datelimit, $date);
 	return get_db_sql ($sql);
 }
 
@@ -739,7 +733,7 @@ function dame_numero_notas ($id_incident) {
  * @return 
  */
 function dame_numero_datos () {
-	return (int) get_db_sql ('SELECT COUNT(*) FROM tagente_datos');
+	return (int) get_db_sql ("SELECT COUNT(*) FROM `tagente_datos`");
 }
 
 /** 
@@ -761,27 +755,25 @@ function dame_generic_string_data ($id) {
 function borrar_incidencia ($id_inc) {
 	global $config;
 	
-	$sql = "DELETE FROM tincidencia WHERE id_incidencia = ".$id_inc;
+	$sql = sprintf("DELETE FROM `tincidencia` WHERE `id_incidencia` = '%d'",$id_inc);
 	mysql_query ($sql);
-	$sql = "SELECT * FROM tnota_inc WHERE id_incidencia = ".$id_inc;
-	$res2 = mysql_query ($sql);
-	while ($row2 = mysql_fetch_array ($res2)) {
-		// Delete all note ID related in table
-		$sql = "DELETE FROM tnota WHERE id_nota = ".$row2["id_nota"];
+	$sql = sprintf("SELECT `id_nota` FROM `tnota_inc` WHERE `id_incidencia` = '%d'".$id_inc);
+	$rows = get_db_all_rows_sql ($sql);
+	foreach ($rows as $row) {
+		$sql = sprintf("DELETE FROM `tnota` WHERE `id_nota` = '%d'",$row["id_nota"]);
 		mysql_query ($sql);
 	}
-	$sql = "DELETE FROM tnota_inc WHERE id_incidencia = ".$id_inc;
+	$sql = "DELETE FROM `tnota_inc` WHERE `id_incidencia` = ".$id_inc;
 	mysql_query ($sql);
+	
 	// Delete attachments
-	$sql = "SELECT * FROM tattachment WHERE id_incidencia = ".$id_inc;
-	$result = mysql_query ($sql);
-	while ($row = mysql_fetch_array ($result)) {
+	$sql = sprintf("SELECT `id_attachment`,`filename` FROM `tattachment` WHERE `id_incidencia` = '%d'",$id_inc);
+	$rows = get_db_all_rows_sql ($sql);
+	foreach ($rows as $row) {
 		// Unlink all attached files for this incident
-		$file_id = $row["id_attachment"];
-		$filename = $row["filename"];
-		unlink ($attachment_store."attachment/pand".$file_id."_".$filename);
+		unlink ($attachment_store."attachment/pand".$row["id_attachment"]."_".$row["filename"]);
 	}
-	$sql = "DELETE FROM tattachment WHERE id_incidencia = ".$id_inc;
+	$sql = sprintf("DELETE FROM `tattachment` WHERE `id_incidencia` = '%d'",$id_inc);
 	mysql_query ($sql);
 }
 
@@ -802,7 +794,9 @@ function dame_so_name ($id_os) {
  * @param id_user User id
  */
 function update_user_contact ($id_user) {
-	$sql = "UPDATE tusuario set fecha_registro = NOW() WHERE id_usuario = '".$id_user."'";
+	global $config;
+	
+	$sql = sprintf("UPDATE `tusuario` set `fecha_registro` = NOW() WHERE 'id_usuario' = '%d'",$id_user);
 	mysql_query ($sql);
 }
 
@@ -840,15 +834,18 @@ function dame_email ($id_user) {
  */
 function dame_admin ($id_user) {
 	$level = get_db_value ('nivel', 'tusuario', 'id_usuario', $id_user);
-	if ($level)
+	if ($level == 1) {
 		return true;
-	return false;
+	} else {
+		return false;
+	}
 }
 
 /** 
  * WARNING: This is a deprectad function and must not be used
  */
 function comprueba_login() { 
+	echo "DEBUG:: Still using comprueba_login eh...";
 	return check_login ();
 }
 
@@ -1248,9 +1245,8 @@ function get_db_value ($field, $table, $field_search=1, $condition=1){
 	} else {
 		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = '%s' LIMIT 1", $field, $table, $field_search, $condition);
 	}
-	$sql .= " LIMIT 1";
-	$result = get_db_all_rows_sql($sql);
-	if(is_array($result))	
+	$result = get_db_all_rows_sql ($sql);
+	if(is_array ($result))	
 		return $result[0][$field];
 	
 	return "";
@@ -1264,7 +1260,8 @@ function get_db_value ($field, $table, $field_search=1, $condition=1){
  * @return The first row of the result or something empty.
  */
 function get_db_row_sql ($sql) {
-	$result = get_db_all_rows_sql($sql);
+	$sql .= " LIMIT 1";
+	$result = get_db_all_rows_sql ($sql);
 	
 	return $result[0];
 }
@@ -1290,8 +1287,6 @@ function get_db_row ($table, $field_search, $condition) {
 	} else {
 		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = '%s' LIMIT 1", $table, $field_search, $condition);
 	}
-	$sql .= ' LIMIT 1';
-	
 	$result = get_db_all_rows_sql ($sql);
 		
 	return $result[0];
@@ -1306,8 +1301,12 @@ function get_db_row ($table, $field_search, $condition) {
  * @return The selected field of the first row in a select statement.
  */
 function get_db_sql ($sql, $field = 0) {
-	$row = get_db_all_rows_sql($sql);
-	return $row[0][$field];
+	$row = get_db_all_rows_sql ($sql);
+	if (is_array ($row)) {
+		return $row[0][$field];
+	} else {
+		return "";
+	}
 }
 
 /**
@@ -1326,7 +1325,7 @@ function get_db_all_rows_sql ($sql) {
 		$retval = $sql_cache[$sql];    
 		$sql_cache[saved]++;
 	} else {
-		$result = mysql_query($sql);
+		$result = mysql_query ($sql);
 		if (!$result) {
 			echo '<strong>Error:</strong> get_db_all_rows_sql ("'.$sql.'") :'. mysql_error ().'<br />';
 			return $retval;
@@ -1335,8 +1334,9 @@ function get_db_all_rows_sql ($sql) {
 			array_push ($retval, $row);
 		}
 		$sql_cache[$sql] = $retval;
+		mysql_free_result ($result);
 	}
-	if(!empty($retval))	
+	if(!empty ($retval))	
 		return $retval;
 	return ""; //Return empty because NULL is a possible database value
 }
@@ -1350,9 +1350,9 @@ function get_db_all_rows_sql ($sql) {
  */
 function get_db_all_rows_in_table ($table, $order_field = "") {
 	if ($order_field != "") {
-		return get_db_all_rows_sql("SELECT * FROM `".$table."` ORDER BY `".$order_field."` ");
+		return get_db_all_rows_sql ("SELECT * FROM `".$table."` ORDER BY `".$order_field."` ");
 	} else {	
-		return get_db_all_rows_sql("SELECT * FROM `".$table."`");
+		return get_db_all_rows_sql ("SELECT * FROM `".$table."`");
 	}
 }
 
@@ -1388,8 +1388,12 @@ function get_db_all_rows_field_filter ($table, $field, $condition, $order_field 
  *
  * @return A matrix with all the values in the table that matches the condition in the field
  */
-function get_db_all_fields_in_table ($table, $field) {
-	return get_db_all_rows_sql ('SELECT '.$field.' FROM '. $table);
+function get_db_all_fields_in_table ($table, $field, $condition='') {
+	$sql = sprintf ("SELECT %s FROM `%s`",$field,$table);
+	if($condition != '') {
+		$sql .= sprintf (" WHERE `%s` = '%s'",$field,$condition);
+	}
+	return get_db_all_rows_sql ($sql);
 }
 
 /** 
@@ -1400,28 +1404,22 @@ function get_db_all_fields_in_table ($table, $field) {
  * @return True if there were alerts fired.
  */
 function return_status_agent_module ($id_agentmodule = 0){
-	$query1 = "SELECT estado FROM tagente_estado WHERE id_agente_modulo = " . $id_agentmodule; 
-	$resq1 = mysql_query ($query1);
-	if ($resq1 != 0) {
-		$rowdup = mysql_fetch_array($resq1);
-		if ($rowdup[0] == 100) {
-			// We need to check if there are any alert on this item
-			$query2 = "SELECT SUM(times_fired) FROM talerta_agente_modulo WHERE id_agente_modulo = " . $id_agentmodule;
-			$resq2 = mysql_query($query2);
-			if ($resq2 != 0) {
-				$rowdup2 = mysql_fetch_array ($resq2);
-				if ($rowdup2[0] > 0){
-					return 0;
-				}
-			}
-			// No alerts fired for this agent module
-			return 1;
-		} elseif ($rowdup[0] == 0) // 0 is ok for estado field
-			return 1;
+	$sql = sprintf ("SELECT `estado` FROM `tagente_estado` WHERE `id_agente_modulo` = '%d'",$id_agentmodule);
+	$estado = get_db_sql($sql); 
+	if ($estado == 100) {
+		// We need to check if there are any alert on this item
+		$sql = sprintf ("SELECT SUM(times_fired) FROM `talerta_agente_modulo` WHERE `id_agente_modulo` = '%d'",$id_agentmodule);
+		$times_fired = get_db_sql($sql);
+		if ($times_fired > 0){
+			return 0;
+		}
+		// No alerts fired for this agent module
+		return 1;
+	} elseif ($estado == 0) { // 0 is ok for estado field
+		return 1;
+	} else {
 		return 0;
 	}
-
-	return 1;
 }
 
 /** 
@@ -1438,24 +1436,22 @@ function return_status_agent_module ($id_agentmodule = 0){
 function return_status_layout ($id_layout = 0) {
 	$temp_status = 0;
 	$temp_total = 0;
-	$sql = "SELECT * FROM tlayout_data WHERE id_layout = $id_layout";
-	$res = mysql_query ($sql);
-	while ($row = mysql_fetch_array ($res)) {
-		$id_agentmodule = $row["id_agente_modulo"];
-		$type = $row["type"];
-		$parent_item = $row["parent_item"];
-		$link_layout = $row["id_layout_linked"];
-		if (($link_layout != 0) && ($id_agentmodule == 0)) {
-			$temp_status += return_status_layout ($link_layout);
+	$sql = sprintf ("SELECT id_agente_modulo, parent_item, id_layout_linked FROM `tlayout_date` WHERE `id_layout` = '%d'",$id_layout);
+	$result = get_db_all_rows_sql ($sql);
+	foreach ($result as $rownum => $data) {
+		if (($data["id_layout_linked"] != 0) && ($data["id_agente_modulo"] == 0)) {
+			$temp_status += return_status_layout ($data["id_layout_linked"]);
 			$temp_total++;
 		} else {
-			$temp_status += return_status_agent_module ($id_agentmodule);
+			$temp_status += return_status_agent_module ($data["id_agente_modulo"]);
 			$temp_total++;
 		}
 	}
-	if ($temp_status == $temp_total)
+	if ($temp_status == $temp_total) {
 		return 1;
-	return 0;
+	} else {
+		return 0;
+	}
 }
 
 /** 
@@ -1616,8 +1612,7 @@ function get_agent_module_value_sumatory ($id_agent_module, $period, $date = 0) 
 	if (! $date)
 		$date = time ();
 	$datelimit = $date - $period; // limit date
-	$id_module_type = get_db_value ('id_tipo_modulo', 'tagente_modulo',
-				'id_agente_modulo', $id_agent_module);
+	$id_module_type = get_db_value ('id_tipo_modulo', 'tagente_modulo','id_agente_modulo', $id_agent_module);
 	$module_name = get_db_value ('nombre', 'ttipo_modulo', 'id_tipo', $id_module_type);
 	
 	if (is_module_data_string ($module_name)) {
@@ -1691,7 +1686,12 @@ function get_agent_module_value_sumatory ($id_agent_module, $period, $date = 0) 
  */
 function lang_string ($string) {
 	global $config;
-	require ($config["homedir"]."/include/languages/language_".$config["language"].".php");
+	global $lang_label;
+	
+	if(!is_array ($lang_label)) {	
+		require_once ($config["homedir"]."/include/languages/language_".$config["language"].".php");
+	} //Only includes the file once (the first function call) and since $lang_label is global, it will propagate
+
 	if (isset ($lang_label[$string]))
 		return $lang_label[$string];
 	return $string;

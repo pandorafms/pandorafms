@@ -18,9 +18,9 @@
 
 // Load global vars
 global $config;
+check_login ();
 
-if (comprueba_login() == 0) 
-	if ((give_acl($id_user, 0, "DM")==1) or (dame_admin($id_user)==1)) {
+if ((give_acl($id_user, 0, "DM")==1) or (dame_admin($id_user)==1)) {
  	// Todo for a good DB maintenance 
  	/* 
  		- Delete too on datos_string and and datos_inc tables 
@@ -44,8 +44,8 @@ if (comprueba_login() == 0)
 	<img src="reporting/fgraph.php?tipo=db_agente_purge&id=-1">
 	</table>
 <?php
-	} else {
-		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Database Management");
-		require ("general/noaccess.php");
-	}
+} else {
+	audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Database Management");
+	require ("general/noaccess.php");
+}
 ?>

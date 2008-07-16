@@ -18,6 +18,7 @@
 // Load global vars
 require("include/config.php");
 check_login();
+
 if ((give_acl($config["id_user"], 0, "DM")==0) AND (dame_admin($config["id_user"])==0)) {
 	audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Database cure section");
 	require ("general/noaccess.php");

@@ -19,9 +19,9 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
-require("include/config.php");
+require ("include/config.php");
 
-comprueba_login();
+check_login ();
 
 $id_user = $_SESSION["id_usuario"];
 $id_group = get_parameter ("id_group",0);

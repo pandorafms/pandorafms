@@ -65,7 +65,7 @@ if (isset($_GET["id_agente"])){
 		echo "<tr>
 		<th>".$lang_label["type"]."<th>".$lang_label["name"]."</th>
 		<th>".$lang_label["description"]."</th>
-        <th>".lang_string ("info")."</th>
+	        <th>".$lang_label["Info"]."</th>
 		<th>".$lang_label["min."]."</th>
 		<th>".$lang_label["max."]."</th>
 		<th>".$lang_label["time_threshold"]."</th>

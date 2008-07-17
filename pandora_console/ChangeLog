@@ -1,3 +1,7 @@
+2008-07-17  Raul Mateos  <raulofpandora@gmail.com>
+
+	* operation/agentes/status_monitor.php: Closed html tags.
+
 2008-07-17  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/reporting/reporting_builder.php,
@@ -1606,7 +1610,6 @@
 
         * godmode/agentes/configurar_agente.php: Small changes that affects 
         module management, visualization and agent management.
-
 
 
 2008-03-01  Raul Mateos  <raulofpandora@gmail.com>

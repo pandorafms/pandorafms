@@ -82,25 +82,25 @@ echo lang_string ("Monitor status");
 echo "<td>";
 echo "<select name='status'>";
 if ($status == -1){
-	echo "<option value=-1>".lang_string("All");
-	echo "<option value=0>".lang_string("Monitors down");
-	echo "<option value=1>".lang_string("Monitors up");
-	echo "<option value=2>".lang_string("Monitors unknown");
+	echo "<option value=-1>".lang_string("All")."</option>";
+	echo "<option value=0>".lang_string("Monitors down")."</option>";
+	echo "<option value=1>".lang_string("Monitors up")."</option>";
+	echo "<option value=2>".lang_string("Monitors unknown")."</option>";
 } elseif ($status == 0){
-	echo "<option value=0>".lang_string("Monitors down");
-	echo "<option value=-1>".lang_string("All");
-	echo "<option value=1>".lang_string("Monitors up");
-	echo "<option value=2>".lang_string("Monitors unknown");
+	echo "<option value=0>".lang_string("Monitors down")."</option>";
+	echo "<option value=-1>".lang_string("All")."</option>";
+	echo "<option value=1>".lang_string("Monitors up")."</option>";
+	echo "<option value=2>".lang_string("Monitors unknown")."</option>";
 } elseif ($status == 2){
-	echo "<option value=2>".lang_string("Monitors unknown");
-	echo "<option value=0>".lang_string("Monitors down");
-	echo "<option value=-1>".lang_string("All");
-	echo "<option value=1>".lang_string("Monitors up");
+	echo "<option value=2>".lang_string("Monitors unknown")."</option>";
+	echo "<option value=0>".lang_string("Monitors down")."</option>";
+	echo "<option value=-1>".lang_string("All")."</option>";
+	echo "<option value=1>".lang_string("Monitors up")."</option>";
 } else {
-	echo "<option value=1>".lang_string("Monitors up");
-	echo "<option value=0>".lang_string("Monitors down");
-	echo "<option value=2>".lang_string("Monitors unknown");
-	echo "<option value=-1>".lang_string("All");
+	echo "<option value=1>".lang_string("Monitors up")."</option>";
+	echo "<option value=0>".lang_string("Monitors down")."</option>";
+	echo "<option value=2>".lang_string("Monitors unknown")."</option>";
+	echo "<option value=-1>".lang_string("All")."</option>";
 }
 echo "</select>";
 

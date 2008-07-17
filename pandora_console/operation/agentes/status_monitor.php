@@ -82,25 +82,25 @@ echo lang_string ("Monitor status");
 echo "<td>";
 echo "<select name='status'>";
 if ($status == -1){
-    echo "<option value=-1>".lang_string("All");
-    echo "<option value=0>".lang_string("Monitors down");
-    echo "<option value=1>".lang_string("Monitors up");
+	echo "<option value=-1>".lang_string("All");
+	echo "<option value=0>".lang_string("Monitors down");
+	echo "<option value=1>".lang_string("Monitors up");
 	echo "<option value=2>".lang_string("Monitors unknown");
 } elseif ($status == 0){
-    echo "<option value=0>".lang_string("Monitors down");
-    echo "<option value=-1>".lang_string("All");
-    echo "<option value=1>".lang_string("Monitors up");
+	echo "<option value=0>".lang_string("Monitors down");
+	echo "<option value=-1>".lang_string("All");
+	echo "<option value=1>".lang_string("Monitors up");
 	echo "<option value=2>".lang_string("Monitors unknown");
 } elseif ($status == 2){
 	echo "<option value=2>".lang_string("Monitors unknown");
-    echo "<option value=0>".lang_string("Monitors down");
-    echo "<option value=-1>".lang_string("All");
-    echo "<option value=1>".lang_string("Monitors up");
+	echo "<option value=0>".lang_string("Monitors down");
+	echo "<option value=-1>".lang_string("All");
+	echo "<option value=1>".lang_string("Monitors up");
 } else {
-    echo "<option value=1>".lang_string("Monitors up");
-    echo "<option value=0>".lang_string("Monitors down");
-    echo "<option value=2>".lang_string("Monitors unknown");
-    echo "<option value=-1>".lang_string("All");
+	echo "<option value=1>".lang_string("Monitors up");
+	echo "<option value=0>".lang_string("Monitors down");
+	echo "<option value=2>".lang_string("Monitors unknown");
+	echo "<option value=-1>".lang_string("All");
 }
 echo "</select>";
 
@@ -142,26 +142,26 @@ $SQL = " FROM tagente, tagente_modulo, tagente_estado WHERE tagente.id_agente = 
 if ($ag_group > 1)
     $SQL .=" AND tagente.id_grupo = ".$ag_group;
 else {
-     // User has explicit permission on group 1 ?
-    $all_group = get_db_sql ("SELECT COUNT(id_grupo) FROM tusuario_perfil WHERE id_usuario='$id_user' AND id_grupo = 1");
-    if ($all_group == 0)
-        $SQL .=" AND tagente.id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='$id_user') ";
+	// User has explicit permission on group 1 ?
+	$all_group = get_db_sql ("SELECT COUNT(id_grupo) FROM tusuario_perfil WHERE id_usuario='$id_user' AND id_grupo = 1");
+	if ($all_group == 0)
+		$SQL .=" AND tagente.id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='$id_user') ";
 }
 
 // Module name selector
 // This code thanks for an idea from Nikum, nikun_h@hotmail.com
 if ($ag_modulename != "")
-    $SQL .= " AND tagente_modulo.nombre = '$ag_modulename'";
+	$SQL .= " AND tagente_modulo.nombre = '$ag_modulename'";
 
 // Freestring selector
 if ($ag_freestring != "")
-    $SQL .= " AND ( tagente.nombre LIKE '%".$ag_freestring."%' OR tagente_modulo.nombre LIKE '%".$ag_freestring."%' OR tagente_modulo.descripcion LIKE '%".$ag_freestring."%') ";
+	$SQL .= " AND ( tagente.nombre LIKE '%".$ag_freestring."%' OR tagente_modulo.nombre LIKE '%".$ag_freestring."%' OR tagente_modulo.descripcion LIKE '%".$ag_freestring."%') ";
 
 // Status selector
 if ($status == 1)
-    $SQL .= " AND tagente_estado.estado = 0 ";
+	$SQL .= " AND tagente_estado.estado = 0 ";
 elseif ($status == 0)
-    $SQL .= " AND tagente_estado.estado = 1 ";
+	$SQL .= " AND tagente_estado.estado = 1 ";
 elseif ($status == 2)
 	$SQL .= " AND (UNIX_TIMESTAMP()-tagente_estado.utimestamp ) > (tagente_estado.current_interval * 2)";
 
@@ -173,79 +173,77 @@ $SQL_FINAL = $SQL_pre . $SQL;
 $SQL_COUNT = $SQL_pre_count . $SQL;
 
 $counter = get_db_sql ($SQL_COUNT);
-    if ( $counter > $config["block_size"]) {
-        pagination ($counter, $URL, $offset);
-        $SQL_FINAL .= " LIMIT $offset , ".$config["block_size"];
-    }
+if ( $counter > $config["block_size"]) {
+	pagination ($counter, $URL, $offset);
+	$SQL_FINAL .= " LIMIT $offset , ".$config["block_size"];
+}
 
 
-if ($counter > 0){
-    echo "
-    <table cellpadding='4' cellspacing='4' width='750' class='databox'>
-    <tr>
-    <th>
-    <th>".$lang_label["agent"]."</th>
-    <th>".$lang_label["type"]."</th>
-    <th>".$lang_label["name"]."</th>
-    <th>".$lang_label["description"]."</th>
-    <th>".$lang_label["interval"]."</th>
-    <th>".$lang_label["status"]."</th>
-    <th>".$lang_label["timestamp"]."</th>";
-    $color =1;
-    $result=mysql_query($SQL_FINAL);
-   
-    
-    while ($data=mysql_fetch_array($result)){ //while there are agents
-	    if ($color == 1){
-		    $tdcolor="datos";
-		    $color =0;
-	    } else {
-		    $tdcolor="datos2";
-		    $color =1;
-	    }
-    	if ($data[7] == 0){
-		    $my_interval = give_agentinterval($data[5]);
-	    } else {
-		    $my_interval = $data[7];						
-	    }
+if ($counter > 0) {
+	echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>
+	<tr>
+	<th>
+	<th>".$lang_label["agent"]."</th>
+	<th>".$lang_label["type"]."</th>
+	<th>".$lang_label["name"]."</th>
+	<th>".$lang_label["description"]."</th>
+	<th>".$lang_label["interval"]."</th>
+	<th>".$lang_label["status"]."</th>
+	<th>".$lang_label["timestamp"]."</th>";
+	$color =1;
+	$result=mysql_query($SQL_FINAL);
 
-		if ($status == 2){
-			 $seconds = time() - $data[9];
-
-		    if ($seconds < ($my_interval*2))
-			    continue;
+	while ($data=mysql_fetch_array($result)){ //while there are agents
+		if ($color == 1){
+			$tdcolor="datos";
+			$color =0;
+		} else {
+			$tdcolor="datos2";
+			$color =1;
+		}
+		if ($data[7] == 0){
+			$my_interval = give_agentinterval($data[5]);
+		} else {
+			$my_interval = $data[7];
+		}
+		
+		if ($status == 2) {
+			$seconds = time() - $data[9];
+			
+			if ($seconds < ($my_interval*2))
+				continue;
 		}
 
-	    echo "<tr><td class='$tdcolor'>";
-	    echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$data["id_agente"]."&id_agente_modulo=".$data[0]."&flag=1&tab=data&refr=60'>";
-	    echo "<img src='images/target.png'></a>";
-	    echo  "</td><td class='$tdcolor'>";
-	    echo  "<b><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$data[5]."'>".strtoupper(substr($data[1],0,21))."</a></b>";
-	    echo "</td><td class='$tdcolor'>";
-	    echo "<img src='images/".show_icon_type($data[6])."' border=0></td>";
-	    echo "<td class='$tdcolor'>". substr($data[2],0,21). "</td>";
-	    echo "<td class='".$tdcolor."f9' title='".$data[3]."'>".substr($data[3],0,30)."</td>";
-	    echo "<td class='$tdcolor' align='center' width=25>";
-	    echo $my_interval;
-				    
-	    echo "<td class='$tdcolor' align='center' width=20>";
-	    if ($data[8] > 0){
-		    echo "<img src='images/pixel_green.png' width=40 height=18 title='".lang_string("Monitor up")."'>";
-	    } else {
-		    echo "<img src='images/pixel_red.png' width=40 height=18 title='".lang_string ("Monitor down")."'>";
-	    }
-	    
-	    echo  "<td class='".$tdcolor."f9'>";
-	    $seconds = time() - $data[9];
-	    if ($seconds >= ($my_interval*2))
-		    echo "<span class='redb'>";
-	    else
-		    echo "<span>";
-    
-	    echo  human_time_comparation($data[10]);
-        echo  "</span></td></tr>";
-    }
-    echo "</table>";
+		echo "<tr><td class='$tdcolor'>";
+		echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$data["id_agente"]."&id_agente_modulo=".$data[0]."&flag=1&tab=data&refr=60'>";
+		echo "<img src='images/target.png'></a>";
+		echo "</td><td class='$tdcolor'>";
+		echo "<strong><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$data[5]."'>".strtoupper(substr($data[1],0,21))."</a></strong>";
+		echo "</td><td class='$tdcolor'>";
+		echo "<img src='images/".show_icon_type($data[6])."' border=0></td>";
+		echo "<td class='$tdcolor'>". substr($data[2],0,21). "</td>";
+		echo "<td class='".$tdcolor."f9' title='".$data[3]."'>".substr($data[3],0,30)."</td>";
+		echo "<td class='$tdcolor' align='center' width=25>";
+		echo $my_interval;
+
+		echo "<td class='$tdcolor' align='center' width=20>";
+		if ($data[8] > 0){
+			echo "<img src='images/pixel_green.png' width=40 height=18 title='".lang_string("Monitor up")."'>";
+		} else {
+			echo "<img src='images/pixel_red.png' width=40 height=18 title='".lang_string ("Monitor down")."'>";
+		}
+
+		echo  "<td class='".$tdcolor."f9'>";
+		$seconds = time() - $data[9];
+		if ($seconds >= ($my_interval*2))
+			echo "<span class='redb'>";
+		else
+		echo "<span>";
+
+		echo  human_time_comparation ($data[10]);
+		echo  "</span></td></tr>";
+	}
+	echo "</table>";
 } else {
 	echo "<div class='nf'>".$lang_label["no_monitors_g"]."</div>";
 }

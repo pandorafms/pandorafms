@@ -1321,9 +1321,9 @@ function get_db_all_rows_sql ($sql) {
 	global $sql_cache;
 	$retval = array();
 	
-	if($sql_cache[$sql]) {
-		$retval = $sql_cache[$sql];    
-		$sql_cache[saved]++;
+	if (! empty ($sql_cache[$sql])) {
+		$retval = $sql_cache[$sql];
+		$sql_cache['saved']++;
 	} else {
 		$result = mysql_query ($sql);
 		if (!$result) {
@@ -1336,7 +1336,7 @@ function get_db_all_rows_sql ($sql) {
 		$sql_cache[$sql] = $retval;
 		mysql_free_result ($result);
 	}
-	if(!empty ($retval))	
+	if (! empty ($retval))
 		return $retval;
 	return ""; //Return empty because NULL is a possible database value
 }

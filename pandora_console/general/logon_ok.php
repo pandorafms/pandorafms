@@ -44,7 +44,7 @@ echo "<tr><td valign='top'>";
 // Site news !
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 echo '<h2>' . $lang_label["site_news"] . '</h2>';
-$sql_news = "SELECT subject,timestamp,text FROM tnews ORDER by timestamp DESC LIMIT 3";
+$sql_news = "SELECT subject,timestamp,text,author FROM tnews ORDER by timestamp DESC LIMIT 3";
 if ($result_news = mysql_query ($sql_news)){
 	echo '<table cellpadding="4" cellspacing="4" width="270" class="databox">';
 	while ($row = mysql_fetch_array ($result_news)) {

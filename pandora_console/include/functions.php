@@ -434,7 +434,7 @@ function format_for_graph ($number , $decimals = 1, $dec_point = ".", $thousands
 		return number_format ($number / 1000, 0, $dec_point, $thousands_sep )." K";
 	}
 	/* If it has decimals */
-	if (fmod ($number , 1))
+	if (fmod ($number, 1))
 		return number_format ($number, $decimals, $dec_point, $thousands_sep);
 	return number_format ($number, 0, $dec_point, $thousands_sep);
 }

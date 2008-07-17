@@ -1,3 +1,20 @@
+2008-07-17  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/reporting/map_builder.php: Check background existance to
+	avoid warnings.
+
+	* include/functions.php: Added Giga magnitude in format_for_graph(),
+	thansk to tono user in openideas.
+
+	* include/functions_db.php: Check database result on
+	return_status_layout(). Deleted "LIMIT 1" on get_previous_data() which
+	was causing SQL failures. Style correction.
+
+	* include/functions_reporting.php: Check database result on
+	get_agent_module_sla().
+
+	* operation/agentes/datos_agente.php: Removed useless code.
+
 2008-07-17  Raul Mateos  <raulofpandora@gmail.com>
 
 	* operation/agentes/status_monitor.php: Closed html tags.

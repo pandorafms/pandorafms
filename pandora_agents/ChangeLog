@@ -1,17 +1,24 @@
+2008-07-17  Manuel Arostegui <marostegui@artica.es>
+
+	* linux/pandora_agent.conf: Removed enabled debug by
+	default. Debug set to 0.
+
+	* ChangeLog: Minor style correction.
+
 2008-07-09  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* pandora_agents/mac_osx: Updated pieces here and there including the installer and startup scripts to make them more compatible and reliable
 
 2008-07-08  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
-        * pandora_agents/tools
-          pandora_agents/linux/plugins
-          pandora_agents/mac_osx/plugins: Moved tools into the plugin sections of compatible agents. The plugins in subdirectories have dependencies that can be found in the README file while plugins directly in the directory can be used directly when Pandora agent prerequisites are met (Perl & Bash)
+	* pandora_agents/tools
+	  pandora_agents/linux/plugins
+	  pandora_agents/mac_osx/plugins: Moved tools into the plugin sections of compatible agents. The plugins in subdirectories have dependencies that can be found in the README file while plugins directly in the directory can be used directly when Pandora agent prerequisites are met (Perl & Bash)
 
-        * pandora_agents/mac_osx/pandora_user.conf
-          pandora_agents/mac_osx/plugins/ppc_sensors: Moved pandora_user.conf into the new plugins section
+	* pandora_agents/mac_osx/pandora_user.conf
+	pandora_agents/mac_osx/plugins/ppc_sensors: Moved pandora_user.conf into the new plugins section
 
-        * pandora_server/pandora_server_installer: Refined the installer so that it doesn't try installing certain parts on systems (usually non-Linux) that don't support cronjobs or /etc/init.d startup. It will just fail with a message for now. Also updated the error messages that appear so that they are more clear (eg. what Perl modules and how to use cpan).
+	* pandora_server/pandora_server_installer: Refined the installer so that it doesn't try installing certain parts on systems (usually non-Linux) that don't support cronjobs or /etc/init.d startup. It will just fail with a message for now. Also updated the error messages that appear so that they are more clear (eg. what Perl modules and how to use cpan).
 
 
 2008-07-08  Sancho Lerena <slerena@gmail.com>
@@ -27,8 +34,8 @@
 	can be found in the README file while plugins directly in the directory
 	can be used directly when Pandora agent prerequisites are met (Perl & Bash)
 
-        * pandora_agents/mac_osx/pandora_user.conf
-        pandora_agents/mac_osx/plugins/ppc_sensors: Moved pandora_user.conf 
+	* pandora_agents/mac_osx/pandora_user.conf
+	  pandora_agents/mac_osx/plugins/ppc_sensors: Moved pandora_user.conf 
 	into the new plugins section
 
 2008-06-30  Sancho Lerena <slerena@artica.es>

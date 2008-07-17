@@ -198,7 +198,7 @@ function get_agents_in_group ($id_group, $disabled = false) {
 	} elseif ($disabled && $id_group != 1) {
 		return get_db_all_rows_field_filter ('tagente', 'id_grupo', (int) $id_group, 'nombre');
 	} else {
-		$sql = sprintf ("SELECT * FROM `tagente` WHERE `id_grupo` = '%d' AND `disabled` = '0' ORDER BY `nombre`",$id_group);
+		$sql = sprintf ("SELECT * FROM `tagente` WHERE `id_grupo` = '%d' AND `disabled` = 0 ORDER BY `nombre`",$id_group);
 		return get_db_all_rows_sql ($sql);
 	}
 }
@@ -1337,7 +1337,8 @@ function get_db_all_rows_sql ($sql) {
 	}
 	if (! empty ($retval))
 		return $retval;
-	return ""; //Return empty because NULL is a possible database value
+	 //Return false, check with === or !==
+	return false;
 }
 
 /**
@@ -1435,7 +1436,7 @@ function return_status_agent_module ($id_agentmodule = 0){
 function return_status_layout ($id_layout = 0) {
 	$temp_status = 0;
 	$temp_total = 0;
-	$sql = sprintf ("SELECT id_agente_modulo, parent_item, id_layout_linked FROM `tlayout_date` WHERE `id_layout` = '%d'",$id_layout);
+	$sql = sprintf ("SELECT id_agente_modulo, parent_item, id_layout_linked FROM `tlayout_data` WHERE `id_layout` = '%d'",$id_layout);
 	$result = get_db_all_rows_sql ($sql);
 	foreach ($result as $rownum => $data) {
 		if (($data["id_layout_linked"] != 0) && ($data["id_agente_modulo"] == 0)) {

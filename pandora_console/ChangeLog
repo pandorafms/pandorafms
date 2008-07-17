@@ -1,5 +1,17 @@
 2008-07-17  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/reporting/reporting_builder.php,
+	godmode/reporting/map_builder.php: Check if all_agents were set to
+	avoid warning on foreach.
+
+	* include/functions_db.php: Fixed typo in return_status_layout().
+	Return false on get_db_all_rows_sql().
+
+	* include/functions_visual_map.php: Check layouts_data to avoid
+	warning on foreach. Removed ugly comments.
+
+2008-07-17  Esteban Sanchez  <estebans@artica.es>
+
 	* include/functions_db.php: Removed debug output to check use of
 	deprecated function. Please don't add message like this since there
 	are many people who use Pandora trunk and may find strange messages

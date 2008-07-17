@@ -21,7 +21,7 @@
  */
 function check_login () {
 	global $config;
-	if (!isset($config["homedir"])){
+	if (! isset ($config["homedir"])) {
 		// No exists $config. Exit inmediatly
 		include("general/noaccess.php");
 		exit;
@@ -32,7 +32,7 @@ function check_login () {
 			return 0;
 		}
 	}
-	audit_db("N/A", getenv("REMOTE_ADDR"), "No session", "Trying to access without a valid session");
+	audit_db ("N/A", getenv ("REMOTE_ADDR"), "No session", "Trying to access without a valid session");
 	include ($config["homedir"]."/general/noaccess.php");
 	exit;
 }
@@ -1438,6 +1438,9 @@ function return_status_layout ($id_layout = 0) {
 	$temp_total = 0;
 	$sql = sprintf ("SELECT id_agente_modulo, parent_item, id_layout_linked FROM `tlayout_data` WHERE `id_layout` = '%d'",$id_layout);
 	$result = get_db_all_rows_sql ($sql);
+	if ($result === false)
+		return 0;
+	
 	foreach ($result as $rownum => $data) {
 		if (($data["id_layout_linked"] != 0) && ($data["id_agente_modulo"] == 0)) {
 			$temp_status += return_status_layout ($data["id_layout_linked"]);
@@ -1449,9 +1452,9 @@ function return_status_layout ($id_layout = 0) {
 	}
 	if ($temp_status == $temp_total) {
 		return 1;
-	} else {
-		return 0;
 	}
+	
+	return 0;
 }
 
 /** 
@@ -1506,7 +1509,7 @@ function get_previous_data ($id_agent_module, $utimestamp) {
 			WHERE id_agente_modulo = %d 
 			AND utimestamp <= %d 
 			AND utimestamp > %d
-			ORDER BY utimestamp DESC LIMIT 1',
+			ORDER BY utimestamp DESC',
 			$id_agent_module, $utimestamp, $utimestamp - $interval);
 	
 	return get_db_row_sql ($sql);

@@ -53,7 +53,7 @@ function get_agent_module_sla ($id_agent_module, $period, $min_value, $max_value
 		array_unshift ($datas, $previous_data);
 		$previous_data_timestamp = $previous_data['utimestamp'];
 	}
-	if (sizeof ($datas) == 0) {
+	if ($datas === false) {
 		return false;
 	}
 	

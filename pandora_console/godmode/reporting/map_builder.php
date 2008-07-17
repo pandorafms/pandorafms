@@ -94,7 +94,10 @@ if ($update_layout) {
 	$width = (int) get_parameter ('width');
 	$height = (int) get_parameter ('height');
 	$background = (string) get_parameter ('background');
-	$bg_info = getimagesize ('images/console/background/'.$background);
+	$bg_info = array (0, 0);
+	if (file_exists ('images/console/background/'.$background))
+		$bg_info = getimagesize ('images/console/background/'.$background);
+	
 	if (! $width)
 		$width = $bg_info[0];
 	if (! $height)

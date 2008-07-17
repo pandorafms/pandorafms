@@ -91,12 +91,7 @@ function datos_raw($id_agente_modulo, $periodo){
 			echo "<td class='".$tdcolor."' style='width:150px'>".$row["timestamp"]."</td>";
 			echo "<td class='".$tdcolor."'>";
 			if (is_numeric($row["datos"])) {
-				$mytempdata = fmod($row["datos"], 1);
-				if ($mytempdata == 0)
-					$myvalue = intval($row["datos"]);
-				else
-					$myvalue = $row["datos"];
-				echo format_for_graph($myvalue );
+				echo format_for_graph ($row["datos"]);
 			} else {
 				echo salida_limpia($row["datos"]);
 			}

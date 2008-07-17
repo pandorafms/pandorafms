@@ -422,6 +422,11 @@ function format_numeric ($number, $decimals = 1, $dec_point = ".", $thousands_se
  * @return A number rendered to be displayed gently on a graph.
  */
 function format_for_graph ($number , $decimals = 1, $dec_point = ".", $thousands_sep = ",") {
+	if ($number > 1000000000) {
+		if (fmod ($number, 1000000000) > 0){
+			return number_format ($number / 1000000000, $decimals, $dec_point, $thousands_sep)." G";
+		}
+	}
 	if ($number > 1000000) {
 		if (fmod ($number, 1000000) > 0)
 			return number_format ($number / 1000000, $decimals, $dec_point, $thousands_sep)." M";

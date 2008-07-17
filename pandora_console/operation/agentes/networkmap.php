@@ -340,7 +340,7 @@ if($nooverlap) {
 $filename_map .= ".map";
 $filename_img .= ".png";
 
-if($regen != 1 && filemtime($filename_img) > time() - 300) {
+if ($regen != 1 && file_exists ($filename_img) && filemtime ($filename_img) > time () - 300) {
 	$result = true;
 } else {
 	$cmd = "echo " . escapeshellarg($graph) . " | $filter -Tcmapx -o".$filename_map." -Tpng -o".$filename_img;
@@ -353,7 +353,7 @@ if ($result !== false) {
 		echo $result;
 		echo "<br /> Apparently something went wrong reading the output.<br /> Is ".$filter." (usually part of GraphViz) installed and able to be executed by the webserver?";
 		echo "<br /> Is ".$config["attachment_store"]." writeable by the webserver?";
-        	return;
+		return;
 	}
 	echo '<img src="'.$filename_img.'" usemap="#networkmap" />';
 	include $filename_map;

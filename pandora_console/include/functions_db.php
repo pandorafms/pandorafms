@@ -844,8 +844,7 @@ function dame_admin ($id_user) {
 /** 
  * WARNING: This is a deprectad function and must not be used
  */
-function comprueba_login() { 
-	echo "DEBUG:: Still using comprueba_login eh...";
+function comprueba_login() {
 	return check_login ();
 }
 

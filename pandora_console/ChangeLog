@@ -1,5 +1,15 @@
 2008-07-17  Esteban Sanchez  <estebans@artica.es>
 
+	* include/functions_db.php: Removed debug output to check use of
+	deprecated function. Please don't add message like this since there
+	are many people who use Pandora trunk and may find strange messages
+	like that.
+
+	* operation/agentes/networkmap.php: Removed warning message if file
+	doesn't exists on checking cache system.
+
+2008-07-17  Esteban Sanchez  <estebans@artica.es>
+
 	* include/functions.php: Minimal style correction.
 
 	* include/functions_db.php: Check sql_cache with empty() to avoid

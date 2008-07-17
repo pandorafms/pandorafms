@@ -371,10 +371,12 @@ if (! $edit_layout && ! $id_layout) {
 		
 		$all_agents = get_agents_in_group ($id_group);
 		$agents = array ();
-		foreach ($all_agents as $agent) {
-			$agents[$agent['id_agente']] = strtolower($agent['nombre']);
+		if ($all_agents !== false) {
+			foreach ($all_agents as $agent) {
+				$agents[$agent['id_agente']] = strtolower($agent['nombre']);
+			}
+			asort($agents);
 		}
-		asort($agents);
 
 		echo '<div id="layout_editor_drop">';
 		echo '<h1>'.lang_string ('Map element editor').'</h1>';

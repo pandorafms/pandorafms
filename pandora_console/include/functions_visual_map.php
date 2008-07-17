@@ -24,6 +24,11 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 	$layout_datas = get_db_all_rows_field_filter ('tlayout_data', 'id_layout', $id_layout);
 	$lines = array ();
 	
+	if ($layout_datas === false) {
+		echo '</div>';
+		return;
+	}
+	
 	foreach ($layout_datas as $layout_data) {
 		// Linked to other layout ?? - Only if not module defined
 		if (($layout_data['id_layout_linked'] != 0) && ($layout_data['id_agente_modulo'] == 0)) { 
@@ -40,7 +45,6 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 		}
 
 		// STATIC IMAGE (type = 0)
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		if ($layout_data['type'] == 0) {
 
 			// Link image
@@ -108,7 +112,6 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 		}
 	
 		// Get parent relationship - Create line data
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		if ($layout_data["parent_item"] != "" && $layout_data["parent_item"] != 0) {
 			$line['id'] = $layout_data['id'];
 			$line['node_begin'] = 'layout-data-'.$layout_data["parent_item"];

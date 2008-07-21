@@ -7,12 +7,12 @@
 // Raul Mateos <raulofpandora@gmail.com>, 2005-2006
 
 // Load global vars
-require ("include/config.php");
+require_once ("include/config.php");
 check_login (); 
 	
-if ((give_acl($id_user, 0, "DM")==1) or (dame_admin($id_user)==1)) {	
+if ((give_acl ($id_user, 0, "DM")==1) or (dame_admin ($id_user)==1)) {	
 	
-	require("godmode/db/times_incl.php");
+	require ("godmode/db/times_incl.php");
 	
 	$datos_rango3=0;
 	$datos_rango2=0;
@@ -24,9 +24,9 @@ if ((give_acl($id_user, 0, "DM")==1) or (dame_admin($id_user)==1)) {
 	# Purge data using dates
 	# Purge data using dates
 	if (isset ($_POST["date_purge"])){
-		$from_date = mysql_real_esape_string ($_POST["date_purge"]);
+		$from_date = get_parameter_post ("date_purge");
 		$query = sprintf ("DELETE FROM `tevento` WHERE `timestamp` < '%s'",$from_date);
-		mysql_query ($query);			
+		(int) $deleted = process_sql ($query);			
 	}
 	# End of get parameters block
 	

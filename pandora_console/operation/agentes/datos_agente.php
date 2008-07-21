@@ -18,28 +18,28 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
-require("include/config.php");
+require ("include/config.php");
 
-function datos_raw($id_agente_modulo, $periodo){
+function datos_raw ($id_agente_modulo, $periodo){
     global $config;
 	require("include/languages/language_".$config["language"].".php");
 	$id_user = $config["id_user"];
 	$periodo_label = $periodo;
 	switch ($periodo) {
 		case "mes":
-				$periodo = 86400*30;
-				$et=$lang_label["last_month"];
-				break;
+			$periodo = 2592000;
+			$et=$lang_label["last_month"];
+			break;
 		case "semana":
-				$periodo = 86400*7;
-				$et=$lang_label["last_week"];
-				break;
+			$periodo = 604800;
+			$et=$lang_label["last_week"];
+			break;
 		case "dia":
-				$periodo = 86400;
-				$et=$lang_label["last_24"];
-				break;
+			$periodo = 86400;
+			$et=$lang_label["last_24"];
+			break;
 	}
-	$periodo = time() - $periodo;
+	$periodo = time () - $periodo;
 	$id_agent = give_agent_id_from_module_id ($id_agente_modulo);
 	$id_group = get_db_value ("id_grupo", "tagente", "id_agente", $id_agent);
 	// Different query for string data type
@@ -108,9 +108,9 @@ function datos_raw($id_agente_modulo, $periodo){
 // Page begin
 // ---------------
 
-$id_user = "";
-if (comprueba_login() == 0)
-	$id_user = $_SESSION["id_usuario"];
+check_login();
+
+$id_user = $_SESSION["id_usuario"];
 	
 if (give_acl($id_user, 0, "AR")!=1) {
 	audit_db ($id_user, $REMOTE_ADDR, "ACL Violation",
@@ -133,6 +133,6 @@ if (isset($_GET["delete"])) {
 	$result=mysql_query($sql);
 }
 
-datos_raw($id,$tipo);
+datos_raw ($id,$tipo);
 
 ?>

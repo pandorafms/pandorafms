@@ -21,10 +21,10 @@ check_login ();
 
 $id_usuario= $_SESSION["id_usuario"];
 
-if (give_acl($id_usuario, 0, "DM")==1){
+if (give_acl ($id_usuario, 0, "DM")==1){
 
-	if (isset($_POST["agent"])){
-		$id_agent =$_POST["agent"];
+	if (isset ($_POST["agent"])){
+		$id_agent = get_parameter_post ("agent");
 	} else
 		$id_agent = -1;
 	
@@ -38,7 +38,13 @@ if (give_acl($id_usuario, 0, "DM")==1){
 		
 	require("godmode/db/times_incl.php");
 	
-	$datos_rango3=0;$datos_rango2=0;$datos_rango1=0;$datos_rango0=0; $datos_rango00=0; $datos_rango11=0; $datos_total=0;
+	$datos_rango3=0;
+	$datos_rango2=0;
+	$datos_rango1=0;
+	$datos_rango0=0; 
+	$datos_rango00=0; 
+	$datos_rango11=0; 
+	$datos_total=0;
 
 	# ADQUIRE DATA PASSED AS FORM PARAMETERS
 	# ======================================
@@ -47,43 +53,38 @@ if (give_acl($id_usuario, 0, "DM")==1){
 
 	# Purge data using dates
 	if (isset($_POST["purgedb"])){
-		$from_date =$_POST["date_purge"];
+		$from_date = get_parameter_post ("date_purge");
 		if (isset($id_agent)){
 			if ($id_agent != -1) {
-			echo $lang_label["purge_task"].$id_agent." / ".$from_date;
+				echo $lang_label["purge_task"].$id_agent." / ".$from_date;
 				echo "<h3>".$lang_label["please_wait"]."<br>",$lang_label["while_delete_data"].$lang_label["agent"]."</h3>";
-                if ($id_agent == 0)
-                    $sql_2='SELECT * FROM tagente_modulo';
-                else
-                    $sql_2='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_agent;
+		                if ($id_agent == 0) {
+                			$sql_2='SELECT * FROM tagente_modulo';
+                		} else {
+                    			$sql_2='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_agent;
+				}
 				$result_t=mysql_query($sql_2);
-				while ($row=mysql_fetch_array($result_t)){
+				while ($row=mysql_fetch_array($result_t)) {
 					echo $lang_label["deleting_records"].dame_nombre_modulo_agentemodulo($row["id_agente_modulo"]);
 					flush();
 					//ob_flush();
 					echo "<br>";
-					$query = "DELETE FROM tagente_datos WHERE id_agente_modulo = ".$row["id_agente_modulo"]." and timestamp < '".$from_date."'";
-					mysql_query($query);
-					$query = "DELETE FROM tagente_datos_inc WHERE id_agente_modulo = ".$row["id_agente_modulo"]." and timestamp < '".$from_date."'";
-					mysql_query($query);
-					$query = "DELETE FROM tagente_datos_string WHERE id_agente_modulo = ".$row["id_agente_modulo"]." and timestamp < '".$from_date."'";
-					mysql_query($query);		
+					$query = sprintf("DELETE FROM `tagente_datos` WHERE `id_agente_modulo` = '%d' AND `timestamp` < '%s'",$row["id_agente_modulo"],$from_date);
+					process_sql ($query);
+					$query = sprintf("DELETE FROM `tagente_datos_inc` WHERE `id_agente_modulo` = '%d' AND `timestamp` < '%s'",$row["id_agente_modulo"],$from_date);
+					process_sql ($query);
+					$query = sprintf("DELETE FROM `tagente_datos_string` WHERE `id_agente_modulo` = '%d' AND `timestamp` < '%s'",$row["id_agente_modulo"],$from_date);
+					process_sql ($query);
 				}
-			}
-			else {
+			} else {
 				echo $lang_label["deleting_records"].$lang_label["all_agents"];
 				flush();
 				ob_flush();
-				$query = "DELETE FROM tagente_datos WHERE timestamp < '".$from_date."'";
-				mysql_query($query);
-				$query = "DELETE FROM tagente_datos_inc WHERE timestamp < '".$from_date."'";
-				mysql_query($query);
-				$query = "DELETE FROM tagente_datos_string WHERE timestamp < '".$from_date."'";
-				mysql_query($query);
+				$query = "DELETE FROM tagente_datos,tagente_datos_inc,tagente_datos_string WHERE timestamp < '".$from_date."'";
+				process_sql ($query);
 			}
-		echo "<br><br>";
+			echo "<br><br>";
 		}
-	mysql_close();
 	}
 	
 	# Select Agent for further operations.
@@ -119,34 +120,23 @@ if (give_acl($id_usuario, 0, "DM")==1){
 	
 	if (isset($_POST["agent"]) and ($id_agent !=-1)){
 		echo "<h3>".$lang_label["db_agent_bra"].dame_nombre_agente($id_agent).$lang_label["db_agent_ket"]."</h3>";
-        if ($id_agent == 0)
-    		$sql_2='SELECT * FROM tagente_modulo';
-        else
-    		$sql_2='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_agent;		
-		$result_t=mysql_query($sql_2);
-		while ($row=mysql_fetch_array($result_t)){	
-/*			flush();
-   			ob_flush(); */
-			$rango00=mysql_query('SELECT COUNT(*) FROM tagente_datos WHERE id_agente_modulo = '.$row["id_agente_modulo"].' and  timestamp > "'.$d1.'"');
-			$rango0=mysql_query('SELECT COUNT(*) FROM tagente_datos WHERE id_agente_modulo = '.$row["id_agente_modulo"].' and  timestamp > "'.$d3.'"');
-			$rango1=mysql_query('SELECT COUNT(*) FROM tagente_datos WHERE id_agente_modulo = '.$row["id_agente_modulo"].' and  timestamp > "'.$week.'"');
-			$rango11=mysql_query('SELECT COUNT(*) FROM tagente_datos WHERE id_agente_modulo = '.$row["id_agente_modulo"].' and  timestamp > "'.$week2.'"');
-			$rango2=mysql_query('SELECT COUNT(*) FROM tagente_datos WHERE id_agente_modulo = '.$row["id_agente_modulo"].' and  timestamp > "'.$month.'"');		
-			$rango3=mysql_query('SELECT COUNT(*) FROM tagente_datos WHERE id_agente_modulo = '.$row["id_agente_modulo"].' and timestamp > "'.$month3.'"');
-			$rango4=mysql_query('SELECT COUNT(*) FROM tagente_datos WHERE id_agente_modulo = '.$row["id_agente_modulo"]);
-			$row00=mysql_fetch_array($rango00);
-			$row3=mysql_fetch_array($rango3);		$row1=mysql_fetch_array($rango1);
-			$row2=mysql_fetch_array($rango2); 		$row11=mysql_fetch_array($rango11);
-			$row0=mysql_fetch_array($rango0);
-			$row4=mysql_fetch_array($rango4);
-			$datos_rango00=$datos_rango00+$row00[0];
-			$datos_rango0=$datos_rango0+$row0[0];
-			$datos_rango3=$datos_rango3+$row3[0];
-			$datos_rango2=$datos_rango2+$row2[0];
-			$datos_rango1=$datos_rango1+$row1[0];
-			$datos_rango11=$datos_rango11+$row11[0];
-			$datos_total=$datos_total+$row4[0];
-		}	
+        	
+		$sql = "SELECT id_agente_modulo FROM tagente_modulo";
+		if ($id_agent != 0) {
+    			$sql .= sprintf(" WHERE id_agente = '%d'",$id_agent);		
+		}
+		/*
+		flush();
+   		ob_flush(); 
+		*/
+		$datos_rango00 += get_db_sql (sprintf("SELECT COUNT(*) FROM `tagente_datos` WHERE `id_agente_modulo` = ANY(%s) AND `timestamp` > '%s'",$sql,$d1));
+		$datos_rango0 += get_db_sql (sprintf("SELECT COUNT(*) FROM `tagente_datos` WHERE `id_agente_modulo` = ANY(%s) AND `timestamp` > '%s'",$sql,$d3));
+		$datos_rango1 += get_db_sql (sprintf("SELECT COUNT(*) FROM `tagente_datos` WHERE `id_agente_modulo` = ANY(%s) AND `timestamp` > '%s'",$sql,$week));
+		$datos_rango11 += get_db_sql (sprintf("SELECT COUNT(*) FROM `tagente_datos` WHERE `id_agente_modulo` = ANY(%s) AND `timestamp` > '%s'",$sql,$week2));
+		$datos_rango2 += get_db_sql (sprintf("SELECT COUNT(*) FROM `tagente_datos` WHERE `id_agente_modulo` = ANY(%s) AND `timestamp` > '%s'",$sql,$month));		
+		$datos_rango3 += get_db_sql (sprintf("SELECT COUNT(*) FROM `tagente_datos` WHERE `id_agente_modulo` = ANY(%s) AND `timestamp` > '%s'",$sql,$month3));
+		$datos_total += get_db_sql (sprintf("SELECT COUNT(*) FROM `tagente_datos` WHERE `id_agente_modulo` = ANY(%s)",$sql));
+			
 	}
 	
 ?>
@@ -156,48 +146,48 @@ if (give_acl($id_usuario, 0, "DM")==1){
 	<?php echo $lang_label["rango3"]?>
 	</td>
 	<td class=datos>
-	<?php echo $datos_rango3 ?>
+	<?php echo $datos_rango3; ?>
 	</td>
 	
 	<tr><td class=datos2>
 	<?php echo $lang_label["rango2"]?>
 	</td>
 	<td class=datos2>
-	<?php echo $datos_rango2 ?>
+	<?php echo $datos_rango2; ?>
 	</td>
 	
 	<tr><td class=datos>
 	<?php echo $lang_label["rango11"]?>
 	</td>
 	<td class=datos>
-	<?php echo $datos_rango11 ?>
+	<?php echo $datos_rango11; ?>
 	</td>
 	
 	<tr><td class=datos2>
 	<?php echo $lang_label["rango1"]?>
 	</td>
 	<td class=datos2>
-	<?php echo $datos_rango1 ?>
+	<?php echo $datos_rango1; ?>
 	</td>
 	
 	<tr><td class=datos>
 	<?php echo $lang_label["rango0"]?>
 	</td>
 	<td class=datos>
-	<?php echo $datos_rango0 ?>
+	<?php echo $datos_rango0; ?>
 	</td>
 	
 	<tr><td class=datos2>
 	<?php echo $lang_label["rango00"]?>
 	</td>
 	<td class=datos2>
-	<?php echo $datos_rango00 ?>
+	<?php echo $datos_rango00; ?>
 	</td>	
 	<tr><td class=datos>
 	<b><?php echo $lang_label["total_packets"]?></b>
 	</td>
 	<td class=datos>
-	<b><?php echo $datos_total ?></b>
+	<b><?php echo $datos_total; ?></b>
 	</td>
 	</tr>
 	</table>

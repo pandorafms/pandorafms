@@ -1,3 +1,35 @@
+2008-07-17  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+	
+	* godmode/db/*.php
+	-require_once for config might already have loaded
+	-Changed mysql_real_escape_string in favor of get_parameter_post
+	-Process the DELETE SQL queries through process_sql()
+	-Changed comprueba_login() for check_login()
+	-Adhered some things to preferred style
+	-Compounded SQL queries into joins, subqueries or functions
+	-Removed mysql_close() from db_purge.php since the select
+	after the delete wouldn't work anymore (database closed)
+	
+	* godmode/reporting/reporting_builder.php
+	-Fixed a bug that was introduced when the SQL functions returned false
+
+	* include/functions_db.php
+	-Made foreach instead of while loops for simpler functions
+	-Fixed get_reports that failed since SQL function return false
+	-All SQL functions now return false in case of empty
+	-New SQL function process_sql that can handle DELETE. Returns
+	affected rows in case of a changing query or an array in case 
+	it was a selecting query or false in case of error
+
+	* include/functions.php
+	-Simplified safe_input function
+
+	* index.php
+	-Updated SQL queries, style changes
+
+	* operation/agentes/*.php
+	-Style changes and updates to use check_login	
+
 2008-07-17  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/reporting/map_builder.php: Check background existance to

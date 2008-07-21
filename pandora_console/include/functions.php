@@ -46,11 +46,8 @@ function safe_input ($value) {
 	if (is_numeric ($value))
 		return $value;
 	if (is_array ($value)) {
-		$retval = array ();
-		foreach ($value as $id => $val) {
-			$retval[$id] = htmlentities (utf8_decode ($val), ENT_QUOTES);
-		}
-		return $retval;
+		$value = array_walk($value,'safe_input');
+		return $value;
 	}
 	return htmlentities (utf8_decode ($value), ENT_QUOTES); 
 }

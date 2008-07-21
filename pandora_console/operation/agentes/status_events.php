@@ -18,11 +18,7 @@
 
 // Load global vars
 global $config;
-
-if (comprueba_login() != 0) {
-        require ("general/noaccess.php");
-        exit;
-}
+check_login();
 
 if (!isset($id_agente)){
     require ("general/noaccess.php");

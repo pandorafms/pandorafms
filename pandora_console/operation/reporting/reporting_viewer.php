@@ -130,6 +130,9 @@ $table->rowclass[0] = 'datos3';
 $group_name = dame_grupo ($report['id_group']);
 $sql = sprintf ('SELECT * FROM treport_content WHERE id_report = %d ORDER BY `order`', $id_report);
 $contents = get_db_all_rows_sql ($sql);
+if ($contents === false) {
+	return;
+};
 foreach ($contents as $content) {
 	$table->data = array ();
 	$table->head = array ();

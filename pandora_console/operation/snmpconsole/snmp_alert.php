@@ -227,8 +227,8 @@ if (($alert_update != 0) || ($alert_add == 1)) {
 	// Priority
 	echo '<tr><td class="datos">'.lang_string("Priority");
 	echo '<td class="datos">';
-	echo form_priority ($priority);
-
+	echo print_select (get_priorities (), "alert_priority", $priority, '', '', '');
+	
 	echo '</tr></table>';
 	echo '<table cellpadding="4" cellspacing="4" width="650">
 	<tr><td align="right">';

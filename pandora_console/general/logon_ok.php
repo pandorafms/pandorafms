@@ -172,9 +172,12 @@ $table->head[2] = lang_string ('date');
 $table->head[3] = lang_string ('src_address');
 $table->head[4] = lang_string ('comments');
 
-$sql = sprintf ('SELECT ID_usuario,accion,fecha,IP_origen,descripcion FROM tsesion WHERE (utimestamp > UNIX_TIMESTAMP(NOW()) - 604800) 
-	AND ID_usuario = "%s" ORDER BY fecha DESC LIMIT 5', $nick);
+$sql = sprintf ("SELECT ID_usuario,accion,fecha,IP_origen,descripcion FROM `tsesion` WHERE (`utimestamp` > UNIX_TIMESTAMP(NOW()) - 604800) 
+	AND `ID_usuario` = '%s' ORDER BY `fecha` DESC LIMIT 5", $nick);
 $sessions = get_db_all_rows_sql ($sql);
+if($sessions === false)
+	$sessions = array(); 
+
 foreach ($sessions as $session) {
 	$data = array ();
 	

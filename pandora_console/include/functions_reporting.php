@@ -529,7 +529,7 @@ function get_agent_monitors_reporting_table ($id_agent, $period = 0, $date = 0) 
 	$monitors = get_monitors_in_agent ($id_agent);
 	
 	if ($monitors === false) {
-		return $table
+		return $table;
 	}
 	foreach ($monitors as $monitor) {
 		$downs = get_monitor_downs_in_period ($monitor['id_agente_modulo'], $period, $date);

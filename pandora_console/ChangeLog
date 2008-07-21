@@ -1,3 +1,7 @@
+2008-07-21  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* include/functions_reporting.php: Last commit forgot a semicolon. Fixed.
+
 2008-07-21  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/reporting/graph_builder.php,

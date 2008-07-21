@@ -208,9 +208,9 @@ if (isset($chunk1)) {
 	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&delete_module=1'>";
 	if (isset($chunkdata))
 		echo "<input type='hidden' name='chunk' value='$chunkdata'>";
-	if (isset($id_agent))
+	if ($id_agent)
 		echo "<input type='hidden' name='id_agent' value='$id_agent'>";
-	if (isset($period))
+	if ($period)
 		echo "<input type='hidden' name='period' value='$period'>";
 
 	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox'>";
@@ -283,17 +283,10 @@ echo "</b>";
 echo "<td class='datos' colspan=2>";
 
 print_select_from_sql ('SELECT id_agente, nombre FROM tagente WHERE disabled = 0 ORDER BY nombre', 'id_agent', $id_agent, '', '--', 0);
-if (isset($chunkdata))
-	echo "<input type='hidden' name='chunk' value='$chunkdata'>";
 
-// -----------------------
 // SOURCE MODULE FORM
-// -----------------------
-if (isset($chunkdata))
+if (isset ($chunkdata))
 	echo "<input type='hidden' name='chunk' value='$chunkdata'>";
-
-if (isset($id_agent))
-	echo "<input type='hidden' name='id_agent' value='$id_agent'>";
 
 echo "<tr><td class='datos2'>";
 echo "<b>".$lang_label["modules"]."</b>";

@@ -1,34 +1,47 @@
-2008-07-17  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+2008-07-21  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/reporting/graph_builder.php,
+	operation/snmpconsole/snmp_alert.php: Applied patch from Kato
+	Atsushi.
+
+	* include/functions_reporting.php,
+	operation/reporting/reporting_viewer.php,
+	godmode/reporting/reporting_builder.php: Adopted to changes in
+	get_db_* functions.
+
+	* include/functions_db.php: Removed quotes sorrounding %d characters
+	in sprintf. Returned empty array on get_simple_alerts_in_agent() and
+	get_combined_alerts_in_agent(). Style correction. Return all fields on
+	get_db_all_fields_in_table().
+
+	* ChangeLog: Updated previous commit message format and date.
+
+2008-07-21  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 	
-	* godmode/db/*.php
-	-require_once for config might already have loaded
-	-Changed mysql_real_escape_string in favor of get_parameter_post
-	-Process the DELETE SQL queries through process_sql()
-	-Changed comprueba_login() for check_login()
-	-Adhered some things to preferred style
-	-Compounded SQL queries into joins, subqueries or functions
-	-Removed mysql_close() from db_purge.php since the select
-	after the delete wouldn't work anymore (database closed)
+	* godmode/db/*.php: require_once for config might already have loaded.
+	Changed mysql_real_escape_string in favor of get_parameter_post.
+	Process the DELETE SQL queries through process_sql(). Changed
+	comprueba_login() for check_login(). Adhered some things to preferred
+	style. Compounded SQL queries into joins, subqueries or functions.
+	Removed mysql_close() from db_purge.php since the select. After the
+	delete wouldn't work anymore (database closed).
 	
-	* godmode/reporting/reporting_builder.php
-	-Fixed a bug that was introduced when the SQL functions returned false
+	* godmode/reporting/reporting_builder.php: Fixed a bug that was
+	introduced when the SQL functions returned false.
 
-	* include/functions_db.php
-	-Made foreach instead of while loops for simpler functions
-	-Fixed get_reports that failed since SQL function return false
-	-All SQL functions now return false in case of empty
-	-New SQL function process_sql that can handle DELETE. Returns
-	affected rows in case of a changing query or an array in case 
-	it was a selecting query or false in case of error
+	* include/functions_db.php: Made foreach instead of while loops for
+	simpler functions. Fixed get_reports that failed since SQL function
+	return false. All SQL functions now return false in case of empty. New
+	SQL function process_sql that can handle DELETE. Returns affected rows
+	in case of a changing query or an array in case it was a selecting
+	query or false in case of error.
 
-	* include/functions.php
-	-Simplified safe_input function
+	* include/functions.php: Simplified safe_input function.
 
-	* index.php
-	-Updated SQL queries, style changes
+	* index.php: Updated SQL queries, style changes
 
-	* operation/agentes/*.php
-	-Style changes and updates to use check_login	
+	* operation/agentes/*.php: Style changes and updates to use
+	check_login.
 
 2008-07-17  Esteban Sanchez  <estebans@artica.es>
 
@@ -189,7 +202,6 @@
 
 	* godmode/reporting/map_builder.php: Sorted lists, and shown module name 
 	instead description.
-
 
 2008-07-09  Evi Vanoost <vanooste@rcbi.rochester.edu>
 

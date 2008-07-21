@@ -439,36 +439,38 @@ if ($edit_sla_report_content) {
 			$first_id = $report_contents[0]['id_rc'];
 			$last_id = $report_contents[sizeof ($report_contents) - 1]['id_rc'];
 		}
-		foreach ($report_contents as $report_content) {
-			$data = array ();
-			$data[0] = '';
-			if ($first_id != $report_content['id_rc']) {
-				$data[0] .= '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&edit_report=1&id_report='.
-						$id_report.'&content_up=1&id_report_content='.$report_content['id_rc'].
-						'"><img src="images/up.png" title="'.lang_string ('up').'"></a>';
-			}
-			if ($last_id != $report_content['id_rc']) {
-				$data[0] .= '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&edit_report=1&id_report='.
-						$id_report.'&content_down=1&id_report_content='.$report_content['id_rc'].
-						'"><img src="images/down.png" title="'.lang_string ('down').'"></a>';
-			}
-			$data[1] = get_report_name ($report_content['type']);
-			$data[2] = '--';
-			$data[3] = '--';
-			if (get_report_type_data_source ($report_content['type']) == 'module') {
-				$data[2] = strtolower (dame_nombre_agente_agentemodulo ($report_content['id_agent_module']));
-				$data[3] = strtolower (get_db_value ('descripcion', 'tagente_modulo', 'id_agente_modulo', $report_content['id_agent_module']));
-			}
-			$data[4] = human_time_description ($report_content['period']);
-			$data[5] = '';
-			if ($report_content['type'] == 'SLA') {
-				$data[5] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id_report='.$id_report.'&edit_sla_report_content=1&id_report_content='.$report_content['id_rc'].'"><img src="images/setup.png"></a>';
-			}
-			if ($report_id_user == $config['id_user']) {
-				$data[6] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id_report='.$id_report.'&delete_report_content=1&id_report_content='.$report_content['id_rc'].'"><img src="images/cross.png"></a>';
-			}
+		if ($report_contents !== false) {
+			foreach ($report_contents as $report_content) {
+				$data = array ();
+				$data[0] = '';
+				if ($first_id != $report_content['id_rc']) {
+					$data[0] .= '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&edit_report=1&id_report='.
+							$id_report.'&content_up=1&id_report_content='.$report_content['id_rc'].
+							'"><img src="images/up.png" title="'.lang_string ('up').'"></a>';
+				}
+				if ($last_id != $report_content['id_rc']) {
+					$data[0] .= '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&edit_report=1&id_report='.
+							$id_report.'&content_down=1&id_report_content='.$report_content['id_rc'].
+							'"><img src="images/down.png" title="'.lang_string ('down').'"></a>';
+				}
+				$data[1] = get_report_name ($report_content['type']);
+				$data[2] = '--';
+				$data[3] = '--';
+				if (get_report_type_data_source ($report_content['type']) == 'module') {
+					$data[2] = strtolower (dame_nombre_agente_agentemodulo ($report_content['id_agent_module']));
+					$data[3] = strtolower (get_db_value ('descripcion', 'tagente_modulo', 'id_agente_modulo', $report_content['id_agent_module']));
+				}
+				$data[4] = human_time_description ($report_content['period']);
+				$data[5] = '';
+				if ($report_content['type'] == 'SLA') {
+					$data[5] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id_report='.$id_report.'&edit_sla_report_content=1&id_report_content='.$report_content['id_rc'].'"><img src="images/setup.png"></a>';
+				}
+				if ($report_id_user == $config['id_user']) {
+					$data[6] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id_report='.$id_report.'&delete_report_content=1&id_report_content='.$report_content['id_rc'].'"><img src="images/cross.png"></a>';
+				}
 			
-			array_push ($table->data, $data);
+				array_push ($table->data, $data);
+			}
 		}
 		print_table ($table);
 	}

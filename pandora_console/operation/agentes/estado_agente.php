@@ -16,14 +16,11 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
-require("include/config.php");
+require ("include/config.php");
+check_login ();
 
-if (comprueba_login ()) {
-	audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Agent view");
-	require ("general/noaccess.php");
-}
 if (give_acl($id_user, 0, "AR") == 0) {
-	audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access agent main list view");
+	audit_db ($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access agent main list view");
 	require ("general/noaccess.php");
 	exit;
 }

@@ -21,11 +21,6 @@
 $id_user=$_SESSION["id_usuario"];
 global $REMOTE_ADDR;
 
-if (comprueba_login() != 0) {
-	audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access report builder");
-	include ("general/noaccess.php");
-	exit;
-}
 
 if ((give_acl($id_user, 0, "AW") != 1) && (dame_admin ($id_user) != 1)) {
 	audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access graph builder");
@@ -484,7 +479,7 @@ if ($edit_sla_report_content) {
 
 	$reports = get_db_all_rows_in_table ('treport', 'name');
 	$table->width = '0px';
-	if (sizeof ($reports)) {
+	if ($reports !== false) {
 		$table->id = 'report_list';
 		$table->width = '600px';
 		$table->head = array ();

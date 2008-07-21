@@ -79,42 +79,40 @@ AND `tusuario_perfil`.`id_usuario` = '%s' AND (`tusuario_perfil`.`id_grupo` = '%
 
 	$rowdup = get_db_all_rows_sql($query1);
 	$result = 0;
-	$i = 0;
-	while($rowdup[$i]){
+	foreach($rowdup as $row) {
 		// For each profile for this pair of group and user do...
 			switch ($access) {
 			case "IR":
-				$result += $rowdup[$i]["incident_view"];
+				$result += $row["incident_view"];
 				break;
 			case "IW":
-				$result += $rowdup[$i]["incident_edit"];
+				$result += $row["incident_edit"];
 				break;
 			case "IM":
-				$result += $rowdup[$i]["incident_management"];
+				$result += $row["incident_management"];
 				break;
 			case "AR":
-				$result += $rowdup[$i]["agent_view"];
+				$result += $row["agent_view"];
 				break;
 			case "AW":
-				$result += $rowdup[$i]["agent_edit"];
+				$result += $row["agent_edit"];
 				break;
 			case "LW":
-				$result += $rowdup[$i]["alert_edit"];
+				$result += $row["alert_edit"];
 				break;
 			case "LM":
-				$result += $rowdup[$i]["alert_management"];
+				$result += $row["alert_management"];
 				break;
 			case "PM":
-				$result += $rowdup[$i]["pandora_management"];
+				$result += $row["pandora_management"];
 				break;
 			case "DM":
-				$result += $rowdup[$i]["db_management"];
+				$result += $row["db_management"];
 				break;
 			case "UM":
-				$result += $rowdup[$i]["user_management"];
+				$result += $row["user_management"];
 				break;
 			}
-		$i++;
 	}
 	if ($result > 1)
 		$result = 1;
@@ -266,7 +264,7 @@ function get_alerts_in_agent ($id_agent) {
 function get_reports ($id_user) {
 	$user_reports = array ();
 	$all_reports = get_db_all_rows_in_table ('treport', 'name');
-	if (sizeof ($all_reports) == 0) {
+	if ($all_reports === false) {
 		return $user_reports;
 	}
 	foreach ($all_reports as $report) {
@@ -1224,6 +1222,7 @@ function give_agent_id_from_module_id ($id_agent_module) {
 	return (int) get_db_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
 }
 
+$sql_cache=array('saved' => 0);
 /** 
  * Get the first value of the first row of a table in the database.
  * 
@@ -1231,10 +1230,9 @@ function give_agent_id_from_module_id ($id_agent_module) {
  * @param table Table to retrieve the data
  * @param field_search Field to filter elements
  * @param condition Condition the field must have
- * 
- * @return 
- */
-$sql_cache=array('saved' => 0);
+ *              
+ * @return      
+ */  
 function get_db_value ($field, $table, $field_search=1, $condition=1){
 
 	if (is_int ($condition)) {
@@ -1245,10 +1243,11 @@ function get_db_value ($field, $table, $field_search=1, $condition=1){
 		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = '%s' LIMIT 1", $field, $table, $field_search, $condition);
 	}
 	$result = get_db_all_rows_sql ($sql);
-	if(is_array ($result))	
-		return $result[0][$field];
 	
-	return "";
+	if($result === false)
+		return false;
+	
+	return $result[0][$field];
 }
 
 /** 
@@ -1261,8 +1260,11 @@ function get_db_value ($field, $table, $field_search=1, $condition=1){
 function get_db_row_sql ($sql) {
 	$sql .= " LIMIT 1";
 	$result = get_db_all_rows_sql ($sql);
-	
-	return $result[0];
+
+	if($result === false) 
+		return false;
+
+        return $result[0];
 }
 
 /** 
@@ -1288,6 +1290,9 @@ function get_db_row ($table, $field_search, $condition) {
 	}
 	$result = get_db_all_rows_sql ($sql);
 		
+	if($result === false) 
+		return false;
+	
 	return $result[0];
 }
 
@@ -1300,12 +1305,11 @@ function get_db_row ($table, $field_search, $condition) {
  * @return The selected field of the first row in a select statement.
  */
 function get_db_sql ($sql, $field = 0) {
-	$row = get_db_all_rows_sql ($sql);
-	if (is_array ($row)) {
-		return $row[0][$field];
-	} else {
-		return "";
-	}
+	$result = get_db_all_rows_sql ($sql);
+	if($result === false)
+		return false;
+
+        return $result[0][$field];
 }
 
 /**
@@ -1313,32 +1317,48 @@ function get_db_sql ($sql, $field = 0) {
  * 
  * @param $sql SQL statement to execute.
  *
- * @return A matrix with all the values returned from the SQL statement
+ * @return A matrix with all the values returned from the SQL statement or
+ * false in case of empty result
  */
 function get_db_all_rows_sql ($sql) {
-	global $config;
+	$return = process_sql($sql);
+	
+	if (! empty ($return))
+		return $return;
+	//Return false, check with === or !==
+	return false;
+}
+
+/**
+ * This function comes back with an array in case of SELECT
+ * in case of UPDATE, DELETE etc. with affected rows
+ * an empty array in case of SELECT without results
+ */
+function process_sql ($sql) {
+        global $config;
 	global $sql_cache;
 	$retval = array();
-	
+
 	if (! empty ($sql_cache[$sql])) {
 		$retval = $sql_cache[$sql];
 		$sql_cache['saved']++;
 	} else {
 		$result = mysql_query ($sql);
-		if (!$result) {
+		if ($result === false) {
 			echo '<strong>Error:</strong> get_db_all_rows_sql ("'.$sql.'") :'. mysql_error ().'<br />';
-			return $retval;
+			return false;
+		} elseif ($result === true) {
+			return mysql_affected_rows (); //This happens in case the statement was executed but didn't need a resource
+		} else {
+			while ($row = mysql_fetch_array ($result)) {
+				array_push ($retval, $row);
+			}
+			$sql_cache[$sql] = $retval;
+			mysql_free_result ($result);
 		}
-		while ($row = mysql_fetch_array ($result)) {
-			array_push ($retval, $row);
-		}
-		$sql_cache[$sql] = $retval;
-		mysql_free_result ($result);
 	}
-	if (! empty ($retval))
-		return $retval;
-	 //Return false, check with === or !==
-	return false;
+	return $retval;
+	//Return false, check with === or !==
 }
 
 /**
@@ -1367,15 +1387,15 @@ function get_db_all_rows_in_table ($table, $order_field = "") {
  */
 function get_db_all_rows_field_filter ($table, $field, $condition, $order_field = "") {
 	if (is_int ($condition)) {
-		$sql = sprintf ('SELECT * FROM %s WHERE %s = %d', $table, $field, $condition);
+		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = '%d'", $table, $field, $condition);
 	} else if (is_float ($condition) || is_double ($condition)) {
-		$sql = sprintf ('SELECT * FROM %s WHERE %s = %f', $table, $field, $condition);
+		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = '%f'", $table, $field, $condition);
 	} else {
-		$sql = sprintf ('SELECT * FROM %s WHERE %s = "%s"', $table, $field, $condition);
+		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = '%s'", $table, $field, $condition);
 	}
 
 	if ($order_field != "")
-		$sql .= " ORDER BY ".$order_field;	
+		$sql .= sprintf(" ORDER BY `%s`",$order_field);	
 	return get_db_all_rows_sql ($sql);
 }
 

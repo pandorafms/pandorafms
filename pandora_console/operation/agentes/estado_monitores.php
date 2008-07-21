@@ -18,7 +18,7 @@
 
 // Load globar vars
 require("include/config.php");
-if (comprueba_login() == 0) {
+check_login();
 
 	// $id_agente can be obtained as global variable or GET param.
 	if (isset($_GET["id_agente"])){
@@ -120,5 +120,5 @@ if (comprueba_login() == 0) {
 	} else {
 		echo "<div class='nf'>".$lang_label["no_monitors"]."</div>";
 	}
-}
+
 ?>

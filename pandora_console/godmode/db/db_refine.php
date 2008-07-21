@@ -19,13 +19,14 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, U6
 
 // Load global vars
-require("include/config.php");
+require_once ("include/config.php");
 check_login ();	
+
 $id_user = $_SESSION["id_usuario"];
-if ((give_acl($id_user, 0, "DM")==1) or (dame_admin($id_user)==1)) {
-		if ((isset($_GET["operacion"])) AND (! isset($_POST["update_agent"]))){
+if ((give_acl ($id_user, 0, "DM")==1) or (dame_admin ($id_user)==1)) {
+		if ((isset ($_GET["operacion"])) AND (!isset ($_POST["update_agent"]))){
 			// DATA COPY
-			if (isset($_POST["eliminar"])) {
+			if (isset ($_POST["eliminar"])) {
 				echo "<h2>".$lang_label["deletedata"]."</h2>";
 				// First checkings
 				
@@ -37,7 +38,7 @@ if ((give_acl($id_user, 0, "DM")==1) or (dame_admin($id_user)==1)) {
 					include ("general/footer.php");
 					exit;
 				}
-				$origen_modulo = $_POST["origen_modulo"];
+				$origen_modulo = mysql_real_esape_string($_POST["origen_modulo"]);
 			 	if (count($origen_modulo) <= 0){
 					echo "<h3 class='error'>ERROR: ".$lang_label["nomodules_selected"]."</h3>";
 					echo "</table>";

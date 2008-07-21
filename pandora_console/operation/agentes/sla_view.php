@@ -18,12 +18,9 @@
 
 // Load global vars
 global $config;
-$id_user = $config["id_user"];
+check_login();
 
-if (comprueba_login() != 0) {
-	require ("general/noaccess.php");
-	exit;
-}
+$id_user = $config["id_user"];
 
 if ((give_acl($id_user, 0, "AR") != 1) AND (give_acl($id_user,0,"AW") != 1)) {
 	audit_db($id_user,$REMOTE_ADDR, "ACL Violation",

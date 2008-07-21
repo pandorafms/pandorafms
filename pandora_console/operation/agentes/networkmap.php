@@ -237,11 +237,7 @@ $font_size = (int) get_parameter ('font_size', 12);
 $id_user = $_SESSION["id_usuario"];
 global $REMOTE_ADDR;
 
-if (comprueba_login() != 0) {
-	audit_db($id_user, $REMOTE_ADDR, "ACL Violation", "Trying to access node graph builder");
-	include("general/noaccess.php");
-	exit;
-}
+check_login();
 
 if ((give_acl($id_user, 0, "AR") != 1 ) && (dame_admin($id_user) !=1 )) {
 	audit_db($id_user, $REMOTE_ADDR, "ACL Violation", "Trying to access node graph builder");

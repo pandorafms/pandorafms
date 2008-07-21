@@ -17,23 +17,23 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
-require("include/config.php");
+require ("include/config.php");
 
 // Login check
 $id_usuario=$_SESSION["id_usuario"];
 global $REMOTE_ADDR;
 
-if (comprueba_login() != 0) {
+if (check_login() != 0) {
 	audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access alert view");
 	include ("general/noaccess.php");
 	exit;
 }
 
- if ((give_acl($config["id_user"], 0, "AR")!=1) AND (!give_acl($config["id_user"],0,"AW")) AND (dame_admin($config["id_user"])!=1)) {
- 	audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access alert view");
+if ((give_acl($config["id_user"], 0, "AR")!=1) AND (!give_acl($config["id_user"],0,"AW")) AND (dame_admin($config["id_user"])!=1)) {
+	audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access alert view");
 	include ("general/noaccess.php");
 	exit;
- }
+}
  
 
 // -------------------------------

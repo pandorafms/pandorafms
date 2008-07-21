@@ -60,10 +60,11 @@ if ((! file_exists("include/config.php")) OR (! is_readable("include/config.php"
 
 // Real start
 session_start();
-include_once ("include/config.php");
-include_once ("include/languages/language_".$config["language"].".php");
+require_once ("include/config.php");
+require_once ("include/languages/language_".$config["language"].".php");
 require_once ("include/functions.php");
 require_once ("include/functions_db.php");
+//We should require this or you might end up with some empty strings
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -132,13 +133,12 @@ $REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
 if ( (! isset ($_SESSION['id_usuario'])) && (isset ($_GET["login"]))) {
 	$nick = get_parameter_post ("nick");
 	$pass = get_parameter_post ("pass");
-	
 	// Connect to Database
-	$sql1 = 'SELECT * FROM tusuario WHERE id_usuario = "'.$nick.'"';
-	$result = mysql_query ($sql1);
+	$sql1 = sprintf("SELECT `id_usuario`, `password` FROM `tusuario` WHERE `id_usuario` = '%s'",$nick);
+	$row = get_db_row_sql ($sql1);
 	
 	// For every registry
-	if ($row = mysql_fetch_array ($result)){
+	if ($row !== false){
 		if ($row["password"] == md5 ($pass)){
 			// Login OK
 			// Nick could be uppercase or lowercase (select in MySQL
@@ -165,8 +165,7 @@ if ( (! isset ($_SESSION['id_usuario'])) && (isset ($_GET["login"]))) {
 				  "Incorrect password: " . $nick . " / " . $pass);
 			exit;
 		}
-	}
-	else {
+	} else {
 		// User not known
 		unset ($_GET["sec2"]);
 		include "general/logon_failed.php";

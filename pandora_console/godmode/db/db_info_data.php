@@ -17,7 +17,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
-require ("include/config.php");
+require_once ("include/config.php");
 check_login ();
 
 if ((give_acl ($id_user, 0, "DM")==1) or (dame_admin ($id_user)==1)) {
@@ -40,17 +40,15 @@ if ((give_acl ($id_user, 0, "DM")==1) or (dame_admin ($id_user)==1)) {
 	echo "<th>".$lang_label["total_data"]."</th>";
 	$color=0;
 	
-	$result_2=get_db_all_fields_in_table("tagente","id_agente");
-	foreach($result_2 as $rownum => $row2) {
-		$total_agente=0;
-		$result_3=mysql_query("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ".$row2["id_agente"]);
-		$row3c = mysql_num_rows($result_3);
-		// for all data_modules belongs to an agent
-		while ($row3=mysql_fetch_array($result_3)){	
-			$result_4=mysql_query("SELECT COUNT(id_agente_modulo) FROM tagente_datos WHERE id_agente_modulo = ".$row3["id_agente_modulo"]);
-			$row4=mysql_fetch_array($result_4);
-			$total_agente=$total_agente + $row4[0];
-		}
+	$sql = "SELECT `id_agente`, `nombre` FROM `tagente`";
+	$result = get_db_all_rows_sql($sql);
+	foreach($result as $row2) {
+		$sql = sprintf("SELECT COUNT(`id_agente_modulo`) FROM `tagente_modulo` WHERE `id_agente` = '%d'",$row2["id_agente"]);
+		$row3c = get_db_sql($sql);
+		// for all data_modules belongs to an agent -- simplified, made
+		// faster
+		$sql=sprintf("SELECT COUNT(`id_agente_datos`) FROM `tagente_datos` WHERE `id_agente` = '%d'",$row2["id_agente"]);
+		$total_agente = get_db_sql($sql);
 		if ($color == 1){
 			$tdcolor = "datos";
 			$color = 0;
@@ -61,15 +59,15 @@ if ((give_acl ($id_user, 0, "DM")==1) or (dame_admin ($id_user)==1)) {
 		}
 		echo "<tr>
 		<td class='$tdcolor'>
-		<b><a href='index.php?sec=gagente&sec2=operation/agentes/ver_agente&id_agente=".$row2["id_agente"]."'>".dame_nombre_agente($row2[0])."</a></b></td>";
+		<b><a href='index.php?sec=gagente&sec2=operation/agentes/ver_agente&id_agente=".$row2["id_agente"]."'>".$row2["nombre"]."</a></b></td>";
 		echo "<td class='$tdcolor'>".$row3c."</td>";
 		echo "<td class='$tdcolor'>".$total_agente."</td></tr>";
-		flush();
+		flush ();
    		//ob_flush();
 	}
 	echo "</table>";
 } else {
-	audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Database Management Info data");
+	audit_db ($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Database Management Info data");
 	require ("general/noaccess.php");
 }
 ?>

@@ -89,10 +89,7 @@ function generate_average_table ($id_de_mi_agente, $id_agente_modulo, $fecha_ini
 require("include/config.php");
 
 // Security checks
-if (comprueba_login() != 0) {
-	require ("general/noaccess.php");
-	exit;
-}
+check_login();
 
 $id_user = $_SESSION["id_usuario"];
 if ( (give_acl($id_user, 0, "AR")==0) AND (give_acl($id_user, 0, "AW")==0) ){

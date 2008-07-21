@@ -20,11 +20,7 @@
 global $config;
 $id_user = $config["id_user"];
 
-
-if (comprueba_login() != 0) {
-        require ("general/noaccess.php");
-        exit;
-}
+check_login();
 
 if ((give_acl($id_user, 0, "AR")!=1) AND (give_acl($id_user,0,"AW")!=1)) {
         audit_db($id_user,$REMOTE_ADDR, "ACL Violation",

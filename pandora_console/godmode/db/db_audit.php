@@ -18,7 +18,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
-require ("include/config.php");
+require_once ("include/config.php");
 check_login ();
 
 if ((give_acl ($id_user, 0, "DM")==1) or (dame_admin ($id_user)==1)) {
@@ -43,10 +43,9 @@ if ((give_acl ($id_user, 0, "DM")==1) or (dame_admin ($id_user)==1)) {
 	# Purge data using dates
 	# Purge data using dates
 	if (isset($_POST["purgedb"])){	# Fixed 2005-1-13, nil
-		$from_date = mysql_real_escape_string($_POST["date_purge"]);
+		$from_date = get_parameter_post("date_purge");
 		$query = sprintf("DELETE FROM `tsesion` WHERE `fecha` < '%s';",$from_date);
-		echo $query;
-		mysql_query($query);
+		(int) $deleted = process_sql($query);
 	}
 	# End of get parameters block
 	

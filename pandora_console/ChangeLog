@@ -1,3 +1,15 @@
+2008-07-22  Sancho Lerena <slerena@gmail.com>
+
+	* pandoradb_data.sql: Some changes for types not implemented in 2.0
+
+	* module_manager_editor.php: Added help, more space in textareas for
+	tcp recv/send. Better layout.
+
+	* help.png: Smaller icon.
+
+	* view_server.php: Fixed problem with lastupdate render. This was using
+	and incorrect function to render data. 
+
 2008-07-21  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* include/functions_reporting.php: Last commit forgot a semicolon. Fixed.

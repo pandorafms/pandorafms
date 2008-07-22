@@ -180,13 +180,16 @@ INSERT INTO `ttipo_modulo` VALUES
 (17,'remote_snmp_string',5,'Remote SNMP network agent, alphanumeric data','mod_snmp_string.png'),
 (18,'remote_snmp_proc',4,'Remote SNMP network agent, boolean data','mod_snmp_proc.png'), 
 
-(19,'image_jpg',9,'Image JPG data', 'mod_image_jpg.png'), 
-(20,'image_png',9,'Image PNG data', 'mod_image_png.png'), 
 (21,'async_proc', 7, 'Asyncronous proc data', 'mod_async_proc.png'), 
 (22,'async_data', 6, 'Asyncronous numeric data', 'mod_async_data.png'), 
 (23,'async_string', 8, 'Asyncronous string data', 'mod_async_string.png'),
-(24,'async_inc', 6, 'Asyncronous incremental data', 'mod_async_inc.png'),  
 (100,'keep_alive',-1,'KeepAlive','mod_keepalive.png');
+/*
+Not implemented yet
+(19,'image_jpg',9,'Image JPG data', 'mod_image_jpg.png'), 
+(20,'image_png',9,'Image PNG data', 'mod_image_png.png'), 
+(24,'async_inc', 6, 'Asyncronous incremental data', 'mod_async_inc.png'),  
+*/
 
 /* Categoria field is used to segregate several types (plugin, agents, network) on their data
   types, could be used or could be avoided and use directly primary key (id_tipo) */

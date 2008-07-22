@@ -1,5 +1,5 @@
 <?PHP
-// Pandora FMS - the Free Monitoring System
+// Pandora FMS - the Flexible Monitoring System
 // ========================================
 // Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
 // Copyright (c) 2008 Jorge Gonzalez <jorge.gonzalez@artica.es>
@@ -245,10 +245,12 @@ echo '</tr>';
 
 // tcp send / rcv value
 echo '<tr>';
-echo '<td class="datos2">'.lang_string ("tcp_send")."</td>";
-echo '<td class="datos2"><textarea cols=20 style="height:40px;" name="form_tcp_send">'.$form_tcp_send.'</textarea>';
-echo '<td class="datos2">'.lang_string ("tcp_rcv")."</td>";
-echo '<td class="datos2"><textarea cols=20 style="height:40px;" name="form_tcp_rcv">'.$form_tcp_rcv.'</textarea>';
+echo '<td class="datos2" valign="top">'.lang_string ("tcp_send");
+pandora_help ("tcp_send");
+echo "</td>";
+echo '<td class="datos2"><textarea cols=20 style="height:55px;" name="form_tcp_send">'.$form_tcp_send.'</textarea>';
+echo '<td class="datos2" valign="top">'.lang_string ("tcp_rcv")."</td>";
+echo '<td class="datos2"><textarea cols=20 style="height:55px;" name="form_tcp_rcv">'.$form_tcp_rcv.'</textarea>';
 echo '</tr>';
 
 // Description

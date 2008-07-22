@@ -43,7 +43,7 @@ $servers = get_db_all_rows_in_table ('tserver');
 if (sizeof ($servers) == 0)
 	return;
 
-$table->width = '90%';
+$table->width = '98%';
 $table->size = array ();
 $table->size[6] = '60';
 $table->align = array ();
@@ -64,7 +64,6 @@ $table->data = array ();
 foreach ($servers as $server) {
 	$data = array ();
 	$serverinfo = server_status ($server['id_server']);
-	
 	$data[0] = $server['name'];
 	if ($server['status'] == 0){
 		$data[1] = '<img src="images/pixel_red.png" width="20" height="20">';
@@ -114,7 +113,7 @@ foreach ($servers as $server) {
 		$data[6] .= ' <img src="images/binary.png" title="'.lang_string ('checksum').'">';
 	}
 	$data[7] = $server['version'];
-	$data[8] = human_date_relative ($server['keepalive'])."</td>";
+	$data[8] = human_time_comparation ($server['keepalive']) . "</td>";
 	
 	array_push ($table->data, $data);
 }

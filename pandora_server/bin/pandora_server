@@ -86,9 +86,9 @@ pandora_startlog (\%pa_config);
 my $dbhost = $pa_config{'dbhost'};
 my $dbname = $pa_config{'dbname'};
 my $dbh = DBI->connect("DBI:mysql:$dbname:$dbhost:3306",
-						$pa_config{'dbuser'},
-						$pa_config{'dbpass'},
-						{ RaiseError => 1, AutoCommit => 1 });
+			$pa_config{'dbuser'},
+			$pa_config{'dbpass'},
+			{ RaiseError => 1, AutoCommit => 1 });
 
 # KeepAlive checks for Agents, only for master servers, in separate thread
 while (1) {
@@ -103,11 +103,12 @@ while (1) {
 # Close system
 ########################################################################################
 sub pandora_shutdown {
-    logger (\%pa_config,"Pandora FMS Server '".$pa_config{'servername'}.$pa_config{"servermode"}."' Shutdown by signal ",0);
-    print " [*] Shutting down ".$pa_config{'servername'}.$pa_config{"servermode"} ."(received signal)...\n";
-    pandora_event (\%pa_config, $pa_config{'servername'}.$pa_config{"servermode"}." going Down", 0,
-                                   0, 4, 0, 0, "system", $dbh);
-    exit;
+	logger (\%pa_config,"Pandora FMS Server '".$pa_config{'servername'}.$pa_config{"servermode"}."' Shutdown by signal ",0);
+	pandora_updateserver (\%pa_config, $pa_config{'servername'}, 0, 0, $dbh);
+	print " [*] Shutting down ".$pa_config{'servername'}.$pa_config{"servermode"} ."(received signal)...\n";
+	pandora_event (\%pa_config, $pa_config{'servername'}.$pa_config{"servermode"}." going Down", 0,
+   	                               0, 4, 0, 0, "system", $dbh);
+	exit;
 }
 
 ###############################################################################
@@ -155,7 +156,6 @@ sub pandora_data_producer {
 					$incomplete_task_hash{$file_name} = 0;
 				}
 			}
-
 			threads->yield;
 		}
 
@@ -172,7 +172,6 @@ sub pandora_data_producer {
 sub pandora_data_consumer ($$) {
 	my $pa_config = $_[0];
 	my $thread_id = $_[1];
-
 	my $file_name;
 	my $counter =0;
 
@@ -212,6 +211,7 @@ sub pandora_data_consumer ($$) {
 		# Check file really exists to avoid race conditions
 		if (! -e "$file") {
 			$counter++;
+			delete($active_task_hash{$file_name});
 			next LOOP;
 		}
 		
@@ -219,15 +219,14 @@ sub pandora_data_consumer ($$) {
 
 		# Parse the XML file
 		eval {
-        	logger ($pa_config, "Ready to parse $file_name",4);
+			threads->yield;
             $data = XMLin($file, forcearray=>'module');
         };
 
 		# Invalid MXL
         if ($@) {
-
-			# Retry
-			if ($incomplete_task_hash{$file_name} < 10) {
+			# Retry 3 times this XML
+			if ($incomplete_task_hash{$file_name} < 3) {
 				{
 					lock $queue_lock;
 					delete($active_task_hash{$file_name});
@@ -237,22 +236,22 @@ sub pandora_data_consumer ($$) {
 			# Discard
 			else {
 				{
+					logger ($pa_config, "$file_name is a BAD XML. Removing", 3);			
 					lock $queue_lock;
 					delete($active_task_hash{$file_name});
 					delete($incomplete_task_hash{$file_name});
 					rename($file, $file . "_BADXML");
-
                     # Create event
                     pandora_event ($pa_config, "Unable to process XML data file ($file)", 0, 0, 0, 0, 0, 'error', $dbh);
-
 				}
 			}
 
 			$counter = 0;
+			threads->yield;
 			next LOOP;
         }
 
-		procesa_datos ($pa_config, $data, $dbh);
+		process_datafile ($pa_config, $data, $dbh);
 
 		{
 			lock $queue_lock;
@@ -260,7 +259,7 @@ sub pandora_data_consumer ($$) {
 			delete($incomplete_task_hash{$file_name});
 			unlink($file);
 		}
-
+		threads->yield;
 		$counter = 0;
 	}
 }
@@ -274,45 +273,47 @@ sub keep_alive_check {
 	my $pa_config = $_[0];
 	my $dbh = $_[1];
 	my $timestamp = &UnixDate ("today", "%Y-%m-%d %H:%M:%S");
-        my $utimestamp = &UnixDate ("today", "%s");
-        my $query_idag = "SELECT tagente_modulo.id_agente_modulo, tagente_estado.utimestamp, tagente_estado.id_agente, tagente.intervalo, tagente.nombre, tagente_modulo.nombre FROM tagente_modulo, talerta_agente_modulo, tagente_estado, tagente WHERE tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo AND talerta_agente_modulo.disable = 0 AND tagente_modulo.id_tipo_modulo = 100 AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.datos != 0";
-        my $s_idag = $dbh->prepare($query_idag);
-        $s_idag ->execute;
+	my $utimestamp = &UnixDate ("today", "%s");
+	my $query_idag = "SELECT tagente_modulo.id_agente_modulo, tagente_estado.utimestamp, tagente_estado.id_agente, tagente.intervalo, tagente.nombre, tagente_modulo.nombre FROM tagente_modulo, talerta_agente_modulo, tagente_estado, tagente WHERE tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo AND talerta_agente_modulo.disable = 0 AND tagente_modulo.id_tipo_modulo = 100 AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.datos != 0";
+	my $s_idag = $dbh->prepare($query_idag);
+	$s_idag ->execute;
 
-        my $id_agent_module;
-        my $module_utimestamp;
-        my $id_agent;
-        my $interval;
-        my $agent_name;
-        my $module_name;
+	my $id_agent_module;
+	my $module_utimestamp;
+	my $id_agent;
+	my $interval;
+	my $agent_name;
+	my $module_name;
 
 	# data needed in loop (we'll reuse it)
-        my @data;
+	my @data;
 	if ($s_idag->rows != 0) {
 		while (@data = $s_idag->fetchrow_array()) {
 			threads->yield;
 			$id_agent_module = $data[0];
-                        $module_utimestamp = $data[1];
-                        $id_agent = $data[2];
-                        $interval = $data[3];
-                        $agent_name = $data[4];
-                        $module_name = $data[5];
-                        # Agent down - Keepalive utimestamp too low (2x)
-                        if (($module_utimestamp + ($interval * 2)) < $utimestamp){
-                                pandora_writestate ($pa_config, $agent_name, "keep_alive", $module_name, 0, 1, $dbh, 1);
-                        }
+			$module_utimestamp = $data[1];
+			$id_agent = $data[2];
+			$interval = $data[3];
+			$agent_name = $data[4];
+			$module_name = $data[5];
+			# Agent down - Keepalive utimestamp too low (2x)
+			if (($module_utimestamp + ($interval * 2)) < $utimestamp){
+					pandora_writestate ($pa_config, $agent_name, "keep_alive", $module_name, 0, 1, $dbh, 1);
+			}
 		}
 	} 
 	$s_idag->finish();
 }
 
 ##########################################################################
-## SUB procesa_datos (param_1)
+## SUB process_datafile (param_1, param_2, param_3)
 ## Process data packet (XML file)
 ##########################################################################
-## param_1 : XML datafile name
+## param_1 : pandora_config hash
+## param_2 : XML Hash structure reference
+## param_3
 
-sub procesa_datos {
+sub process_datafile {
 	my $pa_config = $_[0];
 	my $datos = $_[1]; 
 	my $dbh = $_[2];	
@@ -347,7 +348,7 @@ sub procesa_datos {
 	}
 
   
-	if (defined $agent_name){
+	if ((defined $agent_name) && ($agent_name ne "")){
 		$id_agente = dame_agente_id($pa_config,$agent_name,$dbh);
 
 		if ($id_agente == -1){
@@ -357,7 +358,7 @@ sub procesa_datos {
 				# Always create event about this detected IP
                 
 			} else {
-				logger($pa_config, "ERROR: There is no agent defined with name $agent_name", 2);
+				logger($pa_config, "ERROR: There is no agent defined with name $agent_name", 3);
 			}
 		}
 
@@ -401,7 +402,7 @@ sub procesa_datos {
 			}
 		} 
 	} else {
-		logger($pa_config, "ERROR: Received data from an unknown agent", 1);
+		logger($pa_config, "ERROR: Received data from an unknown agent", 2);
 	}
 }
 
@@ -419,17 +420,17 @@ sub process_module_data {
 	my $module = $_[4];
 	my $dbh = $_[5];
 
-	if ($tipo_modulo eq 'generic_data') {
-		module_generic_data ($pa_config, $module, $timestamp, $agent_name, "generic_data", $dbh);
+	if (($tipo_modulo eq 'generic_data') || ($tipo_modulo eq 'async_data')) {
+		module_generic_data ($pa_config, $module, $timestamp, $agent_name, $tipo_modulo, $dbh);
 	}
 	elsif ($tipo_modulo eq 'generic_data_inc') {
 		module_generic_data_inc ($pa_config, $module, $timestamp, $agent_name,"generic_data_inc", $dbh);
 	}
-	elsif ($tipo_modulo eq 'generic_data_string') {
-		module_generic_data_string ($pa_config, $module, $timestamp, $agent_name,"generic_data_string", $dbh);
+	elsif (($tipo_modulo eq 'generic_data_string') || ($tipo_modulo eq 'async_string')) {
+		module_generic_data_string ($pa_config, $module, $timestamp, $agent_name,$tipo_modulo, $dbh);
 	}
-	elsif ($tipo_modulo eq 'generic_proc') {
-		module_generic_proc ($pa_config, $module, $timestamp, $agent_name, "generic_proc", $dbh);
+	elsif (($tipo_modulo eq 'generic_proc') || ($tipo_modulo eq 'async_data')) {
+		module_generic_proc ($pa_config, $module, $timestamp, $agent_name, $tipo_modulo, $dbh);
 	}
 	else {
 		logger($pa_config, "ERROR: Received data from an unknown module ($tipo_modulo)", 2);

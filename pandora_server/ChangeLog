@@ -1,3 +1,27 @@
+2008-07-22  Sancho Lerena <slerena@gmail.com>
+
+	* pandora_network: Minimal style changes. Added status change in 
+	tserver table on controlled shutdown.
+
+	* pandora_server: Added status change in tserver table on controlled 
+	shutdown. Minimal changes and optimizations. Recheck for bad XML is 
+	adjusted to 3 instead 10.Fixed problem with "blank" agent names. Added
+	support for async types (data, proc and string).
+
+	* config.pm: Added support for new config token: max_log_size. This
+	stablish a max log filesize.
+
+	* DB.pm: Added support for postprocess (as simple multiplier value). 
+	Fixed problem with continuous update of laststart in server keepalive.
+	Updated also several logger priorities (raise them).
+
+	* Config.pm: pandora_get_os() fixed for void OSes. Logger() implements
+	a file-rotation system with a maximum in bytes for PandoraFMS log file.
+	
+	* pandora_server.conf: Updated with new options and removed some from 1.3.1
+ 	
+	* pandora_export: Deleted skeleton file por export server. 
+
 2008-07-11  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* pandora_server/pandora_network

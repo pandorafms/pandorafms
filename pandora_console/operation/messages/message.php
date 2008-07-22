@@ -1,10 +1,10 @@
 <?php
-
 // Pandora - the Free monitoring system
 // ====================================
 // Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
 // Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L, info@artica.es
 // Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// Copyright (c) 2008-2008 Evi Vanoost, vanooste@rcbi.rochester.edu
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
@@ -18,24 +18,24 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
-require("include/config.php");
+require_once ("include/config.php");
 
-function create_message($usuario_origen, $usuario_destino, $subject, $mensaje){
+function create_message ($usuario_origen, $usuario_destino, $subject, $mensaje){
 	global $lang_label;
 	$sql = sprintf ("INSERT INTO tmensajes (id_usuario_origen, id_usuario_destino, subject, mensaje, timestamp)
 	VALUES ('%s', '%s', '%s', '%s',NOW())",$usuario_origen,$usuario_destino,$subject,$mensaje);
 	(int) $result = process_sql ($sql);
 	if ($result == 1) {
-		echo "<h3 class='suc'>".$lang_label["message_ok"]."</h3>";
+		echo '<h3 class="suc">'.$lang_label["message_ok"].'</h3>';
 	} else {
-		echo "<h3 class='error'>".$lang_label["message_no"]." - Dest: ".$usuario_destino."</h3>";
+		echo '<h3 class="error">'.$lang_label["message_no"].' - Dest: '.$usuario_destino.'</h3>';
 	}
 }
 
 //First Queries
 $iduser = $_SESSION['id_usuario'];
 
-if (isset($_GET["nuevo_mensaje"])){
+if (isset ($_GET["nuevo_mensaje"])){
 	// Create message
 	$usuario_destino = get_parameter ("u_destino");
 	$subject = get_parameter ("subject");
@@ -43,24 +43,24 @@ if (isset($_GET["nuevo_mensaje"])){
 	create_message ($iduser, $usuario_destino, $subject, $mensaje);
 }
 
-if (isset($_GET["nuevo_mensaje_g"])){
+if (isset ($_GET["nuevo_mensaje_g"])){
 	// Create message to groups
 	$dest_group = get_parameter ("g_destino");
 	$subject = get_parameter ("subject");
 	$message = get_parameter ("mensaje");
-	$sql= sprintf("SELECT id_usuario FROM tusuario_perfil WHERE id_grupo ='%d'",$dest_group);
+	$sql = sprintf ("SELECT id_usuario FROM tusuario_perfil WHERE id_grupo ='%d'",$dest_group);
 	$result = get_db_all_rows_sql ($sql);
 	if ($result === false) {
 		echo "<h3 class='error'>".$lang_label["message_no"]."</h3>";
 	} else {
-		foreach($result as $row) {
+		foreach ($result as $row) {
 			create_message ($iduser, $row["id_usuario"], $subject, $message);
 		}
 	}
 }
 echo "<h2>".$lang_label["messages"]." &gt; ";
 
-if (isset($_GET["nuevo"])){ //create message
+if (isset ($_GET["nuevo"])) { //create message
 	echo $lang_label["new_message"].'</h2>';
 	echo '<form name="new_mes" method="POST" action="index.php?sec=messages&sec2=operation/messages/message&nuevo_mensaje=1">
 	<table width="600" class="databox_color" cellpadding="4" cellspacing="4"><tr>
@@ -69,13 +69,13 @@ if (isset($_GET["nuevo"])){ //create message
 	</tr><tr>
 	<td class="datos2">'.$lang_label["m_to"].':</td>
 	<td class="datos2">';
-	if (isset($_POST["u_destino"])) {
+	if (isset ($_POST["u_destino"])) {
 		echo '<b>'.$_POST["u_destino"].'</b><input type="hidden" name="u_destino" value='.$_POST["u_destino"].'>';
 	} else {
 		echo '<select name="u_destino" width="120">';
 		$groups = get_user_groups ($iduser);
 		foreach ($groups as $id => $group) {
-			if(!isset($group_id)) {
+			if (!isset ($group_id)) {
 				$group_id = "id_grupo = ".$id;
 			} else { 
 				$group_id .= " OR id_grupo = ".$id;
@@ -89,19 +89,19 @@ if (isset($_GET["nuevo"])){ //create message
 		echo '</select>';
 	}
 	echo '</td></tr><tr><td class="datos">'.$lang_label["subject"].':</td><td class="datos">';
-		if (isset($_POST["subject"])) {
+		if (isset ($_POST["subject"])) {
 			echo '<input name="subject" value="'.get_parameter_post ("subject").'" size=70>';
 		} else { 
 			echo '<input name="subject" size=60>';
 		}
 	echo '</td></tr><tr><td class="datos2">'.$lang_label["message"].':</td>
 	<td class="datos"><textarea name="mensaje" rows="15" cols="70">';
-		if (isset($_POST["mensaje"])) {
+		if (isset ($_POST["mensaje"])) {
 			echo get_parameter_post ("mensaje");
 		}
 	echo '</textarea></td></tr><tr><td></td><td colspan="3">
 	<input type="submit" class="sub wand" name="send_mes" value="'.$lang_label["send_mes"].'"></form></td></tr></table>';
-} elseif (isset($_GET["nuevo_g"])) {
+} elseif (isset ($_GET["nuevo_g"])) {
 	echo $lang_label["new_message_g"].'</h2>';
 	echo '<form name="new_mes" method="post" action="index.php?sec=messages&sec2=operation/messages/message&nuevo_mensaje_g=1">
 	<table width=600 class="databox_color" cellpadding=4 cellspacing=4>
@@ -111,7 +111,7 @@ if (isset($_GET["nuevo"])){ //create message
 	echo '<select name="g_destino" class="w130">';
 	$groups = get_user_groups ($iduser);
         foreach ($groups as $id => $group) {
-		if(!isset($group_id)) {
+		if(!isset ($group_id)) {
 			$group_id = "id_grupo = ".$id;
 		} else {
 			$group_id .= " OR id_grupo = ".$id;
@@ -119,7 +119,7 @@ if (isset($_GET["nuevo"])){ //create message
 	}
 	// This query makes that we can send messages to groups we have access
 	// to, not only the ones we belong to																										
-	$sql = sprintf("SELECT DISTINCT(id_grupo) FROM tusuario_perfil WHERE %s",$group_id);	
+	$sql = sprintf ("SELECT DISTINCT(id_grupo) FROM tusuario_perfil WHERE %s",$group_id);	
 	$result = get_db_all_rows_sql ($sql);
 	foreach ($result as $row) {
 		echo '<option value="'.$row["id_grupo"].'">'.dame_nombre_grupo($row["id_grupo"]).'</option>';
@@ -157,13 +157,13 @@ if (isset($_GET["nuevo"])){ //create message
 	echo '</form>';
 	echo "</td></tr></table>";
 } 
-if(isset($_GET["leer"]) || (!isset($_GET["nuevo"]) && !isset($_GET["nuevo_g"]))) {	
+if (isset ($_GET["leer"]) || (!isset ($_GET["nuevo"]) && !isset ($_GET["nuevo_g"]))) {	
 	echo $lang_label["read_mes"]."</h2>";
 
 	//Delete messages if borrar is set
-	if (isset($_GET["borrar"])){
+	if (isset ($_GET["borrar"])){
 		$id_message = get_parameter_get ("id_mensaje");
-		$sql = sprintf("DELETE FROM tmensajes WHERE id_usuario_destino='%s' AND id_mensaje='%d'",$iduser,$id_message);
+		$sql = sprintf ("DELETE FROM tmensajes WHERE id_usuario_destino='%s' AND id_mensaje=%d",$iduser,$id_message);
 		(int) $result = process_sql ($sql);
 		if ($result > 0) {
 			echo '<h3 class="suc">'.$lang_label["del_message_ok"].'</h3>';
@@ -179,12 +179,12 @@ if(isset($_GET["leer"]) || (!isset($_GET["nuevo"]) && !isset($_GET["nuevo_g"])))
 	if ($num_messages > 0){
 		echo '<p>'.$lang_label["new_message_bra"].' <b>'.$num_messages.'</b> <img src="images/email.png">'.$lang_label["new_message_ket"].'</p>';
 	}
-	$sql = sprintf("SELECT id_mensaje, id_usuario_origen, subject, timestamp, estado FROM tmensajes WHERE id_usuario_destino='%s' ORDER BY `timestamp` DESC",$iduser);
+	$sql = sprintf ("SELECT id_mensaje, id_usuario_origen, subject, timestamp, estado FROM tmensajes WHERE id_usuario_destino='%s' ORDER BY `timestamp` DESC",$iduser);
 	$result = get_db_all_rows_sql ($sql);
 	if ($result === false) {
 		echo "<div class='nf'>".$lang_label["no_messages"]."</div>";
 	} else {
-		$color=1;
+		$color = 1;
 		echo '<table width="650" class="databox" cellpadding="4" cellspacing="4"><tr>
 		<th>'.$lang_label["read"].'</th>
 		<th>'.$lang_label["sender"].'</th>
@@ -220,11 +220,9 @@ if(isset($_GET["leer"]) || (!isset($_GET["nuevo"]) && !isset($_GET["nuevo_g"])))
 		}
 		echo "</table>";
 	}
-echo '<table width=650 cellpadding=4 cellspacing=4><tr>';
-echo '<td>';
-echo '<form method="post" name="new_mes" action="index.php?sec=messages&sec2=operation/messages/message&nuevo">
-<input type="submit" class="sub next" name="send_mes" value="'.$lang_label["new_message"].'"></form></td></tr></table>';
-
+	echo '<table width=650 cellpadding=4 cellspacing=4><tr>';
+	echo '<td>';
+	echo '<form method="post" name="new_mes" action="index.php?sec=messages&sec2=operation/messages/message&nuevo">
+	<input type="submit" class="sub next" name="send_mes" value="'.$lang_label["new_message"].'"></form></td></tr></table>';
 }	
-
 ?>

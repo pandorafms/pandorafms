@@ -1,9 +1,10 @@
 package PandoraFMS::Tools;
 ##########################################################################
-# Pandora Tools Package
+# Tools Package
+# Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2007 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+# Copyright (c) 2005-2008 Artica Soluciones Tecnologicas S.L
 #
 #This program is free software; you can redistribute it and/or
 #modify it under the terms of the GNU General Public License
@@ -95,35 +96,37 @@ sub pandora_event (%$$$$$$$$) {
 
 sub pandora_get_os ($) {
 	$command = $_[0];
-	
-	if ($command =~ m/Windows/i){
-		return 9;
+	if (defined($command) && $command ne ""){
+		if ($command =~ m/Windows/i){
+			return 9;
+		}
+		elsif ($command =~ m/Linux/i){
+			return 1;
+		}
+		elsif ($command =~ m/BSD/i){
+			return 4;
+		}
+		elsif ($command =~ m/Cisco/i){
+			return 7;
+		}
+		elsif ($command =~ m/SunOS/i){
+			return 2;
+		}
+		elsif ($command =~ m/Solaris/i){
+			return 2;
+		}
+		elsif ($command =~ m/AIX/i){
+			return 3;
+		}
+		elsif ($command =~ m/HP-UX/i){
+			return 5;
+		}
+		else {
+			return 10; # Unknown / Other
+		}
+	} else {
+		return 10;
 	}
-	elsif ($command =~ m/Linux/i){
-		return 1;
-	}
-	elsif ($command =~ m/BSD/i){
-		return 4;
-	}
-	elsif ($command =~ m/Cisco/i){
-		return 7;
-	}
-	elsif ($command =~ m/SunOS/i){
-		return 2;
-	}
-	elsif ($command =~ m/Solaris/i){
-		return 2;
-	}
-	elsif ($command =~ m/AIX/i){
-		return 3;
-	}
-	elsif ($command =~ m/HP-UX/i){
-		return 5;
-	}
-	else {
-		return 10; # Unknown / Other
-	}
-
 }
 
 ##########################################################################
@@ -294,8 +297,9 @@ sub logger {
 	my $pa_config = $_[0];
 	my $fichero = $pa_config->{"logfile"};
 	my $datos = $_[1];
-	my $verbose_level = 2; # if parameter not passed, verbosity is 5 (DEBUG)
 	my $param2= $_[2];
+	my $verbose_level = 2; # if parameter not passed, verbosity is 2 
+
 	if (defined $param2){
 		if (is_numeric($param2)){
 			$verbose_level = $param2;
@@ -308,6 +312,12 @@ sub logger {
 		}
 	
 		my $time_now = &UnixDate("today","%Y/%m/%d %H:%M:%S");
+		if (-e $fichero){
+			my $filesize = (stat($fichero))[7];
+			if ( $filesize > $pa_config->{'max_log_size'}) {
+				rename ($fichero, $fichero.".old");
+			}	
+		}
 		open (FILE, ">> $fichero") or die "[FATAL] Cannot open logfile at $fichero";
 		my $server_name = $pa_config->{'servername'}.$pa_config->{"servermode"};
 		print FILE "$time_now $server_name $datos \n";

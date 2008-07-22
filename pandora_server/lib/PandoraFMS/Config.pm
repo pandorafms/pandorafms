@@ -1,6 +1,7 @@
 package PandoraFMS::Config;
 ##########################################################################
-# Pandora Config package
+# Configuration Package
+# Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
 # Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
 # Copyright (c) 2005-2008 Artica Soluciones Tecnologicas S.L
@@ -195,7 +196,10 @@ sub pandora_loadconfig {
 	$pa_config->{"xprobe2"} = "/usr/bin/xprobe2";
 	$pa_config->{'autocreate_group'} = 2;
 	$pa_config->{'autocreate'} = 1;
-    $pa_config{'recon_threads'} = 3;
+    $pa_config->{'recon_threads'} = 3;
+
+	# max log size (bytes)
+	$pa_config->{'max_log_size'} = 1048576; # 1MB by default
 
 	# Check for UID0
     if ($pa_config->{"quiet"} != 0){
@@ -402,7 +406,9 @@ sub pandora_loadconfig {
         elsif ($parametro =~ m/^recon_threads\s([0-9]*)/i) {
             $pa_config->{'recon_threads'}= clean_blank($1); 
         }
-
+		elsif ($parametro =~ m/^max_log_size\s([0-9]*)/i) {
+            $pa_config->{'max_log_size'}= clean_blank($1); 
+        }
     } # end of loop for parameter #
 
 
@@ -510,7 +516,7 @@ sub pandora_loadconfig {
 	# Check valid Database variables and update server status
 	eval {
 		$dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306", $pa_config->{'dbuser'}, $pa_config->{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
-		pandora_updateserver ($pa_config, $pa_config->{'servername'},1, $opmode, $dbh); # Alive status
+		pandora_updateserver ($pa_config, $pa_config->{'servername'}, 1, $opmode, $dbh); # Alive status
 	};
 	if ($@) {
 		logger ($pa_config, "Error connecting database in init Phase. Aborting startup.",0);

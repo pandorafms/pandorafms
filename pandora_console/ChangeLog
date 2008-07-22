@@ -1,3 +1,11 @@
+2008-07-22  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+	* operation/messages/message.php: Rewrote large parts of the script
+	Simplified functions. Fixed a bug where group messages sent a message
+	only to one member of a group. Also fixed a bug where it only displayed
+	your own group(s), right now it will display all users and groups a user
+	belongs to (using get_user_groups ()) so that you can send messages
+	to everyone.
+
 2008-07-22  Sancho Lerena <slerena@gmail.com>
 
 	* pandoradb_data.sql: Some changes for types not implemented in 2.0

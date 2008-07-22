@@ -1,3 +1,8 @@
+2008-07-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* win32/modules/pandora_module.cc: Fixed a bug that made the agent
+	  crash when a module returned data of the wrong type.
+
 2008-07-17  Manuel Arostegui <marostegui@artica.es>
 
 	* linux/pandora_agent.conf: Removed enabled debug by

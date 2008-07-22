@@ -350,10 +350,16 @@ Pandora_Module::getXml () {
 			data = *iter;
 			data_element = new TiXmlElement ("data");
 			element = new TiXmlElement ("value");
-			data_clean = strreplace (this->getDataOutput (data), "%", "%%" );
-			text = new TiXmlText (data_clean);
-			element->InsertEndChild (*text);
-			data_element->InsertEndChild (*element);
+			try {
+                data_clean = strreplace (this->getDataOutput (data), "%", "%%" );
+            } catch (Output_Error e) {
+	       		delete element;
+                continue;
+            }
+
+            text = new TiXmlText (data_clean);
+            element->InsertEndChild (*text);
+            data_element->InsertEndChild (*element);
 			delete text;
 			delete element;
 			
@@ -372,11 +378,14 @@ Pandora_Module::getXml () {
 	} else {
 		data = data_list->front ();
 		element = new TiXmlElement ("data");
-		data_clean = strreplace (this->getDataOutput (data), "%", "%%" );
-		text = new TiXmlText (data_clean);
-		element->InsertEndChild (*text);
-		root->InsertEndChild (*element);
-		delete text;
+		try {
+            data_clean = strreplace (this->getDataOutput (data), "%", "%%" );
+            text = new TiXmlText (data_clean);
+            element->InsertEndChild (*text);
+            root->InsertEndChild (*element);
+            delete text;
+        } catch (Output_Error e) {
+        }
 		delete element;
 	}
 		

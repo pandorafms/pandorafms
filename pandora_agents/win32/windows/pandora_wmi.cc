@@ -478,7 +478,7 @@ Pandora_Wmi::getTimestampLimit (int interval) {
 	// Substract the agent interval
 	limit_time_utc -= interval;
 	
-	limit_tm = localtime (&limit_time_utc);
+	limit_tm = localtime (&limit_time);
 	if (limit_tm == NULL) {
 		return "";
 	}

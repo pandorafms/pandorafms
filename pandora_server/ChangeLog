@@ -1,3 +1,10 @@
+2008-07-23  Sancho Lerena <slerena@gmail.com>
+
+	* Makefile.PL: Removed reference to export_server.
+
+	* DB.pm: Fixed bug that causes to do not store string data. Added checks
+	for aviod null text and skip max/min checks for string types.
+
 2008-07-22  Sancho Lerena <slerena@gmail.com>
 
 	* pandora_network: Minimal style changes. Added status change in 

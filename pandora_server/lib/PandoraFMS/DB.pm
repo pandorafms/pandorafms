@@ -578,7 +578,7 @@ sub pandora_writestate (%$$$$$$$) {
 	my $estado = $_[5];
 	my $dbh = $_[6];
 	my $needs_update = $_[7];
-
+	
 	my @data;
 	my $cambio = 0;
 
@@ -596,9 +596,20 @@ sub pandora_writestate (%$$$$$$$) {
 	my $id_agente = dame_agente_id ($pa_config, $nombre_agente, $dbh);
 	my $id_modulo = dame_modulo_id ($pa_config, $tipo_modulo, $dbh);
 	my $id_agente_modulo = dame_agente_modulo_id($pa_config, $id_agente, $id_modulo, $nombre_modulo, $dbh);
+
+	# Valid agent ?
 	if (($id_agente ==  -1) || ($id_agente_modulo == -1)) {
 		return 0;
 	}
+
+	# Valid string data ? (not null)
+	if (($id_modulo == 3) || ($id_modulo == 17) || ($id_modulo == 10) || ($id_modulo == 23)){
+			if ($datos eq "") {
+				return 0;
+			}
+	}
+
+
 
     my $id_grupo = dame_grupo_agente($pa_config, $id_agente,$dbh);
 
@@ -658,7 +669,7 @@ sub pandora_writestate (%$$$$$$$) {
 
 	    # Se supone que $data[5](estado) ( nos daria el estado ANTERIOR
     	# For xxxx_PROC type (boolean / monitor), create an event if state has changed
-	    if (( $data[5] != $estado) && ( ($tipo_modulo =~/keep_alive/) || ($tipo_modulo =~ /proc/)) ) {
+	    if (( $data[5] != $estado) && (($tipo_modulo =~/keep_alive/) || ($tipo_modulo =~ /proc/))) {
 	        # Cambio de estado detectado !
 	        $cambio = 1;
             $needs_update = 1;
@@ -1068,13 +1079,23 @@ sub pandora_writedata (%$$$$$$$$$$){
 	if (!defined($min)){
 		$min = "0";
 	}
+
 	# Obtenemos los identificadores
 	my $id_agente = dame_agente_id ($pa_config, $nombre_agente,$dbh);
-	# Check if exists module and agent_module reference in DB, if not, and learn mode activated, insert module in DB
+
+	# Check if exists module and agent_module reference in DB, 
+	# if not, and learn mode activated, insert module in DB
 	if ($id_agente eq "-1"){
 		goto fin_DB_insert_datos;
 	}
+
 	my $id_modulo = dame_modulo_id($pa_config, $tipo_modulo,$dbh);
+	if (($id_modulo == 3) || ($id_modulo == 17) || ($id_modulo == 10) || ($id_modulo == 23)){
+		if ($datos eq "") {
+			return 0;
+		}
+	}
+
 	my $id_agente_modulo = dame_agente_modulo_id($pa_config, $id_agente, $id_modulo, $nombre_modulo,$dbh);
 	# Pandora 1.3. Now uses integer to store timestamp in datatables
 	# much more faster to do comparations...
@@ -1087,26 +1108,31 @@ sub pandora_writedata (%$$$$$$$$$$){
 
 	# take max and min values for this id_agente_module
 	if ($id_agente_modulo != -1){ # ID AgenteModulo does exists
-		my $query_idag = "SELECT * FROM tagente_modulo WHERE id_agente = $id_agente AND id_agente_modulo = ".$id_agente_modulo;
-		my $s_idag = $dbh->prepare($query_idag);
-		$s_idag ->execute;
-		if ($s_idag->rows == 0) {
-			logger( $pa_config, "ERROR Cannot find agenteModulo $id_agente_modulo",6);
-			logger( $pa_config, "ERROR: SQL Query is $query_idag ",10);
-		} else  {    
-			@data = $s_idag->fetchrow_array(); 
-		}
-		$max = $data[5];
-		$min = $data[6];
 
-		# Postprocess
-		if (($data[23] != 0) && (is_numeric($data[23]))){
-			if (($id_modulo == 1) || ($id_modulo == 7) || ($id_modulo == 15) || ($id_modulo == 22) || ($id_modulo == 4) || ($id_modulo == 8) || ($id_modulo == 16) ){
+		# Postprocess and get MAX/MIN only for numeric moduletypes
+
+		if (($id_modulo != 3) && ($id_modulo != 17) && ($id_modulo != 10) && ($id_modulo != 23)){
+			my $query_idag = "SELECT * FROM tagente_modulo WHERE id_agente = $id_agente AND id_agente_modulo = ".$id_agente_modulo;
+			my $s_idag = $dbh->prepare($query_idag);
+			$s_idag ->execute;
+			if ($s_idag->rows == 0) {
+				logger( $pa_config, "ERROR Cannot find agenteModulo $id_agente_modulo",6);
+				logger( $pa_config, "ERROR: SQL Query is $query_idag ",10);
+			} else  {    
+				@data = $s_idag->fetchrow_array(); 
+			}
+			$max = $data[5];
+			$min = $data[6];
+
+			# Postprocess
+			if (($data[23] != 0) && (is_numeric($data[23]))){
 				$datos = $datos * $data[23];
 			}
+			$s_idag->finish();
+		} else {
+			$max = "";
+			$min = "";
 		}
-
-		$s_idag->finish();
 	} else { # Id AgenteModulo DOESNT exist, it could need to be created...
 		if (dame_learnagente($pa_config, $id_agente, $dbh) eq "1" ){
 			# Try to write a module and agent_module definition for that datablock
@@ -1114,7 +1140,7 @@ sub pandora_writedata (%$$$$$$$$$$){
 			$id_agente_modulo = crea_agente_modulo ($pa_config, $nombre_agente, $tipo_modulo, $nombre_modulo, $max, $min, $descripcion, $dbh);
 			$needscreate = 1; # Really needs to be created
 		} else {
-			logger( $pa_config, "VERBOSE: pandora_insertdata cannot find module definition ($nombre_modulo / $tipo_modulo )for agent $nombre_agente - Use LEARN MODE for autocreate.",2);
+			logger( $pa_config, "VERBOSE: pandora_insertdata cannot find module definition ($nombre_modulo / $tipo_modulo )for agent $nombre_agente - Use LEARN MODE for autocreate.", 3);
 			goto fin_DB_insert_datos;
 		}
 	} # Module exists or has been created
@@ -1146,6 +1172,7 @@ sub pandora_writedata (%$$$$$$$$$$){
 			# Two decimal float. We cannot store more
 			# to change this, you need to change mysql structure
 		}
+
 		# Detect changes between stored data and adquired data.
 		if ($data[2] ne $datos){
 			$needsupdate = 1;
@@ -1199,13 +1226,12 @@ sub pandora_writedata (%$$$$$$$$$$){
 			$timestamp = $dbh->quote($timestamp);
 			# Parse data entry for adecuate SQL representation.
 			$query = "INSERT INTO tagente_datos (id_agente_modulo, datos, timestamp, utimestamp, id_agente) VALUES ($id_agente_modulo, $datos, $timestamp, $utimestamp, $id_agente)";
-
-			# If data is out of limits, do not insert into database
-			if ($outlimit == 0){
-				logger($pa_config, "DEBUG: pandora_insertdata Calculado id_agente_modulo a $id_agente_modulo",6);
-				logger($pa_config, "DEBUG: pandora_insertdata SQL : $query",10);
-				$dbh->do($query); # Makes insertion in database
-			}
+		}
+		# If data is out of limits, do not insert into database
+		if ($outlimit == 0){
+			logger($pa_config, "DEBUG: pandora_insertdata Calculado id_agente_modulo a $id_agente_modulo",6);
+			logger($pa_config, "DEBUG: pandora_insertdata SQL : $query",10);
+			$dbh->do($query); # Makes insertion in database
 		}
 	}
 fin_DB_insert_datos:

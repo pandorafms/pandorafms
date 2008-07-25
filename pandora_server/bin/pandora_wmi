@@ -1,12 +1,14 @@
 #!/usr/bin/perl
 ##########################################################################
-# Pandora FMS Plugin Server
+# Pandora FMS WMI Server
+# http://www.pandorafms.com
 ##########################################################################
 # Copyright (c) 2008 Sancho Lerena, slerena@gmail.com
 #           (c) 2008 Artica Soluciones Tecnologicas S.L
+#
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; version 2 (only).
+# as published by the Free Software Foundation; version 2.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -144,6 +146,7 @@ sub pandora_shutdown {
     print " [*] Shutting down ".$pa_config{'servername'}.$pa_config{"servermode"} ."(received signal)...\n";
     pandora_event (\%pa_config, $pa_config{'servername'}.$pa_config{"servermode"}." going Down", 0,
                                    0, 4, 0, 0, "system", $dbh);
+	pandora_updateserver (\%pa_config, $pa_config{'servername'}, 0, 6, $dbh);
     exit;
 }
 

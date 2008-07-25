@@ -79,9 +79,9 @@ $lang_label["field2"]="Campo #2 (Línea sencilla)";
 $lang_label["field3"]="Campo #3 (Texto completo)";
 $lang_label["no_access_title"]="No tiene permiso para acceder a esta página";
 $lang_label["no_access_text"]="El acceso a esta página está restringido a usuarios autorizados, contacte con el administrador del sistema si necesita ayuda. <br><br>Todos los intentos de acceso a esta página son grabados en los logs de seguridad de Pandora FMS";
-$lang_label["header_title"]="Sistema Libre de Monitorización";
+$lang_label["header_title"]="el Sistema Flexible de Monitorización";
 
-$lang_label["gpl_notice"]="es un <b>Proyecto de Software Libre bajo licencia GPL</b>";
+$lang_label["gpl_notice"]="es un <b>Proyecto OpenSource bajo licencia GPL</b>";
 $lang_label["gpl_used"]="Desarrollado utilizando herramientas y software GPL"; 
 $lang_label["gen_date"]="Página generada el ";
 

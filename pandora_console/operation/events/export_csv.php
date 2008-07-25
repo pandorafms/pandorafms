@@ -1,7 +1,7 @@
 <?php
 
-// Pandora FMS 
-// ========================================
+// Pandora FMS - the Flexible Monitoring System
+// ============================================
 // Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
 // Main PHP/SQL code development and project architecture and management
 //
@@ -20,7 +20,7 @@ session_start();
 
 include ("../../include/config.php");
 include ("../../include/functions.php");
-include ("../../include/functions_db.php");
+include_once ("../../include/functions_db.php");
 
 session_write_close(); 
 

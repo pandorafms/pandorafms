@@ -1,6 +1,6 @@
 <?PHP
-// Pandora FMS - the Free Monitoring System
-// ========================================
+// Pandora FMS - the Flexible Monitoring System
+// ============================================
 // Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
@@ -189,6 +189,7 @@ if (mysql_num_rows ($result3)) {
 			echo $lang_label["never"];
 		} else {
 			$ahora = time();
+			// Async modules
 			if (($row3["id_tipo_modulo"] > 20) AND ($row3["id_tipo_modulo"] < 100)){
 				 echo human_time_comparation($row3["timestamp"]);
 			} else {

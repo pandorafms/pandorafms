@@ -53,7 +53,7 @@ if (defined ('AJAX')) {
 		echo '<strong>'.lang_string ('Last remote contact').':</strong> '.human_time_comparation($agent['ultimo_contacto_remoto']).'<br />';
 		
 		$sql = sprintf ('SELECT tagente_modulo.descripcion, tagente_modulo.nombre
-				FROM tagente_estado, tagente_modulo
+				FROM tagente_estado, tagente_modulo 
 				WHERE tagente_modulo.id_agente = %d
 				AND tagente_modulo.id_tipo_modulo in (2, 6, 9, 18, 21, 100)
 				AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
@@ -63,12 +63,18 @@ if (defined ('AJAX')) {
 		$sql = sprintf ('SELECT COUNT(*)
 				FROM tagente_modulo
 				WHERE id_agente = %d
+				AND disabled = 0 
 				AND id_tipo_modulo in (2, 6, 9, 18, 21, 100)', $id_agent);
 		$total_modules = get_db_sql ($sql);
 	
+		if ($bad_modules === false)
+			$size_bad_modules = 0;
+		else
+			$size_bad_modules = sizeof ($bad_modules);
+
 		// Modules down
-		if (sizeof ($bad_modules)) {
-			echo '<strong>'.lang_string ('Monitors down').':</strong> '.sizeof ($bad_modules).' / '.$total_modules;
+		if ($size_bad_modules > 0) {
+			echo '<strong>'.lang_string ('Monitors down').':</strong> '.$size_bad_modules.' / '.$total_modules;
 			echo '<ul>';
 			foreach ($bad_modules as $module) {
 				echo '<li>';

@@ -1,13 +1,11 @@
 <?php
 
-// Pandora FMS - the Free monitoring system
-// ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Pandora FMS - the Frexible monitoring system
+// ============================================
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
 // Main PHP/SQL code development and project architecture and management
 // Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP additions
-// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
-// Additions to Pandora FMS 1.2 graph code 
+// CSS and some PHP additions 
 // Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
 //
 // This program is free software; you can redistribute it and/or
@@ -176,6 +174,27 @@ if (give_acl($_SESSION["id_usuario"], 0, "AR")==1) {
 			echo "<div class='arrow'>";
 		}
 		echo "<ul class='mn'><li><a href='index.php?sec=eventos&amp;sec2=operation/events/event_statistics' class='mn'>".lang_string ("statistics")."</a></li></ul></div>";
+	}
+
+	// Event RSS
+	if (isset($_GET["sec"]) && $_GET["sec"] == "eventos"){
+		echo "<div class='arrow'>";
+		echo "<ul class='mn'><li>";
+		echo "<a target='_top' href='operation/events/events_rss.php' class='mn'>".lang_string ("RSS")."</a></li></ul></div>";
+	}
+
+	// Event CSV
+	if (isset($_GET["sec"]) && $_GET["sec"] == "eventos"){
+		echo "<div class='arrow'>";
+		echo "<ul class='mn'><li>";
+		echo "<a target='_top' href='operation/events/events_csv.php' class='mn'>".lang_string ("CSV File")."</a></li></ul></div>";
+	}
+	
+	// Event Marquee
+	if (isset($_GET["sec"]) && $_GET["sec"] == "eventos"){
+		echo "<div class='arrow'>";
+		echo "<ul class='mn'><li>";
+		echo "<a target='_top' href='operation/events/events_marquee.php' class='mn'>".lang_string ("Marquee")."</a></li></ul></div>";
 	}
 
 	// Users

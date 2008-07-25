@@ -1,6 +1,6 @@
 <?php
-// Pandora FMS - the Free Monitoring System
-// ========================================
+// Pandora FMS - the Flexible Monitoring System
+// =============================================
 // Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
@@ -28,10 +28,14 @@
  * $nothing Label when nothing is selected.
  * $nothing_value Value when nothing is selected
  */
-function print_select ($fields, $name, $selected = '', $script = '', $nothing = 'select', $nothing_value = '0', $return = false) {
+function print_select ($fields, $name, $selected = '', $script = '', $nothing = 'select', $nothing_value = '0', $return = false, $multiple = false) {
 	$output = "\n";
 	
 	$attributes = ($script) ? 'onchange="'. $script .'"' : '';
+	if ($multiple){
+		$attributes .= ' multiple="yes" size=10 ';
+	}
+
 	$output .= '<select id="'.$name.'" name="'.$name.'" '.$attributes.">\n";
 
 	if ($nothing != '') {
@@ -79,7 +83,7 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
  * $nothing Label when nothing is selected.
  * $nothing_value Value when nothing is selected
  */
-function print_select_from_sql ($sql, $name, $selected = '', $script = '', $nothing = 'select', $nothing_value = '0', $return = false) {
+function print_select_from_sql ($sql, $name, $selected = '', $script = '', $nothing = 'select', $nothing_value = '0', $return = false, $multiple = false) {
 	
 	$fields = array ();
 	$result = mysql_query ($sql);
@@ -92,7 +96,7 @@ function print_select_from_sql ($sql, $name, $selected = '', $script = '', $noth
 		$fields[$row[0]] = $row[1];
 	}
 	
-	$output = print_select ($fields, $name, $selected, $script, $nothing, $nothing_value, true);
+	$output = print_select ($fields, $name, $selected, $script, $nothing, $nothing_value, true, $multiple);
 	
 	if ($return)
 		return $output;
@@ -319,7 +323,7 @@ function print_table ($table, $return = false) {
 	}
 
 	if (empty ($table->class)) {
-		$table->class = 'databox_color';
+		$table->class = 'databox';
 	}
 	
 	$tableid = empty ($table->id) ? 'table'.$table_count : $table->id;

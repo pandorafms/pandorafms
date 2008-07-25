@@ -1,6 +1,6 @@
 <?php
-// Pandora FMS - the Free monitoring system
-// ========================================
+// Pandora FMS - the Flexible monitoring system
+// ============================================
 // Copyright (c) 2004-2008 Sancho Lerena, <slerena@gmail.com>
 // Copyright (c) 2005-2008 Artica Soluciones Tecnologicas
 
@@ -1333,7 +1333,7 @@ function get_db_sql ($sql, $field = 0) {
  * false in case of empty result
  */
 function get_db_all_rows_sql ($sql) {
-	$return = process_sql($sql);
+	$return = process_sql ($sql);
 	
 	if (! empty ($return))
 		return $return;

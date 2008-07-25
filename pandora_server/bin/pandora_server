@@ -90,10 +90,11 @@ my $dbh = DBI->connect("DBI:mysql:$dbname:$dbhost:3306",
 			$pa_config{'dbpass'},
 			{ RaiseError => 1, AutoCommit => 1 });
 
-# KeepAlive checks for Agents, only for master servers, in separate thread
+
 while (1) {
-	keep_alive_check (\%pa_config, $dbh);
 	pandora_serverkeepaliver (\%pa_config, 0, $dbh);
+	pandora_planned_downtime (\%pa_config, $dbh);
+	keep_alive_check (\%pa_config, $dbh);
 	threads->yield;
 	sleep ($pa_config{"server_threshold"});
 }

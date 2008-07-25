@@ -1,3 +1,20 @@
+2008-07-25  Sancho Lerena <slerena@gmail.com>
+
+	* pandora_network: Added a defined() check for tcp_send string.
+
+	* pandora_server: Added call to function pandora_planned_downtime().
+	This implements planned downtimes on data server only.
+
+	* DB.pm: Small optimization on bad data: pandora_writedata and 
+	pandora_writestate return -1 on bad values and skip processing data. 
+	More checks on undefined data (pandora_writestate). 
+	Added code for planned downtimes, in function pandora_planned_downtime().
+	Patch for adding [RECOVER] on f2/f3 if blank. Submitted by Kato Atsushi
+	Now Monitor down has priority Warning and Monitor UP priority normal.
+
+	* pandora_*servers*: Added inmediatly status change in tserver table on 
+	controlled shutdown, this could be a ordered shutdown, a kill or a CTRL-C
+
 2008-07-23  Sancho Lerena <slerena@gmail.com>
 
 	* Makefile.PL: Removed reference to export_server.

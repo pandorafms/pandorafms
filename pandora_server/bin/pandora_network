@@ -1,12 +1,16 @@
 #!/usr/bin/perl
+
 ##########################################################################
 # Pandora FMS Network Server
+# http://www.pandorafms.com
 ##########################################################################
 # Copyright (c) 2006-2008 Sancho Lerena, slerena@gmail.com
 #           (c) 2006-2008 Artica Soluciones Tecnologicas S.L
+#
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; version 2
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -382,7 +386,7 @@ next_pair:
 			$tcp_send = shift( @tcp_send );
 			$tcp_rcv  = shift( @tcp_rcv );
 
-		        if ($tcp_send ne ""){ # its Expected to sending data ?
+		        if  ((defined($tcp_send)) && ($tcp_send ne "")){ # its Expected to sending data ?
 			        # Send data
 			        $handle->autoflush(1);
 			        $tcp_send =~ s/\^M/\r\n/g;
@@ -390,7 +394,7 @@ next_pair:
 			        $handle->send($tcp_send);
 		        }
 		        # we expect to receive data ? (non proc types)
-		        if (($tcp_rcv ne "") || ($id_tipo_modulo == 10) || ($id_tipo_modulo ==8) || ($id_tipo_modulo == 11)) {
+		        if ((defined($tcp_rcv)) && (($tcp_rcv ne "") || ($id_tipo_modulo == 10) || ($id_tipo_modulo ==8) || ($id_tipo_modulo == 11))) {
 			        # Receive data, non-blocking !!!! (VERY IMPORTANT!)
 			        $temp2 = "";
 			        for ($tam=0; $tam<($pa_config->{'tcp_timeout'}); $tam++){

@@ -43,8 +43,9 @@ $SIG{'INT'} = 'pandora_shutdown';
 
 # Inicio del bucle principal de programa
 pandora_init(\%pa_config,"Pandora SNMP Console");
+
 # Read config file for Global variables
-pandora_loadconfig (\%pa_config,2);
+pandora_loadconfig (\%pa_config, 2);
 
 # Audit server starting
 pandora_audit (\%pa_config, "Pandora Server SNMP Console Daemon starting", "SYSTEM", "System");
@@ -82,7 +83,7 @@ sub pandora_snmptrapd {
 	my $sql_insert;
 	my @index_data;
 
-	if ( ! -e $snmp_logfile) { # Wait until a snmplogfile exists
+	while ( ! -e $snmp_logfile) { # Wait until a snmplogfile exists
 		sleep 5; 
 	}
 	open (SNMPLOGFILE, $snmp_logfile);
@@ -308,10 +309,11 @@ sub calcula_alerta_snmp {
 # Close system
 ########################################################################################
 sub pandora_shutdown {
-    logger (\%pa_config,"Pandora FMS Server '".$pa_config{'servername'}.$pa_config{"servermode"}."' Shutdown by signal ",0);
+    logger (\%pa_config, "Pandora FMS Server '".$pa_config{'servername'}.$pa_config{"servermode"}."' Shutdown by signal ",0);
     print " [*] Shutting down ".$pa_config{'servername'}.$pa_config{"servermode"} ."(received signal)...\n";
 	my $dbh = DBI->connect("DBI:mysql:$pa_config{'dbname'}:$pa_config{'dbhost'}:3306",$pa_config{'dbuser'}, $pa_config{'dbpass'}, { RaiseError => 1, AutoCommit => 1 });
     pandora_event (\%pa_config, $pa_config{'servername'}.$pa_config{"servermode"}." going Down", 0,
                                    0, 4, 0, 0, "system", $dbh);
+	pandora_updateserver (\%pa_config, $pa_config{'servername'}, 0, 2, $dbh);
     exit;
 }

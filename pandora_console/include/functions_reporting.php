@@ -1,7 +1,7 @@
 <?php
 
-// Pandora FMS - the Free Monitoring System
-// ========================================
+// Pandora FMS - the Flexible Monitoring System
+// ============================================
 // Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
@@ -119,7 +119,7 @@ function general_stats ($id_user, $id_group = 0) {
 	$data_alert = 0;
 	$data_alert_total = 0;
 	$monitor_alert_total = 0;
-	$ahora=date("Y/m/d H:i:s");
+	$ahora=date("Y-m-d H:i:s");
 	$ahora_sec = strtotime($ahora);
 	
 	// Prepare data to show

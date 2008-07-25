@@ -1,3 +1,49 @@
+2008-07-25  Sancho Lerena <slerena@gmail.com>
+
+	* pandoradb.sql: Added new tables for planned downtimes.
+	
+	* godmode/menu.php: Added entry for manage downtimes.
+
+	* group_list.php: Stetic changes in table.
+
+	* modificar_server.php: Fixed timestamp render for start/update 
+	timestamp of each server.
+
+	* functions.php: Minimal estetic changes in help function.
+
+	* functions_db.php: Change header (Flexible <- Free)
+
+	* functions_html.php: Now select admits multiselect option. Default
+	class for table render is now databox not databox_color.
+
+	* AUTHORS: Update list of authors and make a reference to contributors.
+
+	* function_reporting.php: Header change, updated datetime string format.
+
+	* language_en.php, language_es_es.php: Changed FREE for Flexible.
+
+	* pandora.css: Minimal changes. Update color of Monitor count in tactical.
+
+	* menu.php: Added some new event options: CSV Export, RSS and new marquee
+	event visualizer. 
+
+	* estado_ultimopaquete.php: Header update.
+
+	* tactical.php: Added link to data module alerts. 
+
+	* ver_agente.php: Fixed a problem in ajax code that was rending bad 
+	count of down monitors. Using boolean comparation on result of function
+	get_db_sql(). This kind problem could be in more lines of code.
+
+	* events.php: New quicklinks to RSS, CSV and Marquee in event viewer.
+
+	* export_csv.php, events_rss.php: Fixed duped call to function includes. 
+
+	* graph_viewer.php: I hope this fix FINALLY the annoying bug of graph
+	type selector.
+
+	* visual_console/index.php: Updated header.
+
 2008-07-22  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 	* operation/messages/message.php: Rewrote large parts of the script
 	Simplified functions. Fixed a bug where group messages sent a message

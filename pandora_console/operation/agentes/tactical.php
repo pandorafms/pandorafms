@@ -1,7 +1,7 @@
 <?php
 
-// Pandora FMS
-// ====================================
+// Pandora FMS - The Flexible Monitoring System
+// ============================================
 // Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
 // Copyright (c) 2005-2008 Artica Soluciones Tecnologicas, info@artica.es
 // Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
@@ -36,6 +36,7 @@ echo lang_string ("tactical_view")."</h2>";
 $data = general_stats ($id_user,-1);
 $monitor_checks = $data[0];
 $monitor_ok = $data[1];
+
 $monitor_bad = $data[2];
 $monitor_unknown = $data[3];
 $monitor_alert = $data[4];
@@ -106,7 +107,7 @@ echo "<br><br>";
 echo "<tr>";
 echo "<th colspan=2>".lang_string ("monitor_checks")."</th>";
 echo "<tr><td class=datos2><b>"."Monitor checks"."</b></td>";
-echo "<td style='font: bold 2em Arial' class='datos2'>";
+echo "<td style='font: bold 2em Arial;' class='datos2'>";
 echo "<a class='big_data' href='index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=-1'>";
 echo $monitor_checks."</A></td>";
 
@@ -181,11 +182,16 @@ if ($data_not_init > 0)
 else
 	echo "-";
 echo "<tr><td class=datos><b>"."Alerts Fired"."</b></td>";
-echo "<td class=datos style='font: bold 2em Arial; color: #f00;'>";
+
+
+echo "<td class=datos style='font: bold 2em Arial'>";
+echo "<a style=color:#f00' class='big_data'  href='index.php?sec=eventos&sec2=operation/events/events&search=&event_type=alert_fired'>";
 if ($data_alert > 0)
 	echo $data_alert;
 else
 	echo "-";
+echo "</A>";
+
 echo "<tr><td class=datos2><b>"."Alerts Total";
 echo "<td class=datos2 style='font: bold 2em Arial'>".$data_alert_total;
 

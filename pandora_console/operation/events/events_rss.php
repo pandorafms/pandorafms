@@ -1,5 +1,5 @@
 <?php
-// Pandora FMS - the Free monitoring system
+// Pandora FMS - the Flexible monitoring system
 // ========================================
 // Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
 // Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
@@ -20,7 +20,7 @@ error_reporting(E_ALL);
 
 require "../../include/config.php";
 require "../../include/functions.php";
-require "../../include/functions_db.php";
+require_once "../../include/functions_db.php";
 
 $constraints = "";
 

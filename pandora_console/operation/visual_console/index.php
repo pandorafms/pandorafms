@@ -1,10 +1,10 @@
 <?PHP
 
-// Pandora FMS - the Free monitoring system
+// Pandora FMS - the Flexible Monitoring System
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
 // Main PHP/SQL code development and project architecture and management
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
+// Copyright (c) 2005-2008 Artica Soluciones Tecnologicas, info@artica.es
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License

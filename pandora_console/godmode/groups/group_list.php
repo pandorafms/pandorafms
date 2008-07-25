@@ -109,7 +109,7 @@ if ($delete_group) {
 echo "<h2>".lang_string ("group_management")." &gt; ";	
 echo lang_string ("definedgroups")."</h2>";
 
-$table->width = '400px';
+$table->width = '65%';
 $table->head = array ();
 $table->head[0] = lang_string ("icon");
 $table->head[1] = lang_string ("name");

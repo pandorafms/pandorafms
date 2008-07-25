@@ -661,7 +661,7 @@ span#logo_text2 {
 }
 
 td.datos_green, td.datos_greenf9 {
-	background-color: #C7EAD5;
+	background-color: #BBFFA4;
 	padding: 5px 5px 5px 5px;
 }
 
@@ -681,7 +681,7 @@ td.datos_blue, td.datos_bluef9 {
 }
 
 td.datos_grey, td.datos_greyf9 {
-	background-color: #DCDCDC;
+	background-color: #E4E4E4;
 	padding: 5px 5px 5px 5px;
 }
 
@@ -752,4 +752,5 @@ td.big_data {
 
 a.big_data {
 	text-decoration: none; font: bold 1em Arial, Sans-serif;
+	color: #000;
 }

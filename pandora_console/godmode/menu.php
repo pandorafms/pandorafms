@@ -63,6 +63,17 @@ if (comprueba_login() == 0){
 				    echo "<div class='arrowg'>";
 			    echo "<ul class='mn'><li><a href='index.php?sec=gagente&amp;sec2=godmode/groups/group_list' class='mn'>".lang_string ("manage_groups")."</a></li></ul></div>";
 		    }
+
+			// Planned downtimes
+            if ((give_acl($id_user, 0, "AW")==1)){
+			    if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/agentes/planned_downtime" || $_GET["sec2"] == "godmode/agentes/planned_downtime")){
+				    echo "<div class='arrowgs'>";
+			    }
+			    else
+				    echo "<div class='arrowg'>";
+			    echo "<ul class='mn'><li><a href='index.php?sec=gagente&sec2=godmode/agentes/planned_downtime' class='mn'>".lang_string ("Scheduled downtime")."</a></li></ul></div>";
+		    }
+
 	    }
     }
 

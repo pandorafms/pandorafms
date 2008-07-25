@@ -1,6 +1,6 @@
 <?php
-// Pandora FMS - the Free Monitoring System
-// ========================================
+// Pandora FMS - the Flexible Monitoring System
+// ============================================
 // Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
@@ -179,8 +179,10 @@ echo "<h2>".$lang_label["events"]." &gt; ".lang_string ("event_main_view"). "&nb
 
 if ($config["pure"] == 1)
 	echo "<a target='_top' href='$url&pure=0'><img src='images/monitor.png' title='".lang_string("Normal screen")."'></a>";
-else
+else {
+	// Fullscreen
 	echo "<a target='_top' href='$url&pure=1'><img src='images/monitor.png' title='".lang_string("Full screen")."'></a>";
+}
 echo "</h2>";
 
 echo "<a href=\"javascript:;\" onmousedown=\"toggleDiv('event_control');\">";
@@ -250,8 +252,15 @@ echo "<input type='text' size=15 value='".$search."' name='search'>";
 echo "<td colspan=2>";
 echo "<input type=submit value='".lang_string("Update")."' class='sub upd'>";
 echo "&nbsp;&nbsp;&nbsp;";
+
+// CSV
 echo "<a href='operation/events/export_csv.php?ev_group=$ev_group&event_type=$event_type&search=$search&severity=$severity&status=$status&id_agent=$id_agent'>";
-echo "<img src='images/wand.png' title='Export to CSV file'></A>";
+echo "<img src='images/disk.png' title='Export to CSV file'></A>";
+// Marquee
+echo "&nbsp;<a target='_top' href='operation/events/events_marquee.php'><img src='images/heart.png' title='".lang_string("Marquee display")."'></a>";
+// RSS
+echo "&nbsp;<a target='_top' href='operation/events/events_rss.php'><img src='images/transmit.png' title='".lang_string("RSS Events")."'></a>";
+
 
 echo "</table>";
 echo "</form>";

@@ -83,9 +83,10 @@ if (isset($_GET["view_graph"])){
 			$period = 3600 * $period;
 		$events = $row["events"];
 		$description = $row["description"];
-		$stacked = (int) get_parameter ('stacked');
-		if (! $stacked)
+		$stacked = (int) get_parameter ('stacked', -1);
+		if ($stacked == -1)
 			$stacked = $row["stacked"];
+		
 
 		$name = $row["name"];
 		if (($row["private"]==1) && ($row["id_user"] != $id_user)){
@@ -139,10 +140,11 @@ border=1 alt=''>";
 
 		echo "<td class='datos'>";
 		$stackeds = array ();
+		$stackeds[0] = lang_string ('Graph defined');
 		$stackeds[0] = lang_string ('Area');
 		$stackeds[1] = lang_string ('Stacked area');
 		$stackeds[2] = lang_string ('Line');
-		print_select ($stackeds, 'stacked', $stacked , '', '', 0);
+		print_select ($stackeds, 'stacked', $stacked , '', '', -1, false, false);
 
 		echo "<td class='datos'>";
 		$zooms = array();

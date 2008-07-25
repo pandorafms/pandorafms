@@ -712,3 +712,20 @@ CREATE TABLE `tserver_export_data` (
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `tplanned_downtime` (
+  `id` int(20) unsigned NOT NULL auto_increment,
+  `description` varchar(255) NOT NULL default '',
+  `start` date NOT NULL default '0000-00-00',
+  `stop` date NOT NULL default '0000-00-00',
+  `start_time` time NOT NULL default '00:00:00',
+  `stop_time` time NOT NULL default '00:00:00',
+  `executed` tinyint(2) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `tplanned_downtime_agents` (
+  `id` int(20) unsigned NOT NULL auto_increment,
+  `id_agent` mediumint(8) unsigned NOT NULL default '0',
+  `id_downtime` mediumint(8) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

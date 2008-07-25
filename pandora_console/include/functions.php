@@ -1,7 +1,7 @@
 <?php
 
-// Pandora FMS - the Free Monitoring System
-// ========================================
+// Pandora FMS - the Flexible Monitoring System
+// ============================================
 // Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
@@ -186,7 +186,7 @@ function give_human_time ($int_seconds) {
  * @param help_id Help id to be shown when clicking.
  */
 function popup_help ($help_id, $return = false) {
-	$output = "<a href='javascript:help_popup(".$help_id.")'>[H]</a>";
+	$output = "&nbsp;<a href='javascript:help_popup(".$help_id.")'>[H]</a>";
 	if ($return)
 		return $output;
 	echo $output;

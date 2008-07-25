@@ -1,16 +1,8 @@
 <?php
-
-// Pandora FMS - the Free monitoring system
+// Pandora FMS - the Flexible monitoring system
 // ========================================
 // Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
 // Main PHP/SQL code development and project architecture and management
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP additions
-// Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
-// Javascript Active Console code.
-// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
-// Additions to Pandora FMS 1.2 graph code and new XML reporting template management
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -22,34 +14,40 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 // Load global vars
 require("include/config.php");
 
-if (comprueba_login() == 0) {
- 	if ((give_acl($id_user, 0, "AR")==1) or (give_acl($id_user,0,"AW")) or (dame_admin($id_user)==1)) {
+check_login();
 
-	if (isset($_GET["delete"])) {
-		$id_server=entrada_limpia($_GET["server_del"]);
-		$sql = "DELETE FROM tserver WHERE id_server='".$id_server."'";
-		$result=mysql_query($sql);
-		if ($result) echo "<h3 class='suc'>".$lang_label["del_server_ok"]."</h3>";
-		else echo "<h3 class='suc'>".$lang_label["del_server_no"]."</h3>";
-	}
-	
-	if (isset($_GET["update"])) {
-		$name=entrada_limpia($_POST["name"]);
-		$address=entrada_limpia($_POST["address"]);
-		$description=entrada_limpia($_POST["description"]);
-		$id_server=entrada_limpia($_POST["server"]);
-		$sql = "UPDATE tserver SET name='".$name."', ip_address='".$address."', description='".$description."' WHERE id_server='".$id_server."'";
-		$result=mysql_query($sql);
-		if ($result) echo "<h3 class='suc'>".$lang_label["upd_server_ok"]."</h3>";
-		else echo "<h3 class='suc'>".$lang_label["upd_server_no"]."</h3>";
-	}
-	if (isset($_GET["server"])) {
-		$id_server=entrada_limpia($_GET["server"]);
-		echo "<h2>".$lang_label["view_servers"]." &gt; ";
-		echo $lang_label["update_server"]."</h2>";
+if ((give_acl($config["id_user"], 0, "AR")!=1) AND (give_acl($id_user, 0, "AW") != 1)) {
+	audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to access Server Management");
+	require ("general/noaccess.php");
+}
+
+if (isset($_GET["delete"])) {
+	$id_server=entrada_limpia($_GET["server_del"]);
+	$sql = "DELETE FROM tserver WHERE id_server='".$id_server."'";
+	$result=mysql_query($sql);
+	if ($result) echo "<h3 class='suc'>".$lang_label["del_server_ok"]."</h3>";
+	else echo "<h3 class='suc'>".$lang_label["del_server_no"]."</h3>";
+}
+
+if (isset($_GET["update"])) {
+	$name=entrada_limpia($_POST["name"]);
+	$address=entrada_limpia($_POST["address"]);
+	$description=entrada_limpia($_POST["description"]);
+	$id_server=entrada_limpia($_POST["server"]);
+	$sql = "UPDATE tserver SET name='".$name."', ip_address='".$address."', description='".$description."' WHERE id_server='".$id_server."'";
+	$result=mysql_query($sql);
+	if ($result) echo "<h3 class='suc'>".$lang_label["upd_server_ok"]."</h3>";
+	else echo "<h3 class='suc'>".$lang_label["upd_server_no"]."</h3>";
+}
+
+if (isset($_GET["server"])) {
+	$id_server=entrada_limpia($_GET["server"]);
+	echo "<h2>".$lang_label["view_servers"]." &gt; ";
+	echo $lang_label["update_server"]."</h2>";
 
 	$query="SELECT * FROM tserver WHERE id_server=".$id_server;
 	$result=mysql_query($query);
@@ -75,20 +73,18 @@ if (comprueba_login() == 0) {
 	}
 	else {
 		echo "<div class='nf'>".$lang_label["no_server"]."</div>";
-		}
+	}
 	echo '</table>';
 	echo '<table cellpadding="4" cellspacing="4" width="450">';
 	echo '<tr><td align="right">';
 	echo '<input type="submit" class="sub upd" value="'.$lang_label["update"].'"></table>';
-	}
-	else
-	{
+} 
+else {
+
 	$sql='SELECT * FROM tserver';
-	
 	echo "<h2>".$lang_label["view_servers"]." &gt; ";
 	echo $lang_label["manage_servers"]."</h2>";
 
-	// Connect DataBase
 	$result=mysql_query($sql);
 	if (mysql_num_rows($result)){
 		echo "<table cellpadding='4' cellspacing='4' witdh='550' class='databox'>";
@@ -150,8 +146,9 @@ if (comprueba_login() == 0) {
 			if ($checksum == 1){
 				echo "&nbsp; <img src='images/binary.png'>";
 			}
-			echo "</td><td class='".$tdcolor."f9' align='middle'>".substr($keepalive,0,25)."</td>";
+			echo "</td>";
 			echo "<td class='".$tdcolor."f9' align='middle'>".substr($laststart,0,25)."</td>";
+			echo "<td class='".$tdcolor."f9' align='middle'>".substr($keepalive,0,25)."</td>";
 			echo "<td class='".$tdcolor."f9' align='middle'>
 			<a href='index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_del=".$id_server."&delete'>
 			<img src='images/cross.png' border='0'></td></tr>";
@@ -180,12 +177,7 @@ if (comprueba_login() == 0) {
 	}
 	else {
 		echo "<div class='nf'>".$lang_label["no_server"]."</div>";
-		}
 	}
+}
 
-} else {
-	audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Agent view");
-		require ("general/noaccess.php");
-}
-}
 ?>

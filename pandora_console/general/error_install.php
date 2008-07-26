@@ -1,10 +1,7 @@
 <?php
 // Pandora FMS - the Free Monitoring System
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development, project architecture and management.
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP code additions
+// Copyright (c) 2008 Ártica Soluciones Tecnológicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -18,7 +15,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-include "include/languages/language_en.php";
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -45,7 +41,10 @@ include "include/languages/language_en.php";
 		<?php echo $pandora_version; ?>
 		</font>
 	</div>
-	<div class="msg"><br><br>For security reasons, normal operation is not possible until you delete installer file. Please delete the <b>./install.php</b> file before running Pandora FMS Console.</div>
+	<div class="msg"><br><br>
+	For security reasons, normal operation is not possible until you delete installer file. 
+	Please delete the <i>./install.php</i> file before running Pandora FMS Console.
+	</div>
 </div>
 </div>
 </body>

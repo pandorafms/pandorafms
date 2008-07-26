@@ -1,3 +1,8 @@
+2008-07-26  Raul Mateos <raulofpandora@gmail.com>
+
+	* general/error_noconfig.php, error_install.php, error_perms.php: Updated headers, solved
+	english language typos, deleted includes not used. Better coding style.
+
 2008-07-25  Sancho Lerena <slerena@gmail.com>
 
 	* pandoradb.sql: Added new tables for planned downtimes.

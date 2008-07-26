@@ -1,10 +1,7 @@
 <?php
 // Pandora FMS - the Free Monitoring System
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development, project architecture and management.
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP code additions
+// Copyright (c) 2008 Ártica Soluciones Tecnológicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -18,8 +15,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
-include "include/languages/language_en.php";
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -45,7 +40,12 @@ include "include/languages/language_en.php";
 		<img src="images/pandora_logo.png" border="0"></a><br>
 		<font size="1"><?php echo $pandora_version; ?></font>
 	</div>
-	<div class="msg"><br><br>For security reasons, <i>config.php</i> must have restrictive permissions, and "other" users cannot read or write to it. It could be writed only for owner (usually www-data or http daemon user), normal operation is not possible until you change permissions for <i>include/config.php</i> file. Please do it, it's for your security.</div>
+	<div class="msg"><br><br>
+	For security reasons, <i>config.php</i> must have restrictive permissions, and "other" users 
+	should not read it or write to it. It should be written only for owner 
+	(usually www-data or http daemon user), normal operation is not possible until you change 
+	permissions for <i>include/config.php</i> file. Please do it, it's for your security.
+	</div>
 </div>
 </div>
 </body>

@@ -1,11 +1,7 @@
 <?php
-
 // Pandora FMS - the Free Monitoring System
 // ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development, project architecture and management.
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP code additions
+// Copyright (c) 2008 Ártica Soluciones Tecnológicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -18,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
-include "include/languages/language_en.php";
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -48,8 +42,12 @@ include "include/languages/language_en.php";
 	</div>
 	<div class="msg">
 	<br><br>Pandora FMS Console cannot find <i>include/config.php</i> or this file has invalid
-	permissiones and HTTP server cannot read it. Please read documentation to fix this problem.</div>
+	permissions and HTTP server cannot read it. Please read documentation to fix this problem.
 	</div>
+	<div class="msg">
+	You can also try to run the <a href="install.php">installation wizard</a> to create one.
+	</div>
+</div>
 </div>
 </body>
 </html>

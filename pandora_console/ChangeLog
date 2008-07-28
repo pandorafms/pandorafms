@@ -1,5 +1,7 @@
 2008-07-27  Sancho Lerena <slerena@gmail.com>
 
+	* events_marquee.php: Small improvement, show agent name.
+
 	* events_marquee.php: I forget to commit this file in my prev. 
 	commit. This is a new file because I lost it :-(
 

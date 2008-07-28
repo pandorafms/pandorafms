@@ -29,11 +29,16 @@ require "../../include/config.php";
 require_once "../../include/functions.php";
 require_once "../../include/functions_db.php";
 
-$sql = "SELECT evento, timestamp FROM tevento ORDER BY utimestamp DESC LIMIT 0 , $MAX_MARQUEE_EVENTS";
+$sql = "SELECT evento, timestamp, id_agente FROM tevento ORDER BY utimestamp DESC LIMIT 0 , $MAX_MARQUEE_EVENTS";
 
 $result=mysql_query($sql);
 while($row=mysql_fetch_array($result,MYSQL_ASSOC)) {
-	$output .= $row["evento"]. " ( ". human_time_comparation($row["timestamp"]). " ) ";
+	$agente = "";
+	if ($row["id_agente"] != 0){
+		$agente = get_db_sql ("SELECT nombre FROM tagente WHERE id_agente = ". $row["id_agente"]);
+		$agente = $agente . " : ";
+	}
+	$output .= strtoupper($agente) . $row["evento"]. " , ". human_time_comparation($row["timestamp"]);
 	$output .= ".&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp;&nbsp;&nbsp;&nbsp;. ";
 }
 

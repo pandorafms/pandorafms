@@ -1,3 +1,11 @@
+2008-07-27  Sancho Lerena <slerena@gmail.com>
+
+	* events_marquee.php: I forget to commit this file in my prev. 
+	commit. This is a new file because I lost it :-(
+
+	* planned_downtime.php: It is LOST :(. I need to code from scratch,
+	 probably this stuff don't see the light in weeks. Server code works.
+
 2008-07-26  Raul Mateos <raulofpandora@gmail.com>
 
 	* general/error_noconfig.php, error_install.php, error_perms.php: Updated headers, solved

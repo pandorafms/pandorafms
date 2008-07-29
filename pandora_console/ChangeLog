@@ -1,3 +1,10 @@
+2008-07-29  Evi Vanoost <vanooste@rcbi.rochester.edu>
+	
+	* functions_db.php: Style changes, updated process_sql so it can return other 
+	interesting stuff on INSERT. No functions have direct mysql functions anymore
+
+	* logon_ok.php: Style changes. Made it use the DB functions
+
 2008-07-27  Sancho Lerena <slerena@gmail.com>
 
 	* events_marquee.php: Small improvement, show agent name.

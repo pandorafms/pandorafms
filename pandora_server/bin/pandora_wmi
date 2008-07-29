@@ -27,6 +27,7 @@ use Date::Manip;        # Needed to manipulate DateTime formats of input, output
 use Time::Local;        # DateTime basic manipulation
 use threads;
 use threads::shared;
+use HTML::Entities;
 
 # Pandora Modules
 use PandoraFMS::Config;
@@ -338,13 +339,12 @@ sub exec_wmi_module {
 	# Name|State
 	# Eventlog|Running
 
-	my $wmi_query = $agent_module->{'snmp_oid'};
-	$wmi_query =~ s/&quot;/\"/g;
-	$wmi_query =~ s/\"/\\\"/g;
+	my $wmi_query = decode_entities($agent_module->{'snmp_oid'});
+	$wmi_query =~ s/\"/\'/g;
 
-    $wmi_command = $wmi_command . " -U ". $agent_module->{'plugin_user'} ."%". $agent_module->{'plugin_pass'};
-    $wmi_command = $wmi_command . " //". $agent_module->{'ip_target'};
-    $wmi_command = $wmi_command . " \"". $wmi_query . "\"";
+    $wmi_command .= " -U \"". $agent_module->{'plugin_user'} ."\"%\"". $agent_module->{'plugin_pass'} . "\"";
+    $wmi_command .= " //". $agent_module->{'ip_target'};
+    $wmi_command .= " \"". $wmi_query . "\"";
     logger ($pa_config, "Executing AM # $id_am WMI command '$wmi_command'", 9);
     
     eval {

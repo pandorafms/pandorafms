@@ -1,3 +1,7 @@
+2008-07-29  Ramon Novoa  <rnovoa@artica.es>
+
+	* bin/pandora_wmi: Small fixes.
+
 2008-07-25  Sancho Lerena <slerena@gmail.com>
 
 	* pandora_network: Added a defined() check for tcp_send string.

@@ -128,8 +128,8 @@ AND tusuario_perfil.id_usuario = '%s' AND (tusuario_perfil.id_grupo = %d OR tusu
  * @param descripcion Long action description
  */
 function audit_db ($id, $ip, $accion, $descripcion){
-	$sql1 = sprintf ("INSERT INTO tsesion (ID_usuario, accion, fecha, IP_origen,descripcion, utimestamp) VALUES ('%s','%s',NOW(),'%s','%s',UNIX_TIMESTAMP(NOW()))",$id,$accion,$ip,$descripcion);
-	mysql_query($sql1);
+	$sql = sprintf ("INSERT INTO tsesion (ID_usuario, accion, fecha, IP_origen,descripcion, utimestamp) VALUES ('%s','%s',NOW(),'%s','%s',UNIX_TIMESTAMP(NOW()))",$id,$accion,$ip,$descripcion);
+	process_sql ($sql);
 }
 
 /**
@@ -142,7 +142,7 @@ function logon_db ($id_user, $ip) {
 	audit_db ($id_user, $ip, "Logon", "Logged in");
 	// Update last registry of user to set last logon. How do we audit when the user was created then?
 	$sql = sprintf ("UPDATE tusuario SET fecha_registro = NOW() WHERE id_usuario = '%s'", $id_user);
-	mysql_query ($sql);
+	process_sql ($sql);
 }
 
 /**
@@ -766,15 +766,15 @@ function borrar_incidencia ($id_inc) {
 	global $config;
 	
 	$sql = sprintf ("DELETE FROM `tincidencia` WHERE `id_incidencia` = %d",$id_inc);
-	mysql_query ($sql);
+	process_sql ($sql);
 	$sql = sprintf ("SELECT `id_nota` FROM `tnota_inc` WHERE `id_incidencia` = %d".$id_inc);
 	$rows = get_db_all_rows_sql ($sql);
 	foreach ($rows as $row) {
 		$sql = sprintf ("DELETE FROM `tnota` WHERE `id_nota` = %d",$row["id_nota"]);
-		mysql_query ($sql);
+		process_sql ($sql);
 	}
 	$sql = "DELETE FROM `tnota_inc` WHERE `id_incidencia` = ".$id_inc;
-	mysql_query ($sql);
+	process_sql ($sql);
 	
 	// Delete attachments
 	$sql = sprintf ("SELECT `id_attachment`,`filename` FROM `tattachment` WHERE `id_incidencia` = %d",$id_inc);
@@ -784,7 +784,7 @@ function borrar_incidencia ($id_inc) {
 		unlink ($attachment_store."attachment/pand".$row["id_attachment"]."_".$row["filename"]);
 	}
 	$sql = sprintf ("DELETE FROM `tattachment` WHERE `id_incidencia` = %d",$id_inc);
-	mysql_query ($sql);
+	process_sql ($sql);
 }
 
 /** 
@@ -807,7 +807,7 @@ function update_user_contact ($id_user) {
 	global $config;
 	
 	$sql = sprintf ("UPDATE `tusuario` set `fecha_registro` = NOW() WHERE 'id_usuario' = %d",$id_user);
-	mysql_query ($sql);
+	process_sql ($sql);
 }
 
 /** 
@@ -913,7 +913,7 @@ function event_insert ($event, $id_group, $id_agent, $status = 0,
 			$id_agent, $id_group, $event, $status, $id_user, $event_type,
 			$priority, $id_agent_module, $id_aam);
 
-	mysql_query ($sql);
+	process_sql ($sql);
 }
 
 /** 
@@ -968,17 +968,12 @@ function give_agentmodule_flag ($id_agent_module) {
 function list_group ($id_user, $show_all = 1){
 	$mis_grupos = array (); // Define array mis_grupos to put here all groups with Agent Read permission
 	$sql = 'SELECT id_grupo, nombre FROM tgrupo';
-	$result = mysql_query ($sql);
-	while ($row = mysql_fetch_array ($result)) {
-		if ($row["id_grupo"] != 0) {
-			if (give_acl($id_user,$row["id_grupo"], "AR") == 1) {
-				if (($row["id_grupo"] != 1) || ($show_all == 1)) {
-					//Put in  an array all the groups the user belongs to
-					array_push ($mis_grupos, $row["id_grupo"]);
-					echo "<option value='".$row["id_grupo"]."'>".
-					$row["nombre"]."</option>";
-				}
-			}
+	$result = get_db_all_rows_sql ($sql);
+	foreach ($result as $row) {
+		if (($row["id_grupo"] != 1 || $show_all == 1) && $row["id_grupo"] != 0 && give_acl($id_user,$row["id_grupo"], "AR") == 1) {
+			//Put in  an array all the groups the user belongs to
+			array_push ($mis_grupos, $row["id_grupo"]);
+			echo '<option value="'.$row["id_grupo"].'">'.$row["nombre"].'</option>';
 		}
 	}
 	return ($mis_grupos);
@@ -994,14 +989,15 @@ function list_group ($id_user, $show_all = 1){
  * @return A list of the groups the user has reading privileges.
  */
 function list_group2 ($id_user) {
-	$mis_grupos[]=""; // Define array mis_grupos to put here all groups with Agent Read permission
-	$sql = 'SELECT id_grupo FROM tgrupo';
-	$result = mysql_query ($sql);
-	while ($row = mysql_fetch_array ($result)) {
+	$mis_grupos = array (); // Define array mis_grupos to put here all groups with Agent Read permission
+	$result = get_db_all_fields_in_table ("tgrupo","id_grupo");
+	
+	foreach ($result as $row) {
 		if (give_acl ($id_user, $row["id_grupo"], "AR") == 1) {
-			$mis_grupos[]=$row["id_grupo"]; //Put in  an array all the groups the user belongs
+			array_push ($mis_grupos, $row["id_grupo"]); //Put in array all the groups the user belongs to
 		}
-	}
+	}	
+	
 	return ($mis_grupos);
 }
 
@@ -1136,34 +1132,28 @@ function give_network_profile_name ($id_network_profile) {
  * @param ip_address IP address to assign
  */
 function agent_add_address ($id_agent, $ip_address) {
-	$address_exist = 0;
-	$id_address =-1;
-	$address_attached = 0;
-
 	// Check if already is attached to agent
-	$sql = "SELECT * FROM taddress_agent, taddress
+	$sql = sprintf ("SELECT COUNT(`ip`) FROM taddress_agent, taddress
 		WHERE taddress_agent.id_a = taddress.id_a
-		AND ip = '$ip_address'
-		AND id_agent = $id_agent";
+		AND ip = '%s' AND id_agent = %d",$ip_address,$id_agent);
 	$current_address = get_db_row_sql ($sql);
-	if ($current_address)
+	if ($current_address > 0)
 		return;
 	
 	// Look for a record with this IP Address
 	$id_address = (int) get_db_value ('id_a', 'taddress', 'ip', $ip_address);
 	
-	if (! $id_address) {
+	if ($id_address === 0) {
 		// Create IP address in tadress table
-		$sql = "INSERT INTO taddress (ip) VALUES ('$ip_address')";
-		mysql_query ($sql);
-		$id_address = mysql_insert_id ();
+		$sql = sprintf("INSERT INTO taddress (ip) VALUES ('%s')",$ip_address);
+		$id_address = process_sql ($sql, "insert_id");
 	}
 	
 	// Add address to agent
-	$sql = "INSERT INTO taddress_agent
+	$sql = sprintf("INSERT INTO taddress_agent
 			(id_a, id_agent) VALUES
-			($id_address, $id_agent)";
-	mysql_query ($sql);
+			(%d, %d)",$id_address, $id_agent);
+	process_sql ($sql);
 }
 
 /** 
@@ -1173,28 +1163,21 @@ function agent_add_address ($id_agent, $ip_address) {
  * @param ip_address IP address to unassign
  */
 function agent_delete_address ($id_agent, $ip_address) {
-	$address_exist = 0;
-	$id_address =-1;
-	$sql = "SELECT * FROM taddress_agent, taddress
-		WHERE taddress_agent.id_a = taddress.id_a
-		AND ip = '$ip_address'
-		AND id_agent = $id_agent";
-	if ($resq1 = mysql_query ($sql)) {
-		$rowdup = mysql_fetch_array($resq1);
-		$id_ag = $rowdup["id_ag"];
-		$id_a = $rowdup["id_a"];
-		$sql = "DELETE FROM taddress_agent WHERE id_ag = $id_ag";	
-		mysql_query ($sql);
+	$sql = sprintf ("SELECT id_ag FROM taddress_agent, taddress
+		WHERE taddress_agent.id_a = taddress.id_a AND ip = '%s'
+		AND id_agent = %d",$ip_address, $id_agent);
+	$id_ag = get_db_sql ($sql);
+	if ($id_ag !== false) {
+		$sql = sprintf ("DELETE FROM taddress_agent WHERE id_ag = %d",$id_ag);	
+		process_sql ($sql);
 	}
 	// Need to change main address ? 
 	if (give_agent_address ($id_agent) == $ip_address) {
 		$new_ip = give_agent_address_from_list ($id_agent);
 		// Change main address in agent to whis one
-		$query = "UPDATE tagente 
-			(direccion) VALUES
-			($new_ip)
-			WHERE id_agente = $id_agent ";
-		mysql_query ($query);
+		$query = sprintf ("UPDATE tagente (direccion) VALUES
+			('%s') WHERE id_agente = %d ",$new_ip,$id_agent);
+		process_sql ($query);
 	}
 }
 
@@ -1345,8 +1328,18 @@ function get_db_all_rows_sql ($sql) {
  * This function comes back with an array in case of SELECT
  * in case of UPDATE, DELETE etc. with affected rows
  * an empty array in case of SELECT without results
+ * Queries that return data will be cached so queries don't get repeated
+ *
+ * @param $sql SQL statement to execute
+ *
+ * @param $rettype (optional) What type of info to return in case of INSERT/UPDATE.
+ *        insert_id will return the ID of an autoincrement value
+ *        info will return the full (debug) information of a query
+ *        default will return mysql_affected_rows
+ *
+ * @return An array with the rows, columns and values in a multidimensional array 
  */
-function process_sql ($sql) {
+function process_sql ($sql,$rettype = "affected_rows") {
 	global $config;
 	global $sql_cache;
 	$retval = array();
@@ -1360,6 +1353,11 @@ function process_sql ($sql) {
 			echo '<strong>Error:</strong> get_db_all_rows_sql ("'.$sql.'") :'. mysql_error ().'<br />';
 			return false;
 		} elseif ($result === true) {
+			if ($rettype == "insert_id") {
+				return mysql_insert_id ();
+			} elseif ($rettype == "info") {
+				return mysql_info ();
+			}
 			return mysql_affected_rows (); //This happens in case the statement was executed but didn't need a resource
 		} else {
 			while ($row = mysql_fetch_array ($result)) {
@@ -1746,7 +1744,7 @@ function check_server_status () {
 	$status = get_db_sql ($sql);
 	// Set servers to down
 	if ($status == 0){ 
-		mysql_query ("UPDATE tserver SET status = 0");
+		process_sql ("UPDATE tserver SET status = 0");
 	}
 	return $status;
 }
@@ -1760,8 +1758,9 @@ function check_server_status () {
  */
 function show_alert_row_mini ($id_combined_alert) {
 	$color=1;
-	$sql = "SELECT talerta_agente_modulo.*, tcompound_alert.operation FROM talerta_agente_modulo, tcompound_alert WHERE tcompound_alert.id_aam = talerta_agente_modulo.id_aam AND tcompound_alert.id = ".$id_combined_alert;
-	$result = mysql_query ($sql);
+	$sql = sprintf("SELECT talerta_agente_modulo.*, tcompound_alert.operation FROM talerta_agente_modulo, tcompound_alert 
+	WHERE tcompound_alert.id_aam = talerta_agente_modulo.id_aam AND tcompound_alert.id = %d",$id_combined_alert);
+	$result = get_db_all_rows_sql ($sql);
 	echo "<table width=400 cellpadding=2 cellspacing=2 class='databox'>";
 	echo "<th>".lang_string("Name");
 	echo "<th>".lang_string("Oper");
@@ -1773,49 +1772,47 @@ function show_alert_row_mini ($id_combined_alert) {
 	echo "<th>".lang_string("MinMax.Al");
 	echo "<th>".lang_string("Days");
 	echo "<th>".lang_string("Fired");
-	while ($row2 = mysql_fetch_array ($result)) {
-
+	foreach ($result as $row2) {
 		if ($color == 1) {
 			$tdcolor = "datos";
 			$color = 0;
-		}
-		else {
+		} else {
 			$tdcolor = "datos2";
 			$color = 1;
 		}
+		
 		echo "<tr>";    
-
-		if ($row2["disable"] == 1){
+		if ($row2["disable"] == 1) {
 			$tdcolor = "datos3";
 		}
-		echo "<td class=$tdcolor>".get_db_sql("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo =".$row2["id_agente_modulo"]);
+		echo "<td class=$tdcolor>".get_db_sql ("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo =".$row2["id_agente_modulo"]);
 		echo "<td class=$tdcolor>".$row2["operation"];
 
-		echo "<td class='$tdcolor'>".human_time_description($row2["time_threshold"]);
+		echo "<td class='$tdcolor'>".human_time_description ($row2["time_threshold"]);
 
-		if ($row2["dis_min"]!=0){
-			$mytempdata = fmod($row2["dis_min"], 1);
-		if ($mytempdata == 0)
-			$mymin = intval($row2["dis_min"]);
-		else
-			$mymin = $row2["dis_min"];
-			$mymin = format_for_graph($mymin );
+		if ($row2["dis_min"]!=0) {
+			$mytempdata = fmod ($row2["dis_min"], 1);
+			if ($mytempdata == 0) {
+				$mymin = intval ($row2["dis_min"]);
+			} else {
+				$mymin = format_for_graph ($row2["dis_min"]);
+			}
 		} else {
 			$mymin = 0;
 		}
 
-		if ($row2["dis_max"]!=0){
-			$mytempdata = fmod($row2["dis_max"], 1);
-		if ($mytempdata == 0)
-			$mymax = intval($row2["dis_max"]);
-		else
-			$mymax = $row2["dis_max"];
-			$mymax =  format_for_graph($mymax );
+		if ($row2["dis_max"]!=0) {
+			$mytempdata = fmod ($row2["dis_max"], 1);
+			if ($mytempdata == 0) {
+				$mymax = intval ($row2["dis_max"]);
+			} else {
+				$mymax = format_for_graph ($row2["dis_max"]);
+			}
 		} else {
 			$mymax = 0;
 		}
 
-		if (($mymin == 0) && ($mymax == 0)){
+		if (($mymin == 0) && ($mymax == 0)) {
 			$mymin = lang_string ("N/A");
 			$mymax = $mymin;
 		}
@@ -1832,19 +1829,19 @@ function show_alert_row_mini ($id_combined_alert) {
 		echo get_alert_times ($row2);
 
 		// Description
-		echo "</td><td class='$tdcolor'>".substr($row2["descripcion"],0,20);
+		echo "</td><td class='$tdcolor'>".substr ($row2["descripcion"],0,20);
 
 		// Has recovery notify activated ?
-		if ($row2["recovery_notify"] > 0)
+		if ($row2["recovery_notify"] > 0) {
 			$recovery_notify = lang_string ("Yes");
-		else
+		} else {
 			$recovery_notify = lang_string ("No");
-
+		}
 		echo "</td><td class='$tdcolor'>".$recovery_notify;
 
 		// calculare firing conditions
 		if ($row2["alert_text"] != ""){
-			$firing_cond = lang_string("text")."(".substr($row2["alert_text"],0,8).")";
+			$firing_cond = lang_string ("text")."(".substr ($row2["alert_text"],0,8).")";
 		} else {
 			$firing_cond = $row2["min_alerts"]." / ".$row2["max_alerts"];
 		}
@@ -1855,11 +1852,11 @@ function show_alert_row_mini ($id_combined_alert) {
 		echo "</td><td class='$tdcolor'>".$firing_days;
 
 		// Fired ?
-		if ($row2["times_fired"]>0)
-			echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_red.png' title='".lang_string("fired")."'></td>";
-		else
-			echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_green.png' title='".lang_string ('not_fired')."'></td>";
-
+		if ($row2["times_fired"]>0) {
+			echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_red.png' title='".lang_string ("fired")."'></td>";
+		} else {
+			echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_green.png' title='".lang_string ("not_fired")."'></td>";
+		}
 	}
 	echo "</table>";
 }
@@ -1875,9 +1872,8 @@ function show_alert_row_mini ($id_combined_alert) {
  */
 function smal_event_table ($filter = "", $limit = 10, $width = 440) {
 	global $config;
-	global $lang_label;
 
-	$sql = "SELECT * FROM tevento $filter ORDER BY timestamp DESC LIMIT $limit";
+	$sql = sprintf ("SELECT * FROM tevento %s ORDER BY timestamp DESC LIMIT %d",$filter,$limit);
 	echo "<table cellpadding='4' cellspacing='4' width='$width' border=0 class='databox'>";
 	echo "<tr>";
 	echo "<th colspan=6>".lang_string ("Latest events");
@@ -1888,8 +1884,8 @@ function smal_event_table ($filter = "", $limit = 10, $width = 440) {
 	echo "<th class='datos3 f9'>".lang_string ('agent_name')."</th>";
 	echo "<th class='datos3 f9'>".lang_string ('id_user')."</th>";
 	echo "<th class='datos3 f9'>".lang_string ('timestamp')."</th>";
-	$result = mysql_query ($sql);
-	while ($event = mysql_fetch_array ($result)) {
+	$result = get_db_all_rows_sql ($sql);
+	foreach ($result as $event) {
 		$id_grupo = $event["id_grupo"];
 		if (! give_acl ($config["id_user"], $id_grupo, "AR")) {
 			continue;
@@ -1919,11 +1915,11 @@ function smal_event_table ($filter = "", $limit = 10, $width = 440) {
 		$criticity_label = return_priority ($event["criticity"]);
 		/* Colored box */
 		echo "<tr><td class='$tdclass' title='$criticity_label' align='center'>";
-		if ($event["estado"] == 0)
+		if ($event["estado"] == 0) {
 			echo "<img src='images/pixel_red.png' width=20 height=20>";
-		else
+		} else {
 			echo "<img src='images/pixel_green.png' width=20 height=20>";
-	
+		}
 		/* Event type */
 		echo "<td class='".$tdclass."' title='".$event["event_type"]."'>";
 		switch ($event["event_type"]) {
@@ -1955,9 +1951,10 @@ function smal_event_table ($filter = "", $limit = 10, $width = 440) {
 	
 		// Event description
 		echo "<td class='".$tdclass."f9' title='".$event["evento"]."'>";
-		echo substr($event["evento"],0,45);
-		if (strlen($event["evento"]) > 45)
+		echo substr ($event["evento"],0,45);
+		if (strlen ($event["evento"]) > 45) {
 			echo "..";
+		}
 		if ($event["id_agente"] > 0) {
 			// Agent name
 			$agent_name = dame_nombre_agente ($event["id_agente"]);
@@ -1978,9 +1975,9 @@ function smal_event_table ($filter = "", $limit = 10, $width = 440) {
 	
 		// User who validated event
 		echo "<td class='$tdclass'>";
-		if ($event["estado"] != 0)
-			echo "<a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$event["id_usuario"]."'>".substr($event["id_usuario"],0,8)."<a href='#' class='tip'> <span>".dame_nombre_real ($event["id_usuario"])."</span></a></a>";
-	
+		if ($event["estado"] != 0) {
+			echo "<a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$event["id_usuario"]."'>".substr ($event["id_usuario"],0,8)."<a href='#' class='tip'> <span>".dame_nombre_real ($event["id_usuario"])."</span></a></a>";
+		}
 		// Timestamp
 		echo "<td class='".$tdclass."f9' title='".$event["timestamp"]."'>";
 		echo human_time_comparation ($event["timestamp"]);

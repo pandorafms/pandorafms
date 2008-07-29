@@ -28,10 +28,9 @@ echo "</p>";
 
 // Private messages pending to read !
 
-$sql=sprintf("SELECT COUNT('id_mensaje') AS count FROM tmensajes WHERE id_usuario_destino='%s' AND estado='FALSE';",$nick);
-$resultado = mysql_query ($sql);
-$row = mysql_fetch_array ($resultado);
-if ($row["count"] != 0){
+$sql=sprintf("SELECT COUNT(id_mensaje) AS count FROM tmensajes WHERE id_usuario_destino='%s' AND estado='FALSE';",$nick);
+$resultado = get_db_sql ($sql);
+if ($resultado != 0){
 	echo "<h2>". $lang_label["new_message_bra"] . ' 
 	<a href="index.php?sec=messages&sec2=operation/messages/message">'
 	.$row["count"] . ' <img src="images/email.png" border="0">'
@@ -130,9 +129,7 @@ echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20
 echo "</table>";
 
 $query1 = "SELECT COUNT(id_usuario) FROM tusuario";
-$result = mysql_query ($query1);
-$row = mysql_fetch_array ($result);
-$users_defined = $row[0];
+$users_defined = get_db_sql ($query1);
 
 echo "<table class='databox' celldpadding=4 cellspacing=4 width=250>";
 echo "<th colspan=2>".$lang_label["Pandora_FMS_summary"]."</th>";

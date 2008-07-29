@@ -1136,7 +1136,7 @@ function agent_add_address ($id_agent, $ip_address) {
 	$sql = sprintf ("SELECT COUNT(`ip`) FROM taddress_agent, taddress
 		WHERE taddress_agent.id_a = taddress.id_a
 		AND ip = '%s' AND id_agent = %d",$ip_address,$id_agent);
-	$current_address = get_db_row_sql ($sql);
+	$current_address = get_db_sql ($sql);
 	if ($current_address > 0)
 		return;
 	
@@ -1175,8 +1175,7 @@ function agent_delete_address ($id_agent, $ip_address) {
 	if (give_agent_address ($id_agent) == $ip_address) {
 		$new_ip = give_agent_address_from_list ($id_agent);
 		// Change main address in agent to whis one
-		$query = sprintf ("UPDATE tagente (direccion) VALUES
-			('%s') WHERE id_agente = %d ",$new_ip,$id_agent);
+		$query = sprintf ("UPDATE tagente SET `direccion` = '%s' WHERE id_agente = %d",$new_ip,$id_agent);
 		process_sql ($query);
 	}
 }

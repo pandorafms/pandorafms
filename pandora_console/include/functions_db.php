@@ -1884,6 +1884,8 @@ function smal_event_table ($filter = "", $limit = 10, $width = 440) {
 	echo "<th class='datos3 f9'>".lang_string ('id_user')."</th>";
 	echo "<th class='datos3 f9'>".lang_string ('timestamp')."</th>";
 	$result = get_db_all_rows_sql ($sql);
+	if($result === false) 
+		$result = array();
 	foreach ($result as $event) {
 		$id_grupo = $event["id_grupo"];
 		if (! give_acl ($config["id_user"], $id_grupo, "AR")) {

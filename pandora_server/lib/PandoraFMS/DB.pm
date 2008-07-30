@@ -628,10 +628,6 @@ sub pandora_writestate (%$$$$$$$) {
 		@data = $s_idag->fetchrow_array();
 	}
 
-	if (!defined($data[23])){
-		return -1;
-	}
-
 	# Get module interval or agent interval if module don't defined
 	my $id_module_type	= $data[2];
 	my $module_interval = $data[7];
@@ -666,7 +662,6 @@ sub pandora_writestate (%$$$$$$$) {
 	}
 
 	# Apply Mysql quotes to data to prepare for database insertion / update
-
 	$datos = $dbh->quote($datos); # Parse data entry for adecuate SQL representation.
 
 	my $query_act; # OJO que dentro de una llave solo tiene existencia en esa llave !!
@@ -703,8 +698,6 @@ sub pandora_writestate (%$$$$$$$) {
 							$id_agente, 3, 0, $id_agente_modulo, 
 							"monitor_down", $dbh);
 		    }
-
-
 	    }
 
 	    if ($needs_update == 1) {
@@ -727,6 +720,7 @@ sub pandora_writestate (%$$$$$$$) {
 						last_execution_try = $utimestamp WHERE id_agente_modulo = $id_agente_modulo";
         }
     }
+
 	my $a_idages = $dbh->prepare($query_act);
 	$a_idages->execute;
 	$a_idages->finish();
@@ -854,6 +848,7 @@ sub module_generic_proc (%$$$$$) {
 		} else { 
 			$estado = 1;
 		}
+print "Checkpoint Proc prev. writestate #1 \n";
 		pandora_writestate ($pa_config, $agent_name, $module_type, $a_name, $a_datos, $estado, $dbh, $bUpdateDatos);
 	}
 }
@@ -1157,7 +1152,7 @@ sub pandora_writedata (%$$$$$$$$$$){
 			$min = $data[6];
 
 			# Postprocess
-			if (($data[23] != 0) && (is_numeric($data[23]))){
+			if ((defined($data[23])) && ($data[23] != 0) && (is_numeric($data[23]))){
 				$datos = $datos * $data[23];
 			}
 			$s_idag->finish();
@@ -1179,7 +1174,7 @@ sub pandora_writedata (%$$$$$$$$$$){
 	
 	# Check old value for this data in tagente_data
 	# if old value nonequal to new value, needs update
-        my $query;
+	my $query;
 	my $needsupdate =0;
 	
 	$query = "SELECT * FROM tagente_estado WHERE id_agente_modulo = $id_agente_modulo";

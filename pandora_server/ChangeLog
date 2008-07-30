@@ -1,3 +1,8 @@
+2008-07-30  Sancho Lerena <slerena@gmail.com>
+
+	* lib/PandoraFMS/DB.pm: FIXED a stupid bug that makes impossible to 
+	process any data :(. This bug was introducted by me at 25 July.
+
 2008-07-29  Ramon Novoa  <rnovoa@artica.es>
 
 	* bin/pandora_wmi: Small fixes.

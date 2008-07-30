@@ -54,6 +54,13 @@ $SIG{'INT'} = 'pandora_shutdown';
 # Inicio del bucle principal de programa
 pandora_init(\%pa_config, "Pandora FMS WMI Server");
 
+# Check for wmic
+my $wmi_client = "wmic";
+if (system("$wmi_client > /dev/null 2>&1") != 256) {
+	print " [E] $wmi_client not found. Pandora FMS WMI Server needs a DCOM/WMI client.\n\n";
+	exit;
+}
+
 # Read config file for Global variables
 pandora_loadconfig (\%pa_config, 6);
 
@@ -257,7 +264,7 @@ sub pandora_wmi_producer ($) {
 					tagente, tagente_modulo, tagente_estado, tserver
 				WHERE
 				( 	(tagente.id_wmi_server = $server_id AND tagente_modulo.id_agente = tagente.id_agente) OR
-					(tagente.id_wmi_server != $server_id AND tagente_modulo.id_agente = tagente.id_agente AND tagente.id_plugin_server = tserver.id_server AND tserver.status = 0)
+					(tagente.id_wmi_server != $server_id AND tagente_modulo.id_agente = tagente.id_agente AND tagente.id_wmi_server = tserver.id_server AND tserver.status = 0)
 				) AND
 					tagente.disabled = 0
                 AND 
@@ -307,7 +314,7 @@ sub exec_wmi_module {
     my $dbh             = $_[2];
 
     # Set global variables for this sub
-    my $timeout = $pa_config->{'plugin_timeout'};
+    my $timeout = $pa_config->{'wmi_timeout'};
 	my $agent_module; # hash container for tagente_modulo record
 
     # Get a full hash for agent_plugin record reference ($agent_module)
@@ -328,9 +335,6 @@ sub exec_wmi_module {
     my $module_interval = 0;
 
     # Build execution command to plugin
-    my $exec_output = "";
-    my $wmi_command = "wmic ";
-
 	# Sample exec:  wmic -U Administrador%none //192.168.50.123 "SELECT State FROM Win32_Service WHERE Name = \"Eventlog\""
 
 	# This returns several lines that needs to be processed
@@ -342,7 +346,7 @@ sub exec_wmi_module {
 	my $wmi_query = decode_entities($agent_module->{'snmp_oid'});
 	$wmi_query =~ s/\"/\'/g;
 
-    $wmi_command .= " -U \"". $agent_module->{'plugin_user'} ."\"%\"". $agent_module->{'plugin_pass'} . "\"";
+    my $wmi_command = "$wmi_client -U \"". $agent_module->{'plugin_user'} ."\"%\"". $agent_module->{'plugin_pass'} . "\"";
     $wmi_command .= " //". $agent_module->{'ip_target'};
     $wmi_command .= " \"". $wmi_query . "\"";
     logger ($pa_config, "Executing AM # $id_am WMI command '$wmi_command'", 9);

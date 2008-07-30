@@ -1,3 +1,14 @@
+2008-07-30  Sancho Lerena <slerena@gmail.com>
+
+	* win32/installer/pandora.ico: The new official 2.0 icon.
+
+	* win32/bin/Pandora FMS Windows Agent 2.0 (Beta1)-Setup.exe:
+	Probably not final, but this seems to work for us.
+
+	* win32/bin/PandoraAgent.exe: Latest binary for agent.
+
+	* win32/bin/pandora_agent.conf: A more complex sample file.
+
 2008-07-09  Esteban Sanchez  <estebans@artica.es>
 
 	* pandora_strutils.[cc,h]: Added strUnicodeToAnsi().

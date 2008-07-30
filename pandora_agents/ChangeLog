@@ -1,3 +1,7 @@
+2008-07-30  Ramon Novoa  <rnovoa@artica.es>
+
+	* win32/windows/pandora_wmi.cc: Fixed typo bug.
+
 2008-07-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* win32/windows/pandora_wmi.cc: Fixed WMI query timestamp limit for

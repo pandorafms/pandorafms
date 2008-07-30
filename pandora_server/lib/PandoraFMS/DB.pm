@@ -24,6 +24,7 @@ use Time::Format qw(%time %strftime %manip); # For data mangling
 use DBI;
 use Date::Manip;	# Needed to manipulate DateTime formats of input, output and compare
 use XML::Simple;
+use HTML::Entities;
 
 use POSIX qw(strtod);
 
@@ -520,7 +521,7 @@ sub execute_alert (%$$$$$$$$$$$$$$$) {
 		$command =~ s/_timestamp_/$timestamp/ig;
 		$command =~ s/_data_/$data/ig;
 		# Clean up some "tricky" characters
-		$command =~ s/&gt;/>/g;
+		$command = decode_entities($command);
 		# EXECUTING COMMAND !!!
 		eval {
 			my $exit_value = system ($command);

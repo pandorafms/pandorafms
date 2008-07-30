@@ -128,6 +128,8 @@ AND tusuario_perfil.id_usuario = '%s' AND (tusuario_perfil.id_grupo = %d OR tusu
  * @param descripcion Long action description
  */
 function audit_db ($id, $ip, $accion, $descripcion){
+	$accion = safe_input($accion);
+	$descripcion = safe_input($descripcion);
 	$sql = sprintf ("INSERT INTO tsesion (ID_usuario, accion, fecha, IP_origen,descripcion, utimestamp) VALUES ('%s','%s',NOW(),'%s','%s',UNIX_TIMESTAMP(NOW()))",$id,$accion,$ip,$descripcion);
 	process_sql ($sql);
 }
@@ -553,7 +555,7 @@ function get_monitors_in_agent ($id_agent) {
 			FROM `tagente_modulo`, `ttipo_modulo`, `tagente`
 			WHERE `id_tipo_modulo` = `id_tipo`
 			AND `tagente`.`id_agente` = `tagente_modulo`.`id_agente`
-			AND `ttipo_modulo.nombre` LIKE '%%_proc'
+			AND `ttipo_modulo`.`nombre` LIKE '%%_proc'
 			AND `tagente`.`id_agente` = %d", $id_agent);
 	return get_db_all_rows_sql ($sql);
 }

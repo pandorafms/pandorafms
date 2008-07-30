@@ -1,5 +1,5 @@
--- Pandora FMS - the Free Monitoring System
--- ========================================
+-- Pandora FMS - the Flexible Monitoring System
+-- ============================================
 -- Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
 -- Please see http://pandora.sourceforge.net for full contribution list
 
@@ -695,20 +695,22 @@ CREATE TABLE `tserver_export` (
   `preffix` varchar(100) NOT NULL default '',
   `interval` int(5) unsigned NOT NULL default '300',
   `ip_server` varchar(100) NOT NULL default '',
-  `connect_mode` tinyint(2) NOT NULL default '0',
-  `id_export_server` int(5) unsigned NOT NULL default '0',
+  `connect_mode` enum ('tentacle', 'ssh', 'local') default 'local',
+  `id_export_server` int(10) unsigned default NULL,
+  `user` varchar(100) NOT NULL default '',
+  `pass` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- id_export_server is real pandora fms export server process that manages this server
+-- id is the "destination" server to export
 
 CREATE TABLE `tserver_export_data` (
   `id` int(20) unsigned NOT NULL auto_increment,
   `id_export_server` int(10) unsigned default NULL,
-  `agent` varchar(100) NOT NULL default '',
-  `type` varchar(50) NOT NULL default '',
-  `module` varchar(100) NOT NULL default '',
-  `value` varchar(100) NOT NULL default '',
-  `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
+  `id_agent_module` mediumint(8) unsigned NOT NULL default '0',
+  `data` varchar(255) default NULL, 
+  `utimestamp` int(10) unsigned default '0'
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -720,7 +722,7 @@ CREATE TABLE `tplanned_downtime` (
   `end` INT NOT NULL ,
   `module_id` BIGINT( 14 ) NOT NULL ,
   PRIMARY KEY (  `id` ) ,
-  INDEX (  `start` ,  `end` ,  `module_id` ) ,
+  INDEX (  `start` ,  `end` ,  `module_id` ) 
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `tplanned_downtime_agents` (

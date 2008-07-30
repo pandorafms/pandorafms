@@ -1,14 +1,33 @@
-<?php
-// Pandora - The Free Monitoring System
-// This code is protected by GPL license.
-// Este codigo esta protegido por la licencia GPL.
-// Sancho Lerena <slerena@gmail.com>, 2003-2007
-// Raul Mateos <raulofpandora@gmail.com>, 2005-2007
+<?PHP
+
+// Pandora FMS - the Flexible Monitoring System
+// ============================================
+// Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
+// Please see http://pandora.sourceforge.net for full contribution list
+
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation for version 2.
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
-if (comprueba_login() == 0)
-   $id_user = $_SESSION["id_usuario"];
-   if (give_acl($id_user, 0, "PM")==1) {
+require("include/config.php");
+
+if (comprueba_login()) {
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access Link Management");
+	require ("general/noaccess.php");
+}
+if (! give_acl ($config['id_user'], 0, "PM") || ! dame_admin ($config['id_user'])) {
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access Link Management");
+	require ("general/noaccess.php");
+}
+
 
 	if (isset($_POST["create"])){ // If create
 		$name = entrada_limpia($_POST["name"]);
@@ -119,10 +138,5 @@ if (comprueba_login() == 0)
 			echo "<form method='post' action='index.php?sec=gsetup&sec2=godmode/setup/links&form_add=1'>";
 			echo "<input type='submit' class='sub next' name='form_add' value='".$lang_label["add"]."'>";
 			echo "</form></table>";
-} // Fin bloque else
-} else  {
-			audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Link Management");
-			require ("general/noaccess.php");
 	}
-
 ?>

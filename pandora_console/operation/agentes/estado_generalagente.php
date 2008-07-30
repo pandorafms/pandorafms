@@ -1,6 +1,7 @@
 <?php
-// Pandora FMS - the Free Monitoring System
-// ========================================
+
+// Pandora FMS - the Flexible Monitoring System
+// ============================================
 // Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
@@ -101,8 +102,10 @@ echo '<tr><td class="datos"><b>'.$lang_label["interval"].'</b></td><td class="da
 echo '<tr><td class="datos2"><b>'.$lang_label["description"].'</b></td><td class="datos2" colspan=2>'.$comentarios.'</td></tr>';
 
 // Group
-echo '<tr><td class="datos"><b>'.$lang_label["group"].'</b></td><td class="datos" colspan="2">
-	<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.png" >&nbsp;&nbsp; '.dame_grupo($id_grupo).'</td></tr>';
+echo '<tr><td class="datos"><b>'.$lang_label["group"].'</b></td><td class="datos" colspan="2">';
+
+echo "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=$id_grupo'>";
+echo '<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.png" title="'. dame_grupo($id_grupo).'"></A></td></tr>';
 
 // Agent version
 echo '<tr><td class="datos2"><b>'.lang_string ("agentversion"). '</b>';

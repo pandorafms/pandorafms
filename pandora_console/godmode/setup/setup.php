@@ -1,7 +1,7 @@
 <?php 
 
-// Pandora FMS - the Free Monitoring System
-// ========================================
+// Pandora FMS - the Flexible Monitoring System
+// ============================================
 // Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
@@ -20,11 +20,11 @@
 require("include/config.php");
 
 if (comprueba_login()) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access Database Management");
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access Setup Management");
 	require ("general/noaccess.php");
 }
 if (! give_acl ($config['id_user'], 0, "PM") || ! dame_admin ($config['id_user'])) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access Database Management");
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access Setup Management");
 	require ("general/noaccess.php");
 }
 

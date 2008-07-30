@@ -1,3 +1,15 @@
+2008-07-30  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* include/functions_db.php: Small bug that gave a warning in case there were no events for an agent
+
+	* godmode/agentes/planned_downtime.php: You can now create planned downtime schedules. This 
+	won't work yet as the server doesn't support it yet.
+
+	* general/links_menu.php: The first link will also show up. It wasn't showing up because the mysql function
+	that was used moved the internal pointer ahead while checking if it existed. Used new functions.
+
+	* pandoradb.sql: Updated with database schema for planned downtime
+
 2008-07-29  Evi Vanoost <vanooste@rcbi.rochester.edu>
 	
 	* functions_db.php: Style changes, updated process_sql so it can return other 

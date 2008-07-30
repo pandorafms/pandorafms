@@ -1,10 +1,10 @@
 <?php
 
-// Pandora FMS
-// ====================================
-// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2008 Artica Soluciones Tecnologicas, info@artica.es
-// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// Pandora FMS - the Flexible Monitoring System
+// ============================================
+// Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
+// Please see http://pandora.sourceforge.net for full contribution list
+
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2

@@ -1,6 +1,7 @@
 <?php
-// Pandora FMS - the Free Monitoring System
-// ========================================
+
+// Pandora FMS - the Flexible Monitoring System
+// ============================================
 // Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
@@ -252,10 +253,10 @@ if (mysql_num_rows($result)){
 			}
 
 			// Show GROUP icon
-			echo '<td class="'.$tdcolor.'" align="center">
-			<img src="images/groups_small/'.show_icon_group($id_grupo).'.png" title="'.dame_grupo($id_grupo).'">';
-			echo '</td>';
+			echo '<td class="'.$tdcolor.'" align="center">';
 
+			echo "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=$id_grupo'>";
+echo '<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.png" title="'. dame_grupo($id_grupo).'"></A></td>';
 
 			echo "<td class='$tdcolor'> ".
 			$numero_modulos." <b>/</b> ".$numero_monitor;

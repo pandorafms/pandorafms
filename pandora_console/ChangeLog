@@ -1,3 +1,31 @@
+2008-07-30  Sancho Lerena <slerena@gmail.com>
+	
+	* pandoradb.sql: Some changes in structure for new export server. Removed
+	and extra comma in tplanned_downtime.
+
+	* pandoradb_data.sql: Deleted some stuff from Gigabit module templates, 
+	too much.
+
+	* logon_ok.php: Header update.
+
+	* menu.php: Plugin editor moved under server section.
+
+	* modificar_agente.php: Added icon to agent config editor from manage
+	agents view.
+
+	* links.php: Some code cleanup.
+
+	* pandora.ico: New .ICO file for web, this will be official one for
+	2.0 version.
+
+	* functions_db.php: Fixed a problem in audit_db() where parameters
+	was not properly cleaned and with ' chars this makes an SQL error.
+	Fixed BUG #2032885, in function get_monitors_in_agent () where a 
+	bad SQL forced an error in report.
+
+	* estado_agente.php, estado_generalagente.php: Added link to group 
+	view from group icon.
+
 2008-07-30  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* include/functions_db.php: Small bug that gave a warning in case there were no events for an agent

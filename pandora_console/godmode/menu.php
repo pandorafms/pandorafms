@@ -1,14 +1,9 @@
 <?php
 
-// Pandora FMS - the Free monitoring system
-// ========================================
-// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development and project architecture and management
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP additions
-// Copyright (c) 2006 Jose Navarro <contacto@indiseg.net>
-// Additions to Pandora FMS 1.2 graph code 
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
+// Pandora FMS - the Flexible Monitoring System
+// ============================================
+// Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
+// Please see http://pandora.sourceforge.net for full contribution list
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -117,14 +112,6 @@ if (comprueba_login() == 0){
             echo '<div id="god2">';
 		echo '<ul class="mn"><li><a href="index.php?sec=galertas&amp;sec2=godmode/alerts/modify_alert" class="mn">'.lang_string ("manage_alerts").'</a></li></ul></div>';
 
-        if (isset($_GET["sec"]) && $_GET["sec"] == "galertas"){
-            if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/alerts/plugin"){
-                echo "<div class='arrowgs'>";
-            }
-            else echo "<div class='arrowg'>";
-
-            echo "<ul class='mn'><li><a href='index.php?sec=galertas&sec2=godmode/alerts/plugin' class='mn'>".lang_string("Manage plugins")."</a></li></ul></div>";
-        }
 	}
 	if ((give_acl($id_user, 0, "UM")==1)){
 		if (isset($_GET["sec2"]) && ($_GET["sec2"] == "godmode/users/user_list" || $_GET["sec2"] == "godmode/users/configure_user")){
@@ -199,6 +186,16 @@ if (comprueba_login() == 0){
 				echo "<div class='arrowg'>";
 			echo "<ul class='mn'><li><a href='index.php?sec=gservers&sec2=godmode/servers/manage_recontask' class='mn'>".lang_string ("manage_recontask")."</a></li></ul></div>";
 		}
+
+		if (isset($_GET["sec"]) && $_GET["sec"] == "gservers"){
+            if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/servers/plugin"){
+                echo "<div class='arrowgs'>";
+            }
+            else echo "<div class='arrowg'>";
+
+            echo "<ul class='mn'><li><a href='index.php?sec=gservers&sec2=godmode/servers/plugin' class='mn'>".lang_string("Manage plugins")."</a></li></ul></div>";
+        }
+
        	// AUDIT
        	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		if (isset($_GET["sec2"]) && $_GET["sec2"] == "godmode/admin_access_logs"){

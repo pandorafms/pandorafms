@@ -1,8 +1,8 @@
 <?php
-// Pandora FMS - the Free Monitoring System
-// ========================================
+
+// Pandora FMS - the Flexible Monitoring System
+// ============================================
 // Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
-// Copyright (c) 2008 Jorge Gonzalez <jorge.gonzalez@artica.es>
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -227,7 +227,10 @@ if (mysql_num_rows($result)){
 			// Has remote configuration ?
 			$agent_md5 = md5($row["nombre"], FALSE);
 			if (file_exists($config["remote_config"] . "/" . $agent_md5 . ".md5")){
+
+				echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=".$row["id_agente"]."&disk_conf=" . $agent_md5 . "'>";
 				echo "<img src='images/application_edit.png' border='0' align='middle' title='".lang_string("Edit remote config")."'>";
+				echo "</A>";
 			}
 			echo "</td>";
 

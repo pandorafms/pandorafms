@@ -15,10 +15,18 @@ if (isset($_GET["id"])) {
     $id = $_GET["id"];
     $protofile = $config["homedir"]."/include/help/".$config["language"]."/help_".$id.".php";
     if (file_exists ($protofile)){
-        echo "<p align='left'><img src='".$config["homeurl"]."/images/pandora_logo_head.png'>";
-        echo "<font size=14px'><b>Pandora FMS Help System</b></font>";
-        echo "</p><hr width=100% size=1><div style='font-family: verdana, arial; font-size: 11px; text-align:left'>";
+		echo "<div>";
+        echo "<p align=right>";
+        echo "<b>Pandora FMS Help System</b></p>";
+		echo "</div>";
+
+        echo "<hr width=100% size=1><div style='font-family: verdana, arial; font-size: 11px; text-align:left'>";
+		echo "<div style='font-size: 12px; margin-left: 30px; margin-right:25px;'>";
         include $protofile;
+		echo "</div>";
+		echo "<br><br><hr width=100% size=1><div style='font-family: verdana, arial; font-size: 11px;'>";
+		include "footer.php";
+		
     }
     else
         show_help_error();

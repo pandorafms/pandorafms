@@ -1,3 +1,8 @@
+2008-07-31  Ramon Novoa  <rnovoa@artica.es>
+
+	* util/pandora_exec: Added to repository. Perl script to control
+	  command execution timeouts.
+
 2008-07-30  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DB.pm,

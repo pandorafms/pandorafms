@@ -1,3 +1,16 @@
+
+2008-07-31  Sancho Lerena <slerena@gmail.com>
+	
+	* include/help/en/help_plugin_definition.php: New help page for 
+	plugin register section.
+
+	* include/javascript/pandora.js: Help window now shows scrollbar.
+
+	* general/pandora_help.php: Better layout for help system.
+
+	* godmode/servers/plugin.php: Fixed position / menu issues and other
+	menor bugs in plugin editor.
+
 2008-07-31  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/help/en/help_wmiquery.php,

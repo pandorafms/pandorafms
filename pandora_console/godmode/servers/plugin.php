@@ -133,20 +133,21 @@ if ($create != ""){
 // =================================================================
 
 if (($create != "") OR ($view != "")){
-
-    echo "<h2>".lang_string ("Plugin");
+	
+	echo "<h2>";
     if ($create != "")
-	    echo lang_string ("creation");
+	    echo lang_string ("Plugin creation");
     else {
-        echo lang_string ("update");
+        echo lang_string ("Plugin update");
         $plugin_id = get_parameter ("view","");
     }
+	pandora_help("plugin_definition");
     echo "</h2>";
     
     if ($create == "") 
-        echo "<form name=plugin method='post' action='index.php?sec=galertas&sec2=godmode/alerts/plugin&update_plugin=$plugin_id'>";
+        echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&update_plugin=$plugin_id'>";
     else
-        echo "<form name=plugin method='post' action='index.php?sec=galertas&sec2=godmode/alerts/plugin&create_plugin=1'>";
+        echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&create_plugin=1'>";
 
     echo '<table width="600" cellspacing="4" cellpadding="4" class="databox_color">';
     
@@ -154,16 +155,16 @@ if (($create != "") OR ($view != "")){
     echo '<td class="datos">';
     echo '<input type="text" name="form_name" size=30 value="'.$form_name.'"></td>';
     
-    echo '<tr><td class="datos">'.lang_string ("Plugin command");
-    echo '<td class="datos">';
+    echo '<tr><td class="datos2">'.lang_string ("Plugin command");
+    echo '<td class="datos2">';
     echo '<input type="text" name="form_execute" size=45 value="'.$form_execute.'"></td>';
 
     echo '<tr><td class="datos">'.lang_string ("Max.Timeout");
     echo '<td class="datos">';
     echo '<input type="text" name="form_max_timeout" size=5 value="'.$form_max_timeout.'"></td>';
 
-    echo '<tr><td class="datos">'.lang_string ("IP address option");
-    echo '<td class="datos">';
+    echo '<tr><td class="datos2">'.lang_string ("IP address option");
+    echo '<td class="datos2">';
     echo '<input type="text" name="form_net_dst_opt" size=15 value="'.$form_net_dst_opt.'"></td>';
 
     echo '<tr><td class="datos">'.lang_string ("Port option");
@@ -171,16 +172,16 @@ if (($create != "") OR ($view != "")){
     echo '<input type="text" name="form_net_port_opt" size=5 value="'.$form_net_port_opt.'"></td>';
 
 
-    echo '<tr><td class="datos">'.lang_string ("User option");
-    echo '<td class="datos">';
+    echo '<tr><td class="datos2">'.lang_string ("User option");
+    echo '<td class="datos2">';
     echo '<input type="text" name="form_user_opt" size=15 value="'.$form_user_opt.'"></td>';
 
     echo '<tr><td class="datos">'.lang_string ("Password option");
     echo '<td class="datos">';
     echo '<input type="text" name="form_pass_opt" size=15 value="'.$form_pass_opt.'"></td>';
 
-    echo '<tr><td class="datos">'.$lang_label["description"].'</td>';
-    echo '<td class="datos"><textarea name="form_description" cols="50" rows="4">';
+    echo '<tr><td class="datos2">'.$lang_label["description"].'</td>';
+    echo '<td class="datos2"><textarea name="form_description" cols="50" rows="4">';
     echo $form_description;
     echo '</textarea></td></tr>';
 
@@ -197,12 +198,12 @@ if (($create != "") OR ($view != "")){
 }
 
 else {
-// If not edition or insert, then list available plugins
-    echo "<h2>".$lang_label["no_plugins"]."</h2>";
+	echo "<h2>". lang_string ("Plugins registered in Pandora FMS")."</h2>";
+	// If not edition or insert, then list available plugins
     $sql1='SELECT * FROM tplugin ORDER BY name';
     $result=mysql_query($sql1);
     if (mysql_num_rows($result) > 0){
-        echo '<table width="530" cellspacing="4" cellpadding="4" class="databox_color">';
+        echo '<table width="530" cellspacing="4" cellpadding="4" class="databox">';
         echo "<th>".lang_string("name");
         echo "<th>".lang_string("execute");
         echo "<th>".lang_string("delete");
@@ -218,22 +219,22 @@ else {
             }
             echo "<tr>";
             echo "<td class=$tdcolor>";
-            echo "<a href='index.php?sec=galertas&sec2=godmode/alerts/plugin&view=".$row["id"]."'>";
+            echo "<b><a href='index.php?sec=gservers&sec2=godmode/servers/plugin&view=".$row["id"]."'>";
             echo $row["name"];
-            echo "</a>";
+            echo "</a></b>";
             echo "<td class=$tdcolor>";
             echo $row["execute"];
             echo "<td class=$tdcolor>";
-            echo "<a href='index.php?sec=galertas&sec2=godmode/alerts/plugin&kill_plugin=".$row["id"]."'><img src='images/cross.png' border=0></a>";
+            echo "<a href='index.php?sec=gservers&sec2=godmode/servers/plugin&kill_plugin=".$row["id"]."'><img src='images/cross.png' border=0></a>";
         }
         echo "</table>";
     } else {
-        echo lang_string ("There is no plugins in the system");
+        echo '<div class="nf">'. lang_string ("There is no plugins in the system");
         echo "<br>";
     }
     echo "<table width=530>";
     echo "<tr><td align=right>";
-    echo "<form name=plugin method='post' action='index.php?sec=galertas&sec2=godmode/alerts/plugin&create=1'>";
+    echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&create=1'>";
     echo "<input name='crtbutton' type='submit' class='sub wand' value='".$lang_label["create"]."'>";
     echo "</table>";
     

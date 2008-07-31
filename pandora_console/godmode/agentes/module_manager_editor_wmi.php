@@ -43,7 +43,7 @@ if ($update_module_id != NULL){
     }
 	else{
 		$id_agente = $row['id_agente'];
-		$form_id_tipo_modulo = $row['id_tipo_modulo']; // It doesn't matter
+		$form_id_tipo_modulo = $row['id_tipo_modulo'];
 		$form_description = $row['descripcion'];
 		$form_name = $row['nombre'];
 		$form_minvalue = $row['min'];
@@ -92,6 +92,36 @@ echo "<input type='hidden' name='id_agente_modulo'' value='".$update_module_id."
 // id_modulo 6 - WMI
 echo "<input type='hidden' name='form_id_modulo' value='6'>";
 
+// WMI component usage
+echo "<tr><td class='datos3'>";
+echo lang_string ("using_network_component");
+pandora_help ("network_component");
+echo "</td><td class='datos3' colspan=2>";
+
+if ($update_module_id != NULL){
+	echo "<span class='redi'>Not available in edition mode</span>";
+	echo "<input type='hidden' name='form_id_tipo_modulo' value='".$form_id_tipo_modulo."'>";
+} else {
+	echo '<select name="form_network_component">';
+	echo '<option>---'.$lang_label["manual_config"].'---</option>';
+	$result=mysql_query('SELECT * FROM tnetwork_component WHERE id_modulo = 6 ORDER BY name');
+	while ($row=mysql_fetch_array($result)){
+		echo "<option value='".$row["id_nc"]."'>";
+		echo substr($row["name"],0,30);
+		echo " / ";
+		echo substr($row["description"],0,15);
+		echo "</option>";
+	}
+	echo "</select>";
+}
+
+echo '</td>';
+echo '<td class="datos3">';
+echo '<input type="hidden" name="form_moduletype" value="'.$form_moduletype.'">';
+if ($update_module_id == NULL){
+	echo '<input align="right" name="updbutton" type="submit" class="sub next" value="'.$lang_label["get_data"].'">';
+}
+
 // Name / IP_target
 echo '<tr>';
 echo '<td class="datos2">'.lang_string ("module_name")."</td>";
@@ -104,15 +134,21 @@ echo '</tr>';
 echo '<tr>';
 echo '<td class="datos">'.lang_string ("ip_target")."</td>";
 echo '<td class="datos"><input type="text" name="form_ip_target" size="20" value="'.$form_ip_target.'"></td>';
-echo '<td class="datos">'.lang_string ("WMI Query")."</td>";
+echo '<td class="datos">'.lang_string ("WMI Query");
+pandora_help("wmiquery");
+echo "</td>";
 echo '<td class="datos"><input type="text" name="form_snmp_oid" size="25" value="'.$form_snmp_oid.'"></td>';
 echo '</tr>';
 
 // Specific string and field number
 echo '<tr>';
-echo '<td class="datos2">'.lang_string ("Key string")."</td>";
+echo '<td class="datos2">'.lang_string ("Key string");
+pandora_help("wmikey");
+echo "</td>";
 echo '<td class="datos2"><input type="text" name="form_snmp_community" size="20" value="'.$form_snmp_community.'"></td>';
-echo '<td class="datos2">'.lang_string ("Answer field number")."</td>";
+echo '<td class="datos2">'.lang_string ("Field number");
+pandora_help("wmifield");
+echo "</td>";
 echo '<td class="datos2"><input type="text" name="form_tcp_port" size="3" value="'.$form_tcp_port.'"></td>';
 echo '</tr>';
 
@@ -136,6 +172,9 @@ if ($update_module_id != NULL){
 	echo "<input type='hidden' name='form_id_tipo_modulo' value='".$form_id_tipo_modulo."'>";
 } else {
 	echo '<select name="form_id_tipo_modulo">';
+	if ($form_id_tipo_modulo != 0) {
+		echo "<option value='".$form_id_tipo_modulo."'>".giveme_module_type($form_id_tipo_modulo)."</option>";
+	}
 	$sql1='SELECT id_tipo, nombre FROM ttipo_modulo WHERE categoria IN (0,1,2) ORDER BY nombre;';
 	$result=mysql_query($sql1);
 	while ($row=mysql_fetch_array($result)){

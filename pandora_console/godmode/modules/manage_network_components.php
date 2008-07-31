@@ -74,11 +74,21 @@ if (isset($_GET["create"])){ // Create module
 		$module_interval = entrada_limpia($_POST["module_interval"]);
 	if (isset($_POST["id_group"]))
 		$id_group = entrada_limpia($_POST["id_group"]);
-
+	if (isset($_POST["plugin_user"]))
+		$plugin_user = entrada_limpia($_POST["plugin_user"]);
+	if (isset($_POST["plugin_pass"]))
+		$plugin_pass = entrada_limpia($_POST["plugin_pass"]);
+	if (isset($_POST["plugin_parameter"]))
+		$plugin_parameter = entrada_limpia($_POST["plugin_parameter"]);
+	if (isset($_POST["max_timeout"]))
+		$max_timeout = entrada_limpia($_POST["max_timeout"]);
+	if (isset($_POST["id_modulo"]))
+		$id_modulo = entrada_limpia($_POST["id_modulo"]);
 
 	
-	$sql_insert="INSERT INTO tnetwork_component (name, description, module_interval, type, max, min, tcp_send, tcp_rcv, tcp_port, snmp_oid, snmp_community, id_module_group, id_group)
-	VALUES ('$name', '$description', '$module_interval', '$type', '$modulo_max', '$modulo_min', '$tcp_send', '$tcp_rcv', '$tcp_port', '$snmp_oid' ,'$snmp_community', '$id_module_group', '$id_group')";
+	$sql_insert="INSERT INTO tnetwork_component (name, description, module_interval, type, max, min, tcp_send, tcp_rcv, tcp_port, snmp_oid, snmp_community, id_module_group, id_group, id_modulo, plugin_user, plugin_pass, plugin_parameter, max_timeout)
+	VALUES ('$name', '$description', '$module_interval', '$type', '$modulo_max', '$modulo_min', '$tcp_send', '$tcp_rcv', '$tcp_port', '$snmp_oid' ,'$snmp_community', '$id_module_group', '$id_group', '$id_modulo', '$plugin_user', '$plugin_pass', '$plugin_parameter', '$max_timeout')";
+
 	$result=mysql_query($sql_insert);
 	if (! $result)
 		echo "<h3 class='error'>".$lang_label["create_no"]."</h3>";
@@ -124,12 +134,21 @@ if (isset($_GET["update"])){ // if modified any parameter
 		$module_interval = entrada_limpia($_POST["module_interval"]);
 	if (isset($_POST["id_group"]))
 		$id_group = entrada_limpia($_POST["id_group"]);
+	if (isset($_POST["plugin_user"]))
+		$plugin_user = entrada_limpia($_POST["plugin_user"]);
+	if (isset($_POST["plugin_pass"]))
+		$plugin_pass = entrada_limpia($_POST["plugin_pass"]);
+	if (isset($_POST["plugin_parameter"]))
+		$plugin_parameter = entrada_limpia($_POST["plugin_parameter"]);
+	if (isset($_POST["max_timeout"]))
+		$max_timeout = entrada_limpia($_POST["max_timeout"]);
 
 	$sql_update ="UPDATE tnetwork_component	SET name = '$name',
 	description = '$description', snmp_oid = '$snmp_oid', snmp_community = '$snmp_community',
 	id_group = '$id_group', tcp_rcv = '$tcp_rcv', tcp_send = '$tcp_send', max = '$modulo_max',
 	min = '$modulo_min', tcp_port = '$tcp_port', id_module_group = '$id_module_group', type = '$type',
-	module_interval = '$module_interval' WHERE id_nc = '$id_nc'";
+	module_interval = '$module_interval', plugin_user = '$plugin_user',  plugin_pass = '$plugin_pass',
+	plugin_parameter = '$plugin_parameter', max_timeout = '$max_timeout' WHERE id_nc = '$id_nc'";
 	$result=mysql_query($sql_update);
 	if (! $result)
 		echo "<h3 class='error'>".$lang_label["modify_no"]."</h3>";
@@ -159,36 +178,42 @@ echo "<h2>".$lang_label["module_management"]." &gt; ";
 echo $lang_label["network_component_management"]."</h2>";
 
 // Show group selector
-if (isset($_POST["ncgroup"]))
+if (isset($_POST["ncgroup"])) {
 	$ncgroup = $_POST["ncgroup"];
-else
+} else {
 	$ncgroup = 0;
-echo "<form method='POST' action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components'>";
+}
+
+
 
 echo "<table cellpadding='4' cellspacing='4' class='databox'>";
-echo "<tr><td colspan='2' valign='top'>";
-echo "<h3>".$lang_label["filter"]."</h3></td></tr>";
-echo "<tr><td>".$lang_label["group"]."</td>";
-echo "<td valign='middle'>";
+echo "<tr><td>";
+echo "<form method='POST' action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components'>";
+echo $lang_label["group"] . "&nbsp;";
 echo "<select name='ncgroup' onChange='javascript:this.form.submit();'>";
-
 if ($ncgroup != 0){
 	echo "<option value='$ncgroup'>".give_network_component_group_name($ncgroup)."</option>";
 }
 echo "<option value='0'>".$lang_label["all"]."</option>";
-$sql1 = "SELECT * FROM tnetwork_component_group WHERE id_sg != '$ncgroup' ORDER BY name";
-$result = mysql_query($sql1);
-while ($row = mysql_fetch_array ($result))
+$result = mysql_query("SELECT * FROM tnetwork_component_group WHERE id_sg != '$ncgroup' ORDER BY name");
+while ($row = mysql_fetch_array ($result)) {
 	echo "<option value='" . $row["id_sg"] . "'>". give_network_component_group_name ($row["id_sg"])."</option>";
-echo "</select>";
-echo "<td valign='middle'>";
-echo "<noscript><input name='uptbutton' type='submit' class='sub' value='".$lang_label["show"]."'></noscript>";
-echo "</td></form></table><br>";
+}
+echo "</select></form></td>";
+echo "<td>";
+echo "<form method=post action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components_form&create=1'>";
+echo "<select name='id_modulo'>";
+echo "<option value='2'>".lang_string("Create a new network component");
+echo "<option value='6'>".lang_string("Create a new WMI component");
+echo "</select>&nbsp;";
+echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create"]."'>";
+echo "</td></tr></table>";
 
-if ($ncgroup != 0)
+if ($ncgroup != 0) {
 	$sql1 = "SELECT * FROM tnetwork_component WHERE id_group = $ncgroup ORDER BY name";
-else
+} else {
 	$sql1 = "SELECT * FROM tnetwork_component ORDER BY id_group,name";
+}
 	
 $result = mysql_query ($sql1);
 if ( $row = mysql_num_rows ($result)){
@@ -221,7 +246,7 @@ if ( $row = mysql_num_rows ($result)){
 		$module_group2 = $row["id_module_group"];
 
 		echo "<tr><td class='".$tdcolor."_id'>";
-		echo "<a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components_form&update=1&id_nc=".$row["id_nc"]."'>".$nombre_modulo."</a></td>";
+		echo "<a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components_form&update=1&id_modulo=".$row["id_modulo"]."&id_nc=".$row["id_nc"]."'>".$nombre_modulo."</a></td>";
 		echo "<td class='".$tdcolor."f9'>";
 		if ($id_tipo > 0) {
 			echo "<img src='images/".show_icon_type($id_tipo)."' border='0'>";
@@ -248,13 +273,8 @@ if ( $row = mysql_num_rows ($result)){
 		echo "</tr>";
 	}
 	echo "</table>";
-	echo "<table width='750px'>";
-	echo "<tr><td align='right'>";
-	echo "<form method=post action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components_form&create=1'>";
-	echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create"]."'>";
-	echo "</form></td></tr></table>";
-
-} else
+} else {
 	echo "<div class='nf'>No modules</div>";
+}
 
 ?>

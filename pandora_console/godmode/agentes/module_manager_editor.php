@@ -51,7 +51,7 @@ if($form_network_component == "")
 	$form_network_component = get_parameter_post("form_network_component", "");
 
 // Using network component to fill some fields
-if (($form_moduletype == "networkserver") && ($form_network_component != "") && (!isset($_POST['crtbutton'])) && (!isset($_POST['oid']))){
+if (($form_moduletype == "networkserver" || $form_moduletype == "wmiserver") && ($form_network_component != "") && (!isset($_POST['crtbutton'])) && (!isset($_POST['oid']))){
     // Preload data from template
     $row = get_db_row ("tnetwork_component", 'id_nc', $form_network_component);
     if ($row == 0){
@@ -70,12 +70,12 @@ if (($form_moduletype == "networkserver") && ($form_network_component != "") && 
     $form_interval = $row["module_interval"];
     $form_maxvalue = $row["max"];
     $form_minvalue = $row["min"];
-    $form_max_timeout = "";
+    $form_max_timeout = $row["max_timeout"];
     $form_id_export = 0;
     $form_disabled = 0;
-    $form_plugin_user = "";
-    $form_plugin_pass = "";
-    $form_plugin_parameter = "";
+    $form_plugin_user = $row["plugin_user"];
+    $form_plugin_pass = $row["plugin_pass"];
+    $form_plugin_parameter = $row["plugin_parameter"];
     $form_prediction_module = "";
     $form_id_plugin = "";
     $form_post_process = "";

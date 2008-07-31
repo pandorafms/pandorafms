@@ -1,3 +1,22 @@
+2008-07-31  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/help/en/help_wmiquery.php,
+	  include/help/en/help_wmifield.php,
+	  include/help/en/help_wmikey.php: Added to repository. WMI help pages.
+	* include/languages/language_en.php, pandoradb.sql,
+	  pandoradb_data.sql,
+	  godmode/agentes/agent_template.php,
+	  godmode/agentes/module_manager_editor_network.php,
+	  godmode/agentes/module_manager_editor_wmi.php,
+	  godmode/agentes/module_manager_editor.php,
+	  godmode/modules/manage_network_components_form.php,
+	  godmode/modules/manage_network_components.php: Added support for WMI
+	  modules, including components and templates.
+	* godmode/modules/manage_network_components_form_network.php,
+	  godmode/modules/manage_network_components_form_wmi.php: Added to
+	  repository. Component editors.
+
+
 2008-07-30  Sancho Lerena <slerena@gmail.com>
 	
 	* pandoradb.sql: Some changes in structure for new export server. Removed

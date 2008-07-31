@@ -144,9 +144,10 @@ Pandora_Windows_Service::pandora_init () {
 TiXmlElement *
 Pandora_Windows_Service::getXmlHeader () {
 	TiXmlElement *agent;
-	SYSTEMTIME    st;
 	char          timestamp[20];
 	string        value;
+	time_t        ctime;
+	struct tm     *ctime_tm = NULL;
 	
 	agent = new TiXmlElement ("agent_data");
 	
@@ -158,9 +159,13 @@ Pandora_Windows_Service::getXmlHeader () {
 	
 	agent->SetAttribute ("version", getPandoraAgentVersion ());
 	
-	GetSystemTime(&st);
-	sprintf (timestamp, "%d-%02d-%02d %02d:%02d:%02d", st.wYear, st.wMonth, st.wDay,
-		 st.wHour, st.wMinute, st.wSecond);
+	// Get current time
+	ctime = time(0);
+    ctime_tm = localtime(&ctime);
+
+	sprintf (timestamp, "%d-%02d-%02d %02d:%02d:%02d", ctime_tm->tm_year + 1900,
+		ctime_tm->tm_mon + 1,	ctime_tm->tm_mday, ctime_tm->tm_hour,
+		ctime_tm->tm_min, ctime_tm->tm_sec);
 	
 	agent->SetAttribute ("timestamp", timestamp);
 	

@@ -318,7 +318,7 @@ Pandora_Module::getXml () {
 	
 	pandoraDebug ("%s getXML begin", module_name.c_str ());
 	
-	if (!this->has_output || (this->data_list && this->data_list->size () < 1)) {
+	if (!this->has_output || this->data_list == NULL) {
                 return NULL;
         }
         

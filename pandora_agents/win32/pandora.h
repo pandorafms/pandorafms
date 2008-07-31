@@ -51,9 +51,9 @@ namespace Pandora {
         };
         
         static const HKEY  hkey          = HKEY_LOCAL_MACHINE;
-        const char * const name          = "PandoraAgent";
-        const char * const display_name  = "Pandora agent";
-        const char * const description   = "The Pandora Agent service";
+        const char * const name          = "PandoraFMSAgent";
+        const char * const display_name  = "Pandora FMS agent";
+        const char * const description   = "The Pandora FMS Agent service";
 
         void   setPandoraInstallDir   (string dir);
         string getPandoraInstallDir   ();

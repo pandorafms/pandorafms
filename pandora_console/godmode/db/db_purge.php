@@ -59,28 +59,32 @@ if (give_acl ($id_usuario, 0, "DM")==1){
 				echo $lang_label["purge_task"].$id_agent." / ".$from_date;
 				echo "<h3>".$lang_label["please_wait"]."<br>",$lang_label["while_delete_data"].$lang_label["agent"]."</h3>";
 		                if ($id_agent == 0) {
-                			$sql_2='SELECT * FROM tagente_modulo';
+                			$sql="SELECT * FROM tagente_modulo";
                 		} else {
-                    			$sql_2='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_agent;
+                    			$sql=sprintf("SELECT * FROM tagente_modulo WHERE id_agente = %d",$id_agent);
 				}
-				$result_t=mysql_query($sql_2);
-				while ($row=mysql_fetch_array($result_t)) {
+				$result=get_db_all_rows_sql($sql);
+				foreach ($result as $row) {
 					echo $lang_label["deleting_records"].dame_nombre_modulo_agentemodulo($row["id_agente_modulo"]);
 					flush();
 					//ob_flush();
 					echo "<br>";
-					$query = sprintf("DELETE FROM `tagente_datos` WHERE `id_agente_modulo` = '%d' AND `timestamp` < '%s'",$row["id_agente_modulo"],$from_date);
-					process_sql ($query);
-					$query = sprintf("DELETE FROM `tagente_datos_inc` WHERE `id_agente_modulo` = '%d' AND `timestamp` < '%s'",$row["id_agente_modulo"],$from_date);
-					process_sql ($query);
-					$query = sprintf("DELETE FROM `tagente_datos_string` WHERE `id_agente_modulo` = '%d' AND `timestamp` < '%s'",$row["id_agente_modulo"],$from_date);
-					process_sql ($query);
+					$sql = sprintf("DELETE FROM `tagente_datos` WHERE `id_agente_modulo` = '%d' AND `timestamp` < '%s'",$row["id_agente_modulo"],$from_date);
+					process_sql ($sql);
+					$sql = sprintf("DELETE FROM `tagente_datos_inc` WHERE `id_agente_modulo` = '%d' AND `timestamp` < '%s'",$row["id_agente_modulo"],$from_date);
+					process_sql ($sql);
+					$sql = sprintf("DELETE FROM `tagente_datos_string` WHERE `id_agente_modulo` = '%d' AND `timestamp` < '%s'",$row["id_agente_modulo"],$from_date);
+					process_sql ($sql);
 				}
 			} else {
 				echo $lang_label["deleting_records"].$lang_label["all_agents"];
 				flush();
-				ob_flush();
-				$query = "DELETE FROM tagente_datos,tagente_datos_inc,tagente_datos_string WHERE timestamp < '".$from_date."'";
+				//ob_flush();
+				$query = sprintf("DELETE FROM `tagente_datos` WHERE `timestamp` < '%s'",$from_date);
+				process_sql ($query);
+				$query = sprintf("DELETE FROM `tagente_datos_inc` WHERE `timestamp` < '%s'",$from_date);
+				process_sql ($query);
+				$query = sprintf("DELETE FROM `tagente_datos_string` WHERE `timestamp` < '%s'",$from_date);
 				process_sql ($query);
 			}
 			echo "<br><br>";

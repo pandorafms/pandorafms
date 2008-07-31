@@ -1,5 +1,9 @@
 2008-07-31  Ramon Novoa  <rnovoa@artica.es>
 
+	* win32/bin/PandoraAgent.exe: Updated to r989.
+
+2008-07-31  Ramon Novoa  <rnovoa@artica.es>
+
 	* win32/pandora_windows_service.cc: Small fixes.
 	* win32/modules/pandora_module.cc: time() and localtime() are used
 	  instead of GetSystemTime().

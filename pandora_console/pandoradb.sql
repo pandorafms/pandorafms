@@ -399,6 +399,11 @@ CREATE TABLE `tnetwork_component` (
   `snmp_community` varchar(255) NOT NULL default 'NULL',
   `snmp_oid` varchar(400) NOT NULL,
   `id_module_group` tinyint(4) NOT NULL default '0',
+  `id_modulo` int(11) unsigned default '0',
+  `plugin_user` varchar(250) default '',
+  `plugin_pass` varchar(250) default '',
+  `plugin_parameter` text,
+  `max_timeout` tinyint(3) unsigned default '0',
   PRIMARY KEY  (`id_nc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

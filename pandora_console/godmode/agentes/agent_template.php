@@ -60,7 +60,7 @@ if (isset($_POST["template_id"])){
 		while ($row2=mysql_fetch_array($result2)){
 			// Insert each module from tnetwork_component into agent
 			$module_sql = "INSERT INTO tagente_modulo
-			(id_agente, id_tipo_modulo, descripcion, nombre, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, ip_target, id_module_group, id_modulo)
+			(id_agente, id_tipo_modulo, descripcion, nombre, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, ip_target, id_module_group, id_modulo, plugin_user, plugin_pass, plugin_parameter, max_timeout)
 			VALUES ( $id_agente,
 			'".$row2["type"]."',
 			'".$row2["description"]."',
@@ -75,7 +75,11 @@ if (isset($_POST["template_id"])){
 			'".$row2["snmp_oid"]."',
 			'$direccion_agente',
 			'".$row2["id_module_group"]."',
-			'2'
+			'".$row2["id_modulo"]."',
+			'".$row2["plugin_user"]."',
+			'".$row2["plugin_pass"]."',
+			'".$row2["plugin_parameter"]."',
+			'".$row2["max_timeout"]."'
 			)";
 			mysql_query ($module_sql);
 			$id_agente_modulo = mysql_insert_id();

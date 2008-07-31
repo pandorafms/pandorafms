@@ -107,7 +107,7 @@ if ($update_module_id != NULL){
 } else {
 	echo '<select name="form_network_component">';
 	echo '<option>---'.$lang_label["manual_config"].'---</option>';
-	$sql1='SELECT * FROM tnetwork_component ORDER BY name';
+	$sql1='SELECT * FROM tnetwork_component WHERE id_modulo = 2 ORDER BY name';
 	$result=mysql_query($sql1);
 	while ($row=mysql_fetch_array($result)){
 		echo "<option value='".$row["id_nc"]."'>";

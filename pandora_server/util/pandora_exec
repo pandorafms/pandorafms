@@ -1,0 +1,62 @@
+#!/usr/bin/perl
+##########################################################################
+# pandora_exec
+#
+# Executes the given command and prints its output to stdout. If the
+# execution times out or the command does not exist nothing is printed
+# to stdout.
+#
+# Usage: pandora_exec <timeout in seconds> <command> [arguments]
+##########################################################################
+# Copyright (c) 2008 Ramon Novoa, rnovoa@gmail.com
+#           (c) 2008 Artica Soluciones Tecnologicas S.L
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; version 2.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+##########################################################################
+
+use strict;
+use warnings;
+
+# Check command line parameters 
+if ($#ARGV < 1) {
+	exit 1;	
+}
+
+my @opts = @ARGV;
+my $timeout = shift(@opts);
+my $command = quotemeta(shift(@opts));
+my $arguments = join(' ', @opts);
+my $output = '';
+
+# Check that the command exists
+if (system("$command >/dev/null 2>&1") == 32512) {
+	exit 2;
+}
+
+# Execute the command
+eval {
+	local $SIG{ALRM} = sub { die "alarm\n" };
+	alarm $timeout;
+
+	$output = `$command $arguments`;
+	alarm 0;
+};
+
+# Timeout
+if ($@ eq "alarm\n") {
+	exit 3;
+}
+
+print $output;
+
+exit 0;

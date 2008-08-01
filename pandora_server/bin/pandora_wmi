@@ -351,52 +351,39 @@ sub exec_wmi_module {
     $wmi_command .= " \"". $wmi_query . "\"";
     logger ($pa_config, "Executing AM # $id_am WMI command '$wmi_command'", 9);
     
-    eval {
-        alarm ($timeout);
-        $module_data = `$wmi_command`;
-		my @data = split("\n", $module_data); 
-		my @data2 = split(/\|/, $data[2]); # get third line (containing data)
+    $module_data = `$wmi_command`;
+	my @data = split("\n", $module_data); 
+	my @data2 = split(/\|/, $data[2]); # get third line (containing data)
 
-		# Take a specific field number from returned data. It uses tcp_port
-		# field from tagente_module table.
+	# Take a specific field number from returned data. It uses tcp_port
+	# field from tagente_module table.
 
-		$module_data = $data2[$agent_module -> {'tcp_port'}];
-        alarm(0); # Cancel the pending alarm if plugin call returns alive
+	$module_data = $data2[$agent_module -> {'tcp_port'}];
 		
-		# Look for errors
-		if ($module_data =~ /ERROR/) {
-			$module_result = 1;
+	# Look for errors
+	if ($module_data =~ /ERROR/) {
+		$module_result = 1;
+	} else {
+       	$module_result = 0; # If comes here, this is a successfull exec
+	}
+
+	# Special word to know is something is OK or not, 
+	# for example "Running". Defined by user in console. It uses snmp_community 
+	# field from tagente_modulo.
+
+	if ($agent_module -> {'snmp_community'} ne ""){
+		my $temp_filter1 = $agent_module -> {'snmp_community'};
+		if ($module_data =~ /$temp_filter1/){
+			$module_data = 1;
 		} else {
-        	$module_result = 0; # If comes here, this is a successfull exec
+			$module_data = 0;
 		}
+	}
 
-		# Special word to know is something is OK or not, 
-		# for example "Running". Defined by user in console. It uses snmp_community 
-		# field from tagente_modulo.
-
-		if ($agent_module -> {'snmp_community'} ne ""){
-			my $temp_filter1 = $agent_module -> {'snmp_community'};
-			if ($module_data =~ /$temp_filter1/){
-				$module_data = 1;
-			} else {
-				$module_data = 0;
-			}
-		}
-    };
-
-    # Timeout 
-    if ($@ =~ /PANDORA WMI SERVER TIMED OUT/) {
-        logger ($pa_config, "[ERROR] WMI Task for module ".$agent_module->{'id_agente_modulo'}." causes a system timeout in exec", 1);
-        logger ($pa_config, "Executing WMI command '$wmi_command'", 9);
-
-    # General error, not timed-out
-    } elsif ($module_result == 1) { 
+    # Error
+    if ($module_result == 1) { 
         logger ($pa_config, "[ERROR] Plugin Task for module ".$agent_module->{'id_agente_modulo'}." causes an unknown system error", 1);
         logger ($pa_config, "[ERROR] $@", 1);
-    }
-
-    sub timed_out {
-        die "PANDORA WMI SERVER TIMED OUT";
     }
 
 	# Get current timestamp

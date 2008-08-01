@@ -1,3 +1,9 @@
+2008-08-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* bin/pandora_wmi: Removed the timeout mechanism.
+	* bin/pandora_plugin: Removed the timeout mechanism. pandora_exec is
+	  used instead.
+
 2008-07-31  Ramon Novoa  <rnovoa@artica.es>
 
 	* util/pandora_exec: Added to repository. Perl script to control

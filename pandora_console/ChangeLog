@@ -1,3 +1,17 @@
+2008-08-04  Esteban Sanchez  <estebans@artica.es>
+
+	* index.php: Set id_user in config array when login. This fixes errors
+	and notices on login screen.
+
+	* operation/menu.php: Replaced use of id_user on SESSION array with
+	config.
+
+	* general/logon_ok.php: Replaced lang_label with lang_string(). Use
+	id_user on config array. Style correction and code cleanup.
+
+	* godmode/extensions.php: It was showing main functions of extensions
+	instead of godmode ones.
+
 2008-08-04  Esteban Sánchez  <estebans@artica.es>
 
 	* extensions/hello.php: Fixed old function name. Activate the

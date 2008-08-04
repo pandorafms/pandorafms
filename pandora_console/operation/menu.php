@@ -21,7 +21,7 @@
 ?>
 
 <?php
-if (! isset ($_SESSION["id_usuario"])) {
+if (! isset ($config['id_user'])) {
 	return;
 }
 ?>
@@ -33,7 +33,7 @@ $sec = get_parameter ('sec');
 $sec2 = get_parameter ('sec2');
 
 // Agent read, Server read
-if (give_acl ($_SESSION["id_usuario"], 0, "AR")) {
+if (give_acl ($config['id_user'], 0, "AR")) {
 	if ($sec2 == "operation/agentes/tactical") {
 		$selected = ' menu-selected';
 	} else {
@@ -132,7 +132,7 @@ if (give_acl ($_SESSION["id_usuario"], 0, "AR")) {
 
 
 // Check access for incident
-if (give_acl ($_SESSION["id_usuario"], 0, "IR") == 1) {
+if (give_acl ($config['id_user'], 0, "IR") == 1) {
 	if (($sec2 == "operation/incidents/incident" || $sec2 == "operation/incidents/incident_detail"|| $sec2 == "operation/incidents/incident_note")) {
 		$selected = ' menu-selected';
 	} else {
@@ -160,7 +160,7 @@ if (give_acl ($_SESSION["id_usuario"], 0, "IR") == 1) {
 
 
 // Rest of options, all with AR privilege
-if (give_acl ($_SESSION["id_usuario"], 0, "AR")) {
+if (give_acl ($config['id_user'], 0, "AR")) {
 	// Events
 	if($sec2 == "operation/events/events") {
 		$selected = ' menu-selected';
@@ -211,15 +211,15 @@ if (give_acl ($_SESSION["id_usuario"], 0, "AR")) {
 
 	// User edit (submenu)
 	if ($sec == "usuarios") {
-		if(isset($_GET["ver"]) && $_GET["ver"] == $_SESSION["id_usuario"]) {
+		if(isset($_GET["ver"]) && $_GET["ver"] == $config['id_user']) {
 			echo "<div class='operation-submenu submenu-selected'>";
 		} else {
 			echo "<div class='operation-submenu'>";
 		}
-		echo "<ul class='mn'><li><a href='index.php?sec=usuarios&amp;sec2=operation/users/user_edit&amp;ver=".$_SESSION["id_usuario"]."' class='mn'>".lang_string ("index_myuser")."</a></li></ul></div>";
+		echo "<ul class='mn'><li><a href='index.php?sec=usuarios&amp;sec2=operation/users/user_edit&amp;ver=".$config['id_user']."' class='mn'>".lang_string ("index_myuser")."</a></li></ul></div>";
 
 		// User statistics require UM
-		if (give_acl($_SESSION["id_usuario"], 0, "UM")==1) {
+		if (give_acl($config['id_user'], 0, "UM")==1) {
 			if($sec2 == "operation/users/user_statistics") {
 				echo "<div class='operation-submenu submenu-selected'>";
 			} else {
@@ -238,7 +238,7 @@ if (give_acl ($_SESSION["id_usuario"], 0, "AR")) {
 	echo '<div id="op6" class="operation-menu'.$selected.'">';
 	echo '<ul class="mn"><li><a href="index.php?sec=snmpconsole&amp;sec2=operation/snmpconsole/snmp_view&amp;refr=30" class="mn">'.lang_string ("SNMP_console").'</a></li></ul></div>';
 
-	if ((give_acl($_SESSION["id_usuario"], 0, "AW")==1)){
+	if ((give_acl($config['id_user'], 0, "AW")==1)){
 		// SNMP Console alert (submenu)
 		if ($sec == "snmpconsole"){
 			if($sec2 == "operation/snmpconsole/snmp_alert") {

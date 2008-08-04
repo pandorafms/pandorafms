@@ -35,7 +35,7 @@ $table->head[0] = lang_string ('Name');
 $table->data = array ();
 
 foreach ($config['extensions'] as $extension) {
-	if ($extension['main_function'] == '')
+	if ($extension['godmode_function'] == '')
 		continue;
 	$data = array ();
 	$data[0] = '<a href="index.php?sec=gextensions&sec2='.$menu['sec2'].'" class="mn">'.$menu['name'];

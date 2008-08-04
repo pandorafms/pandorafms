@@ -1,5 +1,13 @@
 2008-08-04  Esteban Sánchez  <estebans@artica.es>
 
+	* godmode/extensions.php, operation/extensions.php: Added to
+	repository. Extensions interface to operation and godmode modes.
+
+	* images/extensions.png: Added to repository. Extensions icon for the
+	menu.
+
+2008-08-04  Esteban Sánchez  <estebans@artica.es>
+
 	* AUTHORS: Added myself.
 
 	* include/functions_extensions.php: Added to repository. Implements

@@ -1,77 +1,83 @@
-#op a {
+#menu-operation {
+	border-top: 0px;
+}
+
+#menu-operation a {
 	display: block;
 	color: #000;
 	text-decoration: none;
 }
-#op li {
+
+#menu-operation li {
 	left: 0px;
 	width: 100%;
 	border-bottom: 1px solid #d4d4d4;
 	border-top: 1px solid #eee;
 }
-div.menuop {
+
+.menu-operation {
 	background-color: #e6e9cd;
-	border: 1px solid #dadbdb;
-	width: 155px;
-	margin-bottom: 5px;
 }
-#op1 li, #op2 li, #op3 li, #op4 li, #op5 li, #op6 li, #op7 li, #op8 li, #op9 li,
-#op1s li, #op2s li, #op3s li, #op4s li, #op5s li, #op6s li, #op7s li, #op8s li, #op9s li {
+
+.operation-menu li {
 	padding: 0px 0px 0px 28px;
+	left: 0px;
+	width: 100%;
+	border-bottom: 1px solid #d4d4d4;
+	border-top: 1px solid #eee;
 }
-div#op1>ul, div#op2>ul, div#op3>ul, div#op4>ul, div#op5>ul, div#op6>ul, div#op7>ul,
-div#op8>ul, div#op9>ul, div#op1s>ul, div#op2s>ul, div#op3s>ul, div#op4s>ul, div#op5s>ul, div#op6s>ul,
-div#op7s>ul, div#op8s>ul, div#op9s>ul {
+
+.operation-menu ul {
 	width: 127px;
 }
-#op1 li , #op1 li:hover, #op1s li {
+#op1 li {
 	background: url(../../images/bricks.png) no-repeat 4px 3px;
 }
-#op2 li, #op2 li:hover, #op2s li {
+#op2 li {
 	background: url(../../images/server_database.png) no-repeat 4px 3px;
 }
-#op3 li, #op3 li:hover, #op3s li {
+#op3 li {
 	background: url(../../images/book_edit.png) no-repeat 4px 3px;
 }
-#op4 li, #op4 li:hover, #op4s li {
+#op4 li {
 	background: url(../../images/lightning_go.png) no-repeat 4px 3px;
 }
 /* users */
-#op5 li, #op5 li:hover, #op5s li {
+#op5 li {
 	background: url(../../images/group.png) no-repeat 4px 4px;
 }
-#op6 li, #op6 li:hover, #op6s li {
+#op6 li {
 	background: url(../../images/computer_error.png) no-repeat 4px 4px;
 }
 /* trap console */
-#op7 li, #op7 li:hover, #op7s li  {
+#op7 li {
 	background: url(../../images/email.png) no-repeat 4px 4px;
 }
-#op8 li, #op8 li:hover, #op8s li  {
+#op8 li {
 	background: url(../../images/reporting.png) no-repeat 4px 4px;
 }
-#op9 li, #op9 li:hover, #op9s li  {
+#op9 li {
 	background: url(../../images/monitor.png) no-repeat 4px 3px;
 }
-div.arrow>ul, div.arrows>ul, div#arrowl>ul, div#arrowls>ul {
+
+#op-extensions li {
+	background: url(../../images/extensions.png) no-repeat 4px 3px;
+}
+
+.operation-submenu>ul {
 	width: 75%;
 }
-.arrow li, .arrow li:hover, .arrows li, #arrowl li, #arrowl li:hover, #arrowls li  {
+
+.operation-submenu li {
 	background: url(../../images/arrow.png) no-repeat 2px 4px;
 	margin-left: 26px;
-	padding: 0px 0px 0px 14px;	
+	padding: 0px 0px 0px 14px;
 }
-#op a:hover ,
-#op1 li:hover, #op1s li , #op2 li:hover, #op2s li , #op3 li:hover, #op3s li , 
-#op4 li:hover, #op4s li , #op5 li:hover, #op5s li , #op6 li:hover, #op6s li , 
-#op7 li:hover, #op7s li , #op8 li:hover, #op8s li, #op9 li:hover, #op9s li,
-.arrow li:hover, .arrows li, #arrowl li:hover, #arrowls li
-{
-	background-color: #d4ddc6;
+
+.menu-selected, #menu-operation li:hover, .submenu-selected li, .operation-submenu li:hover {
+	background-color: #d4ddc6 !important;
 }
-#op li.bb0, #arrowls li.bb0, #op8 li.bb0 {
+
+#menu-operation li.bb0, #arrowls li.bb0, #op8 li.bb0 {
 	border-bottom: 0px;
-}
-#op {
-	border-top: 0px;
 }

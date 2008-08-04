@@ -1,3 +1,34 @@
+2008-08-04  Esteban Sánchez  <estebans@artica.es>
+
+	* AUTHORS: Added myself.
+
+	* include/functions_extensions.php: Added to repository. Implements
+	extensions functions. Extensions are some kind of plugins to the
+	console to add functionallity in a modular way. More work and
+	documentation is needed.
+
+	* godmode/reporting/reporting_builder.php, include/functions.php,
+	operation/agentes/networkmap.php, operation/agentes/ver_agente.php:
+	Style correction.
+
+	* include/functions_db.php: Added load_lang_file() to load the
+	languages file (useful in extensions l10n). Style correction.
+
+	* index.php: Load extensions and call them in cases.
+
+	* godmode/menu.php, operation/menu.php: Style correction, code
+	cleanup. Added extension menu and submenus. Use of CSS more efficient.
+
+	* include/config_process.php: Added extensions support.
+
+	* extensions/, extensions/hello.php: Added to repository, extensions
+	dir and example.
+
+	* include/functions.php: Style correction.
+
+	* include/styles/op.css: Cleanup and rewritten the CSS hell it was
+	before.
+
 2008-08-01  Manuel Arostegui <marostegui@artica.es>
 
 	* include/help/en/help_plugin_definition.php: Language corrections.
@@ -161,6 +192,7 @@
 	* view_server.php: Fixed problem with lastupdate render. This was using
 	and incorrect function to render data. 
 
+>>>>>>> .r996
 2008-07-21  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* include/functions_reporting.php: Last commit forgot a semicolon. Fixed.

@@ -65,6 +65,7 @@ require_once ("include/languages/language_".$config["language"].".php");
 require_once ("include/functions.php");
 require_once ("include/functions_db.php");
 //We should require this or you might end up with some empty strings
+load_extensions ($config['extensions']);
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -72,10 +73,10 @@ require_once ("include/functions_db.php");
 <head>
 <?php
 // Pure mode (without menu, header and footer).
-$config["pure"] = get_parameter("pure",0);
+$config["pure"] = get_parameter ("pure", 0);
 
 // Auto Refresh page
-$intervalo = get_parameter ("refr",0);
+$intervalo = get_parameter ("refr", 0);
 if ($intervalo > 0){
 	// Agent selection filters and refresh
 	$query = 'http' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '') . '://' . $_SERVER['SERVER_NAME'];
@@ -193,18 +194,18 @@ if (isset ($_GET["bye"])) {
 	session_unregister ("id_usuario");
 	exit;
 }
-$pagina = "";
+$page = "";
 if (isset ($_GET["sec2"])){
 	$sec2 = get_parameter_get ('sec2');
 	$sec2 = parameter_extra_clean ($sec2);
-	$pagina = $sec2;
+	$page = $sec2;
 } else
 	$sec2 = "";
 	
 if (isset ($_GET["sec"])){
 	$sec = get_parameter_get ('sec');
 	$sec = parameter_extra_clean ($sec);
-	$pagina = $sec2;
+	$page = $sec2;
 } else {
 	$sec = "";
 }
@@ -214,7 +215,7 @@ if (isset ($_GET["sec"])){
 session_write_close(); 
 
 // Header
-if ($config["pure"] == 0){
+if ($config["pure"] == 0) {
 	echo '<div id="container">';
 	echo '<div id="head">';
 	require ("general/header.php"); 
@@ -233,12 +234,21 @@ if ($config["pure"] == 0){
 }
 
 // Page loader / selector
-if ($pagina != ""){
-	if (file_exists ($pagina.".php")) {
-		require ($pagina.".php");
+if ($page != "") {
+	$page .= '.php';
+	if (file_exists ($page)) {
+		if (! is_extension ($page)) {
+			require ($page);
+		} else {
+			if ($sec[0] == 'g') {
+				extension_godmode_function (basename ($page));
+			} else {
+				extension_main_function (basename ($page));
+			}
+		}
 	} else {
 		echo "<br><b class='error'>".lang_string("Sorry! I can't find the page!")."</b>";
-	}	
+	}
 } else
 	require ("general/logon_ok.php");  //default
 

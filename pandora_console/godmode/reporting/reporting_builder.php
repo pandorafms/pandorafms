@@ -21,9 +21,8 @@
 $id_user=$_SESSION["id_usuario"];
 global $REMOTE_ADDR;
 
-
-if ((give_acl($id_user, 0, "AW") != 1) && (dame_admin ($id_user) != 1)) {
-	audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access graph builder");
+if (give_acl ($id_user, 0, "AW") != 1 && dame_admin ($id_user) != 1) {
+	audit_db ($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access graph builder");
 	include ("general/noaccess.php");
 	exit;
 }
@@ -133,7 +132,7 @@ if ($add_content) {
 			$id_agent_module ? $id_agent_module : "NULL",
 			$order, $type, $period * 3600);
 	if ($result = mysql_query($sql)) {
-		echo "<h3 class=suc>".lang_string ('create_reporting_ok')."</h3>";
+		echo '<h3 class="suc">'.lang_string ('create_reporting_ok').'</h3>';
 		$id_agent = 0;
 		$id_agent_module = 0;
 		$report_id_group = 0;
@@ -144,7 +143,7 @@ if ($add_content) {
 		$sla_min = 0;
 		$sla_limit = 0;
 	} else {
-		echo "<h3 class=error>".lang_string ('create_reporting_no')."</h3>";
+		echo '<h3 class="error">'.lang_string ('create_reporting_no')."</h3>";
 		/* Do not unset so the values are kept in the form */
 	}
 }

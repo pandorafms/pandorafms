@@ -61,7 +61,7 @@ function safe_input ($value) {
  * @param mesg Message to be displayed
  */
 function pandora_debug ($var, $msg) { 
-	echo "[Pandora DEBUG (".$var."]: (".$msg.")<br />";
+	echo "[Pandora DEBUG (".$var."): (".$msg.")<br />";
 } 
 
 /** 
@@ -879,7 +879,7 @@ function show_alert_show_view ($data, $tdcolor = "datos", $combined = 0) {
 	// Description
 	echo "<td class='".$tdcolor."'>".$data["descripcion"]."</td>";
 
-	// Extended info    
+	// Extended info
 	echo "<td class='".$tdcolor."'>";
 
 	// Has recovery notify activated ?
@@ -1168,9 +1168,10 @@ function return_priority ($priority) {
  * @param string Text string to be stripped of magic_quotes protection
  */
 
-function unsafe_string ($string){
-	if (get_magic_quotes_gpc() == 1) 
-    	$string = stripslashes ($string);
+function unsafe_string ($string) {
+	if (get_magic_quotes_gpc () == 1) 
+		$string = stripslashes ($string);
 	return $string;
 }
+
 ?>

@@ -75,8 +75,8 @@ function create_edge ($head, $tail) {
 
 // Returns a node definition
 function create_node ($agent, $simple = 0, $font_size = 10) {
-	$sql = sprintf ('SELECT COUNT(tagente_modulo.id_agente) FROM tagente_estado,
-			tagente_modulo
+	$sql = sprintf ('SELECT COUNT(tagente_modulo.id_agente)
+			FROM tagente_estado, tagente_modulo
 			WHERE tagente_modulo.id_agente = %d
 			AND tagente_modulo.id_tipo_modulo in (2, 6, 9, 18, 21, 100)
 			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo

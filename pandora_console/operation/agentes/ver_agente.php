@@ -66,7 +66,7 @@ if (defined ('AJAX')) {
 				AND disabled = 0 
 				AND id_tipo_modulo in (2, 6, 9, 18, 21, 100)', $id_agent);
 		$total_modules = get_db_sql ($sql);
-	
+		
 		if ($bad_modules === false)
 			$size_bad_modules = 0;
 		else
@@ -88,7 +88,15 @@ if (defined ('AJAX')) {
 		}
 
 		// Alerts (if present)
-		$sql = sprintf ('SELECT COUNT(talerta_agente_modulo.id_aam) FROM talerta_agente_modulo, tagente_modulo, tagente WHERE tagente.id_agente = %d AND tagente.disabled = 0 AND tagente.id_agente = tagente_modulo.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo AND talerta_agente_modulo.times_fired > 0 ', $id_agent);
+		$sql = sprintf ('SELECT COUNT(talerta_agente_modulo.id_aam)
+				FROM talerta_agente_modulo, tagente_modulo, tagente
+				WHERE tagente.id_agente = %d
+				AND tagente.disabled = 0
+				AND tagente.id_agente = tagente_modulo.id_agente
+				AND tagente_modulo.disabled = 0
+				AND tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo
+				AND talerta_agente_modulo.times_fired > 0 ',
+				$id_agent);
 		$alert_modules = get_db_sql ($sql);
 		if ($alert_modules > 0){
 			$sql = sprintf ('SELECT tagente_modulo.nombre, talerta_agente_modulo.last_fired FROM talerta_agente_modulo, tagente_modulo, tagente WHERE tagente.id_agente = %d AND tagente.disabled = 0 AND tagente.id_agente = tagente_modulo.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo AND talerta_agente_modulo.times_fired > 0 ', $id_agent);

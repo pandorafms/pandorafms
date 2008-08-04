@@ -1218,7 +1218,8 @@ function give_agent_id_from_module_id ($id_agent_module) {
 	return (int) get_db_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
 }
 
-$sql_cache=array('saved' => 0);
+$sql_cache = array ('saved' => 0);
+
 /** 
  * Get the first value of the first row of a table in the database.
  * 
@@ -1226,17 +1227,20 @@ $sql_cache=array('saved' => 0);
  * @param table Table to retrieve the data
  * @param field_search Field to filter elements
  * @param condition Condition the field must have
- *              
- * @return      
+ *
+ * @return Value of first column of the first row. False if there were no row.
  */  
-function get_db_value ($field, $table, $field_search=1, $condition=1){
+function get_db_value ($field, $table, $field_search = 1, $condition = 1) {
 
 	if (is_int ($condition)) {
-		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = %d LIMIT 1", $field, $table, $field_search, $condition);
+		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = %d LIMIT 1",
+				$field, $table, $field_search, $condition);
 	} else if (is_float ($condition) || is_double ($condition)) {
-		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = %f LIMIT 1", $field, $table, $field_search, $condition);
+		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = %f LIMIT 1",
+				$field, $table, $field_search, $condition);
 	} else {
-		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = '%s' LIMIT 1", $field, $table, $field_search, $condition);
+		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = '%s' LIMIT 1",
+				$field, $table, $field_search, $condition);
 	}
 	$result = get_db_all_rows_sql ($sql);
 	
@@ -1256,11 +1260,11 @@ function get_db_value ($field, $table, $field_search=1, $condition=1){
 function get_db_row_sql ($sql) {
 	$sql .= " LIMIT 1";
 	$result = get_db_all_rows_sql ($sql);
-
+	
 	if($result === false) 
 		return false;
-
-        return $result[0];
+	
+	return $result[0];
 }
 
 /** 
@@ -1305,7 +1309,7 @@ function get_db_sql ($sql, $field = 0) {
 	if($result === false)
 		return false;
 
-        return $result[0][$field];
+	return $result[0][$field];
 }
 
 /**
@@ -1713,6 +1717,17 @@ function get_agent_module_value_sumatory ($id_agent_module, $period, $date = 0) 
 	return (float) $sum;
 }
 
+/**
+ * Loads a language file.
+ *
+ * Check existance of file.
+ *
+ * @param file Filename of language definitions to load.
+ */
+function load_lang_file ($file) {
+	if (file_exists ($file))
+		require_once ($config["homedir"]."/include/languages/language_".$config["language"].".php");
+}
 /** 
  * Get a translated string.
  * 
@@ -1724,9 +1739,11 @@ function lang_string ($string) {
 	global $config;
 	global $lang_label;
 	
-	if(!is_array ($lang_label)) {	
-		require_once ($config["homedir"]."/include/languages/language_".$config["language"].".php");
-	} //Only includes the file once (the first function call) and since $lang_label is global, it will propagate
+	if (!is_array ($lang_label)) {
+		/* Only includes the file once (the first function call)
+		 and since $lang_label is global, it will propagate */
+		load_lang_file ($config["homedir"]."/include/languages/language_".$config["language"].".php");
+	}
 
 	if (isset ($lang_label[$string]))
 		return $lang_label[$string];
@@ -1781,8 +1798,7 @@ function show_alert_row_mini ($id_combined_alert) {
 			$tdcolor = "datos2";
 			$color = 1;
 		}
-		
-		echo "<tr>";    
+		echo "<tr>";
 		if ($row2["disable"] == 1) {
 			$tdcolor = "datos3";
 		}

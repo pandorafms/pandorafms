@@ -17,9 +17,9 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 //Pandora Version
-if (!isset($build_version))
+if (!isset ($build_version))
 	$build_version = "PC080610";
-if (!isset($pandora_version))
+if (!isset ($pandora_version))
 	$pandora_version = "v2.0-dev";
 
 // This is directory where placed "/attachment" directory, to upload files stores. 
@@ -38,8 +38,7 @@ $config["style"] = "pandora";
 $config["sla_period"] = 604800;
 
 // Read remaining config tokens from DB
-if (! mysql_connect($config["dbhost"],$config["dbuser"],$config["dbpass"])){ 
-
+if (! mysql_connect ($config["dbhost"], $config["dbuser"], $config["dbpass"])) {
 	//Non-persistent connection. If you want persistent conn change it to mysql_pconnect()
 	exit ('<html><head><title>Pandora FMS Error</title>
 		<link rel="stylesheet" href="./include/styles/pandora.css" type="text/css">
@@ -81,67 +80,17 @@ if (sizeof ($configs) == 0) {
 		</div>
 		</div></body></html>');
 }
+
 foreach ($configs as $c) {
 	switch ($c["token"]) {
 	case "language_code":
 		$config["language"] = $c["value"];
 		
 		break;
-	case "block_size":
-		$config["block_size"] = $c["value"];
-		
-		break;
-	case "days_purge":
-		$config["days_purge"] = $c["value"];
-		
-		break;
-	case "days_compact":
-		$config["days_compact"] = $c["value"];
-		
-		break;
-	case "graph_res":
-		$config["graph_res"] = $c["value"];
-		
-		break;
-	case "step_compact":
-		$config["step_compact"] = $c["value"];
-		
-		break;  
-	case "style":
-		$config["style"] = $c["value"];
-		
-		break;
-	case "show_unknown":
-		$config["show_unknown"] = $c["value"];
-		
-		break;
-	case "show_lastalerts":
-		$config["show_lastalerts"] = $c["value"];
-		
-		break;
-	case "remote_config":
-		$config["remote_config"] = $c["value"];
-		
-		break;
-	case "graph_color1":
-		$config["graph_color1"] = $c["value"];
-		
-		break;
-	case "graph_color2":
-		$config["graph_color2"] = $c["value"];
-		
-		break;
-	case "graph_color3":
-		$config["graph_color3"] = $c["value"];
-		
-		break;
-	case "sla_period":
-		$config["sla_period"] = $c["value"];
-		
-		break;
+	default:
+		$config[$c["token"]] = $c["value"];
 	}
 }
-
 
 if ($config["language"] == 'ast_es') {
 	$help_code = 'ast';
@@ -149,4 +98,10 @@ if ($config["language"] == 'ast_es') {
 	$help_code = substr ($config["language"], 0, 2);
 }
 
+if (! defined ('EXTENSIONS_DIR'))
+	define ('EXTENSIONS_DIR', 'extensions');
+
+require_once ('functions_extensions.php');
+
+$config['extensions'] = get_extensions ();
 ?>

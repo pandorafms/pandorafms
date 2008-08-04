@@ -131,16 +131,16 @@ else
 $REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
 
 // Login process 
-if ( (! isset ($_SESSION['id_usuario'])) && (isset ($_GET["login"]))) {
+if (! isset ($_SESSION['id_usuario']) && isset ($_GET["login"])) {
 	$nick = get_parameter_post ("nick");
 	$pass = get_parameter_post ("pass");
 	// Connect to Database
-	$sql1 = sprintf("SELECT `id_usuario`, `password` FROM `tusuario` WHERE `id_usuario` = '%s'",$nick);
-	$row = get_db_row_sql ($sql1);
+	$sql = sprintf("SELECT `id_usuario`, `password` FROM `tusuario` WHERE `id_usuario` = '%s'",$nick);
+	$row = get_db_row_sql ($sql);
 	
 	// For every registry
-	if ($row !== false){
-		if ($row["password"] == md5 ($pass)){
+	if ($row !== false) {
+		if ($row["password"] == md5 ($pass)) {
 			// Login OK
 			// Nick could be uppercase or lowercase (select in MySQL
 			// is not case sensitive)
@@ -153,7 +153,7 @@ if ( (! isset ($_SESSION['id_usuario'])) && (isset ($_GET["login"]))) {
 			update_user_contact ($nick);
 			logon_db ($nick, $REMOTE_ADDR);
 			$_SESSION['id_usuario'] = $nick;
-			
+			$config['id_user'] = $nick;
 		} else {
 			// Login failed (bad password)
 			unset ($_GET["sec2"]);

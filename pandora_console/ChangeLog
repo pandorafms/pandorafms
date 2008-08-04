@@ -1,5 +1,10 @@
 2008-08-04  Esteban Sánchez  <estebans@artica.es>
 
+	* extensions/hello.php: Fixed old function name. Activate the
+	extension by default. Style correction.
+
+2008-08-04  Esteban Sánchez  <estebans@artica.es>
+
 	* godmode/extensions.php, operation/extensions.php: Added to
 	repository. Extensions interface to operation and godmode modes.
 

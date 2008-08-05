@@ -394,7 +394,7 @@ sub pandora_loadconfig {
             $pa_config->{"keepalive"} = clean_blank($1);
             $pa_config->{"keepalive_orig"} = clean_blank($1);
         }
-        elsif ($parametro =~ m/^xprobe2\s([.*]*)/i) {
+        elsif ($parametro =~ m/^xprobe2\s(.*)/i) {
             $pa_config->{'xprobe2'}= clean_blank($1); 
         }
 		elsif ($parametro =~ m/^autocreate\s([0-9*]*)/i) {
@@ -541,7 +541,7 @@ sub pandora_startlog ($){
     open STDERR, ">>$pa_config->{'errorlogfile'}" or die " [ERROR] Pandora FMS can't write to Errorlog. Aborting : \n $! \n";
     my $time_now = &UnixDate("today","%Y/%m/%d %H:%M:%S");
     print STDERR "$time_now - ".$pa_config->{'servername'}.$pa_config->{"servermode"}." Starting Pandora FMS Server. Error logging activated \n";
-    # This redirect ANY output to errorlog. Not a good idea for real usage !
+    # This redirect ANY output to errorlog.
     # open STDOUT, ">>$pa_config->{'errorlogfile'}"
 }
 # End of function declaration

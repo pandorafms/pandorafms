@@ -1,3 +1,23 @@
+2008-08-05  Sancho Lerena <slerena@gmail.com>
+
+	* bin/pandora_recon: New functional recon server. It implements 
+	different recon tasks based on OS type. Uses a production/consumer
+	thread model, detec OS typew and assign automatically network profiles
+	(including new WMI components) and WMI, Plugin, Network and Prediction
+	servers, taken the first master server that could found. Uses xprobe2
+	external tool to detect remote OS.
+
+	* Makefile.PL: Added new dependencies (HTML::Entities), and new
+	binary tool for controlled time executing (pandora_exec), used now
+	by pandora_wmi and pandora_plugin.
+
+	* Config.pm: Fixed problem parsing xprobe2 command.
+
+	* DB.pm: Functions pandora_create_agent() and pandora_event() moved
+	from Tools.pm to here. Removed some old DEBUG messages.
+
+	* Tools.pm: Moved pandora_create_agent() and pandora_event() to DB.pm
+
 2008-08-01  Ramon Novoa  <rnovoa@artica.es>
 
 	* bin/pandora_wmi: Removed the timeout mechanism.

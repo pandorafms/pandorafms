@@ -19,10 +19,11 @@ WriteMakefile(
 		IO::Socket => 0,
 		Mail::Sendmail => 0,
 		Net::Traceroute::PurePerl => 0,
+		HTML::Entities => 0,
 		SNMP => 0
     },
     EXE_FILES 		=>
-[ 'bin/pandora_server', 'bin/pandora_network', 'bin/pandora_recon', 'bin/pandora_snmpconsole' , 'bin/pandora_plugin', 'bin/pandora_prediction'],
+[ 'bin/pandora_server', 'bin/pandora_network', 'bin/pandora_recon', 'bin/pandora_snmpconsole' , 'bin/pandora_plugin', 'bin/pandora_prediction', 'util/pandora_exec'],
     PMLIBDIRS  		=> [ 'lib' ],
     'dist'		=> { 'TAR' => 'tar', 'TARFLAGS' => 'cvfz', 'SUFFIX'
 => '.gz', 'COMPRESS' => 'gzip'}

@@ -39,9 +39,7 @@ our @EXPORT = qw(
         is_numeric
         clean_blank
         pandora_sendmail
-		pandora_create_agent
 		pandora_get_os
-		pandora_event
 		pandora_trash_ascii
     );
 
@@ -61,33 +59,6 @@ sub pandora_trash_ascii {
     return $output
 }
 
-##########################################################################
-## SUB pandora_event 
-## Write in internal audit system an entry.
-## Params: config_hash, event_title, group, agent_id, severity, id_alertam
-##         id_agentmodule, event_type (from a set, as string), db_handle
-##########################################################################
-
-sub pandora_event (%$$$$$$$$) {
-    my $pa_config = $_[0];
-    my $evento = $_[1];
-    my $id_grupo = $_[2];
-    my $id_agente = $_[3];
-    my $severity = $_[4]; # new in 2.0
-    my $id_alert_am = $_[5]; # new in 2.0
-    my $id_agentmodule = $_[6]; # new in 2.0
-    my $event_type = $_[7]; # new in 2.0
-	my $dbh = $_[8];
-    my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
-	my $utimestamp; # integer version of timestamp	
-
-	$utimestamp = &UnixDate($timestamp,"%s"); # convert from human to integer
-    $evento = $dbh->quote($evento);
-    $event_type = $dbh->quote($event_type);
-    $timestamp = $dbh->quote($timestamp);
-	my $query = "INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity) VALUES ($id_agente, $id_grupo, $evento, $timestamp, 0, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity)";
-    $dbh->do($query);	
-}
 
 ##########################################################################
 # SUB pandora_get_os (string)
@@ -158,37 +129,6 @@ sub pandora_daemonize {
 # Pandora other General functions  |
 # -------------------------------------------+
 
-##########################################################################
-# SUB pandora_create_agent (pa_config, dbh, target_ip, target_ip_id,
-#				 id_group, network_server_assigned, name, id_os)
-# Create agent, and associate address to agent in taddress_agent table.
-# it returns created id_agent.
-##########################################################################
-sub pandora_create_agent {  
-	my $pa_config = $_[0];
-	my $dbh = $_[1];
-	my $target_ip = $_[2];
-	my $target_ip_id = $_[3];
-	my $id_group = $_[4];
-	my $id_server= $_[5];
-	my $name = $_[6];
-	my $id_parent = $_[7];
-	my $id_os = $_[8];
-
-	my $server = $pa_config->{'servername'}.$pa_config->{"servermode"};
-	logger($pa_config,"$server: Creating agent $name $target_ip ", 1);
-	my $query_sql2 = "INSERT INTO tagente (nombre, direccion, comentarios, id_grupo, id_os, id_network_server, intervalo, id_parent, modo) VALUES  ('$name', '$target_ip', 'Created by $server', $id_group, $id_os, $id_server, 300, $id_parent, 1)";
-	$dbh->do ($query_sql2);
-	my $lastid = $dbh->{'mysql_insertid'};
-
-	pandora_event ($pa_config, "Agent '$name' created by ".$pa_config->{'servername'}.$pa_config->{"servermode"}, $pa_config->{'autocreate_group'}, $lastid, 2, 0, 0, 'new_agent', $dbh);
-
-	if ($target_ip_id > 0){
-		my $query_sql3 = "INSERT INTO taddress_agent (id_a, id_agent) values ($target_ip_id, $lastid)";
-		$dbh->do($query_sql3);
-	}
-	return $lastid;
-}
 
 ##########################################################################
 # SUB pandora_sendmail

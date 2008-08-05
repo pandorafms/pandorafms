@@ -29,7 +29,7 @@ use Date::Manip;        # Needed to manipulate DateTime formats
 use Net::Ping;
 use Time::Local;        # DateTime basic manipulation
 use NetAddr::IP;		# To manage IP Addresses
-use Net::Traceroute::PurePerl; # Traceroute in rawsockets (need root) 
+use Net::Traceroute::PurePerl; 	# Traceroute needs traceroute command
 use POSIX;				# to use ceil() function
 use Socket;				# to resolve address
 use threads;
@@ -45,7 +45,7 @@ my @pending_task : shared;
 my %pending_task_hash : shared;
 my %current_task_hash : shared;
 my $queue_lock : shared;
-
+my $icmp_lock : shared;
 
 # FLUSH in each IO (only for debug, very slooow)
 # ENABLED in DEBUGMODE
@@ -57,7 +57,6 @@ my %pa_config;
 $SIG{'TERM'} = 'pandora_shutdown';
 $SIG{'INT'} = 'pandora_shutdown';
 
-
 # Inicio del bucle principal de programa
 pandora_init(\%pa_config, "Pandora FMS Recon server");
 
@@ -66,6 +65,16 @@ pandora_loadconfig (\%pa_config, 3);
 
 # Audit server starting
 pandora_audit (\%pa_config, "Pandora FMS Recon Daemon starting", "SYSTEM", "System");
+
+# Check for xprobe2
+my $xprobe2 = $pa_config{"xprobe2"};
+
+if (! -e $xprobe2) {
+	print " [E] $xprobe2 not found. Pandora FMS Recon cannot detect OS types without it.\n\n";
+	exit;
+} else {
+ 	print " [*] $xprobe2 Detected.\n\n";
+}
 
 sleep(1);
 
@@ -129,11 +138,12 @@ sub pandora_recon_producer ($) {
 	while (1) {
 		$query_sql = "SELECT * FROM trecon_task 
                     WHERE 
-                        id_network_server = $server_id 
-                    AND 
-                        status = 1
-					AND
+                        id_recon_server = $server_id 
+                    AND (
+                        status = 1  
+						OR 
                         (utimestamp + interval_sweep) < UNIX_TIMESTAMP() 
+						)
                     ";
 
 		$exec_sql1 = $dbh->prepare($query_sql);
@@ -233,13 +243,15 @@ sub pandora_detect_os {
 	}
     my $command= "";
     eval {
-        $command = `$xprobe2 $host 2> /dev/null | grep "Running OS" | head -1`;
+        $command = `$xprobe2 $host 2> /dev/null | grep "Running OS" 2> /dev/null | head -1 2> /dev/null`;
     };
     if ($@){
         return 10;
     }
 	return pandora_get_os ($command);
 }
+
+
 ##########################################################################
 # SUB pandora_exec_task (pa_config, id_task)
 # Execute task
@@ -250,11 +262,11 @@ sub pandora_recon_exec_task {
     my $dbh = $_[2];
 
 	my $target_ip; 			# Real ip to check
-	my @ip2; 			# temp array for NetAddr::IP
-	my $space;			# temp var to store space of ip's for netaddr::ip
+	my @ip2; 				# temp array for NetAddr::IP
+	my $space;				# temp var to store space of ip's for netaddr::ip
 	my $query_sql; 			# for use in SQL
 	my $exec_sql; 			# for use in SQL
-	my @sql_data;			# for use in SQL 
+	my $sql_data;			# for use in SQL 
 	
 	$query_sql = "SELECT * FROM trecon_task WHERE id_rt = $id_task";	
 	$exec_sql = $dbh->prepare($query_sql);
@@ -263,24 +275,24 @@ sub pandora_recon_exec_task {
 		# something wrong..
 		return -1;
 	}
-	@sql_data = $exec_sql->fetchrow_array();
-	my $status = $sql_data[10];
-	my $interval = $sql_data[11];
-	my $network_server_assigned = $sql_data[12];
-	my $extended_info = $sql_data[13];
-	my $extended_value = $sql_data[14];
-	my $target_network = $sql_data[4];
-	my $task_name = $sql_data[1];
+
+	$sql_data = $exec_sql->fetchrow_hashref();
+	my $status = $sql_data->{"status"};
+	my $interval = $sql_data->{"interval"};
+	my $target_network = $sql_data->{"subnet"};
+	my $task_name = $sql_data->{"name"};
+	my $task_ncprofile = $sql_data->{"id_network_profile"};
+	my $task_group = $sql_data->{"id_group"};
+	my $task_create_incident = $sql_data->{"create_incident"};
+	my $task_id_os = $sql_data->{"id_os"};
+
 	my $position = 0;
-	my $task_type = $sql_data[3];
-	my $task_ncprofile = $sql_data[6];
-	my $task_group = $sql_data[8];
-	my $task_create_incident = $sql_data[7];
 	my $list_ip = "";
 	my $list_host = "";
 	my $host_found = 0;
 	my $add_host = 0;
 	my $id_parent = 0;
+	my $id_os = 0;
 	
 	# Asign target dir to netaddr object "space"
 	$space = new NetAddr::IP $target_network;
@@ -296,28 +308,27 @@ sub pandora_recon_exec_task {
 	do {
 		@ip2 = split(/\//,$space);
 		$target_ip = $ip2[0];
-		$space++; $position++;
+		$space++; 
+		$position++;
 		
 		$add_host = 0;
 		# Is this IP listed for any agent ?
         if (pandora_check_ip ($pa_config, $dbh, $target_ip) == 0){
-
 			# Check ICMP for this IP
-			if (($task_type == 1) && (scan_icmp ($target_ip, $pa_config->{'networktimeout'}) == 1)){
-				$add_host = 1;
-			}
-			# Check TCP port for this IP
-			elsif (($task_type == 2) && (scan_icmp ($target_ip, $pa_config->{'networktimeout'}) == 1)) {
-				if (scan_tcp ($target_ip, $pa_config->{'networktimeout'}, $extended_value) == 1){
+			if ( scan_icmp ($target_ip, $pa_config->{'networktimeout'}) == 1) {
+				$id_os = pandora_detect_os ($pa_config, $target_ip);
+				if ($task_id_os == -1){
+					$add_host = 1;
+				} elsif ($id_os == $task_id_os){
 					$add_host = 1;
 				}
 			}
-			
+
 			if ($add_host == 1){
 				$host_found ++;
 				my $target_ip_resolved = resolv_ip2name($target_ip);
-				$list_ip = $list_ip." ".$target_ip;
-				$list_host = $list_host." ".resolv_ip2name($target_ip_resolved);
+				$list_ip = $list_ip . " " . $target_ip;
+				$list_host = $list_host . " " . $target_ip_resolved;
 				$id_parent = pandora_getparent ($pa_config, $target_ip, $dbh);
 
 				# If has a network profile, create agent and modules
@@ -325,12 +336,11 @@ sub pandora_recon_exec_task {
 				if ($task_ncprofile > 0){
 					# Create address, agent and more...
 					my $target_ip_id = pandora_task_create_address ($pa_config, $dbh, $id_task, $target_ip);
-					$agent_id = pandora_task_create_agent($pa_config, $dbh, $target_ip, $target_ip_id, $task_group, $network_server_assigned, $target_ip_resolved, $id_parent);
-					pandora_task_create_agentmodules($pa_config, $dbh, $agent_id, $task_ncprofile, $target_ip);
+					$agent_id = pandora_task_create_agent ($pa_config, $dbh, $target_ip, $target_ip_id, $task_group, $target_ip_resolved, $id_parent, $id_os);
+					pandora_task_create_agentmodules ($pa_config, $dbh, $agent_id, $task_ncprofile, $target_ip);
 				} else {
 					my $target_ip_id = pandora_task_create_address ($pa_config, $dbh, $id_task, $target_ip);
-					$agent_id = pandora_task_create_agent($pa_config, $dbh, $target_ip, $target_ip_id, $task_group,
-					$network_server_assigned, $target_ip_resolved, $id_parent);
+					$agent_id = pandora_task_create_agent($pa_config, $dbh, $target_ip, $target_ip_id, $task_group, $target_ip_resolved, $id_parent, $id_os);
 				}
 				my $title = "[RECON] New host [$target_ip_resolved] detected on network [$target_network]";
 				# Always create event about this detected IP
@@ -366,35 +376,27 @@ sub pandora_recon_exec_task {
 sub scan_icmp {
         my $dest = $_[0];
         my $l_timeout = $_[1];
-        # temporal vars.
+        
+		# Temp vars.
         my $result = 0;
         my $p;
-
+		
         # Check for valid destination
-        if (!defined($dest)) {
+        if (!defined($dest)){
                 return 0;
         }
-        # Thread safe
-        # Some hosts don't accept ICMP with too small payload. Use 16 Bytes
-        {
-            $p = Net::Ping->new("icmp",$l_timeout,16);
-            $p->source_verify(1);
-            $result = $p->ping($dest);
-        }
+		{
+			lock $icmp_lock;
+			$p = Net::Ping->new();
+		}		
 
-        # Check for valid result
-        if (!defined($result)) {
-                return 0;
-        }
-
-        # Lets see the result
-        if ($result == 1) {
-                $p->close();
-                return 1;
-        } else {
-                $p->close();
-                return 0;
-        }
+		if ($p->ping($dest)){
+			$p->close();
+			undef ($p);
+			return 1;
+		} else {
+			return 0;
+		}
 }
 
 ##############################################################################
@@ -524,7 +526,7 @@ sub pandora_task_create_address {
 
 ##########################################################################
 # SUB pandora_task_create_agent (pa_config, dbh, target_ip, target_ip_id,
-#				 id_group, network_server_assigned, name)
+#				 id_group, name, id_parent)
 # Create agent, and associate address to agent in taddress_agent table.
 # it returns created id_agent.
 ##########################################################################
@@ -534,12 +536,11 @@ sub pandora_task_create_agent {
 	my $target_ip 	= $_[2];
 	my $target_ip_id = $_[3];
 	my $id_group 	= $_[4];
-	my $id_server	= $_[5];
-	my $name 		= $_[6];
-	my $id_parent 	= $_[7];
+	my $name 		= $_[5];
+	my $id_parent 	= $_[6];
+	my $id_os 		= $_[7];
 
-	my $id_os = pandora_detect_os ($pa_config, $target_ip);
-	return pandora_create_agent ($pa_config, $dbh, $target_ip, $target_ip_id, $id_group, $id_server, $name, $id_parent, $id_os);
+	return pandora_create_agent ($pa_config, $dbh, $target_ip, $target_ip_id, $id_group, 0, $name, $id_parent, $id_os);
 }
 
 ##########################################################################
@@ -564,38 +565,66 @@ sub pandora_task_create_agentmodules {
 		my $exec_sql2 = $dbh->prepare($query_sql2);
 		$exec_sql2 ->execute;
 		if ($exec_sql2->rows != 0) {
-			my @sql_data2 = $exec_sql2->fetchrow_array();
+			my $sql_data2 = $exec_sql2->fetchrow_hashref();
+
 			my $name = "";
-			$name = $sql_data2[1];
-			my $description = "Autocreated by Pandora FMS Recon Server";
-			$description = $sql_data2[2];
+			$name = $sql_data2->{"name"};
+
+			my $description = "";
+			$description = $sql_data2->{"description"};
+
 			my $type = "1";
-			$type = $sql_data2[4];
+			$type = $sql_data2->{"type"};
+
 			my $max = 0;
-			$max = $sql_data2[5];
+			$max = $sql_data2->{"max"};
+
 			my $min = 0;
-			$min = $sql_data2[6];
+			$min = $sql_data2->{"min"};
+
 			my $interval = 300;
-			$interval = $sql_data2[7];
+			$interval = $sql_data2->{"module_interval"};
+
 			my $tcp_port = "";
-			$tcp_port = $sql_data2[8];
+			$tcp_port = $sql_data2->{"tcp_port"};
+
 			my $tcp_send = "";
-			$tcp_send = $sql_data2[9];
+			$tcp_send = $sql_data2->{"tcp_send"};
+
 			my $tcp_rcv = "";
-			$tcp_rcv = $sql_data2[10];
+			$tcp_rcv = $sql_data2->{"tcp_rcv"};
+
 			my $snmp_community = "public";
-			$snmp_community = $sql_data2[11];
+			$snmp_community = $sql_data2->{"snmp_community"};
+
 			my $snmp_oid = "";
-			$snmp_oid = $sql_data2[12];
+			$snmp_oid = $sql_data2->{"snmp_oid"};
+
 			my $id_module_group = 0;
-			$id_module_group = $sql_data2[13];
+			$id_module_group = $sql_data2->{"id_module_group"};
+
+			my $id_module = 0;
+			$id_module = $sql_data2->{"id_modulo"};
+
+			my $plugin_user = "";
+			$plugin_user = $dbh->quote($sql_data2->{"plugin_user"});
+
+			my $plugin_pass = "";
+			$plugin_pass = $dbh->quote($sql_data2->{"plugin_pass"});
+
+			my $plugin_parameter = "";
+			$plugin_parameter = $dbh->quote($sql_data2->{"plugin_parameter"});
+
+			my $max_timeout = "30";
+			$max_timeout = $sql_data2->{"max_timeout"};
 			
-			my $query_sql3 = "INSERT INTO tagente_modulo (id_agente, id_tipo_modulo, descripcion, nombre, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, ip_target, id_module_group, flag ) VALUES ( $agent_id, $type, '$description', '$name', $max, $min, $interval, $tcp_port, '$tcp_send', '$tcp_rcv', '$snmp_community', '$snmp_oid', '$ip_adress', $id_module_group, 1)";
+			my $query_sql3 = "INSERT INTO tagente_modulo (id_agente, id_tipo_modulo, descripcion, nombre, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, snmp_oid, ip_target, id_module_group, flag, disabled, plugin_user, plugin_pass, plugin_parameter, max_timeout, id_modulo ) VALUES ( $agent_id, $type, '$description', '$name', $max, $min, $interval, $tcp_port, '$tcp_send', '$tcp_rcv', '$snmp_community', '$snmp_oid', '$ip_adress', $id_module_group, 1, 0, $plugin_user, $plugin_pass, $plugin_parameter, $max_timeout, $id_module)";
+
 			$dbh->do($query_sql3);
 			my $last_id_agente_modulo = $dbh->{'mysql_insertid'};
 			logger($pa_config,"Recon Server: Creating module $name for agent $ip_adress",3);
 			my $query_sql4;
-			if 	(($type == 2) || ($type == 6) || ($type == 9) || ($type == 18)) {
+			if 	(($type == 2) || ($type == 6) || ($type == 21) || ($type == 9) || ($type == 18)) {
 				# for monitors
 				$query_sql4 = "INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, cambio, estado, id_agente, last_try, utimestamp, current_interval, running_by) VALUES ($last_id_agente_modulo, '', '0000-00-00 00:00:00', 0, 0, $agent_id, '0000-00-00 00:00:00', 0, $interval, 0)";
 			} else {
@@ -615,7 +644,7 @@ sub pandora_getparent ($$){
 	my $dbh = $_[2];
 
     my $t = new Net::Traceroute::PurePerl(
-         backend        => 'PurePerl', # this optional
+		 backend        => 'PurePerl',
          host           => $destination,
          debug          => 0,
          max_ttl        => 15,
@@ -623,6 +652,7 @@ sub pandora_getparent ($$){
          packetlen      => 40,
          protocol       => 'icmp', # udp or icmp
     );
+
 
 	my $success = 0;
 	$success = $t->traceroute();
@@ -632,6 +662,7 @@ sub pandora_getparent ($$){
 			return pandora_get_agent_from_ip ($pa_config, $dbh, $parent_ip);
 		}
 	} 
+
 	return 0;
 }
 

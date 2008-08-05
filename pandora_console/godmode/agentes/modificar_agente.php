@@ -18,8 +18,8 @@
 // Load global vars
 require("include/config.php");
 
-if (give_acl($id_user, 0, "AW") != 1) {
-	audit_db($id_user,$REMOTE_ADDR, "ACL Violation",
+if (give_acl($config["id_user"], 0, "AW") != 1) {
+	audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation",
 	"Trying to access Agent Management");
 	require ("general/noaccess.php");
 	exit;
@@ -40,7 +40,7 @@ if (isset($_GET["borrar_agente"])){ // if delete agent
 	$id_agente = entrada_limpia($_GET["borrar_agente"]);
 	$agent_name = dame_nombre_agente($id_agente);
 	$id_grupo = dame_id_grupo($id_agente);
-	if (give_acl($id_user, $id_grupo, "AW")==1){
+	if (give_acl($config["id_user"], $id_grupo, "AW")==1){
 		// Firts delete from agents table
 		$sql_delete= "DELETE FROM tagente
 		WHERE id_agente = ".$id_agente;
@@ -87,7 +87,7 @@ if (isset($_GET["borrar_agente"])){ // if delete agent
 		}
 		$sql = "DELETE FROM taddress_agent  where id_agent = $id_agente";
 		$result=mysql_query($sql);
-		audit_db($id_user,$REMOTE_ADDR, "Agent '$agent_name' deleted", "Agent Management");
+		audit_db($config["id_user"],$REMOTE_ADDR, "Agent '$agent_name' deleted", "Agent Management");
 
 		// Delete remote configuration
 		$agent_md5 = md5($agent_name, FALSE);
@@ -99,7 +99,7 @@ if (isset($_GET["borrar_agente"])){ // if delete agent
 			unlink ($file_name);
 		}
 	} else { // NO permissions.
-		audit_db($id_user,$REMOTE_ADDR, "ACL Violation",
+		audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation",
 		"Trying to delete agent '$agent_name'");
 		require ("general/noaccess.php");
 		exit;
@@ -128,7 +128,7 @@ if ( $ag_group > 1 ){
 	"</option>";
 }
 echo "<option value=1>".dame_nombre_grupo(1)."</option>"; // Group all is always active
-$mis_grupos = list_group ($id_user); //Print combo for groups and set an array with all groups
+$mis_grupos = list_group ($config["id_user"]); //Print combo for groups and set an array with all groups
 echo "</select>";
 echo "<td valign='top'>
 <noscript>
@@ -171,13 +171,13 @@ if ($ag_group > 1){
         AND $search_sql ORDER BY nombre";
 } else {
         // Is admin user ??
-        if (get_db_sql ("SELECT * FROM tusuario WHERE id_usuario ='$id_user'", "nivel") == 1){
+        if (get_db_sql ("SELECT * FROM tusuario WHERE id_usuario ='".$config["id_user"]."'", "nivel") == 1){
                 $sql1 = "SELECT * FROM tagente WHERE $search_sql ORDER BY nombre, id_grupo LIMIT $offset, ".$config["block_size"];
                 $sql2="SELECT COUNT(id_agente) FROM tagente WHERE $search_sql ORDER BY nombre, id_grupo";
         } else {
-                $sql1="SELECT * FROM tagente WHERE $search_sql AND id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='$id_user')
+                $sql1="SELECT * FROM tagente WHERE $search_sql AND id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='".$config["id_user"]."')  
                 ORDER BY nombre, id_grupo LIMIT $offset, ".$config["block_size"];
-                $sql2="SELECT COUNT(id_agente) FROM tagente WHERE $search_sql AND id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='$id_user') ORDER BY nombre, id_grupo";
+                $sql2="SELECT COUNT(id_agente) FROM tagente WHERE $search_sql AND id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='".$config["id_user"]."') ORDER BY nombre, id_grupo";
         }
 }
 
@@ -209,7 +209,7 @@ if (mysql_num_rows($result)){
 			$tdcolor = "datos2";
 			$color = 1;
 		}
-		if (give_acl($id_user, $id_grupo, "AW")==1){
+		if (give_acl($config["id_user"], $id_grupo, "AW")==1){
 			// Agent name
 			echo "<tr><td class='$tdcolor'>";
 			if ($row["disabled"] == 1){

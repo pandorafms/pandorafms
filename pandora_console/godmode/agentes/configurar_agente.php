@@ -19,7 +19,7 @@
 
 // Load global vars
 require("include/config.php");
-if (give_acl($id_user, 0, "AW")!=1) {
+if (give_acl($config["id_user"], 0, "AW")!=1) {
 	audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access agent manager");
 	require ("general/noaccess.php");
 	exit;
@@ -496,7 +496,7 @@ if ((isset($agent_created_ok)) && ($agent_created_ok == 1)){
 if (isset($_GET["id_agente"])) {
 	$id_agente = $_GET["id_agente"];
 	$id_grupo = dame_id_grupo($id_agente);
-	if (give_acl($id_user, $id_grupo, "AW")==1){
+	if (give_acl($config["id_user"], $id_grupo, "AW")==1){
 		$sql1='SELECT * FROM tagente WHERE id_agente = '.$id_agente;
 		$result=mysql_query($sql1);
 		if ($row=mysql_fetch_array($result)){
@@ -523,7 +523,7 @@ if (isset($_GET["id_agente"])) {
 			exit;
 		}
 	} else {
-		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to admin an Agent out of admin groups!");
+		audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to admin an Agent out of admin groups!");
 		require ("general/noaccess.php");
 		echo "</table>";
 		require ("general/footer.php");
@@ -566,8 +566,8 @@ if ((isset($_GET["update_module"])) && (!isset($_POST["oid"])) && (!isset($_POST
 
 if (isset($_GET["update_alert"])){
 	$id_grupo = dame_id_grupo($id_agente);
-	if (give_acl($id_user, $id_grupo, "LW")==0){
-		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to update an alert without admin rights");
+	if (give_acl($config["id_user"], $id_grupo, "LW")==0){
+		audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to update an alert without admin rights");
 		require ("general/noaccess.php");
 		echo "</table>";
 		require ("general/footer.php");
@@ -617,8 +617,8 @@ if ((isset($_POST["update_module"])) || (isset($_POST["insert_module"]))) {
 		$id_agente_modulo = $_POST["id_agente_modulo"];
 	}
 	$id_grupo = dame_id_grupo($id_agente);
-	if (give_acl($id_user, $id_grupo, "AW")==0){
-		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to create a module without admin rights");
+	if (give_acl($config["id_user"], $id_grupo, "AW")==0){
+		audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to create a module without admin rights");
 		require ("general/noaccess.php");
 		echo "</table>";
 		require ("general/footer.php");
@@ -763,8 +763,8 @@ if (((!isset($_POST["nc"]) OR ($_POST["nc"]==-1))) && (!isset($_POST["oid"])) &&
 // =================
 if (isset($_GET["delete_module"])){ // DELETE agent module !
 	$id_borrar_modulo = $_GET["delete_module"];
-	$id_grupo = dame_id_grupo($id_agente);	if (give_acl($id_user, $id_grupo, "AW")==0){
-		audit_db($id_user,$REMOTE_ADDR, "ACL Violation",
+	$id_grupo = dame_id_grupo($id_agente);	if (give_acl($config["id_user"], $id_grupo, "AW")==0){
+		audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation",
 		"Trying to delete a module without admin rights");
 		require ("general/noaccess.php");
 		exit;

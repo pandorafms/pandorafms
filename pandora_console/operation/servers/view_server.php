@@ -1,7 +1,7 @@
 <?php
 
-// Pandora FMS - the Free Monitoring System
-// ========================================
+// Pandora FMS - the Flexible Monitoring System
+// ============================================
 // Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
@@ -64,7 +64,11 @@ $table->data = array ();
 foreach ($servers as $server) {
 	$data = array ();
 	$serverinfo = server_status ($server['id_server']);
-	$data[0] = $server['name'];
+	if ($server["recon_server"]==1)
+		$data[0] = "<b><a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=".$server["id_server"]."'>".$server['name']."</A></b>";
+	else
+		$data[0] = "<b>".$server['name']."</b>";
+
 	if ($server['status'] == 0){
 		$data[1] = '<img src="images/pixel_red.png" width="20" height="20">';
 	} else {

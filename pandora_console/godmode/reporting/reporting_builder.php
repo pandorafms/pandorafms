@@ -1,11 +1,10 @@
 <?php
 
-// Pandora FMS - the Free monitoring system
-// ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development and project architecture and management
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
-//
+// Pandora FMS - the Flexible Monitoring System
+// ============================================
+// Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
+// Please see http://pandora.sourceforge.net for full contribution list
+// 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; version 2
@@ -381,7 +380,8 @@ if ($edit_sla_report_content) {
 		$periods[12] = '12 '.lang_string ('hours');
 		$periods[24] = lang_string ('last_day');
 		$periods[48] = lang_string ('two_days');
-		$periods[360] = lang_string ('last_week');
+		$periods[180] = lang_string ('last_week');
+		$periods[360] = lang_string ('last_two_weeks');
 		$periods[720] = lang_string ('last_month');
 		$periods[4320] = lang_string ('six_months');
 		$table->data[1][1] = print_select ($periods, 'period', 0, '', '--', 0, true);

@@ -102,13 +102,20 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 		else
 			$sql1 = 'SELECT * FROM tagente ORDER BY nombre';
 		echo '<select name="origen" style="width:200px">';			
-		if (($update_agent != 1) AND ($origen != -1))
-			echo "<option value=".$_POST["origen"].">".dame_nombre_agente($origen)."</option>";
+		if (($update_agent != 1) AND ($origen != -1)){
+			$agent_name_src = dame_nombre_agente ($origen);
+			$source = $config["remote_config"]."/". md5($agent_name_src);
+			if (file_exists($source))
+				echo "<option value=".$_POST["origen"].">" . $agent_name_src . "</option>";
+		}
 		$result=mysql_query($sql1);
 		while ($row=mysql_fetch_array($result)){
 			if (give_acl ($config["id_user"], $row["id_grupo"], "AR")){
-				if ( $origen != $row["id_agente"])
-					echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
+				if ( $origen != $row["id_agente"]){
+					$source = $config["remote_config"]."/". md5($row["nombre"]);
+					if (file_exists($source))
+						echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
+				}
 			}
 		}
 		echo '</select>';

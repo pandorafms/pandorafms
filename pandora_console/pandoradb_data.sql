@@ -42,8 +42,6 @@ INSERT INTO `talerta` VALUES (9,'Jabber Alert','echo _field3_ | sendxmpp -r _fie
 -- Dumping data for table `tconfig`
 --
 
-
-/*!40000 ALTER TABLE `tconfig` DISABLE KEYS */;
 LOCK TABLES `tconfig` WRITE;
 INSERT INTO `tconfig` VALUES 
 (1,'language_code','en'),
@@ -53,7 +51,7 @@ INSERT INTO `tconfig` VALUES
 (6,'graph_res','5'),
 (7,'step_compact','1'),
 (8,'db_scheme_version','2.0'),
-(9,'db_scheme_build','PD80619'),
+(9,'db_scheme_build','PD80804'),
 (13,'show_unknown','0'),
 (14,'show_lastalerts','1'),
 (15,'style','pandora'),
@@ -63,14 +61,11 @@ INSERT INTO `tconfig` VALUES
 (19, 'graph_color3', '#89FF09'),
 (20, 'sla_period', '604800');
 UNLOCK TABLES;
-/*!40000 ALTER TABLE `tconfig` ENABLE KEYS */;
 
 --
 -- Dumping data for table `tconfig_os`
 --
 
-
-/*!40000 ALTER TABLE `tconfig_os` DISABLE KEYS */;
 LOCK TABLES `tconfig_os` WRITE;
 INSERT INTO `tconfig_os` VALUES 
 (1,'Linux','Linux: All versions','so_linux.png'),
@@ -84,7 +79,7 @@ INSERT INTO `tconfig_os` VALUES
 (10,'Other','Other SO','so_other.png'),
 (11,'Network','Pandora Network Agent','network.png');
 UNLOCK TABLES;
-/*!40000 ALTER TABLE `tconfig_os` ENABLE KEYS */;
+
 
 --
 -- Dumping data for table `tgrupo`
@@ -101,14 +96,14 @@ INSERT INTO `tgrupo` VALUES
 (11,'Workstations','computer',0,0),
 (12,'Applications','applications',0,0);
 UNLOCK TABLES;
-/*!40000 ALTER TABLE `tgrupo` ENABLE KEYS */;
+
 
 --
 -- Dumping data for table `tlanguage`
 --
 
 
-/*!40000 ALTER TABLE `tlanguage` DISABLE KEYS */;
+
 LOCK TABLES `tlanguage` WRITE;
 INSERT INTO `tlanguage` VALUES ('en','English');
 --INSERT INTO `tlanguage` VALUES ('es_es','Espa&ntilde;ol');
@@ -117,32 +112,26 @@ INSERT INTO `tlanguage` VALUES ('en','English');
 --INSERT INTO `tlanguage` VALUES ('pt_br','Portugu&ecirc;s-Brasil'); 
 
 UNLOCK TABLES;
-/*!40000 ALTER TABLE `tlanguage` ENABLE KEYS */;
 
 --
 -- Dumping data for table `tlink`
 --
 
 
-/*!40000 ALTER TABLE `tlink` DISABLE KEYS */;
 LOCK TABLES `tlink` WRITE;
 INSERT INTO `tlink` VALUES 
-(0000000001,'GeekTools','www.geektools.com'),
-(0000000002,'CentralOPS','http://www.centralops.net/'),
-(0000000003,'Pandora FMS','http://pandora.sourceforge.net'),
-(0000000004,'Babel Enterprise','http://babel.sourceforge.net'),
-(0000000006,'Openideas','http://www.openideas.info'),
-(0000000007,'Google','http://www.google.com'),
-(0000000008,'ArticaST','http://www.artica.es');
+(1,'ArticaST','www.artica.es'),
+(2,'Pandora FMS','http://pandora.sourceforge.net'),
+(3,'Babel Enterprise','http://babel.sourceforge.net'),
+(4,'Openideas','http://www.openideas.info'),
+(5,'Google','http://www.google.com');
 UNLOCK TABLES;
-/*!40000 ALTER TABLE `tlink` ENABLE KEYS */;
+
 
 --
 -- Dumping data for table `tmodule_group`
 --
 
-
-/*!40000 ALTER TABLE `tmodule_group` DISABLE KEYS */;
 LOCK TABLES `tmodule_group` WRITE;
 INSERT INTO `tmodule_group` VALUES 
 (1,'General'),
@@ -151,13 +140,22 @@ INSERT INTO `tmodule_group` VALUES
 (4,'System'),
 (5,'Miscellaneous');
 UNLOCK TABLES;
-/*!40000 ALTER TABLE `tmodule_group` ENABLE KEYS */;
-
 
 --
 -- Dumping data for table `torigen`
 --
-INSERT INTO `torigen` VALUES ('Operating System event'),('IDS events'),('Firewall records'),('Database event'),('Application data'),('Logfiles'),('Other data source'),('Pandora FMS Event'),('User report'),('Unknown source');
+
+INSERT INTO `torigen` VALUES 
+('Operating System event'),
+('IDS events'),
+('Firewall records'),
+('Database event'),
+('Application data'),
+('Logfiles'),
+('Other data source'),
+('Pandora FMS Event'),
+('User report'),
+('Unknown source');
 
 --
 -- Dumping data for table `ttipo_modulo`
@@ -183,16 +181,15 @@ INSERT INTO `ttipo_modulo` VALUES
 (21,'async_proc', 7, 'Asyncronous proc data', 'mod_async_proc.png'), 
 (22,'async_data', 6, 'Asyncronous numeric data', 'mod_async_data.png'), 
 (23,'async_string', 8, 'Asyncronous string data', 'mod_async_string.png'),
-(100,'keep_alive',-1,'KeepAlive','mod_keepalive.png');
-/*
-Not implemented yet
+(100,'keep_alive',-1,'KeepAlive','mod_keepalive.png'),
 (19,'image_jpg',9,'Image JPG data', 'mod_image_jpg.png'), 
-(20,'image_png',9,'Image PNG data', 'mod_image_png.png'), 
-(24,'async_inc', 6, 'Asyncronous incremental data', 'mod_async_inc.png'),  
-*/
+(20,'image_png',9,'Image PNG data', 'mod_image_png.png');
+--Not yet implemented
+--(24,'async_inc', 6, 'Asyncronous incremental data', 'mod_async_inc.png')
 
-/* Categoria field is used to segregate several types (plugin, agents, network) on their data
-  types, could be used or could be avoided and use directly primary key (id_tipo) */
+
+-- Categoria field is used to segregate several types (plugin, agents, network) on their data
+-- types, could be used or could be avoided and use directly primary key (id_tipo) 
 
 --
 -- Dumping data for table `tusuario`
@@ -264,11 +261,9 @@ INSERT INTO `tnetwork_component` VALUES (60,'CPU System','Linux System CPU usage
 INSERT INTO `tnetwork_component` VALUES (177,'System Context Change','Linux System Context changes ',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.8.0',4,2,'','','',0);
 INSERT INTO `tnetwork_component` VALUES (178,'System Interrupts','Linux system interrupts ',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.7.0',4,2,'','','',0);
 INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`) VALUES (176,'Catalyst Free Mem','Taken from ftp://ftp.cisco.com/pub/mibs/oid/OLD-CISCO-MEMORY-MIB.oid',2,15,0,0,180,0,'','','public','1.3.6.1.4.1.9.2.1.8',4,2);
-
 INSERT INTO `tnetwork_component` VALUES (61,'GigabitEthernet1/0/1 Status','',2,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.10101',2,2,'','','',0);
 INSERT INTO `tnetwork_component` VALUES (62,'GigabitEthernet1/0/2 Status','',2,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.10102',2,2,'','','',0);
 INSERT INTO `tnetwork_component` VALUES (63,'GigabitEthernet1/0/3 Status','',2,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.10103',2,2,'','','',0);
-
 
 -- WMI components
 INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `plugin_user`, `max_timeout`) VALUES (200, 'CPU load', 'CPU0 load average', 14, 1, 100, 0, 300, 1, '', '', '', 'SELECT LoadPercentage from Win32_Processor WHERE DeviceID = &quot;CPU0&quot;', 1, 6, 'Administrator', 10);

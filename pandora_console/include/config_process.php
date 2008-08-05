@@ -1,7 +1,7 @@
 <?PHP
 
-// Pandora FMS - the Free Monitoring System
-// ========================================
+// Pandora FMS - the Flexible Monitoring System
+// ============================================
 // Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
@@ -18,7 +18,7 @@
 
 //Pandora Version
 if (!isset ($build_version))
-	$build_version = "PC080610";
+	$build_version = "PC080805";
 if (!isset ($pandora_version))
 	$pandora_version = "v2.0-dev";
 
@@ -48,7 +48,7 @@ if (! mysql_connect ($config["dbhost"], $config["dbuser"], $config["dbpass"])) {
 		<a href="index.php"><img src="images/pandora_logo.png" border="0"></a>
 		</div>
 		<div id="db_ftxt">
-		<h1 id="log_f" class="error">Pandora Console Error DB-001</h1>
+		<h1 id="log_f" class="error">Pandora FMS Console Error DB-001</h1>
 		Cannot connect with Database, please check your database setup in the 
 		<b>./include/config.php</b> file and read documentation.<i><br><br>
 		Probably any of your user/database/hostname values are incorrect or 
@@ -72,7 +72,7 @@ if (sizeof ($configs) == 0) {
 		<a href="index.php"><img src="images/pandora_logo.png" border="0"></a>
 		</div>
 		<div id="db_ftxt">
-		<h1 id="log_f" class="error">Pandora Console Error DB-002</h1>
+		<h1 id="log_f" class="error">Pandora FMS Console Error DB-002</h1>
 		Cannot load configuration variables. Please check your database setup in the
 		<b>./include/config.php</b> file and read documentation.<i><br><br>
 		Probably database schema is created but there are no data inside it or you have a problem with DB access credentials.

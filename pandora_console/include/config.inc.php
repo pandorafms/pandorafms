@@ -1,6 +1,6 @@
 <?php
-// Pandora FMS - the Free Monitoring System
-// ========================================
+// Pandora FMS - the Flexible Monitoring System
+// ============================================
 // Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
@@ -28,22 +28,14 @@
 // $config["homeurl"]="/pandora_console/";
 
 // Do not display any ERROR
-//error_reporting(0); // Need to use active console at this moment
+error_reporting(0); 
 
 // Display ALL errors
-error_reporting(E_ERROR);
+// error_reporting(E_ERROR);
 
 // This is directory where placed "/attachment" directory, to upload files stores. 
 // This MUST be writtable by http server user, and should be in pandora root. 
 // By default, Pandora adds /attachment to this, so by default is the pandora console home dir
-
-$config["attachment_store"]=$config["homedir"];
-
-// Default font used for graphics (a Free TrueType font included with Pandora FMS)
-$config["fontpath"] = $config["homedir"]."/reporting/FreeSans.ttf";
-
-// Style (pandora by default)
-$config["style"] = "pandora";
 
 include ("config_process.php");
 ?>

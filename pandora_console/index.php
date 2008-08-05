@@ -184,6 +184,8 @@ if (! isset ($_SESSION['id_usuario']) && isset ($_GET["login"])) {
 } else {
 	// There is session for id_usuario
 	$config["id_user"] = $_SESSION["id_usuario"];
+	// Temporal fix 
+	$id_user = $config["id_user"];
 }
 
 // Log off

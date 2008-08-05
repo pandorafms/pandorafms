@@ -1,3 +1,36 @@
+2008-08-05  Sancho Lerena <slerena@gmail.com>
+
+	* AUTHORS: Added Evi to AUTHORS file.
+
+	* pandoradb.sql: MAJOR UPDATE and normalization of database
+	structure. trecon_task table has changed from previous 2.0 version.
+
+	* pandoradb_data.sql: Minimal updates.
+
+	* reporting_builder.php: Fixed bug #2035570 (Two weeks instead one 
+	week in combo to select SLA period).
+	.
+	* manage_config_remote.php: Fixed bug #2032889: Show configurations
+	not present in disk and fail to copy them.
+
+	* manage_recontask.php: Show OS, and some stetical changes and code
+	optimization. Removed old code for assigned network servers and so on.
+
+	* manage_recontask_form.php: Removed old fields, added new fields, fixed
+	old bugs (create incident combo).
+
+	* config_inc.php: Code cleanup, updated variables.
+
+	* config_process.php: Updated version info.
+
+	* estado_ultimopaquete.php: Added refresh icon.
+
+	* view_server.php: Added missing link to view_server_detail.php for
+	recon servers. Somebody take it prisoner :-)
+
+	* view_server_detail.php: Code stype update, and some fixes and new 
+	column information.
+ 
 2008-08-05  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions_extensions.php: Added function to call login
@@ -16,6 +49,10 @@
 	* operation/menu.php: Style correction.
 
 	* ChangeLog: Added comment about commit #1000.
+
+	* modificar_agente.php, configurar_agente.php: Fixed use of $id_user.
+
+	* index.php: Temporal workaround to use $id_user as global. Need to fix.
 
 2008-08-04  Esteban Sanchez  <estebans@artica.es>
 
@@ -83,6 +120,7 @@
 
 	* include/help/en/help_plugin_definition.php: Language corrections.
 
+>>>>>>> .r1002
 2008-07-31  Sancho Lerena <slerena@gmail.com>
 	
 	* include/help/en/help_plugin_definition.php: New help page for 

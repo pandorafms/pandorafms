@@ -1,8 +1,8 @@
 <?PHP
-// Pandora FMS - the Free monitoring system
-// ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
+// Pandora FMS - the Flexible Monitoring System
+// ============================================
+// Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
+// Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,29 +32,29 @@ if (isset($_GET["update"])){ // Edit mode
 	$row=mysql_fetch_array($result);
 	$name = $row["name"];
 	$network = $row["subnet"];
+	$id_recon_server = $row["id_recon_server"];
 	$description = $row["description"];
 	$type = $row["type"];
-	$id_network_server = $row["id_network_server"];
 	$interval = $row["interval_sweep"];
 	$id_group = $row["id_group"];
 	$create_incident = $row["create_incident"];
 	$id_network_profile = $row["id_network_profile"];
-	$id_network_server_assigned = $row["id_network_server_assigned"];
+	$id_os = $row["id_os"];
 	
 } elseif (isset($_GET["create"])){
 	$id_rt = -1;
 	$name = "";
 	$network = "";
 	$description = "";
-	$id_server = 0;
+	$id_recon_server = 0;
 	$type = 1;
-	$id_network_server = 0;
 	$interval = 43200;
 	$id_group = 1;
 	$create_incident = 1;
 	$id_network_profile = 1;
-	$id_network_server_assigned = 0;
+	$id_os = 10; // Other
 }
+
 echo '<h2>'.$lang_label["view_servers"].' &gt; ';
 echo $lang_label["manage_recontask"];
 pandora_help ("recontask");
@@ -67,16 +67,16 @@ if ($id_rt != -1)
 else
 	echo "<form name='modulo' method='post' action='index.php?sec=gservers&sec2=godmode/servers/manage_recontask&create=1'>";
 
-//name
+// Name
 echo '<tr><td class="datos2">'.$lang_label["task_name"];
 echo "<td class='datos2'><input type='text' name='name' size='25' value='$name'>";
-//-- Recon server
 
+// Recon server
 echo "<td class='datos2'>".$lang_label["recon_server"];
 echo '<a href="#" class="tip">&nbsp;<span>'.$lang_label["recon_server_help"].'</span></a>';
 echo "<td class='datos2'>";
-echo '<select name="id_server">';
-echo "<option value='$id_network_server'>". give_server_name($id_network_server);
+echo '<select name="id_recon_server">';
+echo "<option value='$id_recon_server'>" . give_server_name($id_recon_server);
 $sql1="SELECT id_server, name FROM tserver WHERE recon_server = 1 ORDER BY name ";
 $result=mysql_query($sql1);
 while ($row=mysql_fetch_array($result)){
@@ -89,6 +89,7 @@ echo "<tr>";
 echo '<td class="datos">'.$lang_label["network"].'</td>';
 echo '<td class="datos">';
 echo '<input type="text" name="network" size="25" value="'.$network.'"></td>';
+
 // Interval
 echo '<td class="datos">'.$lang_label["interval"].'</td>';
 echo '<td class="datos">';
@@ -112,7 +113,7 @@ echo "</select>";
 
 // Network profile
 echo "<tr>";
-echo "<td class='datos2'>".$lang_label["network_profile"]."</td>";
+echo "<td class='datos2'>".lang_string ("network_profile") . "</td>";
 echo "<td class='datos2'>";
 echo "<select name='id_network_profile'>";
 echo "<option value='$id_network_profile'>".give_network_profile_name($id_network_profile);
@@ -121,18 +122,19 @@ $result=mysql_query($sql1);
 while ($row=mysql_fetch_array($result))
 	echo "<option value='".$row["id_np"]."'>".$row["name"]."</option>";
 echo "</select></td>";
-//-- Network server
-echo "<td class='datos2'>".$lang_label["network_server"];
-echo '<a href="#" class="tip">&nbsp;<span>'.$lang_label["network_server2_help"].'</span></a>';
+
+// OS
+echo "<td class='datos2'>". lang_string ("OS") . "</td>";
 echo "<td class='datos2'>";
-echo '<select name="server_assigned">';
-$sql1="SELECT id_server, name FROM tserver WHERE network_server = 1 ORDER BY name ";
+echo "<select name='id_os'>";
+if ($id_os != 0)
+	echo "<option value='$id_os'>".get_db_sql ("SELECT name FROM tconfig_os WHERE id_os = $id_os");
+	echo "<option value=-1>". lang_string ("Any");
+$sql1 = "SELECT * FROM tconfig_os ORDER BY name";
 $result=mysql_query($sql1);
-echo "<option value='$id_network_server_assigned'>". give_server_name($id_network_server_assigned);
-while ($row=mysql_fetch_array($result)){
-	echo "<option value='".$row["id_server"]."'>".$row["name"]."</option>";
-}
-echo "</select>";
+while ($row=mysql_fetch_array($result))
+	echo "<option value='".$row["id_os"]."'>".$row["name"]."</option>";
+echo "</select></td>";
 
 // Group
 echo "<tr>";
@@ -146,19 +148,12 @@ while ($row=mysql_fetch_array($result))
 	echo "<option value='".$row["id_grupo"]."'>".$row["nombre"]."</option>";
 echo "</select></td>";
 
-// TYPE
-echo "<td class='datos'>".$lang_label["type"];
-echo "<td class='datos'>";
-echo "<select name='type'>";
-echo "<option value='1'>ICMP</option>";
-echo "</select>";
-
 // Incident
 echo "<tr>";
 echo "<td class='datos2'>".$lang_label["incident"]."</td>";
 echo "<td class='datos2'>";
 echo "<select name='create_incident'>";
-if ($type == 1){
+if ($create_incident == 1){
 	echo "<option value='1'>".$lang_label["yes"]."</option>";
 	echo "<option value='0'>".$lang_label["no"]."</option>";
 }
@@ -169,6 +164,7 @@ else {
 echo "</select></td>";
 echo "<td class='datos2' colspan=2> </td></tr>";
 
+// Comments
 echo '<tr><td class="datost">'.$lang_label["comments"];
 echo '<td class="datos" colspan=3>';
 echo '<textarea name="description" cols=70 rows=2>';

@@ -1,3 +1,22 @@
+2008-08-05  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_extensions.php: Added function to call login
+	functions of the extensions. Functions renamed.
+
+	* include/styles/pandora.css: Added style to notify bubble.
+
+	* general/logon_ok.php: Added extensions login functions call. Style
+	correction.
+
+	* include/functions.php: Fixed array values cleanup on safe_input().
+	Documentation added to clean_output_breaks().
+
+	* index.php: Renamed functions fix.
+
+	* operation/menu.php: Style correction.
+
+	* ChangeLog: Added comment about commit #1000.
+
 2008-08-04  Esteban Sanchez  <estebans@artica.es>
 
 	* index.php: Set id_user in config array when login. This fixes errors
@@ -11,6 +30,10 @@
 
 	* godmode/extensions.php: It was showing main functions of extensions
 	instead of godmode ones.
+
+	This commit is #1000. Congratulations to all the Pandora crew and
+	thanks all the Pandora users around the world. Pandora 2.0 is a bit
+	closer now.
 
 2008-08-04  Esteban Sánchez  <estebans@artica.es>
 

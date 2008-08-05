@@ -2,7 +2,7 @@
 
 $extension_file = '';
 
-function extension_main_function ($filename) {
+function extension_call_main_function ($filename) {
 	global $config;
 	
 	$extension = &$config['extensions'][$filename];
@@ -12,13 +12,24 @@ function extension_main_function ($filename) {
 	}
 }
 
-function extension_godmode_function ($filename) {
+function extension_call_godmode_function ($filename) {
 	global $config;
 	
 	$extension = &$config['extensions'][$filename];
 	if ($extension['godmode_function'] != '') {
 		$params = array ();
 		call_user_func_array ($extension['godmode_function'], $params);
+	}
+}
+
+function extensions_call_login_function () {
+	global $config;
+	
+	$params = array ();
+	foreach ($config['extensions'] as $extension) {
+		if ($extension['login_function'] == '')
+			continue;
+		call_user_func_array ($extension['login_function'], $params);
 	}
 }
 
@@ -113,7 +124,7 @@ function add_extension_godmode_function ($function_name) {
 	$extension['godmode_function'] = $function_name;
 }
 
-function add_login_action_function ($function_name) {
+function add_extension_login_function ($function_name) {
 	global $config;
 	global $extension_file;
 	

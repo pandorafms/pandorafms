@@ -19,6 +19,9 @@
 
 require ("include/functions_reporting.php");
 
+/* Call all extensions login function */
+extensions_call_login_function ();
+
 echo "<div class='jus'>";
 $nick = $_SESSION['id_usuario'];
 echo "<h1>" . lang_string ("welcome_title") . "</h1>";
@@ -28,9 +31,9 @@ echo "</p>";
 
 // Private messages pending to read !
 
-$sql=sprintf("SELECT COUNT(id_mensaje) AS count FROM tmensajes WHERE id_usuario_destino='%s' AND estado='FALSE';",$nick);
+$sql = sprintf ("SELECT COUNT(id_mensaje) AS count FROM tmensajes WHERE id_usuario_destino='%s' AND estado='FALSE';",$nick);
 $resultado = get_db_sql ($sql);
-if ($resultado != 0){
+if ($resultado != 0) {
 	echo "<h2>". lang_string ("new_message_bra") . ' 
 	<a href="index.php?sec=messages&sec2=operation/messages/message">'
 	.$row["count"] . ' <img src="images/email.png" border="0">'

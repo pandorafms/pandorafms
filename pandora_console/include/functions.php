@@ -46,7 +46,7 @@ function safe_input ($value) {
 	if (is_numeric ($value))
 		return $value;
 	if (is_array ($value)) {
-		$value = array_walk($value,'safe_input');
+		array_walk (&$value,'safe_input');
 		return $value;
 	}
 	return htmlentities (utf8_decode ($value), ENT_QUOTES); 
@@ -86,15 +86,15 @@ function salida_limpia ($string) {
 }
 
 /** 
+ * Replace all \n characters with <br /> to show line breaks in HTML code.
  * 
+ * @param string String to replace the characters
  * 
- * @param string 
- * 
- * @return 
+ * @return The string with the characters replaced.
  */
 function clean_output_breaks ($string){
-	$myoutput = salida_limpia($string);
-	return preg_replace ('/\n/',"<br>", $myoutput);
+	$myoutput = salida_limpia ($string);
+	return preg_replace ('/\n/',"<br />", $myoutput);
 }
 
 /** 

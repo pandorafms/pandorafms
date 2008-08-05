@@ -241,9 +241,9 @@ if ($page != "") {
 			require ($page);
 		} else {
 			if ($sec[0] == 'g') {
-				extension_godmode_function (basename ($page));
+				extension_call_godmode_function (basename ($page));
 			} else {
-				extension_main_function (basename ($page));
+				extension_call_main_function (basename ($page));
 			}
 		}
 	} else {

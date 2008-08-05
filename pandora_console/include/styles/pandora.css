@@ -375,11 +375,6 @@ td.datos_jus, td.datos2_jus {
 	border-bottom: 1px solid #708090;
 	width: 100%;
 }
-.suc {
-	color: #5a8629;
-	background: url(../../images/suc.png) no-repeat 1px;
-	padding: 4px 1px 6px 30px;
-}
 .green  {
 	color: #5a8629;
 }
@@ -753,4 +748,11 @@ td.big_data {
 a.big_data {
 	text-decoration: none; font: bold 1em Arial, Sans-serif;
 	color: #000;
+}
+
+.notify {
+	background-color: #f7ffa5;
+	text-align: center;
+	font-weight: bold;
+	padding: 8px;
 }

@@ -230,7 +230,7 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	}
 
 	// SNMP console
-	if($sec2 == "operation/snmpconsole/snmp_view") {
+	if ($sec2 == "operation/snmpconsole/snmp_view") {
 		$selected = ' menu-selected';
 	} else {
 		$selected = '';
@@ -238,10 +238,10 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	echo '<div id="op6" class="operation-menu'.$selected.'">';
 	echo '<ul class="mn"><li><a href="index.php?sec=snmpconsole&amp;sec2=operation/snmpconsole/snmp_view&amp;refr=30" class="mn">'.lang_string ("SNMP_console").'</a></li></ul></div>';
 
-	if ((give_acl($config['id_user'], 0, "AW")==1)){
+	if (give_acl($config['id_user'], 0, "AW")) {
 		// SNMP Console alert (submenu)
-		if ($sec == "snmpconsole"){
-			if($sec2 == "operation/snmpconsole/snmp_alert") {
+		if ($sec == "snmpconsole") {
+			if ($sec2 == "operation/snmpconsole/snmp_alert") {
 				echo "<div class='operation-submenu submenu-selected'>";
 			} else {
 				echo "<div class='operation-submenu'>";
@@ -251,7 +251,7 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	}
 	
 	// Messages
-	if($sec2 == "operation/messages/message" && !isset($_GET["nuevo_g"])) {
+	if($sec2 == "operation/messages/message" && !isset ($_GET["nuevo_g"])) {
 		$selected = ' menu-selected';
 	} else {
 		$selected = '';
@@ -260,8 +260,8 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	echo '<ul class="mn"><li><a href="index.php?sec=messages&amp;sec2=operation/messages/message" class="mn">'. lang_string ("messages").'</a></li></ul></div>';
 
 	// New message (submenu)
-	if ($sec == "messages"){
-		if(isset($_GET["nuevo_g"])) {
+	if ($sec == "messages") {
+		if(isset ($_GET["nuevo_g"])) {
 			echo "<div class='operation-submenu submenu-selected'>";
 		} else {
 			echo "<div class='operation-submenu'>";
@@ -288,10 +288,9 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 		lang_string ("reporting").'</a></li></ul></div>';
 
 	// Custom reporting
-	if ($sec == "reporting"){
-		if ($sec2 == 
-		"operation/reporting/custom_reporting" || $sec2 == 
-		"operation/reporting/reporting_viewer") {
+	if ($sec == "reporting") {
+		if ($sec2 == "operation/reporting/custom_reporting"
+			|| $sec2 == "operation/reporting/reporting_viewer") {
 			echo "<div class='operation-submenu submenu-selected'>";
 		} else {
 			echo "<div class='operation-submenu'>";

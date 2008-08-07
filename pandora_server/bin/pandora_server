@@ -93,7 +93,8 @@ my $dbh = DBI->connect("DBI:mysql:$dbname:$dbhost:3306",
 
 while (1) {
 	pandora_serverkeepaliver (\%pa_config, 0, $dbh);
-	pandora_planned_downtime (\%pa_config, $dbh);
+	# Disabled until we can finish code from editor and update server code
+	# pandora_planned_downtime (\%pa_config, $dbh);
 	keep_alive_check (\%pa_config, $dbh);
 	threads->yield;
 	sleep ($pa_config{"server_threshold"});

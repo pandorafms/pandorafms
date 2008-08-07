@@ -1,3 +1,8 @@
+2008-08-07  Sancho Lerena <slerena@gmail.com>
+	
+	* bin/pandora_server: Disabled downtime server code until
+	we can review changes in db structure from new code / console.
+
 2008-08-05  Sancho Lerena <slerena@gmail.com>
 
 	* bin/pandora_recon: New functional recon server. It implements 

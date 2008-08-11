@@ -18,37 +18,30 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Login check
-$id_usuario=$_SESSION["id_usuario"];
-global $REMOTE_ADDR;
 
-if (comprueba_login() != 0) {
-	audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access graph builder");
-	include ("general/noaccess.php");
-	exit;
-}
+check_login ();
 
 // Delete module SQL code
-if (isset($_GET["delete"])){
-	if ((give_acl($id_usuario,0,"AW") == 1 ) OR (dame_admin($id_user)==1)) {
+if (isset($_GET["delete"])) {
+	if (! give_acl($config['id_user'], 0, "AW")) {
 		$id = $_GET["delete"];
 		$sql = "DELETE FROM tgraph_source WHERE id_graph = $id";
 		if ($res=mysql_query($sql))
-			$result = "<h3 class=suc>".$lang_label["delete_ok"]."</h3>";
+			$result = "<h3 class=suc>".__('delete_ok')."</h3>";
 		else
-			$result = "<h3 class=error>".$lang_label["delete_no"]."</h3>";
+			$result = "<h3 class=error>".__('delete_no')."</h3>";
 		$sql = "DELETE FROM tgraph WHERE id_graph = $id";
 		if ($res=mysql_query($sql))
-			$result = "<h3 class=suc>".$lang_label["delete_ok"]."</h3>";
+			$result = "<h3 class=suc>".__('delete_ok')."</h3>";
 		else
-			$result = "<h3 class=error>".$lang_label["delete_no"]."</h3>";
+			$result = "<h3 class=error>".__('delete_no')."</h3>";
 		echo $result;
 	} else {
-		audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to delete a graph from access graph builder");
+		audit_db ($config['id_user'],$REMOTE_ADDR, "ACL Violation","Trying to delete a graph from access graph builder");
 	include ("general/noaccess.php");
 	exit;
 	}
 }
-
 
 if (isset($_GET["view_graph"])){
 	$id_graph = $_GET["view_graph"];
@@ -58,7 +51,7 @@ if (isset($_GET["view_graph"])){
 		$id_user = $row["id_user"];
 		$private = $row["private"];
 		$width = $row["width"];
-                $height = $row["height"];
+		$height = $row["height"];
 		$zoom = (int) get_parameter ('zoom', 0);
 		if ($zoom > 0){
 			switch ($zoom){
@@ -67,13 +60,13 @@ if (isset($_GET["view_graph"])){
 				$height = 210;
 				break;
 			case 2:  
-                                $width = 650;
-                                $height = 310;
-                                break;
-			case 3:  
-                                $width = 770;
-                                $height = 400;
-                                break;
+				$width = 650;
+				$height = 310;
+				break;
+			case 3:
+				$width = 770;
+				$height = 400;
+				break;
 			}
 		}
 		$period = (int) get_parameter ('period');
@@ -90,7 +83,7 @@ if (isset($_GET["view_graph"])){
 
 		$name = $row["name"];
 		if (($row["private"]==1) && ($row["id_user"] != $id_user)){
-			audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access to a custom graph not allowed");
+			audit_db($config['id_user'],$REMOTE_ADDR, "ACL Violation","Trying to access to a custom graph not allowed");
 			include ("general/noaccess.php");
 			exit;
 		}
@@ -111,8 +104,8 @@ if (isset($_GET["view_graph"])){
 				}
 			}
 		}
-		echo "<h2>".$lang_label["reporting"]." &gt; ";
-		echo $lang_label["combined_image"]."</h2>";
+		echo "<h2>".__('reporting')." &gt; ";
+		echo __('combined_image')."</h2>";
 		echo "<table class='databox_frame' cellpadding=0 cellspacing=0>";
 		echo "<tr><td>";
 		echo "<img 
@@ -123,45 +116,45 @@ border=1 alt=''>";
 		echo "<form method='POST' action='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=$id_graph'>";
 		echo "<table class='databox_frame' cellpadding=4 cellspacing=4>";
 		echo "<tr><td class='datos'>";
-		echo "<b>".lang_string ('period')."</b>";
+		echo "<b>".__('period')."</b>";
 		echo "<td class='datos'>";
 		$periods = array ();
-		$periods[1] = lang_string ('hour');
-		$periods[2] = '2 '.lang_string ('hours');
-		$periods[3] = '3 '.lang_string ('hours');
-		$periods[6] = '6 '.lang_string ('hours');
-		$periods[12] = '12 '.lang_string ('hours');
-		$periods[24] = lang_string ('last_day');
-		$periods[48] = lang_string ('two_days');
-		$periods[360] = lang_string ('last_week');
-		$periods[720] = lang_string ('last_month');
-		$periods[4320] = lang_string ('six_months');
+		$periods[1] = __('hour');
+		$periods[2] = '2 '.__('hours');
+		$periods[3] = '3 '.__('hours');
+		$periods[6] = '6 '.__('hours');
+		$periods[12] = '12 '.__('hours');
+		$periods[24] = __('last_day');
+		$periods[48] = __('two_days');
+		$periods[360] = __('last_week');
+		$periods[720] = __('last_month');
+		$periods[4320] = __('six_months');
 		print_select ($periods, 'period', intval ($period / 3600), '', '', 0);
 
 		echo "<td class='datos'>";
 		$stackeds = array ();
-		$stackeds[0] = lang_string ('Graph defined');
-		$stackeds[0] = lang_string ('Area');
-		$stackeds[1] = lang_string ('Stacked area');
-		$stackeds[2] = lang_string ('Line');
+		$stackeds[0] = __('Graph defined');
+		$stackeds[0] = __('Area');
+		$stackeds[1] = __('Stacked area');
+		$stackeds[2] = __('Line');
 		print_select ($stackeds, 'stacked', $stacked , '', '', -1, false, false);
 
 		echo "<td class='datos'>";
 		$zooms = array();
-		$zooms[0] = lang_string ('Graph defined');
-	 	$zooms[1] = lang_string ('Zoom x1');
-		$zooms[2] = lang_string ('Zoom x2');
-		$zooms[3] = lang_string ('Zoom x3');
+		$zooms[0] = __('Graph defined');
+	 	$zooms[1] = __('Zoom x1');
+		$zooms[2] = __('Zoom x2');
+		$zooms[3] = __('Zoom x3');
 		print_select ($zooms, 'zoom', $zoom , '', '', 0);
 
 		echo "<td class='datos'>";
-		echo "<input type=submit value='".$lang_label["update"]."' class='sub upd'>";
+		echo "<input type=submit value='".__('update')."' class='sub upd'>";
 		echo "</table>";
 		echo "</form>";		
 	}
 }
-echo "<h2>" . lang_string ("reporting") . " &gt; ";
-echo lang_string ("custom_graph_viewer") . "</h2>";
+echo "<h2>" . __('reporting') . " &gt; ";
+echo __('custom_graph_viewer') . "</h2>";
 
 $color=1;
 $sql="SELECT * FROM tgraph ORDER by name";
@@ -169,11 +162,11 @@ $res=mysql_query($sql);
 if (mysql_num_rows($res)) {
 	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
 	echo "<tr>
-		<th>".$lang_label["graph_name"]."</th>
-		<th>".$lang_label["description"]."</th>
-		<th>".$lang_label["view"]."</th>";
-	if ((give_acl($id_usuario,0,"AW") == 1 ) OR (dame_admin($id_usuario)==1))
-		echo "<th>".$lang_label["delete"]."</th>";
+		<th>".__('graph_name')."</th>
+		<th>".__('description')."</th>
+		<th>".__('view')."</th>";
+	if (give_acl ($config['id_user'], 0, "AW"))
+		echo "<th>".__('delete')."</th>";
 	echo "</tr>";
 
 	while ($row = mysql_fetch_array($res)){
@@ -193,15 +186,15 @@ if (mysql_num_rows($res)) {
 			$id_graph =  $row["id_graph"];
 			echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=$id_graph'><img src='images/images.png'></a>";
 			
-			if ((give_acl($id_usuario,0,"AW") == 1 ) OR (dame_admin($id_usuario)==1)) {
-				echo "<td class='$tdcolor' align='center'><a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&delete=$id_graph' ".'onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;">';
+			if (give_acl ($config['id_user'], 0, "AW")) {
+				echo "<td class='$tdcolor' align='center'><a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&delete=$id_graph' ".'onClick="if (!confirm(\' '.__('are_you_sure').'\')) return false;">';
 				echo "<img src='images/cross.png'></a></td>";
 			}
 		}
 	}
 	echo "</table>";
 } else {
-	echo "<div class='nf'>".$lang_label["no_reporting_def"]."</div>";
+	echo "<div class='nf'>".__('no_reporting_def')."</div>";
 }
 
 ?>

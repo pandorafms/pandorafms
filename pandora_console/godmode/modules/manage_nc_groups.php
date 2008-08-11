@@ -24,14 +24,11 @@
 // Load global vars
 require("include/config.php");
 
-if (comprueba_login() == 0)
-  	$id_user = $_SESSION["id_usuario"];
-else
-	$id_user = "";
+check_login ();
 
-if (give_acl($id_user, 0, "PM")!=1) {
-	audit_db($id_user,$REMOTE_ADDR, "ACL Violation",
-	"Trying to access SNMP Group Management");
+if (! give_acl ($config['id_user'], 0, "PM")) {
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+		"Trying to access SNMP Group Management");
 	require ("general/noaccess.php");
 	exit;
 }
@@ -43,9 +40,9 @@ if (isset($_GET["create"])){ // Create module
 	VALUES ('$name', '$parent')";
 	$result=mysql_query($sql_insert);
 	if (! $result)
-		echo "<h3 class='error'>".$lang_label["create_no"]."</h3>";
+		echo "<h3 class='error'>".__('create_no')."</h3>";
 	else {
-		echo "<h3 class='suc'>".$lang_label["create_ok"]."</h3>";
+		echo "<h3 class='suc'>".__('create_ok')."</h3>";
 		$id_sg = mysql_insert_id();
 	}
 }
@@ -59,9 +56,9 @@ if (isset($_GET["update"])){ // if modified any parameter
 	WHERE id_sg = '$id_sg'";
 	$result=mysql_query($sql_update);
 	if (! $result)
-		echo "<h3 class='error'>".$lang_label["modify_no"]."</h3>";
+		echo "<h3 class='error'>".__('modify_no')."</h3>";
 	else
-		echo "<h3 class='suc'>".$lang_label["modify_ok"]."</h3>";
+		echo "<h3 class='suc'>".__('modify_ok')."</h3>";
 }
 
 if (isset($_GET["delete"])){ // if delete
@@ -69,19 +66,19 @@ if (isset($_GET["delete"])){ // if delete
 	$sql_delete= "DELETE FROM tnetwork_component_group WHERE id_sg = ".$id_sg;
 	$result=mysql_query($sql_delete);
 	if (! $result)
-		echo "<h3 class='error'>".$lang_label["delete_no"]."</h3>";
+		echo "<h3 class='error'>".__('delete_no')."</h3>";
 	else
-		echo "<h3 class='suc'>".$lang_label["delete_ok"]."</h3>";
+		echo "<h3 class='suc'>".__('delete_ok')."</h3>";
 	
 	$result=mysql_query($sql_delete);
 }
-echo "<h2>".$lang_label["module_management"]." &gt; ";
-echo $lang_label["network_component_group_management"]."</h2>";
+echo "<h2>".__('module_management')." &gt; ";
+echo __('network_component_group_management')."</h2>";
 
 echo "<table cellpadding='4' cellspacing='4' width='550' class='databox'>";
-echo "<th>".$lang_label["name"]."</th>";
-echo "<th>".$lang_label["parent"]."</th>";
-echo "<th>".$lang_label["delete"]."</th>";
+echo "<th>".__('name')."</th>";
+echo "<th>".__('parent')."</th>";
+echo "<th>".__('delete')."</th>";
 $sql1='SELECT * FROM tnetwork_component_group ORDER BY parent';
 $result=mysql_query($sql1);
 $color=0;
@@ -103,7 +100,7 @@ while ($row=mysql_fetch_array($result)){
 			</td>
 			<td class='$tdcolor' align='center'>
 			<a href='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&delete=1&id_sg=".$row["id_sg"]."'
-				onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\'))
+				onClick='if (!confirm(\' ".__('are_you_sure')."\'))
 			return false;'>
 			<img border='0' src='images/cross.png'></a>
 			</td>
@@ -114,7 +111,7 @@ echo "</table>";
 echo '<table width="550">';
 echo '<tr><td align="right">';
 echo "<form method=post action='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups_form&create=1'>";
-echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create"]."'>";
+echo "<input type='submit' class='sub next' name='crt' value='".__('create')."'>";
 echo "</form></td></tr></table>";
 
 ?>

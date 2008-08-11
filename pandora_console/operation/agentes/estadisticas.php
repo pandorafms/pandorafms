@@ -20,20 +20,20 @@
 
 // Load global vars
 require("include/config.php");
-if (comprueba_login() == 0){ 
-	$iduser_temp=$_SESSION['id_usuario'];
-	if (give_acl($iduser_temp, 0, "AR") == 1){
-		echo "<h2>".$lang_label["ag_title"]." &gt; ";
-		echo $lang_label["db_stat_agent"]."</h2>";
-		echo "<table border=0>";
-		echo "<tr><td><img src='reporting/fgraph.php?tipo=db_agente_modulo'><br>";
-		echo "<tr><td><br>";
-		echo "<tr><td><img src='reporting/fgraph.php?tipo=db_agente_paquetes'><br>";
-		echo "</table>";
-	}
- 	else {
-		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Agent estatistics");
-		require ("general/noaccess.php");
-	}
+
+check_login ();
+
+if (! give_acl ($config['id_user'], 0, "AR")) {
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+		"Trying to access Agent estatistics");
+	require ("general/noaccess.php");
+	return;
 }
+echo "<h2>".__('ag_title')." &gt; ";
+echo __('db_stat_agent')."</h2>";
+echo "<table border=0>";
+echo "<tr><td><img src='reporting/fgraph.php?tipo=db_agente_modulo'><br>";
+echo "<tr><td><br>";
+echo "<tr><td><img src='reporting/fgraph.php?tipo=db_agente_paquetes'><br>";
+echo "</table>";
 ?>

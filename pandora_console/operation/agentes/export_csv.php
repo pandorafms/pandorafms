@@ -23,31 +23,29 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-include ("../../include/config.php");
-include ("../../include/functions.php");
-include ("../../include/functions_db.php");
+require ("include/config.php");
 
-session_start();
+check_login ();
 
-$id_user = $_SESSION["id_usuario"];
-if ( (give_acl($id_user, 0, "AR")==0) AND (give_acl($id_user, 0, "AW")==0) ){
+if (! give_acl($config['id_user'], 0, "AR") && ! give_acl ($config['id_user'], 0, "AW")){
 	require ("../../general/noaccess.php");
-	exit;
+	return;
 }
 
-if ( isset ($_GET["agentmodule"]) && isset ($_GET["agent"]) ){
+if (isset ($_GET["agentmodule"]) && isset ($_GET["agent"]) ){
 	$id_agentmodule = $_GET["agentmodule"];
 	$id_agent = $_GET["agent"];
-	$agentmodule_name = dame_nombre_modulo_agentemodulo($id_agentmodule);
-	if (give_acl($id_user,dame_id_grupo($id_agent),"AR")!=1) {
-		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Agent Export Data");
+	$agentmodule_name = dame_nombre_modulo_agentemodulo ($id_agentmodule);
+	if (! give_acl ($config['id_user'], dame_id_grupo ($id_agent), "AR") != 1) {
+		audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+			"Trying to access Agent Export Data");
 		require ("../../general/noaccess.php");
 		exit;
 	}
 
 	$now = date("Y/m/d H:i:s");
 	
-	// Show contentype header	
+	// Show contentype header
 	Header("Content-type: text/txt");
 	header('Content-Disposition: attachment; filename="pandora_export_'.$agentmodule_name.'.txt"');
 

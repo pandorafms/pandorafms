@@ -20,8 +20,9 @@
 require ("include/config.php");
 check_login ();
 
-if (give_acl($id_user, 0, "AR") == 0) {
-	audit_db ($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access agent main list view");
+if (! give_acl ($config['id_user'], 0, "AR")) {
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+		"Trying to access agent main list view");
 	require ("general/noaccess.php");
 	exit;
 }
@@ -37,7 +38,7 @@ if (isset($_GET["ag_group_refresh"])){
 }
 $search = get_parameter ("search", "");
 
-echo "<h2>".$lang_label["ag_title"]." &gt; ".$lang_label["summary"]."</h2>";
+echo "<h2>".__('ag_title')." &gt; ".__('summary')."</h2>";
 
 // Show group selector (POST)
 if (isset($_POST["ag_group"])){
@@ -52,7 +53,7 @@ if (isset($_POST["ag_group"])){
 }
 
 echo "<table cellpadding='4' cellspacing='4' class='databox'><tr>";
-echo "<td valign='top'>".$lang_label["group"]."</td>";
+echo "<td valign='top'>".__('group')."</td>";
 echo "<td valign='top'>";
 echo "<select name='ag_group' onChange='javascript:this.form.submit();' 
 class='w130'>";
@@ -61,23 +62,23 @@ if ($ag_group > 1){
 	echo "<option value='".$ag_group."'>".dame_nombre_grupo($ag_group).
 	"</option>";
 }
-$mis_grupos=list_group ($id_user); //Print combo for groups and set an array with all groups
+$mis_grupos = list_group ($config['id_user']); //Print combo for groups and set an array with all groups
 
 echo "</select>";
 echo "<td valign='top'>
 <noscript>
 <input name='uptbutton' type='submit' class='sub' 
-value='".$lang_label["show"]."'>
+value='".__('show')."'>
 </noscript>
 </td></form><td valign='top'>";
 
-echo $lang_label["free_text_search"];
+echo __('free_text_search');
 echo "</td><td valign='top'>";
 echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60'>";
 echo "<input type=text name='search' size='15'>";
 echo "</td><td valign='top'>";
 echo "<input name='srcbutton' type='submit' class='sub' 
-value='".$lang_label["search"]."'>";
+value='".__('search')."'>";
 echo "</form>";
 echo "</td></table>";
 
@@ -94,53 +95,71 @@ if ($ag_group > 1){
 	AND disabled = 0 $search_sql ORDER BY nombre LIMIT $offset, ".$config["block_size"];
 	$sql2="SELECT COUNT(id_agente) FROM tagente WHERE id_grupo=$ag_group 
 	AND disabled = 0 $search_sql ORDER BY nombre";
-	
 // Not selected any specific group
 } else {
-// Is admin user ??
-if (get_db_sql ("SELECT * FROM tusuario WHERE id_usuario ='$id_user'", "nivel") == 1){
-        $sql="SELECT * FROM tagente WHERE disabled = 0 $search_sql ORDER BY nombre, id_grupo LIMIT $offset, ".$config["block_size"];
-        $sql2="SELECT COUNT(id_agente) FROM tagente WHERE disabled = 0 $search_sql ORDER BY nombre, id_grupo";
+	// Is admin user ??
+	$sql = sprintf ("SELECT * FROM tusuario WHERE id_usuario ='%s'", $config['id_user']);
+	if (get_db_sql ($sql, "nivel") == 1) {
+		$sql = "SELECT * FROM tagente WHERE disabled = 0 $search_sql ORDER BY nombre, id_grupo LIMIT $offset, ".$config["block_size"];
+		$sql2 = "SELECT COUNT(id_agente) FROM tagente WHERE disabled = 0 $search_sql ORDER BY nombre, id_grupo";
+	// standard user
+	} else {
+		// User has explicit permission on group 1 ?
+		$sql = sprintf ("SELECT COUNT(id_grupo) FROM tusuario_perfil WHERE id_usuario='%s' AND id_grupo = 1", $config['id_user']);
+		$all_group = get_db_sql ($sql);
 
-// standard user
-} else {
-    
-    // User has explicit permission on group 1 ?
-    $all_group = get_db_sql ("SELECT COUNT(id_grupo) FROM tusuario_perfil WHERE id_usuario='$id_user' AND id_grupo = 1");
+		if ($all_group > 0) {
+			$sql = sprintf ("SELECT * FROM tagente
+					WHERE disabled = 0 %s
+					ORDER BY nombre, id_grupo LIMIT %d,%d",
+					$search_sql, $offset,
+					$config["block_size"]);
+			$sql2 = sprint ("SELECT COUNT(id_agente)
+					FROM tagente WHERE disabled = 0 %s
+					ORDER BY nombre, id_grupo",
+					$search_sql);
+		} else {
+			$sql = sprintf ("SELECT * FROM tagente
+					WHERE disabled = 0 %s
+					AND id_grupo IN (SELECT id_grupo
+						FROM tusuario_perfil
+						WHERE id_usuario='%s')
+					ORDER BY nombre, id_grupo LIMIT %d,%d",
+					$search_sql, $config['id_user'], $offset,
+					$config["block_size"]);
+			$sql2 = sprintf ("SELECT COUNT(id_agente)
+					FROM tagente
+					WHERE disabled = 0 %s
+					AND id_grupo IN (SELECT id_grupo 
+						FROM tusuario_perfil
+						WHERE id_usuario='%s')
+						ORDER BY nombre, id_grupo",
+					$search_sql, $config['id_user']);
+		}
 
-    if ($all_group > 0){
-        $sql="SELECT * FROM tagente WHERE disabled = 0 $search_sql 
-        ORDER BY nombre, id_grupo LIMIT $offset, ".$config["block_size"];
-        $sql2="SELECT COUNT(id_agente) FROM tagente WHERE disabled = 0 $search_sql  
-        ORDER BY nombre, id_grupo";
-    } else {
-	        $sql="SELECT * FROM tagente WHERE disabled = 0 $search_sql AND id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='$id_user') 
-	        ORDER BY nombre, id_grupo LIMIT $offset,".$config["block_size"];
-	        $sql2="SELECT COUNT(id_agente) FROM tagente WHERE disabled = 0 $search_sql AND id_grupo IN (SELECT id_grupo  FROM tusuario_perfil WHERE id_usuario='$id_user') ORDER BY nombre, id_grupo";
-    }
-    
+	}
 }
-}
 
-$result2=mysql_query($sql2);
-$row2=mysql_fetch_array($result2);
+$result2 = mysql_query ($sql2);
+$row2 = mysql_fetch_array ($result2);
 $total_events = $row2[0];
 // Prepare pagination
 
 pagination ($total_events, 
-"index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$ag_group&refr=60", $offset);
+	"index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$ag_group&refr=60",
+	$offset);
 // Show data.
 $result=mysql_query($sql);
 if (mysql_num_rows($result)){
 	echo "<table cellpadding='4' cellspacing='4' width='700' class='databox' style='margin-top: 10px'>";
-	echo "<th>".$lang_label["agent"]."</th>";
-	echo "<th>".$lang_label["os"]."</th>";
-	echo "<th>".$lang_label["interval"]."</th>";
-	echo "<th>".$lang_label["group"]."</th>";
-	echo "<th>".$lang_label["modules"]."</th>";
-	echo "<th>".$lang_label["status"]."</th>";
-	echo "<th>".$lang_label["alerts"]."</th>";
-	echo "<th>".$lang_label["last_contact"]."</th>";
+	echo "<th>".__('agent')."</th>";
+	echo "<th>".__('os')."</th>";
+	echo "<th>".__('interval')."</th>";
+	echo "<th>".__('group')."</th>";
+	echo "<th>".__('modules')."</th>";
+	echo "<th>".__('status')."</th>";
+	echo "<th>".__('alerts')."</th>";
+	echo "<th>".__('last_contact')."</th>";
 	// For every agent defined in the agent table
 	$color = 1;
 	while ($row=mysql_fetch_array($result)){
@@ -230,7 +249,7 @@ if (mysql_num_rows($result)){
 			}
 			echo "<tr>";
 			echo "<td class='$tdcolor'>";
-			if (give_acl($id_user, $id_grupo, "AW")==1){
+			if (give_acl ($config['id_user'], $id_grupo, "AW")) {
 				echo "<a href='index.php?sec=gagente&amp;
 				sec2=godmode/agentes/configurar_agente&amp;
 				id_agente=".$id_agente."'>
@@ -299,21 +318,21 @@ echo '<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.p
 			if ($numero_monitor <> 0){
 				if ($estado_general <> 0){
 					if ($estado_cambio == 0){
-						echo "<img src='images/pixel_red.png' width=40 height=18 title='".$lang_label["red_light"]."'>";
+						echo "<img src='images/pixel_red.png' width=40 height=18 title='".__('red_light')."'>";
 					} else {
-						echo "<img src='images/pixel_yellow.png' width=40 height=18 title='".$lang_label["yellow_light"]."'>";
+						echo "<img src='images/pixel_yellow.png' width=40 height=18 title='".__('yellow_light')."'>";
 					}
 				} elseif ($monitor_ok > 0) {
-					echo "<img src='images/pixel_green.png' width=40 height=18 title='".$lang_label["green_light"]."'>";
+					echo "<img src='images/pixel_green.png' width=40 height=18 title='".__('green_light')."'>";
 				}
 				elseif ($numero_datamodules > 0) {
-					echo "<img src='images/pixel_gray.png' width=40 height=18 title='".$lang_label["no_light"]."'>";
+					echo "<img src='images/pixel_gray.png' width=40 height=18 title='".__('no_light')."'>";
 				}
 				elseif ($monitor_down > 0) {
-					echo "<img src='images/pixel_fucsia.png' width=40 height=18 title='".$lang_label["broken_light"]."'>"; 
+					echo "<img src='images/pixel_fucsia.png' width=40 height=18 title='".__('broken_light')."'>"; 
 				}
 			} else 
-				echo "<img src='images/pixel_blue.png' width=40 height=18 title='".$lang_label["blue_light"]."'>";
+				echo "<img src='images/pixel_blue.png' width=40 height=18 title='".__('blue_light')."'>";
 			
 			// checks if an alert was fired recently
 			echo "<td class='$tdcolor' align='center'>";
@@ -321,14 +340,14 @@ echo '<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.p
 				echo "<img src='images/pixel_gray.png' width=20 height=9>";
 			else {
 				if (check_alert_fired($id_agente) == 1) 
-					echo "<img src='images/pixel_red.png' width=20 height=9 title='".$lang_label["fired"]."'>";
+					echo "<img src='images/pixel_red.png' width=20 height=9 title='".__('fired')."'>";
 				else
-					echo "<img src='images/pixel_green.png' width=20 height=9 title='".$lang_label["not_fired"]."'>";
+					echo "<img src='images/pixel_green.png' width=20 height=9 title='".__('not_fired')."'>";
 			}				
 			echo "</td>";
 			echo "<td class='$tdcolor'>";
 			if ( $ultimo_contacto == "0000-00-00 00:00:00"){
-				echo $lang_label["never"];
+				echo __('never');
 			} else {
 				$ultima = strtotime($ultimo_contacto);
 				$ahora = strtotime("now");
@@ -355,12 +374,16 @@ echo '<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.p
 	echo "</table><br>";
 	require "bulbs.php";
 } else {
-	echo '</table><br><div class="nf">'.$lang_label["no_agent"].'</div>';
-	$id_user = $_SESSION["id_usuario"];
-	if ( (give_acl($id_user, 0, "LM")==1) OR (give_acl($id_user, 0, "AW")==1 ) OR (give_acl($id_user, 0, "PM")==1) OR (give_acl($id_user, 0, "DM")==1) OR (give_acl($id_user, 0, "UM")==1 )){
+	echo '</table><br><div class="nf">'.__('no_agent').'</div>';
+	if (give_acl ($config['id_user'], 0, "LM")
+		|| give_acl ($config['id_user'], 0, "AW")
+		|| give_acl ($config['id_user'], 0, "PM")
+		|| give_acl ($config['id_user'], 0, "DM")
+		|| give_acl ($config['id_user'], 0, "UM")) {
+		
 		echo "&nbsp;<form method='post' action='index.php?sec=gagente&
-		sec2=godmode/agentes/configurar_agente&create_agent=1'><input type='submit' class='sub next' name='crt'
-		value='".$lang_label["create_agent"]."'></form>";
+			sec2=godmode/agentes/configurar_agente&create_agent=1'><input type='submit' class='sub next' name='crt'
+			value='".__('create_agent')."'></form>";
 	}
 }
 

@@ -21,26 +21,26 @@ require ("include/config.php");
 if (! isset($config["show_lastalerts"]))
 	$config["show_lastalerts"] = 1;
 
-if (give_acl ($id_user, 0, "AR") != 1) {
-	audit_db ($id_user, $REMOTE_ADDR, "ACL Violation", 
+if (! give_acl ($config['id_user'], 0, "AR")) {
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", 
 	"Trying to access Agent view (Grouped)");
 	require ("general/noaccess.php");
 	exit;
 }
-echo "<h2>".$lang_label["ag_title"]." &gt; ".$lang_label["group_view"]."</h2>";
+echo "<h2>".__('ag_title')." &gt; ".__('group_view')."</h2>";
 
 // Update network modules for this group
 // Check for Network FLAG change request
 // Made it a subquery, much faster on both the database and server side
 if (isset ($_GET["update_netgroup"])) {
-	if (give_acl ($id_user, $_GET["update_netgroup"], "AW") == 1) {
+	if (give_acl ($config['id_user'], $_GET["update_netgroup"], "AW")) {
 		$sql = sprintf ("UPDATE tagente_modulo SET `flag` = '1' WHERE `id_agente` = ANY(SELECT id_agente FROM tagente WHERE `id_grupo` =  '%d')",$_GET["update_netgroup"]);
 		mysql_query ($sql);
 	}
 }
 
 // Get group list that user has access
-$groups = get_user_groups ($id_user);
+$groups = get_user_groups ($config['id_user']);
 $groups_info = array ();
 $total_agents = 0;
 $now = time ();
@@ -110,11 +110,15 @@ foreach ($groups as $id_group => $group_name) {
 }
 
 if ($total_agents == 0) {
-	echo "<div class='nf'>".$lang_label["no_group_def"]."</div>";
-	$id_user = $_SESSION["id_usuario"];
-	if ( (give_acl($id_user, 0, "LM")==1) OR (give_acl($id_user, 0, "AW")==1 ) OR (give_acl($id_user, 0, "PM")==1) OR (give_acl($id_user, 0, "DM")==1) OR (give_acl($id_user, 0, "UM")==1 )){
+	echo "<div class='nf'>".__('no_group_def')."</div>";
+	if (give_acl ($config['id_user'], 0, "LM")
+		|| give_acl ($config['id_user'], 0, "AW")
+		|| give_acl ($config['id_user'], 0, "PM")
+		|| give_acl ($config['id_user'], 0, "DM")
+		|| give_acl ($config['id_user'], 0, "UM")) {
+		
 		echo "&nbsp;<form method='post' action='index.php?sec=gagente&sec2=godmode/groups/configure_group&create_g=1'><input type='submit' class='sub next' name='crt'
-	value='".$lang_label["create_group"]."'></form>";
+	value='".__('create_group')."'></form>";
 	}
 	return;
 }
@@ -142,30 +146,30 @@ for ($table = 0; $table < $ancho; $table++) {
 		$icono_type  = "";
 		if ($group_info["bad"] > 0) {
 			$icono_type .= '<img src="images/dot_red.png"
-					title="'.lang_string ('modules_bad').'">';
+					title="'.__('modules_bad').'">';
 		}
 		
 		if ($group_info["ok"] > 0) {
 			$icono_type .= '<img src="images/dot_green.png" 
-					title="'.lang_string ('modules_ok').'">';
+					title="'.__('modules_ok').'">';
 		}
 			
 		// Show yellow light if there are recent alerts fired for this group
 		if ($group_info["alerts"] > 0 ) {
 			$icono_type .= '<img src="images/dot_yellow.png"
-					title="'.lang_string ('alerts_fired').'">';
+					title="'.__('alerts_fired').'">';
 		}
 		
 		// Show grey light if there are agent down for this group
 		if ($group_info["down"] > 0 ) {
 			$icono_type .= '<img src="images/dot_white.png"
-					title="'.lang_string ('agents_down').'">';
+					title="'.__('agents_down').'">';
 		}
 		
 		// Show red flag is group has disabled alert system
 		if (give_disabled_group ($group_info["id_group"])) {
 			$icono_type .= '<img src="images/flag_red.png"
-					title="'.lang_string ('disabled_alerts').'">';
+					title="'.__('disabled_alerts').'">';
 		}
 		
 		// By default green border
@@ -205,7 +209,7 @@ for ($table = 0; $table < $ancho; $table++) {
 			<table cellspacing='2' cellpadding='0'
 			style='margin-left:2px;'>
 				<tr><th colspan='2' width='91'>".
-				$lang_label["agents"].": </th></tr>
+				__('agents').": </th></tr>
 				<tr><td colspan='2' class='datos' align='center'><b>".
 				$group_info["agent"]."</b></td></tr>
 			</table>
@@ -213,12 +217,12 @@ for ($table = 0; $table < $ancho; $table++) {
 			style='margin-left:2px'>
 				<tr>
 				<th colspan='2' width='90'>".
-				ucfirst ($lang_label["monitors"]).":</th>
+				ucfirst (__('monitors')).":</th>
 				</tr>
 				<tr>
 				<td class='datos'>
 				<img src='images/b_green.png' align='top' alt='' >
-				".$lang_label["ok"].": </td>
+				".__('ok').": </td>
 				<td class='datos'>
 				<font class='greenb'>".$group_info["ok"]."</font>
 				</td>
@@ -226,16 +230,16 @@ for ($table = 0; $table < $ancho; $table++) {
 				<tr>
 				<td class='datos'>
 				<img src='images/b_red.png' align='top' alt=''>
-				".$lang_label["fail"].": </td>
+				".__('fail').": </td>
 				<td class='datos'><font class='redb'>".
 				$group_info["bad"]."</font></td>
 				</tr>";
-		if ($config["show_unknown"] > 0){
+		if ($config["show_unknown"] > 0) {
 			$celda .= "
 			<tr>
 			<td class='datos'>
 			<img src='images/b_white.png' align='top' alt=''>
-			".$lang_label["down"].": </td>
+			".__('down').": </td>
 			<td class='datos'><font class='redb'>".
 			$group_info["down"]."</font></td></tr>";
 		}
@@ -243,14 +247,14 @@ for ($table = 0; $table < $ancho; $table++) {
 			$celda .= "<tr>
 			<td class='datos'>
 			<img src='images/b_yellow.png' align='top' alt=''>
-			".$lang_label["alerts"].": </td>
+			".__('alerts').": </td>
 			<td class='datos'><font class='grey'>".
 			$group_info["alerts"]."</font></td>
 			</tr>";
 		$celda .= "</table></span></a>";
 		
 		// Render network exec module button, only when this group is writtable by user
-		if (give_acl ($id_user, $group_info["id_group"], "AW") == 1) {
+		if (give_acl ($config['id_user'], $group_info["id_group"], "AW")) {
 			$celda .= "&nbsp;<a href='index.php?
 			sec=estado&
 			sec2=operation/agentes/estado_grupo&
@@ -263,7 +267,6 @@ for ($table = 0; $table < $ancho; $table++) {
 		echo $celda;
 		$real_count++;
 	}
-	
 	echo "</tr>";
 }
 echo "</table>";

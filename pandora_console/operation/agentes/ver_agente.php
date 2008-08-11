@@ -18,6 +18,7 @@
 // Load global vars
 require("include/config.php");
 
+check_login();
 
 if (defined ('AJAX')) {
 	$get_agent_json = (bool) get_parameter ('get_agent_json');
@@ -44,13 +45,13 @@ if (defined ('AJAX')) {
 		$id_agent = (int) get_parameter ('id_agent');
 		$agent = get_db_row ('tagente', 'id_agente', $id_agent);
 		echo '<h3>'.$agent['nombre'].'</h3>';
-		echo '<strong>'.lang_string ('Main IP').':</strong> '.$agent['direccion'].'<br />';
-		echo '<strong>'.lang_string ('Group').':</strong> ';
+		echo '<strong>'.__('Main IP').':</strong> '.$agent['direccion'].'<br />';
+		echo '<strong>'.__('Group').':</strong> ';
 		echo '<img src="images/groups_small/'.dame_grupo_icono ($agent['id_grupo']).'.png" /> ';
 		echo dame_nombre_grupo ($agent['id_grupo']).'<br />';
 
-		echo '<strong>'.lang_string ('Last contact').':</strong> '.human_time_comparation($agent['ultimo_contacto']).'<br />';
-		echo '<strong>'.lang_string ('Last remote contact').':</strong> '.human_time_comparation($agent['ultimo_contacto_remoto']).'<br />';
+		echo '<strong>'.__('Last contact').':</strong> '.human_time_comparation($agent['ultimo_contacto']).'<br />';
+		echo '<strong>'.__('Last remote contact').':</strong> '.human_time_comparation($agent['ultimo_contacto_remoto']).'<br />';
 		
 		$sql = sprintf ('SELECT tagente_modulo.descripcion, tagente_modulo.nombre
 				FROM tagente_estado, tagente_modulo 
@@ -74,7 +75,7 @@ if (defined ('AJAX')) {
 
 		// Modules down
 		if ($size_bad_modules > 0) {
-			echo '<strong>'.lang_string ('Monitors down').':</strong> '.$size_bad_modules.' / '.$total_modules;
+			echo '<strong>'.__('Monitors down').':</strong> '.$size_bad_modules.' / '.$total_modules;
 			echo '<ul>';
 			foreach ($bad_modules as $module) {
 				echo '<li>';
@@ -101,7 +102,7 @@ if (defined ('AJAX')) {
 		if ($alert_modules > 0){
 			$sql = sprintf ('SELECT tagente_modulo.nombre, talerta_agente_modulo.last_fired FROM talerta_agente_modulo, tagente_modulo, tagente WHERE tagente.id_agente = %d AND tagente.disabled = 0 AND tagente.id_agente = tagente_modulo.id_agente AND tagente_modulo.disabled = 0 AND tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo AND talerta_agente_modulo.times_fired > 0 ', $id_agent);
 			$alerts = get_db_all_rows_sql ($sql);
-			echo '<strong>'.lang_string ('Alerts fired').':</strong>';
+			echo '<strong>'.__('Alerts fired').':</strong>';
 			echo "<ul>";
 			foreach ($alerts as $alert_item) {
 				echo '<li>';
@@ -122,138 +123,130 @@ if (defined ('AJAX')) {
 	exit ();
 }
 
-check_login();
+$id_agente = (int) get_parameter ("id_agente");
+if (! $id_agente) {
+	return;
+}
+// get group for this id_agente
+$id_grupo = get_db_value ('id_grupo', 'tagente', 'id_agente', $id_agente);
+if (! give_acl ($config['id_user'], $id_grupo, "AR")) {
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+		"Trying to access (read) to agent ".dame_nombre_agente($id_agente));
+	include ("general/noaccess.php");
+	return;
+}
 
-$id_agente = get_parameter("id_agente",-1);
-if ($id_agente != -1){
-	// get group for this id_agente
-	$query="SELECT * FROM tagente WHERE id_agente = ".$id_agente;
-	$res=mysql_query($query);
-	$row=mysql_fetch_array($res); 
-	$id_grupo = $row["id_grupo"];
-	$id_usuario=$config["id_user"];
-	if (give_acl($id_usuario, $id_grupo, "AR")==1){
-		// Check for validate alert request
-		$validate_alert = get_parameter ("validate_alert");
-		if ($validate_alert != ""){
-			if (give_acl($id_usuario, $id_grupo, "AW")==1){
-				$alert_row = get_db_row ("talerta_agente_modulo", "id_aam", $validate_alert);
-				if ($alert_row["id_agente_modulo"] != 0){
-        		            	$am_row = get_db_row ("tagente_modulo", "id_agente_modulo", $alert_row["id_agente_modulo"]);
-					$ag_row = get_db_row ("tagente", "id_agente", $am_row["id_agente"]);
-				} else {
-					$ag_row = get_db_row ("tagente", "id_agente", $alert_row ["id_agent"]);
-				}
-                    		$alert_name = $alert_row["descripcion"];
-
-				// Single alerts
-				if ($alert_row["id_agente_modulo"] != 0){
-                    			event_insert("Manual validation of alert for '$alert_name'", $ag_row["id_grupo"], $am_row["id_agente"], 1, $config["id_user"], "alert_manual_validation", 1, $alert_row["id_agente_modulo"], $validate_alert);
-				// Combined alerts
-				} else {
-					event_insert("Manual validation of alert for '$alert_name'", $ag_row["id_grupo"], $alert_row ["id_agent"], 1, $config["id_user"], "alert_manual_validation", 1, 0, $validate_alert);
-				}
-				$sql='UPDATE talerta_agente_modulo SET times_fired = 0, internal_counter = 0 WHERE id_aam = '.$validate_alert;
-				$result=mysql_query($sql);
-			}
-		}
-
-		// Check for Network FLAG change request
-		if (isset($_GET["flag"])){
-			if ($_GET["flag"]==1){
-				if (give_acl($id_usuario, $id_grupo, "AW")==1){
-					$query ="UPDATE tagente_modulo SET flag=1 WHERE id_agente_modulo = ".$_GET["id_agente_modulo"];
-					$res=mysql_query($query);
-				}
-			}
-		}
-		// Check for Network FLAG change request
-		if (isset($_GET["flag_agent"])){
-			if ($_GET["flag_agent"]==1){
-				if (give_acl($id_usuario, $id_grupo, "AW")==1){
-					$query ="UPDATE tagente_modulo SET flag=1 WHERE id_agente = ". $id_agente;
-					$res=mysql_query($query);
-				}
-			}
-		}
-		if (give_acl($id_usuario,$id_grupo, "AR") == 1){
-			echo "<div id='menu_tab_frame_view'>";
-			echo "<div id='menu_tab_left'><ul class='mn'><li class='view'>
-			<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/bricks.png' class='top' border=0>&nbsp; ".substr(dame_nombre_agente($id_agente),0,15)." - ".$lang_label["view_mode"]."</a>";
-			echo "</li>";
-			echo "</ul></div>";
-			$tab = get_parameter ("tab", "main");
-			echo "<div id='menu_tab'><ul class='mn'>";
-			if (give_acl($id_usuario,$id_grupo, "AW") == 1){
-                    		if ($tab == "manage") {
-                        		echo "<li class='nomn_high'>";
-                    		} else {
-                        		echo "<li class='nomn'>";
-					// Manage agent
-					echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'><img src='images/setup.png' width='16' class='top' border=0> ".$lang_label["Manage"]." </a>";
-					echo "</li>";
-				}
-			}	// Main view
-                	if ($tab == "main") {
-                    		echo "<li class='nomn_high'>";
-                	} else {
-                    		echo "<li class='nomn'>";
-				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/monitor.png' class='top' border=0> ".$lang_label["Main"]." </a>";
-				echo "</li>";
-			}
-			// Data
-                	if ($tab == "data") {
-                    		echo "<li class='nomn_high'>";
-                	} else {
-                    		echo "<li class='nomn'>";
-				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data'><img src='images/lightbulb.png' class='top' border=0> ".$lang_label["Data"]." </a>";
-				echo "</li>";
-			}
-			// Alerts
-			if ($tab == "alert") {
-                    		echo "<li class='nomn_high'>";
-                	} else {
-				echo "<li class='nomn'>";
-				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=alert'><img src='images/bell.png' class='top' border=0> ".$lang_label["Alerts"]." </a>";
-				echo "</li>";
-			}
-			// Go to SLA view
-			echo "<li class='nomn'>";
-			echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sla&id_agente=$id_agente'><img src='images/images.png' class='top' border=0> ".lang_string("SLA")." </a>";
-			echo "</li>";
-				
-			echo "</ul>";
-			echo "</div>";
-                	echo "</div>";
-			echo "<div style='height: 25px'> </div>";
-			switch ($tab) {
-				case "sla":
-					require "sla_view.php";
-					break;
-				case "manage":	
-                    			require "estado_generalagente.php";
-					break;
-				case "main":	
-					require "estado_generalagente.php";
-					require "estado_monitores.php";
-					require "estado_alertas.php";
-                    			require "status_events.php";
-					break;
-				case "data": 	
-					require "estado_ultimopaquete.php";
-					break;
-				case "alert": 	
-        				require "estado_alertas.php";
-					break;
-			}
+// Check for validate alert request
+$validate_alert = get_parameter ("validate_alert");
+if ($validate_alert != ""){
+	if (give_acl ($config['id_user'], $id_grupo, "AW")==1){
+		$alert_row = get_db_row ("talerta_agente_modulo", "id_aam", $validate_alert);
+		if ($alert_row["id_agente_modulo"] != 0){
+			$am_row = get_db_row ("tagente_modulo", "id_agente_modulo", $alert_row["id_agente_modulo"]);
+			$ag_row = get_db_row ("tagente", "id_agente", $am_row["id_agente"]);
 		} else {
-			audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to read data from agent ".dame_nombre_agente($id_agente));
-			require ("general/noaccess.php");
+			$ag_row = get_db_row ("tagente", "id_agente", $alert_row ["id_agent"]);
 		}
-	} else {
-		audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access (read) to agent ".dame_nombre_agente($id_agente));
-		include ("general/noaccess.php");
+		$alert_name = $alert_row["descripcion"];
+
+		// Single alerts
+		if ($alert_row["id_agente_modulo"] != 0){
+			event_insert("Manual validation of alert for '$alert_name'", $ag_row["id_grupo"], $am_row["id_agente"], 1, $config["id_user"], "alert_manual_validation", 1, $alert_row["id_agente_modulo"], $validate_alert);
+		// Combined alerts
+		} else {
+			event_insert("Manual validation of alert for '$alert_name'", $ag_row["id_grupo"], $alert_row ["id_agent"], 1, $config["id_user"], "alert_manual_validation", 1, 0, $validate_alert);
+		}
+		$sql='UPDATE talerta_agente_modulo SET times_fired = 0, internal_counter = 0 WHERE id_aam = '.$validate_alert;
+		$result=mysql_query($sql);
 	}
+}
+
+// Check for Network FLAG change request
+if (isset($_GET["flag"])) {
+	if ($_GET["flag"] == 1 && give_acl ($config['id_user'], $id_grupo, "AW")) {
+		$sql = "UPDATE tagente_modulo SET flag=1 WHERE id_agente_modulo = ".$_GET["id_agente_modulo"];
+		process_sql ($sql);
+	}
+}
+// Check for Network FLAG change request
+if (isset($_GET["flag_agent"])){
+	if ($_GET["flag_agent"] == 1 && give_acl ($config['id_user'], $id_grupo, "AW")) {
+		$sql ="UPDATE tagente_modulo SET flag=1 WHERE id_agente = ". $id_agente;
+		process_sql ($sql);
+	}
+}
+
+echo "<div id='menu_tab_frame_view'>";
+echo "<div id='menu_tab_left'><ul class='mn'><li class='view'>
+<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/bricks.png' class='top' border=0>&nbsp; ".substr(dame_nombre_agente($id_agente),0,15)." - ".__('view_mode')."</a>";
+echo "</li>";
+echo "</ul></div>";
+$tab = get_parameter ("tab", "main");
+echo "<div id='menu_tab'><ul class='mn'>";
+if (give_acl ($config['id_user'],$id_grupo, "AW")) {
+	if ($tab == "manage") {
+		echo "<li class='nomn_high'>";
+	} else {
+		echo "<li class='nomn'>";
+		// Manage agent
+		echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'><img src='images/setup.png' width='16' class='top' border=0> ".__('Manage')." </a>";
+		echo "</li>";
+	}
+}
+
+// Main view
+if ($tab == "main") {
+	echo "<li class='nomn_high'>";
+} else {
+	echo "<li class='nomn'>";
+	echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/monitor.png' class='top' border=0> ".__('Main')." </a>";
+	echo "</li>";
+}
+// Data
+if ($tab == "data") {
+	echo "<li class='nomn_high'>";
+} else {
+	echo "<li class='nomn'>";
+	echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data'><img src='images/lightbulb.png' class='top' border=0> ".__('Data')." </a>";
+	echo "</li>";
+}
+// Alerts
+if ($tab == "alert") {
+	echo "<li class='nomn_high'>";
+} else {
+	echo "<li class='nomn'>";
+	echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=alert'><img src='images/bell.png' class='top' border=0> ".__('Alerts')." </a>";
+	echo "</li>";
+}
+// Go to SLA view
+echo "<li class='nomn'>";
+echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sla&id_agente=$id_agente'><img src='images/images.png' class='top' border=0> ".__('SLA')." </a>";
+echo "</li>";
+	
+echo "</ul>";
+echo "</div>";
+echo "</div>";
+echo "<div style='height: 25px'> </div>";
+
+switch ($tab) {
+case "sla":
+	require "sla_view.php";
+	break;
+case "manage":	
+	require "estado_generalagente.php";
+	break;
+case "main":	
+	require "estado_generalagente.php";
+	require "estado_monitores.php";
+	require "estado_alertas.php";
+	require "status_events.php";
+	break;
+case "data": 	
+	require "estado_ultimopaquete.php";
+	break;
+case "alert": 	
+	require "estado_alertas.php";
+	break;
 }
 
 ?>

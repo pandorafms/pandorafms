@@ -62,11 +62,11 @@ echo "<h1>".$layout_name."&nbsp;&nbsp;";
 
 if ($config["pure"] == 0){
 	echo "<a href='index.php?sec=visualc&sec2=operation/visual_console/render_view&id=$id_layout&refr=$refr&pure=1'>";
-	echo "<img src='images/monitor.png' title='".lang_string("Full screen mode")."'>";
+	echo "<img src='images/monitor.png' title='".__('Full screen mode')."'>";
 	echo "</a>";
 } else {
 	echo "<a href='index.php?sec=visualc&sec2=operation/visual_console/render_view&id=$id_layout&pure=0&refr=$refr'>";
-	echo "<img src='images/monitor.png' title='".lang_string("Back to normal mode")."'>";
+	echo "<img src='images/monitor.png' title='".__('Back to normal mode')."'>";
 	echo "</a>";
 }
 
@@ -75,19 +75,19 @@ echo '</h1>';
 print_pandora_visual_map ($id_layout);
 
 $refresh_values = array ();
-$refresh_values[5] = "5 ". lang_string ('seconds');
-$refresh_values[30] = "30 ". lang_string ('seconds');
-$refresh_values[60] = "1 ". lang_string ('minutes');
-$refresh_values[120] = "2 ". lang_string ('minutes');
-$refresh_values[300] = "5 ". lang_string ('minutes');
-$refresh_values[600] = "10 ". lang_string ('minutes');
-$refresh_values[1800] = "30 ". lang_string ('minutes');
+$refresh_values[5] = "5 ". __('seconds');
+$refresh_values[30] = "30 ". __('seconds');
+$refresh_values[60] = "1 ". __('minutes');
+$refresh_values[120] = "2 ". __('minutes');
+$refresh_values[300] = "5 ". __('minutes');
+$refresh_values[600] = "10 ". __('minutes');
+$refresh_values[1800] = "30 ". __('minutes');
 
 $table->width = '500px';
 $table->data = array ();
-$table->data[0][0] = lang_string ('auto_refresh_time');
+$table->data[0][0] = __('auto_refresh_time');
 $table->data[0][1] = print_select ($refresh_values, 'refr', $refr, '', 'N/A', 0, true);
-$table->data[0][2] = print_submit_button (lang_string ('refresh'), '', false, 'class="sub next"', true);
+$table->data[0][2] = print_submit_button (__('refresh'), '', false, 'class="sub next"', true);
 
 echo "<div style='height:30px'>";
 echo "</div>";
@@ -118,7 +118,7 @@ $(document).ready (function () {
 	t = new Date();
 	t.setTime (t.getTime() + <?=$refr * 1000?>);
 	$.countdown.setDefaults($.countdown.regional["<?=$config['language']?>"]);
-	$("#countdown").countdown({until: t, format: 'MS', description: '<?=lang_string ("Until refresh")?>'});
+	$("#countdown").countdown({until: t, format: 'MS', description: '<?=__('Until refresh')?>'});
 <?php endif; ?>
 	draw_lines (lines, 'layout_map');
 });

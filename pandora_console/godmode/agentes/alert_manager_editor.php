@@ -20,7 +20,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 $add_component = get_parameter ("add_component",0);
-echo "<h3>".$lang_label["alert_asociation_form"];
+echo "<h3>".__('alert_asociation_form');
 pandora_help ("alerts");
 echo "</h3>";
 
@@ -45,7 +45,7 @@ echo '<input type="hidden" name="id_agente" value="'.$id_agente.'">';
 echo '<table width=600 cellpadding="4" cellspacing="4" class="databox_color" border=0>';
 
 // AgentModule association
-echo '<tr><td class="datos3">'.lang_string("assigned_module");
+echo '<tr><td class="datos3">'.__('assigned_module');
 echo '<td class="datos3">';
 if ($form_alerttype != "combined"){
 	if ($update_alert != 1) {
@@ -68,10 +68,10 @@ if ($form_alerttype != "combined"){
 		echo $agentmodule_name;
 	}
 } else {
-	echo lang_string ("N/A");
+	echo __('N/A');
 }
 echo '<td class="datos3">';
-echo lang_string ("Priority");
+echo __('Priority');
 echo '<td class="datos3">';
 
 if (! isset($alert_priority)) {
@@ -80,7 +80,7 @@ if (! isset($alert_priority)) {
 print_select (get_priorities (), "alert_priority", $alert_priority, '', '', '');
 
 // Alert type
-echo '<tr><td class="datos">'. lang_string ("alert_type");
+echo '<tr><td class="datos">'. __('alert_type');
 pandora_help ("alert_type");
 echo '</td>';
 echo '<td class="datos"><select name="tipo_alerta">';
@@ -96,45 +96,45 @@ echo "</select>";
 
 // Alert disable / enable
 echo "<td class='datos'>";
-echo $lang_label["alert_status"];
+echo __('alert_status');
 echo "<td class='datos'>";
 echo '<select name="disable_alert">';
 if ((isset($alerta_disable)) AND ($alerta_disable == "1")) {
-	echo "<option value='1'>".$lang_label["disabled"];
-	echo "<option value='0'>".$lang_label["enabled"];
+	echo "<option value='1'>".__('disabled');
+	echo "<option value='0'>".__('enabled');
 } else {
-	echo "<option value='0'>".$lang_label["enabled"];
-	echo "<option value='1'>".$lang_label["disabled"];
+	echo "<option value='0'>".__('enabled');
+	echo "<option value='1'>".__('disabled');
 }
 echo "</select>";
 
 // Descripcion
-echo '<tr><td class="datos2">'.$lang_label["description"];
+echo '<tr><td class="datos2">'.__('description');
 echo '<td class="datos2" colspan=4><input type="text" name="descripcion" size="60" value ="'.$alerta_descripcion.'">';
 
 // Trigger values for alert
 if ($form_alerttype != "combined"){
-	echo '<tr><td class="datos">'.$lang_label["min_value"];
-	echo "<a href='#' class='tip'>&nbsp;<span>";echo $lang_label["min_valid_value_help"]."</span></a>";
+	echo '<tr><td class="datos">'.__('min_value');
+	echo "<a href='#' class='tip'>&nbsp;<span>";echo __('min_valid_value_help')."</span></a>";
 	echo '<td class="datos"><input type="text" name="minimo" size="5" value="'.$alerta_dis_min.'" style="margin-right: 70px;">';
 
 	echo "<td class='datos'>";
-	echo $lang_label["max_value"];
+	echo __('max_value');
 	echo "<a href='#' class='tip'>&nbsp;<span>";
-	echo $lang_label["max_valid_value_help"];
+	echo __('max_valid_value_help');
 	echo "</span></a>";
 	echo "<td class='datos'>";
 	echo "<input type='text' name='maximo' size='5' value='$alerta_dis_max'>";
 
 	// <!-- FREE TEXT ALERT -->
 
-	echo '<tr><td class="datos2">'.$lang_label["alert_text"]."<a href='#' class='tip'>&nbsp;<span>NOTE: This field is for matching text on data. Regular Expression Supported </span></a>";
+	echo '<tr><td class="datos2">'.__('alert_text')."<a href='#' class='tip'>&nbsp;<span>NOTE: This field is for matching text on data. Regular Expression Supported </span></a>";
 	echo '<td class="datos2" colspan=4><input type="text" name="alert_text" size="60" value ="'.$alert_text.'">';
 }
 
 // Time Threshold (TT)    
-echo '<tr><td class="datos">'.$lang_label["time_threshold"];
-echo "<a href='#' class='tip'>&nbsp;<span>".$lang_label["alert_time_threshold_help"]."</span></a>";
+echo '<tr><td class="datos">'.__('time_threshold');
+echo "<a href='#' class='tip'>&nbsp;<span>".__('alert_time_threshold_help')."</span></a>";
 echo '<td class="datos">';
 echo '<select name="time_threshold" style="margin-right: 60px;">';
 if ($alerta_time_threshold != ""){ 
@@ -156,12 +156,12 @@ echo '
 
 // Other TT
 echo '<td class="datos">';
-echo $lang_label["other"];
+echo __('other');
 echo '<td class="datos">';
 echo '<input type="text" name="other" size="5">';
 
 // Max / Min alerts 
-echo "<tr><td class='datos2'>".$lang_label["min_alerts"];
+echo "<tr><td class='datos2'>".__('min_alerts');
 echo '<td class="datos2">';
 echo '<input type="text" name="min_alerts" size="5" value="';
 if (isset($alerta_min_alerts)) 
@@ -171,7 +171,7 @@ else
 echo '" style="margin-right: 10px;">';
 
 echo '<td class="datos2">';
-echo $lang_label["max_alerts"];
+echo __('max_alerts');
 echo '<td class="datos2">';
 echo '<input type="text" name="max_alerts" size="5" value="';
 if (isset($alerta_max_alerts)) 
@@ -181,20 +181,20 @@ else
 echo '" style="margin-right: 10px;">';
 
 // Field1
-echo '<tr><td class="datos">'.lang_string ("field1");
+echo '<tr><td class="datos">'.__('field1');
 echo '<td class="datos" colspan=4><input type="text" name="campo_1" size="39" value="'.$alerta_campo1.'">';
 echo "<a href='#' class='tip'><span><b>Macros:</b><br>_agent_<br>";
 echo '_timestamp_<br>_data_<br></span></a>';
 
 // Field2
-echo '<tr><td class="datos2">'.$lang_label["field2"];
+echo '<tr><td class="datos2">'.__('field2');
 echo '<td class="datos2" colspan=4>';
 echo '<input type="text" name="campo_2" size="39" value="'.$alerta_campo2.'">';
 echo "<a href='#' class='tip'><span>";
 echo '<b>Macros:</b><br>_agent_<br>_timestamp_<br>_data_<br></span></a>';
 
 //Field3
-echo '<tr><td class="datos">'.lang_string ("field3");
+echo '<tr><td class="datos">'.__('field3');
 echo '<td class="datos" colspan=4>';
 echo '<textarea name="campo_3" style="height:85px; width: 380px" rows="4">';
 echo $alerta_campo3;
@@ -202,7 +202,7 @@ echo '</textarea><a href="#" class="tip"><span><b>Macros:</b><br>_agent_<br>';
 echo '_timestamp_<br>_data_<br></span></a>';
 
 // Time for alerting
-echo "<tr><td class='datos2'>".$lang_label["time_from"];    
+echo "<tr><td class='datos2'>".__('time_from');    
 echo "<td class='datos2'><select name='time_from'>";
 if ($time_from != ""){
 	echo "<option value='$time_from'>".substr($time_from,0,5);
@@ -217,7 +217,7 @@ for ($a=0; $a < 48; $a++){
 echo "<option value='23:59'>23:59";
 echo "</select>";
 
-echo "<td class='datos2'>".$lang_label["time_to"];
+echo "<td class='datos2'>".__('time_to');
 echo "<td class='datos2'><select name='time_to'>";
 if ($time_from != ""){
 	echo "<option value='$time_to'>".substr($time_to,0,5);
@@ -233,52 +233,52 @@ echo "<option value='23:59'>23:59";
 echo "</select>";
 
 // Days of week
-echo "<tr><td class='datos'>".lang_string ("Days of week");
+echo "<tr><td class='datos'>".__('Days of week');
 echo "<td class='datos' colspan=4>";
-echo lang_string("Mon");
+echo __('Mon');
 print_checkbox ("alert_d1", 1, $alert_d1);
 echo "&nbsp;&nbsp;";
-echo lang_string("Tue");
+echo __('Tue');
 print_checkbox ("alert_d2", 1, $alert_d2);
 echo "&nbsp;&nbsp;";
-echo lang_string("Wed");
+echo __('Wed');
 print_checkbox ("alert_d3", 1, $alert_d3);
 echo "&nbsp;&nbsp;";
-echo lang_string("Thu");
+echo __('Thu');
 print_checkbox ("alert_d4", 1, $alert_d4);
 echo "&nbsp;&nbsp;";
-echo lang_string("Fri");
+echo __('Fri');
 print_checkbox ("alert_d5", 1, $alert_d5);
 echo "&nbsp;&nbsp;";
-echo lang_string("Sat");
+echo __('Sat');
 print_checkbox ("alert_d6", 1, $alert_d6);
 echo "&nbsp;&nbsp;";
-echo lang_string("Sun");
+echo __('Sun');
 print_checkbox ("alert_d7", 1, $alert_d7);
 
 // Field2 Recovery
-echo '<tr><td class="datos2">'.lang_string ("Field #2 (Rec)");
+echo '<tr><td class="datos2">'.__('Field #2 (Rec)');
 echo '<td class="datos2">';
 echo '<input type="text" name="campo_2_rec" size="20" value="'.$alerta_campo2_rec.'">';
 
 // Alert recovery disable / enable
-echo '<td class="datos2">'. lang_string ("Alert recovery");
+echo '<td class="datos2">'. __('Alert recovery');
 pandora_help ("alert_recovery");
 echo '</td>';
 echo "<td class='datos2'>";
 echo '<select name="alert_recovery">';
 if ((isset($alert_recovery)) AND ($alert_recovery == "1")) {
-	echo "<option value='1'>".$lang_label["enabled"];
-	echo "<option value='0'>".$lang_label["disabled"];
+	echo "<option value='1'>".__('enabled');
+	echo "<option value='0'>".__('disabled');
 } else {
-	echo "<option value='0'>".$lang_label["disabled"];
-	echo "<option value='1'>".$lang_label["enabled"];
+	echo "<option value='0'>".__('disabled');
+	echo "<option value='1'>".__('enabled');
 }
 echo "</select>";
 
 
 //Field3 - Recovery
-echo '<tr><td class="datos">'.lang_string ("Field #3 (Rec)");
+echo '<tr><td class="datos">'.__('Field #3 (Rec)');
 echo '<td class="datos" colspan=4>';
 echo '<input type="text" name="campo_3_rec" size="60" value="'.$alerta_campo3_rec.'">';
 
@@ -288,16 +288,16 @@ echo "</td></tr></table>";
 echo '<table width=605>';
 echo '<tr><td align="right">';
 if ($update_alert== "1"){
-	echo '<input name="updbutton" type="submit" class="sub upd" value="'.$lang_label["update"].'">';
+	echo '<input name="updbutton" type="submit" class="sub upd" value="'.__('update').'">';
 } else {
-	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.$lang_label["add"].'">';
+	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.__('add').'">';
 }
 echo '</form>';
 echo '</td></tr></table>';
 
 
 if (($form_alerttype == "combined") AND ($update_alert != -1)){
-	echo "<h3>".lang_string ("Combined alert components")."</h3>";
+	echo "<h3>".__('Combined alert components')."</h3>";
 	echo '<table width=605 class="databox" border=0 cellpadding=4 cellspacing=4>';
 	echo '<form method=POST action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente='.$id_agente.'&update_alert='.$alerta_id_aam.'&add_component=1&form_alerttype=combined">';
 
@@ -310,7 +310,7 @@ if (($form_alerttype == "combined") AND ($update_alert != -1)){
 	echo '<input type="hidden" name="id_agente" value="'.$id_agente.'">';
 
 	echo "<tr><td>";
-	echo lang_string ("Source Agent/Alert");
+	echo __('Source Agent/Alert');
 	echo "<td>";
 	echo "<select name='component_item'>";
 
@@ -339,7 +339,7 @@ $result_alert = mysql_query("SELECT tagente_modulo.id_agente_modulo, tagente.nom
 	$row=mysql_fetch_array($result);
 	if ($row[0] > 0){
 		echo "<td>";
-		echo lang_string ("Operation");
+		echo __('Operation');
 		echo "<td>";
 		echo "<select name='component_operation'>";
 		echo "<option>OR";
@@ -353,23 +353,23 @@ $result_alert = mysql_query("SELECT tagente_modulo.id_agente_modulo, tagente.nom
 		echo "<input type=hidden name='component_operation' value='NOP'>";
 	}
 	echo "<td>";
-	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.$lang_label["add"].'">';
+	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.__('add').'">';
 	echo "</form>";
 	echo "</table>";
 
 	echo '<table width=750 cellpadding="4" cellspacing="4" class="databox" border=0>';
 	echo '<tr>';
-	echo '<th>'.lang_string ("agent");
-	echo '<th>'.lang_string ("module");
-	echo "<th>".$lang_label["type"]."</th>
-		<th>".lang_string ("Oper")."</th>
-		<th>".$lang_label["threshold"]."</th>
-		<th>".$lang_label["min."]."</th>
-		<th>".$lang_label["max."]."</th>
-		<th>".$lang_label["time"]."</th>
-		<th>".$lang_label["description"]."</th>
-		<th>".lang_string ("info")."</th>
-		<th width='50'>".$lang_label["action"]."</th></tr>";
+	echo '<th>'.__('agent');
+	echo '<th>'.__('module');
+	echo "<th>".__('type')."</th>
+		<th>".__('Oper')."</th>
+		<th>".__('threshold')."</th>
+		<th>".__('min.')."</th>
+		<th>".__('max.')."</th>
+		<th>".__('time')."</th>
+		<th>".__('description')."</th>
+		<th>".__('info')."</th>
+		<th width='50'>".__('action')."</th></tr>";
 
 	$id_aam = $alerta_id_aam;
 	$sql2 = "SELECT * FROM tcompound_alert, talerta_agente_modulo WHERE tcompound_alert.id = $id_aam AND talerta_agente_modulo.id_aam = tcompound_alert.id_aam";
@@ -397,10 +397,10 @@ $result_alert = mysql_query("SELECT tagente_modulo.id_agente_modulo, tagente.nom
 		echo show_alert_row_edit ($row2, $tdcolor, $module["id_tipo_modulo"],1);
 		echo "</td><td class='$tdcolor'>";
 		$id_grupo = dame_id_grupo($id_agente);
-		if (give_acl($id_user, $id_grupo, "LW")==1){
-			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=".$id_agente."&delete_alert_comp=".$row2["id_aam"]."'> <img src='images/cross.png' border=0 alt='".$lang_label["delete"]."'></a>  &nbsp; ";
+		if (give_acl ($config['id_user'], $id_grupo, "LW")) {
+			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=".$id_agente."&delete_alert_comp=".$row2["id_aam"]."'> <img src='images/cross.png' border=0 alt='".__('delete')."'></a>  &nbsp; ";
 			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=".$id_agente."&update_alert=".$row2["id_aam"]."'>
-			<img src='images/config.png' border=0 alt='".$lang_label["update"]."'></a>";        
+			<img src='images/config.png' border=0 alt='".__('update')."'></a>";        
 		}
 		echo "</td>";
 	}

@@ -70,11 +70,11 @@ function give_acl ($id_user, $id_group, $access) {
 	
 	//Joined multiple queries into one. That saves on the query overhead and query cache.
 	if ($id_group == 0) {
-		$query1=sprintf("SELECT tperfil.incident_view,tperfil.incident_edit,tperfil.incident_management,tperfil.agent_view,tperfil.agent_edit,tperfil.alert_edit,tperfil.alert_management,tperfil.pandora_management,tperfil.db_management,tperfil.user_management FROM tusuario_perfil,tperfil WHERE tusuario_perfil.id_perfil = tperfil.id_perfil AND tusuario_perfil.id_usuario = '%s'",$id_user);
+		$query1=sprintf("SELECT tperfil.incident_view,tperfil.incident_edit,tperfil.incident_management,tperfil.agent_view,tperfil.agent_edit,tperfil.alert_edit,tperfil.alert_management,tperfil.pandora_management,tperfil.db_management,tperfil.user_management FROM tusuario_perfil,tperfil WHERE tusuario_perfil.id_perfil = tperfil.id_perfil AND tusuario_perfil.id_usuario = '%s'", $id_user);
 		//GroupID = 0, access doesnt matter (use with caution!) - Any user gets access to group 0
 	} else {
 		$query1=sprintf("SELECT tperfil.incident_view,tperfil.incident_edit,tperfil.incident_management,tperfil.agent_view,tperfil.agent_edit,tperfil.alert_edit,tperfil.alert_management,tperfil.pandora_management,tperfil.db_management,tperfil.user_management FROM tusuario_perfil,tperfil WHERE tusuario_perfil.id_perfil = tperfil.id_perfil 
-AND tusuario_perfil.id_usuario = '%s' AND (tusuario_perfil.id_grupo = %d OR tusuario_perfil.id_grupo= 1)",$id_user,$id_group);
+AND tusuario_perfil.id_usuario = '%s' AND (tusuario_perfil.id_grupo = %d OR tusuario_perfil.id_grupo= 1)", $id_user, $id_group);
 	}
 
 	$rowdup = get_db_all_rows_sql($query1);
@@ -373,8 +373,8 @@ function dame_nombre_agente ($id_agent) {
  * 
  * @return Password of an user.
  */
-function get_user_password ($id_usuario) {
-	return (string) get_db_value ('password', 'tusuario', 'id_usuario', (int) $id_usuario);
+function get_user_password ($id_user) {
+	return (string) get_db_value ('password', 'tusuario', 'id_usuario', $id_user);
 }
 
 /** 
@@ -1090,19 +1090,19 @@ function show_server_type ($id){
 function give_modulecategory_name ($id_category) {
 	switch ($id_category) {
 	case 0: 
-		return lang_string ("cat_0");
+		return __('cat_0');
 		break;
 	case 1: 
-		return lang_string ("cat_1");
+		return __('cat_1');
 		break;
 	case 2: 
-		return lang_string ("cat_2");
+		return __('cat_2');
 		break;
 	case 3: 
-		return lang_string ("cat_3");
+		return __('cat_3');
 		break;
 	}
-	return lang_string ("unknown");
+	return __('unknown');
 }
 
 /** 
@@ -1656,7 +1656,7 @@ function get_agent_module_value_sumatory ($id_agent_module, $period, $date = 0) 
 	$module_name = get_db_value ('nombre', 'ttipo_modulo', 'id_tipo', $id_module_type);
 	
 	if (is_module_data_string ($module_name)) {
-		return lang_string ('wrong_module_type');
+		return __('wrong_module_type');
 	}
 	
 	// Get the whole interval of data
@@ -1725,9 +1725,23 @@ function get_agent_module_value_sumatory ($id_agent_module, $period, $date = 0) 
  * @param file Filename of language definitions to load.
  */
 function load_lang_file ($file) {
+	global $config;
+	
 	if (file_exists ($file))
 		require_once ($config["homedir"]."/include/languages/language_".$config["language"].".php");
 }
+
+/** 
+ * Get a translated string (alias version of lang_string().
+ * 
+ * @param string String to translate
+ * 
+ * @return The translated string. If not defined, the same string will be returned
+ */
+function __ ($string) {
+	return lang_string ($string);
+}
+
 /** 
  * Get a translated string.
  * 
@@ -1780,16 +1794,16 @@ function show_alert_row_mini ($id_combined_alert) {
 	WHERE tcompound_alert.id_aam = talerta_agente_modulo.id_aam AND tcompound_alert.id = %d",$id_combined_alert);
 	$result = get_db_all_rows_sql ($sql);
 	echo "<table width=400 cellpadding=2 cellspacing=2 class='databox'>";
-	echo "<th>".lang_string("Name");
-	echo "<th>".lang_string("Oper");
-	echo "<th>".lang_string("Tt");
-	echo "<th>".lang_string("Firing");
-	echo "<th>".lang_string("Time");
-	echo "<th>".lang_string("Desc");
-	echo "<th>".lang_string("Recovery");
-	echo "<th>".lang_string("MinMax.Al");
-	echo "<th>".lang_string("Days");
-	echo "<th>".lang_string("Fired");
+	echo "<th>".__('Name');
+	echo "<th>".__('Oper');
+	echo "<th>".__('Tt');
+	echo "<th>".__('Firing');
+	echo "<th>".__('Time');
+	echo "<th>".__('Desc');
+	echo "<th>".__('Recovery');
+	echo "<th>".__('MinMax.Al');
+	echo "<th>".__('Days');
+	echo "<th>".__('Fired');
 	foreach ($result as $row2) {
 		if ($color == 1) {
 			$tdcolor = "datos";
@@ -1830,13 +1844,13 @@ function show_alert_row_mini ($id_combined_alert) {
 		}
 
 		if (($mymin == 0) && ($mymax == 0)) {
-			$mymin = lang_string ("N/A");
+			$mymin = __('N/A');
 			$mymax = $mymin;
 		}
 
 		// We have alert text ?
 		if ($row2["alert_text"]!= "") {
-			echo "<td class='$tdcolor'>".lang_string ('text')."</td>";
+			echo "<td class='$tdcolor'>".__('text')."</td>";
 		} else {
 			echo "<td class='$tdcolor'>".$mymin."/".$mymax."</td>";
 		}
@@ -1850,15 +1864,15 @@ function show_alert_row_mini ($id_combined_alert) {
 
 		// Has recovery notify activated ?
 		if ($row2["recovery_notify"] > 0) {
-			$recovery_notify = lang_string ("Yes");
+			$recovery_notify = __('Yes');
 		} else {
-			$recovery_notify = lang_string ("No");
+			$recovery_notify = __('No');
 		}
 		echo "</td><td class='$tdcolor'>".$recovery_notify;
 
 		// calculare firing conditions
 		if ($row2["alert_text"] != ""){
-			$firing_cond = lang_string ("text")."(".substr ($row2["alert_text"],0,8).")";
+			$firing_cond = __('text')."(".substr ($row2["alert_text"],0,8).")";
 		} else {
 			$firing_cond = $row2["min_alerts"]." / ".$row2["max_alerts"];
 		}
@@ -1870,9 +1884,9 @@ function show_alert_row_mini ($id_combined_alert) {
 
 		// Fired ?
 		if ($row2["times_fired"]>0) {
-			echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_red.png' title='".lang_string ("fired")."'></td>";
+			echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_red.png' title='".__('fired')."'></td>";
 		} else {
-			echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_green.png' title='".lang_string ("not_fired")."'></td>";
+			echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_green.png' title='".__('not_fired')."'></td>";
 		}
 	}
 	echo "</table>";
@@ -1893,14 +1907,14 @@ function smal_event_table ($filter = "", $limit = 10, $width = 440) {
 	$sql = sprintf ("SELECT * FROM tevento %s ORDER BY timestamp DESC LIMIT %d",$filter,$limit);
 	echo "<table cellpadding='4' cellspacing='4' width='$width' border=0 class='databox'>";
 	echo "<tr>";
-	echo "<th colspan=6>".lang_string ("Latest events");
+	echo "<th colspan=6>".__('Latest events');
 	echo "<tr>";
-	echo "<th class='datos3 f9'>".lang_string ("St")."</th>";
-	echo "<th class='datos3 f9'>".lang_string ("Type")."</th>";
-	echo "<th class='datos3 f9'>".lang_string ('event_name')."</th>";
-	echo "<th class='datos3 f9'>".lang_string ('agent_name')."</th>";
-	echo "<th class='datos3 f9'>".lang_string ('id_user')."</th>";
-	echo "<th class='datos3 f9'>".lang_string ('timestamp')."</th>";
+	echo "<th class='datos3 f9'>".__('St')."</th>";
+	echo "<th class='datos3 f9'>".__('Type')."</th>";
+	echo "<th class='datos3 f9'>".__('event_name')."</th>";
+	echo "<th class='datos3 f9'>".__('agent_name')."</th>";
+	echo "<th class='datos3 f9'>".__('id_user')."</th>";
+	echo "<th class='datos3 f9'>".__('timestamp')."</th>";
 	$result = get_db_all_rows_sql ($sql);
 	if($result === false) 
 		$result = array();
@@ -1986,9 +2000,9 @@ function smal_event_table ($filter = "", $limit = 10, $width = 440) {
 			// for System or SNMP generated alerts
 		} else { 
 			if ($event["event_type"] == "system") {
-				echo "<td class='$tdclass'>".lang_string ("System");
+				echo "<td class='$tdclass'>".__('System');
 			} else {
-				echo "<td class='$tdclass'>".lang_string ("alert")."SNMP";
+				echo "<td class='$tdclass'>".__('alert')."SNMP";
 			}
 		}
 	

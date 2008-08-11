@@ -18,26 +18,22 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Login check
-global $REMOTE_ADDR;
+require("include/config.php");
 
-if (comprueba_login() != 0) {
-	audit_db ($id_user, $REMOTE_ADDR, "ACL Violation","Trying to access graph builder");
-	include ("general/noaccess.php");
-	exit;
-}
+check_login();
 
 $id_report = (int) get_parameter ('id');
 
 if (! $id_report) {
-	audit_db ($id_user, $REMOTE_ADDR, "HACK Attempt","Trying to access graph viewer withoud ID");
+	audit_db ($config['id_user'], $REMOTE_ADDR, "HACK Attempt","Trying to access graph viewer withoud ID");
 	include ("general/noaccess.php");
 	exit;
 }
 
 $report = get_db_row ('treport', 'id_report', $id_report);
 
-if (! give_acl ($id_user, $report['id_group'], "AR") AND ! dame_admin ($id_user)) {
-	audit_db ($id_user, $REMOTE_ADDR, "ACL Violation","Trying to access graph builder");
+if (! give_acl ($config['id_user'], $report['id_group'], "AR")) {
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation","Trying to access graph builder");
 	include ("general/noaccess.php");
 	exit;
 }
@@ -45,16 +41,15 @@ if (! give_acl ($id_user, $report['id_group'], "AR") AND ! dame_admin ($id_user)
 require ("include/functions_reporting.php");
 
 /* Check if the user can see the graph */
-/* FIXME: It will check AR permissions against agent or group of the report */
-if ($report['id_user'] != $id_user && ! dame_admin ($id_user) && ! $report['private']) {
+if ($report['id_user'] != $config['id_user'] && ! dame_admin ($config['id_user']) && ! $report['private']) {
 	return;
 }
 
 $date = (string) get_parameter ('date', date ('Y-m-j'));
 $time = (string) get_parameter ('time', date ('h:iA'));
 
-echo "<h2>".lang_string ('reporting')." &gt; ";
-echo lang_string ('custom_reporting')." - ";
+echo "<h2>".__('reporting')." &gt; ";
+echo __('custom_reporting')." - ";
 echo $report['name']."</h2>";
 
 $table->width = '99%';
@@ -69,10 +64,10 @@ if ($report['description'] != '')
 	$table->data[0][1] = $report['description'];
 else
 	$table->data[0][1] = $report['name'];
-$table->data[1][0] = lang_string ('date');
+$table->data[1][0] = __('date');
 $table->data[1][1] = print_input_text ('date', $date, '', 10, 10, true). ' ';
 $table->data[1][1] .= print_input_text ('time', $time, '', 7, 7, true). ' ';
-$table->data[1][1] .= print_submit_button (lang_string ('update'), 'date_submit', false, 'class="sub next"', true);
+$table->data[1][1] .= print_submit_button (__('update'), 'date_submit', false, 'class="sub next"', true);
 
 echo '<form method="post" action="">';
 print_table ($table);
@@ -81,7 +76,7 @@ echo '</form>';
 
 echo '<div id="loading">';
 echo '<img src="images/wait.gif" border="0"><br />';
-echo '<strong>'.lang_string ('Loading').'...</strong>';
+echo '<strong>'.__('Loading').'...</strong>';
 echo '</div>';
 
 /* We must add javascript here. Otherwise, the date picker won't 
@@ -111,12 +106,12 @@ $(document).ready (function () {
 $datetime = strtotime ($date.' '.$time);
 
 if ($datetime === false || $datetime == -1) {
-	echo '<h3 class="error">'.lang_string ('invalid_date').'</h3>';
+	echo '<h3 class="error">'.__('invalid_date').'</h3>';
 	return;
 }
 /* Date must not be older than now */
 if ($datetime > time ()) {
-	echo '<h3 class="error">'.lang_string ('date_older_than_now').'</h3>';
+	echo '<h3 class="error">'.__('date_older_than_now').'</h3>';
 	return;
 }
 
@@ -148,7 +143,7 @@ foreach ($contents as $content) {
 	case 'simple_graph':
 		$table->colspan[1][0] = 4;
 		$data = array ();
-		$data[0] = '<h4>'.lang_string ('simple_graph').'</h4>';
+		$data[0] = '<h4>'.__('simple_graph').'</h4>';
 		$data[1] = '<h4>'.$agent_name.' - '.$module_name.'</h4>';
 		$data[2] = '<h4>'.human_time_description($content['period']).'</h4>';
 		array_push ($table->data, $data);
@@ -162,7 +157,7 @@ foreach ($contents as $content) {
 	case 'custom_graph':
 		$graph = get_db_row ("tgraph", "id_graph", $content['id_gs']);
 		$data = array ();
-		$data[0] = '<h4>'.lang_string ('custom_graph').'</h4>';
+		$data[0] = '<h4>'.__('custom_graph').'</h4>';
 		$data[1] = "<h4>".$graph["name"]."</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
@@ -187,17 +182,18 @@ foreach ($contents as $content) {
 		$table->colspan[0][0] = 2;
 		$table->style[1] = 'text-align: right';
 		$data = array ();
-		$data[0] = '<h4>'.lang_string ('SLA').'</h4>';
+		$data[0] = '<h4>'.__('SLA').'</h4>';
 		$data[1] = '<h4>'.human_time_description ($content['period']).'</h4>';;
 		$n = array_push ($table->data, $data);
 		
 		$slas = get_db_all_rows_field_filter ('treport_content_sla_combined',
 							'id_report_content', $content['id_rc']);
-		if (sizeof ($slas) == 0) {
+		if ($slas === false) {
 			$data = array ();
 			$table->colspan[1][0] = 3;
-			$data[0] = lang_string ('no_defined_slas');
+			$data[0] = __('no_defined_slas');
 			array_push ($table->data, $data);
+			$slas = array ();
 		}
 		
 		$sla_failed = false;
@@ -205,20 +201,20 @@ foreach ($contents as $content) {
 			$data = array ();
 			
 			$table->colspan[$n][0] = 2;
-			$data[0] = '<strong>'.lang_string ('agent')."</strong> : ";
+			$data[0] = '<strong>'.__('agent')."</strong> : ";
 			$data[0] .= dame_nombre_agente_agentemodulo ($sla['id_agent_module'])."<br />";
-			$data[0] .= '<strong>'.lang_string ('module')."</strong> : ";
+			$data[0] .= '<strong>'.__('module')."</strong> : ";
 			$data[0] .= dame_nombre_modulo_agentemodulo ($sla['id_agent_module'])."<br />";
-			$data[0] .= '<strong>'.lang_string ('sla_max')."</strong> : ";
+			$data[0] .= '<strong>'.__('sla_max')."</strong> : ";
 			$data[0] .= $sla['sla_max']."<br />";
-			$data[0] .= '<strong>'.lang_string ('sla_min')."</strong> : ";
+			$data[0] .= '<strong>'.__('sla_min')."</strong> : ";
 			$data[0] .= $sla['sla_min']."<br />";
 			
 			$sla_value = get_agent_module_sla ($sla['id_agent_module'], $content['period'],
 							$sla['sla_min'], $sla['sla_max'], $datetime);
 			if ($sla_value === false) {
 				$data[1] = '<span style="font: bold 3em Arial, Sans-serif; color: #0000FF;">';
-				$data[1] .= lang_string ('unknown');
+				$data[1] .= __('unknown');
 			} else {
 				if ($sla_value >= $sla['sla_limit'])
 					$data[1] = '<span style="font: bold 3em Arial, Sans-serif; color: #000000;">';
@@ -235,9 +231,9 @@ foreach ($contents as $content) {
 		if (sizeof ($slas)) {
 			$data = array ();
 			if (! $sla_failed)
-				$data[0] = '<span style="font: bold 3em Arial, Sans-serif; color: #000000;">'.lang_string ('Ok').'</span>';
+				$data[0] = '<span style="font: bold 3em Arial, Sans-serif; color: #000000;">'.__('Ok').'</span>';
 			else
-				$data[0] = '<span style="font: bold 3em Arial, Sans-serif; color: #ff0000;">'.lang_string ('Fail').'</span>';
+				$data[0] = '<span style="font: bold 3em Arial, Sans-serif; color: #ff0000;">'.__('Fail').'</span>';
 			$n = array_push ($table->data, $data);
 			$table->colspan[$n - 1][0] = 3;
 			$table->rowstyle[$n - 1] = 'text-align: right';
@@ -249,7 +245,7 @@ foreach ($contents as $content) {
 		$table->colspan[0][0] = 2;
 		$id_agent = dame_agente_id ($agent_name);
 		$data = array ();
-		$data[0] = "<h4>".lang_string ('event_report')."</h4>";
+		$data[0] = "<h4>".__('event_report')."</h4>";
 		$data[1] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
 		
@@ -265,7 +261,7 @@ foreach ($contents as $content) {
 	case 5:
 	case 'alert_report':
 		$data = array ();
-		$data[0] = "<h4>".lang_string ('alert_report')."</h4>";
+		$data[0] = "<h4>".__('alert_report')."</h4>";
 		$data[1] = "<h4>$group_name</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
@@ -279,7 +275,7 @@ foreach ($contents as $content) {
 	case 6:
 	case 'monitor_report':
 		$data = array ();
-		$data[0] = "<h4>".lang_string ('monitor_report')."</h4>";
+		$data[0] = "<h4>".__('monitor_report')."</h4>";
 		$data[1] = "<h4>$agent_name - $module_name</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
@@ -297,7 +293,7 @@ foreach ($contents as $content) {
 	case 7:
 	case 'avg_value':
 		$data = array ();
-		$data[0] = "<h4>".lang_string ('avg_value')."</h4>";
+		$data[0] = "<h4>".__('avg_value')."</h4>";
 		$data[1] = "<h4>$agent_name - $module_name</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
@@ -312,7 +308,7 @@ foreach ($contents as $content) {
 	case 8:
 	case 'max_value':
 		$data = array ();
-		$data[0] = "<h4>".lang_string ('max_value')."</h4>";
+		$data[0] = "<h4>".__('max_value')."</h4>";
 		$data[1] = "<h4>$agent_name - $module_name</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
@@ -327,7 +323,7 @@ foreach ($contents as $content) {
 	case 9:
 	case 'min_value':
 		$data = array ();
-		$data[0] = "<h4>".lang_string ('min_value')."</h4>";
+		$data[0] = "<h4>".__('min_value')."</h4>";
 		$data[1] = "<h4>$agent_name - $module_name</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
@@ -342,7 +338,7 @@ foreach ($contents as $content) {
 	case 10:
 	case 'sumatory':
 		$data = array ();
-		$data[0] = "<h4>".lang_string ('sumatory')."</h4>";
+		$data[0] = "<h4>".__('sumatory')."</h4>";
 		$data[1] = "<h4>$agent_name - $module_name</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
@@ -357,7 +353,7 @@ foreach ($contents as $content) {
 	case 11:
 	case 'general_group_report':
 		$data = array ();
-		$data[0] = "<h4>".lang_string ('group')."</h4>";
+		$data[0] = "<h4>".__('group')."</h4>";
 		$data[1] = "<h4>$group_name</h4>";
 		array_push ($table->data, $data);
 		
@@ -370,7 +366,7 @@ foreach ($contents as $content) {
 	case 12:
 	case 'monitor_health':
 		$data = array ();
-		$data[0] = "<h4>".lang_string ('monitor_health')."</h4>";
+		$data[0] = "<h4>".__('monitor_health')."</h4>";
 		$data[1] = "<h4>$group_name</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
@@ -384,7 +380,7 @@ foreach ($contents as $content) {
 	case 13:
 	case 'agents_detailed':
 		$data = array ();
-		$data[0] = "<h4>".lang_string ('agents_detailed')."</h4>";
+		$data[0] = "<h4>".__('agents_detailed')."</h4>";
 		$data[1] = "<h4>$group_name</h4>";
 		array_push ($table->data, $data);
 		$table->colspan[0][0] = 2;

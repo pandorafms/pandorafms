@@ -717,14 +717,14 @@ CREATE TABLE IF NOT EXISTS `tserver_export_data` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `tplanned_downtime` (
-  `id` MEDIUMINT( 8 ) NOT NULL AUTO_INCREMENT ,
-  `name` VARCHAR( 100 ) NOT NULL ,
-  `description` TEXT NOT NULL ,
-  `start` INT NOT NULL ,
-  `end` INT NOT NULL ,
-  `module_id` BIGINT( 14 ) NOT NULL ,
+  `id` MEDIUMINT( 8 ) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR( 100 ) NOT NULL,
+  `description` TEXT NOT NULL,
+  `date_from` INT NOT NULL,
+  `date_to` INT NOT NULL,
+  `id_agent_module` BIGINT(14) NOT NULL,
   PRIMARY KEY (  `id` ) ,
-  INDEX (  `start` ,  `end` ,  `module_id` ) 
+  INDEX (`date_from`, `date_end`, `id_agent_module`)
 ) ENGINE = InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `tplanned_downtime_agents` (

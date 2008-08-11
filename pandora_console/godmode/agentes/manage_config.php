@@ -22,38 +22,39 @@ require ("include/config.php");
 
 check_login ();
 
-$id_user = $_SESSION["id_usuario"];
-$id_group = get_parameter ("id_group",0);
+if (! give_acl ($config['id_user'], 0, "LM")) {
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+		"Trying to access Agent Config Management Admin section");
+	require ("general/noaccess.php");
+	return;
+}
+
+
+$id_group = get_parameter ("id_group", 0);
 $origen = get_parameter ("origen", -1);
 $update_agent = get_parameter ("update_agent", -1);
 $update_group = get_parameter ("update_group", -1);
 
-if ( (give_acl($id_user, 0, "LM")==0) AND (give_acl($id_user, 0, "AW")==0) ){
-	audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Agent Config Management Admin section");
-	require ("general/noaccess.php");
-}
-		
 // Operations
 // ---------------
-if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == -1) ) {
-
+if ((isset($_GET["operacion"])) && ($update_agent == -1) && ($update_group == -1)) {
 	// DATA COPY
 	// ---------
 	if (isset($_POST["copy"])) {
-		echo "<h2>".$lang_label["datacopy"]."</h2>";
+		echo "<h2>".__('datacopy')."</h2>";
 		// Initial checkings
 
 		// if selected more than 0 agents
 		$destino = $_POST["destino"];
 		if (count($destino) <= 0){
-			echo "<h3 class='error'>ERROR: ".$lang_label["noagents_cp"]."</h3>";
+			echo "<h3 class='error'>ERROR: ".__('noagents_cp')."</h3>";
 			echo "</table>";
 			include ("general/footer.php");
 			exit;
 		}
 		$origen_modulo = $_POST["origen_modulo"];
 		if (count($origen_modulo) <= 0){
-			echo "<h3 class='error'>ERROR: ".$lang_label["nomodules_selected"]."</h3>";
+			echo "<h3 class='error'>ERROR: ".__('nomodules_selected')."</h3>";
 			echo "</table>";
 			include ("general/footer.php");
 			exit;
@@ -74,7 +75,7 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 		else
 			$alertas = 0;
 		if (($alertas + $modulos) == 0){
-			echo "<h3 class='error'>ERROR: ".$lang_label["you_must_select_modules"]."</h3>";;
+			echo "<h3 class='error'>ERROR: ".__('you_must_select_modules')."</h3>";;
 			echo "</table>";
 			include ("general/footer.php");
 			exit;
@@ -86,14 +87,14 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 			// For every agent in destination
 
 			$id_agente = $destino[$a];
-			echo "<br><br>".$lang_label["copyage"]."<b> [".dame_nombre_agente($id_origen)."] -> [".dame_nombre_agente($id_agente)."]</b>";
+			echo "<br><br>".__('copyage')."<b> [".dame_nombre_agente($id_origen)."] -> [".dame_nombre_agente($id_agente)."]</b>";
 			if ($multiple == 0)
-					$b=-1;
+				$b = -1;
 			else
-					$b=0;
+				$b = 0;
 
 			// Module read
-			if ($modulos == 1){
+			if ($modulos == 1) {
 				for ($b=$b; $b < count($origen_modulo); $b++){
 					if ($multiple == 0)	
 						$sql1='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_origen;
@@ -149,7 +150,7 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 							)";
 							$result2=mysql_query($sql);
 							if (! $result2)
-								echo "<h3 class=error>".lang_string("Problem updating database")."</h3>";
+								echo "<h3 class=error>".__('Problem updating database')."</h3>";
 							$o_id_agente_modulo = mysql_insert_id();
 							
 							// Create with different estado if proc type or data type
@@ -174,7 +175,7 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 								)";
 							}
 							$result_status=mysql_query($sql_status_insert);
-							echo "<br>&nbsp;&nbsp;".$lang_label["copymod"]." ->".$o_nombre;
+							echo "<br>&nbsp;&nbsp;".__('copymod')." ->".$o_nombre;
 						}
 					}
 				}
@@ -251,10 +252,10 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 								$o_recovery_notify, $o_priority, '$o_al_f2_recovery', 
 								'$o_al_f3_recovery' )";
 								$result_al=mysql_query($sql_al);
-								echo "<br>&nbsp;&nbsp;".$lang_label["copyale"]." ->".$o_descripcion;
+								echo "<br>&nbsp;&nbsp;".__('copyale')." ->".$o_descripcion;
 							}
 						} else 
-							echo "<br><h3 class='error'>ERROR: ".$lang_label["notfoundmod"].$o_nombre.$lang_label["inagent"].dame_nombre_agente($d_id_agente)."</h3>";
+							echo "<br><h3 class='error'>ERROR: ".__('notfoundmod').$o_nombre.__('inagent').dame_nombre_agente($d_id_agente)."</h3>";
 					} //while
 				} // for
 			} // Alerts
@@ -267,13 +268,13 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 	// -----------
 
 	elseif (isset($_POST["delete"])) {
-		echo "<h2>".$lang_label["deletedata"]."</h2>";
+		echo "<h2>".__('deletedata')."</h2>";
 		// Initial checkings
 		
 		//  if selected more than 0 agents
 		$destino = $_POST["destino"];
 		if (count($destino) <= 0){
-			echo "<h3 class='error'>ERROR: ".$lang_label["noagents_del"]."</h3>";
+			echo "<h3 class='error'>ERROR: ".__('noagents_del')."</h3>";
 			break;
 		}
 		
@@ -291,7 +292,7 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 		for ($a=0;$a <count($destino); $a++){ // for each agent
 			$id_agente = $destino[$a];
 			if ($modulos == 1){
-				echo "<br>".$lang_label["deleting_data"]." -> ".dame_nombre_agente($id_agente);
+				echo "<br>".__('deleting_data')." -> ".dame_nombre_agente($id_agente);
 			
 				// Deleting data
 				$sql1='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_agente;
@@ -324,13 +325,13 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 		}// for
 	}//delete
 	elseif (isset($_POST["delete_agent"])) {
-		echo "<h2>".lang_string("delete_agents")."</h2>";
+		echo "<h2>".__('delete_agents')."</h2>";
 		// Initial checkings
 		
 		//  if selected more than 0 agents
 		$destino = $_POST["destino"];
 		if (count($destino) <= 0){
-			echo "<h3 class='error'>ERROR: ".$lang_label["noagents_del"]."</h3>";
+			echo "<h3 class='error'>ERROR: ".__('noagents_del')."</h3>";
 			break;
 		}
 		
@@ -338,7 +339,7 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 		for ($a=0;$a <count($destino); $a++){ // for each agent
 			$id_agente = $destino[$a];
 			
-			echo "<br>".$lang_label["deleting_data"]." -> ".dame_nombre_agente($id_agente);
+			echo "<br>".__('deleting_data')." -> ".dame_nombre_agente($id_agente);
 		
 			// Deleting data
 			$sql1='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_agente;
@@ -368,8 +369,8 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 				$result = mysql_query($sql_delete1);
 			} // while			
 			
-            // delete agent
-            $sql1='DELETE FROM tagente WHERE id_agente = '.$id_agente;
+			// delete agent
+			$sql1='DELETE FROM tagente WHERE id_agente = '.$id_agente;
 			$result1=mysql_query($sql1);
 		}// for
 	}//delete
@@ -380,24 +381,24 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 	} else { 
 		
 		// title
-		echo '<h2>'.lang_string ("agent_conf"). '&gt;'. lang_string ("config_manage").'</h2>';
+		echo '<h2>'.__('agent_conf'). '&gt;'. __('config_manage').'</h2>';
 		echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/manage_config&operacion=1">';
 		echo "<table width='650' border='0' cellspacing='4' cellpadding='4' class='databox'>";
 		
 		// Source group
-		echo '<tr><td class="datost"><b>'. lang_string ("Source group"). '</b><br><br>';
+		echo '<tr><td class="datost"><b>'. __('Source group'). '</b><br><br>';
 		echo '<select name="id_group" style="width:200px">';
 		if ($id_group != 0)
 			echo "<option value=$id_group>".dame_nombre_grupo ($id_group);
-		echo "<option value=0>".lang_string ("All");
+		echo "<option value=0>".__('All');
 		list_group ($config["id_user"]);
 		echo '</select>';
 		echo '&nbsp;&nbsp;';
-		echo '<input type=submit name="update_group" class="sub upd"  value="'.lang_string("Filter").'">';
+		echo '<input type=submit name="update_group" class="sub upd"  value="'.__('Filter').'">';
 		echo '<br><br>';
 
 		// Source agent
-		echo '<b>'. lang_string ("source_agent").'</b><br><br>';
+		echo '<b>'. __('source_agent').'</b><br><br>';
 
 		// Show combo with SOURCE agents
 		if ($id_group != 0)
@@ -417,11 +418,11 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 		echo '</select>';
 
 		echo '&nbsp;&nbsp;';
-		echo '<input type=submit name="update_agent" class="sub upd" value="'.lang_string ("get_info").'">';
+		echo '<input type=submit name="update_agent" class="sub upd" value="'.__('get_info').'">';
 		echo '<br><br>';
 
 		// Source Module(s)
-		echo "<b>".$lang_label["modules"]."</b><br><br>";
+		echo "<b>".__('modules')."</b><br><br>";
 		echo "<select name='origen_modulo[]' size=10 multiple=yes style='width: 250px;'>";
 		if ( (isset($_POST["update_agent"])) AND (isset($_POST["origen"])) ) {
 				// Populate Module/Agent combo
@@ -435,18 +436,18 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 		echo "</select>";
 		
 		echo '<td class="datost">';
-		echo '<b>'.lang_string ("copy_conf"). '</b><br><br>';
+		echo '<b>'.__('copy_conf'). '</b><br><br>';
 		echo '<table>';
-		echo '<tr class=datos><td>'.lang_string ("modules");
+		echo '<tr class=datos><td>'.__('modules');
 		echo '<td><input type="checkbox" name="modules" value="1" class="chk">';
-		echo '<tr class=datos><td>'.lang_string ("alerts");
+		echo '<tr class=datos><td>'.__('alerts');
 		echo '<td><input type="checkbox" name="alerts" value="1" class="chk">';
 		echo '</table>';
 		
 
 		// Destination agent
 		echo '<tr><td class="datost">';
-		echo '<b>'.$lang_label["toagent"].'</b><br><br>';
+		echo '<b>'.__('toagent').'</b><br><br>';
 		echo "<select name=destino[] size=10 multiple=yes style='width: 250px;'>";
 		$sql1='SELECT * FROM tagente ORDER BY nombre';
 		$result=mysql_query($sql1);
@@ -458,12 +459,12 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 		
 		// Form buttons
 		echo '<td align="left" class="datosb">';
-        echo "<br><br>";
-		echo '<input type="submit" name="copy" class="sub copy" value="'.lang_string ("copy").'" onClick="if (!confirm("'.lang_string ("are_you_sure").'")) return false;>';
-        echo "<br><br>";
-		echo '<input type="submit" name="delete" class="sub delete" value="'. lang_string("delete").'" onClick="if (!confirm("'.lang_string ("are_you_sure").'")) return false;>';
-        echo "<br><br>";
-        echo '<input type="submit" name="delete_agent" class="sub delete" value="'. lang_string("Delete Agents").'" onClick="if (!confirm("'.lang_string ("are_you_sure").'")) return false;>';
+		echo "<br><br>";
+		echo '<input type="submit" name="copy" class="sub copy" value="'.__('copy').'" onClick="if (!confirm("'.__('are_you_sure').'")) return false;>';
+		echo "<br><br>";
+		echo '<input type="submit" name="delete" class="sub delete" value="'. __('delete').'" onClick="if (!confirm("'.__('are_you_sure').'")) return false;>';
+		echo "<br><br>";
+		echo '<input type="submit" name="delete_agent" class="sub delete" value="'. __('Delete Agents').'" onClick="if (!confirm("'.__('are_you_sure').'")) return false;>';
 
 		echo '<tr><td colspan=2>';
 		echo '</div></td></tr>';

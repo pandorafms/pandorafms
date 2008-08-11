@@ -15,6 +15,16 @@
 // Load global vars
 require("include/config.php");
 
+check_login();
+
+if (! give_acl ($config['id_user'], 0, "AR")) {
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+		"Trying to access node graph builder");
+	include ("general/noaccess.php");
+	exit;
+}
+
+
 $pandora_name = 'Pandora FMS';
 
 // Generate a dot graph definition for graphviz
@@ -233,23 +243,11 @@ $simple = (boolean) get_parameter ('simple', 0);
 $regen = (boolean) get_parameter ('regen',0);
 $font_size = (int) get_parameter ('font_size', 12);
 
-// Login check
-$id_user = $_SESSION["id_usuario"];
-global $REMOTE_ADDR;
-
-check_login();
-
-if ((give_acl($id_user, 0, "AR") != 1 ) && (dame_admin($id_user) !=1 )) {
-	audit_db($id_user, $REMOTE_ADDR, "ACL Violation", "Trying to access node graph builder");
-	include("general/noaccess.php");
-	exit;
-}
-
-echo '<h2>'.lang_string ('ag_title').' &gt; '.lang_string("Network Map").'&nbsp';
+echo '<h2>'.__('ag_title').' &gt; '.__('Network Map').'&nbsp';
 if ($pure == 1) {
-	echo '<a href="index.php?sec=estado&sec2=operation/agentes/networkmap&pure=0"><img src="images/monitor.png" title="' . lang_string('Normal screen') . '"></a>';
+	echo '<a href="index.php?sec=estado&sec2=operation/agentes/networkmap&pure=0"><img src="images/monitor.png" title="' . __('Normal screen') . '"></a>';
 } else {
-	echo '<a href="index.php?sec=estado&sec2=operation/agentes/networkmap&pure=1"><img src="images/monitor.png" title="' . lang_string('Full screen') . '"></a>';
+	echo '<a href="index.php?sec=estado&sec2=operation/agentes/networkmap&pure=1"><img src="images/monitor.png" title="' . __('Full screen') . '"></a>';
 }
 echo '</h2>';
 
@@ -264,19 +262,19 @@ $layout_array = array (
 echo '<form name="input" action="index.php?sec=estado&sec2=operation/agentes/networkmap&pure=' . $pure . '" method="post">';
 echo '<table cellpadding="4" cellspacing="4" class="databox">';
 echo '<tr>';
-echo '<td valign="top">' . lang_string('Layout') . ' &nbsp;';
+echo '<td valign="top">' . __('Layout') . ' &nbsp;';
 print_select ($layout_array, 'layout', $layout, '', '', '');
 echo '</td>';
 
-echo '<td valign="top">' . lang_string('No Overlap') . ' &nbsp;';
+echo '<td valign="top">' . __('No Overlap') . ' &nbsp;';
 print_checkbox ('nooverlap', '1', $nooverlap);
 echo '</td>';
 
-echo '<td valign="top">' . lang_string('Simple') . ' &nbsp;';
+echo '<td valign="top">' . __('Simple') . ' &nbsp;';
 print_checkbox ('simple', '1', $simple);
 echo '</td>';
 
-echo '<td valign="top">' . lang_string('Regenerate') . ' &nbsp;';
+echo '<td valign="top">' . __('Regenerate') . ' &nbsp;';
 print_checkbox ('regen', '1', $regen);
 echo '</td>';
 
@@ -291,7 +289,7 @@ if ($pure == "1") {
 		'5' => 'x10',
 	);
 
-	echo '<td valign="top">' . lang_string('Zoom') . ' &nbsp;';
+	echo '<td valign="top">' . __('Zoom') . ' &nbsp;';
 	print_select ($zoom_array, 'zoom', $zoom, '', '', '');
 	echo '</td>';
 	
@@ -299,18 +297,18 @@ if ($pure == "1") {
 
 if ($nooverlap == 1){
 	echo "<td>";
-	echo lang_string('Distance between nodes') . ' &nbsp;';
+	echo __('Distance between nodes') . ' &nbsp;';
 	print_input_text ('ranksep', $ranksep, $alt = 'Separation between elements in the map (in Non-overlap mode)', 3, 4, 0);
 }
 
 echo "<td>";
-echo lang_string('Font size') . ' &nbsp;';
+echo __('Font size') . ' &nbsp;';
 print_input_text ('font_size', $font_size, $alt = 'Font size (in pt)', 3, 4, 0);
 
 
 //echo '  Display groups  <input type="checkbox" name="group" value="group" class="chk"/>';
 echo '<td>';
-echo '<input name="updbutton" type="submit" class="sub upd" value="'. lang_string ("update"). '">';
+echo '<input name="updbutton" type="submit" class="sub upd" value="'. __('update'). '">';
 echo '</td>';
 echo '</table>';
 echo '</form>';
@@ -345,7 +343,7 @@ if ($regen != 1 && file_exists ($filename_img) && filemtime ($filename_img) > ti
 
 if ($result !== false) {
 	if (! file_exists ($filename_map)) {
-		echo '<h2 class="err">'.lang_string ('Map could not be generated').'</h2>';
+		echo '<h2 class="err">'.__('Map could not be generated').'</h2>';
 		echo $result;
 		echo "<br /> Apparently something went wrong reading the output.<br /> Is ".$filter." (usually part of GraphViz) installed and able to be executed by the webserver?";
 		echo "<br /> Is ".$config["attachment_store"]." writeable by the webserver?";
@@ -354,7 +352,7 @@ if ($result !== false) {
 	echo '<img src="'.$filename_img.'" usemap="#networkmap" />';
 	include $filename_map;
 } else {
-	echo '<h2 class="err">'.lang_string ('Map could not be generated').'</h2>';
+	echo '<h2 class="err">'.__('Map could not be generated').'</h2>';
 	echo $result;
 	echo "<br /> Apparently something went wrong executing the command.";
 	echo "<br /> Is ".$filter." (usually part of GraphViz) and echo installed and able to be executed by the webserver?";

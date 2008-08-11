@@ -18,31 +18,26 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Login check
-$id_usuario=$_SESSION["id_usuario"];
-global $REMOTE_ADDR;
+require ("include/config.php");
 
-if (comprueba_login() != 0) {
-	audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access graph builder");
-	include ("general/noaccess.php");
-	exit;
-}
+check_login ();
 
-echo "<h2>".lang_string ('reporting')." &gt; ";
-echo lang_string ('custom_reporting')."</h2>";
+echo "<h2>".__('reporting')." &gt; ";
+echo __('custom_reporting')."</h2>";
 
 $reports = get_reports ($config['id_user']);
 
 if (sizeof ($reports) == 0) {
-	echo "<div class='nf'>".$lang_label["no_reporting_def"]."</div>";
+	echo "<div class='nf'>".__('no_reporting_def')."</div>";
 	return;
 }
 
 $table->width = '580px';
 $table->head = array ();
-$table->head[0] = lang_string ('report_name');
-$table->head[1] = lang_string ('description');
-$table->head[2] = lang_string ('HTML');
-$table->head[3] = lang_string ('PDF');
+$table->head[0] = __('report_name');
+$table->head[1] = __('description');
+$table->head[2] = __('HTML');
+$table->head[3] = __('PDF');
 $table->align = array ();
 $table->align[2] = 'center';
 $table->align[3] = 'center';

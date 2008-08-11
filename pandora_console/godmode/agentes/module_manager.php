@@ -19,7 +19,7 @@ if (give_acl($config["id_user"], 0, "AW")!=1) {
 };
 
 
-echo "<h2>".$lang_label["agent_conf"]." &gt; ".$lang_label["modules"]."</h2>"; 
+echo "<h2>".__('agent_conf')." &gt; ".__('modules')."</h2>"; 
 
 // ==========================
 // Create module/type combo
@@ -45,18 +45,18 @@ if (1 == $develop_bypass) {
     $prediction_available = 1;
 }
 
-echo "<option value='dataserver'>".lang_string("Create a new data server module");
+echo "<option value='dataserver'>".__('Create a new data server module');
 if ($network_available == 1)
-    echo "<option value='networkserver'>".lang_string("Create a new network server module");
+    echo "<option value='networkserver'>".__('Create a new network server module');
 if ($plugin_available == 1)
-    echo "<option value='pluginserver'>".lang_string("Create a new plugin Server module");
+    echo "<option value='pluginserver'>".__('Create a new plugin Server module');
 if ($wmi_available == 1)
-    echo "<option value='wmiserver'>".lang_string("Create a new WMI Server module");
+    echo "<option value='wmiserver'>".__('Create a new WMI Server module');
 if ($prediction_available == 1)
-    echo "<option value='predictionserver'>".lang_string("Create a new prediction Server module");
+    echo "<option value='predictionserver'>".__('Create a new prediction Server module');
 echo "</select></td>";
 echo '<td class="datos">';
-echo '<input align="right" name="updbutton" type="submit" class="sub wand" value="'.$lang_label["create"].'">';
+echo '<input align="right" name="updbutton" type="submit" class="sub wand" value="'.__('create').'">';
 echo "</form>";
 echo "</table>";
 
@@ -64,20 +64,20 @@ echo "</table>";
 // MODULE VISUALIZATION TABLE
 // ==========================
 
-echo "<h3>".lang_string ("assigned_modules")."</h3>";
+echo "<h3>".__('assigned_modules')."</h3>";
 $sql1='SELECT * FROM tagente_modulo WHERE id_agente = "'.$id_agente.'"
 ORDER BY id_module_group, nombre ';
 $result=mysql_query($sql1);
 if ($row=mysql_num_rows($result)){
     echo '<table width="750" cellpadding="4" cellspacing="4" class="databox">';
     echo '<tr>';
-    echo "<th>".$lang_label["module_name"]."</th>";
-    echo '<th>'.lang_string('S').'</th>';
-    echo '<th>'.lang_string('type').'</th>';
-    echo "<th>".$lang_label["interval"]."</th>";
-    echo "<th>".$lang_label["description"]."</th>";
-    echo "<th>".$lang_label["max_min"]."</th>";
-    echo "<th width=65>".$lang_label["action"]."</th>";
+    echo "<th>".__('module_name')."</th>";
+    echo '<th>'.__('S').'</th>';
+    echo '<th>'.__('type').'</th>';
+    echo "<th>".__('interval')."</th>";
+    echo "<th>".__('description')."</th>";
+    echo "<th>".__('max_min')."</th>";
+    echo "<th width=65>".__('action')."</th>";
     $color=1; $last_modulegroup = "0";
     while ($row = mysql_fetch_array($result)){
         if ($color == 1){
@@ -140,22 +140,22 @@ if ($row=mysql_num_rows($result)){
 
         // Delete module
         echo "<td class='$tdcolor'>";
-        echo "<a href='index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&delete_module=".$row["id_agente_modulo"]."'".' onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;">';
-        echo "<img src='images/cross.png' border=0 title='".$lang_label["delete"]."'>";
+        echo "<a href='index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&delete_module=".$row["id_agente_modulo"]."'".' onClick="if (!confirm(\' '.__('are_you_sure').'\')) return false;">';
+        echo "<img src='images/cross.png' border=0 title='".__('delete')."'>";
         echo "</b></a>&nbsp;";
 	// Update module
         echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&tab=module&update_module=".$row["id_agente_modulo"]."&moduletype=$id_module#modules'>";
-        echo "<img src='images/config.png' border=0 title='".$lang_label["update"]."' onLoad='type_change()'></b></a>";
+        echo "<img src='images/config.png' border=0 title='".__('update')."' onLoad='type_change()'></b></a>";
         
         // Make a data normalization
         if (($id_tipo == 22 ) OR ($id_tipo == 1 ) OR ($id_tipo == 4 ) OR ($id_tipo == 7 ) OR
         ($id_tipo == 8 ) OR ($id_tipo == 11 ) OR ($id_tipo == 16) OR ($id_tipo == 22 )) {
             echo "&nbsp;";
-            echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&tab=module&fix_module=".$row["id_agente_modulo"]."'".' onClick="if (!confirm(\' '.$lang_label["are_you_sure"].'\')) return false;">';
+            echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&tab=module&fix_module=".$row["id_agente_modulo"]."'".' onClick="if (!confirm(\' '.__('are_you_sure').'\')) return false;">';
             echo "<img src='images/chart_curve.png' border=0 title='Normalize'></b></a>";
         }
     }
     echo "</table>";
 	
 } else
-    echo "<div class='nf'>".lang_string("No available data to show")."</div>";
+    echo "<div class='nf'>".__('No available data to show')."</div>";

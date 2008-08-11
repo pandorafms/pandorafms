@@ -18,14 +18,11 @@
 // Load global vars
 require("include/config.php");
 
-if (comprueba_login() == 0)
-  	$id_user = $_SESSION["id_usuario"];
-else
-	$id_user = "";
+check_login ();
 
-if (give_acl($id_user, 0, "PM")!=1) {
-	audit_db($id_user,$REMOTE_ADDR, "ACL Violation",
-	"Trying to access Network Profile Management");
+if (! give_acl ($config['id_user'], 0, "PM")) {
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+		"Trying to access Network Profile Management");
 	require ("general/noaccess.php");
 	exit;
 }
@@ -36,9 +33,9 @@ if (isset($_GET["delete_module"])){ // Delete module from profile
 	$sql1="DELETE FROM tnetwork_profile_component WHERE id_npc = $id_npc";
 	$result=mysql_query($sql1);
 	if (! $result)
-		echo "<h3 class='error'>".$lang_label["delete_no"]."</h3>";
+		echo "<h3 class='error'>".__('delete_no')."</h3>";
 	else {
-		echo "<h3 class='suc'>".$lang_label["delete_ok"]."</h3>";
+		echo "<h3 class='suc'>".__('delete_ok')."</h3>";
 	}
 }
 
@@ -48,9 +45,9 @@ if (isset($_GET["add_module"])){ // Add module to profile
 	$sql1="INSERT INTO tnetwork_profile_component (id_np,id_nc) VALUES ($id_np, $id_nc)";
 	$result=mysql_query($sql1);
 	if (! $result)
-		echo "<h3 class='error'>".$lang_label["create_no"]."</h3>";
+		echo "<h3 class='error'>".__('create_no')."</h3>";
 	else {
-		echo "<h3 class='suc'>".$lang_label["create_ok"]."</h3>";
+		echo "<h3 class='suc'>".__('create_ok')."</h3>";
 	}
 }
 
@@ -83,9 +80,9 @@ if (isset($_GET["create"])){ // Create module
 	VALUES ('$name', '$description')";
 	$result=mysql_query($sql_insert);
 	if (! $result)
-		echo "<h3 class='error'>".$lang_label["create_no"]."</h3>";
+		echo "<h3 class='error'>".__('create_no')."</h3>";
 	else {
-		echo "<h3 class='suc'>".$lang_label["create_ok"]."</h3>";
+		echo "<h3 class='suc'>".__('create_ok')."</h3>";
 		$id_np = mysql_insert_id();
 	}
 }
@@ -97,14 +94,14 @@ if (isset($_GET["update"])){ // Update profile
 	$sql_insert="UPDATE tnetwork_profile set name = '$name', description = '$description' WHERE id_np = $id_np";
 	$result=mysql_query($sql_insert);
 	if (! $result)
-		echo "<h3 class='error'>".$lang_label["modify_no"]."</h3>";
+		echo "<h3 class='error'>".__('modify_no')."</h3>";
 	else {
-		echo "<h3 class='suc'>".$lang_label["modify_ok"]."</h3>";
+		echo "<h3 class='suc'>".__('modify_ok')."</h3>";
 	}
 }
 
-echo "<h2>".$lang_label["module_management"]." &gt; ";
-echo $lang_label["network_profile_management"]."</h2>";
+echo "<h2>".__('module_management')." &gt; ";
+echo __('network_profile_management')."</h2>";
 echo "<table width='550' cellpadding='4' cellspacing='4' class='databox_color'>";
 
 if ($id_np == -1)
@@ -112,11 +109,11 @@ if ($id_np == -1)
 else
 	echo '<form name="user_mod" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&update='.$id_np.'">';
 
-echo "<tr><td class='datos'>".$lang_label["name"]."</td>";
+echo "<tr><td class='datos'>".__('name')."</td>";
 echo "<td class='datos'>";
 echo "<input type='text' size=25 name='name' value='$name'>";
 echo "</td>";
-echo "<tr><td class='datos2'>".$lang_label["description"]."</td>";
+echo "<tr><td class='datos2'>".__('description')."</td>";
 echo "<td class='datos2'>";
 echo "<textarea cols=50 rows=2 name='description'>";
 if (isset($description)) {
@@ -134,10 +131,10 @@ if ($id_np != -1){
 	
 	echo '<table width="550" cellpadding="4" cellspacing="4" class="databox">';
 	echo '<tr>';
-	echo "<th>".$lang_label["module_name"]."</th>";
-	echo "<th>".$lang_label["type"]."</th>";
-	echo "<th>".$lang_label["description"]."</th>";
-	echo "<th>".$lang_label["nc.group"]."</th>";
+	echo "<th>".__('module_name')."</th>";
+	echo "<th>".__('type')."</th>";
+	echo "<th>".__('description')."</th>";
+	echo "<th>".__('nc.group')."</th>";
  	echo "<th>X</th>";
 	$color =0;
 
@@ -180,15 +177,15 @@ if ($id_np != -1){
 echo "<table width='550'>";
 echo '<tr><td align="right">';
 if ($id_np == -1)
-	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.$lang_label["create"].'">';
+	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.__('create').'">';
 else
-	echo '<input name="updbutton" type="submit" class="sub upd" value="'.$lang_label["update"].'">';
+	echo '<input name="updbutton" type="submit" class="sub upd" value="'.__('update').'">';
 echo "</td></tr></table>";
 echo "</form>";
 
 
 if ($id_np != -1){ 
-	echo "<h3>".$lang_label["add"]." ".$lang_label["module"]."</h3>";
+	echo "<h3>".__('add')." ".__('module')."</h3>";
 	echo "<table class='databox'>";
 	echo '<tr><td>';
 	echo '<form name="add_module" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&add_module=1">';
@@ -201,7 +198,7 @@ if ($id_np != -1){
 	echo "</select>";
 
 	echo '<td valign="top">';
-	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.$lang_label["add"].'">';
+	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.__('add').'">';
 	echo "</td></tr></table>";
 	echo "</form>";
 }

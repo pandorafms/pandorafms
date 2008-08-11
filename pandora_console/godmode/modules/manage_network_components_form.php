@@ -16,16 +16,13 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
-require("include/config.php");
+require ("include/config.php");
 
-if (comprueba_login() == 0)
-  	$id_user = $_SESSION["id_usuario"];
-else
-	$id_user = "";
+check_login ();
 
-if (give_acl($id_user, 0, "PM")!=1) {
-	audit_db($id_user,$REMOTE_ADDR, "ACL Violation",
-	"Trying to access Agent Management");
+if (! give_acl ($config['id_user'], 0, "PM")) {
+	audit_db ($config['id_user'],$REMOTE_ADDR, "ACL Violation",
+		"Trying to access Agent Management");
 	require ("general/noaccess.php");
 	exit;
 }

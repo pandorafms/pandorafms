@@ -17,16 +17,12 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 $accion = "";
-require("include/config.php");
-if (comprueba_login() != 0) {
-	audit_db("Noauth",$REMOTE_ADDR, "No authenticated acces","Trying to access incident viewer");
-	require ("general/noaccess.php");
-	exit;
-}
+require ("include/config.php");
 
-$id_usuario =$_SESSION["id_usuario"];
-if (give_acl($id_usuario, 0, "IR")!=1) {
-	audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access incident viewer");
+check_login ();
+
+if (! give_acl ($config['id_user'], 0, "IR")) {
+	audit_db($config['id_user'],$REMOTE_ADDR, "ACL Violation","Trying to access incident viewer");
 	require ("general/noaccess.php");
 	exit;
 }
@@ -47,13 +43,13 @@ if (isset($_GET["quick_delete"])){
 	$row2=mysql_fetch_array($result2);
 	if ($row2) {
 		$id_author_inc = $row2["id_usuario"];
-		if ((give_acl($id_usuario, $row2["id_grupo"], "IM") ==1) OR ($_SESSION["id_usuario"] == $id_author_inc) ){
+		if (give_acl ($config['id_user'], $row2["id_grupo"], "IM") || $config["id_user"] == $id_author_inc) {
 			borrar_incidencia($id_inc);
-			echo "<h3 class='suc'>".$lang_label["del_incid_ok"]."</h3>";
-			audit_db($id_author_inc,$REMOTE_ADDR,"Incident deleted","User ".$id_usuario." deleted incident #".$id_inc);
+			echo "<h3 class='suc'>".__('del_incid_ok')."</h3>";
+			audit_db($id_author_inc,$REMOTE_ADDR,"Incident deleted","User ".$config['id_user']." deleted incident #".$id_inc);
 		} else {
 			audit_db($id_author_inc,$REMOTE_ADDR,"ACL Forbidden","User ".$_SESSION["id_usuario"]." try to delete incident");
-			echo "<h3 class='error'>".$lang_label["del_incid_no"]."</h3>";
+			echo "<h3 class='error'>".__('del_incid_no')."</h3>";
 			no_permission();
 		}
 	}
@@ -64,7 +60,7 @@ if ((isset($_GET["action"])) AND ($_GET["action"]=="update")){
 	$id_inc = $_POST["id_inc"];
  	$grupo = entrada_limpia($_POST['grupo_form']);
 	$usuario= entrada_limpia($_POST["usuario_form"]);
-	if ((give_acl($id_usuario, $grupo, "IM")==1) OR ($usuario == $id_usuario)) { // Only admins (manage incident) or owners can modify incidents
+	if (give_acl ($config['id_user'], $grupo, "IM") || $usuario == $config['id_user']) { // Only admins (manage incident) or owners can modify incidents
 		$id_author_inc = give_incident_author($id_inc);
 		$titulo = entrada_limpia($_POST["titulo"]);
 		$descripcion = entrada_limpia($_POST['descripcion']);
@@ -74,14 +70,14 @@ if ((isset($_GET["action"])) AND ($_GET["action"]=="update")){
 		$ahora=date("Y/m/d H:i:s");
 		$sql = "UPDATE tincidencia SET actualizacion = '".$ahora."', titulo = '".$titulo."', origen= '".$origen."', estado = '".$estado."', id_grupo = '".$grupo."', id_usuario = '".$usuario."', prioridad = '".$prioridad."', descripcion = '".$descripcion."' WHERE id_incidencia = ".$id_inc;
 		$result=mysql_query($sql);
-		audit_db($id_author_inc,$REMOTE_ADDR,"Incident updated","User ".$id_usuario." deleted updated #".$id_inc);
+		audit_db($id_author_inc,$REMOTE_ADDR,"Incident updated","User ".$config['id_user']." deleted updated #".$id_inc);
 		if ($result)
-			echo "<h3 class='suc'>".$lang_label["upd_incid_ok"]."</h3>";
+			echo "<h3 class='suc'>".__('upd_incid_ok')."</h3>";
 		else
-			echo "<h3 class='suc'>".$lang_label["upd_incid_no"]."</h3>";
+			echo "<h3 class='suc'>".__('upd_incid_no')."</h3>";
 	} else {
-		audit_db($id_usuario,$REMOTE_ADDR,"ACL Forbidden","User ".$_SESSION["id_usuario"]." try to update incident");
-		echo "<h3 class='error'>".$lang_label["upd_incid_no"]."</h3>";
+		audit_db($config['id_user'],$REMOTE_ADDR,"ACL Forbidden","User ".$_SESSION["id_usuario"]." try to update incident");
+		echo "<h3 class='error'>".__('upd_incid_no')."</h3>";
 		no_permission();
 	}
 }
@@ -89,7 +85,7 @@ if ((isset($_GET["action"])) AND ($_GET["action"]=="update")){
 if ((isset($_GET["action"])) AND ($_GET["action"]=="insert")){
 	$grupo = entrada_limpia($_POST['grupo_form']);
 	$usuario= entrada_limpia($_POST["usuario_form"]);
-	if ((give_acl($id_usuario, $grupo, "IM") == 1) OR ($usuario == $id_usuario)) { // Only admins (manage
+	if (give_acl ($config['id_user'], $grupo, "IM") || $usuario == $config['id_user']) { // Only admins (manage
 		// Read input variables
 		$titulo = entrada_limpia($_POST['titulo']);
 		$inicio = date("Y/m/d H:i:s");
@@ -98,16 +94,16 @@ if ((isset($_GET["action"])) AND ($_GET["action"]=="insert")){
 		$origen = entrada_limpia($_POST['origen_form']);
 		$prioridad = entrada_limpia($_POST['prioridad_form']);
 		$actualizacion = $inicio;
-		$id_creator = $id_usuario;
+		$id_creator = $config['id_user'];
 		$estado = entrada_limpia($_POST["estado_form"]);
 		$sql = " INSERT INTO tincidencia (inicio,actualizacion,titulo,descripcion,id_usuario,origen,estado,prioridad,id_grupo, id_creator) VALUES ('".$inicio."','".$actualizacion."','".$titulo."','".$descripcion."','".$usuario."','".$origen."','".$estado."','".$prioridad."','".$grupo."','".$id_creator."') ";
 		if (mysql_query($sql)){
-			echo "<h3 class='suc'>".$lang_label["create_incid_ok"]."</h3>";
+			echo "<h3 class='suc'>".__('create_incid_ok')."</h3>";
 			$id_inc=mysql_insert_id();
-			audit_db($usuario,$REMOTE_ADDR,"Incident created","User ".$id_usuario." created incident #".$id_inc);
+			audit_db($usuario,$REMOTE_ADDR,"Incident created","User ".$config['id_user']." created incident #".$id_inc);
 		}
 	} else {
-		audit_db($id_usuario,$REMOTE_ADDR,"ACL Forbidden","User ".$_SESSION["id_usuario"]." try to create incident");
+		audit_db($config['id_user'],$REMOTE_ADDR,"ACL Forbidden","User ".$_SESSION["id_usuario"]." try to create incident");
 		no_permission();
 	}
 }
@@ -183,10 +179,10 @@ $sql1_count="SELECT COUNT(id_incidencia) FROM tincidencia ".$sql1;
 $sql1=$sql0;
 $sql1=$sql1." LIMIT $offset, ".$config["block_size"];
 
-echo "<h2>".$lang_label["incident_manag"]." &gt; ";
-echo $lang_label["manage_incidents"]."</h2>";
+echo "<h2>".__('incident_manag')." &gt; ";
+echo __('manage_incidents')."</h2>";
 if (isset($_POST['operacion'])){
-	echo $lang_label["incident_view_filter"]." - ".$_POST['operacion']."</h2>";
+	echo __('incident_view_filter')." - ".$_POST['operacion']."</h2>";
 }
 
 ?>
@@ -194,7 +190,7 @@ if (isset($_POST['operacion'])){
 <table class="databox" cellpadding="4" cellspacing="4">
 <tr>
 <td valign="middle">
-<h3><?php echo $lang_label["filter"]; ?></h3>
+<h3><?php echo __('filter'); ?></h3>
 <select name="estado" onChange="javascript:this.form.submit();" class="w155"> 
 <?php
 	// Tipo de estado (Type)
@@ -211,41 +207,41 @@ if (isset($_POST['operacion'])){
 			$estado = $_POST["estado"];
 		echo "<option value='".$estado."'>";
 		switch ($estado){
-			case -1: echo $lang_label["all_inc"]."</option>"; break;
-			case 0: echo $lang_label["opened_inc"]."</option>"; break;
-			case 13: echo $lang_label["closed_inc"]."</option>"; break;
-			case 2: echo $lang_label["rej_inc"]."</option>"; break;
-			case 3: echo $lang_label["exp_inc"]."</option>"; break;
+			case -1: echo __('all_inc')."</option>"; break;
+			case 0: echo __('opened_inc')."</option>"; break;
+			case 13: echo __('closed_inc')."</option>"; break;
+			case 2: echo __('rej_inc')."</option>"; break;
+			case 3: echo __('exp_inc')."</option>"; break;
 		}
 	}
 
-	echo "<option value='-1'>".$lang_label["all_inc"]."</option>";
-	echo "<option value='0'>".$lang_label["opened_inc"]."</option>";
-	echo "<option value='13'>".$lang_label["closed_inc"]."</option>";
-	echo "<option value='2'>".$lang_label["rej_inc"]."</option>";
-	echo "<option value='3'>".$lang_label["exp_inc"]."</option>";
+	echo "<option value='-1'>".__('all_inc')."</option>";
+	echo "<option value='0'>".__('opened_inc')."</option>";
+	echo "<option value='13'>".__('closed_inc')."</option>";
+	echo "<option value='2'>".__('rej_inc')."</option>";
+	echo "<option value='3'>".__('exp_inc')."</option>";
 ?>
 	</select>
 	</td>
 	<td valign="middle">
-	<noscript><input type="submit" class="sub" value="<?php echo $lang_label["show"] ?>" border="0"></noscript>
+	<noscript><input type="submit" class="sub" value="<?php echo __('show') ?>" border="0"></noscript>
 	</td>
 	<td rowspan="5" class="f9" style="padding-left: 30px; vertical-align: top;">
-	<h3><?php echo $lang_label["status"] ?></h3>
-	<img src='images/dot_red.png'> - <?php echo $lang_label["opened_inc"] ?><br>
-	<img src='images/dot_yellow.png'> - <?php echo $lang_label["openedcom_inc"] ?><br>
-	<img src='images/dot_blue.png'> - <?php echo $lang_label["rej_inc"] ?><br>
-	<img src='images/dot_green.png'> - <?php echo $lang_label["closed_inc"] ?><br>
-	<img src='images/dot_white.png'> - <?php echo $lang_label["exp_inc"] ?></td>
+	<h3><?php echo __('status') ?></h3>
+	<img src='images/dot_red.png'> - <?php echo __('opened_inc') ?><br>
+	<img src='images/dot_yellow.png'> - <?php echo __('openedcom_inc') ?><br>
+	<img src='images/dot_blue.png'> - <?php echo __('rej_inc') ?><br>
+	<img src='images/dot_green.png'> - <?php echo __('closed_inc') ?><br>
+	<img src='images/dot_white.png'> - <?php echo __('exp_inc') ?></td>
 
 	<td rowspan="5" class="f9" style="padding-left: 30px; vertical-align: top;">
-	<h3><?php echo $lang_label["priority"] ?></h3>
-	<img src='images/dot_red.png'><img src='images/dot_red.png'><img src='images/dot_red.png'> - <?php echo $lang_label["very_serious"] ?><br>
-	<img src='images/dot_yellow.png'><img src='images/dot_red.png'><img src='images/dot_red.png'> - <?php echo $lang_label["serious"] ?><br>
-	<img src='images/dot_yellow.png'><img src='images/dot_yellow.png'><img src='images/dot_red.png'> - <?php echo $lang_label["medium"] ?><br>
-	<img src='images/dot_green.png'><img src='images/dot_yellow.png'><img src='images/dot_yellow.png'> - <?php echo $lang_label["low"] ?><br>
-	<img src='images/dot_green.png'><img src='images/dot_green.png'><img src='images/dot_yellow.png'> - <?php echo $lang_label["informative"] ?><br>
-	<img src='images/dot_green.png'><img src='images/dot_green.png'><img src='images/dot_green.png'> - <?php echo $lang_label["maintenance"] ?><br>
+	<h3><?php echo __('priority') ?></h3>
+	<img src='images/dot_red.png'><img src='images/dot_red.png'><img src='images/dot_red.png'> - <?php echo __('very_serious') ?><br>
+	<img src='images/dot_yellow.png'><img src='images/dot_red.png'><img src='images/dot_red.png'> - <?php echo __('serious') ?><br>
+	<img src='images/dot_yellow.png'><img src='images/dot_yellow.png'><img src='images/dot_red.png'> - <?php echo __('medium') ?><br>
+	<img src='images/dot_green.png'><img src='images/dot_yellow.png'><img src='images/dot_yellow.png'> - <?php echo __('low') ?><br>
+	<img src='images/dot_green.png'><img src='images/dot_green.png'><img src='images/dot_yellow.png'> - <?php echo __('informative') ?><br>
+	<img src='images/dot_green.png'><img src='images/dot_green.png'><img src='images/dot_green.png'> - <?php echo __('maintenance') ?><br>
 	<tr><td>
 	<select name="prioridad" onChange="javascript:this.form.submit();" class="w155">
 <?php 
@@ -257,26 +253,26 @@ if ((isset($_GET["prioridad"])) OR (isset($_GET["prioridad"]))){
 		$prioridad = $_POST["prioridad"];
 	echo "<option value=".$prioridad.">";
 	switch ($prioridad){
-		case -1: echo $lang_label["all"]." ".$lang_label["priority"]; break;
-		case 0: echo $lang_label["informative"]; break;
-		case 1: echo $lang_label["low"]; break;
-		case 2: echo $lang_label["medium"]; break;
-		case 3: echo $lang_label["serious"]; break;
-		case 4: echo $lang_label["very_serious"]; break;
-		case 10: echo $lang_label["maintenance"]; break;
+		case -1: echo __('all')." ".__('priority'); break;
+		case 0: echo __('informative'); break;
+		case 1: echo __('low'); break;
+		case 2: echo __('medium'); break;
+		case 3: echo __('serious'); break;
+		case 4: echo __('very_serious'); break;
+		case 10: echo __('maintenance'); break;
 	}
 }
-echo "<option value='-1'>".$lang_label["all"]." ".$lang_label["priority"]."</option>"; // al priorities (default)
-echo '<option value="0">'.$lang_label["informative"]."</option>";
-echo '<option value="1">'.$lang_label["low"]."</option>";
-echo '<option value="2">'.$lang_label["medium"]."</option>";
-echo '<option value="3">'.$lang_label["serious"]."</option>";
-echo '<option value="4">'.$lang_label["very_serious"]."</option>";
-echo '<option value="10">'.$lang_label["maintenance"]."</option>";
+echo "<option value='-1'>".__('all')." ".__('priority')."</option>"; // al priorities (default)
+echo '<option value="0">'.__('informative')."</option>";
+echo '<option value="1">'.__('low')."</option>";
+echo '<option value="2">'.__('medium')."</option>";
+echo '<option value="3">'.__('serious')."</option>";
+echo '<option value="4">'.__('very_serious')."</option>";
+echo '<option value="10">'.__('maintenance')."</option>";
 echo "</select></td>
 <td valign='middle>
 <noscript>
-<input type='submit' class='sub' value='".$lang_label["show"]."' border='0'>
+<input type='submit' class='sub' value='".__('show')."' border='0'>
 </noscript>";
 echo "</td>";
 echo '<tr><td><select name="grupo" onChange="javascript:this.form.submit();" class="w155">';
@@ -288,13 +284,13 @@ if ((isset($_GET["grupo"])) OR (isset($_GET["grupo"]))){
 		$grupo = $_POST["grupo"];
 	echo "<option value=".$grupo.">";
 	if ($grupo == -1) {
-		echo $lang_label["all"]." ".$lang_label["groups"]; // all groups (default)
+		echo __('all')." ".__('groups'); // all groups (default)
 	} else {
 		echo dame_nombre_grupo($grupo);
 	}
 	echo "</option>";
 }
-echo "<option value='-1'>".$lang_label["all"]." ".$lang_label["groups"]."</option>"; // all groups (default)
+echo "<option value='-1'>".__('all')." ".__('groups')."</option>"; // all groups (default)
 $sql2="SELECT * FROM tgrupo";
 $result2=mysql_query($sql2);
 while ($row2=mysql_fetch_array($result2)){
@@ -303,7 +299,7 @@ while ($row2=mysql_fetch_array($result2)){
 
 echo "</select></td>
 <td valign='middle'>
-<noscript><input type='submit' class='sub' value='".$lang_label["show"]."' border='0'></noscript>
+<noscript><input type='submit' class='sub' value='".__('show')."' border='0'></noscript>
 </td>";
 
 // Pass search parameters for possible future filter searching by user
@@ -326,11 +322,11 @@ $result2_count=mysql_query($sql1_count);
 $row2_count = mysql_fetch_array($result2_count);
 
 if ($row2_count[0] <= 0 ) {
-	echo '<div class="nf">'.$lang_label["no_incidents"].'</div><br></table>';
+	echo '<div class="nf">'.__('no_incidents').'</div><br></table>';
 	echo "<table>";
 	echo "<tr><td>";
 	echo "<form method='post' action='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&insert_form'>";
-	echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create_incident"]."'></form>";
+	echo "<input type='submit' class='sub next' name='crt' value='".__('create_incident')."'></form>";
 	echo "</td></tr></table>";
 } else {
 	// TOTAL incidents
@@ -359,19 +355,19 @@ if ($row2_count[0] <= 0 ) {
 	echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>";
 	echo "<tr>";
 	echo "<th width='43'>ID</th>";
-	echo "<th>".$lang_label["status"]."</th>";
-	echo "<th >".$lang_label["incident"]."</th>";
-	echo "<th >".$lang_label["priority"]."</th>";
-	echo "<th>".$lang_label["group"]."</th>";
-	echo "<th>".$lang_label["updated_at"]."</th>";
-	echo "<th>".$lang_label["source"]."</th>";
-	echo "<th width='50'>".$lang_label["in_openedby"]."</th>";
-	echo "<th>".$lang_label["delete"]."</th>";
+	echo "<th>".__('status')."</th>";
+	echo "<th >".__('incident')."</th>";
+	echo "<th >".__('priority')."</th>";
+	echo "<th>".__('group')."</th>";
+	echo "<th>".__('updated_at')."</th>";
+	echo "<th>".__('source')."</th>";
+	echo "<th width='50'>".__('in_openedby')."</th>";
+	echo "<th>".__('delete')."</th>";
 	$color = 1;
 
 	while ($row2=mysql_fetch_array($result2)){ 
 		$id_group = $row2["id_grupo"];
-		if (give_acl($id_usuario, $id_group, "IR") ==1){
+		if (give_acl ($config['id_user'], $id_group, "IR")) {
 			if ($color == 1){
 				$tdcolor = "datos";
 				$color = 0;
@@ -426,12 +422,12 @@ if ($row2_count[0] <= 0 ) {
 				case 10: echo "<img src='images/dot_green.png'>"."<img src='images/dot_green.png'>"."<img src='images/dot_green.png'>"; break;
 			}
 			/*
-			case 0: echo $lang_label["informative"]; break;
-			case 1: echo $lang_label["low"]; break;
-			case 2: echo $lang_label["medium"]; break;
-			case 3: echo $lang_label["serious"]; break;
-			case 4: echo $lang_label["very_serious"]; break;
-			case 10: echo $lang_label["maintenance"]; break;
+			case 0: echo __('informative'); break;
+			case 1: echo __('low'); break;
+			case 2: echo __('medium'); break;
+			case 3: echo __('serious'); break;
+			case 4: echo __('very_serious'); break;
+			case 10: echo __('maintenance'); break;
 			*/
 			echo "<td class='$tdcolor' align='center'>";
 			$id_grupo = $row2["id_grupo"];
@@ -442,19 +438,19 @@ if ($row2_count[0] <= 0 ) {
 			echo "<td class='$tdcolor'>".$row2["origen"];
 			echo "<td class='$tdcolor'><a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$row2["id_usuario"]."'>".$row2["id_usuario"]."</td>";
 			$id_author_inc = $row2["id_usuario"];
-			if ((give_acl($id_usuario, $id_group, "IM") ==1) OR ($_SESSION["id_usuario"] == $id_author_inc) ){
+			if (give_acl ($config['id_user'], $id_group, "IM") || $config["id_user"] == $id_author_inc) {
 			// Only incident owners or incident manager
 			// from this group can delete incidents
-				echo "<td class='$tdcolor' align='center'><a href='index.php?sec=incidencias&sec2=operation/incidents/incident&quick_delete=".$row2["id_incidencia"]."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img src='images/cross.png' border='0'></a></td>";
+				echo "<td class='$tdcolor' align='center'><a href='index.php?sec=incidencias&sec2=operation/incidents/incident&quick_delete=".$row2["id_incidencia"]."' onClick='if (!confirm(\' ".__('are_you_sure')."\')) return false;'><img src='images/cross.png' border='0'></a></td>";
 			}
 		}
 	}
 	echo "</tr></table>";
-	if (give_acl($_SESSION["id_usuario"], 0, "IW")==1) {
+	if (give_acl ($config["id_user"], 0, "IW")) {
 		echo "<table width='750px'>";
 		echo "<tr><td align='right'>";
 		echo "<form method='post' action='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&insert_form'>";
-		echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create_incident"]."'></form>";
+		echo "<input type='submit' class='sub next' name='crt' value='".__('create_incident')."'></form>";
 }
 	echo "</td></tr></table>";	
 

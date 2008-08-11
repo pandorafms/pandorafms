@@ -16,15 +16,13 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
-require("include/config.php");
-if (comprueba_login() == 0)
-  	$id_user = $_SESSION["id_usuario"];
-else
-	$id_user = "";
+require ("include/config.php");
 
-if (give_acl($id_user, 0, "PM")!=1) {
-	audit_db($id_user,$REMOTE_ADDR, "ACL Violation",
-	"Trying to access Agent Management");
+check_login ();
+
+if (! give_acl ($config['id_user'], 0, "PM")) {
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+		"Trying to access Agent Management");
 	require ("general/noaccess.php");
 	exit;
 }
@@ -91,9 +89,9 @@ if (isset($_GET["create"])){ // Create module
 
 	$result=mysql_query($sql_insert);
 	if (! $result)
-		echo "<h3 class='error'>".$lang_label["create_no"]."</h3>";
+		echo "<h3 class='error'>".__('create_no')."</h3>";
 	else {
-		echo "<h3 class='suc'>".$lang_label["create_ok"]."</h3>";
+		echo "<h3 class='suc'>".__('create_ok')."</h3>";
 		$id_module = mysql_insert_id();
 	}
 }
@@ -151,9 +149,9 @@ if (isset($_GET["update"])){ // if modified any parameter
 	plugin_parameter = '$plugin_parameter', max_timeout = '$max_timeout' WHERE id_nc = '$id_nc'";
 	$result=mysql_query($sql_update);
 	if (! $result)
-		echo "<h3 class='error'>".$lang_label["modify_no"]."</h3>";
+		echo "<h3 class='error'>".__('modify_no')."</h3>";
 	else
-		echo "<h3 class='suc'>".$lang_label["modify_ok"]."</h3>";
+		echo "<h3 class='suc'>".__('modify_ok')."</h3>";
 }
 
 // ------------------
@@ -164,9 +162,9 @@ if (isset($_GET["delete"])){ // if delete
 	$sql_delete= "DELETE FROM tnetwork_component WHERE id_nc = ".$id_nc;
 	$result=mysql_query($sql_delete);
 	if (! $result)
-		echo "<h3 class='error'>".$lang_label["delete_no"]."</h3>";
+		echo "<h3 class='error'>".__('delete_no')."</h3>";
 	else
-		echo "<h3 class='suc'>".$lang_label["delete_ok"]."</h3>";
+		echo "<h3 class='suc'>".__('delete_ok')."</h3>";
 	$sql_delete= "DELETE FROM tnetwork_profile_component WHERE id_nc = ".$id_nc;
 	$result=mysql_query($sql_delete);
 }
@@ -174,8 +172,8 @@ if (isset($_GET["delete"])){ // if delete
 // ------------------
 // SHOW MODULES
 // ------------------
-echo "<h2>".$lang_label["module_management"]." &gt; ";
-echo $lang_label["network_component_management"]."</h2>";
+echo "<h2>".__('module_management')." &gt; ";
+echo __('network_component_management')."</h2>";
 
 // Show group selector
 if (isset($_POST["ncgroup"])) {
@@ -189,12 +187,12 @@ if (isset($_POST["ncgroup"])) {
 echo "<table cellpadding='4' cellspacing='4' class='databox'>";
 echo "<tr><td>";
 echo "<form method='POST' action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components'>";
-echo $lang_label["group"] . "&nbsp;";
+echo __('group') . "&nbsp;";
 echo "<select name='ncgroup' onChange='javascript:this.form.submit();'>";
 if ($ncgroup != 0){
 	echo "<option value='$ncgroup'>".give_network_component_group_name($ncgroup)."</option>";
 }
-echo "<option value='0'>".$lang_label["all"]."</option>";
+echo "<option value='0'>".__('all')."</option>";
 $result = mysql_query("SELECT * FROM tnetwork_component_group WHERE id_sg != '$ncgroup' ORDER BY name");
 while ($row = mysql_fetch_array ($result)) {
 	echo "<option value='" . $row["id_sg"] . "'>". give_network_component_group_name ($row["id_sg"])."</option>";
@@ -203,10 +201,10 @@ echo "</select></form></td>";
 echo "<td>";
 echo "<form method=post action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components_form&create=1'>";
 echo "<select name='id_modulo'>";
-echo "<option value='2'>".lang_string("Create a new network component");
-echo "<option value='6'>".lang_string("Create a new WMI component");
+echo "<option value='2'>".__('Create a new network component');
+echo "<option value='6'>".__('Create a new WMI component');
 echo "</select>&nbsp;";
-echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create"]."'>";
+echo "<input type='submit' class='sub next' name='crt' value='".__('create')."'>";
 echo "</td></tr></table>";
 
 if ($ncgroup != 0) {
@@ -219,14 +217,14 @@ $result = mysql_query ($sql1);
 if ( $row = mysql_num_rows ($result)){
 	echo '<table width="750" cellpadding="4" cellspacing="4" class="databox">';
 	echo '<tr>';
-	echo "<th>".$lang_label["module_name"]."</th>";
-	echo "<th>".$lang_label["type"]."</th>";
-	echo "<th>".$lang_label["interval"]."</th>";
-	echo "<th>".$lang_label["description"]."</th>";
-	echo "<th>".$lang_label["nc.group"]."</th>";
-	//echo "<th>".$lang_label["module_group"];
-	echo "<th>".$lang_label["max_min"]."</th>";
-	echo "<th width=50>".$lang_label["action"]."</th>";
+	echo "<th>".__('module_name')."</th>";
+	echo "<th>".__('type')."</th>";
+	echo "<th>".__('interval')."</th>";
+	echo "<th>".__('description')."</th>";
+	echo "<th>".__('nc.group')."</th>";
+	//echo "<th>".__('module_group');
+	echo "<th>".__('max_min')."</th>";
+	echo "<th width=50>".__('action')."</th>";
 	$color=1;
 	while ($row=mysql_fetch_array($result)){
 		if ($color == 1){
@@ -269,7 +267,7 @@ if ( $row = mysql_num_rows ($result)){
 		echo $module_max." / ".$module_min;
 		echo "<td class='$tdcolor' align='center'>";
 		echo "<a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&delete=1&id_nc=".$row["id_nc"]."'>";
-		echo "<img src='images/cross.png' border=0 alt='".$lang_label["delete"]."'></a></td>";
+		echo "<img src='images/cross.png' border=0 alt='".__('delete')."'></a></td>";
 		echo "</tr>";
 	}
 	echo "</table>";

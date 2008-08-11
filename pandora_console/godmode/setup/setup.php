@@ -63,49 +63,49 @@ if ($update_settings) {
 	mysql_query ("UPDATE tconfig SET VALUE='".$config["sla_period"]."' WHERE token = 'sla_period'");
 }
 
-echo "<h2>".lang_string ("setup_screen")." &gt; ";
-echo lang_string ("general_config")."</h2>";
+echo "<h2>".__('setup_screen')." &gt; ";
+echo __('general_config')."</h2>";
 
 $file_styles = list_files('include/styles/', "pandora", 1, 0);
 
 $table->width = '500px';
 $table->data = array ();
-$table->data[0][0] = lang_string ('language_code');
+$table->data[0][0] = __('language_code');
 $table->data[0][1] = print_select_from_sql ('SELECT id_language, name FROM tlanguage', 'language_code', $config["language"], '', '', '', true);
-$table->data[1][0] = lang_string ('Remote config directory');
+$table->data[1][0] = __('Remote config directory');
 $table->data[1][1] = print_input_text ('remote_config', $config["remote_config"], '', 30, 100, true);
-$table->data[2][0] = lang_string ('Graph color (min)');
+$table->data[2][0] = __('Graph color (min)');
 $table->data[2][1] = print_input_text ('graph_color1', $config["graph_color1"], '', 8, 8, true);
-$table->data[3][0] = lang_string ('Graph color (avg)');
+$table->data[3][0] = __('Graph color (avg)');
 $table->data[3][1] = print_input_text ('graph_color2', $config["graph_color2"], '', 8, 8, true);
-$table->data[4][0] = lang_string ('Graph color (max)');
+$table->data[4][0] = __('Graph color (max)');
 $table->data[4][1] = print_input_text ('graph_color3', $config["graph_color3"], '', 8, 8, true);
-$table->data[5][0] = lang_string ('sla_period');
+$table->data[5][0] = __('sla_period');
 $table->data[5][1] = print_input_text ('sla_period', $config["sla_period"], '', 5, 5, true);
-$table->data[5][0] = lang_string ('days_compact');
+$table->data[5][0] = __('days_compact');
 $table->data[5][1] = print_input_text ('days_compact', $config["days_compact"], '', 5, 5, true);
-$table->data[6][0] = lang_string ('days_purge');
+$table->data[6][0] = __('days_purge');
 $table->data[6][1] = print_input_text ('days_purge', $config["days_purge"], '', 5, 5, true);
-$table->data[7][0] = lang_string ('graph_res');
+$table->data[7][0] = __('graph_res');
 $table->data[7][1] = print_input_text ('graph_res', $config["graph_res"], '', 5, 5, true);
-$table->data[8][0] = lang_string ('step_compact');
+$table->data[8][0] = __('step_compact');
 $table->data[8][1] = print_input_text ('step_compact', $config["step_compact"], '', 5, 5, true);
-$table->data[9][0] = lang_string ('show_unknown');
+$table->data[9][0] = __('show_unknown');
 $table->data[9][1] = print_checkbox ('show_unknown', 1, $config["show_unknown"], true);
-$table->data[10][0] = lang_string ('show_lastalerts');
+$table->data[10][0] = __('show_lastalerts');
 $table->data[10][1] = print_checkbox ('show_lastalerts', 1, $config["show_lastalerts"], true);
-$table->data[11][0] = lang_string ('style_template');
+$table->data[11][0] = __('style_template');
 $table->data[11][1] = print_select ($file_styles, 'style', $config["style"], '', '', '', true);
-$table->data[12][0] = lang_string ('block_size');
+$table->data[12][0] = __('block_size');
 $table->data[12][1] = print_input_text ('block_size', $config["block_size"], '', 5, 5, true);
-$table->data[13][0] = lang_string ('sla_period');
+$table->data[13][0] = __('sla_period');
 $table->data[13][1] = print_input_text ('sla_period', $config["sla_period"], '', 5, 5, true);
 
 echo '<form id="form_setup" method="POST" action="index.php?sec=gsetup&amp;sec2=godmode/setup/setup">';
 print_input_hidden ('update_settings', 1);
 print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-print_submit_button (lang_string ('update'), 'update_button', false, 'class="sub upd"');
+print_submit_button (__('update'), 'update_button', false, 'class="sub upd"');
 echo '</div>';
 echo '</form>';
 ?>

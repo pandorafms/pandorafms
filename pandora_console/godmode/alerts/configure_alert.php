@@ -22,9 +22,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 // Load global vars
-require("include/config.php");
-if ( (give_acl($id_user, 0, "LM")==1)){
+require ("include/config.php");
+
+check_login ();
+
+if (! give_acl ($config['id_user'], 0, "LM")) {
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+		"Trying to access Alert Management");
+	require ("general/noaccess.php");
+	return;
+}
 	// Var init
 	$descripcion = "";
 	$nombre = "";
@@ -40,7 +49,7 @@ if ( (give_acl($id_user, 0, "LM")==1)){
 			$comando = $row["comando"];
 		} else
 			{
-			echo "<h3 class='error'>".$lang_label["alert_error"]."</h3>";
+			echo "<h3 class='error'>".__('alert_error')."</h3>";
 			echo "</table>";
 			include ("general/footer.php");
 			exit;
@@ -52,12 +61,12 @@ if ( (give_acl($id_user, 0, "LM")==1)){
 		$creacion_alerta = 1;
 	}
 	
-echo "<h2>".$lang_label["alert_config"]." &gt; ";
+echo "<h2>".__('alert_config')." &gt; ";
 	if (isset($_GET["creacion"])){
-		echo $lang_label["create_alert"];
+		echo __('create_alert');
 	}
 	if (isset($_GET["id_alerta"])){
-		echo $lang_label["mod_alert"];
+		echo __('mod_alert');
 	}
 pandora_help ("manage_alerts");
 echo "</h2>";
@@ -73,16 +82,16 @@ echo "</h2>";
 	}
 ?>
 <table width="500" cellspacing="4" cellpadding="4" class="databox_color">
-<tr><td class="datos"><?php echo $lang_label["alertname"] ?></td>
+<tr><td class="datos"><?php echo __('alertname') ?></td>
 <td class="datos">
 <input type="text" name="nombre" size=30 value="<?php echo $nombre ?>"></td>
 </tr>
 <tr>
-<td class="datos2"><?php echo $lang_label["command"] ?></td>
+<td class="datos2"><?php echo __('command') ?></td>
 <td class="datos2">
 <input type="text" name="comando" size="50" value="<?php echo $comando ?>">
 </td></tr>
-<tr><td class="datos"><?php echo $lang_label["description"] ?></td>
+<tr><td class="datos"><?php echo __('description') ?></td>
 <td class="datos"><textarea name="descripcion" cols="50" rows="7">
 <?php echo $descripcion ?>
 </textarea>
@@ -92,18 +101,10 @@ echo "</h2>";
 <tr><td align="right">
 <?php 
 if (isset($_GET["creacion"])){
-	echo "<input name='crtbutton' type='submit' class='sub wand' value='".$lang_label["create"]."'>";
+	echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('create')."'>";
 } else {
-	echo "<input name='uptbutton' type='submit' class='sub upd' value='".$lang_label["update"]."'>";
+	echo "<input name='uptbutton' type='submit' class='sub upd' value='".__('update')."'>";
 } ?>
 </form>
 
 </table>
-
-<?php
-} // end page
-else {
-		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Alert Management");
-		require ("general/noaccess.php");
-	}	
-?>

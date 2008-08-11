@@ -17,12 +17,15 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
-global $config;
+require ("include/config.php");
 
-if ( (give_acl($id_user, 0, "LM")==0)){
-    audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Recon Task Management");
-    require ("general/noaccess.php");
-    exit;
+check_login ();
+
+if (! give_acl ($config['id_user'], 0, "LM")) {
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+		"Trying to access Recon Task Management");
+	require ("general/noaccess.php");
+	exit;
 }
 
 // --------------------------------
@@ -33,9 +36,9 @@ if (isset($_GET["delete"])) {
 	$sql = "DELETE FROM trecon_task WHERE id_rt = $id ";
 	$result = mysql_query($sql);
 	if ($result)
-		echo "<h3 class='suc'>".$lang_label["delete_ok"]."</h3>";
+		echo "<h3 class='suc'>".__('delete_ok')."</h3>";
 	else
-		echo "<h3 class='suc'>".$lang_label["delete_no"]."</h3>";
+		echo "<h3 class='suc'>".__('delete_no')."</h3>";
 }
 
 
@@ -63,9 +66,9 @@ if (isset($_GET["update"])) {
 			id_network_profile = $id_network_profile WHERE id_rt = $id";
 	$result=mysql_query($sql);
 	if ($result)
-		echo "<h3 class='suc'>".$lang_label["modify_ok"]."</h3>";
+		echo "<h3 class='suc'>".__('modify_ok')."</h3>";
 	else
-		echo "<h3 class='suc'>".$lang_label["modify_no"]."</h3>";
+		echo "<h3 class='suc'>".__('modify_no')."</h3>";
 }
 
 // --------------------------------
@@ -75,30 +78,30 @@ if (isset($_GET["create"])) {
 	$sql = "INSERT INTO trecon_task (name, subnet, description, id_recon_server, create_incident, id_group, id_network_profile, interval_sweep, id_os) VALUES ( '$name', '$network', '$description', $id_recon_server, $create_incident, $id_group,  $id_network_profile, $interval, $id_os)";
 	$result=mysql_query($sql);
 	if ($result)
-		echo "<h3 class='suc'>".$lang_label["create_ok"]."</h3>";
+		echo "<h3 class='suc'>".__('create_ok')."</h3>";
 	else
-		echo "<h3 class='suc'>".$lang_label["create_no"]."</h3>";
+		echo "<h3 class='suc'>".__('create_no')."</h3>";
 }
 
 // --------------------------------
 // SHOW TABLE WITH ALL RECON TASKs
 // --------------------------------
-echo "<h2>".$lang_label["view_servers"]." &gt; ";
-echo $lang_label["manage_recontask"]."</h2>";
+echo "<h2>".__('view_servers')." &gt; ";
+echo __('manage_recontask')."</h2>";
 $query="SELECT * FROM trecon_task";
 $result=mysql_query($query);
 $color=1;
 if (mysql_num_rows($result)){
 	echo "<table cellpadding='4' cellspacing='4' width='700' class='databox'>";
-	echo "<tr><th class='datos'>".$lang_label["name"];
-	echo "<th class='datos'>".lang_string ('type');
-	echo "<th class='datos'>".lang_string ('network');
-	echo "<th class='datos'>".lang_string ('network_profile');
-	echo "<th class='datos'>".lang_string ('group');
-	echo "<th class='datos'>".lang_string ('incident');
-	echo "<th class='datos'>".lang_string ('OS');
-	echo "<th class='datos'>".lang_string ('interval');
-	echo "<th class='datos'>".lang_string ('Action');
+	echo "<tr><th class='datos'>".__('name');
+	echo "<th class='datos'>".__('type');
+	echo "<th class='datos'>".__('network');
+	echo "<th class='datos'>".__('network_profile');
+	echo "<th class='datos'>".__('group');
+	echo "<th class='datos'>".__('incident');
+	echo "<th class='datos'>".__('OS');
+	echo "<th class='datos'>".__('interval');
+	echo "<th class='datos'>".__('Action');
 }
 while ($row=mysql_fetch_array($result)){
 	$id_rt = $row["id_rt"];
@@ -145,9 +148,9 @@ while ($row=mysql_fetch_array($result)){
 	// INCIDENT
 	echo "</td><td class='$tdcolor'>";
 	if ($create_incident == 1)
-		echo $lang_label["yes"];
+		echo __('yes');
 	else
-		echo $lang_label["no"];
+		echo __('no');
 
 	// OS
 	echo "</td><td class='$tdcolor'>";
@@ -169,13 +172,13 @@ while ($row=mysql_fetch_array($result)){
 echo "</table>";
 
 if (!mysql_num_rows($result)){
-	echo "<div class='nf'>".$lang_label["no_rtask"]."</div>";
+	echo "<div class='nf'>".__('no_rtask')."</div>";
 }	
 
 echo "<table width='700'>";
 echo "<tr><td align='right'>";
 echo "<form method='post' action='index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&create'>";
-echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create"]."'>";
+echo "<input type='submit' class='sub next' name='crt' value='".__('create')."'>";
 echo "</form></table>";
 
 ?>

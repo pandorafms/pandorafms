@@ -22,21 +22,21 @@
 echo "
 <table cellpadding='3' cellspacing='3'>
 	<tr><td class='f9i'>
-	<img src='images/pixel_green.png' width=40 height=18>  ".$lang_label["green_light"]."</td>
+	<img src='images/pixel_green.png' width=40 height=18>  ".__('green_light')."</td>
 	<td class='f9i'>
-	<img src='images/pixel_red.png' width=40 height=18>  ".$lang_label["red_light"]."</td>
+	<img src='images/pixel_red.png' width=40 height=18>  ".__('red_light')."</td>
 	<td class='f9i'>
-	<img src='images/pixel_yellow.png' width=40 height=18>  ".$lang_label["yellow_light"]."</td>
+	<img src='images/pixel_yellow.png' width=40 height=18>  ".__('yellow_light')."</td>
 	<td class='f9i'>
-	<img src='images/pixel_red.png' width=20 height=10>  ".$lang_label["fired"]."</td>
+	<img src='images/pixel_red.png' width=20 height=10>  ".__('fired')."</td>
 	<tr><td class='f9i'>
-	<img src='images/pixel_gray.png' width=40 height=18>  ".$lang_label["no_light"]."</td>
+	<img src='images/pixel_gray.png' width=40 height=18>  ".__('no_light')."</td>
 	<td class='f9i'>
-	<img src='images/pixel_blue.png' width=40 height=18>  ".$lang_label["blue_light"]."</td>
+	<img src='images/pixel_blue.png' width=40 height=18>  ".__('blue_light')."</td>
 	<td class='f9i'>
-	<img src='images/pixel_fucsia.png' width=40 height=18>  ".$lang_label["broken_light"]."</td>
+	<img src='images/pixel_fucsia.png' width=40 height=18>  ".__('broken_light')."</td>
 	<td class='f9i'>
-	<img src='images/pixel_green.png' width=20 height=10> ".$lang_label["not_fired"]."</td>
+	<img src='images/pixel_green.png' width=20 height=10> ".__('not_fired')."</td>
 	</tr>
 	</table>
 ";

@@ -46,7 +46,7 @@ function safe_input ($value) {
 	if (is_numeric ($value))
 		return $value;
 	if (is_array ($value)) {
-		array_walk (&$value,'safe_input');
+		array_walk ($value,'safe_input');
 		return $value;
 	}
 	return htmlentities (utf8_decode ($value), ENT_QUOTES); 
@@ -198,11 +198,11 @@ function popup_help ($help_id, $return = false) {
 function no_permission () {
 	require("config.php");
 	require ("include/languages/language_".$config["language"].".php");
-	echo "<h3 class='error'>".lang_string ('no_permission_title')."</h3>";
+	echo "<h3 class='error'>".__('no_permission_title')."</h3>";
 	echo "<img src='images/noaccess.png' alt='No access' width='120'><br><br>";
 	echo "<table width=550>";
 	echo "<tr><td>";
-	echo lang_string ('no_permission_text');
+	echo __('no_permission_text');
 	echo "</table>";
 	echo "<tr><td><td><td><td>";
 	include "general/footer.php";
@@ -217,11 +217,11 @@ function no_permission () {
 function unmanaged_error ($error = "") {
 	require("config.php");
 	require ("include/languages/language_".$config["language"].".php");
-	echo "<h3 class='error'>".lang_string("Unmanaged error")."</h3>";
+	echo "<h3 class='error'>".__('Unmanaged error')."</h3>";
 	echo "<img src='images/errror.png' alt='error'><br><br>";
 	echo "<table width=550>";
 	echo "<tr><td>";
-	echo lang_string("Unmanaged error_text");
+	echo __('Unmanaged error_text');
 	echo "<tr><td>";
 	echo $error;
 	echo "</table>";
@@ -452,24 +452,24 @@ function format_for_graph ($number , $decimals = 1, $dec_point = ".", $thousands
  */
 function human_time_comparation ($timestamp) {
 	if ($timestamp == "") {
-		return "0 ".lang_string ('minutes');
+		return "0 ".__('minutes');
 	}
 	
 	$ahora = date ("Y/m/d H:i:s");
 	$seconds = strtotime ($ahora) - strtotime ($timestamp);
 	
 	if ($seconds < 3600)
-		return format_numeric ($seconds / 60, 1)." ".lang_string ('minutes');
+		return format_numeric ($seconds / 60, 1)." ".__('minutes');
 	
 	if ($seconds >= 3600 && $seconds < 86400)
-		return format_numeric ($seconds / 3600, 1)." ".lang_string ('hours');
+		return format_numeric ($seconds / 3600, 1)." ".__('hours');
 	
 	if ($seconds >= 86400 && $seconds < 2592000)
-		return format_numeric ($seconds / 86400, 1)." ".lang_string ('days');
+		return format_numeric ($seconds / 86400, 1)." ".__('days');
 	
 	if ($seconds >= 2592000 && $seconds < 15552000)
-		return format_numeric ($seconds / 2592000, 1)." ".lang_string ('months');
-	return " +6 ".lang_string ('months');
+		return format_numeric ($seconds / 2592000, 1)." ".__('months');
+	return " +6 ".__('months');
 }
 
 /** 
@@ -483,12 +483,12 @@ function human_time_comparation ($timestamp) {
 function human_time_description_raw ($seconds) {
 	global $lang_label;
 	if ($seconds < 3600)
-		return format_numeric($seconds/60,2)." ".lang_string ('minutes');
+		return format_numeric($seconds/60,2)." ".__('minutes');
 	
 	if ($seconds >= 3600 && $seconds < 86400)
-		return format_numeric ($seconds/3600,2)." ".lang_string ('hours');
+		return format_numeric ($seconds/3600,2)." ".__('hours');
 	
-	return format_numeric ($seconds/86400,2)." ".lang_string ('days');
+	return format_numeric ($seconds/86400,2)." ".__('days');
 }
 
 /** 
@@ -505,40 +505,40 @@ function human_time_description ($period) {
 	
 	switch ($period) {
 	case 3600:
-		return lang_string ('hour');
+		return __('hour');
 		break;
 	case 7200:
-		return lang_string ('2_hours');
+		return __('2_hours');
 		break;
 	case 21600:
-		return lang_string ('6_hours');
+		return __('6_hours');
 		break;
 	case 43200:
-		return lang_string ('12_hours');
+		return __('12_hours');
 		break;
 	case 86400:
-		return lang_string ('last_day');
+		return __('last_day');
 		break;
 	case 172800:
-		return lang_string ('two_days');
+		return __('two_days');
 		break;
 	case 432000:
-		return lang_string ('five_days');
+		return __('five_days');
 		break;
 	case 604800:
-		return lang_string ('last_week');
+		return __('last_week');
 		break;
 	case 1296000:
-		return lang_string ('15_days');
+		return __('15_days');
 		break;
 	case 2592000:
-		return lang_string ('last_month');
+		return __('last_month');
 		break;
 	case 5184000:
-		return lang_string ('two_month');
+		return __('two_month');
 		break;
 	case 15552000:
-		return lang_string ('six_months');
+		return __('six_months');
 		break;
 	default:
 		return human_time_description_raw ($period);
@@ -645,19 +645,19 @@ function get_alert_priority ($priority = 0) {
 	global $config;
 	switch ($priority) {
 	case 0: 
-		return lang_string("Maintenance");
+		return __('Maintenance');
 		break;
 	case 1:
-		return lang_string("Informational");
+		return __('Informational');
 		break;
 	case 2:
-		return lang_string("Normal");
+		return __('Normal');
 		break;
 	case 3:
-		return lang_string("Warning");
+		return __('Warning');
 		break;
 	case 4:
-		return lang_string("Critical");
+		return __('Critical');
 		break;
 	}
 	return '';
@@ -676,9 +676,9 @@ function get_alert_days ($row) {
 
 	$check = $row["monday"] + $row["tuesday"] + $row["wednesday"] + $row["thursday"] + $row["friday"] + $row["saturday"] + $row["sunday"];
 	if ($check == 7) {
-		return lang_string ("all");
+		return __('all');
 	} elseif ($check == 0) {
-		return lang_string ("none");
+		return __('none');
 	} 
 	if ($row["monday"] != 0)
 		$days_output .= "Mo ";
@@ -711,15 +711,15 @@ function get_alert_times ($row2) {
 	if ($row2["time_from"]){
 		$time_from_table = $row2["time_from"];
 	} else {
-		$time_from_table = lang_string ("N/A");
+		$time_from_table = __('N/A');
 	}
 	if ($row2["time_to"]){
 		$time_to_table = $row2["time_to"];
 	} else {
-		$time_to_table = lang_string ("N/A");
+		$time_to_table = __('N/A');
 	}
 	if ($time_to_table == $time_from_table)
-		return lang_string ('N/A');
+		return __('N/A');
 		
 	return substr ($time_from_table, 0, 5)." - ".substr ($time_to_table, 0, 5);
 }
@@ -740,7 +740,7 @@ function show_alert_row_edit ($row2, $tdcolor = "datos", $id_tipo_modulo = 1, $c
 
 	$string = "";
 	if ($row2["disable"] == 1){
-		$string .= "<td class='$tdcolor'><b><i>".lang_string ('disabled')."</b></i>";
+		$string .= "<td class='$tdcolor'><b><i>".__('disabled')."</b></i>";
 	} elseif ($id_tipo_modulo != 0) {
 		$string .= "<td class='$tdcolor'><img src='images/".show_icon_type($id_tipo_modulo)."' border=0>";
 	} else {
@@ -780,7 +780,7 @@ function show_alert_row_edit ($row2, $tdcolor = "datos", $id_tipo_modulo = 1, $c
 
 	// We have alert text ?
 	if ($row2["alert_text"]!= "") {
-		$string = $string."<td colspan=2 class='$tdcolor'>".lang_string ('text')."</td>";
+		$string = $string."<td colspan=2 class='$tdcolor'>".__('text')."</td>";
 	} else {
 		$string = $string."<td class='$tdcolor'>".$mymin."</td>";
 		$string = $string."<td class='$tdcolor'>".$mymax."</td>";
@@ -795,16 +795,16 @@ function show_alert_row_edit ($row2, $tdcolor = "datos", $id_tipo_modulo = 1, $c
 
 	// Has recovery notify activated ?
 	if ($row2["recovery_notify"] > 0)
-		$recovery_notify = lang_string("Yes");
+		$recovery_notify = __('Yes');
 	else
-		$recovery_notify = lang_string("No");
+		$recovery_notify = __('No');
 
 	// calculate priority
 	$priority = get_alert_priority ($row2["priority"]);
 
 	// calculare firing conditions
 	if ($row2["alert_text"] != "") {
-		$firing_cond = lang_string("text")."(".substr($row2["alert_text"],0,8).")";
+		$firing_cond = __('text')."(".substr($row2["alert_text"],0,8).")";
 	} else {
 		$firing_cond = $row2["min_alerts"]." / ".$row2["max_alerts"];
 	}
@@ -822,16 +822,16 @@ function show_alert_row_edit ($row2, $tdcolor = "datos", $id_tipo_modulo = 1, $c
 	<table cellspacing='2' cellpadding='0'
 	style='margin-left:2px;'>
 		<tr><th colspan='2' width='91'>".
-		lang_string("Recovery")."</th></tr>
+		__('Recovery')."</th></tr>
 		<tr><td colspan='2' class='datos' align='center'><b>$recovery_notify</b></td></tr>
 		<tr><th colspan='2' width='91'>".
-		lang_string("Priority")."</th></tr>
+		__('Priority')."</th></tr>
 		<tr><td colspan='2' class='datos' align='center'><b>$priority</b></td></tr>
 		<tr><th colspan='2' width='91'>".
-		lang_string("Alert Ctrl.")."</th></tr>
+		__('Alert Ctrl.')."</th></tr>
 		<tr><td colspan='2' class='datos' align='center'><b>".$firing_cond."</b></td></tr>
 		<tr><th colspan='2' width='91'>".
-		lang_string("Firing days")."</th></tr>
+		__('Firing days')."</th></tr>
 		<tr><td colspan='2' class='datos' align='center'><b>".$firing_days."</b></td></tr>
 		</table></span></A>";
 
@@ -884,16 +884,16 @@ function show_alert_show_view ($data, $tdcolor = "datos", $combined = 0) {
 
 	// Has recovery notify activated ?
 	if ($data["recovery_notify"] > 0)
-		$recovery_notify = lang_string("Yes");
+		$recovery_notify = __('Yes');
 	else
-		$recovery_notify = lang_string("No");
+		$recovery_notify = __('No');
 
 	// calculate priority
 	$priority = get_alert_priority ($data["priority"]);
 
 	// calculare firing conditions
 	if ($data["alert_text"] != ""){
-		$firing_cond = lang_string("text")."(".substr($data["alert_text"],0,8).")";
+		$firing_cond = __('text')."(".substr($data["alert_text"],0,8).")";
 	} else {
 		$firing_cond = $data["min_alerts"]." / ".$data["max_alerts"];
 	}
@@ -909,16 +909,16 @@ function show_alert_show_view ($data, $tdcolor = "datos", $combined = 0) {
 		<table cellspacing='2' cellpadding='0'
 		style='margin-left:2px;'>
 		<tr><th colspan='2' width='91'>".
-		lang_string("Recovery")."</th></tr>
+		__('Recovery')."</th></tr>
 		<tr><td colspan='2' class='datos' align='center'><b>$recovery_notify</b></td></tr>
 		<tr><th colspan='2' width='91'>".
-		lang_string("Priority")."</th></tr>
+		__('Priority')."</th></tr>
 		<tr><td colspan='2' class='datos' align='center'><b>$priority</b></td></tr>
 		<tr><th colspan='2' width='91'>".
-		lang_string("Alert Ctrl.")."</th></tr>
+		__('Alert Ctrl.')."</th></tr>
 		<tr><td colspan='2' class='datos' align='center'><b>".$firing_cond."</b></td></tr>
 		<tr><th colspan='2' width='91'>".
-		lang_string("Firing days")."</th></tr>
+		__('Firing days')."</th></tr>
 		<tr><td colspan='2' class='datos' align='center'><b>".$firing_days."</b></td></tr>
 		</table></span></a>";
 
@@ -937,20 +937,20 @@ function show_alert_show_view ($data, $tdcolor = "datos", $combined = 0) {
 	$mymax =  format_for_graph($mymax );
 	// Text alert ?
 	if ($data["alert_text"] != "")
-		echo "<td class='".$tdcolor."' colspan=2>".lang_string ('text')."</td>";
+		echo "<td class='".$tdcolor."' colspan=2>".__('text')."</td>";
 	else {
 		echo "<td class='".$tdcolor."'>".$mymin."</td>";
 		echo "<td class='".$tdcolor."'>".$mymax."</td>";
 	}
 	echo "<td  align='center' class='".$tdcolor."'>".human_time_description($data["time_threshold"]);
 	if ($data["last_fired"] == "0000-00-00 00:00:00") {
-		echo "<td align='center' class='".$tdcolor."f9'>".lang_string ('never')."</td>";
+		echo "<td align='center' class='".$tdcolor."f9'>".__('never')."</td>";
 	} else {
 		echo "<td align='center' class='".$tdcolor."f9'>".human_time_comparation ($data["last_fired"])."</td>";
 	}
 	echo "<td align='center' class='".$tdcolor."'>".$data["times_fired"]."</td>";
 	if ($data["times_fired"] <> 0){
-		echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_red.png' title='".lang_string ('fired')."'>";
+		echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_red.png' title='".__('fired')."'>";
 		echo "</td>";
 		$id_grupo_alerta = get_db_value ("id_grupo", "tagente", "id_agente", $id_agente);
 		if (give_acl($config["id_user"], $id_grupo_alerta, "AW") == 1) {
@@ -961,7 +961,7 @@ function show_alert_show_view ($data, $tdcolor = "datos", $combined = 0) {
 		}
 	} else {
 		echo "<td class='".$tdcolor."' align='center'>
-			<img width='20' height='9' src='images/pixel_green.png' title='".lang_string ('not_fired')."'></td>";
+			<img width='20' height='9' src='images/pixel_green.png' title='".__('not_fired')."'></td>";
 	}
 }
 
@@ -972,19 +972,19 @@ function show_alert_show_view ($data, $tdcolor = "datos", $combined = 0) {
  */
 function get_report_types () {
 	$types = array ();
-	$types['simple_graph'] = lang_string ('simple_graph');
-	$types['custom_graph'] = lang_string ('custom_graph');
-	$types['SLA'] = lang_string ('SLA');
-	$types['event_report'] = lang_string ('event_report');
-	$types['alert_report'] = lang_string ('alert_report');
-	$types['monitor_report'] = lang_string ('monitor_report');
-	$types['avg_value'] = lang_string ('avg_value');
-	$types['max_value'] = lang_string ('max_value');
-	$types['min_value'] = lang_string ('min_value');
-	$types['sumatory'] = lang_string ('sumatory');
-	$types['general_group_report'] = lang_string ('general_group_report');
-	$types['monitor_health'] = lang_string ('monitor_health');
-	$types['agents_detailed'] = lang_string ('agents_detailed');
+	$types['simple_graph'] = __('simple_graph');
+	$types['custom_graph'] = __('custom_graph');
+	$types['SLA'] = __('SLA');
+	$types['event_report'] = __('event_report');
+	$types['alert_report'] = __('alert_report');
+	$types['monitor_report'] = __('monitor_report');
+	$types['avg_value'] = __('avg_value');
+	$types['max_value'] = __('max_value');
+	$types['min_value'] = __('min_value');
+	$types['sumatory'] = __('sumatory');
+	$types['general_group_report'] = __('general_group_report');
+	$types['monitor_health'] = __('monitor_health');
+	$types['agents_detailed'] = __('agents_detailed');
 
 	return $types;
 }
@@ -999,7 +999,7 @@ function get_report_types () {
 function get_report_name ($type) {
 	$types = get_report_types ();
 	if (! isset ($types[$type]))
-		return lang_string ('unknown');
+		return __('unknown');
 	return $types[$type];
 }
 
@@ -1108,16 +1108,16 @@ function is_module_data_string ($module_name) {
  */
 function get_event_types () {
 	$types = array ();
-	$types['unknown'] = lang_string ('unknown');
-	$types['monitor_up'] = lang_string ('monitor_up');
-	$types['monitor_down'] = lang_string ('monitor_down');
-	$types['alert_fired'] = lang_string ('alert_fired');
-	$types['alert_recovered'] = lang_string ('alert_recovered');
-	$types['alert_ceased'] = lang_string ('alert_ceased');
-	$types['alert_manual_validation'] = lang_string ('alert_manual_validation');
-	$types['recon_host_detected'] = lang_string ('recon_host_detected');
-	$types['system'] = lang_string ('sytem');
-	$types['error'] = lang_string ('error');
+	$types['unknown'] = __('unknown');
+	$types['monitor_up'] = __('monitor_up');
+	$types['monitor_down'] = __('monitor_down');
+	$types['alert_fired'] = __('alert_fired');
+	$types['alert_recovered'] = __('alert_recovered');
+	$types['alert_ceased'] = __('alert_ceased');
+	$types['alert_manual_validation'] = __('alert_manual_validation');
+	$types['recon_host_detected'] = __('recon_host_detected');
+	$types['system'] = __('sytem');
+	$types['error'] = __('error');
 	
 	return $types;
 }
@@ -1129,11 +1129,11 @@ function get_event_types () {
  */
 function get_priorities () {
 	$priorities = array ();
-	$priorities[0] = lang_string ("Maintenance");
-	$priorities[1] = lang_string ("Informational");
-	$priorities[2] = lang_string ("Normal");
-	$priorities[3] = lang_string ("Warning");
-	$priorities[4] = lang_string ("Critical");
+	$priorities[0] = __('Maintenance');
+	$priorities[1] = __('Informational');
+	$priorities[2] = __('Normal');
+	$priorities[3] = __('Warning');
+	$priorities[4] = __('Critical');
 	
 	return $priorities;
 }
@@ -1148,17 +1148,17 @@ function return_priority ($priority) {
 
 	switch ($priority) {
 	case 0: 
-		return lang_string ("Maintenance");
+		return __('Maintenance');
 	case 1: 
-		return lang_string ("Informational");
+		return __('Informational');
 	case 2: 
-		return lang_string ("Normal");
+		return __('Normal');
 	case 3: 
-		return lang_string ("Warning");
+		return __('Warning');
 	case 4: 
-		return lang_string ("Critical");
+		return __('Critical');
 	case -1: 
-		return lang_string ("All");
+		return __('All');
 	}
 }
 

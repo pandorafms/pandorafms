@@ -17,20 +17,19 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
-global $config;
-$id_user = $config["id_user"];
+require ("include/config.php");
 
 check_login();
 
-if ((give_acl($id_user, 0, "AR")!=1) AND (give_acl($id_user,0,"AW")!=1)) {
-        audit_db($id_user,$REMOTE_ADDR, "ACL Violation",
-        "Trying to access Agent Management");
-        require ("general/noaccess.php");
-        exit;
+if (! give_acl ($config['id_user'], 0, "AR") && ! give_acl ($config['id_user'], 0, "AW")) {
+	audit_db ($config['id_user'],$REMOTE_ADDR, "ACL Violation",
+		"Trying to access Agent Management");
+	require ("general/noaccess.php");
+	exit;
 }
 
-echo "<h2>".$lang_label["ag_title"]." &gt; ";
-echo $lang_label["monitor_listing"]."</h2>";
+echo "<h2>".__('ag_title')." &gt; ";
+echo __('monitor_listing')."</h2>";
 
 $ag_freestring = get_parameter ("ag_freestring", "");
 $ag_modulename = get_parameter ("ag_modulename", "");
@@ -61,7 +60,7 @@ echo $URL;
 echo "'>";
 
 echo "<table cellspacing='4' cellpadding='4' width='600' class='databox'>";
-echo "<tr><td valign='middle'>".$lang_label["group"]."</td>";
+echo "<tr><td valign='middle'>".__('group')."</td>";
 echo "<td valign='middle'>";
 echo "<select name='ag_group' onChange='javascript:this.form.submit();' class='w130'>";
 
@@ -69,46 +68,46 @@ if ( $ag_group > 1 ){
 	echo "<option value='".$ag_group."'>".dame_nombre_grupo($ag_group)."</option>";
 } 
 echo "<option value=1>".dame_nombre_grupo(1)."</option>";
-list_group ($id_user);
+list_group ($config['id_user']);
 echo "</select>";
 echo "</td>";
 
 echo "<td>";
-echo lang_string ("Monitor status");
+echo __('Monitor status');
 echo "<td>";
 echo "<select name='status'>";
 if ($status == -1){
-	echo "<option value=-1>".lang_string("All")."</option>";
-	echo "<option value=0>".lang_string("Monitors down")."</option>";
-	echo "<option value=1>".lang_string("Monitors up")."</option>";
-	echo "<option value=2>".lang_string("Monitors unknown")."</option>";
+	echo "<option value=-1>".__('All')."</option>";
+	echo "<option value=0>".__('Monitors down')."</option>";
+	echo "<option value=1>".__('Monitors up')."</option>";
+	echo "<option value=2>".__('Monitors unknown')."</option>";
 } elseif ($status == 0){
-	echo "<option value=0>".lang_string("Monitors down")."</option>";
-	echo "<option value=-1>".lang_string("All")."</option>";
-	echo "<option value=1>".lang_string("Monitors up")."</option>";
-	echo "<option value=2>".lang_string("Monitors unknown")."</option>";
+	echo "<option value=0>".__('Monitors down')."</option>";
+	echo "<option value=-1>".__('All')."</option>";
+	echo "<option value=1>".__('Monitors up')."</option>";
+	echo "<option value=2>".__('Monitors unknown')."</option>";
 } elseif ($status == 2){
-	echo "<option value=2>".lang_string("Monitors unknown")."</option>";
-	echo "<option value=0>".lang_string("Monitors down")."</option>";
-	echo "<option value=-1>".lang_string("All")."</option>";
-	echo "<option value=1>".lang_string("Monitors up")."</option>";
+	echo "<option value=2>".__('Monitors unknown')."</option>";
+	echo "<option value=0>".__('Monitors down')."</option>";
+	echo "<option value=-1>".__('All')."</option>";
+	echo "<option value=1>".__('Monitors up')."</option>";
 } else {
-	echo "<option value=1>".lang_string("Monitors up")."</option>";
-	echo "<option value=0>".lang_string("Monitors down")."</option>";
-	echo "<option value=2>".lang_string("Monitors unknown")."</option>";
-	echo "<option value=-1>".lang_string("All")."</option>";
+	echo "<option value=1>".__('Monitors up')."</option>";
+	echo "<option value=0>".__('Monitors down')."</option>";
+	echo "<option value=2>".__('Monitors unknown')."</option>";
+	echo "<option value=-1>".__('All')."</option>";
 }
 echo "</select>";
 
 echo "</tr>";
 echo "<tr>";
-echo "<td valign='middle'>".$lang_label["module_name"]."</td>";
+echo "<td valign='middle'>".__('module_name')."</td>";
 echo "<td valign='middle'>
 <select name='ag_modulename' onChange='javascript:this.form.submit();'>";
 if ( isset($ag_modulename)){
 	echo "<option>".$ag_modulename."</option>";
 } 
-echo "<option>".$lang_label["all"]."</option>";
+echo "<option>".__('all')."</option>";
 $sql='SELECT DISTINCT nombre 
 FROM tagente_modulo 
 WHERE id_tipo_modulo in (2, 6, 9, 18, 21, 100)';
@@ -118,11 +117,11 @@ while ($row=mysql_fetch_array($result)){
 }
 echo "</select>";
 echo "<td valign='middle'>";
-echo lang_string ("Free text");
+echo __('Free text');
 echo "<td valign='middle'>";
 echo "<input type=text name='ag_freestring' size=15 value='$ag_freestring'>";
 echo "<td valign='middle'>";
-echo "<input name='uptbutton' type='submit' class='sub' value='".$lang_label["show"]."'";
+echo "<input name='uptbutton' type='submit' class='sub' value='".__('show')."'";
 echo "</form>";
 echo "</table>";
 
@@ -139,9 +138,10 @@ if ($ag_group > 1)
     $SQL .=" AND tagente.id_grupo = ".$ag_group;
 else {
 	// User has explicit permission on group 1 ?
-	$all_group = get_db_sql ("SELECT COUNT(id_grupo) FROM tusuario_perfil WHERE id_usuario='$id_user' AND id_grupo = 1");
+	$sql = sprintf ("SELECT COUNT(id_grupo) FROM tusuario_perfil WHERE id_usuario='%s' AND id_grupo = 1", $config['id_user']);
+	$all_group = get_db_sql ($sql);
 	if ($all_group == 0)
-		$SQL .=" AND tagente.id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='$id_user') ";
+		$SQL .= sprintf (" AND tagente.id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='%s') ", $config['id_user']);
 }
 
 // Module name selector
@@ -179,13 +179,13 @@ if ($counter > 0) {
 	echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>
 	<tr>
 	<th>
-	<th>".$lang_label["agent"]."</th>
-	<th>".$lang_label["type"]."</th>
-	<th>".$lang_label["name"]."</th>
-	<th>".$lang_label["description"]."</th>
-	<th>".$lang_label["interval"]."</th>
-	<th>".$lang_label["status"]."</th>
-	<th>".$lang_label["timestamp"]."</th>";
+	<th>".__('agent')."</th>
+	<th>".__('type')."</th>
+	<th>".__('name')."</th>
+	<th>".__('description')."</th>
+	<th>".__('interval')."</th>
+	<th>".__('status')."</th>
+	<th>".__('timestamp')."</th>";
 	$color =1;
 	$result=mysql_query($SQL_FINAL);
 
@@ -224,9 +224,9 @@ if ($counter > 0) {
 
 		echo "<td class='$tdcolor' align='center' width=20>";
 		if ($data[8] > 0){
-			echo "<img src='images/pixel_green.png' width=40 height=18 title='".lang_string("Monitor up")."'>";
+			echo "<img src='images/pixel_green.png' width=40 height=18 title='".__('Monitor up')."'>";
 		} else {
-			echo "<img src='images/pixel_red.png' width=40 height=18 title='".lang_string ("Monitor down")."'>";
+			echo "<img src='images/pixel_red.png' width=40 height=18 title='".__('Monitor down')."'>";
 		}
 
 		echo  "<td class='".$tdcolor."f9'>";
@@ -241,15 +241,15 @@ if ($counter > 0) {
 	}
 	echo "</table>";
 } else {
-	echo "<div class='nf'>".$lang_label["no_monitors_g"]."</div>";
+	echo "<div class='nf'>".__('no_monitors_g')."</div>";
 }
 
 echo "<table width=700 border=0>";
 echo "<tr>";
 echo "<td class='f9'>";
-echo "<img src='images/pixel_green.png' width=40 height=18>&nbsp;&nbsp;".lang_string("Monitor up")."</td>";
+echo "<img src='images/pixel_green.png' width=40 height=18>&nbsp;&nbsp;".__('Monitor up')."</td>";
 echo "<td class='f9'";
-echo "<img src='images/pixel_red.png' width=40 height=18>&nbsp;&nbsp;".lang_string("Monitor down")."</td>";
+echo "<img src='images/pixel_red.png' width=40 height=18>&nbsp;&nbsp;".__('Monitor down')."</td>";
 echo "</table>";
 
 ?>

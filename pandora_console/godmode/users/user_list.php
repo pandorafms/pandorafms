@@ -8,38 +8,42 @@
 // Load globar vars
 require("include/config.php");
 
-if (comprueba_login() == 0) 
-	if (give_acl($id_user, 0, "UM")==1) {
-		if (isset($_GET["borrar_usuario"])){ // if delete user
-			$nombre= entrada_limpia($_GET["borrar_usuario"]);
-			// Delete user
-			// Delete cols from table tgrupo_usuario
-			
-			$query_del1="DELETE FROM tgrupo_usuario WHERE usuario = '".$nombre."'";
-			$query_del2="DELETE FROM tusuario WHERE id_usuario = '".$nombre."'";
-			$resq1=mysql_query($query_del1);
-			$resq1=mysql_query($query_del2);
-			if (! $resq1)
-				echo "<h3 class='error'>".$lang_label["delete_user_no"]."</h3>";
-			else
-				echo "<h3 class='suc'>".$lang_label["delete_user_ok"]."</h3>";
-		}
+check_login ();
+if (! give_acl ($config['id_user'], 0, "UM")) {
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+		"Trying to access User Management");
+	require ("general/noaccess.php");
+}
+if (isset($_GET["borrar_usuario"])) { // if delete user
+	$nombre= entrada_limpia($_GET["borrar_usuario"]);
+	// Delete user
+	// Delete cols from table tgrupo_usuario
+	
+	$sql = "DELETE FROM tgrupo_usuario WHERE usuario = '".$nombre."'";
+	$result = mysql_query ($sql);
+	$sql = "DELETE FROM tusuario WHERE id_usuario = '".$nombre."'";
+	$result = mysql_query ($sql);
+	if (! $result)
+		echo "<h3 class='error'>".__('delete_user_no')."</h3>";
+	else
+		echo "<h3 class='suc'>".__('delete_user_ok')."</h3>";
+}
 ?>
 
-<h2><?php echo $lang_label["user_management"] ?> &gt; 
-<?php echo $lang_label["users"] ?></h2>
+<h2><?php echo __('user_management') ?> &gt; 
+<?php echo __('users') ?></h2>
  
 <table width="700" cellpadding="4" cellspacing="4" class="databox">
-<th width="80px"><?php echo $lang_label["user_ID"]?></th>
-<th width="155px"><?php echo $lang_label["last_contact"]?></th>
-<th width="45px"><?php echo $lang_label["profile"]?></th>
-<th width="120px"><?php echo $lang_label["name"]?></th>
-<th><?php echo $lang_label["description"]?></th>
-<th width="30px"><?php echo $lang_label["delete"]?></th>
+<th width="80px"><?php echo __('user_ID')?></th>
+<th width="155px"><?php echo __('last_contact')?></th>
+<th width="45px"><?php echo __('profile')?></th>
+<th width="120px"><?php echo __('name')?></th>
+<th><?php echo __('description')?></th>
+<th width="30px"><?php echo __('delete')?></th>
 
 <?php
-$query1="SELECT * FROM tusuario";
-$resq1=mysql_query($query1);
+$sql = "SELECT * FROM tusuario";
+$resq1 = mysql_query ($sql);
 // Init vars
 $nombre = "";
 $nivel = "";
@@ -47,7 +51,7 @@ $comentarios = "";
 $fecha_registro = "";
 $color=1;
 
-while ($rowdup=mysql_fetch_array($resq1)){
+while ($rowdup = mysql_fetch_array ($resq1)) {
 	$name = $rowdup["id_usuario"];
 	$nivel = $rowdup["nivel"];
 	$real_name = $rowdup["nombre_real"];
@@ -72,34 +76,29 @@ while ($rowdup=mysql_fetch_array($resq1)){
 	else
 		echo "<img src='images/user_green.png'>";
 	
-	$sql1='SELECT * FROM tusuario_perfil WHERE id_usuario = "'.$name.'"';
-	$result=mysql_query($sql1);
+	$sql = 'SELECT * FROM tusuario_perfil WHERE id_usuario = "'.$name.'"';
+	$result = mysql_query ($sql);
 	echo "<a href='#' class='$tip'>&nbsp;<span>";
-	if (mysql_num_rows($result)){
-		while ($row=mysql_fetch_array($result)){
-			echo dame_perfil($row["id_perfil"])."/ ";
-			echo dame_grupo($row["id_grupo"])."<br>";
+	if (mysql_num_rows ($result)) {
+		while ($row = mysql_fetch_array ($result)) {
+			echo dame_perfil ($row["id_perfil"])."/ ";
+			echo dame_grupo ($row["id_grupo"])."<br>";
 		}
+	} else {
+		echo __('no_profile');
 	}
-	else { echo $lang_label["no_profile"]; }
 	echo "</span></a>";
 	
-	echo "<td class='$tdcolor' width='100'>".substr($real_name,0,16)."</td>";
+	echo "<td class='$tdcolor' width='100'>".substr ($real_name, 0, 16)."</td>";
 	echo "<td class='$tdcolor'>".$comments."</td>";
-	echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/users/user_list&borrar_usuario=".$name."' onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\')) return false;'><img border='0' src='images/cross.png'></a></td>";
+	echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/users/user_list&borrar_usuario=".$name."' onClick='if (!confirm(\' ".__('are_you_sure')."\')) return false;'><img border='0' src='images/cross.png'></a></td>";
 }
-	echo "</tr></table>";
-	echo "<table width=700>";
-	echo "<tr><td align='right'>";
-	echo "<form method=post action='index.php?sec=gusuarios&sec2=godmode/users/configure_user&alta=1'>";
-	echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create_user"]."'>";
-	echo "</form></td></tr></table>";
+echo "</tr></table>";
+echo "<table width=700>";
+echo "<tr><td align='right'>";
+echo "<form method=post action='index.php?sec=gusuarios&sec2=godmode/users/configure_user&alta=1'>";
+echo "<input type='submit' class='sub next' name='crt' value='".__('create_user')."'>";
+echo "</form></td></tr></table>";
 
 echo "</table>";
-
-} // end verify security of page
- else {
-		audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access User Management");
-		require ("general/noaccess.php");
-}        
 ?>

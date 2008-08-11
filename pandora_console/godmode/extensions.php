@@ -17,21 +17,27 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+// Login check
+require ("include/config.php");
+
+check_login ();
+
 if (! give_acl ($config['id_user'], 0, "AR") && ! dame_admin ($config['id_user'])) {
-	audit_db ($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access extensions list");
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+		"Trying to access extensions list");
 	include ("general/noaccess.php");
 	exit;
 }
 
 if (sizeof ($config['extensions']) == 0) {
-	echo '<h3>'.lang_string ('There are no extensions defined').'</h3>';
+	echo '<h3>'.__('There are no extensions defined').'</h3>';
 	return;
 }
 
-echo '<h2>'.lang_string ('Defined extensions')."</h2>";
+echo '<h2>'.__('Defined extensions')."</h2>";
 $table->width = '95%';
 $table->head = array ();
-$table->head[0] = lang_string ('Name');
+$table->head[0] = __('Name');
 $table->data = array ();
 
 foreach ($config['extensions'] as $extension) {

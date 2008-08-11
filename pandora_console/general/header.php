@@ -35,36 +35,36 @@ if (isset ($_SESSION["id_usuario"])){
 		echo "<img src='images/user_suit.png' class='bot'> ";
 	else
 		echo "<img src='images/user_green.png' class='bot'> ";
-	echo "<a class='white'>".lang_string ("has_connected"). '
+	echo "<a class='white'>".__('has_connected'). '
 	[<b>'. $_SESSION["id_usuario"]. '</b>]</a>';
 
     // Second column 
     echo "<td>";
-	echo "<a class='white_bold' href='index.php?sec=main'><img src='images/information.png' class='bot'> ". lang_string ("information")."</a>";
+	echo "<a class='white_bold' href='index.php?sec=main'><img src='images/information.png' class='bot'> ". __('information')."</a>";
 	
     // Third column 
     echo "<td>";
     // Autorefresh
     if ((isset($_GET["refr"]) AND $_GET["refr"] != 0) OR (isset($_POST["refr"]) AND $_POST["refr"] != 0)) {
-        echo "<a class='white_grey_bold' href='".((substr($_SERVER['REQUEST_URI'],-1) != "/") ? $_SERVER['REQUEST_URI'] : "index.php?" )."&refr=0'><img src='images/page_lightning.png' class='bot'> ". lang_string("Autorefresh")."</a>";
+        echo "<a class='white_grey_bold' href='".((substr($_SERVER['REQUEST_URI'],-1) != "/") ? $_SERVER['REQUEST_URI'] : "index.php?" )."&refr=0'><img src='images/page_lightning.png' class='bot'> ". __('Autorefresh')."</a>";
     } else {
-        echo "<a class='white_bold' href='".((substr($_SERVER['REQUEST_URI'],-1) != "/") ? $_SERVER['REQUEST_URI'] : "index.php?" )."&refr=5'><img src='images/page_lightning.png' class='bot'> ". lang_string("Autorefresh")."</a>";
+        echo "<a class='white_bold' href='".((substr($_SERVER['REQUEST_URI'],-1) != "/") ? $_SERVER['REQUEST_URI'] : "index.php?" )."&refr=5'><img src='images/page_lightning.png' class='bot'> ". __('Autorefresh')."</a>";
     }
 
 
     echo "<tr><td>";
-    echo "<a class='white_bold' href='index.php?bye=bye'><img src='images/lock.png' class='bot'> ". lang_string ("logout")."</a>";
+    echo "<a class='white_bold' href='index.php?bye=bye'><img src='images/lock.png' class='bot'> ". __('logout')."</a>";
     
     echo "<td>";
     $server_status = check_server_status ();
     if ($server_status == 0)
-        echo "<a class='white_bold' href='index.php?sec=estado_server&sec2=operation/servers/view_server&refr=60'><img src='images/error.png' class='bot'> ". lang_string("Server status: DOWN")."</a>";
+        echo "<a class='white_bold' href='index.php?sec=estado_server&sec2=operation/servers/view_server&refr=60'><img src='images/error.png' class='bot'> ". __('Server status: DOWN')."</a>";
     else
-        echo "<a class='white_bold' href='index.php?sec=estado_server&sec2=operation/servers/view_server&refr=60'><img src='images/ok.png' class='bot'> ". lang_string("System ready")."</a>";
+        echo "<a class='white_bold' href='index.php?sec=estado_server&sec2=operation/servers/view_server&refr=60'><img src='images/ok.png' class='bot'> ". __('System ready')."</a>";
 
     echo "<td>";
     // Event - refresh
-    echo "<a class='white_bold' href='index.php?sec=eventos&sec2=operation/events/events&refr=5'><img src='images/lightning_go.png' class='bot'> ". lang_string("events")."</a>";
+    echo "<a class='white_bold' href='index.php?sec=eventos&sec2=operation/events/events&refr=5'><img src='images/lightning_go.png' class='bot'> ". __('events')."</a>";
 
 
 }

@@ -50,7 +50,6 @@ $page .= '.php';
 $config["id_user"] = $_SESSION["id_usuario"];
 session_write_close ();
 if (file_exists ($page)) {
-	$id_user = $_SESSION["id_usuario"];
 	require_once ($page);
 } else {
 	echo "<br><b class='error'>Sorry! I can't find the page $page!</b>";

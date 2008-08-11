@@ -17,22 +17,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-?>
 
-
-<?php
 require ("operation/menu.php");
 if (! isset ($_SESSION["id_usuario"])) {
-	echo '<div class="f10">' . $lang_label["not_connected"];
+	echo '<div class="f10">' . __('not_connected');
 	echo '<br /><br />';
 	echo '<form method="post" action="index.php?login=1">';
 	echo '<div class="f9b">Login</div><input class="login" type="text" name="nick">';
 	echo '<div class="f9b">Password</div><input class="login" type="password" name="pass">';
-	echo '<div><input name="login" type="submit" class="sub" value="' . $lang_label["login"] .'"></div>';
+	echo '<div><input name="login" type="submit" class="sub" value="' . __('login') .'"></div>';
 	echo '<br />IP: <b class="f10">' . $REMOTE_ADDR . '</b><br /></div>';
 	
 } else {
-	$iduser = $_SESSION['id_usuario'];
 	require ("godmode/menu.php");
 	require ("links_menu.php");
 }

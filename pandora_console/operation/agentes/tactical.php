@@ -17,23 +17,23 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
-
 // Load global vars
-require("include/config.php");
-require("include/functions_reporting.php");
-$id_user = $_SESSION["id_usuario"];
- 	
-if (give_acl ($id_user, 0, "AR") != 1) {
-	audit_db ($id_user, $REMOTE_ADDR, "ACL Violation", 
+require ("include/config.php");
+
+check_login ();
+
+if (give_acl ($config['id_user'], 0, "AR") != 1) {
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", 
 	"Trying to access Agent view (Grouped)");
 	require ("general/noaccess.php");
 	exit;
 }
-echo "<h2>".lang_string ("ag_title")." &gt; ";
-echo lang_string ("tactical_view")."</h2>";
 
-$data = general_stats ($id_user,-1);
+require ("include/functions_reporting.php");
+echo "<h2>".__('ag_title')." &gt; ";
+echo __('tactical_view')."</h2>";
+
+$data = general_stats ($config['id_user'],-1);
 $monitor_checks = $data[0];
 $monitor_ok = $data[1];
 
@@ -91,21 +91,21 @@ echo "<table class='databox' celldpadding=4 cellspacing=4 width=250>";
 
 // Summary
 
-echo "<tr><td colspan='2'><b>".lang_string("Monitor health")."</th>";
-echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$monitor_health' title='$monitor_health % ".lang_string("of monitors UP")."'>";
-echo "<tr><td colspan='2'><b>".lang_string("Data health")."</th>";
-echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$data_health' title='$data_health % ".lang_string("of modules with updated data")."'>";
-echo "<tr><td colspan='2'><b>".lang_string("Global health")."</th>";
-echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$global_health' title='$global_health % ".lang_string("of modules with good data")."'>";
-echo "<tr><td colspan='2'><b>".lang_string("Module sanity")."</th>";
-echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$module_sanity ' title='$module_sanity % ".lang_string("of well initialized modules")."'>";
-echo "<tr><td colspan='2'><b>".lang_string("Alert level")."</th>";
-echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$alert_level' title='$alert_level % ".lang_string("of non-fired alerts")."'>";
+echo "<tr><td colspan='2'><b>".__('Monitor health')."</th>";
+echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$monitor_health' title='$monitor_health % ".__('of monitors UP')."'>";
+echo "<tr><td colspan='2'><b>".__('Data health')."</th>";
+echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$data_health' title='$data_health % ".__('of modules with updated data')."'>";
+echo "<tr><td colspan='2'><b>".__('Global health')."</th>";
+echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$global_health' title='$global_health % ".__('of modules with good data')."'>";
+echo "<tr><td colspan='2'><b>".__('Module sanity')."</th>";
+echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$module_sanity ' title='$module_sanity % ".__('of well initialized modules')."'>";
+echo "<tr><td colspan='2'><b>".__('Alert level')."</th>";
+echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$alert_level' title='$alert_level % ".__('of non-fired alerts')."'>";
 echo "<br><br>";
 
 // Monitor checks
 echo "<tr>";
-echo "<th colspan=2>".lang_string ("monitor_checks")."</th>";
+echo "<th colspan=2>".__('monitor_checks')."</th>";
 echo "<tr><td class=datos2><b>"."Monitor checks"."</b></td>";
 echo "<td style='font: bold 2em Arial;' class='datos2'>";
 echo "<a class='big_data' href='index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=-1'>";
@@ -166,7 +166,7 @@ echo "<td class=datos2 style='font: bold 2em Arial'>".$monitor_alert_total;
 // Data checks
 // ~~~~~~~~~~~~~~~
 
-echo "<tr><th colspan=2>".lang_string ("data_checks")."</th>";
+echo "<tr><th colspan=2>".__('data_checks')."</th>";
 echo "<tr><td class=datos2><b>"."Data checks"."</b></td>";
 echo "<td class=datos2 style='font: bold 2em Arial'>".$data_checks;
 echo "<tr><td class=datos><b>"."Data Unknown"."</b></td>";
@@ -199,7 +199,7 @@ echo "<td class=datos2 style='font: bold 2em Arial'>".$data_alert_total;
 // Summary
 // ~~~~~~~~~~~~~~~
 
-echo "<tr><th colspan='2'>".lang_string ("summary")."</th>";
+echo "<tr><th colspan='2'>".__('summary')."</th>";
 echo "<tr><td class='datos2'><b>"."Total agents"."</b></td>";
 echo "<td class='datos2' style='font: bold 2em Arial, Sans-serif;'>".$total_agents;
 echo "<tr><td class='datos'><b>"."Total checks"."</b></td>";
@@ -208,7 +208,7 @@ echo "<td class='datos' style='font: bold 2em Arial, Sans-serif;'>".$total_check
 echo "<tr><td class='datos2'><b>"."Server sanity"."</b></td>";
 echo "<td class='datos2' style='font: bold 1em Arial, Sans-serif;'>";
 echo format_numeric($notinit_percentage);
-echo "% ".lang_string("Uninitialized modules");
+echo "% ".__('Uninitialized modules');
 
 echo "</table>";
 
@@ -225,12 +225,12 @@ $result=mysql_query($sql);
 if (mysql_num_rows($result)){
 	echo "<table cellpadding='4' cellspacing='4' witdh='440' class='databox'>";
 	echo "<tr><th colspan=5>";
-	echo lang_string("tactical_server_information");
-	echo "<tr><td class='datos3'>".lang_string ("name")."</th>";
-	echo "<td class='datos3'>".lang_string ('status')."</th>";
-	echo "<td class='datos3'>".lang_string ('load')."</th>";
-	echo "<td class='datos3'>".lang_string ('modules')."</th>";
-	echo "<td class='datos3'>".lang_string ('lag')."</th>";
+	echo __('tactical_server_information');
+	echo "<tr><td class='datos3'>".__('name')."</th>";
+	echo "<td class='datos3'>".__('status')."</th>";
+	echo "<td class='datos3'>".__('load')."</th>";
+	echo "<td class='datos3'>".__('modules')."</th>";
+	echo "<td class='datos3'>".__('lag')."</th>";
 	$color=1;
 	while ($row=mysql_fetch_array($result)){
 		if ($color == 1){
@@ -285,7 +285,7 @@ if (mysql_num_rows($result)){
 
 		// Modules
 		echo "<td class='$tdcolor' align='middle'>";
-		echo $serverinfo["modules"] . " ".lang_string("of")." ". $total_modules;
+		echo $serverinfo["modules"] . " ".__('of')." ". $total_modules;
 
 		// Lag
 		echo "<td class='$tdcolor' align='middle'>";

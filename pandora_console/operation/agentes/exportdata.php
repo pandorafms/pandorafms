@@ -25,6 +25,15 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+// Load global vars
+require("include/config.php");
+
+check_login();
+
+if (! give_acl ($config['id_user'], 0, "AR") && ! give_acl ($config['id_user'], 0, "AW")) {
+	require ("general/noaccess.php");
+	return;
+}
 
 function give_average_from_module ($id_agente, $id_agente_modulo, $hour, $day, $start_date, $end_date){
 // Return average value from an agentmodule, for a specific hour of specific day of week,
@@ -48,14 +57,14 @@ function generate_average_table ($id_de_mi_agente, $id_agente_modulo, $fecha_ini
 // Genera una tabla con los promedios de los datos de un módulo no-string
 	require ("include/config.php");
 	require ("include/languages/language_".$language_code.".php");
-	$dias_de_la_semana = array ($lang_label["sunday"],$lang_label["monday"],$lang_label["tuesday"],$lang_label["wednesday"],$lang_label["thurdsday"],$lang_label["friday"],$lang_label["saturday"]);
+	$dias_de_la_semana = array (__('sunday'),__('monday'), __('tuesday'), __('wednesday'), __('thurdsday'), __('friday'), __('saturday'));
 	$nombre_modulo = dame_nombre_modulo_agentemodulo($id_agente_modulo);
 	
 	// Table header
 	echo "<table border=0 cellpadding=4 cellspacing=4 width=600 class='databox'>";
 	echo "<tr>
-	<th rowspan='2'>".$lang_label["hour"]."</th>";
-	echo "<th colspan='7'>".$lang_label["day"]."</th>
+	<th rowspan='2'>".__('hour')."</th>";
+	echo "<th colspan='7'>".__('day')."</th>
 	</tr>";
 	echo "<tr>";
 	for ($dia=0;$dia<7;++$dia)
@@ -70,7 +79,7 @@ function generate_average_table ($id_de_mi_agente, $id_agente_modulo, $fecha_ini
 			$tdcolor = "datos2";
 			$color = 1;
 		}
-		echo "<tr><th class='datos3'> $hora ".$lang_label["hr"]."</th>";
+		echo "<tr><th class='datos3'> $hora ".__('hr')."</th>";
 		for ($dia=0; $dia<7; ++$dia){
 			echo "<td class='$tdcolor'>"; 
 			echo format_numeric (give_average_from_module ($id_de_mi_agente, $id_agente_modulo, $hora, $dia, $fecha_inicio, $fecha_fin));
@@ -81,21 +90,6 @@ function generate_average_table ($id_de_mi_agente, $id_agente_modulo, $fecha_ini
 	echo "</table>";
 }
 
-// ----------------------------------
-// Main code
-// ----------------------------------
-
-// Load global vars
-require("include/config.php");
-
-// Security checks
-check_login();
-
-$id_user = $_SESSION["id_usuario"];
-if ( (give_acl($id_user, 0, "AR")==0) AND (give_acl($id_user, 0, "AW")==0) ){
-	require ("general/noaccess.php");
-	exit;
-}
 
 if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 		
@@ -105,15 +99,16 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 		$export_type = 3; // Standard table;
 
 	// Header
-	echo "<h2>".$lang_label["ag_title"]." &gt; ";
-	echo $lang_label["export_title"]."</h2>";
+	echo "<h2>".__('ag_title')." &gt; ";
+	echo __('export_title')."</h2>";
 
 	if ($export_type == 1) { // CSV
 
 		if (isset ($_POST["origen_modulo"])){
 			$origen = $_POST["origen"];
-			if (give_acl($id_user, dame_id_grupo($origen), "AR")!=1) {
-				audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Agent Export Data");
+			if (! give_acl ($config['id_user'], dame_id_grupo ($origen), "AR")) {
+				audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+					"Trying to access Agent Export Data");
 				require ("general/noaccess.php");
 			}
 			$origen_modulo = $_POST["origen_modulo"];
@@ -126,11 +121,11 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 			$to_date = $end_date." ".$end_time;
 			
 			$agentmodule_name = dame_nombre_modulo_agentemodulo($origen_modulo[0]);
-			echo $lang_label["db_agent_bra"]. "<b>" . dame_nombre_agente($origen). "-  $agentmodule_name</b>". $lang_label["from2"]. "<b>". $from_date. "</b>". $lang_label["to2"]. "<b>". $to_date. "</b><br>";
+			echo __('db_agent_bra'). "<b>" . dame_nombre_agente($origen). "-  $agentmodule_name</b>". __('from2'). "<b>". $from_date. "</b>". __('to2'). "<b>". $to_date. "</b><br>";
 
-			echo "<a href='operation/agentes/export_csv.php?from_date=$from_date&to_date=$to_date&agent=$origen&agentmodule=$id_agentemodulo'><img src='images/disk.png'> ".$lang_label["get_file"]."</a> pandora_export_$agentmodule_name.txt";
+			echo "<a href='operation/agentes/export_csv.php?from_date=$from_date&to_date=$to_date&agent=$origen&agentmodule=$id_agentemodulo'><img src='images/disk.png'> ".__('get_file')."</a> pandora_export_$agentmodule_name.txt";
 		} else
-			echo "<b class='error'>".$lang_label["no_sel_mod"]."</b>";
+			echo "<b class='error'>".__('no_sel_mod')."</b>";
 	}
 
 	if ($export_type == 2){ // Avarage day/hour matrix
@@ -146,7 +141,7 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 			$from_date = $start_date." ".$start_time;
 			$to_date = $end_date." ".$end_time;
 
-			echo $lang_label["db_agent_bra"]. "<b>" . dame_nombre_agente($origen). "-  $agentmodule_name</b>". $lang_label["from2"]. "<b>". $from_date. "</b>". $lang_label["to2"]. "<b>". $to_date. "</b><br>";
+			echo __('db_agent_bra'). "<b>" . dame_nombre_agente($origen). "-  $agentmodule_name</b>". __('from2'). "<b>". $from_date. "</b>". __('to2'). "<b>". $to_date. "</b><br>";
 			echo "<br>";
 
 			// For each module
@@ -163,8 +158,9 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 	if ($export_type == 3) { // Standard table
 		if (isset ($_POST["origen_modulo"])){
 			$origen = $_POST["origen"];
-			if (give_acl($id_user,dame_id_grupo($origen),"AR")!=1) {
-				audit_db($id_user,$REMOTE_ADDR, "ACL Violation","Trying to access Agent Export Data");
+			if (! give_acl ($config['id_user'], dame_id_grupo ($origen), "AR")) {
+				audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+					"Trying to access Agent Export Data");
 				require ("general/noaccess.php");
 			}
 			$origen_modulo = $_POST["origen_modulo"];
@@ -177,12 +173,12 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 			$from_date = $start_date." ".$start_time;
 			$to_date = $end_date." ".$end_time;
 
-			echo $lang_label["db_agent_bra"]. "<b>" . dame_nombre_agente($origen). "-  $agentmodule_name</b>". $lang_label["from2"]. "<b>". $from_date. "</b>". $lang_label["to2"]. "<b>". $to_date. "</b><br>";
+			echo __('db_agent_bra'). "<b>" . dame_nombre_agente($origen). "-  $agentmodule_name</b>". __('from2'). "<b>". $from_date. "</b>". __('to2'). "<b>". $to_date. "</b><br>";
 
 			echo "<br><table cellpadding='4' cellspacing='4' width='600' class='databox'>";
 			echo "<tr>
-			<th class='datos'>".$lang_label["module"]."</th>
-			<th class='datos'>".$lang_label["data"]."</th>
+			<th class='datos'>".__('module')."</th>
+			<th class='datos'>".__('data')."</th>
 			<th class='datos'>Timestamp</th>";
 	
 			// Begin the render !	
@@ -215,7 +211,7 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 			}
 			echo "</table>";
 		} else
-			echo "<b class='error'>".$lang_label["no_sel_mod"]."</b>";
+			echo "<b class='error'>".__('no_sel_mod')."</b>";
 
 	}
 
@@ -242,13 +238,13 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 			$date_to = $ahora;
 		
 	echo "<script type='text/javaScript' src='include/javascript/calendar.js'></script>";
-	echo "<h2>".$lang_label["ag_title"]." &gt; ";
-	echo $lang_label["export_data"]."</h2>";
+	echo "<h2>".__('ag_title')." &gt; ";
+	echo __('export_data')."</h2>";
 
 	echo '<form method="post" action="index.php?sec=estado&sec2=operation/agentes/exportdata" name="export_form">';
 	echo '<table width=550 border=0 cellspacing=3 cellpadding=5 class=databox_color>';
 	echo '<tr>';
-	echo "<td class='datos'><b>".$lang_label["source_agent"]."</b></td>";
+	echo "<td class='datos'><b>".__('source_agent')."</b></td>";
 	echo "<td class='datos'>";	
 
 
@@ -261,70 +257,68 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 	$result=mysql_query($sql1);
 	while ($row=mysql_fetch_array($result)){
 		if ( (isset($_POST["update_agent"])) AND (isset($_POST["origen"])) ){
-			if (give_acl($id_user, $row["id_grupo"], "AR")==1)
+			if (give_acl($config['id_user'], $row["id_grupo"], "AR"))
 				if ( $_POST["origen"] != $row["id_agente"])
 					echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
-		}
-		else
-			if (give_acl($id_user, $row["id_grupo"], "AR")==1)
+		} else {
+			if (give_acl($config['id_user'], $row["id_grupo"], "AR"))
 				echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
+		}
 	}
 	echo "</select> &nbsp;&nbsp;";
-	echo "<input type=submit name='update_agent' class='sub upd' value='".$lang_label["get_info"]."'>";
+	echo "<input type=submit name='update_agent' class='sub upd' value='".__('get_info')."'>";
 
 	
 	echo '<tr>';
 	echo "<td class='datos2'>";
-	echo "<b>".$lang_label["modules"]."</b>";
+	echo "<b>".__('modules')."</b>";
 	echo "<td class='datos2'>";
 	
 	// Combo with modules
 	echo "<select name='origen_modulo[]' size=8 class='w130'>";
-	if ((isset($_POST["update_agent"])) AND (isset($_POST["origen"])) ) {
+	if ((isset($_POST["update_agent"])) && (isset($_POST["origen"])) ) {
 		// Populate Module/Agent combo
 		$agente_modulo = $_POST["origen"];
-		$sql1="SELECT * FROM tagente_modulo WHERE id_agente = ".$agente_modulo;
-		$result = mysql_query($sql1);
-		while ($row=mysql_fetch_array($result)){
+		$sql = "SELECT * FROM tagente_modulo WHERE id_agente = ".$agente_modulo;
+		$result = mysql_query ($sql);
+		while ($row=mysql_fetch_array($result)) {
 			echo "<option value=".$row["id_agente_modulo"].">".$row["nombre"];
 		}
 	} else {
-		echo "<option value=-1>".$lang_label["N/A"]."</option>";
+		echo "<option value=-1>".__('N/A')."</option>";
 	}
 	echo "</select>";
 	
 	echo "<tr><td class='datos'>";
-	echo "<b>".$lang_label["begin_date"]."</b>";
+	echo "<b>".__('begin_date')."</b>";
 	echo "<td class='datos'>";
-	echo "<input type='text' id='start_date' name='start_date' size=10 value='".substr($date_from,0,10)."'> <img src='images/calendar_view_day.png' onclick='scwShow(scwID(\"start_date\"),this);'> ";
-	echo "<input type='text' name='start_time' size=10 value='".substr($date_from,11,8)."'>";
+	echo "<input type='text' id='start_date' name='start_date' size=10 value='".substr ($date_from, 0, 10)."'> <img src='images/calendar_view_day.png' onclick='scwShow(scwID(\"start_date\"),this);'> ";
+	echo "<input type='text' name='start_time' size=10 value='".substr ($date_from, 11, 8)."'>";
 	
 
 	echo "<tr><td class='datos2'>";
-	echo "<b>".$lang_label["end_date"]."</b>";
+	echo "<b>".__('end_date')."</b>";
 	
 	echo "<td class='datos2'>";	
-	echo "<input type='text' id='end_date' name='end_date' size=10 value='".substr($date_to,0,10)."'> <img src='images/calendar_view_day.png' onclick='scwShow(scwID(\"end_date\"),this);'> ";
-	echo "<input type='text' name='end_time' size=10 value='".substr($date_to,11,8)."'>";
+	echo "<input type='text' id='end_date' name='end_date' size=10 value='".substr ($date_to, 0, 10)."'> <img src='images/calendar_view_day.png' onclick='scwShow(scwID(\"end_date\"),this);'> ";
+	echo "<input type='text' name='end_time' size=10 value='".substr ($date_to, 11, 8)."'>";
 
 	echo "<tr><td class='datos'>";
-	echo "<b>".$lang_label["export_type"]."</b>";
+	echo "<b>".__('export_type')."</b>";
 	echo "<td class='datos'>";
 	// Combo for data export type
 	echo "<select name='export_type'>";
-	echo "<option value=3>".$lang_label["datatable"]."</option>";
-	echo "<option value=1>".$lang_label["csv"]."</option>";
-	echo "<option value=2>".$lang_label["average_per_hourday"]."</option>";
+	echo "<option value=3>".__('datatable')."</option>";
+	echo "<option value=1>".__('csv')."</option>";
+	echo "<option value=2>".__('average_per_hourday')."</option>";
 	echo "</select>";
 	echo "</table>";
+	
 	// Submit button
-
-	echo "<table width=550>";
-	echo "<tr><td align='right'>";
-	echo "<input type=submit name='export' class='sub wand' value=".$lang_label["export"].">";
-	echo "</table>";
+	echo '<div class="action-buttons" style="width: 550">';
+	print_submit_button (__('export'), 'export', false, 'class="sub wand"');
+	echo "</div>";
 	echo "</form>";
-
 }
 
 ?>

@@ -36,8 +36,8 @@ $label_group = 0;
 $last_label = "";
 
 // Title
-echo "<h2>".$lang_label["ag_title"]." &gt; ";
-echo $lang_label["last_data_chunk"];
+echo "<h2>".__('ag_title')." &gt; ";
+echo __('last_data_chunk');
 echo "&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data'><img src='images/refresh.png'></A>";
 echo "</h2>";
 
@@ -46,14 +46,14 @@ $result3=mysql_query($sql3);
 if (mysql_num_rows ($result3)) {
 	echo "<table width='750' cellpadding='3' cellspacing='3' class='databox'>";
 	echo "<th></th>";
-	echo "<th>".$lang_label["module_name"]."</th>";
-	echo "<th>".$lang_label["type"]."</th>";
-	echo "<th>".$lang_label["int"]."</th>";
-	echo "<th>".$lang_label["description"]."</th>";
-	echo "<th>".$lang_label["data"]."</th>";
-	echo "<th>".$lang_label["graph"]."</th>";
-	echo "<th>".$lang_label["raw_data"]."</th>";
-	echo "<th>".$lang_label["timestamp"]."</th>";
+	echo "<th>".__('module_name')."</th>";
+	echo "<th>".__('type')."</th>";
+	echo "<th>".__('int')."</th>";
+	echo "<th>".__('description')."</th>";
+	echo "<th>".__('data')."</th>";
+	echo "<th>".__('graph')."</th>";
+	echo "<th>".__('raw_data')."</th>";
+	echo "<th>".__('timestamp')."</th>";
 	$texto=''; $last_modulegroup = 0;
 	$color = 1;
 	while ($row3=mysql_fetch_array($result3)){
@@ -82,8 +82,7 @@ if (mysql_num_rows ($result3)) {
 		// Is a network module 
 		// Has flag = 0
 		$id_grupo = $row_t["id_grupo"];
-		$id_usuario=$_SESSION["id_usuario"];
-		if (give_acl($id_usuario, $id_grupo, "AW")==1){
+		if (give_acl ($config['id_user'], $id_grupo, "AW")) {
 			if (($row3["id_modulo"] > 1) AND ($row3["id_tipo_modulo"] < 100)) {
 				if ($row3["flag"] == 0){
 					echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."&id_agente_modulo=".$row3["id_agente_modulo"]."&flag=1&tab=data&refr=60'><img src='images/target.png' border='0'></a>";
@@ -192,7 +191,7 @@ if (mysql_num_rows ($result3)) {
 	
 		echo "<td class='".$tdcolor."f9'>";
 		if ($row3["timestamp"] == "0000-00-00 00:00:00"){ 
-			echo $lang_label["never"];
+			echo __('never');
 		} else {
 			$ahora = time();
 			// Async modules
@@ -212,7 +211,7 @@ if (mysql_num_rows ($result3)) {
     echo '</table>';
 }
 else {
-	echo "<div class='nf'>".$lang_label["no_modules"]."</div>";
+	echo "<div class='nf'>".__('no_modules')."</div>";
 }	
 
 ?>

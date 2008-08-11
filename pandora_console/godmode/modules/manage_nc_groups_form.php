@@ -24,14 +24,11 @@
 // Load global vars
 require("include/config.php");
 
-if (comprueba_login() == 0)
-  	$id_user = $_SESSION["id_usuario"];
-else
-	$id_user = "";
+check_login ();
 
-if (give_acl($id_user, 0, "PM")!=1) {
-	audit_db($id_user,$REMOTE_ADDR, "ACL Violation",
-	"Trying to access SNMO Groups Management");
+if (! give_acl ($config['id_user'], 0, "PM")) {
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+		"Trying to access SNMO Groups Management");
 	require ("general/noaccess.php");
 	exit;
 }
@@ -49,7 +46,7 @@ if (isset($_GET["edit"])){ // Edit mode
 	$parent = "";
 }
 
-echo "<h2>".$lang_label["network_component_group_management"]."</h2>";
+echo "<h2>".__('network_component_group_management')."</h2>";
 echo '<table width="500" cellspacing="4" cellpadding="4" class="databox_color">';
 
 // Different Form url if it's a create or if it's a update form
@@ -59,11 +56,11 @@ else
 	echo "<form name='snmp_c' method='post' action='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&create=1'>";
 	
 echo "<tr>";
-echo "<td class='datos'>".$lang_label["name"]."</td>";
+echo "<td class='datos'>".__('name')."</td>";
 echo "<td class='datos'><input type='text' name='name' size=30 value='$name'></td>";
 
 echo "<tr>";
-echo "<td class='datos2'>".$lang_label["parent"]."</td>";
+echo "<td class='datos2'>".__('parent')."</td>";
 echo "<td class='datos2'>";
 echo "<select name='parent'>";
 echo "<option value='$parent'>".give_network_component_group_name($parent);
@@ -78,9 +75,9 @@ echo '<table width="500">';
 echo '<tr><td align="right">';
 
 if ($id_sg == -1)
-	echo "<input name='crtbutton' type='submit' class='sub wand' value='".$lang_label["create"]."'>";
+	echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('create')."'>";
 else
-	echo "<input name='uptbutton' type='submit' class='sub upd' value='".$lang_label["update"]."'>";
+	echo "<input name='uptbutton' type='submit' class='sub upd' value='".__('update')."'>";
 
 echo "</form></td></tr></table>";
 

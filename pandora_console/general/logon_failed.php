@@ -20,7 +20,7 @@
 
 <div class='databox' id='login'>
 	<div id='login_f' class='databox'>
-		<h1 id="log_f" style='margin-top: 0px;' class="error"><?php echo $lang_label['err_auth']; ?></h1>
+		<h1 id="log_f" style='margin-top: 0px;' class="error"><?php echo __('err_auth'); ?></h1>
 		<div id='noa' style='width:50px' >
 			<img src='images/noaccess.png' alt='No access'>
 		</div>
@@ -30,6 +30,6 @@
 			<?php echo $pandora_version; ?>
 		</div>
 
-		<div class="msg"><?php echo $lang_label["err_auth_msg"]; ?></div>
+		<div class="msg"><?php echo __('err_auth_msg'); ?></div>
 	</div>
 </div>

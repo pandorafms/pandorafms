@@ -128,7 +128,7 @@ function get_pdf_report ($report) {
 		switch ($content["type"]) {
 		case 1:
 		case 'simple_graph':
-			doTitle ($pdf, lang_string ("Module graph").': '.$agent_name.
+			doTitle ($pdf, __('Module graph').': '.$agent_name.
 				' - '.$module_name.' - '.$period);
 			$image = 'http://'.$_SERVER['HTTP_HOST'].$config["homeurl"].
 				'/reporting/fgraph.php?PHPSESSID='.$session_id.
@@ -152,7 +152,7 @@ function get_pdf_report ($report) {
 				array_push ($modules, $content2['id_agent_module']);
 				array_push ($weights, $content2["weight"]);
 			}
-			doTitle ($pdf, lang_string ("Custom graph").': '.$graph["name"].
+			doTitle ($pdf, __('Custom graph').': '.$graph["name"].
 				' - '.$period);
 			$image = 'http://'.$_SERVER['HTTP_HOST'].$config["homeurl"].
 				'/reporting/fgraph.php?PHPSESSID='.$session_id.'&tipo=combined&id='.
@@ -164,29 +164,29 @@ function get_pdf_report ($report) {
 			break;
 		case 3:
 		case 'SLA':
-			doTitle ($pdf, lang_string ('SLA').': '.$period);
+			doTitle ($pdf, __('SLA').': '.$period);
 			
 			$slas = get_db_all_rows_field_filter ('treport_content_sla_combined',
 							'id_report_content', $content['id_rc']);
 			if (sizeof ($slas) == 0) {
-				$pdf->ezText ("<b>".lang_string ('no_defined_slas') . " %</b>", 18);
+				$pdf->ezText ("<b>".__('no_defined_slas') . " %</b>", 18);
 			}
 			$table->data = array ();
-			$table->head = array (lang_string ('Info'),
-						lang_string ('sla_result'));
+			$table->head = array (__('Info'),
+						__('sla_result'));
 			$sla_failed = false;
 			foreach ($slas as $sla) {
 				$data = array ();
 				
-				$data[0] = lang_string ('agent')." : ".dame_nombre_agente_agentemodulo ($sla['id_agent_module'])."\n";
-				$data[0] .= lang_string ('module')." : ".dame_nombre_modulo_agentemodulo ($sla['id_agent_module'])."\n";
-				$data[0] .= lang_string ('sla_max')." : ".$sla['sla_max']."\n";
-				$data[0] .= lang_string ('sla_min')." : ".$sla['sla_min'];
+				$data[0] = __('agent')." : ".dame_nombre_agente_agentemodulo ($sla['id_agent_module'])."\n";
+				$data[0] .= __('module')." : ".dame_nombre_modulo_agentemodulo ($sla['id_agent_module'])."\n";
+				$data[0] .= __('sla_max')." : ".$sla['sla_max']."\n";
+				$data[0] .= __('sla_min')." : ".$sla['sla_min'];
 				
 				$sla_value = get_agent_module_sla ($sla['id_agent_module'], $content['period'],
 								$sla['sla_min'], $sla['sla_max']);
 				if ($sla_value === false) {
-					$data[1] = lang_string ('unknown');
+					$data[1] = __('unknown');
 				} else {
 					if ($sla_value < $sla['sla_limit']) {
 						$pdf->setColor (0, 1, 0, 0); // Red
@@ -201,16 +201,16 @@ function get_pdf_report ($report) {
 			$pdf->ezTable ($table->data, $table->head, "", $table_options);
 			
 			if (! $sla_failed) {
-				$pdf->ezText ('<b>'.lang_string ('ok').'</b>', 8);
+				$pdf->ezText ('<b>'.__('ok').'</b>', 8);
 			} else {
-				$pdf->ezText ('<b>'.lang_string ('fail').'</b>', 8);
+				$pdf->ezText ('<b>'.__('fail').'</b>', 8);
 			}
 			unset ($slas);
 			
 			break;
 		case 4:
 		case 'event_report':
-			doTitle ($pdf, lang_string ("event_report").' - '.$period);
+			doTitle ($pdf, __('event_report').' - '.$period);
 			$table_events = event_reporting ($report['id_group'], $content['period'], 0, true);
 			$pdf->ezTable ($table_events->data, $table_events->head,
 					"", $table_options);
@@ -221,7 +221,7 @@ function get_pdf_report ($report) {
 			$alerts = get_alerts_in_group ($report['id_group']);
 			$alerts_fired = get_alerts_fired ($alerts, $content['period']);
 			
-			doTitle ($pdf, lang_string ("alert_report").': '.$group_name.
+			doTitle ($pdf, __('alert_report').': '.$group_name.
 				' - '.$period);
 			$fired_percentage = round (sizeof ($alerts_fired) / sizeof ($alerts) * 100, 2);
 			$not_fired_percentage = 100 - $fired_percentage;
@@ -230,8 +230,8 @@ function get_pdf_report ($report) {
 				'&tipo=alerts_fired_pipe&height=150&width=280&fired='.
 				$fired_percentage.'&not_fired='.$not_fired_percentage;
 			$pdf->ezImage ($image, 0, 150, 'none', 'left');
-			$pdf->ezText ('<b>'.lang_string ('fired_alerts').': '.sizeof ($alerts_fired).'</b>', 8);
-			$pdf->ezText ('<b>'.lang_string ('total_alerts_monitored').': '.sizeof ($alerts).'</b>', 8);
+			$pdf->ezText ('<b>'.__('fired_alerts').': '.sizeof ($alerts_fired).'</b>', 8);
+			$pdf->ezText ('<b>'.__('total_alerts_monitored').': '.sizeof ($alerts).'</b>', 8);
 			$pdf->ezText ("\n", 8);
 			
 			$table_alerts = get_fired_alerts_reporting_table ($alerts_fired);
@@ -244,19 +244,19 @@ function get_pdf_report ($report) {
 		case 6:
 		case 'monitor_report':
 			$value = get_agent_module_sla ($content["id_agent_module"], $content['period'], 1, 1);
-			doTitle ($pdf, lang_string ("monitor_report").': '.$agent_name.' - '.$module_name.
+			doTitle ($pdf, __('monitor_report').': '.$agent_name.' - '.$module_name.
 				' - '.$period);
 			$pdf->setColor (0, 0.9, 0, 0); // Red
-			$pdf->ezText ('<b>'.lang_string ('up').': '.format_for_graph ($value, 2) . " %</b>", 18);
+			$pdf->ezText ('<b>'.__('up').': '.format_for_graph ($value, 2) . " %</b>", 18);
 			$pdf->setColor (0.9, 0, 0, 1); // Grey
-			$pdf->ezText ('<b>'.lang_string ('down').': '.format_numeric (100 - $value, 2) . " %</b>", 18);
+			$pdf->ezText ('<b>'.__('down').': '.format_numeric (100 - $value, 2) . " %</b>", 18);
 			$pdf->setColor (0, 0, 0, 1); // Black
 			
 			break;
 		case 7:
 		case 'avg_value':
 			$value = get_agent_module_value_average ($content["id_agent_module"], $content['period']);
-			doTitle ($pdf, lang_string("avg_value").': '.$agent_name.' - '.
+			doTitle ($pdf, __('avg_value').': '.$agent_name.' - '.
 				$module_name.' - '.$period);
 			$pdf->ezText ("<b>".format_for_graph ($value, 2)."</b>", 18);
 			
@@ -264,7 +264,7 @@ function get_pdf_report ($report) {
 		case 8:
 		case 'max_value':
 			$value = get_agent_module_value_max ($content["id_agent_module"], $content['period']);
-			doTitle ($pdf, lang_string ("max_value").': '.$agent_name.
+			doTitle ($pdf, __('max_value').': '.$agent_name.
 				' - '.$module_name.' - '.$period);
 			$pdf->ezText ("<b>".format_for_graph ($value, 2)."</b>", 18);
 			
@@ -272,7 +272,7 @@ function get_pdf_report ($report) {
 		case 9:
 		case 'min_value':
 			$value = get_agent_module_value_min ($content["id_agent_module"], $content['period']);
-			doTitle ($pdf, lang_string ("min_value").': '.$agent_name.
+			doTitle ($pdf, __('min_value').': '.$agent_name.
 				' - '.$module_name.' - '.$period);
 			$pdf->ezText ("<b>".format_for_graph ($value, 2)."</b>", 18);
 			
@@ -280,15 +280,15 @@ function get_pdf_report ($report) {
 		case 10:
 		case 'sumatory':
 			$value = get_agent_module_value_sumatory ($content["id_agent_module"], $content['period']);
-			doTitle ($pdf, lang_string ("sumatory").': '.$agent_name.
+			doTitle ($pdf, __('sumatory').': '.$agent_name.
 				' - '.$module_name.' - '.$period);
 			$pdf->ezText ("<b>".format_for_graph ($value, 2)."</b>", 18);
 			
 			break;
 		case 11:
 		case 'general_group_report':
-			doTitle ($pdf, lang_string ("group").': '.$group_name);
-			$pdf->ezText ("<b>".lang_string ('agents_in_group').': '.sizeof ($agents)."</b>", 12);
+			doTitle ($pdf, __('group').': '.$group_name);
+			$pdf->ezText ("<b>".__('agents_in_group').': '.sizeof ($agents)."</b>", 12);
 			
 			break;
 		case 12:
@@ -296,7 +296,7 @@ function get_pdf_report ($report) {
 			$monitors = get_monitors_in_group ($report['id_group']);
 			$monitors_down = get_monitors_down ($monitors, $content['period']);
 			
-			doTitle ($pdf, lang_string ("monitor_health").': '.
+			doTitle ($pdf, __('monitor_health').': '.
 				$group_name. ' - '.$period);
 			$down_percentage = round (sizeof ($monitors_down) / sizeof ($monitors) * 100, 2);
 			$not_down_percentage = 100 - $down_percentage;
@@ -306,8 +306,8 @@ function get_pdf_report ($report) {
 				$down_percentage.'&not_down='.$not_down_percentage;
 			$pdf->ezImage ($image, 0, 150, 'none', 'left');
 			$pdf->ezText ("\n", 4);
-			$pdf->ezText ('<b>'.lang_string ('total_monitors').': '.sizeof ($monitors).'</b>', 8);
-			$pdf->ezText ('<b>'.lang_string ('monitors_down_on_period').': '.sizeof ($monitors_down).'</b>', 8);
+			$pdf->ezText ('<b>'.__('total_monitors').': '.sizeof ($monitors).'</b>', 8);
+			$pdf->ezText ('<b>'.__('monitors_down_on_period').': '.sizeof ($monitors_down).'</b>', 8);
 			$pdf->ezText ("\n", 8);
 			
 			$table_monitors = get_monitors_down_reporting_table ($monitors_down);
@@ -319,25 +319,25 @@ function get_pdf_report ($report) {
 			break;
 		case 13:
 		case 'agents_detailed':
-			doTitle ($pdf, lang_string ("agents_detailed").': '.
-				$group_name.' '.lang_string ('group'));
+			doTitle ($pdf, __('agents_detailed').': '.
+				$group_name.' '.__('group'));
 			foreach ($agents as $agent) {
 				$pdf->ezText ("<b>".$agent['nombre']."</b>", 18);
 				$table = get_agent_modules_reporting_table ($agent['id_agente'], $content['period']);
-				$pdf->ezText ("<b>".lang_string ('modules')."</b>", 12);
+				$pdf->ezText ("<b>".__('modules')."</b>", 12);
 				$pdf->ezText ("\n", 3);
-				$pdf->ezTable ($table->data, array (lang_string ('name')), "", $table_options);
+				$pdf->ezTable ($table->data, array (__('name')), "", $table_options);
 				
 				$table = get_agent_alerts_reporting_table ($agent['id_agente'], $content['period']);
 				if (sizeof ($table->data)) {
-					$pdf->ezText ("<b>".lang_string ('alerts')."</b>", 12);
+					$pdf->ezText ("<b>".__('alerts')."</b>", 12);
 					$pdf->ezText ("\n", 3);
 					$pdf->ezTable ($table->data, $table->head, "", $table_options);
 				}
 				
 				$table = get_agent_monitors_reporting_table ($agent['id_agente'], $content['period']);
 				if (sizeof ($table->data)) {
-					$pdf->ezText ("<b>".lang_string ('monitors')."</b>", 12);
+					$pdf->ezText ("<b>".__('monitors')."</b>", 12);
 					$pdf->ezText ("\n", 3);
 					$pdf->ezTable ($table->data, $table->head, "", $table_options);
 				}

@@ -10,10 +10,10 @@
 
 <div id="noaccess">
 	<div align='center'>
-		<h2><?php echo lang_string ("no_access_title") ?></h2>
+		<h2><?php echo __('no_access_title') ?></h2>
 		<div>&nbsp;</div>
 		<img src='images/noaccess.png' alt='No access'>
 		<div>&nbsp;</div>
-		<div class="msg"><?php echo lang_string ("no_access_text");?></div>
+		<div class="msg"><?php echo __('no_access_text');?></div>
 	</div>
 </div>

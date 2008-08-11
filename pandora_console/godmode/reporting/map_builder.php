@@ -65,10 +65,10 @@ if ($create_layout) {
 			$name, $id_group, $background, $height, $width);
 	$result = mysql_query ($sql);
 	if ($result) {
-		echo '<h3 class="suc">'.lang_string ("create_ok").'</h3>';
+		echo '<h3 class="suc">'.__('create_ok').'</h3>';
 		$id_layout = mysql_insert_id ();
 	} else {
-		echo '<h3 class="err">'.lang_string ("create_no").'</h3>';
+		echo '<h3 class="err">'.__('create_no').'</h3>';
 	}
 	if (defined ('AJAX')) {
 		exit;
@@ -81,9 +81,9 @@ if ($delete_layout) {
 	$sql = sprintf ('DELETE FROM tlayout WHERE id = %d', $id_layout);
 	$result = mysql_query ($sql);
 	if ($result) {
-		echo '<h3 class="suc">'.lang_string ("delete_ok").'</h3>';
+		echo '<h3 class="suc">'.__('delete_ok').'</h3>';
 	} else {
-		echo '<h3 class="err">'.lang_string ("delete_no").'</h3>';
+		echo '<h3 class="err">'.__('delete_no').'</h3>';
 	}
 	$id_layout = 0;
 }
@@ -108,9 +108,9 @@ if ($update_layout) {
 			$name, $background, $height, $width, $id_layout);
 	$result = mysql_query ($sql);
 	if ($result) {
-		echo '<h3 class="suc">'.lang_string ("update_ok").'</h3>';
+		echo '<h3 class="suc">'.__('update_ok').'</h3>';
 	} else {
-		echo '<h3 class="err">'.lang_string ("update_no").'</h3>';
+		echo '<h3 class="err">'.__('update_no').'</h3>';
 	}
 	if (defined ('AJAX')) {
 		exit;
@@ -165,9 +165,9 @@ if ($create_layout_data) {
 	$result = mysql_query ($sql);
 	
 	if ($result) {
-		echo '<h3 class="suc">'.lang_string ("create_ok").'</h3>';
+		echo '<h3 class="suc">'.__('create_ok').'</h3>';
 	} else {
-		echo '<h3 class="error">'.lang_string ("create_no").'</h3>';
+		echo '<h3 class="error">'.__('create_no').'</h3>';
 	}
 	if (defined ('AJAX')) {
 		exit;
@@ -239,9 +239,9 @@ if ($update_layout_data) {
 	$result = mysql_query ($sql);
 	
 	if ($result) {
-		echo '<h3 class="suc">'.lang_string ("modify_ok").'</h3>';
+		echo '<h3 class="suc">'.__('modify_ok').'</h3>';
 	} else {
-		echo '<h3 class="error">'.lang_string ("modify_no").'</h3>';
+		echo '<h3 class="error">'.__('modify_no').'</h3>';
 	}
 }
 
@@ -255,14 +255,14 @@ if ($id_layout) {
 }
 
 if (! $edit_layout && ! $id_layout) {
-	echo "<h2>".lang_string ("reporting")." &gt; ".lang_string ("map_builder")."</h2>";
+	echo "<h2>".__('reporting')." &gt; ".__('map_builder')."</h2>";
 	
 	$table->width = '500px';
 	$table->data = array ();
 	$table->head = array ();
-	$table->head[0] = lang_string ('map_name');
-	$table->head[1] = lang_string ('group');
-	$table->head[2] = lang_string ('delete');
+	$table->head[0] = __('map_name');
+	$table->head[1] = __('group');
+	$table->head[2] = __('delete');
 	$table->align = array ();
 	$table->align[2] = 'center';
 	
@@ -282,12 +282,12 @@ if (! $edit_layout && ! $id_layout) {
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
 	echo '<form action="index.php?sec=greporting&sec2=godmode/reporting/map_builder" method="post">';
 	print_input_hidden ('edit_layout', 1);
-	print_submit_button (lang_string ('create'), '', false, 'class="sub wand"');
+	print_submit_button (__('create'), '', false, 'class="sub wand"');
 	echo '</form>';
 	echo '</div>';
 } else {
-	echo "<h2>".lang_string ("reporting")." &gt; ";
-	echo lang_string ("map_builder");
+	echo "<h2>".__('reporting')." &gt; ";
+	echo __('map_builder');
 	pandora_help ("map_builder");
 	echo "</h2>";
 	
@@ -297,17 +297,17 @@ if (! $edit_layout && ! $id_layout) {
 	
 	$table->width = '300px';
 	$table->data = array ();
-	$table->data[0][0] = lang_string ('name');
+	$table->data[0][0] = __('name');
 	$table->data[0][1] = print_input_text ('name', $name, '', 15, 50, true);
-	$table->data[1][0] = lang_string ('group');
+	$table->data[1][0] = __('group');
 	$table->data[1][1] = print_select ($groups, 'id_group', $id_group, '', '', '', true);
-	$table->data[2][0] = lang_string ('background');
+	$table->data[2][0] = __('background');
 	$table->data[2][1] = print_select ($backgrounds_list, 'background', $background, '', 'None', '', true);
 	
 	if ($id_layout) {
-		$table->data[3][0] = lang_string ('width');
+		$table->data[3][0] = __('width');
 		$table->data[3][1] = print_input_text ('width', $width, '', 3, 5, true);
-		$table->data[4][0] = lang_string ('height');
+		$table->data[4][0] = __('height');
 		$table->data[4][1] = print_input_text ('height', $height, '', 3, 5, true);
 	}
 	echo '<form action="index.php?sec=greporting&sec2=godmode/reporting/map_builder" method="post">';
@@ -315,11 +315,11 @@ if (! $edit_layout && ! $id_layout) {
 	
 	echo '<div style="width: '.$table->width.'" class="action-buttons">';
 	if ($id_layout) {
-		print_submit_button (lang_string ('update'), 'update_layout', false, 'class="sub upd"');
+		print_submit_button (__('update'), 'update_layout', false, 'class="sub upd"');
 		print_input_hidden ('update_layout', 1);
 		print_input_hidden ('id_layout', $id_layout);
 	} else {
-		print_submit_button (lang_string ('create'), 'create_layout', false, 'class="sub wand"');
+		print_submit_button (__('create'), 'create_layout', false, 'class="sub wand"');
 		print_input_hidden ('create_layout', 1);
 	}
 	echo '</div>';
@@ -327,7 +327,7 @@ if (! $edit_layout && ! $id_layout) {
 	
 	if ($id_layout) {
 		/* Show visual map preview */
-		echo '<h1>'.lang_string ('preview').'</h1>';
+		echo '<h1>'.__('preview').'</h1>';
 		print_pandora_visual_map ($id_layout, false, true);
 		
 		$images_list = array ();
@@ -345,32 +345,32 @@ if (! $edit_layout && ! $id_layout) {
 		/* Layout data trash */
 		echo '<form id="form_layout_data_trash" action="" method="post">';
 		echo '<div id="layout_trash_drop">';
-		echo '<h1>'.lang_string ('Map element trash').'</h1>';	
-		echo lang_string ('Drag an element here to delete from the map');
+		echo '<h1>'.__('Map element trash').'</h1>';	
+		echo __('Drag an element here to delete from the map');
 		echo '<span id="elements"> </span>';
 		print_input_hidden ('delete_layout_data', 1);
 		print_input_hidden ('id_layout', $id_layout);
 		
 		echo '<div class="action-buttons" style="margin-top: 180px">';
-		print_submit_button (lang_string ('delete'), 'delete_buttons', true, 'class="sub delete"');
+		print_submit_button (__('delete'), 'delete_buttons', true, 'class="sub delete"');
 		echo '</div>';
 		echo '</div>';
 		echo '</form>';
 		
 		/* Layout_data editor form */
 		$intervals = array ();
-		$intervals[1] = lang_string ('Hour');
-		$intervals[2] = "2 ".lang_string ('Hours');
-		$intervals[3] = "3 ".lang_string ('Hours');
-		$intervals[6] = "6 ".lang_string ('Hours');
-		$intervals[12] = "12 ".lang_string ('Hours');
-		$intervals[24] = lang_string ('Last day');
-		$intervals[48] = "2 ". lang_string ('days');
-		$intervals[168] = lang_string ('Last week');
-		$intervals[360] = lang_string ('15 days');
-		$intervals[720] = lang_string ('Last Month');
-		$intervals[1440] = lang_string ('Two Months');
-		$intervals[4320] = lang_string ('Six Months');
+		$intervals[1] = __('Hour');
+		$intervals[2] = "2 ".__('Hours');
+		$intervals[3] = "3 ".__('Hours');
+		$intervals[6] = "6 ".__('Hours');
+		$intervals[12] = "12 ".__('Hours');
+		$intervals[24] = __('Last day');
+		$intervals[48] = "2 ". __('days');
+		$intervals[168] = __('Last week');
+		$intervals[360] = __('15 days');
+		$intervals[720] = __('Last Month');
+		$intervals[1440] = __('Two Months');
+		$intervals[4320] = __('Six Months');
 		
 		$all_agents = get_agents_in_group ($id_group);
 		$agents = array ();
@@ -382,8 +382,8 @@ if (! $edit_layout && ! $id_layout) {
 		}
 
 		echo '<div id="layout_editor_drop">';
-		echo '<h1>'.lang_string ('Map element editor').'</h1>';
-		echo lang_string ('Drag an element here to edit the properties');
+		echo '<h1>'.__('Map element editor').'</h1>';
+		echo __('Drag an element here to edit the properties');
 		
 		$table->data = array ();
 		$table->id = 'table_layout_data';
@@ -391,29 +391,29 @@ if (! $edit_layout && ! $id_layout) {
 		$table->rowstyle[3] = 'display: none';
 		$table->rowstyle[4] = 'display: none';
 		
-		$table->data[0][0] = lang_string ('label');
+		$table->data[0][0] = __('label');
 		$table->data[0][1] = print_input_text ('label', '', '', 20, 200, true);
-		$table->data[1][0] = lang_string ('label_color');
+		$table->data[1][0] = __('label_color');
 		$table->data[1][1] = print_input_text ('label_color', '#000000', '', 7, 7, true);
-		$table->data[2][0] = lang_string ('type');
+		$table->data[2][0] = __('type');
 		$table->data[2][1] = print_select (get_layout_data_types (), 'type', '', '', '', '', true);
-		$table->data[3][0] = lang_string ('height');
+		$table->data[3][0] = __('height');
 		$table->data[3][1] = print_input_text ('height', '', '', 5, 5, true);
-		$table->data[4][0] = lang_string ('width');
+		$table->data[4][0] = __('width');
 		$table->data[4][1] = print_input_text ('width', '', '', 5, 5, true);
-		$table->data[5][0] = lang_string ('agent');
+		$table->data[5][0] = __('agent');
 		$table->data[5][1] = print_select ($agents, 'agent', '', '', '--', 0, true);
-		$table->data[6][0] = lang_string ('module');
+		$table->data[6][0] = __('module');
 		$table->data[6][1] = print_select (array (), 'module', '', '', '--', 0, true);
-		$table->data[7][0] = lang_string ('period');
+		$table->data[7][0] = __('period');
 		$table->data[7][1] = print_select ($intervals, 'period', '', '', '--', 0, true);
-		$table->data[8][0] = lang_string ('image');
+		$table->data[8][0] = __('image');
 		$table->data[8][1] = print_select ($images_list, 'image', '', '', 'None', '', true);
 		$table->data[8][1] .= '<div id="image_preview"> </div>';
-		$table->data[9][0] = lang_string ('parent');
+		$table->data[9][0] = __('parent');
 		$table->data[9][1] = print_select_from_sql ('SELECT id, label FROM tlayout_data WHERE id_layout = '.$id_layout,
 							'parent_item', '', '', 'None', '', true);
-		$table->data[10][0] = lang_string ('map_linked');
+		$table->data[10][0] = __('map_linked');
 		$table->data[10][1] = print_select_from_sql ('SELECT id, name FROM tlayout WHERE id != '.$id_layout,
 							'map_linked', '', '', 'None', '', true);
 		
@@ -424,7 +424,7 @@ if (! $edit_layout && ! $id_layout) {
 		print_input_hidden ('id_layout', $id_layout);
 		print_input_hidden ('id_layout_data', 0);
 		echo '<div style="width: '.$table->width.'" class="action-buttons">';
-		print_submit_button (lang_string ('create'), 'create_layout_data_button', false, 'class="sub wand"');
+		print_submit_button (__('create'), 'create_layout_data_button', false, 'class="sub wand"');
 		echo '</div>';
 		echo '</form>';
 		echo '</div>';
@@ -449,7 +449,7 @@ function agent_changed (event, id_agent, selected) {
 		id_agent = this.value;
 	$('#form_layout_data_editor #module').attr ('disabled', 1);
 	$('#form_layout_data_editor #module').empty ();
-	$('#form_layout_data_editor #module').append (new Option ("<?=lang_string ('Loading')?>...", 0));
+	$('#form_layout_data_editor #module').append (new Option ("<?=__('Loading')?>...", 0));
 	jQuery.post ('ajax.php', 
 		{page: "operation/agentes/ver_agente",
 		get_agent_modules_json: 1,
@@ -552,7 +552,7 @@ $(document).ready (function () {
 					$("#form_layout_data_editor #hidden-update_layout_data").attr ('value', 1);
 					$("#form_layout_data_editor #hidden-create_layout_data").attr ('value', 0);
 					$("#form_layout_data_editor #hidden-id_layout_data").attr ('value', id);
-					$("#form_layout_data_editor #submit-create_layout_data_button").attr ('value', "<?=lang_string ('update')?>").removeClass ('wand').addClass ('upd');
+					$("#form_layout_data_editor #submit-create_layout_data_button").attr ('value', "<?=__('update')?>").removeClass ('wand').addClass ('upd');
 					$("#form_layout_data_editor #text-label_color").attr ('value', data['label_color']);
 					$(".ColorPickerDivSample").css ('background-color', data['label_color']);
 					agent_changed (null, data['id_agent'], data['id_agente_modulo']);

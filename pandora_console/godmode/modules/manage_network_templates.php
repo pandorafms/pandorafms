@@ -18,14 +18,11 @@
 // Load global vars
 require("include/config.php");
 
-if (comprueba_login() == 0)
-  	$id_user = $_SESSION["id_usuario"];
-else
-	$id_user = "";
+check_login ();
 
-if (give_acl($id_user, 0, "PM")!=1) {
-	audit_db($id_user,$REMOTE_ADDR, "ACL Violation",
-	"Trying to access Network Profile Management");
+if (! give_acl ($config['id_user'], 0, "PM")) {
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+		"Trying to access Network Profile Management");
 	require ("general/noaccess.php");
 	exit;
 }
@@ -35,14 +32,14 @@ if (isset($_GET["delete"])){ // if delete
 	$sql_delete= "DELETE FROM tnetwork_profile WHERE id_np = ".$id_np;
 	$result=mysql_query($sql_delete);
 	if (! $result)
-		echo "<h3 class='error'>".$lang_label["delete_no"]."</h3>";
+		echo "<h3 class='error'>".__('delete_no')."</h3>";
 	else
-		echo "<h3 class='suc'>".$lang_label["delete_ok"]."</h3>";
+		echo "<h3 class='suc'>".__('delete_ok')."</h3>";
 	
 	$result=mysql_query($sql_delete);
 }
-echo "<h2>".$lang_label["module_management"]." &gt; ";
-echo $lang_label["network_profile_management"]."</h2>";
+echo "<h2>".__('module_management')." &gt; ";
+echo __('network_profile_management')."</h2>";
 
 
 $sql1='SELECT * FROM tnetwork_profile ORDER BY name';
@@ -50,9 +47,9 @@ $result=mysql_query($sql1);
 $color=0;
 if (mysql_num_rows($result)) {
 	echo "<table cellpadding='4' cellspacing='4' width='650' class='databox'>";
-	echo "<th>".$lang_label["name"]."</th>";
-	echo "<th>".$lang_label["description"]."</th>";
-	echo "<th>".$lang_label["action"]."</th>";
+	echo "<th>".__('name')."</th>";
+	echo "<th>".__('description')."</th>";
+	echo "<th>".__('action')."</th>";
 }
 while ($row=mysql_fetch_array($result)){
 	if ($color == 1){
@@ -73,7 +70,7 @@ while ($row=mysql_fetch_array($result)){
 		</td>
 		<td class='$tdcolor' align='center'>
 		<a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates&delete=".$row["id_np"]."'
-			onClick='if (!confirm(\' ".$lang_label["are_you_sure"]."\'))
+			onClick='if (!confirm(\' ".__('are_you_sure')."\'))
 		return false;'>
 		<img border='0' src='images/cross.png'></a>
 		</td>
@@ -84,13 +81,13 @@ if (mysql_num_rows($result)) {
 	echo "</table>";
 	echo "<table width='650px'>";
 } else {
-	echo "<div class='nf'>".$lang_label["no_netprofiles"]."</div>";
+	echo "<div class='nf'>".__('no_netprofiles')."</div>";
 	echo "<table>";
 }
 
 echo "<tr><td align='right'>";
 echo "<form method=post action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np=-1'>";
-echo "<input type='submit' class='sub next' name='crt' value='".$lang_label["create"]."'>";
+echo "<input type='submit' class='sub next' name='crt' value='".__('create')."'>";
 echo "</form></td></tr></table>";
 
 ?>

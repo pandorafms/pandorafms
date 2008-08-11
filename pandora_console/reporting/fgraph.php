@@ -947,7 +947,7 @@ function graphic_string_data ($id_agent_module, $periodo, $width, $height, $pure
 		Image_Graph::vertical(
 			Image_Graph::vertical(
 						$Title = Image_Graph::factory('title', array('   Pandora FMS Graph - '.strtoupper($nombre_agente)." - ".give_human_time ($periodo), 10)),
-						$Subtitle = Image_Graph::factory('title', array('     '.lang_string("Data occurrence for module ").$nombre_modulo, 7)),
+						$Subtitle = Image_Graph::factory('title', array('     '.__('Data occurrence for module ').$nombre_modulo, 7)),
 						90
 				),
 			Image_Graph::horizontal(
@@ -1039,12 +1039,12 @@ function grafico_incidente_prioridad () {
 				$mayor = $i;
 				$mayor_data = $data[$i];
 		}
-	$legend = array (lang_string ("Informative"),
-			lang_string ("Low"),
-			lang_string ("Medium"),
-			lang_string ("Serious"),
-			lang_string ("Very serious"),
-			lang_string ("Maintance"));
+	$legend = array (__('Informative'),
+			__('Low'),
+			__('Medium'),
+			__('Serious'),
+			__('Very serious'),
+			__('Maintance'));
 	generic_pie_graph (320, 200, $data, $legend);
 }
 
@@ -1271,7 +1271,7 @@ function grafico_eventos_total ($filter = "") {
 	$result=mysql_query($sql1);
 	$row=mysql_fetch_array($result);
 	$data[] = $row[0];
-	$legend[] = lang_string("Maintenance")." ( $row[0] )";
+	$legend[] = __('Maintenance')." ( $row[0] )";
 	$total = $row[0];
 	
 	$sql1="SELECT COUNT(id_evento) FROM tevento WHERE criticity = 1 $filter";
@@ -1279,28 +1279,28 @@ function grafico_eventos_total ($filter = "") {
 	$row=mysql_fetch_array($result);
 	$data[] = $row[0];
 	$total = $total + $row[0];
-	$legend[] = lang_string("Informational")."( $row[0] )";
+	$legend[] = __('Informational')."( $row[0] )";
 
 	$sql1="SELECT COUNT(id_evento) FROM tevento WHERE criticity = 2 $filter";
 	$result=mysql_query($sql1);
 	$row=mysql_fetch_array($result);
 	$data[] = $row[0];
 	$total = $total + $row[0];
-	$legend[] = lang_string("Normal")." ( $row[0] )";
+	$legend[] = __('Normal')." ( $row[0] )";
 
 	$sql1="SELECT COUNT(id_evento) FROM tevento WHERE criticity = 3 $filter";
 	$result=mysql_query($sql1);
 	$row=mysql_fetch_array($result);
 	$data[] = $row[0];
 	$total = $total + $row[0];
-	$legend[] = lang_string("Warning")." ( $row[0] )";
+	$legend[] = __('Warning')." ( $row[0] )";
 
 	$sql1="SELECT COUNT(id_evento) FROM tevento WHERE criticity = 4 $filter";
 	$result=mysql_query($sql1);
 	$row=mysql_fetch_array($result);
 	$data[] = $row[0];
 	$total = $total + $row[0];
-	$legend[] = lang_string("Critical")." ( $row[0] )";
+	$legend[] = __('Critical')." ( $row[0] )";
 
 	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
 	// or much better, pay me to do a special version for you, highly optimized :-))))
@@ -1339,7 +1339,7 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 		$row2=mysql_fetch_array($result2);
 	if ($row2[0] > 0) {
 		$data[] = $row2[0];
-		$legend[] = lang_string("System")." ( $row2[0] )";
+		$legend[] = __('System')." ( $row2[0] )";
 	}
 
 
@@ -1558,7 +1558,7 @@ function drawWarning($width,$height) {
 
 	ImageFilledRectangle($image,0,0,$width-1,$height-1,$back);
 	ImageRectangle($image,0,0,$width-1,$height-1,$border);
-	ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $border, $config['fontpath'], lang_string ("no_data"));
+	ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $border, $config['fontpath'], __('no_data'));
 	imagePNG($image);
 	imagedestroy($image);
 }
@@ -1625,7 +1625,7 @@ function progress_bar ($progress, $width, $height, $mode = 1) {
 		if ($mode == 1){
 			if ($rating > 50)
 				if ($rating > 100)
-					ImageTTFText($image, 8, 0, ($width/4), ($height/2)+($height/5), $back, $config["fontpath"], lang_string ("out_of_limits"));
+					ImageTTFText($image, 8, 0, ($width/4), ($height/2)+($height/5), $back, $config["fontpath"], __('out_of_limits'));
 				else
 					ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $back, $config["fontpath"], $rating."%");
 			else
@@ -2180,8 +2180,8 @@ if ($graphic_type) {
 		$data[0] = (float) get_parameter ('fired');
 		$data[1] = (float) get_parameter ('not_fired');
 		$legends = array ();
-		$legends[0] = lang_string ('fired_alerts');
-		$legends[1] = lang_string ('not_fired_alerts');
+		$legends[0] = __('fired_alerts');
+		$legends[1] = __('not_fired_alerts');
 		generic_pie_graph ($width, $height, $data, $legends);
 		
 		break;
@@ -2190,8 +2190,8 @@ if ($graphic_type) {
 		$data[0] = (float) get_parameter ('down');
 		$data[1] = (float) get_parameter ('not_down');
 		$legends = array ();
-		$legends[0] = lang_string ('monitors_ok');
-		$legends[1] = lang_string ('monitors_bad');
+		$legends[0] = __('monitors_ok');
+		$legends[1] = __('monitors_bad');
 		generic_pie_graph ($width, $height, $data, $legends);
 		
 		break;

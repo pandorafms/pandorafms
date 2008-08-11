@@ -106,7 +106,7 @@ if ($intervalo > 0){
 }
 
 ?>
-<title>Pandora FMS - <?php echo lang_string("header_title"); ?></title>
+<title>Pandora FMS - <?php echo __('header_title'); ?></title>
 <meta http-equiv="expires" content="0">
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="resource-type" content="document">
@@ -184,8 +184,6 @@ if (! isset ($_SESSION['id_usuario']) && isset ($_GET["login"])) {
 } else {
 	// There is session for id_usuario
 	$config["id_user"] = $_SESSION["id_usuario"];
-	// Temporal fix 
-	$id_user = $config["id_user"];
 }
 
 // Log off
@@ -249,7 +247,7 @@ if ($page != "") {
 			}
 		}
 	} else {
-		echo "<br><b class='error'>".lang_string("Sorry! I can't find the page!")."</b>";
+		echo "<br><b class='error'>".__('Sorry! I can\'t find the page!')."</b>";
 	}
 } else
 	require ("general/logon_ok.php");  //default

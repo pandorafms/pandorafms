@@ -17,37 +17,35 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
-global $config;
+require("include/config.php");
+
 check_login();
 
-$id_user = $config["id_user"];
-
-if ((give_acl($id_user, 0, "AR") != 1) AND (give_acl($id_user,0,"AW") != 1)) {
-	audit_db($id_user,$REMOTE_ADDR, "ACL Violation",
-	"Trying to access SLA View");
+if (! give_acl ($config['id_user'], 0, "AR") && ! give_acl ($config['id_user'], 0, "AW")) {
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+		"Trying to access SLA View");
 	require ("general/noaccess.php");
 	exit;
 }
 
 require ("include/functions_reporting.php");
 
-
-echo "<h2>".lang_string("SLA view")."</h2>";
+echo "<h2>".__('SLA view')."</h2>";
 $id_agent = get_parameter ("id_agente", "0");
 
 // Get all module from agent
 $sql_t='SELECT * FROM tagente_estado, tagente_modulo WHERE tagente_modulo.disabled = 0 AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.id_agente='.$id_agent.' AND tagente_estado.estado != 100 AND tagente_estado.utimestamp != 0 ORDER BY tagente_modulo.nombre';
 $result_t=mysql_query($sql_t);
 if (mysql_num_rows ($result_t)) {
-	echo "<h3>".lang_string ("Automatic SLA for monitors")."</h3>";
+	echo "<h3>".__('Automatic SLA for monitors')."</h3>";
 	echo "<table width='750' cellpadding=4 cellspacing=4 class='databox'>";
 	echo "<tr><th>X</th>";
-	echo "<th>".$lang_label["type"]."</th>
-	<th>".$lang_label["module_name"]."</th>
-	<th>".$lang_label["SLA"]."</th>
-	<th>".$lang_label["status"]."</th>
-	<th>".$lang_label["interval"]."</th>
-	<th>".$lang_label["last_contact"]."</th>";
+	echo "<th>".__('type')."</th>
+	<th>".__('module_name')."</th>
+	<th>".__('SLA')."</th>
+	<th>".__('status')."</th>
+	<th>".__('interval')."</th>
+	<th>".__('last_contact')."</th>";
 	$color=0;
 	while ($module_data=mysql_fetch_array($result_t)){
 		# For evey module in the status table
@@ -96,7 +94,7 @@ if (mysql_num_rows ($result_t)) {
 
 			$temp = get_agent_module_sla ($module_data["id_agente_modulo"], $config["sla_period"], 1, 2147483647);
 			if ($temp === false)
-				echo lang_string("N/A");
+				echo __('N/A');
 			else {
 				echo format_numeric ($temp)." %</td>";;
 			}
@@ -104,11 +102,11 @@ if (mysql_num_rows ($result_t)) {
 			echo "<td class='".$tdcolor."' align='center'>";
 			if ($est_estado == 1){
 				if ($est_cambio == 1) 
-					echo "<img src='images/pixel_yellow.png' width=40 height=18 title='" . lang_string ("yellow_light") . "'>";
+					echo "<img src='images/pixel_yellow.png' width=40 height=18 title='" . __('yellow_light') . "'>";
 				else
-					echo "<img src='images/pixel_red.png' width=40 height=18 title='". lang_string ("red_light") . "'>";
+					echo "<img src='images/pixel_red.png' width=40 height=18 title='". __('red_light') . "'>";
 			} else
-				echo "<img src='images/pixel_green.png' width=40 height=18 title='". lang_string ("green_light") . "'>";
+				echo "<img src='images/pixel_green.png' width=40 height=18 title='". __('green_light') . "'>";
 
 			echo "<td align='center' class='".$tdcolor."'>";
 			if ($temp_interval != $intervalo)
@@ -123,7 +121,7 @@ if (mysql_num_rows ($result_t)) {
 				echo "<span>";
 			}
 			if ($module_data["timestamp"] == '0000-00-00 00:00:00') {
-				echo lang_string ("never");
+				echo __('never');
 			} else {
 				echo human_time_comparation($module_data["timestamp"]);
 			}
@@ -135,18 +133,18 @@ if (mysql_num_rows ($result_t)) {
 
 
 // Get all SLA report components
-$sql_t = "SELECT tagente_modulo.id_agente_modulo, sla_max, sla_min, sla_limit, tagente_modulo.id_tipo_modulo, tagente_modulo.nombre, tagente_modulo.descripcion FROM treport_content_sla_combined, tagente_modulo WHERE tagente_modulo.id_agente = $id_agent AND tagente_modulo.id_agente_modulo = treport_content_sla_combined.id_agent_module AND tagente_modulo.id_tipo_modulo IN (1,4,7,8,11,15,16,22,24)";
-$result_t=mysql_query($sql_t);
+$sql = "SELECT tagente_modulo.id_agente_modulo, sla_max, sla_min, sla_limit, tagente_modulo.id_tipo_modulo, tagente_modulo.nombre, tagente_modulo.descripcion FROM treport_content_sla_combined, tagente_modulo WHERE tagente_modulo.id_agente = $id_agent AND tagente_modulo.id_agente_modulo = treport_content_sla_combined.id_agent_module AND tagente_modulo.id_tipo_modulo IN (1,4,7,8,11,15,16,22,24)";
+$result_t = mysql_query ($sql);
 if (mysql_num_rows ($result_t)) {
 	$color=0;
-	echo "<h3>".lang_string ("User-defined SLA items")." - ";
+	echo "<h3>".__('User-defined SLA items')." - ";
 	echo human_time_description_raw($config["sla_period"]). " </h3>";
 	echo "<table width='750' cellpadding=4 cellspacing=4 class='databox'>";
 	echo "<tr>";
-	echo "<th>" . lang_string ("type") . "</th>";
-	echo "<th>" . lang_string ("module_name") . "</th>";
-	echo "<th>" . lang_string ("SLA") . "</th>";
-	echo "<th>" . lang_string ("status") . "</th>";
+	echo "<th>" . __('type') . "</th>";
+	echo "<th>" . __('module_name') . "</th>";
+	echo "<th>" . __('SLA') . "</th>";
+	echo "<th>" . __('status') . "</th>";
 	
 	while ($module_data = mysql_fetch_array($result_t)){
 		if ($color == 1){
@@ -177,15 +175,15 @@ if (mysql_num_rows ($result_t)) {
 
 		$temp = get_agent_module_sla ($id_agent_module, $config["sla_period"], $sla_min, $sla_max);
 		if ($temp === false){
-			echo lang_string("N/A");
+			echo __('N/A');
 			echo "<td class='$tdcolor'>";
 		} else {
 			echo format_numeric($temp)." %</td>";
 			echo "<td class='$tdcolor'>";
 			if ($temp > $sla_limit)
-				echo "<img src='images/pixel_green.png' width=40 height=18 title='" . lang_string ("green_light") . "'>";
+				echo "<img src='images/pixel_green.png' width=40 height=18 title='" . __('green_light') . "'>";
 			else
-				echo "<img src='images/pixel_red.png' width=40 height=18 title='" . lang_string ("red_light") . "'>";
+				echo "<img src='images/pixel_red.png' width=40 height=18 title='" . __('red_light') . "'>";
 		}
 	}
 	echo '</table>';

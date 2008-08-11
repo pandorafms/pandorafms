@@ -31,7 +31,7 @@ if (isset($_GET['sec'])){
 
 ?>
 <div class='databox' id='login'>
-	<h1 id='log'><?php echo $lang_label['welcome_title']; ?></h1>
+	<h1 id='log'><?php echo __('welcome_title'); ?></h1>
 	<div class='databox' id='login_in'>
 		<form method="post" action="index.php?login=1">
 		<table cellpadding='4' cellspacing='1' width='400'>

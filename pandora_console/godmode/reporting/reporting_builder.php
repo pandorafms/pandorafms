@@ -17,11 +17,13 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Login check
-$id_user=$_SESSION["id_usuario"];
-global $REMOTE_ADDR;
+require ("include/config.php");
 
-if (give_acl ($id_user, 0, "AW") != 1 && dame_admin ($id_user) != 1) {
-	audit_db ($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access graph builder");
+check_login ();
+
+if (! give_acl ($config['id_user'], 0, "AW")) {
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
+		"Trying to access graph builder");
 	include ("general/noaccess.php");
 	exit;
 }
@@ -68,9 +70,9 @@ if ($delete_report_content) {
 	$sql = sprintf ('DELETE FROM treport_content WHERE id_rc = %d', $id_report_content);
 	$result = mysql_query ($sql);
 	if ($result)
-		echo "<h3 class='suc'>".lang_string ('delete_ok')."</h3>";
+		echo "<h3 class='suc'>".__('delete_ok')."</h3>";
 	else
-		echo "<h3 class='error'>".lang_string ('delete_no')."</h3>";
+		echo "<h3 class='error'>".__('delete_no')."</h3>";
 }
 
 // Move content up
@@ -104,16 +106,16 @@ if ($delete_report) {
 	$res = mysql_query ($sql);
 	$res2 = mysql_query ($sql2);
 	if ($res AND $res2)
-		echo "<h3 class=suc>".lang_string ('delete_reporting_ok')."</h3>";
+		echo "<h3 class=suc>".__('delete_reporting_ok')."</h3>";
 	else
-		echo "<h3 class=error>".lang_string ('delete_reporting_no')."</h3>";
+		echo "<h3 class=error>".__('delete_reporting_no')."</h3>";
 	$id_report = 0;
 }
 
 // Add module SQL code
 if ($add_content) {
 	if (! $id_report) {
-		audit_db($id_user,$REMOTE_ADDR, "Hack attempt","Parameter trash in report builder");
+		audit_db ($config['id_user'], $REMOTE_ADDR, "Hack attempt", "Parameter trash in report builder");
 		include ("general/noaccess.php");
 		exit ();
 	}
@@ -131,7 +133,7 @@ if ($add_content) {
 			$id_agent_module ? $id_agent_module : "NULL",
 			$order, $type, $period * 3600);
 	if ($result = mysql_query($sql)) {
-		echo '<h3 class="suc">'.lang_string ('create_reporting_ok').'</h3>';
+		echo '<h3 class="suc">'.__('create_reporting_ok').'</h3>';
 		$id_agent = 0;
 		$id_agent_module = 0;
 		$report_id_group = 0;
@@ -142,7 +144,7 @@ if ($add_content) {
 		$sla_min = 0;
 		$sla_limit = 0;
 	} else {
-		echo '<h3 class="error">'.lang_string ('create_reporting_no')."</h3>";
+		echo '<h3 class="error">'.__('create_reporting_no')."</h3>";
 		/* Do not unset so the values are kept in the form */
 	}
 }
@@ -154,9 +156,9 @@ if ($create_report) {
 			$report_name, $report_description, $config['id_user'], $report_private, $report_id_group);
 	$result = mysql_query ($sql);
 	if ($result)
-		echo "<h3 class=suc>".lang_string ('create_reporting_ok')."</h3>";
+		echo "<h3 class=suc>".__('create_reporting_ok')."</h3>";
 	else
-		echo "<h3 class=error>".lang_string ('create_reporting_no')."</h3>";
+		echo "<h3 class=error>".__('create_reporting_no')."</h3>";
 	$id_report = mysql_insert_id ();
 }
 
@@ -169,9 +171,9 @@ if ($update_report) {
 			$report_private, $id_report);
 	$result = mysql_query ($sql);
 	if ($result)
-		echo "<h3 class=suc>".lang_string ('modify_ok')."</h3>";
+		echo "<h3 class=suc>".__('modify_ok')."</h3>";
 	else
-		echo "<h3 class=error>".lang_string ('modify_no')."</h3>";
+		echo "<h3 class=error>".__('modify_no')."</h3>";
 }
 
 if ($id_report) {
@@ -214,11 +216,11 @@ if ($edit_sla_report_content) {
 		if ($id_module) {
 			$result = mysql_query ($sql);
 			if ($result)
-				echo "<h3 class=suc>".lang_string ('add_sla_ok')."</h3>";
+				echo "<h3 class=suc>".__('add_sla_ok')."</h3>";
 			else 
-				echo "<h3 class=error>".lang_string ('add_sla_no')."</h3>";
+				echo "<h3 class=error>".__('add_sla_no')."</h3>";
 		} else {
-			echo "<h3 class=error>".lang_string ('sla_module_is_null')."</h3>";
+			echo "<h3 class=error>".__('sla_module_is_null')."</h3>";
 		}
 	}
 	if ($delete_sla) {
@@ -226,18 +228,18 @@ if ($edit_sla_report_content) {
 		$sql = sprintf ('DELETE FROM treport_content_sla_combined WHERE id = %d', $id_sla);
 		$result = mysql_query ($sql);
 		if ($result)
-			echo "<h3 class=suc>".lang_string ('delete_sla_ok')."</h3>";
+			echo "<h3 class=suc>".__('delete_sla_ok')."</h3>";
 		else 
-			echo "<h3 class=error>".lang_string ('delete_sla_no')."</h3>";
+			echo "<h3 class=error>".__('delete_sla_no')."</h3>";
 	}
 	$report_content = get_db_row ('treport_content', 'id_rc', $id_report_content);
 
 	/* Show all SLAs defined in the report content */	
-	echo '<h2>'.lang_string ('reporting')." &gt; ";
-	echo lang_string ('custom_reporting_builder')." &gt; ";
+	echo '<h2>'.__('reporting')." &gt; ";
+	echo __('custom_reporting_builder')." &gt; ";
 	echo '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&edit_report=1&id_report='.
 		$id_report.'">'.$report['name'].'</a></h2>';
-	echo '<h2>'.lang_string ('defined_slas')."</h2>";
+	echo '<h2>'.__('defined_slas')."</h2>";
 
 	$table->id = 'table-sla-list';
 	$table->width = '500px';
@@ -245,12 +247,12 @@ if ($edit_sla_report_content) {
 	$table->align[5] = 'center';
 	$table->data = array ();
 	$table->head = array ();
-	$table->head[0] = lang_string ('agent');
-	$table->head[1] = lang_string ('module');
-	$table->head[2] = lang_string ('sla_min');
-	$table->head[3] = lang_string ('sla_max');
-	$table->head[4] = lang_string ('sla_limit');
-	$table->head[5] = lang_string ('delete');
+	$table->head[0] = __('agent');
+	$table->head[1] = __('module');
+	$table->head[2] = __('sla_min');
+	$table->head[3] = __('sla_max');
+	$table->head[4] = __('sla_limit');
+	$table->head[5] = __('delete');
 
 	$slas = get_db_all_rows_field_filter ('treport_content_sla_combined', 'id_report_content', $id_report_content);
 	foreach ($slas as $sla) {
@@ -272,7 +274,7 @@ if ($edit_sla_report_content) {
 		print_table ($table);
 	}
 
-	echo "<h2>".lang_string ('sla_construction')."</h2>";
+	echo "<h2>".__('sla_construction')."</h2>";
 	$table->id = 'table-add-sla';
 	$table->width = '500px';
 	$table->data = array ();
@@ -281,15 +283,15 @@ if ($edit_sla_report_content) {
 	$table->size[0] = '150px';
 	$table->head = array ();
 	$table->style[0] = 'font-weight: bold';
-	$table->data[0][0] = lang_string ('agent');
+	$table->data[0][0] = __('agent');
 	$table->data[0][1] = print_select ($agents, 'id_agent', 0, '', '--', 0, true);
-	$table->data[1][0] = lang_string ('module');
+	$table->data[1][0] = __('module');
 	$table->data[1][1] = print_select (array (), 'id_module', 0, '', '--', 0, true);
-	$table->data[2][0] = lang_string ('sla_min');
+	$table->data[2][0] = __('sla_min');
 	$table->data[2][1] = print_input_text ('sla_min', $sla_min, '', 5, 10, true);
-	$table->data[3][0] = lang_string ('sla_max');
+	$table->data[3][0] = __('sla_max');
 	$table->data[3][1] = print_input_text ('sla_max', $sla_max, '', 5, 10, true);
-	$table->data[4][0] = lang_string ('sla_limit');
+	$table->data[4][0] = __('sla_limit');
 	$table->data[4][1] = print_input_text ('sla_limit', $sla_limit, '', 5, 10, true);
 	
 	echo '<form method="post" action="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id_report='.
@@ -299,7 +301,7 @@ if ($edit_sla_report_content) {
 	print_input_hidden ('edit_sla_report_content', 1);
 	print_input_hidden ('id_report_content', $id_report_content);
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
-	print_submit_button (lang_string ('create'), 'add', false, 'class="sub wand"');
+	print_submit_button (__('create'), 'add', false, 'class="sub wand"');
 	echo '</div>';
 	echo '</form>';
 } else if ($edit_report || $id_report) {
@@ -308,17 +310,17 @@ if ($edit_sla_report_content) {
 		$id_agent = $_POST["id_agent"];
 	else
 		$id_agent = 0;
-	echo "<h2>".lang_string ('reporting')." &gt; ";
-	echo lang_string ('custom_reporting_builder')."</h2>";
+	echo "<h2>".__('reporting')." &gt; ";
+	echo __('custom_reporting_builder')."</h2>";
 	
 	$table->id = 'table-edit-report';
 	$table->width = '500px';
 	$table->data = array ();
 	$table->style = array ();
 	$table->style[0] = 'font-weight: bold';
-	$table->data[0][0] = lang_string ('report_name');
+	$table->data[0][0] = __('report_name');
 	$table->data[0][1] = print_input_text ('report_name', $report_name, '', 35, 150, true);
-	$table->data[1][0] = lang_string ('group');
+	$table->data[1][0] = __('group');
 	if ($report_id_group) {
 		/* Changing the group is not allowed. */
 		$table->data[1][1] = '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.
@@ -332,9 +334,9 @@ if ($edit_sla_report_content) {
 		$table->data[1][1] .= '<img src="images/groups_small/'.dame_grupo_icono ($report_id_group).'.png" />';
 	}
 	$table->data[1][1] .= '</span>';
-	$table->data[2][0] = lang_string ('private');
+	$table->data[2][0] = __('private');
 	$table->data[2][1] = print_checkbox ('report_private', 1, $report_private, true);
-	$table->data[3][0] = lang_string ('description');
+	$table->data[3][0] = __('description');
 	$table->data[3][1] = print_textarea ('report_description', 3, 40, $report_description, '', true);
 
 	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/reporting_builder'>";
@@ -345,17 +347,17 @@ if ($edit_sla_report_content) {
 	if ($id_report) {
 		print_input_hidden ('id_report', $id_report);
 		print_input_hidden ('update_report', 1);
-		print_submit_button (lang_string ('update'), 'submit', false, 'class="sub next"');
+		print_submit_button (__('update'), 'submit', false, 'class="sub next"');
 	} else {
 		print_input_hidden ('create_report', 1);
-		print_submit_button (lang_string ('create'), 'submit', false, 'class="sub wand"');
+		print_submit_button (__('create'), 'submit', false, 'class="sub wand"');
 	}
 	echo "</div>";
 	echo "</form>";
 	
 	if ($id_report) {
 		// Part 2 - Add new items to report
-		echo "<h2>".lang_string ('reporting_item_add')."</h2>";
+		echo "<h2>".__('reporting_item_add')."</h2>";
 		
 		/* We're reusing some $table attributes */
 		$table->id = 'table-add-item';
@@ -367,29 +369,29 @@ if ($edit_sla_report_content) {
 		$table->size[0] = '200px';
 		$table->data = array ();
 
-		$table->data[0][0] = lang_string ('reporting_type');
+		$table->data[0][0] = __('reporting_type');
 		$types = get_report_types ();
 		asort ($types);
 		$table->data[0][1] = print_select ($types, 'type', -1, '', '--', -1, true);
-		$table->data[1][0] = lang_string ('period');
+		$table->data[1][0] = __('period');
 		$periods = array ();
-		$periods[1] = lang_string ('hour');
-		$periods[2] = '2 '.lang_string ('hours');
-		$periods[3] = '3 '.lang_string ('hours');
-		$periods[6] = '6 '.lang_string ('hours');
-		$periods[12] = '12 '.lang_string ('hours');
-		$periods[24] = lang_string ('last_day');
-		$periods[48] = lang_string ('two_days');
-		$periods[180] = lang_string ('last_week');
-		$periods[360] = lang_string ('last_two_weeks');
-		$periods[720] = lang_string ('last_month');
-		$periods[4320] = lang_string ('six_months');
+		$periods[1] = __('hour');
+		$periods[2] = '2 '.__('hours');
+		$periods[3] = '3 '.__('hours');
+		$periods[6] = '6 '.__('hours');
+		$periods[12] = '12 '.__('hours');
+		$periods[24] = __('last_day');
+		$periods[48] = __('two_days');
+		$periods[180] = __('last_week');
+		$periods[360] = __('last_two_weeks');
+		$periods[720] = __('last_month');
+		$periods[4320] = __('six_months');
 		$table->data[1][1] = print_select ($periods, 'period', 0, '', '--', 0, true);
 
-		$table->data[2][0] = lang_string ('source_agent');
+		$table->data[2][0] = __('source_agent');
 		$table->data[2][1] = print_select ($agents, 'id_agent', $id_agent, '', '--', 0, true);
 		
-		$table->data[3][0] = lang_string ('module');
+		$table->data[3][0] = __('module');
 		$modules = array ();
 		if ($id_agent) {
 			$sql = sprintf ('SELECT id_agente_modulo, LOWER(nombre) FROM tagente_modulo WHERE id_agente = %d ORDER BY nombre', $id_agent);
@@ -397,7 +399,7 @@ if ($edit_sla_report_content) {
 		}
 		$table->data[3][1] = print_select ($modules, 'id_module', 0, '', '--', 0, true);
 		
-		$table->data[4][0] = lang_string ('custom_graph_name');
+		$table->data[4][0] = __('custom_graph_name');
 		$table->data[4][1] = print_select_from_sql ('SELECT id_graph, name FROM tgraph',
 							'id_custom_graph', 0, '', '--', 0, true);
 
@@ -406,30 +408,30 @@ if ($edit_sla_report_content) {
 		echo '<div class="action-buttons" style="width: '.$table->width.'">';
 		print_input_hidden ('add_content', 1);
 		print_input_hidden ('id_report', $id_report);
-		print_submit_button (lang_string ('add'), 'add', false, 'class="sub wand"');
+		print_submit_button (__('add'), 'add', false, 'class="sub wand"');
 		echo "</div>";
 		echo "</form>";
 		
 		// Part 3 - List of already assigned report items
-		echo "<h2>".lang_string ('report_items')."</h2>";
+		echo "<h2>".__('report_items')."</h2>";
 		$table->id = 'table-assigned-reports';
 		$table->width = '90%';
 		$table->data = array ();
 		$table->head = array ();
 		$table->size = array ();
 		$table->rowstyle = array ();
-		$table->head[0] = lang_string ('order');
-		$table->head[1] = lang_string ('type');
-		$table->head[2] = lang_string ('agent');
-		$table->head[3] = lang_string ('module');
-		$table->head[4] = lang_string ('period');
-		$table->head[5] = lang_string ('Options');
+		$table->head[0] = __('order');
+		$table->head[1] = __('type');
+		$table->head[2] = __('agent');
+		$table->head[3] = __('module');
+		$table->head[4] = __('period');
+		$table->head[5] = __('Options');
 		$table->align = array ();
 		$table->align[0] = 'center';
 		$table->align[5] = 'center';
 		if ($report_id_user == $config['id_user']) {
 			$table->align[6] = 'center';
-			$table->head[6] = lang_string ('delete');
+			$table->head[6] = __('delete');
 		}
 		
 		$sql = sprintf ('SELECT * FROM treport_content WHERE id_report = %d ORDER BY `order`', $id_report);
@@ -445,12 +447,12 @@ if ($edit_sla_report_content) {
 				if ($first_id != $report_content['id_rc']) {
 					$data[0] .= '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&edit_report=1&id_report='.
 							$id_report.'&content_up=1&id_report_content='.$report_content['id_rc'].
-							'"><img src="images/up.png" title="'.lang_string ('up').'"></a>';
+							'"><img src="images/up.png" title="'.__('up').'"></a>';
 				}
 				if ($last_id != $report_content['id_rc']) {
 					$data[0] .= '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&edit_report=1&id_report='.
 							$id_report.'&content_down=1&id_report_content='.$report_content['id_rc'].
-							'"><img src="images/down.png" title="'.lang_string ('down').'"></a>';
+							'"><img src="images/down.png" title="'.__('down').'"></a>';
 				}
 				$data[1] = get_report_name ($report_content['type']);
 				$data[2] = '--';
@@ -475,8 +477,8 @@ if ($edit_sla_report_content) {
 	}
 } else {
 	// Report LIST
-	echo "<h2>".lang_string ('reporting')." &gt; ";
-	echo lang_string ('custom_reporting')."</h2>";
+	echo "<h2>".__('reporting')." &gt; ";
+	echo __('custom_reporting')."</h2>";
 
 	$reports = get_db_all_rows_in_table ('treport', 'name');
 	$table->width = '0px';
@@ -487,9 +489,9 @@ if ($edit_sla_report_content) {
 		$table->align = array ();
 		$table->align[2] = 'center';
 		$table->data = array ();
-		$table->head[0] = lang_string ('report_name');
-		$table->head[1] = lang_string ('description');
-		$table->head[2] = lang_string ('delete');
+		$table->head[0] = __('report_name');
+		$table->head[1] = __('description');
+		$table->head[2] = __('delete');
 		
 		foreach ($reports as $report) {
 			if ($report["private"] || $report["id_user"] != $config['id_user'])
@@ -506,13 +508,13 @@ if ($edit_sla_report_content) {
 		}
 		print_table ($table);
 	} else {
-		echo "<div class='nf'>".lang_string ('no_reporting_def')."</div>";
+		echo "<div class='nf'>".__('no_reporting_def')."</div>";
 	}
 	
 	echo '<form method="post" action="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder">';
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
 	print_input_hidden ('edit_report', 1);
-	print_submit_button (lang_string ('Create report'), 'create', false, 'class="sub next"');
+	print_submit_button (__('Create report'), 'create', false, 'class="sub next"');
 	echo "</div>";
 	echo "</form>";
 }

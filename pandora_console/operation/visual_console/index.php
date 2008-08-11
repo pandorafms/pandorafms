@@ -18,31 +18,26 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Login check
-$id_usuario=$_SESSION["id_usuario"];
 global $REMOTE_ADDR;
 
-if (comprueba_login() != 0) {
-	audit_db($id_usuario,$REMOTE_ADDR, "ACL Violation","Trying to access graph builder");
-	include ("general/noaccess.php");
-	exit;
-}
+check_login ();
 
-echo "<h2>".$lang_label["visual_console"]." &gt; ";
-echo $lang_label["summary"]."</h2>";
+echo "<h2>".__('visual_console')." &gt; ";
+echo __('summary')."</h2>";
 
 $layouts = get_db_all_rows_in_table ('tlayout','name');
 
 if (sizeof ($layouts) == 0) {
-	echo "<div class='nf'>".$lang_label["no_layout_def"]."</div>";
+	echo "<div class='nf'>".__('no_layout_def')."</div>";
 	return;
 }
 
 $table->width = '500px';
 $table->data = array ();
 $table->head = array ();
-$table->head[0] = lang_string ('name');
-$table->head[1] = lang_string ('group');
-$table->head[2] = lang_string ('elements');
+$table->head[0] = __('name');
+$table->head[1] = __('group');
+$table->head[2] = __('elements');
 $table->align = array ();
 $table->align[2] = 'center';
 

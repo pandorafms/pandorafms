@@ -25,7 +25,7 @@ if (!isset($id_agente)){
     exit;
 }
 
-echo "<h3>".lang_string ("Latest events for this agent")."</h3>";
+echo "<h3>".__('Latest events for this agent')."</h3>";
 smal_event_table ("WHERE id_agente = $id_agente", $limit = 10, $width=750);
 
 ?>

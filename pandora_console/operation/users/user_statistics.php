@@ -21,8 +21,8 @@
 require("include/config.php");
 
 if (comprueba_login() == 0) {
-echo "<h2>".$lang_label["users"]." &gt; ";
-echo $lang_label["users_statistics"]."</h2>";
+echo "<h2>".__('users')." &gt; ";
+echo __('users_statistics')."</h2>";
 echo '<img src="reporting/fgraph.php?tipo=user_activity" border=0>';
 }
 ?>

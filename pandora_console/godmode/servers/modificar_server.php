@@ -20,17 +20,18 @@ require("include/config.php");
 
 check_login();
 
-if ((give_acl($config["id_user"], 0, "AR")!=1) AND (give_acl($id_user, 0, "AW") != 1)) {
-	audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to access Server Management");
+if (! give_acl ($config["id_user"], 0, "AR") && ! give_acl($config['id_user'], 0, "AW")) {
+	audit_db ($config["id_user"], $REMOTE_ADDR, "ACL Violation",
+		"Trying to access Server Management");
 	require ("general/noaccess.php");
 }
 
-if (isset($_GET["delete"])) {
-	$id_server=entrada_limpia($_GET["server_del"]);
+if (isset ($_GET["delete"])) {
+	$id_server = entrada_limpia($_GET["server_del"]);
 	$sql = "DELETE FROM tserver WHERE id_server='".$id_server."'";
 	$result=mysql_query($sql);
-	if ($result) echo "<h3 class='suc'>".$lang_label["del_server_ok"]."</h3>";
-	else echo "<h3 class='suc'>".$lang_label["del_server_no"]."</h3>";
+	if ($result) echo "<h3 class='suc'>".__('del_server_ok')."</h3>";
+	else echo "<h3 class='suc'>".__('del_server_no')."</h3>";
 }
 
 if (isset($_GET["update"])) {
@@ -40,14 +41,14 @@ if (isset($_GET["update"])) {
 	$id_server=entrada_limpia($_POST["server"]);
 	$sql = "UPDATE tserver SET name='".$name."', ip_address='".$address."', description='".$description."' WHERE id_server='".$id_server."'";
 	$result=mysql_query($sql);
-	if ($result) echo "<h3 class='suc'>".$lang_label["upd_server_ok"]."</h3>";
-	else echo "<h3 class='suc'>".$lang_label["upd_server_no"]."</h3>";
+	if ($result) echo "<h3 class='suc'>".__('upd_server_ok')."</h3>";
+	else echo "<h3 class='suc'>".__('upd_server_no')."</h3>";
 }
 
 if (isset($_GET["server"])) {
 	$id_server=entrada_limpia($_GET["server"]);
-	echo "<h2>".$lang_label["view_servers"]." &gt; ";
-	echo $lang_label["update_server"]."</h2>";
+	echo "<h2>".__('view_servers')." &gt; ";
+	echo __('update_server')."</h2>";
 
 	$query="SELECT * FROM tserver WHERE id_server=".$id_server;
 	$result=mysql_query($query);
@@ -67,35 +68,35 @@ if (isset($_GET["server"])) {
 		echo '<form name="servers" method="POST" action="index.php?sec=gservers&sec2=godmode/servers/modificar_server&update=1">';
 		echo "<table cellpadding='4' cellspacing='4' width='450' class='databox_color'>";
 		echo "<tr>";
-		echo "<td class='datos'>".$lang_label["name"]."</td><td class='datos'><input type='text' name='name' value='".$name."' width='200px'>";
-		echo "<tr><td class='datos2'>".$lang_label['ip_address']."</td><td class='datos2'><input type='text' name='address' value='".$address."' width='200px'>";
-		echo "<tr><td class='datos'>".$lang_label['description']."<td class='datos'><input type='text' name='description' value='".$description."'><input type='hidden' name='server' value='".entrada_limpia($_GET["server"])."'></input>";
+		echo "<td class='datos'>".__('name')."</td><td class='datos'><input type='text' name='name' value='".$name."' width='200px'>";
+		echo "<tr><td class='datos2'>".__('ip_address')."</td><td class='datos2'><input type='text' name='address' value='".$address."' width='200px'>";
+		echo "<tr><td class='datos'>".__('description')."<td class='datos'><input type='text' name='description' value='".$description."'><input type='hidden' name='server' value='".entrada_limpia($_GET["server"])."'></input>";
 	}
 	else {
-		echo "<div class='nf'>".$lang_label["no_server"]."</div>";
+		echo "<div class='nf'>".__('no_server')."</div>";
 	}
 	echo '</table>';
 	echo '<table cellpadding="4" cellspacing="4" width="450">';
 	echo '<tr><td align="right">';
-	echo '<input type="submit" class="sub upd" value="'.$lang_label["update"].'"></table>';
+	echo '<input type="submit" class="sub upd" value="'.__('update').'"></table>';
 } 
 else {
 
 	$sql='SELECT * FROM tserver';
-	echo "<h2>".$lang_label["view_servers"]." &gt; ";
-	echo $lang_label["manage_servers"]."</h2>";
+	echo "<h2>".__('view_servers')." &gt; ";
+	echo __('manage_servers')."</h2>";
 
 	$result=mysql_query($sql);
 	if (mysql_num_rows($result)){
 		echo "<table cellpadding='4' cellspacing='4' witdh='550' class='databox'>";
-		echo "<tr><th class='datos'>".$lang_label["name"]."</th>";
-		echo "<th class='datos'>".$lang_label['status']."</th>";
-		echo "<th class='datos'>".$lang_label['ip_address']."</th>";
-		echo "<th class='datos'>".$lang_label['description']."</th>";
-		echo "<th class='datos' width=80>".$lang_label['type']."</th>";
-		echo "<th class='datos'>".$lang_label['laststart']."</th>";
-		echo "<th class='datos'>".$lang_label['lastupdate']."</th>";
-		echo "<th class='datos'>".$lang_label['delete']."</th>";
+		echo "<tr><th class='datos'>".__('name')."</th>";
+		echo "<th class='datos'>".__('status')."</th>";
+		echo "<th class='datos'>".__('ip_address')."</th>";
+		echo "<th class='datos'>".__('description')."</th>";
+		echo "<th class='datos' width=80>".__('type')."</th>";
+		echo "<th class='datos'>".__('laststart')."</th>";
+		echo "<th class='datos'>".__('lastupdate')."</th>";
+		echo "<th class='datos'>".__('delete')."</th>";
 		$color=1;
 		while ($row=mysql_fetch_array($result)){
 			$name = $row["name"];
@@ -158,25 +159,25 @@ else {
 		echo "
 		<tr>
 		 <td>
-		  <span class='net'>".$lang_label["network_server"]."</span>
+		  <span class='net'>".__('network_server')."</span>
 		 </td>
 		 <td>
-		  <span class='master'>".$lang_label["master"]."</span>
+		  <span class='master'>".__('master')."</span>
 		 </td>
 		 <td>
-		  <span class='data'>".$lang_label["data_server"]."</span>
+		  <span class='data'>".__('data_server')."</span>
 		 </td>
 		 <td>
-		  <span class='binary'>".$lang_label["md5_checksum"]."</span>
+		  <span class='binary'>".__('md5_checksum')."</span>
 		 </td>
 		 <td>
-		  <span class='snmp'>".$lang_label["snmp_console"]."</span>
+		  <span class='snmp'>".__('snmp_console')."</span>
 		 </td>
 		</tr>";
 		echo "</table>";	
 	}
 	else {
-		echo "<div class='nf'>".$lang_label["no_server"]."</div>";
+		echo "<div class='nf'>".__('no_server')."</div>";
 	}
 }
 

@@ -28,15 +28,15 @@ check_login();
 	$sql_t='SELECT * FROM tagente_estado, tagente_modulo WHERE tagente_modulo.disabled = 0 AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.id_agente='.$id_agente.' AND tagente_estado.estado != 100 AND tagente_estado.utimestamp != 0 ORDER BY tagente_modulo.nombre';
 	$result_t=mysql_query($sql_t);
 	if (mysql_num_rows ($result_t)) {
-		echo "<h3>".__('monitor_listing')."</h3>";
+		echo "<h3>".__('Full list of Monitors')."</h3>";
 		echo "<table width='750' cellpadding=4 cellspacing=4 class='databox'>";
 		echo "<tr><th>X</th>";
-        echo "<th>".__('type')."</th>
-		<th>".__('module_name')."</th>
-		<th>".__('description')."</th>
-		<th>".__('status')."</th>
-		<th>".__('interval')."</th>
-		<th>".__('last_contact')."</th>";
+        echo "<th>".__('Type')."</th>
+		<th>".__('Module name')."</th>
+		<th>".__('Description')."</th>
+		<th>".__('Status')."</th>
+		<th>".__('Interval')."</th>
+		<th>".__('Last contact')."</th>";
 		$color=0;
 		while ($row_t=mysql_fetch_array($result_t)){
 			# For evey module in the status table
@@ -89,11 +89,11 @@ check_login();
 				echo "<td class='".$tdcolor."' align='center'>";
 				if ($est_estado == 1){
 					if ($est_cambio == 1) 
-						echo "<img src='images/pixel_yellow.png' width=40 height=18 title='".__('yellow_light')."'>";
+						echo "<img src='images/pixel_yellow.png' width=40 height=18 title='".__('Change between Green/Red state')."'>";
 					else
-						echo "<img src='images/pixel_red.png' width=40 height=18 title='".__('red_light')."'>";
+						echo "<img src='images/pixel_red.png' width=40 height=18 title='".__('At least one monitor fails')."'>";
 				} else
-					echo "<img src='images/pixel_green.png' width=40 height=18 title='".__('green_light')."'>";
+					echo "<img src='images/pixel_green.png' width=40 height=18 title='".__('All Monitors OK')."'>";
 
 				echo "<td align='center' class='".$tdcolor."'>";
 				if ($temp_interval != $intervalo)
@@ -108,7 +108,7 @@ check_login();
 					echo "<span>";
 				}
 				if ($row_t["timestamp"]=='0000-00-00 00:00:00') {
-					echo __('never');
+					echo __('Never');
 				} else {
 					echo human_time_comparation($row_t["timestamp"]);
 				}
@@ -118,7 +118,7 @@ check_login();
 		echo '</table>';
 
 	} else {
-		echo "<div class='nf'>".__('no_monitors')."</div>";
+		echo "<div class='nf'>".__('This agent doesn \'t have any monitor with data')."</div>";
 	}
 
 ?>

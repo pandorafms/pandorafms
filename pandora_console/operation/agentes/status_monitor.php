@@ -28,8 +28,8 @@ if (! give_acl ($config['id_user'], 0, "AR") && ! give_acl ($config['id_user'], 
 	exit;
 }
 
-echo "<h2>".__('ag_title')." &gt; ";
-echo __('monitor_listing')."</h2>";
+echo "<h2>".__('Pandora Agents')." &gt; ";
+echo __('Full list of Monitors')."</h2>";
 
 $ag_freestring = get_parameter ("ag_freestring", "");
 $ag_modulename = get_parameter ("ag_modulename", "");
@@ -60,7 +60,7 @@ echo $URL;
 echo "'>";
 
 echo "<table cellspacing='4' cellpadding='4' width='600' class='databox'>";
-echo "<tr><td valign='middle'>".__('group')."</td>";
+echo "<tr><td valign='middle'>".__('Group')."</td>";
 echo "<td valign='middle'>";
 echo "<select name='ag_group' onChange='javascript:this.form.submit();' class='w130'>";
 
@@ -101,13 +101,13 @@ echo "</select>";
 
 echo "</tr>";
 echo "<tr>";
-echo "<td valign='middle'>".__('module_name')."</td>";
+echo "<td valign='middle'>".__('Module name')."</td>";
 echo "<td valign='middle'>
 <select name='ag_modulename' onChange='javascript:this.form.submit();'>";
 if ( isset($ag_modulename)){
 	echo "<option>".$ag_modulename."</option>";
 } 
-echo "<option>".__('all')."</option>";
+echo "<option>".__('All')."</option>";
 $sql='SELECT DISTINCT nombre 
 FROM tagente_modulo 
 WHERE id_tipo_modulo in (2, 6, 9, 18, 21, 100)';
@@ -121,7 +121,7 @@ echo __('Free text');
 echo "<td valign='middle'>";
 echo "<input type=text name='ag_freestring' size=15 value='$ag_freestring'>";
 echo "<td valign='middle'>";
-echo "<input name='uptbutton' type='submit' class='sub' value='".__('show')."'";
+echo "<input name='uptbutton' type='submit' class='sub' value='".__('Show')."'";
 echo "</form>";
 echo "</table>";
 
@@ -179,13 +179,13 @@ if ($counter > 0) {
 	echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>
 	<tr>
 	<th>
-	<th>".__('agent')."</th>
-	<th>".__('type')."</th>
-	<th>".__('name')."</th>
-	<th>".__('description')."</th>
-	<th>".__('interval')."</th>
-	<th>".__('status')."</th>
-	<th>".__('timestamp')."</th>";
+	<th>".__('Agent')."</th>
+	<th>".__('Type')."</th>
+	<th>".__('Name')."</th>
+	<th>".__('Description')."</th>
+	<th>".__('Interval')."</th>
+	<th>".__('Status')."</th>
+	<th>".__('Timestamp')."</th>";
 	$color =1;
 	$result=mysql_query($SQL_FINAL);
 
@@ -241,7 +241,7 @@ if ($counter > 0) {
 	}
 	echo "</table>";
 } else {
-	echo "<div class='nf'>".__('no_monitors_g')."</div>";
+	echo "<div class='nf'>".__('This group doesn\'t have any monitor')."</div>";
 }
 
 echo "<table width=700 border=0>";

@@ -30,8 +30,8 @@ if (give_acl ($config['id_user'], 0, "AR") != 1) {
 }
 
 require ("include/functions_reporting.php");
-echo "<h2>".__('ag_title')." &gt; ";
-echo __('tactical_view')."</h2>";
+echo "<h2>".__('Pandora Agents')." &gt; ";
+echo __('Tactical view')."</h2>";
 
 $data = general_stats ($config['id_user'],-1);
 $monitor_checks = $data[0];
@@ -105,7 +105,7 @@ echo "<br><br>";
 
 // Monitor checks
 echo "<tr>";
-echo "<th colspan=2>".__('monitor_checks')."</th>";
+echo "<th colspan=2>".__('Monitor checks')."</th>";
 echo "<tr><td class=datos2><b>"."Monitor checks"."</b></td>";
 echo "<td style='font: bold 2em Arial;' class='datos2'>";
 echo "<a class='big_data' href='index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=-1'>";
@@ -166,7 +166,7 @@ echo "<td class=datos2 style='font: bold 2em Arial'>".$monitor_alert_total;
 // Data checks
 // ~~~~~~~~~~~~~~~
 
-echo "<tr><th colspan=2>".__('data_checks')."</th>";
+echo "<tr><th colspan=2>".__('Data checks')."</th>";
 echo "<tr><td class=datos2><b>"."Data checks"."</b></td>";
 echo "<td class=datos2 style='font: bold 2em Arial'>".$data_checks;
 echo "<tr><td class=datos><b>"."Data Unknown"."</b></td>";
@@ -199,7 +199,7 @@ echo "<td class=datos2 style='font: bold 2em Arial'>".$data_alert_total;
 // Summary
 // ~~~~~~~~~~~~~~~
 
-echo "<tr><th colspan='2'>".__('summary')."</th>";
+echo "<tr><th colspan='2'>".__('Summary')."</th>";
 echo "<tr><td class='datos2'><b>"."Total agents"."</b></td>";
 echo "<td class='datos2' style='font: bold 2em Arial, Sans-serif;'>".$total_agents;
 echo "<tr><td class='datos'><b>"."Total checks"."</b></td>";
@@ -225,12 +225,12 @@ $result=mysql_query($sql);
 if (mysql_num_rows($result)){
 	echo "<table cellpadding='4' cellspacing='4' witdh='440' class='databox'>";
 	echo "<tr><th colspan=5>";
-	echo __('tactical_server_information');
-	echo "<tr><td class='datos3'>".__('name')."</th>";
-	echo "<td class='datos3'>".__('status')."</th>";
-	echo "<td class='datos3'>".__('load')."</th>";
-	echo "<td class='datos3'>".__('modules')."</th>";
-	echo "<td class='datos3'>".__('lag')."</th>";
+	echo __('Tactical server information');
+	echo "<tr><td class='datos3'>".__('Name')."</th>";
+	echo "<td class='datos3'>".__('Status')."</th>";
+	echo "<td class='datos3'>".__('Load')."</th>";
+	echo "<td class='datos3'>".__('Modules')."</th>";
+	echo "<td class='datos3'>".__('LAG')."</th>";
 	$color=1;
 	while ($row=mysql_fetch_array($result)){
 		if ($color == 1){

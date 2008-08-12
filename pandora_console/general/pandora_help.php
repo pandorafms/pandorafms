@@ -17,13 +17,13 @@ $help_file = $config["homedir"]."/include/help/".$config["language"]."/help_".$i
 if (! $id || ! file_exists ($help_file)) {
 	echo "<div class='databox' id='login'><div id='login_f' class='databox'>";
 	echo '<h1 id="log_f" style="margin-top: 0px;" class="error">';
-	echo __('help_error');
+	echo __('Help system error');
 	echo "</h1><div id='noa' style='width:120px' >";
 	echo "<img src='../images/help.jpg' alt='No help section'></div>";
 	echo "<div style='width: 350px'>";
 	echo '<a href="index.php"><img src="../images/pandora_logo.png" border="0"></a><br>';
 	echo "</div>";
-	echo '<div class="msg">'.__('help_error_msg').'</div></div></div>';
+	echo '<div class="msg">'.__('Pandora FMS help system has been called with a help reference that currently don\'t exist. There is no help content to show.').'</div></div></div>';
 	return;
 }
 

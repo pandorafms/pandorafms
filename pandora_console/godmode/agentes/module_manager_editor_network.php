@@ -78,7 +78,7 @@ if ($update_module_id != NULL){
 	}
 }
 
-echo "<h3>".__('module_assignment')." - ".__('network server module')."</h3>";
+echo "<h3>".__('Module assignment')." - ".__('Network server module')."</h3>";
 echo '<table width="680" cellpadding="4" cellspacing="4" class="databox_color">';
 // Create from Network Component
 echo '<form name="modulo" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'&form_moduletype='.$form_moduletype.'">';
@@ -97,7 +97,7 @@ echo "<input type='hidden' name='form_id_modulo' value='2'>";
 
 // Network component usage
 echo "<tr><td class='datos3'>";
-echo __('using_network_component');
+echo __('Using Module Component');
 pandora_help ("network_component");
 echo "</td><td class='datos3' colspan=2>";
 
@@ -106,7 +106,7 @@ if ($update_module_id != NULL){
 	echo "<input type='hidden' name='form_id_tipo_modulo' value='".$form_id_tipo_modulo."'>";
 } else {
 	echo '<select name="form_network_component">';
-	echo '<option>---'.__('manual_config').'---</option>';
+	echo '<option>---'.__('Manual setup').'---</option>';
 	$sql1='SELECT * FROM tnetwork_component WHERE id_modulo = 2 ORDER BY name';
 	$result=mysql_query($sql1);
 	while ($row=mysql_fetch_array($result)){
@@ -122,28 +122,28 @@ echo '</td>';
 echo '<td class="datos3">';
 echo '<input type="hidden" name="form_moduletype" value="'.$form_moduletype.'">';
 if ($update_module_id == NULL){
-echo '<input align="right" name="updbutton" type="submit" class="sub next" value="'.__('get_data').'">';
+echo '<input align="right" name="updbutton" type="submit" class="sub next" value="'.__('Get data').'">';
 }
 
 // Name / IP_target
 echo '<tr>';
-echo '<td class="datos2">'.__('module_name')."</td>";
+echo '<td class="datos2">'.__('Module name')."</td>";
 echo '<td class="datos2"><input type="text" name="form_name" size="20" value="'.$form_name.'"></td>';
-echo '<td class="datos2">'.__('disabled')."</td>";
+echo '<td class="datos2">'.__('Disabled')."</td>";
 echo '<td class="datos2"><input type="checkbox" name="form_disabled" value="1" "'.$disabled_status.'"></td>';
 echo '</tr>';
 
 // Ip target, tcp port
 echo '<tr>';
-echo '<td class="datos">'.__('ip_target')."</td>";
+echo '<td class="datos">'.__('Target IP')."</td>";
 echo '<td class="datos"><input type="text" name="form_ip_target" size="25" value="'.$form_ip_target.'"></td>';
-echo '<td class="datos">'.__('tcp_port')."</td>";
+echo '<td class="datos">'.__('TCP port')."</td>";
 echo '<td class="datos"><input type="text" name="form_tcp_port" size="5" value="'.$form_tcp_port.'"></td>';
 echo '</tr>';
 
 // module type / max timeout
 echo '</tr><tr>';
-echo '<td class="datos2">'.__('module_type');
+echo '<td class="datos2">'.__('Module type');
 pandora_help ("module_type");
 echo '</td>';
 
@@ -164,14 +164,14 @@ if ($update_module_id != NULL){
 	echo '</select>';	
 }
 
-echo '<td class="datos2">'.__('max_timeout')."</td>";
+echo '<td class="datos2">'.__('Max. timeout')."</td>";
 echo '<td class="datos2"><input type="text" name="form_max_timeout" size="4" value="'.$form_max_timeout.'"></td></tr>';
 
 // Interval & id_module_group
 echo '<tr>';
-echo '<td class="datos">'.__('interval')."</td>";
+echo '<td class="datos">'.__('Interval')."</td>";
 echo '<td class="datos"><input type="text" name="form_interval" size="5" value="'.$form_interval.'"></td>';
-echo '<td class="datos">'.__('module_group')."</td>";
+echo '<td class="datos">'.__('Module group')."</td>";
 echo '<td class="datos">';
 echo '<select name="form_id_module_group">';
 if ($form_id_module_group != 0){
@@ -186,7 +186,7 @@ echo '</select>';
 
 // Snmp walk
 echo '<tr>';
-echo '<td class="datos2">'.__('snmp_walk');
+echo '<td class="datos2">'.__('SNMP walk');
 pandora_help ("snmpwalk");
 echo '</td>';
 echo '<td class="datos2" colspan=2>';
@@ -207,29 +207,29 @@ echo '<input type="submit" class="sub next" name="oid" value="SNMP Walk">';
 
 // Snmp Oid / community
 echo '<tr>';
-echo '<td class="datos">'.__('snmp_oid');
+echo '<td class="datos">'.__('SNMP OID');
 pandora_help ("snmpoid");
 echo '</td>';
 echo '<td class="datos"><input type="text" name="form_snmp_oid" size="25" value="'.$form_snmp_oid.'"></td>';
-echo '<td class="datos">'.__('snmp_community')."</td>";
+echo '<td class="datos">'.__('SNMP Community')."</td>";
 echo '<td class="datos"><input type="text" name="form_snmp_community" size="12" value="'.$form_snmp_community.'"></td>';
 echo '</tr>';
 
 // Max / min value
 echo '<tr>';
-echo '<td class="datos2">'.__('min_value')."</td>";
+echo '<td class="datos2">'.__('Min. Value')."</td>";
 echo '<td class="datos2"><input type="text" name="form_minvalue" size="5" value="'.$form_minvalue.'"></td>';
-echo '<td class="datos2">'.__('max_value')."</td>";
+echo '<td class="datos2">'.__('Max. Value')."</td>";
 echo '<td class="datos2"><input type="text" name="form_maxvalue" size="5" value="'.$form_maxvalue.'"></td>';
 echo '</tr>';
 
 // Post process / Export server
 echo '<tr>';
-echo '<td class="datos">'.__('post_process');
+echo '<td class="datos">'.__('Post process');
 pandora_help ("postprocess");
 echo '</td>';
 echo '<td class="datos"><input type="text" name="form_post_process" size="5" value="'.$form_post_process.'"></td>';
-echo '<td class="datos">'.__('export_server')."</td>";
+echo '<td class="datos">'.__('Export server')."</td>";
 echo '<td class="datos"><select name="form_id_export">';
 if ($form_id_export != 0){
     echo "<option value='".$form_id_export."'>".dame_nombre_servidorexportacion($form_id_export)."</option>";
@@ -245,17 +245,17 @@ echo '</tr>';
 
 // tcp send / rcv value
 echo '<tr>';
-echo '<td class="datos2" valign="top">'.__('tcp_send');
+echo '<td class="datos2" valign="top">'.__('TCP send');
 pandora_help ("tcp_send");
 echo "</td>";
 echo '<td class="datos2"><textarea cols=20 style="height:55px;" name="form_tcp_send">'.$form_tcp_send.'</textarea>';
-echo '<td class="datos2" valign="top">'.__('tcp_rcv')."</td>";
+echo '<td class="datos2" valign="top">'.__('TCP receive')."</td>";
 echo '<td class="datos2"><textarea cols=20 style="height:55px;" name="form_tcp_rcv">'.$form_tcp_rcv.'</textarea>';
 echo '</tr>';
 
 // Description
 echo '<tr>';
-echo '<td valign="top" class="datos">'.__('description')."</td>";
+echo '<td valign="top" class="datos">'.__('Description')."</td>";
 echo '<td valign="top" class="datos" colspan="3"><textarea name="form_description" cols="65" rows="2">'.$form_description.'</textarea>';
 echo '</tr>';
 echo '</table>';
@@ -264,9 +264,9 @@ echo '</table>';
 echo '<table width="680" cellpadding="4" cellspacing="4">';
 echo '<td valign="top" align="right">';
 if ($update_module_id == NULL){
-	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.__('create').'">';
+	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.__('Create').'">';
 } else {
-	echo '<input name="updbutton" type="submit" class="sub wand" value="'.__('update').'">';
+	echo '<input name="updbutton" type="submit" class="sub wand" value="'.__('Update').'">';
 }
 echo '</table>';
 

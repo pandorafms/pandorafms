@@ -33,10 +33,10 @@ if (isset ($_POST["agent"])){
 } else
 	$id_agent = -1;
 
-echo '<h2>'.__('dbmain_title').' &gt;'.__('db_purge')."</h2>";
+echo '<h2>'.__('Database Maintenance').' &gt;'.__('Database purge')."</h2>";
 echo "<img src='reporting/fgraph.php?tipo=db_agente_purge&id=$id_agent'>";
 echo "<br><br>";
-echo '<h3>'.__('get_data_agent').'</h3>';
+echo '<h3>'.__('Get data from agent').'</h3>';
 
 // All data (now)
 $purge_all = date ("Y-m-d H:i:s", time ());
@@ -61,8 +61,8 @@ if (isset($_POST["purgedb"])) {
 	$from_date = get_parameter_post ("date_purge");
 	if (isset($id_agent)){
 		if ($id_agent != -1) {
-			echo __('purge_task').$id_agent." / ".$from_date;
-			echo "<h3>".__('please_wait')."<br>",__('while_delete_data').__('agent')."</h3>";
+			echo __('Purge task launched for agent id ').$id_agent." / ".$from_date;
+			echo "<h3>".__('Please be patient. This operation can be very long in time (5-10 minutes)')."<br>",__('while deleting data for ').__('Agent')."</h3>";
 			if ($id_agent == 0) {
 				$sql="SELECT * FROM tagente_modulo";
 			} else {
@@ -70,7 +70,7 @@ if (isset($_POST["purgedb"])) {
 			}
 			$result=get_db_all_rows_sql($sql);
 			foreach ($result as $row) {
-				echo __('deleting_records').dame_nombre_modulo_agentemodulo($row["id_agente_modulo"]);
+				echo __('Deleting records for module ').dame_nombre_modulo_agentemodulo($row["id_agente_modulo"]);
 				flush();
 				//ob_flush();
 				echo "<br>";
@@ -82,7 +82,7 @@ if (isset($_POST["purgedb"])) {
 				process_sql ($sql);
 			}
 		} else {
-			echo __('deleting_records').__('all_agents');
+			echo __('Deleting records for module ').__('All agents');
 			flush();
 			//ob_flush();
 			$query = sprintf("DELETE FROM `tagente_datos` WHERE `timestamp` < '%s'",$from_date);
@@ -107,11 +107,11 @@ if (isset($_POST["purgedb"])) {
 if (isset($_POST["agent"]) and ($id_agent > 0))
 	echo "<option value='".$_POST["agent"]."'>".dame_nombre_agente($_POST["agent"]);
 if (isset($_POST["agent"]) and ($id_agent == 0)){
-	echo "<option value=0>".__('all_agents');
-echo "<option value=-1>".__('choose_agent');
+	echo "<option value=0>".__('All agents');
+echo "<option value=-1>".__('Choose agent');
 } else {
-	echo "<option value=-1>".__('choose_agent');
-	echo "<option value=0>".__('all_agents');
+	echo "<option value=-1>".__('Choose agent');
+	echo "<option value=0>".__('All agents');
 }
 $result_t=mysql_query("SELECT * FROM tagente");
 while ($row=mysql_fetch_array($result_t)){	
@@ -120,7 +120,7 @@ while ($row=mysql_fetch_array($result_t)){
 ?>
 </select>
 <a href="#" class="tip">&nbsp;<span><?php echo $help_label["db_purge0"] ?></span></a>
-<td><input class='sub upd' type='submit' name='purgedb_ag' value='<?php echo __('get_data') ?>'>
+<td><input class='sub upd' type='submit' name='purgedb_ag' value='<?php echo __('Get data') ?>'>
 <a href="#" class="tip">&nbsp;<span><?php echo $help_label["db_purge1"] ?></span></a>
 </table><br>
 
@@ -128,7 +128,7 @@ while ($row=mysql_fetch_array($result_t)){
 # End of get parameters block
 
 if (isset($_POST["agent"]) and ($id_agent !=-1)){
-	echo "<h3>".__('db_agent_bra').dame_nombre_agente($id_agent).__('db_agent_ket')."</h3>";
+	echo "<h3>".__('Data from agent ').dame_nombre_agente ($id_agent).__(' in the Database')."</h3>";
 	
 	$sql = "SELECT id_agente_modulo FROM tagente_modulo";
 	if ($id_agent != 0) {
@@ -148,48 +148,48 @@ if (isset($_POST["agent"]) and ($id_agent !=-1)){
 
 <table width='300' border='0' class='databox' cellspacing='4' cellpadding='4'>
 <tr><td class=datos>
-<?php echo __('rango3')?>
+<?php echo __('Packets three months old')?>
 </td>
 <td class=datos>
 <?php echo $datos_rango3; ?>
 </td>
 
 <tr><td class=datos2>
-<?php echo __('rango2')?>
+<?php echo __('Packets one month old')?>
 </td>
 <td class=datos2>
 <?php echo $datos_rango2; ?>
 </td>
 
 <tr><td class=datos>
-<?php echo __('rango11')?>
+<?php echo __('Packets two weeks old')?>
 </td>
 <td class=datos>
 <?php echo $datos_rango11; ?>
 </td>
 
 <tr><td class=datos2>
-<?php echo __('rango1')?>
+<?php echo __('Packets one week old')?>
 </td>
 <td class=datos2>
 <?php echo $datos_rango1; ?>
 </td>
 
 <tr><td class=datos>
-<?php echo __('rango0')?>
+<?php echo __('Packets three days old')?>
 </td>
 <td class=datos>
 <?php echo $datos_rango0; ?>
 </td>
 
 <tr><td class=datos2>
-<?php echo __('rango00')?>
+<?php echo __('Packets one day old')?>
 </td>
 <td class=datos2>
 <?php echo $datos_rango00; ?>
 </td>	
 <tr><td class=datos>
-<b><?php echo __('total_packets')?></b>
+<b><?php echo __('Total packets')?></b>
 </td>
 <td class=datos>
 <b><?php echo $datos_total; ?></b>
@@ -197,18 +197,18 @@ if (isset($_POST["agent"]) and ($id_agent !=-1)){
 </tr>
 </table>
 <br>
-<h3><?php echo __('purge_data') ?></h3>
+<h3><?php echo __('Purge data') ?></h3>
 <table width='300' border='0' class='databox' cellspacing='4' cellpadding='4'>
 <tr><td>
 <select name="date_purge" width="255px">
-<option value="<?php echo $month3 ?>"><?php echo __('purge_90day') ?>
-<option value="<?php echo $month ?>"><?php echo __('purge_30day') ?>
-<option value="<?php echo $week2 ?>"><?php echo __('purge_14day') ?>
-<option value="<?php echo $week ?>"><?php echo __('purge_7day') ?>
-<option value="<?php echo $d3 ?>"><?php echo __('purge_3day') ?>
-<option value="<?php echo $d1 ?>"><?php echo __('purge_1day') ?>
+<option value="<?php echo $month3 ?>"><?php echo __('Purge data over 90 days') ?>
+<option value="<?php echo $month ?>"><?php echo __('Purge data over 30 days') ?>
+<option value="<?php echo $week2 ?>"><?php echo __('Purge data over 14 days') ?>
+<option value="<?php echo $week ?>"><?php echo __('Purge data over 7 days') ?>
+<option value="<?php echo $d3 ?>"><?php echo __('Purge data over 3 days') ?>
+<option value="<?php echo $d1 ?>"><?php echo __('Purge data over 1 day') ?>
 </select>
 
-<td><input class="sub wand" type="submit" name="purgedb" value="<?php echo __('doit') ?>" onClick="if (!confirm('<?php  echo __('are_you_sure') ?>')) return false;">
+<td><input class="sub wand" type="submit" name="purgedb" value="<?php echo __('Do it!') ?>" onClick="if (!confirm('<?php  echo __('Are you sure?') ?>')) return false;">
 </table>
 </form>

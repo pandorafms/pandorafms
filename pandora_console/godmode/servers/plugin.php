@@ -170,7 +170,7 @@ if (($create != "") OR ($view != "")){
 	echo '<td class="datos">';
 	echo '<input type="text" name="form_pass_opt" size=15 value="'.$form_pass_opt.'"></td>';
 
-	echo '<tr><td class="datos2">'.__('description').'</td>';
+	echo '<tr><td class="datos2">'.__('Description').'</td>';
 	echo '<td class="datos2"><textarea name="form_description" cols="50" rows="4">';
 	echo $form_description;
 	echo '</textarea></td></tr>';
@@ -180,9 +180,9 @@ if (($create != "") OR ($view != "")){
 	echo '<tr><td align="right">';
 	
 	if ($create != ""){
-		echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('create')."'>";
+		echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('Create')."'>";
 	} else {
-		echo "<input name='uptbutton' type='submit' class='sub upd' value='".__('update')."'>";
+		echo "<input name='uptbutton' type='submit' class='sub upd' value='".__('Update')."'>";
 	}
 	echo '</form></table>';
 }
@@ -194,9 +194,9 @@ else {
 	$result=mysql_query($sql1);
 	if (mysql_num_rows($result) > 0){
 		echo '<table width="530" cellspacing="4" cellpadding="4" class="databox">';
-		echo "<th>".__('name');
+		echo "<th>".__('Name');
 		echo "<th>".__('execute');
-		echo "<th>".__('delete');
+		echo "<th>".__('Delete');
 		$color = 0;
 		while ($row=mysql_fetch_array($result)){
 			if ($color == 1){
@@ -225,7 +225,7 @@ else {
 	echo "<table width=530>";
 	echo "<tr><td align=right>";
 	echo "<form name=plugin method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&create=1'>";
-	echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('create')."'>";
+	echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('Create')."'>";
 	echo "</table>";
 }
 

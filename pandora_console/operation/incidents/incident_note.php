@@ -27,11 +27,11 @@ if (comprueba_login() == 0) {
 	$now=date("Y/m/d H:i:s");
 
 	// Create Note
-	echo "<h2>".__('incident_manag')." &gt; ";
-	echo __('note_title')." #".$id_inc."</h2>";
+	echo "<h2>".__('Incident management')." &gt; ";
+	echo __('Add note to incident')." #".$id_inc."</h2>";
 	echo "<table cellpadding='4' cellspacing='4' class='databox' width='550px'>
 	<form name='nota' method='post' action='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&insertar_nota=1&id=".$id_inc."'>";
-	echo "<tr><td class='datos'><b>".__('date')."</b>";
+	echo "<tr><td class='datos'><b>".__('Date')."</b>";
 	echo "<td class='datos'>".$now."</td>";
 	echo "<input type='hidden' name='timestamp' value='".$now."'>";
 	echo "<input type='hidden' name='id_inc' value='".$id_inc."'>";
@@ -40,7 +40,7 @@ if (comprueba_login() == 0) {
 	echo '</td></tr>';
 	echo '</table><table width="550">';
 	echo '<tr><td align="right">
-	<input name="addnote" type="submit" class="sub wand" value="'.__('add').'">';
+	<input name="addnote" type="submit" class="sub wand" value="'.__('Add').'">';
 	echo '</table>';
 
 } // end page

@@ -137,8 +137,8 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 }
 
 function get_layout_data_types () {
-	$types = array (0 => __('static_graph'),
-			1 => __('module_graph'));
+	$types = array (0 => __('Static graph'),
+			1 => __('Module graph'));
 	return $types;
 }
 

@@ -57,13 +57,13 @@ function generate_average_table ($id_de_mi_agente, $id_agente_modulo, $fecha_ini
 // Genera una tabla con los promedios de los datos de un módulo no-string
 	require ("include/config.php");
 	require ("include/languages/language_".$language_code.".php");
-	$dias_de_la_semana = array (__('sunday'),__('monday'), __('tuesday'), __('wednesday'), __('thurdsday'), __('friday'), __('saturday'));
+	$dias_de_la_semana = array (__('Sunday'),__('Monday'), __('Tuesday'), __('Wednesday'), __('Thurdsday'), __('Friday'), __('Saturday'));
 	$nombre_modulo = dame_nombre_modulo_agentemodulo($id_agente_modulo);
 	
 	// Table header
 	echo "<table border=0 cellpadding=4 cellspacing=4 width=600 class='databox'>";
 	echo "<tr>
-	<th rowspan='2'>".__('hour')."</th>";
+	<th rowspan='2'>".__('One hour')."</th>";
 	echo "<th colspan='7'>".__('day')."</th>
 	</tr>";
 	echo "<tr>";
@@ -79,7 +79,7 @@ function generate_average_table ($id_de_mi_agente, $id_agente_modulo, $fecha_ini
 			$tdcolor = "datos2";
 			$color = 1;
 		}
-		echo "<tr><th class='datos3'> $hora ".__('hr')."</th>";
+		echo "<tr><th class='datos3'> $hora ".__('Hr')."</th>";
 		for ($dia=0; $dia<7; ++$dia){
 			echo "<td class='$tdcolor'>"; 
 			echo format_numeric (give_average_from_module ($id_de_mi_agente, $id_agente_modulo, $hora, $dia, $fecha_inicio, $fecha_fin));
@@ -99,8 +99,8 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 		$export_type = 3; // Standard table;
 
 	// Header
-	echo "<h2>".__('ag_title')." &gt; ";
-	echo __('export_title')."</h2>";
+	echo "<h2>".__('Pandora Agents')." &gt; ";
+	echo __('Database export results')."</h2>";
 
 	if ($export_type == 1) { // CSV
 
@@ -121,11 +121,11 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 			$to_date = $end_date." ".$end_time;
 			
 			$agentmodule_name = dame_nombre_modulo_agentemodulo($origen_modulo[0]);
-			echo __('db_agent_bra'). "<b>" . dame_nombre_agente($origen). "-  $agentmodule_name</b>". __('from2'). "<b>". $from_date. "</b>". __('to2'). "<b>". $to_date. "</b><br>";
+			echo __('Data from agent '). "<b>" . dame_nombre_agente($origen). "-  $agentmodule_name</b> ". __('from'). " <b>". $from_date. "</b> ". __('to'). " <b>". $to_date. "</b><br>";
 
-			echo "<a href='operation/agentes/export_csv.php?from_date=$from_date&to_date=$to_date&agent=$origen&agentmodule=$id_agentemodulo'><img src='images/disk.png'> ".__('get_file')."</a> pandora_export_$agentmodule_name.txt";
+			echo "<a href='operation/agentes/export_csv.php?from_date=$from_date&to_date=$to_date&agent=$origen&agentmodule=$id_agentemodulo'><img src='images/disk.png'> ".__('Download file')."</a> pandora_export_$agentmodule_name.txt";
 		} else
-			echo "<b class='error'>".__('no_sel_mod')."</b>";
+			echo "<b class='error'>".__('No module has been selected')."</b>";
 	}
 
 	if ($export_type == 2){ // Avarage day/hour matrix
@@ -141,7 +141,7 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 			$from_date = $start_date." ".$start_time;
 			$to_date = $end_date." ".$end_time;
 
-			echo __('db_agent_bra'). "<b>" . dame_nombre_agente($origen). "-  $agentmodule_name</b>". __('from2'). "<b>". $from_date. "</b>". __('to2'). "<b>". $to_date. "</b><br>";
+			echo __('Data from agent '). "<b>" . dame_nombre_agente ($origen). "-  $agentmodule_name</b> ". __('from'). " <b>". $from_date. "</b> ". __('to'). " <b>". $to_date. "</b><br>";
 			echo "<br>";
 
 			// For each module
@@ -173,12 +173,12 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 			$from_date = $start_date." ".$start_time;
 			$to_date = $end_date." ".$end_time;
 
-			echo __('db_agent_bra'). "<b>" . dame_nombre_agente($origen). "-  $agentmodule_name</b>". __('from2'). "<b>". $from_date. "</b>". __('to2'). "<b>". $to_date. "</b><br>";
+			echo __('Data from agent '). "<b>" . dame_nombre_agente($origen). "-  $agentmodule_name</b>". __(' from '). "<b>". $from_date. "</b>". __(' to '). "<b>". $to_date. "</b><br>";
 
 			echo "<br><table cellpadding='4' cellspacing='4' width='600' class='databox'>";
 			echo "<tr>
-			<th class='datos'>".__('module')."</th>
-			<th class='datos'>".__('data')."</th>
+			<th class='datos'>".__('Module')."</th>
+			<th class='datos'>".__('Data')."</th>
 			<th class='datos'>Timestamp</th>";
 	
 			// Begin the render !	
@@ -211,7 +211,7 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 			}
 			echo "</table>";
 		} else
-			echo "<b class='error'>".__('no_sel_mod')."</b>";
+			echo "<b class='error'>".__('No module has been selected')."</b>";
 
 	}
 
@@ -238,13 +238,13 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 			$date_to = $ahora;
 		
 	echo "<script type='text/javaScript' src='include/javascript/calendar.js'></script>";
-	echo "<h2>".__('ag_title')." &gt; ";
-	echo __('export_data')."</h2>";
+	echo "<h2>".__('Pandora Agents')." &gt; ";
+	echo __('Export data')."</h2>";
 
 	echo '<form method="post" action="index.php?sec=estado&sec2=operation/agentes/exportdata" name="export_form">';
 	echo '<table width=550 border=0 cellspacing=3 cellpadding=5 class=databox_color>';
 	echo '<tr>';
-	echo "<td class='datos'><b>".__('source_agent')."</b></td>";
+	echo "<td class='datos'><b>".__('Source agent')."</b></td>";
 	echo "<td class='datos'>";	
 
 
@@ -266,12 +266,12 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 		}
 	}
 	echo "</select> &nbsp;&nbsp;";
-	echo "<input type=submit name='update_agent' class='sub upd' value='".__('get_info')."'>";
+	echo "<input type=submit name='update_agent' class='sub upd' value='".__('Get Info')."'>";
 
 	
 	echo '<tr>';
 	echo "<td class='datos2'>";
-	echo "<b>".__('modules')."</b>";
+	echo "<b>".__('Modules')."</b>";
 	echo "<td class='datos2'>";
 	
 	// Combo with modules
@@ -290,33 +290,33 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 	echo "</select>";
 	
 	echo "<tr><td class='datos'>";
-	echo "<b>".__('begin_date')."</b>";
+	echo "<b>".__('Begin date (*)')."</b>";
 	echo "<td class='datos'>";
 	echo "<input type='text' id='start_date' name='start_date' size=10 value='".substr ($date_from, 0, 10)."'> <img src='images/calendar_view_day.png' onclick='scwShow(scwID(\"start_date\"),this);'> ";
 	echo "<input type='text' name='start_time' size=10 value='".substr ($date_from, 11, 8)."'>";
 	
 
 	echo "<tr><td class='datos2'>";
-	echo "<b>".__('end_date')."</b>";
+	echo "<b>".__('End date (*)')."</b>";
 	
 	echo "<td class='datos2'>";	
 	echo "<input type='text' id='end_date' name='end_date' size=10 value='".substr ($date_to, 0, 10)."'> <img src='images/calendar_view_day.png' onclick='scwShow(scwID(\"end_date\"),this);'> ";
 	echo "<input type='text' name='end_time' size=10 value='".substr ($date_to, 11, 8)."'>";
 
 	echo "<tr><td class='datos'>";
-	echo "<b>".__('export_type')."</b>";
+	echo "<b>".__('Export type')."</b>";
 	echo "<td class='datos'>";
 	// Combo for data export type
 	echo "<select name='export_type'>";
-	echo "<option value=3>".__('datatable')."</option>";
-	echo "<option value=1>".__('csv')."</option>";
-	echo "<option value=2>".__('average_per_hourday')."</option>";
+	echo "<option value=3>".__('Data table')."</option>";
+	echo "<option value=1>".__('Standalone CSV ascii file')."</option>";
+	echo "<option value=2>".__('Average per hour/day')."</option>";
 	echo "</select>";
 	echo "</table>";
 	
 	// Submit button
 	echo '<div class="action-buttons" style="width: 550">';
-	print_submit_button (__('export'), 'export', false, 'class="sub wand"');
+	print_submit_button (__('Export'), 'export', false, 'class="sub wand"');
 	echo "</div>";
 	echo "</form>";
 }

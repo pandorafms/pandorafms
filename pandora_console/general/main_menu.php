@@ -20,12 +20,12 @@
 
 require ("operation/menu.php");
 if (! isset ($_SESSION["id_usuario"])) {
-	echo '<div class="f10">' . __('not_connected');
+	echo '<div class="f10">' . __('You\'re not connected');
 	echo '<br /><br />';
 	echo '<form method="post" action="index.php?login=1">';
 	echo '<div class="f9b">Login</div><input class="login" type="text" name="nick">';
 	echo '<div class="f9b">Password</div><input class="login" type="password" name="pass">';
-	echo '<div><input name="login" type="submit" class="sub" value="' . __('login') .'"></div>';
+	echo '<div><input name="login" type="submit" class="sub" value="' . __('Login') .'"></div>';
 	echo '<br />IP: <b class="f10">' . $REMOTE_ADDR . '</b><br /></div>';
 	
 } else {

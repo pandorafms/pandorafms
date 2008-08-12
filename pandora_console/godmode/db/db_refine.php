@@ -32,20 +32,20 @@ if (! give_acl ($config['id_user'], 0, "DM")) {
 if ((isset ($_GET["operacion"])) && (!isset ($_POST["update_agent"]))) {
 	// DATA COPY
 	if (isset ($_POST["eliminar"])) {
-		echo "<h2>".__('deletedata')."</h2>";
+		echo "<h2>".__('Delete Data')."</h2>";
 		// First checkings
 		
 		$max = $_POST["max"];
 		$min = $_POST["min"];
 		if ($max == $min) {
-			echo "<h3 class='error'>ERROR ".__('max_eq_min')."</h3>";
+			echo "<h3 class='error'>ERROR ".__('Maximum equal to minimum')."</h3>";
 			echo "</table>";
 			include ("general/footer.php");
 			exit;
 		}
 		$origen_modulo = mysql_real_esape_string ($_POST["origen_modulo"]);
 	 	if (count($origen_modulo) <= 0) {
-			echo "<h3 class='error'>ERROR: ".__('nomodules_selected')."</h3>";
+			echo "<h3 class='error'>ERROR: ".__('No modules has been selected')."</h3>";
 			echo "</table>";
 			include ("general/footer.php");
 			exit;
@@ -57,7 +57,7 @@ if ((isset ($_GET["operacion"])) && (!isset ($_POST["update_agent"]))) {
 		// Copy
 		for ($a = 0; $a < count ($origen_modulo); $a++) { // For every agent selected
 			$id_agentemodulo = $origen_modulo[$a];
-			echo "<br><br>".__('filtering_datamodule')."<b> [".dame_nombre_modulo_agentemodulo ($id_agentemodulo)."]</b>";
+			echo "<br><br>".__('Filtering data module')."<b> [".dame_nombre_modulo_agentemodulo ($id_agentemodulo)."]</b>";
 			$sql ='DELETE FROM tagente_datos WHERE id_agente_modulo = '.$origen_modulo[$a].' AND ( datos < '.$min.' OR  datos > '.$max.' )';
 			process_sql ($sql);
 			//echo "<br>DEBUG DELETE $sql1 <br>";
@@ -65,12 +65,12 @@ if ((isset ($_GET["operacion"])) && (!isset ($_POST["update_agent"]))) {
 	} //if copy modules or alerts
 } else { // Form view
 	?>
-	<h2><?php echo __('dbmain_title'); ?> &gt; 
-	<?php echo __('db_refine'); ?></h2>
+	<h2><?php echo __('Database Maintenance'); ?> &gt; 
+	<?php echo __('Database debug'); ?></h2>
 	<form method="post" action="index.php?sec=gdbman&sec2=godmode/db/db_refine&operacion=1">
 	<table width='500' border='0' cellspacing='4' cellpadding='4' class='databox'>
 	<tr>
-	<td class="datost"><b><?php echo __('source_agent'); ?></b><br><br>
+	<td class="datost"><b><?php echo __('Source agent'); ?></b><br><br>
 	<select name="origen" class="w130">
 	<?php
 	if ( (isset ($_POST["update_agent"])) && (isset ($_POST["origen"])) ) {
@@ -87,8 +87,8 @@ if ((isset ($_GET["operacion"])) && (!isset ($_POST["update_agent"]))) {
 		else
 			echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
 	}
-	echo '</select>&nbsp;&nbsp;<input type=submit name="update_agent" class="sub upd" value="'.__('get_info').'"><br><br>';
-	echo "<b>".__('modules')."</b><br><br>";
+	echo '</select>&nbsp;&nbsp;<input type=submit name="update_agent" class="sub upd" value="'.__('Get Info').'"><br><br>';
+	echo "<b>".__('Modules')."</b><br><br>";
 	echo "<select name='origen_modulo[]' size=5 multiple=yes class='w130'>";
 	if ( (isset($_POST["update_agent"])) && (isset ($_POST["origen"])) ) {
 		// Populate Module/Agent combo
@@ -101,13 +101,13 @@ if ((isset ($_GET["operacion"])) && (!isset ($_POST["update_agent"]))) {
 	}
 	echo "</select>";
 	?>
-	<td class="datost"><b><?php echo __('purge_below_limits'); ?></b><br><br>
+	<td class="datost"><b><?php echo __('Purge data out these limits'); ?></b><br><br>
 		<table cellspacing=3 cellpadding=3 border=0>
-		<tr class=datos><td><?php echo __('min'); ?><td><input type="text" name="min" size=4 value=0>
-		<tr class=datos><td><?php echo __('max'); ?><td><input type="text" name="max" size=4 value=0>	
+		<tr class=datos><td><?php echo __('Minimum'); ?><td><input type="text" name="min" size=4 value=0>
+		<tr class=datos><td><?php echo __('Maximum'); ?><td><input type="text" name="max" size=4 value=0>	
 		<tr><td></td></tr>
 		<tr><td class="bot" colspan="2" align="right">
-		<input type="submit" name="eliminar" class="sub delete" value="<?php echo __('delete').'" onClick="if (!confirm("'.__('are_you_sure').'")) return false;>'; ?>
+		<input type="submit" name="eliminar" class="sub delete" value="<?php echo __('Delete').'" onClick="if (!confirm("'.__('Are you sure?').'")) return false;>'; ?>
 		</table>
 	</td></tr>
 

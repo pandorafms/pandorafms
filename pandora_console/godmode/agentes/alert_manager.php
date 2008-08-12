@@ -28,7 +28,7 @@ if (! give_acl ($config["id_user"], 0, "AW")) {
 	return;
 };
 
-echo "<h2>".__('agent_conf')." &gt; ".__('alerts')."</h2>";
+echo "<h2>".__('Agent configuration')." &gt; ".__('Alerts')."</h2>";
 // ==========================
 // Create module/type combo
 // ==========================
@@ -42,7 +42,7 @@ echo "<option value='simple'>".__('Create a simple alert');
 echo "<option value='combined'>".__('Create a new combined alert');
 echo "</select></td>";
 echo '<td class="datos">';
-echo '<input align="right" name="updbutton" type="submit" class="sub wand" value="'.__('create').'">';
+echo '<input align="right" name="updbutton" type="submit" class="sub wand" value="'.__('Create').'">';
 echo "</form>";
 echo "</table>";
 
@@ -90,46 +90,46 @@ if ($row = mysql_num_rows( $result)) {
 				$string = $string."<a href='index.php?sec=gagente&
 				sec2=godmode/agentes/configurar_agente&tab=alert&
 				id_agente=".$id_agente."&delete_alert=".$row3["id_aam"]."'>
-				<img src='images/cross.png' border=0 alt='".__('delete')."'></a>  &nbsp; ";
+				<img src='images/cross.png' border=0 alt='".__('Delete')."'></a>  &nbsp; ";
 				$string = $string."<a href='index.php?sec=gagente&
 				sec2=godmode/agentes/configurar_agente&tab=alert&
 				id_agente=".$id_agente."&update_alert=".$row3["id_aam"]."'>
-				<img src='images/config.png' border=0 alt='".__('update')."'></a>";		
+				<img src='images/config.png' border=0 alt='".__('Update')."'></a>";		
 			}
 			$string = $string."</td>";
 		}
 	}
 	if (isset($string) & $string!='') {
 	echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>
-	<tr><th>".__('name')."</th>
-	<th>".__('type')."</th>
-	<th>".__('alert')."</th>
-	<th>".__('threshold')."</th>
-	<th>".__('min.')."</th>
-	<th>".__('max.')."</th>
-	<th>".__('time')."</th>
-	<th>".__('description')."</th>
+	<tr><th>".__('Name')."</th>
+	<th>".__('Type')."</th>
+	<th>".__('Alert')."</th>
+	<th>".__('Threshold')."</th>
+	<th>".__('Min.')."</th>
+	<th>".__('Max.')."</th>
+	<th>".__('Time')."</th>
+	<th>".__('Description')."</th>
 	<th>".__('info')."</th>
-	<th width='50'>".__('action')."</th></tr>";
+	<th width='50'>".__('Action')."</th></tr>";
 	echo $string;
 	echo "</table>";
 	} else {
-		echo "<div class='nf'>".__('no_alerts')."</div>";
+		echo "<div class='nf'>".__('This agent doesn\'t have any alert')."</div>";
 	}
 } else {
-	echo "<div class='nf'>".__('no_modules')."</div>";
+	echo "<div class='nf'>".__('This agent doesn\'t have any module')."</div>";
 }
 
 // ==========================
 // Combined alerts view
 // ==========================
 
-echo "<h3>".__('combined alerts')."</h3>";
+echo "<h3>".__('Combined alerts')."</h3>";
 
 $sql = 'SELECT * FROM talerta_agente_modulo WHERE id_agent = '.$id_agente;
 $result = mysql_query ($sql);
 if (mysql_num_rows($result) == 0) {
-	echo "<div class='nf'>".__('no_modules')."</div>";
+	echo "<div class='nf'>".__('This agent doesn\'t have any module')."</div>";
 } else {
 	$color = 1;
 	$string = "";
@@ -140,9 +140,9 @@ if (mysql_num_rows($result) == 0) {
 		$string .= show_alert_row_edit ($row, "datos3", 0, 1);
 		$string .= '<td class="datos3">'; // action
 		if (give_acl($config['id_user'], $id_grupo, "LW")==1){
-			$string .= "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=".$id_agente."&delete_alert=".$row["id_aam"]."'> <img src='images/cross.png' border=0 alt='".__('delete')."'></a>  &nbsp; ";
+			$string .= "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=".$id_agente."&delete_alert=".$row["id_aam"]."'> <img src='images/cross.png' border=0 alt='".__('Delete')."'></a>  &nbsp; ";
 			$string .= "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=".$id_agente."&form_alerttype=combined&update_alert=".$row["id_aam"]."'>
-			<img src='images/config.png' border=0 alt='".__('update')."'></a>";
+			<img src='images/config.png' border=0 alt='".__('Update')."'></a>";
 		}
 		$id_aam = $row["id_aam"];
 		$sql = "SELECT * FROM tcompound_alert, talerta_agente_modulo WHERE tcompound_alert.id = $id_aam AND talerta_agente_modulo.id_aam = tcompound_alert.id_aam";
@@ -167,9 +167,9 @@ if (mysql_num_rows($result) == 0) {
 			$string .= "</td><td class='$tdcolor'>";
 			$id_grupo = dame_id_grupo($id_agente);
 			if (give_acl($config['id_user'], $id_grupo, "LW")==1){
-				$string .= "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=".$id_agente."&delete_alert_comp=".$row2["id_aam"]."'> <img src='images/cross.png' border=0 alt='".__('delete')."'></a>  &nbsp; ";
+				$string .= "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=".$id_agente."&delete_alert_comp=".$row2["id_aam"]."'> <img src='images/cross.png' border=0 alt='".__('Delete')."'></a>  &nbsp; ";
 				$string .= "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=".$id_agente."&update_alert=".$row2["id_aam"]."'>
-				<img src='images/config.png' border=0 alt='".__('update')."'></a>";		
+				<img src='images/config.png' border=0 alt='".__('Update')."'></a>";		
 			}
 			$string .= "</td>";
 		}
@@ -177,20 +177,20 @@ if (mysql_num_rows($result) == 0) {
 	
 	if (isset($string) & $string != "") {
 		echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>
-		<tr><th>".__('name')."</th>
-		<th>".__('type')."</th>
+		<tr><th>".__('Name')."</th>
+		<th>".__('Type')."</th>
 		<th>".__('Oper')."</th>
-		<th>".__('threshold')."</th>
-		<th>".__('min.')."</th>
-		<th>".__('max.')."</th>
-		<th>".__('time')."</th>
-		<th>".__('description')."</th>
+		<th>".__('Threshold')."</th>
+		<th>".__('Min.')."</th>
+		<th>".__('Max.')."</th>
+		<th>".__('Time')."</th>
+		<th>".__('Description')."</th>
 		<th>".__('info')."</th>
-		<th width='50'>".__('action')."</th></tr>";
+		<th width='50'>".__('Action')."</th></tr>";
 		echo $string;
 		echo "</table>";
 	} else {
-		echo "<div class='nf'>".__('no_alerts')."</div>";
+		echo "<div class='nf'>".__('This agent doesn\'t have any alert')."</div>";
 	}
 } 
 

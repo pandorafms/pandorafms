@@ -75,8 +75,8 @@ echo '</h1>';
 print_pandora_visual_map ($id_layout);
 
 $refresh_values = array ();
-$refresh_values[5] = "5 ". __('seconds');
-$refresh_values[30] = "30 ". __('seconds');
+$refresh_values[5] = "5 ". __('Seconds');
+$refresh_values[30] = "30 ". __('Seconds');
 $refresh_values[60] = "1 ". __('minutes');
 $refresh_values[120] = "2 ". __('minutes');
 $refresh_values[300] = "5 ". __('minutes');
@@ -85,9 +85,9 @@ $refresh_values[1800] = "30 ". __('minutes');
 
 $table->width = '500px';
 $table->data = array ();
-$table->data[0][0] = __('auto_refresh_time');
+$table->data[0][0] = __('Autorefresh time');
 $table->data[0][1] = print_select ($refresh_values, 'refr', $refr, '', 'N/A', 0, true);
-$table->data[0][2] = print_submit_button (__('refresh'), '', false, 'class="sub next"', true);
+$table->data[0][2] = print_submit_button (__('Refresh'), '', false, 'class="sub next"', true);
 
 echo "<div style='height:30px'>";
 echo "</div>";

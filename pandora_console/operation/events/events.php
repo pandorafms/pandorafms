@@ -75,7 +75,7 @@ if (isset ($_GET["delete"])) {
 		$sql2="DELETE FROM tevento WHERE id_evento =".$id_evento;
 		$result2=mysql_query($sql2);
 		if ($result) {
-			echo "<h3 class='suc'>".__('delete_event_ok')."</h3>";
+			echo "<h3 class='suc'>".__('Event successfully deleted')."</h3>";
 			audit_db ($config['id_user'], $REMOTE_ADDR,
 				"Event deleted","Deleted event: ".return_event_description ($id_evento));
 		}
@@ -94,10 +94,10 @@ if (isset ($_GET["check"])) {
 		$sql2="UPDATE tevento SET estado = 1, id_usuario = '".$config["id_user"]."' WHERE id_evento = ".$id_evento;
 		$result2=mysql_query($sql2);
 		if ($result2) {
-			echo "<h3 class='suc'>".__('validate_event_ok')."</h3>";
+			echo "<h3 class='suc'>".__('Event successfully validated')."</h3>";
 			audit_db($config["id_user"],$REMOTE_ADDR, "Event validated","Validate event: ".return_event_description ($id_evento));
 		} else {
-			echo "<h3 class='error'>".__('validate_event_failed')."</h3>";
+			echo "<h3 class='error'>".__('Event validation failed')."</h3>";
 		}
 		
 	} else {
@@ -180,7 +180,7 @@ if ($id_agent != -1)
 	$sql_post .= " AND id_agente = $id_agent";
 $url = "index.php?sec=eventos&sec2=operation/events/events&search=$search&event_type=$event_type&severity=$severity&status=$status&ev_group=$ev_group&refr=60&id_agent=$id_agent";
 
-echo "<h2>".__('events')." &gt; ".__('event_main_view'). "&nbsp";
+echo "<h2>".__('Events')." &gt; ".__('Main event view'). "&nbsp";
 
 if ($config["pure"] == 1)
 	echo "<a target='_top' href='$url&pure=0'><img src='images/monitor.png' title='".__('Normal screen')."'></a>";
@@ -208,7 +208,7 @@ echo "<tr>";
 echo "<form method='post' action='index.php?sec=eventos&sec2=operation/events/events&refr=60&id_agent=$id_agent&pure=".$config["pure"]."'>";
 
 // Group combo
-echo "<td>".__('group')."</td>";
+echo "<td>".__('Group')."</td>";
 echo "<td>";
 echo "<select name='ev_group' onChange='javascript:this.form.submit();' class='w130'>";
 if ( $ev_group > 1 ){
@@ -299,15 +299,15 @@ if ($total_events > 0){
 	echo "<tr>";
 	echo "<th class=f9>".__('St')."</th>";
 	echo "<th class=f9>".__('Type')."</th>";
-	echo "<th class=f9>".__('event_name')."</th>";
-	echo "<th class=f9>".__('agent_name')."</th>";
-	echo "<th class=f9>".__('source')."</th>";
-	echo "<th class=f9>".__('group')."</th>";
-	echo "<th class=f9>".__('id_user')."</th>";
-	echo "<th class=f9>".__('timestamp')."</th>";
-	echo "<th class=f9>".__('action')."</th>";
+	echo "<th class=f9>".__('Event name')."</th>";
+	echo "<th class=f9>".__('Agent name')."</th>";
+	echo "<th class=f9>".__('Source')."</th>";
+	echo "<th class=f9>".__('Group')."</th>";
+	echo "<th class=f9>".__('User ID')."</th>";
+	echo "<th class=f9>".__('Timestamp')."</th>";
+	echo "<th class=f9>".__('Action')."</th>";
 	echo "<th class='p10'>";
-	echo "<label for='checkbox' class='p21'>".__('all')." </label>";
+	echo "<label for='checkbox' class='p21'>".__('All')." </label>";
 	echo '<input type="checkbox" class="chk" name="allbox" onclick="CheckAll();"></th>';
 	echo "<form name='eventtable' method='POST' action='$url&pure=".$config["pure"]."'>";
 	$id_evento = 0;
@@ -411,7 +411,7 @@ if ($total_events > 0){
 				if ($row2["event_type"] == "system") {
 					echo "<td class='$tdclass' colspan=3>".__('System');
 				} else {
-					echo "<td class='$tdclass' colspan=3>".__('alert')."SNMP";
+					echo "<td class='$tdclass' colspan=3>".__('Alert')."SNMP";
 				}
 			}
 
@@ -445,26 +445,26 @@ if ($total_events > 0){
 	echo "</table>";
 	echo "<table width='750'><tr><td align='right'>";
 	
-	echo "<input class='sub ok' type='submit' name='updatebt' value='".__('validate')."'> ";
+	echo "<input class='sub ok' type='submit' name='updatebt' value='".__('Validate')."'> ";
 	if (give_acl($config["id_user"], 0,"IM") ==1){
-		echo "<input class='sub delete' type='submit' name='deletebt' value='".__('delete')."'>";
+		echo "<input class='sub delete' type='submit' name='deletebt' value='".__('Delete')."'>";
 	}
 	echo "</form></table>";
 	echo "<table>";
 	echo "<tr>";
 	echo "<td rowspan='4' class='f9' style='padding-left: 30px; line-height: 17px; vertical-align: top;'>";
-	echo "<h3>".__('status')."</h3>";
-	echo "<img src='images/dot_green.png'> - ".__('validated_event');
+	echo "<h3>".__('Status')."</h3>";
+	echo "<img src='images/dot_green.png'> - ".__('Validated event');
 	echo "<br>";
-	echo "<img src='images/dot_red.png'> - ".__('not_validated_event');
+	echo "<img src='images/dot_red.png'> - ".__('Not validated event');
 	echo "</td>";
 	echo "<td rowspan='4' class='f9' style='padding-left: 30px; line-height: 17px; vertical-align: top;'>";
-	echo "<h3>".__('action')."</h3>";
-	echo "<img src='images/ok.png'> - ".__('validate_event');
+	echo "<h3>".__('Action')."</h3>";
+	echo "<img src='images/ok.png'> - ".__('Validate event');
 	echo "<br>";
-	echo "<img src='images/cross.png'> - ".__('delete_event');
+	echo "<img src='images/cross.png'> - ".__('Delete event');
 	echo "<br>";
-	echo "<img src='images/page_lightning.png'> - ".__('create_incident');
+	echo "<img src='images/page_lightning.png'> - ".__('Create incident');
 	echo "</td></tr></table>";
 } // no events to show
 ?>

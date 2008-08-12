@@ -41,7 +41,7 @@ if (isset($_GET["id_agente"])){
 	}
 
 	if (isset($_GET["tab"])){
-		echo "<h2>".__('ag_title')." &gt; ".__('alert_listing')."</h2>";
+		echo "<h2>".__('Pandora Agents')." &gt; ".__('Full list of Alerts')."</h2>";
 	}
 	
 	$query_gen='SELECT talerta_agente_modulo.* FROM talerta_agente_modulo, tagente_modulo WHERE talerta_agente_modulo.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.id_agente ='.$id_agente;
@@ -49,21 +49,21 @@ if (isset($_GET["id_agente"])){
 	if (mysql_num_rows ($result_gen)) {
 	
 		if (!isset($_GET["tab"])) {
-			echo "<h3>".__('alert_listing')."</h3>";
+			echo "<h3>".__('Full list of Alerts')."</h3>";
 		}
 	
 		echo "<table cellpadding='4' cellspacing='4' width=750 border=0 class='databox'>";
 		echo "<tr>
-		<th>".__('type')."<th>".__('name')."</th>
-		<th>".__('description')."</th>
+		<th>".__('Type')."<th>".__('Name')."</th>
+		<th>".__('Description')."</th>
 			<th>".__('Info')."</th>
-		<th>".__('min.')."</th>
-		<th>".__('max.')."</th>
-		<th>".__('time_threshold')."</th>
-		<th>".__('last_fired')."</th>
-		<th>".__('times_fired')."</th>
-		<th>".__('status')."</th>
-		<th>".__('validate')."</th>";
+		<th>".__('Min.')."</th>
+		<th>".__('Max.')."</th>
+		<th>".__('Time threshold')."</th>
+		<th>".__('Last fired')."</th>
+		<th>".__('Times Fired')."</th>
+		<th>".__('Status')."</th>
+		<th>".__('Validate')."</th>";
 		$color=1;
 		while ($data=mysql_fetch_array($result_gen)){
 			if ($color == 1){
@@ -98,7 +98,7 @@ if (isset($_GET["id_agente"])){
 		echo '</table>';
 
 	} else {
-		echo "<div class='nf'>".__('no_alerts')."</div>";
+		echo "<div class='nf'>".__('This agent doesn\'t have any alert')."</div>";
 	}
 
 // Show alert for no defined agent 
@@ -107,8 +107,8 @@ if (isset($_GET["id_agente"])){
 	// SHOW ALL ALERTS (GENERAL PAGE)
 	// -------------------------------
 
-	echo "<h2>".__('ag_title')." &gt; ";
-	echo __('alert_listing')."</h2>";
+	echo "<h2>".__('Pandora Agents')." &gt; ";
+	echo __('Full list of Alerts')."</h2>";
 	$iduser_temp=$_SESSION['id_usuario'];
 
 	$ag_group = get_parameter ("ag_group", -1);
@@ -120,7 +120,7 @@ if (isset($_GET["id_agente"])){
 	
 	echo "<table cellpadding='4' cellspacing='4' class='databox'>";
 	echo "<tr>";
-	echo "<td>".__('group')."</td>";
+	echo "<td>".__('Group')."</td>";
 	echo "<td valign='middle'>";
 	echo "<select name='ag_group' onChange='javascript:this.form.submit();' class='w150'>";
 
@@ -133,7 +133,7 @@ if (isset($_GET["id_agente"])){
 	echo "</select></td>";
 	echo "<td valign='middle'>
 	<noscript>
-	<input name='uptbutton' type='submit' class='sub' value='".__('show')."'>
+	<input name='uptbutton' type='submit' class='sub' value='".__('Show')."'>
 	</noscript></td></form>";
 
 	// Display single alerts
@@ -186,9 +186,9 @@ if (isset($_GET["id_agente"])){
 			<b>".$nombre_agente."</b>";
 			$string .= "<td class='$tdcolor' align='center'>";
 			if ($data["times_fired"] <> 0)
-				$string .= "<img src='images/pixel_red.png' width=40 height=18 title='".__('fired')."'>";
+				$string .= "<img src='images/pixel_red.png' width=40 height=18 title='".__('Alert fired')."'>";
 			else
-				$string .= "<img src='images/pixel_green.png' width=40 height=18 title='".__('not_fired')."'>";
+				$string .= "<img src='images/pixel_green.png' width=40 height=18 title='".__('Alert not fired')."'>";
 				
 			$string = $string."<td class='".$tdcolor."'>"
 			.dame_nombre_alerta($data["id_alerta"])."</td>";
@@ -196,7 +196,7 @@ if (isset($_GET["id_agente"])){
 			$data["descripcion"]."</td>";
 			if ($data["last_fired"] == "0000-00-00 00:00:00") {
 				$string=$string."<td class='".$tdcolor."'>".
-				__('never')."</td>";
+				__('Never')."</td>";
 			} else {
 				$string=$string."<td class='".$tdcolor."'>".
 				human_time_comparation($data["last_fired"])."</td>";
@@ -253,9 +253,9 @@ if (isset($_GET["id_agente"])){
 				<b>".$nombre_agente."</b> (*)";
 				$string .= "<td class='$tdcolor' align='center'>";
 				if ($data["times_fired"] <> 0)
-					$string .= "<img src='images/pixel_red.png' width=40 height=18 title='".__('fired')."'>";
+					$string .= "<img src='images/pixel_red.png' width=40 height=18 title='".__('Alert fired')."'>";
 				else
-					$string .= "<img src='images/pixel_green.png' width=40 height=18 title='".__('not_fired')."'>";
+					$string .= "<img src='images/pixel_green.png' width=40 height=18 title='".__('Alert not fired')."'>";
 					
 				$string = $string."<td class='".$tdcolor."'>"
 				.dame_nombre_alerta($data["id_alerta"])."</td>";
@@ -263,7 +263,7 @@ if (isset($_GET["id_agente"])){
 				$data["descripcion"]."</td>";
 				if ($data["last_fired"] == "0000-00-00 00:00:00") {
 					$string=$string."<td class='".$tdcolor."'>".
-					__('never')."</td>";
+					__('Never')."</td>";
 				} else {
 					$string=$string."<td class='".$tdcolor."'>".
 					human_time_comparation($data["last_fired"])."</td>";
@@ -276,25 +276,25 @@ if (isset($_GET["id_agente"])){
 
 	if ($string != "") {
 		echo "<td class='f9' style='padding-left: 30px;'>";
-		echo "<img src='images/pixel_red.png' width=18 height=18> ".__('fired')."</td>";
+		echo "<img src='images/pixel_red.png' width=18 height=18> ".__('Alert fired')."</td>";
 		echo "<td class='f9' style='padding-left: 30px;'>";
-		echo "<img src='images/pixel_green.png' width=18 height=18> ".__('not_fired');
+		echo "<img src='images/pixel_green.png' width=18 height=18> ".__('Alert not fired');
 		echo "</td><td class='f9' valign='bottom' style='padding-left: 10px;'>(*) ".__('Combined alert')."</tr></table>";
 		echo "<br>";
 		echo "<table cellpadding='4' cellspacing='4' width='700' class='databox'>";
 		echo "<tr>
-		<th>".__('agent')."</th>
-		<th>".__('status')."</th>
-		<th>".__('type')."</th>
-		<th>".__('description')."</th>
-		<th>".__('last_fired')."</th>
-		<th>".__('times_fired')."</th>";
+		<th>".__('Agent')."</th>
+		<th>".__('Status')."</th>
+		<th>".__('Type')."</th>
+		<th>".__('Description')."</th>
+		<th>".__('Last fired')."</th>
+		<th>".__('Times Fired')."</th>";
 		echo $string; //built table of alerts
 		echo "</table>";
 	}
 	else {
 		echo "</table><br><div class='nf'>".
-		__('no_alert')."</div>";
+		__('No agent included in this group has any assigned alert')."</div>";
 	}
 } // Main alert view
 ?>

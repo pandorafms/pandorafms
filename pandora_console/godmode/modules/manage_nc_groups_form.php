@@ -46,7 +46,7 @@ if (isset($_GET["edit"])){ // Edit mode
 	$parent = "";
 }
 
-echo "<h2>".__('network_component_group_management')."</h2>";
+echo "<h2>".__('Component group management')."</h2>";
 echo '<table width="500" cellspacing="4" cellpadding="4" class="databox_color">';
 
 // Different Form url if it's a create or if it's a update form
@@ -56,11 +56,11 @@ else
 	echo "<form name='snmp_c' method='post' action='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&create=1'>";
 	
 echo "<tr>";
-echo "<td class='datos'>".__('name')."</td>";
+echo "<td class='datos'>".__('Name')."</td>";
 echo "<td class='datos'><input type='text' name='name' size=30 value='$name'></td>";
 
 echo "<tr>";
-echo "<td class='datos2'>".__('parent')."</td>";
+echo "<td class='datos2'>".__('Parent')."</td>";
 echo "<td class='datos2'>";
 echo "<select name='parent'>";
 echo "<option value='$parent'>".give_network_component_group_name($parent);
@@ -75,9 +75,9 @@ echo '<table width="500">';
 echo '<tr><td align="right">';
 
 if ($id_sg == -1)
-	echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('create')."'>";
+	echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('Create')."'>";
 else
-	echo "<input name='uptbutton' type='submit' class='sub upd' value='".__('update')."'>";
+	echo "<input name='uptbutton' type='submit' class='sub upd' value='".__('Update')."'>";
 
 echo "</form></td></tr></table>";
 

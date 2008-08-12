@@ -48,18 +48,18 @@ if ($update_module) {
 		WHERE id_tipo = '".$id_type."'";
 	$result = mysql_query($sql_update);
 	if (! $result)
-		echo "<h3 class='error'>".__('modify_module_no')."</h3>";
+		echo "<h3 class='error'>".__('Problem modifying module')."</h3>";
 	else
-		echo "<h3 class='suc'>".__('modify_module_ok')."</h3>";
+		echo "<h3 class='suc'>".__('Module updated successfully')."</h3>";
 }
 
-echo "<h2>".__('module_management')." &gt; ";
-echo __('defined_modules')."</h2>";
+echo "<h2>".__('Module management')." &gt; ";
+echo __('Defined modules')."</h2>";
 
 echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>";
-echo "<th>".__('icon')."</th>";
-echo "<th>".__('name')."</th>";
-echo "<th>".__('description')."</th>";
+echo "<th>".__('Icon')."</th>";
+echo "<th>".__('Name')."</th>";
+echo "<th>".__('Description')."</th>";
 $sql = 'SELECT * FROM ttipo_modulo ORDER BY nombre';
 $result = mysql_query ($sql);
 $color = 0;

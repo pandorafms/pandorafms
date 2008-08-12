@@ -1558,7 +1558,7 @@ function drawWarning($width,$height) {
 
 	ImageFilledRectangle($image,0,0,$width-1,$height-1,$back);
 	ImageRectangle($image,0,0,$width-1,$height-1,$border);
-	ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $border, $config['fontpath'], __('no_data'));
+	ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $border, $config['fontpath'], __('no data'));
 	imagePNG($image);
 	imagedestroy($image);
 }
@@ -1625,7 +1625,7 @@ function progress_bar ($progress, $width, $height, $mode = 1) {
 		if ($mode == 1){
 			if ($rating > 50)
 				if ($rating > 100)
-					ImageTTFText($image, 8, 0, ($width/4), ($height/2)+($height/5), $back, $config["fontpath"], __('out_of_limits'));
+					ImageTTFText($image, 8, 0, ($width/4), ($height/2)+($height/5), $back, $config["fontpath"], __('Out of limits'));
 				else
 					ImageTTFText($image, 8, 0, ($width/2)-($width/10), ($height/2)+($height/5), $back, $config["fontpath"], $rating."%");
 			else
@@ -2180,8 +2180,8 @@ if ($graphic_type) {
 		$data[0] = (float) get_parameter ('fired');
 		$data[1] = (float) get_parameter ('not_fired');
 		$legends = array ();
-		$legends[0] = __('fired_alerts');
-		$legends[1] = __('not_fired_alerts');
+		$legends[0] = __('Alerts fired');
+		$legends[1] = __('Alerts not fired');
 		generic_pie_graph ($width, $height, $data, $legends);
 		
 		break;
@@ -2190,8 +2190,8 @@ if ($graphic_type) {
 		$data[0] = (float) get_parameter ('down');
 		$data[1] = (float) get_parameter ('not_down');
 		$legends = array ();
-		$legends[0] = __('monitors_ok');
-		$legends[1] = __('monitors_bad');
+		$legends[0] = __('Monitors OK');
+		$legends[1] = __('Monitors BAD');
 		generic_pie_graph ($width, $height, $data, $legends);
 		
 		break;

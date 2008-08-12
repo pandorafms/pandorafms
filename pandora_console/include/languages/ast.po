@@ -1,0 +1,5154 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# David Muniz, 2005-2006
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-08-11 15:07+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: David Muniz\n"
+"Language-Team: ast <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: reporting/fgraph.php:950
+#, fuzzy
+msgid "Data occurrence for module "
+msgstr "Borrar rexistros pal módulu"
+
+#: reporting/fgraph.php:1042 operation/incidents/incident.php:243
+#: operation/incidents/incident.php:257 operation/incidents/incident.php:266
+#: operation/incidents/incident_detail.php:318
+#: operation/incidents/incident_detail.php:326
+msgid "Informative"
+msgstr "Informativu"
+
+#: reporting/fgraph.php:1043 operation/incidents/incident.php:242
+#: operation/incidents/incident.php:258 operation/incidents/incident.php:267
+#: operation/incidents/incident_detail.php:319
+#: operation/incidents/incident_detail.php:327
+msgid "Low"
+msgstr "Baxa"
+
+#: reporting/fgraph.php:1044 operation/incidents/incident.php:241
+#: operation/incidents/incident.php:259 operation/incidents/incident.php:268
+#: operation/incidents/incident_detail.php:320
+#: operation/incidents/incident_detail.php:328
+msgid "Medium"
+msgstr "Media"
+
+#: reporting/fgraph.php:1045 operation/incidents/incident.php:240
+#: operation/incidents/incident.php:260 operation/incidents/incident.php:269
+#: operation/incidents/incident_detail.php:321
+#: operation/incidents/incident_detail.php:329
+msgid "Serious"
+msgstr "Grave"
+
+#: reporting/fgraph.php:1046
+#, fuzzy
+msgid "Very serious"
+msgstr "Muy grave"
+
+#: reporting/fgraph.php:1047
+#, fuzzy
+msgid "Maintance"
+msgstr "Mantenimientu"
+
+#: reporting/fgraph.php:1274 operation/incidents/incident.php:244
+#: operation/incidents/incident.php:262 operation/incidents/incident.php:271
+#: operation/incidents/incident_detail.php:323
+#: operation/incidents/incident_detail.php:331 include/functions.php:648
+#: include/functions.php:1132 include/functions.php:1151
+msgid "Maintenance"
+msgstr "Mantenimientu"
+
+#: reporting/fgraph.php:1282 include/functions.php:651
+#: include/functions.php:1133 include/functions.php:1153
+#, fuzzy
+msgid "Informational"
+msgstr "Información BBDD"
+
+#: reporting/fgraph.php:1289 include/functions.php:654
+#: include/functions.php:1134 include/functions.php:1155
+#, fuzzy
+msgid "Normal"
+msgstr "Modu normal"
+
+#: reporting/fgraph.php:1296 include/functions.php:657
+#: include/functions.php:1135 include/functions.php:1157
+#, fuzzy
+msgid "Warning"
+msgstr "Modu d'aprendizax"
+
+#: reporting/fgraph.php:1303 include/functions.php:660
+#: include/functions.php:1136 include/functions.php:1159
+msgid "Critical"
+msgstr ""
+
+#: reporting/fgraph.php:1342 operation/events/events.php:412
+#: include/functions_db.php:2003
+msgid "System"
+msgstr ""
+
+#: reporting/fgraph.php:1561
+msgid "no_data"
+msgstr ""
+
+#: reporting/fgraph.php:1628
+msgid "Out of limits"
+msgstr "Fuera de los límites"
+
+#: reporting/fgraph.php:2183 operation/agentes/ver_agente.php:105
+#: include/functions_reporting.php:341 include/functions_reporting_pdf.php:233
+#, fuzzy
+msgid "Alerts fired"
+msgstr "Alerta lanzada"
+
+#: reporting/fgraph.php:2184
+#, fuzzy
+msgid "Alerts not fired"
+msgstr "Alerta nun lanzada"
+
+#: reporting/fgraph.php:2193
+#, fuzzy
+msgid "Monitors OK"
+msgstr "Toos los monitores OK"
+
+#: reporting/fgraph.php:2194
+#, fuzzy
+msgid "Monitors BAD"
+msgstr "Monitores"
+
+#: reporting/stat_win.php:57 operation/agentes/datos_agente.php:122
+msgid "There was a problem locating the source of the graph"
+msgstr "Ocurrió un error al localizar la fuente del gráficu"
+
+#: reporting/stat_win.php:64 reporting/stat_win.php:229
+#: godmode/reporting/reporting_builder.php:378
+#: godmode/servers/manage_recontask_form.php:105
+#: operation/reporting/graph_viewer.php:122
+#: operation/agentes/exportdata.php:66 include/functions.php:508
+#, fuzzy
+msgid "One hour"
+msgstr "Propietariu"
+
+#: reporting/stat_win.php:66 reporting/stat_win.php:230
+#: include/functions.php:511
+msgid "Two hours"
+msgstr ""
+
+#: reporting/stat_win.php:68 reporting/stat_win.php:231
+#: include/functions.php:514
+#, fuzzy
+msgid "Six hours"
+msgstr "Grave"
+
+#: reporting/stat_win.php:70 reporting/stat_win.php:232
+#: include/functions.php:517
+msgid "12 hours"
+msgstr ""
+
+#: reporting/stat_win.php:72 reporting/stat_win.php:233
+#: godmode/reporting/reporting_builder.php:383
+#: operation/reporting/graph_viewer.php:127 include/functions.php:520
+#, fuzzy
+msgid "One day"
+msgstr "Abiertu'l"
+
+#: reporting/stat_win.php:74 reporting/stat_win.php:234
+#: godmode/reporting/reporting_builder.php:384
+#: operation/reporting/graph_viewer.php:128 include/functions.php:523
+msgid "Two days"
+msgstr ""
+
+#: reporting/stat_win.php:76 reporting/stat_win.php:235
+#: include/functions.php:526
+msgid "Five days"
+msgstr ""
+
+#: reporting/stat_win.php:78 reporting/stat_win.php:236
+#: godmode/reporting/reporting_builder.php:385
+#: operation/reporting/graph_viewer.php:129
+#: operation/agentes/datos_agente.php:44 include/functions.php:529
+msgid "One week"
+msgstr "Última selmana"
+
+#: reporting/stat_win.php:80 reporting/stat_win.php:237
+#: godmode/reporting/map_builder.php:370 include/functions.php:532
+msgid "15 days"
+msgstr ""
+
+#: reporting/stat_win.php:82 reporting/stat_win.php:238
+#: godmode/reporting/reporting_builder.php:387
+#: operation/reporting/graph_viewer.php:130
+#: operation/agentes/datos_agente.php:40 include/functions.php:535
+msgid "One month"
+msgstr "Últimu mes"
+
+#: reporting/stat_win.php:84 reporting/stat_win.php:239
+#: include/functions.php:538
+#, fuzzy
+msgid "Two months"
+msgstr "Últimu mes"
+
+#: reporting/stat_win.php:86 reporting/stat_win.php:240
+#: godmode/reporting/reporting_builder.php:388
+#: operation/reporting/graph_viewer.php:131 include/functions.php:541
+#, fuzzy
+msgid "Six months"
+msgstr "Últimu mes"
+
+#: reporting/stat_win.php:125 godmode/agentes/alert_manager_editor.php:122
+#: godmode/agentes/module_manager_editor_network.php:222
+#: godmode/agentes/module_manager_editor_plugin.php:184
+#: godmode/agentes/module_manager_editor_wmi.php:210
+#: godmode/agentes/module_manager_editor_data.php:146
+#: operation/reporting/reporting_viewer.php:311 include/functions.php:982
+#: include/functions_reporting_pdf.php:267
+msgid "Max. Value"
+msgstr "Valor Máximu"
+
+#: reporting/stat_win.php:127 operation/reporting/reporting_viewer.php:296
+#: include/functions.php:981 include/functions_reporting_pdf.php:259
+#, fuzzy
+msgid "Avg. Value"
+msgstr "Valor Máximu"
+
+#: reporting/stat_win.php:129 godmode/agentes/alert_manager_editor.php:117
+#: godmode/agentes/module_manager_editor_network.php:220
+#: godmode/agentes/module_manager_editor_plugin.php:182
+#: godmode/agentes/module_manager_editor_wmi.php:208
+#: godmode/agentes/module_manager_editor_data.php:144
+#: operation/reporting/reporting_viewer.php:326 include/functions.php:983
+#: include/functions_reporting_pdf.php:275
+msgid "Min. Value"
+msgstr "Valor Mínimu"
+
+#: reporting/stat_win.php:198
+msgid "Refresh time"
+msgstr ""
+
+#: reporting/stat_win.php:202
+msgid "Avg. Only"
+msgstr ""
+
+#: reporting/stat_win.php:209
+#, fuzzy
+msgid "Begin date"
+msgstr "Fecha comienzu (*)"
+
+#: reporting/stat_win.php:214
+msgid "Zoom factor"
+msgstr ""
+
+#: reporting/stat_win.php:225
+#, fuzzy
+msgid "Time range"
+msgstr "Rangu de feches"
+
+#: reporting/stat_win.php:244
+#, fuzzy
+msgid "Show events"
+msgstr "Agüeyar eventos"
+
+#: reporting/stat_win.php:253
+#, fuzzy
+msgid "Show alert"
+msgstr "Alertes SNMP"
+
+#: godmode/modules/module_list.php:51
+#, fuzzy
+msgid "Problem modifying module"
+msgstr "Ocurrió un problema al modificar el grupu"
+
+#: godmode/modules/module_list.php:53
+#, fuzzy
+msgid "Module updated successfully"
+msgstr "Servidor actualizáu correutamente"
+
+#: godmode/modules/module_list.php:56
+#: godmode/modules/manage_network_templates_form.php:103
+#: godmode/modules/manage_network_components.php:175
+#: godmode/modules/manage_network_templates.php:41
+#: godmode/modules/manage_nc_groups.php:75
+#, fuzzy
+msgid "Module management"
+msgstr "Xestión de perfiles"
+
+#: godmode/modules/module_list.php:57
+#, fuzzy
+msgid "Defined modules"
+msgstr "Módulos asignaos"
+
+#: godmode/modules/module_list.php:60 godmode/groups/group_list.php:111
+#: godmode/groups/configure_group.php:72
+msgid "Icon"
+msgstr "Iconu"
+
+#: godmode/modules/module_list.php:61
+#: godmode/modules/manage_network_templates_form.php:112
+#: godmode/modules/manage_nc_groups_form.php:59
+#: godmode/modules/manage_network_templates.php:50
+#: godmode/modules/manage_nc_groups.php:79 godmode/extensions.php:40
+#: godmode/reporting/map_builder.php:300
+#: godmode/reporting/graph_builder.php:478 godmode/users/user_list.php:40
+#: godmode/agentes/alert_manager.php:104 godmode/agentes/alert_manager.php:180
+#: godmode/agentes/planned_downtime.php:115
+#: godmode/agentes/planned_downtime.php:148 godmode/groups/group_list.php:112
+#: godmode/groups/configure_group.php:70 godmode/servers/plugin.php:144
+#: godmode/servers/plugin.php:197 godmode/servers/manage_recontask.php:96
+#: godmode/servers/modificar_server.php:71
+#: godmode/servers/modificar_server.php:92
+#: operation/visual_console/index.php:38 operation/extensions.php:35
+#: operation/users/user.php:34 operation/agentes/status_monitor.php:184
+#: operation/agentes/tactical.php:229 operation/agentes/estado_alertas.php:57
+#: operation/servers/view_server.php:53
+#: include/functions_reporting_pdf.php:329 include/functions_db.php:1797
+msgid "Name"
+msgstr "Nome"
+
+#: godmode/modules/module_list.php:62
+#: godmode/modules/manage_network_templates_form.php:116
+#: godmode/modules/manage_network_templates_form.php:136
+#: godmode/modules/manage_network_components.php:223
+#: godmode/modules/manage_network_templates.php:51
+#: godmode/reporting/graph_builder.php:490
+#: godmode/reporting/reporting_builder.php:339
+#: godmode/reporting/reporting_builder.php:493 godmode/users/user_list.php:41
+#: godmode/agentes/agent_template.php:156
+#: godmode/agentes/alert_manager_editor.php:112
+#: godmode/agentes/alert_manager_editor.php:370
+#: godmode/agentes/module_manager.php:78
+#: godmode/agentes/module_manager_editor_network.php:258
+#: godmode/agentes/module_manager_editor_plugin.php:210
+#: godmode/agentes/agent_manager.php:179
+#: godmode/agentes/module_manager_editor_wmi.php:236
+#: godmode/agentes/alert_manager.php:111 godmode/agentes/alert_manager.php:187
+#: godmode/agentes/module_manager_editor_data.php:170
+#: godmode/agentes/modificar_agente.php:199
+#: godmode/agentes/planned_downtime.php:119
+#: godmode/agentes/module_manager_editor_prediction.php:169
+#: godmode/alerts/modify_alert.php:70 godmode/alerts/configure_alert.php:94
+#: godmode/servers/plugin.php:173 godmode/servers/modificar_server.php:73
+#: godmode/servers/modificar_server.php:95
+#: operation/reporting/graph_viewer.php:166
+#: operation/reporting/custom_reporting.php:38 operation/users/user.php:35
+#: operation/incidents/incident_detail.php:436
+#: operation/incidents/incident_detail.php:472
+#: operation/agentes/estado_generalagente.php:102
+#: operation/agentes/status_monitor.php:185
+#: operation/agentes/estado_monitores.php:36
+#: operation/agentes/estado_ultimopaquete.php:52
+#: operation/agentes/estado_alertas.php:58
+#: operation/agentes/estado_alertas.php:289
+#: operation/snmpconsole/snmp_alert.php:178
+#: operation/snmpconsole/snmp_alert.php:267
+#: operation/servers/view_server.php:58 include/functions_reporting.php:486
+#: extensions/update_manager/main.php:59
+msgid "Description"
+msgstr "Descripción"
+
+#: godmode/modules/manage_network_templates_form.php:36
+#: godmode/modules/manage_network_components.php:165
+#: godmode/modules/manage_network_templates.php:35
+#: godmode/modules/manage_nc_groups.php:69
+#: godmode/reporting/map_builder.php:86
+#: godmode/reporting/reporting_builder.php:75 godmode/setup/news.php:54
+#: godmode/agentes/planned_downtime.php:54
+#: godmode/servers/manage_recontask.php:41
+#: operation/reporting/graph_viewer.php:32
+#: operation/reporting/graph_viewer.php:37
+msgid "Not deleted. Error deleting data"
+msgstr ""
+
+#: godmode/modules/manage_network_templates_form.php:38
+#: godmode/modules/manage_network_components.php:167
+#: godmode/modules/manage_network_templates.php:37
+#: godmode/modules/manage_nc_groups.php:71
+#: godmode/reporting/map_builder.php:84
+#: godmode/reporting/reporting_builder.php:73 godmode/setup/news.php:56
+#: godmode/agentes/planned_downtime.php:56
+#: godmode/servers/manage_recontask.php:39
+#: operation/reporting/graph_viewer.php:30
+#: operation/reporting/graph_viewer.php:35
+#, fuzzy
+msgid "Deleted successfully"
+msgstr "Servidor elimináu correutamente"
+
+#: godmode/modules/manage_network_templates_form.php:48
+#: godmode/modules/manage_network_templates_form.php:83
+#: godmode/modules/manage_network_components.php:92
+#: godmode/modules/manage_nc_groups.php:43
+#: godmode/reporting/map_builder.php:71 godmode/reporting/map_builder.php:170
+#: godmode/setup/news.php:29 godmode/agentes/planned_downtime.php:69
+#: godmode/agentes/planned_downtime.php:89
+#: godmode/servers/manage_recontask.php:83
+msgid "Not created. Error inserting data"
+msgstr ""
+
+#: godmode/modules/manage_network_templates_form.php:50
+#: godmode/modules/manage_network_templates_form.php:85
+#: godmode/modules/manage_network_components.php:94
+#: godmode/modules/manage_nc_groups.php:45
+#: godmode/reporting/map_builder.php:68 godmode/reporting/map_builder.php:168
+#: godmode/setup/news.php:31 godmode/agentes/planned_downtime.php:91
+#: godmode/servers/manage_recontask.php:81
+#, fuzzy
+msgid "Created successfully"
+msgstr "Servidor actualizáu correutamente"
+
+#: godmode/modules/manage_network_templates_form.php:97
+#: godmode/modules/manage_network_components.php:152
+#: godmode/modules/manage_nc_groups.php:59
+#: godmode/reporting/map_builder.php:244
+#: godmode/reporting/reporting_builder.php:176 godmode/setup/news.php:44
+#: godmode/servers/manage_recontask.php:71
+msgid "Not updated. Error updating data"
+msgstr ""
+
+#: godmode/modules/manage_network_templates_form.php:99
+#: godmode/modules/manage_network_components.php:154
+#: godmode/modules/manage_nc_groups.php:61
+#: godmode/reporting/map_builder.php:242
+#: godmode/reporting/reporting_builder.php:174 godmode/setup/news.php:46
+#: godmode/servers/manage_recontask.php:69
+#, fuzzy
+msgid "Updated successfully"
+msgstr "Servidor actualizáu correutamente"
+
+#: godmode/modules/manage_network_templates_form.php:104
+#: godmode/modules/manage_network_templates.php:42
+#, fuzzy
+msgid "Module template management"
+msgstr "Módulus per axente"
+
+#: godmode/modules/manage_network_templates_form.php:134
+#: godmode/modules/manage_network_components.php:220
+#: godmode/modules/manage_network_components_form_network.php:193
+#: godmode/modules/manage_network_components_form_wmi.php:90
+#: godmode/agentes/agent_template.php:154
+#: godmode/agentes/module_manager.php:74
+#: godmode/agentes/module_manager_editor_network.php:130
+#: godmode/agentes/module_manager_editor_plugin.php:97
+#: godmode/agentes/module_manager_editor_wmi.php:127
+#: godmode/agentes/module_manager_editor_data.php:95
+#: godmode/agentes/module_manager_editor_prediction.php:97
+#: operation/agentes/status_monitor.php:104
+#: operation/agentes/estado_monitores.php:35 operation/agentes/sla_view.php:44
+#: operation/agentes/sla_view.php:145
+#: operation/agentes/estado_ultimopaquete.php:49
+msgid "Module name"
+msgstr "Nome módulu"
+
+#: godmode/modules/manage_network_templates_form.php:135
+#: godmode/modules/manage_network_components.php:221
+#: godmode/reporting/map_builder.php:398
+#: godmode/reporting/reporting_builder.php:424
+#: godmode/agentes/agent_template.php:155
+#: godmode/agentes/alert_manager_editor.php:364
+#: godmode/agentes/module_manager.php:76 godmode/agentes/alert_manager.php:105
+#: godmode/agentes/alert_manager.php:181
+#: godmode/servers/manage_recontask.php:97
+#: godmode/servers/modificar_server.php:96 operation/events/events.php:301
+#: operation/agentes/status_monitor.php:183
+#: operation/agentes/estado_monitores.php:34 operation/agentes/sla_view.php:43
+#: operation/agentes/sla_view.php:144
+#: operation/agentes/estado_ultimopaquete.php:50
+#: operation/agentes/estado_alertas.php:57
+#: operation/agentes/estado_alertas.php:288
+#: operation/servers/view_server.php:59 include/functions_reporting.php:485
+#: include/functions_db.php:1913
+msgid "Type"
+msgstr "Tipu"
+
+#: godmode/modules/manage_network_templates_form.php:137
+#: godmode/modules/manage_network_components.php:224
+#, fuzzy
+msgid "NC.Group"
+msgstr "Grupu"
+
+#: godmode/modules/manage_network_templates_form.php:180
+#: godmode/modules/manage_network_components.php:207
+#: godmode/modules/manage_nc_groups_form.php:78
+#: godmode/modules/manage_network_templates.php:90
+#: godmode/modules/manage_nc_groups.php:114
+#: godmode/reporting/map_builder.php:285 godmode/reporting/map_builder.php:322
+#: godmode/reporting/map_builder.php:427
+#: godmode/reporting/reporting_builder.php:304
+#: godmode/reporting/reporting_builder.php:353
+#: godmode/users/configure_user.php:281 godmode/agentes/module_manager.php:59
+#: godmode/agentes/module_manager_editor_network.php:267
+#: godmode/agentes/module_manager_editor_plugin.php:219
+#: godmode/agentes/agent_manager.php:215
+#: godmode/agentes/module_manager_editor_wmi.php:245
+#: godmode/agentes/alert_manager.php:45
+#: godmode/agentes/module_manager_editor_data.php:179
+#: godmode/agentes/module_manager_editor_prediction.php:178
+#: godmode/groups/configure_group.php:102
+#: godmode/profiles/profile_list.php:199
+#: godmode/alerts/configure_alert.php:104 godmode/servers/plugin.php:183
+#: godmode/servers/plugin.php:228 godmode/servers/manage_recontask.php:181
+#: operation/incidents/incident_detail.php:362
+#: operation/snmpconsole/snmp_alert.php:244
+#: operation/snmpconsole/snmp_alert.php:352
+#: operation/snmpconsole/snmp_alert.php:359
+msgid "Create"
+msgstr "Crear"
+
+#: godmode/modules/manage_network_templates_form.php:182
+#: godmode/modules/manage_nc_groups_form.php:80
+#: godmode/modules/manage_network_components_form_network.php:282
+#: godmode/modules/manage_network_components_form_wmi.php:205
+#: godmode/reporting/map_builder.php:318 godmode/reporting/map_builder.php:555
+#: godmode/reporting/reporting_builder.php:350
+#: godmode/users/configure_user.php:245 godmode/setup/setup.php:108
+#: godmode/setup/links.php:110 godmode/setup/news.php:108
+#: godmode/agentes/agent_template.php:191
+#: godmode/agentes/alert_manager_editor.php:291
+#: godmode/agentes/alert_manager_editor.php:403
+#: godmode/agentes/module_manager.php:148
+#: godmode/agentes/module_manager_editor_network.php:269
+#: godmode/agentes/module_manager_editor_plugin.php:221
+#: godmode/agentes/agent_manager.php:218
+#: godmode/agentes/module_manager_editor_wmi.php:247
+#: godmode/agentes/alert_manager.php:97 godmode/agentes/alert_manager.php:145
+#: godmode/agentes/alert_manager.php:172
+#: godmode/agentes/module_manager_editor_data.php:181
+#: godmode/agentes/agent_disk_conf_editor.php:83
+#: godmode/agentes/planned_downtime.php:135
+#: godmode/agentes/planned_downtime.php:175
+#: godmode/agentes/module_manager_editor_prediction.php:180
+#: godmode/groups/configure_group.php:99 godmode/profiles/profile_list.php:203
+#: godmode/alerts/configure_alert.php:106 godmode/servers/plugin.php:185
+#: godmode/servers/manage_recontask_form.php:181
+#: godmode/servers/modificar_server.php:81
+#: operation/reporting/graph_viewer.php:151
+#: operation/reporting/reporting_viewer.php:70
+#: operation/users/user_edit.php:137 operation/events/events.php:258
+#: operation/agentes/networkmap.php:311
+#: operation/snmpconsole/snmp_alert.php:240
+#: operation/snmpconsole/snmp_alert.php:346
+#: extensions/update_manager/main.php:69
+#: extensions/update_manager/settings.php:50
+msgid "Update"
+msgstr "Actualizar"
+
+#: godmode/modules/manage_network_templates_form.php:188
+#: godmode/modules/manage_network_templates_form.php:201
+#: godmode/modules/manage_network_components_form_network.php:284
+#: godmode/modules/manage_network_components_form_wmi.php:207
+#: godmode/reporting/graph_builder.php:446
+#: godmode/reporting/reporting_builder.php:411 godmode/setup/links.php:139
+#: godmode/setup/news.php:141 godmode/agentes/alert_manager_editor.php:293
+#: godmode/agentes/alert_manager_editor.php:356
+#: godmode/agentes/planned_downtime.php:138
+#: godmode/servers/manage_recontask_form.php:183
+#: operation/incidents/incident_note.php:43
+msgid "Add"
+msgstr "A&ntilde;adir"
+
+#: godmode/modules/manage_network_templates_form.php:188
+#: godmode/reporting/map_builder.php:406
+#: godmode/reporting/graph_builder.php:215
+#: godmode/reporting/reporting_builder.php:251
+#: godmode/reporting/reporting_builder.php:288
+#: godmode/reporting/reporting_builder.php:394
+#: godmode/reporting/reporting_builder.php:426
+#: godmode/agentes/alert_manager_editor.php:363
+#: godmode/agentes/planned_downtime.php:117
+#: godmode/agentes/planned_downtime.php:149
+#: operation/reporting/reporting_viewer.php:206
+#: operation/agentes/exportdata.php:180
+#: include/functions_reporting_pdf.php:182
+msgid "Module"
+msgstr "Módulu"
+
+#: godmode/modules/manage_network_components.php:176
+#: godmode/modules/manage_network_components_form_network.php:183
+#, fuzzy
+msgid "Module component management"
+msgstr "Módulus per axente"
+
+#: godmode/modules/manage_network_components.php:190
+#: godmode/modules/manage_network_components_form_network.php:210
+#: godmode/modules/manage_network_components_form_wmi.php:107
+#: godmode/reporting/map_builder.php:264 godmode/reporting/map_builder.php:302
+#: godmode/reporting/reporting_builder.php:323
+#: godmode/agentes/agent_manager.php:109
+#: godmode/agentes/modificar_agente.php:121
+#: godmode/agentes/modificar_agente.php:198
+#: godmode/servers/manage_recontask.php:100
+#: godmode/servers/manage_recontask_form.php:143
+#: operation/visual_console/index.php:39
+#: operation/reporting/reporting_viewer.php:356
+#: operation/incidents/incident.php:361
+#: operation/incidents/incident_detail.php:291
+#: operation/incidents/incident_detail.php:295 operation/events/events.php:211
+#: operation/events/events.php:305
+#: operation/agentes/estado_generalagente.php:105
+#: operation/agentes/status_monitor.php:63
+#: operation/agentes/estado_agente.php:56
+#: operation/agentes/estado_agente.php:158 operation/agentes/ver_agente.php:49
+#: operation/agentes/estado_alertas.php:123
+#: operation/servers/view_server_detail.php:73
+#: include/functions_reporting_pdf.php:290
+#: include/functions_reporting_pdf.php:323
+msgid "Group"
+msgstr "Grupu"
+
+#: godmode/modules/manage_network_components.php:195
+#: godmode/admin_access_logs.php:66
+#: godmode/agentes/manage_config_remote.php:89
+#: godmode/agentes/manage_config.php:393 operation/incidents/incident.php:256
+#: operation/incidents/incident.php:265 operation/incidents/incident.php:287
+#: operation/incidents/incident.php:293
+#: operation/incidents/incident_search.php:38 operation/events/events.php:310
+#: operation/agentes/status_monitor.php:80
+#: operation/agentes/status_monitor.php:86
+#: operation/agentes/status_monitor.php:92
+#: operation/agentes/status_monitor.php:98
+#: operation/agentes/status_monitor.php:110
+#: operation/snmpconsole/snmp_view.php:207 include/functions.php:679
+#: include/functions.php:1161
+msgid "All"
+msgstr "Tou"
+
+#: godmode/modules/manage_network_components.php:204
+msgid "Create a new network component"
+msgstr ""
+
+#: godmode/modules/manage_network_components.php:205
+msgid "Create a new WMI component"
+msgstr ""
+
+#: godmode/modules/manage_network_components.php:222
+#: godmode/agentes/module_manager.php:77
+#: godmode/agentes/module_manager_editor_network.php:172
+#: godmode/agentes/module_manager_editor_plugin.php:165
+#: godmode/agentes/agent_manager.php:115
+#: godmode/agentes/module_manager_editor_wmi.php:191
+#: godmode/agentes/module_manager_editor_data.php:152
+#: godmode/agentes/module_manager_editor_prediction.php:136
+#: godmode/servers/manage_recontask.php:103
+#: godmode/servers/manage_recontask_form.php:96
+#: operation/agentes/estado_generalagente.php:99
+#: operation/agentes/status_monitor.php:186
+#: operation/agentes/estado_monitores.php:38
+#: operation/agentes/estado_agente.php:157 operation/agentes/sla_view.php:47
+#: operation/servers/view_server_detail.php:69
+msgid "Interval"
+msgstr "Intervalu"
+
+#: godmode/modules/manage_network_components.php:226
+#: godmode/agentes/module_manager.php:79
+msgid "Max/Min"
+msgstr "Max/Min"
+
+#: godmode/modules/manage_network_components.php:227
+#: godmode/modules/manage_network_templates.php:52
+#: godmode/admin_access_logs.php:61 godmode/admin_access_logs.php:108
+#: godmode/agentes/agent_template.php:157
+#: godmode/agentes/alert_manager_editor.php:372
+#: godmode/agentes/module_manager.php:80 godmode/agentes/alert_manager.php:113
+#: godmode/agentes/alert_manager.php:189
+#: godmode/servers/manage_recontask.php:104 operation/events/events.php:308
+#: operation/events/events.php:462 operation/snmpconsole/snmp_view.php:205
+#: operation/snmpconsole/snmp_alert.php:270 general/logon_ok.php:168
+msgid "Action"
+msgstr "Acción"
+
+#: godmode/modules/manage_network_components.php:270
+#: godmode/modules/manage_nc_groups.php:81
+#: godmode/reporting/map_builder.php:265 godmode/reporting/map_builder.php:355
+#: godmode/reporting/graph_builder.php:217
+#: godmode/reporting/graph_builder.php:241
+#: godmode/reporting/reporting_builder.php:255
+#: godmode/reporting/reporting_builder.php:434
+#: godmode/reporting/reporting_builder.php:494 godmode/users/user_list.php:42
+#: godmode/db/db_refine.php:110 godmode/setup/links.php:119
+#: godmode/setup/news.php:117 godmode/agentes/agent_template.php:184
+#: godmode/agentes/alert_manager_editor.php:401
+#: godmode/agentes/module_manager.php:144 godmode/agentes/alert_manager.php:93
+#: godmode/agentes/alert_manager.php:143 godmode/agentes/alert_manager.php:170
+#: godmode/agentes/modificar_agente.php:200
+#: godmode/agentes/planned_downtime.php:172
+#: godmode/agentes/manage_config.php:465 godmode/groups/group_list.php:115
+#: godmode/profiles/profile_list.php:236 godmode/alerts/modify_alert.php:71
+#: godmode/servers/plugin.php:199 godmode/servers/modificar_server.php:99
+#: operation/reporting/graph_viewer.php:169
+#: operation/incidents/incident.php:365
+#: operation/incidents/incident_detail.php:438 operation/events/events.php:450
+#: operation/messages/message.php:192 operation/agentes/datos_agente.php:81
+#: operation/snmpconsole/snmp_view.php:270
+#: operation/snmpconsole/snmp_alert.php:344
+msgid "Delete"
+msgstr "Borrar"
+
+#: godmode/modules/manage_nc_groups_form.php:49
+#: godmode/modules/manage_nc_groups.php:76
+#, fuzzy
+msgid "Component group management"
+msgstr "Xestión de grupos"
+
+#: godmode/modules/manage_nc_groups_form.php:63
+#: godmode/modules/manage_nc_groups.php:80
+#: godmode/reporting/map_builder.php:413 godmode/agentes/agent_manager.php:104
+#: godmode/groups/group_list.php:113 godmode/groups/configure_group.php:80
+#: operation/agentes/estado_generalagente.php:94
+#, fuzzy
+msgid "Parent"
+msgstr "Axentes de Pandora"
+
+#: godmode/modules/manage_network_templates.php:73
+#: godmode/modules/manage_nc_groups.php:103 godmode/users/user_list.php:94
+#: godmode/users/configure_user.php:267 godmode/db/db_event.php:74
+#: godmode/db/db_audit.php:93 godmode/db/db_purge.php:212
+#: godmode/db/db_refine.php:110 godmode/setup/links.php:133
+#: godmode/setup/news.php:135 godmode/agentes/module_manager.php:143
+#: godmode/agentes/module_manager.php:154
+#: godmode/agentes/manage_config_remote.php:141
+#: godmode/agentes/modificar_agente.php:250
+#: godmode/agentes/manage_config.php:463 godmode/agentes/manage_config.php:465
+#: godmode/agentes/manage_config.php:467 godmode/groups/group_list.php:131
+#: godmode/profiles/profile_list.php:289 godmode/alerts/modify_alert.php:87
+#: operation/reporting/graph_viewer.php:190
+#: operation/incidents/incident.php:444
+msgid "Are you sure?"
+msgstr "¿Ta usté seguru?"
+
+#: godmode/modules/manage_network_templates.php:84
+#, fuzzy
+msgid "There are no defined network profiles"
+msgstr "Nun hay nengún axente definíu"
+
+#: godmode/modules/manage_network_components_form_network.php:197
+#: godmode/modules/manage_network_components_form_wmi.php:94
+#: godmode/agentes/module_manager_editor_network.php:146
+#: godmode/agentes/module_manager_editor_plugin.php:142
+#: godmode/agentes/module_manager_editor_wmi.php:166
+#: godmode/agentes/module_manager_editor_data.php:103
+#: godmode/agentes/module_manager_editor_prediction.php:121
+msgid "Module type"
+msgstr "Tipu modulu"
+
+#: godmode/modules/manage_network_components_form_network.php:221
+#: godmode/modules/manage_network_components_form_wmi.php:118
+#: godmode/agentes/module_manager_editor_network.php:174
+#: godmode/agentes/module_manager_editor_plugin.php:167
+#: godmode/agentes/module_manager_editor_wmi.php:193
+#: godmode/agentes/module_manager_editor_data.php:154
+#: godmode/agentes/module_manager_editor_prediction.php:141
+msgid "Module group"
+msgstr "Grupu módulos"
+
+#: godmode/modules/manage_network_components_form_network.php:233
+#: godmode/modules/manage_network_components_form_wmi.php:131
+msgid "Module Interval"
+msgstr "Intervalu módulu"
+
+#: godmode/modules/manage_network_components_form_network.php:238
+#: godmode/agentes/module_manager_editor_network.php:140
+msgid "TCP port"
+msgstr "Puertu TCP"
+
+#: godmode/modules/manage_network_components_form_network.php:242
+#: godmode/agentes/module_manager_editor_network.php:210
+msgid "SNMP OID"
+msgstr "SNMP OID"
+
+#: godmode/modules/manage_network_components_form_network.php:246
+#: godmode/agentes/module_manager_editor_network.php:214
+msgid "SNMP Community"
+msgstr "Comunidá SNMP"
+
+#: godmode/modules/manage_network_components_form_network.php:250
+#: godmode/agentes/module_manager_editor_network.php:248
+msgid "TCP send"
+msgstr "Enviar TCP"
+
+#: godmode/modules/manage_network_components_form_network.php:254
+#: godmode/agentes/module_manager_editor_network.php:252
+msgid "TCP receive"
+msgstr "Recibir TCP"
+
+#: godmode/modules/manage_network_components_form_network.php:258
+#: godmode/modules/manage_network_components_form_wmi.php:178
+msgid "Minimum Data"
+msgstr "Datu min."
+
+#: godmode/modules/manage_network_components_form_network.php:262
+#: godmode/modules/manage_network_components_form_wmi.php:182
+msgid "Maximum Data"
+msgstr "Datu max."
+
+#: godmode/modules/manage_network_components_form_network.php:268
+#: godmode/modules/manage_network_components_form_wmi.php:190
+#: godmode/users/configure_user.php:208 godmode/admin_access_logs.php:111
+#: godmode/servers/manage_recontask_form.php:170
+#: operation/users/user_edit.php:129 general/logon_ok.php:171
+msgid "Comments"
+msgstr "Comentarios"
+
+#: godmode/modules/manage_network_components_form_wmi.php:78
+#, fuzzy
+msgid "WMI component management"
+msgstr "Xestión d'indicentes"
+
+#: godmode/modules/manage_network_components_form_wmi.php:136
+#: godmode/agentes/module_manager_editor_network.php:167
+#: godmode/agentes/module_manager_editor_plugin.php:160
+#: godmode/agentes/module_manager_editor_wmi.php:186
+#, fuzzy
+msgid "Max. timeout"
+msgstr "M�ximo"
+
+#: godmode/modules/manage_network_components_form_wmi.php:142
+#: godmode/agentes/module_manager_editor_wmi.php:137
+msgid "WMI Query"
+msgstr ""
+
+#: godmode/modules/manage_network_components_form_wmi.php:150
+#: godmode/agentes/module_manager_editor_wmi.php:145
+msgid "Key string"
+msgstr ""
+
+#: godmode/modules/manage_network_components_form_wmi.php:158
+#: godmode/agentes/module_manager_editor_wmi.php:149
+#, fuzzy
+msgid "Field number"
+msgstr "Nome del archivu"
+
+#: godmode/modules/manage_network_components_form_wmi.php:166
+#: godmode/agentes/module_manager_editor_plugin.php:134
+#: godmode/agentes/module_manager_editor_wmi.php:157
+#, fuzzy
+msgid "Username"
+msgstr "Xestión d'usuarios"
+
+#: godmode/modules/manage_network_components_form_wmi.php:172
+#: godmode/users/configure_user.php:183 godmode/users/configure_user.php:187
+#: godmode/agentes/module_manager_editor_plugin.php:136
+#: godmode/agentes/module_manager_editor_wmi.php:159
+#: operation/users/user_edit.php:115 operation/users/user_edit.php:119
+msgid "Password"
+msgstr "Contrase&ntilde;a"
+
+#: godmode/extensions.php:33 operation/extensions.php:28
+#, fuzzy
+msgid "There are no extensions defined"
+msgstr "Nun hay nengún axente definíu"
+
+#: godmode/extensions.php:37 operation/extensions.php:32
+msgid "Defined extensions"
+msgstr ""
+
+#: godmode/reporting/map_builder.php:111
+#, fuzzy
+msgid "update_ok"
+msgstr "Actualizar"
+
+#: godmode/reporting/map_builder.php:113
+#, fuzzy
+msgid "update_no"
+msgstr "Actualizar"
+
+#: godmode/reporting/map_builder.php:258 godmode/reporting/map_builder.php:289
+#: godmode/reporting/graph_builder.php:201
+#: godmode/reporting/reporting_builder.php:238
+#: godmode/reporting/reporting_builder.php:313
+#: godmode/reporting/reporting_builder.php:480
+#: operation/reporting/graph_viewer.php:107
+#: operation/reporting/graph_viewer.php:156
+#: operation/reporting/reporting_viewer.php:51
+#: operation/reporting/custom_reporting.php:25 operation/menu.php:288
+msgid "Reporting"
+msgstr "Informes"
+
+#: godmode/reporting/map_builder.php:258 godmode/reporting/map_builder.php:290
+#: godmode/menu.php:159
+msgid "Map builder"
+msgstr ""
+
+#: godmode/reporting/map_builder.php:263
+#, fuzzy
+msgid "Map name"
+msgstr "Nome Real"
+
+#: godmode/reporting/map_builder.php:304
+#, fuzzy
+msgid "Background"
+msgstr "Imagen de fondo"
+
+#: godmode/reporting/map_builder.php:308 godmode/reporting/map_builder.php:402
+#: godmode/reporting/graph_builder.php:307
+msgid "Width"
+msgstr ""
+
+#: godmode/reporting/map_builder.php:310 godmode/reporting/map_builder.php:400
+#: godmode/reporting/graph_builder.php:325
+msgid "Height"
+msgstr ""
+
+#: godmode/reporting/map_builder.php:330
+msgid "preview"
+msgstr ""
+
+#: godmode/reporting/map_builder.php:348
+msgid "Map element trash"
+msgstr ""
+
+#: godmode/reporting/map_builder.php:349
+msgid "Drag an element here to delete from the map"
+msgstr ""
+
+#: godmode/reporting/map_builder.php:362
+#, fuzzy
+msgid "Hour"
+msgstr "Orixen"
+
+#: godmode/reporting/map_builder.php:363 godmode/reporting/map_builder.php:364
+#: godmode/reporting/map_builder.php:365 godmode/reporting/map_builder.php:366
+msgid "Hours"
+msgstr ""
+
+#: godmode/reporting/map_builder.php:367
+#, fuzzy
+msgid "Last day"
+msgstr "Última fecha"
+
+#: godmode/reporting/map_builder.php:368
+#: godmode/servers/manage_recontask_form.php:103
+#: godmode/servers/manage_recontask_form.php:110
+#: operation/servers/view_server_detail.php:112 include/functions.php:468
+#: include/functions.php:491
+msgid "days"
+msgstr ""
+
+#: godmode/reporting/map_builder.php:369
+#, fuzzy
+msgid "Last week"
+msgstr "Lanzada per vez cabera"
+
+#: godmode/reporting/map_builder.php:371
+#, fuzzy
+msgid "Last Month"
+msgstr "Últimu contautu"
+
+#: godmode/reporting/map_builder.php:372
+msgid "Two Months"
+msgstr ""
+
+#: godmode/reporting/map_builder.php:373
+msgid "Six Months"
+msgstr ""
+
+#: godmode/reporting/map_builder.php:385
+msgid "Map element editor"
+msgstr ""
+
+#: godmode/reporting/map_builder.php:386
+msgid "Drag an element here to edit the properties"
+msgstr ""
+
+#: godmode/reporting/map_builder.php:394
+msgid "Label"
+msgstr ""
+
+#: godmode/reporting/map_builder.php:396
+msgid "Label color"
+msgstr ""
+
+#: godmode/reporting/map_builder.php:404
+#: godmode/reporting/graph_builder.php:214
+#: godmode/reporting/reporting_builder.php:250
+#: godmode/reporting/reporting_builder.php:286
+#: godmode/reporting/reporting_builder.php:425 godmode/db/db_purge.php:65
+#: godmode/agentes/alert_manager_editor.php:362
+#: operation/reporting/reporting_viewer.php:204
+#: operation/agentes/status_monitor.php:182
+#: operation/agentes/estado_agente.php:155
+#: operation/agentes/estado_alertas.php:286
+#: include/functions_reporting.php:296 include/functions_reporting.php:422
+#: include/functions_reporting.php:591 include/functions_reporting_pdf.php:181
+msgid "Agent"
+msgstr "Axente"
+
+#: godmode/reporting/map_builder.php:408
+#: godmode/reporting/graph_builder.php:379
+#: godmode/reporting/reporting_builder.php:376
+#: godmode/reporting/reporting_builder.php:427
+#: operation/reporting/graph_viewer.php:119
+#, fuzzy
+msgid "Period"
+msgstr "Grave"
+
+#: godmode/reporting/map_builder.php:410
+msgid "Image"
+msgstr ""
+
+#: godmode/reporting/map_builder.php:416
+msgid "Map linked"
+msgstr ""
+
+#: godmode/reporting/map_builder.php:452
+#: operation/reporting/reporting_viewer.php:79
+#, fuzzy
+msgid "Loading"
+msgstr "Login"
+
+#: godmode/reporting/graph_builder.php:82
+#, fuzzy
+msgid "Graph stored successfully"
+msgstr "Servidor actualizáu correutamente"
+
+#: godmode/reporting/graph_builder.php:84
+#: godmode/reporting/graph_builder.php:86
+#, fuzzy
+msgid "There was a problem storing Graph"
+msgstr "Ocurrió un problema al cargar la configuración del grupu"
+
+#: godmode/reporting/graph_builder.php:203
+msgid "Graph builder module list"
+msgstr ""
+
+#: godmode/reporting/graph_builder.php:251
+#: operation/reporting/graph_viewer.php:108
+msgid "Combined image render"
+msgstr ""
+
+#: godmode/reporting/graph_builder.php:264
+#: godmode/reporting/graph_builder.php:266 godmode/menu.php:149
+#, fuzzy
+msgid "Graph builder"
+msgstr "Orden del gráficu"
+
+#: godmode/reporting/graph_builder.php:275
+#: godmode/reporting/reporting_builder.php:391 godmode/db/db_refine.php:73
+#: godmode/agentes/manage_config_remote.php:97
+#: godmode/agentes/manage_config.php:401 operation/agentes/exportdata.php:247
+msgid "Source agent"
+msgstr "Axente orixen"
+
+#: godmode/reporting/graph_builder.php:288 godmode/db/db_refine.php:91
+#: godmode/agentes/configurar_agente.php:194
+#: godmode/agentes/module_manager.php:22 godmode/agentes/manage_config.php:425
+#: godmode/agentes/manage_config.php:441 operation/agentes/exportdata.php:274
+#: operation/agentes/tactical.php:232 operation/agentes/estado_agente.php:159
+#: operation/servers/view_server.php:56 include/functions_reporting.php:592
+#: include/functions_reporting_pdf.php:327
+msgid "Modules"
+msgstr "Módulos"
+
+#: godmode/reporting/graph_builder.php:303
+msgid "Factor"
+msgstr ""
+
+#: godmode/reporting/graph_builder.php:313
+#, fuzzy
+msgid "Render now"
+msgstr "Remitente"
+
+#: godmode/reporting/graph_builder.php:403 operation/menu.php:171
+msgid "View events"
+msgstr "Agüeyar eventos"
+
+#: godmode/reporting/graph_builder.php:417
+msgid "Stacked"
+msgstr ""
+
+#: godmode/reporting/graph_builder.php:421
+#: operation/reporting/graph_viewer.php:137
+#, fuzzy
+msgid "Area"
+msgstr "Crear"
+
+#: godmode/reporting/graph_builder.php:422
+#: operation/reporting/graph_viewer.php:138
+#, fuzzy
+msgid "Stacked area"
+msgstr "Arrancáu'l"
+
+#: godmode/reporting/graph_builder.php:423
+#: operation/reporting/graph_viewer.php:139
+#, fuzzy
+msgid "Line"
+msgstr "Enllace"
+
+#: godmode/reporting/graph_builder.php:446
+#, fuzzy
+msgid "Redraw"
+msgstr "LLeísdu"
+
+#: godmode/reporting/graph_builder.php:457
+#, fuzzy
+msgid "Custom graph store"
+msgstr "Valor d'usuariu"
+
+#: godmode/reporting/graph_builder.php:482
+#: godmode/reporting/reporting_builder.php:337
+#, fuzzy
+msgid "Private"
+msgstr "Crear"
+
+#: godmode/reporting/graph_builder.php:485
+#: godmode/servers/manage_recontask.php:153
+#: godmode/servers/manage_recontask_form.php:160
+#: godmode/servers/manage_recontask_form.php:163 include/functions.php:800
+#: include/functions.php:889 include/functions_db.php:1869
+#, fuzzy
+msgid "No"
+msgstr "Nengún"
+
+#: godmode/reporting/graph_builder.php:486
+#: godmode/servers/manage_recontask.php:151
+#: godmode/servers/manage_recontask_form.php:159
+#: godmode/servers/manage_recontask_form.php:164 include/functions.php:798
+#: include/functions.php:887 include/functions_db.php:1867
+msgid "Yes"
+msgstr ""
+
+#: godmode/reporting/graph_builder.php:496
+#, fuzzy
+msgid "Store"
+msgstr "Orixen"
+
+#: godmode/reporting/reporting_builder.php:109
+#, fuzzy
+msgid "Reporting successfully deleted"
+msgstr "Alerta eliminada correutamente"
+
+#: godmode/reporting/reporting_builder.php:111
+#, fuzzy
+msgid "There was a problem deleting reporting"
+msgstr "Ocurrió un problema al borrar l'alerta"
+
+#: godmode/reporting/reporting_builder.php:136
+#: godmode/reporting/reporting_builder.php:159
+#, fuzzy
+msgid "Reporting successfully created"
+msgstr "Alerta creada correutamente"
+
+#: godmode/reporting/reporting_builder.php:147
+#: godmode/reporting/reporting_builder.php:161
+#, fuzzy
+msgid "There was a problem creating reporting"
+msgstr "Ocurrió un problema al crear l'alerta"
+
+#: godmode/reporting/reporting_builder.php:219
+#, fuzzy
+msgid "SLA was successfully created"
+msgstr "L'enlace creóse correutamente"
+
+#: godmode/reporting/reporting_builder.php:221
+#, fuzzy
+msgid "There was a problem creating SLA"
+msgstr "Ocurrió un problema al crear l'enlace"
+
+#: godmode/reporting/reporting_builder.php:223
+#, fuzzy
+msgid "Module is not set"
+msgstr "Formulariu d'asociación de módulo"
+
+#: godmode/reporting/reporting_builder.php:231
+#, fuzzy
+msgid "SLA was successfully delete"
+msgstr "Usuariu elimináu correutamente"
+
+#: godmode/reporting/reporting_builder.php:233
+#, fuzzy
+msgid "There was a problem deleting SLA"
+msgstr "Ocurrió un problema al borrar l'enllace"
+
+#: godmode/reporting/reporting_builder.php:239
+#: godmode/reporting/reporting_builder.php:314
+msgid "Custom reporting builder"
+msgstr ""
+
+#: godmode/reporting/reporting_builder.php:242
+#, fuzzy
+msgid "SLAs defined"
+msgstr "Lanzada per vez cabera"
+
+#: godmode/reporting/reporting_builder.php:252
+#: godmode/reporting/reporting_builder.php:290
+#: operation/reporting/reporting_viewer.php:210
+#: include/functions_reporting_pdf.php:184
+#, fuzzy
+msgid "SLA Min. (value)"
+msgstr "Valor Mínimu"
+
+#: godmode/reporting/reporting_builder.php:253
+#: godmode/reporting/reporting_builder.php:292
+#: operation/reporting/reporting_viewer.php:208
+#: include/functions_reporting_pdf.php:183
+#, fuzzy
+msgid "SLA Max. (value)"
+msgstr "Valor Máximu"
+
+#: godmode/reporting/reporting_builder.php:254
+#: godmode/reporting/reporting_builder.php:294
+msgid "SLA Limit (%)"
+msgstr ""
+
+#: godmode/reporting/reporting_builder.php:277
+#, fuzzy
+msgid "SLA report construction"
+msgstr "Configuración d'alertes"
+
+#: godmode/reporting/reporting_builder.php:321
+#: godmode/reporting/reporting_builder.php:492
+#: operation/reporting/custom_reporting.php:37
+#, fuzzy
+msgid "Report name"
+msgstr "Nome de l'alerta"
+
+#: godmode/reporting/reporting_builder.php:360
+#, fuzzy
+msgid "Add item to report"
+msgstr "A&ntilde;adir nota l'incidente"
+
+#: godmode/reporting/reporting_builder.php:372
+#, fuzzy
+msgid "Reporting type"
+msgstr "Informes"
+
+#: godmode/reporting/reporting_builder.php:379
+#: godmode/reporting/reporting_builder.php:380
+#: godmode/reporting/reporting_builder.php:381
+#: godmode/reporting/reporting_builder.php:382
+#: godmode/servers/manage_recontask_form.php:101
+#: godmode/servers/manage_recontask_form.php:106
+#: godmode/servers/manage_recontask_form.php:107
+#: operation/reporting/graph_viewer.php:123
+#: operation/reporting/graph_viewer.php:124
+#: operation/reporting/graph_viewer.php:125
+#: operation/reporting/graph_viewer.php:126
+#: operation/servers/view_server_detail.php:110 include/functions.php:465
+#: include/functions.php:489
+msgid "hours"
+msgstr ""
+
+#: godmode/reporting/reporting_builder.php:386
+msgid "last_two_weeks"
+msgstr ""
+
+#: godmode/reporting/reporting_builder.php:402
+#, fuzzy
+msgid "Custom graph name"
+msgstr "Valor d'usuariu"
+
+#: godmode/reporting/reporting_builder.php:416
+#, fuzzy
+msgid "Report items"
+msgstr "Informes"
+
+#: godmode/reporting/reporting_builder.php:423
+#, fuzzy
+msgid "Order"
+msgstr "Propietariu"
+
+#: godmode/reporting/reporting_builder.php:428
+#, fuzzy
+msgid "Options"
+msgstr "Operación"
+
+#: godmode/reporting/reporting_builder.php:450
+#: include/functions_reporting_pdf.php:250
+msgid "Up"
+msgstr ""
+
+#: godmode/reporting/reporting_builder.php:455
+#: operation/agentes/estado_grupo.php:242
+#: include/functions_reporting_pdf.php:252
+msgid "Down"
+msgstr "Caídos"
+
+#: godmode/reporting/reporting_builder.php:481
+#: operation/reporting/reporting_viewer.php:52
+#: operation/reporting/custom_reporting.php:26 operation/menu.php:298
+#, fuzzy
+msgid "Custom reporting"
+msgstr "Informes"
+
+#: godmode/reporting/reporting_builder.php:511
+#: operation/reporting/graph_viewer.php:197
+#: operation/reporting/custom_reporting.php:31
+#, fuzzy
+msgid "There are no defined reportings"
+msgstr "Nun hay nengún axente definíu"
+
+#: godmode/reporting/reporting_builder.php:517
+#, fuzzy
+msgid "Create report"
+msgstr "Crear alerta"
+
+#: godmode/users/user_list.php:27
+msgid "There was a problem deleting user"
+msgstr "Ocurrió un problema al eliminar l'usuariu"
+
+#: godmode/users/user_list.php:29
+msgid "User successfully deleted"
+msgstr "Usuariu elimináu correutamente"
+
+#: godmode/users/user_list.php:33 godmode/users/configure_user.php:156
+msgid "User management"
+msgstr "Xestión d'usuarios"
+
+#: godmode/users/user_list.php:34 operation/users/user.php:28
+#: operation/users/user_statistics.php:24
+msgid "Users defined in Pandora"
+msgstr "Usuarios definíos en Pandora"
+
+#: godmode/users/user_list.php:37 operation/users/user.php:31
+msgid "UserID"
+msgstr "ID d'usuariu"
+
+#: godmode/users/user_list.php:38 operation/users/user.php:32
+#: operation/agentes/estado_generalagente.php:126
+#: operation/agentes/estado_monitores.php:39
+#: operation/agentes/estado_agente.php:162 operation/agentes/sla_view.php:48
+#: operation/agentes/ver_agente.php:53
+msgid "Last contact"
+msgstr "Últimu contautu"
+
+#: godmode/users/user_list.php:39 operation/users/user.php:33
+msgid "Profile"
+msgstr "Perfil"
+
+#: godmode/users/user_list.php:88 godmode/users/configure_user.php:271
+#: operation/users/user_edit.php:160 operation/users/user.php:79
+msgid "This user doesn't have any assigned profile/group"
+msgstr "Esti usuariu nun tien nengún perfil/grupu asociáu"
+
+#: godmode/users/user_list.php:100 godmode/users/configure_user.php:159
+msgid "Create user"
+msgstr "Crear usuariu"
+
+#: godmode/users/configure_user.php:56
+msgid "There was a problem loading user"
+msgstr "Ocurrió un problema al cargar l'usuariu"
+
+#: godmode/users/configure_user.php:81 godmode/users/configure_user.php:135
+#: operation/users/user_edit.php:57 operation/users/user_edit.php:80
+msgid "Passwords don't match. Please repeat again"
+msgstr "Les contrase&ntilde;es nun coinciden. Intentelu de nuevu"
+
+#: godmode/users/configure_user.php:120 operation/users/user_edit.php:59
+msgid "User successfully updated"
+msgstr "Usuariu actualizáu correutamente"
+
+#: godmode/users/configure_user.php:123
+msgid "There was a problem updating user"
+msgstr "Ocurrió un problema al actualizar el usuariu"
+
+#: godmode/users/configure_user.php:147
+msgid "create_user_no"
+msgstr "Ocurrió un problema al crear l'usuariu"
+
+#: godmode/users/configure_user.php:149
+msgid "User successfully created"
+msgstr "Usuariu creáu correutamente"
+
+#: godmode/users/configure_user.php:163
+msgid "Update user"
+msgstr "Actualizar usuariu"
+
+#: godmode/users/configure_user.php:176 operation/users/user_edit.php:109
+#: operation/events/events.php:306 operation/snmpconsole/snmp_view.php:202
+#: include/functions_reporting.php:241 include/functions_db.php:1916
+msgid "User ID"
+msgstr "ID usuariu"
+
+#: godmode/users/configure_user.php:178 operation/users/user_edit.php:112
+msgid "Real name"
+msgstr "Nome Real"
+
+#: godmode/users/configure_user.php:187 operation/users/user_edit.php:119
+msgid "confirmation"
+msgstr "confirmación"
+
+#: godmode/users/configure_user.php:193 operation/users/user_edit.php:127
+msgid "Telephone"
+msgstr "Teléfonu"
+
+#: godmode/users/configure_user.php:195
+msgid "Global Profile"
+msgstr "Perfil global"
+
+#: godmode/users/configure_user.php:201 godmode/users/configure_user.php:204
+msgid "Administrator"
+msgstr "Alministraor"
+
+#: godmode/users/configure_user.php:202 godmode/users/configure_user.php:205
+msgid "Standard user"
+msgstr "Usuariu estándar"
+
+#: godmode/users/configure_user.php:220
+msgid "Group(s) available"
+msgstr "Grupu(os) disponible(s)"
+
+#: godmode/users/configure_user.php:223
+#: godmode/agentes/module_manager_editor_network.php:237
+#: godmode/agentes/module_manager_editor_plugin.php:114
+#: godmode/agentes/module_manager_editor_plugin.php:199
+#: godmode/agentes/agent_manager.php:131 godmode/agentes/agent_manager.php:141
+#: godmode/agentes/module_manager_editor_wmi.php:225
+#: godmode/agentes/module_manager_editor_data.php:133
+#: godmode/agentes/module_manager_editor_prediction.php:158
+#: include/functions.php:681
+msgid "None"
+msgstr "Nengún"
+
+#: godmode/users/configure_user.php:232 godmode/profiles/profile_list.php:215
+#: operation/users/user.php:100
+msgid "Profiles"
+msgstr "Perfiles"
+
+#: godmode/users/configure_user.php:250 operation/users/user_edit.php:140
+msgid "Profiles/Groups assigned to this user"
+msgstr "Perfiles/Grupos asignaos a esti usuariu"
+
+#: godmode/db/db_info_data.php:40 godmode/db/db_event.php:38
+#: godmode/db/db_audit.php:59 godmode/db/db_main.php:40
+#: godmode/db/db_purge.php:36 godmode/db/db_refine.php:68
+#: godmode/db/db_info.php:30
+msgid "Database Maintenance"
+msgstr "Mantenimientu de la Base de Datos"
+
+#: godmode/db/db_info_data.php:41 operation/agentes/estadisticas.php:33
+msgid "Database Statistics per Agent"
+msgstr "Estadístiques de la Base de Datos per axente"
+
+#: godmode/db/db_info_data.php:45 godmode/agentes/agent_manager.php:65
+#: godmode/agentes/agent_disk_conf_editor.php:61
+#: godmode/agentes/modificar_agente.php:195 operation/events/events.php:303
+#: operation/agentes/estado_generalagente.php:61 include/functions_db.php:1915
+msgid "Agent name"
+msgstr "Nome del axente"
+
+#: godmode/db/db_info_data.php:46 godmode/agentes/alert_manager_editor.php:48
+msgid "Assigned module"
+msgstr "Módulu asignáu"
+
+#: godmode/db/db_info_data.php:47
+msgid "Total data"
+msgstr "Datos totales"
+
+#: godmode/db/db_sanity.php:29
+#, fuzzy
+msgid "Database sanity tool"
+msgstr "BD d'auditoría"
+
+#: godmode/db/db_sanity.php:35
+msgid "Checking tagente_estado table"
+msgstr ""
+
+#: godmode/db/db_sanity.php:52
+msgid "Checking database consistency"
+msgstr ""
+
+#: godmode/db/db_sanity.php:68
+#, fuzzy
+msgid "Deleting non-init data"
+msgstr "Borrando datos"
+
+#: godmode/db/db_sanity.php:86
+msgid ""
+"Pandora FMS Sanity tool is used to remove bad database structure data, "
+"created modules with missing status, or modules that cannot be initialized "
+"(and don't report any valid data) but retry each its own interval to get "
+"data. This kind of bad modules could degrade performance of Pandora FMS. "
+"This database sanity tool is also implemented in the <b>pandora_db.pl</b> "
+"that you should be running each day or week. This console sanity DONT "
+"compact your database, only delete bad structured data."
+msgstr ""
+
+#: godmode/db/db_sanity.php:91
+msgid "Sanitize my database now"
+msgstr ""
+
+#: godmode/db/db_sanity.php:98
+msgid "Delete non-initialized modules now"
+msgstr ""
+
+#: godmode/db/db_event.php:39
+msgid "Event Database cleanup"
+msgstr "Llimpieza de la Base de Datos d'eventos"
+
+#: godmode/db/db_event.php:45 godmode/db/db_audit.php:66
+msgid "Total"
+msgstr "Total"
+
+#: godmode/db/db_event.php:46 godmode/db/db_audit.php:67
+msgid "Records"
+msgstr "Rexistros"
+
+#: godmode/db/db_event.php:49 godmode/db/db_audit.php:70
+msgid "First date"
+msgstr "Primera fecha"
+
+#: godmode/db/db_event.php:54 godmode/db/db_audit.php:74
+msgid "Latest date"
+msgstr "Última fecha"
+
+#: godmode/db/db_event.php:59 godmode/db/db_audit.php:78
+#: godmode/db/db_purge.php:200
+msgid "Purge data"
+msgstr "Borrar datos"
+
+#: godmode/db/db_event.php:64
+msgid "Purge event data over 90 days"
+msgstr "Borrar los datos d'eventos esceutu el últimu trimestre"
+
+#: godmode/db/db_event.php:65
+msgid "Purge event data over 30 days"
+msgstr "Borrar los datos d'eventos esceutu los últimios 30 díes"
+
+#: godmode/db/db_event.php:66
+msgid "Purge event data over 14 days"
+msgstr "Borrar los datos d'eventos esceutu les últimes dos selmanes"
+
+#: godmode/db/db_event.php:67
+msgid "Purge event data over 7 days"
+msgstr "Borrar los datos d'eventos esceutu la última selmana"
+
+#: godmode/db/db_event.php:68
+msgid "Purge event data over 3 days"
+msgstr "Borrar los datos déventos esceutu los últimos tres díes"
+
+#: godmode/db/db_event.php:69
+msgid "Purge event data over 1 day"
+msgstr "Borrar tolos datos d'eventos, esceutu les últimes 24 hores"
+
+#: godmode/db/db_event.php:70
+msgid "Purge all event data"
+msgstr "Borrar tolos datos d'eventos"
+
+#: godmode/db/db_event.php:74 godmode/db/db_audit.php:93
+#: godmode/db/db_purge.php:212
+msgid "Do it!"
+msgstr "¡Failu!"
+
+#: godmode/db/db_audit.php:60
+msgid "Database Audit purge"
+msgstr "Depuración de la BBDD d'auditoría"
+
+#: godmode/db/db_audit.php:83
+msgid "Purge audit data over 90 days"
+msgstr "Borrar los datos d'auditoría esceutu el últimu trimestre"
+
+#: godmode/db/db_audit.php:84
+msgid "Purge audit data over 30 days"
+msgstr "Borrar los datos d'auditoría esceutu los últimos 30 díes"
+
+#: godmode/db/db_audit.php:85
+msgid "Purge audit data over 14 days"
+msgstr "Borrar los datos d'auditoría esceutu les últimes dos selmanes"
+
+#: godmode/db/db_audit.php:86
+msgid "Purge audit data over 7 days"
+msgstr "Borrar los datos d'auditoría esceutu l'última selmana"
+
+#: godmode/db/db_audit.php:87
+msgid "Purge audit data over 3 days"
+msgstr "Borrar los datos d'auditoría esceutu los últimos tres díes"
+
+#: godmode/db/db_audit.php:88
+msgid "Purge audit data over 1 day"
+msgstr "Borrar los datos d'auditoría esceutu el últimu día"
+
+#: godmode/db/db_audit.php:89
+msgid "Purge all audit data"
+msgstr "Borrar tolos datos d'auditoría"
+
+#: godmode/db/db_main.php:41
+msgid "Current database maintenance setup"
+msgstr "Configuración actual de la Base de Datos"
+
+#: godmode/db/db_main.php:44 godmode/setup/setup.php:85
+msgid "Max. days before compact data"
+msgstr "Max. díes antes de comprimir datos"
+
+#: godmode/db/db_main.php:45 godmode/setup/setup.php:87
+msgid "Max. days before purge"
+msgstr "Max. díes antes d'eliminar datos"
+
+#: godmode/db/db_main.php:48
+msgid ""
+"Please check your Pandora Server setup and be sure that database maintenance "
+"daemon is running. It's very important to keep up-to-date database to get "
+"the best performance and results in Pandora"
+msgstr ""
+"Por favor, asegurate de que la xestión de la Base de Datos ye correuta y de "
+"qu'el sistema automáticu de xestión de Base de Datos de Pandora está "
+"correutamante instaláu y funcionando. Ye per importante pa el correutu "
+"funcionamientu y rendimientu de Pandora."
+
+#: godmode/db/db_purge.php:36 godmode/menu.php:255
+msgid "Database purge"
+msgstr "Borráu BBDD"
+
+#: godmode/db/db_purge.php:39
+msgid "Get data from agent"
+msgstr "Obtener datos d'un axente"
+
+#: godmode/db/db_purge.php:64
+msgid "Purge task launched for agent id "
+msgstr "Tarea de borrau lanzada pal axente"
+
+#: godmode/db/db_purge.php:65
+msgid ""
+"Please be patient. This operation can be very long in time (5-10 minutes)"
+msgstr ""
+"Por favor sea paciente, esta operación pue tardar varios minutos (1-10 "
+"minutos)"
+
+#: godmode/db/db_purge.php:65
+msgid "while deleting data for "
+msgstr "Mientres se borren datos pa"
+
+#: godmode/db/db_purge.php:73 godmode/db/db_purge.php:85
+msgid "Deleting records for module "
+msgstr "Borrar rexistros pal módulu"
+
+#: godmode/db/db_purge.php:85 godmode/db/db_purge.php:110
+#: godmode/db/db_purge.php:114
+msgid "All agents"
+msgstr "Toos los axentes"
+
+#: godmode/db/db_purge.php:111 godmode/db/db_purge.php:113
+msgid "Choose agent"
+msgstr "Escoxa axente"
+
+#: godmode/db/db_purge.php:123
+#: godmode/agentes/module_manager_editor_network.php:125
+#: godmode/agentes/module_manager_editor_wmi.php:122
+msgid "Get data"
+msgstr "Obtener datos"
+
+#: godmode/db/db_purge.php:131 operation/agentes/exportdata.php:124
+#: operation/agentes/exportdata.php:144 operation/agentes/exportdata.php:176
+msgid "Data from agent "
+msgstr "Datos del axente"
+
+#: godmode/db/db_purge.php:131
+msgid " in the Database"
+msgstr "Na Base de Datos"
+
+#: godmode/db/db_purge.php:151
+msgid "Packets three months old"
+msgstr "Paquetes con menos de tres meses"
+
+#: godmode/db/db_purge.php:158
+msgid "Packets one month old"
+msgstr "Paquetes con menos d'un mes"
+
+#: godmode/db/db_purge.php:165
+msgid "Packets two weeks old"
+msgstr "Paquetes con menos de dos selmanes"
+
+#: godmode/db/db_purge.php:172
+msgid "Packets one week old"
+msgstr "Paquetes con menos d'una selmana"
+
+#: godmode/db/db_purge.php:179
+msgid "Packets three days old"
+msgstr "Paquetes con menos de tres díes"
+
+#: godmode/db/db_purge.php:186
+msgid "Packets one day old"
+msgstr "Paquetes con menos de 24 hores"
+
+#: godmode/db/db_purge.php:192 operation/agentes/estado_generalagente.php:115
+msgid "Total packets"
+msgstr "Númberu de paquetes totales"
+
+#: godmode/db/db_purge.php:204
+msgid "Purge data over 90 days"
+msgstr "Borrar los datos con más de tres meses"
+
+#: godmode/db/db_purge.php:205
+msgid "Purge data over 30 days"
+msgstr "Borrar los datos con más de 30 díes"
+
+#: godmode/db/db_purge.php:206
+msgid "Purge data over 14 days"
+msgstr "Borrar los datos con más de dos selmanes"
+
+#: godmode/db/db_purge.php:207
+msgid "Purge data over 7 days"
+msgstr "Borrar los datos con más de una selmana"
+
+#: godmode/db/db_purge.php:208
+msgid "Purge data over 3 days"
+msgstr "Borrar los datos con más de tres díes"
+
+#: godmode/db/db_purge.php:209
+msgid "Purge data over 1 day"
+msgstr "Borrar los datos con más d'un día"
+
+#: godmode/db/db_refine.php:35 godmode/agentes/manage_config.php:271
+msgid "Delete Data"
+msgstr "Borrar datos"
+
+#: godmode/db/db_refine.php:41
+msgid "Maximum equal to minimum"
+msgstr "máximu igual al mínimu"
+
+#: godmode/db/db_refine.php:48 godmode/agentes/manage_config.php:57
+msgid "No modules has been selected"
+msgstr "Nun selecionáronse módulus"
+
+#: godmode/db/db_refine.php:60
+msgid "Filtering data module"
+msgstr "Filtrando módulu de datos"
+
+#: godmode/db/db_refine.php:69 godmode/menu.php:262
+msgid "Database debug"
+msgstr "Depurar BBDD"
+
+#: godmode/db/db_refine.php:90 godmode/agentes/manage_config_remote.php:124
+#: godmode/agentes/manage_config.php:421 operation/agentes/exportdata.php:269
+msgid "Get Info"
+msgstr "Obtener info."
+
+#: godmode/db/db_refine.php:104
+msgid "Purge data out these limits"
+msgstr "Borrar datos fuera d'estos llímites"
+
+#: godmode/db/db_refine.php:106 include/functions_reporting.php:487
+msgid "Minimum"
+msgstr "M�nimo"
+
+#: godmode/db/db_refine.php:107 include/functions_reporting.php:488
+msgid "Maximum"
+msgstr "M�ximo"
+
+#: godmode/db/db_info.php:31
+msgid "Database Information"
+msgstr "Información de la Base de Datos"
+
+#: godmode/db/db_info.php:34
+msgid "Modules per agent"
+msgstr "Módulus per axente"
+
+#: godmode/db/db_info.php:38
+msgid "Packets per agent"
+msgstr "Paquetes per axente"
+
+#: godmode/db/db_info.php:40
+msgid "Press here to get DB Info as text"
+msgstr "Pulse equí pa agüeyar información de la BD como texto"
+
+#: godmode/setup/setup.php:66 godmode/setup/links.php:87
+#: godmode/setup/links.php:115 godmode/setup/news.php:82
+#: godmode/setup/news.php:111 godmode/menu.php:211
+msgid "Pandora Setup"
+msgstr "Configuración"
+
+#: godmode/setup/setup.php:67
+msgid "General configuration"
+msgstr "Configuración xeneral"
+
+#: godmode/setup/setup.php:73
+msgid "Language Code for Pandora"
+msgstr "Códigu de linguax pa Pandora"
+
+#: godmode/setup/setup.php:75
+msgid "Remote config directory"
+msgstr ""
+
+#: godmode/setup/setup.php:77
+msgid "Graph color (min)"
+msgstr ""
+
+#: godmode/setup/setup.php:79
+msgid "Graph color (avg)"
+msgstr ""
+
+#: godmode/setup/setup.php:81
+msgid "Graph color (max)"
+msgstr ""
+
+#: godmode/setup/setup.php:83 godmode/setup/setup.php:101
+msgid "sla_period"
+msgstr ""
+
+#: godmode/setup/setup.php:89
+msgid "Graphic resolution (1-low, 5-high)"
+msgstr "Resolución de los gráficos (1 baxa, 5 alta)"
+
+#: godmode/setup/setup.php:91
+msgid "Compact interpolation in hours (1 Fine-20 bad)"
+msgstr "Interpolación de la compactación (Hores: 1 bueno, 10 medio, 20 malo)"
+
+#: godmode/setup/setup.php:93
+msgid "Show unknown modules in global view"
+msgstr ""
+
+#: godmode/setup/setup.php:95
+msgid "Show last fired alerts in global view"
+msgstr ""
+
+#: godmode/setup/setup.php:97
+msgid "Style template"
+msgstr ""
+
+#: godmode/setup/setup.php:99
+msgid "Block size for pagination"
+msgstr "Tama&ntilde;u de bloque pa la paxinación"
+
+#: godmode/setup/links.php:38
+msgid "There was a problem creating link"
+msgstr "Ocurrió un problema al crear l'enlace"
+
+#: godmode/setup/links.php:40
+msgid "Link successfully created"
+msgstr "L'enlace creóse correutamente"
+
+#: godmode/setup/links.php:52
+msgid "There was a problem modifying link"
+msgstr "Ocurrió un problema al modificar l'axente"
+
+#: godmode/setup/links.php:54
+msgid "Link successfully updated"
+msgstr "Enlace actualizáu correutamente"
+
+#: godmode/setup/links.php:62
+msgid "There was a problem deleting link"
+msgstr "Ocurrió un problema al borrar l'enllace"
+
+#: godmode/setup/links.php:64
+msgid "delete_link_ok"
+msgstr "Enlace elimináu correutamente"
+
+#: godmode/setup/links.php:79 godmode/setup/news.php:72
+msgid "name_error"
+msgstr ""
+
+#: godmode/setup/links.php:88 godmode/setup/links.php:116
+msgid "Link management"
+msgstr "Xestión d'Enllaces"
+
+#: godmode/setup/links.php:100 godmode/setup/links.php:118
+msgid "Link name"
+msgstr "Nome enllace"
+
+#: godmode/setup/links.php:103
+msgid "Link"
+msgstr "Enllace"
+
+#: godmode/setup/news.php:83 godmode/setup/news.php:112
+#, fuzzy
+msgid "Site news management"
+msgstr "Xestión d'Enllaces"
+
+#: godmode/setup/news.php:96 godmode/setup/news.php:114
+#: operation/messages/message.php:90 operation/messages/message.php:127
+#: operation/messages/message.php:143 operation/messages/message.php:190
+msgid "Subject"
+msgstr "Asuntu"
+
+#: godmode/setup/news.php:99 include/functions.php:783
+#: include/functions.php:807 include/functions.php:896
+#: include/functions.php:940 include/functions_db.php:1853
+#: include/functions_db.php:1875
+msgid "Text"
+msgstr ""
+
+#: godmode/setup/news.php:115 operation/incidents/incident_detail.php:400
+msgid "Author"
+msgstr "Autor"
+
+#: godmode/setup/news.php:116 operation/events/events.php:307
+#: operation/messages/message.php:191 operation/agentes/status_monitor.php:188
+#: operation/agentes/datos_agente.php:82
+#: operation/agentes/estado_ultimopaquete.php:56
+#: operation/snmpconsole/snmp_view.php:203 include/functions_reporting.php:242
+#: include/functions_db.php:1917 extensions/update_manager/main.php:56
+msgid "Timestamp"
+msgstr "Fecha/Hora"
+
+#: godmode/admin_access_logs.php:32
+msgid "Pandora audit"
+msgstr "Revisar logs d'auditoría de Pandora"
+
+#: godmode/admin_access_logs.php:32
+msgid "Review Logs"
+msgstr ""
+
+#: godmode/admin_access_logs.php:42
+#: godmode/agentes/manage_config_remote.php:93
+#: godmode/agentes/manage_config.php:397 operation/incidents/incident.php:193
+msgid "Filter"
+msgstr "Filtru"
+
+#: godmode/admin_access_logs.php:80 godmode/agentes/modificar_agente.php:136
+#: operation/incidents/incident.php:227 operation/incidents/incident.php:275
+#: operation/incidents/incident.php:302
+#: operation/agentes/status_monitor.php:124
+#: operation/agentes/estado_agente.php:71
+#: operation/agentes/estado_alertas.php:136
+msgid "Show"
+msgstr "mostrar"
+
+#: godmode/admin_access_logs.php:107
+#: operation/incidents/incident_search.php:35 general/logon_ok.php:167
+msgid "user"
+msgstr "Usuariu"
+
+#: godmode/admin_access_logs.php:109
+#: operation/reporting/reporting_viewer.php:67
+#: operation/incidents/incident_note.php:34
+#: operation/incidents/incident_detail.php:410 general/logon_ok.php:169
+msgid "Date"
+msgstr "Fecha"
+
+#: godmode/admin_access_logs.php:110 general/logon_ok.php:170
+msgid "Source IP"
+msgstr "IP Orixen"
+
+#: godmode/menu.php:28
+msgid "Administration"
+msgstr "Alministración"
+
+#: godmode/menu.php:38
+msgid "Manage agents"
+msgstr "Xestión d'axentes"
+
+#: godmode/menu.php:46
+msgid "Manage config."
+msgstr "Xestionar conf."
+
+#: godmode/menu.php:53
+#, fuzzy
+msgid "Duplicate config"
+msgstr "Xestionar conf."
+
+#: godmode/menu.php:62
+msgid "Manage groups"
+msgstr "Xestión d'grupos"
+
+#: godmode/menu.php:72
+msgid "Scheduled downtime"
+msgstr ""
+
+#: godmode/menu.php:82
+#, fuzzy
+msgid "Manage modules"
+msgstr "Xestión d'usuarios"
+
+#: godmode/menu.php:89
+#, fuzzy
+msgid "Component groups"
+msgstr "Grupos de los incidentes"
+
+#: godmode/menu.php:97
+#, fuzzy
+msgid "Module components"
+msgstr "Formulariu d'asociación de módulo"
+
+#: godmode/menu.php:105 godmode/agentes/agent_template.php:117
+#, fuzzy
+msgid "Module templates"
+msgstr "Tipu modulu"
+
+#: godmode/menu.php:115 godmode/profiles/profile_list.php:184
+msgid "Manage alerts"
+msgstr "Xestión d'alertes"
+
+#: godmode/menu.php:123 godmode/profiles/profile_list.php:176
+msgid "Manage users"
+msgstr "Xestión d'usuarios"
+
+#: godmode/menu.php:130
+#, fuzzy
+msgid "Manage reports"
+msgstr "Xestión d'alertes"
+
+#: godmode/menu.php:139
+#, fuzzy
+msgid "Report builder"
+msgstr "Informes"
+
+#: godmode/menu.php:170
+msgid "Manage profiles"
+msgstr "Xestión de perfiles"
+
+#: godmode/menu.php:178 godmode/servers/modificar_server.php:87
+msgid "Manage servers"
+msgstr "Xestión de servidores"
+
+#: godmode/menu.php:185 godmode/servers/manage_recontask.php:90
+#: godmode/servers/manage_recontask_form.php:61
+#, fuzzy
+msgid "Manage recontask"
+msgstr "Xestión d'axentes"
+
+#: godmode/menu.php:194
+#, fuzzy
+msgid "Manage plugins"
+msgstr "Xestión d'axentes"
+
+#: godmode/menu.php:203
+msgid "System Audit Log"
+msgstr "Auditoría del sistema"
+
+#: godmode/menu.php:218 general/links_menu.php:22
+msgid "Links"
+msgstr "Enllaces"
+
+#: godmode/menu.php:226 general/logon_ok.php:48
+msgid "Site news"
+msgstr ""
+
+#: godmode/menu.php:240
+msgid "DB Maintenance"
+msgstr "Mantenimientu BBDD"
+
+#: godmode/menu.php:248
+msgid "DB Information"
+msgstr "Información BBDD"
+
+#: godmode/menu.php:269
+msgid "Database audit"
+msgstr "BD d'auditoría"
+
+#: godmode/menu.php:276
+msgid "Database event"
+msgstr "BD de eventos"
+
+#: godmode/menu.php:283
+#, fuzzy
+msgid "Database sanity"
+msgstr "BD d'auditoría"
+
+#: godmode/menu.php:295 operation/menu.php:320
+msgid "Extensions"
+msgstr ""
+
+#: godmode/agentes/agent_template.php:112
+#, fuzzy
+msgid "Modules successfully added "
+msgstr "Módulu actualizáu correutamente"
+
+#: godmode/agentes/agent_template.php:117
+#: godmode/agentes/module_manager.php:22
+#: godmode/agentes/manage_config_remote.php:80
+#: godmode/agentes/agent_manager.php:35 godmode/agentes/alert_manager.php:31
+#: godmode/agentes/modificar_agente.php:108
+#: godmode/agentes/manage_config.php:384
+msgid "Agent configuration"
+msgstr "Configuración d'axentes"
+
+#: godmode/agentes/agent_template.php:124
+msgid "Available templates"
+msgstr ""
+
+#: godmode/agentes/agent_template.php:128
+msgid "Template"
+msgstr ""
+
+#: godmode/agentes/agent_template.php:139
+msgid "Assign"
+msgstr ""
+
+#: godmode/agentes/agent_template.php:146
+#: godmode/agentes/module_manager.php:67
+msgid "Assigned modules"
+msgstr "Módulos asignaos"
+
+#: godmode/agentes/configurar_agente.php:137
+msgid "agent_exists"
+msgstr "L'axente ya existe"
+
+#: godmode/agentes/configurar_agente.php:173
+msgid "Setup mode"
+msgstr ""
+
+#: godmode/agentes/configurar_agente.php:180
+#: operation/reporting/graph_viewer.php:167
+msgid "View"
+msgstr ""
+
+#: godmode/agentes/configurar_agente.php:187
+#, fuzzy
+msgid "Setup Agent"
+msgstr "Axente SNMP"
+
+#: godmode/agentes/configurar_agente.php:201
+#: godmode/agentes/alert_manager.php:31 godmode/agentes/manage_config.php:443
+#: godmode/groups/group_list.php:114 godmode/groups/configure_group.php:90
+#: operation/agentes/estado_grupo.php:250
+#: operation/agentes/estado_agente.php:161
+#: operation/agentes/ver_agente.php:218 include/functions_reporting.php:601
+#: include/functions_reporting_pdf.php:333
+msgid "Alerts"
+msgstr "Alertes"
+
+#: godmode/agentes/configurar_agente.php:208
+msgid "Net. Templates"
+msgstr ""
+
+#: godmode/agentes/configurar_agente.php:222
+msgid "There was a problem creating agent"
+msgstr "Ocurrió un problema al crear l'alerta"
+
+#: godmode/agentes/configurar_agente.php:225
+msgid "Agent successfully created"
+msgstr "Axente creáu correutamente"
+
+#: godmode/agentes/configurar_agente.php:243
+#, fuzzy
+msgid "Deleted data above"
+msgstr "Borrar datos"
+
+#: godmode/agentes/configurar_agente.php:256
+#: godmode/agentes/configurar_agente.php:270
+#: godmode/alerts/modify_alert.php:58 operation/snmpconsole/snmp_alert.php:60
+msgid "There was a problem deleting alert"
+msgstr "Ocurrió un problema al borrar l'alerta"
+
+#: godmode/agentes/configurar_agente.php:258
+#: godmode/agentes/configurar_agente.php:272
+#: godmode/alerts/modify_alert.php:60 operation/snmpconsole/snmp_alert.php:62
+msgid "Alert successfully deleted"
+msgstr "Alerta eliminada correutamente"
+
+#: godmode/agentes/configurar_agente.php:345
+#: godmode/alerts/modify_alert.php:44 operation/snmpconsole/snmp_alert.php:88
+msgid "There was a problem creating alert"
+msgstr "Ocurrió un problema al crear l'alerta"
+
+#: godmode/agentes/configurar_agente.php:348
+#: godmode/alerts/modify_alert.php:46 operation/snmpconsole/snmp_alert.php:90
+#: operation/snmpconsole/snmp_alert.php:97
+msgid "Alert successfully created"
+msgstr "Alerta creada correutamente"
+
+#: godmode/agentes/configurar_agente.php:363
+msgid "Problem adding component alert"
+msgstr ""
+
+#: godmode/agentes/configurar_agente.php:365
+msgid "Alert component added ok"
+msgstr ""
+
+#: godmode/agentes/configurar_agente.php:446
+#: godmode/alerts/modify_alert.php:31 operation/snmpconsole/snmp_alert.php:95
+msgid "There was a problem updating alert"
+msgstr "Ocurrió un problema al actualizar l'alerta"
+
+#: godmode/agentes/configurar_agente.php:449
+#: godmode/agentes/configurar_agente.php:490
+#: godmode/agentes/agent_disk_conf_editor.php:48
+msgid "Agent successfully updated"
+msgstr "Axente actualizáu correutamente"
+
+#: godmode/agentes/configurar_agente.php:488
+msgid "There was a problem updating agent"
+msgstr "Ocurrió un problema al actualizar el axente"
+
+#: godmode/agentes/configurar_agente.php:522
+#: operation/agentes/estado_generalagente.php:43
+msgid "There was a problem loading agent"
+msgstr "Ocurrió un error al cargar la configuración del axente"
+
+#: godmode/agentes/configurar_agente.php:694
+msgid "There was a problem updating module"
+msgstr "Ocurrió un problema al actualizar el módulu"
+
+#: godmode/agentes/configurar_agente.php:696
+msgid "Module successfully updated"
+msgstr "Módulu actualizáu correutamente"
+
+#: godmode/agentes/configurar_agente.php:707
+msgid "Cannot read from SNMP source"
+msgstr "No se puede leer SNMP del origen"
+
+#: godmode/agentes/configurar_agente.php:709
+msgid "SNMP source has been scanned"
+msgstr "El origen SNMP ha sido analizado"
+
+#: godmode/agentes/configurar_agente.php:737
+msgid "There was a problem adding module"
+msgstr "Ocurrió un problema al a&ntilde;adir el módulu"
+
+#: godmode/agentes/configurar_agente.php:740
+msgid "add_module_ok"
+msgstr "Módulu a&ntilde;adíu correutamente"
+
+#: godmode/agentes/configurar_agente.php:781
+msgid "There was a problem deleting module"
+msgstr "Ocurrió un problema al borrar el módulu"
+
+#: godmode/agentes/configurar_agente.php:783
+msgid "delete_module_ok"
+msgstr "Módulu elimináu correutamente"
+
+#: godmode/agentes/alert_manager_editor.php:23
+msgid "Alert association form"
+msgstr "Formulariu d'asociación d'allerta"
+
+#: godmode/agentes/alert_manager_editor.php:71
+#: operation/agentes/exportdata.php:288 operation/agentes/sla_view.php:97
+#: operation/agentes/sla_view.php:178 include/functions_reporting.php:524
+#: include/functions_reporting.php:562 include/functions_reporting.php:587
+#: include/functions.php:714 include/functions.php:719
+#: include/functions.php:722 include/functions_db.php:1847
+msgid "N/A"
+msgstr ""
+
+#: godmode/agentes/alert_manager_editor.php:74
+#: operation/incidents/incident.php:238 operation/incidents/incident.php:256
+#: operation/incidents/incident.php:265 operation/incidents/incident.php:360
+#: operation/incidents/incident_detail.php:310
+#: operation/incidents/incident_detail.php:313
+#: operation/snmpconsole/snmp_alert.php:231
+#: include/functions_reporting.php:299 include/functions.php:828
+#: include/functions.php:915
+msgid "Priority"
+msgstr "Prioridá"
+
+#: godmode/agentes/alert_manager_editor.php:83
+#: operation/snmpconsole/snmp_alert.php:157
+#: operation/snmpconsole/snmp_alert.php:263
+msgid "Alert type"
+msgstr "Tipu de alerta"
+
+#: godmode/agentes/alert_manager_editor.php:99
+#, fuzzy
+msgid "Alert status"
+msgstr "Alertes"
+
+#: godmode/agentes/alert_manager_editor.php:103
+#: godmode/agentes/alert_manager_editor.php:107
+#: godmode/agentes/alert_manager_editor.php:272
+#: godmode/agentes/alert_manager_editor.php:274
+#: godmode/agentes/module_manager_editor_network.php:132
+#: godmode/agentes/module_manager_editor_plugin.php:99
+#: godmode/agentes/agent_manager.php:196
+#: godmode/agentes/module_manager_editor_wmi.php:129
+#: godmode/agentes/module_manager_editor_data.php:97
+#: godmode/agentes/module_manager_editor_prediction.php:99
+#: godmode/groups/group_list.php:130 include/functions.php:743
+msgid "Disabled"
+msgstr "deshabilitáu"
+
+#: godmode/agentes/alert_manager_editor.php:104
+#: godmode/agentes/alert_manager_editor.php:106
+#: godmode/agentes/alert_manager_editor.php:271
+#: godmode/agentes/alert_manager_editor.php:275
+#: godmode/groups/group_list.php:130
+#, fuzzy
+msgid "Enabled"
+msgstr "deshabilitáu"
+
+#: godmode/agentes/alert_manager_editor.php:118
+msgid ""
+"Min. possible value to consider 'valid' values, below this limit, Pandora "
+"FMS will fire the alert"
+msgstr ""
+
+#: godmode/agentes/alert_manager_editor.php:124
+msgid ""
+"Max. possible value to consider 'valid' values, above this limit, Pandora "
+"FMS will fire the alert"
+msgstr ""
+
+#: godmode/agentes/alert_manager_editor.php:131
+#, fuzzy
+msgid "Alert text"
+msgstr "Tipu de alerta"
+
+#: godmode/agentes/alert_manager_editor.php:136
+#: operation/agentes/estado_alertas.php:62
+#: operation/snmpconsole/snmp_alert.php:211
+msgid "Time threshold"
+msgstr "Umbral de tiempu"
+
+#: godmode/agentes/alert_manager_editor.php:137
+msgid ""
+"This value must be al least Module Interval * (Min.Number of Alerts + 1)"
+msgstr ""
+
+#: godmode/agentes/alert_manager_editor.php:159
+msgid "Other"
+msgstr "Otru"
+
+#: godmode/agentes/alert_manager_editor.php:164
+#: operation/snmpconsole/snmp_alert.php:203
+msgid "Min. number of alerts"
+msgstr "Númberu mínimu d'alertes"
+
+#: godmode/agentes/alert_manager_editor.php:174
+#: operation/snmpconsole/snmp_alert.php:206
+msgid "Max. number of alerts"
+msgstr "Númberu máximu d'alertes"
+
+#: godmode/agentes/alert_manager_editor.php:184
+#: operation/snmpconsole/snmp_alert.php:194
+msgid "Field #1 (Alias, name)"
+msgstr "Campu #1 (Alias, nome)"
+
+#: godmode/agentes/alert_manager_editor.php:190
+#: operation/snmpconsole/snmp_alert.php:196
+msgid "Field #2 (Single Line)"
+msgstr "Campo #2 ( llínea sencilla)"
+
+#: godmode/agentes/alert_manager_editor.php:197
+#: operation/snmpconsole/snmp_alert.php:198
+msgid "Field #3 (Full Text)"
+msgstr "Campu #3 (Testu completu)"
+
+#: godmode/agentes/alert_manager_editor.php:205
+#: godmode/agentes/planned_downtime.php:121
+#: godmode/agentes/planned_downtime.php:150
+#, fuzzy
+msgid "Time from"
+msgstr "dende"
+
+#: godmode/agentes/alert_manager_editor.php:220
+#: godmode/agentes/planned_downtime.php:124
+#: godmode/agentes/planned_downtime.php:151
+#, fuzzy
+msgid "Time to"
+msgstr "Umbral de tiempu"
+
+#: godmode/agentes/alert_manager_editor.php:236
+msgid "Days of week"
+msgstr ""
+
+#: godmode/agentes/alert_manager_editor.php:238
+msgid "Mon"
+msgstr ""
+
+#: godmode/agentes/alert_manager_editor.php:241
+msgid "Tue"
+msgstr ""
+
+#: godmode/agentes/alert_manager_editor.php:244
+msgid "Wed"
+msgstr ""
+
+#: godmode/agentes/alert_manager_editor.php:247
+msgid "Thu"
+msgstr ""
+
+#: godmode/agentes/alert_manager_editor.php:250
+msgid "Fri"
+msgstr ""
+
+#: godmode/agentes/alert_manager_editor.php:253
+#, fuzzy
+msgid "Sat"
+msgstr "Estáu"
+
+#: godmode/agentes/alert_manager_editor.php:256
+msgid "Sun"
+msgstr ""
+
+#: godmode/agentes/alert_manager_editor.php:260
+#, fuzzy
+msgid "Field #2 (Rec)"
+msgstr "Campo #2 ( llínea sencilla)"
+
+#: godmode/agentes/alert_manager_editor.php:265
+#, fuzzy
+msgid "Alert recovery"
+msgstr "Alerta lanzada"
+
+#: godmode/agentes/alert_manager_editor.php:281
+#, fuzzy
+msgid "Field #3 (Rec)"
+msgstr "Campu #3 (Testu completu)"
+
+#: godmode/agentes/alert_manager_editor.php:300
+msgid "Combined alert components"
+msgstr ""
+
+#: godmode/agentes/alert_manager_editor.php:313
+#, fuzzy
+msgid "Source Agent/Alert"
+msgstr "Axente orixen"
+
+#: godmode/agentes/alert_manager_editor.php:342 operation/menu.php:29
+msgid "Operation"
+msgstr "Operación"
+
+#: godmode/agentes/alert_manager_editor.php:365
+#: godmode/agentes/alert_manager.php:182 include/functions_db.php:1798
+#, fuzzy
+msgid "Oper"
+msgstr "Propietariu"
+
+#: godmode/agentes/alert_manager_editor.php:366
+#: godmode/agentes/alert_manager.php:107 godmode/agentes/alert_manager.php:183
+#: include/functions_reporting.php:489
+#, fuzzy
+msgid "Threshold"
+msgstr "Umbral de tiempu"
+
+#: godmode/agentes/alert_manager_editor.php:367
+#: godmode/agentes/alert_manager.php:108 godmode/agentes/alert_manager.php:184
+#: operation/agentes/estado_alertas.php:60
+msgid "Min."
+msgstr ""
+
+#: godmode/agentes/alert_manager_editor.php:368
+#: godmode/agentes/alert_manager.php:109 godmode/agentes/alert_manager.php:185
+#: operation/agentes/estado_alertas.php:61
+msgid "Max."
+msgstr ""
+
+#: godmode/agentes/alert_manager_editor.php:369
+#: godmode/agentes/alert_manager.php:110 godmode/agentes/alert_manager.php:186
+#: include/functions_db.php:1801
+#, fuzzy
+msgid "Time"
+msgstr "Fecha/Hora"
+
+#: godmode/agentes/alert_manager_editor.php:371
+#: godmode/agentes/alert_manager.php:112 godmode/agentes/alert_manager.php:188
+msgid "info"
+msgstr ""
+
+#: godmode/agentes/module_manager.php:48
+msgid "Create a new data server module"
+msgstr ""
+
+#: godmode/agentes/module_manager.php:50
+msgid "Create a new network server module"
+msgstr ""
+
+#: godmode/agentes/module_manager.php:52
+msgid "Create a new plugin Server module"
+msgstr ""
+
+#: godmode/agentes/module_manager.php:54
+msgid "Create a new WMI Server module"
+msgstr ""
+
+#: godmode/agentes/module_manager.php:56
+msgid "Create a new prediction Server module"
+msgstr ""
+
+#: godmode/agentes/module_manager.php:75
+#, fuzzy
+msgid "S"
+msgstr "SO"
+
+#: godmode/agentes/module_manager.php:161
+msgid "No available data to show"
+msgstr ""
+
+#: godmode/agentes/module_manager_editor_network.php:81
+#: godmode/agentes/module_manager_editor_plugin.php:79
+#: godmode/agentes/module_manager_editor_wmi.php:79
+#: godmode/agentes/module_manager_editor_data.php:79
+#: godmode/agentes/module_manager_editor_prediction.php:79
+#, fuzzy
+msgid "module_assignment"
+msgstr "Formulariu d'asociación de módulo"
+
+#: godmode/agentes/module_manager_editor_network.php:81
+msgid "network server module"
+msgstr ""
+
+#: godmode/agentes/module_manager_editor_network.php:100
+#: godmode/agentes/module_manager_editor_wmi.php:97
+msgid "Using Module Component"
+msgstr ""
+
+#: godmode/agentes/module_manager_editor_network.php:109
+#: godmode/agentes/module_manager_editor_wmi.php:106
+#, fuzzy
+msgid "Manual setup"
+msgstr "Configuración"
+
+#: godmode/agentes/module_manager_editor_network.php:138
+#: godmode/agentes/module_manager_editor_plugin.php:105
+#: godmode/agentes/module_manager_editor_wmi.php:135
+msgid "Target IP"
+msgstr "IP destinu"
+
+#: godmode/agentes/module_manager_editor_network.php:189
+#, fuzzy
+msgid "SNMP walk"
+msgstr "Alertes SNMP"
+
+#: godmode/agentes/module_manager_editor_network.php:228
+#: godmode/agentes/module_manager_editor_plugin.php:190
+#: godmode/agentes/module_manager_editor_wmi.php:216
+#: godmode/agentes/module_manager_editor_data.php:124
+msgid "Post process"
+msgstr ""
+
+#: godmode/agentes/module_manager_editor_network.php:232
+#: godmode/agentes/module_manager_editor_plugin.php:194
+#: godmode/agentes/module_manager_editor_wmi.php:220
+#: godmode/agentes/module_manager_editor_data.php:128
+#: godmode/agentes/module_manager_editor_prediction.php:153
+#: operation/servers/view_server.php:102
+#, fuzzy
+msgid "Export server"
+msgstr "Servidores Pandora"
+
+#: godmode/agentes/manage_config_remote.php:42
+#: godmode/agentes/manage_config.php:44
+msgid "Data Copy"
+msgstr "Copia de datos"
+
+#: godmode/agentes/manage_config_remote.php:48
+#: godmode/agentes/manage_config.php:50
+msgid "No selected agents to copy"
+msgstr "Nun selecionáronse axentes destinu pa la copia"
+
+#: godmode/agentes/manage_config_remote.php:64
+#: godmode/agentes/manage_config.php:90
+msgid "copyage"
+msgstr "Copiando axente"
+
+#: godmode/agentes/manage_config_remote.php:80
+#: godmode/agentes/manage_config.php:384
+msgid "Configuration Management"
+msgstr "Xestión de Configuraciones"
+
+#: godmode/agentes/manage_config_remote.php:85
+#: godmode/agentes/manage_config.php:389
+#, fuzzy
+msgid "Source group"
+msgstr "Grupu módulos"
+
+#: godmode/agentes/manage_config_remote.php:129
+#: godmode/agentes/manage_config.php:450
+msgid "To Agent(s):"
+msgstr "Axente(s) destinu"
+
+#: godmode/agentes/manage_config_remote.php:141
+#, fuzzy
+msgid "Replicate configuration"
+msgstr "Configuración d'alertes"
+
+#: godmode/agentes/module_manager_editor_plugin.php:79
+#, fuzzy
+msgid "Plugin server module"
+msgstr "Módulu d'orixen múltiple"
+
+#: godmode/agentes/module_manager_editor_plugin.php:107
+msgid "plugin"
+msgstr ""
+
+#: godmode/agentes/module_manager_editor_plugin.php:124
+msgid "Plugin parameters"
+msgstr ""
+
+#: godmode/agentes/module_manager_editor_plugin.php:129
+#, fuzzy
+msgid "Port"
+msgstr "Prioridá"
+
+#: godmode/agentes/agent_manager.php:38
+#: godmode/agentes/modificar_agente.php:265
+#: operation/agentes/estado_agente.php:386
+msgid "Create agent"
+msgstr "Crear axente"
+
+#: godmode/agentes/agent_manager.php:40
+msgid "Update agent"
+msgstr "Actualizar axente"
+
+#: godmode/agentes/agent_manager.php:65
+msgid "The Agent's name must be the same as the one defined at the Console"
+msgstr ""
+
+#: godmode/agentes/agent_manager.php:72 operation/menu.php:72
+msgid "Agent detail"
+msgstr "Detalle axente"
+
+#: godmode/agentes/agent_manager.php:78
+msgid "This agent can be remotely configured"
+msgstr ""
+
+#: godmode/agentes/agent_manager.php:79
+msgid "You can remotely edit this agent configuration"
+msgstr ""
+
+#: godmode/agentes/agent_manager.php:83
+#: godmode/servers/modificar_server.php:72
+#: godmode/servers/modificar_server.php:94
+#: operation/agentes/estado_generalagente.php:68
+msgid "IP Address"
+msgstr "Dirección IP"
+
+#: godmode/agentes/agent_manager.php:100
+#, fuzzy
+msgid "Delete selected"
+msgstr "Borrar alerta"
+
+#: godmode/agentes/agent_manager.php:119
+#: godmode/agentes/modificar_agente.php:197
+#: godmode/servers/manage_recontask.php:102
+#: godmode/servers/manage_recontask_form.php:129
+#: operation/agentes/estado_generalagente.php:84
+#: operation/agentes/estado_agente.php:156
+#: operation/servers/view_server_detail.php:74
+msgid "OS"
+msgstr "SO"
+
+#: godmode/agentes/agent_manager.php:125
+#: godmode/servers/modificar_server.php:162
+#: operation/servers/view_server.php:90
+#, fuzzy
+msgid "Network Server"
+msgstr "Servidor asignáu"
+
+#: godmode/agentes/agent_manager.php:126
+msgid ""
+"You must select a Network Server for the Agent, so it can work properly with "
+"this kind of modules"
+msgstr ""
+
+#: godmode/agentes/agent_manager.php:138 operation/servers/view_server.php:111
+#, fuzzy
+msgid "Plugin Server"
+msgstr "Servidor"
+
+#: godmode/agentes/agent_manager.php:139
+msgid ""
+"You must select a Plugin Server for the Agent, so it can work properly with "
+"this kind of modules"
+msgstr ""
+
+#: godmode/agentes/agent_manager.php:152 operation/servers/view_server.php:105
+#, fuzzy
+msgid "WMI Server"
+msgstr "Servidor"
+
+#: godmode/agentes/agent_manager.php:153
+msgid ""
+"You must select a WMI Server for the Agent, so it can work properly with "
+"this kind of modules"
+msgstr ""
+
+#: godmode/agentes/agent_manager.php:165 operation/servers/view_server.php:108
+#, fuzzy
+msgid "Prediction Server"
+msgstr "Servidor activu"
+
+#: godmode/agentes/agent_manager.php:166
+msgid ""
+"You must select a Prediction Server for the Agent, so it can work properly "
+"with this kind of modules"
+msgstr ""
+
+#: godmode/agentes/agent_manager.php:185
+msgid "Module definition"
+msgstr "Definición de módulos"
+
+#: godmode/agentes/agent_manager.php:188
+msgid "Learning mode"
+msgstr "Modu d'aprendizax"
+
+#: godmode/agentes/agent_manager.php:190
+msgid "Normal mode"
+msgstr "Modu normal"
+
+#: godmode/agentes/agent_manager.php:194
+#: godmode/servers/modificar_server.php:93
+#: operation/incidents/incident.php:230 operation/incidents/incident.php:358
+#: operation/incidents/incident_detail.php:245
+#: operation/incidents/incident_detail.php:249 operation/events/events.php:456
+#: operation/agentes/status_monitor.php:187 operation/agentes/tactical.php:230
+#: operation/agentes/estado_monitores.php:37
+#: operation/agentes/estado_agente.php:160 operation/agentes/sla_view.php:46
+#: operation/agentes/sla_view.php:147 operation/agentes/estado_alertas.php:65
+#: operation/agentes/estado_alertas.php:287
+#: operation/snmpconsole/snmp_view.php:198
+#: operation/servers/view_server_detail.php:71
+#: operation/servers/view_server.php:54 include/functions_reporting.php:239
+msgid "Status"
+msgstr "Estáu"
+
+#: godmode/agentes/agent_manager.php:198
+msgid "Active"
+msgstr "Activu"
+
+#: godmode/agentes/agent_manager.php:202
+#, fuzzy
+msgid "Remote configuration"
+msgstr "Configuración d'alertes"
+
+#: godmode/agentes/agent_manager.php:210
+#, fuzzy
+msgid "Not available"
+msgstr "Grupu(os) disponible(s)"
+
+#: godmode/agentes/module_manager_editor_wmi.php:79
+#, fuzzy
+msgid "WMI server module"
+msgstr "Módulu d'orixen múltiple"
+
+#: godmode/agentes/alert_manager.php:41
+#, fuzzy
+msgid "Create a simple alert"
+msgstr "Crear alerta"
+
+#: godmode/agentes/alert_manager.php:42
+#, fuzzy
+msgid "Create a new combined alert"
+msgstr "Crear incidente"
+
+#: godmode/agentes/alert_manager.php:57
+#, fuzzy
+msgid "Simple alerts"
+msgstr "Editar alertes"
+
+#: godmode/agentes/alert_manager.php:106 operation/events/events.php:414
+#: operation/snmpconsole/snmp_view.php:204
+#: operation/snmpconsole/snmp_alert.php:143
+#: operation/snmpconsole/snmp_alert.php:262 include/functions_db.php:2005
+msgid "Alert"
+msgstr "Alerta"
+
+#: godmode/agentes/alert_manager.php:117 godmode/agentes/alert_manager.php:193
+#: operation/agentes/estado_alertas.php:101
+msgid "This agent doesn't have any alert"
+msgstr "Esti axente nun tien nenguna alerta definía"
+
+#: godmode/agentes/alert_manager.php:120 godmode/agentes/alert_manager.php:132
+#: operation/agentes/estado_ultimopaquete.php:214
+msgid "This agent doesn't have any module"
+msgstr "Esti axente nun tien nengún módulu definíu"
+
+#: godmode/agentes/alert_manager.php:127
+#: operation/agentes/estado_alertas.php:84
+#, fuzzy
+msgid "Combined alerts"
+msgstr "Allertes asignaes"
+
+#: godmode/agentes/alert_manager.php:139
+#, fuzzy
+msgid "Combined"
+msgstr "Comandu"
+
+#: godmode/agentes/module_manager_editor_data.php:79
+#, fuzzy
+msgid "data server module"
+msgstr "Módulu d'orixen múltiple"
+
+#: godmode/agentes/modificar_agente.php:49
+msgid "There was a problem deleting agent"
+msgstr "Ocurrió un problema al borrar el axente"
+
+#: godmode/agentes/modificar_agente.php:51
+msgid "delete_agent_ok"
+msgstr "Axente elimináu correutamente"
+
+#: godmode/agentes/modificar_agente.php:108
+msgid "Agents defined in Pandora"
+msgstr "Axentes definíos en Pandora"
+
+#: godmode/agentes/modificar_agente.php:142
+#: operation/incidents/incident_search.php:47
+#: operation/agentes/estado_agente.php:75
+msgid "Free text for search (*)"
+msgstr "Testu llibre pa buscar (*)"
+
+#: godmode/agentes/modificar_agente.php:156
+#: operation/incidents/incident_search.php:53
+#: operation/agentes/estado_agente.php:81
+msgid "Search"
+msgstr "Buscar"
+
+#: godmode/agentes/modificar_agente.php:196
+#, fuzzy
+msgid "Remote agent configuration"
+msgstr "Configuración d'axentes"
+
+#: godmode/agentes/modificar_agente.php:196
+msgid "R"
+msgstr ""
+
+#: godmode/agentes/modificar_agente.php:232
+msgid "Edit remote config"
+msgstr ""
+
+#: godmode/agentes/modificar_agente.php:257
+msgid "There are no defined agents"
+msgstr "Nun hay nengún axente definíu"
+
+#: godmode/agentes/planned_downtime.php:110
+msgid "Planned Downtime Form"
+msgstr ""
+
+#: godmode/agentes/planned_downtime.php:144
+msgid "Planned Downtime"
+msgstr ""
+
+#: godmode/agentes/planned_downtime.php:159
+msgid "No planned downtime"
+msgstr ""
+
+#: godmode/agentes/manage_config.php:78
+msgid "You must select modules and/or alerts for copy operation"
+msgstr "Débense selecionar módulus y/o alertes como oxetivu de la copia"
+
+#: godmode/agentes/manage_config.php:153
+#, fuzzy
+msgid "Problem updating database"
+msgstr "Ocurrió un problema al actualizar el usuariu"
+
+#: godmode/agentes/manage_config.php:178
+msgid "Copying module"
+msgstr "Copiando módulu"
+
+#: godmode/agentes/manage_config.php:255
+msgid "Copying alert"
+msgstr "Copiando alerta"
+
+#: godmode/agentes/manage_config.php:258
+msgid "notfoundmod"
+msgstr "Nun alcontrose el módulu"
+
+#: godmode/agentes/manage_config.php:258
+msgid " in agent "
+msgstr "nel axente"
+
+#: godmode/agentes/manage_config.php:277 godmode/agentes/manage_config.php:334
+msgid "noagents_del"
+msgstr "Nun selecionáronse axentes destinu pal borráu"
+
+#: godmode/agentes/manage_config.php:295 godmode/agentes/manage_config.php:342
+msgid "Deleting data"
+msgstr "Borrando datos"
+
+#: godmode/agentes/manage_config.php:328
+#, fuzzy
+msgid "delete_agents"
+msgstr "Axente elimináu correutamente"
+
+#: godmode/agentes/manage_config.php:439
+msgid "Copy Configuration"
+msgstr "Copiar configuración"
+
+#: godmode/agentes/manage_config.php:463
+msgid "Copy"
+msgstr "Copiar"
+
+#: godmode/agentes/manage_config.php:467
+#, fuzzy
+msgid "Delete Agents"
+msgstr "Borrar alerta"
+
+#: godmode/agentes/module_manager_editor_prediction.php:79
+msgid "Prediction server module"
+msgstr ""
+
+#: godmode/agentes/module_manager_editor_prediction.php:105
+#, fuzzy
+msgid "source_module"
+msgstr "Módulu d'orixen múltiple"
+
+#: godmode/groups/group_list.php:67
+msgid "Group successfully created"
+msgstr "Grupu creáu con éxitu"
+
+#: godmode/groups/group_list.php:69
+msgid "There was a problem creating group"
+msgstr "Ocurrió un problema al crear el grupu"
+
+#: godmode/groups/group_list.php:86
+msgid "Group successfully updated"
+msgstr "Grupu actualizáu correutamente"
+
+#: godmode/groups/group_list.php:88
+msgid "There was a problem modifying group"
+msgstr "Ocurrió un problema al modificar el grupu"
+
+#: godmode/groups/group_list.php:101
+msgid "There was a problem deleting group"
+msgstr "Ocurrió un problema al borrar el grupu"
+
+#: godmode/groups/group_list.php:103
+msgid "Group successfully deleted"
+msgstr "Grupu elimináu correutamente"
+
+#: godmode/groups/group_list.php:106 godmode/groups/configure_group.php:60
+msgid "Group management"
+msgstr "Xestión de grupos"
+
+#: godmode/groups/group_list.php:107
+msgid "Groups defined in Pandora"
+msgstr "Grupos definíos en Pandora"
+
+#: godmode/groups/group_list.php:140 godmode/groups/configure_group.php:64
+#: operation/agentes/estado_grupo.php:121
+msgid "Create group"
+msgstr "Crear grupu"
+
+#: godmode/groups/configure_group.php:53
+msgid "There was a problem loading group"
+msgstr "Ocurrió un problema al cargar la configuración del grupu"
+
+#: godmode/groups/configure_group.php:62
+msgid "Update group"
+msgstr "Actualizar grupu"
+
+#: godmode/profiles/profile_list.php:28
+msgid "delete_profile_no"
+msgstr "Ocurrió un problema al eliminar el perfil"
+
+#: godmode/profiles/profile_list.php:30
+msgid "Profile successfully deleted"
+msgstr "Perfil elimináu correutamente"
+
+#: godmode/profiles/profile_list.php:56
+msgid "There was a problem loading profile"
+msgstr "Ocurrió un problema al cargar el perfil"
+
+#: godmode/profiles/profile_list.php:109
+msgid "Profile successfully created"
+msgstr "Perfil creáu correutamente"
+
+#: godmode/profiles/profile_list.php:111
+#, fuzzy
+msgid "create_profile_no"
+msgstr "Ocurrió un problema al eliminar el perfil"
+
+#: godmode/profiles/profile_list.php:130
+msgid "Profile successfully updated"
+msgstr "Perfil actualizáu correutamente"
+
+#: godmode/profiles/profile_list.php:134
+msgid "Profile management"
+msgstr "Xestión de perfiles"
+
+#: godmode/profiles/profile_list.php:136 godmode/profiles/profile_list.php:297
+msgid "Create profile"
+msgstr "Crear perfil"
+
+#: godmode/profiles/profile_list.php:139
+msgid "Update profile"
+msgstr "Actualizar perfil"
+
+#: godmode/profiles/profile_list.php:140 operation/users/user.php:91
+msgid "Profiles defined in Pandora"
+msgstr "Perfiles definíos en Pandora"
+
+#: godmode/profiles/profile_list.php:149
+msgid "Profile name"
+msgstr "Nome del perfil"
+
+#: godmode/profiles/profile_list.php:152
+msgid "View incidents"
+msgstr "Agüeyar incidentes"
+
+#: godmode/profiles/profile_list.php:156
+msgid "Edit incidents"
+msgstr "Editar incidentes"
+
+#: godmode/profiles/profile_list.php:160 operation/incidents/incident.php:183
+#: operation/menu.php:142
+msgid "Manage incidents"
+msgstr "Xestión d'incidentes"
+
+#: godmode/profiles/profile_list.php:164 operation/menu.php:43
+msgid "View agents"
+msgstr "Agüeyar axentes"
+
+#: godmode/profiles/profile_list.php:168
+msgid "Edit agents"
+msgstr "Editar axentes"
+
+#: godmode/profiles/profile_list.php:172
+msgid "Edit alerts"
+msgstr "Editar alertes"
+
+#: godmode/profiles/profile_list.php:180
+msgid "Manage Database"
+msgstr "Xestión de BD"
+
+#: godmode/profiles/profile_list.php:188
+msgid "Pandora management"
+msgstr "Xestión de Pandora"
+
+#: godmode/alerts/modify_alert.php:33
+msgid "Alert successfully updated"
+msgstr "Alerta actualizada correutamente"
+
+#: godmode/alerts/modify_alert.php:66 godmode/alerts/configure_alert.php:64
+msgid "Alert configuration"
+msgstr "Configuración d'alertes"
+
+#: godmode/alerts/modify_alert.php:67
+msgid "Alerts defined in Pandora"
+msgstr "Alertes definíes en Pandora"
+
+#: godmode/alerts/modify_alert.php:69 godmode/alerts/configure_alert.php:85
+msgid "Alert name"
+msgstr "Nome de l'alerta"
+
+#: godmode/alerts/modify_alert.php:98 godmode/alerts/configure_alert.php:66
+#: operation/snmpconsole/snmp_alert.php:137
+msgid "Create alert"
+msgstr "Crear alerta"
+
+#: godmode/alerts/configure_alert.php:52
+msgid "There was a problem loading alert"
+msgstr "Ocurrió un error al cargar la configuración de la alerta"
+
+#: godmode/alerts/configure_alert.php:69
+msgid "Modify alert"
+msgstr "Modificar alerta"
+
+#: godmode/alerts/configure_alert.php:90
+msgid "Command"
+msgstr "Comandu"
+
+#: godmode/servers/plugin.php:55
+#, fuzzy
+msgid "Problem updating plugin"
+msgstr "Ocurrió un problema al actualizar el axente"
+
+#: godmode/servers/plugin.php:57
+#, fuzzy
+msgid "Plugin updated successfully"
+msgstr "Servidor actualizáu correutamente"
+
+#: godmode/servers/plugin.php:74
+#, fuzzy
+msgid "Problem creating plugin"
+msgstr "Ocurrió un problema al crear l'enlace"
+
+#: godmode/servers/plugin.php:77
+#, fuzzy
+msgid "Plugin created successfully"
+msgstr "Servidor actualizáu correutamente"
+
+#: godmode/servers/plugin.php:86
+#, fuzzy
+msgid "Problem deleting plugin"
+msgstr "Ocurrió un problema al borrar l'enllace"
+
+#: godmode/servers/plugin.php:88
+#, fuzzy
+msgid "Plugin deleted successfully"
+msgstr "Servidor elimináu correutamente"
+
+#: godmode/servers/plugin.php:129
+msgid "Plugin creation"
+msgstr ""
+
+#: godmode/servers/plugin.php:131
+#, fuzzy
+msgid "Plugin update"
+msgstr "Borrar datos"
+
+#: godmode/servers/plugin.php:148
+msgid "Plugin command"
+msgstr ""
+
+#: godmode/servers/plugin.php:152
+#, fuzzy
+msgid "Max.Timeout"
+msgstr "M�ximo"
+
+#: godmode/servers/plugin.php:156
+#, fuzzy
+msgid "IP address option"
+msgstr "Dirección IP"
+
+#: godmode/servers/plugin.php:160
+msgid "Port option"
+msgstr ""
+
+#: godmode/servers/plugin.php:165
+#, fuzzy
+msgid "User option"
+msgstr "Descripción"
+
+#: godmode/servers/plugin.php:169
+#, fuzzy
+msgid "Password option"
+msgstr "Contrase&ntilde;a"
+
+#: godmode/servers/plugin.php:191
+#, fuzzy
+msgid "Plugins registered in Pandora FMS"
+msgstr "axentes definíos en Pandora"
+
+#: godmode/servers/plugin.php:198
+#, fuzzy
+msgid "execute"
+msgstr "Borrar"
+
+#: godmode/servers/plugin.php:222
+msgid "There is no plugins in the system"
+msgstr ""
+
+#: godmode/servers/manage_recontask.php:89
+#: godmode/servers/manage_recontask_form.php:60
+#: godmode/servers/modificar_server.php:50
+#: godmode/servers/modificar_server.php:86 operation/menu.php:130
+#: operation/servers/view_server.php:36
+msgid "Pandora servers"
+msgstr "Servidores Pandora"
+
+#: godmode/servers/manage_recontask.php:98
+#: godmode/servers/manage_recontask_form.php:91
+#: operation/servers/view_server_detail.php:70
+msgid "Network"
+msgstr "Red"
+
+#: godmode/servers/manage_recontask.php:99
+#: godmode/servers/manage_recontask_form.php:118
+#: operation/servers/view_server_detail.php:72
+#, fuzzy
+msgid "Network profile"
+msgstr "Crear perfil"
+
+#: godmode/servers/manage_recontask.php:101
+#: godmode/servers/manage_recontask_form.php:155
+#: operation/incidents/incident.php:359
+#: operation/incidents/incident_detail.php:213
+#: operation/incidents/incident_detail.php:216
+msgid "Incident"
+msgstr "Incidente"
+
+#: godmode/servers/manage_recontask.php:175
+#, fuzzy
+msgid "There are no recon task configured"
+msgstr "Nun hay nengún servidor configuráu na base de datos"
+
+#: godmode/servers/manage_recontask_form.php:73
+#: operation/servers/view_server_detail.php:68
+#, fuzzy
+msgid "Task name"
+msgstr "Nome Real"
+
+#: godmode/servers/manage_recontask_form.php:77
+#: operation/servers/view_server.php:99
+#, fuzzy
+msgid "Recon Server"
+msgstr "Servidor"
+
+#: godmode/servers/manage_recontask_form.php:78
+msgid ""
+"You must select a Recon Server for the Task, otherwise the Recon Task will "
+"never run"
+msgstr ""
+
+#: godmode/servers/manage_recontask_form.php:108
+#: godmode/servers/manage_recontask_form.php:109
+#: operation/agentes/exportdata.php:67
+msgid "day"
+msgstr ""
+
+#: godmode/servers/manage_recontask_form.php:111
+#: godmode/servers/manage_recontask_form.php:112
+#, fuzzy
+msgid "week"
+msgstr "Última selmana"
+
+#: godmode/servers/manage_recontask_form.php:113
+#, fuzzy
+msgid "month"
+msgstr "Últimu mes"
+
+#: godmode/servers/manage_recontask_form.php:134
+msgid "Any"
+msgstr ""
+
+#: godmode/servers/modificar_server.php:33
+msgid "Server deleted successfully"
+msgstr "Servidor elimináu correutamente"
+
+#: godmode/servers/modificar_server.php:34
+msgid "There was a problem deleting server"
+msgstr "Ocurrió un problema al eliminar el servidor"
+
+#: godmode/servers/modificar_server.php:44
+msgid "Server updated successfully"
+msgstr "Servidor actualizáu correutamente"
+
+#: godmode/servers/modificar_server.php:45
+msgid "There was a problem updating server"
+msgstr "Ocurrió un problema al actualizar el servidor"
+
+#: godmode/servers/modificar_server.php:51
+msgid "Update Server"
+msgstr "Actualizar servidor"
+
+#: godmode/servers/modificar_server.php:76
+#: godmode/servers/modificar_server.php:180
+msgid "There are no servers configured into the database"
+msgstr "Nun hay nengún servidor configuráu na base de datos"
+
+#: godmode/servers/modificar_server.php:97
+msgid "Started at"
+msgstr "Arrancáu'l"
+
+#: godmode/servers/modificar_server.php:98
+#: operation/incidents/incident.php:362
+#: operation/incidents/incident_detail.php:220
+#: operation/servers/view_server_detail.php:76
+#: operation/servers/view_server.php:61
+msgid "Updated at"
+msgstr "Actualizáu'l"
+
+#: godmode/servers/modificar_server.php:165
+msgid "Master"
+msgstr "Principal"
+
+#: godmode/servers/modificar_server.php:168
+#: operation/servers/view_server.php:93
+#, fuzzy
+msgid "Data Server"
+msgstr "Actualizar servidor"
+
+#: godmode/servers/modificar_server.php:171
+#, fuzzy
+msgid "MD5 Check"
+msgstr "Check"
+
+#: godmode/servers/modificar_server.php:174
+#, fuzzy
+msgid "SNMP Console"
+msgstr "Consola SNMP"
+
+#: operation/visual_console/index.php:25 operation/menu.php:105
+#, fuzzy
+msgid "Visual console"
+msgstr "Consola SNMP"
+
+#: operation/visual_console/index.php:26 operation/agentes/tactical.php:202
+#: operation/agentes/estado_agente.php:41
+msgid "Summary"
+msgstr "Lista de axentes"
+
+#: operation/visual_console/index.php:31
+#, fuzzy
+msgid "There are no defined layouts"
+msgstr "Nun hay nengún axente definíu"
+
+#: operation/visual_console/index.php:40
+#, fuzzy
+msgid "Elements"
+msgstr "Eventos"
+
+#: operation/visual_console/render_view.php:65
+#, fuzzy
+msgid "Full screen mode"
+msgstr "Módulu d'orixen múltiple"
+
+#: operation/visual_console/render_view.php:69
+#, fuzzy
+msgid "Back to normal mode"
+msgstr "Modu normal"
+
+#: operation/visual_console/render_view.php:78
+#: operation/visual_console/render_view.php:79
+#, fuzzy
+msgid "Seconds"
+msgstr "Rexistros"
+
+#: operation/visual_console/render_view.php:80
+#: operation/visual_console/render_view.php:81
+#: operation/visual_console/render_view.php:82
+#: operation/visual_console/render_view.php:83
+#: operation/visual_console/render_view.php:84 include/functions.php:455
+#: include/functions.php:462 include/functions.php:486
+#, fuzzy
+msgid "minutes"
+msgstr "Itv."
+
+#: operation/visual_console/render_view.php:88
+msgid "Autorefresh time"
+msgstr ""
+
+#: operation/visual_console/render_view.php:90
+msgid "Refresh"
+msgstr ""
+
+#: operation/visual_console/render_view.php:121
+msgid "Until refresh"
+msgstr ""
+
+#: operation/reporting/graph_viewer.php:136
+#: operation/reporting/graph_viewer.php:144
+#, fuzzy
+msgid "Graph defined"
+msgstr "Orden del gráficu"
+
+#: operation/reporting/graph_viewer.php:145
+msgid "Zoom x1"
+msgstr ""
+
+#: operation/reporting/graph_viewer.php:146
+msgid "Zoom x2"
+msgstr ""
+
+#: operation/reporting/graph_viewer.php:147
+msgid "Zoom x3"
+msgstr ""
+
+#: operation/reporting/graph_viewer.php:157
+msgid "Custom graph viewer"
+msgstr ""
+
+#: operation/reporting/graph_viewer.php:165
+#, fuzzy
+msgid "Graph name"
+msgstr "Nome del grupu"
+
+#: operation/reporting/reporting_viewer.php:109
+#, fuzzy
+msgid "Invalid date selected"
+msgstr "Nun selecionasti axente"
+
+#: operation/reporting/reporting_viewer.php:114
+msgid "Selected date is older than current date"
+msgstr ""
+
+#: operation/reporting/reporting_viewer.php:146 include/functions.php:975
+#, fuzzy
+msgid "Simple graph"
+msgstr "Gráficu diariu"
+
+#: operation/reporting/reporting_viewer.php:160 include/functions.php:976
+#: include/functions_reporting_pdf.php:155
+#, fuzzy
+msgid "Custom graph"
+msgstr "Valor d'usuariu"
+
+#: operation/reporting/reporting_viewer.php:185
+#: operation/agentes/sla_view.php:45 operation/agentes/sla_view.php:146
+#: operation/agentes/ver_agente.php:223 include/functions.php:977
+#: include/functions_reporting_pdf.php:167
+msgid "S.L.A"
+msgstr ""
+
+#: operation/reporting/reporting_viewer.php:194
+#: include/functions_reporting_pdf.php:172
+#, fuzzy
+msgid "There are no SLAs defined"
+msgstr "Nun hay nengún axente definíu"
+
+#: operation/reporting/reporting_viewer.php:217 include/functions.php:1002
+#: include/functions.php:1111 include/functions_reporting_pdf.php:189
+#: include/functions_db.php:1105
+msgid "Unknown"
+msgstr ""
+
+#: operation/reporting/reporting_viewer.php:234
+msgid "Ok"
+msgstr ""
+
+#: operation/reporting/reporting_viewer.php:236
+#: operation/agentes/estado_grupo.php:233
+#: include/functions_reporting_pdf.php:206
+msgid "Fail"
+msgstr "Fallu"
+
+#: operation/reporting/reporting_viewer.php:248 include/functions.php:978
+#: include/functions_reporting_pdf.php:213
+#, fuzzy
+msgid "Event report"
+msgstr "Eventos per usuariu"
+
+#: operation/reporting/reporting_viewer.php:264 include/functions.php:979
+#: include/functions_reporting_pdf.php:224
+#, fuzzy
+msgid "Alert report"
+msgstr "Alerta lanzada"
+
+#: operation/reporting/reporting_viewer.php:278 include/functions.php:980
+#: include/functions_reporting_pdf.php:247
+#, fuzzy
+msgid "Monitor report"
+msgstr "Detalle de monitores"
+
+#: operation/reporting/reporting_viewer.php:341 include/functions.php:984
+#: include/functions_reporting_pdf.php:283
+#, fuzzy
+msgid "Sumatory"
+msgstr "Lista de axentes"
+
+#: operation/reporting/reporting_viewer.php:369
+#: operation/agentes/tactical.php:94 general/logon_ok.php:115
+#: include/functions.php:986 include/functions_reporting_pdf.php:299
+#, fuzzy
+msgid "Monitor health"
+msgstr "Detalle de monitores"
+
+#: operation/reporting/reporting_viewer.php:383 include/functions.php:987
+#: include/functions_reporting_pdf.php:322
+#, fuzzy
+msgid "Agents detailed view"
+msgstr "Detalle axente"
+
+#: operation/reporting/custom_reporting.php:39
+msgid "HTML"
+msgstr ""
+
+#: operation/reporting/custom_reporting.php:40
+msgid "PDF"
+msgstr ""
+
+#: operation/users/user_edit.php:83 operation/users/user.php:27
+msgid "Pandora users"
+msgstr "Usuarius de Pandora"
+
+#: operation/users/user_edit.php:84
+msgid "User detail editor"
+msgstr "Editor de detalles d'usuariu"
+
+#: operation/users/user_statistics.php:25
+msgid "User activity statistics"
+msgstr "Estadístiques d'actividá de los usuarios"
+
+#: operation/incidents/incident.php:48
+msgid "Incident successfully deleted"
+msgstr "Incidente elimináu correutamente"
+
+#: operation/incidents/incident.php:52
+msgid "There was a problem deleting incident"
+msgstr "Ocurrió un problema al eliminar l'incidente"
+
+#: operation/incidents/incident.php:75
+msgid "Incident successfully updated"
+msgstr "Incidente actualizáu correutamente"
+
+#: operation/incidents/incident.php:77 operation/incidents/incident.php:80
+msgid "There was a problem updating incident"
+msgstr "Ocurrió un problema al actualizar l'incidente"
+
+#: operation/incidents/incident.php:101
+msgid "Incident successfully created"
+msgstr "Incidente creáu correutamente"
+
+#: operation/incidents/incident.php:182
+#: operation/incidents/incident_note.php:30
+#: operation/incidents/incident_statistics.php:32
+#: operation/incidents/incident_detail.php:204
+#: operation/incidents/incident_search.php:26
+msgid "Incident management"
+msgstr "Xestión d'indicentes"
+
+#: operation/incidents/incident.php:185
+msgid "Viewing incidents"
+msgstr "Visualizando los incidentes"
+
+#: operation/incidents/incident.php:210 operation/incidents/incident.php:218
+msgid "All incidents"
+msgstr "Tolos incidentes"
+
+#: operation/incidents/incident.php:211 operation/incidents/incident.php:219
+#: operation/incidents/incident.php:231
+msgid "Active incidents"
+msgstr "Incidentes activos"
+
+#: operation/incidents/incident.php:212 operation/incidents/incident.php:220
+#: operation/incidents/incident.php:234
+msgid "Closed incidents"
+msgstr "Incidentes zarraos"
+
+#: operation/incidents/incident.php:213 operation/incidents/incident.php:221
+#: operation/incidents/incident.php:233
+msgid "Rejected incidents"
+msgstr "Incidentes rechazaos"
+
+#: operation/incidents/incident.php:214 operation/incidents/incident.php:222
+#: operation/incidents/incident.php:235
+msgid "Expired incidents"
+msgstr "Incidentes espiraos"
+
+#: operation/incidents/incident.php:232
+msgid "Active incidents, with comments"
+msgstr "Incidentes activos, con comentarios"
+
+#: operation/incidents/incident.php:239 operation/incidents/incident.php:261
+#: operation/incidents/incident.php:270
+#: operation/incidents/incident_detail.php:322
+#: operation/incidents/incident_detail.php:330
+msgid "Very Serious"
+msgstr "Muy grave"
+
+#: operation/incidents/incident.php:287 operation/incidents/incident.php:293
+msgid "groups"
+msgstr "Grupos"
+
+#: operation/incidents/incident.php:325
+msgid "No incident matches your search filter"
+msgstr "Nengún incidente s'axusta al to filtru de búsqueda"
+
+#: operation/incidents/incident.php:329 operation/incidents/incident.php:453
+#: operation/incidents/incident_detail.php:208 operation/events/events.php:467
+msgid "Create incident"
+msgstr "Crear incidente"
+
+#: operation/incidents/incident.php:363
+#: operation/incidents/incident_detail.php:271
+#: operation/incidents/incident_detail.php:275 operation/events/events.php:304
+msgid "Source"
+msgstr "Orixen"
+
+#: operation/incidents/incident.php:364
+#: operation/incidents/incident_detail.php:222
+msgid "Owner"
+msgstr "Propietariu"
+
+#: operation/incidents/incident_note.php:31
+msgid "Add note to incident"
+msgstr "A&ntilde;adir nota l'incidente"
+
+#: operation/incidents/incident_statistics.php:33 operation/menu.php:157
+#: operation/menu.php:179 operation/menu.php:228
+msgid "Statistics"
+msgstr "Estadístiques"
+
+#: operation/incidents/incident_statistics.php:37
+#, fuzzy
+msgid "Incidents by status"
+msgstr "Estáu de los incidentes"
+
+#: operation/incidents/incident_statistics.php:40
+#, fuzzy
+msgid "Incidents by priority"
+msgstr "Prioridaes de los incidentes"
+
+#: operation/incidents/incident_statistics.php:43
+#, fuzzy
+msgid "Incidents by group"
+msgstr "Grupos de los incidentes"
+
+#: operation/incidents/incident_statistics.php:46
+#, fuzzy
+msgid "Incidents by user"
+msgstr "Estáu de los incidentes"
+
+#: operation/incidents/incident_statistics.php:49
+#, fuzzy
+msgid "Incidents by source"
+msgstr "Oríxenes de los incidentes"
+
+#: operation/incidents/incident_detail.php:84
+msgid "Note successfully added"
+msgstr "Nota a&ntilde;adida correutamente"
+
+#: operation/incidents/incident_detail.php:111
+msgid "Note successfully deleted"
+msgstr "Nota eliminada correutamente"
+
+#: operation/incidents/incident_detail.php:149
+msgid ""
+"File cannot be saved. Please contact Pandora administrator about this error "
+"<br>"
+msgstr "L'archivu nun pudo ser guardadu.<br>"
+
+#: operation/incidents/incident_detail.php:206
+msgid "Review of incident"
+msgstr "Revisar incidente"
+
+#: operation/incidents/incident_detail.php:218
+msgid "Opened at"
+msgstr "Abiertu'l"
+
+#: operation/incidents/incident_detail.php:255
+#: operation/incidents/incident_detail.php:262
+msgid "Open and Active"
+msgstr "Abierta y activa"
+
+#: operation/incidents/incident_detail.php:257
+#: operation/incidents/incident_detail.php:264
+msgid "Not valid"
+msgstr "Nun válida"
+
+#: operation/incidents/incident_detail.php:258
+#: operation/incidents/incident_detail.php:265
+msgid "Out of date"
+msgstr "Caducada"
+
+#: operation/incidents/incident_detail.php:259
+#: operation/incidents/incident_detail.php:266
+msgid "Closed"
+msgstr "Zarrá"
+
+#: operation/incidents/incident_detail.php:358
+msgid "Update incident"
+msgstr "Actualizar incidente"
+
+#: operation/incidents/incident_detail.php:372
+msgid "Add note"
+msgstr "Insertar nota"
+
+#: operation/incidents/incident_detail.php:387
+msgid "Notes attached to incident"
+msgstr "Notes asociaes al incidente"
+
+#: operation/incidents/incident_detail.php:432
+msgid "Attached files"
+msgstr "Ficheros axuntos"
+
+#: operation/incidents/incident_detail.php:435
+#: operation/incidents/incident_detail.php:468
+msgid "Filename"
+msgstr "Nome del archivu"
+
+#: operation/incidents/incident_detail.php:437
+msgid "Size"
+msgstr "Tama&ntilde;u"
+
+#: operation/incidents/incident_detail.php:458
+msgid "Attach file"
+msgstr "A&ntilde;adir archivu"
+
+#: operation/incidents/incident_detail.php:479
+msgid "Upload"
+msgstr "Subir"
+
+#: operation/incidents/incident_search.php:27
+msgid "Please select a search criterion"
+msgstr "Seleccione un criteriu de búsqueda"
+
+#: operation/incidents/incident_search.php:49
+msgid ""
+"(*) The text search will look for all words entered as substring, in index "
+"title or description of each incident"
+msgstr ""
+"(*) La búsqueda de testu fadríase a partir de toles pallabres introducíes "
+"como subcadena, na descrición del títulu o na descrición de cada incidente"
+
+#: operation/events/event_statistics.php:31 operation/events/events.php:183
+#: general/header.php:67
+msgid "Events"
+msgstr "Eventos"
+
+#: operation/events/event_statistics.php:32
+msgid "Events statistics"
+msgstr "Estadístiques de eventos"
+
+#: operation/events/event_statistics.php:36
+#, fuzzy
+msgid "Event graph"
+msgstr "Nome del eventu"
+
+#: operation/events/event_statistics.php:39
+#, fuzzy
+msgid "Event graph by user"
+msgstr "Eventos per usuariu"
+
+#: operation/events/event_statistics.php:42
+#, fuzzy
+msgid "Event graph by group"
+msgstr "Eventos per grupu"
+
+#: operation/events/events.php:78 operation/snmpconsole/snmp_view.php:73
+msgid "Event successfully deleted"
+msgstr "Eventu elimináu correutamente"
+
+#: operation/events/events.php:97 operation/snmpconsole/snmp_view.php:86
+msgid "Event successfully validated"
+msgstr "Eventu validau correutamente"
+
+#: operation/events/events.php:100
+msgid "Event validation failed"
+msgstr ""
+
+#: operation/events/events.php:183
+msgid "Main Event View"
+msgstr "Vista principal d'eventos"
+
+#: operation/events/events.php:186 operation/agentes/networkmap.php:248
+#, fuzzy
+msgid "Normal screen"
+msgstr "Modu normal"
+
+#: operation/events/events.php:189 operation/agentes/networkmap.php:250
+msgid "Full screen"
+msgstr ""
+
+#: operation/events/events.php:194
+msgid "Event control filter"
+msgstr ""
+
+#: operation/events/events.php:222
+#, fuzzy
+msgid "Event type"
+msgstr "Tipu axente"
+
+#: operation/events/events.php:228
+#, fuzzy
+msgid "Severity"
+msgstr "Servidor"
+
+#: operation/events/events.php:234
+#, fuzzy
+msgid "Event status"
+msgstr "Estadístiques de eventos"
+
+#: operation/events/events.php:238 operation/events/events.php:243
+#: operation/events/events.php:248
+#, fuzzy
+msgid "Only validated"
+msgstr "Validar"
+
+#: operation/events/events.php:239 operation/events/events.php:244
+#: operation/events/events.php:246
+#, fuzzy
+msgid "All event"
+msgstr "Toos los axentes"
+
+#: operation/events/events.php:240 operation/events/events.php:242
+#: operation/events/events.php:247
+msgid "Only pending"
+msgstr ""
+
+#: operation/events/events.php:254
+#, fuzzy
+msgid "Free search"
+msgstr "Crear usuariu"
+
+#: operation/events/events.php:265
+msgid "Marquee display"
+msgstr ""
+
+#: operation/events/events.php:267
+#, fuzzy
+msgid "RSS Events"
+msgstr "Eventos"
+
+#: operation/events/events.php:300 include/functions_db.php:1912
+msgid "St"
+msgstr ""
+
+#: operation/events/events.php:302 include/functions_reporting.php:240
+#: include/functions_db.php:1914
+msgid "Event name"
+msgstr "Nome del eventu"
+
+#: operation/events/events.php:448 operation/agentes/estado_alertas.php:66
+#: operation/snmpconsole/snmp_view.php:268
+msgid "Validate"
+msgstr "Validar"
+
+#: operation/events/events.php:457 operation/snmpconsole/snmp_view.php:142
+msgid "Validated event"
+msgstr "Eventu validáu"
+
+#: operation/events/events.php:459 operation/snmpconsole/snmp_view.php:144
+msgid "Not validated event"
+msgstr "Eventu nun validáu"
+
+#: operation/events/events.php:463 operation/snmpconsole/snmp_view.php:149
+msgid "Validate event"
+msgstr "Validar eventu"
+
+#: operation/events/events.php:465 operation/snmpconsole/snmp_view.php:151
+msgid "Delete event"
+msgstr "Eliminar eventu"
+
+#: operation/menu.php:51 operation/agentes/tactical.php:34
+msgid "Tactical view"
+msgstr ""
+
+#: operation/menu.php:58
+#, fuzzy
+msgid "Group view"
+msgstr "Detalle de los grupos d'axentes"
+
+#: operation/menu.php:65 operation/agentes/networkmap.php:246
+#, fuzzy
+msgid "Network Map"
+msgstr "Red"
+
+#: operation/menu.php:79
+msgid "Alert detail"
+msgstr "Detalle d'allertes"
+
+#: operation/menu.php:86
+msgid "Monitor detail"
+msgstr "Detalle de monitores"
+
+#: operation/menu.php:93 operation/agentes/exportdata.php:242
+msgid "Export data"
+msgstr "Exportar datos"
+
+#: operation/menu.php:150
+msgid "Search incident"
+msgstr "Buscar incidente"
+
+#: operation/menu.php:186
+msgid "RSS"
+msgstr ""
+
+#: operation/menu.php:193
+msgid "CSV File"
+msgstr ""
+
+#: operation/menu.php:200
+msgid "Marquee"
+msgstr ""
+
+#: operation/menu.php:210
+msgid "View users"
+msgstr "Agüeyar usuarios"
+
+#: operation/menu.php:219
+msgid "Edit my user"
+msgstr "Editar mi usuariu"
+
+#: operation/menu.php:239 operation/snmpconsole/snmp_view.php:129
+msgid "SNMP console"
+msgstr "Consola SNMP"
+
+#: operation/menu.php:249 operation/snmpconsole/snmp_alert.php:258
+msgid "SNMP alerts"
+msgstr "Alertes SNMP"
+
+#: operation/menu.php:260 operation/messages/message.php:60
+msgid "Messages"
+msgstr "Mensaxes"
+
+#: operation/menu.php:269
+msgid "Messages to groups"
+msgstr "Mensaxes a grupos"
+
+#: operation/menu.php:308
+#, fuzzy
+msgid "Custom graphs"
+msgstr "Valor d'usuariu"
+
+#: operation/messages/message.php:28
+msgid "Message successfully sent"
+msgstr "Mensaxe insertáu correutamente"
+
+#: operation/messages/message.php:30 operation/messages/message.php:53
+msgid "There was a problem sending message"
+msgstr "Nun se pudo crear el mensax"
+
+#: operation/messages/message.php:63 operation/messages/message.php:225
+msgid "New message"
+msgstr "Nuevu mensax"
+
+#: operation/messages/message.php:66 operation/messages/message.php:107
+msgid "m_from"
+msgstr "Remitente"
+
+#: operation/messages/message.php:69 operation/messages/message.php:109
+msgid "m_to"
+msgstr "Destinatariu"
+
+#: operation/messages/message.php:96 operation/messages/message.php:128
+#: operation/messages/message.php:147
+msgid "Message"
+msgstr "Mensax"
+
+#: operation/messages/message.php:102 operation/messages/message.php:131
+msgid "Send message"
+msgstr "Enviar mensax"
+
+#: operation/messages/message.php:104
+msgid "new_message_g"
+msgstr "Nuevu mensax a un grupu"
+
+#: operation/messages/message.php:139
+msgid "From"
+msgstr "Dende"
+
+#: operation/messages/message.php:152
+msgid " wrote"
+msgstr ""
+
+#: operation/messages/message.php:155
+msgid "Reply"
+msgstr "Responder"
+
+#: operation/messages/message.php:160
+msgid "Read messages"
+msgstr "Lleer mensaxes"
+
+#: operation/messages/message.php:168
+msgid "Message sucessfully deleted"
+msgstr "Mensaxe borráu correutamente"
+
+#: operation/messages/message.php:170
+msgid "There was a problem deleting message"
+msgstr "Error al borrar el mensax"
+
+#: operation/messages/message.php:179 general/logon_ok.php:37
+msgid "You have "
+msgstr "Tienes"
+
+#: operation/messages/message.php:179 general/logon_ok.php:40
+msgid " unread message(s)."
+msgstr "mensaxe(s) por lleer."
+
+#: operation/messages/message.php:184
+msgid "There are no messages"
+msgstr "Nun hay mensaxes"
+
+#: operation/messages/message.php:188
+msgid "Read"
+msgstr "LLeísdu"
+
+#: operation/messages/message.php:189
+msgid "Sender"
+msgstr "Remitente"
+
+#: operation/messages/message.php:214
+msgid "No subject"
+msgstr "Ensin asuntu"
+
+#: operation/agentes/estado_generalagente.php:52
+#: operation/agentes/exportdata.php:102 operation/agentes/exportdata.php:241
+#: operation/agentes/estadisticas.php:32
+#: operation/agentes/status_monitor.php:31 operation/agentes/tactical.php:33
+#: operation/agentes/estado_grupo.php:30
+#: operation/agentes/estado_agente.php:41 operation/agentes/networkmap.php:246
+#: operation/agentes/estado_ultimopaquete.php:39
+#: operation/agentes/estado_alertas.php:44
+#: operation/agentes/estado_alertas.php:110
+msgid "Pandora Agents"
+msgstr "Axentes de Pandora"
+
+#: operation/agentes/estado_generalagente.php:52
+msgid "Agent general information"
+msgstr "Información xeneral del axente"
+
+#: operation/agentes/estado_generalagente.php:64
+#, fuzzy
+msgid "Refresh data"
+msgstr "Borrar datos"
+
+#: operation/agentes/estado_generalagente.php:111
+msgid "Agent Version"
+msgstr "Versión del axente"
+
+#: operation/agentes/estado_generalagente.php:126
+msgid "Remote"
+msgstr "Remota"
+
+#: operation/agentes/estado_generalagente.php:129
+#: operation/agentes/estado_generalagente.php:137
+#: operation/agentes/estado_monitores.php:111
+#: operation/agentes/estado_agente.php:350 operation/agentes/sla_view.php:124
+#: operation/agentes/estado_ultimopaquete.php:194
+#: operation/agentes/estado_alertas.php:199
+#: operation/agentes/estado_alertas.php:266
+#: operation/snmpconsole/snmp_alert.php:341 include/functions.php:947
+msgid "Never"
+msgstr "Enxamás"
+
+#: operation/agentes/estado_generalagente.php:159
+msgid "Next agent contact"
+msgstr "Next agent contact"
+
+#: operation/agentes/estado_generalagente.php:165
+msgid "Agent access rate (24h)"
+msgstr "Acesibilidá axente (24h)"
+
+#: operation/agentes/estado_generalagente.php:169
+msgid "Events generated -by module-"
+msgstr ""
+
+#: operation/agentes/exportdata.php:60
+#, fuzzy
+msgid "Sunday"
+msgstr "Lista de axentes"
+
+#: operation/agentes/exportdata.php:60
+msgid "Monday"
+msgstr ""
+
+#: operation/agentes/exportdata.php:60
+msgid "Tuesday"
+msgstr ""
+
+#: operation/agentes/exportdata.php:60
+msgid "Wednesday"
+msgstr ""
+
+#: operation/agentes/exportdata.php:60
+msgid "Thurdsday"
+msgstr ""
+
+#: operation/agentes/exportdata.php:60
+msgid "Friday"
+msgstr ""
+
+#: operation/agentes/exportdata.php:60
+msgid "Saturday"
+msgstr ""
+
+#: operation/agentes/exportdata.php:82
+msgid "Hr"
+msgstr ""
+
+#: operation/agentes/exportdata.php:103
+msgid "Database export results"
+msgstr "Resultaos del volcáu de datos de la BD"
+
+#: operation/agentes/exportdata.php:124 operation/agentes/exportdata.php:144
+#: operation/agentes/exportdata.php:176
+msgid " from "
+msgstr "dende"
+
+#: operation/agentes/exportdata.php:124 operation/agentes/exportdata.php:144
+#: operation/agentes/exportdata.php:176
+msgid " to "
+msgstr "hasta"
+
+#: operation/agentes/exportdata.php:126
+msgid "Download file"
+msgstr ""
+
+#: operation/agentes/exportdata.php:128 operation/agentes/exportdata.php:214
+msgid "No module has been selected"
+msgstr "Nun se selecionó nengún módulu"
+
+#: operation/agentes/exportdata.php:181 operation/agentes/datos_agente.php:83
+#: operation/agentes/estado_ultimopaquete.php:53
+#: operation/agentes/ver_agente.php:210
+msgid "Data"
+msgstr "Datos"
+
+#: operation/agentes/exportdata.php:293
+msgid "Begin date (*)"
+msgstr "Fecha comienzu (*)"
+
+#: operation/agentes/exportdata.php:300
+msgid "End date (*)"
+msgstr "Fecha fin (*)"
+
+#: operation/agentes/exportdata.php:307
+#, fuzzy
+msgid "Export type"
+msgstr "Exportar datos"
+
+#: operation/agentes/exportdata.php:311
+#, fuzzy
+msgid "Data table"
+msgstr "Rangu de feches"
+
+#: operation/agentes/exportdata.php:312
+msgid "Standalone CSV ascii file"
+msgstr "Formatu CSV"
+
+#: operation/agentes/exportdata.php:313
+msgid "Average per hour/day"
+msgstr ""
+
+#: operation/agentes/exportdata.php:319
+msgid "Export"
+msgstr "Esportar"
+
+#: operation/agentes/status_monitor.php:32
+#: operation/agentes/estado_monitores.php:31
+msgid "Full list of Monitors"
+msgstr "LLista completa de monitores"
+
+#: operation/agentes/status_monitor.php:76
+#, fuzzy
+msgid "Monitor status"
+msgstr "Monitores"
+
+#: operation/agentes/status_monitor.php:81
+#: operation/agentes/status_monitor.php:85
+#: operation/agentes/status_monitor.php:91
+#: operation/agentes/status_monitor.php:96 operation/agentes/ver_agente.php:78
+#, fuzzy
+msgid "Monitors down"
+msgstr "Monitores"
+
+#: operation/agentes/status_monitor.php:82
+#: operation/agentes/status_monitor.php:87
+#: operation/agentes/status_monitor.php:93
+#: operation/agentes/status_monitor.php:95
+#, fuzzy
+msgid "Monitors up"
+msgstr "Monitores"
+
+#: operation/agentes/status_monitor.php:83
+#: operation/agentes/status_monitor.php:88
+#: operation/agentes/status_monitor.php:90
+#: operation/agentes/status_monitor.php:97
+#, fuzzy
+msgid "Monitors unknown"
+msgstr "Monitores"
+
+#: operation/agentes/status_monitor.php:120
+msgid "Free text"
+msgstr ""
+
+#: operation/agentes/status_monitor.php:227
+#: operation/agentes/status_monitor.php:250
+#, fuzzy
+msgid "Monitor up"
+msgstr "Monitores"
+
+#: operation/agentes/status_monitor.php:229
+#: operation/agentes/status_monitor.php:252
+#, fuzzy
+msgid "Monitor down"
+msgstr "Monitores"
+
+#: operation/agentes/status_monitor.php:244
+msgid "This group doesn't have any monitor"
+msgstr "Esti grupo nun tien nengún monitor definío"
+
+#: operation/agentes/tactical.php:95 general/logon_ok.php:116
+#, fuzzy
+msgid "of monitors UP"
+msgstr "Monitores"
+
+#: operation/agentes/tactical.php:96 general/logon_ok.php:118
+msgid "Data health"
+msgstr ""
+
+#: operation/agentes/tactical.php:97 general/logon_ok.php:119
+msgid "of modules with updated data"
+msgstr ""
+
+#: operation/agentes/tactical.php:98 general/logon_ok.php:121
+msgid "Global health"
+msgstr ""
+
+#: operation/agentes/tactical.php:99 general/logon_ok.php:122
+msgid "of modules with good data"
+msgstr ""
+
+#: operation/agentes/tactical.php:100 general/logon_ok.php:124
+#, fuzzy
+msgid "Module sanity"
+msgstr "Tipu modulu"
+
+#: operation/agentes/tactical.php:101 general/logon_ok.php:125
+msgid "of well initialized modules"
+msgstr ""
+
+#: operation/agentes/tactical.php:102 general/logon_ok.php:128
+#, fuzzy
+msgid "Alert level"
+msgstr "Detalle d'allertes"
+
+#: operation/agentes/tactical.php:103 general/logon_ok.php:129
+msgid "of non-fired alerts"
+msgstr ""
+
+#: operation/agentes/tactical.php:108
+#, fuzzy
+msgid "Monitor checks"
+msgstr "Monitores"
+
+#: operation/agentes/tactical.php:169
+msgid "Data checks"
+msgstr ""
+
+#: operation/agentes/tactical.php:211
+#, fuzzy
+msgid "Uninitialized modules"
+msgstr "Módulos asignaos"
+
+#: operation/agentes/tactical.php:228
+#, fuzzy
+msgid "Tactical server information"
+msgstr "Información de la Base de Datos"
+
+#: operation/agentes/tactical.php:231 operation/servers/view_server.php:55
+#, fuzzy
+msgid "Load"
+msgstr "Subir"
+
+#: operation/agentes/tactical.php:233 operation/servers/view_server.php:57
+msgid "LAG"
+msgstr ""
+
+#: operation/agentes/tactical.php:288 operation/servers/view_server.php:85
+msgid "of"
+msgstr ""
+
+#: operation/agentes/estado_grupo.php:30
+msgid "group_view"
+msgstr "Detalle de los grupos d'axentes"
+
+#: operation/agentes/estado_grupo.php:113
+#, fuzzy
+msgid "There are no defined groups"
+msgstr "Nun hay nengún axente definíu"
+
+#: operation/agentes/estado_grupo.php:149
+#, fuzzy
+msgid "modules_bad"
+msgstr "Módulos"
+
+#: operation/agentes/estado_grupo.php:154
+#, fuzzy
+msgid "modules_ok"
+msgstr "Módulu a&ntilde;adíu correutamente"
+
+#: operation/agentes/estado_grupo.php:160
+#, fuzzy
+msgid "alerts_fired"
+msgstr "Alerta lanzada"
+
+#: operation/agentes/estado_grupo.php:166
+#, fuzzy
+msgid "agents_down"
+msgstr "Axente caíu"
+
+#: operation/agentes/estado_grupo.php:172
+#, fuzzy
+msgid "disabled_alerts"
+msgstr "Editar alertes"
+
+#: operation/agentes/estado_grupo.php:212
+msgid "Agents"
+msgstr "Axentes"
+
+#: operation/agentes/estado_grupo.php:220 include/functions_reporting.php:618
+#: include/functions_reporting_pdf.php:340
+msgid "Monitors"
+msgstr "Monitores"
+
+#: operation/agentes/estado_grupo.php:225
+#: include/functions_reporting_pdf.php:204
+msgid "ok"
+msgstr "OK"
+
+#: operation/agentes/estado_monitores.php:92
+#: operation/agentes/estado_agente.php:323 operation/agentes/sla_view.php:105
+#: operation/agentes/bulbs.php:29
+msgid "Change between Green/Red state"
+msgstr "Cambia ente los estaos verde y colloráu??"
+
+#: operation/agentes/estado_monitores.php:94
+#: operation/agentes/estado_agente.php:321 operation/agentes/sla_view.php:107
+#: operation/agentes/sla_view.php:186 operation/agentes/bulbs.php:27
+msgid "At least one monitor fails"
+msgstr "Polo menos un monitor falla"
+
+#: operation/agentes/estado_monitores.php:96
+#: operation/agentes/estado_agente.php:326 operation/agentes/sla_view.php:109
+#: operation/agentes/sla_view.php:184 operation/agentes/bulbs.php:25
+msgid "All Monitors OK"
+msgstr "Toos los monitores OK"
+
+#: operation/agentes/estado_monitores.php:121
+#, fuzzy
+msgid "This agent doesn 't have any monitor with data"
+msgstr "Esti axente nun tien nengún monitor definío"
+
+#: operation/agentes/estado_agente.php:329 operation/agentes/bulbs.php:33
+msgid "Agent without monitors"
+msgstr "Axente ensin monitores"
+
+#: operation/agentes/estado_agente.php:332 operation/agentes/bulbs.php:37
+msgid "Agent down"
+msgstr "Axente caíu"
+
+#: operation/agentes/estado_agente.php:335 operation/agentes/bulbs.php:35
+msgid "Agent without data"
+msgstr "Axente ensin datos"
+
+#: operation/agentes/estado_agente.php:343 operation/agentes/bulbs.php:31
+#: operation/agentes/estado_alertas.php:189
+#: operation/agentes/estado_alertas.php:256
+#: operation/agentes/estado_alertas.php:279 include/functions.php:953
+#: include/functions_db.php:1887
+msgid "Alert fired"
+msgstr "Alerta lanzada"
+
+#: operation/agentes/estado_agente.php:345 operation/agentes/bulbs.php:39
+#: operation/agentes/estado_alertas.php:191
+#: operation/agentes/estado_alertas.php:258
+#: operation/agentes/estado_alertas.php:281 include/functions.php:964
+#: include/functions_db.php:1889
+msgid "Alert not fired"
+msgstr "Alerta nun lanzada"
+
+#: operation/agentes/estado_agente.php:377
+msgid "There are no agents included in this group"
+msgstr "Nun hay nengún axente nesti grupu"
+
+#: operation/agentes/datos_agente.php:48
+msgid "Last 24 Hours"
+msgstr "Últimes 24 hores"
+
+#: operation/agentes/datos_agente.php:75
+msgid "Received data from"
+msgstr "Datos recibíos de"
+
+#: operation/agentes/networkmap.php:265
+#, fuzzy
+msgid "Layout"
+msgstr "Logout"
+
+#: operation/agentes/networkmap.php:269
+msgid "No Overlap"
+msgstr ""
+
+#: operation/agentes/networkmap.php:273
+#, fuzzy
+msgid "Simple"
+msgstr "Tama&ntilde;u"
+
+#: operation/agentes/networkmap.php:277
+#, fuzzy
+msgid "Regenerate"
+msgstr "Páxina xenerada'l"
+
+#: operation/agentes/networkmap.php:292
+msgid "Zoom"
+msgstr ""
+
+#: operation/agentes/networkmap.php:300
+msgid "Distance between nodes"
+msgstr ""
+
+#: operation/agentes/networkmap.php:305
+msgid "Font size"
+msgstr ""
+
+#: operation/agentes/networkmap.php:346 operation/agentes/networkmap.php:355
+msgid "Map could not be generated"
+msgstr ""
+
+#: operation/agentes/sla_view.php:33
+msgid "SLA view"
+msgstr ""
+
+#: operation/agentes/sla_view.php:40
+msgid "Automatic SLA for monitors"
+msgstr ""
+
+#: operation/agentes/sla_view.php:140
+msgid "User-defined SLA items"
+msgstr ""
+
+#: operation/agentes/estado_ultimopaquete.php:40
+msgid "Display of last data modules received by agent"
+msgstr "Conteníu de los últimos paquetes enviaos pol axente:"
+
+#: operation/agentes/estado_ultimopaquete.php:51
+msgid "int"
+msgstr "Itv."
+
+#: operation/agentes/estado_ultimopaquete.php:54
+msgid "Graph"
+msgstr "Gráficu"
+
+#: operation/agentes/estado_ultimopaquete.php:55
+msgid "Raw Data"
+msgstr "Datos"
+
+#: operation/agentes/status_events.php:28
+msgid "Latest events for this agent"
+msgstr ""
+
+#: operation/agentes/ver_agente.php:48
+msgid "Main IP"
+msgstr ""
+
+#: operation/agentes/ver_agente.php:54
+#, fuzzy
+msgid "Last remote contact"
+msgstr "Últimu contautu"
+
+#: operation/agentes/ver_agente.php:181
+#, fuzzy
+msgid "View mode"
+msgstr "Agüeyar usuarios"
+
+#: operation/agentes/ver_agente.php:192
+#, fuzzy
+msgid "Manage"
+msgstr "Xestión d'usuarios"
+
+#: operation/agentes/ver_agente.php:202
+#, fuzzy
+msgid "Main"
+msgstr "Max/Min"
+
+#: operation/agentes/estado_alertas.php:44
+#: operation/agentes/estado_alertas.php:52
+#: operation/agentes/estado_alertas.php:111
+msgid "Full list of Alerts"
+msgstr "LLista completa d'alertes"
+
+#: operation/agentes/estado_alertas.php:59
+#: include/functions_reporting_pdf.php:175
+#, fuzzy
+msgid "Info"
+msgstr "Obtener info."
+
+#: operation/agentes/estado_alertas.php:63
+#: operation/agentes/estado_alertas.php:290
+#: operation/snmpconsole/snmp_alert.php:269
+#: include/functions_reporting.php:490
+msgid "Last fired"
+msgstr "Lanzada per vez cabera"
+
+#: operation/agentes/estado_alertas.php:64
+#: operation/agentes/estado_alertas.php:291
+#: operation/snmpconsole/snmp_alert.php:268
+#: include/functions_reporting.php:298 include/functions_reporting.php:491
+msgid "Times Fired"
+msgstr "Númberu de veces lanzada"
+
+#: operation/agentes/estado_alertas.php:282
+#, fuzzy
+msgid "Combined alert"
+msgstr "Copiando alerta"
+
+#: operation/agentes/estado_alertas.php:297
+msgid "No agent included in this group has any assigned alert"
+msgstr "Nengún axente d'esti grupu tien alguna alerta denifida"
+
+#: operation/snmpconsole/snmp_view.php:199
+#: operation/snmpconsole/snmp_alert.php:182
+#: operation/snmpconsole/snmp_alert.php:265
+#: operation/snmpconsole/snmp_alert.php:302
+msgid "OID"
+msgstr "OID"
+
+#: operation/snmpconsole/snmp_view.php:200
+#: operation/snmpconsole/snmp_alert.php:190
+#: operation/snmpconsole/snmp_alert.php:264
+#: operation/snmpconsole/snmp_alert.php:306
+msgid "SNMP Agent"
+msgstr "Axente SNMP"
+
+#: operation/snmpconsole/snmp_view.php:201
+#: operation/snmpconsole/snmp_alert.php:186
+#: operation/snmpconsole/snmp_alert.php:266
+#: operation/snmpconsole/snmp_alert.php:304
+msgid "Custom value"
+msgstr "Valor d'usuariu"
+
+#: operation/snmpconsole/snmp_view.php:275
+msgid "There are no SNMP traps in database"
+msgstr "Nun hay definíu nengún axente SNMP"
+
+#: operation/snmpconsole/snmp_alert.php:135
+#, fuzzy
+msgid "Update_alert"
+msgstr "Actualizar axente"
+
+#: operation/snmpconsole/snmp_alert.php:356
+msgid "There are no SNMP alerts"
+msgstr "Nun hay definida nenguna alerta SNMP"
+
+#: operation/servers/view_server_detail.php:54
+#: operation/servers/view_server.php:37
+msgid "Configuration detail"
+msgstr "Detalle de configuración"
+
+#: operation/servers/view_server_detail.php:67
+#, fuzzy
+msgid "Force"
+msgstr "Orixen"
+
+#: operation/servers/view_server_detail.php:75
+#, fuzzy
+msgid "Progress"
+msgstr "Perfiles"
+
+#: operation/servers/view_server_detail.php:123
+#, fuzzy
+msgid "Done"
+msgstr "Nengún"
+
+#: operation/servers/view_server_detail.php:125
+msgid "Pending"
+msgstr ""
+
+#: operation/servers/view_server.php:60
+#, fuzzy
+msgid "Version"
+msgstr "Versión del axente"
+
+#: operation/servers/view_server.php:96
+msgid "snmp_server"
+msgstr ""
+
+#: operation/servers/view_server.php:114
+#, fuzzy
+msgid "master_server"
+msgstr "Actualizar servidor"
+
+#: operation/servers/view_server.php:117
+msgid "Check"
+msgstr "Check"
+
+#: general/header.php:38
+msgid "You are "
+msgstr "Tas conectáu/da como"
+
+#: general/header.php:43
+#, fuzzy
+msgid "General information"
+msgstr "Información xeneral del axente"
+
+#: general/header.php:49 general/header.php:51
+msgid "Autorefresh"
+msgstr ""
+
+#: general/header.php:56
+msgid "Logout"
+msgstr "Logout"
+
+#: general/header.php:61
+msgid "Server status: DOWN"
+msgstr ""
+
+#: general/header.php:63
+msgid "Sytem ready"
+msgstr ""
+
+#: general/pandora_help.php:20
+msgid "Help system error"
+msgstr ""
+
+#: general/pandora_help.php:26
+msgid ""
+"Pandora FMS help system has been called with a help reference that currently "
+"don't exist. There is no help content to show."
+msgstr ""
+
+#: general/main_menu.php:23
+msgid "You're not connected"
+msgstr "Nun tas conectáu/da"
+
+#: general/main_menu.php:28
+msgid "Login"
+msgstr "Login"
+
+#: general/logon_failed.php:23
+msgid "Authentication Error"
+msgstr "Error d'Autenticación"
+
+#: general/logon_failed.php:33
+msgid ""
+"Either, your password or your login are incorrect. Please check your CAPS "
+"LOCK key, username and password are case SeNSiTiVe.<br><br>All actions, "
+"included failed login attempts are logged in Pandora FMS System logs, and "
+"these can be reviewed by each user, please report to admin any incident or "
+"malfunction."
+msgstr ""
+"La combinación usuariu/contrase&ntilde;a ye incorreuta. Verifique que nun tá "
+"habilitáu'l Bloquéu de Mayúscules, los campos distinguen ente mayúscules y "
+"minúcules.<br><br> Toles aciones, incluíos los intentos fallíos d'acesu son "
+"guardaos nel sistema de logs de Pandora y pueden ser revisaos per cada "
+"usuariu. Comunique al Alministrador cualquier incidente o fallu"
+
+#: general/logoff.php:23
+msgid "Logged Out"
+msgstr "Desconectáu/da"
+
+#: general/logoff.php:32
+msgid ""
+"Your session is over. Please close your browser window to close session on "
+"Pandora.<br><br>"
+msgstr ""
+"La sesión finalizó. Cierre la ventana del navegador pa zarrar la sesión de "
+"Pandora.<br><br>"
+
+#: general/login_page.php:34 general/logon_ok.php:27
+msgid "Welcome to Pandora FMS Web Console"
+msgstr "Bienveníu a la consola de Pandora"
+
+#: general/logon_ok.php:29
+msgid ""
+"This is the Web Management System for Pandora FMS. From here you can manage "
+"its agents, alerts and incidents. Session is open while activity exists."
+msgstr ""
+"Esta ye la Consola d'Administración de Pandora. Desde equí puede xestionar "
+"los sos axentes, alertes e incidentes. La sesión tará abierta mientres nun "
+"exista una inactividá prolongada."
+
+#: general/logon_ok.php:55
+msgid "by"
+msgstr ""
+
+#: general/logon_ok.php:55
+msgid "At"
+msgstr ""
+
+#: general/logon_ok.php:136
+#, fuzzy
+msgid "Pandora FMS Overview"
+msgstr "Servidores Pandora"
+
+#: general/logon_ok.php:157
+msgid "This is your last activity in Pandora FMS console"
+msgstr "Última actividá en Pandora"
+
+#: general/noaccess.php:13
+msgid "You don't have access to this page"
+msgstr "Nun tien permisu pa acceder nesta páxina"
+
+#: general/noaccess.php:17
+msgid ""
+"Access to this page is restricted to authorized users only, please contact "
+"system administrator if you need assistance. <br><br>Please know that all "
+"attempts to access this page are recorded in security logs of Pandora System "
+"Database"
+msgstr ""
+"L'accesu nesta páxina tá restrinxíu a usuarios autorizaos, contaute con "
+"l'alministraor del sistema si necesita un gabitu. <br><br>Toos los intentos "
+"d'acesu nesta páxina son grabaos nos logs de seguridá de Pandora."
+
+#: general/footer.php:23
+msgid "is a <b>OpenSource Software Project, licensed under GPL terms</b>"
+msgstr "ye un <b> Proyeutu de Software GPL</b>"
+
+#: general/footer.php:29
+msgid "Page generated at"
+msgstr "Páxina xenerada'l"
+
+#: index.php:109
+msgid "the Flexible Monitoring System"
+msgstr "Sistema de Monitorización de software llibre"
+
+#: index.php:250
+msgid "Sorry! I can't find the page!"
+msgstr ""
+
+#: include/functions_reporting.php:297
+#, fuzzy
+msgid "Alert description"
+msgstr "Descripción"
+
+#: include/functions_reporting.php:342 include/functions_reporting_pdf.php:234
+#, fuzzy
+msgid "Total alerts monitored"
+msgstr "Vista detallada de los monitores"
+
+#: include/functions_reporting.php:390 include/functions_reporting_pdf.php:309
+#, fuzzy
+msgid "total_monitors"
+msgstr "Monitores"
+
+#: include/functions_reporting.php:391 include/functions_reporting_pdf.php:310
+msgid "monitors_down_on_period"
+msgstr ""
+
+#: include/functions_reporting.php:423 include/functions_reporting.php:526
+#, fuzzy
+msgid "Monitor"
+msgstr "Monitores"
+
+#: include/functions_reporting.php:466 include/functions_reporting_pdf.php:291
+msgid "agents_in_group"
+msgstr ""
+
+#: include/functions_reporting.php:527
+#, fuzzy
+msgid "last_failure"
+msgstr "Lanzada per vez cabera"
+
+#: include/functions.php:201
+msgid "You don't have access"
+msgstr "Nun tien acesu"
+
+#: include/functions.php:205
+msgid "You don't have enough permission to access this resource"
+msgstr "Nun tienes suficientes permisos pa aceder a esti recursu"
+
+#: include/functions.php:220
+#, fuzzy
+msgid "Unmanaged error"
+msgstr "Xestión de servidores"
+
+#: include/functions.php:224
+msgid "Unmanaged error_text"
+msgstr ""
+
+#: include/functions.php:471 include/functions.php:472
+#, fuzzy
+msgid "months"
+msgstr "Últimu mes"
+
+#: include/functions.php:825 include/functions.php:912
+#: include/functions_db.php:1803
+#, fuzzy
+msgid "Recovery"
+msgstr "Rexistros"
+
+#: include/functions.php:831 include/functions.php:918
+#, fuzzy
+msgid "Alert Ctrl."
+msgstr "Detalle d'allertes"
+
+#: include/functions.php:834 include/functions.php:921
+msgid "Firing days"
+msgstr ""
+
+#: include/functions.php:985
+msgid "General group report"
+msgstr ""
+
+#: include/functions.php:1112
+#, fuzzy
+msgid "monitor_up"
+msgstr "Monitores"
+
+#: include/functions.php:1113
+#, fuzzy
+msgid "monitor_down"
+msgstr "Monitores"
+
+#: include/functions.php:1114
+#, fuzzy
+msgid "alert_fired"
+msgstr "Alerta lanzada"
+
+#: include/functions.php:1115
+msgid "alert_recovered"
+msgstr ""
+
+#: include/functions.php:1116
+msgid "alert_ceased"
+msgstr ""
+
+#: include/functions.php:1117
+msgid "alert_manual_validation"
+msgstr ""
+
+#: include/functions.php:1118
+msgid "recon_host_detected"
+msgstr ""
+
+#: include/functions.php:1119
+msgid "sytem"
+msgstr ""
+
+#: include/functions.php:1120
+msgid "error"
+msgstr ""
+
+#: include/functions_reporting_pdf.php:131
+#: include/functions_visual_map.php:141
+#, fuzzy
+msgid "Module graph"
+msgstr "Grupu módulos"
+
+#: include/functions_reporting_pdf.php:176
+msgid "SLA result"
+msgstr ""
+
+#: include/functions_db.php:1093
+#, fuzzy
+msgid "Software agent data"
+msgstr "Axente orixen"
+
+#: include/functions_db.php:1096
+msgid "Software agent monitor"
+msgstr ""
+
+#: include/functions_db.php:1099
+#, fuzzy
+msgid "Network agent data"
+msgstr "Next agent contact"
+
+#: include/functions_db.php:1102
+#, fuzzy
+msgid "Network agent monitor"
+msgstr "Next agent contact"
+
+#: include/functions_db.php:1659
+#, fuzzy
+msgid "Wrong module type"
+msgstr "Tipu modulu"
+
+#: include/functions_db.php:1799
+msgid "Tt"
+msgstr ""
+
+#: include/functions_db.php:1800
+msgid "Firing"
+msgstr ""
+
+#: include/functions_db.php:1802
+msgid "Desc"
+msgstr ""
+
+#: include/functions_db.php:1804
+#, fuzzy
+msgid "MinMax.Al"
+msgstr "Min/Max"
+
+#: include/functions_db.php:1805
+msgid "Days"
+msgstr ""
+
+#: include/functions_db.php:1806
+#, fuzzy
+msgid "Fired"
+msgstr "Númberu de veces lanzada"
+
+#: include/functions_db.php:1910
+#, fuzzy
+msgid "Latest events"
+msgstr "Agüeyar eventos"
+
+#: include/functions_visual_map.php:140
+#, fuzzy
+msgid "Static graph"
+msgstr "Gráficu diariu"
+
+#: extensions/update_manager.php:69 extensions/update_manager/main.php:48
+#, fuzzy
+msgid "There's a new update for Pandora"
+msgstr "Códigu de linguax pa Pandora"
+
+#: extensions/update_manager.php:71
+msgid "More info"
+msgstr ""
+
+#: extensions/update_manager.php:88 extensions/update_manager/main.php:14
+#, fuzzy
+msgid "Update manager"
+msgstr "Actualizar axente"
+
+#: extensions/update_manager.php:89
+#, fuzzy
+msgid "Update manager settings"
+msgstr "Actualizar axente"
+
+#: extensions/update_manager/main.php:17
+msgid "No keygen path was set"
+msgstr ""
+
+#: extensions/update_manager/main.php:22
+msgid "Keygen is not executable"
+msgstr ""
+
+#: extensions/update_manager/main.php:42
+msgid "Your system is up-to-date"
+msgstr ""
+
+#: extensions/update_manager/main.php:44
+msgid "Server connection failed"
+msgstr ""
+
+#: extensions/update_manager/main.php:46
+msgid "Server authorization rejected"
+msgstr ""
+
+#: extensions/update_manager/main.php:53
+msgid "Id"
+msgstr ""
+
+#: extensions/update_manager/main.php:65
+msgid "Overwrite local changes"
+msgstr ""
+
+#: extensions/update_manager/main.php:74
+msgid "Your system version number is"
+msgstr ""
+
+#: extensions/update_manager/settings.php:18
+msgid "Update manager settings updated"
+msgstr ""
+
+#: extensions/update_manager/settings.php:23
+msgid "Settings"
+msgstr ""
+
+#: extensions/update_manager/settings.php:29
+#, fuzzy
+msgid "Customer key"
+msgstr "Valor d'usuariu"
+
+#: extensions/update_manager/settings.php:32
+#, fuzzy
+msgid "Update server host"
+msgstr "Actualizar servidor"
+
+#: extensions/update_manager/settings.php:35
+#, fuzzy
+msgid "Update server path"
+msgstr "Actualizar servidor"
+
+#: extensions/update_manager/settings.php:38
+#, fuzzy
+msgid "Update server port"
+msgstr "Actualizar servidor"
+
+#: extensions/update_manager/settings.php:41
+msgid "Binary input path"
+msgstr ""
+
+#: extensions/update_manager/settings.php:44
+msgid "Keygen path"
+msgstr ""
+
+#~ msgid "New Incident"
+#~ msgstr "Nuevu incidente"
+
+#~ msgid "Open with notes"
+#~ msgstr "Abierta y con notes"
+
+#~ msgid "Delete incident"
+#~ msgstr "Borrar incidente"
+
+#~ msgid "Source IP(s)"
+#~ msgstr "IP(s) Orixen"
+
+#~ msgid "Destination IP(s)"
+#~ msgstr "IP(s) Destinu"
+
+#~ msgid "Last received data from Agent"
+#~ msgstr "Últimos datos recibíos pel axente"
+
+#~ msgid "Module Update/Create form"
+#~ msgstr "Edición/Creación de módulu"
+
+#~ msgid "gpl_used"
+#~ msgstr "Desarrolláu utilizando ferramientes y software GPL"
+
+#~ msgid "Incident Main view"
+#~ msgstr "Vista principal d'incidentes"
+
+#~ msgid "Agent main config screen"
+#~ msgstr "Pantalla principal de configuración del axente"
+
+#~ msgid "Select agent to modify"
+#~ msgstr "Seleccionar axente a modificar"
+
+#~ msgid "Name / Type"
+#~ msgstr "Nome / Tipu"
+
+#~ msgid "Detailed alert view"
+#~ msgstr "Vista detallada de les alertes"
+
+#~ msgid "Detailed full view"
+#~ msgstr "Vista detallada"
+
+#~ msgid "Agent down default alert"
+#~ msgstr "Allerta per defeutu d'axente ca&atilde;du"
+
+#~ msgid "Pandora Main setup "
+#~ msgstr "Configuración de Pandora"
+
+#~ msgid "Internal Audit Pages"
+#~ msgstr "Páxines d'Auditoría Interna"
+
+#~ msgid "Log type filter"
+#~ msgstr "Tipu de filtru de Log"
+
+#~ msgid "Purge all data"
+#~ msgstr "Borrar toos los datos"
+
+#~ msgid "Database Manipulation"
+#~ msgstr "Manipulación de la BBDD"
+
+#~ msgid "Database compact"
+#~ msgstr "Compautáu de la BBDD"
+
+#~ msgid "Configure"
+#~ msgstr "Configurar"
+
+#~ msgid "Checked by"
+#~ msgstr "Validáu per"
+
+#~ msgid "Resolution (%)"
+#~ msgstr "Resolución (%)"
+
+#~ msgid "(*) Please enter date with format yyyy/mm/dd hh:mm:ss"
+#~ msgstr "(*) Por favor introduzca la fecha con formatu yyyy/mm/dd hh:mm:ss"
+
+#~ msgid "There are "
+#~ msgstr "Hay"
+
+#~ msgid "users defined in Pandora"
+#~ msgstr "usuarios definíos en Pandora"
+
+#~ msgid "alerts defined in Pandora"
+#~ msgstr "alertes definíes en Pandora"
+
+#~ msgid "data modules stored in Pandora Database"
+#~ msgstr "módulos de datos recogíos por Pandora"
+
+#~ msgid "Last data received at "
+#~ msgstr "Datos recogíos per un axente per vez cabera el"
+
+#~ msgid "Pandora general statistics"
+#~ msgstr "Estadístiques xenerales de Pandora"
+
+#~ msgid "Average"
+#~ msgstr "Media"
+
+#~ msgid "Monthly graph"
+#~ msgstr "Gráficu mensual"
+
+#~ msgid "Weekly graph"
+#~ msgstr "Gráficu selmanal"
+
+#~ msgid "Hourly graph"
+#~ msgstr "Gráficu horariu"
+
+#~ msgid "There was a problem creating keepalive module in new agent"
+#~ msgstr "Ocurrió un problema al crear el módulu keepalive nel nuevu axente"
+
+#~ msgid ""
+#~ "User profiles in Pandora define which users can access Pandora as well as "
+#~ "what each user can do. Groups define elements in common among various "
+#~ "users. Each user could be in one or more groups at any one time. Each "
+#~ "group has user profiles which are defined and attached to it. A profile "
+#~ "is a list of things a user can do, such as view incidents, manage "
+#~ "database or other. A list of available profiles is defined below by the "
+#~ "local Pandora administrators"
+#~ msgstr ""
+#~ "Los perfiles d'usuariu en Pandora definen que usuarios puen aceder a "
+#~ "Pandora y que puen facer cada unu. Los grupos definen ellementos en "
+#~ "común, cada usuariu pue pertenecer a unu o más grupos, y tien asignáu un "
+#~ "perfil a cada grupu que pertenezca. Un perfil ye una llista de lo que pue "
+#~ "y nun pue facer cada grupu, como per exemplu «agüeyar incidente» o "
+#~ "«estionar bases de dato». Abaxu se muestra una llista de los perfiles "
+#~ "disponibles (definíos por los alministraores llocales de Pandora)"
+
+#~ msgid ""
+#~ "This user has permissions to manage all. This is admin user and "
+#~ "overwrites all permissions given in profiles/groups."
+#~ msgstr ""
+#~ "Esti usuariu ye especial y tien permisu pa tou, pasando per encima de los "
+#~ "privilexios asignados mediante grupos/perfiles"
+
+#~ msgid ""
+#~ "This user has separated permissions to view data in his group agents, "
+#~ "create incidents belong to his groups, add notes in another incidents, "
+#~ "create personal assignments or reviews and other tasks, on different "
+#~ "profiles"
+#~ msgstr ""
+#~ "Esti usuariu tien permisos segregaos pa agüeyar datos en los axentes de "
+#~ "su grupu, crear incidentes dientru d'aquellos grupos sobre los que tenga "
+#~ "acceso y a&ntilde;adir notes en incidentes o de terceros."
+
+#~ msgid "This button refresh info about database usage among time"
+#~ msgstr ""
+#~ "Esti botón resfresca la información sobre el usu de la Base de Datos a lo "
+#~ "llargu del tiempu"
+
+#~ msgid ""
+#~ "Use this combo to select agent for operation. You need to select an agent "
+#~ "to purge data and to get info about database usage"
+#~ msgstr ""
+#~ "Use esti control pa selecionar un axente. Ye necesariu selecionar un "
+#~ "axente tantu pa obtener información de la Base de Datos como pa borrar "
+#~ "datos de la misma"
+
+#~ msgid "ERROR: At this moment only Global Admin can manage profiles"
+#~ msgstr ""
+#~ "ERROR: Nesti momentu sólu el Alministrador Xeneral pue alministrar "
+#~ "perfiles"
+
+#~ msgid "Agents Reading rights"
+#~ msgstr "Permisos de llectura d'axentes"
+
+#~ msgid "Agents Writing rights"
+#~ msgstr "Permisos de Escritura sobre axentes"
+
+#~ msgid "Agents Management rights"
+#~ msgstr "Permisos de xestión d'axentes"
+
+#~ msgid "System Incidents Reading rights"
+#~ msgstr "Permisos de llectura al sistema d'incidentes"
+
+#~ msgid "System Incidents Writing rights"
+#~ msgstr "Permisos de escritura al sistema d'incidentes"
+
+#~ msgid "System Incidents Management rights"
+#~ msgstr "Permisos de xestión al sistema d'incidentes"
+
+#~ msgid "Alerts Edition rights"
+#~ msgstr "Permisos de asignación d'allertes"
+
+#~ msgid "Alerts Management rights"
+#~ msgstr "Permisos de xestión d'allertes"
+
+#~ msgid "Users Management rights"
+#~ msgstr "Permisos de xestión d'usuarios"
+
+#~ msgid "Database Management rights"
+#~ msgstr "Permisos de xestión de la BD"
+
+#~ msgid "Pandora System Management rights"
+#~ msgstr "Permisos de xestión de Pandora"
+
+#~ msgid "From Agent"
+#~ msgstr "dende l'axente"
+
+#~ msgid "To"
+#~ msgstr "Hasta"
+
+#~ msgid "Destination"
+#~ msgstr "Destinu"
+
+#~ msgid "Packets by date range"
+#~ msgstr "Paquetes per rangos de fecha"
+
+#~ msgid "Total events"
+#~ msgstr "Eventos totales"
+
+#~ msgid "Incidents"
+#~ msgstr "Incidentes"
+
+#~ msgid "group_detail"
+#~ msgstr "Detalle de grupos"
+
+#~ msgid "Pandora Database"
+#~ msgstr "Base de Datos de Pandora"
+
+#~ msgid "It is necesary to select modules or alerts to delete"
+#~ msgstr "Debense seleccionar módulos o alertes pa borrar"
+
+#~ msgid "There was a problem deleting note"
+#~ msgstr "Ocurrió un problema al eliminar la nota"
+
+#~ msgid "Incident writers"
+#~ msgstr "Autores de los incidentes"
+
+#~ msgid "This field can't be changed while in Edition mode"
+#~ msgstr "Esti campu nun pue modificase nel modu edición"
+
+#~ msgid " so there are no alerts"
+#~ msgstr ", per tantu nun hai alertes"
+
+#~ msgid "SNMP"
+#~ msgstr "SNMP"
+
+#~ msgid "There are no events"
+#~ msgstr "Nun hai eventos"
+
+#~ msgid "Agent module share out"
+#~ msgstr "Distribución de módulos"
+
+#~ msgid "Truetype fonts"
+#~ msgstr "Fontes truetype"
+
+#~ msgid "Right to Left"
+#~ msgstr "dre. a manz."
+
+#~ msgid "Left to Right"
+#~ msgstr "manz. a dre."
+
+#~ msgid "Cancel"
+#~ msgstr "Cancelar"
+
+#~ msgid "Network module refresh executed"
+#~ msgstr "Ejecutado el refresco del módulo de red"
+
+#~ msgid "Help"
+#~ msgstr "Ajuda"
+
+#~ msgid "active_console"
+#~ msgstr "Consola activa"

@@ -22,7 +22,7 @@
 
 // Global & session management
 require_once ('../include/config.php');
-if (!isset($_SESSION["id_user"])){
+if (! isset($_SESSION["id_user"])) {
 	session_start();
 	session_write_close();
 }
@@ -31,14 +31,8 @@ require_once ('../include/functions.php');
 require_once ('../include/functions_db.php');
 require_once ('../include/languages/language_'.$config['language'].'.php');
 
-// Access control
-if (comprueba_login() != 0) {
-	$REMOTE_ADDR = getenv ("REMOTE_ADDR");
-	audit_db("Unknown",$REMOTE_ADDR, "ACL Violation","Trying to access graph window without auth");
-	require ("../general/noaccess.php");
-	exit;
-}
-	
+check_login ();
+
 // Parsing the refresh before sending any header
 $refresh = get_parameter ("refresh", -1);
 if ($refresh != -1)
@@ -54,36 +48,36 @@ echo "</head><body>";
 
 $label = get_parameter ("label","");	
 if (!isset($_GET["period"]) OR (!isset($_GET["id"]))) {
-	echo "<h3 class='error'>".__('graf_error')."</h3>";
+	echo "<h3 class='error'>".__('There was a problem locating the source of the graph')."</h3>";
 	exit;
 }
 
 $period = get_parameter ( "period", 3600);
 
 switch ($period) {
-	case 3600: 	$period_label = __('hour');
+	case 3600: 	$period_label = __('One hour');
 			break;
-	case 7200: 	$period_label = __('2_hours');
+	case 7200: 	$period_label = __('Two hours');
 			break;
-	case 21600: 	$period_label = __('6_hours');
+	case 21600: 	$period_label = __('Six hours');
 			break;
-	case 43200: 	$period_label = __('12_hours');
+	case 43200: 	$period_label = __('12 hours');
 			break;
-	case 86400: 	$period_label = __('last_day');
+	case 86400: 	$period_label = __('One day');
 			break;
-	case 172800: 	$period_label = __('two_days');
+	case 172800: 	$period_label = __('Two days');
 			break;
-	case 432000: 	$period_label = __('five_days');
+	case 432000: 	$period_label = __('Five days');
 			break;
-	case 604800: 	$period_label = __('last_week');
+	case 604800: 	$period_label = __('One week');
 			break;
-	case 1296000: 	$period_label = __('15_days');
+	case 1296000: 	$period_label = __('15 days');
 			break;
-	case 2592000: 	$period_label = __('last_month');
+	case 2592000: 	$period_label = __('One month');
 			break;
-	case 5184000: 	$period_label = __('two_month');
+	case 5184000: 	$period_label = __('Two months');
 			break;
-	case 15552000: 	$period_label = __('six_months');
+	case 15552000: 	$period_label = __('Six months');
 			break;
 	default: 	$period_label = human_time_description_raw ($period);
 }
@@ -122,11 +116,11 @@ if ($start_date != $current){
 
 	echo "<table width=450 cellspacing=1 cellpadding=1 class='databox' style='margin-left: 20px'>";
 		echo "<tr><td><b>";
-		echo __('max_value')." </b>: ". format_for_graph(get_agent_module_value_max ($id, $period));
+		echo __('Max. Value')." </b>: ". format_for_graph(get_agent_module_value_max ($id, $period));
 		echo "</td><td><b>";
-		echo __('avg_value')." </b>: ". format_for_graph(get_agent_module_value_average ($id, $period));
+		echo __('Avg. Value')." </b>: ". format_for_graph(get_agent_module_value_average ($id, $period));
 		echo "</td><td><b>";
-		echo __('min_value')." </b>: ". format_for_graph(get_agent_module_value_min ($id, $period));
+		echo __('Min. Value')." </b>: ". format_for_graph(get_agent_module_value_min ($id, $period));
 		echo "</td></tr>";
 	echo "</table>";
 
@@ -199,7 +193,7 @@ if ($start_date != $current){
 			echo "<td colspan=2>";
 			echo "<input type='text' size=5 name='refresh' value='" . $refresh . "'>";
 
-			echo "&nbsp;&nbsp;&nbsp;".__('avg_only');
+			echo "&nbsp;&nbsp;&nbsp;".__('Avg. Only');
 			if ($avg_only == 1)
 				echo "<input type='checkbox' name='avg_only' value=1 CHECKED>";
 			else
@@ -226,18 +220,18 @@ if ($start_date != $current){
 			echo "<td>";
 			echo "<select name='period'>";
 			echo "<option value=$period>".$period_label;
-			echo "<option value=3600>".__('hour');
-			echo "<option value=7200>".__('2_hours');
-			echo "<option value=21600>".__('6_hours');
-			echo "<option value=43200>".__('12_hours');
-			echo "<option value=86400>".__('last_day');
-			echo "<option value=172800>".__('two_days');
-			echo "<option value=432000>".__('five_days');
-			echo "<option value=604800>".__('last_week');
-			echo "<option value=1296000>".__('15_days');
-			echo "<option value=2592000>".__('last_month');
-			echo "<option value=5184000>".__('two_month');
-			echo "<option value=15552000>".__('six_months');
+			echo "<option value=3600>".__('One hour');
+			echo "<option value=7200>".__('Two hours');
+			echo "<option value=21600>".__('Six hours');
+			echo "<option value=43200>".__('12 hours');
+			echo "<option value=86400>".__('One day');
+			echo "<option value=172800>".__('Two days');
+			echo "<option value=432000>".__('Five days');
+			echo "<option value=604800>".__('One week');
+			echo "<option value=1296000>".__('15 days');
+			echo "<option value=2592000>".__('One month');
+			echo "<option value=5184000>".__('Two months');
+			echo "<option value=15552000>".__('Six months');
 			echo "</select>";
 			
 			echo "<tr><td>";

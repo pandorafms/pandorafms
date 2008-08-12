@@ -79,11 +79,11 @@ if (isset ($_GET["store_graph"])) {
 				//echo "DEBUG $sql<br>";
 				mysql_query($sql);
 			}
-			echo "<h3 class='suc'>".__('store_graph_suc')."</h3>";
+			echo "<h3 class='suc'>".__('Graph stored successfully')."</h3>";
 		} else
-			echo "<h3 class='error'>".__('store_graph_error')."</h3>";
+			echo "<h3 class='error'>".__('There was a problem storing Graph')."</h3>";
 	} else 
-		echo "<h3 class='error'>".__('store_graph_error')."</h3>";
+		echo "<h3 class='error'>".__('There was a problem storing Graph')."</h3>";
 }
 
 if (isset ($_GET["get_agent"])) {
@@ -198,9 +198,9 @@ if (! isset($_GET["delete_module"])) {
 	}
 }
 
-echo "<h2>".__('reporting')." &gt; ";
+echo "<h2>".__('Reporting')." &gt; ";
 if (isset ($chunk1)) {
-	echo __('graph_builder_modulelist')."</h2>";
+	echo __('Graph builder module list')."</h2>";
 	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&delete_module=1'>";
 	if (isset($chunkdata))
 		echo "<input type='hidden' name='chunk' value='$chunkdata'>";
@@ -211,10 +211,10 @@ if (isset ($chunk1)) {
 
 	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox'>";
 	echo "<tr>
-	<th>".__('agent')."</th>
-	<th>".__('module')."</th>
+	<th>".__('Agent')."</th>
+	<th>".__('Module')."</th>
 	<th>Weight</th>
-	<th>".__('delete')."</th>";
+	<th>".__('Delete')."</th>";
 	$color=0;
 	for ($a=0; $a < count($module_array); $a++){
 		// Calculate table line color
@@ -238,7 +238,7 @@ if (isset ($chunk1)) {
 	}
 	echo "</table>";
 	echo "<table width='500px'>";
-	echo "<tr><td align='right'><input type=submit name='update_agent' class='sub delete' value='".__('delete')."'>";
+	echo "<tr><td align='right'><input type=submit name='update_agent' class='sub delete' value='".__('Delete')."'>";
 	echo "</table>";
 	echo "</form>";
 }
@@ -248,7 +248,7 @@ if (isset ($chunk1)) {
 // --------------------------------------
 if (($render == 1) && (isset($modules))) {
 	// parse chunk
-	echo "<h3>".__('combined_image')."</h3>";
+	echo "<h3>".__('Combined image render')."</h3>";
 	echo "<table class='databox'>";
 	echo "<tr><td>";
 	echo "<img src='reporting/fgraph.php?tipo=combined&id=$modules&weight_l=$weights&label=Combined%20Sample%20Graph&height=$height&width=$width&stacked=$stacked&period=$period' border=1 alt=''>";
@@ -261,9 +261,9 @@ if (($render == 1) && (isset($modules))) {
 // -----------------------
 
 if ($add_module) {
-	echo __('graph_builder')."</h2>";
+	echo __('Graph builder')."</h2>";
 } else {
-	echo "<h3>".__('graph_builder')."</h3>";
+	echo "<h3>".__('Graph builder')."</h3>";
 }
 echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_color'>";
 echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder'>";
@@ -272,7 +272,7 @@ if (isset($period))
     echo "<input type='hidden' name='period' value='$period'>";
 
 echo "<tr>";
-echo "<td class='datos'><b>".__('source_agent')."</td>";
+echo "<td class='datos'><b>".__('Source agent')."</td>";
 echo "</b>";
 
 // Show combo with agents
@@ -285,7 +285,7 @@ if (isset ($chunkdata))
 	echo "<input type='hidden' name='chunk' value='$chunkdata'>";
 
 echo "<tr><td class='datos2'>";
-echo "<b>".__('modules')."</b>";
+echo "<b>".__('Modules')."</b>";
 echo "<td class='datos2' colspan=3>";
 echo "<select id='id_module' name='id_module' size=1 style='width:180px;'>";
 		echo "<option value=-1> -- </option>";
@@ -304,13 +304,13 @@ echo "<b>".__('Factor')."</b></td>";
 echo "<td class='datos'>";
 echo "<input type='text' name='factor' value='$factor' size=6></td>";
 echo "<td class='datos'>";
-echo "<b>".__('width')."</b>";
+echo "<b>".__('Width')."</b>";
 echo "<td class='datos'>";
 echo "<input type='text' name='width' value='$width' size=6></td>";
 
 
 echo "<tr><td class='datos2'>";
-echo "<b>".__('render_now')."</b></td>";
+echo "<b>".__('Render now')."</b></td>";
 echo "<td class='datos2'>";
 echo "<select name='render'>";
 if ($render == 1){
@@ -322,7 +322,7 @@ if ($render == 1){
 }
 echo "</select></td>";
 echo "<td class='datos2'>";
-echo "<b>".__('height')."</b></td>";
+echo "<b>".__('Height')."</b></td>";
 echo "<td class='datos2'>";
 echo "<input type='text' name='height' value='$height' size=6>";
 
@@ -376,7 +376,7 @@ switch ($period) {
 
 
 echo "<tr><td class='datos'>";
-echo "<b>".__('period')."</b></td>";
+echo "<b>".__('Period')."</b></td>";
 echo "<td class='datos'>";
 
 echo "<select name='period'>";
@@ -400,7 +400,7 @@ echo "<option value=15552000>"."Six Months</option>";
 echo "</select>";
 
 echo "<td class='datos'>";
-echo "<b>".__('view_events')."</b></td>";
+echo "<b>".__('View events')."</b></td>";
 echo "<td class='datos'>";
 echo "<select name='events'>";
 if ($events == 1){
@@ -443,7 +443,7 @@ echo "</select>";
 
 echo "</tr></table>";
 echo "<table width='500px'>";
-echo "<tr><td align='right'><input type=submit name='update_agent' class='sub upd' value='".__('add')."/".__('redraw')."'>";
+echo "<tr><td align='right'><input type=submit name='update_agent' class='sub upd' value='".__('Add')."/".__('Redraw')."'>";
 
 echo "</form>";
 echo "</td></tr></table>";
@@ -454,7 +454,7 @@ echo "</td></tr></table>";
 
 // If we have something to save..
 if (isset($module_array)){
-	echo "<h3>".__('graph_store')."</h3>";
+	echo "<h3>".__('Custom graph store')."</h3>";
 	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_color'>";
 	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder&store_graph=1'>";
 
@@ -475,25 +475,25 @@ if (isset($module_array)){
 	// hidden fields end
 
 	echo "<tr>";
-	echo "<td class='datos'><b>".__('name')."</b></td>";
+	echo "<td class='datos'><b>".__('Name')."</b></td>";
 	echo "</b>";
 	echo "<td class='datos'><input type='text' name='name' size='35'>";
 
-	echo "<td class='datos'><b>".__('private')."</b></td>";
+	echo "<td class='datos'><b>".__('Private')."</b></td>";
 	echo "</b>";
 	echo "<td class='datos'><select name='private'>";
-	echo "<option value=0>".__('no')."</option>";
-	echo "<option value=1>".__('yes')."</option>";
+	echo "<option value=0>".__('No')."</option>";
+	echo "<option value=1>".__('Yes')."</option>";
 	echo "</select>";
 	echo "</td></tr>";
 	echo "<tr>";
-	echo "<td class='datos2'><b>".__('description')."</b></td>";
+	echo "<td class='datos2'><b>".__('Description')."</b></td>";
 	echo "</b>";
 	echo "<td class='datos2' colspan=4><textarea name='description' style='height:45px;' cols=55 rows=2>";
 	echo "</textarea>";
 	echo "</td></tr></table>";
 	echo "<table width='500px'>";
-	echo "<tr><td align='right'><input type=submit name='store' class='sub wand' value='".__('store')."'>";
+	echo "<tr><td align='right'><input type=submit name='store' class='sub wand' value='".__('Store')."'>";
 
 
 	echo "</form>";

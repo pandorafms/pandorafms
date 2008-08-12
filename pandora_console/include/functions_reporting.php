@@ -236,10 +236,10 @@ function event_reporting ($id_group, $period, $date = 0, $return = false) {
 	
 	$table->data = array ();
 	$table->head = array ();
-	$table->head[0] = __('status');
-	$table->head[1] = __('event_name');
-	$table->head[2] = __('id_user');
-	$table->head[3] = __('timestamp');
+	$table->head[0] = __('Status');
+	$table->head[1] = __('Event name');
+	$table->head[2] = __('User ID');
+	$table->head[3] = __('Timestamp');
 	
 	$sql = sprintf ('SELECT * FROM tevento 
 			WHERE id_agente = %d
@@ -293,10 +293,10 @@ function get_fired_alerts_reporting_table ($alerts_fired) {
 	
 	$table->data = array ();
 	$table->head = array ();
-	$table->head[0] = __('agent');
-	$table->head[1] = __('alert_description');
-	$table->head[2] = __('times_fired');
-	$table->head[3] = __('priority');
+	$table->head[0] = __('Agent');
+	$table->head[1] = __('Alert description');
+	$table->head[2] = __('Times Fired');
+	$table->head[3] = __('Priority');
 	
 	foreach ($agents as $alerts) {
 		$data = array ();
@@ -338,8 +338,8 @@ function alert_reporting ($id_group, $period = 0, $date = 0, $return = false) {
 	$output .= '<img src="reporting/fgraph.php?tipo=alerts_fired_pipe&height=150&width=280&fired='.
 		$fired_percentage.'&not_fired='.$not_fired_percentage.'" style="float: right; border: 1px solid black">';
 	
-	$output .= '<strong>'.__('fired_alerts').': '.sizeof ($alerts_fired).'</strong><br />';
-	$output .= '<strong>'.__('total_alerts_monitored').': '.sizeof ($alerts).'</strong><br />';
+	$output .= '<strong>'.__('Alerts fired').': '.sizeof ($alerts_fired).'</strong><br />';
+	$output .= '<strong>'.__('Total alerts monitored').': '.sizeof ($alerts).'</strong><br />';
 
 	if (! sizeof ($alerts_fired)) {
 		if (!$return)
@@ -387,8 +387,8 @@ function monitor_health_reporting ($id_group, $period = 0, $date = 0, $return = 
 	$output .= '<img src="reporting/fgraph.php?tipo=monitors_health_pipe&height=150&width=280&down='.
 		$down_percentage.'&not_down='.$not_down_percentage.'" style="float: right; border: 1px solid black">';
 	
-	$output .= '<strong>'.__('total_monitors').': '.sizeof ($monitors).'</strong><br />';
-	$output .= '<strong>'.__('monitors_down_on_period').': '.sizeof ($monitors_down).'</strong><br />';
+	$output .= '<strong>'.__('Total monitors').': '.sizeof ($monitors).'</strong><br />';
+	$output .= '<strong>'.__('Monitors down on period').': '.sizeof ($monitors_down).'</strong><br />';
 	
 	$table = get_monitors_down_reporting_table ($monitors_down);
 	$table->width = '100%';
@@ -419,8 +419,8 @@ function monitor_health_reporting ($id_group, $period = 0, $date = 0, $return = 
 function get_monitors_down_reporting_table ($monitors_down) {
 	$table->data = array ();
 	$table->head = array ();
-	$table->head[0] = __('agent');
-	$table->head[1] = __('monitor');
+	$table->head[0] = __('Agent');
+	$table->head[1] = __('Monitor');
 	
 	$agents = array ();
 	foreach ($monitors_down as $monitor) {
@@ -463,7 +463,7 @@ function get_monitors_down_reporting_table ($monitors_down) {
 function general_group_reporting ($id_group, $return = false) {
 	$output = '';
 	$agents = get_agents_in_group ($id_group);
-	$output .= '<strong>'.__('agents_in_group').': '.sizeof ($agents).'</strong><br />';
+	$output .= '<strong>'.__('Agents in group').': '.sizeof ($agents).'</strong><br />';
 	
 	if (!$return)
 		echo $output;
@@ -482,13 +482,13 @@ function general_group_reporting ($id_group, $return = false) {
 function get_agent_alerts_reporting_table ($id_agent, $period = 0, $date = 0) {
 	$table->data = array ();
 	$table->head = array ();
-	$table->head[0] = __('type');
-	$table->head[1] = __('description');
-	$table->head[2] = __('min');
-	$table->head[3] = __('max');
-	$table->head[4] = __('threshold');
-	$table->head[5] = __('last_fired');
-	$table->head[6] = __('times_fired');
+	$table->head[0] = __('Type');
+	$table->head[1] = __('Description');
+	$table->head[2] = __('Minimum');
+	$table->head[3] = __('Maximum');
+	$table->head[4] = __('Threshold');
+	$table->head[5] = __('Last fired');
+	$table->head[6] = __('Times Fired');
 	
 	$alerts = get_alerts_in_agent ($id_agent);
 	foreach ($alerts as $alert) {
@@ -523,8 +523,8 @@ function get_agent_alerts_reporting_table ($id_agent, $period = 0, $date = 0) {
 function get_agent_monitors_reporting_table ($id_agent, $period = 0, $date = 0) {
 	$n_a_string = __('N/A').'(*)';
 	$table->head = array ();
-	$table->head[0] = __('monitor');
-	$table->head[1] = __('last_failure');
+	$table->head[0] = __('Monitor');
+	$table->head[1] = __('Last failure');
 	$table->data = array ();
 	$monitors = get_monitors_in_agent ($id_agent);
 	
@@ -588,8 +588,8 @@ function get_agent_detailed_reporting ($id_agent, $period = 0, $date = 0, $retur
 	
 	/* Show modules in agent */
 	$output .= '<div class="agent_reporting">';
-	$output .= '<h3 style="text-decoration: underline">'.__('agent').' - '.dame_nombre_agente ($id_agent).'</h3>';
-	$output .= '<h4>'.__('modules').'</h3>';
+	$output .= '<h3 style="text-decoration: underline">'.__('Agent').' - '.dame_nombre_agente ($id_agent).'</h3>';
+	$output .= '<h4>'.__('Modules').'</h3>';
 	$table_modules = get_agent_modules_reporting_table ($id_agent, $period, $date);
 	$table_modules->width = '99%';
 	$output .= print_table ($table_modules, true);
@@ -598,7 +598,7 @@ function get_agent_detailed_reporting ($id_agent, $period = 0, $date = 0, $retur
 	$table_alerts = get_agent_alerts_reporting_table ($id_agent, $period, $date);
 	$table_alerts->width = '99%';
 	if (sizeof ($table_alerts->data)) {
-		$output .= '<h4>'.__('alerts').'</h4>';
+		$output .= '<h4>'.__('Alerts').'</h4>';
 		$output .= print_table ($table_alerts, true);
 	}
 	
@@ -615,7 +615,7 @@ function get_agent_detailed_reporting ($id_agent, $period = 0, $date = 0, $retur
 	$table_monitors->align[1] = 'right';
 	$table_monitors->size = array ();
 	$table_monitors->align[1] = '10%';
-	$output .= '<h4>'.__('monitors').'</h4>';
+	$output .= '<h4>'.__('Monitors').'</h4>';
 	$output .= print_table ($table_monitors, true);
 	
 	$output .= '</div>';

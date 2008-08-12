@@ -24,22 +24,22 @@ if (isset($_GET["borrar_usuario"])) { // if delete user
 	$sql = "DELETE FROM tusuario WHERE id_usuario = '".$nombre."'";
 	$result = mysql_query ($sql);
 	if (! $result)
-		echo "<h3 class='error'>".__('delete_user_no')."</h3>";
+		echo "<h3 class='error'>".__('There was a problem deleting user')."</h3>";
 	else
-		echo "<h3 class='suc'>".__('delete_user_ok')."</h3>";
+		echo "<h3 class='suc'>".__('User successfully deleted')."</h3>";
 }
 ?>
 
-<h2><?php echo __('user_management') ?> &gt; 
-<?php echo __('users') ?></h2>
+<h2><?php echo __('User management') ?> &gt; 
+<?php echo __('Users defined in Pandora') ?></h2>
  
 <table width="700" cellpadding="4" cellspacing="4" class="databox">
-<th width="80px"><?php echo __('user_ID')?></th>
-<th width="155px"><?php echo __('last_contact')?></th>
-<th width="45px"><?php echo __('profile')?></th>
-<th width="120px"><?php echo __('name')?></th>
-<th><?php echo __('description')?></th>
-<th width="30px"><?php echo __('delete')?></th>
+<th width="80px"><?php echo __('UserID')?></th>
+<th width="155px"><?php echo __('Last contact')?></th>
+<th width="45px"><?php echo __('Profile')?></th>
+<th width="120px"><?php echo __('Name')?></th>
+<th><?php echo __('Description')?></th>
+<th width="30px"><?php echo __('Delete')?></th>
 
 <?php
 $sql = "SELECT * FROM tusuario";
@@ -85,19 +85,19 @@ while ($rowdup = mysql_fetch_array ($resq1)) {
 			echo dame_grupo ($row["id_grupo"])."<br>";
 		}
 	} else {
-		echo __('no_profile');
+		echo __('This user doesn\'t have any assigned profile/group');
 	}
 	echo "</span></a>";
 	
 	echo "<td class='$tdcolor' width='100'>".substr ($real_name, 0, 16)."</td>";
 	echo "<td class='$tdcolor'>".$comments."</td>";
-	echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/users/user_list&borrar_usuario=".$name."' onClick='if (!confirm(\' ".__('are_you_sure')."\')) return false;'><img border='0' src='images/cross.png'></a></td>";
+	echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/users/user_list&borrar_usuario=".$name."' onClick='if (!confirm(\' ".__('Are you sure?')."\')) return false;'><img border='0' src='images/cross.png'></a></td>";
 }
 echo "</tr></table>";
 echo "<table width=700>";
 echo "<tr><td align='right'>";
 echo "<form method=post action='index.php?sec=gusuarios&sec2=godmode/users/configure_user&alta=1'>";
-echo "<input type='submit' class='sub next' name='crt' value='".__('create_user')."'>";
+echo "<input type='submit' class='sub next' name='crt' value='".__('Create user')."'>";
 echo "</form></td></tr></table>";
 
 echo "</table>";

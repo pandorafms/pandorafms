@@ -53,7 +53,7 @@ if ($develop_bypass != 1){
 	}
 }
 
-if ((! file_exists("include/config.php")) OR (! is_readable("include/config.php"))){
+if ((! file_exists("include/config.php")) || (! is_readable("include/config.php"))){
 	include ("general/error_noconfig.php");
 	exit;
 }
@@ -61,7 +61,6 @@ if ((! file_exists("include/config.php")) OR (! is_readable("include/config.php"
 // Real start
 session_start();
 require_once ("include/config.php");
-require_once ("include/languages/language_".$config["language"].".php");
 require_once ("include/functions.php");
 require_once ("include/functions_db.php");
 //We should require this or you might end up with some empty strings
@@ -106,7 +105,7 @@ if ($intervalo > 0){
 }
 
 ?>
-<title>Pandora FMS - <?php echo __('header_title'); ?></title>
+<title>Pandora FMS - <?php echo __('the Flexible Monitoring System'); ?></title>
 <meta http-equiv="expires" content="0">
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="resource-type" content="document">

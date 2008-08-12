@@ -36,8 +36,8 @@ $label_group = 0;
 $last_label = "";
 
 // Title
-echo "<h2>".__('ag_title')." &gt; ";
-echo __('last_data_chunk');
+echo "<h2>".__('Pandora Agents')." &gt; ";
+echo __('Display of last data modules received by agent');
 echo "&nbsp;<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data'><img src='images/refresh.png'></A>";
 echo "</h2>";
 
@@ -46,14 +46,14 @@ $result3=mysql_query($sql3);
 if (mysql_num_rows ($result3)) {
 	echo "<table width='750' cellpadding='3' cellspacing='3' class='databox'>";
 	echo "<th></th>";
-	echo "<th>".__('module_name')."</th>";
-	echo "<th>".__('type')."</th>";
+	echo "<th>".__('Module name')."</th>";
+	echo "<th>".__('Type')."</th>";
 	echo "<th>".__('int')."</th>";
-	echo "<th>".__('description')."</th>";
-	echo "<th>".__('data')."</th>";
-	echo "<th>".__('graph')."</th>";
-	echo "<th>".__('raw_data')."</th>";
-	echo "<th>".__('timestamp')."</th>";
+	echo "<th>".__('Description')."</th>";
+	echo "<th>".__('Data')."</th>";
+	echo "<th>".__('Graph')."</th>";
+	echo "<th>".__('Raw Data')."</th>";
+	echo "<th>".__('Timestamp')."</th>";
 	$texto=''; $last_modulegroup = 0;
 	$color = 1;
 	while ($row3=mysql_fetch_array($result3)){
@@ -191,7 +191,7 @@ if (mysql_num_rows ($result3)) {
 	
 		echo "<td class='".$tdcolor."f9'>";
 		if ($row3["timestamp"] == "0000-00-00 00:00:00"){ 
-			echo __('never');
+			echo __('Never');
 		} else {
 			$ahora = time();
 			// Async modules
@@ -211,7 +211,7 @@ if (mysql_num_rows ($result3)) {
     echo '</table>';
 }
 else {
-	echo "<div class='nf'>".__('no_modules')."</div>";
+	echo "<div class='nf'>".__('This agent doesn\'t have any module')."</div>";
 }	
 
 ?>

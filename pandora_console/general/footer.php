@@ -20,12 +20,12 @@ global $config;
 echo "<center>";
 echo '<a class="white_bold" target="_new" href="general/license/pandora_info_'.$config["language"].'.html">
 Pandora FMS '.$pandora_version.' - Build '.$build_version.'<br>'.
-__('gpl_notice').'</a><br>';
+__('is a <b>OpenSource Software Project, licensed under GPL terms</b>').'</a><br>';
 	if (isset($_SERVER['REQUEST_TIME'])) {
 		$time = $_SERVER['REQUEST_TIME'];
 	} else {
 		$time = time();
 	}
-	echo "<a class='white'>".__('gen_date')." ".date("D F d, Y H:i:s", $time)." - Saved ".$sql_cache["saved"]." Queries</a><br>";
+	echo "<a class='white'>".__('Page generated at')." ".date("D F d, Y H:i:s", $time)." - Saved ".$sql_cache["saved"]." Queries</a><br>";
 echo "</center>";
 ?>

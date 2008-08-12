@@ -25,9 +25,9 @@ function create_message ($usuario_origen, $usuario_destino, $subject, $mensaje) 
 	VALUES ('%s', '%s', '%s', '%s',NOW())",$usuario_origen,$usuario_destino,$subject,$mensaje);
 	(int) $result = process_sql ($sql);
 	if ($result == 1) {
-		echo '<h3 class="suc">'.__('message_ok').'</h3>';
+		echo '<h3 class="suc">'.__('Message successfully sent').'</h3>';
 	} else {
-		echo '<h3 class="error">'.__('message_no').' - Dest: '.$usuario_destino.'</h3>';
+		echo '<h3 class="error">'.__('There was a problem sending message').' - Dest: '.$usuario_destino.'</h3>';
 	}
 }
 
@@ -50,23 +50,23 @@ if (isset ($_GET["nuevo_mensaje_g"])){
 	$sql = sprintf ("SELECT id_usuario FROM tusuario_perfil WHERE id_grupo ='%d'",$dest_group);
 	$result = get_db_all_rows_sql ($sql);
 	if ($result === false) {
-		echo "<h3 class='error'>".__('message_no')."</h3>";
+		echo "<h3 class='error'>".__('There was a problem sending message')."</h3>";
 	} else {
 		foreach ($result as $row) {
 			create_message ($iduser, $row["id_usuario"], $subject, $message);
 		}
 	}
 }
-echo "<h2>".__('messages')." &gt; ";
+echo "<h2>".__('Messages')." &gt; ";
 
 if (isset ($_GET["nuevo"])) { //create message
-	echo __('new_message').'</h2>';
+	echo __('New message').'</h2>';
 	echo '<form name="new_mes" method="POST" action="index.php?sec=messages&sec2=operation/messages/message&nuevo_mensaje=1">
 	<table width="600" class="databox_color" cellpadding="4" cellspacing="4"><tr>
-	<td class="datos">'.__('m_from').':</td>
-	<td class="datos"><b>'.$iduser.'</b></td>
+	<td class="datos">'.__('From').':</td>
+	<td class="datos"><strong>'.$iduser.'</strong></td>
 	</tr><tr>
-	<td class="datos2">'.__('m_to').':</td>
+	<td class="datos2">'.__('To').':</td>
 	<td class="datos2">';
 	if (isset ($_POST["u_destino"])) {
 		echo '<b>'.$_POST["u_destino"].'</b><input type="hidden" name="u_destino" value='.$_POST["u_destino"].'>';
@@ -87,26 +87,26 @@ if (isset ($_GET["nuevo"])) { //create message
 		}
 		echo '</select>';
 	}
-	echo '</td></tr><tr><td class="datos">'.__('subject').':</td><td class="datos">';
+	echo '</td></tr><tr><td class="datos">'.__('Subject').':</td><td class="datos">';
 		if (isset ($_POST["subject"])) {
 			echo '<input name="subject" value="'.get_parameter_post ("subject").'" size=70>';
 		} else { 
 			echo '<input name="subject" size=60>';
 		}
-	echo '</td></tr><tr><td class="datos2">'.__('message').':</td>
+	echo '</td></tr><tr><td class="datos2">'.__('Message').':</td>
 	<td class="datos"><textarea name="mensaje" rows="15" cols="70">';
 		if (isset ($_POST["mensaje"])) {
 			echo get_parameter_post ("mensaje");
 		}
 	echo '</textarea></td></tr><tr><td></td><td colspan="3">
-	<input type="submit" class="sub wand" name="send_mes" value="'.__('send_mes').'"></form></td></tr></table>';
+	<input type="submit" class="sub wand" name="send_mes" value="'.__('Send message').'"></form></td></tr></table>';
 } elseif (isset ($_GET["nuevo_g"])) {
-	echo __('new_message_g').'</h2>';
+	echo __('New message').'</h2>';
 	echo '<form name="new_mes" method="post" action="index.php?sec=messages&sec2=operation/messages/message&nuevo_mensaje_g=1">
 	<table width=600 class="databox_color" cellpadding=4 cellspacing=4>
-	<tr><td class="datos">'.__('m_from').':</td>
-	<td class="datos"><b>'.$iduser.'</b></td></tr>
-	<tr><td class="datos2">'.__('m_to').':</td><td class="datos2">';
+	<tr><td class="datos">'.__('From').':</td>
+	<td class="datos"><strong>'.$iduser.'</strong></td></tr>
+	<tr><td class="datos2">'.__('To').':</td><td class="datos2">';
 	echo '<select name="g_destino" class="w130">';
 	$groups = get_user_groups ($iduser);
         foreach ($groups as $id => $group) {
@@ -124,11 +124,11 @@ if (isset ($_GET["nuevo"])) { //create message
 		echo '<option value="'.$row["id_grupo"].'">'.dame_nombre_grupo($row["id_grupo"]).'</option>';
 	}
 	echo '</select></td></tr>
-	<tr><td class="datos">'.__('subject').':</td><td class="datos"><input name="subject" size="60"></td></tr><tr>
-	<td class="datos2">'.__('message').':</td>
+	<tr><td class="datos">'.__('Subject').':</td><td class="datos"><input name="subject" size="60"></td></tr><tr>
+	<td class="datos2">'.__('Message').':</td>
 	<td class="datos"><textarea name="mensaje" rows="12" cols="60"></textarea></td>
 	</tr><tr><td></td><td colspan="3">
-	<input type="submit" class="sub wand" name="send_mes" value="'.__('send_mes').'"></form></td></tr></table>';
+	<input type="submit" class="sub wand" name="send_mes" value="'.__('Send message').'"></form></td></tr></table>';
 } elseif (isset($_GET["leer"])) {
 	$id_mensaje = get_parameter_get("id_mensaje");
 	$sql = sprintf("SELECT id_usuario_origen, subject, mensaje FROM tmensajes WHERE id_usuario_destino='%s' AND id_mensaje=%d",$iduser,$id_mensaje);
@@ -136,28 +136,28 @@ if (isset ($_GET["nuevo"])) { //create message
 	process_sql ("UPDATE tmensajes SET estado=1 WHERE id_mensaje".$result["id_mensaje"]);
 	echo '<table class="databox_color" width=650 cellpadding=4 cellspacing=4>
 	<form method="post" name="reply_mes" action="index.php?sec=messages&sec2=operation/messages/message&nuevo">
-	<tr><td class="datos">'.__('from').':</td>
+	<tr><td class="datos">'.__('From').':</td>
 	<td class="datos"><b>'.$row["id_usuario_origen"].'</b></td></tr>';
 	
 	// Subject
-	echo '<tr><td class="datos2">'.__('subject').':</td>
+	echo '<tr><td class="datos2">'.__('Subject').':</td>
 	<td class="datos2" valign="top"><b>'.$row["subject"].'</b></td></tr>';
 	
 	// text
-	echo '<tr><td class="datos" valign="top">'.__('message').':</td>
+	echo '<tr><td class="datos" valign="top">'.__('Message').':</td>
 	<td class="datos"><textarea name="mensaje" rows="15" cols=70 readonly>'.$row["mensaje"].'</textarea></td></tr>
 	</table>
         <input type="hidden" name="u_destino" value="'.$row["id_usuario_origen"].'">
         <input type="hidden" name="subject" value="Re: '.$row["subject"].'">
-        <input type="hidden" name="mensaje" value="'.$row["id_usuario_origen"].__('wrote').': '.$row["mensaje"].'">';
+        <input type="hidden" name="mensaje" value="'.$row["id_usuario_origen"].__(' wrote').': '.$row["mensaje"].'">';
 	echo '<table width=650 cellpadding=4 cellspacing=4>';
 	echo "<tr><td align=right>";
-	echo '<input type="submit" class="sub next" name="send_mes" value="'.__('reply').'">';
+	echo '<input type="submit" class="sub next" name="send_mes" value="'.__('Reply').'">';
 	echo '</form>';
 	echo "</td></tr></table>";
 } 
 if (isset ($_GET["leer"]) || (!isset ($_GET["nuevo"]) && !isset ($_GET["nuevo_g"]))) {	
-	echo __('read_mes')."</h2>";
+	echo __('Read messages')."</h2>";
 
 	//Delete messages if borrar is set
 	if (isset ($_GET["borrar"])){
@@ -165,9 +165,9 @@ if (isset ($_GET["leer"]) || (!isset ($_GET["nuevo"]) && !isset ($_GET["nuevo_g"
 		$sql = sprintf ("DELETE FROM tmensajes WHERE id_usuario_destino='%s' AND id_mensaje=%d",$iduser,$id_message);
 		(int) $result = process_sql ($sql);
 		if ($result > 0) {
-			echo '<h3 class="suc">'.__('del_message_ok').'</h3>';
+			echo '<h3 class="suc">'.__('Message sucessfully deleted').'</h3>';
 		} else {
-			echo '<h3 class="error">'.__('del_message_no').'</h3>';
+			echo '<h3 class="error">'.__('There was a problem deleting message').'</h3>';
 		}
 	}
 	
@@ -176,20 +176,20 @@ if (isset ($_GET["leer"]) || (!isset ($_GET["nuevo"]) && !isset ($_GET["nuevo_g"
 	$num_messages = get_db_sql ($sql);
 				
 	if ($num_messages > 0){
-		echo '<p>'.__('new_message_bra').' <b>'.$num_messages.'</b> <img src="images/email.png">'.__('new_message_ket').'</p>';
+		echo '<p>'.__('You have ').' <b>'.$num_messages.'</b> <img src="images/email.png">'.__(' unread message(s).').'</p>';
 	}
 	$sql = sprintf ("SELECT id_mensaje, id_usuario_origen, subject, timestamp, estado FROM tmensajes WHERE id_usuario_destino='%s' ORDER BY `timestamp` DESC",$iduser);
 	$result = get_db_all_rows_sql ($sql);
 	if ($result === false) {
-		echo "<div class='nf'>".__('no_messages')."</div>";
+		echo "<div class='nf'>".__('There are no messages')."</div>";
 	} else {
 		$color = 1;
 		echo '<table width="650" class="databox" cellpadding="4" cellspacing="4"><tr>
-		<th>'.__('read').'</th>
-		<th>'.__('sender').'</th>
-		<th>'.__('subject').'</th>
-		<th>'.__('timestamp').'</th>
-		<th>'.__('delete').'</th></tr>';
+		<th>'.__('Read').'</th>
+		<th>'.__('Sender').'</th>
+		<th>'.__('Subject').'</th>
+		<th>'.__('Timestamp').'</th>
+		<th>'.__('Delete').'</th></tr>';
 															
 		foreach ($result as $row) {
 			if ($color == 1){
@@ -211,7 +211,7 @@ if (isset ($_GET["leer"]) || (!isset ($_GET["nuevo"]) && !isset ($_GET["nuevo_g"
 			if ($row["subject"]) {
 				echo $row["subject"];
 			} else {
-				echo __('no_subject');
+				echo __('No subject');
 			}
 			echo '</b></a></td><td class="'.$tdcolor.'">'.$row["timestamp"].'</td>
 			<td class="'.$tdcolor.'" align="center"><a href="index.php?sec=messages&sec2=operation/messages/message&borrar=1&id_mensaje='.$row["id_mensaje"].'">
@@ -222,6 +222,6 @@ if (isset ($_GET["leer"]) || (!isset ($_GET["nuevo"]) && !isset ($_GET["nuevo_g"
 	echo '<table width=650 cellpadding=4 cellspacing=4><tr>';
 	echo '<td>';
 	echo '<form method="post" name="new_mes" action="index.php?sec=messages&sec2=operation/messages/message&nuevo">
-	<input type="submit" class="sub next" name="send_mes" value="'.__('new_message').'"></form></td></tr></table>';
+	<input type="submit" class="sub next" name="send_mes" value="'.__('New message').'"></form></td></tr></table>';
 }
 ?>

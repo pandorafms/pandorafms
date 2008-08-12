@@ -32,14 +32,14 @@ if (isset($_GET["delete"])){ // if delete
 	$sql_delete= "DELETE FROM tnetwork_profile WHERE id_np = ".$id_np;
 	$result=mysql_query($sql_delete);
 	if (! $result)
-		echo "<h3 class='error'>".__('delete_no')."</h3>";
+		echo "<h3 class='error'>".__('Not deleted. Error deleting data')."</h3>";
 	else
-		echo "<h3 class='suc'>".__('delete_ok')."</h3>";
+		echo "<h3 class='suc'>".__('Deleted successfully')."</h3>";
 	
 	$result=mysql_query($sql_delete);
 }
-echo "<h2>".__('module_management')." &gt; ";
-echo __('network_profile_management')."</h2>";
+echo "<h2>".__('Module management')." &gt; ";
+echo __('Module template management')."</h2>";
 
 
 $sql1='SELECT * FROM tnetwork_profile ORDER BY name';
@@ -47,9 +47,9 @@ $result=mysql_query($sql1);
 $color=0;
 if (mysql_num_rows($result)) {
 	echo "<table cellpadding='4' cellspacing='4' width='650' class='databox'>";
-	echo "<th>".__('name')."</th>";
-	echo "<th>".__('description')."</th>";
-	echo "<th>".__('action')."</th>";
+	echo "<th>".__('Name')."</th>";
+	echo "<th>".__('Description')."</th>";
+	echo "<th>".__('Action')."</th>";
 }
 while ($row=mysql_fetch_array($result)){
 	if ($color == 1){
@@ -70,7 +70,7 @@ while ($row=mysql_fetch_array($result)){
 		</td>
 		<td class='$tdcolor' align='center'>
 		<a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates&delete=".$row["id_np"]."'
-			onClick='if (!confirm(\' ".__('are_you_sure')."\'))
+			onClick='if (!confirm(\' ".__('Are you sure?')."\'))
 		return false;'>
 		<img border='0' src='images/cross.png'></a>
 		</td>
@@ -81,13 +81,13 @@ if (mysql_num_rows($result)) {
 	echo "</table>";
 	echo "<table width='650px'>";
 } else {
-	echo "<div class='nf'>".__('no_netprofiles')."</div>";
+	echo "<div class='nf'>".__('There are no defined network profiles')."</div>";
 	echo "<table>";
 }
 
 echo "<tr><td align='right'>";
 echo "<form method=post action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np=-1'>";
-echo "<input type='submit' class='sub next' name='crt' value='".__('create')."'>";
+echo "<input type='submit' class='sub next' name='crt' value='".__('Create')."'>";
 echo "</form></td></tr></table>";
 
 ?>

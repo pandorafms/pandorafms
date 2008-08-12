@@ -70,7 +70,7 @@ if (isset($_GET["delete"])){
 	if (give_acl ($config['id_user'], 0, "IM")) {
 		$sql2="DELETE FROM ttrap WHERE id_trap =".$id_trap;
 		$result2=mysql_query($sql2);
-		if ($result) { echo "<h3 class='suc'>".__('delete_event_ok')."</h3>";}
+		if ($result) { echo "<h3 class='suc'>".__('Event successfully deleted')."</h3>";}
 	} else {
 		audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
 			"Trying to delete event ID".$id_trap);
@@ -83,7 +83,7 @@ if (isset($_GET["check"])){
 	if (give_acl ($config['id_user'], 0, "IW")) {
 		$sql2="UPDATE ttrap set status=1, id_usuario = '".$config['id_user']."' WHERE id_trap = ".$id_trap;
 		$result2=mysql_query($sql2);
-		if ($result2) { echo "<h3 class='suc'>".__('validate_event_ok')."</h3>";}
+		if ($result2) { echo "<h3 class='suc'>".__('Event successfully validated')."</h3>";}
 
 	} else {
 		audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
@@ -126,7 +126,7 @@ if (isset($_POST["updatebt"])){
 	}
 }
 echo "<h2>Pandora SNMP &gt; ";
-echo __('SNMP_console')."</h2>";
+echo __('SNMP console')."</h2>";
 
 if (isset($_GET["offset"]))
 	$offset=$_GET["offset"];
@@ -139,16 +139,16 @@ $result2=mysql_query($sql2);
 if (mysql_num_rows($result2)){
 	echo "<table><tr>";
 	echo "<td class='f9' style='padding-left: 30px;'>";
-	echo "<img src='images/pixel_green.png' width=20 height=20> - ".__('validated_event');
+	echo "<img src='images/pixel_green.png' width=20 height=20> - ".__('Validated event');
 	echo "<br>";
-	echo "<img src='images/pixel_red.png' width=20 height=20> - ".__('not_validated_event');
+	echo "<img src='images/pixel_red.png' width=20 height=20> - ".__('Not validated event');
 	//echo "<br>";
-	//echo "<img src='images/pixel_yellow.png' width=20 height=35> - ".__('alert');
+	//echo "<img src='images/pixel_yellow.png' width=20 height=35> - ".__('Alert');
 	echo "</td>";
 	echo "<td class='f9' style='padding-left: 20px;'>";  
-	echo "<img src='images/ok.png'> - ".__('validate_event');
+	echo "<img src='images/ok.png'> - ".__('Validate event');
 	echo "<br>"; 
-	echo "<img src='images/cross.png '> - ".__('delete_event');
+	echo "<img src='images/cross.png '> - ".__('Delete event');
 	echo "</td>";
 	echo "</tr></table>";
 	echo "<br>";
@@ -195,16 +195,16 @@ if (isset($_GET["offset"])){
 echo "<br>";
 echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>";
 echo "<tr>";
-echo "<th>".__('status')."</th>";
+echo "<th>".__('Status')."</th>";
 echo "<th>".__('OID')."</th>";
-echo "<th>".__('SNMP_agent')."</th>";
-echo "<th>".__('customvalue')."</th>";
-echo "<th>".__('id_user')."</th>";
-echo "<th width ='130px'>".__('timestamp')."</th>";
-echo "<th>".__('alert')."</th>";
-echo "<th>".__('action')."</th>";
+echo "<th>".__('SNMP Agent')."</th>";
+echo "<th>".__('Custom value')."</th>";
+echo "<th>".__('User ID')."</th>";
+echo "<th width ='130px'>".__('Timestamp')."</th>";
+echo "<th>".__('Alert')."</th>";
+echo "<th>".__('Action')."</th>";
 echo "<th class='p10'>";
-echo "<label for='checkbox' class='p21'>".__('all')." </label>";
+echo "<label for='checkbox' class='p21'>".__('All')." </label>";
 echo '<input type="checkbox" class="chk" name="allbox" onclick="CheckAll();">
 </th>';
 echo "<form name='eventtable' method='POST' action='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&refr=60&offset=".$offset."'>";	
@@ -265,14 +265,14 @@ echo "</table>";
 $offset_counter = 0;
 echo "<table width='750px'><tr><td align='right'>";
 
-echo "<input class='sub' type='submit' name='updatebt' value='".__('validate')."'> ";
+echo "<input class='sub' type='submit' name='updatebt' value='".__('Validate')."'> ";
 if (give_acl ($config['id_user'], 0, "IM")) {
-	echo "<input class='sub' type='submit' name='deletebt' value='".__('delete')."'>";
+	echo "<input class='sub' type='submit' name='deletebt' value='".__('Delete')."'>";
 }
 echo "</form></td></tr></table>";
 
 } else { 
-	echo "<div class='nf'>".__('no_snmp_agent')."</div>";
+	echo "<div class='nf'>".__('There are no SNMP traps in database')."</div>";
 }
 
 ?>

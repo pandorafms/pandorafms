@@ -29,7 +29,7 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 	exit;
 }
 
-echo "<h2>".__('audit_title')." &gt ".__('logs')."</h2>";
+echo "<h2>".__('Pandora audit')." &gt ".__('Review Logs')."</h2>";
 if (isset ($_GET["offset"]))
 	$offset=$_GET["offset"];
 else
@@ -39,7 +39,7 @@ echo "<table width=100%>";
 echo "<tr><td>";
 echo "<table cellpadding='4' cellspacing='4' class='databox'>";
 echo "<tr><td colspan='2' valign='top'>";
-echo "<h3>".__('filter')."</h3></td></tr>";
+echo "<h3>".__('Filter')."</h3></td></tr>";
 // Manage GET/POST parameter for subselect on action type. POST parameter are proccessed before GET parameter (if passed)
 if (isset ($_GET["tipo_log"])) {
 	$tipo_log = $_GET["tipo_log"];
@@ -58,12 +58,12 @@ if (isset ($_GET["tipo_log"])) {
 // generate select 
 
 echo "<form name='query_sel' method='post' action='index.php?sec=godmode&sec2=godmode/admin_access_logs'>";
-echo "<tr><td>".__('action')."</td><td valign='middle'>";
+echo "<tr><td>".__('Action')."</td><td valign='middle'>";
 echo "<select name='tipo_log' onChange='javascript:this.form.submit();'>";
 if (isset($tipo_log)) {
 	echo "<option>".$tipo_log."</option>";
 }
-echo "<option value='-1'>".__('all')."</option>";
+echo "<option value='-1'>".__('All')."</option>";
 $sql3="SELECT DISTINCT (accion) FROM `tsesion`"; 
 // Prepare index for pagination
 $result3=mysql_query($sql3);
@@ -77,7 +77,7 @@ while ($row3=mysql_fetch_array($result3)){
 	}
 }
 echo "</select>";
-echo "<td valign='middle'><noscript><input name='uptbutton' type='submit' class='sub' value='".__('show')."'></noscript>";
+echo "<td valign='middle'><noscript><input name='uptbutton' type='submit' class='sub' value='".__('Show')."'></noscript>";
 echo "</table></form>";
 
 echo "</td><td align='right'>";
@@ -105,10 +105,10 @@ $result=mysql_query($query1);
 echo '<table cellpadding="4" cellspacing="4" width="700" class="databox">';
 echo '<tr>';
 echo '<th width="80px">'.__('user').'</th>';
-echo '<th>'.__('action').'</th>';
-echo '<th width="130px">'.__('date').'</th>';
-echo '<th width="100px">'.__('src_address').'</th>';
-echo '<th width="200px">'.__('comments').'</th>';
+echo '<th>'.__('Action').'</th>';
+echo '<th width="130px">'.__('Date').'</th>';
+echo '<th width="100px">'.__('Source IP').'</th>';
+echo '<th width="200px">'.__('Comments').'</th>';
 
 $color=1;
 // Get data

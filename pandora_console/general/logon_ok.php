@@ -24,9 +24,9 @@ extensions_call_login_function ();
 
 echo "<div class='jus'>";
 $nick = $_SESSION['id_usuario'];
-echo "<h1>" . __('welcome_title') . "</h1>";
+echo "<h1>" . __('Welcome to Pandora FMS Web Console') . "</h1>";
 echo "<p>";
-echo __('main_text');
+echo __('This is the Web Management System for Pandora FMS. From here you can manage its agents, alerts and incidents. Session is open while activity exists.');
 echo "</p>";
 
 // Private messages pending to read !
@@ -34,10 +34,10 @@ echo "</p>";
 $sql = sprintf ("SELECT COUNT(id_mensaje) AS count FROM tmensajes WHERE id_usuario_destino='%s' AND estado='FALSE';",$nick);
 $resultado = get_db_sql ($sql);
 if ($resultado != 0) {
-	echo "<h2>". __('new_message_bra') . ' 
+	echo "<h2>". __('You have ') . ' 
 	<a href="index.php?sec=messages&sec2=operation/messages/message">'
 	.$row["count"] . ' <img src="images/email.png" border="0">'
-	.__('new_message_ket') . '</a></h2>';
+	.__(' unread message(s).') . '</a></h2>';
 }
 
 echo "<table width=95%>";
@@ -45,14 +45,14 @@ echo "<tr><td valign='top'>";
 
 // Site news !
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-echo '<h2>' . __('site_news') . '</h2>';
+echo '<h2>' . __('Site news') . '</h2>';
 $sql_news = "SELECT subject,timestamp,text,author FROM tnews ORDER by timestamp DESC LIMIT 3";
 if ($result_news = mysql_query ($sql_news)){
 	echo '<table cellpadding="4" cellspacing="4" width="270" class="databox">';
 	while ($row = mysql_fetch_array ($result_news)) {
 		echo '<tr>';
 		echo "<th><b>".$row["subject"]."</b>";
-		echo "<tr><td>".__('by')." <b>".$row["author"]. "</b> ".__('at')." <i>".$row["timestamp"]."</i>";
+		echo "<tr><td>".__('by')." <b>".$row["author"]. "</b> ".__('At')." <i>".$row["timestamp"]."</i>";
 		echo '<tr><td class=datos>';
 		echo clean_output_breaks($row["text"]);
 	}
@@ -133,7 +133,7 @@ $query1 = "SELECT COUNT(id_usuario) FROM tusuario";
 $users_defined = get_db_sql ($query1);
 
 echo "<table class='databox' celldpadding=4 cellspacing=4 width=250>";
-echo "<th colspan=2>".__('Pandora_FMS_summary')."</th>";
+echo "<th colspan=2>".__('Pandora FMS Overview')."</th>";
 echo "<tr><td class='datos2'><b>"."Total agents"."</b></td>";
 echo "<td class='datos2' style='font: bold 2em Arial, Sans-serif; color: #000;'>".$total_agents."</td>";
 echo "</tr><tr><td class='datos'><b>"."Total checks"."</b></td>";
@@ -154,7 +154,7 @@ echo "</table>";
 
 echo "<div id='activity'>";
 // Show last activity from this user
-echo "<h2>" . __('user_last_activity') . "</h2>";
+echo "<h2>" . __('This is your last activity in Pandora FMS console') . "</h2>";
 
 $color = 1;
 
@@ -165,10 +165,10 @@ $table->size[2] = '130px';
 $table->size[4] = '200px';
 $table->head = array ();
 $table->head[0] = __('user');
-$table->head[1] = __('action');
-$table->head[2] = __('date');
-$table->head[3] = __('src_address');
-$table->head[4] = __('comments');
+$table->head[1] = __('Action');
+$table->head[2] = __('Date');
+$table->head[3] = __('Source IP');
+$table->head[4] = __('Comments');
 
 $sql = sprintf ("SELECT ID_usuario,accion,fecha,IP_origen,descripcion
 		FROM `tsesion`

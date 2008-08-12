@@ -29,24 +29,24 @@ if (! give_acl ($config['id_user'], 0, "IR")==1) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access Incident section");
 	return;
 }
-echo "<h2>".__('incident_manag')." &gt; ";
-echo __('statistics')."</h2>";
+echo "<h2>".__('Incident management')." &gt; ";
+echo __('Statistics')."</h2>";
 
 echo "<table width = 90%>";
 echo "<tr><td valign='top'>";
-echo '<h3>'.__('inc_stat_status').'</h3>';
+echo '<h3>'.__('Incidents by status').'</h3>';
 echo '<img src="reporting/fgraph.php?tipo=estado_incidente" border=0>';
 echo "<td valign='top'>";
-echo '<h3>'.__('inc_stat_priority').'</h3>';
+echo '<h3>'.__('Incidents by priority').'</h3>';
 echo '<img src="reporting/fgraph.php?tipo=prioridad_incidente" border=0>';
 echo "<tr><td>";
-echo '<h3>'.__('inc_stat_group').'</h3>';
+echo '<h3>'.__('Incidents by group').'</h3>';
 echo '<img src="reporting/fgraph.php?tipo=group_incident" border=0>';
 echo "<td>";
-echo '<h3>'.__('inc_stat_user').'</h3>';
+echo '<h3>'.__('Incidents by user').'</h3>';
 echo '<img src="reporting/fgraph.php?tipo=user_incident" border=0>';
 echo "<tr><td>";
-echo '<h3>'.__('inc_stat_source').'</h3>';
+echo '<h3>'.__('Incidents by source').'</h3>';
 echo '<img src="reporting/fgraph.php?tipo=source_incident" border=0>';
 echo "<td>";
 echo "</table>";

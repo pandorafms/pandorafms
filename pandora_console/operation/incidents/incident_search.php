@@ -23,8 +23,8 @@ require("include/config.php");
 
 if (comprueba_login() == 0) {
 
-echo "<h2>".__('incident_manag')." &gt; ";
-echo __('find_crit')."</h2>";
+echo "<h2>".__('Incident management')." &gt; ";
+echo __('Please select a search criterion')."</h2>";
 echo "<div style='width:645'>";
 echo "<div style='float:right;'><img src='images/pulpo_lupa.png' class='bot' align='left'></div>";	
 ?>
@@ -35,7 +35,7 @@ echo "<div style='float:right;'><img src='images/pulpo_lupa.png' class='bot' ali
 <td class="datos"><?php echo __('user') ?>
 <td class="datos">
 <select name="usuario" class="w120">
-	<option value=""><?php echo __('all') ?></option>
+	<option value=""><?php echo __('All') ?></option>
 	<?php 
 	$sql1='SELECT * FROM tusuario ORDER BY id_usuario';
 	$result=mysql_query($sql1);
@@ -44,13 +44,13 @@ echo "<div style='float:right;'><img src='images/pulpo_lupa.png' class='bot' ali
 	}
 	?>
 </select>
-<tr><td class="datos2"><?php echo __('free_text_search') ?>
+<tr><td class="datos2"><?php echo __('Free text for search (*)') ?>
 <td class="datos2"><input type="text" size="45" name="texto"></tr>
-<tr><td class="datos" colspan="2"><i><?php echo __('free_text_search_msg') ?></i></td></tr>
+<tr><td class="datos" colspan="2"><i><?php echo __('(*) The text search will look for all words entered as substring, in index title or description of each incident') ?></i></td></tr>
 </table>
 <table width="500">
 <tr><td align="right" colspan="3">
-<?php echo "<input name='uptbutton' type='submit' class='sub search' value='".__('search')."'>"; ?>
+<?php echo "<input name='uptbutton' type='submit' class='sub search' value='".__('Search')."'>"; ?>
 
 </form>
 </table>

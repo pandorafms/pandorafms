@@ -76,7 +76,7 @@ if ($update_module_id != NULL){
 	}
 }
 
-echo "<h3>". __('module_assignment')." - ". __('data server module')."</h3>";
+echo "<h3>". __('Module assignment')." - ". __('Data server module')."</h3>";
 echo '<form name="modulo" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'&form_moduletype='.$form_moduletype.'">';
 // Whether in update or insert mode
 if ($update_module_id == NULL){
@@ -92,15 +92,15 @@ echo "<input type='hidden' name='id_agente_modulo'' value='".$update_module_id."
 echo "<input type='hidden' name='form_id_modulo' value='1'>";
 echo '<table width="600" cellpadding="4" cellspacing="4" class="databox_color">';
 echo '<tr>';
-echo '<td class="datos2">'. __('module_name')."</td>";
+echo '<td class="datos2">'. __('Module name')."</td>";
 echo '<td class="datos2"><input type="text" name="form_name" size="35" value="'.$form_name.'"></td>';
-echo '<td class="datos2">'. __('disabled')."</td>";
+echo '<td class="datos2">'. __('Disabled')."</td>";
 echo '<td class="datos2"><input type="checkbox" name="form_disabled" value="1" "'.$disabled_status.'"></td>';
 echo '</tr><tr>';
 
 // module type / max timeout
 echo '</tr><tr>';
-echo '<td class="datos2">'.__('module_type');
+echo '<td class="datos2">'.__('Module type');
 pandora_help("module_type");
 echo '</td>';
 echo '<td class="datos2" colspan="3">';
@@ -121,11 +121,11 @@ echo '</tr>';
 
 // Post process / Export server
 echo '<tr>';
-echo '<td class="datos2">'.__('post_process');
+echo '<td class="datos2">'.__('Post process');
 pandora_help("postprocess");
 echo '</td>';
 echo '<td class="datos2"><input type="text" name="form_post_process" size="5" value="'.$form_post_process.'"></td>';
-echo '<td class="datos2">'.__('export_server')."</td>";
+echo '<td class="datos2">'.__('Export server')."</td>";
 echo '<td class="datos2"><select name="form_id_export">';
 if ($form_id_export != 0){
     echo "<option value='".$form_id_export."'>".dame_nombre_servidorexportacion($form_id_export)."</option>";
@@ -141,17 +141,17 @@ echo '</tr>';
 
 // Max / min value
 echo '<tr>';
-echo '<td class="datos">'.__('min_value')."</td>";
+echo '<td class="datos">'.__('Min. Value')."</td>";
 echo '<td class="datos"><input type="text" name="form_minvalue" size="5" value="'.$form_minvalue.'"></td>';
-echo '<td class="datos">'.__('max_value')."</td>";
+echo '<td class="datos">'.__('Max. Value')."</td>";
 echo '<td class="datos"><input type="text" name="form_maxvalue" size="5" value="'.$form_maxvalue.'"></td>';
 echo '</tr>';
 
 // Interval & id_module_group
 echo '<tr>';
-echo '<td class="datos2">'.__('interval')."</td>";
+echo '<td class="datos2">'.__('Interval')."</td>";
 echo '<td class="datos2"><input type="text" name="form_interval" size="5" value="'.$form_interval.'"></td>';
-echo '<td class="datos2">'.__('module_group')."</td>";
+echo '<td class="datos2">'.__('Module group')."</td>";
 echo '<td class="datos2">';
 echo '<select name="form_id_module_group">';
 if ($form_id_module_group != 0){
@@ -167,7 +167,7 @@ echo '</tr>';
 
 // Description
 echo '<tr>';
-echo '<td valign="top" class="datos">'.__('description')."</td>";
+echo '<td valign="top" class="datos">'.__('Description')."</td>";
 echo '<td valign="top" class="datos" colspan="3"><textarea name="form_description" cols="65" rows="2">'.$form_description.'</textarea>';
 echo '</tr>';
 echo '</table>';
@@ -176,9 +176,9 @@ echo '</table>';
 echo '<table width="600" cellpadding="4" cellspacing="4">';
 echo '<td valign="top" align="right">';
 if ($update_module_id == NULL){
-	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.__('create').'">';
+	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.__('Create').'">';
 } else {
-	echo '<input name="updbutton" type="submit" class="sub wand" value="'.__('update').'">';
+	echo '<input name="updbutton" type="submit" class="sub wand" value="'.__('Update').'">';
 }
 echo '</table>';
 

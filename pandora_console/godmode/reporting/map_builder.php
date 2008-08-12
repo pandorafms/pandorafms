@@ -65,10 +65,10 @@ if ($create_layout) {
 			$name, $id_group, $background, $height, $width);
 	$result = mysql_query ($sql);
 	if ($result) {
-		echo '<h3 class="suc">'.__('create_ok').'</h3>';
+		echo '<h3 class="suc">'.__('Created successfully').'</h3>';
 		$id_layout = mysql_insert_id ();
 	} else {
-		echo '<h3 class="err">'.__('create_no').'</h3>';
+		echo '<h3 class="err">'.__('Not created. Error inserting data').'</h3>';
 	}
 	if (defined ('AJAX')) {
 		exit;
@@ -81,9 +81,9 @@ if ($delete_layout) {
 	$sql = sprintf ('DELETE FROM tlayout WHERE id = %d', $id_layout);
 	$result = mysql_query ($sql);
 	if ($result) {
-		echo '<h3 class="suc">'.__('delete_ok').'</h3>';
+		echo '<h3 class="suc">'.__('Deleted successfully').'</h3>';
 	} else {
-		echo '<h3 class="err">'.__('delete_no').'</h3>';
+		echo '<h3 class="err">'.__('Not deleted. Error deleting data').'</h3>';
 	}
 	$id_layout = 0;
 }
@@ -108,9 +108,9 @@ if ($update_layout) {
 			$name, $background, $height, $width, $id_layout);
 	$result = mysql_query ($sql);
 	if ($result) {
-		echo '<h3 class="suc">'.__('update_ok').'</h3>';
+		echo '<h3 class="suc">'.__('Update layout successful').'</h3>';
 	} else {
-		echo '<h3 class="err">'.__('update_no').'</h3>';
+		echo '<h3 class="err">'.__('Update layout failed').'</h3>';
 	}
 	if (defined ('AJAX')) {
 		exit;
@@ -165,9 +165,9 @@ if ($create_layout_data) {
 	$result = mysql_query ($sql);
 	
 	if ($result) {
-		echo '<h3 class="suc">'.__('create_ok').'</h3>';
+		echo '<h3 class="suc">'.__('Created successfully').'</h3>';
 	} else {
-		echo '<h3 class="error">'.__('create_no').'</h3>';
+		echo '<h3 class="error">'.__('Not created. Error inserting data').'</h3>';
 	}
 	if (defined ('AJAX')) {
 		exit;
@@ -239,9 +239,9 @@ if ($update_layout_data) {
 	$result = mysql_query ($sql);
 	
 	if ($result) {
-		echo '<h3 class="suc">'.__('modify_ok').'</h3>';
+		echo '<h3 class="suc">'.__('Updated successfully').'</h3>';
 	} else {
-		echo '<h3 class="error">'.__('modify_no').'</h3>';
+		echo '<h3 class="error">'.__('Not updated. Error updating data').'</h3>';
 	}
 }
 
@@ -255,14 +255,14 @@ if ($id_layout) {
 }
 
 if (! $edit_layout && ! $id_layout) {
-	echo "<h2>".__('reporting')." &gt; ".__('map_builder')."</h2>";
+	echo "<h2>".__('Reporting')." &gt; ".__('Map builder')."</h2>";
 	
 	$table->width = '500px';
 	$table->data = array ();
 	$table->head = array ();
-	$table->head[0] = __('map_name');
-	$table->head[1] = __('group');
-	$table->head[2] = __('delete');
+	$table->head[0] = __('Map name');
+	$table->head[1] = __('Group');
+	$table->head[2] = __('Delete');
 	$table->align = array ();
 	$table->align[2] = 'center';
 	
@@ -282,12 +282,12 @@ if (! $edit_layout && ! $id_layout) {
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
 	echo '<form action="index.php?sec=greporting&sec2=godmode/reporting/map_builder" method="post">';
 	print_input_hidden ('edit_layout', 1);
-	print_submit_button (__('create'), '', false, 'class="sub wand"');
+	print_submit_button (__('Create'), '', false, 'class="sub wand"');
 	echo '</form>';
 	echo '</div>';
 } else {
-	echo "<h2>".__('reporting')." &gt; ";
-	echo __('map_builder');
+	echo "<h2>".__('Reporting')." &gt; ";
+	echo __('Map builder');
 	pandora_help ("map_builder");
 	echo "</h2>";
 	
@@ -297,17 +297,17 @@ if (! $edit_layout && ! $id_layout) {
 	
 	$table->width = '300px';
 	$table->data = array ();
-	$table->data[0][0] = __('name');
+	$table->data[0][0] = __('Name');
 	$table->data[0][1] = print_input_text ('name', $name, '', 15, 50, true);
-	$table->data[1][0] = __('group');
+	$table->data[1][0] = __('Group');
 	$table->data[1][1] = print_select ($groups, 'id_group', $id_group, '', '', '', true);
-	$table->data[2][0] = __('background');
+	$table->data[2][0] = __('Background');
 	$table->data[2][1] = print_select ($backgrounds_list, 'background', $background, '', 'None', '', true);
 	
 	if ($id_layout) {
-		$table->data[3][0] = __('width');
+		$table->data[3][0] = __('Width');
 		$table->data[3][1] = print_input_text ('width', $width, '', 3, 5, true);
-		$table->data[4][0] = __('height');
+		$table->data[4][0] = __('Height');
 		$table->data[4][1] = print_input_text ('height', $height, '', 3, 5, true);
 	}
 	echo '<form action="index.php?sec=greporting&sec2=godmode/reporting/map_builder" method="post">';
@@ -315,11 +315,11 @@ if (! $edit_layout && ! $id_layout) {
 	
 	echo '<div style="width: '.$table->width.'" class="action-buttons">';
 	if ($id_layout) {
-		print_submit_button (__('update'), 'update_layout', false, 'class="sub upd"');
+		print_submit_button (__('Update'), 'update_layout', false, 'class="sub upd"');
 		print_input_hidden ('update_layout', 1);
 		print_input_hidden ('id_layout', $id_layout);
 	} else {
-		print_submit_button (__('create'), 'create_layout', false, 'class="sub wand"');
+		print_submit_button (__('Create'), 'create_layout', false, 'class="sub wand"');
 		print_input_hidden ('create_layout', 1);
 	}
 	echo '</div>';
@@ -352,7 +352,7 @@ if (! $edit_layout && ! $id_layout) {
 		print_input_hidden ('id_layout', $id_layout);
 		
 		echo '<div class="action-buttons" style="margin-top: 180px">';
-		print_submit_button (__('delete'), 'delete_buttons', true, 'class="sub delete"');
+		print_submit_button (__('Delete'), 'delete_buttons', true, 'class="sub delete"');
 		echo '</div>';
 		echo '</div>';
 		echo '</form>';
@@ -391,29 +391,29 @@ if (! $edit_layout && ! $id_layout) {
 		$table->rowstyle[3] = 'display: none';
 		$table->rowstyle[4] = 'display: none';
 		
-		$table->data[0][0] = __('label');
+		$table->data[0][0] = __('Label');
 		$table->data[0][1] = print_input_text ('label', '', '', 20, 200, true);
-		$table->data[1][0] = __('label_color');
+		$table->data[1][0] = __('Label color');
 		$table->data[1][1] = print_input_text ('label_color', '#000000', '', 7, 7, true);
-		$table->data[2][0] = __('type');
+		$table->data[2][0] = __('Type');
 		$table->data[2][1] = print_select (get_layout_data_types (), 'type', '', '', '', '', true);
-		$table->data[3][0] = __('height');
+		$table->data[3][0] = __('Height');
 		$table->data[3][1] = print_input_text ('height', '', '', 5, 5, true);
-		$table->data[4][0] = __('width');
+		$table->data[4][0] = __('Width');
 		$table->data[4][1] = print_input_text ('width', '', '', 5, 5, true);
-		$table->data[5][0] = __('agent');
+		$table->data[5][0] = __('Agent');
 		$table->data[5][1] = print_select ($agents, 'agent', '', '', '--', 0, true);
-		$table->data[6][0] = __('module');
+		$table->data[6][0] = __('Module');
 		$table->data[6][1] = print_select (array (), 'module', '', '', '--', 0, true);
-		$table->data[7][0] = __('period');
+		$table->data[7][0] = __('Period');
 		$table->data[7][1] = print_select ($intervals, 'period', '', '', '--', 0, true);
-		$table->data[8][0] = __('image');
+		$table->data[8][0] = __('Image');
 		$table->data[8][1] = print_select ($images_list, 'image', '', '', 'None', '', true);
 		$table->data[8][1] .= '<div id="image_preview"> </div>';
-		$table->data[9][0] = __('parent');
+		$table->data[9][0] = __('Parent');
 		$table->data[9][1] = print_select_from_sql ('SELECT id, label FROM tlayout_data WHERE id_layout = '.$id_layout,
 							'parent_item', '', '', 'None', '', true);
-		$table->data[10][0] = __('map_linked');
+		$table->data[10][0] = __('Map linked');
 		$table->data[10][1] = print_select_from_sql ('SELECT id, name FROM tlayout WHERE id != '.$id_layout,
 							'map_linked', '', '', 'None', '', true);
 		
@@ -424,7 +424,7 @@ if (! $edit_layout && ! $id_layout) {
 		print_input_hidden ('id_layout', $id_layout);
 		print_input_hidden ('id_layout_data', 0);
 		echo '<div style="width: '.$table->width.'" class="action-buttons">';
-		print_submit_button (__('create'), 'create_layout_data_button', false, 'class="sub wand"');
+		print_submit_button (__('Create'), 'create_layout_data_button', false, 'class="sub wand"');
 		echo '</div>';
 		echo '</form>';
 		echo '</div>';
@@ -552,7 +552,7 @@ $(document).ready (function () {
 					$("#form_layout_data_editor #hidden-update_layout_data").attr ('value', 1);
 					$("#form_layout_data_editor #hidden-create_layout_data").attr ('value', 0);
 					$("#form_layout_data_editor #hidden-id_layout_data").attr ('value', id);
-					$("#form_layout_data_editor #submit-create_layout_data_button").attr ('value', "<?=__('update')?>").removeClass ('wand').addClass ('upd');
+					$("#form_layout_data_editor #submit-create_layout_data_button").attr ('value', "<?=__('Update')?>").removeClass ('wand').addClass ('upd');
 					$("#form_layout_data_editor #text-label_color").attr ('value', data['label_color']);
 					$(".ColorPickerDivSample").css ('background-color', data['label_color']);
 					agent_changed (null, data['id_agent'], data['id_agente_modulo']);

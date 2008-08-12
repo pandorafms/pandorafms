@@ -27,16 +27,16 @@ if (! give_acl ($config['id_user'], 0, "DM")) {
 	- A more powerful selection (by Agent, by Module, etc).
  */
 
-echo "<h2>".__('dbmain_title')." &gt; ";
-echo __('db_info2')."</h2>";
+echo "<h2>".__('Database Maintenance')." &gt; ";
+echo __('Database Information')."</h2>";
 echo "<table border=0>";
 echo "<tr><td>";
-echo '<h3>'.__('db_agente_modulo').'</h3>';
+echo '<h3>'.__('Modules per agent').'</h3>';
 echo "<img src='reporting/fgraph.php?tipo=db_agente_modulo&width=600&height=200'><br>";
 echo "<tr><td><br>";
 echo "<tr><td>";
-echo '<h3>'.__('db_agente_paquetes').'</h3>';
+echo '<h3>'.__('Packets per agent').'</h3>';
 echo "<img src='reporting/fgraph.php?tipo=db_agente_paquetes&width=600&height=200'><br>";
-echo "<br><br><a href='index.php?sec=gdbman&sec2=godmode/db/db_info_data'>".__('press_db_info')."</a>";
+echo "<br><br><a href='index.php?sec=gdbman&sec2=godmode/db/db_info_data'>".__('Press here to get DB Info as text')."</a>";
 echo "</table>";
 ?>

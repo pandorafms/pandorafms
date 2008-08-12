@@ -134,7 +134,7 @@ if ( isset ($_POST["create_agent"])) { // Create a new and shining agent
 	$sql1='SELECT nombre FROM tagente WHERE nombre = "'.$nombre_agente.'"';
 	$result=mysql_query($sql1);
 	if ($row=mysql_fetch_array($result)){
-		$agent_creation_error  =  __('agent_exists');
+		$agent_creation_error  =  __('Agent exists');
 		$agent_created_ok = 0;
 	} else {
 		$sql_insert ="INSERT INTO tagente (nombre, direccion, id_grupo, intervalo, comentarios,modo, id_os, disabled, id_network_server, id_plugin_server, id_wmi_server, id_prediction_server, id_parent) VALUES ('$nombre_agente', '$direccion_agente', $grupo , $intervalo , '$comentarios',$modo, $id_os, $disabled, $id_network_server, $id_plugin_server, $id_wmi_server, $id_prediction_server, $id_parent)";
@@ -170,28 +170,28 @@ echo "<div id='menu_tab_left'>
 <ul class='mn'>";
 echo "<li class='nomn'>";
 echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'>
-<img src='images/setup.png' class='top' border='0'>&nbsp; ".substr(dame_nombre_agente($id_agente),0,15)." - ".__('setup_mode')."</a>";
+<img src='images/setup.png' class='top' border='0'>&nbsp; ".substr(dame_nombre_agente($id_agente),0,15)." - ".__('Setup mode')."</a>";
 echo "</li>";
 echo "</ul></div>";
 
 echo "<div id='menu_tab'><ul class='mn'>";
 
 echo "<li class='nomn'>";
-echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/zoom.png' width='16' class='top' border='0'>&nbsp;".__('view')."</a>";
+echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/zoom.png' width='16' class='top' border='0'>&nbsp;".__('View')."</a>";
 echo "</li>";
 
 if ($tab == "main")
 	echo "<li class='nomn_high'>";
 else
 	echo "<li class='nomn'>";
-echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=$id_agente'><img src='images/cog.png' width='16' class='top' border='0'>&nbsp; ".__('setup_agent')."</a>";
+echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=$id_agente'><img src='images/cog.png' width='16' class='top' border='0'>&nbsp; ".__('Setup Agent')."</a>";
 echo "</li>";
 
 if ($tab == "module")
 	echo "<li class='nomn_high'>";
 else
 	echo "<li class='nomn'>";
-echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente=$id_agente'><img src='images/lightbulb.png' width='16' class='top' border='0'>&nbsp;".__('modules')."</a>";
+echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente=$id_agente'><img src='images/lightbulb.png' width='16' class='top' border='0'>&nbsp;".__('Modules')."</a>";
 echo "</li>";
 
 if ($tab == "alert")
@@ -205,7 +205,7 @@ if ($tab == "template")
 	echo "<li class='nomn_high'>";
 else
 	echo "<li class='nomn'>";
-echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=template&id_agente=$id_agente'><img src='images/network.png' width='16' class='top' border=0>&nbsp;".__('ntemplates')."</a>";
+echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=template&id_agente=$id_agente'><img src='images/network.png' width='16' class='top' border=0>&nbsp;".__('Net. Templates')."</a>";
 echo "</li>";
 
 echo "</ul>";
@@ -219,10 +219,10 @@ echo "<div style='height: 25px'> </div>";
 // Show agent creation results
 if (isset($_POST["create_agent"])){
 	if ($agent_created_ok == 0){
-		echo "<h3 class='error'>".__('create_agent_no')."</h3>";
+		echo "<h3 class='error'>".__('There was a problem creating agent')."</h3>";
 		echo $agent_creation_error;
 	} else {
-		echo "<h3 class='suc'>".__('create_agent_ok')."</h3>";
+		echo "<h3 class='suc'>".__('Agent successfully created')."</h3>";
 	}
 }
 
@@ -240,7 +240,7 @@ if (isset($_GET["fix_module"])){
 		$media = $media * 1.3;
 		$sql1 = "DELETE FROM tagente_datos WHERE datos > $media AND id_agente_modulo = $id_module AND id_agente = $id_agent";
 		$result=mysql_query($sql1);
-		echo "<h3 class='suc'>".__('delete_data_above')." $media</h3>";
+		echo "<h3 class='suc'>".__('Deleted data above')." $media</h3>";
 	}
 }
 
@@ -253,9 +253,9 @@ if (isset($_GET["delete_alert"])){ // if modified some parameter
 	$sql1='DELETE FROM talerta_agente_modulo WHERE id_aam = '.$id_borrar_modulo;
 	$result=mysql_query($sql1);
 		if (! $result)
-			echo "<h3 class='error'>".__('delete_alert_no')."</h3>";
+			echo "<h3 class='error'>".__('There was a problem deleting alert')."</h3>";
 		else
-			echo "<h3 class='suc'>".__('delete_alert_ok')."</h3>";
+			echo "<h3 class='suc'>".__('Alert successfully deleted')."</h3>";
 
 }
 
@@ -267,9 +267,9 @@ if (isset($_GET["delete_alert_comp"])){ // if modified some parameter
 	$sql1='DELETE FROM tcompound_alert WHERE id_aam = '.$id_borrar_modulo;
 	$result=mysql_query($sql1);
 	if (! $result)
-		echo "<h3 class='error'>".__('delete_alert_no')."</h3>";
+		echo "<h3 class='error'>".__('There was a problem deleting alert')."</h3>";
 	else
-		echo "<h3 class='suc'>".__('delete_alert_ok')."</h3>";
+		echo "<h3 class='suc'>".__('Alert successfully deleted')."</h3>";
 }
 
 // Create alert
@@ -342,10 +342,10 @@ if (isset($_POST["insert_alert"])){ // if created alert
 			'$campo2_rec' )";
 	$result=mysql_query($sql_insert);	
 	if (! $result) {
-		echo "<h3 class='error'>".__('create_alert_no')."</h3>";
+		echo "<h3 class='error'>".__('There was a problem creating alert')."</h3>";
 	} else {
 		$id_alerta_agente_modulo = mysql_insert_id();
-		echo "<h3 class='suc'>".__('create_alert_ok')."</h3>";
+		echo "<h3 class='suc'>".__('Alert successfully created')."</h3>";
 	}
 	
 }
@@ -443,10 +443,10 @@ if (isset($_POST["update_alert"])){ // Update an existing alert
 		WHERE id_aam = ".$id_aam;
 	$result=mysql_query($sql_insert);	
 	if (! $result) {
-		echo "<h3 class='error'>".__('update_alert_no')."</h3>";
+		echo "<h3 class='error'>".__('There was a problem updating alert')."</h3>";
 	}
 	else 
-		echo "<h3 class='suc'>".__('update_agent_ok')."</h3>";
+		echo "<h3 class='suc'>".__('Agent successfully updated')."</h3>";
 }
 
 // ================
@@ -485,9 +485,9 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	
 	$result=mysql_query($sql_update);
 	if (! $result) {
-		echo "<h3 class='error'>".__('update_agent_no')."</h3>";
+		echo "<h3 class='error'>".__('There was a problem updating agent')."</h3>";
 	} else {
-		echo "<h3 class='suc'>".__('update_agent_ok')."</h3>";
+		echo "<h3 class='suc'>".__('Agent successfully updated')."</h3>";
 	}
 }
 
@@ -519,7 +519,7 @@ if (isset($_GET["id_agente"])) {
 			$disabled=$row["disabled"];
 			$id_parent = $row["id_parent"];
 		} else {
-			echo "<h3 class='error'>".__('agent_error')."</h3>";
+			echo "<h3 class='error'>".__('There was a problem loading agent')."</h3>";
 			echo "</table>";
 			echo "</div><div id='foot'>";
 				include ("general/footer.php");
@@ -691,9 +691,9 @@ if ((isset($_POST["update_module"])) && (!isset($_POST["oid"]))){ // if modified
 	WHERE id_agente_modulo = '$id_agente_modulo'";
 	$result=mysql_query($sql_update);
 	if (! $result) {
-		echo "<h3 class='error'>".__('update_module_no')."</h3>";
+		echo "<h3 class='error'>".__('There was a problem updating module')."</h3>";
 	} else {
-		echo "<h3 class='suc'>".__('update_module_ok')."</h3>";
+		echo "<h3 class='suc'>".__('Module successfully updated')."</h3>";
 	}
 
 }
@@ -704,9 +704,9 @@ if ((isset($_POST["update_module"])) && (!isset($_POST["oid"]))){ // if modified
 if (isset($_POST["oid"])){
 	snmp_set_quick_print(1);	
 	if (! ($snmpwalk = snmprealwalk($form_ip_target, $form_snmp_community, ""))) {
-		echo "<h3 class='error'>".__('cannot_read_snmp')."</h3>";
+		echo "<h3 class='error'>".__('Cannot read from SNMP source')."</h3>";
 	} else {
-		echo "<h3 class='suc'>".__('ok_read_snmp')."</h3>";
+		echo "<h3 class='suc'>".__('SNMP source has been scanned')."</h3>";
 	}
 }
 
@@ -734,10 +734,10 @@ if (((!isset($_POST["nc"]) OR ($_POST["nc"]==-1))) && (!isset($_POST["oid"])) &&
 		VALUES ($id_agente, $form_id_tipo_modulo, '$form_name', '$form_description', $form_maxvalue, $form_minvalue, '$form_snmp_oid', '$form_snmp_community', $form_id_module_group, $form_interval, '$form_ip_target', $form_tcp_port, '$form_tcp_rcv', '$form_tcp_send', $form_id_export, '$form_plugin_user', '$form_plugin_pass', '$form_plugin_parameter', $form_id_plugin, $form_post_process, $form_id_prediction_module, $form_max_timeout, $form_disabled, $form_id_modulo)";
 	$result=mysql_query($sql_insert);
 	if (! $result){
-		echo "<h3 class='error'>".__('add_module_no')."</h3>";
+		echo "<h3 class='error'>".__('There was a problem adding module')."</h3>";
 		echo "<i>DEBUG: $sql_insert</i>";
 	} else {
-		echo "<h3 class='suc'>".__('add_module_ok')."</h3>";
+		echo "<h3 class='suc'>".__('Module added successfully')."</h3>";
 		$id_agente_modulo = mysql_insert_id();
 		// Create with different estado if proc type or data type
 		if (($form_id_tipo_modulo == 2) ||   // data_proc
@@ -778,9 +778,9 @@ if (isset($_GET["delete_module"])){ // DELETE agent module !
 	WHERE id_agente_modulo = ".$id_borrar_modulo;
 	$result=mysql_query($sql_delete);
 	if (! $result) {
-		echo "<h3 class='error'>".__('delete_module_no')."</h3>"; 
+		echo "<h3 class='error'>".__('There was a problem deleting module')."</h3>"; 
 	} else {
-		echo "<h3 class='suc'>".__('delete_module_ok')."</h3>";
+		echo "<h3 class='suc'>".__('Module deleted successfully')."</h3>";
 	}
 	// Then delete all staus
 	$sql_delete = "DELETE FROM tagente_estado 

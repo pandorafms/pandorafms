@@ -25,9 +25,9 @@ if (isset($_GET["delete_profile"])){ // if any parameter is modified
 	$query_del2="DELETE FROM tusuario_perfil WHERE id_perfil = '".$id_perfil."'";
 	$resq1=mysql_query($query_del1);
 		if (! $resq1)
-			echo "<h3 class='error'>".__('delete_profile_no')."</h3>";
+			echo "<h3 class='error'>".__('There was a problem deleting profile')."</h3>";
 		else
-			echo "<h3 class='suc'>".__('delete_profile_ok')."</h3>";
+			echo "<h3 class='suc'>".__('Profile successfully deleted')."</h3>";
 	$resq1=mysql_query($query_del2);
 	unset($id_perfil); // forget it to show list
 }
@@ -53,7 +53,7 @@ elseif (isset($_GET["new_profile"])){ // create a new profile
 	$resq1=mysql_query($query_del1);
 	$rowq1=mysql_fetch_array($resq1);
 	if (!$rowq1){
-		echo "<h3 class='error'>".__('profile_error')."</h3>";
+		echo "<h3 class='error'>".__('There was a problem loading profile')."</h3>";
 		echo "</table>";
 		include ("general/footer.php");
 		exit;
@@ -106,9 +106,9 @@ elseif (isset($_GET["new_profile"])){ // create a new profile
 		// echo "DEBUG: ".$query;
 		$res=mysql_query($query);
 		if ($res)
-			echo "<h3 class='suc'>".__('create_profile_ok')."</h3>";
+			echo "<h3 class='suc'>".__('Profile successfully created')."</h3>";
 		else {
-			echo "<h3 class='error'>".__('create_profile_no')."</h3>";
+			echo "<h3 class='error'>".__('There was a problem creating profile')."</h3>";
 		}
 
 	} else { // UPDATE
@@ -127,17 +127,17 @@ elseif (isset($_GET["new_profile"])){ // create a new profile
 		WHERE id_perfil = $id_perfil ";
 		// echo "DEBUG: ".$query;
 		$res=mysql_query($query);
-		echo "<h3 class='suc'>".__('profile_upd')."</h3>";
+		echo "<h3 class='suc'>".__('Profile successfully updated')."</h3>";
 	}
  	unset($id_perfil);
 }
-echo '<h2>'.__('profile_title').' &gt; ';
+echo '<h2>'.__('Profile management').' &gt; ';
 echo (isset($_GET["new_profile"])) ?
-	(__('create_profile').'</h2>'):
+	(__('Create profile').'</h2>'):
 	(
 	(isset($_GET["edit_profile"]))?
-	(__('update_profile').'></h2>'):
-	(__('definedprofiles').'</h2>')
+	(__('Update profile').'></h2>'):
+	(__('Profiles defined in Pandora').'</h2>')
 	);
 // Form to manage date
 if (isset ($id_perfil)){ // There are values defined, let's show form with data for INSERT or UPDATE
@@ -146,46 +146,46 @@ if (isset ($id_perfil)){ // There are values defined, let's show form with data 
 	echo "<form method='post' action='index.php?sec=gperfiles&sec2=godmode/profiles/profile_list&update_data'>";
 	echo "<input type=hidden name=id_perfil value='".$id_perfil."'>";
 	echo "
-	<td class=datos>".__('profile_name')."</td>
+	<td class=datos>".__('Profile name')."</td>
 	<td class=datos>
 	<input name='name' type=text size='27' value='".$name."'></td></tr>
-	<tr><td class=datos2>".__('incident_view')."</td>
+	<tr><td class=datos2>".__('View incidents')."</td>
 	<td class=datos2>
 	<input name='incident_view' type=checkbox class='chk' value='1' ";
 	if ($incident_view == 1) echo "checked"; echo "></td></tr>
-	<tr><td class=datos>".__('incident_edit')."</td>
+	<tr><td class=datos>".__('Edit incidents')."</td>
 	<td class=datos>
 	<input name='incident_edit' type=checkbox class='chk' value='1' ";
 	if ($incident_edit == 1) echo "checked";echo "></td></tr>
-	<tr><td class=datos2>".__('manage_incidents')."</td>
+	<tr><td class=datos2>".__('Manage incidents')."</td>
 	<td class=datos2>
 	<input name='incident_management' type=checkbox class='chk' value='1' ";
 	if ($incident_management == 1) echo "checked";echo "></td></tr>
-	<tr><td class=datos>".__('view_agents')."</td>
+	<tr><td class=datos>".__('View agents')."</td>
 	<td class=datos>
 	<input name='agent_view' type=checkbox class='chk' value='1' ";
 	if ($agent_view == 1) echo "checked";echo "></td></tr>
-	<tr><td class=datos2>".__('agent_edit')."</td>
+	<tr><td class=datos2>".__('Edit agents')."</td>
 	<td class=datos2>
 	<input name='agent_edit' type=checkbox class='chk' value='1' ";
 	if ($agent_edit == 1) echo "checked";echo "></td></tr>
-	<tr><td class=datos>".__('alert_edit')."</td>
+	<tr><td class=datos>".__('Edit alerts')."</td>
 	<td class=datos>
 	<input name='alert_edit' type=checkbox class='chk' value='1' ";
 	if ($alert_edit == 1) echo "checked";echo "></td></tr>
-	<tr><td class=datos2>".__('manage_users')."</td>
+	<tr><td class=datos2>".__('Manage users')."</td>
 	<td class=datos2>
 	<input name='user_management' class='chk' type=checkbox value='1' ";
 	if ($user_management == 1) echo "checked";echo "></td></tr>
-	<tr><td class=datos>".__('manage_db')."</td>
+	<tr><td class=datos>".__('Manage Database')."</td>
 	<td class=datos>
 	<input name='db_management' class='chk' type=checkbox value='1' ";
 	if ($db_management == 1) echo "checked";echo "></td></tr>
-	<tr><td class=datos2>".__('manage_alerts')."</td>
+	<tr><td class=datos2>".__('Manage alerts')."</td>
 	<td class=datos2>
 	<input name='alert_management' class='chk' type=checkbox value='1' ";
 	if ($alert_management == 1) echo "checked";echo "></td></tr>
-	<tr><td class=datos>".__('pandora_management')."</td>
+	<tr><td class=datos>".__('Pandora management')."</td>
 	<td class=datos>
 	<input name='pandora_management' class='chk' type=checkbox value='1' ";
 	if ($pandora_management == 1) echo "checked";echo "></td></tr>
@@ -196,11 +196,11 @@ if (isset ($id_perfil)){ // There are values defined, let's show form with data 
 	
 	if (isset($_GET["new_profile"])){
 		echo "
-		<input name='crtbutton' type='submit' class='sub wand' value='".__('create')."'>";
+		<input name='crtbutton' type='submit' class='sub wand' value='".__('Create')."'>";
 	}
 	if (isset($_GET["edit_profile"])){
 		echo "
-		<input name='uptbutton' type='submit' class='sub upd' value='" .__('update')."'>";
+		<input name='uptbutton' type='submit' class='sub upd' value='" .__('Update')."'>";
 	}
 	echo "</td></tr></table>";
 	
@@ -212,7 +212,7 @@ if (isset ($id_perfil)){ // There are values defined, let's show form with data 
 	$query_del1="SELECT * FROM tperfil";
 	$resq1=mysql_query($query_del1);
 	echo "<tr>";
-	echo "<th width='180px'><font size=1>".__('profiles');
+	echo "<th width='180px'><font size=1>".__('Profiles');
 	echo "</th><th width='40px'>
 	<font size=1>IR<a href='#' class='tipp'>&nbsp;<span>".$help_label["IR"]."</span></a>";
 	echo "</th><th width='40px'>
@@ -233,7 +233,7 @@ if (isset ($id_perfil)){ // There are values defined, let's show form with data 
 	<font size=1>LM<a href='#' class='tipp'>&nbsp;<span>".$help_label["LM"]."</span></a>";
 	echo "</th><th width='40px'>
 	<font size=1>PM<a href='#' class='tipp'>&nbsp;<span>".$help_label["PM"]."</span></a>";
-	echo "</th><th width='40px'>".__('delete')."</th></tr>";
+	echo "</th><th width='40px'>".__('Delete')."</th></tr>";
 	while ($rowdup=mysql_fetch_array($resq1)){
 		$id_perfil = $rowdup["id_perfil"];
 		$nombre=$rowdup["name"];
@@ -286,7 +286,7 @@ if (isset ($id_perfil)){ // There are values defined, let's show form with data 
 			
 		echo "</td><td class='$tdcolor'>";
 		if ($pandora_management == 1) echo "<img src='images/ok.png' border=0>";
-		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/profiles/profile_list&delete_profile=".$id_perfil."' onClick='if (!confirm(\' ".__('are_you_sure')."\')) return false;'><img border='0' src='images/cross.png'></a></td></tr>";
+		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/profiles/profile_list&delete_profile=".$id_perfil."' onClick='if (!confirm(\' ".__('Are you sure?')."\')) return false;'><img border='0' src='images/cross.png'></a></td></tr>";
 		
 	}
 		echo "</table>";
@@ -294,7 +294,7 @@ if (isset ($id_perfil)){ // There are values defined, let's show form with data 
 		echo '<table width="750">';
 		echo '<tr><td align="right">';
 		echo "<form method=post action='index.php?sec=gperfiles&sec2=godmode/profiles/profile_list&new_profile=1'>";
-		echo "<input type='submit' class='sub next' name='crt' value='".__('create_profile')."'>";
+		echo "<input type='submit' class='sub next' name='crt' value='".__('Create profile')."'>";
 		echo "</form></table>";
 }
 ?>

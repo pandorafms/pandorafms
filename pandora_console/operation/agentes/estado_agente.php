@@ -38,7 +38,7 @@ if (isset($_GET["ag_group_refresh"])){
 }
 $search = get_parameter ("search", "");
 
-echo "<h2>".__('ag_title')." &gt; ".__('summary')."</h2>";
+echo "<h2>".__('Pandora Agents')." &gt; ".__('Summary')."</h2>";
 
 // Show group selector (POST)
 if (isset($_POST["ag_group"])){
@@ -53,7 +53,7 @@ if (isset($_POST["ag_group"])){
 }
 
 echo "<table cellpadding='4' cellspacing='4' class='databox'><tr>";
-echo "<td valign='top'>".__('group')."</td>";
+echo "<td valign='top'>".__('Group')."</td>";
 echo "<td valign='top'>";
 echo "<select name='ag_group' onChange='javascript:this.form.submit();' 
 class='w130'>";
@@ -68,17 +68,17 @@ echo "</select>";
 echo "<td valign='top'>
 <noscript>
 <input name='uptbutton' type='submit' class='sub' 
-value='".__('show')."'>
+value='".__('Show')."'>
 </noscript>
 </td></form><td valign='top'>";
 
-echo __('free_text_search');
+echo __('Free text for search (*)');
 echo "</td><td valign='top'>";
 echo "<form method='post' action='index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60'>";
 echo "<input type=text name='search' size='15'>";
 echo "</td><td valign='top'>";
 echo "<input name='srcbutton' type='submit' class='sub' 
-value='".__('search')."'>";
+value='".__('Search')."'>";
 echo "</form>";
 echo "</td></table>";
 
@@ -152,14 +152,14 @@ pagination ($total_events,
 $result=mysql_query($sql);
 if (mysql_num_rows($result)){
 	echo "<table cellpadding='4' cellspacing='4' width='700' class='databox' style='margin-top: 10px'>";
-	echo "<th>".__('agent')."</th>";
-	echo "<th>".__('os')."</th>";
-	echo "<th>".__('interval')."</th>";
-	echo "<th>".__('group')."</th>";
-	echo "<th>".__('modules')."</th>";
-	echo "<th>".__('status')."</th>";
-	echo "<th>".__('alerts')."</th>";
-	echo "<th>".__('last_contact')."</th>";
+	echo "<th>".__('Agent')."</th>";
+	echo "<th>".__('OS')."</th>";
+	echo "<th>".__('Interval')."</th>";
+	echo "<th>".__('Group')."</th>";
+	echo "<th>".__('Modules')."</th>";
+	echo "<th>".__('Status')."</th>";
+	echo "<th>".__('Alerts')."</th>";
+	echo "<th>".__('Last contact')."</th>";
 	// For every agent defined in the agent table
 	$color = 1;
 	while ($row=mysql_fetch_array($result)){
@@ -318,21 +318,21 @@ echo '<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.p
 			if ($numero_monitor <> 0){
 				if ($estado_general <> 0){
 					if ($estado_cambio == 0){
-						echo "<img src='images/pixel_red.png' width=40 height=18 title='".__('red_light')."'>";
+						echo "<img src='images/pixel_red.png' width=40 height=18 title='".__('At least one monitor fails')."'>";
 					} else {
-						echo "<img src='images/pixel_yellow.png' width=40 height=18 title='".__('yellow_light')."'>";
+						echo "<img src='images/pixel_yellow.png' width=40 height=18 title='".__('Change between Green/Red state')."'>";
 					}
 				} elseif ($monitor_ok > 0) {
-					echo "<img src='images/pixel_green.png' width=40 height=18 title='".__('green_light')."'>";
+					echo "<img src='images/pixel_green.png' width=40 height=18 title='".__('All Monitors OK')."'>";
 				}
 				elseif ($numero_datamodules > 0) {
-					echo "<img src='images/pixel_gray.png' width=40 height=18 title='".__('no_light')."'>";
+					echo "<img src='images/pixel_gray.png' width=40 height=18 title='".__('Agent without monitors')."'>";
 				}
 				elseif ($monitor_down > 0) {
-					echo "<img src='images/pixel_fucsia.png' width=40 height=18 title='".__('broken_light')."'>"; 
+					echo "<img src='images/pixel_fucsia.png' width=40 height=18 title='".__('Agent down')."'>"; 
 				}
 			} else 
-				echo "<img src='images/pixel_blue.png' width=40 height=18 title='".__('blue_light')."'>";
+				echo "<img src='images/pixel_blue.png' width=40 height=18 title='".__('Agent without data')."'>";
 			
 			// checks if an alert was fired recently
 			echo "<td class='$tdcolor' align='center'>";
@@ -340,14 +340,14 @@ echo '<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.p
 				echo "<img src='images/pixel_gray.png' width=20 height=9>";
 			else {
 				if (check_alert_fired($id_agente) == 1) 
-					echo "<img src='images/pixel_red.png' width=20 height=9 title='".__('fired')."'>";
+					echo "<img src='images/pixel_red.png' width=20 height=9 title='".__('Alert fired')."'>";
 				else
-					echo "<img src='images/pixel_green.png' width=20 height=9 title='".__('not_fired')."'>";
+					echo "<img src='images/pixel_green.png' width=20 height=9 title='".__('Alert not fired')."'>";
 			}				
 			echo "</td>";
 			echo "<td class='$tdcolor'>";
 			if ( $ultimo_contacto == "0000-00-00 00:00:00"){
-				echo __('never');
+				echo __('Never');
 			} else {
 				$ultima = strtotime($ultimo_contacto);
 				$ahora = strtotime("now");
@@ -374,7 +374,7 @@ echo '<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.p
 	echo "</table><br>";
 	require "bulbs.php";
 } else {
-	echo '</table><br><div class="nf">'.__('no_agent').'</div>';
+	echo '</table><br><div class="nf">'.__('There are no agents included in this group').'</div>';
 	if (give_acl ($config['id_user'], 0, "LM")
 		|| give_acl ($config['id_user'], 0, "AW")
 		|| give_acl ($config['id_user'], 0, "PM")
@@ -383,7 +383,7 @@ echo '<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.p
 		
 		echo "&nbsp;<form method='post' action='index.php?sec=gagente&
 			sec2=godmode/agentes/configurar_agente&create_agent=1'><input type='submit' class='sub next' name='crt'
-			value='".__('create_agent')."'></form>";
+			value='".__('Create agent')."'></form>";
 	}
 }
 

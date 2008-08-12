@@ -1,3 +1,17 @@
+2008-08-12  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+        * operation/menu.php: Made short tag, normal tag
+
+	* include/functions.php: Got rid of references to language files
+
+	* godmode/servers/plugin.php: Made proper english
+
+	* godmode/servers/manage_recontask.php: Made proper HTML
+
+	* godmode/profiles/profile_list.php: Translation of help strings
+
+	* godmode/agentes/manage_config_remote.php: Fixed typo that generated errors
+
 2008-08-12  Esteban Sanchez <estebans@artica.es>
 
 	* pandoradb_data.sql: Added default languages.

@@ -138,7 +138,7 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 		
 		// Form buttons
 		echo '<td align="right" class="datosb">';
-		echo '<input type="submit" name="copy" class="sub next" value="'.w__('Replicate configuration').'" onClick="if (!confirm("'.__('Are you sure?').'")) return false;>';
+		echo '<input type="submit" name="copy" class="sub next" value="'.__('Replicate configuration').'" onClick="if (!confirm("'.__('Are you sure?').'")) return false;>';
 		echo '<tr><td colspan=2>';
 		echo '</div></td></tr>';
 		echo '</table>';

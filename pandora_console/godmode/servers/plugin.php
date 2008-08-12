@@ -219,7 +219,7 @@ else {
 		}
 		echo "</table>";
 	} else {
-		echo '<div class="nf">'. __('There is no plugins in the system');
+		echo '<div class="nf">'. __('There are no plugins in the system');
 		echo "<br>";
 	}
 	echo "<table width=530>";

@@ -197,7 +197,6 @@ function popup_help ($help_id, $return = false) {
  */
 function no_permission () {
 	require("config.php");
-	require ("include/languages/language_".$config["language"].".php");
 	echo "<h3 class='error'>".__('You don\'t have access')."</h3>";
 	echo "<img src='images/noaccess.png' alt='No access' width='120'><br><br>";
 	echo "<table width=550>";
@@ -216,9 +215,8 @@ function no_permission () {
  */
 function unmanaged_error ($error = "") {
 	require("config.php");
-	require ("include/languages/language_".$config["language"].".php");
 	echo "<h3 class='error'>".__('Unmanaged error')."</h3>";
-	echo "<img src='images/errror.png' alt='error'><br><br>";
+	echo "<img src='images/error.png' alt='error'><br><br>";
 	echo "<table width=550>";
 	echo "<tr><td>";
 	echo __('Unmanaged error');
@@ -283,7 +281,6 @@ function list_files ($directory, $stringSearch, $searchHandler, $return) {
  */
 function pagination ($count, $url, $offset) {
 	global $config;
-	require ("include/languages/language_".$config["language"].".php");
 	
 	/* 	URL passed render links with some parameter
 			&offset - Offset records passed to next page

@@ -26,7 +26,7 @@ if (! isset ($config['id_user'])) {
 }
 ?>
 
-<div class="tit bg">:: <?= __('Operation'); ?> ::</div>
+<div class="tit bg">:: <?php echo __('Operation'); ?> ::</div>
 <div class="menu-operation" id="menu-operation">
 <?php
 $sec = get_parameter ('sec');

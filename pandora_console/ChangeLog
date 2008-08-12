@@ -1,6 +1,26 @@
+2008-08-12  Esteban Sanchez <estebans@artica.es>
+
+	* godmode/db/db_purge.php: Use print_help_tip() to show help tip.
+
+	* godmode/profiles/profile_list.php: Use print_help_tip(). Removed
+	deprecated $help_label.
+
+	* godmode/users/configure_user.php: Better code to show user level
+	radio buttons and help.
+
+	* include/functions_db.php: Removed deprecated function
+	load_lang_file().
+
+	* operation/agentes/datos_agente.php, ajax.php,
+	operation/reporting/reporting_viewer_pdf.php, reporting/stat_win.php,
+	operation/agentes/exportdata.php: Removed inclusion of old
+	language files.
+
+	* include/languages/index.pot: Regenerated and added header.
+
 2008-08-12  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
-        * operation/menu.php: Made short tag, normal tag
+	* operation/menu.php: Made short tag, normal tag
 
 	* include/functions.php: Got rid of references to language files
 

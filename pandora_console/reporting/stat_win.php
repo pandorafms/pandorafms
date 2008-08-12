@@ -29,7 +29,6 @@ if (! isset($_SESSION["id_user"])) {
 
 require_once ('../include/functions.php');
 require_once ('../include/functions_db.php');
-require_once ('../include/languages/language_'.$config['language'].'.php');
 
 check_login ();
 

@@ -29,9 +29,8 @@ if (give_acl ($config['id_user'], 0, "AR")!=1) {
 	exit;
 }
 
-function datos_raw ($id_agente_modulo, $periodo){
+function datos_raw ($id_agente_modulo, $periodo) {
 	global $config;
-	require("include/languages/language_".$config["language"].".php");
 	
 	$periodo_label = $periodo;
 	switch ($periodo) {

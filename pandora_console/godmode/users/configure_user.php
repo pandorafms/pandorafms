@@ -197,14 +197,14 @@ echo '<tr><td class="datos">E-Mail</td>';
 <td class="datos">
 <?php
 
-if ($nivel == "1") {
-	echo __('Administrator').'<input type="radio" class="chk" name="nivel" value="1" checked><a href="#" class="tip">&nbsp;<span>'.$help_label["users_msg1"].'</span></a>&nbsp;';
-	echo __('Standard user').'<input type="radio" class="chk" name="nivel" value="0"><a href="#" class="tip">&nbsp;<span>'.$help_label["users_msg2"].'</span></a>';
-} else {
-	echo __('Administrator').'<input type="radio" class="chk" name="nivel" value="1"><a href="#" class="tip">&nbsp;<span>'.$help_label["users_msg1"].'</span></a>&nbsp;';
-	echo __('Standard user').'<input type="radio" class="chk" name="nivel" value="0" checked><a href="#" class="tip">&nbsp;<span>'.$help_label["users_msg2"].'</span></a>';
-}
+echo __('Administrator');
+print_radio_button ('nivel', '1', '', $nivel);
+print_help_tip (__("This user has permissions to manage all. This is admin user and overwrites all permissions given in profiles/groups"));
+print __('Standard user');
+print_radio_button ('nivel', '0', '', $nivel);
+print_help_tip (__("This user has separated permissions to view data in his group agents, create incidents belong to his groups, add notes in another incidents, create personal assignments or reviews and other tasks, on different profiles"));
 ?>
+
 <tr><td class="datos2" colspan="2"><?php echo __('Comments') ?></td>
 <tr><td class="datos" colspan="2">
 <textarea name="comentarios" cols="60" rows="4"><?php echo $comentarios ?></textarea>

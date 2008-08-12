@@ -119,9 +119,10 @@ while ($row=mysql_fetch_array($result_t)){
 }
 ?>
 </select>
-<a href="#" class="tip">&nbsp;<span><?php echo $help_label["db_purge0"] ?></span></a>
+
+<?php print_help_tip (__("This button refresh info about database usage among time")); ?>
 <td><input class='sub upd' type='submit' name='purgedb_ag' value='<?php echo __('Get data') ?>'>
-<a href="#" class="tip">&nbsp;<span><?php echo $help_label["db_purge1"] ?></span></a>
+<?php print_help_tip (__("Use this combo to select agent for operation. You need to select an agent to purge data and to get info about database usage")); ?>
 </table><br>
 
 <?php	

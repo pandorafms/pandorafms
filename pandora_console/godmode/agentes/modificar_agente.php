@@ -46,9 +46,9 @@ if (isset($_GET["borrar_agente"])){ // if delete agent
 		WHERE id_agente = ".$id_agente;
 		$result=mysql_query($sql_delete);
 		if (! $result)
-			echo "<h3 class='error'>".__('delete_agent_no')."</h3>";
+			echo "<h3 class='error'>".__('There was a problem deleting agent')."</h3>";
 		else
-			echo "<h3 class='suc'>".__('delete_agent_ok')."</h3>";
+			echo "<h3 class='suc'>".__('Agent deleted successfully')."</h3>";
 		// Delete agent access table
 		$sql_delete = "DELETE FROM tagent_access
 		WHERE id_agent = ".$id_agente;
@@ -105,7 +105,7 @@ if (isset($_GET["borrar_agente"])){ // if delete agent
 		exit;
 	}
 }
-echo "<h2>".__('agent_conf')." &gt; ".__('agent_defined2')."</h2>";
+echo "<h2>".__('Agent configuration')." &gt; ".__('Agents defined in Pandora')."</h2>";
 
 // Show group selector
 if (isset($_POST["ag_group"])){
@@ -118,7 +118,7 @@ if (isset($_POST["ag_group"])){
 }
 
 echo "<table cellpadding='4' cellspacing='4' class='databox' width=700><tr>";
-echo "<td valign='top'>".__('group')."</td>";
+echo "<td valign='top'>".__('Group')."</td>";
 echo "<td valign='top'>";
 echo "<select name='ag_group' onChange='javascript:this.form.submit();'
 class='w130'>";
@@ -133,13 +133,13 @@ echo "</select>";
 echo "<td valign='top'>
 <noscript>
 <input name='uptbutton' type='submit' class='sub upd'
-value='".__('show')."'>
+value='".__('Show')."'>
 </noscript>
 </td>
 </form>
 <td valign='top'>";
 
-echo __('free_text_search');
+echo __('Free text for search (*)');
 echo "</td><td>";
 
 // Show group selector
@@ -153,7 +153,7 @@ echo "<form method='post' action='index.php?sec=gagente&sec2=godmode/agentes/mod
 echo "<input type=text name='search' size='15' >";
 echo "</td><td valign='top'>";
 echo "<input name='srcbutton' type='submit' class='sub' 
-value='".__('search')."'>";
+value='".__('Search')."'>";
 echo "</form>";
 echo "</td></table>";
 
@@ -192,12 +192,12 @@ echo "<div style='height: 20px'> </div>";
 
 if (mysql_num_rows($result)){
 	echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>";
-	echo "<th>".__('agent_name')."</th>";
+	echo "<th>".__('Agent name')."</th>";
 	echo "<th title='".__('Remote agent configuration')."'>".__('R')."</th>";
-	echo "<th>".__('os')."</th>";
-	echo "<th>".__('group')."</th>";
-	echo "<th>".__('description')."</th>";
-	echo "<th>".__('delete')."</th>";
+	echo "<th>".__('OS')."</th>";
+	echo "<th>".__('Group')."</th>";
+	echo "<th>".__('Description')."</th>";
+	echo "<th>".__('Delete')."</th>";
 	$color=1;
 	while ($row=mysql_fetch_array($result)){
 		$id_grupo = $row["id_grupo"];
@@ -247,14 +247,14 @@ if (mysql_num_rows($result)){
 			// Action
 			echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
 			borrar_agente=".$row["id_agente"]."'";
-			echo ' onClick="if (!confirm(\' '.__('are_you_sure').'\')) return false;">';
+			echo ' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 			echo "<img border='0' src='images/cross.png'></a></td>";
 		}
 	}
 	echo "</table>";
 	echo "<table width='750'><tr><td align='right'>";
 } else {
-	echo "<div class='nf'>".__('no_agent_def')."</div>";
+	echo "<div class='nf'>".__('There are no defined agents')."</div>";
 	echo "&nbsp;</td></tr><tr><td>";
 }
 
@@ -262,6 +262,6 @@ if (mysql_num_rows($result)){
 	echo "<form method='post' action='index.php?sec=gagente&
 	sec2=godmode/agentes/configurar_agente&create_agent=1'>";
 	echo "<input type='submit' class='sub next' name='crt'
-	value='".__('create_agent')."'>";
+	value='".__('Create agent')."'>";
 	echo "</form></td></tr></table>";
 ?>

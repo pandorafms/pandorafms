@@ -51,7 +51,7 @@ $row=mysql_fetch_array($result);
 $server_name = $row["name"];
 $id_server = $row[0];
 
-echo "<h2>". __('server_detail') . " - $server_name ";
+echo "<h2>". __('Configuration detail') . " - $server_name ";
 echo "&nbsp;";
 echo "<a href='index.php?sec=estado_server&sec2=operation/servers/view_server_detail&server_id=$id_server'>";
 echo "<img src='images/refresh.png'>";
@@ -65,15 +65,15 @@ if ($row["recon_server"]) {
 	if (mysql_num_rows($result)){
 		echo "<table cellpadding='4' cellspacing='4' width='760' class='databox'>";
 		echo "<tr><th class='datos'>".__('Force')."</th>";
-		echo "<th class='datos'>".__('task_name')."</th>";
-		echo "<th class='datos'>".__('interval')."</th>";
-		echo "<th class='datos'>".__('network')."</th>";
-		echo "<th class='datos'>".__('status')."</th>";
-		echo "<th class='datos'>".__('network_profile')."</th>";
-		echo "<th class='datos'>".__('group')."</th>";
+		echo "<th class='datos'>".__('Task name')."</th>";
+		echo "<th class='datos'>".__('Interval')."</th>";
+		echo "<th class='datos'>".__('Network')."</th>";
+		echo "<th class='datos'>".__('Status')."</th>";
+		echo "<th class='datos'>".__('Network profile')."</th>";
+		echo "<th class='datos'>".__('Group')."</th>";
 		echo "<th class='datos'>".__('OS') ."</th>";
-		echo "<th class='datos'>".__('progress')."</th>";
-		echo "<th class='datos'>".__('lastupdate')."</th>";
+		echo "<th class='datos'>".__('Progress')."</th>";
+		echo "<th class='datos'>".__('Updated at')."</th>";
 		echo "<th class='datos'></th>";
 		$color=1;
 		while ($row=mysql_fetch_array($result)){
@@ -120,9 +120,9 @@ if ($row["recon_server"]) {
 			// status
 			echo "<td class='$tdcolor' align='center'>";
 			if ($status == -1)
-				echo __('done');
+				echo __('Done');
 			else
-				echo __('pending');
+				echo __('Pending');
 			// Network profile
 			echo "<td class='$tdcolor'>";
 			echo give_network_profile_name($id_network_profile);

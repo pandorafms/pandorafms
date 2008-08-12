@@ -87,11 +87,11 @@ echo '<table width="700" cellspacing="4" cellpadding="4" class="databox_color">'
 echo '<tr>';
 
 // Name
-echo '<tr><td class="datos2">' . __('module_name');
+echo '<tr><td class="datos2">' . __('Module name');
 echo '<td class="datos2"><input type="text" name="name" size="25" value="' . $name . '">';
 
 // Type
-echo '<td class="datos2">' . __('module_type') . '</td>';
+echo '<td class="datos2">' . __('Module type') . '</td>';
 echo '<td class="datos2">';
 echo '<select name="tipo">';
 echo '<option value="' . $type . '">' . dame_nombre_tipo_modulo($type);
@@ -104,7 +104,7 @@ echo '</td></tr>';
 echo '<tr>';
 
 // Component group
-echo '<td class="datos">' . __('group') . '</td>';
+echo '<td class="datos">' . __('Group') . '</td>';
 echo '<td class="datos">';
 echo '<select name="id_group">';
 echo '<option value="' . $id_group . '">' . give_network_component_group_name($id_group) . '</option>';
@@ -115,7 +115,7 @@ while ($row = mysql_fetch_array($result)) {
 echo '</select>';
 
 // Module group
-echo '<td class="datos">' . __('module_group') . '</td>';
+echo '<td class="datos">' . __('Module group') . '</td>';
 echo '<td class="datos">';
 echo '<select name="id_module_group">';
 if ($id_nc != -1 ) {
@@ -128,12 +128,12 @@ echo '</select>';
 echo '<tr>';
 
 // Interval
-echo '<td class="datos2">' . __('module_interval');
+echo '<td class="datos2">' . __('Module Interval');
 echo '<td class="datos2">';
 echo '<input type="text" name="module_interval" size="5" value="'.$module_interval.'">';
 
 // Timeout
-echo '<td class="datos2">' . __('max_timeout') . '</td>';
+echo '<td class="datos2">' . __('Max. timeout') . '</td>';
 echo '<td class="datos2">';
 echo	'<input type="text" name="max_timeout" size="5" value="' . $max_timeout . '">';
 echo '</td></tr>';
@@ -175,11 +175,11 @@ echo 	'<input type="password" name="plugin_pass" size="25" value="' . $plugin_pa
 echo '</td></tr>';
 
 // Min data
-echo '<tr><td class="datos">' . __('mindata') . '</td>';
+echo '<tr><td class="datos">' . __('Minimum Data') . '</td>';
 echo '<td class="datos">';
 echo '<input type="text" name="modulo_min" size="5" value="' . $modulo_min . '">';
 echo '</td>';
-echo '<td class="datos">' . __('maxdata') . '</td>';
+echo '<td class="datos">' . __('Maximum Data') . '</td>';
 echo '<td class="datos">';
 
 // Max data
@@ -187,7 +187,7 @@ echo '<input type="text" name="modulo_max" size="5" value="' . $modulo_max . '">
 echo '</td></tr>';
 
 // Comments
-echo '<tr><td class="datos2t">'.__('comments');
+echo '<tr><td class="datos2t">'.__('Comments');
 echo '<td class="datos2" colspan=3>';
 echo '<textarea name="descripcion" cols=70 rows=2>';
 echo $description;
@@ -202,9 +202,9 @@ echo '<input type="hidden" name="id_modulo" value="6">';
 echo '<table width="700px">';
 echo '</tr><td align="right">';
 if ($id_nc != '-1')
-	echo '<input name="updbutton" type="submit" class="sub upd" value="'.__('update').'">';
+	echo '<input name="updbutton" type="submit" class="sub upd" value="'.__('Update').'">';
 else
-	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.__('add').'">';
+	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.__('Add').'">';
 echo '</td></tr></table>';
 echo '</form>';
 

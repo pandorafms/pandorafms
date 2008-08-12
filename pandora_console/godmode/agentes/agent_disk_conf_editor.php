@@ -45,7 +45,7 @@ function save_config ($agent_config) {
 // Update configuration
 if (isset ($_POST["disk_conf"])) {
 	save_config (str_replace ("\r\n", "\n", $_POST["disk_conf"]));
-	echo "<h3 class='suc'>".__('update_agent_ok')."</h3>";
+	echo "<h3 class='suc'>".__('Agent successfully updated')."</h3>";
 }
 
 // Read configuration file
@@ -58,7 +58,7 @@ fclose ($file);
 echo '<form name="update" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente='.$id_agente.'&disk_conf='.$agent_md5.'">';	
 echo '<table width="650" cellpadding="4" cellspacing="4" class="databox_color">';
 echo 	'<tr>';
-echo 		'<td class="datos"><b>'.__('agent_name').'</b></td>';
+echo 		'<td class="datos"><b>'.__('Agent name').'</b></td>';
 echo 		'<td class="datos">';
 echo			'<input disabled type="text" name="agente" size=30 value="'.$nombre_agente.'">';
 echo 			'<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">';
@@ -80,7 +80,7 @@ echo '</table>';
 echo '<table width="650"><tr><td align="right">';
 echo 	'<tr>';	
 echo 		'<td align="right">';
-echo 			'<input name="updbutton" type="submit" class="sub upd" value="'.__('update').'">';
+echo 			'<input name="updbutton" type="submit" class="sub upd" value="'.__('Update').'">';
 echo 		'</td>';
 echo 	'</tr>';
 echo '</table>';

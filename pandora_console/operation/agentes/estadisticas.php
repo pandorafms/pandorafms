@@ -29,8 +29,8 @@ if (! give_acl ($config['id_user'], 0, "AR")) {
 	require ("general/noaccess.php");
 	return;
 }
-echo "<h2>".__('ag_title')." &gt; ";
-echo __('db_stat_agent')."</h2>";
+echo "<h2>".__('Pandora Agents')." &gt; ";
+echo __('Database Statistics per Agent')."</h2>";
 echo "<table border=0>";
 echo "<tr><td><img src='reporting/fgraph.php?tipo=db_agente_modulo'><br>";
 echo "<tr><td><br>";

@@ -19,7 +19,7 @@ if (give_acl($config["id_user"], 0, "AW")!=1) {
 };
 
 
-echo "<h2>".__('agent_conf')." &gt; ".__('modules')."</h2>"; 
+echo "<h2>".__('Agent configuration')." &gt; ".__('Modules')."</h2>"; 
 
 // ==========================
 // Create module/type combo
@@ -56,7 +56,7 @@ if ($prediction_available == 1)
     echo "<option value='predictionserver'>".__('Create a new prediction Server module');
 echo "</select></td>";
 echo '<td class="datos">';
-echo '<input align="right" name="updbutton" type="submit" class="sub wand" value="'.__('create').'">';
+echo '<input align="right" name="updbutton" type="submit" class="sub wand" value="'.__('Create').'">';
 echo "</form>";
 echo "</table>";
 
@@ -64,20 +64,20 @@ echo "</table>";
 // MODULE VISUALIZATION TABLE
 // ==========================
 
-echo "<h3>".__('assigned_modules')."</h3>";
+echo "<h3>".__('Assigned modules')."</h3>";
 $sql1='SELECT * FROM tagente_modulo WHERE id_agente = "'.$id_agente.'"
 ORDER BY id_module_group, nombre ';
 $result=mysql_query($sql1);
 if ($row=mysql_num_rows($result)){
     echo '<table width="750" cellpadding="4" cellspacing="4" class="databox">';
     echo '<tr>';
-    echo "<th>".__('module_name')."</th>";
+    echo "<th>".__('Module name')."</th>";
     echo '<th>'.__('S').'</th>';
-    echo '<th>'.__('type').'</th>';
-    echo "<th>".__('interval')."</th>";
-    echo "<th>".__('description')."</th>";
-    echo "<th>".__('max_min')."</th>";
-    echo "<th width=65>".__('action')."</th>";
+    echo '<th>'.__('Type').'</th>';
+    echo "<th>".__('Interval')."</th>";
+    echo "<th>".__('Description')."</th>";
+    echo "<th>".__('Max/Min')."</th>";
+    echo "<th width=65>".__('Action')."</th>";
     $color=1; $last_modulegroup = "0";
     while ($row = mysql_fetch_array($result)){
         if ($color == 1){
@@ -140,18 +140,18 @@ if ($row=mysql_num_rows($result)){
 
         // Delete module
         echo "<td class='$tdcolor'>";
-        echo "<a href='index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&delete_module=".$row["id_agente_modulo"]."'".' onClick="if (!confirm(\' '.__('are_you_sure').'\')) return false;">';
-        echo "<img src='images/cross.png' border=0 title='".__('delete')."'>";
+        echo "<a href='index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&delete_module=".$row["id_agente_modulo"]."'".' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+        echo "<img src='images/cross.png' border=0 title='".__('Delete')."'>";
         echo "</b></a>&nbsp;";
 	// Update module
         echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&tab=module&update_module=".$row["id_agente_modulo"]."&moduletype=$id_module#modules'>";
-        echo "<img src='images/config.png' border=0 title='".__('update')."' onLoad='type_change()'></b></a>";
+        echo "<img src='images/config.png' border=0 title='".__('Update')."' onLoad='type_change()'></b></a>";
         
         // Make a data normalization
         if (($id_tipo == 22 ) OR ($id_tipo == 1 ) OR ($id_tipo == 4 ) OR ($id_tipo == 7 ) OR
         ($id_tipo == 8 ) OR ($id_tipo == 11 ) OR ($id_tipo == 16) OR ($id_tipo == 22 )) {
             echo "&nbsp;";
-            echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&tab=module&fix_module=".$row["id_agente_modulo"]."'".' onClick="if (!confirm(\' '.__('are_you_sure').'\')) return false;">';
+            echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente&tab=module&fix_module=".$row["id_agente_modulo"]."'".' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
             echo "<img src='images/chart_curve.png' border=0 title='Normalize'></b></a>";
         }
     }

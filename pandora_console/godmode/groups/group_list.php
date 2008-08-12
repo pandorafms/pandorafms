@@ -64,9 +64,9 @@ if ($create_group) {
 			$name, substr ($icon, 0, -4), $id_parent, $alerts_disabled);
 	$result = mysql_query ($sql);
 	if ($result) {
-		echo "<h3 class='suc'>".__('create_group_ok')."</h3>"; 
+		echo "<h3 class='suc'>".__('Group successfully created')."</h3>"; 
 	} else {
-		echo "<h3 class='error'>".__('create_group_no')."</h3>";	}
+		echo "<h3 class='error'>".__('There was a problem creating group')."</h3>";	}
 }
 
 /* Update group */
@@ -83,9 +83,9 @@ if ($update_group) {
 			$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $id_group);
 	$result = mysql_query ($sql);
 	if ($result) {
-		echo "<h3 class='suc'>".__('modify_group_ok')."</h3>";
+		echo "<h3 class='suc'>".__('Group successfully updated')."</h3>";
 	} else {
-		echo "<h3 class='error'>".__('modify_group_no')."</h3>";
+		echo "<h3 class='error'>".__('There was a problem modifying group')."</h3>";
 	}
 }
 
@@ -98,21 +98,21 @@ if ($delete_group) {
 	$sql = sprintf ('DELETE FROM tgrupo WHERE id_grupo = %d', $id_group);
 	$result = mysql_query ($sql);
 	if (! $result)
-		echo "<h3 class='error'>".__('delete_group_no')."</h3>"; 
+		echo "<h3 class='error'>".__('There was a problem deleting group')."</h3>"; 
 	else
-		echo "<h3 class='suc'>".__('delete_group_ok')."</h3>";
+		echo "<h3 class='suc'>".__('Group successfully deleted')."</h3>";
 }
 
-echo "<h2>".__('group_management')." &gt; ";	
-echo __('definedgroups')."</h2>";
+echo "<h2>".__('Group management')." &gt; ";	
+echo __('Groups defined in Pandora')."</h2>";
 
 $table->width = '65%';
 $table->head = array ();
-$table->head[0] = __('icon');
-$table->head[1] = __('name');
-$table->head[2] = __('parent');
-$table->head[3] = __('alerts');
-$table->head[4] = __('delete');
+$table->head[0] = __('Icon');
+$table->head[1] = __('Name');
+$table->head[2] = __('Parent');
+$table->head[3] = __('Alerts');
+$table->head[4] = __('Delete');
 $table->align = array ();
 $table->align[4] = 'center';
 $table->data = array ();
@@ -127,8 +127,8 @@ foreach ($groups as $id_group => $group_name) {
 	$data[0] = '<img src="images/groups_small/'.$group["icon"].'.png" border="0">';
 	$data[1] = '<strong><a href="index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$id_group.'">'.$group_name.'</a></strong>';
 	$data[2] = dame_nombre_grupo ($group["parent"]);
-	$data[3] = $group['disabled'] ? __('disabled') : __('enabled');
-	$data[4] = '<a href="index.php?sec=gagente&sec2=godmode/groups/group_list&id_group='.$id_group.'&delete_group=1" onClick="if (!confirm(\' '.__('are_you_sure').'\')) return false;"><img border="0" src="images/cross.png"></a>';
+	$data[3] = $group['disabled'] ? __('Disabled') : __('Enabled');
+	$data[4] = '<a href="index.php?sec=gagente&sec2=godmode/groups/group_list&id_group='.$id_group.'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;"><img border="0" src="images/cross.png"></a>';
 	
 	array_push ($table->data, $data);
 }
@@ -137,7 +137,7 @@ print_table ($table);
 
 echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/groups/configure_group">';
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
-print_submit_button (__('create_group'), 'crt', false, 'class="sub next"');
+print_submit_button (__('Create group'), 'crt', false, 'class="sub next"');
 echo '</div>';
 echo '</form>';
 

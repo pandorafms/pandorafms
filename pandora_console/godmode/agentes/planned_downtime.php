@@ -51,9 +51,9 @@ if ($delete_downtime) {
 	echo $sql;
 	$result = process_sql ($sql);
 	if ($result === false) {
-		echo '<h3 class="error">'.__('delete_no').'</h3>';
+		echo '<h3 class="error">'.__('Not deleted. Error deleting data').'</h3>';
 	} else {
-		echo '<h3 class="suc">'.__('delete_ok').'</h3>';
+		echo '<h3 class="suc">'.__('Deleted successfully').'</h3>';
 	}
 }
 
@@ -66,7 +66,7 @@ if ($create_downtime || $update_downtime) {
 	
 	echo $datetime_from.' > '.$datetime_to;
 	if ($datetime_from > $datetime_to) {
-		echo '<h3 class="error">'.__('create_no').': START &gt; END</h3>';
+		echo '<h3 class="error">'.__('Not created. Error inserting data').': START &gt; END</h3>';
 	} else {
 		$sql = '';
 		if ($create_downtime) {
@@ -86,9 +86,9 @@ if ($create_downtime || $update_downtime) {
 		
 		$result = process_sql ($sql);
 		if ($result === false) {
-			echo '<h3 class="error">'.__('create_no').'</h3>';
+			echo '<h3 class="error">'.__('Not created. Error inserting data').'</h3>';
 		} else {
-			echo '<h3 class="suc">'.__('create_ok').'</h3>';
+			echo '<h3 class="suc">'.__('Created successfully').'</h3>';
 		}
 	}
 }
@@ -145,10 +145,10 @@ echo '<h3>'.__('Planned Downtime').':</h3>';
 $table->width = '90%';
 $table->data = array ();
 $table->head = array ();
-$table->head[0] = __('name');
-$table->head[1] = __('module');
-$table->head[2] = __('time_from');
-$table->head[3] = __('time_to');
+$table->head[0] = __('Name');
+$table->head[1] = __('Module');
+$table->head[2] = __('Time from');
+$table->head[3] = __('Time to');
 
 $sql = sprintf ("SELECT tplanned_downtime.id, tplanned_downtime.name, tplanned_downtime.id_agent_module, tplanned_downtime.date_from, tplanned_downtime.date_to 
 	FROM tplanned_downtime, tagente_modulo WHERE tplanned_downtime.id_agent_module = tagente_modulo.id_agente_modulo 
@@ -169,7 +169,7 @@ foreach ($downtimes as $downtime) {
 	$data[3] = date ("Y-m-d H:i", $downtime['date_to']);
 	$data[4] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime&id_agent='.
 		$id_agent.'&delete_downtime=1&id_downtime='.$downtime['id'].'">
-		<img src="images/cross.png" border="0" alt="'.__('delete').'"></a>';
+		<img src="images/cross.png" border="0" alt="'.__('Delete').'"></a>';
 	$data[4] .= '<a href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime&id_agent='.
 		$id_agent.'&edit_downtime=1&id_downtime='.$downtime['id'].'">
 		<img src="images/config.png" border="0" alt="'.__('Update').'"></a>';

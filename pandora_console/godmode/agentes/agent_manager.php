@@ -32,12 +32,12 @@ if (! give_acl ($config['id_user'], 0, "AW")) {
 	return;
 }
 
-echo "<h2>".__('agent_conf');
+echo "<h2>".__('Agent configuration');
 if (isset($_GET["create_agent"])){
 	$create_agent = 1;
-	echo " &gt; ".__('create_agent');
+	echo " &gt; ".__('Create agent');
 } else {
-	echo " &gt; ".__('update_agent');
+	echo " &gt; ".__('Update agent');
 }
 echo "</h2>";
 echo "<div style='height: 5px'> </div>";
@@ -62,14 +62,14 @@ echo '<form name="conf_agent" method="post" action="index.php?sec=gagente&
 sec2=godmode/agentes/configurar_agente">';
 echo '<table width="650" id="table-agent-configuration" cellpadding="4" cellspacing="4" class="databox_color">';
 echo "<tr>";
-echo '<td class="datos"><b>'.__('agent_name').'</b><a href="#" class="tip">&nbsp;<span>'.__('agent_name_help').'</span></a></td><td class="datos">';
+echo '<td class="datos"><b>'.__('Agent name').'</b><a href="#" class="tip">&nbsp;<span>'.__('The Agent\'s name must be the same as the one defined at the Console').'</span></a></td><td class="datos">';
 print_input_text ('agente', $nombre_agente, '', 30, 100);
 
 if (isset ($id_agente) && $id_agente != "") {
 	echo "
 	<a href='index.php?sec=estado&
 	sec2=operation/agentes/ver_agente&id_agente=".$id_agente."'>
-	<img src='images/lupa.png' border='0' align='middle' title='".__('agent_detail')."'></a>";
+	<img src='images/lupa.png' border='0' align='middle' title='".__('Agent detail')."'></a>";
 } 
 // Remote configuration available
 if (file_exists ($config["remote_config"] . "/" . $agent_md5 . ".md5")) {
@@ -80,7 +80,7 @@ if (file_exists ($config["remote_config"] . "/" . $agent_md5 . ".md5")) {
 }
 
 echo '<tr><td class="datos2">';
-echo '<b>'.__('ip_address').'</b>';
+echo '<b>'.__('IP Address').'</b>';
 echo '<td class="datos2">';
 print_input_text ('direccion', $direccion_agente, '', 16, 100);
 
@@ -97,7 +97,7 @@ if ($create_agent != 1) {
 		}
 	echo "</select>";
 
-	echo "<input name='delete_ip' type=checkbox value='1'> ".__('delete_sel');
+	echo "<input name='delete_ip' type=checkbox value='1'> ".__('Delete selected');
 	echo "</td>";
 }
 
@@ -106,24 +106,24 @@ echo '<td class="datos">';
 print_select_from_sql ('SELECT id_agente, nombre FROM tagente ORDER BY nombre',
 				'id_parent', $id_parent, '', 'None', '0');
 
-echo '<tr><td class="datos"><b>'.__('group').'</b>';
+echo '<tr><td class="datos"><b>'.__('Group').'</b>';
 echo '<td class="datos">';
 print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo ORDER BY nombre',
 			'grupo', $grupo, '', '', '');
 
 echo "<tr><td class='datos2'>";
-echo "<b>".__('interval')."</b></td>";
+echo "<b>".__('Interval')."</b></td>";
 echo '<td class="datos2">';
 
 echo '<input type="text" name="intervalo" size="15" value="'.$intervalo.'"></td>';
-echo '<tr><td class="datos"><b>'.__('os').'</b></td>';
+echo '<tr><td class="datos"><b>'.__('OS').'</b></td>';
 echo '<td class="datos">';
 print_select_from_sql ('SELECT id_os, name FROM tconfig_os ORDER BY name',
 			'id_os', $id_os, '', '', '');
 
 // Network server
-echo '<tr><td class="datos2"><b>'.__('network_server').'</b>';
-echo '<a href="#" class="tip">&nbsp;<span>'.__('network_server_help').'</span></a>';
+echo '<tr><td class="datos2"><b>'.__('Network Server').'</b>';
+echo '<a href="#" class="tip">&nbsp;<span>'.__('You must select a Network Server for the Agent, so it can work properly with this kind of modules').'</span></a>';
 echo '</td><td class="datos2">';
 $none = '';
 $none_value = '';
@@ -135,8 +135,8 @@ print_select_from_sql ('SELECT id_server, name FROM tserver WHERE network_server
 			'network_server', $id_network_server, '', $none, $none_value);
 
 // Plugin Server
-echo '<tr><td class="datos"><b>'.__('plugin_server').'</b>';
-echo '<a href="#" class="tip">&nbsp;<span>'.__('plugin_server_help').'</span></a>';
+echo '<tr><td class="datos"><b>'.__('Plugin Server').'</b>';
+echo '<a href="#" class="tip">&nbsp;<span>'.__('You must select a Plugin Server for the Agent, so it can work properly with this kind of modules').'</span></a>';
 echo '</td><td class="datos">';
 $none_str = __('None');
 $none = '';
@@ -149,8 +149,8 @@ print_select_from_sql ('SELECT id_server, name FROM tserver WHERE plugin_server 
 			'plugin_server', $id_plugin_server, '', $none, $none_value);
 
 // WMI Server
-echo '<tr><td class="datos2"><b>'.__('wmi_server').'</b>';
-echo '<a href="#" class="tip">&nbsp;<span>'.__('wmi_server_help').'</span></a>';
+echo '<tr><td class="datos2"><b>'.__('WMI Server').'</b>';
+echo '<a href="#" class="tip">&nbsp;<span>'.__('You must select a WMI Server for the Agent, so it can work properly with this kind of modules').'</span></a>';
 echo '</td><td class="datos2">';
 $none = '';
 $none_value = '';
@@ -162,8 +162,8 @@ print_select_from_sql ('SELECT id_server, name FROM tserver WHERE wmi_server = 1
 			'wmi_server', $id_wmi_server, '', $none, $none_value);
 
 // Prediction Server
-echo '<tr><td class="datos"><b>'.__('prediction_server').'</b>';
-echo '<a href="#" class="tip">&nbsp;<span>'.__('prediction_server_help').'</span></a>';
+echo '<tr><td class="datos"><b>'.__('Prediction Server').'</b>';
+echo '<a href="#" class="tip">&nbsp;<span>'.__('You must select a Prediction Server for the Agent, so it can work properly with this kind of modules').'</span></a>';
 echo '</td><td class="datos">';
 $none = '';
 $none_value = '';
@@ -176,26 +176,26 @@ print_select_from_sql ('SELECT id_server, name FROM tserver WHERE prediction_ser
 
 // Description
 echo '<tr><td class="datos2"><b>';
-echo __('description');
+echo __('Description');
 echo '</b><td class="datos2">';
 print_input_text ('comentarios', $comentarios, '', 45, 255);
 
 // Learn mode / Normal mode 
 echo '<tr><td class="datos"><b>';
-echo __('module_definition');
+echo __('Module definition');
 pandora_help("module_definition");
 echo '</b><td class="datos">';
-echo __('learning_mode');
+echo __('Learning mode');
 print_radio_button_extended ("modo", 1, '', $modo, false, '', 'style="margin-right: 40px;"');
-echo __('normal_mode');
+echo __('Normal mode');
 print_radio_button_extended ("modo", 0, '', $modo, false, '', 'style="margin-right: 40px;"');
 
 // Status (Disabled / Enabled)
-echo '<tr><td class="datos2"><b>'.__('status').'</b>';
+echo '<tr><td class="datos2"><b>'.__('Status').'</b>';
 echo '<td class="datos2">';
-echo __('disabled');
+echo __('Disabled');
 print_radio_button_extended ("disabled", 1, '', $disabled, false, '', 'style="margin-right: 40px;"');
-echo __('active');
+echo __('Active');
 print_radio_button_extended ("disabled", 0, '', $disabled, false, '', 'style="margin-right: 40px;"');
 
 // Remote configuration
@@ -212,10 +212,10 @@ if (file_exists($filename)){
 
 echo '</table><table width="650"><tr><td  align="right">';
 if ($create_agent == 1) {
-	print_submit_button (__('create'), 'crtbutton', false, 'class="sub wand"');
+	print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
 	print_input_hidden ('create_agent', 1);
 } else {
-	print_submit_button (__('update'), 'updbutton', false, 'class="sub upd"');
+	print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
 	print_input_hidden ('update_agent', 1);
 	print_input_hidden ('id_agente', $id_agente);
 }

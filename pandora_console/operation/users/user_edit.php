@@ -54,9 +54,9 @@ if (isset ($_GET["modificado"])){
 		$telefono = entrada_limpia($_POST["telefono"]);
 		$nombre_real = entrada_limpia($_POST["nombre_real"]);
 		if ($pass1 != $pass2) {
-			echo "<h3 class='error'>".__('pass_nomatch')."</h3>";
+			echo "<h3 class='error'>".__('Passwords don\'t match. Please repeat again')."</h3>";
 		}
-		else {echo "<h3 class='suc'>".__('update_user_ok')."</h3>";}
+		else {echo "<h3 class='suc'>".__('User successfully updated')."</h3>";}
 		//echo "<br>DEBUG for ".$nombre;
 		//echo "<br>Comments:".$comentarios;	
 		$comentarios = entrada_limpia($_POST["comentarios"]);
@@ -77,11 +77,11 @@ if (isset ($_GET["modificado"])){
 		$nombre=$rowdup["id_usuario"];			
 	}
 	else {
-		echo "<h3 class='error'>".__('pass_nomatch')."</h3>";
+		echo "<h3 class='error'>".__('Passwords don\'t match. Please repeat again')."</h3>";
 	}
 } 
-echo "<h2>".__('users_')." &gt; ";
-echo __('user_edit_title')."</h2>";
+echo "<h2>".__('Pandora users')." &gt; ";
+echo __('User detail editor')."</h2>";
 
 // Si no se obtiene la variable "modificado" es que se esta visualizando la informacion y
 // preparandola para su modificacion, no se almacenan los datos
@@ -106,17 +106,17 @@ else
 	echo '<form name="user_mod" method="post" action="">';
 ?>
 <tr>
-<td class="datos"><?php echo __('id_user') ?></td>
+<td class="datos"><?php echo __('User ID') ?></td>
 <td class="datos"><input class=input type="text" name="nombre" value="<?php echo $nombre ?>" disabled></td>
 <tr>
-<td class="datos2"><?php echo __('real_name') ?></td>
+<td class="datos2"><?php echo __('Real name') ?></td>
 <td class="datos2">
 <input class=input type="text" name="nombre_real" value="<?php echo $nombre_real ?>"></td>
-<tr><td class="datos"><?php echo __('password') ?></td>
+<tr><td class="datos"><?php echo __('Password') ?></td>
 <td class="datos">
 <input class=input type="password" name="pass1" value="<?php echo $password ?>"></td>
 <tr><td class="datos2">
-<?php echo __('password'); echo " ".__('confirmation')?>
+<?php echo __('Password'); echo " ".__('confirmation')?>
 <td class="datos2">
 <input class=input type="password" name="pass2" value="<?php echo $password ?>"></td>
 <tr>
@@ -124,9 +124,9 @@ else
 <td class="datos">
 <input class=input type="text" name="direccion" size="40" value="<?php echo $direccion ?>">
 <tr>
-<td class="datos2"><?php echo __('telefono') ?>
+<td class="datos2"><?php echo __('Telephone') ?>
 <td class="datos2"><input class=input type="text" name="telefono" value="<?php echo $telefono ?>">
-<tr><td class="datos" colspan="2"><?php echo __('comments') ?>
+<tr><td class="datos" colspan="2"><?php echo __('Comments') ?>
 <tr><td class="datos2" colspan="2"><textarea name="comentarios" cols="55" rows="4"><?php echo $comentarios ?></textarea>
 </table>
 <table cellpadding="4" cellspacing="4" width="500px">
@@ -134,10 +134,10 @@ else
 
 if ($view_mode == 0) {
 	echo '<tr><td colspan="3" align="right">';
-	echo "<input name='uptbutton' type='submit' class='sub upd' value='".__('update')."'></td></tr>";
+	echo "<input name='uptbutton' type='submit' class='sub upd' value='".__('Update')."'></td></tr>";
 }
 echo '</table></form><br>';
-echo '<h3>'.__('listGroupUser').'</h3>';
+echo '<h3>'.__('Profiles/Groups assigned to this user').'</h3>';
 echo "<table width='500' cellpadding='4' cellspacing='4' class='databox'>";
 $sql = 'SELECT * FROM tusuario_perfil WHERE id_usuario = "'.$nombre.'"';
 $result = mysql_query ($sql);
@@ -157,7 +157,7 @@ if (mysql_num_rows ($result)) {
 		echo "<b>".dame_grupo($row["id_grupo"])."</b><tr>";	
 	}
 } else { 
-	echo '<div class="nf">'.__('no_profile').'</div>'; 
+	echo '<div class="nf">'.__('This user doesn\'t have any assigned profile/group').'</div>'; 
 }
 echo '</table>';
 

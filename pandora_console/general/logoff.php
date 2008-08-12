@@ -20,7 +20,7 @@
 
 <center>
 <div class='databox' id='login'>
-	<h1 id='log'><?php echo __('logged_out'); ?></h1>
+	<h1 id='log'><?php echo __('Logged Out'); ?></h1>
 	<div class='databox' style='width: 400px;'>
 		<form method="post" action="index.php?login=1">
 		<table cellpadding='4' cellspacing='1' width='400'>
@@ -29,7 +29,7 @@
 			<img src="images/pandora_logo.png" border="0" alt="logo"></a><br>
 			<?php echo $pandora_version; ?>
 		</td><td valign='bottom'>
-			<?php echo __('logout_msg'); ?>
+			<?php echo __('Your session is over. Please close your browser window to close session on Pandora.<br><br>'); ?>
 		</td></tr>
 		</table>
 		</form>

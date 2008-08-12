@@ -36,9 +36,9 @@ if (isset($_GET["delete"])) {
 	$sql = "DELETE FROM trecon_task WHERE id_rt = $id ";
 	$result = mysql_query($sql);
 	if ($result)
-		echo "<h3 class='suc'>".__('delete_ok')."</h3>";
+		echo "<h3 class='suc'>".__('Deleted successfully')."</h3>";
 	else
-		echo "<h3 class='suc'>".__('delete_no')."</h3>";
+		echo "<h3 class='suc'>".__('Not deleted. Error deleting data')."</h3>";
 }
 
 
@@ -66,9 +66,9 @@ if (isset($_GET["update"])) {
 			id_network_profile = $id_network_profile WHERE id_rt = $id";
 	$result=mysql_query($sql);
 	if ($result)
-		echo "<h3 class='suc'>".__('modify_ok')."</h3>";
+		echo "<h3 class='suc'>".__('Updated successfully')."</h3>";
 	else
-		echo "<h3 class='suc'>".__('modify_no')."</h3>";
+		echo "<h3 class='suc'>".__('Not updated. Error updating data')."</h3>";
 }
 
 // --------------------------------
@@ -78,29 +78,29 @@ if (isset($_GET["create"])) {
 	$sql = "INSERT INTO trecon_task (name, subnet, description, id_recon_server, create_incident, id_group, id_network_profile, interval_sweep, id_os) VALUES ( '$name', '$network', '$description', $id_recon_server, $create_incident, $id_group,  $id_network_profile, $interval, $id_os)";
 	$result=mysql_query($sql);
 	if ($result)
-		echo "<h3 class='suc'>".__('create_ok')."</h3>";
+		echo "<h3 class='suc'>".__('Created successfully')."</h3>";
 	else
-		echo "<h3 class='suc'>".__('create_no')."</h3>";
+		echo "<h3 class='suc'>".__('Not created. Error inserting data')."</h3>";
 }
 
 // --------------------------------
 // SHOW TABLE WITH ALL RECON TASKs
 // --------------------------------
-echo "<h2>".__('view_servers')." &gt; ";
-echo __('manage_recontask')."</h2>";
+echo "<h2>".__('Pandora servers')." &gt; ";
+echo __('Manage recontask')."</h2>";
 $query="SELECT * FROM trecon_task";
 $result=mysql_query($query);
 $color=1;
 if (mysql_num_rows($result)){
 	echo "<table cellpadding='4' cellspacing='4' width='700' class='databox'>";
-	echo "<tr><th class='datos'>".__('name');
-	echo "<th class='datos'>".__('type');
-	echo "<th class='datos'>".__('network');
-	echo "<th class='datos'>".__('network_profile');
-	echo "<th class='datos'>".__('group');
-	echo "<th class='datos'>".__('incident');
+	echo "<tr><th class='datos'>".__('Name');
+	echo "<th class='datos'>".__('Type');
+	echo "<th class='datos'>".__('Network');
+	echo "<th class='datos'>".__('Network profile');
+	echo "<th class='datos'>".__('Group');
+	echo "<th class='datos'>".__('Incident');
 	echo "<th class='datos'>".__('OS');
-	echo "<th class='datos'>".__('interval');
+	echo "<th class='datos'>".__('Interval');
 	echo "<th class='datos'>".__('Action');
 }
 while ($row=mysql_fetch_array($result)){
@@ -148,9 +148,9 @@ while ($row=mysql_fetch_array($result)){
 	// INCIDENT
 	echo "</td><td class='$tdcolor'>";
 	if ($create_incident == 1)
-		echo __('yes');
+		echo __('Yes');
 	else
-		echo __('no');
+		echo __('No');
 
 	// OS
 	echo "</td><td class='$tdcolor'>";
@@ -172,13 +172,13 @@ while ($row=mysql_fetch_array($result)){
 echo "</table>";
 
 if (!mysql_num_rows($result)){
-	echo "<div class='nf'>".__('no_rtask')."</div>";
+	echo "<div class='nf'>".__('There are no recon task configured')."</div>";
 }	
 
 echo "<table width='700'>";
 echo "<tr><td align='right'>";
 echo "<form method='post' action='index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&create'>";
-echo "<input type='submit' class='sub next' name='crt' value='".__('create')."'>";
+echo "<input type='submit' class='sub next' name='crt' value='".__('Create')."'>";
 echo "</form></table>";
 
 ?>

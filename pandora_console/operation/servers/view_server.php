@@ -33,8 +33,8 @@ $total_modules_network = 0;
 $total_modules_data = 0;
 
 
-echo "<h2>".__('view_servers')." &gt; ";
-echo __('server_detail')."</h2>";
+echo "<h2>".__('Pandora servers')." &gt; ";
+echo __('Configuration detail')."</h2>";
 
 $total_modules = (int) get_db_sql ("SELECT COUNT(*)
 				FROM tagente_modulo
@@ -50,15 +50,15 @@ $table->align = array ();
 $table->align[1] = 'center';
 $table->align[6] = 'center';
 $table->head = array ();
-$table->head[0] = __('name');
-$table->head[1] = __('status');
-$table->head[2] = __('load');
-$table->head[3] = __('modules');
-$table->head[4] = __('lag');
-$table->head[5] = __('description');
-$table->head[6] = __('type');
-$table->head[7] = __('version');
-$table->head[8] = __('lastupdate');
+$table->head[0] = __('Name');
+$table->head[1] = __('Status');
+$table->head[2] = __('Load');
+$table->head[3] = __('Modules');
+$table->head[4] = __('LAG');
+$table->head[5] = __('Description');
+$table->head[6] = __('Type');
+$table->head[7] = __('Version');
+$table->head[8] = __('Updated at');
 $table->data = array ();
 
 foreach ($servers as $server) {
@@ -87,34 +87,34 @@ foreach ($servers as $server) {
 	$data[5] = '<span title="'.$server['description'].'">'.substr ($server['description'], 0, 25).'</span>';
 	$data[6] = '';
 	if ($server['network_server'] == 1) {
-		$data[6] .= ' <img src="images/network.png" title="'.__('network_server').'">';
+		$data[6] .= ' <img src="images/network.png" title="'.__('Network Server').'">';
 	}
 	if ($server['data_server'] == 1) {
-		$data[6] .= ' <img src="images/data.png" title="'.__('data_server').'">';
+		$data[6] .= ' <img src="images/data.png" title="'.__('Data Server').'">';
 	}
 	if ($server['snmp_server'] == 1) {
-		$data[6] .= ' <img src="images/snmp.png" title="'.__('snmp_server').'">';
+		$data[6] .= ' <img src="images/snmp.png" title="'.__('SNMP server').'">';
 	}
 	if ($server['recon_server'] == 1) {
-		$data[6] .= ' <img src="images/recon.png" title="'.__('recon_server').'">';
+		$data[6] .= ' <img src="images/recon.png" title="'.__('Recon Server').'">';
 	}
 	if ($server['export_server'] == 1) {
-		$data[6] .= ' <img src="images/database_refresh.png" title="'.__('export_server').'">';
+		$data[6] .= ' <img src="images/database_refresh.png" title="'.__('Export server').'">';
 	}
 	if ($server['wmi_server'] == 1) {
-		$data[6] .= ' <img src="images/wmi.png" title="'.__('wmi_server').'">';
+		$data[6] .= ' <img src="images/wmi.png" title="'.__('WMI Server').'">';
 	}
 	if ($server['prediction_server'] == 1) {
-		$data[6] .= ' <img src="images/chart_bar.png" title="'.__('prediction_server').'">';
+		$data[6] .= ' <img src="images/chart_bar.png" title="'.__('Prediction Server').'">';
 	}
 	if ($server['plugin_server'] == 1) {
-		$data[6] .= ' <img src="images/plugin.png" title="'.__('plugin_server').'">';
+		$data[6] .= ' <img src="images/plugin.png" title="'.__('Plugin Server').'">';
 	}
 	if ($server['master'] == 1) {
-		$data[6] .= ' <img src="images/master.png" title="'.__('master_server').'">';
+		$data[6] .= ' <img src="images/master.png" title="'.__('Master server').'">';
 	}
 	if ($server['checksum'] == 1){
-		$data[6] .= ' <img src="images/binary.png" title="'.__('checksum').'">';
+		$data[6] .= ' <img src="images/binary.png" title="'.__('Check').'">';
 	}
 	$data[7] = $server['version'];
 	$data[8] = human_time_comparation ($server['keepalive']) . "</td>";

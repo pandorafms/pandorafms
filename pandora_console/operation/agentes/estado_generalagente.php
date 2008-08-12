@@ -40,7 +40,7 @@ if (isset($_GET["id_agente"])){
 		$disabled= $row["disabled"];
 		$network_server = $row["id_network_server"];
 	} else {
-		echo "<h3 class='error'>".__('agent_error')."</h3>";
+		echo "<h3 class='error'>".__('There was a problem loading agent')."</h3>";
 		echo "</table>";
 		echo "</div><div id='foot'>";
 		include ("general/footer.php");
@@ -49,7 +49,7 @@ if (isset($_GET["id_agente"])){
 	}
 }
 
-echo "<h2>".__('ag_title')." &gt; ".__('view_agent_general_data')."</h2>";
+echo "<h2>".__('Pandora Agents')." &gt; ".__('Agent general information')."</h2>";
 
 // Blank space below title
 echo "<div style='height: 10px'> </div>";
@@ -58,14 +58,14 @@ echo '<table cellspacing="0" cellpadding="0" width="750" border=0 class="databox
 echo "<tr><td>";
 echo '<table cellspacing="4" cellpadding="4" border=0 class="databox">';
 echo '<tr>
-	<td class="datos"><b>'.__('agent_name').'</b></td>
+	<td class="datos"><b>'.__('Agent name').'</b></td>
 	<td class="datos"><b>'.strtoupper(salida_limpia($nombre_agente)).'</b></td>';
 echo "<td class='datos2' width='40'>
-	<a class='info' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."&refr=60'><span>".__('refresh_data')."</span><img src='images/refresh.png' class='top' border=0></a>&nbsp;";
+	<a class='info' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."&refr=60'><span>".__('Refresh data')."</span><img src='images/refresh.png' class='top' border=0></a>&nbsp;";
 echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&flag_agent=1&id_agente=$id_agente'><img src='images/target.png' border=0></A>";
 // Data base access graph
 echo '</td></tr>';
-echo '<tr><td class="datos2"><b>'.__('ip_address').'</b></td><td class="datos2" colspan=2>';
+echo '<tr><td class="datos2"><b>'.__('IP Address').'</b></td><td class="datos2" colspan=2>';
 // Show all address for this agent, show first the main IP (taken from tagente table)
 echo "<select style='padding:0px' name='notused' size='1'>";
 echo "<option>".salida_limpia($direccion_agente)."</option>";
@@ -81,7 +81,7 @@ while ($row=mysql_fetch_array($result_t)){
 }
 echo "</select>";
 	
-echo '<tr><td class="datos"><b>'.__('os').'</b></td><td class="datos" colspan="2"><img src="images/'.dame_so_icon($id_os).'"> - '.dame_so_name($id_os);
+echo '<tr><td class="datos"><b>'.__('OS').'</b></td><td class="datos" colspan="2"><img src="images/'.dame_so_icon($id_os).'"> - '.dame_so_name($id_os);
 
 if ($os_version != "") {
 	echo ' '.salida_limpia($os_version);
@@ -96,23 +96,23 @@ echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=
 echo dame_nombre_agente($id_parent).'</a></td>';
 
 // Agent Interval
-echo '<tr><td class="datos"><b>'.__('interval').'</b></td><td class="datos" colspan=2>'. human_time_description_raw($intervalo).'</td></tr>';	
+echo '<tr><td class="datos"><b>'.__('Interval').'</b></td><td class="datos" colspan=2>'. human_time_description_raw($intervalo).'</td></tr>';	
 	
 // Comments
-echo '<tr><td class="datos2"><b>'.__('description').'</b></td><td class="datos2" colspan=2>'.$comentarios.'</td></tr>';
+echo '<tr><td class="datos2"><b>'.__('Description').'</b></td><td class="datos2" colspan=2>'.$comentarios.'</td></tr>';
 
 // Group
-echo '<tr><td class="datos"><b>'.__('group').'</b></td><td class="datos" colspan="2">';
+echo '<tr><td class="datos"><b>'.__('Group').'</b></td><td class="datos" colspan="2">';
 
 echo "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=$id_grupo'>";
 echo '<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.png" title="'. dame_grupo($id_grupo).'"></A></td></tr>';
 
 // Agent version
-echo '<tr><td class="datos2"><b>'.__('agentversion'). '</b>';
+echo '<tr><td class="datos2"><b>'.__('Agent Version'). '</b>';
 echo '<td class="datos2" colspan=2>'.salida_limpia($agent_version). '</td>';
 
 // Total packets
-echo '<tr><td class="datos"><b>'. __('total_packets'). '</b></td>';
+echo '<tr><td class="datos"><b>'. __('Total packets'). '</b></td>';
 echo '<td class="datos" colspan=2>';
 $total_paketes= 0;
 $sql_3='SELECT COUNT(*) FROM tagente_datos WHERE id_agente = '.$id_agente;
@@ -123,10 +123,10 @@ echo $total_paketes;
 echo '</td></tr>';
 
 // Last contact
-echo '<tr><td class="datos2f9"><b>'.__('last_contact')." / ".__('remote').'</b></td><td class="datos2 f9" colspan="2">';
+echo '<tr><td class="datos2f9"><b>'.__('Last contact')." / ".__('Remote').'</b></td><td class="datos2 f9" colspan="2">';
 
 if ($ultima_act == "0000-00-00 00:00:00"){ 
-	echo __('never');
+	echo __('Never');
 } else {
 	echo $ultima_act;
 }
@@ -134,7 +134,7 @@ if ($ultima_act == "0000-00-00 00:00:00"){
 echo " / ";
 
 if ($ultima_act_remota == "0000-00-00 00:00:00"){ 
-	echo __('never');
+	echo __('Never');
 } else {
 	echo $ultima_act_remota;
 }
@@ -156,13 +156,13 @@ if ($row_maxi=mysql_fetch_array($result_maxi))
 	} else {
 		$percentil = -1;
 	}
-	echo "<tr><td class='datos'><b>".__('next_contact')."</b>
+	echo "<tr><td class='datos'><b>".__('Next agent contact')."</b>
 		<td class='datosf9' colspan=2>
 		<img src='reporting/fgraph.php?tipo=progress&percent=".$percentil."&height=20&width=200'>
 		</td></tr></table>
 
 	<td valign='top'><table border=0>
-	<tr><td><b>".__('agent_access_rate')."</b><br><br>
+	<tr><td><b>".__('Agent access rate (24h)')."</b><br><br>
 	<img border=1 src='reporting/fgraph.php?id=".$id_agente."&tipo=agentaccess&periodo=1440&height=70&width=280'>
 	</td></tr>
 	<tr><td><div style='height:25px'> </div>

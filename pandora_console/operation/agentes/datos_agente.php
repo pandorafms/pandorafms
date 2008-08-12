@@ -37,15 +37,15 @@ function datos_raw ($id_agente_modulo, $periodo){
 	switch ($periodo) {
 	case "mes":
 		$periodo = 2592000;
-		$et=__('last_month');
+		$et=__('One month');
 		break;
 	case "semana":
 		$periodo = 604800;
-		$et=__('last_week');
+		$et=__('One week');
 		break;
 	case "dia":
 		$periodo = 86400;
-		$et=__('last_24');
+		$et=__('Last 24 Hours');
 		break;
 	}
 	$periodo = time () - $periodo;
@@ -72,15 +72,15 @@ function datos_raw ($id_agente_modulo, $periodo){
 	$nombre_agente = dame_nombre_agente_agentemodulo ($id_agente_modulo);
 	$nombre_modulo = dame_nombre_modulo_agentemodulo ($id_agente_modulo);
 	
-	echo "<h2>".__('data_received')." 
+	echo "<h2>".__('Received data from')." 
 	'$nombre_agente' / '$nombre_modulo' </h2>";
 	echo "<h3>". $et ."</h3>";
 	if (mysql_num_rows ($result)) {
 		echo "<table cellpadding='3' cellspacing='3' width='600' class='databox'>";
 		$color=1;
-		echo "<th>".__('delete')."</th>";
-		echo "<th>".__('timestamp')."</th>";
-		echo "<th width='400'>".__('data')."</th>";
+		echo "<th>".__('Delete')."</th>";
+		echo "<th>".__('Timestamp')."</th>";
+		echo "<th width='400'>".__('Data')."</th>";
 		while ($row=mysql_fetch_array($result)){
 			if ($color == 1){
 				$tdcolor = "datos";
@@ -119,7 +119,7 @@ if (isset ($_GET["tipo"]) && isset ($_GET["id"])) {
 	$id = get_parameter ("id");
 	$tipo= get_parameter ("tipo");
 } else {
-	echo "<h3 class='error'>".__('graf_error')."</h3>";
+	echo "<h3 class='error'>".__('There was a problem locating the source of the graph')."</h3>";
 	exit;
 }
 

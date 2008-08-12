@@ -33,9 +33,9 @@ if (isset($_GET["delete_module"])){ // Delete module from profile
 	$sql1="DELETE FROM tnetwork_profile_component WHERE id_npc = $id_npc";
 	$result=mysql_query($sql1);
 	if (! $result)
-		echo "<h3 class='error'>".__('delete_no')."</h3>";
+		echo "<h3 class='error'>".__('Not deleted. Error deleting data')."</h3>";
 	else {
-		echo "<h3 class='suc'>".__('delete_ok')."</h3>";
+		echo "<h3 class='suc'>".__('Deleted successfully')."</h3>";
 	}
 }
 
@@ -45,9 +45,9 @@ if (isset($_GET["add_module"])){ // Add module to profile
 	$sql1="INSERT INTO tnetwork_profile_component (id_np,id_nc) VALUES ($id_np, $id_nc)";
 	$result=mysql_query($sql1);
 	if (! $result)
-		echo "<h3 class='error'>".__('create_no')."</h3>";
+		echo "<h3 class='error'>".__('Not created. Error inserting data')."</h3>";
 	else {
-		echo "<h3 class='suc'>".__('create_ok')."</h3>";
+		echo "<h3 class='suc'>".__('Created successfully')."</h3>";
 	}
 }
 
@@ -80,9 +80,9 @@ if (isset($_GET["create"])){ // Create module
 	VALUES ('$name', '$description')";
 	$result=mysql_query($sql_insert);
 	if (! $result)
-		echo "<h3 class='error'>".__('create_no')."</h3>";
+		echo "<h3 class='error'>".__('Not created. Error inserting data')."</h3>";
 	else {
-		echo "<h3 class='suc'>".__('create_ok')."</h3>";
+		echo "<h3 class='suc'>".__('Created successfully')."</h3>";
 		$id_np = mysql_insert_id();
 	}
 }
@@ -94,14 +94,14 @@ if (isset($_GET["update"])){ // Update profile
 	$sql_insert="UPDATE tnetwork_profile set name = '$name', description = '$description' WHERE id_np = $id_np";
 	$result=mysql_query($sql_insert);
 	if (! $result)
-		echo "<h3 class='error'>".__('modify_no')."</h3>";
+		echo "<h3 class='error'>".__('Not updated. Error updating data')."</h3>";
 	else {
-		echo "<h3 class='suc'>".__('modify_ok')."</h3>";
+		echo "<h3 class='suc'>".__('Updated successfully')."</h3>";
 	}
 }
 
-echo "<h2>".__('module_management')." &gt; ";
-echo __('network_profile_management')."</h2>";
+echo "<h2>".__('Module management')." &gt; ";
+echo __('Module template management')."</h2>";
 echo "<table width='550' cellpadding='4' cellspacing='4' class='databox_color'>";
 
 if ($id_np == -1)
@@ -109,11 +109,11 @@ if ($id_np == -1)
 else
 	echo '<form name="user_mod" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&update='.$id_np.'">';
 
-echo "<tr><td class='datos'>".__('name')."</td>";
+echo "<tr><td class='datos'>".__('Name')."</td>";
 echo "<td class='datos'>";
 echo "<input type='text' size=25 name='name' value='$name'>";
 echo "</td>";
-echo "<tr><td class='datos2'>".__('description')."</td>";
+echo "<tr><td class='datos2'>".__('Description')."</td>";
 echo "<td class='datos2'>";
 echo "<textarea cols=50 rows=2 name='description'>";
 if (isset($description)) {
@@ -131,10 +131,10 @@ if ($id_np != -1){
 	
 	echo '<table width="550" cellpadding="4" cellspacing="4" class="databox">';
 	echo '<tr>';
-	echo "<th>".__('module_name')."</th>";
-	echo "<th>".__('type')."</th>";
-	echo "<th>".__('description')."</th>";
-	echo "<th>".__('nc.group')."</th>";
+	echo "<th>".__('Module name')."</th>";
+	echo "<th>".__('Type')."</th>";
+	echo "<th>".__('Description')."</th>";
+	echo "<th>".__('NC.Group')."</th>";
  	echo "<th>X</th>";
 	$color =0;
 
@@ -177,15 +177,15 @@ if ($id_np != -1){
 echo "<table width='550'>";
 echo '<tr><td align="right">';
 if ($id_np == -1)
-	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.__('create').'">';
+	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.__('Create').'">';
 else
-	echo '<input name="updbutton" type="submit" class="sub upd" value="'.__('update').'">';
+	echo '<input name="updbutton" type="submit" class="sub upd" value="'.__('Update').'">';
 echo "</td></tr></table>";
 echo "</form>";
 
 
 if ($id_np != -1){ 
-	echo "<h3>".__('add')." ".__('module')."</h3>";
+	echo "<h3>".__('Add')." ".__('Module')."</h3>";
 	echo "<table class='databox'>";
 	echo '<tr><td>';
 	echo '<form name="add_module" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&add_module=1">';
@@ -198,7 +198,7 @@ if ($id_np != -1){
 	echo "</select>";
 
 	echo '<td valign="top">';
-	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.__('add').'">';
+	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.__('Add').'">';
 	echo "</td></tr></table>";
 	echo "</form>";
 }

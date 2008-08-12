@@ -35,9 +35,9 @@ if (! give_acl ($config['id_user'], 0, "PM") || ! dame_admin ($config['id_user']
 		$sql_insert="INSERT INTO tlink (name,link) VALUES ('$name','$link') ";
 		$result=mysql_query($sql_insert);	
 		if (! $result)
-			echo "<h3 class='error'>".__('create_link_no')."</h3>";
+			echo "<h3 class='error'>".__('There was a problem creating link')."</h3>";
 		else {
-			echo "<h3 class='suc'>".__('create_link_ok')."</h3>"; 
+			echo "<h3 class='suc'>".__('Link successfully created')."</h3>"; 
 			$id_link = mysql_insert_id();
 		}
 	}
@@ -49,9 +49,9 @@ if (! give_acl ($config['id_user'], 0, "PM") || ! dame_admin ($config['id_user']
     	$sql_update ="UPDATE tlink SET name = '".$name."', link ='".$link."' WHERE id_link = '".$id_link."'";
 		$result=mysql_query($sql_update);
 		if (! $result)
-			echo "<h3 class='error'>".__('modify_link_no')."</h3>";
+			echo "<h3 class='error'>".__('There was a problem modifying link')."</h3>";
 		else
-			echo "<h3 class='suc'>".__('modify_link_ok')."</h3>";
+			echo "<h3 class='suc'>".__('Link successfully updated')."</h3>";
 	}
 	
 	if (isset($_GET["borrar"])){ // if delete
@@ -59,9 +59,9 @@ if (! give_acl ($config['id_user'], 0, "PM") || ! dame_admin ($config['id_user']
 		$sql_delete= "DELETE FROM tlink WHERE id_link = ".$id_link;
 		$result=mysql_query($sql_delete);
 		if (! $result)
-			echo "<h3 class='error'>".__('delete_link_no')."</h3>";
+			echo "<h3 class='error'>".__('There was a problem deleting link')."</h3>";
 		else
-			echo "<h3 class='suc'>".__('delete_link_ok')."</h3>"; 
+			echo "<h3 class='suc'>".__('Link successfully deleted')."</h3>"; 
 
 	}
 
@@ -76,7 +76,7 @@ if (! give_acl ($config['id_user'], 0, "PM") || ! dame_admin ($config['id_user']
 						$nombre = $row["name"];
 				$link = $row["link"];
                 	}
-				else echo "<h3 class='error'>".__('name_error')."</h3>";
+				else echo "<h3 class='error'>".__('Name error')."</h3>";
 		} else { // form_add
 			$creation_mode =1;
 			$nombre = "";
@@ -84,8 +84,8 @@ if (! give_acl ($config['id_user'], 0, "PM") || ! dame_admin ($config['id_user']
 		}
 
 		// Create link
-        echo "<h2>".__('setup_screen')." &gt; ";
-		echo __('link_management')."</h2>";
+        echo "<h2>".__('Pandora Setup')." &gt; ";
+		echo __('Link management')."</h2>";
 		echo '<table class="databox" cellpadding="4" cellspacing="4" width="500">';
 		echo '<form name="ilink" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/links">';
         	if ($creation_mode == 1)
@@ -97,26 +97,26 @@ if (! give_acl ($config['id_user'], 0, "PM") || ! dame_admin ($config['id_user']
 		<?php
 		echo "'>";
 		echo '<tr>
-		<td class="datos">'.__('link_name').'</td>
+		<td class="datos">'.__('Link name').'</td>
 		<td class="datos"><input type="text" name="name" size="35" value="'.$nombre.'">';
 		echo '<tr>
-		<td class="datos2">'.__('link').'</td>
+		<td class="datos2">'.__('Link').'</td>
 		<td class="datos2">
 		<input type="text" name="link" size="35" value="'.$link.'"></td>';
 		echo '</tr>';	
 		echo "</table>";
 		echo "<table width='500px'>";
 		echo "<tr><td align='right'>
-		<input name='crtbutton' type='submit' class='sub upd' value='".__('update')."'>";
+		<input name='crtbutton' type='submit' class='sub upd' value='".__('Update')."'>";
 		echo '</form></td></tr></table>';
 	}
 
 	else {  // Main list view for Links editor
-		echo "<h2>".__('setup_screen')." &gt; ";
-		echo  __('link_management')."</h3>";
+		echo "<h2>".__('Pandora Setup')." &gt; ";
+		echo  __('Link management')."</h3>";
 		echo "<table cellpadding='4' cellspacing='4' class='databox'>";
-		echo "<th width='180px'>".__('link_name')."</th>";
-		echo "<th width='80px'>".__('delete')."</th>";
+		echo "<th width='180px'>".__('Link name')."</th>";
+		echo "<th width='80px'>".__('Delete')."</th>";
 		$sql1='SELECT * FROM tlink ORDER BY name';
 		$result=mysql_query($sql1);
 		$color=1;
@@ -130,13 +130,13 @@ if (! give_acl ($config['id_user'], 0, "PM") || ! dame_admin ($config['id_user']
 				$color = 1;
 			}
 			echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=gsetup&sec2=godmode/setup/links&form_edit=1&id_link=".$row["id_link"]."'>".$row["name"]."</a></b></td>";
-			echo '<td class="'.$tdcolor.'" align="center"><a href="index.php?sec=gsetup&sec2=godmode/setup/links&id_link='.$row["id_link"].'&borrar='.$row["id_link"].'" onClick="if (!confirm(\' '.__('are_you_sure').'\')) return false;"><img border=0 src="images/cross.png"></a></td></tr>';
+			echo '<td class="'.$tdcolor.'" align="center"><a href="index.php?sec=gsetup&sec2=godmode/setup/links&id_link='.$row["id_link"].'&borrar='.$row["id_link"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;"><img border=0 src="images/cross.png"></a></td></tr>';
 		}
 			echo "</table>";
 			echo "<table width='290px'>";
 			echo "<tr><td align='right'>";
 			echo "<form method='post' action='index.php?sec=gsetup&sec2=godmode/setup/links&form_add=1'>";
-			echo "<input type='submit' class='sub next' name='form_add' value='".__('add')."'>";
+			echo "<input type='submit' class='sub next' name='form_add' value='".__('Add')."'>";
 			echo "</form></table>";
 	}
 ?>

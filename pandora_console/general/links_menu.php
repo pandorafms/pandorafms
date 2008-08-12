@@ -19,7 +19,7 @@ $sql='SELECT link,name FROM tlink ORDER BY name';
 $result = get_db_all_rows_sql ($sql);
 if ($result !== false){
 ?>
-	<div class="tit bg4">:: <?php echo __('links_header') ?> ::</div>
+	<div class="tit bg4">:: <?php echo __('Links') ?> ::</div>
 	<div class="menul" id="link">
 <?php
 	foreach ($result as $row){

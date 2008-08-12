@@ -180,7 +180,7 @@ if (isset($_GET["update"])){ // Edit mode
 	$type = 0;
 }
 
-echo "<h2>".__('network_component_management')."</h2>";
+echo "<h2>".__('Module component management')."</h2>";
 echo '<table width="700" cellspacing="4" cellpadding="4" class="databox_color">';
 
 // Different Form url if it's a create or if it's a update form
@@ -190,11 +190,11 @@ if ($id_nc != -1) {
 	echo "<form name='modulo' method='post' action='index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&create=1'>";
 }
 echo "<tr>";
-echo '<tr><td class="datos2">'.__('module_name');
+echo '<tr><td class="datos2">'.__('Module name');
 echo "<td class='datos2'><input type='text' name='name' size='25' value='$name'>";
 
 //-- Module type combobox
-echo "<td class='datos2'>".__('module_type')."</td>";
+echo "<td class='datos2'>".__('Module type')."</td>";
 echo "<td class='datos2'>";
 echo '<select name="tipo" onChange="type_change()">';
 $sql1="SELECT id_tipo, nombre FROM ttipo_modulo WHERE id_tipo != '$type' ORDER BY nombre";
@@ -207,7 +207,7 @@ echo "</select>";
 
 echo "</td></tr>";
 echo "<tr>";
-echo "<td class='datos'>".__('group')."</td>";
+echo "<td class='datos'>".__('Group')."</td>";
 echo "<td class='datos'>";
 echo "<select name='id_group'>";
 echo "<option value='$id_group'>".give_network_component_group_name($id_group)."</option>";
@@ -218,7 +218,7 @@ while ($row=mysql_fetch_array($result))
 echo "</select>";
 
 
-echo "<td class='datos'>".__('module_group')."</td>";
+echo "<td class='datos'>".__('Module group')."</td>";
 echo '<td class="datos">';
 echo '<select name="id_module_group">';
 if ($id_nc != -1 )
@@ -230,42 +230,42 @@ while ($row=mysql_fetch_array($result))
 echo "</select>";
 
 echo "<tr>";
-echo '<td class="datos2">'.__('module_interval');
+echo '<td class="datos2">'.__('Module Interval');
 echo '<td class="datos2">';
 echo '<input type="text" name="module_interval" size="5" value="'.$module_interval.'">';
 ?>
 
-<td class="datos2"><?php echo __('tcp_port') ?></td>
+<td class="datos2"><?php echo __('TCP port') ?></td>
 <td class="datos2">
 <input type="text" name="tcp_port" size="5" value="<?php echo $tcp_port ?>">
 </td></tr>
-<tr><td class="datos"><?php echo __('snmp_oid') ?><?php pandora_help("snmpoid"); ?></td>
+<tr><td class="datos"><?php echo __('SNMP OID') ?><?php pandora_help("snmpoid"); ?></td>
 <td class="datos">
 <input type="text" name="snmp_oid" size="25" value="<?php echo $snmp_oid ?>">
 </td>
-<td class="datos"><?php echo __('snmp_community') ?></td>
+<td class="datos"><?php echo __('SNMP Community') ?></td>
 <td class="datos">
 <input type="text" name="snmp_community" size="25" value="<?php echo $snmp_community ?>">
 </td></tr>
-<tr><td class="datos2t"><?php echo __('tcp_send') ?></td>
+<tr><td class="datos2t"><?php echo __('TCP send') ?></td>
 <td class="datos2">
 <textarea name="tcp_send" cols="20" rows="2"><?php echo $tcp_send ?></textarea>
 </td>
-<td class="datos2t"><?php echo __('tcp_rcv') ?></td>
+<td class="datos2t"><?php echo __('TCP receive') ?></td>
 <td class="datos2">
 <textarea name="tcp_rcv" cols="20" rows="2"><?php echo $tcp_rcv ?></textarea>
 </td></tr>
-<tr><td class="datos"><?php echo __('mindata') ?></td>
+<tr><td class="datos"><?php echo __('Minimum Data') ?></td>
 <td class="datos">
 <input type="text" name="modulo_min" size="5" value="<?php echo $modulo_min ?>">
 </td>
-<td class="datos"><?php echo __('maxdata') ?></td>
+<td class="datos"><?php echo __('Maximum Data') ?></td>
 <td class="datos">
 <input type="text" name="modulo_max" size="5" value="<?php echo $modulo_max ?>">
 </td></tr>
 <?PHP
 
-echo '<tr><td class="datos2t">'.__('comments');
+echo '<tr><td class="datos2t">'.__('Comments');
 echo '<td class="datos2" colspan=3>';
 echo '<textarea name="descripcion" cols=70 rows=2>';
 echo $description;
@@ -279,9 +279,9 @@ echo '<input type="hidden" name="id_modulo" value="2">';
 echo "<table width='700px'>";
 echo "</tr><td align='right'>";
 if ($id_nc != "-1")
-	echo '<input name="updbutton" type="submit" class="sub upd" value="'.__('update').'">';
+	echo '<input name="updbutton" type="submit" class="sub upd" value="'.__('Update').'">';
 else
-	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.__('add').'">';
+	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.__('Add').'">';
 echo "</form>";
 echo "</td></tr></table>";
 

@@ -178,7 +178,7 @@ if (isset($_GET["flag_agent"])){
 
 echo "<div id='menu_tab_frame_view'>";
 echo "<div id='menu_tab_left'><ul class='mn'><li class='view'>
-<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/bricks.png' class='top' border=0>&nbsp; ".substr(dame_nombre_agente($id_agente),0,15)." - ".__('view_mode')."</a>";
+<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/bricks.png' class='top' border=0>&nbsp; ".substr(dame_nombre_agente($id_agente),0,15)." - ".__('View mode')."</a>";
 echo "</li>";
 echo "</ul></div>";
 $tab = get_parameter ("tab", "main");
@@ -220,7 +220,7 @@ if ($tab == "alert") {
 }
 // Go to SLA view
 echo "<li class='nomn'>";
-echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sla&id_agente=$id_agente'><img src='images/images.png' class='top' border=0> ".__('SLA')." </a>";
+echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sla&id_agente=$id_agente'><img src='images/images.png' class='top' border=0> ".__('S.L.A')." </a>";
 echo "</li>";
 	
 echo "</ul>";

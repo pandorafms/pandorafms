@@ -27,14 +27,14 @@ if (isset($_GET["delete"])) {
 		$id = $_GET["delete"];
 		$sql = "DELETE FROM tgraph_source WHERE id_graph = $id";
 		if ($res=mysql_query($sql))
-			$result = "<h3 class=suc>".__('delete_ok')."</h3>";
+			$result = "<h3 class=suc>".__('Deleted successfully')."</h3>";
 		else
-			$result = "<h3 class=error>".__('delete_no')."</h3>";
+			$result = "<h3 class=error>".__('Not deleted. Error deleting data')."</h3>";
 		$sql = "DELETE FROM tgraph WHERE id_graph = $id";
 		if ($res=mysql_query($sql))
-			$result = "<h3 class=suc>".__('delete_ok')."</h3>";
+			$result = "<h3 class=suc>".__('Deleted successfully')."</h3>";
 		else
-			$result = "<h3 class=error>".__('delete_no')."</h3>";
+			$result = "<h3 class=error>".__('Not deleted. Error deleting data')."</h3>";
 		echo $result;
 	} else {
 		audit_db ($config['id_user'],$REMOTE_ADDR, "ACL Violation","Trying to delete a graph from access graph builder");
@@ -104,8 +104,8 @@ if (isset($_GET["view_graph"])){
 				}
 			}
 		}
-		echo "<h2>".__('reporting')." &gt; ";
-		echo __('combined_image')."</h2>";
+		echo "<h2>".__('Reporting')." &gt; ";
+		echo __('Combined image render')."</h2>";
 		echo "<table class='databox_frame' cellpadding=0 cellspacing=0>";
 		echo "<tr><td>";
 		echo "<img 
@@ -116,19 +116,19 @@ border=1 alt=''>";
 		echo "<form method='POST' action='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=$id_graph'>";
 		echo "<table class='databox_frame' cellpadding=4 cellspacing=4>";
 		echo "<tr><td class='datos'>";
-		echo "<b>".__('period')."</b>";
+		echo "<b>".__('Period')."</b>";
 		echo "<td class='datos'>";
 		$periods = array ();
-		$periods[1] = __('hour');
+		$periods[1] = __('One hour');
 		$periods[2] = '2 '.__('hours');
 		$periods[3] = '3 '.__('hours');
 		$periods[6] = '6 '.__('hours');
 		$periods[12] = '12 '.__('hours');
-		$periods[24] = __('last_day');
-		$periods[48] = __('two_days');
-		$periods[360] = __('last_week');
-		$periods[720] = __('last_month');
-		$periods[4320] = __('six_months');
+		$periods[24] = __('One day');
+		$periods[48] = __('Two days');
+		$periods[360] = __('One week');
+		$periods[720] = __('One month');
+		$periods[4320] = __('Six months');
 		print_select ($periods, 'period', intval ($period / 3600), '', '', 0);
 
 		echo "<td class='datos'>";
@@ -148,13 +148,13 @@ border=1 alt=''>";
 		print_select ($zooms, 'zoom', $zoom , '', '', 0);
 
 		echo "<td class='datos'>";
-		echo "<input type=submit value='".__('update')."' class='sub upd'>";
+		echo "<input type=submit value='".__('Update')."' class='sub upd'>";
 		echo "</table>";
 		echo "</form>";		
 	}
 }
-echo "<h2>" . __('reporting') . " &gt; ";
-echo __('custom_graph_viewer') . "</h2>";
+echo "<h2>" . __('Reporting') . " &gt; ";
+echo __('Custom graph viewer') . "</h2>";
 
 $color=1;
 $sql="SELECT * FROM tgraph ORDER by name";
@@ -162,11 +162,11 @@ $res=mysql_query($sql);
 if (mysql_num_rows($res)) {
 	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
 	echo "<tr>
-		<th>".__('graph_name')."</th>
-		<th>".__('description')."</th>
-		<th>".__('view')."</th>";
+		<th>".__('Graph name')."</th>
+		<th>".__('Description')."</th>
+		<th>".__('View')."</th>";
 	if (give_acl ($config['id_user'], 0, "AW"))
-		echo "<th>".__('delete')."</th>";
+		echo "<th>".__('Delete')."</th>";
 	echo "</tr>";
 
 	while ($row = mysql_fetch_array($res)){
@@ -187,14 +187,14 @@ if (mysql_num_rows($res)) {
 			echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=$id_graph'><img src='images/images.png'></a>";
 			
 			if (give_acl ($config['id_user'], 0, "AW")) {
-				echo "<td class='$tdcolor' align='center'><a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&delete=$id_graph' ".'onClick="if (!confirm(\' '.__('are_you_sure').'\')) return false;">';
+				echo "<td class='$tdcolor' align='center'><a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&delete=$id_graph' ".'onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 				echo "<img src='images/cross.png'></a></td>";
 			}
 		}
 	}
 	echo "</table>";
 } else {
-	echo "<div class='nf'>".__('no_reporting_def')."</div>";
+	echo "<div class='nf'>".__('There are no defined reportings')."</div>";
 }
 
 ?>

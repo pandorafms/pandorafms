@@ -198,11 +198,11 @@ function popup_help ($help_id, $return = false) {
 function no_permission () {
 	require("config.php");
 	require ("include/languages/language_".$config["language"].".php");
-	echo "<h3 class='error'>".__('no_permission_title')."</h3>";
+	echo "<h3 class='error'>".__('You don\'t have access')."</h3>";
 	echo "<img src='images/noaccess.png' alt='No access' width='120'><br><br>";
 	echo "<table width=550>";
 	echo "<tr><td>";
-	echo __('no_permission_text');
+	echo __('You don\'t have enough permission to access this resource');
 	echo "</table>";
 	echo "<tr><td><td><td><td>";
 	include "general/footer.php";
@@ -221,7 +221,7 @@ function unmanaged_error ($error = "") {
 	echo "<img src='images/errror.png' alt='error'><br><br>";
 	echo "<table width=550>";
 	echo "<tr><td>";
-	echo __('Unmanaged error_text');
+	echo __('Unmanaged error');
 	echo "<tr><td>";
 	echo $error;
 	echo "</table>";
@@ -505,40 +505,40 @@ function human_time_description ($period) {
 	
 	switch ($period) {
 	case 3600:
-		return __('hour');
+		return __('One hour');
 		break;
 	case 7200:
-		return __('2_hours');
+		return __('Two hours');
 		break;
 	case 21600:
-		return __('6_hours');
+		return __('Six hours');
 		break;
 	case 43200:
-		return __('12_hours');
+		return __('12 hours');
 		break;
 	case 86400:
-		return __('last_day');
+		return __('One day');
 		break;
 	case 172800:
-		return __('two_days');
+		return __('Two days');
 		break;
 	case 432000:
-		return __('five_days');
+		return __('Five days');
 		break;
 	case 604800:
-		return __('last_week');
+		return __('One week');
 		break;
 	case 1296000:
-		return __('15_days');
+		return __('15 days');
 		break;
 	case 2592000:
-		return __('last_month');
+		return __('One month');
 		break;
 	case 5184000:
-		return __('two_month');
+		return __('Two months');
 		break;
 	case 15552000:
-		return __('six_months');
+		return __('Six months');
 		break;
 	default:
 		return human_time_description_raw ($period);
@@ -676,9 +676,9 @@ function get_alert_days ($row) {
 
 	$check = $row["monday"] + $row["tuesday"] + $row["wednesday"] + $row["thursday"] + $row["friday"] + $row["saturday"] + $row["sunday"];
 	if ($check == 7) {
-		return __('all');
+		return __('All');
 	} elseif ($check == 0) {
-		return __('none');
+		return __('None');
 	} 
 	if ($row["monday"] != 0)
 		$days_output .= "Mo ";
@@ -740,7 +740,7 @@ function show_alert_row_edit ($row2, $tdcolor = "datos", $id_tipo_modulo = 1, $c
 
 	$string = "";
 	if ($row2["disable"] == 1){
-		$string .= "<td class='$tdcolor'><b><i>".__('disabled')."</b></i>";
+		$string .= "<td class='$tdcolor'><b><i>".__('Disabled')."</b></i>";
 	} elseif ($id_tipo_modulo != 0) {
 		$string .= "<td class='$tdcolor'><img src='images/".show_icon_type($id_tipo_modulo)."' border=0>";
 	} else {
@@ -780,7 +780,7 @@ function show_alert_row_edit ($row2, $tdcolor = "datos", $id_tipo_modulo = 1, $c
 
 	// We have alert text ?
 	if ($row2["alert_text"]!= "") {
-		$string = $string."<td colspan=2 class='$tdcolor'>".__('text')."</td>";
+		$string = $string."<td colspan=2 class='$tdcolor'>".__('Text')."</td>";
 	} else {
 		$string = $string."<td class='$tdcolor'>".$mymin."</td>";
 		$string = $string."<td class='$tdcolor'>".$mymax."</td>";
@@ -804,7 +804,7 @@ function show_alert_row_edit ($row2, $tdcolor = "datos", $id_tipo_modulo = 1, $c
 
 	// calculare firing conditions
 	if ($row2["alert_text"] != "") {
-		$firing_cond = __('text')."(".substr($row2["alert_text"],0,8).")";
+		$firing_cond = __('Text')."(".substr($row2["alert_text"],0,8).")";
 	} else {
 		$firing_cond = $row2["min_alerts"]." / ".$row2["max_alerts"];
 	}
@@ -893,7 +893,7 @@ function show_alert_show_view ($data, $tdcolor = "datos", $combined = 0) {
 
 	// calculare firing conditions
 	if ($data["alert_text"] != ""){
-		$firing_cond = __('text')."(".substr($data["alert_text"],0,8).")";
+		$firing_cond = __('Text')."(".substr($data["alert_text"],0,8).")";
 	} else {
 		$firing_cond = $data["min_alerts"]." / ".$data["max_alerts"];
 	}
@@ -937,20 +937,20 @@ function show_alert_show_view ($data, $tdcolor = "datos", $combined = 0) {
 	$mymax =  format_for_graph($mymax );
 	// Text alert ?
 	if ($data["alert_text"] != "")
-		echo "<td class='".$tdcolor."' colspan=2>".__('text')."</td>";
+		echo "<td class='".$tdcolor."' colspan=2>".__('Text')."</td>";
 	else {
 		echo "<td class='".$tdcolor."'>".$mymin."</td>";
 		echo "<td class='".$tdcolor."'>".$mymax."</td>";
 	}
 	echo "<td  align='center' class='".$tdcolor."'>".human_time_description($data["time_threshold"]);
 	if ($data["last_fired"] == "0000-00-00 00:00:00") {
-		echo "<td align='center' class='".$tdcolor."f9'>".__('never')."</td>";
+		echo "<td align='center' class='".$tdcolor."f9'>".__('Never')."</td>";
 	} else {
 		echo "<td align='center' class='".$tdcolor."f9'>".human_time_comparation ($data["last_fired"])."</td>";
 	}
 	echo "<td align='center' class='".$tdcolor."'>".$data["times_fired"]."</td>";
 	if ($data["times_fired"] <> 0){
-		echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_red.png' title='".__('fired')."'>";
+		echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_red.png' title='".__('Alert fired')."'>";
 		echo "</td>";
 		$id_grupo_alerta = get_db_value ("id_grupo", "tagente", "id_agente", $id_agente);
 		if (give_acl($config["id_user"], $id_grupo_alerta, "AW") == 1) {
@@ -961,7 +961,7 @@ function show_alert_show_view ($data, $tdcolor = "datos", $combined = 0) {
 		}
 	} else {
 		echo "<td class='".$tdcolor."' align='center'>
-			<img width='20' height='9' src='images/pixel_green.png' title='".__('not_fired')."'></td>";
+			<img width='20' height='9' src='images/pixel_green.png' title='".__('Alert not fired')."'></td>";
 	}
 }
 
@@ -972,19 +972,19 @@ function show_alert_show_view ($data, $tdcolor = "datos", $combined = 0) {
  */
 function get_report_types () {
 	$types = array ();
-	$types['simple_graph'] = __('simple_graph');
-	$types['custom_graph'] = __('custom_graph');
-	$types['SLA'] = __('SLA');
-	$types['event_report'] = __('event_report');
-	$types['alert_report'] = __('alert_report');
-	$types['monitor_report'] = __('monitor_report');
-	$types['avg_value'] = __('avg_value');
-	$types['max_value'] = __('max_value');
-	$types['min_value'] = __('min_value');
-	$types['sumatory'] = __('sumatory');
-	$types['general_group_report'] = __('general_group_report');
-	$types['monitor_health'] = __('monitor_health');
-	$types['agents_detailed'] = __('agents_detailed');
+	$types['simple_graph'] = __('Simple graph');
+	$types['custom_graph'] = __('Custom graph');
+	$types['SLA'] = __('S.L.A');
+	$types['event_report'] = __('Event report');
+	$types['alert_report'] = __('Alert report');
+	$types['monitor_report'] = __('Monitor report');
+	$types['avg_value'] = __('Avg. Value');
+	$types['max_value'] = __('Max. Value');
+	$types['min_value'] = __('Min. Value');
+	$types['sumatory'] = __('Sumatory');
+	$types['general_group_report'] = __('General group report');
+	$types['monitor_health'] = __('Monitor health');
+	$types['agents_detailed'] = __('Agents detailed view');
 
 	return $types;
 }
@@ -999,7 +999,7 @@ function get_report_types () {
 function get_report_name ($type) {
 	$types = get_report_types ();
 	if (! isset ($types[$type]))
-		return __('unknown');
+		return __('Unknown');
 	return $types[$type];
 }
 
@@ -1108,16 +1108,16 @@ function is_module_data_string ($module_name) {
  */
 function get_event_types () {
 	$types = array ();
-	$types['unknown'] = __('unknown');
-	$types['monitor_up'] = __('monitor_up');
-	$types['monitor_down'] = __('monitor_down');
-	$types['alert_fired'] = __('alert_fired');
-	$types['alert_recovered'] = __('alert_recovered');
-	$types['alert_ceased'] = __('alert_ceased');
-	$types['alert_manual_validation'] = __('alert_manual_validation');
-	$types['recon_host_detected'] = __('recon_host_detected');
-	$types['system'] = __('sytem');
-	$types['error'] = __('error');
+	$types['unknown'] = __('Unknown');
+	$types['monitor_up'] = __('Monitor up');
+	$types['monitor_down'] = __('Monitor down');
+	$types['alert_fired'] = __('Alert fired');
+	$types['alert_recovered'] = __('Alert recovered');
+	$types['alert_ceased'] = __('Alert ceased');
+	$types['alert_manual_validation'] = __('Alert manual validation');
+	$types['recon_host_detected'] = __('Recon host detected');
+	$types['system'] = __('System');
+	$types['error'] = __('Error');
 	
 	return $types;
 }

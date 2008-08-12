@@ -22,20 +22,20 @@ require ("include/config.php");
 
 check_login ();
 
-echo "<h2>".__('reporting')." &gt; ";
-echo __('custom_reporting')."</h2>";
+echo "<h2>".__('Reporting')." &gt; ";
+echo __('Custom reporting')."</h2>";
 
 $reports = get_reports ($config['id_user']);
 
 if (sizeof ($reports) == 0) {
-	echo "<div class='nf'>".__('no_reporting_def')."</div>";
+	echo "<div class='nf'>".__('There are no defined reportings')."</div>";
 	return;
 }
 
 $table->width = '580px';
 $table->head = array ();
-$table->head[0] = __('report_name');
-$table->head[1] = __('description');
+$table->head[0] = __('Report name');
+$table->head[1] = __('Description');
 $table->head[2] = __('HTML');
 $table->head[3] = __('PDF');
 $table->align = array ();

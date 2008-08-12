@@ -25,7 +25,8 @@ check_login();
 $id_report = (int) get_parameter ('id');
 
 if (! $id_report) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "HACK Attempt","Trying to access graph viewer withoud ID");
+	audit_db ($config['id_user'], $REMOTE_ADDR, "HACK Attempt",
+		"Trying to access graph viewer withoud ID");
 	include ("general/noaccess.php");
 	exit;
 }
@@ -48,8 +49,8 @@ if ($report['id_user'] != $config['id_user'] && ! dame_admin ($config['id_user']
 $date = (string) get_parameter ('date', date ('Y-m-j'));
 $time = (string) get_parameter ('time', date ('h:iA'));
 
-echo "<h2>".__('reporting')." &gt; ";
-echo __('custom_reporting')." - ";
+echo "<h2>".__('Reporting')." &gt; ";
+echo __('Custom reporting')." - ";
 echo $report['name']."</h2>";
 
 $table->width = '99%';
@@ -64,10 +65,10 @@ if ($report['description'] != '')
 	$table->data[0][1] = $report['description'];
 else
 	$table->data[0][1] = $report['name'];
-$table->data[1][0] = __('date');
+$table->data[1][0] = __('Date');
 $table->data[1][1] = print_input_text ('date', $date, '', 10, 10, true). ' ';
 $table->data[1][1] .= print_input_text ('time', $time, '', 7, 7, true). ' ';
-$table->data[1][1] .= print_submit_button (__('update'), 'date_submit', false, 'class="sub next"', true);
+$table->data[1][1] .= print_submit_button (__('Update'), 'date_submit', false, 'class="sub next"', true);
 
 echo '<form method="post" action="">';
 print_table ($table);
@@ -106,12 +107,12 @@ $(document).ready (function () {
 $datetime = strtotime ($date.' '.$time);
 
 if ($datetime === false || $datetime == -1) {
-	echo '<h3 class="error">'.__('invalid_date').'</h3>';
+	echo '<h3 class="error">'.__('Invalid date selected').'</h3>';
 	return;
 }
 /* Date must not be older than now */
 if ($datetime > time ()) {
-	echo '<h3 class="error">'.__('date_older_than_now').'</h3>';
+	echo '<h3 class="error">'.__('Selected date is older than current date').'</h3>';
 	return;
 }
 
@@ -143,7 +144,7 @@ foreach ($contents as $content) {
 	case 'simple_graph':
 		$table->colspan[1][0] = 4;
 		$data = array ();
-		$data[0] = '<h4>'.__('simple_graph').'</h4>';
+		$data[0] = '<h4>'.__('Simple graph').'</h4>';
 		$data[1] = '<h4>'.$agent_name.' - '.$module_name.'</h4>';
 		$data[2] = '<h4>'.human_time_description($content['period']).'</h4>';
 		array_push ($table->data, $data);
@@ -157,7 +158,7 @@ foreach ($contents as $content) {
 	case 'custom_graph':
 		$graph = get_db_row ("tgraph", "id_graph", $content['id_gs']);
 		$data = array ();
-		$data[0] = '<h4>'.__('custom_graph').'</h4>';
+		$data[0] = '<h4>'.__('Custom graph').'</h4>';
 		$data[1] = "<h4>".$graph["name"]."</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
@@ -182,7 +183,7 @@ foreach ($contents as $content) {
 		$table->colspan[0][0] = 2;
 		$table->style[1] = 'text-align: right';
 		$data = array ();
-		$data[0] = '<h4>'.__('SLA').'</h4>';
+		$data[0] = '<h4>'.__('S.L.A').'</h4>';
 		$data[1] = '<h4>'.human_time_description ($content['period']).'</h4>';;
 		$n = array_push ($table->data, $data);
 		
@@ -191,7 +192,7 @@ foreach ($contents as $content) {
 		if ($slas === false) {
 			$data = array ();
 			$table->colspan[1][0] = 3;
-			$data[0] = __('no_defined_slas');
+			$data[0] = __('There are no SLAs defined');
 			array_push ($table->data, $data);
 			$slas = array ();
 		}
@@ -201,20 +202,20 @@ foreach ($contents as $content) {
 			$data = array ();
 			
 			$table->colspan[$n][0] = 2;
-			$data[0] = '<strong>'.__('agent')."</strong> : ";
+			$data[0] = '<strong>'.__('Agent')."</strong> : ";
 			$data[0] .= dame_nombre_agente_agentemodulo ($sla['id_agent_module'])."<br />";
-			$data[0] .= '<strong>'.__('module')."</strong> : ";
+			$data[0] .= '<strong>'.__('Module')."</strong> : ";
 			$data[0] .= dame_nombre_modulo_agentemodulo ($sla['id_agent_module'])."<br />";
-			$data[0] .= '<strong>'.__('sla_max')."</strong> : ";
+			$data[0] .= '<strong>'.__('SLA Max. (value)')."</strong> : ";
 			$data[0] .= $sla['sla_max']."<br />";
-			$data[0] .= '<strong>'.__('sla_min')."</strong> : ";
+			$data[0] .= '<strong>'.__('SLA Min. (value)')."</strong> : ";
 			$data[0] .= $sla['sla_min']."<br />";
 			
 			$sla_value = get_agent_module_sla ($sla['id_agent_module'], $content['period'],
 							$sla['sla_min'], $sla['sla_max'], $datetime);
 			if ($sla_value === false) {
 				$data[1] = '<span style="font: bold 3em Arial, Sans-serif; color: #0000FF;">';
-				$data[1] .= __('unknown');
+				$data[1] .= __('Unknown');
 			} else {
 				if ($sla_value >= $sla['sla_limit'])
 					$data[1] = '<span style="font: bold 3em Arial, Sans-serif; color: #000000;">';
@@ -245,7 +246,7 @@ foreach ($contents as $content) {
 		$table->colspan[0][0] = 2;
 		$id_agent = dame_agente_id ($agent_name);
 		$data = array ();
-		$data[0] = "<h4>".__('event_report')."</h4>";
+		$data[0] = "<h4>".__('Event report')."</h4>";
 		$data[1] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
 		
@@ -261,7 +262,7 @@ foreach ($contents as $content) {
 	case 5:
 	case 'alert_report':
 		$data = array ();
-		$data[0] = "<h4>".__('alert_report')."</h4>";
+		$data[0] = "<h4>".__('Alert report')."</h4>";
 		$data[1] = "<h4>$group_name</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
@@ -275,7 +276,7 @@ foreach ($contents as $content) {
 	case 6:
 	case 'monitor_report':
 		$data = array ();
-		$data[0] = "<h4>".__('monitor_report')."</h4>";
+		$data[0] = "<h4>".__('Monitor report')."</h4>";
 		$data[1] = "<h4>$agent_name - $module_name</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
@@ -293,7 +294,7 @@ foreach ($contents as $content) {
 	case 7:
 	case 'avg_value':
 		$data = array ();
-		$data[0] = "<h4>".__('avg_value')."</h4>";
+		$data[0] = "<h4>".__('Avg. Value')."</h4>";
 		$data[1] = "<h4>$agent_name - $module_name</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
@@ -308,7 +309,7 @@ foreach ($contents as $content) {
 	case 8:
 	case 'max_value':
 		$data = array ();
-		$data[0] = "<h4>".__('max_value')."</h4>";
+		$data[0] = "<h4>".__('Max. Value')."</h4>";
 		$data[1] = "<h4>$agent_name - $module_name</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
@@ -323,7 +324,7 @@ foreach ($contents as $content) {
 	case 9:
 	case 'min_value':
 		$data = array ();
-		$data[0] = "<h4>".__('min_value')."</h4>";
+		$data[0] = "<h4>".__('Min. Value')."</h4>";
 		$data[1] = "<h4>$agent_name - $module_name</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
@@ -338,7 +339,7 @@ foreach ($contents as $content) {
 	case 10:
 	case 'sumatory':
 		$data = array ();
-		$data[0] = "<h4>".__('sumatory')."</h4>";
+		$data[0] = "<h4>".__('Sumatory')."</h4>";
 		$data[1] = "<h4>$agent_name - $module_name</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
@@ -353,7 +354,7 @@ foreach ($contents as $content) {
 	case 11:
 	case 'general_group_report':
 		$data = array ();
-		$data[0] = "<h4>".__('group')."</h4>";
+		$data[0] = "<h4>".__('Group')."</h4>";
 		$data[1] = "<h4>$group_name</h4>";
 		array_push ($table->data, $data);
 		
@@ -366,7 +367,7 @@ foreach ($contents as $content) {
 	case 12:
 	case 'monitor_health':
 		$data = array ();
-		$data[0] = "<h4>".__('monitor_health')."</h4>";
+		$data[0] = "<h4>".__('Monitor health')."</h4>";
 		$data[1] = "<h4>$group_name</h4>";
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
@@ -380,7 +381,7 @@ foreach ($contents as $content) {
 	case 13:
 	case 'agents_detailed':
 		$data = array ();
-		$data[0] = "<h4>".__('agents_detailed')."</h4>";
+		$data[0] = "<h4>".__('Agents detailed view')."</h4>";
 		$data[1] = "<h4>$group_name</h4>";
 		array_push ($table->data, $data);
 		$table->colspan[0][0] = 2;

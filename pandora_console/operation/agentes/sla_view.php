@@ -40,12 +40,12 @@ if (mysql_num_rows ($result_t)) {
 	echo "<h3>".__('Automatic SLA for monitors')."</h3>";
 	echo "<table width='750' cellpadding=4 cellspacing=4 class='databox'>";
 	echo "<tr><th>X</th>";
-	echo "<th>".__('type')."</th>
-	<th>".__('module_name')."</th>
-	<th>".__('SLA')."</th>
-	<th>".__('status')."</th>
-	<th>".__('interval')."</th>
-	<th>".__('last_contact')."</th>";
+	echo "<th>".__('Type')."</th>
+	<th>".__('Module name')."</th>
+	<th>".__('S.L.A')."</th>
+	<th>".__('Status')."</th>
+	<th>".__('Interval')."</th>
+	<th>".__('Last contact')."</th>";
 	$color=0;
 	while ($module_data=mysql_fetch_array($result_t)){
 		# For evey module in the status table
@@ -102,11 +102,11 @@ if (mysql_num_rows ($result_t)) {
 			echo "<td class='".$tdcolor."' align='center'>";
 			if ($est_estado == 1){
 				if ($est_cambio == 1) 
-					echo "<img src='images/pixel_yellow.png' width=40 height=18 title='" . __('yellow_light') . "'>";
+					echo "<img src='images/pixel_yellow.png' width=40 height=18 title='" . __('Change between Green/Red state') . "'>";
 				else
-					echo "<img src='images/pixel_red.png' width=40 height=18 title='". __('red_light') . "'>";
+					echo "<img src='images/pixel_red.png' width=40 height=18 title='". __('At least one monitor fails') . "'>";
 			} else
-				echo "<img src='images/pixel_green.png' width=40 height=18 title='". __('green_light') . "'>";
+				echo "<img src='images/pixel_green.png' width=40 height=18 title='". __('All Monitors OK') . "'>";
 
 			echo "<td align='center' class='".$tdcolor."'>";
 			if ($temp_interval != $intervalo)
@@ -121,7 +121,7 @@ if (mysql_num_rows ($result_t)) {
 				echo "<span>";
 			}
 			if ($module_data["timestamp"] == '0000-00-00 00:00:00') {
-				echo __('never');
+				echo __('Never');
 			} else {
 				echo human_time_comparation($module_data["timestamp"]);
 			}
@@ -141,10 +141,10 @@ if (mysql_num_rows ($result_t)) {
 	echo human_time_description_raw($config["sla_period"]). " </h3>";
 	echo "<table width='750' cellpadding=4 cellspacing=4 class='databox'>";
 	echo "<tr>";
-	echo "<th>" . __('type') . "</th>";
-	echo "<th>" . __('module_name') . "</th>";
-	echo "<th>" . __('SLA') . "</th>";
-	echo "<th>" . __('status') . "</th>";
+	echo "<th>" . __('Type') . "</th>";
+	echo "<th>" . __('Module name') . "</th>";
+	echo "<th>" . __('S.L.A') . "</th>";
+	echo "<th>" . __('Status') . "</th>";
 	
 	while ($module_data = mysql_fetch_array($result_t)){
 		if ($color == 1){
@@ -181,9 +181,9 @@ if (mysql_num_rows ($result_t)) {
 			echo format_numeric($temp)." %</td>";
 			echo "<td class='$tdcolor'>";
 			if ($temp > $sla_limit)
-				echo "<img src='images/pixel_green.png' width=40 height=18 title='" . __('green_light') . "'>";
+				echo "<img src='images/pixel_green.png' width=40 height=18 title='" . __('All Monitors OK') . "'>";
 			else
-				echo "<img src='images/pixel_red.png' width=40 height=18 title='" . __('red_light') . "'>";
+				echo "<img src='images/pixel_red.png' width=40 height=18 title='" . __('At least one monitor fails') . "'>";
 		}
 	}
 	echo '</table>';

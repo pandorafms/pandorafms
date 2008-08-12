@@ -27,7 +27,7 @@ if (! give_acl ($config['id_user'], 0, "AR")) {
 	require ("general/noaccess.php");
 	exit;
 }
-echo "<h2>".__('ag_title')." &gt; ".__('group_view')."</h2>";
+echo "<h2>".__('Pandora Agents')." &gt; ".__('Group view')."</h2>";
 
 // Update network modules for this group
 // Check for Network FLAG change request
@@ -110,7 +110,7 @@ foreach ($groups as $id_group => $group_name) {
 }
 
 if ($total_agents == 0) {
-	echo "<div class='nf'>".__('no_group_def')."</div>";
+	echo "<div class='nf'>".__('There are no defined groups')."</div>";
 	if (give_acl ($config['id_user'], 0, "LM")
 		|| give_acl ($config['id_user'], 0, "AW")
 		|| give_acl ($config['id_user'], 0, "PM")
@@ -118,7 +118,7 @@ if ($total_agents == 0) {
 		|| give_acl ($config['id_user'], 0, "UM")) {
 		
 		echo "&nbsp;<form method='post' action='index.php?sec=gagente&sec2=godmode/groups/configure_group&create_g=1'><input type='submit' class='sub next' name='crt'
-	value='".__('create_group')."'></form>";
+	value='".__('Create group')."'></form>";
 	}
 	return;
 }
@@ -146,30 +146,30 @@ for ($table = 0; $table < $ancho; $table++) {
 		$icono_type  = "";
 		if ($group_info["bad"] > 0) {
 			$icono_type .= '<img src="images/dot_red.png"
-					title="'.__('modules_bad').'">';
+					title="'.__('Modules bad').'">';
 		}
 		
 		if ($group_info["ok"] > 0) {
 			$icono_type .= '<img src="images/dot_green.png" 
-					title="'.__('modules_ok').'">';
+					title="'.__('Modules OK').'">';
 		}
 			
 		// Show yellow light if there are recent alerts fired for this group
 		if ($group_info["alerts"] > 0 ) {
 			$icono_type .= '<img src="images/dot_yellow.png"
-					title="'.__('alerts_fired').'">';
+					title="'.__('Alerts fired').'">';
 		}
 		
 		// Show grey light if there are agent down for this group
 		if ($group_info["down"] > 0 ) {
 			$icono_type .= '<img src="images/dot_white.png"
-					title="'.__('agents_down').'">';
+					title="'.__('Agents down').'">';
 		}
 		
 		// Show red flag is group has disabled alert system
 		if (give_disabled_group ($group_info["id_group"])) {
 			$icono_type .= '<img src="images/flag_red.png"
-					title="'.__('disabled_alerts').'">';
+					title="'.__('Disabled alerts').'">';
 		}
 		
 		// By default green border
@@ -209,7 +209,7 @@ for ($table = 0; $table < $ancho; $table++) {
 			<table cellspacing='2' cellpadding='0'
 			style='margin-left:2px;'>
 				<tr><th colspan='2' width='91'>".
-				__('agents').": </th></tr>
+				__('Agents').": </th></tr>
 				<tr><td colspan='2' class='datos' align='center'><b>".
 				$group_info["agent"]."</b></td></tr>
 			</table>
@@ -217,7 +217,7 @@ for ($table = 0; $table < $ancho; $table++) {
 			style='margin-left:2px'>
 				<tr>
 				<th colspan='2' width='90'>".
-				ucfirst (__('monitors')).":</th>
+				ucfirst (__('Monitors')).":</th>
 				</tr>
 				<tr>
 				<td class='datos'>
@@ -230,7 +230,7 @@ for ($table = 0; $table < $ancho; $table++) {
 				<tr>
 				<td class='datos'>
 				<img src='images/b_red.png' align='top' alt=''>
-				".__('fail').": </td>
+				".__('Fail').": </td>
 				<td class='datos'><font class='redb'>".
 				$group_info["bad"]."</font></td>
 				</tr>";
@@ -239,7 +239,7 @@ for ($table = 0; $table < $ancho; $table++) {
 			<tr>
 			<td class='datos'>
 			<img src='images/b_white.png' align='top' alt=''>
-			".__('down').": </td>
+			".__('Down').": </td>
 			<td class='datos'><font class='redb'>".
 			$group_info["down"]."</font></td></tr>";
 		}
@@ -247,7 +247,7 @@ for ($table = 0; $table < $ancho; $table++) {
 			$celda .= "<tr>
 			<td class='datos'>
 			<img src='images/b_yellow.png' align='top' alt=''>
-			".__('alerts').": </td>
+			".__('Alerts').": </td>
 			<td class='datos'><font class='grey'>".
 			$group_info["alerts"]."</font></td>
 			</tr>";

@@ -22,22 +22,22 @@ global $REMOTE_ADDR;
 
 check_login ();
 
-echo "<h2>".__('visual_console')." &gt; ";
-echo __('summary')."</h2>";
+echo "<h2>".__('Visual console')." &gt; ";
+echo __('Summary')."</h2>";
 
 $layouts = get_db_all_rows_in_table ('tlayout','name');
 
 if (sizeof ($layouts) == 0) {
-	echo "<div class='nf'>".__('no_layout_def')."</div>";
+	echo "<div class='nf'>".__('There are no defined layouts')."</div>";
 	return;
 }
 
 $table->width = '500px';
 $table->data = array ();
 $table->head = array ();
-$table->head[0] = __('name');
-$table->head[1] = __('group');
-$table->head[2] = __('elements');
+$table->head[0] = __('Name');
+$table->head[1] = __('Group');
+$table->head[2] = __('Elements');
 $table->align = array ();
 $table->align[2] = 'center';
 

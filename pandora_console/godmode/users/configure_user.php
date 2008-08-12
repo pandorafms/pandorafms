@@ -53,7 +53,7 @@ if (isset ($_GET["id_usuario_mio"])) { // if any parameter changed
 	$result = mysql_query ($sql);
 	$rowdup = mysql_fetch_array ($result);
 	if (! $rowdup) {
-		echo "<h3 class='error'>".__('user_error')."</h3>";
+		echo "<h3 class='error'>".__('There was a problem loading user')."</h3>";
 		echo "</table>";
 		include ("general/footer.php");
 		exit;
@@ -78,7 +78,7 @@ if (isset ($_POST["edicion"])) {
 		$password = get_parameter_post ("pass1");
 		$password2 = get_parameter_post ("pass2");
 		if ($password != $password2){
-			echo "<h3 class='error'>".__('pass_nomatch')."</h3>";
+			echo "<h3 class='error'>".__('Passwords don\'t match. Please repeat again')."</h3>";
 		} else {
 			if (isset($_POST["nivel"]))
 				$nivel = get_parameter_post ("nivel");
@@ -117,10 +117,10 @@ if (isset ($_POST["edicion"])) {
 			$nivel = $rowdup["nivel"];
 			$nombre_real=$rowdup["nombre_real"];
 			$modo ="edicion";
-			echo "<h3 class='suc'>".__('update_user_ok')."</h3>";
+			echo "<h3 class='suc'>".__('User successfully updated')."</h3>";
 		}
 	} else {
-		echo "<h3 class='error'>".__('update_user_no')."</h3>";
+		echo "<h3 class='error'>".__('There was a problem updating user')."</h3>";
 	}
 } 
 
@@ -132,7 +132,7 @@ if (isset ($_GET["nuevo_usuario"])) {
 	$password2 = get_parameter_post ("pass2");
 	$nombre_real=get_parameter_post ("nombre_real");
 	if ($password <> $password2){
-		echo "<h3 class='error'>".__('pass_nomatch')."</h3>";
+		echo "<h3 class='error'>".__('Passwords don\'t match. Please repeat again')."</h3>";
 	}
 	$direccion = get_parameter_post ("direccion");
 	$telefono = get_parameter_post ("telefono");
@@ -144,23 +144,23 @@ if (isset ($_GET["nuevo_usuario"])) {
 	$sql = "INSERT INTO tusuario (id_usuario,direccion,password,telefono,fecha_registro,nivel,comentarios, nombre_real) VALUES ('".$nombre."','".$direccion."','".$password."','".$telefono."','".$ahora."','".$nivel."','".$comentarios."','".$nombre_real."')";
 	$resq1 = mysql_query ($sql);
 	if (! $resq1)
-		echo "<h3 class='error'>".__('create_user_no')."</h3>";
+		echo "<h3 class='error'>".__('User creation failed')."</h3>";
 	else {
-		echo "<h3 class='suc'>".__('create_user_ok')."</h3>";
+		echo "<h3 class='suc'>".__('User created successfully')."</h3>";
 	}
 	$id_usuario_mio = $nombre;
 	$modo ="edicion";
 	$password = "";
 	$password2 = "";
 }
-	echo "<h2>".__('user_management')." &gt; ";
+	echo "<h2>".__('User management')." &gt; ";
 	if (isset($_GET["alta"])) {
 		if ($_GET["alta"] == 1) {
-			echo __('create_user');
+			echo __('Create user');
 		}
 	}
 	if (isset ($_GET["id_usuario_mio"]) || isset ($_GET["nuevo_usuario"])) {
-		echo __('update_user');
+		echo __('Update user');
 	}
 echo "</h2>";
 
@@ -173,39 +173,39 @@ else
 	echo '<form name="user_mod" method="post" action="index.php?sec=gusuarios&sec2=godmode/users/configure_user&id_usuario_mio='.$id_usuario_mio.'">';
 ?>
 <tr>
-<td class="datos"><?php echo __('id_user') ?></td>
+<td class="datos"><?php echo __('User ID') ?></td>
 <td class="datos"><input type="text" name="nombre" value="<?php echo $id_usuario_mio ?>"></td>
-<tr><td class="datos2"><?php echo __('real_name') ?>
+<tr><td class="datos2"><?php echo __('Real name') ?>
 <td class="datos2"><input type="text" name="nombre_real" value="<?php echo $nombre_real ?>"></td>
 
 <?php
 echo '<tr><td class="datos">';
-echo __('password');
+echo __('Password');
 echo '<td class="datos">';
 echo '<input type="password" name="pass1" value="'.$password.'"></td>';
 echo '<tr><td class="datos2">';
-echo __('password'). " ". __('confirmation').'</td>';
+echo __('Password confirmation').'</td>';
 echo '<td class="datos">';
 echo '<input type="password" name="pass2" value="'.$password2.'"></td>';
 echo '<tr><td class="datos">E-Mail</td>';
 ?>
 <td class="datos"><input type="text" name="direccion" size="40" value="<?php echo $direccion ?>"></td>
-<tr><td class="datos2"><?php echo __('telefono') ?></td>
+<tr><td class="datos2"><?php echo __('Telephone') ?></td>
 <td class="datos2"><input type="text" name="telefono" value="<?php echo $telefono ?>"></td>
-<tr><td class="datos"><?php echo __('global_profile') ?></td>
+<tr><td class="datos"><?php echo __('Global Profile') ?></td>
 
 <td class="datos">
 <?php
 
 if ($nivel == "1") {
-	echo __('administrator').'<input type="radio" class="chk" name="nivel" value="1" checked><a href="#" class="tip">&nbsp;<span>'.$help_label["users_msg1"].'</span></a>&nbsp;';
-	echo __('normal_user').'<input type="radio" class="chk" name="nivel" value="0"><a href="#" class="tip">&nbsp;<span>'.$help_label["users_msg2"].'</span></a>';
+	echo __('Administrator').'<input type="radio" class="chk" name="nivel" value="1" checked><a href="#" class="tip">&nbsp;<span>'.$help_label["users_msg1"].'</span></a>&nbsp;';
+	echo __('Standard user').'<input type="radio" class="chk" name="nivel" value="0"><a href="#" class="tip">&nbsp;<span>'.$help_label["users_msg2"].'</span></a>';
 } else {
-	echo __('administrator').'<input type="radio" class="chk" name="nivel" value="1"><a href="#" class="tip">&nbsp;<span>'.$help_label["users_msg1"].'</span></a>&nbsp;';
-	echo __('normal_user').'<input type="radio" class="chk" name="nivel" value="0" checked><a href="#" class="tip">&nbsp;<span>'.$help_label["users_msg2"].'</span></a>';
+	echo __('Administrator').'<input type="radio" class="chk" name="nivel" value="1"><a href="#" class="tip">&nbsp;<span>'.$help_label["users_msg1"].'</span></a>&nbsp;';
+	echo __('Standard user').'<input type="radio" class="chk" name="nivel" value="0" checked><a href="#" class="tip">&nbsp;<span>'.$help_label["users_msg2"].'</span></a>';
 }
 ?>
-<tr><td class="datos2" colspan="2"><?php echo __('comments') ?></td>
+<tr><td class="datos2" colspan="2"><?php echo __('Comments') ?></td>
 <tr><td class="datos" colspan="2">
 <textarea name="comentarios" cols="60" rows="4"><?php echo $comentarios ?></textarea>
 </td></tr>
@@ -217,10 +217,10 @@ if ($modo == "edicion") { // Only show groups for existing users
 	echo '<input type="hidden" name="edicion" value="1">';
 	echo '<input type="hidden" name="id_usuario_antiguo" value="'.$id_usuario_mio.'">';
 	
-	echo '<tr><td class="datos2">'.__('group_avail').'</td>
+	echo '<tr><td class="datos2">'.__('Group(s) available').'</td>
 	<td class="datos2">
 	<select name="grupo" class="w155">';
-	echo "<option value=''>".__('none');
+	echo "<option value=''>".__('None');
 	$sql1='SELECT * FROM tgrupo ORDER BY nombre';
 	$result=mysql_query($sql1);
 	while ($row=mysql_fetch_array($result)){
@@ -229,7 +229,7 @@ if ($modo == "edicion") { // Only show groups for existing users
 	echo '</select>';
 	
 	echo '</td></tr>';
-	echo "<tr><td class='datos'>".__('profiles')."</td>";
+	echo "<tr><td class='datos'>".__('Profiles')."</td>";
 	echo "<td class='datos'>
 	<select name='perfil' class='w155'>";
 	$sql1='SELECT * FROM tperfil ORDER BY name';
@@ -242,12 +242,12 @@ if ($modo == "edicion") { // Only show groups for existing users
 	echo '</tr></table>';
 	echo "<table width=500>";
 	echo "<tr><td align='right'>";
-	echo "<input name='uptbutton' type='submit' class='sub upd' value='".__('update')."'></td></tr></table><br>";
+	echo "<input name='uptbutton' type='submit' class='sub upd' value='".__('Update')."'></td></tr></table><br>";
 	// Show user profile / groups assigned
 	$sql1='SELECT * FROM tusuario_perfil WHERE id_usuario = "'.$id_usuario_mio.'"';
 	$result=mysql_query($sql1);
 	
-	echo '<h3>'.__('listGroupUser').'</h3>';
+	echo '<h3>'.__('Profiles/Groups assigned to this user').'</h3>';
 	echo "<table width='500' cellpadding='4' cellspacing='4' class='databox'>";
 	if (mysql_num_rows($result)){
 		echo '<tr>';
@@ -264,11 +264,11 @@ if ($modo == "edicion") { // Only show groups for existing users
 			echo '<td class="'.$tdcolor.'">';
 			echo "<b style='margin-left:10px'>".dame_perfil($row["id_perfil"])."</b> / ";
 			echo "<b>".dame_grupo($row["id_grupo"])."</b>";
-			echo '<td class="'.$tdcolor.'t"><a href="index.php?sec=gusuarios&sec2=godmode/users/configure_user&id_usuario_mio='.$id_usuario_mio.'&borrar_grupo='.$row["id_up"].' " onClick="if (!confirm(\' '.__('are_you_sure').'\')) return false;"><img border=0 src="images/cross.png"></a><tr>';
+			echo '<td class="'.$tdcolor.'t"><a href="index.php?sec=gusuarios&sec2=godmode/users/configure_user&id_usuario_mio='.$id_usuario_mio.'&borrar_grupo='.$row["id_up"].' " onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;"><img border=0 src="images/cross.png"></a><tr>';
 		}
 	}
 	else {
-		echo '<div class="nf">'.__('no_profile').'</div>';
+		echo '<div class="nf">'.__('This user doesn\'t have any assigned profile/group').'</div>';
 	}
 }	
 ?>
@@ -278,7 +278,7 @@ if (isset($_GET["alta"])) {
 	echo '</tr></table>';
 	echo '<table width="500">';
 	echo '<tr><td align="right">';
-	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.__('create').'">';
+	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.__('Create').'">';
 } 
 ?> 
 </form>

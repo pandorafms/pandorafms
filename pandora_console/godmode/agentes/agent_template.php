@@ -109,23 +109,23 @@ if (isset($_POST["template_id"])) {
 			$sql = "";
 		}
 	}
-	echo "<h3 class='suc'>".__('add_mod_ok')."</h3>";
+	echo "<h3 class='suc'>".__('Modules successfully added ')."</h3>";
 }
 
 // Main header
 
-echo "<h2>".__('agent_conf')." &gt; ".__('network_templates');
+echo "<h2>".__('Agent configuration')." &gt; ".__('Module templates');
 echo "</h2>";
 
 // ==========================
 // TEMPLATE ASSIGMENT FORM
 // ==========================
 
-echo "<h3>".__('available_templates')."</h3>";
+echo "<h3>".__('Available templates')."</h3>";
 echo "<form method=post action='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=template&id_agente=$id_agente'>";
 
 echo "<table width='300' class='databox' cellpadding='4' cellspacing='4'>";
-echo "<tr><td>".__('template')."</td><td valign='middle'>";
+echo "<tr><td>".__('Template')."</td><td valign='middle'>";
 
 echo "<select name='template_id' class='w130'>";
 $sql = 'SELECT * FROM tnetwork_profile ORDER BY name';
@@ -136,14 +136,14 @@ if (mysql_num_rows ($result))
 echo "</select></td>";
 
 echo "<td>";
-echo "<input type='submit' class='sub next' name='crt' value='".__('assign')."'>";
+echo "<input type='submit' class='sub next' name='crt' value='".__('Assign')."'>";
 echo "</table>";
 echo "</form>";
 
 // ==========================
 // MODULE VISUALIZATION TABLE
 // ==========================
-echo "<h3>".__('assigned_modules')."</h3>";
+echo "<h3>".__('Assigned modules')."</h3>";
 
 $sql = 'SELECT * FROM tagente_modulo WHERE id_agente = "'.$id_agente.'"
 	ORDER BY id_module_group, nombre ';
@@ -151,10 +151,10 @@ $result = mysql_query($sql);
 if ($row = mysql_num_rows ($result)) {
 	echo '<table width="700" cellpadding="4" cellspacing="4" class="databox">';
 	echo '<tr>';
-	echo "<th>".__('module_name')."</th>";
-	echo "<th>".__('type')."</th>";
-	echo "<th>".__('description')."</th>";
-	echo "<th width=50>".__('action')."</th>";
+	echo "<th>".__('Module name')."</th>";
+	echo "<th>".__('Type')."</th>";
+	echo "<th>".__('Description')."</th>";
+	echo "<th width=50>".__('Action')."</th>";
 	$color=1;
 	$last_modulegroup = "0";
 	while ($row = mysql_fetch_array ($result)) {
@@ -181,14 +181,14 @@ if ($row = mysql_num_rows ($result)) {
 			sec2=godmode/agentes/configurar_agente&tab=template&
 			id_agente=".$id_agente."&
 			delete_module=".$row["id_agente_modulo"]."'>
-			<img src='images/cross.png' border=0 alt='".__('delete')."'>
+			<img src='images/cross.png' border=0 alt='".__('Delete')."'>
 			</b></a> &nbsp; ";
 		echo "<a href='index.php?sec=gagente&
 		sec2=godmode/agentes/configurar_agente&
 		id_agente=".$id_agente."&
 		tab=module&
 		update_module=".$row["id_agente_modulo"]."#modules'>
-		<img src='images/config.png' border=0 alt='".__('update')."' onLoad='type_change()'></b></a>";
+		<img src='images/config.png' border=0 alt='".__('Update')."' onLoad='type_change()'></b></a>";
 	}
 	echo "</td></tr>";
 	echo "</table>";

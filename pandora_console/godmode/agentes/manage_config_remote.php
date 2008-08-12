@@ -39,13 +39,13 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 	// DATA COPY
 	// ---------
 	if (isset($_POST["copy"])) {
-		echo "<h2>".__('datacopy')."</h2>";
+		echo "<h2>".__('Data Copy')."</h2>";
 		// Initial checkings
 
 		// if selected more than 0 agents
 		$destino = $_POST["destino"];
 		if (count($destino) <= 0){
-			echo "<h3 class='error'>ERROR: ".__('noagents_cp')."</h3>";
+			echo "<h3 class='error'>ERROR: ".__('No selected agents to copy')."</h3>";
 			echo "</table>";
 			include ("general/footer.php");
 			exit;
@@ -77,7 +77,7 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 	} else { 
 		
 		// title
-		echo '<h2>'.__('agent_conf'). '&gt;'. __('config_manage').'</h2>';
+		echo '<h2>'.__('Agent configuration'). '&gt;'. __('Configuration Management').'</h2>';
 		echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/manage_config_remote&operacion=1">';
 		echo "<table width='650' border='0' cellspacing='4' cellpadding='4' class='databox'>";
 		
@@ -94,7 +94,7 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 		echo '<br><br>';
 
 		// Source agent
-		echo '<b>'. __('source_agent').'</b><br><br>';
+		echo '<b>'. __('Source agent').'</b><br><br>';
 
 		// Show combo with SOURCE agents
 		if ($id_group != 0)
@@ -121,12 +121,12 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 		echo '</select>';
 
 		echo '&nbsp;&nbsp;';
-		echo '<input type=submit name="update_agent" class="sub upd" value="'.__('get_info').'">';
+		echo '<input type=submit name="update_agent" class="sub upd" value="'.__('Get Info').'">';
 		echo '<br><br>';
 
 		// Destination agent
 		echo '<tr><td class="datost">';
-		echo '<b>'.__('toagent').'</b><br><br>';
+		echo '<b>'.__('To Agent(s):').'</b><br><br>';
 		echo "<select name=destino[] size=10 multiple=yes style='width: 250px;'>";
 		$sql1='SELECT * FROM tagente ORDER BY nombre';
 		$result=mysql_query($sql1);
@@ -138,7 +138,7 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 		
 		// Form buttons
 		echo '<td align="right" class="datosb">';
-		echo '<input type="submit" name="copy" class="sub next" value="'.__('Replicate configuration').'" onClick="if (!confirm("'.__('are_you_sure').'")) return false;>';
+		echo '<input type="submit" name="copy" class="sub next" value="'.w__('Replicate configuration').'" onClick="if (!confirm("'.__('Are you sure?').'")) return false;>';
 		echo '<tr><td colspan=2>';
 		echo '</div></td></tr>';
 		echo '</table>';

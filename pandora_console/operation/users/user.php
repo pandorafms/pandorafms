@@ -24,15 +24,15 @@ if (comprueba_login() == 0) {
 
 ?>
 
-<h2><?php echo __('users_') ?> &gt; 
-<?php echo __('users') ?></h2>
+<h2><?php echo __('Pandora users') ?> &gt; 
+<?php echo __('Users defined in Pandora') ?></h2>
 
 <table cellpadding="4" cellspacing="4" width="700" class='databox'>
-<th width="80px"><?php echo __('user_ID')?></th>
-<th width="155px"><?php echo __('last_contact')?></th>
-<th width="45px"><?php echo __('profile')?></th>
-<th width="120px"><?php echo __('name')?></th>
-<th><?php echo __('description')?></th>
+<th width="80px"><?php echo __('UserID')?></th>
+<th width="155px"><?php echo __('Last contact')?></th>
+<th width="45px"><?php echo __('Profile')?></th>
+<th width="120px"><?php echo __('Name')?></th>
+<th><?php echo __('Description')?></th>
 
 <?php
 $color = 1;
@@ -76,7 +76,7 @@ while ($rowdup=mysql_fetch_array($resq1)){
 			echo dame_grupo($row["id_grupo"])."<br>";
 		}
 	}
-	else { echo __('no_profile'); }
+	else { echo __('This user doesn\'t have any assigned profile/group'); }
 	echo "</span></a>";
 	echo "<td class='$tdcolor' width='100'>".substr($real_name,0,16)."</td>";
 	echo "<td class='$tdcolor'>".$comments."</td>";
@@ -88,7 +88,7 @@ echo "</table><br>";
 ?>
 
 
-<h3><?php echo __('definedprofiles') ?></h3>
+<h3><?php echo __('Profiles defined in Pandora') ?></h3>
 
 <table cellpadding='4' cellspacing='4' class='databox'>
 <?php
@@ -97,7 +97,7 @@ echo "</table><br>";
 	$resq1=mysql_query($query_del1);
 	echo "<tr>";
 	echo "<th width='180px'>
-	<font size=1>".__('profiles')."</th>";
+	<font size=1>".__('Profiles')."</th>";
 	echo "<th width='40px'>
 	<font size=1>IR<a href='#' class='tipp'>&nbsp;<span>".$help_label["IR"]."</span></a>
 	</font></th>";

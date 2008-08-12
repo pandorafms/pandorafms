@@ -28,9 +28,9 @@ if (isset($_POST["update_alerta"])){ // if modified any parameter
 	$sql_update ="UPDATE talerta SET nombre = '".$nombre."', comando = '".$comando."', descripcion = '".$descripcion."' WHERE id_alerta= '".$id_alerta."'";
 	$result=mysql_query($sql_update);	
 	if (! $result) {
-		echo "<h3 class='error'>".__('update_alert_no')."</h3>";
+		echo "<h3 class='error'>".__('There was a problem updating alert')."</h3>";
 	} else {
-		echo "<h3 class='suc'>".__('update_alert_ok')."</h3>";
+		echo "<h3 class='suc'>".__('Alert successfully updated')."</h3>";
 	}
 }
 
@@ -41,9 +41,9 @@ if (isset($_POST["crear_alerta"])){ // if create alert
 	$sql_update ="INSERT talerta (nombre, comando, descripcion) VALUES ('".$nombre."', '".$comando."', '".$descripcion."')";
 	$result=mysql_query($sql_update);	
 	if (! $result)
-		echo "<h3 class='error'>".__('create_alert_no')."</h3>";
+		echo "<h3 class='error'>".__('There was a problem creating alert')."</h3>";
 	else
-		echo "<h3 class='suc'>".__('create_alert_ok')."</h3>";  
+		echo "<h3 class='suc'>".__('Alert successfully created')."</h3>";  
 }
 
 if (isset($_GET["borrar_alerta"])){ // if delete alert
@@ -55,20 +55,20 @@ if (isset($_GET["borrar_alerta"])){ // if delete alert
 	$sql_delete= "DELETE FROM talerta WHERE id_alerta = ".$id_alerta;
 	$result=mysql_query($sql_delete);		
 	if (! $result)
-		echo "<h3 class='error'>".__('delete_alert_no')."</h3>"; 
+		echo "<h3 class='error'>".__('There was a problem deleting alert')."</h3>"; 
 	else
-		echo "<h3 class='suc'>".__('delete_alert_ok')."</h3>"; 
+		echo "<h3 class='suc'>".__('Alert successfully deleted')."</h3>"; 
 
 	$sql_delete2 ="DELETE FROM talerta_agente_modulo WHERE id_alerta = ".$id_alerta; 
 	$result=mysql_query($sql_delete2);
 }
 
-echo "<h2>".__('alert_config')." &gt; ";
-echo __('alert_defined2')."</h2>";
+echo "<h2>".__('Alert configuration')." &gt; ";
+echo __('Alerts defined in Pandora')."</h2>";
 echo "<table width='500' cellpadding='4' cellspacing='4' class='databox'>";
-echo "<th width='100px'>".__('alertname')."</th>";
-echo "<th>".__('description')."</th>";
-echo "<th>".__('delete')."</th>";
+echo "<th width='100px'>".__('Alert name')."</th>";
+echo "<th>".__('Description')."</th>";
+echo "<th>".__('Delete')."</th>";
 $color=1;
 $sql1='SELECT * FROM talerta';
 $result=mysql_query($sql1);
@@ -84,7 +84,7 @@ while ($row=mysql_fetch_array($result)){
 	if ($row[0] > 4){
 		echo "<tr><td class='$tdcolor'><b><a href='index.php?sec=galertas&sec2=godmode/alerts/configure_alert&id_alerta=".$row["id_alerta"]."'>".$row["nombre"]."</a></b></td>";
 		echo "<td class='$tdcolor'>".$row["descripcion"]."</td>";
-		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/alerts/modify_alert&borrar_alerta=".$row["id_alerta"]."' onClick='if (!confirm(\' ".__('are_you_sure')."\')) return false;'><img border='0' src='images/cross.png'></a></td>";
+		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/alerts/modify_alert&borrar_alerta=".$row["id_alerta"]."' onClick='if (!confirm(\' ".__('Are you sure?')."\')) return false;'><img border='0' src='images/cross.png'></a></td>";
 	} else {
 		echo "<tr><td class='$tdcolor'><b>".$row["nombre"]."</b></td>";
 		echo "<td class='$tdcolor'>".$row["descripcion"]."</td>";
@@ -95,7 +95,7 @@ echo "</tr></table>";
 echo "<table width=500>";
 echo "<tr><td align='right'>";
 echo "<form method=post action='index.php?sec=galertas&sec2=godmode/alerts/configure_alert&creacion=1'>";
-echo "<input type='submit' class='sub next' name='crt' value='".__('create_alert')."'>";
+echo "<input type='submit' class='sub next' name='crt' value='".__('Create alert')."'>";
 echo "</form>";
 echo "</td></tr></table>";
 ?>

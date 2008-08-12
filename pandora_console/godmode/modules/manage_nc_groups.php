@@ -40,9 +40,9 @@ if (isset($_GET["create"])){ // Create module
 	VALUES ('$name', '$parent')";
 	$result=mysql_query($sql_insert);
 	if (! $result)
-		echo "<h3 class='error'>".__('create_no')."</h3>";
+		echo "<h3 class='error'>".__('Not created. Error inserting data')."</h3>";
 	else {
-		echo "<h3 class='suc'>".__('create_ok')."</h3>";
+		echo "<h3 class='suc'>".__('Created successfully')."</h3>";
 		$id_sg = mysql_insert_id();
 	}
 }
@@ -56,9 +56,9 @@ if (isset($_GET["update"])){ // if modified any parameter
 	WHERE id_sg = '$id_sg'";
 	$result=mysql_query($sql_update);
 	if (! $result)
-		echo "<h3 class='error'>".__('modify_no')."</h3>";
+		echo "<h3 class='error'>".__('Not updated. Error updating data')."</h3>";
 	else
-		echo "<h3 class='suc'>".__('modify_ok')."</h3>";
+		echo "<h3 class='suc'>".__('Updated successfully')."</h3>";
 }
 
 if (isset($_GET["delete"])){ // if delete
@@ -66,19 +66,19 @@ if (isset($_GET["delete"])){ // if delete
 	$sql_delete= "DELETE FROM tnetwork_component_group WHERE id_sg = ".$id_sg;
 	$result=mysql_query($sql_delete);
 	if (! $result)
-		echo "<h3 class='error'>".__('delete_no')."</h3>";
+		echo "<h3 class='error'>".__('Not deleted. Error deleting data')."</h3>";
 	else
-		echo "<h3 class='suc'>".__('delete_ok')."</h3>";
+		echo "<h3 class='suc'>".__('Deleted successfully')."</h3>";
 	
 	$result=mysql_query($sql_delete);
 }
-echo "<h2>".__('module_management')." &gt; ";
-echo __('network_component_group_management')."</h2>";
+echo "<h2>".__('Module management')." &gt; ";
+echo __('Component group management')."</h2>";
 
 echo "<table cellpadding='4' cellspacing='4' width='550' class='databox'>";
-echo "<th>".__('name')."</th>";
-echo "<th>".__('parent')."</th>";
-echo "<th>".__('delete')."</th>";
+echo "<th>".__('Name')."</th>";
+echo "<th>".__('Parent')."</th>";
+echo "<th>".__('Delete')."</th>";
 $sql1='SELECT * FROM tnetwork_component_group ORDER BY parent';
 $result=mysql_query($sql1);
 $color=0;
@@ -100,7 +100,7 @@ while ($row=mysql_fetch_array($result)){
 			</td>
 			<td class='$tdcolor' align='center'>
 			<a href='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups&delete=1&id_sg=".$row["id_sg"]."'
-				onClick='if (!confirm(\' ".__('are_you_sure')."\'))
+				onClick='if (!confirm(\' ".__('Are you sure?')."\'))
 			return false;'>
 			<img border='0' src='images/cross.png'></a>
 			</td>
@@ -111,7 +111,7 @@ echo "</table>";
 echo '<table width="550">';
 echo '<tr><td align="right">';
 echo "<form method=post action='index.php?sec=gmodules&sec2=godmode/modules/manage_nc_groups_form&create=1'>";
-echo "<input type='submit' class='sub next' name='crt' value='".__('create')."'>";
+echo "<input type='submit' class='sub next' name='crt' value='".__('Create')."'>";
 echo "</form></td></tr></table>";
 
 ?>

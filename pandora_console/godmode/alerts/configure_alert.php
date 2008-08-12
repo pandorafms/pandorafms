@@ -49,7 +49,7 @@ if (! give_acl ($config['id_user'], 0, "LM")) {
 			$comando = $row["comando"];
 		} else
 			{
-			echo "<h3 class='error'>".__('alert_error')."</h3>";
+			echo "<h3 class='error'>".__('There was a problem loading alert')."</h3>";
 			echo "</table>";
 			include ("general/footer.php");
 			exit;
@@ -61,12 +61,12 @@ if (! give_acl ($config['id_user'], 0, "LM")) {
 		$creacion_alerta = 1;
 	}
 	
-echo "<h2>".__('alert_config')." &gt; ";
+echo "<h2>".__('Alert configuration')." &gt; ";
 	if (isset($_GET["creacion"])){
-		echo __('create_alert');
+		echo __('Create alert');
 	}
 	if (isset($_GET["id_alerta"])){
-		echo __('mod_alert');
+		echo __('Modify alert');
 	}
 pandora_help ("manage_alerts");
 echo "</h2>";
@@ -82,16 +82,16 @@ echo "</h2>";
 	}
 ?>
 <table width="500" cellspacing="4" cellpadding="4" class="databox_color">
-<tr><td class="datos"><?php echo __('alertname') ?></td>
+<tr><td class="datos"><?php echo __('Alert name') ?></td>
 <td class="datos">
 <input type="text" name="nombre" size=30 value="<?php echo $nombre ?>"></td>
 </tr>
 <tr>
-<td class="datos2"><?php echo __('command') ?></td>
+<td class="datos2"><?php echo __('Command') ?></td>
 <td class="datos2">
 <input type="text" name="comando" size="50" value="<?php echo $comando ?>">
 </td></tr>
-<tr><td class="datos"><?php echo __('description') ?></td>
+<tr><td class="datos"><?php echo __('Description') ?></td>
 <td class="datos"><textarea name="descripcion" cols="50" rows="7">
 <?php echo $descripcion ?>
 </textarea>
@@ -101,9 +101,9 @@ echo "</h2>";
 <tr><td align="right">
 <?php 
 if (isset($_GET["creacion"])){
-	echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('create')."'>";
+	echo "<input name='crtbutton' type='submit' class='sub wand' value='".__('Create')."'>";
 } else {
-	echo "<input name='uptbutton' type='submit' class='sub upd' value='".__('update')."'>";
+	echo "<input name='uptbutton' type='submit' class='sub upd' value='".__('Update')."'>";
 } ?>
 </form>
 

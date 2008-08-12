@@ -1090,19 +1090,19 @@ function show_server_type ($id){
 function give_modulecategory_name ($id_category) {
 	switch ($id_category) {
 	case 0: 
-		return __('cat_0');
+		return __('Software agent data');
 		break;
 	case 1: 
-		return __('cat_1');
+		return __('Software agent monitor');
 		break;
 	case 2: 
-		return __('cat_2');
+		return __('Network agent data');
 		break;
 	case 3: 
-		return __('cat_3');
+		return __('Network agent monitor');
 		break;
 	}
-	return __('unknown');
+	return __('Unknown');
 }
 
 /** 
@@ -1656,7 +1656,7 @@ function get_agent_module_value_sumatory ($id_agent_module, $period, $date = 0) 
 	$module_name = get_db_value ('nombre', 'ttipo_modulo', 'id_tipo', $id_module_type);
 	
 	if (is_module_data_string ($module_name)) {
-		return __('wrong_module_type');
+		return __('Wrong module type');
 	}
 	
 	// Get the whole interval of data
@@ -1750,18 +1750,11 @@ function __ ($string) {
  * @return The translated string. If not defined, the same string will be returned
  */
 function lang_string ($string) {
-	global $config;
-	global $lang_label;
+	global $l10n;
 	
-	if (!is_array ($lang_label)) {
-		/* Only includes the file once (the first function call)
-		 and since $lang_label is global, it will propagate */
-		load_lang_file ($config["homedir"]."/include/languages/language_".$config["language"].".php");
-	}
-
-	if (isset ($lang_label[$string]))
-		return $lang_label[$string];
-	return $string;
+	if (is_null ($l10n))
+		return $string;
+	return $l10n->translate ($string);
 }
 
 /** 
@@ -1850,7 +1843,7 @@ function show_alert_row_mini ($id_combined_alert) {
 
 		// We have alert text ?
 		if ($row2["alert_text"]!= "") {
-			echo "<td class='$tdcolor'>".__('text')."</td>";
+			echo "<td class='$tdcolor'>".__('Text')."</td>";
 		} else {
 			echo "<td class='$tdcolor'>".$mymin."/".$mymax."</td>";
 		}
@@ -1872,7 +1865,7 @@ function show_alert_row_mini ($id_combined_alert) {
 
 		// calculare firing conditions
 		if ($row2["alert_text"] != ""){
-			$firing_cond = __('text')."(".substr ($row2["alert_text"],0,8).")";
+			$firing_cond = __('Text')."(".substr ($row2["alert_text"],0,8).")";
 		} else {
 			$firing_cond = $row2["min_alerts"]." / ".$row2["max_alerts"];
 		}
@@ -1884,9 +1877,9 @@ function show_alert_row_mini ($id_combined_alert) {
 
 		// Fired ?
 		if ($row2["times_fired"]>0) {
-			echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_red.png' title='".__('fired')."'></td>";
+			echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_red.png' title='".__('Alert fired')."'></td>";
 		} else {
-			echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_green.png' title='".__('not_fired')."'></td>";
+			echo "<td class='".$tdcolor."' align='center'><img width='20' height='9' src='images/pixel_green.png' title='".__('Alert not fired')."'></td>";
 		}
 	}
 	echo "</table>";
@@ -1911,10 +1904,10 @@ function smal_event_table ($filter = "", $limit = 10, $width = 440) {
 	echo "<tr>";
 	echo "<th class='datos3 f9'>".__('St')."</th>";
 	echo "<th class='datos3 f9'>".__('Type')."</th>";
-	echo "<th class='datos3 f9'>".__('event_name')."</th>";
-	echo "<th class='datos3 f9'>".__('agent_name')."</th>";
-	echo "<th class='datos3 f9'>".__('id_user')."</th>";
-	echo "<th class='datos3 f9'>".__('timestamp')."</th>";
+	echo "<th class='datos3 f9'>".__('Event name')."</th>";
+	echo "<th class='datos3 f9'>".__('Agent name')."</th>";
+	echo "<th class='datos3 f9'>".__('User ID')."</th>";
+	echo "<th class='datos3 f9'>".__('Timestamp')."</th>";
 	$result = get_db_all_rows_sql ($sql);
 	if($result === false) 
 		$result = array();
@@ -2002,7 +1995,7 @@ function smal_event_table ($filter = "", $limit = 10, $width = 440) {
 			if ($event["event_type"] == "system") {
 				echo "<td class='$tdclass'>".__('System');
 			} else {
-				echo "<td class='$tdclass'>".__('alert')."SNMP";
+				echo "<td class='$tdclass'>".__('Alert')."SNMP";
 			}
 		}
 	

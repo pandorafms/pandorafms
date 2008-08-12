@@ -106,10 +106,14 @@ UNLOCK TABLES;
 
 LOCK TABLES `tlanguage` WRITE;
 INSERT INTO `tlanguage` VALUES ('en','English');
---INSERT INTO `tlanguage` VALUES ('es_es','Espa&ntilde;ol');
---INSERT INTO `tlanguage` VALUES ('de','Deutch');
---INSERT INTO `tlanguage` VALUES ('fr','Fran&ccedil;ais');
---INSERT INTO `tlanguage` VALUES ('pt_br','Portugu&ecirc;s-Brasil'); 
+INSERT INTO `tlanguage` VALUES ('es','Espa&ntilde;ol');
+INSERT INTO `tlanguage` VALUES ('de','Deutch');
+INSERT INTO `tlanguage` VALUES ('fr','Fran&ccedil;ais');
+INSERT INTO `tlanguage` VALUES ('pt_br','Portugu&ecirc;s-Brasil'); 
+INSERT INTO `tlanguage` VALUES ('it','Italiano'); 
+INSERT INTO `tlanguage` VALUES ('gl','Galego'); 
+INSERT INTO `tlanguage` VALUES ('ca','Catal&aacute;'); 
+INSERT INTO `tlanguage` VALUES ('ast','Asturianu'); 
 
 UNLOCK TABLES;
 

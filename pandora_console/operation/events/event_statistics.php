@@ -28,18 +28,18 @@ if (! give_acl ($config['id_user'], 0, "AR")) {
 	return;
 }
 
-echo "<h2>".__('events')." &gt; ";
-echo __('event_statistics')."</h2>";
+echo "<h2>".__('Events')." &gt; ";
+echo __('Events statistics')."</h2>";
 echo "<br><br>";
 echo "<table width=95%>";
 echo "<tr><td valign='top'>";
-echo "<h3>".__('graph_event_total')."</h3>";
+echo "<h3>".__('Event graph')."</h3>";
 echo '<img src="reporting/fgraph.php?tipo=total_events&width=300&height=200" border=0>';
 echo "<td valign='top'>";
-echo "<h3>".__('graph_event_user')."</h3>";
+echo "<h3>".__('Event graph by user')."</h3>";
 echo '<img src="reporting/fgraph.php?tipo=user_events&width=300&height=200" border=0>';
 echo "<tr><td>";
-echo "<h3>".__('graph_event_group')."</h3>";
+echo "<h3>".__('Event graph by group')."</h3>";
 echo '<img src="reporting/fgraph.php?tipo=group_events&width=300&height=200" border=0>';
 echo "</table>";
 ?>

@@ -37,14 +37,14 @@ if (! give_acl ($config['id_user'], 0, "DM")) {
 	- A more powerful selection (by Agent, by Module, etc).
 */
 	
-echo "<h2>".__('dbmain_title')." &gt; ";
-echo  __('db_stat_agent')."</h2>";
+echo "<h2>".__('Database Maintenance')." &gt; ";
+echo  __('Database Statistics per Agent')."</h2>";
 
 $table->data = array ();
 $table->head = array ();
-$table->head[0] = __('agent_name');
-$table->head[1] = __('assigned_module');
-$table->head[2] = __('total_data');
+$table->head[0] = __('Agent name');
+$table->head[1] = __('Assigned module');
+$table->head[2] = __('Total data');
 
 $sql = "SELECT `id_agente`, `nombre` FROM `tagente`";
 $result = get_db_all_rows_sql ($sql);

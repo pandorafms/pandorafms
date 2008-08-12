@@ -243,7 +243,7 @@ $simple = (boolean) get_parameter ('simple', 0);
 $regen = (boolean) get_parameter ('regen',0);
 $font_size = (int) get_parameter ('font_size', 12);
 
-echo '<h2>'.__('ag_title').' &gt; '.__('Network Map').'&nbsp';
+echo '<h2>'.__('Pandora Agents').' &gt; '.__('Network Map').'&nbsp';
 if ($pure == 1) {
 	echo '<a href="index.php?sec=estado&sec2=operation/agentes/networkmap&pure=0"><img src="images/monitor.png" title="' . __('Normal screen') . '"></a>';
 } else {
@@ -308,7 +308,7 @@ print_input_text ('font_size', $font_size, $alt = 'Font size (in pt)', 3, 4, 0);
 
 //echo '  Display groups  <input type="checkbox" name="group" value="group" class="chk"/>';
 echo '<td>';
-echo '<input name="updbutton" type="submit" class="sub upd" value="'. __('update'). '">';
+echo '<input name="updbutton" type="submit" class="sub upd" value="'. __('Update'). '">';
 echo '</td>';
 echo '</table>';
 echo '</form>';

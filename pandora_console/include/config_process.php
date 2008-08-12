@@ -104,4 +104,13 @@ if (! defined ('EXTENSIONS_DIR'))
 require_once ('functions_extensions.php');
 
 $config['extensions'] = get_extensions ();
+
+require_once ('streams.php');
+require_once ('gettext.php');
+
+$l10n = NULL;
+if (file_exists ('./include/languages/'.$config["language"].'.mo')) {
+	$l10n = new gettext_reader (new CachedFileReader ('./include/languages/'.$config["language"].'.mo'));
+	$l10n->load_tables();
+}
 ?>

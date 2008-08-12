@@ -1,17 +1,23 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Pandora Flexible Monitor System
+# Copyright (C) 2005-2008 Artica Soluciones Tecnologicas S.L, info@artica.es
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Sancho Lerena, slerena@artica.es, 2005
+# Raul Mateos, raulofpandora@gmail.com, 2005
+# Esteban Sanchez, estebans@artica.es, 2006
+# Jorge Gonzalez, jorge.gonzalez@artica.es, 2008
+# Ramon Novoa, ramon.novoa@artica.es, 2008
+# Evi Vanoost, vanooste@rcbi.rochester.edu, 2008
+
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Pandora FMS 2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-08-12 13:52+0200\n"
+"POT-Creation-Date: 2008-08-12 15:43+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language-Team: en <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -91,7 +97,7 @@ msgid "Critical"
 msgstr ""
 
 #: ../../reporting/fgraph.php:1342 ../../operation/events/events.php:412
-#: ../../include/functions.php:1119 ../../include/functions_db.php:1996
+#: ../../include/functions.php:1119 ../../include/functions_db.php:1981
 msgid "System"
 msgstr ""
 
@@ -311,7 +317,7 @@ msgstr ""
 #: ../../operation/agentes/estado_alertas.php:57
 #: ../../operation/servers/view_server.php:53
 #: ../../include/functions_reporting_pdf.php:329
-#: ../../include/functions_db.php:1790
+#: ../../include/functions_db.php:1775
 msgid "Name"
 msgstr ""
 
@@ -478,7 +484,7 @@ msgstr ""
 #: ../../operation/agentes/estado_alertas.php:288
 #: ../../operation/servers/view_server.php:59
 #: ../../include/functions_reporting.php:485
-#: ../../include/functions_db.php:1906
+#: ../../include/functions_db.php:1891
 msgid "Type"
 msgstr ""
 
@@ -1140,7 +1146,7 @@ msgstr ""
 #: ../../godmode/servers/manage_recontask_form.php:160
 #: ../../godmode/servers/manage_recontask_form.php:163
 #: ../../include/functions.php:800 ../../include/functions.php:889
-#: ../../include/functions_db.php:1862
+#: ../../include/functions_db.php:1847
 msgid "No"
 msgstr ""
 
@@ -1149,7 +1155,7 @@ msgstr ""
 #: ../../godmode/servers/manage_recontask_form.php:159
 #: ../../godmode/servers/manage_recontask_form.php:164
 #: ../../include/functions.php:798 ../../include/functions.php:887
-#: ../../include/functions_db.php:1860
+#: ../../include/functions_db.php:1845
 msgid "Yes"
 msgstr ""
 
@@ -1388,7 +1394,7 @@ msgstr ""
 #: ../../operation/events/events.php:306
 #: ../../operation/snmpconsole/snmp_view.php:202
 #: ../../include/functions_reporting.php:241
-#: ../../include/functions_db.php:1909
+#: ../../include/functions_db.php:1894
 msgid "User ID"
 msgstr ""
 
@@ -1466,7 +1472,7 @@ msgstr ""
 #: ../../godmode/agentes/modificar_agente.php:195
 #: ../../operation/events/events.php:303
 #: ../../operation/agentes/estado_generalagente.php:61
-#: ../../include/functions_db.php:1908
+#: ../../include/functions_db.php:1893
 msgid "Agent name"
 msgstr ""
 
@@ -1898,8 +1904,8 @@ msgstr ""
 
 #: ../../godmode/setup/news.php:99 ../../include/functions.php:783
 #: ../../include/functions.php:807 ../../include/functions.php:896
-#: ../../include/functions.php:940 ../../include/functions_db.php:1846
-#: ../../include/functions_db.php:1868
+#: ../../include/functions.php:940 ../../include/functions_db.php:1831
+#: ../../include/functions_db.php:1853
 msgid "Text"
 msgstr ""
 
@@ -1915,7 +1921,7 @@ msgstr ""
 #: ../../operation/agentes/estado_ultimopaquete.php:56
 #: ../../operation/snmpconsole/snmp_view.php:203
 #: ../../include/functions_reporting.php:242
-#: ../../include/functions_db.php:1910
+#: ../../include/functions_db.php:1895
 #: ../../extensions/update_manager/main.php:56
 msgid "Timestamp"
 msgstr ""
@@ -2250,7 +2256,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:562
 #: ../../include/functions_reporting.php:587 ../../include/functions.php:714
 #: ../../include/functions.php:719 ../../include/functions.php:722
-#: ../../include/functions_db.php:1840
+#: ../../include/functions_db.php:1825
 msgid "N/A"
 msgstr ""
 
@@ -2426,7 +2432,7 @@ msgstr ""
 
 #: ../../godmode/agentes/alert_manager_editor.php:365
 #: ../../godmode/agentes/alert_manager.php:182
-#: ../../include/functions_db.php:1791
+#: ../../include/functions_db.php:1776
 msgid "Oper"
 msgstr ""
 
@@ -2454,7 +2460,7 @@ msgstr ""
 #: ../../godmode/agentes/alert_manager_editor.php:369
 #: ../../godmode/agentes/alert_manager.php:110
 #: ../../godmode/agentes/alert_manager.php:186
-#: ../../include/functions_db.php:1794
+#: ../../include/functions_db.php:1779
 msgid "Time"
 msgstr ""
 
@@ -2568,10 +2574,6 @@ msgstr ""
 #: ../../godmode/agentes/manage_config_remote.php:129
 #: ../../godmode/agentes/manage_config.php:448
 msgid "To Agent(s):"
-msgstr ""
-
-#: ../../godmode/agentes/manage_config_remote.php:141
-msgid "Replicate configuration"
 msgstr ""
 
 #: ../../godmode/agentes/module_manager_editor_plugin.php:79
@@ -2749,7 +2751,7 @@ msgstr ""
 #: ../../operation/snmpconsole/snmp_view.php:204
 #: ../../operation/snmpconsole/snmp_alert.php:143
 #: ../../operation/snmpconsole/snmp_alert.php:262
-#: ../../include/functions_db.php:1998
+#: ../../include/functions_db.php:1983
 msgid "Alert"
 msgstr ""
 
@@ -3731,13 +3733,13 @@ msgstr ""
 msgid "RSS Events"
 msgstr ""
 
-#: ../../operation/events/events.php:300 ../../include/functions_db.php:1905
+#: ../../operation/events/events.php:300 ../../include/functions_db.php:1890
 msgid "St"
 msgstr ""
 
 #: ../../operation/events/events.php:302
 #: ../../include/functions_reporting.php:240
-#: ../../include/functions_db.php:1907
+#: ../../include/functions_db.php:1892
 msgid "Event name"
 msgstr ""
 
@@ -4271,7 +4273,7 @@ msgstr ""
 #: ../../operation/agentes/estado_alertas.php:256
 #: ../../operation/agentes/estado_alertas.php:279
 #: ../../include/functions.php:953 ../../include/functions.php:1114
-#: ../../include/functions_db.php:1880
+#: ../../include/functions_db.php:1865
 msgid "Alert fired"
 msgstr ""
 
@@ -4280,7 +4282,7 @@ msgstr ""
 #: ../../operation/agentes/estado_alertas.php:191
 #: ../../operation/agentes/estado_alertas.php:258
 #: ../../operation/agentes/estado_alertas.php:281
-#: ../../include/functions.php:964 ../../include/functions_db.php:1882
+#: ../../include/functions.php:964 ../../include/functions_db.php:1867
 msgid "Alert not fired"
 msgstr ""
 
@@ -4654,7 +4656,7 @@ msgid "months"
 msgstr ""
 
 #: ../../include/functions.php:825 ../../include/functions.php:912
-#: ../../include/functions_db.php:1796
+#: ../../include/functions_db.php:1781
 msgid "Recovery"
 msgstr ""
 
@@ -4719,31 +4721,31 @@ msgstr ""
 msgid "Wrong module type"
 msgstr ""
 
-#: ../../include/functions_db.php:1792
+#: ../../include/functions_db.php:1777
 msgid "Tt"
 msgstr ""
 
-#: ../../include/functions_db.php:1793
+#: ../../include/functions_db.php:1778
 msgid "Firing"
 msgstr ""
 
-#: ../../include/functions_db.php:1795
+#: ../../include/functions_db.php:1780
 msgid "Desc"
 msgstr ""
 
-#: ../../include/functions_db.php:1797
+#: ../../include/functions_db.php:1782
 msgid "MinMax.Al"
 msgstr ""
 
-#: ../../include/functions_db.php:1798
+#: ../../include/functions_db.php:1783
 msgid "Days"
 msgstr ""
 
-#: ../../include/functions_db.php:1799
+#: ../../include/functions_db.php:1784
 msgid "Fired"
 msgstr ""
 
-#: ../../include/functions_db.php:1903
+#: ../../include/functions_db.php:1888
 msgid "Latest events"
 msgstr ""
 
@@ -4760,12 +4762,12 @@ msgstr ""
 msgid "More info"
 msgstr ""
 
-#: ../../extensions/update_manager.php:88
+#: ../../extensions/update_manager.php:86
 #: ../../extensions/update_manager/main.php:14
 msgid "Update manager"
 msgstr ""
 
-#: ../../extensions/update_manager.php:89
+#: ../../extensions/update_manager.php:87
 msgid "Update manager settings"
 msgstr ""
 

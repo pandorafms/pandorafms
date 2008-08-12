@@ -104,7 +104,7 @@ elseif (isset($_GET["new_profile"])){ // create a new profile
 		$query = "INSERT INTO tperfil (name,incident_view,incident_edit,incident_management, agent_view,agent_edit,alert_edit,user_management,db_management,alert_management,pandora_management) VALUES 
 		('".$name."','".$incident_view."','".$incident_edit."','".$incident_management."','".$agent_view."','".$agent_edit."','".$alert_edit."','".$user_management."','".$db_management."','".$alert_management."','".$pandora_management."')";
 		// echo "DEBUG: ".$query;
-		$res=mysql_query($query);
+		$res = mysql_query($query);
 		if ($res)
 			echo "<h3 class='suc'>".__('Profile successfully created')."</h3>";
 		else {
@@ -205,49 +205,50 @@ if (isset ($id_perfil)){ // There are values defined, let's show form with data 
 	echo "</td></tr></table>";
 	
 } else { // View list data
-	$color=1;
-	?>
-	<table cellpadding='4' cellspacing='4' class='databox' width='750px'>
-	<?php
-	$query_del1="SELECT * FROM tperfil";
-	$resq1=mysql_query($query_del1);
+	$color = 1;
+	echo "<table cellpadding='4' cellspacing='4' class='databox' width='750px'>";
+	
+	$sql = "SELECT * FROM tperfil";
+	$result = mysql_query ($sql);
 	echo "<tr>";
 	echo "<th width='180px'><font size=1>".__('Profiles');
-	echo "</th><th width='40px'>
-	<font size=1>IR<a href='#' class='tipp'>&nbsp;<span>".__("System Incidents Reading rights")."</span></a>";
-	echo "</th><th width='40px'>
-	<font size=1>IW<a href='#' class='tipp'>&nbsp;<span>".__("System Incidents Writing rights")."</span></a>";
-	echo "</th><th width='40px'>
-	<font size=1>IM<a href='#' class='tipp'>&nbsp;<span>".__("System Incidents Management rights")."</span></a>";
-	echo "</th><th width='40px'>
-	<font size=1>AR<a href='#' class='tipp'>&nbsp;<span>".__("Agents Reading rights")."</span></a>";
-	echo "</th><th width='40px'>
-	<font size=1>AW<a href='#' class='tipp'>&nbsp;<span>".__("Agents Writing rights")."</span></a>";
-	echo "</th><th width='40px'>
-	<font size=1>LW<a href='#' class='tipp'>&nbsp;<span>".__("Alerts Edition rights")."</span></a>";
-	echo "</th><th width='40px'>
-	<font size=1>UM<a href='#' class='tipp'>&nbsp;<span>".__("Users Management rights")."</span></a>";
-	echo "</th><th width='40px'>
-	<font size=1>DM<a href='#' class='tipp'>&nbsp;<span>".__("Database Management rights")."</span></a>";
-	echo "</th><th width='40px'>
-	<font size=1>LM<a href='#' class='tipp'>&nbsp;<span>".__("Alerts Management rights")."</span></a>";
-	echo "</th><th width='40px'>
-	<font size=1>PM<a href='#' class='tipp'>&nbsp;<span>".__("Pandora System Management rights")."</span></a>";
+	echo "</th><th width='40px'>IR";
+	print_help_tip (__('System incidents reading'));
+	echo "</th><th width='40px'>IW";
+	print_help_tip (__('System incidents writing'));
+	echo "</th><th width='40px'>IM";
+	print_help_tip (__('System incidents management'));
+	echo "</th><th width='40px'>AR";
+	print_help_tip (__('Agents reading'));
+	echo "</th><th width='40px'>AW";
+	print_help_tip (__('Agents management'));
+	echo "</th><th width='40px'>LW";
+	print_help_tip (__('Alerts edition'));
+	echo "</th><th width='40px'>UM";
+	print_help_tip (__('Users management'));
+	echo "</th><th width='40px'>DM";
+	print_help_tip (__('Database management'));
+	echo "</th><th width='40px'>LM";
+	print_help_tip (__('Alerts anagement'));
+	echo "</th><th width='40px'>PM";
+	print_help_tip (__('Pandora system management'));
 	echo "</th><th width='40px'>".__('Delete')."</th></tr>";
-	while ($rowdup=mysql_fetch_array($resq1)){
-		$id_perfil = $rowdup["id_perfil"];
-		$nombre=$rowdup["name"];
-		$incident_view = $rowdup["incident_view"];
-		$incident_edit = $rowdup["incident_edit"];
-		$incident_management = $rowdup["incident_management"];
-		$agent_view = $rowdup["agent_view"];
-		$agent_edit =$rowdup["agent_edit"];
-		$alert_edit = $rowdup["alert_edit"];
-		$user_management = $rowdup["user_management"];
-		$db_management = $rowdup["db_management"];
-		$alert_management = $rowdup["alert_management"];
-		$pandora_management = $rowdup["pandora_management"];
-		if ($color == 1){
+	
+	while (profile = mysql_fetch_array ($result)) {
+		$id_perfil = profile["id_perfil"];
+		$nombre=profile["name"];
+		$incident_view = profile["incident_view"];
+		$incident_edit = profile["incident_edit"];
+		$incident_management = profile["incident_management"];
+		$agent_view = profile["agent_view"];
+		$agent_edit =profile["agent_edit"];
+		$alert_edit = profile["alert_edit"];
+		$user_management = profile["user_management"];
+		$db_management = profile["db_management"];
+		$alert_management = profile["alert_management"];
+		$pandora_management = profile["pandora_management"];
+		
+		if ($color == 1) {
 			$tdcolor = "datos";
 			$color = 0;
 		}
@@ -289,12 +290,12 @@ if (isset ($id_perfil)){ // There are values defined, let's show form with data 
 		echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/profiles/profile_list&delete_profile=".$id_perfil."' onClick='if (!confirm(\' ".__('Are you sure?')."\')) return false;'><img border='0' src='images/cross.png'></a></td></tr>";
 		
 	}
-		echo "</table>";
-		echo '</tr></table>';
-		echo '<table width="750">';
-		echo '<tr><td align="right">';
-		echo "<form method=post action='index.php?sec=gperfiles&sec2=godmode/profiles/profile_list&new_profile=1'>";
-		echo "<input type='submit' class='sub next' name='crt' value='".__('Create profile')."'>";
-		echo "</form></table>";
+	echo "</table>";
+	echo '</tr></table>';
+	echo '<table width="750">';
+	echo '<tr><td align="right">';
+	echo "<form method=post action='index.php?sec=gperfiles&sec2=godmode/profiles/profile_list&new_profile=1'>";
+	echo "<input type='submit' class='sub next' name='crt' value='".__('Create profile')."'>";
+	echo "</form></table>";
 }
 ?>

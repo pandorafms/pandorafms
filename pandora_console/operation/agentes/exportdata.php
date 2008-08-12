@@ -56,7 +56,7 @@ function give_average_from_module ($id_agente, $id_agente_modulo, $hour, $day, $
 function generate_average_table ($id_de_mi_agente, $id_agente_modulo, $fecha_inicio, $fecha_fin){
 // Genera una tabla con los promedios de los datos de un módulo no-string
 	require ("include/config.php");
-	require ("include/languages/language_".$language_code.".php");
+	
 	$dias_de_la_semana = array (__('Sunday'),__('Monday'), __('Tuesday'), __('Wednesday'), __('Thurdsday'), __('Friday'), __('Saturday'));
 	$nombre_modulo = dame_nombre_modulo_agentemodulo($id_agente_modulo);
 	

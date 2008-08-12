@@ -20,20 +20,11 @@
 // Silk icon set 1.3 (cc) Mark James, http://www.famfamfam.com/lab/icons/silk/
 // Pandora FMS uses Pear Image::Graph code
 
-
 if ((! file_exists("include/config.php")) || (! is_readable("include/config.php"))) {
 	exit;
 }
 
 require_once ('include/config.php');
-
-// Check for correct language file presence
-if (file_exists ('include/languages/language_'.$config['language'].'.php')) {
-	include 'include/languages/language_'.$config['language'].'.php';
-} else {
-	include "include/languages/language_en.php";
-}
-
 require_once ('include/functions.php');
 require_once ('include/functions_db.php');
 

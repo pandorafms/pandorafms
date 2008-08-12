@@ -21,7 +21,6 @@
 require ("../../include/config.php");
 require_once ("../../include/functions.php");
 require_once ("../../include/functions_db.php");
-require_once ("../../include/languages/language_".$config["language"].".php");
 require_once ("../../include/functions_reporting_pdf.php");
 
 if (! isset ($_SESSION["id_usuario"])) {

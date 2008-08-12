@@ -1716,21 +1716,6 @@ function get_agent_module_value_sumatory ($id_agent_module, $period, $date = 0) 
 	
 	return (float) $sum;
 }
-
-/**
- * Loads a language file.
- *
- * Check existance of file.
- *
- * @param file Filename of language definitions to load.
- */
-function load_lang_file ($file) {
-	global $config;
-	
-	if (file_exists ($file))
-		require_once ($config["homedir"]."/include/languages/language_".$config["language"].".php");
-}
-
 /** 
  * Get a translated string (alias version of lang_string().
  * 

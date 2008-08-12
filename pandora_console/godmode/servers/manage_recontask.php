@@ -93,15 +93,15 @@ $result=mysql_query($query);
 $color=1;
 if (mysql_num_rows($result)){
 	echo "<table cellpadding='4' cellspacing='4' width='700' class='databox'>";
-	echo "<tr><th class='datos'>".__('Name');
-	echo "<th class='datos'>".__('Type');
-	echo "<th class='datos'>".__('Network');
-	echo "<th class='datos'>".__('Network profile');
-	echo "<th class='datos'>".__('Group');
-	echo "<th class='datos'>".__('Incident');
-	echo "<th class='datos'>".__('OS');
-	echo "<th class='datos'>".__('Interval');
-	echo "<th class='datos'>".__('Action');
+        echo "<tr><th class='datos'>".__('Name')."</th>";
+        echo "<th class='datos'>".__('Type')."</th>";
+        echo "<th class='datos'>".__('Network')."</th>";
+        echo "<th class='datos'>".__('Network profile')."</th>";
+        echo "<th class='datos'>".__('Group')."</th>";
+        echo "<th class='datos'>".__('Incident')."</th>";
+        echo "<th class='datos'>".__('OS')."</th>";
+        echo "<th class='datos'>".__('Interval')."</th>";
+        echo "<th class='datos'>".__('Action')."</th></tr>";
 }
 while ($row=mysql_fetch_array($result)){
 	$id_rt = $row["id_rt"];

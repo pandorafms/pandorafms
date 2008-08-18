@@ -1,3 +1,10 @@
+2008-08-18  Esteban Sanchez <estebans@artica.es>
+
+	* operation/menu.php: Fixes events submenu and link to CSV exporting.
+	Style correction.
+
+	* images/rss.png: Added to repository.
+
 2008-08-12  Esteban Sanchez <estebans@artica.es>
 
 	* godmode/db/db_purge.php: Use print_help_tip() to show help tip.

@@ -18,9 +18,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-?>
 
-<?php
 if (! isset ($config['id_user'])) {
 	return;
 }
@@ -130,7 +128,6 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	echo '<a href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server&amp;refr=60" class="mn">'.__('Pandora servers').'</a></li></ul></div>';
 }
 
-
 // Check access for incident
 if (give_acl ($config['id_user'], 0, "IR") == 1) {
 	if (($sec2 == "operation/incidents/incident" || $sec2 == "operation/incidents/incident_detail"|| $sec2 == "operation/incidents/incident_note")) {
@@ -170,38 +167,33 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	echo '<div id="op4" class="operation-menu'.$selected.'">';
 	echo '<ul class="mn"><li><a href="index.php?sec=eventos&amp;sec2=operation/events/events" class="mn">'.__('View events').'</a></li></ul></div>';
 	// Event statistics submenu
-	if ($sec == "eventos"){
+	if ($sec == "eventos") {
 		if($sec2 == "operation/events/event_statistics") {
 			echo "<div class='operation-submenu submenu-selected'>";
 		} else {
 			echo "<div class='operation-submenu'>";
 		}
 		echo "<ul class='mn'><li><a href='index.php?sec=eventos&amp;sec2=operation/events/event_statistics' class='mn'>".__('Statistics')."</a></li></ul></div>";
-	}
-
-	// Event RSS
-	if (isset($_GET["sec"]) && $_GET["sec"] == "eventos"){
-		echo "<div class='arrow'>";
+		
+		// Event RSS
+		echo "<div class='operation-submenu'>";
 		echo "<ul class='mn'><li>";
-		echo "<a target='_top' href='operation/events/events_rss.php' class='mn'>".__('RSS')."</a></li></ul></div>";
-	}
-
-	// Event CSV
-	if (isset($_GET["sec"]) && $_GET["sec"] == "eventos"){
-		echo "<div class='arrow'>";
+		echo "<a target='_top' href='operation/events/events_rss.php' class='mn'><img src='images/rss.png' /> ".__('RSS');
+		echo "</a></li></ul></div>";
+		
+		// Event CSV
+		echo "<div class='operation-submenu'>";
 		echo "<ul class='mn'><li>";
-		echo "<a target='_top' href='operation/events/events_csv.php' class='mn'>".__('CSV File')."</a></li></ul></div>";
-	}
-	
-	// Event Marquee
-	if (isset($_GET["sec"]) && $_GET["sec"] == "eventos"){
-		echo "<div class='arrow'>";
+		echo "<a target='_top' href='operation/events/export_csv.php' class='mn'>".__('CSV File')."</a></li></ul></div>";
+		
+		// Event Marquee
+		echo "<div class='operation-submenu'>";
 		echo "<ul class='mn'><li>";
 		echo "<a target='_top' href='operation/events/events_marquee.php' class='mn'>".__('Marquee')."</a></li></ul></div>";
 	}
-
+	
 	// Users
-	if(($sec2 == "operation/users/user" || $sec2 == "operation/users/user_edit" )) {
+	if (($sec2 == "operation/users/user" || $sec2 == "operation/users/user_edit" )) {
 		$selected = ' menu-selected';
 	} else {
 		$selected = '';
@@ -211,7 +203,7 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 
 	// User edit (submenu)
 	if ($sec == "usuarios") {
-		if(isset($_GET["ver"]) && $_GET["ver"] == $config['id_user']) {
+		if (isset($_GET["ver"]) && $_GET["ver"] == $config['id_user']) {
 			echo "<div class='operation-submenu submenu-selected'>";
 		} else {
 			echo "<div class='operation-submenu'>";
@@ -219,7 +211,7 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 		echo "<ul class='mn'><li><a href='index.php?sec=usuarios&amp;sec2=operation/users/user_edit&amp;ver=".$config['id_user']."' class='mn'>".__('Edit my user')."</a></li></ul></div>";
 
 		// User statistics require UM
-		if (give_acl($config['id_user'], 0, "UM")==1) {
+		if (give_acl ($config['id_user'], 0, "UM")) {
 			if($sec2 == "operation/users/user_statistics") {
 				echo "<div class='operation-submenu submenu-selected'>";
 			} else {
@@ -261,7 +253,7 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 
 	// New message (submenu)
 	if ($sec == "messages") {
-		if(isset ($_GET["nuevo_g"])) {
+		if (isset ($_GET["nuevo_g"])) {
 			echo "<div class='operation-submenu submenu-selected'>";
 		} else {
 			echo "<div class='operation-submenu'>";

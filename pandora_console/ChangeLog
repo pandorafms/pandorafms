@@ -1,3 +1,16 @@
+2008-08-19  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* include/locale.class.php: Locale class for number, time and money
+	formatting. Latest version, much corrections.
+
+	* include/functions_db.php: HTML corrections (close tags)
+
+	* include/config_process.php: Process $config['locale'] and init LOCALE
+	class. Still needs to be implemented in a "userspace" function
+
+	* general/footer.php: Updated footer to use locale class (not function)
+	to display the date and number. Just an example of the possibility
+
 2008-08-18  Esteban Sanchez <estebans@artica.es>
 
 	* operation/menu.php: Fixes events submenu and link to CSV exporting.

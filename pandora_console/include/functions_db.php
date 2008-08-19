@@ -1772,16 +1772,16 @@ function show_alert_row_mini ($id_combined_alert) {
 	WHERE tcompound_alert.id_aam = talerta_agente_modulo.id_aam AND tcompound_alert.id = %d",$id_combined_alert);
 	$result = get_db_all_rows_sql ($sql);
 	echo "<table width=400 cellpadding=2 cellspacing=2 class='databox'>";
-	echo "<th>".__('Name');
-	echo "<th>".__('Oper');
-	echo "<th>".__('Tt');
-	echo "<th>".__('Firing');
-	echo "<th>".__('Time');
-	echo "<th>".__('Desc');
-	echo "<th>".__('Recovery');
-	echo "<th>".__('MinMax.Al');
-	echo "<th>".__('Days');
-	echo "<th>".__('Fired');
+	echo "<th>".__('Name')."</th>";
+	echo "<th>".__('Oper')."</th>";
+	echo "<th>".__('Tt')."</th>";
+	echo "<th>".__('Firing')."</th>";
+	echo "<th>".__('Time')."</th>";
+	echo "<th>".__('Desc')."</th>";
+	echo "<th>".__('Recovery')."</th>";
+	echo "<th>".__('MinMax.Al')."</th>";
+	echo "<th>".__('Days')."</th>";
+	echo "<th>".__('Fired')."</th>";
 	foreach ($result as $row2) {
 		if ($color == 1) {
 			$tdcolor = "datos";
@@ -1794,10 +1794,10 @@ function show_alert_row_mini ($id_combined_alert) {
 		if ($row2["disable"] == 1) {
 			$tdcolor = "datos3";
 		}
-		echo "<td class=$tdcolor>".get_db_sql ("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo =".$row2["id_agente_modulo"]);
-		echo "<td class=$tdcolor>".$row2["operation"];
+		echo "<td class=$tdcolor>".get_db_sql ("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo =".$row2["id_agente_modulo"])."</td>";
+		echo "<td class=$tdcolor>".$row2["operation"]."</td>";
 
-		echo "<td class='$tdcolor'>".human_time_description ($row2["time_threshold"]);
+		echo "<td class='$tdcolor'>".human_time_description ($row2["time_threshold"])."</td>";
 
 		if ($row2["dis_min"]!=0) {
 			$mytempdata = fmod ($row2["dis_min"], 1);
@@ -1885,7 +1885,7 @@ function smal_event_table ($filter = "", $limit = 10, $width = 440) {
 	$sql = sprintf ("SELECT * FROM tevento %s ORDER BY timestamp DESC LIMIT %d",$filter,$limit);
 	echo "<table cellpadding='4' cellspacing='4' width='$width' border=0 class='databox'>";
 	echo "<tr>";
-	echo "<th colspan=6>".__('Latest events');
+	echo "<th colspan=6>".__('Latest events')."</th>";
 	echo "<tr>";
 	echo "<th class='datos3 f9'>".__('St')."</th>";
 	echo "<th class='datos3 f9'>".__('Type')."</th>";

@@ -113,4 +113,11 @@ if (file_exists ('./include/languages/'.$config["language"].'.mo')) {
 	$l10n = new gettext_reader (new CachedFileReader ('./include/languages/'.$config["language"].'.mo'));
 	$l10n->load_tables();
 }
+
+require_once ('locale.class.php');
+if (empty ($config["locale"])) {
+	$config["locale"] = "en_US";
+}
+$LOCALE = new Set_Locale ($config["locale"]);
+
 ?>

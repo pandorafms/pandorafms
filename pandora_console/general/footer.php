@@ -26,6 +26,6 @@ __('is a <b>OpenSource Software Project, licensed under GPL terms</b>').'</a><br
 	} else {
 		$time = time();
 	}
-	echo "<a class='white'>".__('Page generated at')." ".date("D F d, Y H:i:s", $time)." - Saved ".$sql_cache["saved"]." Queries</a><br>";
+	echo "<a class='white'>".__('Page generated at')." ".$LOCALE->fmt_time($time)." - Saved ".$LOCALE->fmt_number($sql_cache["saved"])." Queries</a><br>";
 echo "</center>";
 ?>

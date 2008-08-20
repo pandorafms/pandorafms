@@ -640,7 +640,7 @@ class Set_Locale {
 	
 		//Find out the cache location in case none is given
 		if($cacheloc === false) {
-			if(!empty($_ENV)) {
+			if(!empty($_ENV["TMPDIR"])) {
 				$cacheloc = $_ENV["TMPDIR"];
 			} elseif (ini_get('upload_tmp_dir') != "") {
 				$cacheloc = ini_get('upload_tmp_dir');			

@@ -1,3 +1,13 @@
+2008-08-20  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* godmode/profiles/profile_list.php: HTML overhaul (close tags, put
+	brackets and quotes in the right places. Now uses new functions 
+	instead of the old ones
+
+	* include/locale.class.php: Updated and added functions. See internals
+	for updated functions. It now allows to put a translated array of 
+	languages, countries and currency instead of the built-in english one
+
 2008-08-19  Esteban Sanchez <estebans@artica.es>
 
 	* include/locale.class.php: Fixes in Translate_Locale() to work

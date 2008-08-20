@@ -675,6 +675,8 @@ class Set_Locale {
 				$backup_locale = "en_US";
 			} elseif(in_array("es_ES",$this->locales)) {
 				$backup_locale = "es_ES";
+			} else {
+				$backup_locale = "POSIX";
 			}
 			
 			if($backup_locale == "" || !in_array($backup_locale,$this->locales)) {
@@ -732,12 +734,73 @@ class Set_Locale {
 
 	function Get_Locales_SelectBox () {
 		foreach ($this->locales as $iter_locale) {
-			echo '<select name="'.$iter_locale.'">'.$this->Translate_Locale($iter_locale).'</select>';
+			echo '<select name="'.htmlentities ($iter_locale).'">'.$this->Translate_Locale_HTML($iter_locale).'</select>';
+		}
+	}
+
+	//Input: Language code (en, es, nl) -> should be lower case to
+	//distinguish from country code
+	//Output: Language name
+	function Get_Language_Name ($code) {
+		if (array_key_exists (mb_strtolower($code),$this->lang_codes)) {
+			return mb_convert_case($this->lang_codes[$code], MB_CASE_TITLE, "UTF-8");
+		}
+		return false;
+	}
+
+	//Input: Country code (BE, NL, US) -> should be upper case to
+	//distinguish from language code
+	//Output: Country name
+	function Get_Country_Name ($code) {
+		if (array_key_exists (mb_strtoupper($code),$this->country_codes)) {
+			return mb_convert_case($this->country_codes[$code], MB_CASE_TITLE, "UTF-8");
+		}
+		return false;
+	}
+	
+	//Input: Money code (USD, EUR) -> should be upper case because of
+	//international standards
+	//Output: Money name
+	function Get_Currency_Name ($code) {
+		if (array_key_exists (mb_strtoupper($code),$this->currency_codes)) {
+			return $this->currency_codes[$code];
+		}
+		return false;
+	}
+
+	function Put_Translated_Language ($array) {
+		if(!is_array ($array)) {
+			return false;	
+		}
+		$this->lang_codes = $array;
+		return true;
+	}
+
+	function Put_Translated_Country ($array) {
+                if(!is_array ($array)) {
+			return false;
+		}
+		$this->country_codes = $array;
+	}
+	
+	function Put_Translated_Currency ($array) {
+		if(!is_array ($array)) {
+			return false;
+		}
+		$this->currency_codes = $array;
+	}
+
+	function Translate_Locale_HTML ($locale) {
+		if(is_array($locale)) {
+			$locale = array_walk($locale,'Translate_Locale_HTML');
+		} else {
+			$locale = $this->Translate_Locale ($locale);
+			return htmlentities ($locale);
 		}
 	}
 
 	function Translate_Locale ($locale) {
-		if($locale == "UTF-8" || $locale == "C" || $locale == "POSIX") {
+		if ($locale == "UTF-8" || $locale == "C" || $locale == "POSIX") {
 			return $locale; //Pure UTF-8, C or POSIX is not localized to a country
 		}
 		
@@ -748,20 +811,15 @@ class Set_Locale {
 		$char = isset($country_char[1]) ? $country_char[1] : "";
 		unset ($lang_country, $country_char);
 		
-		if (in_array($lang,array_keys($this->lang_codes))) {
-			$lang = $this->lang_codes[$lang];
-		} else {
-			// __("Unknown");
-			$lang = "Unknown";
-		}
+		$lang = $this->Get_Language_Name ($lang);
+		$cntr = $this->Get_Country_Name ($cntr);
 
-		if (in_array($cntr,array_keys($this->country_codes))) {
-			$cntr = ucwords(strtolower($this->country_codes[$cntr]));
-		} else {
-			// __("Unknown");
+		if($lang === false)
+			$lang = "Unknown";
+
+		if($cntr === false)
 			$cntr = "Unknown";
-		}
-	
+		
 		if($char != "") {
 			$char = " - ".$char;
 		}
@@ -770,12 +828,10 @@ class Set_Locale {
 	}
 
 	function Translate_Currency ($currency) {
-		$currency = trim($currency);
-		
-		if(in_array($currency,array_keys($this->currency_codes))) {
-			return $this->currency_codes[$currency];
-		}
-		return "Unknown";
+		$currency = $this->Get_Currency_Name (trim($currency));
+		if($currency === false)	
+			return "Unknown";
+		return $currency;
 	}
 
 	//This private function comes back with the precision of a specific
@@ -866,7 +922,7 @@ class Set_Locale {
 		} elseif($out == "SHORT") {
 			$currency = $this->MONFORMAT['currency_symbol'];
 		} elseif($out == "LONG") {
-			$currency = $this->Translate_Currency($currency);
+			$currency = $this->Translate_Currency($this->MONFORMAT['int_curr_symbol']);
 		} else {
 			$currency = $this->MONFORMAT['int_curr_symbol'];
 		}
@@ -962,5 +1018,6 @@ class Set_Locale {
 		}
 		return $output;
 	}
-  }
+}
+
 ?>

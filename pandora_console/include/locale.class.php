@@ -1,23 +1,23 @@
 <?php
-// Locale Class - Working number, date and monetary converter
-// ------------------------------------------------------------
-// Copyright (c) 2008 Evi Vanoost (vanooste@rcbi.rochester.edu)
+  // Locale Class - Working number, date and monetary converter
+  // ------------------------------------------------------------
+  // Copyright (c) 2008 Evi Vanoost (vanooste@rcbi.rochester.edu)
 
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
-// USA.
+  // This program is free software; you can redistribute it and/or
+  // modify it under the terms of the GNU General Public License
+  // as published by the Free Software Foundation for version 2.
+  // This program is distributed in the hope that it will be useful,
+  // but WITHOUT ANY WARRANTY; without even the implied warranty of
+  // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  // GNU General Public License for more details.
+  // You should have received a copy of the GNU General Public License
+  // along with this program; if not, write to the Free Software
+  // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+  // USA.
 
-// This class should only be used for output, not for the parsing of input nor
-// database storage. This class might output UTF-8 codes that might not be
-// supported by all output formats. Please format these strings accordingly.
+  // This class should only be used for output, not for the parsing of input nor
+  // database storage. This class might output UTF-8 codes that might not be
+  // supported by all output formats. Please format these strings accordingly.
 
 class Set_Locale {
 	public $localedir = ""; //can be set from outside or you should set it here if it's in an unusual location
@@ -29,386 +29,386 @@ class Set_Locale {
 	private $TIMEFORMAT;
 	
 	public $lang_codes = array(
-            'aa' => 'Afar',
-            'ab' => 'Abkhazian',
-            'af' => 'Afrikaans',
-            'am' => 'Amharic',
-            'ar' => 'Arabic',
-            'as' => 'Assamese',
-            'ay' => 'Aymara',
-            'az' => 'Azerbaijani',
-            'ba' => 'Bashkir',
-            'be' => 'Byelorussian',
-            'bg' => 'Bulgarian',
-            'bh' => 'Bihari',
-            'bi' => 'Bislama',
-            'bn' => 'Bengali; Bangla',
-            'bo' => 'Tibetan',
-            'br' => 'Breton',
-            'ca' => 'Catalan',
-            'co' => 'Corsican',
-            'cs' => 'Czech',
-            'cy' => 'Welsh',
-            'da' => 'Danish',
-            'de' => 'German',
-            'dz' => 'Bhutani',
-            'el' => 'Greek',
-            'en' => 'English',
-            'eo' => 'Esperanto',
-            'es' => 'Spanish',
-            'et' => 'Estonian',
-            'eu' => 'Basque',
-            'fa' => 'Persian',
-            'fi' => 'Finnish',
-            'fj' => 'Fiji',
-            'fo' => 'Faeroese',
-            'fr' => 'French',
-            'fy' => 'Frisian',
-            'ga' => 'Irish',
-            'gd' => 'Scots Gaelic',
-            'gl' => 'Galician',
-            'gn' => 'Guarani',
-            'gu' => 'Gujarati',
-            'ha' => 'Hausa',
-            'hi' => 'Hindi',
-            'hr' => 'Croatian',
-            'hu' => 'Hungarian',
-            'hy' => 'Armenian',
-            'ia' => 'Interlingua',
-            'ie' => 'Interlingue',
-            'ik' => 'Inupiak',
-            'in' => 'Indonesian',
-            'is' => 'Icelandic',
-            'it' => 'Italian',
-            'iw' => 'Hebrew',
-            'ja' => 'Japanese',
-            'ji' => 'Yiddish',
-            'jw' => 'Javanese',
-            'ka' => 'Georgian',
-            'kk' => 'Kazakh',
-            'kl' => 'Greenlandic',
-            'km' => 'Cambodian',
-            'kn' => 'Kannada',
-            'ko' => 'Korean',
-            'ks' => 'Kashmiri',
-            'ku' => 'Kurdish',
-            'ky' => 'Kirghiz',
-            'la' => 'Latin',
-            'ln' => 'Lingala',
-            'lo' => 'Laothian',
-            'lt' => 'Lithuanian',
-            'lv' => 'Latvian, Lettish',
-            'mg' => 'Malagasy',
-            'mi' => 'Maori',
-            'mk' => 'Macedonian',
-            'ml' => 'Malayalam',
-            'mn' => 'Mongolian',
-            'mo' => 'Moldavian',
-            'mr' => 'Marathi',
-            'ms' => 'Malay',
-            'mt' => 'Maltese',
-            'my' => 'Burmese',
-            'na' => 'Nauru',
-            'ne' => 'Nepali',
-            'nl' => 'Dutch',
-            'no' => 'Norwegian',
-            'oc' => 'Occitan',
-            'om' => '(Afan) Oromo',
-            'or' => 'Oriya',
-            'pa' => 'Punjabi',
-            'pl' => 'Polish',
-            'ps' => 'Pashto, Pushto',
-            'pt' => 'Portuguese',
-            'qu' => 'Quechua',
-            'rm' => 'Rhaeto-Romance',
-            'rn' => 'Kirundi',
-            'ro' => 'Romanian',
-            'ru' => 'Russian',
-            'rw' => 'Kinyarwanda',
-            'sa' => 'Sanskrit',
-            'sd' => 'Sindhi',
-            'sg' => 'Sangro',
-            'sh' => 'Serbo-Croatian',
-            'si' => 'Singhalese',
-            'sk' => 'Slovak',
-            'sl' => 'Slovenian',
-            'sm' => 'Samoan',
-            'sn' => 'Shona',
-            'so' => 'Somali',
-            'sq' => 'Albanian',
-            'sr' => 'Serbian',
-            'ss' => 'Siswati',
-            'st' => 'Sesotho',
-            'su' => 'Sundanese',
-            'sv' => 'Swedish',
-            'sw' => 'Swahili',
-            'ta' => 'Tamil',
-            'te' => 'Tegulu',
-            'tg' => 'Tajik',
-            'th' => 'Thai',
-            'ti' => 'Tigrinya',
-            'tk' => 'Turkmen',
-            'tl' => 'Tagalog',
-            'tn' => 'Setswana',
-            'to' => 'Tonga',
-            'tr' => 'Turkish',
-            'ts' => 'Tsonga',
-            'tt' => 'Tatar',
-            'tw' => 'Twi',
-            'uk' => 'Ukrainian',
-            'ur' => 'Urdu',
-            'uz' => 'Uzbek',
-            'vi' => 'Vietnamese',
-            'vo' => 'Volapuk',
-            'wo' => 'Wolof',
-            'xh' => 'Xhosa',
-            'yo' => 'Yoruba',
-            'zh' => 'Chinese',
-            'zu' => 'Zulu'
-	);
+		'aa' => 'Afar',
+		'ab' => 'Abkhazian',
+		'af' => 'Afrikaans',
+		'am' => 'Amharic',
+		'ar' => 'Arabic',
+		'as' => 'Assamese',
+		'ay' => 'Aymara',
+		'az' => 'Azerbaijani',
+		'ba' => 'Bashkir',
+		'be' => 'Byelorussian',
+		'bg' => 'Bulgarian',
+		'bh' => 'Bihari',
+		'bi' => 'Bislama',
+		'bn' => 'Bengali; Bangla',
+		'bo' => 'Tibetan',
+		'br' => 'Breton',
+		'ca' => 'Catalan',
+		'co' => 'Corsican',
+		'cs' => 'Czech',
+		'cy' => 'Welsh',
+		'da' => 'Danish',
+		'de' => 'German',
+		'dz' => 'Bhutani',
+		'el' => 'Greek',
+		'en' => 'English',
+		'eo' => 'Esperanto',
+		'es' => 'Spanish',
+		'et' => 'Estonian',
+		'eu' => 'Basque',
+		'fa' => 'Persian',
+		'fi' => 'Finnish',
+		'fj' => 'Fiji',
+		'fo' => 'Faeroese',
+		'fr' => 'French',
+		'fy' => 'Frisian',
+		'ga' => 'Irish',
+		'gd' => 'Scots Gaelic',
+		'gl' => 'Galician',
+		'gn' => 'Guarani',
+		'gu' => 'Gujarati',
+		'ha' => 'Hausa',
+		'hi' => 'Hindi',
+		'hr' => 'Croatian',
+		'hu' => 'Hungarian',
+		'hy' => 'Armenian',
+		'ia' => 'Interlingua',
+		'ie' => 'Interlingue',
+		'ik' => 'Inupiak',
+		'in' => 'Indonesian',
+		'is' => 'Icelandic',
+		'it' => 'Italian',
+		'iw' => 'Hebrew',
+		'ja' => 'Japanese',
+		'ji' => 'Yiddish',
+		'jw' => 'Javanese',
+		'ka' => 'Georgian',
+		'kk' => 'Kazakh',
+		'kl' => 'Greenlandic',
+		'km' => 'Cambodian',
+		'kn' => 'Kannada',
+		'ko' => 'Korean',
+		'ks' => 'Kashmiri',
+		'ku' => 'Kurdish',
+		'ky' => 'Kirghiz',
+		'la' => 'Latin',
+		'ln' => 'Lingala',
+		'lo' => 'Laothian',
+		'lt' => 'Lithuanian',
+		'lv' => 'Latvian, Lettish',
+		'mg' => 'Malagasy',
+		'mi' => 'Maori',
+		'mk' => 'Macedonian',
+		'ml' => 'Malayalam',
+		'mn' => 'Mongolian',
+		'mo' => 'Moldavian',
+		'mr' => 'Marathi',
+		'ms' => 'Malay',
+		'mt' => 'Maltese',
+		'my' => 'Burmese',
+		'na' => 'Nauru',
+		'ne' => 'Nepali',
+		'nl' => 'Dutch',
+		'no' => 'Norwegian',
+		'oc' => 'Occitan',
+		'om' => '(Afan) Oromo',
+		'or' => 'Oriya',
+		'pa' => 'Punjabi',
+		'pl' => 'Polish',
+		'ps' => 'Pashto, Pushto',
+		'pt' => 'Portuguese',
+		'qu' => 'Quechua',
+		'rm' => 'Rhaeto-Romance',
+		'rn' => 'Kirundi',
+		'ro' => 'Romanian',
+		'ru' => 'Russian',
+		'rw' => 'Kinyarwanda',
+		'sa' => 'Sanskrit',
+		'sd' => 'Sindhi',
+		'sg' => 'Sangro',
+		'sh' => 'Serbo-Croatian',
+		'si' => 'Singhalese',
+		'sk' => 'Slovak',
+		'sl' => 'Slovenian',
+		'sm' => 'Samoan',
+		'sn' => 'Shona',
+		'so' => 'Somali',
+		'sq' => 'Albanian',
+		'sr' => 'Serbian',
+		'ss' => 'Siswati',
+		'st' => 'Sesotho',
+		'su' => 'Sundanese',
+		'sv' => 'Swedish',
+		'sw' => 'Swahili',
+		'ta' => 'Tamil',
+		'te' => 'Tegulu',
+		'tg' => 'Tajik',
+		'th' => 'Thai',
+		'ti' => 'Tigrinya',
+		'tk' => 'Turkmen',
+		'tl' => 'Tagalog',
+		'tn' => 'Setswana',
+		'to' => 'Tonga',
+		'tr' => 'Turkish',
+		'ts' => 'Tsonga',
+		'tt' => 'Tatar',
+		'tw' => 'Twi',
+		'uk' => 'Ukrainian',
+		'ur' => 'Urdu',
+		'uz' => 'Uzbek',
+		'vi' => 'Vietnamese',
+		'vo' => 'Volapuk',
+		'wo' => 'Wolof',
+		'xh' => 'Xhosa',
+		'yo' => 'Yoruba',
+		'zh' => 'Chinese',
+		'zu' => 'Zulu'
+		);
 
 	public $country_codes = array(
-            'AF' => 'AFGHANISTAN',
-            'AL' => 'ALBANIA',
-            'DZ' => 'ALGERIA',
-            'AS' => 'AMERICAN SAMOA',
-            'AD' => 'ANDORRA',
-            'AO' => 'ANGOLA',
-            'AI' => 'ANGUILLA',
-            'AQ' => 'ANTARCTICA',
-            'AG' => 'ANTIGUA AND BARBUDA',
-            'AR' => 'ARGENTINA',
-            'AM' => 'ARMENIA',
-            'AW' => 'ARUBA',
-            'AU' => 'AUSTRALIA',
-            'AT' => 'AUSTRIA',
-            'AZ' => 'AZERBAIJAN',
-            'BS' => 'BAHAMAS',
-            'BH' => 'BAHRAIN',
-            'BD' => 'BANGLADESH',
-            'BB' => 'BARBADOS',
-            'BY' => 'BELARUS',
-            'BE' => 'BELGIUM',
-            'BZ' => 'BELIZE',
-            'BJ' => 'BENIN',
-            'BM' => 'BERMUDA',
-            'BT' => 'BHUTAN',
-            'BO' => 'BOLIVIA',
-            'BA' => 'BOSNIA AND HERZEGOWINA',
-            'BW' => 'BOTSWANA',
-            'BV' => 'BOUVET ISLAND',
-            'BR' => 'BRAZIL',
-            'IO' => 'BRITISH INDIAN OCEAN TERRITORY',
-            'BN' => 'BRUNEI DARUSSALAM',
-            'BG' => 'BULGARIA',
-            'BF' => 'BURKINA FASO',
-            'BI' => 'BURUNDI',
-            'KH' => 'CAMBODIA',
-            'CM' => 'CAMEROON',
-            'CA' => 'CANADA',
-            'CV' => 'CAPE VERDE',
-            'KY' => 'CAYMAN ISLANDS',
-            'CF' => 'CENTRAL AFRICAN REPUBLIC',
-            'TD' => 'CHAD',
-            'CL' => 'CHILE',
-            'CN' => 'CHINA',
-            'CX' => 'CHRISTMAS ISLAND',
-            'CC' => 'COCOS (KEELING) ISLANDS',
-            'CO' => 'COLOMBIA',
-            'KM' => 'COMOROS',
-            'CG' => 'CONGO',
-            'CD' => 'CONGO, THE DEMOCRATIC REPUBLIC OF THE',
-            'CK' => 'COOK ISLANDS',
-            'CR' => 'COSTA RICA',
-            'CI' => 'COTE D\'IVOIRE',
-            'HR' => 'CROATIA (local name: Hrvatska)',
-            'CU' => 'CUBA',
-            'CY' => 'CYPRUS',
-            'CZ' => 'CZECH REPUBLIC',
-            'DK' => 'DENMARK',
-            'DJ' => 'DJIBOUTI',
-            'DM' => 'DOMINICA',
-            'DO' => 'DOMINICAN REPUBLIC',
-            'TP' => 'EAST TIMOR',
-            'EC' => 'ECUADOR',
-            'EG' => 'EGYPT',
-            'SV' => 'EL SALVADOR',
-            'GQ' => 'EQUATORIAL GUINEA',
-            'ER' => 'ERITREA',
-            'EE' => 'ESTONIA',
-            'ET' => 'ETHIOPIA',
-            'FK' => 'FALKLAND ISLANDS (MALVINAS)',
-            'FO' => 'FAROE ISLANDS',
-            'FJ' => 'FIJI',
-            'FI' => 'FINLAND',
-            'FR' => 'FRANCE',
-            'FX' => 'FRANCE, METROPOLITAN',
-            'GF' => 'FRENCH GUIANA',
-            'PF' => 'FRENCH POLYNESIA',
-            'TF' => 'FRENCH SOUTHERN TERRITORIES',
-            'GA' => 'GABON',
-            'GM' => 'GAMBIA',
-            'GE' => 'GEORGIA',
-            'DE' => 'GERMANY',
-            'GH' => 'GHANA',
-            'GI' => 'GIBRALTAR',
-            'GR' => 'GREECE',
-            'GL' => 'GREENLAND',
-            'GD' => 'GRENADA',
-            'GP' => 'GUADELOUPE',
-            'GU' => 'GUAM',
-            'GT' => 'GUATEMALA',
-            'GN' => 'GUINEA',
-            'GW' => 'GUINEA-BISSAU',
-            'GY' => 'GUYANA',
-            'HT' => 'HAITI',
-            'HM' => 'HEARD AND MC DONALD ISLANDS',
-            'VA' => 'HOLY SEE (VATICAN CITY STATE)',
-            'HN' => 'HONDURAS',
-            'HK' => 'HONG KONG',
-            'HU' => 'HUNGARY',
-            'IS' => 'ICELAND',
-            'IN' => 'INDIA',
-            'ID' => 'INDONESIA',
-            'IR' => 'IRAN (ISLAMIC REPUBLIC OF)',
-            'IQ' => 'IRAQ',
-            'IE' => 'IRELAND',
-            'IL' => 'ISRAEL',
-            'IT' => 'ITALY',
-            'JM' => 'JAMAICA',
-            'JP' => 'JAPAN',
-            'JO' => 'JORDAN',
-            'KZ' => 'KAZAKHSTAN',
-            'KE' => 'KENYA',
-            'KI' => 'KIRIBATI',
-            'KP' => 'KOREA, DEMOCRATIC PEOPLE\'S REPUBLIC OF',
-            'KR' => 'KOREA, REPUBLIC OF',
-            'KW' => 'KUWAIT',
-            'KG' => 'KYRGYZSTAN',
-            'LA' => 'LAO PEOPLE\'S DEMOCRATIC REPUBLIC',
-            'LV' => 'LATVIA',
-            'LB' => 'LEBANON',
-            'LS' => 'LESOTHO',
-            'LR' => 'LIBERIA',
-            'LY' => 'LIBYAN ARAB JAMAHIRIYA',
-            'LI' => 'LIECHTENSTEIN',
-            'LT' => 'LITHUANIA',
-            'LU' => 'LUXEMBOURG',
-            'MO' => 'MACAU',
-            'MK' => 'MACEDONIA, THE FORMER YUGOSLAV REPUBLIC OF',
-            'MG' => 'MADAGASCAR',
-            'MW' => 'MALAWI',
-            'MY' => 'MALAYSIA',
-            'MV' => 'MALDIVES',
-            'ML' => 'MALI',
-            'MT' => 'MALTA',
-            'MH' => 'MARSHALL ISLANDS',
-            'MQ' => 'MARTINIQUE',
-            'MR' => 'MAURITANIA',
-            'MU' => 'MAURITIUS',
-            'YT' => 'MAYOTTE',
-            'MX' => 'MEXICO',
-            'FM' => 'MICRONESIA, FEDERATED STATES OF',
-            'MD' => 'MOLDOVA, REPUBLIC OF',
-            'MC' => 'MONACO',
-            'MN' => 'MONGOLIA',
-            'MS' => 'MONTSERRAT',
-            'MA' => 'MOROCCO',
-            'MZ' => 'MOZAMBIQUE',
-            'MM' => 'MYANMAR',
-            'NA' => 'NAMIBIA',
-            'NR' => 'NAURU',
-            'NP' => 'NEPAL',
-            'NL' => 'NETHERLANDS',
-            'AN' => 'NETHERLANDS ANTILLES',
-            'NC' => 'NEW CALEDONIA',
-            'NZ' => 'NEW ZEALAND',
-            'NI' => 'NICARAGUA',
-            'NE' => 'NIGER',
-            'NG' => 'NIGERIA',
-            'NU' => 'NIUE',
-            'NF' => 'NORFOLK ISLAND',
-            'MP' => 'NORTHERN MARIANA ISLANDS',
-            'NO' => 'NORWAY',
-            'OM' => 'OMAN',
-            'PK' => 'PAKISTAN',
-            'PW' => 'PALAU',
-            'PS' => 'PALESTINIAN TERRITORY, OCCUPIED',
-            'PA' => 'PANAMA',
-            'PG' => 'PAPUA NEW GUINEA',
-            'PY' => 'PARAGUAY',
-            'PE' => 'PERU',
-            'PH' => 'PHILIPPINES',
-            'PN' => 'PITCAIRN',
-            'PL' => 'POLAND',
-            'PT' => 'PORTUGAL',
-            'PR' => 'PUERTO RICO',
-            'QA' => 'QATAR',
-            'RE' => 'REUNION',
-            'RO' => 'ROMANIA',
-            'RU' => 'RUSSIAN FEDERATION',
-            'RW' => 'RWANDA',
-            'KN' => 'SAINT KITTS AND NEVIS',
-            'LC' => 'SAINT LUCIA',
-            'VC' => 'SAINT VINCENT AND THE GRENADINES',
-            'WS' => 'SAMOA',
-            'SM' => 'SAN MARINO',
-            'ST' => 'SAO TOME AND PRINCIPE',
-            'SA' => 'SAUDI ARABIA',
-            'SN' => 'SENEGAL',
-            'SC' => 'SEYCHELLES',
-            'SL' => 'SIERRA LEONE',
-            'SG' => 'SINGAPORE',
-            'SK' => 'SLOVAKIA (Slovak Republic)',
-            'SI' => 'SLOVENIA',
-            'SB' => 'SOLOMON ISLANDS',
-            'SO' => 'SOMALIA',
-            'ZA' => 'SOUTH AFRICA',
-            'GS' => 'SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS',
-            'ES' => 'SPAIN',
-            'LK' => 'SRI LANKA',
-            'SH' => 'ST. HELENA',
-            'PM' => 'ST. PIERRE AND MIQUELON',
-            'SD' => 'SUDAN',
-            'SR' => 'SURINAME',
-            'SJ' => 'SVALBARD AND JAN MAYEN ISLANDS',
-            'SZ' => 'SWAZILAND',
-            'SE' => 'SWEDEN',
-            'CH' => 'SWITZERLAND',
-            'SY' => 'SYRIAN ARAB REPUBLIC',
-            'TW' => 'TAIWAN, PROVINCE OF CHINA',
-            'TJ' => 'TAJIKISTAN',
-            'TZ' => 'TANZANIA, UNITED REPUBLIC OF',
-            'TH' => 'THAILAND',
-            'TG' => 'TOGO',
-            'TK' => 'TOKELAU',
-            'TO' => 'TONGA',
-            'TT' => 'TRINIDAD AND TOBAGO',
-            'TN' => 'TUNISIA',
-            'TR' => 'TURKEY',
-            'TM' => 'TURKMENISTAN',
-            'TC' => 'TURKS AND CAICOS ISLANDS',
-            'TV' => 'TUVALU',
-            'UG' => 'UGANDA',
-            'UA' => 'UKRAINE',
-            'AE' => 'UNITED ARAB EMIRATES',
-            'GB' => 'UNITED KINGDOM',
-            'US' => 'UNITED STATES',
-            'UM' => 'UNITED STATES MINOR OUTLYING ISLANDS',
-            'UY' => 'URUGUAY',
-            'UZ' => 'UZBEKISTAN',
-            'VU' => 'VANUATU',
-            'VE' => 'VENEZUELA',
-            'VN' => 'VIET NAM',
-            'VG' => 'VIRGIN ISLANDS (BRITISH)',
-            'VI' => 'VIRGIN ISLANDS (U.S.)',
-            'WF' => 'WALLIS AND FUTUNA ISLANDS',
-            'EH' => 'WESTERN SAHARA',
-            'YE' => 'YEMEN',
-            'YU' => 'YUGOSLAVIA',
-            'ZM' => 'ZAMBIA',
-            'ZW' => 'ZIMBABWE'
-        );
+		'AF' => 'AFGHANISTAN',
+		'AL' => 'ALBANIA',
+		'DZ' => 'ALGERIA',
+		'AS' => 'AMERICAN SAMOA',
+		'AD' => 'ANDORRA',
+		'AO' => 'ANGOLA',
+		'AI' => 'ANGUILLA',
+		'AQ' => 'ANTARCTICA',
+		'AG' => 'ANTIGUA AND BARBUDA',
+		'AR' => 'ARGENTINA',
+		'AM' => 'ARMENIA',
+		'AW' => 'ARUBA',
+		'AU' => 'AUSTRALIA',
+		'AT' => 'AUSTRIA',
+		'AZ' => 'AZERBAIJAN',
+		'BS' => 'BAHAMAS',
+		'BH' => 'BAHRAIN',
+		'BD' => 'BANGLADESH',
+		'BB' => 'BARBADOS',
+		'BY' => 'BELARUS',
+		'BE' => 'BELGIUM',
+		'BZ' => 'BELIZE',
+		'BJ' => 'BENIN',
+		'BM' => 'BERMUDA',
+		'BT' => 'BHUTAN',
+		'BO' => 'BOLIVIA',
+		'BA' => 'BOSNIA AND HERZEGOWINA',
+		'BW' => 'BOTSWANA',
+		'BV' => 'BOUVET ISLAND',
+		'BR' => 'BRAZIL',
+		'IO' => 'BRITISH INDIAN OCEAN TERRITORY',
+		'BN' => 'BRUNEI DARUSSALAM',
+		'BG' => 'BULGARIA',
+		'BF' => 'BURKINA FASO',
+		'BI' => 'BURUNDI',
+		'KH' => 'CAMBODIA',
+		'CM' => 'CAMEROON',
+		'CA' => 'CANADA',
+		'CV' => 'CAPE VERDE',
+		'KY' => 'CAYMAN ISLANDS',
+		'CF' => 'CENTRAL AFRICAN REPUBLIC',
+		'TD' => 'CHAD',
+		'CL' => 'CHILE',
+		'CN' => 'CHINA',
+		'CX' => 'CHRISTMAS ISLAND',
+		'CC' => 'COCOS (KEELING) ISLANDS',
+		'CO' => 'COLOMBIA',
+		'KM' => 'COMOROS',
+		'CG' => 'CONGO',
+		'CD' => 'CONGO, THE DEMOCRATIC REPUBLIC OF THE',
+		'CK' => 'COOK ISLANDS',
+		'CR' => 'COSTA RICA',
+		'CI' => 'COTE D\'IVOIRE',
+		'HR' => 'CROATIA (local name: Hrvatska)',
+		'CU' => 'CUBA',
+		'CY' => 'CYPRUS',
+		'CZ' => 'CZECH REPUBLIC',
+		'DK' => 'DENMARK',
+		'DJ' => 'DJIBOUTI',
+		'DM' => 'DOMINICA',
+		'DO' => 'DOMINICAN REPUBLIC',
+		'TP' => 'EAST TIMOR',
+		'EC' => 'ECUADOR',
+		'EG' => 'EGYPT',
+		'SV' => 'EL SALVADOR',
+		'GQ' => 'EQUATORIAL GUINEA',
+		'ER' => 'ERITREA',
+		'EE' => 'ESTONIA',
+		'ET' => 'ETHIOPIA',
+		'FK' => 'FALKLAND ISLANDS (MALVINAS)',
+		'FO' => 'FAROE ISLANDS',
+		'FJ' => 'FIJI',
+		'FI' => 'FINLAND',
+		'FR' => 'FRANCE',
+		'FX' => 'FRANCE, METROPOLITAN',
+		'GF' => 'FRENCH GUIANA',
+		'PF' => 'FRENCH POLYNESIA',
+		'TF' => 'FRENCH SOUTHERN TERRITORIES',
+		'GA' => 'GABON',
+		'GM' => 'GAMBIA',
+		'GE' => 'GEORGIA',
+		'DE' => 'GERMANY',
+		'GH' => 'GHANA',
+		'GI' => 'GIBRALTAR',
+		'GR' => 'GREECE',
+		'GL' => 'GREENLAND',
+		'GD' => 'GRENADA',
+		'GP' => 'GUADELOUPE',
+		'GU' => 'GUAM',
+		'GT' => 'GUATEMALA',
+		'GN' => 'GUINEA',
+		'GW' => 'GUINEA-BISSAU',
+		'GY' => 'GUYANA',
+		'HT' => 'HAITI',
+		'HM' => 'HEARD AND MC DONALD ISLANDS',
+		'VA' => 'HOLY SEE (VATICAN CITY STATE)',
+		'HN' => 'HONDURAS',
+		'HK' => 'HONG KONG',
+		'HU' => 'HUNGARY',
+		'IS' => 'ICELAND',
+		'IN' => 'INDIA',
+		'ID' => 'INDONESIA',
+		'IR' => 'IRAN (ISLAMIC REPUBLIC OF)',
+		'IQ' => 'IRAQ',
+		'IE' => 'IRELAND',
+		'IL' => 'ISRAEL',
+		'IT' => 'ITALY',
+		'JM' => 'JAMAICA',
+		'JP' => 'JAPAN',
+		'JO' => 'JORDAN',
+		'KZ' => 'KAZAKHSTAN',
+		'KE' => 'KENYA',
+		'KI' => 'KIRIBATI',
+		'KP' => 'KOREA, DEMOCRATIC PEOPLE\'S REPUBLIC OF',
+		'KR' => 'KOREA, REPUBLIC OF',
+		'KW' => 'KUWAIT',
+		'KG' => 'KYRGYZSTAN',
+		'LA' => 'LAO PEOPLE\'S DEMOCRATIC REPUBLIC',
+		'LV' => 'LATVIA',
+		'LB' => 'LEBANON',
+		'LS' => 'LESOTHO',
+		'LR' => 'LIBERIA',
+		'LY' => 'LIBYAN ARAB JAMAHIRIYA',
+		'LI' => 'LIECHTENSTEIN',
+		'LT' => 'LITHUANIA',
+		'LU' => 'LUXEMBOURG',
+		'MO' => 'MACAU',
+		'MK' => 'MACEDONIA, THE FORMER YUGOSLAV REPUBLIC OF',
+		'MG' => 'MADAGASCAR',
+		'MW' => 'MALAWI',
+		'MY' => 'MALAYSIA',
+		'MV' => 'MALDIVES',
+		'ML' => 'MALI',
+		'MT' => 'MALTA',
+		'MH' => 'MARSHALL ISLANDS',
+		'MQ' => 'MARTINIQUE',
+		'MR' => 'MAURITANIA',
+		'MU' => 'MAURITIUS',
+		'YT' => 'MAYOTTE',
+		'MX' => 'MEXICO',
+		'FM' => 'MICRONESIA, FEDERATED STATES OF',
+		'MD' => 'MOLDOVA, REPUBLIC OF',
+		'MC' => 'MONACO',
+		'MN' => 'MONGOLIA',
+		'MS' => 'MONTSERRAT',
+		'MA' => 'MOROCCO',
+		'MZ' => 'MOZAMBIQUE',
+		'MM' => 'MYANMAR',
+		'NA' => 'NAMIBIA',
+		'NR' => 'NAURU',
+		'NP' => 'NEPAL',
+		'NL' => 'NETHERLANDS',
+		'AN' => 'NETHERLANDS ANTILLES',
+		'NC' => 'NEW CALEDONIA',
+		'NZ' => 'NEW ZEALAND',
+		'NI' => 'NICARAGUA',
+		'NE' => 'NIGER',
+		'NG' => 'NIGERIA',
+		'NU' => 'NIUE',
+		'NF' => 'NORFOLK ISLAND',
+		'MP' => 'NORTHERN MARIANA ISLANDS',
+		'NO' => 'NORWAY',
+		'OM' => 'OMAN',
+		'PK' => 'PAKISTAN',
+		'PW' => 'PALAU',
+		'PS' => 'PALESTINIAN TERRITORY, OCCUPIED',
+		'PA' => 'PANAMA',
+		'PG' => 'PAPUA NEW GUINEA',
+		'PY' => 'PARAGUAY',
+		'PE' => 'PERU',
+		'PH' => 'PHILIPPINES',
+		'PN' => 'PITCAIRN',
+		'PL' => 'POLAND',
+		'PT' => 'PORTUGAL',
+		'PR' => 'PUERTO RICO',
+		'QA' => 'QATAR',
+		'RE' => 'REUNION',
+		'RO' => 'ROMANIA',
+		'RU' => 'RUSSIAN FEDERATION',
+		'RW' => 'RWANDA',
+		'KN' => 'SAINT KITTS AND NEVIS',
+		'LC' => 'SAINT LUCIA',
+		'VC' => 'SAINT VINCENT AND THE GRENADINES',
+		'WS' => 'SAMOA',
+		'SM' => 'SAN MARINO',
+		'ST' => 'SAO TOME AND PRINCIPE',
+		'SA' => 'SAUDI ARABIA',
+		'SN' => 'SENEGAL',
+		'SC' => 'SEYCHELLES',
+		'SL' => 'SIERRA LEONE',
+		'SG' => 'SINGAPORE',
+		'SK' => 'SLOVAKIA (Slovak Republic)',
+		'SI' => 'SLOVENIA',
+		'SB' => 'SOLOMON ISLANDS',
+		'SO' => 'SOMALIA',
+		'ZA' => 'SOUTH AFRICA',
+		'GS' => 'SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS',
+		'ES' => 'SPAIN',
+		'LK' => 'SRI LANKA',
+		'SH' => 'ST. HELENA',
+		'PM' => 'ST. PIERRE AND MIQUELON',
+		'SD' => 'SUDAN',
+		'SR' => 'SURINAME',
+		'SJ' => 'SVALBARD AND JAN MAYEN ISLANDS',
+		'SZ' => 'SWAZILAND',
+		'SE' => 'SWEDEN',
+		'CH' => 'SWITZERLAND',
+		'SY' => 'SYRIAN ARAB REPUBLIC',
+		'TW' => 'TAIWAN, PROVINCE OF CHINA',
+		'TJ' => 'TAJIKISTAN',
+		'TZ' => 'TANZANIA, UNITED REPUBLIC OF',
+		'TH' => 'THAILAND',
+		'TG' => 'TOGO',
+		'TK' => 'TOKELAU',
+		'TO' => 'TONGA',
+		'TT' => 'TRINIDAD AND TOBAGO',
+		'TN' => 'TUNISIA',
+		'TR' => 'TURKEY',
+		'TM' => 'TURKMENISTAN',
+		'TC' => 'TURKS AND CAICOS ISLANDS',
+		'TV' => 'TUVALU',
+		'UG' => 'UGANDA',
+		'UA' => 'UKRAINE',
+		'AE' => 'UNITED ARAB EMIRATES',
+		'GB' => 'UNITED KINGDOM',
+		'US' => 'UNITED STATES',
+		'UM' => 'UNITED STATES MINOR OUTLYING ISLANDS',
+		'UY' => 'URUGUAY',
+		'UZ' => 'UZBEKISTAN',
+		'VU' => 'VANUATU',
+		'VE' => 'VENEZUELA',
+		'VN' => 'VIET NAM',
+		'VG' => 'VIRGIN ISLANDS (BRITISH)',
+		'VI' => 'VIRGIN ISLANDS (U.S.)',
+		'WF' => 'WALLIS AND FUTUNA ISLANDS',
+		'EH' => 'WESTERN SAHARA',
+		'YE' => 'YEMEN',
+		'YU' => 'YUGOSLAVIA',
+		'ZM' => 'ZAMBIA',
+		'ZW' => 'ZIMBABWE'
+		);
 
 	//ISO-4217 currency codes
 	public $currency_codes = array (
@@ -616,7 +616,7 @@ class Set_Locale {
 		'ZMK' => 'Kwacha',
 		'ZRN' => 'New Zaire',
 		'ZWD' => 'Zimbabwe Dollar'
-	);
+		);
 
 	//When initializing this and the locale specified cannot be found, the
 	//system default will be used
@@ -662,9 +662,9 @@ class Set_Locale {
 				$this->TIMEFORMAT = $glob["TIMEFORMAT"];
 				if(!empty($this->NUMFORMAT) && !empty($this->MONFORMAT) && !empty($this->TIMEFORMAT))
 					return true;
-					//If any of these is empty, we'll have
-					//to fill it with something so tthe
-					//functions goes on
+				//If any of these is empty, we'll have
+				//to fill it with something so tthe
+				//functions goes on
 			}
 		}
 
@@ -704,11 +704,11 @@ class Set_Locale {
 			}
 		}
 
-                foreach ($time as $value) {
-                        $value = split('=',$value);
-                        if(!empty($value[1])) {
+		foreach ($time as $value) {
+			$value = split('=',$value);
+			if(!empty($value[1])) {
 				$this->TIMEFORMAT[$value[0]] = str_replace('"','',$value[1]);
-                	}
+			}
 		}
 
 		if($cache !== false) {
@@ -740,12 +740,14 @@ class Set_Locale {
 		if($locale == "UTF-8" || $locale == "C" || $locale == "POSIX") {
 			return $locale; //Pure UTF-8, C or POSIX is not localized to a country
 		}
-		$lang_cntr = split("_",$langcntr_char[0]);
-		$lang = $lang_cntr[0];
-		$cntr = $lang_cntr[1];
-		$char = $langcntr_char[1];
-		unset ($langcntr_char, $lang_cntr);
-
+		
+		$lang_country = split ("_",$locale);
+		$lang = $lang_country[0];
+		$country_char = split ("\.",$lang_country[1]);
+		$cntr = isset($country_char[0]) ? $country_char[0] : "";
+		$char = isset($country_char[1]) ? $country_char[1] : "";
+		unset ($lang_country, $country_char);
+		
 		if (in_array($lang,array_keys($this->lang_codes))) {
 			$lang = $this->lang_codes[$lang];
 		} else {
@@ -807,16 +809,16 @@ class Set_Locale {
 		return $precision;
 	}
 	
-        // This function should get values as a non-formatted numeric string
-        // This can accept scientific notation and other forms 
-        // Example: Correct - 1000.00
-        //          Correct - 0.1e16
-        //          Incorrect - 1,000.00
-        // Returns false if string is not numeric
-        //
-        // @value = Value to be formatted
-        // @precision = Optional - Precision (numbers after the comma). The function will
-        // automatically figure this out but if you want to force it, set it
+	// This function should get values as a non-formatted numeric string
+	// This can accept scientific notation and other forms 
+	// Example: Correct - 1000.00
+	//		  Correct - 0.1e16
+	//		  Incorrect - 1,000.00
+	// Returns false if string is not numeric
+	//
+	// @value = Value to be formatted
+	// @precision = Optional - Precision (numbers after the comma). The function will
+	// automatically figure this out but if you want to force it, set it
 
 	function fmt_number ($value, $precision = false) {
 		if($precision === false) {
@@ -834,8 +836,8 @@ class Set_Locale {
 	// This function should get values as a non formatted numeric string
 	// This cannot reliably accept scientific notations and other forms
 	// Example: Correct - 1000.00
-	//	    Incorrect - 1,000.00
-	//	    Undefined - 1e-15
+	//		Incorrect - 1,000.00
+	//		Undefined - 1e-15
 	// Returns false if string is not numeric 
 	//
 	// @value = Value to be formatted
@@ -907,9 +909,9 @@ class Set_Locale {
 	// be defined across all locales and all systems
 
 	// @type: Specify the INPUT. Can be 
-	//      UNIXTIME for integer unix timeformat (default)
-	//      MYSQL for MySQL format (2000-07-01 00:00)
-	//      ATOM for strings like 2000-07-01T00:00:00+00:00
+	//	  UNIXTIME for integer unix timeformat (default)
+	//	  MYSQL for MySQL format (2000-07-01 00:00)
+	//	  ATOM for strings like 2000-07-01T00:00:00+00:00
 	//	RFC822 for RFC822 formatted strings
 	//	ENGLISH A US English time string understood by strtotime()
 	//	If an integer is sent as value, it will default to UNIXTIME
@@ -921,12 +923,12 @@ class Set_Locale {
 	function fmt_time ($value, $type = "UNIXTIME", $out = "DATETIME", $utc = 0) {
 		if(!is_int($value) && $type != "UNIXTIME") {
 			switch ($type) {
-				case "MYSQL":
-					$value = preg_split('/[-:\s]+/i',$value);
-					$value = mktime($value[3],$value[4],$value[5],$value[1],$value[2],$value[0]);
+			case "MYSQL":
+				$value = preg_split('/[-:\s]+/i',$value);
+				$value = mktime($value[3],$value[4],$value[5],$value[1],$value[2],$value[0]);
 				break;
-				default:	
-					$value = strtotime($value);
+			default:	
+				$value = strtotime($value);
 			}
 		} elseif (!is_numeric($value)) {
 			trigger_error("Value given to fmt_time is not Unix Timestamp although it is specified");
@@ -941,24 +943,24 @@ class Set_Locale {
 
 		//Command line processing is the safest
 		switch ($out) {
-			case "DATETIME":
-				$output = exec('LANGTEMP=\$LANG; LANG='.$this->locale.'; date '.$utc.' -r '.$value.' +"'.$this->TIMEFORMAT['d_t_fmt'].'"; LANG=\$LANGTEMP');
-				break;
-			case "LONGTIME":
-				$output = exec('LANGTEMP=\$LANG; LANG='.$this->locale.'; date '.$utc.' -r '.$value.' +"'.$this->TIMEFORMAT['t_fmt_ampm'].'"; LANG=\$LANGTEMP');
-				break;
-			case "DATE":
-				$output = exec('LANGTEMP=\$LANG; LANG='.$this->locale.'; date '.$utc.' -r '.$value.' +"'.$this->TIMEFORMAT['d_fmt'].'"; LANG=\$LANGTEMP');
-				break;
-			case "TIME":
-				$output = exec('LANGTEMP=\$LANG; LANG='.$this->locale.'; date '.$utc.' -r '.$value.' +"'.$this->TIMEFORMAT['t_fmt'].'"; LANG=\$LANGTEMP');
-				break;
-			default:
-				//This part cannot be safely localized (see
-				//warning with setlocale)
-				$output = date($out,$value);
+		case "DATETIME":
+			$output = exec('LANGTEMP=\$LANG; LANG='.$this->locale.'; date '.$utc.' -r '.$value.' +"'.$this->TIMEFORMAT['d_t_fmt'].'"; LANG=\$LANGTEMP');
+			break;
+		case "LONGTIME":
+			$output = exec('LANGTEMP=\$LANG; LANG='.$this->locale.'; date '.$utc.' -r '.$value.' +"'.$this->TIMEFORMAT['t_fmt_ampm'].'"; LANG=\$LANGTEMP');
+			break;
+		case "DATE":
+			$output = exec('LANGTEMP=\$LANG; LANG='.$this->locale.'; date '.$utc.' -r '.$value.' +"'.$this->TIMEFORMAT['d_fmt'].'"; LANG=\$LANGTEMP');
+			break;
+		case "TIME":
+			$output = exec('LANGTEMP=\$LANG; LANG='.$this->locale.'; date '.$utc.' -r '.$value.' +"'.$this->TIMEFORMAT['t_fmt'].'"; LANG=\$LANGTEMP');
+			break;
+		default:
+			//This part cannot be safely localized (see
+			//warning with setlocale)
+			$output = date($out,$value);
 		}
 		return $output;
 	}
-}
+  }
 ?>

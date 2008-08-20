@@ -1,5 +1,15 @@
 2008-08-19  Esteban Sanchez <estebans@artica.es>
 
+	* include/locale.class.php: Fixes in Translate_Locale() to work
+	properly. Tab style correction in all the file, use tabs instead of
+	blankspaces.
+
+	* godmode/setup/setup.php: Added locale configuration option.
+
+	* pandoradb_data.sql: Added locale to tconfig.
+
+2008-08-19  Esteban Sanchez <estebans@artica.es>
+
 	* include/locale.class.php: Check $ENV["TMPDIR"] existance to avoid
 	PHP errors.
 

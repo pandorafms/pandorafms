@@ -1,3 +1,8 @@
+2008-08-19  Esteban Sanchez <estebans@artica.es>
+
+	* include/locale.class.php: Check $ENV["TMPDIR"] existance to avoid
+	PHP errors.
+
 2008-08-19  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* include/locale.class.php: Locale class for number, time and money

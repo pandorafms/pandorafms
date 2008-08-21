@@ -153,6 +153,41 @@ function print_input_text_extended ($name, $value, $id, $alt, $size, $maxlength,
 }
 
 /**
+ * Render an input password element. Extended version
+ * See print_input_text_extended for all options 
+ */
+function print_input_password_extended ($name, $value, $id, $alt, $size, $maxlength, $disabled, $script, $attributes, $return = false) {
+        static $idcounter = 0;
+
+        ++$idcounter;
+        if (empty ($name)) {
+		$name = 'unnamed';
+	}
+	if (empty ($alt)) {
+		$alt = 'textfield';
+	}
+	if (!empty ($maxlength)) {
+		$maxlength = ' maxlength="'.$maxlength.'" ';
+	}
+	$output = '<input name="'.$name.'" type="password" value="'.$value.'" size="'.$size.'" '.$maxlength.' alt="'.$alt.'" ';
+	if ($id != '') {
+		$output .= ' id="'.$id.'"';
+	} else {
+		$htmlid = 'pass-'.sprintf ('%04d', $idcounter);
+		$output .= ' id="'.$htmlid.'"';
+	}
+	if ($disabled)
+		$output .= ' disabled';
+	if ($attributes != '')
+		$output .= ' '.$attributes;
+	$output .= ' />';
+	if ($return)
+		return $output;
+	echo $output;
+}
+
+
+/**
  * Render an input text element. 
  * 
  * @param string $name Input name.

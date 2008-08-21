@@ -38,10 +38,10 @@ echo '<div class="databox" id="login">
 			<a href="index.php"><img src="images/pandora_logo.png" border="0" alt="logo"></a><br />
 			'.$pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '').'
 		</td><td class="f9b">
-			'.__('Login').':<br />'.print_input_text_extended ("nick",'', "nick",'','','',false,'','class="login"',true).'
+			'.__('Login').':<br />'.print_input_text_extended ("nick", '', "nick", '', '', '' , false, '', 'class="login"', true).'
 		</td></tr>
 		<tr><td class="f9b">
-			'.__('Password').':<br />'.print_input_password_extended ("pass",'', "pass",'','','',false,'','class="login"',true).'
+			'.__('Password').':<br />'.print_input_text_extended ("pass", '', "pass", '', '', '' ,false, '', 'class="login"', true, true).'
 		</td></tr>
 		<tr><td align="center">
 			'.print_submit_button ("Login",'',false,'class="sub next"',true).'

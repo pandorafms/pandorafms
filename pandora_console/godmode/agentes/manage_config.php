@@ -45,19 +45,18 @@ if ((isset($_GET["operacion"])) && ($update_agent == -1) && ($update_group == -1
 		// Initial checkings
 
 		// if selected more than 0 agents
-		$destino = $_POST["destino"];
-		if (count($destino) <= 0){
+		if (isset($_POST["destino"])) 
+			$destino = $_POST["destino"];
+		if ((!isset($_POST["destino"])) OR (count($destino) <= 0)) {
 			echo "<h3 class='error'>ERROR: ".__('No selected agents to copy')."</h3>";
-			echo "</table>";
-			include ("general/footer.php");
-			exit;
+			return;
 		}
-		$origen_modulo = $_POST["origen_modulo"];
-		if (count($origen_modulo) <= 0){
+		if (isset($_POST["origen_modulo"]))
+			$origen_modulo = $_POST["origen_modulo"];
+		
+		if ((!isset($_POST["origen_modulo"])) OR (count($origen_modulo) <= 0)) {
 			echo "<h3 class='error'>ERROR: ".__('No modules has been selected')."</h3>";
-			echo "</table>";
-			include ("general/footer.php");
-			exit;
+			return;
 		}
 
 		$multiple=1;
@@ -132,8 +131,7 @@ if ((isset($_GET["operacion"])) && ($update_agent == -1) && ($update_group == -1
 
 						
 						// Write every module in destination agent
-						if ($o_nombre != "agent_keepalive") {
-							$sql = "INSERT INTO tagente_modulo (
+						$sql = "INSERT INTO tagente_modulo (
 								id_agente,id_tipo_modulo,descripcion, nombre, max, min, 
 								module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, 
 								snmp_oid, ip_target, id_module_group, flag, 
@@ -148,35 +146,34 @@ if ((isset($_GET["operacion"])) && ($update_agent == -1) && ($update_group == -1
 							$o_id_plugin, '$o_plugin_parameter', '$o_plugin_user',
 							'$o_plugin_pass', $o_id_modulo
 							)";
-							$result2=mysql_query($sql);
-							if (! $result2)
-								echo "<h3 class=error>".__('Problem updating database')."</h3>";
-							$o_id_agente_modulo = mysql_insert_id();
-							
-							// Create with different estado if proc type or data type
-							if (
-							($o_id_agente_modulo != "") AND (
-							($o_id_tipo_modulo == 2) ||
-							($o_id_tipo_modulo == 6) || 
-							($o_id_tipo_modulo == 9) ||
-							($o_id_tipo_modulo == 100) || 
-							($o_id_tipo_modulo == 21) || 
-							($o_id_tipo_modulo == 18))){
-								$sql_status_insert = "INSERT INTO tagente_estado 
-								(id_agente_modulo,datos,timestamp,cambio,estado,id_agente, utimestamp) 
-								VALUES (
-								$o_id_agente_modulo, 0,'0000-00-00 00:00:00',0,0,'".$d_id_agente."',0
-								)";
-							} else { 
-								$sql_status_insert = "INSERT INTO tagente_estado
-								(id_agente_modulo,datos,timestamp,cambio,estado,id_agente, utimestamp) 
-								VALUES (
-								$o_id_agente_modulo, 0,'0000-00-00 00:00:00',0,100,'".$d_id_agente."',0
-								)";
-							}
-							$result_status=mysql_query($sql_status_insert);
-							echo "<br>&nbsp;&nbsp;".__('Copying module')." ->".$o_nombre;
+						$result2=mysql_query($sql);
+						if (! $result2)
+							echo "<h3 class=error>".__('Problem updating database')."</h3>";
+						$o_id_agente_modulo = mysql_insert_id();
+						
+						// Create with different estado if proc type or data type
+						if (
+						($o_id_agente_modulo != "") AND (
+						($o_id_tipo_modulo == 2) ||
+						($o_id_tipo_modulo == 6) || 
+						($o_id_tipo_modulo == 9) ||
+						($o_id_tipo_modulo == 100) || 
+						($o_id_tipo_modulo == 21) || 
+						($o_id_tipo_modulo == 18))){
+							$sql_status_insert = "INSERT INTO tagente_estado 
+							(id_agente_modulo,datos,timestamp,cambio,estado,id_agente, utimestamp) 
+							VALUES (
+							$o_id_agente_modulo, 0,'0000-00-00 00:00:00',0,0,'".$d_id_agente."',0
+							)";
+						} else { 
+							$sql_status_insert = "INSERT INTO tagente_estado
+							(id_agente_modulo,datos,timestamp,cambio,estado,id_agente, utimestamp) 
+							VALUES (
+							$o_id_agente_modulo, 0,'0000-00-00 00:00:00',0,100,'".$d_id_agente."',0
+							)";
 						}
+						$result_status=mysql_query($sql_status_insert);
+						echo "<br>&nbsp;&nbsp;".__('Copying module')." ->".$o_nombre;
 					}
 				}
 			}

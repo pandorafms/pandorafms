@@ -135,18 +135,14 @@ $table->data[] = array (__('Comments'),print_textarea ("description", 2, 70, $de
 print_table ($table);
 unset ($table);
 
-//Table with buttons
-$table->align = array ("right");
-$table->width = 700;
-$table->cellpadding = 4;
-$table->cellspacing = 4;
-if ($id_rt != "-1") {
-	$table->data[] = array ('<input name="updbutton" type="submit" class="sub upd" value="'.__('Update').'">');
-} else {
-	$table->data[] = array ('<input name="crtbutton" type="submit" class="sub wand" value="'.__('Add').'">');
-}
-print_table($table);
-unset($table);
+echo '<div class="action-buttons" style="width: 700px">';
+if ($id_rt != "-1") 
+	echo print_submit_button (__('Update'),"crt",false,'class="sub upd"',true);
+else
+	echo print_submit_button (__('Add'),"crt",false,'class="sub wand"',true);
+echo '</form>';
+echo "</div>";
+
 
 echo "</form>";
 

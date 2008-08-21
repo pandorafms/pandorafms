@@ -84,7 +84,7 @@ echo "</td></table>";
 
 
 if ($search != ""){
-	$search_sql = " AND nombre LIKE '%$search%' ";
+	$search_sql = " AND nombre LIKE '%$search%' OR direccion LIKE '%$search%' ";
 } else {
 	$search_sql = "";
 }

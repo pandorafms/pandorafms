@@ -28,7 +28,7 @@
 // $config["homeurl"]="/pandora_console/";
 
 // Do not display any ERROR
-error_reporting(0); 
+error_reporting(E_ALL); 
 
 // Display ALL errors
 // error_reporting(E_ERROR);

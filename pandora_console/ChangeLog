@@ -1,3 +1,33 @@
+
+2008-08-21  Sancho Lerena <slerena@gmail.com>
+
+	* pandoradb*.sql: tplanned_downtime: Fixed a typo, changed timestamp 
+	types, added executed field and removed id_agent_module.
+
+	* manage_config.php:  (Problem copying keep_alive modules
+	and alerts and solved bad message with no data supplied.
+
+	* manage_config_remote.php: Solved BUG #2042788 Fixed, was missing 
+	extension in filename check.
+
+	* planned_downtime.php: Major rewrite. Now works with server model of
+	planned downtimes based on select agents to disable in specific times.
+	Using unixtime was a very nice idea, so the javascript controls are 
+	fantastic to do this job!. Thanks Esteban and Evi!.
+
+	* manage_recontask*: Some issues with styles, using new div for button.
+
+	* modificar_server.php:  Some issues with styles, using new div for button
+
+	* config.inc.php: By default, show errors, easy to debug first problems.
+
+	* functions_db.php: Fixed problems detected in borrar_incidencia() function
+	(this is delete_incident in spanish).
+
+	* estado_agente.php: Added support to search by IP address in agent view.
+
+	* networkmap.php: Regen on by default, Font label shortened.
+	
 2008-08-21  Esteban Sanchez <estebans@artica.es>
 
 	* general/pandora_help.php: Added a require of a functions file. Added
@@ -319,6 +349,10 @@
 
 	* view_server_detail.php: Code stype update, and some fixes and new 
 	column information.
+
+	* modificar_agente.php, configurar_agente.php: Fixed use of $id_user.
+
+	* index.php: Temporal workaround to use $id_user as global. Need to fix.
  
 2008-08-05  Esteban Sanchez  <estebans@artica.es>
 
@@ -338,10 +372,6 @@
 	* operation/menu.php: Style correction.
 
 	* ChangeLog: Added comment about commit #1000.
-
-	* modificar_agente.php, configurar_agente.php: Fixed use of $id_user.
-
-	* index.php: Temporal workaround to use $id_user as global. Need to fix.
 
 2008-08-04  Esteban Sanchez  <estebans@artica.es>
 

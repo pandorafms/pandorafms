@@ -9,7 +9,11 @@
 // as published by the Free Software Foundation for version 2.
 
 require_once ("../include/config.php");
+require_once ("../include/functions.php");
+
+echo '<html><head><title>'.__('Pandora FMS help system').'</title></head>';
 echo '<link rel="stylesheet" href="../include/styles/'.$config['style'].'.css" type="text/css">';
+echo '<body>';
 
 $id = get_parameter ('id');
 $help_file = $config["homedir"]."/include/help/".$config["language"]."/help_".$id.".php";
@@ -29,7 +33,7 @@ if (! $id || ! file_exists ($help_file)) {
 
 /* Show help */
 echo '<div>';
-echo '<p style="text-align: right"><strong>Pandora FMS Help System</strong></p>';
+echo '<p style="text-align: right"><strong>'.__('Pandora FMS Help System').'</strong></p>';
 echo '</div>';
 echo '<hr width="100%" size="1" />';
 echo '<div style="font-family: verdana, arial; font-size: 11px; text-align:left">';
@@ -40,3 +44,5 @@ echo '<br /><br /><hr width="100%" size="1" />';
 echo '<div style="font-family: verdana, arial; font-size: 11px;">';
 include ('footer.php');
 ?>
+</body>
+</html>

@@ -19,54 +19,37 @@
 
 $addr = "";
 if (isset($_GET['sec'])){
-	$addr = 'http://' . $_SERVER['SERVER_NAME']; // TODO: check https
-
-	if ($_SERVER['SERVER_PORT'] != 80)
-		$addr .= ":" . $_SERVER['SERVER_PORT'];
-
+	$addr = 'http' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '') . '://' . $_SERVER['SERVER_NAME'];
+	
+	if ($_SERVER['SERVER_PORT'] != 80 && (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE && $_SERVER['SERVER_PORT'] != 443))
+		$query .= ":" . $_SERVER['SERVER_PORT'];
+	
 	$addr .= $_SERVER['REQUEST_URI'];
 	
 	$addr = urlencode($addr);
 }
 
-?>
-<div class='databox' id='login'>
-	<h1 id='log'><?php echo __('Welcome to Pandora FMS Web Console'); ?></h1>
-	<div class='databox' id='login_in'>
+echo '<div class="databox" id="login">
+	<h1 id="log">'.__('Welcome to Pandora FMS Web Console').'</h1>
+	<div class="databox" id="login_in">
 		<form method="post" action="index.php?login=1">
-		<table cellpadding='4' cellspacing='1' width='400'>
-		<tr><td rowspan='3' align='left' style="border-right: solid 1px #678;">
-			<a href="index.php">
-			<img src="images/pandora_logo.png" border="0" alt="logo"></a><br>
-			<?php 
-				echo $pandora_version;
-				if ($develop_bypass == 1){
-					echo " Build " . $build_version;
-				}
-			?>
-		<td rowspan='3' width='5'>
-		<td class='f9b'>
-			Login <br>
-			<input class="login" type="text" name="nick" id="nick" value="">
+		<table cellpadding="4" cellspacing="1" width="400">
+		<tr><td rowspan="3" align="left" style="border-right: solid 1px #678;">
+			<a href="index.php"><img src="images/pandora_logo.png" border="0" alt="logo"></a><br />
+			'.$pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '').'
+		</td><td class="f9b">
+			'.__('Login').':<br />'.print_input_text_extended ("nick",'', "nick",'','','',false,'','class="login"',true).'
 		</td></tr>
-		<tr><td class='f9b'>
-			Password <br>
-			<input class="login" type="password" name="pass" value="">
+		<tr><td class="f9b">
+			'.__('Password').':<br />'.print_input_password_extended ("pass",'', "pass",'','','',false,'','class="login"',true).'
 		</td></tr>
-		<tr><td align='center'>
-			<input type="submit" class="sub next" value="Login">
+		<tr><td align="center">
+			'.print_submit_button ("Login",'',false,'class="sub next"',true).'
 		</td></tr>
 		</table>
-		
-		<?php if (strlen($addr) > 0) { ?>
-			<input type="hidden" name="redirect" value="<?php echo $addr; ?>">
-		<?php } ?>
+		'.((strlen($addr) > 0) ? print_input_hidden("redirect",$addr,true) : '').'
 		</form>
 	</div>
-	<div id="ip"><?php echo 'IP: <b class="f10">'.$REMOTE_ADDR.'</b>'; ?></div>
-
-</div>
-
-<script type="text/javascript">
-	document.getElementById('nick').focus();
-</script>
+	<div id="ip">IP: <b class="f10">'.$REMOTE_ADDR.'</b></div>
+	</div><script type="text/javascript">document.getElementById(\'nick\').focus();</script>';
+?>

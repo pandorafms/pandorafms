@@ -1,3 +1,22 @@
+2008-08-21  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* index.php: Update HTML for unclosed tags and put everything in PHP
+	Updated the HTTPS detection. Made sure the password doesn't get
+	passed to other scripts (like 'evil' plugins)
+
+	* include/functions_html.php: Added print_input_password_extended()
+
+	* general/main_menu.php: Removed old code and header
+
+	* general/login_page.php: Tried putting it in functions_html code but
+	that didn't work (rowspan), so I just ended up with a smaller file and
+	the input boxes getting printed
+
+	* general/header.php: Updated to use functions_html
+
+	* general/footer.php: Updated header and develop_bypass for the query
+	counter
+
 
 2008-08-21  Sancho Lerena <slerena@gmail.com>
 

@@ -65,12 +65,9 @@ require_once ("include/functions.php");
 require_once ("include/functions_db.php");
 //We should require this or you might end up with some empty strings
 load_extensions ($config['extensions']);
-?>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<head>
-<?php
+echo '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head>';
+
 // Pure mode (without menu, header and footer).
 $config["pure"] = get_parameter ("pure", 0);
 
@@ -79,7 +76,7 @@ $intervalo = get_parameter ("refr", 0);
 if ($intervalo > 0){
 	// Agent selection filters and refresh
 	$query = 'http' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '') . '://' . $_SERVER['SERVER_NAME'];
-	if ($_SERVER['SERVER_PORT'] != 80)
+	if ($_SERVER['SERVER_PORT'] != 80 && (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE && $_SERVER['SERVER_PORT'] != 443))
 		$query .= ":" . $_SERVER['SERVER_PORT'];
 	
 	$query .= $_SERVER['SCRIPT_NAME'];
@@ -95,8 +92,8 @@ if ($intervalo > 0){
 	}
 	if (isset ($_POST["ag_group"])) {
 		$ag_group = $_POST["ag_group"];
-		$query = 'http://' . $_SERVER['SERVER_NAME'];
-		if ($_SERVER['SERVER_PORT'] != 80)
+		$query = 'http' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '') . '://' . $_SERVER['SERVER_NAME'];
+		if ($_SERVER['SERVER_PORT'] != 80 && (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE && $_SERVER['SERVER_PORT'] != 443))
 			$query .= ":" . $_SERVER['SERVER_PORT'];
 		$query .= $_SERVER['REQUEST_URI'] . '&ag_group_refresh=' . $ag_group;
 	} else {
@@ -104,8 +101,7 @@ if ($intervalo > 0){
 	}
 }
 
-?>
-<title>Pandora FMS - <?php echo __('the Flexible Monitoring System'); ?></title>
+echo '<title>Pandora FMS - '.__('the Flexible Monitoring System').'</title>
 <meta http-equiv="expires" content="0">
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="resource-type" content="document">
@@ -115,18 +111,18 @@ if ($intervalo > 0){
 <meta name="keywords" content="pandora, monitoring, system, GPL, software">
 <meta name="robots" content="index, follow">
 <link rel="icon" href="images/pandora.ico" type="image/ico">
-<link rel="stylesheet" href="include/styles/<?php echo $config['style']; ?>.css" type="text/css">
-
+<link rel="stylesheet" href="include/styles/'.$config["style"].'.css" type="text/css">
 <script type="text/javascript" src="include/javascript/wz_jsgraphics.js"></script>
 <script type="text/javascript" src="include/javascript/pandora.js"></script>
-</head>
+</head>';
 
-<?php
 // Show custom background
-if ($config["pure"] == 0)
+if ($config["pure"] == 0) {
 	echo '<body bgcolor="#555555">';
-else
+} else {
 	echo '<body bgcolor="#FFFFFF">';
+}
+
 $REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
 
 // Login process 
@@ -153,32 +149,36 @@ if (! isset ($_SESSION['id_usuario']) && isset ($_GET["login"])) {
 			logon_db ($nick, $REMOTE_ADDR);
 			$_SESSION['id_usuario'] = $nick;
 			$config['id_user'] = $nick;
+			unset ($_GET['pass'], $pass);
 		} else {
 			// Login failed (bad password)
 			unset ($_GET["sec2"]);
-			include "general/logon_failed.php";
-			// change password to do not show all string
-			$primera = substr ($pass,0,1);
-			$ultima = substr ($pass, strlen ($pass) - 1, 1);
-			$pass = $primera . "****" . $ultima;
+			require "general/logon_failed.php";
+			// change password to do not show any string
+			// $primera = substr ($pass,0,1);
+			// $ultima = substr ($pass, strlen ($pass) - 1, 1);
+			// $pass = $primera . "****" . $ultima;
 			audit_db ($nick, $REMOTE_ADDR, "Logon Failed",
-				  "Incorrect password: " . $nick . " / " . $pass);
+				  "Incorrect password: " . $nick);
 			exit;
 		}
 	} else {
 		// User not known
 		unset ($_GET["sec2"]);
-		include "general/logon_failed.php";
-		$primera = substr ($pass, 0, 1);
-		$ultima = substr ($pass, strlen ($pass) - 1, 1);
-		$pass = $primera . "****" . $ultima;
+		require "general/logon_failed.php";
+		// do not show any password string. Unsafe especially with
+		// short passwords
+		//$primera = substr ($pass, 0, 1);
+		//$ultima = substr ($pass, strlen ($pass) - 1, 1);
+		//$pass = $primera . "****" . $ultima;
 		audit_db ($nick, $REMOTE_ADDR, "Logon Failed",
-			  "Invalid username: " . $nick . " / " . $pass);
+			  "Invalid username: " . $nick);
 		exit;
 	}
 } elseif (! isset ($_SESSION['id_usuario'])) {
 	// There is no user connected
 	include "general/login_page.php";
+	echo '</body></html>';
 	exit;
 } else {
 	// There is session for id_usuario
@@ -198,9 +198,10 @@ if (isset ($_GET["sec2"])){
 	$sec2 = get_parameter_get ('sec2');
 	$sec2 = parameter_extra_clean ($sec2);
 	$page = $sec2;
-} else
+} else {
 	$sec2 = "";
-	
+}
+
 if (isset ($_GET["sec"])){
 	$sec = get_parameter_get ('sec');
 	$sec = parameter_extra_clean ($sec);
@@ -215,12 +216,9 @@ session_write_close();
 
 // Header
 if ($config["pure"] == 0) {
-	echo '<div id="container">';
-	echo '<div id="head">';
+	echo '<div id="container"><div id="head">';
 	require ("general/header.php"); 
-	echo '</div>';
-	echo '<div id="page">';
-	echo '<div id="menu">';
+	echo '</div><div id="page"><div id="menu">';
 	require ("general/main_menu.php");
 	echo '</div>';
 } else {
@@ -246,17 +244,18 @@ if ($page != "") {
 			}
 		}
 	} else {
-		echo "<br><b class='error'>".__('Sorry! I can\'t find the page!')."</b>";
+		echo '<br><b class="error">'.__('Sorry! I can\'t find the page!').'</b>';
 	}
-} else
+} else {
 	require ("general/logon_ok.php");  //default
+}
 
-if ($config["pure"] == 0){    
+if ($config["pure"] == 0) {    
 	echo '</div>'; // main
 	echo '<div style="clear:both"></div>';
-	echo '</div>'; // page
+	echo '</div>'; // page (id = page)
 } else {
-	echo "</div>";
+	echo "</div>"; // main_pure
 }
 
 if ($config["pure"] == 0) {

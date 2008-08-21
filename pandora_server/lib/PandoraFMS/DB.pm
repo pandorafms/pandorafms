@@ -1329,13 +1329,14 @@ sub pandora_planned_downtime (%$) {
 	my $query_handle;
 	my $query_handle2;
 	my $query_sql;
-	my $datestamp = &UnixDate("today","%Y-%m-%d");
-	my $timestamp = &UnixDate("today","%H:%M:%S");
-
+	
+	my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
+	my $utimestamp; # integer version of timestamp	
+	$utimestamp = &UnixDate($timestamp,"%s"); # convert from 
 
 	# Activate a planned downtime: Set agents as disabled for Planned Downtime
 
-	$query_sql = "SELECT * FROM tplanned_downtime WHERE executed = 0 AND start <= '$datestamp' AND start_time <= '$timestamp' AND stop >= '$datestamp' AND stop_time >'$timestamp' ";
+	$query_sql = "SELECT * FROM tplanned_downtime WHERE executed = 0 AND date_from <= $utimestamp AND date_to >= $utimestamp";
 
 	$query_handle = $dbh->prepare($query_sql);
 	$query_handle ->execute;
@@ -1359,7 +1360,7 @@ sub pandora_planned_downtime (%$) {
 
 	# Deactivate a planned downtime: Set agents as disabled for Planned Downtime
 
-	$query_sql = "SELECT * FROM tplanned_downtime WHERE executed = 1 AND stop <= '$datestamp' AND stop_time <= '$timestamp'";
+	$query_sql = "SELECT * FROM tplanned_downtime WHERE executed = 1 AND date_to <= $utimestamp";
 	$query_handle = $dbh->prepare($query_sql);
 	$query_handle ->execute;
 	if ($query_handle->rows != 0) {

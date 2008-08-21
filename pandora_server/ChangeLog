@@ -1,3 +1,8 @@
+2008-08-21  Sancho Lerena <slerena@gmail.com>
+
+	* lib/PandoraFMS/DB.pm, bin/pandora_server: Enabled again 
+	downtime scheduler. Now works fine, tested.
+
 2008-08-07  Sancho Lerena <slerena@gmail.com>
 	
 	* bin/pandora_server: Disabled downtime server code until

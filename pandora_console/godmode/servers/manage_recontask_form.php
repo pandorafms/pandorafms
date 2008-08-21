@@ -28,160 +28,126 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 }
 
 if (isset ($_GET["update"])) { // Edit mode
-	$id_rt = $_GET["update"];
-	$query="SELECT * FROM trecon_task where id_rt = $id_rt";
-	$result=mysql_query($query);
-	$row=mysql_fetch_array($result);
+	$id_rt = (int) get_parameter_get ("update");
+	$row = get_db_row ("trecon_task","id_rt",$id_rt);
 	$name = $row["name"];
 	$network = $row["subnet"];
 	$id_recon_server = $row["id_recon_server"];
 	$description = $row["description"];
-	$type = $row["type"];
 	$interval = $row["interval_sweep"];
 	$id_group = $row["id_group"];
 	$create_incident = $row["create_incident"];
 	$id_network_profile = $row["id_network_profile"];
 	$id_os = $row["id_os"];
-	
 } elseif (isset ($_GET["create"])) {
 	$id_rt = -1;
 	$name = "";
 	$network = "";
 	$description = "";
 	$id_recon_server = 0;
-	$type = 1;
 	$interval = 43200;
 	$id_group = 1;
 	$create_incident = 1;
 	$id_network_profile = 1;
-	$id_os = 10; // Other
+	$id_os = -1; // Any
 }
 
-echo '<h2>'.__('Pandora servers').' &gt; ';
-echo __('Manage recontask');
+echo '<h2>'.__('Pandora servers').' &gt; '.__('Manage recontask');
 pandora_help ("recontask");
 echo '</h2>';
-echo '<table width="700" cellspacing="4" cellpadding="4" class="databox_color">';
+
+$table->width=700;
+$table->cellspacing=4;
+$table->cellpadding=4;
+$table->class="databox_color";
 
 // Different Form url if it's a create or if it's a update form
-if ($id_rt != -1)
-	echo "<form name='modulo' method='post' action='index.php?sec=gservers&sec2=godmode/servers/manage_recontask&update=$id_rt'>";
-else
-	echo "<form name='modulo' method='post' action='index.php?sec=gservers&sec2=godmode/servers/manage_recontask&create=1'>";
+echo '<form name="modulo" method="POST" action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&'.(($id_rt != -1) ? 'update='.$id_rt : 'create=1').'">';
 
 // Name
-echo '<tr><td class="datos2">'.__('Task name');
-echo "<td class='datos2'><input type='text' name='name' size='25' value='$name'>";
+$table->data[] = array (__('Task name'),print_input_text ('name',$name,'',25,0,true));
 
 // Recon server
-echo "<td class='datos2'>".__('Recon Server');
-echo '<a href="#" class="tip">&nbsp;<span>'.__('You must select a Recon Server for the Task, otherwise the Recon Task will never run').'</span></a>';
-echo "<td class='datos2'>";
-echo '<select name="id_recon_server">';
-echo "<option value='$id_recon_server'>" . give_server_name($id_recon_server);
-$sql1="SELECT id_server, name FROM tserver WHERE recon_server = 1 ORDER BY name ";
-$result=mysql_query($sql1);
-while ($row=mysql_fetch_array($result)){
-	echo "<option value='".$row["id_server"]."'>".$row["name"]."</option>";
+$sql = "SELECT id_server, name FROM tserver WHERE recon_server = 1 ORDER BY name";
+$result = get_db_all_rows_sql ($sql);
+foreach ($result as $row) {
+	$selectbox[$row["id_server"]] = $row["name"];
 }
-echo "</select>";
+$table->data[] = array (__('Recon Server').'<a href="#" class="tip">&nbsp;<span>'.__('You must select a Recon Server for the Task, otherwise the Recon Task will never run').'</span></a>',
+			print_select ($selectbox, "id_recon_server", $id_recon_server,'','','',true));
+unset ($selectbox);
 
 // Network 
-echo "<tr>";
-echo '<td class="datos">'.__('Network').'</td>';
-echo '<td class="datos">';
-echo '<input type="text" name="network" size="25" value="'.$network.'"></td>';
+$table->data[] = array (__('Network'),print_input_text ('network',$network,'',25,0,true));
 
 // Interval
-echo '<td class="datos">'.__('Interval').'</td>';
-echo '<td class="datos">';
-echo "<select name='interval'>";
-if ($interval != 0){
-	if ($interval < 43200)
-		echo "<option value='$interval'>".($interval / 3600).__('hours')."</option>";
-	else
-		echo "<option value='$interval'>".($interval / 86400).__('days')."</option>";
-}
-echo "<option value='3600'>1 ".__('One hour')."</option>";
-echo "<option value='7200'>2 ".__('hours')."</option>";
-echo "<option value='21600'>6 ".__('hours')."</option>";
-echo "<option value='43200'>1/2 ".__('day')."</option>";
-echo "<option value='86400'>1 ".__('day')."</option>";
-echo "<option value='432000'>5 ".__('days')."</option>";
-echo "<option value='604800'>1 ".__('week')."</option>";
-echo "<option value='1209600'>2 ".__('week')."</option>";
-echo "<option value='2592000'>1 ".__('month')."</option>";
-echo "</select>";
+$selectbox = array (
+		3600 => '1 '.__('hour'),
+		7200 => '2 '.__('hours'),
+		21600 => '6 '.__('hours'),
+		43200 => '12 '.__('hours'),
+		86400 => '1 '.__('day'),
+		432000 => '5 '.__('days'),
+		604800 => '1 '.__('week'),
+		1209600 => '2 '.__('weeks'),
+		2592000 => '1 '.__('month')
+	);
+
+$table->data[] = array (__('Interval'),print_select ($selectbox, "interval", $interval,'','','',true));
+unset ($selectbox);
 
 // Network profile
-echo "<tr>";
-echo "<td class='datos2'>".__('Network profile') . "</td>";
-echo "<td class='datos2'>";
-echo "<select name='id_network_profile'>";
-echo "<option value='$id_network_profile'>".give_network_profile_name($id_network_profile);
-$sql1 = "SELECT * FROM tnetwork_profile where id_np != '$id_network_profile'";
-$result=mysql_query($sql1);
-while ($row=mysql_fetch_array($result))
-	echo "<option value='".$row["id_np"]."'>".$row["name"]."</option>";
-echo "</select></td>";
+$sql = sprintf("SELECT id_np, name FROM tnetwork_profile");
+$result = get_db_all_rows_sql ($sql);
+foreach($result as $row) {
+	$selectbox[$row["id_np"]] = $row["name"];
+}
+
+$table->data[] = array (__('Network profile'),print_select ($selectbox, "id_network_profile", $id_network_profile,'','','',true));
+unset ($selectbox);
 
 // OS
-echo "<td class='datos2'>". __('OS') . "</td>";
-echo "<td class='datos2'>";
-echo "<select name='id_os'>";
-if ($id_os != 0)
-	echo "<option value='$id_os'>".get_db_sql ("SELECT name FROM tconfig_os WHERE id_os = $id_os");
-	echo "<option value=-1>". __('Any');
-$sql1 = "SELECT * FROM tconfig_os ORDER BY name";
-$result=mysql_query($sql1);
-while ($row=mysql_fetch_array($result))
-	echo "<option value='".$row["id_os"]."'>".$row["name"]."</option>";
-echo "</select></td>";
+$sql = "SELECT id_os, name FROM tconfig_os ORDER BY name";
+$result = get_db_all_rows_sql ($sql);
+$selectbox[-1] = __('Any');
+foreach ($result as $row) {
+	$selectbox[$row["id_os"]] = $row["name"];
+}
+
+$table->data[] = array (__('OS'),print_select ($selectbox, "id_os", $id_os,'','','',true));
+unset ($selectbox);
 
 // Group
-echo "<tr>";
-echo "<td class='datos'>".__('Group')."</td>";
-echo "<td class='datos'>";
-echo "<select name='id_group'>";
-echo "<option value='$id_group'>".dame_nombre_grupo($id_group)."</option>";
-$sql1 = "SELECT * FROM tgrupo where id_grupo != $id_group";
-$result=mysql_query($sql1);
-while ($row=mysql_fetch_array($result))
-	echo "<option value='".$row["id_grupo"]."'>".$row["nombre"]."</option>";
-echo "</select></td>";
+$sql = "SELECT id_grupo, nombre FROM tgrupo";
+$result = get_db_all_rows_sql ($sql);
+foreach ($result as $row) {
+	$selectbox[$row["id_grupo"]] = $row["nombre"];
+}
+$table->data[] = array (__('Group'),print_select ($selectbox, "id_group", $id_group,'','','',true));
+unset ($selectbox);
 
 // Incident
-echo "<tr>";
-echo "<td class='datos2'>".__('Incident')."</td>";
-echo "<td class='datos2'>";
-echo "<select name='create_incident'>";
-if ($create_incident == 1){
-	echo "<option value='1'>".__('Yes')."</option>";
-	echo "<option value='0'>".__('No')."</option>";
-}
-else {
-	echo "<option value='0'>".__('No')."</option>";
-	echo "<option value='1'>".__('Yes')."</option>";
-}
-echo "</select></td>";
-echo "<td class='datos2' colspan=2> </td></tr>";
+$selectbox = array ( 0 => __('No'), 1 => __('Yes') );
+$table->data[] = array (__('Incident'),print_select ($selectbox, "create_incident", $create_incident,'','','',true));
 
 // Comments
-echo '<tr><td class="datost">'.__('Comments');
-echo '<td class="datos" colspan=3>';
-echo '<textarea name="description" cols=70 rows=2>';
-echo $description;
-echo "</textarea>";
-echo "</td></tr>";
-echo "</table>";
+$table->data[] = array (__('Comments'),print_textarea ("description", 2, 70, $description,'',true));
+print_table ($table);
+unset ($table);
 
-echo "<table cellpadding='4' cellspacing='4' width='700'>";
-echo "<td align='right'>";
-if ($id_rt != "-1")
-	echo '<input name="updbutton" type="submit" class="sub upd" value="'.__('Update').'">';
-else
-	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.__('Add').'">';
+//Table with buttons
+$table->align = array ("right");
+$table->width = 700;
+$table->cellpadding = 4;
+$table->cellspacing = 4;
+if ($id_rt != "-1") {
+	$table->data[] = array ('<input name="updbutton" type="submit" class="sub upd" value="'.__('Update').'">');
+} else {
+	$table->data[] = array ('<input name="crtbutton" type="submit" class="sub wand" value="'.__('Add').'">');
+}
+print_table($table);
+unset($table);
+
 echo "</form>";
-echo "</table>";
 
 ?>

@@ -3,6 +3,13 @@
 	* general/pandora_help.php: Added a require of a functions file. Added
 	missing HTML tags.
 
+2008-08-21  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* godmode/servers/modificar_server.php. 
+	godmode/servers/manage_recontask_form.php, 
+	godmode/servers/manage_recontask.php: HTML and SQL overhaul. Now uses 
+	the new functions that are available in functions_html.php.
+
 2008-08-20  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* godmode/profiles/profile_list.php: HTML overhaul (close tags, put

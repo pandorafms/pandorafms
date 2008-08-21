@@ -24,159 +24,114 @@ if (! give_acl ($config["id_user"], 0, "AR") && ! give_acl($config['id_user'], 0
 	audit_db ($config["id_user"], $REMOTE_ADDR, "ACL Violation",
 		"Trying to access Server Management");
 	require ("general/noaccess.php");
+	exit;
 }
 
 if (isset ($_GET["delete"])) {
-	$id_server = entrada_limpia($_GET["server_del"]);
-	$sql = "DELETE FROM tserver WHERE id_server='".$id_server."'";
-	$result=mysql_query($sql);
-	if ($result) echo "<h3 class='suc'>".__('Server deleted successfully')."</h3>";
-	else echo "<h3 class='suc'>".__('There was a problem deleting server')."</h3>";
-}
-
-if (isset($_GET["update"])) {
-	$name=entrada_limpia($_POST["name"]);
-	$address=entrada_limpia($_POST["address"]);
-	$description=entrada_limpia($_POST["description"]);
-	$id_server=entrada_limpia($_POST["server"]);
-	$sql = "UPDATE tserver SET name='".$name."', ip_address='".$address."', description='".$description."' WHERE id_server='".$id_server."'";
-	$result=mysql_query($sql);
-	if ($result) echo "<h3 class='suc'>".__('Server updated successfully')."</h3>";
-	else echo "<h3 class='suc'>".__('There was a problem updating server')."</h3>";
+	$id_server = get_parameter_get ("server_del");
+	$sql = sprintf ("DELETE FROM tserver WHERE id_server='%d'",$id_server);
+	$result = process_sql ($sql);
+	if ($result !== false) {
+		 echo '<h3 class="suc">'.__('Server deleted successfully').'</h3>';
+	} else { 
+		echo '<h3 class="error">'.__('There was a problem deleting the server').'</h3>';
+	}
+} elseif (isset($_GET["update"])) {
+	$name = get_parameter_post ("name");
+	$address = get_parameter_post ("address");
+	$description = get_parameter_post ("description");
+	$id_server = get_parameter_post ("server");
+	$sql = sprintf ("UPDATE tserver SET name = '%s', ip_address = '%s', description = '%s' WHERE id_server = %d",$name,$address,$description,$server);
+	$result = process_sql ($sql);
+	if ($result !== false) {
+		echo '<h3 class="suc">'.__('Server updated successfully').'</h3>';
+	} else { 
+		echo '<h3 class="error">'.__('There was a problem updating the server').'</h3>';
+	}
 }
 
 if (isset($_GET["server"])) {
-	$id_server=entrada_limpia($_GET["server"]);
-	echo "<h2>".__('Pandora servers')." &gt; ";
-	echo __('Update Server')."</h2>";
+	$id_server= get_parameter_get ("server");
+	echo "<h2>".__('Pandora servers')." &gt; ".__('Update Server')."</h2>";
+	$sql = sprintf("SELECT name, ip_address, description FROM tserver WHERE id_server = %d",$id_server);
+	$row = get_db_row_sql ($sql);
+	echo '<form name="servers" method="POST" action="index.php?sec=gservers&sec2=godmode/servers/modificar_server&update=1">';
+	print_input_hidden ("server",$id_server);
+	
+	$table->cellpadding=4;
+	$table->cellspacing=4;
+	$table->width=450;
+	$table->class="databox_color";
+	
+	$table->data[] = array (__('Name'),print_input_text ('name',$row["name"],'',50,0,true));
+	$table->data[] = array (__('IP Address'),print_input_text ('address',$row["ip_address"],'',50,0,true));
+	$table->data[] = array (__('Description'),print_input_text ('description',$row["description"],'',50,0,true));
+	
+	print_table($table);
+	unset ($table->data, $table->class);
 
-	$query="SELECT * FROM tserver WHERE id_server=".$id_server;
-	$result=mysql_query($query);
-	if (mysql_num_rows($result)){
-		$row=mysql_fetch_array($result);
-		$name = $row["name"];
-		$address = $row["ip_address"];
-		$status = $row["status"];
-		$laststart = $row["laststart"];
-		$keepalive = $row["keepalive"];
-		$network_server = $row["network_server"];
-		$data_server = $row["data_server"];
-		$snmp_server = $row["snmp_server"];
-		$master = $row["master"];
-		$checksum = $row["checksum"];
-		$description = $row["description"];
-		echo '<form name="servers" method="POST" action="index.php?sec=gservers&sec2=godmode/servers/modificar_server&update=1">';
-		echo "<table cellpadding='4' cellspacing='4' width='450' class='databox_color'>";
-		echo "<tr>";
-		echo "<td class='datos'>".__('Name')."</td><td class='datos'><input type='text' name='name' value='".$name."' width='200px'>";
-		echo "<tr><td class='datos2'>".__('IP Address')."</td><td class='datos2'><input type='text' name='address' value='".$address."' width='200px'>";
-		echo "<tr><td class='datos'>".__('Description')."<td class='datos'><input type='text' name='description' value='".$description."'><input type='hidden' name='server' value='".entrada_limpia($_GET["server"])."'></input>";
-	}
-	else {
-		echo "<div class='nf'>".__('There are no servers configured into the database')."</div>";
-	}
-	echo '</table>';
-	echo '<table cellpadding="4" cellspacing="4" width="450">';
-	echo '<tr><td align="right">';
-	echo '<input type="submit" class="sub upd" value="'.__('Update').'"></table>';
-} 
-else {
+	$table->align=array ("right");
+	$table->data[] = array ('<input type="submit" class="sub upd" value="'.__('Update').'">');
+	print_table($table);
+	unset ($table);
+} else {
+	$result = get_db_all_rows_in_table ("tserver");
+	echo "<h2>".__('Pandora servers')." &gt; ".__('Manage servers')."</h2>";
 
-	$sql='SELECT * FROM tserver';
-	echo "<h2>".__('Pandora servers')." &gt; ";
-	echo __('Manage servers')."</h2>";
-
-	$result=mysql_query($sql);
-	if (mysql_num_rows($result)){
-		echo "<table cellpadding='4' cellspacing='4' witdh='550' class='databox'>";
-		echo "<tr><th class='datos'>".__('Name')."</th>";
-		echo "<th class='datos'>".__('Status')."</th>";
-		echo "<th class='datos'>".__('IP Address')."</th>";
-		echo "<th class='datos'>".__('Description')."</th>";
-		echo "<th class='datos' width=80>".__('Type')."</th>";
-		echo "<th class='datos'>".__('Started at')."</th>";
-		echo "<th class='datos'>".__('Updated at')."</th>";
-		echo "<th class='datos'>".__('Delete')."</th>";
-		$color=1;
-		while ($row=mysql_fetch_array($result)){
-			$name = $row["name"];
-			$address = $row["ip_address"];
-			$status = $row["status"];
-			$laststart = $row["laststart"];
-			$keepalive = $row["keepalive"];
-			$network_server = $row["network_server"];
-			$data_server = $row["data_server"];
-			$snmp_server = $row["snmp_server"];
-			$master = $row["master"];
-			$checksum = $row["checksum"];
-			$description = $row["description"];
-			$id_server = $row["id_server"];
-			
-			if ($color == 1){
-				$tdcolor = "datos";
-				$color = 0;
+	if ($result !== false) {
+		$table->cellpadding = 4;
+		$table->cellspacing = 4;
+		$table->width = "100%";
+		$table->class = "databox";
+		$table->align = array ('',"center","center","center","center","center","center","center");
+		$table->head = array (__('Name'),__('Status'),__('IP Address'),__('Description'),__('Type'),__('Started at'),__('Updated at'),__('Delete'));
+		
+		foreach ($result as $row) {
+			$server = "";
+			if($row["network_server"] == 1) {
+				$server .= '<img src="images/network.png" />&nbsp;';
 			}
-			else {
-				$tdcolor = "datos2";
-				$color = 1;
+			if ($row["data_server"] == 1) {
+				$server .= '<img src="images/data.png" />&nbsp;';
 			}
-			echo "<tr><td class='$tdcolor'>";
-			echo "<a href='index.php?sec=gservers&sec2=godmode/servers/modificar_server&server=".$id_server."'><b>$name</b></a>";
-			echo "</td><td class='$tdcolor' align='middle'>";
-			if ($status ==0){
-				echo "<img src='images/dot_red.png'>";
-			} else {
-				echo "<img src='images/dot_green.png'>";
+			if ($row["snmp_server"] == 1) {
+				$server .= '<img src="images/snmp.png" />&nbsp;';
 			}
-			echo "</td><td class='$tdcolor' align='middle'>";
-			echo "$address";
-			echo "</td><td class='".$tdcolor."f9'>".substr($description,0,25);
-			echo "</td><td class='$tdcolor' align='middle'>";			
-			if ($network_server == 1){
-				echo "&nbsp; <img src='images/network.png'>";
-			}		
-			if ($data_server == 1){
-				echo "&nbsp; <img src='images/data.png'>";
-			}		
-			if ($snmp_server == 1){
-				echo "&nbsp; <img src='images/snmp.png'>";
-			}		
-			if ($master == 1){
-				echo "&nbsp; <img src='images/master.png'>";
-			}		
-			if ($checksum == 1){
-				echo "&nbsp; <img src='images/binary.png'>";
+			if ($row["master"] == 1) {
+				$server .= '<img src="images/master.png" />&nbsp;';
 			}
-			echo "</td>";
-			echo "<td class='".$tdcolor."f9' align='middle'>".substr($laststart,0,25)."</td>";
-			echo "<td class='".$tdcolor."f9' align='middle'>".substr($keepalive,0,25)."</td>";
-			echo "<td class='".$tdcolor."f9' align='middle'>
-			<a href='index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_del=".$id_server."&delete'>
-			<img src='images/cross.png' border='0'></td></tr>";
+			if ($row["checksum"] == 1) {
+				$server .= '<img src="images/binary.png" />&nbsp;';
+			}
+				
+			$table->data[] = array (
+						'<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server='.$row["id_server"].'"><b>'.$row["name"].'</b></a>',
+						'<img src="images/dot_'.(($row["status"] == 0) ? 'red' : 'green').'">',
+						$row["ip_address"],
+						substr($row["description"],0,25),
+						$server,
+						$LOCALE->fmt_time($row["laststart"],"MYSQL","DATE").' '.$LOCALE->fmt_time($row["laststart"],"MYSQL","LONGTIME"),
+						$LOCALE->fmt_time($row["keepalive"],"MYSQL","DATE").' '.$LOCALE->fmt_time($row["keepalive"],"MYSQL","LONGTIME"),
+						'<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_del='.$row["id_server"].'&delete"><img src="images/cross.png" border="0">'
+					);
+		
 		}
-		echo '</table>';
-		echo "<table cellpadding=2 cellspacing=0>";
-		echo "
-		<tr>
-		 <td>
-		  <span class='net'>".__('Network Server')."</span>
-		 </td>
-		 <td>
-		  <span class='master'>".__('Master')."</span>
-		 </td>
-		 <td>
-		  <span class='data'>".__('Data Server')."</span>
-		 </td>
-		 <td>
-		  <span class='binary'>".__('MD5 Check')."</span>
-		 </td>
-		 <td>
-		  <span class='snmp'>".__('SNMP Console')."</span>
-		 </td>
-		</tr>";
-		echo "</table>";	
-	}
-	else {
+		print_table ($table);
+		unset ($table);
+		
+		//Lagend
+		$table->cellpadding = 2;
+		$table->cellspacing = 0;
+		$table->data[] = array (
+		  			'<span class="net">'.__('Network Server').'</span>',
+		  			'<span class="master">'.__('Master').'</span>',
+		  			'<span class="data">'.__('Data Server').'</span>',
+		  			'<span class="binary">'.__('MD5 Check').'</span>',
+		  			'<span class="snmp">'.__('SNMP Console').'</span>'
+				);
+		print_table ($table);
+		unset ($table);
+	} else {
 		echo "<div class='nf'>".__('There are no servers configured into the database')."</div>";
 	}
 }

@@ -1,5 +1,4 @@
 <?php
-
 // Pandora FMS - the Flexible Monitoring System
 // ============================================
 // Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
@@ -31,154 +30,108 @@ if (! give_acl ($config['id_user'], 0, "LM")) {
 // --------------------------------
 // DELETE A RECON TASKs
 // --------------------------------
-if (isset($_GET["delete"])) {
-	$id = entrada_limpia($_GET["delete"]);
-	$sql = "DELETE FROM trecon_task WHERE id_rt = $id ";
-	$result = mysql_query($sql);
-	if ($result)
-		echo "<h3 class='suc'>".__('Deleted successfully')."</h3>";
-	else
-		echo "<h3 class='suc'>".__('Not deleted. Error deleting data')."</h3>";
+if (isset ($_GET["delete"])) {
+	$id = get_parameter_get ("delete");
+	$sql = sprintf("DELETE FROM trecon_task WHERE id_rt = '%d'",$id);
+	$result = process_sql ($sql);
+	if ($result !== false) {
+		echo '<h3 class="suc">'.__('Succesfully deleted recon task').'</h3>';
+	} else {
+		echo '<h3 class="error">'.__('Error deleting recon task').'</h3>';
+	}
 }
 
-
-if ((isset($_GET["update"])) OR ((isset($_GET["create"])))){
-	$name = entrada_limpia($_POST["name"]);
-	$network = entrada_limpia($_POST["network"]);
-	$description = entrada_limpia($_POST["description"]);
-	$id_recon_server = entrada_limpia($_POST["id_recon_server"]);
-	$interval = entrada_limpia($_POST["interval"]);
-	$id_group = entrada_limpia($_POST["id_group"]);
-	$create_incident = entrada_limpia($_POST["create_incident"]);
-	$id_network_profile = entrada_limpia($_POST["id_network_profile"]);
-	$id_os = get_parameter ("id_os", 10);
-
+// --------------------------------
+// GET PARAMETERS IF UPDATE OR CREATE
+// --------------------------------
+if ((isset ($_GET["update"])) OR ((isset ($_GET["create"])))) {
+	$name = get_parameter_post ("name");
+	$network = get_parameter_post ("network");
+	$description = get_parameter_post ("description");
+	$id_recon_server = get_parameter_post ("id_recon_server");
+	$interval = get_parameter_post ("interval");
+	$id_group = get_parameter_post ("id_group");
+	$create_incident = get_parameter_post ("create_incident");
+	$id_network_profile = get_parameter_post ("id_network_profile");
+	$id_os = get_parameter_post ("id_os", 10);
 }
 
 // --------------------------------
 // UPDATE A RECON TASK
 // --------------------------------
 if (isset($_GET["update"])) {
-	$id = entrada_limpia($_GET["update"]);
-	$sql = "UPDATE trecon_task SET id_os = $id_os, name = '$name', subnet = '$network', 
-			description='$description', id_recon_server = $id_recon_server,
-			create_incident = $create_incident, id_group = $id_group, interval_sweep = $interval,
-			id_network_profile = $id_network_profile WHERE id_rt = $id";
-	$result=mysql_query($sql);
-	if ($result)
-		echo "<h3 class='suc'>".__('Updated successfully')."</h3>";
-	else
-		echo "<h3 class='suc'>".__('Not updated. Error updating data')."</h3>";
+	$id = get_parameter_get ("update");
+	$sql = sprintf ("UPDATE trecon_task SET id_os = %d, name = '%s', subnet = '%s',
+				description = '%s', id_recon_server = %d, create_incident = %b, id_group = %d, interval_sweep = %u, 
+				id_network_profile = %d WHERE id_rt = %u",$id_os,$name,$network,$description,$id_recon_server,$create_incident,$id_group,$interval,$id_network_profile,$id);
+	
+	if (process_sql ($sql) !== false) {
+		echo '<h3 class="suc">'.__('Successfully updated recon task').'</h3>';
+	} else {
+		echo '<h3 class="error">'.__('Error updating recon task').'</h3>';
+	}
 }
 
 // --------------------------------
 // CREATE A RECON TASK
 // --------------------------------
 if (isset($_GET["create"])) {
-	$sql = "INSERT INTO trecon_task (name, subnet, description, id_recon_server, create_incident, id_group, id_network_profile, interval_sweep, id_os) VALUES ( '$name', '$network', '$description', $id_recon_server, $create_incident, $id_group,  $id_network_profile, $interval, $id_os)";
-	$result=mysql_query($sql);
-	if ($result)
-		echo "<h3 class='suc'>".__('Created successfully')."</h3>";
-	else
-		echo "<h3 class='suc'>".__('Not created. Error inserting data')."</h3>";
+	$sql = sprintf ("INSERT INTO trecon_task 
+			(name, subnet, description, id_recon_server, create_incident, id_group, id_network_profile, interval_sweep, id_os) 
+			VALUES ( '%s', '%s', '%s', %u, %b, %d, %d, %u, %d)",$name,$network,$description,$id_recon_server,$create_incident,$id_group,$id_network_profile,$interval,$id_os);
+	
+	if (process_sql ($sql) !== false) {
+		echo '<h3 class="suc">'.__('Successfully created recon task').'</h3>';
+	} else {
+		echo '<h3 class="error">'.__('Error creating recon task').'</h3>';
+	}
 }
 
 // --------------------------------
 // SHOW TABLE WITH ALL RECON TASKs
 // --------------------------------
-echo "<h2>".__('Pandora servers')." &gt; ";
-echo __('Manage recontask')."</h2>";
-$query="SELECT * FROM trecon_task";
-$result=mysql_query($query);
+echo "<h2>".__('Pandora servers')." &gt; ".__('Manage recontask')."</h2>";
+
+$result = get_db_all_rows_in_table ("trecon_task");
 $color=1;
-if (mysql_num_rows($result)){
-	echo "<table cellpadding='4' cellspacing='4' width='700' class='databox'>";
-        echo "<tr><th class='datos'>".__('Name')."</th>";
-        echo "<th class='datos'>".__('Type')."</th>";
-        echo "<th class='datos'>".__('Network')."</th>";
-        echo "<th class='datos'>".__('Network profile')."</th>";
-        echo "<th class='datos'>".__('Group')."</th>";
-        echo "<th class='datos'>".__('Incident')."</th>";
-        echo "<th class='datos'>".__('OS')."</th>";
-        echo "<th class='datos'>".__('Interval')."</th>";
-        echo "<th class='datos'>".__('Action')."</th></tr>";
+if ($result !== false) {
+	$table->head = array  (__('Name'), __('Network'), __('Network profile'), __('Group'), __('Incident'), __('OS'), __('Interval'), __('Action'));
+	$table->align = array ("","","","center","","","center","center");
+	$table->width = 700;
+	$table->cellpadding = 4;
+	$table->cellspacing = 4;
+	$table->class = "databox";
+
+	foreach ($result as $row) {
+		$table->data[] = array (
+			'<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$row["id_rt"].'"><b>'.$row["name"].'</b></a>',
+		// Network (subnet)
+			$row["subnet"],
+		// Network profile name
+			'<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates&id='.$row["id_network_profile"].'">'.give_network_profile_name ($row["id_network_profile"]).'</a>',
+		// GROUP
+			'<img class="bot" src="images/groups_small/'.show_icon_group ($row["id_group"]).'.png" alt="">',
+		// INCIDENT
+			(($row["create_incident"] == 1) ? __('Yes') : __('No')),	
+		// OS
+			(($row["id_os"] > 0) ? '<img src="images/'.dame_so_icon ($row["id_os"]).'" />' : __('Any')),
+		// INTERVAL
+			human_time_description_raw($row["interval_sweep"]),
+		// ACTION
+			'<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete='.$row["id_rt"].'">
+			<img src="images/cross.png" border="0" /></a>&nbsp;&nbsp;<a href="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update='.$row["id_rt"].'">
+			<img src="images/config.png" /></a>'
+		);
+	}
+	print_table ($table);
+	unset ($table);
+} else {
+	echo '<div class="nf">'.__('There are no recon task configured').'</div>';
 }
-while ($row=mysql_fetch_array($result)){
-	$id_rt = $row["id_rt"];
-	$name = $row["name"];
-	$network = $row["subnet"];
-	$description = $row["description"];
-//	$id_server = $row["server"];
-	$type = $row["type"];
-	$id_recon_server = $row["id_recon_server"];
-	$interval = $row["interval_sweep"];
-	$id_group = $row["id_group"];
-	$create_incident = $row["create_incident"];
-	$id_network_profile = $row["id_network_profile"];
-	$id_os = $row["id_os"];
 
-	if ($color == 1){
-		$tdcolor = "datos";
-		$color = 0;
-	}
-	else {
-		$tdcolor = "datos2";
-		$color = 1;
-	}
-	echo "<tr>";
-	echo "<td class='$tdcolor'>";
-	echo "<a href='index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update=$id_rt'><b>$name</b></A>";
-	
-	echo "</td><td class='$tdcolor'>";
-	if ($type ==1)
-		echo "ICMP";
-
-	// Network
-	echo "</td><td class='$tdcolor'>";
-	echo $network;
-
-	// Network profile name
-	echo "</td><td class='$tdcolor'>";
-	echo "<a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates&id=$id_network_profile'>".give_network_profile_name($id_network_profile)."</a>";
-
-	// GROUP
-	echo "</td><td class='$tdcolor' align='center'>";
-	echo "<img class='bot' src='images/groups_small/".show_icon_group($id_group).".png' alt=''>";
-
-	// INCIDENT
-	echo "</td><td class='$tdcolor'>";
-	if ($create_incident == 1)
-		echo __('Yes');
-	else
-		echo __('No');
-
-	// OS
-	echo "</td><td class='$tdcolor'>";
-	if ($id_os > 0){
-		$icon = get_db_sql ("SELECT icon_name FROM tconfig_os WHERE id_os = $id_os");
-		echo "<img src='images/$icon'>";
-	}
-
-	// INTERVAL
-	echo "</td><td class='$tdcolor' align='center'>";
-	echo human_time_description_raw($interval);
-
-	// ACTION
-	echo "</td><td class='".$tdcolor."' align='center'><a href='index.php?sec=gservers&sec2=godmode/servers/manage_recontask&delete=$id_rt'><img src='images/cross.png' border='0'>";
-	echo "&nbsp;&nbsp;";
-	echo "<a href='index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&update=$id_rt'><img src='images/config.png'></A>";
-	echo "</td></tr>";
-}
-echo "</table>";
-
-if (!mysql_num_rows($result)){
-	echo "<div class='nf'>".__('There are no recon task configured')."</div>";
-}	
-
-echo "<table width='700'>";
-echo "<tr><td align='right'>";
-echo "<form method='post' action='index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&create'>";
-echo "<input type='submit' class='sub next' name='crt' value='".__('Create')."'>";
-echo "</form></table>";
-
+$table->align = array ("right");
+$table->width = 700;
+$table->data[] = array ('<form method="post" action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&create">'.print_submit_button (__('Create'),"crt",false,'class="sub next"',true).'</form>');
+print_table($table);
+unset($table);
 ?>

@@ -81,7 +81,7 @@ if (isset($_GET["server"])) {
 	if ($result !== false) {
 		$table->cellpadding = 4;
 		$table->cellspacing = 4;
-		$table->width = "100%";
+		$table->width = "90%";
 		$table->class = "databox";
 		$table->align = array ('',"center","center","center","center","center","center","center");
 		$table->head = array (__('Name'),__('Status'),__('IP Address'),__('Description'),__('Type'),__('Started at'),__('Updated at'),__('Delete'));

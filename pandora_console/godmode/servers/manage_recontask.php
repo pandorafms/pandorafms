@@ -129,9 +129,10 @@ if ($result !== false) {
 	echo '<div class="nf">'.__('There are no recon task configured').'</div>';
 }
 
-$table->align = array ("right");
-$table->width = 700;
-$table->data[] = array ('<form method="post" action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&create">'.print_submit_button (__('Create'),"crt",false,'class="sub next"',true).'</form>');
-print_table($table);
-unset($table);
+echo '<div class="action-buttons" style="width: 700px">';
+echo '<form method="post" action="index.php?sec=gservers&sec2=godmode/servers/manage_recontask_form&create">';
+echo print_submit_button (__('Create'),"crt",false,'class="sub next"',true);
+echo '</form>';
+echo "</div>";
+
 ?>

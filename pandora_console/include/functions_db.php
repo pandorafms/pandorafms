@@ -767,26 +767,30 @@ function dame_generic_string_data ($id) {
 function borrar_incidencia ($id_inc) {
 	global $config;
 	
-	$sql = sprintf ("DELETE FROM `tincidencia` WHERE `id_incidencia` = %d",$id_inc);
+	$sql = sprintf ("DELETE FROM `tincidencia` WHERE `id_incidencia` = %d", $id_inc);
 	process_sql ($sql);
-	$sql = sprintf ("SELECT `id_nota` FROM `tnota_inc` WHERE `id_incidencia` = %d".$id_inc);
+	$sql = sprintf ("SELECT `id_nota` FROM `tnota_inc` WHERE `id_incidencia` = %d ", $id_inc);
 	$rows = get_db_all_rows_sql ($sql);
-	foreach ($rows as $row) {
-		$sql = sprintf ("DELETE FROM `tnota` WHERE `id_nota` = %d",$row["id_nota"]);
+	if ($rows){
+		foreach ($rows as $row) {
+			$sql = sprintf ("DELETE FROM `tnota` WHERE `id_nota` = %d",$row["id_nota"]);
+			process_sql ($sql);
+		}
+		$sql = "DELETE FROM `tnota_inc` WHERE `id_incidencia` = $id_inc";
 		process_sql ($sql);
 	}
-	$sql = "DELETE FROM `tnota_inc` WHERE `id_incidencia` = ".$id_inc;
-	process_sql ($sql);
 	
 	// Delete attachments
-	$sql = sprintf ("SELECT `id_attachment`,`filename` FROM `tattachment` WHERE `id_incidencia` = %d",$id_inc);
+	$sql = sprintf ("SELECT `id_attachment`,`filename` FROM `tattachment` WHERE `id_incidencia` = %d", $id_inc);
 	$rows = get_db_all_rows_sql ($sql);
-	foreach ($rows as $row) {
-		// Unlink all attached files for this incident
-		unlink ($attachment_store."attachment/pand".$row["id_attachment"]."_".$row["filename"]);
+	if ($rows){
+		foreach ($rows as $row) {
+			// Unlink all attached files for this incident
+			unlink ($attachment_store."attachment/pand".$row["id_attachment"]."_".$row["filename"]);
+		}
+		$sql = sprintf ("DELETE FROM `tattachment` WHERE `id_incidencia` = %d",$id_inc);
+		process_sql ($sql);
 	}
-	$sql = sprintf ("DELETE FROM `tattachment` WHERE `id_incidencia` = %d",$id_inc);
-	process_sql ($sql);
 }
 
 /** 

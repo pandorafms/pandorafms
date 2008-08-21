@@ -240,7 +240,7 @@ $pure = (int) get_parameter ('pure');
 $zoom = (float) get_parameter ('zoom');
 $ranksep = (float) get_parameter ('ranksep', 2.5);
 $simple = (boolean) get_parameter ('simple', 0);
-$regen = (boolean) get_parameter ('regen',0);
+$regen = (boolean) get_parameter ('regen',1); // Always regen by default
 $font_size = (int) get_parameter ('font_size', 12);
 
 echo '<h2>'.__('Pandora Agents').' &gt; '.__('Network Map').'&nbsp';
@@ -302,7 +302,7 @@ if ($nooverlap == 1){
 }
 
 echo "<td>";
-echo __('Font size') . ' &nbsp;';
+echo __('Font') . ' &nbsp;';
 print_input_text ('font_size', $font_size, $alt = 'Font size (in pt)', 3, 4, 0);
 
 

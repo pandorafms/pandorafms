@@ -200,91 +200,49 @@ if (isset ($id_perfil)){ // There are values defined, let's show form with data 
 	}
 	echo '</td></tr></table>';
 } else { // View list data
-	echo '<table cellpadding="4" cellspacing="4" class="databox" width="750px">';
-	
 	$result = get_db_all_rows_in_table ("tperfil");
-	echo '<tr><th width="180px"><font size="1">'.__('Profiles').'</th><th width="40px">IR';
-	print_help_tip (__('Read Incidents'));
-	echo '</th><th width="40px">IW';
-	print_help_tip (__('Create Incidents'));
-	echo '</th><th width="40px">IM';
-	print_help_tip (__('Manage Incidents'));
-	echo '</th><th width="40px">AR';
-	print_help_tip (__('Read Agent Information'));
-	echo '</th><th width="40px">AW';
-	print_help_tip (__('Manage Agents'));
-	echo '</th><th width="40px">LW';
-	print_help_tip (__('Edit Alerts'));
-	echo '</th><th width="40px">UM';
-	print_help_tip (__('Manage User Rights'));
-	echo '</th><th width="40px">DM';
-	print_help_tip (__('Database Management'));
-	echo '</th><th width="40px">LM';
-	print_help_tip (__('Alerts Management'));
-	echo '</th><th width="40px">PM';
-	print_help_tip (__('Pandora System Management'));
-	echo '</th><th width="40px">'.__('Delete').'</th></tr>';
-	
-	$color = 1;
-	foreach ($result as $profile) {
-		$id_perfil = $profile["id_perfil"];
-		$nombre = $profile["name"];
-		$incident_view = $profile["incident_view"];
-		$incident_edit = $profile["incident_edit"];
-		$incident_management = $profile["incident_management"];
-		$agent_view = $profile["agent_view"];
-		$agent_edit = $profile["agent_edit"];
-		$alert_edit = $profile["alert_edit"];
-		$user_management = $profile["user_management"];
-		$db_management = $profile["db_management"];
-		$alert_management = $profile["alert_management"];
-		$pandora_management = $profile["pandora_management"];
-		
-		if ($color == 1) {
-			$tdcolor = "datos";
-			$color = 0;
-		} else {
-			$tdcolor = "datos2";
-			$color = 1;
-		}
-		
-		echo '<tr>
-		      <td class="'.$tdcolor.'">
-			<a href="index.php?sec=gperfiles&amp;sec2=godmode/profiles/profile_list&amp;edit_profile='.$id_perfil.'"><b>'.$nombre.'</b></a>
-		      </td>
-		      <td class="'.$tdcolor.'">
-		      	'.(($incident_view == 1) ? '<img src="images/ok.png" border="0">' : '').'
-		      </td>
-		      <td class="'.$tdcolor.'">
-			'.(($incident_edit == 1) ? '<img src="images/ok.png" border="0">' : '').'			
-		      </td>
-		      <td class="'.$tdcolor.'">
-			'.(($incident_management == 1) ? '<img src="images/ok.png" border="0">' : '').'
-		      </td><td class="'.$tdcolor.'">
-			'.(($agent_view == 1) ? '<img src="images/ok.png" border="0">' : '').'
-		      </td><td class="'.$tdcolor.'">
-			'.(($agent_edit == 1) ? '<img src="images/ok.png" border="0">' : '').'
-		      </td><td class="'.$tdcolor.'">
-		      	'.(($alert_edit == 1) ? '<img src="images/ok.png" border="0">' : '').'
-		      </td><td class="'.$tdcolor.'">
-		      	'.(($user_management == 1) ? '<img src="images/ok.png" border="0">' : '').'
-		      </td><td class="'.$tdcolor.'">
-		      	'.(($db_management == 1) ? '<img src="images/ok.png" border="0">' : '').'
-		      <td class="'.$tdcolor.'">
-		      	'.(($alert_management == 1) ? '<img src="images/ok.png" border="0">' : '').'
-		      </td><td class="'.$tdcolor.'">
-		      	'.(($pandora_management == 1) ? '<img src="images/ok.png" border="0">' : '').'
-		      <td class="'.$tdcolor.'" align="center">
-		      	<a href="index.php?sec=gagente&sec2=godmode/profiles/profile_list&delete_profile='.$id_perfil.'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">
-		      	<img border="0" src="images/cross.png"></a>
-		      </td>
-		</tr>';	
+	$table->cellpadding = 4;
+	$table->cellspacing = 4;
+	$table->class = "databox";
+	$table->width = 750;
+	$table->size = array (180,40,40,40,40,40,40,40,40,40,40);
+	$table->head = array (
+				__('Profiles'),
+				'IR'.print_help_tip (__('Read Incidents'),true),
+				'IW'.print_help_tip (__('Create Incidents'),true),
+				'IM'.print_help_tip (__('Manage Incidents'),true),
+				'AR'.print_help_tip (__('Read Agent Information'),true),
+				'AW'.print_help_tip (__('Manage Agents'),true),
+				'LW'.print_help_tip (__('Edit Alerts'),true),
+				'UM'.print_help_tip (__('Manage User Rights'),true),
+				'DM'.print_help_tip (__('Database Management'),true),
+				'LM'.print_help_tip (__('Alerts Management'),true),
+				'PM'.print_help_tip (__('Pandora System Management'),true),
+				__('Delete')
+			);	
+	$table->align = array ('',"center","center","center","center","center","center","center","center","center","center","center");
+	foreach ($result as $row) {
+		$table->data[] = array (
+					'<a href="index.php?sec=gperfiles&amp;sec2=godmode/profiles/profile_list&amp;edit_profile='.$row["id_perfil"].'"><b>'.$row["name"].'</b></a>',
+		      			(($row["incident_view"] == 1) ? '<img src="images/ok.png" border="0">' : ''),
+					(($row["incident_edit"] == 1) ? '<img src="images/ok.png" border="0">' : ''),
+					(($row["incident_management"] == 1) ? '<img src="images/ok.png" border="0">' : ''),
+					(($row["agent_view"] == 1) ? '<img src="images/ok.png" border="0">' : ''),
+					(($row["agent_edit"] == 1) ? '<img src="images/ok.png" border="0">' : ''),
+		      			(($row["alert_edit"] == 1) ? '<img src="images/ok.png" border="0">' : ''),
+		      			(($row["user_management"] == 1) ? '<img src="images/ok.png" border="0">' : ''),
+		      			(($row["db_management"] == 1) ? '<img src="images/ok.png" border="0">' : ''),
+		      			(($row["alert_management"] == 1) ? '<img src="images/ok.png" border="0">' : ''),
+					(($row["pandora_management"] == 1) ? '<img src="images/ok.png" border="0">' : ''),
+		      			'<a href="index.php?sec=gagente&sec2=godmode/profiles/profile_list&delete_profile='.$row["id_perfil"].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;"><img border="0" src="images/cross.png"></a>'
+				);
 	}
-	echo '</table></tr></table>
-		<table width="750"><tr><td align="right">
-			<form method="POST" action="index.php?sec=gperfiles&sec2=godmode/profiles/profile_list&new_profile=1">
-			<input type="submit" class="sub next" name="crt" value="'.__('Create profile').'">
-			</form>
-		</td></tr></table>';
+	print_table ($table);
+	unset ($table);
+	$table->width = 750;
+	$table->align = array ("right");
+	$table->data[] = array ('<form method="POST" action="index.php?sec=gperfiles&sec2=godmode/profiles/profile_list&new_profile=1">'.print_submit_button(__('Create profile'),"crt",false,'class="sub next"',true).'</form>' );
+	print_table ($table);
+	unset ($table);
 }
 ?>

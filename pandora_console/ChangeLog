@@ -1,3 +1,12 @@
+2008-08-21  Esteban Sanchez <estebans@artica.es>
+
+	* include/functions_html.php: Added an optional parameter to
+	print_input_text_extended() to allow password inputs. Replaced
+	print_input_password_extended() with print_input_password().
+
+	* general/login_page.php: Replaced print_input_password_extended()
+	with print_input_text_extended(). Style correction.
+
 2008-08-21  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* index.php: Update HTML for unclosed tags and put everything in PHP

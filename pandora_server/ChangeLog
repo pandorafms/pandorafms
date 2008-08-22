@@ -1,3 +1,20 @@
+2008-08-22  Sancho Lerena <slerena@gmail.com>
+
+	* Makefile.PL: Added WMI and fixed lot of small things.
+
+	* pandora_server_installer: Fixed several things.
+
+	* pandora_wmi: Launcher script added.
+
+	* lib/PandoraFMS/Config.pm: Update version.
+
+	* lib/PandoraFMS/DB.pm
+
+	* lib/PandoraFMS/Tools.pm: Added defined check in limpia_cadena().
+	This should fix warning message on some calls.
+
+	* bin/pandora_snmpconsole: Fixed code for SNMP TRAP alerts.
+
 2008-08-21  Sancho Lerena <slerena@gmail.com>
 
 	* lib/PandoraFMS/DB.pm, bin/pandora_server: Enabled again 

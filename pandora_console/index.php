@@ -20,8 +20,8 @@
 // Silk icon set 1.3 (cc) Mark James, http://www.famfamfam.com/lab/icons/silk/
 // Pandora FMS uses Pear Image::Graph code
 
-$build_version="PC080226";
-$pandora_version="v2.0-dev";
+$build_version="PC080822";
+$pandora_version="v2.0Beta1";
 global $build_version;
 global $pandora_version;
 

@@ -1,8 +1,8 @@
 <?php
 
-// Pandora FMS - the Free Monitoring System
-// ========================================
-// Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
+// Pandora FMS - the Flexible Monitoring System
+// ============================================
+// Copyright (c) 2008 Artica Soluciones Tecnologicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -15,10 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
-// Pandora FMS uses icons from famfamfam, licensed under CC Atr. 2.5
-// Silk icon set 1.3 (cc) Mark James, http://www.famfamfam.com/lab/icons/silk/
-// Pandora FMS uses Pear Image::Graph code
 
 if ((! file_exists("include/config.php")) || (! is_readable("include/config.php"))) {
 	exit;

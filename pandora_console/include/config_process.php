@@ -1,8 +1,8 @@
-<?PHP
+<?php
 
 // Pandora FMS - the Flexible Monitoring System
 // ============================================
-// Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
+// Copyright (c) 2008 Artica Soluciones Tecnologicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -18,9 +18,9 @@
 
 //Pandora Version
 if (!isset ($build_version))
-	$build_version = "PC080821";
+	$build_version = "PC080822";
 if (!isset ($pandora_version))
-	$pandora_version = "v2.0-beta1";
+	$pandora_version = "v2.0Beta1";
 
 // This is directory where placed "/attachment" directory, to upload files stores. 
 // This MUST be writtable by http server user, and should be in pandora root. 

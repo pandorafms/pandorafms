@@ -66,14 +66,15 @@ if (isset($_GET["server"])) {
 	$table->data[] = array (__('Name'),print_input_text ('name',$row["name"],'',50,0,true));
 	$table->data[] = array (__('IP Address'),print_input_text ('address',$row["ip_address"],'',50,0,true));
 	$table->data[] = array (__('Description'),print_input_text ('description',$row["description"],'',50,0,true));
-	
-	print_table($table);
-	unset ($table->data, $table->class);
 
+	print_table ($table);
+
+	$table->cellpadding=4;
+	$table->cellspacing=4;
+	$table->width=450;
 	$table->align=array ("right");
 	$table->data[] = array ('<input type="submit" class="sub upd" value="'.__('Update').'">');
-	print_table($table);
-	unset ($table);
+	print_table ($table2);
 } else {
 	$result = get_db_all_rows_in_table ("tserver");
 	echo "<h2>".__('Pandora servers')." &gt; ".__('Manage servers')."</h2>";
@@ -110,14 +111,13 @@ if (isset($_GET["server"])) {
 						$row["ip_address"],
 						substr($row["description"],0,25),
 						$server,
-						$LOCALE->fmt_time($row["laststart"],"MYSQL","DATE").' '.$LOCALE->fmt_time($row["laststart"],"MYSQL","LONGTIME"),
-						$LOCALE->fmt_time($row["keepalive"],"MYSQL","DATE").' '.$LOCALE->fmt_time($row["keepalive"],"MYSQL","LONGTIME"),
+						$LOCALE->fmt_time($row["laststart"],"MYSQL","DATE").' '.$LOCALE->fmt_time($row["laststart"],"MYSQL","TIME"),
+						$LOCALE->fmt_time($row["keepalive"],"MYSQL","DATE").' '.$LOCALE->fmt_time($row["keepalive"],"MYSQL","TIME"),
 						'<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_del='.$row["id_server"].'&delete"><img src="images/cross.png" border="0">'
 					);
 		
 		}
 		print_table ($table);
-		unset ($table);
 		
 		//Lagend
 		$table->cellpadding = 2;
@@ -130,7 +130,6 @@ if (isset($_GET["server"])) {
 		  			'<span class="snmp">'.__('SNMP Console').'</span>'
 				);
 		print_table ($table);
-		unset ($table);
 	} else {
 		echo "<div class='nf'>".__('There are no servers configured into the database')."</div>";
 	}

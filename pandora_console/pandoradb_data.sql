@@ -60,7 +60,7 @@ INSERT INTO `tconfig` VALUES
 (18, 'graph_color2', '#42D100'),
 (19, 'graph_color3', '#89FF09'),
 (20, 'sla_period', '604800'),
-(21, 'locale', 'C');
+(22, 'date_format', 'F j, Y, g:i a');
 UNLOCK TABLES;
 
 --

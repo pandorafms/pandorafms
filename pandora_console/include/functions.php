@@ -30,7 +30,7 @@ function pandora_help ($help_id, $return = false) {
 	global $config;
 	$output = '&nbsp;<img class="img_help" src="images/help.png" onClick="pandora_help(\''.$help_id.'\')">';
 	if ($return)
-		return $return;
+		return $output;
 	echo $output;
 }
 
@@ -379,6 +379,29 @@ function pagination ($count, $url, $offset) {
 	// End div and layout
 	echo "</div>";
 }
+
+
+
+/** 
+ * Format a unix timestamp to render a datetime string with specific format
+ *
+ * format comes with $config["date_format"]
+ * 
+ * @param utimestamp Unixtimestamp integer format
+ * @param alt_format Alternative format, for use insted configþ[]
+ * 
+ * @return 
+ */
+function format_datetime ($timestamp, $alt_format = "") {
+	
+	global $config;
+	
+	if ($alt_format == "")
+		$alt_format = $config["date_format"];
+		
+	return date($alt_format, $timestamp); 
+}
+
 
 /** 
  * Format a number with decimals and thousands separator.

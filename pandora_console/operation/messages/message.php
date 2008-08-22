@@ -57,7 +57,7 @@ if (isset ($_GET["nuevo_mensaje_g"])){
 		}
 	}
 }
-echo "<h2>".__('Messages')." &gt; ";
+echo "<h2>".__('Messages')." - ";
 
 if (isset ($_GET["nuevo"])) { //create message
 	echo __('New message').'</h2>';
@@ -130,10 +130,12 @@ if (isset ($_GET["nuevo"])) { //create message
 	</tr><tr><td></td><td colspan="3">
 	<input type="submit" class="sub wand" name="send_mes" value="'.__('Send message').'"></form></td></tr></table>';
 } elseif (isset($_GET["leer"])) {
+
 	$id_mensaje = get_parameter_get("id_mensaje");
-	$sql = sprintf("SELECT id_usuario_origen, subject, mensaje FROM tmensajes WHERE id_usuario_destino='%s' AND id_mensaje=%d",$iduser,$id_mensaje);
-        $row = get_db_row_sql ($sql);
-	process_sql ("UPDATE tmensajes SET estado=1 WHERE id_mensaje".$result["id_mensaje"]);
+	$sql = sprintf("SELECT id_usuario_origen, subject, mensaje FROM tmensajes WHERE id_usuario_destino='%s' AND id_mensaje=%d" , $iduser, $id_mensaje);
+    $row = get_db_row_sql ($sql);
+	process_sql ("UPDATE tmensajes SET estado=1 WHERE id_mensaje = ".$id_mensaje);
+
 	echo '<table class="databox_color" width=650 cellpadding=4 cellspacing=4>
 	<form method="post" name="reply_mes" action="index.php?sec=messages&sec2=operation/messages/message&nuevo">
 	<tr><td class="datos">'.__('From').':</td>
@@ -200,28 +202,29 @@ if (isset ($_GET["leer"]) || (!isset ($_GET["nuevo"]) && !isset ($_GET["nuevo_g"
 				$color = 1;
 			}
 			echo '<tr><td align="center" class="'.$tdcolor.'">';
+			echo '<a href="index.php?sec=messages&sec2=operation/messages/message&leer=1&id_mensaje='.$row["id_mensaje"].'">';
 			if ($row["estado"]==1) {
 				$img = "email_open.png";
 			} else {
 				$img = "email.png";
 			}
-			echo '<img src="images/'.$img.'" border="0"></td>
-			<td class="'.$tdcolor.'"><a href="index.php?sec=usuarios&sec2=operation/users/user_edit&ver='.$row["id_usuario_origen"].'">'.$row["id_usuario_origen"].'</td>
-			<td class="'.$tdcolor.'"><a href="index.php?sec=messages&sec2=operation/messages/message&leer=1&id_mensaje='.$row["id_mensaje"].'"><b>';
+			echo '<img src="images/'.$img.'" border="0"></a></td>';
+			echo '<td class="'.$tdcolor.'">'. $row["id_usuario_origen"].'</td>';
+			echo '<td class="'.$tdcolor.'"><a href="index.php?sec=messages&sec2=operation/messages/message&leer=1&id_mensaje='.$row["id_mensaje"].'"><b>';
 			if ($row["subject"]) {
 				echo $row["subject"];
 			} else {
 				echo __('No subject');
 			}
-			echo '</b></a></td><td class="'.$tdcolor.'">'.$row["timestamp"].'</td>
+			echo '</b></a></td><td class="'.$tdcolor.'">'.format_datetime(strtotime($row["timestamp"])).'</td>
 			<td class="'.$tdcolor.'" align="center"><a href="index.php?sec=messages&sec2=operation/messages/message&borrar=1&id_mensaje='.$row["id_mensaje"].'">
 			<img src="images/cross.png" border="0"></a></td></tr>';
 		}
 		echo "</table>";
 	}
-	echo '<table width=650 cellpadding=4 cellspacing=4><tr>';
-	echo '<td>';
+	echo '<div class="action-buttons" style="width: 650px">';
 	echo '<form method="post" name="new_mes" action="index.php?sec=messages&sec2=operation/messages/message&nuevo">
-	<input type="submit" class="sub next" name="send_mes" value="'.__('New message').'"></form></td></tr></table>';
+	<input type="submit" class="sub next" name="send_mes" value="'.__('New message').'"></form>';
+	echo "</div>";
 }
 ?>

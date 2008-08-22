@@ -31,30 +31,31 @@ $table->rowclass=array("inherit","inherit");
 
 $table->data[] = array (
 			// First column
-    			'<img src="images/user_'.((dame_admin ($_SESSION["id_usuario"]) == 1) ? 'suit' : 'green' ).'.png" class="bot">'.'<a class="white">'.__('You are ').'[<b>'.$_SESSION["id_usuario"].'</b>]</a>',
+    			'<img src="images/user_'.((dame_admin ($_SESSION["id_usuario"]) == 1) ? 'suit' : 'green' ).'.png" class="bot">&nbsp;'.'<a class="white">'.__('You are ').'[<b>'.$_SESSION["id_usuario"].'</b>]</a>',
 			// Second column 
-			'<a class="white_bold" href="index.php?sec=main"><img src="images/information.png" class="bot">'.__('General information').'</a>',
+			'<a class="white_bold" href="index.php?sec=main"><img src="images/information.png" class="bot">&nbsp;'.__('General information').'</a>',
 			// Third column 
 			// Autorefresh
 			((get_parameter ("refr") != 0) ?
-        			'<a class="white_grey_bold" href="'.((substr($_SERVER['REQUEST_URI'],-1) != "/") ? $_SERVER['REQUEST_URI'] : 'index.php?' ).'&refr=0"><img src="images/page_lightning.png" class="bot" />'. __('Autorefresh').'</a>'
+        			'<a class="white_grey_bold" href="'.((substr($_SERVER['REQUEST_URI'],-1) != "/") ? $_SERVER['REQUEST_URI'] : 'index.php?' ).'&refr=0"><img src="images/page_lightning.png" class="bot" />&nbsp;'. __('Autorefresh').'</a>'
     			:
-        			'<a class="white_bold" href="'.((substr($_SERVER['REQUEST_URI'],-1) != "/") ? $_SERVER['REQUEST_URI'] : "index.php?" ).'&refr=5"><img src="images/page_lightning.png" class="bot" />'.__('Autorefresh').'</a>'
+        			'<a class="white_bold" href="'.((substr($_SERVER['REQUEST_URI'],-1) != "/") ? $_SERVER['REQUEST_URI'] : "index.php?" ).'&refr=5"><img src="images/page_lightning.png" class="bot" />&nbsp;'.__('Autorefresh').'</a>'
     			)
 		);
 
 $table->data[] = array (
-			'<a class="white_bold" href="index.php?bye=bye"><img src="images/lock.png" class="bot">'. __('Logout').'</a>',
+			'<a class="white_bold" href="index.php?bye=bye"><img src="images/lock.png" class="bot">&nbsp;'. __('Logout').'</a>',
 			'<a class="white_bold" href="index.php?sec=estado_server&sec2=operation/servers/view_server&refr=60">'.
     			((check_server_status () == 0) ?
-				'<img src="images/error.png" class="bot" />'.__('Server status: DOWN')
+				'<img src="images/error.png" class="bot" />&nbsp;'.__('Server status: DOWN')
 			:
-        			'<img src="images/ok.png" class="bot" />'.__('System ready')
+        			'<img src="images/ok.png" class="bot" />&nbsp;'.__('System ready')
 			).'</a>',
     			// Event - refresh
-			'<a class="white_bold" href="index.php?sec=eventos&sec2=operation/events/events&refr=5"><img src="images/lightning_go.png" class="bot" />'.__('Events').'</a>'
+			'<a class="white_bold" href="index.php?sec=eventos&sec2=operation/events/events&refr=5"><img src="images/lightning_go.png" class="bot" />&nbsp;'.__('Events').'</a>'
 		);
 print_table ($table);
+unset ($table);
 echo "</div>";
 
 ?>

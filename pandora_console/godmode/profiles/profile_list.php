@@ -192,13 +192,16 @@ if (isset ($id_perfil)){ // There are values defined, let's show form with data 
 		</tr>
 		</form>
 	</table>';
-	echo '<table width="400"><tr><td align="right">';
+
+	echo '<div class="action-buttons" style="width: 400px">';
+	
 	if (isset ($_GET["new_profile"])) {
 		echo '<input name="crtbutton" type="submit" class="sub wand" value="'.__('Create').'" />';
 	} elseif (isset ($_GET["edit_profile"])) {
 		echo '<input name="uptbutton" type="submit" class="sub upd" value="'.__('Update').'" />';
 	}
-	echo '</td></tr></table>';
+	echo "</div>";
+
 } else { // View list data
 	$result = get_db_all_rows_in_table ("tperfil");
 	$table->cellpadding = 4;
@@ -238,11 +241,8 @@ if (isset ($id_perfil)){ // There are values defined, let's show form with data 
 				);
 	}
 	print_table ($table);
-	unset ($table);
-	$table->width = 750;
-	$table->align = array ("right");
-	$table->data[] = array ('<form method="POST" action="index.php?sec=gperfiles&sec2=godmode/profiles/profile_list&new_profile=1">'.print_submit_button(__('Create profile'),"crt",false,'class="sub next"',true).'</form>' );
-	print_table ($table);
-	unset ($table);
+	echo '<div class="action-buttons" style="width: 750px">';
+	echo '<form method="POST" action="index.php?sec=gperfiles&sec2=godmode/profiles/profile_list&new_profile=1">'.print_submit_button(__('Create profile'),"crt",false,'class="sub next"',true).'</form>';
+	echo "</div>";
 }
 ?>

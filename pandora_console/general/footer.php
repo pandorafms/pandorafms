@@ -21,11 +21,12 @@ if (isset($_SERVER['REQUEST_TIME'])) {
 	$time = time();
 }
 									
-echo '<a class="white_bold" target="_new" href="general/license/pandora_info_'.$config["language"].'.html">Pandora FMS '.$pandora_version.' - Build '.$build_version.'<br>'.
-__('is an OpenSource Software Project, licensed under GPL terms').'</a><br />
-<a class="white">'.__('Page generated at').' '.$LOCALE->fmt_time($time);
-if ($develop_bypass == 1) {
-	echo ' - Saved '.$LOCALE->fmt_number($sql_cache["saved"]).' Queries';
+echo '<a class="white_bold" target="_new" href="general/license/pandora_info_'.$config["language"].'.html">Pandora FMS '.$pandora_version.' - Build '.$build_version.'<br>';
+echo __('is an OpenSource Software Project, licensed under GPL terms').'</a><br/>';
+echo '<a class="white">'. __('Page generated at') . ' '. format_datetime ($time);
+
+if ((isset($develop_bypass)) AND ($develop_bypass == 1)) {
+	echo ' - Saved '.format_numeric ($sql_cache["saved"]).' Queries';
 }
 echo '</a><br>';
 ?>

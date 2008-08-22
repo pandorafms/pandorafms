@@ -41,7 +41,7 @@ if (isset ($_GET["delete"])) {
 	$address = get_parameter_post ("address");
 	$description = get_parameter_post ("description");
 	$id_server = get_parameter_post ("server");
-	$sql = sprintf ("UPDATE tserver SET name = '%s', ip_address = '%s', description = '%s' WHERE id_server = %d",$name,$address,$description,$server);
+	$sql = sprintf ("UPDATE tserver SET name = '%s', ip_address = '%s', description = '%s' WHERE id_server = %d", $name, $address, $description, $id_server);
 	$result = process_sql ($sql);
 	if ($result !== false) {
 		echo '<h3 class="suc">'.__('Server updated successfully').'</h3>';
@@ -66,15 +66,13 @@ if (isset($_GET["server"])) {
 	$table->data[] = array (__('Name'),print_input_text ('name',$row["name"],'',50,0,true));
 	$table->data[] = array (__('IP Address'),print_input_text ('address',$row["ip_address"],'',50,0,true));
 	$table->data[] = array (__('Description'),print_input_text ('description',$row["description"],'',50,0,true));
-
 	print_table ($table);
 
-	$table->cellpadding=4;
-	$table->cellspacing=4;
-	$table->width=450;
-	$table->align=array ("right");
-	$table->data[] = array ('<input type="submit" class="sub upd" value="'.__('Update').'">');
-	print_table ($table2);
+
+	echo '<div class="action-buttons" style="width: 450px">';
+	echo '<input type="submit" class="sub upd" value="'.__('Update').'">';
+	echo "</div>";
+
 } else {
 	$result = get_db_all_rows_in_table ("tserver");
 	echo "<h2>".__('Pandora servers')." &gt; ".__('Manage servers')."</h2>";
@@ -107,29 +105,28 @@ if (isset($_GET["server"])) {
 				
 			$table->data[] = array (
 						'<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server='.$row["id_server"].'"><b>'.$row["name"].'</b></a>',
-						'<img src="images/dot_'.(($row["status"] == 0) ? 'red' : 'green').'">',
+						'<img src="images/dot_'.(($row["status"] == 0) ? 'red' : 'green').'.png">',
 						$row["ip_address"],
 						substr($row["description"],0,25),
 						$server,
-						$LOCALE->fmt_time($row["laststart"],"MYSQL","DATE").' '.$LOCALE->fmt_time($row["laststart"],"MYSQL","TIME"),
-						$LOCALE->fmt_time($row["keepalive"],"MYSQL","DATE").' '.$LOCALE->fmt_time($row["keepalive"],"MYSQL","TIME"),
+					 	human_time_comparation ($row["laststart"]), 
+						human_time_comparation ($row["keepalive"]),
 						'<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_del='.$row["id_server"].'&delete"><img src="images/cross.png" border="0">'
 					);
 		
 		}
 		print_table ($table);
 		
-		//Lagend
-		$table->cellpadding = 2;
-		$table->cellspacing = 0;
-		$table->data[] = array (
-		  			'<span class="net">'.__('Network Server').'</span>',
-		  			'<span class="master">'.__('Master').'</span>',
-		  			'<span class="data">'.__('Data Server').'</span>',
-		  			'<span class="binary">'.__('MD5 Check').'</span>',
-		  			'<span class="snmp">'.__('SNMP Console').'</span>'
-				);
-		print_table ($table);
+		//Legend
+		echo "<table>";
+		echo "<tr>";
+		echo '<td><span class="net">'.__('Network Server').'</span></td>';
+		echo '<td><span class="master">'.__('Master').'</span></td>';
+		echo '<td><span class="data">'.__('Data Server').'</span></td>';
+		echo '<td><span class="binary">'.__('MD5 Check').'</span></td>';
+		echo '<td><span class="snmp">'.__('SNMP Console').'</span></td>';
+		echo "</tr></table>";
+
 	} else {
 		echo "<div class='nf'>".__('There are no servers configured into the database')."</div>";
 	}

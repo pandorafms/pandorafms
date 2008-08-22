@@ -74,7 +74,7 @@ if ($row["recon_server"]) {
 		echo "<th class='datos'>".__('OS') ."</th>";
 		echo "<th class='datos'>".__('Progress')."</th>";
 		echo "<th class='datos'>".__('Updated at')."</th>";
-		echo "<th class='datos'></th>";
+		echo "<th class='datos'>".__('Op')."</th>";
 		$color=1;
 		while ($row=mysql_fetch_array($result)){
 			if ($color == 1){
@@ -95,7 +95,7 @@ if ($row["recon_server"]) {
 			$id_os = $row["id_os"];
 			$id_group = $row["id_group"];
 			$id_network_profile = $row["id_network_profile"];
-			$type = $row["type"];
+
 			echo "<tr>";
 			// Name
 			echo "<td class='$tdcolor'>";
@@ -147,7 +147,7 @@ if ($row["recon_server"]) {
 			
 			// Last execution
 			echo "<td class='".$tdcolor."f9'>";
-			$keepalive = strftime ( "%m/%d/%y %H:%M:%S" , $utimestamp );
+			$keepalive = format_datetime ( $utimestamp );
 			echo substr($keepalive,0,25)."</td>";
 
 			echo "<td class='$tdcolor'>";

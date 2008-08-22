@@ -99,34 +99,34 @@ echo "</table><br>";
 	echo "<th width='180px'>
 	<font size=1>".__('Profiles')."</th>";
 	echo "<th width='40px'>
-	<font size=1>IR<a href='#' class='tipp'>&nbsp;<span>".$help_label["IR"]."</span></a>
+	<font size=1>IR<a href='#' class='tipp'>&nbsp;<span>".__("IR")."</span></a>
 	</font></th>";
 	echo "<th width='40px'>
-	<font size=1>IW<a href='#' class='tipp'>&nbsp;<span>".$help_label["IW"]."</span></a>
+	<font size=1>IW<a href='#' class='tipp'>&nbsp;<span>".__("IW")."</span></a>
 	</font></th>";
 	echo "<th width='40px'>
-	<font size=1>IM<a href='#' class='tipp'>&nbsp;<span>".$help_label["IM"]."</span></a>
+	<font size=1>IM<a href='#' class='tipp'>&nbsp;<span>".__("IM")."</span></a>
 	</font></th>";
 	echo "<th width='40px'>
-	<font size=1>AR<a href='#' class='tipp'>&nbsp;<span>".$help_label["AR"]."</span></a>
+	<font size=1>AR<a href='#' class='tipp'>&nbsp;<span>".__("AR")."</span></a>
 	</font></th>";
 	echo "<th width='40px'>
-	<font size=1>AW<a href='#' class='tipp'>&nbsp;<span>".$help_label["AW"]."</span></a>
+	<font size=1>AW<a href='#' class='tipp'>&nbsp;<span>".__("AW")."</span></a>
 	</font></th>";
 	echo "<th width='40px'>
-	<font size=1>LW<a href='#' class='tipp'>&nbsp;<span>".$help_label["LW"]."</span></a>
+	<font size=1>LW<a href='#' class='tipp'>&nbsp;<span>".("LW")."</span></a>
 	</font></th>";
 	echo "<th width='40px'>
-	<font size=1>UM<a href='#' class='tipp'>&nbsp;<span>".$help_label["UM"]."</span></a>
+	<font size=1>UM<a href='#' class='tipp'>&nbsp;<span>".__("UM")."</span></a>
 	</font></th>";
 	echo "<th width='40px'>
-	<font size=1>DM<a href='#' class='tipp'>&nbsp;<span>".$help_label["DM"]."</span></a>
+	<font size=1>DM<a href='#' class='tipp'>&nbsp;<span>".__("DM")."</span></a>
 	</font></th>";
 	echo "<th width='40px'>
-	<font size=1>LM<a href='#' class='tipp'>&nbsp;<span>".$help_label["LM"]."</span></a>
+	<font size=1>LM<a href='#' class='tipp'>&nbsp;<span>".__("LM")."</span></a>
 	</font></th>";
 	echo "<th width='40px'>
-	<font size=1>PM<a href='#' class='tipp'>&nbsp;<span>".$help_label["PM"]."</span></a>
+	<font size=1>PM<a href='#' class='tipp'>&nbsp;<span>".__("PM")."</span></a>
 	</font></th>";
 	$color = 1;
 	while ($rowdup=mysql_fetch_array($resq1)){

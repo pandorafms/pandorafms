@@ -45,9 +45,9 @@ if ($update_settings) {
 	$config["graph_color2"] = (string) get_parameter ('graph_color2');
 	$config["graph_color3"] = (string) get_parameter ('graph_color3');	
 	$config["sla_period"] = (int) get_parameter ("sla_period");
-	$config["locale"] = (string) get_parameter ("locale");
-	
+	$config["date_format"] = (string) get_parameter ("date_format");
 	$config["style"] = substr ($config["style"], 0, strlen ($config["style"]) - 4);
+
 	process_sql ("UPDATE tconfig SET VALUE='".$config["remote_config"]."' WHERE token = 'remote_config'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["block_size"]."' WHERE token = 'block_size'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["language"]."' WHERE token = 'language_code'");
@@ -62,7 +62,7 @@ if ($update_settings) {
 	process_sql ("UPDATE tconfig SET VALUE='".$config["graph_color2"]."' WHERE token = 'graph_color2'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["graph_color3"]."' WHERE token = 'graph_color3'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["sla_period"]."' WHERE token = 'sla_period'");
-	process_sql ("UPDATE tconfig SET VALUE='".$config["locale"]."' WHERE token = 'locale'");
+	process_sql ("UPDATE tconfig SET VALUE='".$config["date_format"]."' WHERE token = 'date_format'");
 }
 
 echo "<h2>".__('Pandora Setup')." &gt; ";
@@ -74,38 +74,46 @@ $table->width = '500px';
 $table->data = array ();
 $table->data[0][0] = __('Language Code for Pandora');
 $table->data[0][1] = print_select_from_sql ('SELECT id_language, name FROM tlanguage', 'language_code', $config["language"], '', '', '', true);
-if (isset ($LOCALE)) {
-	$locales = array ();
-	foreach ($LOCALE->Get_Locales_Array () as $locale) {
-		$locales[$locale] = $LOCALE->Translate_Locale ($locale);
-	}
-	$table->data[1][0] = __('Locale');
-	$table->data[1][1] = print_select ($locales, 'locale', $config["locale"], '', '', '', true);
-}
+
+$table->data[1][0] = __('Date format string') . pandora_help("date_format", true);
+$table->data[1][1] = print_input_text ('date_format', $config["date_format"], '', 30, 100, true);
+
 $table->data[2][0] = __('Remote config directory');
 $table->data[2][1] = print_input_text ('remote_config', $config["remote_config"], '', 30, 100, true);
+
 $table->data[3][0] = __('Graph color (min)');
 $table->data[3][1] = print_input_text ('graph_color1', $config["graph_color1"], '', 8, 8, true);
+
 $table->data[4][0] = __('Graph color (avg)');
 $table->data[4][1] = print_input_text ('graph_color2', $config["graph_color2"], '', 8, 8, true);
+
 $table->data[5][0] = __('Graph color (max)');
 $table->data[5][1] = print_input_text ('graph_color3', $config["graph_color3"], '', 8, 8, true);
+
 $table->data[6][0] = __('SLA period');
 $table->data[6][1] = print_input_text ('sla_period', $config["sla_period"], '', 5, 5, true);
+
 $table->data[6][0] = __('Max. days before compact data');
 $table->data[6][1] = print_input_text ('days_compact', $config["days_compact"], '', 5, 5, true);
+
 $table->data[7][0] = __('Max. days before purge');
 $table->data[7][1] = print_input_text ('days_purge', $config["days_purge"], '', 5, 5, true);
+
 $table->data[8][0] = __('Graphic resolution (1-low, 5-high)');
 $table->data[8][1] = print_input_text ('graph_res', $config["graph_res"], '', 5, 5, true);
+
 $table->data[9][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
 $table->data[9][1] = print_input_text ('step_compact', $config["step_compact"], '', 5, 5, true);
+
 $table->data[10][0] = __('Show unknown modules in global view');
 $table->data[10][1] = print_checkbox ('show_unknown', 1, $config["show_unknown"], true);
+
 $table->data[11][0] = __('Show last fired alerts in global view');
 $table->data[11][1] = print_checkbox ('show_lastalerts', 1, $config["show_lastalerts"], true);
+
 $table->data[12][0] = __('Style template');
 $table->data[12][1] = print_select ($file_styles, 'style', $config["style"], '', '', '', true);
+
 $table->data[13][0] = __('Block size for pagination');
 $table->data[13][1] = print_input_text ('block_size', $config["block_size"], '', 5, 5, true);
 

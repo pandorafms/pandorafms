@@ -18,9 +18,9 @@
 
 //Pandora Version
 if (!isset ($build_version))
-	$build_version = "PC080805";
+	$build_version = "PC080821";
 if (!isset ($pandora_version))
-	$pandora_version = "v2.0-dev";
+	$pandora_version = "v2.0-beta1";
 
 // This is directory where placed "/attachment" directory, to upload files stores. 
 // This MUST be writtable by http server user, and should be in pandora root. 
@@ -114,10 +114,9 @@ if (file_exists ('./include/languages/'.$config["language"].'.mo')) {
 	$l10n->load_tables();
 }
 
-require_once ('locale.class.php');
-if (empty ($config["locale"])) {
-	$config["locale"] = "en_US";
+if (!isset($config["date_format"])) {
+	$config["date_format"] = "F j, Y, g:i a";
 }
-$LOCALE = new Set_Locale ($config["locale"]);
+
 
 ?>

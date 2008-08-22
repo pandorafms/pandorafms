@@ -416,12 +416,6 @@ function print_table (&$table, $return = false) {
 	}
 	$output .= '</table>'."\n";
 
-	//if(isset($GLOBALS["table"]))
-	//	unset($GLOBALS["table"]);
-
-	$table->head = $table->align = $table->valign = $table->size = $table->wrap = $table->style = $table->rowstyle = $table->rowclass = $table->colspan = $table->data = array();
-	$table->width = $table->border = $table->tablealign = $table->cellpadding = $table->cellspacing = $table->class = false;
-		
 	if ($return) 
 		return $output;
 	

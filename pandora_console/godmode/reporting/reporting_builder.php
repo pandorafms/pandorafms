@@ -255,19 +255,21 @@ if ($edit_sla_report_content) {
 	$table->head[5] = __('Delete');
 
 	$slas = get_db_all_rows_field_filter ('treport_content_sla_combined', 'id_report_content', $id_report_content);
-	foreach ($slas as $sla) {
-		$data = array ();
-		
-		$data[0] = dame_nombre_agente_agentemodulo ($sla['id_agent_module']);
-		$data[1] = dame_nombre_modulo_agentemodulo ($sla['id_agent_module']);
-		$data[2] = $sla['sla_min'];
-		$data[3] = $sla['sla_max'];
-		$data[4] = $sla['sla_limit'].'%';
-		$data[5] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id_report='.
-				$id_report.'&edit_sla_report_content=1&delete_sla=1&id_report_content='.
-				$id_report_content.'&id_sla='.$sla['id'].'"><img src="images/cross.png"></a>';
-		
-		array_push ($table->data, $data);
+	if ($slas){
+		foreach ($slas as $sla) {
+			$data = array ();
+			
+			$data[0] = dame_nombre_agente_agentemodulo ($sla['id_agent_module']);
+			$data[1] = dame_nombre_modulo_agentemodulo ($sla['id_agent_module']);
+			$data[2] = $sla['sla_min'];
+			$data[3] = $sla['sla_max'];
+			$data[4] = $sla['sla_limit'].'%';
+			$data[5] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id_report='.
+					$id_report.'&edit_sla_report_content=1&delete_sla=1&id_report_content='.
+					$id_report_content.'&id_sla='.$sla['id'].'"><img src="images/cross.png"></a>';
+			
+			array_push ($table->data, $data);
+		}
 	}
 	
 	if (sizeof ($slas)) {
@@ -297,12 +299,15 @@ if ($edit_sla_report_content) {
 	echo '<form method="post" action="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder&id_report='.
 		$id_report.'&edit_sla_report_content=1&id_report_content='.$id_report_content.'">';
 	print_table ($table);
+
 	print_input_hidden ('add_sla', 1);
 	print_input_hidden ('edit_sla_report_content', 1);
 	print_input_hidden ('id_report_content', $id_report_content);
-	echo '<div class="action-buttons" style="width: '.$table->width.'">';
+
+	echo '<div class="action-buttons" style="width: 500px;">';
 	print_submit_button (__('Create'), 'add', false, 'class="sub wand"');
 	echo '</div>';
+
 	echo '</form>';
 } else if ($edit_report || $id_report) {
 	 /* Edit and creation report form */
@@ -342,7 +347,7 @@ if ($edit_sla_report_content) {
 	echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/reporting_builder'>";
 	print_table ($table);
 	// Button
-	echo '<div class="action-buttons" style="width: '.$table->width.'">';
+	echo '<div class="action-buttons" style="width: 500px;">';
 	print_input_hidden ('edit_report', 1);
 	if ($id_report) {
 		print_input_hidden ('id_report', $id_report);
@@ -405,7 +410,7 @@ if ($edit_sla_report_content) {
 
 		echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/reporting_builder'>";
 		print_table ($table);
-		echo '<div class="action-buttons" style="width: '.$table->width.'">';
+		echo '<div class="action-buttons" style="width: 500px;">';
 		print_input_hidden ('add_content', 1);
 		print_input_hidden ('id_report', $id_report);
 		print_submit_button (__('Add'), 'add', false, 'class="sub wand"');
@@ -512,7 +517,7 @@ if ($edit_sla_report_content) {
 	}
 	
 	echo '<form method="post" action="index.php?sec=greporting&sec2=godmode/reporting/reporting_builder">';
-	echo '<div class="action-buttons" style="width: '.$table->width.'">';
+	echo '<div class="action-buttons" style="width: 600px;">';
 	print_input_hidden ('edit_report', 1);
 	print_submit_button (__('Create report'), 'create', false, 'class="sub next"');
 	echo "</div>";

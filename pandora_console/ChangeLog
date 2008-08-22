@@ -1,3 +1,61 @@
+2008-08-22 Sancho Lerena  <slerena@gmail.com>
+
+	* pandoradb_data.sql: Removed data for locale, added for new 
+	date string format.
+
+	* include/functions_html.php: Deletion of table properties 
+	after calling it makes a bad render on several pages that uses 
+	some properties for other things (width).
+
+	* include/functions_reporting.php: Added several checks to avoid
+	notices.
+
+	* include/config_process.php: Removed locale code. Added code for
+	new datetime string format.
+
+	* include/locale.class.php: Removed.
+
+	* include/functions.php: pandora_help() was not returning correct output.
+	Added format_datetime() function to render date / time strings in user
+	defined format.
+
+	* include/functions_db.php: Added check in get_monitors_down() to avoid
+	notice in void foreach.
+
+	* operation/incidents/incident_detail.php: Solved problem with attachments.
+
+	* operation/users/user.php: Solved problem with old help_lang[] array.
+
+	* operation/messages/message.php: Sime minor fixes and style improvements.
+
+	* operation/servers/view_server.php: Remove description.
+
+	* operation/servers/view_server_detail.php: Removed bad field retrieval 
+	from database and added format_datetime().
+
+	* reporting/fgraph.php: Fixed small problem in monitors_health_pipe().
+	 (changed parameters).
+
+	* general/footer.php: Updated use of new functions. 
+
+	* general/header.php: Added blank spaces between icons and texts.
+
+	* godmode/setup/setup.php: Management of new string format for datetime.
+
+	* godmode/profiles/profile_list.php: Submit button now uses div instead 
+	tables.
+
+	* godmode/reporting/reporting_builder.php: Added check before foreach() to
+	avoid notice warnings. Changed div for buttons.
+
+	* godmode/reporting/map_builder.php: Fixed div for submit button.
+
+	* godmode/servers/modificar_server.php: Fixed typo in SQL sentence. 
+	Removed usage of not-used-now locale format functions. Alter legend to use
+	a plain-formatted table to avoid background color in legend.
+
+	* /en/help_date_format.php: Added help for date format string.
+
 2008-08-21  Esteban Sanchez <estebans@artica.es>
 
 	* include/functions_html.php: Added an optional parameter to

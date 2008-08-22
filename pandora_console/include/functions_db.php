@@ -573,6 +573,9 @@ function get_monitors_in_agent ($id_agent) {
  */
 function get_monitors_down ($monitors, $period = 0, $date = 0) {
 	$monitors_down = array ();
+	if (! $monitors)
+		return $monitors_down;
+
 	foreach ($monitors as $monitor) {
 		$down = get_monitor_downs_in_period ($monitor['id_agente_modulo'], $period, $date);
 		if ($down)

@@ -55,10 +55,9 @@ $table->head[1] = __('Status');
 $table->head[2] = __('Load');
 $table->head[3] = __('Modules');
 $table->head[4] = __('LAG');
-$table->head[5] = __('Description');
-$table->head[6] = __('Type');
-$table->head[7] = __('Version');
-$table->head[8] = __('Updated at');
+$table->head[5] = __('Type');
+$table->head[6] = __('Version');
+$table->head[7] = __('Updated at');
 $table->data = array ();
 
 foreach ($servers as $server) {
@@ -84,40 +83,39 @@ foreach ($servers as $server) {
 	$data[2] = '<img src="reporting/fgraph.php?tipo=progress&percent='.$load_percent.'&height=18&width=80">';
 	$data[3] = $serverinfo["modules"] . " ".__('of')." ". $total_modules;
 	$data[4] = human_time_description_raw ($serverinfo["lag"]) . " / ". $serverinfo["module_lag"];
-	$data[5] = '<span title="'.$server['description'].'">'.substr ($server['description'], 0, 25).'</span>';
-	$data[6] = '';
+	$data[5] = '';
 	if ($server['network_server'] == 1) {
-		$data[6] .= ' <img src="images/network.png" title="'.__('Network Server').'">';
+		$data[5] .= ' <img src="images/network.png" title="'.__('Network Server').'">';
 	}
 	if ($server['data_server'] == 1) {
-		$data[6] .= ' <img src="images/data.png" title="'.__('Data Server').'">';
+		$data[5] .= ' <img src="images/data.png" title="'.__('Data Server').'">';
 	}
 	if ($server['snmp_server'] == 1) {
-		$data[6] .= ' <img src="images/snmp.png" title="'.__('SNMP server').'">';
+		$data[5] .= ' <img src="images/snmp.png" title="'.__('SNMP server').'">';
 	}
 	if ($server['recon_server'] == 1) {
-		$data[6] .= ' <img src="images/recon.png" title="'.__('Recon Server').'">';
+		$data[5] .= ' <img src="images/recon.png" title="'.__('Recon Server').'">';
 	}
 	if ($server['export_server'] == 1) {
-		$data[6] .= ' <img src="images/database_refresh.png" title="'.__('Export server').'">';
+		$data[5] .= ' <img src="images/database_refresh.png" title="'.__('Export server').'">';
 	}
 	if ($server['wmi_server'] == 1) {
-		$data[6] .= ' <img src="images/wmi.png" title="'.__('WMI Server').'">';
+		$data[5] .= ' <img src="images/wmi.png" title="'.__('WMI Server').'">';
 	}
 	if ($server['prediction_server'] == 1) {
-		$data[6] .= ' <img src="images/chart_bar.png" title="'.__('Prediction Server').'">';
+		$data[5] .= ' <img src="images/chart_bar.png" title="'.__('Prediction Server').'">';
 	}
 	if ($server['plugin_server'] == 1) {
-		$data[6] .= ' <img src="images/plugin.png" title="'.__('Plugin Server').'">';
+		$data[5] .= ' <img src="images/plugin.png" title="'.__('Plugin Server').'">';
 	}
 	if ($server['master'] == 1) {
-		$data[6] .= ' <img src="images/master.png" title="'.__('Master server').'">';
+		$data[5] .= ' <img src="images/master.png" title="'.__('Master server').'">';
 	}
 	if ($server['checksum'] == 1){
-		$data[6] .= ' <img src="images/binary.png" title="'.__('Check').'">';
+		$data[5] .= ' <img src="images/binary.png" title="'.__('Check').'">';
 	}
-	$data[7] = $server['version'];
-	$data[8] = human_time_comparation ($server['keepalive']) . "</td>";
+	$data[6] = $server['version'];
+	$data[7] = human_time_comparation ($server['keepalive']) . "</td>";
 	
 	array_push ($table->data, $data);
 }

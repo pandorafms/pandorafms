@@ -423,32 +423,33 @@ function get_monitors_down_reporting_table ($monitors_down) {
 	$table->head[1] = __('Monitor');
 	
 	$agents = array ();
-	foreach ($monitors_down as $monitor) {
-		/* Add monitors fired to $agents_fired_alerts indexed by id_agent */
-		$id_agent = $monitor['id_agente'];
-		if (!isset ($agents[$id_agent])) {
-			$agents[$id_agent] = array ();
-		}
-		array_push ($agents[$id_agent], $monitor);
-		
-		$monitors_down++;
-	}
-	foreach ($agents as $id_agent => $monitors) {
-		$data = array ();
-		foreach ($monitors as $monitor) {
-			if (! isset ($data[0]))
-				$data[0] = dame_nombre_agente ($id_agent);
-			else
-				$data[0] = '';
-			if ($monitor['descripcion'] != '') {
-				$data[1] = $monitor['descripcion'];
-			} else {
-				$data[1] = $monitor['nombre'];
+	if ($monitors_down){
+		foreach ($monitors_down as $monitor) {
+			/* Add monitors fired to $agents_fired_alerts indexed by id_agent */
+			$id_agent = $monitor['id_agente'];
+			if (!isset ($agents[$id_agent])) {
+				$agents[$id_agent] = array ();
 			}
-			array_push ($table->data, $data);
+			array_push ($agents[$id_agent], $monitor);
+			
+			$monitors_down++;
+		}
+		foreach ($agents as $id_agent => $monitors) {
+			$data = array ();
+			foreach ($monitors as $monitor) {
+				if (! isset ($data[0]))
+					$data[0] = dame_nombre_agente ($id_agent);
+				else
+					$data[0] = '';
+				if ($monitor['descripcion'] != '') {
+					$data[1] = $monitor['descripcion'];
+				} else {
+					$data[1] = $monitor['nombre'];
+				}
+				array_push ($table->data, $data);
+			}
 		}
 	}
-	
 	return $table;
 }
 

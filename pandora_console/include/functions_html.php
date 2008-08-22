@@ -266,7 +266,7 @@ function print_textarea ($name, $rows, $columns, $value = '', $attributes = '', 
  *     $table->class  - CSS table class
  * @param  bool $return whether to return an output string or echo now
  */
-function print_table ($table, $return = false) {
+function print_table (&$table, $return = false) {
 	$output = '';
 	static $table_count = 0;
 
@@ -415,6 +415,13 @@ function print_table ($table, $return = false) {
 		}
 	}
 	$output .= '</table>'."\n";
+
+	//if(isset($GLOBALS["table"]))
+	//	unset($GLOBALS["table"]);
+
+	$table->head = $table->align = $table->valign = $table->size = $table->wrap = $table->style = $table->rowstyle = $table->rowclass = $table->colspan = $table->data = array();
+	$table->width = $table->border = $table->tablealign = $table->cellpadding = $table->cellspacing = $table->class = false;
+		
 	if ($return) 
 		return $output;
 	

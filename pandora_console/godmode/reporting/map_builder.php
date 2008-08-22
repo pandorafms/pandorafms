@@ -1,14 +1,13 @@
 <?php
 
-// Pandora FMS - the Free monitoring system
-// ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development and project architecture and management
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas, info@artica.es
-//
+// Pandora FMS - the Flexible Monitoring System
+// ============================================
+// Copyright (c) 2008 Artica Soluciones Tecnologicas, http://www.artica.es
+// Please see http://pandora.sourceforge.net for full contribution list
+
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
+// as published by the Free Software Foundation for version 2.
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -267,17 +266,21 @@ if (! $edit_layout && ! $id_layout) {
 	$table->align[2] = 'center';
 	
 	$maps = get_db_all_rows_in_table ('tlayout','name');
-	foreach ($maps as $map) {
-		$data = array ();
-		
-		$data[0] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/map_builder&id_layout='.$map['id'].'">'.$map['name'].'</a>';
-		$data[1] = '<img src="images/'.dame_grupo_icono ($map['id_group']).'.png" /> ';
-		$data[1] .= dame_nombre_grupo ($map['id_group']);
-		$data[2] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/map_builder&id_layout='.$map['id'].'&delete_layout=1">
-			<img src="images/cross.png"></a>';
-		array_push ($table->data, $data);
+	if (!$maps)
+		echo '<div class="nf">'.('No maps defined').'</div>';
+	else {
+		foreach ($maps as $map) {
+			$data = array ();
+			
+			$data[0] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/map_builder&id_layout='.$map['id'].'">'.$map['name'].'</a>';
+			$data[1] = '<img src="images/'.dame_grupo_icono ($map['id_group']).'.png" /> ';
+			$data[1] .= dame_nombre_grupo ($map['id_group']);
+			$data[2] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/map_builder&id_layout='.$map['id'].'&delete_layout=1">
+				<img src="images/cross.png"></a>';
+			array_push ($table->data, $data);
+		}
+		print_table ($table);
 	}
-	print_table ($table);
 	
 	echo '<div class="action-buttons" style="width: 500px">';
 	echo '<form action="index.php?sec=greporting&sec2=godmode/reporting/map_builder" method="post">';

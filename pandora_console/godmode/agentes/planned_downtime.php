@@ -1,8 +1,8 @@
 <?php
+
 // Pandora FMS - the Flexible Monitoring System
-// ========================================
-// Copyright (c) 2008 Evi Vanoost <vanooste@rcbi.rochester.edu>
-// Copyright (c) 2008 Esteban Sanchez <estebans@artica.es>
+// ============================================
+// Copyright (c) 2008 Artica Soluciones Tecnologicas, http://www.artica.es
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -15,6 +15,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+
+// Copyright (c) 2008 Evi Vanoost <vanooste@rcbi.rochester.edu>
+// Please see http://pandora.sourceforge.net for full contribution list
+
 
 // Load global vars
 require("include/config.php");
@@ -272,36 +277,34 @@ if ($create_downtime || $update_downtime) {
 
 		$sql = "SELECT * FROM tplanned_downtime";
 		$downtimes = get_db_all_rows_sql ($sql);
-		if ($downtimes === false) {
-			$table->colspan[0][0] = 5;
-			$table->data[0][0] = __('No planned downtime');
-			$downtimes = array();
+		if (!$downtimes) {
+			echo '<div class="nf">'.('No planned downtime').'</div>';
 		}
-		
-		foreach ($downtimes as $downtime) {
-			$data = array();
-			$total  = get_db_sql ("SELECT COUNT(id_agent) FROM tplanned_downtime_agents WHERE id_downtime = ".$downtime["id"]);
+		else {
+			foreach ($downtimes as $downtime) {
+				$data = array();
+				$total  = get_db_sql ("SELECT COUNT(id_agent) FROM tplanned_downtime_agents WHERE id_downtime = ".$downtime["id"]);
 
-			$data[0] = $downtime['name']. " ($total)";
-			$data[1] = $downtime['description'];
-			$data[2] = date ("Y-m-d H:i", $downtime['date_from']);
-			$data[3] = date ("Y-m-d H:i", $downtime['date_to']);
-			if ($downtime["executed"] == 0){
-				$data[4] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime&id_agent='.
-				$id_agent.'&delete_downtime=1&id_downtime='.$downtime['id'].'">
-				<img src="images/cross.png" border="0" alt="'.__('Delete').'"></a>';
-				$data[5] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime&edit_downtime=1&first_update=1&id_downtime='.$downtime['id'].'">
-				<img src="images/config.png" border="0" alt="'.__('Update').'"></a>';
+				$data[0] = $downtime['name']. " ($total)";
+				$data[1] = $downtime['description'];
+				$data[2] = date ("Y-m-d H:i", $downtime['date_from']);
+				$data[3] = date ("Y-m-d H:i", $downtime['date_to']);
+				if ($downtime["executed"] == 0){
+					$data[4] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime&id_agent='.
+					$id_agent.'&delete_downtime=1&id_downtime='.$downtime['id'].'">
+					<img src="images/cross.png" border="0" alt="'.__('Delete').'"></a>';
+					$data[5] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime&edit_downtime=1&first_update=1&id_downtime='.$downtime['id'].'">
+					<img src="images/config.png" border="0" alt="'.__('Update').'"></a>';
+				}
+				if ($downtime["executed"] == 0)
+					$data[6] = "<img src='images/pixel_green.png' width=20 height=20>";
+				else
+					$data[6] = "<img src='images/pixel_red.png' width=20 height=20>";
+
+				array_push ($table->data, $data);
 			}
-			if ($downtime["executed"] == 0)
-				$data[6] = "<img src='images/pixel_green.png' width=20 height=20>";
-			else
-				$data[6] = "<img src='images/pixel_red.png' width=20 height=20>";
-
-			array_push ($table->data, $data);
+			print_table ($table);
 		}
-		print_table ($table);
-
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
 
 		echo "<form method=post action='index.php?sec=gagente&sec2=godmode/agentes/planned_downtime'>";

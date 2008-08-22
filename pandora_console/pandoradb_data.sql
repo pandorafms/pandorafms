@@ -51,7 +51,7 @@ INSERT INTO `tconfig` VALUES
 (6,'graph_res','5'),
 (7,'step_compact','1'),
 (8,'db_scheme_version','2.0'),
-(9,'db_scheme_build','PD80804'),
+(9,'db_scheme_build','PD80822'),
 (13,'show_unknown','0'),
 (14,'show_lastalerts','1'),
 (15,'style','pandora'),
@@ -186,12 +186,11 @@ INSERT INTO `ttipo_modulo` VALUES
 (21,'async_proc', 7, 'Asyncronous proc data', 'mod_async_proc.png'), 
 (22,'async_data', 6, 'Asyncronous numeric data', 'mod_async_data.png'), 
 (23,'async_string', 8, 'Asyncronous string data', 'mod_async_string.png'),
-(100,'keep_alive',-1,'KeepAlive','mod_keepalive.png'),
-(19,'image_jpg',9,'Image JPG data', 'mod_image_jpg.png'), 
-(20,'image_png',9,'Image PNG data', 'mod_image_png.png');
+(100,'keep_alive',-1,'KeepAlive','mod_keepalive.png');
 --Not yet implemented
+--(19,'image_jpg',9,'Image JPG data', 'mod_image_jpg.png'), 
+--(20,'image_png',9,'Image PNG data', 'mod_image_png.png');
 --(24,'async_inc', 6, 'Asyncronous incremental data', 'mod_async_inc.png')
-
 
 -- Categoria field is used to segregate several types (plugin, agents, network) on their data
 -- types, could be used or could be avoided and use directly primary key (id_tipo) 

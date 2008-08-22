@@ -1,5 +1,9 @@
 2008-08-22 Sancho Lerena  <slerena@gmail.com>
 
+	* Massive header update. We're now officially on Beta1.
+
+2008-08-22 Sancho Lerena  <slerena@gmail.com>
+
 	* pandoradb_data.sql: Removed data for locale, added for new 
 	date string format.
 

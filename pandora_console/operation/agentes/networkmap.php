@@ -115,8 +115,8 @@ function create_node ($agent, $simple = 0, $font_size = 10) {
 
 	// Short name
 	$name = strtolower ($agent["nombre"]);
-	if (strlen ($name) > 12)
-		$name = substr ($name, 0, 12);
+	if (strlen ($name) > 16)
+		$name = substr ($name, 0, 16);
 
 	if ($simple == 0){
 		// Set node icon
@@ -125,6 +125,7 @@ function create_node ($agent, $simple = 0, $font_size = 10) {
 		} else {
 			$img_node = 'images/networkmap/0.png';
 		}
+
 		$node = $agent['id_agente'].' [ color="'.$status_color.'", fontsize='.$font_size.', style="filled", fixedsize=true, width=0.40, height=0.40, label=<<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"><TR><TD><IMG SRC="'.$img_node.'"/></TD></TR>
 		 <TR><TD>'.$name.'</TD></TR></TABLE>>,
 		 shape="ellipse", URL="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'",

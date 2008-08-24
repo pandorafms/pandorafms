@@ -1,3 +1,20 @@
+2008-08-24 Sancho Lerena  <slerena@gmail.com>
+
+ 	* include/functions_db.php: Fixed some warning messages
+	due missing check before several foreachs.
+	
+	* index.php: Disabled development flag to detect config.
+
+	* operation/agentes/networkmap.php: String too short for
+	names, long IP address was being shortened.
+
+	* operation/servers/view_server.php,
+	operation/servers/view_server_detail.php
+	godmode/servers/manage_recontask_form.php: Fixed some warnings
+	and added proper message for empty screens.
+
+	After this commit a beta1 package has been made.
+
 2008-08-22 Sancho Lerena  <slerena@gmail.com>
 
 	* Massive header update. We're now officially on Beta1.

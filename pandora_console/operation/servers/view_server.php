@@ -60,6 +60,11 @@ $table->head[6] = __('Version');
 $table->head[7] = __('Updated at');
 $table->data = array ();
 
+if (!$servers){
+	echo "<div class='nf'>".__('There are no servers configured into the database')."</div>";
+	return;
+}
+
 foreach ($servers as $server) {
 	$data = array ();
 	$serverinfo = server_status ($server['id_server']);

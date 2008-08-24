@@ -119,7 +119,7 @@ $table->data[] = array (__('OS'),print_select ($selectbox, "id_os", $id_os,'',''
 unset ($selectbox);
 
 // Group
-$sql = "SELECT id_grupo, nombre FROM tgrupo";
+$sql = "SELECT id_grupo, nombre FROM tgrupo WHERE id_grupo > 1";
 $result = get_db_all_rows_sql ($sql);
 foreach ($result as $row) {
 	$selectbox[$row["id_grupo"]] = $row["nombre"];

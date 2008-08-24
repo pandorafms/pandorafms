@@ -83,6 +83,10 @@ AND tusuario_perfil.id_usuario = '%s' AND (tusuario_perfil.id_grupo = %d OR tusu
 
 	$rowdup = get_db_all_rows_sql($query1);
 	$result = 0;
+
+	if (!$rowdup)
+		return $result;
+
 	foreach($rowdup as $row) {
 		// For each profile for this pair of group and user do...
 			switch ($access) {
@@ -622,6 +626,8 @@ function get_alert_fires_in_period ($id_agent_module, $period, $date = 0) {
 function get_alerts_in_group ($id_group) {
 	$alerts = array ();
 	$agents = get_agents_in_group ($id_group);
+	if (!$agents)
+		return;
 	foreach ($agents as $agent) {
 		$agent_alerts = get_alerts_in_agent ($agent["id_agente"]);
 		$alerts = array_merge ($alerts, $agent_alerts);
@@ -982,6 +988,8 @@ function list_group ($id_user, $show_all = 1){
 	$mis_grupos = array (); // Define array mis_grupos to put here all groups with Agent Read permission
 	$sql = 'SELECT id_grupo, nombre FROM tgrupo';
 	$result = get_db_all_rows_sql ($sql);
+	if (!$result)
+		return $mis_grupos;
 	foreach ($result as $row) {
 		if (($row["id_grupo"] != 1 || $show_all == 1) && $row["id_grupo"] != 0 && give_acl($id_user,$row["id_grupo"], "AR") == 1) {
 			//Put in  an array all the groups the user belongs to
@@ -1004,7 +1012,8 @@ function list_group ($id_user, $show_all = 1){
 function list_group2 ($id_user) {
 	$mis_grupos = array (); // Define array mis_grupos to put here all groups with Agent Read permission
 	$result = get_db_all_fields_in_table ("tgrupo","id_grupo");
-	
+	if (!$result)
+		return $mis_grupos;
 	foreach ($result as $row) {
 		if (give_acl ($id_user, $row["id_grupo"], "AR") == 1) {
 			array_push ($mis_grupos, $row["id_grupo"]); //Put in array all the groups the user belongs to
@@ -1024,6 +1033,10 @@ function list_group2 ($id_user) {
 function get_user_groups ($id_user) {
 	$user_groups = array ();
 	$groups = get_db_all_rows_in_table ('tgrupo', 'nombre');
+
+	if (!$groups)
+		return $user_groups;
+
 	foreach ($groups as $group) {
 		if (! give_acl ($id_user, $group["id_grupo"], "AR"))
 			continue;
@@ -1695,6 +1708,7 @@ function get_agent_module_value_sumatory ($id_agent_module, $period, $date = 0) 
 	$timestamp_end = 0;
 	$sum = 0;
 	$data_value = 0;
+	
 	foreach ($datas as $data) {
 		$timestamp_end = $data["utimestamp"];
 		$elapsed = $timestamp_end - $timestamp_begin;
@@ -1782,6 +1796,10 @@ function show_alert_row_mini ($id_combined_alert) {
 	$sql = sprintf("SELECT talerta_agente_modulo.*, tcompound_alert.operation FROM talerta_agente_modulo, tcompound_alert 
 	WHERE tcompound_alert.id_aam = talerta_agente_modulo.id_aam AND tcompound_alert.id = %d",$id_combined_alert);
 	$result = get_db_all_rows_sql ($sql);
+	
+	if (!$result)
+		return;
+
 	echo "<table width=400 cellpadding=2 cellspacing=2 class='databox'>";
 	echo "<th>".__('Name')."</th>";
 	echo "<th>".__('Oper')."</th>";
@@ -1793,6 +1811,7 @@ function show_alert_row_mini ($id_combined_alert) {
 	echo "<th>".__('MinMax.Al')."</th>";
 	echo "<th>".__('Days')."</th>";
 	echo "<th>".__('Fired')."</th>";
+
 	foreach ($result as $row2) {
 		if ($color == 1) {
 			$tdcolor = "datos";

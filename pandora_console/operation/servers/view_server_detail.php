@@ -159,7 +159,9 @@ if ($row["recon_server"]) {
 		}
 		echo "</table>";
 	} else {
-		echo "This server has no recon tasks assigned";
+		echo "<div class='nf'>";
+		echo __("This server has no recon tasks assigned");
+		echo "</div>";
 	}
 }
 

@@ -29,7 +29,15 @@ use Date::Manip;        # Needed to manipulate DateTime formats
 use Net::Ping;
 use Time::Local;        # DateTime basic manipulation
 use NetAddr::IP;		# To manage IP Addresses
-use Net::Traceroute::PurePerl; 	# Traceroute needs traceroute command
+
+# Detect if Net:Traceroute::Pureperl is available.
+# If not, parent detection will be disabled
+my $traceroute_loaded = 1;
+# Traceroute needs traceroute command
+unless ( eval "use Net::Traceroute::PurePerl; 1" ) {
+     $traceroute_loaded = 0;
+}
+
 use POSIX;				# to use ceil() function
 use Socket;				# to resolve address
 use threads;
@@ -65,6 +73,12 @@ pandora_loadconfig (\%pa_config, 3);
 
 # Audit server starting
 pandora_audit (\%pa_config, "Pandora FMS Recon Daemon starting", "SYSTEM", "System");
+
+# Check for traceroute
+
+if ($traceroute_loaded == 0){
+ 	print " [!] Traceroute has noot been compiled. Parent detection disabled.\n\n";
+}
 
 # Check for xprobe2
 my $xprobe2 = $pa_config{"xprobe2"};
@@ -643,6 +657,11 @@ sub pandora_getparent ($$){
 	my $destination = $_[1];
 	my $dbh = $_[2];
 
+	# If don't have traceroute available, just skip
+    if ($traceroute_loaded == 0){
+		return 0;
+	}
+
     my $t = new Net::Traceroute::PurePerl(
 		 backend        => 'PurePerl',
          host           => $destination,
@@ -650,9 +669,8 @@ sub pandora_getparent ($$){
          max_ttl        => 15,
          query_timeout  => $pa_config->{"networktimeout"},
          packetlen      => 40,
-         protocol       => 'icmp', # udp or icmp
+         protocol       => 'udp', # udp or icmp
     );
-
 
 	my $success = 0;
 	$success = $t->traceroute();

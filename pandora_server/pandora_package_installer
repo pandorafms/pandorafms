@@ -1,0 +1,143 @@
+# Pandora FMS 2.0 Server Package Installer (c) ArticaST 2008
+# Please see http://pandora.sourceforge.net
+# This code is licensed under GPL 2.0 license.
+# **********************************************************************
+
+#!/bin/bash
+
+MODE=$1
+
+install () {
+
+	mkdir /var/spool/pandora 2> /dev/null
+	mkdir /var/spool/pandora/data_in 2> /dev/null
+	id pandora
+	if [ $? -eq 0 ]; then
+		echo " "
+		echo "User pandora does exist, make sure the SSH directories are correct"
+	else
+		echo "Creating user pandora."
+		useradd pandora
+		mkdir /home/pandora
+		mkdir /home/pandora/.ssh
+		chown -R pandora /home/pandora
+	fi
+	mkdir /var/log/pandora 2> /dev/null
+	chown pandora:wheel /var/spool/pandora/data_in > /dev/null 2>&1 || chown pandora:root /var/spool/pandora/data_in
+	chmod 770 /var/spool/pandora/data_in 
+	mkdir /etc/pandora 2> /dev/null
+	if [ -e /etc/pandora/pandora_server.conf ]; then
+		echo "Old installation detected, backing up pandora_server.conf"
+		mv /etc/pandora/pandora_server.conf /etc/pandora/pandora_server.conf.bak
+	fi
+	cp conf/pandora_server.conf /etc/pandora/
+	chmod 770 /etc/pandora/pandora_server.conf
+	if [ "`uname -s`" != "Linux" ]; then
+		echo "This is not a Linux-based distro. The installer will not create files for automatic startup."
+		echo "Copying the binaries into /usr/local/bin"
+		cp pkg/pandora_* /usr/bin
+		cp util/pandora_exec /usr/bin
+	else 
+		echo "Copying the binaries into /usr/bin"
+		cp pkg/pandora_* /usr/bin
+		cp util/pandora_exec /usr/bin
+		echo "Creating startup scripts into /etc/init.d and linking it to rc2.d"
+		cp pandora_* /etc/init.d
+		rm /etc/init.d/pandora_*_installer
+		ln -s /etc/init.d/pandora_server /etc/rc2.d/S90pandora_server 2> /dev/null
+		ln -s /etc/init.d/pandora_recon /etc/rc2.d/S90pandora_recon 2> /dev/null
+		ln -s /etc/init.d/pandora_network /etc/rc2.d/S90pandora_network 2> /dev/null
+		ln -s /etc/init.d/pandora_snmpconsole /etc/rc2.d/S90pandora_snmpconsole 2> /dev/null
+		ln -s /etc/init.d/pandora_plugin /etc/rc2.d/S90pandora_plugin 2> /dev/null
+		ln -s /etc/init.d/pandora_prediction /etc/rc2.d/S90pandora_prediction 2> /dev/null
+		ln -s /etc/init.d/pandora_wmi /etc/rc2.d/S90pandora_wmi 2> /dev/null
+	fi
+
+	mkdir /usr/share/pandora 2> /dev/null
+	cp -R util /usr/share/pandora
+	if [ -d /etc/cron.daily ]
+	then
+		echo "perl /usr/share/pandora/util/pandora_db /etc/pandora/pandora_server.conf" > /etc/cron.daily/pandora_purge_db	
+		chmod +x /etc/cron.daily/pandora_purge_db
+	else
+		echo "You're probably not using cron for automatic scheduling. You should schedule the following command to run frequently (daily) on your master server:"
+		echo "   perl /usr/share/pandora/util/pandora_db /etc/pandora/pandora_server.conf"
+	fi
+}
+
+uninstall () {
+        if [ "`uname -s`" != "Linux" ]; then
+                echo "This is not a Linux-based distro. Uninstaller is currently not working for your OS"
+	fi
+	echo "Removing Pandora Servers"
+    rm -Rf /var/spool/pandora/data_in/
+
+	echo "If the user Pandora is not being used for any other operations, please delete using the following commands:"
+	echo "   userdel pandora"
+	echo "   rm -Rf /home/pandora/"
+
+	## Just to clarify here. Some people (like me) are using the pandora user for other purposes and/or using an LDAP-based user management
+	## I would hate to have a script clear out this users' information without any notification
+	
+	rm -Rf /var/log/pandora/  2> /dev/null 
+	rm -Rf /etc/pandora/pandora_server.conf  2> /dev/null
+	
+	rm -Rf /etc/init.d/pandora_server  2> /dev/null 
+	rm -Rf /etc/init.d/pandora_network  2> /dev/null 
+	rm -Rf /etc/init.d/pandora_recon  2> /dev/null 
+	rm -Rf /etc/init.d/pandora_snmpconsole  2> /dev/null 
+	rm -Rf /etc/init.d/pandora_prediction 2> /dev/null 
+	rm -Rf /etc/init.d/pandora_wmi 2> /dev/null 
+	rm -Rf /etc/init.d/pandora_plugin 2> /dev/null
+	
+	rm -Rf /etc/rc2.d/S90pandora_server  2> /dev/null 
+	rm -Rf /etc/rc2.d/S90pandora_recon  2> /dev/null 
+	rm -Rf /etc/rc2.d/S90pandora_network 2> /dev/null 
+	rm -Rf /etc/rc2.d/S90pandora_snmpconsole 2> /dev/null 
+	rm -Rf /etc/rc2.d/S90pandora_wmi 2> /dev/null 
+	rm -Rf /etc/rc2.d/S90pandora_prediction 2> /dev/null 
+	rm -Rf /etc/rc2.d/S90pandora_plugin 2> /dev/null
+	
+	rm -Rf /usr/bin/pandora_exec 2> /dev/null
+	rm -Rf /usr/bin/pandora_wmi 2> /dev/null
+	rm -Rf /usr/bin/pandora_server 2> /dev/null
+	rm -Rf /usr/bin/pandora_snmpconsole 2> /dev/null
+	rm -Rf /usr/bin/pandora_recon 2> /dev/null
+	rm -Rf /usr/bin/pandora_network 2> /dev/null
+	rm -Rf /usr/bin/pandora_prediction 2> /dev/null
+	rm -Rf /usr/bin/pandora_plugin 2> /dev/null
+	
+	rm -Rf /usr/share/pandora
+	rm -Rf /etc/cron.daily/pandora_purge_db
+
+	echo "Done"
+}
+
+help () {
+        echo "     --install           To install Pandora FMS Servers on this system (You have to be root)"
+        echo "     --uninstall         To uninstall and remove Pandora FMS Servers on this System"
+        echo " "
+}
+
+# Script banner at start
+echo " "
+echo "Pandora FMS 2.0 Server Package Installer (c) ArticaST 2008"
+echo "This program is licensed under GPL2 Terms. http://pandora.sourceforge.net"
+echo " "
+
+case "$MODE" in
+
+'--install')
+        install
+        exit
+        ;;
+
+'--uninstall')
+        uninstall
+        exit
+        ;;
+
+*)
+        help
+esac
+

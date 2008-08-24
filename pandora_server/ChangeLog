@@ -1,3 +1,11 @@
+2008-08-24  Sancho Lerena <slerena@gmail.com>
+
+	* pandora_package_installer: New script for install binary
+	PandoraFMS servers precompiled with pp. 
+
+	* pandora_recon: Added detection of Net::Traceroute::PurePerl
+	to disable parent detection if dependencies not installed.
+
 2008-08-22  Sancho Lerena <slerena@gmail.com>
 
 	* Makefile.PL: Added WMI and fixed lot of small things.

@@ -1,3 +1,7 @@
+2008-08-25  Ramon Novoa  <rnovoa@artica.es>
+
+	* bin/pandora_wmi: Check for wmic execution errors.
+
 2008-08-24  Sancho Lerena <slerena@gmail.com>
 
 	* pandora_package_installer: New script for install binary

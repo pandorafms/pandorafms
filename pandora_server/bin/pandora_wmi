@@ -331,7 +331,7 @@ sub exec_wmi_module {
     # Initialize another global sub variables.
 	my $agent_name = dame_agente_nombre ($pa_config, $agent_module->{'id_agente'}, $dbh);
 	my $module_result = 1;  # Fail by default
-	my $module_data = 0;    # 0 data for default
+	my $module_data = '';
     my $module_interval = 0;
 
     # Build execution command to plugin
@@ -352,7 +352,17 @@ sub exec_wmi_module {
     logger ($pa_config, "Executing AM # $id_am WMI command '$wmi_command'", 9);
     
     $module_data = `$wmi_command`;
-	my @data = split("\n", $module_data); 
+	if (! defined($module_data)) {
+		#logger ($pa_config, "[ERROR] Unexpected response from $wmi_client\n");
+		return;
+	}
+
+	my @data = split("\n", $module_data);
+	if ($#data < 2) {
+		#logger ($pa_config, "[ERROR] Unexpected response from $wmi_client\n");
+		return;
+	}
+
 	my @data2 = split(/\|/, $data[2]); # get third line (containing data)
 
 	# Take a specific field number from returned data. It uses tcp_port

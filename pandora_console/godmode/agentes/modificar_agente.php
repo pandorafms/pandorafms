@@ -33,67 +33,89 @@ $group_id = get_parameter ("group_id", 0);
 $ag_group = get_parameter ("ag_group", -1);
 if (($ag_group == -1) && ($group_id != 0))
         $ag_group = $group_id;
-if (isset($_GET["ag_group_refresh"])){
+if (isset ($_GET["ag_group_refresh"])){
         $ag_group = $_GET["ag_group_refresh"];
 }
 $search = get_parameter ("search", "");
 
 if (isset($_GET["borrar_agente"])){ // if delete agent
-	$id_agente = entrada_limpia($_GET["borrar_agente"]);
-	$agent_name = dame_nombre_agente($id_agente);
-	$id_grupo = dame_id_grupo($id_agente);
-	if (give_acl($config["id_user"], $id_grupo, "AW")==1){
-		// Firts delete from agents table
-		$sql_delete= "DELETE FROM tagente
-		WHERE id_agente = ".$id_agente;
-		$result=mysql_query($sql_delete);
-		if (! $result)
-			echo "<h3 class='error'>".__('There was a problem deleting agent')."</h3>";
-		else
-			echo "<h3 class='suc'>".__('Agent deleted successfully')."</h3>";
-		// Delete agent access table
-		$sql_delete = "DELETE FROM tagent_access
-		WHERE id_agent = ".$id_agente;
-		// Delete tagente_datos data
-		$result=mysql_query($sql_delete);
-		$sql_delete4="DELETE FROM tagente_datos
-		WHERE id_agente=".$id_agente;
-		$result=mysql_query($sql_delete4);
-		// Delete tagente_datos_string data
-		$result=mysql_query($sql_delete);
-		$sql_delete4="DELETE FROM tagente_datos_string
-		WHERE id_agente=".$id_agente;
-		$result=mysql_query($sql_delete4);
-		// Delete from tagente_datos
-		$sql1='SELECT * FROM tagente_modulo
-		WHERE id_agente = '.$id_agente;
-		$result1=mysql_query($sql1);
-		while ($row=mysql_fetch_array($result1)){
-			$sql_delete4="DELETE FROM tagente_datos_inc
-			WHERE id_agente_modulo=".$row["id_agente_modulo"];
-			$result=mysql_query($sql_delete4);
-		}
-		$sql_delete2 ="DELETE FROM tagente_modulo
-		WHERE id_agente = ".$id_agente;
-		$sql_delete3 ="DELETE FROM tagente_estado
-		WHERE id_agente = ".$id_agente;
-		$result=mysql_query($sql_delete2);
-		$result=mysql_query($sql_delete3);
+	$id_agente = get_parameter_get ("borrar_agente");
+	$agent_name = dame_nombre_agente ($id_agente);
+	$id_grupo = dame_id_grupo ($id_agente);
+	if (give_acl ($config["id_user"], $id_grupo, "AW")==1) {
+		//Start transaction - this improves consistency
+		process_sql ("SET AUTOCOMMIT=0;");
+		process_sql ("START TRANSACTION;");
+		$del_error = 0; //Delete error count. At the end it will be used to rollback or commit
 		
-		// Delete IPs from tadress table and taddress_agent
-		$sql = "SELECT * FROM taddress_agent where id_agent = $id_agente";
-		$result=mysql_query($sql);
-		while ($row=mysql_fetch_array($result)){
-			$sql2="DELETE FROM taddress where id_a = ".$row["id_a"];
-			$result2=mysql_query($sql2);
+		// Firts delete from agents table
+		$sql_delete = "DELETE FROM tagente WHERE id_agente = ".$id_agente;
+		if (process_sql ($sql_delete) === false) 
+			$del_error++; //in case process_sql returns false, increase error count
+		
+		// Delete agent access table
+		$sql_delete = "DELETE FROM tagent_access WHERE id_agent = ".$id_agente;
+		if (process_sql ($sql_delete) === false) 
+			$del_error++;
+		
+		// Delete tagente_datos data
+		$sql_delete = "DELETE FROM tagente_datos WHERE id_agente = ".$id_agente;
+		if (process_sql ($sql_delete) === false)
+			$del_error++;
+			
+		// Delete tagente_datos_string data
+		$sql_delete = "DELETE FROM tagente_datos_string WHERE id_agente = ".$id_agente;
+		if (process_sql ($sql_delete) === false)
+			$del_error++;	
+		
+		// Delete from tagente_datos - relies on id_agente_modulo
+		$sql_delete = "DELETE FROM tagente_datos_inc WHERE 
+		id_agente_modulo = ANY(SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ".$id_agente.")";
+		if (process_sql ($sql_delete) === false)
+			$del_error++;
+		
+		// Delete alerts from talerta_agente_modulo - relies on
+		// id_agente_modulo	
+		$sql_delete = "DELETE FROM talerta_agente_modulo WHERE
+		id_agente_modulo = ANY(SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ".$id_agente.")";
+		if (process_sql ($sql_delete) === false)
+			$del_error++;
+		
+		// Delete from tagente_modulo	
+		$sql_delete ="DELETE FROM tagente_modulo WHERE id_agente = ".$id_agente;
+		if (process_sql ($sql_delete) === false)
+			$del_error++;	
+		
+		// Delete from tagente_estado
+		$sql_delete ="DELETE FROM tagente_estado WHERE id_agente = ".$id_agente;
+		if (process_sql ($sql_delete) === false)
+			$del_error++;	
+		
+		// Delete IP's from taddress table using taddress_agent
+		$sql_delete = "DELETE FROM taddress WHERE 
+		id_a = ANY(SELECT id_a FROM taddress_agent WHERE id_agent = ".$id_agente.")";
+		if (process_sql ($sql_delete) === false)
+			$del_error++;
+		
+		// Delete IPs from taddress_agent table
+		$sql_delete = "DELETE FROM taddress_agent WHERE id_agent = ".$id_agente;
+		if (process_sql ($sql_delete) === false)
+			$del_error++;
+						
+		if ($del_error > 0) {
+			process_sql ("ROLLBACK;");
+			echo "<h3 class='error'>".__('There was a problem deleting agent')."</h3>";
+		} else {
+			process_sql ("COMMIT;");
+			echo "<h3 class='suc'>".__('Agent deleted successfully')."</h3>";
 		}
-		$sql = "DELETE FROM taddress_agent  where id_agent = $id_agente";
-		$result=mysql_query($sql);
+		unset ($sql_delete, $del_error); //Clean up
+		process_sql ("SET AUTOCOMMIT=1;");	
 		audit_db($config["id_user"],$REMOTE_ADDR, "Agent '$agent_name' deleted", "Agent Management");
 
 		// Delete remote configuration
 		$agent_md5 = md5($agent_name, FALSE);
-		if (file_exists($config["remote_config"] . "/" . $agent_md5 . ".md5")){
+		if (file_exists($config["remote_config"] . "/" . $agent_md5 . ".md5")) {
 		// Agent remote configuration editor
 			$file_name = $config["remote_config"] . "/" . $agent_md5 . ".conf";
 			unlink ($file_name);
@@ -111,7 +133,7 @@ echo "<h2>".__('Agent configuration')." &gt; ".__('Agents defined in Pandora')."
 
 // Show group selector
 if (isset($_POST["ag_group"])){
-	$ag_group = $_POST["ag_group"];
+	$ag_group = get_parameter_post ("ag_group");
 	echo "<form method='post'
 	action='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group_refresh=".$ag_group."'>";
 } else {
@@ -126,7 +148,7 @@ echo "<select name='ag_group' onChange='javascript:this.form.submit();'
 class='w130'>";
 
 if ( $ag_group > 1 ){
-	echo "<option value='".$ag_group."'>".dame_nombre_grupo($ag_group).
+	echo "<option value='".$ag_group."'>".dame_nombre_grupo ($ag_group).
 	"</option>";
 }
 echo "<option value=1>".dame_nombre_grupo(1)."</option>"; // Group all is always active
@@ -146,7 +168,7 @@ echo "</td><td>";
 
 // Show group selector
 if (isset($_POST["ag_group"])){
-        $group_mod = "&ag_group_refresh=".$_POST["ag_group"];
+        $group_mod = "&ag_group_refresh=".get_parameter_post ("ag_group");
 } else {
         $group_mod ="";
 }

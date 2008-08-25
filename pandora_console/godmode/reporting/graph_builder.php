@@ -315,11 +315,11 @@ echo "<b>".__('Render now')."</b></td>";
 echo "<td class='datos2'>";
 echo "<select name='render'>";
 if ($render == 1){
-	echo "<option value=1>Yes</option>";
-	echo "<option value=0>No</option>";
+	echo "<option value=1>".__('Yes')."</option>";
+	echo "<option value=0>".__('No')."</option>";
 } else {
-	echo "<option value=0>No</option>";
-	echo "<option value=1>Yes</option>";
+	echo "<option value=0>".__('No')."</option>";
+	echo "<option value=1>".__('Yes')."</option>";
 }
 echo "</select></td>";
 echo "<td class='datos2'>";
@@ -330,49 +330,49 @@ echo "<input type='text' name='height' value='$height' size=6>";
 
 switch ($period) {
 	case 3600:
-		$period_label = "Hour";
+		$period_label = __('Hour');
 		break;
 	case 7200:
-		$period_label = "2 Hours";
+		$period_label = __('2 Hours');
 		break;
 	case 10800:
-		$period_label = "3 Hours";
+		$period_label = __('3 Hours');
 		break;
 	case 21600:
-		$period_label = "6 Hours";
+		$period_label = __('6 Hours');
 		break;
 	case 43200:
-		$period_label = "12 Hours";
+		$period_label = __('12 Hours');
 		break;
 	case 86400:
-		$period_label = "Day";
+		$period_label = __('Day');
 		break;
 	case 172800:
-		$period_label = "Two days";
+		$period_label = __('Two days');
 		break;
 	case 345600:
-		$period_label = "Four days";
+		$period_label = __('Four days');
 		break;
 	case 604800:
-		$period_label = "Last Week";
+		$period_label = __('Last Week');
 		break;
 	case 1296000:
-		$period_label = "15 Days";
+		$period_label = __('15 Days');
 		break;
 	case 2592000:
-		$period_label = "Last Month";
+		$period_label = __('Last Month');
 		break;
 	case 5184000:
-		$period_label = "Two Month";
+		$period_label = __('Two Month');
 		break;
 	case 15552000:
-		$period_label = "Six Months";
+		$period_label = __('Six Months');
 		break;
 	case 31104000:
-		$period_label = "One year";
+		$period_label = __('One year');
 		break;
 	default:
-		$period_label = "Day";
+		$period_label = __('Day');
 }
 
 
@@ -386,18 +386,18 @@ if ($period==0) {
 } else {
 	echo "<option value=$period>".$period_label."</option>";
 }
-echo "<option value=3600>"."Hour</option>";
-echo "<option value=7200>"."2 Hours</option>";
-echo "<option value=10800>"."3 Hours</option>";
-echo "<option value=21600>"."6 Hours</option>";
-echo "<option value=43200>"."12 Hours</option>";
-echo "<option value=86400>"."Last day</option>";
-echo "<option value=172800>"."Two days</option>";
-echo "<option value=604800>"."Last Week</option>";
-echo "<option value=1296000>"."15 days</option>";
-echo "<option value=2592000>"."Last Month</option>";
-echo "<option value=5184000>"."Two Month</option>";
-echo "<option value=15552000>"."Six Months</option>";
+echo "<option value=3600>".__('1 hour')."</option>";
+echo "<option value=7200>".__('2 hours')."</option>";
+echo "<option value=10800>".__('3 hours')."</option>";
+echo "<option value=21600>".__('6 hours')."</option>";
+echo "<option value=43200>".__('12 hours')."</option>";
+echo "<option value=86400>".__('Last day')."</option>";
+echo "<option value=172800>".__('Two days')."</option>";
+echo "<option value=604800>".__('Last week')."</option>";
+echo "<option value=1296000>".__('15 days')."</option>";
+echo "<option value=2592000>".__('Last month')."</option>";
+echo "<option value=5184000>".__('Two months')."</option>";
+echo "<option value=15552000>".__('Six months')."</option>";
 echo "</select>";
 
 echo "<td class='datos'>";
@@ -405,11 +405,11 @@ echo "<b>".__('View events')."</b></td>";
 echo "<td class='datos'>";
 echo "<select name='events'>";
 if ($events == 1){
-	echo "<option value=1>Yes</option>";
-	echo "<option value=0>No</option>";
+	echo "<option value=1>".__('Yes')."</option>";
+	echo "<option value=0>".__('No')."</option>";
 } else {
-	echo "<option value=0>No</option>";
-	echo "<option value=1>Yes</option>";
+	echo "<option value=0>".__('No')."</option>";
+	echo "<option value=1>".__('Yes')."</option>";
 }
 echo "</select></td>";
 

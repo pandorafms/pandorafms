@@ -1,6 +1,10 @@
+2008-08-25  Esteban Sanchez  <estebans@artica.es>
+
+	* images/help.png: Updated to a bigger image with more quality.
+
 2008-08-24 Sancho Lerena  <slerena@gmail.com>
 
- 	* include/functions_db.php: Fixed some warning messages
+	* include/functions_db.php: Fixed some warning messages
 	due missing check before several foreachs.
 	
 	* index.php: Disabled development flag to detect config.

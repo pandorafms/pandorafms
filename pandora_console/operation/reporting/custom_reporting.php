@@ -37,7 +37,6 @@ $table->head = array ();
 $table->head[0] = __('Report name');
 $table->head[1] = __('Description');
 $table->head[2] = __('HTML');
-$table->head[3] = __('PDF');
 $table->align = array ();
 $table->align[2] = 'center';
 $table->align[3] = 'center';
@@ -50,8 +49,6 @@ foreach ($reports as $report) {
 	$data[1] = $report['description'];
 	$data[2] = '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$report['id_report'].'">
 			<img src="images/reporting.png"></a>';
-	$data[3] = '<a href="operation/reporting/reporting_viewer_pdf.php?id_report='.$report['id_report'].'" '.
-		'target="_new"><img src="images/pdf.png"></a>';
 	array_push ($table->data, $data);
 }
 

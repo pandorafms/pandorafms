@@ -1,3 +1,14 @@
+2008-08-25  Jorge Gonzalez  <jorgegonz@svn.gnome.org>
+
+	* include/languages/es.po: Updated Spanish translation.
+
+	* include/languages/index.pot: Updated strings.
+
+	* include/languages/es.mo: Updated Spanish translation.
+
+	* godmode/reporting/graph_builder.php: Changed several hardcoded
+	  striings to make them translatable.
+
 2008-08-25  Esteban Sanchez  <estebans@artica.es>
 
 	* images/help.png: Updated to a bigger image with more quality.

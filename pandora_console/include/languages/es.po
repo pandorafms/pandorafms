@@ -1,20 +1,22 @@
-# SOME DESCRIPTIVE TITLE.
+# translation of es.po to Español
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
 #
-#, fuzzy
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
+# Jorge Gonzalez <jorge.gonzalez@artica.es>, 2008.
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-08-11 15:07+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: es <LL@li.org>\n"
+"PO-Revision-Date: 2008-08-25 15:13+0200\n"
+"Last-Translator: Jorge Gonzalez <jorge.gonzalez@artica.es>\n"
+"Language-Team: Español <artica@artica.es>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.11.4\n"
+"Plural-Forms:  nplurals=2; plural=(n != 1);\n"
 
 #: reporting/fgraph.php:950
 #, fuzzy
@@ -88,16 +90,16 @@ msgstr "Modo de aprendizaje"
 #: reporting/fgraph.php:1303 include/functions.php:660
 #: include/functions.php:1136 include/functions.php:1159
 msgid "Critical"
-msgstr ""
+msgstr "Crítico"
 
 #: reporting/fgraph.php:1342 operation/events/events.php:412
 #: include/functions_db.php:2003
 msgid "System"
-msgstr ""
+msgstr "Sistema"
 
 #: reporting/fgraph.php:1561
 msgid "no_data"
-msgstr ""
+msgstr "sin datos"
 
 #: reporting/fgraph.php:1628
 msgid "Out of limits"
@@ -134,7 +136,7 @@ msgstr "Ha habido un error al localizar la fuente del gr&aactuefico"
 #: operation/reporting/graph_viewer.php:122
 #: operation/agentes/exportdata.php:66 include/functions.php:508
 msgid "One hour"
-msgstr "hour"
+msgstr "Una hora"
 
 #: reporting/stat_win.php:66 reporting/stat_win.php:230
 #: include/functions.php:511
@@ -1562,8 +1564,7 @@ msgid "Purge task launched for agent id "
 msgstr "Tarea de borrado lanzada para el agente "
 
 #: godmode/db/db_purge.php:65
-msgid ""
-"Please be patient. This operation can be very long in time (5-10 minutes)"
+msgid "Please be patient. This operation can be very long in time (5-10 minutes)"
 msgstr ""
 "Por favor sea paciente, esta operación puede tardar varios minutos (5-10 "
 "minutos)"
@@ -2225,8 +2226,7 @@ msgid "Time threshold"
 msgstr "Umbral de tiempo"
 
 #: godmode/agentes/alert_manager_editor.php:137
-msgid ""
-"This value must be al least Module Interval * (Min.Number of Alerts + 1)"
+msgid "This value must be al least Module Interval * (Min.Number of Alerts + 1)"
 msgstr ""
 "Este valor debe ser como mínimo, el intervalo del módulo multiplicado por el "
 "mínimo número de alertas + 1"
@@ -4811,368 +4811,3 @@ msgstr ""
 msgid "Keygen path"
 msgstr ""
 
-#~ msgid "New Incident"
-#~ msgstr "Nuevo incidente"
-
-#~ msgid "Open with notes"
-#~ msgstr "Abierta y con notas"
-
-#~ msgid "Delete incident"
-#~ msgstr "Borrar incidente"
-
-#~ msgid "Source IP(s)"
-#~ msgstr "IP(s) Origen"
-
-#~ msgid "Destination IP(s)"
-#~ msgstr "IP(s) Destino"
-
-#~ msgid "Last received data from Agent"
-#~ msgstr "Últimos datos recibidos por el agente"
-
-#~ msgid "Module Update/Create form"
-#~ msgstr "Edición/Creación de módulo"
-
-#~ msgid "gpl_used"
-#~ msgstr "Desarrollado utilizando herramientas y software GPL"
-
-#~ msgid "Incident Main view"
-#~ msgstr "Vista principal de incidentes"
-
-#~ msgid "Agent main config screen"
-#~ msgstr "Pantalla principal de configuración del agente"
-
-#~ msgid "Select agent to modify"
-#~ msgstr "Seleccionar agente a modificar"
-
-#~ msgid "Name / Type"
-#~ msgstr "Nombre / Tipo"
-
-#~ msgid "Detailed alert view"
-#~ msgstr "Vista detallada de las alertas"
-
-#~ msgid "Detailed monitor view"
-#~ msgstr "Vista detallada de los monitores"
-
-#~ msgid "Detailed full view"
-#~ msgstr "Vista detallada"
-
-#~ msgid "Agent down default alert"
-#~ msgstr "Alerta por defecto de agente caído"
-
-#~ msgid "Pandora Main setup "
-#~ msgstr "Configuración de Pandora"
-
-#~ msgid "Internal Audit Pages"
-#~ msgstr "Páginas de Auditoría Interna"
-
-#~ msgid "Log type filter"
-#~ msgstr "Tipo de filtro de Log"
-
-#~ msgid "Group name"
-#~ msgstr "Nombre de grupo"
-
-#~ msgid "Purge all data"
-#~ msgstr "Borrar todos los datos"
-
-#~ msgid "Database Manipulation"
-#~ msgstr "Manipulación de la BBDD"
-
-#~ msgid "No agent selected"
-#~ msgstr "No se ha seleccionado agente"
-
-#~ msgid "Database compact"
-#~ msgstr "Compactado de la BBDD"
-
-#~ msgid "Configure"
-#~ msgstr "Configurar"
-
-#~ msgid "Checked by"
-#~ msgstr "Validado por"
-
-#~ msgid "Resolution (%)"
-#~ msgstr "Resolución (%)"
-
-#~ msgid "(*) Please enter date with format yyyy/mm/dd hh:mm:ss"
-#~ msgstr "(*) Por favor introduzca la fecha con formato yyyy/mm/dd hh:mm:ss"
-
-#~ msgid "There are "
-#~ msgstr "Hay "
-
-#~ msgid "users defined in Pandora"
-#~ msgstr "usuarios definidos en Pandora"
-
-#~ msgid "alerts defined in Pandora"
-#~ msgstr "alertas definidas en Pandora"
-
-#~ msgid "data modules stored in Pandora Database"
-#~ msgstr "módulos de datos recogidos por Pandora"
-
-#~ msgid "Last data received at "
-#~ msgstr "Datos recogidos por un agente por última vez el "
-
-#~ msgid "Pandora general statistics"
-#~ msgstr "Estadísticas generales de Pandora"
-
-#~ msgid "Average"
-#~ msgstr "Media"
-
-#~ msgid "Monthly graph"
-#~ msgstr "Gráfico mensual"
-
-#~ msgid "Weekly graph"
-#~ msgstr "Gráfico semanal"
-
-#~ msgid "Daily graph"
-#~ msgstr "Gráfico diario"
-
-#~ msgid "Hourly graph"
-#~ msgstr "Gráfico horario"
-
-#~ msgid "There was a problem creating keepalive module in new agent"
-#~ msgstr ""
-#~ "Ha habido un problema al crear el módulo keepalive en el nuevo agente"
-
-#~ msgid ""
-#~ "User profiles in Pandora define which users can access Pandora as well as "
-#~ "what each user can do. Groups define elements in common among various "
-#~ "users. Each user could be in one or more groups at any one time. Each "
-#~ "group has user profiles which are defined and attached to it. A profile "
-#~ "is a list of things a user can do, such as view incidents, manage "
-#~ "database or other. A list of available profiles is defined below by the "
-#~ "local Pandora administrators"
-#~ msgstr ""
-#~ "Los perfiles de usuario en Pandora definen qué usuarios pueden acceder a "
-#~ "Pandora y que puede hacer cada uno. Los grupos definen elementos en "
-#~ "común, cada usuario puede pertenecer a uno o más grupos, y tiene asignado "
-#~ "un perfil a cada grupo que pertenezca. Un perfil es una lista de lo que "
-#~ "puede y no puede hacer cada grupo, como por ejemplo 'ver incidentes' o "
-#~ "'gestionar bases de datos'. Abajo se muestra una lista de los perfiles "
-#~ "disponibles (definidos por los administradores locales de Pandora)"
-
-#~ msgid ""
-#~ "This user has permissions to manage all. This is admin user and "
-#~ "overwrites all permissions given in profiles/groups."
-#~ msgstr ""
-#~ "Este usuario es especial y tiene permiso para todo, pasando por encima de "
-#~ "los privilegios asignados mediante grupos/perfiles"
-
-#~ msgid ""
-#~ "This user has separated permissions to view data in his group agents, "
-#~ "create incidents belong to his groups, add notes in another incidents, "
-#~ "create personal assignments or reviews and other tasks, on different "
-#~ "profiles"
-#~ msgstr ""
-#~ "Este usuario tiene permisos segregados para ver datos en los agente de su "
-#~ "grupo, crear incidentes dentro de aquellos grupos sobre los que tenga "
-#~ "acceso y añadir notas en incidentes propios o de terceros"
-
-#~ msgid "This button refresh info about database usage among time"
-#~ msgstr ""
-#~ "Este botón refresca la información sobre el uso de la Base de Datos a lo "
-#~ "largo del tiempo"
-
-#~ msgid ""
-#~ "Use this combo to select agent for operation. You need to select an agent "
-#~ "to purge data and to get info about database usage"
-#~ msgstr ""
-#~ "Use este control para seleccionar un agente. Es necesario seleccionar un "
-#~ "agente tanto para obtener información de la Base de Datos como para "
-#~ "borrar datos de la misma"
-
-#~ msgid "ERROR: At this moment only Global Admin can manage profiles"
-#~ msgstr ""
-#~ "ERROR: En este momento sólo el Administrador General puede administrar "
-#~ "perfiles"
-
-#~ msgid "Agents Reading rights"
-#~ msgstr "Permisos de Lectura de agentes"
-
-#~ msgid "Agents Writing rights"
-#~ msgstr "Permisos de Escritura sobre agentes"
-
-#~ msgid "Agents Management rights"
-#~ msgstr "Permisos de gestión de agentes"
-
-#~ msgid "System Incidents Reading rights"
-#~ msgstr "Permisos de lectura al sistema de incidentes"
-
-#~ msgid "System Incidents Writing rights"
-#~ msgstr "Permisos de escritura al sistema de incidentes"
-
-#~ msgid "System Incidents Management rights"
-#~ msgstr "Permisos de gestión al sistema de incidentes"
-
-#~ msgid "Alerts Edition rights"
-#~ msgstr "Permisos de asignación de alertas"
-
-#~ msgid "Alerts Management rights"
-#~ msgstr "Permisos de gestión de alertas"
-
-#~ msgid "Users Management rights"
-#~ msgstr "Permisos de gestión de usuarios"
-
-#~ msgid "Database Management rights"
-#~ msgstr "Permisos de gestión de la BD"
-
-#~ msgid "Pandora System Management rights"
-#~ msgstr "Permisos de gestión de Pandora"
-
-#~ msgid "From Agent"
-#~ msgstr "desde el agente"
-
-#~ msgid "To"
-#~ msgstr "Hasta"
-
-#~ msgid "Incidents status"
-#~ msgstr "Estado de los incidentes"
-
-#~ msgid "Incidents priorities"
-#~ msgstr "Prioridades de los incidentes"
-
-#~ msgid "Destination"
-#~ msgstr "Destino"
-
-#~ msgid "Packets by date range"
-#~ msgstr "Paquetes por rangos de fecha"
-
-#~ msgid "Total events"
-#~ msgstr "Eventos totales"
-
-#~ msgid "Events per user"
-#~ msgstr "Eventos por usuario"
-
-#~ msgid "Events per group"
-#~ msgstr "Eventos por grupo"
-
-#~ msgid "Incidents"
-#~ msgstr "Incidentes"
-
-#~ msgid "group_detail"
-#~ msgstr "Detalle de grupos"
-
-#~ msgid "Pandora Database"
-#~ msgstr "Base de datos de Pandora"
-
-#~ msgid "It is necesary to select modules or alerts to delete"
-#~ msgstr "Se deben seleccionar módulos o alertas para borrar"
-
-#~ msgid "There was a problem deleting note"
-#~ msgstr "Ha habido un problema al eliminar la nota"
-
-#~ msgid "Incident writers"
-#~ msgstr "Autores de los incidentes"
-
-#~ msgid "Incident sources"
-#~ msgstr "Origenes de los incidentes"
-
-#~ msgid "Incident groups"
-#~ msgstr "Grupos de los incidentes"
-
-#~ msgid "Assigned Network Server"
-#~ msgstr "Servidor asignado"
-
-#~ msgid "This field can't be changed while in Edition mode"
-#~ msgstr "Este campo no puede modificarse en el modo edición"
-
-#~ msgid " so there are no alerts"
-#~ msgstr ", por tanto no hay alertas"
-
-#~ msgid "SNMP"
-#~ msgstr "SNMP"
-
-#~ msgid "There are no events"
-#~ msgstr "No hay eventos"
-
-#~ msgid "Agent module share out"
-#~ msgstr "Distribución de módulos"
-
-#~ msgid "Graph order"
-#~ msgstr "Orden del gráfico"
-
-#~ msgid "Truetype fonts"
-#~ msgstr "Fuentes truetype"
-
-#~ msgid "Right to Left"
-#~ msgstr "Der. a Izq."
-
-#~ msgid "Left to Right"
-#~ msgstr "Izq. a Der."
-
-#~ msgid "Cancel"
-#~ msgstr "Cancelar"
-
-#~ msgid "Network module refresh executed"
-#~ msgstr "Ejecutado el refresco del módulo de red"
-
-#~ msgid "Background image"
-#~ msgstr "Imagen de fondo"
-
-#~ msgid "Help"
-#~ msgstr "Ayuda"
-
-#~ msgid "dbprohelp"
-#~ msgstr ""
-#~ "El proceso de borrado de la base de datos es usado para borrar aquellas "
-#~ "entradas de la BBDD que por alguna razon necesitan ser borradas"
-
-#~ msgid "valprohelp"
-#~ msgstr ""
-#~ "El valor del módulo del agente mínimo y máximo que delimitan los valores "
-#~ "válidos. Cualquier otro valor fuera de ese rango será eliminado"
-
-#~ msgid "Agent overview"
-#~ msgstr "Foto general"
-
-#~ msgid "SNMP modules"
-#~ msgstr "Módulos SNMP"
-
-#~ msgid "Network components groups"
-#~ msgstr "Grupos de componentes de red"
-
-#~ msgid "Module Component"
-#~ msgstr "Componente de red"
-
-#~ msgid "weeks"
-#~ msgstr "semanas"
-
-#~ msgid "# Modules"
-#~ msgstr "Nº Módulos"
-
-#~ msgid "Save"
-#~ msgstr "Grabar"
-
-#~ msgid "says"
-#~ msgstr "dijo"
-
-#~ msgid "Tactical indicator"
-#~ msgstr "Indicador táctico"
-
-#~ msgid "Position X"
-#~ msgstr "Posición eje X"
-
-#~ msgid "Position Y"
-#~ msgstr "Posición eje Y"
-
-#~ msgid "Parent item"
-#~ msgstr "Objeto padre"
-
-#~ msgid "Link color"
-#~ msgstr "Color de enlace"
-
-#~ msgid "White"
-#~ msgstr "Blanco"
-
-#~ msgid "Black"
-#~ msgstr "Nigro"
-
-#~ msgid "Add map item"
-#~ msgstr "Añadir objeto al mapa"
-
-#~ msgid "There are no defined report items"
-#~ msgstr "No hay definidos elementos en el informe"
-
-#~ msgid "Message already read"
-#~ msgstr "Mensaje leído"
-
-#~ msgid "Message not read"
-#~ msgstr "Mensaje sin leer"

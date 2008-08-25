@@ -1,3 +1,10 @@
+2008-08-25  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* godmode/agentes/modificar_agente.php: Updated delete routine to
+	include a transaction. This way the database consistency is
+	guaranteed in case a query causes a problem as follow up on Bugs 
+	item #2073383. Also some style updates 
+
 2008-08-25  Jorge Gonzalez  <jorgegonz@svn.gnome.org>
 
 	* include/languages/es.po: Updated Spanish translation.

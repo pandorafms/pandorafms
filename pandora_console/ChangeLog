@@ -1,3 +1,16 @@
+2008-08-25  Sancho lerena <slerena@artica.es>
+
+	* extensions/update_manager: Added update manager client for
+	PandoraFMS.
+
+	* operation/reporting/custom_reporting.php: Moved PDF link.
+
+	* operation/reporting/reporting_viewer_pdf.php: Moved to enterprise
+	version.
+
+	* godmode/agentes/agent_disk_conf_editor.php: Moved to enterprise
+	version.
+
 2008-08-25  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* godmode/agentes/modificar_agente.php: Updated delete routine to

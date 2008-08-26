@@ -98,7 +98,8 @@ else
 	cp -R util /usr/share/pandora
 	if [ -d /etc/cron.daily ]
 	then
-		echo "perl /usr/share/pandora/util/pandora_db /etc/pandora/pandora_server.conf" > /etc/cron.daily/pandora_purge_db	
+		echo "#!/bin/bash" > /etc/cron.daily/pandora_purge_db	
+		echo "perl /usr/share/pandora/util/pandora_db /etc/pandora/pandora_server.conf" >> /etc/cron.daily/pandora_purge_db	
 		chmod +x /etc/cron.daily/pandora_purge_db
 	else
 		echo "You're probably not using cron for automatic scheduling. You should schedule the following command to run frequently (daily) on your master server:"

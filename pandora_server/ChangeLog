@@ -1,3 +1,8 @@
+
+2008-08-26  Sancho Lerena <slerena@artica.es>
+
+	* pandora_*installer: Minimal fix creating cront task in installer
+
 2008-08-25  Ramon Novoa  <rnovoa@artica.es>
 
 	* bin/pandora_wmi: Check for wmic execution errors.

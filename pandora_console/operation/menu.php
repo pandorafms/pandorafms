@@ -265,14 +265,7 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 		$selected = '';
 	}
 	echo '<div id="op8" class="operation-menu'.$selected.'">';
-	echo '<ul class="mn">';
-	
-	if ($sec == "reporting" &&
-		$sec2 != "operation/reporting/reporting") {
-		echo '<li>';
-	} else {
-		echo '<li class="bb0">';
-	}
+	echo '<ul class="mn"><li>';
 	echo '<a href="index.php?sec=reporting&sec2=operation/reporting/custom_reporting" class="mn">'.
 		__('Reporting').'</a></li></ul></div>';
 
@@ -284,7 +277,8 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 		} else {
 			echo "<div class='operation-submenu'>";
 		}
-		echo "<ul class='mn'><li><a href='index.php?sec=reporting&sec2=operation/reporting/custom_reporting' class='mn'>".__('Custom reporting')."</a></li></ul></div>";
+		echo "<ul class='mn'><li>
+		<a href='index.php?sec=reporting&sec2=operation/reporting/custom_reporting' class='mn'>".__('Custom reporting')."</a></li></ul></div>";
 	}
 
 	// Custom graph viewer
@@ -294,7 +288,8 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 		} else {
 			echo "<div class='operation-submenu'>";
 		}
-		echo "<ul class='mn'><li class='bb0'><a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer' class='mn'>".__('Custom graphs')."</a></li></ul></div>";
+		echo "<ul class='mn'><li>
+		<a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer' class='mn'>".__('Custom graphs')."</a></li></ul></div>";
 	}
 
 	// Extensions menu additions
@@ -305,7 +300,8 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 			$selected = '';
 		}
 		echo '<div id="op-extensions" class="operation-menu'.$selected.'">';
-		echo '<ul class="mn"><li><a href="index.php?sec=extensions&sec2=operation/extensions" class="mn">';
+		echo '<ul class="mn"><li class="bb0">
+		<a href="index.php?sec=extensions&sec2=operation/extensions" class="mn">';
 		echo __('Extensions');
 		echo '</a></li></ul>';
 		echo "</div>";

@@ -1,10 +1,12 @@
 2008-08-27  Raul Mateos  <raulofpandora@gmail.com>
+
+	* operation/agentes/status_monitor.php: Moved legend.
+
 	* godmode/menu.php, operation/menu.php: Updated to solve small ugly effects.
 	
 	* include/styles/op.css, god.css: Updated to solve small ugly effects. 
 	god.css needs to be changed to the new "version".
 
-2008-08-27  Raul Mateos  <raulofpandora@gmail.com>
 	* install.php: Solved small typos in language. Style correction.
 
 2008-08-25  Sancho lerena <slerena@artica.es>

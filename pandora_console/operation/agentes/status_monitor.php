@@ -242,16 +242,15 @@ if ($counter > 0) {
 		echo  "</span></td></tr>";
 	}
 	echo "</table>";
+	echo "<table width=700 border=0>";
+	echo "<tr>";
+	echo "<td class='f9'>";
+	echo "<img src='images/pixel_green.png' width=40 height=18>&nbsp;&nbsp;".__('Monitor up')."</td>";
+	echo "<td class='f9'";
+	echo "<img src='images/pixel_red.png' width=40 height=18>&nbsp;&nbsp;".__('Monitor down')."</td>";
+	echo "</table>";	
 } else {
 	echo "<div class='nf'>".__('This group doesn\'t have any monitor')."</div>";
 }
-
-echo "<table width=700 border=0>";
-echo "<tr>";
-echo "<td class='f9'>";
-echo "<img src='images/pixel_green.png' width=40 height=18>&nbsp;&nbsp;".__('Monitor up')."</td>";
-echo "<td class='f9'";
-echo "<img src='images/pixel_red.png' width=40 height=18>&nbsp;&nbsp;".__('Monitor down')."</td>";
-echo "</table>";
 
 ?>

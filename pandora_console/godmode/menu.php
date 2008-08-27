@@ -231,12 +231,7 @@ if (give_acl ($config['id_user'], 0, "DM")) {
 		echo '<div id="god8s">';
 	} else 
 		echo '<div id="god8">';
-	echo '<ul class="mn">';
-	if ($sec == "gdbman" && $sec2 != "godmode/db/db_main") {
-		echo '<li>';
-	} else {
-		echo '<li class="bb0">';
-	}
+	echo '<ul class="mn"><li>';
 	echo '<a href="index.php?sec=gdbman&amp;sec2=godmode/db/db_main" class="mn">'.__('DB Maintenance').'</a></li></ul></div>';
 	
 	if ($sec == "gdbman") {
@@ -273,25 +268,26 @@ if (give_acl ($config['id_user'], 0, "DM")) {
 		} else {
 			echo "<div id='arrowgl'>";
 		}
-		echo "<ul class='mn'><li class='bb0'><a href='index.php?sec=gdbman&amp;sec2=godmode/db/db_event' class='mn'>".__('Database event')."</a></li></ul></div>";
+		echo "<ul class='mn'><li><a href='index.php?sec=gdbman&amp;sec2=godmode/db/db_event' class='mn'>".__('Database event')."</a></li></ul></div>";
 
 		if ($sec2 == "godmode/db/db_sanity") {
 			echo "<div id='arrowgls'>";
 		} else {
 			echo "<div id='arrowgl'>";
 		}
-		echo "<ul class='mn'><li class='bb0'><a href='index.php?sec=gdbman&sec2=godmode/db/db_sanity' class='mn'>".__('Database sanity')."</a></li></ul></div>";
+		echo "<ul class='mn'><li><a href='index.php?sec=gdbman&sec2=godmode/db/db_sanity' class='mn'>".__('Database sanity')."</a></li></ul></div>";
 	}
 }
 
 if (is_array ($config['extensions'])) {
 	if ($sec == "gextensions") {
-		$selected = ' menu-selected';
+		$selected = ' menu-god-selected';
 	} else {
 		$selected = '';
 	}
-	echo '<div id="op-extensions" class="operation-menu'.$selected.'">';
-	echo '<ul class="mn"><li><a href="index.php?sec=gextensions&sec2=godmode/extensions" class="mn">';
+	echo '<div id="god-extensions" class="god-menu'.$selected.'">';
+	echo '<ul class="mn"><li class="bb0">
+	<a href="index.php?sec=gextensions&sec2=godmode/extensions" class="mn">';
 	echo __('Extensions');
 	echo '</a></li></ul>';
 	echo "</div>";
@@ -303,9 +299,9 @@ if (is_array ($config['extensions'])) {
 			if (! give_acl ($config['id_user'], 0, $menu['acl']))
 				continue;
 			if ($sec2 == $menu['sec2']) {
-				echo '<div class="operation-submenu submenu-selected">';
+				echo '<div class="god-submenu submenu-god-selected">';
 			} else {
-				echo '<div class="operation-submenu">';
+				echo '<div class="god-submenu">';
 			}
 			echo '<ul class="mn"><li>';
 			echo '<a href="index.php?sec=gextensions&sec2='.$menu['sec2'].'" class="mn">'.$menu['name'];

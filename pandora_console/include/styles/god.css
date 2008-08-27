@@ -15,10 +15,10 @@ div.menug {
 	width: 155px;
 	margin-bottom: 5px;
 }
-#god1 li, #god2 li, #god3 li, #god4 li, #god5 li, #god51 li, #god6 li, #god7 li, #god8 li, #god1s li, #god2s li, #god3s li, #god4s li, #god5s li, #god51s li, #god6s li, #god7s li, #god8s li, #god_module li, #god_module_sel li {
+#god1 li, #god2 li, #god3 li, #god4 li, #god5 li, #god51 li, #god6 li, #god7 li, #god8 li, #god1s li, #god2s li, #god3s li, #god4s li, #god5s li, #god51s li, #god6s li, #god7s li, #god8s li, #god_module li, #god_module_sel li, #god-extensions li {
 	padding: 0px 0px 0px 30px;
 }
-div#god1>ul, div#god2>ul, div#god3>ul, div#god4>ul, div#god5>ul, div#god51>ul, div#god6>ul, div#god7>ul, div#god8>ul, div#god1s>ul, div#god2s>ul, div#god3s>ul, div#god4s>ul, div#god5s>ul, div#god51s>ul, div#god6s>ul, div#god7s>ul, div#god8s>ul, div#god_module>ul, div#god_module_sel>ul {
+div#god1>ul, div#god2>ul, div#god3>ul, div#god4>ul, div#god5>ul, div#god51>ul, div#god6>ul, div#god7>ul, div#god8>ul, div#god1s>ul, div#god2s>ul, div#god3s>ul, div#god4s>ul, div#god5s>ul, div#god51s>ul, div#god6s>ul, div#god7s>ul, div#god8s>ul, div#god_module>ul, div#god_module_sel>ul , .god-menu ul{
 	width: 126px;
 }
 #god1 li, #god1 li:hover, #god1s li  {
@@ -51,14 +51,22 @@ div#god1>ul, div#god2>ul, div#god3>ul, div#god4>ul, div#god5>ul, div#god51>ul, d
 #god_module li, #god_module li:hover, #god_module_sel li {
 	background: url(../../images/brick.png) no-repeat 6px 4px;
 }
-div.arrowg>ul, div.arrowgs>ul, div#arrowgl>ul, div#arrowgls>ul  {
+#god-extensions li, #god-extensions li:hover {
+	background: url(../../images/extensions.png) no-repeat 5px 3px;
+}
+
+div.arrowg>ul, div.arrowgs>ul, div#arrowgl>ul, div#arrowgls>ul , .god-submenu>ul {
 	width: 75%;
 }
-.arrowg li, .arrowg li:hover, .arrowgs li, #arrowgl li, #arrowgl li:hover, #arrowgls li {
+.arrowg li, .arrowg li:hover, .arrowgs li, #arrowgl li, #arrowgl li:hover, #arrowgls li, .god-submenu li {
 	background: url(../../images/arrow.png) no-repeat 2px 4px;
 	margin-left: 26px;
 	padding: 0px 0px 0px 14px;	
 }
+.menu-god-selected, #menug li:hover, .submenu-god-selected li, .god-submenu li:hover {
+	background-color: #efefbd !important;
+}
+
 #god a:hover,
 #god1 li:hover, #god1s li, #god2 li:hover, #god2s li, #god3 li:hover, #god3s li,
 #god4 li:hover, #god4s li, #god5 li:hover, #god5s li, #god6 li:hover, #god6s li,
@@ -68,9 +76,9 @@ div.arrowg>ul, div.arrowgs>ul, div#arrowgl>ul, div#arrowgls>ul  {
  {
 	background-color: #efefbd;
 }
-#arrowgl li.bb0, #arrowgls li.bb0, #god8 li.bb0 {
+#arrowgl li.bb0, #arrowgls li.bb0 , #menug li.bb0, #god {
 	border-bottom: 0px;
 }
-#god {
+#menug li.bb0, #god {
 	border-top: 0px;
 }

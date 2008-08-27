@@ -28,7 +28,7 @@
 }
 
 .operation-menu ul {
-	width: 127px;
+	width: 128px;
 }
 #op1 li {
 	background: url(../../images/bricks.png) no-repeat 4px 3px;
@@ -59,7 +59,6 @@
 #op9 li {
 	background: url(../../images/monitor.png) no-repeat 4px 3px;
 }
-
 #op-extensions li {
 	background: url(../../images/extensions.png) no-repeat 4px 3px;
 }
@@ -71,13 +70,13 @@
 .operation-submenu li {
 	background: url(../../images/arrow.png) no-repeat 2px 4px;
 	margin-left: 26px;
-	padding: 0px 0px 0px 14px;
+	padding: 0px 0px 0px 13px;
 }
 
 .menu-selected, #menu-operation li:hover, .submenu-selected li, .operation-submenu li:hover {
 	background-color: #d4ddc6 !important;
 }
 
-#menu-operation li.bb0, #arrowls li.bb0, #op8 li.bb0 {
+#menu-operation li.bb0, #arrowls li.bb0, #op-extensions li.bb0 {
 	border-bottom: 0px;
 }

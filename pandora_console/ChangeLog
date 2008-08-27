@@ -1,3 +1,6 @@
+2008-08-27  Raul Mateos  <raulofpandora@gmail.com>
+	* install.php: Solved small typos in language. Style correction.
+
 2008-08-25  Sancho lerena <slerena@artica.es>
 
 	* extensions/update_manager: Added update manager client for

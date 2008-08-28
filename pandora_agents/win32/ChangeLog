@@ -1,3 +1,7 @@
+2008-08-28  Raul Mateos  <raulofpandora@gmail.com>
+
+	* win32/bin/pandora_agent.conf: Updated.
+
 2008-07-30  Sancho Lerena <slerena@gmail.com>
 
 	* win32/installer/pandora.ico: The new official 2.0 icon.

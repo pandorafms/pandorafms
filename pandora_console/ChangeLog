@@ -1,3 +1,9 @@
+2008-08-28  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_visual_map.php: Fixed an error when there were no
+	elements in the map that cause Javascript failure and nothing works.
+	Thanks Jorge for the advice.
+
 2008-08-27  Raul Mateos  <raulofpandora@gmail.com>
 
 	* operation/agentes/status_monitor.php: Moved legend.

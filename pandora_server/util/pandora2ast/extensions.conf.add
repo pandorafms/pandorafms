@@ -1,0 +1,4 @@
+[text2speech]
+exten => s,1,Answer
+exten => s,n,AGI(/usr/share/asterisk/agi-bin/text2speech.php,"${MSGTEXT}")
+exten => s,n,Hangup

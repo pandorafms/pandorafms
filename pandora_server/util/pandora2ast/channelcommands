@@ -1,0 +1,15 @@
+Action: Login
+Username: amanager --> A username that can access the manager console (remotely) as specified in your manager.conf
+Secret: sauce --> A secret password (this goes cleartext over the line, so if you go remote, watch out)
+
+Action: Setvar
+Variable: MSGTEXT
+Value: "Anything you want it to say" --> Again, this is all cleartext
+
+Action: Originate
+Channel: SIP/6549 --> basically any number you want/need to call
+Context: text2speech
+Callerid: Evil Bot --> what you want the callerid to say 
+Priority: 1
+
+Action: Logoff

@@ -126,7 +126,7 @@ function um_client_db_save_package ($package) {
 		$replace[] = '?';
 	}
 	
-	$sql =& $db->prepare ('INSERT INTO tupdate_package ('.implode(',', array_keys (&$fields)).') VALUES ('.implode(',', &$replace).')');
+	$sql =& $db->prepare ('INSERT INTO tupdate_package ('.implode(',', array_keys ($fields)).') VALUES ('.implode(',', $replace).')');
 	$result =& $db->execute ($sql, $fields);
 	if (PEAR::isError ($result)) {
 		return false;
@@ -137,14 +137,14 @@ function um_client_db_save_package ($package) {
 function um_client_db_save_update ($update) {
 	global $db;
 	
-	$fields = array_keys (get_object_vars (&$update));
-	$values = array_values (get_object_vars (&$update));
+	$fields = array_keys (get_object_vars ($update));
+	$values = array_values (get_object_vars ($update));
 	$replace = array ();
 	for ($i = 0; $i < sizeof ($values); $i++) {
 		$replace[] = '?';
 	}
 	
-	$sql =& $db->prepare ('INSERT INTO tupdate ('.implode(',', &$fields).') VALUES ('.implode(',', &$replace).')');
+	$sql =& $db->prepare ('INSERT INTO tupdate ('.implode(',', $fields).') VALUES ('.implode(',', $replace).')');
 	$result =& $db->execute ($sql, $values);
 	if (PEAR::isError ($result)) {
 		return false;
@@ -201,12 +201,12 @@ function um_client_apply_update_database ($update, $db) {
 function um_client_apply_update ($update, $settings, $db, $force = false) {
 	if ($update->type == 'code') {
 		$filename = realpath ($settings->updating_code_path.'/'.$update->filename);
-		$success = um_client_apply_update_file (&$update, &$filename, $force);
+		$success = um_client_apply_update_file ($update, $filename, $force);
 	} else if ($update->type == 'binary') {
 		$filename = realpath ($settings->updating_binary_path.'/'.$update->filename);
-		$success = um_client_apply_update_file (&$update, &$filename);
+		$success = um_client_apply_update_file ($update, $filename);
 	} else if ($update->type == 'db_data' || $update->type == 'db_schema') {
-		$success = um_client_apply_update_database (&$update, &$db);
+		$success = um_client_apply_update_database ($update, $db);
 	} else {
 		return false;
 	}
@@ -232,10 +232,10 @@ function um_client_rollback_update_file ($update, $destiny_filename) {
 function um_client_rollback_update ($update, $settings, $db) {
 	if ($update->type == 'code') {
 		$filename = realpath ($settings->updating_code_path.'/'.$update->filename);
-		$success = um_client_rollback_update_file (&$update, &$filename);
+		$success = um_client_rollback_update_file ($update, $filename);
 	} else if ($update->type == 'binary') {
 		$filename = realpath ($settings->updating_binary_path.'/'.$update->filename);
-		$success = um_client_rollback_update_file (&$update, &$filename);
+		$success = um_client_rollback_update_file ($update, $filename);
 	} else if ($update->type == 'db_data' || $update->type == 'db_schema') {
 		$db->rollback ();
 		$success = true;
@@ -269,11 +269,11 @@ function um_client_upgrade_to_package ($package, $settings, $force = false) {
 	$applied_updates = array ();
 	$rollback = false;
 	
-	$db = um_client_db_connect (&$settings);
+	$db = um_client_db_connect ($settings);
 	if ($db === false)
 		return false;
 	foreach ($package->updates as $update) {
-		$success = um_client_apply_update (&$update, &$settings, &$db, $force);
+		$success = um_client_apply_update ($update, $settings, $db, $force);
 		if (! $success) {
 			echo '<p /><strong>Failed</strong> on:<br />';
 			um_client_print_update ($update, $settings);
@@ -285,7 +285,7 @@ function um_client_upgrade_to_package ($package, $settings, $force = false) {
 	
 	if ($rollback) {
 		foreach ($applied_updates as $update) {
-			$success = um_client_rollback_update (&$update, &$settings, &$db);
+			$success = um_client_rollback_update ($update, $settings, $db);
 		}
 		return false;
 	}

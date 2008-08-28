@@ -1,0 +1,31 @@
+Text2Speech for Asterisk
+
+1. Install Asterisk and Festival on the Asterisk machine.
+
+2. Copy/paste what is in extensions.conf.add to your 
+Asterisk extensions.conf (usually /etc/asterisk/extensions.conf)
+
+3. Put the PHP script text2speech.php in your Asterisk 
+AGI binary directory (on my machine /usr/share/asterisk/agi-bin)
+
+Another host can then execute the actions in channelcommand with 
+the proper variables by connecting through a clear text (try 
+telnet) to: asteriskhost:5038
+
+pandora2ast.pl is a sample Perl script which can be called with 
+some options from Pandora FMS and will initiate a call through 
+the Asterisk Manager (over port 5038). Modify to your liking
+You can put it in /usr/bin or anywhere you would like. Then go
+to the Pandora Console and add an alert with the command
+/usr/bin/pandora2ast.pl _agent_ _data_ _field1_ _field2_
+
+In Pandora you can specify an alert to call this script with 
+the following options: _agent_ _data_ _field1_ _field2_ which 
+will in turn initiate a call to _field1_ (which should be a SIP 
+or other extension eg. SIP/6549 would call through SIP extension 
+6549 - see the Asterisk manuals how to dial stuff) and have a 
+caller id show up of _field2_. It will say as soon as the end
+picks up in a computer voice: "This is a message from the Pandora 
+FMS monitoring system. Agent _agent_. _data_"
+
+There could be a delay as Asterisk processes the voice data.

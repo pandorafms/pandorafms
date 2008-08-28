@@ -1,3 +1,12 @@
+2008-08-28  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* extensions/update_manager.php: Check for an empty variable so it 
+	doesn't give a warning
+
+	* extensions/update_manager/lib/libupdate_manager_utils.php,
+	libupdate_manager_client.php: Removed referenced variables from
+	function calls because it is deprecated in PHP5
+
 2008-08-28  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions_visual_map.php: Fixed an error when there were no

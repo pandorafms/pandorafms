@@ -6,7 +6,7 @@ function add_prefix (&$string, $key, $prefix) {
 
 function is_binary ($filepath) {
 	$output = array ();
-	exec ('file -b -e soft '.$filepath, &$output);
+	exec ('file -b -e soft '.$filepath, $output);
 	if (isset ($output[0]))
 		return $output[0] == 'data';
 	return false;

@@ -1,3 +1,8 @@
+2008-08-28  Evi Vanoost <vanooste@rcbi.rochester.edu>
+	
+	* util/pandora2ast: Pandora to Asterisk script. Check README for how to
+	install it and use it
+
 2008-08-28  Manuel Arostegui <marostegui@artica.es>
 
 	* conf/pandora_server.conf: Fixed small typo.

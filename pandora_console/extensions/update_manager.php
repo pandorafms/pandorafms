@@ -76,6 +76,10 @@ function pandora_update_manager_login () {
 	$db =& um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
 			$config['dbpass'], $config['dbname']);
 	$settings = um_db_load_settings ();
+	
+	if(empty($settings->keygen_path))
+		return false;
+	
 	$user_key = exec ($settings->keygen_path);
 	
 	$package = um_client_check_latest_update ($settings, $user_key);

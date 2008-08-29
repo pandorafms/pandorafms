@@ -1,3 +1,10 @@
+2008-08-28  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* operation/events/events.php: Updated the queries and fixed some minor
+	bugs with the event selections. Style changes.
+
+	* operation/agentes/networkmap.php: Style changes
+
 2008-08-28  Esteban Sanchez  <estebans@artica.es>
 
 	* extensions/update_manager.php: Added function to update Update

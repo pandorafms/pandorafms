@@ -6,8 +6,6 @@ if ((include_once ('XML/RPC.php')) != 1)
 error_reporting ($prev_level);
 unset ($prev_level);
 
-define ('XMLRPC_DEBUG', 0);
-
 function um_xml_rpc_client_call ($server_host, $server_path, $server_port, $function, $parameters) {
 	$msg = new XML_RPC_Message ($function, $parameters);
 	$client = new XML_RPC_Client ($server_path, $server_host, $server_port);
@@ -15,12 +13,7 @@ function um_xml_rpc_client_call ($server_host, $server_path, $server_port, $func
 		$client->setDebug (XMLRPC_DEBUG);
 	$result = $client->send ($msg);
 	
-	if (! $result) {
-		trigger_error ('<strong>Open Update Manager</strong> Server comunication error. '.$client->errstr);
-		return false;
-	}
-	if ($result->faultCode ()) {
-		trigger_error ('<strong>Open Update Manager</strong> XML-RPC error. '.$result->faultString ());
+	if (! $result || $result->faultCode ()) {
 		return false;
 	}
 	
@@ -153,14 +146,15 @@ function um_client_db_save_update ($update) {
 }
 
 function um_client_apply_update_file ($update, $destiny_filename, $force = false) {
-	if (! is_writable ($destiny_filename)) {
-		return false;
-	}
-
+	@mkdir (dirname ($destiny_filename), 0777, true);
+	
 	if (file_exists ($destiny_filename)) {
+		if (! is_writable ($destiny_filename)) {
+			return false;
+		}
 		$checksum = md5_file ($destiny_filename);
-		if (! $force &&$update->previous_checksum != '') {
-			if ($update->previous_checksum  != $checksum)
+		if (! $force && $update->previous_checksum != '') {
+			if ($update->previous_checksum != $checksum)
 				/* Local changes in the file. Don't update */
 				return false;
 		}
@@ -251,7 +245,11 @@ function um_client_print_update ($update, $settings) {
 	echo '<ul>';
 	echo '<li><em>Type</em>: '.$update->type.'</li>';
 	if ($update->type == 'code' || $update->type == 'binary') {
-		$realpath = realpath ($settings->updating_code_path.'/'.$update->filename);
+		if ($update->type == 'code') {
+			$realpath = realpath ($settings->updating_code_path.'/'.$update->filename);
+		} else {
+			$realpath = realpath ($settings->updating_binary_path.'/'.$update->filename);
+		}
 		echo '<li><em>Filename</em>: '.$update->filename.'</li>';
 		echo '<li><em>Realpath</em>: '.$realpath.'</li>';
 		echo '<li><em>Checksum</em>: '.$update->checksum.'</li>';

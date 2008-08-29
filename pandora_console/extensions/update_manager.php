@@ -20,6 +20,18 @@ function load_update_manager_lib () {
 	require_once ('update_manager/load_updatemanager.php');
 }
 
+function update_settings_database_connection () {
+	global $config;
+	global $db;
+	
+	$db =& um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
+			$config['dbpass'], $config['dbname']);
+	um_db_update_setting ('dbname', $config['dbname']);
+	um_db_update_setting ('dbuser', $config['dbuser']);
+	um_db_update_setting ('dbpass', $config['dbpass']);
+	um_db_update_setting ('dbhost', $config['dbhost']);
+}
+
 function pandora_update_manager_install () {
 	global $config;
 	global $db;
@@ -44,10 +56,7 @@ function pandora_update_manager_install () {
 			$config['dbpass'], $config['dbname']);
 	um_db_update_setting ('updating_code_path',
 			dirname ($_SERVER['SCRIPT_FILENAME']));
-	um_db_update_setting ('dbname', $config['dbname']);
-	um_db_update_setting ('dbuser', $config['dbuser']);
-	um_db_update_setting ('dbpass', $config['dbpass']);
-	um_db_update_setting ('dbhost', $config['dbhost']);
+	update_settings_database_connection ();
 }
 
 function pandora_update_manager_uninstall () {
@@ -63,6 +72,7 @@ function pandora_update_manager_main () {
 	global $db;
 	
 	load_update_manager_lib ();
+	update_settings_database_connection ();
 	
 	require_once ('update_manager/main.php');
 }

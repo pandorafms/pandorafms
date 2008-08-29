@@ -1,5 +1,4 @@
 <?php
-
 // Pandora FMS - the Flexible Monitoring System
 // ============================================
 // Copyright (c) 2008 Artica Soluciones Tecnologicas, http://www.artica.es
@@ -21,7 +20,7 @@
 // Load global vars
 require("include/config.php");
 
-check_login();
+check_login ();
 
 if (! give_acl ($config['id_user'], 0, "AR")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
@@ -43,23 +42,22 @@ function generate_dot ($simple = 0, $font_size) {
 	$orphans = array();
 	
 	// Open Graph
-	$graph = open_graph();
+	$graph = open_graph ();
 
 	// Get agent data	
-	$agents = mysql_query('SELECT id_grupo, nombre, id_os, id_parent, id_agente FROM tagente WHERE disabled = 0 ORDER BY id_grupo');
-	while ($agent = mysql_fetch_assoc($agents)) {
-		if (give_acl($config["id_user"], $agent["id_grupo"], "AR") == 0)
+	$agents = get_db_all_rows_sql ('SELECT id_grupo, nombre, id_os, id_parent, id_agente FROM tagente WHERE disabled = 0 ORDER BY id_grupo');
+	foreach ($agents as $agent) {
+		if (give_acl ($config["id_user"], $agent["id_grupo"], "AR") == 0)
 			continue;
 		// Save node parent information to define edges later
 		if ($agent['id_parent'] != "0") {
 			$parents[$agent['id_agente']] = $agent['id_parent'];
-		}
-		else {
+		} else {
 			$orphans[$agent['id_agente']] = 1;
 		}
 		
 		// Add node
-		$graph .= create_node($agent , $simple, $font_size)."\n\t\t";
+		$graph .= create_node ($agent , $simple, $font_size)."\n\t\t";
 	}
 
 	// Create a central node if orphan nodes exist
@@ -78,7 +76,7 @@ function generate_dot ($simple = 0, $font_size) {
 	}
 	
 	// Close graph
-	$graph .= close_graph();
+	$graph .= close_graph ();
 	
 	return $graph;
 }
@@ -306,19 +304,19 @@ if ($nooverlap == 1){
 	echo "<td>";
 	echo __('Distance between nodes') . ' &nbsp;';
 	print_input_text ('ranksep', $ranksep, $alt = 'Separation between elements in the map (in Non-overlap mode)', 3, 4, 0);
+	echo "</td>";
 }
 
 echo "<td>";
 echo __('Font') . ' &nbsp;';
 print_input_text ('font_size', $font_size, $alt = 'Font size (in pt)', 3, 4, 0);
-
+echo "</td>";
 
 //echo '  Display groups  <input type="checkbox" name="group" value="group" class="chk"/>';
 echo '<td>';
 echo '<input name="updbutton" type="submit" class="sub upd" value="'. __('Update'). '">';
-echo '</td>';
-echo '</table>';
-echo '</form>';
+echo '</td></tr>';
+echo '</table></form>';
 
 // Set filter
 $filter = set_filter();
@@ -375,7 +373,7 @@ if ($result !== false) {
 
 <script language="javascript" type="text/javascript">
 $(document).ready (function () {
-	$("area[title!='<?=$pandora_name?>']").cluetip ({
+	$("area[title!='<?php echo $pandora_name; ?>']").cluetip ({
 		arrows: true,
 		attribute: 'title',
 		cluetipClass: 'default',

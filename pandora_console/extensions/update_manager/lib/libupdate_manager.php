@@ -197,16 +197,32 @@ function um_db_get_package_updates ($id_package) {
 	return $updates;
 }
 
-function um_db_create_package_log ($id_package, $id_auth, $ip_address = '') {
+function um_db_create_package_log ($id_package, $client_key, $user_package, $result = 'query', $user_subscription = '') {
 	global $db;
 	
-	$values = array ($id_package, $id_auth, $ip_address);
-	$sql =& $db->prepare ('INSERT INTO tupdate_package_log (id_update_package, id_auth, ip_address) VALUES (?, ?, ?)');
+	$values = array ($id_package, $client_key, $_SERVER['REMOTE_ADDR'], $user_package, $user_subscription, $result);
+	$sql =& $db->prepare ('INSERT INTO tupdate_package_log (id_update_package, client_key, ip_address, user_package, user_subscription, result) VALUES (?, ?, ?, ?, ?, ?)');
 	$result =& $db->execute ($sql, $values);
 	if (PEAR::isError ($result)) {
 		return false;
 	}
 	return true;
+}
+
+function um_db_get_all_package_logs () {
+	global $db;
+	
+	$result =& $db->query ('SELECT * FROM tupdate_package_log ORDER BY `timestamp` DESC');
+	if (PEAR::isError ($result)) {
+		echo '<strong>Error</strong>: '.$result->getMessage ().'<br />';
+		return array ();
+	}
+	$logs = array ();
+	while ($result->fetchInto ($log)) {
+		$logs[$log->id] = $log;
+	}
+	
+	return $logs;
 }
 
 function um_db_create_component ($type, $name, $path = '') {
@@ -502,10 +518,10 @@ function um_component_db_connect () {
 function um_get_package_status () {
 	$status = array ();
 	
-	$status['development'] = 'Development';
-	$status['testing'] = 'Testing';
-	$status['public'] = 'Public';
-	$status['disabled'] = 'Disabled';
+	$status['development'] = __('Development');
+	$status['testing'] = __('Testing');
+	$status['public'] = __('Public');
+	$status['disabled'] = __('Disabled');
 	
 	return $status;
 }
@@ -513,8 +529,8 @@ function um_get_package_status () {
 function um_get_component_types () {
 	$types = array ();
 	
-	$types['database'] = 'Database';
-	$types['directory'] = 'Code / binary directory';
+	$types['database'] = __('Database');
+	$types['directory'] = __('Code / binary directory');
 	
 	return $types;
 }

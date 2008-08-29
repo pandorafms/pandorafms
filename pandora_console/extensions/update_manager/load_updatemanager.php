@@ -13,5 +13,14 @@ if (! extension_loaded ('mysql'))
 
 require_once ('lib/libupdate_manager.php');
 
+function get_user_key () {
+	/* We only want to know this for statistics records.
+	   Feel free to disable if you want. We don't want to hide anything.
+	 */
+	$user_key = get_db_value ('COUNT(`id_agente`)', 'tagente', 'disabled', 0);
+	
+	return $user_key;
+}
+
 flush ();
 ?>

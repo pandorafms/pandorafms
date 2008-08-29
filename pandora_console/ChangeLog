@@ -1,3 +1,29 @@
+2008-08-28  Esteban Sanchez  <estebans@artica.es>
+
+	* extensions/update_manager.php: Added function to update Update
+	Manager settings.
+
+	* extensions/update_manager/load_updatemanager.php: Added user key
+	generation function. Update manager free extension do not use a keygen
+	binary file.
+	
+	* extensions/update_manager/main.php: Changes to key generation,
+	because free extension do not use keygen.
+
+	* extensions/update_manager/settings.php: Removed configuration of
+	keygen and upgrading directory.
+
+	* extensions/update_manager/lib/libupdate_manager.php,
+	extensions/update_manager/lib/libupdate_manager_utils.php: Updated to
+	latest version of Update Manager.
+
+	* extensions/update_manager/lib/libupdate_manager_client.php: Removed
+	debug flag and errors to be less intrusive for the user. Updated to
+	latest version of Update Manager.
+
+	* extensions/update_manager/sql/update_manager.sql: Changed default
+	settings.
+
 2008-08-28  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* extensions/update_manager.php: Check for an empty variable so it 

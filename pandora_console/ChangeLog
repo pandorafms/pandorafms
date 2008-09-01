@@ -1,3 +1,15 @@
+2008-09-01  Esteban Sanchez  <estebans@artica.es>
+
+	* extensions/update_manager/sql/update_manager.sql,
+	extensions/update_manager.php: Updated server info to
+	the final Update manager host.
+
+	* extensions/update_manager/main.php: Added a information message
+	about Update Manager extension.
+
+	* update_manager/load_updatemanager.php: Get module count into user
+	key.
+
 2008-09-01  Sancho Lerena <slerena@artica.es>
 
 	* pandora_logo.png: White background for IE6 users.

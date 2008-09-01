@@ -34,6 +34,14 @@ $settings = um_db_load_settings ();
 
 echo '<h3>'.__('Update manager').'</h3>';
 
+echo '<div class="notify" style="width: 80%" >';
+echo '<img src="images/information.png" /> ';
+/* Translators: Do not translade Update Manager, it's the name of the program */
+echo __('The new <a href="http://updatemanager.sourceforge.net">Update Manager</a> client is shipped with the new Pandora FMS 2.0. It lets systems administrators to do not need to update their PandoraFMS manually since the Update Manager is the one getting new modules, new plugins and new features (even full migrations tools for future versions) automatically');
+echo '<p />';
+echo __('Update Manager is one of the most advanced features of PandoraFMS 2.0 Enterprise version, for more information visit <a href="http://pandorafms.com">http://pandorafms.com</a>');
+echo '</div>';
+
 $user_key = get_user_key ();
 $package = um_client_check_latest_update ($settings, $user_key);
 

@@ -1,3 +1,14 @@
+2008-09-01  Esteban Sanchez  <estebans@artica.es>
+
+	* reporting/pandora_graph.php: Added to repository. New abstract class
+	PandoraGraphAbstract to allow the change of the graphic engine easily.
+
+	* reporting/fgraph.php: Rewritten to remove all the references to
+	PEAR::Image and replaced by the new Pandora Graph abstract class.
+
+	* reporting/pearimage_graph.php: Added to repository. Implements
+	PandoraGraphAbstract class with the PEAR::Image functions.
+
 2008-09-01  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/languages/es.po, include/languages/es.mo: updated 

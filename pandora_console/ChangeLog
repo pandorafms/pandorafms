@@ -1,3 +1,24 @@
+2008-09-01  Sancho lerena <slerena@artica.es>
+
+	* include/, fgraph.php: Moved licence of libraries to LGPL.
+
+	* install.php: Added dependency check for several new includes
+	from pear (xml_rpc and DB), also graphviz twopi binary and check
+	in step1 for a writable config.php and ./include dir. Some other
+	minor fixes (esthetic).
+
+	* pandoradb.sql: Table tagent_data_image was still there. This
+	comes with next version (I hope), not this one.
+
+	*  pandoradb_data.sql: db_scheme_build update and removed modules
+	components without proper id_module.
+
+	* networkmap.php: Another foreach() notice fixed.
+
+	* upgrade.php: Moved to contrib branch in SVN.
+
+	Old pandora SQL conversion files, deleted (was present in its branches).
+
 2008-08-28  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* operation/events/events.php: Updated the queries and fixed some minor

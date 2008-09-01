@@ -76,18 +76,6 @@ CREATE TABLE IF NOT EXISTS `tagente_datos` (
   KEY `data_index1` (`id_agente_modulo`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 
-CREATE TABLE IF NOT EXISTS `tagent_data_image` (
-  `id` bigint(20) unsigned NOT NULL auto_increment,
-  `id_agent_module`int(10) unsigned NOT NULL default '0',
-  `id_agent` int(10) unsigned NOT NULL default '0',
-  `blob` mediumblob NOT NULL,
-  `filename` varchar(255) default '',
-  `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
-  `utimestamp` int(20) unsigned default '0',
-  PRIMARY KEY  (`id`),
-  KEY `img_idx1` (`id_agent`,`id_agent_module`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 CREATE TABLE IF NOT EXISTS `tagente_datos_inc` (
   `id_adi` int(10) unsigned NOT NULL auto_increment,
   `id_agente_modulo` int(10) unsigned NOT NULL default '0',

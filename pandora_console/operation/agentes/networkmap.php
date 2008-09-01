@@ -46,6 +46,7 @@ function generate_dot ($simple = 0, $font_size) {
 
 	// Get agent data	
 	$agents = get_db_all_rows_sql ('SELECT id_grupo, nombre, id_os, id_parent, id_agente FROM tagente WHERE disabled = 0 ORDER BY id_grupo');
+	if ($agents)
 	foreach ($agents as $agent) {
 		if (give_acl ($config["id_user"], $agent["id_grupo"], "AR") == 0)
 			continue;

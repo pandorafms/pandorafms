@@ -94,6 +94,29 @@ function check_generic ( $ok, $label ){
 	echo "</td></tr>";
 }
 
+function check_writable ( $fullpath, $label ){
+	echo "<tr><td>";
+	echo "<span class='arr'> $label </span>";
+	echo "</td><td>";
+	if (file_exists($fullpath))
+		if (is_writable($fullpath)){
+			echo " <img src='images/dot_green.png'>";
+			echo "</td></tr>";
+			return 0;
+		} else {
+			echo " <img src='images/dot_red.png'>";
+			echo "</td></tr>";
+			return 1;
+		}
+	else {
+		echo " <img src='images/dot_red.png'>";
+		echo "</td></tr>";
+		return 1;
+	}
+
+}
+
+
 function check_variable ( $var, $value, $label, $mode ){
 	echo "<tr><td>";
 	echo "<span class='arr'> $label </span>";
@@ -150,7 +173,7 @@ function install_step1() {
 	echo "
 	<div id='install_container'>
 	<h1>Pandora FMS installation wizard. Step #1 of 4</h1>
-	<div id='wizard' style='height: 380px;'>
+	<div id='wizard' style='height: 490px;'>
 		<div id='install_box'>
 			<h2>Welcome to Pandora FMS 2.0 installation Wizard</h2>
 			<p>This wizard helps you to quick install Pandora FMS console in your system.</p>
@@ -163,6 +186,12 @@ function install_step1() {
 			echo "<div class='warn'><b>Warning:</b> You already have a config.php file. 
 			Configuration and database would be overwritten if you continued.</div>";
 		}
+		echo "<table width=100%>";
+		$writable = check_writable ( "include", "Checking if ./config is writable");
+		if (file_exists("include/config.php"))
+			$writable += check_writable ( "include/config.php", "Checking if include/config.php is writable");
+		echo "</table>";
+
 		echo "<div class='warn'><b>Warning:</b> This installer will <b>overwrite and destroy</b> 
 		your existing Pandora FMS configuration and <b>Database</b>. Before continue, 
 		please <b>be sure that you have no valuable Pandora FMS data in your Database</b>.<br>
@@ -179,13 +208,17 @@ function install_step1() {
 			<img src='images/pandora_logo.png' border='0'><br>
 			<img src='images/step0.png' border='0'>
 		</div>
-		<div id='install_img'>
-			<a href='install.php?step=2'><img align='right' src='images/arrow_next.png' border='0'>
-			</a>
+		<div id='install_img'>";
+		if ($writable == 0)
+			echo "
+			<a href='install.php?step=2'><img align='right' src='images/arrow_next.png' border='0'></a>";
+		else
+			echo "<div class='warn'><b>ERROR:</b>You need to setup permissions to be able to write in ./include directory</div>";
+		echo "
 		</div>
 	</div>
 	<div id='foot_install'>
-		<i>Pandora FMS is a Free Software project registered at 
+			<i>Pandora FMS is an OpenSource Software project registered at 
 		<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
 	</div>
 	</div>";
@@ -196,7 +229,7 @@ function install_step2() {
 	echo "
 	<div id='install_container'>
 	<h1>Pandora FMS console installation wizard. Step #2 of 4</h1>
-	<div id='wizard' style='height: 300px;'>
+	<div id='wizard' style='height: 390px;'>
 		<div id='install_box'>";
 		echo "<h2>Checking software dependencies</h2>";
 			echo "<table border=0 width=230>";
@@ -208,7 +241,10 @@ function install_step2() {
 			$res += check_extension("session","PHP session extension");
 			$res += check_extension("gettext","PHP gettext extension");
 			$res += check_include("PEAR.php","PEAR PHP Library");
-			//$res += check_exists ("/usr/bin/pdflatex","PDF Latex in /usr/bin/pdflatex");
+			$res += check_include("DB.php","PEAR:DB PHP Library");
+			$res += check_include("XML/RPC.php","PEAR XML/RPC.php PHP Library");
+			$res += check_exists ("/usr/bin/twopi","Graphviz Binary");
+
 			echo "</table>
 		</div>
 		<div id='logo_img'>
@@ -231,7 +267,7 @@ function install_step2() {
 		</div>
 	</div>
 	<div id='foot_install'>
-		<i>Pandora FMS is a Free Software project registered at 
+			<i>Pandora FMS is an OpenSource Software project registered at 
 		<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
 	</div>
 	</div>";
@@ -300,7 +336,7 @@ function install_step3() {
 			</div>
 		</div>
 		<div id='foot_install'>
-			<i>Pandora FMS is a Free Software project registered at 
+			<i>Pandora FMS is an OpenSource Software project registered at 
 			<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
 		</div>
 	</div>";
@@ -422,7 +458,7 @@ $config["homeurl"]="'.$url.'";			// Base URL
 		</div>
 	</div>
 	<div id='foot_install'>
-		<i>Pandora FMS is a Free Software project registered at 
+			<i>Pandora FMS is an OpenSource Software project registered at 
 		<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
 	</div>
 </div>";
@@ -451,7 +487,7 @@ function install_step5() {
 		</div>
 	</div>
 	<div id='foot_install'>
-		<i>Pandora FMS is a Free Software project registered at 
+			<i>Pandora FMS is an OpenSource Software project registered at 
 		<a target='_new' href='http://pandora.sourceforge.net'>SourceForge</a></i>
 	</div>
 </div>";

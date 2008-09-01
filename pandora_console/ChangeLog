@@ -1,5 +1,10 @@
 2008-09-01  Esteban Sanchez  <estebans@artica.es>
 
+	* extensions/update_manager.php: Get user key with the function
+	instead of the unexistent keygen.
+
+2008-09-01  Esteban Sanchez  <estebans@artica.es>
+
 	* extensions/update_manager/sql/update_manager.sql,
 	extensions/update_manager.php: Updated server info to
 	the final Update manager host.

@@ -51,7 +51,7 @@ INSERT INTO `tconfig` VALUES
 (6,'graph_res','5'),
 (7,'step_compact','1'),
 (8,'db_scheme_version','2.0'),
-(9,'db_scheme_build','PD80822'),
+(9,'db_scheme_build','PD80901'),
 (13,'show_unknown','0'),
 (14,'show_lastalerts','1'),
 (15,'style','pandora'),
@@ -255,19 +255,7 @@ INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `t
 INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`) VALUES (51,'OS Raw Interrupts','Get system raw interrupts from SO',13,16,0,0,180,0,'','','public','UCD-SNMP-MIB::ssRawInterrupts.0',4,2);
 INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`) VALUES (52,'OS IO Signals sent','IO Signals sent by Kernel',13,16,0,0,180,0,'','','public','UCD-SNMP-MIB::ssIOSent.0',4,2);
 INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`) VALUES (53,'System Uptime','Sistem uptime in timeticks',1,15,0,0,180,0,'','','public','HOST-RESOURCES-MIB::hrSystemUptime.0',4,2);
-INSERT INTO `tnetwork_component` VALUES (54,'System IO Recv','Linux System IO Recv ',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.6.0',4,2,'','','',0);
-INSERT INTO `tnetwork_component` VALUES (55,'System SwapIn ','Linux System Swap In',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.3.0',1,2,'','','',0);
-INSERT INTO `tnetwork_component` VALUES (56,'System Buffer Memory','Linux System Buffer Memory (used as available\nmemory)',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.4.14.0',4,2,'','','',0);
-INSERT INTO `tnetwork_component` VALUES (57,'System Cached Memory','Linux System Cached Memory (used as free\nmemory)',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.4.15.0',4,2,'','','',0);
-INSERT INTO `tnetwork_component` VALUES (58,'System Processes','Total system process on any host',12,15,0,0,180,0,'','','public','.1.3.6.1.2.1.25.1.6.0',4,2,'','','',0);
-INSERT INTO `tnetwork_component` VALUES (59,'CPU User','Linux User CPU Usage (%)',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.9.0',4,2,'','','',0);
-INSERT INTO `tnetwork_component` VALUES (60,'CPU System','Linux System CPU usage',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.10.0',4,2,'','','',0);
-INSERT INTO `tnetwork_component` VALUES (177,'System Context Change','Linux System Context changes ',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.8.0',4,2,'','','',0);
-INSERT INTO `tnetwork_component` VALUES (178,'System Interrupts','Linux system interrupts ',5,15,0,0,180,0,'','','public','.1.3.6.1.4.1.2021.11.7.0',4,2,'','','',0);
 INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`) VALUES (176,'Catalyst Free Mem','Taken from ftp://ftp.cisco.com/pub/mibs/oid/OLD-CISCO-MEMORY-MIB.oid',2,15,0,0,180,0,'','','public','1.3.6.1.4.1.9.2.1.8',4,2);
-INSERT INTO `tnetwork_component` VALUES (61,'GigabitEthernet1/0/1 Status','',2,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.10101',2,2,'','','',0);
-INSERT INTO `tnetwork_component` VALUES (62,'GigabitEthernet1/0/2 Status','',2,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.10102',2,2,'','','',0);
-INSERT INTO `tnetwork_component` VALUES (63,'GigabitEthernet1/0/3 Status','',2,18,0,0,180,0,'','','public','.1.3.6.1.2.1.2.2.1.8.10103',2,2,'','','',0);
 
 -- WMI components
 INSERT INTO `tnetwork_component` (`id_nc`, `name`, `description`, `id_group`, `type`, `max`, `min`, `module_interval`, `tcp_port`, `tcp_send`, `tcp_rcv`, `snmp_community`, `snmp_oid`, `id_module_group`, `id_modulo`, `plugin_user`, `max_timeout`) VALUES (200, 'CPU load', 'CPU0 load average', 14, 1, 100, 0, 300, 1, '', '', '', 'SELECT LoadPercentage from Win32_Processor WHERE DeviceID = &quot;CPU0&quot;', 1, 6, 'Administrator', 10);

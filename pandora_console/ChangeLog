@@ -1,3 +1,7 @@
+2008-09-01  Raul Mateos  <raulofpandora@gmail.com>
+
+	* operation/snmp/snmp_console/snmp_view.php: Added style to buttons.
+
 2008-09-01  Esteban Sanchez  <estebans@artica.es>
 
 	* extensions/update_manager.php: Get user key with the function
@@ -32,8 +36,8 @@
 
 2008-09-01  Raul Mateos  <raulofpandora@gmail.com>
 
-	* operation/snmp/smp_console/snmp_view.php: Show substring in custom value, when the mouse is
-	over data, it shows all the custom value. Cosmetic change.
+	* operation/snmp/snmp_console/snmp_view.php: Show substring in custom value, 
+	when the mouse is over data, it shows all the custom value. Cosmetic change.
 	
 	* operation/events/events.php: Closed several html tags.
 	

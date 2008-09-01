@@ -545,9 +545,15 @@ sub execute_alert (%$$$$$$$$$$$$$$$) {
 		pandora_audit ($pa_config, $field1, $agent, "Alert ($alert_description)", $dbh);
         $create_event = 0;
 	} elsif ($id_alert == 2) { # email
+
+        $field2 =~ s/_agent_/$agent/ig;
+        $field2 =~ s/_timestamp_/$timestamp/ig;
+        $field2 =~ s/_data_/$data/ig;
+
         $field3 =~ s/_agent_/$agent/ig;
         $field3 =~ s/_timestamp_/$timestamp/ig;
         $field3 =~ s/_data_/$data/ig;
+
         pandora_sendmail ( $pa_config, $field1, $field2, $field3);
     } elsif ($id_alert == 4) { # internal event
         $create_event = 1;
@@ -631,6 +637,16 @@ sub pandora_writestate (%$$$$$$$) {
 		@data = $s_idag->fetchrow_array();
 	}
 
+	# Postprocess management
+
+	if ((defined($data[23])) && ($data[23] != 0) && (is_numeric($data[23]))){
+		if (($id_modulo == 1) || ($id_modulo == 7) || ($id_modulo == 15) || ($id_modulo == 22) || ($id_modulo == 4) || ($id_modulo == 8) || ($id_modulo == 16) ){
+			$datos = $datos * $data[23];
+		}
+	}
+
+	$s_idag->finish();
+
 	# Get module interval or agent interval if module don't defined
 	my $id_module_type	= $data[2];
 	my $module_interval = $data[7];
@@ -655,14 +671,6 @@ sub pandora_writestate (%$$$$$$$) {
 	my $idages = "SELECT * from tagente_estado WHERE id_agente_modulo = $id_agente_modulo";
 	my $s_idages = $dbh->prepare($idages);
 	$s_idages ->execute;
-
-	# Postprocess management
-
-	if ((defined($data[23])) && ($data[23] != 0) && (is_numeric($data[23]))){
-		if (($id_modulo == 1) || ($id_modulo == 7) || ($id_modulo == 15) || ($id_modulo == 22) || ($id_modulo == 4) || ($id_modulo == 8) || ($id_modulo == 16) ){
-			$datos = $datos * $data[23];
-		}
-	}
 
 	# Apply Mysql quotes to data to prepare for database insertion / update
 	$datos = $dbh->quote($datos); # Parse data entry for adecuate SQL representation.

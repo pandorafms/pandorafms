@@ -1,3 +1,9 @@
+
+2008-09-01  Sancho Lerena <slerena@gmail.com>
+
+        * lib/PandoraFMS/DB.pm: Sending mail now replaces macros also 
+        in the subject.
+
 2008-08-28  Evi Vanoost <vanooste@rcbi.rochester.edu>
 	
 	* util/pandora2ast: Pandora to Asterisk script. Check README for how to

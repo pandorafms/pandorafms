@@ -18,7 +18,9 @@
 	* operation/snmp/smp_console/snmp_view.php: Show substring in custom value, when the mouse is
 	over data, it shows all the custom value. Cosmetic change.
 	
-	* operation/events/events.php: Closed several html tags.	
+	* operation/events/events.php: Closed several html tags.
+	
+	* general/error_install.php: Updated page title.
 
 2008-09-01  Esteban Sanchez  <estebans@artica.es>
 

@@ -21,12 +21,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<title>Pandora FMS - The Free Monitoring System - Console Error</title>
+<title>Pandora FMS - The Flexible Monitoring System - Console Error</title>
 <meta http-equiv="expires" content="0">
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="resource-type" content="document">
 <meta name="distribution" content="global">
-<meta name="author" content="Sancho Lerena, Raul Mateos">
+<meta name="author" content="Sancho Lerena">
 <meta name="copyright" content="This is GPL software. Created by Sancho Lerena and others">
 <meta name="keywords" content="pandora, monitoring, system, GPL, software">
 <meta name="robots" content="index, follow">
@@ -43,7 +43,7 @@
 		</font>
 	</div>
 	<div class="msg"><br><br>
-	For security reasons, normal operation is not possible until you delete installer file. 
+	For security reasons, normal operation is not possible until you delete installer file.
 	Please delete the <i>./install.php</i> file before running Pandora FMS Console.
 	</div>
 </div>

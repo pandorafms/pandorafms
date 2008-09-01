@@ -414,21 +414,25 @@ if ($total_events > 0){
 			// Timestamp
 			echo "<td class='".$tdclass."f9' title='".$row2["timestamp"]."'>";
 			echo human_time_comparation ($row2["timestamp"]);
-			
+			echo "</td>";
 			// Several options grouped here
 			echo "<td class='$tdclass' align='right'>";
 			// Validate event
 			if (($row2["estado"] == 0) and (give_acl ($config["id_user"], $id_group,"IW") ==1))
-				echo "<a href='$url&check=".$row2["id_evento"]."&pure=".$config["pure"]."'><img src='images/ok.png' border='0'></a> ";
+				echo "<a href='$url&check=".$row2["id_evento"]."&pure=".$config["pure"]."'>
+				<img src='images/ok.png' border='0'></a> ";
 			// Delete event
 			if (give_acl ($config["id_user"], $id_group,"IM") ==1)
-				echo "<a href='$url&delete=".$row2["id_evento"]."&pure=".$config["pure"]."'><img src='images/cross.png' border=0></a> ";
+				echo "<a href='$url&delete=".$row2["id_evento"]."&pure=".$config["pure"]."'>
+				<img src='images/cross.png' border=0></a> ";
 			// Create incident from this event			
 			if (give_acl ($config["id_user"], $id_group,"IW") == 1)
 				echo "<a href='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&insert_form&from_event=".$row2["id_evento"]."'><img src='images/page_lightning.png' border=0></a>";
-			// Checbox					
+			echo "</td>";
+			// Checbox				
 			echo "<td class='$tdclass' align='center'>";
-			echo "<input type='checkbox' class='chk' name='eventid".$offset_counter."' value='".$row2["id_evento"]."'>";
+			echo "<input type='checkbox' class='chk' name='eventid".$offset_counter."' 
+			value='".$row2["id_evento"]."'>";
 			echo "</td></tr>";
 		}
 		$offset_counter++;

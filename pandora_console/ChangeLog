@@ -1,3 +1,10 @@
+2008-09-01  Raul Mateos  <raulofpandora@gmail.com>
+
+	* operation/snmp/smp_console/snmp_view.php: Show substring in custom value, when the mouse is
+	over data, it shows all the custom value. Cosmetic change.
+	
+	* operation/events/events.php: Closed several html tags.	
+
 2008-09-01  Esteban Sanchez  <estebans@artica.es>
 
 	* reporting/pandora_graph.php: Added to repository. New abstract class
@@ -14,7 +21,7 @@
 	* include/languages/es.po, include/languages/es.mo: updated 
 	Spanish translation.
 
-2008-09-01  Sancho lerena <slerena@artica.es>
+2008-09-01  Sancho Lerena <slerena@artica.es>
 
 	* include/, fgraph.php: Moved licence of libraries to LGPL.
 

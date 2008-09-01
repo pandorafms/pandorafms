@@ -239,21 +239,24 @@ for ($a=$offset_limit;$a < ($config["block_size"] + $offset + 1);$a++){
 			else {
 				echo "<td class='datos'>".$row["source"]."</td>";
 			}
-			echo "<td class='datos'>".$row["value_custom"]."</td>";
+			echo "<td class='datos' title='".$row["value_custom"]."''>".substr($row["value_custom"],0,20)."</td>";
 
 			echo "<td class='datos'>";
 			if ($row["status"] <> 0)
 				echo "<a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$row["id_usuario"]."'><a href='#' class='tip'>&nbsp;<span>".dame_nombre_real($row["id_usuario"])."</span></a>".substr($row["id_usuario"],0,8)."</a>";
+			echo "</td>";
 			echo "<td class='datos'>".$row["timestamp"]."</td>";
 			echo "<td class='datos' align='center'>";
 			if ($row["alerted"] != 0 )
 				echo "<img src='images/dot_yellow.png' border=0>";
+			echo "</td>";
 			echo "<td class='datos' align='center'>";
 			
 			if ($row["status"] == 0 && give_acl ($config['id_user'],"0","IW"))
 				echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&check=".$row["id_trap"]."'><img src='images/ok.png' border='0'></a>";
 			if (give_acl ($config['id_user'], "0", "IM"))
 				echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&delete=".$row["id_trap"]."&refr=60&offset=".$offset."'><img src='images/cross.png' border=0></a>";
+			echo "</td>";
 			echo "<td class='datos' align='center'>";
 			echo "<input type='checkbox' class='chk' name='snmptrapid".$offset_counter."' value='".$row["id_trap"]."'>";
 			echo "</td></tr>";

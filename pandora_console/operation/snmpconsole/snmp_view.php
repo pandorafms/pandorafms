@@ -263,9 +263,9 @@ echo "</table>";
 $offset_counter = 0;
 echo "<table width='750px'><tr><td align='right'>";
 
-echo "<input class='sub' type='submit' name='updatebt' value='".__('Validate')."'> ";
+echo "<input class='sub ok' type='submit' name='updatebt' value='".__('Validate')."'> ";
 if (give_acl ($config['id_user'], 0, "IM")) {
-	echo "<input class='sub' type='submit' name='deletebt' value='".__('Delete')."'>";
+	echo "<input class='sub delete' type='submit' name='deletebt' value='".__('Delete')."'>";
 }
 echo "</form></td></tr></table>";
 

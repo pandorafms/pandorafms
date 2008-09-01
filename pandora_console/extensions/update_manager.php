@@ -90,10 +90,7 @@ function pandora_update_manager_login () {
 	um_db_update_setting ('update_server_host', 'www.artica.es');
 	um_db_update_setting ('update_server_path', 'pandoraupdate/server.php');
 	
-	if (empty ($settings->keygen_path))
-		return false;
-	
-	$user_key = exec ($settings->keygen_path);
+	$user_key = get_user_key ();
 	
 	$package = um_client_check_latest_update ($settings, $user_key);
 	

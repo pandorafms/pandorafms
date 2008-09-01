@@ -88,7 +88,7 @@ function pandora_update_manager_login () {
 	$settings = um_db_load_settings ();
 	
 	um_db_update_setting ('update_server_host', 'www.artica.es');
-	um_db_update_setting ('update_server_path', 'pandoraupdate/server.php');
+	um_db_update_setting ('update_server_path', '/pandoraupdate/server.php');
 	
 	$user_key = get_user_key ();
 	

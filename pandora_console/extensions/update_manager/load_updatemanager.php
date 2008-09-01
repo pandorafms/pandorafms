@@ -17,10 +17,10 @@ function get_user_key () {
 	/* We only want to know this for statistics records.
 	   Feel free to disable if you want. We don't want to hide anything.
 	 */
-	$n = get_db_value ('COUNT(`id_agente`)', 'tagente', 'disabled', 0);
-	$m = get_db_value ('COUNT(`id_agente_modulo`)', 'tagente_modulo',
-			'disabled', 0);
-	$user_key = array ('A' => $n, 'M' => $m);
+	$n = (int) get_db_value ('COUNT(`id_agente`)', 'tagente', 'disabled', 0);
+	$m = (int) get_db_value ('COUNT(`id_agente_modulo`)', 'tagente_modulo',
+				'disabled', 0);
+	$user_key = array ('A' => )$n, 'M' => $m);
 	
 	return json_encode ($user_key);
 }

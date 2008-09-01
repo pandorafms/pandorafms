@@ -1,3 +1,18 @@
+2008-09-01  Sancho Lerena <slerena@artica.es>
+
+	* pandora_logo.png: White background for IE6 users.
+
+	* index.php: Updated version and develop bypass.
+
+	* header.php, pandora.css: Better view in IE6.
+
+	* estado_ultimopaquete.php: Fixes bad render for big numbers.
+
+	* snmp_view.php: Fixes problems with IE6 render. Better view
+	of custom OID (shortened and as tooltip).
+
+	* stat_win.php: Fixed problem with slicer in IE6.
+
 2008-09-01  Raul Mateos  <raulofpandora@gmail.com>
 
 	* operation/snmp/smp_console/snmp_view.php: Show substring in custom value, when the mouse is

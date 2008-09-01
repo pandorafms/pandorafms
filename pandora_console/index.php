@@ -20,13 +20,13 @@
 // Silk icon set 1.3 (cc) Mark James, http://www.famfamfam.com/lab/icons/silk/
 // Pandora FMS uses Pear Image::Graph code
 
-$build_version="PC080822";
-$pandora_version="v2.0Beta1";
+$build_version="PC080901";
+$pandora_version="v2.0Beta1 ";
 global $build_version;
 global $pandora_version;
 
 // Set to 1 to do not check for installer or config file (for development!).
-$develop_bypass = 1;
+$develop_bypass = 0;
 
 if ($develop_bypass != 1){
 	// If no config file, automatically try to install

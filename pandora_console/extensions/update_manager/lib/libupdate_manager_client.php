@@ -9,8 +9,7 @@ unset ($prev_level);
 function um_xml_rpc_client_call ($server_host, $server_path, $server_port, $function, $parameters) {
 	$msg = new XML_RPC_Message ($function, $parameters);
 	$client = new XML_RPC_Client ($server_path, $server_host, $server_port);
-	if (defined ('XMLRPC_DEBUG'))
-		$client->setDebug (XMLRPC_DEBUG);
+	
 	$result = $client->send ($msg);
 	
 	if (! $result || $result->faultCode ()) {

@@ -157,12 +157,7 @@ if (mysql_num_rows ($result3)) {
 
             // Kind of data
             if (is_numeric($row3["datos"])) {
-				$mytempdata = fmod($row3["datos"], 1);
-				if ($mytempdata == 0)
-					$myvalue = intval($row3["datos"]);
-				else
-					$myvalue = $row3["datos"];
-				echo format_for_graph($myvalue );
+				echo format_for_graph($row3["datos"] );
 			} else
 				echo substr(salida_limpia($row3["datos"]),0,42);
 			

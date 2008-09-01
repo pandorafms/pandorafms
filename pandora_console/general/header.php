@@ -23,7 +23,7 @@ if(!isset ($_SESSION["id_usuario"])) {
 	echo "</div>";
 	return;
 }
-$table->width=520;
+$table->width=480;
 $table->border=0;
 $table->cellpadding=3;
 $table->size=array("30%");

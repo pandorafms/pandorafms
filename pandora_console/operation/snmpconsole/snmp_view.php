@@ -136,7 +136,7 @@ $sql2="SELECT * FROM ttrap ORDER BY timestamp DESC";
 $result2=mysql_query($sql2);
 
 if (mysql_num_rows($result2)){
-	echo "<table><tr>";
+	echo "<table border=0 width=600><tr>";
 	echo "<td class='f9' style='padding-left: 30px;'>";
 	echo "<img src='images/pixel_green.png' width=20 height=20> - ".__('Validated event');
 	echo "<br>";
@@ -161,30 +161,7 @@ if (mysql_num_rows($result2)){
 
 $total_traps = count($trap_list);
 pagination($total_traps, "index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view", $offset);
-/*
-if ($total_eventos > $config["block_size"]){ 
-	// If existes more registers tha$row["id_usuario"]n i can put in a page, calculate index markers
-	$index_counter = ceil($total_eventos/$config["block_size"]);
-	for ($i = 1; $i <= $index_counter; $i++) {
-		$inicio_bloque = ($i * $config["block_size"] - $config["block_size"]);
-		$final_bloque = $i * $config["block_size"];
-		if ($total_eventos < $final_bloque)
-			$final_bloque = $total_eventos;
-		echo '<a href="index.php?sec=eventos&sec2=eventos/eventos&offset='.$inicio_bloque.'">';
-		$inicio_bloque_fake = $inicio_bloque + 1;
-		if ($inicio_bloque == $offset)
-			echo '<b>[ '.$inicio_bloque_fake.' - '.$final_bloque.' ]</b>';
-		else 
-			echo '[ '.$inicio_bloque_fake.' - '.$final_bloque.' ]';
-		echo '</a> ';
-	}
-	echo "<br><br>";
-	// if exists more registers than i can put in a page (defined by $config["block_size"] config parameter)
-	// get offset for index calculation
-}
 
-echo "</div>";
-*/
 
 if (isset($_GET["offset"])){
 	$offset=entrada_limpia($_GET["offset"]);
@@ -192,7 +169,7 @@ if (isset($_GET["offset"])){
 	$offset=0;
 }
 echo "<br>";
-echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>";
+echo "<table cellpadding='4' cellspacing='4' width='735' class='databox'>";
 echo "<tr>";
 echo "<th>".__('Status')."</th>";
 echo "<th>".__('OID')."</th>";
@@ -207,7 +184,9 @@ echo "<label for='checkbox' class='p21'>".__('All')." </label>";
 echo '<input type="checkbox" class="chk" name="allbox" onclick="CheckAll();">
 </th>';
 echo "<form name='eventtable' method='POST' action='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&refr=60&offset=".$offset."'>";	
+
 $id_trap = 0;
+$color = 0;
 if ($offset !=0)
 	$offset_limit = $offset +1;
 else
@@ -219,45 +198,62 @@ for ($a=$offset_limit;$a < ($config["block_size"] + $offset + 1);$a++){
 		$sql="SELECT * FROM ttrap WHERE id_trap = $id_trap";
 		if ($result=mysql_query($sql)){
 			$row=mysql_fetch_array($result);
+			if ($color == 1){
+				$tdcolor = "datos";
+				$color = 0;
+			}
+			else {
+				$tdcolor = "datos2";
+				$color = 1;
+			}
 			$offset_counter++;
 			echo "<tr>";
-			echo "<td class='datos' align='center'>";
+			echo "<td class='$tdcolor' align='center'>";
 			if ($row["status"] == 0){
 				echo "<img src='images/pixel_red.png' width=20 height=20>";
 			}
 			else {
 				echo "<img src='images/pixel_green.png' width=20 height=20>";
 			}
-			echo "<td class='datos'>".$row["oid"];
+			echo "</td>";
+
+			echo "<td class='$tdcolor'>".$row["oid"];
 			$sql="SELECT * FROM tagente WHERE direccion = '".$row["source"]."'";
 			$result2=mysql_query($sql); // If there's any agent with this IP we show name and link to agent
 			if ($row2=mysql_fetch_array($result2)){
-				echo "<td class='datos'>
+				echo "<td class='$tdcolor'>
 				<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row2["id_agente"]."'>
 				<b>".dame_nombre_agente($row2["id_agente"])."</b></a></td>";
 			}
 			else {
-				echo "<td class='datos'>".$row["source"]."</td>";
+				echo "<td class='$tdcolor'>".$row["source"]."</td>";
 			}
-			echo "<td class='datos' title='".$row["value_custom"]."''>".substr($row["value_custom"],0,20)."</td>";
 
-			echo "<td class='datos'>";
+			$custom = substr($row["value_custom"],0,15);
+			if (strlen ($row["value_custom"]) > 15)
+				$custom .= "...";
+			echo "<td title='".$row["value_custom"]."' class='$tdcolor'>".$custom."</td>";
+
+			echo "<td class='$tdcolor'>";
 			if ($row["status"] <> 0)
 				echo "<a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$row["id_usuario"]."'><a href='#' class='tip'>&nbsp;<span>".dame_nombre_real($row["id_usuario"])."</span></a>".substr($row["id_usuario"],0,8)."</a>";
 			echo "</td>";
-			echo "<td class='datos'>".$row["timestamp"]."</td>";
-			echo "<td class='datos' align='center'>";
+
+			echo "<td class='$tdcolor'>".$row["timestamp"]."</td>";
+
+			echo "<td class='$tdcolor' align='center'>";
 			if ($row["alerted"] != 0 )
 				echo "<img src='images/dot_yellow.png' border=0>";
 			echo "</td>";
-			echo "<td class='datos' align='center'>";
-			
+
+			echo "<td class='$tdcolor' align='center'>";
 			if ($row["status"] == 0 && give_acl ($config['id_user'],"0","IW"))
 				echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&check=".$row["id_trap"]."'><img src='images/ok.png' border='0'></a>";
 			if (give_acl ($config['id_user'], "0", "IM"))
 				echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&delete=".$row["id_trap"]."&refr=60&offset=".$offset."'><img src='images/cross.png' border=0></a>";
 			echo "</td>";
-			echo "<td class='datos' align='center'>";
+
+			echo "<td class='$tdcolor' align='center'>";
 			echo "<input type='checkbox' class='chk' name='snmptrapid".$offset_counter."' value='".$row["id_trap"]."'>";
 			echo "</td></tr>";
 		}

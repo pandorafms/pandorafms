@@ -1,3 +1,8 @@
+2008-09-01  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* include/languages/es.po, include/languages/es.mo: updated 
+	Spanish translation.
+
 2008-09-01  Sancho lerena <slerena@artica.es>
 
 	* include/, fgraph.php: Moved licence of libraries to LGPL.

@@ -1,4 +1,8 @@
 2008-09-01  Esteban Sanchez  <estebans@artica.es>
+
+	* extensions/update_manager/load_updatemanager.php: Typo error fixed.
+
+2008-09-01  Esteban Sanchez  <estebans@artica.es>
 	
 	* extensions/update_manager.php,
 	extensions/update_manager/sql/update_manager.sql: Fixed update server

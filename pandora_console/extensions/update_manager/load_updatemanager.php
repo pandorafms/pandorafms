@@ -20,7 +20,7 @@ function get_user_key () {
 	$n = (int) get_db_value ('COUNT(`id_agente`)', 'tagente', 'disabled', 0);
 	$m = (int) get_db_value ('COUNT(`id_agente_modulo`)', 'tagente_modulo',
 				'disabled', 0);
-	$user_key = array ('A' => )$n, 'M' => $m);
+	$user_key = array ('A' => $n, 'M' => $m);
 	
 	return json_encode ($user_key);
 }

@@ -120,15 +120,16 @@ if (isset ($_POST["deletebt"])){
 	while ($count <= $config["block_size"]) {
 		if (isset ($_POST["eventid".$count])) {
 			$event_id = get_parameter_post ("eventid".$count);
+			$descr = return_event_description ($event_id); //Get description before it gets deleted
 			// Look for event_id following parameters: id_group.
 			$id_group = gime_idgroup_from_idevent ($event_id);
 			if (give_acl ($config['id_user'], $id_group, "IM")) {
 				process_sql ("DELETE FROM tevento WHERE id_evento = ".$event_id);
 				audit_db ($config['id_user'], $REMOTE_ADDR,
-					"Event deleted","Deleted event: ".return_event_description ($event_id));
+					"Event deleted","Deleted event: ".$descr);
 			} else {
 				audit_db ($config['id_user'], $REMOTE_ADDR,
-					"ACL Violation","Trying to delete event ".return_event_description ($event_id));
+					"ACL Violation","Trying to delete event: ".$descr);
 			}
 		}
 		$count++;

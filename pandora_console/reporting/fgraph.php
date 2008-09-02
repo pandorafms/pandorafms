@@ -1374,54 +1374,40 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 	global $config;
 	
-	$url = str_replace  ( "\\" , "", $url);
+	$url = rawurldecode ($url); //It was urlencoded, so we urldecode it
 	$data = array();
 	$legend = array();
-	$sql1="SELECT * FROM tagente";
-	$result=mysql_query($sql1);
-	while ($row=mysql_fetch_array($result)){
-		if (give_acl($config["id_user"], $row["id_grupo"], "AR") == 1) {
-			$sql1="SELECT COUNT(id_evento) FROM tevento WHERE 1=1 $url AND id_agente = ".$row["id_agente"];
-			if ($result2=mysql_query($sql1))
-				$row2=mysql_fetch_array($result2);
-			if ($row2[0] > 0) {
-				$data[] = $row2[0];
-				$legend[] = substr($row["nombre"],0,15)." ( $row2[0] )";
-			}
-		}
-	}
-	// System events
-	$sql1="SELECT COUNT(id_evento) FROM tevento WHERE 1=1 $url AND id_agente = 0";
-	if ($result2 = mysql_query($sql1))
-		$row2=mysql_fetch_array($result2);
-	if ($row2[0] > 0){
-		$data[] = $row2[0];
-		$legend[] = "SYSTEM"." ( $row2[0] )";
-	}
+	
+	//This will give the distinct id_agente, give the id_grupo that goes
+	//with it and then the number of times it occured. GROUP BY statement
+	//is required if both DISTINCT() and COUNT() are in the statement 
+	$sql = "SELECT DISTINCT(id_agente) AS id_agente, id_grupo, COUNT(id_agente) AS count FROM tevento WHERE 1=1 ".$url." GROUP BY id_agente"; 
+	$result = get_db_all_rows_sql ($sql);
+	if ($result === false)
+		$result = array();
 
-	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
-	// or much better, pay me to do a special version for you, highly optimized :-))))
-	for ($i=0;$i < sizeof($data);$i++){
-		for ($j=$i; $j <sizeof($data); $j++)
-			if ($data[$j] > $data[$i]) {
-					$temp = $data[$i];
-					$temp_label = $legend[$i];
-					$data[$i] = $data[$j];
-					$legend[$i] = $legend[$j];
-					$data[$j] = $temp;
-					$legend[$j] = $temp_label;
+	foreach ($result as $row) {
+		if (give_acl ($config["id_user"], $row["id_grupo"], "AR") == 1) {
+			$data[] = $row["count"];
+			if ($row["id_agente"] == 0) {
+				//System event
+				$legend[] = "SYSTEM (".$row["count"].")";
+			} else {
+				//Other events
+				$legend[] = substr (dame_nombre_agente ($row["id_agente"]), 0, 15)." (".$row["count"].")";
 			}
-	}
-    $max_items = 6;
-    // Take only the first x items
-	if (sizeof($data) >= $max_items){
-		for ($i = 0; $i < $max_items; $i++){
-			$legend2[]= $legend[$i];
-			$data2[] = $data[$i];
 		}
-	 	generic_pie_graph ($width, $height, $data2, $legend2);
-	} else
-	 	generic_pie_graph ($width, $height, $data, $legend);
+	}
+	
+	array_multisort ($legend, $data);
+	
+	$max_items = 6; //Maximum items on the piegraph
+	while (count($data) > $max_items) {
+		//Pops an element off the array until the array is small enough
+		array_pop ($data);
+	}
+	
+	generic_pie_graph ($width, $height, $data, $legend);
 }
 
 
@@ -2083,6 +2069,7 @@ $stacked = get_parameter ("stacked", 0);
 $date = get_parameter ("date");
 $graphic_type = (string) get_parameter ('tipo');
 $mode = get_parameter ("mode", 1);
+$url = get_parameter ('url','');
 
 if ($graphic_type) {
 	switch ($graphic_type) {
@@ -2122,7 +2109,7 @@ if ($graphic_type) {
 		graph_event_module ($width, $height, $id_agent);
 		
 	case "group_events":
-		grafico_eventos_grupo($width, $height);
+		grafico_eventos_grupo($width, $height, $url);
 		
 		break;
 	case "user_events":

@@ -1,3 +1,22 @@
+
+2008-09-02  Sancho Lerena <slerena@gmail.com>
+
+	* functions.php: Added function to clean SQL string.
+
+	* setup/news.php: Fixed problem adding new news.
+
+	* setup/link.php: Added mysql recheck to input var.
+
+	* login_page.php: Removed "Welcome", added a blank line before title.
+
+	* logon_failed.php: Was rending bad in IE.
+
+	* footer.php: Added Firefox button and tooltip about best view in Firefox.
+
+	* header.php: Old rendering was crazy in IE. New code to set render exactly
+	equal on IE and Firefox. PLEASE DO NOT USE TABULAR phpp functions here, this is 
+	pure HTML formatting.
+
 2008-09-02  Esteban Sanchez  <estebans@artica.es>
 
 	* extensions/update_manager/lib/*: Update Manager has its own license

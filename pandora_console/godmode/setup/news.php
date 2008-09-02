@@ -31,11 +31,13 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 if (isset ($_POST["create"])) { // If create
 	$subject = get_parameter ("subject");
 	$text = get_parameter ("text");
+	$text = safe_sql_string ($text);
+
 	$timestamp = $ahora = date ("Y/m/d H:i:s");
 	$author = $config['id_user'];
 	
 	$sql = "INSERT INTO tnews (subject, text, author, timestamp) VALUES ('$subject','$text', '$author', '$timestamp') ";
-	$result = mysql_query ($sql_insert);
+	$result = mysql_query ($sql);
 	if (! $result) {
 		echo "<h3 class='error'>".__('Not created. Error inserting data')."</h3>";
 	} else {

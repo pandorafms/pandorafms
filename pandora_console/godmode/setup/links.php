@@ -32,7 +32,8 @@ if (! give_acl ($config['id_user'], 0, "PM") || ! dame_admin ($config['id_user']
 	if (isset($_POST["create"])){ // If create
 		$name = entrada_limpia($_POST["name"]);
 		$link = entrada_limpia($_POST["link"]);
-		$sql_insert="INSERT INTO tlink (name,link) VALUES ('$name','$link') ";
+		$link = safe_sql_string ($link);
+		$sql_insert = "INSERT INTO tlink (name,link) VALUES ('$name','$link')";
 		$result=mysql_query($sql_insert);	
 		if (! $result)
 			echo "<h3 class='error'>".__('There was a problem creating link')."</h3>";

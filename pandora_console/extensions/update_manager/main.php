@@ -1,12 +1,13 @@
 <?php
-// Pandora - the Free monitoring system
-// ====================================
-// Copyright (c) 2008 Esteban Sanchez, estebans@artica.es
-// Copyright (c) 2008 Artica Soluciones Tecnologicas S.L, info@artica.es
+
+// Pandora FMS - the Flexible Monitoring System
+// ============================================
+// Copyright (c) 2008 Artica Soluciones Tecnologicas, http://www.artica.es
+// Please see http://pandora.sourceforge.net for full contribution list
+
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation;  version 2
-// of the License, or (at your option) any later version.
+// as published by the Free Software Foundation for version 2.
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -32,15 +33,17 @@ $db =& um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
 
 $settings = um_db_load_settings ();
 
-echo '<h3>'.__('Update manager').'</h3>';
+echo '<h2>'.__('Update manager').'</h2>';
 
 if ($settings->customer_key == FREE_USER) {
-	echo '<div class="notify" style="width: 80%" >';
+	echo '<div class="notify" style="width: 80%; text-align:left;" >';
 	echo '<img src="images/information.png" /> ';
 	/* Translators: Do not translade Update Manager, it's the name of the program */
 	echo __('The new <a href="http://updatemanager.sourceforge.net">Update Manager</a> client is shipped with the new Pandora FMS 2.0. It lets systems administrators to do not need to update their PandoraFMS manually since the Update Manager is the one getting new modules, new plugins and new features (even full migrations tools for future versions) automatically');
 	echo '<p />';
 	echo __('Update Manager is one of the most advanced features of PandoraFMS 2.0 Enterprise version, for more information visit <a href="http://pandorafms.com">http://pandorafms.com</a>');
+	echo '<p />';
+	echo __('Update Manager sends anonymous information about Pandora FMS usage (number of agents and modules running). To disable it, just delete extension or remove remote server address from Update Manager plugin setup.');
 	echo '</div>';
 }
 

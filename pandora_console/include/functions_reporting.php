@@ -563,6 +563,8 @@ function get_agent_modules_reporting_table ($id_agent, $period = 0, $date = 0) {
 	$table->data = array ();
 	$n_a_string = __('N/A').'(*)';
 	$modules = get_modules_in_agent ($id_agent);
+	if ($modules === false)
+		$modules = array();
 	$data = array ();
 	
 	foreach ($modules as $module) {

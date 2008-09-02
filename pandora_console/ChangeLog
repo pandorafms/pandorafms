@@ -3,9 +3,12 @@
 	* reporting/fgraph.php: SQL passed wasn't being processed, so the graph
 	was off for grafico_eventos_group. Updated that and the whole
 	function. Simplified, it runs very fast now (practically no delay).
+	Updated graph_event_module as well.
 
 	* operation/events/events.php: Description wasn't being added to the
 	audit log when deleting multiple items. Fixed
+
+	* include/functions_reporting.php: Minor fix for uninitialized array
 
 2008-09-02  Esteban Sanchez  <estebans@artica.es>
 

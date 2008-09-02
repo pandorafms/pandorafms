@@ -1,3 +1,11 @@
+2008-09-02  Esteban Sanchez  <estebans@artica.es>
+
+	* reporting/fgraph.php: Rollback to r1049. It still needs some tests,
+	will be readded in next Pandora major version.
+
+	* reporting/pandora_graph.php, reporting/pearimage_graph.php: Deleted
+	from repository.
+
 2008-09-01  Esteban Sanchez  <estebans@artica.es>
 
 	* extensions/update_manager/load_updatemanager.php: Typo error fixed.

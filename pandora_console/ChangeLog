@@ -1,3 +1,12 @@
+2008-09-02  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* reporting/fgraph.php: SQL passed wasn't being processed, so the graph
+	was off for grafico_eventos_group. Updated that and the whole
+	function. Simplified, it runs very fast now (practically no delay).
+
+	* operation/events/events.php: Description wasn't being added to the
+	audit log when deleting multiple items. Fixed
+
 2008-09-02  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions.php: Style correction.

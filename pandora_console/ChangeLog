@@ -1,3 +1,8 @@
+2008-09-02  Sancho Lerena <slerena@gmail.com>
+
+	*  extensions/update_manager*: Updated GPL header. Added 
+	more text about Update Manager anonymous information gathering.
+
 2008-09-02  Esteban Sanchez  <estebans@artica.es>
 
 	* extensions/update_manager.php: Style correction. Removed force

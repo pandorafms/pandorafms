@@ -49,7 +49,8 @@ function pandora_update_manager_install () {
 		if ($success === false)
 			return;
 	}
-	$sql = 'INSERT INTO `tconfig` (`token`, `value` ) VALUES ("update_manager_installed", 1)';
+	$sql = 'INSERT INTO `tconfig` (`token`, `value`)
+		VALUES ("update_manager_installed", 1)';
 	process_sql ($sql);
 	
 	$db =& um_db_connect ('mysql', $config['dbhost'], $config['dbuser'],
@@ -87,10 +88,7 @@ function pandora_update_manager_login () {
 			$config['dbpass'], $config['dbname']);
 	$settings = um_db_load_settings ();
 	
-	um_db_update_setting ('update_server_host', 'www.artica.es');
-	um_db_update_setting ('update_server_path', '/pandoraupdate/server.php');
-	
-	$user_key = get_user_key ();
+	$user_key = get_user_key ($settings);
 	
 	$package = um_client_check_latest_update ($settings, $user_key);
 	

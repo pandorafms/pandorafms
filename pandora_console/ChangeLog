@@ -1,5 +1,27 @@
 2008-09-02  Esteban Sanchez  <estebans@artica.es>
 
+	* extensions/update_manager.php: Style correction. Removed force
+	updating of the settings.
+
+	* extensions/update_manager/load_updatemanager.php: Run the keygen if
+	the user is not the free one.
+
+	* extensions/update_manager/main.php: Show information message to free
+	users.
+
+	* extensions/update_manager/settings.php: Allow updating keygen and
+	binary path settings.
+
+	* extensions/update_manager/lib/*: Updated to latest version of Open
+	Update Manager.
+
+	* extensions/update_manager/sql/update_manager.sql: Set keygen path.
+
+	* godmode/extensions.php: Bug solved that was avoiding to show defined
+	extensions. Fixed ACL check.
+
+2008-09-02  Esteban Sanchez  <estebans@artica.es>
+
 	* reporting/fgraph.php: Rollback to r1049. It still needs some tests,
 	will be readded in next Pandora major version.
 

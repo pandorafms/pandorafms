@@ -32,15 +32,30 @@ function um_db_load_settings () {
 function um_db_update_setting ($key, $value = '') {
 	global $db;
 	
-	$values = array ($value, $key);
-	
-	$sql =& $db->prepare ('UPDATE tupdate_settings SET value = ? WHERE `key` = ?');
-	$result =& $db->execute ($sql, $values);
+	$sql =& $db->prepare ('SELECT COUNT(*) e FROM tupdate_settings WHERE `key` = ?');
+	$result =& $db->execute ($sql, $key);
 	if (PEAR::isError ($result)) {
 		echo '<strong>Error</strong>: '.$result->getMessage ().'<br />';
-		return false;
+		return NULL;
 	}
 	
+	$result->fetchInto ($exists);
+	$values = array ($value, $key);
+	if ($exists->e) {
+		$sql =& $db->prepare ('UPDATE tupdate_settings SET value = ? WHERE `key` = ?');
+		$result =& $db->execute ($sql, $values);
+		if (PEAR::isError ($result)) {
+			echo '<strong>Error</strong>: '.$result->getMessage ().'<br />';
+			return false;
+		}
+	} else {
+		$sql =& $db->prepare ('INSERT INTO tupdate_settings (value, `key`) VALUES (?, ?)');
+		$result =& $db->execute ($sql, $values);
+		if (PEAR::isError ($result)) {
+			echo '<strong>Error</strong>: '.$result->getMessage ().'<br />';
+			return false;
+		}
+	}
 	return true;
 }
 
@@ -197,11 +212,11 @@ function um_db_get_package_updates ($id_package) {
 	return $updates;
 }
 
-function um_db_create_package_log ($id_package, $client_key, $user_package, $result = 'query', $user_subscription = '') {
+function um_db_create_package_log ($id_package, $client_key, $user_package, $result = 'query', $user_subscription = '', $description = '') {
 	global $db;
 	
-	$values = array ($id_package, $client_key, $_SERVER['REMOTE_ADDR'], $user_package, $user_subscription, $result);
-	$sql =& $db->prepare ('INSERT INTO tupdate_package_log (id_update_package, client_key, ip_address, user_package, user_subscription, result) VALUES (?, ?, ?, ?, ?, ?)');
+	$values = array ($id_package, $client_key, $_SERVER['REMOTE_ADDR'], $user_package, $user_subscription, $result, $description);
+	$sql =& $db->prepare ('INSERT INTO tupdate_package_log (id_update_package, client_key, ip_address, user_package, user_subscription, result, description) VALUES (?, ?, ?, ?, ?, ?, ?)');
 	$result =& $db->execute ($sql, $values);
 	if (PEAR::isError ($result)) {
 		return false;

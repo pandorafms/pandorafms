@@ -144,7 +144,7 @@ function um_client_db_save_update ($update) {
 	return true;
 }
 
-function um_client_apply_update_file ($update, $destiny_filename, $force = false) {
+function um_client_apply_update_file (&$update, $destiny_filename, $force = false) {
 	@mkdir (dirname ($destiny_filename), 0777, true);
 	
 	if (file_exists ($destiny_filename)) {
@@ -169,7 +169,7 @@ function um_client_apply_update_file ($update, $destiny_filename, $force = false
 	return true;
 }
 
-function um_client_apply_update_database ($update, $db) {
+function um_client_apply_update_database (&$update, &$db) {
 	if ($update->type == 'db_data') {
 		$values = array ($update->db_table,
 						$update->db_field,
@@ -191,7 +191,7 @@ function um_client_apply_update_database ($update, $db) {
 	return true;
 }
 
-function um_client_apply_update ($update, $settings, $db, $force = false) {
+function um_client_apply_update (&$update, $settings, $db, $force = false) {
 	if ($update->type == 'code') {
 		$filename = realpath ($settings->updating_code_path.'/'.$update->filename);
 		$success = um_client_apply_update_file ($update, $filename, $force);
@@ -209,7 +209,7 @@ function um_client_apply_update ($update, $settings, $db, $force = false) {
 	return true;
 }
 
-function um_client_rollback_update_file ($update, $destiny_filename) {
+function um_client_rollback_update_file (&$update, $destiny_filename) {
 	/* If there's no data rollback, we suppose it's a new file, so it should 
 		not be a problem. In any case, it's better than deleting the file. */
 	if (! isset ($update->data_rollback))
@@ -222,7 +222,7 @@ function um_client_rollback_update_file ($update, $destiny_filename) {
 	return true;
 }
 
-function um_client_rollback_update ($update, $settings, $db) {
+function um_client_rollback_update (&$update, $settings, $db) {
 	if ($update->type == 'code') {
 		$filename = realpath ($settings->updating_code_path.'/'.$update->filename);
 		$success = um_client_rollback_update_file ($update, $filename);
@@ -313,7 +313,7 @@ function um_client_upgrade_to_latest ($user_key, $force) {
 		or on auth failure (server return false) */
 }
 
-function um_client_db_connect ($settings = NULL) {
+function um_client_db_connect (&$settings = NULL) {
 	if (! $settings)
 		$settings = um_db_load_settings ();
 	

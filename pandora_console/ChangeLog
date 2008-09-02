@@ -1,3 +1,8 @@
+2008-09-02  Esteban Sanchez  <estebans@artica.es>
+
+	* extensions/update_manager/lib/*: Update Manager has its own license
+	header which must be respected.
+
 2008-09-02  Sancho Lerena <slerena@gmail.com>
 
 	*  extensions/update_manager*: Updated GPL header. Added 

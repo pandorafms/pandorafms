@@ -1,9 +1,8 @@
 <?php
-
-// Pandora FMS - the Flexible Monitoring System
-// ============================================
+// Open Update Manager
+// ===================
 // Copyright (c) 2008 Artica Soluciones Tecnologicas, http://www.artica.es
-// Please see http://pandora.sourceforge.net for full contribution list
+// Copyright (c) 2008 Esteban Sanchez Muñoz <estebans@artica.es>
 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License

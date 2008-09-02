@@ -1195,4 +1195,10 @@ function unsafe_string ($string) {
 	return $string;
 }
 
+function safe_sql_string ($string){
+	if (get_magic_quotes_gpc() == 0) 
+    	$string = mysql_escape_string ($string);
+	return $string;
+}
+
 ?>

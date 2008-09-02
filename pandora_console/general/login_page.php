@@ -29,7 +29,7 @@ if (isset($_GET['sec'])){
 }
 
 echo '<div class="databox" id="login">
-	<h1 id="log">'.__('Welcome to Pandora FMS Web Console').'</h1>
+	<h1 id="log">'.__('Pandora FMS Web Console').'</h1><br>
 	<div class="databox" id="login_in">
 		<form method="post" action="index.php?login=1">
 		<table cellpadding="4" cellspacing="1" width="400">
@@ -49,6 +49,8 @@ echo '<div class="databox" id="login">
 		'.((strlen($addr) > 0) ? print_input_hidden("redirect",$addr,true) : '').'
 		</form>
 	</div>
-	<div id="ip">IP: <b class="f10">'.$REMOTE_ADDR.'</b></div>
+	<div id="ip">IP: <b class="f10">'.$REMOTE_ADDR.'</b>
+</div>
+
 	</div><script type="text/javascript">document.getElementById(\'nick\').focus();</script>';
 ?>

@@ -1,3 +1,9 @@
+2008-09-02  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions.php: Style correction.
+
+	* general/footer.php: Fixed link to Firefox and make it
+	translatable.
 
 2008-09-02  Sancho Lerena <slerena@gmail.com>
 

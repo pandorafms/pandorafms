@@ -326,7 +326,7 @@
           <tr valign="middle">
            <td colspan="1" rowspan="1" align="left"><i>U</i></td>
            <td colspan="1" rowspan="1" align="left">Seconds since the Unix Epoch (January 1 1970 00:00:00 GMT)</td>
-           <td colspan="1" rowspan="1" align="left">See also <a href="function.time.php" class="function">time()</a></td>
+           <td colspan="1" rowspan="1" align="left">See also <a href="http://es.php.net/manual/en/function.time.php" class="function">time()</a></td>
 
           </tr>
 

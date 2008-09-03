@@ -1,3 +1,30 @@
+2008-09-03  Esteban Sanchez  <estebans@artica.es>
+
+	* include/config_process.php: Checks in homeurl config variable. Style
+	corrections.
+
+	* include/help/en/help_date_format.php: Points to oficial PHP manual
+	on php.net.
+
+	* godmode/agentes/modificar_agente.php: Escape quotes which was
+	causing SQL errors.
+
+	* godmode/reporting/map_builder.php: Fixed divs and tables widths.
+
+	* include/functions.php, operation/agentes/datos_agente.php: Style
+	corrections.
+
+	* include/functions_db.php: Style corrections. Added comments for
+	translators.
+
+	* operation/extensions.php: Added login checking.
+
+	* operation/reporting/reporting_viewer.php: Minor bug that was causing
+	javascript failures.
+
+	* operation/users/user.php: Use print_help_tip() to show contextual
+	help.
+
 2008-09-02  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* reporting/fgraph.php: SQL passed wasn't being processed, so the graph

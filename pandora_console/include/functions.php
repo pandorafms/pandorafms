@@ -47,7 +47,7 @@ function safe_input ($value) {
 	if (is_numeric ($value))
 		return $value;
 	if (is_array ($value)) {
-		array_walk ($value,'safe_input');
+		array_walk ($value, 'safe_input');
 		return $value;
 	}
 	return htmlentities (utf8_decode ($value), ENT_QUOTES); 
@@ -83,7 +83,8 @@ function salida_limpia ($string) {
 		$trans[chr(38)] = '&';
 	}
 	// after the initial translation, _do_ map standalone "&" into "&#38;"
-	return preg_replace("/&(?![A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/","&#38;" , strtr($string, $trans));
+	return preg_replace ("/&(?![A-Za-z]{0,4}\w{2,3};|#[0-9]{2,3};)/","&#38;",
+			strtr ($string, $trans));
 }
 
 /** 
@@ -412,14 +413,17 @@ function format_datetime ($timestamp, $alt_format = "") {
  * 
  * @param number Number to be rendered
  * @param decimals Number of decimals to be shown. Default value: 1
- * @param dec_point Decimal separator string. Default value: .
- * @param thousands_sep Thousands separator string. Default value: ,
  * 
  * @return 
  */
-function format_numeric ($number, $decimals = 1, $dec_point = ".", $thousands_sep = ",") {
+function format_numeric ($number, $decimals = 1) {
 	if ($number == 0)
 		return 0;
+	
+	// Translators: This is separator of decimal point
+	$dec_point = __(".");
+	// Translators: This is separator of decimal point
+	$thousands_sep = __(",");
 	
 	/* If has decimals */
 	if (fmod ($number , 1) > 0)
@@ -504,12 +508,12 @@ function human_time_comparation ($timestamp) {
 function human_time_description_raw ($seconds) {
 	global $lang_label;
 	if ($seconds < 3600)
-		return format_numeric($seconds/60,2)." ".__('minutes');
+		return format_numeric ($seconds / 60, 2)." ".__('minutes');
 	
 	if ($seconds >= 3600 && $seconds < 86400)
-		return format_numeric ($seconds/3600,2)." ".__('hours');
+		return format_numeric ($seconds / 3600, 2)." ".__('hours');
 	
-	return format_numeric ($seconds/86400,2)." ".__('days');
+	return format_numeric ($seconds / 86400, 2)." ".__('days');
 }
 
 /** 

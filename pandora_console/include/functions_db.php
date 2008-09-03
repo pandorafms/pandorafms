@@ -1257,7 +1257,6 @@ $sql_cache = array ('saved' => 0);
  * @return Value of first column of the first row. False if there were no row.
  */  
 function get_db_value ($field, $table, $field_search = 1, $condition = 1) {
-
 	if (is_int ($condition)) {
 		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = %d LIMIT 1",
 				$field, $table, $field_search, $condition);
@@ -1270,7 +1269,7 @@ function get_db_value ($field, $table, $field_search = 1, $condition = 1) {
 	}
 	$result = get_db_all_rows_sql ($sql);
 	
-	if($result === false)
+	if ($result === false)
 		return false;
 	
 	return $result[0][$field];
@@ -1370,7 +1369,7 @@ function get_db_all_rows_sql ($sql) {
  *
  * @return An array with the rows, columns and values in a multidimensional array 
  */
-function process_sql ($sql,$rettype = "affected_rows") {
+function process_sql ($sql, $rettype = "affected_rows") {
 	global $config;
 	global $sql_cache;
 	$retval = array();
@@ -1795,19 +1794,23 @@ function check_server_status () {
  */
 function show_alert_row_mini ($id_combined_alert) {
 	$color=1;
-	$sql = sprintf("SELECT talerta_agente_modulo.*, tcompound_alert.operation FROM talerta_agente_modulo, tcompound_alert 
-	WHERE tcompound_alert.id_aam = talerta_agente_modulo.id_aam AND tcompound_alert.id = %d",$id_combined_alert);
+	$sql = sprintf ("SELECT talerta_agente_modulo.*,tcompound_alert.operation
+			FROM talerta_agente_modulo, tcompound_alert
+			WHERE tcompound_alert.id_aam = talerta_agente_modulo.id_aam
+			AND tcompound_alert.id = %d", $id_combined_alert);
 	$result = get_db_all_rows_sql ($sql);
 	
-	if (!$result)
+	if ($result === false)
 		return;
 
 	echo "<table width=400 cellpadding=2 cellspacing=2 class='databox'>";
 	echo "<th>".__('Name')."</th>";
 	echo "<th>".__('Oper')."</th>";
+	/* Translators: Abbrevation for Time threshold */
 	echo "<th>".__('Tt')."</th>";
 	echo "<th>".__('Firing')."</th>";
 	echo "<th>".__('Time')."</th>";
+	/* Translators: Abbrevation for Description */
 	echo "<th>".__('Desc')."</th>";
 	echo "<th>".__('Recovery')."</th>";
 	echo "<th>".__('MinMax.Al')."</th>";

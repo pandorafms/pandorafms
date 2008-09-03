@@ -1,3 +1,13 @@
+2008-09-03  Sancho Lerena <slerena@artica.es>
+
+	* reporting/fgraph.php: URL passed should don't get slashes or 
+	don't work, used unsafe_string() to remove it.
+
+	* datos_agente.php: was not showing async string data. Now it
+	uses a regexp to search for string types.
+
+	* logon_ok.php: Was using a wrong variable on message counter.
+
 2008-09-03  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* reporting/fgraph.php: Fixed bug where a graph wouldn't return

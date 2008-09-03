@@ -53,9 +53,7 @@ function datos_raw ($id_agente_modulo, $periodo) {
 	$id_group = get_db_value ("id_grupo", "tagente", "id_agente", $id_agent);
 	// Different query for string data type
 	$id_tipo_modulo = dame_id_tipo_modulo_agentemodulo($id_agente_modulo);
-	if ( (dame_nombre_tipo_modulo ($id_tipo_modulo) == "generic_data_string" ) ||
-	     (dame_nombre_tipo_modulo ($id_tipo_modulo) == "remote_tcp_string" ) ||
- 	     (dame_nombre_tipo_modulo ($id_tipo_modulo) == "remote_snmp_string" )) {
+	if (preg_match("/string/", dame_nombre_tipo_modulo ($id_tipo_modulo) )) {
 		$sql1="SELECT * FROM tagente_datos_string WHERE id_agente_modulo = ".
 		$id_agente_modulo." AND id_agente = $id_agent AND utimestamp > '".$periodo."' 
 		ORDER BY timestamp DESC"; 

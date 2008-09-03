@@ -36,7 +36,7 @@ $resultado = get_db_sql ($sql);
 if ($resultado != 0) {
 	echo "<h2>". __('You have ') . ' 
 	<a href="index.php?sec=messages&sec2=operation/messages/message">'
-	.$row["count"] . ' <img src="images/email.png" border="0">'
+	.$resultado . ' <img src="images/email.png" border="0">'
 	.__(' unread message(s).') . '</a></h2>';
 }
 

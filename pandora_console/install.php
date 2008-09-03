@@ -317,13 +317,13 @@ function install_step3() {
 					</span>
 				</div>
 				<input class='login' type='text' name='path' style='width: 190px;' 
-				value='/var/www/pandora_console/'>
+				value='".dirname (__FILE__)."'>
 
-				<div>Full local URL to Pandora FMS Console<br>
+				<div>URL path to Pandora FMS Console<br>
 				<span class='f9b'>For example '/pandora_console'</span>
 				</div>
 				<input class='login' type='text' name='url' style='width: 250px;' 
-				value='/pandora_console'>
+				value='".dirname ($_SERVER['PHP_SELF'])."'>
 				
 				<div align='right'>
 				<input type='image' src='images/arrow_next.png' value='Step #4' id='step4'>
@@ -474,7 +474,7 @@ function install_step5() {
 			<h2>Installation complete</h2>
 			<p>You now must delete manually this installer ('<i>install.php</i>') 
 			file for security before trying to access to your Pandora FMS console.
-			<p>Now you need to install Pandora FMS server before trying to monitor anything, 
+			<p>You should also install the Pandora FMS Servers before trying to monitor anything, 
 			please read documentation on how to install it.</p>
 			<p>Don't forget to check <a href='http://pandorafms.com'>http://pandorafms.com</a> 
 			for updates.

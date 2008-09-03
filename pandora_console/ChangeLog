@@ -1,3 +1,19 @@
+2008-09-03  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* reporting/fgraph.php: Fixed bug where a graph wouldn't return
+	when free search was specified. Also made SQL safer against
+	attacks since fgraph can be accessed by anyone. This should be
+	fixed in later versions so there has to be no SQL query passed
+
+	* operation/events/events_rss.php: Made RSS feed better. Now you can
+	also pass a filter from events.php. Fixed direction of the links
+
+	* operation/events/events.php: Added a filter on agent name. Updated
+	for RSS feeds. Added filter on event id
+
+	* install.php: A little bit of automatic field filling. Corrected some
+	text for more correct English and update to the new URL specification
+
 2008-09-03  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions_html.php: Fixed a typo error in print_textarea

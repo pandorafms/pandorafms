@@ -104,8 +104,13 @@ install () {
         chmod -R 600 $PANDORA_TEMP/data_out
         chmod 640 $PANDORA_LOG
         chgrp 3 $PANDORA_LOG
-        echo "Copyng start-up daemon script at $PANDORA_STARTUP";
+
+        echo "Linking start-up daemon script at $PANDORA_STARTUP";
         cp pandora_agent_daemon $PANDORA_STARTUP
+
+        echo "Linking start-up daemon script to /etc/rc2.d";
+        ln -s /etc/init.d/pandora_agent_daemon /etc/rc2.d/S90pandora_agent
+
         chown -R root $PANDORA_BIN
         echo "Done."
         echo " "

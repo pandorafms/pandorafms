@@ -35,7 +35,7 @@ $result=mysql_query($sql);
 
 //$url = "https://".$_SERVER['HTTP_HOST']."/pandora_console";
 
-$url = $config["homeurl"];
+$url = 'http://'.$_SERVER['HTTP_HOST'].$config["homeurl"];
 
 $rss_feed = '<?xml version="1.0" ?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel>
 <title>Pandora RSS Feed</title>

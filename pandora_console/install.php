@@ -320,10 +320,10 @@ function install_step3() {
 				value='/var/www/pandora_console/'>
 
 				<div>Full local URL to Pandora FMS Console<br>
-				<span class='f9b'>For example http://localhost/pandora_console</span>
+				<span class='f9b'>For example '/pandora_console'</span>
 				</div>
 				<input class='login' type='text' name='url' style='width: 250px;' 
-				value='http://localhost/pandora_console'>
+				value='/pandora_console'>
 				
 				<div align='right'>
 				<input type='image' src='images/arrow_next.png' value='Step #4' id='step4'>

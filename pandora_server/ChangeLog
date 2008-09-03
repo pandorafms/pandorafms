@@ -1,3 +1,10 @@
+2008-09-03  Sancho Lerena <slerena@gmail.com>
+
+	* pandora_server_installer: Added more info about some dependencies.
+
+	* pandora_package_installer: The same.
+
+	* util/pandora_db.pl: Fixed problem deleteing tevent table.
 
 2008-09-01  Sancho Lerena <slerena@gmail.com>
 

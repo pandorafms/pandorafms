@@ -22,7 +22,7 @@ then
 	echo "The complete installation guide is at: "http://www.openideas.info/wiki/index.php?title=Pandora_1.3:Server:QIG#Installing_from_sources" "
 	echo " "
 	echo "Debian-based distribution do:"
-	echo "	$ apt-get install libdate-manip-perl snmp snmpd libsnmp-perl libtime-format-perl libxml-simple-perl libnetaddr-ip-perl libdbi-perl libxml-simple-perl libnetaddr-ip-perl wmi-client xprobe2"
+	echo "	$ apt-get install libdate-manip-perl snmp snmpd libsnmp-perl libtime-format-perl libxml-simple-perl libnetaddr-ip-perl libdbi-perl libxml-simple-perl libnetaddr-ip-perl libhtml-parser-perl wmi-client xprobe2"
 	echo " "
 	echo "RedHat-based distribution do"
 	echo " "
@@ -30,7 +30,7 @@ then
 	echo " "
 	echo "To get it from source through CPAN do"
 	echo " "
-	echo "  $ cpan Digest::MD5 Time::Local DBI threads threads::shared IO::Socket Time::HiRes Time::Format Net::Ping NetAddr::IP Mail::Sendmail Net::Traceroute::PurePerl"
+	echo "  $ cpan Digest::MD5 Time::Local DBI threads threads::shared IO::Socket Time::HiRes Time::Format Net::Ping NetAddr::IP Mail::Sendmail Net::Traceroute::PurePerl HTML::Entities"
 	echo " "
 	rm output
 else
@@ -99,11 +99,11 @@ else
 	if [ -d /etc/cron.daily ]
 	then
 		echo "#!/bin/bash" > /etc/cron.daily/pandora_purge_db	
-		echo "perl /usr/share/pandora/util/pandora_db /etc/pandora/pandora_server.conf" >> /etc/cron.daily/pandora_purge_db	
+		echo "perl /usr/share/pandora/util/pandora_db.pl /etc/pandora/pandora_server.conf" >> /etc/cron.daily/pandora_purge_db	
 		chmod +x /etc/cron.daily/pandora_purge_db
 	else
 		echo "You're probably not using cron for automatic scheduling. You should schedule the following command to run frequently (daily) on your master server:"
-		echo "   perl /usr/share/pandora/util/pandora_db /etc/pandora/pandora_server.conf"
+		echo "   perl /usr/share/pandora/util/pandora_db.pl /etc/pandora/pandora_server.conf"
 	fi
 	rm output
 fi

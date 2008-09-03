@@ -25,7 +25,7 @@ use DBI;				# DB interface with MySQL
 use Date::Manip;			# Date/Time manipulation
 
 # version: define la version actual del programa
-my $version = "1.3 PS080327";
+my $version = "2.0 PS080903";
 
 # Setup variables
 my $dirname="";
@@ -91,7 +91,7 @@ sub pandora_purgedb {
     my $limit_event = DateCalc("today","-$config_days_purge days",\$err);
     $limit_event = &UnixDate($limit_event,"%Y-%m-%d %H:%M:%S");
     print "[PURGE] Deleting old event data (More than $config_days_purge days)... \n";
-    $dbh->do("DELETE FROM tevent WHERE timestamp < '$limit_event'");
+    $dbh->do("DELETE FROM tevento WHERE timestamp < '$limit_event'");
 
 	print "[PURGE] Deleting old data... \n";
 	# Lets insert the last value on $limit_timestamp + 1 minute for each id_agente_modulo

@@ -1369,7 +1369,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 	//This will give the distinct id_agente, give the id_grupo that goes
 	//with it and then the number of times it occured. GROUP BY statement
 	//is required if both DISTINCT() and COUNT() are in the statement 
-	$sql = "SELECT DISTINCT(id_agente) AS id_agente, id_grupo, COUNT(id_agente) AS count FROM tevento WHERE 1=1 ".$url." GROUP BY id_agente"; 
+	$sql = "SELECT DISTINCT(id_agente) AS id_agente, id_grupo, COUNT(id_agente) AS count FROM tevento WHERE 1=1 ".$url." GROUP BY id_agente ORDER BY count DESC"; 
 	$result = get_db_all_rows_sql ($sql);
 	if ($result === false)
 		$result = array();
@@ -1386,8 +1386,6 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 			}
 		}
 	}
-	
-	array_multisort ($legend, $data);
 	
 	$max_items = 6; //Maximum items on the piegraph
 	while (count($data) > $max_items) {

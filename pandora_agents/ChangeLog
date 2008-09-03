@@ -1,3 +1,8 @@
+2008-09-03  SAncho Lerena <lserena@artica.es>
+
+	* linux/pandora_agent_installer: Added link to startup
+	for linux agent.
+
 2008-07-31  Ramon Novoa  <rnovoa@artica.es>
 
 	* win32/bin/PandoraAgent.exe: Updated to r989.

@@ -1,3 +1,15 @@
+2008-09-03  Sancho Lerena <slerena@artica.es>
+
+	* include/functions_reporting_pdf.php: Moved to contrib branch.
+
+	* install.php: Update sample of use for homeurl variable. This should
+	not contain HTTP:/x.x.x.x anymore.
+
+	* operation/events/events_rss.php: Makes use of homeurl in the 
+	correct way.
+
+	* operation/agentes/estado_agente.php: Fixed a sprintf typo.
+
 2008-09-03  Esteban Sanchez  <estebans@artica.es>
 
 	* include/config_process.php: Checks in homeurl config variable. Style

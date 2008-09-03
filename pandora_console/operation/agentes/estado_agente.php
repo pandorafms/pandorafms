@@ -116,7 +116,7 @@ if ($ag_group > 1){
 					ORDER BY nombre, id_grupo LIMIT %d,%d",
 					$search_sql, $offset,
 					$config["block_size"]);
-			$sql2 = sprint ("SELECT COUNT(id_agente)
+			$sql2 = sprintf ("SELECT COUNT(id_agente)
 					FROM tagente WHERE disabled = 0 %s
 					ORDER BY nombre, id_grupo",
 					$search_sql);
@@ -141,6 +141,7 @@ if ($ag_group > 1){
 
 	}
 }
+
 
 $result2 = mysql_query ($sql2);
 $row2 = mysql_fetch_array ($result2);

@@ -164,13 +164,14 @@ if (isset ($_POST["updatebt"])) {
 
 // Get data
 
-$offset = get_parameter ( "offset",0);
-$ev_group = get_parameter ("ev_group", 0); // group
+$offset = (int) get_parameter ( "offset",0);
+$ev_group = (int) get_parameter ("ev_group", 0); // group
 $search = get_parameter ("search", ""); // free search
 $event_type = get_parameter ("event_type", ''); // 0 all
-$severity = get_parameter ("severity", -1); // -1 all
-$status = get_parameter ("status", 0); // -1 all, 0 only red, 1 only green
-$id_agent = get_parameter ("id_agent", -1);
+$severity = (int) get_parameter ("severity", -1); // -1 all
+$status = (int) get_parameter ("status", 0); // -1 all, 0 only red, 1 only green
+$id_agent = (int) get_parameter ("id_agent", -1);
+$id_event = (int) get_parameter ("id_event", -1);
 
 $sql_post = "";
 if ($ev_group > 1)
@@ -184,10 +185,13 @@ if ($search != "")
 if ($event_type != "")
 	$sql_post .= " AND event_type = '$event_type'";
 if ($severity != -1)
-	$sql_post .= " AND criticity >= $severity";
+	$sql_post .= " AND criticity >= ".$severity;
 if ($id_agent != -1)
-	$sql_post .= " AND id_agente = $id_agent";
-$url = "index.php?sec=eventos&sec2=operation/events/events&search=$search&event_type=$event_type&severity=$severity&status=$status&ev_group=$ev_group&refr=60&id_agent=$id_agent";
+	$sql_post .= " AND id_agente = ".$id_agent;
+if ($id_event != -1)
+	$sql_post .= " AND id_evento = ".$id_event;
+
+$url = "index.php?sec=eventos&sec2=operation/events/events&search=$search&event_type=$event_type&severity=$severity&status=$status&ev_group=$ev_group&refr=60&id_agent=$id_agent&id_event=$id_event";
 
 echo "<h2>".__('Events')." &gt; ".__('Main event view'). "&nbsp";
 
@@ -250,7 +254,24 @@ echo "</td></tr><tr>";
 // Free search
 echo "<td>".__('Free search')."</td><td>";
 print_input_text ('search', $search, '', 15);
-echo "</td><td colspan=2>";
+
+//Agent search
+echo "</td><td>".__('Agent search')."</td><td>";
+$sql = "SELECT DISTINCT(id_agente) FROM tevento WHERE 1=1 ".$sql_post;
+$result = get_db_all_rows_sql ($sql);
+if ($result === false)
+	$result = array();
+$agents = array(-1 => "All");
+
+foreach ($result as $id_row) {
+	$agents[$id_row[0]] = dame_nombre_agente ($id_row[0]);
+}
+
+print_select ($agents, 'id_agent', $id_agent, 'javascript:this.form.submit();', '', '');
+echo "</td></tr>";
+
+//The buttons
+echo '<tr><td colspan="2"><!-- Empty cell --></td><td colspan="2">';
 print_submit_button (__('Update'), '', false, $attributes = 'class="sub upd"');
 
 // CSV
@@ -260,7 +281,7 @@ echo '&nbsp;&nbsp;&nbsp;
 // Marquee
 echo "&nbsp;<a target='_top' href='operation/events/events_marquee.php'><img src='images/heart.png' title='".__('Marquee display')."'></a>";
 // RSS
-echo "&nbsp;<a target='_top' href='operation/events/events_rss.php'><img src='images/transmit.png' title='".__('RSS Events')."'></a>";
+echo '&nbsp;<a target="_top" href="operation/events/events_rss.php?ev_group='.$ev_group.'&event_type='.$event_type.'&search='.$search.'&severity='.$severity.'&status='.$status.'&id_agent='.$id_agent.'"><img src="images/transmit.png" title="'.__('RSS Events').'"></a>';
 
 
 echo "</td></tr></table>";

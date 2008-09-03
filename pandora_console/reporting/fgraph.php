@@ -1325,7 +1325,7 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
         $data = array();
         $legend = array();
 
-        $sql = "SELECT DISTINCT(id_agentmodule) AS id_agentmodule, id_grupo, COUNT(id_agentmodule) AS count FROM tevento WHERE id_agente = ".$id_agent." GROUP BY id_agentmodule";
+        $sql = sprintf ("SELECT DISTINCT(id_agentmodule) AS id_agentmodule, id_grupo, COUNT(id_agentmodule) AS count FROM tevento WHERE id_agente = %d GROUP BY id_agentmodule",$id_agent);
         $result = get_db_all_rows_sql ($sql);
         if ($result === false)
                 $result = array();
@@ -1359,10 +1359,13 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
 function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 	global $config;
 	
-	$url = rawurldecode ($url); //It was urlencoded, so we urldecode it
+	$url = html_entity_decode (rawurldecode ($url),ENT_QUOTES); //It was urlencoded, so we urldecode it
 	$data = array();
 	$legend = array();
-	
+
+	$badstrings = array (";", "SELECT ", "DELETE ", "UPDATE ", "INSERT ");	
+	$url = str_ireplace ($badstrings,"",$url); //remove bad strings from the query so queries like ; DELETE FROM  don't pass
+		
 	//This will give the distinct id_agente, give the id_grupo that goes
 	//with it and then the number of times it occured. GROUP BY statement
 	//is required if both DISTINCT() and COUNT() are in the statement 

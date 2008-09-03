@@ -89,9 +89,9 @@ echo '</div>';
 <script type="text/javascript" src="include/javascript/jquery.js"></script>
 <script src="include/javascript/jquery.ui.core.js"></script>
 <script src="include/javascript/jquery.ui.datepicker.js"></script>
+<script src="include/javascript/jquery.timeentry.js"></script>
 <script src="include/languages/date_<?= $config['language'] ?>.js"></script>
 <script src="include/languages/time_<?= $config['language'] ?>.js"></script>
-<script src="include/javascript/jquery.timeentry.js"></script>
 
 <script language="javascript" type="text/javascript">
 

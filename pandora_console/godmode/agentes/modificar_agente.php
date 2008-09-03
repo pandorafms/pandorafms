@@ -111,7 +111,7 @@ if (isset($_GET["borrar_agente"])){ // if delete agent
 		}
 		unset ($sql_delete, $del_error); //Clean up
 		process_sql ("SET AUTOCOMMIT=1;");	
-		audit_db($config["id_user"],$REMOTE_ADDR, "Agent '$agent_name' deleted", "Agent Management");
+		audit_db($config["id_user"],$REMOTE_ADDR, "Agent \'$agent_name\' deleted", "Agent Management");
 
 		// Delete remote configuration
 		$agent_md5 = md5($agent_name, FALSE);
@@ -123,8 +123,8 @@ if (isset($_GET["borrar_agente"])){ // if delete agent
 			unlink ($file_name);
 		}
 	} else { // NO permissions.
-		audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation",
-		"Trying to delete agent '$agent_name'");
+		audit_db ($config["id_user"],$REMOTE_ADDR, "ACL Violation",
+			"Trying to delete agent \'$agent_name\'");
 		require ("general/noaccess.php");
 		exit;
 	}

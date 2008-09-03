@@ -114,9 +114,12 @@ if (file_exists ('./include/languages/'.$config["language"].'.mo')) {
 	$l10n->load_tables();
 }
 
-if (!isset($config["date_format"])) {
-	$config["date_format"] = "F j, Y, g:i a";
+if (! isset ($config['date_format'])) {
+	$config['date_format'] = 'F j, Y, g:i a';
 }
 
+if (isset ($config['homeurl']) && $config['homeurl'][0] != '/') {
+	$config['homeurl'] = '/'.$config['homeurl'];
+}
 
 ?>

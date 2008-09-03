@@ -1,3 +1,8 @@
+2008-09-03  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_html.php: Fixed a typo error in print_textarea
+	that cause not showing the value given.
+
 2008-09-03  Sancho Lerena <slerena@artica.es>
 
 	* include/functions_reporting_pdf.php: Moved to contrib branch.

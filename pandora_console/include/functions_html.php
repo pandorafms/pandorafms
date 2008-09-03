@@ -23,14 +23,17 @@
  * 
  * Based on choose_from_menu() from Moodle 
  * 
- * $fields Array with dropdown values. Example: $fields["value"] = "label"
- * $name Select form name
- * $selected Current selected value.
- * $script Javascript onChange code.
- * $nothing Label when nothing is selected.
- * $nothing_value Value when nothing is selected
+ * @param array $fields Array with dropdown values. Example: $fields["value"] = "label"
+ * @param string $name Select form name
+ * @param variant $selected Current selected value.
+ * @param string $script Javascript onChange code.
+ * @param string $nothing Label when nothing is selected.
+ * @param variant $nothing_value Value when nothing is selected
+ * @param bool $return Whether to return an output string or echo now (optional, echo by default).
+ * @param bool $multiple Set the input to allow multiple selections (optional, single selection by default).
+ * @param bool $sort Whether to sort the options or not (optional, unsorted by default).
  */
-function print_select ($fields, $name, $selected = '', $script = '', $nothing = 'select', $nothing_value = '0', $return = false, $multiple = false) {
+function print_select ($fields, $name, $selected = '', $script = '', $nothing = 'select', $nothing_value = '0', $return = false, $multiple = false, $sort = true) {
 	$output = "\n";
 	
 	$attributes = ($script) ? 'onchange="'. $script .'"' : '';
@@ -49,7 +52,8 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 	}
 
 	if (!empty ($fields)) {
-		asort ($fields);
+		if ($sort)
+			asort ($fields);
 		foreach ($fields as $value => $label) {
 			$output .= '   <option value="'. $value .'"';
 			if ($value == $selected) {
@@ -85,7 +89,7 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
  * $nothing Label when nothing is selected.
  * $nothing_value Value when nothing is selected
  */
-function print_select_from_sql ($sql, $name, $selected = '', $script = '', $nothing = 'select', $nothing_value = '0', $return = false, $multiple = false) {
+function print_select_from_sql ($sql, $name, $selected = '', $script = '', $nothing = 'select', $nothing_value = '0', $return = false, $multiple = false, $sort = true) {
 	
 	$fields = array ();
 	$result = mysql_query ($sql);
@@ -98,7 +102,7 @@ function print_select_from_sql ($sql, $name, $selected = '', $script = '', $noth
 		$fields[$row[0]] = $row[1];
 	}
 	
-	$output = print_select ($fields, $name, $selected, $script, $nothing, $nothing_value, true, $multiple);
+	$output = print_select ($fields, $name, $selected, $script, $nothing, $nothing_value, true, $multiple, $sort);
 	
 	if ($return)
 		return $output;
@@ -237,7 +241,7 @@ function print_button ($label = 'OK', $name = '', $disabled = false, $script = '
 }
 
 function print_textarea ($name, $rows, $columns, $value = '', $attributes = '', $return = false) {
-	$output = '<textarea name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' />';
+	$output = '<textarea name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' >';
 	$output .= $value;
 	$output .= '</textarea>';
 	

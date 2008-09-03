@@ -1,5 +1,11 @@
 2008-09-03  Sancho Lerena <slerena@artica.es>
 
+	* reporting/fgraph.php: In grafico_eventos_grupo() array_multisort 
+	was not working as expected. Using a SORT sentence in SQL that provides
+	the same functionality.
+
+2008-09-03  Sancho Lerena <slerena@artica.es>
+
 	* reporting/fgraph.php: URL passed should don't get slashes or 
 	don't work, used unsafe_string() to remove it.
 

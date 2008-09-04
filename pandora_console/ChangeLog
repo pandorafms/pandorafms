@@ -1,5 +1,10 @@
 2008-09-04  Esteban Sanchez  <estebans@artica.es>
 
+	* extensions/update_manager/lib/libupdatemanager_client.php: Updated
+	to latest Update Manager version.
+
+2008-09-04  Esteban Sanchez  <estebans@artica.es>
+
 	* extensions/update_manager/main.php: Added option to update packages.
 
 	* include/functions_db.php: Added default value to get_user_groups,

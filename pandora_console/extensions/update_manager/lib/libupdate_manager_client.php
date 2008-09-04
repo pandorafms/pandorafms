@@ -13,7 +13,6 @@
 // GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 $prev_level = error_reporting (0);
 if ((include_once ('XML/RPC.php')) != 1)
@@ -21,13 +20,22 @@ if ((include_once ('XML/RPC.php')) != 1)
 error_reporting ($prev_level);
 unset ($prev_level);
 
+
+define ('XMLRPC_DEBUG', 0);
+
 function um_xml_rpc_client_call ($server_host, $server_path, $server_port, $function, $parameters) {
 	$msg = new XML_RPC_Message ($function, $parameters);
 	$client = new XML_RPC_Client ($server_path, $server_host, $server_port);
-	
+	if (defined ('XMLRPC_DEBUG'))
+		$client->setDebug (XMLRPC_DEBUG);
 	$result = $client->send ($msg);
 	
-	if (! $result || $result->faultCode ()) {
+	if (! $result) {
+		trigger_error ('<strong>Open Update Manager</strong> Server comunication error. '.$client->errstr);
+		return false;
+	}
+	if ($result->faultCode ()) {
+		trigger_error ('<strong>Open Update Manager</strong> XML-RPC error. '.$result->faultString ());
 		return false;
 	}
 	
@@ -177,7 +185,6 @@ function um_client_apply_update_file (&$update, $destiny_filename, $force = fals
 		$update->previous_checksum = $checksum;
 	}
 	$result = file_put_contents ($destiny_filename, convert_uudecode ($update->data));
-	
 	if ($result === false) {
 		return false;
 	}
@@ -208,10 +215,10 @@ function um_client_apply_update_database (&$update, &$db) {
 
 function um_client_apply_update (&$update, $settings, $db, $force = false) {
 	if ($update->type == 'code') {
-		$filename = realpath ($settings->updating_code_path.'/'.$update->filename);
+		$filename = $settings->updating_code_path.'/'.$update->filename;
 		$success = um_client_apply_update_file ($update, $filename, $force);
 	} else if ($update->type == 'binary') {
-		$filename = realpath ($settings->updating_binary_path.'/'.$update->filename);
+		$filename = $settings->updating_binary_path.'/'.$update->filename;
 		$success = um_client_apply_update_file ($update, $filename);
 	} else if ($update->type == 'db_data' || $update->type == 'db_schema') {
 		$success = um_client_apply_update_database ($update, $db);
@@ -239,10 +246,10 @@ function um_client_rollback_update_file (&$update, $destiny_filename) {
 
 function um_client_rollback_update (&$update, $settings, $db) {
 	if ($update->type == 'code') {
-		$filename = realpath ($settings->updating_code_path.'/'.$update->filename);
+		$filename = $settings->updating_code_path.'/'.$update->filename;
 		$success = um_client_rollback_update_file ($update, $filename);
 	} else if ($update->type == 'binary') {
-		$filename = realpath ($settings->updating_binary_path.'/'.$update->filename);
+		$filename = $settings->updating_binary_path.'/'.$update->filename;
 		$success = um_client_rollback_update_file ($update, $filename);
 	} else if ($update->type == 'db_data' || $update->type == 'db_schema') {
 		$db->rollback ();
@@ -260,9 +267,9 @@ function um_client_print_update ($update, $settings) {
 	echo '<li><em>Type</em>: '.$update->type.'</li>';
 	if ($update->type == 'code' || $update->type == 'binary') {
 		if ($update->type == 'code') {
-			$realpath = realpath ($settings->updating_code_path.'/'.$update->filename);
+			$realpath = $settings->updating_code_path.'/'.$update->filename;
 		} else {
-			$realpath = realpath ($settings->updating_binary_path.'/'.$update->filename);
+			$realpath = $settings->updating_binary_path.'/'.$update->filename;
 		}
 		echo '<li><em>Filename</em>: '.$update->filename.'</li>';
 		echo '<li><em>Realpath</em>: '.$realpath.'</li>';

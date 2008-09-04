@@ -1,3 +1,18 @@
+2008-09-04  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* mac_osx/plugins/XServeRAID: Updated for 2.0 type agents. Added
+	license information
+
+	* mac_osx/plugins/SGE: Added SGE plugin. This is a shell script that
+	will output the status of an SGE computing cluster. Best installed on
+	the SGE Master
+
+	* mac_osx/plugins/ppc_sensors: Updated for 2.0 type agents. Added
+	license information
+
+	* mac_osx/plugins/ipmi2xml: Renamed .txt to .php (what it should be).
+	Updated to 2.0 type agents. Added license information
+
 2008-09-03  SAncho Lerena <lserena@artica.es>
 
 	* linux/pandora_agent_installer: Added link to startup

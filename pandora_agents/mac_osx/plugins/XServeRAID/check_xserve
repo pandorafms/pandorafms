@@ -1,3 +1,22 @@
 #!/bin/sh
+###############################################################################
+#
+# Copyright (c) 2007-2008  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+#
+# check_xserve: This script reads out the check_xserve_raid utils to use in the
+# 	Pandora configuration.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 3 of the License.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.  
+#
+###############################################################################
+
+
 /usr/local/bin/check_xserve_raid --address 0.0.0.0 --debug --debug > /private/var/root/xserve-status
 cat /private/var/root/xserve-status | grep "lhs.array1 optimal, rhs.array1 optimal" | wc -l

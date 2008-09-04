@@ -1,3 +1,13 @@
+2008-09-04  Esteban Sanchez  <estebans@artica.es>
+
+	* extensions/update_manager/main.php: Added option to update packages.
+
+	* include/functions_db.php: Added default value to get_user_groups,
+	so if no parameter is giving, it will asume running user.
+
+	* include/languages/Makefile: Added missing options to add comments to
+	index.pot file.
+
 2008-09-03  Sancho Lerena <slerena@artica.es>
 
 	* reporting/fgraph.php: In grafico_eventos_grupo() array_multisort 

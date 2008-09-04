@@ -1032,7 +1032,12 @@ function list_group2 ($id_user) {
  * 
  * @return A list of the groups the user has reading privileges.
  */
-function get_user_groups ($id_user) {
+function get_user_groups ($id_user = 0) {
+	if ($id_user == 0) {
+		global $config;
+		$id_user = $config['id_user'];
+	}
+	
 	$user_groups = array ();
 	$groups = get_db_all_rows_in_table ('tgrupo', 'nombre');
 

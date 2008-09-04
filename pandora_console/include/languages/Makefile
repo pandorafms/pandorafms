@@ -1,5 +1,5 @@
 all: ast.mo  ca.mo  de.mo  es.mo  fr.mo  gl.mo  it.mo  pt_br.mo
-	xgettext `find ../../ -name "*\.php"` --output=index.pot  --keyword=__
+	xgettext `find ../../ -name "*\.php"` --output=index.pot  --keyword=__ --add-comments=///
 
 ast.mo: ast.po
 	msgfmt ast.po -o ast.mo

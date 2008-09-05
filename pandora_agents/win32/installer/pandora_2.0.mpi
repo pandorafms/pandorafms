@@ -119,6 +119,9 @@ PackageSummary
 PackageVersion
 <%MajorVersion%>.<%MinorVersion%>
 
+PreserveFileAttributes
+Yes
+
 PreserveFilePermissions
 No
 
@@ -126,7 +129,7 @@ ProjectID
 0EA13B96-1BB2-4238-B248-101B4F906C15
 
 ProjectVersion
-1.2.5.1
+1.2.9.0
 
 SaveOnlyToplevelDirs
 No
@@ -139,6 +142,9 @@ ShortAppName
 
 SkipUnusedFileGroups
 No
+
+SystemLanguage
+es
 
 Theme
 Modern_Wizard
@@ -220,7 +226,6 @@ File ::5EA49A68-6952-43BF-9A54-1CDF8E48C3D8 -name 4.jpg -parent 550F286E-2409-42
 File ::0C33AC8D-503A-4A9C-801F-2FDEF9FA98C0 -name 5.jpg -parent 550F286E-2409-4221-A51A-CA980C9EA9DC
 File ::1B81E274-2375-4287-90D7-953BE3F71FA7 -name 6.jpg -parent 550F286E-2409-4221-A51A-CA980C9EA9DC
 File ::C2E02994-9B4E-430C-B399-E93986DD9B0F -name logo.png -parent 550F286E-2409-4221-A51A-CA980C9EA9DC
-File ::1E2AD0BC-1D4C-4C45-BFCF-9CECF7BA3952 -name Thumbs.db -parent 550F286E-2409-4221-A51A-CA980C9EA9DC
 File ::9E5D6A00-E82C-49B4-B654-3F36D4D48A83 -name C:/pandora_installer/bin/libodbc++.dll -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 Component ::FB96078B-BA3C-498C-8C20-B01C1F28ACA9 -setup Install -active Yes -platforms Windows -name {Default Component} -parent Components
 SetupType ::A87C1A6B-ED26-4B07-8736-750725FF34E4 -setup Install -active Yes -platforms {Solaris-sparc Windows} -name Typical -parent SetupTypes
@@ -228,11 +233,11 @@ SetupType ::A87C1A6B-ED26-4B07-8736-750725FF34E4 -setup Install -active Yes -pla
 InstallComponent 1957048E-B498-4FFF-A8BA-F2DF640463B1 -setup Install -type pane -title {Welcome Screen} -component Welcome -active Yes -parent StandardInstall
 InstallComponent DE1D4DF7-A35C-4228-8A25-07106AD77C9E -setup Install -type pane -title {License Agreement} -component License -active Yes -parent StandardInstall
 InstallComponent EAB473BD-3ECC-4FDE-AF62-B80B89DCAE38 -setup Install -type action -conditions {354871D2-65BD-4414-BB04-F466798FA027 0F1370DF-FF15-4CE7-ADF6-CA74BC642334} -title {Modify Widget} -component ModifyWidget -command insert -active Yes -parent DE1D4DF7-A35C-4228-8A25-07106AD77C9E
-Condition 354871D2-65BD-4414-BB04-F466798FA027 -active Yes -parent EAB473BD-3ECC-4FDE-AF62-B80B89DCAE38 -title {String Is Condition} -component StringIsCondition
-Condition 0F1370DF-FF15-4CE7-ADF6-CA74BC642334 -active Yes -parent EAB473BD-3ECC-4FDE-AF62-B80B89DCAE38 -title {String Is Condition} -component StringIsCondition
+Condition 354871D2-65BD-4414-BB04-F466798FA027 -active Yes -parent EAB473BD-3ECC-4FDE-AF62-B80B89DCAE38 -title {String Is Condition} -component StringIsCondition -TreeObject::id 354871D2-65BD-4414-BB04-F466798FA027
+Condition 0F1370DF-FF15-4CE7-ADF6-CA74BC642334 -active Yes -parent EAB473BD-3ECC-4FDE-AF62-B80B89DCAE38 -title {String Is Condition} -component StringIsCondition -TreeObject::id 0F1370DF-FF15-4CE7-ADF6-CA74BC642334
 InstallComponent B2E20690-C57D-4286-9977-F2541E04D71F -setup Install -type pane -conditions {F6A6DB43-C89D-4A19-98D3-1E24284260AE E8952A0A-82A0-4AD0-8FA8-8902870AF848} -title {Select Destination} -component SelectDestination -command insert -active Yes -parent StandardInstall
-Condition F6A6DB43-C89D-4A19-98D3-1E24284260AE -active Yes -parent B2E20690-C57D-4286-9977-F2541E04D71F -title {Script Condition} -component ScriptCondition
-Condition E8952A0A-82A0-4AD0-8FA8-8902870AF848 -active Yes -parent B2E20690-C57D-4286-9977-F2541E04D71F -title {File Permission Condition} -component FilePermissionCondition
+Condition F6A6DB43-C89D-4A19-98D3-1E24284260AE -active Yes -parent B2E20690-C57D-4286-9977-F2541E04D71F -title {Script Condition} -component ScriptCondition -TreeObject::id F6A6DB43-C89D-4A19-98D3-1E24284260AE
+Condition E8952A0A-82A0-4AD0-8FA8-8902870AF848 -active Yes -parent B2E20690-C57D-4286-9977-F2541E04D71F -title {File Permission Condition} -component FilePermissionCondition -TreeObject::id E8952A0A-82A0-4AD0-8FA8-8902870AF848
 InstallComponent C862BDC0-8F67-4546-B658-4A9A8ADCE385 -setup Install -type pane -title {Start Copying Files} -component StartCopyingFiles -active Yes -parent StandardInstall
 InstallComponent 268B55D8-DE61-421A-AB68-A5D4821D981F -setup Install -type pane -title {Copying Files} -component CopyFiles -active Yes -parent StandardInstall
 InstallComponent 57BABE6F-717F-4D6A-8A66-921B404862F5 -setup Install -type action -title {Disable Buttons} -component ModifyWidget -active Yes -parent 268B55D8-DE61-421A-AB68-A5D4821D981F
@@ -246,21 +251,27 @@ InstallComponent 736623D0-C176-476C-A899-35C05DD59147 -setup Install -type actio
 InstallComponent E3AB45B0-A6A5-40AC-ADC7-7DD86403BFD0 -setup Install -type action -title {Install Program Folder Shortcut} -component InstallProgramFolderShortcut -active Yes -parent 268B55D8-DE61-421A-AB68-A5D4821D981F
 InstallComponent D6128B0E-6CFE-4626-87CC-64C883554F0F -setup Install -type action -title {Install Program Folder Shortcut} -component InstallProgramFolderShortcut -active Yes -parent 268B55D8-DE61-421A-AB68-A5D4821D981F
 InstallComponent 8A1B144A-F5F6-430F-A334-C31494182599 -setup Install -type action -title {Move Forward} -component MoveForward -active Yes -parent 268B55D8-DE61-421A-AB68-A5D4821D981F
+InstallComponent 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1 -setup Install -type pane -title {Custom Blank Pane 2} -component CustomBlankPane2 -active Yes -parent StandardInstall
+InstallComponent 75288342-4CEB-473C-B242-450642503F74 -setup Install -type action -title {Add Widget} -component AddWidget -active Yes -parent 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1
+InstallComponent F1A58A0A-58DF-4236-9316-8BE4D22D4FF6 -setup Install -type action -title {Add Widget} -component AddWidget -command reorder -active Yes -parent 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1
+InstallComponent 34F6EFDE-4008-4CD2-942B-401D2E55F334 -setup Install -type action -title {Add Widget} -component AddWidget -active Yes -parent 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1
+InstallComponent E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0 -setup Install -type action -title {Add Widget} -component AddWidget -active Yes -parent 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1
+InstallComponent 0C4A17DA-7867-40CC-81B4-0D1F170581AC -setup Install -type action -title {Replace Text In File} -component ReplaceTextInFile -active Yes -parent 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1
 InstallComponent 1F7BE720-7885-4150-9550-F25FB1C69423 -setup Install -type pane -title {Setup Complete} -component SetupComplete -active Yes -parent StandardInstall
 InstallComponent 2B99A465-4666-445D-96BF-9C8F03CDAC60 -setup Install -type action -title {Message Box} -component MessageBox -active Yes -parent 1F7BE720-7885-4150-9550-F25FB1C69423
 InstallComponent C6CE92F8-3842-4E58-A3A2-5B5D2F7AFB4B -setup Install -type action -title {Message Box} -component MessageBox -active Yes -parent 1F7BE720-7885-4150-9550-F25FB1C69423
 InstallComponent 549C2B91-793B-4761-9A80-335929EB17F8 -setup Install -type action -title {Execute External Program} -component ExecuteExternalProgram -active Yes -parent 1F7BE720-7885-4150-9550-F25FB1C69423
 InstallComponent 60CAEDF4-53E9-46C5-9A0F-5873E12F2328 -setup Install -type action -conditions {D8C1E7BD-813A-43ED-95A4-4F5DA45D5886 3AEDBF26-DF24-4328-B5AE-E93AA5F0617B} -title {View Readme Checkbutton} -component AddWidget -command insert -active Yes -parent 1F7BE720-7885-4150-9550-F25FB1C69423
-Condition D8C1E7BD-813A-43ED-95A4-4F5DA45D5886 -active Yes -parent 60CAEDF4-53E9-46C5-9A0F-5873E12F2328 -title {File Exists Condition} -component FileExistsCondition
-Condition 3AEDBF26-DF24-4328-B5AE-E93AA5F0617B -active Yes -parent 60CAEDF4-53E9-46C5-9A0F-5873E12F2328 -title {String Is Condition} -component StringIsCondition
+Condition D8C1E7BD-813A-43ED-95A4-4F5DA45D5886 -active Yes -parent 60CAEDF4-53E9-46C5-9A0F-5873E12F2328 -title {File Exists Condition} -component FileExistsCondition -TreeObject::id D8C1E7BD-813A-43ED-95A4-4F5DA45D5886
+Condition 3AEDBF26-DF24-4328-B5AE-E93AA5F0617B -active Yes -parent 60CAEDF4-53E9-46C5-9A0F-5873E12F2328 -title {String Is Condition} -component StringIsCondition -TreeObject::id 3AEDBF26-DF24-4328-B5AE-E93AA5F0617B
 InstallComponent 6059F771-3AA1-491C-8B84-788812912E73 -setup Install -type pane -title {Copying Files} -component CopyFiles -active Yes -parent DefaultInstall
 InstallComponent 63A986C1-609D-430F-8119-EBEDFC8315EF -setup Install -type action -title {Disable Buttons} -component ModifyWidget -active Yes -parent 6059F771-3AA1-491C-8B84-788812912E73
 InstallComponent D05D0C20-4972-455A-885D-69F24E9AF177 -setup Install -type action -title {Execute Action} -component ExecuteAction -active Yes -parent 6059F771-3AA1-491C-8B84-788812912E73
 InstallComponent 66412B02-0460-4B2B-9D89-57A6BBF1328D -setup Install -type action -title {Move Forward} -component MoveForward -active Yes -parent 6059F771-3AA1-491C-8B84-788812912E73
 InstallComponent 6B06C7C2-97A8-4642-B286-3B089943F359 -setup Install -type pane -title {Setup Complete} -component SetupComplete -active Yes -parent DefaultInstall
 InstallComponent 86342A9C-494A-4036-BA8E-E4BE8A7BB16C -setup Install -type action -conditions {E573F839-1FCD-4668-93F9-E39764B8CB78 D3D6A68D-37DE-4FC8-874D-33A762512634} -title {View Readme Checkbutton} -component AddWidget -command insert -active Yes -parent 6B06C7C2-97A8-4642-B286-3B089943F359
-Condition E573F839-1FCD-4668-93F9-E39764B8CB78 -active Yes -parent 86342A9C-494A-4036-BA8E-E4BE8A7BB16C -title {File Exists Condition} -component FileExistsCondition
-Condition D3D6A68D-37DE-4FC8-874D-33A762512634 -active Yes -parent 86342A9C-494A-4036-BA8E-E4BE8A7BB16C -title {String Is Condition} -component StringIsCondition
+Condition E573F839-1FCD-4668-93F9-E39764B8CB78 -active Yes -parent 86342A9C-494A-4036-BA8E-E4BE8A7BB16C -title {File Exists Condition} -component FileExistsCondition -TreeObject::id E573F839-1FCD-4668-93F9-E39764B8CB78
+Condition D3D6A68D-37DE-4FC8-874D-33A762512634 -active Yes -parent 86342A9C-494A-4036-BA8E-E4BE8A7BB16C -title {String Is Condition} -component StringIsCondition -TreeObject::id D3D6A68D-37DE-4FC8-874D-33A762512634
 InstallComponent BAD74F82-1E82-46F5-861A-EFBF6EC6887A -setup Install -type action -title {Execute Action} -component ExecuteAction -active Yes -parent SilentInstall
 InstallComponent 466DC16E-3453-409B-999C-CCDF853AA03D -setup Install -type action -title Exit -component Exit -active Yes -parent SilentInstall
 InstallComponent D567240B-2A30-47FD-97AA-3EDA09B64E9F -setup Install -type actiongroup -title {Setup Actions} -active Yes -parent ActionGroupsInstall
@@ -273,9 +284,9 @@ InstallComponent 75B1D869-C9BA-42C4-9C07-E1D156DA80A8 -setup Install -type actio
 InstallComponent A4155ACD-0377-4A2C-B952-2C19BF592347 -setup Install -type action -title {Uninstall Shortcut} -component InstallProgramFolderShortcut -command reorder -active Yes -parent 9C96DF15-FD21-468D-9996-76D96466D335
 InstallComponent 18774B81-6D13-4BD2-B6F2-852BF95814BD -setup Install -type actiongroup -title {Finish Actions} -active Yes -parent ActionGroupsInstall
 InstallComponent 5EA75DE2-F9E1-405D-800E-B28FB96CDC61 -setup Install -type action -conditions {EDB4771C-ED91-462E-84D9-66E4AE0A9D9C 5CC9615C-1568-415A-A9BA-8D48DD155F7E 9D5D32C2-9AEC-46C1-98CA-F9A535E6ED82} -title {View Readme Window} -component TextWindow -command insert -active Yes -parent 18774B81-6D13-4BD2-B6F2-852BF95814BD
-Condition EDB4771C-ED91-462E-84D9-66E4AE0A9D9C -active Yes -parent 5EA75DE2-F9E1-405D-800E-B28FB96CDC61 -title {String Is Condition} -component StringIsCondition
-Condition 5CC9615C-1568-415A-A9BA-8D48DD155F7E -active Yes -parent 5EA75DE2-F9E1-405D-800E-B28FB96CDC61 -title {String Is Condition} -component StringIsCondition
-Condition 9D5D32C2-9AEC-46C1-98CA-F9A535E6ED82 -active Yes -parent 5EA75DE2-F9E1-405D-800E-B28FB96CDC61 -title {File Exists Condition} -component FileExistsCondition
+Condition EDB4771C-ED91-462E-84D9-66E4AE0A9D9C -active Yes -parent 5EA75DE2-F9E1-405D-800E-B28FB96CDC61 -title {String Is Condition} -component StringIsCondition -TreeObject::id EDB4771C-ED91-462E-84D9-66E4AE0A9D9C
+Condition 5CC9615C-1568-415A-A9BA-8D48DD155F7E -active Yes -parent 5EA75DE2-F9E1-405D-800E-B28FB96CDC61 -title {String Is Condition} -component StringIsCondition -TreeObject::id 5CC9615C-1568-415A-A9BA-8D48DD155F7E
+Condition 9D5D32C2-9AEC-46C1-98CA-F9A535E6ED82 -active Yes -parent 5EA75DE2-F9E1-405D-800E-B28FB96CDC61 -title {File Exists Condition} -component FileExistsCondition -TreeObject::id 9D5D32C2-9AEC-46C1-98CA-F9A535E6ED82
 InstallComponent CFF365EA-C5AD-4E16-9D09-E20AADED45ED -setup Install -type actiongroup -title {Cancel Actions} -active Yes -parent ActionGroupsInstall
 InstallComponent F037AAD5-E79E-4544-B8C0-AA98CDF5438E -setup Uninstall -type pane -title Uninstall -component Uninstall -active Yes -parent StandardUninstall
 InstallComponent 1728FDEB-5E1A-48D4-9FF8-EE993A2C04AC -setup Uninstall -type action -title {Modify Widget} -component ModifyWidget -active Yes -parent F037AAD5-E79E-4544-B8C0-AA98CDF5438E
@@ -285,11 +296,11 @@ InstallComponent 97F814AB-227B-4241-94E4-0E2061D62063 -setup Uninstall -type act
 InstallComponent 60FEFCD5-D31D-4DEA-86D7-E0246ABF0DF5 -setup Uninstall -type action -title {Execute Action} -component ExecuteAction -active Yes -parent F037AAD5-E79E-4544-B8C0-AA98CDF5438E
 InstallComponent 6B488B72-9080-4AF7-8690-8D823CCD86AE -setup Uninstall -type action -title {Move Forward} -component MoveForward -active Yes -parent F037AAD5-E79E-4544-B8C0-AA98CDF5438E
 InstallComponent 2C06B466-789E-4F18-B711-E8411E2CD80F -setup Uninstall -type pane -conditions 628E6478-81A8-4DF9-A4FE-EACEFAEA2E93 -title {Uninstall Details} -component UninstallDetails -command insert -active Yes -parent StandardUninstall
-Condition 628E6478-81A8-4DF9-A4FE-EACEFAEA2E93 -active Yes -parent 2C06B466-789E-4F18-B711-E8411E2CD80F -title {String Is Condition} -component StringIsCondition
+Condition 628E6478-81A8-4DF9-A4FE-EACEFAEA2E93 -active Yes -parent 2C06B466-789E-4F18-B711-E8411E2CD80F -title {String Is Condition} -component StringIsCondition -TreeObject::id 628E6478-81A8-4DF9-A4FE-EACEFAEA2E93
 InstallComponent C0AAD722-CF3D-4708-A62F-4EE9C92F7B24 -setup Uninstall -type pane -title {Uninstall Complete} -component UninstallComplete -active Yes -parent StandardUninstall
 InstallComponent C19EE9A4-6BBE-4631-8013-7B7DCA588367 -setup Uninstall -type action -title {Console Ask Yes Or No} -component ConsoleAskYesOrNo -active Yes -parent ConsoleUninstall
 InstallComponent AA0A7460-2E6B-4DB1-A7EF-845A1C7B09CE -setup Uninstall -type action -conditions 96F7BA2D-A593-40DC-89C9-AE7895FD0984 -title Exit -component Exit -command insert -active Yes -parent ConsoleUninstall
-Condition 96F7BA2D-A593-40DC-89C9-AE7895FD0984 -active Yes -parent AA0A7460-2E6B-4DB1-A7EF-845A1C7B09CE -title {String Is Condition} -component StringIsCondition
+Condition 96F7BA2D-A593-40DC-89C9-AE7895FD0984 -active Yes -parent AA0A7460-2E6B-4DB1-A7EF-845A1C7B09CE -title {String Is Condition} -component StringIsCondition -TreeObject::id 96F7BA2D-A593-40DC-89C9-AE7895FD0984
 InstallComponent 1D572EE2-DD93-4F13-850E-DE0EEB1DA110 -setup Uninstall -type action -title {Console Message} -component ConsoleMessage -active Yes -parent ConsoleUninstall
 InstallComponent A518E166-9DC7-454F-8EFE-CD4461F093FB -setup Uninstall -type action -title {Execute Action} -component ExecuteAction -active Yes -parent ConsoleUninstall
 InstallComponent 4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3 -setup Uninstall -type action -title {Console Message} -component ConsoleMessage -active Yes -parent ConsoleUninstall
@@ -299,14 +310,29 @@ InstallComponent CFEEDA4E-6870-4C25-8847-2ABB087DF90D -setup Uninstall -type act
 InstallComponent ED3D7C90-4A56-40EE-A2C5-E845C3A57C12 -setup Uninstall -type actiongroup -title {Setup Actions} -active Yes -parent ActionGroupsUninstall
 InstallComponent B923CC3C-CD18-4F8A-9648-51ADE1168D4A -setup Uninstall -type actiongroup -title {Startup Actions} -active Yes -parent ActionGroupsUninstall
 InstallComponent 716175FD-DD14-46E4-AC3E-2E6483C6FF7D -setup Uninstall -type action -conditions {103DC6E3-97DC-46AC-81C5-DED8E4E319E7 DAE5A5A9-35B4-44B5-89C0-F25FDD2771FB} -title Exit -component Exit -command insert -active Yes -parent B923CC3C-CD18-4F8A-9648-51ADE1168D4A
-Condition 103DC6E3-97DC-46AC-81C5-DED8E4E319E7 -active Yes -parent 716175FD-DD14-46E4-AC3E-2E6483C6FF7D -title {String Is Condition} -component StringIsCondition
-Condition DAE5A5A9-35B4-44B5-89C0-F25FDD2771FB -active Yes -parent 716175FD-DD14-46E4-AC3E-2E6483C6FF7D -title {Ask Yes or No} -component AskYesOrNo
+Condition 103DC6E3-97DC-46AC-81C5-DED8E4E319E7 -active Yes -parent 716175FD-DD14-46E4-AC3E-2E6483C6FF7D -title {String Is Condition} -component StringIsCondition -TreeObject::id 103DC6E3-97DC-46AC-81C5-DED8E4E319E7
+Condition DAE5A5A9-35B4-44B5-89C0-F25FDD2771FB -active Yes -parent 716175FD-DD14-46E4-AC3E-2E6483C6FF7D -title {Ask Yes or No} -component AskYesOrNo -TreeObject::id DAE5A5A9-35B4-44B5-89C0-F25FDD2771FB
 InstallComponent 73AB9FDF-9481-4EC3-8B31-C109BAA1086C -setup Uninstall -type actiongroup -title {Uninstall Actions} -active Yes -parent ActionGroupsUninstall
 InstallComponent ACFFE9C0-C404-4FD9-AD70-8F60E822DE65 -setup Uninstall -type action -title {Uninstall Selected Files} -component UninstallSelectedFiles -active Yes -parent 73AB9FDF-9481-4EC3-8B31-C109BAA1086C
 InstallComponent AA00EDED-9979-419F-A32C-DF1480E9EFF0 -setup Uninstall -type actiongroup -title {Finish Actions} -active Yes -parent ActionGroupsUninstall
 InstallComponent BC4AB013-F50F-49BF-BF98-FF7EBE16BCA4 -setup Uninstall -type actiongroup -title {Cancel Actions} -active Yes -parent ActionGroupsUninstall
 
 array set Properties {
+0C4A17DA-7867-40CC-81B4-0D1F170581AC,Conditions
+{0 conditions}
+
+0C4A17DA-7867-40CC-81B4-0D1F170581AC,ExecuteAction
+{Before Next Pane is Displayed}
+
+0C4A17DA-7867-40CC-81B4-0D1F170581AC,Files
+pandora_agent.conf
+
+0C4A17DA-7867-40CC-81B4-0D1F170581AC,StringMap
+{$ServerIP$ <%ServerIP%>
+$AgentName$ <%AgentName%>
+$ServerPath$ <%ServerPath%>
+$AgentTemp$ <%AgentTemp%>}
+
 0F1370DF-FF15-4CE7-ADF6-CA74BC642334,CheckCondition
 {Before Action is Executed}
 
@@ -468,6 +494,39 @@ disabled
 
 2C06B466-789E-4F18-B711-E8411E2CD80F,Title,subst
 1
+
+34F6EFDE-4008-4CD2-942B-401D2E55F334,Conditions
+{0 conditions}
+
+34F6EFDE-4008-4CD2-942B-401D2E55F334,Height
+20
+
+34F6EFDE-4008-4CD2-942B-401D2E55F334,LabelSide
+left
+
+34F6EFDE-4008-4CD2-942B-401D2E55F334,LabelWidth
+{}
+
+34F6EFDE-4008-4CD2-942B-401D2E55F334,Text,subst
+1
+
+34F6EFDE-4008-4CD2-942B-401D2E55F334,Type
+entry
+
+34F6EFDE-4008-4CD2-942B-401D2E55F334,Value
+agent1
+
+34F6EFDE-4008-4CD2-942B-401D2E55F334,VirtualText
+AgentName
+
+34F6EFDE-4008-4CD2-942B-401D2E55F334,Width
+160
+
+34F6EFDE-4008-4CD2-942B-401D2E55F334,X
+20
+
+34F6EFDE-4008-4CD2-942B-401D2E55F334,Y
+240
 
 354871D2-65BD-4414-BB04-F466798FA027,CheckCondition
 {Before Action is Executed}
@@ -640,6 +699,33 @@ disabled
 66412B02-0460-4B2B-9D89-57A6BBF1328D,Conditions
 {0 conditions}
 
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Active
+Yes
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,BackButton,subst
+1
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,CancelButton,subst
+1
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Caption,subst
+1
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Conditions
+{0 conditions}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Message,subst
+1
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,NextButton,subst
+1
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Subtitle,subst
+1
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Title,subst
+1
+
 6ADB9508-5F82-4564-B6AC-1170A76B4CB9,ExitType
 Finish
 
@@ -687,6 +773,39 @@ Finish
 
 73AB9FDF-9481-4EC3-8B31-C109BAA1086C,Conditions
 {0 conditions}
+
+75288342-4CEB-473C-B242-450642503F74,Conditions
+{0 conditions}
+
+75288342-4CEB-473C-B242-450642503F74,Height
+20
+
+75288342-4CEB-473C-B242-450642503F74,LabelSide
+left
+
+75288342-4CEB-473C-B242-450642503F74,LabelWidth
+{}
+
+75288342-4CEB-473C-B242-450642503F74,Text,subst
+1
+
+75288342-4CEB-473C-B242-450642503F74,Type
+entry
+
+75288342-4CEB-473C-B242-450642503F74,Value
+192.168.100.101
+
+75288342-4CEB-473C-B242-450642503F74,VirtualText
+ServerIP
+
+75288342-4CEB-473C-B242-450642503F74,Width
+240
+
+75288342-4CEB-473C-B242-450642503F74,X
+20
+
+75288342-4CEB-473C-B242-450642503F74,Y
+190
 
 75B1D869-C9BA-42C4-9C07-E1D156DA80A8,Conditions
 {0 conditions}
@@ -767,7 +886,7 @@ ViewReadme
 <%InstallDir%>
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,FileSize
-7838828
+7812698
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,Name
 {Program Files}
@@ -1117,6 +1236,39 @@ E573F839-1FCD-4668-93F9-E39764B8CB78,CheckCondition
 E573F839-1FCD-4668-93F9-E39764B8CB78,Filename
 <%ProgramReadme%>
 
+E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Conditions
+{0 conditions}
+
+E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Height
+20
+
+E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,LabelSide
+left
+
+E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,LabelWidth
+{}
+
+E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Text,subst
+1
+
+E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Type
+entry
+
+E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Value
+{C:\Windows\Temp}
+
+E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,VirtualText
+AgentTemp
+
+E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Width
+250
+
+E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,X
+20
+
+E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Y
+265
+
 E8952A0A-82A0-4AD0-8FA8-8902870AF848,CheckCondition
 {Before Next Pane is Displayed}
 
@@ -1182,6 +1334,39 @@ F037AAD5-E79E-4544-B8C0-AA98CDF5438E,Title,subst
 
 F0BC8450-668B-41B2-A442-F1BE095D1BFB,Conditions
 {0 conditions}
+
+F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Conditions
+{0 conditions}
+
+F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Height
+20
+
+F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,LabelSide
+left
+
+F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,LabelWidth
+{}
+
+F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text,subst
+1
+
+F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Type
+entry
+
+F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Value
+/var/spool/pandora/data_in
+
+F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,VirtualText
+ServerPath
+
+F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Width
+355
+
+F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,X
+20
+
+F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Y
+215
 
 F6A6DB43-C89D-4A19-98D3-1E24284260AE,Comment
 {Do not display this pane if this is an upgrade install unless there is more than one installation present}
@@ -1690,14 +1875,38 @@ Klicken Sie auf Weiter um Fortzufahren oder auf  Abbrechen, um das Setup zu been
 2073DDB6-50AB-4708-82AD-02A6C3F3EDE1,Message
 <%InstallationCompleteText%>
 
+34F6EFDE-4008-4CD2-942B-401D2E55F334,Text
+{Agent Name:}
+
 4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Message
 <%UninstallCompleteText%>
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Caption
+{This values will be written to the pandora_agent.conf file in the <%ProgramFolderName%> folder. Please change them to your own data.}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Message
+{ }
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Subtitle
+{Now it's time to configure your pandora_agent.conf file}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Title
+{Pandora FMS Agent for Windows Configuration}
+
+75288342-4CEB-473C-B242-450642503F74,Text
+{Pandora Server IP Address:}
 
 BF861387-DA7F-4986-B5BB-F77358B58603,Message
 <%InstallingApplicationText%>
 
+E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Text
+{Agent Temp folder:}
+
 EditConfiguration
 {Bearbeiten der Konfiguration}
+
+F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text
+{Server Path for Incoming Packets:}
 
 StartPandoraService
 {Startet <%AppName%> Dienst}
@@ -1735,6 +1944,9 @@ Please, review the "<%HelpGeneratingSSHKeys%>" help file in the documentation fo
 2B99A465-4666-445D-96BF-9C8F03CDAC60,Title
 {SSH Key Generation}
 
+34F6EFDE-4008-4CD2-942B-401D2E55F334,Text
+{Agent Name:}
+
 4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Message
 <%UninstallCompleteText%>
 
@@ -1758,6 +1970,21 @@ Please, review the "<%HelpGeneratingSSHKeys%>" help file in the documentation fo
 
 60CAEDF4-53E9-46C5-9A0F-5873E12F2328,Text
 <%ViewReadmeText%>
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Caption
+{These values will be written to the pandora_agent.conf file in the <%ProgramFolderName%> folder. Please change them to your own data.}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Message
+{ }
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Subtitle
+{Now it's time to configure your pandora_agent.conf file}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Title
+{Pandora FMS Agent for Windows Configuration}
+
+75288342-4CEB-473C-B242-450642503F74,Text
+{Pandora Server IP Address:}
 
 86342A9C-494A-4036-BA8E-E4BE8A7BB16C,Text
 <%ViewReadmeText%>
@@ -1894,8 +2121,14 @@ NO WARRANTY
 
 END OF TERMS AND CONDITIONS}
 
+E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Text
+{Agent Temp folder:}
+
 EditConfiguration
 {Edit Configuration}
+
+F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text
+{Server Path for Incoming Packets:}
 
 FB96078B-BA3C-498C-8C20-B01C1F28ACA9,Description
 <%ProgramFilesDescription%>
@@ -1932,6 +2165,12 @@ Pulse Siguiente para continuar o Cancelar para salir de la instalación.}
 1D572EE2-DD93-4F13-850E-DE0EEB1DA110,Message
 <%UninstallingApplicationText%>
 
+1F7BE720-7885-4150-9550-F25FB1C69423,Caption
+{La instalación ha finalizado}
+
+1F7BE720-7885-4150-9550-F25FB1C69423,Message
+{El instalador ha instalado <%AppName%> con éxito.  Pulse Finalizar para salir de este instalador.}
+
 2073DDB6-50AB-4708-82AD-02A6C3F3EDE1,Message
 <%InstallationCompleteText%>
 
@@ -1945,11 +2184,29 @@ Más información en el documento "<%HelpGeneratingSSHKeys%>", que está incluid
 2B99A465-4666-445D-96BF-9C8F03CDAC60,Title
 {Generación de claves SSH}
 
+34F6EFDE-4008-4CD2-942B-401D2E55F334,Text
+{Agent Name:}
+
 4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Message
 <%UninstallCompleteText%>
 
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Caption
+{This values will be written to the pandora_agent.conf file in the <%ProgramFolderName%> folder. Please change them to your own data.}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Message
+{ }
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Subtitle
+{Now it's time to configure your pandora_agent.conf file}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Title
+{Pandora FMS Agent for Windows Configuration}
+
 6B06C7C2-97A8-4642-B286-3B089943F359,Message
 {InstallJammer ha instalado <%AppName%> con éxito.  Pulse Finalizar para salir de este instalador.}
+
+75288342-4CEB-473C-B242-450642503F74,Text
+{Pandora Server IP Address:}
 
 B2E20690-C57D-4286-9977-F2541E04D71F,BrowseText
 {Pulse Siguiente para continuar. Si desea seleccionar una carpeta diferente, pulse Examinar.}
@@ -1982,8 +2239,14 @@ C862BDC0-8F67-4546-B658-4A9A8ADCE385,Caption
 DE1D4DF7-A35C-4228-8A25-07106AD77C9E,Subtitle
 {Por favor lea atentamente el siguiente acuerdo de licencia (en inglés).}
 
+E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Text
+{Agent Temp folder:}
+
 EditConfiguration
 {Editar fichero de configuración}
+
+F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text
+{Server Path for Incoming Packets:}
 
 HelpGeneratingSSHKeys
 {Creación de claves SSH}
@@ -1991,17 +2254,32 @@ HelpGeneratingSSHKeys
 HowTo
 how_to_keys_es.html
 
+InstallStartupText
+{Se va a instalar <%AppName%> en su equipo.  ¿Desea continuar?}
+
 PandoraLicense
 {Licencia de Pandora FMS (inglés)}
 
 Readme
 {Léeme (inglés)}
 
+SeparatorText
+{Instalador de Pandora FMS}
+
 StartPandoraService
 {Iniciar el servicio <%AppName%>}
 
 StopPandoraService
 {Parar el servicio <%AppName%>}
+
+StopPanodoraService
+{Stop Pandora Service}
+
+UninstallLeftoverText
+{Algunos componentes no pudieron ser eliminados. ¿Desea borrarlos de todos modos? (no recomendado)}
+
+UninstallStartupText
+{Se eliminará completamente <%AppName%> de su sistema. ¿Seguro que desea continuar?}
 
 }
 ::msgcat::mcmset fr {
@@ -2028,14 +2306,38 @@ sauvez-les comme id_dsa.pub et id_dsa, avec le format d'OpenSSH, dans le répero
 
 S'il vous plaît, lisez le document "<%HelpGeneratingSSHKeys%>" dans la chemise de documentation pour plus de renseignements.}
 
+34F6EFDE-4008-4CD2-942B-401D2E55F334,Text
+{Agent Name:}
+
 4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Message
 <%UninstallCompleteText%>
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Caption
+{This values will be written to the pandora_agent.conf file in the <%ProgramFolderName%> folder. Please change them to your own data.}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Message
+{ }
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Subtitle
+{Now it's time to configure your pandora_agent.conf file}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Title
+{Pandora FMS Agent for Windows Configuration}
+
+75288342-4CEB-473C-B242-450642503F74,Text
+{Pandora Server IP Address:}
 
 BF861387-DA7F-4986-B5BB-F77358B58603,Message
 <%InstallingApplicationText%>
 
+E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Text
+{Agent Temp folder:}
+
 EditConfiguration
 {Modifier la configuration}
+
+F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text
+{Server Path for Incoming Packets:}
 
 StartPandoraService
 {Démarre le service <%AppName%>}
@@ -2052,6 +2354,36 @@ StopPandoraService
 
  Kattintson a <%Next%> gombra a folytatáshoz  vagy a <%Cancel%> gombra kilépéshez.}
 
+34F6EFDE-4008-4CD2-942B-401D2E55F334,Text
+{Agent Name:}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Caption
+{This values will be written to the pandora_agent.conf file in the <%ProgramFolderName%> folder. Please change them to your own data.}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Message
+{ }
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Subtitle
+{Now it's time to configure your pandora_agent.conf file}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Title
+{Pandora FMS Agent for Windows Configuration}
+
+75288342-4CEB-473C-B242-450642503F74,Text
+{Pandora Server IP Address:}
+
+E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Text
+{Agent Temp folder:}
+
+F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text
+{Server Path for Incoming Packets:}
+
+StartPandoraService
+{Start Pandora Service}
+
+StopPandoraService
+{Stop Pandora Service}
+
 }
 ::msgcat::mcmset it {
 1957048E-B498-4FFF-A8BA-F2DF640463B1,Message
@@ -2061,12 +2393,72 @@ E' consigliata la chiusura di tutte le altre applicazioni prima di  proseguire.
 
 Premere su Avanti per continuare o su Annulla per uscire dall'installazione.}
 
+34F6EFDE-4008-4CD2-942B-401D2E55F334,Text
+{Agent Name:}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Caption
+{This values will be written to the pandora_agent.conf file in the <%ProgramFolderName%> folder. Please change them to your own data.}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Message
+{ }
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Subtitle
+{Now it's time to configure your pandora_agent.conf file}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Title
+{Pandora FMS Agent for Windows Configuration}
+
+75288342-4CEB-473C-B242-450642503F74,Text
+{Pandora Server IP Address:}
+
+E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Text
+{Agent Temp folder:}
+
+F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text
+{Server Path for Incoming Packets:}
+
+StartPandoraService
+{Start Pandora Service}
+
+StopPandoraService
+{Stop Pandora Service}
+
 }
 ::msgcat::mcmset nl {
 1957048E-B498-4FFF-A8BA-F2DF640463B1,Message
 {Het is aan te raden alle overige applicaties te sluiten alvorens verder te gaan met deze installatie.
 
 Klik op <%Next%> om verder  te gaan of op <%Cancel%> om deze installatie af te breken}
+
+34F6EFDE-4008-4CD2-942B-401D2E55F334,Text
+{Agent Name:}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Caption
+{This values will be written to the pandora_agent.conf file in the <%ProgramFolderName%> folder. Please change them to your own data.}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Message
+{ }
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Subtitle
+{Now it's time to configure your pandora_agent.conf file}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Title
+{Pandora FMS Agent for Windows Configuration}
+
+75288342-4CEB-473C-B242-450642503F74,Text
+{Pandora Server IP Address:}
+
+E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Text
+{Agent Temp folder:}
+
+F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text
+{Server Path for Incoming Packets:}
+
+StartPandoraService
+{Start Pandora Service}
+
+StopPandoraService
+{Stop Pandora Service}
 
 }
 ::msgcat::mcmset pl {
@@ -2083,11 +2475,41 @@ Kliknij Dalej, aby kontynuowaÄ‡ lub Anuluj, aby opuÅ›ciÄ‡ instalator.}
 2073DDB6-50AB-4708-82AD-02A6C3F3EDE1,Message
 <%InstallationCompleteText%>
 
+34F6EFDE-4008-4CD2-942B-401D2E55F334,Text
+{Agent Name:}
+
 4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Message
 <%UninstallCompleteText%>
 
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Caption
+{This values will be written to the pandora_agent.conf file in the <%ProgramFolderName%> folder. Please change them to your own data.}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Message
+{ }
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Subtitle
+{Now it's time to configure your pandora_agent.conf file}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Title
+{Pandora FMS Agent for Windows Configuration}
+
+75288342-4CEB-473C-B242-450642503F74,Text
+{Pandora Server IP Address:}
+
 BF861387-DA7F-4986-B5BB-F77358B58603,Message
 <%InstallingApplicationText%>
+
+E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Text
+{Agent Temp folder:}
+
+F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text
+{Server Path for Incoming Packets:}
+
+StartPandoraService
+{}
+
+StopPandoraService
+{Stop Pandora Service}
 
 }
 ::msgcat::mcmset pt_br {
@@ -2113,20 +2535,76 @@ Se você quiser usar SFTP/SSH2, gere tanto chaves Públicas como Privadas e salv
 
 Por favor, reveja a documentação (<%HelpGeneratingSSHKeys%>) para mais informação.}
 
+34F6EFDE-4008-4CD2-942B-401D2E55F334,Text
+{Agent Name:}
+
 4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Message
 <%UninstallCompleteText%>
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Caption
+{This values will be written to the pandora_agent.conf file in the <%ProgramFolderName%> folder. Please change them to your own data.}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Message
+{ }
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Subtitle
+{Now it's time to configure your pandora_agent.conf file}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Title
+{Pandora FMS Agent for Windows Configuration}
+
+75288342-4CEB-473C-B242-450642503F74,Text
+{Pandora Server IP Address:}
 
 BF861387-DA7F-4986-B5BB-F77358B58603,Message
 <%InstallingApplicationText%>
 
+E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Text
+{Agent Temp folder:}
+
 EditConfiguration
 {Editar a configuração}
+
+F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text
+{Server Path for Incoming Packets:}
 
 StartPandoraService
 {Inicia o serviço <%AppName%>}
 
 StopPandoraService
 {Interrompe o serviço <%AppName%>}
+
+}
+::msgcat::mcmset ru {
+34F6EFDE-4008-4CD2-942B-401D2E55F334,Text
+{Agent Name:}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Caption
+{This values will be written to the pandora_agent.conf file in the <%ProgramFolderName%> folder. Please change them to your own data.}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Message
+{ }
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Subtitle
+{Now it's time to configure your pandora_agent.conf file}
+
+68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Title
+{Pandora FMS Agent for Windows Configuration}
+
+75288342-4CEB-473C-B242-450642503F74,Text
+{Pandora Server IP Address:}
+
+E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Text
+{Agent Temp folder:}
+
+F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text
+{Server Path for Incoming Packets:}
+
+StartPandoraService
+{Start Pandora Service}
+
+StopPanodoraService
+{}
 
 }
 

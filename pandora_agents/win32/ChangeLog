@@ -1,3 +1,10 @@
+2008-09-05  Raul Mateos  <raulofpandora@gmail.com>
+
+	* win32/bin/pandora_agent.conf: Changed to template used by installer.
+	
+	* win32/installer/pandora_2.0.mpi: Updated installer file with pane
+	that allows configure the pandora_agent.conf file without editing it.
+
 2008-08-28  Raul Mateos  <raulofpandora@gmail.com>
 
 	* win32/bin/pandora_agent.conf: Updated.

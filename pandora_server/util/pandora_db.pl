@@ -3,8 +3,8 @@
 ###############################################################################
 # Pandora FMS DB Management
 ###############################################################################
-# Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+# Copyright (c) 2005-2008 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -279,9 +279,9 @@ sub pandora_compactdb {
 ##############################################################################
 
 sub pandora_init {
-	print "\nPandora FMS DB Tool $version Copyright (c) 2004-2007 Sancho Lerena\n";
+	print "\nPandora FMS DB Tool $version Copyright (c) 2004-2008 Sancho Lerena\n";
 	print "This program is Free Software, licensed under the terms of GPL License v2\n";
-	print "You can download latest versions and documentation at http://pandora.sf.net\n";
+	print "You can download latest versions and documentation at http://www.pandorafms.org\n";
 
 	# Load config file from command line
 	if ($#ARGV == -1 ){

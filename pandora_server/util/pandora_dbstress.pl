@@ -2,8 +2,8 @@
 ################################################################################
 # Pandora DB Stress tool
 ################################################################################
-# Copyright (c) 2004-2006 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2006 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
+# Copyright (c) 2005-2008 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -42,7 +42,7 @@ use PandoraFMS::DB;
 ################################################################################
 ################################################################################
 
-my $version = "1.3-dev 070526";
+my $version = "2.0 PS080903";
 
 # FLUSH in each IO (only for debug, very slooow)
 # ENABLED in DEBUGMODE

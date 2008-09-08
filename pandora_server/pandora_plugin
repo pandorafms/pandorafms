@@ -1,15 +1,16 @@
 #!/bin/bash
 
 # Pandora FMS Plugin Server, startup script
-# Sancho Lerena, <slerena@gmail.com>
+# Copyright (c) 2006-2008 Sancho Lerena, <slerena@gmail.com>
 # Linux Version (generic)
-# 2.0 Build 080620
+# v2.0 Build 080903
+# http://www.pandorafms.com
 
 # Configurable path and filenames
 PANDORA_HOME="/etc/pandora/pandora_server.conf"
 PANDORA_PID_PATH="/var/run"
 PANDORA_PID=$PANDORA_PID_PATH/pandora_plugin.pid
-PANDORA_DAEMON=/usr/bin/pandora_plugin
+PANDORA_DAEMON=/usr/local/bin/pandora_plugin
 
 # Main script
 
@@ -21,50 +22,50 @@ fi
 
 if [ ! -f $PANDORA_DAEMON ] 
 then
-        echo "Pandora FMS Plugin Server not found, please check setup and read manual"
-        exit
+	echo "Pandora FMS Plugin Server not found, please check setup and read manual"
+	exit
 fi
 
 case "$1" in
-  start)
-	OLD_PATH="`pwd`"
-	PANDORA_PID=$(pidof -x $PANDORA_DAEMON)
-        if [ ! -z $PANDORA_PID ]
-	then
-		echo "Pandora FMS Plugin Server is currently running on this machine with PID ($PANDORA_PID). Aborting now..."
-		exit 1
-	fi
-	
-	$PANDORA_DAEMON $PANDORA_HOME -D
-	sleep 1
+	start)
+		OLD_PATH="`pwd`"
+		PANDORA_PID=$(pidof -x $PANDORA_DAEMON)
+			if [ ! -z $PANDORA_PID ]
+		then
+			echo "Pandora FMS Plugin Server is currently running on this machine with PID ($PANDORA_PID). Aborting now..."
+			exit 1
+		fi
 
-	PANDORA_PID=$(pidof -x $PANDORA_DAEMON)
-        if [ ! -z "$PANDORA_PID" ]
-	then
-		echo "Pandora FMS Plugin Server is now running with PID $PANDORA_PID"
-	else
-		echo "Cannot start Pandora FMS Plugin Server. Aborted."
-	fi
-	cd "$OLD_PATH"
-        ;;
-  stop)
-	PANDORA_PID=$(pidof -x $PANDORA_DAEMON)
-        if [ -z $PANDORA_PID ]
-	then
-		echo "Pandora FMS Plugin Server is not running, cannot stop it."
-		exit 1	
-	else
-	   	echo "Stopping Pandora FMS Plugin Server"
-           	kill $PANDORA_PID > /dev/null 2>&1
-           	rm -f $PANDORA_PID
-	fi
-        ;;
-  force-reload|restart)
-        $0 stop
-        $0 start
-        ;;
-  *)
-        echo "Usage: pandora_plugin {start|stop|restart}"
-        exit 1
+		$PANDORA_DAEMON $PANDORA_HOME -D
+		sleep 1
+
+		PANDORA_PID=$(pidof -x $PANDORA_DAEMON)
+			if [ ! -z "$PANDORA_PID" ]
+		then
+			echo "Pandora FMS Plugin Server is now running with PID $PANDORA_PID"
+		else
+			echo "Cannot start Pandora FMS Plugin Server. Aborted."
+		fi
+		cd "$OLD_PATH"
+			;;
+	stop)
+		PANDORA_PID=$(pidof -x $PANDORA_DAEMON)
+			if [ -z $PANDORA_PID ]
+		then
+			echo "Pandora FMS Plugin Server is not running, cannot stop it."
+			exit 1	
+		else
+			echo "Stopping Pandora FMS Plugin Server"
+				kill $PANDORA_PID > /dev/null 2>&1
+				rm -f $PANDORA_PID
+		fi
+	        ;;
+	force-reload|restart)
+		$0 stop
+		$0 start
+		;;
+	*)
+		echo "Usage: pandora_plugin {start|stop|restart}"
+		exit 1
 esac
 

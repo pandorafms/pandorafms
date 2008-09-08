@@ -1,9 +1,10 @@
 #!/bin/bash
 
 # Pandora FMS Recon Server, startup script
-# Sancho Lerena, <slerena@gmail.com>
+# Copyright (c) 2006-2008 Sancho Lerena, <slerena@gmail.com>
 # Linux Version (generic)
-# v1.3 Build 070731
+# v2.0 Build 080903
+# http://www.pandorafms.com
 
 # Configurable path and filenames
 PANDORA_HOME="/etc/pandora/pandora_server.conf"

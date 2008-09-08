@@ -1,4 +1,4 @@
-# (c) 2008 Manuel Arostegui <marostegui@artica.es>
+# Pandora FMS 2.0 Server Installer (c) 2008 Manuel Arostegui <marostegui@artica.es>
 # Please see http://pandora.sourceforge.net
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
@@ -19,7 +19,7 @@ then
 	echo "You are missing the following dependencies"
 	echo " "
 	cat output | awk -F ": prerequisite" '{print $2}' | awk -F " " '{print $1}'
-	echo "The complete installation guide is at: "http://www.openideas.info/wiki/index.php?title=Pandora_1.3:Server:QIG#Installing_from_sources" "
+	echo "The complete installation guide is at: "http://www.openideas.info/wiki/index.php?title=Pandora_2.0:Documentation_en:Install_Server#Pandora_FMS_Server_installation" "
 	echo " "
 	echo "Debian-based distribution do:"
 	echo "	$ apt-get install libdate-manip-perl snmp snmpd libsnmp-perl libtime-format-perl libxml-simple-perl libnetaddr-ip-perl libdbi-perl libxml-simple-perl libnetaddr-ip-perl libhtml-parser-perl wmi-client xprobe2"
@@ -78,9 +78,9 @@ else
 	if [ -e /usr/local/bin/pandora_server ]
 	then
 		ln -s /usr/local/bin/pandora_server /usr/bin/pandora_server
-	        ln -s /usr/local/bin/pandora_snmpconsole /usr/bin/pandora_snmpconsole
-	        ln -s /usr/local/bin/pandora_recon /usr/bin/pandora_recon
-	        ln -s /usr/local/bin/pandora_network /usr/bin/pandora_network
+	    ln -s /usr/local/bin/pandora_snmpconsole /usr/bin/pandora_snmpconsole
+		ln -s /usr/local/bin/pandora_recon /usr/bin/pandora_recon
+		ln -s /usr/local/bin/pandora_network /usr/bin/pandora_network
 		ln -s /usr/local/bin/pandora_prediction /usr/bin/pandora_prediction
 		ln -s /usr/local/bin/pandora_plugin /usr/bin/pandora_plugin
 		ln -s /usr/local/bin/pandora_wmi /usr/bin/pandora_wmi
@@ -111,11 +111,11 @@ fi
 }
 
 uninstall () {
-        if [ "`uname -s`" != "Linux" ]; then
-                echo "This is not a Linux-based distro. Uninstaller is currently not working for your OS"
+	if [ "`uname -s`" != "Linux" ]; then
+			echo "This is not a Linux-based distro. Uninstaller is currently not working for your OS"
 	fi
 	echo "Removing Pandora Servers"
-        rm -Rf /var/spool/pandora/data_in/
+		rm -Rf /var/spool/pandora/data_in/
 
 	echo "If the user Pandora is not being used for any other operations, please delete using the following commands:"
 	echo "   userdel pandora"
@@ -124,31 +124,30 @@ uninstall () {
 	## I would hate to have a script clear out this users' information without any notification
 
 	rm -Rf /var/log/pandora/  2> /dev/null 
-        rm -Rf /etc/pandora/pandora_server.conf  2> /dev/null
- 
-        rm -Rf /etc/init.d/pandora_server  2> /dev/null 
+	rm -Rf /etc/pandora/pandora_server.conf  2> /dev/null
+	rm -Rf /etc/init.d/pandora_server  2> /dev/null 
 	rm -Rf /etc/init.d/pandora_network  2> /dev/null 
-        rm -Rf /etc/init.d/pandora_recon  2> /dev/null 
+	rm -Rf /etc/init.d/pandora_recon  2> /dev/null 
 	rm -Rf /etc/init.d/pandora_snmpconsole  2> /dev/null 
 	rm -Rf /etc/init.d/pandora_prediction 2> /dev/null 
 	rm -Rf /etc/init.d/pandora_wmi 2> /dev/null 
-        rm -Rf /etc/init.d/pandora_plugin 2> /dev/null
+	rm -Rf /etc/init.d/pandora_plugin 2> /dev/null
 
 	rm -Rf /etc/rc2.d/S90pandora_server  2> /dev/null 
-        rm -Rf /etc/rc2.d/S90pandora_recon  2> /dev/null 
+	rm -Rf /etc/rc2.d/S90pandora_recon  2> /dev/null 
 	rm -Rf /etc/rc2.d/S90pandora_network 2> /dev/null 
 	rm -Rf /etc/rc2.d/S90pandora_snmpconsole 2> /dev/null 
-        rm -Rf /etc/rc2.d/S90pandora_wmi 2> /dev/null 
-        rm -Rf /etc/rc2.d/S90pandora_prediction 2> /dev/null 
-        rm -Rf /etc/rc2.d/S90pandora_plugin 2> /dev/null
+	rm -Rf /etc/rc2.d/S90pandora_wmi 2> /dev/null 
+	rm -Rf /etc/rc2.d/S90pandora_prediction 2> /dev/null 
+	rm -Rf /etc/rc2.d/S90pandora_plugin 2> /dev/null
 
 	rm -Rf /usr/local/bin/pandora_server  2> /dev/null
 	rm -Rf /usr/local/bin/pandora_snmpconsole  2> /dev/null
 	rm -Rf /usr/local/bin/pandora_recon  2> /dev/null 
 	rm -Rf /usr/local/bin/pandora_network 2> /dev/null
-        rm -Rf /usr/local/bin/pandora_wmi  2> /dev/null
-        rm -Rf /usr/local/bin/pandora_prediction 2> /dev/null
-        rm -Rf /usr/local/bin/pandora_plugin 2> /dev/null
+	rm -Rf /usr/local/bin/pandora_wmi  2> /dev/null
+	rm -Rf /usr/local/bin/pandora_prediction 2> /dev/null
+	rm -Rf /usr/local/bin/pandora_plugin 2> /dev/null
 
 	rm -Rf /usr/bin/pandora_wmi 2> /dev/null
 	rm -Rf /usr/bin/pandora_server 2> /dev/null

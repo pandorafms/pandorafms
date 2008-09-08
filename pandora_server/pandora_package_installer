@@ -67,8 +67,8 @@ install () {
 }
 
 uninstall () {
-        if [ "`uname -s`" != "Linux" ]; then
-                echo "This is not a Linux-based distro. Uninstaller is currently not working for your OS"
+	if [ "`uname -s`" != "Linux" ]; then
+		echo "This is not a Linux-based distro. Uninstaller is currently not working for your OS"
 	fi
 	echo "Removing Pandora Servers"
     rm -Rf /var/spool/pandora/data_in/

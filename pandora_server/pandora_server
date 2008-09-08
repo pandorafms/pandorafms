@@ -1,9 +1,10 @@
 #!/bin/bash
 
-# Pandora Data Server, startup script
-# Sancho Lerena, <slerena@gmail.com>
-# Linux Version (generico)
-# v1.3 Build 070802
+# Pandora FMS Data Server, startup script
+# Copyright (c) 2006-2008 Sancho Lerena, <slerena@gmail.com>
+# Linux Version (generic)
+# v2.0 Build 080903
+# http://www.pandorafms.com
 
 # Configurable path and filenames
 PANDORA_HOME="/etc/pandora/pandora_server.conf"
@@ -21,8 +22,8 @@ fi
 
 if [ ! -f $PANDORA_DAEMON ]
 then
-        echo "Pandora FMS Data Server not found, please check setup and read manual"
-        exit
+	echo "Pandora FMS Data Server not found, please check setup and read manual"
+	exit
 fi
 
 case "$1" in
@@ -48,25 +49,25 @@ case "$1" in
 		echo "Cannot start Pandora FMS Data Server. Aborted."
 	fi
 	cd "$OLD_PATH"
-        ;;
+		;;
   stop)
 	PANDORA_PID=$(pidof -x $PANDORA_DAEMON)
 	if [ -z $PANDORA_PID ]
 	then
-          echo "Pandora FMS Data Server is not running, cannot stop it."
-          exit 1
+		echo "Pandora FMS Data Server is not running, cannot stop it."
+		exit 1
 	else
-	   echo "Stopping Pandora FMS Data Server"
-           kill $PANDORA_PID > /dev/null 2>&1
-           rm -f $PANDORA_PID
+		echo "Stopping Pandora FMS Data Server"
+			kill $PANDORA_PID > /dev/null 2>&1
+			rm -f $PANDORA_PID
 	fi
-        ;;
+		;;
   force-reload|restart)
-        $0 stop
-        $0 start
-        ;;
+		$0 stop
+		$0 start
+		;;
   *)
-        echo "Usage: pandora_server {start|stop|restart}"
-        exit 1
+		echo "Usage: pandora_server {start|stop|restart}"
+		exit 1
 esac
 

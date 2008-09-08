@@ -41,14 +41,50 @@ if (! give_acl ($config['id_user'], 0, "DM")) {
 
 echo "<h2>".__('Database Maintenance')." &gt; ";
 echo __('Database Information')."</h2>";
-echo "<table border=0>";
-echo "<tr><td>";
+echo '<div id="db_info_graph">';
+echo '<table border=0>';
+echo '<tr><td>';
 echo '<h3>'.__('Modules per agent').'</h3>';
-echo "<img src='reporting/fgraph.php?tipo=db_agente_modulo&width=600&height=200'><br>";
-echo "<tr><td><br>";
-echo "<tr><td>";
+echo '<img src="reporting/fgraph.php?tipo=db_agente_modulo&width=600&height=200"><br />';
+echo '</td></tr><tr><td><br /></tr></td>';
+echo '<tr><td>';
 echo '<h3>'.__('Packets per agent').'</h3>';
-echo "<img src='reporting/fgraph.php?tipo=db_agente_paquetes&width=600&height=200'><br>";
-echo "<br><br><a href='index.php?sec=gdbman&sec2=godmode/db/db_info_data'>".__('Press here to get DB Info as text')."</a>";
-echo "</table>";
+echo '<img src="reporting/fgraph.php?tipo=db_agente_paquetes&width=600&height=200"><br />';
+echo '</table>';
+echo '<a href="#" onClick="toggleDiv(\'db_info_data\'); toggleDiv(\'db_info_graph\'); return false;">'.__('Press here to get database information as text').'</a></div>';
+echo '<div id="db_info_data" style="display:none">';
+//Merged from db_info_data.php because the queries are the same, so the cache
+//will kick in.
+
+$table->data = array ();
+$table->head = array ();
+$table->head[0] = __('Agent name');
+$table->head[1] = __('Assigned modules');
+$table->head[2] = __('Total data');
+
+$sql = "SELECT DISTINCT(id_agente), COUNT(id_agente_datos) AS count FROM tagente_datos GROUP BY id_agente ORDER BY count ASC";
+//This query takes 1s on a 1 million entry database. Merging it with tagente
+//costs 7 seconds so we rely on the functions to return information on
+//id_agente.
+$result = get_db_all_rows_sql ($sql);
+if ($result === false) {
+	$result = array();
+}
+
+foreach ($result as $row) {
+	$data = array ();
+
+	//First row is a link to the agent
+	$data[0] = '<strong><a href="index.php?sec=gagente&sec2=operation/agentes/ver_agente&id_agente='.
+	$row["id_agente"].'">'.dame_nombre_agente ($row["id_agente"]).'</a></strong>';
+	//Second row is a number of modules for the agent
+	$data[1] = count (get_modules_in_agent ($row["id_agente"]));
+	//Then the number of data packets for the agent
+	$data[2] = $row["count"];
+
+	array_unshift ($table->data, $data);
+}
+print_table ($table);
+
+echo '<a href="#" onClick="toggleDiv(\'db_info_graph\'); toggleDiv(\'db_info_data\'); return false;">'.__('Press here to get database information as a graph').'</a></div>';
 ?>

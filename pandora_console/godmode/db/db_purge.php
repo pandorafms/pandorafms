@@ -24,194 +24,190 @@ check_login ();
 
 if (! give_acl ($config['id_user'], 0, "DM")) {
 	audit_db($config['id_user'], $REMOTE_ADDR, "ACL Violation",
-		"Trying to access to Database Purge Section");
+		"Trying to access Database Purge Section");
 	include ("general/noaccess.php");
-	return;
+	exit;
+}
+
+//id_agent = -1: None selected; id_agent = 0: All
+if (isset ($_POST["agent"])){
+	$id_agent = (int) get_parameter_post ("agent",-1); //Default to none selected
+} else {
+	$id_agent = -1;
 }
 
 
-if (isset ($_POST["agent"])){
-	$id_agent = get_parameter_post ("agent");
-} else
-	$id_agent = -1;
 
-echo '<h2>'.__('Database Maintenance').' &gt;'.__('Database purge')."</h2>";
-echo "<img src='reporting/fgraph.php?tipo=db_agente_purge&id=$id_agent'>";
-echo "<br><br>";
-echo '<h3>'.__('Get data from agent').'</h3>';
+echo '<h2>'.__('Database Maintenance').' &gt;'.__('Database purge').'</h2>
+	<img src="reporting/fgraph.php?tipo=db_agente_purge&id='.$id_agent.'" />
+	<br /><br />
+	<h3>'.__('Get data from agent').'</h3>';
 
 // All data (now)
-$purge_all = date ("Y-m-d H:i:s", time ());
-	
-require("godmode/db/times_incl.php");
+$time["all"] = time ();
 
-$datos_rango3=0;
-$datos_rango2=0;
-$datos_rango1=0;
-$datos_rango0=0; 
-$datos_rango00=0; 
-$datos_rango11=0; 
-$datos_total=0;
+// 1 day ago
+$time["1day"] = $time["all"]-86400;
+
+// 3 days ago
+$time["3day"] = $time["all"]-(86400*3);
+
+// 1 week ago
+$time["1week"] = $time["all"]-(86400*7);
+
+// 2 weeks ago
+$time["2week"] = $time["all"]-(86400*14);
+
+// 1 month ago
+$time["1month"] = $time["all"]-(86400*30);
+
+// Three months ago
+$time["3month"] = $time["all"]-(86400*90);
+	
+//Init data
+$data["1day"] = 0;
+$data["3day"] = 0;
+$data["1week"] = 0;
+$data["2week"] = 0; 
+$data["1month"] = 0; 
+$data["3month"] = 0; 
+$data["total"] = 0;
 
 # ADQUIRE DATA PASSED AS FORM PARAMETERS
 # ======================================
-# Purge data using dates
-	
 
 # Purge data using dates
 if (isset($_POST["purgedb"])) {
-	$from_date = get_parameter_post ("date_purge");
-	if (isset($id_agent)){
-		if ($id_agent != -1) {
-			echo __('Purge task launched for agent id ').$id_agent." / ".$from_date;
-			echo "<h3>".__('Please be patient. This operation can be very long in time (5-10 minutes)')."<br>",__('while deleting data for ').__('Agent')."</h3>";
-			if ($id_agent == 0) {
-				$sql="SELECT * FROM tagente_modulo";
-			} else {
-				$sql=sprintf("SELECT * FROM tagente_modulo WHERE id_agente = %d",$id_agent);
-			}
-			$result=get_db_all_rows_sql($sql);
-			foreach ($result as $row) {
-				echo __('Deleting records for module ').dame_nombre_modulo_agentemodulo($row["id_agente_modulo"]);
-				flush();
-				//ob_flush();
-				echo "<br>";
-				$sql = sprintf("DELETE FROM `tagente_datos` WHERE `id_agente_modulo` = '%d' AND `timestamp` < '%s'",$row["id_agente_modulo"],$from_date);
-				process_sql ($sql);
-				$sql = sprintf("DELETE FROM `tagente_datos_inc` WHERE `id_agente_modulo` = '%d' AND `timestamp` < '%s'",$row["id_agente_modulo"],$from_date);
-				process_sql ($sql);
-				$sql = sprintf("DELETE FROM `tagente_datos_string` WHERE `id_agente_modulo` = '%d' AND `timestamp` < '%s'",$row["id_agente_modulo"],$from_date);
-				process_sql ($sql);
-			}
-		} else {
-			echo __('Deleting records for module ').__('All agents');
-			flush();
-			//ob_flush();
-			$query = sprintf("DELETE FROM `tagente_datos` WHERE `timestamp` < '%s'",$from_date);
-			process_sql ($query);
-			$query = sprintf("DELETE FROM `tagente_datos_inc` WHERE `timestamp` < '%s'",$from_date);
-			process_sql ($query);
-			$query = sprintf("DELETE FROM `tagente_datos_string` WHERE `timestamp` < '%s'",$from_date);
-			process_sql ($query);
+	$from_date = get_parameter_post ("date_purge",0); //0: No time selected
+	if ($id_agent != -1) {
+		echo __('Purge task launched for agent')." ".dame_nombre_agente ($id_agent)." :: ".__('Data older than')." ".human_time_description ($from_date);
+		echo "<h3>".__('Please be patient. This operation can take a long time depending on the amount of modules.')."</h3>";
+		
+		$sql = sprintf ("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = %d",$id_agent);
+		$result=get_db_all_rows_sql($sql);
+		
+		//Made it in a transaction so it gets done all at once.
+		process_sql ("SET AUTOCOMMIT=0;");
+		process_sql ("START TRANSACTION;"); //We start a transaction for consistency 
+		$errors = 0;
+		foreach ($result as $row) {
+			echo __('Deleting records for module')." ".dame_nombre_modulo_agentemodulo ($row["id_agente_modulo"]);
+			echo "<br />";
+			flush (); //Flush here in case there are errors and the script dies, at least we know where we ended
+			set_time_limit (); //Reset the time limit just in case
+			$sql = sprintf("DELETE FROM `tagente_datos` WHERE `id_agente_modulo` = '%d' AND `utimestamp` < '%d'",$row["id_agente_modulo"],$from_date);
+			if (process_sql ($sql) === false)
+				$errors++;
+			$sql = sprintf("DELETE FROM `tagente_datos_inc` WHERE `id_agente_modulo` = '%d' AND `utimestamp` < '%d'",$row["id_agente_modulo"],$from_date);
+			if (process_sql ($sql) === false) 
+				$errors++;				
+			$sql = sprintf("DELETE FROM `tagente_datos_string` WHERE `id_agente_modulo` = '%d' AND `utimestamp` < '%d'",$row["id_agente_modulo"],$from_date);
+			if (process_sql ($sql) === false) 
+				$errors++;				
 		}
-		echo "<br><br>";
+		
+		if ($errors > 0) {
+			process_sql ("ROLLBACK;"); //If we have errors, rollback
+		} else {
+			process_sql ("COMMIT;"); //Otherwise commit
+		}
+		
+		process_sql ("SET AUTOCOMMIT=1;"); //Set autocommit back to 1
+	} else {
+		//All agents
+		echo __('Deleting records for all agents');
+		flush();
+		//ob_flush();
+		$query = sprintf("DELETE FROM `tagente_datos` WHERE `utimestamp` < '%d'",$from_date);
+		process_sql ($query);
+		$query = sprintf("DELETE FROM `tagente_datos_inc` WHERE `utimestamp` < '%d'",$from_date);
+		process_sql ($query);
+		$query = sprintf("DELETE FROM `tagente_datos_string` WHERE `utimestamp` < '%d'",$from_date);
+		process_sql ($query);
 	}
+	echo "<br /><br />";
 }
 
 # Select Agent for further operations.
-?>
-<form action='index.php?sec=gdbman&sec2=godmode/db/db_purge' method='post'>
-<table class='databox'>
-<tr><td class='datos'>
-<select name='agent' class='w130'>
+echo '<form action="index.php?sec=gdbman&sec2=godmode/db/db_purge" method="post">
+<table class="databox">
+<tr><td class="datos">';
 
-<?php
-if (isset($_POST["agent"]) and ($id_agent > 0))
-	echo "<option value='".$_POST["agent"]."'>".dame_nombre_agente($_POST["agent"]);
-if (isset($_POST["agent"]) and ($id_agent == 0)){
-	echo "<option value=0>".__('All agents');
-echo "<option value=-1>".__('Choose agent');
+$agents[-1] = __('Choose agent');
+$agents[0] = __('All agents'); 
+
+$result = get_agents_in_group (1);
+if ($result === false)
+	$result = array();
+
+foreach ($result as $row) {
+	$agents[$row["id_agente"]] = $row["nombre"];
+}
+
+print_select ($agents, "agent", $id_agent, "", "", "", false, false, false);
+print_help_tip (__("Select the agent you want information about"));
+
+echo '</td><td><input class="sub upd" type="submit" name="purgedb_ag" value="'.__('Get data').'">';
+print_help_tip (__("Click here to get the data from the agent specified in the select box")); 
+echo '</td></tr></table><br />';
+
+if ($id_agent > 0) {
+	$title = __('Information on agent').' '.dame_nombre_agente ($id_agent).' '.__('in the database');
 } else {
-	echo "<option value=-1>".__('Choose agent');
-	echo "<option value=0>".__('All agents');
+	$title = __('Information on all agents').' '.__('in the database');
 }
-$result_t=mysql_query("SELECT * FROM tagente");
-while ($row=mysql_fetch_array($result_t)){	
-	echo "<option value='".$row["id_agente"]."'>".$row["nombre"];
+
+echo "<h3>".$title."</h3>";	
+
+$query = "";
+if ($id_agent > 0) { //If the agent is not All or Not selected
+	$query = sprintf (" AND id_agente_modulo = ANY(SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = '%d' ",$id_agent);
 }
-?>
-</select>
 
-<?php print_help_tip (__("This button refresh info about database usage among time")); ?>
-<td><input class='sub upd' type='submit' name='purgedb_ag' value='<?php echo __('Get data') ?>'>
-<?php print_help_tip (__("Use this combo to select agent for operation. You need to select an agent to purge data and to get info about database usage")); ?>
-</table><br>
-
-<?php	
-# End of get parameters block
-
-if (isset($_POST["agent"]) and ($id_agent !=-1)){
-	echo "<h3>".__('Data from agent ').dame_nombre_agente ($id_agent).__(' in the Database')."</h3>";
+$data["1day"] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp > %d %s", $time["1day"], $query));
+$data["3day"] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp > %d %s", $time["3day"], $query));
+$data["1week"] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp > %d %s", $time["1week"], $query));
+$data["2week"] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp > %d %s", $time["2week"], $query));
+$data["1month"] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp > %d %s", $time["1month"], $query));
+$data["3month"] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp > %d %s", $time["3month"], $query));
+$data["total"] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE 1=1 %s", $query));
 	
-	$sql = "SELECT id_agente_modulo FROM tagente_modulo";
-	if ($id_agent != 0) {
-		$sql .= sprintf(" WHERE id_agente = '%d'",$id_agent);		
-	}
-	
-	$datos_rango00 += get_db_sql (sprintf("SELECT COUNT(*) FROM `tagente_datos` WHERE `id_agente_modulo` = ANY(%s) AND `timestamp` > '%s'",$sql,$d1));
-	$datos_rango0 += get_db_sql (sprintf("SELECT COUNT(*) FROM `tagente_datos` WHERE `id_agente_modulo` = ANY(%s) AND `timestamp` > '%s'",$sql,$d3));
-	$datos_rango1 += get_db_sql (sprintf("SELECT COUNT(*) FROM `tagente_datos` WHERE `id_agente_modulo` = ANY(%s) AND `timestamp` > '%s'",$sql,$week));
-	$datos_rango11 += get_db_sql (sprintf("SELECT COUNT(*) FROM `tagente_datos` WHERE `id_agente_modulo` = ANY(%s) AND `timestamp` > '%s'",$sql,$week2));
-	$datos_rango2 += get_db_sql (sprintf("SELECT COUNT(*) FROM `tagente_datos` WHERE `id_agente_modulo` = ANY(%s) AND `timestamp` > '%s'",$sql,$month));		
-	$datos_rango3 += get_db_sql (sprintf("SELECT COUNT(*) FROM `tagente_datos` WHERE `id_agente_modulo` = ANY(%s) AND `timestamp` > '%s'",$sql,$month3));
-	$datos_total += get_db_sql (sprintf("SELECT COUNT(*) FROM `tagente_datos` WHERE `id_agente_modulo` = ANY(%s)",$sql));
-		
+if (isset ($table)) {
+	unset ($table); //since $table is an object, we make sure it's gone first
 }
-?>
 
-<table width='300' border='0' class='databox' cellspacing='4' cellpadding='4'>
-<tr><td class=datos>
-<?php echo __('Packets three months old')?>
-</td>
-<td class=datos>
-<?php echo $datos_rango3; ?>
-</td>
+$table->width = 300;
+$table->border = 0;
+$table->class = "databox";
+$table->cellspacing = 4;
+$table->cellpadding = 4;
 
-<tr><td class=datos2>
-<?php echo __('Packets one month old')?>
-</td>
-<td class=datos2>
-<?php echo $datos_rango2; ?>
-</td>
+$table->data[0] = array (__('Packets less than three months old'), $data["3month"]);
+$table->data[1] = array (__('Packets less than one month old'), $data["1month"]);
+$table->data[2] = array (__('Packets less than two weeks old'), $data["2week"]);
+$table->data[3] = array (__('Packets less than one week old'), $data["1week"]);
+$table->data[4] = array (__('Packets less than three days old'), $data["3day"]);
+$table->data[5] = array (__('Packets less than one day old'), $data["1day"]);
+$table->data[6] = array ('<b>'.__('Total number of packets').'</b>', '<b>'.$data["total"].'</b>');
 
-<tr><td class=datos>
-<?php echo __('Packets two weeks old')?>
-</td>
-<td class=datos>
-<?php echo $datos_rango11; ?>
-</td>
+print_table ($table);
 
-<tr><td class=datos2>
-<?php echo __('Packets one week old')?>
-</td>
-<td class=datos2>
-<?php echo $datos_rango1; ?>
-</td>
-
-<tr><td class=datos>
-<?php echo __('Packets three days old')?>
-</td>
-<td class=datos>
-<?php echo $datos_rango0; ?>
-</td>
-
-<tr><td class=datos2>
-<?php echo __('Packets one day old')?>
-</td>
-<td class=datos2>
-<?php echo $datos_rango00; ?>
-</td>	
-<tr><td class=datos>
-<b><?php echo __('Total packets')?></b>
-</td>
-<td class=datos>
-<b><?php echo $datos_total; ?></b>
-</td>
-</tr>
-</table>
-<br>
-<h3><?php echo __('Purge data') ?></h3>
-<table width='300' border='0' class='databox' cellspacing='4' cellpadding='4'>
+echo '<br />';
+echo '<h3>'.__('Purge data').'</h3>
+<table width="300" border="0" class="databox" cellspacing="4" cellpadding="4">
 <tr><td>
 <select name="date_purge" width="255px">
-<option value="<?php echo $month3 ?>"><?php echo __('Purge data over 90 days') ?>
-<option value="<?php echo $month ?>"><?php echo __('Purge data over 30 days') ?>
-<option value="<?php echo $week2 ?>"><?php echo __('Purge data over 14 days') ?>
-<option value="<?php echo $week ?>"><?php echo __('Purge data over 7 days') ?>
-<option value="<?php echo $d3 ?>"><?php echo __('Purge data over 3 days') ?>
-<option value="<?php echo $d1 ?>"><?php echo __('Purge data over 1 day') ?>
+<option value="'.$time["3month"].'">'.__('Purge data over 3 months').'</option>
+<option value="'.$time["1month"].'">'.__('Purge data over 1 month').'</option>
+<option value="'.$time["2week"].'">'.__('Purge data over 2 weeks').'</option>
+<option value="'.$time["1week"].'">'.__('Purge data over 1 week').'</option>
+<option value="'.$time["3day"].'">'.__('Purge data over 3 days').'</option>
+<option value="'.$time["1day"].'">'.__('Purge data over 1 day').'</option>
+<option value="'.$time["all"].'">'.__('All data until now').'</option>
 </select>
-
-<td><input class="sub wand" type="submit" name="purgedb" value="<?php echo __('Do it!') ?>" onClick="if (!confirm('<?php  echo __('Are you sure?') ?>')) return false;">
+</td><td>
+<input class="sub wand" type="submit" name="purgedb" value="'.__('Do it!').'" onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;" />
+</td></tr>
 </table>
-</form>
+</form>';
+?>

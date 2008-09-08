@@ -36,16 +36,18 @@ if (! give_acl ($config['id_user'], 0, "DM")) {
 	
 	- A more powerful selection (by Agent, by Module, etc).
 */
-?>
-<h2><?php echo __('Database Maintenance') ?> &gt;
-<?php echo __('Current database maintenance setup') ?></h2>
-<table width=550 cellspacing=3 cellpadding=3 border=0>
+
+echo '<h2>'.__('Database Maintenance').' &gt; '.__('Current database maintenance setup').'</h2>
+<table width="550" cellspacing="3" cellpadding="3" border="0">
 <tr><td>
-<i><?php echo __('Max. days before compact data'); ?>:</i>&nbsp;<b><?php echo __('Max. days before compact data'); ?></b><br><br>
-<i><?php echo __('Max. days before purge'); ?>:</i>&nbsp;<b><?php echo __('Max. days before purge'); ?></b><br><br>
+<i>'.__('Max. time before compact data').':</i>&nbsp;<b>'.$config['days_compact'].' '.__('days').'</b><br /><br />
+<i>'.__('Max. time before purge').':</i>&nbsp;<b>'.$config['days_purge'].' '.__('days').'</b><br /><br />
+</td></tr>
 <tr><td>
-<div align='justify'>
-<?php echo __('Please check your Pandora Server setup and be sure that database maintenance daemon is running. It\'s very important to keep up-to-date database to get the best performance and results in Pandora'); ?>
-</div><br>
+<div align="justify">
+'.__('Please check your Pandora Server setup and be sure that database maintenance daemon is running. It\'s very important to keep up-to-date database to get the best performance and results in Pandora').'
+</div><br />
 <img src="reporting/fgraph.php?tipo=db_agente_purge&id=-1">
-</table>
+</td></tr>
+</table>';
+?>

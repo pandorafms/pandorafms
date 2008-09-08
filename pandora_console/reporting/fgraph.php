@@ -22,6 +22,8 @@ require_once ($config["homedir"].'/include/functions.php');
 require_once ($config["homedir"].'/include/functions_db.php');
 require_once ('Image/Graph.php');
 
+ini_set ('display_errors', 0); //This is to prevent notices from making the thing not graph
+
 global $config;
 
 if (!isset($_SESSION["id_user"])){
@@ -54,13 +56,7 @@ function graphic_error () {
  */
 function dame_fecha ($mh) {
 	$mh *= 60;
-	$m_year = date ("Y", time() - $mh); 
-	$m_month = date ("m", time() - $mh);
-	$m_day = date ("d", time() - $mh);
-	$m_hour = date ("H", time() - $mh);
-	$m_min = date ("i", time() - $mh);
-	$m = $m_year."-".$m_month."-".$m_day." ".$m_hour.":".$m_min.":00";
-	return $m;
+	return date ("Y-m-d H:i:00", time() - $mh); 
 }
 
 /**
@@ -1199,28 +1195,21 @@ function graphic_incident_source ($width=320, $height=200) {
 function grafico_db_agentes_modulos($width, $height) {
 	$data = array();
 	$legend = array();
-	$sql1="SELECT * FROM tagente";
-	$result=mysql_query($sql1);
-	while ($row=mysql_fetch_array($result)){
-		$sql1="SELECT COUNT(id_agente_modulo) FROM tagente_modulo WHERE id_agente = ".$row["id_agente"];;
-		$result2=mysql_query($sql1);
-		$row2=mysql_fetch_array($result2);
-		$data[] = $row2[0];
-		$legend[] = $row["nombre"];
+	
+	$sql = "SELECT DISTINCT(id_agente), COUNT(id_agente_datos) AS count FROM tagente_datos GROUP BY id_agente ORDER BY count ASC";
+	//This query is not the most efficient on itself. But other functions
+	//use this query so it will a) be fetched from cache and b) it will
+	//return the result in the same order as the other graph and data
+	
+	$result = get_db_all_rows_sql ($sql);
+	if ($result === false)
+		$result = array();
+
+	foreach ($result as $row) {
+		$data[] = count (get_modules_in_agent ($row["id_agente"]));
+		$legend[] = dame_nombre_agente ($row["id_agente"]);
 	}
-	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
-	// or much better, pay me to do a special version for you, highly optimized :-))))
-	for ($i = 0; $i < sizeof($data); $i++) {
-		for ($j = $i; $j <sizeof($data); $j++)
-		if ($data[$j] > $data[$i]) {
-				$temp = $data[$i];
-				$temp_label = $legend[$i];
-				$data[$i] = $data[$j];
-				$legend[$i] = $legend[$j];
-				$data[$j] = $temp;
-				$legend[$j] = $temp_label;
-		}
-	}
+	
 	generic_bar_graph ($width, $height, $data, $legend);
 }
 
@@ -1325,7 +1314,7 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
         $data = array();
         $legend = array();
 
-        $sql = sprintf ("SELECT DISTINCT(id_agentmodule) AS id_agentmodule, id_grupo, COUNT(id_agentmodule) AS count FROM tevento WHERE id_agente = %d GROUP BY id_agentmodule",$id_agent);
+        $sql = sprintf ("SELECT DISTINCT(id_agentmodule) AS id_agentmodule, id_grupo, COUNT(id_agentmodule) AS count FROM tevento WHERE id_agente = %d GROUP BY id_agentmodule ORDER BY count DESC",$id_agent);
         $result = get_db_all_rows_sql ($sql);
         if ($result === false)
                 $result = array();
@@ -1342,8 +1331,6 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
                         }
                 }
         }
-
-        array_multisort ($legend, $data);
 
         $max_items = 6; //Maximum items on the piegraph
         while (count($data) > $max_items) {
@@ -1437,77 +1424,60 @@ function generic_bar_graph ( $width =380, $height = 200, $data, $legend) {
 function grafico_db_agentes_paquetes ($width = 380, $height = 300) {
 	$data = array();
 	$legend = array();
-	$sql1="SELECT distinct (id_agente) FROM tagente_datos";
-	$result=mysql_query($sql1);
-	while ($row=mysql_fetch_array($result)){
-		if (! is_null($row["id_agente"])){
-			$sql1="SELECT COUNT(id_agente) FROM tagente_datos WHERE id_agente = ".$row["id_agente"];
-			$result3=mysql_query($sql1);
-			if ($row3=mysql_fetch_array($result3)){
-				$agent_name = dame_nombre_agente($row[0]);
-				if ($agent_name != ""){
-					$data[]= $row3[0];
-					$legend[] = str_pad($agent_name,15);
-				}
-			}
-		}
-	}
-	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
-	// or much better, pay me to do a special version for you, highly optimized :-))))
-	for ($i=0;$i < sizeof($data);$i++){
-		for ($j=$i; $j <sizeof($data); $j++)
-		if ($data[$j] > $data[$i]){
-				$temp = $data[$i];
-				$temp_label = $legend[$i];
-				$data[$i] = $data[$j];
-				$legend[$i] = $legend[$j];
-				$data[$j] = $temp;
-				$legend[$j] = $temp_label;
-		}
-	}
+	
+	$sql = "SELECT DISTINCT(id_agente), COUNT(id_agente_datos) AS count FROM tagente_datos GROUP BY id_agente ORDER BY count ASC";
+	$result = get_db_all_rows_sql ($sql);
+	
+	if ($result === false)
+		$result = array();
+
+	foreach ($result as $row) {
+		$data[] = $row["count"];
+		$legend[] = dame_nombre_agente ($row["id_agente"]);
+	}													
+	
 	generic_bar_graph ($width, $height, $data, $legend);
 }
 
 function grafico_db_agentes_purge ($id_agent, $width, $height) {
-	if ($id_agent == 0)
+	//If id_agent is -1 or 0 (depending on what passed it), it should be
+	//All. Positive id is a possible agent
+	if ($id_agent < 1) {
 		$id_agent = -1;
-	// All data (now)
-	$purge_all=date("Y-m-d H:i:s",time());
-	
-	$data = array();
-	$legend = array();
-	
-	$d90 = time()-(2592000*3);
-	$d30 = time()-2592000;
-	$d7 = time()-604800;
-	$d1 = time()-86400;
-	$fechas = array($d90, $d30, $d7, $d1);
-	$fechas_label = array("30-90 days","7-30 days","This week","Today");
-
-	// Calc. total packets
-	$sql1 = "SELECT COUNT(id_agente_datos) FROM tagente_datos";
-	$result2 = mysql_query ($sql1);
-	$row2 = mysql_fetch_array ($result2);
-	$total = $row2[0];
-	
-	for ($i = 0; $i < sizeof ($fechas); $i++){
-	// 4 x intervals will be enought, increase if your database is very very fast :)
-		if ($i == 3) {
-			if ($id_agent == -1)
-				$sql1="SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp >= ".$fechas[$i];
-			else
-				$sql1="SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE id_agente = $id_agent AND utimestamp >= ".$fechas[$i];
-		} else {
-			if ($id_agent == -1)
-				$sql1="SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp >= ".$fechas[$i]." AND utimestamp < ".$fechas[$i+1];
-			else
-				$sql1="SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE id_agente = $id_agent AND utimestamp >= ".$fechas[$i]." AND utimestamp < ".$fechas[$i+1];
-		}
-		$result=mysql_query($sql1);
-		$row=mysql_fetch_array($result);
-		$data[] =  $row[0];
-		$legend[]=$fechas_label[$i]." ( ".format_for_graph($row[0],0)." )";
+		$query = "";
+	} else {
+		$query = sprintf (" AND id_agente_modulo = ANY(SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = '%d' ",$id_agent);
 	}
+	
+	// All data (now)
+	$time["all"] = time ();
+
+	// 1 day ago
+	$time["1day"] = $time["all"]-86400;
+
+	// 1 week ago
+	$time["1week"] = $time["all"]-(86400*7);
+
+	// 1 month ago
+	$time["1month"] = $time["all"]-(86400*30);
+
+	// Three months ago
+	$time["3month"] = $time["all"]-(86400*90);
+
+	//Init legend
+	$legend[0] = __("Today");
+	$legend[1] = "1 ".__("Week");
+	$legend[2] = "1 ".__("Month");
+	$legend[3] = "3 ".__("Months");
+	$legend[4] = __("Older");
+	
+	$data[0] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp > %d %s", $time["1day"], $query));
+	$data[1] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp > %d %s", $time["1week"], $query));
+	$data[2] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp > %d %s", $time["1month"], $query));
+	$data[3] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp > %d %s", $time["3month"], $query));
+	$data[4] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE 1=1 %s", $query));
+	$data[4] = $data[4] - $data[3];
+	
 	generic_pie_graph ($width, $height, $data, $legend);
 }
 

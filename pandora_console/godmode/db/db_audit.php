@@ -37,16 +37,9 @@ if (! give_acl ($config['id_user'], 0, "DM")) {
 	
 	- A more powerful selection (by Agent, by Module, etc).
 */
-require("godmode/db/times_incl.php");
-
-$datos_rango3=0;
-$datos_rango2=0;
-$datos_rango1=0;
-
 
 # ADQUIRE DATA PASSED AS FORM PARAMETERS
 # ======================================
-# Purge data using dates
 # Purge data using dates
 if (isset($_POST["purgedb"])){	# Fixed 2005-1-13, nil
 	$from_date = get_parameter_post("date_purge");

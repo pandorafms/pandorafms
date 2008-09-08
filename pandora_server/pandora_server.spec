@@ -1,16 +1,16 @@
 #
-# Pandora Server 
+# Pandora FMS Server 
 #
 %define name        pandora_server
-%define version	    1.3.1
-Summary:            Pandora Server
+%define version	    2.0.0
+Summary:            Pandora FMS Server
 Name:               %{name}
 Version:            %{version}
 Release:            1
 License:            GPL
 Vendor:             Sancho Lerena <sancho.lerena@artica.es>
 Source0:            %{name}-%{version}.tar.gz
-URL:                http://pandora.sf.net
+URL:                http://www.pandorafms.com
 Group:              System/Monitoring
 Packager:           Manuel Arostegui <marostegui@artica.es>
 Prefix:             /usr/share

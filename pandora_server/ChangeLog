@@ -3,6 +3,8 @@
 	* util/pandora_db.pl: Updated year and URL.
 	
 	* util/pandora_dbstress.pl: Updated year and build.
+	
+	* pandora_*: Updated headers with build and new URL, better style
 
 2008-09-03  Sancho Lerena <slerena@gmail.com>
 
@@ -14,8 +16,8 @@
 
 2008-09-01  Sancho Lerena <slerena@gmail.com>
 
-        * lib/PandoraFMS/DB.pm: Sending mail now replaces macros also 
-        in the subject.
+	* lib/PandoraFMS/DB.pm: Sending mail now replaces macros also 
+	in the subject.
 
 2008-08-28  Evi Vanoost <vanooste@rcbi.rochester.edu>
 	

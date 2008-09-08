@@ -27,16 +27,8 @@ if (! give_acl ($config['id_user'], 0, "DM")) {
 	return;
 }
 
-
-require ("godmode/db/times_incl.php");
-
-$datos_rango3 = 0;
-$datos_rango2 = 0;
-$datos_rango1 = 0;
-
 # ADQUIRE DATA PASSED AS FORM PARAMETERS
 # ======================================
-# Purge data using dates
 # Purge data using dates
 if (isset ($_POST["date_purge"])){
 	$from_date = get_parameter_post ("date_purge");

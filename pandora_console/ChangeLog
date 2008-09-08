@@ -1,3 +1,34 @@
+2008-09-08  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* reporting/fgraph.php: Further updating of the queries for the
+	godmode/db directories. Mainly making sure all data outputs (graph or
+	text) have the same order for simple overview. Also fixed some minor 
+	issues like the one Sancho fixed (array_multisort). Made some strings 
+	translatable
+
+	* godmode/db/times_incl.php: This file is actually only relied on by
+	db_info.php so I removed it and included the contents in db_info
+
+	* godmode/db/db_purge.php: Since we went over the threshhold of 1,5M
+	data entries on a P4, the page would timeout from the browser out. So
+	I reworked the page to clarify the variables and adhere to style. Put
+	the delete query in a transaction (since it might be that either
+	timeouts or other errors don't clean the whole database up and then
+	you have to do it manually. Code is also prettier now.
+
+	* godmode/db/db_main.php: Made it display the actual numbers instead of
+	repeating the string.
+
+	* godmode/db/db_info_data.php: Moved into db_info.php
+
+	* godmode/db/db_info.php: Introduced db_info_data.php as a hidden Div.
+	This will allow quicker access without adding another menu. The query
+	will come from cache anyway (SQL cache) so it's faster too
+
+	* godmode/db/db_event.php: Removed reference to times_incl.php
+
+	* godmode/db/db_audit.php: Removed reference to times_incl.php
+
 2008-09-04  Esteban Sanchez  <estebans@artica.es>
 
 	* extensions/update_manager/lib/libupdatemanager_client.php: Updated

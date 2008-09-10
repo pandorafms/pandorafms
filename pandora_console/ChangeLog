@@ -1,5 +1,13 @@
 2008-09-10  Jorge Gonzalez  <jorgegonz@artica.es>
 
+	* include/languages/fr.mo, include/languages/pt_BR.po, include/languages/pl.mo, include/languages/eu.po, include/languages/sv.mo, include/languages/ru.po, include/languages/zh_TW.mo, include/languages/index.pot, include/languages/zh_CN.mo, include/languages/eu.mo, include/languages/pl.po, include/languages/ru.mo, include/languages/sv.po, include/languages/zh_TW.po, include/languages/zh_CN.po: Added new po and mo translations, imported from Rosetta.
+
+	* operation/agentes/tactical.php: Added some strings for translation.
+
+	* include/languages/Makefile: added new languages to compile.
+
+2008-09-10  Jorge Gonzalez  <jorgegonz@artica.es>
+
 	* languages/es.po, languages/it.mo, languages/ca.mo, languages/ast.mo,		languages/de.mo, languages/index.pot. languages/gl.po, languages/es.mo, 	languages/fr.po, languages/it.po, languages/ca.po, languages/ast.po, 		languages/de.po, languages/gl.mo: New translations imported from 		Rosetta, thanks to all contributors.
 
 2008-09-08  Evi Vanoost  <vanooste@rcbi.rochester.edu>

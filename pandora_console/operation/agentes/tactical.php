@@ -106,13 +106,13 @@ echo "<br><br>";
 // Monitor checks
 echo "<tr>";
 echo "<th colspan=2>".__('Monitor checks')."</th>";
-echo "<tr><td class=datos2><b>"."Monitor checks"."</b></td>";
+echo "<tr><td class=datos2><b>".__('Monitor checks')."</b></td>";
 echo "<td style='font: bold 2em Arial;' class='datos2'>";
 echo "<a class='big_data' href='index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=-1'>";
 echo $monitor_checks."</A></td>";
 
 // Monitor OK
-echo "<tr><td class=datos><b>"."Monitor OK"."</b></td>";
+echo "<tr><td class=datos><b>".__('Monitor OK')."</b></td>";
 echo "<td style='font: bold 2em Arial' class='datos'>";
 echo "<a style='color:#0f0;' class='big_data' href='index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=1'>";
 if ($monitor_ok > 0)
@@ -122,7 +122,7 @@ else
 echo "</A>";
 
 // Monitor BAD
-echo "<tr><td class=datos2><b>"."Monitor BAD"."</b></td>";
+echo "<tr><td class=datos2><b>".__('Monitor BAD')."</b></td>";
 echo "<td class='datos2' style='font: bold 2em Arial' >";
 echo "<a style='color:#f00;' class='big_data'  href='index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=0'>";
 if ($monitor_bad > 0)
@@ -135,7 +135,7 @@ echo "</td></tr>";
 
 // Monitor unknown
 echo "<tr><td class=datos>";
-echo "<b>"."Monitor Unknown"."</b></td>";
+echo "<b>".__('Monitor Unknown')."</b></td>";
 echo "<td class='datos' style='font: bold 2em Arial' >";
 echo "<a style='color:#aaa;' class='big_data'  href='index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=2'>";
 if ($monitor_unknown > 0)
@@ -144,14 +144,14 @@ else
 	echo "-";
 echo "</A>";
 
-echo "</td></tr><tr><td class=datos2><b>"."Monitor Not Init"."</b></td>";
+echo "</td></tr><tr><td class=datos2><b>".__('Monitor Not Init')."</b></td>";
 echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #FF8C00;'>";
 if ($monitor_not_init> 0)
 	echo $monitor_not_init;
 else
 	echo "-";
 
-echo "<tr><td class=datos><b>"."Alerts Fired"."</b></td>";
+echo "<tr><td class=datos><b>".__('Alerts Fired')."</b></td>";
 echo "<td class=datos style='font: bold 2em Arial'>";
 echo "<a style=color:#f00' class='big_data'  href='index.php?sec=eventos&sec2=operation/events/events&search=&event_type=alert_fired'>";
 if ($monitor_alert > 0)
@@ -159,29 +159,29 @@ if ($monitor_alert > 0)
 else
 	echo "-";
 echo "</A>";
-echo "<tr><td class=datos2><b>"."Alerts Total"."</b></td>";
+echo "<tr><td class=datos2><b>".__('Alerts Total')."</b></td>";
 echo "<td class=datos2 style='font: bold 2em Arial'>".$monitor_alert_total;
 
 
 // Data checks
 // ~~~~~~~~~~~~~~~
 
-echo "<tr><th colspan=2>".__('Data checks')."</th>";
-echo "<tr><td class=datos2><b>"."Data checks"."</b></td>";
+echo "<tr><th colspan=2>".__('Data Checks')."</th>";
+echo "<tr><td class=datos2><b>".__('Data Checks')."</b></td>";
 echo "<td class=datos2 style='font: bold 2em Arial'>".$data_checks;
-echo "<tr><td class=datos><b>"."Data Unknown"."</b></td>";
+echo "<tr><td class=datos><b>".__('Data Unknown')."</b></td>";
 echo "<td class=datos style='font: bold 2em Arial; color: #aaa;'>";
 if ($data_unknown > 0)
 	echo $data_unknown;
 else
 	echo "-";
-echo "<tr><td class=datos2><b>"."Data not init"."</b></td>";
+echo "<tr><td class=datos2><b>".__('Data Not Init')."</b></td>";
 echo "<td class=datos2 style='font: bold 2em Arial'>";
 if ($data_not_init > 0)
 	echo $data_not_init;
 else
 	echo "-";
-echo "<tr><td class=datos><b>"."Alerts Fired"."</b></td>";
+echo "<tr><td class=datos><b>".__('Alerts Fired')."</b></td>";
 
 
 echo "<td class=datos style='font: bold 2em Arial'>";
@@ -192,7 +192,7 @@ else
 	echo "-";
 echo "</A>";
 
-echo "<tr><td class=datos2><b>"."Alerts Total";
+echo "<tr><td class=datos2><b>".__('Alerts Total');
 echo "<td class=datos2 style='font: bold 2em Arial'>".$data_alert_total;
 
 
@@ -200,12 +200,12 @@ echo "<td class=datos2 style='font: bold 2em Arial'>".$data_alert_total;
 // ~~~~~~~~~~~~~~~
 
 echo "<tr><th colspan='2'>".__('Summary')."</th>";
-echo "<tr><td class='datos2'><b>"."Total agents"."</b></td>";
+echo "<tr><td class='datos2'><b>".__('Total Agents')."</b></td>";
 echo "<td class='datos2' style='font: bold 2em Arial, Sans-serif;'>".$total_agents;
-echo "<tr><td class='datos'><b>"."Total checks"."</b></td>";
+echo "<tr><td class='datos'><b>".__('Total Checks')."</b></td>";
 echo "<td class='datos' style='font: bold 2em Arial, Sans-serif;'>".$total_checks;
 
-echo "<tr><td class='datos2'><b>"."Server sanity"."</b></td>";
+echo "<tr><td class='datos2'><b>".__('Server Sanity')."</b></td>";
 echo "<td class='datos2' style='font: bold 1em Arial, Sans-serif;'>";
 echo format_numeric($notinit_percentage);
 echo "% ".__('Uninitialized modules');

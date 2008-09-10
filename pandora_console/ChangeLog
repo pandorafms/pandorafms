@@ -1,3 +1,10 @@
+2008-09-10  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/languages/pt_br.po: Removed the file from repository. The
+	update named pt_BR.po (note capitalization) remains. The files were
+	causing problems in local svn repositories based on filesystems 
+	that don't differentiate between the 2 files.
+
 2008-09-10  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/languages/fr.mo, include/languages/pt_BR.po, include/languages/pl.mo, include/languages/eu.po, include/languages/sv.mo, include/languages/ru.po, include/languages/zh_TW.mo, include/languages/index.pot, include/languages/zh_CN.mo, include/languages/eu.mo, include/languages/pl.po, include/languages/ru.mo, include/languages/sv.po, include/languages/zh_TW.po, include/languages/zh_CN.po: Added new po and mo translations, imported from Rosetta.

@@ -1,3 +1,7 @@
+2008-09-10  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* languages/es.po, languages/it.mo, languages/ca.mo, languages/ast.mo,		languages/de.mo, languages/index.pot. languages/gl.po, languages/es.mo, 	languages/fr.po, languages/it.po, languages/ca.po, languages/ast.po, 		languages/de.po, languages/gl.mo: New translations imported from 		Rosetta, thanks to all contributors.
+
 2008-09-08  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* reporting/fgraph.php: Further updating of the queries for the

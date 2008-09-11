@@ -72,13 +72,12 @@ if ($update_group) {
 	$icon = (string) get_parameter ('icon');
 	$id_parent = (int) get_parameter ('id_parent');
 	$alerts_enabled = (bool) get_parameter ('alerts_enabled');
-	
 	$sql = sprintf ('UPDATE tgrupo  SET nombre = "%s",
 			icon = "%s", disabled = %d, parent = %d 
 			WHERE id_grupo = %d',
 			$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $id_group);
-	$result = mysql_query ($sql);
-	if ($result) {
+	$result = process_sql ($sql);
+	if ($result !== false) {
 		echo "<h3 class='suc'>".__('Group successfully updated')."</h3>";
 	} else {
 		echo "<h3 class='error'>".__('There was a problem modifying group')."</h3>";

@@ -1,3 +1,8 @@
+2008-09-11  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* godmode/groups/group_list.php, godmode/groups/configure_group.php:
+	Fixed a bug where the group parent wouldn't be added to a group.
+
 2008-09-10  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/languages/pt_br.po: Removed the file from repository. The

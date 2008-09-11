@@ -42,7 +42,7 @@ if ($id_group) {
 	if ($group) {
 		$name = $group["nombre"];
 		$icon = $group["icon"].'.png';
-		$alerts_isabled = $group["disabled"];
+		$alerts_disabled = $group["disabled"];
 		$id_parent = $group["parent"];
 	} else {
 		echo "<h3 class='error'>".__('There was a problem loading group')."</h3>";
@@ -64,6 +64,7 @@ $table->width = '450px';
 $table->data = array ();
 $table->data[0][0] = __('Name');
 $table->data[0][1] = print_input_text ('name', $name, '', 35, 100, true);
+
 $table->data[1][0] = __('Icon');
 $files = list_files ('images/groups_small/', "png", 1, 0);
 $table->data[1][1] = print_select ($files, 'icon', $icon, '', 'None', '', true);
@@ -72,16 +73,18 @@ if ($icon) {
 	$table->data[1][1] .= '<img src="images/groups_small/'.$icon.'" />';
 }
 $table->data[1][1] .= '</span>';
+
 $table->data[2][0] = __('Parent');
-$sql = 'SELECT * FROM tgrupo ';
+$sql = 'SELECT id_grupo, nombre FROM tgrupo ';
 if ($id_group)
 	$sql .= sprintf ('WHERE id_grupo != %d', $id_group);
-$table->data[2][1] = print_select_from_sql ($sql, 'parent', $id_parent, '', 'None', 0, true);
+$table->data[2][1] = print_select_from_sql ($sql, 'id_parent', $id_parent, '', 'None', 0, true);
 $table->data[2][1] .= ' <span id="parent_preview">';
 if ($id_parent) {
 	echo '<img src="images/groups_small/'.dame_grupo_icono ($id_parent).'.png" />';
 }
 echo'</span>';
+
 $table->data[3][0] = __('Alerts');
 $table->data[3][1] = print_checkbox ('alerts_enabled', 1, ! $alerts_disabled, true);
 

@@ -29,14 +29,8 @@ if (! give_acl($config["id_user"], 0, "AW")) {
 	exit;
 };
 
-if (isset($_GET["id_agente"]))
-	$id_agente = $_GET["id_agente"];
-else {
-	$id_agente = -1;
-	if (isset($_POST["update_agent"])) { // if modified some agent paramenter
-		$id_agente = entrada_limpia($_POST["id_agente"]);
-	}
-}
+//See if id_agente is set (either POST or GET, otherwise -1
+$id_agente = get_parameter ("id_agente", -1);
 
 // Get passed variables
 $tab = get_parameter_get ("tab","main");
@@ -50,11 +44,11 @@ $comentarios = "";
 $campo_1 = "";
 $campo_2 = "";
 $campo_3 = "";
-$maximo = "0";
-$minimo = "0";
+$maximo = 0;
+$minimo = 0;
 $nombre_agente = "";
 $direccion_agente = "";
-$intervalo = "300";
+$intervalo = 300;
 $id_server = "";
 $max_alerts = 0;
 $modo = 1;
@@ -66,25 +60,25 @@ $modulo_descripcion = "";
 $alerta_id_aam = "";
 $alerta_campo1 = "";
 $alerta_campo2 = "";
-$alerta_campo3 ="";
+$alerta_campo3 = "";
 $alerta_dis_max = "";
 $alerta_dis_min = "";
-$alerta_min_alerts = "0";
-$alerta_max_alerts = "1";
+$alerta_min_alerts = 0;
+$alerta_max_alerts = 1;
 $alerta_time_threshold = "";
 $alerta_descripcion = "";
-$disabled="";
-$id_parent="0";
-$modulo_max="";
-$modulo_min='';
+$disabled = "";
+$id_parent = 0;
+$modulo_max = "";
+$modulo_min = "";
 $module_interval = "";
 $tcp_port = "";
 $tcp_send = "";
 $tcp_rcv = "";
-$snmp_oid= "";
-$ip_target ="";
-$snmp_community="";
-$combo_snmp_oid="";
+$snmp_oid = "";
+$ip_target = "";
+$snmp_community = "";
+$combo_snmp_oid = "";
 $agent_created_ok = 0;
 $create_agent = 0;
 $alert_text = "";
@@ -93,15 +87,15 @@ $time_to = "";
 $alerta_campo2_rec = "";
 $alerta_campo3_rec = "";
 $alert_id_agent = "";
-$alert_d1 = "1";
-$alert_d2 = "1";
-$alert_d3 = "1";
-$alert_d4 = "1";
-$alert_d5 = "1";
-$alert_d6 = "1";
-$alert_d7 = "1";
-$alert_recovery = "0";
-$alert_priority = "0";
+$alert_d1 = 1;
+$alert_d2 = 1;
+$alert_d3 = 1;
+$alert_d4 = 1;
+$alert_d5 = 1;
+$alert_d6 = 1;
+$alert_d7 = 1;
+$alert_recovery = 0;
+$alert_priority = 0;
 $id_network_server = 0;
 $id_plugin_server = 0;
 $id_prediction_server = 0;
@@ -114,60 +108,76 @@ $id_os = 0;
 // ================================
 // We need to create agent BEFORE showing tabs, because we need to get agent_id
 // This is not very clean, but...
-if ( isset ($_POST["create_agent"])) { // Create a new and shining agent
-	$nombre_agente =  entrada_limpia ($_POST["agente"]);
-	$direccion_agente =  entrada_limpia ($_POST["direccion"]);
-	$grupo =  entrada_limpia ($_POST["grupo"]);
-	$intervalo =  entrada_limpia ($_POST["intervalo"]);
-	$comentarios =  entrada_limpia ($_POST["comentarios"]);
-	$modo = entrada_limpia ($_POST["modo"]);
+if (isset ($_POST["create_agent"])) { // Create a new and shiny agent
+	$nombre_agente =  get_parameter_post ("agente", "");
+	$direccion_agente = get_parameter_post ("direccion", "");
+	$grupo = get_parameter_post ("grupo", 0);
+	$intervalo = get_parameter_post ("intervalo", 300);
+	$comentarios = get_parameter_post ("comentarios", "");
+	$modo = get_parameter_post ("modo", 0);
 	$id_parent = get_parameter_post ("id_parent", 0);
 	$id_network_server = get_parameter_post ("network_server", 0);
 	$id_plugin_server = get_parameter_post ("plugin_server", 0);
 	$id_prediction_server = get_parameter_post ("prediction_server", 0);
 	$id_wmi_server = get_parameter_post ("wmi_server", 0);
-
-	$id_os = entrada_limpia ($_POST["id_os"]);
-	$disabled = entrada_limpia ($_POST["disabled"]);
+	$id_os = get_parameter_post ("id_os", 0);
+	$disabled = get_parameter_post ("disabled", 0);
 
 	// Check if agent exists (BUG WC-50518-2)
-	$sql1='SELECT nombre FROM tagente WHERE nombre = "'.$nombre_agente.'"';
-	$result=mysql_query($sql1);
-	if ($row=mysql_fetch_array($result)){
-		$agent_creation_error  =  __('Agent exists');
+	if ($nombre_agente == "") {
+		$agent_creation_error = __('No agent name specified');
+		$agent_created_ok = 0;
+	} elseif (dame_agente_id ($nombre_agente) > 0) {
+		$agent_creation_error = __('An agent with this name already exists');
 		$agent_created_ok = 0;
 	} else {
-		$sql_insert ="INSERT INTO tagente (nombre, direccion, id_grupo, intervalo, comentarios,modo, id_os, disabled, id_network_server, id_plugin_server, id_wmi_server, id_prediction_server, id_parent) VALUES ('$nombre_agente', '$direccion_agente', $grupo , $intervalo , '$comentarios',$modo, $id_os, $disabled, $id_network_server, $id_plugin_server, $id_wmi_server, $id_prediction_server, $id_parent)";
-		$result = mysql_query($sql_insert);
-		if ($result) {
-            $agent_created_ok = 1;
-            $agent_creation_error = "";
-            $id_agente = mysql_insert_id ();
-            // Create special MODULE agent_keepalive
-            $sql_insert = "INSERT INTO tagente_modulo (nombre, id_agente, id_tipo_modulo, descripcion, id_modulo) VALUES ('agent_keepalive', ".$id_agente.",100,'Agent Keepalive monitor',1)";
-            $result=mysql_query($sql_insert);
-            $id_agent_module = mysql_insert_id();
-            // And create MODULE agent_keepalive in tagente_estado table 
-            $sql_insert2 ="INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, cambio, estado, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try) VALUES ($id_agent_module, 1, '', 0, 0, $id_agente, 0,0,0,0,0)";
-            $result = mysql_query ($sql_insert2);
-            if (!$result){
-                $agent_created_ok = 0;
-                $agent_creation_error = "Problem creating record on tagente_estado table";
-            }
-            // Create address for this agent in taddress
-            agent_add_address ($id_agente, $direccion_agente);
-        } else {
-            $agent_created_ok = 0;
-            $agent_creation_error = "Cannot create agent <br><i>$sql_insert</i>";
-        }
-    }
+		$sql = sprintf ("INSERT INTO tagente 
+				(nombre, direccion, id_grupo, intervalo, comentarios, modo, id_os, disabled, id_network_server, id_plugin_server, id_wmi_server, id_prediction_server, id_parent) 
+				VALUES 
+				('%s', '%s', %d, %d, '%s', %d, %d, %d, %d, %d, %d, %d, %d)",
+				$nombre_agente, $direccion_agente, $grupo, $intervalo, $comentarios, $modo, $id_os, $disabled, $id_network_server, $id_plugin_server, $id_wmi_server, $id_prediction_server, $id_parent);
+		$id_agente = process_sql ($sql, "insert_id");
+		if ($id_agente !== false) {
+			$agent_created_ok = 1;
+			$agent_creation_error = "";
+			
+			// Create special module agent_keepalive
+			$sql = "INSERT INTO tagente_modulo 
+					(nombre, id_agente, id_tipo_modulo, descripcion, id_modulo) 
+					VALUES 
+					('agent_keepalive',".$id_agente.",100,'Agent Keepalive monitor',1)";
+			$id_agent_module = process_sql ($sql, "insert_id");
+			
+			if ($id_agent_module !== false) {
+				// Create agent_keepalive in tagente_estado table
+				$sql = "INSERT INTO tagente_estado 
+					(id_agente_modulo, datos, timestamp, cambio, estado, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try) 
+					VALUES 
+					(".$id_agent_module.",1,'',0,0,".$id_agente.",0,0,0,0,0)";
+				$result = process_sql ($sql);
+				if ($result === false) {
+					$agent_created_ok = 0;
+					$agent_creation_error = __("There was a problem creating record in tagente_estado table");
+				}
+			} else {
+				$agent_created_ok = 0;
+				$agent_creation_error = __("There was a problem creating agent_keepalive module");
+			}
+			
+			// Create address for this agent in taddress
+			agent_add_address ($id_agente, $direccion_agente);
+		} else {
+			$id_agente = -1;
+			$agent_created_ok = 0;
+			$agent_creation_error = __("There was a problem creating the agent");
+		}
+	}
 }
 
 // Show tabs
 // -----------------
 echo "<div id='menu_tab_frame'>";
-echo "<div id='menu_tab_left'>
-<ul class='mn'>";
+echo "<div id='menu_tab_left'><ul class='mn'>";
 echo "<li class='nomn'>";
 echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'>
 <img src='images/setup.png' class='top' border='0'>&nbsp; ".substr(dame_nombre_agente($id_agente),0,15)." - ".__('Setup mode')."</a>";
@@ -180,31 +190,35 @@ echo "<li class='nomn'>";
 echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/zoom.png' width='16' class='top' border='0'>&nbsp;".__('View')."</a>";
 echo "</li>";
 
-if ($tab == "main")
+if ($tab == "main") {
 	echo "<li class='nomn_high'>";
-else
+} else {
 	echo "<li class='nomn'>";
+}
 echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=$id_agente'><img src='images/cog.png' width='16' class='top' border='0'>&nbsp; ".__('Setup Agent')."</a>";
 echo "</li>";
 
-if ($tab == "module")
+if ($tab == "module") {
 	echo "<li class='nomn_high'>";
-else
+} else {
 	echo "<li class='nomn'>";
+}
 echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente=$id_agente'><img src='images/lightbulb.png' width='16' class='top' border='0'>&nbsp;".__('Modules')."</a>";
 echo "</li>";
 
-if ($tab == "alert")
+if ($tab == "alert") {
 	echo "<li class='nomn_high'>";
-else
+} else {
 	echo "<li class='nomn'>";
+}	
 echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=$id_agente'><img src='images/bell.png' width='16' class='top' border='0'>&nbsp;". __('Alerts')."</a>";
 echo "</li>";
 
-if ($tab == "template")
+if ($tab == "template") {
 	echo "<li class='nomn_high'>";
-else
+} else {
 	echo "<li class='nomn'>";
+}
 echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=template&id_agente=$id_agente'><img src='images/network.png' width='16' class='top' border=0>&nbsp;".__('Net. Templates')."</a>";
 echo "</li>";
 
@@ -213,11 +227,10 @@ echo "</div>";
 echo "</div>"; // menu_tab_frame
 
 // Make some space between tabs and title
-echo "<div style='height: 25px'> </div>";
-
+echo "<div style='height: 25px'>&nbsp;</div>"; //Some browsers (IE) might not always show an empty div, added space
 
 // Show agent creation results
-if (isset($_POST["create_agent"])){
+if (isset ($_POST["create_agent"])) {
 	if ($agent_created_ok == 0){
 		echo "<h3 class='error'>".__('There was a problem creating agent')."</h3>";
 		echo $agent_creation_error;
@@ -225,7 +238,6 @@ if (isset($_POST["create_agent"])){
 		echo "<h3 class='suc'>".__('Agent successfully created')."</h3>";
 	}
 }
-
 
 // Fix / Normalize module data
 // ===========================
@@ -453,50 +465,68 @@ if (isset($_POST["update_alert"])){ // Update an existing alert
 // Update AGENT
 // ================
 if (isset($_POST["update_agent"])) { // if modified some agent paramenter
-	$id_agente = entrada_limpia($_POST["id_agente"]);
-	$nombre_agente =  entrada_limpia($_POST["agente"]);
-	$direccion_agente =  entrada_limpia($_POST["direccion"]);
-	$old_agent_address = give_agent_address ($id_agente);
-	$grupo =  entrada_limpia($_POST["grupo"]);
-	$intervalo =  entrada_limpia($_POST["intervalo"]);
-	$comentarios =  entrada_limpia($_POST["comentarios"]);
-	$modo = entrada_limpia($_POST["modo"]);
-	$id_os = entrada_limpia($_POST["id_os"]);
-	$disabled = entrada_limpia($_POST["disabled"]);
-	$id_network_server = get_parameter ("network_server", 0);
-	$id_plugin_server = get_parameter ("plugin_server", 0);
-	$id_wmi_server = get_parameter ("wmi_server", 0);
-	$id_prediction_server = get_parameter_post ("prediction_server", 0);
-	$id_parent = get_parameter_post ("id_parent", 0);
+	$id_agente = (int) get_parameter_post ("id_agente", 0);
+	$nombre_agente = (string) get_parameter_post ("agente");
+	$direccion_agente = (string) get_parameter_post ("direccion");
+	$grupo = (int) get_parameter_post ("grupo", 0);
+	$intervalo = (int) get_parameter_post ("intervalo", 300);
+	$comentarios = (string) get_parameter_post ("comentarios");
+	$modo = (bool) get_parameter_post ("modo", 0); //Mode: Learning or Normal
+	$id_os = (int) get_parameter_post ("id_os");
+	$disabled = (bool) get_parameter_post ("disabled");
+	$id_network_server = (int) get_parameter_post ("network_server", 0);
+	$id_plugin_server = (int) get_parameter_post ("plugin_server", 0);
+	$id_wmi_server = (int) get_parameter_post ("wmi_server", 0);
+	$id_prediction_server = (int) get_parameter_post ("prediction_server", 0);
+	$id_parent = (int) get_parameter_post ("id_parent", 0);
 
-	if ($direccion_agente != $old_agent_address){
-		agent_add_address ($id_agente, $direccion_agente);
-	}
-	$sql_update ="UPDATE tagente 
-		SET disabled = ".$disabled.", id_parent = $id_parent, id_os = ".$id_os." , modo = ".$modo." , nombre = '".$nombre_agente."', direccion = '".$direccion_agente."', id_grupo = '".$grupo."', intervalo = '".$intervalo."', comentarios = '".$comentarios."', id_network_server = '$id_network_server', id_plugin_server = $id_plugin_server, id_wmi_server = $id_wmi_server,
-	id_prediction_server = $id_prediction_server 
-		WHERE id_agente = '".$id_agente."'";
-
-	// Delete one of associateds IP's ?
-	if (isset($_POST["delete_ip"])) {
-		$delete_ip = $_POST["address_list"];
-		agent_delete_address ($id_agente, $delete_ip);
-	}
-	
-	$result=mysql_query($sql_update);
-	if (! $result) {
-		echo "<h3 class='error'>".__('There was a problem updating agent')."</h3>";
+	//Verify if there is another agent with the same name but different ID
+	if ($nombre_agente == "") { 
+		echo '<h3 class="error">'.__('No agent name specified').'</h3>';	
+	} elseif ($id_agente != dame_agente_id ($nombre_agente)) {
+		echo '<h3 class="error">'.__('There is already an agent in the database with this name').'</h3>';
 	} else {
-		echo "<h3 class='suc'>".__('Agent successfully updated')."</h3>";
+		//If different IP is specified than previous, add the IP
+		if ($direccion_agente != give_agent_address ($id_agente))
+			agent_add_address ($id_agente, $direccion_agente);
+		
+		//If IP is set for deletion, delete first
+		if (isset ($_POST["delete_ip"])) {
+			$delete_ip = get_parameter_post ("address_list");
+			agent_delete_address ($id_agente, $delete_ip);
+		}
+	
+		//Now update the thing
+		$sql = sprintf ("UPDATE tagente SET 
+			disabled = %d, 
+			id_parent = %d, 
+			id_os = %d, 
+			modo = %d, 
+			nombre = '%s', 
+			direccion = '%s',
+			id_grupo = %d,
+			intervalo = %d,
+			comentarios = '%s',
+			id_network_server = %d,
+			id_plugin_server = %d,
+			id_wmi_server = %d,
+			id_prediction_server = %d
+			WHERE id_agente = %d",$disabled,$id_parent,$id_os,$modo,$nombre_agente,$direccion_agente,$grupo,$intervalo,$comentarios,$id_network_server,$id_plugin_server,$id_wmi_server,$id_prediction_server,$id_agente);
+		$result = process_sql ($sql);
+		if ($result === false) {
+			echo '<h3 class="error">'.__('There was a problem updating agent').'</h3>';
+		} else {
+			echo '<h3 class="suc">'.__('Agent successfully updated').'</h3>';
+		}
 	}
 }
 
 if ((isset($agent_created_ok)) && ($agent_created_ok == 1)){
-	$_GET["id_agente"]= $id_agente;
+	$_GET["id_agente"] = $id_agente;
 }
 
 // Read agent data
-// This should be at the end of all operation checks, to read the changes
+// This should be at the end of all operation checks, to read the changess
 if (isset($_GET["id_agente"])) {
 	$id_agente = $_GET["id_agente"];
 	$id_grupo = dame_id_grupo($id_agente);

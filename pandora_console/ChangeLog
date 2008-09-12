@@ -1,3 +1,10 @@
+2008-09-12  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* godmode/agentes/configurar_agente.php: Style updates for create agent
+	and update agent. Fixed a bug where empty and duplicate names would
+	be allowed when updating. Made some strings translatable and more
+	extensive error messages.
+
 2008-09-11  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* godmode/groups/group_list.php, godmode/groups/configure_group.php:

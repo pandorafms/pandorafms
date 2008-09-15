@@ -398,6 +398,10 @@ sub process_datafile {
 				    }
 					# Single data
 				    else {
+						# Data has its own timestamp
+						if (defined $part->{timestamp}) {
+							$timestamp =  $part->{timestamp}->[0];
+						}
 						process_module_data($pa_config, $timestamp, $agent_name, $tipo_modulo, $part, $dbh);
 					}
                 }

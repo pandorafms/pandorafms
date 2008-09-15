@@ -1,3 +1,8 @@
+2008-09-15  Ramon Novoa  <rnovoa@artica.es>
+
+	* bin/pandora_server: Use data timestamp when available (instead of
+	  agent timestamp).
+
 2008-09-08  Raul Mateos <raulofpandora@gmail.com>
 
 	* util/pandora_db.pl: Updated year and URL.

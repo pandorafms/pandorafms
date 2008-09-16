@@ -1,3 +1,10 @@
+2008-09-16  Sancho Lerena <slerena@artica.es>
+
+	* util/plugin/ssh_pandoraplugin.sh: New remote SSH exec plugin.
+
+	* util/plugin/ssh-exec_pandoraplugin.pl: Deleted old one because
+	it has A LOT of problematic dependencies.
+
 2008-09-15  Ramon Novoa  <rnovoa@artica.es>
 
 	* bin/pandora_server: Use data timestamp when available (instead of

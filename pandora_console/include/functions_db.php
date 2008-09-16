@@ -192,12 +192,17 @@ function give_disabled_group ($id_group) {
 /**
  * Get all the agents in a group.
  *
- * @param id_group Group id
+ * @param id_group Group id or a comma delimited list of id_groups or an array
+ * of ID's
+ * 
  * @param disabled Add disabled agents to agents. Default: False.
  *
  * @return An array with all agents in the group.
  */
 function get_agents_in_group ($id_group, $disabled = false) {
+	if (is_array ($id_group)) //If id_group is an array, then 
+		$id_group = implode (",", $id_group);
+	
 	/* 'All' group must return all agents */
 	if ($id_group == 1) {
 		if ($disabled) {
@@ -206,9 +211,10 @@ function get_agents_in_group ($id_group, $disabled = false) {
 			return get_db_all_rows_field_filter ('tagente', 'disabled', 0, 'nombre');
 		}
 	} elseif ($disabled && $id_group != 1) {
-		return get_db_all_rows_field_filter ('tagente', 'id_grupo', (int) $id_group, 'nombre');
+		$sql = sprintf ("SELECT * FROM tagente WHERE id_grupo IN (%s) ORDER BY nombre",$id_group);
+		return get_db_all_rows_sql ($sql);
 	} else {
-		$sql = sprintf ("SELECT * FROM tagente WHERE id_grupo = %d AND disabled = 0 ORDER BY nombre",$id_group);
+		$sql = sprintf ("SELECT * FROM tagente WHERE id_grupo IN (%s) AND disabled = 0 ORDER BY nombre",$id_group);
 		return get_db_all_rows_sql ($sql);
 	}
 }
@@ -628,8 +634,9 @@ function get_alert_fires_in_period ($id_agent_module, $period, $date = 0) {
 function get_alerts_in_group ($id_group) {
 	$alerts = array ();
 	$agents = get_agents_in_group ($id_group);
-	if (!$agents)
-		return;
+	if (empty ($agents))
+		return $alerts;
+	
 	foreach ($agents as $agent) {
 		$agent_alerts = get_alerts_in_agent ($agent["id_agente"]);
 		$alerts = array_merge ($alerts, $agent_alerts);

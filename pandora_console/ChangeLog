@@ -1,3 +1,18 @@
+2008-09-16  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* operation/agentes/estado_alertas.php: Fixed a few bugs and made it
+	faster by switching to the general functions. Style update
+
+	* include/functions_db.php: Made get_agents_in_group() function accept
+	array or a comma delimited list. This will allow us to get agents in
+	multiple groups. Backwards compatible (single value passed). Set an
+	output check on empty (array or false) for get_alerts_in_group().
+
+	* include/functions.php: Made get_alert_days() output translatable.
+	Made the little columns with info on alerts give more text (it does
+	fit). Made show_alert_show_view() use the internal functions to
+	retrieve name and id's. Style updates, better HTML output (tags).
+
 2008-09-12  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* godmode/agentes/configurar_agente.php: Style updates for create agent

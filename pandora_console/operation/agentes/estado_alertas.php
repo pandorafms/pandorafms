@@ -201,7 +201,7 @@ if (isset($_GET["id_agente"])){
 				$table->data[$idx][4] = human_time_comparation ($data["last_fired"]);
 			}
 			$table->data[$idx][5] = $data["times_fired"];
-			$tbl_idx++; //increment the index counter
+			$idx++; //increment the index counter
 		} //end foreach (data)
 	} //end foreach (agent)
 	if (!empty ($result) && !empty ($table->data)) {

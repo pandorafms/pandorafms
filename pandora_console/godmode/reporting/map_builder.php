@@ -451,7 +451,7 @@ function agent_changed (event, id_agent, selected) {
 		id_agent = this.value;
 	$('#form_layout_data_editor #module').attr ('disabled', 1);
 	$('#form_layout_data_editor #module').empty ();
-	$('#form_layout_data_editor #module').append (new Option ("<?=__('Loading')?>...", 0));
+	$('#form_layout_data_editor #module').append (new Option ("<?php echo __('Loading'); ?>...", 0));
 	jQuery.post ('ajax.php', 
 		{page: "operation/agentes/ver_agente",
 		get_agent_modules_json: 1,
@@ -554,7 +554,7 @@ $(document).ready (function () {
 					$("#form_layout_data_editor #hidden-update_layout_data").attr ('value', 1);
 					$("#form_layout_data_editor #hidden-create_layout_data").attr ('value', 0);
 					$("#form_layout_data_editor #hidden-id_layout_data").attr ('value', id);
-					$("#form_layout_data_editor #submit-create_layout_data_button").attr ('value', "<?=__('Update')?>").removeClass ('wand').addClass ('upd');
+					$("#form_layout_data_editor #submit-create_layout_data_button").attr ('value', "<?php echo __('Update'); ?>").removeClass ('wand').addClass ('upd');
 					$("#form_layout_data_editor #text-label_color").attr ('value', data['label_color']);
 					$(".ColorPickerDivSample").css ('background-color', data['label_color']);
 					agent_changed (null, data['id_agent'], data['id_agente_modulo']);

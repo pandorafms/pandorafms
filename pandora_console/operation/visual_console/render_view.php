@@ -16,15 +16,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
-
 // Login check
-global $config;
-global $REMOTE_ADDR;
-
 require ('include/functions_visual_map.php');
 
-if (comprueba_login () != 0) {
+if (check_login () != 0) {
 	audit_db ($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to access graph builder");
 	include ("general/noaccess.php");
 	exit;
@@ -111,15 +106,15 @@ echo "</form>";
 <link rel="stylesheet" href="include/styles/countdown.css" type="text/css" />
 <script type="text/javascript" src="include/javascript/jquery.js"></script>
 <script type="text/javascript" src="include/javascript/jquery.countdown.js"></script>
-<script type="text/javascript" src="include/languages/countdown_<?=$config['language']?>.js"></script>
+<script type="text/javascript" src="include/languages/countdown_<?php echo $config['language']?>.js"></script>
 <script type="text/javascript" src="include/javascript/pandora_visual_console.js"></script>
 <script language="javascript" type="text/javascript">
 $(document).ready (function () {
 <?php if ($refr) : ?>
 	t = new Date();
-	t.setTime (t.getTime() + <?=$refr * 1000?>);
-	$.countdown.setDefaults($.countdown.regional["<?=$config['language']?>"]);
-	$("#countdown").countdown({until: t, format: 'MS', description: '<?=__('Until refresh')?>'});
+	t.setTime (t.getTime() + <?php echo $refr * 1000; ?>);
+	$.countdown.setDefaults($.countdown.regional["<?php echo $config['language']; ?>"]);
+	$("#countdown").countdown({until: t, format: 'MS', description: '<?php echo __('Until refresh'); ?>'});
 <?php endif; ?>
 	draw_lines (lines, 'layout_map');
 });

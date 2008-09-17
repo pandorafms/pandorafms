@@ -1,3 +1,12 @@
+2008-09-17  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* operation/visual_console/render_view.php: Removed short tags.
+	Used new functions for login check. Removed unnecessary global
+
+	* operation/agentes/estado_alertas.php: Fixed a minor bug
+
+	* godmode/reporting/map_builder.php: Removed short tags
+
 2008-09-16  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* operation/agentes/estado_alertas.php: Fixed a few bugs and made it

@@ -187,7 +187,7 @@ function install_step1() {
 			Configuration and database would be overwritten if you continued.</div>";
 		}
 		echo "<table width=100%>";
-		$writable = check_writable ( "include", "Checking if ./config is writable");
+		$writable = check_writable ( "include", "Checking if ./include is writable");
 		if (file_exists("include/config.php"))
 			$writable += check_writable ( "include/config.php", "Checking if include/config.php is writable");
 		echo "</table>";

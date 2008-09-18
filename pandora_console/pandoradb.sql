@@ -153,7 +153,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   `plugin_pass` varchar(250) default '',
   `plugin_parameter` text,
   `id_plugin` int(10) default '0',
-  `post_process` double(18,2) default NULL,
+  `post_process` double(18,13) default NULL,
   `prediction_module` bigint(14) default '0',
   `max_timeout` int(4) unsigned default '0',
   PRIMARY KEY  (`id_agente_modulo`),

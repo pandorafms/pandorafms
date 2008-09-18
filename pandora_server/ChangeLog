@@ -1,3 +1,7 @@
+2008-09-18  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/DB.pm: Added Export Server support.
+
 2008-09-16  Sancho Lerena <slerena@artica.es>
 
 	* util/plugin/ssh_pandoraplugin.sh: New remote SSH exec plugin.

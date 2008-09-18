@@ -808,7 +808,7 @@ function borrar_incidencia ($id_inc) {
 	if ($rows){
 		foreach ($rows as $row) {
 			// Unlink all attached files for this incident
-			unlink ($attachment_store."attachment/pand".$row["id_attachment"]."_".$row["filename"]);
+			unlink ($attachment_store."/pand".$row["id_attachment"]."_".$row["filename"]);
 		}
 		$sql = sprintf ("DELETE FROM `tattachment` WHERE `id_incidencia` = %d",$id_inc);
 		process_sql ($sql);

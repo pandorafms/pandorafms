@@ -689,6 +689,9 @@ CREATE TABLE IF NOT EXISTS `tserver_export` (
   `id_export_server` int(10) unsigned default NULL,
   `user` varchar(100) NOT NULL default '',
   `pass` varchar(100) NOT NULL default '',
+  `port` int(4) unsigned default '0',
+  `directory` varchar(100) NOT NULL default '',
+  `options` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -698,9 +701,11 @@ CREATE TABLE IF NOT EXISTS `tserver_export` (
 CREATE TABLE IF NOT EXISTS `tserver_export_data` (
   `id` int(20) unsigned NOT NULL auto_increment,
   `id_export_server` int(10) unsigned default NULL,
-  `id_agent_module` mediumint(8) unsigned NOT NULL default '0',
+  `agent_name` varchar(100) NOT NULL default '',
+  `module_name` varchar(100) NOT NULL default '',
+  `module_type` varchar(100) NOT NULL default '',
   `data` varchar(255) default NULL, 
-  `utimestamp` int(10) unsigned default '0',
+  `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

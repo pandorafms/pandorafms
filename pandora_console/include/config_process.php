@@ -26,7 +26,7 @@ if (!isset ($pandora_version))
 // This MUST be writtable by http server user, and should be in pandora root. 
 // By default, Pandora adds /attachment to this, so by default is the pandora console home dir
 
-$config["attachment_store"] = $config["homedir"]."attachment";
+$config["attachment_store"] = $config["homedir"]."/attachment";
 
 // Default font used for graphics (a Free TrueType font included with Pandora FMS)
 $config["fontpath"] = $config["homedir"]."/reporting/FreeSans.ttf";

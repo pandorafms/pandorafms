@@ -1,3 +1,13 @@
+2008-09-18  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/config_process.php,
+	  include/functions_db.php: Small fixes.
+	* godmode/servers/manage_export.php,
+	  godmode/servers/manage_export_form.php: Added to repository. Export
+	  target configuration.
+	* godmode/menu.php,
+	  pandoradb.sql: Added support for export target configuration.
+
 2008-09-18  Sancho Lerena <slerena@artica.es>
 
 	* install.php: Fixed a bad description string.

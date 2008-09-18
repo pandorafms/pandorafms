@@ -193,7 +193,13 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 
 		echo "<ul class='mn'><li><a href='index.php?sec=gservers&sec2=godmode/servers/plugin' class='mn'>".__('Manage plugins')."</a></li></ul></div>";
 	}
-
+	if ($sec == "gservers") {
+		if ($sec2 == "godmode/servers/manage_export"|| $sec2 == "godmode/servers/manage_export_form") {
+			echo "<div class='arrowgs'>";
+		} else
+			echo "<div class='arrowg'>";
+		echo "<ul class='mn'><li><a href='index.php?sec=gservers&sec2=godmode/servers/manage_export' class='mn'>".__('Export targets')."</a></li></ul></div>";
+	}
 	// AUDIT
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	if ($sec2 == "godmode/admin_access_logs") {

@@ -1120,6 +1120,9 @@ sub pandora_writedata (%$$$$$$$$$$){
 	# Obtenemos los identificadores
 	my $id_agente = dame_agente_id ($pa_config, $nombre_agente,$dbh);
 
+	# Export module data if necessary
+	export_module_data ($id_agente, $nombre_agente, $nombre_modulo, $tipo_modulo, $datos, $timestamp, $dbh);
+
 	# Check if exists module and agent_module reference in DB, 
 	# if not, and learn mode activated, insert module in DB
 	if ($id_agente eq "-1"){
@@ -1424,6 +1427,8 @@ sub pandora_updateserver (%$$$) {
         $pandorasuffix = "_Prediction";
     } elsif ($opmode == 6){
         $pandorasuffix = "_WMI";
+    } elsif ($opmode == 7){
+        $pandorasuffix = "_Export";
     } else {
         logger ($pa_config, "Error: received a unknown server type. Aborting startup.",0);
         print (" [ERROR] Received a unknown server type. Aborting startup \n\n");
@@ -1470,6 +1475,8 @@ sub pandora_updateserver (%$$$) {
 				$sql_update = "prediction_server = 1";
             } elsif ($opmode == 6) {
 				$sql_update = "wmi_server = 1";
+            } elsif ($opmode == 7) {
+				$sql_update = "export_server = 1";
             }
 
 			$sql_update = "UPDATE tserver SET $sql_update $sql_update_post , status = $status, keepalive = '$timestamp', master =  $pa_config->{'pandora_master'} WHERE id_server = $id_server";
@@ -2227,6 +2234,35 @@ sub pandora_event (%$$$$$$$$) {
     $dbh->do($query);	
 }
 
+##########################################################################
+## SUB export_module_data ()
+## ($id_agent, $module, $data, $timestamp, $dbh)
+## Process module data according to the module type.
+##########################################################################
+
+sub export_module_data {
+	my $id_agent = $_[0];
+	my $agent_name = $_[1];
+	my $module_name = $_[2];
+	my $module_type = $_[3];
+	my $data = $_[4];
+	my $timestamp = $_[5];
+	my $dbh = $_[6];
+
+	my $tagente_modulo = get_db_free_row ("SELECT id_export, id_agente_modulo
+	                                       FROM tagente_modulo WHERE id_agente = " . $id_agent .
+	                                       " AND nombre = '" . $module_name . "'", $dbh);
+ 	my $id_export = $tagente_modulo->{'id_export'};
+	my $id_agente_modulo = $tagente_modulo->{'id_agente_modulo'};
+	if ($id_export < 1) {
+		return;
+	}
+
+	$dbh->do("INSERT INTO tserver_export_data (`id_export_server`, `agent_name` ,
+	         `module_name`, `module_type`, `data`, `timestamp`)
+	         VALUES ($id_export, '$agent_name', '$module_name', '$module_type',
+	         '$data', '$timestamp')");
+}
 
 # End of function declaration
 # End of defined Code

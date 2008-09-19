@@ -1,3 +1,13 @@
+2008-09-19  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/agentes/module_manager_editor_network.php,
+	  godmode/agentes/module_manager_editor_wmi.php,
+	  godmode/agentes/module_manager_editor_plugin.php,
+	  godmode/agentes/module_manager_editor_prediction.php,
+	  godmode/agentes/module_manager_editor_data.php,
+	  godmode/servers/manage_export.php,
+	  godmode/servers/manage_export_form.php: Fixed some strings.
+
 2008-09-18  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/config_process.php,

@@ -127,7 +127,7 @@ echo '<td class="datos2">'.__('Post process');
 pandora_help("postprocess");
 echo '</td>';
 echo '<td class="datos2"><input type="text" name="form_post_process" size="5" value="'.$form_post_process.'"></td>';
-echo '<td class="datos2">'.__('Export server')."</td>";
+echo '<td class="datos2">'.__('Export target')."</td>";
 echo '<td class="datos2"><select name="form_id_export">';
 if ($form_id_export != 0){
     echo "<option value='".$form_id_export."'>".dame_nombre_servidorexportacion($form_id_export)."</option>";

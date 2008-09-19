@@ -33,41 +33,51 @@
  * @param bool $multiple Set the input to allow multiple selections (optional, single selection by default).
  * @param bool $sort Whether to sort the options or not (optional, unsorted by default).
  */
-function print_select ($fields, $name, $selected = '', $script = '', $nothing = 'select', $nothing_value = '0', $return = false, $multiple = false, $sort = true) {
+function print_select ($fields, $name, $selected = '', $script = '', $nothing = '', $nothing_value = '0', $return = false, $multiple = false, $sort = true, $class = '', $disabled = false) {
 	$output = "\n";
 	
-	$attributes = ($script) ? 'onchange="'. $script .'"' : '';
-	if ($multiple){
-		$attributes .= ' multiple="yes" size=10 ';
+	$attributes = "";
+	if (!empty ($script)) {
+		$attributes .= ' onchange="'.$script.'"';
+	}
+	if (!empty ($multiple)) {
+		$attributes .= ' multiple="yes" size="10"';
+	}
+	if (!empty ($class)) {
+		$attributes .= ' class="'.$class.'"';
+	}
+	if (!empty ($disabled)) {
+		$attributes .= ' disabled';
 	}
 
-	$output .= '<select id="'.$name.'" name="'.$name.'" '.$attributes.">\n";
+	$output .= '<select id="'.$name.'" name="'.$name.'"'.$attributes.'>';
 
 	if ($nothing != '') {
-		$output .= '   <option value="'.$nothing_value.'"';
+		$output .= '<option value="'.$nothing_value.'"';
 		if ($nothing_value == $selected) {
 			$output .= " selected";
 		}
-		$output .= '>'.lang_string ($nothing)."</option>\n";
+		$output .= '>'.$nothing."</option>"; //You should pass a translated string already
 	}
 
 	if (!empty ($fields)) {
-		if ($sort)
+		if ($sort !== false) {
 			asort ($fields);
+		}
 		foreach ($fields as $value => $label) {
-			$output .= '   <option value="'. $value .'"';
+			$output .= '<option value="'.$value.'"';
 			if ($value == $selected) {
 				$output .= ' selected';
 			}
 			if ($label === '') {
-				$output .= '>'. $value ."</option>\n";
+				$output .= '>'.$value."</option>";
 			} else {
-				$output .= '>'. $label ."</option>\n";
+				$output .= '>'.$label."</option>";
 			}
 		}
 	}
 
-	$output .= "</select>\n";
+	$output .= "</select>";
 
 	if ($return)
 		return $output;

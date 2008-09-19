@@ -151,7 +151,7 @@ while ($row=mysql_fetch_array($result)){
 }
 echo '</select>';
 
-echo '<td class="datos">'.__('Export server')."</td>";
+echo '<td class="datos">'.__('Export target')."</td>";
 echo '<td class="datos"><select name="form_id_export">';
 if ($form_id_export != 0){
     echo "<option value='".$form_id_export."'>".dame_nombre_servidorexportacion($form_id_export)."</option>";

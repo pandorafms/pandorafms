@@ -63,9 +63,9 @@ if ($update) {
 if ($delete) {
 	$sql = sprintf("DELETE FROM tserver_export WHERE id = '%d'", $delete);
 	if (process_sql ($sql) === false) {
-		echo '<h3 class="error">'.__('Error deleting export server').'</h3>';
+		echo '<h3 class="error">'.__('Error deleting export target').'</h3>';
 	} else {
-		echo '<h3 class="suc">'.__('Succesfully deleted export server').'</h3>';
+		echo '<h3 class="suc">'.__('Succesfully deleted export target').'</h3>';
 	}
 }
 
@@ -79,14 +79,14 @@ if ($create) {
 			$user, $password, $port, $directory, $options);
 	
 	if (process_sql ($sql) === false) {
-		echo '<h3 class="error">'.__('Error creating recon task').'</h3>';
+		echo '<h3 class="error">'.__('Error creating export target').'</h3>';
 	} else {
-		echo '<h3 class="suc">'.__('Successfully created recon task').'</h3>';
+		echo '<h3 class="suc">'.__('Successfully created export target').'</h3>';
 	}
 }
 
 // List export servers
-echo "<h2>".__('Pandora servers')." &gt; ".__('Manage export targets')."</h2>";
+echo "<h2>".__('Pandora servers')." &gt; ".__('export targets')."</h2>";
 
 $result = get_db_all_rows_in_table ("tserver_export");
 if (!$result) {

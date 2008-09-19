@@ -23,7 +23,7 @@ check_login ();
 
 if (! give_acl ($config['id_user'], 0, "PM")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
-		"Trying to access Agent Management");
+		"Trying to access Export Server Management");
 	require ("general/noaccess.php");
 	return;
 }
@@ -58,7 +58,7 @@ else {
 	$options = '';
 }
 
-echo '<h2>'.__('Pandora servers').' &gt; '.__('Manage export servers');
+echo '<h2>'.__('Pandora servers').' &gt; '.__('export targets');
 //pandora_help ("exportserver");
 echo '</h2>';
 

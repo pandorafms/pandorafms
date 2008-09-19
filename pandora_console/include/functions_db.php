@@ -492,7 +492,7 @@ function dame_id_tipo_modulo_agentemodulo ($id_agente_modulo) {
  * @return Real name of given user.
  */
 function dame_nombre_real ($id_user) {
-	return (string) get_db_value ('nombre_real', 'tusuario', 'id_usuario', (int) $id_user);
+	return (string) get_db_value ('nombre_real', 'tusuario', 'id_usuario', $id_user);
 }
 
 /**
@@ -987,6 +987,9 @@ function give_agentmodule_flag ($id_agent_module) {
 /** 
  * Prints a list of <options> HTML tags with the groups the user has
  * reading privileges.
+ *
+ * DEPRECATED: Use get_user_groups () in combination with print_select ()
+ * instead
  * 
  * @param id_user User id
  * @param show_all Flag to show all the groups or not. True by default.
@@ -1032,6 +1035,35 @@ function list_group2 ($id_user) {
 	return ($mis_grupos);
 }
 
+/**
+ * Get a list of all users in an array [username] => real name
+ * 
+ * @param order by (id_usuario, nombre_real or fecha_registro)
+ *
+ * @return An array of users
+ */
+function list_users ($order = "nombre_real") {
+	switch ($order) {
+		case "id_usuario":
+		case "fecha_registro":
+		case "nombre_real":
+			break;
+		default:
+			$order = "nombre_real";
+	}
+	
+	$output = array();
+	
+	$result = get_db_all_rows_sql ("SELECT id_usuario, nombre_real FROM tusuario ORDER BY ".$order);
+	if ($result !== false) {
+		foreach ($result as $row) {
+			$output[$row["id_usuario"]] = $row["nombre_real"];
+		}
+	}
+	
+	return $output;
+}
+ 
 /** 
  * Get all the groups a user has reading privileges.
  * 

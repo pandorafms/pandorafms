@@ -22,30 +22,23 @@ require("include/config.php");
 
 check_login ();
 
-if (! give_acl ($config['id_user'], 0, "IR")==1) {
+if (! give_acl ($config['id_user'], 0, "IR") == 1) {
 	require ("general/noaccess.php");
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access Incident section");
 	return;
 }
-echo "<h2>".__('Incident management')." &gt; ";
-echo __('Statistics')."</h2>";
+echo "<h2>".__('Incident management')." &gt; ".__('Statistics')."</h2>";
 
-echo "<table width = 90%>";
-echo "<tr><td valign='top'>";
-echo '<h3>'.__('Incidents by status').'</h3>';
-echo '<img src="reporting/fgraph.php?tipo=estado_incidente" border=0>';
-echo "<td valign='top'>";
-echo '<h3>'.__('Incidents by priority').'</h3>';
-echo '<img src="reporting/fgraph.php?tipo=prioridad_incidente" border=0>';
-echo "<tr><td>";
-echo '<h3>'.__('Incidents by group').'</h3>';
-echo '<img src="reporting/fgraph.php?tipo=group_incident" border=0>';
-echo "<td>";
-echo '<h3>'.__('Incidents by user').'</h3>';
-echo '<img src="reporting/fgraph.php?tipo=user_incident" border=0>';
-echo "<tr><td>";
-echo '<h3>'.__('Incidents by source').'</h3>';
-echo '<img src="reporting/fgraph.php?tipo=source_incident" border=0>';
-echo "<td>";
-echo "</table>";
+echo '<table width="90%">
+	<tr><td valign="top"><h3>'.__('Incidents by status').'</h3>
+	<img src="reporting/fgraph.php?tipo=estado_incidente" border="0"></td>
+	<td valign="top"><h3>'.__('Incidents by priority').'</h3>
+	<img src="reporting/fgraph.php?tipo=prioridad_incidente" border="0"></td></tr>
+	<tr><td><h3>'.__('Incidents by group').'</h3>
+	<img src="reporting/fgraph.php?tipo=group_incident" border="0"></td>
+	<td><h3>'.__('Incidents by user').'</h3>
+	<img src="reporting/fgraph.php?tipo=user_incident" border="0"></td></tr>
+	<tr><td><h3>'.__('Incidents by source').'</h3>
+	<img src="reporting/fgraph.php?tipo=source_incident" border="0"></td></tr>
+	</table>';
 ?>

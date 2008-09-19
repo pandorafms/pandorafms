@@ -1,3 +1,35 @@
+2008-09-19  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/styles/pandora.css: Removed some duplicate entries while
+	hunting down a specific tag
+
+	* include/functions_html.php: Added class to print_select () and
+	removed the default 'select' display in case of empty
+
+	* include/functions_db.php: Added comment to list_group so coders are
+	reminded to use the html functions instead. Fixed dame_nombre_real
+	because a user_id is not an int. Added function list_users similar to
+	list_group. Needed to fill input boxes with user selections.
+
+	* include/functions.php: Adhered pagination to correcter HTML style
+	removed single quotes and closed open tags
+
+	* operation/incidents/incident_statistics.php: Correcter HTML
+
+	* operation/incidents/incident_search.php: Style changes. Use new
+	functions for html objects
+
+	* operation/incidents/incident_note.php: Inherited into
+	incident_detail.php
+
+	* operation/incident_detail.php: Rewritten for style and security.
+	Uses all the functions for html and sql. Added a bunch of security
+	checks and made it look a little more consistent. Added virus scanner
+	integration with the clamav library for PHP4 or PHP5 (autodetect)
+
+	* operation/incident.php: Rewritten for style and security. Uses all
+	the functions for html and sql.
+
 2008-09-19  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/agentes/module_manager_editor_network.php,

@@ -324,16 +324,13 @@ function pagination ($count, $url, $offset) {
 
 	echo "<div>";
 	// Show GOTO FIRST button
-	echo '<a href="'.$url.'&offset=0">';
-	echo "<img src='images/control_start_blue.png' class='bot'>";
-	echo "</a>";
-	echo "&nbsp;";
+	echo '<a href="'.$url.'&offset=0"><img src="images/control_start_blue.png" class="bot" /></a>&nbsp;';
 	// Show PREVIOUS button
 	if ($index_page > 0){
 		$index_page_prev= ($index_page-(floor($block_limit/2)))*$config["block_size"];
 		if ($index_page_prev < 0)
 			$index_page_prev = 0;
-		echo '<a href="'.$url.'&offset='.$index_page_prev.'"><img src="images/control_rewind_blue.png" class="bot"></a>';
+		echo '<a href="'.$url.'&offset='.$index_page_prev.'"><img src="images/control_rewind_blue.png" class="bot" /></a>';
 	}
 	echo "&nbsp;";echo "&nbsp;";
 	// Draw blocks markers
@@ -364,8 +361,7 @@ function pagination ($count, $url, $offset) {
 		$prox_bloque = ($i+ceil($block_limit/2))*$config["block_size"];
 		if ($prox_bloque > $count)
 			$prox_bloque = ($count -1) - $config["block_size"];
-		echo '<a href="'.$url.'&offset='.$prox_bloque.'">';
-		echo "<img class='bot' src='images/control_fastforward_blue.png'></a> ";
+		echo '<a href="'.$url.'&offset='.$prox_bloque.'"><img class="bot" src="images/control_fastforward_blue.png" /></a>';
 		$i = $index_counter;
 	}
 	// if exists more registers than i can put in a page (defined by $block_size config parameter)
@@ -374,9 +370,7 @@ function pagination ($count, $url, $offset) {
 	// as painted in last block (last integer block).	
 	if (($count - $config["block_size"]) > 0){
 		$myoffset = floor(($count-1)/ $config["block_size"])* $config["block_size"];
-		echo '<a href="'.$url.'&offset='.$myoffset.'">';
-		echo "<img class='bot' src='images/control_end_blue.png'>";
-		echo "</a>";
+		echo '<a href="'.$url.'&offset='.$myoffset.'"><img class="bot" src="images/control_end_blue.png" /></a>';
 	}
 	// End div and layout
 	echo "</div>";

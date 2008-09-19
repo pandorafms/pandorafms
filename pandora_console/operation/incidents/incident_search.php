@@ -20,42 +20,32 @@
 // Load global vars
 require("include/config.php");
 
-if (comprueba_login() == 0) {
+check_login ();
 
-echo "<h2>".__('Incident management')." &gt; ";
-echo __('Please select a search criterion')."</h2>";
-echo "<div style='width:645'>";
-echo "<div style='float:right;'><img src='images/pulpo_lupa.png' class='bot' align='left'></div>";	
-?>
-<div style='float:left;'>
-<table width="500" cellpadding="4" cellspacing="4" class='databox'>
-<form name="busqueda" method="post" action="index.php?sec=incidencias&sec2=operation/incidents/incident">
-<tr>
-<td class="datos"><?php echo __('user') ?>
-<td class="datos">
-<select name="usuario" class="w120">
-	<option value=""><?php echo __('All') ?></option>
-	<?php 
-	$sql1='SELECT * FROM tusuario ORDER BY id_usuario';
-	$result=mysql_query($sql1);
-	while ($row=mysql_fetch_array($result)){
-		echo "<option>".$row["id_usuario"]."</option>";
-	}
-	?>
-</select>
-<tr><td class="datos2"><?php echo __('Free text for search (*)') ?>
-<td class="datos2"><input type="text" size="45" name="texto"></tr>
-<tr><td class="datos" colspan="2"><i><?php echo __('(*) The text search will look for all words entered as substring, in index title or description of each incident') ?></i></td></tr>
-</table>
-<table width="500">
-<tr><td align="right" colspan="3">
-<?php echo "<input name='uptbutton' type='submit' class='sub search' value='".__('Search')."'>"; ?>
+if (give_acl ($config['id_user'], 0, "IR") != 1) {
+	audit_db($config['id_user'],$REMOTE_ADDR, "ACL Violation","Trying to access incident search");
+	require ("general/noaccess.php");
+	exit;
+}
 
-</form>
-</table>
-</div>
-</div>
-<?php 
+echo "<h2>".__('Incident management')." &gt; ".__('Please select a search criterion')."</h2>";
+echo '<div style="width:650px;"><div style="float:right;"><img src="images/pulpo_lupa.png" class="bot" align="left"></div>
+	<div style="float:left;"><form name="busqueda" method="post" action="index.php?sec=incidencias&sec2=operation/incidents/incident">
+	<table width="500px" cellpadding="4" cellspacing="4" class="databox">
+	<tr><td class="datos">'.__('Created by:').'</td><td class="datos">';
 
-} // end page
+print_select (list_users (), "usuario", "All", '', __('All'), "All", false, false, false, "w120");
+
+echo '</td></tr><tr><td class="datos2">'.__('Search text').': (*)</td>
+	<td class="datos2">';
+	
+print_input_text ('texto', '', '', 45);	
+
+echo '</td></tr><tr>
+	<td class="datos" colspan="2"><i>'.__('(*) The text search will look for all words entered as a substring in the title and description of each incident').'
+	</i></td></tr><tr><td align="right" colspan="2">';
+
+print_submit_button (__('Search'), 'uptbutton', false, 'class="sub search"');
+
+echo '</td></tr></table></form></div></div>';
 ?>

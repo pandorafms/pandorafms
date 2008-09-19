@@ -1,5 +1,10 @@
 2008-09-19  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
+	* godmode/agentes/configurar_agente.php: Fixed small bug when renaming
+	agent. Changed a string to a duplicate with the same meaning.
+
+2008-09-19  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
 	* include/styles/pandora.css: Removed some duplicate entries while
 	hunting down a specific tag
 

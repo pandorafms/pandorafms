@@ -128,7 +128,7 @@ if (isset ($_POST["create_agent"])) { // Create a new and shiny agent
 		$agent_creation_error = __('No agent name specified');
 		$agent_created_ok = 0;
 	} elseif (dame_agente_id ($nombre_agente) > 0) {
-		$agent_creation_error = __('An agent with this name already exists');
+		$agent_creation_error = __('There is already an agent in the database with this name');
 		$agent_created_ok = 0;
 	} else {
 		$sql = sprintf ("INSERT INTO tagente 
@@ -483,7 +483,8 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	//Verify if there is another agent with the same name but different ID
 	if ($nombre_agente == "") { 
 		echo '<h3 class="error">'.__('No agent name specified').'</h3>';	
-	} elseif ($id_agente != dame_agente_id ($nombre_agente)) {
+	//If there is an agent with the same name, but a different ID
+	} elseif (dame_agente_id ($nombre_agente) > 0 && dame_agente_id ($nombre_agente) != $id_agente) {
 		echo '<h3 class="error">'.__('There is already an agent in the database with this name').'</h3>';
 	} else {
 		//If different IP is specified than previous, add the IP

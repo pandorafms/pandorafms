@@ -1041,7 +1041,7 @@ function grafico_incidente_prioridad () {
 			__('Medium'),
 			__('Serious'),
 			__('Very serious'),
-			__('Maintance'));
+			__('Maintenance'));
 	generic_pie_graph (320, 200, $data, $legend);
 }
 

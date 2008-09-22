@@ -380,17 +380,17 @@ if ($edit_sla_report_content) {
 		$table->data[0][1] = print_select ($types, 'type', -1, '', '--', -1, true);
 		$table->data[1][0] = __('Period');
 		$periods = array ();
-		$periods[1] = __('One hour');
+		$periods[1] = __('1 hour');
 		$periods[2] = '2 '.__('hours');
 		$periods[3] = '3 '.__('hours');
 		$periods[6] = '6 '.__('hours');
 		$periods[12] = '12 '.__('hours');
-		$periods[24] = __('One day');
-		$periods[48] = __('Two days');
-		$periods[180] = __('One week');
-		$periods[360] = __('Two weeks');
-		$periods[720] = __('One month');
-		$periods[4320] = __('Six months');
+		$periods[24] = __('1 day');
+		$periods[48] = __('2 days');
+		$periods[180] = __('1 week');
+		$periods[360] = __('2 weeks');
+		$periods[720] = __('1 month');
+		$periods[4320] = __('6 months');
 		$table->data[1][1] = print_select ($periods, 'period', 0, '', '--', 0, true);
 
 		$table->data[2][0] = __('Source agent');

@@ -1,3 +1,8 @@
+2008-09-22  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* include/languages/*: Updated translations from Launchpad. Thanks
+	  to all contributors.
+
 2008-09-19  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* godmode/agentes/configurar_agente.php: Fixed small bug when renaming

@@ -107,14 +107,23 @@ UNLOCK TABLES;
 
 LOCK TABLES `tlanguage` WRITE;
 INSERT INTO `tlanguage` VALUES ('en','English');
-INSERT INTO `tlanguage` VALUES ('es','Espa&ntilde;ol');
+INSERT INTO `tlanguage` VALUES ('es','Español');
 INSERT INTO `tlanguage` VALUES ('de','Deutch');
-INSERT INTO `tlanguage` VALUES ('fr','Fran&ccedil;ais');
-INSERT INTO `tlanguage` VALUES ('pt_br','Portugu&ecirc;s-Brasil'); 
-INSERT INTO `tlanguage` VALUES ('it','Italiano'); 
-INSERT INTO `tlanguage` VALUES ('gl','Galego'); 
-INSERT INTO `tlanguage` VALUES ('ca','Catal&aacute;'); 
-INSERT INTO `tlanguage` VALUES ('ast','Asturianu'); 
+INSERT INTO `tlanguage` VALUES ('fr','Français');
+INSERT INTO `tlanguage` VALUES ('pt_BR','Português-Brasil');
+INSERT INTO `tlanguage` VALUES ('it','Italiano');
+INSERT INTO `tlanguage` VALUES ('gl','Galego');
+INSERT INTO `tlanguage` VALUES ('ca','Catalá');
+INSERT INTO `tlanguage` VALUES ('eu','Euskara');
+INSERT INTO `tlanguage` VALUES ('cs','Česky');
+INSERT INTO `tlanguage` VALUES ('hi','हिन्दी');
+INSERT INTO `tlanguage` VALUES ('pl','Polski');
+INSERT INTO `tlanguage` VALUES ('hu','Magyar');
+INSERT INTO `tlanguage` VALUES ('ro','Română');
+INSERT INTO `tlanguage` VALUES ('ru','Русский');
+INSERT INTO `tlanguage` VALUES ('sv','Svenska');
+INSERT INTO `tlanguage` VALUES ('zh_CN','简化字');
+INSERT INTO `tlanguage` VALUES ('zh_TW','簡化字');
 
 UNLOCK TABLES;
 

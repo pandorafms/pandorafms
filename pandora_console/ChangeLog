@@ -1,3 +1,7 @@
+2008-09-22  Raul Mateos  <raulofpandora@gmail.com>
+
+	* pandora_console.spec: Changed URL. Added FMS to name. Updated version.
+
 2008-09-22  Manuel Arostegui <marostegui@artica.es>
 
 	* pandoradb_data.sql: Changed FTP module's TCP received string, set
@@ -305,7 +309,9 @@
 2008-09-02  Esteban Sanchez  <estebans@artica.es>
 
 	* extensions/update_manager.php: Style correction. Removed force
-	updating of the settings.
+	updating of 2008-09-01  Raul Mateos  <raulofpandora@gmail.com>
+
+	* operation/snmp/snmp_console/snmp_view.php: Added style to buttons.the settings.
 
 	* extensions/update_manager/load_updatemanager.php: Run the keygen if
 	the user is not the free one.

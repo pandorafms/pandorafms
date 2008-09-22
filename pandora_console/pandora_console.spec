@@ -1,8 +1,8 @@
 #
-# Pandora Console
+# Pandora FMS Console
 #
 %define name        PandoraFMS_Console
-%define version     1.3.1
+%define version     2.0.0
 %define release     1
 
 
@@ -48,14 +48,14 @@
 # Evaluate PHP version
 %define phpver_lt_430 %(out=`rpm -q --queryformat='%{VERSION}' php` 2>&1 >/dev/null || out=0 ; out=`echo $out | tr . : | sed s/://g` ; if [ $out -lt 430 ] ; then out=1 ; else out=0; fi ; echo $out)
 
-Summary:            Web Console for PandoraFMS
+Summary:            Web Console for Pandora FMS
 Name:               %{name}
 Version:            %{version}
 Release:            %{release}
 License:            GPL
 Vendor:             Sancho Lerena <sancho.lerena@artica.es>
 Source0:            %{name}-%{version}.tar.gz
-URL:                http://pandora.sf.net
+URL:                http://www.pandorafms.com
 Group:              Productivity/Networking/Web/Utilities
 Packager:           Manuel Arostegui <marostegui@artica.es>
 

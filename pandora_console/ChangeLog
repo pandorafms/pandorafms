@@ -3,6 +3,9 @@
 	* include/languages/*: Updated translations from Launchpad. Thanks
 	  to all contributors.
 
+	* pandora_console/pandoradb_data.sql: database modified to show the
+	  new languages.
+
 2008-09-19  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* godmode/agentes/configurar_agente.php: Fixed small bug when renaming

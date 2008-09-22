@@ -50,29 +50,29 @@ if (!isset($_GET["period"]) OR (!isset($_GET["id"]))) {
 $period = get_parameter ( "period", 3600);
 
 switch ($period) {
-	case 3600: 	$period_label = __('One hour');
+	case 3600: 	$period_label = __('1 hour');
 			break;
-	case 7200: 	$period_label = __('Two hours');
+	case 7200: 	$period_label = __('2 hours');
 			break;
-	case 21600: 	$period_label = __('Six hours');
+	case 21600: 	$period_label = __('6 hours');
 			break;
 	case 43200: 	$period_label = __('12 hours');
 			break;
-	case 86400: 	$period_label = __('One day');
+	case 86400: 	$period_label = __('1 day');
 			break;
-	case 172800: 	$period_label = __('Two days');
+	case 172800: 	$period_label = __('2 days');
 			break;
-	case 432000: 	$period_label = __('Five days');
+	case 432000: 	$period_label = __('5 days');
 			break;
-	case 604800: 	$period_label = __('One week');
+	case 604800: 	$period_label = __('1 week');
 			break;
 	case 1296000: 	$period_label = __('15 days');
 			break;
-	case 2592000: 	$period_label = __('One month');
+	case 2592000: 	$period_label = __('1 month');
 			break;
-	case 5184000: 	$period_label = __('Two months');
+	case 5184000: 	$period_label = __('2 months');
 			break;
-	case 15552000: 	$period_label = __('Six months');
+	case 15552000: 	$period_label = __('6 months');
 			break;
 	default: 	$period_label = human_time_description_raw ($period);
 }
@@ -215,18 +215,18 @@ if ($start_date != $current){
 			echo "<td>";
 			echo "<select name='period'>";
 			echo "<option value=$period>".$period_label;
-			echo "<option value=3600>".__('One hour');
-			echo "<option value=7200>".__('Two hours');
-			echo "<option value=21600>".__('Six hours');
+			echo "<option value=3600>".__('1 hour');
+			echo "<option value=7200>".__('2 hours');
+			echo "<option value=21600>".__('6 hours');
 			echo "<option value=43200>".__('12 hours');
-			echo "<option value=86400>".__('One day');
-			echo "<option value=172800>".__('Two days');
-			echo "<option value=432000>".__('Five days');
-			echo "<option value=604800>".__('One week');
+			echo "<option value=86400>".__('1 day');
+			echo "<option value=172800>".__('2 days');
+			echo "<option value=432000>".__('5 days');
+			echo "<option value=604800>".__('1 week');
 			echo "<option value=1296000>".__('15 days');
-			echo "<option value=2592000>".__('One month');
-			echo "<option value=5184000>".__('Two months');
-			echo "<option value=15552000>".__('Six months');
+			echo "<option value=2592000>".__('1 month');
+			echo "<option value=5184000>".__('2 months');
+			echo "<option value=15552000>".__('6 months');
 			echo "</select>";
 			
 			echo "<tr><td>";

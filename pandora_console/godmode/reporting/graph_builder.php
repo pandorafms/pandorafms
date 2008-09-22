@@ -330,49 +330,49 @@ echo "<input type='text' name='height' value='$height' size=6>";
 
 switch ($period) {
 	case 3600:
-		$period_label = __('Hour');
+		$period_label = __('1 hour');
 		break;
 	case 7200:
-		$period_label = __('2 Hours');
+		$period_label = __('2 hours');
 		break;
 	case 10800:
-		$period_label = __('3 Hours');
+		$period_label = __('3 hours');
 		break;
 	case 21600:
-		$period_label = __('6 Hours');
+		$period_label = __('6 hours');
 		break;
 	case 43200:
-		$period_label = __('12 Hours');
+		$period_label = __('12 hours');
 		break;
 	case 86400:
-		$period_label = __('Day');
+		$period_label = __('1 day');
 		break;
 	case 172800:
-		$period_label = __('Two days');
+		$period_label = __('2 days');
 		break;
 	case 345600:
-		$period_label = __('Four days');
+		$period_label = __('4 days');
 		break;
 	case 604800:
-		$period_label = __('Last Week');
+		$period_label = __('Last week');
 		break;
 	case 1296000:
-		$period_label = __('15 Days');
+		$period_label = __('15 days');
 		break;
 	case 2592000:
-		$period_label = __('Last Month');
+		$period_label = __('Last month');
 		break;
 	case 5184000:
-		$period_label = __('Two Month');
+		$period_label = __('2 months');
 		break;
 	case 15552000:
-		$period_label = __('Six Months');
+		$period_label = __('6 months');
 		break;
 	case 31104000:
-		$period_label = __('One year');
+		$period_label = __('1 year');
 		break;
 	default:
-		$period_label = __('Day');
+		$period_label = __('1 day');
 }
 
 
@@ -392,12 +392,12 @@ echo "<option value=10800>".__('3 hours')."</option>";
 echo "<option value=21600>".__('6 hours')."</option>";
 echo "<option value=43200>".__('12 hours')."</option>";
 echo "<option value=86400>".__('Last day')."</option>";
-echo "<option value=172800>".__('Two days')."</option>";
+echo "<option value=172800>".__('2 days')."</option>";
 echo "<option value=604800>".__('Last week')."</option>";
 echo "<option value=1296000>".__('15 days')."</option>";
 echo "<option value=2592000>".__('Last month')."</option>";
-echo "<option value=5184000>".__('Two months')."</option>";
-echo "<option value=15552000>".__('Six months')."</option>";
+echo "<option value=5184000>".__('2 months')."</option>";
+echo "<option value=15552000>".__('6 months')."</option>";
 echo "</select>";
 
 echo "<td class='datos'>";

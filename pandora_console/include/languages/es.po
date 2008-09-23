@@ -2718,15 +2718,15 @@ msgstr "Puerto"
 
 #: ../../godmode/agentes/alert_manager.php:43
 msgid "Create a simple alert"
-msgstr "Crear alerta"
+msgstr "Crear alerta simple"
 
 #: ../../godmode/agentes/alert_manager.php:44
 msgid "Create a new combined alert"
-msgstr "Crear incidente"
+msgstr "Crear alerta compuesta"
 
 #: ../../godmode/agentes/alert_manager.php:59
 msgid "Simple alerts"
-msgstr "Editar alertas"
+msgstr "Alertas simples"
 
 #: ../../godmode/agentes/alert_manager.php:108
 #: ../../include/functions_db.php:2023
@@ -2790,7 +2790,7 @@ msgstr "Alertas asignadas"
 
 #: ../../godmode/agentes/alert_manager.php:141
 msgid "Combined"
-msgstr "Combinada"
+msgstr "Compuesta"
 
 #: ../../godmode/agentes/alert_manager.php:184
 #: ../../godmode/agentes/alert_manager_editor.php:364

@@ -23,9 +23,9 @@ unset ($prev_level);
 
 define ('XMLRPC_DEBUG', 0);
 
-function um_xml_rpc_client_call ($server_host, $server_path, $server_port, $function, $parameters) {
+function um_xml_rpc_client_call ($server_host, $server_path, $server_port, $proxy, $proxy_port, $proxy_user, $proxy_pass, $function, $parameters) {
 	$msg = new XML_RPC_Message ($function, $parameters);
-	$client = new XML_RPC_Client ($server_path, $server_host, $server_port);
+	$client = new XML_RPC_Client ($server_path, $server_host, $server_port, $proxy, $proxy_port, $proxy_user, $proxy_pass);
 	if (defined ('XMLRPC_DEBUG'))
 		$client->setDebug (XMLRPC_DEBUG);
 	$result = $client->send ($msg);
@@ -91,6 +91,10 @@ function um_client_check_latest_update ($settings, $user_key) {
 	$result = um_xml_rpc_client_call ($settings->update_server_host,
 			$settings->update_server_path,
 			$settings->update_server_port,
+			$settings->proxy,
+			$settings->proxy_port,
+			$settings->proxy_user,
+			$settings->proxy_pass,
 			'get_latest_package', $params);
 	
 	if ($result === false) {
@@ -115,6 +119,10 @@ function um_client_get_package ($settings, $user_key) {
 	$result = um_xml_rpc_client_call ($settings->update_server_host,
 			$settings->update_server_path,
 			$settings->update_server_port,
+			$settings->proxy,
+			$settings->proxy_port,
+			$settings->proxy_user,
+			$settings->proxy_pass,
 			'get_next_package', $params);
 	
 	if ($result === false)

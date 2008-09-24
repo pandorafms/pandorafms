@@ -1302,7 +1302,7 @@ $sql_cache = array ('saved' => 0);
  */  
 function get_db_value ($field, $table, $field_search = 1, $condition = 1) {
 	if (is_int ($condition)) {
-		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = %d LIMIT 1",
+		$sql = sprintf ("SELECT %s FROM `%s` WHERE %s = %d LIMIT 1",
 				$field, $table, $field_search, $condition);
 	} else if (is_float ($condition) || is_double ($condition)) {
 		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = %f LIMIT 1",
@@ -1821,7 +1821,7 @@ function lang_string ($string) {
  */
 function check_server_status () {
 	$sql = "SELECT COUNT(id_server) FROM tserver WHERE status = 1 AND keepalive > NOW() - INTERVAL 15 MINUTE";
-	$status = get_db_sql ($sql);
+	$status = (int) get_db_sql ($sql); //Cast as int will assure a number value
 	// Set servers to down
 	if ($status == 0){ 
 		process_sql ("UPDATE tserver SET status = 0");

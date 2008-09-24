@@ -1,3 +1,12 @@
+2008-09-24  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/functions_db.php: Fixed a small bug in get_db_value and fixed
+	check_server_status () to return an int at all times
+
+	* general/header.php: Removed my old table code. Fixed bug #2119102.
+
+	* ChangeLog: Made Jorge's entry use tab instead of spaces
+
 2008-09-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* extensions/update_manager/sql/update_manager.sql,
@@ -7,7 +16,7 @@
 
 2008-09-23  Jorge Gonzalez  <jorgegonz@artica.es>
 
-        * include/languages/es.po: Updated Spanish translation, fixes a bug.
+	* include/languages/es.po: Updated Spanish translation, fixes a bug.
 
 2008-09-22  Raul Mateos  <raulofpandora@gmail.com>
 

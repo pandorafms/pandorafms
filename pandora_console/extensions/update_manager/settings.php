@@ -64,6 +64,18 @@ $table->data[4][1] = print_input_text ('keys[updating_binary_path]', $settings->
 $table->data[5][0] = '<strong>'.__('Keygen path').'</strong>';
 $table->data[5][1] = print_input_text ('keys[keygen_path]', $settings->keygen_path, '', 40, 255, true);
 
+$table->data[6][0] = '<strong>'.__('Proxy server').'</strong>';
+$table->data[6][1] = print_input_text ('keys[proxy]', $settings->proxy, '', 40, 255, true);
+
+$table->data[7][0] = '<strong>'.__('Proxy port').'</strong>';
+$table->data[7][1] = print_input_text ('keys[proxy_port]', $settings->proxy_port, '', 40, 255, true);
+
+$table->data[8][0] = '<strong>'.__('Proxy user').'</strong>';
+$table->data[8][1] = print_input_text ('keys[proxy_user]', $settings->proxy_user, '', 40, 255, true);
+
+$table->data[9][0] = '<strong>'.__('Proxy password').'</strong>';
+$table->data[9][1] = print_input_text ('keys[proxy_pass]', $settings->proxy_pass, '', 40, 255, true);
+
 print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';
 print_input_hidden ('update_settings', 1);

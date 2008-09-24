@@ -1,3 +1,10 @@
+2008-09-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* extensions/update_manager/sql/update_manager.sql,
+	  extensions/update_manager/lib/libupdate_manager_client.php,
+	  extensions/update_manager/settings.php: Added proxy support to
+	  update manager.
+
 2008-09-23  Jorge Gonzalez  <jorgegonz@artica.es>
 
         * include/languages/es.po: Updated Spanish translation, fixes a bug.

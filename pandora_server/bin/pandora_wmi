@@ -347,6 +347,12 @@ sub exec_wmi_module {
 	$wmi_query =~ s/\"/\'/g;
 
     my $wmi_command = "$wmi_client -U \"". $agent_module->{'plugin_user'} ."\"%\"". $agent_module->{'plugin_pass'} . "\"";
+    
+    # Custom namespace
+    if ($agent_module->{'tcp_send'} ne '') {
+		$agent_module->{'tcp_send'} =~ s/\"/\'/g;
+    	$wmi_command .= " --namespace=\"" . $agent_module->{'tcp_send'} . "\"";
+    }
     $wmi_command .= " //". $agent_module->{'ip_target'};
     $wmi_command .= " \"". $wmi_query . "\"";
     logger ($pa_config, "Executing AM # $id_am WMI command '$wmi_command'", 9);

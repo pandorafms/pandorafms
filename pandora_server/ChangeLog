@@ -1,3 +1,7 @@
+2008-09-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* bin/pandora_wmi: Added WMI namespace support.
+
 2008-09-18  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DB.pm: Added Export Server support.

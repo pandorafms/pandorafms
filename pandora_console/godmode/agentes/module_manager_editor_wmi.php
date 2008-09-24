@@ -131,26 +131,30 @@ echo '<td class="datos2">'.__('Disabled')."</td>";
 echo '<td class="datos2"><input type="checkbox" name="form_disabled" value="1" "'.$disabled_status.'"></td>';
 echo '</tr>';
 
-// Ip target, WMI query
+// Ip target / Namespace
 echo '<tr>';
 echo '<td class="datos">'.__('Target IP')."</td>";
 echo '<td class="datos"><input type="text" name="form_ip_target" size="20" value="'.$form_ip_target.'"></td>';
-echo '<td class="datos">'.__('WMI Query');
+echo '<td class="datos">'.__('Namespace')."</td>";
+echo '<td class="datos"><input type="text" name="form_tcp_send" size="10" value="'.$form_tcp_send.'"></td>'; 
+echo '</tr>';
+
+echo '<tr>';
+echo '<td class="datos2">'.__('WMI Query');
 pandora_help("wmiquery");
-echo "</td>";
-echo '<td class="datos"><input type="text" name="form_snmp_oid" size="25" value="'.$form_snmp_oid.'"></td>';
+echo '<td class="datos2" colspan="3"><input type="text" name="form_snmp_oid" size="70" value="'.$form_snmp_oid.'"></td>';
 echo '</tr>';
 
 // Specific string and field number
 echo '<tr>';
-echo '<td class="datos2">'.__('Key string');
+echo '<td class="datos">'.__('Key string');
 pandora_help("wmikey");
 echo "</td>";
-echo '<td class="datos2"><input type="text" name="form_snmp_community" size="20" value="'.$form_snmp_community.'"></td>';
-echo '<td class="datos2">'.__('Field number');
+echo '<td class="datos"><input type="text" name="form_snmp_community" size="20" value="'.$form_snmp_community.'"></td>';
+echo '<td class="datos">'.__('Field number');
 pandora_help("wmifield");
 echo "</td>";
-echo '<td class="datos2"><input type="text" name="form_tcp_port" size="3" value="'.$form_tcp_port.'"></td>';
+echo '<td class="datos"><input type="text" name="form_tcp_port" size="3" value="'.$form_tcp_port.'"></td>';
 echo '</tr>';
 
 // username / password

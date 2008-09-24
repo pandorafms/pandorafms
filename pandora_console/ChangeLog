@@ -1,3 +1,8 @@
+2008-09-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/agentes/module_manager_editor_wmi.php: Added WMI namespace
+	  support.
+
 2008-09-24  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/functions_db.php: Fixed a small bug in get_db_value and fixed

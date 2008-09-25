@@ -1,3 +1,8 @@
+2008-09-25  Sancho Lerena <slerena@artica.es>
+
+	* events.php: Forced a shorten agent name to avoid layout problems.
+	Added a new combo to define a limit for pagination in event view.
+
 2008-09-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/agentes/module_manager_editor_wmi.php: Added WMI namespace

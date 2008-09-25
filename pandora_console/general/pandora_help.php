@@ -26,6 +26,11 @@ echo '<body>';
 $id = get_parameter ('id');
 $help_file = $config["homedir"]."/include/help/".$config["language"]."/help_".$id.".php";
 
+// Default to english
+if (! file_exists ($help_file)) {
+	$help_file = $config["homedir"]."/include/help/en/help_".$id.".php";
+}
+
 if (! $id || ! file_exists ($help_file)) {
 	echo "<div class='databox' id='login'><div id='login_f' class='databox'>";
 	echo '<h1 id="log_f" style="margin-top: 0px;" class="error">';

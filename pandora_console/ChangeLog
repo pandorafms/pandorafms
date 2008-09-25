@@ -1,5 +1,9 @@
 2008-09-25  Ramon Novoa  <rnovoa@artica.es>
 
+	* general/pandora_help.php: Fixed bug #2119100.
+
+2008-09-25  Ramon Novoa  <rnovoa@artica.es>
+
 	* include/help/en/help_duplicateconfig.php,
 	  include/help/en/help_wminamespace.php: Added to repository. Help
 	  files.

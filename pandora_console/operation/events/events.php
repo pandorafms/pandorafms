@@ -172,6 +172,8 @@ $severity = (int) get_parameter ("severity", -1); // -1 all
 $status = (int) get_parameter ("status", 0); // -1 all, 0 only red, 1 only green
 $id_agent = (int) get_parameter ("id_agent", -1);
 $id_event = (int) get_parameter ("id_event", -1);
+$pagination = (int) get_parameter ("pagination", $config["block_size"]);
+$config["block_size"] = $pagination;
 
 $sql_post = "";
 if ($ev_group > 1)
@@ -264,14 +266,30 @@ if ($result === false)
 $agents = array(-1 => "All");
 
 foreach ($result as $id_row) {
-	$agents[$id_row[0]] = dame_nombre_agente ($id_row[0]);
+	$name_for_combo = substr(dame_nombre_agente ($id_row[0]),0,20);
+	if ($name_for_combo != "")
+		$agents[$id_row[0]] = $name_for_combo;
 }
 
 print_select ($agents, 'id_agent', $id_agent, 'javascript:this.form.submit();', '', '');
 echo "</td></tr>";
 
+// User selectable block size
+echo '<tr><td>';
+echo __('Block size for pagination');
+echo '</td>';
+$lpagination[25]=25;
+$lpagination[50]=50;
+$lpagination[100]=100;
+$lpagination[200]=200;
+$lpagination[500]=500;
+
+echo "<td>";
+print_select ($lpagination, "pagination", $pagination, '', 'Default', $config["block_size"]);
+echo "</td>";
+
 //The buttons
-echo '<tr><td colspan="2"><!-- Empty cell --></td><td colspan="2">';
+echo '<td colspan="2">';
 print_submit_button (__('Update'), '', false, $attributes = 'class="sub upd"');
 
 // CSV

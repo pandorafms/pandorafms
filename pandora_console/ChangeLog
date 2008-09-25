@@ -1,3 +1,12 @@
+2008-09-25  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/help/en/help_duplicateconfig.php,
+	  include/help/en/help_wminamespace.php: Added to repository. Help
+	  files.
+
+	* godmode/agentes/module_manager_editor_wmi.php,
+	  godmode/agentes/manage_config_remote.php: Added help.
+
 2008-09-25  Sancho Lerena <slerena@artica.es>
 
 	* events.php: Forced a shorten agent name to avoid layout problems.

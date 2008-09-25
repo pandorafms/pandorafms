@@ -135,7 +135,9 @@ echo '</tr>';
 echo '<tr>';
 echo '<td class="datos">'.__('Target IP')."</td>";
 echo '<td class="datos"><input type="text" name="form_ip_target" size="20" value="'.$form_ip_target.'"></td>';
-echo '<td class="datos">'.__('Namespace')."</td>";
+echo '<td class="datos">'.__('Namespace');
+pandora_help("wminamespace");
+echo "</td>";
 echo '<td class="datos"><input type="text" name="form_tcp_send" size="10" value="'.$form_tcp_send.'"></td>'; 
 echo '</tr>';
 

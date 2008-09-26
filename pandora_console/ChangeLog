@@ -1,3 +1,13 @@
+2008-09-25  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* include/help/es: created directory for Spanish help files.
+
+	* include/help/es/help_map_builder.php,
+	  include/help/es/help_alert_recovery.php,
+	  include/help/es/help_network_component.php,
+	  include/help/es/help_module_definition.php: Added some Spanish
+	  help files.
+
 2008-09-25  Ramon Novoa  <rnovoa@artica.es>
 
 	* general/pandora_help.php: Fixed bug #2119100.

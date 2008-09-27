@@ -1,7 +1,7 @@
-Pandora FMS : The Free Monitoring System v1.3.1
-===============================================
+Pandora FMS: The Flexible Monitoring System v2.0
+=================================================
 
-http://pandora.sourceforge.net
+http://www.pandorafms.org
 
 How to install
 --------------
@@ -55,4 +55,3 @@ License
 
 The project is distributed under the GPL License v2 or later.
 Copyright (C) 2004-2008 Pandora FMS development team
-

@@ -1,5 +1,5 @@
 # Pandora FMS 2.0 Server Package Installer (c) ArticaST 2008
-# Please see http://pandora.sourceforge.net
+# Please see http://www.pandorafms.com
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
@@ -123,7 +123,7 @@ help () {
 # Script banner at start
 echo " "
 echo "Pandora FMS 2.0 Server Package Installer (c) ArticaST 2008"
-echo "This program is licensed under GPL2 Terms. http://pandora.sourceforge.net"
+echo "This program is licensed under GPL2 Terms. http://www.pandorafms.com"
 echo " "
 
 case "$MODE" in

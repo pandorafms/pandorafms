@@ -163,7 +163,7 @@ echo "To start Pandora Server: /etc/init.d/pandora_server start"
 echo "To start Pandora Network Server: /etc/init.d/pandora_network start"
 echo "To start Pandora Recon Server: /etc/init.d/pandora_recon start"
 echo "The manual can be reached at: man pandora or man pandora_server"
-echo "Pandora Documentation is in: http://pandora.sourceforge.net/en/index.php?sec=docs"
+echo "Pandora Documentation is in: http://openideas.info/wiki/index.php?title=Pandora_2.0:Documentation"
 %files
 %defattr(700,pandora,pandora)
 /usr/bin/pandora_server

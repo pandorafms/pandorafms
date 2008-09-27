@@ -1,3 +1,10 @@
+2008-09-08  Raul Mateos <raulofpandora@gmail.com>
+
+	* README: Updated version and URL.
+	
+	* lib/PandoraFMS/Config.pm, pandora_package_installer, pandora_server_installer, 
+	pandora_server.spec: Updated URL.
+	
 2008-09-24  Ramon Novoa  <rnovoa@artica.es>
 
 	* bin/pandora_wmi: Added WMI namespace support.

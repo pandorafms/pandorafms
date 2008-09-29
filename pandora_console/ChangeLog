@@ -1,3 +1,12 @@
+2008-09-29  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* godmode/agentes/module_manager_editor_data.php,
+	godmode/agentes/module_manager_editor.php,
+	godmode/agentes/configurar_agente.php: Style updates. These files now
+	use the database functions and can be used as a template for the
+	others. Resolved bug #2124706 where a blank page would come up in
+	case the module type would be wrong. Now displays an error message
+
 2008-09-25  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/help/es: created directory for Spanish help files.

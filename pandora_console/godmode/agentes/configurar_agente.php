@@ -22,15 +22,18 @@ require("include/config.php");
 
 check_login ();
 
-if (! give_acl($config["id_user"], 0, "AW")) {
+//See if id_agente is set (either POST or GET, otherwise -1
+$id_agente = get_parameter ("id_agente", -1);
+
+$group = dame_id_grupo ($id_agente); //Will return 0 or an int
+
+if (! give_acl($config["id_user"], $group, "AW")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
 		"Trying to access agent manager");
 	require ("general/noaccess.php");
 	exit;
-};
+}
 
-//See if id_agente is set (either POST or GET, otherwise -1
-$id_agente = get_parameter ("id_agente", -1);
 
 // Get passed variables
 $tab = get_parameter_get ("tab","main");
@@ -242,46 +245,56 @@ if (isset ($_POST["create_agent"])) {
 // Fix / Normalize module data
 // ===========================
 if (isset($_GET["fix_module"])){ 
-	$id_module = $_GET["fix_module"];
-	$id_agent = $_GET["id_agente"];
+	$id_module = get_parameter_get ("fix_module",0);
 	// get info about this module
-	$sql1 = "SELECT AVG(datos) FROM tagente_datos WHERE id_agente_modulo = $id_module AND id_agente = $id_agent";
-	$result=mysql_query($sql1);
-	if ($row=mysql_fetch_array($result)){
-		$media = $row[0];
-		$media = $media * 1.3;
-		$sql1 = "DELETE FROM tagente_datos WHERE datos > $media AND id_agente_modulo = $id_module AND id_agente = $id_agent";
-		$result=mysql_query($sql1);
-		echo "<h3 class='suc'>".__('Deleted data above')." $media</h3>";
+	$media = get_agent_module_value_average ($id_module, 30758400); //Get average over the year
+	$media *= 1.3;
+	$error = "";
+	//If the value of media is 0 or something went wrong, don't delete
+	if (!empty ($media)) {
+		$sql = sprintf ("DELETE FROM tagente_datos WHERE datos > %f AND id_agente_modulo = %d", $media, $id_module);
+		$result = process_sql ($sql);
+	} else {
+		$result = false;
+		$error = " - ".__('No data to normalize');
+	}
+	
+	if ($result !== false) {
+		echo '<h3 class="suc">'.__('Deleted data above').' '.$media.'</h3>';
+	} else {
+		echo '<h3 class="error">'.__('Error normalizing module').$error.'</h3>';
 	}
 }
-
 
 // Delete Alert
 // =============
 if (isset($_GET["delete_alert"])){ // if modified some parameter
-	$id_borrar_modulo = $_GET["delete_alert"];
+	$id_borrar_modulo = get_parameter_get ("delete_alert",0);
 	// get info about agent
-	$sql1='DELETE FROM talerta_agente_modulo WHERE id_aam = '.$id_borrar_modulo;
-	$result=mysql_query($sql1);
-		if (! $result)
-			echo "<h3 class='error'>".__('There was a problem deleting alert')."</h3>";
-		else
-			echo "<h3 class='suc'>".__('Alert successfully deleted')."</h3>";
+	$sql = sprintf ("DELETE FROM talerta_agente_modulo WHERE id_aam = %d", $id_borrar_modulo);
+	$result = process_sql ($sql);
+	
+	if ($result === false) {
+		echo '<h3 class="error">'.__('There was a problem deleting the alert').'</h3>';
+	} else {
+		echo '<h3 class="suc">'.__('Alert successfully deleted').'</h3>';
+	}
 
 }
 
 // Delete Alert component (from a combined)
 // ==========================================
-if (isset($_GET["delete_alert_comp"])){ // if modified some parameter
-	$id_borrar_modulo = $_GET["delete_alert_comp"];
+if (isset($_GET["delete_alert_comp"])) { // if modified some parameter
+	$id_borrar_modulo = get_parameter_get ("delete_alert_comp",0);
 	// get info about agent
-	$sql1='DELETE FROM tcompound_alert WHERE id_aam = '.$id_borrar_modulo;
-	$result=mysql_query($sql1);
-	if (! $result)
-		echo "<h3 class='error'>".__('There was a problem deleting alert')."</h3>";
-	else
-		echo "<h3 class='suc'>".__('Alert successfully deleted')."</h3>";
+	$sql = sprintf ("DELETE FROM tcompound_alert WHERE id_aam = %d", $id_borrar_modulo);
+	$result = process_sql ($sql);
+	
+	if ($result === false) {
+		echo '<h3 class="error">'.__('There was a problem deleting alert').'</h3>';
+	} else {
+		echo '<h3 class="suc">'.__('Alert successfully deleted').'</h3>';
+	}
 }
 
 // Create alert
@@ -316,48 +329,52 @@ if (isset($_POST["insert_alert"])){ // if created alert
 	$campo2_rec = get_parameter ("campo_2_rec","");
 	$campo3_rec = get_parameter ("campo_3_rec","");
 
-	if ($combined == 1)
+	if ($combined == 1) {
 		$alert_id_agent = $id_agente;
-	else
+	} else {
 		$alert_id_agent = 0;
+	}
 	if ($time_threshold == -1) {
 		$time_threshold = $other;
 	}
-	$sql_insert="INSERT INTO talerta_agente_modulo
-			(id_agente_modulo,id_alerta,al_campo1,al_campo2,al_campo3,descripcion,dis_max,dis_min,time_threshold,max_alerts, min_alerts, alert_text, disable, time_from, time_to, id_agent, monday, tuesday, wednesday, thursday, friday, saturday, sunday, recovery_notify, priority, al_f2_recovery, al_f3_recovery) VALUES
-			('$id_agente_modulo',
-			'$tipo_alerta',
-			'$campo_1',
-			'$campo_2',
-			'$campo_3',
-			'$descripcion',
-			'$maximo',
-			'$minimo',
-			'$time_threshold',
-			'$max_alerts',
-			'$min_alerts',
-			'$alert_text',
-			'$disable_alert',
-			'$time_from',
-			'$time_to',
-			$alert_id_agent,
-			$alert_d1,
-			$alert_d2,
-			$alert_d3,
-			$alert_d4,
-			$alert_d5,
-			$alert_d6,
-			$alert_d7,
-			$alert_recovery,
-			$alert_priority,
-			'$campo2_rec',
-			'$campo2_rec' )";
-	$result=mysql_query($sql_insert);	
-	if (! $result) {
-		echo "<h3 class='error'>".__('There was a problem creating alert')."</h3>";
+	
+	$sql = sprintf ("INSERT INTO talerta_agente_modulo
+			(id_agente_modulo,
+			id_alerta,
+			al_campo1,
+			al_campo2,
+			al_campo3,
+			descripcion,
+			dis_max,
+			dis_min,
+			time_threshold,
+			max_alerts,
+			min_alerts,
+			alert_text,
+			disable,
+			time_from,
+			time_to,
+			id_agent,
+			monday,
+			tuesday,
+			wednesday,
+			thursday,
+			friday,
+			saturday,
+			sunday,
+			recovery_notify,
+			priority,
+			al_f2_recovery,
+			al_f3_recovery) VALUES
+			(%d,%d,'%s','%s','%s','%s',%f,%f,%d,%d,%d,'%s',%d,'%s','%s',%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,'%s','%s')", 
+			$id_agente_modulo, $tipo_alerta, $campo_1, $campo_2, $campo_3, $descripcion, $maximo, $minimo, $time_threshold, $max_alerts, $min_alerts, $alert_text, $disable_alert,
+			$time_from, $time_to, $alert_id_agent, $alert_d1, $alert_d2, $alert_d3, $alert_d4, $alert_d5, $alert_d6, $alert_d7, $alert_recovery, $alert_priority, $campo2_rec, $campo3_rec);
+	$id_alerta_agente_modulo = process_sql ($sql, "insert_id");
+	//False or 0 is invalid
+	if (empty ($id_alerta_agente_modulo)) {
+		echo '<h3 class="error">'.__('There was a problem creating alert').'</h3>';
 	} else {
-		$id_alerta_agente_modulo = mysql_insert_id();
-		echo "<h3 class='suc'>".__('Alert successfully created')."</h3>";
+		echo '<h3 class="suc">'.__('Alert successfully created').'</h3>';
 	}
 	
 }
@@ -368,13 +385,12 @@ if (isset($_POST["add_alert_combined"])){ // Update an existing alert
 	$alerta_id_aam = get_parameter ("update_alert",-1);
 	$component_item = get_parameter ("component_item",-1);
 	$component_operation = get_parameter ("component_operation","AND");
-	$sql_insert = "INSERT INTO tcompound_alert (id, id_aam, operation) 
-	VALUES ($alerta_id_aam, $component_item, '$component_operation')";
-	$result=mysql_query($sql_insert);
-	if (! $result) {
-		echo "<h3 class='error'>".__('Problem adding component alert')."</h3>";
+	$sql = sprintf ("INSERT INTO tcompound_alert (id, id_aam, operation) VALUES (%d, %d, '%s')", $alerta_id_aam, $component_item, $component_operation);
+	$result = process_sql ($sql);
+	if ($result === false) {
+		echo '<h3 class="error">'.__('There was a problem creating composite alert').'</h3>';
 	} else {
-		echo "<h3 class='suc'>".__('Alert component added ok')."</h3>";
+		echo '<h3 class="suc">'.__('Composite alert successfully created').'</h3>';
 	}
 
 }
@@ -425,40 +441,41 @@ if (isset($_POST["update_alert"])){ // Update an existing alert
 		$time_threshold = $other;
 	}
 
-	$sql_insert="UPDATE talerta_agente_modulo SET
-		id_alerta = $tipo_alerta,
-		max_alerts = '$max_alerts',
-		min_alerts = '$min_alerts' ,
-		time_threshold = '$time_threshold',
-		dis_min = '$minimo' ,
-		dis_max = '$maximo' ,
-		al_campo3 = '$campo_3' ,
-		al_campo2 = '$campo_2' ,
-		al_campo1 = '$campo_1' ,
-		descripcion = '$descripcion',
-		alert_text = '$alert_text',
-		time_to = '$time_to',
-		time_from = '$time_from',
-		disable = '$disable_alert',
-		monday = '$alert_d1',
-		tuesday = '$alert_d2',
-		wednesday = '$alert_d3',
-		thursday = '$alert_d4',
-		friday = '$alert_d5',
-		saturday = '$alert_d6',
-		sunday = '$alert_d7',
-		recovery_notify = $alert_recovery,
-		priority = $alert_priority,
-		al_f2_recovery = '$campo2_rec',
-		al_f3_recovery = '$campo3_rec',
-		id_alerta = $tipo_alerta 
-		WHERE id_aam = ".$id_aam;
-	$result=mysql_query($sql_insert);	
-	if (! $result) {
-		echo "<h3 class='error'>".__('There was a problem updating alert')."</h3>";
+	$sql = sprintf ("UPDATE talerta_agente_modulo SET
+		id_alerta = %d,
+		max_alerts = %d,
+		min_alerts = %d,
+		time_threshold = '%s',
+		dis_min = %f,
+		dis_max = %f,
+		al_campo3 = '%s',
+		al_campo2 = '%s',
+		al_campo1 = '%s',
+		descripcion = '%s',
+		alert_text = '%s',
+		time_to = '%s',
+		time_from = '%s',
+		disable = %d,
+		monday = %d,
+		tuesday = %d,
+		wednesday = %d,
+		thursday = %d,
+		friday = %d,
+		saturday = %d,
+		sunday = %d,
+		recovery_notify = %d,
+		priority = %d,
+		al_f2_recovery = '%s',
+		al_f3_recovery = '%s',
+		id_alerta = %d WHERE id_aam = %d", $tipo_alerta, $max_alerts, $min_alerts, $time_threshold, $minimo, $maximo, $campo_3, $campo_2, $campo_1, $descripcion, $alert_text, 
+		$time_to, $time_from, $disable_alert, $alert_d1, $alert_d2, $alert_d3, $alert_d4, $alert_d5, $alert_d5, $alert_d6, $alert_d7, $alert_recovery, $alert_priority,
+		$campo2_rec, $campo3_rec, $tipo_alerta, $id_aam);
+	$result = process_sql ($sql);
+	if ($result === false) {
+		echo '<h3 class="error">'.__('There was a problem updating alert').'</h3>';
+	} else {
+		echo '<h3 class="suc">'.__('Alert successfully updated').'</h3>';
 	}
-	else 
-		echo "<h3 class='suc'>".__('Agent successfully updated')."</h3>";
 }
 
 // ================
@@ -529,91 +546,88 @@ if ((isset($agent_created_ok)) && ($agent_created_ok == 1)){
 // Read agent data
 // This should be at the end of all operation checks, to read the changess
 if (isset($_GET["id_agente"])) {
-	$id_agente = $_GET["id_agente"];
-	$id_grupo = dame_id_grupo($id_agente);
-	if (give_acl($config["id_user"], $id_grupo, "AW")==1){
-		$sql1='SELECT * FROM tagente WHERE id_agente = '.$id_agente;
-		$result=mysql_query($sql1);
-		if ($row=mysql_fetch_array($result)){
-			$intervalo = $row["intervalo"]; // Define interval in seconds
-			$nombre_agente = $row["nombre"];
-			$direccion_agente =$row["direccion"];
-			$grupo = $row["id_grupo"];
-			$ultima_act = $row["ultimo_contacto"];
-			$comentarios = $row["comentarios"];
-			$id_plugin_server = $row["id_plugin_server"];
-			$id_network_server = $row["id_network_server"];
-			$id_prediction_server = $row["id_prediction_server"];
-			$id_wmi_server = $row["id_wmi_server"];
-			$modo = $row["modo"];
-			$id_os = $row["id_os"];
-			$disabled=$row["disabled"];
-			$id_parent = $row["id_parent"];
-		} else {
-			echo "<h3 class='error'>".__('There was a problem loading agent')."</h3>";
-			echo "</table>";
-			echo "</div><div id='foot'>";
-				include ("general/footer.php");
-			echo "</div>";
-			exit;
-		}
-	} else {
-		audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to admin an Agent out of admin groups!");
+	$id_agente = get_parameter_get ("id_agente"); //This has been done in the beginning of the page, but if an agent was created, this id might change
+	$id_grupo = dame_id_grupo ($id_agente);
+	if (give_acl ($config["id_user"], $id_grupo, "AW") != 1) {
+		audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to admin an agent without access");
 		require ("general/noaccess.php");
-		echo "</table>";
-		require ("general/footer.php");
+		exit;								       
+	}
+	
+	$row = get_db_row ('tagente', 'id_agente', $id_agente);
+	if (empty ($row)) {
+		//Close out the page
+		echo '<h3 class="error">'.__('There was a problem loading agent').'</h3>';
+		echo '</table></div><div id="foot">';
+		include ("general/footer.php");
+		echo "</div>";
 		exit;
-		}
+	}
+	
+	$intervalo = $row["intervalo"]; // Define interval in seconds
+	$nombre_agente = $row["nombre"];
+	$direccion_agente = $row["direccion"];
+	$grupo = $row["id_grupo"];
+	$ultima_act = $row["ultimo_contacto"];
+	$comentarios = $row["comentarios"];
+	$id_plugin_server = $row["id_plugin_server"];
+	$id_network_server = $row["id_network_server"];
+	$id_prediction_server = $row["id_prediction_server"];
+	$id_wmi_server = $row["id_wmi_server"];
+	$modo = $row["modo"];
+	$id_os = $row["id_os"];
+	$disabled = $row["disabled"];
+	$id_parent = $row["id_parent"];
 }
 
 // Read data module if editing module
 // ==================================
-if ((isset($_GET["update_module"])) && (!isset($_POST["oid"])) && (!isset($_POST["update_module"]))) {
+if ((isset ($_GET["update_module"])) && (!isset ($_POST["oid"])) && (!isset ($_POST["update_module"]))) {
 	$update_module = 1;
-	$id_agente_modulo = $_GET["update_module"];
+	$id_agente_modulo = (int) get_parameter_get ("update_module",0);
 
-	$sql_update = "SELECT * FROM tagente_modulo 
-	WHERE id_agente_modulo = ".$id_agente_modulo;
-	$result=mysql_query($sql_update);		
-	while ($row=mysql_fetch_array($result)){
+	$row = get_db_row ('tagente_modulo', 'id_agente_modulo', $id_agente_modulo);
+
+	if ($row === false) {
+		echo '<h3 class="error">'.__('There was a problem loading the module').'</h3>';
+	} else {
 		$modulo_id_agente = $row["id_agente"];
 		$modulo_id_tipo_modulo = $row["id_tipo_modulo"];
 		$modulo_nombre = $row["nombre"];
-		$modulo_descripcion = $row["descripcion"];		
+		$modulo_descripcion = $row["descripcion"];
 		$tcp_send = $row["tcp_send"];
 		$tcp_rcv = $row["tcp_rcv"];
-		$tcp_port = $row["tcp_port"];
 		$ip_target = $row["ip_target"];
 		$snmp_community = $row["snmp_community"];
 		$snmp_oid = $row["snmp_oid"];
 		$id_module_group = $row["id_module_group"];
 		$module_interval = $row["module_interval"];
 		$modulo_max = $row["max"];
-		if (! isset($modulo_max))
-			$modulo_max ="N/A";
-		$modulo_min = $row["min"];
-		if (! isset($modulo_min))
-			$modulo_min ="N/A";
+		if (empty ($modulo_max))
+			$modulo_max = "N/A";
+		if (empty ($modulo_min))
+			$modulo_min = "N/A";	
 	}
 }
+
 // Read ALERT data if editing alert
 // ==================================
-
-if (isset($_GET["update_alert"])){
-	$id_grupo = dame_id_grupo($id_agente);
-	if (give_acl($config["id_user"], $id_grupo, "LW")==0){
+if (isset ($_GET["update_alert"])) {
+	$id_grupo = dame_id_grupo ($id_agente);
+	if (give_acl ($config["id_user"], $id_grupo, "LW") == 0){
 		audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to update an alert without admin rights");
 		require ("general/noaccess.php");
-		echo "</table>";
-		require ("general/footer.php");
 		exit;
 	}
+	
 	$update_alert = 1;
-	$id_aam = $_GET["update_alert"];
-	$sql_update = "SELECT * FROM talerta_agente_modulo WHERE id_aam = ".$id_aam;
-	$result=mysql_query($sql_update);		
-	while ($row=mysql_fetch_array($result)){
-		$alerta_id_aam = $id_aam;
+	$id_aam = (int) get_parameter_get ("update_alert",0);
+	$row = get_db_row ('talerta_agente_modulo', 'id_aam', $id_aam);
+	
+	if ($row === false) {
+		echo '<h3 class="error">'.__('There was a problem loading the alert').'</h3>';
+	} else {
+		$alerta_id_aam = $row["id_aam"];
 		$alerta_campo1 = $row["al_campo1"];
 		$alerta_campo2 = $row["al_campo2"];
 		$alerta_campo3 = $row["al_campo3"];
@@ -646,85 +660,87 @@ if (isset($_GET["update_alert"])){
 
 // GET DATA for MODULE UPDATE OR MODULE INSERT
 // ===========================================
-if ((isset($_POST["update_module"])) || (isset($_POST["insert_module"]))) {
-	if (isset($_POST["update_module"])){
+if ((isset ($_POST["update_module"])) || (isset ($_POST["insert_module"]))) {
+	if (isset ($_POST["update_module"])) {
 		$update_module = 1;
-		$id_agente_modulo = $_POST["id_agente_modulo"];
+		$id_agente_modulo = get_parameter_post ("id_agente_modulo",0);
 	}
-	$id_grupo = dame_id_grupo($id_agente);
-	if (give_acl($config["id_user"], $id_grupo, "AW")==0){
-		audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to create a module without admin rights");
+	
+	$id_grupo = dame_id_grupo ($id_agente);
+	
+	if (give_acl ($config["id_user"], $id_grupo, "AW") == 0) {
+		audit_db ($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to create a module without admin rights");
 		require ("general/noaccess.php");
-		echo "</table>";
-		require ("general/footer.php");
 		exit;
 	}
-	$form_id_tipo_modulo = get_parameter ("form_id_tipo_modulo");
-	$form_name = get_parameter ("form_name");
-	$form_description = get_parameter ("form_description");
-	$form_id_module_group = get_parameter ("form_id_module_group",0);
-	$form_flag = get_parameter ("form_flag",0);
-	$form_post_process = get_parameter ("form_post_process",0);
-	$form_prediction_module = get_parameter ("form_prediction_module",0);
-	$form_max_timeout = get_parameter ("form_max_timeout",0);
-	$form_minvalue = get_parameter_post ("form_minvalue",0);
-	$form_maxvalue = get_parameter ("form_maxvalue",0);
-	$form_interval = get_parameter ("form_interval",300);
-	$form_id_prediction_module = get_parameter ("form_id_prediction_module",0);
-	$form_id_plugin = get_parameter ("form_id_plugin",0);
-	$form_id_export = get_parameter ("form_id_export",0);
-	$form_disabled = get_parameter ("form_disabled",0);
-	$form_tcp_send = get_parameter ("form_tcp_send","");
-	$form_tcp_rcv = get_parameter ("form_tcp_rcv","");
-	$form_tcp_port = get_parameter ("form_tcp_port",0);
-	$form_snmp_community = get_parameter ("form_snmp_community","");
-	$form_snmp_oid = get_parameter ("form_snmp_oid","");
-	$form_ip_target = get_parameter ("form_ip_target","");
-	$form_plugin_user = get_parameter ("form_plugin_user","");
-	$form_plugin_pass = get_parameter ("form_plugin_pass","");
-	$form_plugin_parameter = get_parameter ("form_plugin_parameter","");
-	$form_id_modulo = get_parameter ("form_id_modulo");
+	$form_id_tipo_modulo = (int) get_parameter ("form_id_tipo_modulo",0);
+	$form_name = (string) get_parameter ("form_name",0);
+	$form_description = (string) get_parameter ("form_description","");
+	$form_id_module_group = (int) get_parameter ("form_id_module_group",0);
+	$form_flag = (bool) get_parameter ("form_flag",0);
+	$form_post_process = (float) get_parameter ("form_post_process",0);
+	$form_prediction_module = (int) get_parameter ("form_prediction_module",0);
+	$form_max_timeout = (int) get_parameter ("form_max_timeout",0);
+	$form_minvalue = (int) get_parameter_post ("form_minvalue",0);
+	$form_maxvalue = (int) get_parameter ("form_maxvalue",0);
+	$form_interval = (int) get_parameter ("form_interval",300);
+	$form_id_prediction_module = (int) get_parameter ("form_id_prediction_module",0);
+	$form_id_plugin = (int) get_parameter ("form_id_plugin",0);
+	$form_id_export = (int) get_parameter ("form_id_export",0);
+	$form_disabled = (bool) get_parameter ("form_disabled",0);
+	$form_tcp_send = (string) get_parameter ("form_tcp_send","");
+	$form_tcp_rcv = (string) get_parameter ("form_tcp_rcv","");
+	$form_tcp_port = (int) get_parameter ("form_tcp_port",0);
+	$form_snmp_community = (string) get_parameter ("form_snmp_community","");
+	$form_snmp_oid = (string) get_parameter ("form_snmp_oid","");
+	$form_ip_target = (string) get_parameter ("form_ip_target","");
+	$form_plugin_user = (string) get_parameter ("form_plugin_user","");
+	$form_plugin_pass = (string) get_parameter ("form_plugin_pass","");
+	$form_plugin_parameter = (string) get_parameter ("form_plugin_parameter","");
+	$form_id_modulo = (int) get_parameter ("form_id_modulo",0);
 }
 
 // MODULE UPDATE
 // =================
-if ((isset($_POST["update_module"])) && (!isset($_POST["oid"]))){ // if modified something
-	if (isset($_POST["form_combo_snmp_oid"])){
-		$form_combo_snmp_oid = entrada_limpia($_POST["form_combo_snmp_oid"]);
-		if ($snmp_oid == ""){
+if ((isset ($_POST["update_module"])) && (!isset ($_POST["oid"]))) { // if modified something
+	if (isset ($_POST["form_combo_snmp_oid"])) {
+		$form_combo_snmp_oid = get_parameter_post ("form_combo_snmp_oid");
+		if ($snmp_oid == "") {
 			$snmp_oid = $form_combo_snmp_oid;
 		}
 	}
-	$sql_update = "UPDATE tagente_modulo 
-	SET descripcion = '$form_description', 
-	nombre = '$form_name', 
-	max = '$form_maxvalue', 
-	min = '$form_minvalue', 
-	module_interval = '$form_interval', 
-	tcp_port = '$form_tcp_port', 
-	tcp_send = '$form_tcp_send', 
-	tcp_rcv = '$form_tcp_rcv', 
-	snmp_community = '$form_snmp_community', 
-	snmp_oid = '$form_snmp_oid', 
-	ip_target = '$form_ip_target', 
-	id_module_group = '$form_id_module_group', 
-	flag = '$form_flag', 
-	id_modulo = '$form_id_modulo', 
-	disabled = '$form_disabled', 
-	id_export = '$form_id_export', 
-	plugin_user = '$form_plugin_user', 
-	plugin_pass = '$form_plugin_pass', 
-	plugin_parameter = '$form_plugin_parameter', 
-	id_plugin = '$form_id_plugin', 
-	post_process = '$form_post_process', 
-	prediction_module = '$form_prediction_module', 
-	max_timeout = '$form_max_timeout' 
-	WHERE id_agente_modulo = '$id_agente_modulo'";
-	$result=mysql_query($sql_update);
-	if (! $result) {
-		echo "<h3 class='error'>".__('There was a problem updating module')."</h3>";
+	$sql = sprintf ("UPDATE tagente_modulo SET 
+			descripcion = '%s', 
+			nombre = '%s', 
+			max = %d, 
+			min = %d, 
+			module_interval = %d, 
+			tcp_port = %d, 
+			tcp_send = '%s', 
+			tcp_rcv = '%s', 
+			snmp_community = '%s', 
+			snmp_oid = '%s', 
+			ip_target = '%s', 
+			flag = %d, 
+			id_modulo = %d, 
+			disabled = %d, 
+			id_export = %d, 
+			plugin_user = '%s', 
+			plugin_pass = '%s', 
+			plugin_parameter = '%s', 
+			id_plugin = %d, 
+			post_process = %f, 
+			prediction_module = %d, 
+			max_timeout = %d 
+			WHERE id_agente_modulo = %d", $form_description, $form_name, $form_maxvalue, $form_minvalue, $form_interval, $form_tcp_port, $form_tcp_send, $form_tcp_rcv,
+			$form_snmp_community, $form_snmp_oid, $form_ip_target, $form_flag, $form_id_modulo, $form_disabled, $form_id_export, $form_plugin_user, $form_plugin_pass,
+			$form_plugin_parameter, $form_id_plugin, $form_post_process, $form_prediction_module, $form_max_timeout, $id_agente_modulo);
+	$result = process_sql ($sql);
+	
+	if ($result === false) {
+		echo '<h3 class="error">'.__('There was a problem updating module').'</h3>';
 	} else {
-		echo "<h3 class='suc'>".__('Module successfully updated')."</h3>";
+		echo '<h3 class="suc">'.__('Module successfully updated').'</h3>';
 	}
 
 }
@@ -732,12 +748,14 @@ if ((isset($_POST["update_module"])) && (!isset($_POST["oid"]))){ // if modified
 // OID Refresh button to get SNMPWALK from data in form
 // This code is also applied when submitting a new module (insert_module = 1)
 // =========================================================
-if (isset($_POST["oid"])){
-	snmp_set_quick_print(1);	
-	if (! ($snmpwalk = snmprealwalk($form_ip_target, $form_snmp_community, ""))) {
-		echo "<h3 class='error'>".__('Cannot read from SNMP source')."</h3>";
+if (isset ($_POST["oid"])){
+	snmp_set_quick_print (1);
+	$snmpwalk = snmprealwalk ($form_ip_target, $form_snmp_community, '');
+	
+	if (empty ($snmpwalk)) {
+		echo '<h3 class="error">'.__('Cannot read from SNMP source').'</h3>';
 	} else {
-		echo "<h3 class='suc'>".__('SNMP source has been scanned')."</h3>";
+		echo '<h3 class="suc">'.__('SNMP source has been scanned').'</h3>';
 	}
 }
 
@@ -746,10 +764,10 @@ if (isset($_POST["oid"])){
 // MODULE INSERT
 // =========================================================
 
-if (((!isset($_POST["nc"]) OR ($_POST["nc"]==-1))) && (!isset($_POST["oid"])) && (isset($_POST["insert_module"])) && (isset($_POST['crtbutton']))){
+if (((!isset ($_POST["nc"]) OR ($_POST["nc"] == -1))) && (!isset ($_POST["oid"])) && (isset ($_POST["insert_module"])) && (isset ($_POST['crtbutton']))) {
 
-	if (isset($_POST["form_combo_snmp_oid"])) {
-		$combo_snmp_oid = entrada_limpia($_POST["form_combo_snmp_oid"]);
+	if (isset ($_POST["form_combo_snmp_oid"])) {
+		$combo_snmp_oid = get_parameter_post ("form_combo_snmp_oid");
 	}
 	if ($form_snmp_oid == ""){
 		$form_snmp_oid = $combo_snmp_oid;
@@ -757,19 +775,20 @@ if (((!isset($_POST["nc"]) OR ($_POST["nc"]==-1))) && (!isset($_POST["oid"])) &&
 	if ($form_tcp_port == "") {
 		$form_tcp_port= "0";
 	}
-	$sql_insert = "INSERT INTO tagente_modulo 
+	$sql = sprintf ("INSERT INTO tagente_modulo 
 		(id_agente, id_tipo_modulo, nombre, descripcion, max, min, snmp_oid, snmp_community,
 		id_module_group, module_interval, ip_target, tcp_port, tcp_rcv, tcp_send, id_export, 
 		plugin_user, plugin_pass, plugin_parameter, id_plugin, post_process, prediction_module,
 		max_timeout, disabled, id_modulo) 
-		VALUES ($id_agente, $form_id_tipo_modulo, '$form_name', '$form_description', $form_maxvalue, $form_minvalue, '$form_snmp_oid', '$form_snmp_community', $form_id_module_group, $form_interval, '$form_ip_target', $form_tcp_port, '$form_tcp_rcv', '$form_tcp_send', $form_id_export, '$form_plugin_user', '$form_plugin_pass', '$form_plugin_parameter', $form_id_plugin, $form_post_process, $form_id_prediction_module, $form_max_timeout, $form_disabled, $form_id_modulo)";
-	$result=mysql_query($sql_insert);
-	if (! $result){
-		echo "<h3 class='error'>".__('There was a problem adding module')."</h3>";
-		echo "<i>DEBUG: $sql_insert</i>";
+		VALUES (%d,%d,'%s','%s',%d,%d,'%s','%s',%d,%d,'%s',%d,'%s','%s',%d,'%s','%s','%s',%d,%d,%d,%d,%d,%d)",
+			$id_agente, $form_id_tipo_modulo, $form_name, $form_description, $form_maxvalue, $form_minvalue, $form_snmp_oid, $form_snmp_community, 
+			$form_id_module_group, $form_interval, $form_ip_target, $form_tcp_port, $form_tcp_rcv, $form_tcp_send, $form_id_export, $form_plugin_user, $form_plugin_pass, 
+			$form_plugin_parameter, $form_id_plugin, $form_post_process, $form_id_prediction_module, $form_max_timeout, $form_disabled, $form_id_modulo);
+	$id_agente_modulo = process_sql ($sql, 'insert_id');
+	echo $sql;	
+	if ($id_agente_modulo === false){
+		echo '<h3 class="error">'.__('There was a problem adding module').'</h3>';
 	} else {
-		echo "<h3 class='suc'>".__('Module added successfully')."</h3>";
-		$id_agente_modulo = mysql_insert_id();
 		// Create with different estado if proc type or data type
 		if (($form_id_tipo_modulo == 2) ||   // data_proc
 			($form_id_tipo_modulo == 6) ||   // icmp_proc
@@ -778,57 +797,76 @@ if (((!isset($_POST["nc"]) OR ($_POST["nc"]==-1))) && (!isset($_POST["oid"])) &&
 			($form_id_tipo_modulo == 21) ||  // async proc
 			($form_id_tipo_modulo == 100)  // Keepalive
 			) { 
-			$sql_insert2 = "INSERT INTO tagente_estado 
+			$sql = sprintf ("INSERT INTO tagente_estado 
 			(id_agente_modulo,datos,timestamp,cambio,estado,id_agente, utimestamp) 
-			VALUES (
-			$id_agente_modulo, 0,'0000-00-00 00:00:00',0,0,'".$id_agente."',0
-			)";
+			VALUES (%d, 0,'0000-00-00 00:00:00',0,0,%d,0)",$id_agente_modulo,$id_agente);
 		} else { 
-		    $sql_insert2 = "INSERT INTO tagente_estado 
+			$sql = sprintf ("INSERT INTO tagente_estado 
 			(id_agente_modulo,datos,timestamp,cambio,estado,id_agente, utimestamp) 
-			VALUES (
-			$id_agente_modulo, 0,'0000-00-00 00:00:00',0,100,'".$id_agente."',0
-			)";
+			VALUES (%d, 0,'0000-00-00 00:00:00',0,100,%d,0)",$id_agente_modulo,$id_agente);
 		}
-		$result=mysql_query($sql_insert2);
+		$result = process_sql ($sql);
+		if ($result !== false) {
+			echo '<h3 class="suc">'.__('Module added successfully').'</h3>';
+		} else {
+			echo '<h3 class="error">'.__('Module added successfully').' - '.__('Status init unsuccessful').'</h3>';
+		}
 	}
 }
 
 // MODULE DELETION
 // =================
-if (isset($_GET["delete_module"])){ // DELETE agent module !
-	$id_borrar_modulo = $_GET["delete_module"];
-	$id_grupo = dame_id_grupo($id_agente);	if (give_acl($config["id_user"], $id_grupo, "AW")==0){
+if (isset ($_GET["delete_module"])){ // DELETE agent module !
+	$id_borrar_modulo = (int) get_parameter_get ("delete_module",0);
+	$id_grupo = (int) dame_id_grupo ($id_agente);	
+	
+	if (give_acl ($config["id_user"], $id_grupo, "AW") == 0){
 		audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation",
 		"Trying to delete a module without admin rights");
 		require ("general/noaccess.php");
 		exit;
 	}
-	// First detele from tagente_modulo
-	$sql_delete= "DELETE FROM tagente_modulo 
-	WHERE id_agente_modulo = ".$id_borrar_modulo;
-	$result=mysql_query($sql_delete);
-	if (! $result) {
-		echo "<h3 class='error'>".__('There was a problem deleting module')."</h3>"; 
-	} else {
-		echo "<h3 class='suc'>".__('Module deleted successfully')."</h3>";
+	
+	if ($id_borrar_modulo < 1) {
+		audit_db ($config["id_user"],$REMOTE_ADDR, "HACK Attempt",
+		"Expected variable from form is not correct");
+		die ("Nice try buddy");
+		exit;
 	}
-	// Then delete all staus
-	$sql_delete = "DELETE FROM tagente_estado 
-	WHERE id_agente_modulo = ".$id_borrar_modulo;
-	$result=mysql_query($sql_delete);
 	
-	$sql_delete = "DELETE FROM tagente_datos 
-	WHERE id_agente_modulo = ".$id_borrar_modulo;
-	$result=mysql_query($sql_delete);
+	//Init transaction
+	$error = 0;
+	process_sql ("SET AUTOCOMMIT=0;");
+	process_sql ("START TRANSACTION;");
 	
-	$sql_delete = "DELETE FROM tagente_datos_string 
-	WHERE id_agente_modulo = ".$id_borrar_modulo;
-	$result=mysql_query($sql_delete);
+	// First delete from tagente_modulo -> if not successful, increment
+	// error
+	if (process_sql ("DELETE FROM tagente_modulo WHERE id_agente_modulo = ".$id_borrar_modulo) === false)
+		$error++;
 	
-	$sql_delete = "DELETE FROM tagente_datos_inc 
-	WHERE id_agente_modulo = ".$id_borrar_modulo;
-	$result=mysql_query($sql_delete);
+	if (process_sql ("DELETE FROM tagente_estado WHERE id_agente_modulo = ".$id_borrar_modulo) === false)
+		$error++;
+	
+	if (process_sql ("DELETE FROM tagente_datos WHERE id_agente_modulo = ".$id_borrar_modulo) === false)
+		$error++;
+	
+	if (process_sql ("DELETE FROM tagente_datos_string WHERE id_agente_modulo = ".$id_borrar_modulo) === false)
+		$error++;
+			
+	if (process_sql ("DELETE FROM tagente_datos_inc WHERE id_agente_modulo = ".$id_borrar_modulo) === false)
+		$error++;
+			
+	//Check for errors
+	if ($error != 0) {
+		echo '<h3 class="error">'.__('There was a problem deleting the module').'</h3>'; 
+		process_sql ("ROLLBACK;");
+	} else {
+		echo '<h3 class="suc">'.__('Module deleted successfully').'</h3>';
+		process_sql ("COMMIT;");
+	}
+
+	//End transaction
+	process_sql ("SET AUTOCOMMIT=1;");
 }
 
 // -----------------------------------
@@ -840,19 +878,25 @@ switch ($tab) {
 		require "agent_manager.php";
 		break;
 	case "module":
-		if (($form_moduletype == "") && ($moduletype == ""))
+		if (($form_moduletype == "") && ($moduletype == "")) {
 			require "module_manager.php";
-		else
+		} else {
 			require "module_manager_editor.php";
+		}
 		break;
 	case "alert":
-		if (($form_alerttype == "") && (!isset($_GET["update_alert"])))
+		if (($form_alerttype == "") && (!isset($_GET["update_alert"]))) {
 			require "alert_manager.php";
-		else
+		} else {
 			require "alert_manager_editor.php";
+		}
 		break;
 	case "template":
 		require "agent_template.php";
 		break;
+	default:
+		//This will make sure that blank pages will have at least some
+		//debug info in them
+		echo '<h3 class="error">DEBUG: Invalid tab specified in '.__FILE__.':'.__LINE__.'</h3>';
 }
 ?>

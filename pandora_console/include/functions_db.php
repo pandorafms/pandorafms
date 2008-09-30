@@ -551,11 +551,21 @@ function get_monitor_last_down_timestamp_in_period ($id_agent_module, $period, $
  * @return An array with all the monitors defined in the group (tagente_modulo).
  */
 function get_monitors_in_group ($id_group) {
+	if ($id_group <= 1) {
+		//We select all groups the user has access  to if it's 0, -1 or 1
+		global $config;
+		$id_group = array_keys (get_user_groups ($config['id_user']));
+	}
+	
+	if (is_array ($id_group)) {
+		$id_group = implode (",",$id_group);
+	}
+	
 	$sql = sprintf ("SELECT `tagente_modulo`.* FROM `tagente_modulo`, `ttipo_modulo`, `tagente` WHERE 
 			`id_tipo_modulo` = `id_tipo` 
 			AND `tagente`.`id_agente` = `tagente_modulo`.`id_agente` 
 			AND `ttipo_modulo`.`nombre` LIKE '%%_proc' 
-			AND `tagente`.`id_grupo` = %d", $id_group);
+			AND `tagente`.`id_grupo` IN (%s) ORDER BY `tagente`.`nombre`", $id_group);
 	return get_db_all_rows_sql ($sql);
 }
 
@@ -589,12 +599,12 @@ function get_monitors_in_agent ($id_agent) {
  */
 function get_monitors_down ($monitors, $period = 0, $date = 0) {
 	$monitors_down = array ();
-	if (! $monitors)
+	if (empty ($monitors))
 		return $monitors_down;
 
 	foreach ($monitors as $monitor) {
 		$down = get_monitor_downs_in_period ($monitor['id_agente_modulo'], $period, $date);
-		if ($down)
+		if ($down > 0)
 			array_push ($monitors_down, $monitor);
 	}
 	return $monitors_down;
@@ -1302,13 +1312,13 @@ $sql_cache = array ('saved' => 0);
  */  
 function get_db_value ($field, $table, $field_search = 1, $condition = 1) {
 	if (is_int ($condition)) {
-		$sql = sprintf ("SELECT %s FROM `%s` WHERE %s = %d LIMIT 1",
+		$sql = sprintf ("SELECT %s FROM %s WHERE %s = %d LIMIT 1",
 				$field, $table, $field_search, $condition);
 	} else if (is_float ($condition) || is_double ($condition)) {
-		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = %f LIMIT 1",
+		$sql = sprintf ("SELECT %s FROM %s WHERE %s = %f LIMIT 1",
 				$field, $table, $field_search, $condition);
 	} else {
-		$sql = sprintf ("SELECT %s FROM `%s` WHERE `%s` = '%s' LIMIT 1",
+		$sql = sprintf ("SELECT %s FROM %s WHERE %s = '%s' LIMIT 1",
 				$field, $table, $field_search, $condition);
 	}
 	$result = get_db_all_rows_sql ($sql);
@@ -1473,9 +1483,9 @@ function get_db_all_rows_in_table ($table, $order_field = "") {
  */
 function get_db_all_rows_field_filter ($table, $field, $condition, $order_field = "") {
 	if (is_int ($condition)) {
-		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = '%d'", $table, $field, $condition);
+		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = %d", $table, $field, $condition);
 	} else if (is_float ($condition) || is_double ($condition)) {
-		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = '%f'", $table, $field, $condition);
+		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = %f", $table, $field, $condition);
 	} else {
 		$sql = sprintf ("SELECT * FROM `%s` WHERE `%s` = '%s'", $table, $field, $condition);
 	}

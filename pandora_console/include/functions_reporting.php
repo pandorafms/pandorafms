@@ -374,22 +374,21 @@ function alert_reporting ($id_group, $period = 0, $date = 0, $return = false) {
  * @param $return Flag to return or echo the report (by default).
  */
 function monitor_health_reporting ($id_group, $period = 0, $date = 0, $return = false) {
-	if (! $date)
+	if (empty ($date)) //If date is 0, false or empty
 		$date = time ();
+		
 	$datelimit = $date - $period;
 	$output = '';
 	
 	$monitors = get_monitors_in_group ($id_group);
-	if (sizeof ($monitors) == 0)
+	if (empty ($monitors)) //If monitors has returned false or an empty array
 		return;
 	$monitors_down = get_monitors_down ($monitors, $period, $date);
-	$down_percentage = round (sizeof ($monitors_down) / sizeof ($monitors) * 100, 2);
+	$down_percentage = round (count ($monitors_down) / count ($monitors) * 100, 2);
 	$not_down_percentage = 100 - $down_percentage;
-	$output .= '<img src="reporting/fgraph.php?tipo=monitors_health_pipe&height=150&width=280&down='.
-		$down_percentage.'&not_down='.$not_down_percentage.'" style="float: right; border: 1px solid black">';
 	
-	$output .= '<strong>'.__('Total monitors').': '.sizeof ($monitors).'</strong><br />';
-	$output .= '<strong>'.__('Monitors down on period').': '.sizeof ($monitors_down).'</strong><br />';
+	$output .= '<strong>'.__('Total monitors').': '.count ($monitors).'</strong><br />';
+	$output .= '<strong>'.__('Monitors down on period').': '.count ($monitors_down).'</strong><br />';
 	
 	$table = get_monitors_down_reporting_table ($monitors_down);
 	$table->width = '100%';
@@ -403,6 +402,9 @@ function monitor_health_reporting ($id_group, $period = 0, $date = 0, $return = 
 	$table->size[0] = '100px';
 	
 	$output .= print_table ($table, true);
+	
+	//Floating it was ugly, moved it to the bottom
+	$output .= '<img src="reporting/fgraph.php?tipo=monitors_health_pipe&height=150&width=280&down='.$down_percentage.'&amp;not_down='.$not_down_percentage.'" style="border: 1px solid black">';
 	
 	if (!$return)
 		echo $output;

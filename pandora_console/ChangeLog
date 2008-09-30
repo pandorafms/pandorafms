@@ -1,3 +1,30 @@
+2008-09-30  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* reporting/fgraph.php: monitors_health_pipe was in an aesthetically
+	bad order. Moved for yellow to be bad and green to be good
+
+	* operation/reporting/reporting_viewer.php,
+	godmode/reporting/reporting_builder.php: Style updates. Use the
+	updated database functions.
+
+	* include/functions_reporting.php: monitor_health_reporting function
+	updated. There was a major bug; &not got translated into it's ASCII
+	value and the graph didn't work. The graph was in a bad position as a
+	float, it went over the table and if the table was not big enough,it
+	would go over other data. So fixed all of it.
+
+	* include/functions_html.php: print_select_from_sql updated to use SQL
+	functions
+
+	* include/functions_db.php: get_monitors_in_group didn't work correctly
+	if the group was 1 (All). Removed quotes from get_db_value and 
+	get_db_all_rows_field_filter
+
+	* include/functions.php: get_report_type_data_source returned the wrong
+	type for monitor_report (id 6) which made the jQuery not show the
+	agent/module select box and subsequently the graph failed
+
+
 2008-09-29  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* godmode/agentes/module_manager_editor_data.php,

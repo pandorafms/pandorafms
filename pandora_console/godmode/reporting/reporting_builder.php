@@ -66,13 +66,14 @@ if ($delete_report_content) {
 	$id_report_content = (int) get_parameter ('id_report_content');
 	$order = get_db_value ('`order`', 'treport_content', 'id_rc', $id_report_content);
 	$sql = sprintf ('UPDATE treport_content SET `order` = `order` -1 WHERE id_report = %d AND `order` > %d', $id_report, $order);
-	mysql_query ($sql);
+	process_sql ($sql);
 	$sql = sprintf ('DELETE FROM treport_content WHERE id_rc = %d', $id_report_content);
-	$result = mysql_query ($sql);
-	if ($result)
+	$result = process_sql ($sql);
+	if ($result !== false) {
 		echo "<h3 class='suc'>".__('Deleted successfully')."</h3>";
-	else
+	} else {
 		echo "<h3 class='error'>".__('Not deleted. Error deleting data')."</h3>";
+	}
 }
 
 // Move content up
@@ -82,9 +83,9 @@ if ($content_up) {
 	/* Set the previous element order to the current of the content we want to change */
 	$sql = sprintf ('UPDATE treport_content SET `order` = `order` + 1 WHERE id_report = %d AND `order` = %d',
 			$id_report, $order - 1);
-	$result = mysql_query ($sql);
+	$result = process_sql ($sql);
 	$sql = sprintf ('UPDATE treport_content SET `order` = `order` - 1 WHERE id_rc = %d', $id_report_content);
-	$result = mysql_query ($sql);
+	$result = process_sql ($sql);
 }
 
 // Move content down
@@ -94,17 +95,17 @@ if ($content_down) {
 	/* Set the previous element order to the current of the content we want to change */
 	$sql = sprintf ('UPDATE treport_content SET `order` = `order` - 1 WHERE id_report = %d AND `order` = %d',
 			$id_report, $order + 1);
-	$result = mysql_query ($sql);
+	$result = process_sql ($sql);
 	$sql = sprintf ('UPDATE treport_content SET `order` = `order` + 1 WHERE id_rc = %d', $id_report_content);
-	$result = mysql_query ($sql);
+	$result = process_sql ($sql);
 }
 
 // Delete report SQL code
 if ($delete_report) {
 	$sql = sprintf ('DELETE FROM treport_content WHERE id_report = %d', $id_report);
 	$sql2 = sprintf ('DELETE FROM treport WHERE id_report = %d', $id_report);
-	$res = mysql_query ($sql);
-	$res2 = mysql_query ($sql2);
+	$res = process_sql ($sql);
+	$res2 = process_sql ($sql2);
 	if ($res AND $res2)
 		echo "<h3 class=suc>".__('Reporting successfully deleted')."</h3>";
 	else
@@ -132,7 +133,9 @@ if ($add_content) {
 			$id_report, $id_custom_graph ? $id_custom_graph : "NULL",
 			$id_agent_module ? $id_agent_module : "NULL",
 			$order, $type, $period * 3600);
-	if ($result = mysql_query($sql)) {
+	$result = process_sql ($sql);
+
+	if ($result !== false) {
 		echo '<h3 class="suc">'.__('Reporting successfully created').'</h3>';
 		$id_agent = 0;
 		$id_agent_module = 0;
@@ -154,12 +157,12 @@ if ($create_report) {
 	$sql = sprintf ('INSERT INTO treport (name, description, id_user, private, id_group) 
 			VALUES ("%s", "%s", "%s", %d, %d)',
 			$report_name, $report_description, $config['id_user'], $report_private, $report_id_group);
-	$result = mysql_query ($sql);
-	if ($result)
+	$id_report = process_sql ($sql, "insert_id");
+	if ($id_report !== false) {
 		echo "<h3 class=suc>".__('Reporting successfully created')."</h3>";
-	else
+	} else {
 		echo "<h3 class=error>".__('There was a problem creating reporting')."</h3>";
-	$id_report = mysql_insert_id ();
+	}
 }
 
 // Update report
@@ -169,11 +172,12 @@ if ($update_report) {
 			WHERE id_report = %d',
 			$report_name, $report_description,
 			$report_private, $id_report);
-	$result = mysql_query ($sql);
-	if ($result)
+	$result = process_sql ($sql);
+	if ($result) {
 		echo "<h3 class=suc>".__('Updated successfully')."</h3>";
-	else
+	} else {
 		echo "<h3 class=error>".__('Not updated. Error updating data')."</h3>";
+	}
 }
 
 if ($id_report) {
@@ -214,11 +218,12 @@ if ($edit_sla_report_content) {
 				$id_report_content, $id_module, $sla_max, $sla_min, $sla_limit);
 		
 		if ($id_module) {
-			$result = mysql_query ($sql);
-			if ($result)
+			$result = process_sql ($sql);
+			if ($result !== false) {
 				echo "<h3 class=suc>".__('SLA was successfully created')."</h3>";
-			else 
+			} else {
 				echo "<h3 class=error>".__('There was a problem creating SLA')."</h3>";
+			}
 		} else {
 			echo "<h3 class=error>".__('Module is not set')."</h3>";
 		}
@@ -226,11 +231,12 @@ if ($edit_sla_report_content) {
 	if ($delete_sla) {
 		$id_sla = (int) get_parameter ('id_sla');
 		$sql = sprintf ('DELETE FROM treport_content_sla_combined WHERE id = %d', $id_sla);
-		$result = mysql_query ($sql);
-		if ($result)
+		$result = process_sql ($sql);
+		if ($result !== false) {
 			echo "<h3 class=suc>".__('SLA was successfully delete')."</h3>";
-		else 
+		} else { 
 			echo "<h3 class=error>".__('There was a problem deleting SLA')."</h3>";
+		}
 	}
 	$report_content = get_db_row ('treport_content', 'id_rc', $id_report_content);
 
@@ -255,7 +261,7 @@ if ($edit_sla_report_content) {
 	$table->head[5] = __('Delete');
 
 	$slas = get_db_all_rows_field_filter ('treport_content_sla_combined', 'id_report_content', $id_report_content);
-	if ($slas){
+	if ($slas) {
 		foreach ($slas as $sla) {
 			$data = array ();
 			
@@ -309,12 +315,9 @@ if ($edit_sla_report_content) {
 	echo '</div>';
 
 	echo '</form>';
-} else if ($edit_report || $id_report) {
+} elseif ($edit_report || $id_report) {
 	 /* Edit and creation report form */
-	if (isset($_POST["id_agent"]))
-		$id_agent = $_POST["id_agent"];
-	else
-		$id_agent = 0;
+	$id_agent = get_parameter_post ("id_agent",0);
 	echo "<h2>".__('Reporting')." &gt; ";
 	echo __('Custom reporting builder')."</h2>";
 	

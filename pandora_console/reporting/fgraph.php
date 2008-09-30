@@ -2133,11 +2133,11 @@ if ($graphic_type) {
 		break;
 	case 'monitors_health_pipe':
 		$data = array ();
-		$data[0] = (float) get_parameter ('down');
-		$data[1] = (float) get_parameter ('not_down');
+		$data[1] = (float) get_parameter ('down');
+		$data[0] = (float) get_parameter ('not_down');
 		$legends = array ();
-		$legends[0] = __('Monitors BAD');
-		$legends[1] = __('Monitors OK');
+		$legends[1] = __('Monitors BAD');
+		$legends[0] = __('Monitors OK');
 		generic_pie_graph ($width, $height, $data, $legends);
 		
 		break;

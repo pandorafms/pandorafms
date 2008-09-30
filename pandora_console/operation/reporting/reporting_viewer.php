@@ -34,7 +34,7 @@ if (! $id_report) {
 $report = get_db_row ('treport', 'id_report', $id_report);
 
 if (! give_acl ($config['id_user'], $report['id_group'], "AR")) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation","Trying to access graph builder");
+	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation","Trying to access graph reader");
 	include ("general/noaccess.php");
 	exit;
 }
@@ -60,11 +60,12 @@ $table->style[0] = 'font-weight: bold';
 $table->size = array ();
 $table->size[0] = '50px';
 $table->data = array ();
-$table->data[0][0] = '<img src="images/reporting.png" width="32" height="32">';
-if ($report['description'] != '')
+$table->data[0][0] = '<img src="images/reporting.png" width="32" height="32" />';
+if ($report['description'] != '') {
 	$table->data[0][1] = $report['description'];
-else
+} else {
 	$table->data[0][1] = $report['name'];
+}
 $table->data[1][0] = __('Date');
 $table->data[1][1] = print_input_text ('date', $date, '', 10, 10, true). ' ';
 $table->data[1][1] .= print_input_text ('time', $time, '', 7, 7, true). ' ';
@@ -76,7 +77,7 @@ print_input_hidden ('id_report', $id_report);
 echo '</form>';
 
 echo '<div id="loading">';
-echo '<img src="images/wait.gif" border="0"><br />';
+echo '<img src="images/wait.gif" border="0" /><br />';
 echo '<strong>'.__('Loading').'...</strong>';
 echo '</div>';
 
@@ -90,8 +91,8 @@ echo '</div>';
 <script src="include/javascript/jquery.ui.core.js"></script>
 <script src="include/javascript/jquery.ui.datepicker.js"></script>
 <script src="include/javascript/jquery.timeentry.js"></script>
-<script src="include/languages/date_<?= $config['language'] ?>.js"></script>
-<script src="include/languages/time_<?= $config['language'] ?>.js"></script>
+<script src="include/languages/date_<?php echo $config['language']; ?>.js"></script>
+<script src="include/languages/time_<?php echo $config['language']; ?>.js"></script>
 
 <script language="javascript" type="text/javascript">
 
@@ -99,7 +100,7 @@ $(document).ready (function () {
 	$("#loading").slideUp ();
 	$("#text-time").timeEntry ({spinnerImage: 'images/time-entry.png', spinnerSize: [20, 20, 0]});
 	$("#text-date").datepicker ();
-	$.datepicker.regional["<?= $config['language'] ?>"];
+	$.datepicker.regional["<?php echo $config['language']; ?>"];
 });
 </script>
 
@@ -124,8 +125,7 @@ $table->rowclass = array ();
 $table->rowclass[0] = 'datos3';
 
 $group_name = dame_grupo ($report['id_group']);
-$sql = sprintf ('SELECT * FROM treport_content WHERE id_report = %d ORDER BY `order`', $id_report);
-$contents = get_db_all_rows_sql ($sql);
+$contents = get_db_all_rows_field_filter ("treport_content","id_report",$id_report,"order");
 if ($contents === false) {
 	return;
 };
@@ -163,11 +163,13 @@ foreach ($contents as $content) {
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
 		
-		$sql2 = sprintf ('SELECT * FROM tgraph_source WHERE id_graph = %d', $content['id_gs']);
-		$res2 = mysql_query($sql2);
+		$result = get_db_all_rows_field_filter ("tgraph_source","id_graph",$content['id_gs']);
 		$modules = array ();
 		$weights = array ();
-		while ($content2 = mysql_fetch_array($res2)) {
+		if ($result === false)
+			$result = array();
+		
+		foreach ($result as $content2) {
 			array_push ($modules, $content2['id_agent_module']);
 			array_push ($weights, $content2["weight"]);
 		}
@@ -229,9 +231,9 @@ foreach ($contents as $content) {
 			
 			$n = array_push ($table->data, $data);
 		}
-		if (sizeof ($slas)) {
+		if (!empty ($slas)) {
 			$data = array ();
-			if (! $sla_failed)
+			if ($sla_failed !== false)
 				$data[0] = '<span style="font: bold 3em Arial, Sans-serif; color: #000000;">'.__('Ok').'</span>';
 			else
 				$data[0] = '<span style="font: bold 3em Arial, Sans-serif; color: #ff0000;">'.__('Fail').'</span>';
@@ -284,10 +286,10 @@ foreach ($contents as $content) {
 		$data = array ();
 		$monitor_value = format_numeric (get_agent_module_sla ($content['id_agent_module'], $content['period'], 1, 1, $datetime));
 		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">';
-		$data[0] .= $monitor_value.' % <img src="images/b_green.png" height="32" width="32"></p>';
+		$data[0] .= $monitor_value.' % <img src="images/b_green.png" height="32" width="32" /></p>';
 		$monitor_value2 = format_numeric (100 - $monitor_value, 2) ;
-		$data[1] = "<p style='font: bold 3em Arial, Sans-serif; color: #ff0000;'>";
-		$data[1] .= $monitor_value2.' % <img src="images/b_red.png" height="32" width="32"></p>';
+		$data[1] = '<p style="font: bold 3em Arial, Sans-serif; color: #ff0000;">';
+		$data[1] .= $monitor_value2.' % <img src="images/b_red.png" height="32" width="32" /></p>';
 		array_push ($table->data, $data);
 		
 		break;

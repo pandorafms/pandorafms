@@ -1,5 +1,12 @@
 2008-09-30  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
+	* operation/reporting/reporting_xml.php: Reporting does now output XML
+	reports for use in dashboards from other vendors.
+
+	* operation/reporting/custom_reporting.php: Added link for XML reports
+
+2008-09-30  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
 	* reporting/fgraph.php: monitors_health_pipe was in an aesthetically
 	bad order. Moved for yellow to be bad and green to be good
 

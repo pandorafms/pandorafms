@@ -1033,6 +1033,8 @@ function get_report_type_data_source ($type) {
 	switch ($type) {
 	case 1:
 	case 'simple_graph':
+	case 6: 
+	case 'monitor_report':
 	case 7:
 	case 'avg_value':
 	case 8:
@@ -1051,8 +1053,6 @@ function get_report_type_data_source ($type) {
 	case 'event_report':
 	case 5:
 	case 'alert_report':
-	case 6:
-	case 'monitor_report':
 	case 11:
 	case 'general_group_report':
 	case 12:

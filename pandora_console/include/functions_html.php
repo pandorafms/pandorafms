@@ -99,16 +99,14 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
  * $nothing Label when nothing is selected.
  * $nothing_value Value when nothing is selected
  */
-function print_select_from_sql ($sql, $name, $selected = '', $script = '', $nothing = 'select', $nothing_value = '0', $return = false, $multiple = false, $sort = true) {
+function print_select_from_sql ($sql, $name, $selected = '', $script = '', $nothing = '', $nothing_value = '0', $return = false, $multiple = false, $sort = true) {
 	
 	$fields = array ();
-	$result = mysql_query ($sql);
-	if (! $result) {
-		echo mysql_error ();
+	$result = get_db_all_rows_sql ($sql);
+	if ($result === false)
 		return "";
-	}
 	
-	while ($row = mysql_fetch_array ($result)) {
+	foreach ($result as $row) {
 		$fields[$row[0]] = $row[1];
 	}
 	

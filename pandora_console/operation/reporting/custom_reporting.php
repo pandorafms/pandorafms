@@ -37,6 +37,7 @@ $table->head = array ();
 $table->head[0] = __('Report name');
 $table->head[1] = __('Description');
 $table->head[2] = __('HTML');
+$table->head[3] = __('XML');
 $table->align = array ();
 $table->align[2] = 'center';
 $table->align[3] = 'center';
@@ -48,7 +49,8 @@ foreach ($reports as $report) {
 	$data[0] = $report['name'];
 	$data[1] = $report['description'];
 	$data[2] = '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$report['id_report'].'">
-			<img src="images/reporting.png"></a>';
+			<img src="images/reporting.png" /></a>';
+	$data[3] = '<a href="ajax.php?page=operation/reporting/reporting_xml&id='.$report['id_report'].'"><img src="images/database_lightning.png" /></a>'; //I chose ajax.php because it's supposed to give XML anyway
 	array_push ($table->data, $data);
 }
 

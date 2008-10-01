@@ -785,7 +785,7 @@ if (((!isset ($_POST["nc"]) OR ($_POST["nc"] == -1))) && (!isset ($_POST["oid"])
 			$form_id_module_group, $form_interval, $form_ip_target, $form_tcp_port, $form_tcp_rcv, $form_tcp_send, $form_id_export, $form_plugin_user, $form_plugin_pass, 
 			$form_plugin_parameter, $form_id_plugin, $form_post_process, $form_id_prediction_module, $form_max_timeout, $form_disabled, $form_id_modulo);
 	$id_agente_modulo = process_sql ($sql, 'insert_id');
-	echo $sql;	
+
 	if ($id_agente_modulo === false){
 		echo '<h3 class="error">'.__('There was a problem adding module').'</h3>';
 	} else {

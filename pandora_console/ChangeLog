@@ -1,3 +1,8 @@
+2008-10-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* extensions/update_manager/lib/libupdate_manager_client.php: Added a
+	timeout to the XML-RPC client.
+
 2008-09-30  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* operation/reporting/reporting_xml.php: Reporting does now output XML

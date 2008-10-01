@@ -22,13 +22,14 @@ unset ($prev_level);
 
 
 define ('XMLRPC_DEBUG', 0);
+define ('XMLRPC_TIMEOUT', 5);
 
 function um_xml_rpc_client_call ($server_host, $server_path, $server_port, $proxy, $proxy_port, $proxy_user, $proxy_pass, $function, $parameters) {
 	$msg = new XML_RPC_Message ($function, $parameters);
 	$client = new XML_RPC_Client ($server_path, $server_host, $server_port, $proxy, $proxy_port, $proxy_user, $proxy_pass);
 	if (defined ('XMLRPC_DEBUG'))
 		$client->setDebug (XMLRPC_DEBUG);
-	$result = $client->send ($msg);
+	$result = $client->send ($msg, XMLRPC_TIMEOUT);
 	
 	if (! $result) {
 		trigger_error ('<strong>Open Update Manager</strong> Server comunication error. '.$client->errstr);

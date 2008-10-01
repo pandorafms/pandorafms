@@ -215,6 +215,24 @@ echo '<td class="datos">'.__('SNMP Community')."</td>";
 echo '<td class="datos"><input type="text" name="form_snmp_community" size="12" value="'.$form_snmp_community.'"></td>';
 echo '</tr>';
 
+// SNMP version
+echo '<tr>';
+echo '<td class="datos">'.__('SNMP version');
+$snmp_versions["1"] = "1";
+$snmp_versions["2"] = "2";
+$snmp_versions["2c"] = "2c";
+$snmp_versions["3"] = "3";
+echo '</td>';
+echo '<td>';
+// SNMP module, tcp_send contains the snmp version
+if ($form_id_tipo_modulo >= 15 && $form_id_tipo_modulo <= 18) {
+	print_select ($snmp_versions, 'form_tcp_send', $form_tcp_send, '', '', '', false, false);
+} else {
+	print_select ($snmp_versions, 'form_tcp_send_void', 0, '', '', '', false, false);
+}
+echo '</td>';
+echo '</tr>';
+
 // Max / min value
 echo '<tr>';
 echo '<td class="datos2">'.__('Min. Value')."</td>";
@@ -248,7 +266,13 @@ echo '<tr>';
 echo '<td class="datos2" valign="top">'.__('TCP send');
 pandora_help ("tcp_send");
 echo "</td>";
-echo '<td class="datos2"><textarea cols=20 style="height:55px;" name="form_tcp_send">'.$form_tcp_send.'</textarea>';
+
+// SNMP module, tcp_send contains the SNMP version
+if ($form_id_tipo_modulo >= 15 && $form_id_tipo_modulo <= 18) {
+	echo '<td class="datos2"><textarea cols=20 style="height:55px;" name="form_tcp_send_void"></textarea>';
+} else {
+	echo '<td class="datos2"><textarea cols=20 style="height:55px;" name="form_tcp_send">'.$form_tcp_send.'</textarea>';
+}
 echo '<td class="datos2" valign="top">'.__('TCP receive')."</td>";
 echo '<td class="datos2"><textarea cols=20 style="height:55px;" name="form_tcp_rcv">'.$form_tcp_rcv.'</textarea>';
 echo '</tr>';

@@ -1,3 +1,7 @@
+2008-10-02  Ramon Novoa  <rnovoa@artica.es>
+
+	* bin/pandora_network: Added support for multiple SNMP versions.
+
 2008-09-08  Raul Mateos <raulofpandora@gmail.com>
 
 	* README: Updated version and URL.

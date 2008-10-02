@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CYBackwardCompatibleExport</key>
+	<false/>
+	<key>CYProjectFormatVersion</key>
+	<integer>1</integer>
+	<key>Steps</key>
+	<array>
+		<dict>
+			<key>Completed</key>
+			<false/>
+			<key>Detail</key>
+			<string>Custom_Step_1_Detail</string>
+			<key>MainHelp</key>
+			<string>Tag(200)</string>
+			<key>Required</key>
+			<true/>
+			<key>Title</key>
+			<string>Custom_Step_1_Title</string>
+		</dict>
+		<dict>
+			<key>Completed</key>
+			<false/>
+			<key>Detail</key>
+			<string>Custom_Step_2_Detail</string>
+			<key>MainHelp</key>
+			<string>Tag(201)</string>
+			<key>Required</key>
+			<true/>
+			<key>Title</key>
+			<string>Custom_Step_2_Title</string>
+		</dict>
+		<dict>
+			<key>Completed</key>
+			<false/>
+			<key>Detail</key>
+			<string>Custom_Step_3_Detail</string>
+			<key>MainHelp</key>
+			<string>Tag(202)</string>
+			<key>Required</key>
+			<true/>
+			<key>Title</key>
+			<string>Custom_Step_3_Title</string>
+		</dict>
+		<dict>
+			<key>Completed</key>
+			<false/>
+			<key>Detail</key>
+			<string>Custom_Step_4_Detail</string>
+			<key>MainHelp</key>
+			<string>Tag(203)</string>
+			<key>Recommended</key>
+			<true/>
+			<key>Title</key>
+			<string>Custom_Step_4_Title</string>
+		</dict>
+		<dict>
+			<key>Completed</key>
+			<true/>
+			<key>Detail</key>
+			<string>Custom_Step_5_Detail</string>
+			<key>MainHelp</key>
+			<string>Tag(204)</string>
+			<key>Recommended</key>
+			<true/>
+			<key>Title</key>
+			<string>Custom_Step_5_Title</string>
+		</dict>
+		<dict>
+			<key>Completed</key>
+			<false/>
+			<key>Detail</key>
+			<string>Custom_Step_6_Detail</string>
+			<key>MainHelp</key>
+			<string>Tag(205)</string>
+			<key>Recommended</key>
+			<true/>
+			<key>Title</key>
+			<string>Custom_Step_6_Title</string>
+		</dict>
+	</array>
+	<key>TemplateIdentifier</key>
+	<string>com.apple.Dashcode.template.custom</string>
+	<key>WidgetIconImageSettings</key>
+	<string>image-theme: 1; image-shape: 3; image-opacity: 1.00; image-top-color: 1.0000,1.0000,1.0000; image-bottom-color: 0.6154,0.6154,0.6154; image-radius: 12,12,12,12; image-border: 1; image-border-color: 0.5294,0.5294,0.5294; image-border-width: 1; shine-strength: 0.90; shine-alpha-level: 0.67; shine-height: 0.50; glass-arc-height: 0.06; shadow-include-shadow: 1; shadow-blur: 9.00; shadow-offset: -1.00,-6.00; shadow-color: 0.0000,0.0000,0.0000,0.3333;</string>
+	<key>WidgetIconIncludeLayer</key>
+	<true/>
+	<key>WidgetIconLayerPoint</key>
+	<string>{15.756, 18.8015}</string>
+	<key>WidgetIconLayerSize</key>
+	<string>{68.4874, 61.397}</string>
+</dict>
+</plist>

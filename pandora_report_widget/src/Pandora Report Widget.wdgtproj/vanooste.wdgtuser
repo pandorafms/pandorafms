@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Breakpoints</key>
+	<dict/>
+	<key>ContentSplitViewGeometry</key>
+	<dict>
+		<key>ContentSplitViewConfig</key>
+		<integer>8</integer>
+		<key>SplitViewConfig</key>
+		<integer>3</integer>
+		<key>_collapsingFrameDimension</key>
+		<real>0.0</real>
+		<key>_indexOfCollapsedView</key>
+		<integer>0</integer>
+		<key>_percentageOfCollapsedView</key>
+		<real>0.0</real>
+		<key>sizes</key>
+		<array>
+			<string>{{0, 0}, {997, 384}}</string>
+			<string>{{0, 394}, {997, 295}}</string>
+		</array>
+	</dict>
+	<key>ContentViewType</key>
+	<integer>0</integer>
+	<key>Dashboard Widget Prefs</key>
+	<dict>
+		<key>id</key>
+		<string>41ad2adffece6363</string>
+		<key>in-layer</key>
+		<true/>
+		<key>path</key>
+		<string>/private/var/folders/lu/lur3T8arGqSkdoBhZw56VE++-Fo/-Tmp-/Dashcode/.TemplateCustomUjPkIj/Pandora Dashboard Widget.wdgtproj/project.wdgt/</string>
+		<key>percent-offset-x</key>
+		<integer>0</integer>
+		<key>percent-offset-y</key>
+		<integer>0</integer>
+		<key>percent-type</key>
+		<integer>2</integer>
+		<key>percent-x</key>
+		<real>0.14940476417541504</real>
+		<key>percent-y</key>
+		<real>0.11619047820568085</real>
+		<key>pos-x</key>
+		<integer>1149</integer>
+		<key>pos-y</key>
+		<integer>122</integer>
+	</dict>
+	<key>Design time language</key>
+	<string>en.lproj</string>
+	<key>MainSplitViewGeometry</key>
+	<dict>
+		<key>_collapsingFrameDimension</key>
+		<real>0.0</real>
+		<key>_indexOfCollapsedView</key>
+		<integer>0</integer>
+		<key>_percentageOfCollapsedView</key>
+		<real>0.0</real>
+		<key>sizes</key>
+		<array>
+			<string>{{0, 0}, {244, 710}}</string>
+			<string>{{245, 0}, {998, 710}}</string>
+		</array>
+	</dict>
+	<key>MainWindowFrame</key>
+	<string>182 186 1242 731 0 0 1680 1028 </string>
+	<key>NavigatorSplitViewGeometry</key>
+	<dict>
+		<key>ContentSplitViewConfig</key>
+		<integer>5</integer>
+		<key>SplitViewConfig</key>
+		<integer>3</integer>
+		<key>_collapsingFrameDimension</key>
+		<real>0.0</real>
+		<key>_indexOfCollapsedView</key>
+		<integer>0</integer>
+		<key>_percentageOfCollapsedView</key>
+		<real>0.0</real>
+		<key>sizes</key>
+		<array>
+			<string>{{0, 0}, {246, 382}}</string>
+			<string>{{0, 392}, {246, 297}}</string>
+		</array>
+	</dict>
+	<key>Objects view expanded items</key>
+	<array>
+		<array>
+			<integer>0</integer>
+		</array>
+		<array>
+			<integer>0</integer>
+			<integer>0</integer>
+		</array>
+		<array>
+			<integer>0</integer>
+			<integer>1</integer>
+		</array>
+		<array>
+			<integer>0</integer>
+			<integer>0</integer>
+			<integer>3</integer>
+		</array>
+		<array>
+			<integer>0</integer>
+			<integer>0</integer>
+			<integer>2</integer>
+		</array>
+		<array>
+			<integer>0</integer>
+			<integer>0</integer>
+			<integer>4</integer>
+		</array>
+		<array>
+			<integer>0</integer>
+			<integer>0</integer>
+			<integer>5</integer>
+		</array>
+	</array>
+	<key>Objects view last selections</key>
+	<array/>
+	<key>Opened Steps</key>
+	<array>
+		<integer>0</integer>
+		<integer>1</integer>
+	</array>
+</dict>
+</plist>

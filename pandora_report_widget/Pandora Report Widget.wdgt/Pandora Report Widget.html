@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <style type="text/css" title="AppleStyle">
+        @import "Pandora Report Widget.css";
+    </style>
+    <script type="text/javascript" src="file:///System/Library/WidgetResources/AppleClasses/AppleAnimator.js" charset="utf-8"></script>
+    <script type="text/javascript" src="file:///System/Library/WidgetResources/AppleClasses/AppleButton.js" charset="utf-8"></script>
+    <script type="text/javascript" src="file:///System/Library/WidgetResources/AppleClasses/AppleInfoButton.js" charset="utf-8"></script>
+    <script type="text/javascript" src="localizedStrings.js" charset="utf-8"></script>
+	<script type="text/javascript" src="phpfunctions.js" charset="utf-8"></script>
+    <script type="text/javascript" src="Parts/utilities.js" charset="utf-8"></script>
+    <script type="text/javascript" src="Parts/setup.js" charset="utf-8"></script>
+    <script type="text/javascript" src="Parts/Text.js" charset="utf-8"></script>
+    <script type="text/javascript" src="Parts/InfoButton.js" charset="utf-8"></script>
+    <script type="text/javascript" src="Parts/GlassButton.js" charset="utf-8"></script>
+    <script type="text/javascript" src="Pandora Report Widget.js" charset="utf-8"></script>
+
+<script type="text/javascript" src="Parts/Button.js" charset="utf-8"></script>
+<script type="text/javascript" src="Parts/Gauge.js" charset="utf-8"></script>
+</head>
+<body onload="load();" id="body">
+    <div id="front">
+        <img id="frontImg" src="Images/front.png" alt="">    
+    <div apple-text-overflow="ellipsis" id="report_name"></div>
+    <div id="box0">
+        <div id="gauge-box0"></div>
+    <div apple-text-overflow="ellipsis" id="agent-text0"></div>
+    <div apple-text-overflow="ellipsis" id="agent-value0"></div>
+    <div apple-text-overflow="ellipsis" id="module-text0"></div>
+    <div apple-text-overflow="ellipsis" id="module-value0"></div>
+    <div apple-text-overflow="ellipsis" id="num-box0"></div>
+    </div>
+    <div id="box1">
+        <div id="gauge-box1"></div>
+    <div apple-text-overflow="ellipsis" id="agent-text1"></div>
+    <div apple-text-overflow="ellipsis" id="agent-value1"></div>
+    <div apple-text-overflow="ellipsis" id="module-text1"></div>
+    <div apple-text-overflow="ellipsis" id="module-value1"></div>
+    <div apple-text-overflow="ellipsis" id="num-box1"></div>
+    </div>
+    <div id="box2">
+	<div id="gauge-box2"></div>
+    <div apple-text-overflow="ellipsis" id="agent-text2"></div>
+    <div apple-text-overflow="ellipsis" id="agent-value2"></div>
+    <div apple-text-overflow="ellipsis" id="module-text2"></div>
+    <div apple-text-overflow="ellipsis" id="module-value2"></div>
+    <div apple-text-overflow="ellipsis" id="num-box2"></div>
+    </div>
+    <div id="box3">
+        <div id="gauge-box3"></div>
+    <div apple-text-overflow="ellipsis" id="agent-text3"></div>
+    <div apple-text-overflow="ellipsis" id="agent-value3"></div>
+    <div apple-text-overflow="ellipsis" id="module-text3"></div>
+    <div apple-text-overflow="ellipsis" id="module-value3"></div>
+    <div apple-text-overflow="ellipsis" id="num-box3"></div>
+    </div>
+    
+    <div id="refresh" onclick="refreshButton();"></div>
+    
+    
+    <div apple-text-overflow="ellipsis" id="error_txt"></div>
+    <div id="info"></div>
+    </div>
+    <div id="back">
+       <img id="backImg" src="Images/back.png" alt="">
+        
+        
+    <div apple-text-overflow="ellipsis" id="url-text"></div>
+    <input type="text" name="" value="" id="url" oninput="loginchanged = 1;">
+    
+    <div apple-text-overflow="ellipsis" id="login-text"></div>
+    <input type="text" name="" value="" id="login" oninput="loginchanged = 1;">
+    <div apple-text-overflow="ellipsis" id="password-text"></div>
+    <input type="password" name="" value="" id="password" oninput="loginchanged = 1;">
+    
+    <div apple-text-overflow="ellipsis" id="reportid-text"></div>
+    <input type="text" name="" value="" id="reportid" oninput="loginchanged = 1;">
+    
+    <div id="done"></div>
+    </div>
+
+</body>
+</html>

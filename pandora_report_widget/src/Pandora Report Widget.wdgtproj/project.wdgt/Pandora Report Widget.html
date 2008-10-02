@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <style type="text/css" title="AppleStyle">
+        @import "Pandora Report Widget.css";
+    </style>
+    <script type="text/javascript" src="file:///System/Library/WidgetResources/AppleClasses/AppleAnimator.js" charset="utf-8"></script>
+    <script type="text/javascript" src="file:///System/Library/WidgetResources/AppleClasses/AppleButton.js" charset="utf-8"></script>
+    <script type="text/javascript" src="file:///System/Library/WidgetResources/AppleClasses/AppleInfoButton.js" charset="utf-8"></script>
+    <script type="text/javascript" src="localizedStrings.js" charset="utf-8"></script>
+	<script type="text/javascript" src="phpfunctions.js" charset="utf-8"></script>
+    <script type="text/javascript" src="Parts/utilities.js" charset="utf-8"></script>
+    <script type="text/javascript" src="Parts/setup.js" charset="utf-8"></script>
+    <script type="text/javascript" src="Parts/Text.js" charset="utf-8"></script>
+    <script type="text/javascript" src="Parts/InfoButton.js" charset="utf-8"></script>
+    <script type="text/javascript" src="Parts/GlassButton.js" charset="utf-8"></script>
+    <script type="text/javascript" src="Pandora Report Widget.js" charset="utf-8"></script>
+
+<script type="text/javascript" src="Parts/Button.js" charset="utf-8"></script>
+<script type="text/javascript" src="Parts/Gauge.js" charset="utf-8"></script>
+</head>
+<body onload="load();" id="body">
+    <div id="front">
+        <img id="frontImg" src="Images/front.png" alt="" apple-locked="true" apple-part="com.apple.Dashcode.part.frontimage" apple-style="image-theme: 1; image-shape: 3; image-opacity: 1.00; image-top-color: 1.0000,1.0000,1.0000; image-bottom-color: 0.6154,0.6154,0.6154; image-radius: 12,12,12,12; image-border: 1; image-border-color: 0.5294,0.5294,0.5294; image-border-width: 1; shine-on: 0; shine-strength: 0.90; shine-alpha-level: 0.67; shine-height: 0.50; glass-arc-height: 0.06; shadow-include-shadow: 1; shadow-blur: 9.00; shadow-offset: -1.00,-6.00; shadow-color: 0.0000,0.0000,0.0000,0.3333;">    
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-text-overflow="ellipsis" id="report_name" apple-group="text"></div>
+    <div id="box0" apple-locked="true">
+        <div apple-part="com.apple.Dashcode.part.gauge" class="apple-no-children" id="gauge-box0" apple-group="gauge-box2" apple-default-image-visibility="hidden" apple-locked="true"></div>
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="agent-text0" apple-group="text"></div>
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="agent-value0" apple-group="text"></div>
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="module-text0" apple-group="text"></div>
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="module-value0" apple-group="text"></div>
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="num-box0" apple-group="text"></div>
+    </div>
+    <div id="box1" apple-locked="true">
+        <div apple-part="com.apple.Dashcode.part.gauge" class="apple-no-children" id="gauge-box1" apple-group="gauge-box2" apple-default-image-visibility="hidden" apple-locked="true"></div>
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="agent-text1" apple-group="text"></div>
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="agent-value1" apple-group="text"></div>
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="module-text1" apple-group="text"></div>
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="module-value1" apple-group="text"></div>
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="num-box1" apple-group="text"></div>
+    </div>
+    <div id="box2" apple-locked="true">
+	<div apple-part="com.apple.Dashcode.part.gauge" class="apple-no-children" id="gauge-box2" apple-group="gauge-box2" apple-default-image-visibility="hidden" apple-locked="true"></div>
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="agent-text2" apple-group="text"></div>
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="agent-value2" apple-group="text"></div>
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="module-text2" apple-group="text"></div>
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="module-value2" apple-group="text"></div>
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="num-box2" apple-group="text"></div>
+    </div>
+    <div id="box3" apple-locked="true">
+        <div apple-part="com.apple.Dashcode.part.gauge" class="apple-no-children" id="gauge-box3" apple-group="gauge-box2" apple-default-image-visibility="hidden" apple-locked="true"></div>
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="agent-text3" apple-group="text"></div>
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="agent-value3" apple-group="text"></div>
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="module-text3" apple-group="text"></div>
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="module-value3" apple-group="text"></div>
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="num-box3" apple-group="text"></div>
+    </div>
+    
+    <div apple-part="com.apple.Dashcode.part.lozengetextbutton" class="apple-no-children" apple-style="image-theme: 1; image-shape: 1; image-button-type: 0; image-opacity: 1.00; image-top-color: 1.0000,1.0000,1.0000; image-bottom-color: 0.6154,0.6154,0.6154; image-radius: 10,10,10,10; image-border: 1; image-border-color: 0.5294,0.5294,0.5294; image-border-width: 1; shine-on: 0; shine-strength: 0.90; shine-alpha-level: 0.67; shine-height: 0.50; glass-arc-height: 0.06; shadow-include-shadow: 0; shadow-blur: 3.00;" id="refresh" apple-group="button" onclick="refreshButton();"></div>
+    
+    
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="error_txt" apple-group="text"></div>
+    <div class="apple-no-children" id="info" apple-part="com.apple.Dashcode.part.infobutton" apple-default-image-visibility="hidden"></div>
+    </div>
+    <div id="back">
+       <img id="backImg" src="Images/back.png" alt="" apple-locked="false" apple-part="com.apple.Dashcode.part.backimage" apple-style=" image-radius: 12,12,12,12; image-border: 1; image-border-color: 0.1500,0.1500,0.1500; image-border-width: 3; shadow-include-shadow: 1; shadow-blur: 9.00; shadow-offset: -1.00,-6.00; shadow-color: 0.0000,0.0000,0.0000,0.3333;">
+        
+        
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="url-text" apple-group="text" apple-locked="true"></div>
+    <input type="text" name="" value="" class="apple-textfield apple-no-children" apple-part="com.apple.Dashcode.part.textfield" id="url" apple-group="textfield" apple-locked="true" oninput="loginchanged = 1;">
+    
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="login-text" apple-group="text" apple-locked="false"></div>
+    <input type="text" name="" value="" class="apple-textfield apple-no-children" apple-part="com.apple.Dashcode.part.textfield" id="login" apple-group="textfield" apple-locked="false" oninput="loginchanged = 1;">
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="password-text" apple-group="text" apple-locked="false"></div>
+    <input type="password" name="" value="" class="apple-textfield apple-no-children" apple-part="com.apple.Dashcode.part.textfield" id="password" apple-group="textfield" apple-locked="false" oninput="loginchanged = 1;">
+    
+    <div apple-part="com.apple.Dashcode.part.text" class="apple-text apple-no-children" apple-default-image-visibility="hidden" apple-text-overflow="ellipsis" id="reportid-text" apple-group="text" apple-locked="false"></div>
+    <input type="text" name="" value="" class="apple-textfield apple-no-children" apple-part="com.apple.Dashcode.part.textfield" id="reportid" apple-group="textfield" apple-locked="false" oninput="loginchanged = 1;">
+    
+    <div id="done" class="apple-no-children" apple-part="com.apple.Dashcode.part.glassbutton"></div>
+    </div>
+
+</body>
+</html>

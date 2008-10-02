@@ -1,3 +1,10 @@
+2008-10-02  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* operation/reporting/reporting_xml.php: Updated to handle logins in
+	case our XML client can't handle sessions. If you use this, try to
+	use POST requests and HTTPS for login. Only if your client is really
+	braindead should you be using GET for login. Example in source.
+
 2008-10-02  Esteban Sanchez  <estebans@artica.es>
 
 	* operation/reporting/reporting_viewer.php,

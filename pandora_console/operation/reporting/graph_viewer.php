@@ -21,10 +21,13 @@
 
 check_login ();
 
+$delete_graph = (bool) get_parameter ('delete_graph');
+$view_graph = (bool) get_parameter ('view_graph');
+$id = (int) get_parameter ('id');
+
 // Delete module SQL code
-if (isset($_GET["delete"])) {
-	if (! give_acl($config['id_user'], 0, "AW")) {
-		$id = $_GET["delete"];
+if ($delete_graph) {
+	if (give_acl ($config['id_user'], 0, "AW")) {
 		$sql = "DELETE FROM tgraph_source WHERE id_graph = $id";
 		if ($res=mysql_query($sql))
 			$result = "<h3 class=suc>".__('Deleted successfully')."</h3>";
@@ -38,23 +41,22 @@ if (isset($_GET["delete"])) {
 		echo $result;
 	} else {
 		audit_db ($config['id_user'],$REMOTE_ADDR, "ACL Violation","Trying to delete a graph from access graph builder");
-	include ("general/noaccess.php");
-	exit;
+		include ("general/noaccess.php");
+		exit;
 	}
 }
 
-if (isset($_GET["view_graph"])){
-	$id_graph = $_GET["view_graph"];
-	$sql="SELECT * FROM tgraph WHERE id_graph = $id_graph";
+if ($view_graph) {
+	$sql="SELECT * FROM tgraph WHERE id_graph = $id";
 	$res=mysql_query($sql);
-	if ($row = mysql_fetch_array($res)){
-		$id_user = $row["id_user"];
-		$private = $row["private"];
-		$width = $row["width"];
-		$height = $row["height"];
+	if ($graph = mysql_fetch_array($res)){
+		$id_user = $graph["id_user"];
+		$private = $graph["private"];
+		$width = $graph["width"];
+		$height = $graph["height"];
 		$zoom = (int) get_parameter ('zoom', 0);
-		if ($zoom > 0){
-			switch ($zoom){
+		if ($zoom > 0) {
+			switch ($zoom) {
 			case 1: 
 				$width = 500;
 				$height = 210;
@@ -71,28 +73,28 @@ if (isset($_GET["view_graph"])){
 		}
 		$period = (int) get_parameter ('period');
 		if (! $period)
-			$period = $row["period"];
+			$period = $graph["period"];
 		else 
 			$period = 3600 * $period;
-		$events = $row["events"];
-		$description = $row["description"];
+		$events = $graph["events"];
+		$description = $graph["description"];
 		$stacked = (int) get_parameter ('stacked', -1);
 		if ($stacked == -1)
-			$stacked = $row["stacked"];
+			$stacked = $graph["stacked"];
 		
 
-		$name = $row["name"];
-		if (($row["private"]==1) && ($row["id_user"] != $id_user)){
+		$name = $graph["name"];
+		if (($graph["private"]==1) && ($graph["id_user"] != $id_user)){
 			audit_db($config['id_user'],$REMOTE_ADDR, "ACL Violation","Trying to access to a custom graph not allowed");
 			include ("general/noaccess.php");
 			exit;
 		}
 		
-		$sql2="SELECT * FROM tgraph_source WHERE id_graph = $id_graph";
+		$sql2="SELECT * FROM tgraph_source WHERE id_graph = $id";
 		$res2=mysql_query($sql2);
-		while ( $row2 = mysql_fetch_array($res2)){
-			$weight = $row2["weight"];
-			$id_agent_module = $row2["id_agent_module"];
+		while ($graph_source = mysql_fetch_array($res2)) {
+			$weight = $graph_source["weight"];
+			$id_agent_module = $graph_source["id_agent_module"];
 			$id_grupo = get_db_sql ("SELECT id_grupo FROM tagente, tagente_modulo WHERE tagente_modulo.id_agente_modulo = $id_agent_module AND tagente.id_agente = tagente_modulo.id_agente");
 			if (give_acl($config["id_user"], $id_grupo, "AR")==1){
 				if (!isset($modules)){
@@ -113,7 +115,7 @@ src='reporting/fgraph.php?tipo=combined&height=$height&width=$width&id=$modules&
 border=1 alt=''>";
 		echo "</td></tr></table>";
 		$period_label = human_time_description ($period);
-		echo "<form method='POST' action='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=$id_graph'>";
+		echo "<form method='POST' action='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=$id'>";
 		echo "<table class='databox_frame' cellpadding=4 cellspacing=4>";
 		echo "<tr><td class='datos'>";
 		echo "<b>".__('Period')."</b>";
@@ -169,8 +171,8 @@ if (mysql_num_rows($res)) {
 		echo "<th>".__('Delete')."</th>";
 	echo "</tr>";
 
-	while ($row = mysql_fetch_array($res)){
-		if (($row["private"]==0) || ($row["id_user"] == $id_user)){
+	while ($graph = mysql_fetch_array($res)){
+		if (($graph["private"] == 0) || ($graph["id_user"] == $id_user)) {
 			// Calculate table line color
 			if ($color == 1){
 				$tdcolor = "datos";
@@ -181,13 +183,13 @@ if (mysql_num_rows($res)) {
 				$color = 1;
 			}
 			echo "<tr>";
-			echo "<td valign='top' class='$tdcolor'>".$row["name"]."</td>";
-			echo "<td class='$tdcolor'>".$row["description"]."</td>";
-			$id_graph =  $row["id_graph"];
-			echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=$id_graph'><img src='images/images.png'></a>";
+			echo "<td valign='top' class='$tdcolor'>".$graph["name"]."</td>";
+			echo "<td class='$tdcolor'>".$graph["description"]."</td>";
+			$id =  $graph["id_graph"];
+			echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=$id'><img src='images/images.png'></a>";
 			
 			if (give_acl ($config['id_user'], 0, "AW")) {
-				echo "<td class='$tdcolor' align='center'><a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&delete=$id_graph' ".'onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+				echo "<td class='$tdcolor' align='center'><a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&delete_graph=1&id=$id' ".'onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
 				echo "<img src='images/cross.png'></a></td>";
 			}
 		}

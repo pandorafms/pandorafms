@@ -1,3 +1,18 @@
+2008-10-02  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_db.php: Removed quotes when using $order_field so
+	it can be used order (ASC or DESC).
+
+	* include/functions_html.php: Added thead and tbody to be more XHTML
+	compliant.
+	
+	* operation/reporting/graph_viewer.php: Fixed a typo error that was
+	not allowing to remove a graph. Style correction, variables renamed to
+	have a meaning ($row has no scope or meaning, please do not use it!)
+	and better use of the parameters.
+
+	* godmode/extensions.php: Style correction.
+
 2008-10-01  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/agentes/module_manager_editor_network.php: Added support for

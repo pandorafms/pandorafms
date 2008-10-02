@@ -368,10 +368,9 @@ function print_table (&$table, $return = false) {
 	$output .= " cellpadding=\"$table->cellpadding\" cellspacing=\"$table->cellspacing\" ";
 	$output .= " border=\"$table->border\" class=\"$table->class\" id=\"$tableid\" >\n";
 	$countcols = 0;
-
 	if (!empty ($table->head)) {
 		$countcols = count ($table->head);
-		$output .= '<tr>';
+		$output .= '<thead><tr>';
 		foreach ($table->head as $key => $heading) {
 			if (!isset ($size[$key])) {
 				$size[$key] = '';
@@ -382,8 +381,10 @@ function print_table (&$table, $return = false) {
 	
 			$output .= '<th class="header c'.$key.'" scope="col">'. $heading .'</th>';
 		}
-		$output .= '</tr>'."\n";
+		$output .= '</tr></thead>'."\n";
 	}
+
+	$output .= '<tbody>'."\n";
 	if (!empty ($table->data)) {
 		$oddeven = 1;
 		foreach ($table->data as $keyrow => $row) {
@@ -428,7 +429,7 @@ function print_table (&$table, $return = false) {
 			$output .= '</tr>'."\n";
 		}
 	}
-	$output .= '</table>'."\n";
+	$output .= '</tbody></table>'."\n";
 
 	if ($return) 
 		return $output;

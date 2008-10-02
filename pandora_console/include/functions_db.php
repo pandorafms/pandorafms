@@ -1466,7 +1466,7 @@ function process_sql ($sql, $rettype = "affected_rows") {
  */
 function get_db_all_rows_in_table ($table, $order_field = "") {
 	if ($order_field != "") {
-		return get_db_all_rows_sql ("SELECT * FROM `".$table."` ORDER BY `".$order_field."` ");
+		return get_db_all_rows_sql ("SELECT * FROM `".$table."` ORDER BY ".$order_field);
 	} else {	
 		return get_db_all_rows_sql ("SELECT * FROM `".$table."`");
 	}
@@ -1491,7 +1491,7 @@ function get_db_all_rows_field_filter ($table, $field, $condition, $order_field 
 	}
 
 	if ($order_field != "")
-		$sql .= sprintf(" ORDER BY `%s`",$order_field);	
+		$sql .= sprintf(" ORDER BY %s",$order_field);	
 	return get_db_all_rows_sql ($sql);
 }
 

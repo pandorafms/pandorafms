@@ -16,9 +16,87 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
 // Login check
-require("include/config.php");
+if (isset ($_GET["direct"]))  {
+	/* 
+	This is in case somebody wants to access the XML directly without
+	having the possibility to login and handle sessions
+	
+	Use this URL: https://yourserver/pandora_console/operation/reporting/reporting_xml.php?id=<reportid>&direct=1
+	
+	Although it's not recommended, you can put your login and password
+	in a GET request (append &nick=<yourlogin>&password=<password>). 
+	
+	
+	You SHOULD put it in a POST but some programs
+	might not be able to handle it without extensive re-programming
+	(M$ ShitPoint). Either way, you should have a read-only user for getting reports
+	
+	XMLHttpRequest can do it (example):
+	
+	var reportid = 3;
+	var login = "yourlogin";
+	var password = "yourpassword";
+	var url = "https://<yourserver>/pandora_console/operation/reporting/reporting_xml.php?id="+urlencode(reportid)+"&direct=1";
+	var params = "nick="+urlencode(login)+"&pass="+urlencode(password);
+	var xmlHttp = new XMLHttpRequest();
+	var textout = "";
+	try { 
+		xmlHttp.open("POST", url, false);
+		xmlHttp.send(params);
+		if(xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+			textout = xmlHttp.responseXML;
+		}
+	} 
+	catch (err) {
+		alert ("error");
+	}
+	*/
+	require_once ("../../include/config.php");
+	require_once ("../../include/functions.php");
+	require_once ("../../include/functions_db.php");
+	require_once ("../../include/functions_reporting.php");
+	
+	$nick = get_parameter ("nick");
+	$pass = get_parameter ("pass");
+        
+	// Connect to Database
+        $sql = sprintf("SELECT `id_usuario`, `password` FROM `tusuario` WHERE `id_usuario` = '%s'",$nick);
+        $row = get_db_row_sql ($sql);
+                        
+        // For every registry
+        if ($row !== false) {
+                if ($row["password"] == md5 ($pass)) {
+                        // Login OK
+                        // Nick could be uppercase or lowercase (select in MySQL
+                        // is not case sensitive)
+                        // We get DB nick to put in PHP Session variable,
+                        // to avoid problems with case-sensitive usernames.
+                        // Thanks to David Muñiz for Bug discovery :)
+                        $nick = $row["id_usuario"];
+                        update_user_contact ($nick);
+                        $_SESSION['id_usuario'] = $nick;
+                        $config['id_user'] = $nick;
+                        unset ($_GET['pass'], $pass);
+                } else {
+                        // Login failed (bad password) 
+                        echo "Logon failed";
+                        audit_db ($nick, $_SERVER['REMOTE_ADDR'], "Logon Failed",
+                                  "Incorrect password: " . $nick);
+                        exit;
+                }
+        } else {
+                // User not known
+                echo "Logon failed";
+                audit_db ($nick, $_SERVER['REMOTE_ADDR'], "Logon Failed",
+                          "Invalid username: " . $nick);
+                exit;
+        }
+
+} else {
+	require_once ("include/config.php");
+	require_once ("include/functions_reporting.php");
+}
 
 check_login();
 
@@ -27,7 +105,7 @@ $id_report = (int) get_parameter ('id');
 if (! $id_report) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "HACK Attempt",
 		"Trying to access graph viewer withoud ID");
-	include ("general/noaccess.php");
+	require ("general/noaccess.php");
 	exit;
 }
 
@@ -38,8 +116,6 @@ if (! give_acl ($config['id_user'], $report['id_group'], "AR")) {
 	include ("general/noaccess.php");
 	exit;
 }
-
-require ("include/functions_reporting.php");
 
 /* Check if the user can see the graph */
 if ($report['id_user'] != $config['id_user'] && ! dame_admin ($config['id_user']) && ! $report['private']) {
@@ -54,13 +130,13 @@ $time = (string) get_parameter ('time', date ('h:iA'));
 $datetime = strtotime ($date.' '.$time);
 
 if ($datetime === false || $datetime == -1) {
-	$xml["error"][] = __('Invalid date selected');
-	return;
+	echo "<error>Invalid date selected</error>"; //Not translatable because this is an error message and might have to be used on the other end
+	exit;
 }
 /* Date must not be older than now */
 if ($datetime > time ()) {
-	$xml["error"][] = __('Selected date is older than current date');
-	return;
+	echo "<error>Date is larger than current time</error>"; //Not translatable because this is an error message
+	exit;
 }
 
 $group_name = dame_grupo ($report['id_group']);
@@ -234,8 +310,11 @@ function xml_array ($array) {
 	}
 }
 
-echo "<report>";
+$time = time ();
+echo '<report>';
+echo '<generated><unix>'.$time.'</unix>';
+echo '<rfc2822>'.date ("r",$time).'</rfc2822></generated>';
 xml_array ($xml);
-echo "</report>";
+echo '</report>';
 
 ?>

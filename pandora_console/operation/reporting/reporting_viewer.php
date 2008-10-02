@@ -125,7 +125,7 @@ $table->rowclass = array ();
 $table->rowclass[0] = 'datos3';
 
 $group_name = dame_grupo ($report['id_group']);
-$contents = get_db_all_rows_field_filter ("treport_content","id_report",$id_report,"order");
+$contents = get_db_all_rows_field_filter ("treport_content", "id_report", $id_report, "`order`");
 if ($contents === false) {
 	return;
 };
@@ -163,7 +163,7 @@ foreach ($contents as $content) {
 		$data[2] = "<h4>".human_time_description ($content['period'])."</h4>";
 		array_push ($table->data, $data);
 		
-		$result = get_db_all_rows_field_filter ("tgraph_source","id_graph",$content['id_gs']);
+		$result = get_db_all_rows_field_filter ("tgraph_source", "id_graph", $content['id_gs']);
 		$modules = array ();
 		$weights = array ();
 		if ($result === false)

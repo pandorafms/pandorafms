@@ -64,7 +64,7 @@ if ($datetime > time ()) {
 }
 
 $group_name = dame_grupo ($report['id_group']);
-$contents = get_db_all_rows_field_filter ("treport_content","id_report",$id_report,"order");
+$contents = get_db_all_rows_field_filter ('treport_content', 'id_report', $id_report, '`order`');
 
 
 $xml["id"] = $id_report;
@@ -209,10 +209,10 @@ foreach ($contents as $content) {
 		$data["objdata"] .= "]]>";
 		break;
 	}
-	array_push ($xml["reports"],$data);
+	array_push ($xml["reports"], $data);
 }
 
-header('Content-type: application/xml; charset="utf-8"',true);
+header ('Content-type: application/xml; charset="utf-8"',true);
 
 
 function xml_array ($array) {

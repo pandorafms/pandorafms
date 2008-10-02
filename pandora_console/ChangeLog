@@ -1,5 +1,12 @@
 2008-10-02  Esteban Sanchez  <estebans@artica.es>
 
+	* operation/reporting/reporting_viewer.php,
+	operation/reporting/reporting_xml.php: Quote order field on
+	get_db_all_rows_field_filter(), since it was a reserved word in SQL.
+	Style corrections.
+
+2008-10-02  Esteban Sanchez  <estebans@artica.es>
+
 	* include/functions_db.php: Removed quotes when using $order_field so
 	it can be used order (ASC or DESC).
 

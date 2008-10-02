@@ -462,12 +462,18 @@ next_pair:
 # SUB pandora_query_snmp (pa_config, oid, community, target, error, dbh)
 # Makes a call to SNMP modules to get a value,
 ##########################################################################
-sub pandora_query_snmp (%$$$$) {
+sub pandora_query_snmp (%$$$$$) {
 	my $pa_config = $_[0];
 	my $snmp_oid = $_[1];
 	my $snmp_community =$_[2];
 	my $snmp_target = $_[3];
-	# $_[4] contains error var.
+	my $snmp_version = $_[4];
+	# $_[5] contains error var.
+
+	if ($snmp_version ne '1' && $snmp_version ne '2' 
+		&& $snmp_version ne '2c' && $snmp_version ne '3') {
+		$snmp_version = '1';
+	}
 
     my $output ="";
     my $snmp_timeout = 1000 * 1000 * $pa_config->{"snmp_timeout"};
@@ -480,12 +486,12 @@ sub pandora_query_snmp (%$$$$) {
 					Timeout   => $snmp_timeout,
 					Retries   => $snmp_retries,
                     Community => $snmp_community,
-                    Version   => 1);
+                    Version   => $snmp_version);
 	}
 
 	if ((!defined($SESSION)) || ($SESSION->{ErrorStr})) {
         logger($pa_config, "SNMP ERROR SESSION for Target $snmp_target ".$SESSION->{ErrorStr}, 2);
-		$_[4] = "1";
+		$_[5] = "1";
         if (defined($SESSION)){
 		    undef ($SESSION);
         }
@@ -499,11 +505,11 @@ sub pandora_query_snmp (%$$$$) {
 	}
 	if ((!defined($output)) || ($output eq "")) {
                	logger($pa_config, "SNMP ERROR SNMPGET for Target $snmp_target ".$SESSION->{ErrorStr}, 2);
-               	$_[4] = "1";
+               	$_[5] = "1";
 		        undef ($SESSION);
                	return 0;
 	}
-	$_[4] = "0";
+	$_[5] = "0";
 	undef ($SESSION);
 	return $output;
 }
@@ -592,7 +598,7 @@ sub exec_network_module {
 	    # ------------
 	    } elsif (($id_tipo_modulo == 15) || ($id_tipo_modulo == 18) || ($id_tipo_modulo == 16) || ($id_tipo_modulo == 17)) { # SNMP module
             if ((defined($snmp_oid)) && ($snmp_oid ne "") && (defined($snmp_community)) && ($snmp_community ne "")) { # Port check
-		    	    $temp2 = pandora_query_snmp ($pa_config, $snmp_oid, $snmp_community, $ip_target, $error);
+		    	    $temp2 = pandora_query_snmp ($pa_config, $snmp_oid, $snmp_community, $ip_target, $tcp_send, $error);
 		    } else {
 			    $error = 1
 		    }

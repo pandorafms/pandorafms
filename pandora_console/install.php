@@ -234,9 +234,9 @@ function install_step2() {
 		echo "<h2>Checking software dependencies</h2>";
 			echo "<table border=0 width=230>";
 			$res = 0;
-			$res += check_variable(phpversion(),"4.3","PHP version >= 4.3.x",1);
+			$res += check_variable(phpversion(),"5.2","PHP version >= 5.2",1);
 			$res += check_extension("mysql","PHP MySQL extension");
-			$res += check_extension("gd","PHP gd extension");
+			$res += check_extension("gd","PHP GD extension");
 			$res += check_extension("snmp","PHP SNMP extension");
 			$res += check_extension("session","PHP session extension");
 			$res += check_extension("gettext","PHP gettext extension");

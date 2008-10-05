@@ -1,3 +1,7 @@
+2008-10-05  Raul Mateos  <raulofpandora@gmail.com>
+
+	* install.php: Updated PHP version dependency.
+
 2008-10-02  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* operation/reporting/reporting_xml.php: Updated to handle logins in

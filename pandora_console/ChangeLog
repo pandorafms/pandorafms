@@ -1,3 +1,13 @@
+2008-10-06  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* godmode/agentes/configurar_agente.php: Double values in query removed
+	
+	* godmode/agentes/agent_manager.php: WMI Server now properly displays
+	None if no WMI server is present
+
+	* include/functions_html.php: If the query returns empty for
+	print_select_from_sql, a box should still be printed. Fixed.
+
 2008-10-05  Raul Mateos  <raulofpandora@gmail.com>
 
 	* install.php: Updated PHP version dependency.

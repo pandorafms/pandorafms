@@ -155,7 +155,7 @@ echo '<a href="#" class="tip">&nbsp;<span>'.__('You must select a WMI Server for
 echo '</td><td class="datos2">';
 $none = '';
 $none_value = '';
-if ($id_plugin_server == 0) {
+if ($id_wmi_server == 0) {
 	$none = $none_str;
 	$none_value = 0;
 }

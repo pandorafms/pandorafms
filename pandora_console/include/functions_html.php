@@ -104,7 +104,7 @@ function print_select_from_sql ($sql, $name, $selected = '', $script = '', $noth
 	$fields = array ();
 	$result = get_db_all_rows_sql ($sql);
 	if ($result === false)
-		return "";
+		$result = array ();
 	
 	foreach ($result as $row) {
 		$fields[$row[0]] = $row[1];

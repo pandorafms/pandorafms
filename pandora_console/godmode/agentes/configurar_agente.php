@@ -397,7 +397,7 @@ if (isset($_POST["add_alert_combined"])){ // Update an existing alert
 
 // Update ALERT
 // =============
-if (isset($_POST["update_alert"])){ // Update an existing alert
+if (isset($_POST["update_alert"])) { // Update an existing alert
 	$id_agente_modulo = get_parameter ("agente_modulo",0);
 	$id_aam = get_parameter ("id_aam",0);
 	$maximo = get_parameter ("maximo",0);
@@ -466,10 +466,10 @@ if (isset($_POST["update_alert"])){ // Update an existing alert
 		recovery_notify = %d,
 		priority = %d,
 		al_f2_recovery = '%s',
-		al_f3_recovery = '%s',
-		id_alerta = %d WHERE id_aam = %d", $tipo_alerta, $max_alerts, $min_alerts, $time_threshold, $minimo, $maximo, $campo_3, $campo_2, $campo_1, $descripcion, $alert_text, 
-		$time_to, $time_from, $disable_alert, $alert_d1, $alert_d2, $alert_d3, $alert_d4, $alert_d5, $alert_d5, $alert_d6, $alert_d7, $alert_recovery, $alert_priority,
-		$campo2_rec, $campo3_rec, $tipo_alerta, $id_aam);
+		al_f3_recovery = '%s'
+		WHERE id_aam = %d", $tipo_alerta, $max_alerts, $min_alerts, $time_threshold, $minimo, $maximo, $campo_3, $campo_2, $campo_1, $descripcion, $alert_text, 
+		$time_to, $time_from, $disable_alert, $alert_d1, $alert_d2, $alert_d3, $alert_d4, $alert_d5, $alert_d6, $alert_d7, $alert_recovery, $alert_priority,
+		$campo2_rec, $campo3_rec, $id_aam);
 	$result = process_sql ($sql);
 	if ($result === false) {
 		echo '<h3 class="error">'.__('There was a problem updating alert').'</h3>';

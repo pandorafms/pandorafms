@@ -34,9 +34,6 @@ $config["fontpath"] = $config["homedir"]."/reporting/FreeSans.ttf";
 // Style (pandora by default)
 $config["style"] = "pandora";
 
-// Default period (in secs) for auto SLA calculation (for monitors)
-$config["sla_period"] = 604800;
-
 // Read remaining config tokens from DB
 if (! mysql_connect ($config["dbhost"], $config["dbuser"], $config["dbpass"])) {
 	//Non-persistent connection. If you want persistent conn change it to mysql_pconnect()
@@ -120,6 +117,11 @@ if (! isset ($config['date_format'])) {
 
 if (isset ($config['homeurl']) && $config['homeurl'][0] != '/') {
 	$config['homeurl'] = '/'.$config['homeurl'];
+}
+
+if (!isset ($config["sla_period"]) || empty ($config["sla_period"])) {
+	// Default period (in secs) for auto SLA calculation (for monitors)
+	$config["sla_period"] = 604800;
 }
 
 ?>

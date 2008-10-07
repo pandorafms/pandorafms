@@ -29,18 +29,33 @@
  * @return SLA percentage of the requested module.
  */
 function get_agent_module_sla ($id_agent_module, $period, $min_value, $max_value, $date = 0) {
-	require("config.php");
-	if (! $date)
+	if (empty ($date))
 		$date = time ();
-	$datelimit = $date - $period; // limit date
-	$id_agent = get_db_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
+	
+	if (empty ($period))
+		return false; //We can't calculate a 0 period (division by zero)
+	
+	
+	$datelimit = $date - $period; // start date
+	
+	$id_agent = get_db_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', (int) $id_agent_module);
+	if (empty ($id_agent))
+		return 0; 
+		//No agent connected to this module. Something bad in the database
+	
 	/* Get all the data in the interval */
-	$sql = sprintf ('SELECT * FROM tagente_datos 
+	$sql = sprintf ('SELECT datos, utimestamp FROM tagente_datos 
 			WHERE id_agente = %d AND id_agente_modulo = %d 
 			AND utimestamp > %d AND utimestamp <= %d 
 			ORDER BY utimestamp ASC',
 			$id_agent, $id_agent_module, $datelimit, $date);
 	$datas = get_db_all_rows_sql ($sql);
+	
+	if ($datas === false) {
+		//No data to calculate on so we return 0.
+		return 0;
+	}
+	
 	$last_data = "";
 	$total_badtime = 0;
 	$interval_begin = 0;
@@ -49,13 +64,11 @@ function get_agent_module_sla ($id_agent_module, $period, $min_value, $max_value
 	
 	/* Get also the previous data before the selected interval. */
 	$previous_data = get_previous_data ($id_agent_module, $datelimit);
+	
 	if ($previous_data) {
 		/* Add data to the beginning */
 		array_unshift ($datas, $previous_data);
 		$previous_data_timestamp = $previous_data['utimestamp'];
-	}
-	if ($datas === false) {
-		return false;
 	}
 	
 	foreach ($datas as $data) {

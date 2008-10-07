@@ -19,13 +19,12 @@
 // Load global vars
 require("include/config.php");
 
-if (comprueba_login()) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access Setup Management");
-	require ("general/noaccess.php");
-}
+check_login ();
+
 if (! give_acl ($config['id_user'], 0, "PM") || ! dame_admin ($config['id_user'])) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access Setup Management");
 	require ("general/noaccess.php");
+	exit;
 }
 
 $update_settings = (bool) get_parameter ('update_settings');
@@ -90,32 +89,32 @@ $table->data[4][1] = print_input_text ('graph_color2', $config["graph_color2"], 
 $table->data[5][0] = __('Graph color (max)');
 $table->data[5][1] = print_input_text ('graph_color3', $config["graph_color3"], '', 8, 8, true);
 
-$table->data[6][0] = __('SLA period');
-$table->data[6][1] = print_input_text ('sla_period', $config["sla_period"], '', 5, 5, true);
+$table->data[6][0] = __('SLA period (seconds)');
+$table->data[6][1] = print_input_text ('sla_period', $config["sla_period"], '', 8, 8, true);
 
-$table->data[6][0] = __('Max. days before compact data');
-$table->data[6][1] = print_input_text ('days_compact', $config["days_compact"], '', 5, 5, true);
+$table->data[7][0] = __('Max. days before compact data');
+$table->data[7][1] = print_input_text ('days_compact', $config["days_compact"], '', 5, 5, true);
 
-$table->data[7][0] = __('Max. days before purge');
-$table->data[7][1] = print_input_text ('days_purge', $config["days_purge"], '', 5, 5, true);
+$table->data[8][0] = __('Max. days before purge');
+$table->data[8][1] = print_input_text ('days_purge', $config["days_purge"], '', 5, 5, true);
 
-$table->data[8][0] = __('Graphic resolution (1-low, 5-high)');
-$table->data[8][1] = print_input_text ('graph_res', $config["graph_res"], '', 5, 5, true);
+$table->data[9][0] = __('Graphic resolution (1-low, 5-high)');
+$table->data[9][1] = print_input_text ('graph_res', $config["graph_res"], '', 5, 5, true);
 
-$table->data[9][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
-$table->data[9][1] = print_input_text ('step_compact', $config["step_compact"], '', 5, 5, true);
+$table->data[10][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
+$table->data[10][1] = print_input_text ('step_compact', $config["step_compact"], '', 5, 5, true);
 
-$table->data[10][0] = __('Show unknown modules in global view');
-$table->data[10][1] = print_checkbox ('show_unknown', 1, $config["show_unknown"], true);
+$table->data[11][0] = __('Show unknown modules in global view');
+$table->data[11][1] = print_checkbox ('show_unknown', 1, $config["show_unknown"], true);
 
-$table->data[11][0] = __('Show last fired alerts in global view');
-$table->data[11][1] = print_checkbox ('show_lastalerts', 1, $config["show_lastalerts"], true);
+$table->data[12][0] = __('Show last fired alerts in global view');
+$table->data[12][1] = print_checkbox ('show_lastalerts', 1, $config["show_lastalerts"], true);
 
-$table->data[12][0] = __('Style template');
-$table->data[12][1] = print_select ($file_styles, 'style', $config["style"], '', '', '', true);
+$table->data[13][0] = __('Style template');
+$table->data[13][1] = print_select ($file_styles, 'style', $config["style"], '', '', '', true);
 
-$table->data[13][0] = __('Block size for pagination');
-$table->data[13][1] = print_input_text ('block_size', $config["block_size"], '', 5, 5, true);
+$table->data[14][0] = __('Block size for pagination');
+$table->data[14][1] = print_input_text ('block_size', $config["block_size"], '', 5, 5, true);
 
 echo '<form id="form_setup" method="POST" action="index.php?sec=gsetup&amp;sec2=godmode/setup/setup">';
 print_input_hidden ('update_settings', 1);

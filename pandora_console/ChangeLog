@@ -1,3 +1,14 @@
+2008-10-07  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/functions_reporting.php: Handle empty and zero values in
+	get_agent_module_sla.
+
+	* include/config_process.php: SLA Period shouldn't be 0 (which is
+	apparently default in the database). If SLA is empty (NULL, 0, false 
+	or '') then it get's reset to a default value.
+
+	* godmode/setup/setup.php: SLA Period was hidden because of a miscount 
+
 2008-10-06  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* godmode/agentes/configurar_agente.php: Double values in query removed

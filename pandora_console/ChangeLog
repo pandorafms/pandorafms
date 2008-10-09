@@ -1,5 +1,10 @@
 2008-10-08  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
+	* operation/agentes/estado_grupo.php: Fixed bug #2155213 and rewrote
+	cleaner HTML partially
+
+2008-10-08  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
 	* godmode/db/db_event.php: Didn't work for some or another reason.
 	Partially rewrote it. It works now.
 

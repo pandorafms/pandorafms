@@ -28,6 +28,27 @@ if (! give_acl ($config['id_user'], 0, "DM")) {
 	return;
 }
 
+// All data (now)
+$time["all"] = time ();
+
+// 1 day ago
+$time["1day"] = $time["all"]-86400;
+
+// 3 days ago
+$time["3day"] = $time["all"]-(86400*3);
+
+// 1 week ago
+$time["1week"] = $time["all"]-(86400*7);
+
+// 2 weeks ago
+$time["2week"] = $time["all"]-(86400*14);
+
+// 1 month ago
+$time["1month"] = $time["all"]-(86400*30);
+
+// Three months ago
+$time["3month"] = $time["all"]-(86400*90);
+
 // Todo for a good DB maintenance 
 /* 
 	- Delete too on datos_string and and datos_inc tables 
@@ -43,7 +64,7 @@ if (! give_acl ($config['id_user'], 0, "DM")) {
 # Purge data using dates
 if (isset($_POST["purgedb"])){	# Fixed 2005-1-13, nil
 	$from_date = get_parameter_post("date_purge");
-	$query = sprintf("DELETE FROM `tsesion` WHERE `fecha` < '%s';",$from_date);
+	$query = sprintf("DELETE FROM `tsesion` WHERE `utimestamp` < '%s';",$from_date);
 	(int) $deleted = process_sql($query);
 }
 # End of get parameters block
@@ -72,13 +93,13 @@ echo "</tr></table>";
 <table width='300' cellpadding='4' cellspacing='4' class='databox'>
 <tr><td class='datos'>
 <select name="date_purge" width="255px">
-<option value="<?php echo $month3 ?>"><?php echo __('Purge audit data over 90 days') ?>
-<option value="<?php echo $month ?>"><?php echo __('Purge audit data over 30 days') ?>
-<option value="<?php echo $week2 ?>"><?php echo __('Purge audit data over 14 days') ?>
-<option value="<?php echo $week ?>"><?php echo __('Purge audit data over 7 days') ?>
-<option value="<?php echo $d3 ?>"><?php echo __('Purge audit data over 3 days') ?>
-<option value="<?php echo $d1 ?>"><?php echo __('Purge audit data over 1 day') ?>
-<option value="<?php echo $all_data ?>"><?php echo __('Purge all audit data') ?>
+<option value="<?php echo $time["3month"] ?>"><?php echo __('Purge audit data over 90 days') ?>
+<option value="<?php echo $time["1month"] ?>"><?php echo __('Purge audit data over 30 days') ?>
+<option value="<?php echo $time["2week"] ?>"><?php echo __('Purge audit data over 14 days') ?>
+<option value="<?php echo $time["1week"] ?>"><?php echo __('Purge audit data over 7 days') ?>
+<option value="<?php echo $time["3day"] ?>"><?php echo __('Purge audit data over 3 days') ?>
+<option value="<?php echo $time["1day"] ?>"><?php echo __('Purge audit data over 1 day') ?>
+<option value="<?php echo $time["all"] ?>"><?php echo __('Purge all audit data') ?>
 </select>
 
 <td class="datos">

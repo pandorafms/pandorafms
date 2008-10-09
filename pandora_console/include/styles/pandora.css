@@ -171,6 +171,7 @@ div#container {
 	border-right: solid 2px #000;
 	border-top: solid 2px #000;
 	margin-top: 5px;
+	background: #fff;
 }
 div#page {
 	width: 960px;

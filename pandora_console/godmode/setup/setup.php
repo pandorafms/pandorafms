@@ -45,6 +45,9 @@ if ($update_settings) {
 	$config["graph_color3"] = (string) get_parameter ('graph_color3');	
 	$config["sla_period"] = (int) get_parameter ("sla_period");
 	$config["date_format"] = (string) get_parameter ("date_format");
+	$config["trap2agent"] = (string) get_parameter ("trap2agent");
+	$config["autoupdate"] = (string) get_parameter ("autoupdate");
+
 	$config["style"] = substr ($config["style"], 0, strlen ($config["style"]) - 4);
 
 	process_sql ("UPDATE tconfig SET VALUE='".$config["remote_config"]."' WHERE token = 'remote_config'");
@@ -62,6 +65,8 @@ if ($update_settings) {
 	process_sql ("UPDATE tconfig SET VALUE='".$config["graph_color3"]."' WHERE token = 'graph_color3'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["sla_period"]."' WHERE token = 'sla_period'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["date_format"]."' WHERE token = 'date_format'");
+	process_sql ("UPDATE tconfig SET VALUE='".$config["trap2agent"]."' WHERE token = 'trap2agent'");
+	process_sql ("UPDATE tconfig SET VALUE='".$config["autoupdate"]."' WHERE token = 'autoupdate'");
 }
 
 echo "<h2>".__('Pandora Setup')." &gt; ";
@@ -115,6 +120,12 @@ $table->data[13][1] = print_select ($file_styles, 'style', $config["style"], '',
 
 $table->data[14][0] = __('Block size for pagination');
 $table->data[14][1] = print_input_text ('block_size', $config["block_size"], '', 5, 5, true);
+
+$table->data[15][0] = __('Forward SNMP traps to agent (if exist)');
+$table->data[15][1] = print_checkbox ('trap2agent', 1, $config["trap2agent"], true);
+
+$table->data[16][0] = __('Automatic update check');
+$table->data[16][1] = print_checkbox ('autoupdate', 1, $config["autoupdate"], true);
 
 echo '<form id="form_setup" method="POST" action="index.php?sec=gsetup&amp;sec2=godmode/setup/setup">';
 print_input_hidden ('update_settings', 1);

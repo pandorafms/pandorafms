@@ -119,6 +119,13 @@ if (isset ($config['homeurl']) && $config['homeurl'][0] != '/') {
 	$config['homeurl'] = '/'.$config['homeurl'];
 }
 
+
+// If first time, make the trap2agent disable in DB
+if (!isset($config["trap2agent"])){
+	$config["trap2agent"] = 0;
+	process_sql ("INSERT INTO tconfig (token,value) VALUES ('trap2agent', 0)");
+}
+
 if (!isset ($config["sla_period"]) || empty ($config["sla_period"])) {
 	// Default period (in secs) for auto SLA calculation (for monitors)
 	$config["sla_period"] = 604800;

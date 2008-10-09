@@ -1,3 +1,23 @@
+2008-10-10  Sancho Lerena <slerena@artica.es>
+
+	* pandoradb_data.sql: Added support for autoupdate and trap2agent 
+	forward in tconfig.
+
+	* update_manager.php: Automatically in logon function hook detect
+	if is defined. If not, try to connect the first time and automatically
+	set autoupdate to 0 in tconfig.
+
+	* db_audit.php: Now works, before don't.
+
+	* setup.php: Added new items: trap2agent forward and autoupdate.
+
+	* snmp_view.php: Now display properly OID, Value and Custom Value. Need
+	changes in snmptconsole server to work and render all data. Better layout.
+
+	* config_process.php: Detect if trap2agent is not configured, and if not, 
+	create record in tconfig (this should not be necessary but there is a lot
+	of people using beta1 yet and will have problems if not have this).
+
 2008-10-08  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* operation/agentes/estado_grupo.php: Fixed bug #2155213 and rewrote

@@ -1,5 +1,8 @@
 2008-10-10  Sancho Lerena <slerena@artica.es>
 
+	* bin/pandora_snmpconsole: Trap SNMP forward not will included in 
+	this version, moved to 2.1 roadmap.
+
 	* bin/pandora_snmpconsole: Added support to get custom value, 
 	custom type and custom OID. Code for trap2agent forward feature
 	not fully implemented, don't work yet, need finish.

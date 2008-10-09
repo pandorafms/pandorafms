@@ -31,48 +31,58 @@ if (! give_acl ($config['id_user'], 0, "DM")) {
 # ======================================
 # Purge data using dates
 if (isset ($_POST["date_purge"])){
-	$from_date = get_parameter_post ("date_purge");
-	$query = sprintf ("DELETE FROM `tevento` WHERE `timestamp` < '%s'",$from_date);
-	(int) $deleted = process_sql ($query);			
+	$from_date = (int) get_parameter_post ("date_purge");
+	$query = sprintf ("DELETE FROM `tevento` WHERE `utimestamp` < %d",$from_date);
+	$deleted = process_sql ($query);			
+	if ($deleted !== false) {
+		echo '<h3 class="suc">'.__('Successfully deleted old events').'</h3>';
+	} else {
+		echo '<h3 class="error">'.__('Error deleting old events').'</h3>';
+	}
 }
 # End of get parameters block
 
-echo "<h2>".__('Database Maintenance')." &gt; ";
-echo  __('Event Database cleanup')."</h2>";
+echo "<h2>".__('Database Maintenance')." &gt; ".__('Event Database cleanup')."</h2>";
 
-echo "<table cellpadding='4' cellspacing='4' class='databox'>";
-echo "<tr><td class='datos'>";
 $row = get_db_row_sql ("SELECT COUNT(*) AS total, MIN(timestamp) AS first_date, MAX(timestamp) AS latest_date FROM tevento");
 
-echo "<b>".__('Total')."</b>";
-echo "<td class='datos'>".$row["total"]." ".__('Records')."</td>";
+$table->data = array ();
+$table->cellpadding = 4;
+$table->cellspacing = 4;
+$table->class = "databox";
+$table->width = 300;
 
-echo "<tr>";	
-echo "<td class='datos2'><b>".__('First date')."</b></td>";
-echo "<td class='datos2'>".$row["first_date"]."</td></tr>";
+$table->data[0][0] = '<b>'.__('Total').':</b>';
+$table->data[0][1] = $row["total"].' '.__('Records');
 
+$table->data[1][0] = '<b>'.__('First date').':</b>';
+$table->data[1][1] = $row["first_date"];
 
-echo "<tr><td class='datos'>";
-echo "<b>".__('Latest date')."</b>";
-echo "<td class='datos'>".$row["latest_date"]."</td>";
-echo "</table>";
+$table->data[2][0] = '<b>'.__('Latest data').':</b>';
+$table->data[2][1] = $row["latest_date"];
+
+print_table ($table);
+unset ($table);
+
+echo '<h3>'.__('Purge data').'</h3>';
+
+echo '<form name="db_audit" method="post" action="index.php?sec=gdbman&sec2=godmode/db/db_event">';
+echo '<table width="300" cellpadding="4" cellspacing="4" class="databox">
+	<tr><td class="datos">';
+
+$time = time ();
+$fields = array ();
+$fields[$time - 7776000] = __('Purge event data over 90 days');
+$fields[$time - 2592000] = __('Purge event data over 30 days');
+$fields[$time - 1209600] = __('Purge event data over 14 days');
+$fields[$time - 604800] = __('Purge event data over 7 days');
+$fields[$time - 259200] = __('Purge event data over 3 days');
+$fields[$time - 86400] = __('Purge event data over 1 day');
+$fields[$time] = __('Purge all event data');
+
+print_select ($fields, "date_purge", '', '', '', '0', false, false, false, "w255");
+
+echo '</td><td class="datos">';
+print_submit_button (__('Do it!'),'purgedb', false, 'class="sub wand" onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;"');
+echo '</td></tr></table></form>';
 ?>
-
-<h3><?php echo __('Purge data') ?></h3>
-<form name="db_audit" method="post" action="index.php?sec=gdbman&sec2=godmode/db/db_event">
-<table width='300' cellpadding='4' cellspacing='4' class='databox'>
-<tr><td class='datos'>
-<select name="date_purge" width="255px">
-<option value="<?php echo $month3 ?>"><?php echo __('Purge event data over 90 days') ?>
-<option value="<?php echo $month ?>"><?php echo __('Purge event data over 30 days') ?>
-<option value="<?php echo $week2 ?>"><?php echo __('Purge event data over 14 days') ?>
-<option value="<?php echo $week ?>"><?php echo __('Purge event data over 7 days') ?>
-<option value="<?php echo $d3 ?>"><?php echo __('Purge event data over 3 days') ?>
-<option value="<?php echo $d1 ?>"><?php echo __('Purge event data over 1 day') ?>
-<option value="<?php echo $all_data ?>"><?php echo __('Purge all event data') ?>
-</select>
-
-<td class="datos">
-<input class="sub wand" type="submit" name="purgedb" value="<?php echo __('Do it!') ?>" onClick="if (!confirm('<?php  echo __('Are you sure?') ?>')) return false;">
-</table>
-</form>

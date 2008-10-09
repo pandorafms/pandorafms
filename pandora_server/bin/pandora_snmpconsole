@@ -167,19 +167,7 @@ sub pandora_snmptrapd {
 				if ($@) {
 					logger ($pa_config, "[ERROR] Cannot access to database while updating SNMP Trap data",0);
 					logger ($pa_config, "[ERROR] SQL Errorcode: $@", 2);
-				}
-
-				if ( $trap2agent eq "1"){
-					# Forward trap to agent into module "SNMPTrap";
-					# Exist an agent with this IP ?
-					if (pandora_check_ip ($pa_config, $dbh, $source) == 1){
-					# TODO: Falta la ultima parte (coger el nombre del agente e insertar el dato, comprobar que el codigo que hay aqui funciona OK).
-						my $agent_name = ''; #DAME NOMBRE DEL AGENTE A PARTIR DE LA IP;
-						my $mydata = "$oid $value $custom_oid $custom_value";
-						# Insert string data
-						module_generic_data_string ($pa_config, $mydata, $timestamp, $agent_name, 'SNMPTrap', $dbh);
-					}
-				}
+				}		
 			}
 		}
 		sleep ($pa_config{'server_threshold'});

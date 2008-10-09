@@ -146,10 +146,19 @@ sub pandora_purgedb {
 	}
 	$idag->finish();
 	if ($verbosity > 0){	
-		print "[PURGE] Deleting static data until $limit_timestamp \n";
+		print "\n[PURGE] Deleting string data until $limit_timestamp \n";
 	}
- 	$dbh->do ("delete from tagente_datos_string where timestamp < '$limit_timestamp'");
-        $dbh->disconnect();
+	my $limit_utimestamp = &UnixDate($limit_timestamp, "%s");
+
+	# Deleting string data
+ 	$dbh->do ("DELETE FROM tagente_datos_string WHERE utimestamp < $limit_utimestamp");
+
+	# Deleting session data
+ 	$dbh->do ("DELETE FROM tsesion WHERE utimestamp < $limit_utimestamp");
+
+	# Deleting SNMP data
+ 	$dbh->do ("DELETE FROM ttrap WHERE timestamp < '$limit_timestamp'");
+    $dbh->disconnect();
 }
 
 ###############################################################################

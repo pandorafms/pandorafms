@@ -117,6 +117,8 @@ sub pandora_snmptrapd {
 	# open database, only ONCE. We pass reference to DBI handler ($dbh) to all subprocess
 	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306",$pa_config->{'dbuser'}, $pa_config->{'dbpass'},	{ RaiseError => 1, AutoCommit => 1 });
 
+	my $trap2agent = get_db_value ("value", "tconfig", "token", "trap2agent", $dbh);
+
 	# Main loop for reading file
 	while ( 1 ){
 		while ($datos = <SNMPLOGFILE>) {
@@ -155,8 +157,8 @@ sub pandora_snmptrapd {
 					$custom_value=$type_desc; # Bug fixed, 080108 by anonymous
 				}
 	
-				$sql_insert = "insert into ttrap (timestamp, source, oid, type, value, oid_custom, value_custom,  type_custom) values ('$timestamp', '$source', '$oid', $type, '$value', '', '', '')";
-				logger ($pa_config,"Received SNMP Trap from $source", 5);
+				$sql_insert = "INSERT INTO ttrap (timestamp, source, oid, type, value, oid_custom, value_custom,  type_custom) VALUES ('$timestamp', '$source', '$oid', $type, '$value', '$custom_oid', '$custom_value', '$custom_type')";
+				logger ($pa_config,"Received SNMP Trap from $source", 4);
 				eval {
 					$dbh->do($sql_insert) || logger ($pa_config, "Cannot write to database while updating SNMP Trap data (error in INSERT)",0);
 					# Evaluate TRAP Alerts for this trap
@@ -164,7 +166,19 @@ sub pandora_snmptrapd {
 				};
 				if ($@) {
 					logger ($pa_config, "[ERROR] Cannot access to database while updating SNMP Trap data",0);
-					logger ($pa_config, "[ERROR] SQL Errorcode: $@",2);
+					logger ($pa_config, "[ERROR] SQL Errorcode: $@", 2);
+				}
+
+				if ( $trap2agent eq "1"){
+					# Forward trap to agent into module "SNMPTrap";
+					# Exist an agent with this IP ?
+					if (pandora_check_ip ($pa_config, $dbh, $source) == 1){
+					# TODO: Falta la ultima parte (coger el nombre del agente e insertar el dato, comprobar que el codigo que hay aqui funciona OK).
+						my $agent_name = ''; #DAME NOMBRE DEL AGENTE A PARTIR DE LA IP;
+						my $mydata = "$oid $value $custom_oid $custom_value";
+						# Insert string data
+						module_generic_data_string ($pa_config, $mydata, $timestamp, $agent_name, 'SNMPTrap', $dbh);
+					}
 				}
 			}
 		}

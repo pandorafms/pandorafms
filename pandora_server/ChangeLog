@@ -1,3 +1,12 @@
+2008-10-10  Sancho Lerena <slerena@artica.es>
+
+	* bin/pandora_snmpconsole: Added support to get custom value, 
+	custom type and custom OID. Code for trap2agent forward feature
+	not fully implemented, don't work yet, need finish.
+	
+	* util/pandora_db.pl: Now delete also events and session information.
+	String data is using utimestamp to purge (faster!).
+
 2008-10-02  Ramon Novoa  <rnovoa@artica.es>
 
 	* bin/pandora_network: Added support for multiple SNMP versions.

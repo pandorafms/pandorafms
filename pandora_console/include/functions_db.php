@@ -2172,4 +2172,21 @@ function server_status ($id_server) {
 	
 	return $serverinfo;
 }
+
+function delete_agent ($id_agente) {
+/*
+	mysql_query ("DELETE FROM tagente_datos WHERE id_agente_modulo = $id_agente");
+	mysql_query ("DELETE FROM tagente_datos_inc WHERE id_agente_modulo = $id_agente");
+	mysql_query ("DELETE FROM tagente_datos_string WHERE id_agente_modulo = $id_agente");
+	mysql_query ("DELETE FROM talerta_agente_modulo WHERE id_agent = $id_agente");
+	mysql_query ("DELETE FROM tevent WHERE id_agente = $id_agente");
+	mysql_query ("DELETE FROM tagent_access WHERE id_agent = $id_agente");
+	mysql_query ("DELETE FROM tplanned_downtime_agents WHERE id_agent = $id_agente");
+	mysql_query ("DELETE FROM tagente_estado WHERE id_agente = $id_agente");
+	mysql_query ("DELETE FROM tagente_modulo WHERE id_agente = $id_agente");	
+	mysql_query ("DELETE FROM tagente WHERE id_agente = $id_agente");
+	mysql_query ("DELETE FROM taddress_agent WHERE id_agent = $id_agente");
+*/
+	echo "BORRANDO AGENTE A SACO $id_agente";
+}
 ?>

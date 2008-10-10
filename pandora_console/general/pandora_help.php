@@ -46,6 +46,9 @@ if (! $id || ! file_exists ($help_file)) {
 
 /* Show help */
 echo '<div>';
+echo '<span style="float:left; margin: 0px; padding: 0px">';
+echo '<img src="../images/pandora_textlogo.png" border=0>';
+echo "</span>";
 echo '<p style="text-align: right"><strong>'.__('Pandora FMS Help System').'</strong></p>';
 echo '</div>';
 echo '<hr width="100%" size="1" />';

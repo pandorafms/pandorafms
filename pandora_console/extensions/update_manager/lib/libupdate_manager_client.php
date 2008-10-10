@@ -32,11 +32,11 @@ function um_xml_rpc_client_call ($server_host, $server_path, $server_port, $prox
 	$result = $client->send ($msg, XMLRPC_TIMEOUT);
 	
 	if (! $result) {
-		trigger_error ('<strong>Open Update Manager</strong> Server comunication error. '.$client->errstr);
+		echo '<strong>Open Update Manager</strong> Server comunication error: '.$client->errstr;
 		return false;
 	}
 	if ($result->faultCode ()) {
-		trigger_error ('<strong>Open Update Manager</strong> XML-RPC error. '.$result->faultString ());
+		echo '<strong>Open Update Manager</strong> XML-RPC error: '.$result->faultString ();
 		return false;
 	}
 	

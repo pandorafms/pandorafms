@@ -1,5 +1,41 @@
 2008-10-10  Sancho Lerena <slerena@artica.es>
 
+	* ajax.php: removed carriage return from EOF.
+
+	* index.php: Updated final version variable (YES!)
+
+	* config_process: Updated final version variable (YES!)
+
+	* libupdate_manager_client.php: Do not raise a notice (probably be hidden
+	for user). Show error details with a simple echo.
+
+	* footer.php: Bad reference to image, in help don't show properly fixed.
+
+	* pandora_help.php: Fancy layout :)
+
+	* manage_config.php: Now works fine. If target agents not defined used
+	source agent. Module mass delete now works. Added help and better deletion
+	of agents. Fixed bug #2157135.
+
+	* pandora_textlogo.png: Added new icon for help header.
+
+	* functions_db.php: Added delete_agent() used in manage_config.
+
+	* help_alert_validation.php, help_manageconfig.php, help_planned_downtime.php:
+	New help files (english only!).
+
+	* datos_agente.php: Stupid bug that don't allow to delete string data.
+
+	* estado_alertas.php: Added help to alert ACK button.
+
+	* reporting_viewer.php: Added SLA legend label (limit) and fixed render of 
+	invalid SLA (was swapped bad for good). Combined graphs dimensions are used
+	now on reports.
+
+	* reporting_xml.php:; Fixed a small problem that renders header after contents.
+
+2008-10-09  Sancho Lerena <slerena@artica.es>
+
 	* pandoradb_data.sql: Added support for autoupdate and trap2agent 
 	forward in tconfig.
 

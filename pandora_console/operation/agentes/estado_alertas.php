@@ -64,7 +64,7 @@ if (isset($_GET["id_agente"])){
 			<th>".__('Last fired')."</th>
 			<th>".__('Times Fired')."</th>
 			<th>".__('Status')."</th>
-			<th>".__('Validate')."</th></tr>";
+			<th>".__('Validate') ." " . pandora_help('alert_validation', true)."</th></tr>";
 		$color = 1;
 		foreach ($result as $data) {
 			if ($color == 1){

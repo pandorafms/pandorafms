@@ -122,6 +122,7 @@ if ($report['id_user'] != $config['id_user'] && ! dame_admin ($config['id_user']
 	return;
 }
 
+header ('Content-type: application/xml; charset="utf-8"', true);
 echo '<?xml version="1.0" encoding="UTF-8" ?>';
 
 $date = (string) get_parameter ('date', date ('Y-m-j'));
@@ -287,8 +288,6 @@ foreach ($contents as $content) {
 	}
 	array_push ($xml["reports"], $data);
 }
-
-header ('Content-type: application/xml; charset="utf-8"',true);
 
 
 function xml_array ($array) {

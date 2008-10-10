@@ -121,7 +121,7 @@ if (! give_acl ($config['id_user'], $report['id_group'], "AR")) {
 if ($report['id_user'] != $config['id_user'] && ! dame_admin ($config['id_user']) && ! $report['private']) {
 	return;
 }
-header ('Content-type: application/xml; charset="utf-8"', true);
+
 echo '<?xml version="1.0" encoding="UTF-8" ?>';
 
 $date = (string) get_parameter ('date', date ('Y-m-j'));
@@ -167,7 +167,7 @@ foreach ($contents as $content) {
 	case 1:
 	case 'simple_graph':	
 		$data["title"] = __('Simple graph');
-		$data["objdata"]["img"] = 'reporting/fgraph.php?tipo=sparse&id='.$content['id_agent_module'].'&height=230&width=720&period='.$content['period'].'&date='.$datetime.'&avg_only=1&pure=1';
+		$data["objdata"]["img"] = 'reporting/fgraph.php?tipo=sparse&amp;id='.$content['id_agent_module'].'&amp;height=230&amp;width=720&amp;period='.$content['period'].'&amp;date='.$datetime.'&amp;avg_only=1&amp;pure=1';
 		break;
 	case 2:
 	case 'custom_graph':
@@ -186,7 +186,7 @@ foreach ($contents as $content) {
 			array_push ($weights, $content2["weight"]);
 		}
 		
-		$data["objdata"]["img"] = 'reporting/fgraph.php?tipo=combined&id='.implode (',', $modules).'&weight_l='.implode (',', $weights).'&height=230&width=720&period='.$content['period'].'&date='.$datetime.'&stacked='.$graph["stacked"].'&pure=1"';
+		$data["objdata"]["img"] = 'reporting/fgraph.php?tipo=combined&amp;id='.implode (',', $modules).'&amp;weight_l='.implode (',', $weights).'&amp;height=230&amp;width=720&amp;period='.$content['period'].'&amp;date='.$datetime.'&amp;stacked='.$graph["stacked"].'&amp;pure=1"';
 		break;
 	case 3:
 	case 'SLA':
@@ -287,6 +287,9 @@ foreach ($contents as $content) {
 	}
 	array_push ($xml["reports"], $data);
 }
+
+header ('Content-type: application/xml; charset="utf-8"',true);
+
 
 function xml_array ($array) {
 	foreach ($array as $name => $value) {

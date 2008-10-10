@@ -88,9 +88,12 @@ function datos_raw ($id_agente_modulo, $periodo) {
 				$color = 1;
 			}
 			echo "<tr>";
-			if ((give_acl ($config['id_user'], $id_group, "AW") ==1) && ($string_type == 0)) {
+			if (give_acl ($config['id_user'], $id_group, "AW") ==1) {
 				echo "<td class='".$tdcolor."' width=20>";
-				echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=$periodo_label&id=$id_agente_modulo&delete=".$row["id_agente_datos"]."'><img src='images/cross.png' border=0>";
+				if ($string_type == 0)
+					echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=$periodo_label&id=$id_agente_modulo&delete=".$row["id_agente_datos"]."'><img src='images/cross.png' border=0>";
+				else
+					echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=$periodo_label&id=$id_agente_modulo&delete_text=".$row["id_agente_datos"]."'><img src='images/cross.png' border=0>";
 			} else {
 				echo "<td class='".$tdcolor."'>";
 			}
@@ -122,8 +125,14 @@ if (isset ($_GET["tipo"]) && isset ($_GET["id"])) {
 }
 
 if (isset($_GET["delete"])) {
-	$delete =$_GET["delete"];
+	$delete = $_GET["delete"];
 	$sql = "DELETE FROM tagente_datos WHERE id_agente_datos = $delete";
+	$result = process_sql ($sql);
+}
+
+if (isset($_GET["delete_text"])) {
+	$delete = $_GET["delete_text"];
+	$sql = "DELETE FROM tagente_datos_string WHERE id_agente_datos = $delete";
 	$result = process_sql ($sql);
 }
 

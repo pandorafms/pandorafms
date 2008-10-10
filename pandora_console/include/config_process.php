@@ -18,9 +18,9 @@
 
 //Pandora Version
 if (!isset ($build_version))
-	$build_version = "PC080822";
+	$build_version="PC081010";
 if (!isset ($pandora_version))
-	$pandora_version = "v2.0Beta1";
+	$pandora_version="v2.0";
 
 // This is directory where placed "/attachment" directory, to upload files stores. 
 // This MUST be writtable by http server user, and should be in pandora root. 

@@ -174,9 +174,13 @@ foreach ($contents as $content) {
 			array_push ($weights, $content2["weight"]);
 		}
 		
+		$graph_width = get_db_sql ("SELECT width FROM tgraph WHERE id_graph = ".$content["id_gs"]);
+		$graph_height= get_db_sql ("SELECT height FROM tgraph WHERE id_graph = ".$content["id_gs"]);
+
+
 		$table->colspan[1][0] = 4;
 		$data = array ();
-		$data[0] = '<img src="reporting/fgraph.php?tipo=combined&id='.implode (',', $modules).'&weight_l='.implode (',', $weights).'&height=230&width=720&period='.$content['period'].'&date='.$datetime.'&stacked='.$graph["stacked"].'&pure=1" border="1" alt="">';
+		$data[0] = '<img src="reporting/fgraph.php?tipo=combined&id='.implode (',', $modules).'&weight_l='.implode (',', $weights).'&height='.$graph_height.'&width='.$graph_width.'&period='.$content['period'].'&date='.$datetime.'&stacked='.$graph["stacked"].'&pure=1" border="1" alt="">';
 		array_push ($table->data, $data);
 		
 		break;
@@ -212,7 +216,8 @@ foreach ($contents as $content) {
 			$data[0] .= $sla['sla_max']."<br />";
 			$data[0] .= '<strong>'.__('SLA Min. (value)')."</strong> : ";
 			$data[0] .= $sla['sla_min']."<br />";
-			
+			$data[0] .= '<strong>'.__('SLA Limit')."</strong> : ";
+			$data[0] .= $sla['sla_limit'];
 			$sla_value = get_agent_module_sla ($sla['id_agent_module'], $content['period'],
 							$sla['sla_min'], $sla['sla_max'], $datetime);
 			if ($sla_value === false) {
@@ -233,7 +238,7 @@ foreach ($contents as $content) {
 		}
 		if (!empty ($slas)) {
 			$data = array ();
-			if ($sla_failed !== false)
+			if ($sla_failed == false)
 				$data[0] = '<span style="font: bold 3em Arial, Sans-serif; color: #000000;">'.__('Ok').'</span>';
 			else
 				$data[0] = '<span style="font: bold 3em Arial, Sans-serif; color: #ff0000;">'.__('Fail').'</span>';

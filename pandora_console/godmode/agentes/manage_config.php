@@ -17,6 +17,8 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
+// WARNING: Do not use generic get_parameter() functions here, because some of the
+// variables passed are arrays and are not supported by these functions.
 
 // Load global vars
 require ("include/config.php");
@@ -270,9 +272,13 @@ if ((isset($_GET["operacion"])) && ($update_agent == -1) && ($update_group == -1
 		// Initial checkings
 		
 		//  if selected more than 0 agents
-		$destino = $_POST["destino"];
+		if (isset($_POST["destino"]))
+			$destino = $_POST["destino"];
+		else
+			$destino = array();
 		if (count($destino) <= 0) {
-			break;
+			echo "<h3>" . __("Deleting source agent. No destination targets defined") . "</h3>";
+			$destino[0] = $origen;
 		}
 		
 		// If selected modules or alerts
@@ -283,44 +289,60 @@ if ((isset($_GET["operacion"])) && ($update_agent == -1) && ($update_group == -1
 		if (isset($_POST["alerts"]))
 			$alertas = 1;
 		else
-			$alertas = 0;			
-		if (($alertas + $modulos) >= 0)
-		// Delete
+			$alertas = 0;
+
+		if (isset($_POST["origen_modulo"]))
+			$origen_modulo = $_POST["origen_modulo"];
+		else
+			$origen_modulo = array();
+		if (count($origen_modulo) <= 0) 
+			$allmodules = 1;
+		else 
+			$allmodules = 0;
+
 		for ($a=0;$a <count($destino); $a++){ // for each agent
 			$id_agente = $destino[$a];
-			if ($modulos == 1){
-				echo "<br>".__('Deleting data')." -> ".dame_nombre_agente($id_agente);
-			
+			echo "<br>".__('Deleting data')." -> ".dame_nombre_agente($id_agente);
+			if ($allmodules == 1){
 				// Deleting data
-				$sql1='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_agente;
-				$result1=mysql_query($sql1);
-				while ($row=mysql_fetch_array($result1)){
-					$sql_delete1="DELETE FROM tagente_datos WHERE id_agente_modulo=".$row["id_agente_modulo"];
-					$sql_delete2="DELETE FROM tagente_datos_inc WHERE id_agente_modulo=".$row["id_agente_modulo"];
-					$sql_delete3="DELETE FROM tagente_datos_string WHERE id_agente_modulo=".$row["id_agente_modulo"];
-					$result=mysql_query($sql_delete1);
-					$result=mysql_query($sql_delete2);
-					$result=mysql_query($sql_delete3);
+				if ($modulos == 1){
+					mysql_query ("DELETE FROM tagente_datos WHERE id_agente_modulo=$id_agente");
+					mysql_query ("DELETE FROM tagente_datos_inc WHERE id_agente_modulo=$id_agente");
+					mysql_query ("DELETE FROM tagente_datos_string WHERE id_agente_modulo=$id_agente");
+					mysql_query ("DELETE FROM tagente_estado WHERE id_agente = $id_agente");
+					mysql_query ("DELETE FROM tagente_modulo WHERE id_agente = $id_agente");
 				}
-			
-			// Delete conf
-			$sql_delete5 ="DELETE FROM tagente_modulo WHERE id_agente = ".$id_agente; // delete from table tagente_modulo
-			$sql_delete6 ="DELETE FROM tagente_estado WHERE id_agente = ".$id_agente; // detele from table tagente_estado
-			$result=mysql_query($sql_delete5);
-			$result=mysql_query($sql_delete6);		
+				if ($alertas == 1){
+					mysql_query ("DELETE FROM talerta_agente_modulo WHERE id_agent = $id_agente");
+				echo "DELETE talertas* where id_agente = $id_agente <br>";
+				}
+				mysql_query ("DELETE FROM tevent WHERE id_agente = $id_agente");
+			} else {
+				for ($i=0; $i < count($origen_modulo); $i++){
+					$source_module = $origen_modulo[$i];
+					$source_module_name = get_db_sql ("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = $source_module");
+					$id_modulo = get_db_sql ("SELECT id_agente_modulo FROM tagente_modulo WHERE nombre = '$source_module_name' AND id_agente = $id_agente");
+					if ($modulos == 1){
+						mysql_query ("DELETE FROM tagente_datos WHERE id_agente_modulo=$id_modulo");
+						mysql_query ("DELETE FROM tagente_datos_inc WHERE id_agente_modulo=$id_modulo");
+						mysql_query ("DELETE FROM tagente_datos_string WHERE id_agente_modulo=$id_modulo");
+						mysql_query ("DELETE FROM tagente_datos_string WHERE id_agente_modulo=$id_modulo");
+						mysql_query ("DELETE FROM tagente_estado WHERE id_agente_modulo = $id_modulo");
+						mysql_query ("DELETE FROM tagente_modulo WHERE id_agente_modulo = $id_modulo");
+					}
+					if ($alertas == 1){
+						mysql_query ("DELETE FROM talerta_agente_modulo WHERE id_agente_modulo = $id_modulo");
+					}
+					mysql_query ("DELETE FROM tevent WHERE id_agentmodule = $id_modulo");
+				}
 			}
-			// delete alerts definitions
-			if ($alertas == 1){ 
-				// delete data
-				$sql1='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_agente;
-				$result1=mysql_query($sql1);
-				while ($row=mysql_fetch_array($result1)){
-					$sql_delete1="DELETE FROM talerta_agente_modulo WHERE id_agente_modulo=".$row["id_agente_modulo"];
-					$result = mysql_query($sql_delete1);
-				} // while			
-			}//if 
-		}// for
-	}//delete
+		}
+	}
+
+	// -----------
+	// DELETE AGENT
+	// -----------
+
 	elseif (isset($_POST["delete_agent"])) {
 		echo "<h2>".__('Delete agents')."</h2>";
 		// Initial checkings
@@ -328,7 +350,7 @@ if ((isset($_GET["operacion"])) && ($update_agent == -1) && ($update_group == -1
 		//  if selected more than 0 agents
 		$destino = $_POST["destino"];
 		if (count($destino) <= 0) {
-			break;
+			$destino[0]=$origen;
 		}
 		
 		// Delete
@@ -336,38 +358,7 @@ if ((isset($_GET["operacion"])) && ($update_agent == -1) && ($update_group == -1
 			$id_agente = $destino[$a];
 			
 			echo "<br>".__('Deleting data')." -> ".dame_nombre_agente($id_agente);
-		
-			// Deleting data
-			$sql1='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_agente;
-			$result1=mysql_query($sql1);
-			while ($row=mysql_fetch_array($result1)){
-				$sql_delete1="DELETE FROM tagente_datos WHERE id_agente_modulo=".$row["id_agente_modulo"];
-				$sql_delete2="DELETE FROM tagente_datos_inc WHERE id_agente_modulo=".$row["id_agente_modulo"];
-				$sql_delete3="DELETE FROM tagente_datos_string WHERE id_agente_modulo=".$row["id_agente_modulo"];
-				$result=mysql_query($sql_delete1);
-				$result=mysql_query($sql_delete2);
-				$result=mysql_query($sql_delete3);
-			}
-			
-			// Delete conf
-			$sql_delete5 ="DELETE FROM tagente_modulo WHERE id_agente = ".$id_agente; // delete from table tagente_modulo
-			$sql_delete6 ="DELETE FROM tagente_estado WHERE id_agente = ".$id_agente; // detele from table tagente_estado
-			$result=mysql_query($sql_delete5);
-			$result=mysql_query($sql_delete6);		
-			
-			// delete alerts definitions
-			
-			// delete data
-			$sql1='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_agente;
-			$result1=mysql_query($sql1);
-			while ($row=mysql_fetch_array($result1)){
-				$sql_delete1="DELETE FROM talerta_agente_modulo WHERE id_agente_modulo=".$row["id_agente_modulo"];
-				$result = mysql_query($sql_delete1);
-			} // while			
-			
-			// delete agent
-			$sql1='DELETE FROM tagente WHERE id_agente = '.$id_agente;
-			$result1=mysql_query($sql1);
+			delete_agent($id_agente);
 		}// for
 	}//delete
 
@@ -377,7 +368,7 @@ if ((isset($_GET["operacion"])) && ($update_agent == -1) && ($update_group == -1
 	} else { 
 		
 		// title
-		echo '<h2>'.__('Agent configuration'). '&gt;'. __('Configuration Management').'</h2>';
+		echo '<h2>'.__('Agent configuration'). '&gt;'. __('Configuration Management').  '</h2>';
 		echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/manage_config&operacion=1">';
 		echo "<table width='650' border='0' cellspacing='4' cellpadding='4' class='databox'>";
 		
@@ -432,7 +423,9 @@ if ((isset($_GET["operacion"])) && ($update_agent == -1) && ($update_group == -1
 		echo "</select>";
 		
 		echo '<td class="datost">';
-		echo '<b>'.__('Copy Configuration'). '</b><br><br>';
+		echo '<b>'.__('Targets'). '</b> ';
+		pandora_help ('manageconfig');
+		echo '<br><br>';
 		echo '<table>';
 		echo '<tr class=datos><td>'.__('Modules');
 		echo '<td><input type="checkbox" name="modules" value="1" class="chk">';
@@ -456,9 +449,12 @@ if ((isset($_GET["operacion"])) && ($update_agent == -1) && ($update_group == -1
 		// Form buttons
 		echo '<td align="left" class="datosb">';
 		echo "<br><br>";
-		echo '<input type="submit" name="copy" class="sub copy" value="'.__('Copy').'" onClick="if (!confirm("'.__('Are you sure?').'")) return false;>';
+		echo '<input type="submit" name="copy" class="sub copy" value="'.__('Copy').'" onClick="if (!confirm("'.__('Are you sure?').'")) return false;> ';
+		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+		pandora_help ('manageconfig');
 		echo "<br><br>";
 		echo '<input type="submit" name="delete" class="sub delete" value="'. __('Delete').'" onClick="if (!confirm("'.__('Are you sure?').'")) return false;>';
+		
 		echo "<br><br>";
 		echo '<input type="submit" name="delete_agent" class="sub delete" value="'. __('Delete Agents').'" onClick="if (!confirm("'.__('Are you sure?').'")) return false;>';
 

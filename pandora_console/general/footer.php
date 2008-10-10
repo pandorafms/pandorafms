@@ -32,7 +32,7 @@ if ((isset($develop_bypass)) AND ($develop_bypass == 1)) {
 	echo ' - Saved '.format_numeric ($sql_cache["saved"]).' Queries';
 }
 echo '</a><br>';
-echo '<a href="http://www.mozilla-europe.org/en/firefox/"><img src="images/firefox.gif" align="middle"
+echo '<a href="http://www.mozilla-europe.org/en/firefox/"><img src="'.$config["homeurl"].'/images/firefox.gif" align="middle"
 	title="'.__('Pandora FMS console is best viewed with Firefox web browser').'" /></a>';
 echo "</center>";
 

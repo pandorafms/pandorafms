@@ -1,3 +1,11 @@
+2008-10-10  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+	
+	* operation/reporting/reporting_xml.php: Now correctly displays image
+	reports without messing up the XML
+
+	* include/functions_html.php: print_select now accepts arrays (eg. for
+	use in select boxes with the multiple tag set) as selected values
+
 2008-10-10  Sancho Lerena <slerena@artica.es>
 
 	* ajax.php: removed carriage return from EOF.

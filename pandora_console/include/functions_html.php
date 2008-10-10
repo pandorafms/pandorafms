@@ -25,7 +25,8 @@
  * 
  * @param array $fields Array with dropdown values. Example: $fields["value"] = "label"
  * @param string $name Select form name
- * @param variant $selected Current selected value.
+ * @param variant $selected Current selected value. Can be a single value or an
+ * array of selected values (in combination with multiple)
  * @param string $script Javascript onChange code.
  * @param string $nothing Label when nothing is selected.
  * @param variant $nothing_value Value when nothing is selected
@@ -66,7 +67,9 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 		}
 		foreach ($fields as $value => $label) {
 			$output .= '<option value="'.$value.'"';
-			if ($value == $selected) {
+			if (is_array ($selected) && in_array ($value, $selected)) {
+				$output .= ' selected';
+			} elseif (!is_array ($selected) && $value == $selected) {
 				$output .= ' selected';
 			}
 			if ($label === '') {

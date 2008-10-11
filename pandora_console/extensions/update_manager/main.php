@@ -39,9 +39,9 @@ if ($settings->customer_key == FREE_USER) {
 	echo '<div class="notify" style="width: 80%; text-align:left;" >';
 	echo '<img src="images/information.png" /> ';
 	/* Translators: Do not translade Update Manager, it's the name of the program */
-	echo __('The new <a href="http://updatemanager.sourceforge.net">Update Manager</a> client is shipped with the new Pandora FMS 2.0. It lets systems administrators to do not need to update their PandoraFMS manually since the Update Manager is the one getting new modules, new plugins and new features (even full migrations tools for future versions) automatically');
+	echo __('The new <a href="http://updatemanager.sourceforge.net">Update Manager</a> client is shipped with Pandora FMS 2.0. It helps system administrators to update their Pandora FMS automatically, since the Update Manager do the task of getting new modules, new plugins and new features (even full migrations tools for future versions) automatically.');
 	echo '<p />';
-	echo __('Update Manager is one of the most advanced features of PandoraFMS 2.0 Enterprise version, for more information visit <a href="http://pandorafms.com">http://pandorafms.com</a>');
+	echo __('Update Manager is one of the most advanced features of Pandora FMS 2.0 Enterprise version, for more information visit <a href="http://pandorafms.com">http://pandorafms.com</a>.');
 	echo '<p />';
 	echo __('Update Manager sends anonymous information about Pandora FMS usage (number of agents and modules running). To disable it, just delete extension or remove remote server address from Update Manager plugin setup.');
 	echo '</div>';
@@ -69,7 +69,7 @@ if (is_int ($package) && $package == 1) {
 } elseif (is_int ($package) && $package == 0) {
 	echo '<h5 class="error">'.__('Server authorization rejected')."</h5>";
 } else {
-	echo '<h5 class="suc">'.__('There\'s a new update for Pandora')."</h5>";
+	echo '<h5 class="suc">'.__('There\'s a new update for Pandora FMS')."</h5>";
 	
 	$table->width = '50%';
 	$table->data = array ();

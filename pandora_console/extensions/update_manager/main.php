@@ -39,7 +39,7 @@ if ($settings->customer_key == FREE_USER) {
 	echo '<div class="notify" style="width: 80%; text-align:left;" >';
 	echo '<img src="images/information.png" /> ';
 	/* Translators: Do not translade Update Manager, it's the name of the program */
-	echo __('The new <a href="http://updatemanager.sourceforge.net">Update Manager</a> client is shipped with Pandora FMS 2.0. It helps system administrators to update their Pandora FMS automatically, since the Update Manager do the task of getting new modules, new plugins and new features (even full migrations tools for future versions) automatically.');
+	echo __('The new <a href="http://updatemanager.sourceforge.net">Update Manager</a> client is shipped with Pandora FMS 2.0. It helps system administrators to update their Pandora FMS automatically, since the Update Manager does the task of getting new modules, new plugins and new features (even full migrations tools for future versions) automatically.');
 	echo '<p />';
 	echo __('Update Manager is one of the most advanced features of Pandora FMS 2.0 Enterprise version, for more information visit <a href="http://pandorafms.com">http://pandorafms.com</a>.');
 	echo '<p />';

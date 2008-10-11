@@ -1,3 +1,9 @@
+2008-10-11  Raul Mateos  <raulofpandora@gmail.com>
+	
+	* images/firefox.png: Moved from .gif to .png. WE SHOLDN'T USE .gif FILES!
+	
+	* general/footer.php: Added year header. Changed image link to .png
+
 2008-10-11  Manuel Arostegui <marostegui@artica.es>
 
 	* extensions/update_manager/main.php: Small language correction

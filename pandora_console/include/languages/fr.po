@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-09-10 15:55+0200\n"
-"PO-Revision-Date: 2008-09-05 20:40+0000\n"
+"PO-Revision-Date: 2008-10-08 09:43+0000\n"
 "Last-Translator: Pierre-Yves Dubreucq <Unknown>\n"
 "Language-Team: fr <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-09-22 07:01+0000\n"
+"X-Launchpad-Export-Date: 2008-10-13 07:49+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #~ msgid "Two hours"
@@ -520,21 +520,21 @@ msgstr ""
 #: ../../include/functions.php:533
 #: ../../operation/reporting/graph_viewer.php:122
 msgid "1 hour"
-msgstr ""
+msgstr "1 heure"
 
 #: ../../reporting/stat_win.php:55 ../../reporting/stat_win.php:219
 #: ../../godmode/reporting/graph_builder.php:336
 #: ../../godmode/reporting/graph_builder.php:390
 #: ../../include/functions.php:536
 msgid "2 hours"
-msgstr ""
+msgstr "2 heures"
 
 #: ../../reporting/stat_win.php:57 ../../reporting/stat_win.php:220
 #: ../../godmode/reporting/graph_builder.php:342
 #: ../../godmode/reporting/graph_builder.php:392
 #: ../../include/functions.php:539
 msgid "6 hours"
-msgstr ""
+msgstr "6 heures"
 
 #: ../../reporting/stat_win.php:59 ../../reporting/stat_win.php:221
 #: ../../godmode/reporting/graph_builder.php:345
@@ -550,7 +550,7 @@ msgstr "12 heures"
 #: ../../include/functions.php:545
 #: ../../operation/reporting/graph_viewer.php:127
 msgid "1 day"
-msgstr ""
+msgstr "1 jour"
 
 #: ../../reporting/stat_win.php:63 ../../reporting/stat_win.php:223
 #: ../../godmode/reporting/graph_builder.php:351
@@ -559,19 +559,19 @@ msgstr ""
 #: ../../include/functions.php:548
 #: ../../operation/reporting/graph_viewer.php:128
 msgid "2 days"
-msgstr ""
+msgstr "2 jours"
 
 #: ../../reporting/stat_win.php:65 ../../reporting/stat_win.php:224
 #: ../../include/functions.php:551
 msgid "5 days"
-msgstr ""
+msgstr "5 jours"
 
 #: ../../reporting/stat_win.php:67 ../../reporting/stat_win.php:225
 #: ../../godmode/reporting/reporting_builder.php:390
 #: ../../include/functions.php:554
 #: ../../operation/reporting/graph_viewer.php:129
 msgid "1 week"
-msgstr ""
+msgstr "1 semaine"
 
 #: ../../reporting/stat_win.php:69 ../../reporting/stat_win.php:226
 #: ../../godmode/reporting/map_builder.php:373
@@ -586,14 +586,14 @@ msgstr "15 jours"
 #: ../../include/functions.php:560
 #: ../../operation/reporting/graph_viewer.php:130
 msgid "1 month"
-msgstr ""
+msgstr "1 mois"
 
 #: ../../reporting/stat_win.php:73 ../../reporting/stat_win.php:228
 #: ../../godmode/reporting/graph_builder.php:366
 #: ../../godmode/reporting/graph_builder.php:399
 #: ../../include/functions.php:563
 msgid "2 months"
-msgstr ""
+msgstr "2 mois"
 
 #: ../../reporting/stat_win.php:75 ../../reporting/stat_win.php:229
 #: ../../godmode/reporting/graph_builder.php:369
@@ -602,7 +602,7 @@ msgstr ""
 #: ../../include/functions.php:566
 #: ../../operation/reporting/graph_viewer.php:131
 msgid "6 months"
-msgstr ""
+msgstr "6 mois"
 
 #: ../../reporting/stat_win.php:114
 #: ../../godmode/agentes/module_manager_editor_wmi.php:211
@@ -618,7 +618,7 @@ msgstr "Valeur Maximale"
 #: ../../reporting/stat_win.php:116 ../../include/functions.php:1006
 #: ../../operation/reporting/reporting_viewer.php:297
 msgid "Avg. Value"
-msgstr ""
+msgstr "Valeur moyenne"
 
 #: ../../reporting/stat_win.php:118
 #: ../../godmode/agentes/module_manager_editor_wmi.php:209
@@ -633,7 +633,7 @@ msgstr "Valeur Minimale"
 
 #: ../../reporting/stat_win.php:187
 msgid "Refresh time"
-msgstr ""
+msgstr "Heure de rafraichissement"
 
 #: ../../reporting/stat_win.php:191
 msgid "Avg. Only"
@@ -641,27 +641,27 @@ msgstr "Moyenne  uniquement"
 
 #: ../../reporting/stat_win.php:198
 msgid "Begin date"
-msgstr ""
+msgstr "Date de début"
 
 #: ../../reporting/stat_win.php:203
 msgid "Zoom factor"
-msgstr "Facteur de zoom"
+msgstr "Facteur d'agrandissement"
 
 #: ../../reporting/stat_win.php:214
 msgid "Time range"
-msgstr ""
+msgstr "Plage de temps"
 
 #: ../../reporting/stat_win.php:233
 msgid "Show events"
-msgstr ""
+msgstr "Voir les événements"
 
 #: ../../reporting/stat_win.php:242
 msgid "Show alert"
-msgstr ""
+msgstr "Voir l'alerte"
 
 #: ../../reporting/fgraph.php:947
 msgid "Data occurrence for module "
-msgstr ""
+msgstr "Données disponibles pour le module "
 
 #: ../../reporting/fgraph.php:1039 ../../operation/incidents/incident.php:245
 #: ../../operation/incidents/incident.php:262
@@ -697,7 +697,7 @@ msgstr "Grave"
 
 #: ../../reporting/fgraph.php:1043
 msgid "Very serious"
-msgstr ""
+msgstr "Très grave"
 
 #: ../../reporting/fgraph.php:1044 ../../reporting/fgraph.php:1264
 #: ../../include/functions.php:673 ../../include/functions.php:1157
@@ -712,17 +712,17 @@ msgstr "Maintenance"
 #: ../../reporting/fgraph.php:1272 ../../include/functions.php:676
 #: ../../include/functions.php:1158 ../../include/functions.php:1178
 msgid "Informational"
-msgstr ""
+msgstr "Informatif"
 
 #: ../../reporting/fgraph.php:1279 ../../include/functions.php:679
 #: ../../include/functions.php:1159 ../../include/functions.php:1180
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
 #: ../../reporting/fgraph.php:1286 ../../include/functions.php:682
 #: ../../include/functions.php:1160 ../../include/functions.php:1182
 msgid "Warning"
-msgstr ""
+msgstr "Avertissement"
 
 #: ../../reporting/fgraph.php:1293 ../../include/functions.php:685
 #: ../../include/functions.php:1161 ../../include/functions.php:1184
@@ -731,23 +731,23 @@ msgstr "Critique"
 
 #: ../../reporting/fgraph.php:1468
 msgid "Today"
-msgstr ""
+msgstr "Aujourd'hui"
 
 #: ../../reporting/fgraph.php:1469
 msgid "Week"
-msgstr ""
+msgstr "Semaine"
 
 #: ../../reporting/fgraph.php:1470
 msgid "Month"
-msgstr ""
+msgstr "Mois"
 
 #: ../../reporting/fgraph.php:1471
 msgid "Months"
-msgstr ""
+msgstr "Mois"
 
 #: ../../reporting/fgraph.php:1472
 msgid "Older"
-msgstr ""
+msgstr "Ancien"
 
 #: ../../reporting/fgraph.php:1504
 msgid "no data"
@@ -777,11 +777,11 @@ msgstr ""
 
 #: ../../general/pandora_help.php:22
 msgid "Pandora FMS help system"
-msgstr ""
+msgstr "Système d'aide de Pandora FMS"
 
 #: ../../general/pandora_help.php:32
 msgid "Help system error"
-msgstr ""
+msgstr "Erreur dans le système d'aide"
 
 #: ../../general/pandora_help.php:38
 msgid ""
@@ -793,15 +793,15 @@ msgstr ""
 
 #: ../../general/pandora_help.php:44
 msgid "Pandora FMS Help System"
-msgstr ""
+msgstr "Système d'Aide de Pandora FMS"
 
 #: ../../general/login_page.php:32
 msgid "Pandora FMS Web Console"
-msgstr ""
+msgstr "Console Web Pandora FMS"
 
 #: ../../general/login_page.php:38
 msgid "Build"
-msgstr ""
+msgstr "Construire"
 
 #: ../../general/login_page.php:40
 msgid "Login"
@@ -824,6 +824,7 @@ msgstr "Page crée le"
 #: ../../general/footer.php:36
 msgid "Pandora FMS console is best viewed with Firefox web browser"
 msgstr ""
+"La console Pandora FMS est optimisée pour le navigateur internet Firefox"
 
 #: ../../general/logoff.php:22
 msgid "Logged Out"
@@ -894,15 +895,15 @@ msgstr "Á"
 #: ../../operation/reporting/reporting_viewer.php:370
 #: ../../operation/agentes/tactical.php:94
 msgid "Monitor health"
-msgstr ""
+msgstr "Moniteur de santé"
 
 #: ../../general/logon_ok.php:120 ../../operation/agentes/tactical.php:95
 msgid "of monitors UP"
-msgstr ""
+msgstr "des moniteurs ACTIF"
 
 #: ../../general/logon_ok.php:122 ../../operation/agentes/tactical.php:96
 msgid "Data health"
-msgstr ""
+msgstr "Santé des données"
 
 #: ../../general/logon_ok.php:123 ../../operation/agentes/tactical.php:97
 msgid "of modules with updated data"
@@ -922,11 +923,11 @@ msgstr ""
 
 #: ../../general/logon_ok.php:129 ../../operation/agentes/tactical.php:101
 msgid "of well initialized modules"
-msgstr ""
+msgstr "des modules initialisés correctement"
 
 #: ../../general/logon_ok.php:132 ../../operation/agentes/tactical.php:102
 msgid "Alert level"
-msgstr ""
+msgstr "Niveau d'alerte"
 
 #: ../../general/logon_ok.php:133 ../../operation/agentes/tactical.php:103
 msgid "of non-fired alerts"
@@ -1001,11 +1002,11 @@ msgstr "Etat du serveur : ETEINT"
 
 #: ../../general/header.php:51
 msgid "System ready"
-msgstr ""
+msgstr "Système prêt"
 
 #: ../../general/header.php:59 ../../general/header.php:61
 msgid "Autorefresh"
-msgstr ""
+msgstr "Raffraichissement automatique"
 
 #: ../../general/header.php:65 ../../operation/events/event_statistics.php:32
 #: ../../operation/events/events.php:196
@@ -1050,7 +1051,7 @@ msgstr ""
 #: ../../extensions/update_manager/main.php:36
 #: ../../extensions/update_manager.php:115
 msgid "Update manager"
-msgstr ""
+msgstr "Gestionnaire de mise à jour"
 
 #: ../../extensions/update_manager/main.php:42
 msgid ""

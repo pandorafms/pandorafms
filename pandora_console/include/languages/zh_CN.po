@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2008-09-10 15:55+0200\n"
-"PO-Revision-Date: 2008-09-13 15:23+0000\n"
-"Last-Translator: Aron Xu <Unknown>\n"
+"PO-Revision-Date: 2008-10-09 14:04+0000\n"
+"Last-Translator: rainofchaos <rainofchaos@gmail.com>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-09-22 07:01+0000\n"
+"X-Launchpad-Export-Date: 2008-10-13 07:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../../reporting/stat_win.php:46
@@ -29,28 +29,28 @@ msgstr ""
 #: ../../include/functions.php:533
 #: ../../operation/reporting/graph_viewer.php:122
 msgid "1 hour"
-msgstr "一小时"
+msgstr "1 小时"
 
 #: ../../reporting/stat_win.php:55 ../../reporting/stat_win.php:219
 #: ../../godmode/reporting/graph_builder.php:336
 #: ../../godmode/reporting/graph_builder.php:390
 #: ../../include/functions.php:536
 msgid "2 hours"
-msgstr "两小时"
+msgstr "2 小时"
 
 #: ../../reporting/stat_win.php:57 ../../reporting/stat_win.php:220
 #: ../../godmode/reporting/graph_builder.php:342
 #: ../../godmode/reporting/graph_builder.php:392
 #: ../../include/functions.php:539
 msgid "6 hours"
-msgstr "六小时"
+msgstr "6小时"
 
 #: ../../reporting/stat_win.php:59 ../../reporting/stat_win.php:221
 #: ../../godmode/reporting/graph_builder.php:345
 #: ../../godmode/reporting/graph_builder.php:393
 #: ../../include/functions.php:542
 msgid "12 hours"
-msgstr ""
+msgstr "12小时"
 
 #: ../../reporting/stat_win.php:61 ../../reporting/stat_win.php:222
 #: ../../godmode/reporting/graph_builder.php:348
@@ -59,7 +59,7 @@ msgstr ""
 #: ../../include/functions.php:545
 #: ../../operation/reporting/graph_viewer.php:127
 msgid "1 day"
-msgstr "一天"
+msgstr "1天"
 
 #: ../../reporting/stat_win.php:63 ../../reporting/stat_win.php:223
 #: ../../godmode/reporting/graph_builder.php:351
@@ -68,19 +68,19 @@ msgstr "一天"
 #: ../../include/functions.php:548
 #: ../../operation/reporting/graph_viewer.php:128
 msgid "2 days"
-msgstr "两天"
+msgstr "2天"
 
 #: ../../reporting/stat_win.php:65 ../../reporting/stat_win.php:224
 #: ../../include/functions.php:551
 msgid "5 days"
-msgstr "五天"
+msgstr "5天"
 
 #: ../../reporting/stat_win.php:67 ../../reporting/stat_win.php:225
 #: ../../godmode/reporting/reporting_builder.php:390
 #: ../../include/functions.php:554
 #: ../../operation/reporting/graph_viewer.php:129
 msgid "1 week"
-msgstr "一周"
+msgstr "1星期"
 
 #: ../../reporting/stat_win.php:69 ../../reporting/stat_win.php:226
 #: ../../godmode/reporting/map_builder.php:373
@@ -88,21 +88,21 @@ msgstr "一周"
 #: ../../godmode/reporting/graph_builder.php:397
 #: ../../include/functions.php:557
 msgid "15 days"
-msgstr ""
+msgstr "15天"
 
 #: ../../reporting/stat_win.php:71 ../../reporting/stat_win.php:227
 #: ../../godmode/reporting/reporting_builder.php:392
 #: ../../include/functions.php:560
 #: ../../operation/reporting/graph_viewer.php:130
 msgid "1 month"
-msgstr "一个月"
+msgstr "1个月"
 
 #: ../../reporting/stat_win.php:73 ../../reporting/stat_win.php:228
 #: ../../godmode/reporting/graph_builder.php:366
 #: ../../godmode/reporting/graph_builder.php:399
 #: ../../include/functions.php:563
 msgid "2 months"
-msgstr "两个月"
+msgstr "2个月"
 
 #: ../../reporting/stat_win.php:75 ../../reporting/stat_win.php:229
 #: ../../godmode/reporting/graph_builder.php:369
@@ -111,7 +111,7 @@ msgstr "两个月"
 #: ../../include/functions.php:566
 #: ../../operation/reporting/graph_viewer.php:131
 msgid "6 months"
-msgstr "六个月"
+msgstr "6个月"
 
 #: ../../reporting/stat_win.php:114
 #: ../../godmode/agentes/module_manager_editor_wmi.php:211
@@ -1065,11 +1065,11 @@ msgstr "上个月"
 
 #: ../../godmode/reporting/map_builder.php:375
 msgid "Two Months"
-msgstr "两个月"
+msgstr "2个月"
 
 #: ../../godmode/reporting/map_builder.php:376
 msgid "Six Months"
-msgstr "六个月"
+msgstr "6个月"
 
 #: ../../godmode/reporting/map_builder.php:388
 msgid "Map element editor"
@@ -1255,7 +1255,7 @@ msgstr "三小时"
 
 #: ../../godmode/reporting/graph_builder.php:354
 msgid "4 days"
-msgstr "四天"
+msgstr "4天"
 
 #: ../../godmode/reporting/graph_builder.php:363
 #: ../../godmode/reporting/graph_builder.php:398
@@ -1949,7 +1949,7 @@ msgstr "数据库信息"
 
 #: ../../godmode/menu.php:250 ../../godmode/db/db_purge.php:41
 msgid "Database purge"
-msgstr "数据库整理"
+msgstr "数据库清理"
 
 #: ../../godmode/menu.php:257 ../../godmode/db/db_refine.php:69
 msgid "Database debug"
@@ -3155,31 +3155,31 @@ msgstr "星期"
 
 #: ../../godmode/agentes/alert_manager_editor.php:237
 msgid "Mon"
-msgstr "周一"
+msgstr "一"
 
 #: ../../godmode/agentes/alert_manager_editor.php:240
 msgid "Tue"
-msgstr "周二"
+msgstr "二"
 
 #: ../../godmode/agentes/alert_manager_editor.php:243
 msgid "Wed"
-msgstr "周三"
+msgstr "三"
 
 #: ../../godmode/agentes/alert_manager_editor.php:246
 msgid "Thu"
-msgstr "周四"
+msgstr "四"
 
 #: ../../godmode/agentes/alert_manager_editor.php:249
 msgid "Fri"
-msgstr "周五"
+msgstr "五"
 
 #: ../../godmode/agentes/alert_manager_editor.php:252
 msgid "Sat"
-msgstr "周六"
+msgstr "六"
 
 #: ../../godmode/agentes/alert_manager_editor.php:255
 msgid "Sun"
-msgstr "周日"
+msgstr "日"
 
 #: ../../godmode/agentes/alert_manager_editor.php:259
 msgid "Field #2 (Rec)"
@@ -3204,7 +3204,7 @@ msgstr ""
 #: ../../godmode/agentes/alert_manager_editor.php:341
 #: ../../operation/menu.php:24
 msgid "Operation"
-msgstr ""
+msgstr "操作"
 
 #: ../../godmode/modules/manage_network_components.php:177
 #: ../../godmode/modules/manage_nc_groups.php:70
@@ -3230,16 +3230,16 @@ msgstr "创建新的WMI组件"
 #: ../../godmode/modules/manage_network_components.php:226
 #: ../../godmode/modules/manage_network_templates_form.php:138
 msgid "NC.Group"
-msgstr ""
+msgstr "NC.组"
 
 #: ../../godmode/modules/manage_nc_groups.php:71
 #: ../../godmode/modules/manage_nc_groups_form.php:44
 msgid "Component group management"
-msgstr ""
+msgstr "组件组管理"
 
 #: ../../godmode/modules/manage_network_components_form_wmi.php:80
 msgid "WMI component management"
-msgstr ""
+msgstr "WMI组件管理"
 
 #: ../../godmode/modules/manage_network_components_form_wmi.php:133
 #: ../../godmode/modules/manage_network_components_form_network.php:235
@@ -3279,7 +3279,7 @@ msgstr "已定义的模块"
 
 #: ../../godmode/users/user_list.php:38
 msgid "There was a problem deleting user"
-msgstr ""
+msgstr "删除用户时发生了一个问题"
 
 #: ../../godmode/users/user_list.php:40
 msgid "User successfully deleted"
@@ -3288,17 +3288,17 @@ msgstr "成功的删除了用户"
 #: ../../godmode/users/user_list.php:44
 #: ../../godmode/users/configure_user.php:156
 msgid "User management"
-msgstr ""
+msgstr "用户管理"
 
 #: ../../godmode/users/user_list.php:45
 #: ../../operation/users/user_statistics.php:25
 #: ../../operation/users/user.php:28
 msgid "Users defined in Pandora"
-msgstr ""
+msgstr "已创建的用户"
 
 #: ../../godmode/users/user_list.php:48 ../../operation/users/user.php:31
 msgid "UserID"
-msgstr ""
+msgstr "用户ID"
 
 #: ../../godmode/users/user_list.php:50 ../../operation/users/user.php:33
 msgid "Profile"
@@ -3317,27 +3317,27 @@ msgstr "创建用户"
 
 #: ../../godmode/users/configure_user.php:56
 msgid "There was a problem loading user"
-msgstr ""
+msgstr "载入用户时出现问题"
 
 #: ../../godmode/users/configure_user.php:81
 #: ../../godmode/users/configure_user.php:135
 #: ../../operation/users/user_edit.php:57
 #: ../../operation/users/user_edit.php:80
 msgid "Passwords don't match. Please repeat again"
-msgstr ""
+msgstr "两次输入的密码不匹配，请重新输入"
 
 #: ../../godmode/users/configure_user.php:120
 #: ../../operation/users/user_edit.php:59
 msgid "User successfully updated"
-msgstr ""
+msgstr "成功地更新了用户"
 
 #: ../../godmode/users/configure_user.php:123
 msgid "There was a problem updating user"
-msgstr ""
+msgstr "更新用户时发生问题"
 
 #: ../../godmode/users/configure_user.php:147
 msgid "User creation failed"
-msgstr ""
+msgstr "创建用户失败"
 
 #: ../../godmode/users/configure_user.php:149
 msgid "User created successfully"
@@ -3354,21 +3354,21 @@ msgstr ""
 #: ../../operation/events/events.php:320
 #: ../../operation/users/user_edit.php:109
 msgid "User ID"
-msgstr ""
+msgstr "用户 ID"
 
 #: ../../godmode/users/configure_user.php:178
 #: ../../operation/users/user_edit.php:112
 msgid "Real name"
-msgstr ""
+msgstr "真名"
 
 #: ../../godmode/users/configure_user.php:187
 msgid "Password confirmation"
-msgstr ""
+msgstr "密码确认"
 
 #: ../../godmode/users/configure_user.php:193
 #: ../../operation/users/user_edit.php:127
 msgid "Telephone"
-msgstr ""
+msgstr "电话号码"
 
 #: ../../godmode/users/configure_user.php:195
 msgid "Global Profile"
@@ -3376,7 +3376,7 @@ msgstr "全局档案"
 
 #: ../../godmode/users/configure_user.php:200
 msgid "Administrator"
-msgstr ""
+msgstr "管理员"
 
 #: ../../godmode/users/configure_user.php:202
 msgid ""
@@ -3386,18 +3386,18 @@ msgstr "此用户拥有全部权限。这是一个管理员账户，覆盖由档
 
 #: ../../godmode/users/configure_user.php:203
 msgid "Standard user"
-msgstr ""
+msgstr "标准用户"
 
 #: ../../godmode/users/configure_user.php:205
 msgid ""
 "This user has separated permissions to view data in his group agents, create "
 "incidents belong to his groups, add notes in another incidents, create "
 "personal assignments or reviews and other tasks, on different profiles"
-msgstr ""
+msgstr "此用户可以查看属于其群组代理的数据，创建属于其群组的事件，为其群组的事件添加注解，创建个人任务和回顾， 并拥有由其档案赋予的其他权限。"
 
 #: ../../godmode/users/configure_user.php:220
 msgid "Group(s) available"
-msgstr ""
+msgstr "可用的用户组"
 
 #: ../../godmode/users/configure_user.php:250
 #: ../../operation/users/user_edit.php:140
@@ -3408,15 +3408,15 @@ msgstr "此用户档案/群组"
 #: ../../godmode/db/db_main.php:40 ../../godmode/db/db_audit.php:51
 #: ../../godmode/db/db_refine.php:68 ../../godmode/db/db_event.php:40
 msgid "Database Maintenance"
-msgstr ""
+msgstr "数据库维护"
 
 #: ../../godmode/db/db_info.php:43
 msgid "Database Information"
-msgstr ""
+msgstr "数据库信息"
 
 #: ../../godmode/db/db_info.php:47
 msgid "Modules per agent"
-msgstr ""
+msgstr "代理使用的模块数"
 
 #: ../../godmode/db/db_info.php:51
 msgid "Packets per agent"
@@ -3424,15 +3424,15 @@ msgstr ""
 
 #: ../../godmode/db/db_info.php:54
 msgid "Press here to get database information as text"
-msgstr ""
+msgstr "点这里以文本显示数据库信息"
 
 #: ../../godmode/db/db_info.php:63
 msgid "Total data"
-msgstr ""
+msgstr "总数据"
 
 #: ../../godmode/db/db_info.php:89
 msgid "Press here to get database information as a graph"
-msgstr ""
+msgstr "点这里以图表显示数据库信息"
 
 #: ../../godmode/db/db_sanity.php:32
 msgid "Database sanity tool"
@@ -3444,7 +3444,7 @@ msgstr ""
 
 #: ../../godmode/db/db_sanity.php:55
 msgid "Checking database consistency"
-msgstr ""
+msgstr "正在检查数据库的一致性"
 
 #: ../../godmode/db/db_sanity.php:71
 msgid "Deleting non-init data"
@@ -3470,15 +3470,15 @@ msgstr ""
 
 #: ../../godmode/db/db_sanity.php:101
 msgid "Delete non-initialized modules now"
-msgstr "立刻删除无法初始化的模块"
+msgstr "立刻删除未初始化的模块"
 
 #: ../../godmode/db/db_purge.php:44
 msgid "Get data from agent"
-msgstr ""
+msgstr "从代理获取数据"
 
 #: ../../godmode/db/db_purge.php:83
 msgid "Purge task launched for agent"
-msgstr ""
+msgstr "对下列代理的清理任务已经开始："
 
 #: ../../godmode/db/db_purge.php:83
 msgid "Data older than"
@@ -3496,105 +3496,105 @@ msgstr "删除模块记录"
 
 #: ../../godmode/db/db_purge.php:118
 msgid "Deleting records for all agents"
-msgstr ""
+msgstr "删除所有代理记录"
 
 #: ../../godmode/db/db_purge.php:136
 msgid "Choose agent"
-msgstr ""
+msgstr "选择代理"
 
 #: ../../godmode/db/db_purge.php:137
 msgid "All agents"
-msgstr ""
+msgstr "所有代理"
 
 #: ../../godmode/db/db_purge.php:148
 msgid "Select the agent you want information about"
-msgstr ""
+msgstr "选择相应的代理以查看其信息"
 
 #: ../../godmode/db/db_purge.php:151
 msgid "Click here to get the data from the agent specified in the select box"
-msgstr ""
+msgstr "点这里以获得所选代理的信息"
 
 #: ../../godmode/db/db_purge.php:155
 msgid "Information on agent"
-msgstr ""
+msgstr "代理信息"
 
 #: ../../godmode/db/db_purge.php:155 ../../godmode/db/db_purge.php:157
 msgid "in the database"
-msgstr ""
+msgstr "之数据"
 
 #: ../../godmode/db/db_purge.php:157
 msgid "Information on all agents"
-msgstr ""
+msgstr "所有代理的信息"
 
 #: ../../godmode/db/db_purge.php:185
 msgid "Packets less than three months old"
-msgstr ""
+msgstr "3个月之内的包"
 
 #: ../../godmode/db/db_purge.php:186
 msgid "Packets less than one month old"
-msgstr ""
+msgstr "1个月之内的包"
 
 #: ../../godmode/db/db_purge.php:187
 msgid "Packets less than two weeks old"
-msgstr ""
+msgstr "2星期之内的包"
 
 #: ../../godmode/db/db_purge.php:188
 msgid "Packets less than one week old"
-msgstr ""
+msgstr "1星期之内的包"
 
 #: ../../godmode/db/db_purge.php:189
 msgid "Packets less than three days old"
-msgstr ""
+msgstr "3天之内的包"
 
 #: ../../godmode/db/db_purge.php:190
 msgid "Packets less than one day old"
-msgstr ""
+msgstr "1天之内的包"
 
 #: ../../godmode/db/db_purge.php:191
 msgid "Total number of packets"
-msgstr ""
+msgstr "包总数"
 
 #: ../../godmode/db/db_purge.php:196 ../../godmode/db/db_audit.php:70
 #: ../../godmode/db/db_event.php:61
 msgid "Purge data"
-msgstr ""
+msgstr "清理数据"
 
 #: ../../godmode/db/db_purge.php:200
 msgid "Purge data over 3 months"
-msgstr ""
+msgstr "清理3个月之前的数据"
 
 #: ../../godmode/db/db_purge.php:201
 msgid "Purge data over 1 month"
-msgstr ""
+msgstr "清理1个月之前的数据"
 
 #: ../../godmode/db/db_purge.php:202
 msgid "Purge data over 2 weeks"
-msgstr ""
+msgstr "清理2星期之前的数据"
 
 #: ../../godmode/db/db_purge.php:203
 msgid "Purge data over 1 week"
-msgstr ""
+msgstr "清理1星期之前的数据"
 
 #: ../../godmode/db/db_purge.php:204
 msgid "Purge data over 3 days"
-msgstr ""
+msgstr "清理3天之前的数据"
 
 #: ../../godmode/db/db_purge.php:205
 msgid "Purge data over 1 day"
-msgstr ""
+msgstr "清理1天之前的数据"
 
 #: ../../godmode/db/db_purge.php:206
 msgid "All data until now"
-msgstr ""
+msgstr "至今所有数据"
 
 #: ../../godmode/db/db_purge.php:209 ../../godmode/db/db_audit.php:85
 #: ../../godmode/db/db_event.php:76
 msgid "Do it!"
-msgstr ""
+msgstr "执行！"
 
 #: ../../godmode/db/db_main.php:40
 msgid "Current database maintenance setup"
-msgstr ""
+msgstr "当前数据库维护之设置"
 
 #: ../../godmode/db/db_main.php:43
 msgid "Max. time before compact data"
@@ -3609,23 +3609,23 @@ msgid ""
 "Please check your Pandora Server setup and be sure that database maintenance "
 "daemon is running. It's very important to keep up-to-date database to get "
 "the best performance and results in Pandora"
-msgstr ""
+msgstr "请检查Pandora服务器之设置并确保数据库维护守护程序正在运行。为保证Pandora的最佳性能与结果，务必及时地维护数据库。"
 
 #: ../../godmode/db/db_audit.php:52
 msgid "Database Audit purge"
-msgstr ""
+msgstr "数据库审计清理"
 
 #: ../../godmode/db/db_audit.php:58 ../../godmode/db/db_event.php:47
 msgid "Total"
-msgstr ""
+msgstr "总计"
 
 #: ../../godmode/db/db_audit.php:59 ../../godmode/db/db_event.php:48
 msgid "Records"
-msgstr ""
+msgstr "记录"
 
 #: ../../godmode/db/db_audit.php:62 ../../godmode/db/db_event.php:51
 msgid "First date"
-msgstr ""
+msgstr "起始日期"
 
 #: ../../godmode/db/db_audit.php:66 ../../godmode/db/db_event.php:56
 msgid "Latest date"
@@ -3633,53 +3633,53 @@ msgstr ""
 
 #: ../../godmode/db/db_audit.php:75
 msgid "Purge audit data over 90 days"
-msgstr ""
+msgstr "清理90天之前的审计数据"
 
 #: ../../godmode/db/db_audit.php:76
 msgid "Purge audit data over 30 days"
-msgstr ""
+msgstr "清理30天之前的审计数据"
 
 #: ../../godmode/db/db_audit.php:77
 msgid "Purge audit data over 14 days"
-msgstr ""
+msgstr "清理14天之前的审计数据"
 
 #: ../../godmode/db/db_audit.php:78
 msgid "Purge audit data over 7 days"
-msgstr ""
+msgstr "清理7天之前的审计数据"
 
 #: ../../godmode/db/db_audit.php:79
 msgid "Purge audit data over 3 days"
-msgstr ""
+msgstr "清理3天之前的审计数据"
 
 #: ../../godmode/db/db_audit.php:80
 msgid "Purge audit data over 1 day"
-msgstr ""
+msgstr "清理1天之前的审计数据"
 
 #: ../../godmode/db/db_audit.php:81
 msgid "Purge all audit data"
-msgstr ""
+msgstr "清理所有的审计数据"
 
 #: ../../godmode/db/db_refine.php:41
 msgid "Maximum equal to minimum"
-msgstr ""
+msgstr "最大值与最小值不可相等"
 
 #: ../../godmode/db/db_refine.php:60
 msgid "Filtering data module"
-msgstr "过滤数据模块"
+msgstr "正在过滤数据模块"
 
 #: ../../godmode/db/db_refine.php:104
 msgid "Purge data out these limits"
-msgstr ""
+msgstr "清理不在此范围内的审计数据"
 
 #: ../../godmode/db/db_refine.php:106
 #: ../../include/functions_reporting.php:489
 msgid "Minimum"
-msgstr ""
+msgstr "最小值"
 
 #: ../../godmode/db/db_refine.php:107
 #: ../../include/functions_reporting.php:490
 msgid "Maximum"
-msgstr ""
+msgstr "最大值"
 
 #: ../../godmode/db/db_event.php:41
 msgid "Event Database cleanup"
@@ -3687,49 +3687,49 @@ msgstr ""
 
 #: ../../godmode/db/db_event.php:66
 msgid "Purge event data over 90 days"
-msgstr ""
+msgstr "清理90天之前的事件"
 
 #: ../../godmode/db/db_event.php:67
 msgid "Purge event data over 30 days"
-msgstr ""
+msgstr "清理30天之前的事件"
 
 #: ../../godmode/db/db_event.php:68
 msgid "Purge event data over 14 days"
-msgstr ""
+msgstr "清理14天之前的事件"
 
 #: ../../godmode/db/db_event.php:69
 msgid "Purge event data over 7 days"
-msgstr ""
+msgstr "清理7天之前的事件"
 
 #: ../../godmode/db/db_event.php:70
 msgid "Purge event data over 3 days"
-msgstr ""
+msgstr "清理3天之前的事件"
 
 #: ../../godmode/db/db_event.php:71
 msgid "Purge event data over 1 day"
-msgstr ""
+msgstr "清理1天之前的事件"
 
 #: ../../godmode/db/db_event.php:72
 msgid "Purge all event data"
-msgstr ""
+msgstr "清理所有的事件"
 
 #: ../../godmode/alerts/modify_alert.php:46
 msgid "Alert successfully updated"
-msgstr ""
+msgstr "成功地更新了警告"
 
 #: ../../godmode/alerts/modify_alert.php:79
 #: ../../godmode/alerts/configure_alert.php:58
 msgid "Alert configuration"
-msgstr ""
+msgstr "警告设置"
 
 #: ../../godmode/alerts/modify_alert.php:80
 msgid "Alerts defined in Pandora"
-msgstr ""
+msgstr "已定义之警告"
 
 #: ../../godmode/alerts/modify_alert.php:82
 #: ../../godmode/alerts/configure_alert.php:79
 msgid "Alert name"
-msgstr ""
+msgstr "警告名"
 
 #: ../../godmode/alerts/modify_alert.php:111
 #: ../../godmode/alerts/configure_alert.php:60
@@ -3739,19 +3739,19 @@ msgstr "创建警告"
 
 #: ../../godmode/alerts/configure_alert.php:46
 msgid "There was a problem loading alert"
-msgstr ""
+msgstr "装载警告时发生问题"
 
 #: ../../godmode/alerts/configure_alert.php:63
 msgid "Modify alert"
-msgstr ""
+msgstr "修改警告"
 
 #: ../../godmode/alerts/configure_alert.php:84
 msgid "Command"
-msgstr ""
+msgstr "命令"
 
 #: ../../include/functions_visual_map.php:139
 msgid "Static graph"
-msgstr ""
+msgstr "静态图表"
 
 #: ../../include/functions_visual_map.php:140
 msgid "Module graph"
@@ -3759,11 +3759,11 @@ msgstr "模块图表"
 
 #: ../../include/functions.php:202
 msgid "You don't have access"
-msgstr ""
+msgstr "您没有访问权限"
 
 #: ../../include/functions.php:206
 msgid "You don't have enough permission to access this resource"
-msgstr ""
+msgstr "您没有权限访问该资源"
 
 #: ../../include/functions.php:220 ../../include/functions.php:224
 msgid "Unmanaged error"
@@ -3771,11 +3771,11 @@ msgstr ""
 
 #: ../../include/functions.php:424
 msgid "."
-msgstr ""
+msgstr "。"
 
 #: ../../include/functions.php:426
 msgid ","
-msgstr ""
+msgstr ","
 
 #: ../../include/functions.php:480 ../../include/functions.php:487
 #: ../../include/functions.php:511
@@ -3785,24 +3785,24 @@ msgstr ""
 #: ../../operation/visual_console/render_view.php:84
 #: ../../operation/visual_console/render_view.php:85
 msgid "minutes"
-msgstr ""
+msgstr "分钟"
 
 #: ../../include/functions.php:496 ../../include/functions.php:497
 msgid "months"
-msgstr ""
+msgstr "月"
 
 #: ../../include/functions.php:850 ../../include/functions.php:937
 #: ../../include/functions_db.php:1820
 msgid "Recovery"
-msgstr ""
+msgstr "恢复"
 
 #: ../../include/functions.php:856 ../../include/functions.php:943
 msgid "Alert Ctrl."
-msgstr ""
+msgstr "触发条件"
 
 #: ../../include/functions.php:859 ../../include/functions.php:946
 msgid "Firing days"
-msgstr ""
+msgstr "触发日期"
 
 #: ../../include/functions.php:972
 #: ../../operation/snmpconsole/snmp_alert.php:341
@@ -3815,7 +3815,7 @@ msgstr ""
 #: ../../operation/agentes/estado_alertas.php:201
 #: ../../operation/agentes/estado_alertas.php:268
 msgid "Never"
-msgstr ""
+msgstr "从不"
 
 #: ../../include/functions.php:978 ../../include/functions.php:1139
 #: ../../include/functions_db.php:1905 ../../operation/agentes/bulbs.php:29
@@ -3824,7 +3824,7 @@ msgstr ""
 #: ../../operation/agentes/estado_alertas.php:258
 #: ../../operation/agentes/estado_alertas.php:281
 msgid "Alert fired"
-msgstr ""
+msgstr "已触发的警告"
 
 #: ../../include/functions.php:989 ../../include/functions_db.php:1907
 #: ../../operation/agentes/bulbs.php:37
@@ -3833,17 +3833,17 @@ msgstr ""
 #: ../../operation/agentes/estado_alertas.php:260
 #: ../../operation/agentes/estado_alertas.php:283
 msgid "Alert not fired"
-msgstr ""
+msgstr "未触发的警告"
 
 #: ../../include/functions.php:1000
 #: ../../operation/reporting/reporting_viewer.php:147
 msgid "Simple graph"
-msgstr ""
+msgstr "简单图表"
 
 #: ../../include/functions.php:1001
 #: ../../operation/reporting/reporting_viewer.php:161
 msgid "Custom graph"
-msgstr ""
+msgstr "自定义图表"
 
 #: ../../include/functions.php:1002
 #: ../../operation/reporting/reporting_viewer.php:186
@@ -3856,17 +3856,17 @@ msgstr ""
 #: ../../include/functions.php:1003
 #: ../../operation/reporting/reporting_viewer.php:249
 msgid "Event report"
-msgstr ""
+msgstr "事件报告"
 
 #: ../../include/functions.php:1004
 #: ../../operation/reporting/reporting_viewer.php:265
 msgid "Alert report"
-msgstr ""
+msgstr "警告报告"
 
 #: ../../include/functions.php:1005
 #: ../../operation/reporting/reporting_viewer.php:279
 msgid "Monitor report"
-msgstr ""
+msgstr "监视"
 
 #: ../../include/functions.php:1009
 #: ../../operation/reporting/reporting_viewer.php:342
@@ -3880,41 +3880,41 @@ msgstr ""
 #: ../../include/functions.php:1012
 #: ../../operation/reporting/reporting_viewer.php:384
 msgid "Agents detailed view"
-msgstr ""
+msgstr "代理详细视图"
 
 #: ../../include/functions.php:1027 ../../include/functions.php:1136
 #: ../../include/functions_db.php:1136
 #: ../../operation/reporting/reporting_viewer.php:218
 msgid "Unknown"
-msgstr ""
+msgstr "未知"
 
 #: ../../include/functions.php:1137
 #: ../../operation/agentes/status_monitor.php:229
 #: ../../operation/agentes/status_monitor.php:248
 msgid "Monitor up"
-msgstr ""
+msgstr "监视器已启动"
 
 #: ../../include/functions.php:1138
 #: ../../operation/agentes/status_monitor.php:231
 #: ../../operation/agentes/status_monitor.php:250
 msgid "Monitor down"
-msgstr ""
+msgstr "监视器已停止"
 
 #: ../../include/functions.php:1140
 msgid "Alert recovered"
-msgstr ""
+msgstr "警告已恢复"
 
 #: ../../include/functions.php:1141
 msgid "Alert ceased"
-msgstr ""
+msgstr "警告已中止"
 
 #: ../../include/functions.php:1142
 msgid "Alert manual validation"
-msgstr ""
+msgstr "警告人工确认"
 
 #: ../../include/functions.php:1143
 msgid "Recon host detected"
-msgstr ""
+msgstr "已检测到侦察主机"
 
 #: ../../include/functions.php:1144 ../../include/functions_db.php:2021
 #: ../../operation/events/events.php:425
@@ -3923,23 +3923,23 @@ msgstr "系统"
 
 #: ../../include/functions.php:1145
 msgid "Error"
-msgstr ""
+msgstr "错误"
 
 #: ../../include/functions_db.php:1124
 msgid "Software agent data"
-msgstr ""
+msgstr "软件代理数据"
 
 #: ../../include/functions_db.php:1127
 msgid "Software agent monitor"
-msgstr ""
+msgstr "软件代理监视器"
 
 #: ../../include/functions_db.php:1130
 msgid "Network agent data"
-msgstr ""
+msgstr "网络代理数据"
 
 #: ../../include/functions_db.php:1133
 msgid "Network agent monitor"
-msgstr ""
+msgstr "网络代理监视器"
 
 #: ../../include/functions_db.php:1689
 msgid "Wrong module type"
@@ -3947,31 +3947,31 @@ msgstr "错误的模块类型"
 
 #: ../../include/functions_db.php:1815
 msgid "Tt"
-msgstr ""
+msgstr "时阀"
 
 #: ../../include/functions_db.php:1816
 msgid "Firing"
-msgstr ""
+msgstr "触发"
 
 #: ../../include/functions_db.php:1819
 msgid "Desc"
-msgstr ""
+msgstr "描述"
 
 #: ../../include/functions_db.php:1821
 msgid "MinMax.Al"
-msgstr ""
+msgstr "警告范围"
 
 #: ../../include/functions_db.php:1822
 msgid "Days"
-msgstr ""
+msgstr "天"
 
 #: ../../include/functions_db.php:1823
 msgid "Fired"
-msgstr ""
+msgstr "触发"
 
 #: ../../include/functions_db.php:1928
 msgid "Latest events"
-msgstr ""
+msgstr "最新事件"
 
 #: ../../include/functions_db.php:1930 ../../operation/events/events.php:314
 msgid "St"
@@ -3981,11 +3981,11 @@ msgstr ""
 #: ../../include/functions_reporting.php:241
 #: ../../operation/events/events.php:316
 msgid "Event name"
-msgstr ""
+msgstr "事件名称"
 
 #: ../../include/functions_reporting.php:298
 msgid "Alert description"
-msgstr ""
+msgstr "警告描述"
 
 #: ../../include/functions_reporting.php:299
 #: ../../include/functions_reporting.php:493
@@ -3993,7 +3993,7 @@ msgstr ""
 #: ../../operation/agentes/estado_alertas.php:66
 #: ../../operation/agentes/estado_alertas.php:293
 msgid "Times Fired"
-msgstr ""
+msgstr "触发时间"
 
 #: ../../include/functions_reporting.php:343
 msgid "Total alerts monitored"
@@ -4001,7 +4001,7 @@ msgstr ""
 
 #: ../../include/functions_reporting.php:391
 msgid "Total monitors"
-msgstr ""
+msgstr "总监视器数"
 
 #: ../../include/functions_reporting.php:392
 msgid "Monitors down on period"
@@ -4010,7 +4010,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:424
 #: ../../include/functions_reporting.php:528
 msgid "Monitor"
-msgstr ""
+msgstr "监视器"
 
 #: ../../include/functions_reporting.php:468
 msgid "Agents in group"
@@ -4030,28 +4030,28 @@ msgstr ""
 #: ../../include/functions_reporting.php:622
 #: ../../operation/agentes/estado_grupo.php:222
 msgid "Monitors"
-msgstr ""
+msgstr "监视器"
 
 #: ../../operation/reporting/reporting_viewer.php:110
 msgid "Invalid date selected"
-msgstr ""
+msgstr "所选日期无效"
 
 #: ../../operation/reporting/reporting_viewer.php:115
 msgid "Selected date is older than current date"
-msgstr ""
+msgstr "所选日期在现在之前"
 
 #: ../../operation/reporting/reporting_viewer.php:195
 msgid "There are no SLAs defined"
-msgstr ""
+msgstr "并未定义SLA"
 
 #: ../../operation/reporting/reporting_viewer.php:235
 msgid "Ok"
-msgstr ""
+msgstr "确定"
 
 #: ../../operation/reporting/reporting_viewer.php:237
 #: ../../operation/agentes/estado_grupo.php:235
 msgid "Fail"
-msgstr ""
+msgstr "失败"
 
 #: ../../operation/reporting/graph_viewer.php:136
 #: ../../operation/reporting/graph_viewer.php:144
@@ -4060,27 +4060,27 @@ msgstr ""
 
 #: ../../operation/reporting/graph_viewer.php:145
 msgid "Zoom x1"
-msgstr ""
+msgstr "原始大小"
 
 #: ../../operation/reporting/graph_viewer.php:146
 msgid "Zoom x2"
-msgstr ""
+msgstr "缩放 X2"
 
 #: ../../operation/reporting/graph_viewer.php:147
 msgid "Zoom x3"
-msgstr ""
+msgstr "缩放 X3"
 
 #: ../../operation/reporting/graph_viewer.php:157
 msgid "Custom graph viewer"
-msgstr ""
+msgstr "自定义图表查看器"
 
 #: ../../operation/reporting/graph_viewer.php:165
 msgid "Graph name"
-msgstr ""
+msgstr "图表名称"
 
 #: ../../operation/reporting/custom_reporting.php:39
 msgid "HTML"
-msgstr ""
+msgstr "HTML"
 
 #: ../../operation/incidents/incident_note.php:29
 #: ../../operation/incidents/incident.php:184
@@ -4088,36 +4088,36 @@ msgstr ""
 #: ../../operation/incidents/incident_detail.php:203
 #: ../../operation/incidents/incident_search.php:25
 msgid "Incident management"
-msgstr ""
+msgstr "事故管理"
 
 #: ../../operation/incidents/incident_note.php:30
 msgid "Add note to incident"
-msgstr ""
+msgstr "为此事故添加注解"
 
 #: ../../operation/incidents/incident.php:50
 msgid "Incident successfully deleted"
-msgstr "成功地删除了事件"
+msgstr "成功地删除了事故"
 
 #: ../../operation/incidents/incident.php:54
 msgid "There was a problem deleting incident"
-msgstr ""
+msgstr "删除事故时发生问题"
 
 #: ../../operation/incidents/incident.php:77
 msgid "Incident successfully updated"
-msgstr ""
+msgstr "成功地更新了事故"
 
 #: ../../operation/incidents/incident.php:79
 #: ../../operation/incidents/incident.php:82
 msgid "There was a problem updating incident"
-msgstr ""
+msgstr "更新事故时发生问题"
 
 #: ../../operation/incidents/incident.php:103
 msgid "Incident successfully created"
-msgstr "成功创建了事件"
+msgstr "成功创建了事故"
 
 #: ../../operation/incidents/incident.php:187
 msgid "Viewing incidents"
-msgstr ""
+msgstr "查看事故"
 
 #: ../../operation/incidents/incident.php:212
 #: ../../operation/incidents/incident.php:220
@@ -4424,7 +4424,7 @@ msgstr ""
 
 #: ../../operation/menu.php:81
 msgid "Monitor detail"
-msgstr ""
+msgstr "监视器详情"
 
 #: ../../operation/menu.php:88 ../../operation/agentes/exportdata.php:236
 msgid "Export data"
@@ -4608,7 +4608,7 @@ msgstr ""
 
 #: ../../operation/agentes/status_monitor.php:78
 msgid "Monitor status"
-msgstr ""
+msgstr "监视器状态"
 
 #: ../../operation/agentes/status_monitor.php:83
 #: ../../operation/agentes/status_monitor.php:87
@@ -4638,7 +4638,7 @@ msgstr ""
 
 #: ../../operation/agentes/status_monitor.php:253
 msgid "This group doesn't have any monitor"
-msgstr ""
+msgstr "此组内并无监视器"
 
 #: ../../operation/agentes/estado_generalagente.php:54
 msgid "Agent general information"
@@ -4752,35 +4752,35 @@ msgstr ""
 
 #: ../../operation/agentes/estado_monitores.php:123
 msgid "This agent doesn 't have any monitor with data"
-msgstr ""
+msgstr "此代理并无有数据的监视器"
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Sunday"
-msgstr ""
+msgstr "星期天"
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Monday"
-msgstr ""
+msgstr "星期一"
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Tuesday"
-msgstr ""
+msgstr "星期二"
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Wednesday"
-msgstr ""
+msgstr "星期三"
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Thurdsday"
-msgstr ""
+msgstr "星期四"
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Friday"
-msgstr ""
+msgstr "星期五"
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Saturday"
-msgstr ""
+msgstr "星期六"
 
 #: ../../operation/agentes/exportdata.php:60
 msgid "One hour"
@@ -4798,7 +4798,7 @@ msgstr ""
 #: ../../operation/agentes/exportdata.php:138
 #: ../../operation/agentes/exportdata.php:170
 msgid "Data from agent "
-msgstr ""
+msgstr "数据库中，源于代理 "
 
 #: ../../operation/agentes/exportdata.php:118
 #: ../../operation/agentes/exportdata.php:138
@@ -4858,7 +4858,7 @@ msgstr ""
 #: ../../operation/agentes/bulbs.php:31
 #: ../../operation/agentes/estado_agente.php:332
 msgid "Agent without monitors"
-msgstr ""
+msgstr "不含监视器的代理"
 
 #: ../../operation/agentes/bulbs.php:33
 #: ../../operation/agentes/estado_agente.php:338
@@ -4872,7 +4872,7 @@ msgstr ""
 
 #: ../../operation/agentes/datos_agente.php:40
 msgid "One month"
-msgstr "一个月"
+msgstr "1个月"
 
 #: ../../operation/agentes/datos_agente.php:44
 msgid "One week"
@@ -5196,4 +5196,4 @@ msgstr ""
 
 #: ../../operation/messages/message.php:215
 msgid "No subject"
-msgstr ""
+msgstr "无主题"

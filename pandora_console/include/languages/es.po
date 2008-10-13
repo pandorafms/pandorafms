@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-09-10 15:55+0200\n"
-"PO-Revision-Date: 2008-09-12 04:28+0000\n"
+"PO-Revision-Date: 2008-10-08 07:55+0000\n"
 "Last-Translator: Jorge González <Unknown>\n"
 "Language-Team: Español <artica@artica.es>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-09-22 07:01+0000\n"
+"X-Launchpad-Export-Date: 2008-10-13 07:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../../reporting/stat_win.php:46
@@ -29,7 +29,7 @@ msgstr "Hubo un problema al localizar la fuente del gráfico"
 #: ../../include/functions.php:533
 #: ../../operation/reporting/graph_viewer.php:122
 msgid "1 hour"
-msgstr "1 hora"
+msgstr "Una hora"
 
 #: ../../reporting/stat_win.php:55 ../../reporting/stat_win.php:219
 #: ../../godmode/reporting/graph_builder.php:336
@@ -95,14 +95,14 @@ msgstr "15 días"
 #: ../../include/functions.php:560
 #: ../../operation/reporting/graph_viewer.php:130
 msgid "1 month"
-msgstr "mes"
+msgstr "Un mes"
 
 #: ../../reporting/stat_win.php:73 ../../reporting/stat_win.php:228
 #: ../../godmode/reporting/graph_builder.php:366
 #: ../../godmode/reporting/graph_builder.php:399
 #: ../../include/functions.php:563
 msgid "2 months"
-msgstr "meses"
+msgstr "2 meses"
 
 #: ../../reporting/stat_win.php:75 ../../reporting/stat_win.php:229
 #: ../../godmode/reporting/graph_builder.php:369
@@ -111,7 +111,7 @@ msgstr "meses"
 #: ../../include/functions.php:566
 #: ../../operation/reporting/graph_viewer.php:131
 msgid "6 months"
-msgstr "meses"
+msgstr "6 meses"
 
 #: ../../reporting/stat_win.php:114
 #: ../../godmode/agentes/module_manager_editor_wmi.php:211
@@ -282,7 +282,7 @@ msgstr "Monitores en mal estado"
 
 #: ../../reporting/fgraph.php:2140
 msgid "Monitors OK"
-msgstr "Monitores funcionando"
+msgstr "Monitores en buen estado"
 
 #: ../../general/pandora_help.php:22
 msgid "Pandora FMS help system"
@@ -403,7 +403,7 @@ msgstr "En"
 #: ../../operation/reporting/reporting_viewer.php:370
 #: ../../operation/agentes/tactical.php:94
 msgid "Monitor health"
-msgstr "Salud de los monitores"
+msgstr "Estado de los monitores"
 
 #: ../../general/logon_ok.php:120 ../../operation/agentes/tactical.php:95
 msgid "of monitors UP"
@@ -411,7 +411,7 @@ msgstr "de monitores funcionando"
 
 #: ../../general/logon_ok.php:122 ../../operation/agentes/tactical.php:96
 msgid "Data health"
-msgstr "Salud de los datos"
+msgstr "Estado de los datos"
 
 #: ../../general/logon_ok.php:123 ../../operation/agentes/tactical.php:97
 msgid "of modules with updated data"
@@ -790,7 +790,7 @@ msgstr "Desactivado"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:563
 msgid "Database"
-msgstr "BB. DD."
+msgstr "Base de datos"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:564
 msgid "Code / binary directory"
@@ -1609,7 +1609,7 @@ msgstr "Error"
 
 #: ../../godmode/servers/manage_recontask.php:71
 msgid "Successfully updated recon task"
-msgstr "Enlace actualizado correctamente"
+msgstr "Tarea de reconocimiento actualizada correctamente"
 
 #: ../../godmode/servers/manage_recontask.php:73
 msgid "Error updating recon task"
@@ -1617,11 +1617,11 @@ msgstr "Gestionar tarea recon"
 
 #: ../../godmode/servers/manage_recontask.php:86
 msgid "Successfully created recon task"
-msgstr "El enlace se ha creado correctamente"
+msgstr "Tarea de reconocimiento creada correctamente"
 
 #: ../../godmode/servers/manage_recontask.php:88
 msgid "Error creating recon task"
-msgstr "Gestionar tarea recon"
+msgstr "Error al crear la tarea de reconocimiento"
 
 #: ../../godmode/servers/manage_recontask.php:95
 #: ../../godmode/servers/manage_recontask_form.php:56
@@ -1798,7 +1798,7 @@ msgstr "No hay complementos en el sistema"
 
 #: ../../godmode/groups/group_list.php:63
 msgid "Group successfully created"
-msgstr "Grupo creado con éxito"
+msgstr "Grupo creado correctamente"
 
 #: ../../godmode/groups/group_list.php:65
 msgid "There was a problem creating group"
@@ -1975,7 +1975,7 @@ msgstr "Información BB. DD."
 
 #: ../../godmode/menu.php:250 ../../godmode/db/db_purge.php:41
 msgid "Database purge"
-msgstr "Borrado BB. DD."
+msgstr "Purgar BB. DD."
 
 #: ../../godmode/menu.php:257 ../../godmode/db/db_refine.php:69
 msgid "Database debug"
@@ -1983,11 +1983,11 @@ msgstr "Depurar BB. DD."
 
 #: ../../godmode/menu.php:264
 msgid "Database audit"
-msgstr "BB. DD. de auditoría"
+msgstr "Auditar BB. DD."
 
 #: ../../godmode/menu.php:271
 msgid "Database event"
-msgstr "BB. DD. de eventos"
+msgstr "Evento de la Base de datos"
 
 #: ../../godmode/menu.php:278
 msgid "Database sanity"
@@ -2722,7 +2722,7 @@ msgstr "Crear alerta simple"
 
 #: ../../godmode/agentes/alert_manager.php:44
 msgid "Create a new combined alert"
-msgstr "Crear alerta compuesta"
+msgstr "Crear alerta combinada"
 
 #: ../../godmode/agentes/alert_manager.php:59
 msgid "Simple alerts"
@@ -2786,11 +2786,11 @@ msgstr "Este agente no tiene ningún módulo definido"
 #: ../../godmode/agentes/alert_manager.php:129
 #: ../../operation/agentes/estado_alertas.php:86
 msgid "Combined alerts"
-msgstr "Alertas asignadas"
+msgstr "Alertas combinadas"
 
 #: ../../godmode/agentes/alert_manager.php:141
 msgid "Combined"
-msgstr "Compuesta"
+msgstr "Combinada"
 
 #: ../../godmode/agentes/alert_manager.php:184
 #: ../../godmode/agentes/alert_manager_editor.php:364

@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-09-10 15:55+0200\n"
-"PO-Revision-Date: 2008-08-30 03:29+0000\n"
-"Last-Translator: nil <slerena@gmail.com>\n"
+"PO-Revision-Date: 2008-10-09 18:26+0000\n"
+"Last-Translator: Giovanni Perteghella <giovanni.perteghella@cytrix.net>\n"
 "Language-Team: it <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-09-22 07:01+0000\n"
+"X-Launchpad-Export-Date: 2008-10-13 07:49+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #~ msgid "is a <b>OpenSource Software Project, licensed under GPL terms</b>"
@@ -409,28 +409,28 @@ msgstr "Si è verificato un problema  nel trovare la sorgente del grafico"
 #: ../../include/functions.php:533
 #: ../../operation/reporting/graph_viewer.php:122
 msgid "1 hour"
-msgstr ""
+msgstr "1 ora"
 
 #: ../../reporting/stat_win.php:55 ../../reporting/stat_win.php:219
 #: ../../godmode/reporting/graph_builder.php:336
 #: ../../godmode/reporting/graph_builder.php:390
 #: ../../include/functions.php:536
 msgid "2 hours"
-msgstr ""
+msgstr "2 ore"
 
 #: ../../reporting/stat_win.php:57 ../../reporting/stat_win.php:220
 #: ../../godmode/reporting/graph_builder.php:342
 #: ../../godmode/reporting/graph_builder.php:392
 #: ../../include/functions.php:539
 msgid "6 hours"
-msgstr ""
+msgstr "6 ore"
 
 #: ../../reporting/stat_win.php:59 ../../reporting/stat_win.php:221
 #: ../../godmode/reporting/graph_builder.php:345
 #: ../../godmode/reporting/graph_builder.php:393
 #: ../../include/functions.php:542
 msgid "12 hours"
-msgstr ""
+msgstr "12 ore"
 
 #: ../../reporting/stat_win.php:61 ../../reporting/stat_win.php:222
 #: ../../godmode/reporting/graph_builder.php:348
@@ -439,7 +439,7 @@ msgstr ""
 #: ../../include/functions.php:545
 #: ../../operation/reporting/graph_viewer.php:127
 msgid "1 day"
-msgstr ""
+msgstr "1 giorno"
 
 #: ../../reporting/stat_win.php:63 ../../reporting/stat_win.php:223
 #: ../../godmode/reporting/graph_builder.php:351
@@ -448,19 +448,19 @@ msgstr ""
 #: ../../include/functions.php:548
 #: ../../operation/reporting/graph_viewer.php:128
 msgid "2 days"
-msgstr ""
+msgstr "2 giorni"
 
 #: ../../reporting/stat_win.php:65 ../../reporting/stat_win.php:224
 #: ../../include/functions.php:551
 msgid "5 days"
-msgstr ""
+msgstr "5 giorni"
 
 #: ../../reporting/stat_win.php:67 ../../reporting/stat_win.php:225
 #: ../../godmode/reporting/reporting_builder.php:390
 #: ../../include/functions.php:554
 #: ../../operation/reporting/graph_viewer.php:129
 msgid "1 week"
-msgstr ""
+msgstr "1 settimana"
 
 #: ../../reporting/stat_win.php:69 ../../reporting/stat_win.php:226
 #: ../../godmode/reporting/map_builder.php:373
@@ -468,21 +468,21 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:397
 #: ../../include/functions.php:557
 msgid "15 days"
-msgstr ""
+msgstr "15 giorni"
 
 #: ../../reporting/stat_win.php:71 ../../reporting/stat_win.php:227
 #: ../../godmode/reporting/reporting_builder.php:392
 #: ../../include/functions.php:560
 #: ../../operation/reporting/graph_viewer.php:130
 msgid "1 month"
-msgstr ""
+msgstr "1 mese"
 
 #: ../../reporting/stat_win.php:73 ../../reporting/stat_win.php:228
 #: ../../godmode/reporting/graph_builder.php:366
 #: ../../godmode/reporting/graph_builder.php:399
 #: ../../include/functions.php:563
 msgid "2 months"
-msgstr ""
+msgstr "2 mesi"
 
 #: ../../reporting/stat_win.php:75 ../../reporting/stat_win.php:229
 #: ../../godmode/reporting/graph_builder.php:369
@@ -491,7 +491,7 @@ msgstr ""
 #: ../../include/functions.php:566
 #: ../../operation/reporting/graph_viewer.php:131
 msgid "6 months"
-msgstr ""
+msgstr "6 mesi"
 
 #: ../../reporting/stat_win.php:114
 #: ../../godmode/agentes/module_manager_editor_wmi.php:211
@@ -507,7 +507,7 @@ msgstr "Valore massimo"
 #: ../../reporting/stat_win.php:116 ../../include/functions.php:1006
 #: ../../operation/reporting/reporting_viewer.php:297
 msgid "Avg. Value"
-msgstr ""
+msgstr "Valore Medio"
 
 #: ../../reporting/stat_win.php:118
 #: ../../godmode/agentes/module_manager_editor_wmi.php:209
@@ -522,15 +522,15 @@ msgstr "Valore minimo"
 
 #: ../../reporting/stat_win.php:187
 msgid "Refresh time"
-msgstr ""
+msgstr "Tempo di aggiornamento"
 
 #: ../../reporting/stat_win.php:191
 msgid "Avg. Only"
-msgstr ""
+msgstr "solo media"
 
 #: ../../reporting/stat_win.php:198
 msgid "Begin date"
-msgstr ""
+msgstr "Data inizio"
 
 #: ../../reporting/stat_win.php:203
 msgid "Zoom factor"
@@ -538,15 +538,15 @@ msgstr "Zoom"
 
 #: ../../reporting/stat_win.php:214
 msgid "Time range"
-msgstr ""
+msgstr "Intervallo di tempo"
 
 #: ../../reporting/stat_win.php:233
 msgid "Show events"
-msgstr ""
+msgstr "Mostra eventi"
 
 #: ../../reporting/stat_win.php:242
 msgid "Show alert"
-msgstr ""
+msgstr "Mostra allarmi"
 
 #: ../../reporting/fgraph.php:947
 msgid "Data occurrence for module "
@@ -586,7 +586,7 @@ msgstr "Grave"
 
 #: ../../reporting/fgraph.php:1043
 msgid "Very serious"
-msgstr ""
+msgstr "Molto serio"
 
 #: ../../reporting/fgraph.php:1044 ../../reporting/fgraph.php:1264
 #: ../../include/functions.php:673 ../../include/functions.php:1157
@@ -601,17 +601,17 @@ msgstr "Manutenzione"
 #: ../../reporting/fgraph.php:1272 ../../include/functions.php:676
 #: ../../include/functions.php:1158 ../../include/functions.php:1178
 msgid "Informational"
-msgstr ""
+msgstr "Informativo"
 
 #: ../../reporting/fgraph.php:1279 ../../include/functions.php:679
 #: ../../include/functions.php:1159 ../../include/functions.php:1180
 msgid "Normal"
-msgstr ""
+msgstr "Normale"
 
 #: ../../reporting/fgraph.php:1286 ../../include/functions.php:682
 #: ../../include/functions.php:1160 ../../include/functions.php:1182
 msgid "Warning"
-msgstr ""
+msgstr "Attenzione"
 
 #: ../../reporting/fgraph.php:1293 ../../include/functions.php:685
 #: ../../include/functions.php:1161 ../../include/functions.php:1184
@@ -620,27 +620,27 @@ msgstr "Critico"
 
 #: ../../reporting/fgraph.php:1468
 msgid "Today"
-msgstr ""
+msgstr "Oggi"
 
 #: ../../reporting/fgraph.php:1469
 msgid "Week"
-msgstr ""
+msgstr "Settimana"
 
 #: ../../reporting/fgraph.php:1470
 msgid "Month"
-msgstr ""
+msgstr "Mese"
 
 #: ../../reporting/fgraph.php:1471
 msgid "Months"
-msgstr ""
+msgstr "Mesi"
 
 #: ../../reporting/fgraph.php:1472
 msgid "Older"
-msgstr ""
+msgstr "Più vecchi"
 
 #: ../../reporting/fgraph.php:1504
 msgid "no data"
-msgstr ""
+msgstr "Nessun informazione"
 
 #: ../../reporting/fgraph.php:1571
 msgid "Out of limits"
@@ -658,19 +658,19 @@ msgstr ""
 
 #: ../../reporting/fgraph.php:2139
 msgid "Monitors BAD"
-msgstr ""
+msgstr "Indicatori ERRATI"
 
 #: ../../reporting/fgraph.php:2140
 msgid "Monitors OK"
-msgstr ""
+msgstr "Indicatori OK"
 
 #: ../../general/pandora_help.php:22
 msgid "Pandora FMS help system"
-msgstr ""
+msgstr "Sistema di aiuto di Pandora FMS"
 
 #: ../../general/pandora_help.php:32
 msgid "Help system error"
-msgstr ""
+msgstr "Errore nel sistema dell'aiuto"
 
 #: ../../general/pandora_help.php:38
 msgid ""
@@ -680,11 +680,11 @@ msgstr ""
 
 #: ../../general/pandora_help.php:44
 msgid "Pandora FMS Help System"
-msgstr ""
+msgstr "Sistema di aiuto di Pandora FMS"
 
 #: ../../general/login_page.php:32
 msgid "Pandora FMS Web Console"
-msgstr ""
+msgstr "Console Web to di Pandora FMS"
 
 #: ../../general/login_page.php:38
 msgid "Build"
@@ -768,11 +768,11 @@ msgstr " Messaggi(o) non letti(o)"
 
 #: ../../general/logon_ok.php:48 ../../godmode/menu.php:226
 msgid "Site news"
-msgstr ""
+msgstr "Notizie dal sito"
 
 #: ../../general/logon_ok.php:55
 msgid "by"
-msgstr ""
+msgstr "di"
 
 #: ../../general/logon_ok.php:55
 msgid "At"
@@ -782,27 +782,27 @@ msgstr ""
 #: ../../operation/reporting/reporting_viewer.php:370
 #: ../../operation/agentes/tactical.php:94
 msgid "Monitor health"
-msgstr ""
+msgstr "Salute del Monitor"
 
 #: ../../general/logon_ok.php:120 ../../operation/agentes/tactical.php:95
 msgid "of monitors UP"
-msgstr ""
+msgstr "di monitor FUNZIONANTI"
 
 #: ../../general/logon_ok.php:122 ../../operation/agentes/tactical.php:96
 msgid "Data health"
-msgstr ""
+msgstr "Salute dei Dati"
 
 #: ../../general/logon_ok.php:123 ../../operation/agentes/tactical.php:97
 msgid "of modules with updated data"
-msgstr ""
+msgstr "di moduli cono dati aggiornati"
 
 #: ../../general/logon_ok.php:125 ../../operation/agentes/tactical.php:98
 msgid "Global health"
-msgstr ""
+msgstr "Salute globale"
 
 #: ../../general/logon_ok.php:126 ../../operation/agentes/tactical.php:99
 msgid "of modules with good data"
-msgstr ""
+msgstr "di moduli con dati corretti"
 
 #: ../../general/logon_ok.php:128 ../../operation/agentes/tactical.php:100
 msgid "Module sanity"
@@ -810,11 +810,11 @@ msgstr ""
 
 #: ../../general/logon_ok.php:129 ../../operation/agentes/tactical.php:101
 msgid "of well initialized modules"
-msgstr ""
+msgstr "di moduli inizializzati correttamente"
 
 #: ../../general/logon_ok.php:132 ../../operation/agentes/tactical.php:102
 msgid "Alert level"
-msgstr ""
+msgstr "livello di allarme"
 
 #: ../../general/logon_ok.php:133 ../../operation/agentes/tactical.php:103
 msgid "of non-fired alerts"
@@ -822,7 +822,7 @@ msgstr ""
 
 #: ../../general/logon_ok.php:140
 msgid "Pandora FMS Overview"
-msgstr ""
+msgstr "Introduzione a Pandora FMS"
 
 #: ../../general/logon_ok.php:161
 msgid "This is your last activity in Pandora FMS console"
@@ -881,19 +881,19 @@ msgstr "Logout"
 
 #: ../../general/header.php:43
 msgid "General information"
-msgstr ""
+msgstr "Informazioni generali"
 
 #: ../../general/header.php:49
 msgid "Server status: DOWN"
-msgstr ""
+msgstr "Stato del Server: DOWN"
 
 #: ../../general/header.php:51
 msgid "System ready"
-msgstr ""
+msgstr "Sistema pronto"
 
 #: ../../general/header.php:59 ../../general/header.php:61
 msgid "Autorefresh"
-msgstr ""
+msgstr "Autoaggiornamento"
 
 #: ../../general/header.php:65 ../../operation/events/event_statistics.php:32
 #: ../../operation/events/events.php:196
@@ -926,20 +926,20 @@ msgstr "Sistema di Monitoraggio Libero"
 
 #: ../../index.php:247
 msgid "Sorry! I can't find the page!"
-msgstr ""
+msgstr "Mi dispiace! Impossibile trovare la pagina!"
 
 #: ../../extensions/update_manager/load_updatemanager.php:37
 msgid "Keygen file does not exists"
-msgstr ""
+msgstr "Il file Keygen non esiste"
 
 #: ../../extensions/update_manager/load_updatemanager.php:44
 msgid "Keygen file is not executable"
-msgstr ""
+msgstr "Il file Keyken non è eseguibile"
 
 #: ../../extensions/update_manager/main.php:36
 #: ../../extensions/update_manager.php:115
 msgid "Update manager"
-msgstr ""
+msgstr "Gestore aggiornamenti"
 
 #: ../../extensions/update_manager/main.php:42
 msgid ""
@@ -966,24 +966,24 @@ msgstr ""
 
 #: ../../extensions/update_manager/main.php:66
 msgid "Your system is up-to-date"
-msgstr ""
+msgstr "Il sistema è aggiornato"
 
 #: ../../extensions/update_manager/main.php:68
 msgid "Server connection failed"
-msgstr ""
+msgstr "Connessione al server fallita"
 
 #: ../../extensions/update_manager/main.php:70
 msgid "Server authorization rejected"
-msgstr ""
+msgstr "Il server ha rifiutato l'autenticazione"
 
 #: ../../extensions/update_manager/main.php:72
 #: ../../extensions/update_manager.php:98
 msgid "There's a new update for Pandora"
-msgstr ""
+msgstr "C'è un nuovo aggiornamento per Pandora"
 
 #: ../../extensions/update_manager/main.php:77
 msgid "Id"
-msgstr ""
+msgstr "Identificativo"
 
 #: ../../extensions/update_manager/main.php:80
 #: ../../godmode/setup/news.php:129 ../../include/functions_db.php:1935
@@ -1046,7 +1046,7 @@ msgstr "Descrizione"
 
 #: ../../extensions/update_manager/main.php:89
 msgid "Overwrite local changes"
-msgstr ""
+msgstr "Sovrascrivere i cambiamenti locali"
 
 #: ../../extensions/update_manager/main.php:93
 #: ../../extensions/update_manager/settings.php:70
@@ -1093,7 +1093,7 @@ msgstr "Aggiorna"
 
 #: ../../extensions/update_manager/main.php:98
 msgid "Your system version number is"
-msgstr ""
+msgstr "Il numero della versione del sistema è"
 
 #: ../../extensions/update_manager/settings.php:38
 msgid "Update manager settings updated"
@@ -1101,11 +1101,11 @@ msgstr ""
 
 #: ../../extensions/update_manager/settings.php:43
 msgid "Settings"
-msgstr ""
+msgstr "Impostazioni"
 
 #: ../../extensions/update_manager/settings.php:49
 msgid "Customer key"
-msgstr ""
+msgstr "Chiave personalizzata"
 
 #: ../../extensions/update_manager/settings.php:52
 msgid "Update server host"
@@ -1113,11 +1113,11 @@ msgstr ""
 
 #: ../../extensions/update_manager/settings.php:55
 msgid "Update server path"
-msgstr ""
+msgstr "Aggiorna il percorso del server"
 
 #: ../../extensions/update_manager/settings.php:58
 msgid "Update server port"
-msgstr ""
+msgstr "Aggiorna la porta del server"
 
 #: ../../extensions/update_manager/settings.php:61
 msgid "Binary input path"
@@ -1125,19 +1125,19 @@ msgstr ""
 
 #: ../../extensions/update_manager/settings.php:64
 msgid "Keygen path"
-msgstr ""
+msgstr "Percorso del Keygen"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:552
 msgid "Development"
-msgstr ""
+msgstr "Sviluppo"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:553
 msgid "Testing"
-msgstr ""
+msgstr "Testing"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:554
 msgid "Public"
-msgstr ""
+msgstr "Pubblico"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:555
 #: ../../godmode/groups/group_list.php:126
@@ -1157,7 +1157,7 @@ msgstr "Disabilitato"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:563
 msgid "Database"
-msgstr ""
+msgstr "Database"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:564
 msgid "Code / binary directory"
@@ -1165,11 +1165,11 @@ msgstr ""
 
 #: ../../extensions/update_manager.php:100
 msgid "More info"
-msgstr ""
+msgstr "Più informazioni"
 
 #: ../../extensions/update_manager.php:116
 msgid "Update manager settings"
-msgstr ""
+msgstr "Aggiorna gestione impostazioni"
 
 #: ../../godmode/reporting/map_builder.php:67
 #: ../../godmode/reporting/map_builder.php:167 ../../godmode/setup/news.php:44
@@ -1179,7 +1179,7 @@ msgstr ""
 #: ../../godmode/modules/manage_network_templates_form.php:51
 #: ../../godmode/modules/manage_network_templates_form.php:86
 msgid "Created successfully"
-msgstr ""
+msgstr "Creato con successo"
 
 #: ../../godmode/reporting/map_builder.php:70
 #: ../../godmode/reporting/map_builder.php:169 ../../godmode/setup/news.php:42
@@ -1190,7 +1190,7 @@ msgstr ""
 #: ../../godmode/modules/manage_network_templates_form.php:49
 #: ../../godmode/modules/manage_network_templates_form.php:84
 msgid "Not created. Error inserting data"
-msgstr ""
+msgstr "Non creato. Errore inserimento dati"
 
 #: ../../godmode/reporting/map_builder.php:83
 #: ../../godmode/reporting/reporting_builder.php:73
@@ -1203,7 +1203,7 @@ msgstr ""
 #: ../../operation/reporting/graph_viewer.php:30
 #: ../../operation/reporting/graph_viewer.php:35
 msgid "Deleted successfully"
-msgstr ""
+msgstr "Eliminazione con successo."
 
 #: ../../godmode/reporting/map_builder.php:85
 #: ../../godmode/reporting/reporting_builder.php:75
@@ -1216,7 +1216,7 @@ msgstr ""
 #: ../../operation/reporting/graph_viewer.php:32
 #: ../../operation/reporting/graph_viewer.php:37
 msgid "Not deleted. Error deleting data"
-msgstr ""
+msgstr "Non eliminato. Errore di eliminazione dati"
 
 #: ../../godmode/reporting/map_builder.php:110
 msgid "Update layout successful"
@@ -1224,7 +1224,7 @@ msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:112
 msgid "Update layout failed"
-msgstr ""
+msgstr "Aggiornamento layout fallito"
 
 #: ../../godmode/reporting/map_builder.php:241
 #: ../../godmode/reporting/reporting_builder.php:174
@@ -1233,7 +1233,7 @@ msgstr ""
 #: ../../godmode/modules/manage_nc_groups.php:56
 #: ../../godmode/modules/manage_network_templates_form.php:100
 msgid "Updated successfully"
-msgstr ""
+msgstr "Aggiornato con successo"
 
 #: ../../godmode/reporting/map_builder.php:243
 #: ../../godmode/reporting/reporting_builder.php:176
@@ -1242,7 +1242,7 @@ msgstr ""
 #: ../../godmode/modules/manage_nc_groups.php:54
 #: ../../godmode/modules/manage_network_templates_form.php:98
 msgid "Not updated. Error updating data"
-msgstr ""
+msgstr "Non aggiornato. Errore aggiornamento dati"
 
 #: ../../godmode/reporting/map_builder.php:257
 #: ../../godmode/reporting/map_builder.php:292
@@ -1261,11 +1261,11 @@ msgstr "Rapporto"
 #: ../../godmode/reporting/map_builder.php:257
 #: ../../godmode/reporting/map_builder.php:293 ../../godmode/menu.php:159
 msgid "Map builder"
-msgstr ""
+msgstr "Costruttore mappa"
 
 #: ../../godmode/reporting/map_builder.php:262
 msgid "Map name"
-msgstr ""
+msgstr "Nome mappa"
 
 #: ../../godmode/reporting/map_builder.php:263
 #: ../../godmode/reporting/map_builder.php:305
@@ -1394,23 +1394,23 @@ msgstr "Nome"
 
 #: ../../godmode/reporting/map_builder.php:307
 msgid "Background"
-msgstr ""
+msgstr "Sfondo"
 
 #: ../../godmode/reporting/map_builder.php:311
 #: ../../godmode/reporting/map_builder.php:405
 #: ../../godmode/reporting/graph_builder.php:308
 msgid "Width"
-msgstr ""
+msgstr "Larghezza"
 
 #: ../../godmode/reporting/map_builder.php:313
 #: ../../godmode/reporting/map_builder.php:403
 #: ../../godmode/reporting/graph_builder.php:326
 msgid "Height"
-msgstr ""
+msgstr "Altezza"
 
 #: ../../godmode/reporting/map_builder.php:333
 msgid "preview"
-msgstr ""
+msgstr "anteprima"
 
 #: ../../godmode/reporting/map_builder.php:351
 msgid "Map element trash"
@@ -1422,19 +1422,19 @@ msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:365
 msgid "Hour"
-msgstr ""
+msgstr "Ora"
 
 #: ../../godmode/reporting/map_builder.php:366
 #: ../../godmode/reporting/map_builder.php:367
 #: ../../godmode/reporting/map_builder.php:368
 #: ../../godmode/reporting/map_builder.php:369
 msgid "Hours"
-msgstr ""
+msgstr "Ore"
 
 #: ../../godmode/reporting/map_builder.php:370
 #: ../../godmode/reporting/graph_builder.php:394
 msgid "Last day"
-msgstr ""
+msgstr "Ultimo giorno"
 
 #: ../../godmode/reporting/map_builder.php:371
 #: ../../godmode/servers/manage_recontask_form.php:91
@@ -1442,25 +1442,25 @@ msgstr ""
 #: ../../include/functions.php:493 ../../include/functions.php:516
 #: ../../operation/servers/view_server_detail.php:113
 msgid "days"
-msgstr ""
+msgstr "giorni"
 
 #: ../../godmode/reporting/map_builder.php:372
 #: ../../godmode/reporting/graph_builder.php:357
 #: ../../godmode/reporting/graph_builder.php:396
 msgid "Last week"
-msgstr ""
+msgstr "Ultima settimana"
 
 #: ../../godmode/reporting/map_builder.php:374
 msgid "Last Month"
-msgstr ""
+msgstr "Ultimo mese"
 
 #: ../../godmode/reporting/map_builder.php:375
 msgid "Two Months"
-msgstr ""
+msgstr "Due mesi"
 
 #: ../../godmode/reporting/map_builder.php:376
 msgid "Six Months"
-msgstr ""
+msgstr "Sei mesi"
 
 #: ../../godmode/reporting/map_builder.php:388
 msgid "Map element editor"
@@ -1472,11 +1472,11 @@ msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:397
 msgid "Label"
-msgstr ""
+msgstr "Etichetta"
 
 #: ../../godmode/reporting/map_builder.php:399
 msgid "Label color"
-msgstr ""
+msgstr "Colore Etichetta"
 
 #: ../../godmode/reporting/map_builder.php:401
 #: ../../godmode/reporting/reporting_builder.php:429
@@ -1537,11 +1537,11 @@ msgstr "Modulo"
 #: ../../godmode/reporting/reporting_builder.php:432
 #: ../../operation/reporting/graph_viewer.php:119
 msgid "Period"
-msgstr ""
+msgstr "Periodo"
 
 #: ../../godmode/reporting/map_builder.php:413
 msgid "Image"
-msgstr ""
+msgstr "Immagine"
 
 #: ../../godmode/reporting/map_builder.php:416
 #: ../../godmode/groups/group_list.php:109
@@ -1551,16 +1551,16 @@ msgstr ""
 #: ../../godmode/modules/manage_nc_groups_form.php:58
 #: ../../operation/agentes/estado_generalagente.php:96
 msgid "Parent"
-msgstr ""
+msgstr "Genitore"
 
 #: ../../godmode/reporting/map_builder.php:419
 msgid "Map linked"
-msgstr ""
+msgstr "Mappa linkata"
 
 #: ../../godmode/reporting/map_builder.php:454
 #: ../../operation/reporting/reporting_viewer.php:80
 msgid "Loading"
-msgstr ""
+msgstr "Caricamento"
 
 #: ../../godmode/reporting/graph_builder.php:83
 msgid "Graph stored successfully"
@@ -1625,7 +1625,7 @@ msgstr ""
 #: ../../include/functions.php:823 ../../include/functions.php:912
 #: ../../include/functions_db.php:1885
 msgid "Yes"
-msgstr ""
+msgstr "Si"
 
 #: ../../godmode/reporting/graph_builder.php:319
 #: ../../godmode/reporting/graph_builder.php:321
@@ -1637,25 +1637,25 @@ msgstr ""
 #: ../../include/functions.php:825 ../../include/functions.php:914
 #: ../../include/functions_db.php:1887
 msgid "No"
-msgstr ""
+msgstr "No"
 
 #: ../../godmode/reporting/graph_builder.php:339
 #: ../../godmode/reporting/graph_builder.php:391
 msgid "3 hours"
-msgstr ""
+msgstr "3 ore"
 
 #: ../../godmode/reporting/graph_builder.php:354
 msgid "4 days"
-msgstr ""
+msgstr "4 giorni"
 
 #: ../../godmode/reporting/graph_builder.php:363
 #: ../../godmode/reporting/graph_builder.php:398
 msgid "Last month"
-msgstr ""
+msgstr "Ultimo mese"
 
 #: ../../godmode/reporting/graph_builder.php:372
 msgid "1 year"
-msgstr ""
+msgstr "1 anno"
 
 #: ../../godmode/reporting/graph_builder.php:404 ../../operation/menu.php:165
 msgid "View events"
@@ -1663,12 +1663,12 @@ msgstr "Visualizza Eventi"
 
 #: ../../godmode/reporting/graph_builder.php:418
 msgid "Stacked"
-msgstr ""
+msgstr "Sovrapposto"
 
 #: ../../godmode/reporting/graph_builder.php:422
 #: ../../operation/reporting/graph_viewer.php:137
 msgid "Area"
-msgstr ""
+msgstr "Area"
 
 #: ../../godmode/reporting/graph_builder.php:423
 #: ../../operation/reporting/graph_viewer.php:138
@@ -1678,7 +1678,7 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:424
 #: ../../operation/reporting/graph_viewer.php:139
 msgid "Line"
-msgstr ""
+msgstr "Linea"
 
 #: ../../godmode/reporting/graph_builder.php:447
 #: ../../godmode/reporting/reporting_builder.php:416
@@ -1698,7 +1698,7 @@ msgstr "Aggiungi"
 
 #: ../../godmode/reporting/graph_builder.php:447
 msgid "Redraw"
-msgstr ""
+msgstr "Ridisegna"
 
 #: ../../godmode/reporting/graph_builder.php:458
 msgid "Custom graph store"
@@ -1707,7 +1707,7 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:483
 #: ../../godmode/reporting/reporting_builder.php:342
 msgid "Private"
-msgstr ""
+msgstr "Riservato"
 
 #: ../../godmode/reporting/graph_builder.php:497
 msgid "Store"
@@ -1733,23 +1733,23 @@ msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:219
 msgid "SLA was successfully created"
-msgstr ""
+msgstr "SLA è stato creato con successo"
 
 #: ../../godmode/reporting/reporting_builder.php:221
 msgid "There was a problem creating SLA"
-msgstr ""
+msgstr "C'è un problema con la creazione del SLA"
 
 #: ../../godmode/reporting/reporting_builder.php:223
 msgid "Module is not set"
-msgstr ""
+msgstr "Il modulo non è impostato"
 
 #: ../../godmode/reporting/reporting_builder.php:231
 msgid "SLA was successfully delete"
-msgstr ""
+msgstr "SLA è stato cancellato con successo"
 
 #: ../../godmode/reporting/reporting_builder.php:233
 msgid "There was a problem deleting SLA"
-msgstr ""
+msgstr "C'è stato un problema alla cancellazione SLA"
 
 #: ../../godmode/reporting/reporting_builder.php:239
 #: ../../godmode/reporting/reporting_builder.php:319
@@ -1785,7 +1785,7 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.php:497
 #: ../../operation/reporting/custom_reporting.php:37
 msgid "Report name"
-msgstr ""
+msgstr "Segnala nome"
 
 #: ../../godmode/reporting/reporting_builder.php:365
 msgid "Add item to report"
@@ -1813,7 +1813,7 @@ msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:391
 msgid "2 weeks"
-msgstr ""
+msgstr "2 settimane"
 
 #: ../../godmode/reporting/reporting_builder.php:407
 msgid "Custom graph name"
@@ -5446,7 +5446,7 @@ msgstr ""
 
 #: ../../operation/events/events.php:240
 msgid "Severity"
-msgstr ""
+msgstr "Severità"
 
 #: ../../operation/events/events.php:245
 msgid "Event status"
@@ -5466,7 +5466,7 @@ msgstr ""
 
 #: ../../operation/events/events.php:255
 msgid "Free search"
-msgstr ""
+msgstr "Ricerca libera"
 
 #: ../../operation/events/events.php:259
 msgid "Agent search"
@@ -5478,7 +5478,7 @@ msgstr ""
 
 #: ../../operation/events/events.php:284
 msgid "RSS Events"
-msgstr ""
+msgstr "Eventi RSS"
 
 #: ../../operation/users/user_statistics.php:26
 msgid "User activity statistics"

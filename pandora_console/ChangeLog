@@ -1,3 +1,25 @@
+2008-10-13  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* languages/cs.po, languages/pt_BR.po, languages/es.po,
+	  languages/pl.mo, languages/it.mo, languages/sl.mo,
+	  languages/uk.po, languages/ro.po, languages/pt.mo,
+	  languages/ast.mo, languages/index.pot, languages/Makefile,
+	  languages/cs.mo, languages/pt_BR.mo, languages/es.mo,
+	  languages/fr.po, languages/uk.mo, languages/ro.mo,
+	  languages/ca.po, languages/de.po, languages/sv.po,
+	  languages/zh_TW.po, languages/hi.po, languages/zh_CN.po,
+	  languages/fr.mo, languages/te.po, languages/eu.po,
+	  languages/hu.po, languages/ca.mo, languages/sv.mo,
+	  languages/de.mo, languages/ru.po, languages/zh_TW.mo,
+	  languages/hi.mo, languages/zh_CN.mo, languages/gl.po,
+	  languages/te.mo, languages/eu.mo, languages/hu.mo,
+	  languages/pl.po, languages/it.po, languages/sl.po,
+	  languages/pt.po, languages/ru.mo, languages/ast.po,
+	  languages/gl.mo: updated languages and infrastructure for
+	  languages; thanks to the guys working at Rosetta.
+
+	* pandoradb_data.sql: Updated tlanguage table with new languages.
+
 2008-10-11  Raul Mateos  <raulofpandora@gmail.com>
 	
 	* images/firefox.png: Moved from .gif to .png. WE SHOLDN'T USE .gif FILES!

@@ -1,3 +1,7 @@
+2008-10-13  Sancho Lerena  <slerena@artica.es>
+
+	* include/help/en/help_tcp_send.php: Added mising help file.
+
 2008-10-13  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* languages/cs.po, languages/pt_BR.po, languages/es.po,

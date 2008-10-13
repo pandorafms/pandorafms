@@ -1,4 +1,18 @@
 2008-10-13  Sancho Lerena  <slerena@artica.es>
+	
+	* agent_disk_conf_editor.php: Now load enterprise code
+	using a normalized code.
+
+	* setup.php: Removed some features of enterprise on setup.
+
+	* functions.php: Added enterprise load code and load hook 
+	functions.
+
+	* datos_agente.php: Fixed stupid problem with string data
+	deletion.
+
+	* custom_reporting.php:  Now load enterprise code
+	using a normalized code.
 
 	* include/help/en/help_tcp_send.php: Added mising help file.
 

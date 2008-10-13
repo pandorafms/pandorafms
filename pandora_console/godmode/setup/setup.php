@@ -27,6 +27,11 @@ if (! give_acl ($config['id_user'], 0, "PM") || ! dame_admin ($config['id_user']
 	exit;
 }
 
+// Load enterprise extensions
+if (file_exists( $config["homedir"] . "/enterprise/godmode/setup/setup.php")) {
+	include $config["homedir"] . "/enterprise/godmode/setup/setup.php";
+}
+
 $update_settings = (bool) get_parameter ('update_settings');
 
 if ($update_settings) {
@@ -121,8 +126,7 @@ $table->data[13][1] = print_select ($file_styles, 'style', $config["style"], '',
 $table->data[14][0] = __('Block size for pagination');
 $table->data[14][1] = print_input_text ('block_size', $config["block_size"], '', 5, 5, true);
 
-$table->data[15][0] = __('Forward SNMP traps to agent (if exist)');
-$table->data[15][1] = print_checkbox ('trap2agent', 1, $config["trap2agent"], true);
+enterprise_hook ('load_snmpforward_enterprise');
 
 $table->data[16][0] = __('Automatic update check');
 $table->data[16][1] = print_checkbox ('autoupdate', 1, $config["autoupdate"], true);

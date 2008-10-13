@@ -22,6 +22,12 @@ require ("include/config.php");
 
 check_login ();
 
+// Load enterprise extensions
+if (file_exists( $config["homedir"] . "/enterprise/operation/reporting/custom_reporting.php")) {
+	include $config["homedir"] . "/enterprise/operation/reporting/custom_reporting.php";
+}
+
+
 echo "<h2>".__('Reporting')." &gt; ";
 echo __('Custom reporting')."</h2>";
 
@@ -38,6 +44,9 @@ $table->head[0] = __('Report name');
 $table->head[1] = __('Description');
 $table->head[2] = __('HTML');
 $table->head[3] = __('XML');
+
+enterprise_hook ('load_custom_reporting_1');
+
 $table->align = array ();
 $table->align[2] = 'center';
 $table->align[3] = 'center';
@@ -51,6 +60,8 @@ foreach ($reports as $report) {
 	$data[2] = '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$report['id_report'].'">
 			<img src="images/reporting.png" /></a>';
 	$data[3] = '<a href="ajax.php?page=operation/reporting/reporting_xml&id='.$report['id_report'].'"><img src="images/database_lightning.png" /></a>'; //I chose ajax.php because it's supposed to give XML anyway
+
+	enterprise_hook ('load_custom_reporting_2');
 	array_push ($table->data, $data);
 }
 

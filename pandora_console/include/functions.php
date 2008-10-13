@@ -1199,4 +1199,20 @@ function safe_sql_string ($string) {
 	return $string;
 }
 
+function enterprise_hook ($function_name) {
+	if (function_exists ($function_name))
+		call_user_func ($function_name);
+}
+
+function enterprise_include ($filename) {
+	global $config;
+	// Load enterprise extensions
+	$fullfilename = $config["homedir"]."/enterprise/" . $filename;
+	if (file_exists ($fullfilename)) {
+		include ($fullfilename);
+		return true;
+	}
+	return false;
+}
+
 ?>

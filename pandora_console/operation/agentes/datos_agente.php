@@ -93,7 +93,7 @@ function datos_raw ($id_agente_modulo, $periodo) {
 				if ($string_type == 0)
 					echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=$periodo_label&id=$id_agente_modulo&delete=".$row["id_agente_datos"]."'><img src='images/cross.png' border=0>";
 				else
-					echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=$periodo_label&id=$id_agente_modulo&delete_text=".$row["id_agente_datos"]."'><img src='images/cross.png' border=0>";
+					echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=$periodo_label&id=$id_agente_modulo&delete_text=".$row["id_tagente_datos_string"]."'><img src='images/cross.png' border=0>";
 			} else {
 				echo "<td class='".$tdcolor."'>";
 			}
@@ -132,7 +132,7 @@ if (isset($_GET["delete"])) {
 
 if (isset($_GET["delete_text"])) {
 	$delete = $_GET["delete_text"];
-	$sql = "DELETE FROM tagente_datos_string WHERE id_agente_datos = $delete";
+	$sql = "DELETE FROM tagente_datos_string WHERE id_tagente_datos_string = $delete";
 	$result = process_sql ($sql);
 }
 

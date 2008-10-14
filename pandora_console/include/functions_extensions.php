@@ -57,8 +57,11 @@ function is_extension ($page) {
 	return isset ($config['extensions'][$filename]);
 }
 
-function get_extensions () {
-	$handle = @opendir (EXTENSIONS_DIR);
+function get_extensions ($enterprise = false) {
+	$dir = EXTENSIONS_DIR;
+	if ($enterprise)
+		$dir = ENTERPRISE_DIR.'/'.EXTENSIONS_DIR;
+	$handle = @opendir ($dir);
 	if (! $handle) {
 		return;
 	}
@@ -70,7 +73,7 @@ function get_extensions () {
 			$file = readdir ($handle);
 			continue;
 		}
-		$filepath = realpath (EXTENSIONS_DIR."/".$file);
+		$filepath = realpath ($dir."/".$file);
 		if (! is_readable ($filepath) || is_dir ($filepath) || ! preg_match ("/.*\.php$/", $filepath)) {
 			$file = readdir ($handle);
 			continue;
@@ -81,9 +84,16 @@ function get_extensions () {
 		$extension['main_function'] = '';
 		$extension['godmode_function'] = '';
 		$extension['login_function'] = '';
+		$extension['enterprise'] = $enterprise;
+		$extension['dir'] = $dir;
 		$extensions[$file] = $extension;
 		$file = readdir ($handle);
 	}
+	
+	/* Load extensions in enterprise directory */
+	if (! $enterprise && file_exists (ENTERPRISE_DIR.'/'.EXTENSIONS_DIR))
+		return array_merge ($extensions, get_extensions (true));
+	
 	return $extensions;
 }
 
@@ -93,7 +103,7 @@ function load_extensions ($extensions) {
 	
 	foreach ($extensions as $extension) {
 		$extension_file = $extension['file'];
-		include_once (realpath (EXTENSIONS_DIR."/".$extension_file));
+		include_once (realpath ($extension['dir']."/".$extension_file));
 	}
 }
 
@@ -105,8 +115,8 @@ function add_operation_menu_option ($name) {
 	   be called before any function the extension call, we are sure it will 
 	   be set. */
 	$option_menu['name'] = substr ($name, 0, 15);
-	$option_menu['sec2'] = EXTENSIONS_DIR.'/'.substr ($extension_file, 0, -4);
 	$extension = &$config['extensions'][$extension_file];
+	$option_menu['sec2'] = $extension['dir'].'/'.substr ($extension_file, 0, -4);
 	$extension['operation_menu'] = $option_menu;
 }
 
@@ -119,8 +129,8 @@ function add_godmode_menu_option ($name, $acl) {
 	   be set. */
 	$option_menu['acl'] = $acl;
 	$option_menu['name'] = substr ($name, 0, 15);
-	$option_menu['sec2'] = EXTENSIONS_DIR.'/'.substr ($extension_file, 0, -4);
 	$extension = &$config['extensions'][$extension_file];
+	$option_menu['sec2'] = $extension['dir'].'/'.substr ($extension_file, 0, -4);
 	$extension['godmode_menu'] = $option_menu;
 }
 

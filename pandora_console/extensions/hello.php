@@ -21,7 +21,7 @@
 function hello_extension_main () {
 	/* Here you can do almost all you want! */
 	echo "<h1>Hello world!</h1>";
-	echo "This is a sample of minimal plugin";
+	echo "This is a sample of minimal extension";
 }
 
 /* This adds a option in the operation menu */

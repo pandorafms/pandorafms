@@ -62,10 +62,9 @@ if ($create_layout) {
 	$sql = sprintf ('INSERT INTO tlayout (name, id_group, background, height, width)
 			VALUES ("%s", %d, "%s", %d, %d)',
 			$name, $id_group, $background, $height, $width);
-	$result = mysql_query ($sql);
-	if ($result) {
+	$id_layout = process_sql ($sql, 'insert-id');
+	if ($result !== false) {
 		echo '<h3 class="suc">'.__('Created successfully').'</h3>';
-		$id_layout = mysql_insert_id ();
 	} else {
 		echo '<h3 class="err">'.__('Not created. Error inserting data').'</h3>';
 	}
@@ -76,9 +75,9 @@ if ($create_layout) {
 
 if ($delete_layout) {
 	$sql = sprintf ('DELETE FROM tlayout_data WHERE id_layout = %d', $id_layout);
-	mysql_query ($sql);
+	process_sql ($sql);
 	$sql = sprintf ('DELETE FROM tlayout WHERE id = %d', $id_layout);
-	$result = mysql_query ($sql);
+	$result = process_sql ($sql);
 	if ($result) {
 		echo '<h3 class="suc">'.__('Deleted successfully').'</h3>';
 	} else {
@@ -161,9 +160,9 @@ if ($create_layout_data) {
 			$layout_data_id_agent_module,
 			$layout_data_parent_item, $layout_data_period * 3600,
 			$layout_data_width, $layout_data_height);
-	$result = mysql_query ($sql);
+	$result = process_sql ($sql, 'insert-id');
 	
-	if ($result) {
+	if ($result !== false) {
 		echo '<h3 class="suc">'.__('Created successfully').'</h3>';
 	} else {
 		echo '<h3 class="error">'.__('Not created. Error inserting data').'</h3>';
@@ -182,7 +181,7 @@ if ($update_layout_data_coords) {
 			pos_x = %d, pos_y = %d
 			WHERE id = %d',
 			$layout_data_x, $layout_data_y, $id_layout_data);
-	$result = mysql_query ($sql);
+	process_sql ($sql);
 	
 	if (defined ('AJAX')) {
 		exit;
@@ -195,10 +194,10 @@ if ($delete_layout_data) {
 	foreach ($ids_layout_data as $id_layout_data) {
 		$sql = sprintf ('UPDATE tlayout_data SET parent_item = 0 WHERE parent_item = %d',
 				$id_layout_data);
-		$result = mysql_query ($sql);
+		process_sql ($sql);
 		$sql = sprintf ('DELETE FROM tlayout_data WHERE id = %d',
 				$id_layout_data);
-		$result = mysql_query ($sql);
+		process_sql ($sql);
 	}
 	
 	if (defined ('AJAX')) {
@@ -235,9 +234,9 @@ if ($update_layout_data) {
 			$layout_data_map_linked,
 			$layout_data_width, $layout_data_height,
 			$id_layout_data);
-	$result = mysql_query ($sql);
+	$result = process_sql ($sql);
 	
-	if ($result) {
+	if ($result !== false) {
 		echo '<h3 class="suc">'.__('Updated successfully').'</h3>';
 	} else {
 		echo '<h3 class="error">'.__('Not updated. Error updating data').'</h3>';

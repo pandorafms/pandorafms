@@ -39,9 +39,9 @@ function pandora_help ($help_id, $return = false) {
  * Cleans a string by decoding from UTF-8 and replacing the HTML
  * entities.
  * 
- * @param value String to be cleaned.
+ * @param value String or array of strings to be cleaned.
  * 
- * @return The string cleaned.
+ * @return The cleaned string.
  */
 function safe_input ($value) {
 	if (is_numeric ($value))

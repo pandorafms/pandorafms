@@ -1,3 +1,13 @@
+2008-10-14  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+	
+	* include/functions_db.php: Style changes and language updates and a
+	fully functional delete_agent function
+
+	* include/functions.php: Comment update for safe_input
+
+	* manage_config.php: Merged Sancho's bug fixes and a rewrite. It works
+	it is more elegant and is more extensive in database cleanup
+
 2008-10-14  Sancho Lerena <slerena@artica.es>
 
 	* operation/snmpconsole/snmp_alert.php: Texst changes for 

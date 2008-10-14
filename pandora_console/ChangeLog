@@ -1,8 +1,10 @@
+2008-10-14  Sancho Lerena <slerena@artica.es>
+
+	* include/pdf: Removed unused old code (ezPdf library).
+
 2008-10-14  Esteban Sanchez  <estebans@artica.es>
 
 	* include/config_process.php: Added ENTERPRISE_DIR constant.
-
-	* 
 
 2008-10-14  Esteban Sanchez  <estebans@artica.es>
 

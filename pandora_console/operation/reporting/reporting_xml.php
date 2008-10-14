@@ -59,39 +59,37 @@ if (isset ($_GET["direct"]))  {
 	
 	$nick = get_parameter ("nick");
 	$pass = get_parameter ("pass");
-        
-	// Connect to Database
-        $sql = sprintf("SELECT `id_usuario`, `password` FROM `tusuario` WHERE `id_usuario` = '%s'",$nick);
-        $row = get_db_row_sql ($sql);
-                        
-        // For every registry
-        if ($row !== false) {
-                if ($row["password"] == md5 ($pass)) {
-                        // Login OK
-                        // Nick could be uppercase or lowercase (select in MySQL
-                        // is not case sensitive)
-                        // We get DB nick to put in PHP Session variable,
-                        // to avoid problems with case-sensitive usernames.
-                        // Thanks to David Muñiz for Bug discovery :)
-                        $nick = $row["id_usuario"];
-                        update_user_contact ($nick);
-                        $_SESSION['id_usuario'] = $nick;
-                        $config['id_user'] = $nick;
-                        unset ($_GET['pass'], $pass);
-                } else {
-                        // Login failed (bad password) 
-                        echo "Logon failed";
-                        audit_db ($nick, $_SERVER['REMOTE_ADDR'], "Logon Failed",
-                                  "Incorrect password: " . $nick);
-                        exit;
-                }
-        } else {
-                // User not known
-                echo "Logon failed";
-                audit_db ($nick, $_SERVER['REMOTE_ADDR'], "Logon Failed",
-                          "Invalid username: " . $nick);
-                exit;
-        }
+	
+	$sql = sprintf("SELECT `id_usuario`, `password` FROM `tusuario` WHERE `id_usuario` = '%s'",$nick);
+	$row = get_db_row_sql ($sql);
+	
+	// For every registry
+	if ($row !== false) {
+		if ($row["password"] == md5 ($pass)) {
+			// Login OK
+			// Nick could be uppercase or lowercase (select in MySQL
+			// is not case sensitive)
+			// We get DB nick to put in PHP Session variable,
+			// to avoid problems with case-sensitive usernames.
+			// Thanks to David Muñiz for Bug discovery :)
+			$nick = $row["id_usuario"];
+			update_user_contact ($nick);
+			$_SESSION['id_usuario'] = $nick;
+			$config['id_user'] = $nick;
+			unset ($_GET['pass'], $pass);
+		} else {
+			// Login failed (bad password) 
+			echo "Logon failed";
+			audit_db ($nick, $_SERVER['REMOTE_ADDR'], "Logon Failed",
+					  "Incorrect password: " . $nick);
+			exit;
+		}
+	} else {
+		// User not known
+		echo "Logon failed";
+		audit_db ($nick, $_SERVER['REMOTE_ADDR'], "Logon Failed", "Invalid username: " . $nick);
+		exit;
+	}
 
 } else {
 	require_once ("include/config.php");
@@ -118,7 +116,7 @@ if (! give_acl ($config['id_user'], $report['id_group'], "AR")) {
 }
 
 /* Check if the user can see the graph */
-if ($report['id_user'] != $config['id_user'] && ! dame_admin ($config['id_user']) && ! $report['private']) {
+if ($report['private'] && ($report['id_user'] != $config['id_user'] && ! dame_admin ($config['id_user']))) {
 	return;
 }
 

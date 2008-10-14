@@ -17,8 +17,6 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
-// WARNING: Do not use generic get_parameter() functions here, because some of the
-// variables passed are arrays and are not supported by these functions.
 
 // Load global vars
 require ("include/config.php");
@@ -37,431 +35,422 @@ $id_group = get_parameter ("id_group", 0);
 $origen = get_parameter ("origen", -1);
 $update_agent = get_parameter ("update_agent", -1);
 $update_group = get_parameter ("update_group", -1);
+$destino = get_parameter_post ("destino",array ());
+$origen_modulo = get_parameter_post ("origen_modulo", array ());
 
 // Operations
 // ---------------
-if ((isset($_GET["operacion"])) && ($update_agent == -1) && ($update_group == -1)) {
-	// DATA COPY
-	// ---------
-	if (isset($_POST["copy"])) {
-		echo "<h2>".__('Data Copy')."</h2>";
-		// Initial checkings
 
-		// if selected more than 0 agents
-		if (isset($_POST["destino"])) 
-			$destino = $_POST["destino"];
-		if ((!isset($_POST["destino"])) OR (count($destino) <= 0)) {
-			echo "<h3 class='error'>ERROR: ".__('No selected agents to copy')."</h3>";
-			return;
-		}
-		if (isset($_POST["origen_modulo"]))
-			$origen_modulo = $_POST["origen_modulo"];
-		
-		if ((!isset($_POST["origen_modulo"])) OR (count($origen_modulo) <= 0)) {
-			echo "<h3 class='error'>ERROR: ".__('No modules has been selected')."</h3>";
-			return;
-		}
-
-		$multiple=1;
-
-		// Source
-		$id_origen = $_POST["origen"];
-		
-		// If selected modules or alerts
-		if (isset($_POST["modules"]))
-			$modulos = 1;
-		else
-			$modulos = 0;
-		if (isset($_POST["alerts"]))
-			$alertas = 1;
-		else
-			$alertas = 0;
-		if (($alertas + $modulos) == 0){
-			echo "<h3 class='error'>ERROR: ".__('You must select modules and/or alerts for copy operation')."</h3>";;
-			echo "</table>";
-			include ("general/footer.php");
-			exit;
-		}
-		
-		// Copy
-		// ----	
-		for ($a=0;$a <count($destino); $a++){ 
-			// For every agent in destination
-
-			$id_agente = $destino[$a];
-			echo "<br><br>".__('copyage')."<b> [".dame_nombre_agente($id_origen)."] -> [".dame_nombre_agente($id_agente)."]</b>";
-			if ($multiple == 0)
-				$b = -1;
-			else
-				$b = 0;
-
-			// Module read
-			if ($modulos == 1) {
-				for ($b=$b; $b < count($origen_modulo); $b++){
-					if ($multiple == 0)	
-						$sql1='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_origen;
-					else
-						$sql1='SELECT * FROM tagente_modulo WHERE id_agente_modulo = '.$origen_modulo[$b];
-					$result1=mysql_query($sql1);
-					while ($row=mysql_fetch_array($result1)){
-						$o_id_agente_modulo = $row["id_agente_modulo"];
-						$o_id_tipo_modulo = $row["id_tipo_modulo"];
-						$o_nombre = $row["nombre"];
-						$d_id_agente = $id_agente; // Rapelace with destination agent id
-						// Read every module in source agent				
-						$o_descripcion = $row["descripcion"];
-						$o_max = $row["max"];
-						$o_min = $row["min"];
-						$o_module_interval = $row["module_interval"];
-						$o_tcp_port = $row["tcp_port"];
-						$o_tcp_send = $row["tcp_send"];
-						$o_tcp_rcv = $row["tcp_rcv"];
-						$o_snmp_community = $row["snmp_community"];
-						$o_snmp_oid = $row["snmp_oid"];
-						// Replace IP Address for main ip address of destination module
-						$real_ip_address = give_agent_address ($id_agente);
-						$o_ip_target = $real_ip_address;
-						$o_id_module_group = $row["id_module_group"];
-						// 2.0 new modules
-						$o_max_timeout = $row["max_timeout"];
-						$o_prediction_module = $row["prediction_module"];
-						$o_post_process = $row["post_process"];
-						$o_id_plugin = $row["id_plugin"];
-						$o_plugin_parameter = $row["plugin_parameter"];
-						$o_plugin_user = $row["plugin_user"];
-						$o_plugin_pass = $row["plugin_pass"];
-						$o_id_modulo = $row["id_modulo"];
-
-						
-						// Write every module in destination agent
-						$sql = "INSERT INTO tagente_modulo (
-								id_agente,id_tipo_modulo,descripcion, nombre, max, min, 
-								module_interval, tcp_port, tcp_send, tcp_rcv, snmp_community, 
-								snmp_oid, ip_target, id_module_group, flag, 
-								max_timeout, prediction_module, post_process, id_plugin, 
-								plugin_parameter, plugin_user, plugin_pass, id_modulo
-							) VALUES (
-							$d_id_agente, '$o_id_tipo_modulo', '$o_descripcion',
-							'$o_nombre', '$o_max', '$o_min', '$o_module_interval',
-							'$o_tcp_port', '$o_tcp_send', '$o_tcp_rcv', '$o_snmp_community',
-							'$o_snmp_oid', '$o_ip_target', $o_id_module_group, 1,
-							$o_max_timeout, $o_prediction_module, '$o_post_process',
-							$o_id_plugin, '$o_plugin_parameter', '$o_plugin_user',
-							'$o_plugin_pass', $o_id_modulo
-							)";
-						$result2=mysql_query($sql);
-						if (! $result2)
-							echo "<h3 class=error>".__('Problem updating database')."</h3>";
-						$o_id_agente_modulo = mysql_insert_id();
-						
-						// Create with different estado if proc type or data type
-						if (
-						($o_id_agente_modulo != "") AND (
-						($o_id_tipo_modulo == 2) ||
-						($o_id_tipo_modulo == 6) || 
-						($o_id_tipo_modulo == 9) ||
-						($o_id_tipo_modulo == 100) || 
-						($o_id_tipo_modulo == 21) || 
-						($o_id_tipo_modulo == 18))){
-							$sql_status_insert = "INSERT INTO tagente_estado 
-							(id_agente_modulo,datos,timestamp,cambio,estado,id_agente, utimestamp) 
-							VALUES (
-							$o_id_agente_modulo, 0,'0000-00-00 00:00:00',0,0,'".$d_id_agente."',0
-							)";
-						} else { 
-							$sql_status_insert = "INSERT INTO tagente_estado
-							(id_agente_modulo,datos,timestamp,cambio,estado,id_agente, utimestamp) 
-							VALUES (
-							$o_id_agente_modulo, 0,'0000-00-00 00:00:00',0,100,'".$d_id_agente."',0
-							)";
-						}
-						$result_status=mysql_query($sql_status_insert);
-						echo "<br>&nbsp;&nbsp;".__('Copying module')." ->".$o_nombre;
-					}
-				}
-			}
-			if ($multiple == 0)
-					$b=-1;
-			else
-					$b=0;
-
-			// Alerts
-			// ------
-			if ($alertas == 1){
-				for ($b=$b; $b < count($origen_modulo); $b++){
-					if ($multiple == 0)
-						$sql1='SELECT * FROM tagente_modulo WHERE id_agente = '.$id_origen;
-					else
-						$sql1='SELECT * FROM tagente_modulo WHERE id_agente_modulo = '.$origen_modulo[$b];
-					$result1=mysql_query($sql1);
-					while ($row=mysql_fetch_array($result1)){
-						$o_id_agente_modulo = $row["id_agente_modulo"];
-						$o_id_tipo_modulo = $row["id_tipo_modulo"];
-						$o_nombre = $row["nombre"];
-						$d_id_agente = $id_agente; // destination agent id
-						// For each agent module, given as $o_id_agente_modulo:
-						// Searching if destination agent has a agente_modulo with same type and name that source
-						$sqlp="SELECT * FROM tagente_modulo WHERE id_agente = ".$d_id_agente." AND nombre = '".$o_nombre."' AND id_tipo_modulo = ".$o_id_tipo_modulo;
-						$resultp=mysql_query($sqlp);
-						if ( $rowp=mysql_fetch_array($resultp)){
-							// If rowp success get  ID
-							$d_id_agente_modulo = $rowp["id_agente_modulo"];
-							// Read every alert from source agent
-							$sql2='SELECT * FROM talerta_agente_modulo WHERE id_agente_modulo = '.$o_id_agente_modulo;
-							$result3=mysql_query($sql2);
-							while ($row3=mysql_fetch_array($result3)){
-								$o_id_alerta = $row3["id_alerta"];
-								$o_al_campo1 = $row3["al_campo1"];
-								$o_al_campo2 = $row3["al_campo2"];
-								$o_al_campo3 = $row3["al_campo3"];
-								$o_descripcion = $row3["descripcion"];
-								$o_dis_max = $row3["dis_max"];
-								$o_dis_min = $row3["dis_min"];
-								$o_time_threshold = $row3["time_threshold"];
-								$o_last_fired = "2001-01-01 00:00:00";
-								$o_max_alerts = $row3["max_alerts"];
-								$o_min_alerts = $row3["min_alerts"];
-								$o_times_fired = 0;
-
-								$o_alert_text = $row3["alert_text"];
-								$o_time_from = $row3["time_from"];
-								$o_time_to = $row3["time_to"];
-								$o_monday = $row3["monday"];
-								$o_tuesday = $row3["tuesday"];
-								$o_wednesday = $row3["wednesday"];
-								$o_thursday = $row3["thursday"];
-								$o_friday = $row3["friday"];
-								$o_saturday = $row3["saturday"];
-								$o_sunday = $row3["sunday"];
-								$o_recovery_notify = $row3["recovery_notify"];
-								$o_priority = $row3["priority"];
-								$o_al_f2_recovery= $row3["al_f2_recovery"];
-								$o_al_f3_recovery= $row3["al_f3_recovery"];	
-
-								// Insert
-								$sql_al="INSERT INTO talerta_agente_modulo (id_agente_modulo, id_alerta, al_campo1, al_campo2, al_campo3, descripcion, dis_max, dis_min, time_threshold, last_fired, max_alerts, times_fired, min_alerts,
-								alert_text, time_from, time_to, monday, tuesday, wednesday, 
-								thursday, friday, saturday, sunday, recovery_notify, priority,
-								al_f2_recovery, al_f3_recovery ) 
-								VALUES ( $d_id_agente_modulo , $o_id_alerta, '$o_al_campo1',
-								'$o_al_campo2', '$o_al_campo3', '$o_descripcion', $o_dis_max,
-								$o_dis_min, $o_time_threshold, '$o_last_fired', $o_max_alerts,
-								$o_times_fired, $o_min_alerts, '$o_alert_text', '$o_time_from',
-								'$o_time_to', '$o_monday', '$o_tuesday', '$o_wednesday', 
-								'$o_thursday', '$o_friday', '$o_saturday', '$o_sunday', 
-								$o_recovery_notify, $o_priority, '$o_al_f2_recovery', 
-								'$o_al_f3_recovery' )";
-								$result_al=mysql_query($sql_al);
-								echo "<br>&nbsp;&nbsp;".__('Copying alert')." ->".$o_descripcion;
-							}
-						} else 
-							echo "<br><h3 class='error'>ERROR: ".__('Not found').$o_nombre.__(' in agent ').dame_nombre_agente($d_id_agente)."</h3>";
-					} //while
-				} // for
-			} // Alerts
-		} // for each destination agent
-	} //end if copy modules or alerts
-
-
-	// -----------
-	// DELETE DATA
-	// -----------
-
-	elseif (isset($_POST["delete"])) {
-		echo "<h2>".__('Delete Data')."</h2>";
-		// Initial checkings
-		
-		//  if selected more than 0 agents
-		if (isset($_POST["destino"]))
-			$destino = $_POST["destino"];
-		else
-			$destino = array();
-		if (count($destino) <= 0) {
-			echo "<h3>" . __("Deleting source agent. No destination targets defined") . "</h3>";
-			$destino[0] = $origen;
-		}
-		
-		// If selected modules or alerts
-		if (isset($_POST["modules"]))
-			$modulos = 1;
-		else
-			$modulos = 0;
-		if (isset($_POST["alerts"]))
-			$alertas = 1;
-		else
-			$alertas = 0;
-
-		if (isset($_POST["origen_modulo"]))
-			$origen_modulo = $_POST["origen_modulo"];
-		else
-			$origen_modulo = array();
-		if (count($origen_modulo) <= 0) 
-			$allmodules = 1;
-		else 
-			$allmodules = 0;
-
-		for ($a=0;$a <count($destino); $a++){ // for each agent
-			$id_agente = $destino[$a];
-			echo "<br>".__('Deleting data')." -> ".dame_nombre_agente($id_agente);
-			if ($allmodules == 1){
-				// Deleting data
-				if ($modulos == 1){
-					mysql_query ("DELETE FROM tagente_datos WHERE id_agente_modulo=$id_agente");
-					mysql_query ("DELETE FROM tagente_datos_inc WHERE id_agente_modulo=$id_agente");
-					mysql_query ("DELETE FROM tagente_datos_string WHERE id_agente_modulo=$id_agente");
-					mysql_query ("DELETE FROM tagente_estado WHERE id_agente = $id_agente");
-					mysql_query ("DELETE FROM tagente_modulo WHERE id_agente = $id_agente");
-				}
-				if ($alertas == 1){
-					mysql_query ("DELETE FROM talerta_agente_modulo WHERE id_agent = $id_agente");
-				echo "DELETE talertas* where id_agente = $id_agente <br>";
-				}
-				mysql_query ("DELETE FROM tevent WHERE id_agente = $id_agente");
-			} else {
-				for ($i=0; $i < count($origen_modulo); $i++){
-					$source_module = $origen_modulo[$i];
-					$source_module_name = get_db_sql ("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = $source_module");
-					$id_modulo = get_db_sql ("SELECT id_agente_modulo FROM tagente_modulo WHERE nombre = '$source_module_name' AND id_agente = $id_agente");
-					if ($modulos == 1){
-						mysql_query ("DELETE FROM tagente_datos WHERE id_agente_modulo=$id_modulo");
-						mysql_query ("DELETE FROM tagente_datos_inc WHERE id_agente_modulo=$id_modulo");
-						mysql_query ("DELETE FROM tagente_datos_string WHERE id_agente_modulo=$id_modulo");
-						mysql_query ("DELETE FROM tagente_datos_string WHERE id_agente_modulo=$id_modulo");
-						mysql_query ("DELETE FROM tagente_estado WHERE id_agente_modulo = $id_modulo");
-						mysql_query ("DELETE FROM tagente_modulo WHERE id_agente_modulo = $id_modulo");
-					}
-					if ($alertas == 1){
-						mysql_query ("DELETE FROM talerta_agente_modulo WHERE id_agente_modulo = $id_modulo");
-					}
-					mysql_query ("DELETE FROM tevent WHERE id_agentmodule = $id_modulo");
-				}
-			}
-		}
+// DATA COPY
+// ---------
+if (isset($_POST["copy"])) {
+	echo "<h2>".__('Data Copy')."</h2>";
+	
+	if (empty ($destino)) {
+		echo '<h3 class="error">ERROR: '.__('No selected agents to copy').'</h3>';
+		return;
+	} 
+	
+	if (empty ($origen_modulo)) {
+		echo '<h3 class="error">ERROR: '.__('No modules have been selected').'</h3>';
+		return;
 	}
 
-	// -----------
-	// DELETE AGENT
-	// -----------
-
-	elseif (isset($_POST["delete_agent"])) {
-		echo "<h2>".__('Delete agents')."</h2>";
-		// Initial checkings
+	// If selected modules or alerts
+	if (isset($_POST["modules"])) {
+		$modulos = 1;
+	} else {
+		$modulos = 0;
+	}
 		
-		//  if selected more than 0 agents
-		$destino = $_POST["destino"];
-		if (count($destino) <= 0) {
-			$destino[0]=$origen;
-		}
+	if (isset($_POST["alerts"])) {
+		$alertas = 1;
+	} else {
+		$alertas = 0;
+	}
+	
+	if (($alertas + $modulos) == 0){
+		echo '<h3 class="error">ERROR: '.__('You must check modules and/or alerts to be copied').'</h3>';
+		return;
+	}
 		
-		// Delete
-		for ($a=0;$a <count($destino); $a++){ // for each agent
-			$id_agente = $destino[$a];
+	// Copy
+	// ----	
+	$errors = 0;
+	$id_new_module = 0;
+	process_sql ("SET AUTOCOMMIT = 0;");
+	process_sql ("START TRANSACTION;"); //Start a transaction
+	
+	foreach ($origen_modulo as $id_module) {
+		//For each selected module
+		$module = get_db_row ("tagente_modulo", "id_agente_modulo", $id_module);
+		
+		foreach ($destino as $id_agent_dest) {
+			//For each destination agent
 			
-			echo "<br>".__('Deleting data')." -> ".dame_nombre_agente($id_agente);
-			delete_agent($id_agente);
-		}// for
-	}//delete
+			if ($modulos == 1) {
+				echo '<br /><br />'.__('Copying module').'<b> ['.dame_nombre_agente ($origen).' - '.$module["nombre"].'] -> ['.dame_nombre_agente ($id_agent_dest).']</b>';
+				$sql = sprintf ("INSERT INTO tagente_modulo 
+					(id_agente, id_tipo_modulo, descripcion, nombre, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, 
+					snmp_community, snmp_oid, ip_target, id_module_group, flag, id_modulo, disabled, id_export, 
+					plugin_user, plugin_pass, plugin_parameter, id_plugin, post_process, prediction_module, max_timeout) 
+					VALUES (%d,".$module["id_tipo_modulo"].",'".$module["descripcion"]."','".$module["nombre"]."',".$module["max"].",".$module["min"].",".$module["module_interval"].",".$module["tcp_port"].",'".$module["tcp_send"]."','".$module["tcp_rcv"]."',
+					'".$module["snmp_community"]."','".$module["snmp_oid"]."','%s',".$module["id_module_group"].",".$module["flag"].",".$module["id_modulo"].",".$module["disabled"].",".$module["id_export"].",
+					'".$module["plugin_user"]."','".$module["plugin_pass"]."','".$module["plugin_parameter"]."',".$module["id_plugin"].",'".$module["post_process"]."',".$module["prediction_module"].",".$module["max_timeout"].")",
+					$id_agent_dest,give_agent_address ($id_agent_dest));
 
-	// ============	
-	// Form view
-	// ============
-	} else { 
-		
-		// title
-		echo '<h2>'.__('Agent configuration'). '&gt;'. __('Configuration Management').  '</h2>';
-		echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/manage_config&operacion=1">';
-		echo "<table width='650' border='0' cellspacing='4' cellpadding='4' class='databox'>";
-		
-		// Source group
-		echo '<tr><td class="datost"><b>'. __('Source group'). '</b><br><br>';
-		echo '<select name="id_group" style="width:200px">';
-		if ($id_group != 0)
-			echo "<option value=$id_group>".dame_nombre_grupo ($id_group);
-		echo "<option value=0>".__('All');
-		list_group ($config["id_user"]);
-		echo '</select>';
-		echo '&nbsp;&nbsp;';
-		echo '<input type=submit name="update_group" class="sub upd"  value="'.__('Filter').'">';
-		echo '<br><br>';
+				$id_new_module = process_sql ($sql, "insert_id");
+				if (empty ($id_new_module)) {
+					$errors++;
+				} else {
+					switch ($module["id_tipo_modulo"]) {
+						case 2:
+						case 6:
+						case 9:
+						case 100:
+						case 21:
+						case 18:
+							$sql = sprintf ("INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, cambio, estado, id_agente, utimestamp) 
+								VALUES (%d, 0,'0000-00-00 00:00:00',0,0, %d, 0)", $id_new_module, $id_agent_dest);
+						default:
+							$sql = sprintf ("INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, cambio, estado, id_agente, utimestamp) 
+								VALUES (%d, 0,'0000-00-00 00:00:00',0,100, %d, 0)", $id_new_module, $id_agent_dest);
+					}
+					$result = process_sql ($sql);
+					if ($result === false)
+						$errors++;
+				}//If empty id_new_module
+			} //If modulos
+			
+			if ($alertas == 1) {
+				if (empty ($id_new_module)) {
+					//If we didn't copy modules or if we
+					//didn't create new modules we have to
+					//look for the module id
+					$sql = sprintf ("SELECT id_agente_modulo FROM tagente_modulo WHERE nombre = '%s' AND id_agente = %d", $module["nombre"], $id_agent_dest);
+					$id_new_module = get_db_sql ($sql);
+					if (empty ($id_new_module)) {
+						continue; //If we can't find a module belonging to this agent with the same name, skip the loop
+					}
+				}
 
-		// Source agent
-		echo '<b>'. __('Source agent').'</b><br><br>';
+				
+				$module_alerts = get_db_all_rows_field_filter ("talerta_agente_modulo", "id_agente_modulo", $id_module);	
+				if (empty ($module_alerts)) {
+					$module_alerts = array ();
+				}
+				
+				foreach ($module_alerts as $alert) {
+					echo '<br /><br />'.__('Copying alert').'<b> ['.dame_nombre_agente ($origen).' - '.$module["nombre"].'] -> ['.dame_nombre_agente ($id_agent_dest).']</b>';
+					if (!empty ($alert["id_agent"])) {
+						//Compound alert
+						$alert["id_agent"] = $id_agent_dest;
+					}
+					$sql = sprintf ("INSERT INTO talerta_agente_modulo 
+						(id_agente_modulo, id_alerta, al_campo1, al_campo2, al_campo3, descripcion, dis_max, dis_min,
+						time_threshold, max_alerts, module_type, min_alerts, alert_text, disable, time_from,
+						time_to, id_agent, monday, tuesday, wednesday, thursday, friday, saturday, sunday,
+						recovery_notify, priority, al_f2_recovery, al_f3_recovery) 
+						VALUES (
+						%d,%d,'%s','%s','%s','%s',%d,%d,
+						%d,%d,%d,%d,'%s',%d,'%s',
+						'%s',%d,%d,%d,%d,%d,%d,%d,%d,
+						%d,%d,'%s','%s')",
+						$id_new_module,$alert["id_alerta"],$alert["al_campo1"],$alert["al_campo2"],$alert["al_campo3"],$alert["descripcion"],$alert["dis_max"],$alert["dis_min"],
+						$alert["time_threshold"],$alert["max_alerts"],$alert["module_type"],$alert["min_alerts"],$alert["alert_text"],$alert["disable"],$alert["time_from"],
+						$alert["time_to"],$alert["id_agent"],$alert["monday"],$alert["tuesday"],$alert["wednesday"],$alert["thursday"],$alert["friday"],$alert["saturday"],$alert["sunday"],
+						$alert["recovery_notify"],$alert["priority"],$alert["al_f2_recovery"],$alert["al_f3_recovery"]);
+					
+					$new_alert = process_sql ($sql, "insert_id");
+					
+					if ($new_alert === false) {
+						$errors++;
+					} elseif (!empty ($alert["id_agent"])) {
+						$sql = sprintf ("SELECT operation FROM tcompound_alert WHERE id_aam = %d", $alert["id_aam"]);
+						$result = get_db_all_row_sql ($sql);
+						
+						if ($result === false)
+							continue; // This alert is supposed to be part of a 
+								  // compound alert but there is no entry for 
+								  // it in the tcompound_alert table so we skip this																			            
+						
+						foreach ($result as $comp_alert) {
+							$sql = sprintf ("INSERT INTO tcompound_alert (id_aam, operation) VALUES (%d, '%s')",$new_alert,$comp_alert["operation"]);
+							$result = process_sql ($sql);
+							if ($result === false)
+								$errors++;
+						} //foreach compound alert
+					} //if-elseif compound alert
+				} //foreach alert
+			} //if alerts
+		} //Foreach destino
+	} //Foreach origen_modulo
 
-		// Show combo with SOURCE agents
-		if ($id_group != 0)
-			$sql1 = "SELECT * FROM tagente WHERE id_grupo = $id_group ORDER BY nombre ";
-		else
-			$sql1 = 'SELECT * FROM tagente ORDER BY nombre';
-		echo '<select name="origen" style="width:200px">';			
-		if (($update_agent != 1) AND ($origen != -1))
-			echo "<option value=".$_POST["origen"].">".dame_nombre_agente($origen)."</option>";
-		$result=mysql_query($sql1);
-		while ($row=mysql_fetch_array($result)){
-			if (give_acl ($config["id_user"], $row["id_grupo"], "AR")){
-				if ( $origen != $row["id_agente"])
-					echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
-			}
-		}
-		echo '</select>';
-
-		echo '&nbsp;&nbsp;';
-		echo '<input type=submit name="update_agent" class="sub upd" value="'.__('Get Info').'">';
-		echo '<br><br>';
-
-		// Source Module(s)
-		echo "<b>".__('Modules')."</b><br><br>";
-		echo "<select name='origen_modulo[]' size=10 multiple=yes style='width: 250px;'>";
-		if ( (isset($_POST["update_agent"])) AND (isset($_POST["origen"])) ) {
-				// Populate Module/Agent combo
-			$agente = $_POST["origen"];
-			$sql1="SELECT * FROM tagente_modulo WHERE id_agente = ".$agente. " ORDER BY nombre";	
-			$result = mysql_query($sql1);
-			while ($row=mysql_fetch_array($result)){
-				echo "<option value=".$row["id_agente_modulo"].">".$row["nombre"]."</option>";	
-			}
-		}
-		echo "</select>";
-		
-		echo '<td class="datost">';
-		echo '<b>'.__('Targets'). '</b> ';
-		pandora_help ('manageconfig');
-		echo '<br><br>';
-		echo '<table>';
-		echo '<tr class=datos><td>'.__('Modules');
-		echo '<td><input type="checkbox" name="modules" value="1" class="chk">';
-		echo '<tr class=datos><td>'.__('Alerts');
-		echo '<td><input type="checkbox" name="alerts" value="1" class="chk">';
-		echo '</table>';
-		
-
-		// Destination agent
-		echo '<tr><td class="datost">';
-		echo '<b>'.__('To Agent(s):').'</b><br><br>';
-		echo "<select name=destino[] size=10 multiple=yes style='width: 250px;'>";
-		$sql1='SELECT * FROM tagente ORDER BY nombre';
-		$result=mysql_query($sql1);
-		while ($row=mysql_fetch_array($result)){
-			if (give_acl ($config["id_user"], $row["id_grupo"], "AW"))
-				echo "<option value=".$row["id_agente"].">".$row["nombre"]."</option>";
-		}
-		echo '</select>';
-		
-		// Form buttons
-		echo '<td align="left" class="datosb">';
-		echo "<br><br>";
-		echo '<input type="submit" name="copy" class="sub copy" value="'.__('Copy').'" onClick="if (!confirm("'.__('Are you sure?').'")) return false;> ';
-		echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-		pandora_help ('manageconfig');
-		echo "<br><br>";
-		echo '<input type="submit" name="delete" class="sub delete" value="'. __('Delete').'" onClick="if (!confirm("'.__('Are you sure?').'")) return false;>';
-		
-		echo "<br><br>";
-		echo '<input type="submit" name="delete_agent" class="sub delete" value="'. __('Delete Agents').'" onClick="if (!confirm("'.__('Are you sure?').'")) return false;>';
-
-		echo '<tr><td colspan=2>';
-		echo '</div></td></tr>';
-		echo '</table>';
-
+	if ($errors > 1) {
+		echo '<h3 class="error">'.__('There was an error copying the module, the copy has been cancelled').'</h3>';
+		process_sql ("ROLLBACK;");
+	} else {
+		echo '<h3 class="suc">'.__('Successfully copied module').'</h3>';
+		process_sql ("COMMIT;");
 	}
+	process_sql ("SET AUTOCOMMIT = 1;");
+	return; //Page shouldn't continue anymore
+} //end of copy modules or alerts
+
+// -----------
+// DELETE DATA
+// -----------
+if (isset ($_POST["delete"])) {
+        echo "<h2>".__('Agent Module Data Deletion')."</h2>";
+
+        if (empty ($destino)) {
+                echo '<h3 class="error">ERROR: '.__('No selected agents to copy').'</h3>';
+                return;
+        }
+
+        if (empty ($origen_modulo)) {
+                echo '<h3 class="error">ERROR: '.__('No modules have been selected').'</h3>';
+                return;
+        }
+
+
+	
+        // If selected modules or alerts
+	if (isset($_POST["alerts"])) {
+		$alertas = 1;
+	} else {
+		$alertas = 0;
+	}
+	
+	if (isset($_POST["modules"])) {
+                $modulos = 1;
+		$alertas = 1;
+        } else {
+                $modulos = 0;
+        }
+
+        if (($alertas + $modulos) == 0){
+                echo '<h3 class="error">ERROR: '.__('You must check modules and/or alerts to be deleted').'</h3>';
+                return;
+        }
+
+        // Deletion
+        // ---- 
+        $errors = 0;
+        
+	process_sql ("SET AUTOCOMMIT = 0;");
+        process_sql ("START TRANSACTION;"); //Start a transaction
+
+	function temp_sql_delete ($table, $row, $value) {
+		global $errors; //Globalize the errors variable
+		$sql = sprintf ("DELETE FROM %s WHERE %s = %s", $table, $row, $value);
+		
+		$result = process_sql ($sql);
+		
+		if ($result === false)
+			$errors++;
+	}
+
+        foreach ($origen_modulo as $id_module_src) {
+		$nombre_src = get_db_value ("nombre", "tagente_modulo", "id_agente_modulo", $id_module_src);
+		
+		foreach ($destino as $agent_dest) {
+			$sql = sprintf ("SELECT id_agente_modulo FROM tagente_modulo WHERE nombre = '%s' AND id_agente = %d", $nombre_src, $agent_dest);
+			$id_module_dest = get_db_sql ($sql);
+			if ($id_module_dest === false)
+				continue; //If we don't have a module like that in the agent, then don't try deleting
+
+			if ($alertas == 1) {
+				//Alert
+				temp_sql_delete ("tcompound_alert", "id_aam", "ANY(SELECT id_aam FROM talerta_agente_modulo WHERE id_agente_modulo = ".$id_module_dest.")");
+				temp_sql_delete ("talerta_agente_modulo", "id_agente_modulo", $id_module_dest);
+			}
+			
+			if ($modulos == 1) {
+				//Standard data
+				temp_sql_delete ("tagente_datos", "id_agente_modulo", $id_module_dest);
+	
+	                	//Incremental Data
+				temp_sql_delete ("tagente_datos_inc", "id_agente_modulo", $id_module_dest);
+
+				//String data
+				temp_sql_delete ("tagente_datos_string", "id_agente_modulo", $id_module_dest);
+			
+				//Data image
+				temp_sql_delete ("tagent_data_image", "id_agent_module", $id_module_dest);
+			
+				//Events (up/down monitors)
+				temp_sql_delete ("tevento", "id_agentmodule", $id_module_dest);
+			
+				//Graphs, layouts & reports
+				temp_sql_delete ("tgraph_source", "id_agent_module", $id_module_dest);
+				temp_sql_delete ("tlayout_data", "id_agente_modulo", $id_module_dest);
+				temp_sql_delete ("treport_content", "id_agent_module", $id_module_dest);
+
+				//The status of the module
+				temp_sql_delete ("tagente_estado", "id_agente_modulo", $id_module_dest);
+
+				//The actual modules, don't put anything based on
+				//tagente_modulo after this
+				temp_sql_delete ("tagente_modulo", "id_agente_modulo", $id_module_dest);
+			} //if modulos
+		} //foreach destino
+	} //foreach origen_modulo
+	
+	if ($errors > 1) {
+		echo '<h3 class="error">'.__('There was an error removing the module data, the removal has been cancelled').'</h3>';
+		process_sql ("ROLLBACK;");
+	} else {
+		echo '<h3 class="suc">'.__('Successfully removed module data').'</h3>';
+		process_sql ("COMMIT;");
+	}
+	process_sql ("SET AUTOCOMMIT = 1;");
+	return; //Page shouldn't continue anymore															
+} //if $_POST['delete']
+
+// -----------
+// DELETE AGENT
+// -----------
+
+if (isset ($_POST["delete_agent"])) {
+	echo "<h2>".__('Deleting Agent')."</h2>";
+	// Initial checkings
+	
+	//  if selected more than 0 agents
+	$destino = get_parameter_post ("destino", array ());
+	
+	if (empty ($destino)) {
+		echo '<h3 class="error">ERROR: '.__('You must select at least one agent to be removed').'</h3>';
+		return;
+	}
+	
+	$result = delete_agent ($destino);	
+	
+	if ($result === false) {
+		echo '<h3 class="error">'.__('There was an error removing the agents. Removal has been cancelled').'</h3>';
+	} else {
+		echo '<h3 class="suc">'.__('Successfully removed agents').'</h3>';
+	}
+
+	return;
+}
+																		
+	
+// ============	
+// Form view
+// ============
+		
+// title
+echo '<h2>'.__('Agent configuration'). '&gt;'. __('Configuration Management').'</h2>';
+echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/manage_config&operacion=1">';
+echo '<table width="650" border="0" cellspacing="4" cellpadding="4" class="databox">';
+	
+// Source group
+echo '<tr><td class="datost"><b>'. __('Source group'). '</b><br /><br />';
+$groups = get_user_groups ($config['id_user']);
+	
+print_select ($groups, "id_group", $id_group, 'javascript:this.form.submit();', '', 0, false, false, false, '" style="width:200px');
+echo '<noscript>&nbsp;&nbsp;';
+print_submit_button (__('Filter'), "update_group", false, 'class="sub upd"');
+echo '</noscript><br /><br />';
+	
+// Source agent
+echo '<b>'. __('Source agent').'</b><br /><br />';
+
+// Show combo with SOURCE agents
+if ($id_group > 1) { //Group -1, 0 and 1 all mean that we should select ALL
+	$result = get_db_all_rows_field_filter ("tagente", "id_grupo", $id_group, "nombre");
+} else {
+	$result = get_db_all_rows_in_table ("tagente", "nombre");
+}
+	
+if ($result === false) {
+	$result = array ();
+	$result[0]["id_grupo"] = 0;
+	$result[0]["id_agente"] = 0;
+	$result[0]["nombre"] = __('No Agents in this Group');
+}
+
+$agents = array ();
+foreach ($result as $row) {
+	if (give_acl ($config["id_user"], $row["id_grupo"], "AR"))
+		$agents[$row["id_agente"]] = $row["nombre"];
+}
+
+if ($origen == -1 || ($id_group > 1 && dame_id_grupo ($origen) != $id_group)) {
+	$origen = $result[0]["id_agente"]; 
+	//If the agent selected is not in the group selected (that
+	//happens if an agent was selected and then the group was changed) 
+}
+
+print_select ($agents, "origen", $origen, 'javascript:this.form.submit();', '', 0, false, false, false, '" style="width:200px');
+echo '<noscript>&nbsp;&nbsp;';
+print_submit_button (__('Get Info'), "update_agent", false, 'class="sub upd"');
+echo '</noscript><br /><br />';
+	
+// Source Module(s)
+$result = get_db_all_rows_field_filter ("tagente_modulo", "id_agente", $origen, "nombre");
+$modules = array ();
+
+if ($result === false) {
+	$result = array ();
+	$result[0]["id_agente_modulo"] = -1;
+	if ($origen > 0) {
+		$result[0]["nombre"] = __('No modules for this agent');
+	} else {
+		$result[0]["nombre"] = __('No agent selected');
+	}
+}     
+foreach ($result as $row) {
+	$modules[$row["id_agente_modulo"]] = $row["nombre"];
+}
+	
+echo '<b>'.__('Modules').'</b><br /><br />';
+print_select ($modules, "origen_modulo[]", '', '', '', 0, false, true, false, '" style="width:250px'); 
+echo '</td>';
+		
+echo '<td class="datost">';
+echo '<b>'.__('Targets'). '</b>';
+pandora_help ('manageconfig');
+echo '<br /><br />';
+echo '<table>';
+echo '<tr><td class="datos">'.__('Modules').'</td><td class="datos">';
+print_checkbox_extended ("modules", "1", false, false, '', 'class="chk"');
+
+echo '</td></tr><tr><td class="datos">'.__('Alerts').'<td class="datos">';
+print_checkbox_extended ("alerts", "1", false, false, '', 'class="chk"');
+echo '</td></tr></table></td></tr>';
+		
+
+// Destination agent
+$result = get_db_all_rows_in_table ("tagente", "nombre");
+$agents = array ();
+if ($result === false) {
+	$result = array ();
+}
+
+foreach ($result as $row) {
+	if (give_acl ($config["id_user"], $row["id_grupo"], "AW"))
+		$agents[$row["id_agente"]] = $row["nombre"];
+}
+
+echo '<tr><td class="datost">';
+echo '<b>'.__('To Agent(s):').'</b><br /><br />';
+print_select ($agents, "destino[]", $destino, '', '', 0, false, true, false, '" style="width:250px');
+echo '</td>';
+
+// Form buttons
+echo '<td align="left" class="datosb">';
+echo "<br /><br />";
+print_submit_button (__('Copy Modules/Alerts'), "copy", false, 'class="sub copy" onClick="if (!confirm("'.__('Are you sure?').'")) return false;"');
+pandora_help ('manageconfig');
+echo "<br /><br />";
+print_submit_button (__('Delete Modules/Alerts'), "delete", false, 'class="sub delete" onClick="if (!confirm("'.__('Are you sure you want to delete these modules and alerts?').'")) return false;"');
+pandora_help ('manageconfig');
+echo "<br /><br />";
+print_submit_button (__('Delete Agents'), "delete_agent", false, 'class="sub delete" onClick="if (!confirm("'.__('Are you sure you want to delete these agents?').'")) return false;"');
+pandora_help ('manageconfig');
+echo '</td></tr>';
+echo '</table>';
 
 ?>

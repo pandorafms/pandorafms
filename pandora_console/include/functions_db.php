@@ -1434,7 +1434,7 @@ function process_sql ($sql, $rettype = "affected_rows") {
 	} else {
 		$result = mysql_query ($sql);
 		if ($result === false) {
-			echo '<strong>Error:</strong> get_db_all_rows_sql ("'.$sql.'") :'. mysql_error ().'<br />';
+			echo '<strong>Error:</strong> process_sql ("'.$sql.'") :'. mysql_error ().'<br />';
 			return false;
 		} elseif ($result === true) {
 			if ($rettype == "insert_id") {
@@ -1526,7 +1526,8 @@ function get_db_all_fields_in_table ($table, $field, $condition = '', $order_fie
  * @return True if there were alerts fired.
  */
 function return_status_agent_module ($id_agentmodule = 0) {
-	$status = get_db_vakye ('estado', 'tagente_estado', 'id_agente_modulo', $id_agentmodule); 
+	$status = get_db_value ('estado', 'tagente_estado', 'id_agente_modulo', $id_agentmodule);
+	
 	if ($status == 100) {
 		// We need to check if there are any alert on this item
 		$times_fired = get_db_value ('SUM(times_fired)', 'talerta_agente_modulo',
@@ -1583,11 +1584,11 @@ function return_status_layout ($id_layout = 0) {
  * 
  * @param id_agentmodule 
  * 
- * @return 
+ * @return a numerically formatted value 
  */
 function return_value_agent_module ($id_agentmodule) {
-	return format_numeric (get_db_value ('datos', 'tagente_estado',
-			'id_agente_modulo', $id_agentmodule));
+	return format_numeric (get_db_value ('datos', 'tagente_estado', 
+		'id_agente_modulo', $id_agentmodule));
 }
 
 /** 
@@ -1803,29 +1804,31 @@ function get_agent_module_value_sumatory ($id_agent_module, $period, $date = 0) 
 	return (float) $sum;
 }
 /** 
- * Get a translated string (alias version of lang_string().
+ * Get a translated string
  * 
  * @param string String to translate
  * 
  * @return The translated string. If not defined, the same string will be returned
  */
 function __ ($string) {
-	return lang_string ($string);
+	global $l10n;
+
+	if (is_null ($l10n))
+		return $string;
+
+	return $l10n->translate ($string);
 }
 
 /** 
- * Get a translated string.
+ * Get a translated string. (DEPRECATED IN FAVOR OF __ )
+ * Calls to the __ function will automatically be picked up by the translators
  * 
  * @param string String to translate
  * 
  * @return The translated string. If not defined, the same string will be returned
  */
 function lang_string ($string) {
-	global $l10n;
-	
-	if (is_null ($l10n))
-		return $string;
-	return $l10n->translate ($string);
+	return __ ($string);
 }
 
 /** 
@@ -1833,7 +1836,7 @@ function lang_string ($string) {
  *
  * This check assumes that server_keepalive should be at least 15 minutes.
  * 
- * @return The number of agents alive.
+ * @return The number of servers alive.
  */
 function check_server_status () {
 	$sql = "SELECT COUNT(id_server) FROM tserver WHERE status = 1 AND keepalive > NOW() - INTERVAL 15 MINUTE";
@@ -2179,20 +2182,111 @@ function server_status ($id_server) {
 	return $serverinfo;
 }
 
-function delete_agent ($id_agente) {
 /*
-	mysql_query ("DELETE FROM tagente_datos WHERE id_agente_modulo = $id_agente");
-	mysql_query ("DELETE FROM tagente_datos_inc WHERE id_agente_modulo = $id_agente");
-	mysql_query ("DELETE FROM tagente_datos_string WHERE id_agente_modulo = $id_agente");
-	mysql_query ("DELETE FROM talerta_agente_modulo WHERE id_agent = $id_agente");
-	mysql_query ("DELETE FROM tevent WHERE id_agente = $id_agente");
-	mysql_query ("DELETE FROM tagent_access WHERE id_agent = $id_agente");
-	mysql_query ("DELETE FROM tplanned_downtime_agents WHERE id_agent = $id_agente");
-	mysql_query ("DELETE FROM tagente_estado WHERE id_agente = $id_agente");
-	mysql_query ("DELETE FROM tagente_modulo WHERE id_agente = $id_agente");	
-	mysql_query ("DELETE FROM tagente WHERE id_agente = $id_agente");
-	mysql_query ("DELETE FROM taddress_agent WHERE id_agent = $id_agente");
+ * This function will delete the agent from the database in a transaction
+ * You can pass a variable or an array of ID's to be removed (int)
+ *
+ * @param $id_agents An array or variable with integeres of ID's to be erased
+ *
+ * returns false in case of a problem, true in case of successful
+ *
 */
-	echo "BORRANDO AGENTE A SACO $id_agente";
+
+function delete_agent ($id_agents) {
+        //Init vars
+	$errors = 0;
+	
+	//Subfunciton for less typing
+	function temp_sql_delete ($table, $row, $value) {
+		global $errors; //Globalize the errors variable
+		$sql = sprintf ("DELETE FROM %s WHERE %s = %s", $table, $row, $value);
+		$result = process_sql ($sql);
+		if ($result === false)
+			$errors++;
+	}
+
+	//Convert single values to an array
+	if (!is_array ($id_agents)) {
+		$id_agents[0] = (int) $id_agents;
+	}
+
+	//Start transaction
+	process_sql ("SET AUTOCOMMIT = 0;");
+	$trerr = process_sql ("START TRANSACTION;");
+	
+	if ($trerr === false) {
+		echo "Error starting transaction";
+		return false;
+	}
+
+	foreach ($id_agents as $id_agent) {
+		$id_agent = (int) $id_agent; //Cast as integer
+		
+		if ($id_agent < 1)
+			continue; //If an agent is not an integer or invalid, don't process it 
+	
+		//A variable where we store that long subquery thing for
+		//modules
+		$tmodbase = "ANY(SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ".$id_agent.")";	
+		
+		//IP address
+		$sql = sprintf ("SELECT id_ag FROM taddress_agent, taddress WHERE taddress_agent.id_a = taddress.id_a AND id_agent = %d", $id_agent);
+		$result = get_db_all_rows_sql ($sql);
+		
+		foreach ($result as $row) {
+			temp_sql_delete ("taddress_agent", "id_ag", $row["id_ag"]);
+		}
+		
+		//Standard data
+		temp_sql_delete ("tagente_datos", "id_agente_modulo", $tmodbase);
+                
+		//Incremental Data
+		temp_sql_delete ("tagente_datos_inc", "id_agente_modulo", $tmodbase);
+                
+		//String data
+		temp_sql_delete ("tagente_datos_string", "id_agente_modulo", $tmodbase);
+                
+                //Alert
+		temp_sql_delete ("tcompound_alert", "id_aam", "ANY(SELECT id_aam FROM talerta_agente_modulo WHERE id_agent = ".$id_agent.")");
+		temp_sql_delete ("talerta_agente_modulo", "id_agente_modulo", $tmodbase);
+		temp_sql_delete ("talerta_agente_modulo", "id_agent", $id_agent);
+        
+		//Data image
+		temp_sql_delete ("tagent_data_image", "id_agent", $id_agent);
+                
+		//Events (up/down monitors)
+		temp_sql_delete ("tevento", "id_agente", $id_agent);
+
+		//Graphs, layouts & reports
+		temp_sql_delete ("tgraph_source", "id_agent_module", $tmodbase);
+		temp_sql_delete ("tlayout_data", "id_agente_modulo", $tmodbase);
+		temp_sql_delete ("treport_content", "id_agent_module", $tmodbase);
+        
+		//Planned Downtime
+		temp_sql_delete ("tplanned_downtime_agents", "id_agent", $id_agent);
+		
+		//The status of the module
+		temp_sql_delete ("tagente_estado", "id_agente_modulo", $tmodbase);
+		
+		//The actual modules, don't put anything based on
+		//tagente_modulo after this
+		temp_sql_delete ("tagente_modulo", "id_agente", $id_agent);
+		
+		//Access entries
+		temp_sql_delete ("tagent_access", "id_agent", $id_agent);
+
+		//And at long last, the agent
+		temp_sql_delete ("tagente", "id_agente", $id_agent);
+	}
+
+	if ($errors > 1) {
+		process_sql ("ROLLBACK;");
+		process_sql ("SET AUTOCOMMIT = 1;");
+		return false;
+	} else {
+		process_sql ("COMMIT;");
+		process_sql ("SET AUTOCOMMIT = 1;");
+		return true;
+	}
 }
 ?>

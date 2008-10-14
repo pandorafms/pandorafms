@@ -397,11 +397,12 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 
 function grafico_modulo_sparse ($id_agente_modulo, $periodo, $show_event,
 				$width, $height , $title, $unit_name, $show_alert, $avg_only = 0, $pure = 0, $date = 0) {
-	include ("../include/config.php");
+	global $config;
 	require_once 'Image/Graph.php';	
 
-	if (! $date)
+	if (empty ($date))
 		$date = time ();
+	
 	$resolution = $config["graph_res"] * 50; // Number of "slices" we want in graph
 	$fechatope = $date - $periodo;
 

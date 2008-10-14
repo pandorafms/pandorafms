@@ -1,5 +1,11 @@
 2008-10-14  Esteban Sanchez  <estebans@artica.es>
 
+	* include/config_process.php: Added ENTERPRISE_DIR constant.
+
+	* 
+
+2008-10-14  Esteban Sanchez  <estebans@artica.es>
+
 	* operation/reporting/reporting_viewer.php,
 	operation/reporting/custom_reporting.php: Fixed checking of private
 	reports.

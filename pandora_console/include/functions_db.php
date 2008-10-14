@@ -1008,7 +1008,7 @@ function give_agentmodule_flag ($id_agent_module) {
  */
 function list_group ($id_user, $show_all = 1){
 	$mis_grupos = array (); // Define array mis_grupos to put here all groups with Agent Read permission
-	$sql = 'SELECT id_grupo, nombre FROM tgrupo';
+	$sql = 'SELECT id_grupo, nombre FROM tgrupo ORDER BY nombre';
 	$result = get_db_all_rows_sql ($sql);
 	if (!$result)
 		return $mis_grupos;
@@ -1033,7 +1033,7 @@ function list_group ($id_user, $show_all = 1){
  */
 function list_group2 ($id_user) {
 	$mis_grupos = array (); // Define array mis_grupos to put here all groups with Agent Read permission
-	$result = get_db_all_fields_in_table ("tgrupo","id_grupo");
+	$result = get_db_all_fields_in_table ("tgrupo", "id_grupo");
 	if (!$result)
 		return $mis_grupos;
 	foreach ($result as $row) {
@@ -1054,12 +1054,12 @@ function list_group2 ($id_user) {
  */
 function list_users ($order = "nombre_real") {
 	switch ($order) {
-		case "id_usuario":
-		case "fecha_registro":
-		case "nombre_real":
-			break;
-		default:
-			$order = "nombre_real";
+	case "id_usuario":
+	case "fecha_registro":
+	case "nombre_real":
+		break;
+	default:
+		$order = "nombre_real";
 	}
 	
 	$output = array();
@@ -1380,7 +1380,7 @@ function get_db_row ($table, $field_search, $condition) {
  *
  * @param sql SQL statement to execute
  * @param field Field number to get, beggining by 0. Default: 0
- * @param cache Cache the query while generating this page. Default: 1
+ *
  * @return The selected field of the first row in a select statement.
  */
 function get_db_sql ($sql, $field = 0) {
@@ -1417,9 +1417,9 @@ function get_db_all_rows_sql ($sql) {
  * @param $sql SQL statement to execute
  *
  * @param $rettype (optional) What type of info to return in case of INSERT/UPDATE.
- *        insert_id will return the ID of an autoincrement value
- *        info will return the full (debug) information of a query
- *        default will return mysql_affected_rows
+ *        'affected_rows' will return mysql_affected_rows (default value)
+ *        'insert_id' will return the ID of an autoincrement value
+ *        'info' will return the full (debug) information of a query
  *
  * @return An array with the rows, columns and values in a multidimensional array 
  */
@@ -1461,6 +1461,7 @@ function process_sql ($sql, $rettype = "affected_rows") {
  * Get all the rows in a table of the database.
  * 
  * @param $table Database table name.
+ * @param $order_field Field to order by.
  *
  * @return A matrix with all the values in the table
  */
@@ -1478,6 +1479,7 @@ function get_db_all_rows_in_table ($table, $order_field = "") {
  * @param $table Database table name.
  * @param $field Field of the table.
  * @param $condition Condition the field must have to be selected.
+ * @param $order_field Field to order by.
  *
  * @return A matrix with all the values in the table that matches the condition in the field
  */
@@ -1491,7 +1493,7 @@ function get_db_all_rows_field_filter ($table, $field, $condition, $order_field 
 	}
 
 	if ($order_field != "")
-		$sql .= sprintf(" ORDER BY %s",$order_field);	
+		$sql .= sprintf (" ORDER BY %s", $order_field);
 	return get_db_all_rows_sql ($sql);
 }
 
@@ -1504,11 +1506,15 @@ function get_db_all_rows_field_filter ($table, $field, $condition, $order_field 
  *
  * @return A matrix with all the values in the table that matches the condition in the field
  */
-function get_db_all_fields_in_table ($table, $field, $condition='') {
+function get_db_all_fields_in_table ($table, $field, $condition = '', $order_field = '') {
 	$sql = sprintf ("SELECT * FROM `%s`", $table);
-	if($condition != '') {
+	if ($condition != '') {
 		$sql .= sprintf (" WHERE `%s` = '%s'", $field, $condition);
 	}
+	
+	if ($order_field != "")
+		$sql .= sprintf (" ORDER BY %s", $order_field);
+	
 	return get_db_all_rows_sql ($sql);
 }
 
@@ -1519,14 +1525,13 @@ function get_db_all_fields_in_table ($table, $field, $condition='') {
  * 
  * @return True if there were alerts fired.
  */
-function return_status_agent_module ($id_agentmodule = 0){
-	$sql = sprintf ('SELECT `estado` FROM `tagente_estado` WHERE `id_agente_modulo` = %d', $id_agentmodule);
-	$estado = get_db_sql($sql); 
-	if ($estado == 100) {
+function return_status_agent_module ($id_agentmodule = 0) {
+	$status = get_db_vakye ('estado', 'tagente_estado', 'id_agente_modulo', $id_agentmodule); 
+	if ($status == 100) {
 		// We need to check if there are any alert on this item
-		$sql = sprintf ('SELECT SUM(times_fired) FROM `talerta_agente_modulo` WHERE `id_agente_modulo` = %d', $id_agentmodule);
-		$times_fired = get_db_sql($sql);
-		if ($times_fired > 0){
+		$times_fired = get_db_value ('SUM(times_fired)', 'talerta_agente_modulo',
+			'id_agente_modulo', $id_agentmodule);
+		if ($times_fired > 0) {
 			return 0;
 		}
 		// No alerts fired for this agent module
@@ -1581,7 +1586,8 @@ function return_status_layout ($id_layout = 0) {
  * @return 
  */
 function return_value_agent_module ($id_agentmodule) {
-	return format_numeric (get_db_value ('datos', 'tagente_estado', 'id_agente_modulo', $id_agentmodule));
+	return format_numeric (get_db_value ('datos', 'tagente_estado',
+			'id_agente_modulo', $id_agentmodule));
 }
 
 /** 

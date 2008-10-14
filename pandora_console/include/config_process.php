@@ -98,6 +98,9 @@ if ($config["language"] == 'ast_es') {
 if (! defined ('EXTENSIONS_DIR'))
 	define ('EXTENSIONS_DIR', 'extensions');
 
+if (! defined ('ENTERPRISE_DIR'))
+	define ('ENTERPRISE_DIR', 'enterprise');
+
 require_once ('functions_extensions.php');
 
 $config['extensions'] = get_extensions ();

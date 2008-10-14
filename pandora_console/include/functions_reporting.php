@@ -211,20 +211,21 @@ function general_stats ($id_user, $id_group = 0) {
 		}
 	}
 
-	$data =  array();
-	$data[0] = $monitor_checks;
-	$data[1] = $monitor_ok;
-	$data[2] = $monitor_bad;
-	$data[3] = $monitor_unknown;
-	$data[4] = $monitor_alert;
-	$data[5] = $total_agents;
-	$data[6] = $data_checks;
-	$data[7] = $data_unknown;
-	$data[8] = $data_alert;
-	$data[9] = $data_alert_total;
-	$data[10] = $monitor_alert_total;
-	$data[11] = $data_not_init;
-	$data[12] = $monitor_not_init;
+	$data = array ();
+	$data[0] = $data['monitor_checks'] = $monitor_checks;
+	$data[1] = $data['monitor_ok'] = $monitor_ok;
+	$data[2] = $data['monitor_bad'] = $monitor_bad;
+	$data[3] = $data['monitor_unknown'] = $monitor_unknown;
+	$data[4] = $data['monitor_alert'] = $monitor_alert;
+	$data[5] = $data['total_agents'] = $total_agents;
+	$data[6] = $data['data_checks'] = $data_checks;
+	$data[7] = $data['data_unknown'] = $data_unknown;
+	$data[8] = $data['data_alert'] = $data_alert;
+	$data[9] = $data['data_alert_total'] = $data_alert_total;
+	$data[10] = $data['monitor_alert_total'] = $monitor_alert_total;
+	$data[11] = $data['data_not_iniv'] = $data_not_init;
+	$data[12] = $data['monitor_not_init'] = $monitor_not_init;
+	
 	return $data;
 }
 

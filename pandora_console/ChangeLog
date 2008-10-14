@@ -1,3 +1,12 @@
+2008-10-14  Esteban Sanchez  <estebans@artica.es>
+
+	* operation/reporting/reporting_viewer.php,
+	operation/reporting/custom_reporting.php: Fixed checking of private
+	reports.
+
+	* operation/reporting/custom_reporting.php: Do not show reports that
+	user can not see.
+
 2008-10-13  Sancho Lerena  <slerena@artica.es>
 	
 	* agent_disk_conf_editor.php: Now load enterprise code

@@ -53,6 +53,10 @@ $table->align[3] = 'center';
 $table->data = array ();
 
 foreach ($reports as $report) {
+	if ($report['private'] && ($report['id_user'] != $config['id_user'] && ! dame_admin ($config['id_user']))) {
+		continue;
+	}
+	
 	$data = array ();
 	
 	$data[0] = $report['name'];

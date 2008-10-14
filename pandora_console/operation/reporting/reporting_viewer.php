@@ -42,7 +42,8 @@ if (! give_acl ($config['id_user'], $report['id_group'], "AR")) {
 require ("include/functions_reporting.php");
 
 /* Check if the user can see the graph */
-if ($report['id_user'] != $config['id_user'] && ! dame_admin ($config['id_user']) && ! $report['private']) {
+if ($report['private'] && ($report['id_user'] != $config['id_user'] && ! dame_admin ($config['id_user']))) {
+	include ("general/noaccess.php");
 	return;
 }
 

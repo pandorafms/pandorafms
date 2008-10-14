@@ -1,5 +1,8 @@
 2008-10-14  Sancho Lerena <slerena@artica.es>
 
+	* operation/snmpconsole/snmp_alert.php: Texst changes for 
+	SNMP trap alert value label.
+
 	* include/pdf: Removed unused old code (ezPdf library).
 
 2008-10-14  Esteban Sanchez  <estebans@artica.es>

@@ -159,19 +159,19 @@ if (($alert_update != 0) || ($alert_add == 1)) {
 	if ($alert_type == 0) {
 		echo '
 		<option value=0>OID</option>
-		<option value=1>CustomOID/Value</option>
+		<option value=1>Custom Value/Value</option>
 		<option value=2>SNMPAgent</option>';
 	
 	} elseif ($alert_type == 1) {
 		echo '
-		<option value=1>CustomOID/Value</option>
+		<option value=1>Custom Value/Value</option>
 		<option value=0>OID</option>
 		<option value=2>SNMPAgent</option>';
 	} else {
 		echo '
 		<option value=2>SNMPAgent</option>
 		<option value=0>OID</option>
-		<option value=1>CustomOID/Value</option>';
+		<option value=1>Custom Value/Value</option>';
 	}
 	echo '</select></td></tr>';
 	// Description
@@ -183,7 +183,7 @@ if (($alert_update != 0) || ($alert_add == 1)) {
 	echo '<td  class="datos2"><input type="text" size=30 name="oid" value="'.$oid.'">';
 
 	// OID Custom
-	echo '<tr><td class=datos>'.__('Custom value').'</td>';
+	echo '<tr><td class=datos>'.__('Custom value')."/".__("Value").'</td>';
 	echo '<td class=datos><input type="text" size=30 name="custom" value="'.$custom_oid.'">';
 
 	// SNMP Agent

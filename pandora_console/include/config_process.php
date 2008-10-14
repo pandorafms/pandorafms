@@ -18,7 +18,7 @@
 
 //Pandora Version
 if (!isset ($build_version))
-	$build_version="PC081010";
+	$build_version="PC081014";
 if (!isset ($pandora_version))
 	$pandora_version="v2.0";
 

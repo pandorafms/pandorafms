@@ -1537,7 +1537,7 @@ function return_status_agent_module ($id_agentmodule = 0) {
 		}
 		// No alerts fired for this agent module
 		return 1;
-	} elseif ($estado == 0) { // 0 is ok for estado field
+	} elseif ($status == 0) { // 0 is ok for estado field
 		return 1;
 	} else {
 		return 0;
@@ -2232,7 +2232,7 @@ function delete_agent ($id_agents) {
 		//IP address
 		$sql = sprintf ("SELECT id_ag FROM taddress_agent, taddress WHERE taddress_agent.id_a = taddress.id_a AND id_agent = %d", $id_agent);
 		$result = get_db_all_rows_sql ($sql);
-		if ($result)
+		
 		foreach ($result as $row) {
 			temp_sql_delete ("taddress_agent", "id_ag", $row["id_ag"]);
 		}

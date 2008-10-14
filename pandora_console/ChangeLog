@@ -1,3 +1,11 @@
+2008-10-14  Sancho Lerena <slerena@artica.es>
+
+	* include/config_process.php, index.php: Updated version.
+
+	* include/functions_db.php: Small fix in a foreach() warning.
+
+	* operation/agentes/estadisticas.php: Old, unused code removed.
+
 2008-10-14  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 	
 	* include/functions_db.php: Style changes and language updates and a

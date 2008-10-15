@@ -27,339 +27,359 @@ if (! give_acl ($config['id_user'], 0, "LW")) {
 	return;
 }
 
-// Variable init
-$view_alert=1;
-$alert_add = 0;
-$alert_update=0;
-$alert_submit=0;
-
-$id_as = "";
-$id_alert = "";
-$nombre_alerta = "";
-$alert_type = "";
-$agent = "";
-$description = "";
-$oid = "";
-$custom_oid = "";
-$time_threshold = "";
-$al_field1 = "";
-$al_field2 = "";
-$al_field3 = "";
-$last_fired = "";
-$max_alerts = "";
-$min_alerts = "";
-$priority = "";
-
 // Alert Delete
 // =============
-if (isset ($_GET["delete_alert"])){ // Delete alert
-	$alert_delete = $_GET["delete_alert"];
-	$sql1='DELETE FROM talert_snmp WHERE id_as = '.$alert_delete;
-	$result=mysql_query($sql1);
-	if (!$result)
-		echo "<h3 class='error'>".__('There was a problem deleting alert')."</h3>";
-	else
-		echo "<h3 class='suc'>".__('Alert successfully deleted')."</h3>";
-}
-// Alert submit (for insert or update)
-if (isset ($_GET["submit"])){
-	$alert_submit=1;
-	$create = entrada_limpia($_POST["create"]);
-	$update = entrada_limpia($_POST["update"]);
-	$id_as = entrada_limpia($_POST["id_as"]);
-	$max = entrada_limpia($_POST["max"]);
-	$min = entrada_limpia($_POST["min"]);
-	$time = entrada_limpia($_POST["time"]);
-	$description = entrada_limpia($_POST["description"]);
-	$oid = entrada_limpia($_POST["oid"]);
-	$agent = entrada_limpia($_POST["agent"]);
-	$custom = entrada_limpia($_POST["custom"]);
-	$alert_id = entrada_limpia($_POST["alert_id"]);
-	$alert_type = entrada_limpia($_POST["alert_type"]);
-	$field1 = entrada_limpia($_POST["field1"]);
-	$field2 = entrada_limpia($_POST["field2"]);
-	$field3 = entrada_limpia($_POST["field3"]);
-	$priority = get_parameter ("priority",0);
-	
-	if ($create == 1){
-		$sql = "INSERT INTO talert_snmp (id_alert,al_field1,al_field2,al_field3,description,alert_type,agent,custom_oid,oid,time_threshold,max_alerts,min_alerts, priority) VALUES ($alert_id,'$field1','$field2','$field3','$description', $alert_type, '$agent', '$custom', '$oid', $time, $max, $min, $priority)";
-		$result=mysql_query($sql);
-		if (!$result)
-			echo "<h3 class='error'>".__('There was a problem creating alert')."</h3>";
-		else
-			echo "<h3 class='suc'>".__('Alert successfully created')."</h3>";
-	} else { 
-		$sql = "UPDATE talert_snmp set priority = $priority, id_alert= $alert_id, al_field1 = '$field1', al_field2 = '$field2', al_field3 = '$field3', description = '$description', alert_type = $alert_type, agent = '$agent', custom_oid = '$custom', oid = '$oid', time_threshold = $time, max_alerts = '$max', min_alerts = '$min' WHERE id_as = $id_as";
-		$result=mysql_query($sql);
-		if (!$result)
-			echo "<h3 class='error'>".__('There was a problem updating alert')."</h3>";
-		else
-			echo "<h3 class='suc'>".__('Alert successfully created')."</h3>";
-	}
-
-
-}
-// Alert update: (first, load data used in form), later use insert/add form
-// ============
-if (isset ($_GET["update_alert"])){
-	$alert_update = $_GET["update_alert"];
-	$sql1='SELECT * FROM talert_snmp WHERE id_as = '.$alert_update;
-	$result=mysql_query($sql1);
-	if ($row=mysql_fetch_array($result)){
-		$id_as = $row["id_as"];
-		$id_alert = $row["id_alert"];
-		$nombre_alerta = dame_nombre_alerta($id_alert);
-		$alert_type = $row["alert_type"];
-		$agent = $row["agent"];
-		$description = $row["description"];
-		$oid = $row["oid"];
-		$custom_oid = $row["custom_oid"];
-		$time_threshold = $row["time_threshold"];
-		$al_field1 = $row["al_field1"];
-		$al_field2 = $row["al_field2"];
-		$al_field3 = $row["al_field3"];
-		$last_fired = $row["last_fired"];
-		$max_alerts = $row["max_alerts"];
-		$min_alerts = $row["min_alerts"];
-		$priority = $row["priority"];
-	}
-}
-if (isset($_POST["add_alert"])){
-	$alert_add = 1;
-}
-echo "<h2>Pandora SNMP &gt; ";
-// Add alert form
-if (($alert_update != 0) || ($alert_add == 1)) {
-
-	if ($alert_update != 0) {
-		echo __('Update alert')."</h2>";
+if (isset ($_GET["delete_alert"])) { // Delete alert
+	$alert_delete = (int) get_parameter_get ("delete_alert", 0);
+	$sql = sprintf ("DELETE FROM talert_snmp WHERE id_as = %d", $alert_delete);
+	$result = process_sql ($sql);
+	if ($result === false) {
+		echo '<h3 class="error">'.__('There was a problem deleting the alert').'</h3>';
 	} else {
-		echo __('Create alert')."</h2>";
+		echo '<h3 class="suc">'.__('Alert successfully deleted').'</h3>';
 	}
-	echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&submit=1">';
-	echo '<input type="hidden" name="id_as" value="'.$id_as.'">'; // if known, if add will be undetermined (0).
+}
+
+// Form submitted
+// =============
+if (isset ($_GET["submit"])) {
+	$id_as = (int) get_parameter_get ("submit", -1);
+	$source_ip = (string) get_parameter_post ("source_ip");
+	$alert_type = (int) get_parameter_post ("alert_type"); //Event, e-mail
+	$alert_trigger = (int) get_parameter_post ("alert_trigger"); //OID, Custom Value
+	$description = (string) get_parameter_post ("description");
+	$oid = (string) get_parameter_post ("oid");
+	$custom_value = (string) get_parameter_post ("custom_value");
+	$time_threshold = (int) get_parameter_post ("time_threshold", 300);
+	$time_other = (int) get_parameter_post ("time_other", -1);
+	$al_field1 = (string) get_parameter_post ("al_field1");
+	$al_field2 = (string) get_parameter_post ("al_field2");
+	$al_field3 = (string) get_parameter_post ("al_field3");
+	$max_alerts = (int) get_parameter_post ("max_alerts", 1);
+	$min_alerts = (int) get_parameter_post ("min_alerts", 1);
+	$priority = (int) get_parameter_post ("priority", 0);
+	
+	if ($time_threshold == -1) {
+		$time_threshold = $time_other;
+	}
+	
+	if ($id_as < 1) {
+		$sql = sprintf ("INSERT INTO talert_snmp 
+			(id_alert, al_field1, al_field2, al_field3, description, alert_type, agent, custom_oid, oid, time_threshold, max_alerts, min_alerts, priority)
+			VALUES
+			(%d, '%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', %d, %d, %d, %d)",
+			$alert_type, $al_field1, $al_field2, $al_field3, $description, $alert_trigger, $source_ip, $custom_value, $oid, $time_threshold, $max_alerts, $min_alerts, $priority);
+		
+		//$result = process_sql ($sql);
+
+		if ($result === false) {
+			echo '<h3 class="error">'.__('There was a problem creating the alert').'</h3>';
+		} else {
+			echo '<h3 class="suc">'.__('Alert successfully created').'</h3>';
+		}
+		
+	} else {
+		$sql = sprintf ("UPDATE talert_snmp SET
+			priority = %d, id_alert = %d, al_field1 = '%s', al_field2 = '%s', al_field3 = '%s', description = '%s', alert_type = %d, agent = '%s', custom_oid = '%s',
+			oid = '%s', time_threshold = %d, max_alerts = %d, min_alerts = %d WHERE id_as = %d",
+			$priority, $alert_type, $al_field1, $al_field2, $al_field3, $description, $alert_trigger, $source_ip, $custom_value,
+			$oid, $time_threshold, $max_alerts, $min_alerts, $id_as);
+		
+		$result = process_sql ($sql);
+
+		if ($result === false) {
+			echo '<h3 class="error">'.__('There was a problem updating the alert').'</h3>';
+		} else {
+			echo '<h3 class="suc">'.__('Alert successfully updated').'</h3>';
+		}
+	}
+}
+
+// From variable init
+// ==================
+if (isset ($_GET["update_alert"]) && $_GET["update_alert"]) {
+	$id_as = (int) get_parameter_get ("update_alert", -1);
+	$alert = get_db_row ("talert_snmp", "id_as", $id_as);
+	$id_as = $alert["id_as"];
+	$source_ip = $alert["agent"];
+	$alert_type = $alert["id_alert"];
+	$alert_trigger = $alert["alert_type"];
+	$description = $alert["description"];
+	$oid = $alert["oid"];
+	$custom_value = $alert["custom_oid"];
+	$time_threshold = $alert["time_threshold"];
+	$al_field1 = $alert["al_field1"];
+	$al_field2 = $alert["al_field2"];
+	$al_field3 = $alert["al_field3"];
+	$max_alerts = $alert["max_alerts"];
+	$min_alerts = $alert["min_alerts"];
+	$priority = $alert["priority"];	
+} elseif (isset ($_GET["update_alert"])) {
+	// Variable init
+	$id_as = -1;
+	$source_ip = "";
+	$alert_type = 1; //Event, e-mail
+	$alert_trigger = 0; //OID, Custom Value
+	$description = "";
+	$oid = "";
+	$custom_value = "";
+	$time_threshold = 300;
+	$al_field1 = "";
+	$al_field2 = "";
+	$al_field3 = "";
+	$max_alerts = 1;
+	$min_alerts = 1;
+	$priority = 0;
+}
+
+// Alert form
+if (isset ($_GET["update_alert"])) { //the update_alert means the form should be displayed. If update_alert > 1 then an existing alert is updated
+	if ($id_as > 1) {
+		echo "<h2>Pandora SNMP &gt; ".__('Update alert')."</h2>";
+	} else {
+		echo "<h2>Pandora SNMP &gt; ".__('Create alert')."</h2>";
+	}
+	echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&submit='.$id_as.'">';
 	echo '<table cellpadding="4" cellspacing="4" width="650" class="databox_color">';
-	// Alert
-	echo '<tr><td class=datos>'.__('Alert').'<td class=datos><select name="alert_id">';
-	if ($alert_update != 0) { // calculate first item
-		$sql0='SELECT * FROM talerta WHERE id_alerta = '.$id_alert;
-		$result0=mysql_query($sql0);
-		$row0=mysql_fetch_array($result0);
-		echo "<option value='".$row0["id_alerta"]."'>".$row0["nombre"]."</option>";
-	}
-	$sql1='SELECT * FROM talerta';
-	$result1=mysql_query($sql1);
-	while ($row1=mysql_fetch_array($result1)){
-		echo "<option value='".$row1["id_alerta"]."'>".$row1["nombre"]."</option>";
-	}
-	echo "</select>";
-	// Alert type		
-	echo '<tr><td class="datos2">'.__('Alert type');
-	echo '<td class="datos2"><select name="alert_type">';
-	if ($alert_type == 0) {
-		echo '
-		<option value=0>OID</option>
-		<option value=1>Custom Value/Value</option>
-		<option value=2>SNMPAgent</option>';
 	
-	} elseif ($alert_type == 1) {
-		echo '
-		<option value=1>Custom Value/Value</option>
-		<option value=0>OID</option>
-		<option value=2>SNMPAgent</option>';
-	} else {
-		echo '
-		<option value=2>SNMPAgent</option>
-		<option value=0>OID</option>
-		<option value=1>Custom Value/Value</option>';
+	// Alert type (e-mail, event etc.)
+	echo '<tr><td class="datos">'.__('Alert type').'</td><td class="datos">';
+	
+	$fields = array ();
+	$result = get_db_all_rows_in_table ("talerta", "nombre");
+	if ($result === false) {
+		$result = array ();
 	}
-	echo '</select></td></tr>';
-	// Description
-	echo '<tr><td class=datos>'.__('Description').'</td>';
-	echo '<td class=datos><input type="text" size=60 name="description" value="'.$description.'">';
 
+	foreach ($result as $row) {
+		$fields[$row["id_alerta"]] = $row["nombre"];
+	}
+	
+	print_select ($fields, "alert_type", $alert_type, '', '', '0', false, false, false);
+	echo '</td></tr>';
+	
+	// Alert trigger (OID, custom_value)
+	echo '<tr><td class="datos2">'.__('Alert trigger').'</td><td class="datos2">';
+	
+	$fields = array ();
+	$fields[0] = "OID";
+	$fields[1] = "Custom Value/OID";
+	$fields[2] = "SNMP Agent";
+	
+	print_select ($fields, "alert_trigger", $alert_trigger);
+	echo '</td></tr>';
+	
+	// Description
+	echo '<tr><td class="datos">'.__('Description').'</td><td class="datos">';
+	print_input_text ("description", $description, '', 60);
+	echo '</td></tr>';
+	
 	// OID
-	echo '<tr><td class="datos2">'.__('OID').'</td>';
-	echo '<td  class="datos2"><input type="text" size=30 name="oid" value="'.$oid.'">';
+	echo '<tr id="tr-oid"><td class="datos2">'.__('OID').'</td><td class="datos2">';
+	print_input_text ("oid", $oid, '', 30);
+	echo '</td></tr>';
 
 	// OID Custom
-	echo '<tr><td class=datos>'.__('Custom value')."/".__("Value").'</td>';
-	echo '<td class=datos><input type="text" size=30 name="custom" value="'.$custom_oid.'">';
+	echo '<tr id="tr-custom_value" style="display:none"><td class="datos">'.__('Custom Value')."/".__("OID").'</td><td class="datos">';
+	print_input_text ("custom_value", $custom_value, '', 30);
+	echo '</td></tr>';
 
 	// SNMP Agent
-	echo '<tr><td class="datos2">'.__('SNMP Agent').' IP</td>';
-	echo '<td class="datos2"><input type="text" size=30 name="agent" value="'.$agent.'">';
-	
+	echo '<tr id="tr-source_ip" style="display:none"><td class="datos2">'.__('SNMP Agent').' (IP)</td><td class="datos2">';
+	print_input_text ("source_ip", $source_ip, '', 30);
+	echo '</td></tr>';
+		
 	// Alert fields
-	echo '<tr><td class=datos>'.__('Field #1 (Alias, name)').'</td>';
-	echo '<td class=datos><input type="text" size=30 name="field1" value="'.$al_field1.'"></td>';
-	echo '<tr><td class="datos2">'.__('Field #2 (Single Line)').'</td>';
-	echo '<td class="datos2"><input type="text" size=40 name="field2" value="'.$al_field2.'"></td>';
-	echo '<tr><td class=datos valign="top">'.__('Field #3 (Full Text)');
-	echo '<td class=datos><textarea rows=4 style="width:400px" name="field3">'.$al_field3.'</textarea>';
+	echo '<tr><td class="datos">'.__('Field #1 (Alias, name)').'</td><td class="datos">';
+	print_input_text ("al_field1", $al_field1, '', 30);
+	echo '</td></tr>';
+	
+	echo '<tr><td class="datos2">'.__('Field #2 (Single Line)').'</td><td class="datos2">';
+	print_input_text ("al_field2", $al_field2, '', 30);
+	echo '</td></tr>';
+	
+	echo '<tr><td class="datos" valign="top">'.__('Field #3 (Full Text)').'<td class="datos">';
+	print_textarea ("al_field3", $al_field3, 4, $al_field3, 'style="width:400px"');
+	echo '</td></tr>';
 	
 	// Max / Min alerts
-	echo '<tr>
-	<td class="datos2">'.__('Min. number of alerts').'</td>';
-	echo '<td class="datos2"><input type="text" size=3 name="min" value="'.$min_alerts.'"></td>';
-	echo '<tr>
-	<td class="datos">'.__('Max. number of alerts').'</td>';
-	echo '<td class=datos><input type="text" size=3 name="max" value="'.$max_alerts.'"></td>';
+	echo '<tr><td class="datos2">'.__('Min. number of alerts').'</td><td class="datos2">';
+	print_input_text ("min_alerts", $min_alerts, '', 3);
+	
+	echo '</td></tr><tr><td class="datos">'.__('Max. number of alerts').'</td><td class="datos">';
+	print_input_text ("max_alerts", $max_alerts, '', 3);
+	echo '</td></tr>';
 
 	// Time Threshold
-	echo '<tr>
-	<td class="datos2">'.__('Time threshold').'</td>';
-	echo '<td class="datos2">';
-	echo '<select name="time" style="margin-right: 60px;">';
-	if ($time_threshold != ""){ 
-		echo "<option value='".$time_threshold."'>".human_time_description($time_threshold)."</option>";
-	}
-	echo '<option value=300>5 Min.</option>
-		<option value=600>10 Min.</option>
-		<option value=900>15 Min.</option>
-		<option value=1800>30 Min.</option>
-		<option value=3600>1 Hour</option>
-		<option value=7200>2 Hour</option>
-		<option value=18000>5 Hour</option>
-		<option value=43200>12 Hour</option>
-		<option value=86400>1 Day</option>
-		<option value=604800>1 Week</option>
-		<option value=-1>Other value</option>
-		</select>';
-
+	echo '<tr><td class="datos2">'.__('Time threshold').'</td><td class="datos2">';
+	
+	$fields = array ();
+	$fields[$time_threshold] = human_time_description ($time_threshold);
+	$fields[300] = human_time_description (300);
+	$fields[600] = human_time_description (600);
+	$fields[900] = human_time_description (900);
+	$fields[1800] = human_time_description (1800);
+	$fields[3600] = human_time_description (3600);
+	$fields[7200] = human_time_description (7200);
+	$fields[18000] = human_time_description (18000);
+	$fields[43200] = human_time_description (43200);
+	$fields[86400] = human_time_description (86400);
+	$fields[604800] = human_time_description (604800);
+	$fields[-1] = __('Other value');
+	
+	print_select ($fields, "time_threshold", $time_threshold, '', '', '0', false, false, false, '" style="margin-right:60px');
+	echo '<div id="div-time_other" style="display:none">';
+	print_input_text ("time_other", 0, '', 6);
+	echo ' '.__('seconds').'</div></td></tr>';
+		
 	// Priority
-	echo '<tr><td class="datos">'.__('Priority');
-	echo '<td class="datos">';
-	echo print_select (get_priorities (), "alert_priority", $priority, '', '', '');
-	
-	echo '</tr></table>';
-	echo '<table cellpadding="4" cellspacing="4" width="650">
-	<tr><td align="right">';
-	// Update or Add button
-	if ($alert_update != 0) {
-		echo '<input name="uptbutton" type="submit" class="sub upd" value="'.__('Update').'">';
-		echo "<input type='hidden' name='update' value='1'>";
-		echo "<input type='hidden' name='create' value='0'>";
+	echo '<tr><td class="datos">'.__('Priority').'</td><td class="datos">';
+	echo print_select (get_priorities (), "priority", $priority, '', '', '0', false, false, false);
+	echo '</td></tr>';
+
+	//Button
+	echo '<tr><td></td><td align="right">';
+	if ($id_as > 0) {
+		print_submit_button (__('Update'), "submit", false, 'class="sub upd"', false);
 	} else {
-		echo '<input name="createbutton" type="submit" class="sub next" value="'.__('Create').'">';
-		echo "<input type='hidden' name='update' value='0'>";
-		echo "<input type='hidden' name='create' value='1'>";
+		print_submit_button (__('Create'), "submit", false, 'class="sub next"', false);
 	}
-	// Endtable
+	
+	// End table
 	echo "</td></tr></table>";
-	$view_alert =0; // Do not show alert list
-}
-
-if ($view_alert == 1) { // View alerts defined on SNMP traps
-	
-	$sql1='SELECT * FROM talert_snmp';
-	$result=mysql_query($sql1);
-	
-	echo __('SNMP alerts')."</h2>";
-	if (mysql_num_rows($result)){
-
-		echo '<table cellpadding="4" cellspacing="4" width="750" class="databox">';
-		echo '<tr><th>'.__('Alert')."</th>";
-		echo '<th width=75>'.__('Alert type')."</th>";	
-		echo '<th>'.__('SNMP Agent')."</th>";
-		echo '<th>'.__('OID')."</th>";
-		echo '<th>'.__('Custom value')."</th>";
-		echo '<th>'.__('Description')."</th>";
-		echo '<th>'.__('Times Fired')."</th>";
-		echo '<th>'.__('Last fired')."</th>";
-		echo '<th width="50">'.__('Action')."</th>";
-		$color=1;
-		while ($row=mysql_fetch_array($result)){
-			if ($color == 1){
-				$tdcolor = "datos";
-				$color = 0;
-				}
-			else {
-				$tdcolor = "datos2";
-				$color = 1;
-			}
-			$id_as = $row["id_as"];
-			$id_alert = $row["id_alert"];
-			$nombre_alerta = dame_nombre_alerta($id_alert);
-			$alert_type = $row["alert_type"];
-			$agent = $row["agent"];
-			$description = $row["description"];
-			$oid = $row["oid"];
-			$custom_oid = $row["custom_oid"];
-			$time_threshold = $row["time_threshold"];
-			$al_field1 = $row["al_field1"];
-			$al_field2 = $row["al_field2"];
-			$al_field3 = $row["al_field3"];
-			$last_fired = $row["last_fired"];
-			$times_fired = $row["times_fired"];
-			$max_alerts = $row["max_alerts"];
-			$min_alerts = $row["min_alerts"];
-			
-			echo "<tr><td class='$tdcolor'>";
-			echo $nombre_alerta;
-			echo "</td><td class='$tdcolor'>";
-			if ($alert_type == 0) {
-				$tipo_alerta = __('OID');
-			} elseif ($alert_type == 1) {
-				$tipo_alerta = __('Custom value');
-			} elseif ($alert_type == 2) {
-				$tipo_alerta = __('SNMP Agent');
-			} else {
-				$tipo_alerta = "N/A";
-			}
-			echo $tipo_alerta;
-			echo "</td><td class='$tdcolor'>";
-			if ($alert_type == 2) {
-				echo $agent;
-			} else { 
-				echo "N/A";
-			}
-
-			echo "</td><td class='$tdcolor'>";
-			if ($alert_type == 0) {
-				echo $oid;
-			} else { 
-				echo "N/A";
-			}
-			
-			echo "</td><td class='$tdcolor'>";
-			if ($alert_type == 1) {
-				echo $custom_oid;
-			} else { 
-				echo "N/A";
-			}
-			
-			echo "</td><td class='$tdcolor'>";
-			echo $description;
-			
-			echo "</td><td class='$tdcolor'>";
-			echo $times_fired;
-			echo "</td><td class='$tdcolor'>";
-			if ($last_fired != "0000-00-00 00:00:00")
-				echo $last_fired;
-			else
-				echo __('Never');
-			echo "</td><td class='$tdcolor'>";
-			echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&delete_alert=".$id_as."'>
-			<img src='images/cross.png' border=0 alt='".__('Delete')."'></b></a> &nbsp; ";
-			echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&update_alert=".$id_as."'>
-			<img src='images/config.png' border=0 alt='".__('Update')."'></b></a></td></tr>";
-		}
-		echo "</table>";
-		echo "<table width='750px'>";
-		echo "<tr><td align='right'>";
-		echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert">';
-		echo '<input name="add_alert" type="submit" class="sub next" value="'.__('Create').'">';
-		echo "</form>";
-		echo "</td></tr></table>";
-	} else {
+} else {
+	echo "<h2>Pandora SNMP &gt; ".__('Alert Overview')."</h2>";
+	//Overview
+	$result = get_db_all_rows_in_table ("talert_snmp");
+	if ($result === false) {
+		$result = array ();
 		echo "<div class='nf'>".__('There are no SNMP alerts')."</div>";
-		echo "<br>";
-		echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert">';
-		echo '<input name="add_alert" type="submit" class="sub next" value="'.__('Create').'">';
-		echo "</form>";
-	} // End of view snmp alert
+	}
+	
+	$table->data = array ();
+	$table->head = array ();
+	$table->size = array ();
+	$table->cellpadding = 4;
+	$table->cellspacing = 4;
+	$table->width = 750;
+	$table->class= "databox";
+	$table->align = array ();
+
+	$table->head[0] = __('Alert type');
+	
+	$table->head[1] = __('Alert trigger');
+	$table->align[1] = 'center';
+	
+	$table->head[2] = __('SNMP Agent');
+	$table->size[2] = 75;
+	$table->align[2] = 'center';
+
+	$table->head[3] = __('OID');
+	$table->align[3] = 'center';
+	
+	$table->head[4] = __('Custom Value/OID');
+	$table->align[4] = 'center';
+	
+	$table->head[5] = __('Description');
+	
+	$table->head[6] = __('Times fired');
+	$table->align[6] = 'center';
+	
+	$table->head[7] = __('Last fired');
+	$table->align[7] = 'center';
+
+	$table->head[8] = __('Action');
+	$table->size[8] = 50;
+	$table->align[8] = 'right';
+
+	foreach ($result as $row) {
+		$data = array ();
+		$data[0] = dame_nombre_alerta ($row["id_alert"]);
+		$data[1] = __('N/A');
+		$data[2] = __('N/A');
+		$data[3] = __('N/A');
+		$data[4] = __('N/A');
+									
+		switch ($row["alert_type"]) {
+		case 0:
+			$data[1] = __('OID');
+			$data[3] = $row["oid"];
+			break;
+		case 1:
+			$data[1] = __('Custom Value/OID');
+			$data[4] = $row["custom_oid"];
+			break;
+		case 2:
+			$data[1] = __('SNMP Agent');
+			$data[2] = $row["agent"];
+			break;
+		}
+			
+		$data[5] = $row["description"];
+		$data[6] = $row["times_fired"];
+		
+		if ($row["last_fired"] != "0000-00-00 00:00:00") {
+			$data[7] = $row["last_fired"];
+		} else {
+			$data[7] = __('Never');
+		}
+		
+		$data[8] = '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&delete_alert='.$row["id_as"].'">
+				<img src="images/cross.png" border="0" alt="'.__('Delete').'"></a>&nbsp;
+				<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&update_alert='.$row["id_as"].'">
+				<img src="images/config.png" border="0" alt="'.__('Update').'"></a>';
+		array_push ($table->data, $data);			
+	}
+
+	if (!empty ($table->data)) {
+		print_table ($table);
+	}
+	
+	unset ($table);	
+	
+	echo '<div style="text-align:right; width:740px">';
+	echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&update_alert=-1">';
+	print_submit_button (__('Create'), "add_alert", false, 'class="sub next"');
+	echo "</form></div>";
+		
 }
 ?>
-<tr>
-</table>
+<script type="text/javascript" src="include/javascript/jquery.js"></script>
+
+<script language="javascript" type="text/javascript">
+function time_changed () {
+	var time = this.value;
+	if (time == -1) {
+		$('#time_threshold').fadeOut ('normal', function () {
+			$('#div-time_other').fadeIn ('normal');
+		});
+	}
+}
+
+function trigger_changed () {
+	var trigger = this.value;
+	if (trigger == 0) {
+		$('#tr-custom_value').fadeOut ('fast');
+		$('#tr-source_ip').fadeOut ('fast');
+		$('#tr-oid').fadeIn ('slow');
+		return;
+	} 
+	if (trigger == 1) {
+		$('#tr-oid').fadeOut ('fast');
+		$('#tr-source_ip').fadeOut ('fast');
+		$('#tr-custom_value').fadeIn ('slow');
+		return;
+	} 
+	if (trigger == 2) {
+		$('#tr-oid').fadeOut ('fast');
+		$('#tr-custom_value').fadeOut ('fast');
+		$('#tr-source_ip').fadeIn ('slow');
+		return;
+	}
+}
+
+$(document).ready (function () {
+	$('#time_threshold').change (time_changed);
+	$('#alert_trigger').change (trigger_changed);
+}); 
+</script>

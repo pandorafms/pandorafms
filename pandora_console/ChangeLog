@@ -1,3 +1,9 @@
+2008-10-15  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/functions_db.php: Fix where the attachment wouldn't be
+	deleted because of a variable problem
+
+	* operation/snmpconsole/snmp_alert.php: Rewrite. Fixes bug #2166256
 
 2008-10-15  Sancho Lerena <slerena@artica.es>
 

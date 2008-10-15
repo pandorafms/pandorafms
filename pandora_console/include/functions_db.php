@@ -815,10 +815,10 @@ function borrar_incidencia ($id_inc) {
 	// Delete attachments
 	$sql = sprintf ("SELECT `id_attachment`,`filename` FROM `tattachment` WHERE `id_incidencia` = %d", $id_inc);
 	$rows = get_db_all_rows_sql ($sql);
-	if ($rows){
+	if (!empty ($rows)){
 		foreach ($rows as $row) {
 			// Unlink all attached files for this incident
-			unlink ($attachment_store."/pand".$row["id_attachment"]."_".$row["filename"]);
+			unlink ($config["attachment_store"]."/pand".$row["id_attachment"]."_".$row["filename"]);
 		}
 		$sql = sprintf ("DELETE FROM `tattachment` WHERE `id_incidencia` = %d",$id_inc);
 		process_sql ($sql);

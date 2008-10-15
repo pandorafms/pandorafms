@@ -19,6 +19,8 @@
 
 require_once ('functions_html.php');
 
+define ('ENTERPRISE_NOT_HOOK', -1);
+
 /** 
  * Prints a help tip icon.
  * 
@@ -1199,9 +1201,13 @@ function safe_sql_string ($string) {
 	return $string;
 }
 
-function enterprise_hook ($function_name) {
-	if (function_exists ($function_name))
-		call_user_func ($function_name);
+function enterprise_hook ($function_name, $parameters = false) {
+	if (function_exists ($function_name)) {
+		if (!is_array ($parameters))
+			return call_user_func ($function_name);
+		return call_user_func_array ($function_name, $parameters);
+	}
+	return ENTERPRISE_NOT_HOOK;
 }
 
 function enterprise_include ($filename) {
@@ -1212,7 +1218,7 @@ function enterprise_include ($filename) {
 		include ($fullfilename);
 		return true;
 	}
-	return false;
+	return ENTERPRISE_NOT_HOOK;
 }
 
 ?>

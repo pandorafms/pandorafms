@@ -1,3 +1,8 @@
+
+2008-10-15  Sancho Lerena <slerena@artica.es>
+
+	* include/functions.php: Enterprise hook functions upgrade.
+
 2008-10-15  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/agentes/module_manager_editor_network.php: Removed SNMP

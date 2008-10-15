@@ -221,7 +221,6 @@ echo '<td class="datos">'.__('SNMP version');
 $snmp_versions["1"] = "1";
 $snmp_versions["2"] = "2";
 $snmp_versions["2c"] = "2c";
-$snmp_versions["3"] = "3";
 echo '</td>';
 echo '<td>';
 // SNMP module, tcp_send contains the snmp version

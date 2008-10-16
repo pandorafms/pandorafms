@@ -567,4 +567,39 @@ function print_help_tip ($text, $return = false) {
 	echo $output;
 }
 
+/** 
+ * Evaluates a result using empty () and then prints an error message or a
+ * success message
+ * 
+ * @param any $result the results to evaluate. 0, NULL, false, '' or array()
+ * is bad, the rest is good
+ * @param string $good the string to be displayed if the result was good
+ * @param string $bad the string to be displayed if the result was bad
+ * @param string $attributes any other attributes to be set for the h3
+ * @param bool $return whether to output the string or return it
+ * @param string $tag what tag to use (you could specify something else than
+ * h3 like div or h2
+ *
+ * @return a string or an output
+*/
+       
+function print_error_message ($result, $good = '', $bad = '', $attributes = '', $return = false, $tag = 'h3') {
+	if ($good == '' || $good === false)
+		$good = __('Request successfully processed');
+	
+	if ($bad == '' || $bad === false)
+		$bad = __('Error processing request');
+	
+	if (empty ($result)) {
+		$output = '<'.$tag.' class="error" '.$attributes.'>'.$bad.'</'.$tag.'>';
+	} else {
+		$output = '<'.$tag.' class="suc" '.$attributes.'>'.$good.'</'.$tag.'>';
+	}
+
+	if ($return !== false)
+		return $output;
+	
+	echo $output;
+}
+
 ?>

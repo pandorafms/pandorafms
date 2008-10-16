@@ -56,7 +56,7 @@ if (isset ($_GET["submit"])) {
 	$al_field2 = (string) get_parameter_post ("al_field2");
 	$al_field3 = (string) get_parameter_post ("al_field3");
 	$max_alerts = (int) get_parameter_post ("max_alerts", 1);
-	$min_alerts = (int) get_parameter_post ("min_alerts", 1);
+	$min_alerts = (int) get_parameter_post ("min_alerts", 0);
 	$priority = (int) get_parameter_post ("priority", 0);
 	
 	if ($time_threshold == -1) {
@@ -67,10 +67,10 @@ if (isset ($_GET["submit"])) {
 		$sql = sprintf ("INSERT INTO talert_snmp 
 			(id_alert, al_field1, al_field2, al_field3, description, alert_type, agent, custom_oid, oid, time_threshold, max_alerts, min_alerts, priority)
 			VALUES
-			(%d, '%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', %d, %d, %d, %d)",
+			(%d, '%s', '%s', '%s', '%s', %d, '%s', '%s', '%s', %d, %d, %d, %d) ",
 			$alert_type, $al_field1, $al_field2, $al_field3, $description, $alert_trigger, $source_ip, $custom_value, $oid, $time_threshold, $max_alerts, $min_alerts, $priority);
 		
-		//$result = process_sql ($sql);
+		$result = process_sql ($sql);
 
 		if ($result === false) {
 			echo '<h3 class="error">'.__('There was a problem creating the alert').'</h3>';
@@ -97,7 +97,7 @@ if (isset ($_GET["submit"])) {
 
 // From variable init
 // ==================
-if (isset ($_GET["update_alert"]) && $_GET["update_alert"]) {
+if ((isset ($_GET["update_alert"])) && ($_GET["update_alert"] != -1)) {
 	$id_as = (int) get_parameter_get ("update_alert", -1);
 	$alert = get_db_row ("talert_snmp", "id_as", $id_as);
 	$id_as = $alert["id_as"];
@@ -128,7 +128,7 @@ if (isset ($_GET["update_alert"]) && $_GET["update_alert"]) {
 	$al_field2 = "";
 	$al_field3 = "";
 	$max_alerts = 1;
-	$min_alerts = 1;
+	$min_alerts = 0;
 	$priority = 0;
 }
 

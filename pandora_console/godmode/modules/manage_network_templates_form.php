@@ -17,9 +17,10 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
-require("include/config.php");
+require_once ("include/config.php");
 
 check_login ();
+
 
 if (! give_acl ($config['id_user'], 0, "PM")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
@@ -28,180 +29,204 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 	exit;
 }
 
+$id_np = get_parameter ("id_np", -1); //Network Profile
+$ncgroup = get_parameter ("ncgroup", -1); //Network component group
+$id_nc = get_parameter ("components", array ());
 
-if (isset($_GET["delete_module"])){ // Delete module from profile
-	$id_npc = $_GET["delete_module"];
-	$sql1="DELETE FROM tnetwork_profile_component WHERE id_npc = $id_npc";
-	$result=mysql_query($sql1);
-	if (! $result)
-		echo "<h3 class='error'>".__('Not deleted. Error deleting data')."</h3>";
-	else {
-		echo "<h3 class='suc'>".__('Deleted successfully')."</h3>";
-	}
-}
-
-if (isset($_GET["add_module"])){ // Add module to profile
-	$id_nc = $_POST["component"];
-	$id_np = $_GET["id_np"];
-	$sql1="INSERT INTO tnetwork_profile_component (id_np,id_nc) VALUES ($id_np, $id_nc)";
-	$result=mysql_query($sql1);
-	if (! $result)
-		echo "<h3 class='error'>".__('Not created. Error inserting data')."</h3>";
-	else {
-		echo "<h3 class='suc'>".__('Created successfully')."</h3>";
-	}
-}
-
-$ncgroup = -1;
-
-if (isset($_GET["refresh_module"])){  //Refresh module info from group combo
-	$ncgroup = $_POST["ncgroup"];
-}
-
-
-if (isset($_GET["id_np"])){ // Read module data
-	$id_np = $_GET["id_np"];
-	if ($id_np != -1){
-		$sql1="SELECT * FROM tnetwork_profile WHERE id_np = $id_np ORDER BY
-        name";
-		$result=mysql_query($sql1);
-		$row=mysql_fetch_array($result);
-		$description = $row["description"];
-		$name = $row["name"];
-	} else  {
-		$comentarios = "";
-		$name = "";
-	}
-}
-
-if (isset($_GET["create"])){ // Create module
-	$name = entrada_limpia ($_POST["name"]);
-	$description = entrada_limpia ($_POST["description"]);
-	$sql_insert="INSERT INTO tnetwork_profile (name,description)
-	VALUES ('$name', '$description')";
-	$result=mysql_query($sql_insert);
-	if (! $result)
-		echo "<h3 class='error'>".__('Not created. Error inserting data')."</h3>";
-	else {
-		echo "<h3 class='suc'>".__('Created successfully')."</h3>";
-		$id_np = mysql_insert_id();
-	}
-}
-
-if (isset($_GET["update"])){ // Update profile
-	$id_np = $_GET["update"];
-	$name = entrada_limpia ($_POST["name"]);
-	$description = entrada_limpia ($_POST["description"]);
-	$sql_insert="UPDATE tnetwork_profile set name = '$name', description = '$description' WHERE id_np = $id_np";
-	$result=mysql_query($sql_insert);
-	if (! $result)
-		echo "<h3 class='error'>".__('Not updated. Error updating data')."</h3>";
-	else {
-		echo "<h3 class='suc'>".__('Updated successfully')."</h3>";
-	}
-}
-
-echo "<h2>".__('Module management')." &gt; ";
-echo __('Module template management')."</h2>";
-echo "<table width='550' cellpadding='4' cellspacing='4' class='databox_color'>";
-
-if ($id_np == -1)
-	echo '<form name="new_user" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&create=1">';
-else
-	echo '<form name="user_mod" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&update='.$id_np.'">';
-
-echo "<tr><td class='datos'>".__('Name')."</td>";
-echo "<td class='datos'>";
-echo "<input type='text' size=25 name='name' value='$name'>";
-echo "</td>";
-echo "<tr><td class='datos2'>".__('Description')."</td>";
-echo "<td class='datos2'>";
-echo "<textarea cols=50 rows=2 name='description'>";
-if (isset($description)) {
-	echo $description;
-}
-echo "</textarea>";
-echo "</td></tr></table>";
-
-if ($id_np != -1){
-	// Show associated modules, allow to delete, and to add
-
-	$sql1 = "SELECT * FROM tnetwork_profile_component where id_np = $id_np";
-	$result = mysql_query ($sql1);
-	if ($row=mysql_num_rows($result)) {
-	
-	echo '<table width="550" cellpadding="4" cellspacing="4" class="databox">';
-	echo '<tr>';
-	echo "<th>".__('Module name')."</th>";
-	echo "<th>".__('Type')."</th>";
-	echo "<th>".__('Description')."</th>";
-	echo "<th>".__('NC.Group')."</th>";
- 	echo "<th>X</th>";
-	$color =0;
-
-	while ( $row = mysql_fetch_array($result)) {
-		$id_nc = $row["id_nc"];
-		$id_npc = $row["id_npc"];
-		$sql2 = "SELECT * FROM tnetwork_component where id_nc = $id_nc ORDER BY name";
-		$result2 = mysql_query ($sql2);
-		if ($row2=mysql_fetch_array($result2)){
-			if ($color == 1){
-				$tdcolor="datos";
-				$color =0;
-			} else {
-				$tdcolor="datos2";
-				$color =1;
-			}
-			$id_tipo = $row2["type"];
-			$id_group = $row2["id_group"];
-			$nombre_modulo =$row2["name"];
-			$description = $row2["description"];
-			$module_group2 = $row2["id_module_group"];
-
-			echo "<tr><td class='".$tdcolor."_id'>";
-			echo $nombre_modulo;
-			echo "<td class='".$tdcolor."f9'>";
-			if ($id_tipo > 0) {
-				echo "<img src='images/".show_icon_type($id_tipo)."' border=0>";
-			}
-			echo "<td class='$tdcolor'>".substr($description,0,30)."</td>";
-			echo "<td class='$tdcolor'>".give_network_component_group_name($id_group)."</td>";
-			echo "<td class='$tdcolor'><a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np=$id_np&delete_module=$id_npc'><img src='images/cross.png'></a></td>";
+if (isset ($_GET["delete_module"])) { 
+	// Delete module from profile
+	$errors = 0;
+	foreach ($id_nc as $component) {
+		$sql = sprintf ("DELETE FROM tnetwork_profile_component WHERE id_np = %d AND id_nc = %d", $id_np, $component);
+		$result = process_sql ($sql);
+		if ($result === false) {
+			$errors++;
 		}
 	}
-	} else {
-		echo "<div class='nf'>No modules</div>";
+
+	print_error_message (($errors < 1), __('Successfully deleted module from profile'), __('Error deleting module from profile'));
+} elseif (isset ($_GET["add_module"])) {
+	// Add module to profile
+	$errors = 0;
+	foreach ($id_nc as $component) {
+		$sql = sprintf ("INSERT INTO tnetwork_profile_component (id_np,id_nc) VALUES (%d, %d)", $id_np, $component);
+		$result = process_sql ($sql);
+		if ($result === false) {
+			$errors++;
+		}
 	}
-	echo "</table>";
+	
+	print_error_message (($errors < 1), __('Successfully added module to profile'), __('Error adding module to profile'));
+} 
+
+if (isset ($_GET["create"]) || isset ($_GET["update"])) {
+	//Submitted form
+	$name = get_parameter_post ("name");
+	$description = get_parameter_post ("description");
+	
+	if ($id_np > 0) {
+		//Profile exists
+		$sql = sprintf ("UPDATE tnetwork_profile SET name = '%s', description = '%s' WHERE id_np = %d", $name, $description, $id_np); 		
+		$result = process_sql ($sql);
+		print_error_message ($result, __('Successfully updated network profile'), __('Error updating network profile'));
+	} else {
+		//Profile doesn't exist
+		$sql = sprintf ("INSERT INTO tnetwork_profile (name, description) VALUES ('%s', '%s')", $name, $description);
+		$result = process_sql ($sql, "insert_id");
+		print_error_message ($result, __('Successfully added network profile'), __('Error adding network profile'));
+		$id_np = (int) $result; //Will return either 0 (in case of error) or an int
+	}
+
+} elseif ($id_np > 0) {
+	//Profile exists
+	$row = get_db_row ("tnetwork_profile", "id_np", $id_np);
+		
+	$description = $row["description"];
+	$name = $row["name"];
+
+} else {
+	//Profile has to be created
+	$description = "";
+	$name = "";
 }
 
-echo "<table width='550'>";
-echo '<tr><td align="right">';
-if ($id_np == -1)
-	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.__('Create').'">';
-else
-	echo '<input name="updbutton" type="submit" class="sub upd" value="'.__('Update').'">';
-echo "</td></tr></table>";
-echo "</form>";
+echo "<h2>".__('Module management')." &gt; ".__('Module template management')."</h2>";
 
+if ($id_np < 1) {
+	        echo '<form name="new_temp" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&create=1">';
+} else {
+	        echo '<form name="mod_temp" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&update='.$id_np.'">';
+}
 
-if ($id_np != -1){ 
-	echo "<h3>".__('Add')." ".__('Module')."</h3>";
-	echo "<table class='databox'>";
-	echo '<tr><td>';
-	echo '<form name="add_module" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&add_module=1">';
-	$sql1 = "SELECT * FROM tnetwork_component ORDER BY id_group, name";
-	$result = mysql_query ($sql1);
-	echo "<select name='component'>";
-	while ($row = mysql_fetch_array($result)) {
-		echo "<option value='" . $row["id_nc"] . "'>". $row["name"]." / ".give_network_component_group_name ($row["id_group"]);
+echo '<table width="550" cellpadding="4" cellspacing="4" class="databox_color">';
+
+echo '<tr><td class="datos">'.__('Name').'</td><td class="datos">';
+print_input_text ("name", $name, '', 63);
+echo '</td></tr>';
+
+echo '<tr><td class="datos2">'.__('Description').'</td>';
+echo '<td class="datos2">';
+print_textarea ("description", 2, 60, $description);
+echo "</td></tr>";
+echo '<tr><td></td><td style="text-align:right;">';
+if ($id_np > 0) {
+	print_submit_button (__("Update"), "updbutton", false, 'class="sub upd"');
+} else {
+	print_submit_button (__("Create"), "crtbutton", false, 'class="sub wand"');
+}
+echo "</td></tr></table></form>";
+
+if ($id_np > 0) {
+	// Show associated modules, allow to delete, and to add
+	$sql = sprintf ("SELECT npc.id_nc AS component_id, nc.name, nc.type, nc.description, nc.id_module_group AS `group`
+		FROM tnetwork_profile_component AS npc, tnetwork_component AS nc 
+		WHERE npc.id_nc = nc.id_nc AND npc.id_np = %d", $id_np);
+	
+	$result = get_db_all_rows_sql ($sql);
+
+	if (empty ($result)) {
+		echo '<div style="width:550px;" class="error">'.__("No modules for this profile").'</div>';
+		$result = array ();
 	}
-	echo "</select>";
 
-	echo '<td valign="top">';
-	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.__('Add').'">';
-	echo "</td></tr></table>";
-	echo "</form>";
+	$table->head = array ();
+	$table->data = array ();
+	$table->align = array ();
+	$table->width = 550;
+	$table->cellpadding = 4;
+	$table->cellspacing = 4;
+	$table->class = "databox";
+	
+	$table->head[0] = __('Module name');
+	$table->head[1] = __('Type');
+	$table->align[1] = "center";
+	$table->head[2] = __('Description');
+	$table->head[3] = __('Group');
+	$table->align[3] = "center";
+	$table->head[4] = print_checkbox_extended ('allbox', '', false, false, 'CheckAll();', '', true);
+	$table->align[4] = "center";
+	
+	foreach ($result as $row) {
+		$data = array ();
+		$data[0] = $row["name"];
+		$data[1] = '<img src="images/'.show_icon_type($row["type"]).'" border="0" />';
+		$data[2] = substr($row["description"],0,30);
+		$data[3] = give_network_component_group_name ($row["group"]);
+		$data[4] = print_checkbox ("components[]", $row["component_id"], false, true);
+		array_push ($table->data, $data);
+	}
+
+	if (!empty ($table->data)) {
+		echo '<form name="component_delete" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&delete_module=1">';
+		print_table ($table);
+		echo '<div style="width:540px; text-align:right">';
+		print_submit_button (__('Delete'), "delbutton", false, 'class="sub delete" onClick="if (!confirm(\'Are you sure?\')) return false;"');
+		echo '</div></form>';
+	}
+	unset ($table);
+	
+	echo "<h3>".__('Add Modules')."</h3>";
+	
+	//Here should be a form to filter group
+
+	//The form to submit when adding a list of components
+	echo '<form name="filter_group" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'#filter">';
+	echo '<div style="width:540px"><a name="filter"></a>';
+	$result = get_db_all_rows_in_table ("tnetwork_component_group","name");
+	
+	//2 arrays. 1 with the groups, 1 with the groups by parent
+	$groups = array ();
+	$groups_compound = array ();
+	foreach ($result as $row) {
+		$groups[$row["id_sg"]] = $row["name"];	
+	}
+
+	foreach ($result as $row) {
+		$groups_compound[$row["id_sg"]] = '';
+		if ($row["parent"] > 1) {
+			$groups_compound[$row["id_sg"]] = $groups[$row["parent"]]." / ";
+		}
+		$groups_compound[$row["id_sg"]] .= $row["name"];
+	}
+	
+	print_select ($groups_compound, "ncgroup", $ncgroup, 'javascript:this.form.submit();', __('Group')." - ".__('All'), -1, false, false, true, '" style="width:350px');
+	echo '<noscript>';
+	print_submit_button (__('Filter'), 'ncgbutton', false, 'class="sub search"');
+	echo '</noscript></div></form>';
+	
+	echo '<form name="add_module" method="post" action="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates_form&id_np='.$id_np.'&add_module=1">';
+	echo '<div style="width:540px">';
+	if ($ncgroup > 0) {
+		$sql = sprintf ("SELECT id_nc, name, id_group FROM tnetwork_component WHERE id_group = %d ORDER BY name", $ncgroup);
+	} else {
+		$sql = "SELECT id_nc, name, id_group FROM tnetwork_component ORDER BY name"; 
+	}
+
+	$result = get_db_all_rows_sql ($sql);
+	$components = array ();
+	if ($result === false)
+		$result = array ();
+
+	foreach ($result as $row) {
+		$components[$row["id_nc"]] = $row["name"];
+	}
+
+	print_select ($components, "components[]", $id_nc, '', '', -1, false, true, false, '" style="width:350px');
+	echo "&nbsp;&nbsp;";
+	print_submit_button (__('Add'), 'crtbutton', false, 'class="sub wand"');
+	echo "</div></form>";
 }
 
 ?>
+<script language="JavaScript" type="text/javascript">
+<!--
+function CheckAll() {
+	for (var i = 0; i < document.component_delete.elements.length; i++) {
+	
+		var e = document.component_delete.elements[i];
+		if (e.type == 'checkbox' && e.name != 'allbox')
+			e.checked = !e.checked;
+	}
+}
+-->
+</script>

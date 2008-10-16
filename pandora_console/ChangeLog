@@ -1,3 +1,13 @@
+2008-10-16  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/functions_html.php: Added print_error_message, a function
+	that will print out <h3> error messages for you given a result
+
+	* godmode/modules/manage_network_templates_form.php: Rewrite for new
+	style and makes it easier for mass updates to templates (eg. if you
+	have port 1-48 of a Cisco Switch (input, output and status) now you
+	don't have to click 288 times.
+
 2008-10-16  Sancho Lerena <slerena@gmail.com>
 
 	* operation/snmpconsole/snmp_alert.php: Fixed problem creating 

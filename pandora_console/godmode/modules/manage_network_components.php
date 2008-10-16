@@ -42,6 +42,7 @@ $snmp_community="";
 $id_module_group="";
 $module_interval="";
 $id_group = "";
+$plugin_parameter = "";
 
 // ------------------
 // CREATE MODULE

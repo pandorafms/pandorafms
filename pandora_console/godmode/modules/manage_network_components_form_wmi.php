@@ -162,6 +162,14 @@ pandora_help("wmifield");
 echo '</td>';
 echo '<td class="datos2">';
 echo	'<input type="text" name="tcp_port" size="5" value="' . $tcp_port . '">';
+echo '</td>';
+
+// Namespace
+echo '<td class="datos2">' . __('Namespace');
+pandora_help("wminamespace");
+echo '</td>';
+echo '<td class="datos2">';
+echo	'<input type="text" name="tcp_send" size="25" value="' . $tcp_send . '">';
 echo '</td></tr>';
 
 // Username

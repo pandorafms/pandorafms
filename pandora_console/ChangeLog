@@ -1,3 +1,8 @@
+2008-10-16  Sancho Lerena <slerena@gmail.com>
+
+	* operation/snmpconsole/snmp_alert.php: Fixed problem creating 
+	alerts, missing process_sql(). Default values now shown properly.
+
 2008-10-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/modules/manage_network_components_form_wmi.php: Added

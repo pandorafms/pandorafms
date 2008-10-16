@@ -1,3 +1,10 @@
+2008-10-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/modules/manage_network_components_form_wmi.php: Added
+	  WMI namespace option.
+
+	* godmode/modules/manage_network_components.php: Small fix.
+
 2008-10-15  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/functions_db.php: Fix where the attachment wouldn't be

@@ -1477,6 +1477,14 @@ function grafico_db_agentes_purge ($id_agent, $width, $height) {
 	$data[2] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp > %d %s", $time["1month"], $query));
 	$data[3] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp > %d %s", $time["3month"], $query));
 	$data[4] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE 1=1 %s", $query));
+
+
+	$data[0] += get_db_sql (sprintf ("SELECT COUNT(id_tagente_datos_string) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1day"], $query));
+	$data[1] += get_db_sql (sprintf ("SELECT COUNT(id_tagente_datos_string) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1week"], $query));
+	$data[2] += get_db_sql (sprintf ("SELECT COUNT(id_tagente_datos_string) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1month"], $query));
+	$data[3] += get_db_sql (sprintf ("SELECT COUNT(id_tagente_datos_string) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["3month"], $query));
+	$data[4] += get_db_sql (sprintf ("SELECT COUNT(id_tagente_datos_string) FROM tagente_datos_string WHERE 1=1 %s", $query));
+
 	$data[4] = $data[4] - $data[3];
 	
 	generic_pie_graph ($width, $height, $data, $legend);

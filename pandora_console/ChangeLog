@@ -1,3 +1,7 @@
+2008-10-17  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* godmode/db/db_purge.php: Bug fix where db_purge wouldn't work
+	correctly if all was selected. Also added inc data to the count
 
 2008-10-17  Sancho Lerena <slerena@gmail.com>
 

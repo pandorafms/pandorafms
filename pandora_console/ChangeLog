@@ -1,3 +1,9 @@
+2008-10-16  Sancho Lerena <slerena@artica.es>
+
+	Created 2.0 branch.
+
+	* Added enterprise directory (blank), was missing ¿?.
+
 2008-10-16  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/functions_html.php: Added print_error_message, a function

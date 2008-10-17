@@ -63,6 +63,10 @@ $table->head[1] = __('Assigned modules');
 $table->head[2] = __('Total data');
 
 $sql = "SELECT DISTINCT(id_agente), COUNT(id_agente_datos) AS count FROM tagente_datos GROUP BY id_agente ORDER BY count ASC";
+
+// Not implemented yet
+//$sql2 = "SELECT DISTINCT(id_agente), COUNT(id_agente_datos_string) AS count FROM tagente_datos_string GROUP BY id_agente ORDER BY count ASC";
+
 //This query takes 1s on a 1 million entry database. Merging it with tagente
 //costs 7 seconds so we rely on the functions to return information on
 //id_agente.

@@ -3,7 +3,7 @@ AllowLanguageSelection
 Yes
 
 AppName
-{Pandora FMS Windows Agent 2.0 (Beta1)}
+{Pandora FMS Windows Agent 2.0}
 
 ApplicationID
 17E3D2CF-CA02-406B-8A80-9D31C17BD08F
@@ -1594,57 +1594,6 @@ Linux-x86,RequireRoot
 No
 
 Linux-x86,RootInstallDir
-/usr/local/<%ShortAppName%>
-
-MacOS-X,Active
-No
-
-MacOS-X,DefaultDirectoryPermission
-0755
-
-MacOS-X,DefaultFilePermission
-0755
-
-MacOS-X,Executable
-<%AppName%>-<%Version%>-<%Platform%>-Install<%Ext%>
-
-MacOS-X,FallBackToConsole
-Yes
-
-MacOS-X,InstallDir
-<%Home%>/<%ShortAppName%>
-
-MacOS-X,InstallMode
-Standard
-
-MacOS-X,InstallType
-Typical
-
-MacOS-X,ProgramExecutable
-{}
-
-MacOS-X,ProgramFolderAllUsers
-No
-
-MacOS-X,ProgramFolderName
-<%AppName%>
-
-MacOS-X,ProgramLicense
-<%InstallDir%>/LICENSE.txt
-
-MacOS-X,ProgramName
-{}
-
-MacOS-X,ProgramReadme
-<%InstallDir%>/README.txt
-
-MacOS-X,PromptForRoot
-Yes
-
-MacOS-X,RequireRoot
-No
-
-MacOS-X,RootInstallDir
 /usr/local/<%ShortAppName%>
 
 Solaris-sparc,Active

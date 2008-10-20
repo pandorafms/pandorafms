@@ -1,3 +1,10 @@
+2008-10-20  Esteban Sanchez  <estebans@artica.es>
+
+	* lib/PandoraFMS/DB.pm: Fixed a strange bug that was causing to
+	generate events of servers going down, the solution was to update
+	own keepalive before checking others server status. Tab style
+	correction, replacing blankspaces with tab.
+
 2008-10-20  Manuel Arostegui <marostegui@artica.es>
 
 	* pandora_server_installer: Added dependency

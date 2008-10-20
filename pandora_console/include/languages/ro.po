@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2008-09-10 15:55+0200\n"
-"PO-Revision-Date: 2008-09-29 04:15+0000\n"
-"Last-Translator: Albert Mate <Unknown>\n"
+"PO-Revision-Date: 2008-10-19 06:13+0000\n"
+"Last-Translator: stefan <linelolteanu@yahoo.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-10-13 07:48+0000\n"
+"X-Launchpad-Export-Date: 2008-10-20 07:24+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../../reporting/stat_win.php:46
@@ -745,7 +745,7 @@ msgstr "Dezvoltare"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:553
 msgid "Testing"
-msgstr ""
+msgstr "Testare"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:554
 msgid "Public"
@@ -765,7 +765,7 @@ msgstr "Public"
 #: ../../godmode/agentes/alert_manager_editor.php:273
 #: ../../include/functions.php:768
 msgid "Disabled"
-msgstr "Dezactivat"
+msgstr "Dezactivat(ă)"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:563
 msgid "Database"
@@ -773,15 +773,15 @@ msgstr "Bază de date"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:564
 msgid "Code / binary directory"
-msgstr ""
+msgstr "Cod/director binar"
 
 #: ../../extensions/update_manager.php:100
 msgid "More info"
-msgstr ""
+msgstr "MAi multe informatii"
 
 #: ../../extensions/update_manager.php:116
 msgid "Update manager settings"
-msgstr ""
+msgstr "Aduceti la zi mangerul de setari"
 
 #: ../../godmode/reporting/map_builder.php:67
 #: ../../godmode/reporting/map_builder.php:167 ../../godmode/setup/news.php:44
@@ -815,7 +815,7 @@ msgstr "Nu a fost creat. Eroare la inserarea datelor"
 #: ../../operation/reporting/graph_viewer.php:30
 #: ../../operation/reporting/graph_viewer.php:35
 msgid "Deleted successfully"
-msgstr ""
+msgstr "Sters cu succes"
 
 #: ../../godmode/reporting/map_builder.php:85
 #: ../../godmode/reporting/reporting_builder.php:75
@@ -828,7 +828,7 @@ msgstr ""
 #: ../../operation/reporting/graph_viewer.php:32
 #: ../../operation/reporting/graph_viewer.php:37
 msgid "Not deleted. Error deleting data"
-msgstr ""
+msgstr "Nu s-a sters.Eroare la stergerea datelor"
 
 #: ../../godmode/reporting/map_builder.php:110
 msgid "Update layout successful"
@@ -845,7 +845,7 @@ msgstr ""
 #: ../../godmode/modules/manage_nc_groups.php:56
 #: ../../godmode/modules/manage_network_templates_form.php:100
 msgid "Updated successfully"
-msgstr ""
+msgstr "Aducere la zi terminata cu succes."
 
 #: ../../godmode/reporting/map_builder.php:243
 #: ../../godmode/reporting/reporting_builder.php:176
@@ -854,7 +854,7 @@ msgstr ""
 #: ../../godmode/modules/manage_nc_groups.php:54
 #: ../../godmode/modules/manage_network_templates_form.php:98
 msgid "Not updated. Error updating data"
-msgstr ""
+msgstr "Nu sa adus la zii.Eroare la aducerea la zii a datelor"
 
 #: ../../godmode/reporting/map_builder.php:257
 #: ../../godmode/reporting/map_builder.php:292
@@ -868,16 +868,16 @@ msgstr ""
 #: ../../operation/reporting/custom_reporting.php:25
 #: ../../operation/menu.php:270
 msgid "Reporting"
-msgstr ""
+msgstr "Raportare"
 
 #: ../../godmode/reporting/map_builder.php:257
 #: ../../godmode/reporting/map_builder.php:293 ../../godmode/menu.php:159
 msgid "Map builder"
-msgstr ""
+msgstr "Constructor de harti"
 
 #: ../../godmode/reporting/map_builder.php:262
 msgid "Map name"
-msgstr ""
+msgstr "Numele hartii"
 
 #: ../../godmode/reporting/map_builder.php:263
 #: ../../godmode/reporting/map_builder.php:305
@@ -1022,7 +1022,7 @@ msgstr "Înălțime"
 
 #: ../../godmode/reporting/map_builder.php:333
 msgid "preview"
-msgstr ""
+msgstr "Previzualizare"
 
 #: ../../godmode/reporting/map_builder.php:351
 msgid "Map element trash"
@@ -1030,11 +1030,11 @@ msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:352
 msgid "Drag an element here to delete from the map"
-msgstr ""
+msgstr "Trageti un element aici pentru a fi sters din harta"
 
 #: ../../godmode/reporting/map_builder.php:365
 msgid "Hour"
-msgstr "Ora"
+msgstr "Oră"
 
 #: ../../godmode/reporting/map_builder.php:366
 #: ../../godmode/reporting/map_builder.php:367
@@ -1076,11 +1076,11 @@ msgstr "Şase luni"
 
 #: ../../godmode/reporting/map_builder.php:388
 msgid "Map element editor"
-msgstr ""
+msgstr "Editor de elemente al hartii"
 
 #: ../../godmode/reporting/map_builder.php:389
 msgid "Drag an element here to edit the properties"
-msgstr ""
+msgstr "Aduceti un element aici pentru a i modifica proprietatile"
 
 #: ../../godmode/reporting/map_builder.php:397
 msgid "Label"
@@ -1112,7 +1112,7 @@ msgstr "Culoare etichetă"
 #: ../../operation/agentes/estado_alertas.php:290
 #: ../../operation/events/events.php:315
 msgid "Type"
-msgstr ""
+msgstr "Tip:"
 
 #: ../../godmode/reporting/map_builder.php:407
 #: ../../godmode/reporting/graph_builder.php:215
@@ -1163,7 +1163,7 @@ msgstr "Imagine"
 #: ../../godmode/modules/manage_nc_groups_form.php:58
 #: ../../operation/agentes/estado_generalagente.php:96
 msgid "Parent"
-msgstr ""
+msgstr "Părinte"
 
 #: ../../godmode/reporting/map_builder.php:419
 msgid "Map linked"
@@ -1185,17 +1185,17 @@ msgstr "A apărut o problemă la salvarea graficului"
 
 #: ../../godmode/reporting/graph_builder.php:204
 msgid "Graph builder module list"
-msgstr ""
+msgstr "Lista de module al constructorului de grafice"
 
 #: ../../godmode/reporting/graph_builder.php:252
 #: ../../operation/reporting/graph_viewer.php:108
 msgid "Combined image render"
-msgstr ""
+msgstr "Redare da imagini combinata"
 
 #: ../../godmode/reporting/graph_builder.php:265
 #: ../../godmode/reporting/graph_builder.php:267 ../../godmode/menu.php:149
 msgid "Graph builder"
-msgstr ""
+msgstr "Constructor de Grafice"
 
 #: ../../godmode/reporting/graph_builder.php:276
 #: ../../godmode/reporting/reporting_builder.php:396
@@ -1221,11 +1221,11 @@ msgstr "Module"
 
 #: ../../godmode/reporting/graph_builder.php:304
 msgid "Factor"
-msgstr ""
+msgstr "Factor"
 
 #: ../../godmode/reporting/graph_builder.php:314
 msgid "Render now"
-msgstr ""
+msgstr "Reda acum"
 
 #: ../../godmode/reporting/graph_builder.php:318
 #: ../../godmode/reporting/graph_builder.php:322
@@ -1275,7 +1275,7 @@ msgstr "Vezi evenimente"
 
 #: ../../godmode/reporting/graph_builder.php:418
 msgid "Stacked"
-msgstr ""
+msgstr "Stivuit"
 
 #: ../../godmode/reporting/graph_builder.php:422
 #: ../../operation/reporting/graph_viewer.php:137
@@ -1285,7 +1285,7 @@ msgstr "Zonă"
 #: ../../godmode/reporting/graph_builder.php:423
 #: ../../operation/reporting/graph_viewer.php:138
 msgid "Stacked area"
-msgstr ""
+msgstr "Zona stivuita"
 
 #: ../../godmode/reporting/graph_builder.php:424
 #: ../../operation/reporting/graph_viewer.php:139
@@ -1319,7 +1319,7 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:483
 #: ../../godmode/reporting/reporting_builder.php:342
 msgid "Private"
-msgstr ""
+msgstr "Privat"
 
 #: ../../godmode/reporting/graph_builder.php:497
 msgid "Store"
@@ -1327,7 +1327,7 @@ msgstr "Salvare"
 
 #: ../../godmode/reporting/reporting_builder.php:109
 msgid "Reporting successfully deleted"
-msgstr ""
+msgstr "Raportarea a fost ştearsă"
 
 #: ../../godmode/reporting/reporting_builder.php:111
 msgid "There was a problem deleting reporting"
@@ -1341,11 +1341,11 @@ msgstr "Raportarea a fost creată cu succes"
 #: ../../godmode/reporting/reporting_builder.php:147
 #: ../../godmode/reporting/reporting_builder.php:161
 msgid "There was a problem creating reporting"
-msgstr ""
+msgstr "A apărut o problemă la crearea raportării"
 
 #: ../../godmode/reporting/reporting_builder.php:219
 msgid "SLA was successfully created"
-msgstr "SLA creat cu succes"
+msgstr "SLA a fost creat cu succes"
 
 #: ../../godmode/reporting/reporting_builder.php:221
 msgid "There was a problem creating SLA"
@@ -1370,28 +1370,28 @@ msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:242
 msgid "SLAs defined"
-msgstr ""
+msgstr "SLA-uri definite"
 
 #: ../../godmode/reporting/reporting_builder.php:252
 #: ../../godmode/reporting/reporting_builder.php:292
 #: ../../operation/reporting/reporting_viewer.php:211
 msgid "SLA Min. (value)"
-msgstr ""
+msgstr "SLA Minim (valoare)"
 
 #: ../../godmode/reporting/reporting_builder.php:253
 #: ../../godmode/reporting/reporting_builder.php:294
 #: ../../operation/reporting/reporting_viewer.php:209
 msgid "SLA Max. (value)"
-msgstr "SLA Max.(valoare)"
+msgstr "SLA Maxim (valoare)"
 
 #: ../../godmode/reporting/reporting_builder.php:254
 #: ../../godmode/reporting/reporting_builder.php:296
 msgid "SLA Limit (%)"
-msgstr ""
+msgstr "Limita SLA (%)"
 
 #: ../../godmode/reporting/reporting_builder.php:279
 msgid "SLA report construction"
-msgstr "Creare raport SLA"
+msgstr "Raport constructie SLA"
 
 #: ../../godmode/reporting/reporting_builder.php:326
 #: ../../godmode/reporting/reporting_builder.php:497

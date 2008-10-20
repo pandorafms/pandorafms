@@ -1,5 +1,10 @@
 2008-10-20  Jorge Gonzalez  <jorgegonz@artica.es>
 
+        * operation/agentes/estado_agente.php, operation/agentes/bulbs.php:
+          reverted changes.
+
+2008-10-20  Jorge Gonzalez  <jorgegonz@artica.es>
+
 	* operation/agentes/estado_agente.php, operation/agentes/bulbs.php:
 	  fixed bug, blue monitor means it has no monitors, while gray means
 	  it has no data.

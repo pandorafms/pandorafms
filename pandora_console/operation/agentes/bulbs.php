@@ -28,7 +28,7 @@ echo "
 	<td class='f9i'>
 	<img src='images/pixel_red.png' width=20 height=10>  ".__('Alert fired')."</td>
 	<tr><td class='f9i'>
-	<img src='images/pixel_blue.png' width=40 height=18>  ".__('Agent without monitors')."</td>
+	<img src='images/pixel_gray.png' width=40 height=18>  ".__('Agent without monitors')."</td>
 	<td class='f9i'>
 	<img src='images/pixel_blue.png' width=40 height=18>  ".__('Agent without data')."</td>
 	<td class='f9i'>

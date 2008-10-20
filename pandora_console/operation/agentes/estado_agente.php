@@ -329,13 +329,13 @@ echo '<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.p
 					echo "<img src='images/pixel_green.png' width=40 height=18 title='".__('All Monitors OK')."'>";
 				}
 				elseif ($numero_datamodules > 0) {
-					echo "<img src='images/pixel_gray.png' width=40 height=18 title='".__('Agent without monitors')."'>";
+					echo "<img src='images/pixel_blue.png' width=40 height=18 title='".__('Agent without monitors')."'>";
 				}
 				elseif ($monitor_down > 0) {
 					echo "<img src='images/pixel_fucsia.png' width=40 height=18 title='".__('Agent down')."'>"; 
 				}
 			} else 
-				echo "<img src='images/pixel_blue.png' width=40 height=18 title='".__('Agent without data')."'>";
+				echo "<img src='images/pixel_gray.png' width=40 height=18 title='".__('Agent without data')."'>";
 			
 			// checks if an alert was fired recently
 			echo "<td class='$tdcolor' align='center'>";

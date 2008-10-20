@@ -327,10 +327,10 @@ echo '<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.p
 					}
 				} elseif ($monitor_ok > 0) {
 					echo '<img src="images/pixel_green.png" width="40" height="18" title="'.__('All Monitors OK').'" />';
-				} elseif ($numero_datamodules == 0) {
-					echo '<img src="images/pixel_blue.png" width="40" height="18" title="'.__('Agent without data').'" />';
 				} elseif ($monitor_down > 0) {
 					echo '<img src="images/pixel_fucsia.png" width="40" height="18" title="'.__('Agent down').'" />'; 
+				} elseif ($numero_datamodules == 0) {
+					echo '<img src="images/pixel_blue.png" width="40" height="18" title="'.__('Agent without data').'" />';
 				}
 			} else {
 				if ($numero_datamodules == 0) {

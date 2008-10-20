@@ -1,3 +1,8 @@
+2008-10-20  Esteban Sanchez  <estebans@artica.es>
+
+	* operation/agentes/estado_agente.php: Checking if there are monitors
+	down has more priority than check if there are no data.
+
 2008-10-20  Manuel Arostegui  <marostegui@artica.es>
 
 	* operation/agentes/estado_agente.php: Fixed agent status color

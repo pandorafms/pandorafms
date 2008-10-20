@@ -321,22 +321,24 @@ echo '<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.p
 			if ($numero_monitor <> 0){
 				if ($estado_general <> 0){
 					if ($estado_cambio == 0){
-						echo "<img src='images/pixel_red.png' width=40 height=18 title='".__('At least one monitor fails')."'>";
+						echo '<img src="images/pixel_red.png" width="40" height="18" title="'.__('At least one monitor fails').'" />';
 					} else {
-						echo "<img src='images/pixel_yellow.png' width=40 height=18 title='".__('Change between Green/Red state')."'>";
+						echo '<img src="images/pixel_yellow.png" width="40" height="18" title="'.__('Change between Green/Red state').'" />';
 					}
 				} elseif ($monitor_ok > 0) {
-					echo "<img src='images/pixel_green.png' width=40 height=18 title='".__('All Monitors OK')."'>";
+					echo '<img src="images/pixel_green.png" width="40" height="18" title="'.__('All Monitors OK').'" />';
+				} elseif ($numero_datamodules == 0) {
+					echo '<img src="images/pixel_blue.png" width="40" height="18" title="'.__('Agent without data').'" />';
+				} elseif ($monitor_down > 0) {
+					echo '<img src="images/pixel_fucsia.png" width="40" height="18" title="'.__('Agent down').'" />'; 
 				}
-				elseif ($numero_datamodules > 0) {
-					echo "<img src='images/pixel_blue.png' width=40 height=18 title='".__('Agent without monitors')."'>";
+			} else {
+				if ($numero_datamodules == 0) {
+                                        echo '<img src="images/pixel_blue.png" width="40" height="18" title="'.__('Agent without data').'" />';
+                                } else {
+					echo '<img src="images/pixel_gray.png" width="40" height="18" title="'.__('Agent without monitors').'" />';
 				}
-				elseif ($monitor_down > 0) {
-					echo "<img src='images/pixel_fucsia.png' width=40 height=18 title='".__('Agent down')."'>"; 
-				}
-			} else 
-				echo "<img src='images/pixel_blue.png' width=40 height=18 title='".__('Agent without data')."'>";
-			
+			}
 			// checks if an alert was fired recently
 			echo "<td class='$tdcolor' align='center'>";
 			if (give_disabled_group($id_grupo) == 1)

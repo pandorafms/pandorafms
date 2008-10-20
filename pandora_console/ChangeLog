@@ -1,7 +1,15 @@
+2008-10-20  Manuel Arostegui  <marostegui@artica.es>
+
+	* operation/agentes/estado_agente.php: Fixed agent status color
+	column. It was showing incorrect values in some cases like without
+	data or monitors.
+
+	* ChangeLog: Fixed Jorge previous commit style.
+
 2008-10-20  Jorge Gonzalez  <jorgegonz@artica.es>
 
-        * operation/agentes/estado_agente.php, operation/agentes/bulbs.php:
-          reverted changes.
+	* operation/agentes/estado_agente.php, operation/agentes/bulbs.php:
+	Reverted changes.
 
 2008-10-20  Jorge Gonzalez  <jorgegonz@artica.es>
 

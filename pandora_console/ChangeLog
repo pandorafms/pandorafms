@@ -1,3 +1,8 @@
+2008-10-20  Esteban Sanchez  <estebans@artica.es>
+
+	* operation/agentes/estado_grupo.php: Fixed a notice error when the
+	query returns nothing.
+
 2008-10-20  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/languages/cs.po, include/languages/pt_BR.po,
@@ -99,6 +104,26 @@
 2008-10-14  Esteban Sanchez  <estebans@artica.es>
 
 	* include/config_process.php: Added ENTERPRISE_DIR constant.
+
+	* extensions/hello.php: Use extension better than plugin which is
+	already used in other places.
+
+	* godmode/reporting/map_builder.php: Use process_sql() to make SQL
+	queries.
+
+	* include/functions_db.php: Fixed some functions documentation. Added
+	order_field to get_db_all_fields_in_table(). Style correction.
+
+	* include/functions_extensions.php: Support to load enterprise
+	extensions.
+
+	* include/functions_reporting.php: Fixed general_stats() to returns
+	stats also with a field name.
+
+	* include/javascript/jquery.ui.core.js,
+	include/javascript/jquery.ui.draggable.js,
+	include/javascript/jquery.ui.droppable.js: Updated to latest version
+	of jQuery UI.
 
 2008-10-14  Esteban Sanchez  <estebans@artica.es>
 

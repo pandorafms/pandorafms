@@ -14,491 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-10-13 07:48+0000\n"
+"X-Launchpad-Export-Date: 2008-10-20 07:24+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
-
-#~ msgid "Two hours"
-#~ msgstr "Dúas horas"
-
-#~ msgid "Six hours"
-#~ msgstr "Seis horas"
-
-#~ msgid "One day"
-#~ msgstr "Un día"
-
-#~ msgid "Two days"
-#~ msgstr "Dous días"
-
-#~ msgid "Five days"
-#~ msgstr "Cinco días"
-
-#~ msgid "Two months"
-#~ msgstr "Dous meses"
-
-#~ msgid "Six months"
-#~ msgstr "Seis meses"
-
-#~ msgid "is a <b>OpenSource Software Project, licensed under GPL terms</b>"
-#~ msgstr "é un <b>Proxecto de Software Libre con licenza GPL</b>"
-
-#~ msgid "You're not connected"
-#~ msgstr "Non estás conectado/a"
-
-#~ msgid "There was a problem deleting server"
-#~ msgstr "Houbo un problema eliminando o servidor"
-
-#~ msgid "There was a problem updating server"
-#~ msgstr "Houbo un problema actualizando o servidor"
-
-#~ msgid "Press here to get DB Info as text"
-#~ msgstr "Pulse aquí para ver información da base de datos como texto"
-
-#~ msgid "Purge task launched for agent id "
-#~ msgstr "Tarefa de borrado lanzada para o axente "
-
-#~ msgid ""
-#~ "Please be patient. This operation can be very long in time (5-10 minutes)"
-#~ msgstr "Por favor, agarde"
-
-#~ msgid "while deleting data for "
-#~ msgstr "Mentres se borran datos para "
-
-#~ msgid "Deleting records for module "
-#~ msgstr "Borrando rexistros para o módulo "
-
-#~ msgid " in the Database"
-#~ msgstr " na base de datos"
-
-#~ msgid "Packets three months old"
-#~ msgstr "Paquetes con menos de tres meses"
-
-#~ msgid "Packets one month old"
-#~ msgstr "Paquetes con menos dun mes"
-
-#~ msgid "Packets two weeks old"
-#~ msgstr "Paquetes con menos de duas semanas"
-
-#~ msgid "Packets one week old"
-#~ msgstr "Paquetes con menos dunha semana"
-
-#~ msgid "Packets three days old"
-#~ msgstr "Paquetes con menos de tres días"
-
-#~ msgid "Packets one day old"
-#~ msgstr "Paquetes con menos de 24 horas"
-
-#~ msgid "Purge data over 90 days"
-#~ msgstr "Borrar os datos con mais de tres meses"
-
-#~ msgid "Purge data over 30 days"
-#~ msgstr "Borrar os datos con mais de 30 días"
-
-#~ msgid "Purge data over 14 days"
-#~ msgstr "Borrar os datos con mais de duas semanas"
-
-#~ msgid "Purge data over 7 days"
-#~ msgstr "Borrar os datos con mais dunha semana"
-
-#~ msgid "Data checks"
-#~ msgstr "Comprobaciones de datos"
-
-#~ msgid "Event validation failed"
-#~ msgstr "Validación de evento fallida"
-
-#~ msgid "create_user_no"
-#~ msgstr "Houbo un problema creando o usuario"
-
-#~ msgid "User successfully created"
-#~ msgstr "Usuario creado correctamente"
-
-#~ msgid "delete_link_ok"
-#~ msgstr "Ligazón eliminada correctamente"
-
-#~ msgid "agent_exists"
-#~ msgstr "O axente xa existe"
-
-#~ msgid "add_module_ok"
-#~ msgstr "Módulo engaadido correctamente"
-
-#~ msgid "delete_module_ok"
-#~ msgstr "Módulo eliminado correctamente"
-
-#~ msgid "delete_agent_ok"
-#~ msgstr "Axente eliminado correctamente"
-
-#~ msgid "notfoundmod"
-#~ msgstr "No se atopou módulo"
-
-#~ msgid "noagents_del"
-#~ msgstr "No se seleccionaron axentes destino para o borrado"
-
-#~ msgid "delete_profile_no"
-#~ msgstr "Houbo un problema eliminando o perfil"
-
-#~ msgid "Main Event View"
-#~ msgstr "Vista principal dos eventos"
-
-#~ msgid "m_from"
-#~ msgstr "Remitente"
-
-#~ msgid "m_to"
-#~ msgstr "Destinatario"
-
-#~ msgid "new_message_g"
-#~ msgstr "Nova mensaxe a un grupo"
-
-#~ msgid "group_view"
-#~ msgstr "Detalles dos grupos de axentes"
-
-#~ msgid "Update_alert"
-#~ msgstr "Actualizar alerta"
-
-#~ msgid "New Incident"
-#~ msgstr "Novo incidente"
-
-#~ msgid "Open with notes"
-#~ msgstr "Aberta e con notas"
-
-#~ msgid "Delete incident"
-#~ msgstr "Borrar incidente"
-
-#~ msgid "Source IP(s)"
-#~ msgstr "IP(s) Orixe"
-
-#~ msgid "Destination IP(s)"
-#~ msgstr "IP(s) Destino"
-
-#~ msgid "Last received data from Agent"
-#~ msgstr "Últimos datos recibidos polo axente"
-
-#~ msgid "Module Update/Create form"
-#~ msgstr "Edición/Creación de módulo"
-
-#~ msgid "gpl_used"
-#~ msgstr "Desenrolado empregando ferramentas e software GPL"
-
-#~ msgid "Incident Main view"
-#~ msgstr "Vista principal de incidentes"
-
-#~ msgid "Agent main config screen"
-#~ msgstr "Pantalla principal de configuración do axente"
-
-#~ msgid "Select agent to modify"
-#~ msgstr "Seleccionar axente a modificar"
-
-#~ msgid "Name / Type"
-#~ msgstr "Nome / Tipo"
-
-#~ msgid "Detailed alert view"
-#~ msgstr "Vista detallada das alertas"
-
-#~ msgid "Detailed full view"
-#~ msgstr "Vista detallada"
-
-#~ msgid "Agent down default alert"
-#~ msgstr "Alerta por defecto do axente caído"
-
-#~ msgid "Pandora Main setup "
-#~ msgstr "Configuración de Pandora "
-
-#~ msgid "Internal Audit Pages"
-#~ msgstr "Páxinas de Auditoría Interna"
-
-#~ msgid "Log type filter"
-#~ msgstr "Tipo de filtro do log"
-
-#~ msgid "Purge all data"
-#~ msgstr "Borrar todos os datos"
-
-#~ msgid "Database Manipulation"
-#~ msgstr "Manipulación da BBDD"
-
-#~ msgid "Database compact"
-#~ msgstr "Compactado da BBDD"
-
-#~ msgid "Configure"
-#~ msgstr "Configurar"
-
-#~ msgid "Checked by"
-#~ msgstr "Validado por"
-
-#~ msgid "Resolution (%)"
-#~ msgstr "Resolución (%)"
-
-#~ msgid "(*) Please enter date with format yyyy/mm/dd hh:mm:ss"
-#~ msgstr "(*) Por favor, introduza a data con formato yyyy/mm/dd hh:mm:ss"
-
-#~ msgid "There are "
-#~ msgstr "Hai "
-
-#~ msgid "users defined in Pandora"
-#~ msgstr "usuarios definidos en Pandora"
-
-#~ msgid "alerts defined in Pandora"
-#~ msgstr "alertas definidas en Pandora"
-
-#~ msgid "data modules stored in Pandora Database"
-#~ msgstr "módulos de datos recollidos por Pandora"
-
-#~ msgid "Last data received at "
-#~ msgstr "Datos recollidos por un axente por última vez o "
-
-#~ msgid "Pandora general statistics"
-#~ msgstr "Estadísticas xerais de Pandora"
-
-#~ msgid "Average"
-#~ msgstr "Media"
-
-#~ msgid "Monthly graph"
-#~ msgstr "Grafico mensual"
-
-#~ msgid "Weekly graph"
-#~ msgstr "Grafico semanal"
-
-#~ msgid "Hourly graph"
-#~ msgstr "Grafico horario"
-
-#~ msgid "There was a problem creating keepalive module in new agent"
-#~ msgstr "Houbo un problema creando o módulo keepalive no novo axente"
-
-#~ msgid ""
-#~ "User profiles in Pandora define which users can access Pandora as well as "
-#~ "what each user can do. Groups define elements in common among various users. "
-#~ "Each user could be in one or more groups at any one time. Each group has "
-#~ "user profiles which are defined and attached to it. A profile is a list of "
-#~ "things a user can do, such as view incidents, manage database or other. A "
-#~ "list of available profiles is defined below by the local Pandora "
-#~ "administrators"
-#~ msgstr ""
-#~ "Os perfís de usuario en Pandora definen qué usuarios poden acceder a Pandora "
-#~ "e que pode facer cada un. Os grupos definen elementos en común, cada usuario "
-#~ "pode pertencer a un ou mais;s grupos, e ten asignado un perfil por cada "
-#~ "grupo ao que pertenza. Un perfil é unha lista do que pode e non pode facer "
-#~ "cada grupo, como «ver incidentes» ou «xestionar bases de datos». Abaixo "
-#~ "podese ver unha lista dos perfís dispo&ntilde;ibles (definidos polos "
-#~ "administradores locais de Pandora)"
-
-#~ msgid ""
-#~ "This user has permissions to manage all. This is admin user and overwrites "
-#~ "all permissions given in profiles/groups."
-#~ msgstr ""
-#~ "Este usuario ten  permiso para todo, pasando por riba dos privilexos "
-#~ "asignados mediante perfís/grupos"
-
-#~ msgid "This button refresh info about database usage among time"
-#~ msgstr ""
-#~ "Este botón actualiza a información sobre uso da base de datos ao longo do "
-#~ "tempo"
-
-#~ msgid ""
-#~ "Use this combo to select agent for operation. You need to select an agent to "
-#~ "purge data and to get info about database usage"
-#~ msgstr ""
-#~ "Use este control para seleccionar un axente. É preciso seleccionar un axente "
-#~ "tanto para borrar información da base de datos como para obter datos dela"
-
-#~ msgid "ERROR: At this moment only Global Admin can manage profiles"
-#~ msgstr "ERROR: Neste momento só o administrador xeral pode administrar perfí"
-
-#~ msgid "Agents Reading rights"
-#~ msgstr "Permisos de lectura de axentes"
-
-#~ msgid "Agents Writing rights"
-#~ msgstr "Permisos de escritura sobre axentes"
-
-#~ msgid "Agents Management rights"
-#~ msgstr "Permisos de xestión de axentes"
-
-#~ msgid "System Incidents Reading rights"
-#~ msgstr "Permisos de lectura no sistema de incidentes"
-
-#~ msgid "System Incidents Writing rights"
-#~ msgstr "Permisos de escritura no sistema de incidentes"
-
-#~ msgid "System Incidents Management rights"
-#~ msgstr "Permisos de xestión do sistema de incidentes"
-
-#~ msgid "Alerts Edition rights"
-#~ msgstr "Permisos de asignación de alertas"
-
-#~ msgid "Alerts Management rights"
-#~ msgstr "Permisos de xestión de alertas"
-
-#~ msgid "Users Management rights"
-#~ msgstr "Permisos de xestión de usuarios"
-
-#~ msgid "Database Management rights"
-#~ msgstr "Permisos de xestión da BD"
-
-#~ msgid "Pandora System Management rights"
-#~ msgstr "Permisos de xestión de Pandora"
-
-#~ msgid "From Agent"
-#~ msgstr "dende o axente"
-
-#~ msgid "Destination"
-#~ msgstr "Destino"
-
-#~ msgid "Packets by date range"
-#~ msgstr "Paquetes por rangos de data"
-
-#~ msgid "Total events"
-#~ msgstr "Eventos totais"
-
-#~ msgid "Incidents"
-#~ msgstr "Incidentes"
-
-#~ msgid "group_detail"
-#~ msgstr "Detalles dos grupos"
-
-#~ msgid "Pandora Database"
-#~ msgstr "Base de datos de Pandora"
-
-#~ msgid "It is necesary to select modules or alerts to delete"
-#~ msgstr "Debe seleccionar módulos ou alertas para borrar"
-
-#~ msgid "There was a problem deleting note"
-#~ msgstr "Houbo un problema eliminando a nota"
-
-#~ msgid "Incident writers"
-#~ msgstr "Autores dos incidentes"
-
-#~ msgid "This field can't be changed while in Edition mode"
-#~ msgstr "Este campo non pode modificarse no modo de edición"
-
-#~ msgid " so there are no alerts"
-#~ msgstr " , polo tanto non hai alertas"
-
-#~ msgid "SNMP"
-#~ msgstr "SNMP"
-
-#~ msgid "There are no events"
-#~ msgstr "Non hai eventos"
-
-#~ msgid "Agent module share out"
-#~ msgstr "Distribución dos módulos"
-
-#~ msgid "Truetype fonts"
-#~ msgstr "Fontes truetype"
-
-#~ msgid "Right to Left"
-#~ msgstr "Der. a Esq."
-
-#~ msgid "Left to Right"
-#~ msgstr "Esq. a Der."
-
-#~ msgid "Cancel"
-#~ msgstr "Cancelar"
-
-#~ msgid "Network module refresh executed"
-#~ msgstr "Executada a actualización do módulo de rede"
-
-#~ msgid "Help"
-#~ msgstr "Axuda"
-
-#~ msgid "active_console"
-#~ msgstr "Consola activa"
-
-#~ msgid "Agent overview"
-#~ msgstr "Agent overview"
-
-#~ msgid "Detailed monitor view"
-#~ msgstr "Vista detallada dos monitores"
-
-#~ msgid "Group name"
-#~ msgstr "Nome do grupo"
-
-#~ msgid "No agent selected"
-#~ msgstr "Non se seleccionou axente"
-
-#~ msgid "Daily graph"
-#~ msgstr "Grafico diario"
-
-#~ msgid "Incidents status"
-#~ msgstr "Estado dos incidentes"
-
-#~ msgid "Incidents priorities"
-#~ msgstr "Prioridade dos incidentes"
-
-#~ msgid "Events per user"
-#~ msgstr "Eventos por usuario"
-
-#~ msgid "Events per group"
-#~ msgstr "Eventos por grupo"
-
-#~ msgid "valprohelp"
-#~ msgstr ""
-#~ "O valor do módulo do axente mínimo e máximo que delimitan os valores "
-#~ "válidos. Calquer outro valor fora de ese rango será eliminado"
-
-#~ msgid "Incident sources"
-#~ msgstr "Orixe dos incidentes"
-
-#~ msgid "Incident groups"
-#~ msgstr "Grupos dos incidentes"
-
-#~ msgid "Assigned Network Server"
-#~ msgstr "Servidor asignado"
-
-#~ msgid "Active Server"
-#~ msgstr "Servidor activo"
-
-#~ msgid "Graph order"
-#~ msgstr "Orde do gráfico"
-
-#~ msgid "Background image"
-#~ msgstr "Imaxe de fondo"
-
-#~ msgid "SNMP modules"
-#~ msgstr "Módulos SNMP"
-
-#~ msgid "Network components groups"
-#~ msgstr "Grupos de compoñentes de rede"
-
-#~ msgid "Module Component"
-#~ msgstr "Componente de rede"
-
-#~ msgid "# Modules"
-#~ msgstr "Nº Módulos"
-
-#~ msgid "Save"
-#~ msgstr "Gravar"
-
-#~ msgid "says"
-#~ msgstr "dixo"
-
-#~ msgid "Tactical indicator"
-#~ msgstr "Indicador táctico"
-
-#~ msgid "Position X"
-#~ msgstr "Posición eixe X"
-
-#~ msgid "Position Y"
-#~ msgstr "Posición eixe Y"
-
-#~ msgid "Parent item"
-#~ msgstr "Obxeto padre"
-
-#~ msgid "Link color"
-#~ msgstr "Cor de enlace"
-
-#~ msgid "White"
-#~ msgstr "Branco"
-
-#~ msgid "Black"
-#~ msgstr "Negro"
-
-#~ msgid "Add map item"
-#~ msgstr "Engadir objeto ó mapa"
-
-#~ msgid "There are no defined report items"
-#~ msgstr "Non hai definidos elementos no informe"
-
-#~ msgid "Message already read"
-#~ msgstr "Mensaxe leído"
-
-#~ msgid "Message not read"
-#~ msgstr "Mensaxe sin ler"
 
 #: ../../reporting/stat_win.php:46
 #: ../../operation/agentes/datos_agente.php:120
@@ -5703,3 +5220,486 @@ msgstr "Remitente"
 #: ../../operation/messages/message.php:215
 msgid "No subject"
 msgstr "Sen asunto"
+
+#~ msgid "Two hours"
+#~ msgstr "Dúas horas"
+
+#~ msgid "Six hours"
+#~ msgstr "Seis horas"
+
+#~ msgid "One day"
+#~ msgstr "Un día"
+
+#~ msgid "Two days"
+#~ msgstr "Dous días"
+
+#~ msgid "Five days"
+#~ msgstr "Cinco días"
+
+#~ msgid "Two months"
+#~ msgstr "Dous meses"
+
+#~ msgid "Six months"
+#~ msgstr "Seis meses"
+
+#~ msgid "is a <b>OpenSource Software Project, licensed under GPL terms</b>"
+#~ msgstr "é un <b>Proxecto de Software Libre con licenza GPL</b>"
+
+#~ msgid "You're not connected"
+#~ msgstr "Non estás conectado/a"
+
+#~ msgid "There was a problem deleting server"
+#~ msgstr "Houbo un problema eliminando o servidor"
+
+#~ msgid "There was a problem updating server"
+#~ msgstr "Houbo un problema actualizando o servidor"
+
+#~ msgid "Press here to get DB Info as text"
+#~ msgstr "Pulse aquí para ver información da base de datos como texto"
+
+#~ msgid "Purge task launched for agent id "
+#~ msgstr "Tarefa de borrado lanzada para o axente "
+
+#~ msgid ""
+#~ "Please be patient. This operation can be very long in time (5-10 minutes)"
+#~ msgstr "Por favor, agarde"
+
+#~ msgid "while deleting data for "
+#~ msgstr "Mentres se borran datos para "
+
+#~ msgid "Deleting records for module "
+#~ msgstr "Borrando rexistros para o módulo "
+
+#~ msgid " in the Database"
+#~ msgstr " na base de datos"
+
+#~ msgid "Packets three months old"
+#~ msgstr "Paquetes con menos de tres meses"
+
+#~ msgid "Packets one month old"
+#~ msgstr "Paquetes con menos dun mes"
+
+#~ msgid "Packets two weeks old"
+#~ msgstr "Paquetes con menos de duas semanas"
+
+#~ msgid "Packets one week old"
+#~ msgstr "Paquetes con menos dunha semana"
+
+#~ msgid "Packets three days old"
+#~ msgstr "Paquetes con menos de tres días"
+
+#~ msgid "Packets one day old"
+#~ msgstr "Paquetes con menos de 24 horas"
+
+#~ msgid "Purge data over 90 days"
+#~ msgstr "Borrar os datos con mais de tres meses"
+
+#~ msgid "Purge data over 30 days"
+#~ msgstr "Borrar os datos con mais de 30 días"
+
+#~ msgid "Purge data over 14 days"
+#~ msgstr "Borrar os datos con mais de duas semanas"
+
+#~ msgid "Purge data over 7 days"
+#~ msgstr "Borrar os datos con mais dunha semana"
+
+#~ msgid "Data checks"
+#~ msgstr "Comprobaciones de datos"
+
+#~ msgid "Event validation failed"
+#~ msgstr "Validación de evento fallida"
+
+#~ msgid "create_user_no"
+#~ msgstr "Houbo un problema creando o usuario"
+
+#~ msgid "User successfully created"
+#~ msgstr "Usuario creado correctamente"
+
+#~ msgid "delete_link_ok"
+#~ msgstr "Ligazón eliminada correctamente"
+
+#~ msgid "agent_exists"
+#~ msgstr "O axente xa existe"
+
+#~ msgid "add_module_ok"
+#~ msgstr "Módulo engaadido correctamente"
+
+#~ msgid "delete_module_ok"
+#~ msgstr "Módulo eliminado correctamente"
+
+#~ msgid "delete_agent_ok"
+#~ msgstr "Axente eliminado correctamente"
+
+#~ msgid "notfoundmod"
+#~ msgstr "No se atopou módulo"
+
+#~ msgid "noagents_del"
+#~ msgstr "No se seleccionaron axentes destino para o borrado"
+
+#~ msgid "delete_profile_no"
+#~ msgstr "Houbo un problema eliminando o perfil"
+
+#~ msgid "Main Event View"
+#~ msgstr "Vista principal dos eventos"
+
+#~ msgid "m_from"
+#~ msgstr "Remitente"
+
+#~ msgid "m_to"
+#~ msgstr "Destinatario"
+
+#~ msgid "new_message_g"
+#~ msgstr "Nova mensaxe a un grupo"
+
+#~ msgid "group_view"
+#~ msgstr "Detalles dos grupos de axentes"
+
+#~ msgid "Update_alert"
+#~ msgstr "Actualizar alerta"
+
+#~ msgid "New Incident"
+#~ msgstr "Novo incidente"
+
+#~ msgid "Open with notes"
+#~ msgstr "Aberta e con notas"
+
+#~ msgid "Delete incident"
+#~ msgstr "Borrar incidente"
+
+#~ msgid "Source IP(s)"
+#~ msgstr "IP(s) Orixe"
+
+#~ msgid "Destination IP(s)"
+#~ msgstr "IP(s) Destino"
+
+#~ msgid "Last received data from Agent"
+#~ msgstr "Últimos datos recibidos polo axente"
+
+#~ msgid "Module Update/Create form"
+#~ msgstr "Edición/Creación de módulo"
+
+#~ msgid "gpl_used"
+#~ msgstr "Desenrolado empregando ferramentas e software GPL"
+
+#~ msgid "Incident Main view"
+#~ msgstr "Vista principal de incidentes"
+
+#~ msgid "Agent main config screen"
+#~ msgstr "Pantalla principal de configuración do axente"
+
+#~ msgid "Select agent to modify"
+#~ msgstr "Seleccionar axente a modificar"
+
+#~ msgid "Name / Type"
+#~ msgstr "Nome / Tipo"
+
+#~ msgid "Detailed alert view"
+#~ msgstr "Vista detallada das alertas"
+
+#~ msgid "Detailed full view"
+#~ msgstr "Vista detallada"
+
+#~ msgid "Agent down default alert"
+#~ msgstr "Alerta por defecto do axente caído"
+
+#~ msgid "Pandora Main setup "
+#~ msgstr "Configuración de Pandora "
+
+#~ msgid "Internal Audit Pages"
+#~ msgstr "Páxinas de Auditoría Interna"
+
+#~ msgid "Log type filter"
+#~ msgstr "Tipo de filtro do log"
+
+#~ msgid "Purge all data"
+#~ msgstr "Borrar todos os datos"
+
+#~ msgid "Database Manipulation"
+#~ msgstr "Manipulación da BBDD"
+
+#~ msgid "Database compact"
+#~ msgstr "Compactado da BBDD"
+
+#~ msgid "Configure"
+#~ msgstr "Configurar"
+
+#~ msgid "Checked by"
+#~ msgstr "Validado por"
+
+#~ msgid "Resolution (%)"
+#~ msgstr "Resolución (%)"
+
+#~ msgid "(*) Please enter date with format yyyy/mm/dd hh:mm:ss"
+#~ msgstr "(*) Por favor, introduza a data con formato yyyy/mm/dd hh:mm:ss"
+
+#~ msgid "There are "
+#~ msgstr "Hai "
+
+#~ msgid "users defined in Pandora"
+#~ msgstr "usuarios definidos en Pandora"
+
+#~ msgid "alerts defined in Pandora"
+#~ msgstr "alertas definidas en Pandora"
+
+#~ msgid "data modules stored in Pandora Database"
+#~ msgstr "módulos de datos recollidos por Pandora"
+
+#~ msgid "Last data received at "
+#~ msgstr "Datos recollidos por un axente por última vez o "
+
+#~ msgid "Pandora general statistics"
+#~ msgstr "Estadísticas xerais de Pandora"
+
+#~ msgid "Average"
+#~ msgstr "Media"
+
+#~ msgid "Monthly graph"
+#~ msgstr "Grafico mensual"
+
+#~ msgid "Weekly graph"
+#~ msgstr "Grafico semanal"
+
+#~ msgid "Hourly graph"
+#~ msgstr "Grafico horario"
+
+#~ msgid "There was a problem creating keepalive module in new agent"
+#~ msgstr "Houbo un problema creando o módulo keepalive no novo axente"
+
+#~ msgid ""
+#~ "User profiles in Pandora define which users can access Pandora as well as "
+#~ "what each user can do. Groups define elements in common among various users. "
+#~ "Each user could be in one or more groups at any one time. Each group has "
+#~ "user profiles which are defined and attached to it. A profile is a list of "
+#~ "things a user can do, such as view incidents, manage database or other. A "
+#~ "list of available profiles is defined below by the local Pandora "
+#~ "administrators"
+#~ msgstr ""
+#~ "Os perfís de usuario en Pandora definen qué usuarios poden acceder a Pandora "
+#~ "e que pode facer cada un. Os grupos definen elementos en común, cada usuario "
+#~ "pode pertencer a un ou mais;s grupos, e ten asignado un perfil por cada "
+#~ "grupo ao que pertenza. Un perfil é unha lista do que pode e non pode facer "
+#~ "cada grupo, como «ver incidentes» ou «xestionar bases de datos». Abaixo "
+#~ "podese ver unha lista dos perfís dispo&ntilde;ibles (definidos polos "
+#~ "administradores locais de Pandora)"
+
+#~ msgid ""
+#~ "This user has permissions to manage all. This is admin user and overwrites "
+#~ "all permissions given in profiles/groups."
+#~ msgstr ""
+#~ "Este usuario ten  permiso para todo, pasando por riba dos privilexos "
+#~ "asignados mediante perfís/grupos"
+
+#~ msgid "This button refresh info about database usage among time"
+#~ msgstr ""
+#~ "Este botón actualiza a información sobre uso da base de datos ao longo do "
+#~ "tempo"
+
+#~ msgid ""
+#~ "Use this combo to select agent for operation. You need to select an agent to "
+#~ "purge data and to get info about database usage"
+#~ msgstr ""
+#~ "Use este control para seleccionar un axente. É preciso seleccionar un axente "
+#~ "tanto para borrar información da base de datos como para obter datos dela"
+
+#~ msgid "ERROR: At this moment only Global Admin can manage profiles"
+#~ msgstr "ERROR: Neste momento só o administrador xeral pode administrar perfí"
+
+#~ msgid "Agents Reading rights"
+#~ msgstr "Permisos de lectura de axentes"
+
+#~ msgid "Agents Writing rights"
+#~ msgstr "Permisos de escritura sobre axentes"
+
+#~ msgid "Agents Management rights"
+#~ msgstr "Permisos de xestión de axentes"
+
+#~ msgid "System Incidents Reading rights"
+#~ msgstr "Permisos de lectura no sistema de incidentes"
+
+#~ msgid "System Incidents Writing rights"
+#~ msgstr "Permisos de escritura no sistema de incidentes"
+
+#~ msgid "System Incidents Management rights"
+#~ msgstr "Permisos de xestión do sistema de incidentes"
+
+#~ msgid "Alerts Edition rights"
+#~ msgstr "Permisos de asignación de alertas"
+
+#~ msgid "Alerts Management rights"
+#~ msgstr "Permisos de xestión de alertas"
+
+#~ msgid "Users Management rights"
+#~ msgstr "Permisos de xestión de usuarios"
+
+#~ msgid "Database Management rights"
+#~ msgstr "Permisos de xestión da BD"
+
+#~ msgid "Pandora System Management rights"
+#~ msgstr "Permisos de xestión de Pandora"
+
+#~ msgid "From Agent"
+#~ msgstr "dende o axente"
+
+#~ msgid "Destination"
+#~ msgstr "Destino"
+
+#~ msgid "Packets by date range"
+#~ msgstr "Paquetes por rangos de data"
+
+#~ msgid "Total events"
+#~ msgstr "Eventos totais"
+
+#~ msgid "Incidents"
+#~ msgstr "Incidentes"
+
+#~ msgid "group_detail"
+#~ msgstr "Detalles dos grupos"
+
+#~ msgid "Pandora Database"
+#~ msgstr "Base de datos de Pandora"
+
+#~ msgid "It is necesary to select modules or alerts to delete"
+#~ msgstr "Debe seleccionar módulos ou alertas para borrar"
+
+#~ msgid "There was a problem deleting note"
+#~ msgstr "Houbo un problema eliminando a nota"
+
+#~ msgid "Incident writers"
+#~ msgstr "Autores dos incidentes"
+
+#~ msgid "This field can't be changed while in Edition mode"
+#~ msgstr "Este campo non pode modificarse no modo de edición"
+
+#~ msgid " so there are no alerts"
+#~ msgstr " , polo tanto non hai alertas"
+
+#~ msgid "SNMP"
+#~ msgstr "SNMP"
+
+#~ msgid "There are no events"
+#~ msgstr "Non hai eventos"
+
+#~ msgid "Agent module share out"
+#~ msgstr "Distribución dos módulos"
+
+#~ msgid "Truetype fonts"
+#~ msgstr "Fontes truetype"
+
+#~ msgid "Right to Left"
+#~ msgstr "Der. a Esq."
+
+#~ msgid "Left to Right"
+#~ msgstr "Esq. a Der."
+
+#~ msgid "Cancel"
+#~ msgstr "Cancelar"
+
+#~ msgid "Network module refresh executed"
+#~ msgstr "Executada a actualización do módulo de rede"
+
+#~ msgid "Help"
+#~ msgstr "Axuda"
+
+#~ msgid "active_console"
+#~ msgstr "Consola activa"
+
+#~ msgid "Agent overview"
+#~ msgstr "Agent overview"
+
+#~ msgid "Detailed monitor view"
+#~ msgstr "Vista detallada dos monitores"
+
+#~ msgid "Group name"
+#~ msgstr "Nome do grupo"
+
+#~ msgid "No agent selected"
+#~ msgstr "Non se seleccionou axente"
+
+#~ msgid "Daily graph"
+#~ msgstr "Grafico diario"
+
+#~ msgid "Incidents status"
+#~ msgstr "Estado dos incidentes"
+
+#~ msgid "Incidents priorities"
+#~ msgstr "Prioridade dos incidentes"
+
+#~ msgid "Events per user"
+#~ msgstr "Eventos por usuario"
+
+#~ msgid "Events per group"
+#~ msgstr "Eventos por grupo"
+
+#~ msgid "valprohelp"
+#~ msgstr ""
+#~ "O valor do módulo do axente mínimo e máximo que delimitan os valores "
+#~ "válidos. Calquer outro valor fora de ese rango será eliminado"
+
+#~ msgid "Incident sources"
+#~ msgstr "Orixe dos incidentes"
+
+#~ msgid "Incident groups"
+#~ msgstr "Grupos dos incidentes"
+
+#~ msgid "Assigned Network Server"
+#~ msgstr "Servidor asignado"
+
+#~ msgid "Active Server"
+#~ msgstr "Servidor activo"
+
+#~ msgid "Graph order"
+#~ msgstr "Orde do gráfico"
+
+#~ msgid "Background image"
+#~ msgstr "Imaxe de fondo"
+
+#~ msgid "SNMP modules"
+#~ msgstr "Módulos SNMP"
+
+#~ msgid "Network components groups"
+#~ msgstr "Grupos de compoñentes de rede"
+
+#~ msgid "Module Component"
+#~ msgstr "Componente de rede"
+
+#~ msgid "# Modules"
+#~ msgstr "Nº Módulos"
+
+#~ msgid "Save"
+#~ msgstr "Gravar"
+
+#~ msgid "says"
+#~ msgstr "dixo"
+
+#~ msgid "Tactical indicator"
+#~ msgstr "Indicador táctico"
+
+#~ msgid "Position X"
+#~ msgstr "Posición eixe X"
+
+#~ msgid "Position Y"
+#~ msgstr "Posición eixe Y"
+
+#~ msgid "Parent item"
+#~ msgstr "Obxeto padre"
+
+#~ msgid "Link color"
+#~ msgstr "Cor de enlace"
+
+#~ msgid "White"
+#~ msgstr "Branco"
+
+#~ msgid "Black"
+#~ msgstr "Negro"
+
+#~ msgid "Add map item"
+#~ msgstr "Engadir objeto ó mapa"
+
+#~ msgid "There are no defined report items"
+#~ msgstr "Non hai definidos elementos no informe"
+
+#~ msgid "Message already read"
+#~ msgstr "Mensaxe leído"
+
+#~ msgid "Message not read"
+#~ msgstr "Mensaxe sin ler"

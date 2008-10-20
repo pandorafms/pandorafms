@@ -8,19 +8,19 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2008-09-10 15:55+0200\n"
-"PO-Revision-Date: 2008-10-09 14:04+0000\n"
-"Last-Translator: rainofchaos <rainofchaos@gmail.com>\n"
+"PO-Revision-Date: 2008-10-17 06:11+0000\n"
+"Last-Translator: whitemay <whitemay@hotmail.com>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-10-13 07:48+0000\n"
+"X-Launchpad-Export-Date: 2008-10-20 07:24+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../../reporting/stat_win.php:46
 #: ../../operation/agentes/datos_agente.php:120
 msgid "There was a problem locating the source of the graph"
-msgstr ""
+msgstr "定位本图的来源时出错。"
 
 #: ../../reporting/stat_win.php:53 ../../reporting/stat_win.php:218
 #: ../../godmode/reporting/graph_builder.php:333
@@ -178,7 +178,7 @@ msgstr ""
 #: ../../operation/incidents/incident_detail.php:317
 #: ../../operation/incidents/incident_detail.php:325
 msgid "Informative"
-msgstr ""
+msgstr "信息"
 
 #: ../../reporting/fgraph.php:1040 ../../operation/incidents/incident.php:244
 #: ../../operation/incidents/incident.php:265
@@ -226,7 +226,7 @@ msgstr "提示"
 #: ../../reporting/fgraph.php:1279 ../../include/functions.php:679
 #: ../../include/functions.php:1159 ../../include/functions.php:1180
 msgid "Normal"
-msgstr ""
+msgstr "正常"
 
 #: ../../reporting/fgraph.php:1286 ../../include/functions.php:682
 #: ../../include/functions.php:1160 ../../include/functions.php:1182
@@ -278,11 +278,11 @@ msgstr "未发出警告"
 
 #: ../../reporting/fgraph.php:2139
 msgid "Monitors BAD"
-msgstr ""
+msgstr "监视器报错"
 
 #: ../../reporting/fgraph.php:2140
 msgid "Monitors OK"
-msgstr ""
+msgstr "监视器正常"
 
 #: ../../general/pandora_help.php:22
 msgid "Pandora FMS help system"
@@ -535,7 +535,7 @@ msgstr "对不起，无法找到该页面！"
 
 #: ../../extensions/update_manager/load_updatemanager.php:37
 msgid "Keygen file does not exists"
-msgstr ""
+msgstr "未找到Keygen文件"
 
 #: ../../extensions/update_manager/load_updatemanager.php:44
 msgid "Keygen file is not executable"
@@ -588,7 +588,7 @@ msgstr "服务器拒绝了认证"
 #: ../../extensions/update_manager/main.php:72
 #: ../../extensions/update_manager.php:98
 msgid "There's a new update for Pandora"
-msgstr ""
+msgstr "Pandora有新的更新"
 
 #: ../../extensions/update_manager/main.php:77
 msgid "Id"
@@ -1073,7 +1073,7 @@ msgstr "6个月"
 
 #: ../../godmode/reporting/map_builder.php:388
 msgid "Map element editor"
-msgstr ""
+msgstr "地图元素编辑器"
 
 #: ../../godmode/reporting/map_builder.php:389
 msgid "Drag an element here to edit the properties"
@@ -1146,7 +1146,7 @@ msgstr "模块"
 #: ../../godmode/reporting/reporting_builder.php:432
 #: ../../operation/reporting/graph_viewer.php:119
 msgid "Period"
-msgstr ""
+msgstr "周期"
 
 #: ../../godmode/reporting/map_builder.php:413
 msgid "Image"
@@ -1187,7 +1187,7 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:252
 #: ../../operation/reporting/graph_viewer.php:108
 msgid "Combined image render"
-msgstr ""
+msgstr "组合图形生成器"
 
 #: ../../godmode/reporting/graph_builder.php:265
 #: ../../godmode/reporting/graph_builder.php:267 ../../godmode/menu.php:149
@@ -1320,7 +1320,7 @@ msgstr "私有的"
 
 #: ../../godmode/reporting/graph_builder.php:497
 msgid "Store"
-msgstr ""
+msgstr "存储"
 
 #: ../../godmode/reporting/reporting_builder.php:109
 msgid "Reporting successfully deleted"
@@ -1555,7 +1555,7 @@ msgstr "网络服务器"
 
 #: ../../godmode/servers/modificar_server.php:125
 msgid "Master"
-msgstr ""
+msgstr "主"
 
 #: ../../godmode/servers/modificar_server.php:126
 #: ../../operation/servers/view_server.php:96
@@ -2304,7 +2304,7 @@ msgstr "成功地创建了代理"
 
 #: ../../godmode/agentes/configurar_agente.php:243
 msgid "Deleted data above"
-msgstr ""
+msgstr "删除上述数据"
 
 #: ../../godmode/agentes/configurar_agente.php:256
 #: ../../godmode/agentes/configurar_agente.php:270
@@ -4908,7 +4908,7 @@ msgstr ""
 
 #: ../../operation/agentes/sla_view.php:34
 msgid "SLA view"
-msgstr ""
+msgstr "SLA视图"
 
 #: ../../operation/agentes/sla_view.php:41
 msgid "Automatic SLA for monitors"
@@ -4916,25 +4916,25 @@ msgstr ""
 
 #: ../../operation/agentes/sla_view.php:141
 msgid "User-defined SLA items"
-msgstr ""
+msgstr "自定义SLA条目"
 
 #: ../../operation/agentes/estado_agente.php:380
 msgid "There are no agents included in this group"
-msgstr ""
+msgstr "组中没有代理"
 
 #: ../../operation/agentes/estado_alertas.php:46
 #: ../../operation/agentes/estado_alertas.php:54
 #: ../../operation/agentes/estado_alertas.php:113
 msgid "Full list of Alerts"
-msgstr ""
+msgstr "完整的告警列表"
 
 #: ../../operation/agentes/estado_alertas.php:61
 msgid "Info"
-msgstr ""
+msgstr "信息"
 
 #: ../../operation/agentes/estado_alertas.php:284
 msgid "Combined alert"
-msgstr ""
+msgstr "组合告警"
 
 #: ../../operation/agentes/estado_alertas.php:299
 msgid "No agent included in this group has any assigned alert"
@@ -4947,46 +4947,46 @@ msgstr ""
 
 #: ../../operation/agentes/tactical.php:115
 msgid "Monitor OK"
-msgstr ""
+msgstr "监视器正常"
 
 #: ../../operation/agentes/tactical.php:125
 msgid "Monitor BAD"
-msgstr ""
+msgstr "监视器异常"
 
 #: ../../operation/agentes/tactical.php:138
 msgid "Monitor Unknown"
-msgstr ""
+msgstr "监视器状态未知"
 
 #: ../../operation/agentes/tactical.php:147
 msgid "Monitor Not Init"
-msgstr ""
+msgstr "监视器未初始化"
 
 #: ../../operation/agentes/tactical.php:154
 #: ../../operation/agentes/tactical.php:184
 msgid "Alerts Fired"
-msgstr ""
+msgstr "产生告警"
 
 #: ../../operation/agentes/tactical.php:162
 #: ../../operation/agentes/tactical.php:195
 msgid "Alerts Total"
-msgstr ""
+msgstr "告警总数"
 
 #: ../../operation/agentes/tactical.php:169
 #: ../../operation/agentes/tactical.php:170
 msgid "Data Checks"
-msgstr ""
+msgstr "数据检查"
 
 #: ../../operation/agentes/tactical.php:172
 msgid "Data Unknown"
-msgstr ""
+msgstr "数据未知"
 
 #: ../../operation/agentes/tactical.php:178
 msgid "Data Not Init"
-msgstr ""
+msgstr "数据未初始化"
 
 #: ../../operation/agentes/tactical.php:203
 msgid "Total Agents"
-msgstr ""
+msgstr "代理总数"
 
 #: ../../operation/agentes/tactical.php:205
 msgid "Total Checks"
@@ -5110,46 +5110,46 @@ msgstr ""
 
 #: ../../operation/users/user.php:111
 msgid "Agents reading"
-msgstr ""
+msgstr "当前读取代理"
 
 #: ../../operation/users/user.php:114
 msgid "Agents management"
-msgstr ""
+msgstr "当前管理代理"
 
 #: ../../operation/users/user.php:117
 msgid "Alerts edition"
-msgstr ""
+msgstr "告警版本"
 
 #: ../../operation/users/user.php:120
 msgid "Users management"
-msgstr ""
+msgstr "用户管理"
 
 #: ../../operation/users/user.php:123
 msgid "Database management"
-msgstr ""
+msgstr "数据库管理"
 
 #: ../../operation/users/user.php:126
 msgid "Alerts anagement"
-msgstr ""
+msgstr "告警管理"
 
 #: ../../operation/users/user.php:129
 msgid "Pandora system management"
-msgstr ""
+msgstr "Pandora系统管理"
 
 #: ../../operation/messages/message.php:26
 msgid "Message successfully sent"
-msgstr ""
+msgstr "成功发送消息"
 
 #: ../../operation/messages/message.php:28
 #: ../../operation/messages/message.php:51
 msgid "There was a problem sending message"
-msgstr ""
+msgstr "发送消息时出错"
 
 #: ../../operation/messages/message.php:61
 #: ../../operation/messages/message.php:102
 #: ../../operation/messages/message.php:225
 msgid "New message"
-msgstr ""
+msgstr "新建消息"
 
 #: ../../operation/messages/message.php:94
 #: ../../operation/messages/message.php:126
@@ -5172,7 +5172,7 @@ msgstr ""
 
 #: ../../operation/messages/message.php:160
 msgid "Read messages"
-msgstr ""
+msgstr "读取消息"
 
 #: ../../operation/messages/message.php:168
 msgid "Message sucessfully deleted"
@@ -5180,19 +5180,19 @@ msgstr "成功地删除了消息"
 
 #: ../../operation/messages/message.php:170
 msgid "There was a problem deleting message"
-msgstr ""
+msgstr "删除消息时出错"
 
 #: ../../operation/messages/message.php:184
 msgid "There are no messages"
-msgstr ""
+msgstr "没有消息"
 
 #: ../../operation/messages/message.php:188
 msgid "Read"
-msgstr ""
+msgstr "读取"
 
 #: ../../operation/messages/message.php:189
 msgid "Sender"
-msgstr ""
+msgstr "发送方"
 
 #: ../../operation/messages/message.php:215
 msgid "No subject"

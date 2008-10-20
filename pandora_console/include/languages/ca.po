@@ -8,377 +8,14 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-09-10 15:55+0200\n"
-"PO-Revision-Date: 2008-08-20 12:41+0000\n"
-"Last-Translator: nevot <r.nevot@gmail.com>\n"
+"PO-Revision-Date: 2008-10-15 09:32+0000\n"
+"Last-Translator: persanz <pere.sanz@ast-global.com>\n"
 "Language-Team: ca <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-10-13 07:48+0000\n"
+"X-Launchpad-Export-Date: 2008-10-20 07:24+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
-
-#~ msgid "is a <b>OpenSource Software Project, licensed under GPL terms</b>"
-#~ msgstr "es un <b>Projecte de Software GPL</b>"
-
-#~ msgid "You're not connected"
-#~ msgstr "No est&aacute;s conectat"
-
-#~ msgid "There was a problem deleting server"
-#~ msgstr "Hi ha hagut un problema esborrant el servidor"
-
-#~ msgid "There was a problem updating server"
-#~ msgstr "Hi ha hagut un problema actualitzant el servidor"
-
-#~ msgid "Press here to get DB Info as text"
-#~ msgstr "Prem aqu&iacute; per obtenir la base de dades en format texte"
-
-#~ msgid "Purge task launched for agent id "
-#~ msgstr "Purgar tasques llan&ccedil;ades per l'gent amb id "
-
-#~ msgid ""
-#~ "Please be patient. This operation can be very long in time (5-10 minutes)"
-#~ msgstr "Si us plau esperi"
-
-#~ msgid "while deleting data for "
-#~ msgstr "mentre s'esborraven dades per "
-
-#~ msgid "Deleting records for module "
-#~ msgstr "Esborrant registres del m&ograve;dul "
-
-#~ msgid " in the Database"
-#~ msgstr " a la base de dades"
-
-#~ msgid "Packets three months old"
-#~ msgstr "Paquets dels tres &uacute;ltims mesos"
-
-#~ msgid "Packets one month old"
-#~ msgstr "Paquets del l'&uacute;ltim mes"
-
-#~ msgid "Packets two weeks old"
-#~ msgstr "Paquets de les &uacute;ltimes dues setmanes"
-
-#~ msgid "Packets one week old"
-#~ msgstr "Paquets del l'&uacute;ltima setmana"
-
-#~ msgid "Packets three days old"
-#~ msgstr "Paquets dels &uacute;ltims tres dies"
-
-#~ msgid "Packets one day old"
-#~ msgstr "Paquets del l'&uacute;ltim dia"
-
-#~ msgid "Purge data over 90 days"
-#~ msgstr "Purgar dades de m&eacute;s de 90 dies"
-
-#~ msgid "Purge data over 30 days"
-#~ msgstr "Purgar dades de m&eacute;s de 30 dies"
-
-#~ msgid "Purge data over 14 days"
-#~ msgstr "Purgar dades de m&eacute;s de 14 dies"
-
-#~ msgid "Purge data over 7 days"
-#~ msgstr "Purgar dades de m&eacute;s de 7 dies"
-
-#~ msgid "create_user_no"
-#~ msgstr "Hi ha hagut un problema creant l'usuari"
-
-#~ msgid "User successfully created"
-#~ msgstr "Usuari creat amb &egrave;xit"
-
-#~ msgid "delete_link_ok"
-#~ msgstr "Enlla&ccedil; esborrat amb &egrave;xit"
-
-#~ msgid "agent_exists"
-#~ msgstr "Aquest agent ja existeix"
-
-#~ msgid "add_module_ok"
-#~ msgstr "M&ograve;dul afegit amb &egrave;xit"
-
-#~ msgid "delete_module_ok"
-#~ msgstr "M&ograve;dul esborrat amb &egrave;xit"
-
-#~ msgid "delete_agent_ok"
-#~ msgstr "Agent esborrat amb &egrave;xit"
-
-#~ msgid "notfoundmod"
-#~ msgstr "M&ograve;dul no trobat"
-
-#~ msgid "noagents_del"
-#~ msgstr "No hi ha cap agent seleccionat per esborrar"
-
-#~ msgid "delete_profile_no"
-#~ msgstr "Hi ha hagut un problema esborrant el perfil"
-
-#~ msgid "Main Event View"
-#~ msgstr "Visor principal d'events"
-
-#~ msgid "m_from"
-#~ msgstr "De"
-
-#~ msgid "m_to"
-#~ msgstr "A"
-
-#~ msgid "new_message_g"
-#~ msgstr "Nou mensatge a un grup"
-
-#~ msgid "group_view"
-#~ msgstr "Detalls del grup d'agents"
-
-#~ msgid "Update_alert"
-#~ msgstr "Actualitzar alerta"
-
-#~ msgid "New Incident"
-#~ msgstr "Nou Incident"
-
-#~ msgid "Open with notes"
-#~ msgstr "Obert amb notes"
-
-#~ msgid "Delete incident"
-#~ msgstr "Esborrar incident"
-
-#~ msgid "Source IP(s)"
-#~ msgstr "IP(s) d'origen"
-
-#~ msgid "Destination IP(s)"
-#~ msgstr "IP(s) de destinaci&oacute;"
-
-#~ msgid "Last received data from Agent"
-#~ msgstr "&Uacute;ltima dada rebuda de l'agent"
-
-#~ msgid "Module Update/Create form"
-#~ msgstr "Formulari d'actualitzaci&oacute;/creaci&oacute; de moduls"
-
-#~ msgid "gpl_used"
-#~ msgstr "Dissenyat utilitzant eines y programari GPL"
-
-#~ msgid "Incident Main view"
-#~ msgstr "Vista Principal d'Incidents"
-
-#~ msgid "Agent main config screen"
-#~ msgstr "Pantalla principal de configurci&oacute; de l'agent"
-
-#~ msgid "Select agent to modify"
-#~ msgstr "Seleccioni l'agent a modificar"
-
-#~ msgid "Name / Type"
-#~ msgstr "Nom/ Tipus"
-
-#~ msgid "Detailed alert view"
-#~ msgstr "Vista detallada de l'alerta"
-
-#~ msgid "Detailed full view"
-#~ msgstr "Vista completa detallada"
-
-#~ msgid "Agent down default alert"
-#~ msgstr "Alerta per defecte d'agent fora de servei"
-
-#~ msgid "Pandora Main setup "
-#~ msgstr "Configuraci&oacute; principal del Pandora "
-
-#~ msgid "Internal Audit Pages"
-#~ msgstr "Paginaci&oacute; de la auditoria interna"
-
-#~ msgid "Log type filter"
-#~ msgstr "Tipus de filtre pel Log"
-
-#~ msgid "Purge all data"
-#~ msgstr "Purgar totes les dades"
-
-#~ msgid "Database Manipulation"
-#~ msgstr "Operacions a la base de dades"
-
-#~ msgid "Database compact"
-#~ msgstr "Compactar base de dades"
-
-#~ msgid "Configure"
-#~ msgstr "Configure"
-
-#~ msgid "Checked by"
-#~ msgstr "Comprobat per"
-
-#~ msgid "Resolution (%)"
-#~ msgstr "Resoluci&oacute; (%)"
-
-#~ msgid "(*) Please enter date with format yyyy/mm/dd hh:mm:ss"
-#~ msgstr ""
-#~ "(*) Si us plaus introdueix la data amb el seguent format yyyy/mm/dd hh:mm:ss"
-
-#~ msgid "There are "
-#~ msgstr "Hi ha "
-
-#~ msgid "users defined in Pandora"
-#~ msgstr "usuaris definits en el Pandora"
-
-#~ msgid "alerts defined in Pandora"
-#~ msgstr "alertes definides en el Pandora"
-
-#~ msgid "data modules stored in Pandora Database"
-#~ msgstr "modules de dades en la base de dades del Pandora"
-
-#~ msgid "Last data received at "
-#~ msgstr "&uacute;ltimes dades rebudes a les "
-
-#~ msgid "Pandora general statistics"
-#~ msgstr "Estad&iacute;stiques generals del Pandora"
-
-#~ msgid "Average"
-#~ msgstr "Mitjana"
-
-#~ msgid "Monthly graph"
-#~ msgstr "Gr&agrave;fica mensual"
-
-#~ msgid "Weekly graph"
-#~ msgstr "Gr&agrave;fica setmanal"
-
-#~ msgid "Hourly graph"
-#~ msgstr "Gr&agrave;fica horaria"
-
-#~ msgid "There was a problem creating keepalive module in new agent"
-#~ msgstr "Hi ha hagut un problema creant un m&ograve;dul 'keepalive'"
-
-#~ msgid ""
-#~ "User profiles in Pandora define which users can access Pandora as well as "
-#~ "what each user can do. Groups define elements in common among various users. "
-#~ "Each user could be in one or more groups at any one time. Each group has "
-#~ "user profiles which are defined and attached to it. A profile is a list of "
-#~ "things a user can do, such as view incidents, manage database or other. A "
-#~ "list of available profiles is defined below by the local Pandora "
-#~ "administrators"
-#~ msgstr ""
-#~ "Els perfils dels usuaris en el Pandora estableix qui pot accedir i que pot "
-#~ "fer en el sistema. Els grups defineixen elements en com&uacute; entre "
-#~ "diversos usuaris. Cada usuari pot estar en un o m&eacute;s grups a la "
-#~ "vegada. Cada grup te una serie de perfils predefinits. Un perfil es una "
-#~ "llista de cosses que un usuari por fer, veure incidents, gestionar la base "
-#~ "de dades, etc. M&eacute;s abaix hi ha una llista de perfils disponibles que "
-#~ "han sigut creats pels administradors del Pandora."
-
-#~ msgid ""
-#~ "This user has permissions to manage all. This is admin user and overwrites "
-#~ "all permissions given in profiles/groups."
-#~ msgstr ""
-#~ "Aquest usuari te perm&iacute;s per gestionar-ho tot. Aquest usuari es un "
-#~ "administrador i pot fer el que vulgui mes enll&agrave; del que extableixin "
-#~ "el perfils o grups."
-
-#~ msgid "This button refresh info about database usage among time"
-#~ msgstr ""
-#~ "Aquest but&ograve; refresca la informaci&oacute; sobre l'utilitzaci&oacute; "
-#~ "de la base de dades en funci&oacute; del temps."
-
-#~ msgid ""
-#~ "Use this combo to select agent for operation. You need to select an agent to "
-#~ "purge data and to get info about database usage"
-#~ msgstr ""
-#~ "Utilitza aquest 'combo' per seleccionar l'agent sobre el cual vols operar. "
-#~ "Es necessari seleccionar un agent per purgar dades i per obtenir "
-#~ "informaci&oacute; sobre l'us de la base de dades."
-
-#~ msgid "ERROR: At this moment only Global Admin can manage profiles"
-#~ msgstr ""
-#~ "ERROR: En aquest moment nom&eacute;s l'Administrador Global pot gestionar "
-#~ "perfils."
-
-#~ msgid "Agents Reading rights"
-#~ msgstr "Permisos de Lectura dels agents"
-
-#~ msgid "Agents Writing rights"
-#~ msgstr "Permisos de Escriptura dels agents"
-
-#~ msgid "Agents Management rights"
-#~ msgstr "Permisos de Gesti&oacute; dels agents"
-
-#~ msgid "System Incidents Reading rights"
-#~ msgstr "Permisos de Lectura del incidents de sistema"
-
-#~ msgid "System Incidents Writing rights"
-#~ msgstr "Permisos de Escriptura del incidents de sistema"
-
-#~ msgid "System Incidents Management rights"
-#~ msgstr "Permisos de Gesti&oacute; del incidents de sistema"
-
-#~ msgid "Alerts Edition rights"
-#~ msgstr "Permisos d'edici&oacute; de les alertes"
-
-#~ msgid "Alerts Management rights"
-#~ msgstr "Permisos de gesti&oacute; de les alertes"
-
-#~ msgid "Users Management rights"
-#~ msgstr "Permisos de gesti&oacute; de usuaris"
-
-#~ msgid "Database Management rights"
-#~ msgstr "Permisos de gesti&oacute; de les bases de dades"
-
-#~ msgid "Pandora System Management rights"
-#~ msgstr "Permisos de gesti&oacute; del sistema Pandora"
-
-#~ msgid "From Agent"
-#~ msgstr "Des de l'Agent"
-
-#~ msgid "Destination"
-#~ msgstr "Dest&iacute;"
-
-#~ msgid "Packets by date range"
-#~ msgstr "Paquets per rang de dates"
-
-#~ msgid "Total events"
-#~ msgstr "Events en total"
-
-#~ msgid "Incidents"
-#~ msgstr "Incidents"
-
-#~ msgid "group_detail"
-#~ msgstr "Detalls del grup"
-
-#~ msgid "Pandora Database"
-#~ msgstr "Base de dades del Pandora"
-
-#~ msgid "It is necesary to select modules or alerts to delete"
-#~ msgstr "Es necessari seleccionar els m&ograve;duls o alertes per esborrar"
-
-#~ msgid "There was a problem deleting note"
-#~ msgstr "Hi ha hagut un problema esborrant la nota"
-
-#~ msgid "Incident writers"
-#~ msgstr "Crador de l'incident"
-
-#~ msgid "This field can't be changed while in Edition mode"
-#~ msgstr "Aquest camp no pot ser modificat mentre s'est&agrave; editant"
-
-#~ msgid " so there are no alerts"
-#~ msgstr " doncs no hi ha alertes"
-
-#~ msgid "SNMP"
-#~ msgstr "SNMP"
-
-#~ msgid "There are no events"
-#~ msgstr "No hi ha cap event"
-
-#~ msgid "Agent module share out"
-#~ msgstr "Distribuci&oacute; de m&ograve;duls"
-
-#~ msgid "Truetype fonts"
-#~ msgstr "Fonts Truetype"
-
-#~ msgid "Right to Left"
-#~ msgstr "Dre. a Esq."
-
-#~ msgid "Left to Right"
-#~ msgstr "Esq. a Dre."
-
-#~ msgid "Cancel"
-#~ msgstr "Cancel.lar"
-
-#~ msgid "Network module refresh executed"
-#~ msgstr "Executat el refresc del m&ograve;dul de xarxa"
-
-#~ msgid "Help"
-#~ msgstr "Ajuda"
-
-#~ msgid "active_console"
-#~ msgstr "Consola activa"
-
-#~ msgid "Agent overview"
-#~ msgstr "Agent overview"
 
 #: ../../reporting/stat_win.php:46
 #: ../../operation/agentes/datos_agente.php:120
@@ -392,28 +29,28 @@ msgstr "Hi ha hagut un problema localitzant l'origen de la gr&agrave;fica"
 #: ../../include/functions.php:533
 #: ../../operation/reporting/graph_viewer.php:122
 msgid "1 hour"
-msgstr ""
+msgstr "Una hora"
 
 #: ../../reporting/stat_win.php:55 ../../reporting/stat_win.php:219
 #: ../../godmode/reporting/graph_builder.php:336
 #: ../../godmode/reporting/graph_builder.php:390
 #: ../../include/functions.php:536
 msgid "2 hours"
-msgstr ""
+msgstr "2 hores"
 
 #: ../../reporting/stat_win.php:57 ../../reporting/stat_win.php:220
 #: ../../godmode/reporting/graph_builder.php:342
 #: ../../godmode/reporting/graph_builder.php:392
 #: ../../include/functions.php:539
 msgid "6 hours"
-msgstr ""
+msgstr "Sis hores"
 
 #: ../../reporting/stat_win.php:59 ../../reporting/stat_win.php:221
 #: ../../godmode/reporting/graph_builder.php:345
 #: ../../godmode/reporting/graph_builder.php:393
 #: ../../include/functions.php:542
 msgid "12 hours"
-msgstr "12 hores"
+msgstr "Dotze hores"
 
 #: ../../reporting/stat_win.php:61 ../../reporting/stat_win.php:222
 #: ../../godmode/reporting/graph_builder.php:348
@@ -431,19 +68,19 @@ msgstr ""
 #: ../../include/functions.php:548
 #: ../../operation/reporting/graph_viewer.php:128
 msgid "2 days"
-msgstr ""
+msgstr "Dos dies"
 
 #: ../../reporting/stat_win.php:65 ../../reporting/stat_win.php:224
 #: ../../include/functions.php:551
 msgid "5 days"
-msgstr ""
+msgstr "Cinc dies"
 
 #: ../../reporting/stat_win.php:67 ../../reporting/stat_win.php:225
 #: ../../godmode/reporting/reporting_builder.php:390
 #: ../../include/functions.php:554
 #: ../../operation/reporting/graph_viewer.php:129
 msgid "1 week"
-msgstr ""
+msgstr "1 setmana"
 
 #: ../../reporting/stat_win.php:69 ../../reporting/stat_win.php:226
 #: ../../godmode/reporting/map_builder.php:373
@@ -458,14 +95,14 @@ msgstr "15 dies"
 #: ../../include/functions.php:560
 #: ../../operation/reporting/graph_viewer.php:130
 msgid "1 month"
-msgstr ""
+msgstr "Un mes"
 
 #: ../../reporting/stat_win.php:73 ../../reporting/stat_win.php:228
 #: ../../godmode/reporting/graph_builder.php:366
 #: ../../godmode/reporting/graph_builder.php:399
 #: ../../include/functions.php:563
 msgid "2 months"
-msgstr ""
+msgstr "Dos mesos"
 
 #: ../../reporting/stat_win.php:75 ../../reporting/stat_win.php:229
 #: ../../godmode/reporting/graph_builder.php:369
@@ -474,7 +111,7 @@ msgstr ""
 #: ../../include/functions.php:566
 #: ../../operation/reporting/graph_viewer.php:131
 msgid "6 months"
-msgstr ""
+msgstr "Sis mesos"
 
 #: ../../reporting/stat_win.php:114
 #: ../../godmode/agentes/module_manager_editor_wmi.php:211
@@ -485,7 +122,7 @@ msgstr ""
 #: ../../include/functions.php:1007
 #: ../../operation/reporting/reporting_viewer.php:312
 msgid "Max. Value"
-msgstr "Valor m&agrave;xim"
+msgstr "Valor màxim"
 
 #: ../../reporting/stat_win.php:116 ../../include/functions.php:1006
 #: ../../operation/reporting/reporting_viewer.php:297
@@ -501,7 +138,7 @@ msgstr "Valor Mig"
 #: ../../include/functions.php:1008
 #: ../../operation/reporting/reporting_viewer.php:327
 msgid "Min. Value"
-msgstr "Valor m&iacute;nim"
+msgstr "Valor mínim"
 
 #: ../../reporting/stat_win.php:187
 msgid "Refresh time"
@@ -509,7 +146,7 @@ msgstr "Temps de refresc"
 
 #: ../../reporting/stat_win.php:191
 msgid "Avg. Only"
-msgstr ""
+msgstr "Només mitja"
 
 #: ../../reporting/stat_win.php:198
 msgid "Begin date"
@@ -569,7 +206,7 @@ msgstr "Greu"
 
 #: ../../reporting/fgraph.php:1043
 msgid "Very serious"
-msgstr ""
+msgstr "Molt greu"
 
 #: ../../reporting/fgraph.php:1044 ../../reporting/fgraph.php:1264
 #: ../../include/functions.php:673 ../../include/functions.php:1157
@@ -584,17 +221,17 @@ msgstr "Manteniment"
 #: ../../reporting/fgraph.php:1272 ../../include/functions.php:676
 #: ../../include/functions.php:1158 ../../include/functions.php:1178
 msgid "Informational"
-msgstr ""
+msgstr "Informatiu"
 
 #: ../../reporting/fgraph.php:1279 ../../include/functions.php:679
 #: ../../include/functions.php:1159 ../../include/functions.php:1180
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
 #: ../../reporting/fgraph.php:1286 ../../include/functions.php:682
 #: ../../include/functions.php:1160 ../../include/functions.php:1182
 msgid "Warning"
-msgstr "Advertència"
+msgstr "Avís"
 
 #: ../../reporting/fgraph.php:1293 ../../include/functions.php:685
 #: ../../include/functions.php:1161 ../../include/functions.php:1184
@@ -603,23 +240,23 @@ msgstr "Crític"
 
 #: ../../reporting/fgraph.php:1468
 msgid "Today"
-msgstr ""
+msgstr "Avui"
 
 #: ../../reporting/fgraph.php:1469
 msgid "Week"
-msgstr ""
+msgstr "Setmana"
 
 #: ../../reporting/fgraph.php:1470
 msgid "Month"
-msgstr ""
+msgstr "Mes"
 
 #: ../../reporting/fgraph.php:1471
 msgid "Months"
-msgstr ""
+msgstr "Mesos"
 
 #: ../../reporting/fgraph.php:1472
 msgid "Older"
-msgstr ""
+msgstr "Més vell"
 
 #: ../../reporting/fgraph.php:1504
 msgid "no data"
@@ -627,25 +264,25 @@ msgstr "sense dades"
 
 #: ../../reporting/fgraph.php:1571
 msgid "Out of limits"
-msgstr "Fora dels l&iacute;mits"
+msgstr "Fora limits"
 
 #: ../../reporting/fgraph.php:2129 ../../include/functions_reporting.php:342
 #: ../../operation/agentes/estado_grupo.php:162
 #: ../../operation/agentes/ver_agente.php:106
 msgid "Alerts fired"
-msgstr ""
+msgstr "Alertes activades"
 
 #: ../../reporting/fgraph.php:2130
 msgid "Alerts not fired"
-msgstr ""
+msgstr "Cap alerta activada"
 
 #: ../../reporting/fgraph.php:2139
 msgid "Monitors BAD"
-msgstr ""
+msgstr "Monitors en fallida"
 
 #: ../../reporting/fgraph.php:2140
 msgid "Monitors OK"
-msgstr ""
+msgstr "Monitors correctes"
 
 #: ../../general/pandora_help.php:22
 msgid "Pandora FMS help system"
@@ -653,29 +290,31 @@ msgstr ""
 
 #: ../../general/pandora_help.php:32
 msgid "Help system error"
-msgstr ""
+msgstr "Error al sistema d'ajuda"
 
 #: ../../general/pandora_help.php:38
 msgid ""
 "Pandora FMS help system has been called with a help reference that currently "
 "don't exist. There is no help content to show."
 msgstr ""
+"El sistema d'ajuda de Pandora FMS ha estat cridat amb una referència que "
+"actualemnt no existeix. No hi ha ajudes a mostrar."
 
 #: ../../general/pandora_help.php:44
 msgid "Pandora FMS Help System"
-msgstr ""
+msgstr "Ajuda de Pandora FMS"
 
 #: ../../general/login_page.php:32
 msgid "Pandora FMS Web Console"
-msgstr ""
+msgstr "Consola web de Pandora FMS"
 
 #: ../../general/login_page.php:38
 msgid "Build"
-msgstr ""
+msgstr "Munta"
 
 #: ../../general/login_page.php:40
 msgid "Login"
-msgstr "Entrar al sistema"
+msgstr "Inici de sessió"
 
 #: ../../general/login_page.php:43
 #: ../../godmode/agentes/module_manager_editor_wmi.php:160
@@ -694,10 +333,11 @@ msgstr "Pagina generada a les"
 #: ../../general/footer.php:36
 msgid "Pandora FMS console is best viewed with Firefox web browser"
 msgstr ""
+"La consola web de Pandora FMS esta optimitzada per el navegador Firefox"
 
 #: ../../general/logoff.php:22
 msgid "Logged Out"
-msgstr "Sessi&oacute; finalitzada"
+msgstr "Fi de sessió"
 
 #: ../../general/logoff.php:31
 msgid ""
@@ -709,7 +349,7 @@ msgstr ""
 
 #: ../../general/links_menu.php:22 ../../godmode/menu.php:218
 msgid "Links"
-msgstr "Enlla&ccedil;os"
+msgstr "Enllaços"
 
 #: ../../general/noaccess.php:22
 msgid "You don't have access to this page"
@@ -5604,3 +5244,366 @@ msgstr "Remitent"
 #: ../../operation/messages/message.php:215
 msgid "No subject"
 msgstr "Sense asumpte"
+
+#~ msgid "is a <b>OpenSource Software Project, licensed under GPL terms</b>"
+#~ msgstr "es un <b>Projecte de Software GPL</b>"
+
+#~ msgid "You're not connected"
+#~ msgstr "No est&aacute;s conectat"
+
+#~ msgid "There was a problem deleting server"
+#~ msgstr "Hi ha hagut un problema esborrant el servidor"
+
+#~ msgid "There was a problem updating server"
+#~ msgstr "Hi ha hagut un problema actualitzant el servidor"
+
+#~ msgid "Press here to get DB Info as text"
+#~ msgstr "Prem aqu&iacute; per obtenir la base de dades en format texte"
+
+#~ msgid "Purge task launched for agent id "
+#~ msgstr "Purgar tasques llan&ccedil;ades per l'gent amb id "
+
+#~ msgid ""
+#~ "Please be patient. This operation can be very long in time (5-10 minutes)"
+#~ msgstr "Si us plau esperi"
+
+#~ msgid "while deleting data for "
+#~ msgstr "mentre s'esborraven dades per "
+
+#~ msgid "Deleting records for module "
+#~ msgstr "Esborrant registres del m&ograve;dul "
+
+#~ msgid " in the Database"
+#~ msgstr " a la base de dades"
+
+#~ msgid "Packets three months old"
+#~ msgstr "Paquets dels tres &uacute;ltims mesos"
+
+#~ msgid "Packets one month old"
+#~ msgstr "Paquets del l'&uacute;ltim mes"
+
+#~ msgid "Packets two weeks old"
+#~ msgstr "Paquets de les &uacute;ltimes dues setmanes"
+
+#~ msgid "Packets one week old"
+#~ msgstr "Paquets del l'&uacute;ltima setmana"
+
+#~ msgid "Packets three days old"
+#~ msgstr "Paquets dels &uacute;ltims tres dies"
+
+#~ msgid "Packets one day old"
+#~ msgstr "Paquets del l'&uacute;ltim dia"
+
+#~ msgid "Purge data over 90 days"
+#~ msgstr "Purgar dades de m&eacute;s de 90 dies"
+
+#~ msgid "Purge data over 30 days"
+#~ msgstr "Purgar dades de m&eacute;s de 30 dies"
+
+#~ msgid "Purge data over 14 days"
+#~ msgstr "Purgar dades de m&eacute;s de 14 dies"
+
+#~ msgid "Purge data over 7 days"
+#~ msgstr "Purgar dades de m&eacute;s de 7 dies"
+
+#~ msgid "create_user_no"
+#~ msgstr "Hi ha hagut un problema creant l'usuari"
+
+#~ msgid "User successfully created"
+#~ msgstr "Usuari creat amb &egrave;xit"
+
+#~ msgid "delete_link_ok"
+#~ msgstr "Enlla&ccedil; esborrat amb &egrave;xit"
+
+#~ msgid "agent_exists"
+#~ msgstr "Aquest agent ja existeix"
+
+#~ msgid "add_module_ok"
+#~ msgstr "M&ograve;dul afegit amb &egrave;xit"
+
+#~ msgid "delete_module_ok"
+#~ msgstr "M&ograve;dul esborrat amb &egrave;xit"
+
+#~ msgid "delete_agent_ok"
+#~ msgstr "Agent esborrat amb &egrave;xit"
+
+#~ msgid "notfoundmod"
+#~ msgstr "M&ograve;dul no trobat"
+
+#~ msgid "noagents_del"
+#~ msgstr "No hi ha cap agent seleccionat per esborrar"
+
+#~ msgid "delete_profile_no"
+#~ msgstr "Hi ha hagut un problema esborrant el perfil"
+
+#~ msgid "Main Event View"
+#~ msgstr "Visor principal d'events"
+
+#~ msgid "m_from"
+#~ msgstr "De"
+
+#~ msgid "m_to"
+#~ msgstr "A"
+
+#~ msgid "new_message_g"
+#~ msgstr "Nou mensatge a un grup"
+
+#~ msgid "group_view"
+#~ msgstr "Detalls del grup d'agents"
+
+#~ msgid "Update_alert"
+#~ msgstr "Actualitzar alerta"
+
+#~ msgid "New Incident"
+#~ msgstr "Nou Incident"
+
+#~ msgid "Open with notes"
+#~ msgstr "Obert amb notes"
+
+#~ msgid "Delete incident"
+#~ msgstr "Esborrar incident"
+
+#~ msgid "Source IP(s)"
+#~ msgstr "IP(s) d'origen"
+
+#~ msgid "Destination IP(s)"
+#~ msgstr "IP(s) de destinaci&oacute;"
+
+#~ msgid "Last received data from Agent"
+#~ msgstr "&Uacute;ltima dada rebuda de l'agent"
+
+#~ msgid "Module Update/Create form"
+#~ msgstr "Formulari d'actualitzaci&oacute;/creaci&oacute; de moduls"
+
+#~ msgid "gpl_used"
+#~ msgstr "Dissenyat utilitzant eines y programari GPL"
+
+#~ msgid "Incident Main view"
+#~ msgstr "Vista Principal d'Incidents"
+
+#~ msgid "Agent main config screen"
+#~ msgstr "Pantalla principal de configurci&oacute; de l'agent"
+
+#~ msgid "Select agent to modify"
+#~ msgstr "Seleccioni l'agent a modificar"
+
+#~ msgid "Name / Type"
+#~ msgstr "Nom/ Tipus"
+
+#~ msgid "Detailed alert view"
+#~ msgstr "Vista detallada de l'alerta"
+
+#~ msgid "Detailed full view"
+#~ msgstr "Vista completa detallada"
+
+#~ msgid "Agent down default alert"
+#~ msgstr "Alerta per defecte d'agent fora de servei"
+
+#~ msgid "Pandora Main setup "
+#~ msgstr "Configuraci&oacute; principal del Pandora "
+
+#~ msgid "Internal Audit Pages"
+#~ msgstr "Paginaci&oacute; de la auditoria interna"
+
+#~ msgid "Log type filter"
+#~ msgstr "Tipus de filtre pel Log"
+
+#~ msgid "Purge all data"
+#~ msgstr "Purgar totes les dades"
+
+#~ msgid "Database Manipulation"
+#~ msgstr "Operacions a la base de dades"
+
+#~ msgid "Database compact"
+#~ msgstr "Compactar base de dades"
+
+#~ msgid "Configure"
+#~ msgstr "Configure"
+
+#~ msgid "Checked by"
+#~ msgstr "Comprobat per"
+
+#~ msgid "Resolution (%)"
+#~ msgstr "Resoluci&oacute; (%)"
+
+#~ msgid "(*) Please enter date with format yyyy/mm/dd hh:mm:ss"
+#~ msgstr ""
+#~ "(*) Si us plaus introdueix la data amb el seguent format yyyy/mm/dd hh:mm:ss"
+
+#~ msgid "There are "
+#~ msgstr "Hi ha "
+
+#~ msgid "users defined in Pandora"
+#~ msgstr "usuaris definits en el Pandora"
+
+#~ msgid "alerts defined in Pandora"
+#~ msgstr "alertes definides en el Pandora"
+
+#~ msgid "data modules stored in Pandora Database"
+#~ msgstr "modules de dades en la base de dades del Pandora"
+
+#~ msgid "Last data received at "
+#~ msgstr "&uacute;ltimes dades rebudes a les "
+
+#~ msgid "Pandora general statistics"
+#~ msgstr "Estad&iacute;stiques generals del Pandora"
+
+#~ msgid "Average"
+#~ msgstr "Mitjana"
+
+#~ msgid "Monthly graph"
+#~ msgstr "Gr&agrave;fica mensual"
+
+#~ msgid "Weekly graph"
+#~ msgstr "Gr&agrave;fica setmanal"
+
+#~ msgid "Hourly graph"
+#~ msgstr "Gr&agrave;fica horaria"
+
+#~ msgid "There was a problem creating keepalive module in new agent"
+#~ msgstr "Hi ha hagut un problema creant un m&ograve;dul 'keepalive'"
+
+#~ msgid ""
+#~ "User profiles in Pandora define which users can access Pandora as well as "
+#~ "what each user can do. Groups define elements in common among various users. "
+#~ "Each user could be in one or more groups at any one time. Each group has "
+#~ "user profiles which are defined and attached to it. A profile is a list of "
+#~ "things a user can do, such as view incidents, manage database or other. A "
+#~ "list of available profiles is defined below by the local Pandora "
+#~ "administrators"
+#~ msgstr ""
+#~ "Els perfils dels usuaris en el Pandora estableix qui pot accedir i que pot "
+#~ "fer en el sistema. Els grups defineixen elements en com&uacute; entre "
+#~ "diversos usuaris. Cada usuari pot estar en un o m&eacute;s grups a la "
+#~ "vegada. Cada grup te una serie de perfils predefinits. Un perfil es una "
+#~ "llista de cosses que un usuari por fer, veure incidents, gestionar la base "
+#~ "de dades, etc. M&eacute;s abaix hi ha una llista de perfils disponibles que "
+#~ "han sigut creats pels administradors del Pandora."
+
+#~ msgid ""
+#~ "This user has permissions to manage all. This is admin user and overwrites "
+#~ "all permissions given in profiles/groups."
+#~ msgstr ""
+#~ "Aquest usuari te perm&iacute;s per gestionar-ho tot. Aquest usuari es un "
+#~ "administrador i pot fer el que vulgui mes enll&agrave; del que extableixin "
+#~ "el perfils o grups."
+
+#~ msgid "This button refresh info about database usage among time"
+#~ msgstr ""
+#~ "Aquest but&ograve; refresca la informaci&oacute; sobre l'utilitzaci&oacute; "
+#~ "de la base de dades en funci&oacute; del temps."
+
+#~ msgid ""
+#~ "Use this combo to select agent for operation. You need to select an agent to "
+#~ "purge data and to get info about database usage"
+#~ msgstr ""
+#~ "Utilitza aquest 'combo' per seleccionar l'agent sobre el cual vols operar. "
+#~ "Es necessari seleccionar un agent per purgar dades i per obtenir "
+#~ "informaci&oacute; sobre l'us de la base de dades."
+
+#~ msgid "ERROR: At this moment only Global Admin can manage profiles"
+#~ msgstr ""
+#~ "ERROR: En aquest moment nom&eacute;s l'Administrador Global pot gestionar "
+#~ "perfils."
+
+#~ msgid "Agents Reading rights"
+#~ msgstr "Permisos de Lectura dels agents"
+
+#~ msgid "Agents Writing rights"
+#~ msgstr "Permisos de Escriptura dels agents"
+
+#~ msgid "Agents Management rights"
+#~ msgstr "Permisos de Gesti&oacute; dels agents"
+
+#~ msgid "System Incidents Reading rights"
+#~ msgstr "Permisos de Lectura del incidents de sistema"
+
+#~ msgid "System Incidents Writing rights"
+#~ msgstr "Permisos de Escriptura del incidents de sistema"
+
+#~ msgid "System Incidents Management rights"
+#~ msgstr "Permisos de Gesti&oacute; del incidents de sistema"
+
+#~ msgid "Alerts Edition rights"
+#~ msgstr "Permisos d'edici&oacute; de les alertes"
+
+#~ msgid "Alerts Management rights"
+#~ msgstr "Permisos de gesti&oacute; de les alertes"
+
+#~ msgid "Users Management rights"
+#~ msgstr "Permisos de gesti&oacute; de usuaris"
+
+#~ msgid "Database Management rights"
+#~ msgstr "Permisos de gesti&oacute; de les bases de dades"
+
+#~ msgid "Pandora System Management rights"
+#~ msgstr "Permisos de gesti&oacute; del sistema Pandora"
+
+#~ msgid "From Agent"
+#~ msgstr "Des de l'Agent"
+
+#~ msgid "Destination"
+#~ msgstr "Dest&iacute;"
+
+#~ msgid "Packets by date range"
+#~ msgstr "Paquets per rang de dates"
+
+#~ msgid "Total events"
+#~ msgstr "Events en total"
+
+#~ msgid "Incidents"
+#~ msgstr "Incidents"
+
+#~ msgid "group_detail"
+#~ msgstr "Detalls del grup"
+
+#~ msgid "Pandora Database"
+#~ msgstr "Base de dades del Pandora"
+
+#~ msgid "It is necesary to select modules or alerts to delete"
+#~ msgstr "Es necessari seleccionar els m&ograve;duls o alertes per esborrar"
+
+#~ msgid "There was a problem deleting note"
+#~ msgstr "Hi ha hagut un problema esborrant la nota"
+
+#~ msgid "Incident writers"
+#~ msgstr "Crador de l'incident"
+
+#~ msgid "This field can't be changed while in Edition mode"
+#~ msgstr "Aquest camp no pot ser modificat mentre s'est&agrave; editant"
+
+#~ msgid " so there are no alerts"
+#~ msgstr " doncs no hi ha alertes"
+
+#~ msgid "SNMP"
+#~ msgstr "SNMP"
+
+#~ msgid "There are no events"
+#~ msgstr "No hi ha cap event"
+
+#~ msgid "Agent module share out"
+#~ msgstr "Distribuci&oacute; de m&ograve;duls"
+
+#~ msgid "Truetype fonts"
+#~ msgstr "Fonts Truetype"
+
+#~ msgid "Right to Left"
+#~ msgstr "Dre. a Esq."
+
+#~ msgid "Left to Right"
+#~ msgstr "Esq. a Dre."
+
+#~ msgid "Cancel"
+#~ msgstr "Cancel.lar"
+
+#~ msgid "Network module refresh executed"
+#~ msgstr "Executat el refresc del m&ograve;dul de xarxa"
+
+#~ msgid "Help"
+#~ msgstr "Ajuda"
+
+#~ msgid "active_console"
+#~ msgstr "Consola activa"
+
+#~ msgid "Agent overview"
+#~ msgstr "Agent overview"

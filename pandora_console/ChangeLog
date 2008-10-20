@@ -1,3 +1,22 @@
+2008-10-20  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* pandoradb_data.sql, pandora_db.sql: id_npc was rendered unnecessary
+	with the last rewrite of the profiles page and id_np should really be
+	the key since that what we're selecting/sorting on.
+
+	* operation/events/events.php: Fixed Bug #2174790 and fixed the
+	brackets being in all the wrong places. Also added checks so that only 
+	admins can retrieve system events
+
+	* include/functions_db.php: Added an option to get_user_groups so that
+	other privileges than AR can be retrieved.
+
+	* operation/visual_console/index.php: Added ACL check. Security issue
+	reported in bug #2174790
+
+	* operation/menu.php: Added ACL check. Security issue reported in bug
+	#2174790
+
 2008-10-20  Esteban Sanchez  <estebans@artica.es>
 
 	* operation/agentes/estado_agente.php: Checking if there are monitors

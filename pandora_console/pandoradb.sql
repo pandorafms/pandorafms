@@ -413,10 +413,9 @@ CREATE TABLE IF NOT EXISTS `tnetwork_profile` (
 
 
 CREATE TABLE IF NOT EXISTS `tnetwork_profile_component` (
-  `id_npc` int(10) unsigned NOT NULL auto_increment,
-  `id_nc` int(10) unsigned NOT NULL default '0',
-  `id_np` int(10) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id_npc`)
+  `id_nc` mediumint(8) unsigned NOT NULL default '0',
+  `id_np` mediumint(8) unsigned NOT NULL default '0',
+  KEY `id_np` (`id_np`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

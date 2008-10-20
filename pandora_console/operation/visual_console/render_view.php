@@ -19,11 +19,7 @@
 // Login check
 require ('include/functions_visual_map.php');
 
-if (check_login () != 0) {
-	audit_db ($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to access graph builder");
-	include ("general/noaccess.php");
-	exit;
-}
+check_login ();
 
 $id_layout = (int) get_parameter ('id');
 $refr = (int) get_parameter ('refr');
@@ -53,10 +49,16 @@ $bheight = $layout["height"];
 
 $pure_url = "&pure=".$config["pure"];
 
+if (! give_acl ($config["id_user"], $id_group, "AR")) {
+	audit_db ($config["id_user"], $REMOTE_ADDR, "ACL Violation", "Trying to access visual console without group access");
+	require ("general/noaccess.php");
+	exit;
+}
+
 // Render map
 echo "<h1>".$layout_name."&nbsp;&nbsp;";
 
-if ($config["pure"] == 0){
+if ($config["pure"] == 0) {
 	echo "<a href='index.php?sec=visualc&sec2=operation/visual_console/render_view&id=$id_layout&refr=$refr&pure=1'>";
 	echo "<img src='images/monitor.png' title='".__('Full screen mode')."'>";
 	echo "</a>";

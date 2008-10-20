@@ -1078,10 +1078,10 @@ function list_users ($order = "nombre_real") {
  * Get all the groups a user has reading privileges.
  * 
  * @param id_user User id
- * 
- * @return A list of the groups the user has reading privileges.
+ * @param privilege The privilege to evaluate
+ * @return A list of the groups the user has certain privileges.
  */
-function get_user_groups ($id_user = 0) {
+function get_user_groups ($id_user = 0, $privilege = "AR") {
 	if ($id_user == 0) {
 		global $config;
 		$id_user = $config['id_user'];
@@ -1094,7 +1094,7 @@ function get_user_groups ($id_user = 0) {
 		return $user_groups;
 
 	foreach ($groups as $group) {
-		if (! give_acl ($id_user, $group["id_grupo"], "AR"))
+		if (! give_acl ($id_user, $group["id_grupo"], $privilege))
 			continue;
 		$user_groups[$group['id_grupo']] = $group['nombre'];
 	}

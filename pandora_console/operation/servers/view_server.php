@@ -117,7 +117,7 @@ foreach ($servers as $server) {
 		$data[5] .= ' <img src="images/master.png" title="'.__('Master server').'">';
 	}
 	if ($server['checksum'] == 1){
-		$data[5] .= ' <img src="images/binary.png" title="'.__('Check').'">';
+		$data[5] .= ' <img src="images/binary.png" title="'.__('MD5 check').'">';
 	}
 	$data[6] = $server['version'];
 	$data[7] = human_time_comparation ($server['keepalive']) . "</td>";

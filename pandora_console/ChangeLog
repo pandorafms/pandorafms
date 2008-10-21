@@ -1,3 +1,26 @@
+2008-10-21  Jorge Gonzalez  <jorgegonz@svn.gnome.org>
+
+	* operation/servers/view_server.php,
+	  godmode/agentes/module_manager_editor_network.php,
+	  godmode/agentes/module_manager_editor_wmi.php,
+	  godmode/agentes/module_manager_editor_plugin.php,
+	  godmode/agentes/module_manager_editor_prediction.php,
+	  godmode/agentes/module_manager_editor_data.php,
+	  godmode/agentes/configurar_agente.php: added translation context.
+
+	* include/languages/cs.po, include/languages/pt_BR.po,
+          include/languages/es.po, include/languages/uk.po,
+          include/languages/ro.po, include/languages/fr.po,
+          include/languages/ca.po, include/languages/de.po,
+          include/languages/sv.po, include/languages/zh_TW.po,
+          include/languages/hi.po, include/languages/zh_CN.po,
+          include/languages/te.po, include/languages/eu.po,
+          include/languages/hu.po, include/languages/ru.po,
+          include/languages/gl.po, include/languages/pl.po,
+          include/languages/it.po, include/languages/sl.po,
+          include/languages/pt.po, include/languages/ast.po,
+          include/languages/index.pot: Updated translations from Rosetta, thanks to all contributors.
+
 2008-10-21  Manuel Arostegui  <marostegui@artica.es>
 
 	* operation/menu.php: Fixed warning message if no layouts were defined

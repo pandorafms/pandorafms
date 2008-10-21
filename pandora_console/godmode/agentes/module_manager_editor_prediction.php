@@ -150,7 +150,7 @@ while ($row=mysql_fetch_array($result)){
     echo "<option value='".$row["id_mg"]."'>".$row["name"]."</option>";
 }
 echo '</select>';
-
+// Export target is a server where the data will be sent
 echo '<td class="datos">'.__('Export target')."</td>";
 echo '<td class="datos"><select name="form_id_export">';
 if ($form_id_export != 0){

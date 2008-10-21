@@ -1,3 +1,9 @@
+2008-10-21  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/profiles/profile_list.php: Rewritten be more consistent and
+	use generic functions for HTML output. Also a bug when creating a
+	profile is fixed.
+
 2008-10-20  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* pandoradb_data.sql, pandora_db.sql: id_npc was rendered unnecessary

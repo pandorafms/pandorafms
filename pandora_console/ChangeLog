@@ -1,5 +1,16 @@
 2008-10-21  Esteban Sanchez  <estebans@artica.es>
 
+	* include/functions.php: Improved human_time_comparation() so it won't
+	return nothing like "1.7 minutes". Make enterprise_include use
+	ENTERPRISE_DIR. Style correction.
+
+	* operation/agentes/estado_agente.php: Uses generic functions. Reduce
+	one indent level by using continue on a loop. Fixes status flag to
+	check if agent is down with no monitors. Show the exact date on last
+	contact column title. Style corrections.
+
+2008-10-21  Esteban Sanchez  <estebans@artica.es>
+
 	* godmode/profiles/profile_list.php: Rewritten be more consistent and
 	use generic functions for HTML output. Also a bug when creating a
 	profile is fixed.

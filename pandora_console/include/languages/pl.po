@@ -8,19 +8,19 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2008-09-10 15:55+0200\n"
-"PO-Revision-Date: 2008-09-10 18:03+0000\n"
+"PO-Revision-Date: 2008-10-20 12:34+0000\n"
 "Last-Translator: Marcin <flux71@gmail.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-10-13 07:48+0000\n"
+"X-Launchpad-Export-Date: 2008-10-21 13:41+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../../reporting/stat_win.php:46
 #: ../../operation/agentes/datos_agente.php:120
 msgid "There was a problem locating the source of the graph"
-msgstr "Problem przy lokalizacji źródła wykresu"
+msgstr "Wystąpił błąd podczas lokalizacji źródła wykresu"
 
 #: ../../reporting/stat_win.php:53 ../../reporting/stat_win.php:218
 #: ../../godmode/reporting/graph_builder.php:333
@@ -142,7 +142,7 @@ msgstr "Min. Wartość"
 
 #: ../../reporting/stat_win.php:187
 msgid "Refresh time"
-msgstr ""
+msgstr "Czas odświeżania"
 
 #: ../../reporting/stat_win.php:191
 msgid "Avg. Only"
@@ -150,15 +150,15 @@ msgstr "Tylko Śr."
 
 #: ../../reporting/stat_win.php:198
 msgid "Begin date"
-msgstr ""
+msgstr "Data startu"
 
 #: ../../reporting/stat_win.php:203
 msgid "Zoom factor"
-msgstr ""
+msgstr "Powiększenie"
 
 #: ../../reporting/stat_win.php:214
 msgid "Time range"
-msgstr ""
+msgstr "Przedział czasowy"
 
 #: ../../reporting/stat_win.php:233
 msgid "Show events"
@@ -379,7 +379,7 @@ msgstr " nieprzeczytanych wiadomości."
 
 #: ../../general/logon_ok.php:48 ../../godmode/menu.php:226
 msgid "Site news"
-msgstr ""
+msgstr "Nowości na stronie"
 
 #: ../../general/logon_ok.php:55
 msgid "by"
@@ -421,7 +421,7 @@ msgstr ""
 
 #: ../../general/logon_ok.php:129 ../../operation/agentes/tactical.php:101
 msgid "of well initialized modules"
-msgstr ""
+msgstr "dobrze zainicjowanych modułów"
 
 #: ../../general/logon_ok.php:132 ../../operation/agentes/tactical.php:102
 msgid "Alert level"
@@ -429,7 +429,7 @@ msgstr "Poziom czujności"
 
 #: ../../general/logon_ok.php:133 ../../operation/agentes/tactical.php:103
 msgid "of non-fired alerts"
-msgstr ""
+msgstr "nie odpalonych powiadomień"
 
 #: ../../general/logon_ok.php:140
 msgid "Pandora FMS Overview"
@@ -548,7 +548,7 @@ msgstr ""
 #: ../../extensions/update_manager/main.php:36
 #: ../../extensions/update_manager.php:115
 msgid "Update manager"
-msgstr ""
+msgstr "Menedżer aktualizacji"
 
 #: ../../extensions/update_manager/main.php:42
 msgid ""
@@ -586,7 +586,7 @@ msgstr "Pdłączanie do serwera zawiodło"
 
 #: ../../extensions/update_manager/main.php:70
 msgid "Server authorization rejected"
-msgstr ""
+msgstr "Autoryzacja serwera odrzucona"
 
 #: ../../extensions/update_manager/main.php:72
 #: ../../extensions/update_manager.php:98
@@ -791,7 +791,7 @@ msgstr "Ustawienia menedżera aktualizacji"
 #: ../../godmode/modules/manage_network_templates_form.php:51
 #: ../../godmode/modules/manage_network_templates_form.php:86
 msgid "Created successfully"
-msgstr ""
+msgstr "Utworzono pomyślnie"
 
 #: ../../godmode/reporting/map_builder.php:70
 #: ../../godmode/reporting/map_builder.php:169 ../../godmode/setup/news.php:42
@@ -1862,7 +1862,7 @@ msgstr "Utwórz grupę"
 
 #: ../../godmode/groups/configure_group.php:48
 msgid "There was a problem loading group"
-msgstr ""
+msgstr "Wystąpił problem podczas wczytywania grupy"
 
 #: ../../godmode/groups/configure_group.php:57
 msgid "Update group"
@@ -2125,7 +2125,7 @@ msgstr "Łącze"
 
 #: ../../godmode/setup/news.php:96 ../../godmode/setup/news.php:125
 msgid "Site news management"
-msgstr ""
+msgstr "Zarządzanie nowościami ze strony"
 
 #: ../../godmode/setup/news.php:109 ../../godmode/setup/news.php:127
 #: ../../operation/messages/message.php:88

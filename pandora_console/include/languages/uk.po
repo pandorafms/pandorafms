@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2008-09-10 15:55+0200\n"
-"PO-Revision-Date: 2008-10-08 15:21+0000\n"
+"PO-Revision-Date: 2008-10-21 11:57+0000\n"
 "Last-Translator: Zhenka <eduma@mail.ru>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-10-13 07:49+0000\n"
+"X-Launchpad-Export-Date: 2008-10-21 13:41+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../../reporting/stat_win.php:46
@@ -571,11 +571,11 @@ msgstr ""
 
 #: ../../extensions/update_manager/main.php:66
 msgid "Your system is up-to-date"
-msgstr ""
+msgstr "Ваша система оновлена!"
 
 #: ../../extensions/update_manager/main.php:68
 msgid "Server connection failed"
-msgstr ""
+msgstr "Помилка з'єднання з сервером"
 
 #: ../../extensions/update_manager/main.php:70
 msgid "Server authorization rejected"
@@ -584,11 +584,11 @@ msgstr ""
 #: ../../extensions/update_manager/main.php:72
 #: ../../extensions/update_manager.php:98
 msgid "There's a new update for Pandora"
-msgstr ""
+msgstr "Є нове оновлення до Pandora"
 
 #: ../../extensions/update_manager/main.php:77
 msgid "Id"
-msgstr ""
+msgstr "ID"
 
 #: ../../extensions/update_manager/main.php:80
 #: ../../godmode/setup/news.php:129 ../../include/functions_db.php:1935
@@ -647,11 +647,11 @@ msgstr ""
 #: ../../operation/agentes/estado_alertas.php:291
 #: ../../operation/users/user.php:35
 msgid "Description"
-msgstr ""
+msgstr "Опис"
 
 #: ../../extensions/update_manager/main.php:89
 msgid "Overwrite local changes"
-msgstr ""
+msgstr "Переписати локальні зміни"
 
 #: ../../extensions/update_manager/main.php:93
 #: ../../extensions/update_manager/settings.php:70
@@ -694,19 +694,19 @@ msgstr ""
 #: ../../operation/events/events.php:275
 #: ../../operation/users/user_edit.php:137
 msgid "Update"
-msgstr ""
+msgstr "Оновити"
 
 #: ../../extensions/update_manager/main.php:98
 msgid "Your system version number is"
-msgstr ""
+msgstr "Номер версії системи"
 
 #: ../../extensions/update_manager/settings.php:38
 msgid "Update manager settings updated"
-msgstr ""
+msgstr "Налааштування мерендера оновлень - оновлені."
 
 #: ../../extensions/update_manager/settings.php:43
 msgid "Settings"
-msgstr ""
+msgstr "Налаштування"
 
 #: ../../extensions/update_manager/settings.php:49
 msgid "Customer key"
@@ -718,11 +718,11 @@ msgstr ""
 
 #: ../../extensions/update_manager/settings.php:55
 msgid "Update server path"
-msgstr ""
+msgstr "Шлях до сервера оновлень"
 
 #: ../../extensions/update_manager/settings.php:58
 msgid "Update server port"
-msgstr ""
+msgstr "Порт серверу оновлень"
 
 #: ../../extensions/update_manager/settings.php:61
 msgid "Binary input path"
@@ -734,15 +734,15 @@ msgstr ""
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:552
 msgid "Development"
-msgstr ""
+msgstr "Розробка"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:553
 msgid "Testing"
-msgstr ""
+msgstr "Тестування"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:554
 msgid "Public"
-msgstr ""
+msgstr "Публічний"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:555
 #: ../../godmode/groups/group_list.php:126
@@ -758,11 +758,11 @@ msgstr ""
 #: ../../godmode/agentes/alert_manager_editor.php:273
 #: ../../include/functions.php:768
 msgid "Disabled"
-msgstr ""
+msgstr "Вимкнений"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:563
 msgid "Database"
-msgstr ""
+msgstr "Бази даних"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:564
 msgid "Code / binary directory"
@@ -770,7 +770,7 @@ msgstr ""
 
 #: ../../extensions/update_manager.php:100
 msgid "More info"
-msgstr ""
+msgstr "Більше інформації"
 
 #: ../../extensions/update_manager.php:116
 msgid "Update manager settings"
@@ -784,7 +784,7 @@ msgstr ""
 #: ../../godmode/modules/manage_network_templates_form.php:51
 #: ../../godmode/modules/manage_network_templates_form.php:86
 msgid "Created successfully"
-msgstr ""
+msgstr "Створений успішно."
 
 #: ../../godmode/reporting/map_builder.php:70
 #: ../../godmode/reporting/map_builder.php:169 ../../godmode/setup/news.php:42
@@ -795,7 +795,7 @@ msgstr ""
 #: ../../godmode/modules/manage_network_templates_form.php:49
 #: ../../godmode/modules/manage_network_templates_form.php:84
 msgid "Not created. Error inserting data"
-msgstr ""
+msgstr "Не створений. Помилка додавання даних."
 
 #: ../../godmode/reporting/map_builder.php:83
 #: ../../godmode/reporting/reporting_builder.php:73
@@ -808,7 +808,7 @@ msgstr ""
 #: ../../operation/reporting/graph_viewer.php:30
 #: ../../operation/reporting/graph_viewer.php:35
 msgid "Deleted successfully"
-msgstr ""
+msgstr "Успішно видалений"
 
 #: ../../godmode/reporting/map_builder.php:85
 #: ../../godmode/reporting/reporting_builder.php:75
@@ -821,7 +821,7 @@ msgstr ""
 #: ../../operation/reporting/graph_viewer.php:32
 #: ../../operation/reporting/graph_viewer.php:37
 msgid "Not deleted. Error deleting data"
-msgstr ""
+msgstr "Не видалений. Помилка видалення"
 
 #: ../../godmode/reporting/map_builder.php:110
 msgid "Update layout successful"
@@ -838,7 +838,7 @@ msgstr ""
 #: ../../godmode/modules/manage_nc_groups.php:56
 #: ../../godmode/modules/manage_network_templates_form.php:100
 msgid "Updated successfully"
-msgstr ""
+msgstr "Успішно оновлений"
 
 #: ../../godmode/reporting/map_builder.php:243
 #: ../../godmode/reporting/reporting_builder.php:176
@@ -847,7 +847,7 @@ msgstr ""
 #: ../../godmode/modules/manage_nc_groups.php:54
 #: ../../godmode/modules/manage_network_templates_form.php:98
 msgid "Not updated. Error updating data"
-msgstr ""
+msgstr "Не оновлений. Помилка в оновленні."
 
 #: ../../godmode/reporting/map_builder.php:257
 #: ../../godmode/reporting/map_builder.php:292
@@ -861,7 +861,7 @@ msgstr ""
 #: ../../operation/reporting/custom_reporting.php:25
 #: ../../operation/menu.php:270
 msgid "Reporting"
-msgstr ""
+msgstr "Звіти"
 
 #: ../../godmode/reporting/map_builder.php:257
 #: ../../godmode/reporting/map_builder.php:293 ../../godmode/menu.php:159
@@ -870,7 +870,7 @@ msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:262
 msgid "Map name"
-msgstr ""
+msgstr "Назва карти."
 
 #: ../../godmode/reporting/map_builder.php:263
 #: ../../godmode/reporting/map_builder.php:305
@@ -898,7 +898,7 @@ msgstr ""
 #: ../../operation/agentes/estado_alertas.php:125
 #: ../../operation/events/events.php:224 ../../operation/events/events.php:319
 msgid "Group"
-msgstr ""
+msgstr "Група"
 
 #: ../../godmode/reporting/map_builder.php:264
 #: ../../godmode/reporting/map_builder.php:358
@@ -935,7 +935,7 @@ msgstr ""
 #: ../../operation/events/events.php:467
 #: ../../operation/messages/message.php:192
 msgid "Delete"
-msgstr ""
+msgstr "Видалити"
 
 #: ../../godmode/reporting/map_builder.php:288
 #: ../../godmode/reporting/map_builder.php:325
@@ -967,7 +967,7 @@ msgstr ""
 #: ../../operation/snmpconsole/snmp_alert.php:352
 #: ../../operation/snmpconsole/snmp_alert.php:359
 msgid "Create"
-msgstr ""
+msgstr "Створити"
 
 #: ../../godmode/reporting/map_builder.php:303
 #: ../../godmode/reporting/graph_builder.php:479
@@ -995,27 +995,27 @@ msgstr ""
 #: ../../operation/agentes/estado_alertas.php:59
 #: ../../operation/agentes/tactical.php:229 ../../operation/users/user.php:34
 msgid "Name"
-msgstr ""
+msgstr "Ім'я"
 
 #: ../../godmode/reporting/map_builder.php:307
 msgid "Background"
-msgstr ""
+msgstr "Фон"
 
 #: ../../godmode/reporting/map_builder.php:311
 #: ../../godmode/reporting/map_builder.php:405
 #: ../../godmode/reporting/graph_builder.php:308
 msgid "Width"
-msgstr ""
+msgstr "Ширина"
 
 #: ../../godmode/reporting/map_builder.php:313
 #: ../../godmode/reporting/map_builder.php:403
 #: ../../godmode/reporting/graph_builder.php:326
 msgid "Height"
-msgstr ""
+msgstr "Висота"
 
 #: ../../godmode/reporting/map_builder.php:333
 msgid "preview"
-msgstr ""
+msgstr "попередній перегляд"
 
 #: ../../godmode/reporting/map_builder.php:351
 msgid "Map element trash"
@@ -1023,23 +1023,23 @@ msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:352
 msgid "Drag an element here to delete from the map"
-msgstr ""
+msgstr "Пересуньте елемент сюди, щоб видалити з карти."
 
 #: ../../godmode/reporting/map_builder.php:365
 msgid "Hour"
-msgstr ""
+msgstr "Година"
 
 #: ../../godmode/reporting/map_builder.php:366
 #: ../../godmode/reporting/map_builder.php:367
 #: ../../godmode/reporting/map_builder.php:368
 #: ../../godmode/reporting/map_builder.php:369
 msgid "Hours"
-msgstr ""
+msgstr "Години"
 
 #: ../../godmode/reporting/map_builder.php:370
 #: ../../godmode/reporting/graph_builder.php:394
 msgid "Last day"
-msgstr ""
+msgstr "Останній день."
 
 #: ../../godmode/reporting/map_builder.php:371
 #: ../../godmode/servers/manage_recontask_form.php:91
@@ -1047,25 +1047,25 @@ msgstr ""
 #: ../../include/functions.php:493 ../../include/functions.php:516
 #: ../../operation/servers/view_server_detail.php:113
 msgid "days"
-msgstr ""
+msgstr "днів"
 
 #: ../../godmode/reporting/map_builder.php:372
 #: ../../godmode/reporting/graph_builder.php:357
 #: ../../godmode/reporting/graph_builder.php:396
 msgid "Last week"
-msgstr ""
+msgstr "Останній тиждень"
 
 #: ../../godmode/reporting/map_builder.php:374
 msgid "Last Month"
-msgstr ""
+msgstr "Останній місяць"
 
 #: ../../godmode/reporting/map_builder.php:375
 msgid "Two Months"
-msgstr ""
+msgstr "Два місяці"
 
 #: ../../godmode/reporting/map_builder.php:376
 msgid "Six Months"
-msgstr ""
+msgstr "Шість місяців"
 
 #: ../../godmode/reporting/map_builder.php:388
 msgid "Map element editor"
@@ -1073,15 +1073,15 @@ msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:389
 msgid "Drag an element here to edit the properties"
-msgstr ""
+msgstr "Пересуньте елемент сюди, щоб змінити його налаштування."
 
 #: ../../godmode/reporting/map_builder.php:397
 msgid "Label"
-msgstr ""
+msgstr "Мітка"
 
 #: ../../godmode/reporting/map_builder.php:399
 msgid "Label color"
-msgstr ""
+msgstr "Колір Мітки"
 
 #: ../../godmode/reporting/map_builder.php:401
 #: ../../godmode/reporting/reporting_builder.php:429
@@ -1105,7 +1105,7 @@ msgstr ""
 #: ../../operation/agentes/estado_alertas.php:290
 #: ../../operation/events/events.php:315
 msgid "Type"
-msgstr ""
+msgstr "Тип"
 
 #: ../../godmode/reporting/map_builder.php:407
 #: ../../godmode/reporting/graph_builder.php:215
@@ -1121,7 +1121,7 @@ msgstr ""
 #: ../../operation/agentes/estado_agente.php:158
 #: ../../operation/agentes/estado_alertas.php:288
 msgid "Agent"
-msgstr ""
+msgstr "Агент"
 
 #: ../../godmode/reporting/map_builder.php:409
 #: ../../godmode/reporting/graph_builder.php:216
@@ -1134,7 +1134,7 @@ msgstr ""
 #: ../../operation/reporting/reporting_viewer.php:207
 #: ../../operation/agentes/exportdata.php:174
 msgid "Module"
-msgstr ""
+msgstr "Модуль"
 
 #: ../../godmode/reporting/map_builder.php:411
 #: ../../godmode/reporting/graph_builder.php:380
@@ -1142,11 +1142,11 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.php:432
 #: ../../operation/reporting/graph_viewer.php:119
 msgid "Period"
-msgstr ""
+msgstr "Період"
 
 #: ../../godmode/reporting/map_builder.php:413
 msgid "Image"
-msgstr ""
+msgstr "Зображення"
 
 #: ../../godmode/reporting/map_builder.php:416
 #: ../../godmode/groups/group_list.php:109
@@ -1165,7 +1165,7 @@ msgstr ""
 #: ../../godmode/reporting/map_builder.php:454
 #: ../../operation/reporting/reporting_viewer.php:80
 msgid "Loading"
-msgstr ""
+msgstr "Завантаження"
 
 #: ../../godmode/reporting/graph_builder.php:83
 msgid "Graph stored successfully"
@@ -1210,11 +1210,11 @@ msgstr ""
 #: ../../operation/agentes/estado_agente.php:162
 #: ../../operation/agentes/tactical.php:232
 msgid "Modules"
-msgstr ""
+msgstr "Модулі"
 
 #: ../../godmode/reporting/graph_builder.php:304
 msgid "Factor"
-msgstr ""
+msgstr "Коефіцієнт"
 
 #: ../../godmode/reporting/graph_builder.php:314
 msgid "Render now"
@@ -1230,7 +1230,7 @@ msgstr ""
 #: ../../include/functions.php:823 ../../include/functions.php:912
 #: ../../include/functions_db.php:1885
 msgid "Yes"
-msgstr ""
+msgstr "Так"
 
 #: ../../godmode/reporting/graph_builder.php:319
 #: ../../godmode/reporting/graph_builder.php:321
@@ -1242,29 +1242,29 @@ msgstr ""
 #: ../../include/functions.php:825 ../../include/functions.php:914
 #: ../../include/functions_db.php:1887
 msgid "No"
-msgstr ""
+msgstr "Ні"
 
 #: ../../godmode/reporting/graph_builder.php:339
 #: ../../godmode/reporting/graph_builder.php:391
 msgid "3 hours"
-msgstr ""
+msgstr "3 години"
 
 #: ../../godmode/reporting/graph_builder.php:354
 msgid "4 days"
-msgstr ""
+msgstr "4 дні"
 
 #: ../../godmode/reporting/graph_builder.php:363
 #: ../../godmode/reporting/graph_builder.php:398
 msgid "Last month"
-msgstr ""
+msgstr "Останній місяць"
 
 #: ../../godmode/reporting/graph_builder.php:372
 msgid "1 year"
-msgstr ""
+msgstr "1 рік"
 
 #: ../../godmode/reporting/graph_builder.php:404 ../../operation/menu.php:165
 msgid "View events"
-msgstr ""
+msgstr "Показати події"
 
 #: ../../godmode/reporting/graph_builder.php:418
 msgid "Stacked"
@@ -1273,7 +1273,7 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:422
 #: ../../operation/reporting/graph_viewer.php:137
 msgid "Area"
-msgstr ""
+msgstr "Зона"
 
 #: ../../godmode/reporting/graph_builder.php:423
 #: ../../operation/reporting/graph_viewer.php:138
@@ -1283,7 +1283,7 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:424
 #: ../../operation/reporting/graph_viewer.php:139
 msgid "Line"
-msgstr ""
+msgstr "Рядок"
 
 #: ../../godmode/reporting/graph_builder.php:447
 #: ../../godmode/reporting/reporting_builder.php:416
@@ -1299,11 +1299,11 @@ msgstr ""
 #: ../../godmode/modules/manage_network_components_form_network.php:286
 #: ../../operation/incidents/incident_note.php:42
 msgid "Add"
-msgstr ""
+msgstr "Додати"
 
 #: ../../godmode/reporting/graph_builder.php:447
 msgid "Redraw"
-msgstr ""
+msgstr "Перемалювати"
 
 #: ../../godmode/reporting/graph_builder.php:458
 msgid "Custom graph store"
@@ -1312,19 +1312,19 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:483
 #: ../../godmode/reporting/reporting_builder.php:342
 msgid "Private"
-msgstr ""
+msgstr "Приватний"
 
 #: ../../godmode/reporting/graph_builder.php:497
 msgid "Store"
-msgstr ""
+msgstr "Зберігати"
 
 #: ../../godmode/reporting/reporting_builder.php:109
 msgid "Reporting successfully deleted"
-msgstr ""
+msgstr "Звіт успішно видалений"
 
 #: ../../godmode/reporting/reporting_builder.php:111
 msgid "There was a problem deleting reporting"
-msgstr ""
+msgstr "Виникла проблеми при видалені звіту."
 
 #: ../../godmode/reporting/reporting_builder.php:136
 #: ../../godmode/reporting/reporting_builder.php:159
@@ -1369,13 +1369,13 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.php:292
 #: ../../operation/reporting/reporting_viewer.php:211
 msgid "SLA Min. (value)"
-msgstr ""
+msgstr "SLA мін. (значення)"
 
 #: ../../godmode/reporting/reporting_builder.php:253
 #: ../../godmode/reporting/reporting_builder.php:294
 #: ../../operation/reporting/reporting_viewer.php:209
 msgid "SLA Max. (value)"
-msgstr ""
+msgstr "SLA макс. (значення)"
 
 #: ../../godmode/reporting/reporting_builder.php:254
 #: ../../godmode/reporting/reporting_builder.php:296
@@ -1390,7 +1390,7 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.php:497
 #: ../../operation/reporting/custom_reporting.php:37
 msgid "Report name"
-msgstr ""
+msgstr "Назва звіту"
 
 #: ../../godmode/reporting/reporting_builder.php:365
 msgid "Add item to report"
@@ -1414,11 +1414,11 @@ msgstr ""
 #: ../../operation/reporting/graph_viewer.php:126
 #: ../../operation/servers/view_server_detail.php:111
 msgid "hours"
-msgstr ""
+msgstr "години"
 
 #: ../../godmode/reporting/reporting_builder.php:391
 msgid "2 weeks"
-msgstr ""
+msgstr "2 тидні"
 
 #: ../../godmode/reporting/reporting_builder.php:407
 msgid "Custom graph name"
@@ -1434,7 +1434,7 @@ msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:433
 msgid "Options"
-msgstr ""
+msgstr "Параметри"
 
 #: ../../godmode/reporting/reporting_builder.php:455
 msgid "Up"
@@ -1460,7 +1460,7 @@ msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:522
 msgid "Create report"
-msgstr ""
+msgstr "Створити звіт"
 
 #: ../../godmode/extensions.php:29 ../../operation/extensions.php:29
 msgid "There are no extensions defined"
@@ -1503,7 +1503,7 @@ msgstr ""
 #: ../../godmode/agentes/agent_manager.php:84
 #: ../../operation/agentes/estado_generalagente.php:70
 msgid "IP Address"
-msgstr ""
+msgstr "IP адреса"
 
 #: ../../godmode/servers/modificar_server.php:79 ../../godmode/menu.php:178
 msgid "Manage servers"
@@ -1529,11 +1529,11 @@ msgstr ""
 #: ../../operation/agentes/tactical.php:230
 #: ../../operation/events/events.php:473
 msgid "Status"
-msgstr ""
+msgstr "Статус"
 
 #: ../../godmode/servers/modificar_server.php:87
 msgid "Started at"
-msgstr ""
+msgstr "Розпочато в"
 
 #: ../../godmode/servers/modificar_server.php:87
 #: ../../operation/incidents/incident.php:378
@@ -1551,7 +1551,7 @@ msgstr ""
 
 #: ../../godmode/servers/modificar_server.php:125
 msgid "Master"
-msgstr ""
+msgstr "Головний"
 
 #: ../../godmode/servers/modificar_server.php:126
 #: ../../operation/servers/view_server.php:96
@@ -1605,7 +1605,7 @@ msgstr ""
 #: ../../godmode/servers/manage_recontask_form.php:82
 #: ../../operation/servers/view_server_detail.php:71
 msgid "Network"
-msgstr ""
+msgstr "Мережа"
 
 #: ../../godmode/servers/manage_recontask.php:100
 #: ../../godmode/servers/manage_recontask_form.php:107
@@ -1630,7 +1630,7 @@ msgstr ""
 #: ../../operation/agentes/estado_generalagente.php:86
 #: ../../operation/agentes/estado_agente.php:159
 msgid "OS"
-msgstr ""
+msgstr "ОС"
 
 #: ../../godmode/servers/manage_recontask.php:100
 #: ../../godmode/servers/manage_recontask_form.php:97
@@ -1649,13 +1649,13 @@ msgstr ""
 #: ../../operation/agentes/sla_view.php:48
 #: ../../operation/agentes/estado_agente.php:160
 msgid "Interval"
-msgstr ""
+msgstr "Період"
 
 #: ../../godmode/servers/manage_recontask.php:119
 #: ../../godmode/servers/manage_recontask_form.php:113
 #: ../../godmode/agentes/planned_downtime.php:207
 msgid "Any"
-msgstr ""
+msgstr "Будь-який"
 
 #: ../../godmode/servers/manage_recontask.php:131
 msgid "There are no recon task configured"
@@ -1679,24 +1679,24 @@ msgstr ""
 
 #: ../../godmode/servers/manage_recontask_form.php:86
 msgid "hour"
-msgstr ""
+msgstr "година"
 
 #: ../../godmode/servers/manage_recontask_form.php:90
 #: ../../operation/agentes/exportdata.php:61
 msgid "day"
-msgstr ""
+msgstr "день"
 
 #: ../../godmode/servers/manage_recontask_form.php:92
 msgid "week"
-msgstr ""
+msgstr "тиждень"
 
 #: ../../godmode/servers/manage_recontask_form.php:93
 msgid "weeks"
-msgstr ""
+msgstr "тижні"
 
 #: ../../godmode/servers/manage_recontask_form.php:94
 msgid "month"
-msgstr ""
+msgstr "місяць"
 
 #: ../../godmode/servers/plugin.php:56
 msgid "Problem updating plugin"
@@ -1760,7 +1760,7 @@ msgstr ""
 
 #: ../../godmode/servers/plugin.php:199
 msgid "execute"
-msgstr ""
+msgstr "виконати"
 
 #: ../../godmode/servers/plugin.php:223
 msgid "There are no plugins in the system"
@@ -1803,7 +1803,7 @@ msgstr ""
 #: ../../godmode/groups/configure_group.php:67
 #: ../../godmode/modules/module_list.php:55
 msgid "Icon"
-msgstr ""
+msgstr "Іконка"
 
 #: ../../godmode/groups/group_list.php:110
 #: ../../godmode/groups/configure_group.php:85
@@ -1823,7 +1823,7 @@ msgstr ""
 #: ../../godmode/agentes/alert_manager_editor.php:270
 #: ../../godmode/agentes/alert_manager_editor.php:274
 msgid "Enabled"
-msgstr ""
+msgstr "Увімкнено"
 
 #: ../../godmode/groups/group_list.php:127 ../../godmode/setup/links.php:134
 #: ../../godmode/setup/news.php:148
@@ -1845,7 +1845,7 @@ msgstr ""
 #: ../../operation/reporting/graph_viewer.php:190
 #: ../../operation/incidents/incident.php:460
 msgid "Are you sure?"
-msgstr ""
+msgstr "Ви впевнені?"
 
 #: ../../godmode/groups/group_list.php:136
 #: ../../godmode/groups/configure_group.php:59
@@ -1863,7 +1863,7 @@ msgstr ""
 
 #: ../../godmode/menu.php:28
 msgid "Administration"
-msgstr ""
+msgstr "Адміністрування"
 
 #: ../../godmode/menu.php:38
 msgid "Manage agents"
@@ -1907,7 +1907,7 @@ msgstr ""
 
 #: ../../godmode/menu.php:123 ../../godmode/profiles/profile_list.php:183
 msgid "Manage users"
-msgstr ""
+msgstr "Управління користувачами"
 
 #: ../../godmode/menu.php:130
 msgid "Manage reports"
@@ -1965,7 +1965,7 @@ msgstr ""
 
 #: ../../godmode/menu.php:291 ../../operation/menu.php:305
 msgid "Extensions"
-msgstr ""
+msgstr "Розширення"
 
 #: ../../godmode/admin_access_logs.php:30
 msgid "Pandora audit"
@@ -1980,7 +1980,7 @@ msgstr ""
 #: ../../godmode/agentes/manage_config.php:393
 #: ../../operation/incidents/incident.php:195
 msgid "Filter"
-msgstr ""
+msgstr "Фільтр"
 
 #: ../../godmode/admin_access_logs.php:64
 #: ../../godmode/agentes/manage_config.php:389
@@ -1999,7 +1999,7 @@ msgstr ""
 #: ../../operation/agentes/status_monitor.php:112
 #: ../../operation/events/events.php:324
 msgid "All"
-msgstr ""
+msgstr "Усі"
 
 #: ../../godmode/admin_access_logs.php:78
 #: ../../godmode/agentes/modificar_agente.php:160
@@ -2010,7 +2010,7 @@ msgstr ""
 #: ../../operation/agentes/estado_agente.php:73
 #: ../../operation/agentes/estado_alertas.php:138
 msgid "Show"
-msgstr ""
+msgstr "Відобразити"
 
 #: ../../godmode/setup/setup.php:69
 msgid "General configuration"
@@ -5189,4 +5189,4 @@ msgstr ""
 
 #: ../../operation/messages/message.php:215
 msgid "No subject"
-msgstr ""
+msgstr "Тема відсутня"

@@ -160,6 +160,7 @@ if (isset ($_POST["create_agent"])) { // Create a new and shiny agent
 				$result = process_sql ($sql);
 				if ($result === false) {
 					$agent_created_ok = 0;
+					// Do not translate tagente_estado, is the table name
 					$agent_creation_error = __("There was a problem creating record in tagente_estado table");
 				}
 			} else {
@@ -388,9 +389,9 @@ if (isset($_POST["add_alert_combined"])){ // Update an existing alert
 	$sql = sprintf ("INSERT INTO tcompound_alert (id, id_aam, operation) VALUES (%d, %d, '%s')", $alerta_id_aam, $component_item, $component_operation);
 	$result = process_sql ($sql);
 	if ($result === false) {
-		echo '<h3 class="error">'.__('There was a problem creating composite alert').'</h3>';
+		echo '<h3 class="error">'.__('There was a problem creating the combined alert').'</h3>';
 	} else {
-		echo '<h3 class="suc">'.__('Composite alert successfully created').'</h3>';
+		echo '<h3 class="suc">'.__('Combined alert successfully created').'</h3>';
 	}
 
 }

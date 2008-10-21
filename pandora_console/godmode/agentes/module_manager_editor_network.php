@@ -246,6 +246,7 @@ echo '<td class="datos">'.__('Post process');
 pandora_help ("postprocess");
 echo '</td>';
 echo '<td class="datos"><input type="text" name="form_post_process" size="5" value="'.$form_post_process.'"></td>';
+// Export target is a server where the data will be sent
 echo '<td class="datos">'.__('Export target')."</td>";
 echo '<td class="datos"><select name="form_id_export">';
 if ($form_id_export != 0){

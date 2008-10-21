@@ -117,6 +117,7 @@ echo '<td class="datos2">'.__('Post process');
 pandora_help("postprocess");
 echo '</td><td class="datos2">';
 print_input_text ("form_post_process",$form_post_process, '', 5);
+// Export target is a server where the data will be sent
 echo '</td><td class="datos2">'.__('Export target').'</td>';
 echo '<td class="datos2">';
 

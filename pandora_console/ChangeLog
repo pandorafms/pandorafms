@@ -1,3 +1,8 @@
+2008-10-21  Manuel Arostegui  <marostegui@artica.es>
+
+	* operation/menu.php: Fixed warning message if no layouts were defined
+	on the visual console.
+
 2008-10-21  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions.php: Improved human_time_comparation() so it won't

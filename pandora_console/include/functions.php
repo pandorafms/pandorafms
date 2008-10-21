@@ -391,13 +391,12 @@ function pagination ($count, $url, $offset) {
  * @return 
  */
 function format_datetime ($timestamp, $alt_format = "") {
-	
 	global $config;
 	
 	if ($alt_format == "")
 		$alt_format = $config["date_format"];
 		
-	return date($alt_format, $timestamp); 
+	return date ($alt_format, $timestamp); 
 }
 
 
@@ -479,17 +478,25 @@ function human_time_comparation ($timestamp) {
 	$ahora = date ("Y/m/d H:i:s");
 	$seconds = strtotime ($ahora) - strtotime ($timestamp);
 	
-	if ($seconds < 3600)
-		return format_numeric ($seconds / 60, 1)." ".__('minutes');
+	if ($seconds < 60)
+		return format_numeric ($seconds, 0)." ".__('seconds');
 	
-	if ($seconds >= 3600 && $seconds < 86400)
-		return format_numeric ($seconds / 3600, 1)." ".__('hours');
+	if ($seconds < 3600) {
+		$minutes = format_numeric ($seconds / 60, 0);
+		$seconds = format_numeric ($seconds % 60, 0);
+		if ($seconds == 0)
+			return $minutes.' '.__('minutes');
+		$seconds = sprintf ("%02d", $seconds);
+		return $minutes.':'.$seconds.' '.__('minutes');
+	}
+	if ($seconds < 86400)
+		return format_numeric ($seconds / 3600, 0)." ".__('hours');
 	
-	if ($seconds >= 86400 && $seconds < 2592000)
-		return format_numeric ($seconds / 86400, 1)." ".__('days');
+	if ($seconds < 2592000)
+		return format_numeric ($seconds / 86400, 0)." ".__('days');
 	
-	if ($seconds >= 2592000 && $seconds < 15552000)
-		return format_numeric ($seconds / 2592000, 1)." ".__('months');
+	if ($seconds < 15552000)
+		return format_numeric ($seconds / 2592000, 0)." ".__('months');
 	return " +6 ".__('months');
 }
 
@@ -1213,9 +1220,9 @@ function enterprise_hook ($function_name, $parameters = false) {
 function enterprise_include ($filename) {
 	global $config;
 	// Load enterprise extensions
-	$fullfilename = $config["homedir"]."/enterprise/" . $filename;
-	if (file_exists ($fullfilename)) {
-		include ($fullfilename);
+	$filepath = $config["homedir"].ENTERPRISE_DIR.'/'.$filename;
+	if (file_exists ($filepath)) {
+		include ($filepath);
 		return true;
 	}
 	return ENTERPRISE_NOT_HOOK;

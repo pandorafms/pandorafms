@@ -16,8 +16,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
-
 // Load global vars
 require ("include/config.php");
 check_login ();
@@ -152,8 +150,9 @@ pagination ($total_events,
 	"index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$ag_group&refr=60",
 	$offset);
 // Show data.
-$result=mysql_query($sql);
-if (mysql_num_rows($result)){
+$agents = get_db_all_rows_sql ($sql);
+
+if ($agents !== false) {
 	echo "<table cellpadding='4' cellspacing='4' width='700' class='databox' style='margin-top: 10px'>";
 	echo "<th>".__('Agent')."</th>";
 	echo "<th>".__('OS')."</th>";
@@ -165,219 +164,187 @@ if (mysql_num_rows($result)){
 	echo "<th>".__('Last contact')."</th>";
 	// For every agent defined in the agent table
 	$color = 1;
-	while ($row=mysql_fetch_array($result)){
-		$intervalo = $row["intervalo"]; // Interval in seconds
-		$id_agente = $row['id_agente'];	
-		$nombre_agente = substr(strtoupper($row["nombre"]),0,18);
-		$direccion_agente =$row["direccion"];
-		$id_grupo=$row["id_grupo"];
-		$id_os = $row["id_os"];
-		$ultimo_contacto = $row["ultimo_contacto"];
-		$biginterval=$intervalo;
-		foreach ($mis_grupos as $migrupo){ //Verifiy if the group this agent begins is one of the user groups
-			if (($migrupo ==1) || ($id_grupo==$migrupo)){
+	foreach ($agents as $agent) {
+		$intervalo = $agent["intervalo"]; // Interval in seconds
+		$id_agente = $agent['id_agente'];	
+		$nombre_agente = substr (strtoupper ($agent["nombre"]), 0, 18);
+		$direccion_agente = $agent["direccion"];
+		$id_grupo = $agent["id_grupo"];
+		$id_os = $agent["id_os"];
+		$ultimo_contacto = $agent["ultimo_contacto"];
+		$biginterval = $intervalo;
+		$pertenece = 0;
+		foreach ($mis_grupos as $migrupo) { //Verifiy if the group this agent begins is one of the user groups
+			if ($migrupo || $id_grupo == $migrupo) {
 				$pertenece = 1;
 				break;
 			}
-			else
-				$pertenece = 0;
 		}
-		if ($pertenece == 1) { // Si el agente pertenece a uno de los grupos que el usuario puede visualizar
-			// Obtenemos la lista de todos los modulos de cada agente
-			$sql_t="SELECT * FROM tagente_estado, tagente_modulo 
+		if (! $pertenece == 1)
+			continue;
+	
+		// Obtenemos la lista de todos los modulos de cada agente
+		$sql = "SELECT * FROM tagente_estado, tagente_modulo 
 			WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND 
 			tagente_modulo.disabled = 0 
 			AND tagente_modulo.id_agente=".$id_agente;
-			$result_t=mysql_query($sql_t);
-			$estado_general = 0; 
-			$numero_modulos = 0; 
-			$numero_monitor = 0; 
-			$est_timestamp = ""; 
-			$monitor_bad=0; 
-			$monitor_ok = 0; 
-			$monitor_down=0; 
-			$numero_datamodules=0;
-			$estado_cambio=0;
-			$ahora=date("Y/m/d H:i:s");
-			// Calculate module/monitor totals  for this agent
-			while ($row_t=mysql_fetch_array($result_t)){
-				$est_modulo = $row_t["estado"]; 
-				$ultimo_contacto_modulo = $row_t["timestamp"];
-				$module_interval = $row_t["module_interval"];
-				$module_type = $row_t["id_tipo_modulo"];
+		$modules = get_db_all_rows_sql ($sql);
+		if ($modules === false)
+			$modules = array ();
+		$estado_general = 0; 
+		$numero_modulos = 0; 
+		$numero_monitor = 0; 
+		$est_timestamp = ""; 
+		$monitor_bad = 0; 
+		$monitor_ok = 0; 
+		$monitor_down = 0; 
+		$numero_datamodules = 0;
+		$estado_cambio = 0;
+		$agent_down = 0;
+		$now = time ();
+		
+		// Calculate module/monitor totals  for this agent
+		foreach ($modules as $module) {
+			$est_modulo = $module["estado"]; 
+			$ultimo_contacto_modulo = $module["timestamp"];
+			$module_interval = $module["module_interval"];
+			$module_type = $module["id_tipo_modulo"];
 
-				if ($module_interval > $biginterval)
-					$biginterval = $module_interval;
-				if ($module_interval !=0)
-					$intervalo_comp = $module_interval;
-				else
-					$intervalo_comp = $intervalo;
-				if ($ultimo_contacto <> "")
-					$seconds = strtotime($ahora) - strtotime($ultimo_contacto_modulo);
-				else 
-					$seconds = -1;
-				if (($module_type < 21) OR ($module_type == 100)){
-					$async = 0;
-				} else {
-					$async = 1;
-				}
-				# Defines if Agent is down (interval x 2 > time last contact	
-				if ($seconds >= ($intervalo_comp*2)){ // If (intervalx2) secs. ago we don't get anything, show alert
-					if ($est_modulo != 100)
-						$numero_monitor++;
-					if ($async == 0)
-						$monitor_down++;
-				}
-				elseif ($est_modulo != 100) { // estado=100 are data modules
-					$estado_general = $estado_general + $est_modulo;
-					$estado_cambio = $estado_cambio + $row_t["cambio"]; 
-					$numero_monitor ++;
-					if ($est_modulo != 0)
-						$monitor_bad++;			
-					else
-						$monitor_ok++;
-				} elseif ($est_modulo == 100){ // Data modules
-					$numero_datamodules++;
-				}
-				$numero_modulos++;
-			}					
-			// Color change for each line (1.2 beta2)
-			if ($color == 1){
-				$tdcolor = "datos";
-				$color = 0;
-			}
-			else {
-				$tdcolor = "datos2";
-				$color = 1;
-			}
-			echo "<tr>";
-			echo "<td class='$tdcolor'>";
-			if (give_acl ($config['id_user'], $id_grupo, "AW")) {
-				echo "<a href='index.php?sec=gagente&amp;
-				sec2=godmode/agentes/configurar_agente&amp;
-				id_agente=".$id_agente."'>
-				<img src='images/setup.png' border=0 width=16></a>";
-			}
-			echo "&nbsp;<a href='index.php?sec=estado&amp;
-			sec2=operation/agentes/ver_agente&amp;id_agente=".$id_agente."'>
-			<b>".$nombre_agente."</b></a></td>";
-
-			// Show SO icon :)
-			echo "<td class='$tdcolor' align='center'>
-			<img border=0 src='images/".dame_so_icon($id_os)."' 
-			alt='".dame_so_name($id_os)."'></td>";
-			// If there are a module interval bigger than agent interval
-			if ($biginterval > $intervalo) {
-				echo "<td class='$tdcolor'>
-				<span class='green'>".$biginterval."</span></td>";
+			if ($module_interval > $biginterval)
+				$biginterval = $module_interval;
+			if ($module_interval != 0)
+				$intervalo_comp = $module_interval;
+			else
+				$intervalo_comp = $intervalo;
+			if ($ultimo_contacto != "")
+				$seconds = $now - strtotime ($ultimo_contacto_modulo);
+			else 
+				$seconds = -1;
+			if ($module_type < 21 || $module_type == 100) {
+				$async = 0;
 			} else {
-				echo "<td class='$tdcolor'>".$intervalo."</td>";
+				$async = 1;
 			}
+			// Defines if Agent is down (interval x 2 > time last contact	
+			if ($seconds >= ($intervalo_comp * 2)) { // If (intervalx2) secs. ago we don't get anything, show alert
+				$agent_down = 1;
+				if ($est_modulo != 100)
+					$numero_monitor++;
+				if ($async == 0)
+					$monitor_down++;
+			} elseif ($est_modulo != 100) { // estado=100 are data modules
+				$estado_general = $estado_general + $est_modulo;
+				$estado_cambio = $estado_cambio + $module["cambio"]; 
+				$numero_monitor ++;
+				if ($est_modulo != 0)
+					$monitor_bad++;
+				else
+					$monitor_ok++;
+			} elseif ($est_modulo == 100) { // Data modules
+				$numero_datamodules++;
+			}
+			$numero_modulos++;
+		}
+		// Color change for each line (1.2 beta2)
+		if ($color == 1){
+			$tdcolor = "datos";
+			$color = 0;
+		}
+		else {
+			$tdcolor = "datos2";
+			$color = 1;
+		}
+		echo "<tr>";
+		echo "<td class='$tdcolor'>";
+		if (give_acl ($config['id_user'], $id_grupo, "AW")) {
+			echo "<a href='index.php?sec=gagente&amp;
+			sec2=godmode/agentes/configurar_agente&amp;
+			id_agente=".$id_agente."'>
+			<img src='images/setup.png' border=0 width=16></a>";
+		}
+		echo "&nbsp;<a href='index.php?sec=estado&amp;
+		sec2=operation/agentes/ver_agente&amp;id_agente=".$id_agente."'>
+		<b>".$nombre_agente."</b></a></td>";
 
-			// Show GROUP icon
-			echo '<td class="'.$tdcolor.'" align="center">';
+		// Show SO icon :)
+		echo "<td class='$tdcolor' align='center'>
+		<img border=0 src='images/".dame_so_icon($id_os)."' 
+		alt='".dame_so_name($id_os)."'></td>";
+		// If there are a module interval bigger than agent interval
+		if ($biginterval > $intervalo) {
+			echo "<td class='$tdcolor'>
+			<span class='green'>".$biginterval."</span></td>";
+		} else {
+			echo "<td class='$tdcolor'>".$intervalo."</td>";
+		}
 
-			echo "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=$id_grupo'>";
+		// Show GROUP icon
+		echo '<td class="'.$tdcolor.'" align="center">';
+
+		echo "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=$id_grupo'>";
 echo '<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.png" title="'. dame_grupo($id_grupo).'"></A></td>';
 
-			echo "<td class='$tdcolor'> ".
-			$numero_modulos." <b>/</b> ".$numero_monitor;
-			if ($monitor_bad <> 0) {
-				echo " <b>/</b> <span class='red'>".$monitor_bad."</span>";
-			}
-			if ($monitor_down <> 0){
-				echo " <b>/</b> <span class='grey'>".$monitor_down."</span>";
-			}
-			echo "</td>";
-			/*
-			if ($numero_monitor <> 0){
-                                if ($estado_general <> 0){
-                                        if ($estado_cambio == 0){
-                                                // RED
-                                                echo "<td class='$tdcolor' align='center' style='background: #ff1d21'>";
-                                        } else {
-                                                // Yellow
-                                                echo "<td class='$tdcolor' align='center' style='background: #ffe100'>";
-                                        }
-                                } elseif ($monitor_ok > 0) {
-                                        // Green
-                                        echo "<td class='$tdcolor' align='center' style='background: #5fff1b'>";
-                                }
-                                elseif ($numero_datamodules > 0) {
-                                        // Grey #1
-                                        echo "<td class='$tdcolor' align='center' style='background: #d5d5d5'>";
-                                }
-                                elseif ($monitor_down > 0) {
-                                        // Grey - Red
-                                        echo "<td class='$tdcolor' align='center' style='background: #d5b3b3'>";
-                                }
-                        } else {
-                                // Blue
-                                echo "<td class='$tdcolor' align='center' style='background: #4485d5'>";
-                        }
-			*/
-			
-			echo "<td class='$tdcolor' align='center'>";	
-			if ($numero_monitor <> 0){
-				if ($estado_general <> 0){
-					if ($estado_cambio == 0){
-						echo '<img src="images/pixel_red.png" width="40" height="18" title="'.__('At least one monitor fails').'" />';
-					} else {
-						echo '<img src="images/pixel_yellow.png" width="40" height="18" title="'.__('Change between Green/Red state').'" />';
-					}
-				} elseif ($monitor_ok > 0) {
-					echo '<img src="images/pixel_green.png" width="40" height="18" title="'.__('All Monitors OK').'" />';
-				} elseif ($monitor_down > 0) {
-					echo '<img src="images/pixel_fucsia.png" width="40" height="18" title="'.__('Agent down').'" />'; 
-				} elseif ($numero_datamodules == 0) {
-					echo '<img src="images/pixel_blue.png" width="40" height="18" title="'.__('Agent without data').'" />';
-				}
-			} else {
-				if ($numero_datamodules == 0) {
-                                        echo '<img src="images/pixel_blue.png" width="40" height="18" title="'.__('Agent without data').'" />';
-                                } else {
-					echo '<img src="images/pixel_gray.png" width="40" height="18" title="'.__('Agent without monitors').'" />';
-				}
-			}
-			// checks if an alert was fired recently
-			echo "<td class='$tdcolor' align='center'>";
-			if (give_disabled_group($id_grupo) == 1)
-				echo "<img src='images/pixel_gray.png' width=20 height=9>";
-			else {
-				if (check_alert_fired($id_agente) == 1) 
-					echo "<img src='images/pixel_red.png' width=20 height=9 title='".__('Alert fired')."'>";
-				else
-					echo "<img src='images/pixel_green.png' width=20 height=9 title='".__('Alert not fired')."'>";
-			}				
-			echo "</td>";
-			echo "<td class='$tdcolor'>";
-			if ( $ultimo_contacto == "0000-00-00 00:00:00"){
-				echo __('Never');
-			} else {
-				$ultima = strtotime($ultimo_contacto);
-				$ahora = strtotime("now");
-				$diferencia = $ahora - $ultima;
-				if ( $diferencia > ($biginterval*2))
-					echo "<font color='#ff0000'>";
+		echo "<td class='$tdcolor'> ".
+		$numero_modulos." <b>/</b> ".$numero_monitor;
+		if ($monitor_bad != 0) {
+			echo " <b>/</b> <span class='red'>".$monitor_bad."</span>";
+		}
+		if ($monitor_down != 0){
+			echo " <b>/</b> <span class='grey'>".$monitor_down."</span>";
+		}
+		echo "</td>";
 		
-            echo human_time_comparation($ultimo_contacto);
-/*
-				if ($biginterval > 0){
-					$percentil = round($diferencia/(($biginterval*2) / 100));	
+		echo "<td class='$tdcolor' align='center'>";
+		if ($numero_monitor != 0){
+			if ($estado_general != 0){
+				if ($estado_cambio == 0){
+					echo '<img src="images/pixel_red.png" width="40" height="18" title="'.__('At least one monitor fails').'" />';
 				} else {
-					$percentil = -1;
+					echo '<img src="images/pixel_yellow.png" width="40" height="18" title="'.__('Change between Green/Red state').'" />';
 				}
-				echo "<a href='#' class='info2'>
-				<img src='reporting/fgraph.php?tipo=progress&amp;percent=".
-				$percentil."&amp;height=18&amp;width=80' border='0'>
-				&nbsp;<span>$ultimo_contacto</span></a>";*/
+			} elseif ($monitor_ok > 0) {
+				echo '<img src="images/pixel_green.png" width="40" height="18" title="'.__('All Monitors OK').'" />';
+			} elseif ($monitor_down > 0) {
+				echo '<img src="images/pixel_fucsia.png" width="40" height="18" title="'.__('Agent down').'" />';
+			} elseif ($numero_datamodules == 0) {
+				echo '<img src="images/pixel_blue.png" width="40" height="18" title="'.__('Agent without data').'" />';
 			}
-			
-		} // If pertenece/belongs to group
+		} else {
+			if ($agent_down && $numero_datamodules == 0) {
+				echo '<img src="images/pixel_fucsia.png" width="40" height="18" title="'.__('Agent down').'" />';
+			} elseif ($numero_datamodules == 0) {
+				echo '<img src="images/pixel_blue.png" width="40" height="18" title="'.__('Agent without data').'" />';
+			} else {
+				echo '<img src="images/pixel_gray.png" width="40" height="18" title="'.__('Agent without monitors').'" />';
+			}
+		}
+		// checks if an alert was fired recently
+		echo "<td class='$tdcolor' align='center'>";
+		if (give_disabled_group ($id_grupo)) {
+			echo "<img src='images/pixel_gray.png' width=20 height=9>";
+		} else {
+			if (check_alert_fired ($id_agente) == 1) 
+				echo '<img src="images/pixel_red.png" width="20" height="9" title="'.__('Alert fired').'" />';
+			else
+				echo '<img src="images/pixel_green.png" width="20" height="9" title="'.__('Alert not fired').'" />';
+		}				
+		echo "</td>";
+		echo "<td class='$tdcolor'>";
+		if ($ultimo_contacto == "0000-00-00 00:00:00") {
+			echo __('Never');
+		} else {
+			$last_time = strtotime ($ultimo_contacto);
+			$diferencia = $now - $last_time;
+			$time = human_time_comparation ($ultimo_contacto);
+			$style = '';
+			if ($diferencia > ($biginterval * 2))
+				$style = 'style="color: #ff0000"';
+			echo '<span '.$style.' title="'.format_datetime ($last_time).'">'.$time.'</span>';
+		}
 	}
 	echo "<tr>";
 	echo "</table><br>";
-	require "bulbs.php";
+	require ("bulbs.php");
 } else {
 	echo '</table><br><div class="nf">'.__('There are no agents included in this group').'</div>';
 	if (give_acl ($config['id_user'], 0, "LM")

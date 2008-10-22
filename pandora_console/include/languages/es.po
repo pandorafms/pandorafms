@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: index.es\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-10-21 16:42+0200\n"
-"PO-Revision-Date: 2008-10-21 16:45+0200\n"
+"POT-Creation-Date: 2008-10-22 16:48+0200\n"
+"PO-Revision-Date: 2008-10-22 16:49+0200\n"
 "Last-Translator: Jorge Gonzalez <jorge.gonzalez@artica.es>\n"
 "Language-Team: Español <artica@artica.es>\n"
 "MIME-Version: 1.0\n"
@@ -23,8 +23,8 @@ msgid "There was a problem locating the source of the graph"
 msgstr "Hubo un problema al localizar la fuente del gráfico"
 
 #: ../../reporting/stat_win.php:53 ../../reporting/stat_win.php:218
-#: ../../godmode/reporting/graph_builder.php:333
-#: ../../godmode/reporting/graph_builder.php:389
+#: ../../godmode/reporting/graph_builder.php:329
+#: ../../godmode/reporting/graph_builder.php:385
 #: ../../godmode/reporting/reporting_builder.php:386
 #: ../../include/functions.php:529
 #: ../../operation/reporting/graph_viewer.php:124
@@ -32,29 +32,29 @@ msgid "1 hour"
 msgstr "Una hora"
 
 #: ../../reporting/stat_win.php:55 ../../reporting/stat_win.php:219
-#: ../../godmode/reporting/graph_builder.php:336
-#: ../../godmode/reporting/graph_builder.php:390
+#: ../../godmode/reporting/graph_builder.php:332
+#: ../../godmode/reporting/graph_builder.php:386
 #: ../../include/functions.php:532
 msgid "2 hours"
 msgstr "2 horas"
 
 #: ../../reporting/stat_win.php:57 ../../reporting/stat_win.php:220
-#: ../../godmode/reporting/graph_builder.php:342
-#: ../../godmode/reporting/graph_builder.php:392
+#: ../../godmode/reporting/graph_builder.php:338
+#: ../../godmode/reporting/graph_builder.php:388
 #: ../../include/functions.php:535
 msgid "6 hours"
 msgstr "6 horas"
 
 #: ../../reporting/stat_win.php:59 ../../reporting/stat_win.php:221
-#: ../../godmode/reporting/graph_builder.php:345
-#: ../../godmode/reporting/graph_builder.php:393
+#: ../../godmode/reporting/graph_builder.php:341
+#: ../../godmode/reporting/graph_builder.php:389
 #: ../../include/functions.php:538
 msgid "12 hours"
 msgstr "12 horas"
 
 #: ../../reporting/stat_win.php:61 ../../reporting/stat_win.php:222
-#: ../../godmode/reporting/graph_builder.php:348
-#: ../../godmode/reporting/graph_builder.php:375
+#: ../../godmode/reporting/graph_builder.php:344
+#: ../../godmode/reporting/graph_builder.php:371
 #: ../../godmode/reporting/reporting_builder.php:391
 #: ../../include/functions.php:541
 #: ../../operation/reporting/graph_viewer.php:129
@@ -62,8 +62,8 @@ msgid "1 day"
 msgstr "día"
 
 #: ../../reporting/stat_win.php:63 ../../reporting/stat_win.php:223
-#: ../../godmode/reporting/graph_builder.php:351
-#: ../../godmode/reporting/graph_builder.php:395
+#: ../../godmode/reporting/graph_builder.php:347
+#: ../../godmode/reporting/graph_builder.php:391
 #: ../../godmode/reporting/reporting_builder.php:392
 #: ../../include/functions.php:544
 #: ../../operation/reporting/graph_viewer.php:130
@@ -84,8 +84,8 @@ msgstr "semana"
 
 #: ../../reporting/stat_win.php:69 ../../reporting/stat_win.php:226
 #: ../../godmode/reporting/map_builder.php:372
-#: ../../godmode/reporting/graph_builder.php:360
-#: ../../godmode/reporting/graph_builder.php:397
+#: ../../godmode/reporting/graph_builder.php:356
+#: ../../godmode/reporting/graph_builder.php:393
 #: ../../include/functions.php:553
 msgid "15 days"
 msgstr "15 días"
@@ -98,15 +98,15 @@ msgid "1 month"
 msgstr "Un mes"
 
 #: ../../reporting/stat_win.php:73 ../../reporting/stat_win.php:228
-#: ../../godmode/reporting/graph_builder.php:366
-#: ../../godmode/reporting/graph_builder.php:399
+#: ../../godmode/reporting/graph_builder.php:362
+#: ../../godmode/reporting/graph_builder.php:395
 #: ../../include/functions.php:559
 msgid "2 months"
 msgstr "2 meses"
 
 #: ../../reporting/stat_win.php:75 ../../reporting/stat_win.php:229
-#: ../../godmode/reporting/graph_builder.php:369
-#: ../../godmode/reporting/graph_builder.php:400
+#: ../../godmode/reporting/graph_builder.php:365
+#: ../../godmode/reporting/graph_builder.php:396
 #: ../../godmode/reporting/reporting_builder.php:396
 #: ../../include/functions.php:562
 #: ../../operation/reporting/graph_viewer.php:133
@@ -441,13 +441,35 @@ msgstr "de alertas no disparadas"
 msgid "Pandora FMS Overview"
 msgstr "Visión general de Pandora FMS"
 
+#: ../../general/logon_ok.php:141
+msgid "Total agents"
+msgstr "Agentes totales"
+
+#: ../../general/logon_ok.php:143
+msgid "Total checks"
+msgstr "Comprobaciones totales"
+
+#: ../../general/logon_ok.php:145 ../../operation/agentes/tactical.php:125
+msgid "Monitor BAD"
+msgstr "Monitores MAL"
+
+#: ../../general/logon_ok.php:151
+msgid "Alerts defined"
+msgstr "Alertas definidas"
+
+#: ../../general/logon_ok.php:153
+msgid "Total users"
+msgstr "Usuarios totales"
+
 #: ../../general/logon_ok.php:161
 msgid "This is your last activity in Pandora FMS console"
 msgstr "Ésta es su última actividad en la consola de Pandora FMS"
 
-#: ../../general/logon_ok.php:171 ../../godmode/admin_access_logs.php:105
-msgid "user"
-msgstr "usuario"
+#: ../../general/logon_ok.php:171
+#: ../../godmode/servers/manage_export_form.php:103
+#: ../../godmode/admin_access_logs.php:105
+msgid "User"
+msgstr "Usuario"
 
 #: ../../general/logon_ok.php:172 ../../godmode/servers/manage_export.php:102
 #: ../../godmode/servers/manage_recontask.php:100
@@ -487,7 +509,7 @@ msgstr "Comentarios"
 
 #: ../../general/header.php:31
 msgid "You are"
-msgstr "Es"
+msgstr "Conectado como"
 
 #: ../../general/header.php:35
 msgid "Logout"
@@ -572,11 +594,12 @@ msgid ""
 "task of getting new modules, new plugins and new features (even full "
 "migrations tools for future versions) automatically."
 msgstr ""
-"El nuevo cliente de <a href=\"http://updatemanager.sourceforge.net\">Update Manager</a> "
-"viene con la nueva versión de Pandora FMS 2.0. Permite que los administradores "
-"actualicen sus Pandora FMS automáticamente, ya que el Update Manager obtendrá los "
-"módulos complementos y otras características nuevas (incluso migraciones "
-"completas de herramientas para futuras versiones) de forma automática."
+"El nuevo cliente de <a href=\"http://updatemanager.sourceforge.net\">Update "
+"Manager</a> viene con la nueva versión de Pandora FMS 2.0. Permite que los "
+"administradores actualicen sus Pandora FMS automáticamente, ya que el Update "
+"Manager obtendrá los módulos complementos y otras características nuevas "
+"(incluso migraciones completas de herramientas para futuras versiones) de "
+"forma automática."
 
 #: ../../extensions/update_manager/main.php:44
 msgid ""
@@ -584,9 +607,9 @@ msgid ""
 "Enterprise version, for more information visit <a href=\"http://pandorafms."
 "com\">http://pandorafms.com</a>."
 msgstr ""
-"El Update Manager es una de las características más avanzadas de Pandora FMS 2.0 Enterprise, "
-"para obtener más información visite <a "
-"href=\"http://pandorafms.com\">http://pandorafms.com</a>."
+"El Update Manager es una de las características más avanzadas de Pandora FMS "
+"2.0 Enterprise, para obtener más información visite <a href=\"http://"
+"pandorafms.com\">http://pandorafms.com</a>."
 
 #: ../../extensions/update_manager/main.php:46
 msgid ""
@@ -632,7 +655,7 @@ msgid "Timestamp"
 msgstr "Fecha/Hora"
 
 #: ../../extensions/update_manager/main.php:83
-#: ../../godmode/reporting/graph_builder.php:491
+#: ../../godmode/reporting/graph_builder.php:487
 #: ../../godmode/reporting/reporting_builder.php:347
 #: ../../godmode/reporting/reporting_builder.php:501
 #: ../../godmode/servers/modificar_server.php:69
@@ -1015,7 +1038,7 @@ msgid "Create"
 msgstr "Crear"
 
 #: ../../godmode/reporting/map_builder.php:302
-#: ../../godmode/reporting/graph_builder.php:479
+#: ../../godmode/reporting/graph_builder.php:475
 #: ../../godmode/extensions.php:36 ../../godmode/servers/manage_export.php:102
 #: ../../godmode/servers/modificar_server.php:67
 #: ../../godmode/servers/modificar_server.php:87
@@ -1049,13 +1072,13 @@ msgstr "Imagen de fondo"
 
 #: ../../godmode/reporting/map_builder.php:310
 #: ../../godmode/reporting/map_builder.php:404
-#: ../../godmode/reporting/graph_builder.php:308
+#: ../../godmode/reporting/graph_builder.php:304
 msgid "Width"
 msgstr "Anchura"
 
 #: ../../godmode/reporting/map_builder.php:312
 #: ../../godmode/reporting/map_builder.php:402
-#: ../../godmode/reporting/graph_builder.php:326
+#: ../../godmode/reporting/graph_builder.php:322
 msgid "Height"
 msgstr "Altura"
 
@@ -1083,7 +1106,7 @@ msgid "Hours"
 msgstr "Horas"
 
 #: ../../godmode/reporting/map_builder.php:369
-#: ../../godmode/reporting/graph_builder.php:394
+#: ../../godmode/reporting/graph_builder.php:390
 msgid "Last day"
 msgstr "Último día"
 
@@ -1096,8 +1119,8 @@ msgid "days"
 msgstr "días"
 
 #: ../../godmode/reporting/map_builder.php:371
-#: ../../godmode/reporting/graph_builder.php:357
-#: ../../godmode/reporting/graph_builder.php:396
+#: ../../godmode/reporting/graph_builder.php:353
+#: ../../godmode/reporting/graph_builder.php:392
 msgid "Last week"
 msgstr "Última semana"
 
@@ -1182,7 +1205,7 @@ msgid "Module"
 msgstr "Módulo"
 
 #: ../../godmode/reporting/map_builder.php:410
-#: ../../godmode/reporting/graph_builder.php:380
+#: ../../godmode/reporting/graph_builder.php:376
 #: ../../godmode/reporting/reporting_builder.php:384
 #: ../../godmode/reporting/reporting_builder.php:435
 #: ../../operation/reporting/graph_viewer.php:121
@@ -1225,17 +1248,20 @@ msgstr "Hubo un problema al almacenar la gráfica"
 msgid "Graph builder module list"
 msgstr "Lista de módulos del creador de gráficas"
 
+#: ../../godmode/reporting/graph_builder.php:217
+msgid "Weight"
+msgstr "Peso"
+
 #: ../../godmode/reporting/graph_builder.php:252
 #: ../../operation/reporting/graph_viewer.php:110
 msgid "Combined image render"
 msgstr "Visualización de imágenes combinadas"
 
-#: ../../godmode/reporting/graph_builder.php:265
-#: ../../godmode/reporting/graph_builder.php:267 ../../godmode/menu.php:149
+#: ../../godmode/reporting/graph_builder.php:264 ../../godmode/menu.php:149
 msgid "Graph builder"
 msgstr "Constructor de gráficos"
 
-#: ../../godmode/reporting/graph_builder.php:276
+#: ../../godmode/reporting/graph_builder.php:272
 #: ../../godmode/reporting/reporting_builder.php:399
 #: ../../godmode/agentes/manage_config_remote.php:99
 #: ../../godmode/agentes/manage_config.php:358
@@ -1244,7 +1270,7 @@ msgstr "Constructor de gráficos"
 msgid "Source agent"
 msgstr "Agente origen"
 
-#: ../../godmode/reporting/graph_builder.php:289
+#: ../../godmode/reporting/graph_builder.php:285
 #: ../../godmode/agentes/configurar_agente.php:209
 #: ../../godmode/agentes/manage_config.php:408
 #: ../../godmode/agentes/manage_config.php:417
@@ -1257,19 +1283,19 @@ msgstr "Agente origen"
 msgid "Modules"
 msgstr "Módulos"
 
-#: ../../godmode/reporting/graph_builder.php:304
+#: ../../godmode/reporting/graph_builder.php:300
 msgid "Factor"
 msgstr "Factor"
 
-#: ../../godmode/reporting/graph_builder.php:314
+#: ../../godmode/reporting/graph_builder.php:310
 msgid "Render now"
 msgstr "Ver ahora"
 
+#: ../../godmode/reporting/graph_builder.php:314
 #: ../../godmode/reporting/graph_builder.php:318
-#: ../../godmode/reporting/graph_builder.php:322
+#: ../../godmode/reporting/graph_builder.php:404
 #: ../../godmode/reporting/graph_builder.php:408
-#: ../../godmode/reporting/graph_builder.php:412
-#: ../../godmode/reporting/graph_builder.php:487
+#: ../../godmode/reporting/graph_builder.php:483
 #: ../../godmode/servers/manage_recontask.php:117
 #: ../../godmode/servers/manage_recontask_form.php:131
 #: ../../include/functions.php:823 ../../include/functions.php:907
@@ -1277,11 +1303,11 @@ msgstr "Ver ahora"
 msgid "Yes"
 msgstr "Sí"
 
-#: ../../godmode/reporting/graph_builder.php:319
-#: ../../godmode/reporting/graph_builder.php:321
-#: ../../godmode/reporting/graph_builder.php:409
-#: ../../godmode/reporting/graph_builder.php:411
-#: ../../godmode/reporting/graph_builder.php:486
+#: ../../godmode/reporting/graph_builder.php:315
+#: ../../godmode/reporting/graph_builder.php:317
+#: ../../godmode/reporting/graph_builder.php:405
+#: ../../godmode/reporting/graph_builder.php:407
+#: ../../godmode/reporting/graph_builder.php:482
 #: ../../godmode/servers/manage_recontask.php:117
 #: ../../godmode/servers/manage_recontask_form.php:131
 #: ../../include/functions.php:825 ../../include/functions.php:909
@@ -1289,48 +1315,48 @@ msgstr "Sí"
 msgid "No"
 msgstr "No"
 
-#: ../../godmode/reporting/graph_builder.php:339
-#: ../../godmode/reporting/graph_builder.php:391
+#: ../../godmode/reporting/graph_builder.php:335
+#: ../../godmode/reporting/graph_builder.php:387
 msgid "3 hours"
 msgstr "3 horas"
 
-#: ../../godmode/reporting/graph_builder.php:354
+#: ../../godmode/reporting/graph_builder.php:350
 msgid "4 days"
 msgstr "días"
 
-#: ../../godmode/reporting/graph_builder.php:363
-#: ../../godmode/reporting/graph_builder.php:398
+#: ../../godmode/reporting/graph_builder.php:359
+#: ../../godmode/reporting/graph_builder.php:394
 msgid "Last month"
 msgstr "Último mes"
 
-#: ../../godmode/reporting/graph_builder.php:372
+#: ../../godmode/reporting/graph_builder.php:368
 msgid "1 year"
 msgstr "1 año"
 
-#: ../../godmode/reporting/graph_builder.php:404 ../../operation/menu.php:165
+#: ../../godmode/reporting/graph_builder.php:400 ../../operation/menu.php:165
 msgid "View events"
 msgstr "Ver eventos"
 
-#: ../../godmode/reporting/graph_builder.php:418
+#: ../../godmode/reporting/graph_builder.php:414
 msgid "Stacked"
 msgstr "Apilado"
 
-#: ../../godmode/reporting/graph_builder.php:422
+#: ../../godmode/reporting/graph_builder.php:418
 #: ../../operation/reporting/graph_viewer.php:139
 msgid "Area"
 msgstr "Área"
 
-#: ../../godmode/reporting/graph_builder.php:423
+#: ../../godmode/reporting/graph_builder.php:419
 #: ../../operation/reporting/graph_viewer.php:140
 msgid "Stacked area"
 msgstr "Área apilada"
 
-#: ../../godmode/reporting/graph_builder.php:424
+#: ../../godmode/reporting/graph_builder.php:420
 #: ../../operation/reporting/graph_viewer.php:141
 msgid "Line"
 msgstr "Línea"
 
-#: ../../godmode/reporting/graph_builder.php:447
+#: ../../godmode/reporting/graph_builder.php:443
 #: ../../godmode/reporting/reporting_builder.php:419
 #: ../../godmode/servers/manage_recontask_form.php:143
 #: ../../godmode/servers/manage_export_form.php:128
@@ -1346,20 +1372,20 @@ msgstr "Línea"
 msgid "Add"
 msgstr "Añadir"
 
-#: ../../godmode/reporting/graph_builder.php:447
+#: ../../godmode/reporting/graph_builder.php:443
 msgid "Redraw"
 msgstr "Redibujar"
 
-#: ../../godmode/reporting/graph_builder.php:458
+#: ../../godmode/reporting/graph_builder.php:454
 msgid "Custom graph store"
 msgstr "Guardar imagen combinada de usuario"
 
-#: ../../godmode/reporting/graph_builder.php:483
+#: ../../godmode/reporting/graph_builder.php:479
 #: ../../godmode/reporting/reporting_builder.php:345
 msgid "Private"
 msgstr "Privado"
 
-#: ../../godmode/reporting/graph_builder.php:497
+#: ../../godmode/reporting/graph_builder.php:493
 msgid "Store"
 msgstr "Guardar"
 
@@ -1641,19 +1667,18 @@ msgid "Status"
 msgstr "Estado"
 
 #: ../../godmode/servers/modificar_server.php:87
-msgid "Started at"
-msgstr "Iniciado el"
+msgid "Started"
+msgstr "Iniciado hace"
 
 #: ../../godmode/servers/modificar_server.php:87
-#: ../../operation/incidents/incident_detail.php:236
-#: ../../operation/servers/view_server_detail.php:77
-#: ../../operation/servers/view_server.php:60
-msgid "Updated at"
-msgstr "Actualizado el"
+#: ../../operation/incidents/incident.php:261
+#: ../../operation/servers/view_server.php:61
+msgid "Updated"
+msgstr "Actualizado hace"
 
 #: ../../godmode/servers/modificar_server.php:124
 #: ../../godmode/agentes/agent_manager.php:126
-#: ../../operation/servers/view_server.php:93
+#: ../../operation/servers/view_server.php:94
 msgid "Network Server"
 msgstr "Servidor de red"
 
@@ -1662,12 +1687,12 @@ msgid "Master"
 msgstr "Principal"
 
 #: ../../godmode/servers/modificar_server.php:126
-#: ../../operation/servers/view_server.php:96
+#: ../../operation/servers/view_server.php:97
 msgid "Data Server"
 msgstr "Servidor de datos"
 
 #: ../../godmode/servers/modificar_server.php:127
-#: ../../operation/servers/view_server.php:120
+#: ../../operation/servers/view_server.php:121
 msgid "MD5 Check"
 msgstr "Comprobación MD5"
 
@@ -1676,7 +1701,7 @@ msgid "SNMP Console"
 msgstr "Consola SNMP"
 
 #: ../../godmode/servers/modificar_server.php:132
-#: ../../operation/servers/view_server.php:64
+#: ../../operation/servers/view_server.php:65
 msgid "There are no servers configured into the database"
 msgstr "No hay ningún servidor configurado en la base de datos"
 
@@ -1756,7 +1781,7 @@ msgid "Task name"
 msgstr "Nombre tarea"
 
 #: ../../godmode/servers/manage_recontask_form.php:77
-#: ../../operation/servers/view_server.php:102
+#: ../../operation/servers/view_server.php:103
 msgid "Recon Server"
 msgstr "Servidor de exploración de red"
 
@@ -1790,7 +1815,7 @@ msgid "month"
 msgstr "mes"
 
 #: ../../godmode/servers/manage_export_form.php:77
-#: ../../operation/servers/view_server.php:105
+#: ../../operation/servers/view_server.php:106
 msgid "Export server"
 msgstr "Servidor de exportación"
 
@@ -1810,10 +1835,6 @@ msgstr "Ninguno"
 #: ../../godmode/servers/manage_export_form.php:94
 msgid "Transfer mode"
 msgstr "Modo de transferencia"
-
-#: ../../godmode/servers/manage_export_form.php:103
-msgid "User"
-msgstr "Usuario"
 
 #: ../../godmode/servers/manage_export_form.php:111
 #: ../../godmode/agentes/module_manager_editor_plugin.php:129
@@ -2807,6 +2828,7 @@ msgid "Remove"
 msgstr "Remoto"
 
 #: ../../godmode/agentes/planned_downtime.php:237
+#: ../../godmode/agentes/planned_downtime.php:281
 msgid "No planned downtime"
 msgstr "Desconexión no planificada"
 
@@ -3159,7 +3181,7 @@ msgstr ""
 "correctamente con este tipo de módulos"
 
 #: ../../godmode/agentes/agent_manager.php:139
-#: ../../operation/servers/view_server.php:114
+#: ../../operation/servers/view_server.php:115
 msgid "Plugin Server"
 msgstr "Servidor de complementos"
 
@@ -3172,7 +3194,7 @@ msgstr ""
 "funcionar correctamente con este tipo de módulos"
 
 #: ../../godmode/agentes/agent_manager.php:153
-#: ../../operation/servers/view_server.php:108
+#: ../../operation/servers/view_server.php:109
 msgid "WMI Server"
 msgstr "Servidor WMI"
 
@@ -3185,7 +3207,7 @@ msgstr ""
 "funcionar correctamente con este tipo de módulos"
 
 #: ../../godmode/agentes/agent_manager.php:166
-#: ../../operation/servers/view_server.php:111
+#: ../../operation/servers/view_server.php:112
 msgid "Prediction Server"
 msgstr "Servidor de predicción"
 
@@ -4358,7 +4380,7 @@ msgstr "Límite del SLA"
 #: ../../operation/reporting/reporting_viewer.php:243
 #: ../../operation/agentes/estado_grupo.php:212
 msgid "Ok"
-msgstr "Aceptar"
+msgstr "Bien"
 
 #: ../../operation/reporting/reporting_viewer.php:245
 #: ../../operation/agentes/estado_grupo.php:214
@@ -4471,10 +4493,6 @@ msgstr "Ningún incidente coincide con su filtro de búsqueda"
 msgid "ID"
 msgstr "ID"
 
-#: ../../operation/incidents/incident.php:261
-msgid "Updated"
-msgstr "Actualizado"
-
 #: ../../operation/incidents/incident.php:262
 #: ../../operation/incidents/incident_detail.php:260
 #: ../../operation/events/events.php:336
@@ -4562,7 +4580,9 @@ msgstr "Archivo subido"
 msgid ""
 "File could not be saved. Contact the Pandora Administrator for more "
 "information"
-msgstr "No se pudo guardar el archivo. Contacte con el administrador de Pandora FMS para obtener más información"
+msgstr ""
+"No se pudo guardar el archivo. Contacte con el administrador de Pandora FMS "
+"para obtener más información"
 
 #: ../../operation/incidents/incident_detail.php:218
 msgid "Incident details"
@@ -4571,6 +4591,11 @@ msgstr "Detalles del incidente"
 #: ../../operation/incidents/incident_detail.php:235
 msgid "Opened at"
 msgstr "Abierto el"
+
+#: ../../operation/incidents/incident_detail.php:236
+#: ../../operation/servers/view_server_detail.php:77
+msgid "Updated at"
+msgstr "Actualizado el"
 
 #: ../../operation/incidents/incident_detail.php:248
 msgid "Open and Active"
@@ -4645,7 +4670,9 @@ msgstr "Buscar texto"
 msgid ""
 "(*) The text search will look for all words entered as a substring in the "
 "title and description of each incident"
-msgstr "(*) La búsqueda de texto buscará todas las palabras introducidas como subcadenas en el título y la descripción de cada incidente"
+msgstr ""
+"(*) La búsqueda de texto buscará todas las palabras introducidas como "
+"subcadenas en el título y la descripción de cada incidente"
 
 #: ../../operation/servers/view_server_detail.php:55
 #: ../../operation/servers/view_server.php:37
@@ -4690,16 +4717,16 @@ msgstr "Retraso"
 msgid "Version"
 msgstr "Versión"
 
-#: ../../operation/servers/view_server.php:89
+#: ../../operation/servers/view_server.php:90
 #: ../../operation/agentes/tactical.php:288
 msgid "of"
 msgstr "de"
 
-#: ../../operation/servers/view_server.php:99
+#: ../../operation/servers/view_server.php:100
 msgid "SNMP server"
 msgstr "Servidor SNMP"
 
-#: ../../operation/servers/view_server.php:117
+#: ../../operation/servers/view_server.php:118
 msgid "Master Server"
 msgstr "Servidor principal"
 
@@ -4722,7 +4749,7 @@ msgstr "Tiempo de autorefresco"
 
 #: ../../operation/visual_console/render_view.php:86
 msgid "Refresh"
-msgstr "refrescar"
+msgstr "Refrescar"
 
 #: ../../operation/visual_console/render_view.php:117
 msgid "Until refresh"
@@ -5069,7 +5096,7 @@ msgstr "Módulos corruptos"
 
 #: ../../operation/agentes/estado_grupo.php:161
 msgid "Modules OK"
-msgstr "Módulos OK"
+msgstr "Módulos BIEN"
 
 #: ../../operation/agentes/estado_grupo.php:171
 msgid "Agents down"
@@ -5127,7 +5154,7 @@ msgstr "Al menos un monitor falla"
 #: ../../operation/agentes/sla_view.php:185
 #: ../../operation/agentes/estado_agente.php:329
 msgid "All Monitors OK"
-msgstr "Todos los monitores OK"
+msgstr "Todos los monitores BIEN"
 
 #: ../../operation/agentes/estado_monitores.php:123
 msgid "This agent doesn 't have any monitor with data"
@@ -5328,10 +5355,6 @@ msgstr "Comprobaciones de monitor"
 msgid "Monitor OK"
 msgstr "Monitor BIEN"
 
-#: ../../operation/agentes/tactical.php:125
-msgid "Monitor BAD"
-msgstr "Monitor MAL"
-
 #: ../../operation/agentes/tactical.php:138
 msgid "Monitor Unknown"
 msgstr "Monitor descon."
@@ -5421,7 +5444,7 @@ msgstr "Tipo de evento"
 
 #: ../../operation/events/events.php:242
 msgid "Severity"
-msgstr "Severidad"
+msgstr "Gravedad"
 
 #: ../../operation/events/events.php:247
 msgid "Event status"

@@ -138,19 +138,19 @@ $users_defined = get_db_sql ($query1);
 
 echo "<table class='databox' celldpadding=4 cellspacing=4 width=250>";
 echo "<th colspan=2>".__('Pandora FMS Overview')."</th>";
-echo "<tr><td class='datos2'><b>"."Total agents"."</b></td>";
+echo "<tr><td class='datos2'><b>".__('Total agents')."</b></td>";
 echo "<td class='datos2' style='font: bold 2em Arial, Sans-serif; color: #000;'>".$total_agents."</td>";
-echo "</tr><tr><td class='datos'><b>"."Total checks"."</b></td>";
+echo "</tr><tr><td class='datos'><b>".__('Total checks')."</b></td>";
 echo "<td class='datos' style='font: bold 2em Arial, Sans-serif; color: #000;'>".$total_checks."</td>";	
-echo "</tr><tr><td class='datos2'><b>"."Monitor BAD"."</b></td>";
+echo "</tr><tr><td class='datos2'><b>".__('Monitor BAD')."</b></td>";
 echo "<td class='datos2' style='font: bold 2em Arial, Sans-serif; color: #f00;'>";
 if ($monitor_bad > 0)
 	echo $monitor_bad;
 else
 	echo "-";
-echo "</td></tr><tr><td class='datos'><b>"."Alerts defined"."</b></td>";
+echo "</td></tr><tr><td class='datos'><b>".__('Alerts defined')."</b></td>";
 echo "<td class='datos' style='font: bold 2em Arial, Sans-serif; color: #000;'>".$total_alerts."</td>";
-echo "</tr><tr><td class='datos2'><b>"."Total users"."</b></td>";
+echo "</tr><tr><td class='datos2'><b>".__('Total users')."</b></td>";
 echo "<td class='datos2' style='font: bold 2em Arial, Sans-serif; color: #000;'>".$users_defined."</td>";
 echo "</tr></table>";
 
@@ -168,7 +168,7 @@ $table->size = array ();
 $table->size[2] = '130px';
 $table->size[4] = '200px';
 $table->head = array ();
-$table->head[0] = __('user');
+$table->head[0] = __('User');
 $table->head[1] = __('Action');
 $table->head[2] = __('Date');
 $table->head[3] = __('Source IP');

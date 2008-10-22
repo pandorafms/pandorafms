@@ -57,7 +57,8 @@ $table->head[3] = __('Modules');
 $table->head[4] = __('LAG');
 $table->head[5] = __('Type');
 $table->head[6] = __('Version');
-$table->head[7] = __('Updated at');
+// This will have a column of data such as "6 hours"
+$table->head[7] = __('Updated');
 $table->data = array ();
 
 if (!$servers){

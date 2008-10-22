@@ -79,7 +79,7 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 	} else { 
 		
 		// title
-		echo '<h2>'.__('Agent configuration'). '&gt;'. __('Configuration Management').'</h2>';
+		echo '<h2>'.__('Agent configuration'). ' &gt; '. __('Configuration Management').'</h2>';
 		echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/agentes/manage_config_remote&operacion=1">';
 		echo "<table width='650' border='0' cellspacing='4' cellpadding='4' class='databox'>";
 		

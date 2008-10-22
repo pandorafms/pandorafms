@@ -16,13 +16,13 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
-
 // ========================
 // AGENT GENERAL DATA FORM 
 // ========================
 // Load global vars
-require("include/config.php");
+require ('include/config.php');
+
+enterprise_include ('godmode/agentes/agent_manager.php');
 
 check_login ();
 
@@ -175,19 +175,8 @@ if ($id_prediction_server == 0) {
 print_select_from_sql ('SELECT id_server, name FROM tserver WHERE prediction_server = 1 ORDER BY name',
 			'prediction_server', $id_prediction_server, '', $none, $none_value);
 
-// Inventory Server
-echo '<tr><td class="datos2"><b>'.__('Inventory Server').'</b>';
-echo '<a href="#" class="tip">&nbsp;<span>'.__('You must select an Inventory Server for the Agent, so it can work properly with this kind of modules').'</span></a>';
-echo '</td><td class="datos2">';
-$none = '';
-$none_value = '';
-if ($id_inventory_server == 0) {
-	$none = $none_str;
-	$none_value = 0;
-}
-print_select_from_sql ('SELECT id_server, name FROM tserver WHERE inventory_server = 1 ORDER BY name',
-			'inventory_server', $id_inventory_server, '', $none, $none_value);
-			
+enterprise_hook ('inventory_server');
+
 // Description
 echo '<tr><td class="datos2"><b>';
 echo __('Description');

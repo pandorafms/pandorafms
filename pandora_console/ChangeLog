@@ -1,4 +1,28 @@
-2008-10-21  Esteban Sanchez  <estebans@artica.es>
+2008-10-22  Esteban Sanchez  <estebans@artica.es>
+
+	* pandoradb.sql: Style correction.
+
+	* godmode/agentes/agent_manager.php,
+	godmode/agentes/configurar_agente.php: Removed inventory server
+	configuration, which was moved to an enterprise hook. Style
+	correction.
+
+	* include/functions.php: Added slash to enterprise_include() path to
+	work in some rare cases.
+
+	* include/functions_db.php: Errors in process_sql() are shown using
+	trigger_error(), so they can be disabled setting error_reporting().
+
+	* include/functions_html.php: Added print_input_image() to show input
+	image HTML elements.
+
+	* index.php: Added enterprise includes and hooks to show the future
+	dashboard. Style corrections.
+
+	* godmode/reporting/map_builder.php: Fixed error when creating a map.
+	Javascript fixes. Style correction.
+	
+2008-10-22  Esteban Sanchez  <estebans@artica.es>
 
 	* pandoradb.sql: Removed inventory tables and fields from previous
 	commit.

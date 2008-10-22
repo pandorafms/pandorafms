@@ -1,3 +1,17 @@
+2008-10-22  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/styles/op.css,
+	  include/styles/pandora.css,
+	  pandoradb.sql,
+	  operation/menu.php,
+	  godmode/agentes/configurar_agente.php,
+	  godmode/agentes/agent_manager.php,
+	  godmode/menu.php: Added inventory support.
+
+	* operation/agentes/export_csv.php: Fixed, didn't work.
+
+	* operation/agentes/ver_agente.php: Fixed tabs.
+
 2008-10-21  Jorge Gonzalez  <jorgegonz@svn.gnome.org>
 
 	* operation/servers/view_server.php,

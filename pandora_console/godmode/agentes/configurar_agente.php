@@ -19,6 +19,7 @@
 
 // Load global vars
 require("include/config.php");
+enterprise_include('godmode/agentes/configurar_agente.php');
 
 check_login ();
 
@@ -103,6 +104,7 @@ $id_network_server = 0;
 $id_plugin_server = 0;
 $id_prediction_server = 0;
 $id_wmi_server = 0;
+$id_inventory_server = 0;
 $grupo = 0;
 $id_os = 0;
 
@@ -123,6 +125,7 @@ if (isset ($_POST["create_agent"])) { // Create a new and shiny agent
 	$id_plugin_server = get_parameter_post ("plugin_server", 0);
 	$id_prediction_server = get_parameter_post ("prediction_server", 0);
 	$id_wmi_server = get_parameter_post ("wmi_server", 0);
+	$id_inventory_server = get_parameter_post ("inventory_server", 0);
 	$id_os = get_parameter_post ("id_os", 0);
 	$disabled = get_parameter_post ("disabled", 0);
 
@@ -135,10 +138,10 @@ if (isset ($_POST["create_agent"])) { // Create a new and shiny agent
 		$agent_created_ok = 0;
 	} else {
 		$sql = sprintf ("INSERT INTO tagente 
-				(nombre, direccion, id_grupo, intervalo, comentarios, modo, id_os, disabled, id_network_server, id_plugin_server, id_wmi_server, id_prediction_server, id_parent) 
+				(nombre, direccion, id_grupo, intervalo, comentarios, modo, id_os, disabled, id_network_server, id_plugin_server, id_wmi_server, id_prediction_server, id_inventory_server, id_parent) 
 				VALUES 
-				('%s', '%s', %d, %d, '%s', %d, %d, %d, %d, %d, %d, %d, %d)",
-				$nombre_agente, $direccion_agente, $grupo, $intervalo, $comentarios, $modo, $id_os, $disabled, $id_network_server, $id_plugin_server, $id_wmi_server, $id_prediction_server, $id_parent);
+				('%s', '%s', %d, %d, '%s', %d, %d, %d, %d, %d, %d, %d, %d, %d)",
+				$nombre_agente, $direccion_agente, $grupo, $intervalo, $comentarios, $modo, $id_os, $disabled, $id_network_server, $id_plugin_server, $id_wmi_server, $id_prediction_server, $id_inventory_server, $id_parent);
 		$id_agente = process_sql ($sql, "insert_id");
 		if ($id_agente !== false) {
 			$agent_created_ok = 1;
@@ -225,6 +228,8 @@ if ($tab == "template") {
 }
 echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=template&id_agente=$id_agente'><img src='images/network.png' width='16' class='top' border=0>&nbsp;".__('Net. Templates')."</a>";
 echo "</li>";
+
+enterprise_hook ('inventory_tab');
 
 echo "</ul>";
 echo "</div>";
@@ -496,6 +501,7 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	$id_plugin_server = (int) get_parameter_post ("plugin_server", 0);
 	$id_wmi_server = (int) get_parameter_post ("wmi_server", 0);
 	$id_prediction_server = (int) get_parameter_post ("prediction_server", 0);
+	$id_inventory_server = (int) get_parameter_post ("inventory_server", 0);
 	$id_parent = (int) get_parameter_post ("id_parent", 0);
 
 	//Verify if there is another agent with the same name but different ID
@@ -529,8 +535,9 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 			id_network_server = %d,
 			id_plugin_server = %d,
 			id_wmi_server = %d,
-			id_prediction_server = %d
-			WHERE id_agente = %d",$disabled,$id_parent,$id_os,$modo,$nombre_agente,$direccion_agente,$grupo,$intervalo,$comentarios,$id_network_server,$id_plugin_server,$id_wmi_server,$id_prediction_server,$id_agente);
+			id_prediction_server = %d,
+			id_inventory_server = %d
+			WHERE id_agente = %d",$disabled,$id_parent,$id_os,$modo,$nombre_agente,$direccion_agente,$grupo,$intervalo,$comentarios,$id_network_server,$id_plugin_server,$id_wmi_server,$id_prediction_server,$id_inventory_server,$id_agente);
 		$result = process_sql ($sql);
 		if ($result === false) {
 			echo '<h3 class="error">'.__('There was a problem updating agent').'</h3>';
@@ -575,6 +582,7 @@ if (isset($_GET["id_agente"])) {
 	$id_network_server = $row["id_network_server"];
 	$id_prediction_server = $row["id_prediction_server"];
 	$id_wmi_server = $row["id_wmi_server"];
+	$id_inventory_server = $row["id_inventory_server"];
 	$modo = $row["modo"];
 	$id_os = $row["id_os"];
 	$disabled = $row["disabled"];
@@ -894,6 +902,9 @@ switch ($tab) {
 		break;
 	case "template":
 		require "agent_template.php";
+		break;
+	case "inventory":
+		enterprise_include ('godmode/agentes/inventory_manager.php');
 		break;
 	default:
 		//This will make sure that blank pages will have at least some

@@ -16,13 +16,14 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+session_start();
 
+require_once ("../../include/config.php");
+require_once ("../../include/functions.php");
+require_once ("../../include/functions_db.php");
 
-require ("include/config.php");
-
-check_login ();
-
-if (! give_acl($config['id_user'], 0, "AR") && ! give_acl ($config['id_user'], 0, "AW")){
+$config["id_user"] = $_SESSION["id_usuario"];
+if (! give_acl ($config['id_user'], 0, "AR") && ! give_acl ($config['id_user'], 0, "AW")) {
 	require ("../../general/noaccess.php");
 	return;
 }
@@ -31,7 +32,7 @@ if (isset ($_GET["agentmodule"]) && isset ($_GET["agent"]) ){
 	$id_agentmodule = $_GET["agentmodule"];
 	$id_agent = $_GET["agent"];
 	$agentmodule_name = dame_nombre_modulo_agentemodulo ($id_agentmodule);
-	if (! give_acl ($config['id_user'], dame_id_grupo ($id_agent), "AR") != 1) {
+	if (! give_acl ($config['id_user'], dame_id_grupo ($id_agent), "AR")) {
 		audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
 			"Trying to access Agent Export Data");
 		require ("../../general/noaccess.php");

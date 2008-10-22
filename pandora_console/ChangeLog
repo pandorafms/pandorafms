@@ -1,3 +1,8 @@
+2008-10-21  Esteban Sanchez  <estebans@artica.es>
+
+	* pandoradb.sql: Removed inventory tables and fields from previous
+	commit.
+
 2008-10-22  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/styles/op.css,

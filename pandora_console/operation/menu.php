@@ -19,6 +19,8 @@
 if (! isset ($config['id_user'])) {
 	return;
 }
+
+enterprise_include ('operation/menu.php');
 ?>
 
 <div class="tit bg">:: <?php echo __('Operation'); ?> ::</div>
@@ -116,7 +118,8 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 			echo "<ul class='mn'><li><a href='index.php?sec=visualc&sec2=operation/visual_console/render_view&id=".$layout["id"]."' class='mn'>". substr ($layout["name"], 0, 15). "</a></li></ul></div>";
 		}
 	}
-	
+
+	enterprise_hook ('inventory_menu');
 
 	// Server view
 	if ( $sec == "estado_server") {

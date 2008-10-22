@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
   `id_prediction_server` smallint(4) unsigned default '0',
   `id_wmi_server` smallint(4) unsigned default '0',
   `id_parent` int(10) unsigned default '0',
+  `id_inventory_server` smallint(4) unsigned default '0',
   PRIMARY KEY  (`id_agente`),
   KEY `nombre` (`nombre`),
   KEY `direccion` (`direccion`),
@@ -493,6 +494,7 @@ CREATE TABLE IF NOT EXISTS `tserver` (
   `prediction_server` tinyint(3) unsigned NOT NULL default '0',
   `wmi_server` tinyint(3) unsigned NOT NULL default '0',
   `export_server` tinyint(3) unsigned NOT NULL default '0',
+  `inventory_server` tinyint(3) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_server`),
 	KEY `name` (`name`),
 	KEY `keepalive` (`keepalive`),
@@ -723,4 +725,34 @@ CREATE TABLE IF NOT EXISTS `tplanned_downtime_agents` (
   `id_agent` mediumint(8) unsigned NOT NULL default '0',
   `id_downtime` mediumint(8) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tmodule_inventory` (
+ `id_module_inventory` int(10) NOT NULL auto_increment,
+ `id_os` int(10) unsigned NOT NULL,
+ `name` varchar(100) default '',
+ `description` varchar(100) default '',
+ `interpreter` varchar(100) default '',
+ `code` BLOB NOT NULL,
+ PRIMARY KEY  (`id_module_inventory`),
+ FOREIGN KEY (`id_os`) REFERENCES tconfig_os(`id_os`)
+   ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tagent_module_inventory` (
+ `id_agent_module_inventory` int(10) NOT NULL auto_increment,
+ `id_agente` int(10) unsigned NOT NULL,
+ `id_module_inventory` int(10) NOT NULL,
+ `target` varchar(100) default '',
+ `interval` int(10) unsigned NOT NULL default '3600',
+ `username` varchar(100) default '',
+ `password` varchar(100) default '',
+ `data` BLOB NOT NULL,
+ `timestamp` datetime default '0000-00-00 00:00:00',
+ `flag` tinyint(1) unsigned default '1',
+ PRIMARY KEY  (`id_agent_module_inventory`),
+ FOREIGN KEY (`id_agente`) REFERENCES tagente(`id_agente`)
+   ON UPDATE CASCADE ON DELETE CASCADE,
+ FOREIGN KEY (`id_module_inventory`) REFERENCES tmodule_inventory(`id_module_inventory`)
+   ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

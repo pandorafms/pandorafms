@@ -466,7 +466,7 @@ div.title_line {
 }
 #menu_tab li a, #menu_tab li.nomn a {
 	background: #d4ddc6;
-	padding: 2px 10px 2px 10px;
+	padding: 2px 5px 2px 5px;
 	color: #333;
 	border-left: 2px solid #778866;
 	font-weight: bold;
@@ -509,7 +509,7 @@ div.title_line {
 }
 #menu_tab_left li a {
 	background: #d84437;
-	padding: 2px 10px 2px 10px;
+	padding: 2px 5px 2px 5px;
 	color: #fff;
 	font-weight: bold;
 	line-height: 18px;

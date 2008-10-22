@@ -16,6 +16,8 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+enterprise_include ('godmode/menu.php');
+
 if (comprueba_login ()) {
 	return;
 }
@@ -104,6 +106,8 @@ if ((give_acl($config['id_user'], 0, "PM")==1)){
 			echo "<div class='arrowg'>";
 		echo "<ul class='mn'><li><a href='index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates' class='mn'>".__('Module templates')."</a></li></ul></div>";
 	}
+	// Inventory modules
+	enterprise_hook ('inventory_submenu');
 }
 
 if (give_acl ($config['id_user'], 0, "LM")) {

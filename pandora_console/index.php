@@ -66,6 +66,11 @@ require_once ("include/functions_db.php");
 //We should require this or you might end up with some empty strings
 load_extensions ($config['extensions']);
 
+/* Enterprise support */
+if (file_exists ("enterprise/load_enterprise.php")) {
+	include ("enterprise/load_enterprise.php");
+}
+
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head>';
 
 // Pure mode (without menu, header and footer).
@@ -101,20 +106,25 @@ if ($intervalo > 0){
 	}
 }
 
+enterprise_include ('index.php');
+
 echo '<title>Pandora FMS - '.__('the Flexible Monitoring System').'</title>
-<meta http-equiv="expires" content="0">
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="resource-type" content="document">
-<meta name="distribution" content="global">
-<meta name="author" content="Sancho Lerena">
-<meta name="copyright" content="This is GPL software. Created by Sancho Lerena and others">
-<meta name="keywords" content="pandora, monitoring, system, GPL, software">
-<meta name="robots" content="index, follow">
-<link rel="icon" href="images/pandora.ico" type="image/ico">
-<link rel="stylesheet" href="include/styles/'.$config["style"].'.css" type="text/css">
+<meta http-equiv="expires" content="0" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="resource-type" content="document" />
+<meta name="distribution" content="global" />
+<meta name="author" content="Sancho Lerena" />
+<meta name="copyright" content="This is GPL software. Created by Sancho Lerena and others" />
+<meta name="keywords" content="pandora, monitoring, system, GPL, software" />
+<meta name="robots" content="index, follow" />
+<link rel="icon" href="images/pandora.ico" type="image/ico" />
+<link rel="stylesheet" href="include/styles/'.$config["style"].'.css" type="text/css" />
 <script type="text/javascript" src="include/javascript/wz_jsgraphics.js"></script>
-<script type="text/javascript" src="include/javascript/pandora.js"></script>
-</head>';
+<script type="text/javascript" src="include/javascript/pandora.js"></script>';
+
+enterprise_hook ('load_html_header');
+
+echo '</head>';
 
 // Show custom background
 if ($config["pure"] == 0) {
@@ -130,7 +140,7 @@ if (! isset ($_SESSION['id_usuario']) && isset ($_GET["login"])) {
 	$nick = get_parameter_post ("nick");
 	$pass = get_parameter_post ("pass");
 	// Connect to Database
-	$sql = sprintf("SELECT `id_usuario`, `password` FROM `tusuario` WHERE `id_usuario` = '%s'",$nick);
+	$sql = sprintf ("SELECT `id_usuario`, `password` FROM `tusuario` WHERE `id_usuario` = '%s'", $nick);
 	$row = get_db_row_sql ($sql);
 	
 	// For every registry
@@ -194,20 +204,18 @@ if (isset ($_GET["bye"])) {
 	exit;
 }
 $page = "";
-if (isset ($_GET["sec2"])){
+$sec2 = "";
+$sec = "";
+if (isset ($_GET["sec2"])) {
 	$sec2 = get_parameter_get ('sec2');
 	$sec2 = parameter_extra_clean ($sec2);
 	$page = $sec2;
-} else {
-	$sec2 = "";
 }
 
-if (isset ($_GET["sec"])){
+if (isset ($_GET["sec"])) {
 	$sec = get_parameter_get ('sec');
 	$sec = parameter_extra_clean ($sec);
 	$page = $sec2;
-} else {
-	$sec = "";
 }
 
 // http://es2.php.net/manual/en/ref.session.php#64525
@@ -226,7 +234,7 @@ if ($config["pure"] == 0) {
 }
 
 // Main block of content
-if ($config["pure"] == 0){
+if ($config["pure"] == 0) {
 	echo '<div id="main">';
 }
 
@@ -247,7 +255,9 @@ if ($page != "") {
 		echo '<br><b class="error">'.__('Sorry! I can\'t find the page!').'</b>';
 	}
 } else {
-	require ("general/logon_ok.php");  //default
+	if (enterprise_hook ('load_logon_ok') === ENTERPRISE_NOT_HOOK) {
+		require ("general/logon_ok.php");
+	}
 }
 
 if ($config["pure"] == 0) {    

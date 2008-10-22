@@ -1220,7 +1220,9 @@ function enterprise_hook ($function_name, $parameters = false) {
 function enterprise_include ($filename) {
 	global $config;
 	// Load enterprise extensions
-	$filepath = $config["homedir"].ENTERPRISE_DIR.'/'.$filename;
+	$filepath = realpath ($config["homedir"].'/'.ENTERPRISE_DIR.'/'.$filename);
+	if ($filepath === false)
+		return ENTERPRISE_NOT_HOOK;
 	if (file_exists ($filepath)) {
 		include ($filepath);
 		return true;

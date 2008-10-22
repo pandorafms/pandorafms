@@ -209,6 +209,22 @@ function print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 0,
 	echo $output;
 }
 
+/**
+ * Render an input image element.
+ * 
+ * @param string $name Input name.
+ * @param string $src Image source.
+ * @param string $value Input value.
+ * @param string $style HTML style property.
+ * @param bool $return Whether to return an output string or echo now (optional, echo by default).
+ */
+function print_input_image ($name, $src, $value, $style = '', $return = false) {
+	$output = '<input id="image-'.$name.'" src="'.$src.'" style="'.$style.'" name="'.$name.'" type="image" value="'.$value.'" />';
+	
+	if ($return)
+		return $output;
+	echo $output;
+}
 
 /**
  * Render an input hidden element.

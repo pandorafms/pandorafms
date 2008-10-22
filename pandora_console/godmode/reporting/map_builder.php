@@ -62,8 +62,8 @@ if ($create_layout) {
 	$sql = sprintf ('INSERT INTO tlayout (name, id_group, background, height, width)
 			VALUES ("%s", %d, "%s", %d, %d)',
 			$name, $id_group, $background, $height, $width);
-	$id_layout = process_sql ($sql, 'insert-id');
-	if ($result !== false) {
+	$id_layout = process_sql ($sql, 'insert_id');
+	if ($id_layout !== false) {
 		echo '<h3 class="suc">'.__('Created successfully').'</h3>';
 	} else {
 		echo '<h3 class="err">'.__('Not created. Error inserting data').'</h3>';
@@ -160,7 +160,7 @@ if ($create_layout_data) {
 			$layout_data_id_agent_module,
 			$layout_data_parent_item, $layout_data_period * 3600,
 			$layout_data_width, $layout_data_height);
-	$result = process_sql ($sql, 'insert-id');
+	$result = process_sql ($sql, 'insert_id');
 	
 	if ($result !== false) {
 		echo '<h3 class="suc">'.__('Created successfully').'</h3>';
@@ -252,9 +252,11 @@ if ($id_layout) {
 	$height = $layout['height'];
 }
 
+echo "<h2>".__('Reporting')." &gt; ".__('Map builder');
+pandora_help ("map_builder");
+echo "</h2>";
+
 if (! $edit_layout && ! $id_layout) {
-	echo "<h2>".__('Reporting')." &gt; ".__('Map builder')."</h2>";
-	
 	$table->width = '500px';
 	$table->data = array ();
 	$table->head = array ();
@@ -265,9 +267,9 @@ if (! $edit_layout && ! $id_layout) {
 	$table->align[2] = 'center';
 	
 	$maps = get_db_all_rows_in_table ('tlayout','name');
-	if (!$maps)
+	if (!$maps) {
 		echo '<div class="nf">'.('No maps defined').'</div>';
-	else {
+	} else {
 		foreach ($maps as $map) {
 			$data = array ();
 			
@@ -288,11 +290,6 @@ if (! $edit_layout && ! $id_layout) {
 	echo '</form>';
 	echo '</div>';
 } else {
-	echo "<h2>".__('Reporting')." &gt; ";
-	echo __('Map builder');
-	pandora_help ("map_builder");
-	echo "</h2>";
-	
 	$backgrounds_list = list_files ('images/console/background/', "jpg", 1, 0);
 	$backgrounds_list = array_merge ($backgrounds_list, list_files ('images/console/background/', "png", 1, 0));
 	$groups = get_user_groups ($config['id_user']);
@@ -450,7 +447,7 @@ function agent_changed (event, id_agent, selected) {
 		id_agent = this.value;
 	$('#form_layout_data_editor #module').attr ('disabled', 1);
 	$('#form_layout_data_editor #module').empty ();
-	$('#form_layout_data_editor #module').append (new Option ("<?php echo __('Loading'); ?>...", 0));
+	$('#form_layout_data_editor #module').append ($('<option></option>').html ("<?php echo __('Loading'); ?>...").attr ("value", 0));
 	jQuery.post ('ajax.php', 
 		{page: "operation/agentes/ver_agente",
 		get_agent_modules_json: 1,
@@ -458,10 +455,10 @@ function agent_changed (event, id_agent, selected) {
 		},
 		function (data) {
 			$('#form_layout_data_editor #module').empty ();
-			$('#form_layout_data_editor #module').append (new Option ("--", 0));
+			$('#form_layout_data_editor #module').append ($('<option></option>').html ("--").attr ("value", 0));
 			jQuery.each (data, function (i, val) {
 				s = html_entity_decode (val['nombre']);
-				$('#form_layout_data_editor #module').append (new Option (s, val['id_agente_modulo']));
+				$('#form_layout_data_editor #module').append ($('<option></option>').html (s).attr ("value", val['id_agente_modulo']));
 				$('#form_layout_data_editor #module').fadeIn ('normal');
 			});
 			if (selected != undefined)

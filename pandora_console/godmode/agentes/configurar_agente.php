@@ -104,7 +104,6 @@ $id_network_server = 0;
 $id_plugin_server = 0;
 $id_prediction_server = 0;
 $id_wmi_server = 0;
-$id_inventory_server = 0;
 $grupo = 0;
 $id_os = 0;
 
@@ -125,7 +124,6 @@ if (isset ($_POST["create_agent"])) { // Create a new and shiny agent
 	$id_plugin_server = get_parameter_post ("plugin_server", 0);
 	$id_prediction_server = get_parameter_post ("prediction_server", 0);
 	$id_wmi_server = get_parameter_post ("wmi_server", 0);
-	$id_inventory_server = get_parameter_post ("inventory_server", 0);
 	$id_os = get_parameter_post ("id_os", 0);
 	$disabled = get_parameter_post ("disabled", 0);
 
@@ -138,11 +136,12 @@ if (isset ($_POST["create_agent"])) { // Create a new and shiny agent
 		$agent_created_ok = 0;
 	} else {
 		$sql = sprintf ("INSERT INTO tagente 
-				(nombre, direccion, id_grupo, intervalo, comentarios, modo, id_os, disabled, id_network_server, id_plugin_server, id_wmi_server, id_prediction_server, id_inventory_server, id_parent) 
+				(nombre, direccion, id_grupo, intervalo, comentarios, modo, id_os, disabled, id_network_server, id_plugin_server, id_wmi_server, id_prediction_server, id_parent) 
 				VALUES 
-				('%s', '%s', %d, %d, '%s', %d, %d, %d, %d, %d, %d, %d, %d, %d)",
-				$nombre_agente, $direccion_agente, $grupo, $intervalo, $comentarios, $modo, $id_os, $disabled, $id_network_server, $id_plugin_server, $id_wmi_server, $id_prediction_server, $id_inventory_server, $id_parent);
+				('%s', '%s', %d, %d, '%s', %d, %d, %d, %d, %d, %d, %d, %d)",
+				$nombre_agente, $direccion_agente, $grupo, $intervalo, $comentarios, $modo, $id_os, $disabled, $id_network_server, $id_plugin_server, $id_wmi_server, $id_prediction_server, $id_parent);
 		$id_agente = process_sql ($sql, "insert_id");
+		enterprise_hook ('update_agent', array ($id_agente));
 		if ($id_agente !== false) {
 			$agent_created_ok = 1;
 			$agent_creation_error = "";
@@ -501,7 +500,6 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	$id_plugin_server = (int) get_parameter_post ("plugin_server", 0);
 	$id_wmi_server = (int) get_parameter_post ("wmi_server", 0);
 	$id_prediction_server = (int) get_parameter_post ("prediction_server", 0);
-	$id_inventory_server = (int) get_parameter_post ("inventory_server", 0);
 	$id_parent = (int) get_parameter_post ("id_parent", 0);
 
 	//Verify if there is another agent with the same name but different ID
@@ -522,26 +520,21 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 		}
 	
 		//Now update the thing
-		$sql = sprintf ("UPDATE tagente SET 
-			disabled = %d, 
-			id_parent = %d, 
-			id_os = %d, 
-			modo = %d, 
-			nombre = '%s', 
-			direccion = '%s',
-			id_grupo = %d,
-			intervalo = %d,
-			comentarios = '%s',
-			id_network_server = %d,
-			id_plugin_server = %d,
-			id_wmi_server = %d,
-			id_prediction_server = %d,
-			id_inventory_server = %d
-			WHERE id_agente = %d",$disabled,$id_parent,$id_os,$modo,$nombre_agente,$direccion_agente,$grupo,$intervalo,$comentarios,$id_network_server,$id_plugin_server,$id_wmi_server,$id_prediction_server,$id_inventory_server,$id_agente);
+		$sql = sprintf ("UPDATE tagente
+			SET disabled = %d, id_parent = %d, id_os = %d, modo = %d, 
+			nombre = '%s', direccion = '%s', id_grupo = %d,
+			intervalo = %d, comentarios = '%s', id_network_server = %d,
+			id_plugin_server = %d, id_wmi_server = %d, id_prediction_server = %d
+			WHERE id_agente = %d",
+			$disabled, $id_parent, $id_os, $modo, $nombre_agente,
+			$direccion_agente, $grupo, $intervalo, $comentarios,
+			$id_network_server, $id_plugin_server, $id_wmi_server,
+			$id_prediction_server, $id_agente);
 		$result = process_sql ($sql);
 		if ($result === false) {
 			echo '<h3 class="error">'.__('There was a problem updating agent').'</h3>';
 		} else {
+			enterprise_hook ('update_agent', array ($id_agente));
 			echo '<h3 class="suc">'.__('Agent successfully updated').'</h3>';
 		}
 	}
@@ -554,12 +547,13 @@ if ((isset($agent_created_ok)) && ($agent_created_ok == 1)){
 // Read agent data
 // This should be at the end of all operation checks, to read the changess
 if (isset($_GET["id_agente"])) {
-	$id_agente = get_parameter_get ("id_agente"); //This has been done in the beginning of the page, but if an agent was created, this id might change
+	//This has been done in the beginning of the page, but if an agent was created, this id might change
+	$id_agente = get_parameter_get ("id_agente");
 	$id_grupo = dame_id_grupo ($id_agente);
 	if (give_acl ($config["id_user"], $id_grupo, "AW") != 1) {
 		audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation","Trying to admin an agent without access");
 		require ("general/noaccess.php");
-		exit;								       
+		exit;
 	}
 	
 	$row = get_db_row ('tagente', 'id_agente', $id_agente);
@@ -582,7 +576,6 @@ if (isset($_GET["id_agente"])) {
 	$id_network_server = $row["id_network_server"];
 	$id_prediction_server = $row["id_prediction_server"];
 	$id_wmi_server = $row["id_wmi_server"];
-	$id_inventory_server = $row["id_inventory_server"];
 	$modo = $row["modo"];
 	$id_os = $row["id_os"];
 	$disabled = $row["disabled"];
@@ -903,12 +896,10 @@ switch ($tab) {
 	case "template":
 		require "agent_template.php";
 		break;
-	case "inventory":
-		enterprise_include ('godmode/agentes/inventory_manager.php');
-		break;
 	default:
-		//This will make sure that blank pages will have at least some
-		//debug info in them
-		echo '<h3 class="error">DEBUG: Invalid tab specified in '.__FILE__.':'.__LINE__.'</h3>';
+		if (enterprise_hook ('switch_agent_tab', array ($tab)))
+			//This will make sure that blank pages will have at least some
+			//debug info in them
+			echo '<h3 class="error">DEBUG: Invalid tab specified in '.__FILE__.':'.__LINE__.'</h3>';
 }
 ?>

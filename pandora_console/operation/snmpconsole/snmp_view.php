@@ -106,7 +106,9 @@ echo '<img src="images/pixel_green.png" width="20" height="20" /> - '.__('Valida
 echo '<br />';
 echo '<img src="images/pixel_red.png" width="20" height="20" /> - '.__('Not validated event');
 echo '</td><td class="f9" style="padding-left: 30px;">';
-echo '<img src="images/pixel_yellow.png" width="20" height="20" /> - '.__('Alert fired');
+echo '<img src="images/pixel_yellow.png" width="40" height="20" /> - '.__('Alert fired');
+echo '<br />';
+echo '<img src="images/pixel_gray.png" width="40" height="20" /> - '.__('Alert not fired');
 echo '</td><td class="f9" style="padding-left: 30px;">';
 echo '<img src="images/ok.png" /> - '.__('Validate event');
 echo '<br />'; 
@@ -128,21 +130,38 @@ $table->class = "databox";
 $table->head = array ();
 $table->size = array ();
 $table->data = array ();
+$table->align = array ();
 
 $table->head[0] = __('Status');
+$table->align[0] = "center";
+
 $table->head[1] = __('SNMP Agent');
+$table->align[1] = "center";
+
 $table->head[2] = __('OID');
+$table->align[2] = "center";
+
 $table->head[3] = __('Value');
+$table->align[3] = "center";
+
 $table->head[4] = __('Custom');
+$table->align[4] = "center";
+
 $table->head[5] = __('User ID');
+$table->align[5] = "center";
 
 $table->head[6] = __('Timestamp');
 $table->size[6] = 130;
+$table->align[6] = "center";
 
 $table->head[7] = __('Alert');
+$table->align[7] = "center";
+
 $table->head[8] = __('Action');
+$table->align[8] = "center";
 
 $table->head[9] = print_checkbox_extended ("allbox", 1, false, false, "javascript:CheckAll();", 'class="chk" title="'.__('All').'"', true);
+$table->align[9] = "center";
 
 // Skip offset records
 foreach ($traps as $trap) {
@@ -209,9 +228,30 @@ foreach ($traps as $trap) {
 
 	//Alert fired
 	if (!empty ($trap["alerted"])) {
-		$data[7] = '<img src="images/pixel_yellow.png" width="40" height="18" border="0" title="'.__('Alert fired').'" />';
+		$idx = count ($table->data);
+		switch ($trap["priority"]) {
+		case 0:
+			$table->rowclass[$idx] = "datos_blue";
+			break;
+		case 1:
+			$table->rowclass[$idx] = "datos_grey";
+			break;
+		case 2:
+			$table->rowclass[$idx] = "datos_green";
+			break;
+		case 3:
+			$table->rowclass[$idx] = "datos_yellow";
+			break;
+		case 4:
+			$table->rowclass[$idx] = "datos_red";
+			break;
+		default:
+			$table->rowclass[$idx] = "datos_grey";
+		}
+
+		$data[7] = '<img src="images/pixel_yellow.png" width="40" height="20" border="0" title="'.__('Alert fired').'" />';
 	} else {
-		$data[7] = '--';
+		$data[7] = '<img src="images/pixel_gray.png" width="40" height="20" border="0" title="'.__('Alert not fired').'" />';
 	}
 
 	//Actions

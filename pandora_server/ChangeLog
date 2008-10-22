@@ -1,3 +1,7 @@
+2008-10-22  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* bin/pandora_snmpconsole: Feature request #2166257
+
 2008-10-20  Esteban Sanchez  <estebans@artica.es>
 
 	* lib/PandoraFMS/DB.pm: Fixed a strange bug that was causing to

@@ -16,6 +16,12 @@
 
 2008-10-22  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
+	* operation/snmpconsole/snmp_view.php: Feature request #2166257
+
+	* pandoradb.sql: Feature request #2166257
+
+2008-10-22  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
 	* operation/snmpconsole/snmp_view.php: Style update and uses new
 	functions. Also uses (much) less SQL queries now. Fixed some bugs and 
 	if an IP matches an existing agent, it gets checked against ACL

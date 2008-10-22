@@ -535,6 +535,7 @@ CREATE TABLE IF NOT EXISTS `ttrap` (
   `status` smallint(6) NOT NULL default '0',
   `id_usuario` varchar(150) default '',
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
+  `priority` tinyint(4) unsigned NOT NULL default '2',
   PRIMARY KEY  (`id_trap`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

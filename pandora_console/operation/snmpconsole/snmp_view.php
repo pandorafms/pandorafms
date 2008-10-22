@@ -18,7 +18,7 @@
 
 
 // Load global vars
-require("include/config.php");
+require_once ("include/config.php");
 
 check_login ();
 
@@ -26,64 +26,31 @@ if (! give_acl ($config['id_user'], 0, "AR")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
 		"Trying to access SNMP Console");
 	require ("general/noaccess.php");
-	return;
+	exit;
 }
-?>
-
-<script language="JavaScript" type="text/javascript">
-<!--
-function CheckAll() {
-	for (var i = 0; i < document.eventtable.elements.length; i++) {
-		var e = document.eventtable.elements[i];
-		if (e.type == 'checkbox' && e.name != 'allbox')
-			e.checked = 1;
-	}
-}
-
-function OpConfirm (text, conf) {
-	for (var i = 0; i < document.pageform.elements.length; i++) {
-		var e = document.pageform.elements[i];
-		if (e.type == 'checkbox' && e.name != 'allbox' && e.checked == 1 ) {
-			if (conf) {
-				return confirm(text);
-			} else {
-				return 1;
-			}
-		}
-	}
-	return false;
-}
-//-->
-</script>
-
-<?php
-// Var init
-$accion = "";
-$offset_counter =0;
 
 // OPERATIONS
 
-// Delete SNMP Trap entryEvent (only incident management access).
-if (isset($_GET["delete"])){
-	$id_trap = $_GET["delete"];
-	if (give_acl ($config['id_user'], 0, "IM")) {
-		$sql2="DELETE FROM ttrap WHERE id_trap =".$id_trap;
-		$result2=mysql_query($sql2);
-		if ($result) { echo "<h3 class='suc'>".__('Event successfully deleted')."</h3>";}
+// Delete SNMP Trap entry Event (only incident management access).
+if (isset ($_GET["delete"])){
+	$id_trap = (int) get_parameter_get ("delete", 0);
+	if ($id_trap > 0 && give_acl ($config['id_user'], 0, "IM")) {
+		$sql = sprintf ("DELETE FROM ttrap WHERE id_trap = %d", $id_trap);
+		$result = process_sql ($sql);
+		print_error_message ($result, __('Event successfully deleted'), __('Error removing event'));
 	} else {
 		audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
-			"Trying to delete event ID".$id_trap);
+			"Trying to delete SNMP event ID #".$id_trap);
 	}
 }
 
 // Check Event (only incident write access).
-if (isset($_GET["check"])){
-	$id_trap = $_GET["check"];
-	if (give_acl ($config['id_user'], 0, "IW")) {
-		$sql2="UPDATE ttrap set status=1, id_usuario = '".$config['id_user']."' WHERE id_trap = ".$id_trap;
-		$result2=mysql_query($sql2);
-		if ($result2) { echo "<h3 class='suc'>".__('Event successfully validated')."</h3>";}
-
+if (isset ($_GET["check"])) {
+	$id_trap = (int) get_parameter_get ("check", 0);
+	if ($id_trap > 1 && give_acl ($config['id_user'], 0, "IW")) {
+		$sql = sprintf ("UPDATE ttrap SET status = 1, id_usuario = '%s' WHERE id_trap = %d", $config["id_user"], $id_trap);
+		$result = process_sql ($sql);
+		print_error_message ($result, __('Event successfully updated'), __('Error updating event'));
 	} else {
 		audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
 			"Trying to checkout SNMP Trap ID".$id_trap);
@@ -91,15 +58,12 @@ if (isset($_GET["check"])){
 }
 
 // Mass-process DELETE
-if (isset($_POST["deletebt"])){
-	$count=0;
-	if (give_acl ($config['id_user'], 0, "IW")) {
-		while ($count <= $config["block_size"]) {
-			if (isset($_POST["snmptrapid".$count])){
-				$trap_id = $_POST["snmptrapid".$count];
-				mysql_query("DELETE FROM ttrap WHERE id_trap =".$trap_id);
-			}
-			$count++;
+if (isset ($_POST["deletebt"])) {
+	$trap_ids = get_parameter_post ("snmptrapid", array ());
+	if (is_array ($trap_ids) && give_acl ($config['id_user'], 0, "IW")) {
+		foreach ($trap_ids as $id_trap) {
+			$sql = sprintf ("DELETE FROM ttrap WHERE id_trap = %d", $id_trap);
+			process_sql ($sql);
 		}
 	} else {
 		audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
@@ -108,174 +72,183 @@ if (isset($_POST["deletebt"])){
 }
 
 // Mass-process UPDATE
-if (isset($_POST["updatebt"])){
-	$count=0;
-	if (give_acl ($config['id_user'], 0, "IW")) {
-		while ($count <= $config["block_size"]){
-			if (isset($_POST["snmptrapid".$count])){
-				$id_trap = $_POST["snmptrapid".$count];
-				$sql2="UPDATE ttrap SET status=1, id_usuario = '".$config['id_user']."' WHERE status = 0 and id_trap = ".$id_trap;
-				$result2=mysql_query($sql2);
-			}
-			$count++;
-		}
+if (isset ($_POST["updatebt"])) {
+	$trap_ids = get_parameter_post ("snmptrapid", array ());
+	if (is_array ($trap_ids) && give_acl ($config['id_user'], 0, "IW")) {
+		foreach ($trap_ids as $id_trap) {
+			$sql = sprintf ("UPDATE ttrap SET status = 1, id_usuario = '%s' WHERE id_trap = %d", $config["id_user"], $id_trap);
+			process_sql ($sql);
+                }
 	} else {
 		audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
-			"Trying to mass-validate SNMP Trap ID");
+			"Trying to mass-delete SNMP Trap ID");
 	}
 }
-echo "<h2>Pandora SNMP &gt; ";
-echo __('SNMP console')."</h2>";
 
-$offset = get_parameter ('offset');
+echo "<h2>Pandora SNMP &gt; ".__('SNMP console')."</h2>";
 
-$sql2="SELECT * FROM ttrap ORDER BY timestamp DESC";
-$result2=mysql_query($sql2);
+$offset = (int) get_parameter ('offset',0);
 
-if (mysql_num_rows ($result2) == 0) {
-	echo "<div class='nf'>".__('There are no SNMP traps in database')."</div>";
+
+$sql = sprintf ("SELECT * FROM ttrap ORDER BY timestamp DESC LIMIT %d,%d",$offset,$config['block_size']);
+$traps = get_db_all_rows_sql ($sql);
+
+if (empty ($traps)) {
+	echo '<div class="nf">'.__('There are no SNMP traps in database').'</div>';
 	return;
 }
 
-echo "<table border=0 width=600><tr>";
-echo "<td class='f9' style='padding-left: 30px;'>";
-echo "<img src='images/pixel_green.png' width=20 height=20> - ".__('Validated event');
-echo "<br>";
-echo "<img src='images/pixel_red.png' width=20 height=20> - ".__('Not validated event');
-//echo "<br>";
-//echo "<img src='images/pixel_yellow.png' width=20 height=35> - ".__('Alert');
-echo "</td>";
-echo "<td class='f9' style='padding-left: 20px;'>";  
-echo "<img src='images/ok.png'> - ".__('Validate event');
-echo "<br>"; 
-echo "<img src='images/cross.png '> - ".__('Delete event');
-echo "</td>";
-echo "</tr></table>";
-echo "<br>";
+echo '<table border="0" width="735"><thead><th style="width:33%">'.__('Status').'</th>';
+echo '<th style="width:34%">'.__('Alert').'</th>';
+echo '<th style="width:33%">'.__('Action').'</th></thead><tbody><tr>';
+echo '<td class="f9" style="padding-left: 30px;">';
+echo '<img src="images/pixel_green.png" width="20" height="20" /> - '.__('Validated event');
+echo '<br />';
+echo '<img src="images/pixel_red.png" width="20" height="20" /> - '.__('Not validated event');
+echo '</td><td class="f9" style="padding-left: 30px;">';
+echo '<img src="images/pixel_yellow.png" width="20" height="20" /> - '.__('Alert fired');
+echo '</td><td class="f9" style="padding-left: 30px;">';
+echo '<img src="images/ok.png" /> - '.__('Validate event');
+echo '<br />'; 
+echo '<img src="images/cross.png" /> - '.__('Delete event');
+echo '</td></tr></tbody></table>';
+echo '<br />';
 
-// Prepare index for pagination
-$trap_list[]="";
+// Prepare index for paginationi
+$trapcount = get_db_sql ("SELECT COUNT(*) FROM ttrap");
+pagination ($trapcount, "index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view", $offset);
 
-while ($row2=mysql_fetch_array($result2)){ // Jump offset records
-	$trap_list[]=$row2["id_trap"];
-}
+echo "<br />";
+echo '<form name="eventtable" method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&refr=60&offset='.$offset.'">';
 
-$total_traps = count ($trap_list);
-pagination ($total_traps, "index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view", $offset);
+$table->cellpadding = 4;
+$table->cellspacing = 4;
+$table->width = 735;
+$table->class = "databox";
+$table->head = array ();
+$table->size = array ();
+$table->data = array ();
 
-echo "<br>";
-echo "<table cellpadding='4' cellspacing='4' width='735' class='databox'>";
-echo "<tr>";
-echo "<th>".__('Status')."</th>";
-echo "<th>".__('SNMP Agent')."</th>";
-echo "<th>".__('OID')."</th>";
-echo "<th>".__('Value')."</th>";
-echo "<th>".__('Custom')."</th>";
-echo "<th>".__('User ID')."</th>";
-echo "<th width ='130px'>".__('Timestamp')."</th>";
-echo "<th>".__('Alert')."</th>";
-echo "<th>".__('Action')."</th>";
-echo "<th class='p10'>";
-echo "<label for='checkbox' class='p21'>".__('All')." </label>";
-echo '<input type="checkbox" class="chk" name="allbox" onclick="CheckAll();">
-</th>';
-echo "<form name='eventtable' method='POST' action='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&refr=60&offset=".$offset."'>";	
+$table->head[0] = __('Status');
+$table->head[1] = __('SNMP Agent');
+$table->head[2] = __('OID');
+$table->head[3] = __('Value');
+$table->head[4] = __('Custom');
+$table->head[5] = __('User ID');
 
-$id_trap = 0;
-$color = 0;
-if ($offset != 0)
-	$offset_limit = $offset + 1;
-else
-	$offset_limit = $offset;
+$table->head[6] = __('Timestamp');
+$table->size[6] = 130;
+
+$table->head[7] = __('Alert');
+$table->head[8] = __('Action');
+
+$table->head[9] = print_checkbox_extended ("allbox", 1, false, false, "javascript:CheckAll();", 'class="chk" title="'.__('All').'"', true);
+
 // Skip offset records
-for ($a=$offset_limit;$a < ($config["block_size"] + $offset + 1);$a++){
-	if (isset($trap_list[$a])){
-		$id_trap = $trap_list[$a];
-		$sql="SELECT * FROM ttrap WHERE id_trap = $id_trap";
-		if ($result=mysql_query($sql)){
-			$trap=mysql_fetch_array($result);
-			if ($color == 1){
-				$tdcolor = "datos";
-				$color = 0;
-			}
-			else {
-				$tdcolor = "datos2";
-				$color = 1;
-			}
-			$offset_counter++;
-			echo "<tr>";
-			echo "<td class='$tdcolor' align='center'>";
-			if ($trap["status"] == 0){
-				echo "<img src='images/pixel_red.png' width=20 height=20>";
-			}
-			else {
-				echo "<img src='images/pixel_green.png' width=20 height=20>";
-			}
-			echo "</td>";
-
-
-			// Agent ID
-			$agent = get_db_row ('tagente', 'direccion', $trap['source']);
-			if ($agent) {
-				echo "<td class='$tdcolor'>
-				<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$agent["id_agente"]."'>
-				<strong>".$agent['nombre']."</strong></a></td>";
-			} else {
-				echo "<td class='$tdcolor'>".$trap["source"]."</td>";
-			}
+foreach ($traps as $trap) {
+	$data = array ();
 	
-			// OID
-			echo "<td class='$tdcolor'>".$trap["oid"];
-			
-			
-			// Value
-			$value = substr ($trap["value"], 0, 15);
-			if (strlen ($trap["value"]) > 15)
-				$value .= "...";
-			echo "<td title='".$trap["value"]."' class='$tdcolor'>".$value."</td>";
-
-			// CUSTOM
-			$custom = substr ($trap["value_custom"], 0, 15);
-			if (strlen ($trap["value_custom"]) > 15)
-				$custom .= "...";
-			echo "<td title='".$trap["value_custom"]."' class='$tdcolor'>".$custom."</td>";
-
-			// User 
-			echo "<td class='$tdcolor'>";
-			if ($trap["status"])
-				echo "<a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$trap["id_usuario"]."'><a href='#' class='tip'>&nbsp;<span>".dame_nombre_real($trap["id_usuario"])."</span></a>".substr($trap["id_usuario"],0,8)."</a>";
-			echo "</td>";
-
-			// Timestamp
-			echo "<td class='$tdcolor'>".$trap["timestamp"]."</td>";
-
-			// Alerted ?
-			echo "<td class='$tdcolor' align='center'>";
-			if ($trap["alerted"])
-				echo "<img src='images/pixel_yellow.png' width=40 height=18 border=0>";
-			echo "</td>";
-
-			// Delete and ACK
-			echo "<td class='$tdcolor' align='center'>";
-			if ($trap["status"] == 0 && give_acl ($config['id_user'],"0","IW"))
-				echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&check=".$trap["id_trap"]."'><img src='images/ok.png' border='0'></a>";
-			if (give_acl ($config['id_user'], "0", "IM"))
-				echo "<a href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&delete=".$trap["id_trap"]."&refr=60&offset=".$offset."'><img src='images/cross.png' border=0></a>";
-			echo "</td>";
-
-			echo "<td class='$tdcolor' align='center'>";
-			echo "<input type='checkbox' class='chk' name='snmptrapid".$offset_counter."' value='".$trap["id_trap"]."'>";
-			echo "</td></tr>";
-		}
+	//Status
+	if ($trap["status"] == 0) {
+		$data[0] = '<img src="images/pixel_red.png" title="'.__('Not validated').'" width="20" height="20" />';
+	} else {
+		$data[0] = '<img src="images/pixel_green.png" title="'.__('Validated').'" width="20" height="20" />';
 	}
-}
-echo "</table>";
-$offset_counter = 0;
-echo "<table width='750px'><tr><td align='right'>";
 
-echo "<input class='sub ok' type='submit' name='updatebt' value='".__('Validate')."'> ";
-if (give_acl ($config['id_user'], 0, "IM")) {
-	echo "<input class='sub delete' type='submit' name='deletebt' value='".__('Delete')."'>";
+	// Agent matching
+	$agent = get_db_row ('tagente', 'direccion', $trap['source']);
+	if ($agent !== false && ! give_acl ($config["id_user"], $agent["id_grupo"], "AR")) {
+		//Agent found, no rights
+		continue;
+	} elseif ($agent === false) {
+		//Agent not found
+		$data[1] = $trap["source"];
+		if (give_acl ($config["id_user"], 0, "AW")) {
+			//We have rights to create agents
+			$data[1] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&create_agent=1&direccion='.$data[1].'" title="'.__('Create agent').'">'.$data[1].'</a>';	
+		}
+	} else {
+		//Agent found
+		$data[1] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'" title="'.__('View agent details').'">';
+		$data[1] .= '<b>'.$agent["nombre"].'</b></a>';
+	}
+
+	//OID
+	$data[2] = $trap["oid"];
+	if (empty ($data[2]))
+		$data[2] = __('N/A');
+	
+	//Value
+	$data[3] = substr ($trap["value"], 0, 15);
+	
+	if (empty ($data[3])) {
+		$data[3] = __('N/A');
+	} elseif (strlen ($trap["value"]) > 15) {
+		$data[3] = '<span title="'.$trap["value"].'">'.$data[3].'...</span>';
+	}
+	
+	//Custom
+	$data[4] = $trap["value_custom"];
+
+	if (empty ($data[4])) {
+		$data[4] = __('N/A');
+	} elseif (strlen ($trap["value_custom"]) > 15) {
+		$data[4] = '<span title="'.$trap["custom_value"].'">'.$data[4].'...</span>';
+	}	
+
+	//User
+	if (!empty ($trap["status"])) {
+		$data[5] = '<a href="index.php?sec=usuarios&sec2=operation/users/user_edit&ver='.$trap["id_usuario"].'">'.substr ($trap["id_usuario"], 0, 8).'</a>';
+		$data[5] .= '<a href="#" class="tip">&nbsp;<span>'.dame_nombre_real($trap["id_usuario"]).'</span></a>';
+	} else {
+		$data[5] = '--';
+	}
+	
+	// Timestamp
+	$data[6] = $trap["timestamp"];
+
+	//Alert fired
+	if (!empty ($trap["alerted"])) {
+		$data[7] = '<img src="images/pixel_yellow.png" width="40" height="18" border="0" title="'.__('Alert fired').'" />';
+	} else {
+		$data[7] = '--';
+	}
+
+	//Actions
+	$data[8] = "";
+	if (empty ($trap["status"]) && give_acl ($config["id_user"], 0, "IW")) {
+		$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&check='.$trap["id_trap"].'"><img src="images/ok.png" border="0" title="'.__('Validate').'" /></a>';
+	}
+	if (give_acl ($config["id_user"], 0, "IW")) {
+		$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&delete='.$trap["id_trap"].'&refr=60&offset='.$offset.'" onClick="javascript:confirm(\''.__('Are you sure').'\')"><img src="images/cross.png" border="0" title="'.__('Delete').'"/></a>';
+	}
+	
+	$data[9] = print_checkbox_extended ("snmptrapid[]", $trap["id_trap"], false, false, '', 'class="chk"', true);
+
+	array_push ($table->data, $data);
 }
-echo "</form></td></tr></table>";
+
+print_table ($table);
+unset ($table);
+
+echo '<div style="width:735px; text-align:right;">';
+print_submit_button (__('Validate'), "updatebt", false, 'class="sub ok"');
+
+if (give_acl ($config['id_user'], 0, "IM")) {
+	print_submit_button (__('Delete'), "deletebt", false, 'class="sub delete" onClick="javascript:confirm(\''.__('Are you sure').'\')"');
+}
+echo "</div></form>";
+
+
 ?>
+<script language="JavaScript" type="text/javascript">
+<!--
+function CheckAll() {
+        for (var i = 0; i < document.eventtable.elements.length; i++) {
+                var e = document.eventtable.elements[i];
+                if (e.type == 'checkbox' && e.name != 'allbox')
+                        e.checked = !e.checked;
+        }
+}
+//-->
+</script>

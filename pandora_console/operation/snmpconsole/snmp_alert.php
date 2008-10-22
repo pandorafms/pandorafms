@@ -328,7 +328,27 @@ if (isset ($_GET["update_alert"])) { //the update_alert means the form should be
 				<img src="images/cross.png" border="0" alt="'.__('Delete').'"></a>&nbsp;
 				<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&update_alert='.$row["id_as"].'">
 				<img src="images/config.png" border="0" alt="'.__('Update').'"></a>';
-		array_push ($table->data, $data);			
+		$idx = count ($table->data); //The current index of the table is 1 less than the count of table data so we count before adding to table->data
+		array_push ($table->data, $data);
+		switch ($row["priority"]) {
+		case 0:
+			$table->rowclass[$idx] = "datos_blue";
+			break;
+		case 1:
+			$table->rowclass[$idx] = "datos_grey";
+			break;
+		case 2:
+			$table->rowclass[$idx] = "datos_green";
+			break;
+		case 3:
+			$table->rowclass[$idx] = "datos_yellow";
+			break;
+		case 4:
+			$table->rowclass[$idx] = "datos_red";
+			break;
+		default:
+			$table->rowclass[$idx] = "datos_grey";
+		}
 	}
 
 	if (!empty ($table->data)) {

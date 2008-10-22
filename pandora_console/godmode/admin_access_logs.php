@@ -102,7 +102,7 @@ $result=mysql_query($query1);
 // table header
 echo '<table cellpadding="4" cellspacing="4" width="700" class="databox">';
 echo '<tr>';
-echo '<th width="80px">'.__('user').'</th>';
+echo '<th width="80px">'.__('User').'</th>';
 echo '<th>'.__('Action').'</th>';
 echo '<th width="130px">'.__('Date').'</th>';
 echo '<th width="100px">'.__('Source IP').'</th>';

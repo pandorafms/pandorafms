@@ -214,7 +214,7 @@ if (isset ($chunk1)) {
 	echo "<tr>
 	<th>".__('Agent')."</th>
 	<th>".__('Module')."</th>
-	<th>Weight</th>
+	<th>".__('Weight')."</th>
 	<th>".__('Delete')."</th>";
 	$color=0;
 	for ($a=0; $a < count($module_array); $a++){
@@ -261,12 +261,8 @@ if (($render == 1) && (isset($modules))) {
 // SOURCE AGENT TABLE/FORM
 // -----------------------
 
-if ($add_module) {
-	echo __('Graph builder')."</h2>";
-} else {
-	echo "<h3>".__('Graph builder')."</h3>";
-}
-echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_color'>";
+echo __('Graph builder')."</h2>";
+echo "<table width='500' cellpadding='4' cellpadding='4' class='databox_color'>";
 echo "<form method='post' action='index.php?sec=greporting&sec2=godmode/reporting/graph_builder'>";
 print_input_hidden ('add_module', 1);
 if (isset($period))

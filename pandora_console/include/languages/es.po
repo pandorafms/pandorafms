@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: index.es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-10-22 16:48+0200\n"
-"PO-Revision-Date: 2008-10-22 16:50+0200\n"
+"PO-Revision-Date: 2008-10-22 17:30+0200\n"
 "Last-Translator: Jorge Gonzalez <jorge.gonzalez@artica.es>\n"
 "Language-Team: Español <artica@artica.es>\n"
 "MIME-Version: 1.0\n"
@@ -451,7 +451,7 @@ msgstr "Comprobaciones totales"
 
 #: ../../general/logon_ok.php:145 ../../operation/agentes/tactical.php:125
 msgid "Monitor BAD"
-msgstr "Monitor MAL"
+msgstr "Monitores MAL"
 
 #: ../../general/logon_ok.php:151
 msgid "Alerts defined"
@@ -2993,8 +2993,10 @@ msgid "You must check modules and/or alerts to be deleted"
 msgstr "Debe comprobar módulos y/o alertas para borrar"
 
 #: ../../godmode/agentes/manage_config.php:301
-msgid "There was an error removing the module data, the removal has been cancelled"
-msgstr "Hubo un error al eliminar el módulo de datos. Se canceló la eliminación."
+msgid ""
+"There was an error removing the module data, the removal has been cancelled"
+msgstr ""
+"Hubo un error al eliminar el módulo de datos. Se canceló la eliminación."
 
 #: ../../godmode/agentes/manage_config.php:304
 msgid "Successfully removed module data"
@@ -3353,7 +3355,8 @@ msgid "Time threshold"
 msgstr "Umbral de tiempo"
 
 #: ../../godmode/agentes/alert_manager_editor.php:136
-msgid "This value must be al least Module Interval * (Min.Number of Alerts + 1)"
+msgid ""
+"This value must be al least Module Interval * (Min.Number of Alerts + 1)"
 msgstr ""
 "Este valor debe ser como mínimo, el intervalo del módulo multiplicado por el "
 "mínimo número de alertas + 1"
@@ -5390,7 +5393,7 @@ msgstr "Comprobaciones de monitor"
 
 #: ../../operation/agentes/tactical.php:115
 msgid "Monitor OK"
-msgstr "Monitor BIEN"
+msgstr "Monitores BIEN"
 
 #: ../../operation/agentes/tactical.php:138
 msgid "Monitor Unknown"
@@ -5644,4 +5647,3 @@ msgstr "Remitente"
 #: ../../operation/messages/message.php:215
 msgid "No subject"
 msgstr "Sin asunto"
-

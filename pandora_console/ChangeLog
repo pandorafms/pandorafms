@@ -1,3 +1,19 @@
+2008-10-22  Jorge Gonzalez  <jorgegonz@artica.es>
+
+        * include/languages/es.po, include/languages/es.mo: Updated Spanish 
+          translation.
+
+        * include/languages/index.pot: Updated po template file.
+
+        * operation/messages/message.php, operation/servers/view_server.php,
+          general/logon_ok.php, godmode/admin_access_logs.php,
+          godmode/db/db_purge.php, godmode/agentes/manage_config.php,
+          godmode/agentes/planned_downtime.php,
+          godmode/agentes/manage_config_remote.php,
+          godmode/reporting/graph_builder.php,
+          godmode/servers/modificar_server.php: Updated translation
+          infrastructure.
+
 2008-10-22  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* operation/snmpconsole/snmp_view.php: Style update and uses new

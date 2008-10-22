@@ -55,7 +55,7 @@ if (isset ($_GET["nuevo_mensaje_g"])){
 		}
 	}
 }
-echo "<h2>".__('Messages')." - ";
+echo "<h2>".__('Messages')." &gt; ";
 
 if (isset ($_GET["nuevo"])) { //create message
 	echo __('New message').'</h2>';

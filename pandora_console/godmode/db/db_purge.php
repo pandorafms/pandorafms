@@ -38,7 +38,7 @@ if (isset ($_POST["agent"])){
 
 
 
-echo '<h2>'.__('Database Maintenance').' &gt;'.__('Database purge').'</h2>
+echo '<h2>'.__('Database Maintenance').' &gt; '.__('Database purge').'</h2>
 	<img src="reporting/fgraph.php?tipo=db_agente_purge&id='.$id_agent.'" />
 	<br /><br />
 	<h3>'.__('Get data from agent').'</h3>';

@@ -84,7 +84,7 @@ if (isset($_GET["server"])) {
 		$table->width = "90%";
 		$table->class = "databox";
 		$table->align = array ('',"center","center","center","center","center","center","center");
-		$table->head = array (__('Name'),__('Status'),__('IP Address'),__('Description'),__('Type'),__('Started at'),__('Updated at'),__('Delete'));
+		$table->head = array (__('Name'),__('Status'),__('IP Address'),__('Description'),__('Type'),__('Started'),__('Updated'),__('Delete'));
 		
 		foreach ($result as $row) {
 			$server = "";

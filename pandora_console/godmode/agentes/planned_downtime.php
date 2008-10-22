@@ -278,7 +278,7 @@ if ($create_downtime || $update_downtime) {
 		$sql = "SELECT * FROM tplanned_downtime";
 		$downtimes = get_db_all_rows_sql ($sql);
 		if (!$downtimes) {
-			echo '<div class="nf">'.('No planned downtime').'</div>';
+			echo '<div class="nf">'.__('No planned downtime').'</div>';
 		}
 		else {
 			foreach ($downtimes as $downtime) {

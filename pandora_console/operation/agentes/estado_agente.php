@@ -55,16 +55,10 @@ if (isset($_POST["ag_group"])){
 echo "<table cellpadding='4' cellspacing='4' class='databox'><tr>";
 echo "<td valign='top'>".__('Group')."</td>";
 echo "<td valign='top'>";
-echo "<select name='ag_group' onChange='javascript:this.form.submit();' 
-class='w130'>";
 
-if ($ag_group > 1){
-	echo "<option value='".$ag_group."'>".dame_nombre_grupo($ag_group).
-	"</option>";
-}
-$mis_grupos = list_group ($config['id_user']); //Print combo for groups and set an array with all groups
+$groups = get_user_groups ();
+print_select ($groups, 'ag_group', $ag_group, 'this.form.submit()', '', '');
 
-echo "</select>";
 echo "<td valign='top'>
 <noscript>
 <input name='uptbutton' type='submit' class='sub' 
@@ -174,7 +168,7 @@ if ($agents !== false) {
 		$ultimo_contacto = $agent["ultimo_contacto"];
 		$biginterval = $intervalo;
 		$pertenece = 0;
-		foreach ($mis_grupos as $migrupo) { //Verifiy if the group this agent begins is one of the user groups
+		foreach ($groups as $migrupo) { //Verifiy if the group this agent begins is one of the user groups
 			if ($migrupo || $id_grupo == $migrupo) {
 				$pertenece = 1;
 				break;

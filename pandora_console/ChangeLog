@@ -1,3 +1,14 @@
+2008-10-24  Esteban Sanchez  <estebans@artica.es>
+
+	* operation/snmpconsole/snmp_alert.php: Fixed an error that doesn't
+	allow to show some fields when editing an alert. It's done using
+	javascript, but a PHP version might be better. Style correction.
+
+	* include/functions_db.php: Added get_agent_with_ip().
+
+	* operation/snmpconsole/snmp_view.php: Use get_agent_with_ip() since
+	using get_db_row() is not enough for agents with many addresses.
+
 2008-10-23  Esteban Sanchez  <estebans@artica.es>
 
 	* operation/agentes/estado_agente.php: Use print_select() to show the

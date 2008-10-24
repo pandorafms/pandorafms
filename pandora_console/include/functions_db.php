@@ -1273,6 +1273,22 @@ function give_agent_address ($id_agent) {
 	return (string) get_db_value ('direccion', 'tagente', 'id_agente', $id_agent);
 }
 
+/**
+ * Get the agent that matches an IP address
+ *
+ * @param $ip_address IP address to get the agents.
+ *
+ * @return The agent that has the IP address given. False if none were found.
+ */
+function get_agent_with_ip ($ip_address) {
+	$sql = sprintf ('SELECT tagente.*
+		FROM tagente, taddress, taddress_agent
+		WHERE tagente.id_agente = taddress_agent.id_agent
+		AND taddress_agent.id_a = taddress.id_a
+		AND ip = "%s"', $ip_address);
+	return get_db_row_sql ($sql);
+}
+
 /** 
  * Get IP address of an agent from address list
  * 

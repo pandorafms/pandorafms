@@ -174,8 +174,8 @@ foreach ($traps as $trap) {
 		$data[0] = '<img src="images/pixel_green.png" title="'.__('Validated').'" width="20" height="20" />';
 	}
 
-	// Agent matching
-	$agent = get_db_row ('tagente', 'direccion', $trap['source']);
+	// Agent matching source address
+	$agent = get_agent_with_ip ($trap['source']);
 	if ($agent !== false && ! give_acl ($config["id_user"], $agent["id_grupo"], "AR")) {
 		//Agent found, no rights
 		continue;
@@ -189,7 +189,7 @@ foreach ($traps as $trap) {
 	} else {
 		//Agent found
 		$data[1] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_agente"].'" title="'.__('View agent details').'">';
-		$data[1] .= '<b>'.$agent["nombre"].'</b></a>';
+		$data[1] .= '<strong>'.$agent["nombre"].'</strong></a>';
 	}
 
 	//OID

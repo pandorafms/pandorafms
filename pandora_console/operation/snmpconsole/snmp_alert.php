@@ -133,8 +133,9 @@ if ((isset ($_GET["update_alert"])) && ($_GET["update_alert"] != -1)) {
 }
 
 // Alert form
-if (isset ($_GET["update_alert"])) { //the update_alert means the form should be displayed. If update_alert > 1 then an existing alert is updated
-	if ($id_as > 1) {
+if (isset ($_GET["update_alert"])) {
+	//the update_alert means the form should be displayed. If update_alert > 1 then an existing alert is updated
+	if ($id_as) {
 		echo "<h2>Pandora SNMP &gt; ".__('Update alert')."</h2>";
 	} else {
 		echo "<h2>Pandora SNMP &gt; ".__('Create alert')."</h2>";
@@ -376,8 +377,7 @@ function time_changed () {
 	}
 }
 
-function trigger_changed () {
-	var trigger = this.value;
+function trigger_changed (trigger) {
 	if (trigger == 0) {
 		$('#tr-custom_value').fadeOut ('fast');
 		$('#tr-source_ip').fadeOut ('fast');
@@ -400,6 +400,13 @@ function trigger_changed () {
 
 $(document).ready (function () {
 	$('#time_threshold').change (time_changed);
-	$('#alert_trigger').change (trigger_changed);
+	$('#alert_trigger').change (function () {
+		trigger_changed (this.value)
+	});
+<?php
+	if ($id_as) {
+		echo 'trigger_changed ('.$alert_trigger.');';
+	}
+?>
 }); 
 </script>

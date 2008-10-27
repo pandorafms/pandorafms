@@ -1434,7 +1434,7 @@ function process_sql ($sql, $rettype = "affected_rows") {
 	} else {
 		$result = mysql_query ($sql);
 		if ($result === false) {
-			echo '<strong>Error:</strong> process_sql ("'.$sql.'") :'. mysql_error ().'<br />';
+			trigger_error (mysql_error ());
 			return false;
 		} elseif ($result === true) {
 			if ($rettype == "insert_id") {

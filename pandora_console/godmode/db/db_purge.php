@@ -79,12 +79,15 @@ $data["total"] = 0;
 # Purge data using dates
 if (isset($_POST["purgedb"])) {
 	$from_date = get_parameter_post ("date_purge",0); //0: No time selected
-	if ($id_agent != -1) {
+	if ($id_agent > 0) {
 		echo __('Purge task launched for agent')." ".dame_nombre_agente ($id_agent)." :: ".__('Data older than')." ".human_time_description ($from_date);
 		echo "<h3>".__('Please be patient. This operation can take a long time depending on the amount of modules.')."</h3>";
 		
 		$sql = sprintf ("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = %d",$id_agent);
 		$result=get_db_all_rows_sql($sql);
+		if (empty ($result)) {
+			$result = array ();
+		}
 		
 		//Made it in a transaction so it gets done all at once.
 		process_sql ("SET AUTOCOMMIT=0;");
@@ -159,6 +162,7 @@ if ($id_agent > 0) {
 
 echo "<h3>".$title."</h3>";	
 
+flush ();
 $query = "";
 if ($id_agent > 0) { //If the agent is not All or Not selected
 	$query = sprintf (" AND id_agente_modulo = ANY(SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = '%d' ",$id_agent);
@@ -171,7 +175,24 @@ $data["2week"] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagent
 $data["1month"] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp > %d %s", $time["1month"], $query));
 $data["3month"] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp > %d %s", $time["3month"], $query));
 $data["total"] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE 1=1 %s", $query));
-	
+
+$data["1day"] += get_db_sql (sprintf ("SELECT COUNT(id_adi) FROM tagente_datos_inc WHERE utimestamp > %d %s", $time["1day"], $query));
+$data["3day"] += get_db_sql (sprintf ("SELECT COUNT(id_adi) FROM tagente_datos_inc WHERE utimestamp > %d %s", $time["3day"], $query));
+$data["1week"] += get_db_sql (sprintf ("SELECT COUNT(id_adi) FROM tagente_datos_inc WHERE utimestamp > %d %s", $time["1week"], $query));
+$data["2week"] += get_db_sql (sprintf ("SELECT COUNT(id_adi) FROM tagente_datos_inc WHERE utimestamp > %d %s", $time["2week"], $query));
+$data["1month"] += get_db_sql (sprintf ("SELECT COUNT(id_adi) FROM tagente_datos_inc WHERE utimestamp > %d %s", $time["1month"], $query));
+$data["3month"] += get_db_sql (sprintf ("SELECT COUNT(id_adi) FROM tagente_datos_inc WHERE utimestamp > %d %s", $time["3month"], $query));
+$data["total"] += get_db_sql (sprintf ("SELECT COUNT(id_adi) FROM tagente_datos_inc WHERE 1=1 %s", $query));
+
+$data["1day"] += get_db_sql (sprintf ("SELECT COUNT(id_tagente_datos_string) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1day"], $query));
+$data["3day"] += get_db_sql (sprintf ("SELECT COUNT(id_tagente_datos_string) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["3day"], $query));
+$data["1week"] += get_db_sql (sprintf ("SELECT COUNT(id_tagente_datos_string) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1week"], $query));
+$data["2week"] += get_db_sql (sprintf ("SELECT COUNT(id_tagente_datos_string) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["2week"], $query));
+$data["1month"] += get_db_sql (sprintf ("SELECT COUNT(id_tagente_datos_string) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1month"], $query));
+$data["3month"] += get_db_sql (sprintf ("SELECT COUNT(id_tagente_datos_string) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["3month"], $query));
+$data["total"] += get_db_sql (sprintf ("SELECT COUNT(id_tagente_datos_string) FROM tagente_datos_string WHERE 1=1 %s", $query));
+
+
 if (isset ($table)) {
 	unset ($table); //since $table is an object, we make sure it's gone first
 }

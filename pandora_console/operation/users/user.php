@@ -123,7 +123,7 @@ echo "</table><br>";
 	print_help_tip (__('Database management'));
 	echo "</font></th>";
 	echo "<th width='40px'><font size=1>LM";
-	print_help_tip (__('Alerts anagement'));
+	print_help_tip (__('Alerts management'));
 	echo "</font></th>";
 	echo "<th width='40px'><font size=1>PM";
 	print_help_tip (__('Pandora system management'));

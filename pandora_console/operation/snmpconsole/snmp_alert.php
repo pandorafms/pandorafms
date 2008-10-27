@@ -356,8 +356,7 @@ function time_changed () {
 	}
 }
 
-function trigger_changed () {
-	var trigger = this.value;
+function trigger_changed (trigger) {
 	if (trigger == 0) {
 		$('#tr-custom_value').fadeOut ('fast');
 		$('#tr-source_ip').fadeOut ('fast');
@@ -380,6 +379,13 @@ function trigger_changed () {
 
 $(document).ready (function () {
 	$('#time_threshold').change (time_changed);
-	$('#alert_trigger').change (trigger_changed);
+	$('#alert_trigger').change (function () {
+		trigger_changed (this.value)
+	});
+<?php
+	if ($id_as) {
+		echo 'trigger_changed ('.$alert_trigger.');';
+	}
+?>
 }); 
 </script>

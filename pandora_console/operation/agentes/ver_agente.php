@@ -189,10 +189,10 @@ if (give_acl ($config['id_user'],$id_grupo, "AW")) {
 		echo "<li class='nomn_high'>";
 	} else {
 		echo "<li class='nomn'>";
-		// Manage agent
-		echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'><img src='images/setup.png' width='16' class='top' border=0> ".__('Manage')." </a>";
-		echo "</li>";
 	}
+	// Manage agent
+	echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'><img src='images/setup.png' width='16' class='top' border=0> ".__('Manage')." </a>";
+	echo "</li>";
 }
 
 // Main view
@@ -200,25 +200,28 @@ if ($tab == "main") {
 	echo "<li class='nomn_high'>";
 } else {
 	echo "<li class='nomn'>";
-	echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/monitor.png' class='top' border=0> ".__('Main')." </a>";
-	echo "</li>";
 }
+echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/monitor.png' class='top' border=0> ".__('Main')." </a>";
+echo "</li>";
+
 // Data
 if ($tab == "data") {
 	echo "<li class='nomn_high'>";
 } else {
 	echo "<li class='nomn'>";
-	echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data'><img src='images/lightbulb.png' class='top' border=0> ".__('Data')." </a>";
-	echo "</li>";
 }
+echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data'><img src='images/lightbulb.png' class='top' border=0> ".__('Data')." </a>";
+echo "</li>";
+
 // Alerts
 if ($tab == "alert") {
 	echo "<li class='nomn_high'>";
 } else {
 	echo "<li class='nomn'>";
-	echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=alert'><img src='images/bell.png' class='top' border=0> ".__('Alerts')." </a>";
-	echo "</li>";
 }
+echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=alert'><img src='images/bell.png' class='top' border=0> ".__('Alerts')." </a>";
+echo "</li>";
+
 // Go to SLA view
 echo "<li class='nomn'>";
 echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sla&id_agente=$id_agente'><img src='images/images.png' class='top' border=0> ".__('S.L.A')." </a>";

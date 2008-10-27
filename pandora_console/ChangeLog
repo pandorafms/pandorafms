@@ -1,9 +1,25 @@
+2008-10-27  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/db/db_purge.php, godmode/profiles/profile_list.php,
+	godmode/reporting/map_builder.php, include/languages/*,
+	include/functions.php, include/functions_db.php,
+	operation/agentes/estado_agente.php,
+	operation/agentes/estado_grupo.php, operation/agentes/ver_agente.php,
+	operation/events/events.php, operation/servers/view_server.php,
+	operation/snmpconsole/snmp_alert.php, operation/users/user.php,
+	operation/visual_console/index.php,
+	operation/visual_console/render_view.php, operation/menu.php: Merged
+	from trunk to fix bugs and errors. No functionallity changes were
+	done.
+
+	* index.php, include/config_process.php: Updated build number.
+
 2008-10-22  Jorge Gonzalez  <jorgegonz@artica.es>
 
-        * include/languages/es.po, include/languages/es.mo: Updated Spanish
-          translation.
+	* include/languages/es.po, include/languages/es.mo: Updated Spanish
+	translation.
 
-        * include/languages/index.pot: Updated po template file.
+	* include/languages/index.pot: Updated po template file.
 
 2008-10-22  Jorge Gonzalez  <jorgegonz@artica.es>
 

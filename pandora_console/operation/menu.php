@@ -97,20 +97,24 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	}
 	echo '<div id="op9" class="operation-menu'.$selected.'">';
 	echo '<ul class="mn"><li>';
-	echo '<a href="index.php?sec=visualc&sec2=operation/visual_console/index"  class="mn">'.__('Visual console').'</a></li></ul></div>';
+	echo '<a href="index.php?sec=visualc&sec2=operation/visual_console/index" class="mn">'.__('Visual console').'</a></li></ul></div>';
 
 	if ($sec  == "visualc") {
-		$sql="SELECT * FROM tlayout ORDER BY name";
+		$layouts = get_db_all_rows_in_table ('tlayout', 'name');
+		if ($layouts === false)
+			$layouts = array ();
 		$id = get_parameter ('id');
-		if ($res = mysql_query ($sql))
-			while ($layout = mysql_fetch_array ($res)) {
-				if ($sec2 == "operation/visual_console/render_view" && $id == $layout["id"]) {
-					echo "<div class='operation-submenu submenu-selected'>";
-				} else {
-					echo "<div class='operation-submenu'>";
-				}
-				echo "<ul class='mn'><li><a href='index.php?sec=visualc&sec2=operation/visual_console/render_view&id=".$layout["id"]."' class='mn'>". substr ($layout["name"], 0, 15). "</a></li></ul></div>";
+		foreach ($layouts as $layout) {
+			if (! give_acl ($config["id_user"], $layout["id_group"], "AR")) {
+				continue;
 			}
+			if ($sec2 == "operation/visual_console/render_view" && $id == $layout["id"]) {
+				echo "<div class='operation-submenu submenu-selected'>";
+			} else {
+				echo "<div class='operation-submenu'>";
+			}
+			echo "<ul class='mn'><li><a href='index.php?sec=visualc&sec2=operation/visual_console/render_view&id=".$layout["id"]."' class='mn'>". substr ($layout["name"], 0, 15). "</a></li></ul></div>";
+		}
 	}
 	
 

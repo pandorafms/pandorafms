@@ -62,8 +62,8 @@ if ($create_layout) {
 	$sql = sprintf ('INSERT INTO tlayout (name, id_group, background, height, width)
 			VALUES ("%s", %d, "%s", %d, %d)',
 			$name, $id_group, $background, $height, $width);
-	$id_layout = process_sql ($sql, 'insert-id');
-	if ($result !== false) {
+	$id_layout = process_sql ($sql, 'insert_id');
+	if ($id_layout !== false) {
 		echo '<h3 class="suc">'.__('Created successfully').'</h3>';
 	} else {
 		echo '<h3 class="err">'.__('Not created. Error inserting data').'</h3>';
@@ -265,9 +265,9 @@ if (! $edit_layout && ! $id_layout) {
 	$table->align[2] = 'center';
 	
 	$maps = get_db_all_rows_in_table ('tlayout','name');
-	if (!$maps)
+	if (!$maps) {
 		echo '<div class="nf">'.('No maps defined').'</div>';
-	else {
+	} else {
 		foreach ($maps as $map) {
 			$data = array ();
 			

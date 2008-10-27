@@ -53,6 +53,12 @@ $bheight = $layout["height"];
 
 $pure_url = "&pure=".$config["pure"];
 
+if (! give_acl ($config["id_user"], $id_group, "AR")) {
+	audit_db ($config["id_user"], $REMOTE_ADDR, "ACL Violation", "Trying to access visual console without group access");
+	require ("general/noaccess.php");
+	exit;
+}
+
 // Render map
 echo "<h1>".$layout_name."&nbsp;&nbsp;";
 

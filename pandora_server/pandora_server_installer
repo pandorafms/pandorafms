@@ -22,7 +22,7 @@ then
 	echo "The complete installation guide is at: "http://www.openideas.info/wiki/index.php?title=Pandora_2.0:Documentation_en:Install_Server#Pandora_FMS_Server_installation" "
 	echo " "
 	echo "Debian-based distribution do:"
-	echo "	$ apt-get install libdate-manip-perl snmp snmpd libsnmp-perl libtime-format-perl libxml-simple-perl libnetaddr-ip-perl libdbi-perl libxml-simple-perl libnetaddr-ip-perl libhtml-parser-perl wmi-client xprobe2"
+	echo "	$ apt-get install libdate-manip-perl snmp snmpd libsnmp-perl libtime-format-perl libxml-simple-perl libnetaddr-ip-perl libdbi-perl libxml-simple-perl libnetaddr-ip-perl libhtml-parser-perl wmi-client xprobe2 libmail-sendmail-perl"
 	echo " "
 	echo "RedHat-based distribution do"
 	echo " "

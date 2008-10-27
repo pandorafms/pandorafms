@@ -1,3 +1,8 @@
+2008-10-27  Esteban Sanchez  <esteban@artica.es>
+
+	* pandora_server_installer, lib/PandoraFMS/DB.pm: Merged from trunk
+	version, fixing a couple of bugs.
+
 2008-10-16  Sancho Lerena <slerena@artica.es>
 
 	* Config.pm: Version update.

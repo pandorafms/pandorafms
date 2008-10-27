@@ -1292,6 +1292,9 @@ sub pandora_serverkeepaliver (%$$) {
 	my @data;
 	my $err;
 
+	# First of all, update our keepalive
+	pandora_updateserver ($pa_config, $pa_config->{'servername'}, 1, $opmode, $dbh);
+	
 	my $temp = $pa_config->{"keepalive"} - $pa_config->{"server_threshold"};
 
 	if ($temp <= 0){
@@ -1321,7 +1324,6 @@ sub pandora_serverkeepaliver (%$$) {
 		}
 		$s_idag->finish();
 		# Update my server
-		pandora_updateserver ($pa_config, $pa_config->{'servername'}, 1, $opmode, $dbh);
 		$pa_config->{"keepalive"} = $pa_config->{"keepalive_orig"};
 	}
 	$pa_config->{"keepalive"} = $pa_config->{"keepalive"} - $pa_config->{"server_threshold"};

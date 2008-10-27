@@ -17,99 +17,101 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load globar vars
-require("include/config.php");
+require_once ("include/config.php");
 
 check_login ();
+
 if (! give_acl ($config['id_user'], 0, "UM")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
 		"Trying to access User Management");
 	require ("general/noaccess.php");
+	exit;
 }
+
 if (isset($_GET["borrar_usuario"])) { // if delete user
-	$nombre= entrada_limpia($_GET["borrar_usuario"]);
+	$nombre = get_parameter_get ("borrar_usuario");
 	// Delete user
 	// Delete cols from table tgrupo_usuario
 	
 	$sql = "DELETE FROM tgrupo_usuario WHERE usuario = '".$nombre."'";
-	$result = mysql_query ($sql);
+	$result = process_sql ($sql);
 	$sql = "DELETE FROM tusuario WHERE id_usuario = '".$nombre."'";
-	$result = mysql_query ($sql);
-	if (! $result)
-		echo "<h3 class='error'>".__('There was a problem deleting user')."</h3>";
-	else
-		echo "<h3 class='suc'>".__('User successfully deleted')."</h3>";
-}
-?>
-
-<h2><?php echo __('User management') ?> &gt; 
-<?php echo __('Users defined in Pandora') ?></h2>
- 
-<table width="700" cellpadding="4" cellspacing="4" class="databox">
-<th width="80px"><?php echo __('UserID')?></th>
-<th width="155px"><?php echo __('Last contact')?></th>
-<th width="45px"><?php echo __('Profile')?></th>
-<th width="120px"><?php echo __('Name')?></th>
-<th><?php echo __('Description')?></th>
-<th width="30px"><?php echo __('Delete')?></th>
-
-<?php
-$sql = "SELECT * FROM tusuario";
-$resq1 = mysql_query ($sql);
-// Init vars
-$nombre = "";
-$nivel = "";
-$comentarios = "";
-$fecha_registro = "";
-$color=1;
-
-while ($rowdup = mysql_fetch_array ($resq1)) {
-	$name = $rowdup["id_usuario"];
-	$nivel = $rowdup["nivel"];
-	$real_name = $rowdup["nombre_real"];
-	$comments = $rowdup["comentarios"];
-	$fecha_registro = $rowdup["fecha_registro"];
-	if ($color == 1){
-		$tdcolor = "datos";
-		$tip= "tip";
-		$color = 0;
-	}
-	else {
-		$tdcolor = "datos2";
-		$tip= "tip2";
-		$color = 1;
-	}
-	echo "<tr><td class='$tdcolor'>";
-	echo "<a href='index.php?sec=gusuarios&sec2=godmode/users/configure_user&id_usuario_mio=".$name."'><b>".$name."</b></a>";
-	echo "<td class='$tdcolor'>".$fecha_registro;
-	echo "<td class='$tdcolor'>";
-	if ($nivel == 1) 
-		echo "<img src='images/user_suit.png'>";
-	else
-		echo "<img src='images/user_green.png'>";
-	
-	$sql = 'SELECT * FROM tusuario_perfil WHERE id_usuario = "'.$name.'"';
-	$result = mysql_query ($sql);
-	echo "<a href='#' class='$tip'>&nbsp;<span>";
-	if (mysql_num_rows ($result)) {
-		while ($row = mysql_fetch_array ($result)) {
-			echo dame_perfil ($row["id_perfil"])."/ ";
-			echo dame_grupo ($row["id_grupo"])."<br>";
-		}
+	$result = process_sql ($sql);
+	if ($result === false) {
+		echo '<h3 class="error">'.__('There was a problem deleting user').'</h3>';
 	} else {
-		echo __('This user doesn\'t have any assigned profile/group');
+		echo '<h3 class="suc">'.__('User successfully deleted').'</h3>';
 	}
-	echo "</span></a>";
-	
-	echo "<td class='$tdcolor' width='100'>".substr ($real_name, 0, 16)."</td>";
-	echo "<td class='$tdcolor'>".$comments."</td>";
-	echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/users/user_list&borrar_usuario=".$name."' onClick='if (!confirm(\' ".__('Are you sure?')."\')) return false;'><img border='0' src='images/cross.png'></a></td>";
 }
-echo "</tr></table>";
-echo "<table width=700>";
-echo "<tr><td align='right'>";
-echo "<form method=post action='index.php?sec=gusuarios&sec2=godmode/users/configure_user&alta=1'>";
-echo "<input type='submit' class='sub next' name='crt' value='".__('Create user')."'>";
-echo "</form></td></tr></table>";
 
-echo "</table>";
+echo '<h2>'.__('User management').' &gt; '.__('Users defined in Pandora').'</h2>';
+
+$table->width = 700;
+$table->cellpadding = 4;
+$table->cellspacing = 4;
+$table->class = "databox";
+
+$table->head = array ();
+$table->size = array ();
+$table->data = array ();
+$table->align = array ();
+
+$table->head[0] = __('User ID');
+
+$table->head[1] = __('Last contact');
+$table->align[1] = "center";
+
+$table->head[2] = __('Profile');
+$table->align[2] = "center";
+
+$table->head[3] = __('Name');
+$table->align[3] = "center";
+
+$table->head[4] = __('Description');
+$table->align[4] = "center";
+
+$table->head[5] = __('Delete');
+$table->align[5] = "center";
+
+$result = get_db_all_rows_in_table ('tusuario');
+
+foreach ($result as $row) {
+	$data = array ();
+
+	$data[0] = '<a href="index.php?sec=gusuarios&sec2=godmode/users/configure_user&id_usuario_mio='.$row["id_usuario"].'"><b>'.$row["id_usuario"].'</b></a>';
+	$data[1] = $row["fecha_registro"];
+	if ($row["nivel"] == 1) {
+		$data[2] = '<img src="images/user_suit.png" />';
+	} else {
+		$data[2] = '<img src="images/user_green.png" />';
+	}
+	
+	$data[2] .= '<a href="#" class="tip"><span>';
+	$profiles = get_db_all_rows_field_filter ("tusuario_perfil", "id_usuario", $row["id_usuario"]);
+	if ($profiles === false) {
+		$data[2] .= __('This user doesn\'t have any assigned profile/group');
+		$profiles = array ();
+	}
+	
+	foreach ($profiles as $profile) {
+		$data[2] .= dame_perfil ($profile["id_perfil"])." / ";
+		$data[2] .= dame_grupo ($profile["id_grupo"])."<br />";
+	}
+	
+	$data[2] .= "</span></a>";
+	
+	$data[3] = substr ($row["nombre_real"], 0, 16);
+	$data[4] = $row["comentarios"];
+
+	$data[5] = '<a href="index.php?sec=gagente&sec2=godmode/users/user_list&borrar_usuario='.$row["id_usuario"].'" onClick="if (!confirm(\''.__('Are you sure?').'\')) return false;">';
+	$data[5] .= '<img border="0" src="images/cross.png" /></a>';
+	array_push ($table->data, $data);
+}
+
+print_table ($table);
+unset ($table);
+
+echo '<div style="width:680px; text-align:right"><form method="post" action="index.php?sec=gusuarios&sec2=godmode/users/configure_user&alta=1">';
+print_submit_button (__('Create user'), "crt", false, 'class="sub next"');
+echo "</form></div>";
 ?>

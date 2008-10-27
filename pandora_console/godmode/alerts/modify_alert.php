@@ -19,7 +19,7 @@
 
 
 // Load global vars
-require ("include/config.php");
+require_once ("include/config.php");
 
 check_login ();
 
@@ -27,13 +27,14 @@ if (! give_acl ($config['id_user'], 0, "LM")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
 		"Trying to access Alert Management");
 	require ("general/noaccess.php");
-	return;
+	exit;
 }
 if (isset($_POST["update_alerta"])){ // if modified any parameter
 	$id_alerta = entrada_limpia($_POST["id_alerta"]);
 	if ($id_alerta < 4){
 		audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access Alert Management");
 		require ("general/noaccess.php");
+		exit;
 	}
 	$nombre =  entrada_limpia($_POST["nombre"]);
 	$comando =  entrada_limpia($_POST["comando"]);
@@ -64,6 +65,7 @@ if (isset($_GET["borrar_alerta"])){ // if delete alert
 	if ($id_alerta < 4) {
 		audit_db ($config['id_user'],$REMOTE_ADDR, "ACL Violation","Trying to access Alert Management");
 		require ("general/noaccess.php");
+		exit;
 	}
 	$sql_delete= "DELETE FROM talerta WHERE id_alerta = ".$id_alerta;
 	$result=mysql_query($sql_delete);		

@@ -1,3 +1,21 @@
+2008-10-27  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* godmode/users/user_list.php: Rewrite to use print_table. Fixed
+	security hole where the acl check didn't call exit
+	
+	* godmode/users/configure_user.php: Fixed security hole with acl check
+
+	* godmode/setup/setup.php, godmode/setup/news.php, 
+	godmode/setup/links.php: Removed call to comprueba_login, made acl
+	checks exit and require_once config.php
+
+	* godmode/reporting/reporting_builder.php,
+	godmode/reporting/map_builder.php, godmode/reporting/graph_builder.php:
+	Removed call to comprueba_login, made acl checks exit.
+
+	* godmode/alerts/modify_alert.php, godmode/alerts/configure_alert.php:
+	Fixed acl check and removed call to comprueba_login.
+
 2008-10-24  Esteban Sanchez  <estebans@artica.es>
 
 	* operation/snmpconsole/snmp_alert.php: Fixed an error that doesn't

@@ -16,19 +16,17 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-if (comprueba_login () != 0) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access map builder");
-	include ("general/noaccess.php");
-	exit;
-}
+require_once ("include/config.php");
+
+check_login ();
 
 if (! give_acl ($config['id_user'], 0, "AW")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access map builder");
-	include ("general/noaccess.php");
+	require ("general/noaccess.php");
 	exit;
 }
 
-require ('include/functions_visual_map.php');
+require_once ('include/functions_visual_map.php');
 
 $id_layout = (int) get_parameter ('id_layout');
 $edit_layout = (bool) get_parameter ('edit_layout');

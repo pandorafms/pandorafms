@@ -17,15 +17,14 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
-require("include/config.php");
+require_once ("include/config.php");
 
-if (comprueba_login()) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access Link Management");
-	require ("general/noaccess.php");
-}
+check_login ();
+
 if (! give_acl ($config['id_user'], 0, "PM") || ! dame_admin ($config['id_user'])) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access Link Management");
 	require ("general/noaccess.php");
+	exit;
 }
 
 

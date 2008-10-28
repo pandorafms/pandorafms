@@ -1,3 +1,9 @@
+2008-10-28  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/modules/manage_network_components.php: Replaced parameters
+	manual check using entrada_limpia with get_parameter(). It was causing
+	PHP notices and was not working fine.
+
 2008-10-27  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* godmode/users/user_list.php: Rewrite to use print_table. Fixed
@@ -122,25 +128,26 @@
 2008-10-21  Jorge Gonzalez  <jorgegonz@svn.gnome.org>
 
 	* operation/servers/view_server.php,
-	  godmode/agentes/module_manager_editor_network.php,
-	  godmode/agentes/module_manager_editor_wmi.php,
-	  godmode/agentes/module_manager_editor_plugin.php,
-	  godmode/agentes/module_manager_editor_prediction.php,
-	  godmode/agentes/module_manager_editor_data.php,
-	  godmode/agentes/configurar_agente.php: added translation context.
+	godmode/agentes/module_manager_editor_network.php,
+	godmode/agentes/module_manager_editor_wmi.php,
+	godmode/agentes/module_manager_editor_plugin.php,
+	godmode/agentes/module_manager_editor_prediction.php,
+	godmode/agentes/module_manager_editor_data.php,
+	godmode/agentes/configurar_agente.php: Added translation context.
 
 	* include/languages/cs.po, include/languages/pt_BR.po,
-          include/languages/es.po, include/languages/uk.po,
-          include/languages/ro.po, include/languages/fr.po,
-          include/languages/ca.po, include/languages/de.po,
-          include/languages/sv.po, include/languages/zh_TW.po,
-          include/languages/hi.po, include/languages/zh_CN.po,
-          include/languages/te.po, include/languages/eu.po,
-          include/languages/hu.po, include/languages/ru.po,
-          include/languages/gl.po, include/languages/pl.po,
-          include/languages/it.po, include/languages/sl.po,
-          include/languages/pt.po, include/languages/ast.po,
-          include/languages/index.pot: Updated translations from Rosetta, thanks to all contributors.
+	include/languages/es.po, include/languages/uk.po,
+	include/languages/ro.po, include/languages/fr.po,
+	include/languages/ca.po, include/languages/de.po,
+	include/languages/sv.po, include/languages/zh_TW.po,
+	include/languages/hi.po, include/languages/zh_CN.po,
+	include/languages/te.po, include/languages/eu.po,
+	include/languages/hu.po, include/languages/ru.po,
+	include/languages/gl.po, include/languages/pl.po,
+	include/languages/it.po, include/languages/sl.po,
+	include/languages/pt.po, include/languages/ast.po,
+	include/languages/index.pot: Updated translations from Rosetta, thanks to
+	all contributors.
 
 2008-10-21  Manuel Arostegui  <marostegui@artica.es>
 
@@ -204,8 +211,8 @@
 2008-10-20  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* operation/agentes/estado_agente.php, operation/agentes/bulbs.php:
-	  fixed bug, blue monitor means it has no monitors, while gray means
-	  it has no data.
+	fixed bug, blue monitor means it has no monitors, while gray means
+	it has no data.
 
 2008-10-20  Esteban Sanchez  <estebans@artica.es>
 
@@ -215,17 +222,17 @@
 2008-10-20  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/languages/cs.po, include/languages/pt_BR.po,
-	  include/languages/es.po, include/languages/uk.po,
-	  include/languages/ro.po, include/languages/fr.po,
-	  include/languages/ca.po, include/languages/de.po,
-	  include/languages/sv.po, include/languages/zh_TW.po,
-	  include/languages/hi.po, include/languages/zh_CN.po,
-	  include/languages/te.po, include/languages/eu.po,
-	  include/languages/hu.po, include/languages/ru.po,
-	  include/languages/gl.po, include/languages/pl.po,
-	  include/languages/it.po, include/languages/sl.po,
-	  include/languages/pt.po, include/languages/ast.po: Updated
-	  translations from Rosetta, thanks to all contributors.
+	include/languages/es.po, include/languages/uk.po,
+	include/languages/ro.po, include/languages/fr.po,
+	include/languages/ca.po, include/languages/de.po,
+	include/languages/sv.po, include/languages/zh_TW.po,
+	include/languages/hi.po, include/languages/zh_CN.po,
+	include/languages/te.po, include/languages/eu.po,
+	include/languages/hu.po, include/languages/ru.po,
+	include/languages/gl.po, include/languages/pl.po,
+	include/languages/it.po, include/languages/sl.po,
+	include/languages/pt.po, include/languages/ast.po: Updated
+	translations from Rosetta, thanks to all contributors.
 
 	* Makefile: modified entries to make them be in alphabetic order.
 

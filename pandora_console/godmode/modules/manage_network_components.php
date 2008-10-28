@@ -49,53 +49,33 @@ $plugin_parameter = "";
 // ------------------
 
 if (isset($_GET["create"])){ // Create module
-	if (isset($_POST["tipo"]))
-		$type = entrada_limpia($_POST["tipo"]);
-	if (isset($_POST["name"]))
-		$name =  entrada_limpia($_POST["name"]);
-	if (isset($_POST["descripcion"]))
-		$description = entrada_limpia($_POST["descripcion"]);
-	if (isset($_POST["modulo_max"]))
-		$modulo_max = entrada_limpia($_POST["modulo_max"]);
-	if (isset($_POST["modulo_min"]))
-		$modulo_min = entrada_limpia($_POST["modulo_min"]);
-	if (isset($_POST["tcp_send"]))
-		$tcp_send = entrada_limpia($_POST["tcp_send"]);
-	if (isset($_POST["tcp_rcv"]))
-		$tcp_rcv = entrada_limpia($_POST["tcp_rcv"]);
-	if (isset($_POST["tcp_port"]))
-		$tcp_port = entrada_limpia($_POST["tcp_port"]);
-	if (isset($_POST["snmp_oid"]))
-		$snmp_oid = entrada_limpia($_POST["snmp_oid"]);
-	if (isset($_POST["snmp_community"]))
-		$snmp_community = entrada_limpia($_POST["snmp_community"]);
-	if (isset($_POST["id_module_group"]))
-		$id_module_group = entrada_limpia($_POST["id_module_group"]);
-	if (isset($_POST["module_interval"]))
-		$module_interval = entrada_limpia($_POST["module_interval"]);
-	if (isset($_POST["id_group"]))
-		$id_group = entrada_limpia($_POST["id_group"]);
-	if (isset($_POST["plugin_user"]))
-		$plugin_user = entrada_limpia($_POST["plugin_user"]);
-	if (isset($_POST["plugin_pass"]))
-		$plugin_pass = entrada_limpia($_POST["plugin_pass"]);
-	if (isset($_POST["plugin_parameter"]))
-		$plugin_parameter = entrada_limpia($_POST["plugin_parameter"]);
-	if (isset($_POST["max_timeout"]))
-		$max_timeout = entrada_limpia($_POST["max_timeout"]);
-	if (isset($_POST["id_modulo"]))
-		$id_modulo = entrada_limpia($_POST["id_modulo"]);
-
+	$type = get_parameter ('tipo');
+	$name = get_parameter ('name');
+	$description = get_parameter ('descripcion');
+	$modulo_max = get_parameter ('modulo_max', 0);
+	$modulo_min = get_parameter ('modulo_min', 0);
+	$tcp_send = get_parameter ('tcp_send');
+	$tcp_rcv = get_parameter ('tcp_rcv');
+	$tcp_port = get_parameter ('tcp_port');
+	$snmp_oid = get_parameter ('snmp_oid');
+	$snmp_community = get_parameter ('snmp_community');
+	$id_module_group = get_parameter ('id_module_group');
+	$module_interval = get_parameter ('module_interval');
+	$id_group = get_parameter ('id_group');
+	$plugin_user = get_parameter ('plugin_user');
+	$plugin_pass = get_parameter ('plugin_pass');
+	$plugin_parameter = get_parameter ('plugin_parameter');
+	$max_timeout = get_parameter ('max_timeout');
+	$id_modulo = get_parameter ('id_modulo');
 	
-	$sql_insert="INSERT INTO tnetwork_component (name, description, module_interval, type, max, min, tcp_send, tcp_rcv, tcp_port, snmp_oid, snmp_community, id_module_group, id_group, id_modulo, plugin_user, plugin_pass, plugin_parameter, max_timeout)
+	$sql = "INSERT INTO tnetwork_component (name, description, module_interval, type, max, min, tcp_send, tcp_rcv, tcp_port, snmp_oid, snmp_community, id_module_group, id_group, id_modulo, plugin_user, plugin_pass, plugin_parameter, max_timeout)
 	VALUES ('$name', '$description', '$module_interval', '$type', '$modulo_max', '$modulo_min', '$tcp_send', '$tcp_rcv', '$tcp_port', '$snmp_oid' ,'$snmp_community', '$id_module_group', '$id_group', '$id_modulo', '$plugin_user', '$plugin_pass', '$plugin_parameter', '$max_timeout')";
 
-	$result=mysql_query($sql_insert);
-	if (! $result)
+	$id_module = process_sql ($sql, 'insert_id');
+	if ($id_module === false)
 		echo "<h3 class='error'>".__('Not created. Error inserting data')."</h3>";
 	else {
 		echo "<h3 class='suc'>".__('Created successfully')."</h3>";
-		$id_module = mysql_insert_id();
 	}
 }
 
@@ -103,54 +83,33 @@ if (isset($_GET["create"])){ // Create module
 // UPDATE MODULE
 // ------------------
 if (isset($_GET["update"])){ // if modified any parameter
-	$id_nc = entrada_limpia ($_GET["id_nc"]);
+	$id_nc = get_parameter ('id_nc');
 
-	if (isset($_POST["tipo"]))
-		$type = entrada_limpia($_POST["tipo"]);
-	if (isset($_POST["name"]))
-		$name =  entrada_limpia($_POST["name"]);
-	if (isset($_POST["descripcion"]))
-		$description = entrada_limpia($_POST["descripcion"]);
-	if (isset($_POST["modulo_max"]))
-		$modulo_max = entrada_limpia($_POST["modulo_max"]);
-		if ($modulo_max == "")
-			$modulo_max = 0;
-	if (isset($_POST["modulo_min"]))
-		$modulo_min = entrada_limpia($_POST["modulo_min"]);
-		if ($modulo_min == "")
-			$modulo_min = 0;
-	if (isset($_POST["tcp_send"]))
-		$tcp_send = entrada_limpia($_POST["tcp_send"]);
-	if (isset($_POST["tcp_rcv"]))
-		$tcp_rcv = entrada_limpia($_POST["tcp_rcv"]);
-	if (isset($_POST["tcp_port"]))
-		$tcp_port = entrada_limpia($_POST["tcp_port"]);
-	if (isset($_POST["snmp_oid"]))
-		$snmp_oid = entrada_limpia($_POST["snmp_oid"]);
-	if (isset($_POST["snmp_community"]))
-		$snmp_community = entrada_limpia($_POST["snmp_community"]);
-	if (isset($_POST["id_module_group"]))
-		$id_module_group = entrada_limpia($_POST["id_module_group"]);
-	if (isset($_POST["module_interval"]))
-		$module_interval = entrada_limpia($_POST["module_interval"]);
-	if (isset($_POST["id_group"]))
-		$id_group = entrada_limpia($_POST["id_group"]);
-	if (isset($_POST["plugin_user"]))
-		$plugin_user = entrada_limpia($_POST["plugin_user"]);
-	if (isset($_POST["plugin_pass"]))
-		$plugin_pass = entrada_limpia($_POST["plugin_pass"]);
-	if (isset($_POST["plugin_parameter"]))
-		$plugin_parameter = entrada_limpia($_POST["plugin_parameter"]);
-	if (isset($_POST["max_timeout"]))
-		$max_timeout = entrada_limpia($_POST["max_timeout"]);
+	$type = get_parameter ('tipo');
+	$name = get_parameter ('name');
+	$description = get_parameter ('descripcion');
+	$modulo_max = get_parameter ('modulo_max', 0);
+	$modulo_min = get_parameter ('modulo_min', 0);
+	$tcp_send = get_parameter ('tcp_send');
+	$tcp_rcv = get_parameter ('tcp_rcv');
+	$tcp_port = get_parameter ('tcp_port');
+	$snmp_oid = get_parameter ('snmp_oid');
+	$snmp_community = get_parameter ('snmp_community');
+	$id_module_group = get_parameter ('id_module_group');
+	$module_interval = get_parameter ('module_interval');
+	$id_group = get_parameter ('id_group');
+	$plugin_user = get_parameter ('plugin_user');
+	$plugin_pass = get_parameter ('plugin_pass');
+	$plugin_parameter = get_parameter ('plugin_parameter');
+	$max_timeout = get_parameter ('max_timeout');
 
-	$sql_update ="UPDATE tnetwork_component	SET name = '$name',
+	$sql ="UPDATE tnetwork_component	SET name = '$name',
 	description = '$description', snmp_oid = '$snmp_oid', snmp_community = '$snmp_community',
 	id_group = '$id_group', tcp_rcv = '$tcp_rcv', tcp_send = '$tcp_send', max = '$modulo_max',
 	min = '$modulo_min', tcp_port = '$tcp_port', id_module_group = '$id_module_group', type = '$type',
 	module_interval = '$module_interval', plugin_user = '$plugin_user',  plugin_pass = '$plugin_pass',
 	plugin_parameter = '$plugin_parameter', max_timeout = '$max_timeout' WHERE id_nc = '$id_nc'";
-	$result=mysql_query($sql_update);
+	$result = process_sql ($sql);
 	if (! $result)
 		echo "<h3 class='error'>".__('Not updated. Error updating data')."</h3>";
 	else
@@ -162,14 +121,14 @@ if (isset($_GET["update"])){ // if modified any parameter
 // ------------------
 if (isset($_GET["delete"])){ // if delete
 	$id_nc = entrada_limpia ($_GET["id_nc"]);
-	$sql_delete= "DELETE FROM tnetwork_component WHERE id_nc = ".$id_nc;
-	$result=mysql_query($sql_delete);
+	$sql= "DELETE FROM tnetwork_component WHERE id_nc = ".$id_nc;
+	$result = process_sql ($sql);
 	if (! $result)
 		echo "<h3 class='error'>".__('Not deleted. Error deleting data')."</h3>";
 	else
 		echo "<h3 class='suc'>".__('Deleted successfully')."</h3>";
-	$sql_delete= "DELETE FROM tnetwork_profile_component WHERE id_nc = ".$id_nc;
-	$result=mysql_query($sql_delete);
+	$sql = "DELETE FROM tnetwork_profile_component WHERE id_nc = ".$id_nc;
+	$result = process_sql ($sql);
 }
 
 // ------------------

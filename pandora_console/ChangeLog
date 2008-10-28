@@ -1,3 +1,9 @@
+2008-10-28  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/modules/manage_network_components.php: Replaced parameters
+	manual check using entrada_limpia with get_parameter(). It was causing
+	PHP notices and was not working fine.
+
 2008-10-27  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/db/db_purge.php, godmode/profiles/profile_list.php,

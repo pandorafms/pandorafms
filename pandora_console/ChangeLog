@@ -1,3 +1,11 @@
+2008-10-29  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* operation/agentes/status_monitor.php: Made it a bit faster and fixed
+	some issues I had with it (flag). Uses new html functions now.
+
+	* include/functions.php: Made human_time_comparation accept both
+	Unixtime as well as other system timestamps
+
 2008-10-28  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/modules/manage_network_components.php: Replaced parameters

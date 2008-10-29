@@ -475,8 +475,11 @@ function human_time_comparation ($timestamp) {
 		return "0 ".__('minutes');
 	}
 	
-	$ahora = date ("Y/m/d H:i:s");
-	$seconds = strtotime ($ahora) - strtotime ($timestamp);
+	if (!is_numeric ($timestamp)) {
+		$timestamp = strtotime ($timestamp);
+	}
+	
+	$seconds = time () - $timestamp;
 	
 	if ($seconds < 60)
 		return format_numeric ($seconds, 0)." ".__('seconds');
@@ -497,6 +500,7 @@ function human_time_comparation ($timestamp) {
 	
 	if ($seconds < 15552000)
 		return format_numeric ($seconds / 2592000, 0)." ".__('months');
+	
 	return " +6 ".__('months');
 }
 

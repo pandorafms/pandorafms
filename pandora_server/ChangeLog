@@ -1,3 +1,7 @@
+2008-10-29  Manuel Arostegui <marostegui@artica.es>
+	
+	* pandora_server/lib/PandoraFMS/Config.pm: Updated build number.
+
 2008-10-27  Esteban Sanchez  <esteban@artica.es>
 
 	* pandora_server_installer, lib/PandoraFMS/DB.pm: Merged from trunk

@@ -2,7 +2,7 @@
 # Init script for Pandora FMS agent
 # Generic GNU/Linux version
 # Sancho Lerena, <slerena@gmail.com>
-# v1.3.1   
+# v2.0
 
 ### BEGIN INIT INFO
 # Provides: pandora_agent

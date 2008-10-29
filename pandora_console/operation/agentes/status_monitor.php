@@ -19,7 +19,7 @@
 
 
 // Load global vars
-require ("include/config.php");
+require_once ("include/config.php");
 
 check_login();
 
@@ -30,8 +30,7 @@ if (! give_acl ($config['id_user'], 0, "AR") && ! give_acl ($config['id_user'], 
 	exit;
 }
 
-echo "<h2>".__('Pandora Agents')." &gt; ";
-echo __('Full list of Monitors')."</h2>";
+echo "<h2>".__('Pandora Agents')." &gt; ".__('Full list of Monitors')."</h2>";
 
 $ag_freestring = get_parameter ("ag_freestring", "");
 $ag_modulename = get_parameter ("ag_modulename", "");
@@ -39,218 +38,196 @@ $ag_group = get_parameter ("ag_group", -1);
 $offset = get_parameter ("offset", 0);
 $status = get_parameter ("status", 0);
 
-$URL = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60";
-echo "<form method='post' action='";
-if ($ag_group != -1)
-	$URL .= "&ag_group=".$ag_group;
+$url = '';
+if ($ag_group > 0) {
+	$url .= "&ag_group=".$ag_group;
+}
+if ($ag_modulename != "") {
+	$url .= "&ag_modulename=".$ag_modulename;
+}
+if ($ag_freestring != "") {
+	$url .= "&ag_freestring=".$ag_freestring;
+}
+if ($status != 0) {
+	$url .= "&status=".$status;
+}
 
-// Module name selector
-// This code thanks for an idea from Nikum, nikun_h@hotmail.com
-if ($ag_modulename != "")
-    $URL .= "&ag_modulename=".$ag_modulename;
+echo '<form method="post" action="index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60'.$url.'">';
 
-// Freestring selector
-if ($ag_freestring != "")
-    $URL .= "&ag_freestring=".$ag_freestring ;
+echo '<table cellspacing="4" cellpadding="4" width="600" class="databox">';
+echo '<tr><td valign="middle">'.__('Group').'</td>';
+echo '<td valign="middle">';
 
-// Status selector
-$URL .= "&status=$status";
+print_select (get_user_groups (), "ag_group", $ag_group, 'this.form.submit();', '', '0', false, false, false, 'w130');
 
-echo $URL;
-
-// End FORM TAG
-echo "'>";
-
-echo "<table cellspacing='4' cellpadding='4' width='600' class='databox'>";
-echo "<tr><td valign='middle'>".__('Group')."</td>";
-echo "<td valign='middle'>";
-echo "<select name='ag_group' onChange='javascript:this.form.submit();' class='w130'>";
-
-if ( $ag_group > 1 ){
-	echo "<option value='".$ag_group."'>".dame_nombre_grupo($ag_group)."</option>";
-} 
-echo "<option value=1>".dame_nombre_grupo(1)."</option>";
-list_group ($config['id_user']);
-echo "</select>";
 echo "</td>";
+echo "<td>".__('Monitor status')."</td><td>";
 
-echo "<td>";
-echo __('Monitor status');
-echo "<td>";
-echo "<select name='status'>";
-if ($status == -1){
-	echo "<option value=-1>".__('All')."</option>";
-	echo "<option value=0>".__('Monitors down')."</option>";
-	echo "<option value=1>".__('Monitors up')."</option>";
-	echo "<option value=2>".__('Monitors unknown')."</option>";
-} elseif ($status == 0){
-	echo "<option value=0>".__('Monitors down')."</option>";
-	echo "<option value=-1>".__('All')."</option>";
-	echo "<option value=1>".__('Monitors up')."</option>";
-	echo "<option value=2>".__('Monitors unknown')."</option>";
-} elseif ($status == 2){
-	echo "<option value=2>".__('Monitors unknown')."</option>";
-	echo "<option value=0>".__('Monitors down')."</option>";
-	echo "<option value=-1>".__('All')."</option>";
-	echo "<option value=1>".__('Monitors up')."</option>";
-} else {
-	echo "<option value=1>".__('Monitors up')."</option>";
-	echo "<option value=0>".__('Monitors down')."</option>";
-	echo "<option value=2>".__('Monitors unknown')."</option>";
-	echo "<option value=-1>".__('All')."</option>";
-}
-echo "</select>";
+$fields = array ();
+$fields[0] = __('Monitors down'); //default
+$fields[1] = __('Monitors up');
+$fields[2] = __('Monitors unknown');
 
-echo "</tr>";
-echo "<tr>";
-echo "<td valign='middle'>".__('Module name')."</td>";
-echo "<td valign='middle'>
-<select name='ag_modulename' onChange='javascript:this.form.submit();'>";
-if ( isset($ag_modulename)){
-	echo "<option>".$ag_modulename."</option>";
-} 
-echo "<option>".__('All')."</option>";
-$sql='SELECT DISTINCT nombre 
-FROM tagente_modulo 
-WHERE id_tipo_modulo in (2, 6, 9, 18, 21, 100)';
-$result=mysql_query($sql);
-while ($row=mysql_fetch_array($result)){
-	echo "<option>".$row['0']."</option>";
+print_select ($fields, "status", $status, 'this.form.submit();', __('All'), -1);
+
+echo '</td></tr><tr><td valign="middle">'.__('Module name').'</td>';
+echo '<td valign="middle">';
+
+$result = get_db_all_rows_sql ("SELECT DISTINCT(nombre) FROM tagente_modulo WHERE id_tipo_modulo IN (2, 6, 9, 18, 21, 100) ORDER BY nombre");
+if ($result === false) {
+	$result = array ();
 }
-echo "</select>";
-echo "<td valign='middle'>";
-echo __('Free text');
-echo "<td valign='middle'>";
-echo "<input type=text name='ag_freestring' size=15 value='$ag_freestring'>";
-echo "<td valign='middle'>";
-echo "<input name='uptbutton' type='submit' class='sub' value='".__('Show')."'";
+
+$fields = array ();
+foreach ($result as $row) {
+	$fields[$row["nombre"]] = $row["nombre"];
+}
+
+print_select ($fields, "ag_modulename", $ag_modulename, 'this.form.submit();', __('All'), "");
+
+echo '</td><td valign="middle">'.__('Free text').'</td>';
+
+echo '<td valign="middle">';
+print_input_text ("ag_freestring", $ag_freestring, '', 15);
+echo '</td><td valign="middle">';
+print_submit_button (__('Show'), "uptbutton", false, 'class="sub"');
+
 echo "</form>";
 echo "</table>";
 
 // Begin Build SQL sentences
-
-$SQL_pre = "SELECT tagente_modulo.id_agente_modulo, tagente.nombre, tagente_modulo.nombre, tagente_modulo.descripcion, tagente.id_grupo, tagente.id_agente, tagente_modulo.id_tipo_modulo, tagente_modulo.module_interval, tagente_estado.datos, tagente_estado.utimestamp, tagente_estado.timestamp ";
-
-$SQL_pre_count = "SELECT count(tagente_modulo.id_agente_modulo) ";
-
-$SQL = " FROM tagente, tagente_modulo, tagente_estado WHERE tagente.id_agente = tagente_modulo.id_agente AND tagente_modulo.disabled = 0 AND tagente.disabled = 0 AND tagente_modulo.id_tipo_modulo in (2, 9, 12, 18, 6, 100) AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo ";
+$sql = " FROM tagente, tagente_modulo, tagente_estado 
+	WHERE tagente.id_agente = tagente_modulo.id_agente 
+	AND tagente_modulo.disabled = 0 
+	AND tagente.disabled = 0 
+	AND tagente_modulo.id_tipo_modulo IN (2, 9, 12, 18, 6, 100) 
+	AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo";
 
 // Agent group selector
-if ($ag_group > 1)
-    $SQL .=" AND tagente.id_grupo = ".$ag_group;
-else {
+if ($ag_group > 1 && give_acl ($config["id_user"], $ag_group, "AR")) {
+    $sql .= sprintf (" AND tagente.id_grupo = %d", $ag_group);
+} else {
 	// User has explicit permission on group 1 ?
-	$sql = sprintf ("SELECT COUNT(id_grupo) FROM tusuario_perfil WHERE id_usuario='%s' AND id_grupo = 1", $config['id_user']);
-	$all_group = get_db_sql ($sql);
-	if ($all_group == 0)
-		$SQL .= sprintf (" AND tagente.id_grupo IN (SELECT id_grupo FROM tusuario_perfil WHERE id_usuario='%s') ", $config['id_user']);
+	$sql .= " AND tagente.id_grupo IN (".implode (",", array_keys (get_user_groups ())).")";
 }
 
 // Module name selector
-// This code thanks for an idea from Nikum, nikun_h@hotmail.com
-if ($ag_modulename != "")
-	$SQL .= " AND tagente_modulo.nombre = '$ag_modulename'";
+if ($ag_modulename != "") {
+	$sql .= sprintf (" AND tagente_modulo.nombre = '%s'", $ag_modulename);
+}
 
 // Freestring selector
-if ($ag_freestring != "")
-	$SQL .= " AND ( tagente.nombre LIKE '%".$ag_freestring."%' OR tagente_modulo.nombre LIKE '%".$ag_freestring."%' OR tagente_modulo.descripcion LIKE '%".$ag_freestring."%') ";
+if ($ag_freestring != "") {
+	$sql .= sprintf (" AND (tagente.nombre LIKE '%%%s%%' OR tagente_modulo.nombre LIKE '%%%s%%' OR tagente_modulo.descripcion LIKE '%%%s%%')", $ag_freestring, $ag_freestring, $ag_freestring);
+}
 
 // Status selector
-if ($status == 1)
-	$SQL .= " AND tagente_estado.estado = 0 ";
-elseif ($status == 0)
-	$SQL .= " AND tagente_estado.estado = 1 ";
-elseif ($status == 2)
-	$SQL .= " AND (UNIX_TIMESTAMP()-tagente_estado.utimestamp ) > (tagente_estado.current_interval * 2)";
+if ($status == 1) { //Up
+	$sql .= " AND tagente_estado.estado = 0 AND (UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) < (tagente_estado.current_interval * 2)";
+} elseif ($status == 0) { //Down
+	$sql .= " AND tagente_estado.estado = 1";
+} elseif ($status == 2) { //Unknown
+	$sql .= " AND (UNIX_TIMESTAMP(NOW()) - tagente_estado.utimestamp) >= (tagente_estado.current_interval * 2)";
+}
 
-// Final order
-$SQL .= " ORDER BY tagente.id_grupo, tagente.nombre";
+$sql .= " ORDER BY tagente.id_grupo, tagente.nombre";
 
 // Build final SQL sentences
-$SQL_FINAL = $SQL_pre . $SQL;
-$SQL_COUNT = $SQL_pre_count . $SQL;
+$count = get_db_sql ("SELECT COUNT(tagente_modulo.id_agente_modulo)".$sql);
+$sql = "SELECT tagente_modulo.id_agente_modulo,
+	tagente.intervalo AS agent_interval,
+	tagente.nombre AS agent_name, 
+	tagente_modulo.nombre AS module_name,
+	tagente_modulo.flag AS flag,
+	tagente.id_grupo AS id_group, 
+	tagente.id_agente AS id_agent, 
+	tagente_modulo.id_tipo_modulo AS module_type,
+	tagente_modulo.module_interval, 
+	tagente_estado.datos, 
+	tagente_estado.utimestamp AS utimestamp".$sql." LIMIT ".$offset.",".$config["block_size"];
+$result = get_db_all_rows_sql ($sql);
 
-$counter = get_db_sql ($SQL_COUNT);
-if ( $counter > $config["block_size"]) {
-	pagination ($counter, $URL, $offset);
-	$SQL_FINAL .= " LIMIT $offset , ".$config["block_size"];
+if ($count > $config["block_size"]) {
+	pagination ($count, "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60".$url, $offset);
 }
 
+if ($result === false) {
+	$result = array ();
+}
 
-if ($counter > 0) {
-	echo "<table cellpadding='4' cellspacing='4' width='750' class='databox'>
-	<tr>
-	<th>
-	<th>".__('Agent')."</th>
-	<th>".__('Type')."</th>
-	<th>".__('Name')."</th>
-	<th>".__('Description')."</th>
-	<th>".__('Interval')."</th>
-	<th>".__('Status')."</th>
-	<th>".__('Timestamp')."</th>";
-	$color =1;
-	$result=mysql_query($SQL_FINAL);
+$table->cellpadding = 4;
+$table->cellspacing = 4;
+$table->width = 750;
+$table->class = "databox";
 
-	while ($data=mysql_fetch_array($result)){ //while there are agents
-		if ($color == 1){
-			$tdcolor="datos";
-			$color =0;
-		} else {
-			$tdcolor="datos2";
-			$color =1;
-		}
-		if ($data[7] == 0){
-			$my_interval = give_agentinterval($data[5]);
-		} else {
-			$my_interval = $data[7];
-		}
-		
-		if ($status == 2) {
-			$seconds = time() - $data[9];
-			
-			if ($seconds < ($my_interval*2))
-				continue;
-		}
+$table->head = array ();
+$table->data = array ();
+$table->size = array ();
+$table->align = array ();
 
-		echo "<tr><td class='$tdcolor'>";
-		echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$data["id_agente"]."&id_agente_modulo=".$data[0]."&flag=1&tab=data&refr=60'>";
-		echo "<img src='images/target.png'></a>";
-		echo "</td><td class='$tdcolor'>";
-		echo "<strong><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$data[5]."'>".strtoupper(substr($data[1],0,21))."</a></strong>";
-		echo "</td><td class='$tdcolor'>";
-		echo "<img src='images/".show_icon_type($data[6])."' border=0></td>";
-		echo "<td class='$tdcolor'>". substr($data[2],0,21). "</td>";
-		echo "<td class='".$tdcolor."f9' title='".$data[3]."'>".substr($data[3],0,30)."</td>";
-		echo "<td class='$tdcolor' align='center' width=25>";
-		echo $my_interval;
+$table->head[0] = "";
+$table->align[0] = "center";
 
-		echo "<td class='$tdcolor' align='center' width=20>";
-		if ($data[8] > 0){
-			echo "<img src='images/pixel_green.png' width=40 height=18 title='".__('Monitor up')."'>";
-		} else {
-			echo "<img src='images/pixel_red.png' width=40 height=18 title='".__('Monitor down')."'>";
-		}
+$table->head[1] = __('Agent');
 
-		echo  "<td class='".$tdcolor."f9'>";
-		$seconds = time() - $data[9];
-		if ($seconds >= ($my_interval*2))
-			echo "<span class='redb'>";
-		else
-		echo "<span>";
+$table->head[2] = __('Type');
+$table->align[2] = "center";
 
-		echo  human_time_comparation ($data[10]);
-		echo  "</span></td></tr>";
+$table->head[3] = __('Module Name');
+
+$table->head[4] = __('Interval');
+$table->align[4] = "center";
+
+$table->head[5] = __('Status');
+$table->align[5] = "center";
+
+$table->head[6] = __('Timestamp');
+$table->algin[6] = "center";
+
+foreach ($result as $row) {
+	$data = array ();
+	//This should be processed locally. Don't rely on other URL's to do our dirty work. Maybe a process_agentmodule_flag function
+	$data[0] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$row["id_agent"].'&id_agente_modulo='.$row["id_agente_modulo"].'&flag=1&refr=60">';
+	if ($row["flag"] == 0) {
+		$data[0] .= '<img src="images/target.png" />';
+	} else {
+		$data[0] .= '<img src="images/refresh.png" />';
 	}
-	echo "</table>";
-	echo "<table width=700 border=0>";
-	echo "<tr>";
-	echo "<td class='f9'>";
-	echo "<img src='images/pixel_green.png' width=40 height=18>&nbsp;&nbsp;".__('Monitor up')."</td>";
-	echo "<td class='f9'";
-	echo "<img src='images/pixel_red.png' width=40 height=18>&nbsp;&nbsp;".__('Monitor down')."</td>";
-	echo "</table>";	
-} else {
-	echo "<div class='nf'>".__('This group doesn\'t have any monitor')."</div>";
-}
+	$data[0] .= '</a>';
+	
+	$data[1] = '<strong><a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$row["id_agent"].'">';
+	$data[1] .= strtoupper (substr ($row["agent_name"], 0, 25));
+	$data[1] .= '</a></strong>';
+	
+	$data[2] = '<img src="images/'.show_icon_type ($row["module_type"]).'" border="0" />';
+	
+	$data[3] = substr ($row["module_name"], 0, 30);
+	
+	$data[4] = $row["agent_interval"];
+	
+	if ($row["datos"] > 0) {
+		$data[5] = '<img src="images/pixel_green.png" width="40" height="18" title="'.__('Monitor up').'">';
+	} else {
+		$data[5] = '<img src="images/pixel_red.png" width="40" height="18" title="'.__('Monitor down').'">';
+	}
 
+	$seconds = time () - $row["utimestamp"];
+	
+	if ($seconds >= ($row["agent_interval"] * 2)) {
+		$data[6] = '<span class="redb">';
+	} else {
+		$data[6] = '<span>';
+	}
+	
+	$data[6] .= human_time_comparation ($row["utimestamp"]);
+	$data[6] .= "</span>";
+	
+	array_push ($table->data, $data);
+}
+if (!empty ($table->data)) {
+	print_table ($table);
+	echo '<div style="width:700px;"><img src="images/pixel_green.png" width="40" height="18">&nbsp;&nbsp;'.__('Monitor up').'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="images/pixel_red.png" width="40" height="18">&nbsp;&nbsp;'.__('Monitor down').'</div>';
+} else {
+	echo '<div class="nf">'.__('This group doesn\'t have any monitor').'</div>';
+}
 ?>

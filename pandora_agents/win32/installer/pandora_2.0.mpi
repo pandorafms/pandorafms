@@ -3,7 +3,7 @@ AllowLanguageSelection
 Yes
 
 AppName
-{Pandora FMS Windows Agent 2.0 (Beta1)}
+{Pandora FMS Windows Agent 2.0}
 
 ApplicationID
 17E3D2CF-CA02-406B-8A80-9D31C17BD08F
@@ -63,7 +63,7 @@ InstallPassword
 {}
 
 InstallVersion
-2.0.0.1
+2.0.0.2
 
 Language,de
 Yes
@@ -159,7 +159,7 @@ UpgradeApplicationID
 {}
 
 Version
-{}
+080610
 
 ViewReadme
 Yes
@@ -185,7 +185,7 @@ test
 {Testing Switch Yes No {} {run uninstaller without uninstalling any files}}
 
 }
-FileGroup ::946FC43B-0E32-4C38-86EF-4F9252C67E16 -setup Install -active Yes -platforms Windows -name {Program Files} -parent FileGroups
+FileGroup ::946FC43B-0E32-4C38-86EF-4F9252C67E16 -setup Install -active Yes -platforms {Windows MacOS-X} -name {Program Files} -parent FileGroups
 File ::7003FDCA-0EDA-4431-93E2-6FEA7E8660D6 -type dir -name C:/pandora_installer/bin/key -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 File ::B33B08D0-C80C-49CB-9431-44C6B4E7858E -name id_dsa -parent 7003FDCA-0EDA-4431-93E2-6FEA7E8660D6
 File ::7E8B4918-C894-4FCE-98F0-1DDDBF9818F8 -name id_dsa.pub -parent 7003FDCA-0EDA-4431-93E2-6FEA7E8660D6
@@ -228,7 +228,7 @@ File ::1B81E274-2375-4287-90D7-953BE3F71FA7 -name 6.jpg -parent 550F286E-2409-42
 File ::C2E02994-9B4E-430C-B399-E93986DD9B0F -name logo.png -parent 550F286E-2409-4221-A51A-CA980C9EA9DC
 File ::9E5D6A00-E82C-49B4-B654-3F36D4D48A83 -name C:/pandora_installer/bin/libodbc++.dll -parent 946FC43B-0E32-4C38-86EF-4F9252C67E16
 Component ::FB96078B-BA3C-498C-8C20-B01C1F28ACA9 -setup Install -active Yes -platforms Windows -name {Default Component} -parent Components
-SetupType ::A87C1A6B-ED26-4B07-8736-750725FF34E4 -setup Install -active Yes -platforms {Solaris-sparc Windows} -name Typical -parent SetupTypes
+SetupType ::A87C1A6B-ED26-4B07-8736-750725FF34E4 -setup Install -active Yes -platforms Windows -name Typical -parent SetupTypes
 
 InstallComponent 1957048E-B498-4FFF-A8BA-F2DF640463B1 -setup Install -type pane -title {Welcome Screen} -component Welcome -active Yes -parent StandardInstall
 InstallComponent DE1D4DF7-A35C-4228-8A25-07106AD77C9E -setup Install -type pane -title {License Agreement} -component License -active Yes -parent StandardInstall
@@ -258,10 +258,10 @@ InstallComponent 34F6EFDE-4008-4CD2-942B-401D2E55F334 -setup Install -type actio
 InstallComponent E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0 -setup Install -type action -title {Add Widget} -component AddWidget -active Yes -parent 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1
 InstallComponent 0C4A17DA-7867-40CC-81B4-0D1F170581AC -setup Install -type action -title {Replace Text In File} -component ReplaceTextInFile -active Yes -parent 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1
 InstallComponent 1F7BE720-7885-4150-9550-F25FB1C69423 -setup Install -type pane -title {Setup Complete} -component SetupComplete -active Yes -parent StandardInstall
-InstallComponent 2B99A465-4666-445D-96BF-9C8F03CDAC60 -setup Install -type action -title {Message Box} -component MessageBox -active Yes -parent 1F7BE720-7885-4150-9550-F25FB1C69423
-InstallComponent C6CE92F8-3842-4E58-A3A2-5B5D2F7AFB4B -setup Install -type action -title {Message Box} -component MessageBox -active Yes -parent 1F7BE720-7885-4150-9550-F25FB1C69423
-InstallComponent 549C2B91-793B-4761-9A80-335929EB17F8 -setup Install -type action -title {Execute External Program} -component ExecuteExternalProgram -active Yes -parent 1F7BE720-7885-4150-9550-F25FB1C69423
-InstallComponent 60CAEDF4-53E9-46C5-9A0F-5873E12F2328 -setup Install -type action -conditions {D8C1E7BD-813A-43ED-95A4-4F5DA45D5886 3AEDBF26-DF24-4328-B5AE-E93AA5F0617B} -title {View Readme Checkbutton} -component AddWidget -command insert -active Yes -parent 1F7BE720-7885-4150-9550-F25FB1C69423
+InstallComponent 10D62EB5-B108-461C-91D4-1D18A9CB5B08 -setup Install -type action -conditions {8112E00E-C24D-458F-9C19-03E63937E908 29B86DFA-93EA-4584-A9CF-DE823F4787F2} -title {Start Windows Service} -component StartWindowsService -command reorder -active Yes -parent 1F7BE720-7885-4150-9550-F25FB1C69423
+Condition 8112E00E-C24D-458F-9C19-03E63937E908 -active Yes -parent 10D62EB5-B108-461C-91D4-1D18A9CB5B08 -title {Ask Yes or No} -component AskYesOrNo -TreeObject::id 8112E00E-C24D-458F-9C19-03E63937E908
+Condition 29B86DFA-93EA-4584-A9CF-DE823F4787F2 -active Yes -parent 10D62EB5-B108-461C-91D4-1D18A9CB5B08 -title {String Is Condition} -component StringIsCondition -TreeObject::id 29B86DFA-93EA-4584-A9CF-DE823F4787F2
+InstallComponent 60CAEDF4-53E9-46C5-9A0F-5873E12F2328 -setup Install -type action -conditions {D8C1E7BD-813A-43ED-95A4-4F5DA45D5886 3AEDBF26-DF24-4328-B5AE-E93AA5F0617B} -title {View Readme Checkbutton} -component AddWidget -command reorder -active Yes -parent 1F7BE720-7885-4150-9550-F25FB1C69423
 Condition D8C1E7BD-813A-43ED-95A4-4F5DA45D5886 -active Yes -parent 60CAEDF4-53E9-46C5-9A0F-5873E12F2328 -title {File Exists Condition} -component FileExistsCondition -TreeObject::id D8C1E7BD-813A-43ED-95A4-4F5DA45D5886
 Condition 3AEDBF26-DF24-4328-B5AE-E93AA5F0617B -active Yes -parent 60CAEDF4-53E9-46C5-9A0F-5873E12F2328 -title {String Is Condition} -component StringIsCondition -TreeObject::id 3AEDBF26-DF24-4328-B5AE-E93AA5F0617B
 InstallComponent 6059F771-3AA1-491C-8B84-788812912E73 -setup Install -type pane -title {Copying Files} -component CopyFiles -active Yes -parent DefaultInstall
@@ -348,6 +348,12 @@ false
 103DC6E3-97DC-46AC-81C5-DED8E4E319E7,String
 <%GuiMode%>
 
+10D62EB5-B108-461C-91D4-1D18A9CB5B08,Conditions
+{2 conditions}
+
+10D62EB5-B108-461C-91D4-1D18A9CB5B08,ServiceName
+pandoraFMSagent
+
 1728FDEB-5E1A-48D4-9FF8-EE993A2C04AC,Conditions
 {0 conditions}
 
@@ -408,6 +414,9 @@ disabled
 1D3EE8A2-B735-4756-9BB6-7BBC42077575,WorkingDirectory
 <%InstallDir%>
 
+1D572EE2-DD93-4F13-850E-DE0EEB1DA110,Conditions
+{0 conditions}
+
 1D572EE2-DD93-4F13-850E-DE0EEB1DA110,Message,subst
 1
 
@@ -459,14 +468,14 @@ disabled
 268B55D8-DE61-421A-AB68-A5D4821D981F,Title,subst
 1
 
-2B99A465-4666-445D-96BF-9C8F03CDAC60,Conditions
-{0 conditions}
+29B86DFA-93EA-4584-A9CF-DE823F4787F2,CheckCondition
+{Before Action is Executed}
 
-2B99A465-4666-445D-96BF-9C8F03CDAC60,Message,subst
-1
+29B86DFA-93EA-4584-A9CF-DE823F4787F2,FailureMessage
+{Error starting Pandora FMS service}
 
-2B99A465-4666-445D-96BF-9C8F03CDAC60,Title,subst
-1
+29B86DFA-93EA-4584-A9CF-DE823F4787F2,String
+<%Answer%>
 
 2C06B466-789E-4F18-B711-E8411E2CD80F,BackButton,subst
 1
@@ -520,7 +529,7 @@ agent1
 AgentName
 
 34F6EFDE-4008-4CD2-942B-401D2E55F334,Width
-160
+165
 
 34F6EFDE-4008-4CD2-942B-401D2E55F334,X
 20
@@ -558,23 +567,11 @@ stop_pandora_agent.bat
 4CDCA2A2-0948-4DD1-BA24-C173D4D72E79,WorkingDirectory
 <%InstallDir%>/scripts
 
-4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Message,subst
-1
-
-549C2B91-793B-4761-9A80-335929EB17F8,Conditions
+4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Conditions
 {0 conditions}
 
-549C2B91-793B-4761-9A80-335929EB17F8,ConsoleTitle
-{<%AppName%> Editing Pandora FMS Agent configuration file}
-
-549C2B91-793B-4761-9A80-335929EB17F8,ProgramCommandLine
-{notepad pandora_agent.conf}
-
-549C2B91-793B-4761-9A80-335929EB17F8,WaitForProgram
-No
-
-549C2B91-793B-4761-9A80-335929EB17F8,WorkingDirectory
-<%InstallDir%>
+4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Message,subst
+1
 
 57BABE6F-717F-4D6A-8A66-921B404862F5,Conditions
 {0 conditions}
@@ -641,6 +638,9 @@ disabled
 
 60CAEDF4-53E9-46C5-9A0F-5873E12F2328,Background
 white
+
+60CAEDF4-53E9-46C5-9A0F-5873E12F2328,Checked
+Yes
 
 60CAEDF4-53E9-46C5-9A0F-5873E12F2328,Conditions
 {2 conditions}
@@ -726,6 +726,9 @@ Yes
 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Title,subst
 1
 
+6ADB9508-5F82-4564-B6AC-1170A76B4CB9,Conditions
+{0 conditions}
+
 6ADB9508-5F82-4564-B6AC-1170A76B4CB9,ExitType
 Finish
 
@@ -799,7 +802,7 @@ entry
 ServerIP
 
 75288342-4CEB-473C-B242-450642503F74,Width
-240
+265
 
 75288342-4CEB-473C-B242-450642503F74,X
 20
@@ -830,6 +833,18 @@ Yes
 
 7FB76BFF-92E4-4210-9CFA-D6CDDB7C2288,UpdateFileText
 Yes
+
+8112E00E-C24D-458F-9C19-03E63937E908,CheckCondition
+{Before Action is Executed}
+
+8112E00E-C24D-458F-9C19-03E63937E908,FailureMessage
+{Service not initialized. Try to init Pandora Windows Agent Service manually.}
+
+8112E00E-C24D-458F-9C19-03E63937E908,Message,subst
+1
+
+8112E00E-C24D-458F-9C19-03E63937E908,Title,subst
+1
 
 86342A9C-494A-4036-BA8E-E4BE8A7BB16C,Background
 white
@@ -886,7 +901,7 @@ ViewReadme
 <%InstallDir%>
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,FileSize
-7812698
+7812767
 
 946FC43B-0E32-4C38-86EF-4F9252C67E16,Name
 {Program Files}
@@ -962,6 +977,9 @@ No
 
 AA00EDED-9979-419F-A32C-DF1480E9EFF0,Alias
 {Finish Actions}
+
+AA0A7460-2E6B-4DB1-A7EF-845A1C7B09CE,Conditions
+{1 condition}
 
 ACFFE9C0-C404-4FD9-AD70-8F60E822DE65,Conditions
 {0 conditions}
@@ -1083,20 +1101,14 @@ C0AAD722-CF3D-4708-A62F-4EE9C92F7B24,Message,subst
 C0AAD722-CF3D-4708-A62F-4EE9C92F7B24,NextButton,subst
 1
 
+C19EE9A4-6BBE-4631-8013-7B7DCA588367,Conditions
+{0 conditions}
+
 C19EE9A4-6BBE-4631-8013-7B7DCA588367,Default
 Yes
 
 C19EE9A4-6BBE-4631-8013-7B7DCA588367,Prompt
 <%UninstallStartupText%>
-
-C6CE92F8-3842-4E58-A3A2-5B5D2F7AFB4B,Conditions
-{0 conditions}
-
-C6CE92F8-3842-4E58-A3A2-5B5D2F7AFB4B,Message,subst
-1
-
-C6CE92F8-3842-4E58-A3A2-5B5D2F7AFB4B,Title,subst
-1
 
 C862BDC0-8F67-4546-B658-4A9A8ADCE385,BackButton,subst
 1
@@ -1261,7 +1273,7 @@ E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,VirtualText
 AgentTemp
 
 E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Width
-250
+260
 
 E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,X
 20
@@ -1360,7 +1372,7 @@ F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,VirtualText
 ServerPath
 
 F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Width
-355
+400
 
 F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,X
 20
@@ -1931,19 +1943,6 @@ Click Next to continue or Cancel to exit Setup.}
 2073DDB6-50AB-4708-82AD-02A6C3F3EDE1,Message
 <%InstallationCompleteText%>
 
-2B99A465-4666-445D-96BF-9C8F03CDAC60,Message
-{By default, the Windows version of the Pandora FMS agent uses tentacle as a file transfer protocol, make sure you have your tentacle server up an running in the remote machine.
-
-If you want to use FTP method, instead, to copy XML data files to server. Just change it in the pandora_agent.conf file.
-
-If you want to use SFTP/SSH2, please generate both Public and Private keys and 
-save them as id_dsa.pub and id_dsa, OpenSSH format, into <%InstallDir%>\key folder.
-
-Please, review the "<%HelpGeneratingSSHKeys%>" help file in the documentation folder for more information.}
-
-2B99A465-4666-445D-96BF-9C8F03CDAC60,Title
-{SSH Key Generation}
-
 34F6EFDE-4008-4CD2-942B-401D2E55F334,Text
 {Agent Name:}
 
@@ -1983,8 +1982,20 @@ Please, review the "<%HelpGeneratingSSHKeys%>" help file in the documentation fo
 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Title
 {Pandora FMS Agent for Windows Configuration}
 
+6FD08442-A7BA-4654-9ECE-3883DD747D00,Message
+{Do you like to start Pandora FMS Windows Agent Service Now?}
+
+6FD08442-A7BA-4654-9ECE-3883DD747D00,Title
+{Starting Pandora FMS service}
+
 75288342-4CEB-473C-B242-450642503F74,Text
 {Pandora Server IP Address:}
+
+8112E00E-C24D-458F-9C19-03E63937E908,Message
+{Do you want to start Pandora FMS Agent Service?}
+
+8112E00E-C24D-458F-9C19-03E63937E908,Title
+{Pandora FMS Windows Agent Service}
 
 86342A9C-494A-4036-BA8E-E4BE8A7BB16C,Text
 <%ViewReadmeText%>
@@ -2003,20 +2014,6 @@ A87C1A6B-ED26-4B07-8736-750725FF34E4,Description
 
 BF861387-DA7F-4986-B5BB-F77358B58603,Message
 <%InstallingApplicationText%>
-
-C6CE92F8-3842-4E58-A3A2-5B5D2F7AFB4B,Message
-{Last step is to configure your Pandora FMS agent.
-
-Now the pandora_agent.conf file will be open to change Pandora FMS Server IP address and agent name (used in Web Console).
-
-If you use FTP method to transfer data files, configure "server_pwd" parameter with the pandora user password in the FTP server. This user "pandora" should have write permissions in the server directory, by default /var/spool/pandora/data_in.
-
-If you want to use SSH, comment Tentacle (FTP) parameters and generate SSH Keys.
-
-One you have saved your changes, use link to start Pandora FMS Agent for Windows service.}
-
-C6CE92F8-3842-4E58-A3A2-5B5D2F7AFB4B,Title
-{Setup Pandora FMS Windows Agent}
 
 C862BDC0-8F67-4546-B658-4A9A8ADCE385,Caption
 {Setup has enough information to start copying the program files. If you want to review or change any settings, click Back.  If you are satisfied with the settings, click Next to begin copying files.}
@@ -2174,39 +2171,38 @@ Pulse Siguiente para continuar o Cancelar para salir de la instalación.}
 2073DDB6-50AB-4708-82AD-02A6C3F3EDE1,Message
 <%InstallationCompleteText%>
 
-2B99A465-4666-445D-96BF-9C8F03CDAC60,Message
-{Por defecto Pandora FMS utiliza el protocolo Tentacle para el envío de ficheros XML al servidor. Puede utilizarse también SFTP/SSH2.
-
-Si se utiliza este método, hay que generar previamente las claves públicas y privadas y guardarlas como id_dsa.pub e id_dsa, respectivamente en formato OpenSSH, dentro del directorio <%InstallDir%>\key.
-
-Más información en el documento "<%HelpGeneratingSSHKeys%>", que está incluido en la ayuda.}
-
-2B99A465-4666-445D-96BF-9C8F03CDAC60,Title
-{Generación de claves SSH}
-
 34F6EFDE-4008-4CD2-942B-401D2E55F334,Text
-{Agent Name:}
+{Nombre del agente:}
 
 4E1B9A69-B88E-4DE5-A0E1-08E04C4BE6B3,Message
 <%UninstallCompleteText%>
 
 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Caption
-{This values will be written to the pandora_agent.conf file in the <%ProgramFolderName%> folder. Please change them to your own data.}
+{Los siguientes datos serán guardados en el fichero pandora_agent.conf de la carpeta <%ProgramFolderName%> . Modifique los datos según su propia configuración.}
 
 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Message
 { }
 
 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Subtitle
-{Now it's time to configure your pandora_agent.conf file}
+{Configuración del fichero pandora_agent.conf del agente}
 
 68A06F1C-625E-4BF0-AE3B-8BFBD37824C1,Title
-{Pandora FMS Agent for Windows Configuration}
+{Configuración de Pandora FMS Agent for Windows}
 
 6B06C7C2-97A8-4642-B286-3B089943F359,Message
 {InstallJammer ha instalado <%AppName%> con éxito.  Pulse Finalizar para salir de este instalador.}
 
+6FD08442-A7BA-4654-9ECE-3883DD747D00,Message
+{¿Quiere iniciar ahora el servicio de Pandora FMS Windows Agent?}
+
+6FD08442-A7BA-4654-9ECE-3883DD747D00,Title
+{Inicio del servicio Pandora FMS}
+
 75288342-4CEB-473C-B242-450642503F74,Text
-{Pandora Server IP Address:}
+{Dirección IP del servidor Pandora:}
+
+8112E00E-C24D-458F-9C19-03E63937E908,Message
+{¿Quiere iniciar el servicio del agente de Pandora FMS para Windows?}
 
 B2E20690-C57D-4286-9977-F2541E04D71F,BrowseText
 {Pulse Siguiente para continuar. Si desea seleccionar una carpeta diferente, pulse Examinar.}
@@ -2219,20 +2215,6 @@ Para instalar en esa carpeta, pulse Siguiente. Para instalar en una carpeta dife
 BF861387-DA7F-4986-B5BB-F77358B58603,Message
 <%InstallingApplicationText%>
 
-C6CE92F8-3842-4E58-A3A2-5B5D2F7AFB4B,Message
-{El último paso es configurar el agente.
-
-Ahora se abrirá el fichero pandora_agent.conf para configurar la dirección IP del servidor y el nombre del agente (se utilizará en la consola web).
-
-Si el método de transferencia de ficheros que se va a utilizar es FTP, el parámetro "server_pwd" contiene la contraseña del usuario "pandora", que debe tener permisos de escritura en el directorio del servidor, por defecto /var/spool/pandora/data_in.
-
-Si se quiere utilizar SSH, deben comentarse las entradas relativas a Tentacle (FTP) y generar las claves SSH.
-
-Una vez finalizada la configuración, el servicio puede iniciarse con el enlace creado.}
-
-C6CE92F8-3842-4E58-A3A2-5B5D2F7AFB4B,Title
-{Configurar el agente Windows de Pandora FMS}
-
 C862BDC0-8F67-4546-B658-4A9A8ADCE385,Caption
 {Se ha recopilado la información necesaria para comenzar a copiar los archivos del programa. Si desea revisar o cambiar la configuración, pulse Atrás. Si esta conforme con la configuración, pulse Siguiente para comenzar a copiar los archivos.}
 
@@ -2240,13 +2222,13 @@ DE1D4DF7-A35C-4228-8A25-07106AD77C9E,Subtitle
 {Por favor lea atentamente el siguiente acuerdo de licencia (en inglés).}
 
 E79E1899-9F8B-4BB7-ACFF-F7B50B38DDB0,Text
-{Agent Temp folder:}
+{Directorio temporal del agente:}
 
 EditConfiguration
 {Editar fichero de configuración}
 
 F1A58A0A-58DF-4236-9316-8BE4D22D4FF6,Text
-{Server Path for Incoming Packets:}
+{Ruta en el servidor para los paquetes de datos:}
 
 HelpGeneratingSSHKeys
 {Creación de claves SSH}
@@ -2297,14 +2279,6 @@ Cliquez sur SUIVANT pour continuer ou ANNULER pour quitter l'installation.}
 
 2073DDB6-50AB-4708-82AD-02A6C3F3EDE1,Message
 <%InstallationCompleteText%>
-
-2B99A465-4666-445D-96BF-9C8F03CDAC60,Message
-{Par défaut, l'agent de Pandora FMS pour Windows utilise la méthode tentacle de copier des fichiers de données XML au serveur.
-
-Si vous voulez utiliser SFTP/SSH2, produisez s'il vous plaît des clés Publiques et Privées et 
-sauvez-les comme id_dsa.pub et id_dsa, avec le format d'OpenSSH, dans le réperotire <%InstallDir%>\key.
-
-S'il vous plaît, lisez le document "<%HelpGeneratingSSHKeys%>" dans la chemise de documentation pour plus de renseignements.}
 
 34F6EFDE-4008-4CD2-942B-401D2E55F334,Text
 {Agent Name:}
@@ -2527,13 +2501,6 @@ Clique em Próximo para continuar ou em Cancelar para sair da Instalação.}
 
 2073DDB6-50AB-4708-82AD-02A6C3F3EDE1,Message
 <%InstallationCompleteText%>
-
-2B99A465-4666-445D-96BF-9C8F03CDAC60,Message
-{À revelia, o agente de Pandora FMS do Windows usa o método de FTP para copiar arquivos de dados de XML ao servidor.
-
-Se você quiser usar SFTP/SSH2, gere tanto chaves Públicas como Privadas e salve-os como id_dsa.pub e id_dsa, o formato de OpenSSH, no diretório <%InstallDir %>\key.
-
-Por favor, reveja a documentação (<%HelpGeneratingSSHKeys%>) para mais informação.}
 
 34F6EFDE-4008-4CD2-942B-401D2E55F334,Text
 {Agent Name:}

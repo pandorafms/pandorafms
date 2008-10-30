@@ -1,3 +1,10 @@
+2008-10-30  Raul Mateos  <raulofpandora@gmail.com>
+	
+	* win32/installer/pandora_2.0.mpi: Updated installer to let the user start
+	the service during installation.
+	
+	* win32/installer/scripts/*.bat: Updated bat files with new service name.
+
 2008-09-05  Raul Mateos  <raulofpandora@gmail.com>
 
 	* win32/bin/pandora_agent.conf: Changed to template used by installer.

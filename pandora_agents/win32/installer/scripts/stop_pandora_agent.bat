@@ -1,1 +1,1 @@
-@net stop pandoraagent
+@net stop pandoraFMSagent

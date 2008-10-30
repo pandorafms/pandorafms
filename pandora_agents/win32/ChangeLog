@@ -1,3 +1,12 @@
+2008-10-30  Raul Mateos  <raulofpandora@gmail.com>
+	
+	* win32/installer/pandora_2.0.mpi: Updated installer to let the user start
+	the service during installation.
+	
+	* win32/installer/scripts/*.bat: Updated bat files with new service name.
+	
+	* win32/installer/Pandora FMS Windows Agent 2.0-Setup.exe: New file.
+
 2008-10-19  Raul Mateos  <raulofpandora@gmail.com>
 	
 	* win32/installer/pandora_2.0.mpi: Updated installer removing beta string.

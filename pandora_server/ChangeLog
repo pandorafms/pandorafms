@@ -1,3 +1,14 @@
+2008-10-30  Sancho Lerena <slerena@gmail.com>
+
+	* lib/PandoraFMS/DB.pm:  Some people reports problems with 
+	server stop detection. This could help, because has optimized
+	way to detect servers, but is not a bugfix because I cannot 
+	reproduce the problem.
+
+	* Config.pm: Updated version.
+
+	* server/Launcher scripts: Updated version.
+
 2008-10-22  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* bin/pandora_snmpconsole: Feature request #2166257

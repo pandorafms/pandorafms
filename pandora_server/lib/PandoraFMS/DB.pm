@@ -1282,7 +1282,7 @@ sub pandora_writedata (%$$$$$$$$$$){
 ## Update server status
 ##########################################################################
 sub pandora_serverkeepaliver (%$$) {
-    my $pa_config= $_[0];
+	my $pa_config= $_[0];
 	my $opmode = $_[1]; # 0 dataserver, 1 network server, 2 snmp console
                         # 3 recon srv, 4 plugin srv, 5 prediction srv
                         # 6 WMI server
@@ -1296,14 +1296,13 @@ sub pandora_serverkeepaliver (%$$) {
 	pandora_updateserver ($pa_config, $pa_config->{'servername'}, 1, $opmode, $dbh);
 	
 	my $temp = $pa_config->{"keepalive"} - $pa_config->{"server_threshold"};
-
 	if ($temp <= 0){
 		my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
 		$temp = $pa_config->{"keepalive_orig"} * 2; # Down if keepalive x 2 seconds unknown
 		my $fecha_limite = DateCalc($timestamp,"- $temp seconds",\$err);
-		$fecha_limite = &UnixDate($fecha_limite,"%Y-%m-%d %H:%M:%S");		
-		# Look updated servers and take down non updated servers
-		my $query_idag = "select * from tserver where keepalive < '$fecha_limite'";
+		$fecha_limite = &UnixDate($fecha_limite,"%Y-%m-%d %H:%M:%S");
+
+		my $query_idag = "SELECT * FROM tserver WHERE status = 1 AND keepalive < '$fecha_limite'";
 		my $s_idag = $dbh->prepare($query_idag);
 		$s_idag ->execute;
 		if ($s_idag->rows != 0) {
@@ -1314,19 +1313,16 @@ sub pandora_serverkeepaliver (%$$) {
 					my $sql_update = "UPDATE tserver SET status = 0, version = '".$version_data."' WHERE id_server = $data[0]";
 					$dbh->do($sql_update);
 
-
-                    pandora_event ($pa_config, "Server ".$data[1]." going Down", 0,
-                                   0, 4, 0, 0, "system", $dbh);
-
-					logger( $pa_config, "Server ".$data[1]." going Down ",1);
+					pandora_event ($pa_config, "Server ".$data[1]." going Down", 0, 0, 4, 0, 0, "system", $dbh);
+					logger( $pa_config, "Server ".$data[1]." going Down ", 1);
 				}
 			}
 		}
 		$s_idag->finish();
-		# Update my server
 		$pa_config->{"keepalive"} = $pa_config->{"keepalive_orig"};
+	} else {
+		$pa_config->{"keepalive"} = $pa_config->{"keepalive"} - $pa_config->{"server_threshold"};
 	}
-	$pa_config->{"keepalive"} = $pa_config->{"keepalive"} - $pa_config->{"server_threshold"};
 }
 
 ##########################################################################

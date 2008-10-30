@@ -3,7 +3,7 @@
 # Pandora FMS Plugin Server, startup script
 # Copyright (c) 2006-2008 Sancho Lerena, <slerena@gmail.com>
 # Linux Version (generic)
-# v2.0 Build 080903
+# v2.1 Build 081030
 # http://www.pandorafms.com
 
 # Configurable path and filenames
@@ -62,6 +62,7 @@ case "$1" in
 	        ;;
 	force-reload|restart)
 		$0 stop
+		sleep 2
 		$0 start
 		;;
 	*)

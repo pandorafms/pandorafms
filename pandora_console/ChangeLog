@@ -1,5 +1,16 @@
 2008-10-31  Ramon Novoa  <rnovoa@artica.es>
 
+	* operation/snmpconsole/snmp_alert.php: Moved to
+	  godmode/snmpconsole/snmp_alert.php.
+
+	* godmode/snmpconsole: Added to repository. SNMP console godmode
+	  subdirectory.
+
+	* godmode/menu.php,
+	  operation/menu.php: Updated menus to reflect the change.
+
+2008-10-31  Ramon Novoa  <rnovoa@artica.es>
+
 	* include/styles/god.css,
 	  operation/menu.php,
 	  godmode/menu.php: Added support for enterprise SNMP console.

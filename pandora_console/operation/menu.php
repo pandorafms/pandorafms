@@ -234,18 +234,6 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	echo '<div id="op6" class="operation-menu'.$selected.'">';
 	echo '<ul class="mn"><li><a href="index.php?sec=snmpconsole&amp;sec2=operation/snmpconsole/snmp_view" class="mn">'.__('SNMP console').'</a></li></ul></div>';
 
-	if (give_acl($config['id_user'], 0, "AW")) {
-		// SNMP Console alert (submenu)
-		if ($sec == "snmpconsole") {
-			if ($sec2 == "operation/snmpconsole/snmp_alert") {
-				echo "<div class='operation-submenu submenu-selected'>";
-			} else {
-				echo "<div class='operation-submenu'>";
-			}
-			echo "<ul class='mn'><li><a href='index.php?sec=snmpconsole&amp;sec2=operation/snmpconsole/snmp_alert' class='mn'>".__('SNMP alerts')."</a></li></ul></div>";
-		}
-	}
-	
 	// Messages
 	if($sec2 == "operation/messages/message" && !isset ($_GET["nuevo_g"])) {
 		$selected = ' menu-selected';

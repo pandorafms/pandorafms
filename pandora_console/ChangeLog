@@ -1,3 +1,14 @@
+2008-10-31  Jorge Gonzalez  <jorgegonz@artica.es>
+
+        * include/languages/es.po, include/languages/es.mo: Updated Spanish 
+          translation.
+
+        * include/languages/index.pot, include/languages/Makefile: Updated  
+          translation infrastructure.
+
+        * include/languages/fi.po, include/languages/fi.mo: Added finnish   
+          translation from Rosetta.
+
 2008-10-29  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* operation/agentes/status_monitor.php: Made it a bit faster and fixed

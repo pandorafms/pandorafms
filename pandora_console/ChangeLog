@@ -1,3 +1,12 @@
+2008-10-31  Ramon Novoa  <rnovoa@artica.es>
+
+	* include/styles/god.css,
+	  operation/menu.php,
+	  godmode/menu.php: Added support for enterprise SNMP console.
+
+	* operation/snmpconsole/snmp_view.php: Added filtering, fullscreen
+	  support, interface changes and enterprise SNMP console support.
+
 2008-10-31  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* pandoradb_data.sql: Added support for finnish. 

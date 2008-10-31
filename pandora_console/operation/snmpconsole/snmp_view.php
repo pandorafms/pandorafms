@@ -19,6 +19,7 @@
 
 // Load global vars
 require_once ("include/config.php");
+enterprise_include ("operation/snmpconsole/snmp_view.php");
 
 check_login ();
 
@@ -28,6 +29,15 @@ if (! give_acl ($config['id_user'], 0, "AR")) {
 	require ("general/noaccess.php");
 	exit;
 }
+
+// Read parameters
+$filter_agent = (string) get_parameter ("filter_agent", '');
+$filter_oid = (string) get_parameter ("filter_oid", '');
+$filter_severity = (int) get_parameter ("filter_severity", -1);
+$filter_fired = (int) get_parameter ("filter_fired", -1);
+$search_string = (string) get_parameter ("search_string", '');
+$config["block_size"] = (int) get_parameter ("pagination", $config["block_size"]);
+$offset = (int) get_parameter ('offset',0);
 
 // OPERATIONS
 
@@ -85,43 +95,97 @@ if (isset ($_POST["updatebt"])) {
 	}
 }
 
-echo "<h2>Pandora SNMP &gt; ".__('SNMP console')."</h2>";
-
-$offset = (int) get_parameter ('offset',0);
-
+echo "<h2>Pandora SNMP &gt; " . __('SNMP console');
+if ($config["pure"] == 1) {
+	echo "&nbsp;<a target='_top' href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&pure=0'><img src='images/monitor.png' title='".__('Normal screen')."'></a>";
+} else {
+	// Fullscreen
+	echo "&nbsp;<a target='_top' href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&refr=30&pure=1'><img src='images/monitor.png' title='".__('Full screen')."'></a>";
+}
+echo "</h2>";
 
 $sql = sprintf ("SELECT * FROM ttrap ORDER BY timestamp DESC LIMIT %d,%d",$offset,$config['block_size']);
 $traps = get_db_all_rows_sql ($sql);
 
+// No traps 
 if (empty ($traps)) {
 	echo '<div class="nf">'.__('There are no SNMP traps in database').'</div>';
 	return;
 }
 
-echo '<table border="0" width="735"><thead><th style="width:33%">'.__('Status').'</th>';
-echo '<th style="width:34%">'.__('Alert').'</th>';
-echo '<th style="width:33%">'.__('Action').'</th></thead><tbody><tr>';
-echo '<td class="f9" style="padding-left: 30px;">';
-echo '<img src="images/pixel_green.png" width="20" height="20" /> - '.__('Validated event');
-echo '<br />';
-echo '<img src="images/pixel_red.png" width="20" height="20" /> - '.__('Not validated event');
-echo '</td><td class="f9" style="padding-left: 30px;">';
-echo '<img src="images/pixel_yellow.png" width="40" height="20" /> - '.__('Alert fired');
-echo '<br />';
-echo '<img src="images/pixel_gray.png" width="40" height="20" /> - '.__('Alert not fired');
-echo '</td><td class="f9" style="padding-left: 30px;">';
-echo '<img src="images/ok.png" /> - '.__('Validate event');
-echo '<br />'; 
-echo '<img src="images/cross.png" /> - '.__('Delete event');
-echo '</td></tr></tbody></table>';
+// Toggle filters
+echo '<a href="#" onmousedown="toggleDiv(\'filters\');">';
+echo "<b>".__('Toggle filters')." ".'<img src="images/wand.png" /></a></b>';
+
+echo '<form method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view">';
+$table->width = '90%';
+$table->size = array ();
+$table->size[0] = '120px';
+$table->data = array ();
+
+// Set filters
+$agents = array ();
+$oids = array ();
+$severities = get_priorities ();
+$alerted = array (__('Not fired'), __('fired'));
+foreach ($traps as $trap) {
+	$agent = get_agent_with_ip ($trap['source']);
+	$agents[$trap["source"]] = $agent !== false ? $agent["nombre"] : $trap["source"];
+	$oid = enterprise_hook ('get_oid', array ($trap));
+	if ($oid === ENTERPRISE_NOT_HOOK) {
+		$oid = $trap["oid"];
+	}
+	$oids[$oid] = $oid;
+}
+
+if ($config["pure"] == 1) {
+	echo "<div id='filters' style='display:none'>";
+} else {
+	echo "<div id='filters' style='display:block'>"; //There is no value all to property display
+}
+
+// Agent select
+$table->data[0][0] = '<strong>'.lang_string ('Agent').'</strong>';
+$table->data[0][1] = print_select ($agents, 'filter_agent', $filter_agent, 'javascript:this.form.submit();', __('All'), '', true);
+
+// OID select
+$table->data[0][2] = '<strong>'.lang_string ('OID').'</strong>';
+$table->data[0][3] = print_select ($oids, 'filter_oid', $filter_oid, 'javascript:this.form.submit();', __('All'), '', true);
+
+// Alert status select
+$table->data[1][0] = '<strong>' . __('Alert') . '</strong>';
+$table->data[1][1] = print_select ($alerted, "filter_fired", $filter_fired, 'javascript:this.form.submit();', __('All'), '-1', true);
+
+// String search_string
+$table->data[1][2] = '<strong>' . __('Search value') . '</strong>';
+$table->data[1][3] = print_input_text ('search_string', $search_string, '', 25, 0, true);
+
+// Block size for pagination select
+$table->data[2][0] = '<strong>' . __('Block size for pagination') . '</strong>';
+$lpagination[25]=25;
+$lpagination[50]=50;
+$lpagination[100]=100;
+$lpagination[200]=200;
+$lpagination[500]=500;
+$table->data[2][1] = print_select ($lpagination, "pagination", $config["block_size"], 'javascript:this.form.submit();', __('Default'), $config["block_size"], true);
+
+// Severity select
+$table->data[2][2] = '<strong>'.lang_string ('Severity').'</strong>';
+$table->data[2][3] = print_select ($severities, 'filter_severity', $filter_severity, 'javascript:this.form.submit();', __('All'), -1, true);
+
+print_table ($table);
+unset ($table);
+
+echo '</form>';
+echo '</div>';
+
 echo '<br />';
 
-// Prepare index for paginationi
+// Prepare index for pagination
 $trapcount = get_db_sql ("SELECT COUNT(*) FROM ttrap");
 pagination ($trapcount, "index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view", $offset);
 
-echo "<br />";
-echo '<form name="eventtable" method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&refr=60&offset='.$offset.'">';
+echo '<form name="eventtable" method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&offset='.$offset.'">';
 
 $table->cellpadding = 4;
 $table->cellspacing = 4;
@@ -164,9 +228,42 @@ $table->head[9] = print_checkbox_extended ("allbox", 1, false, false, "javascrip
 $table->align[9] = "center";
 
 // Skip offset records
+$idx = 0;
 foreach ($traps as $trap) {
 	$data = array ();
+
+	// Apply filters
+	if ($filter_agent != '' && $trap["source"] != $filter_agent) {
+		continue;
+	}
 	
+	$oid = enterprise_hook ('get_oid', array ($trap));
+	if ($oid === ENTERPRISE_NOT_HOOK) {
+		$oid = $trap["oid"];
+	}
+
+	if ($filter_oid != '' && $oid != $filter_oid) {
+		continue;
+	}
+
+	if ($filter_fired != -1 && $trap["alerted"] != $filter_fired) {
+		continue;
+	}
+
+	$severity = enterprise_hook ('get_severity', array ($trap));
+	if ($severity === ENTERPRISE_NOT_HOOK) {
+		$severity = $trap["alerted"] == 1 ? $trap["priority"] : 1;
+	}
+
+	if ($filter_severity != -1 && $severity != $filter_severity) {
+		continue;
+	}
+
+	if ($search_string != '' && ereg ($search_string, $trap["value"]) == 0 && 
+	    ereg ($search_string, $trap["value_custom"]) == 0) {
+	    continue;
+	}
+
 	//Status
 	if ($trap["status"] == 0) {
 		$data[0] = '<img src="images/pixel_red.png" title="'.__('Not validated').'" width="20" height="20" />';
@@ -193,10 +290,15 @@ foreach ($traps as $trap) {
 	}
 
 	//OID
-	$data[2] = $trap["oid"];
-	if (empty ($data[2]))
+	if (empty ($trap["oid"])) {
 		$data[2] = __('N/A');
-	
+	} else {
+		$data[2] = enterprise_hook ('editor_link', array ($trap));
+		if ($data[2] === ENTERPRISE_NOT_HOOK) {
+			$data[2] = $trap["oid"];
+		}
+	}
+
 	//Value
 	$data[3] = substr ($trap["value"], 0, 15);
 	
@@ -224,12 +326,17 @@ foreach ($traps as $trap) {
 	}
 	
 	// Timestamp
-	$data[6] = $trap["timestamp"];
+	$data[6] = human_time_comparation($trap["timestamp"]);
 
-	//Alert fired
+	// Use alert severity if fired
 	if (!empty ($trap["alerted"])) {
-		$idx = count ($table->data);
-		switch ($trap["priority"]) {
+		$data[7] = '<img src="images/pixel_yellow.png" width="20" height="20" border="0" title="'.__('Alert fired').'" />';		
+	} else {
+		$data[7] = '<img src="images/pixel_gray.png" width="20" height="20" border="0" title="'.__('Alert not fired').'" />';
+	}
+
+	// Severity	
+	switch ($severity) {
 		case 0:
 			$table->rowclass[$idx] = "datos_blue";
 			break;
@@ -247,11 +354,6 @@ foreach ($traps as $trap) {
 			break;
 		default:
 			$table->rowclass[$idx] = "datos_grey";
-		}
-
-		$data[7] = '<img src="images/pixel_yellow.png" width="40" height="20" border="0" title="'.__('Alert fired').'" />';
-	} else {
-		$data[7] = '<img src="images/pixel_gray.png" width="40" height="20" border="0" title="'.__('Alert not fired').'" />';
 	}
 
 	//Actions
@@ -260,27 +362,55 @@ foreach ($traps as $trap) {
 		$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&check='.$trap["id_trap"].'"><img src="images/ok.png" border="0" title="'.__('Validate').'" /></a>';
 	}
 	if (give_acl ($config["id_user"], 0, "IW")) {
-		$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&delete='.$trap["id_trap"].'&refr=60&offset='.$offset.'" onClick="javascript:confirm(\''.__('Are you sure').'\')"><img src="images/cross.png" border="0" title="'.__('Delete').'"/></a>';
+		$data[8] .= '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&delete='.$trap["id_trap"].'&offset='.$offset.'" onClick="javascript:confirm(\''.__('Are you sure').'\')"><img src="images/cross.png" border="0" title="'.__('Delete').'"/></a>';
 	}
 	
 	$data[9] = print_checkbox_extended ("snmptrapid[]", $trap["id_trap"], false, false, '', 'class="chk"', true);
 
 	array_push ($table->data, $data);
+	$idx++;
 }
 
-print_table ($table);
+// No matching traps
+if ($idx == 0) {
+	echo '<div class="nf">'.__('No matching traps found').'</div>';
+} else {
+	print_table ($table);	
+}
+
 unset ($table);
 
 echo '<div style="width:735px; text-align:right;">';
 print_submit_button (__('Validate'), "updatebt", false, 'class="sub ok"');
 
 if (give_acl ($config['id_user'], 0, "IM")) {
+	echo "&nbsp;";
 	print_submit_button (__('Delete'), "deletebt", false, 'class="sub delete" onClick="javascript:confirm(\''.__('Are you sure').'\')"');
 }
 echo "</div></form>";
 
-
+echo '<table>';
+echo '<tr>';
+echo '<td rowspan="4" class="f9" style="padding-left: 30px; line-height: 17px; vertical-align: top;">';
+echo '<h3>' . __('Status') . '</h3>';
+echo '<img src="images/pixel_green.png" width="20" height="20" /> - ' . __('Validated');
+echo '<br />';
+echo '<img src="images/pixel_red.png" width="20" height="20" /> - ' . __('Not validated');
+echo '</td>';
+echo '<td rowspan="4" class="f9" style="padding-left: 30px; line-height: 17px; vertical-align: top;">';
+echo '<h3>' . __('Alert') . '</h3>';
+echo '<img src="images/pixel_yellow.png" width="20" height="20" /> - '  .__('Fired');
+echo '<br />';
+echo '<img src="images/pixel_gray.png" width="20" height="20" /> - ' . __('Not fired');
+echo '<td rowspan="4" class="f9" style="padding-left: 30px; line-height: 17px; vertical-align: top;">';
+echo '<h3>' . __('Action') . '</h3>';
+echo '<img src="images/ok.png" /> - '  .__('Validate');
+echo '<br />';
+echo '<img src="images/cross.png" /> - ' . __('Delete');
+echo '</td>';
+echo '</td></tr></table>';
 ?>
+
 <script language="JavaScript" type="text/javascript">
 <!--
 function CheckAll() {
@@ -289,6 +419,14 @@ function CheckAll() {
                 if (e.type == 'checkbox' && e.name != 'allbox')
                         e.checked = !e.checked;
         }
+}
+
+function toggleDiv (divid){
+	if (document.getElementById(divid).style.display == 'none'){
+		document.getElementById(divid).style.display = 'block';
+	} else {
+		document.getElementById(divid).style.display = 'none';
+	}
 }
 //-->
 </script>

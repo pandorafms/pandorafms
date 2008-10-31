@@ -204,6 +204,10 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 			echo "<div class='arrowg'>";
 		echo "<ul class='mn'><li><a href='index.php?sec=gservers&sec2=godmode/servers/manage_export' class='mn'>".__('Export targets')."</a></li></ul></div>";
 	}
+
+	// SNMP console	
+	enterprise_hook ('snmpconsole_menu');
+
 	// AUDIT
 	// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	if ($sec2 == "godmode/admin_access_logs") {

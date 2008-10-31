@@ -232,7 +232,7 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 		$selected = '';
 	}
 	echo '<div id="op6" class="operation-menu'.$selected.'">';
-	echo '<ul class="mn"><li><a href="index.php?sec=snmpconsole&amp;sec2=operation/snmpconsole/snmp_view&amp;refr=30" class="mn">'.__('SNMP console').'</a></li></ul></div>';
+	echo '<ul class="mn"><li><a href="index.php?sec=snmpconsole&amp;sec2=operation/snmpconsole/snmp_view" class="mn">'.__('SNMP console').'</a></li></ul></div>';
 
 	if (give_acl($config['id_user'], 0, "AW")) {
 		// SNMP Console alert (submenu)

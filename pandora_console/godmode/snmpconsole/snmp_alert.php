@@ -140,7 +140,7 @@ if (isset ($_GET["update_alert"])) {
 	} else {
 		echo "<h2>Pandora SNMP &gt; ".__('Create alert')."</h2>";
 	}
-	echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&submit='.$id_as.'">';
+	echo '<form name="agente" method="post" action="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_alert&submit='.$id_as.'">';
 	echo '<table cellpadding="4" cellspacing="4" width="650" class="databox_color">';
 	
 	// Alert type (e-mail, event etc.)
@@ -325,9 +325,9 @@ if (isset ($_GET["update_alert"])) {
 			$data[7] = __('Never');
 		}
 		
-		$data[8] = '<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&delete_alert='.$row["id_as"].'">
+		$data[8] = '<a href="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_alert&delete_alert='.$row["id_as"].'">
 				<img src="images/cross.png" border="0" alt="'.__('Delete').'"></a>&nbsp;
-				<a href="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&update_alert='.$row["id_as"].'">
+				<a href="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_alert&update_alert='.$row["id_as"].'">
 				<img src="images/config.png" border="0" alt="'.__('Update').'"></a>';
 		$idx = count ($table->data); //The current index of the table is 1 less than the count of table data so we count before adding to table->data
 		array_push ($table->data, $data);
@@ -359,7 +359,7 @@ if (isset ($_GET["update_alert"])) {
 	unset ($table);	
 	
 	echo '<div style="text-align:right; width:740px">';
-	echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_alert&update_alert=-1">';
+	echo '<form name="agente" method="post" action="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_alert&update_alert=-1">';
 	print_submit_button (__('Create'), "add_alert", false, 'class="sub next"');
 	echo "</form></div>";
 		

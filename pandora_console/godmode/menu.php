@@ -127,6 +127,29 @@ if (give_acl ($config['id_user'], 0, "UM")) {
 	echo '<ul class="mn"><li><a href="index.php?sec=gusuarios&amp;sec2=godmode/users/user_list" class="mn">'.__('Manage users').'</a></li></ul></div>';
 }
 
+// SNMP console
+if (give_acl($config['id_user'], 0, "AW")) {
+	if ($sec == "gsnmpconsole"){
+		echo "<div id='god9s'>";
+	} else
+		echo "<div id='god9'>";
+
+	echo "<ul class='mn'><li><a href='index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_alert' class='mn'>" . __('Manage SNMP console') . "</a></li></ul></div>";
+
+	// SNMP Console alert (submenu)
+	if ($sec == "gsnmpconsole") {
+		if ($sec2 == "godmode/snmpconsole/snmp_alert") {
+			echo "<div class='arrowgs'>";
+		} else {
+			echo "<div class='arrowg'>";
+		}
+		echo "<ul class='mn'><li><a href='index.php?sec=gsnmpconsole&amp;sec2=godmode/snmpconsole/snmp_alert' class='mn'>".__('SNMP alerts')."</a></li></ul></div>";
+	}
+	
+	enterprise_hook ('snmpconsole_submenu');
+}
+
+
 // Reporting
 if (give_acl ($config['id_user'], 0, "PM")) {
 	echo '<div id="god51">';

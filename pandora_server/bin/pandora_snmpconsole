@@ -78,9 +78,9 @@ sub pandora_snmptrapd {
 	my $type;
 	my $type_desc;
 	my $value;
-	my $custom_oid;
-	my $custom_type;
-	my $custom_value;
+	my $custom_oid = '';
+	my $custom_type = '';
+	my $custom_value = '';
 	my $sql_insert;
 	my @index_data;
 
@@ -157,18 +157,20 @@ sub pandora_snmptrapd {
 					$custom_type="";
 					$custom_value=$type_desc; # Bug fixed, 080108 by anonymous
 				}
-	
-				$sql_insert = "INSERT INTO ttrap (timestamp, source, oid, type, value, oid_custom, value_custom,  type_custom) VALUES ('$timestamp', '$source', '$oid', $type, '$value', '$custom_oid', '$custom_value', '$custom_type')";
-				logger ($pa_config,"Received SNMP Trap from $source", 4);
-				eval {
-					$dbh->do($sql_insert) || logger ($pa_config, "Cannot write to database while updating SNMP Trap data (error in INSERT)",0);
-					# Evaluate TRAP Alerts for this trap
-					calcula_alerta_snmp ($pa_config, $source, $oid, $custom_value,  $timestamp, $dbh);
-				};
-				if ($@) {
-					logger ($pa_config, "[ERROR] Cannot access to database while updating SNMP Trap data",0);
-					logger ($pa_config, "[ERROR] SQL Errorcode: $@", 2);
-				}		
+
+				if (! defined(PandoraFMS::Tools::enterprise_hook ('snmp_insert_trap', [$pa_config, $source, $oid, $type, $value, $custom_oid, $custom_value, $custom_type, $timestamp, $dbh]))) {
+					$sql_insert = "INSERT INTO ttrap (timestamp, source, oid, type, value, oid_custom, value_custom,  type_custom) VALUES ('$timestamp', '$source', '$oid', $type, '$value', '$custom_oid', '$custom_value', '$custom_type')";
+					logger ($pa_config,"Received SNMP Trap from $source", 4);
+					eval {
+						$dbh->do($sql_insert) || logger ($pa_config, "Cannot write to database while updating SNMP Trap data (error in INSERT)",0);
+						# Evaluate TRAP Alerts for this trap
+						calcula_alerta_snmp ($pa_config, $source, $oid, $oid, $custom_value,  $timestamp, $dbh);
+					};
+					if ($@) {
+						logger ($pa_config, "[ERROR] Cannot access to database while updating SNMP Trap data",0);
+						logger ($pa_config, "[ERROR] SQL Errorcode: $@", 2);
+					}
+				}
 				PandoraFMS::Tools::enterprise_hook ('snmp_trap2agent', [defined($trap2agent) ? $trap2agent : 0, $pa_config, $source, $oid, $value, $custom_oid, $custom_value, $timestamp, $dbh]);
 			}
 		}
@@ -189,9 +191,10 @@ sub calcula_alerta_snmp {
 	my $pa_config = $_[0];
 	my $trap_agente = $_[1];
 	my $trap_oid = $_[2];
-	my $trap_custom_value = $_[3];
-	my $timestamp = $_[4];
-	my $dbh = $_[5];
+	my $trap_oid_text = $_[3];
+	my $trap_custom_value = $_[4];
+	my $timestamp = $_[5];
+	my $dbh = $_[6];
 	my $alert_fired = 0;
 	
 	my $query_idag = "select * from talert_snmp";
@@ -223,7 +226,7 @@ sub calcula_alerta_snmp {
 			my $alert_data = "";
 				
 			if ($alert_type == 0){ # type 0 is OID only
-				if ( $trap_oid =~ m/$oid/i ){
+				if ( $trap_oid =~ m/$oid/i || $trap_oid_text =~ m/$oid/i){
 					$alert_fired = 1;
 					$alert_data = "SNMP/OID:".$oid;
 					logger ($pa_config,"SNMP Alert debug (OID) MATCHED",10);

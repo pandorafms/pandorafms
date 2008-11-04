@@ -1,3 +1,11 @@
+2008-11-04  Ramon Novoa  <rnovoa@artica.es>
+
+	* lib/PandoraFMS/Config.pm,
+	  lib/PandoraFMS/DB.pm,
+	  lib/PandoraFMS/Tools.pm,
+	  bin/pandora_snmpconsole: Added support for enterprise version
+	  features.
+
 2008-10-30  Sancho Lerena <slerena@gmail.com>
 
 	* lib/PandoraFMS/DB.pm:  Some people reports problems with 

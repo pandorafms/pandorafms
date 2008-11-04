@@ -1,7 +1,8 @@
-2008-10-31  Jorge Gonzalez  <jorgegonz@artica.es>                              
+2008-11-04  Jorge Gonzalez  <jorgegonz@artica.es>                              
 
-	* pandoradb_data.sql: Added support for finnish.                       
-
+	* include/languages/es.po, include/languages/es.mo: Updated Spanish
+          translation.
+                       
 2008-10-31  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/languages/es.po, include/languages/es.mo: Updated Spanish

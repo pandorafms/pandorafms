@@ -1428,6 +1428,8 @@ sub pandora_updateserver (%$$$) {
 		$pandorasuffix = "_WMI";
 	} elsif ($opmode == 7){
 		$pandorasuffix = "_Export";
+	} elsif ($opmode == 8){
+		$pandorasuffix = "_Inventory";
 	} else {
 		logger ($pa_config, "Error: received a unknown server type. Aborting startup.",0);
 		print (" [ERROR] Received a unknown server type. Aborting startup \n\n");
@@ -1476,6 +1478,8 @@ sub pandora_updateserver (%$$$) {
 				$sql_update = "wmi_server = 1";
 			} elsif ($opmode == 7) {
 				$sql_update = "export_server = 1";
+			} elsif ($opmode == 8) {
+				$sql_update = "inventory_server = 1";
 			}
 
 			$sql_update = "UPDATE tserver SET $sql_update $sql_update_post , status = $status, keepalive = '$timestamp', master =  $pa_config->{'pandora_master'} WHERE id_server = $id_server";
@@ -2251,6 +2255,10 @@ sub export_module_data {
 	my $tagente_modulo = get_db_free_row ("SELECT id_export, id_agente_modulo
 										   FROM tagente_modulo WHERE id_agente = " . $id_agent .
 										   " AND nombre = '" . $module_name . "'", $dbh);
+	if ($tagente_modulo eq '-1') {
+		return;
+	}
+
  	my $id_export = $tagente_modulo->{'id_export'};
 	my $id_agente_modulo = $tagente_modulo->{'id_agente_modulo'};
 	if ($id_export < 1) {

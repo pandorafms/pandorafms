@@ -163,6 +163,7 @@ sub pandora_loadconfig {
     $pa_config->{"pluginserver"} = 0; # Introduced on 2.0
     $pa_config->{"predictionserver"} = 0; # Introduced on 2.0
     $pa_config->{"exportserver"} = 0; # 2.0
+    $pa_config->{"inventoryserver"} = 0; # 2.1
     $pa_config->{"servermode"} = "";
     $pa_config->{'snmp_logfile'} = "/var/log/pandora_snmptrap.log";
     $pa_config->{"network_threads"} = 5; # Fixed default
@@ -183,6 +184,7 @@ sub pandora_loadconfig {
     $pa_config->{"wmi_timeout"} = 5; # Introduced on 2.0
     $pa_config->{"compound_max_depth"} = 5; # Maximum nested compound alert depth. Not in config file.
     $pa_config->{"dataserver_threads"} = 3; # Introduced on 2.0
+    $pa_config->{"inventory_threads"} = 5; # 2.1
 
     # Internal MTA for alerts, each server need its own config.
     $pa_config->{"mta_address"} = '127.0.0.1'; # Introduced on 2.0
@@ -501,6 +503,11 @@ sub pandora_loadconfig {
             print " [*] You are running Pandora FMS Export Server. \n";
             $parametro ="Pandora FMS Export Server";
             $pa_config->{"servermode"}="_Export";
+        }
+        if ($opmode == 8){
+            print " [*] You are running Pandora FMS Inventory Server. \n";
+            $parametro ="Pandora FMS Inventory Server";
+            $pa_config->{"servermode"}="_Inventory";
         }
 	    if ($pa_config->{"pandora_check"} == 1) {
 		    print " [*] MD5 Security enabled.\n";

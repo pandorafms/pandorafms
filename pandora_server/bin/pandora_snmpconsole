@@ -30,6 +30,7 @@ use Time::HiRes;			# For high precission timedate functions (Net::Ping)
 use PandoraFMS::Config;
 use PandoraFMS::Tools;
 use PandoraFMS::DB;
+PandoraFMS::Tools::enterprise_load ();
 
 # FLUSH in each IO (only for debug, very slooow)
 # ENABLED in DEBUGMODE
@@ -117,7 +118,7 @@ sub pandora_snmptrapd {
 	# open database, only ONCE. We pass reference to DBI handler ($dbh) to all subprocess
 	my $dbh = DBI->connect("DBI:mysql:$pa_config->{'dbname'}:$pa_config->{'dbhost'}:3306",$pa_config->{'dbuser'}, $pa_config->{'dbpass'},	{ RaiseError => 1, AutoCommit => 1 });
 
-	my $trap2agent = get_db_value ("value", "tconfig", "token", "trap2agent", $dbh);
+	my $trap2agent = PandoraFMS::Tools::enterprise_hook('snmp_get_trap2module', [$dbh]);
 
 	# Main loop for reading file
 	while ( 1 ){
@@ -168,6 +169,7 @@ sub pandora_snmptrapd {
 					logger ($pa_config, "[ERROR] Cannot access to database while updating SNMP Trap data",0);
 					logger ($pa_config, "[ERROR] SQL Errorcode: $@", 2);
 				}		
+				PandoraFMS::Tools::enterprise_hook ('snmp_trap2agent', [defined($trap2agent) ? $trap2agent : 0, $pa_config, $source, $oid, $value, $custom_oid, $custom_value, $timestamp, $dbh]);
 			}
 		}
 		sleep ($pa_config{'server_threshold'});

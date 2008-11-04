@@ -314,6 +314,42 @@ sub float_equal {
     return sprintf("%.${dp}g", $A) eq sprintf("%.${dp}g", $B);
 }
 
+##########################################################################
+# sub enterprise_load ()
+# Tries to load the PandoraEnterprise module. Must be called once before
+# enterprise_hook ().
+##########################################################################
+sub enterprise_load () {
+	eval { require PandoraFMS::Enterprise; };
+}
+
+##########################################################################
+# sub enterprise_hook ($function_name, \@arguments)
+# Tries to call a PandoraEnterprise function. Returns undef if unsuccessful.
+##########################################################################
+sub enterprise_hook ($$) {
+	my $func = $_[0];
+	my @args = @{$_[1]};
+	my $output;
+
+	# Temporarily disable strict refs
+	no strict 'refs';
+
+	# Prepend the package name
+	$func = 'PandoraFMS::Enterprise::' . $func;
+
+	# Try to call the function
+	$output = eval { &$func (@args); };
+
+	# Check for errors
+	if ($@) {
+		return undef;
+	}
+	else {
+		return $output;
+	}
+}
+
 # End of function declaration
 # End of defined Code
 

@@ -459,7 +459,7 @@ next_pair:
 }
 
 ##########################################################################
-# SUB pandora_query_snmp (pa_config, oid, community, target, error, dbh)
+# SUB pandora_query_snmp (pa_config, oid, community, target, version, error, dbh)
 # Makes a call to SNMP modules to get a value,
 ##########################################################################
 sub pandora_query_snmp (%$$$$$) {

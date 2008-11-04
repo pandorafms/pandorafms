@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: pandora.es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-10-31 11:29+0100\n"
-"PO-Revision-Date: 2008-10-31 11:35+0100\n"
+"PO-Revision-Date: 2008-11-04 09:46+0100\n"
 "Last-Translator: Jorge Gonzalez <jorge.gonzalez@artica.es>\n"
 "Language-Team: Español <artica@artica.es>\n"
 "MIME-Version: 1.0\n"
@@ -29,7 +29,7 @@ msgstr "Hubo un problema al localizar la fuente del gráfico"
 #: ../../include/functions.php:540
 #: ../../operation/reporting/graph_viewer.php:124
 msgid "1 hour"
-msgstr "Una hora"
+msgstr "1 hora"
 
 #: ../../reporting/stat_win.php:55 ../../reporting/stat_win.php:219
 #: ../../godmode/reporting/graph_builder.php:332
@@ -59,7 +59,7 @@ msgstr "12 horas"
 #: ../../include/functions.php:552
 #: ../../operation/reporting/graph_viewer.php:129
 msgid "1 day"
-msgstr "día"
+msgstr "1 día"
 
 #: ../../reporting/stat_win.php:63 ../../reporting/stat_win.php:223
 #: ../../godmode/reporting/graph_builder.php:347
@@ -68,19 +68,19 @@ msgstr "día"
 #: ../../include/functions.php:555
 #: ../../operation/reporting/graph_viewer.php:130
 msgid "2 days"
-msgstr "días"
+msgstr "2 días"
 
 #: ../../reporting/stat_win.php:65 ../../reporting/stat_win.php:224
 #: ../../include/functions.php:558
 msgid "5 days"
-msgstr "días"
+msgstr "5 días"
 
 #: ../../reporting/stat_win.php:67 ../../reporting/stat_win.php:225
 #: ../../godmode/reporting/reporting_builder.php:393
 #: ../../include/functions.php:561
 #: ../../operation/reporting/graph_viewer.php:131
 msgid "1 week"
-msgstr "semana"
+msgstr "1 semana"
 
 #: ../../reporting/stat_win.php:69 ../../reporting/stat_win.php:226
 #: ../../godmode/reporting/map_builder.php:367
@@ -95,7 +95,7 @@ msgstr "15 días"
 #: ../../include/functions.php:567
 #: ../../operation/reporting/graph_viewer.php:132
 msgid "1 month"
-msgstr "Un mes"
+msgstr "1 mes"
 
 #: ../../reporting/stat_win.php:73 ../../reporting/stat_win.php:228
 #: ../../godmode/reporting/graph_builder.php:362
@@ -2988,8 +2988,10 @@ msgid "You must check modules and/or alerts to be deleted"
 msgstr "Debe comprobar módulos y/o alertas para borrar"
 
 #: ../../godmode/agentes/manage_config.php:301
-msgid "There was an error removing the module data, the removal has been cancelled"
-msgstr "Hubo un error al eliminar el módulo de datos. Se canceló la eliminación."
+msgid ""
+"There was an error removing the module data, the removal has been cancelled"
+msgstr ""
+"Hubo un error al eliminar el módulo de datos. Se canceló la eliminación."
 
 #: ../../godmode/agentes/manage_config.php:304
 msgid "Successfully removed module data"
@@ -3348,7 +3350,8 @@ msgid "Time threshold"
 msgstr "Umbral de tiempo"
 
 #: ../../godmode/agentes/alert_manager_editor.php:136
-msgid "This value must be al least Module Interval * (Min.Number of Alerts + 1)"
+msgid ""
+"This value must be al least Module Interval * (Min.Number of Alerts + 1)"
 msgstr ""
 "Este valor debe ser como mínimo, el intervalo del módulo multiplicado por el "
 "mínimo número de alertas + 1"
@@ -5637,4 +5640,3 @@ msgstr "Remitente"
 #: ../../operation/messages/message.php:215
 msgid "No subject"
 msgstr "Sin asunto"
-

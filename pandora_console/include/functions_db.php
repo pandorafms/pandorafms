@@ -1425,6 +1425,17 @@ function get_db_all_rows_sql ($sql) {
 }
 
 /**
+ * Error handler function when an SQL error is triggered.
+ * 
+ * @param $errno Level of the error raised (not used, but required by set_error_handler()).
+ * @param $errstr Contains the error message.
+ */
+function sql_error_handler ($errno, $errstr) {
+	echo "<strong>SQL error</strong>: ".$errstr."<br />\n";
+	return true;
+}
+
+/**
  * This function comes back with an array in case of SELECT
  * in case of UPDATE, DELETE etc. with affected rows
  * an empty array in case of SELECT without results
@@ -1450,7 +1461,12 @@ function process_sql ($sql, $rettype = "affected_rows") {
 	} else {
 		$result = mysql_query ($sql);
 		if ($result === false) {
-			trigger_error (mysql_error ());
+			$backtrace = debug_backtrace ();
+			$error = sprintf ('%s (\'%s\') in <strong>%s</strong> on line %d',
+				mysql_error (), $sql, $backtrace[0]['file'], $backtrace[0]['line']);
+			set_error_handler ('sql_error_handler');
+			trigger_error ($error);
+			restore_error_handler ();
 			return false;
 		} elseif ($result === true) {
 			if ($rettype == "insert_id") {

@@ -63,13 +63,13 @@ session_start();
 require_once ("include/config.php");
 require_once ("include/functions.php");
 require_once ("include/functions_db.php");
-//We should require this or you might end up with some empty strings
-load_extensions ($config['extensions']);
 
 /* Enterprise support */
-if (file_exists ("enterprise/load_enterprise.php")) {
-	include ("enterprise/load_enterprise.php");
+if (file_exists (ENTERPRISE_DIR."/load_enterprise.php")) {
+	include (ENTERPRISE_DIR."/load_enterprise.php");
 }
+
+load_extensions ($config['extensions']);
 
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head>';
 

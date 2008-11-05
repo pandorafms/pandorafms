@@ -1,3 +1,8 @@
+2008-11-05  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb.sql: Deleted 'id_inventory_server' column from 'tagente'
+	  (only needed in enterprise version).
+
 2009-11-05  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/languages/pt_BR.mo, include/languages/fr.po,

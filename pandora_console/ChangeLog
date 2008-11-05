@@ -1,3 +1,16 @@
+2009-11-05  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_db.php: Added sql_error_handler() to show SQL
+	errors. Improved SQL error messages in process_sql() so it shows now
+	the failing sentence, the file and the line of the call.
+
+	* index.php: Moved load_extensions() call after enterprise
+	instalation so enterprise extensions are installed properly.
+
+	* godmode/profiles/profile_list.php: HTML tags nesting fixed.
+
+	* ChangeLog: Fixed previous commit message style.
+
 2008-11-05  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb.sql: Deleted 'id_inventory_server' column from 'tagente'
@@ -6,27 +19,27 @@
 2009-11-05  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/languages/pt_BR.mo, include/languages/fr.po,
-          include/languages/uk.mo, include/languages/ro.mo,   
-          include/languages/ca.po, include/languages/sv.po,   
-          include/languages/de.po, include/languages/zh_TW.po,
-          include/languages/hi.po, include/languages/zh_CN.po,
-          include/languages/fr.mo, include/languages/te.po,   
-          include/languages/eu.po,  include/languages/hu.po,
-          include/languages/ca.mo, include/languages/de.mo,   
-          include/languages/sv.mo, include/languages/ru.po,   
-          include/languages/zh_TW.mo, include/languages/hi.mo,
-          include/languages/zh_CN.mo, include/languages/gl.po,
-          include/languages/te.mo, include/languages/eu.mo,   
-          include/languages/hu.mo,  include/languages/pl.po,
-          include/languages/it.po, include/languages/sl.po, 
-          include/languages/ru.mo, include/languages/pt.po, 
-          include/languages/ast.po, include/languages/gl.mo: Updated
-          translations from rosetta: thanks to all contributors.
+	include/languages/uk.mo, include/languages/ro.mo,   
+	include/languages/ca.po, include/languages/sv.po,   
+	include/languages/de.po, include/languages/zh_TW.po,
+	include/languages/hi.po, include/languages/zh_CN.po,
+	include/languages/fr.mo, include/languages/te.po,   
+	include/languages/eu.po,  include/languages/hu.po,
+	include/languages/ca.mo, include/languages/de.mo,   
+	include/languages/sv.mo, include/languages/ru.po,   
+	include/languages/zh_TW.mo, include/languages/hi.mo,
+	include/languages/zh_CN.mo, include/languages/gl.po,
+	include/languages/te.mo, include/languages/eu.mo,   
+	include/languages/hu.mo,  include/languages/pl.po,
+	include/languages/it.po, include/languages/sl.po, 
+	include/languages/ru.mo, include/languages/pt.po, 
+	include/languages/ast.po, include/languages/gl.mo: Updated
+	translations from rosetta: thanks to all contributors.
 
 2008-11-04  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/languages/es.po, include/languages/es.mo: Updated Spanish
-          translation.
+	translation.
 
 2008-10-31  Ramon Novoa  <rnovoa@artica.es>
 

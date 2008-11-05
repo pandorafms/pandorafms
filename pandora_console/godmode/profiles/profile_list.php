@@ -281,7 +281,7 @@ if ($id_profile || $new_profile) {
 	echo '<div class="action-buttons" style="width: '.$table->width.'">';
 	print_input_hidden ('new_profile', 1);
 	print_submit_button (__('Create profile'), "crt", false, 'class="sub next"');
-	echo '</form>';
 	echo "</div>";
+	echo '</form>';
 }
 ?>

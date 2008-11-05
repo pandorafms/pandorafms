@@ -57,7 +57,6 @@ CREATE TABLE IF NOT EXISTS `tagente` (
   `id_prediction_server` smallint(4) unsigned default '0',
   `id_wmi_server` smallint(4) unsigned default '0',
   `id_parent` int(10) unsigned default '0',
-  `id_inventory_server` smallint(4) unsigned default '0',
   PRIMARY KEY  (`id_agente`),
   KEY `nombre` (`nombre`),
   KEY `direccion` (`direccion`),

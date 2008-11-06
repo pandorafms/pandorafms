@@ -97,7 +97,7 @@ if (isset($_POST["copy"])) {
 					VALUES (%d,".$module["id_tipo_modulo"].",'".$module["descripcion"]."','".$module["nombre"]."',".$module["max"].",".$module["min"].",".$module["module_interval"].",".$module["tcp_port"].",'".$module["tcp_send"]."','".$module["tcp_rcv"]."',
 					'".$module["snmp_community"]."','".$module["snmp_oid"]."','%s',".$module["id_module_group"].",".$module["flag"].",".$module["id_modulo"].",".$module["disabled"].",".$module["id_export"].",
 					'".$module["plugin_user"]."','".$module["plugin_pass"]."','".$module["plugin_parameter"]."',".$module["id_plugin"].",'".$module["post_process"]."',".$module["prediction_module"].",".$module["max_timeout"].")",
-					$id_agent_dest,give_agent_address ($id_agent_dest));
+					$id_agent_dest,get_agent_address ($id_agent_dest));
 
 				$id_new_module = process_sql ($sql, "insert_id");
 				if (empty ($id_new_module)) {

@@ -19,158 +19,117 @@
 
 
 // Load global vars
-require ("include/config.php");
+require_once ("include/config.php");
 check_login ();
 
-if (isset($_GET["id_agente"])){
-	$id_agente = $_GET["id_agente"];
-	// Connect BBDD
-	$sql1='SELECT * FROM tagente WHERE id_agente = '.$id_agente;
-	$result=mysql_query($sql1);
-	if ($row=mysql_fetch_array($result)){
-		$intervalo = $row["intervalo"]; // Interval in seconds to receive data
-		$nombre_agente = $row["nombre"];
-		$direccion_agente =$row["direccion"];
-		$ultima_act = $row["ultimo_contacto"];
-		$ultima_act_remota =$row["ultimo_contacto_remoto"];
-		$comentarios = $row["comentarios"];
-		$id_grupo = $row["id_grupo"];
-		$id_os= $row["id_os"];
-            	$id_parent= $row["id_parent"];  
-		$os_version = $row["os_version"];
-		$agent_version = $row["agent_version"];
-		$disabled= $row["disabled"];
-		$network_server = $row["id_network_server"];
-	} else {
-		echo "<h3 class='error'>".__('There was a problem loading agent')."</h3>";
-		echo "</table>";
-		echo "</div><div id='foot'>";
-		include ("general/footer.php");
-		echo "</div>";
-		exit;
-	}
+$id_agente = get_parameter_get ("id_agente", -1);
+
+$agent = get_db_row ("tagente", "id_agente", $id_agente);
+
+if ($agent === false) {
+	echo '<h3 class="error">'.__('There was a problem loading agent').'</h3>';
+	return;
+}
+
+if (give_acl ($config["id_user"], $agent["id_grupo"], "AR") == 0) {
+	audit_db ($config["id_user"], $REMOTE_ADDR, "ACL Violation", 
+			  "Trying to access Agent General Information");
+	require_once ("general/noaccess.php");
+	exit;
 }
 
 echo "<h2>".__('Pandora Agents')." &gt; ".__('Agent general information')."</h2>";
 
 // Blank space below title
-echo "<div style='height: 10px'> </div>";
+echo '<div style="height: 10px">&nbsp;</div>';
 
-echo '<table cellspacing="0" cellpadding="0" width="750" border=0 class="databox">';
-echo "<tr><td>";
-echo '<table cellspacing="4" cellpadding="4" border=0 class="databox">';
-echo '<tr>
-	<td class="datos"><b>'.__('Agent name').'</b></td>
-	<td class="datos"><b>'.strtoupper(salida_limpia($nombre_agente)).'</b></td>';
-echo "<td class='datos2' width='40'>
-	<a class='info' href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."&refr=60'><span>".__('Refresh data')."</span><img src='images/refresh.png' class='top' border=0></a>&nbsp;";
-echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&flag_agent=1&id_agente=$id_agente'><img src='images/target.png' border=0></A>";
-// Data base access graph
+//Floating div
+echo '<div style="float:right; width:300px; padding-top:16px;">';
+echo '<b>'.__('Agent access rate (24h)').'</b><br /><br />';
+echo '<img border="1" src="reporting/fgraph.php?id='.$id_agente.'&tipo=agentaccess&periodo=1440&height=70&width=280" />';
+echo '<div style="height:25px">&nbsp;</div>';
+echo '<b>'.__('Events generated -by module-').'</b><br /><br />';
+echo '<img border="1" src="reporting/fgraph.php?tipo=event_module&width=250&height=180&id_agent='.$id_agente.'" />';
+echo '</div>';
+	
+echo '<div width="450px">';
+echo '<table cellspacing="4" cellpadding="4" border="0" class="databox">';
+//Agent name
+echo '<tr><td class="datos"><b>'.__('Agent name').'</b></td>';
+echo '<td class="datos"><b>'.strtoupper($agent["nombre"]).'</b></td>';
+echo '<td class="datos" width="40"><a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&refr=60"><img src="images/refresh.png" border="0" title="'.__('Refresh data').'" /></a>&nbsp;';
+echo '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&flag_agent=1&id_agente='.$id_agente.'"><img src="images/target.png" border="0" title="'.__('Flag').'" /></a></td></tr>';
+
+//Addresses
+echo '<tr><td class="datos2"><b>'.__('IP Address').'</b></td>';
+echo '<td class="datos2" colspan="2">';
+print_select (get_agent_addresses ($id_agente), "not_used", get_agent_address ($id_agente));
 echo '</td></tr>';
-echo '<tr><td class="datos2"><b>'.__('IP Address').'</b></td><td class="datos2" colspan=2>';
-// Show all address for this agent, show first the main IP (taken from tagente table)
-echo "<select style='padding:0px' name='notused' size='1'>";
-echo "<option>".salida_limpia($direccion_agente)."</option>";
-$sql_2='SELECT id_a FROM taddress_agent WHERE id_agent = '.$id_agente;
-$result_t=mysql_query($sql_2);
-while ($row=mysql_fetch_array($result_t)){
-	$sql_3='SELECT ip FROM taddress WHERE id_a = '.$row[0];
-	$result_3=mysql_query($sql_3);
-	$row3=mysql_fetch_array($result_3);
-	if ($direccion_agente != $row3[0]) {
-		echo "<option value='".salida_limpia($row3[0])."'>".salida_limpia($row3[0])."</option>";
-	}
-}
-echo "</select>";
-	
-echo '<tr><td class="datos"><b>'.__('OS').'</b></td><td class="datos" colspan="2"><img src="images/'.dame_so_icon($id_os).'"> - '.dame_so_name($id_os);
 
-if ($os_version != "") {
-	echo ' '.salida_limpia($os_version);
-}
+//OS
+echo '<tr><td class="datos"><b>'.__('OS').'</b></td>';
+echo '<td class="datos" colspan="2"><img src="images/'.dame_so_icon ($agent["id_os"]).'"> - '.dame_so_name ($agent["id_os"]).' '.$agent["os_version"].'</td></tr>';
 
-echo '</td>';
-echo '</tr>';
-	
 // Parent
-echo '<tr><td class="datos2"><b>'.__('Parent').'</b></td><td class="datos2" colspan=2>';
-echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_parent'>";
-echo dame_nombre_agente($id_parent).'</a></td>';
+echo '<tr><td class="datos2"><b>'.__('Parent').'</b></td>';
+echo '<td class="datos2" colspan="2"><a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_parent"].'">'.dame_nombre_agente ($agent["id_parent"]).'</a></td></tr>';
 
 // Agent Interval
-echo '<tr><td class="datos"><b>'.__('Interval').'</b></td><td class="datos" colspan=2>'. human_time_description_raw($intervalo).'</td></tr>';	
+echo '<tr><td class="datos"><b>'.__('Interval').'</b></td>';
+echo '<td class="datos" colspan="2">'.human_time_description_raw ($agent["intervalo"]).'</td></tr>';
 	
 // Comments
-echo '<tr><td class="datos2"><b>'.__('Description').'</b></td><td class="datos2" colspan=2>'.$comentarios.'</td></tr>';
+echo '<tr><td class="datos2"><b>'.__('Description').'</b></td>';
+echo '<td class="datos2" colspan="2">'.$agent["comentarios"].'</td></tr>';
 
 // Group
-echo '<tr><td class="datos"><b>'.__('Group').'</b></td><td class="datos" colspan="2">';
-
-echo "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=$id_grupo'>";
-echo '<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.png" title="'. dame_grupo($id_grupo).'"></A></td></tr>';
+echo '<tr><td class="datos"><b>'.__('Group').'</b></td>';
+echo '<td class="datos" colspan="2">';
+echo '<img class="bot" src="images/groups_small/'.show_icon_group ($agent["id_grupo"]).'.png" /> - <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$agent["id_grupo"].'">'. dame_grupo ($agent["id_grupo"]).'</a></td></tr>';
 
 // Agent version
-echo '<tr><td class="datos2"><b>'.__('Agent Version'). '</b>';
-echo '<td class="datos2" colspan=2>'.salida_limpia($agent_version). '</td>';
+echo '<tr><td class="datos2"><b>'.__('Agent Version'). '</b></td>';
+echo '<td class="datos2" colspan="2">'.$agent["agent_version"].'</td></tr>';
 
 // Total packets
 echo '<tr><td class="datos"><b>'. __('Total packets'). '</b></td>';
-echo '<td class="datos" colspan=2>';
-$total_paketes= 0;
-$sql_3='SELECT COUNT(*) FROM tagente_datos WHERE id_agente = '.$id_agente;
-$result_3=mysql_query($sql_3);
-$row3=mysql_fetch_array($result_3);
-$total_paketes = $row3[0];
-echo $total_paketes;
-echo '</td></tr>';
+echo '<td class="datos" colspan=2>'.dame_numero_datos ($id_agente).'</td></tr>';
 
 // Last contact
-echo '<tr><td class="datos2f9"><b>'.__('Last contact')." / ".__('Remote').'</b></td><td class="datos2 f9" colspan="2">';
-
-if ($ultima_act == "0000-00-00 00:00:00"){ 
+echo '<tr><td class="datos2"><b>'.__('Last contact')." / ".__('Remote').'</b></td><td class="datos2 f9" colspan="2">';
+if ($agent["ultimo_contacto"] == "0000-00-00 00:00:00") { 
 	echo __('Never');
 } else {
-	echo $ultima_act;
+	echo $agent["ultimo_contacto"];
 }
 
 echo " / ";
 
-if ($ultima_act_remota == "0000-00-00 00:00:00"){ 
+if ($agent["ultimo_contacto_remoto"] == "0000-00-00 00:00:00") { 
 	echo __('Never');
 } else {
-	echo $ultima_act_remota;
+	echo $agent["ultimo_contacto_remoto"];
+}
+echo '</td></tr>';
+
+// Next contact (agent)
+$difference = time () - strtotime ($agent["ultimo_contacto"]);
+$sql = sprintf ("SELECT MAX(module_interval) FROM tagente_modulo WHERE id_agente = %d", $id_agente);
+$max = (int) get_db_sql ($sql);
+if ($max > 0) {
+	//First check if there is a maximum module interval
+	$progress = round ($difference / (($max * 2) / 100));
+} elseif ($agent["intervalo"] > 0) {
+	//Then if there is a generic agent interval
+	$progress = round ($difference / (($agent["intervalo"] * 2) / 100));
+} else {
+	//Otherwise there is no progress to be reported
+	$progress = -1;
 }
 
-// Next contact
+echo '<tr><td class="datos"><b>'.__('Next agent contact').'</b></td>';
+echo '<td class="datos f9" colspan="2"><img src="reporting/fgraph.php?tipo=progress&percent='.$progress.'&height=20&width=200"></td></tr>';
 
-$ultima = strtotime($ultima_act);
-$ahora = strtotime("now");
-$diferencia = $ahora - $ultima;
-// Get higher interval set for the set of modules from this agent
-$sql_maxi ="SELECT MAX(module_interval) FROM tagente_modulo WHERE id_agente = ".$id_agente;
-$result_maxi=mysql_query($sql_maxi);
-if ($row_maxi=mysql_fetch_array($result_maxi))
-	if ($row_maxi[0] > 0 ) {
-		$intervalo = $row_maxi[0];
-	}
-	if ($intervalo > 0){
-		$percentil = round($diferencia/(($intervalo*2) / 100));	
-	} else {
-		$percentil = -1;
-	}
-	echo "<tr><td class='datos'><b>".__('Next agent contact')."</b>
-		<td class='datosf9' colspan=2>
-		<img src='reporting/fgraph.php?tipo=progress&percent=".$percentil."&height=20&width=200'>
-		</td></tr></table>
-
-	<td valign='top'><table border=0>
-	<tr><td><b>".__('Agent access rate (24h)')."</b><br><br>
-	<img border=1 src='reporting/fgraph.php?id=".$id_agente."&tipo=agentaccess&periodo=1440&height=70&width=280'>
-	</td></tr>
-	<tr><td><div style='height:25px'> </div>
-	<b>".__('Events generated -by module-')."</b><br><br>
-	<img src='reporting/fgraph.php?tipo=event_module&width=250&height=180&id_agent=".$id_agente."' >
-	</td></tr>
-	</table></td></tr>
-	</table>";
+//End of table
+echo '</table></div>';
 ?>

@@ -1,3 +1,21 @@
+2008-11-06  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* operation/snmpconsole/snmp_View.php: Added a span with title over the
+	time comp since some people want to know what time something went down.
+	This should maybe be moved into a print_ function
+
+	* operation/agentes/estado_generalagente.php: ACL check and style
+	changes. Use of new functions
+
+	* include/functions_db.php: dame_numero_datos - added inc and string
+	can also filter on agent now. Renamed give_agent_address_from_list to
+	get_agent_addresses. get_agent_addresses now returns an array with ips
+	Changed give_agent_address to get_agent_address
+
+	* godmode/agentes/manage_config.php,
+	godmode/agentes/configurar_agente.php: Renamed functions
+
+
 2009-11-05  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions_db.php: Added sql_error_handler() to show SQL

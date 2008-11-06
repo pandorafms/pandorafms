@@ -774,10 +774,21 @@ function dame_numero_notas ($id_incident) {
 /** 
  * Get the number of pandora data in the database.
  * 
+ * @param id_agent Agent id or 0 for all
+ *
  * @return 
  */
-function dame_numero_datos () {
-	return (int) get_db_sql ("SELECT COUNT(*) FROM `tagente_datos`");
+function dame_numero_datos ($id_agent = 0) {
+	if ($id_agent < 1) {
+		$query = '';
+	} else {
+		$query = sprintf (" WHERE id_agente_modulo = ANY(SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = %d)", $id_agent);
+	}
+	$datos = 0;
+	$datos += (int) get_db_sql ("SELECT COUNT(*) FROM tagente_datos".$query);
+	$datos += (int) get_db_sql ("SELECT COUNT(*) FROM tagente_datos_inc".$query);
+	$datos += (int) get_db_sql ("SELECT COUNT(*) FROM tagente_datos_string".$query);
+	return $datos;
 }
 
 /** 
@@ -1253,11 +1264,11 @@ function agent_delete_address ($id_agent, $ip_address) {
 		$sql = sprintf ("DELETE FROM taddress_agent WHERE id_ag = %d",$id_ag);	
 		process_sql ($sql);
 	}
-	// Need to change main address ? 
-	if (give_agent_address ($id_agent) == $ip_address) {
-		$new_ip = give_agent_address_from_list ($id_agent);
-		// Change main address in agent to whis one
-		$query = sprintf ("UPDATE tagente SET `direccion` = '%s' WHERE id_agente = %d",$new_ip,$id_agent);
+	// Need to change main address?
+	if (get_agent_address ($id_agent) == $ip_address) {
+		$new_ips = get_agent_addresses ($id_agent);
+		// Change main address in agent to first one in the list
+		$query = sprintf ("UPDATE tagente SET `direccion` = '%s' WHERE id_agente = %d", $new_ips[0], $id_agent);
 		process_sql ($query);
 	}
 }
@@ -1269,8 +1280,8 @@ function agent_delete_address ($id_agent, $ip_address) {
  * 
  * @return The address of the given agent 
  */
-function give_agent_address ($id_agent) {
-	return (string) get_db_value ('direccion', 'tagente', 'id_agente', $id_agent);
+function get_agent_address ($id_agent) {
+	return (string) get_db_value ('direccion', 'tagente', 'id_agente', (int) $id_agent);
 }
 
 /**
@@ -1290,17 +1301,29 @@ function get_agent_with_ip ($ip_address) {
 }
 
 /** 
- * Get IP address of an agent from address list
+ * Get all IP addresses of an agent
  * 
  * @param id_agent Agent id
  * 
- * @return The IP address of the given agent.
+ * @return Array with the IP address of the given agent.
  */
-function give_agent_address_from_list ($id_agent){
-	$sql = "SELECT ip FROM taddress_agent, taddress
+function get_agent_addresses ($id_agent) {
+	$sql = sprintf ("SELECT ip FROM taddress_agent, taddress
 		WHERE taddress_agent.id_a = taddress.id_a
-		AND id_agent = $id_agent";
-	return (string) get_db_sql ($sql);
+		AND id_agent = %d", $id_agent);
+	
+	$ips = get_db_all_rows_sql ($sql);
+	
+	if ($ips === false) {
+		$ips = array ();
+	}
+	
+	$ret_arr = array ();
+	foreach ($ips as $row) {
+		$ret_arr[] = $row["ip"];
+	}
+	
+	return $ret_arr;
 }
 
 /** 

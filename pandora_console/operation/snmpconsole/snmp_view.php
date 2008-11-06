@@ -326,8 +326,10 @@ foreach ($traps as $trap) {
 	}
 	
 	// Timestamp
-	$data[6] = human_time_comparation($trap["timestamp"]);
-
+	$data[6] = '<span title="'.$trap["timestamp"].'">';
+	$data[6] .= human_time_comparation ($trap["timestamp"]);
+	$data[6] .= '</span>';
+	
 	// Use alert severity if fired
 	if (!empty ($trap["alerted"])) {
 		$data[7] = '<img src="images/pixel_yellow.png" width="20" height="20" border="0" title="'.__('Alert fired').'" />';		

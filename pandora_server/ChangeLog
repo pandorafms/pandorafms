@@ -1,3 +1,8 @@
+2008-11-07  Sancho Lerena <slerena@artica.es>
+
+        * bin/pandora_server: Fixed an important problem detected
+        in Keepalive module, present since revision #678.
+
 2008-11-04  Ramon Novoa  <rnovoa@artica.es>
 
 	* bin/pandora_snmpconsole: Added support for extended trap information

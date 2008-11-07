@@ -82,8 +82,8 @@ function give_acl ($id_user, $id_group, $access) {
 		$query1=sprintf("SELECT tperfil.incident_view,tperfil.incident_edit,tperfil.incident_management,tperfil.agent_view,tperfil.agent_edit,tperfil.alert_edit,tperfil.alert_management,tperfil.pandora_management,tperfil.db_management,tperfil.user_management FROM tusuario_perfil,tperfil WHERE tusuario_perfil.id_perfil = tperfil.id_perfil 
 AND tusuario_perfil.id_usuario = '%s' AND (tusuario_perfil.id_grupo = %d OR tusuario_perfil.id_grupo= 1)", $id_user, $id_group);
 	}
-
-	$rowdup = get_db_all_rows_sql($query1);
+	
+	$rowdup = get_db_all_rows_sql ($query1);
 	$result = 0;
 
 	if (!$rowdup)
@@ -91,38 +91,38 @@ AND tusuario_perfil.id_usuario = '%s' AND (tusuario_perfil.id_grupo = %d OR tusu
 
 	foreach($rowdup as $row) {
 		// For each profile for this pair of group and user do...
-			switch ($access) {
-			case "IR":
-				$result += $row["incident_view"];
-				break;
-			case "IW":
-				$result += $row["incident_edit"];
-				break;
-			case "IM":
-				$result += $row["incident_management"];
-				break;
-			case "AR":
-				$result += $row["agent_view"];
-				break;
-			case "AW":
-				$result += $row["agent_edit"];
-				break;
-			case "LW":
-				$result += $row["alert_edit"];
-				break;
-			case "LM":
-				$result += $row["alert_management"];
-				break;
-			case "PM":
-				$result += $row["pandora_management"];
-				break;
-			case "DM":
-				$result += $row["db_management"];
-				break;
-			case "UM":
-				$result += $row["user_management"];
-				break;
-			}
+		switch ($access) {
+		case "IR":
+			$result += $row["incident_view"];
+			break;
+		case "IW":
+			$result += $row["incident_edit"];
+			break;
+		case "IM":
+			$result += $row["incident_management"];
+			break;
+		case "AR":
+			$result += $row["agent_view"];
+			break;
+		case "AW":
+			$result += $row["agent_edit"];
+			break;
+		case "LW":
+			$result += $row["alert_edit"];
+			break;
+		case "LM":
+			$result += $row["alert_management"];
+			break;
+		case "PM":
+			$result += $row["pandora_management"];
+			break;
+		case "DM":
+			$result += $row["db_management"];
+			break;
+		case "UM":
+			$result += $row["user_management"];
+			break;
+		}
 	}
 	if ($result > 1)
 		$result = 1;
@@ -1044,7 +1044,7 @@ function list_group ($id_user, $show_all = 1){
  */
 function list_group2 ($id_user) {
 	$mis_grupos = array (); // Define array mis_grupos to put here all groups with Agent Read permission
-	$result = get_db_all_fields_in_table ("tgrupo", "id_grupo");
+	$result = get_db_all_fields_in_table ('tgrupo', 'id_grupo');
 	if (!$result)
 		return $mis_grupos;
 	foreach ($result as $row) {
@@ -1454,6 +1454,8 @@ function get_db_all_rows_sql ($sql) {
  * @param $errstr Contains the error message.
  */
 function sql_error_handler ($errno, $errstr) {
+	if (error_reporting () <= $errno)
+		return false;
 	echo "<strong>SQL error</strong>: ".$errstr."<br />\n";
 	return true;
 }
@@ -1476,8 +1478,12 @@ function sql_error_handler ($errno, $errstr) {
 function process_sql ($sql, $rettype = "affected_rows") {
 	global $config;
 	global $sql_cache;
+	
 	$retval = array();
-
+	
+	if ($sql == '')
+		return false;
+	
 	if (! empty ($sql_cache[$sql])) {
 		$retval = $sql_cache[$sql];
 		$sql_cache['saved']++;
@@ -1557,7 +1563,6 @@ function get_db_all_rows_field_filter ($table, $field, $condition, $order_field 
  * 
  * @param $table Database table name.
  * @param $field Field of the table.
- * @param $condition Condition the field must have to be selected.
  *
  * @return A matrix with all the values in the table that matches the condition in the field
  */

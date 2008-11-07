@@ -1,3 +1,10 @@
+2008-11-07  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_db.php: Style corrections ins give_acl(). Show
+	nothing on sql_error_handler based on error_reporting() level.
+
+	* ChangeLog: Fixed my previous commit date.
+
 2008-11-06  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* operation/snmpconsole/snmp_View.php: Added a span with title over the
@@ -16,7 +23,7 @@
 	godmode/agentes/configurar_agente.php: Renamed functions
 
 
-2009-11-05  Esteban Sanchez  <estebans@artica.es>
+2008-11-05  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions_db.php: Added sql_error_handler() to show SQL
 	errors. Improved SQL error messages in process_sql() so it shows now

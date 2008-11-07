@@ -1,3 +1,8 @@
+2008-11-07  Sancho Lerena <slerena@gmail.com>
+
+	* bin/pandora_server: Fixed an important problem detected
+	in Keepalive module, present since revision #678.
+
 2008-10-30  Sancho Lerena <slerena@gmail.com>
 
 	* lib/PandoraFMS/DB.pm:  Some people reports problems with 

@@ -274,34 +274,27 @@ sub pandora_data_consumer ($$) {
 sub keep_alive_check {
 	my $pa_config = $_[0];
 	my $dbh = $_[1];
-	my $timestamp = &UnixDate ("today", "%Y-%m-%d %H:%M:%S");
-	my $utimestamp = &UnixDate ("today", "%s");
-	my $query_idag = "SELECT tagente_modulo.id_agente_modulo, tagente_estado.utimestamp, tagente_estado.id_agente, tagente.intervalo, tagente.nombre, tagente_modulo.nombre FROM tagente_modulo, talerta_agente_modulo, tagente_estado, tagente WHERE tagente_modulo.id_agente_modulo = talerta_agente_modulo.id_agente_modulo AND talerta_agente_modulo.disable = 0 AND tagente_modulo.id_tipo_modulo = 100 AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente.id_agente = tagente_estado.id_agente AND tagente_estado.datos != 0";
+
+	my $query_idag = " SELECT tagente_modulo.id_agente_modulo, tagente_estado.id_agente, tagente.nombre as agentname, tagente_modulo.nombre as modulename FROM tagente_modulo, tagente_estado, tagente WHERE tagente.id_agente = tagente_estado.id_agente AND tagente.disabled = 0 AND tagente_modulo.id_tipo_modulo = 100 AND tagente_modulo.disabled = 0 AND tagente_estado.datos = 1 AND tagente_estado.estado = 0 AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo AND ( tagente_estado.utimestamp + (tagente.intervalo * 2) < UNIX_TIMESTAMP()) ";
+
 	my $s_idag = $dbh->prepare($query_idag);
 	$s_idag ->execute;
 
 	my $id_agent_module;
-	my $module_utimestamp;
 	my $id_agent;
-	my $interval;
 	my $agent_name;
 	my $module_name;
 
 	# data needed in loop (we'll reuse it)
-	my @data;
+	my $data;
 	if ($s_idag->rows != 0) {
-		while (@data = $s_idag->fetchrow_array()) {
+		while ($data = $s_idag->fetchrow_hashref()) {
 			threads->yield;
-			$id_agent_module = $data[0];
-			$module_utimestamp = $data[1];
-			$id_agent = $data[2];
-			$interval = $data[3];
-			$agent_name = $data[4];
-			$module_name = $data[5];
-			# Agent down - Keepalive utimestamp too low (2x)
-			if (($module_utimestamp + ($interval * 2)) < $utimestamp){
-					pandora_writestate ($pa_config, $agent_name, "keep_alive", $module_name, 0, 1, $dbh, 1);
-			}
+			$id_agent_module = $data->{'id_agente_modulo'};
+			$id_agent = $data->{'id_agente'};
+			$agent_name = $data->{'agentname'};
+			$module_name = $data->{'modulename'};
+			pandora_writestate ($pa_config, $agent_name, "keep_alive", $module_name, 0, 1, $dbh, 1);
 		}
 	} 
 	$s_idag->finish();

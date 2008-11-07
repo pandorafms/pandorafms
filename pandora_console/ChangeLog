@@ -1,3 +1,8 @@
+2008-11-07  Sancho Lerena <slerena@gmail.com>
+
+	* install.php: Installer create a bad homeurl variable, should be
+	like /pandora_console, not http://localhost/pandora_console
+
 2009-11-05  Jorge Gonzalez  <jorgegonz@artica.es>
 
         * include/languages/pt_BR.mo, include/languages/fr.po,
@@ -34,6 +39,7 @@
 	* include/languages/fi.po, include/languages/fi.mo: Added finnish
 	  translation from Rosetta.
 
+>>>>>>> .r1223
 2008-10-28  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/modules/manage_network_components.php: Replaced parameters

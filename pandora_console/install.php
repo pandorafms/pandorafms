@@ -323,7 +323,7 @@ function install_step3() {
 				<span class='f9b'>For example '/pandora_console'</span>
 				</div>
 				<input class='login' type='text' name='url' style='width: 250px;' 
-				value='".dirname ($_SERVER['PHP_SELF'])."'>
+				value='/pandora_console'>
 				
 				<div align='right'>
 				<input type='image' src='images/arrow_next.png' value='Step #4' id='step4'>

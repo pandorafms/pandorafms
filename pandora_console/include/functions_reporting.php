@@ -52,8 +52,22 @@ function get_agent_module_sla ($id_agent_module, $period, $min_value, $max_value
 	$datas = get_db_all_rows_sql ($sql);
 	
 	if ($datas === false) {
-		//No data to calculate on so we return 0.
-		return 0;
+		
+		/* Try to get data from tagente_estado. It may found nothing because of
+		data compression */
+		$sql = sprintf ('SELECT datos, utimestamp FROM tagente_estado 
+			WHERE id_agente = %d AND id_agente_modulo = %d 
+			AND utimestamp > %d AND utimestamp <= %d 
+			ORDER BY utimestamp ASC',
+			$id_agent, $id_agent_module, $datelimit, $date);
+		$data = get_db_sql ($sql);
+		
+		if ($data === false) {
+			//No data to calculate on so we return 0.
+			return 0;
+		}
+		$datas = array ();
+		array_push ($datas, $data);
 	}
 	
 	$last_data = "";
@@ -247,7 +261,6 @@ function event_reporting ($id_group, $period, $date = 0, $return = false) {
 
 	if (! $date)
 		$date = time ();
-	$datelimit = $date - $period;
 	
 	$table->data = array ();
 	$table->head = array ();
@@ -256,13 +269,7 @@ function event_reporting ($id_group, $period, $date = 0, $return = false) {
 	$table->head[2] = __('User ID');
 	$table->head[3] = __('Timestamp');
 	
-	$sql = sprintf ('SELECT * FROM tevento 
-			WHERE id_agente = %d
-			AND utimestamp > %d AND utimestamp <= %d
-			AND id_grupo = %d
-			ORDER BY utimestamp ASC',
-			$id_group, $datelimit, $date, $id_group);
-	$events = get_db_all_rows_sql ($sql);
+	$events = get_events_in_group ($id_group, $period, $date);
 	if ($events === false) {
 		if (!$return)
 		print_table ($table);

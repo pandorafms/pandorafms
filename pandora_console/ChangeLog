@@ -1,3 +1,15 @@
+2008-11-07  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/reporting/reporting_builder.php: Fixed value of 1 week
+	period.
+
+	* * include/functions_reporting.php: Fixed a bug in SLA calculation
+	that affects small periods of time (less than 24 hours) due to data
+	compression in the database.
+
+	* * include/functions.php: Added get_events_in_group() to get the
+	events of a group in a period of time. It handles group All properly.
+
 2008-11-07  Sancho Lerena <slerena@gmail.com>
 
 	* install.php: Installer create a bad homeurl variable, should be

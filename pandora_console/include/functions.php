@@ -481,6 +481,18 @@ function human_time_comparation ($timestamp) {
 	
 	$seconds = time () - $timestamp;
 	
+	return human_time_description_raw ($seconds);
+}
+
+/** 
+ * Transform an amount of time in seconds into a human readable
+ * strings of minutes, hours or days.
+ * 
+ * @param seconds Seconds elapsed time
+ * 
+ * @return A human readable translation of minutes.
+ */
+function human_time_description_raw ($seconds) {
 	if ($seconds < 60)
 		return format_numeric ($seconds, 0)." ".__('seconds');
 	
@@ -502,25 +514,6 @@ function human_time_comparation ($timestamp) {
 		return format_numeric ($seconds / 2592000, 0)." ".__('months');
 	
 	return " +6 ".__('months');
-}
-
-/** 
- * Transform an amount of time in seconds into a human readable
- * strings of minutes, hours or days.
- * 
- * @param seconds Seconds elapsed time
- * 
- * @return A human readable translation of minutes.
- */
-function human_time_description_raw ($seconds) {
-	global $lang_label;
-	if ($seconds < 3600)
-		return format_numeric ($seconds / 60, 2)." ".__('minutes');
-	
-	if ($seconds >= 3600 && $seconds < 86400)
-		return format_numeric ($seconds / 3600, 2)." ".__('hours');
-	
-	return format_numeric ($seconds / 86400, 2)." ".__('days');
 }
 
 /** 

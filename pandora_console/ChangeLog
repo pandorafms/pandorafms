@@ -1,3 +1,17 @@
+2008-11-08  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/reporting/reporting_builder.php: Fixed value of 1 week
+	period.
+
+	* include/functions.php: Moved all human_time_* functionallity to
+	human_time_description_raw().
+
+	* include/functions_reporting.php: Fixed a bug in SLA calculation that
+	affects small periods of time (less than 24 hours) due to data
+	compression in the database.
+
+	* operation/reporting/reporting_viewer.php: Style correction.
+
 2008-11-07  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions_db.php: Style corrections ins give_acl(). Show

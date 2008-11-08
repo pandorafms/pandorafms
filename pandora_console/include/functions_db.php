@@ -570,6 +570,36 @@ function get_monitors_in_group ($id_group) {
 }
 
 /** 
+ * Get all the events happened in a group during a period of time.
+ *
+ * The returned events will be in the time interval ($date - $period, $date]
+ * 
+ * @param id_group Group id to get events.
+ * @param period Period of time in seconds to get events.
+ * @param date Beginning date to get events.
+ * 
+ * @return An array with all the events happened.
+ */
+function get_events_in_group ($id_group, $period, $date) {
+	$datelimit = $date - $period;
+	
+	if ($id_group == 1) {
+		$sql = sprintf ('SELECT * FROM tevento 
+			WHERE utimestamp > %d AND utimestamp <= %d
+			ORDER BY utimestamp ASC',
+			$datelimit, $date);
+	} else {
+		$sql = sprintf ('SELECT * FROM tevento 
+			WHERE utimestamp > %d AND utimestamp <= %d
+			AND id_grupo = %d
+			ORDER BY utimestamp ASC',
+			$datelimit, $date, $id_group);
+	}
+	
+	return get_db_all_rows_sql ($sql);
+}
+
+/** 
  * Get all the monitors defined in an agent.
  * 
  * @param id_agent Agent id to get all the monitors.

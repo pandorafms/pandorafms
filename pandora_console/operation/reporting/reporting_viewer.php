@@ -147,7 +147,7 @@ foreach ($contents as $content) {
 		$data = array ();
 		$data[0] = '<h4>'.__('Simple graph').'</h4>';
 		$data[1] = '<h4>'.$agent_name.' - '.$module_name.'</h4>';
-		$data[2] = '<h4>'.human_time_description($content['period']).'</h4>';
+		$data[2] = '<h4>'.human_time_description ($content['period']).'</h4>';
 		array_push ($table->data, $data);
 		
 		$data = array ();
@@ -293,9 +293,9 @@ foreach ($contents as $content) {
 		$monitor_value = format_numeric (get_agent_module_sla ($content['id_agent_module'], $content['period'], 1, 1, $datetime));
 		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">';
 		$data[0] .= $monitor_value.' % <img src="images/b_green.png" height="32" width="32" /></p>';
-		$monitor_value2 = format_numeric (100 - $monitor_value, 2) ;
+		$monitor_value = format_numeric (100 - $monitor_value, 2) ;
 		$data[1] = '<p style="font: bold 3em Arial, Sans-serif; color: #ff0000;">';
-		$data[1] .= $monitor_value2.' % <img src="images/b_red.png" height="32" width="32" /></p>';
+		$data[1] .= $monitor_value.' % <img src="images/b_red.png" height="32" width="32" /></p>';
 		array_push ($table->data, $data);
 		
 		break;

@@ -390,7 +390,7 @@ if ($edit_sla_report_content) {
 		$periods[12] = '12 '.__('hours');
 		$periods[24] = __('1 day');
 		$periods[48] = __('2 days');
-		$periods[180] = __('1 week');
+		$periods[168] = __('1 week');
 		$periods[360] = __('2 weeks');
 		$periods[720] = __('1 month');
 		$periods[4320] = __('6 months');

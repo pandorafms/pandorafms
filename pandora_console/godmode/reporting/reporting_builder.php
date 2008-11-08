@@ -64,8 +64,15 @@ if (isset($_GET["get_agent"])) {
 // Delete module SQL code
 if ($delete_report_content) {
 	$id_report_content = (int) get_parameter ('id_report_content');
-	$order = get_db_value ('`order`', 'treport_content', 'id_rc', $id_report_content);
-	$sql = sprintf ('UPDATE treport_content SET `order` = `order` -1 WHERE id_report = %d AND `order` > %d', $id_report, $order);
+	$sql = sprintf ('SELECT `order`
+		FROM treport_content
+		WHERE id_rc = %d',
+		$id_report_content);
+	$order = get_db_sql ($sql);
+	$sql = sprintf ('UPDATE treport_content
+		SET `order` = `order` -1
+		WHERE id_report = %d AND `order` > %d',
+		$id_report, $order);
 	process_sql ($sql);
 	$sql = sprintf ('DELETE FROM treport_content WHERE id_rc = %d', $id_report_content);
 	$result = process_sql ($sql);
@@ -81,10 +88,16 @@ if ($content_up) {
 	$id_report_content = (int) get_parameter ('id_report_content');
 	$order = get_db_value ('`order`', 'treport_content', 'id_rc', $id_report_content);
 	/* Set the previous element order to the current of the content we want to change */
-	$sql = sprintf ('UPDATE treport_content SET `order` = `order` + 1 WHERE id_report = %d AND `order` = %d',
-			$id_report, $order - 1);
+	$sql = sprintf ('UPDATE treport_content
+		SET `order` = `order` + 1
+		WHERE id_report = %d
+		AND `order` = %d',
+		$id_report, $order - 1);
 	$result = process_sql ($sql);
-	$sql = sprintf ('UPDATE treport_content SET `order` = `order` - 1 WHERE id_rc = %d', $id_report_content);
+	$sql = sprintf ('UPDATE treport_content
+		SET `order` = `order` - 1
+		WHERE id_rc = %d',
+		$id_report_content);
 	$result = process_sql ($sql);
 }
 

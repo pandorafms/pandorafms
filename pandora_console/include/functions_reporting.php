@@ -304,7 +304,7 @@ function get_fired_alerts_reporting_table ($alerts_fired) {
 		$alert = get_db_row ('talerta_agente_modulo', 'id_aam', $id_alert);
 		
 		/* Add alerts fired to $agents_fired_alerts indexed by id_agent */
-		$id_agent = $alert['id_agent'];
+		$id_agent = get_db_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', $alert['id_agente_modulo']);
 		if (!isset ($agents[$id_agent])) {
 			$agents[$id_agent] = array ();
 		}
@@ -318,11 +318,11 @@ function get_fired_alerts_reporting_table ($alerts_fired) {
 	$table->head[2] = __('Times Fired');
 	$table->head[3] = __('Priority');
 	
-	foreach ($agents as $alerts) {
+	foreach ($agents as $id_agent => $alerts) {
 		$data = array ();
 		foreach ($alerts as $alert) {
 			if (! isset ($data[0]))
-				$data[0] = dame_nombre_agente_agentemodulo ($alert['id_agente_modulo']);
+				$data[0] = dame_nombre_agente ($id_agent);
 			else
 				$data[0] = '';
 			$data[1] = $alert['descripcion'];

@@ -291,43 +291,40 @@ sub pandora_loadconfig {
         elsif ($parametro =~ m/^snmp_logfile\s(.*)/i) { 
             $pa_config->{'snmp_logfile'}= clean_blank($1); 
         }
-		elsif ($parametro =~ m/^dbname\s(.*)/i) { 
+	elsif ($parametro =~ m/^dbname\s(.*)/i) { 
             $pa_config->{'dbname'}= clean_blank($1); 
         }
-		elsif ($parametro =~ m/^dbuser\s(.*)/i) { 
+	elsif ($parametro =~ m/^dbuser\s(.*)/i) { 
             $pa_config->{'dbuser'}= clean_blank($1); 
         }
-  		elsif ($parametro =~ m/^dbpass\s(.*)/i) {
+  	elsif ($parametro =~ m/^dbpass\s(.*)/i) {
             $pa_config->{'dbpass'}= clean_blank($1); 
         }
   		elsif ($parametro =~ m/^dbhost\s(.*)/i) { 
             $pa_config->{'dbhost'}= clean_blank($1); 
         }
-  		elsif ($parametro =~ m/^daemon\s([0-9]*)/i) { 
-            $pa_config->{'daemon'}= clean_blank($1);
+  	elsif ($parametro =~ m/^daemon\s([0-9]*)/i) { 
+        	$pa_config->{'daemon'}= clean_blank($1);
         }
-		elsif ($parametro =~ m/^dataserver\s([0-9]*)/i){
-			$pa_config->{'dataserver'}= clean_blank($1);
-		}
-        elsif ($parametro =~ m/^networkserver\s([0-9]*)/i){
+	elsif ($parametro =~ m/^dataserver\s([0-9])/i){
+		$pa_config->{'dataserver'}= clean_blank($1);
+	}
+        elsif ($parametro =~ m/^networkserver\s([0-9])/i){
             $pa_config->{'networkserver'}= clean_blank($1);
         }
-        elsif ($parametro =~ m/^pluginserver\s([0-9]*)/i){
+        elsif ($parametro =~ m/^pluginserver\s([0-9])/i){
             $pa_config->{'pluginserver'}= clean_blank($1);
         }
-        elsif ($parametro =~ m/^predictionserver\s([0-9]*)/i){
+        elsif ($parametro =~ m/^predictionserver\s([0-9])/i){
             $pa_config->{'predictionserver'}= clean_blank($1);
         }
-        elsif ($parametro =~ m/^reconserver\s([0-9]*)/i) {
+        elsif ($parametro =~ m/^reconserver\s([0-9])/i) {
             $pa_config->{'reconserver'}= clean_blank($1);
         }
-        elsif ($parametro =~ m/^reconserver\s([0-9]*)/i) {
-            $pa_config->{'reconserver'}= clean_blank($1);
-        }
-        elsif ($parametro =~ m/^wmiserver\s([0-9]*)/i) {
+        elsif ($parametro =~ m/^wmiserver\s([0-9])/i) {
 	        $pa_config->{'wmiserver'}= clean_blank($1);
         }
-        elsif ($parametro =~ m/^exportserver\s([0-9]*)/i) {
+        elsif ($parametro =~ m/^exportserver\s([0-9])/i) {
             $pa_config->{'exportserver'}= clean_blank($1);
         }
         elsif ($parametro =~ m/^servername\s(.*)/i) { 
@@ -339,28 +336,25 @@ sub pandora_loadconfig {
         elsif ($parametro =~ m/^master\s([0-9])/i) { 
 	        $pa_config->{"pandora_master"} = clean_blank($1); 
         }
-        elsif ($parametro =~ m/^icmp_checks\s([0-9])/i) { 
+        elsif ($parametro =~ m/^icmp_checks\s([0-9]*)/i) { 
 	        $pa_config->{"icmp_checks"} = clean_blank($1); 
         }
         elsif ($parametro =~ m/^snmpconsole\s([0-9])/i) {
 	        $pa_config->{"snmpconsole"} = clean_blank($1);
         }
-        elsif ($parametro =~ m/^alert_recovery\s([0-9])/i) {
-	        $pa_config->{"alert_recovery"} = clean_blank($1);
-        }
-        elsif ($parametro =~ m/^snmp_checks\s([0-9])/i) {
+        elsif ($parametro =~ m/^snmp_checks\s([0-9]*)/i) {
             $pa_config->{"snmp_checks"} = clean_blank($1);
         }
-        elsif ($parametro =~ m/^snmp_timeout\s([0-9])/i) {
+        elsif ($parametro =~ m/^snmp_timeout\s([0-9]*)/i) {
             $pa_config->{"snmp_timeout"} = clean_blank($1);
         }
-        elsif ($parametro =~ m/^tcp_checks\s([0-9])/i) {
+        elsif ($parametro =~ m/^tcp_checks\s([0-9]*)/i) {
             $pa_config->{"tcp_checks"} = clean_blank($1);
         }
-        elsif ($parametro =~ m/^tcp_timeout\s([0-9])/i) {
+        elsif ($parametro =~ m/^tcp_timeout\s([0-9]*)/i) {
             $pa_config->{"tcp_timeout"} = clean_blank($1);
         }
-        elsif ($parametro =~ m/^snmp_proc_deadresponse\s([0-9]*)/i) { 
+        elsif ($parametro =~ m/^snmp_proc_deadresponse\s([0-9])/i) { 
             $pa_config->{"snmp_proc_deadresponse"} = clean_blank($1);
         }
         elsif ($parametro =~ m/^verbosity\s([0-9]*)/i) {

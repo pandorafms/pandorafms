@@ -39,7 +39,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "2.1-dev";
-my $pandora_build="PS081030";
+my $pandora_build="PS081109";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -246,6 +246,7 @@ sub pandora_loadconfig {
  
  	for ($ax=0;$ax<=$ltotal;$ax++){
   		$parametro = $args[$ax];
+
 		if ($parametro =~ m/^incomingdir\s(.*)/i) {  
 			$tbuf= clean_blank($1); 
 			if ($tbuf =~ m/^\.(.*)/){
@@ -254,16 +255,18 @@ sub pandora_loadconfig {
 				$pa_config->{"incomingdir"} = $tbuf;
 			}
 		}
+
 		elsif ($parametro =~ m/^log_file\s(.*)/i) { 
-            $tbuf= clean_blank($1);	
+			$tbuf= clean_blank($1);	
 			if ($tbuf =~ m/^\.(.*)/){
 				$pa_config->{"logfile"} = $pa_config->{"basepath"}.$1;
 			} else {
 				$pa_config->{"logfile"} = $tbuf;
 			}
 		}
-  		elsif ($parametro =~ m/^errorlog_file\s(.*)/i) { 
-            $tbuf= clean_blank($1); 	
+
+		elsif ($parametro =~ m/^errorlog_file\s(.*)/i) { 
+			$tbuf= clean_blank($1); 	
 			if ($tbuf =~ m/^\.(.*)/){
 				$pa_config->{"errorlogfile"} = $pa_config->{"basepath"}.$1;
 			} else {
@@ -341,25 +344,25 @@ sub pandora_loadconfig {
         elsif ($parametro =~ m/^master\s([0-9])/i) { 
 	        $pa_config->{"pandora_master"} = clean_blank($1); 
         }
-        elsif ($parametro =~ m/^icmp_checks\s([0-9])/i) { 
+        elsif ($parametro =~ m/^icmp_checks\s([0-9]*)/i) { 
 	        $pa_config->{"icmp_checks"} = clean_blank($1); 
         }
-        elsif ($parametro =~ m/^snmpconsole\s([0-9])/i) {
+        elsif ($parametro =~ m/^snmpconsole\s([0-9]*)/i) {
 	        $pa_config->{"snmpconsole"} = clean_blank($1);
         }
-        elsif ($parametro =~ m/^alert_recovery\s([0-9])/i) {
+        elsif ($parametro =~ m/^alert_recovery\s([0-9]*)/i) {
 	        $pa_config->{"alert_recovery"} = clean_blank($1);
         }
-        elsif ($parametro =~ m/^snmp_checks\s([0-9])/i) {
+        elsif ($parametro =~ m/^snmp_checks\s([0-9]*)/i) {
             $pa_config->{"snmp_checks"} = clean_blank($1);
         }
-        elsif ($parametro =~ m/^snmp_timeout\s([0-9])/i) {
+        elsif ($parametro =~ m/^snmp_timeout\s([0-9]*)/i) {
             $pa_config->{"snmp_timeout"} = clean_blank($1);
         }
-        elsif ($parametro =~ m/^tcp_checks\s([0-9])/i) {
+        elsif ($parametro =~ m/^tcp_checks\s([0-9]*)/i) {
             $pa_config->{"tcp_checks"} = clean_blank($1);
         }
-        elsif ($parametro =~ m/^tcp_timeout\s([0-9])/i) {
+        elsif ($parametro =~ m/^tcp_timeout\s([0-9]*)/i) {
             $pa_config->{"tcp_timeout"} = clean_blank($1);
         }
         elsif ($parametro =~ m/^snmp_proc_deadresponse\s([0-9]*)/i) { 

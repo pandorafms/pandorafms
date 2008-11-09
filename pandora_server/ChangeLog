@@ -1,3 +1,8 @@
+2008-11-08  Sancho Lerena <slerena@gmail.com>
+
+        * Config.pm: Fixed bug parsing config options with more
+        than 2 digits. Thanks to Glen Eustace.
+
 2008-11-07  Sancho Lerena <slerena@artica.es>
 
         * bin/pandora_server: Fixed an important problem detected

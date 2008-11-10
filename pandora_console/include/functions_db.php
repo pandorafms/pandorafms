@@ -2341,9 +2341,6 @@ function delete_agent ($id_agents) {
 		temp_sql_delete ("talerta_agente_modulo", "id_agente_modulo", $tmodbase);
 		temp_sql_delete ("talerta_agente_modulo", "id_agent", $id_agent);
         
-		//Data image
-		temp_sql_delete ("tagent_data_image", "id_agent", $id_agent);
-                
 		//Events (up/down monitors)
 		temp_sql_delete ("tevento", "id_agente", $id_agent);
 

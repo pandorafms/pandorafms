@@ -89,7 +89,7 @@ if ((isset ($_GET["action"])) AND ($_GET["action"] == "update")) {
 
 // INSERT incident
 if ((isset ($_GET["action"])) AND ($_GET["action"] == "insert")) {
-	$grupo = get_parameter_post ("grupo_form");
+	$grupo = get_parameter_post ("grupo_form", 1);
 	if (give_acl ($config['id_user'], $grupo, "IM")) {
 		// Read input variables
 		$titulo = get_parameter_post ("titulo"); 
@@ -98,8 +98,7 @@ if ((isset ($_GET["action"])) AND ($_GET["action"] == "insert")) {
 		$prioridad = get_parameter_post ("prioridad_form");
 		$id_creator = $config['id_user'];
 		$estado = get_parameter_post ("estado_form");
-		$sql = sprintf ("INSERT INTO tincidencia (inicio,actualizacion,titulo,descripcion,id_usuario,origen,estado,prioridad,id_grupo,id_creator) VALUES 
-			(NOW(), NOW(), '%s', '%s', '%s', '%s', %d, %d, '%s')".$titulo,$descripcion,$config["id_user"],$origen,$estado,$prioridad,$grupo,$config["id_user"]);
+		$sql = sprintf ("INSERT INTO tincidencia (inicio, actualizacion, titulo, descripcion, id_usuario, origen, estado, prioridad, id_grupo, id_creator) VALUES (NOW(), NOW(), '%s', '%s', '%s', '%s', %d, %d, '%s', '%s')", $titulo, $descripcion, $config["id_user"], $origen, $estado, $prioridad, $grupo, $config["id_user"]);
 		$id_inc = process_sql ($sql, "insert_id");
 
 		if ($id_inc === false) {
@@ -226,6 +225,8 @@ if ($count < 1) {
 } else {
 	// TOTAL incidents
 	$url = "index.php?sec=incidencias&sec2=operation/incidents/incident";
+
+	$estado = -1;
 
 	// add form filter values for group, priority, state, and search fields: user and text
 	if ($grupo != -1)

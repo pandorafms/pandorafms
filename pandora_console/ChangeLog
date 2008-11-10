@@ -1,3 +1,10 @@
+2008-11-10  Sancho Lerena <slerena@artica.es>
+
+        * include/funcions_db.php: Reference to inexistant table
+        tagent_data_image has been deleted and fixed notice.
+
+	* install.php: Fixed default var for homeurl.
+
 2008-11-08  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/reporting/reporting_builder.php: Fixed a notice using

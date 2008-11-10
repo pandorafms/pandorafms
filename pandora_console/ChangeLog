@@ -1,5 +1,11 @@
 2008-11-10  Sancho Lerena <slerena@artica.es>
 
+	* operation/incidents/incident.php
+	operation/incidents/incident_detail.php: Fixed some bugs in
+	incident management that makes unusable the incident sytem
+	Thanks to Esben for reporting this bug that was introduced
+	only few days before closing 2.0 version :( 
+
         * include/funcions_db.php: Reference to inexistant table
         tagent_data_image has been deleted and fixed notice.
 

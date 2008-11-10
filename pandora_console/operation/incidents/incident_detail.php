@@ -30,6 +30,9 @@ if (! give_acl ($config["id_user"], 0, "IR")) {
 	exit;
 }
 
+$inicio = date('Y-m-d H:i:s');
+$actualizacion = date('Y-m-d H:i:s');
+
 // EDITION MODE
 if (isset ($_GET["id"])) {
 	$id_inc = get_parameter_get ("id");
@@ -270,9 +273,9 @@ foreach ($return as $row) {
 
 // Only owner could change source or user with Incident management privileges
 if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
-	print_select ($fields, "estado_form", $estado, '', '', '', false, false, false, 'w135');
+	print_select ($fields, "origen_form", $estado, '', '', '', false, false, false, 'w135');
 } else {
-	print_select ($fields, "estado_form", $estado, '', '', '', false, false, false, 'w135', true);
+	print_select ($fields, "origen_form", $estado, '', '', '', false, false, false, 'w135', true);
 }
 echo '</td><td class="datos2"><b>'.__('Group').'</b></td><td class="datos2">';
 
@@ -325,44 +328,46 @@ if (isset ($id_inc) AND (give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR
 	print_submit_button (__('Submit'), "accion", true, 'class="sub upd"');
 }
 echo "</div></form>";
-echo '<div>';
-print_submit_button (__('Add note'), "note_control", false, 'class="sub next"');
-echo '</div><div>';
-echo '<form id="add_note" name="nota" method="POST" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&insertar_nota=1&id='.$id_inc.'">';
-echo '<table cellpadding="4" cellspacing="4" class="databox" width="600px">
-	<tr><td class="datos2"><textarea name="nota" rows="5" cols="70" style="height: 100px;"></textarea></td>
-	<td valign="bottom"><input name="addnote" type="submit" class="sub wand" value="'.__('Add').'"></td></tr>
-	</table></form></div><div>';
-
-// ********************************************************************
-// Notes 
-// ********************************************************************
 
 if (isset ($id_inc)) {
-	$sql = sprintf ("SELECT tnota.* FROM tnota, tnota_inc WHERE tnota_inc.id_incidencia = '%d' AND tnota.id_nota = tnota_inc.id_nota",$id_inc);
-	$result = get_db_all_rows_sql ($sql);
-} else {
-	$result = array ();
-}
+	echo '<div>';
+	print_submit_button (__('Add note'), "note_control", false, 'class="sub next"');
+	echo '</div><div>';
+	echo '<form id="add_note" name="nota" method="POST" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&insertar_nota=1&id='.$id_inc.'">';
+	echo '<table cellpadding="4" cellspacing="4" class="databox" width="600px">
+		<tr><td class="datos2"><textarea name="nota" rows="5" cols="70" style="height: 100px;"></textarea></td>
+		<td valign="bottom"><input name="addnote" type="submit" class="sub wand" value="'.__('Add').'"></td></tr>
+		</table></form></div><div>';
 
-if (empty ($result)) {
-	$result = array ();
-} else {
-	echo "<h3>".__('Notes attached to incident').'<h3>';
-}
+	// ********************************************************************
+	// Notes 
+	// ********************************************************************
 
-echo '<table cellpadding="4" cellspacing="4" class="databox" width="600px">';
-foreach ($result as $row) {
-	echo '<tr><td><img src="images/page_white_text.png" border="0"></td>';
-	echo '<td>'.__('Author').': <a href="index.php?sec=usuario&sec2=operation/users/user_edit&ver='.$row["id_usuario"].'">'.dame_nombre_real ($row["id_usuario"]).'</a> ('.date ($config['date_format'],strtotime ($row["timestamp"])).')</td></tr>';
-	echo '<tr><td>';
-	if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($row["id_usuario"] == $config["id_user"])) {
-		echo '<a href="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'&id_nota='.$row["id_nota"].'"><img src="images/cross.png" border="0"></a>';
+	if (isset ($id_inc)) {
+		$sql = sprintf ("SELECT tnota.* FROM tnota, tnota_inc WHERE tnota_inc.id_incidencia = '%d' AND tnota.id_nota = tnota_inc.id_nota",$id_inc);
+		$result = get_db_all_rows_sql ($sql);
+	} else {
+		$result = array ();
 	}
-	echo '</td><td>'.safe_input ($row["nota"]).'</td></tr>';
-}
-echo '</table>';
 
+	if (empty ($result)) {
+		$result = array ();
+	} else {
+		echo "<h3>".__('Notes attached to incident').'<h3>';
+	}
+
+	echo '<table cellpadding="4" cellspacing="4" class="databox" width="600px">';
+	foreach ($result as $row) {
+		echo '<tr><td><img src="images/page_white_text.png" border="0"></td>';
+		echo '<td>'.__('Author').': <a href="index.php?sec=usuario&sec2=operation/users/user_edit&ver='.$row["id_usuario"].'">'.dame_nombre_real ($row["id_usuario"]).'</a> ('.date ($config['date_format'],strtotime ($row["timestamp"])).')</td></tr>';
+		echo '<tr><td>';
+		if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($row["id_usuario"] == $config["id_user"])) {
+			echo '<a href="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'&id_nota='.$row["id_nota"].'"><img src="images/cross.png" border="0"></a>';
+		}
+		echo '</td><td>'.safe_input ($row["nota"]).'</td></tr>';
+	}
+	echo '</table>';
+}
 
 // ************************************************************
 // Files attached to this incident
@@ -417,8 +422,9 @@ unset ($table);
 // Upload control
 // ************************************************************
 
+
 // Upload control
-if (give_acl($config["id_user"], $id_grupo, "IW")==1){
+if ((give_acl($config["id_user"], $id_grupo, "IW")==1) AND (isset ($id_inc))) {
 	echo '<div>';
 	print_submit_button (__('Add attachment'), "attachment", false, 'class="sub next"');
 	echo '</div>';

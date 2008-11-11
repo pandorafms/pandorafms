@@ -1,3 +1,8 @@
+2008-11-11  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* include/languages/es.po, include/languages/index.pot,
+	  include/languages/es.mo: Updated Spanish translation and template.
+
 2008-11-10  Sancho Lerena <slerena@artica.es>
 
 	* operation/incidents/incident.php

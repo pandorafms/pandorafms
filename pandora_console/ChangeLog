@@ -1,3 +1,11 @@
+2008-11-11  Sancho Lerena <slerena@artica.es>
+
+	* extensions/update_manager/lib/libupdate_manager_client.php:
+	Connection XML/RPC timeout incremented to 10.
+
+	* godmode/agentes/agent_disk_conf_editor.php: Warning for
+	usage of enterprise feature without have enterprise version.
+
 2008-11-10  Sancho Lerena <slerena@artica.es>
 
 	* operation/incidents/incident.php

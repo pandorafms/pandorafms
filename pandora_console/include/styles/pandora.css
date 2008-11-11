@@ -306,9 +306,6 @@ td.datos3 {
 td.datos_id {
 	color: #1a313a;
 }
-td.datos_jus, td.datos2_jus {
-	text-align: justify;
-}
 .bg { /* op menu */
 	background-color: #786;
 }
@@ -335,10 +332,6 @@ td.datos_jus, td.datos2_jus {
 }
 .f9i, .redi {
 	font-style: italic;
-}
-.jus {
-	text-align: justify;
-	width: 700px;
 }
 .tit {
 	padding-top: 3px;
@@ -730,15 +723,9 @@ div#main_pure {
 	padding: 20px;
 }
 
-
-td.big_data {
-	font-size: 2em;
-	font-weight: bold;
-}
-
+/* big_data is used in tactical and logon_ok */
 a.big_data {
-	text-decoration: none; font: bold 1em Arial, Sans-serif;
-	color: #000;
+	text-decoration: none; font: bold 2em Arial, Sans-serif;
 }
 
 .notify {

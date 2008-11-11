@@ -2186,90 +2186,16 @@ function smal_event_table ($filter = "", $limit = 10, $width = 440) {
 
 
 /** 
+ * *DEPRECATED* use get_server_info instead 
  * Get statistical information for a given server
- * 
+ *
  * @param id_server 
  *
- * @return : Serverifo array with following keys:
- 	type 		- Type of server (descriptive)
- 	modules		- Modules running on this server
-	module_lag	- Number of modules of time
-	lag		- Lag time in sec
+ * @return : Serverinfo array
 */
 function server_status ($id_server) {
-	$server = get_db_row_sql ( "SELECT * FROM tserver WHERE id_server = $id_server" );
-	$serverinfo = array();
-	
-	if ($server["network_server"] == 1)
-		$serverinfo["type"] = "network";
-	elseif ($server["data_server"] == 1)
-		$serverinfo["type"] = "data";
-	elseif ($server["plugin_server"] == 1)
-		$serverinfo["type"] = "plugin";
-	elseif ($server["wmi_server"] == 1)
-		$serverinfo["type"] = "wmi";
-	elseif ($server["recon_server"] == 1)
-		$serverinfo["type"] = "recon";
-	elseif ($server["snmp_server"] == 1)
-		$serverinfo["type"] = "snmp";
-	elseif ($server["prediction_server"] == 1)
-		$serverinfo["type"] = "prediction";
-	
-	// Get type of modules that runs this server
-	$sql = sprintf ("SELECT DISTINCT(id_modulo) 
-			FROM tagente_estado, tagente_modulo
-			WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-			AND tagente_modulo.disabled = 0
-			AND tagente_estado.running_by = %d
-			ORDER BY tagente_modulo.id_agente_modulo",
-			$id_server);
-	$moduletype = get_db_all_rows_sql ($sql);
-	if ($moduletype) {
-		$serverinfo["modules"] = get_db_sql ("SELECT COUNT(*)
-						FROM tagente_estado, tagente_modulo
-						WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
-						AND tagente_modulo.disabled = 0
-						AND tagente_estado.running_by = $id_server");
-
-		$serverinfo["module_lag"] = get_db_sql ("SELECT COUNT(*)
-						FROM tagente_estado, tagente_modulo, tagente
-						WHERE tagente_estado.last_execution_try > 0
-						AND tagente_estado.running_by = $id_server
-						AND tagente_modulo.id_agente = tagente.id_agente
-						AND tagente.disabled = 0
-						AND tagente_modulo.disabled = 0
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND (UNIX_TIMESTAMP() - tagente_estado.last_execution_try - tagente_estado.current_interval < 1200)");
-
-		// Lag over 1200 seconds is not lag, is module without contacting data in several time.or with a 
-		// 1200 sec is 20 min
-		$serverinfo["lag"] = get_db_sql ("SELECT MAX(tagente_estado.last_execution_try - tagente_estado.current_interval)
-						FROM tagente_estado, tagente_modulo, tagente
-						WHERE tagente_estado.last_execution_try > 0
-						AND tagente_estado.running_by = $id_server
-						AND tagente_modulo.id_agente = tagente.id_agente
-						AND tagente.disabled = 0
-						AND tagente_modulo.disabled = 0
-						AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-						AND (UNIX_TIMESTAMP() - tagente_estado.last_execution_try - tagente_estado.current_interval < 1200)");
-
-		if ($serverinfo["lag"] == "")
-			$serverinfo["lag"] = 0;
-		else
-			$serverinfo["lag"] = $serverinfo["lag"] ;
-	} else {
-		$serverinfo["modules_total"] = 0;
-		$serverinfo["modules"] = 0;
-		$serverinfo["module_lag"] = 0;
-		$serverinfo["lag"] = 0;
-	}
-
-	$nowtime = time();		
-	if ($serverinfo["lag"] != 0){
-		$serverinfo["lag"] = $nowtime - $serverinfo["lag"];
-	}
-	
-	return $serverinfo;
+	$serverinfo = get_server_info ($id_server);
+	return $serverinfo[$id_server];
 }
 
 /*
@@ -2375,5 +2301,98 @@ function delete_agent ($id_agents) {
 		process_sql ("SET AUTOCOMMIT = 1;");
 		return true;
 	}
+}
+
+/**
+ * This function will get all the server information in an array or a specific server
+ *
+ * @param $id_server: An optional integer or array of integers to select specific servers
+ *
+ * @return false in case the server doesn't exist or an array with info 
+ *
+**/
+function get_server_info ($id_server = -1) {
+	if (is_array ($id_server)) {
+		$select_id = " WHERE id_server IN (".implode (",", $id_server).")";
+	} elseif ($id_server > 0) {
+		$select_id = " WHERE id_server IN (".(int) $id_server.")";
+	} else {
+		$select_id = "";
+	}
+	
+	$sql = "SELECT * FROM tserver".$select_id;
+	$result = get_db_all_rows_sql ($sql);
+	
+	if (empty ($result)) {
+		return false;
+	}
+	
+	$return = array ();
+	foreach ($result as $server) {
+		if ($server["network_server"] == 1) {
+			$server["type"] = "network";
+		} elseif ($server["data_server"] == 1) {
+			$server["type"] = "data";
+		} elseif ($server["plugin_server"] == 1) {
+			$server["type"] = "plugin";
+		} elseif ($server["wmi_server"] == 1) {
+			$server["type"] = "wmi";
+		} elseif ($server["recon_server"] == 1) {
+			$server["type"] = "recon";
+		} elseif ($server["snmp_server"] == 1) {
+			$server["type"] = "snmp";
+		} elseif ($server["prediction_server"] == 1) {
+			$server["type"] = "prediction";
+		} else {
+			$server["type"] = "unknown";
+		}
+		
+		$server["modules"] = get_db_sql ("SELECT COUNT(*) FROM tagente_estado, tagente_modulo 
+										 WHERE tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo
+										 AND tagente_modulo.disabled = 0
+										 AND tagente_estado.running_by = ".$server["id_server"]);
+			
+		$server["module_lag"] = get_db_sql ("SELECT COUNT(*) FROM tagente_estado, tagente_modulo, tagente
+											WHERE tagente_estado.last_execution_try > 0
+											AND tagente_estado.running_by = ".$server["id_server"]."
+											AND tagente_modulo.id_agente = tagente.id_agente
+											AND tagente.disabled = 0
+											AND tagente_modulo.disabled = 0
+											AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+											AND (UNIX_TIMESTAMP() - tagente_estado.last_execution_try - tagente_estado.current_interval < 1200)");
+			
+		// Lag over 1200 seconds is not lag, is module without contacting data in several time.or with a 
+		// 1200 sec is 20 min
+		$server["lag"] = get_db_sql ("SELECT MAX(tagente_estado.last_execution_try - tagente_estado.current_interval)
+										 FROM tagente_estado, tagente_modulo, tagente
+										 WHERE tagente_estado.last_execution_try > 0
+										 AND tagente_estado.running_by = ".$server["id_server"]."
+										 AND tagente_modulo.id_agente = tagente.id_agente
+										 AND tagente.disabled = 0
+										 AND tagente_modulo.disabled = 0
+										 AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+										 AND (UNIX_TIMESTAMP() - tagente_estado.last_execution_try - tagente_estado.current_interval < 1200)");
+			
+		if (empty ($server["lag"])) {
+			$server["lag"] = 0;
+		} else {
+			$server["lag"] = time () - $server["lag"];
+		}
+		
+		//Push the raw data on the return stack
+		$return[$server["id_server"]] = $server;	
+	}
+	return $return;
+}
+
+/**
+ * This function will return the number of all agent modules in the database
+ *
+ * @return integer with the number of agent modules
+ *
+ * TODO: Filter? Implement when necessary
+ **/
+function get_agentmodule_count () {
+	return (int) get_db_sql ("SELECT COUNT(*) FROM tagente_modulo");
 }
 ?>

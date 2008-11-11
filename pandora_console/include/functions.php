@@ -90,18 +90,6 @@ function salida_limpia ($string) {
 }
 
 /** 
- * Replace all \n characters with <br /> to show line breaks in HTML code.
- * 
- * @param string String to replace the characters
- * 
- * @return The string with the characters replaced.
- */
-function clean_output_breaks ($string){
-	$myoutput = salida_limpia ($string);
-	return preg_replace ('/\n/',"<br />", $myoutput);
-}
-
-/** 
  * Cleans a string to be shown in a graphic.
  * 
  * @param string String to be cleaned

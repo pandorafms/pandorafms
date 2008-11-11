@@ -18,7 +18,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
-require ("include/config.php");
+require_once ("include/config.php");
 
 check_login ();
 
@@ -29,274 +29,224 @@ if (give_acl ($config['id_user'], 0, "AR") != 1) {
 	exit;
 }
 
-require ("include/functions_reporting.php");
-echo "<h2>".__('Pandora Agents')." &gt; ";
-echo __('Tactical view')."</h2>";
+require_once ("include/functions_reporting.php");
 
-$data = general_stats ($config['id_user'],-1);
-$monitor_checks = $data[0];
-$monitor_ok = $data[1];
-
-$monitor_bad = $data[2];
-$monitor_unknown = $data[3];
-$monitor_alert = $data[4];
-$total_agents = $data[5];
-$data_checks = $data[6];
-$data_unknown = $data[7];
-$data_alert = $data[8];
-$data_alert_total = $data[9];
-$monitor_alert_total = $data[10];
-$data_not_init = $data[11];
-$monitor_not_init = $data[12];
-
-// Calculate global indicators
-
-$total_checks = $data_checks + $monitor_checks;
-if($total_checks != 0){
-	$notinit_percentage = (($data_not_init + $monitor_not_init) / ($total_checks / 100));
-} else {
-	$notinit_percentage = 0;
+//This is an intermediary function to print out a set of cells
+//Cells is an array with the explanation, value, link and color
+function print_cells_temp ($cells) {
+	foreach ($cells as $key => $row) {
+		//Switch class around
+		$class = (($key % 2) ? "datos2" : "datos");
+		echo '<tr><td class="'.$class.'"><b>'.$row[0].'</b></td>';
+		if ($row[1] === 0) {
+			$row[1] = "-";
+		}
+		echo '<td class="'.$class.'" style="text-align:right;"><a class="big_data" href="'.$row["href"].'" style="color: '.$row["color"].';">'.$row[1].'</a></td></tr>';
+	}	
 }
-$module_sanity = format_numeric (100 - $notinit_percentage);
-$total_alerts = $data_alert + $monitor_alert;
-$total_fired_alerts = $monitor_alert_total+$data_alert_total;
-if ($total_fired_alerts > 0)
-	$alert_level = format_numeric (100 - ($total_alerts / ($total_fired_alerts / 100)));
-else
-	$alert_level  = 100;
 
-if ($monitor_checks > 0){
-	$monitor_health = format_numeric (  100- (($monitor_bad + $monitor_unknown) / ($monitor_checks/100)) , 1);
-} else 
-	$monitor_health = 100;
-if ($data_checks > 0){
-	$data_health = format_numeric ( (($data_checks -($data_unknown + $data_alert)) / $data_checks ) * 100,1);;
-} else
-	$data_health = 100;
-if ($data_health < 0)
-	$data_health =0;
-if (($data_checks != 0) OR ($data_checks != 0)){
-	$global_health = format_numeric ((($data_health * $data_checks) + ($monitor_health * $monitor_checks)) / $total_checks);
-} else
-	$global_health = 100;
 
-if ($global_health < 0)
-	$global_health;
+echo "<h2>".__('Pandora Agents')." &gt; ".__('Tactical view')."</h2>";
 
+$data = get_group_stats (0);
+
+echo '<div style="width:265px; float:left;  padding-right: 40px;" id="leftcolumn">';
 // Monitor checks
-// ~~~~~~~~~~~~~~~
-echo "<table width=770 border=0>";
-echo "<tr><td valign=top>";
-echo "<table class='databox' celldpadding=4 cellspacing=4 width=250>";
 
-// Summary
+$table->width = "100%";
+$table->class = "databox";
+$table->cellpadding = 0;
+$table->cellspacing = 0;
+$table->border = 0;
+$table->head = array ();
+$table->data = array ();
+$table->style = array ();
 
-echo "<tr><td colspan='2'><b>".__('Monitor health')."</th>";
-echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$monitor_health' title='$monitor_health % ".__('of monitors UP')."'>";
-echo "<tr><td colspan='2'><b>".__('Data health')."</th>";
-echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$data_health' title='$data_health % ".__('of modules with updated data')."'>";
-echo "<tr><td colspan='2'><b>".__('Global health')."</th>";
-echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$global_health' title='$global_health % ".__('of modules with good data')."'>";
-echo "<tr><td colspan='2'><b>".__('Module sanity')."</th>";
-echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$module_sanity ' title='$module_sanity % ".__('of well initialized modules')."'>";
-echo "<tr><td colspan='2'><b>".__('Alert level')."</th>";
-echo "<tr><td colspan='2'><img src='reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent=$alert_level' title='$alert_level % ".__('of non-fired alerts')."'>";
-echo "<br><br>";
+$table->style[0] = "padding-top:4px; padding-bottom:4px;";
+$table->data[0][0] ='<b>'.__('Monitor health').'</b>';
 
-// Monitor checks
-echo "<tr>";
-echo "<th colspan=2>".__('Monitor checks')."</th>";
-echo "<tr><td class=datos2><b>".__('Monitor checks')."</b></td>";
-echo "<td style='font: bold 2em Arial;' class='datos2'>";
-echo "<a class='big_data' href='index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=-1'>";
-echo $monitor_checks."</A></td>";
+$table->style[1] = "padding-top:4px; padding-bottom:4px;";
+$table->data[1][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent='.$data["monitor_health"].'" title="'.$data["monitor_health"].'% '.__('of monitors up').'" />';
 
-// Monitor OK
-echo "<tr><td class=datos><b>".__('Monitor OK')."</b></td>";
-echo "<td style='font: bold 2em Arial' class='datos'>";
-echo "<a style='color:#0f0;' class='big_data' href='index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=1'>";
-if ($monitor_ok > 0)
-	echo $monitor_ok;
-else
-	echo "-";
-echo "</A>";
+$table->style[2] = "padding-top:4px; padding-bottom:4px;";
+$table->data[2][0] = '<b>'.__('Data health').'</b>';
 
-// Monitor BAD
-echo "<tr><td class=datos2><b>".__('Monitor BAD')."</b></td>";
-echo "<td class='datos2' style='font: bold 2em Arial' >";
-echo "<a style='color:#f00;' class='big_data'  href='index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=0'>";
-if ($monitor_bad > 0)
-	echo $monitor_bad;
-else
-	echo "-";
-echo "</A>";
+$table->style[3] = "padding-top:4px; padding-bottom:4px;";
+$table->data[3][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent='.$data["data_health"].'" title="'.$data["data_health"].'% '.__('of data modules up').'" />';
 
-echo "</td></tr>";
+$table->style[4] = "padding-top:4px; padding-bottom:4px;";
+$table->data[4][0] = '<b>'.__('Global health').'</b>';
 
-// Monitor unknown
-echo "<tr><td class=datos>";
-echo "<b>".__('Monitor Unknown')."</b></td>";
-echo "<td class='datos' style='font: bold 2em Arial' >";
-echo "<a style='color:#aaa;' class='big_data'  href='index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=2'>";
-if ($monitor_unknown > 0)
-	echo $monitor_unknown;
-else
-	echo "-";
-echo "</A>";
+$table->style[5] = "padding-top:4px; padding-bottom:4px;";
+$table->data[5][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent='.$data["global_health"].'" title="'.$data["global_health"].'% '.__('of total modules up').'" />';
+	
+$table->style[6] = "padding-top:4px; padding-bottom:4px;";
+$table->data[6][0] = '<b>'.__('Module sanity').'</b>';
 
-echo "</td></tr><tr><td class=datos2><b>".__('Monitor Not Init')."</b></td>";
-echo "<td class=datos2 style='font: bold 2em Arial, Sans-serif; color: #FF8C00;'>";
-if ($monitor_not_init> 0)
-	echo $monitor_not_init;
-else
-	echo "-";
+$table->style[7] = "padding-top:4px; padding-bottom:4px;";
+$table->data[7][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent='.$data["module_sanity"].'" title="'.$data["module_sanity"].'% '.__('of total modules inited').'" />';
 
-echo "<tr><td class=datos><b>".__('Alerts Fired')."</b></td>";
-echo "<td class=datos style='font: bold 2em Arial'>";
-echo "<a style=color:#f00' class='big_data'  href='index.php?sec=eventos&sec2=operation/events/events&search=&event_type=alert_fired'>";
-if ($monitor_alert > 0)
-	echo $monitor_alert;
-else
-	echo "-";
-echo "</A>";
-echo "<tr><td class=datos2><b>".__('Alerts Total')."</b></td>";
-echo "<td class=datos2 style='font: bold 2em Arial'>".$monitor_alert_total;
+$table->style[8] = "padding-top:4px; padding-bottom:4px;";
+$table->data[8][0] = '<b>'.__('Alert level').'</b>';
 
+$table->style[9] = "padding-top:4px; padding-bottom:4px;";
+$table->data[9][0] = '<img src="reporting/fgraph.php?tipo=progress&height=20&width=260&mode=0&percent='.$data["alert_level"].'" title="'.$data["alert_level"].'% '.__('of defined alerts not fired').'" />';
+	
+print_table ($table);
+unset ($table);
 
-// Data checks
-// ~~~~~~~~~~~~~~~
+echo '<table class="databox" cellpadding="4" cellspacing="4" style="width:100%;">';
+echo '<tr><th colspan="2">'.__('Monitor checks').'</th></tr>';
+	
+$cells = array ();
+$cells[0][0] = __('Monitor checks');
+$cells[0][1] = $data["monitor_checks"];
+$cells[0]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=-1"; //All
+$cells[0]["color"] = "#000";
 
-echo "<tr><th colspan=2>".__('Data Checks')."</th>";
-echo "<tr><td class=datos2><b>".__('Data Checks')."</b></td>";
-echo "<td class=datos2 style='font: bold 2em Arial'>".$data_checks;
-echo "<tr><td class=datos><b>".__('Data Unknown')."</b></td>";
-echo "<td class=datos style='font: bold 2em Arial; color: #aaa;'>";
-if ($data_unknown > 0)
-	echo $data_unknown;
-else
-	echo "-";
-echo "<tr><td class=datos2><b>".__('Data Not Init')."</b></td>";
-echo "<td class=datos2 style='font: bold 2em Arial'>";
-if ($data_not_init > 0)
-	echo $data_not_init;
-else
-	echo "-";
-echo "<tr><td class=datos><b>".__('Alerts Fired')."</b></td>";
+$cells[1][0] = __('Monitors good');
+$cells[1][1] = $data["monitor_ok"];
+$cells[1]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=1"; //Up
+$cells[1]["color"] = "#000";
 
+$cells[2][0] = __('Monitors down');
+$cells[2][1] = $data["monitor_down"];
+$cells[2]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=0"; //Down
+$cells[2]["color"] = "#f00";
+	
+$cells[3][0] = __('Monitors unknown');
+$cells[3][1] = $data["monitor_unknown"];
+$cells[3]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=2"; //Unknown
+$cells[3]["color"] = "#C0C0C0";
 
-echo "<td class=datos style='font: bold 2em Arial'>";
-echo "<a style=color:#f00' class='big_data'  href='index.php?sec=eventos&sec2=operation/events/events&search=&event_type=alert_fired'>";
-if ($data_alert > 0)
-	echo $data_alert;
-else
-	echo "-";
-echo "</A>";
+$cells[4][0] = __('Monitors not init');
+$cells[4][1] = $data["monitor_not_init"];
+$cells[4]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=2"; //Unknown
+$cells[4]["color"] = "#f00";
 
-echo "<tr><td class=datos2><b>".__('Alerts Total');
-echo "<td class=datos2 style='font: bold 2em Arial'>".$data_alert_total;
+$cells[5][0] = __('Alerts defined');
+$cells[5][1] = $data["monitor_alerts"];
+$cells[5]["href"] = "index.php?sec=estado&sec2=operation/agentes/estado_alertas&refr=60"; //All alerts defined
+$cells[5]["color"] = "#000";
 
+$cells[6][0] = __('Alerts fired');
+$cells[6][1] = $data["monitor_alerts_fired"];
+$cells[6]["href"] = "index.php?sec=eventos&sec2=operation/events/events&search=&event_type=alert_fired"; //Fired alert events
+$cells[6]["color"] = "#f00";
 
-// Summary
-// ~~~~~~~~~~~~~~~
+print_cells_temp ($cells);
+	
+echo '<tr><th colspan="2">'.__('Data checks').'</th></tr>';
+	
+$cells = array ();
+$cells[0][0] = __('Data checks');
+$cells[0][1] = $data["data_checks"];
+$cells[0]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=-1"; //All
+$cells[0]["color"] = "#000";
+	
+$cells[1][0] = __('Data good');
+$cells[1][1] = $data["data_ok"];
+$cells[1]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=1"; //Up
+$cells[1]["color"] = "#000";
+	
+$cells[2][0] = __('Data down');
+$cells[2][1] = $data["data_down"];
+$cells[2]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=0"; //Down
+$cells[2]["color"] = "#f00";
+	
+$cells[3][0] = __('Data unknown');
+$cells[3][1] = $data["data_unknown"];
+$cells[3]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=2"; //Unknown
+$cells[3]["color"] = "#C0C0C0";
+	
+$cells[4][0] = __('Data not init');
+$cells[4][1] = $data["data_not_init"];
+$cells[4]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=2"; //Unknown
+$cells[4]["color"] = "#f00";
+	
+$cells[5][0] = __('Alerts defined');
+$cells[5][1] = $data["data_alerts"];
+$cells[5]["href"] = "index.php?sec=estado&sec2=operation/agentes/estado_alertas&refr=60"; //All alerts defined
+$cells[5]["color"] = "#000";
+	
+$cells[6][0] = __('Alerts fired');
+$cells[6][1] = $data["data_alerts_fired"];
+$cells[6]["href"] = "index.php?sec=eventos&sec2=operation/events/events&search=&event_type=alert_fired"; //Fired alert events
+$cells[6]["color"] = "#f00";
 
-echo "<tr><th colspan='2'>".__('Summary')."</th>";
-echo "<tr><td class='datos2'><b>".__('Total Agents')."</b></td>";
-echo "<td class='datos2' style='font: bold 2em Arial, Sans-serif;'>".$total_agents;
-echo "<tr><td class='datos'><b>".__('Total Checks')."</b></td>";
-echo "<td class='datos' style='font: bold 2em Arial, Sans-serif;'>".$total_checks;
+print_cells_temp ($cells);
+	
+echo '<tr><th colspan="2">'.__('Summary').'</th></tr>';
 
-echo "<tr><td class='datos2'><b>".__('Server Sanity')."</b></td>";
-echo "<td class='datos2' style='font: bold 1em Arial, Sans-serif;'>";
-echo format_numeric($notinit_percentage);
-echo "% ".__('Uninitialized modules');
+$cells = array ();
+$cells[0][0] = __('Total Agents');
+$cells[0][1] = $data["total_agents"];
+$cells[0]["color"] = "#000";
+$cells[0]["href"] = "index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60";
+
+$cells[1][0] = __('Total Checks');
+$cells[1][1] = $data["total_checks"];
+$cells[1]["color"] = "#000";
+$cells[1]["href"] = "index.php?sec=estado&sec2=operation/agentes/status_monitor&refr=60&status=-1";
+
+$cells[2][0] = __('Uninitialized modules');
+$cells[2][1] = $data["server_sanity"] . "%";
+$cells[2]["color"] = "#000";
+$cells[2]["href"] = "index.php?sec=estado_server&sec2=operation/servers/view_server&refr=60";
+
+print_cells_temp ($cells);
 
 echo "</table>";
+echo '</div>'; //Left column
 
-echo "<td valign='top'>";
+echo '<div style="width: 450px; float:left;" id="rightcolumn">';
 
 // Server information
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-$total_modules = (int) get_db_sql ("SELECT COUNT(*)
-				FROM tagente_modulo
-				WHERE tagente_modulo.disabled = 0");
 
-$sql='SELECT * FROM tserver';
-$result=mysql_query($sql);
-if (mysql_num_rows($result)){
-	echo "<table cellpadding='4' cellspacing='4' witdh='440' class='databox'>";
-	echo "<tr><th colspan=5>";
-	echo __('Tactical server information');
-	echo "<tr><td class='datos3'>".__('Name')."</th>";
-	echo "<td class='datos3'>".__('Status')."</th>";
-	echo "<td class='datos3'>".__('Load')."</th>";
-	echo "<td class='datos3'>".__('Modules')."</th>";
-	echo "<td class='datos3'>".__('LAG')."</th>";
-	$color=1;
-	while ($row=mysql_fetch_array($result)){
-		if ($color == 1){
-			$tdcolor = "datos";
-			$color = 0;
-			}
-		else {
-			$tdcolor = "datos2";
-			$color = 1;
-		}
-		$id_server = $row["id_server"];
-		$name = $row["name"];
-		$address = $row["ip_address"];
-		$status = $row["status"];
-		$laststart = $row["laststart"];
-		$keepalive = $row["keepalive"];
-		$network_server = $row["network_server"];
-		$data_server = $row["data_server"];
-		$snmp_server = $row["snmp_server"];
-		$recon_server = $row["recon_server"];
-		$master = $row["master"];
-		$checksum = $row["checksum"];
-		$description = $row["description"];
-		$version = $row["version"];
-		$modules_server = 0;
+echo '<table class="databox" cellpadding="4" cellspacing="4" style="width:100%;">';
+echo '<thead><tr><th colspan="4">'.__('Tactical server information').'</th></tr>';
+echo '<tr><th style="font-weight:none;">'.__('Name').'</th><th style="font-weight:none;">'.__('Status').'</th><th style="font-weight:none;">'.__('Load').'</th><th style="font-weight:none;">'.__('Lag').pandora_help ("serverlag", true).'</th></tr></thead><tbody>';
 
-		$serverinfo = server_status ($id_server);
+$serverinfo = get_server_info ();
+$total_modules = get_agentmodule_count ();
+$cells = array ();
 
-		// Name of server
-		echo "<tr><td class='$tdcolor'>";
-		echo $name;
+foreach ($serverinfo as $server_id => $server_info) {
+	$data = array ();
+	$data[0] = $server_info["name"];
 
-		// Status
-		echo "<td class='$tdcolor' align='middle'>";
-		if ($status ==0){
-			echo "<img src='images/pixel_red.png' width=20 height=20>";
-		} else {
-			echo "<img src='images/pixel_green.png' width=20 height=20>";
-		}
-		
-		// Load
-		echo "<td class='$tdcolor' align='middle'>";
-		if ($total_modules > 0)
-			$percentil = $serverinfo["modules"] / ($total_modules / 100);
-		else
-			$percentil = 0;
-		if ($percentil > 100)
-			$percentil = 100;
-		// Progress bar render
-
-		echo '<img src="reporting/fgraph.php?tipo=progress&percent='.$percentil.'&height=18&width=80">';
-
-		// Modules
-		echo "<td class='$tdcolor' align='middle'>";
-		echo $serverinfo["modules"] . " ".__('of')." ". $total_modules;
-
-		// Lag
-		echo "<td class='$tdcolor' align='middle'>";
-		echo human_time_description_raw ($serverinfo["lag"]) . " / ". $serverinfo["module_lag"];
+	if ($server_info["status"] == 0){
+		$data[1] = '<img src="images/pixel_red.png" width="20" height="20" />';
+	} else {
+		$data[1] = '<img src="images/pixel_green.png" width="20" height="20" />';
 	}
-	echo '</table>';
+	
+	
+	if ($server_info["modules"] > 0 && $total_modules > 0) {
+		$percent = $server_info["modules"] / ($total_modules / 100);
+	} else {
+		$percent = 0;
+	}
+	$data[2] = '<img src="reporting/fgraph.php?tipo=progress&percent='.$percent.'&height=18&width=80" title="'.$server_info["modules"]." ".__('of')." ".$total_modules.'" />';
 
-	// Event information
-	smal_event_table ("", 10, 440);
+	$data[3] = $server_info["lag"]." / ".$server_info["module_lag"];
+
+	array_push ($cells, $data);
 }
-echo "</table>";
 
+foreach ($cells as $key => $row) {
+	//Switch class around
+	$class = (($key % 2) ? "datos2" : "datos");
+	echo '<tr>
+		<td class="'.$class.'">'.$row[0].'</td>
+		<td class="'.$class.'" style="text-align:center;">'.$row[1].'</td>
+		<td class="'.$class.'" style="text-align:center;">'.$row[2].'</td>
+		<td class="'.$class.'" style="text-align:right;">'.$row[3].'</td>
+		</tr>';
+}
+echo '</tbody></table>';
 
+smal_event_table ("", 10, 450);
+
+echo '</div>';
 ?>

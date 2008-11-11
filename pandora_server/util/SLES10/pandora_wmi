@@ -1,0 +1,60 @@
+#!/bin/bash 
+
+# Pandora FMS WMI Server, startup script
+# Sancho Lerena, <slerena@gmail.com>
+# SLES 10 Version
+# v2.0 Build 081111
+
+# Configurable path and filenames
+PANDORA_HOME="/etc/pandora/pandora_server.conf"
+PANDORA_DAEMON=/usr/bin/pandora_wmi
+
+# Main script
+
+if [ ! -f $PANDORA_DAEMON ]
+then
+        echo "Pandora FMS WMI Server not found, please check setup and read manual"
+        exit
+fi
+
+case "$1" in
+  start)
+	PANDORA_PID=$(pidof -x $PANDORA_DAEMON)
+        if [ ! -z $PANDORA_PID ]
+	then
+			echo "Pandora FMS WMI Server is currently running on this machine with PID ($PANDORA_PID). Aborting now..."
+			exit 1
+	fi
+	
+	$PANDORA_DAEMON $PANDORA_HOME -D
+	sleep 1
+
+	PANDORA_PID=$(pidof -x $PANDORA_DAEMON)
+	if [ ! -z "$PANDORA_PID" ]
+	then
+		echo "Pandora FMS WMI Server is now running with PID $PANDORA_PID"
+	else
+		echo "Cannot start Pandora FMS WMI Server. Aborted."
+	fi
+        ;;
+  stop)
+	PANDORA_PID=$(pidof -x $PANDORA_DAEMON)
+	if [ -z "$PANDORA_PID" ]
+	then
+	   echo "Pandora FMS WMI Server is not running, cannot stop it."
+	   exit 1
+	else
+	   echo "Stopping Pandora FMS WMI Server"
+           kill $PANDORA_PID 
+	fi
+        ;;
+  force-reload|restart)
+        $0 stop
+	sleep 10
+        $0 start
+        ;;
+  *)
+        echo "Usage: pandora_network {start|stop|restart}"
+        exit 1
+esac
+

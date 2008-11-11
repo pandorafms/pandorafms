@@ -1,3 +1,8 @@
+2008-11-11  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/agentes/agent_disk_conf_editor.php: Fixed check of
+	  enterprise_include () return value.
+
 2008-11-11  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/languages/es.po, include/languages/index.pot,

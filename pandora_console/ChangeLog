@@ -1,7 +1,40 @@
+2008-11-11  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* operation/servers/view_server.php: Small language fix
+
+	* operation/agentes/tactical.php: Rewrite using new functions and
+	cleaner html. More understandable and outsourced calculations to
+	get_group_stats
+
+	* include/styles/pandora.css: Clean up CSS deprecated in other files
+
+	* include/javascript/pandora.js: Noticed a small style difference
+
+	* include/help/en/help_serverlag.php: Hopefully this makes server lag
+	somewhat more understandable (I didn't know what it was)
+
+	* include/functions_reporting.php: Renamed general_stats to
+	get_group_stats and made it accept arrays. Also added ACL check and
+	an easier output format. All calculations are now done here.
+
+	* include/functions_html.php: print_table would always reset
+	cellpaddings and cellspacing from 0 to 4. Fixed it
+
+	* include/functions_db.php: Deprecated server_status for
+	get_server_info. Added get_server_info which accepts single values or
+	arrays of servers to be checked.
+
+	* include/functions.php: Removed clean_output_breaks. Use built-in
+	function nl2br() for that instead. They're faster and cross-platform
+
+	* general/logon_ok.php: Same as tactical.php (both had to be updated)
+
+	* ChangeLog: Somebody started using spaces instead of tabs?
+
 2008-11-11  Sancho Lerena <slerena@artica.es>
 
-        * extensions/update_manager/lib/libupdate_manager_client.php:
-        Connection XML/RPC timeout incremented to 10.
+	* extensions/update_manager/lib/libupdate_manager_client.php:
+	Connection XML/RPC timeout incremented to 10.
 
 2008-11-11  Ramon Novoa  <rnovoa@artica.es>
 
@@ -21,8 +54,8 @@
 	Thanks to Esben for reporting this bug that was introduced
 	only few days before closing 2.0 version :( 
 
-        * include/funcions_db.php: Reference to inexistant table
-        tagent_data_image has been deleted and fixed notice.
+	* include/funcions_db.php: Reference to inexistant table
+	tagent_data_image has been deleted and fixed notice.
 
 	* install.php: Fixed default var for homeurl.
 

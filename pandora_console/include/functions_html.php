@@ -369,11 +369,11 @@ function print_table (&$table, $return = false) {
 		$table->tablealign = 'center';
 	}
 
-	if (empty ($table->cellpadding)) {
+	if (!isset ($table->cellpadding)) {
 		$table->cellpadding = '4';
 	}
 
-	if (empty ($table->cellspacing)) {
+	if (!isset ($table->cellspacing)) {
 		$table->cellspacing = '4';
 	}
 
@@ -384,8 +384,8 @@ function print_table (&$table, $return = false) {
 	$tableid = empty ($table->id) ? 'table'.$table_count : $table->id;
 
 	$output .= '<table width="'.$table->width.'" ';
-	$output .= " cellpadding=\"$table->cellpadding\" cellspacing=\"$table->cellspacing\" ";
-	$output .= " border=\"$table->border\" class=\"$table->class\" id=\"$tableid\" >\n";
+	$output .= ' cellpadding="'.$table->cellpadding.'" cellspacing="'.$table->cellspacing.'"';
+	$output .= ' border="'.$table->border.'" class="'.$table->class.'" id="'.$tableid.'">';
 	$countcols = 0;
 	if (!empty ($table->head)) {
 		$countcols = count ($table->head);

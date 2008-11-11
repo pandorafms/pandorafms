@@ -22,7 +22,7 @@ unset ($prev_level);
 
 
 define ('XMLRPC_DEBUG', 0);
-define ('XMLRPC_TIMEOUT', 5);
+define ('XMLRPC_TIMEOUT', 15);
 
 function um_xml_rpc_client_call ($server_host, $server_path, $server_port, $proxy, $proxy_port, $proxy_user, $proxy_pass, $function, $parameters) {
 	$msg = new XML_RPC_Message ($function, $parameters);

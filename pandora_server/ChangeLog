@@ -1,3 +1,14 @@
+2008-11-11  Sancho Lerena <slerena@artica.es>
+
+	* conf/pandora_server.conf: Added mta_user parameter who defines
+	mail address used for alerts.
+
+	* pandora_ctl: General control script to start/stop Pandora FMS
+	daemons.
+
+	* util/SLES10/*: Alternative start/stop daemons for SUSE and
+	other systems that don't work fine with standard scripts.
+
 2008-11-08  Sancho Lerena <slerena@gmail.com>
 
         * Config.pm: Fixed bug parsing config options with more

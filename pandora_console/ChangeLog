@@ -1,3 +1,8 @@
+2008-11-13  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/agentes/manage_config.php: Removed reference to
+	tagent_data_image which was not allowing to delete an agent.
+
 2008-11-11  Sancho Lerena <slerena@artica.es>
 
 	* extensions/update_manager/lib/libupdate_manager_client.php:

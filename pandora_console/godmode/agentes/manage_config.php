@@ -275,10 +275,7 @@ if (isset ($_POST["delete"])) {
 
 				//String data
 				temp_sql_delete ("tagente_datos_string", "id_agente_modulo", $id_module_dest);
-			
-				//Data image
-				temp_sql_delete ("tagent_data_image", "id_agent_module", $id_module_dest);
-			
+				
 				//Events (up/down monitors)
 				temp_sql_delete ("tevento", "id_agentmodule", $id_module_dest);
 			

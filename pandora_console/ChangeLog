@@ -1,3 +1,9 @@
+2008-11-14  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_reporting.php: Fixed an error when calculating
+	working data modules that affects to strings modules. Thanks to Glen
+	Eustace for the report and fix.
+
 2008-11-11  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* operation/servers/view_server.php: Small language fix

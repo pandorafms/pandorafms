@@ -121,9 +121,7 @@ function get_agent_module_sla ($id_agent_module, $period, $min_value, $max_value
  * @return 
  */
 function get_group_stats ($id_group) {
-	global $config;
-	
-	$groups = array_keys (get_user_groups ($config["id_user"]));
+	$groups = array_keys (get_user_groups ());
 	if ($id_group > 0 && in_array ($groups, $id_group)) {
 		//If a group is selected, and we have permissions to it then we don't need to look for them
 		$groups = array ();
@@ -288,16 +286,17 @@ function get_group_stats ($id_group) {
  * 
  * @param id_group Group id to get the report.
  * @param period Period of time to get the report.
- * @param date Beginning date of the report in UNIX time (current date by default).
+ * @param date Beginning date of the report
  * @param return Flag to return or echo the report table (echo by default).
  * 
  * @return A table object if return variable is true.
  */
 function event_reporting ($id_group, $period, $date = 0, $return = false) {
-	global $config;
-
-	if (! $date)
+	if (empty ($date)) {
 		$date = time ();
+	} elseif (!is_int ($date)) {
+		$date = strtotime ($date);
+	}
 	
 	$table->data = array ();
 	$table->head = array ();
@@ -306,25 +305,23 @@ function event_reporting ($id_group, $period, $date = 0, $return = false) {
 	$table->head[2] = __('User ID');
 	$table->head[3] = __('Timestamp');
 	
-	$events = get_events_in_group ($id_group, $period, $date);
-	if ($events === false) {
-		if (!$return)
-		print_table ($table);
-		return $table;
+	$events = get_group_events ($id_group, $period, $date);
+	if (empty ($events)) {
+		$events = array ();
 	}
 	foreach ($events as $event) {
 		$data = array ();
 		if ($event["estado"] == 0)
-			$data[0] = '<img src="images/dot_red.png">';
+			$data[0] = '<img src="images/dot_red.png" />';
 		else
-			$data[0] = '<img src="images/dot_green.png">';
+			$data[0] = '<img src="images/dot_green.png" />';
 		$data[1] = $event['evento'];
 		$data[2] = $event['id_usuario'] != '0' ? $event['id_usuario'] : '';
 		$data[3] = $event["timestamp"];
 		array_push ($table->data, $data);
 	}
 
-	if (!$return)
+	if (empty ($return))
 		print_table ($table);
 	return $table;
 }

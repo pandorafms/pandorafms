@@ -1,3 +1,36 @@
+2008-11-14  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* operation/incidents/incident_detail.php, incident.php: Update ACL's
+	to reflect IR rights instead of default AR
+
+	* operation/events/events.php: Updated style and html for new
+	functions. Fixes Bug #2267593
+
+	* index.php: Put REMOTE_ADDR in $config as well. It's easier to
+	globalize in functions.
+
+	* include/functions_reporting.php: Updated event_reporting to accept
+	any type of date. Style update. get_group_stats didn't need global
+
+	* include/functions_html.php: Updated print_table documentation with
+	pre-existing $table->id. Also added $table->headclass[] for classes
+	in headers
+
+	* include/functions_events.php: New-style function file to aggregate
+	events functions.
+
+	* include/functions_db.php: gime_idgroup_from_idevent is now in
+	functions_events.php as get_events_group. Renamed get_events_in_group 
+	to get_group_events return_priority is now get_priority_name
+
+	* include/functions.php: Added safe_int function to clean up and remove
+	non-ints from either single values or arrays of values. Also has min
+	and max limiters. Added $pagination in lieu of $config["block_size"]
+	to pagination function. That way larger block sizes (eg in events)
+	will display correctly. Added strtotime on format_datetime
+
+	* godmode/db/db_event.php: After an ACL error, it's better to exit
+
 2008-11-14  Esteban Sanchez  <estebans@artica.es>
 
 	* include/functions_reporting.php: Fixed an error when calculating

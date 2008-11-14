@@ -281,9 +281,9 @@ echo '</td><td class="datos2"><b>'.__('Group').'</b></td><td class="datos2">';
 
 // Group combo
 if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
-	print_select (get_user_groups (), "grupo_form", $id_grupo, '', '', '', false, false, false, 'w135');
+	print_select (get_user_groups ($config["id_user"], "IR"), "grupo_form", $id_grupo, '', '', '', false, false, false, 'w135');
 } else {
-	print_select (get_user_groups (), "grupo_form", $id_grupo, '', '', '', false, false, true, 'w135', true);
+	print_select (get_user_groups ($config["id_user"], "IR"), "grupo_form", $id_grupo, '', '', '', false, false, true, 'w135', true);
 }
 
 echo '</td></tr><tr><td class="datos"><b>'.__('Priority').'</b></td><td class="datos">';

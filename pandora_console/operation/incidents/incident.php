@@ -141,7 +141,7 @@ if ($prioridad != -1) //-1 = All
 	$filter .= sprintf (" AND prioridad = %d", $prioridad);
 
 $offset = (int) get_parameter ("offset", 0);
-$groups = get_user_groups ($config["id_user"]);
+$groups = get_user_groups ($config["id_user"], "IR");
 
 
 //Select incidencts where the user has access to ($groups from

@@ -55,6 +55,36 @@ function safe_input ($value) {
 	return htmlentities (utf8_decode ($value), ENT_QUOTES); 
 }
 
+/**
+ * Cleans an object or an array and casts all values as integers
+ *
+ * @param value String or array of strings to be cleaned
+ * @param min If value is smaller than min it will return false
+ * @param max if value is larger than max it will return false
+ *
+ * @return The cleaned string. If an array was passed, the invalid values will have been removed
+ */
+function safe_int ($value, $min = false, $max = false) {
+	if (is_array ($value)) {
+		foreach ($value as $key => $check) {
+			$check = safe_int ($check, $min, $max);
+			if ($check !== false) {
+				$value[$key] = $check;
+			} else {
+				unset ($value[$key]);
+			}
+		}
+	} else {
+		$value = (int) $value; //Cast as integer
+		if (($min !== false && $value < $min) || ($max !== false && $value > $max)) {
+			//If it's smaller than min or larger than max return false
+			return false;
+		}
+	}
+	return $value;
+}
+
+
 /** 
  * Pandora debug functions.
  *
@@ -206,7 +236,7 @@ function no_permission () {
  * @param error Aditional error string to be shown. Blank by default
  */
 function unmanaged_error ($error = "") {
-	require("config.php");
+	require_once ("config.php");
 	echo "<h3 class='error'>".__('Unmanaged error')."</h3>";
 	echo "<img src='images/error.png' alt='error'><br><br>";
 	echo "<table width=550>";
@@ -268,11 +298,16 @@ function list_files ($directory, $stringSearch, $searchHandler, $return) {
  * @param count Number of elements in the collection.
  * @param url URL of the pagination links. It must include all form values as GET form.
  * @param offset Current offset for the pagination
+ * @param pagination Current pagination size. If a user requests a larger pagination than config["block_size"]
  * 
  * @return It returns nothing, it prints the pagination.
  */
-function pagination ($count, $url, $offset) {
+function pagination ($count, $url, $offset, $pagination = 0) {
 	global $config;
+	
+	if (empty ($pagination)) {
+		$pagination = $config["block_size"];
+	}
 	
 	/* 	URL passed render links with some parameter
 			&offset - Offset records passed to next page
@@ -282,12 +317,12 @@ function pagination ($count, $url, $offset) {
 	   
 	*/
 	$block_limit = 15; // Visualize only $block_limit blocks
-	if ($count <= $config["block_size"]) {
+	if ($count <= $pagination) {
 		return;
 	}
 	// If exists more registers than I can put in a page, calculate index markers
-	$index_counter = ceil($count/$config["block_size"]); // Number of blocks of block_size with data
-	$index_page = ceil($offset/$config["block_size"])-(ceil($block_limit/2)); // block to begin to show data;
+	$index_counter = ceil($count/$pagination); // Number of blocks of block_size with data
+	$index_page = ceil($offset/$pagination)-(ceil($block_limit/2)); // block to begin to show data;
 	if ($index_page < 0)
 		$index_page = 0;
 
@@ -317,7 +352,7 @@ function pagination ($count, $url, $offset) {
 	echo '<a href="'.$url.'&offset=0"><img src="images/control_start_blue.png" class="bot" /></a>&nbsp;';
 	// Show PREVIOUS button
 	if ($index_page > 0){
-		$index_page_prev= ($index_page-(floor($block_limit/2)))*$config["block_size"];
+		$index_page_prev= ($index_page-(floor($block_limit/2)))*$pagination;
 		if ($index_page_prev < 0)
 			$index_page_prev = 0;
 		echo '<a href="'.$url.'&offset='.$index_page_prev.'"><img src="images/control_rewind_blue.png" class="bot" /></a>';
@@ -326,10 +361,10 @@ function pagination ($count, $url, $offset) {
 	// Draw blocks markers
 	// $i stores number of page
 	for ($i = $inicio_pag; $i < $index_limit; $i++) {
-		$inicio_bloque = ($i * $config["block_size"]);
-		$final_bloque = $inicio_bloque + $config["block_size"];
+		$inicio_bloque = ($i * $pagination);
+		$final_bloque = $inicio_bloque + $pagination;
 		if ($final_bloque > $count){ // if upper limit is beyond max, this shouldnt be possible !
-			$final_bloque = ($i-1)*$config["block_size"] + $count-(($i-1) * $config["block_size"]);
+			$final_bloque = ($i-1) * $pagination + $count-(($i-1) * $pagination);
 		}
 		echo "<span>";
 			
@@ -348,9 +383,9 @@ function pagination ($count, $url, $offset) {
 	// Show NEXT PAGE (fast forward)
 	// Index_counter stores max of blocks
 	if (($paginacion_maxima == 1) AND (($index_counter - $i) > 0)) {
-		$prox_bloque = ($i+ceil($block_limit/2))*$config["block_size"];
+		$prox_bloque = ($i + ceil ($block_limit / 2)) * $pagination;
 		if ($prox_bloque > $count)
-			$prox_bloque = ($count -1) - $config["block_size"];
+			$prox_bloque = ($count -1) - $pagination;
 		echo '<a href="'.$url.'&offset='.$prox_bloque.'"><img class="bot" src="images/control_fastforward_blue.png" /></a>';
 		$i = $index_counter;
 	}
@@ -358,8 +393,8 @@ function pagination ($count, $url, $offset) {
 	// get offset for index calculation
 	// Draw "last" block link, ajust for last block will be the same
 	// as painted in last block (last integer block).	
-	if (($count - $config["block_size"]) > 0){
-		$myoffset = floor(($count-1)/ $config["block_size"])* $config["block_size"];
+	if (($count - $pagination) > 0){
+		$myoffset = floor(($count-1) / $pagination) * $pagination;
 		echo '<a href="'.$url.'&offset='.$myoffset.'"><img class="bot" src="images/control_end_blue.png" /></a>';
 	}
 	// End div and layout
@@ -380,6 +415,11 @@ function pagination ($count, $url, $offset) {
  */
 function format_datetime ($timestamp, $alt_format = "") {
 	global $config;
+	
+	if (!is_int ($timestamp)) {
+		//Make function format agnostic
+		$timestamp = strtotime ($timestamp);
+	}
 	
 	if ($alt_format == "")
 		$alt_format = $config["date_format"];
@@ -1152,11 +1192,13 @@ function get_priorities () {
 }
 
 /**
- * Get priority value from priority name.
+ * Get priority name from priority value.
  *
- * @param priority Priority name.
+ * @param priority value (integer) as stored eg. in database.
+ *
+ * @return priority string.
  */
-function return_priority ($priority) {
+function get_priority_name ($priority) {
 	global $config;
 
 	switch ($priority) {
@@ -1177,7 +1219,8 @@ function return_priority ($priority) {
 
 /**
  * Avoid magic_quotes protection
- *
+ * Deprecated by get_parameter functions and safe_input funcitons
+ * Magic Quotes are deprecated in PHP5 and will be removed in PHP6
  * @param string Text string to be stripped of magic_quotes protection
  */
 
@@ -1187,11 +1230,20 @@ function unsafe_string ($string) {
 	return $string;
 }
 
+/**
+ * Deprecated by get_parameter functions and safe_input funcitons
+ * Magic Quotes are deprecated in PHP5 and will be removed in PHP6
+ */
+
 function safe_sql_string ($string) {
 	if (get_magic_quotes_gpc () == 0) 
 		$string = mysql_escape_string ($string);
 	return $string;
 }
+
+/**
+ * enterprise functions
+ */
 
 function enterprise_hook ($function_name, $parameters = false) {
 	if (function_exists ($function_name)) {

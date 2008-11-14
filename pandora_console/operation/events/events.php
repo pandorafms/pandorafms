@@ -232,33 +232,34 @@ $table->head = array ();
 $table->data = array ();
 
 $table->head[0] = '';
+$table->align[0] = 'center';
 
 $table->head[1] = __('Type');
 $table->headclass[1] = 'f9';
+$table->align[1] = 'center';
 
 $table->head[2] = __('Event name');
-//$table->headclass[2] = 'f9';
 
 $table->head[3] = __('Agent name');
-//$table->headclass[3] = 'f9';
+$table->align[3] = 'center';
 
 $table->head[4] = __('Source');
-//$table->headclass[4] = 'f9';
+$table->align[4] = 'center';
 
 $table->head[5] = __('Group');
-//$table->headclass[5] = 'f9';
+$table->align[5] = 'center';
 
 $table->head[6] = __('User ID');
-//$table->headclass[6] = 'f9';
+$table->align[6] = 'center';
 
 $table->head[7] = __('Timestamp');
-//$table->headclass[7] = 'f9';
+$table->align[7] = 'center';
 
 $table->head[8] = __('Action');
-//$table->headclass[8] = 'f9';
+$table->align[8] = 'center';
 
 $table->head[9] = print_checkbox ("allbox", "1", false, true);
-//$table->headclass[9] = 'p10';
+$table->align[9] = 'center';
 
 //Arrange data. We already did ACL's in the query
 foreach ($result as $row) {

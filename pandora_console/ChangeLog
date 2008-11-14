@@ -1,5 +1,11 @@
 2008-11-14  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
+	* operation/reporting/reporting_xml.php: Fixed bug #2268220
+
+	* operation/events/events.php: Centered some columns
+
+2008-11-14  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
 	* operation/incidents/incident_detail.php, incident.php: Update ACL's
 	to reflect IR rights instead of default AR
 

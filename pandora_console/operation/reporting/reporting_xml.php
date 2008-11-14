@@ -121,6 +121,7 @@ if ($report['private'] && ($report['id_user'] != $config['id_user'] && ! dame_ad
 }
 
 header ('Content-type: application/xml; charset="utf-8"', true);
+
 echo '<?xml version="1.0" encoding="UTF-8" ?>';
 
 $date = (string) get_parameter ('date', date ('Y-m-j'));
@@ -185,7 +186,7 @@ foreach ($contents as $content) {
 			array_push ($weights, $content2["weight"]);
 		}
 		
-		$data["objdata"]["img"] = 'reporting/fgraph.php?tipo=combined&amp;id='.implode (',', $modules).'&amp;weight_l='.implode (',', $weights).'&amp;height=230&amp;width=720&amp;period='.$content['period'].'&amp;date='.$datetime.'&amp;stacked='.$graph["stacked"].'&amp;pure=1"';
+		$data["objdata"]["img"] = 'reporting/fgraph.php?tipo=combined&amp;id='.implode (',', $modules).'&amp;weight_l='.implode (',', $weights).'&amp;height=230&amp;width=720&amp;period='.$content['period'].'&amp;date='.$datetime.'&amp;stacked='.$graph["stacked"].'&amp;pure=1';
 		break;
 	case 3:
 	case 'SLA':
@@ -200,23 +201,22 @@ foreach ($contents as $content) {
 		$data["objdata"]["sla"] = array ();
 		$sla_failed = false;
 		foreach ($slas as $sla) {
-			$sla = array ();
-			$sla["agent"] .= dame_nombre_agente_agentemodulo ($sla['id_agent_module']);
-			$sla["module"] .= dame_nombre_modulo_agentemodulo ($sla['id_agent_module']);
-			$sla["max"] .= $sla['sla_max'];
-			$sla["min"] .= $sla['sla_min'];
+			$sla_data = array ();
+			$sla_data["agent"] = dame_nombre_agente_agentemodulo ($sla['id_agent_module']);
+			$sla_data["module"] = dame_nombre_modulo_agentemodulo ($sla['id_agent_module']);
+			$sla_data["max"] = $sla['sla_max'];
+			$sla_data["min"] = $sla['sla_min'];
 			
-			$sla_value = get_agent_module_sla ($sla['id_agent_module'], $content['period'],
-							$sla['sla_min'], $sla['sla_max'], $datetime);
+			$sla_value = get_agent_module_sla ($sla['id_agent_module'], $content['period'], $sla['sla_min'], $sla['sla_max'], $datetime);
 			if ($sla_value === false) {
-				$sla["error"] .= __('Unknown');
+				$sla_data["error"] = __('Unknown');
 			} else {
 				if ($sla_value < $sla['sla_limit']) {
-					$sla["failed"] = "true";
+					$sla_data["failed"] = true;
 				}
-				$sla["value"] = format_numeric ($sla_value);
+				$sla_data["value"] = format_numeric ($sla_value);
 			}
-			array_push ($data["objdata"]["sla"], $sla);
+			array_push ($data["objdata"]["sla"], $sla_data);
 		}
 		
 		break;

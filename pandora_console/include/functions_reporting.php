@@ -203,7 +203,7 @@ function get_group_stats ($id_group) {
 			} elseif ($last_update >= ($row["current_interval"] * 2)) {
 				//The utimestamp is greater than 2x the interval (it has timed out)
 				$data["data_unknown"]++;
-			} elseif ($row["datos"] != 0) {
+			} elseif ($row["datos"]) {
 				//Status is something
 				$data["data_ok"]++;
 			} else {
@@ -712,4 +712,5 @@ function get_agents_detailed_reporting ($id_group, $period = 0, $date = 0, $retu
 		echo $output;
 	return $output;
 }
+
 ?>

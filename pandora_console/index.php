@@ -134,6 +134,7 @@ if ($config["pure"] == 0) {
 }
 
 $REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
+$config["remote_addr"] = $_SERVER['REMOTE_ADDR'];
 
 // Login process 
 if (! isset ($_SESSION['id_usuario']) && isset ($_GET["login"])) {

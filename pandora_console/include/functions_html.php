@@ -297,6 +297,8 @@ function print_textarea ($name, $rows, $columns, $value = '', $attributes = '', 
  *     $table->cellpadding  - Padding on each cell
  *     $table->cellspacing  - Spacing between cells
  *     $table->class  - CSS table class
+ *	   $table->id - Table ID (useful in JavaScript)
+ *	   $table->headclass[] - An array of classes for each heading
  * @param  bool $return whether to return an output string or echo now
  */
 function print_table (&$table, $return = false) {
@@ -397,8 +399,10 @@ function print_table (&$table, $return = false) {
 			if (!isset ($align[$key])) {
 				$align[$key] = '';
 			}
-	
-			$output .= '<th class="header c'.$key.'" scope="col">'. $heading .'</th>';
+			if (!isset ($table->headclass[$key])) {
+				$table->headclass[$key] = 'header c'.$key;
+			}	
+			$output .= '<th class="'.$table->headclass[$key].'" scope="col">'. $heading .'</th>';
 		}
 		$output .= '</tr></thead>'."\n";
 	}

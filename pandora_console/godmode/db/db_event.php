@@ -24,7 +24,7 @@ check_login ();
 if (! give_acl ($config['id_user'], 0, "DM")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access Database Management Event");
 	require ("general/noaccess.php");
-	return;
+	exit;
 }
 
 # ADQUIRE DATA PASSED AS FORM PARAMETERS

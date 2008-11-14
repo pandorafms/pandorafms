@@ -15,154 +15,40 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-?>
 
-
-<script language="JavaScript" type="text/javascript">
-<!--
-	function CheckAll () {
-		for (var i = 0; i < document.eventtable.elements.length; i++) {
-			var e = document.eventtable.elements[i];
-			if (e.type == 'checkbox' && e.name != 'allbox')
-				e.checked = 1;
-		}
-	}
-
-	function OpConfirm (text, conf) {
-		for (var i = 0; i < document.pageform.elements.length; i++) {
-			var e = document.pageform.elements[i];
-			if (e.type == 'checkbox' && e.name != 'allbox' && e.checked == 1) {
-				if (conf) {
-					return confirm (text);
-				} else {
-					return 1;
-				}
-			}
-		}
-		return false;
-	}
-
-	/* Function to hide/unhide a specific Div id */
-	function toggleDiv (divid){
-		if (document.getElementById(divid).style.display == 'none'){
-			document.getElementById(divid).style.display = 'block';
-		} else {
-			document.getElementById(divid).style.display = 'none';
-		}
-	}
-//-->
-</script>
-
-<?php
 // Load global vars
-require("include/config.php");
+require_once ("include/config.php");
+require_once ("include/functions_events.php"); //Event processing functions
 
 check_login ();
 
-if (! give_acl ($config["id_user"], 0, "AR")) {
+if (! give_acl ($config["id_user"], 0, "IR")) {
 	audit_db ($config["id_user"], $REMOTE_ADDR, "ACL Violation",
 		"Trying to access event viewer");
 	require ("general/noaccess.php");
-	return;
+	exit;
 }
 
-$accion = "";
-// OPERATIONS
-// Delete Event (only incident management access).
-if (isset ($_GET["delete"])) {
-	//safe input
-	$id_evento = get_parameter_get ("delete");
-	
-	// Look for event_id following parameters: id_group.
-	$id_group = gime_idgroup_from_idevent ($id_evento);
-	if (give_acl ($config['id_user'], $id_group, "IM")) {
-		$descr = return_event_description ($id_evento); //Get description before it gets deleted
-		$sql = "DELETE FROM tevento WHERE id_evento =".$id_evento;
-		$result = process_sql ($sql);
-		
-		if ($result !== false) {
-			echo '<h3 class="suc">'.__('Event successfully deleted').'</h3>';
-			audit_db ($config['id_user'], $REMOTE_ADDR,
-				"Event deleted","Deleted event: ".$descr);
-		} else {
-			echo '<h3 class="error">'.__('Error deleting event').'</h3>';
-		}
-	} else {
-		audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
-			"Trying to delete event ID".$id_evento);
-	}
-}
-	
-// Check Event (only incident write access).
-if (isset ($_GET["check"])) {
-	$id_evento = get_parameter_get ("check");
-	// Look for event_id following parameters: id_group.
-	$id_group = gime_idgroup_from_idevent ($id_evento);
-	if (give_acl ($config["id_user"], $id_group, "IW") ==1){
-		$sql = "UPDATE tevento SET estado = 1, id_usuario = '".$config["id_user"]."' WHERE id_evento = ".$id_evento;
-		$result = process_sql ($sql);
-		if ($result !== false) {
-			echo '<h3 class="suc">'.__('Event successfully validated').'</h3>';
-			audit_db($config["id_user"],$REMOTE_ADDR, "Event validated","Validate event: ".return_event_description ($id_evento));
-		} else {
-			echo '<h3 class="error">'.__('Error validating event').'</h3>';
-		}
-		
-	} else {
-		audit_db ($config['id_user'],$REMOTE_ADDR, "ACL Violation",
-			"Trying to checkout event ".return_event_description ($id_evento));
-	}
-}
-	
-// Mass-process DELETE
-if (isset ($_POST["deletebt"])){
-	$count=0;
-	while ($count <= $config["block_size"]) {
-		if (isset ($_POST["eventid".$count])) {
-			$event_id = get_parameter_post ("eventid".$count);
-			$descr = return_event_description ($event_id); //Get description before it gets deleted
-			// Look for event_id following parameters: id_group.
-			$id_group = gime_idgroup_from_idevent ($event_id);
-			if (give_acl ($config['id_user'], $id_group, "IM")) {
-				process_sql ("DELETE FROM tevento WHERE id_evento = ".$event_id);
-				audit_db ($config['id_user'], $REMOTE_ADDR,
-					"Event deleted","Deleted event: ".$descr);
-			} else {
-				audit_db ($config['id_user'], $REMOTE_ADDR,
-					"ACL Violation","Trying to delete event: ".$descr);
-			}
-		}
-		$count++;
-	}
+$delete = get_parameter ("delete");
+$validate = get_parameter ("validate");
+//Process deletion (pass array or single value)
+if (!empty ($delete)) {
+	$eventid = (array) get_parameter ("eventid", -1);
+	$return = delete_event ($eventid); //This function handles both single values as well arrays and cleans up before deleting
+	print_error_message ($return, __('Events successfully deleted'), __('There was an error deleting events'));
 }
 
-// Mass-process UPDATE
-if (isset ($_POST["updatebt"])) {
-	$count = 0;
-	while ($count <= $config["block_size"]) {
-		if (isset ($_POST["eventid".$count])) {
-			$id_evento = get_parameter_post ("eventid".$count);
-			$id_group = gime_idgroup_from_idevent($id_evento);
-			if (give_acl ($config['id_user'], $id_group, "IW")) {
-				$sql = "UPDATE tevento SET estado=1, id_usuario = '".$config['id_user']."' WHERE estado = 0 AND id_evento = ".$id_evento;
-				$result = process_sql ($sql);
-				audit_db ($config['id_user'], $REMOTE_ADDR,
-					"Event validated","Validate event: ".return_event_description ($id_evento));
-			} else {
-				audit_db ($config['id_user'], $REMOTE_ADDR,
-					"ACL Violation","Trying to checkout event ID".$id_evento);
-			}
-		}
-		$count++;
-	}
+//Process validation (pass array or single value)
+if (!empty ($validate)) {
+	$eventid = (array) get_parameter ("eventid", -1);
+	$return = process_event_validate ($eventid);
+	print_error_message ($return, __('Events successfully validated'), __('There was an error validating events'));
 }
+
 
 // ***********************************************************************
 // Main code form / page
 // ***********************************************************************
-
-
-// Get data
 
 $offset = (int) get_parameter ( "offset",0);
 $ev_group = (int) get_parameter ("ev_group", 1); //1 = all
@@ -173,10 +59,9 @@ $status = (int) get_parameter ("status", 0); // -1 all, 0 only red, 1 only green
 $id_agent = (int) get_parameter ("id_agent", -1); //-1 all, 0 system
 $id_event = (int) get_parameter ("id_event", -1);
 $pagination = (int) get_parameter ("pagination", $config["block_size"]);
-$config["block_size"] = $pagination;
-$groups = get_user_groups ($config["id_user"]);
-//Group selection
+$groups = get_user_groups ($config["id_user"], "IR");
 
+//Group selection
 if ($ev_group > 1 && in_array ($ev_group, array_keys ($groups))) {
 	//If a group is selected and it's in the groups allowed
 	$sql_post = " AND id_grupo = $ev_group";
@@ -206,7 +91,7 @@ if ($id_agent != -1)
 if ($id_event != -1)
 	$sql_post .= " AND id_evento = ".$id_event;
 
-$url = "index.php?sec=eventos&sec2=operation/events/events&search=$search&event_type=$event_type&severity=$severity&status=$status&ev_group=$ev_group&refr=60&id_agent=$id_agent&id_event=$id_event";
+$url = "index.php?sec=eventos&sec2=operation/events/events&search=$search&event_type=$event_type&severity=$severity&status=$status&ev_group=$ev_group&refr=60&id_agent=$id_agent&id_event=$id_event&pagination=$pagination";
 
 echo "<h2>".__('Events')." &gt; ".__('Main event view'). "&nbsp";
 
@@ -217,57 +102,51 @@ if ($config["pure"] == 1) {
 	echo "<a target='_top' href='$url&pure=1'><img src='images/monitor.png' title='".__('Full screen')."'></a>";
 }
 echo "</h2>";
-echo '<a href="javascript::" onmousedown="toggleDiv(\'event_control\');">';
-echo "<b>".__('Event control filter')." ".'<img src="images/wand.png" /></a></b>';
+echo '<a href="#" id="tgl_event_control"><b>'.__('Event control filter').'</b>&nbsp;'.'<img src="images/wand.png" /></a>';
 
 if ($config["pure"] == 1) {
-	echo "<div id='event_control' style='display:none'>";
+	echo '<div id="event_control" style="display:none">';
 } else {
-	echo "<div id='event_control' style='display:block'>"; //There is no value all to property display
+	echo '<div id="event_control" style="display:block">'; //There is no value all to property display
 }
-// Table who separate control and graph
-echo "<table width=99% cellpadding=0 cellspacing=2 border=0>";
-echo "<tr><td width=500>";
-
 // Table for filter controls
-echo "<form method='post' action='index.php?sec=eventos&sec2=operation/events/events&refr=60&pure=".$config["pure"]."'>";
-echo "<table width=500 cellpadding=4 cellspacing=4 class=databox>";
-echo "<tr>";
+echo '<form method="post" action="index.php?sec=eventos&sec2=operation/events/events&refr=60&pure='.$config["pure"].'">';
+echo '<table style="width:500px; float:left;" cellpadding="4" cellspacing="4" class="databox"><tr>';
 
 // Group combo
-echo "<td>".__('Group')."</td>";
-echo "<td>";
+echo "<td>".__('Group')."</td><td>";
 print_select ($groups, 'ev_group', $ev_group, 'javascript:this.form.submit();', '', 0, false, false, false, 'w130');
 echo "</td>";
 
 // Event type
-echo "<td>".__('Event type')."</td>";
-echo "<td>";
+echo "<td>".__('Event type')."</td><td>";
 print_select (get_event_types (), 'event_type', $event_type, '', __('All'), '');
 echo "</td></tr><tr>";
 
 // Severity
-echo "<td>".__('Severity')."</td>";
-echo "<td>";
+echo "<td>".__('Severity')."</td><td>";
 print_select (get_priorities (), "severity", $severity, '', __('All'), '-1');
+echo '</td>';
 
 // Status
-echo "</td><td>".__('Event status')."</td>";
-echo "<td>";
+echo "<td>".__('Event status')."</td><td>";
 $fields = array ();
 $fields[-1] = __('All event');
 $fields[1] = __('Only validated');
 $fields[0] = __('Only pending');
 
 print_select ($fields, 'status', $status, 'javascript:this.form.submit();', '', '');
+
+//NEW LINE
 echo "</td></tr><tr>";
 
 // Free search
 echo "<td>".__('Free search')."</td><td>";
 print_input_text ('search', $search, '', 15);
+echo '</td>';
 
 //Agent search
-echo "</td><td>".__('Agent search')."</td><td>";
+echo "<td>".__('Agent search')."</td><td>";
 $sql = "SELECT DISTINCT(id_agente) FROM tevento WHERE 1=1 ".$sql_post;
 $result = get_db_all_rows_sql ($sql);
 if ($result === false)
@@ -294,14 +173,14 @@ echo "</td></tr>";
 echo '<tr><td>';
 echo __('Block size for pagination');
 echo '</td>';
-$lpagination[25]=25;
-$lpagination[50]=50;
-$lpagination[100]=100;
-$lpagination[200]=200;
-$lpagination[500]=500;
+$lpagination[25] = 25;
+$lpagination[50] = 50;
+$lpagination[100] = 100;
+$lpagination[200] = 200;
+$lpagination[500] = 500;
 
 echo "<td>";
-print_select ($lpagination, "pagination", $pagination, '', __('Default'), $config["block_size"]);
+print_select ($lpagination, "pagination", $pagination, 'javascript:this.form.submit();', __('Default'), $config["block_size"]);
 echo "</td>";
 
 //The buttons
@@ -311,207 +190,251 @@ print_submit_button (__('Update'), '', false, 'class="sub upd"');
 // CSV
 echo '&nbsp;&nbsp;&nbsp;
 	<a href="operation/events/export_csv.php?ev_group='.$ev_group.'&event_type='.$event_type.'&search='.$search.'&severity='.$severity.'&status='.$status.'&id_agent='.$id_agent.'">
-	<img src="images/disk.png" title="Export to CSV file"></a>';
+	<img src="images/disk.png" title="Export to CSV file" /></a>';
 // Marquee
-echo "&nbsp;<a target='_top' href='operation/events/events_marquee.php'><img src='images/heart.png' title='".__('Marquee display')."'></a>";
+echo '&nbsp;<a target="_top" href="operation/events/events_marquee.php"><img src="images/heart.png" title="'.__('Marquee display').'" /></a>';
 // RSS
-echo '&nbsp;<a target="_top" href="operation/events/events_rss.php?ev_group='.$ev_group.'&event_type='.$event_type.'&search='.$search.'&severity='.$severity.'&status='.$status.'&id_agent='.$id_agent.'"><img src="images/transmit.png" title="'.__('RSS Events').'"></a>';
+echo '&nbsp;<a target="_top" href="operation/events/events_rss.php?ev_group='.$ev_group.'&event_type='.$event_type.'&search='.$search.'&severity='.$severity.'&status='.$status.'&id_agent='.$id_agent.'"><img src="images/transmit.png" title="'.__('RSS Events').'" /></a>';
 
 
-echo "</td></tr></table></form>";
-echo '<td><img src="reporting/fgraph.php?tipo=group_events&width=250&height=180&url='.rawurlencode($sql_post).'" border="0">'; //Don't rely on browsers to do this correctly
-echo "</td></tr></table></div>";
+echo "</td></tr></table></form>"; //This is the internal table
+echo '<div style="width:250px; float:left;"><img src="reporting/fgraph.php?tipo=group_events&width=250&height=180&url='.rawurlencode ($sql_post).'" border="0"></div>';
+echo '</div><div style="clear:both">&nbsp;</div>';
 
-$sql = "SELECT * FROM tevento WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$config["block_size"];
+$sql = "SELECT * FROM tevento WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
 $result = get_db_all_rows_sql ($sql);
 $sql = "SELECT COUNT(id_evento) FROM tevento WHERE 1=1 ".$sql_post;
 $total_events = get_db_sql ($sql);
 
+if (empty ($result)) {
+	$result = array ();
+}
+if (empty ($total_events)) {
+	$total_events = 0;
+}
+
 // Show pagination header
-if ($total_events > 0) {
+$offset = get_parameter ("offset", 0);
+pagination ($total_events, $url."&pure=".$config["pure"], $offset, $pagination);		
 
-	$offset = get_parameter ("offset",0);
-	pagination ($total_events, $url."&pure=".$config["pure"], $offset);		
-	// Show data.
-		
-	echo "<br>";
-	echo "<br>";
-	if ($config["pure"] == 0) {
-		echo "<table cellpadding='4' cellspacing='4' width='765' class='databox'>";
+// If pure, table width takes more space
+if ($config["pure"] != 0) {
+	$table->width = 765;
+} else {
+	$table->width = 750;
+}
+
+$table->id = "eventtable";
+$table->cellpadding = 4;
+$table->cellspacing = 4;
+$table->class = "databox";
+$table->head = array ();
+$table->data = array ();
+
+$table->head[0] = '';
+
+$table->head[1] = __('Type');
+$table->headclass[1] = 'f9';
+
+$table->head[2] = __('Event name');
+//$table->headclass[2] = 'f9';
+
+$table->head[3] = __('Agent name');
+//$table->headclass[3] = 'f9';
+
+$table->head[4] = __('Source');
+//$table->headclass[4] = 'f9';
+
+$table->head[5] = __('Group');
+//$table->headclass[5] = 'f9';
+
+$table->head[6] = __('User ID');
+//$table->headclass[6] = 'f9';
+
+$table->head[7] = __('Timestamp');
+//$table->headclass[7] = 'f9';
+
+$table->head[8] = __('Action');
+//$table->headclass[8] = 'f9';
+
+$table->head[9] = print_checkbox ("allbox", "1", false, true);
+//$table->headclass[9] = 'p10';
+
+//Arrange data. We already did ACL's in the query
+foreach ($result as $row) {
+	$data = array ();
+	
+	//First pass along the class of this row
+	switch ($row["criticity"]) {
+	case 0: 
+		$table->rowclass[] = "datos_blue";
+		break;
+	case 1: 
+		$table->rowclass[] = "datos_grey";
+		break;
+	case 2: 
+		$table->rowclass[] = "datos_green";
+		break;
+	case 3: 
+		$table->rowclass[] = "datos_yellow";
+		break;
+	case 4: 
+		$table->rowclass[] = "datos_red";
+		break;
+	default:
+		$table->rowclass[] = "datos_grey";
+	}
+	
+	// Colored box
+	if ($row["estado"] == 0) {
+		$data[0] = '<img src="images/pixel_red.png" width="20" height="35" title="'.get_priority_name ($row["criticity"]).'" />';
 	} else {
-		echo "<table cellpadding='4' cellspacing='4' class='databox'>";
+		$data[0] = '<img src="images/pixel_green.png" width="20" height="35" title="'.get_priority_name ($row["criticity"]).'" />';
 	}
-	echo "<tr>";
-	echo "<th class=f9>".__('St')."</th>";
-	echo "<th class=f9>".__('Type')."</th>";
-	echo "<th class=f9>".__('Event name')."</th>";
-	echo "<th class=f9>".__('Agent name')."</th>";
-	echo "<th class=f9>".__('Source')."</th>";
-	echo "<th class=f9>".__('Group')."</th>";
-	echo "<th class=f9>".__('User ID')."</th>";
-	echo "<th class=f9>".__('Timestamp')."</th>";
-	echo "<th class=f9>".__('Action')."</th>";
-	echo "<th class='p10'>";
-	echo "<label for='checkbox' class='p21'>".__('All')." </label>";
-	echo '<input type="checkbox" class="chk" name="allbox" onclick="CheckAll();"></th>';
-	echo "<form name='eventtable' method='POST' action='$url&pure=".$config["pure"]."'>";
-	$id_evento = 0;
+
 	
-	$offset_counter=0;
-	// Make query for data (all data, not only distinct).
-	foreach ($result as $row2) {
-		$id_grupo = $row2["id_grupo"];
-		if (give_acl($config["id_user"], $id_grupo, "AR") == 1) // Only incident read access to view data !
-			$id_group = $row2["id_grupo"];
-
-		switch ($row2["criticity"]) {
-		case 0: 
-			$tdclass = "datos_blue";
+	switch ($row["event_type"]) {
+	case "alert_recovered": 
+		$data[1] = '<img src="images/error.png" title="'.__('Alert Recovered').'" />';
+		break;
+	case "alert_manual_validation": 
+		$data[1] = '<img src="images/eye.png" title="'.__('Manual Alert Validation').'" />';
+		break;
+	case "monitor_up":
+		$data[1] = '<img src="images/lightbulb.png" title="'.__('Monitor Up').'" />';
+		break;
+	case "monitor_down":
+		$data[1] = '<img src="images/lightbulb_off.png" title="'.__('Monitor Down').'" />';
+		break;
+	case "alert_fired":
+		$data[1] = '<img src="images/bell.png" title="'.__('Alert Fired').'" />';
+		break;
+	case "system";
+		$data[1] = '<img src="images/cog.png" title="'.__('System').'" />';
+		break;
+	case "recon_host_detected";
+		$data[1] = '<img src="images/network.png" title="'.__('Host Detected (Recon)').'" />';
+		break;
+	case "new_agent";
+		$data[1] = '<img src="images/wand.png" title="'.__('New Agent').'" />';
+		break;
+	case "unknown": 
+	default:
+			$data[1] = '<img src="images/err.png" title="'.__('Unknown type').': '.$row["event_type"].'" />';
 			break;
-		case 1: 
-			$tdclass = "datos_grey";
-			break;
-		case 2: 
-			$tdclass = "datos_green";
-			break;
-		case 3: 
-			$tdclass = "datos_yellow";
-			break;
-		case 4: 
-			$tdclass = "datos_red";
-			break;
-		default:
-			$tdclass = "datos_grey";
-		}
-		$criticity_label = return_priority ($row2["criticity"]);
-		// Colored box 
-		echo "<tr><td class='$tdclass' title='$criticity_label' align='center'>";
-		if ($row2["estado"] == 0) {
-			echo "<img src='images/pixel_red.png' width=20 height=35>";
-		} else {
-			echo "<img src='images/pixel_green.png' width=20 height=35>";
-		}
-
-		// Event type
-		echo "<td class='".$tdclass."' title='".$row2["event_type"]."'>";
-		switch ($row2["event_type"]) {
-		case "unknown": 
-			echo "<img src='images/err.png'>";
-			break;
-		case "alert_recovered": 
-			echo "<img src='images/error.png'>";
-			break;
-		case "alert_manual_validation": 
-			echo "<img src='images/eye.png'>";
-			break;
-		case "monitor_up":
-			echo "<img src='images/lightbulb.png'>";
-			break;
-		case "monitor_down":
-			echo "<img src='images/lightbulb_off.png'>";
-			break;
-		case "alert_fired":
-			echo "<img src='images/bell.png'>";
-			break;
-		case "system";
-			echo "<img src='images/cog.png'>";
-			break;
-		case "recon_host_detected";
-			echo "<img src='images/network.png'>";
-			break;
-		case "new_agent";
-			echo "<img src='images/wand.png'>";
-			break;
-		}
- 
-		// Event description
-		$event_title = safe_input ($row2["evento"]);
-		echo "<td class='".$tdclass."f9' title='$event_title'>";
-		echo substr($row2["evento"],0,45);
-		if (strlen($row2["evento"]) > 45)
-			echo "..";
-		if ($row2["id_agente"] > 0) {
-			// Agent name
-			$agent_name = dame_nombre_agente ($row2["id_agente"]);
-			echo "<td class='".$tdclass."f9' title='$agent_name'><a href='$url&pure=".$config["pure"]."&id_agent=".$row2["id_agente"]."'><b>";
-			echo substr($agent_name, 0, 14);
-			if (strlen($agent_name) > 14)
-				echo "..";
-			echo "</b></a>";
-			
-			// Module name / Alert
-			echo "<td class='$tdclass'>";
-			if ($row2["id_agentmodule"] != 0)
-				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row2["id_agente"]."&tab=data'><img src='images/bricks.png' border=0></A>";
-			echo "&nbsp;";
-			if ($row2["id_alert_am"] != 0)
-				echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row2["id_agente"]."&tab=alert'><img src='images/bell.png' border=0></a>";
-
-			// Group icon
-			$group_name = (string) get_db_value ('nombre', 'tgrupo', 'id_grupo', $id_group);
-			echo "<td class='$tdclass' align='center'><img src='images/groups_small/".show_icon_group($id_group).".png' title='$group_name' class='bot'></td>";
-
-			// for System or SNMP generated alerts
-		} elseif ($row2["event_type"] == "system") {
-			echo "<td class='$tdclass' colspan=3>".__('System');
-		} else {
-			echo "<td class='$tdclass' colspan=3>".__('Alert')."SNMP";
-		}
-
-		// User who validated event
-		echo "<td class='$tdclass'>";
-		if ($row2["estado"] <> 0)
-			echo "<a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$row2["id_usuario"]."'>".substr($row2["id_usuario"],0,8)."<a href='#' class='tip'> <span>".dame_nombre_real($row2["id_usuario"])."</span></a></a>";
-			
-		// Timestamp
-		echo "<td class='".$tdclass."f9' title='".$row2["timestamp"]."'>";
-		echo human_time_comparation ($row2["timestamp"]);
-		echo "</td>";
-		// Several options grouped here
-		echo "<td class='$tdclass' align='right'>";
-		// Validate event
-		if (($row2["estado"] == 0) and (give_acl ($config["id_user"], $id_group,"IW") ==1))
-			echo "<a href='$url&check=".$row2["id_evento"]."&pure=".$config["pure"]."'>
-			<img src='images/ok.png' border='0'></a> ";
-		// Delete event
-		if (give_acl ($config["id_user"], $id_group,"IM") ==1)
-			echo "<a href='$url&delete=".$row2["id_evento"]."&pure=".$config["pure"]."'>
-			<img src='images/cross.png' border=0></a> ";
-		// Create incident from this event			
-		if (give_acl ($config["id_user"], $id_group,"IW") == 1)
-			echo "<a href='index.php?sec=incidencias&sec2=operation/incidents/incident_detail&insert_form&from_event=".$row2["id_evento"]."'><img src='images/page_lightning.png' border=0></a>";
-			echo "</td>";
-		// Checbox				
-		echo "<td class='$tdclass' align='center'>";
-		echo "<input type='checkbox' class='chk' name='eventid".$offset_counter."' 
-		value='".$row2["id_evento"]."'>";
-		echo "</td></tr>";
-
-		$offset_counter++;
 	}
-	echo "</table>";
-	echo "<table width='750'><tr><td align='right'>";
 	
-	echo "<input class='sub ok' type='submit' name='updatebt' value='".__('Validate')."'> ";
+	// Event description
+	$data[2] = '<span title="'.$row["evento"].'" class="f9">';
+	if (strlen ($row["evento"]) > 39) {
+		$data[2] .= substr ($row["evento"], 0, 37)."...";
+	} else {
+		$data[2] .= $row["evento"];
+	}
+	$data[2] .= '</span>';
+
+	if ($row["event_type"] == "system") {
+		$data[3] = __('System');
+	} elseif ($row["id_agente"] > 0) {
+		// Agent name
+		$agent_name = dame_nombre_agente ($row["id_agente"]);
+		$data[3] = '<a href='.$url.'&pure='.$config["pure"].'&id_agent='.$row["id_agente"].'" title="'.$agent_name.'" class="f9"><b>';
+		if (strlen ($agent_name) > 16) {
+			$data[3] .= substr ($agent_name, 0, 14)."...";
+		} else {
+			$data[3] .= $agent_name;
+		}
+		$data[3] .= '</b></a>';
+	} else {
+		$data[3] = __('Alert').__('SNMP');
+	}
+	
+	$data[4] = '';
+	if ($row["id_agentmodule"] != 0) {
+		$data[4] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$row["id_agente"].'&tab=data"><img src="images/bricks.png" border="0" /></a>&nbsp;';
+	}
+	if ($row["id_alert_am"] != 0) {
+		$data[4] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$row["id_agente"].'&tab=alert"><img src="images/bell.png" border="0" /></a>';
+	}
+	
+	if (!empty ($row["id_grupo"])) {
+		$data[5] = '<img src="images/groups_small/'.show_icon_group ($row["id_grupo"]).'.png" title="'.dame_nombre_grupo ($row["id_grupo"]).'" class="bot" />';
+	} else {
+		$data[5] = '';
+	}
+
+	if (!empty ($row["estado"])) {
+		$data[6] = '<a href="index.php?sec=usuario&sec2=operation/user/user_edit&ver='.$row["id_usuario"].'" title="'.dame_nombre_real ($row["id_usuario"]).'">'.substr ($row["id_usuario"],0,8).'</a>';
+	} else {
+		$data[6] = '';
+	}
+	
+	//Time
+	$data[7] = '<span class="f9" title="'.format_datetime ($row["timestamp"]).'">'.human_time_comparation ($row["timestamp"]).'</span>';
+	
+	//Actions
+	$data[8] = '';
+	// Validate event
+	if (($row["estado"] == 0) and (give_acl ($config["id_user"], $row["id_grupo"], "IW") == 1)) {
+		$data[8] .= '<a href="'.$url.'&validate=1&eventid='.$row["id_evento"].'&pure='.$config["pure"].'"><img src="images/ok.png" border="0" /></a>';
+	}
+	// Delete event
+	if (give_acl ($config["id_user"], $row["id_grupo"], "IM") == 1) {
+		$data[8] .= '<a href="'.$url.'&delete=1&eventid='.$row["id_evento"].'&pure='.$config["pure"].'"><img src="images/cross.png" border="0" /></a>';
+	}
+	// Create incident from this event			
+	if (give_acl ($config["id_user"], $row["id_grupo"], "IW") == 1) {
+		$data[8] .= '<a href="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&insert_form&from_event='.$row["id_evento"].'"><img src="images/page_lightning.png" border="0" /></a>';
+	}
+	
+	//Checkbox
+	$data[9] = print_checkbox_extended ("eventid[]", $row["id_evento"], false, false, false, 'class="chk"', true);
+	
+	array_push ($table->data, $data);
+}
+
+if (!empty ($table->data)) {
+	echo '<form method="post" action="'.$url.'&pure='.$config["pure"].'">';
+	print_table ($table);
+	echo '<div style="width:750px; text-align:right">';
+	if (give_acl ($config["id_user"], 0, "IW") == 1) {
+		print_submit_button (__('Validate'), 'validate', false, 'class="sub ok"');
+	}
 	if (give_acl ($config["id_user"], 0,"IM") == 1) {
-		echo "<input class='sub delete' type='submit' name='deletebt' value='".__('Delete')."'>";
+		print_submit_button (__('Delete'), 'delete', false, 'class="sub delete"');
 	}
-	echo "</form></table>";
-	echo "<table>";
-	echo "<tr>";
-	echo "<td rowspan='4' class='f9' style='padding-left: 30px; line-height: 17px; vertical-align: top;'>";
-	echo "<h3>".__('Status')."</h3>";
-	echo "<img src='images/dot_green.png'> - ".__('Validated event');
-	echo "<br>";
-	echo "<img src='images/dot_red.png'> - ".__('Not validated event');
-	echo "</td>";
-	echo "<td rowspan='4' class='f9' style='padding-left: 30px; line-height: 17px; vertical-align: top;'>";
-	echo "<h3>".__('Action')."</h3>";
-	echo "<img src='images/ok.png'> - ".__('Validate event');
-	echo "<br>";
-	echo "<img src='images/cross.png'> - ".__('Delete event');
-	echo "<br>";
-	echo "<img src='images/page_lightning.png'> - ".__('Create incident');
-	echo "</td></tr></table>";
-} // no events to show
+	echo '</div></form>';
+} else {
+	echo '<div class="error">'.__('No events').'</div>';
+}
+unset ($table);
+
+echo '<div style="padding-left:30px; width:150px; float:left; line-height:17px;">';
+echo '<h3>'.__('Status').'</h3>';
+echo '<img src="images/dot_green.png" /> - '.__('Validated event');
+echo '<br />';
+echo '<img src="images/dot_red.png" /> - '.__('Not validated event');
+
+echo '</div><div style="padding-left:30px; width:150px; float:left; line-height:17px;">';
+echo '<h3>'.__('Action').'</h3>';
+echo '<img src="images/ok.png" /> - '.__('Validate event');
+echo '<br />';
+echo '<img src="images/cross.png" /> - '.__('Delete event');
+echo '<br />';
+echo '<img src="images/page_lightning.png" /> - '.__('Create incident');
+echo '</div><div style="clear:both;">&nbsp;</div>';
 ?>
+<script type="text/javascript" src="include/javascript/jquery.js"></script>
+<script language="JavaScript" type="text/javascript">
+$(document).ready( function() {
+	$("INPUT[name='allbox']").click( function() {
+		$("INPUT[name='eventid[]']").each( function() {
+			$(this).attr('checked', !$(this).attr('checked'));
+		});
+		return !(this).attr('checked');
+	});
+	$("#tgl_event_control").click( function () {
+		$("#event_control").slideToggle ("slow");						  
+	});
+});
+</script>

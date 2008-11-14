@@ -361,17 +361,6 @@ function return_event_description ($id_event) {
 }
 
 /** 
- * Get group id of an event.
- * 
- * @param id_event Event id
- * 
- * @return Group id of the given event.
- */
-function gime_idgroup_from_idevent ($id_event) {
-	return (int) get_db_value ('id_grupo', 'tevento', 'id_evento', (int) $id_event);
-}
-
-/** 
  * Get name of an agent.
  * 
  * @param id_agent Agent id.
@@ -580,7 +569,7 @@ function get_monitors_in_group ($id_group) {
  * 
  * @return An array with all the events happened.
  */
-function get_events_in_group ($id_group, $period, $date) {
+function get_group_events ($id_group, $period, $date) {
 	$datelimit = $date - $period;
 	
 	if ($id_group == 1) {
@@ -2111,7 +2100,7 @@ function smal_event_table ($filter = "", $limit = 10, $width = 440) {
 			$tdclass = "datos_grey";
 		}
 		
-		$criticity_label = return_priority ($event["criticity"]);
+		$criticity_label = get_priority_name ($event["criticity"]);
 		/* Colored box */
 		echo "<tr><td class='$tdclass' title='$criticity_label' align='center'>";
 		if ($event["estado"] == 0) {

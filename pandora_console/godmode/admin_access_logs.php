@@ -16,7 +16,8 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Load global vars
-require("include/config.php");
+
+require_once ("include/config.php");
 
 check_login ();
 
@@ -28,106 +29,84 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 }
 
 echo "<h2>".__('Pandora audit')." &gt ".__('Review Logs')."</h2>";
-if (isset ($_GET["offset"]))
-	$offset=$_GET["offset"];
-else
-	$offset=0;
+$offset = get_parameter ("offset", 0);
+$tipo_log = get_parameter ("tipo_log", 'all');
 
-echo "<table width=100%>";
-echo "<tr><td>";
-echo "<table cellpadding='4' cellspacing='4' class='databox'>";
-echo "<tr><td colspan='2' valign='top'>";
-echo "<h3>".__('Filter')."</h3></td></tr>";
-// Manage GET/POST parameter for subselect on action type. POST parameter are proccessed before GET parameter (if passed)
-if (isset ($_GET["tipo_log"])) {
-	$tipo_log = $_GET["tipo_log"];
-	$tipo_log_select = " WHERE accion='".$tipo_log."' ";
-} elseif (isset ($_POST["tipo_log"])) {
-	$tipo_log = $_POST["tipo_log"];
-	if ($tipo_log == "-1"){
-		$tipo_log_select = "";
-		unset($tipo_log);
-	} else {
-		$tipo_log_select = " WHERE accion='".$tipo_log."' ";
-	}
-} else {
-	$tipo_log_select= "";
+echo '<div style="width:450px; float:left;">';
+echo '<h3>'.__('Filter').'</h3>';
+
+// generate select
+
+$rows = get_db_all_rows_sql ("SELECT DISTINCT(accion) FROM tsesion");
+if (empty ($rows)) {
+	$rows = array ();
 }
-// generate select 
 
-echo "<form name='query_sel' method='post' action='index.php?sec=godmode&sec2=godmode/admin_access_logs'>";
-echo "<tr><td>".__('Action')."</td><td valign='middle'>";
-echo "<select name='tipo_log' onChange='javascript:this.form.submit();'>";
-if (isset($tipo_log)) {
-	echo "<option>".$tipo_log."</option>";
+$actions = array ();
+
+foreach ($rows as $row) {
+	$actions[$row["accion"]] = $row["accion"]; 
 }
-echo "<option value='-1'>".__('All')."</option>";
-$sql3="SELECT DISTINCT (accion) FROM `tsesion`"; 
-// Prepare index for pagination
-$result3=mysql_query($sql3);
-while ($row3=mysql_fetch_array($result3)){
-	if (isset($tipo_log)) {
-		if ($tipo_log != $row3[0]) {
-			echo "<option value='".$row3[0]."'>".$row3[0]."</option>";
-		}
-	} else {
-		echo "<option value='".$row3[0]."'>".$row3[0]."</option>";
-	}
+	
+echo '<form name="query_sel" method="post" action="index.php?sec=godmode&sec2=godmode/admin_access_logs">';
+echo __('Action').': ';
+print_select ($actions, 'tipo_log', $tipo_log, 'this.form.submit();', __('All'), 'all');
+echo '<br /><noscript><input name="uptbutton" type="submit" class="sub" value="'.__('Show').'"></noscript>';
+echo '</form></div>';
+
+echo '<div style="width:300px; height:140px; float:left;">';
+echo '<img src="reporting/fgraph.php?tipo=user_activity&width=300&height=140" />';
+echo '</div><div style="clear:both;">&nbsp;</div>';
+
+$filter = '';
+if ($tipo_log != 'all') {
+	$filter = sprintf (" WHERE accion = '%s'", $tipo_log);
 }
-echo "</select>";
-echo "<td valign='middle'><noscript><input name='uptbutton' type='submit' class='sub' value='".__('Show')."'></noscript>";
-echo "</table></form>";
 
-echo "</td><td align='right'>";
-echo "<img src='reporting/fgraph.php?tipo=user_activity&width=300&height=140'>";
-echo "</table>";
+$sql = "SELECT COUNT(*) FROM tsesion".$filter;
+$count = get_db_sql ($sql);
+$url = "index.php?sec=godmode&sec2=godmode/admin_access_logs&tipo_log=".$tipo_log;
 
-$sql2="SELECT COUNT(*) FROM tsesion ".$tipo_log_select." ORDER BY fecha DESC";
-$result2=mysql_query($sql2);
-$row2=mysql_fetch_array($result2);
-$counter = $row2[0];
-if (isset ($tipo_log))
-	$url = "index.php?sec=godmode&sec2=godmode/admin_access_logs&tipo_log=".$tipo_log;
-else
-	$url = "index.php?sec=godmode&sec2=godmode/admin_access_logs";
+pagination ($count, $url, $offset);
 
-// Prepare query and pagination
-$query1 = "SELECT * FROM tsesion " . $tipo_log_select." ORDER BY fecha DESC"; 
-if ( $counter > $config["block_size"]) {
-	pagination ($counter, $url, $offset);
-	$query1 .= " LIMIT $offset , ".$config["block_size"];
+
+$sql = sprintf ("SELECT * FROM tsesion%s ORDER BY fecha DESC LIMIT %d, %d", $filter, $offset, $config["block_size"]);
+$result = get_db_all_rows_sql ($sql);
+
+if (empty ($result)) {
+	$result = array ();
 }
-$result=mysql_query($query1);
 
-// table header
-echo '<table cellpadding="4" cellspacing="4" width="700" class="databox">';
-echo '<tr>';
-echo '<th width="80px">'.__('User').'</th>';
-echo '<th>'.__('Action').'</th>';
-echo '<th width="130px">'.__('Date').'</th>';
-echo '<th width="100px">'.__('Source IP').'</th>';
-echo '<th width="200px">'.__('Comments').'</th>';
+$table->cellpadding = 4;
+$table->cellspacing = 4;
+$table->width = 700;
+$table->class = "databox";
+$table->size = array ();
+$table->data = array ();
+$table->head = array ();
 
-$color=1;
+$table->head[0] = __('User');
+$table->head[1] = __('Action');
+$table->head[2] = __('Date');
+$table->head[3] = __('Source IP');
+$table->head[4] = __('Comments');
+
+$table->size[0] = 80;
+$table->size[2] = 130;
+$table->size[3] = 100;
+$table->size[4] = 200;
+
 // Get data
-while ($row=mysql_fetch_array($result)) {
-	if ($color == 1){
-		$tdcolor = "datos";
-		$color = 0;
-	}
-	else {
-		$tdcolor = "datos2";
-		$color = 1;
-	}
-	echo '<tr><td class="'.$tdcolor.'_id">'.$row["ID_usuario"];
-	echo '<td class="'.$tdcolor.'">'.$row["accion"];
-	echo '<td class="'.$tdcolor.'f9">'.$row["fecha"];
-	echo '<td class="'.$tdcolor.'f9">'.$row["IP_origen"];
-	echo '<td class="'.$tdcolor.'">'.$row["descripcion"];
-	echo '</tr>';
+foreach ($result as $row) {
+	$data = array ();
+	$data[0] = $row["ID_usuario"];
+	$data[1] = $row["accion"];
+	$data[2] = $row["fecha"];
+	$data[3] = $row["IP_origen"];
+	$data[4] = $row["descripcion"];
+	array_push ($table->data, $data);
 }
 
-// end table
-echo "</table>"; 
+print_table ($table);
 
 ?>

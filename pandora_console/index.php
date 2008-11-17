@@ -28,32 +28,32 @@ global $pandora_version;
 // Set to 1 to do not check for installer or config file (for development!).
 $develop_bypass = 0;
 
-if ($develop_bypass != 1){
+if ($develop_bypass != 1) {
 	// If no config file, automatically try to install
-	if (! file_exists("include/config.php")){
-		if (!file_exists("install.php")){
+	if (! file_exists ("include/config.php")) {
+		if (! file_exists ("install.php")) {
 			include ("general/error_noconfig.php");
 			exit;
-		} else
+		} else {
 			include ("install.php");
-		exit;
+			exit;
+		}
 	}
 	// Check for installer presence
-	if (file_exists("install.php")){
+	if (file_exists ("install.php")) {
 		include "general/error_install.php";
 		exit;
 	}
 	// Check perms for config.php
-	if ((substr(sprintf('%o', fileperms('include/config.php')), -4) != "0600") &&
-	    (substr(sprintf('%o', fileperms('include/config.php')), -4) != "0660") &&
-	    (substr(sprintf('%o', fileperms('include/config.php')), -4) != "0640"))
-	{
+	if ((substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0600") &&
+	    (substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0660") &&
+	    (substr (sprintf ('%o', fileperms('include/config.php')), -4) != "0640")) {
 		include "general/error_perms.php";
 		exit;
 	}
 }
 
-if ((! file_exists("include/config.php")) || (! is_readable("include/config.php"))){
+if ((! file_exists("include/config.php")) || (! is_readable("include/config.php"))) {
 	include ("general/error_noconfig.php");
 	exit;
 }
@@ -78,7 +78,7 @@ $config["pure"] = get_parameter ("pure", 0);
 
 // Auto Refresh page
 $intervalo = get_parameter ("refr", 0);
-if ($intervalo > 0){
+if ($intervalo > 0) {
 	// Agent selection filters and refresh
 	$query = 'http' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '') . '://' . $_SERVER['SERVER_NAME'];
 	if ($_SERVER['SERVER_PORT'] != 80 && (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE && $_SERVER['SERVER_PORT'] != 443))
@@ -209,13 +209,13 @@ $sec2 = "";
 $sec = "";
 if (isset ($_GET["sec2"])) {
 	$sec2 = get_parameter_get ('sec2');
-	$sec2 = parameter_extra_clean ($sec2);
+	$sec2 = safe_url_extraclean ($sec2);
 	$page = $sec2;
 }
 
 if (isset ($_GET["sec"])) {
 	$sec = get_parameter_get ('sec');
-	$sec = parameter_extra_clean ($sec);
+	$sec = safe_url_extraclean ($sec);
 	$page = $sec2;
 }
 
@@ -277,5 +277,4 @@ if ($config["pure"] == 0) {
 }
 
 echo '</body></html>';
-
 ?>

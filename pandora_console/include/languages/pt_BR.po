@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-10-31 11:29+0100\n"
-"PO-Revision-Date: 2008-11-05 02:09+0000\n"
+"PO-Revision-Date: 2008-11-10 00:56+0000\n"
 "Last-Translator: Cleber Paiva de Souza <cleberps@gmail.com>\n"
 "Language-Team: pt_br <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-11-05 08:52+0000\n"
+"X-Launchpad-Export-Date: 2008-11-17 08:36+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../../reporting/stat_win.php:46
@@ -402,7 +402,7 @@ msgstr "Monitorar saúde"
 
 #: ../../general/logon_ok.php:120 ../../operation/agentes/tactical.php:95
 msgid "of monitors UP"
-msgstr ""
+msgstr "dos monitores UP"
 
 #: ../../general/logon_ok.php:122 ../../operation/agentes/tactical.php:96
 msgid "Data health"
@@ -606,6 +606,9 @@ msgid ""
 "Enterprise version, for more information visit <a "
 "href=\"http://pandorafms.com\">http://pandorafms.com</a>."
 msgstr ""
+"O Gerenciador de Atualizações é um dos recursos mais avançados da versão "
+"Enterprise do Pandora FMS 2.0, para maiores informações visite <a "
+"href=\"http://pandorafms.com\">http://pandorafms.com</a>."
 
 #: ../../extensions/update_manager/main.php:46
 msgid ""
@@ -613,6 +616,10 @@ msgid ""
 "of agents and modules running). To disable it, just delete extension or "
 "remove remote server address from Update Manager plugin setup."
 msgstr ""
+"O Gerenciador de Atualizações envia informações anônimas sobre o uso do "
+"Pandora FMS (número de agentes e módulos em execução). Para desabilitar "
+"isso, apenas exclua a extensão ou remova o endereço do servidor remoto do "
+"configurador de plugins do Gerenciador de Atualizações."
 
 #: ../../extensions/update_manager/main.php:66
 msgid "Your system is up-to-date"
@@ -628,7 +635,7 @@ msgstr "A autorização do servidor foi rejeitada"
 
 #: ../../extensions/update_manager/main.php:72
 msgid "There's a new update for Pandora FMS"
-msgstr ""
+msgstr "Existe uma nova atualização para o Pandora FMS"
 
 #: ../../extensions/update_manager/main.php:77
 msgid "Id"
@@ -1406,7 +1413,7 @@ msgstr "O SLA foi criado com sucesso"
 
 #: ../../godmode/reporting/reporting_builder.php:225
 msgid "There was a problem creating SLA"
-msgstr ""
+msgstr "Houve um problema durante a criação do SLA"
 
 #: ../../godmode/reporting/reporting_builder.php:228
 msgid "Module is not set"

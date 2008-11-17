@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2008-10-31 11:29+0100\n"
-"PO-Revision-Date: 2008-10-22 17:39+0000\n"
-"Last-Translator: whitemay <whitemay@hotmail.com>\n"
+"PO-Revision-Date: 2008-11-13 03:18+0000\n"
+"Last-Translator: deadeye <Unknown>\n"
 "Language-Team: Simplified Chinese <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-11-05 08:52+0000\n"
+"X-Launchpad-Export-Date: 2008-11-17 08:36+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../../reporting/stat_win.php:46
@@ -458,7 +458,7 @@ msgstr "这是您在Pandora FMS控制台的上一次动作"
 #: ../../godmode/servers/manage_export_form.php:103
 #: ../../godmode/admin_access_logs.php:105
 msgid "User"
-msgstr ""
+msgstr "用户"
 
 #: ../../general/logon_ok.php:172 ../../godmode/servers/manage_export.php:102
 #: ../../godmode/servers/manage_recontask.php:100

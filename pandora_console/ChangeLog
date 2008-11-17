@@ -1,3 +1,34 @@
+2008-11-17  Jorge Gonzalez  <jorgegonz@svn.gnome.org>
+
+	* pandoradb_data.sql: Added Danish to available languages.
+
+	* include/languages/da.po, include/languages/cs.po,
+	  include/languages/pt_BR.po, include/languages/es.po,
+	  include/languages/pl.mo, include/languages/it.mo,
+	  include/languages/sl.mo, include/languages/uk.po,
+	  include/languages/pt.mo, include/languages/ro.po,
+	  include/languages/ast.mo, include/languages/cs.mo,
+	  include/languages/pt_BR.mo, include/languages/fr.mo, 
+	  include/languages/uk.mo, include/languages/ro.mo, 
+	  include/languages/ca.po, include/languages/sv.po, 
+	  include/languages/de.po, include/languages/zh_TW.po, 
+	  include/languages/fi.po, include/languages/hi.po, 
+	  include/languages/zh_CN.po, include/languages/fr.mo, 
+	  include/languages/te.po, include/languages/eu.po, 
+	  include/languages/hu.po, include/languages/ca.mo, 
+	  include/languages/de.mo, include/languages/sv.mo, 
+	  include/languages/ru.po, include/languages/zh_TW.mo, 
+	  include/languages/fi.mo, include/languages/hi.mo, 
+	  include/languages/zh_CN.mo, include/languages/gl.po, 
+	  include/languages/te.mo, include/languages/eu.mo, 
+	  include/languages/hu.mo, include/languages/pl.po, 
+	  include/languages/it.po, include/languages/sl.po, 
+	  include/languages/pt.po, include/languages/ru.mo, 
+	  include/languages/ast.po, include/languages/gl.mo: Updated
+	  languages and added Danish.
+
+	* include/languages/index.pot: Updated po template.
+
 2008-11-14  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* operation/reporting/reporting_xml.php: Fixed bug #2268220

@@ -1,4 +1,4 @@
-# Slovenian translation for pandora-fms
+# Danish translation for pandora-fms
 # Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
 # This file is distributed under the same license as the pandora-fms package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2008-11-11 08:59+0100\n"
-"PO-Revision-Date: 2008-09-23 18:56+0000\n"
-"Last-Translator: Štefan Baebler <Unknown>\n"
-"Language-Team: Slovenian <sl@li.org>\n"
+"PO-Revision-Date: 2008-11-16 15:46+0000\n"
+"Last-Translator: nanker <Unknown>\n"
+"Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-11-17 08:32+0000\n"
+"X-Launchpad-Export-Date: 2008-11-17 08:33+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../../reporting/stat_win.php:46
@@ -29,28 +29,28 @@ msgstr ""
 #: ../../include/functions.php:533
 #: ../../operation/reporting/graph_viewer.php:124
 msgid "1 hour"
-msgstr "1 ura"
+msgstr "1 time"
 
 #: ../../reporting/stat_win.php:55 ../../reporting/stat_win.php:219
 #: ../../godmode/reporting/graph_builder.php:332
 #: ../../godmode/reporting/graph_builder.php:386
 #: ../../include/functions.php:536
 msgid "2 hours"
-msgstr "2 uri"
+msgstr "2 timer"
 
 #: ../../reporting/stat_win.php:57 ../../reporting/stat_win.php:220
 #: ../../godmode/reporting/graph_builder.php:338
 #: ../../godmode/reporting/graph_builder.php:388
 #: ../../include/functions.php:539
 msgid "6 hours"
-msgstr "6 ur"
+msgstr "6 timer"
 
 #: ../../reporting/stat_win.php:59 ../../reporting/stat_win.php:221
 #: ../../godmode/reporting/graph_builder.php:341
 #: ../../godmode/reporting/graph_builder.php:389
 #: ../../include/functions.php:542
 msgid "12 hours"
-msgstr "12 ur"
+msgstr "12 timer"
 
 #: ../../reporting/stat_win.php:61 ../../reporting/stat_win.php:222
 #: ../../godmode/reporting/graph_builder.php:344
@@ -59,7 +59,7 @@ msgstr "12 ur"
 #: ../../include/functions.php:545
 #: ../../operation/reporting/graph_viewer.php:129
 msgid "1 day"
-msgstr "1 dan"
+msgstr "1 dag"
 
 #: ../../reporting/stat_win.php:63 ../../reporting/stat_win.php:223
 #: ../../godmode/reporting/graph_builder.php:347
@@ -68,19 +68,19 @@ msgstr "1 dan"
 #: ../../include/functions.php:548
 #: ../../operation/reporting/graph_viewer.php:130
 msgid "2 days"
-msgstr "2 dni"
+msgstr "2 dage"
 
 #: ../../reporting/stat_win.php:65 ../../reporting/stat_win.php:224
 #: ../../include/functions.php:551
 msgid "5 days"
-msgstr "5 dni"
+msgstr "5 dage"
 
 #: ../../reporting/stat_win.php:67 ../../reporting/stat_win.php:225
 #: ../../godmode/reporting/reporting_builder.php:406
 #: ../../include/functions.php:554
 #: ../../operation/reporting/graph_viewer.php:131
 msgid "1 week"
-msgstr "1 teden"
+msgstr "1 uge"
 
 #: ../../reporting/stat_win.php:69 ../../reporting/stat_win.php:226
 #: ../../godmode/reporting/map_builder.php:367
@@ -88,21 +88,21 @@ msgstr "1 teden"
 #: ../../godmode/reporting/graph_builder.php:393
 #: ../../include/functions.php:557
 msgid "15 days"
-msgstr "15 dni"
+msgstr "15 dage"
 
 #: ../../reporting/stat_win.php:71 ../../reporting/stat_win.php:227
 #: ../../godmode/reporting/reporting_builder.php:408
 #: ../../include/functions.php:560
 #: ../../operation/reporting/graph_viewer.php:132
 msgid "1 month"
-msgstr "1 mesec"
+msgstr "1 måned"
 
 #: ../../reporting/stat_win.php:73 ../../reporting/stat_win.php:228
 #: ../../godmode/reporting/graph_builder.php:362
 #: ../../godmode/reporting/graph_builder.php:395
 #: ../../include/functions.php:563
 msgid "2 months"
-msgstr "2 meseca"
+msgstr "2 måneder"
 
 #: ../../reporting/stat_win.php:75 ../../reporting/stat_win.php:229
 #: ../../godmode/reporting/graph_builder.php:365
@@ -111,7 +111,7 @@ msgstr "2 meseca"
 #: ../../include/functions.php:566
 #: ../../operation/reporting/graph_viewer.php:133
 msgid "6 months"
-msgstr "6 mesecev"
+msgstr "6 måneder"
 
 #: ../../reporting/stat_win.php:114
 #: ../../godmode/agentes/module_manager_editor_wmi.php:217
@@ -123,13 +123,13 @@ msgstr "6 mesecev"
 #: ../../operation/reporting/reporting_viewer.php:320
 #: ../../operation/reporting/reporting_xml.php:252
 msgid "Max. Value"
-msgstr "Največja vrednost"
+msgstr "Maks værdi"
 
 #: ../../reporting/stat_win.php:116 ../../include/functions.php:1006
 #: ../../operation/reporting/reporting_viewer.php:305
 #: ../../operation/reporting/reporting_xml.php:247
 msgid "Avg. Value"
-msgstr "Povprečna vrednost"
+msgstr ""
 
 #: ../../reporting/stat_win.php:118
 #: ../../godmode/agentes/module_manager_editor_wmi.php:215
@@ -141,27 +141,27 @@ msgstr "Povprečna vrednost"
 #: ../../operation/reporting/reporting_viewer.php:335
 #: ../../operation/reporting/reporting_xml.php:257
 msgid "Min. Value"
-msgstr "Najmanjša vrednost"
+msgstr ""
 
 #: ../../reporting/stat_win.php:187
 msgid "Refresh time"
-msgstr "Čas osveževanja"
+msgstr ""
 
 #: ../../reporting/stat_win.php:191
 msgid "Avg. Only"
-msgstr "Samo povprečje"
+msgstr ""
 
 #: ../../reporting/stat_win.php:198
 msgid "Begin date"
-msgstr "Datum začetka"
+msgstr ""
 
 #: ../../reporting/stat_win.php:203
 msgid "Zoom factor"
-msgstr "Faktor povečave"
+msgstr ""
 
 #: ../../reporting/stat_win.php:214
 msgid "Time range"
-msgstr "Časovni razpon"
+msgstr ""
 
 #: ../../reporting/stat_win.php:233
 msgid "Show events"
@@ -185,13 +185,13 @@ msgstr ""
 #: ../../operation/incidents/incident.php:199
 #: ../../operation/incidents/incident_detail.php:293
 msgid "Low"
-msgstr "Nizko"
+msgstr "Lav"
 
 #: ../../reporting/fgraph.php:1042 ../../operation/incidents/incident.php:189
 #: ../../operation/incidents/incident.php:200
 #: ../../operation/incidents/incident_detail.php:294
 msgid "Medium"
-msgstr "Srednje"
+msgstr ""
 
 #: ../../reporting/fgraph.php:1043 ../../operation/incidents/incident.php:188
 #: ../../operation/incidents/incident.php:201
@@ -210,51 +210,51 @@ msgstr ""
 #: ../../operation/incidents/incident.php:203
 #: ../../operation/incidents/incident_detail.php:297
 msgid "Maintenance"
-msgstr "Vzdrževanje"
+msgstr "Vedligeholdelse"
 
 #: ../../reporting/fgraph.php:1273 ../../include/functions.php:676
 #: ../../include/functions.php:1158 ../../include/functions.php:1178
 msgid "Informational"
-msgstr "Informativno"
+msgstr ""
 
 #: ../../reporting/fgraph.php:1280 ../../include/functions.php:679
 #: ../../include/functions.php:1159 ../../include/functions.php:1180
 msgid "Normal"
-msgstr "Običajno"
+msgstr "Normal"
 
 #: ../../reporting/fgraph.php:1287 ../../include/functions.php:682
 #: ../../include/functions.php:1160 ../../include/functions.php:1182
 msgid "Warning"
-msgstr "Opozorilo"
+msgstr "Advarsel"
 
 #: ../../reporting/fgraph.php:1294 ../../include/functions.php:685
 #: ../../include/functions.php:1161 ../../include/functions.php:1184
 msgid "Critical"
-msgstr "Kritično"
+msgstr "Kritisk"
 
 #: ../../reporting/fgraph.php:1469
 msgid "Today"
-msgstr "Danes"
+msgstr "I dag"
 
 #: ../../reporting/fgraph.php:1470
 msgid "Week"
-msgstr "Teden"
+msgstr "Uge"
 
 #: ../../reporting/fgraph.php:1471
 msgid "Month"
-msgstr "Mesec"
+msgstr "Måned"
 
 #: ../../reporting/fgraph.php:1472
 msgid "Months"
-msgstr "Meseci"
+msgstr "Måneder"
 
 #: ../../reporting/fgraph.php:1473
 msgid "Older"
-msgstr "Starejši"
+msgstr "Ældre"
 
 #: ../../reporting/fgraph.php:1513
 msgid "no data"
-msgstr "ni podatkov"
+msgstr "ingen data"
 
 #: ../../reporting/fgraph.php:1580
 msgid "Out of limits"
@@ -306,7 +306,7 @@ msgstr ""
 
 #: ../../general/login_page.php:40
 msgid "Login"
-msgstr "Prijava"
+msgstr "Log in"
 
 #: ../../general/login_page.php:43
 #: ../../godmode/servers/manage_export_form.php:107
@@ -317,7 +317,7 @@ msgstr "Prijava"
 #: ../../operation/users/user_edit.php:115
 #: ../../operation/users/user_edit.php:119
 msgid "Password"
-msgstr "Geslo"
+msgstr "Adgangskode"
 
 #: ../../general/footer.php:31
 msgid "Page generated at"
@@ -339,11 +339,11 @@ msgstr ""
 
 #: ../../general/links_menu.php:22 ../../godmode/menu.php:255
 msgid "Links"
-msgstr "Povezave"
+msgstr "Links"
 
 #: ../../general/noaccess.php:22
 msgid "You don't have access to this page"
-msgstr ""
+msgstr "Du har ikke adgang til denne side"
 
 #: ../../general/noaccess.php:26
 msgid ""
@@ -365,11 +365,11 @@ msgstr ""
 
 #: ../../general/logon_ok.php:37 ../../operation/messages/message.php:179
 msgid "You have "
-msgstr "Imate "
+msgstr "Du har "
 
 #: ../../general/logon_ok.php:40 ../../operation/messages/message.php:179
 msgid " unread message(s)."
-msgstr " neprebranih sporočil"
+msgstr " ulæst(e) meddelelse(r)."
 
 #: ../../general/logon_ok.php:48 ../../godmode/menu.php:263
 msgid "Site news"
@@ -377,11 +377,11 @@ msgstr ""
 
 #: ../../general/logon_ok.php:55
 msgid "by"
-msgstr "od"
+msgstr ""
 
 #: ../../general/logon_ok.php:55
 msgid "At"
-msgstr "Ob"
+msgstr ""
 
 #: ../../general/logon_ok.php:119 ../../include/functions.php:1011
 #: ../../operation/reporting/reporting_viewer.php:378
@@ -448,7 +448,7 @@ msgstr ""
 
 #: ../../general/logon_ok.php:153
 msgid "Total users"
-msgstr ""
+msgstr "Totale antal brugere"
 
 #: ../../general/logon_ok.php:161
 msgid "This is your last activity in Pandora FMS console"
@@ -458,7 +458,7 @@ msgstr ""
 #: ../../godmode/servers/manage_export_form.php:103
 #: ../../godmode/admin_access_logs.php:105
 msgid "User"
-msgstr ""
+msgstr "Bruger"
 
 #: ../../general/logon_ok.php:172 ../../godmode/servers/manage_export.php:102
 #: ../../godmode/servers/manage_recontask.php:100
@@ -476,16 +476,16 @@ msgstr ""
 #: ../../operation/snmpconsole/snmp_view.php:408
 #: ../../operation/events/events.php:353 ../../operation/events/events.php:509
 msgid "Action"
-msgstr ""
+msgstr "Handling"
 
 #: ../../general/logon_ok.php:173 ../../godmode/admin_access_logs.php:107
 #: ../../operation/reporting/reporting_viewer.php:70
 msgid "Date"
-msgstr "Datum"
+msgstr "Dato"
 
 #: ../../general/logon_ok.php:174 ../../godmode/admin_access_logs.php:108
 msgid "Source IP"
-msgstr "IP izvora"
+msgstr "Kilde IP"
 
 #: ../../general/logon_ok.php:175
 #: ../../godmode/servers/manage_recontask_form.php:135
@@ -495,46 +495,46 @@ msgstr "IP izvora"
 #: ../../godmode/users/configure_user.php:209
 #: ../../operation/users/user_edit.php:129
 msgid "Comments"
-msgstr "Opombe"
+msgstr "Kommentarer"
 
 #: ../../general/header.php:31
 msgid "You are"
-msgstr ""
+msgstr "Du er"
 
 #: ../../general/header.php:35
 msgid "Logout"
-msgstr "Odjava"
+msgstr "Log af"
 
 #: ../../general/header.php:39
 msgid "General information"
-msgstr "Splošni podatki"
+msgstr "Generel information"
 
 #: ../../general/header.php:49 ../../general/header.php:55
 msgid "All systems"
-msgstr ""
+msgstr "Alle systemer"
 
 #: ../../general/header.php:49
 #: ../../godmode/reporting/reporting_builder.php:476
 #: ../../operation/agentes/estado_grupo.php:220
 msgid "Down"
-msgstr "Dol"
+msgstr "Ned"
 
 #: ../../general/header.php:52
 msgid "servers down"
-msgstr ""
+msgstr "servere nede"
 
 #: ../../general/header.php:55
 msgid "Ready"
-msgstr ""
+msgstr "Klar"
 
 #: ../../general/header.php:65 ../../general/header.php:67
 msgid "Autorefresh"
-msgstr "Samodejno osveževanje"
+msgstr ""
 
 #: ../../general/header.php:72 ../../operation/events/event_statistics.php:32
 #: ../../operation/events/events.php:211
 msgid "Events"
-msgstr "Dogodki"
+msgstr "Hændelser"
 
 #: ../../general/logon_failed.php:22
 msgid "Authentication Error"
@@ -595,11 +595,11 @@ msgstr ""
 
 #: ../../extensions/update_manager/main.php:66
 msgid "Your system is up-to-date"
-msgstr "Uporabljate najnovejšo različico sistema."
+msgstr "Dit system er opdateret"
 
 #: ../../extensions/update_manager/main.php:68
 msgid "Server connection failed"
-msgstr "Povezava s strežnikom ni uspela"
+msgstr ""
 
 #: ../../extensions/update_manager/main.php:70
 msgid "Server authorization rejected"
@@ -611,7 +611,7 @@ msgstr ""
 
 #: ../../extensions/update_manager/main.php:77
 msgid "Id"
-msgstr ""
+msgstr "ID"
 
 #: ../../extensions/update_manager/main.php:80
 #: ../../godmode/setup/news.php:129 ../../include/functions_db.php:2083
@@ -623,7 +623,7 @@ msgstr ""
 #: ../../operation/events/events.php:352
 #: ../../operation/messages/message.php:191
 msgid "Timestamp"
-msgstr "Časovni žig"
+msgstr "Tidsstempel"
 
 #: ../../extensions/update_manager/main.php:83
 #: ../../godmode/reporting/graph_builder.php:487
@@ -669,11 +669,11 @@ msgstr "Časovni žig"
 #: ../../operation/agentes/estado_alertas.php:163
 #: ../../operation/users/user.php:35
 msgid "Description"
-msgstr "Opis"
+msgstr "Beskrivelse"
 
 #: ../../extensions/update_manager/main.php:89
 msgid "Overwrite local changes"
-msgstr "Prepiši krajevne spremembe"
+msgstr ""
 
 #: ../../extensions/update_manager/main.php:93
 #: ../../extensions/update_manager/settings.php:82
@@ -717,7 +717,7 @@ msgstr "Prepiši krajevne spremembe"
 #: ../../operation/events/events.php:309
 #: ../../operation/users/user_edit.php:137
 msgid "Update"
-msgstr "Posodobi"
+msgstr "Opdatér"
 
 #: ../../extensions/update_manager/main.php:98
 msgid "Your system version number is"
@@ -729,7 +729,7 @@ msgstr ""
 
 #: ../../extensions/update_manager/settings.php:43
 msgid "Settings"
-msgstr "Nastavitve"
+msgstr "Opsætning"
 
 #: ../../extensions/update_manager/settings.php:49
 msgid "Customer key"
@@ -773,15 +773,15 @@ msgstr ""
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:552
 msgid "Development"
-msgstr "Razvoj"
+msgstr ""
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:553
 msgid "Testing"
-msgstr "Preizkušanje"
+msgstr ""
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:554
 msgid "Public"
-msgstr "Javno"
+msgstr ""
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:555
 #: ../../godmode/groups/group_list.php:125
@@ -797,11 +797,11 @@ msgstr "Javno"
 #: ../../godmode/agentes/alert_manager_editor.php:273
 #: ../../include/functions.php:772
 msgid "Disabled"
-msgstr "Izključeno"
+msgstr ""
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:563
 msgid "Database"
-msgstr "Zbirka podatkov"
+msgstr "Database"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:564
 msgid "Code / binary directory"
@@ -813,7 +813,7 @@ msgstr ""
 
 #: ../../extensions/update_manager.php:109
 msgid "More info"
-msgstr ""
+msgstr "Mere info"
 
 #: ../../extensions/update_manager.php:125
 msgid "Update manager settings"
@@ -933,7 +933,7 @@ msgstr ""
 #: ../../operation/agentes/estado_alertas.php:134
 #: ../../operation/events/events.php:238 ../../operation/events/events.php:350
 msgid "Group"
-msgstr "Skupina"
+msgstr "Gruppe"
 
 #: ../../godmode/reporting/map_builder.php:263
 #: ../../godmode/reporting/map_builder.php:352
@@ -972,7 +972,7 @@ msgstr "Skupina"
 #: ../../operation/events/events.php:497
 #: ../../operation/messages/message.php:192
 msgid "Delete"
-msgstr "Izbriši"
+msgstr "Slet"
 
 #: ../../godmode/reporting/map_builder.php:287
 #: ../../godmode/reporting/map_builder.php:319
@@ -1005,7 +1005,7 @@ msgstr "Izbriši"
 #: ../../godmode/alerts/configure_alert.php:98
 #: ../../operation/incidents/incident_detail.php:326
 msgid "Create"
-msgstr "Ustvari"
+msgstr "Opret"
 
 #: ../../godmode/reporting/map_builder.php:297
 #: ../../godmode/reporting/graph_builder.php:475
@@ -1033,27 +1033,27 @@ msgstr "Ustvari"
 #: ../../operation/agentes/estado_alertas.php:58
 #: ../../operation/agentes/tactical.php:229 ../../operation/users/user.php:34
 msgid "Name"
-msgstr "Ime"
+msgstr "Navn"
 
 #: ../../godmode/reporting/map_builder.php:301
 msgid "Background"
-msgstr "Ozadje"
+msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:305
 #: ../../godmode/reporting/map_builder.php:399
 #: ../../godmode/reporting/graph_builder.php:304
 msgid "Width"
-msgstr "Širina"
+msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:307
 #: ../../godmode/reporting/map_builder.php:397
 #: ../../godmode/reporting/graph_builder.php:322
 msgid "Height"
-msgstr "Višina"
+msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:327
 msgid "preview"
-msgstr "predogled"
+msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:345
 msgid "Map element trash"
@@ -1065,19 +1065,19 @@ msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:359
 msgid "Hour"
-msgstr "Ura"
+msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:360
 #: ../../godmode/reporting/map_builder.php:361
 #: ../../godmode/reporting/map_builder.php:362
 #: ../../godmode/reporting/map_builder.php:363
 msgid "Hours"
-msgstr "Ur"
+msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:364
 #: ../../godmode/reporting/graph_builder.php:390
 msgid "Last day"
-msgstr "Zadnji dan"
+msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:365
 #: ../../godmode/servers/manage_recontask_form.php:91
@@ -1091,19 +1091,19 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:353
 #: ../../godmode/reporting/graph_builder.php:392
 msgid "Last week"
-msgstr "Zadnji teden"
+msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:368
 msgid "Last Month"
-msgstr "Zadnji mesec"
+msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:369
 msgid "Two Months"
-msgstr "Dva meseca"
+msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:370
 msgid "Six Months"
-msgstr "Šest mesecev"
+msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:382
 msgid "Map element editor"
@@ -1115,11 +1115,11 @@ msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:391
 msgid "Label"
-msgstr "Oznaka"
+msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:393
 msgid "Label color"
-msgstr "Barva oznake"
+msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:395
 #: ../../godmode/reporting/reporting_builder.php:445
@@ -1143,7 +1143,7 @@ msgstr "Barva oznake"
 #: ../../operation/agentes/estado_alertas.php:162
 #: ../../operation/events/events.php:346
 msgid "Type"
-msgstr "Vrsta"
+msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:401
 #: ../../godmode/reporting/graph_builder.php:215
@@ -1159,7 +1159,7 @@ msgstr "Vrsta"
 #: ../../operation/agentes/estado_agente.php:151
 #: ../../operation/agentes/estado_alertas.php:160
 msgid "Agent"
-msgstr "Agent"
+msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:403
 #: ../../godmode/reporting/graph_builder.php:216
@@ -1171,7 +1171,7 @@ msgstr "Agent"
 #: ../../operation/reporting/reporting_viewer.php:214
 #: ../../operation/agentes/exportdata.php:174
 msgid "Module"
-msgstr "Modul"
+msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:405
 #: ../../godmode/reporting/graph_builder.php:376
@@ -1179,11 +1179,11 @@ msgstr "Modul"
 #: ../../godmode/reporting/reporting_builder.php:448
 #: ../../operation/reporting/graph_viewer.php:121
 msgid "Period"
-msgstr "Obdobje"
+msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:407
 msgid "Image"
-msgstr "Slika"
+msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:410
 #: ../../godmode/groups/group_list.php:108
@@ -1193,7 +1193,7 @@ msgstr "Slika"
 #: ../../godmode/modules/manage_nc_groups_form.php:58
 #: ../../operation/agentes/estado_generalagente.php:74
 msgid "Parent"
-msgstr "Nadrejeni"
+msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:413
 msgid "Map linked"
@@ -1202,7 +1202,7 @@ msgstr ""
 #: ../../godmode/reporting/map_builder.php:448
 #: ../../operation/reporting/reporting_viewer.php:82
 msgid "Loading"
-msgstr "Nalaganje"
+msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:83
 msgid "Graph stored successfully"
@@ -1254,7 +1254,7 @@ msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:300
 msgid "Factor"
-msgstr "Faktor"
+msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:310
 msgid "Render now"
@@ -1270,7 +1270,7 @@ msgstr ""
 #: ../../include/functions.php:827 ../../include/functions.php:911
 #: ../../include/functions_db.php:2033
 msgid "Yes"
-msgstr "Da"
+msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:315
 #: ../../godmode/reporting/graph_builder.php:317
@@ -1282,29 +1282,29 @@ msgstr "Da"
 #: ../../include/functions.php:829 ../../include/functions.php:913
 #: ../../include/functions_db.php:2035
 msgid "No"
-msgstr "Ne"
+msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:335
 #: ../../godmode/reporting/graph_builder.php:387
 msgid "3 hours"
-msgstr "3 ure"
+msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:350
 msgid "4 days"
-msgstr "4 dni"
+msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:359
 #: ../../godmode/reporting/graph_builder.php:394
 msgid "Last month"
-msgstr "Zadnji mesec"
+msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:368
 msgid "1 year"
-msgstr "1 leto"
+msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:400 ../../operation/menu.php:172
 msgid "View events"
-msgstr "Pregled dogodkov"
+msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:414
 msgid "Stacked"
@@ -1313,7 +1313,7 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:418
 #: ../../operation/reporting/graph_viewer.php:139
 msgid "Area"
-msgstr "Področje"
+msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:419
 #: ../../operation/reporting/graph_viewer.php:140
@@ -1323,7 +1323,7 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:420
 #: ../../operation/reporting/graph_viewer.php:141
 msgid "Line"
-msgstr "Črta"
+msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:443
 #: ../../godmode/reporting/reporting_builder.php:432
@@ -1339,11 +1339,11 @@ msgstr "Črta"
 #: ../../godmode/modules/manage_network_components_form_network.php:286
 #: ../../operation/incidents/incident_detail.php:339
 msgid "Add"
-msgstr "Dodaj"
+msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:443
 msgid "Redraw"
-msgstr "Izriši znova"
+msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:454
 msgid "Custom graph store"
@@ -1352,11 +1352,11 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:479
 #: ../../godmode/reporting/reporting_builder.php:358
 msgid "Private"
-msgstr "Zasebno"
+msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:493
 msgid "Store"
-msgstr "Shrani"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:123
 msgid "Reporting successfully deleted"
@@ -1399,7 +1399,7 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.php:258
 #: ../../godmode/reporting/reporting_builder.php:335
 msgid "Custom reporting builder"
-msgstr "Gradnik prilagojenih poročil"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:261
 msgid "SLAs defined"
@@ -1430,7 +1430,7 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.php:513
 #: ../../operation/reporting/custom_reporting.php:43
 msgid "Report name"
-msgstr "Ime poročila"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:381
 msgid "Add item to report"
@@ -1438,7 +1438,7 @@ msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:393
 msgid "Reporting type"
-msgstr "Vrsta poročila"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:400
 #: ../../godmode/reporting/reporting_builder.php:401
@@ -1454,11 +1454,11 @@ msgstr "Vrsta poročila"
 #: ../../operation/reporting/graph_viewer.php:128
 #: ../../operation/servers/view_server_detail.php:111
 msgid "hours"
-msgstr "ur"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:407
 msgid "2 weeks"
-msgstr "2 tedna"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:423
 msgid "Custom graph name"
@@ -1474,18 +1474,18 @@ msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:449
 msgid "Options"
-msgstr "Možnosti"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:471
 msgid "Up"
-msgstr "Gor"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:502
 #: ../../operation/reporting/reporting_viewer.php:54
 #: ../../operation/reporting/custom_reporting.php:32
 #: ../../operation/menu.php:276
 msgid "Custom reporting"
-msgstr "Poročila po meri"
+msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:532
 #: ../../operation/reporting/graph_viewer.php:199
@@ -1495,7 +1495,7 @@ msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:538
 msgid "Create report"
-msgstr "Ustvari poročilo"
+msgstr ""
 
 #: ../../godmode/extensions.php:29 ../../operation/extensions.php:29
 msgid "There are no extensions defined"
@@ -1608,11 +1608,11 @@ msgstr ""
 #: ../../godmode/agentes/agent_manager.php:84
 #: ../../operation/agentes/estado_generalagente.php:64
 msgid "IP Address"
-msgstr "Naslov IP"
+msgstr ""
 
 #: ../../godmode/servers/modificar_server.php:79 ../../godmode/menu.php:205
 msgid "Manage servers"
-msgstr "Upravljanje strežnikov"
+msgstr ""
 
 #: ../../godmode/servers/modificar_server.php:87
 #: ../../godmode/agentes/agent_manager.php:197
@@ -1634,7 +1634,7 @@ msgstr "Upravljanje strežnikov"
 #: ../../operation/agentes/tactical.php:230
 #: ../../operation/events/events.php:503
 msgid "Status"
-msgstr "Stanje"
+msgstr ""
 
 #: ../../godmode/servers/modificar_server.php:87
 msgid "Started"
@@ -1650,11 +1650,11 @@ msgstr ""
 #: ../../godmode/agentes/agent_manager.php:126
 #: ../../operation/servers/view_server.php:94
 msgid "Network Server"
-msgstr "Mrežni strežnik"
+msgstr ""
 
 #: ../../godmode/servers/modificar_server.php:125
 msgid "Master"
-msgstr "Glavni"
+msgstr ""
 
 #: ../../godmode/servers/modificar_server.php:126
 #: ../../operation/servers/view_server.php:97
@@ -1708,20 +1708,20 @@ msgstr ""
 #: ../../godmode/servers/manage_recontask_form.php:82
 #: ../../operation/servers/view_server_detail.php:71
 msgid "Network"
-msgstr "Omrežje"
+msgstr ""
 
 #: ../../godmode/servers/manage_recontask.php:100
 #: ../../godmode/servers/manage_recontask_form.php:107
 #: ../../operation/servers/view_server_detail.php:73
 msgid "Network profile"
-msgstr "Profil omrežja"
+msgstr ""
 
 #: ../../godmode/servers/manage_recontask.php:100
 #: ../../godmode/servers/manage_recontask_form.php:132
 #: ../../operation/incidents/incident.php:259
 #: ../../operation/incidents/incident_detail.php:228
 msgid "Incident"
-msgstr "Incident"
+msgstr ""
 
 #: ../../godmode/servers/manage_recontask.php:100
 #: ../../godmode/servers/manage_recontask_form.php:118

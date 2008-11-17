@@ -112,6 +112,7 @@ INSERT INTO `tlanguage` VALUES ('es','Español');
 INSERT INTO `tlanguage` VALUES ('ast','Asturianu');
 INSERT INTO `tlanguage` VALUES ('ca','Catalá');
 INSERT INTO `tlanguage` VALUES ('cs','Česky');
+INSERT INTO `tlanguage` VALUES ('da','Dansk');
 INSERT INTO `tlanguage` VALUES ('de','Deutch');
 INSERT INTO `tlanguage` VALUES ('eu','Euskara');
 INSERT INTO `tlanguage` VALUES ('fi','Suomi');

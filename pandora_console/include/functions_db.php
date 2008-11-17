@@ -1899,18 +1899,6 @@ function __ ($string) {
 }
 
 /** 
- * Get a translated string. (DEPRECATED IN FAVOR OF __ )
- * Calls to the __ function will automatically be picked up by the translators
- * 
- * @param string String to translate
- * 
- * @return The translated string. If not defined, the same string will be returned
- */
-function lang_string ($string) {
-	return __ ($string);
-}
-
-/** 
  * Get the numbers of servers up.
  *
  * This check assumes that server_keepalive should be at least 15 minutes.

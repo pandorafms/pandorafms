@@ -148,15 +148,18 @@ function entrada_limpia ($string) {
  * 
  * @return 
  */
-function parameter_extra_clean ($string) {
+function safe_url_extraclean ($string) {
 	/* Clean "://" from the strings
 	 See: http://seclists.org/lists/incidents/2004/Jul/0034.html
 	*/
 	$pos = strpos ($string, "://");
-	if ($pos != 0)
-		$string = substr_replace ($string, "", $pos, +3);
+	if ($pos != 0) {
+		//Strip the string from (protocol[://] to protocol[://] + 125 chars)
+		$string = substr ($string, $pos + 3, $pos + 128);
+	} else {
+		$string = substr ($string, 0, 125);
+	}
 	/* Strip the string to 125 characters */
-	$string = substr_replace ($string, "", 125);
 	return preg_replace ('/[^a-z0-9_\/]/i', '', $string);
 }
 

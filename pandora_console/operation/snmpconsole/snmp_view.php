@@ -145,23 +145,23 @@ if ($config["pure"] == 1) {
 }
 
 // Agent select
-$table->data[0][0] = '<strong>'.lang_string ('Agent').'</strong>';
+$table->data[0][0] = '<strong>'.__('Agent').'</strong>';
 $table->data[0][1] = print_select ($agents, 'filter_agent', $filter_agent, 'javascript:this.form.submit();', __('All'), '', true);
 
 // OID select
-$table->data[0][2] = '<strong>'.lang_string ('OID').'</strong>';
+$table->data[0][2] = '<strong>'.__('OID').'</strong>';
 $table->data[0][3] = print_select ($oids, 'filter_oid', $filter_oid, 'javascript:this.form.submit();', __('All'), '', true);
 
 // Alert status select
-$table->data[1][0] = '<strong>' . __('Alert') . '</strong>';
+$table->data[1][0] = '<strong>'.__('Alert').'</strong>';
 $table->data[1][1] = print_select ($alerted, "filter_fired", $filter_fired, 'javascript:this.form.submit();', __('All'), '-1', true);
 
 // String search_string
-$table->data[1][2] = '<strong>' . __('Search value') . '</strong>';
+$table->data[1][2] = '<strong>'.__('Search value').'</strong>';
 $table->data[1][3] = print_input_text ('search_string', $search_string, '', 25, 0, true);
 
 // Block size for pagination select
-$table->data[2][0] = '<strong>' . __('Block size for pagination') . '</strong>';
+$table->data[2][0] = '<strong>'.__('Block size for pagination').'</strong>';
 $lpagination[25]=25;
 $lpagination[50]=50;
 $lpagination[100]=100;
@@ -170,7 +170,7 @@ $lpagination[500]=500;
 $table->data[2][1] = print_select ($lpagination, "pagination", $config["block_size"], 'javascript:this.form.submit();', __('Default'), $config["block_size"], true);
 
 // Severity select
-$table->data[2][2] = '<strong>'.lang_string ('Severity').'</strong>';
+$table->data[2][2] = '<strong>'.__('Severity').'</strong>';
 $table->data[2][3] = print_select ($severities, 'filter_severity', $filter_severity, 'javascript:this.form.submit();', __('All'), -1, true);
 
 print_table ($table);

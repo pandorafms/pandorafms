@@ -1,3 +1,17 @@
+2008-11-17  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* operations/snmpconsole/snmp_view.php: Removed 
+	lang_string references in favor of __ ()
+	
+	* index.php: Style updates and function name update
+	
+	* include/functions_db.php: Removed lang_string function
+	
+	* include/functions.php: parameter_extra_clean is now 
+	safe_url_extraclean. Also updated it slightly
+	
+	* godmode/admin_access_logs: Updated for style and speed
+
 2008-11-17  Jorge Gonzalez  <jorgegonz@svn.gnome.org>
 
 	* pandoradb_data.sql: Added Danish to available languages.

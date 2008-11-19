@@ -1,21 +1,23 @@
+# translation of pandora-eu.po to Basque
 # Basque translation for pandora-fms
 # Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
 # This file is distributed under the same license as the pandora-fms package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
 #
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
+# Jorge Gonzalez <jorgegonz@artica.es>, 2008.
 msgid ""
 msgstr ""
-"Project-Id-Version: pandora-fms\n"
+"Project-Id-Version: pandora-eu\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2008-11-11 08:59+0100\n"
-"PO-Revision-Date: 2008-08-20 19:59+0000\n"
-"Last-Translator: Alberto Isaba <arkaitz4@yahoo.es>\n"
+"PO-Revision-Date: 2008-11-17 13:46+0100\n"
+"Last-Translator: Jorge Gonzalez <jorgegonz@artica.es>\n"
 "Language-Team: Basque <eu@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2008-11-17 08:32+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Generator: KBabel 1.11.4\n"
 
 #: ../../reporting/stat_win.php:46
 #: ../../operation/agentes/datos_agente.php:123
@@ -225,7 +227,7 @@ msgstr "Normala"
 #: ../../reporting/fgraph.php:1287 ../../include/functions.php:682
 #: ../../include/functions.php:1160 ../../include/functions.php:1182
 msgid "Warning"
-msgstr ""
+msgstr "Abisua"
 
 #: ../../reporting/fgraph.php:1294 ../../include/functions.php:685
 #: ../../include/functions.php:1161 ../../include/functions.php:1184
@@ -234,15 +236,15 @@ msgstr "Kritikoa"
 
 #: ../../reporting/fgraph.php:1469
 msgid "Today"
-msgstr ""
+msgstr "Gaur"
 
 #: ../../reporting/fgraph.php:1470
 msgid "Week"
-msgstr ""
+msgstr "Astea"
 
 #: ../../reporting/fgraph.php:1471
 msgid "Month"
-msgstr ""
+msgstr "Hilabetea"
 
 #: ../../reporting/fgraph.php:1472
 msgid "Months"
@@ -302,7 +304,7 @@ msgstr ""
 
 #: ../../general/login_page.php:38
 msgid "Build"
-msgstr ""
+msgstr "Eraiki"
 
 #: ../../general/login_page.php:40
 msgid "Login"
@@ -377,7 +379,7 @@ msgstr ""
 
 #: ../../general/logon_ok.php:55
 msgid "by"
-msgstr ""
+msgstr "egilea:"
 
 #: ../../general/logon_ok.php:55
 msgid "At"
@@ -458,7 +460,7 @@ msgstr ""
 #: ../../godmode/servers/manage_export_form.php:103
 #: ../../godmode/admin_access_logs.php:105
 msgid "User"
-msgstr ""
+msgstr "Erabiltzailea"
 
 #: ../../general/logon_ok.php:172 ../../godmode/servers/manage_export.php:102
 #: ../../godmode/servers/manage_recontask.php:100
@@ -525,7 +527,7 @@ msgstr ""
 
 #: ../../general/header.php:55
 msgid "Ready"
-msgstr ""
+msgstr "Prest"
 
 #: ../../general/header.php:65 ../../general/header.php:67
 msgid "Autorefresh"
@@ -611,7 +613,7 @@ msgstr ""
 
 #: ../../extensions/update_manager/main.php:77
 msgid "Id"
-msgstr ""
+msgstr "Id"
 
 #: ../../extensions/update_manager/main.php:80
 #: ../../godmode/setup/news.php:129 ../../include/functions_db.php:2083
@@ -729,7 +731,7 @@ msgstr ""
 
 #: ../../extensions/update_manager/settings.php:43
 msgid "Settings"
-msgstr ""
+msgstr "Ezarpenak"
 
 #: ../../extensions/update_manager/settings.php:49
 msgid "Customer key"
@@ -773,7 +775,7 @@ msgstr ""
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:552
 msgid "Development"
-msgstr ""
+msgstr "Garapena"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:553
 msgid "Testing"
@@ -781,7 +783,7 @@ msgstr ""
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:554
 msgid "Public"
-msgstr ""
+msgstr "Publikoa"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:555
 #: ../../godmode/groups/group_list.php:125
@@ -801,7 +803,7 @@ msgstr "Desgaituta"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:563
 msgid "Database"
-msgstr ""
+msgstr "Datu-basea"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:564
 msgid "Code / binary directory"
@@ -1193,7 +1195,7 @@ msgstr "Irudia"
 #: ../../godmode/modules/manage_nc_groups_form.php:58
 #: ../../operation/agentes/estado_generalagente.php:74
 msgid "Parent"
-msgstr ""
+msgstr "Gurasoa"
 
 #: ../../godmode/reporting/map_builder.php:413
 msgid "Map linked"
@@ -1577,7 +1579,7 @@ msgstr ""
 #: ../../godmode/servers/manage_export.php:102
 #: ../../godmode/servers/manage_export_form.php:90
 msgid "Address"
-msgstr ""
+msgstr "Helbidea"
 
 #: ../../godmode/servers/manage_export.php:102
 msgid "Transfer Mode"
@@ -1638,13 +1640,13 @@ msgstr "Egoera"
 
 #: ../../godmode/servers/modificar_server.php:87
 msgid "Started"
-msgstr ""
+msgstr "Hasita"
 
 #: ../../godmode/servers/modificar_server.php:87
 #: ../../operation/incidents/incident.php:262
 #: ../../operation/servers/view_server.php:61
 msgid "Updated"
-msgstr ""
+msgstr "Eguneratuta"
 
 #: ../../godmode/servers/modificar_server.php:124
 #: ../../godmode/agentes/agent_manager.php:126
@@ -1762,7 +1764,7 @@ msgstr ""
 
 #: ../../godmode/servers/manage_recontask_form.php:86
 msgid "hour"
-msgstr ""
+msgstr "ordu"
 
 #: ../../godmode/servers/manage_recontask_form.php:90
 #: ../../operation/agentes/exportdata.php:61
@@ -1775,7 +1777,7 @@ msgstr "aste"
 
 #: ../../godmode/servers/manage_recontask_form.php:93
 msgid "weeks"
-msgstr ""
+msgstr "aste"
 
 #: ../../godmode/servers/manage_recontask_form.php:94
 msgid "month"
@@ -2205,7 +2207,7 @@ msgstr ""
 #: ../../godmode/snmpconsole/snmp_alert.php:234
 #: ../../include/functions.php:497
 msgid "seconds"
-msgstr ""
+msgstr "segundo"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:237
 #: ../../godmode/agentes/alert_manager_editor.php:73
@@ -2215,7 +2217,7 @@ msgstr ""
 #: ../../operation/incidents/incident.php:260
 #: ../../operation/incidents/incident_detail.php:289
 msgid "Priority"
-msgstr ""
+msgstr "Lehentasuna"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:252
 msgid "Alert Overview"
@@ -2258,7 +2260,7 @@ msgstr ""
 #: ../../operation/agentes/sla_view.php:98
 #: ../../operation/agentes/sla_view.php:179
 msgid "N/A"
-msgstr ""
+msgstr "E/E"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:325
 #: ../../include/functions.php:972
@@ -2270,7 +2272,7 @@ msgstr ""
 #: ../../operation/agentes/estado_agente.php:328
 #: ../../operation/agentes/estado_alertas.php:199
 msgid "Never"
-msgstr ""
+msgstr "Inoiz ere ez"
 
 #: ../../godmode/admin_access_logs.php:30
 msgid "Pandora audit"
@@ -2775,7 +2777,7 @@ msgstr ""
 #: ../../godmode/agentes/module_manager_editor_wmi.php:138
 #: ../../godmode/modules/manage_network_components_form_wmi.php:168
 msgid "Namespace"
-msgstr ""
+msgstr "Izen-lekua"
 
 #: ../../godmode/agentes/module_manager_editor_wmi.php:145
 #: ../../godmode/modules/manage_network_components_form_wmi.php:144
@@ -2957,7 +2959,7 @@ msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.php:230
 msgid "Remove"
-msgstr ""
+msgstr "Kendu"
 
 #: ../../godmode/agentes/planned_downtime.php:237
 #: ../../godmode/agentes/planned_downtime.php:281
@@ -2977,17 +2979,17 @@ msgstr ""
 #: ../../operation/messages/message.php:105
 #: ../../operation/messages/message.php:139
 msgid "From"
-msgstr ""
+msgstr "Nork"
 
 #: ../../godmode/agentes/planned_downtime.php:273
 #: ../../operation/messages/message.php:67
 #: ../../operation/messages/message.php:107
 msgid "To"
-msgstr ""
+msgstr "Nori"
 
 #: ../../godmode/agentes/planned_downtime.php:274
 msgid "Del"
-msgstr ""
+msgstr "Ezab"
 
 #: ../../godmode/agentes/planned_downtime.php:275
 msgid "Upd"
@@ -2995,7 +2997,7 @@ msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.php:276
 msgid "Running"
-msgstr ""
+msgstr "Exekutatzen"
 
 #: ../../godmode/agentes/module_manager_editor_plugin.php:79
 msgid "Plugin server module"
@@ -3125,8 +3127,7 @@ msgid "You must check modules and/or alerts to be deleted"
 msgstr ""
 
 #: ../../godmode/agentes/manage_config.php:301
-msgid ""
-"There was an error removing the module data, the removal has been cancelled"
+msgid "There was an error removing the module data, the removal has been cancelled"
 msgstr ""
 
 #: ../../godmode/agentes/manage_config.php:304
@@ -3369,7 +3370,7 @@ msgstr ""
 
 #: ../../godmode/agentes/agent_manager.php:213
 msgid "Not available"
-msgstr ""
+msgstr "Ez dago erabilgarri"
 
 #: ../../godmode/agentes/module_manager.php:57
 msgid "Create a new data server module"
@@ -3433,13 +3434,12 @@ msgid "Alert text"
 msgstr ""
 
 #: ../../godmode/agentes/alert_manager_editor.php:136
-msgid ""
-"This value must be al least Module Interval * (Min.Number of Alerts + 1)"
+msgid "This value must be al least Module Interval * (Min.Number of Alerts + 1)"
 msgstr ""
 
 #: ../../godmode/agentes/alert_manager_editor.php:158
 msgid "Other"
-msgstr ""
+msgstr "Bestelakoa"
 
 #: ../../godmode/agentes/alert_manager_editor.php:204
 msgid "Time from"
@@ -3486,7 +3486,7 @@ msgstr ""
 #: ../../godmode/agentes/alert_manager_editor.php:255
 #: ../../include/functions.php:723
 msgid "Sun"
-msgstr ""
+msgstr "Eguzkia"
 
 #: ../../godmode/agentes/alert_manager_editor.php:259
 msgid "Field #2 (Rec)"
@@ -3511,7 +3511,7 @@ msgstr ""
 #: ../../godmode/agentes/alert_manager_editor.php:341
 #: ../../operation/menu.php:26
 msgid "Operation"
-msgstr ""
+msgstr "Eragiketa"
 
 #: ../../godmode/modules/manage_network_components.php:137
 #: ../../godmode/modules/manage_nc_groups.php:70
@@ -3654,7 +3654,7 @@ msgstr ""
 
 #: ../../godmode/users/user_list.php:64 ../../operation/users/user.php:33
 msgid "Profile"
-msgstr ""
+msgstr "Profila"
 
 #: ../../godmode/users/user_list.php:92
 #: ../../godmode/users/configure_user.php:272
@@ -3711,7 +3711,7 @@ msgstr ""
 #: ../../godmode/users/configure_user.php:194
 #: ../../operation/users/user_edit.php:127
 msgid "Telephone"
-msgstr ""
+msgstr "Telefonoa"
 
 #: ../../godmode/users/configure_user.php:196
 msgid "Global Profile"
@@ -3719,7 +3719,7 @@ msgstr ""
 
 #: ../../godmode/users/configure_user.php:201
 msgid "Administrator"
-msgstr ""
+msgstr "Administratzailea"
 
 #: ../../godmode/users/configure_user.php:203
 msgid ""
@@ -3957,7 +3957,7 @@ msgstr ""
 
 #: ../../godmode/db/db_audit.php:79 ../../godmode/db/db_event.php:55
 msgid "Total"
-msgstr ""
+msgstr "Guztira"
 
 #: ../../godmode/db/db_audit.php:80 ../../godmode/db/db_event.php:56
 msgid "Records"
@@ -3969,7 +3969,7 @@ msgstr ""
 
 #: ../../godmode/db/db_audit.php:87
 msgid "Latest date"
-msgstr ""
+msgstr "Data berriena"
 
 #: ../../godmode/db/db_audit.php:96
 msgid "Purge audit data over 90 days"
@@ -4097,7 +4097,7 @@ msgstr ""
 
 #: ../../godmode/alerts/configure_alert.php:84
 msgid "Command"
-msgstr ""
+msgstr "Komandoa"
 
 #: ../../include/functions_html.php:604
 msgid "Request successfully processed"
@@ -4129,11 +4129,11 @@ msgstr ""
 
 #: ../../include/functions.php:419
 msgid "."
-msgstr ""
+msgstr ","
 
 #: ../../include/functions.php:421
 msgid ","
-msgstr ""
+msgstr ", "
 
 #: ../../include/functions.php:475 ../../include/functions.php:503
 #: ../../include/functions.php:505
@@ -4143,11 +4143,11 @@ msgstr ""
 #: ../../operation/visual_console/render_view.php:81
 #: ../../operation/visual_console/render_view.php:82
 msgid "minutes"
-msgstr ""
+msgstr "minutu"
 
 #: ../../include/functions.php:514 ../../include/functions.php:516
 msgid "months"
-msgstr ""
+msgstr "hilabete"
 
 #: ../../include/functions.php:853 ../../include/functions.php:935
 #: ../../include/functions_db.php:1968
@@ -4241,7 +4241,7 @@ msgstr ""
 #: ../../operation/reporting/reporting_viewer.php:226
 #: ../../operation/reporting/reporting_xml.php:212
 msgid "Unknown"
-msgstr ""
+msgstr "Ezezaguna"
 
 #: ../../include/functions.php:1137
 #: ../../operation/agentes/status_monitor.php:209
@@ -4278,7 +4278,7 @@ msgstr "Sistema"
 
 #: ../../include/functions.php:1145
 msgid "Error"
-msgstr ""
+msgstr "Errorea"
 
 #: ../../include/functions_db.php:1214
 msgid "Software agent data"
@@ -4318,7 +4318,7 @@ msgstr ""
 
 #: ../../include/functions_db.php:1970
 msgid "Days"
-msgstr ""
+msgstr "Egunak"
 
 #: ../../include/functions_db.php:1971
 #: ../../operation/snmpconsole/snmp_view.php:404
@@ -4365,7 +4365,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:445
 #: ../../include/functions_reporting.php:549
 msgid "Monitor"
-msgstr ""
+msgstr "Monitorea"
 
 #: ../../include/functions_reporting.php:489
 msgid "Agents in group"
@@ -4378,7 +4378,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:643
 #: ../../operation/agentes/estado_grupo.php:213
 msgid "Monitors"
-msgstr ""
+msgstr "Monitoreak"
 
 #: ../../operation/reporting/reporting_viewer.php:112
 msgid "Invalid date selected"
@@ -4400,7 +4400,7 @@ msgstr ""
 #: ../../operation/reporting/reporting_viewer.php:243
 #: ../../operation/agentes/estado_grupo.php:214
 msgid "Ok"
-msgstr ""
+msgstr "Ados"
 
 #: ../../operation/reporting/reporting_viewer.php:245
 #: ../../operation/agentes/estado_grupo.php:216
@@ -4434,11 +4434,11 @@ msgstr ""
 
 #: ../../operation/reporting/custom_reporting.php:45
 msgid "HTML"
-msgstr ""
+msgstr "HTML"
 
 #: ../../operation/reporting/custom_reporting.php:46
 msgid "XML"
-msgstr ""
+msgstr "XML"
 
 #: ../../operation/incidents/incident.php:50
 msgid "Incident successfully deleted"
@@ -4511,18 +4511,18 @@ msgstr ""
 
 #: ../../operation/incidents/incident.php:257
 msgid "ID"
-msgstr ""
+msgstr "IDa"
 
 #: ../../operation/incidents/incident.php:263
 #: ../../operation/incidents/incident_detail.php:263
 #: ../../operation/events/events.php:349
 msgid "Source"
-msgstr ""
+msgstr "Iturburua"
 
 #: ../../operation/incidents/incident.php:264
 #: ../../operation/incidents/incident_detail.php:241
 msgid "Owner"
-msgstr ""
+msgstr "Jabea"
 
 #: ../../operation/incidents/incident.php:352
 #: ../../operation/incidents/incident_detail.php:224
@@ -4534,7 +4534,7 @@ msgstr ""
 #: ../../operation/menu.php:158 ../../operation/menu.php:180
 #: ../../operation/menu.php:224
 msgid "Statistics"
-msgstr ""
+msgstr "Estatistika"
 
 #: ../../operation/incidents/incident_statistics.php:33
 msgid "Incidents by status"
@@ -4586,7 +4586,7 @@ msgstr ""
 
 #: ../../operation/incidents/incident_detail.php:124
 msgid "No description available"
-msgstr ""
+msgstr "Ez dago azalpenik eskuragarri"
 
 #: ../../operation/incidents/incident_detail.php:152
 msgid "File could not be saved due to database error"
@@ -4629,11 +4629,11 @@ msgstr ""
 
 #: ../../operation/incidents/incident_detail.php:254
 msgid "Closed"
-msgstr ""
+msgstr "Itxita"
 
 #: ../../operation/incidents/incident_detail.php:305
 msgid "Creator"
-msgstr ""
+msgstr "Sortzailea"
 
 #: ../../operation/incidents/incident_detail.php:324
 msgid "Update incident"
@@ -4658,11 +4658,11 @@ msgstr ""
 #: ../../operation/incidents/incident_detail.php:396
 #: ../../operation/incidents/incident_detail.php:433
 msgid "Filename"
-msgstr ""
+msgstr "Fitxategi-izena"
 
 #: ../../operation/incidents/incident_detail.php:398
 msgid "Size"
-msgstr ""
+msgstr "Tamaina"
 
 #: ../../operation/incidents/incident_detail.php:429
 msgid "Add attachment"
@@ -4697,23 +4697,23 @@ msgstr ""
 
 #: ../../operation/servers/view_server_detail.php:68
 msgid "Force"
-msgstr ""
+msgstr "Indarra"
 
 #: ../../operation/servers/view_server_detail.php:76
 msgid "Progress"
-msgstr ""
+msgstr "Aurrerapena"
 
 #: ../../operation/servers/view_server_detail.php:78
 msgid "Op"
-msgstr ""
+msgstr "Erag."
 
 #: ../../operation/servers/view_server_detail.php:124
 msgid "Done"
-msgstr ""
+msgstr "Eginda"
 
 #: ../../operation/servers/view_server_detail.php:126
 msgid "Pending"
-msgstr ""
+msgstr "Zain"
 
 #: ../../operation/servers/view_server_detail.php:163
 msgid "This server has no recon tasks assigned"
@@ -4722,7 +4722,7 @@ msgstr ""
 #: ../../operation/servers/view_server.php:55
 #: ../../operation/agentes/tactical.php:231
 msgid "Load"
-msgstr ""
+msgstr "Kargatu"
 
 #: ../../operation/servers/view_server.php:57
 #: ../../operation/agentes/tactical.php:233
@@ -4731,16 +4731,16 @@ msgstr ""
 
 #: ../../operation/servers/view_server.php:59
 msgid "Version"
-msgstr ""
+msgstr "Bertsioa"
 
 #: ../../operation/servers/view_server.php:90
 #: ../../operation/agentes/tactical.php:288
 msgid "of"
-msgstr ""
+msgstr " / "
 
 #: ../../operation/servers/view_server.php:100
 msgid "SNMP server"
-msgstr ""
+msgstr "SNMP zerbitzaria"
 
 #: ../../operation/servers/view_server.php:118
 msgid "Master server"
@@ -4761,7 +4761,7 @@ msgstr ""
 #: ../../operation/visual_console/render_view.php:76
 #: ../../operation/visual_console/render_view.php:77
 msgid "Seconds"
-msgstr ""
+msgstr "Segundoak"
 
 #: ../../operation/visual_console/render_view.php:86
 msgid "Autorefresh time"
@@ -4769,7 +4769,7 @@ msgstr ""
 
 #: ../../operation/visual_console/render_view.php:88
 msgid "Refresh"
-msgstr ""
+msgstr "Freskatu"
 
 #: ../../operation/visual_console/render_view.php:119
 msgid "Until refresh"
@@ -4783,7 +4783,7 @@ msgstr ""
 #: ../../operation/agentes/estado_agente.php:41
 #: ../../operation/agentes/tactical.php:202
 msgid "Summary"
-msgstr ""
+msgstr "Laburpena"
 
 #: ../../operation/visual_console/index.php:37
 msgid "Elements"
@@ -4831,7 +4831,7 @@ msgstr ""
 
 #: ../../operation/menu.php:196
 msgid "Marquee"
-msgstr ""
+msgstr "Markesina"
 
 #: ../../operation/menu.php:206
 msgid "View users"
@@ -4847,7 +4847,7 @@ msgstr ""
 
 #: ../../operation/menu.php:244 ../../operation/messages/message.php:58
 msgid "Messages"
-msgstr ""
+msgstr "Mezuak"
 
 #: ../../operation/menu.php:253
 msgid "Messages to groups"
@@ -4910,15 +4910,15 @@ msgstr ""
 #: ../../operation/snmpconsole/snmp_view.php:170
 #: ../../operation/events/events.php:304
 msgid "Default"
-msgstr ""
+msgstr "Lehenetsia"
 
 #: ../../operation/snmpconsole/snmp_view.php:208
 msgid "Value"
-msgstr ""
+msgstr "Balioa"
 
 #: ../../operation/snmpconsole/snmp_view.php:211
 msgid "Custom"
-msgstr ""
+msgstr "Pertsonalizatua"
 
 #: ../../operation/snmpconsole/snmp_view.php:269
 #: ../../operation/snmpconsole/snmp_view.php:400
@@ -4967,7 +4967,7 @@ msgstr ""
 
 #: ../../operation/agentes/networkmap.php:271
 msgid "Layout"
-msgstr ""
+msgstr "Diseinua"
 
 #: ../../operation/agentes/networkmap.php:275
 msgid "No Overlap"
@@ -4975,7 +4975,7 @@ msgstr ""
 
 #: ../../operation/agentes/networkmap.php:279
 msgid "Simple"
-msgstr ""
+msgstr "Soila"
 
 #: ../../operation/agentes/networkmap.php:283
 msgid "Regenerate"
@@ -4983,7 +4983,7 @@ msgstr ""
 
 #: ../../operation/agentes/networkmap.php:298
 msgid "Zoom"
-msgstr ""
+msgstr "Zooma"
 
 #: ../../operation/agentes/networkmap.php:306
 msgid "Distance between nodes"
@@ -4991,7 +4991,7 @@ msgstr ""
 
 #: ../../operation/agentes/networkmap.php:312
 msgid "Font"
-msgstr ""
+msgstr "Letra-tipoa"
 
 #: ../../operation/agentes/networkmap.php:352
 #: ../../operation/agentes/networkmap.php:361
@@ -5109,11 +5109,11 @@ msgstr ""
 #: ../../operation/agentes/datos_agente.php:81
 #: ../../operation/agentes/ver_agente.php:214
 msgid "Data"
-msgstr ""
+msgstr "Datuak"
 
 #: ../../operation/agentes/estado_ultimopaquete.php:57
 msgid "Graph"
-msgstr ""
+msgstr "Grafikoa"
 
 #: ../../operation/agentes/estado_ultimopaquete.php:58
 msgid "Raw Data"
@@ -5148,19 +5148,19 @@ msgstr ""
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Sunday"
-msgstr ""
+msgstr "Igandea"
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Monday"
-msgstr ""
+msgstr "Astelehena"
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Tuesday"
-msgstr ""
+msgstr "Asteartea"
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Wednesday"
-msgstr ""
+msgstr "Asteazkena"
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Thurdsday"
@@ -5168,11 +5168,11 @@ msgstr ""
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Friday"
-msgstr ""
+msgstr "Ostirala"
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Saturday"
-msgstr ""
+msgstr "Larunbata"
 
 #: ../../operation/agentes/exportdata.php:60
 msgid "One hour"
@@ -5195,12 +5195,12 @@ msgstr ""
 #: ../../operation/agentes/exportdata.php:118
 #: ../../operation/agentes/exportdata.php:138
 msgid "from"
-msgstr ""
+msgstr "diskoa:"
 
 #: ../../operation/agentes/exportdata.php:118
 #: ../../operation/agentes/exportdata.php:138
 msgid "to"
-msgstr ""
+msgstr "eta"
 
 #: ../../operation/agentes/exportdata.php:120
 msgid "Download file"
@@ -5217,7 +5217,7 @@ msgstr ""
 
 #: ../../operation/agentes/exportdata.php:170
 msgid " to "
-msgstr ""
+msgstr " - "
 
 #: ../../operation/agentes/exportdata.php:287
 msgid "Begin date (*)"
@@ -5245,7 +5245,7 @@ msgstr ""
 
 #: ../../operation/agentes/exportdata.php:313
 msgid "Export"
-msgstr ""
+msgstr "Esportatu"
 
 #: ../../operation/agentes/bulbs.php:31
 #: ../../operation/agentes/estado_agente.php:312
@@ -5324,7 +5324,7 @@ msgstr ""
 
 #: ../../operation/agentes/estado_alertas.php:60
 msgid "Info"
-msgstr ""
+msgstr "Informazioa"
 
 #: ../../operation/agentes/estado_alertas.php:143
 msgid "Combined alert"
@@ -5488,7 +5488,7 @@ msgstr ""
 
 #: ../../operation/events/events.php:512
 msgid "Delete event"
-msgstr ""
+msgstr "Gertakizuna ezabatu"
 
 #: ../../operation/users/user_statistics.php:26
 msgid "User activity statistics"
@@ -5569,12 +5569,12 @@ msgstr ""
 #: ../../operation/messages/message.php:126
 #: ../../operation/messages/message.php:147
 msgid "Message"
-msgstr ""
+msgstr "Mezua"
 
 #: ../../operation/messages/message.php:100
 #: ../../operation/messages/message.php:129
 msgid "Send message"
-msgstr ""
+msgstr "Bidali mezua"
 
 #: ../../operation/messages/message.php:152
 msgid " wrote"
@@ -5582,7 +5582,7 @@ msgstr ""
 
 #: ../../operation/messages/message.php:155
 msgid "Reply"
-msgstr ""
+msgstr "Erantzun"
 
 #: ../../operation/messages/message.php:160
 msgid "Read messages"
@@ -5602,12 +5602,13 @@ msgstr ""
 
 #: ../../operation/messages/message.php:188
 msgid "Read"
-msgstr ""
+msgstr "Irakurri"
 
 #: ../../operation/messages/message.php:189
 msgid "Sender"
-msgstr ""
+msgstr "Bidaltzailea"
 
 #: ../../operation/messages/message.php:215
 msgid "No subject"
 msgstr ""
+

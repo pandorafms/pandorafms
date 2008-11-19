@@ -1,3 +1,38 @@
+2008-11-19  Jorge Gonzalez  <jorgegonz@svn.gnome.org>
+
+	* pandoradb_data.sql: Added Arab and Turkish translations to the
+	  database.
+
+	* include/languages/index.pot: Updated po template.
+
+	* include/languages/Makefile: added ar and tr to translation.
+
+	* include/languages/cs.po, include/languages/cs.mo,
+	  include/languages/ar.po, include/languages/da.po,
+	  include/languages/tr.po, include/languages/ja.po,
+	  include/languages/fi.po, include/languages/ar.mo,
+	  include/languages/eu.po, include/languages/da.mo,
+	  include/languages/tr.mo, include/languages/ru.po,
+	  include/languages/ja.mo, include/languages/fi.mo,
+	  include/languages/eu.mo, include/languages/ru.mo: Updated/added
+	  translations.
+
+2008-11-19  Jorge Gonzalez  <jorgegonz@svn.gnome.org>
+
+	* pandoradb_data.sql: Added japanese translation to the database.
+
+	* include/languages/cs.po, include/languages/cs.mo,
+	  include/languages/da.po, include/languages/ja.po,
+	  include/languages/fi.po, include/languages/eu.po,
+	  include/languages/da.mo, include/languages/ja.mo,
+	  include/languages/fi.mo, include/languages/eu.mo: Updated Czech,
+	  Danish, Basque and Finish translations, added japanese.
+
+	* include/languages/index.pot: Updated po template.
+
+	* include/languages/Makefile: Added ja to translation
+	  infrastructure.
+
 2008-11-17  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* operations/snmpconsole/snmp_view.php: Removed 

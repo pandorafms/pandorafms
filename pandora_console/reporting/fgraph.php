@@ -1207,8 +1207,8 @@ function grafico_db_agentes_modulos($width, $height) {
 		$result = array();
 
 	foreach ($result as $row) {
-		$data[] = count (get_modules_in_agent ($row["id_agente"]));
-		$legend[] = dame_nombre_agente ($row["id_agente"]);
+		$data[] = get_agentmodule_count ($row["id_agente"]);
+		$legend[] = get_agent_name ($row["id_agente"], "lower");
 	}
 	
 	generic_bar_graph ($width, $height, $data, $legend);
@@ -1370,7 +1370,7 @@ function grafico_eventos_grupo ($width = 300, $height = 200, $url = "") {
 				$legend[] = "SYSTEM (".$row["count"].")";
 			} else {
 				//Other events
-				$legend[] = substr (dame_nombre_agente ($row["id_agente"]), 0, 15)." (".$row["count"].")";
+				$legend[] = substr (get_agent_name ($row["id_agente"], "lower"), 0, 15)." (".$row["count"].")";
 			}
 		}
 	}
@@ -1434,7 +1434,7 @@ function grafico_db_agentes_paquetes ($width = 380, $height = 300) {
 
 	foreach ($result as $row) {
 		$data[] = $row["count"];
-		$legend[] = dame_nombre_agente ($row["id_agente"]);
+		$legend[] = get_agent_name ($row["id_agente"], "lower");
 	}													
 	
 	generic_bar_graph ($width, $height, $data, $legend);
@@ -1447,7 +1447,8 @@ function grafico_db_agentes_purge ($id_agent, $width, $height) {
 		$id_agent = -1;
 		$query = "";
 	} else {
-		$query = sprintf (" AND id_agente_modulo = ANY(SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = '%d' ",$id_agent);
+		$modules = get_agentmodules ($id_agent);
+		$query = sprintf (" AND id_agente_modulo IN (%s)", implode (",", array_keys ($modules)));
 	}
 	
 	// All data (now)

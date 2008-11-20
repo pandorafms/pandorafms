@@ -221,7 +221,7 @@ function get_group_stats ($id_group) {
 		} //End module check
 	} //End foreach module
 	
-	$data["total_agents"] = count (get_agents_in_group ($groups));
+	$data["total_agents"] = count (get_group_agents ($groups, false, "none"));
 	$data["total_checks"] = $data["data_checks"] + $data["monitor_checks"];
 	$data["total_ok"] = $data["data_ok"] + $data["monitor_ok"];
 	$data["total_alerts"] = $data["data_alerts"] + $data["monitor_alerts"];
@@ -496,7 +496,7 @@ function get_monitors_down_reporting_table ($monitors_down) {
 			$data = array ();
 			foreach ($monitors as $monitor) {
 				if (! isset ($data[0]))
-					$data[0] = dame_nombre_agente ($id_agent);
+					$data[0] = get_agent_name ($id_agent);
 				else
 					$data[0] = '';
 				if ($monitor['descripcion'] != '') {
@@ -520,12 +520,12 @@ function get_monitors_down_reporting_table ($monitors_down) {
  * @param $return Flag to return or echo the report (by default).
  */
 function general_group_reporting ($id_group, $return = false) {
-	$output = '';
-	$agents = get_agents_in_group ($id_group);
-	$output .= '<strong>'.__('Agents in group').': '.sizeof ($agents).'</strong><br />';
+	$agents = get_group_agents ($id_group, false, "none");
+	$output = '<strong>'.__('Agents in group').': '.count ($agents).'</strong><br />';
 	
-	if (!$return)
+	if ($return === false)
 		echo $output;
+		
 	return $output;
 }
 
@@ -619,7 +619,7 @@ function get_agent_monitors_reporting_table ($id_agent, $period = 0, $date = 0) 
 function get_agent_modules_reporting_table ($id_agent, $period = 0, $date = 0) {
 	$table->data = array ();
 	$n_a_string = __('N/A').'(*)';
-	$modules = get_modules_in_agent ($id_agent);
+	$modules = get_agentmodules ($id_agent, array ("nombre", "descripcion"));
 	if ($modules === false)
 		$modules = array();
 	$data = array ();
@@ -693,20 +693,16 @@ function get_agent_detailed_reporting ($id_agent, $period = 0, $date = 0, $retur
  * @param $return Flag to return or echo the report (by default).
  */
 function get_agents_detailed_reporting ($id_group, $period = 0, $date = 0, $return = false) {
-	$output = '';
-	$agents = get_agents_in_group ($id_group);
+	$agents = get_group_agents ($id_group, false, "none");
 	
-	foreach ($agents as $agent) {
-		$output .= get_agent_detailed_reporting ($agent['id_agente'], $period, $date, true);
-		if (!$return) {
-			echo $output;
-			$output = '';
-			flush ();
-		}
+	$output = '';
+	foreach ($agents as $agent_id => $agent_name) {
+		$output .= get_agent_detailed_reporting ($agent_id, $period, $date, true);
 	}
 	
-	if (!$return)
+	if ($return === false)
 		echo $output;
+		
 	return $output;
 }
 

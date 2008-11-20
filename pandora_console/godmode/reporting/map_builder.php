@@ -369,15 +369,8 @@ if (! $edit_layout && ! $id_layout) {
 		$intervals[1440] = __('Two Months');
 		$intervals[4320] = __('Six Months');
 		
-		$all_agents = get_agents_in_group ($id_group);
-		$agents = array ();
-		if ($all_agents !== false) {
-			foreach ($all_agents as $agent) {
-				$agents[$agent['id_agente']] = strtolower($agent['nombre']);
-			}
-			asort($agents);
-		}
-
+		$agents = get_group_agents ($id_group);
+					
 		echo '<div id="layout_editor_drop">';
 		echo '<h1>'.__('Map element editor').'</h1>';
 		echo __('Drag an element here to edit the properties');

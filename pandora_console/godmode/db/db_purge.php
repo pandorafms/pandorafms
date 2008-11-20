@@ -31,7 +31,7 @@ if (! give_acl ($config['id_user'], 0, "DM")) {
 
 //id_agent = -1: None selected; id_agent = 0: All
 if (isset ($_POST["agent"])){
-	$id_agent = (int) get_parameter_post ("agent",-1); //Default to none selected
+	$id_agent = (int) get_parameter_post ("agent", -1); //Default to none selected
 } else {
 	$id_agent = -1;
 }
@@ -78,13 +78,13 @@ $data["total"] = 0;
 
 # Purge data using dates
 if (isset($_POST["purgedb"])) {
-	$from_date = get_parameter_post ("date_purge",0); //0: No time selected
+	$from_date = get_parameter_post ("date_purge", 0); //0: No time selected
 	if ($id_agent > 0) {
 		echo __('Purge task launched for agent')." ".dame_nombre_agente ($id_agent)." :: ".__('Data older than')." ".human_time_description ($from_date);
 		echo "<h3>".__('Please be patient. This operation can take a long time depending on the amount of modules.')."</h3>";
 		
-		$sql = sprintf ("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = %d",$id_agent);
-		$result=get_db_all_rows_sql($sql);
+		$sql = sprintf ("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = %d", $id_agent);
+		$result=get_db_all_rows_sql ($sql);
 		if (empty ($result)) {
 			$result = array ();
 		}
@@ -98,13 +98,13 @@ if (isset($_POST["purgedb"])) {
 			echo "<br />";
 			flush (); //Flush here in case there are errors and the script dies, at least we know where we ended
 			set_time_limit (); //Reset the time limit just in case
-			$sql = sprintf("DELETE FROM `tagente_datos` WHERE `id_agente_modulo` = '%d' AND `utimestamp` < '%d'",$row["id_agente_modulo"],$from_date);
+			$sql = sprintf ("DELETE FROM `tagente_datos` WHERE `id_agente_modulo` = %d AND `utimestamp` < %d",$row["id_agente_modulo"],$from_date);
 			if (process_sql ($sql) === false)
 				$errors++;
-			$sql = sprintf("DELETE FROM `tagente_datos_inc` WHERE `id_agente_modulo` = '%d' AND `utimestamp` < '%d'",$row["id_agente_modulo"],$from_date);
+			$sql = sprintf ("DELETE FROM `tagente_datos_inc` WHERE `id_agente_modulo` = %d AND `utimestamp` < %d",$row["id_agente_modulo"],$from_date);
 			if (process_sql ($sql) === false) 
 				$errors++;				
-			$sql = sprintf("DELETE FROM `tagente_datos_string` WHERE `id_agente_modulo` = '%d' AND `utimestamp` < '%d'",$row["id_agente_modulo"],$from_date);
+			$sql = sprintf ("DELETE FROM `tagente_datos_string` WHERE `id_agente_modulo` = %d AND `utimestamp` < %d",$row["id_agente_modulo"],$from_date);
 			if (process_sql ($sql) === false) 
 				$errors++;				
 		}
@@ -120,39 +120,29 @@ if (isset($_POST["purgedb"])) {
 		//All agents
 		echo __('Deleting records for all agents');
 		flush ();
-		//ob_flush();
-		$query = sprintf("DELETE FROM `tagente_datos` WHERE `utimestamp` < '%d'",$from_date);
+		$query = sprintf ("DELETE FROM `tagente_datos` WHERE `utimestamp` < %d",$from_date);
 		process_sql ($query);
-		$query = sprintf("DELETE FROM `tagente_datos_inc` WHERE `utimestamp` < '%d'",$from_date);
+		$query = sprintf ("DELETE FROM `tagente_datos_inc` WHERE `utimestamp` < %d",$from_date);
 		process_sql ($query);
-		$query = sprintf("DELETE FROM `tagente_datos_string` WHERE `utimestamp` < '%d'",$from_date);
+		$query = sprintf ("DELETE FROM `tagente_datos_string` WHERE `utimestamp` < %d",$from_date);
 		process_sql ($query);
 	}
 	echo "<br /><br />";
 }
 
 # Select Agent for further operations.
-echo '<form action="index.php?sec=gdbman&sec2=godmode/db/db_purge" method="post">
-<table class="databox">
-<tr><td class="datos">';
-
+$agents = get_group_agents (1, true);
 $agents[-1] = __('Choose agent');
 $agents[0] = __('All agents'); 
 
-$result = get_agents_in_group (1);
-if ($result === false)
-	$result = array();
-
-foreach ($result as $row) {
-	$agents[$row["id_agente"]] = $row["nombre"];
-}
-
-print_select ($agents, "agent", $id_agent, "", "", "", false, false, false);
+echo '<form action="index.php?sec=gdbman&sec2=godmode/db/db_purge" method="post">';
+echo '<div style="width:100%;">';
+print_select ($agents, "agent", $id_agent, "this.form.submit();", "", "", false, false, false);
 print_help_tip (__("Select the agent you want information about"));
-
-echo '</td><td><input class="sub upd" type="submit" name="purgedb_ag" value="'.__('Get data').'">';
+echo '<noscript>';
+print_submit_button (__('Get data'), 'purgedb_ag', false, 'class="sub upd"');
 print_help_tip (__("Click here to get the data from the agent specified in the select box")); 
-echo '</td></tr></table><br />';
+echo '</noscript><br />';
 
 if ($id_agent > 0) {
 	$title = __('Information on agent').' '.dame_nombre_agente ($id_agent).' '.__('in the database');
@@ -161,10 +151,12 @@ if ($id_agent > 0) {
 }
 
 echo "<h3>".$title."</h3>";	
-flush ();
-$query = "";
+flush (); //Flush before we do some SQL stuff
 if ($id_agent > 0) { //If the agent is not All or Not selected
-	$query = sprintf (" AND id_agente_modulo = ANY(SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = '%d' ",$id_agent);
+	$modules = get_agentmodules ($id_agent);
+	sprintf ("AND id_agente_modulo IN(%s)", implode (",", array_keys ($modules)));
+} else {
+	$query = "";
 }
 
 $data["1day"] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp > %d %s", $time["1day"], $query));

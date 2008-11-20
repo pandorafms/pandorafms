@@ -202,14 +202,7 @@ if ($id_report) {
 	$report_id_group = $report['id_group'];
 }
 
-$all_agents = get_agents_in_group ($report_id_group);
-$agents = array ();
-if ($all_agents !== false) {
-	foreach ($all_agents as $agent) {
-		$agents[$agent['id_agente']] = strtolower($agent['nombre']);
-	}
-	asort ($agents);
-}
+$agents = get_group_agents ($report_id_group);
 
 if ($edit_sla_report_content) {
 	/* Edit SLA report form */

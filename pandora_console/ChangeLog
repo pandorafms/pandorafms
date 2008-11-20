@@ -1,3 +1,21 @@
+2008-11-20  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* pandoradb_data.sql: Added Hebrew and Slovak translations to the
+	  database.
+
+	* include/languages/index.pot: Updated po template.
+
+	* include/languages/Makefile: added sk and he to translation.
+
+	* include/languages/sk.po, include/languages/sk.mo,
+	  include/languages/he.po, include/languages/he.mo,
+	  include/languages/sl.mo, include/languages/pt.mo,
+	  include/languages/hi.po, include/languages/te.po,
+	  include/languages/hi.mo, include/languages/te.mo,
+	  include/languages/sl.po, include/languages/pt.po: Updated
+	  portuguese, slovenian, hindi, and telugu translations, added
+	  slovak and hebrew translations.
+
 2008-11-20  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* reporting/fgraph.php: Updated for some faster processing

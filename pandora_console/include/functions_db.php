@@ -1071,11 +1071,11 @@ function event_insert ($event, $id_group, $id_agent, $status = 0,
  */
 function get_module_interval ($id_agent_module) {
 	$interval = (int) get_db_value ('module_interval', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
-	if ($interval)
+	if ($interval > 0)
 		return $interval;
-	$id_agent = get_db_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', (int) $id_agent_module);
-	
-	return (int) give_agentinterval ($id_agent);
+		
+	$id_agent = give_agent_id_from_module_id ($id_agent_module);
+	return (int) get_agent_interval ($id_agent);
 }
 
 /** 
@@ -1085,7 +1085,7 @@ function get_module_interval ($id_agent_module) {
  * 
  * @return The interval value of a given agent
  */
-function give_agentinterval ($id_agent) {
+function get_agent_interval ($id_agent) {
 	return (int) get_db_value ('intervalo', 'tagente', 'id_agente', $id_agent);
 }
 
@@ -2144,26 +2144,7 @@ function smal_event_table ($filter = "", $limit = 10, $width = 440) {
 		}
 		
 		/* Only incident read access to view data ! */
-		switch ($event["criticity"]) {
-		case 0: 
-			$tdclass = "datos_blue";
-			break;
-		case 1: 
-			$tdclass = "datos_grey";
-			break;
-		case 2: 
-			$tdclass = "datos_green";
-			break;
-		case 3: 
-			$tdclass = "datos_yellow";
-			break;
-		case 4: 
-			$tdclass = "datos_red";
-			break;
-		default:
-			$tdclass = "datos_grey";
-		}
-		
+		$tdclass = get_priority_class ($event["criticity"]);		
 		$criticity_label = get_priority_name ($event["criticity"]);
 		/* Colored box */
 		echo "<tr><td class='$tdclass' title='$criticity_label' align='center'>";

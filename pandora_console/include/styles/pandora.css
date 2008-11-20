@@ -639,34 +639,35 @@ span#logo_text2 {
 	width: 180px;
 }
 
-td.datos_green, td.datos_greenf9 {
+/* classes for event priorities. Sits now in functions.php */
+.datos_green, .datos_greenf9 {
 	background-color: #BBFFA4;
-	padding: 5px 5px 5px 5px;
 }
 
-td.datos_red, td.datos_redf9 {
+.datos_red, .datos_redf9 {
 	background-color: #FFC0B5;
-	padding: 5px 5px 5px 5px;
 }
 
-td.datos_yellow, td.datos_yellowf9 {
+.datos_yellow, .datos_yellowf9 {
 	background-color: #F4FFBF;
-	padding: 5px 5px 5px 5px;
 }
 
-td.datos_blue, td.datos_bluef9 {
+.datos_blue, .datos_bluef9 {
 	background-color: #CDE2EA;
-	padding: 5px 5px 5px 5px;
 }
 
-td.datos_grey, td.datos_greyf9 {
+.datos_grey, .datos_greyf9 {
 	background-color: #E4E4E4;
-	padding: 5px 5px 5px 5px;
+}
+
+.datos_greyf9, .datos_bluef9, .datos_greenf9, .datos_redf9, .datos_yellowf9 {
+	font-size: 6.5pt;
 }
 
 td.datos_greyf9, td.datos_bluef9, td.datos_greenf9, td.datos_redf9, td.datos_yellowf9 {
-	font-size: 6.5pt;
+	padding: 5px 5px 5px 5px;
 }
+/* end of classes for event priorities */
 
 div#main_pure {
 	background-color: #fefefe;

@@ -161,7 +161,7 @@ if (dame_admin ($config["id_user"])) {
 foreach ($result as $id_row) {
 	$name_for_combo = "";
 	if ($id_row[0] > 0)
-		$name_for_combo = substr (strtolower (dame_nombre_agente ($id_row[0])),0,20);
+		$name_for_combo = substr (get_agent_name ($id_row[0], "lower"),0,20);
 	if ($name_for_combo != "")
 		$agents[$id_row[0]] = $name_for_combo;
 }

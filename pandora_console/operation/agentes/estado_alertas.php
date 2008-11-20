@@ -144,10 +144,10 @@ if (isset($_GET["id_agente"])){
 	
 	// Agent group selector
 	if ($ag_group > 1) {
-		$result = get_agents_in_group ($ag_group);
+		$result = get_group_agents ($ag_group, false, "upper");
 	} else {
 		//Fields is an array with all the groups the user has access to
-		$result = get_agents_in_group (array_keys ($fields));
+		$result = get_group_agents (array_keys ($fields), false, "upper");
 	}
 	
 	$color = 1; 
@@ -174,9 +174,7 @@ if (isset($_GET["id_agente"])){
 	}
 	
 	//This result is the array with agents
-	foreach ($result as $row) {
-		$id_agente = $row["id_agente"];
-		$nombre_agente = strtoupper ($row["nombre"]);
+	foreach ($result as $id_agente => $nombre_agente) {
 		$result_alerts = get_alerts_in_agent ($id_agente);
 		
 		if ($result_alerts === false)

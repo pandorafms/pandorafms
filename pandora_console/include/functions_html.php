@@ -113,12 +113,7 @@ function print_select_from_sql ($sql, $name, $selected = '', $script = '', $noth
 		$fields[$row[0]] = $row[1];
 	}
 	
-	$output = print_select ($fields, $name, $selected, $script, $nothing, $nothing_value, true, $multiple, $sort);
-	
-	if ($return)
-		return $output;
-
-	echo $output;
+	return print_select ($fields, $name, $selected, $script, $nothing, $nothing_value, $return, $multiple, $sort);
 }
 
 /**

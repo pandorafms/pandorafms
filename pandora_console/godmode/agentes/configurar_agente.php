@@ -37,7 +37,7 @@ if (! give_acl($config["id_user"], $group, "AW")) {
 
 
 // Get passed variables
-$tab = get_parameter_get ("tab","main");
+$tab = get_parameter_get ("tab", "main");
 $form_moduletype = get_parameter_post ("form_moduletype");
 $form_alerttype = get_parameter ("form_alerttype");
 $moduletype = get_parameter_get ("moduletype");
@@ -490,6 +490,14 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	$id_agente = (int) get_parameter_post ("id_agente", 0);
 	$nombre_agente = (string) get_parameter_post ("agente");
 	$direccion_agente = (string) get_parameter_post ("direccion");
+	$address_list = (string) get_parameter_post ("address_list");
+	if ($address_list != $direccion_agente && $direccion_agente == get_agent_address ($id_agente) && $address_list != get_agent_address ($id_agente)) {
+		//If we selected another IP in the drop down list to be 'primary': 
+		// a) field is not the same as selectbox
+		// b) field has not changed from current IP
+		// c) selectbox is not the current IP
+		$direccion_agente = $address_list;
+	}
 	$grupo = (int) get_parameter_post ("grupo", 0);
 	$intervalo = (int) get_parameter_post ("intervalo", 300);
 	$comentarios = (string) get_parameter_post ("comentarios");

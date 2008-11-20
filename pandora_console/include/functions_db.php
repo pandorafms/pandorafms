@@ -190,44 +190,100 @@ function give_disabled_group ($id_group) {
 }
 
 /**
- * Get all the agents in a group.
+ * Get all the agents within a group(s).
  *
  * @param id_group Group id or a comma delimited list of id_groups or an array
  * of ID's
  * 
  * @param disabled Add disabled agents to agents. Default: False.
+ * 
+ * @param case Which case to return the agentname as (lower, upper, none)
  *
- * @return An array with all agents in the group.
+ * @return An array with all agents in the group or an empty array
  */
-function get_agents_in_group ($id_group, $disabled = false) {
-	if (is_array ($id_group)) //If id_group is an array, then 
-		$id_group = implode (",", $id_group);
+function get_group_agents ($id_group, $disabled = false, $case = "lower") {
+	$id_group = safe_int ($id_group, 1);
+	
+	if (is_array ($id_group)) {
+		//If id_group is an array, then 
+		if (in_array (1, $id_group)) {
+			//If All is included in the group list, just select All
+			$id_group = 1;
+		} else {
+			//If All is not included, select what we need
+			$id_group = implode (",", $id_group);
+		}
+	}
 	
 	/* 'All' group must return all agents */
-	if ($id_group == 1) {
-		if ($disabled) {
-			return get_db_all_rows_in_table ('tagente', 'nombre');
-		} else {
-			return get_db_all_rows_field_filter ('tagente', 'disabled', 0, 'nombre');
-		}
-	} elseif ($disabled && $id_group != 1) {
-		$sql = sprintf ("SELECT * FROM tagente WHERE id_grupo IN (%s) ORDER BY nombre",$id_group);
-		return get_db_all_rows_sql ($sql);
-	} else {
-		$sql = sprintf ("SELECT * FROM tagente WHERE id_grupo IN (%s) AND disabled = 0 ORDER BY nombre",$id_group);
-		return get_db_all_rows_sql ($sql);
+	$search = '';
+	if (!empty ($id_group) && $id_group > 1) {
+		$search .= sprintf (' WHERE id_grupo IN (%s)', $id_group);
 	}
+	if ($disabled !== false) {
+		$search .= (($search == '') ? ' WHERE' : ' AND' ).' disabled = 0';
+	}
+	
+	$sql = sprintf ("SELECT id_agente, nombre FROM tagente%s ORDER BY nombre", $search);
+	$result = get_db_all_rows_sql ($sql);
+	
+	if ($result === false)
+		return array (); //Return an empty array
+	
+	$agents = array ();
+	foreach ($result as $row) {
+		switch ($case) {
+		case "lower":
+			$agents[$row["id_agente"]] = mb_strtolower ($row["nombre"],"UTF-8");
+		break;	
+		case "upper":
+			$agents[$row["id_agente"]] = mb_strtoupper ($row["nombre"],"UTF-8");
+		break;
+		default:
+			$agents[$row["id_agente"]] = $row["nombre"];
+		}
+	}
+	return ($agents);
 }
 
 /**
  * Get all the modules in an agent.
  *
  * @param $id_agent Agent id
+ * @param $details Array, comma delimited list or singular value of rows to select. If nothing is specified, nombre will be selected
  *
- * @return An array with all modules in the agent.
+ * @return An array with all modules in the agent. If multiple rows are selected, they will be in an array
  */
-function get_modules_in_agent ($id_agent) {
-	return get_db_all_rows_field_filter ('tagente_modulo', 'id_agente', (int) $id_agent);
+function get_agentmodules ($id_agent, $details = false) {
+	$id_agent = safe_int ($id_agent, 1);
+	
+	if (empty ($id_agent)) {
+		$filter = '';
+	} elseif (is_array ($id_agent)) {
+		$filter = sprintf (' WHERE id_agente IN (%s)', implode (",",$id_agent));
+	} else {
+		$filter = sprintf (' WHERE id_agente = %d', $id_agent);
+	}
+	
+	if (empty ($details)) {
+		$details = "nombre";
+	}
+	
+	$sql = "SELECT id_agente_modulo,".implode (",", (array) $details)." FROM tagente_modulo".$filter." ORDER BY nombre";
+	$result = get_db_all_rows_sql ($sql); //cast as array, that way a false will be converted into an array
+	if (empty ($result)) {
+		$result = array ();
+	}
+	$modules = array ();
+	
+	foreach ($result as $row) {
+		if (is_array ($details)) {
+			$modules[$row["id_agente_modulo"]] = $row; //Just stack the information in array by ID
+		} else {
+			$modules[$row["id_agente_modulo"]] = $row[$details];
+		}
+	}
+	return $modules;
 }
 
 /**
@@ -361,14 +417,36 @@ function return_event_description ($id_event) {
 }
 
 /** 
- * Get name of an agent.
+ * DEPRECATED: Use get_agent_name instead
  * 
  * @param id_agent Agent id.
  * 
  * @return Name of the given agent.
  */
 function dame_nombre_agente ($id_agent) {
-	return (string) get_db_value ('nombre', 'tagente', 'id_agente', (int) $id_agent);
+	return get_agent_name ($id_agent, "none");
+}
+
+/** 
+ * Get name of an agent.
+ * 
+ * @param id_agent Agent id.
+ * @param case Case (upper, lower, none)
+ * 
+ * @return Name of the given agent.
+ */
+function get_agent_name ($id_agent, $case = "upper") {
+	$agent = (string) get_db_value ('nombre', 'tagente', 'id_agente', (int) $id_agent);
+	switch ($case) {
+		case "upper":
+			return mb_strtoupper ($agent,"UTF-8");
+			break;
+		case "lower":
+			return mb_strtolower ($agent,"UTF-8");
+			break;
+		default:
+			return ($agent);
+	}
 }
 
 /** 
@@ -662,12 +740,10 @@ function get_alert_fires_in_period ($id_agent_module, $period, $date = 0) {
  */
 function get_alerts_in_group ($id_group) {
 	$alerts = array ();
-	$agents = get_agents_in_group ($id_group);
-	if (empty ($agents))
-		return $alerts;
+	$agents = get_group_agents ($id_group, false, "none");
 	
-	foreach ($agents as $agent) {
-		$agent_alerts = get_alerts_in_agent ($agent["id_agente"]);
+	foreach ($agents as $agent_id => $agent_name) {
+		$agent_alerts = get_alerts_in_agent ($agent_id);
 		$alerts = array_merge ($alerts, $agent_alerts);
 	}
 	
@@ -1287,7 +1363,7 @@ function agent_delete_address ($id_agent, $ip_address) {
 	if (get_agent_address ($id_agent) == $ip_address) {
 		$new_ips = get_agent_addresses ($id_agent);
 		// Change main address in agent to first one in the list
-		$query = sprintf ("UPDATE tagente SET `direccion` = '%s' WHERE id_agente = %d", $new_ips[0], $id_agent);
+		$query = sprintf ("UPDATE tagente SET `direccion` = '%s' WHERE id_agente = %d", current ($new_ips), $id_agent);
 		process_sql ($query);
 	}
 }
@@ -1324,7 +1400,7 @@ function get_agent_with_ip ($ip_address) {
  * 
  * @param id_agent Agent id
  * 
- * @return Array with the IP address of the given agent.
+ * @return Array with the IP address of the given agent or an empty array.
  */
 function get_agent_addresses ($id_agent) {
 	$sql = sprintf ("SELECT ip FROM taddress_agent, taddress
@@ -1339,7 +1415,7 @@ function get_agent_addresses ($id_agent) {
 	
 	$ret_arr = array ();
 	foreach ($ips as $row) {
-		$ret_arr[] = $row["ip"];
+		$ret_arr[$row["ip"]] = $row["ip"];
 	}
 	
 	return $ret_arr;
@@ -2365,11 +2441,23 @@ function get_server_info ($id_server = -1) {
 /**
  * This function will return the number of all agent modules in the database
  *
+ * @param integer or array of integers with agent(s). Leave empty to select everything
+ *
  * @return integer with the number of agent modules
  *
- * TODO: Filter? Implement when necessary
  **/
-function get_agentmodule_count () {
-	return (int) get_db_sql ("SELECT COUNT(*) FROM tagente_modulo");
+function get_agentmodule_count ($id_agent = 0) {
+	$id_agent = safe_int ($id_agent); //Make sure we're all int's and filter out bad stuff
+	if (empty ($id_agent) || $id_agent < 1) {
+		//If the array proved empty or the agent is less than 1 (eg. -1)
+		$filter = '';
+	} elseif (is_array ($id_agent)) {
+		//If it's an array of agents, flatten the aray
+		$filter = sprintf (" WHERE id_agente IN (%s)", implode (",",$id_agent));
+	} else {
+		$filter = sprintf (" WHERE id_agente = %d", $id_agent);
+	}
+	
+	return (int) get_db_sql ("SELECT COUNT(*) FROM tagente_modulo".$filter);
 }
 ?>

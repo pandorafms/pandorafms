@@ -1,3 +1,31 @@
+2008-11-20  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* reporting/fgraph.php: Updated for some faster processing
+	and new functions.
+
+	* operation/events/events.php,
+	operation/agentes/estado_alertas,
+	include/functions_reporting.php, 
+	godmode/reporting/reporting_bulder.php, 
+	godmode/reporting/map_builder.php, godmode/db/db_info.php: 
+	Function name updates
+	
+	* include/functions_html.php: Small style update
+	
+	* include/functions_db.php: get_agents_in_group is now
+	get_group_agents. Accepts array and specified case. 
+	get_modules_in_agent is now get_agentmodules and accepts arrays
+	of agents as well as which details to select. Deprecated 
+	dame_nombre_agente in favor of get_agent_name which accepts case.
+	Fixed get_agent_addresses for use in select boxes. Added filter
+	to get_agentmodule_count
+	
+	* godmode/db/db_purge.php: Fixed queries and style updates
+	
+	* godmode/agentes/configurar_agente.php: Fixed IP select box
+	
+	* godmode/agentes/agent_manager.php: Style update and fixed a bug
+	
 2008-11-19  Jorge Gonzalez  <jorgegonz@svn.gnome.org>
 
 	* pandoradb_data.sql: Added Arab and Turkish translations to the

@@ -72,7 +72,7 @@ echo '<td class="datos" colspan="2"><img src="images/'.dame_so_icon ($agent["id_
 
 // Parent
 echo '<tr><td class="datos2"><b>'.__('Parent').'</b></td>';
-echo '<td class="datos2" colspan="2"><a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_parent"].'">'.dame_nombre_agente ($agent["id_parent"]).'</a></td></tr>';
+echo '<td class="datos2" colspan="2"><a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent["id_parent"].'">'.get_agent_name ($agent["id_parent"]).'</a></td></tr>';
 
 // Agent Interval
 echo '<tr><td class="datos"><b>'.__('Interval').'</b></td>';

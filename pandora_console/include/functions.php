@@ -1202,8 +1202,6 @@ function get_priorities () {
  * @return priority string.
  */
 function get_priority_name ($priority) {
-	global $config;
-
 	switch ($priority) {
 	case 0: 
 		return __('Maintenance');
@@ -1215,10 +1213,35 @@ function get_priority_name ($priority) {
 		return __('Warning');
 	case 4: 
 		return __('Critical');
-	case -1: 
+	default: 
 		return __('All');
 	}
 }
+
+/**
+ * Get priority class (CSS class) from priority value.
+ *
+ * @param priority value (integer) as stored eg. in database.
+ *
+ * @return priority class.
+ */
+function get_priority_class ($priority) {
+	switch ($priority) {
+	case 0: 
+		return "datos_blue";
+	case 1: 
+		return "datos_grey";
+	case 2:
+		return "datos_green";
+	case 3: 
+		return "datos_yellow";
+	case 4: 
+		return "datos_red";
+	default: 
+		return "datos_grey";
+	}
+}
+	
 
 /**
  * Avoid magic_quotes protection

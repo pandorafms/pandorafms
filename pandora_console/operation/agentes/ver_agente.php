@@ -17,10 +17,10 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
-require("include/config.php");
-enterprise_include('operation/agentes/ver_agente.php');
+require_once ("include/config.php");
+enterprise_include ('operation/agentes/ver_agente.php');
 
-check_login();
+check_login ();
 
 if (defined ('AJAX')) {
 	$get_agent_json = (bool) get_parameter ('get_agent_json');
@@ -129,6 +129,7 @@ $id_agente = (int) get_parameter ("id_agente");
 if (! $id_agente) {
 	return;
 }
+
 // get group for this id_agente
 $id_grupo = get_db_value ('id_grupo', 'tagente', 'id_agente', $id_agente);
 if (! give_acl ($config['id_user'], $id_grupo, "AR")) {
@@ -141,7 +142,7 @@ if (! give_acl ($config['id_user'], $id_grupo, "AR")) {
 // Check for validate alert request
 $validate_alert = get_parameter ("validate_alert");
 if ($validate_alert != ""){
-	if (give_acl ($config['id_user'], $id_grupo, "AW")==1){
+	if (give_acl ($config['id_user'], $id_grupo, "AW") == 1) {
 		$alert_row = get_db_row ("talerta_agente_modulo", "id_aam", $validate_alert);
 		if ($alert_row["id_agente_modulo"] != 0){
 			$am_row = get_db_row ("tagente_modulo", "id_agente_modulo", $alert_row["id_agente_modulo"]);

@@ -1,3 +1,26 @@
+2008-11-20  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* operation/snmpconsole/snmp_view.php, godmode/snmpconsole/snmp_view.php:
+	Added legend to satisfy feature request #2204169. Also made filters 
+	persistent
+	
+	* operation/events/events.php: Usage of new function
+	
+	* operation/agentes/ver_agente.php,
+	operation/agentes/estado_monitores.php: A bit of style update
+	Fixed bug where $intervalo actually came from index.php
+	
+	* index.php: Put refresh in config (to prevent above bug)
+	
+	* include/styles/pandora_width.css, include/styles/pandora_red.css,
+	include/styles/pandora_black.css, include/styles/pandora.css:
+	Update so you can use datos_<color> in other things than td
+	
+	* include/functions_db.php: give_agentinterval is now get_agent_interval
+	
+	* include/functions.php: Added get_priority_class to find background 
+	color classes		
+
 2008-11-20  Jorge Gonzalez   <jorgegonz@artica.es>
 
 	* pandoradb_data.sql: Corrected mistake for languages Slovak and

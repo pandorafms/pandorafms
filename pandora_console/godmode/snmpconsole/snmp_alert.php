@@ -331,25 +331,8 @@ if (isset ($_GET["update_alert"])) {
 				<img src="images/config.png" border="0" alt="'.__('Update').'"></a>';
 		$idx = count ($table->data); //The current index of the table is 1 less than the count of table data so we count before adding to table->data
 		array_push ($table->data, $data);
-		switch ($row["priority"]) {
-		case 0:
-			$table->rowclass[$idx] = "datos_blue";
-			break;
-		case 1:
-			$table->rowclass[$idx] = "datos_grey";
-			break;
-		case 2:
-			$table->rowclass[$idx] = "datos_green";
-			break;
-		case 3:
-			$table->rowclass[$idx] = "datos_yellow";
-			break;
-		case 4:
-			$table->rowclass[$idx] = "datos_red";
-			break;
-		default:
-			$table->rowclass[$idx] = "datos_grey";
-		}
+		
+		$table->rowclass[$idx] = get_priority_class ($row["priority"]);
 	}
 
 	if (!empty ($table->data)) {
@@ -362,7 +345,14 @@ if (isset ($_GET["update_alert"])) {
 	echo '<form name="agente" method="post" action="index.php?sec=gsnmpconsole&sec2=godmode/snmpconsole/snmp_alert&update_alert=-1">';
 	print_submit_button (__('Create'), "add_alert", false, 'class="sub next"');
 	echo "</form></div>";
-		
+
+	echo '<div style="margin-left: 30px; line-height: 17px; vertical-align: top; width:120px;">';
+	echo '<h3>'.__('Legend').'</h3>';
+	foreach (get_priorities () as $num => $name) {
+		echo '<span class="'.get_priority_class ($num).'">'.$name.'</span>';
+		echo '<br />';
+	}
+	echo '</div>';
 }
 ?>
 <script type="text/javascript" src="include/javascript/jquery.js"></script>

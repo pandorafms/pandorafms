@@ -77,8 +77,8 @@ echo '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head
 $config["pure"] = get_parameter ("pure", 0);
 
 // Auto Refresh page
-$intervalo = get_parameter ("refr", 0);
-if ($intervalo > 0) {
+$config["refr"] = get_parameter ("refr", 0);
+if ($config["refr"] > 0) {
 	// Agent selection filters and refresh
 	$query = 'http' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '') . '://' . $_SERVER['SERVER_NAME'];
 	if ($_SERVER['SERVER_PORT'] != 80 && (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE && $_SERVER['SERVER_PORT'] != 443))
@@ -102,7 +102,7 @@ if ($intervalo > 0) {
 			$query .= ":" . $_SERVER['SERVER_PORT'];
 		$query .= $_SERVER['REQUEST_URI'] . '&ag_group_refresh=' . $ag_group;
 	} else {
-		echo '<meta http-equiv="refresh" content="' . $intervalo . '; URL=' . $query . '">';
+		echo '<meta http-equiv="refresh" content="' . $config["refr"] . '; URL=' . $query . '">';
 	}
 }
 

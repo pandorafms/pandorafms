@@ -266,25 +266,7 @@ foreach ($result as $row) {
 	$data = array ();
 	
 	//First pass along the class of this row
-	switch ($row["criticity"]) {
-	case 0: 
-		$table->rowclass[] = "datos_blue";
-		break;
-	case 1: 
-		$table->rowclass[] = "datos_grey";
-		break;
-	case 2: 
-		$table->rowclass[] = "datos_green";
-		break;
-	case 3: 
-		$table->rowclass[] = "datos_yellow";
-		break;
-	case 4: 
-		$table->rowclass[] = "datos_red";
-		break;
-	default:
-		$table->rowclass[] = "datos_grey";
-	}
+	$table->rowclass[] = get_priority_class ($row["criticity"]);
 	
 	// Colored box
 	if ($row["estado"] == 0) {

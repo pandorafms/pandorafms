@@ -36,8 +36,9 @@ $filter_oid = (string) get_parameter ("filter_oid", '');
 $filter_severity = (int) get_parameter ("filter_severity", -1);
 $filter_fired = (int) get_parameter ("filter_fired", -1);
 $search_string = (string) get_parameter ("search_string", '');
-$config["block_size"] = (int) get_parameter ("pagination", $config["block_size"]);
+$pagination = (int) get_parameter ("pagination", $config["block_size"]);
 $offset = (int) get_parameter ('offset',0);
+$url = "index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&filter_agent=".$filter_agent."&filter_oid=".$filter_oid."&filter_severity=".$filter_severity."&filter_fired=".$filter_fired."&search_string=".$search_string."&pagination=".$pagination."&offset=".$offset;
 
 // OPERATIONS
 
@@ -97,10 +98,10 @@ if (isset ($_POST["updatebt"])) {
 
 echo "<h2>Pandora SNMP &gt; " . __('SNMP console');
 if ($config["pure"] == 1) {
-	echo "&nbsp;<a target='_top' href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&pure=0'><img src='images/monitor.png' title='".__('Normal screen')."'></a>";
+	echo '&nbsp;<a target="_top" href="'.$url.'&pure=1&refr=30"><img src="images/monitor.png" title="'.__('Normal screen').'" /></a>';
 } else {
 	// Fullscreen
-	echo "&nbsp;<a target='_top' href='index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&refr=30&pure=1'><img src='images/monitor.png' title='".__('Full screen')."'></a>";
+	echo '&nbsp;<a target="_top" href="'.$url.'&pure=0&refr=0"><img src="images/monitor.png" title="'.__('Full screen').'" /></a>';
 }
 echo "</h2>";
 
@@ -114,10 +115,9 @@ if (empty ($traps)) {
 }
 
 // Toggle filters
-echo '<a href="#" onmousedown="toggleDiv(\'filters\');">';
-echo "<b>".__('Toggle filters')." ".'<img src="images/wand.png" /></a></b>';
+echo '<a href="#" onmousedown="toggleDiv(\'filters\');"><b>'.__('Toggle filters').'</b>&nbsp;<img src="images/wand.png" /></a>';
 
-echo '<form method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view">';
+echo '<form method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&refr='.$config["refr"].'&pure='.$config["pure"].'">';
 $table->width = '90%';
 $table->size = array ();
 $table->size[0] = '120px';
@@ -139,9 +139,9 @@ foreach ($traps as $trap) {
 }
 
 if ($config["pure"] == 1) {
-	echo "<div id='filters' style='display:none'>";
+	echo '<div id="filters" style="display:none;">';
 } else {
-	echo "<div id='filters' style='display:block'>"; //There is no value all to property display
+	echo '<div id="filters" style="display:block;">'; //There is no value all to property display
 }
 
 // Agent select
@@ -167,11 +167,11 @@ $lpagination[50]=50;
 $lpagination[100]=100;
 $lpagination[200]=200;
 $lpagination[500]=500;
-$table->data[2][1] = print_select ($lpagination, "pagination", $config["block_size"], 'javascript:this.form.submit();', __('Default'), $config["block_size"], true);
+$table->data[2][1] = print_select ($lpagination, "pagination", $pagination, 'this.form.submit();', __('Default'), $config["block_size"], true);
 
 // Severity select
 $table->data[2][2] = '<strong>'.__('Severity').'</strong>';
-$table->data[2][3] = print_select ($severities, 'filter_severity', $filter_severity, 'javascript:this.form.submit();', __('All'), -1, true);
+$table->data[2][3] = print_select ($severities, 'filter_severity', $filter_severity, 'this.form.submit();', __('All'), -1, true);
 
 print_table ($table);
 unset ($table);
@@ -183,9 +183,9 @@ echo '<br />';
 
 // Prepare index for pagination
 $trapcount = get_db_sql ("SELECT COUNT(*) FROM ttrap");
-pagination ($trapcount, "index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view", $offset);
+pagination ($trapcount, "index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&filter_agent=".$filter_agent."&filter_oid=".$filter_oid."&pagination=".$pagination."&offset=".$offset."&refr=".$config["refr"]."&pure=".$config["pure"], $offset, $pagination);
 
-echo '<form name="eventtable" method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&offset='.$offset.'">';
+echo '<form name="eventtable" method="POST" action="index.php?sec=snmpconsole&sec2=operation/snmpconsole/snmp_view&pagination='.$pagination.'&offset='.$offset.'">';
 
 $table->cellpadding = 4;
 $table->cellspacing = 4;
@@ -338,25 +338,7 @@ foreach ($traps as $trap) {
 	}
 
 	// Severity	
-	switch ($severity) {
-		case 0:
-			$table->rowclass[$idx] = "datos_blue";
-			break;
-		case 1:
-			$table->rowclass[$idx] = "datos_grey";
-			break;
-		case 2:
-			$table->rowclass[$idx] = "datos_green";
-			break;
-		case 3:
-			$table->rowclass[$idx] = "datos_yellow";
-			break;
-		case 4:
-			$table->rowclass[$idx] = "datos_red";
-			break;
-		default:
-			$table->rowclass[$idx] = "datos_grey";
-	}
+	$table->rowclass[$idx] = get_priority_class ($severity);
 
 	//Actions
 	$data[8] = "";
@@ -391,26 +373,33 @@ if (give_acl ($config['id_user'], 0, "IM")) {
 }
 echo "</div></form>";
 
-echo '<table>';
-echo '<tr>';
-echo '<td rowspan="4" class="f9" style="padding-left: 30px; line-height: 17px; vertical-align: top;">';
+
+echo '<div style="float:left; padding-left:30px; line-height: 17px; vertical-align: top; width:120px;">';
 echo '<h3>' . __('Status') . '</h3>';
 echo '<img src="images/pixel_green.png" width="20" height="20" /> - ' . __('Validated');
 echo '<br />';
 echo '<img src="images/pixel_red.png" width="20" height="20" /> - ' . __('Not validated');
-echo '</td>';
-echo '<td rowspan="4" class="f9" style="padding-left: 30px; line-height: 17px; vertical-align: top;">';
+echo '</div>';
+echo '<div style="float:left; padding-left:30px; line-height: 17px; vertical-align: top; width:120px;">';
 echo '<h3>' . __('Alert') . '</h3>';
 echo '<img src="images/pixel_yellow.png" width="20" height="20" /> - '  .__('Fired');
 echo '<br />';
 echo '<img src="images/pixel_gray.png" width="20" height="20" /> - ' . __('Not fired');
-echo '<td rowspan="4" class="f9" style="padding-left: 30px; line-height: 17px; vertical-align: top;">';
+echo '</div>';
+echo '<div style="float:left; padding-left:30px; line-height: 19px; vertical-align: top; width:120px;">';
 echo '<h3>' . __('Action') . '</h3>';
-echo '<img src="images/ok.png" /> - '  .__('Validate');
+echo '<img src="images/ok.png" width="18" height="18" /> - '  .__('Validate');
 echo '<br />';
-echo '<img src="images/cross.png" /> - ' . __('Delete');
-echo '</td>';
-echo '</td></tr></table>';
+echo '<img src="images/cross.png" width="18" height="18" /> - ' . __('Delete');
+echo '</div>';
+echo '<div style="float:left; padding-left:30px; line-height: 17px; vertical-align: top; width:120px;">';
+echo '<h3>'.__('Legend').'</h3>';
+foreach (get_priorities () as $num => $name) {
+	echo '<span class="'.get_priority_class ($num).'">'.$name.'</span>';
+	echo '<br />';
+}
+echo '</div>';
+echo '<div style="clear:both;">&nbsp;</div>';
 ?>
 
 <script language="JavaScript" type="text/javascript">

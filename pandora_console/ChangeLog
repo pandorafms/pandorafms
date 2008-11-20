@@ -1,3 +1,8 @@
+2008-11-20  Jorge Gonzalez   <jorgegonz@artica.es>
+
+	* pandoradb_data.sql: Corrected mistake for languages Slovak and
+	  Slovenian.
+
 2008-11-20  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* pandoradb_data.sql: Added Hebrew and Slovak translations to the

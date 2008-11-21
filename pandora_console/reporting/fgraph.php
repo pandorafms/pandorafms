@@ -944,7 +944,7 @@ function graphic_string_data ($id_agent_module, $periodo, $width, $height, $pure
 		$Graph->add(
 		Image_Graph::vertical(
 			Image_Graph::vertical(
-						$Title = Image_Graph::factory('title', array('   Pandora FMS Graph - '.strtoupper($nombre_agente)." - ".give_human_time ($periodo), 10)),
+						$Title = Image_Graph::factory('title', array('   Pandora FMS Graph - '.strtoupper($nombre_agente)." - ".human_time_description_raw ($periodo), 10)),
 						$Subtitle = Image_Graph::factory('title', array('     '.__('Data occurrence for module ').$nombre_modulo, 7)),
 						90
 				),

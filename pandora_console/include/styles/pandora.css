@@ -327,7 +327,7 @@ td.datos_id {
 	font-size: 7pt;
 	text-align: center;
 }
-.f9, .f9i, .f9b, td.f9, td.f9i, td.datosf9, td.datos2f9 {
+.f9, .f9i, .f9b, .datos_greyf9, .datos_bluef9, .datos_greenf9, .datos_redf9, .datos_yellowf9, td.f9, td.f9i, td.datosf9, td.datos2f9 {
 	font-size: 6.5pt;
 }
 .f9i, .redi {
@@ -350,7 +350,7 @@ td.datos_id {
 	background: url(../../images/err.png) no-repeat;
 	padding: 4px 1px 6px 30px;
 }
-.red , .redb, .redi, .error {
+.red, .redb, .redi, .error {
 	color: #f00;
 }
 .sep {
@@ -658,10 +658,6 @@ span#logo_text2 {
 
 .datos_grey, .datos_greyf9 {
 	background-color: #E4E4E4;
-}
-
-.datos_greyf9, .datos_bluef9, .datos_greenf9, .datos_redf9, .datos_yellowf9 {
-	font-size: 6.5pt;
 }
 
 td.datos_greyf9, td.datos_bluef9, td.datos_greenf9, td.datos_redf9, td.datos_yellowf9 {

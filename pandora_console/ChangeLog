@@ -1,3 +1,26 @@
+2008-11-21  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* godmode/setup/setup.php: Added prominent_time value to configuration.
+	Also made setup.php available for singular GET requests. Implements 
+	feature request #2267582
+
+	* include/config_process.php: Added prominent_time to configuration. Also
+	made sure some values are inserted into the database. Implements 
+	feature request #2267582
+	
+	* include/functions.php: Removed give_human_time(). Fixed 
+	human_time_description_raw and human_time_comparation for 0 values
+	
+	* include/functions_db.php: Called safe_input in get_agentmodules
+	
+	* include/functions_html.php: Added print_timestamp for feature request
+	#2267582. Timestamps should be printed using this function.
+	
+	* include/styles/pandora.css: Simplified CSS for f9 classes
+	
+	* operation/agentes/estado_monitores: Rewrite. Also implemented 
+	Glen Eustace's (from Godzone) feature request.
+
 2008-11-20  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* operation/snmpconsole/snmp_view.php, godmode/snmpconsole/snmp_view.php:

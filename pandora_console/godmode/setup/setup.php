@@ -35,23 +35,24 @@ if (file_exists( $config["homedir"] . "/enterprise/godmode/setup/setup.php")) {
 $update_settings = (bool) get_parameter ('update_settings');
 
 if ($update_settings) {
-	$config["block_size"] = (int) get_parameter ('block_size');
-	$config["language"] = (string) get_parameter ('language_code');
-	$config["days_compact"] = (int) get_parameter ('days_compact');
-	$config["days_purge"] = (int) get_parameter ('days_purge');
-	$config["graph_res"] = (int) get_parameter ('graph_res');
-	$config["step_compact"] = (int) get_parameter ('step_compact');
-	$config["show_unknown"] = (int) get_parameter ('show_unknown');
-	$config["show_lastalerts"] = (int) get_parameter ('show_lastalerts');
-	$config["style"] = (string) get_parameter ('style', 'pandora.css');
-	$config["remote_config"] = (string) get_parameter ('remote_config');
-	$config["graph_color1"] = (string) get_parameter ('graph_color1');
-	$config["graph_color2"] = (string) get_parameter ('graph_color2');
-	$config["graph_color3"] = (string) get_parameter ('graph_color3');	
-	$config["sla_period"] = (int) get_parameter ("sla_period");
-	$config["date_format"] = (string) get_parameter ("date_format");
-	$config["trap2agent"] = (string) get_parameter ("trap2agent");
-	$config["autoupdate"] = (string) get_parameter ("autoupdate");
+	$config["block_size"] = (int) get_parameter ('block_size', $config["block_size"]);
+	$config["language"] = (string) get_parameter ('language_code', $config["language"]);
+	$config["days_compact"] = (int) get_parameter ('days_compact', $config["days_compact"]);
+	$config["days_purge"] = (int) get_parameter ('days_purge', $config["days_purge"]);
+	$config["graph_res"] = (int) get_parameter ('graph_res', $config["graph_res"]);
+	$config["step_compact"] = (int) get_parameter ('step_compact', $config["step_compact"]);
+	$config["show_unknown"] = (int) get_parameter ('show_unknown', $config["show_unknown"]);
+	$config["show_lastalerts"] = (int) get_parameter ('show_lastalerts', $config["show_lastalerts"]);
+	$config["style"] = (string) get_parameter ('style', $config["style"]);
+	$config["remote_config"] = (string) get_parameter ('remote_config', $config["remote_config"]);
+	$config["graph_color1"] = (string) get_parameter ('graph_color1', $config["graph_color1"]);
+	$config["graph_color2"] = (string) get_parameter ('graph_color2', $config["graph_color2"]);
+	$config["graph_color3"] = (string) get_parameter ('graph_color3', $config["graph_color3"]);	
+	$config["sla_period"] = (int) get_parameter ('sla_period', $config["sla_period"]);
+	$config["date_format"] = (string) get_parameter ('date_format', $config["date_format"]);
+	$config["trap2agent"] = (string) get_parameter ('trap2agent', $config["trap2agent"]);
+	$config["autoupdate"] = (string) get_parameter ('autoupdate', $config["autoupdate"]);
+	$config["prominent_time"] = (string) get_parameter ('prominent_time', $config["prominent_time"]);
 
 	$config["style"] = substr ($config["style"], 0, strlen ($config["style"]) - 4);
 
@@ -72,6 +73,7 @@ if ($update_settings) {
 	process_sql ("UPDATE tconfig SET VALUE='".$config["date_format"]."' WHERE token = 'date_format'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["trap2agent"]."' WHERE token = 'trap2agent'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["autoupdate"]."' WHERE token = 'autoupdate'");
+	process_sql ("UPDATE tconfig SET VALUE='".$config["prominent_time"]."' WHERE token = 'prominent_time'");
 }
 
 echo "<h2>".__('Pandora Setup')." &gt; ";
@@ -125,6 +127,12 @@ $table->data[13][1] = print_select ($file_styles, 'style', $config["style"], '',
 
 $table->data[14][0] = __('Block size for pagination');
 $table->data[14][1] = print_input_text ('block_size', $config["block_size"], '', 5, 5, true);
+
+$table->data[15][0] = __('Timestamp or time comparation');
+$table->data[15][1] = __('Comparation in rollover').' ';
+$table->data[15][1] .=  print_radio_button ('prominent_time', "timestamp", '', $config["prominent_time"], true);
+$table->data[15][1] .= '<br />'.__('Timestamp in rollover').' ';
+$table->data[15][1] .= print_radio_button ('prominent_time', "comparation", '', $config["prominent_time"], true);
 
 enterprise_hook ('load_snmpforward_enterprise');
 

@@ -611,10 +611,53 @@ function print_error_message ($result, $good = '', $bad = '', $attributes = '', 
 		$output = '<'.$tag.' class="suc" '.$attributes.'>'.$good.'</'.$tag.'>';
 	}
 
-	if ($return !== false)
-		return $output;
+	if ($return === false)
+		echo $output;
 	
-	echo $output;
+	return $output;
 }
 
+/**
+ * Evaluates a unix timestamp and returns a span (or whatever tag specified)
+ * with as title the correctly formatted full timestamp and a time comparation
+ * in the tag
+ *
+ * @param int $unixtime: Any type of timestamp really, but we prefer unixtime
+ * @param string $attributes: Any additional attributes (class, script etc.)
+ * @param string $tag: If it should be in a different tag than span
+ * @param bool $return whether to output the string or return it
+ */
+function print_timestamp ($unixtime, $attributes, $tag = "span", $return = false) {
+	global $config;
+	
+	if (!is_numeric ($unixtime)) {
+		$unixtime = strtotime ($unixtime);
+	}
+
+	//prominent_time is either timestamp or comparation
+	if ($config["prominent_time"] == "timestamp") {
+		$title = human_time_comparation ($unixtime);
+		$data = date ($config["date_format"], $unixtime);
+	} else {
+		$title = date ($config["date_format"], $unixtime);
+		$data = human_time_comparation ($unixtime);
+	}
+	
+	$output = '<'.$tag;
+	switch ($tag) {
+		default:
+		//Usually tags have title attributes, so by default we add, then fall through to add attributes and data
+			$output .= ' title="'.$title.'"';
+		case "h1":
+		case "h2":
+		case "h3":
+		//Above tags don't have title attributes
+			$output .= ' '.$attributes.'>'.$data.'</'.$tag.'>';
+	}
+
+	if ($return === false) {
+		echo $output;
+	}
+	return $output;
+}
 ?>

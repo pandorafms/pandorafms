@@ -114,8 +114,9 @@ if (file_exists ('./include/languages/'.$config["language"].'.mo')) {
 	$l10n->load_tables();
 }
 
-if (! isset ($config['date_format'])) {
+if (!isset ($config['date_format'])) {
 	$config['date_format'] = 'F j, Y, g:i a';
+	process_sql ("INSERT INTO tconfig (token,value) VALUES ('date_format', '".$config['date_format']."')");
 }
 
 if (isset ($config['homeurl']) && $config['homeurl'][0] != '/') {
@@ -132,6 +133,13 @@ if (!isset($config["trap2agent"])){
 if (!isset ($config["sla_period"]) || empty ($config["sla_period"])) {
 	// Default period (in secs) for auto SLA calculation (for monitors)
 	$config["sla_period"] = 604800;
+	process_sql ("INSERT INTO tconfig (token,value) VALUES ('sla_period',604800)");
+}
+
+if (!isset ($config["prominent_time"])) {
+	// Prominent time tells us what to show prominently when a timestamp is displayed. The comparation (... days ago) or the timestamp (full date)
+	$config["prominent_time"] == "comparation";
+	process_sql ("INSERT INTO tconfig (token,value) VALUES ('prominent_time','comparation')");	
 }
 
 ?>

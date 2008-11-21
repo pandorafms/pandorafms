@@ -1252,4 +1252,13 @@ function enterprise_include ($filename) {
 	return ENTERPRISE_NOT_HOOK;
 }
 
+if (!function_exists ("mb_strtoupper")) {
+	//Multibyte not loaded
+	function mb_strtoupper ($string, $encoding = false) {
+		return strtoupper ($string);
+	}
+	function mb_strtolower ($string, $encoding = false) {
+		return strtoupper ($string);
+	}
+}
 ?>

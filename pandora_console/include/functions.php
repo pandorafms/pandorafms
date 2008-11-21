@@ -164,48 +164,6 @@ function safe_url_extraclean ($string) {
 }
 
 /** 
- * Get a human readable string with a time threshold in seconds,
- * minutes, days or weeks.
- * 
- * @param int_seconds 
- * 
- * @return 
- */
-function give_human_time ($int_seconds) {
-	$key_suffix = 's';
-	$periods = array('year'   => 31556926,
-			 'month'  => 2629743,
-			 'day'    => 86400,
-			 'hour'   => 3600,
-			 'minute' => 60,
-			 'second' => 1);
-
-	// used to hide 0's in higher periods
-	$flag_hide_zero = true;
-
-	// do the loop thang
-	foreach( $periods as $key => $length ) {
-		// calculate
-		$temp = floor( $int_seconds / $length );
-
-		// determine if temp qualifies to be passed to output
-		if( !$flag_hide_zero || $temp > 0 ) {
-			// store in an array
-			$build[] = $temp.' '.$key.($temp != 1 ? 's' : null);
-
-			// set flag to false, to allow 0's in lower periods
-			$flag_hide_zero = true;
-		}
-
-		// get the remainder of seconds
-		$int_seconds = fmod ($int_seconds, $length);
-	}
-
-	// return output, if !empty, implode into string, else output $if_reached
-	return (!empty ($build) ? implode (', ', $build) : $if_reached);
-}
-
-/** 
  * Add a help link to show help in a popup window.
  * 
  * @param help_id Help id to be shown when clicking.
@@ -502,10 +460,6 @@ function format_for_graph ($number , $decimals = 1, $dec_point = ".", $thousands
  * time and given timestamp.
  */
 function human_time_comparation ($timestamp) {
-	if ($timestamp == "") {
-		return "0 ".__('minutes');
-	}
-	
 	if (!is_numeric ($timestamp)) {
 		$timestamp = strtotime ($timestamp);
 	}
@@ -524,6 +478,10 @@ function human_time_comparation ($timestamp) {
  * @return A human readable translation of minutes.
  */
 function human_time_description_raw ($seconds) {
+	if (empty ($seconds)) {
+		return __('Never');
+	}
+	
 	if ($seconds < 60)
 		return format_numeric ($seconds, 0)." ".__('seconds');
 	
@@ -535,6 +493,7 @@ function human_time_description_raw ($seconds) {
 		$seconds = sprintf ("%02d", $seconds);
 		return $minutes.':'.$seconds.' '.__('minutes');
 	}
+	
 	if ($seconds < 86400)
 		return format_numeric ($seconds / 3600, 0)." ".__('hours');
 	
@@ -544,7 +503,7 @@ function human_time_description_raw ($seconds) {
 	if ($seconds < 15552000)
 		return format_numeric ($seconds / 2592000, 0)." ".__('months');
 	
-	return " +6 ".__('months');
+	return "+6 ".__('months');
 }
 
 /** 

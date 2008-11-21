@@ -28,101 +28,98 @@ if (!isset ($id_agente)) {
 }
 
 // Get all module from agent
-$sql_t='SELECT * FROM tagente_estado, tagente_modulo WHERE tagente_modulo.disabled = 0 AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.id_agente='.$id_agente.' AND tagente_estado.estado != 100 AND tagente_estado.utimestamp != 0 ORDER BY tagente_modulo.nombre';
-$result_t=mysql_query($sql_t);
-if (mysql_num_rows ($result_t)) {
-	echo "<h3>".__('Full list of Monitors')."</h3>";
-	echo "<table width='750' cellpadding=4 cellspacing=4 class='databox'>";
-	echo "<tr><th>X</th>";
-	echo "<th>".__('Type')."</th>
-	<th>".__('Module name')."</th>
-	<th>".__('Description')."</th>
-	<th>".__('Status')."</th>
-	<th>".__('Interval')."</th>
-	<th>".__('Last contact')."</th>";
-	$color=0;
-	while ($row_t=mysql_fetch_array($result_t)){
-		# For evey module in the status table
-		$est_modulo = substr($row_t["nombre"],0,25);
-		$est_tipo = dame_nombre_tipo_modulo($row_t["id_tipo_modulo"]);
-		$est_description = $row_t["descripcion"];
-		$est_timestamp = $row_t["timestamp"];
-		$est_estado = $row_t["estado"];
-		$est_datos = $row_t["datos"];
-		$est_cambio = $row_t["cambio"];
-		if ($row_t["module_interval"] > 0) {
-			$est_interval = $row_t["module_interval"];
+$sql = sprintf ("SELECT * FROM tagente_estado, tagente_modulo WHERE tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo 
+				AND tagente_modulo.id_agente = %d 
+				AND tagente_modulo.disabled = 0
+				AND tagente_estado.utimestamp != 0 
+				ORDER BY tagente_modulo.nombre", $id_agente);
+
+$modules = get_db_all_rows_sql ($sql);
+
+$table->width = 750;
+$table->cellpadding = 4;
+$table->cellspacing = 4;
+$table->class = "databox";
+$table->head = array ();
+$table->data = array ();
+
+$table->head[0] = "X";
+$table->head[1] = __('Type');
+$table->head[2] = __('Module name');
+$table->head[3] = __('Description');
+$table->head[4] = __('Status');
+$table->head[5] = __('Interval');
+$table->head[6] = __('Last contact');
+
+//Since PHP's Zend optimizer references $var2 in case you do $var = $var2, objects get referenced too so we can't do $table = $table_data 
+$table_data->head = $table->head; //Duplicate table for data modules
+$table_data->class = $table->class;
+$table_data->data = array ();
+$table_data->cellspacing = $table->cellspacing;
+$table_data->cellpadding = $table->cellpadding;
+$table_data->width = $table->width;
+
+foreach ($modules as $module) {
+	$data = array ();
+	if (($module["id_modulo"] != 1) && ($module["id_tipo_modulo"] != 100)) {
+		if ($module["flag"] == 0) {
+			$data[0] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&id_agente_modulo='.$module["id_agente_modulo"].'&flag=1&refr=60"><img src="images/target.png" border="0" /></a>';
 		} else {
-			$est_interval = get_module_interval ($row_t["module_interval"]); //This function will return the correct interval
+			$data[0] = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&id_agente_modulo='.$module["id_agente_modulo"].'&refr=60"><img src="images/refresh.png" border="0"></a>';
 		}
-		
-		if ($est_estado <>100){ # si no es un modulo de tipo datos
-			# Determinamos si se ha caido el agente (tiempo de intervalo * 2 superado)
-			if ($color == 1){
-				$tdcolor = "datos";
-				$color = 0;
-			}
-			else {
-				$tdcolor = "datos2";
-				$color = 1;
-			}
-			$seconds = time() - $row_t["utimestamp"];
-			if ($seconds >= ($est_interval*2)) // If every interval x 2 secs. we get nothing, there's and alert
-				$agent_down = 1;
-			else
-				$agent_down = 0;
-			
-
-
-
-			echo "<tr><td class='".$tdcolor."'>";
-
-			if (($row_t["id_modulo"] != 1) AND ($row_t["id_tipo_modulo"] < 100)) {
-				if ($row_t["flag"] == 0){
-					echo "<a href='index.php?sec=estado& sec2=operation/agentes/ver_agente& id_agente=".$id_agente."&id_agente_modulo=".$row_t["id_agente_modulo"]."&flag=1& tab=main&refr=60'><img src='images/target.png' border='0'></a>";
-				} else {
-					echo "<a href='index.php?sec=estado& sec2=operation/agentes/ver_agente&id_agente=".$id_agente."&id_agente_modulo=".$row_t["id_agente_modulo"]."&tab=main&refr=60'><img src='images/refresh.png' border='0'></a>";
-				}
-			}
-			echo "<td class='".$tdcolor."'>";
-			echo "<img src='images/".show_icon_type($row_t["id_tipo_modulo"])."' border=0>";	
-			echo "<td class='".$tdcolor."'>".$est_modulo."</td>";
-			echo "<td class='".$tdcolor."f9'>";
-			echo substr($est_description,0,35);
-			echo "<td class='".$tdcolor."' align='center'>";
-			if ($est_estado == 1){
-				if ($est_cambio == 1) 
-					echo "<img src='images/pixel_yellow.png' width=40 height=18 title='".__('Change between Green/Red state')."'>";
-				else
-					echo "<img src='images/pixel_red.png' width=40 height=18 title='".__('At least one monitor fails')."'>";
-			} else
-				echo "<img src='images/pixel_green.png' width=40 height=18 title='".__('All Monitors OK')."'>";
-
-			echo "<td align='center' class='".$tdcolor."'>";
-			if ($est_interval > 0) {
-				echo $est_interval;
-			} else {
-				echo "--";
-			}
-			echo  "</td><td class='".$tdcolor."f9'>";
-			if ($agent_down == 1) { // If agent down, it's shown red and bold
-				echo  "<span class='redb'>";
-			}
-			else {
-				echo "<span>";
-			}
-			if ($row_t["timestamp"]=='0000-00-00 00:00:00') {
-				echo __('Never');
-			} else {
-				echo human_time_comparation($row_t["timestamp"]);
-			}
-			echo "</span></td>";
-		}
+	} else {
+		$data[0] = '';
 	}
-	echo '</table>';
+	
+	$data[1] = '<img src="images/'.show_icon_type ($module["id_tipo_modulo"]).'" border="0">';
+	$data[2] = substr ($module["nombre"], 0, 25);
+	$data[3] = substr ($module["descripcion"], 0, 35);
+	
+	if ($module["estado"] == 1 && $module["cambio"] == 1) {
+		$data[4] = '<img src="images/pixel_yellow.png" width="40" height="18" title="'.__('Change between Green/Red state').'">';
+	} elseif ($module["estado"] == 1) {
+		$data[4] = '<img src="images/pixel_red.png" width="40" height="18" title="'.__('At least one monitor fails').'">';
+	} else {
+		$data[4] = '<img src="images/pixel_green.png" width="40" height="18" title="'.__('All Monitors OK').'">';
+	}
+	
+	if ($module["module_interval"] > 0) {
+		$data[5] = $module["module_interval"];
+	} else {
+		$data[5] = "--";
+	}
+	
+	$seconds = time () - $module["utimestamp"];
+	if ($module["current_interval"] > 0 && $module["utimestamp"] > 0 && $seconds >= ($module["current_interval"] * 2)) {
+		$data[6] = '<span class="redb">';
+	} else {
+		$data[6] = '<span>';
+	}
+	$data[6] .= print_timestamp ($module["utimestamp"], '', 'span', true);
+	$data[6] .= '</span>';
+	
+	if ($module["estado"] != 100) {
+		array_push ($table->data, $data);
+		//Monitor modules go on $table
+	} else {
+		array_push ($table_data->data, $data);
+		//Data modules go on $table_data
+	}	
+}		
 
+if (empty ($table->data)) {
+	echo '<div class="nf">'.__('This agent doesn\'t have any active monitors').'</div>';
 } else {
-	echo "<div class='nf'>".__('This agent doesn \'t have any monitor with data')."</div>";
+	echo "<h3>".__('Full list of Monitors')."</h3>";
+	print_table ($table);
 }
 
+if (empty ($table_data->data)) {
+	echo '<div class="nf">'.__('This agent doesn\'t have any active data modules').'</div>';
+} else {
+	echo "<h3>".__('Full list of Data Modules')."</h3>";
+	print_table ($table_data);
+}
+unset ($table);
+unset ($table_data);
 ?>

@@ -267,15 +267,18 @@ function get_agentmodules ($id_agent, $details = false) {
 	
 	if (empty ($details)) {
 		$details = "nombre";
+	} else {
+		$details = safe_input ($details);
 	}
 	
 	$sql = "SELECT id_agente_modulo,".implode (",", (array) $details)." FROM tagente_modulo".$filter." ORDER BY nombre";
 	$result = get_db_all_rows_sql ($sql); //cast as array, that way a false will be converted into an array
-	if (empty ($result)) {
-		$result = array ();
-	}
-	$modules = array ();
 	
+	if (empty ($result)) {
+		return array ();
+	}
+	
+	$modules = array ();
 	foreach ($result as $row) {
 		if (is_array ($details)) {
 			$modules[$row["id_agente_modulo"]] = $row; //Just stack the information in array by ID

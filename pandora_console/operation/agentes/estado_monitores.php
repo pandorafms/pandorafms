@@ -35,7 +35,9 @@ $sql = sprintf ("SELECT * FROM tagente_estado, tagente_modulo WHERE tagente_esta
 				ORDER BY tagente_modulo.nombre", $id_agente);
 
 $modules = get_db_all_rows_sql ($sql);
-
+if (empty ($modules)) {
+	$modules = array ();
+}
 $table->width = 750;
 $table->cellpadding = 4;
 $table->cellspacing = 4;

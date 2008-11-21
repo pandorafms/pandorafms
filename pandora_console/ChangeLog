@@ -1,5 +1,10 @@
 2008-11-21  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
+	* include/functions.php: Added function_exists check for multibyte 
+	functions. Thanks to Glen Eustace for bug report. mb_string extension
+
+2008-11-21  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
 	* godmode/setup/setup.php: Added prominent_time value to configuration.
 	Also made setup.php available for singular GET requests. Implements 
 	feature request #2267582

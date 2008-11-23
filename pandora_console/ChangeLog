@@ -1,3 +1,13 @@
+2008-11-23  Raul Mateos  <raulofpandora@gmail.com>
+
+	* index.php: Develop Bypass set to 1, to help debugging. Updated build.
+	
+	* extensions/update_manager/settings.php: Use print_input_password instead
+	print_input_text for proxy password.
+	
+	* godmode/modules/manage_network_components_form_wmi.php: Cosmetic change.
+	Closed some HTML tags.
+
 2008-11-21  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* include/functions.php: Added function_exists check for multibyte 

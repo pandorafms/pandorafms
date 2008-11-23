@@ -74,7 +74,7 @@ $table->data[8][0] = '<strong>'.__('Proxy user').'</strong>';
 $table->data[8][1] = print_input_text ('keys[proxy_user]', $settings->proxy_user, '', 40, 255, true);
 
 $table->data[9][0] = '<strong>'.__('Proxy password').'</strong>';
-$table->data[9][1] = print_input_text ('keys[proxy_pass]', $settings->proxy_pass, '', 40, 255, true);
+$table->data[9][1] = print_input_password ('keys[proxy_pass]', $settings->proxy_pass, '', 40, 255, true);
 
 print_table ($table);
 echo '<div class="action-buttons" style="width: '.$table->width.'">';

@@ -89,8 +89,8 @@ echo '<table width="700" cellspacing="4" cellpadding="4" class="databox_color">'
 echo '<tr>';
 
 // Name
-echo '<tr><td class="datos2">' . __('Module name');
-echo '<td class="datos2"><input type="text" name="name" size="25" value="' . $name . '">';
+echo '<tr><td class="datos2">' . __('Module name') . '</td>';
+echo '<td class="datos2"><input type="text" name="name" size="25" value="' . $name . '"></td>';
 
 // Type
 echo '<td class="datos2">' . __('Module type') . '</td>';
@@ -130,7 +130,7 @@ echo '</select>';
 echo '<tr>';
 
 // Interval
-echo '<td class="datos2">' . __('Module Interval');
+echo '<td class="datos2">' . __('Module Interval') . '</td>';
 echo '<td class="datos2">';
 echo '<input type="text" name="module_interval" size="5" value="'.$module_interval.'">';
 
@@ -173,32 +173,32 @@ echo	'<input type="text" name="tcp_send" size="25" value="' . $tcp_send . '">';
 echo '</td></tr>';
 
 // Username
-echo '<tr><td class="datos2t">' . __('Username') . '</td>';
-echo '<td class="datos2">';
+echo '<tr><td class="datos">' . __('Username') . '</td>';
+echo '<td class="datos">';
 echo 	'<input type="text" name="plugin_user" size="25" value="' . $plugin_user . '">';
 echo '</td>';
 
 // Password
-echo '<td class="datos2t">' . __('Password') . '</td>';
-echo '<td class="datos2">';
+echo '<td class="datos">' . __('Password') . '</td>';
+echo '<td class="datos">';
 echo 	'<input type="password" name="plugin_pass" size="25" value="' . $plugin_pass . '">';
 echo '</td></tr>';
 
 // Min data
-echo '<tr><td class="datos">' . __('Minimum Data') . '</td>';
-echo '<td class="datos">';
+echo '<tr><td class="datos2">' . __('Minimum Data') . '</td>';
+echo '<td class="datos2">';
 echo '<input type="text" name="modulo_min" size="5" value="' . $modulo_min . '">';
 echo '</td>';
-echo '<td class="datos">' . __('Maximum Data') . '</td>';
-echo '<td class="datos">';
+echo '<td class="datos2">' . __('Maximum Data') . '</td>';
+echo '<td class="datos2">';
 
 // Max data
 echo '<input type="text" name="modulo_max" size="5" value="' . $modulo_max . '">';
 echo '</td></tr>';
 
 // Comments
-echo '<tr><td class="datos2t">'.__('Comments');
-echo '<td class="datos2" colspan=3>';
+echo '<tr><td class="datos">'.__('Comments') . '</td>';
+echo '<td class="datos" colspan=3>';
 echo '<textarea name="descripcion" cols=70 rows=2>';
 echo $description;
 echo '</textarea>';

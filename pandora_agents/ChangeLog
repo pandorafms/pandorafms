@@ -1,3 +1,9 @@
+2008-11-24  Sancho lerena   <slerena@artica.es>
+
+	* linux/pandora_agent: Fixed problem parsing async_string.
+
+	* linux/pandora_agent.conf: Sample of async_string module.
+
 2008-10-29  Manuel Arostegui <marostegui@artica.es>
 
 	* pandora_agents/linux/pandora_agent, pandora_agent_daemon,

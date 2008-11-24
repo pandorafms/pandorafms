@@ -488,7 +488,7 @@ do
          	if [ ! -z "`echo $a | grep -e '^module_type'`" ]
          	then
             		mtype=`echo $a | awk '{ print $2 }' `
-            		if [ ! -z "`echo $mtype | grep 'generic_data_string'`" ]
+            		if [ ! -z "`echo $mtype | grep 'generic_data_string'`" ] || [ ! -z "`echo $mtype | grep 'async_string'`" ]
      			then
    				flux_string=1
      			else

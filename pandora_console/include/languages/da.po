@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: pandora-da\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2008-11-11 08:59+0100\n"
-"PO-Revision-Date: 2008-11-17 11:13+0100\n"
+"PO-Revision-Date: 2008-11-24 16:53+0100\n"
 "Last-Translator: Jorge Gonzalez <jorgegonz@artica.es>\n"
 "Language-Team: Dansk <da@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -23,7 +23,7 @@ msgstr ""
 #: ../../reporting/stat_win.php:46
 #: ../../operation/agentes/datos_agente.php:123
 msgid "There was a problem locating the source of the graph"
-msgstr ""
+msgstr "a kilde af"
 
 #: ../../reporting/stat_win.php:53 ../../reporting/stat_win.php:218
 #: ../../godmode/reporting/graph_builder.php:329
@@ -156,7 +156,7 @@ msgstr ""
 
 #: ../../reporting/stat_win.php:198
 msgid "Begin date"
-msgstr ""
+msgstr "Start dato"
 
 #: ../../reporting/stat_win.php:203
 msgid "Zoom factor"
@@ -182,7 +182,7 @@ msgstr ""
 #: ../../operation/incidents/incident.php:198
 #: ../../operation/incidents/incident_detail.php:292
 msgid "Informative"
-msgstr ""
+msgstr "Informativ"
 
 #: ../../reporting/fgraph.php:1041 ../../operation/incidents/incident.php:190
 #: ../../operation/incidents/incident.php:199
@@ -200,12 +200,12 @@ msgstr "Mellem"
 #: ../../operation/incidents/incident.php:201
 #: ../../operation/incidents/incident_detail.php:295
 msgid "Serious"
-msgstr ""
+msgstr "Alvorlig"
 
 #: ../../reporting/fgraph.php:1044
 #: ../../operation/incidents/incident_detail.php:296
 msgid "Very serious"
-msgstr ""
+msgstr "Meget alvorlig"
 
 #: ../../reporting/fgraph.php:1045 ../../reporting/fgraph.php:1265
 #: ../../include/functions.php:673 ../../include/functions.php:1157
@@ -261,7 +261,7 @@ msgstr "ingen data"
 
 #: ../../reporting/fgraph.php:1580
 msgid "Out of limits"
-msgstr ""
+msgstr "Udenfor grænser"
 
 #: ../../reporting/fgraph.php:2138 ../../include/functions_reporting.php:361
 #: ../../operation/agentes/estado_grupo.php:168
@@ -287,7 +287,7 @@ msgstr ""
 
 #: ../../general/pandora_help.php:37
 msgid "Help system error"
-msgstr ""
+msgstr "Hjælpesystem fejl"
 
 #: ../../general/pandora_help.php:43
 msgid ""
@@ -602,7 +602,7 @@ msgstr "Dit system er opdateret"
 
 #: ../../extensions/update_manager/main.php:68
 msgid "Server connection failed"
-msgstr ""
+msgstr "Server forbindelse mislykkedes"
 
 #: ../../extensions/update_manager/main.php:70
 msgid "Server authorization rejected"
@@ -676,7 +676,7 @@ msgstr "Beskrivelse"
 
 #: ../../extensions/update_manager/main.php:89
 msgid "Overwrite local changes"
-msgstr ""
+msgstr "Overskriv lokale ændringer"
 
 #: ../../extensions/update_manager/main.php:93
 #: ../../extensions/update_manager/settings.php:82
@@ -724,7 +724,7 @@ msgstr "Opdatér"
 
 #: ../../extensions/update_manager/main.php:98
 msgid "Your system version number is"
-msgstr ""
+msgstr "Dit systems versionsnummer er"
 
 #: ../../extensions/update_manager/settings.php:38
 msgid "Update manager settings updated"
@@ -736,19 +736,19 @@ msgstr "Opsætning"
 
 #: ../../extensions/update_manager/settings.php:49
 msgid "Customer key"
-msgstr ""
+msgstr "Kundenøgle"
 
 #: ../../extensions/update_manager/settings.php:52
 msgid "Update server host"
-msgstr ""
+msgstr "Opdatér værts server"
 
 #: ../../extensions/update_manager/settings.php:55
 msgid "Update server path"
-msgstr ""
+msgstr "Opdatér serversti"
 
 #: ../../extensions/update_manager/settings.php:58
 msgid "Update server port"
-msgstr ""
+msgstr "Opdatér serverport"
 
 #: ../../extensions/update_manager/settings.php:61
 msgid "Binary input path"
@@ -760,19 +760,19 @@ msgstr ""
 
 #: ../../extensions/update_manager/settings.php:67
 msgid "Proxy server"
-msgstr ""
+msgstr "Proxy-server"
 
 #: ../../extensions/update_manager/settings.php:70
 msgid "Proxy port"
-msgstr ""
+msgstr "Proxy port"
 
 #: ../../extensions/update_manager/settings.php:73
 msgid "Proxy user"
-msgstr ""
+msgstr "Proxy bruger"
 
 #: ../../extensions/update_manager/settings.php:76
 msgid "Proxy password"
-msgstr ""
+msgstr "Proxy adgangskode"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:552
 msgid "Development"
@@ -780,7 +780,7 @@ msgstr "Udvikling"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:553
 msgid "Testing"
-msgstr ""
+msgstr "Tester"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:554
 msgid "Public"
@@ -837,7 +837,7 @@ msgstr ""
 #: ../../godmode/modules/manage_network_components.php:76
 #: ../../godmode/modules/manage_nc_groups.php:38
 msgid "Not created. Error inserting data"
-msgstr ""
+msgstr "Ikke oprettet. Fejl ved indsættelse af data"
 
 #: ../../godmode/reporting/map_builder.php:80
 #: ../../godmode/reporting/reporting_builder.php:80
@@ -849,7 +849,7 @@ msgstr ""
 #: ../../operation/reporting/graph_viewer.php:33
 #: ../../operation/reporting/graph_viewer.php:38
 msgid "Deleted successfully"
-msgstr ""
+msgstr "Slettet succesfuldt"
 
 #: ../../godmode/reporting/map_builder.php:82
 #: ../../godmode/reporting/reporting_builder.php:82
@@ -861,7 +861,7 @@ msgstr ""
 #: ../../operation/reporting/graph_viewer.php:35
 #: ../../operation/reporting/graph_viewer.php:40
 msgid "Not deleted. Error deleting data"
-msgstr ""
+msgstr "Ikke slettet. Fejl ved sletning af data"
 
 #: ../../godmode/reporting/map_builder.php:107
 msgid "Update layout successful"
@@ -885,7 +885,7 @@ msgstr ""
 #: ../../godmode/modules/manage_network_components.php:114
 #: ../../godmode/modules/manage_nc_groups.php:54
 msgid "Not updated. Error updating data"
-msgstr ""
+msgstr "Ikke opdateret. Fejl ved opdatering af data"
 
 #: ../../godmode/reporting/map_builder.php:253
 #: ../../godmode/reporting/graph_builder.php:202
@@ -1724,7 +1724,7 @@ msgstr ""
 #: ../../operation/incidents/incident.php:259
 #: ../../operation/incidents/incident_detail.php:228
 msgid "Incident"
-msgstr ""
+msgstr "Hændelse"
 
 #: ../../godmode/servers/manage_recontask.php:100
 #: ../../godmode/servers/manage_recontask_form.php:118
@@ -1914,7 +1914,7 @@ msgstr ""
 #: ../../godmode/groups/group_list.php:101
 #: ../../godmode/groups/configure_group.php:55
 msgid "Group management"
-msgstr ""
+msgstr "Styring af gruppe"
 
 #: ../../godmode/groups/group_list.php:102
 msgid "Groups defined in Pandora"
@@ -1964,17 +1964,17 @@ msgstr "Aktiveret"
 #: ../../operation/reporting/graph_viewer.php:192
 #: ../../operation/incidents/incident.php:338
 msgid "Are you sure?"
-msgstr ""
+msgstr "Er du sikker?"
 
 #: ../../godmode/groups/group_list.php:135
 #: ../../godmode/groups/configure_group.php:59
 #: ../../operation/agentes/estado_grupo.php:125
 msgid "Create group"
-msgstr ""
+msgstr "Opret gruppe"
 
 #: ../../godmode/groups/configure_group.php:48
 msgid "There was a problem loading group"
-msgstr ""
+msgstr "Der var et problem med indlæsning af gruppe"
 
 #: ../../godmode/groups/configure_group.php:57
 msgid "Update group"
@@ -1998,7 +1998,7 @@ msgstr ""
 
 #: ../../godmode/menu.php:64
 msgid "Manage groups"
-msgstr ""
+msgstr "Styr grupper"
 
 #: ../../godmode/menu.php:74
 msgid "Scheduled downtime"
@@ -2026,7 +2026,7 @@ msgstr ""
 
 #: ../../godmode/menu.php:127 ../../godmode/profiles/profile_list.php:188
 msgid "Manage users"
-msgstr ""
+msgstr "Styr brugere"
 
 #: ../../godmode/menu.php:137
 msgid "Manage SNMP console"
@@ -2415,15 +2415,15 @@ msgstr ""
 
 #: ../../godmode/setup/links.php:79 ../../godmode/setup/news.php:85
 msgid "Name error"
-msgstr ""
+msgstr "Navne fejl"
 
 #: ../../godmode/setup/links.php:88 ../../godmode/setup/links.php:116
 msgid "Link management"
-msgstr ""
+msgstr "Styring af links"
 
 #: ../../godmode/setup/links.php:100 ../../godmode/setup/links.php:118
 msgid "Link name"
-msgstr ""
+msgstr "Link navn"
 
 #: ../../godmode/setup/links.php:103
 msgid "Link"
@@ -2460,7 +2460,7 @@ msgstr ""
 
 #: ../../godmode/profiles/profile_list.php:47
 msgid "There was a problem deleting the profile"
-msgstr ""
+msgstr "Der var et problem med at slette profil"
 
 #: ../../godmode/profiles/profile_list.php:49
 msgid "Profile successfully deleted"
@@ -2472,7 +2472,7 @@ msgstr ""
 
 #: ../../godmode/profiles/profile_list.php:86
 msgid "There was a problem updating this profile"
-msgstr ""
+msgstr "Der var et problem med at opdatere profil"
 
 #: ../../godmode/profiles/profile_list.php:116
 msgid "Profile successfully created"
@@ -2480,7 +2480,7 @@ msgstr ""
 
 #: ../../godmode/profiles/profile_list.php:118
 msgid "There was a problem creating this profile"
-msgstr ""
+msgstr "Der var et problem med at oprette profil"
 
 #: ../../godmode/profiles/profile_list.php:123
 msgid "Profile management"
@@ -2489,32 +2489,32 @@ msgstr ""
 #: ../../godmode/profiles/profile_list.php:141
 #: ../../godmode/profiles/profile_list.php:283
 msgid "Create profile"
-msgstr ""
+msgstr "Opret profil"
 
 #: ../../godmode/profiles/profile_list.php:146
 msgid "There was a problem loading profile"
-msgstr ""
+msgstr "Der var et problem med indlæsning af profil"
 
 #: ../../godmode/profiles/profile_list.php:162
 msgid "Update profile"
-msgstr ""
+msgstr "Opdatér profil"
 
 #: ../../godmode/profiles/profile_list.php:172
 msgid "Profile name"
-msgstr ""
+msgstr "Profilnavn"
 
 #: ../../godmode/profiles/profile_list.php:174
 msgid "View incidents"
-msgstr ""
+msgstr "Vis hændelser"
 
 #: ../../godmode/profiles/profile_list.php:176
 msgid "Edit incidents"
-msgstr ""
+msgstr "Redigér hændelser"
 
 #: ../../godmode/profiles/profile_list.php:178
 #: ../../operation/incidents/incident.php:161 ../../operation/menu.php:143
 msgid "Manage incidents"
-msgstr ""
+msgstr "Styring af hændelser"
 
 #: ../../godmode/profiles/profile_list.php:180 ../../operation/menu.php:40
 msgid "View agents"
@@ -2530,7 +2530,7 @@ msgstr ""
 
 #: ../../godmode/profiles/profile_list.php:190
 msgid "Manage Database"
-msgstr ""
+msgstr "Styr database"
 
 #: ../../godmode/profiles/profile_list.php:192
 msgid "Pandora management"
@@ -2552,7 +2552,7 @@ msgstr ""
 
 #: ../../godmode/profiles/profile_list.php:233
 msgid "Manage Incidents"
-msgstr ""
+msgstr "Styr hændelser"
 
 #: ../../godmode/profiles/profile_list.php:234
 msgid "Read Agent Information"
@@ -2956,7 +2956,7 @@ msgstr ""
 #: ../../operation/agentes/estado_agente.php:158
 #: ../../operation/users/user.php:32
 msgid "Last contact"
-msgstr ""
+msgstr "Sidste kontakt"
 
 #: ../../godmode/agentes/planned_downtime.php:230
 msgid "Remove"
@@ -3626,7 +3626,7 @@ msgstr ""
 
 #: ../../godmode/users/user_list.php:41
 msgid "There was a problem deleting user"
-msgstr ""
+msgstr "Der var et problem med at slette bruger"
 
 #: ../../godmode/users/user_list.php:43
 msgid "User successfully deleted"
@@ -3635,7 +3635,7 @@ msgstr ""
 #: ../../godmode/users/user_list.php:47
 #: ../../godmode/users/configure_user.php:157
 msgid "User management"
-msgstr ""
+msgstr "Styr brugere"
 
 #: ../../godmode/users/user_list.php:47
 #: ../../operation/users/user_statistics.php:25
@@ -3651,7 +3651,7 @@ msgstr ""
 #: ../../operation/events/events.php:351
 #: ../../operation/users/user_edit.php:109
 msgid "User ID"
-msgstr ""
+msgstr "Bruger ID"
 
 #: ../../godmode/users/user_list.php:64 ../../operation/users/user.php:33
 msgid "Profile"
@@ -3666,7 +3666,7 @@ msgstr ""
 #: ../../godmode/users/user_list.php:115
 #: ../../godmode/users/configure_user.php:160
 msgid "Create user"
-msgstr ""
+msgstr "Opret bruger"
 
 #: ../../godmode/users/configure_user.php:57
 msgid "There was a problem loading user"
@@ -3698,16 +3698,16 @@ msgstr ""
 
 #: ../../godmode/users/configure_user.php:164
 msgid "Update user"
-msgstr ""
+msgstr "Opdatér bruger"
 
 #: ../../godmode/users/configure_user.php:179
 #: ../../operation/users/user_edit.php:112
 msgid "Real name"
-msgstr ""
+msgstr "Rigtigt navn"
 
 #: ../../godmode/users/configure_user.php:188
 msgid "Password confirmation"
-msgstr ""
+msgstr "Adgangskode bekræftet"
 
 #: ../../godmode/users/configure_user.php:194
 #: ../../operation/users/user_edit.php:127
@@ -3730,7 +3730,7 @@ msgstr ""
 
 #: ../../godmode/users/configure_user.php:204
 msgid "Standard user"
-msgstr ""
+msgstr "Standard bruger"
 
 #: ../../godmode/users/configure_user.php:206
 msgid ""
@@ -3741,7 +3741,7 @@ msgstr ""
 
 #: ../../godmode/users/configure_user.php:221
 msgid "Group(s) available"
-msgstr ""
+msgstr "Gruppe(r) tilgængelig(e)"
 
 #: ../../godmode/users/configure_user.php:251
 #: ../../operation/users/user_edit.php:140
@@ -4443,15 +4443,15 @@ msgstr "XML"
 
 #: ../../operation/incidents/incident.php:50
 msgid "Incident successfully deleted"
-msgstr ""
+msgstr "Hændelse succesfuldt slettet"
 
 #: ../../operation/incidents/incident.php:54
 msgid "There was a problem deleting incident"
-msgstr ""
+msgstr "Der var et problem med at slette hændelse"
 
 #: ../../operation/incidents/incident.php:80
 msgid "Incident successfully updated"
-msgstr ""
+msgstr "Hændelse succesfuldt opdateret"
 
 #: ../../operation/incidents/incident.php:82
 msgid "There was a problem updating the incident"
@@ -4467,11 +4467,11 @@ msgstr ""
 #: ../../operation/incidents/incident_detail.php:224
 #: ../../operation/incidents/incident_search.php:31
 msgid "Incident management"
-msgstr ""
+msgstr "Styr hændelser"
 
 #: ../../operation/incidents/incident.php:168
 msgid "All incidents"
-msgstr ""
+msgstr "Alle hændelser"
 
 #: ../../operation/incidents/incident.php:169
 #: ../../operation/incidents/incident.php:181
@@ -4500,7 +4500,7 @@ msgstr ""
 #: ../../operation/incidents/incident.php:187
 #: ../../operation/incidents/incident.php:202
 msgid "Very Serious"
-msgstr ""
+msgstr "Meget alvorlig"
 
 #: ../../operation/incidents/incident.php:197
 msgid "All priorities"
@@ -4529,7 +4529,7 @@ msgstr "Ejer"
 #: ../../operation/incidents/incident_detail.php:224
 #: ../../operation/events/events.php:514
 msgid "Create incident"
-msgstr ""
+msgstr "Opret hændelse"
 
 #: ../../operation/incidents/incident_statistics.php:30
 #: ../../operation/menu.php:158 ../../operation/menu.php:180
@@ -4567,7 +4567,7 @@ msgstr ""
 
 #: ../../operation/incidents/incident_detail.php:90
 msgid "Note successfully deleted"
-msgstr ""
+msgstr "Note succesfuldt slettet"
 
 #: ../../operation/incidents/incident_detail.php:92
 msgid "Error deleting note"
@@ -4650,11 +4650,11 @@ msgstr ""
 
 #: ../../operation/incidents/incident_detail.php:356
 msgid "Notes attached to incident"
-msgstr ""
+msgstr "Noter tilknyttet til hændelser"
 
 #: ../../operation/incidents/incident_detail.php:386
 msgid "Attached files"
-msgstr ""
+msgstr "Vedhæftede filer"
 
 #: ../../operation/incidents/incident_detail.php:396
 #: ../../operation/incidents/incident_detail.php:433
@@ -4671,7 +4671,7 @@ msgstr ""
 
 #: ../../operation/incidents/incident_detail.php:435
 msgid "Upload"
-msgstr ""
+msgstr "Upload"
 
 #: ../../operation/incidents/incident_search.php:31
 msgid "Please select a search criterion"
@@ -4683,7 +4683,7 @@ msgstr ""
 
 #: ../../operation/incidents/incident_search.php:39
 msgid "Search text"
-msgstr ""
+msgstr "Søg tekst"
 
 #: ../../operation/incidents/incident_search.php:45
 msgid ""
@@ -4836,11 +4836,11 @@ msgstr "Flyvende tekst"
 
 #: ../../operation/menu.php:206
 msgid "View users"
-msgstr ""
+msgstr "Vis brugere"
 
 #: ../../operation/menu.php:215
 msgid "Edit my user"
-msgstr ""
+msgstr "Redigér min bruger"
 
 #: ../../operation/menu.php:235 ../../operation/snmpconsole/snmp_view.php:98
 msgid "SNMP console"
@@ -4885,7 +4885,7 @@ msgstr ""
 #: ../../operation/agentes/networkmap.php:256
 #: ../../operation/events/events.php:217
 msgid "Full screen"
-msgstr ""
+msgstr "Fuld Skærm"
 
 #: ../../operation/snmpconsole/snmp_view.php:112
 msgid "There are no SNMP traps in database"
@@ -5509,7 +5509,7 @@ msgstr ""
 
 #: ../../operation/users/user.php:31
 msgid "UserID"
-msgstr ""
+msgstr "BrugerID"
 
 #: ../../operation/users/user.php:102
 msgid "System incidents reading"
@@ -5541,7 +5541,7 @@ msgstr ""
 
 #: ../../operation/users/user.php:123
 msgid "Database management"
-msgstr ""
+msgstr "Databasestyring"
 
 #: ../../operation/users/user.php:126
 msgid "Alerts management"
@@ -5553,18 +5553,18 @@ msgstr ""
 
 #: ../../operation/messages/message.php:26
 msgid "Message successfully sent"
-msgstr ""
+msgstr "Besked afsendt"
 
 #: ../../operation/messages/message.php:28
 #: ../../operation/messages/message.php:51
 msgid "There was a problem sending message"
-msgstr ""
+msgstr "Der var ingen problemer med at sende besked"
 
 #: ../../operation/messages/message.php:61
 #: ../../operation/messages/message.php:102
 #: ../../operation/messages/message.php:225
 msgid "New message"
-msgstr ""
+msgstr "Ny besked"
 
 #: ../../operation/messages/message.php:94
 #: ../../operation/messages/message.php:126
@@ -5587,19 +5587,19 @@ msgstr "Svar"
 
 #: ../../operation/messages/message.php:160
 msgid "Read messages"
-msgstr ""
+msgstr "Læs beskedder"
 
 #: ../../operation/messages/message.php:168
 msgid "Message sucessfully deleted"
-msgstr ""
+msgstr "Besked succesfuldt slettet"
 
 #: ../../operation/messages/message.php:170
 msgid "There was a problem deleting message"
-msgstr ""
+msgstr "Der var ingen problemer med at slette besked"
 
 #: ../../operation/messages/message.php:184
 msgid "There are no messages"
-msgstr ""
+msgstr "Der er ingen beskedder"
 
 #: ../../operation/messages/message.php:188
 msgid "Read"
@@ -5611,5 +5611,5 @@ msgstr "Afsender"
 
 #: ../../operation/messages/message.php:215
 msgid "No subject"
-msgstr ""
+msgstr "Intet emne"
 

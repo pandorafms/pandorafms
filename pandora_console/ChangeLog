@@ -1,3 +1,11 @@
+2008-11-24  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* include/languages/index.pot: Updated po template.
+
+	* include/languages/es.po, include/languages/es.mo,
+	  include/languages/da.po, include/languages/da.mo: Updated
+	  translations.
+
 2008-11-23  Raul Mateos  <raulofpandora@gmail.com>
 
 	* index.php: Develop Bypass set to 1, to help debugging. Updated build.

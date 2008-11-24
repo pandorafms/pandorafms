@@ -1,3 +1,9 @@
+2008-11-25  Sancho Lerena <slerena@gmail.com>
+
+	* linux/pandora_agent: Fixed problem parsing async_string.
+
+	* linux/pandora_agent.conf: Sample of async_string module.
+
 2008-09-04  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* mac_osx/plugins/XServeRAID: Updated for 2.0 type agents. Added

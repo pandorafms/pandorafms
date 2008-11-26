@@ -1,3 +1,11 @@
+2008-11-26  Sancho Lerena  <slerena@artica.es>
+
+        * godmode/agentes/configurar_agente.php: Fixed problem with agent module
+        groups.
+
+        * include/config_process.php: Fixed typo on prominent_time config token.
+
+
 2008-11-26  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* pandoradb_data.sql: Added korean translation.

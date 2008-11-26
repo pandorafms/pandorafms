@@ -721,6 +721,7 @@ if ((isset ($_POST["update_module"])) && (!isset ($_POST["oid"]))) { // if modif
 	}
 	$sql = sprintf ("UPDATE tagente_modulo SET 
 			descripcion = '%s', 
+			id_module_group = %d,
 			nombre = '%s', 
 			max = %d, 
 			min = %d, 
@@ -742,7 +743,7 @@ if ((isset ($_POST["update_module"])) && (!isset ($_POST["oid"]))) { // if modif
 			post_process = %f, 
 			prediction_module = %d, 
 			max_timeout = %d 
-			WHERE id_agente_modulo = %d", $form_description, $form_name, $form_maxvalue, $form_minvalue, $form_interval, $form_tcp_port, $form_tcp_send, $form_tcp_rcv,
+			WHERE id_agente_modulo = %d", $form_description, $form_id_module_group, $form_name, $form_maxvalue, $form_minvalue, $form_interval, $form_tcp_port, $form_tcp_send, $form_tcp_rcv,
 			$form_snmp_community, $form_snmp_oid, $form_ip_target, $form_flag, $form_id_modulo, $form_disabled, $form_id_export, $form_plugin_user, $form_plugin_pass,
 			$form_plugin_parameter, $form_id_plugin, $form_post_process, $form_prediction_module, $form_max_timeout, $id_agente_modulo);
 	$result = process_sql ($sql);

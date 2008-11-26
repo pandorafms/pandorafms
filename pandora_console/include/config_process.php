@@ -138,7 +138,7 @@ if (!isset ($config["sla_period"]) || empty ($config["sla_period"])) {
 
 if (!isset ($config["prominent_time"])) {
 	// Prominent time tells us what to show prominently when a timestamp is displayed. The comparation (... days ago) or the timestamp (full date)
-	$config["prominent_time"] == "comparation";
+	$config["prominent_time"] = "comparation";
 	process_sql ("INSERT INTO tconfig (token,value) VALUES ('prominent_time','comparation')");	
 }
 

@@ -114,7 +114,7 @@ Pandora_FTP_Test::test () {
 		tmp_filepath += "\\";
 	}
 	tmp_filepath += tmp_filename;
-        
+	
 	decl = new TiXmlDeclaration( "1.0", "ISO-8859-1", "" );
 	doc = new TiXmlDocument (tmp_filepath);
 	doc->InsertEndChild (*decl);
@@ -132,9 +132,9 @@ Pandora_FTP_Test::test () {
 		throw e;
 	}
 	delete doc;
-        
+	
 	cout << "Created a blank XML file in " << tmp_filepath<< endl;
-        
+	
 	remote_filepath = conf->getValue ("server_path");
 	if (remote_filepath[remote_filepath.length () - 1] != '/') {
 		remote_filepath += "/";

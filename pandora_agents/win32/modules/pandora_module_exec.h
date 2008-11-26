@@ -31,14 +31,14 @@ namespace Pandora_Modules {
 	 * Any custom order that want to be executed can be put in
 	 * the <code>util</code> directory into the Pandora agent path.
 	 */
-        class Pandora_Module_Exec : public Pandora_Module {
-        private:
-                string module_exec;        
-        public:
-                Pandora_Module_Exec    (string name, string exec);
-                
-                void   run       ();
-        };
+	class Pandora_Module_Exec : public Pandora_Module {
+	private:
+		string module_exec;        
+	public:
+		Pandora_Module_Exec    (string name, string exec);
+		
+		void   run       ();
+	};
 }
 
 #endif

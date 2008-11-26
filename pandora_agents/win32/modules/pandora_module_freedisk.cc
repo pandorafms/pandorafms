@@ -37,13 +37,13 @@ using namespace Pandora_Strutils;
  */
 Pandora_Module_Freedisk::Pandora_Module_Freedisk (string name, string disk_id)
 	: Pandora_Module (name) {
-        
-        this->disk_id = disk_id;
-        
-        transform (disk_id.begin (), disk_id.end (),
-                   this->disk_id.begin (), (int (*) (int)) toupper);
 	
-        this->setKind (module_freedisk_str);
+	this->disk_id = disk_id;
+	
+	transform (disk_id.begin (), disk_id.end (),
+		   this->disk_id.begin (), (int (*) (int)) toupper);
+	
+	this->setKind (module_freedisk_str);
 }
 
 void
@@ -51,10 +51,10 @@ Pandora_Module_Freedisk::run () {
 	long res;
 	
 	try {
-                Pandora_Module::run ();
-        } catch (Interval_Not_Fulfilled e) {
-                return;
-        }
+		Pandora_Module::run ();
+	} catch (Interval_Not_Fulfilled e) {
+		return;
+	}
 
 	try {
 		res = Pandora_Wmi::getDiskFreeSpace (this->disk_id);

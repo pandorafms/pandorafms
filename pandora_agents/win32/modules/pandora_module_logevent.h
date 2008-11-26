@@ -31,15 +31,15 @@ namespace Pandora_Modules {
      * pattern. Events can be filtered by source and type.
 	 */
 
-        class Pandora_Module_Logevent : public Pandora_Module {
-        private:
-                string source;
-                string type;
-                string pattern;
-        public:
-                Pandora_Module_Logevent (string name, string source, string type, string pattern);
-                void run ();
-        };
+	class Pandora_Module_Logevent : public Pandora_Module {
+	private:
+		string source;
+		string type;
+		string pattern;
+	public:
+		Pandora_Module_Logevent (string name, string source, string type, string pattern);
+		void run ();
+	};
 }
 
 #endif

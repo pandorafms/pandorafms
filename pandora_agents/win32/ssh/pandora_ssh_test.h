@@ -31,15 +31,15 @@ namespace SSH {
 	 * An object of this class will read the configuration file
 	 * and copy a blank xml file into remote server path.
 	 */
-        class Pandora_SSH_Test {
-        private:
-                Pandora_Ssh_Client          *ssh_client;
-                Pandora::Pandora_Agent_Conf *conf;
-        public:
-                Pandora_SSH_Test  ();
-                ~Pandora_SSH_Test ();
-                void test         ();
-        };
+	class Pandora_SSH_Test {
+	private:
+		Pandora_Ssh_Client          *ssh_client;
+		Pandora::Pandora_Agent_Conf *conf;
+	public:
+		Pandora_SSH_Test  ();
+		~Pandora_SSH_Test ();
+		void test         ();
+	};
 }
 
 #endif

@@ -38,7 +38,7 @@ namespace Pandora {
 	public:
 		Pandora_Data            ();
 		Pandora_Data            (string value);
-        Pandora_Data            (string value, SYSTEMTIME *system_time);
+	Pandora_Data            (string value, SYSTEMTIME *system_time);
 		~Pandora_Data           ();
 
 		string     getValue     () const;

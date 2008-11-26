@@ -35,14 +35,14 @@ using namespace std;
  **/
 bool
 Pandora_File::fileExists (const string filepath) {
-        ifstream myfile (filepath.c_str ());
-        
-        if (! myfile.is_open ()) {
-                return false;
-        }
+	ifstream myfile (filepath.c_str ());
+	
+	if (! myfile.is_open ()) {
+		return false;
+	}
 
 	myfile.close();
-        return true;
+	return true;
 }
 
 /**
@@ -57,21 +57,21 @@ Pandora_File::fileExists (const string filepath) {
  **/
 string
 Pandora_File::readFile (const string filepath) {
-        string   line, result;
-        ifstream myfile (filepath.c_str ());
-        
-        if (! myfile.is_open ()) {
-                throw File_Not_Found ();
-        }
-        
-        if (myfile.is_open()) {
-                while (! myfile.eof()) {
-                        getline (myfile,line);
-                        result += line + '\n';
-                }
-                myfile.close();
-        }
-        return result;
+	string   line, result;
+	ifstream myfile (filepath.c_str ());
+	
+	if (! myfile.is_open ()) {
+		throw File_Not_Found ();
+	}
+	
+	if (myfile.is_open()) {
+		while (! myfile.eof()) {
+			getline (myfile,line);
+			result += line + '\n';
+		}
+		myfile.close();
+	}
+	return result;
 }
 
 /**
@@ -128,9 +128,9 @@ Pandora_File::readBinFile (const string filepath, char **buffer) {
  */
 void
 Pandora_File::removeFile (const string filepath) {
-        if (remove (filepath.c_str ()) == -1) {
-                 throw Delete_Error ();
-        }
+	if (remove (filepath.c_str ()) == -1) {
+		 throw Delete_Error ();
+	}
 }
 
 /**
@@ -144,13 +144,13 @@ Pandora_File::removeFile (const string filepath) {
  */
 void
 Pandora_File::writeFile (const string filepath, const string data) {
-        ofstream  file (filepath.c_str ());
-        
-        if (! file.is_open ()) {
-                throw File_Not_Found ();
-        }
-        file.write (data.c_str (), data.length ());
-        file.close ();
+	ofstream  file (filepath.c_str ());
+	
+	if (! file.is_open ()) {
+		throw File_Not_Found ();
+	}
+	file.write (data.c_str (), data.length ());
+	file.close ();
 }
 
 /**
@@ -165,18 +165,18 @@ Pandora_File::writeFile (const string filepath, const string data) {
  */
 void
 Pandora_File::writeBinFile (const string filepath, const char *buffer, int size) {
-        ofstream  file;
-        
-        if (buffer == NULL) {
-            throw File_Exception ();
-        }
-        
-        file.open(filepath.c_str (), ios_base::binary | ios_base::trunc);
-        if (! file.is_open ()) {
-                throw File_Not_Found ();
-        }
-        file.write (buffer, size);
-        file.close ();
+	ofstream  file;
+	
+	if (buffer == NULL) {
+	    throw File_Exception ();
+	}
+	
+	file.open(filepath.c_str (), ios_base::binary | ios_base::trunc);
+	if (! file.is_open ()) {
+		throw File_Not_Found ();
+	}
+	file.write (buffer, size);
+	file.close ();
 }
 
 /** 

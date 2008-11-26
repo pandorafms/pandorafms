@@ -34,13 +34,13 @@ using namespace Pandora_Strutils;
  * @param name Module name.
  */
 Pandora_Module::Pandora_Module (string name) {
-        this->module_name     = name;
-        this->executions      = 0;
-        this->module_interval = 1;
-        this->max             = 0;
-        this->min             = 0;
-        this->has_limits      = false;
-        this->data_list       = NULL;
+	this->module_name     = name;
+	this->executions      = 0;
+	this->module_interval = 1;
+	this->max             = 0;
+	this->min             = 0;
+	this->has_limits      = false;
+	this->data_list       = NULL;
 }
 
 /** 
@@ -82,17 +82,17 @@ Pandora_Module::cleanDataList () {
  */
 Module_Type
 Pandora_Module::parseModuleTypeFromString (string type) {
-        if (type == module_generic_data_str) {
-                return TYPE_GENERIC_DATA;
-        } else if (type == module_generic_data_inc_str) {
-                return TYPE_GENERIC_DATA_INC;
-        } else if (type == module_generic_data_string_str) {
-                return TYPE_GENERIC_DATA_STRING;
-        } else if (type == module_generic_proc_str) {
-                return TYPE_GENERIC_PROC;
-        } else {
-                return TYPE_0;
-        }
+	if (type == module_generic_data_str) {
+		return TYPE_GENERIC_DATA;
+	} else if (type == module_generic_data_inc_str) {
+		return TYPE_GENERIC_DATA_INC;
+	} else if (type == module_generic_data_string_str) {
+		return TYPE_GENERIC_DATA_STRING;
+	} else if (type == module_generic_proc_str) {
+		return TYPE_GENERIC_PROC;
+	} else {
+		return TYPE_0;
+	}
 }
 
 /** 
@@ -104,26 +104,26 @@ Pandora_Module::parseModuleTypeFromString (string type) {
  */
 Module_Kind
 Pandora_Module::parseModuleKindFromString (string kind) {
-        if (kind == module_exec_str) {
-                return MODULE_EXEC;
-        } else if (kind == module_proc_str) {
-                return MODULE_PROC;
-        } else if (kind == module_service_str) {
-                return MODULE_SERVICE;
-        } else if (kind == module_freedisk_str) {
-                return MODULE_FREEDISK;
-        } else if (kind == module_freememory_str) {
-                return MODULE_FREEMEMORY;
-        } else if (kind == module_cpuusage_str) {
-                return MODULE_CPUUSAGE;
+	if (kind == module_exec_str) {
+		return MODULE_EXEC;
+	} else if (kind == module_proc_str) {
+		return MODULE_PROC;
+	} else if (kind == module_service_str) {
+		return MODULE_SERVICE;
+	} else if (kind == module_freedisk_str) {
+		return MODULE_FREEDISK;
+	} else if (kind == module_freememory_str) {
+		return MODULE_FREEMEMORY;
+	} else if (kind == module_cpuusage_str) {
+		return MODULE_CPUUSAGE;
 	} else if (kind == module_odbc_str) {
-                return MODULE_ODBC;
-        } else if (kind == module_logevent_str) {
+		return MODULE_ODBC;
+	} else if (kind == module_logevent_str) {
 
-                return MODULE_LOGEVENT;                
-        } else {
-                return MODULE_0;
-        }
+		return MODULE_LOGEVENT;                
+	} else {
+		return MODULE_0;
+	}
 }
 
 /** 
@@ -133,7 +133,7 @@ Pandora_Module::parseModuleKindFromString (string kind) {
  */
 string
 Pandora_Module::getName () const {
-        return this->module_name;
+	return this->module_name;
 }
 
 /** 
@@ -153,7 +153,7 @@ Pandora_Module::getDescription () const {
  */
 string
 Pandora_Module::getTypeString () const {
-        return this->module_type_str;
+	return this->module_type_str;
 }
 
 /** 
@@ -163,7 +163,7 @@ Pandora_Module::getTypeString () const {
  */
 Module_Type
 Pandora_Module::getTypeInt () const {
-        return this->module_type;
+	return this->module_type;
 }
 
 /** 
@@ -173,7 +173,7 @@ Pandora_Module::getTypeInt () const {
  */
 Module_Kind
 Pandora_Module::getModuleKind () const {
-        return this->module_kind;
+	return this->module_kind;
 }
 
 /** 
@@ -183,7 +183,7 @@ Pandora_Module::getModuleKind () const {
  */
 Module_Type
 Pandora_Module::getModuleType () const {
-        return this->module_type;
+	return this->module_type;
 }
 
 /** 
@@ -202,7 +202,7 @@ string
 Pandora_Module::getDataOutput (Pandora_Data *data) {
 	double value;
 	
-        if (this->module_type == TYPE_GENERIC_DATA_STRING) {
+	if (this->module_type == TYPE_GENERIC_DATA_STRING) {
 		return data->getValue ();
 	}
 	
@@ -274,19 +274,19 @@ Pandora_Module::setOutput (string output, SYSTEMTIME *system_time) {
  */
 void
 Pandora_Module::run () {
-        /* Check the interval */
-        if (this->executions % this->module_interval != 0) {
-                pandoraDebug ("%s: Interval is not fulfilled",
-                              this->module_name.c_str ());
-                this->executions++;
-                has_output = false;
-                throw Interval_Not_Fulfilled ();
-        }
-        
-        /* Increment the executions after check. This is done to execute the
-           first time */
-        this->executions++;
-        has_output = true;
+	/* Check the interval */
+	if (this->executions % this->module_interval != 0) {
+		pandoraDebug ("%s: Interval is not fulfilled",
+			      this->module_name.c_str ());
+		this->executions++;
+		has_output = false;
+		throw Interval_Not_Fulfilled ();
+	}
+	
+	/* Increment the executions after check. This is done to execute the
+	   first time */
+	this->executions++;
+	has_output = true;
 }
 
 /** 
@@ -319,24 +319,24 @@ Pandora_Module::getXml () {
 	pandoraDebug ("%s getXML begin", module_name.c_str ());
 	
 	if (!this->has_output || this->data_list == NULL) {
-                return NULL;
-        }
-        
-        root = new TiXmlElement ("module");
-        
-        element = new TiXmlElement ("name");
-        text = new TiXmlText (this->module_name);
-        element->InsertEndChild (*text);
-        root->InsertEndChild (*element);
-        delete element;
-        delete text;
-        
-        element = new TiXmlElement ("type");
-        text = new TiXmlText (this->module_type_str);
-        element->InsertEndChild (*text);
-        root->InsertEndChild (*element);
-        delete element;
-        delete text;
+		return NULL;
+	}
+	
+	root = new TiXmlElement ("module");
+	
+	element = new TiXmlElement ("name");
+	text = new TiXmlText (this->module_name);
+	element->InsertEndChild (*text);
+	root->InsertEndChild (*element);
+	delete element;
+	delete text;
+	
+	element = new TiXmlElement ("type");
+	text = new TiXmlText (this->module_type_str);
+	element->InsertEndChild (*text);
+	root->InsertEndChild (*element);
+	delete element;
+	delete text;
 	
 	if (this->data_list && this->data_list->size () > 1) {
 		list<Pandora_Data *>::iterator iter;
@@ -351,15 +351,15 @@ Pandora_Module::getXml () {
 			data_element = new TiXmlElement ("data");
 			element = new TiXmlElement ("value");
 			try {
-                data_clean = strreplace (this->getDataOutput (data), "%", "%%" );
-            } catch (Output_Error e) {
+		data_clean = strreplace (this->getDataOutput (data), "%", "%%" );
+	    } catch (Output_Error e) {
 	       		delete element;
-                continue;
-            }
+		continue;
+	    }
 
-            text = new TiXmlText (data_clean);
-            element->InsertEndChild (*text);
-            data_element->InsertEndChild (*element);
+	    text = new TiXmlText (data_clean);
+	    element->InsertEndChild (*text);
+	    data_element->InsertEndChild (*element);
 			delete text;
 			delete element;
 			
@@ -379,26 +379,26 @@ Pandora_Module::getXml () {
 		data = data_list->front ();
 		element = new TiXmlElement ("data");
 		try {
-            data_clean = strreplace (this->getDataOutput (data), "%", "%%" );
-            text = new TiXmlText (data_clean);
-            element->InsertEndChild (*text);
-            root->InsertEndChild (*element);
-            delete text;
-        } catch (Output_Error e) {
-        }
+	    data_clean = strreplace (this->getDataOutput (data), "%", "%%" );
+	    text = new TiXmlText (data_clean);
+	    element->InsertEndChild (*text);
+	    root->InsertEndChild (*element);
+	    delete text;
+	} catch (Output_Error e) {
+	}
 		delete element;
 	}
 		
-        element = new TiXmlElement ("description");
-        text = new TiXmlText (this->module_description);
-        element->InsertEndChild (*text);
-        root->InsertEndChild (*element);
-        delete text;
-        delete element;
+	element = new TiXmlElement ("description");
+	text = new TiXmlText (this->module_description);
+	element->InsertEndChild (*text);
+	root->InsertEndChild (*element);
+	delete text;
+	delete element;
 
 	this->cleanDataList ();
-        pandoraDebug ("%s getXML end", module_name.c_str ());
-        return root;
+	pandoraDebug ("%s getXML end", module_name.c_str ());
+	return root;
 }
 
 /** 
@@ -410,8 +410,8 @@ Pandora_Module::getXml () {
  */
 void
 Pandora_Module::setMax (int value) {
-        this->has_limits = true;
-        this->max        = value;
+	this->has_limits = true;
+	this->max        = value;
 }
 
 /** 
@@ -423,8 +423,8 @@ Pandora_Module::setMax (int value) {
  */
 void
 Pandora_Module::setMin (int value) {
-        this->has_limits = true;
-        this->min        = value;
+	this->has_limits = true;
+	this->min        = value;
 }
 
 /** 
@@ -434,8 +434,8 @@ Pandora_Module::setMin (int value) {
  */
 void
 Pandora_Module::setType (string type) {
-        this->module_type_str = type;
-        this->module_type     = parseModuleTypeFromString (type);
+	this->module_type_str = type;
+	this->module_type     = parseModuleTypeFromString (type);
 }
 
 /** 
@@ -445,8 +445,8 @@ Pandora_Module::setType (string type) {
  */
 void
 Pandora_Module::setKind (string kind) {
-        this->module_kind_str = kind;
-        this->module_kind     = parseModuleKindFromString (kind);
+	this->module_kind_str = kind;
+	this->module_kind     = parseModuleKindFromString (kind);
 }
 
 /** 
@@ -456,7 +456,7 @@ Pandora_Module::setKind (string kind) {
  */
 void
 Pandora_Module::setInterval (int interval) {
-        this->module_interval = interval;
+	this->module_interval = interval;
 }
 
 /** 
@@ -466,7 +466,7 @@ Pandora_Module::setInterval (int interval) {
  */
 int
 Pandora_Module::getInterval () {
-        return this->module_interval;
+	return this->module_interval;
 }
 
 /** 
@@ -476,5 +476,5 @@ Pandora_Module::getInterval () {
  */
 void
 Pandora_Module::setDescription (string description) {
-        this->module_description = description;
+	this->module_description = description;
 }

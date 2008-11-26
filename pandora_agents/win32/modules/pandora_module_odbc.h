@@ -32,17 +32,17 @@ namespace Pandora_Modules {
 	 * Module to retrieve a value based on a SQL query to an ODBC
 	 * connection.
 	 */
-        class Pandora_Module_Odbc : public Pandora_Module {
-        private:
-                string      dsn;
+	class Pandora_Module_Odbc : public Pandora_Module {
+	private:
+		string      dsn;
 		string      username;
 		string      password;
 		string      query;
 		Connection *con;
 		
 		void   doQuery ();
-        public:
-                Pandora_Module_Odbc (string name,
+	public:
+		Pandora_Module_Odbc (string name,
 				     string dsn,
 				     string query);
 
@@ -56,8 +56,8 @@ namespace Pandora_Modules {
 		string getUsername  ();
 		string getQuery     ();
 		
-                void   run          ();
-        };
+		void   run          ();
+	};
 }
 
 #endif

@@ -35,7 +35,7 @@ using namespace Pandora_Strutils;
 Pandora_Module_Freememory::Pandora_Module_Freememory (string name)
 	: Pandora_Module (name) {
 	
-        this->setKind (module_freememory_str);
+	this->setKind (module_freememory_str);
 }
 
 void
@@ -43,10 +43,10 @@ Pandora_Module_Freememory::run () {
 	long res;
 	
 	try {
-                Pandora_Module::run ();
-        } catch (Interval_Not_Fulfilled e) {
-                return;
-        }
+		Pandora_Module::run ();
+	} catch (Interval_Not_Fulfilled e) {
+		return;
+	}
 
 	try {
 		res = Pandora_Wmi::getFreememory ();

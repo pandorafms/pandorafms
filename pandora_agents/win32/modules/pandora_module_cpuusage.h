@@ -28,14 +28,14 @@ namespace Pandora_Modules {
 	/**
 	 * Module to retrieve the CPU usage percentage.
 	 */
-        class Pandora_Module_Cpuusage : public Pandora_Module {
-        private:
-                int cpu_id;
-        public:
-                Pandora_Module_Cpuusage (string name, int cpu_id);
-                
-                void   run              ();
-        };
+	class Pandora_Module_Cpuusage : public Pandora_Module {
+	private:
+		int cpu_id;
+	public:
+		Pandora_Module_Cpuusage (string name, int cpu_id);
+		
+		void   run              ();
+	};
 }
 
 #endif

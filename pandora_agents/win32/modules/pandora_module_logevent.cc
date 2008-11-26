@@ -35,10 +35,10 @@ using namespace Pandora_Modules;
 Pandora_Module_Logevent::Pandora_Module_Logevent (string name, string source, string type, string pattern)
 	: Pandora_Module (name) {
 
-        this->source = source;
-        this->type = type;
-        this->pattern = pattern;
-        this->setKind (module_logevent_str);
+	this->source = source;
+	this->type = type;
+	this->pattern = pattern;
+	this->setKind (module_logevent_str);
 }
 
 void

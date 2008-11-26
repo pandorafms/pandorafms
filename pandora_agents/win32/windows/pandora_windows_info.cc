@@ -33,7 +33,7 @@ using namespace Pandora_Windows_Info;
  */
 string
 Pandora_Windows_Info::getOSName () {
-        return Pandora_Wmi::getOSName ();
+	return Pandora_Wmi::getOSName ();
 }
 
 /** 
@@ -43,7 +43,7 @@ Pandora_Windows_Info::getOSName () {
  */
 string
 Pandora_Windows_Info::getOSVersion () {
-        return Pandora_Wmi::getOSVersion ();
+	return Pandora_Wmi::getOSVersion ();
 }
 
 /** 
@@ -53,7 +53,7 @@ Pandora_Windows_Info::getOSVersion () {
  */
 string
 Pandora_Windows_Info::getOSBuild () {
-        return Pandora_Wmi::getOSBuild();
+	return Pandora_Wmi::getOSBuild();
 }
 
 /** 
@@ -63,7 +63,7 @@ Pandora_Windows_Info::getOSBuild () {
  */
 string
 Pandora_Windows_Info::getSystemName () {
-        return Pandora_Wmi::getSystemName ();
+	return Pandora_Wmi::getSystemName ();
 }
 
 /** 
@@ -75,9 +75,9 @@ string
 Pandora_Windows_Info::getSystemPath () {
 	char buffer[MAX_PATH];
 	
-        ::GetWindowsDirectory (buffer, MAX_PATH+1);
-        
-        string str_path = buffer;
+	::GetWindowsDirectory (buffer, MAX_PATH+1);
+	
+	string str_path = buffer;
 	str_path = trim (str_path);
 	return str_path;
 }

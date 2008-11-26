@@ -36,33 +36,33 @@
  */
 class Windows_Service {
 private:
-        char     *service_name;
-        char     *service_display_name;
-        char     *service_description;
-        HANDLE    stop_event;
-        int       sleep_time;
-        SC_HANDLE sc_service;
-        
-        void (Windows_Service::*run_function)  ();
-        void (Windows_Service::*init_function) ();
+	char     *service_name;
+	char     *service_display_name;
+	char     *service_description;
+	HANDLE    stop_event;
+	int       sleep_time;
+	SC_HANDLE sc_service;
+	
+	void (Windows_Service::*run_function)  ();
+	void (Windows_Service::*init_function) ();
 public:
-        Windows_Service        ();
-        
-        Windows_Service        (const char * svc_name,
-			        const char * svc_display_name,
-			        const char * svc_description);
-        
-        ~Windows_Service       ();
-        
-        void  install          (LPCTSTR application_binary_path);
-        void  uninstall        ();
-        void  run              ();
-        void  setRunFunction   (void (Windows_Service::*f) ());
-        void  setInitFunction  (void (Windows_Service::*f) ());
-        LPSTR getServiceName   ();
-        void  setSleepTime     (unsigned int s);
+	Windows_Service        ();
+	
+	Windows_Service        (const char * svc_name,
+				const char * svc_display_name,
+				const char * svc_description);
+	
+	~Windows_Service       ();
+	
+	void  install          (LPCTSTR application_binary_path);
+	void  uninstall        ();
+	void  run              ();
+	void  setRunFunction   (void (Windows_Service::*f) ());
+	void  setInitFunction  (void (Windows_Service::*f) ());
+	LPSTR getServiceName   ();
+	void  setSleepTime     (unsigned int s);
 
 	void  execRunFunction  ();
-        void  execInitFunction ();
+	void  execInitFunction ();
 };
 #endif /* __WINDOWS_SERVICE_H__ */

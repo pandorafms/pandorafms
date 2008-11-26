@@ -35,7 +35,7 @@ using namespace Pandora_Modules;
  * @param exec Command to be executed.
  */
 Pandora_Module_Exec::Pandora_Module_Exec (string name, string exec)
-                                         : Pandora_Module (name) {
+					 : Pandora_Module (name) {
 	this->module_exec = "cmd.exe /c \"" + exec + "\"";
 	
 	this->setKind (module_exec_str);

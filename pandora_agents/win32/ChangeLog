@@ -1,3 +1,28 @@
+2008-11-26  Esteban Sanchez  <estebans@artica.es>
+
+	* pandora_strutils.cc, pandora_strutils.h, ftp/pandora_ftp_client.cc,
+	ftp/pandora_ftp_test.cc, ftp/pandora_ftp_client.h,
+	ftp/pandora_ftp_test.h, windows/pandora_windows_info.h,
+	windows/pandora_wmi.cc, windows/pandora_windows_info.cc,
+	misc/pandora_file.cc, misc/pandora_file.h, pandora_agent_conf.cc,
+	ssh/pandora_ssh_client.cc, ssh/pandora_ssh_test.cc,
+	ssh/pandora_ssh_client.h, ssh/pandora_ssh_test.h,
+	pandora_agent_conf.h, windows_service.cc, windows_service.h,
+	modules/pandora_module.h, modules/pandora_module_logevent.cc,
+	modules/pandora_module_exec.cc, modules/pandora_module_logevent.h,
+	modules/pandora_module_exec.h, modules/pandora_module_freedisk.cc,
+	modules/pandora_module_freedisk.h, modules/pandora_module_service.cc,
+	modules/pandora_module_service.h, modules/pandora_module_proc.cc,
+	modules/pandora_data.cc, modules/pandora_module_proc.h,
+	modules/pandora_data.h, modules/pandora_module_factory.cc,
+	modules/pandora_module_odbc.cc, modules/pandora_module_odbc.h,
+	modules/pandora_module_factory.h,
+	modules/pandora_module_freememory.cc, modules/pandora_module_list.cc,
+	modules/pandora_module_freememory.h,
+	modules/pandora_module_cpuusage.cc, modules/pandora_module_cpuusage.h,
+	modules/pandora_module.cc, pandora.h: Tab style correction.
+	Indentation blankspaces moved to tab characters.
+
 2008-10-30  Raul Mateos  <raulofpandora@gmail.com>
 	
 	* win32/installer/pandora_2.0.mpi: Updated installer to let the user start

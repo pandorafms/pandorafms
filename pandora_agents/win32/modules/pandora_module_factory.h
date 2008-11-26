@@ -32,7 +32,7 @@ using namespace Pandora_Modules;
  * Factoy to create Pandora_Module objects by parsing a definition.
  */
 namespace Pandora_Module_Factory {
-        Pandora_Module * getModuleFromDefinition (string definition);
+	Pandora_Module * getModuleFromDefinition (string definition);
 }
 
 #endif

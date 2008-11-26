@@ -27,14 +27,14 @@ namespace Pandora_Modules {
 	/**
 	 * Module to check that a process is running on the system.
 	 */
-        class Pandora_Module_Proc : public Pandora_Module {
-        private:
-                string process_name;
-        public:
-                Pandora_Module_Proc (string name, string process_name);
-                
-                void   run          ();
-        };
+	class Pandora_Module_Proc : public Pandora_Module {
+	private:
+		string process_name;
+	public:
+		Pandora_Module_Proc (string name, string process_name);
+		
+		void   run          ();
+	};
 }
 
 #endif

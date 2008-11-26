@@ -28,7 +28,7 @@
 using namespace std;
 
 namespace Pandora {
-        /**
+	/**
 	 * Agent main configuration class.
 	 *
 	 * Stores a list of Key_Value objects with the agent configuration.

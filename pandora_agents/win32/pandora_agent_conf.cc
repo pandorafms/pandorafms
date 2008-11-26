@@ -28,14 +28,14 @@ using namespace Pandora;
 #define MAX_KEYS 100
 
 Pandora::Pandora_Agent_Conf::Pandora_Agent_Conf () {
-        this->key_values = NULL;
+	this->key_values = NULL;
 }
 
 /**
  * Destroy a Pandora_Agent_Conf object.
  */
 Pandora::Pandora_Agent_Conf::~Pandora_Agent_Conf () {
-        delete key_values; 
+	delete key_values; 
 }
 
 Pandora_Agent_Conf *
@@ -62,34 +62,34 @@ Pandora::Pandora_Agent_Conf::getInstance () {
 void
 Pandora::Pandora_Agent_Conf::setFile (string filename) {
 	ifstream     file (filename.c_str ());
-        string       buffer;
-        unsigned int pos;
+	string       buffer;
+	unsigned int pos;
 
 	if (this->key_values)
 		delete this->key_values;
-        this->key_values = new list<Key_Value> ();
-        
-        if (!file.is_open ()) {
-                return;
-        }
-        
-        /* Read and set the file */
-        while (!file.eof ()) {
-                /* Set the value from each line */
-                getline (file, buffer);
-                
-                /* Ignore blank or commented lines */
-                if (buffer[0] != '#' && buffer[0] != '\n' && buffer[0] != '\0') {
-                        pos = buffer.find ("module_");
-                        if (pos == string::npos) {
-                                Key_Value kv;
-                                
-                                kv.parseLine (buffer);
-                                key_values->push_back (kv);
-                        }
-                }
-        }
-        file.close ();
+	this->key_values = new list<Key_Value> ();
+	
+	if (!file.is_open ()) {
+		return;
+	}
+	
+	/* Read and set the file */
+	while (!file.eof ()) {
+		/* Set the value from each line */
+		getline (file, buffer);
+		
+		/* Ignore blank or commented lines */
+		if (buffer[0] != '#' && buffer[0] != '\n' && buffer[0] != '\0') {
+			pos = buffer.find ("module_");
+			if (pos == string::npos) {
+				Key_Value kv;
+				
+				kv.parseLine (buffer);
+				key_values->push_back (kv);
+			}
+		}
+	}
+	file.close ();
 }
 
 /**
@@ -106,14 +106,14 @@ Pandora::Pandora_Agent_Conf::setFile (string filename) {
 string
 Pandora::Pandora_Agent_Conf::getValue (const string key)
 {
-        std::list<Key_Value>::iterator i;
-        
-        for (i = key_values->begin (); i != key_values->end (); i++) {
-                if ((*i).getKey () == key) {
-                        return (*i).getValue ();
-                }
-        }
-        
-        return "";
+	std::list<Key_Value>::iterator i;
+	
+	for (i = key_values->begin (); i != key_values->end (); i++) {
+		if ((*i).getKey () == key) {
+			return (*i).getValue ();
+		}
+	}
+	
+	return "";
 }
 

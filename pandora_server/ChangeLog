@@ -1,3 +1,7 @@
+2008-11-26  Sancho Lerena <slerena@artica.es>
+	
+	* util/plugin/mysql_plugin.sh: New Mysql plugin for Plugin server.
+
 2008-11-11  Sancho Lerena <slerena@artica.es>
 
 	* conf/pandora_server.conf: Added mta_user parameter who defines

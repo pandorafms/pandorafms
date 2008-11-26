@@ -1,3 +1,8 @@
+2008-11-26  Sancho Lerena  <slerena@artica.es>
+
+	* godmode/agentes/configurar_agente.php: Fixed problem with agent module
+	groups. 
+	
 2009-11-17  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/languages/pt_BR.mo, include/languages/fr.po,

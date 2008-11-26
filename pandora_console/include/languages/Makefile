@@ -1,4 +1,4 @@
-all: ar.mo  ast.mo  ca.mo  cs.mo  da.mo  de.mo  es.mo  eu.mo  fi.mo  fr.mo  gl.mo  he.mo  hi.mo  hu.mo  it.mo  ja.mo  pl.mo  pt.mo  pt_BR.mo  ro.mo  ru.mo  sk.mo  sl.mo  sv.mo  te.mo  tr.mo  uk.mo  zh_CN.mo  zh_TW.mo
+all: ar.mo  ast.mo  ca.mo  cs.mo  da.mo  de.mo  es.mo  eu.mo  fi.mo  fr.mo  gl.mo  he.mo  hi.mo  hu.mo  it.mo  ja.mo  ko.mo  pl.mo  pt.mo  pt_BR.mo  ro.mo  ru.mo  sk.mo  sl.mo  sv.mo  te.mo  tr.mo  uk.mo  zh_CN.mo  zh_TW.mo
 	xgettext `find ../../ -name "*\.php"` --output=index.pot  --keyword=__ --add-comments=///
 
 ar.mo: ar.po
@@ -49,6 +49,9 @@ it.mo: it.po
 ja.mo: ja.po
 	msgfmt ja.po -o ja.mo
 	
+ko.mo: ko.po
+	msgfmt ko.po -o ko.mo
+
 pl.mo: pl.po
 	msgfmt pl.po -o pl.mo
         

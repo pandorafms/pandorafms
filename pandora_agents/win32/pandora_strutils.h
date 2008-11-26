@@ -31,32 +31,32 @@ using namespace std;
  * Operations with strings.
  */
 namespace Pandora_Strutils {
-        /**
+	/**
 	 * String super-class exception.
 	 */
-        class String_Exception : Pandora::Pandora_Exception {};
+	class String_Exception : Pandora::Pandora_Exception {};
 	
 	/**
 	 * Exception throwed when a conversion could not be success.
 	 */
-        class Invalid_Conversion : Pandora_Strutils::String_Exception {};
+	class Invalid_Conversion : Pandora_Strutils::String_Exception {};
 	
-        string             trim        (const string str);
+	string             trim        (const string str);
 
 	LPSTR              strUnicodeToAnsi (LPCWSTR s);
 	
-        string             inttostr    (const int i);
-        string             longtostr   (const long i);
-        string             longtohex   (const long i);
-        
-        int                strtoint    (const string str);
-        double             strtodouble (const string str);
+	string             inttostr    (const int i);
+	string             longtostr   (const long i);
+	string             longtohex   (const long i);
+	
+	int                strtoint    (const string str);
+	double             strtodouble (const string str);
 	unsigned long long strtoulong  (const string str);
-        
-        string             strreplace  (string in, string pattern, string rep);
+	
+	string             strreplace  (string in, string pattern, string rep);
 
-        void
-        stringtok (list<string> &l, string const &s,
-                   char const * const separators = " \t\n");
+	void
+	stringtok (list<string> &l, string const &s,
+		   char const * const separators = " \t\n");
 }
 #endif /* __STRUTILS_H__ */

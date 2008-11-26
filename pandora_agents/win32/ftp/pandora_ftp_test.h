@@ -25,18 +25,18 @@ using namespace Pandora;
 
 namespace FTP {
 	/**
-         * Class to perform a test of the FTP configuration.
-         *
-         * An object of this class will read the configuration file
-         * and copy a blank xml file into remote server path.
-         */
-        class Pandora_FTP_Test {
-        private:
-                Pandora_Ftp_Client *ftp_client;
-                Pandora_Agent_Conf *conf;
-        public:
-                Pandora_FTP_Test  ();
-                ~Pandora_FTP_Test ();
-                void test       ();
-        };
+	 * Class to perform a test of the FTP configuration.
+	 *
+	 * An object of this class will read the configuration file
+	 * and copy a blank xml file into remote server path.
+	 */
+	class Pandora_FTP_Test {
+	private:
+		Pandora_Ftp_Client *ftp_client;
+		Pandora_Agent_Conf *conf;
+	public:
+		Pandora_FTP_Test  ();
+		~Pandora_FTP_Test ();
+		void test       ();
+	};
 }

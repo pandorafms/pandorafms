@@ -27,12 +27,12 @@ namespace Pandora_Modules {
 	/**
 	 * Module to retrieve the free memory amount of the system.
 	 */
-        class Pandora_Module_Freememory : public Pandora_Module {
-        public:
-                Pandora_Module_Freememory (string name);
-                
-                void   run                ();
-        };
+	class Pandora_Module_Freememory : public Pandora_Module {
+	public:
+		Pandora_Module_Freememory (string name);
+		
+		void   run                ();
+	};
 }
 
 #endif

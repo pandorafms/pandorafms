@@ -49,8 +49,8 @@ Pandora_Module_Odbc::Pandora_Module_Odbc (string name,
 	conf = Pandora_Agent_Conf::getInstance ();
 	
 	this->setKind (module_odbc_str);
-        this->dsn      = dsn;
-        this->username = conf->getValue ("odbc_" + dsn + "_username");
+	this->dsn      = dsn;
+	this->username = conf->getValue ("odbc_" + dsn + "_username");
 	this->password = conf->getValue ("odbc_" + dsn + "_password");
 	this->query    = query;
 }
@@ -72,7 +72,7 @@ Pandora_Module_Odbc::setDsn (string dsn) {
  */
 void
 Pandora_Module_Odbc::setUsername (string username) {
-        this->username = username;
+	this->username = username;
 }
 
 /** 
@@ -171,10 +171,10 @@ Pandora_Module_Odbc::doQuery () {
 void
 Pandora_Module_Odbc::run () {
 	try {
-                Pandora_Module::run ();
-        } catch (Interval_Not_Fulfilled e) {
-                return;
-        }
+		Pandora_Module::run ();
+	} catch (Interval_Not_Fulfilled e) {
+		return;
+	}
 
 	if (this->query == "") {
 		pandoraLog ("Error on module ODBC '%s': No query to execute",

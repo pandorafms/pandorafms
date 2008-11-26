@@ -31,110 +31,110 @@ using namespace std;
  * SSH connection classes.
  */
 namespace SSH {
-        /**
+	/**
 	 * A SSH super-class exception.
 	 */
-        class SSH_Exception          : public Pandora::Pandora_Exception {
-        };
+	class SSH_Exception          : public Pandora::Pandora_Exception {
+	};
 	
-        /**
+	/**
 	 * A SSH session has already be opened and a new
 	 * connection is attemped without closing it.
 	 */
-        class Session_Already_Opened : public SSH::SSH_Exception {
-        };
+	class Session_Already_Opened : public SSH::SSH_Exception {
+	};
 
 	/**
 	 * A SSH operations is tried and a session
 	 * has still not be opened.
 	 */
-        class Session_Not_Opened     : public SSH::SSH_Exception {
-        };
+	class Session_Not_Opened     : public SSH::SSH_Exception {
+	};
 
 	/**
 	 * There were unknown problems with the SSH session.
 	 */
-        class Session_Error          : public SSH::SSH_Exception {
-        };
+	class Session_Error          : public SSH::SSH_Exception {
+	};
 	
 	/**
 	 * The SSH authentication fails when connecting.
 	 */
-        class Authentication_Failed  : public SSH::SSH_Exception {
-        };
+	class Authentication_Failed  : public SSH::SSH_Exception {
+	};
 
 	/**
 	 * The host could not be resolved.	   
 	 */
-        class Resolv_Failed          : public SSH::SSH_Exception {
-        };
+	class Resolv_Failed          : public SSH::SSH_Exception {
+	};
 
 	/**
 	 * Unknown socket error.
 	 */
-        class Socket_Error           : public SSH::SSH_Exception {
-        };
+	class Socket_Error           : public SSH::SSH_Exception {
+	};
 
 	/**
 	 * An error happened with a file.
 	 */
-        class File_Error             : public SSH::SSH_Exception {
-        };
+	class File_Error             : public SSH::SSH_Exception {
+	};
 
 	/**
 	 * An error occured with the SSH channel.
 	 */
-        class Channel_Error          : public SSH::SSH_Exception {
-        };
+	class Channel_Error          : public SSH::SSH_Exception {
+	};
 
 	/**
 	 * Connection failed with the host.
 	 */
-        class Connection_Failed      : public SSH::SSH_Exception {
-        private:
-                int err_number;
-        public:
-                Connection_Failed (int e);
-                int getError ();
-        };
+	class Connection_Failed      : public SSH::SSH_Exception {
+	private:
+		int err_number;
+	public:
+		Connection_Failed (int e);
+		int getError ();
+	};
 
 	/**
 	 * The scp operation failed due to some unknow error.
 	 */	
-        class Scp_Failed             : public SSH::SSH_Exception {
-        private:
-                char *errmsg;
-        public:
-                Scp_Failed  (char *e);
-                ~Scp_Failed () { Pandora::pandoraFree (errmsg); };
-        };
-        
-        /**
+	class Scp_Failed             : public SSH::SSH_Exception {
+	private:
+		char *errmsg;
+	public:
+		Scp_Failed  (char *e);
+		~Scp_Failed () { Pandora::pandoraFree (errmsg); };
+	};
+	
+	/**
 	 * Client to perform a SSH connection to a host.
 	 */
-        class Pandora_Ssh_Client {
-        private:
-                int              sock;
-                string           fingerprint;
-                LIBSSH2_SESSION *session;
-                LIBSSH2_CHANNEL *channel;
-                
-                void newConnection (const string host, const int port);
-        public:
-                Pandora_Ssh_Client          ();
-                ~Pandora_Ssh_Client         ();
-            
-                void connectWithPublicKey (const string host, const int port,
-                                           const string username, const string filename_pubkey,
-                                           const string filename_privkey, const string passphrase);
-                
-            
-                void disconnect           ();
-                                             
-                void scpFileFilename      (const string remote_filename, 
-                                           const string filename);
-                                           
-                string getFingerprint     ();
-        };
+	class Pandora_Ssh_Client {
+	private:
+		int              sock;
+		string           fingerprint;
+		LIBSSH2_SESSION *session;
+		LIBSSH2_CHANNEL *channel;
+		
+		void newConnection (const string host, const int port);
+	public:
+		Pandora_Ssh_Client          ();
+		~Pandora_Ssh_Client         ();
+	    
+		void connectWithPublicKey (const string host, const int port,
+					   const string username, const string filename_pubkey,
+					   const string filename_privkey, const string passphrase);
+		
+	    
+		void disconnect           ();
+					     
+		void scpFileFilename      (const string remote_filename, 
+					   const string filename);
+					   
+		string getFingerprint     ();
+	};
 }
 #endif

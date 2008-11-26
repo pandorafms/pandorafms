@@ -34,30 +34,30 @@ namespace Pandora_File {
 	/**
 	 * File super-class exception.
 	 */
-        class File_Exception : Pandora::Pandora_Exception {
-        };
+	class File_Exception : Pandora::Pandora_Exception {
+	};
 	
 	/**
 	 * Exception throwed when a file could not be found when doing
 	 * a file operation.
 	 */
-        class File_Not_Found : Pandora_File::File_Exception {
-        };
+	class File_Not_Found : Pandora_File::File_Exception {
+	};
 
-        /**
+	/**
 	 * Exception throwed when a file could not be deleted on a delete
 	 * operation.
 	 */
-        class Delete_Error : Pandora_File::File_Exception {
-        };
+	class Delete_Error : Pandora_File::File_Exception {
+	};
 
 	bool   fileExists (const string filename);
-        string readFile   (const string filename);	
-        int    readBinFile (const string filepath, char **buffer);
-        void   removeFile (const string filename);
-        void   writeFile  (const string filename, const string data);
-        void   writeBinFile (const string filepath, const char *buffer, int size);
-        
+	string readFile   (const string filename);	
+	int    readBinFile (const string filepath, char **buffer);
+	void   removeFile (const string filename);
+	void   writeFile  (const string filename, const string data);
+	void   writeBinFile (const string filepath, const char *buffer, int size);
+	
 	string fileName   (const string filepath);
     void   md5 (const char *data, int size, char *buffer);
 }

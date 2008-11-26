@@ -35,10 +35,10 @@ using namespace Pandora_Strutils;
  */
 Pandora_Module_Cpuusage::Pandora_Module_Cpuusage (string name, int cpu_id)
 	: Pandora_Module (name) {
-        
-        this->cpu_id = cpu_id;
 	
-        this->setKind (module_cpuusage_str);
+	this->cpu_id = cpu_id;
+	
+	this->setKind (module_cpuusage_str);
 }
 
 void
@@ -46,10 +46,10 @@ Pandora_Module_Cpuusage::run () {
 	int res;
 	
 	try {
-                Pandora_Module::run ();
-        } catch (Interval_Not_Fulfilled e) {
-                return;
-        }
+		Pandora_Module::run ();
+	} catch (Interval_Not_Fulfilled e) {
+		return;
+	}
 
 	try {
 		res = Pandora_Wmi::getCpuUsagePercentage (this->cpu_id);

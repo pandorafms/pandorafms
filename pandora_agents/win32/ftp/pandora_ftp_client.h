@@ -31,50 +31,50 @@ using namespace std;
  * FTP connection classes.
  */
 namespace FTP {
-        /**
+	/**
 	 * A FTP super-class exception.
 	 */
-        class FTP_Exception          : public Pandora::Pandora_Exception {
-        };
+	class FTP_Exception          : public Pandora::Pandora_Exception {
+	};
 	
 	/**
 	 * The FTP authentication fails when connecting.
 	 */
-        class Authentication_Failed  : public FTP::FTP_Exception {
-        };
+	class Authentication_Failed  : public FTP::FTP_Exception {
+	};
 
 	/**
 	 * The FTP host is unknown.
 	 */
-        class Unknown_Host           : public FTP::FTP_Exception {
-        };
+	class Unknown_Host           : public FTP::FTP_Exception {
+	};
 	
-        /**
+	/**
 	 * Client to perform a FTP connection to a host.
 	 */
-        class Pandora_Ftp_Client {
-        private:
+	class Pandora_Ftp_Client {
+	private:
 		string   host;
 		string   username;
 		string   password;
 
-                CURL    *curl;
-                CURLcode result;
-        public:
-                Pandora_Ftp_Client     ();
-                ~Pandora_Ftp_Client    ();
-            
-                void   connect         (const string host,
+		CURL    *curl;
+		CURLcode result;
+	public:
+		Pandora_Ftp_Client     ();
+		~Pandora_Ftp_Client    ();
+	    
+		void   connect         (const string host,
 					const int    port,
 					const string username,
 					const string password);
-                
-                void   disconnect      ();
-                                             
-                void   ftpFileFilename (const string remote_filename,
+		
+		void   disconnect      ();
+					     
+		void   ftpFileFilename (const string remote_filename,
 					const string filepath);
 
 		string getError        ();
-        };
+	};
 }
 #endif

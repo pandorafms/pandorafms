@@ -35,9 +35,9 @@ using namespace Pandora;
  */
 Pandora_Ftp_Client::Pandora_Ftp_Client ()
 {
-        curl = NULL;
+	curl = NULL;
 	
-        return;
+	return;
 }
 
 /**
@@ -49,9 +49,9 @@ Pandora_Ftp_Client::Pandora_Ftp_Client ()
  */
 Pandora_Ftp_Client::~Pandora_Ftp_Client ()
 {
-        this->disconnect ();
+	this->disconnect ();
 	
-        return;
+	return;
 }
 
 /**
@@ -62,10 +62,10 @@ Pandora_Ftp_Client::~Pandora_Ftp_Client ()
 void
 Pandora_Ftp_Client::disconnect ()
 {
-        if (curl != NULL) {
-                curl_easy_cleanup (curl);
+	if (curl != NULL) {
+		curl_easy_cleanup (curl);
 		curl = NULL;
-        }
+	}
 }
 
 /**

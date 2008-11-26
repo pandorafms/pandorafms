@@ -29,14 +29,14 @@ namespace Pandora_Modules {
 	 * Module to retrieve the free space available in a logical volume
 	 * disk.
 	 */
-        class Pandora_Module_Freedisk : public Pandora_Module {
-        private:
-                string disk_id;
-        public:
-                Pandora_Module_Freedisk (string name, string disk_id);
-                
-                void   run              ();
-        };
+	class Pandora_Module_Freedisk : public Pandora_Module {
+	private:
+		string disk_id;
+	public:
+		Pandora_Module_Freedisk (string name, string disk_id);
+		
+		void   run              ();
+	};
 }
 
 #endif

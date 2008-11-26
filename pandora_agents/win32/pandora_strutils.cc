@@ -38,22 +38,22 @@ using namespace Pandora;
  */
 string
 Pandora_Strutils::trim (const string str) {
-        char *            delims = " \t\r\n";
-        string            result = str;
-        string::size_type index = result.find_last_not_of (delims);
-        
-        if (index != string::npos) {
-                result.erase (++index);
-        }
-        
-        index = result.find_first_not_of (delims);
-        if (index != std::string::npos) {
-                result.erase (0, index);
-        } else {
-                result.erase ();
-        }
-        
-        return result;
+	char *            delims = " \t\r\n";
+	string            result = str;
+	string::size_type index = result.find_last_not_of (delims);
+	
+	if (index != string::npos) {
+		result.erase (++index);
+	}
+	
+	index = result.find_first_not_of (delims);
+	if (index != std::string::npos) {
+		result.erase (0, index);
+	} else {
+		result.erase ();
+	}
+	
+	return result;
 }
 
 /** 
@@ -100,7 +100,7 @@ Pandora_Strutils::strUnicodeToAnsi (LPCWSTR s) {
  */
 string
 Pandora_Strutils::inttostr (const int i) {
-        return longtostr (i);
+	return longtostr (i);
 }
 
 /** 
@@ -113,10 +113,10 @@ Pandora_Strutils::inttostr (const int i) {
 string
 Pandora_Strutils::longtostr (const long i) {
 	std::ostringstream o;
-        
-        o << i;
-        
-        return o.str();
+	
+	o << i;
+	
+	return o.str();
 }
 
 /** 
@@ -128,10 +128,10 @@ Pandora_Strutils::longtostr (const long i) {
  */
 string
 Pandora_Strutils::longtohex (const long i) {
-        std::ostringstream o;
-        o << std::hex << i;
-        
-        return o.str();
+	std::ostringstream o;
+	o << std::hex << i;
+	
+	return o.str();
 }
 
 /** 
@@ -146,12 +146,12 @@ Pandora_Strutils::longtohex (const long i) {
  */
 int
 Pandora_Strutils::strtoint (const string str) {
-        int result;
-        
-        if (! std::sscanf (str.c_str (), "%d", &result)) {
-                throw Invalid_Conversion ();
-        }
-        return result;
+	int result;
+	
+	if (! std::sscanf (str.c_str (), "%d", &result)) {
+		throw Invalid_Conversion ();
+	}
+	return result;
 }
 
 /** 
@@ -165,12 +165,12 @@ Pandora_Strutils::strtoint (const string str) {
  */
 double
 Pandora_Strutils::strtodouble (const string str) {
-        double result;
-        
-        if (! std::sscanf (str.c_str (), "%le", &result)) {
-                throw Invalid_Conversion ();
-        }
-        return result;
+	double result;
+	
+	if (! std::sscanf (str.c_str (), "%le", &result)) {
+		throw Invalid_Conversion ();
+	}
+	return result;
 }
 
 /** 
@@ -185,13 +185,13 @@ Pandora_Strutils::strtodouble (const string str) {
  */
 unsigned long long
 Pandora_Strutils::strtoulong (const string str) {
-        unsigned long long result;
+	unsigned long long result;
 
-        if (! std::sscanf (str.c_str (), "%I64d", &result)) {
-                throw Invalid_Conversion ();
-        }
+	if (! std::sscanf (str.c_str (), "%I64d", &result)) {
+		throw Invalid_Conversion ();
+	}
 
-        return result;
+	return result;
 }
 
 /** 
@@ -205,30 +205,30 @@ Pandora_Strutils::strtoulong (const string str) {
  */
 string
 Pandora_Strutils::strreplace (string in, string pattern, string rep) {
-        int i = in.find (pattern);
-        int j;
-        
-        if (i < 0) {
-                return in;
-        }
-        
-        int plen = pattern.length ();
-        int rlen = rep.length ();
-        
-        do {
-                in.replace(i, plen, rep);
-                i += rlen;
-                string rest = in.substr (i, in.length () - i);
-                j = rest.find (pattern);
-                i += j;
-        } while (j >= 0);
-        
-        return in;
+	int i = in.find (pattern);
+	int j;
+	
+	if (i < 0) {
+		return in;
+	}
+	
+	int plen = pattern.length ();
+	int rlen = rep.length ();
+	
+	do {
+		in.replace(i, plen, rep);
+		i += rlen;
+		string rest = in.substr (i, in.length () - i);
+		j = rest.find (pattern);
+		i += j;
+	} while (j >= 0);
+	
+	return in;
 }
 
 inline bool
 isseparator (char c, char const * const wstr) {
-        return (strchr (wstr, c) != NULL);
+	return (strchr (wstr, c) != NULL);
 }
 
 /** 
@@ -243,30 +243,30 @@ isseparator (char c, char const * const wstr) {
  */
 void
 Pandora_Strutils::stringtok (list<string> &l, string const &s, 
-                             char const * const separators) {
+		     char const * const separators) {
     
-        const string::size_type  strsize = s.size();
-        string::size_type        i = 0;
-        
-        while (i < strsize) {
-                /* eat leading whitespace */
-                while ((i < strsize) && (isseparator (s[i], separators))) {
-                        i++;
-                }
-                if (i == strsize) {
-                        return;  /* nothing left but WS */
-                }
-                
-                /* find end of word */
-                string::size_type  j = i + 1;
-                while ((j < strsize) && (!isseparator (s[j], separators))) {
-                        j++;
-                }
-                
-                /* add word */
-                l.push_back (s.substr (i, j - i));
-                
-                /* set up for next loop */
-                i = j + 1;
-        }
+	const string::size_type  strsize = s.size();
+	string::size_type        i = 0;
+	
+	while (i < strsize) {
+		/* eat leading whitespace */
+		while ((i < strsize) && (isseparator (s[i], separators))) {
+			i++;
+		}
+		if (i == strsize) {
+			return;  /* nothing left but WS */
+		}
+		
+		/* find end of word */
+		string::size_type  j = i + 1;
+		while ((j < strsize) && (!isseparator (s[j], separators))) {
+			j++;
+		}
+		
+		/* add word */
+		l.push_back (s.substr (i, j - i));
+		
+		/* set up for next loop */
+		i = j + 1;
+	}
 }

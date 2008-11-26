@@ -40,32 +40,32 @@ namespace Pandora {
 	 * A Key_Value object holds a relation between a value and a
 	 * unique key value.
 	 */
-        class Key_Value {
-        private:
+	class Key_Value {
+	private:
 		string key;
 		string value;
-        public:
-                void   parseLine (string str);
-                string getKey    ();
-                string getValue  ();
-        };
-        
-        static const HKEY  hkey          = HKEY_LOCAL_MACHINE;
-        const char * const name          = "PandoraFMSAgent";
-        const char * const display_name  = "Pandora FMS agent";
-        const char * const description   = "The Pandora FMS Agent service";
+	public:
+		void   parseLine (string str);
+		string getKey    ();
+		string getValue  ();
+	};
+	
+	static const HKEY  hkey          = HKEY_LOCAL_MACHINE;
+	const char * const name          = "PandoraFMSAgent";
+	const char * const display_name  = "Pandora FMS agent";
+	const char * const description   = "The Pandora FMS Agent service";
 
-        void   setPandoraInstallDir   (string dir);
-        string getPandoraInstallDir   ();
-        void   setPandoraInstallPath  (string path);
-        string getPandoraInstallPath  ();
-        void   setPandoraDebug        (bool dbg);
+	void   setPandoraInstallDir   (string dir);
+	string getPandoraInstallDir   ();
+	void   setPandoraInstallPath  (string path);
+	string getPandoraInstallPath  ();
+	void   setPandoraDebug        (bool dbg);
 	bool   getPandoraDebug        ();
-        string getPandoraAgentVersion ();
-        
-        void   pandoraDebug           (char *format, ...);
-        void   pandoraLog             (char *format, ...);
-        void   pandoraFree            (void * e);
+	string getPandoraAgentVersion ();
+	
+	void   pandoraDebug           (char *format, ...);
+	void   pandoraLog             (char *format, ...);
+	void   pandoraFree            (void * e);
 
 	/**
 	 * Super-class exception.
@@ -73,7 +73,7 @@ namespace Pandora {
 	 * Other exceptions generated in the application should inherate from
 	 * this class. This allow a easier handling on throw and catch blocks.
 	 */
-        class Pandora_Exception { };
+	class Pandora_Exception { };
 }
 
 #endif /* __PANDORA_H__ */

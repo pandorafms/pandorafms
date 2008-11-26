@@ -31,7 +31,7 @@ using namespace Pandora;
  * @param timestamp Timeestamp value.
  */
 Pandora_Data::Pandora_Data (string value) {
-        this->value = value;
+	this->value = value;
 	GetSystemTime (&(this->timestamp));
 }
 
@@ -90,7 +90,7 @@ Pandora_Data::getTimestamp () const {
 	string retval;
 	
 	sprintf (strtime, "%d-%02d-%02d %02d:%02d:%02d", this->timestamp.wYear, this->timestamp.wMonth, this->timestamp.wDay,
-                 this->timestamp.wHour, this->timestamp.wMinute, this->timestamp.wSecond);
+		 this->timestamp.wHour, this->timestamp.wMinute, this->timestamp.wSecond);
 	retval = strtime;
 	return retval;
 }

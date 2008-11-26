@@ -337,7 +337,7 @@ Pandora_Wmi::getOSBuild () {
 		FOR_EACH (quickfix, quickfixes, NULL) {
 			dhGetValue (L"%s", &build, quickfix,
 				    L".Version");
-                        
+			
 			ret = build;
 			dhFreeString (build);
 			
@@ -345,7 +345,7 @@ Pandora_Wmi::getOSBuild () {
 	} catch (string errstr) {
 		pandoraLog ("getOSBuild error. %s", errstr.c_str ());
 	}
-        
+	
 	return ret;
 }
 
@@ -370,7 +370,7 @@ Pandora_Wmi::getSystemName () {
 		FOR_EACH (quickfix, quickfixes, NULL) {
 			dhGetValue (L"%s", &name, quickfix,
 				    L".CSName");
-                        
+			
 			ret = name;
 			dhFreeString (name);
 			
@@ -378,7 +378,7 @@ Pandora_Wmi::getSystemName () {
 	} catch (string errstr) {
 		pandoraLog ("getSystemName error. %s", errstr.c_str ());
 	}
-        
+	
 	return ret;
 }
 

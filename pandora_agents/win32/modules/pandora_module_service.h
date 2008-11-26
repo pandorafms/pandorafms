@@ -29,14 +29,14 @@ namespace Pandora_Modules {
 	 * Module to check that a windows service is running on the
 	 * system.
 	 */
-        class Pandora_Module_Service : public Pandora_Module {
-        private:
-                string service_name;
-        public:
-                Pandora_Module_Service (string name, string service_name);
-                
-                void   run             ();
-        };
+	class Pandora_Module_Service : public Pandora_Module {
+	private:
+		string service_name;
+	public:
+		Pandora_Module_Service (string name, string service_name);
+		
+		void   run             ();
+	};
 }
 
 #endif

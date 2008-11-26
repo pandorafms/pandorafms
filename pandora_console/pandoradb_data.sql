@@ -124,6 +124,7 @@ INSERT INTO `tlanguage` VALUES ('hi','हिन्दी');
 INSERT INTO `tlanguage` VALUES ('hu','Magyar');
 INSERT INTO `tlanguage` VALUES ('it','Italiano');
 INSERT INTO `tlanguage` VALUES ('ja','日本語');
+INSERT INTO `tlanguage` VALUES ('ko','한국어');
 INSERT INTO `tlanguage` VALUES ('pl','Polski');
 INSERT INTO `tlanguage` VALUES ('pt_BR','Português-Brasil');
 INSERT INTO `tlanguage` VALUES ('pt','Português');

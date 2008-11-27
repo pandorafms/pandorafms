@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-11-26 09:56+0100\n"
+"POT-Creation-Date: 2008-11-27 15:04+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1288,7 +1288,7 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:272
 #: ../../godmode/reporting/reporting_builder.php:405
 #: ../../godmode/agentes/manage_config_remote.php:99
-#: ../../godmode/agentes/manage_config.php:358
+#: ../../godmode/agentes/manage_config.php:355
 #: ../../godmode/db/db_refine.php:73
 #: ../../operation/agentes/exportdata.php:241
 msgid "Source agent"
@@ -1296,8 +1296,8 @@ msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:285
 #: ../../godmode/agentes/configurar_agente.php:212
-#: ../../godmode/agentes/manage_config.php:408
-#: ../../godmode/agentes/manage_config.php:417
+#: ../../godmode/agentes/manage_config.php:405
+#: ../../godmode/agentes/manage_config.php:414
 #: ../../godmode/agentes/module_manager.php:31
 #: ../../godmode/db/db_refine.php:91 ../../include/functions_reporting.php:653
 #: ../../enterprise/include/functions_reporting_pdf.php:329
@@ -1994,7 +1994,7 @@ msgstr ""
 #: ../../godmode/groups/configure_group.php:88
 #: ../../godmode/agentes/configurar_agente.php:220
 #: ../../godmode/agentes/alert_manager.php:33
-#: ../../godmode/agentes/manage_config.php:420
+#: ../../godmode/agentes/manage_config.php:417
 #: ../../include/functions_reporting.php:662
 #: ../../enterprise/include/functions_reporting_pdf.php:335
 #: ../../operation/agentes/estado_grupo.php:225
@@ -2015,7 +2015,7 @@ msgstr ""
 #: ../../godmode/setup/news.php:148
 #: ../../godmode/profiles/profile_list.php:274
 #: ../../godmode/agentes/manage_config_remote.php:146
-#: ../../godmode/agentes/manage_config.php:445
+#: ../../godmode/agentes/manage_config.php:442
 #: ../../godmode/agentes/modificar_agente.php:274
 #: ../../godmode/agentes/module_manager.php:152
 #: ../../godmode/agentes/module_manager.php:163
@@ -2361,7 +2361,7 @@ msgstr ""
 
 #: ../../godmode/admin_access_logs.php:36
 #: ../../godmode/agentes/manage_config_remote.php:95
-#: ../../godmode/agentes/manage_config.php:354
+#: ../../godmode/agentes/manage_config.php:351
 #: ../../godmode/modules/manage_network_templates_form.php:194
 #: ../../operation/incidents/incident.php:165
 msgid "Filter"
@@ -2778,40 +2778,40 @@ msgstr ""
 msgid "There was a problem loading the alert"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:751
+#: ../../godmode/agentes/configurar_agente.php:752
 msgid "There was a problem updating module"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:753
+#: ../../godmode/agentes/configurar_agente.php:754
 msgid "Module successfully updated"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:766
+#: ../../godmode/agentes/configurar_agente.php:767
 msgid "Cannot read from SNMP source"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:768
+#: ../../godmode/agentes/configurar_agente.php:769
 msgid "SNMP source has been scanned"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:800
+#: ../../godmode/agentes/configurar_agente.php:801
 msgid "There was a problem adding module"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:820
-#: ../../godmode/agentes/configurar_agente.php:822
+#: ../../godmode/agentes/configurar_agente.php:821
+#: ../../godmode/agentes/configurar_agente.php:823
 msgid "Module added successfully"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:822
+#: ../../godmode/agentes/configurar_agente.php:823
 msgid "Status init unsuccessful"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:871
+#: ../../godmode/agentes/configurar_agente.php:872
 msgid "There was a problem deleting the module"
 msgstr ""
 
-#: ../../godmode/agentes/configurar_agente.php:874
+#: ../../godmode/agentes/configurar_agente.php:875
 msgid "Module deleted successfully"
 msgstr ""
 
@@ -2944,7 +2944,7 @@ msgstr ""
 #: ../../godmode/agentes/agent_template.php:119
 #: ../../godmode/agentes/manage_config_remote.php:82
 #: ../../godmode/agentes/alert_manager.php:33
-#: ../../godmode/agentes/manage_config.php:344
+#: ../../godmode/agentes/manage_config.php:341
 #: ../../godmode/agentes/modificar_agente.php:132
 #: ../../godmode/agentes/agent_manager.php:37
 #: ../../godmode/agentes/module_manager.php:31
@@ -2993,24 +2993,24 @@ msgid "copyage"
 msgstr ""
 
 #: ../../godmode/agentes/manage_config_remote.php:82
-#: ../../godmode/agentes/manage_config.php:344
+#: ../../godmode/agentes/manage_config.php:341
 msgid "Configuration Management"
 msgstr ""
 
 #: ../../godmode/agentes/manage_config_remote.php:87
-#: ../../godmode/agentes/manage_config.php:349
+#: ../../godmode/agentes/manage_config.php:346
 msgid "Source group"
 msgstr ""
 
 #: ../../godmode/agentes/manage_config_remote.php:129
-#: ../../godmode/agentes/manage_config.php:388
+#: ../../godmode/agentes/manage_config.php:385
 #: ../../godmode/db/db_refine.php:90
 #: ../../operation/agentes/exportdata.php:263
 msgid "Get Info"
 msgstr ""
 
 #: ../../godmode/agentes/manage_config_remote.php:134
-#: ../../godmode/agentes/manage_config.php:438
+#: ../../godmode/agentes/manage_config.php:435
 msgid "To Agent(s):"
 msgstr ""
 
@@ -3222,65 +3222,65 @@ msgstr ""
 msgid "You must check modules and/or alerts to be deleted"
 msgstr ""
 
-#: ../../godmode/agentes/manage_config.php:301
+#: ../../godmode/agentes/manage_config.php:298
 msgid ""
 "There was an error removing the module data, the removal has been cancelled"
 msgstr ""
 
-#: ../../godmode/agentes/manage_config.php:304
+#: ../../godmode/agentes/manage_config.php:301
 msgid "Successfully removed module data"
 msgstr ""
 
-#: ../../godmode/agentes/manage_config.php:316
+#: ../../godmode/agentes/manage_config.php:313
 msgid "Deleting Agent"
 msgstr ""
 
-#: ../../godmode/agentes/manage_config.php:323
+#: ../../godmode/agentes/manage_config.php:320
 msgid "You must select at least one agent to be removed"
 msgstr ""
 
-#: ../../godmode/agentes/manage_config.php:330
+#: ../../godmode/agentes/manage_config.php:327
 msgid "There was an error removing the agents. Removal has been cancelled"
 msgstr ""
 
-#: ../../godmode/agentes/manage_config.php:332
+#: ../../godmode/agentes/manage_config.php:329
 msgid "Successfully removed agents"
 msgstr ""
 
-#: ../../godmode/agentes/manage_config.php:371
+#: ../../godmode/agentes/manage_config.php:368
 msgid "No Agents in this Group"
 msgstr ""
 
-#: ../../godmode/agentes/manage_config.php:399
+#: ../../godmode/agentes/manage_config.php:396
 msgid "No modules for this agent"
 msgstr ""
 
-#: ../../godmode/agentes/manage_config.php:401
+#: ../../godmode/agentes/manage_config.php:398
 #: ../../enterprise/operation/inventory/inventory.php:76
 msgid "No agent selected"
 msgstr ""
 
-#: ../../godmode/agentes/manage_config.php:413
+#: ../../godmode/agentes/manage_config.php:410
 msgid "Targets"
 msgstr ""
 
-#: ../../godmode/agentes/manage_config.php:445
+#: ../../godmode/agentes/manage_config.php:442
 msgid "Copy Modules/Alerts"
 msgstr ""
 
-#: ../../godmode/agentes/manage_config.php:448
+#: ../../godmode/agentes/manage_config.php:445
 msgid "Delete Modules/Alerts"
 msgstr ""
 
-#: ../../godmode/agentes/manage_config.php:448
+#: ../../godmode/agentes/manage_config.php:445
 msgid "Are you sure you want to delete these modules and alerts?"
 msgstr ""
 
-#: ../../godmode/agentes/manage_config.php:451
+#: ../../godmode/agentes/manage_config.php:448
 msgid "Delete Agents"
 msgstr ""
 
-#: ../../godmode/agentes/manage_config.php:451
+#: ../../godmode/agentes/manage_config.php:448
 msgid "Are you sure you want to delete these agents?"
 msgstr ""
 

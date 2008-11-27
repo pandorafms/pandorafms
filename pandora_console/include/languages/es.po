@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Jorge Gonzalez <jorge.gonzalez@artica.es>, 2008.
+# Jorge González <jorgegonz@svn.gnome.org>, 2008.
 msgid ""
 msgstr ""
 "Project-Id-Version: index.es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-11-24 10:06+0100\n"
-"PO-Revision-Date: 2008-11-24 10:12+0100\n"
-"Last-Translator: Jorge Gonzalez <jorge.gonzalez@artica.es>\n"
-"Language-Team: Español <artica@artica.es>\n"
+"PO-Revision-Date: 2008-11-27 10:45+0100\n"
+"Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
+"Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -416,7 +417,7 @@ msgstr "Estado de los monitores"
 
 #: ../../general/logon_ok.php:77 ../../operation/agentes/tactical.php:69
 msgid "of monitors up"
-msgstr "de monitores levantados"
+msgstr "de monitores funcionando"
 
 #: ../../general/logon_ok.php:79
 #: ../../enterprise/dashboard/widgets/monitor_health.php:73
@@ -426,7 +427,7 @@ msgstr "Estado de los datos"
 
 #: ../../general/logon_ok.php:80 ../../operation/agentes/tactical.php:75
 msgid "of data modules up"
-msgstr "de módulos de datos levantados"
+msgstr "de módulos de datos funcionando"
 
 #: ../../general/logon_ok.php:82
 #: ../../enterprise/dashboard/widgets/monitor_health.php:16
@@ -437,7 +438,7 @@ msgstr "Salud global"
 
 #: ../../general/logon_ok.php:83 ../../operation/agentes/tactical.php:81
 msgid "of total modules up"
-msgstr "del total de módulos levantados"
+msgstr "del total de módulos funcionando"
 
 #: ../../general/logon_ok.php:85
 #: ../../enterprise/dashboard/widgets/monitor_health.php:77
@@ -635,8 +636,8 @@ msgid ""
 "com\">http://pandorafms.com</a>."
 msgstr ""
 "El Update Manager es una de las características más avanzadas de Pandora FMS "
-"2.0 Enterprise, para obtener más información visite <a "
-"href=\"http://pandorafms.com\">http://pandorafms.com</a>."
+"2.0 Enterprise, para obtener más información visite <a href=\"http://"
+"pandorafms.com\">http://pandorafms.com</a>."
 
 #: ../../extensions/update_manager/main.php:46
 msgid ""
@@ -2498,7 +2499,7 @@ msgstr "Tamaño de bloque para la paginación"
 
 #: ../../godmode/setup/setup.php:131
 msgid "Timestamp or time comparation"
-msgstr ""
+msgstr "Marca de tiempo o comparación de hora"
 
 #: ../../godmode/setup/setup.php:132
 msgid "Comparation in rollover"
@@ -3256,8 +3257,10 @@ msgid "You must check modules and/or alerts to be deleted"
 msgstr "Debe comprobar módulos y/o alertas para borrar"
 
 #: ../../godmode/agentes/manage_config.php:301
-msgid "There was an error removing the module data, the removal has been cancelled"
-msgstr "Hubo un error al eliminar el módulo de datos. Se canceló la eliminación."
+msgid ""
+"There was an error removing the module data, the removal has been cancelled"
+msgstr ""
+"Hubo un error al eliminar el módulo de datos. Se canceló la eliminación."
 
 #: ../../godmode/agentes/manage_config.php:304
 msgid "Successfully removed module data"
@@ -3580,7 +3583,8 @@ msgid "Alert text"
 msgstr "Alerta de texto"
 
 #: ../../godmode/agentes/alert_manager_editor.php:136
-msgid "This value must be al least Module Interval * (Min.Number of Alerts + 1)"
+msgid ""
+"This value must be al least Module Interval * (Min.Number of Alerts + 1)"
 msgstr ""
 "Este valor debe ser como mínimo, el intervalo del módulo multiplicado por el "
 "mínimo número de alertas + 1"
@@ -4422,7 +4426,7 @@ msgstr "Desconocido"
 #: ../../operation/agentes/status_monitor.php:209
 #: ../../operation/agentes/status_monitor.php:229
 msgid "Monitor up"
-msgstr "Monitor levantado"
+msgstr "Monitor funcionando"
 
 #: ../../include/functions.php:1128
 #: ../../operation/agentes/status_monitor.php:211
@@ -4815,7 +4819,7 @@ msgstr ""
 
 #: ../../enterprise/godmode/agentes/agent_manager.php:11
 msgid "Inventory Server"
-msgstr ""
+msgstr "Servidor de inventario"
 
 #: ../../enterprise/godmode/agentes/agent_manager.php:12
 msgid ""
@@ -4839,7 +4843,7 @@ msgstr ""
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:81
 #: ../../enterprise/godmode/modules/manage_inventory_modules_form.php:62
 msgid "Interpreter"
-msgstr ""
+msgstr "Intérprete"
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:92
 msgid "There are no defined inventory modules"
@@ -4847,11 +4851,11 @@ msgstr ""
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules_form.php:55
 msgid "name"
-msgstr ""
+msgstr "nombre"
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules_form.php:57
 msgid "description"
-msgstr ""
+msgstr "descripción"
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules_form.php:59
 msgid "os"
@@ -4859,7 +4863,7 @@ msgstr ""
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules_form.php:65
 msgid "Code"
-msgstr ""
+msgstr "Código"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:169
 #: ../../operation/reporting/reporting_viewer.php:202
@@ -4874,7 +4878,7 @@ msgstr "Info"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:173
 msgid "SLA result"
-msgstr ""
+msgstr "Resultado del SLA"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:182
 #: ../../operation/reporting/reporting_viewer.php:220
@@ -4883,7 +4887,7 @@ msgstr "Límite del SLA"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:201
 msgid "SLA final result: "
-msgstr ""
+msgstr "Resultado final del SLA: "
 
 #: ../../enterprise/include/functions_reporting_pdf.php:203
 msgid "ok"
@@ -4897,11 +4901,11 @@ msgstr "Fallo"
 
 #: ../../enterprise/dashboard/main_dashboard.php:109
 msgid "Could not create dashboard"
-msgstr ""
+msgstr "No se pudo crear el Dashboard"
 
 #: ../../enterprise/dashboard/main_dashboard.php:111
 msgid "Dashboard successfuly created"
-msgstr ""
+msgstr "El Dashboard se creó correctamente"
 
 #: ../../enterprise/dashboard/main_dashboard.php:122
 #: ../../operation/snmpconsole/snmp_view.php:170
@@ -4911,31 +4915,31 @@ msgstr "Predeterminado"
 
 #: ../../enterprise/dashboard/main_dashboard.php:161
 msgid "Add tab"
-msgstr ""
+msgstr "Añadir solapa"
 
 #: ../../enterprise/dashboard/main_dashboard.php:165
 msgid "Add widget"
-msgstr ""
+msgstr "Añadir marco"
 
 #: ../../enterprise/dashboard/main_dashboard.php:277
 msgid "Add new dashboard view"
-msgstr ""
+msgstr "Añadir una vista nueva al Dashboard"
 
 #: ../../enterprise/dashboard/main_dashboard.php:292
 msgid "Add new widget"
-msgstr ""
+msgstr "Añadir marco nuevo"
 
 #: ../../enterprise/dashboard/widgets/example.php:16
 msgid "Welcome message to Pandora FMS"
-msgstr ""
+msgstr "Mensaje de bienvenida a Pandora FMS"
 
 #: ../../enterprise/dashboard/widgets/example.php:20
 msgid "Welcome"
-msgstr ""
+msgstr "Bienvenido"
 
 #: ../../enterprise/dashboard/widgets/example.php:22
 msgid "Welcome to Pandora FMS"
-msgstr ""
+msgstr "Bienvenido a Pandora FMS"
 
 #: ../../enterprise/dashboard/widgets/example.php:23
 msgid "This is an example of a dashboard widget. A widget may contain elements"
@@ -4955,48 +4959,49 @@ msgid ""
 msgstr ""
 
 #: ../../enterprise/dashboard/widgets/example.php:26
-msgid "To do so, just click on the title and drag and drop it to the desired place."
+msgid ""
+"To do so, just click on the title and drag and drop it to the desired place."
 msgstr ""
 
 #: ../../enterprise/dashboard/widgets/example.php:28
 msgid "Thanks for using Pandora FMS"
-msgstr ""
+msgstr "Gracias por usar Pandora FMS"
 
 #: ../../enterprise/dashboard/widgets/monitor_health.php:11
 msgid "Show a list of global monitor health"
-msgstr ""
+msgstr "Mostrar una lista de la salud global de los monitores"
 
 #: ../../enterprise/dashboard/widgets/monitor_health.php:72
 msgid "of monitors UP"
-msgstr ""
+msgstr "de monitores funcionando"
 
 #: ../../enterprise/dashboard/widgets/monitor_health.php:74
 msgid "of modules with updated data"
-msgstr ""
+msgstr "de módulos con datos actualizados"
 
 #: ../../enterprise/dashboard/widgets/monitor_health.php:76
 msgid "of modules with good data"
-msgstr ""
+msgstr "de módulos con datos correctos"
 
 #: ../../enterprise/dashboard/widgets/monitor_health.php:78
 msgid "of well initialized modules"
-msgstr ""
+msgstr "de módulos bien inicializados"
 
 #: ../../enterprise/dashboard/widgets/monitor_health.php:80
 msgid "of non-fired alerts"
-msgstr ""
+msgstr "de alertas sin disparar"
 
 #: ../../enterprise/operation/reporting/custom_reporting.php:13
 msgid "PDF"
-msgstr ""
+msgstr "PDF"
 
 #: ../../enterprise/operation/agentes/agent_inventory.php:28
 msgid "Pandora Agents "
-msgstr ""
+msgstr "Agentes de pandora"
 
 #: ../../enterprise/operation/inventory/inventory.php:154
 msgid "No relevant data"
-msgstr ""
+msgstr "Sin datos relevantes"
 
 #: ../../operation/reporting/reporting_viewer.php:112
 msgid "Invalid date selected"
@@ -5747,15 +5752,15 @@ msgstr "Todos los monitores BIEN"
 
 #: ../../operation/agentes/estado_monitores.php:113
 msgid "This agent doesn't have any active monitors"
-msgstr ""
+msgstr "Este agente no tienen ningún monitor activo"
 
 #: ../../operation/agentes/estado_monitores.php:120
 msgid "This agent doesn't have any active data modules"
-msgstr ""
+msgstr "Este agente no tiene ningún módulo de datos activo"
 
 #: ../../operation/agentes/estado_monitores.php:122
 msgid "Full list of Data Modules"
-msgstr ""
+msgstr "Lista completa de módulos de datos"
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Sunday"
@@ -6085,7 +6090,7 @@ msgstr "Validación manual de alerta"
 
 #: ../../operation/events/events.php:287
 msgid "Monitor Up"
-msgstr "Monitor levantado"
+msgstr "Monitor funcionando"
 
 #: ../../operation/events/events.php:290
 msgid "Monitor Down"
@@ -6252,4 +6257,3 @@ msgstr "Remitente"
 #: ../../operation/messages/message.php:215
 msgid "No subject"
 msgstr "Sin asunto"
-

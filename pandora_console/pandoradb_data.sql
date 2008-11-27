@@ -116,6 +116,7 @@ INSERT INTO `tlanguage` VALUES ('cs','Česky');
 INSERT INTO `tlanguage` VALUES ('da','Dansk');
 INSERT INTO `tlanguage` VALUES ('de','Deutch');
 INSERT INTO `tlanguage` VALUES ('eu','Euskara');
+INSERT INTO `tlanguage` VALUES ('el','Ελληνικά');
 INSERT INTO `tlanguage` VALUES ('fi','Suomi');
 INSERT INTO `tlanguage` VALUES ('fr','Français');
 INSERT INTO `tlanguage` VALUES ('gl','Galego');

@@ -43,10 +43,14 @@ namespace Pandora_Modules {
 		void             parseModuleDefinition (string definition);
 	public:
 		Pandora_Module_List                    (string filename);
+		Pandora_Module_List                    ();
 		
 		~Pandora_Module_List                   ();
 		
 		Pandora_Module * getCurrentValue       ();
+		
+		/* Add a module to the list */
+		void             addModule             (Pandora_Module *module);
 		
 		/* Move to the first element of the list */
 		void             goFirst               ();

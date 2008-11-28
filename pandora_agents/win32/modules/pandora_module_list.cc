@@ -80,8 +80,26 @@ Pandora_Modules::Pandora_Module_List::Pandora_Module_List (string filename) {
 	file.close ();
 	
 	current = new std::list<Pandora_Module *>::iterator ();
-	*current = modules->begin ();
+	(*current) = modules->begin ();
 }
+
+/** 
+ * Creates an empty module list object.
+ */
+Pandora_Modules::Pandora_Module_List::Pandora_Module_List () {
+	this->modules = new list<Pandora_Module *> ();
+	current = new std::list<Pandora_Module *>::iterator ();
+	(*current) = modules->begin ();
+}
+
+/** 
+ * Adds a module object to a list object.
+ */
+void
+Pandora_Modules::Pandora_Module_List::addModule (Pandora_Module *module) {
+	modules->push_back (module);
+}
+
 
 /** 
  * Destroy the list.

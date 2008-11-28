@@ -53,6 +53,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_SOURCE      ("module_source ")
 #define TOKEN_EVENTTYPE   ("module_eventtype ")
 #define TOKEN_PATTERN     ("module_pattern ")
+#define TOKEN_ASYNC       ("module_async")
 
 string
 parseLine (string line, string token) {
@@ -87,7 +88,8 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_interval, module_proc, module_service;
 	string                 module_freedisk, module_cpuusage, module_odbc;
 	string                 module_odbc_query, module_dsn, module_freememory;
-    string                 module_logevent, module_source, module_eventtype, module_pattern;
+	string                 module_logevent, module_source, module_eventtype;
+	string                 module_pattern, module_async;
 	Pandora_Module        *module;
 	bool                   numeric;
 	Module_Type            type;
@@ -104,10 +106,10 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_odbc        = "";
 	module_odbc_query  = "";
 	module_odbc        = "";
-    module_logevent    = "";
-    module_source      = "";
-    module_eventtype   = "";
-    module_pattern     = "";
+	module_logevent    = "";
+	module_source      = "";
+	module_eventtype   = "";
+	module_pattern     = "";
 
 	stringtok (tokens, definition, "\n");
 	
@@ -160,18 +162,21 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_odbc_query == "") {
 			module_odbc_query = parseLine (line, TOKEN_ODBC_QUERY);
 		}
-	if (module_logevent == "") {
-	    module_logevent = parseLine (line, TOKEN_LOGEVENT);
-	}                
-	if (module_source == "") {
-	    module_source = parseLine (line, TOKEN_SOURCE);
-	}                
-	if (module_eventtype == "") {
-	    module_eventtype = parseLine (line, TOKEN_EVENTTYPE);
-	}                
-	if (module_pattern == "") {
-	    module_pattern = parseLine (line, TOKEN_PATTERN);
-	}                
+		if (module_logevent == "") {
+			module_logevent = parseLine (line, TOKEN_LOGEVENT);
+		}
+		if (module_source == "") {
+			module_source = parseLine (line, TOKEN_SOURCE);
+		}
+		if (module_eventtype == "") {
+			module_eventtype = parseLine (line, TOKEN_EVENTTYPE);
+		}
+		if (module_pattern == "") {
+			module_pattern = parseLine (line, TOKEN_PATTERN);
+		}
+		if (module_async == "") {
+			module_async = parseLine (line, TOKEN_ASYNC);
+		}
 		
 		iter++;
 	}
@@ -221,7 +226,11 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	if (module_description != "") {
 		module->setDescription (module_description);
 	}
-
+	
+	if (module_async != "") {
+		module->setAsync (true);
+	}
+	
 	type = Pandora_Module::parseModuleTypeFromString (module_type);
 	switch (type) {
 	case TYPE_GENERIC_DATA:
@@ -258,7 +267,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 			}
 		}
 		if (module_min != "") {
-		       try {
+			try {
 				int value = strtoint (module_min);
 				
 				module->setMin (value);

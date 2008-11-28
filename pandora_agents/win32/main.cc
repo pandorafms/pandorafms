@@ -37,9 +37,11 @@ main (int argc, char *argv[]) {
 	string                   aux;
 	unsigned int             pos;
 
-	service = new Pandora_Windows_Service (Pandora::name, Pandora::display_name,
-					       Pandora::description);
-
+	service = Pandora_Windows_Service::getInstance ();
+	service->setValues (Pandora::name, Pandora::display_name,
+			    Pandora::description);
+	service->start ();
+	
 	GetModuleFileName (NULL, buffer, MAX_PATH);
 	aux = buffer;
 	Pandora::setPandoraInstallPath (aux);

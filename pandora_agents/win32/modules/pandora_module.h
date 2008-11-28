@@ -80,7 +80,7 @@ namespace Pandora_Modules {
 	const string module_freememory_str = "module_freememory";
 	const string module_cpuusage_str   = "module_cpuusage";
 	const string module_odbc_str       = "module_odbc";
-	const string module_logevent_str       = "module_logevent";	
+	const string module_logevent_str   = "module_logevent";	
 
 	/**
 	 * Pandora module super-class exception.
@@ -135,6 +135,11 @@ namespace Pandora_Modules {
 		 * The description of the module.
 		 */
 		string      module_description;
+		
+		/**
+		 * Flag to set a module as asynchronous
+		 */
+		bool                  async;
 	public:
 		Pandora_Module                    (string name);
 		virtual ~Pandora_Module           ();
@@ -145,29 +150,32 @@ namespace Pandora_Modules {
 		static Module_Kind
 			parseModuleKindFromString (string kind);
 		
-		void               setInterval    (int interval);
-		int                getInterval    ();
+		void         setInterval   (int interval);
+		int          getInterval   ();
 		
-		TiXmlElement      *getXml         ();
+		TiXmlElement *getXml       ();
 		
-		virtual void       run            ();
+		virtual void run           ();
 		
-		virtual void       setOutput      (string output);
-	virtual void       setOutput      (string output, SYSTEMTIME *system_time);
+		virtual void setOutput     (string output);
+		virtual void setOutput     (string output,
+					    SYSTEMTIME *system_time);
 
 		
-		string             getName        () const;
-		string             getDescription () const;
-		string             getTypeString  () const;
-		Module_Type        getTypeInt     () const;
-		Module_Type        getModuleType  () const;
-		Module_Kind        getModuleKind  () const;
+		string      getName        () const;
+		string      getDescription () const;
+		string      getTypeString  () const;
+		string      getLatestOutput () const;
+		Module_Type getTypeInt     () const;
+		Module_Type getModuleType  () const;
+		Module_Kind getModuleKind  () const;
 		
-		void               setType        (string type);
-		void               setKind        (string kind);
-		void               setDescription (string description);
-		void               setMax         (int value);
-		void               setMin         (int value);
+		void        setType        (string type);
+		void        setKind        (string kind);
+		void        setDescription (string description);
+		void        setMax         (int value);
+		void        setMin         (int value);
+		void        setAsync       (bool async);
 	};
 }
 

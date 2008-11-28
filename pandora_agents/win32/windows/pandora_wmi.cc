@@ -64,7 +64,7 @@ Pandora_Wmi::isProcessRunning (string process_name) {
 
 	query = "SELECT * FROM Win32_Process WHERE Name=\"" + process_name + "\"";
 	
-	try {	
+	try {
 		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
 		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
 				     L".ExecQuery(%T)",
@@ -99,7 +99,7 @@ Pandora_Wmi::isServiceRunning (string service_name) {
 
 	query = "SELECT * FROM Win32_Service WHERE Name = \"" + service_name + "\"";
 
-	try {	
+	try {
 		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
 		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
 				     L".ExecQuery(%T)",

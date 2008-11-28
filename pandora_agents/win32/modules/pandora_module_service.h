@@ -32,10 +32,12 @@ namespace Pandora_Modules {
 	class Pandora_Module_Service : public Pandora_Module {
 	private:
 		string service_name;
+		HANDLE thread;
 	public:
 		Pandora_Module_Service (string name, string service_name);
 		
-		void   run             ();
+		void   run               ();
+		string getServiceName    () const;
 	};
 }
 

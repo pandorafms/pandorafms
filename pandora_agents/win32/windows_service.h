@@ -35,10 +35,11 @@
  * Notice: A program should have only one object of this class.
  */
 class Windows_Service {
-private:
+protected:
 	char     *service_name;
 	char     *service_display_name;
 	char     *service_description;
+private:
 	HANDLE    stop_event;
 	int       sleep_time;
 	SC_HANDLE sc_service;

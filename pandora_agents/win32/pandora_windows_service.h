@@ -44,6 +44,7 @@ namespace Pandora {
 		long                 interval;
 		long                 elapsed_transfer_time;
 		long                 transfer_interval;
+		bool                 started;
 		
 		TiXmlElement  *getXmlHeader    ();
 		void           copyDataFile    (string filename);
@@ -59,14 +60,22 @@ namespace Pandora {
 		void           recvTentacleDataFile (string host,
 						     string filename);
 		void           checkConfig ();
+		
+		Pandora_Windows_Service     ();
 	public:
 		void           pandora_run  ();
 		void           pandora_init ();
 	public:
-		Pandora_Windows_Service     (const char * svc_name,
-					     const char * svc_display_name,
-					     const char * svc_description);
+		static Pandora_Windows_Service *getInstance ();
+		
 		~Pandora_Windows_Service    ();
+		
+		void           setValues    (const char *svc_name,
+					     const char *svc_display_name,
+					     const char *svc_description);
+		
+		void           start        ();
+		void           sendXml      (Pandora_Module_List *modules);
 	};
 }
 

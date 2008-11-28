@@ -40,6 +40,7 @@ Pandora_Module::Pandora_Module (string name) {
 	this->max             = 0;
 	this->min             = 0;
 	this->has_limits      = false;
+	this->async           = false;
 	this->data_list       = NULL;
 }
 
@@ -177,6 +178,21 @@ Pandora_Module::getModuleKind () const {
 }
 
 /** 
+ * Get the output of the module.
+ * 
+ * @return The module output in a string value.
+ */
+string
+Pandora_Module::getLatestOutput () const {
+	list<Pandora_Data *>::iterator iter;
+	
+	if (this->data_list == NULL)
+		return "";
+	iter = this->data_list->begin ();
+	return (*iter)->getValue ();
+}
+
+/** 
  * Get the type of the module in a integer_value.
  * 
  * @return The module type in a integer value.
@@ -222,7 +238,7 @@ Pandora_Module::getDataOutput (Pandora_Data *data) {
 		}
 	}
 	
-	return trim(data->getValue ());
+	return trim (data->getValue ());
 }
 
 /** 
@@ -351,15 +367,16 @@ Pandora_Module::getXml () {
 			data_element = new TiXmlElement ("data");
 			element = new TiXmlElement ("value");
 			try {
-		data_clean = strreplace (this->getDataOutput (data), "%", "%%" );
-	    } catch (Output_Error e) {
-	       		delete element;
-		continue;
-	    }
-
-	    text = new TiXmlText (data_clean);
-	    element->InsertEndChild (*text);
-	    data_element->InsertEndChild (*element);
+				data_clean = strreplace (this->getDataOutput (data),
+							 "%", "%%" );
+			} catch (Output_Error e) {
+		 		delete element;
+				continue;
+			}
+			
+			text = new TiXmlText (data_clean);
+			element->InsertEndChild (*text);
+			data_element->InsertEndChild (*element);
 			delete text;
 			delete element;
 			
@@ -379,11 +396,11 @@ Pandora_Module::getXml () {
 		data = data_list->front ();
 		element = new TiXmlElement ("data");
 		try {
-	    data_clean = strreplace (this->getDataOutput (data), "%", "%%" );
-	    text = new TiXmlText (data_clean);
-	    element->InsertEndChild (*text);
-	    root->InsertEndChild (*element);
-	    delete text;
+		data_clean = strreplace (this->getDataOutput (data), "%", "%%" );
+		text = new TiXmlText (data_clean);
+		element->InsertEndChild (*text);
+		root->InsertEndChild (*element);
+		delete text;
 	} catch (Output_Error e) {
 	}
 		delete element;
@@ -425,6 +442,19 @@ void
 Pandora_Module::setMin (int value) {
 	this->has_limits = true;
 	this->min        = value;
+}
+
+/** 
+ * Set the async flag to the module.
+ *
+ * If a module is set to be async, it would try to works only when the
+ * events happen. Note that not all the modules can work in async mode.
+ *
+ * @param async Flag to set.
+ */
+void
+Pandora_Module::setAsync (bool async) {
+	this->async = async;
 }
 
 /** 

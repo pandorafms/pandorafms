@@ -1,3 +1,30 @@
+2008-11-28  Esteban Sanchez  <estebans@artica.es>
+
+	* modules/pandora_module.[cc,h]: Added an async property. Added
+	getLatestOutput() to get the latest output of a module.
+
+	* modules/pandora_module_factory.cc: Parse async token in modules.
+
+	* modules/pandora_module_list.[cc,h]: It can create empty lists now
+	and add modules using new addModule() function.
+
+	* modules/pandora_module_service.[cc,h]: Added an async thread to
+	watch services events and track services status changes quickly and
+	asynchronously.
+
+	* windows/pandora_wmi.cc: Style correction.
+
+	* pandora_windows_service.[cc,h]: Pandora Windows service object is
+	now single instance, so the instance to the running service can be
+	accessed anywhere (useful in async threads). The XML generation and
+	sending process has been moved to a new function called sendXml()
+	which is thread-safe.
+
+	* windows_service.h: Some properties are now protected instead of
+	public to make it easier the singleton pattern in child classes.
+
+	* main.cc: Adopted to singleton pattern in Pandora windows service.
+
 2008-11-26  Esteban Sanchez  <estebans@artica.es>
 
 	* pandora_strutils.cc, pandora_strutils.h, ftp/pandora_ftp_client.cc,

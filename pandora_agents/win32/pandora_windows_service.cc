@@ -40,23 +40,30 @@ using namespace Pandora_Strutils;
 
 string enabled_values[] = {"enabled", "1", "on", "yes", "si", "sí", "ok", ""};
 
+Pandora_Windows_Service::Pandora_Windows_Service ()
+  : Windows_Service (NULL, NULL, NULL) {
+	this->setInitFunction ((void (Windows_Service::*) ())
+			       &Pandora_Windows_Service::pandora_init);
+	this->setRunFunction ((void (Windows_Service::*) ())
+			      &Pandora_Windows_Service::pandora_run);
+	this->started = false;
+}
+
 /** 
- * Creates a new Pandora_Windows_Service.
+ * Set Pandora service Windows properties.
  * 
  * @param svc_name Internal service name
  * @param svc_display_name Service name that will appear in the
  *        Windows service administration tool.
  * @param svc_description Long description of the service.
  */
-Pandora_Windows_Service::Pandora_Windows_Service (const char * svc_name,
-						  const char * svc_display_name,
-						  const char * svc_description)
-  : Windows_Service (svc_name, svc_display_name, svc_description) {
-	this->setInitFunction ((void (Windows_Service::*) ())
-			       &Pandora_Windows_Service::pandora_init);
-	this->setRunFunction ((void (Windows_Service::*) ())
-			      &Pandora_Windows_Service::pandora_run);
-	
+void
+Pandora_Windows_Service::setValues (const char * svc_name,
+				    const char * svc_display_name,
+				    const char * svc_description) {
+	this->service_name          = (char *) svc_name;
+	this->service_display_name  = (char *) svc_display_name;
+	this->service_description   = (char *) svc_description;
 	execution_number            = 0;
 	this->modules               = NULL;
 	this->conf                  = NULL;
@@ -77,6 +84,23 @@ Pandora_Windows_Service::~Pandora_Windows_Service () {
 		delete this->modules;
 	}
 	pandoraLog ("Pandora agent stopped");
+}
+
+Pandora_Windows_Service *
+Pandora_Windows_Service::getInstance () {
+	static Pandora_Windows_Service *service = NULL;
+	
+	if (service != NULL)
+		return service;
+	
+	service = new Pandora_Windows_Service ();
+	
+	return service;
+}
+
+void
+Pandora_Windows_Service::start () {
+	this->started = true;
 }
 
 bool
@@ -161,7 +185,7 @@ Pandora_Windows_Service::getXmlHeader () {
 	
 	// Get current time
 	ctime = time(0);
-    ctime_tm = localtime(&ctime);
+	ctime_tm = localtime(&ctime);
 
 	sprintf (timestamp, "%d-%02d-%02d %02d:%02d:%02d", ctime_tm->tm_year + 1900,
 		ctime_tm->tm_mon + 1,	ctime_tm->tm_mday, ctime_tm->tm_hour,
@@ -589,7 +613,7 @@ Pandora_Windows_Service::checkConfig () {
 		Pandora_File::removeFile (tmp);
 		/* Save new configuration */
 		Pandora_File::writeBinFile (conf_file, conf_str, conf_size);
-	} catch (...) {		
+	} catch (...) {
 		pandoraDebug("Pandora_Windows_Service::checkConfig: Error retrieving configuration file from server");
 		if (conf_str != NULL) {
 			delete[] conf_str;
@@ -604,15 +628,93 @@ Pandora_Windows_Service::checkConfig () {
 }
 
 void
-Pandora_Windows_Service::pandora_run () {
-	TiXmlDeclaration *decl;    
-	TiXmlDocument *doc;
-	TiXmlElement  *local_xml, *agent;
-	string         xml_filename, random_integer;
-	string         tmp_filename, tmp_filepath;
-	string encoding;
-	bool           saved;
+Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
+	TiXmlDeclaration *decl;
+	TiXmlDocument    *doc;
+	TiXmlElement     *local_xml, *agent;
+	string            xml_filename, random_integer;
+	string            tmp_filename, tmp_filepath;
+	string            encoding;
+	bool              saved;
+	static HANDLE     mutex = 0; 
+	
+	if (mutex == 0) {
+		mutex = CreateMutex (NULL, FALSE, NULL);
+	}
+	/* Wait for the mutex to be opened */
+	WaitForSingleObject (mutex, INFINITE);
 
+	pandoraLog ("aasdfasdf");
+	agent = getXmlHeader ();
+	
+	if (modules != NULL) {
+		modules->goFirst ();
+	
+		while (! modules->isLast ()) {
+			Pandora_Module *module;
+			
+			module = modules->getCurrentValue ();
+			
+			local_xml = module->getXml ();
+			if (local_xml != NULL) {
+				agent->InsertEndChild (*local_xml);
+			
+				delete local_xml;
+			}
+			modules->goNext ();
+		}
+	}
+	
+	/* Generate temporal filename */
+	random_integer = inttostr (rand());
+	tmp_filename = conf->getValue ("agent_name");
+	if (tmp_filename == "") {
+		tmp_filename = Pandora_Windows_Info::getSystemName ();
+	}
+	tmp_filename += "." + random_integer + ".data";
+
+	xml_filename = conf->getValue ("temporal");
+	if (xml_filename[xml_filename.length () - 1] != '\\') {
+		xml_filename += "\\";
+	}
+	tmp_filepath = xml_filename + tmp_filename;
+
+	/* Copy the XML to temporal file */
+	encoding = conf->getValue ("encoding");
+	if (encoding == "") {
+		encoding = "ISO-8859-1";
+	}
+
+	pandoraDebug ("Copying XML on %s", tmp_filepath.c_str ());
+	decl = new TiXmlDeclaration( "1.0", encoding.c_str(), "" );
+	doc = new TiXmlDocument (tmp_filepath);
+	doc->InsertEndChild (*decl);
+	doc->InsertEndChild (*agent);
+	saved = doc->SaveFile();
+	delete doc;
+	delete agent;
+
+	if (!saved) {
+		pandoraLog ("Error when saving the XML in %s",
+			    tmp_filepath.c_str ());
+		return;
+	}
+
+	/* Only send if debug is not activated */
+	if (getPandoraDebug () == false) {
+		this->copyDataFile (tmp_filename);
+	
+		try {
+			Pandora_File::removeFile (tmp_filepath);
+		} catch (Pandora_File::Delete_Error e) {
+		}
+	}
+	
+	ReleaseMutex (mutex);
+}
+
+void
+Pandora_Windows_Service::pandora_run () {
 	pandoraDebug ("Run begin");
 	
 	/* Check for configuration changes */
@@ -635,74 +737,12 @@ Pandora_Windows_Service::pandora_run () {
 		}
 	}
 
-	this->elapsed_transfer_time += interval;
-
+	this->elapsed_transfer_time += this->interval;
+	
 	if (this->elapsed_transfer_time >= this->transfer_interval) {
-		agent = getXmlHeader ();
-	
-		if (this->modules != NULL) {
-			this->modules->goFirst ();
-		
-			while (! this->modules->isLast ()) {
-				Pandora_Module *module;
-			
-				module = this->modules->getCurrentValue ();
-			
-				local_xml = module->getXml ();
-				if (local_xml != NULL) {
-					agent->InsertEndChild (*local_xml);
-				
-					delete local_xml;
-				}
-				this->modules->goNext ();
-			}
-		}
-	
 		this->elapsed_transfer_time = 0;
-		/* Generate temporal filename */
-		random_integer = inttostr (rand());
-		tmp_filename = conf->getValue ("agent_name");
-		if (tmp_filename == "") {
-			tmp_filename = Pandora_Windows_Info::getSystemName ();
-		}
-		tmp_filename += "." + random_integer + ".data";
-	
-		xml_filename = conf->getValue ("temporal");
-		if (xml_filename[xml_filename.length () - 1] != '\\') {
-			xml_filename += "\\";
-		}
-		tmp_filepath = xml_filename + tmp_filename;
-	
-		/* Copy the XML to temporal file */
-		encoding = conf->getValue ("encoding");
-		if (encoding == "") {
-			encoding = "ISO-8859-1";
-		}
-	
-		pandoraDebug ("Copying XML on %s", tmp_filepath.c_str ());
-		decl = new TiXmlDeclaration( "1.0", encoding.c_str(), "" );
-		doc = new TiXmlDocument (tmp_filepath);
-		doc->InsertEndChild (*decl);			
-		doc->InsertEndChild (*agent);
-		saved = doc->SaveFile();
-		delete doc;
-		delete agent;
-	
-		if (!saved) {
-			pandoraLog ("Error when saving the XML in %s",
-				    tmp_filepath.c_str ());
-			return;
-		}
-	
-		/* Only send if debug is not activated */
-		if (getPandoraDebug () == false) {
-			this->copyDataFile (tmp_filename);
 		
-			try {
-				Pandora_File::removeFile (tmp_filepath);
-			} catch (Pandora_File::Delete_Error e) {
-			}
-		}
+		this->sendXml (this->modules);
 	}
 	
 	/* Get the interval value (in minutes) */

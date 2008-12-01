@@ -1,3 +1,10 @@
+2008-12-01  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* include/languages/index.pot: Updated po template.
+
+	* include/languages/de.po, include/languages/de.mo: Updated German
+	  translation from Rosetta translations.
+
 2008-11-27  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* pandoradb_data.sql: Added Greek translation.

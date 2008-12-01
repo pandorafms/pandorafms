@@ -1,3 +1,21 @@
+2008-12-01  Esteban Sanchez  <estebans@artica.es>
+
+	* pandora_windows_service.cc: Removed debug output. Release mutex on
+	sendXml()
+	
+	* modules/pandora_module.[cc,h]: Save latest output in a new property.
+	It's used on generic_proc modules to check the value better.
+
+	* modules/pandora_module_proc.[cc,h]: Added support for asynchronous
+	mode. It checks process in a separeted thread and report the status
+	quicker. Added getProcessName()
+
+	* modules/pandora_module_service.cc: Style correction. Removed an
+	indentation level.
+
+	* windows/pandora_windows_info.[cc,h]: Added getProcessHandles() to
+	get a list of handles of a running process, giving the process name.
+
 2008-11-28  Esteban Sanchez  <estebans@artica.es>
 
 	* modules/pandora_module.[cc,h]: Added an async property. Added

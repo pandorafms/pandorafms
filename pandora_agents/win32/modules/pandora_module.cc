@@ -184,12 +184,7 @@ Pandora_Module::getModuleKind () const {
  */
 string
 Pandora_Module::getLatestOutput () const {
-	list<Pandora_Data *>::iterator iter;
-	
-	if (this->data_list == NULL)
-		return "";
-	iter = this->data_list->begin ();
-	return (*iter)->getValue ();
+	return this->latest_output;
 }
 
 /** 
@@ -257,6 +252,7 @@ Pandora_Module::setOutput (string output) {
 		this->data_list = new list<Pandora_Data *> ();
 	data = new Pandora_Data (output);
 	this->data_list->push_back (data);
+	this->latest_output = output;
 }
 
 /** 

@@ -30,10 +30,13 @@ namespace Pandora_Modules {
 	class Pandora_Module_Proc : public Pandora_Module {
 	private:
 		string process_name;
+		HANDLE thread;
 	public:
-		Pandora_Module_Proc (string name, string process_name);
+		Pandora_Module_Proc   (string name, string process_name);
 		
-		void   run          ();
+		string getProcessName () const;
+		
+		void   run            ();
 	};
 }
 

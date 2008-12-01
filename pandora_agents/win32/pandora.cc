@@ -50,24 +50,24 @@ Key_Value::parseLine (string str) {
 	list<string>           tokens;
 	list<string>::iterator iter;
 	string                 trimmedstr;
-        
+	
 	trimmedstr = trim (str);
-        
-/* Check if the string has " */
+	
+	/* Check if the string has " */
 	pos = trimmedstr.find ("\"");
 	if (pos == string::npos) {
 		stringtok (tokens, trimmedstr, " \t");
 	} else {
 		stringtok (tokens, trimmedstr, "\"");
 	}
-        
-/* Pick the first and the last value of the token list */
+		
+	/* Pick the first and the last value of the token list */
 	iter = tokens.begin ();
 	key = trim (*iter);
 	transform (key.begin(), key.end(), key.begin(), (int(*)(int)) tolower);
 	iter = tokens.end ();
 	iter--;
-/* Check if the line has only one token */
+	/* Check if the line has only one token */
 	if (iter != tokens.begin ()) {
 		value = trim (*iter);
 	} else {
@@ -102,16 +102,16 @@ pandoraWriteLog (string filename, string line) {
 	FILE      *file;
 	string     filepath;
 	SYSTEMTIME st;
-        
+		
 	GetSystemTime(&st);
-    sprintf (str_time, "%d-%02d-%02d %02d:%02d:%02d ", st.wYear, st.wMonth, st.wDay,
-             st.wHour, st.wMinute, st.wSecond);
-        
+	sprintf (str_time, "%d-%02d-%02d %02d:%02d:%02d ", st.wYear, st.wMonth, st.wDay,
+		st.wHour, st.wMinute, st.wSecond);
+
 	buffer = (char *) str_time;
 	buffer += line;
-        
+	
 	filepath = pandora_dir + filename;
-        
+	
 	file = fopen (filepath.c_str (), "a+");
 	if (file != NULL) {
 		fprintf (file, "%s\n", buffer.c_str ());
@@ -132,11 +132,11 @@ void
 Pandora::pandoraLog (char *format, ...) {
 	va_list    args;
 	char       msg[5000];
-        
+	
 	va_start (args, format);
 	vsprintf (msg, format, args);
 	va_end (args);
-        
+	
 	pandoraWriteLog ("pandora_agent.log", (char *) msg);
 }
 
@@ -154,11 +154,11 @@ Pandora::pandoraDebug (char *format, ...) {
 	if (pandora_debug) {
 		va_list    args;
 		char       msg[5000];
-                
+		
 		va_start (args, format);
 		vsprintf (msg, format, args);
 		va_end (args);
-                
+		
 		pandoraWriteLog ("pandora_debug.log", (char *) msg);
 	}
 	return;

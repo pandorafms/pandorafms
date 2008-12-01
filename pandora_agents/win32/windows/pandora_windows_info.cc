@@ -20,6 +20,7 @@
 
 #include "pandora_windows_info.h"
 #include "../pandora_strutils.h"
+#include <psapi.h>
 
 #define MAX_KEY_LENGTH 255
 
@@ -80,4 +81,52 @@ Pandora_Windows_Info::getSystemPath () {
 	string str_path = buffer;
 	str_path = trim (str_path);
 	return str_path;
+}
+
+HANDLE *
+Pandora_Windows_Info::getProcessHandles (string name) {
+	HANDLE  handle;
+	HANDLE  handles[128];
+	HANDLE *retval;
+	DWORD   pids[1024], needed, npids;
+	int     i;
+	int     count;
+	HMODULE modules;
+	bool    success;
+	TCHAR   process_name[MAX_PATH];
+
+	if (! EnumProcesses (pids, sizeof (pids), &needed))
+		return NULL;
+	
+	count = 0;
+	npids = needed / sizeof (DWORD);
+	for (i = 0; i < npids; i++) {
+		if (pids[i] == 0)
+			continue;
+		
+		/* Open process handle and find module base name (which is
+		 supposed to be process name) */
+		handle = OpenProcess (PROCESS_ALL_ACCESS, FALSE, pids[i]);
+		if (handle == NULL)
+			continue;
+		success = EnumProcessModules (handle, &modules, sizeof (modules), &needed);
+		if (! success) {
+			CloseHandle (handle);
+			continue;
+		}
+		GetModuleBaseName (handle, modules, process_name, sizeof (process_name) / sizeof (TCHAR));
+		
+		if (stricmp (process_name, name.c_str ()) == 0) {
+			/* Process found */
+			handles[count++] = handle;
+		}
+	}
+	
+	if (count == 0)
+		return NULL;
+	retval = (HANDLE *) malloc (count * sizeof (HANDLE));
+	for (i = 0; i < count; i++)
+		retval[i] = handles[i];
+	
+	return retval;
 }

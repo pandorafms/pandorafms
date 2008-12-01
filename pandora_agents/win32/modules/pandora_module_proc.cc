@@ -19,14 +19,18 @@
 */
 
 #include "pandora_module_proc.h"
+#include "pandora_module_list.h"
 #include "../windows/pandora_wmi.h"
+#include "../windows/pandora_windows_info.h"
 #include "../pandora_strutils.h"
+#include "../pandora_windows_service.h"
 #include <algorithm>
 #include <cctype>
 
 using namespace Pandora;
 using namespace Pandora_Modules;
 using namespace Pandora_Strutils;
+using namespace Pandora_Windows_Info;
 
 /** 
  * Creates a Pandora_Module_Proc object.
@@ -44,6 +48,73 @@ Pandora_Module_Proc::Pandora_Module_Proc (string name, string process_name)
 	this->setKind (module_proc_str);
 }
 
+string
+Pandora_Module_Proc::getProcessName () const {
+	return this->process_name;
+}
+
+void
+async_run (Pandora_Module_Proc *module) {
+	HANDLE              *processes = NULL;
+	int                  nprocess;
+	DWORD                result;
+	Pandora_Module_List *modules;
+	string               str_res;
+	string               prev_res;
+	int                  res;
+	int                  i;
+	
+	prev_res = module->getLatestOutput ();
+	modules = new Pandora_Module_List ();
+	modules->addModule (module);
+	Sleep (2000);
+	
+	while (1) {
+		processes = getProcessHandles (module->getProcessName ());
+		if (processes == NULL) {
+			Sleep (2000);
+			continue;
+		}
+		
+		/* There are opened processes */
+		res = Pandora_Wmi::isProcessRunning (module->getProcessName ());
+		str_res = inttostr (res);
+		if (str_res != prev_res) {
+			module->setOutput (str_res);
+			prev_res = str_res;
+			Pandora_Windows_Service::getInstance ()->sendXml (modules);
+		}
+		
+		/* Wait for this processes */
+		nprocess = res;
+		result = WaitForMultipleObjects (nprocess, processes, FALSE, 10000);
+		
+		if (result > (WAIT_OBJECT_0 + nprocess - 1)) {
+			/* No event happened */
+			for (i = 0; i < nprocess; i++)
+				CloseHandle (processes[i]);
+			pandoraFree (processes);
+			continue;
+		}
+		
+		/* Some event happened, probably the process was closed */
+		res = Pandora_Wmi::isProcessRunning (module->getProcessName ());
+		str_res = inttostr (res);
+		if (str_res != prev_res) {
+			module->setOutput (str_res);
+			prev_res = str_res;
+			Pandora_Windows_Service::getInstance ()->sendXml (modules);
+		}
+		
+		/* Free handles */
+		for (i = 0; i < nprocess; i++)
+			CloseHandle (processes[i]);
+		pandoraFree (processes);
+	}
+	
+	delete modules;
+}
+
 void
 Pandora_Module_Proc::run () {
 	int res;
@@ -55,6 +126,13 @@ Pandora_Module_Proc::run () {
 	}
 	
 	res = Pandora_Wmi::isProcessRunning (this->process_name);
-	
 	this->setOutput (inttostr (res));
+	
+	/* Launch thread if it's asynchronous */
+	if (this->async) {
+		this->thread = CreateThread (NULL, 0,
+					     (LPTHREAD_START_ROUTINE) async_run,
+					     this, 0, NULL);
+		this->async = false;
+	}
 }

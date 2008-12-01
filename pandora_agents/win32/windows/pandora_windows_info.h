@@ -34,10 +34,11 @@ using namespace std;
  * Windows information functions.
  */
 namespace Pandora_Windows_Info {
-	string getOSName     ();
-	string getOSVersion  ();
-	string getOSBuild    ();
-	string getSystemName ();
-	string getSystemPath ();
+	string  getOSName         ();
+	string  getOSVersion      ();
+	string  getOSBuild        ();
+	string  getSystemName     ();
+	string  getSystemPath     ();
+	HANDLE *getProcessHandles (string name);
 }
 #endif

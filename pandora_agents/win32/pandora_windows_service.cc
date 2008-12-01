@@ -641,10 +641,10 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 	if (mutex == 0) {
 		mutex = CreateMutex (NULL, FALSE, NULL);
 	}
+	
 	/* Wait for the mutex to be opened */
 	WaitForSingleObject (mutex, INFINITE);
-
-	pandoraLog ("aasdfasdf");
+	
 	agent = getXmlHeader ();
 	
 	if (modules != NULL) {
@@ -686,7 +686,7 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 	}
 
 	pandoraDebug ("Copying XML on %s", tmp_filepath.c_str ());
-	decl = new TiXmlDeclaration( "1.0", encoding.c_str(), "" );
+	decl = new TiXmlDeclaration ("1.0", encoding.c_str(), "");
 	doc = new TiXmlDocument (tmp_filepath);
 	doc->InsertEndChild (*decl);
 	doc->InsertEndChild (*agent);
@@ -697,6 +697,7 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 	if (!saved) {
 		pandoraLog ("Error when saving the XML in %s",
 			    tmp_filepath.c_str ());
+		ReleaseMutex (mutex);
 		return;
 	}
 

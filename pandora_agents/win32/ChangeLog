@@ -1,3 +1,12 @@
+2008-12-01  Ramon Novoa  <rnovoa@artica.es>
+
+	* windows/pandora_wmi.cc,
+	  windows/pandora_wmi.h,
+	  modules/pandora_module_logevent.cc,
+	  modules/pandora_module_logevent.h,
+	  modules/pandora_module_factory.cc: Added event code filtering
+	  support to logevent module.
+
 2008-12-01  Esteban Sanchez  <estebans@artica.es>
 
 	* pandora_windows_service.cc: Removed debug output. Release mutex on

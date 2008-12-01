@@ -35,9 +35,10 @@ namespace Pandora_Modules {
 	private:
 		string source;
 		string type;
+		string code;
 		string pattern;
 	public:
-		Pandora_Module_Logevent (string name, string source, string type, string pattern);
+		Pandora_Module_Logevent (string name, string source, string type, string code, string pattern);
 		void run ();
 	};
 }

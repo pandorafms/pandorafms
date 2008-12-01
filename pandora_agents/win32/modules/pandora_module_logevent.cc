@@ -32,11 +32,12 @@ using namespace Pandora_Modules;
  * @param name Module name.
  * @param service_name Service internal name to check.
  */
-Pandora_Module_Logevent::Pandora_Module_Logevent (string name, string source, string type, string pattern)
+Pandora_Module_Logevent::Pandora_Module_Logevent (string name, string source, string type, string code, string pattern)
 	: Pandora_Module (name) {
 
 	this->source = source;
 	this->type = type;
+	this->code = code;
 	this->pattern = pattern;
 	this->setKind (module_logevent_str);
 }
@@ -68,7 +69,7 @@ Pandora_Module_Logevent::run () {
 		return;
 	}
 	
-	Pandora_Wmi::getEventList (this->source, this->type, this->pattern, interval, event_list);
+	Pandora_Wmi::getEventList (this->source, this->type, this->code, this->pattern, interval, event_list);
 	
 	// No data
 	if (event_list.size () < 1) {

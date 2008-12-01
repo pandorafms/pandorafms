@@ -58,19 +58,19 @@ Pandora_Module_Service::getServiceName () const {
 
 void
 async_run (Pandora_Module_Service *module) {
-	HANDLE                   event_log;
-	HANDLE                   event;
-	DWORD                    result;
-	int                      res;
-	string                   str_res;
-	BYTE                     buffer[BUFFER_SIZE];
-	EVENTLOGRECORD          *record;
-	DWORD                    read;
-	DWORD                    needed;
-	int                     event_id;
-	bool                     service_event;
-	string                   prev_res;
-	Pandora_Module_List     *modules;
+	HANDLE               event_log;
+	HANDLE               event;
+	DWORD                result;
+	int                  res;
+	string               str_res;
+	BYTE                 buffer[BUFFER_SIZE];
+	EVENTLOGRECORD      *record;
+	DWORD                read;
+	DWORD                needed;
+	int                  event_id;
+	bool                 service_event;
+	string               prev_res;
+	Pandora_Module_List *modules;
 	
 	prev_res = module->getLatestOutput ();
 	modules = new Pandora_Module_List ();
@@ -87,35 +87,41 @@ async_run (Pandora_Module_Service *module) {
 		NotifyChangeEventLog (event_log, event);
 		result = WaitForSingleObject (event, 10000);
 		
-		if (result == 0) {
-			service_event = false;
-			record = (EVENTLOGRECORD *) buffer;
+		/* No event happened */
+		if (result != WAIT_OBJECT_0) {
+			CloseHandle (event);
+			CloseEventLog (event_log);
+			continue;
+		}
+		
+		/* An event happened */
+		service_event = false;
+		record = (EVENTLOGRECORD *) buffer;
+		
+		/* Read events and check if any was relative to service */
+		while (ReadEventLog (event_log,	
+			EVENTLOG_FORWARDS_READ | EVENTLOG_SEQUENTIAL_READ,
+			0, record, BUFFER_SIZE, &read, &needed)) {
 			
-			while (ReadEventLog (event_log,	
-				EVENTLOG_FORWARDS_READ | EVENTLOG_SEQUENTIAL_READ,
-				0, record, BUFFER_SIZE, &read, &needed)) {
-				
-				if (record->EventType != EVENTLOG_INFORMATION_TYPE)
-					continue;
-				event_id = record->EventID & 0x0000ffff;
-				
-				/* Those numbers are the code for service start/stopping */
-				if (event_id == 7035 || event_id == 7036) {
-					service_event = true;
-					break;
-				}
+			if (record->EventType != EVENTLOG_INFORMATION_TYPE)
+				continue;
+			event_id = record->EventID & 0x0000ffff;
+			
+			/* Those numbers are the code for service start/stopping */
+			if (event_id == 7035 || event_id == 7036) {
+				service_event = true;
+				break;
 			}
-			
-			if (service_event) {
-				res = Pandora_Wmi::isServiceRunning (module->getServiceName ());
-				str_res = inttostr (res);
-				if (str_res != prev_res) {
-					module->setOutput (str_res);
-					prev_res = str_res;
-					pandoraLog ("Service \"%s\" changed status to: %d",
-						module->getServiceName ().c_str (), res);
-					Pandora_Windows_Service::getInstance ()->sendXml (modules);
-				}
+		}
+		
+		/* A start/stop action was thrown */
+		if (service_event) {
+			res = Pandora_Wmi::isServiceRunning (module->getServiceName ());
+			str_res = inttostr (res);
+			if (str_res != prev_res) {
+				module->setOutput (str_res);
+				prev_res = str_res;
+				Pandora_Windows_Service::getInstance ()->sendXml (modules);
 			}
 		}
 		CloseHandle (event);

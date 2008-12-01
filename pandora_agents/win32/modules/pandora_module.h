@@ -118,6 +118,7 @@ namespace Pandora_Modules {
 		string                module_kind_str;
 		Module_Kind           module_kind;
 		list<Pandora_Data *> *data_list;
+		string                latest_output;
 
 		string getDataOutput (Pandora_Data *data);
 		void   cleanDataList ();

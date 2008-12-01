@@ -52,6 +52,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_LOGEVENT    ("module_logevent")
 #define TOKEN_SOURCE      ("module_source ")
 #define TOKEN_EVENTTYPE   ("module_eventtype ")
+#define TOKEN_EVENTCODE   ("module_eventcode ")
 #define TOKEN_PATTERN     ("module_pattern ")
 #define TOKEN_ASYNC       ("module_async")
 
@@ -88,7 +89,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_interval, module_proc, module_service;
 	string                 module_freedisk, module_cpuusage, module_odbc;
 	string                 module_odbc_query, module_dsn, module_freememory;
-	string                 module_logevent, module_source, module_eventtype;
+	string                 module_logevent, module_source, module_eventtype, module_eventcode;
 	string                 module_pattern, module_async;
 	Pandora_Module        *module;
 	bool                   numeric;
@@ -109,6 +110,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_logevent    = "";
 	module_source      = "";
 	module_eventtype   = "";
+	module_eventcode   = "";
 	module_pattern     = "";
 
 	stringtok (tokens, definition, "\n");
@@ -171,6 +173,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_eventtype == "") {
 			module_eventtype = parseLine (line, TOKEN_EVENTTYPE);
 		}
+		if (module_eventcode == "") {
+			module_eventcode = parseLine (line, TOKEN_EVENTCODE);
+		}
 		if (module_pattern == "") {
 			module_pattern = parseLine (line, TOKEN_PATTERN);
 		}
@@ -218,6 +223,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		module = new Pandora_Module_Logevent (module_name,
 				  module_source,
 				  module_eventtype,
+				  module_eventcode,
 				  module_pattern);
 	} else {
 		return NULL;

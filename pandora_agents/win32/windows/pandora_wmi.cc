@@ -388,7 +388,7 @@ Pandora_Wmi::getSystemName () {
  * @return The list of events.
  */
 void
-Pandora_Wmi::getEventList (string source, string type, string pattern, int interval, list<string> &event_list) {
+Pandora_Wmi::getEventList (string source, string type, string code, string pattern, int interval, list<string> &event_list) {
 	CDhInitialize init;
 	CDispPtr      wmi_svc, quickfixes;
 	char         *value = NULL;
@@ -410,7 +410,10 @@ Pandora_Wmi::getEventList (string source, string type, string pattern, int inter
 	if (! type.empty()) {
 		query += " AND Type = '" + type + "'";
 	}
-	
+	if (! code.empty()) {
+		query += " AND EventCode = '" + code + "'";
+	}
+
 	try {
 		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
 		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,

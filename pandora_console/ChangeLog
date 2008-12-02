@@ -1,3 +1,10 @@
+2008-12-02  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* include/languages/index.pot: Updated Spanish translation.
+
+	* include/languages/fr.po, include/languages/fr.mo: Updated French
+	  translation.
+
 2008-12-02  Jorge gonzalez  <jorgegonz@artica.es>
 
 	* pandoradb_data.sql: Added Bengali to translations.

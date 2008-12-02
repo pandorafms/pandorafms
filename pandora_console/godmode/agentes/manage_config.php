@@ -90,15 +90,45 @@ if (isset($_POST["copy"])) {
 			
 			if ($modulos == 1) {
 				echo '<br /><br />'.__('Copying module').'<b> ['.dame_nombre_agente ($origen).' - '.$module["nombre"].'] -> ['.dame_nombre_agente ($id_agent_dest).']</b>';
-				$sql = sprintf ("INSERT INTO tagente_modulo 
-					(id_agente, id_tipo_modulo, descripcion, nombre, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, 
-					snmp_community, snmp_oid, ip_target, id_module_group, flag, id_modulo, disabled, id_export, 
-					plugin_user, plugin_pass, plugin_parameter, id_plugin, post_process, prediction_module, max_timeout) 
-					VALUES (%d,".$module["id_tipo_modulo"].",'".$module["descripcion"]."','".$module["nombre"]."',".$module["max"].",".$module["min"].",".$module["module_interval"].",".$module["tcp_port"].",'".$module["tcp_send"]."','".$module["tcp_rcv"]."',
-					'".$module["snmp_community"]."','".$module["snmp_oid"]."','%s',".$module["id_module_group"].",".$module["flag"].",".$module["id_modulo"].",".$module["disabled"].",".$module["id_export"].",
-					'".$module["plugin_user"]."','".$module["plugin_pass"]."','".$module["plugin_parameter"]."',".$module["id_plugin"].",'".$module["post_process"]."',".$module["prediction_module"].",".$module["max_timeout"].")",
-					$id_agent_dest,give_agent_address ($id_agent_dest));
-
+				$sql = sprintf ('INSERT INTO tagente_modulo 
+					(id_agente, id_tipo_modulo, descripcion,
+					nombre, max, min, module_interval,
+					tcp_port, tcp_send, tcp_rcv, 
+					snmp_community, snmp_oid, ip_target,
+					id_module_group, flag, id_modulo,
+					disabled, id_export, 
+					plugin_user, plugin_pass,
+					plugin_parameter, id_plugin,
+					post_process, prediction_module,
+					max_timeout) 
+					VALUES (%d, %d, "%s", "%s", %f, %f, %d,
+					%d, "%s", "%s", "%s", "%s", "%s", %d,
+					%d, %d, %d, %d, "%s", "%s", "%s", %d,
+					%f, %d, %d)',
+					$id_agent_dest, $module["id_tipo_modulo"],
+					$module["descripcion"],
+					$module["nombre"], $module["max"],
+					$module["min"],
+					$module["module_interval"],
+					$module["tcp_port"],
+					$module["tcp_send"],
+					$module["tcp_rcv"],
+					$module["snmp_community"],
+					$module["snmp_oid"],
+					give_agent_address ($id_agent_dest),
+					$module["id_module_group"],
+					$module["flag"],
+					$module["id_modulo"],
+					$module["disabled"],
+					$module["id_export"],
+					$module["plugin_user"],
+					$module["plugin_pass"],
+					$module["plugin_parameter"],
+					$module["id_plugin"],
+					$module["post_process"],
+					$module["prediction_module"],
+					$module["max_timeout"]);
+				
 				$id_new_module = process_sql ($sql, "insert_id");
 				if (empty ($id_new_module)) {
 					$errors++;

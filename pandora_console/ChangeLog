@@ -1,3 +1,9 @@
+2008-12-02  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/agentes/manage_config.php:  Fixed SQL sentence generation
+	when copying a module. It was causing PHP notices and nothing was
+	being copied.
+
 2008-11-26  Sancho Lerena  <slerena@artica.es>
 
 	* godmode/agentes/configurar_agente.php: Fixed problem with agent module

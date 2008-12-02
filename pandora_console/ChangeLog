@@ -1,3 +1,17 @@
+2008-12-02  Jorge gonzalez  <jorgegonz@artica.es>
+
+	* pandoradb_data.sql: Added Bengali to translations.
+
+	* include/languages/index.pot: Updated po template.
+
+	* include/languages/bn.po, include/languages/bn.mo: Added Bengali
+	  translation from Rosetta and GNOME Translation Memory.
+
+	* include/languages/Makefile: Added Bengali to translations.
+
+	* include/languages/de.po, include/languages/de.mo: Updated German
+	  translation from Rosetta.
+
 2008-12-02  Esteban Sanchez <estebans@artica.es>
 
 	* godmode/agentes/manage_config.php: Fixed SQL sentence generation

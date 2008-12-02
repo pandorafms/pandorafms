@@ -90,31 +90,62 @@ if (isset($_POST["copy"])) {
 			
 			if ($modulos == 1) {
 				echo '<br /><br />'.__('Copying module').'<b> ['.dame_nombre_agente ($origen).' - '.$module["nombre"].'] -> ['.dame_nombre_agente ($id_agent_dest).']</b>';
-				$sql = sprintf ("INSERT INTO tagente_modulo 
-					(id_agente, id_tipo_modulo, descripcion, nombre, max, min, module_interval, tcp_port, tcp_send, tcp_rcv, 
-					snmp_community, snmp_oid, ip_target, id_module_group, flag, id_modulo, disabled, id_export, 
-					plugin_user, plugin_pass, plugin_parameter, id_plugin, post_process, prediction_module, max_timeout) 
-					VALUES (%d,".$module["id_tipo_modulo"].",'".$module["descripcion"]."','".$module["nombre"]."',".$module["max"].",".$module["min"].",".$module["module_interval"].",".$module["tcp_port"].",'".$module["tcp_send"]."','".$module["tcp_rcv"]."',
-					'".$module["snmp_community"]."','".$module["snmp_oid"]."','%s',".$module["id_module_group"].",".$module["flag"].",".$module["id_modulo"].",".$module["disabled"].",".$module["id_export"].",
-					'".$module["plugin_user"]."','".$module["plugin_pass"]."','".$module["plugin_parameter"]."',".$module["id_plugin"].",'".$module["post_process"]."',".$module["prediction_module"].",".$module["max_timeout"].")",
-					$id_agent_dest,get_agent_address ($id_agent_dest));
-
+				$sql = sprintf ('INSERT INTO tagente_modulo 
+					(id_agente, id_tipo_modulo, descripcion,
+					nombre, max, min, module_interval,
+					tcp_port, tcp_send, tcp_rcv, 
+					snmp_community, snmp_oid, ip_target,
+					id_module_group, flag, id_modulo,
+					disabled, id_export, 
+					plugin_user, plugin_pass,
+					plugin_parameter, id_plugin,
+					post_process, prediction_module,
+					max_timeout) 
+					VALUES (%d, %d, "%s", "%s", %f, %f, %d,
+					%d, "%s", "%s", "%s", "%s", "%s", %d,
+					%d, %d, %d, %d, "%s", "%s", "%s", %d,
+					%f, %d, %d)',
+					$id_agent_dest, $module["id_tipo_modulo"],
+					$module["descripcion"],
+					$module["nombre"], $module["max"],
+					$module["min"],
+					$module["module_interval"],
+					$module["tcp_port"],
+					$module["tcp_send"],
+					$module["tcp_rcv"],
+					$module["snmp_community"],
+					$module["snmp_oid"],
+					get_agent_address ($id_agent_dest),
+					$module["id_module_group"],
+					$module["flag"],
+					$module["id_modulo"],
+					$module["disabled"],
+					$module["id_export"],
+					$module["plugin_user"],
+					$module["plugin_pass"],
+					$module["plugin_parameter"],
+					$module["id_plugin"],
+					$module["post_process"],
+					$module["prediction_module"],
+					$module["max_timeout"]);
+				
 				$id_new_module = process_sql ($sql, "insert_id");
 				if (empty ($id_new_module)) {
 					$errors++;
 				} else {
 					switch ($module["id_tipo_modulo"]) {
-						case 2:
-						case 6:
-						case 9:
-						case 100:
-						case 21:
-						case 18:
-							$sql = sprintf ("INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, cambio, estado, id_agente, utimestamp) 
-								VALUES (%d, 0,'0000-00-00 00:00:00',0,0, %d, 0)", $id_new_module, $id_agent_dest);
-						default:
-							$sql = sprintf ("INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, cambio, estado, id_agente, utimestamp) 
-								VALUES (%d, 0,'0000-00-00 00:00:00',0,100, %d, 0)", $id_new_module, $id_agent_dest);
+					case 2:
+					case 6:
+					case 9:
+					case 100:
+					case 21:
+					case 18:
+						$sql = sprintf ("INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, cambio, estado, id_agente, utimestamp) 
+							VALUES (%d, 0,'0000-00-00 00:00:00',0,0, %d, 0)", $id_new_module, $id_agent_dest);
+						break;
+					default:
+						$sql = sprintf ("INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, cambio, estado, id_agente, utimestamp) 
+							VALUES (%d, 0,'0000-00-00 00:00:00',0,100, %d, 0)", $id_new_module, $id_agent_dest);
 					}
 					$result = process_sql ($sql);
 					if ($result === false)
@@ -170,10 +201,10 @@ if (isset($_POST["copy"])) {
 						$result = get_db_all_row_sql ($sql);
 						
 						if ($result === false)
-							continue; // This alert is supposed to be part of a 
-								  // compound alert but there is no entry for 
-								  // it in the tcompound_alert table so we skip this																			            
-						
+							/* This alert is supposed to be part of a 
+							 compound alert but there is no entry for 
+							 it in the tcompound_alert table so we skip this */
+							continue;
 						foreach ($result as $comp_alert) {
 							$sql = sprintf ("INSERT INTO tcompound_alert (id_aam, operation) VALUES (%d, '%s')",$new_alert,$comp_alert["operation"]);
 							$result = process_sql ($sql);
@@ -201,21 +232,21 @@ if (isset($_POST["copy"])) {
 // DELETE DATA
 // -----------
 if (isset ($_POST["delete"])) {
-        echo "<h2>".__('Agent Module Data Deletion')."</h2>";
+	echo "<h2>".__('Agent Module Data Deletion')."</h2>";
 
-        if (empty ($destino)) {
-                echo '<h3 class="error">ERROR: '.__('No selected agents to copy').'</h3>';
-                return;
-        }
+	if (empty ($destino)) {
+		echo '<h3 class="error">ERROR: '.__('No selected agents to copy').'</h3>';
+		return;
+	}
 
-        if (empty ($origen_modulo)) {
-                echo '<h3 class="error">ERROR: '.__('No modules have been selected').'</h3>';
-                return;
-        }
+	if (empty ($origen_modulo)) {
+		echo '<h3 class="error">ERROR: '.__('No modules have been selected').'</h3>';
+		return;
+	}
 
 
 	
-        // If selected modules or alerts
+	// If selected modules or alerts
 	if (isset($_POST["alerts"])) {
 		$alertas = 1;
 	} else {
@@ -223,23 +254,23 @@ if (isset ($_POST["delete"])) {
 	}
 	
 	if (isset($_POST["modules"])) {
-                $modulos = 1;
+		$modulos = 1;
 		$alertas = 1;
-        } else {
-                $modulos = 0;
-        }
+	} else {
+		$modulos = 0;
+	}
 
-        if (($alertas + $modulos) == 0){
-                echo '<h3 class="error">ERROR: '.__('You must check modules and/or alerts to be deleted').'</h3>';
-                return;
-        }
+	if (($alertas + $modulos) == 0){
+		echo '<h3 class="error">ERROR: '.__('You must check modules and/or alerts to be deleted').'</h3>';
+		return;
+	}
 
-        // Deletion
-        // ---- 
-        $errors = 0;
-        
+	// Deletion
+	// ---- 
+	$errors = 0;
+	
 	process_sql ("SET AUTOCOMMIT = 0;");
-        process_sql ("START TRANSACTION;"); //Start a transaction
+	process_sql ("START TRANSACTION;"); //Start a transaction
 
 	function temp_sql_delete ($table, $row, $value) {
 		global $errors; //Globalize the errors variable
@@ -251,7 +282,7 @@ if (isset ($_POST["delete"])) {
 			$errors++;
 	}
 
-        foreach ($origen_modulo as $id_module_src) {
+	foreach ($origen_modulo as $id_module_src) {
 		$nombre_src = get_db_value ("nombre", "tagente_modulo", "id_agente_modulo", $id_module_src);
 		
 		foreach ($destino as $agent_dest) {
@@ -270,12 +301,12 @@ if (isset ($_POST["delete"])) {
 				//Standard data
 				temp_sql_delete ("tagente_datos", "id_agente_modulo", $id_module_dest);
 	
-	                	//Incremental Data
+				//Incremental Data
 				temp_sql_delete ("tagente_datos_inc", "id_agente_modulo", $id_module_dest);
 
 				//String data
-				temp_sql_delete ("tagente_datos_string", "id_agente_modulo", $id_module_dest);		
-	
+				temp_sql_delete ("tagente_datos_string", "id_agente_modulo", $id_module_dest);
+				
 				//Events (up/down monitors)
 				temp_sql_delete ("tevento", "id_agentmodule", $id_module_dest);
 			

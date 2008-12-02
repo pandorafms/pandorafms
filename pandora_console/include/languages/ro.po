@@ -8,19 +8,19 @@ msgstr ""
 "Project-Id-Version: pandora-fms\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2008-10-31 11:29+0100\n"
-"PO-Revision-Date: 2008-11-05 02:14+0000\n"
+"PO-Revision-Date: 2008-11-27 15:12+0000\n"
 "Last-Translator: Jorge González <Unknown>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-11-17 08:36+0000\n"
+"X-Launchpad-Export-Date: 2008-12-02 10:49+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../../reporting/stat_win.php:46
 #: ../../operation/agentes/datos_agente.php:123
 msgid "There was a problem locating the source of the graph"
-msgstr ""
+msgstr "A apărut o problemă la determinarea sursei graficului"
 
 #: ../../reporting/stat_win.php:53 ../../reporting/stat_win.php:218
 #: ../../godmode/reporting/graph_builder.php:329
@@ -292,7 +292,7 @@ msgid ""
 "don't exist. There is no help content to show."
 msgstr ""
 "Sistemul de asistenţă al Pandora FMS a fost apelat cu un subiect inexistent "
-"în prezent. Nu există informaţii de afişat."
+"în prezent. Nu sunt informaţii de afişat."
 
 #: ../../general/pandora_help.php:52
 msgid "Pandora FMS Help System"
@@ -304,7 +304,7 @@ msgstr "Consola Web a Pandora FMS"
 
 #: ../../general/login_page.php:38
 msgid "Build"
-msgstr ""
+msgstr "Versiune"
 
 #: ../../general/login_page.php:40
 msgid "Login"
@@ -389,7 +389,7 @@ msgstr "Ştiri site"
 
 #: ../../general/logon_ok.php:55
 msgid "by"
-msgstr ""
+msgstr "de"
 
 #: ../../general/logon_ok.php:55
 msgid "At"
@@ -408,7 +408,7 @@ msgstr ""
 
 #: ../../general/logon_ok.php:122 ../../operation/agentes/tactical.php:96
 msgid "Data health"
-msgstr ""
+msgstr "Consistenţa datelor"
 
 #: ../../general/logon_ok.php:123 ../../operation/agentes/tactical.php:97
 msgid "of modules with updated data"
@@ -444,11 +444,11 @@ msgstr ""
 
 #: ../../general/logon_ok.php:141
 msgid "Total agents"
-msgstr ""
+msgstr "Total agenţi"
 
 #: ../../general/logon_ok.php:143
 msgid "Total checks"
-msgstr ""
+msgstr "Total verificări"
 
 #: ../../general/logon_ok.php:145 ../../operation/agentes/tactical.php:125
 msgid "Monitor BAD"
@@ -456,7 +456,7 @@ msgstr ""
 
 #: ../../general/logon_ok.php:151
 msgid "Alerts defined"
-msgstr ""
+msgstr "Alarme definite"
 
 #: ../../general/logon_ok.php:153
 msgid "Total users"
@@ -470,7 +470,7 @@ msgstr "Aceasta este ultima ta activitate în consola Pandora FMS"
 #: ../../godmode/servers/manage_export_form.php:103
 #: ../../godmode/admin_access_logs.php:105
 msgid "User"
-msgstr ""
+msgstr "Utilizator"
 
 #: ../../general/logon_ok.php:172 ../../godmode/servers/manage_export.php:102
 #: ../../godmode/servers/manage_recontask.php:100
@@ -522,7 +522,7 @@ msgstr "Informaţii generale"
 
 #: ../../general/header.php:49 ../../general/header.php:55
 msgid "All systems"
-msgstr ""
+msgstr "Toate sistemele"
 
 #: ../../general/header.php:49
 #: ../../godmode/reporting/reporting_builder.php:463
@@ -532,11 +532,11 @@ msgstr ""
 
 #: ../../general/header.php:52
 msgid "servers down"
-msgstr ""
+msgstr "servere oprite"
 
 #: ../../general/header.php:55
 msgid "Ready"
-msgstr ""
+msgstr "Pregătit"
 
 #: ../../general/header.php:65 ../../general/header.php:67
 msgid "Autorefresh"
@@ -579,7 +579,7 @@ msgstr ""
 #: ../../extensions/update_manager/main.php:36
 #: ../../extensions/update_manager.php:124
 msgid "Update manager"
-msgstr ""
+msgstr "Administrator actualizări"
 
 #: ../../extensions/update_manager/main.php:42
 msgid ""
@@ -596,6 +596,9 @@ msgid ""
 "Enterprise version, for more information visit <a "
 "href=\"http://pandorafms.com\">http://pandorafms.com</a>."
 msgstr ""
+"Administratorul de actualizări este unul dintre cele mai avansate trăsături "
+"ale versiunii Enterprise a PandoraFMS 2.0, pentru mai multe informaţii "
+"vizitaţi <a href=\\\"http://pandorafms.com\\\">http://pandorafms.com</a>."
 
 #: ../../extensions/update_manager/main.php:46
 msgid ""
@@ -603,6 +606,10 @@ msgid ""
 "of agents and modules running). To disable it, just delete extension or "
 "remove remote server address from Update Manager plugin setup."
 msgstr ""
+"Administratorul de actualizări transmite informaţii anonime referitoare la "
+"utilizarea Pandora FMS (numărul de agenţi şi module active). Pentru "
+"dezactivarea acestei operaţii, doar ştergeţi extensia sau adresa serverului "
+"de la distanţă din configuraţia modulului de administrare a actualizărilor."
 
 #: ../../extensions/update_manager/main.php:66
 msgid "Your system is up-to-date"
@@ -614,11 +621,11 @@ msgstr "Conexiunea la server a eşuat"
 
 #: ../../extensions/update_manager/main.php:70
 msgid "Server authorization rejected"
-msgstr ""
+msgstr "Autorizarea serverului nu a fost acceptată"
 
 #: ../../extensions/update_manager/main.php:72
 msgid "There's a new update for Pandora FMS"
-msgstr ""
+msgstr "Există o versiune actualizată a Pandora FMS"
 
 #: ../../extensions/update_manager/main.php:77
 msgid "Id"
@@ -733,11 +740,11 @@ msgstr "Actualizare"
 
 #: ../../extensions/update_manager/main.php:98
 msgid "Your system version number is"
-msgstr ""
+msgstr "Numărul de versiune al sistemului tău"
 
 #: ../../extensions/update_manager/settings.php:38
 msgid "Update manager settings updated"
-msgstr ""
+msgstr "Setările pentru administratorul de actualizări au fost actualizate"
 
 #: ../../extensions/update_manager/settings.php:43
 msgid "Settings"
@@ -769,19 +776,19 @@ msgstr ""
 
 #: ../../extensions/update_manager/settings.php:67
 msgid "Proxy server"
-msgstr ""
+msgstr "Server proxy"
 
 #: ../../extensions/update_manager/settings.php:70
 msgid "Proxy port"
-msgstr ""
+msgstr "Portul proxy-ului"
 
 #: ../../extensions/update_manager/settings.php:73
 msgid "Proxy user"
-msgstr ""
+msgstr "Utilizator proxy"
 
 #: ../../extensions/update_manager/settings.php:76
 msgid "Proxy password"
-msgstr ""
+msgstr "Parolă proxy"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:552
 msgid "Development"
@@ -821,7 +828,7 @@ msgstr "Cod/director binar"
 
 #: ../../extensions/update_manager.php:107
 msgid "There's a new update for Pandora"
-msgstr ""
+msgstr "Există o versiune actualizată a Pandora"
 
 #: ../../extensions/update_manager.php:109
 msgid "More info"
@@ -1250,7 +1257,7 @@ msgstr "Constructor de Grafice"
 #: ../../godmode/db/db_refine.php:73
 #: ../../operation/agentes/exportdata.php:241
 msgid "Source agent"
-msgstr ""
+msgstr "Agent sursă"
 
 #: ../../godmode/reporting/graph_builder.php:285
 #: ../../godmode/agentes/configurar_agente.php:209
@@ -1540,7 +1547,7 @@ msgstr ""
 
 #: ../../godmode/servers/manage_export.php:84
 msgid "Successfully created export target"
-msgstr ""
+msgstr "Destinaţia de export a fost creată"
 
 #: ../../godmode/servers/manage_export.php:89
 #: ../../godmode/servers/modificar_server.php:56
@@ -1555,16 +1562,16 @@ msgstr "Servere Pandora"
 #: ../../godmode/servers/manage_export.php:89
 #: ../../godmode/servers/manage_export_form.php:61
 msgid "export targets"
-msgstr ""
+msgstr "destinaţii de export"
 
 #: ../../godmode/servers/manage_export.php:93
 msgid "There are no export targets configured"
-msgstr ""
+msgstr "Nu există destinaţii de export configurate"
 
 #: ../../godmode/servers/manage_export.php:102
 #: ../../godmode/servers/manage_export_form.php:82
 msgid "Preffix"
-msgstr ""
+msgstr "Prefix"
 
 #: ../../godmode/servers/manage_export.php:102
 #: ../../godmode/servers/manage_recontask.php:100
@@ -1590,11 +1597,11 @@ msgstr "Interval"
 #: ../../godmode/servers/manage_export.php:102
 #: ../../godmode/servers/manage_export_form.php:90
 msgid "Address"
-msgstr ""
+msgstr "Adresă"
 
 #: ../../godmode/servers/manage_export.php:102
 msgid "Transfer Mode"
-msgstr ""
+msgstr "Mod de transfer"
 
 #: ../../godmode/servers/modificar_server.php:36
 msgid "Server deleted successfully"
@@ -1610,7 +1617,7 @@ msgstr "Serverul a fost actualizat cu succes"
 
 #: ../../godmode/servers/modificar_server.php:50
 msgid "There was a problem updating the server"
-msgstr ""
+msgstr "A apărut o problemă la actualizarea serverului"
 
 #: ../../godmode/servers/modificar_server.php:56
 msgid "Update Server"
@@ -1656,7 +1663,7 @@ msgstr ""
 #: ../../operation/incidents/incident.php:261
 #: ../../operation/servers/view_server.php:61
 msgid "Updated"
-msgstr ""
+msgstr "Actualizat"
 
 #: ../../godmode/servers/modificar_server.php:124
 #: ../../godmode/agentes/agent_manager.php:126
@@ -1750,7 +1757,7 @@ msgstr "SO"
 #: ../../godmode/servers/manage_recontask_form.php:113
 #: ../../godmode/agentes/planned_downtime.php:207
 msgid "Any"
-msgstr ""
+msgstr "Oricare"
 
 #: ../../godmode/servers/manage_recontask.php:131
 msgid "There are no recon task configured"
@@ -1796,7 +1803,7 @@ msgstr "lună"
 #: ../../godmode/servers/manage_export_form.php:77
 #: ../../operation/servers/view_server.php:106
 msgid "Export server"
-msgstr ""
+msgstr "Server de export"
 
 #: ../../godmode/servers/manage_export_form.php:79
 #: ../../godmode/agentes/module_manager_editor_wmi.php:232
@@ -1809,24 +1816,24 @@ msgstr ""
 #: ../../godmode/agentes/agent_manager.php:142
 #: ../../godmode/users/configure_user.php:223 ../../include/functions.php:710
 msgid "None"
-msgstr ""
+msgstr "Niciunul"
 
 #: ../../godmode/servers/manage_export_form.php:94
 msgid "Transfer mode"
-msgstr ""
+msgstr "Mod transfer"
 
 #: ../../godmode/servers/manage_export_form.php:111
 #: ../../godmode/agentes/module_manager_editor_plugin.php:129
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #: ../../godmode/servers/manage_export_form.php:115
 msgid "Target directory"
-msgstr ""
+msgstr "Director destinaţie"
 
 #: ../../godmode/servers/manage_export_form.php:119
 msgid "Extra options"
-msgstr ""
+msgstr "Opţiuni suplimentare"
 
 #: ../../godmode/servers/plugin.php:56
 msgid "Problem updating plugin"
@@ -1858,7 +1865,7 @@ msgstr "Creare plugin"
 
 #: ../../godmode/servers/plugin.php:132
 msgid "Plugin update"
-msgstr ""
+msgstr "Actualizare plugin"
 
 #: ../../godmode/servers/plugin.php:149
 msgid "Plugin command"
@@ -1870,19 +1877,19 @@ msgstr ""
 
 #: ../../godmode/servers/plugin.php:157
 msgid "IP address option"
-msgstr ""
+msgstr "Opţiune adresă IP"
 
 #: ../../godmode/servers/plugin.php:161
 msgid "Port option"
-msgstr ""
+msgstr "Opţiune port"
 
 #: ../../godmode/servers/plugin.php:166
 msgid "User option"
-msgstr ""
+msgstr "Utilizator"
 
 #: ../../godmode/servers/plugin.php:170
 msgid "Password option"
-msgstr ""
+msgstr "Parola"
 
 #: ../../godmode/servers/plugin.php:192
 msgid "Plugins registered in Pandora FMS"
@@ -1983,7 +1990,7 @@ msgstr "Creare grup"
 
 #: ../../godmode/groups/configure_group.php:48
 msgid "There was a problem loading group"
-msgstr ""
+msgstr "A apărut o problemă la încărcarea grupului"
 
 #: ../../godmode/groups/configure_group.php:57
 msgid "Update group"
@@ -1999,7 +2006,7 @@ msgstr "Administrare agenţi"
 
 #: ../../godmode/menu.php:46
 msgid "Manage config."
-msgstr ""
+msgstr "Administrare configuraţie"
 
 #: ../../godmode/menu.php:53
 msgid "Duplicate config"
@@ -2011,7 +2018,7 @@ msgstr "Administrare grupuri"
 
 #: ../../godmode/menu.php:72
 msgid "Scheduled downtime"
-msgstr ""
+msgstr "Oprire programată"
 
 #: ../../godmode/menu.php:82
 msgid "Manage modules"
@@ -2039,7 +2046,7 @@ msgstr "Administrare utilizatori"
 
 #: ../../godmode/menu.php:130
 msgid "Manage reports"
-msgstr ""
+msgstr "Administrare rapoarte"
 
 #: ../../godmode/menu.php:139
 msgid "Report builder"
@@ -2051,15 +2058,15 @@ msgstr "Administrare profile"
 
 #: ../../godmode/menu.php:194
 msgid "Manage plugins"
-msgstr ""
+msgstr "Administrare plugin-uri"
 
 #: ../../godmode/menu.php:201
 msgid "Export targets"
-msgstr ""
+msgstr "Destinaţii de export"
 
 #: ../../godmode/menu.php:209
 msgid "System Audit Log"
-msgstr ""
+msgstr "Jurnal de audit al sistemului"
 
 #: ../../godmode/menu.php:217 ../../godmode/setup/setup.php:77
 #: ../../godmode/setup/links.php:88 ../../godmode/setup/links.php:116
@@ -2081,11 +2088,11 @@ msgstr ""
 
 #: ../../godmode/menu.php:263 ../../godmode/db/db_refine.php:69
 msgid "Database debug"
-msgstr ""
+msgstr "Depanare baza de date"
 
 #: ../../godmode/menu.php:270
 msgid "Database audit"
-msgstr ""
+msgstr "Audit baza de date"
 
 #: ../../godmode/menu.php:277
 msgid "Database event"
@@ -2113,7 +2120,7 @@ msgstr ""
 #: ../../godmode/modules/manage_network_templates_form.php:194
 #: ../../operation/incidents/incident.php:166
 msgid "Filter"
-msgstr ""
+msgstr "Filtru"
 
 #: ../../godmode/admin_access_logs.php:64
 #: ../../godmode/modules/manage_network_components.php:157
@@ -2152,7 +2159,7 @@ msgstr "Cod limbă pentru Pandora"
 
 #: ../../godmode/setup/setup.php:87
 msgid "Date format string"
-msgstr ""
+msgstr "Format dată"
 
 #: ../../godmode/setup/setup.php:90
 msgid "Remote config directory"
@@ -2164,7 +2171,7 @@ msgstr "Culoare grafic (min)"
 
 #: ../../godmode/setup/setup.php:96
 msgid "Graph color (avg)"
-msgstr ""
+msgstr "Culoare grafic (medie)"
 
 #: ../../godmode/setup/setup.php:99
 msgid "Graph color (max)"
@@ -2176,7 +2183,7 @@ msgstr ""
 
 #: ../../godmode/setup/setup.php:105
 msgid "Max. days before compact data"
-msgstr ""
+msgstr "Nr. max. de zile înainte de compactarea datelor"
 
 #: ../../godmode/setup/setup.php:108
 msgid "Max. days before purge"
@@ -2252,7 +2259,7 @@ msgstr "Legătură"
 
 #: ../../godmode/setup/news.php:96 ../../godmode/setup/news.php:125
 msgid "Site news management"
-msgstr ""
+msgstr "Administrare ştiri site"
 
 #: ../../godmode/setup/news.php:109 ../../godmode/setup/news.php:127
 #: ../../operation/messages/message.php:88
@@ -2260,7 +2267,7 @@ msgstr ""
 #: ../../operation/messages/message.php:143
 #: ../../operation/messages/message.php:190
 msgid "Subject"
-msgstr ""
+msgstr "Subiect"
 
 #: ../../godmode/setup/news.php:112 ../../include/functions.php:815
 #: ../../include/functions.php:839 ../../include/functions.php:924
@@ -2347,7 +2354,7 @@ msgstr "Editare agenţi"
 
 #: ../../godmode/profiles/profile_list.php:184
 msgid "Edit alerts"
-msgstr ""
+msgstr "Editare alarme"
 
 #: ../../godmode/profiles/profile_list.php:190
 msgid "Manage Database"
@@ -2355,7 +2362,7 @@ msgstr "Administrare Baza de Date"
 
 #: ../../godmode/profiles/profile_list.php:192
 msgid "Pandora management"
-msgstr ""
+msgstr "Administrare Pandora"
 
 #: ../../godmode/profiles/profile_list.php:230
 #: ../../godmode/users/configure_user.php:232
@@ -2369,7 +2376,7 @@ msgstr ""
 
 #: ../../godmode/profiles/profile_list.php:232
 msgid "Create Incidents"
-msgstr ""
+msgstr "Creare incidente"
 
 #: ../../godmode/profiles/profile_list.php:233
 msgid "Manage Incidents"
@@ -2385,7 +2392,7 @@ msgstr "Administrare agenţi"
 
 #: ../../godmode/profiles/profile_list.php:236
 msgid "Edit Alerts"
-msgstr ""
+msgstr "Editare alarme"
 
 #: ../../godmode/profiles/profile_list.php:237
 msgid "Manage User Rights"
@@ -2411,7 +2418,7 @@ msgstr ""
 #: ../../godmode/agentes/configurar_agente.php:134
 #: ../../godmode/agentes/configurar_agente.php:505
 msgid "There is already an agent in the database with this name"
-msgstr ""
+msgstr "Există deja un agent cu acest nume în baza de date"
 
 #: ../../godmode/agentes/configurar_agente.php:163
 msgid "There was a problem creating record in tagente_estado table"
@@ -2423,7 +2430,7 @@ msgstr ""
 
 #: ../../godmode/agentes/configurar_agente.php:175
 msgid "There was a problem creating the agent"
-msgstr ""
+msgstr "A apărut o problemă la crearea agentului"
 
 #: ../../godmode/agentes/configurar_agente.php:186
 msgid "Setup mode"
@@ -2465,43 +2472,43 @@ msgstr ""
 #: ../../godmode/agentes/configurar_agente.php:278
 #: ../../operation/snmpconsole/snmp_alert.php:37
 msgid "There was a problem deleting the alert"
-msgstr ""
+msgstr "A apărut o problemă la ştergerea alarmei"
 
 #: ../../godmode/agentes/configurar_agente.php:280
 #: ../../godmode/agentes/configurar_agente.php:296
 #: ../../godmode/alerts/modify_alert.php:73
 #: ../../operation/snmpconsole/snmp_alert.php:39
 msgid "Alert successfully deleted"
-msgstr ""
+msgstr "Alarma a fost ştearsă"
 
 #: ../../godmode/agentes/configurar_agente.php:294
 #: ../../godmode/alerts/modify_alert.php:71
 msgid "There was a problem deleting alert"
-msgstr ""
+msgstr "A apărut o problemă la ştergerea alarmei"
 
 #: ../../godmode/agentes/configurar_agente.php:375
 #: ../../godmode/alerts/modify_alert.php:57
 msgid "There was a problem creating alert"
-msgstr ""
+msgstr "A apărut o problemă la crearea alarmei"
 
 #: ../../godmode/agentes/configurar_agente.php:377
 #: ../../godmode/alerts/modify_alert.php:59
 #: ../../operation/snmpconsole/snmp_alert.php:78
 msgid "Alert successfully created"
-msgstr ""
+msgstr "Alarma a fost creată"
 
 #: ../../godmode/agentes/configurar_agente.php:391
 msgid "There was a problem creating the combined alert"
-msgstr ""
+msgstr "A apărut o problemă la crearea alarmei combinate"
 
 #: ../../godmode/agentes/configurar_agente.php:393
 msgid "Combined alert successfully created"
-msgstr ""
+msgstr "Alarma combinată a fost creată"
 
 #: ../../godmode/agentes/configurar_agente.php:475
 #: ../../godmode/alerts/modify_alert.php:44
 msgid "There was a problem updating alert"
-msgstr ""
+msgstr "A apărut o problemă la actualizarea alarmei"
 
 #: ../../godmode/agentes/configurar_agente.php:477
 #: ../../godmode/alerts/modify_alert.php:46
@@ -3287,7 +3294,7 @@ msgstr "Prioritate"
 #: ../../operation/snmpconsole/snmp_alert.php:146
 #: ../../operation/snmpconsole/snmp_alert.php:268
 msgid "Alert type"
-msgstr ""
+msgstr "Tip alarmă"
 
 #: ../../godmode/agentes/alert_manager_editor.php:98
 msgid "Alert status"
@@ -3327,12 +3334,12 @@ msgstr ""
 #: ../../godmode/agentes/alert_manager_editor.php:163
 #: ../../operation/snmpconsole/snmp_alert.php:206
 msgid "Min. number of alerts"
-msgstr ""
+msgstr "Numărul min. de alarme"
 
 #: ../../godmode/agentes/alert_manager_editor.php:173
 #: ../../operation/snmpconsole/snmp_alert.php:209
 msgid "Max. number of alerts"
-msgstr ""
+msgstr "Numărul max. de alarme"
 
 #: ../../godmode/agentes/alert_manager_editor.php:183
 #: ../../operation/snmpconsole/snmp_alert.php:193
@@ -4067,7 +4074,7 @@ msgstr ""
 #: ../../include/functions.php:482
 #: ../../operation/snmpconsole/snmp_alert.php:233
 msgid "seconds"
-msgstr ""
+msgstr "secunde"
 
 #: ../../include/functions.php:499 ../../include/functions.php:500
 msgid "months"
@@ -4308,7 +4315,7 @@ msgstr "Agenţi în grup"
 #: ../../operation/agentes/estado_alertas.php:64
 #: ../../operation/agentes/estado_alertas.php:164
 msgid "Last fired"
-msgstr ""
+msgstr "Ultima declanşare"
 
 #: ../../include/functions_reporting.php:545
 msgid "Last failure"
@@ -4802,11 +4809,11 @@ msgstr ""
 
 #: ../../operation/snmpconsole/snmp_alert.php:76
 msgid "There was a problem creating the alert"
-msgstr ""
+msgstr "A apărut o problemă la crearea alarmei"
 
 #: ../../operation/snmpconsole/snmp_alert.php:91
 msgid "There was a problem updating the alert"
-msgstr ""
+msgstr "A apărut o problemă la actualizarea alarmei"
 
 #: ../../operation/snmpconsole/snmp_alert.php:138
 msgid "Update alert"
@@ -4815,7 +4822,7 @@ msgstr "Alarmă de actualizare"
 #: ../../operation/snmpconsole/snmp_alert.php:162
 #: ../../operation/snmpconsole/snmp_alert.php:270
 msgid "Alert trigger"
-msgstr ""
+msgstr "Declanşator alarmă"
 
 #: ../../operation/snmpconsole/snmp_alert.php:178
 #: ../../operation/snmpconsole/snmp_alert.php:183
@@ -4838,7 +4845,7 @@ msgstr "Agent SNMP"
 
 #: ../../operation/snmpconsole/snmp_alert.php:228
 msgid "Other value"
-msgstr ""
+msgstr "Altă valoare"
 
 #: ../../operation/snmpconsole/snmp_alert.php:251
 msgid "Alert Overview"
@@ -4846,7 +4853,7 @@ msgstr ""
 
 #: ../../operation/snmpconsole/snmp_alert.php:256
 msgid "There are no SNMP alerts"
-msgstr ""
+msgstr "Nu sunt alarme SNMP"
 
 #: ../../operation/snmpconsole/snmp_alert.php:280
 #: ../../operation/snmpconsole/snmp_alert.php:309
@@ -4855,7 +4862,7 @@ msgstr ""
 
 #: ../../operation/snmpconsole/snmp_alert.php:285
 msgid "Times fired"
-msgstr ""
+msgstr "Numărul de declanşări"
 
 #: ../../operation/snmpconsole/snmp_view.php:72
 #: ../../operation/events/events.php:84
@@ -5556,3 +5563,30 @@ msgstr "Expeditor"
 #: ../../operation/messages/message.php:215
 msgid "No subject"
 msgstr "Fără subiect"
+
+#~ msgid "ok"
+#~ msgstr "ok"
+
+#~ msgid "Manage SNMP console"
+#~ msgstr "Administrare consolă SNMP"
+
+#~ msgid "at"
+#~ msgstr "la"
+
+#~ msgid "of monitors up"
+#~ msgstr "de monitoare active"
+
+#~ msgid "of data modules up"
+#~ msgstr "de module de date active"
+
+#~ msgid "of defined alerts not fired"
+#~ msgstr "de alarme definite nedeclanşate"
+
+#~ msgid "Modules Down"
+#~ msgstr "Module oprite"
+
+#~ msgid "Users defined"
+#~ msgstr "Utilizatori definiţi"
+
+#~ msgid "Legend"
+#~ msgstr "Legendă"

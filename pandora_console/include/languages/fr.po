@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-10-31 11:29+0100\n"
-"PO-Revision-Date: 2008-10-22 18:46+0000\n"
-"Last-Translator: Jorge González <Unknown>\n"
+"PO-Revision-Date: 2008-11-27 15:02+0000\n"
+"Last-Translator: didier Belot <didier.belot@electrolinux.net>\n"
 "Language-Team: fr <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-11-17 08:37+0000\n"
+"X-Launchpad-Export-Date: 2008-12-02 10:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../../reporting/stat_win.php:46
@@ -472,7 +472,7 @@ msgstr "Dernière activité sur Pandora"
 #: ../../godmode/servers/manage_export_form.php:103
 #: ../../godmode/admin_access_logs.php:105
 msgid "User"
-msgstr ""
+msgstr "Utilisateur"
 
 #: ../../general/logon_ok.php:172 ../../godmode/servers/manage_export.php:102
 #: ../../godmode/servers/manage_recontask.php:100
@@ -512,7 +512,7 @@ msgstr "Comentaires"
 
 #: ../../general/header.php:31
 msgid "You are"
-msgstr ""
+msgstr "Vous êtes"
 
 #: ../../general/header.php:35
 msgid "Logout"
@@ -578,11 +578,11 @@ msgstr "Désolé ! Je ne peux pas trouver la page !"
 
 #: ../../extensions/update_manager/load_updatemanager.php:37
 msgid "Keygen file does not exists"
-msgstr ""
+msgstr "Le générateur de clef (keygen) n'existe pas"
 
 #: ../../extensions/update_manager/load_updatemanager.php:44
 msgid "Keygen file is not executable"
-msgstr ""
+msgstr "Le générateur de clef (keygen) n'est pas executable"
 
 #: ../../extensions/update_manager/main.php:36
 #: ../../extensions/update_manager.php:124
@@ -614,7 +614,7 @@ msgstr ""
 
 #: ../../extensions/update_manager/main.php:66
 msgid "Your system is up-to-date"
-msgstr ""
+msgstr "Votre système est à jour"
 
 #: ../../extensions/update_manager/main.php:68
 msgid "Server connection failed"
@@ -630,7 +630,7 @@ msgstr ""
 
 #: ../../extensions/update_manager/main.php:77
 msgid "Id"
-msgstr ""
+msgstr "Id"
 
 #: ../../extensions/update_manager/main.php:80
 #: ../../godmode/setup/news.php:129 ../../include/functions_db.php:1993
@@ -749,7 +749,7 @@ msgstr ""
 
 #: ../../extensions/update_manager/settings.php:43
 msgid "Settings"
-msgstr ""
+msgstr "Paramètres"
 
 #: ../../extensions/update_manager/settings.php:49
 msgid "Customer key"
@@ -5595,20 +5595,8 @@ msgstr "Sans Objet"
 #~ msgid "You are "
 #~ msgstr "Vous êtes connecté(e) "
 
-#~ msgid "Server status: DOWN"
-#~ msgstr "Etat du serveur : ETEINT"
-
-#~ msgid "System ready"
-#~ msgstr "Système prêt"
-
 #~ msgid "Started at"
 #~ msgstr "Lancé le"
-
-#~ msgid "SLA period"
-#~ msgstr "période SLA"
-
-#~ msgid "Alert component added ok"
-#~ msgstr "Composant d'alerte ajouté ok"
 
 #~ msgid "There was a problem deleting module"
 #~ msgstr "Pandora a rencontré un problème pour effacer le module"
@@ -5616,17 +5604,11 @@ msgstr "Sans Objet"
 #~ msgid "You must select modules and/or alerts for copy operation"
 #~ msgstr "Veuillez sélectionner des modules et/ou des alertes à copier"
 
-#~ msgid "Not found"
-#~ msgstr "Non trouvé"
-
 #~ msgid " in agent "
 #~ msgstr " dans l'agent "
 
 #~ msgid "Deleting data"
 #~ msgstr "Effacement des données"
-
-#~ msgid "Delete agents"
-#~ msgstr "Agents supprimés"
 
 #~ msgid "Copy Configuration"
 #~ msgstr "Copier la configuration"
@@ -6169,3 +6151,9 @@ msgstr "Sans Objet"
 #~ msgstr ""
 #~ "Le processus d'élimination de la Base de données sert à éliminer les données "
 #~ "inscrites sur celle-ci si elles"
+
+#~ msgid "SLA result"
+#~ msgstr "Résultat de SLA"
+
+#~ msgid "PDF"
+#~ msgstr "PDF"

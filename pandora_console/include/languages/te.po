@@ -1,20 +1,22 @@
+# translation of pandora-te.po to Telugu
 # Telugu translation for pandora-fms
 # Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
 # This file is distributed under the same license as the pandora-fms package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
 #
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
+# Jorge Gonzalez <jorgegonz@artica.es>, 2008.
 msgid ""
 msgstr ""
-"Project-Id-Version: pandora-fms\n"
+"Project-Id-Version: pandora-te\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2008-10-31 11:29+0100\n"
-"PO-Revision-Date: 2008-10-22 18:11+0000\n"
-"Last-Translator: Jorge González <Unknown>\n"
+"PO-Revision-Date: 2008-11-20 22:06+0000\n"
+"Last-Translator: Jorge Gonzalez <Unknown>\n"
 "Language-Team: Telugu <te@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-11-17 08:37+0000\n"
+"X-Launchpad-Export-Date: 2008-12-02 10:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../../reporting/stat_win.php:46
@@ -230,7 +232,7 @@ msgstr "హెచ్చరిక"
 #: ../../reporting/fgraph.php:1294 ../../include/functions.php:688
 #: ../../include/functions.php:1164 ../../include/functions.php:1187
 msgid "Critical"
-msgstr ""
+msgstr "విషమం"
 
 #: ../../reporting/fgraph.php:1469
 msgid "Today"
@@ -302,11 +304,11 @@ msgstr ""
 
 #: ../../general/login_page.php:38
 msgid "Build"
-msgstr ""
+msgstr "బుల్ట్"
 
 #: ../../general/login_page.php:40
 msgid "Login"
-msgstr ""
+msgstr "ప్రవేశము"
 
 #: ../../general/login_page.php:43
 #: ../../godmode/servers/manage_export_form.php:107
@@ -458,7 +460,7 @@ msgstr ""
 #: ../../godmode/servers/manage_export_form.php:103
 #: ../../godmode/admin_access_logs.php:105
 msgid "User"
-msgstr ""
+msgstr "వినియోగదారు"
 
 #: ../../general/logon_ok.php:172 ../../godmode/servers/manage_export.php:102
 #: ../../godmode/servers/manage_recontask.php:100
@@ -502,7 +504,7 @@ msgstr ""
 
 #: ../../general/header.php:35
 msgid "Logout"
-msgstr ""
+msgstr "లాగ్అవుట్"
 
 #: ../../general/header.php:39
 msgid "General information"
@@ -516,7 +518,7 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.php:463
 #: ../../operation/agentes/estado_grupo.php:220
 msgid "Down"
-msgstr ""
+msgstr "క్రింద"
 
 #: ../../general/header.php:52
 msgid "servers down"
@@ -524,7 +526,7 @@ msgstr ""
 
 #: ../../general/header.php:55
 msgid "Ready"
-msgstr ""
+msgstr "సన్నద్దము"
 
 #: ../../general/header.php:65 ../../general/header.php:67
 msgid "Autorefresh"
@@ -717,7 +719,7 @@ msgstr ""
 #: ../../operation/events/events.php:309
 #: ../../operation/users/user_edit.php:137
 msgid "Update"
-msgstr ""
+msgstr "తాజా పరుచు"
 
 #: ../../extensions/update_manager/main.php:98
 msgid "Your system version number is"
@@ -773,15 +775,15 @@ msgstr ""
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:552
 msgid "Development"
-msgstr ""
+msgstr "అభివృధ్ధి"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:553
 msgid "Testing"
-msgstr ""
+msgstr "పరిశీలించుచున్న"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:554
 msgid "Public"
-msgstr ""
+msgstr "ప్రజా"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:555
 #: ../../godmode/groups/group_list.php:125
@@ -797,11 +799,11 @@ msgstr ""
 #: ../../godmode/agentes/alert_manager_editor.php:273
 #: ../../include/functions.php:775
 msgid "Disabled"
-msgstr ""
+msgstr "అచేతనం"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:563
 msgid "Database"
-msgstr ""
+msgstr "దత్తాంశ స్థానము"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:564
 msgid "Code / binary directory"
@@ -935,7 +937,7 @@ msgstr ""
 #: ../../operation/agentes/estado_alertas.php:134
 #: ../../operation/events/events.php:238 ../../operation/events/events.php:350
 msgid "Group"
-msgstr ""
+msgstr "గ్రూపు"
 
 #: ../../godmode/reporting/map_builder.php:263
 #: ../../godmode/reporting/map_builder.php:357
@@ -972,7 +974,7 @@ msgstr ""
 #: ../../operation/events/events.php:497
 #: ../../operation/messages/message.php:192
 msgid "Delete"
-msgstr ""
+msgstr "తొలగించు"
 
 #: ../../godmode/reporting/map_builder.php:287
 #: ../../godmode/reporting/map_builder.php:324
@@ -1005,7 +1007,7 @@ msgstr ""
 #: ../../operation/snmpconsole/snmp_alert.php:245
 #: ../../operation/snmpconsole/snmp_alert.php:342
 msgid "Create"
-msgstr ""
+msgstr "సృష్టించు"
 
 #: ../../godmode/reporting/map_builder.php:302
 #: ../../godmode/reporting/graph_builder.php:475
@@ -1034,23 +1036,23 @@ msgstr ""
 #: ../../operation/agentes/estado_alertas.php:58
 #: ../../operation/agentes/tactical.php:229 ../../operation/users/user.php:34
 msgid "Name"
-msgstr ""
+msgstr "నామము"
 
 #: ../../godmode/reporting/map_builder.php:306
 msgid "Background"
-msgstr ""
+msgstr "బ్యాక్‌గ్రౌండ్"
 
 #: ../../godmode/reporting/map_builder.php:310
 #: ../../godmode/reporting/map_builder.php:404
 #: ../../godmode/reporting/graph_builder.php:304
 msgid "Width"
-msgstr ""
+msgstr "వెడల్పు"
 
 #: ../../godmode/reporting/map_builder.php:312
 #: ../../godmode/reporting/map_builder.php:402
 #: ../../godmode/reporting/graph_builder.php:322
 msgid "Height"
-msgstr ""
+msgstr "ఎత్తు"
 
 #: ../../godmode/reporting/map_builder.php:332
 msgid "preview"
@@ -1073,7 +1075,7 @@ msgstr ""
 #: ../../godmode/reporting/map_builder.php:367
 #: ../../godmode/reporting/map_builder.php:368
 msgid "Hours"
-msgstr ""
+msgstr "గంటలు"
 
 #: ../../godmode/reporting/map_builder.php:369
 #: ../../godmode/reporting/graph_builder.php:390
@@ -1086,7 +1088,7 @@ msgstr ""
 #: ../../include/functions.php:496 ../../include/functions.php:519
 #: ../../operation/servers/view_server_detail.php:113
 msgid "days"
-msgstr ""
+msgstr "రోజులు"
 
 #: ../../godmode/reporting/map_builder.php:371
 #: ../../godmode/reporting/graph_builder.php:353
@@ -1116,7 +1118,7 @@ msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:396
 msgid "Label"
-msgstr ""
+msgstr "లేబుల్"
 
 #: ../../godmode/reporting/map_builder.php:398
 msgid "Label color"
@@ -1144,7 +1146,7 @@ msgstr ""
 #: ../../operation/agentes/estado_alertas.php:162
 #: ../../operation/events/events.php:346
 msgid "Type"
-msgstr ""
+msgstr "రకం"
 
 #: ../../godmode/reporting/map_builder.php:406
 #: ../../godmode/reporting/graph_builder.php:215
@@ -1184,7 +1186,7 @@ msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:412
 msgid "Image"
-msgstr ""
+msgstr "ప్రతిరూపం"
 
 #: ../../godmode/reporting/map_builder.php:415
 #: ../../godmode/groups/group_list.php:108
@@ -1194,7 +1196,7 @@ msgstr ""
 #: ../../godmode/modules/manage_nc_groups_form.php:58
 #: ../../operation/agentes/estado_generalagente.php:96
 msgid "Parent"
-msgstr ""
+msgstr "మూలం"
 
 #: ../../godmode/reporting/map_builder.php:418
 msgid "Map linked"
@@ -1271,7 +1273,7 @@ msgstr ""
 #: ../../include/functions.php:830 ../../include/functions.php:914
 #: ../../include/functions_db.php:1943
 msgid "Yes"
-msgstr ""
+msgstr "అవును"
 
 #: ../../godmode/reporting/graph_builder.php:315
 #: ../../godmode/reporting/graph_builder.php:317
@@ -1283,7 +1285,7 @@ msgstr ""
 #: ../../include/functions.php:832 ../../include/functions.php:916
 #: ../../include/functions_db.php:1945
 msgid "No"
-msgstr ""
+msgstr "కాదు"
 
 #: ../../godmode/reporting/graph_builder.php:335
 #: ../../godmode/reporting/graph_builder.php:387
@@ -1324,7 +1326,7 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:420
 #: ../../operation/reporting/graph_viewer.php:141
 msgid "Line"
-msgstr ""
+msgstr "వరుస"
 
 #: ../../godmode/reporting/graph_builder.php:443
 #: ../../godmode/reporting/reporting_builder.php:419
@@ -1340,7 +1342,7 @@ msgstr ""
 #: ../../godmode/modules/manage_network_components_form_network.php:286
 #: ../../operation/incidents/incident_detail.php:334
 msgid "Add"
-msgstr ""
+msgstr "చేర్చు"
 
 #: ../../godmode/reporting/graph_builder.php:443
 msgid "Redraw"
@@ -1353,7 +1355,7 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:479
 #: ../../godmode/reporting/reporting_builder.php:345
 msgid "Private"
-msgstr ""
+msgstr "స్వంత"
 
 #: ../../godmode/reporting/graph_builder.php:493
 msgid "Store"
@@ -1455,7 +1457,7 @@ msgstr ""
 #: ../../operation/reporting/graph_viewer.php:128
 #: ../../operation/servers/view_server_detail.php:111
 msgid "hours"
-msgstr ""
+msgstr "గంటలు"
 
 #: ../../godmode/reporting/reporting_builder.php:394
 msgid "2 weeks"
@@ -1471,15 +1473,15 @@ msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:431
 msgid "Order"
-msgstr ""
+msgstr "క్రమం"
 
 #: ../../godmode/reporting/reporting_builder.php:436
 msgid "Options"
-msgstr ""
+msgstr "ఇచ్ఛాపూర్వకాలు"
 
 #: ../../godmode/reporting/reporting_builder.php:458
 msgid "Up"
-msgstr ""
+msgstr "పైకి"
 
 #: ../../godmode/reporting/reporting_builder.php:489
 #: ../../operation/reporting/reporting_viewer.php:54
@@ -1578,7 +1580,7 @@ msgstr ""
 #: ../../godmode/servers/manage_export.php:102
 #: ../../godmode/servers/manage_export_form.php:90
 msgid "Address"
-msgstr ""
+msgstr "చిరునామా"
 
 #: ../../godmode/servers/manage_export.php:102
 msgid "Transfer Mode"
@@ -1609,7 +1611,7 @@ msgstr ""
 #: ../../godmode/agentes/agent_manager.php:84
 #: ../../operation/agentes/estado_generalagente.php:70
 msgid "IP Address"
-msgstr ""
+msgstr "IP చిరునామా"
 
 #: ../../godmode/servers/modificar_server.php:79 ../../godmode/menu.php:178
 msgid "Manage servers"
@@ -1634,17 +1636,17 @@ msgstr ""
 #: ../../operation/agentes/tactical.php:230
 #: ../../operation/events/events.php:503
 msgid "Status"
-msgstr ""
+msgstr "స్థితి"
 
 #: ../../godmode/servers/modificar_server.php:87
 msgid "Started"
-msgstr ""
+msgstr "మొదలుపెట్టబడినది"
 
 #: ../../godmode/servers/modificar_server.php:87
 #: ../../operation/incidents/incident.php:261
 #: ../../operation/servers/view_server.php:61
 msgid "Updated"
-msgstr ""
+msgstr "తాజాపరచబడిన"
 
 #: ../../godmode/servers/modificar_server.php:124
 #: ../../godmode/agentes/agent_manager.php:126
@@ -1708,7 +1710,7 @@ msgstr ""
 #: ../../godmode/servers/manage_recontask_form.php:82
 #: ../../operation/servers/view_server_detail.php:71
 msgid "Network"
-msgstr ""
+msgstr "అల్లిక"
 
 #: ../../godmode/servers/manage_recontask.php:100
 #: ../../godmode/servers/manage_recontask_form.php:107
@@ -1738,7 +1740,7 @@ msgstr ""
 #: ../../godmode/servers/manage_recontask_form.php:113
 #: ../../godmode/agentes/planned_downtime.php:207
 msgid "Any"
-msgstr ""
+msgstr "ఏదేని"
 
 #: ../../godmode/servers/manage_recontask.php:131
 msgid "There are no recon task configured"
@@ -1762,12 +1764,12 @@ msgstr ""
 
 #: ../../godmode/servers/manage_recontask_form.php:86
 msgid "hour"
-msgstr ""
+msgstr "గంట"
 
 #: ../../godmode/servers/manage_recontask_form.php:90
 #: ../../operation/agentes/exportdata.php:61
 msgid "day"
-msgstr ""
+msgstr "రోజు"
 
 #: ../../godmode/servers/manage_recontask_form.php:92
 msgid "week"
@@ -1775,7 +1777,7 @@ msgstr ""
 
 #: ../../godmode/servers/manage_recontask_form.php:93
 msgid "weeks"
-msgstr ""
+msgstr "వారములు"
 
 #: ../../godmode/servers/manage_recontask_form.php:94
 msgid "month"
@@ -1797,7 +1799,7 @@ msgstr ""
 #: ../../godmode/agentes/agent_manager.php:142
 #: ../../godmode/users/configure_user.php:223 ../../include/functions.php:710
 msgid "None"
-msgstr ""
+msgstr "ఏదీకాదు"
 
 #: ../../godmode/servers/manage_export_form.php:94
 msgid "Transfer mode"
@@ -1806,7 +1808,7 @@ msgstr ""
 #: ../../godmode/servers/manage_export_form.php:111
 #: ../../godmode/agentes/module_manager_editor_plugin.php:129
 msgid "Port"
-msgstr ""
+msgstr "రేవు"
 
 #: ../../godmode/servers/manage_export_form.php:115
 msgid "Target directory"
@@ -1878,7 +1880,7 @@ msgstr ""
 
 #: ../../godmode/servers/plugin.php:199
 msgid "execute"
-msgstr ""
+msgstr "నిర్వర్తించు"
 
 #: ../../godmode/servers/plugin.php:223
 msgid "There are no plugins in the system"
@@ -1921,7 +1923,7 @@ msgstr ""
 #: ../../godmode/groups/configure_group.php:68
 #: ../../godmode/modules/module_list.php:55
 msgid "Icon"
-msgstr ""
+msgstr "ప్రతిమ"
 
 #: ../../godmode/groups/group_list.php:109
 #: ../../godmode/groups/configure_group.php:88
@@ -1941,7 +1943,7 @@ msgstr ""
 #: ../../godmode/agentes/alert_manager_editor.php:270
 #: ../../godmode/agentes/alert_manager_editor.php:274
 msgid "Enabled"
-msgstr ""
+msgstr "క్రియాశీలీకరించిన"
 
 #: ../../godmode/groups/group_list.php:126 ../../godmode/setup/links.php:134
 #: ../../godmode/setup/news.php:148
@@ -1979,7 +1981,7 @@ msgstr ""
 
 #: ../../godmode/menu.php:28
 msgid "Administration"
-msgstr ""
+msgstr "నిర్వహణ"
 
 #: ../../godmode/menu.php:38
 msgid "Manage agents"
@@ -2085,7 +2087,7 @@ msgstr ""
 
 #: ../../godmode/menu.php:297 ../../operation/menu.php:309
 msgid "Extensions"
-msgstr ""
+msgstr "పొడగింపులు"
 
 #: ../../godmode/admin_access_logs.php:30
 msgid "Pandora audit"
@@ -2101,7 +2103,7 @@ msgstr ""
 #: ../../godmode/modules/manage_network_templates_form.php:194
 #: ../../operation/incidents/incident.php:166
 msgid "Filter"
-msgstr ""
+msgstr "వడపోత"
 
 #: ../../godmode/admin_access_logs.php:64
 #: ../../godmode/modules/manage_network_components.php:157
@@ -2117,7 +2119,7 @@ msgstr ""
 #: ../../operation/events/events.php:246 ../../operation/events/events.php:252
 #: ../../operation/events/events.php:276 ../../operation/events/events.php:355
 msgid "All"
-msgstr ""
+msgstr "అన్ని"
 
 #: ../../godmode/admin_access_logs.php:78
 #: ../../godmode/agentes/modificar_agente.php:160
@@ -2128,7 +2130,7 @@ msgstr ""
 #: ../../operation/agentes/estado_agente.php:65
 #: ../../operation/agentes/estado_alertas.php:139
 msgid "Show"
-msgstr ""
+msgstr "చూపు"
 
 #: ../../godmode/setup/setup.php:78
 msgid "General configuration"
@@ -2236,7 +2238,7 @@ msgstr ""
 
 #: ../../godmode/setup/links.php:104
 msgid "Link"
-msgstr ""
+msgstr "అనుసంధానం"
 
 #: ../../godmode/setup/news.php:96 ../../godmode/setup/news.php:125
 msgid "Site news management"
@@ -2248,19 +2250,19 @@ msgstr ""
 #: ../../operation/messages/message.php:143
 #: ../../operation/messages/message.php:190
 msgid "Subject"
-msgstr ""
+msgstr "సంగతి"
 
 #: ../../godmode/setup/news.php:112 ../../include/functions.php:815
 #: ../../include/functions.php:839 ../../include/functions.php:924
 #: ../../include/functions.php:966 ../../include/functions_db.php:1929
 #: ../../include/functions_db.php:1951
 msgid "Text"
-msgstr ""
+msgstr "పాఠం"
 
 #: ../../godmode/setup/news.php:128
 #: ../../operation/incidents/incident_detail.php:357
 msgid "Author"
-msgstr ""
+msgstr "మూలకర్త"
 
 #: ../../godmode/profiles/profile_list.php:33
 #: ../../operation/users/user.php:91
@@ -2349,7 +2351,7 @@ msgstr ""
 #: ../../godmode/users/configure_user.php:232
 #: ../../operation/users/user.php:100
 msgid "Profiles"
-msgstr ""
+msgstr "ప్రొఫైల్స్"
 
 #: ../../godmode/profiles/profile_list.php:231
 msgid "Read Incidents"
@@ -2420,7 +2422,7 @@ msgstr ""
 #: ../../godmode/agentes/configurar_agente.php:193
 #: ../../operation/reporting/graph_viewer.php:169
 msgid "View"
-msgstr ""
+msgstr "దర్శనం"
 
 #: ../../godmode/agentes/configurar_agente.php:201
 msgid "Setup Agent"
@@ -2611,7 +2613,7 @@ msgstr ""
 #: ../../godmode/agentes/module_manager_editor_wmi.php:138
 #: ../../godmode/modules/manage_network_components_form_wmi.php:168
 msgid "Namespace"
-msgstr ""
+msgstr "నామప్రదేశం"
 
 #: ../../godmode/agentes/module_manager_editor_wmi.php:145
 #: ../../godmode/modules/manage_network_components_form_wmi.php:144
@@ -2632,7 +2634,7 @@ msgstr ""
 #: ../../godmode/agentes/module_manager_editor_plugin.php:134
 #: ../../godmode/modules/manage_network_components_form_wmi.php:176
 msgid "Username"
-msgstr ""
+msgstr "వినియోగదారుని నామం"
 
 #: ../../godmode/agentes/module_manager_editor_wmi.php:173
 #: ../../godmode/agentes/module_manager_editor_data.php:95
@@ -2696,7 +2698,7 @@ msgstr ""
 
 #: ../../godmode/agentes/agent_template.php:130
 msgid "Template"
-msgstr ""
+msgstr "మాదిరి"
 
 #: ../../godmode/agentes/agent_template.php:141
 msgid "Assign"
@@ -2793,7 +2795,7 @@ msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.php:230
 msgid "Remove"
-msgstr ""
+msgstr "తీసివేయు"
 
 #: ../../godmode/agentes/planned_downtime.php:237
 #: ../../godmode/agentes/planned_downtime.php:281
@@ -2813,17 +2815,17 @@ msgstr ""
 #: ../../operation/messages/message.php:105
 #: ../../operation/messages/message.php:139
 msgid "From"
-msgstr ""
+msgstr "నుండి"
 
 #: ../../godmode/agentes/planned_downtime.php:273
 #: ../../operation/messages/message.php:67
 #: ../../operation/messages/message.php:107
 msgid "To"
-msgstr ""
+msgstr "కు"
 
 #: ../../godmode/agentes/planned_downtime.php:274
 msgid "Del"
-msgstr ""
+msgstr "Del"
 
 #: ../../godmode/agentes/planned_downtime.php:275
 msgid "Upd"
@@ -2831,7 +2833,7 @@ msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.php:276
 msgid "Running"
-msgstr ""
+msgstr "నడుపుచున్నది"
 
 #: ../../godmode/agentes/module_manager_editor_plugin.php:79
 msgid "Plugin server module"
@@ -2862,7 +2864,7 @@ msgstr ""
 #: ../../operation/snmpconsole/snmp_view.php:176
 #: ../../operation/events/events.php:458
 msgid "Alert"
-msgstr ""
+msgstr "ఏలర్ట్"
 
 #: ../../godmode/agentes/alert_manager.php:109
 #: ../../godmode/agentes/alert_manager.php:185
@@ -2890,7 +2892,7 @@ msgstr ""
 #: ../../godmode/agentes/alert_manager_editor.php:368
 #: ../../include/functions_db.php:1875
 msgid "Time"
-msgstr ""
+msgstr "సమయం"
 
 #: ../../godmode/agentes/alert_manager.php:114
 #: ../../godmode/agentes/alert_manager.php:190
@@ -3085,7 +3087,7 @@ msgstr ""
 #: ../../operation/incidents/incident_search.php:48
 #: ../../operation/agentes/estado_agente.php:75
 msgid "Search"
-msgstr ""
+msgstr "శోధించు"
 
 #: ../../godmode/agentes/modificar_agente.php:219
 #: ../../godmode/agentes/agent_manager.php:66 ../../godmode/db/db_info.php:61
@@ -3101,7 +3103,7 @@ msgstr ""
 
 #: ../../godmode/agentes/modificar_agente.php:220
 msgid "R"
-msgstr ""
+msgstr "R"
 
 #: ../../godmode/agentes/modificar_agente.php:256
 msgid "Edit remote config"
@@ -3194,7 +3196,7 @@ msgstr ""
 
 #: ../../godmode/agentes/agent_manager.php:199
 msgid "Active"
-msgstr ""
+msgstr "క్రియాశీలంచేయు"
 
 #: ../../godmode/agentes/agent_manager.php:203
 msgid "Remote configuration"
@@ -3202,7 +3204,7 @@ msgstr ""
 
 #: ../../godmode/agentes/agent_manager.php:211
 msgid "Not available"
-msgstr ""
+msgstr "అందుబాటులో లేదు"
 
 #: ../../godmode/agentes/module_manager.php:57
 msgid "Create a new data server module"
@@ -3226,7 +3228,7 @@ msgstr ""
 
 #: ../../godmode/agentes/module_manager.php:84
 msgid "S"
-msgstr ""
+msgstr "S"
 
 #: ../../godmode/agentes/module_manager.php:88
 #: ../../godmode/modules/manage_network_components.php:188
@@ -3259,7 +3261,7 @@ msgstr ""
 #: ../../operation/agentes/sla_view.php:98
 #: ../../operation/agentes/sla_view.php:179
 msgid "N/A"
-msgstr ""
+msgstr "N/A"
 
 #: ../../godmode/agentes/alert_manager_editor.php:73
 #: ../../include/functions.php:858 ../../include/functions.php:940
@@ -3269,7 +3271,7 @@ msgstr ""
 #: ../../operation/incidents/incident_detail.php:286
 #: ../../operation/snmpconsole/snmp_alert.php:236
 msgid "Priority"
-msgstr ""
+msgstr "ప్రాధాన్యత"
 
 #: ../../godmode/agentes/alert_manager_editor.php:82
 #: ../../operation/snmpconsole/snmp_alert.php:146
@@ -3310,7 +3312,7 @@ msgstr ""
 
 #: ../../godmode/agentes/alert_manager_editor.php:158
 msgid "Other"
-msgstr ""
+msgstr "ఇతర"
 
 #: ../../godmode/agentes/alert_manager_editor.php:163
 #: ../../operation/snmpconsole/snmp_alert.php:206
@@ -3407,7 +3409,7 @@ msgstr ""
 #: ../../godmode/agentes/alert_manager_editor.php:341
 #: ../../operation/menu.php:24
 msgid "Operation"
-msgstr ""
+msgstr "కార్యం"
 
 #: ../../godmode/modules/manage_network_components.php:137
 #: ../../godmode/modules/manage_nc_groups.php:70
@@ -3596,7 +3598,7 @@ msgstr ""
 #: ../../operation/events/events.php:351
 #: ../../operation/users/user_edit.php:109
 msgid "User ID"
-msgstr ""
+msgstr "వినియోగదారుడి గుచి"
 
 #: ../../godmode/users/configure_user.php:178
 #: ../../operation/users/user_edit.php:112
@@ -3610,7 +3612,7 @@ msgstr ""
 #: ../../godmode/users/configure_user.php:193
 #: ../../operation/users/user_edit.php:127
 msgid "Telephone"
-msgstr ""
+msgstr "దూర సంవాదక యంత్రము"
 
 #: ../../godmode/users/configure_user.php:195
 msgid "Global Profile"
@@ -3618,7 +3620,7 @@ msgstr ""
 
 #: ../../godmode/users/configure_user.php:200
 msgid "Administrator"
-msgstr ""
+msgstr "నిర్వాహకి"
 
 #: ../../godmode/users/configure_user.php:202
 msgid ""
@@ -3856,7 +3858,7 @@ msgstr ""
 
 #: ../../godmode/db/db_audit.php:79 ../../godmode/db/db_event.php:55
 msgid "Total"
-msgstr ""
+msgstr "మొత్తము"
 
 #: ../../godmode/db/db_audit.php:80 ../../godmode/db/db_event.php:56
 msgid "Records"
@@ -4002,7 +4004,7 @@ msgstr ""
 
 #: ../../godmode/alerts/configure_alert.php:84
 msgid "Command"
-msgstr ""
+msgstr "ఆదేశము"
 
 #: ../../include/functions_html.php:588
 msgid "Request successfully processed"
@@ -4034,7 +4036,7 @@ msgstr ""
 
 #: ../../include/functions.php:420
 msgid "."
-msgstr ""
+msgstr "."
 
 #: ../../include/functions.php:422
 msgid ","
@@ -4048,16 +4050,16 @@ msgstr ""
 #: ../../operation/visual_console/render_view.php:85
 #: ../../operation/visual_console/render_view.php:86
 msgid "minutes"
-msgstr ""
+msgstr "నిమిషాలు"
 
 #: ../../include/functions.php:482
 #: ../../operation/snmpconsole/snmp_alert.php:233
 msgid "seconds"
-msgstr ""
+msgstr "సెకనులు"
 
 #: ../../include/functions.php:499 ../../include/functions.php:500
 msgid "months"
-msgstr ""
+msgstr "నెలలు"
 
 #: ../../include/functions.php:856 ../../include/functions.php:938
 #: ../../include/functions_db.php:1878
@@ -4082,7 +4084,7 @@ msgstr ""
 #: ../../operation/agentes/estado_agente.php:328
 #: ../../operation/agentes/estado_alertas.php:199
 msgid "Never"
-msgstr ""
+msgstr "ఎప్పటికివద్దు"
 
 #: ../../include/functions.php:983 ../../include/functions.php:1142
 #: ../../include/functions_db.php:1963 ../../operation/agentes/bulbs.php:29
@@ -4160,7 +4162,7 @@ msgstr ""
 #: ../../operation/reporting/reporting_viewer.php:226
 #: ../../operation/reporting/reporting_xml.php:212
 msgid "Unknown"
-msgstr ""
+msgstr "అపరిచిత"
 
 #: ../../include/functions.php:1140
 #: ../../operation/agentes/status_monitor.php:229
@@ -4193,11 +4195,11 @@ msgstr ""
 #: ../../include/functions.php:1147 ../../include/functions_db.php:2079
 #: ../../operation/events/events.php:279 ../../operation/events/events.php:456
 msgid "System"
-msgstr ""
+msgstr "సిస్టమ్"
 
 #: ../../include/functions.php:1148
 msgid "Error"
-msgstr ""
+msgstr "దోషం"
 
 #: ../../include/functions_db.php:1173
 msgid "Software agent data"
@@ -4237,7 +4239,7 @@ msgstr ""
 
 #: ../../include/functions_db.php:1880
 msgid "Days"
-msgstr ""
+msgstr "రోజులు"
 
 #: ../../include/functions_db.php:1881
 msgid "Fired"
@@ -4283,7 +4285,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:440
 #: ../../include/functions_reporting.php:544
 msgid "Monitor"
-msgstr ""
+msgstr "మానిటర్"
 
 #: ../../include/functions_reporting.php:484
 msgid "Agents in group"
@@ -4325,7 +4327,7 @@ msgstr ""
 #: ../../operation/reporting/reporting_viewer.php:243
 #: ../../operation/agentes/estado_grupo.php:214
 msgid "Ok"
-msgstr ""
+msgstr "ఓకే"
 
 #: ../../operation/reporting/reporting_viewer.php:245
 #: ../../operation/agentes/estado_grupo.php:216
@@ -4359,11 +4361,11 @@ msgstr ""
 
 #: ../../operation/reporting/custom_reporting.php:45
 msgid "HTML"
-msgstr ""
+msgstr "HTML"
 
 #: ../../operation/reporting/custom_reporting.php:46
 msgid "XML"
-msgstr ""
+msgstr "XML"
 
 #: ../../operation/incidents/incident.php:50
 msgid "Incident successfully deleted"
@@ -4436,18 +4438,18 @@ msgstr ""
 
 #: ../../operation/incidents/incident.php:256
 msgid "ID"
-msgstr ""
+msgstr "గుచి"
 
 #: ../../operation/incidents/incident.php:262
 #: ../../operation/incidents/incident_detail.php:260
 #: ../../operation/events/events.php:349
 msgid "Source"
-msgstr ""
+msgstr "వనరు"
 
 #: ../../operation/incidents/incident.php:263
 #: ../../operation/incidents/incident_detail.php:238
 msgid "Owner"
-msgstr ""
+msgstr "యజమాని"
 
 #: ../../operation/incidents/incident.php:351
 #: ../../operation/incidents/incident_detail.php:221
@@ -4459,7 +4461,7 @@ msgstr ""
 #: ../../operation/menu.php:155 ../../operation/menu.php:177
 #: ../../operation/menu.php:221
 msgid "Statistics"
-msgstr ""
+msgstr "గణాంకాలు"
 
 #: ../../operation/incidents/incident_statistics.php:33
 msgid "Incidents by status"
@@ -4511,7 +4513,7 @@ msgstr ""
 
 #: ../../operation/incidents/incident_detail.php:121
 msgid "No description available"
-msgstr ""
+msgstr "ఏ వివరణ లభింఛలేదు"
 
 #: ../../operation/incidents/incident_detail.php:149
 msgid "File could not be saved due to database error"
@@ -4558,7 +4560,7 @@ msgstr ""
 
 #: ../../operation/incidents/incident_detail.php:302
 msgid "Creator"
-msgstr ""
+msgstr "సృష్టికర్త"
 
 #: ../../operation/incidents/incident_detail.php:321
 msgid "Update incident"
@@ -4583,11 +4585,11 @@ msgstr ""
 #: ../../operation/incidents/incident_detail.php:391
 #: ../../operation/incidents/incident_detail.php:427
 msgid "Filename"
-msgstr ""
+msgstr "దస్త్రనామము"
 
 #: ../../operation/incidents/incident_detail.php:393
 msgid "Size"
-msgstr ""
+msgstr "పరిమాణం"
 
 #: ../../operation/incidents/incident_detail.php:423
 msgid "Add attachment"
@@ -4626,7 +4628,7 @@ msgstr ""
 
 #: ../../operation/servers/view_server_detail.php:76
 msgid "Progress"
-msgstr ""
+msgstr "పురోగమనం"
 
 #: ../../operation/servers/view_server_detail.php:78
 msgid "Op"
@@ -4634,7 +4636,7 @@ msgstr ""
 
 #: ../../operation/servers/view_server_detail.php:124
 msgid "Done"
-msgstr ""
+msgstr "అయినది"
 
 #: ../../operation/servers/view_server_detail.php:126
 msgid "Pending"
@@ -4647,7 +4649,7 @@ msgstr ""
 #: ../../operation/servers/view_server.php:55
 #: ../../operation/agentes/tactical.php:231
 msgid "Load"
-msgstr ""
+msgstr "భారం"
 
 #: ../../operation/servers/view_server.php:57
 #: ../../operation/agentes/tactical.php:233
@@ -4656,16 +4658,16 @@ msgstr ""
 
 #: ../../operation/servers/view_server.php:59
 msgid "Version"
-msgstr ""
+msgstr "వివరణం"
 
 #: ../../operation/servers/view_server.php:90
 #: ../../operation/agentes/tactical.php:288
 msgid "of"
-msgstr ""
+msgstr "ఆఫ్"
 
 #: ../../operation/servers/view_server.php:100
 msgid "SNMP server"
-msgstr ""
+msgstr "SNMP సేవిక"
 
 #: ../../operation/servers/view_server.php:118
 msgid "Master server"
@@ -4694,7 +4696,7 @@ msgstr ""
 
 #: ../../operation/visual_console/render_view.php:92
 msgid "Refresh"
-msgstr ""
+msgstr "పునర్వికాసం"
 
 #: ../../operation/visual_console/render_view.php:123
 msgid "Until refresh"
@@ -4708,7 +4710,7 @@ msgstr ""
 #: ../../operation/agentes/estado_agente.php:41
 #: ../../operation/agentes/tactical.php:202
 msgid "Summary"
-msgstr ""
+msgstr "సంక్షిప్తమైన"
 
 #: ../../operation/visual_console/index.php:37
 msgid "Elements"
@@ -4756,7 +4758,7 @@ msgstr ""
 
 #: ../../operation/menu.php:193
 msgid "Marquee"
-msgstr ""
+msgstr "మార్క్యూ"
 
 #: ../../operation/menu.php:203
 msgid "View users"
@@ -4776,7 +4778,7 @@ msgstr ""
 
 #: ../../operation/menu.php:253 ../../operation/messages/message.php:58
 msgid "Messages"
-msgstr ""
+msgstr "సందేశాలు"
 
 #: ../../operation/menu.php:262
 msgid "Messages to groups"
@@ -4879,11 +4881,11 @@ msgstr ""
 
 #: ../../operation/snmpconsole/snmp_view.php:172
 msgid "Value"
-msgstr ""
+msgstr "విలువ"
 
 #: ../../operation/snmpconsole/snmp_view.php:173
 msgid "Custom"
-msgstr ""
+msgstr "మలచిన"
 
 #: ../../operation/snmpconsole/snmp_view.php:276
 #: ../../operation/agentes/estado_alertas.php:67
@@ -4917,7 +4919,7 @@ msgstr ""
 
 #: ../../operation/agentes/networkmap.php:271
 msgid "Layout"
-msgstr ""
+msgstr "కూర్పు"
 
 #: ../../operation/agentes/networkmap.php:275
 msgid "No Overlap"
@@ -4925,7 +4927,7 @@ msgstr ""
 
 #: ../../operation/agentes/networkmap.php:279
 msgid "Simple"
-msgstr ""
+msgstr "సాధారణ"
 
 #: ../../operation/agentes/networkmap.php:283
 msgid "Regenerate"
@@ -4933,7 +4935,7 @@ msgstr ""
 
 #: ../../operation/agentes/networkmap.php:298
 msgid "Zoom"
-msgstr ""
+msgstr "జూమ్"
 
 #: ../../operation/agentes/networkmap.php:306
 msgid "Distance between nodes"
@@ -4941,7 +4943,7 @@ msgstr ""
 
 #: ../../operation/agentes/networkmap.php:312
 msgid "Font"
-msgstr ""
+msgstr "అక్షరశైలి"
 
 #: ../../operation/agentes/networkmap.php:352
 #: ../../operation/agentes/networkmap.php:361
@@ -5005,7 +5007,7 @@ msgstr ""
 
 #: ../../operation/agentes/estado_generalagente.php:128
 msgid "Remote"
-msgstr ""
+msgstr "సుదూర"
 
 #: ../../operation/agentes/estado_generalagente.php:161
 msgid "Next agent contact"
@@ -5099,19 +5101,19 @@ msgstr ""
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Sunday"
-msgstr ""
+msgstr "ఆదివారం"
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Monday"
-msgstr ""
+msgstr "సోమవారం"
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Tuesday"
-msgstr ""
+msgstr "మంగళవారం"
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Wednesday"
-msgstr ""
+msgstr "బుధవారం"
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Thurdsday"
@@ -5119,15 +5121,15 @@ msgstr ""
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Friday"
-msgstr ""
+msgstr "శుక్రవారం"
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Saturday"
-msgstr ""
+msgstr "శనివారం"
 
 #: ../../operation/agentes/exportdata.php:60
 msgid "One hour"
-msgstr ""
+msgstr "ఒక గంట"
 
 #: ../../operation/agentes/exportdata.php:76
 msgid "Hr"
@@ -5168,7 +5170,7 @@ msgstr ""
 
 #: ../../operation/agentes/exportdata.php:170
 msgid " to "
-msgstr ""
+msgstr " దానికి "
 
 #: ../../operation/agentes/exportdata.php:287
 msgid "Begin date (*)"
@@ -5196,7 +5198,7 @@ msgstr ""
 
 #: ../../operation/agentes/exportdata.php:313
 msgid "Export"
-msgstr ""
+msgstr "ఎగుమతి"
 
 #: ../../operation/agentes/bulbs.php:31
 #: ../../operation/agentes/estado_agente.php:312
@@ -5275,7 +5277,7 @@ msgstr ""
 
 #: ../../operation/agentes/estado_alertas.php:60
 msgid "Info"
-msgstr ""
+msgstr "సమాచారం"
 
 #: ../../operation/agentes/estado_alertas.php:143
 msgid "Combined alert"
@@ -5387,7 +5389,7 @@ msgstr ""
 
 #: ../../operation/events/events.php:250
 msgid "Severity"
-msgstr ""
+msgstr "తీవ్రత"
 
 #: ../../operation/events/events.php:255
 msgid "Event status"
@@ -5415,7 +5417,7 @@ msgstr ""
 
 #: ../../operation/events/events.php:304
 msgid "Default"
-msgstr ""
+msgstr "అప్రమేయం"
 
 #: ../../operation/events/events.php:316
 msgid "Marquee display"
@@ -5500,12 +5502,12 @@ msgstr ""
 #: ../../operation/messages/message.php:126
 #: ../../operation/messages/message.php:147
 msgid "Message"
-msgstr ""
+msgstr "సందేశం"
 
 #: ../../operation/messages/message.php:100
 #: ../../operation/messages/message.php:129
 msgid "Send message"
-msgstr ""
+msgstr "సందేశాన్ని పంపుము"
 
 #: ../../operation/messages/message.php:152
 msgid " wrote"
@@ -5513,7 +5515,7 @@ msgstr ""
 
 #: ../../operation/messages/message.php:155
 msgid "Reply"
-msgstr ""
+msgstr "సమాధానం"
 
 #: ../../operation/messages/message.php:160
 msgid "Read messages"
@@ -5533,15 +5535,12 @@ msgstr ""
 
 #: ../../operation/messages/message.php:188
 msgid "Read"
-msgstr ""
+msgstr "చదువుము"
 
 #: ../../operation/messages/message.php:189
 msgid "Sender"
-msgstr ""
+msgstr "పంపినవాడు"
 
 #: ../../operation/messages/message.php:215
 msgid "No subject"
 msgstr ""
-
-#~ msgid "user"
-#~ msgstr "వాడుకరి"

@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-10-31 11:29+0100\n"
-"PO-Revision-Date: 2008-10-22 18:34+0000\n"
-"Last-Translator: Jorge González <Unknown>\n"
+"PO-Revision-Date: 2008-12-01 11:09+0000\n"
+"Last-Translator: nafets <nafets1@gmx.at>\n"
 "Language-Team: de <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-11-17 08:37+0000\n"
+"X-Launchpad-Export-Date: 2008-12-02 10:49+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../../reporting/stat_win.php:46
@@ -29,21 +29,21 @@ msgstr "Die Quelle des Graphen kann nicht gefunden werden."
 #: ../../include/functions.php:536
 #: ../../operation/reporting/graph_viewer.php:124
 msgid "1 hour"
-msgstr ""
+msgstr "1 Stunde"
 
 #: ../../reporting/stat_win.php:55 ../../reporting/stat_win.php:219
 #: ../../godmode/reporting/graph_builder.php:332
 #: ../../godmode/reporting/graph_builder.php:386
 #: ../../include/functions.php:539
 msgid "2 hours"
-msgstr ""
+msgstr "2 Stunden"
 
 #: ../../reporting/stat_win.php:57 ../../reporting/stat_win.php:220
 #: ../../godmode/reporting/graph_builder.php:338
 #: ../../godmode/reporting/graph_builder.php:388
 #: ../../include/functions.php:542
 msgid "6 hours"
-msgstr ""
+msgstr "6 Stunden"
 
 #: ../../reporting/stat_win.php:59 ../../reporting/stat_win.php:221
 #: ../../godmode/reporting/graph_builder.php:341
@@ -59,7 +59,7 @@ msgstr "12 Stunden"
 #: ../../include/functions.php:548
 #: ../../operation/reporting/graph_viewer.php:129
 msgid "1 day"
-msgstr ""
+msgstr "1 Tag"
 
 #: ../../reporting/stat_win.php:63 ../../reporting/stat_win.php:223
 #: ../../godmode/reporting/graph_builder.php:347
@@ -68,19 +68,19 @@ msgstr ""
 #: ../../include/functions.php:551
 #: ../../operation/reporting/graph_viewer.php:130
 msgid "2 days"
-msgstr ""
+msgstr "2 Tage"
 
 #: ../../reporting/stat_win.php:65 ../../reporting/stat_win.php:224
 #: ../../include/functions.php:554
 msgid "5 days"
-msgstr ""
+msgstr "5 Tage"
 
 #: ../../reporting/stat_win.php:67 ../../reporting/stat_win.php:225
 #: ../../godmode/reporting/reporting_builder.php:393
 #: ../../include/functions.php:557
 #: ../../operation/reporting/graph_viewer.php:131
 msgid "1 week"
-msgstr ""
+msgstr "1 Woche"
 
 #: ../../reporting/stat_win.php:69 ../../reporting/stat_win.php:226
 #: ../../godmode/reporting/map_builder.php:372
@@ -95,14 +95,14 @@ msgstr "15 Tage"
 #: ../../include/functions.php:563
 #: ../../operation/reporting/graph_viewer.php:132
 msgid "1 month"
-msgstr ""
+msgstr "1 Monat"
 
 #: ../../reporting/stat_win.php:73 ../../reporting/stat_win.php:228
 #: ../../godmode/reporting/graph_builder.php:362
 #: ../../godmode/reporting/graph_builder.php:395
 #: ../../include/functions.php:566
 msgid "2 months"
-msgstr ""
+msgstr "2 Monate"
 
 #: ../../reporting/stat_win.php:75 ../../reporting/stat_win.php:229
 #: ../../godmode/reporting/graph_builder.php:365
@@ -111,7 +111,7 @@ msgstr ""
 #: ../../include/functions.php:569
 #: ../../operation/reporting/graph_viewer.php:133
 msgid "6 months"
-msgstr ""
+msgstr "6 Monate"
 
 #: ../../reporting/stat_win.php:114
 #: ../../godmode/agentes/module_manager_editor_wmi.php:217
@@ -145,7 +145,7 @@ msgstr "Min. Wert"
 
 #: ../../reporting/stat_win.php:187
 msgid "Refresh time"
-msgstr ""
+msgstr "Wiederhol-Datum"
 
 #: ../../reporting/stat_win.php:191
 msgid "Avg. Only"
@@ -153,27 +153,27 @@ msgstr "Nur Mittelwert"
 
 #: ../../reporting/stat_win.php:198
 msgid "Begin date"
-msgstr ""
+msgstr "Anfangsdatum"
 
 #: ../../reporting/stat_win.php:203
 msgid "Zoom factor"
-msgstr ""
+msgstr "Vergrößerungsfaktor"
 
 #: ../../reporting/stat_win.php:214
 msgid "Time range"
-msgstr ""
+msgstr "Zeitbereich"
 
 #: ../../reporting/stat_win.php:233
 msgid "Show events"
-msgstr ""
+msgstr "Ereignisse anzeigen"
 
 #: ../../reporting/stat_win.php:242
 msgid "Show alert"
-msgstr ""
+msgstr "Alarm anzeigen"
 
 #: ../../reporting/fgraph.php:948
 msgid "Data occurrence for module "
-msgstr ""
+msgstr "Datenaufkommen für Modul "
 
 #: ../../reporting/fgraph.php:1040 ../../operation/incidents/incident.php:192
 #: ../../operation/incidents/incident.php:199
@@ -202,7 +202,7 @@ msgstr "Ernst"
 #: ../../reporting/fgraph.php:1044
 #: ../../operation/incidents/incident_detail.php:293
 msgid "Very serious"
-msgstr ""
+msgstr "sehr gravierend"
 
 #: ../../reporting/fgraph.php:1045 ../../reporting/fgraph.php:1265
 #: ../../include/functions.php:676 ../../include/functions.php:1160
@@ -215,46 +215,46 @@ msgstr "Wartung"
 #: ../../reporting/fgraph.php:1273 ../../include/functions.php:679
 #: ../../include/functions.php:1161 ../../include/functions.php:1181
 msgid "Informational"
-msgstr ""
+msgstr "Informativ"
 
 #: ../../reporting/fgraph.php:1280 ../../include/functions.php:682
 #: ../../include/functions.php:1162 ../../include/functions.php:1183
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
 #: ../../reporting/fgraph.php:1287 ../../include/functions.php:685
 #: ../../include/functions.php:1163 ../../include/functions.php:1185
 msgid "Warning"
-msgstr ""
+msgstr "Achtung"
 
 #: ../../reporting/fgraph.php:1294 ../../include/functions.php:688
 #: ../../include/functions.php:1164 ../../include/functions.php:1187
 msgid "Critical"
-msgstr ""
+msgstr "Kritisch"
 
 #: ../../reporting/fgraph.php:1469
 msgid "Today"
-msgstr ""
+msgstr "Heute"
 
 #: ../../reporting/fgraph.php:1470
 msgid "Week"
-msgstr ""
+msgstr "Woche"
 
 #: ../../reporting/fgraph.php:1471
 msgid "Month"
-msgstr ""
+msgstr "Monat"
 
 #: ../../reporting/fgraph.php:1472
 msgid "Months"
-msgstr ""
+msgstr "Monaten"
 
 #: ../../reporting/fgraph.php:1473
 msgid "Older"
-msgstr ""
+msgstr "Ältere"
 
 #: ../../reporting/fgraph.php:1505
 msgid "no data"
-msgstr ""
+msgstr "keine Daten"
 
 #: ../../reporting/fgraph.php:1572
 msgid "Out of limits"
@@ -290,19 +290,19 @@ msgstr ""
 msgid ""
 "Pandora FMS help system has been called with a help reference that currently "
 "don't exist. There is no help content to show."
-msgstr ""
+msgstr "Zum ausgewählten Thema ist leider keine Hilfe verfügbar."
 
 #: ../../general/pandora_help.php:52
 msgid "Pandora FMS Help System"
-msgstr ""
+msgstr "Pandora FMS Hilfe"
 
 #: ../../general/login_page.php:32
 msgid "Pandora FMS Web Console"
-msgstr ""
+msgstr "Pandora FMS Webinterface"
 
 #: ../../general/login_page.php:38
 msgid "Build"
-msgstr ""
+msgstr "Version"
 
 #: ../../general/login_page.php:40
 msgid "Login"
@@ -325,7 +325,7 @@ msgstr "Diese Seite wurde erstellt am"
 
 #: ../../general/footer.php:40
 msgid "Pandora FMS console is best viewed with Firefox web browser"
-msgstr ""
+msgstr "Pandora FMS Webinterface  - Beste Anzeige mit Firefox"
 
 #: ../../general/logoff.php:22
 msgid "Logged Out"
@@ -431,7 +431,7 @@ msgstr ""
 
 #: ../../general/logon_ok.php:132 ../../operation/agentes/tactical.php:102
 msgid "Alert level"
-msgstr ""
+msgstr "Alarmlevel"
 
 #: ../../general/logon_ok.php:133 ../../operation/agentes/tactical.php:103
 msgid "of non-fired alerts"
@@ -443,11 +443,11 @@ msgstr "Überblick über Pandora FMS"
 
 #: ../../general/logon_ok.php:141
 msgid "Total agents"
-msgstr ""
+msgstr "Anzahl Agenten"
 
 #: ../../general/logon_ok.php:143
 msgid "Total checks"
-msgstr ""
+msgstr "Anzahl Checks"
 
 #: ../../general/logon_ok.php:145 ../../operation/agentes/tactical.php:125
 msgid "Monitor BAD"
@@ -455,7 +455,7 @@ msgstr ""
 
 #: ../../general/logon_ok.php:151
 msgid "Alerts defined"
-msgstr ""
+msgstr "Alarme definiert"
 
 #: ../../general/logon_ok.php:153
 msgid "Total users"
@@ -469,7 +469,7 @@ msgstr "Dies ist Ihre letzte Aktivität in Pandora"
 #: ../../godmode/servers/manage_export_form.php:103
 #: ../../godmode/admin_access_logs.php:105
 msgid "User"
-msgstr ""
+msgstr "Benutzer"
 
 #: ../../general/logon_ok.php:172 ../../godmode/servers/manage_export.php:102
 #: ../../godmode/servers/manage_recontask.php:100
@@ -509,7 +509,7 @@ msgstr "Bemerkungen"
 
 #: ../../general/header.php:31
 msgid "You are"
-msgstr ""
+msgstr "Sie sind"
 
 #: ../../general/header.php:35
 msgid "Logout"
@@ -521,7 +521,7 @@ msgstr "Allgemeine Information"
 
 #: ../../general/header.php:49 ../../general/header.php:55
 msgid "All systems"
-msgstr ""
+msgstr "Alle Systeme"
 
 #: ../../general/header.php:49
 #: ../../godmode/reporting/reporting_builder.php:463
@@ -531,15 +531,15 @@ msgstr "Nicht erreichbar"
 
 #: ../../general/header.php:52
 msgid "servers down"
-msgstr ""
+msgstr "Servers down"
 
 #: ../../general/header.php:55
 msgid "Ready"
-msgstr ""
+msgstr "Fertig"
 
 #: ../../general/header.php:65 ../../general/header.php:67
 msgid "Autorefresh"
-msgstr ""
+msgstr "Autorefresh"
 
 #: ../../general/header.php:72 ../../operation/events/event_statistics.php:32
 #: ../../operation/events/events.php:211
@@ -572,20 +572,20 @@ msgstr "Freies Überwachungssystem"
 
 #: ../../index.php:247
 msgid "Sorry! I can't find the page!"
-msgstr ""
+msgstr "Seite kann nicht angezeigt werden."
 
 #: ../../extensions/update_manager/load_updatemanager.php:37
 msgid "Keygen file does not exists"
-msgstr ""
+msgstr "Keygen File existriert nicht."
 
 #: ../../extensions/update_manager/load_updatemanager.php:44
 msgid "Keygen file is not executable"
-msgstr ""
+msgstr "Keygen File kann nicht ausgeführt werden."
 
 #: ../../extensions/update_manager/main.php:36
 #: ../../extensions/update_manager.php:124
 msgid "Update manager"
-msgstr ""
+msgstr "Updatemanager"
 
 #: ../../extensions/update_manager/main.php:42
 msgid ""
@@ -612,19 +612,19 @@ msgstr ""
 
 #: ../../extensions/update_manager/main.php:66
 msgid "Your system is up-to-date"
-msgstr ""
+msgstr "Ihr System ist auf dem aktuellen Stand"
 
 #: ../../extensions/update_manager/main.php:68
 msgid "Server connection failed"
-msgstr ""
+msgstr "Serververbindung fehlgeschlagen"
 
 #: ../../extensions/update_manager/main.php:70
 msgid "Server authorization rejected"
-msgstr ""
+msgstr "Serververbindung nicht zugelassen."
 
 #: ../../extensions/update_manager/main.php:72
 msgid "There's a new update for Pandora FMS"
-msgstr ""
+msgstr "Keine neuen Pandora FMS Updates vorhaden."
 
 #: ../../extensions/update_manager/main.php:77
 msgid "Id"
@@ -691,7 +691,7 @@ msgstr "Beschreibung"
 
 #: ../../extensions/update_manager/main.php:89
 msgid "Overwrite local changes"
-msgstr ""
+msgstr "lokale Einstellungen überschreiben"
 
 #: ../../extensions/update_manager/main.php:93
 #: ../../extensions/update_manager/settings.php:82
@@ -739,15 +739,15 @@ msgstr "Aktualisiere"
 
 #: ../../extensions/update_manager/main.php:98
 msgid "Your system version number is"
-msgstr ""
+msgstr "Versionssnummer des Systems"
 
 #: ../../extensions/update_manager/settings.php:38
 msgid "Update manager settings updated"
-msgstr ""
+msgstr "Einstellungen des Update Managers geändert"
 
 #: ../../extensions/update_manager/settings.php:43
 msgid "Settings"
-msgstr ""
+msgstr "Einstellungen"
 
 #: ../../extensions/update_manager/settings.php:49
 msgid "Customer key"
@@ -771,35 +771,35 @@ msgstr ""
 
 #: ../../extensions/update_manager/settings.php:64
 msgid "Keygen path"
-msgstr ""
+msgstr "Keygen Pfad"
 
 #: ../../extensions/update_manager/settings.php:67
 msgid "Proxy server"
-msgstr ""
+msgstr "Proxy Server"
 
 #: ../../extensions/update_manager/settings.php:70
 msgid "Proxy port"
-msgstr ""
+msgstr "Proxy Port"
 
 #: ../../extensions/update_manager/settings.php:73
 msgid "Proxy user"
-msgstr ""
+msgstr "Proxy Benutzer"
 
 #: ../../extensions/update_manager/settings.php:76
 msgid "Proxy password"
-msgstr ""
+msgstr "Proxy Passwort"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:552
 msgid "Development"
-msgstr ""
+msgstr "Entwicklung"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:553
 msgid "Testing"
-msgstr ""
+msgstr "Test"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:554
 msgid "Public"
-msgstr ""
+msgstr "Öffentlich"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:555
 #: ../../godmode/groups/group_list.php:125
@@ -819,7 +819,7 @@ msgstr "Inaktiv"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:563
 msgid "Database"
-msgstr ""
+msgstr "Datenbank"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:564
 msgid "Code / binary directory"
@@ -827,15 +827,15 @@ msgstr ""
 
 #: ../../extensions/update_manager.php:107
 msgid "There's a new update for Pandora"
-msgstr ""
+msgstr "Neues Update für Pandora FMS"
 
 #: ../../extensions/update_manager.php:109
 msgid "More info"
-msgstr ""
+msgstr "weitere Informationen"
 
 #: ../../extensions/update_manager.php:125
 msgid "Update manager settings"
-msgstr ""
+msgstr "Update Manager - Einstellungen"
 
 #: ../../godmode/reporting/map_builder.php:67
 #: ../../godmode/reporting/map_builder.php:166 ../../godmode/setup/news.php:44
@@ -1072,7 +1072,7 @@ msgstr "Höhe"
 
 #: ../../godmode/reporting/map_builder.php:332
 msgid "preview"
-msgstr ""
+msgstr "Vorschau"
 
 #: ../../godmode/reporting/map_builder.php:350
 msgid "Map element trash"
@@ -1080,23 +1080,23 @@ msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:351
 msgid "Drag an element here to delete from the map"
-msgstr ""
+msgstr "Um ein Element zu löschen, hier her ziehen."
 
 #: ../../godmode/reporting/map_builder.php:364
 msgid "Hour"
-msgstr ""
+msgstr "Stunde"
 
 #: ../../godmode/reporting/map_builder.php:365
 #: ../../godmode/reporting/map_builder.php:366
 #: ../../godmode/reporting/map_builder.php:367
 #: ../../godmode/reporting/map_builder.php:368
 msgid "Hours"
-msgstr ""
+msgstr "Stunden"
 
 #: ../../godmode/reporting/map_builder.php:369
 #: ../../godmode/reporting/graph_builder.php:390
 msgid "Last day"
-msgstr ""
+msgstr "Gestern"
 
 #: ../../godmode/reporting/map_builder.php:370
 #: ../../godmode/servers/manage_recontask_form.php:91
@@ -1110,19 +1110,19 @@ msgstr "Tage"
 #: ../../godmode/reporting/graph_builder.php:353
 #: ../../godmode/reporting/graph_builder.php:392
 msgid "Last week"
-msgstr ""
+msgstr "Letzte Woche"
 
 #: ../../godmode/reporting/map_builder.php:373
 msgid "Last Month"
-msgstr ""
+msgstr "Letzten Monat"
 
 #: ../../godmode/reporting/map_builder.php:374
 msgid "Two Months"
-msgstr ""
+msgstr "Zwei Monate"
 
 #: ../../godmode/reporting/map_builder.php:375
 msgid "Six Months"
-msgstr ""
+msgstr "Sechs Monate"
 
 #: ../../godmode/reporting/map_builder.php:387
 msgid "Map element editor"
@@ -1221,7 +1221,7 @@ msgstr "Verknüpfte Karte"
 #: ../../godmode/reporting/map_builder.php:453
 #: ../../operation/reporting/reporting_viewer.php:82
 msgid "Loading"
-msgstr ""
+msgstr "Laden"
 
 #: ../../godmode/reporting/graph_builder.php:83
 msgid "Graph stored successfully"
@@ -1238,7 +1238,7 @@ msgstr "Modulliste der Grapherzeuger"
 
 #: ../../godmode/reporting/graph_builder.php:217
 msgid "Weight"
-msgstr ""
+msgstr "Gewichtung"
 
 #: ../../godmode/reporting/graph_builder.php:252
 #: ../../operation/reporting/graph_viewer.php:110
@@ -1306,20 +1306,20 @@ msgstr "Nein"
 #: ../../godmode/reporting/graph_builder.php:335
 #: ../../godmode/reporting/graph_builder.php:387
 msgid "3 hours"
-msgstr ""
+msgstr "3 Stunden"
 
 #: ../../godmode/reporting/graph_builder.php:350
 msgid "4 days"
-msgstr ""
+msgstr "4 Tage"
 
 #: ../../godmode/reporting/graph_builder.php:359
 #: ../../godmode/reporting/graph_builder.php:394
 msgid "Last month"
-msgstr ""
+msgstr "Letzten Monat"
 
 #: ../../godmode/reporting/graph_builder.php:368
 msgid "1 year"
-msgstr ""
+msgstr "1 Jahr"
 
 #: ../../godmode/reporting/graph_builder.php:400 ../../operation/menu.php:169
 msgid "View events"
@@ -1327,12 +1327,12 @@ msgstr "Ereignisse"
 
 #: ../../godmode/reporting/graph_builder.php:414
 msgid "Stacked"
-msgstr ""
+msgstr "Gestapelt"
 
 #: ../../godmode/reporting/graph_builder.php:418
 #: ../../operation/reporting/graph_viewer.php:139
 msgid "Area"
-msgstr ""
+msgstr "Bereich"
 
 #: ../../godmode/reporting/graph_builder.php:419
 #: ../../operation/reporting/graph_viewer.php:140
@@ -1397,23 +1397,23 @@ msgstr "Bei der Berichtsbildung gab es ein Problem"
 
 #: ../../godmode/reporting/reporting_builder.php:223
 msgid "SLA was successfully created"
-msgstr ""
+msgstr "SLA wurden erstellt"
 
 #: ../../godmode/reporting/reporting_builder.php:225
 msgid "There was a problem creating SLA"
-msgstr ""
+msgstr "Beim erstellen der SLA sind Probleme aufgetreten"
 
 #: ../../godmode/reporting/reporting_builder.php:228
 msgid "Module is not set"
-msgstr ""
+msgstr "Modul wurde nicht ausgewählt"
 
 #: ../../godmode/reporting/reporting_builder.php:236
 msgid "SLA was successfully delete"
-msgstr ""
+msgstr "SLA wurde gelöscht"
 
 #: ../../godmode/reporting/reporting_builder.php:238
 msgid "There was a problem deleting SLA"
-msgstr ""
+msgstr "Beim löschen der SLA sind Probleme aufgetreten"
 
 #: ../../godmode/reporting/reporting_builder.php:245
 #: ../../godmode/reporting/reporting_builder.php:322
@@ -1443,7 +1443,7 @@ msgstr "SLA Grenze (%)"
 
 #: ../../godmode/reporting/reporting_builder.php:285
 msgid "SLA report construction"
-msgstr ""
+msgstr "SLA Berichtsgenerator"
 
 #: ../../godmode/reporting/reporting_builder.php:329
 #: ../../godmode/reporting/reporting_builder.php:500
@@ -1477,7 +1477,7 @@ msgstr "Stunden"
 
 #: ../../godmode/reporting/reporting_builder.php:394
 msgid "2 weeks"
-msgstr ""
+msgstr "2 Wochen"
 
 #: ../../godmode/reporting/reporting_builder.php:410
 msgid "Custom graph name"
@@ -1489,11 +1489,11 @@ msgstr "Berichtseinheit"
 
 #: ../../godmode/reporting/reporting_builder.php:431
 msgid "Order"
-msgstr ""
+msgstr "Reihenfolge"
 
 #: ../../godmode/reporting/reporting_builder.php:436
 msgid "Options"
-msgstr ""
+msgstr "Optionen"
 
 #: ../../godmode/reporting/reporting_builder.php:458
 msgid "Up"
@@ -1514,39 +1514,39 @@ msgstr "Es sind keine Berichte angelegt"
 
 #: ../../godmode/reporting/reporting_builder.php:525
 msgid "Create report"
-msgstr ""
+msgstr "Bericht erstellen"
 
 #: ../../godmode/extensions.php:29 ../../operation/extensions.php:29
 msgid "There are no extensions defined"
-msgstr ""
+msgstr "Keine Erweiterungen gefiniert"
 
 #: ../../godmode/extensions.php:33 ../../operation/extensions.php:33
 msgid "Defined extensions"
-msgstr ""
+msgstr "Erweiterungen definieren"
 
 #: ../../godmode/servers/manage_export.php:56
 msgid "Error updating export target"
-msgstr ""
+msgstr "Exportziel konnte nicht erstellt werden"
 
 #: ../../godmode/servers/manage_export.php:58
 msgid "Successfully updated export target"
-msgstr ""
+msgstr "Exportziel erfolgreich erstellt"
 
 #: ../../godmode/servers/manage_export.php:66
 msgid "Error deleting export target"
-msgstr ""
+msgstr "Exportziel konnte nicht gelöscht werden"
 
 #: ../../godmode/servers/manage_export.php:68
 msgid "Succesfully deleted export target"
-msgstr ""
+msgstr "Exportziel erfolgreich gelöscht"
 
 #: ../../godmode/servers/manage_export.php:82
 msgid "Error creating export target"
-msgstr ""
+msgstr "Fehler bei der Exportzielerstellung"
 
 #: ../../godmode/servers/manage_export.php:84
 msgid "Successfully created export target"
-msgstr ""
+msgstr "Exportziel wurde erstellt"
 
 #: ../../godmode/servers/manage_export.php:89
 #: ../../godmode/servers/modificar_server.php:56
@@ -1561,11 +1561,11 @@ msgstr "Pandora Servers"
 #: ../../godmode/servers/manage_export.php:89
 #: ../../godmode/servers/manage_export_form.php:61
 msgid "export targets"
-msgstr ""
+msgstr "Exportziele"
 
 #: ../../godmode/servers/manage_export.php:93
 msgid "There are no export targets configured"
-msgstr ""
+msgstr "kein Exportziel ausgewählt"
 
 #: ../../godmode/servers/manage_export.php:102
 #: ../../godmode/servers/manage_export_form.php:82
@@ -1596,7 +1596,7 @@ msgstr "Intervall"
 #: ../../godmode/servers/manage_export.php:102
 #: ../../godmode/servers/manage_export_form.php:90
 msgid "Address"
-msgstr ""
+msgstr "Adresse"
 
 #: ../../godmode/servers/manage_export.php:102
 msgid "Transfer Mode"
@@ -1608,7 +1608,7 @@ msgstr "Der Server wurde gelöscht"
 
 #: ../../godmode/servers/modificar_server.php:38
 msgid "There was a problem deleting the server"
-msgstr ""
+msgstr "Server konnte nicht gelöscht werden"
 
 #: ../../godmode/servers/modificar_server.php:48
 msgid "Server updated successfully"
@@ -1616,7 +1616,7 @@ msgstr "Server wurde aktualisiert"
 
 #: ../../godmode/servers/modificar_server.php:50
 msgid "There was a problem updating the server"
-msgstr ""
+msgstr "Server konnte nicht Aktualisiert werden"
 
 #: ../../godmode/servers/modificar_server.php:56
 msgid "Update Server"
@@ -1656,13 +1656,13 @@ msgstr "Status"
 
 #: ../../godmode/servers/modificar_server.php:87
 msgid "Started"
-msgstr ""
+msgstr "Gestartet"
 
 #: ../../godmode/servers/modificar_server.php:87
 #: ../../operation/incidents/incident.php:261
 #: ../../operation/servers/view_server.php:61
 msgid "Updated"
-msgstr ""
+msgstr "Aktualisiert"
 
 #: ../../godmode/servers/modificar_server.php:124
 #: ../../godmode/agentes/agent_manager.php:126
@@ -1756,7 +1756,7 @@ msgstr "BS"
 #: ../../godmode/servers/manage_recontask_form.php:113
 #: ../../godmode/agentes/planned_downtime.php:207
 msgid "Any"
-msgstr ""
+msgstr "Beliebig"
 
 #: ../../godmode/servers/manage_recontask.php:131
 msgid "There are no recon task configured"
@@ -1780,7 +1780,7 @@ msgstr ""
 
 #: ../../godmode/servers/manage_recontask_form.php:86
 msgid "hour"
-msgstr ""
+msgstr "Stunde"
 
 #: ../../godmode/servers/manage_recontask_form.php:90
 #: ../../operation/agentes/exportdata.php:61
@@ -1802,7 +1802,7 @@ msgstr "Monat"
 #: ../../godmode/servers/manage_export_form.php:77
 #: ../../operation/servers/view_server.php:106
 msgid "Export server"
-msgstr ""
+msgstr "Exportserver"
 
 #: ../../godmode/servers/manage_export_form.php:79
 #: ../../godmode/agentes/module_manager_editor_wmi.php:232
@@ -1824,47 +1824,47 @@ msgstr ""
 #: ../../godmode/servers/manage_export_form.php:111
 #: ../../godmode/agentes/module_manager_editor_plugin.php:129
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #: ../../godmode/servers/manage_export_form.php:115
 msgid "Target directory"
-msgstr ""
+msgstr "Zielverzeichnis"
 
 #: ../../godmode/servers/manage_export_form.php:119
 msgid "Extra options"
-msgstr ""
+msgstr "Zusätzliche Optionen"
 
 #: ../../godmode/servers/plugin.php:56
 msgid "Problem updating plugin"
-msgstr ""
+msgstr "Plugin konnte nicht aktualisiert werden"
 
 #: ../../godmode/servers/plugin.php:58
 msgid "Plugin updated successfully"
-msgstr ""
+msgstr "Plugin erfolgreich aktualisiert"
 
 #: ../../godmode/servers/plugin.php:75
 msgid "Problem creating plugin"
-msgstr ""
+msgstr "Plugion konnte nicht erstellt werden"
 
 #: ../../godmode/servers/plugin.php:78
 msgid "Plugin created successfully"
-msgstr ""
+msgstr "Plugin wurde erstellt"
 
 #: ../../godmode/servers/plugin.php:87
 msgid "Problem deleting plugin"
-msgstr ""
+msgstr "Plugin konnte nicht gelöscht werden"
 
 #: ../../godmode/servers/plugin.php:89
 msgid "Plugin deleted successfully"
-msgstr ""
+msgstr "Plugin wurde gelöscht"
 
 #: ../../godmode/servers/plugin.php:130
 msgid "Plugin creation"
-msgstr ""
+msgstr "Pluginerstellung"
 
 #: ../../godmode/servers/plugin.php:132
 msgid "Plugin update"
-msgstr ""
+msgstr "Pluginupdate"
 
 #: ../../godmode/servers/plugin.php:149
 msgid "Plugin command"
@@ -1872,7 +1872,7 @@ msgstr ""
 
 #: ../../godmode/servers/plugin.php:153
 msgid "Max.Timeout"
-msgstr ""
+msgstr "max. Verzögerung"
 
 #: ../../godmode/servers/plugin.php:157
 msgid "IP address option"
@@ -1880,27 +1880,27 @@ msgstr ""
 
 #: ../../godmode/servers/plugin.php:161
 msgid "Port option"
-msgstr ""
+msgstr "Port Optionen"
 
 #: ../../godmode/servers/plugin.php:166
 msgid "User option"
-msgstr ""
+msgstr "Benutzer Optionen"
 
 #: ../../godmode/servers/plugin.php:170
 msgid "Password option"
-msgstr ""
+msgstr "Passwort Optionen"
 
 #: ../../godmode/servers/plugin.php:192
 msgid "Plugins registered in Pandora FMS"
-msgstr ""
+msgstr "Plugins in Pandora FMS registriert"
 
 #: ../../godmode/servers/plugin.php:199
 msgid "execute"
-msgstr ""
+msgstr "ausführen"
 
 #: ../../godmode/servers/plugin.php:223
 msgid "There are no plugins in the system"
-msgstr ""
+msgstr "keine Plugins installiert"
 
 #: ../../godmode/groups/group_list.php:63
 msgid "Group successfully created"
@@ -2009,7 +2009,7 @@ msgstr "Admin. Konfiguration"
 
 #: ../../godmode/menu.php:53
 msgid "Duplicate config"
-msgstr ""
+msgstr "doppelte Konfiguration"
 
 #: ../../godmode/menu.php:62
 msgid "Manage groups"
@@ -2057,11 +2057,11 @@ msgstr "Verwalte Profile"
 
 #: ../../godmode/menu.php:194
 msgid "Manage plugins"
-msgstr ""
+msgstr "Plugins verwalten"
 
 #: ../../godmode/menu.php:201
 msgid "Export targets"
-msgstr ""
+msgstr "keine Exportziele"
 
 #: ../../godmode/menu.php:209
 msgid "System Audit Log"
@@ -2103,7 +2103,7 @@ msgstr ""
 
 #: ../../godmode/menu.php:297 ../../operation/menu.php:309
 msgid "Extensions"
-msgstr ""
+msgstr "Erweiterungen"
 
 #: ../../godmode/admin_access_logs.php:30
 msgid "Pandora audit"
@@ -2166,7 +2166,7 @@ msgstr ""
 
 #: ../../godmode/setup/setup.php:93
 msgid "Graph color (min)"
-msgstr ""
+msgstr "Grafikfarbe (min)"
 
 #: ../../godmode/setup/setup.php:96
 msgid "Graph color (avg)"
@@ -2174,11 +2174,11 @@ msgstr ""
 
 #: ../../godmode/setup/setup.php:99
 msgid "Graph color (max)"
-msgstr ""
+msgstr "Grafikfarbe (max)"
 
 #: ../../godmode/setup/setup.php:102
 msgid "SLA period (seconds)"
-msgstr ""
+msgstr "SLA Periode (in Sekunden)"
 
 #: ../../godmode/setup/setup.php:105
 msgid "Max. days before compact data"
@@ -2215,7 +2215,7 @@ msgstr "Blockgrö&szlig;e der Seitenansicht"
 
 #: ../../godmode/setup/setup.php:131
 msgid "Automatic update check"
-msgstr ""
+msgstr "automatischer Updatecheck"
 
 #: ../../godmode/setup/links.php:39
 msgid "There was a problem creating link"
@@ -2239,7 +2239,7 @@ msgstr "Der Link kann nicht gelöscht werden"
 
 #: ../../godmode/setup/links.php:65
 msgid "Link successfully deleted"
-msgstr ""
+msgstr "Link wurde gelöscht"
 
 #: ../../godmode/setup/links.php:80 ../../godmode/setup/news.php:85
 msgid "Name error"
@@ -2288,7 +2288,7 @@ msgstr "Liste der Profile"
 
 #: ../../godmode/profiles/profile_list.php:47
 msgid "There was a problem deleting the profile"
-msgstr ""
+msgstr "Profil konnte nicht gelsöcht werden"
 
 #: ../../godmode/profiles/profile_list.php:49
 msgid "Profile successfully deleted"
@@ -2300,7 +2300,7 @@ msgstr "Profile wurde aktualisiert"
 
 #: ../../godmode/profiles/profile_list.php:86
 msgid "There was a problem updating this profile"
-msgstr ""
+msgstr "Profil konnte nicht aktualisiert werden"
 
 #: ../../godmode/profiles/profile_list.php:116
 msgid "Profile successfully created"
@@ -2308,7 +2308,7 @@ msgstr "Profil wurde kreiert"
 
 #: ../../godmode/profiles/profile_list.php:118
 msgid "There was a problem creating this profile"
-msgstr ""
+msgstr "Profil konnte nicht erstellt werden"
 
 #: ../../godmode/profiles/profile_list.php:123
 msgid "Profile management"
@@ -2376,11 +2376,11 @@ msgstr ""
 
 #: ../../godmode/profiles/profile_list.php:232
 msgid "Create Incidents"
-msgstr ""
+msgstr "Störfall erstellen"
 
 #: ../../godmode/profiles/profile_list.php:233
 msgid "Manage Incidents"
-msgstr ""
+msgstr "Störfälle bearbeiten"
 
 #: ../../godmode/profiles/profile_list.php:234
 msgid "Read Agent Information"
@@ -2388,37 +2388,37 @@ msgstr ""
 
 #: ../../godmode/profiles/profile_list.php:235
 msgid "Manage Agents"
-msgstr ""
+msgstr "Agenten managen"
 
 #: ../../godmode/profiles/profile_list.php:236
 msgid "Edit Alerts"
-msgstr ""
+msgstr "Agenten bearbeiten"
 
 #: ../../godmode/profiles/profile_list.php:237
 msgid "Manage User Rights"
-msgstr ""
+msgstr "Benutzerrechte"
 
 #: ../../godmode/profiles/profile_list.php:238
 msgid "Database Management"
-msgstr ""
+msgstr "Datenbank managen"
 
 #: ../../godmode/profiles/profile_list.php:239
 msgid "Alerts Management"
-msgstr ""
+msgstr "Alarme managen"
 
 #: ../../godmode/profiles/profile_list.php:240
 msgid "Pandora System Management"
-msgstr ""
+msgstr "Pandora System Management"
 
 #: ../../godmode/agentes/configurar_agente.php:131
 #: ../../godmode/agentes/configurar_agente.php:502
 msgid "No agent name specified"
-msgstr ""
+msgstr "kein Agenten name ausgewählt"
 
 #: ../../godmode/agentes/configurar_agente.php:134
 #: ../../godmode/agentes/configurar_agente.php:505
 msgid "There is already an agent in the database with this name"
-msgstr ""
+msgstr "Ein Agent mit diesem Namen existiert bereits"
 
 #: ../../godmode/agentes/configurar_agente.php:163
 msgid "There was a problem creating record in tagente_estado table"
@@ -2472,7 +2472,7 @@ msgstr ""
 #: ../../godmode/agentes/configurar_agente.php:278
 #: ../../operation/snmpconsole/snmp_alert.php:37
 msgid "There was a problem deleting the alert"
-msgstr ""
+msgstr "Alarm konnte nicht gelöscht werden"
 
 #: ../../godmode/agentes/configurar_agente.php:280
 #: ../../godmode/agentes/configurar_agente.php:296
@@ -2531,11 +2531,11 @@ msgstr "Der Agent konnte nicht geladen werden"
 
 #: ../../godmode/agentes/configurar_agente.php:592
 msgid "There was a problem loading the module"
-msgstr ""
+msgstr "Modul konnte nicht geladen werden"
 
 #: ../../godmode/agentes/configurar_agente.php:628
 msgid "There was a problem loading the alert"
-msgstr ""
+msgstr "Alarm konnte nicht geladen werden"
 
 #: ../../godmode/agentes/configurar_agente.php:741
 msgid "There was a problem updating module"
@@ -2560,7 +2560,7 @@ msgstr "Das Modul konnte nicht hinzugefügt werden"
 #: ../../godmode/agentes/configurar_agente.php:810
 #: ../../godmode/agentes/configurar_agente.php:812
 msgid "Module added successfully"
-msgstr ""
+msgstr "Modul wurde hinzugefügt"
 
 #: ../../godmode/agentes/configurar_agente.php:812
 msgid "Status init unsuccessful"
@@ -2568,11 +2568,11 @@ msgstr ""
 
 #: ../../godmode/agentes/configurar_agente.php:861
 msgid "There was a problem deleting the module"
-msgstr ""
+msgstr "Modul konnte nicht gelöscht werden"
 
 #: ../../godmode/agentes/configurar_agente.php:864
 msgid "Module deleted successfully"
-msgstr ""
+msgstr "Modul wurde gelöscht"
 
 #: ../../godmode/agentes/module_manager_editor_wmi.php:80
 #: ../../godmode/agentes/module_manager_editor_data.php:72
@@ -2584,7 +2584,7 @@ msgstr ""
 
 #: ../../godmode/agentes/module_manager_editor_wmi.php:80
 msgid "WMI server module"
-msgstr ""
+msgstr "WMI Servermodul"
 
 #: ../../godmode/agentes/module_manager_editor_wmi.php:98
 #: ../../godmode/agentes/module_manager_editor_network.php:100
@@ -2630,12 +2630,12 @@ msgstr "Zieladresse IP"
 #: ../../godmode/agentes/module_manager_editor_wmi.php:138
 #: ../../godmode/modules/manage_network_components_form_wmi.php:168
 msgid "Namespace"
-msgstr ""
+msgstr "Namensraum"
 
 #: ../../godmode/agentes/module_manager_editor_wmi.php:145
 #: ../../godmode/modules/manage_network_components_form_wmi.php:144
 msgid "WMI Query"
-msgstr ""
+msgstr "WMI Abfrage"
 
 #: ../../godmode/agentes/module_manager_editor_wmi.php:152
 #: ../../godmode/modules/manage_network_components_form_wmi.php:152
@@ -2645,13 +2645,13 @@ msgstr ""
 #: ../../godmode/agentes/module_manager_editor_wmi.php:156
 #: ../../godmode/modules/manage_network_components_form_wmi.php:160
 msgid "Field number"
-msgstr ""
+msgstr "Feldnummer"
 
 #: ../../godmode/agentes/module_manager_editor_wmi.php:164
 #: ../../godmode/agentes/module_manager_editor_plugin.php:134
 #: ../../godmode/modules/manage_network_components_form_wmi.php:176
 msgid "Username"
-msgstr ""
+msgstr "Benutzername"
 
 #: ../../godmode/agentes/module_manager_editor_wmi.php:173
 #: ../../godmode/agentes/module_manager_editor_data.php:95
@@ -2693,7 +2693,7 @@ msgstr ""
 #: ../../godmode/agentes/module_manager_editor_prediction.php:154
 #: ../../godmode/agentes/module_manager_editor_network.php:249
 msgid "Export target"
-msgstr ""
+msgstr "Exportziel"
 
 #: ../../godmode/agentes/agent_template.php:114
 msgid "Modules successfully added "
@@ -2732,7 +2732,7 @@ msgstr ""
 
 #: ../../godmode/agentes/module_manager_editor_data.php:162
 msgid "Not assigned"
-msgstr ""
+msgstr "Nicht zugeordnet"
 
 #: ../../godmode/agentes/manage_config_remote.php:44
 #: ../../godmode/agentes/manage_config.php:47
@@ -2789,11 +2789,11 @@ msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.php:188
 msgid "Available Agents"
-msgstr ""
+msgstr "verfügare Agenten"
 
 #: ../../godmode/agentes/planned_downtime.php:209
 msgid "Filter by group"
-msgstr ""
+msgstr "Gruppenfilter"
 
 #: ../../godmode/agentes/planned_downtime.php:221
 msgid "Agents planned for this downtime"
@@ -2812,7 +2812,7 @@ msgstr "Letzter Kontakt"
 
 #: ../../godmode/agentes/planned_downtime.php:230
 msgid "Remove"
-msgstr ""
+msgstr "Löschen"
 
 #: ../../godmode/agentes/planned_downtime.php:237
 #: ../../godmode/agentes/planned_downtime.php:281
@@ -2842,7 +2842,7 @@ msgstr "bis"
 
 #: ../../godmode/agentes/planned_downtime.php:274
 msgid "Del"
-msgstr ""
+msgstr "löschen"
 
 #: ../../godmode/agentes/planned_downtime.php:275
 msgid "Upd"
@@ -2850,7 +2850,7 @@ msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.php:276
 msgid "Running"
-msgstr ""
+msgstr "Wird ausgeführt"
 
 #: ../../godmode/agentes/module_manager_editor_plugin.php:79
 msgid "Plugin server module"
@@ -2858,15 +2858,15 @@ msgstr ""
 
 #: ../../godmode/agentes/module_manager_editor_plugin.php:107
 msgid "plugin"
-msgstr ""
+msgstr "Plugin"
 
 #: ../../godmode/agentes/module_manager_editor_plugin.php:124
 msgid "Plugin parameters"
-msgstr ""
+msgstr "Plugin Parameter"
 
 #: ../../godmode/agentes/alert_manager.php:43
 msgid "Create a simple alert"
-msgstr ""
+msgstr "Einfachen Alarm erstellen"
 
 #: ../../godmode/agentes/alert_manager.php:44
 msgid "Create a new combined alert"
@@ -2874,7 +2874,7 @@ msgstr ""
 
 #: ../../godmode/agentes/alert_manager.php:59
 msgid "Simple alerts"
-msgstr ""
+msgstr "einfache Alarme"
 
 #: ../../godmode/agentes/alert_manager.php:108
 #: ../../include/functions_db.php:2081
@@ -2915,7 +2915,7 @@ msgstr "Zeit"
 #: ../../godmode/agentes/alert_manager.php:190
 #: ../../godmode/agentes/alert_manager_editor.php:370
 msgid "info"
-msgstr ""
+msgstr "Info"
 
 #: ../../godmode/agentes/alert_manager.php:119
 #: ../../godmode/agentes/alert_manager.php:195
@@ -2936,7 +2936,7 @@ msgstr ""
 
 #: ../../godmode/agentes/alert_manager.php:141
 msgid "Combined"
-msgstr ""
+msgstr "Kombiniert"
 
 #: ../../godmode/agentes/alert_manager.php:184
 #: ../../godmode/agentes/alert_manager_editor.php:364
@@ -2947,11 +2947,11 @@ msgstr ""
 #: ../../godmode/agentes/manage_config.php:55
 #: ../../godmode/agentes/manage_config.php:212
 msgid "No modules have been selected"
-msgstr ""
+msgstr "Es wurden keine Module ausgewählt"
 
 #: ../../godmode/agentes/manage_config.php:73
 msgid "You must check modules and/or alerts to be copied"
-msgstr ""
+msgstr "Es müssen Module oder Alarme zum kopieren ausgewählt sein"
 
 #: ../../godmode/agentes/manage_config.php:92
 msgid "Copying module"
@@ -2964,6 +2964,8 @@ msgstr "Kopiere Alarm"
 #: ../../godmode/agentes/manage_config.php:190
 msgid "There was an error copying the module, the copy has been cancelled"
 msgstr ""
+"Beim kopieren der Module ist ein Fahler aufgetreten. Der Vorgang wurde "
+"abgebrochen."
 
 #: ../../godmode/agentes/manage_config.php:193
 msgid "Successfully copied module"
@@ -2975,7 +2977,7 @@ msgstr ""
 
 #: ../../godmode/agentes/manage_config.php:233
 msgid "You must check modules and/or alerts to be deleted"
-msgstr ""
+msgstr "Es müssen Module oder Alarme zum löschen ausgewählt sein"
 
 #: ../../godmode/agentes/manage_config.php:301
 msgid ""
@@ -2992,7 +2994,7 @@ msgstr ""
 
 #: ../../godmode/agentes/manage_config.php:323
 msgid "You must select at least one agent to be removed"
-msgstr ""
+msgstr "Es muß mindesten ein Agent zum lösche nausgewählt sein"
 
 #: ../../godmode/agentes/manage_config.php:330
 msgid "There was an error removing the agents. Removal has been cancelled"
@@ -3000,15 +3002,15 @@ msgstr ""
 
 #: ../../godmode/agentes/manage_config.php:332
 msgid "Successfully removed agents"
-msgstr ""
+msgstr "gelöschte Agenten"
 
 #: ../../godmode/agentes/manage_config.php:371
 msgid "No Agents in this Group"
-msgstr ""
+msgstr "Es eidn keine Agenten in dieser Gruppe"
 
 #: ../../godmode/agentes/manage_config.php:399
 msgid "No modules for this agent"
-msgstr ""
+msgstr "keine Module in diesem Agenten"
 
 #: ../../godmode/agentes/manage_config.php:401
 msgid "No agent selected"
@@ -3016,15 +3018,15 @@ msgstr "Es wurde kein Agent ausgewählt"
 
 #: ../../godmode/agentes/manage_config.php:413
 msgid "Targets"
-msgstr ""
+msgstr "Ziele"
 
 #: ../../godmode/agentes/manage_config.php:445
 msgid "Copy Modules/Alerts"
-msgstr ""
+msgstr "Module und Agnten kopieren"
 
 #: ../../godmode/agentes/manage_config.php:448
 msgid "Delete Modules/Alerts"
-msgstr ""
+msgstr "Module und Agnten löschen"
 
 #: ../../godmode/agentes/manage_config.php:448
 msgid "Are you sure you want to delete these modules and alerts?"
@@ -4087,7 +4089,7 @@ msgstr "Minuten"
 #: ../../include/functions.php:482
 #: ../../operation/snmpconsole/snmp_alert.php:233
 msgid "seconds"
-msgstr ""
+msgstr "Sekunden"
 
 #: ../../include/functions.php:499 ../../include/functions.php:500
 msgid "months"
@@ -4822,20 +4824,20 @@ msgstr "Ihre Graphen"
 
 #: ../../operation/snmpconsole/snmp_alert.php:76
 msgid "There was a problem creating the alert"
-msgstr ""
+msgstr "Alarm konnte nicht erstellt werden"
 
 #: ../../operation/snmpconsole/snmp_alert.php:91
 msgid "There was a problem updating the alert"
-msgstr ""
+msgstr "Alarm konnte nicht geändert werden"
 
 #: ../../operation/snmpconsole/snmp_alert.php:138
 msgid "Update alert"
-msgstr ""
+msgstr "Alarm ändern"
 
 #: ../../operation/snmpconsole/snmp_alert.php:162
 #: ../../operation/snmpconsole/snmp_alert.php:270
 msgid "Alert trigger"
-msgstr ""
+msgstr "Alarmauslöser"
 
 #: ../../operation/snmpconsole/snmp_alert.php:178
 #: ../../operation/snmpconsole/snmp_alert.php:183
@@ -4858,11 +4860,11 @@ msgstr "SNMP Agent"
 
 #: ../../operation/snmpconsole/snmp_alert.php:228
 msgid "Other value"
-msgstr ""
+msgstr "Anderer Wert"
 
 #: ../../operation/snmpconsole/snmp_alert.php:251
 msgid "Alert Overview"
-msgstr ""
+msgstr "Alarmübersicht"
 
 #: ../../operation/snmpconsole/snmp_alert.php:256
 msgid "There are no SNMP alerts"
@@ -6161,3 +6163,9 @@ msgstr "Kein Betreff"
 #~ "Bereiches liegen. Beispiele sind: Fehler des Agenten, Daten liegen "
 #~ "au&szlig;erhalb eines Definitionsbereiches, es wurden Tests durchgeführt. "
 #~ "Durch das Löschen inkorrekter Daten werden realistischere Plots erzeugt."
+
+#~ msgid "Users defined"
+#~ msgstr "Benutzer definiert"
+
+#~ msgid "Legend"
+#~ msgstr "Beschriftung"

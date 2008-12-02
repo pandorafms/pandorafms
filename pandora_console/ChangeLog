@@ -1,3 +1,47 @@
+2008-12-02  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* pandoradb_data.sql: Added Korean, Slovak, Danish, Turkish, Japanese, 
+	  Hebrew, Greek and Arab translations.
+
+	* include/languages/Makefile: Added Korean, Slovak, Danish, Turkish, 
+	  Japanese, Hebrew, Greek and Arab translations.
+
+	* include/languages/cs.po, include/languages/pt_BR.po, 
+	  include/languages/pl.mo, include/languages/it.mo, 
+	  include/languages/sl.mo, include/languages/uk.po, 
+	  include/languages/ro.po, include/languages/pt.mo, 
+	  include/languages/ast.mo, include/languages/cs.mo, 
+	  include/languages/pt_BR.mo, include/languages/fr.po, 
+	  include/languages/uk.mo, include/languages/ro.mo, 
+	  include/languages/ca.po, include/languages/de.po, 
+	  include/languages/sv.po, include/languages/zh_TW.po, 
+	  include/languages/fi.po, include/languages/hi.po, 
+	  include/languages/zh_CN.po, include/languages/fr.mo, 
+	  include/languages/te.po, include/languages/eu.po, 
+	  include/languages/hu.po, include/languages/ca.mo, 
+	  include/languages/sv.mo, include/languages/de.mo, 
+	  include/languages/ru.po, include/languages/zh_TW.mo, 
+	  include/languages/fi.mo, include/languages/hi.mo, 
+	  include/languages/zh_CN.mo, include/languages/gl.po, 
+	  include/languages/te.mo, include/languages/eu.mo, 
+	  include/languages/hu.mo, include/languages/pl.po, 
+	  include/languages/it.po, include/languages/sl.po, 
+	  include/languages/ru.mo, include/languages/pt.po, 
+	  include/languages/ast.po, include/languages/gl.mo
+
+	* include/languages/ko.po, include/languages/sk.po, 
+	  include/languages/ar.po, include/languages/sk.mo, 
+	  include/languages/da.po, include/languages/tr.po, 
+	  include/languages/ja.po, include/languages/he.po, 
+	  include/languages/ar.mo, include/languages/da.mo, 
+	  include/languages/tr.mo, include/languages/ja.mo, 
+	  include/languages/he.mo, include/languages/ko.mo, 
+	  include/languages/el.po, include/languages/el.mo: Added Korean, 
+	  Slovak, Danish, Turkish, Japanese, Hebrew, Greek and Arab 
+	  translations.
+
+   	* include/languages/index.pot: Updated po template.
+
 2008-12-02  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/agentes/manage_config.php:  Fixed SQL sentence generation
@@ -382,9 +426,9 @@
 	* snmp_view.php: Now display properly OID, Value and Custom Value. Need
 	changes in snmptconsole server to work and render all data. Better layout.
 
-	* config_process.php: Detect if trap2agent is not configured, and if not, 
-	create record in tconfig (this should not be necessary but there is a lot
-	of people using beta1 yet and will have problems if not have this).
+	* config_process.php: Detect if trap2agent is not configured, and if 
+	not, create record in tconfig (this should not be necessary but there is 
+	a lot of people using beta1 yet and will have problems if not have this).
 
 2008-10-08  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
@@ -687,7 +731,15 @@
 
 2008-09-10  Jorge Gonzalez  <jorgegonz@artica.es>
 
-	* include/languages/fr.mo, include/languages/pt_BR.po, include/languages/pl.mo, include/languages/eu.po, include/languages/sv.mo, include/languages/ru.po, include/languages/zh_TW.mo, include/languages/index.pot, include/languages/zh_CN.mo, include/languages/eu.mo, include/languages/pl.po, include/languages/ru.mo, include/languages/sv.po, include/languages/zh_TW.po, include/languages/zh_CN.po: Added new po and mo translations, imported from Rosetta.
+	* include/languages/fr.mo, include/languages/pt_BR.po, 
+	include/languages/pl.mo, include/languages/eu.po, 
+	include/languages/sv.mo, include/languages/ru.po, 
+	include/languages/zh_TW.mo, include/languages/index.pot, 
+	include/languages/zh_CN.mo, include/languages/eu.mo, 
+	include/languages/pl.po, include/languages/ru.mo, 
+	include/languages/sv.po, include/languages/zh_TW.po, 
+	include/languages/zh_CN.po: Added new po and mo translations, imported 
+	from Rosetta.
 
 	* operation/agentes/tactical.php: Added some strings for translation.
 
@@ -850,11 +902,12 @@
 
 	* logon_failed.php: Was rending bad in IE.
 
-	* footer.php: Added Firefox button and tooltip about best view in Firefox.
+	* footer.php: Added Firefox button and tooltip about best view in 
+	Firefox.
 
-	* header.php: Old rendering was crazy in IE. New code to set render exactly
-	equal on IE and Firefox. PLEASE DO NOT USE TABULAR phpp functions here, this is 
-	pure HTML formatting.
+	* header.php: Old rendering was crazy in IE. New code to set render 
+	exactly	equal on IE and Firefox. PLEASE DO NOT USE TABULAR phpp 
+	functions here, this is pure HTML formatting.
 
 2008-09-02  Esteban Sanchez  <estebans@artica.es>
 
@@ -871,7 +924,8 @@
 	* extensions/update_manager.php: Style correction. Removed force
 	updating of 2008-09-01  Raul Mateos  <raulofpandora@gmail.com>
 
-	* operation/snmp/snmp_console/snmp_view.php: Added style to buttons.the settings.
+	* operation/snmp/snmp_console/snmp_view.php: Added style to buttons.the 
+	settings.
 
 	* extensions/update_manager/load_updatemanager.php: Run the keygen if
 	the user is not the free one.

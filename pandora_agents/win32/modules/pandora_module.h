@@ -101,9 +101,8 @@ namespace Pandora_Modules {
 	 * The module does not satisfy its interval.
 	 */
 	class Interval_Not_Fulfilled : public Pandora_Modules::Module_Exception { };
-
-	/**
-	 * Pandora module super-class.
+	
+	/**	 * Pandora module super-class.
 	 *
 	 * Every defined module must inherit of this class.
 	 */

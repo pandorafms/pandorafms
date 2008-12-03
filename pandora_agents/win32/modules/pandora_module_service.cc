@@ -47,11 +47,23 @@ Pandora_Module_Service::Pandora_Module_Service (string name, string service_name
 	
 	this->setKind (module_service_str);
 	this->thread = 0;
+	this->watchdog = false;
 }
 
 string
 Pandora_Module_Service::getServiceName () const {
 	return this->service_name;
+}
+
+
+bool
+Pandora_Module_Service::isWatchdog () const {
+	return this->watchdog;
+}
+
+void
+Pandora_Module_Service::setWatchdog (bool watchdog) {
+	this->watchdog = watchdog;
 }
 
 #define BUFFER_SIZE (16384)
@@ -107,8 +119,8 @@ async_run (Pandora_Module_Service *module) {
 				continue;
 			event_id = record->EventID & 0x0000ffff;
 			
-			/* Those numbers are the code for service start/stopping */
-			if (event_id == 7035 || event_id == 7036) {
+			/* This number is the code for service start/stopping */
+			if (event_id == 7036) {
 				service_event = true;
 				break;
 			}
@@ -122,6 +134,10 @@ async_run (Pandora_Module_Service *module) {
 				module->setOutput (str_res);
 				prev_res = str_res;
 				Pandora_Windows_Service::getInstance ()->sendXml (modules);
+			}
+			
+			if (res == 0 && module->isWatchdog ()) {
+				Pandora_Wmi::startService (module->getServiceName ());
 			}
 		}
 		CloseHandle (event);

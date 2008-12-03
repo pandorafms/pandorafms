@@ -66,7 +66,8 @@ namespace Pandora {
 	void   pandoraDebug           (char *format, ...);
 	void   pandoraLog             (char *format, ...);
 	void   pandoraFree            (void * e);
-
+	
+	bool   is_enabled             (string value);
 	/**
 	 * Super-class exception.
 	 *

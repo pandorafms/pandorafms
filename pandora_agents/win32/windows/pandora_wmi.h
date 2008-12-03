@@ -47,9 +47,20 @@ namespace Pandora_Wmi {
 	string        getOSVersion          ();
 	string        getOSBuild            ();
 	string        getSystemName         ();
-	void          getEventList              (string source, string type, string code, string pattern, int interval, list<string> &event_list);
-	string        getTimestampLimit         (int interval);
-	void          convertWMIDate            (string wmi_date, SYSTEMTIME *system_time);
+	
+	void          getEventList          (string source,
+					     string type,
+					     string code,
+					     string pattern,
+					     int interval,
+					     list<string> &event_list);
+	string        getTimestampLimit     (int interval);
+	void          convertWMIDate        (string wmi_date,
+					     SYSTEMTIME *system_time);
+	
+	bool          runProgram            (string command);
+	bool          startService          (string service_name);
+	bool          stopService           (string service_name);
 };
 
 #endif

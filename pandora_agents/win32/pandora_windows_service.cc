@@ -38,8 +38,6 @@ using namespace Pandora;
 using namespace Pandora_Modules;
 using namespace Pandora_Strutils;
 
-string enabled_values[] = {"enabled", "1", "on", "yes", "si", "sí", "ok", ""};
-
 Pandora_Windows_Service::Pandora_Windows_Service ()
   : Windows_Service (NULL, NULL, NULL) {
 	this->setInitFunction ((void (Windows_Service::*) ())
@@ -101,23 +99,6 @@ Pandora_Windows_Service::getInstance () {
 void
 Pandora_Windows_Service::start () {
 	this->started = true;
-}
-
-bool
-is_enabled (string value) {
-	int i = 0;
-	
-	if (value == "") {
-		return false;
-	}
-	
-	while (enabled_values[i] != "") {
-		if (enabled_values[i] == value) {
-			return true;
-		}
-		i++;
-	}
-	return false;
 }
 
 void

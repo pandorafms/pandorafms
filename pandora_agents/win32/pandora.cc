@@ -272,3 +272,22 @@ string
 Pandora::getPandoraAgentVersion () {
 	return pandora_version;
 }
+
+
+bool
+Pandora::is_enabled (string value) {
+	static string enabled_values[] = {"enabled", "1", "on", "yes", "si", "sí", "ok", "true", ""};
+	int i = 0;
+	
+	if (value == "") {
+		return false;
+	}
+	
+	while (enabled_values[i] != "") {
+		if (enabled_values[i] == value) {
+			return true;
+		}
+		i++;
+	}
+	return false;
+}

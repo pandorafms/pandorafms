@@ -202,19 +202,20 @@ Windows_Service::install (LPCTSTR application_binary_path) {
 	}
 	
 	/* Crerate the service */
-	sc_service = CreateService (sc_manager,                 /* SCManager database        */
-				    service_name,               /* name of service           */
-				    service_display_name,       /* service name to display   */
-				    SERVICE_ALL_ACCESS,         /* desired access            */
-				    SERVICE_WIN32_OWN_PROCESS,  /* service type              */
-				    SERVICE_AUTO_START,       /* start type                */
-				    SERVICE_ERROR_NORMAL,       /* error control type        */
-				    application_binary_path,    /* service's binary          */
-				    NULL,                       /* no load ordering group    */
-				    NULL,                       /* no tag identifier         */
-				    NULL,                       /* no dependencies           */
-				    NULL,                       /* LocalSystem account       */
-				    NULL                        /* no password               */ );
+	sc_service = CreateService (sc_manager,                  /* SCManager database        */
+				    service_name,                /* name of service           */
+				    service_display_name,        /* service name to display   */
+				    SERVICE_ALL_ACCESS,          /* desired access            */
+				    SERVICE_WIN32_OWN_PROCESS |
+				    SERVICE_INTERACTIVE_PROCESS, /* service type, interactive */
+				    SERVICE_AUTO_START,          /* start type                */
+				    SERVICE_ERROR_NORMAL,        /* error control type        */
+				    application_binary_path,     /* service's binary          */
+				    NULL,                        /* no load ordering group    */
+				    NULL,                        /* no tag identifier         */
+				    NULL,                        /* no dependencies           */
+				    NULL,                        /* LocalSystem account       */
+				    NULL                         /* no password               */ );
 	
 	if (sc_service == NULL) {
 		DWORD   err = GetLastError();

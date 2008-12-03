@@ -255,6 +255,8 @@ if ($serverinfo) {
 	</tr>';
 	}
 	echo '</tbody></table>';
+} else {
+	echo "<div class='nf'>".__('There are no servers configured into the database')."</div>";
 }
 smal_event_table ("", 10, 450);
 

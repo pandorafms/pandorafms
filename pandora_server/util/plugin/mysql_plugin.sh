@@ -21,15 +21,25 @@ function help {
 	echo "   ./mysql_plugin.sh -u root -p none -s localhost -q Connections"
 	echo "   ./mysql_plugin.sh -u root -p anypass -s 192.168.50.24 -q Innodb_rows_read"
 	echo ""
+	exit
 }
+
+
+if [ $# -eq 0 ]
+then
+	help
+fi
 
 # Main parsing code
 
-while getopts "u:p:s:q:" optname
+while getopts ":hu:p:s:q:" optname
   do
     case "$optname" in
+      "h")
+	        help
+	;;
       "u")
-        USER=$OPTARG
+	        USER=$OPTARG
         ;;
       "p")
 		PASSWORD=$OPTARG
@@ -40,6 +50,12 @@ while getopts "u:p:s:q:" optname
       "q")
 		QUERY=$OPTARG
 		;;
+        ?)
+		help
+		;;
+      default) 
+		help
+	;;
      
     esac
 done

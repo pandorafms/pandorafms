@@ -31,12 +31,19 @@ namespace Pandora_Modules {
 	private:
 		string process_name;
 		HANDLE thread;
+		bool   watchdog;
+		string start_command;
 	public:
-		Pandora_Module_Proc   (string name, string process_name);
+		Pandora_Module_Proc    (string name, string process_name);
 		
-		string getProcessName () const;
+		string getProcessName  () const;
+		string getStartCommand () const;
+		bool   isWatchdog      () const;
 		
-		void   run            ();
+		void   setWatchdog     (bool watchdog);
+		void   setStartCommand (string command);
+		
+		void   run             ();
 	};
 }
 

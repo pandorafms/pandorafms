@@ -1,3 +1,24 @@
+2008-12-03  Esteban Sanchez  <estebans@artica.es>
+
+	* pandora.[cc,h]: Function is_enabled() was moved here to be
+	accesible.
+
+	* pandora_windows_service.cc: Removed is_enabled() private function.
+
+	* windows_service.cc: Service is now interactive, so it can open
+	interactive processes in the watchdog mode of proc modules.
+
+	* modules/pandora_module_factory.cc: Added "module_watchdog" and
+	"module_start_command" tokens to service and process modules. Style
+	correction.
+
+	* modules/pandora_module_proc.[cc,h]: Added watchdog mode to run
+	proccess when they die. It's done by setting a start command to
+	recover it.
+
+	* modules/pandora_module_service.[cc,h]: Added watchdog mode to start
+	a service when it's stopped.
+
 2008-12-01  Ramon Novoa  <rnovoa@artica.es>
 
 	* windows/pandora_wmi.cc,

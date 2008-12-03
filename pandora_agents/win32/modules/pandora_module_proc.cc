@@ -46,11 +46,34 @@ Pandora_Module_Proc::Pandora_Module_Proc (string name, string process_name)
 		   this->process_name.begin (), (int (*) (int)) tolower);
 	
 	this->setKind (module_proc_str);
+	
+	this->watchdog = false;
+	this->start_command = "";
 }
 
 string
 Pandora_Module_Proc::getProcessName () const {
 	return this->process_name;
+}
+
+bool
+Pandora_Module_Proc::isWatchdog () const {
+	return this->watchdog;
+}
+
+string
+Pandora_Module_Proc::getStartCommand () const {
+	return this->start_command;
+}
+
+void
+Pandora_Module_Proc::setWatchdog (bool watchdog) {
+	this->watchdog = watchdog;
+}
+
+void
+Pandora_Module_Proc::setStartCommand (string command) {
+	this->start_command = command;
 }
 
 void
@@ -72,6 +95,9 @@ async_run (Pandora_Module_Proc *module) {
 	while (1) {
 		processes = getProcessHandles (module->getProcessName ());
 		if (processes == NULL) {
+			if (module->isWatchdog ()) {
+				Pandora_Wmi::runProgram (module->getStartCommand ());
+			}
 			Sleep (2000);
 			continue;
 		}
@@ -104,6 +130,10 @@ async_run (Pandora_Module_Proc *module) {
 			module->setOutput (str_res);
 			prev_res = str_res;
 			Pandora_Windows_Service::getInstance ()->sendXml (modules);
+		}
+		
+		if (res == 0 && module->isWatchdog ()) {
+			Pandora_Wmi::runProgram (module->getStartCommand ());
 		}
 		
 		/* Free handles */

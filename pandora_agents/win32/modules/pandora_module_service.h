@@ -33,11 +33,15 @@ namespace Pandora_Modules {
 	private:
 		string service_name;
 		HANDLE thread;
+		bool   watchdog;
 	public:
 		Pandora_Module_Service (string name, string service_name);
 		
-		void   run               ();
-		string getServiceName    () const;
+		void   run             ();
+		string getServiceName  () const;
+		bool   isWatchdog      () const;
+		
+		void   setWatchdog     (bool watchdog);
 	};
 }
 

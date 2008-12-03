@@ -26,16 +26,17 @@
 #include <cctype>
 #include <sstream>
 #include <ctime>
+#include <winuser.h>
 
 using namespace std;
 using namespace Pandora_Wmi;
 
 static LPWSTR
 getWmiStr (LPCWSTR computer) {
-	static WCHAR wmi_str [256];
+	static WCHAR wmi_str[256];
 
-	wcscpy (wmi_str, L"winmgmts:{impersonationLevel=impersonate}!\\\\");
-
+	wcscpy (wmi_str, L"winmgmts:\\\\");
+	
 	if (computer) {
 		wcsncat (wmi_str, computer, 128);
 	} else {
@@ -43,7 +44,7 @@ getWmiStr (LPCWSTR computer) {
 	}
 
 	wcscat (wmi_str, L"\\root\\cimv2");
-
+	
 	return wmi_str;
 }
 
@@ -388,7 +389,9 @@ Pandora_Wmi::getSystemName () {
  * @return The list of events.
  */
 void
-Pandora_Wmi::getEventList (string source, string type, string code, string pattern, int interval, list<string> &event_list) {
+Pandora_Wmi::getEventList (string source, string type, string code,
+			   string pattern, int interval,
+			   list<string> &event_list) {
 	CDhInitialize init;
 	CDispPtr      wmi_svc, quickfixes;
 	char         *value = NULL;
@@ -453,8 +456,8 @@ Pandora_Wmi::getEventList (string source, string type, string code, string patte
  */
 string
 Pandora_Wmi::getTimestampLimit (int interval) {
-	char limit_str[26], diff_sign;
-	time_t limit_time, limit_time_utc, limit_diff;
+	char       limit_str[26], diff_sign;
+	time_t     limit_time, limit_time_utc, limit_diff;
 	struct tm *limit_tm = NULL, *limit_tm_utc = NULL;
 	
 	// Get current time
@@ -512,3 +515,120 @@ Pandora_Wmi::convertWMIDate (string wmi_date, SYSTEMTIME *system_time)
 	system_time->wMinute = atoi (wmi_date.substr (10, 2).c_str());
 	system_time->wSecond = atoi (wmi_date.substr (12, 2).c_str());
 }
+
+/**
+ * Runs a program in a new process.
+ *
+ * @param command Command to run, with parameters
+ */
+bool
+Pandora_Wmi::runProgram (string command) {
+	PROCESS_INFORMATION process_info;
+	STARTUPINFO         startup_info;
+	bool                success;
+	char               *cmd;
+	
+	if (command == "")
+		return false;
+	
+	ZeroMemory (&startup_info, sizeof (startup_info));
+	startup_info.cb = sizeof (startup_info);
+	ZeroMemory (&process_info, sizeof (process_info));
+	
+	pandoraDebug ("Start process \"%s\".", command.c_str ());
+	cmd = strdup (command.c_str ());
+	success = CreateProcess (NULL, cmd, NULL, NULL, FALSE, 0,
+				 NULL, NULL, &startup_info, &process_info);
+	pandoraFree (cmd);
+	
+	if (success) {
+		pandoraDebug ("The process \"%s\" was started.", command.c_str ());
+		return true;
+	}
+	pandoraLog ("Could not start process \"%s\". Error %d", command.c_str (),
+		    GetLastError());
+	return false;
+}
+
+/**
+ * Start a Windows service.
+ *
+ * @param service_name Service internal name to start.
+ *
+ * @retval true If the service started.
+ * @retval false If the service could not start. A log message is created.
+ */
+bool
+Pandora_Wmi::startService (string service_name) {
+	SC_HANDLE manager, service;
+	bool      success;
+	
+	manager = OpenSCManager (NULL, NULL, SC_MANAGER_ALL_ACCESS);
+	if (manager == NULL) {
+		pandoraLog ("Could not access to service \"%s\" to start.",
+			    service_name.c_str ());
+		return false;
+	}
+	
+	service = OpenService (manager, service_name.c_str (), GENERIC_EXECUTE);
+	if (service == NULL) {
+		pandoraLog ("Could not access to service \"%s\" to start.",
+			    service_name.c_str ());
+		CloseServiceHandle (manager);
+		return false;
+	}
+	
+	success = StartService (service, 0, NULL);
+	
+	CloseServiceHandle (service);
+	CloseServiceHandle (manager);
+	
+	if (! success) {
+		pandoraLog ("Could not start service \"%s\". (Error %d)",
+			    service_name.c_str (), GetLastError ());
+	}
+	
+	return success;
+}
+
+/**
+ * Stop a Windows service.
+ *
+ * @param service_name Service internal name to stop.
+ *
+ * @retval true If the service started.
+ * @retval false If the service could not stop. A log message is created.
+ */
+bool
+Pandora_Wmi::stopService (string service_name) {
+	SC_HANDLE manager, service;
+	bool      success;
+	
+	manager = OpenSCManager (NULL, NULL, SC_MANAGER_ALL_ACCESS);
+	if (manager == NULL) {
+		pandoraLog ("Could not access to service \"%s\" to stop.",
+			    service_name.c_str ());
+		return false;
+	}
+	
+	service = OpenService (manager, service_name.c_str (), GENERIC_EXECUTE);
+	if (service == NULL) {
+		pandoraLog ("Could not access to service \"%s\" to stop.",
+			    service_name.c_str ());
+		CloseServiceHandle (manager);
+		return false;
+	}
+	
+	success = ControlService (service, SERVICE_CONTROL_STOP, NULL);
+	
+	CloseServiceHandle (service);
+	CloseServiceHandle (manager);
+	
+	if (! success) {
+		pandoraLog ("Could not stop service \"%s\". (Error %d)",
+			    service_name.c_str (), GetLastError ());
+	}
+	
+	return success;
+}
+

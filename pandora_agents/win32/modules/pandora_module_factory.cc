@@ -35,26 +35,28 @@ using namespace Pandora;
 using namespace Pandora_Modules;
 using namespace Pandora_Strutils;
 
-#define TOKEN_NAME        ("module_name ")
-#define TOKEN_TYPE        ("module_type ")
-#define TOKEN_INTERVAL    ("module_interval ")
-#define TOKEN_EXEC        ("module_exec ")
-#define TOKEN_PROC        ("module_proc ")
-#define TOKEN_SERVICE     ("module_service ")
-#define TOKEN_FREEDISK    ("module_freedisk ")
-#define TOKEN_FREEMEMORY  ("module_freememory")
-#define TOKEN_CPUUSAGE    ("module_cpuusage ")
-#define TOKEN_ODBC        ("module_odbc ")
-#define TOKEN_MAX         ("module_max ")
-#define TOKEN_MIN         ("module_min ")
-#define TOKEN_DESCRIPTION ("module_description ")
-#define TOKEN_ODBC_QUERY  ("module_odbc_query ")
-#define TOKEN_LOGEVENT    ("module_logevent")
-#define TOKEN_SOURCE      ("module_source ")
-#define TOKEN_EVENTTYPE   ("module_eventtype ")
-#define TOKEN_EVENTCODE   ("module_eventcode ")
-#define TOKEN_PATTERN     ("module_pattern ")
-#define TOKEN_ASYNC       ("module_async")
+#define TOKEN_NAME          ("module_name ")
+#define TOKEN_TYPE          ("module_type ")
+#define TOKEN_INTERVAL      ("module_interval ")
+#define TOKEN_EXEC          ("module_exec ")
+#define TOKEN_PROC          ("module_proc ")
+#define TOKEN_SERVICE       ("module_service ")
+#define TOKEN_FREEDISK      ("module_freedisk ")
+#define TOKEN_FREEMEMORY    ("module_freememory")
+#define TOKEN_CPUUSAGE      ("module_cpuusage ")
+#define TOKEN_ODBC          ("module_odbc ")
+#define TOKEN_MAX           ("module_max ")
+#define TOKEN_MIN           ("module_min ")
+#define TOKEN_DESCRIPTION   ("module_description ")
+#define TOKEN_ODBC_QUERY    ("module_odbc_query ")
+#define TOKEN_LOGEVENT      ("module_logevent")
+#define TOKEN_SOURCE        ("module_source ")
+#define TOKEN_EVENTTYPE     ("module_eventtype ")
+#define TOKEN_EVENTCODE     ("module_eventcode ")
+#define TOKEN_PATTERN       ("module_pattern ")
+#define TOKEN_ASYNC         ("module_async")
+#define TOKEN_WATCHDOG      ("module_watchdog ")
+#define TOKEN_START_COMMAND ("module_start_command ")
 
 string
 parseLine (string line, string token) {
@@ -91,27 +93,31 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_odbc_query, module_dsn, module_freememory;
 	string                 module_logevent, module_source, module_eventtype, module_eventcode;
 	string                 module_pattern, module_async;
+	string                 module_watchdog, module_start_command;
 	Pandora_Module        *module;
 	bool                   numeric;
 	Module_Type            type;
-
-	module_name        = "";
-	module_type        = "";
-	module_min         = "";
-	module_max         = "";
-	module_description = "";
-	module_interval    = "";
-	module_exec        = "";
-	module_proc        = "";
-	module_service     = "";
-	module_odbc        = "";
-	module_odbc_query  = "";
-	module_odbc        = "";
-	module_logevent    = "";
-	module_source      = "";
-	module_eventtype   = "";
+	
+	module_name          = "";
+	module_type          = "";
+	module_min           = "";
+	module_max           = "";
+	module_description   = "";
+	module_interval      = "";
+	module_exec          = "";
+	module_proc          = "";
+	module_service       = "";
+	module_odbc          = "";
+	module_odbc_query    = "";
+	module_odbc          = "";
+	module_logevent      = "";
+	module_source        = "";
+	module_eventtype     = "";
 	module_eventcode   = "";
-	module_pattern     = "";
+	module_pattern       = "";
+	module_async         = "";
+	module_watchdog      = "";
+	module_start_command = "";
 
 	stringtok (tokens, definition, "\n");
 	
@@ -182,6 +188,12 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_async == "") {
 			module_async = parseLine (line, TOKEN_ASYNC);
 		}
+		if (module_start_command == "") {
+			module_start_command = parseLine (line, TOKEN_START_COMMAND);
+		}
+		if (module_watchdog == "") {
+			module_watchdog = parseLine (line, TOKEN_WATCHDOG);
+		}
 		
 		iter++;
 	}
@@ -193,9 +205,35 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	} else if (module_proc != "") {
 		module = new Pandora_Module_Proc (module_name,
 						  module_proc);
+		if (module_watchdog != "") {
+			bool                 enabled;
+			
+			enabled = is_enabled (module_watchdog);
+			if (enabled) {
+				if (module_start_command == "") {
+					pandoraLog ("Module \"%s\" is marked to be watchdog but no recover command was set. "
+						    "Please add a new token 'module_start_command c:\\command_to_recover.exe'",
+						    module_name.c_str ());
+					delete module;
+					return NULL;
+				}
+				
+				Pandora_Module_Proc *module_proc;
+				
+				module_proc = (Pandora_Module_Proc *) module;
+				module_proc->setWatchdog (true);
+				module_proc->setStartCommand (module_start_command);
+			}
+		}
 	} else if (module_service != "") {
 		module = new Pandora_Module_Service (module_name,
 						     module_service);
+		if (module_watchdog != "") {
+			Pandora_Module_Service *module_service;
+			
+			module_service = (Pandora_Module_Service *) module;
+			module_service->setWatchdog (is_enabled (module_watchdog));
+		}
 	} else if (module_freedisk != "") {
 		module = new Pandora_Module_Freedisk (module_name,
 						      module_freedisk);
@@ -221,10 +259,10 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 						  module_odbc_query);
 	} else if (module_logevent != "") {
 		module = new Pandora_Module_Logevent (module_name,
-				  module_source,
-				  module_eventtype,
-				  module_eventcode,
-				  module_pattern);
+						      module_source,
+						      module_eventtype,
+						      module_eventcode,
+						      module_pattern);
 	} else {
 		return NULL;
 	}
@@ -297,5 +335,6 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 				    module_name.c_str ());
 		}
 	}
+	
 	return module;
 }

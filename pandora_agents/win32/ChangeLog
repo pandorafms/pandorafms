@@ -1,5 +1,9 @@
 2008-12-03  Esteban Sanchez  <estebans@artica.es>
 
+	* bin/PandoraAgent.exe: Updated to last commit.
+
+2008-12-03  Esteban Sanchez  <estebans@artica.es>
+
 	* pandora.[cc,h]: Function is_enabled() was moved here to be
 	accesible.
 

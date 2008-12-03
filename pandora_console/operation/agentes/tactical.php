@@ -1,14 +1,14 @@
 <?php
 
-// Pandora FMS - The Flexible Monitoring System
+// Pandora FMS - the Flexible Monitoring System
 // ============================================
-// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
-// Copyright (c) 2005-2008 Artica Soluciones Tecnologicas, info@artica.es
-// Copyright (c) 2004-2006 Raul Mateos Martin, raulofpandora@gmail.com
+// Copyright (c) 2008 Artica Soluciones Tecnologicas, http://www.artica.es
+// Please see http://pandora.sourceforge.net for full contribution list
+
 // This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
+// modify it under the terms of the GNU Lesser General Public License (LGPL)
+// as published by the Free Software Foundation for version 2.
+// 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -203,15 +203,25 @@ echo '<div style="width: 450px; float:left;" id="rightcolumn">';
 
 // Server information
 
-echo '<table class="databox" cellpadding="4" cellspacing="4" style="width:100%;">';
-echo '<thead><tr><th colspan="4">'.__('Tactical server information').'</th></tr>';
-echo '<tr><th style="font-weight:none;">'.__('Name').'</th><th style="font-weight:none;">'.__('Status').'</th><th style="font-weight:none;">'.__('Load').'</th><th style="font-weight:none;">'.__('Lag').pandora_help ("serverlag", true).'</th></tr></thead><tbody>';
-
 $serverinfo = get_server_info ();
 $total_modules = get_agentmodule_count ();
 $cells = array ();
 
-foreach ($serverinfo as $server_id => $server_info) {
+if ($serverinfo) {
+
+	echo '<table class="databox" cellpadding="4" cellspacing="4" style="width:100%;">';
+	echo '<thead>
+	<tr>
+	<th colspan="4" style="background-color:#799E48">'.__('Tactical server information').'</th>
+	</tr>';
+	echo '<tr>
+	<th style="font-weight:none;">'.__('Name').'</th>
+	<th style="font-weight:none;">'.__('Status').'</th>
+	<th style="font-weight:none;">'.__('Load').'</th>
+	<th style="font-weight:none;">'.__('Lag').pandora_help ("serverlag", true).'</th>
+	</tr></thead><tbody>';
+
+	foreach ($serverinfo as $server_id => $server_info) {
 	$data = array ();
 	$data[0] = $server_info["name"];
 
@@ -220,8 +230,8 @@ foreach ($serverinfo as $server_id => $server_info) {
 	} else {
 		$data[1] = '<img src="images/pixel_green.png" width="20" height="20" />';
 	}
-	
-	
+
+
 	if ($server_info["modules"] > 0 && $total_modules > 0) {
 		$percent = $server_info["modules"] / ($total_modules / 100);
 	} else {
@@ -232,9 +242,9 @@ foreach ($serverinfo as $server_id => $server_info) {
 	$data[3] = $server_info["lag"]." / ".$server_info["module_lag"];
 
 	array_push ($cells, $data);
-}
+	}
 
-foreach ($cells as $key => $row) {
+	foreach ($cells as $key => $row) {
 	//Switch class around
 	$class = (($key % 2) ? "datos2" : "datos");
 	echo '<tr>
@@ -242,10 +252,10 @@ foreach ($cells as $key => $row) {
 		<td class="'.$class.'" style="text-align:center;">'.$row[1].'</td>
 		<td class="'.$class.'" style="text-align:center;">'.$row[2].'</td>
 		<td class="'.$class.'" style="text-align:right;">'.$row[3].'</td>
-		</tr>';
+	</tr>';
+	}
+	echo '</tbody></table>';
 }
-echo '</tbody></table>';
-
 smal_event_table ("", 10, 450);
 
 echo '</div>';

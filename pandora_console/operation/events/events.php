@@ -388,7 +388,7 @@ if (!empty ($table->data)) {
 	}
 	echo '</div></form>';
 } else {
-	echo '<div class="error">'.__('No events').'</div>';
+	echo '<div class="nf">'.__('No events').'</div>';
 }
 unset ($table);
 

@@ -1,3 +1,13 @@
+2008-12-03  Raul Mateos  <raulofpandora@gmail.com>
+
+	* include/functions_db.php: Now if no event, table shows "no event" text.
+	Cosmetic table header change.
+	
+	* operation/agentes/tactical.php: Solve warning if no servers defined.
+	Cosmetic table header change.
+	
+	* operation/events/events.php: Change "error" class to "not found" class.
+
 2008-12-02  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/languages/index.pot: Updated Spanish translation.

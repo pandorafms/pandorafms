@@ -1,3 +1,37 @@
+2008-12-10  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* include/functions.php: format_for_graph is now much simpler and uses 
+	format_numeric.
+	
+	* include/functions_db.php: give_note_author, give_incident_author, 
+	dame_numero_notas, borrar_incidencia, event_insert and 
+	return_event_description are now in their respective functions_*.php files
+	but under a new name. Fixed delete_agent transaction error detection
+	
+	* include/functions_events.php: Added get_event_description and
+	create_event (formerly return_event_description and event_insert)
+	
+	* include/functions_html.php: print_timestamp attributes should be default
+	empty, not required. Added print_username for a consistent username print
+	
+	* operation/agentes/ver_agente.php: Function renaming (create_event)
+	
+	* operation/incidents/incident.php: Partial rewrite. Uses new functions. 
+	Also added some of feature request #2264838
+	
+	* operation/incidents/incident_detail.php: Partial rewrite. Uses new 
+	functions. Added some of feature request #2264838 functionality.
+	
+	* operation/incidents/incident_search.php, 
+	operation/incidents/incident_statistics.php: Minor style update
+	
+	* pandoradb.sql: New tincidencia and tnota layout. No use for tnota_inc
+	
+	* include/functions_incidents.php: All incidents functions. Documentation
+	will be online soon. Also includes an upgrade mechanism for SVN users. 
+	Mechanism should be removed for a stable version and integrated into 
+	install/upgrade tool.
+	
 2008-12-03  Raul Mateos  <raulofpandora@gmail.com>
 
 	* include/functions_db.php: Now if no event, table shows "no event" text.

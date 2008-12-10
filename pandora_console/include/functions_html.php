@@ -627,7 +627,7 @@ function print_error_message ($result, $good = '', $bad = '', $attributes = '', 
  * @param string $tag: If it should be in a different tag than span
  * @param bool $return whether to output the string or return it
  */
-function print_timestamp ($unixtime, $attributes, $tag = "span", $return = false) {
+function print_timestamp ($unixtime, $attributes = "", $tag = "span", $return = false) {
 	global $config;
 	
 	if (!is_numeric ($unixtime)) {
@@ -659,5 +659,22 @@ function print_timestamp ($unixtime, $attributes, $tag = "span", $return = false
 		echo $output;
 	}
 	return $output;
+}
+
+/**
+ * Prints a username with real name, link to the user_edit page etc.
+ *
+ * @param username (string) The username
+ * @param return (bool) Whether to return or print
+ *
+ * @return (string) The full <a href string
+ */
+	
+function print_username ($username, $return = false) {
+	$string = '<a href="index.php?sec=usuario&sec2=operation/users/user_edit&ver='.$username.'">'.dame_nombre_real ($username).'</a>';
+	if ($return === false) {
+		echo $string;
+	}
+	return $string;
 }
 ?>

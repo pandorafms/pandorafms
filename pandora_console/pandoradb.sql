@@ -318,9 +318,8 @@ CREATE TABLE IF NOT EXISTS `tgrupo` (
   PRIMARY KEY  (`id_grupo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
 CREATE TABLE IF NOT EXISTS `tincidencia` (
- `id_incidencia` bigint(20) unsigned NOT NULL auto_increment,
+  `id_incidencia` bigint(6) unsigned zerofill NOT NULL auto_increment,
   `inicio` datetime NOT NULL default '0000-00-00 00:00:00',
   `cierre` datetime NOT NULL default '0000-00-00 00:00:00',
   `titulo` varchar(100) NOT NULL default '',
@@ -330,13 +329,15 @@ CREATE TABLE IF NOT EXISTS `tincidencia` (
   `estado` int(10) NOT NULL default '0',
   `prioridad` int(10) NOT NULL default '0',
   `id_grupo` mediumint(4) unsigned NOT NULL default '0',
-  `actualizacion` datetime NOT NULL default '0000-00-00 00:00:00',
+  `actualizacion` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   `id_creator` varchar(60) default NULL,
+  `id_lastupdate` varchar(60) default NULL,
+  `id_agente_modulo` bigint(100) NOT NULL,
   `notify_email` tinyint(3) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id_incidencia`),
-  KEY `incident_index_1` (`id_usuario`,`id_incidencia`)
+  KEY `incident_index_1` (`id_usuario`,`id_incidencia`),
+  KEY `id_agente_modulo` (`id_agente_modulo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 CREATE TABLE IF NOT EXISTS`tlanguage` (
   `id_language` varchar(6) NOT NULL default '',
@@ -418,23 +419,15 @@ CREATE TABLE IF NOT EXISTS `tnetwork_profile_component` (
   KEY `id_np` (`id_np`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
 CREATE TABLE IF NOT EXISTS `tnota` (
-  `id_nota` mediumint(8) unsigned NOT NULL auto_increment,
+  `id_nota` bigint(6) unsigned zerofill NOT NULL auto_increment,
+  `id_incident` bigint(6) unsigned zerofill NOT NULL,
   `id_usuario` varchar(100) NOT NULL default '0',
-  `timestamp` tinyblob NOT NULL,
+  `timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP,
   `nota` mediumtext NOT NULL,
-  PRIMARY KEY  (`id_nota`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
-CREATE TABLE IF NOT EXISTS `tnota_inc` (
-  `id_nota_inc` mediumint(8) unsigned NOT NULL auto_increment,
-  `id_incidencia` mediumint(9) NOT NULL default '0',
-  `id_nota` mediumint(9) NOT NULL default '0',
-  PRIMARY KEY  (`id_nota_inc`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
+  PRIMARY KEY  (`id_nota`),
+  KEY `id_incident` (`id_incident`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `torigen` (
   `origen` varchar(100) NOT NULL default ''

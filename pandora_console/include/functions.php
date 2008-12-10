@@ -428,26 +428,16 @@ function format_numeric ($number, $decimals = 1) {
  * @return A number rendered to be displayed gently on a graph.
  */
 function format_for_graph ($number , $decimals = 1, $dec_point = ".", $thousands_sep = ",") {
-	if ($number > 1000000000) {
-		if (fmod ($number, 1000000000) > 0){
-			return number_format ($number / 1000000000, $decimals, $dec_point, $thousands_sep)." G";
-		}
-	}
-	if ($number > 1000000) {
-		if (fmod ($number, 1000000) > 0)
-			return number_format ($number / 1000000, $decimals, $dec_point, $thousands_sep)." M";
-		return number_format ($number / 1000000, 0, $dec_point, $thousands_sep)." M";
-	}
+	$shorts = array("","K","M","G","T","P");
+    $pos = 0;
+    while ($number>=1000) { //as long as the number can be divided by 1000
+        $pos++; //Position in array starting with 0
+        $number = $number/1000;
+    }
 	
-	if ($number > 1000) {
-		if (fmod ($number, 1000) > 0)
-			return number_format ($number / 1000, $decimals, $dec_point, $thousands_sep )." K";
-		return number_format ($number / 1000, 0, $dec_point, $thousands_sep )." K";
-	}
-	/* If it has decimals */
-	if (fmod ($number, 1))
-		return number_format ($number, $decimals, $dec_point, $thousands_sep);
-	return number_format ($number, 0, $dec_point, $thousands_sep);
+	$number = $number . $shorts[$pos];
+	
+	return format_numeric ($number, $decimals); //This will actually do the rounding and the decimals
 }
 
 /** 

@@ -18,6 +18,8 @@
 
 // Load global vars
 require_once ("include/config.php");
+require_once ("include/functions_events.php");
+
 enterprise_include ('operation/agentes/ver_agente.php');
 
 check_login ();
@@ -154,10 +156,10 @@ if ($validate_alert != ""){
 
 		// Single alerts
 		if ($alert_row["id_agente_modulo"] != 0){
-			event_insert("Manual validation of alert for '$alert_name'", $ag_row["id_grupo"], $am_row["id_agente"], 1, $config["id_user"], "alert_manual_validation", 1, $alert_row["id_agente_modulo"], $validate_alert);
+			create_event ("Manual validation of alert for '$alert_name'", $ag_row["id_grupo"], $am_row["id_agente"], 1, $config["id_user"], "alert_manual_validation", 1, $alert_row["id_agente_modulo"], $validate_alert);
 		// Combined alerts
 		} else {
-			event_insert("Manual validation of alert for '$alert_name'", $ag_row["id_grupo"], $alert_row ["id_agent"], 1, $config["id_user"], "alert_manual_validation", 1, 0, $validate_alert);
+			create_event ("Manual validation of alert for '$alert_name'", $ag_row["id_grupo"], $alert_row ["id_agent"], 1, $config["id_user"], "alert_manual_validation", 1, 0, $validate_alert);
 		}
 		$sql='UPDATE talerta_agente_modulo SET times_fired = 0, internal_counter = 0 WHERE id_aam = '.$validate_alert;
 		$result=mysql_query($sql);

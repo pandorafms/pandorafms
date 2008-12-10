@@ -18,14 +18,14 @@
 
 
 // Load global vars
-require("include/config.php");
+require_once ("include/config.php");
 
 check_login ();
 
 if (! give_acl ($config['id_user'], 0, "IR") == 1) {
+	audit_db ($config['id_user'], $config["remote_addr"], "ACL Violation", "Trying to access Incident section");
 	require ("general/noaccess.php");
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to access Incident section");
-	return;
+	exit;
 }
 echo "<h2>".__('Incident management')." &gt; ".__('Statistics')."</h2>";
 

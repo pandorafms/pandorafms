@@ -1536,8 +1536,7 @@ sub pandora_create_incident (%$$$$$$$) {
 	my $status = $_[5];
 	my $origin = $_[6];
 	my $id_group = $_[7];
-	my $my_timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
-	my $sql = "INSERT INTO tincidencia (inicio, actualizacion, titulo, descripcion, origen, estado, prioridad, id_grupo) VALUES ('$my_timestamp', '$my_timestamp', '$title', '$text', '$origin', $status, $priority, $id_group)";
+	my $sql = "INSERT INTO tincidencia (inicio, titulo, descripcion, origen, estado, prioridad, id_grupo) VALUES (NOW(), '$title', '$text', '$origin', $status, $priority, $id_group)";
 	$dbh->do($sql);
 }
 

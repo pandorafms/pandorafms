@@ -102,4 +102,41 @@ function process_event_validate ($id_event) {
 function get_event_group ($id_event) {
 	return (int) get_db_value ('id_grupo', 'tevento', 'id_evento', (int) $id_event);
 }
+
+/** 
+ * Get description of an event.
+ * 
+ * @param id_event Event id.
+ * 
+ * @return Description of the given event.
+ */
+function get_event_description ($id_event) {
+	return (string) get_db_value ('evento', 'tevento', 'id_evento', (int) $id_event);
+}
+
+/** 
+ * Insert a event in the event log system.
+ * 
+ * @param event 
+ * @param id_group 
+ * @param id_agent 
+ * @param status 
+ * @param id_user 
+ * @param event_type 
+ * @param priority 
+ * @param id_agent_module 
+ * @param id_aam 
+ *
+ * @return event_id
+ */
+function create_event ($event, $id_group, $id_agent, $status = 0, $id_user = "", $event_type = "unknown", $priority = 0, $id_agent_module = 0, $id_aam = 0) {
+	$sql = sprintf ('INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, 
+					estado, utimestamp, id_usuario, event_type, criticity,
+					id_agentmodule, id_alert_am) 
+					VALUES (%d, %d, "%s", NOW(), %d, NOW(), "%s", "%s", %d, %d, %d)',
+					$id_agent, $id_group, $event, $status, $id_user, $event_type,
+					$priority, $id_agent_module, $id_aam);
+	
+	return (int) process_sql ($sql, "insert_id");
+}
 ?>

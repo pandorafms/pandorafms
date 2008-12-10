@@ -397,28 +397,7 @@ function dame_agente_id ($agent_name) {
 	return (int) get_db_value ('id_agente', 'tagente', 'nombre', $agent_name);
 }
 
-/** 
- * Get user id of a note.
- * 
- * @param id_note Note id.
- * 
- * @return User id of the given note.
- */
-function give_note_author ($id_note) {
-	return (int) get_db_value ('id_usuario', 'tnota', 'id_nota', (int) $id_note);
-}
-
-/** 
- * Get description of an event.
- * 
- * @param id_event Event id.
- * 
- * @return Description of the given event.
- */
-function return_event_description ($id_event) {
-	return (string) get_db_value ('evento', 'tevento', 'id_evento', (int) $id_event);
-}
-
+	
 /** 
  * DEPRECATED: Use get_agent_name instead
  * 
@@ -804,17 +783,6 @@ function get_alert_last_fire_timestamp_in_period ($id_agent_module, $period, $da
 }
 
 /** 
- * Get the author of an incident.
- * 
- * @param id_incident Incident id.
- * 
- * @return The author of an incident
- */
-function give_incident_author ($id_incident) {
-	return (string) get_db_value ('id_usuario', 'tincidencia', 'id_incidencia', (int) $id_incident);
-}
-
-/** 
  * Get the server name.
  * 
  * @param id_server Server id.
@@ -859,17 +827,6 @@ function dame_id_grupo ($id_agent) {
 }
 
 /** 
- * Get the number of notes in a incident.
- * 
- * @param id_incident Incident id
- * 
- * @return The number of notes in given incident.
- */
-function dame_numero_notas ($id_incident) {
-	return (int) get_db_value ('COUNT(*)', 'tnota_inc', 'id_incidencia', $id_incident);
-}
-
-/** 
  * Get the number of pandora data in the database.
  * 
  * @param id_agent Agent id or 0 for all
@@ -898,40 +855,6 @@ function dame_numero_datos ($id_agent = 0) {
  */
 function dame_generic_string_data ($id) {
 	return (string) get_db_value ('datos', 'tagente_datos_string', 'id_tagente_datos_string', $id);
-}
-
-/** 
- * Delete an incident of the database.
- * 
- * @param id_inc Incident id
- */
-function borrar_incidencia ($id_inc) {
-	global $config;
-	
-	$sql = sprintf ("DELETE FROM `tincidencia` WHERE `id_incidencia` = %d", $id_inc);
-	process_sql ($sql);
-	$sql = sprintf ("SELECT `id_nota` FROM `tnota_inc` WHERE `id_incidencia` = %d ", $id_inc);
-	$rows = get_db_all_rows_sql ($sql);
-	if ($rows){
-		foreach ($rows as $row) {
-			$sql = sprintf ("DELETE FROM `tnota` WHERE `id_nota` = %d",$row["id_nota"]);
-			process_sql ($sql);
-		}
-		$sql = "DELETE FROM `tnota_inc` WHERE `id_incidencia` = $id_inc";
-		process_sql ($sql);
-	}
-	
-	// Delete attachments
-	$sql = sprintf ("SELECT `id_attachment`,`filename` FROM `tattachment` WHERE `id_incidencia` = %d", $id_inc);
-	$rows = get_db_all_rows_sql ($sql);
-	if (!empty ($rows)){
-		foreach ($rows as $row) {
-			// Unlink all attached files for this incident
-			unlink ($config["attachment_store"]."/pand".$row["id_attachment"]."_".$row["filename"]);
-		}
-		$sql = sprintf ("DELETE FROM `tattachment` WHERE `id_incidencia` = %d",$id_inc);
-		process_sql ($sql);
-	}
 }
 
 /** 
@@ -1035,32 +958,6 @@ function existe ($id_user) {
 	if (! $user)
 		return false;
 	return true;
-}
-
-/** 
- * Insert a event in the event log system.
- * 
- * @param event 
- * @param id_group 
- * @param id_agent 
- * @param status 
- * @param id_user 
- * @param event_type 
- * @param priority 
- * @param id_agent_module 
- * @param id_aam 
- */
-function event_insert ($event, $id_group, $id_agent, $status = 0,
-			$id_user = '', $event_type = "unknown", $priority = 0,
-			$id_agent_module = 0, $id_aam = 0) {
-	$sql = sprintf ('INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, 
-			estado, utimestamp, id_usuario, event_type, criticity,
-			id_agentmodule, id_alert_am) 
-			VALUES (%d, %d, "%s", NOW(), %d, NOW(), "%s", "%s", %d, %d, %d)',
-			$id_agent, $id_group, $event, $status, $id_user, $event_type,
-			$priority, $id_agent_module, $id_aam);
-
-	process_sql ($sql);
 }
 
 /** 
@@ -2342,7 +2239,7 @@ function delete_agent ($id_agents) {
 		temp_sql_delete ("tagente", "id_agente", $id_agent);
 	}
 
-	if ($errors > 1) {
+	if ($errors > 0) {
 		process_sql ("ROLLBACK;");
 		process_sql ("SET AUTOCOMMIT = 1;");
 		return false;

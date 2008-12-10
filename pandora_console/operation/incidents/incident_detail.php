@@ -19,23 +19,25 @@
 
 // Load global vars
 
-require("include/config.php");
+require_once ("include/config.php");
+require_once ("include/functions_incidents.php");
+require_once ("include/functions_events.php"); //To get events group information
 
 check_login ();
 
 if (! give_acl ($config["id_user"], 0, "IR")) {
  	// Doesn't have access to this page
-	audit_db ($config["id_user"], $REMOTE_ADDR, "ACL Violation", "Trying to access incident details");
-	include ("general/noaccess.php");
+	audit_db ($config["id_user"], $config["remote_addr"], "ACL Violation", "Trying to access incident details");
+	require ("general/noaccess.php");
 	exit;
 }
 
-$inicio = date('Y-m-d H:i:s');
-$actualizacion = date('Y-m-d H:i:s');
+$inicio = time (); //Just inits the variable
+$actualizacion = time ();
 
 // EDITION MODE
 if (isset ($_GET["id"])) {
-	$id_inc = get_parameter_get ("id");
+	$id_inc = get_parameter_get ("id", 0);
 	
 	// Obtain group of this incident
 	$row = get_db_row ("tincidencia","id_incidencia",$id_inc);
@@ -43,86 +45,65 @@ if (isset ($_GET["id"])) {
 	// Get values
 	$titulo = $row["titulo"];
 	$texto = $row["descripcion"];
-	$inicio = $row["inicio"];
-	$actualizacion = $row["actualizacion"];
+	$inicio = strtotime ($row["inicio"]); 
+	$actualizacion = strtotime ($row["actualizacion"]);
 	$estado = $row["estado"];
 	$prioridad = $row["prioridad"];
 	$origen = $row["origen"];
-	$usuario = $row["id_usuario"];
+	$usuario = $row["id_usuario"]; //owner
 	$id_grupo = $row["id_grupo"];
-	$id_creator = $row["id_creator"];
-	$upd_sql = sprintf ("UPDATE tincidencia SET actualizacion = NOW(), id_usuario = '%s' WHERE id_incidencia = %d", $usuario, $id_inc);
+	$id_creator = $row["id_creator"]; //creator
+	$id_lastupdate = $row["id_lastupdate"]; //last updater
+	
 	// Note add - everybody that can read incidents, can add notes
 	if (isset ($_GET["insertar_nota"])) {
 		$nota = get_parameter_post ("nota");
 
-		$sql = sprintf ("INSERT INTO tnota (id_usuario, timestamp, nota) VALUES ('%s',NOW(),'%s')",$config["id_user"],$nota);
+		$sql = sprintf ("INSERT INTO tnota (id_usuario, id_incident, nota) VALUES ('%s', %d, '%s')",$config["id_user"],$id_inc, $nota);
 		$id_nota = process_sql ($sql, "insert_id");
 
 		if ($id_nota !== false) {
-			echo '<h3 class="suc">'.__('Note successfully added').'</h3>';
-			$sql = sprintf ("INSERT INTO tnota_inc (id_incidencia, id_nota) VALUES (%d,%d)", $id_inc, $id_nota);
-			process_sql ($sql);
-			process_sql ($upd_sql); //Update tincidencia
-		} else {
-			echo '<h3 class="error">'.__('Error adding note').'</h3>';
+			process_incidents_touch ($id_inc);
 		}
+		print_error_message ($id_nota, __('Note successfully added'), __('Error adding note'));
 	}
 
 	// Delete note
-	if (isset ($_GET["id_nota"])) {
-		$id_nota = get_parameter_get ("id_nota");
-		$note_user = give_note_author ($id_nota);
-		if (((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($note_user == $config["id_user"])) OR ($id_creator == $config["id_user"]) ) { 
+	if (isset ($_POST["delete_nota"])) {
+		$id_nota = get_parameter_post ("delete_nota", 0);
+		$note_user = get_incidents_notes_author ($id_nota);
+		if (((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($note_user == $config["id_user"])) OR ($id_owner == $config["id_user"])) { 
 		// Only admins (manage incident) or owners can modify
-		// incidents, including their notes. note authors are 
+		// incidents notes. note authors are 
 		// able to delete their own notes
-			$sql = sprintf ("DELETE FROM tnota WHERE id_nota = %d",$id_nota);
-			$result = process_sql ($sql); //Result is 0 or false if the note wasn't deleted, therefore check with empty
+			$result = delete_incidents_note ($id_nota);
 
 			if (!empty ($result)) {
-				$sql = sprintf ("DELETE FROM tnota_inc WHERE id_nota = %d",$id_nota);
-				$result = process_sql ($sql);
+				process_incidents_touch ($id_inc);
 			}
-			
-			if (!empty ($result)) {
-				process_sql ($upd_sql); //Update tincidencia
-				echo '<h3 class="suc">'.__('Note successfully deleted').'</h3>';
-			} else {
-				echo '<h3 class="error">'.__('Error deleting note').'<h3>';
-			}
+			print_error_message ($id_nota, __('Note successfully deleted'), __('Error deleting note'));
 		}
 	}
 
 	// Delete file
-	if (((give_acl ($config["id_user"], $id_grupo, "IM")==1) OR ($id_creator == $config["id_user"])) AND isset ($_GET["delete_file"])) {
-		$file_id = get_parameter_get ("delete_file");
-		$sql = sprintf ("SELECT filename FROM tattachment WHERE id_attachment = %d",$file_id);
-		$filename = get_db_sql ($sql);
-		if (!empty ($filename)) {
-			$sql = sprintf ("DELETE FROM tattachment WHERE id_attachment = %d",$file_id);
-			$result = process_sql ($sql);
-		} else {
-			echo '<h3 class="error">'.__('Could not find file in database').'</h3>';
-			$result = false;
-		}
+	if (((give_acl ($config["id_user"], $id_grupo, "IM")==1) OR ($id_owner == $config["id_user"])) AND isset ($_POST["delete_file"])) {
+		$file_id = (int) get_parameter_post ("delete_file", 0);
+		$filename = get_db_value ("filename", "tattachment", "id_attachment", $file_id);
+		$sql = sprintf ("DELETE FROM tattachment WHERE id_attachment = %d",$file_id);
+		$result = process_sql ($sql);
 		
 		if (!empty ($result)) {
 			unlink ($config["attachment_store"]."/pand".$file_id."_".$filename);
-			process_sql ($upd_sql); //Update tincidencia
-			echo '<h3 class="suc">'.__('File successfully deleted from database').'</h3>';
-		} else {
-			echo '<h3 class="error"'.__('Unable to delete file').'</h3>';
+			process_incidents_touch ($id_inc);
 		}
+		
+		print_error_message ($result, __('File successfully deleted from database'), __('Unable to delete file'));
 	}
 
 	// Upload file
-	if ((give_acl ($config["id_user"], $id_grupo, "IW") == 1) AND isset ($_GET["upload_file"]) AND ($_FILES['userfile']['name'] != "")) { //if file
-		if (isset ($_POST["file_description"])) {
-			$description = get_parameter_post ("file_description");
-		} else {
-			$description = __("No description available");
-		}
+	if ((give_acl ($config["id_user"], $id_grupo, "IW") == 1) AND isset ($_GET["upload_file"]) AND ($_FILES['userfile']['name'] != "")) {
+		$description = get_parameter_post ("file_description", __('No description available'));
+		
 		// Insert into database
 		$filename = safe_input ($_FILES['userfile']['name']);
 		$filesize = safe_input ($_FILES['userfile']['size']);
@@ -130,7 +111,7 @@ if (isset ($_GET["id"])) {
 		//The following is if you have clamavlib installed
 		//(php5-clamavlib) and enabled in php.ini
 		//http://www.howtoforge.com/scan_viruses_with_php_clamavlib
-		if(extension_loaded ('clamav')) {
+		if (extension_loaded ('clamav')) {
 			cl_setlimits (5, 1000, 200, 0, 10485760);
 			$malware = cl_scanfile ($_FILES['file']['tmp_name']); 
 			if ($malware) {
@@ -155,12 +136,12 @@ if (isset ($_GET["id"])) {
 
 		if ($result !== false) {
 			unlink ($_FILES['userfile']['tmp_name']);
-			process_sql ($upd_sql); //Update tincidencia
-			echo '<h3 class="suc">'.__('File uploaded').'</h3>';
+			process_incidents_touch ($id_inc);
 		} else {
-			echo '<h3 class="error">'.__('File could not be saved. Contact the Pandora Administrator for more information').'</h3>';
 			process_sql ("DELETE FROM tattachment WHERE id_attachment = ".$id_attachment);
 		}
+		
+		print_error_message ($result, __('File uploaded'), __('File could not be saved. Contact the Pandora Administrator for more information'));
 	}
 } // else Not given id
 // Create incident from event... read event data
@@ -175,18 +156,19 @@ elseif (isset ($_GET["insert_form"])) {
 	$usuario = $config["id_user"];
 	$id_creator = $config["id_user"];
 	
-	if (isset($_GET["from_event"])) {
+	if (isset ($_GET["from_event"])) {
 		$event = get_parameter_get ("from_event");
-		$titulo = return_event_description ($event);
-		$descripcion = "";
+		$titulo = get_event_description ($event);
+		$id_grupo = get_event_group ($event);
 		$origen = "Pandora FMS event";
 		unset ($event);
 	}
 	$prioridad = 0;
 	$id_grupo = 0;
 } else {
-	audit_db ($config['id_user'],$REMOTE_ADDR, "HACK","Trying to get to incident details in an unusual way");
-	no_permission ();
+	audit_db ($config['id_user'],$config["remote_addr"], "HACK","Trying to get to incident details in an unusual way");
+	require ("general/noaccess.php");
+	exit;
 }
 
 
@@ -235,8 +217,8 @@ if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $confi
 
 echo '</td></tr>';
 
-echo '<tr><td class="datos2"><b>'.__('Opened at').'</b></td><td class="datos2"><i>'.date ($config['date_format'],strtotime ($inicio)).'</i></td>';
-echo '<td class="datos2"><b>'.__('Updated at').'</b><td class="datos2"><i>'.date ($config['date_format'],strtotime ($actualizacion)).'</i></td></tr>';
+echo '<tr><td class="datos2"><b>'.__('Opened at').'</b></td><td class="datos2"><i>'.date ($config['date_format'], $inicio).'</i></td>';
+echo '<td class="datos2"><b>'.__('Updated at').'</b><td class="datos2"><i>'.date ($config['date_format'], $actualizacion).'</i></td></tr>';
 
 echo '<tr><td class="datos"><b>'.__('Owner').'</b></td><td class="datos">';
 
@@ -247,16 +229,10 @@ if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $confi
 }
 echo '</td><td class="datos"><b>'.__('Status').'</b></td><td class="datos">';
 
-$fields = array ();
-$fields[0] = __('Open and Active');
-$fields[2] = __('Not valid');
-$fields[3] = __('Out of date');
-$fields[13] = __('Closed');
-
 if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
-	print_select ($fields, "estado_form", $estado, '', '', '', false, false, false, 'w135');
+	print_select (get_incidents_status (), "estado_form", $estado, '', '', '', false, false, false, 'w135');
 } else {
-	print_select ($fields, "estado_form", $estado, '', '', '', false, false, false, 'w135', true);
+	print_select (get_incidents_status (), "estado_form", $estado, '', '', '', false, false, false, 'w135', true);
 }
 echo '</td></tr>';
 
@@ -288,18 +264,10 @@ if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $confi
 
 echo '</td></tr><tr><td class="datos"><b>'.__('Priority').'</b></td><td class="datos">';
 
-$fields = array();
-$fields[0] = __('Informative');
-$fields[1] = __('Low');
-$fields[2] = __('Medium');
-$fields[3] = __('Serious');
-$fields[4] = __('Very serious');
-$fields[10] = __('Maintenance');
-
 if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
-	print_select ($fields, "prioridad_form", $prioridad, '', '', '', false, false, false, 'w135');
+	print_select (get_incidents_priorities (), "prioridad_form", $prioridad, '', '', '', false, false, false, 'w135');
 } else {
-	print_select ($fields, "prioridad_form", $prioridad, '', '', '', false, false, false, 'w135', true);
+	print_select (get_incidents_priorities (), "prioridad_form", $prioridad, '', '', '', false, false, false, 'w135', true);
 }
 
 echo '</td><td class="datos"><b>'.__('Creator').'</b></td><td class="datos">';
@@ -319,8 +287,7 @@ if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $confi
 
 echo '</td></tr></table><div style="width: 600px; text-align:right;">';
 // Only if user is the used who opened incident or (s)he is admin
-
-if (isset ($id_inc) AND (give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
+if (isset ($id_inc) AND ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"]))) {
 	print_submit_button (__('Update incident'), "accion", false, 'class="sub upd"');
 } elseif (give_acl ($config["id_user"], $id_grupo, "IW")) {
 	print_submit_button (__('Create'), "accion", false, 'class="sub wand"');
@@ -329,7 +296,12 @@ if (isset ($id_inc) AND (give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR
 }
 echo "</div></form>";
 
+//If we're actually working on an incident
 if (isset ($id_inc)) {
+	// ********************************************************************
+	// Notes 
+	// ********************************************************************
+	
 	echo '<div>';
 	print_submit_button (__('Add note'), "note_control", false, 'class="sub next"');
 	echo '</div><div>';
@@ -339,101 +311,96 @@ if (isset ($id_inc)) {
 		<td valign="bottom"><input name="addnote" type="submit" class="sub wand" value="'.__('Add').'"></td></tr>
 		</table></form></div><div>';
 
-	// ********************************************************************
-	// Notes 
-	// ********************************************************************
-
-	if (isset ($id_inc)) {
-		$sql = sprintf ("SELECT tnota.* FROM tnota, tnota_inc WHERE tnota_inc.id_incidencia = '%d' AND tnota.id_nota = tnota_inc.id_nota",$id_inc);
-		$result = get_db_all_rows_sql ($sql);
-	} else {
-		$result = array ();
-	}
-
-	if (empty ($result)) {
-		$result = array ();
-	} else {
-		echo "<h3>".__('Notes attached to incident').'<h3>';
-	}
-
-	echo '<table cellpadding="4" cellspacing="4" class="databox" width="600px">';
+	$result = get_incidents_notes ($id_inc);
+	
+	$table->cellpadding = 4;
+	$table->cellspacing = 4;
+	$table->class = "databox";
+	$table->width = 600;
+	$table->data = array ();
+	$table->head = array ();
+	
 	foreach ($result as $row) {
-		echo '<tr><td><img src="images/page_white_text.png" border="0"></td>';
-		echo '<td>'.__('Author').': <a href="index.php?sec=usuario&sec2=operation/users/user_edit&ver='.$row["id_usuario"].'">'.dame_nombre_real ($row["id_usuario"]).'</a> ('.date ($config['date_format'],strtotime ($row["timestamp"])).')</td></tr>';
-		echo '<tr><td>';
+		$data = array ();
+		$data[0] = '<img src="images/page_white_text.png" border="0" />';
+		$data[1] = __('Author').': '.print_username ($row["id_usuario"], true).' ('.print_timestamp ($row["timestamp"], "", "span", true).')';
+		array_push ($table->data, $data);
+		
+		$data = array ();
+		$data[0] = '';
 		if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($row["id_usuario"] == $config["id_user"])) {
-			echo '<a href="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'&id_nota='.$row["id_nota"].'"><img src="images/cross.png" border="0"></a>';
+			$data[0] .= print_input_image ("delete_nota", "images/cross.png", $row["id_nota"], 'border:0px;" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;', true);
 		}
-		echo '</td><td>'.safe_input ($row["nota"]).'</td></tr>';
+		$data[1] = safe_input ($row["nota"]);
+		array_push ($table->data, $data);
 	}
-	echo '</table>';
-}
-
-// ************************************************************
-// Files attached to this incident
-// ************************************************************
-
-// Attach head if there's attach for this incident
-if (isset ($id_inc)) {
-	$result = get_db_all_rows_field_filter ("tattachment", "id_incidencia", $id_inc, "filename");
-} else {
-	$result = array ();
-}
-
-if (empty ($result)) {
-	$result = array ();
-} else {
-	echo "<h3>".__('Attached files')."</h3>";
-}
-
-$table->cellpadding = 4;
-$table->cellspacing = 4;
-$table->class = "databox";
-$table->width = 650;
-$table->head = array ();
-$table->data = array ();
-
-$table->head[0] = __('Filename');
-$table->head[1] = __('Description');
-$table->head[2] = __('Size');
-$table->head[3] = __('Delete');
-
-$table->align[2] = "center";
-$table->align[3] = "center";
-
-foreach ($result as $row) {
-	$data[0] = '<img src="images/disk.png" border="0" align="top" />&nbsp;&nbsp;<a target="_new" href="attachment/pand'.$row["id_attachment"].'_'.$row["filename"].'"><b>'.$row["filename"].'</b></a>';
-	$data[1] = $row["description"];
-	$data[2] = $row["size"]." KB";
-	if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
-		$data[3] = '<a href="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'&delete_file='.$row["id_attachment"].'"><img src="images/cross.png" border=0 /></a>';
-	} else {
-		$data[3] = '';
+	
+	if (!empty ($table->data)) {
+		echo "<h3>".__('Notes attached to incident').'<h3>';
+		echo '<form method="POST" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'">';
+		print_table ($table);
+		echo '</form>';
 	}
-	array_push ($table->data, $data);
-}
+	unset ($table);
+	
 
-if (!empty ($table->data)) {
-	print_table ($table);
-}
-unset ($table);
+	// ************************************************************
+	// Files attached to this incident
+	// ************************************************************
 
-// ************************************************************
-// Upload control
-// ************************************************************
+	$result = get_incidents_attach ($id_inc);
+
+	$table->cellpadding = 4;
+	$table->cellspacing = 4;
+	$table->class = "databox";
+	$table->width = 650;
+	$table->head = array ();
+	$table->data = array ();
+
+	$table->head[0] = __('Filename');
+	$table->head[1] = __('Description');
+	$table->head[2] = __('Size');
+	$table->head[3] = __('Delete');
+
+	$table->align[2] = "center";
+	$table->align[3] = "center";
+
+	foreach ($result as $row) {
+		$data[0] = '<img src="images/disk.png" border="0" align="top" />&nbsp;&nbsp;<a target="_new" href="attachment/pand'.$row["id_attachment"].'_'.$row["filename"].'"><b>'.$row["filename"].'</b></a>';
+		$data[1] = $row["description"];
+		$data[2] = format_for_graph ($row["size"])."B";
+		if ((give_acl ($config["id_user"], $id_grupo, "IM") == 1) OR ($usuario == $config["id_user"])) {
+			$data[3] = print_input_image ("delete_file", "images/cross.png", $row["id_attachment"], 'border:0px;" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;', true);
+		} else {
+			$data[3] = '';
+		}
+		array_push ($table->data, $data);
+	}
+
+	if (!empty ($table->data)) {
+		echo "<h3>".__('Attached files')."</h3>";
+		echo '<form method="POST" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'">';
+		print_table ($table);
+		echo '</form>';
+	}
+	unset ($table);
+
+	// ************************************************************
+	// Upload control
+	// ************************************************************
 
 
-// Upload control
-if ((give_acl($config["id_user"], $id_grupo, "IW")==1) AND (isset ($id_inc))) {
-	echo '<div>';
-	print_submit_button (__('Add attachment'), "attachment", false, 'class="sub next"');
-	echo '</div>';
-	echo '<div><form method="post" id="file_control" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'&upload_file=1" enctype="multipart/form-data">';
-	echo '<table cellpadding="4" cellspacing="3" class="databox" width="400">
-		<tr><td class="datos">'.__('Filename').'</td><td class="datos"><input type="file" name="userfile" value="userfile" class="sub" size="40" /></td></tr>
-		<tr><td class="datos2">'.__('Description').'</td><td class="datos2" colspan="3"><input type="text" name="file_description" size="47"></td></tr>
-		<tr><td rowspan="2" style="text-align: right;">	<input type="submit" name="upload" value="'.__('Upload').'" class="sub wand"></td></tr>
-		</table></form></div>';
-
+	// Upload control
+	if ((give_acl($config["id_user"], $id_grupo, "IW")==1)) {
+		echo '<div>';
+		print_submit_button (__('Add attachment'), "attachment", false, 'class="sub next"');
+		echo '</div>';
+		echo '<div><form method="post" id="file_control" action="index.php?sec=incidencias&sec2=operation/incidents/incident_detail&id='.$id_inc.'&upload_file=1" enctype="multipart/form-data">';
+		echo '<table cellpadding="4" cellspacing="3" class="databox" width="400">
+			<tr><td class="datos">'.__('Filename').'</td><td class="datos"><input type="file" name="userfile" value="userfile" class="sub" size="40" /></td></tr>
+			<tr><td class="datos2">'.__('Description').'</td><td class="datos2" colspan="3"><input type="text" name="file_description" size="47"></td></tr>
+			<tr><td rowspan="2" style="text-align: right;">	<input type="submit" name="upload" value="'.__('Upload').'" class="sub wand"></td></tr>
+			</table></form></div>';
+	}
 }
 ?>

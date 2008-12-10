@@ -1,4 +1,7 @@
+2008-12-10  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
+	* lib/PandoraFMS/DB.pm: New table layout doesn't require timestamp anymore
+	
 2008-12-03  Sancho Lerena <slerena@artica.es>
 
 	* mysql_plugin.sh: Updated MySQL plugin. 

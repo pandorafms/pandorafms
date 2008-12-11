@@ -49,13 +49,18 @@ namespace Pandora {
 		TiXmlElement  *getXmlHeader    ();
 		void           copyDataFile    (string filename);
 		void           copyTentacleDataFile (string host,
-						     string filename);
+						     string filename,
+						     string port,
+						     string ssl,
+						     string pass,
+						     string opts);
 		void           copyScpDataFile (string host,
 						string remote_path,
 						string filename);
 		void           copyFtpDataFile (string host,
 						string remote_path,
-						string filename);
+						string filename,
+						string password);
 		void           recvDataFile (string filename);
 		void           recvTentacleDataFile (string host,
 						     string filename);

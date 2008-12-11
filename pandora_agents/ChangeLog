@@ -1,3 +1,14 @@
+2008-12-11  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* linux/plugins/SGE: Added the SGE plugin
+	
+	* mac_osx/plugins/SGE: Renamed the SGE plugin to be consistent with Linux
+	
+	* mac_osx/pandora_agent, mac_osx/pandora_agent.conf, 
+	mac_osx/pandora_agent_installer, mac_osx/pandora_fms/StartupParameters.list
+	mac_osx/pandora_fms/pandora_fms: Updated to latest (2.0) client code. Fixed
+	installer issues where it would overwrite previous config.
+
 2008-12-11  Ramon Novoa  <rnovoa@artica.es>
 
 	* win32/pandora_windows_service.h,

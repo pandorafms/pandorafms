@@ -1,3 +1,20 @@
+2008-12-11  Ramon Novoa  <rnovoa@artica.es>
+
+	* win32/windows/pandora_wmi.cc,
+	  win32/pandora_windows_service.h,
+	  win32/PandoraAgent.dev,
+	  win32/pandora_windows_service.cc: Added an UDP Server. The
+	  agent can receive remote commands.
+
+	* win32/udp_server,
+	  win32/udp_server/udp_server.cc,
+	  win32/udp_server/udp_server.h: Added to repository. UDP Server.
+
+2008-12-10  Ramon Novoa  <rnovoa@artica.es>
+
+	*  linux/pandora_agent,
+	   linux/pandora_agent.conf: Added support for a secondary server.
+
 2008-11-25  Sancho Lerena <slerena@gmail.com>
 
 	* linux/pandora_agent: Fixed problem parsing async_string.

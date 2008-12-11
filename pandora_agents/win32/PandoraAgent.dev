@@ -1,7 +1,7 @@
 [Project]
 FileName=PandoraAgent.dev
 Name=PandoraAgent
-UnitCount=77
+UnitCount=79
 Type=1
 Ver=1
 ObjFiles=
@@ -20,7 +20,7 @@ ObjectOutput=
 OverrideOutput=0
 OverrideOutputName=PandoraAgent.exe
 HostApplication=
-Folders=FTP,Misc,Modules,Modules/Utils,SSH,SSH/libssh2,Windows,Windows/WMI,XML
+Folders=FTP,Misc,Modules,Modules/Utils,SSH,SSH/libssh2,"UDP Server",Windows,Windows/WMI,XML
 CommandLine=
 UseCustomMakefile=0
 CustomMakefile=
@@ -811,6 +811,26 @@ BuildCmd=
 FileName=modules\pandora_module_logevent.h
 CompileCpp=1
 Folder=Modules
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit78]
+FileName=udp_server\udp_server.h
+CompileCpp=1
+Folder=UDP Server
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit79]
+FileName=udp_server\udp_server.cc
+CompileCpp=1
+Folder=UDP Server
 Compile=1
 Link=1
 Priority=1000

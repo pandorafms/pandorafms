@@ -27,6 +27,7 @@
 #include "ftp/pandora_ftp_client.h"
 #include "misc/pandora_file.h"
 #include "windows/pandora_windows_info.h"
+#include "udp_server/udp_server.h"
 
 #include <iostream>
 #include <cstdlib>
@@ -104,7 +105,9 @@ Pandora_Windows_Service::start () {
 void
 Pandora_Windows_Service::pandora_init () {
 	string conf_file, interval, debug, transfer_interval;
-	
+	string udp_server_enabled, udp_server_port, udp_server_addr, udp_server_auth_addr;
+	static UDP_Server *udp_server = NULL;
+
 	setPandoraDebug (true);
 	
 	conf_file = Pandora::getPandoraInstallDir ();
@@ -144,6 +147,16 @@ Pandora_Windows_Service::pandora_init () {
 	this->setSleepTime (this->interval);
 	
 	pandoraLog ("Pandora agent started");
+	
+	/* Launch UDP Server */
+	udp_server_enabled = conf->getValue ("udp_server");
+	if (udp_server == NULL && udp_server_enabled.compare ("1") == 0) {
+		udp_server_port = conf->getValue ("udp_server_port");
+		udp_server_addr = conf->getValue ("udp_server_address");
+		udp_server_auth_addr = conf->getValue ("udp_server_auth_address");
+		udp_server = new UDP_Server (this, udp_server_addr, udp_server_auth_addr, atoi (udp_server_port.c_str ()));
+		udp_server->start ();
+	}
 }
 
 TiXmlElement *
@@ -731,4 +744,9 @@ Pandora_Windows_Service::pandora_run () {
 	pandoraDebug ("Next execution on %d seconds", this->interval / 1000);
 
 	return;
+}
+
+Pandora_Agent_Conf  *
+Pandora_Windows_Service::getConf () {
+	return this->conf;
 }

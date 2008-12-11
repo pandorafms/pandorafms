@@ -1,14 +1,14 @@
 #!/bin/bash
 # **********************************************************************
 # Pandora FMS Generic Host Agent
-# GNU/Linux version 2.0
+# Mac OS X/Linux version 2.0
 # (c) 2003-2008 Sancho Lerena <slerena@gmail.com>
 # with the help of many people. Please see http://pandora.sourceforge.net
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
 AGENT_VERSION=2.0
-AGENT_BUILD=080619
+AGENT_BUILD=081211
 
 # **********************************************************************
 # function configure_agent()
@@ -17,7 +17,7 @@ AGENT_BUILD=080619
 function configure_agent {
 	
 	# Read config file
-	for a in `cat $PANDORA_HOME/pandora_agent.conf | grep -v -e "^#" | grep -v -e "^module"`
+	for a in `cat $PANDORA_HOME/pandora_agent.conf | grep -v -e "^#" | grep -v -e "^module" `
 	do
 		a=`echo $a | tr -s " " " "`
 		# Get general configuration parameters from config file
@@ -25,68 +25,55 @@ function configure_agent {
 		then
 			PANDORA_LOGFILE=`echo $a | awk '{ print $2 }' `
 			echo "$TIMESTAMP - [SETUP] - Pandora Logfile is $PANDORA_LOGFILE" >> $PANDORA_LOGFILE
-		fi
-		if [ ! -z "`echo $a | grep -e '^server_ip'`" ]
+		elif [ ! -z "`echo $a | grep -e '^server_ip'`" ]
 		then
 			SERVER_IP=`echo $a | awk '{ print $2 }' `
 			echo "$TIMESTAMP - [SETUP] - Server IP Address is $SERVER_IP" >> $PANDORA_LOGFILE
-		fi
-		if [ ! -z "`echo $a | grep -e '^server_path'`" ]
+		elif [ ! -z "`echo $a | grep -e '^server_path'`" ]
 		then
 			SERVER_PATH=`echo $a | awk '{ print $2 }' `
 			echo "$TIMESTAMP - [SETUP] - Server Path is $SERVER_PATH" >> $PANDORA_LOGFILE
-		fi
-		if [ ! -z "`echo $a | grep -e '^temporal'`" ]
+		elif [ ! -z "`echo $a | grep -e '^temporal'`" ]
 		then
 			TEMP=`echo $a | awk '{ print $2 }' `
 			echo "$TIMESTAMP - [SETUP] - Temporal Path is $TEMP" >> $PANDORA_LOGFILE
-		fi
-		if [ ! -z "`echo $a | grep -e '^interval'`" ]
+		elif [ ! -z "`echo $a | grep -e '^interval'`" ]
 		then
 			INTERVAL=`echo $a | awk '{ print $2 }' `
 			echo "$TIMESTAMP - [SETUP] - Interval is $INTERVAL seconds" >> $PANDORA_LOGFILE
-		fi
-		if [ ! -z "`echo $a | grep -e '^agent_name'`" ]
+		elif [ ! -z "`echo $a | grep -e '^agent_name'`" ]
 		then
 			NOMBRE_HOST=`echo $a | awk '{ print $2 }' `
 			echo "$TIMESTAMP - [SETUP] - Agent name is $NOMBRE_HOST " >> $PANDORA_LOGFILE
-		fi
-		if [ ! -z "`echo $a | grep -e '^debug'`" ]
+		elif [ ! -z "`echo $a | grep -e '^debug'`" ]
 		then
 			DEBUG_MODE=`echo $a | awk '{ print $2 }' `
 			echo "$TIMESTAMP - [SETUP] - Debug mode is $DEBUG_MODE " >> $PANDORA_LOGFILE
-		fi
-
 		# Contribution of daggett
-		if [ ! -z "`echo $a | grep -e '^server_port'`" ]
+		elif [ ! -z "`echo $a | grep -e '^server_port'`" ]
 		then
 			SERVER_PORT=`echo $a | awk '{ print $2 }' `
 			echo "$TIMESTAMP - [SETUP] - Server Port is $SERVER_PORT" >> $PANDORA_LOGFILE
-		fi
 		# Contribution of daggett
-		if [ ! -z "`echo $a | grep -e '^encoding'`" ]
+		elif [ ! -z "`echo $a | grep -e '^encoding'`" ]
 		then
 			ENCODING=`echo $a | awk '{ print $2 }' `
 			echo "$TIMESTAMP - [SETUP] - Encoding is $ENCODING" >> $PANDORA_LOGFILE
-		fi
-		if [ ! -z "`echo $a | grep -e '^transfer_mode'`" ]
+		elif [ ! -z "`echo $a | grep -e '^transfer_mode'`" ]
 		then
 			TRANSFER_MODE=`echo $a | awk '{ print $2 }' `
 			echo "$TIMESTAMP - [SETUP] - Transfer Mode is $TRANSFER_MODE" >> $PANDORA_LOGFILE
-		fi
-		if [ ! -z "`echo $a | grep -e '^delayed_startup'`" ]
+		elif [ ! -z "`echo $a | grep -e '^delayed_startup'`" ]
 		then
 			DELAYED_STARTUP=`echo $a | awk '{ print $2 }' `
 			echo "$TIMESTAMP - [SETUP] - DELAYED_STARTUP is $DELAYED_STARTUP" >> $PANDORA_LOGFILE
-		fi
 		# CPU protection
-		if [ ! -z "`echo $a | grep -e '^pandora_nice'`" ]
+		elif [ ! -z "`echo $a | grep -e '^pandora_nice'`" ]
 		then
 			PANDORA_NICE=`echo $a | awk '{ print $2 }' `
 			echo "$TIMESTAMP - [SETUP] - PandoraFMS Nice is $PANDORA_NICE" >> $PANDORA_LOGFILE
-		fi
 		# Tentacle options
-		if [ ! -z "`echo $a | grep -e '^server_pwd'`" ]
+		elif [ ! -z "`echo $a | grep -e '^server_pwd'`" ]
 		then
 			SERVER_PWD=`echo $a | awk '{ print $2 }' `
 			if [ ! -z "$SERVER_PWD" ]
@@ -94,8 +81,7 @@ function configure_agent {
 				TENTACLE_OPTS="-x $SERVER_PWD $TENTACLE_OPTS"
 				echo "$TIMESTAMP - [SETUP] - Server password set (FTP/Tentacle)" >> $PANDORA_LOGFILE
 			fi
-		fi
-		if [ ! -z "`echo $a | grep -e '^server_ssl'`" ]
+		elif [ ! -z "`echo $a | grep -e '^server_ssl'`" ]
 		then
 			SERVER_SSL=`echo $a | awk '{ print $2 }' `
 			if [ "$SERVER_SSL" == "yes" ]
@@ -103,13 +89,11 @@ function configure_agent {
 				TENTACLE_OPTS="-c $TENTACLE_OPTS"
 				echo "$TIMESTAMP - [SETUP] - OpenSSL enabled for Tentacle" >> $PANDORA_LOGFILE
 			fi
-		fi
-		if [ ! -z "`echo $a | grep -e '^cron_mode'`" ]
-			then
+		elif [ ! -z "`echo $a | grep -e '^cron_mode'`" ]
+		then
 					CRON_MODE=1
-					echo "$TIMESTAMP - [SETUP] - Cronmode enabled" >> $PANDORA_LOGFILE
-			fi
-		if [ ! -z "`echo $a | grep -e '^server_opts'`" ]
+					echo "$TIMESTAMP - [SETUP] - Scheduled mode enabled" >> $PANDORA_LOGFILE
+		elif [ ! -z "`echo $a | grep -e '^server_opts'`" ]
 		then
 			SERVER_OPTS=`echo $a | cut -d" " -f2-`
 			if [ ! -z "$SERVER_OPTS" ]
@@ -117,14 +101,58 @@ function configure_agent {
 				TENTACLE_OPTS="$SERVER_OPTS $TENTACLE_OPTS"
 				echo "$TIMESTAMP - [SETUP] - Extra options for the Tentacle client $SERVER_OPTS" >> $PANDORA_LOGFILE
 			fi
-		fi
 		# Remote configuration
-		if [ ! -z "`echo $a | grep -e '^remote_config'`" ]
+		elif [ ! -z "`echo $a | grep -e '^remote_config'`" ]
 		then
 			REMOTE_CONFIG=`echo $a | awk '{ print $2 }'`
 			if [ "$REMOTE_CONFIG" == "1" ]
 			then
 				echo "$TIMESTAMP - [SETUP] - Remote configuration enabled" >> $PANDORA_LOGFILE
+			fi
+		# Secondary server configuration
+		elif [ ! -z "`echo $a | grep -e '^secondary_mode'`" ]
+		then
+			SECONDARY_MODE=`echo $a | awk '{ print $2 }' `
+			echo "$TIMESTAMP - [SETUP] - Secondary server mode is '$SECONDARY_MODE'" >> $PANDORA_LOGFILE
+		elif [ ! -z "`echo $a | grep -e '^secondary_transfer_mode'`" ]
+		then
+			SECONDARY_TRANSFER_MODE=`echo $a | awk '{ print $2 }' `
+			echo "$TIMESTAMP - [SETUP] - Secondary transfer Mode is $SECONDARY_TRANSFER_MODE" >> $PANDORA_LOGFILE
+		elif [ ! -z "`echo $a | grep -e '^secondary_server_ip'`" ]
+		then
+			SECONDARY_SERVER_IP=`echo $a | awk '{ print $2 }' `
+			echo "$TIMESTAMP - [SETUP] - Secondary server IP Address is $SECONDARY_SERVER_IP" >> $PANDORA_LOGFILE
+		elif [ ! -z "`echo $a | grep -e '^secondary_server_path'`" ]
+		then
+			SECONDARY_SERVER_PATH=`echo $a | awk '{ print $2 }' `
+			echo "$TIMESTAMP - [SETUP] - Secondary server Path is $SECONDARY_SERVER_PATH" >> $PANDORA_LOGFILE
+		elif [ ! -z "`echo $a | grep -e '^secondary_server_port'`" ]
+		then
+			SECONDARY_SERVER_PORT=`echo $a | awk '{ print $2 }' `
+			echo "$TIMESTAMP - [SETUP] - Secondary server Port is $SECONDARY_SERVER_PORT" >> $PANDORA_LOGFILE
+		elif [ ! -z "`echo $a | grep -e '^secondary_server_pwd'`" ]
+		then
+			SECONDARY_SERVER_PWD=`echo $a | awk '{ print $2 }' `
+			if [ ! -z "$SECONDARY_SERVER_PWD" ]
+			then
+				SECONDARY_TENTACLE_OPTS="-x $SECONDARY_SERVER_PWD $SECONDARY_TENTACLE_OPTS"
+				echo "$TIMESTAMP - [SETUP] - Secondary server password set (FTP/Tentacle)" >> $PANDORA_LOGFILE
+			fi
+		elif [ ! -z "`echo $a | grep -e '^secondary_server_ssl'`" ]
+		then
+			SECONDARY_SERVER_SSL=`echo $a | awk '{ print $2 }' `
+			if [ "$SECONDARY_SERVER_SSL" == "yes" ]
+			then
+				SECONDARY_TENTACLE_OPTS="-c $SECONDARY_TENTACLE_OPTS"
+				echo "$TIMESTAMP - [SETUP] - OpenSSL enabled for secondary Tentacle" >> $PANDORA_LOGFILE
+			fi
+		elif [ ! -z "`echo $a | grep -e '^secondary_server_opts'`" ]
+		then
+			SECONDARY_SERVER_OPTS=`echo $a | cut -d" " -f2-`
+			if [ ! -z "$SERVER_OPTS" ]
+			then
+				SECONDARY_TENTACLE_OPTS="$SECONDARY_SERVER_OPTS $SECONDARY_TENTACLE_OPTS"
+				echo "$TIMESTAMP - [SETUP] - Extra options for the secondary Tentacle client $SECONDARY_SERVER_OPTS" >> $PANDORA_LOGFILE
 			fi
 		fi	
 	done
@@ -137,13 +165,16 @@ function configure_agent {
 		echo "Running in $NOMBRE_HOST at $TIMESTAMP"
 		echo " "
 	else
-		# Checks if there is another instance running
-		PID_RUNNING=`pidof -x pandora_agent`
+		# Checks if there is another instance running in cron mode
+		# there is no pidof in Mac OS X. We use good ol' pid files
+		PID_RUNNING=`cat /tmp/pandora_agent_cron.pid 2> /dev/null || echo 0`
 		PID_ME=$$
 		if [ "$PID_ME" != "$PID_RUNNING" ]
 		then
 			echo "Aborting execution. Another instance of Pandora FMS running"
 			exit
+		else
+			echo $PID_ME > /tmp/pandora_agent_cron.pid
 		fi
 	fi
 
@@ -211,6 +242,34 @@ FEOF1
 }
 
 # **********************************************************************
+# function send_file_secure(file)
+# Sends the file to the available server.
+# **********************************************************************
+function send_file_secure {
+	FILE="$1"
+
+	send_file "$FILE"
+	RC=$?
+
+	# Always send the file to the secondary server
+	if [ "$SECONDARY_MODE" = "always" ]; then
+		switch_servers
+		send_file "$FILE"
+		switch_servers
+	# Send the file to the secondary server only if something went wrong
+	elif [ "$SECONDARY_MODE" = "on_error" ]; then
+		if [ $RC != 0 ]; then
+			switch_servers
+			send_file "$FILE"
+			RC=$?
+			switch_servers
+		fi
+	fi
+
+	return $RC
+}
+
+# **********************************************************************
 # function recv_file(file)
 # Gets a file from the server and saves it under $TEMP. Paths are not
 # allowed.
@@ -257,6 +316,29 @@ FEOF1
 }
 
 # **********************************************************************
+# function switch(var1, var2)
+# Switches the values of var1 and var2
+# **********************************************************************
+function switch {
+        eval "TEMP=\"\$$1\""
+        eval "$1=\"\$$2\""
+        eval "$2=\"\$TEMP\""
+}
+
+# **********************************************************************
+# function switch_servers()
+# Switches the target server
+# **********************************************************************
+function switch_servers {
+	switch TRANSFER_MODE	SECONDARY_TRANSFER_MODE
+	switch SERVER_IP 			SECONDARY_SERVER_IP
+	switch SERVER_PORT 		SECONDARY_SERVER_PORT
+	switch TENTACLE_OPTS 	SECONDARY_TENTACLE_OPTS
+	switch SERVER_PATH 		SECONDARY_SERVER_PATH
+	switch SERVER_PWD 		SECONDARY_SERVER_PWD
+}
+
+# **********************************************************************
 # function check_remote_config()
 # Checks for a newer remote configuration file.
 # **********************************************************************
@@ -273,15 +355,15 @@ function check_remote_config {
 		return 1
 	fi
 
-	# Agent name md5sum
-	AGENT_MD5=`echo -n $NOMBRE_HOST | md5sum | cut -d" " -f1`
+	# Agent name md5 (md5sum is not available on Mac OS X except through Fink)
+	AGENT_MD5=`echo -n $NOMBRE_HOST | md5`
 	CONFIG_FILE="$AGENT_MD5.conf"
 	MD5_FILE="$AGENT_MD5.md5"
 	
-	# Local config file md5sum
-	CONFIG_MD5=`md5sum $PANDORA_HOME/pandora_agent.conf | cut -d" " -f1`
+	# Local config file md5 (md5 has the hash on 4 instead of md5sum's 1)
+	CONFIG_MD5=`md5 $PANDORA_HOME/pandora_agent.conf | cut -d" " -f4`
 	
-	# Get remote config file md5sum
+	# Get remote config file
 	recv_file "$MD5_FILE"
 	
 	# Configuration has not been uploaded to the server
@@ -373,7 +455,7 @@ OS_NAME=`uname -s`
 PANDORA_LOGFILE=/var/log/pandora/pandora_agent.log
 TEMP=/tmp
 
-# Get Linux Distro type and version
+# Check version
 if [ -f "/etc/SuSE-release" ]
 then
         OS_VERSION=`cat /etc/SuSE-release | grep VERSION | cut -f 3 -d " "`
@@ -486,7 +568,7 @@ do
          	if [ ! -z "`echo $a | grep -e '^module_type'`" ]
          	then
             		mtype=`echo $a | awk '{ print $2 }' `
-            		if [ ! -z "`echo $mtype | grep 'generic_data_string'`" ]
+            		if [ ! -z "`echo $mtype | grep 'generic_data_string'`" ] || [ ! -z "`echo $mtype | grep 'async_string'`" ]
      			then
    				flux_string=1
      			else
@@ -555,7 +637,7 @@ do
 	fi
 	
 	# Send packets to server and delete it
-	send_file $DATA
+	send_file_secure $DATA
 
 	# Delete data
 	rm -f $DATA > /dev/null 2> $PANDORA_LOGFILE.err
@@ -563,10 +645,12 @@ do
 	# Cron mode
 	if [ "$CRON_MODE" == "1" ]
 	then
-		exit
+		#remove pid file first
+		rm /tmp/pandora_agent_cron.pid
+		exit 
 	fi
 	
 	# Go to bed :-)
 	sleep $INTERVAL
 done
-# This runs forever! 
+# This runs forever!

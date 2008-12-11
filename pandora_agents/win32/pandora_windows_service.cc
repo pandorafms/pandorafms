@@ -201,7 +201,11 @@ Pandora_Windows_Service::getXmlHeader () {
 
 void
 Pandora_Windows_Service::copyTentacleDataFile (string host,
-					       string filename)
+					       string filename,
+					       string port,
+					       string ssl,
+					       string pass,
+					       string opts)
 {
 	int     rc;
 	string  var, filepath;
@@ -217,24 +221,20 @@ Pandora_Windows_Service::copyTentacleDataFile (string host,
 	/* Build the command to launch the Tentacle client */
 	tentacle_cmd = "tentacle_client.exe -a " + host;
 
-	var = conf->getValue ("server_port");	
-	if (var != "") {
-		tentacle_cmd += " -p " + var;
+	if (port != "") {
+		tentacle_cmd += " -p " + port;
 	}
 
-	var = conf->getValue ("server_ssl");	
-	if (var == "1") {
+	if (ssl == "1") {
 		tentacle_cmd += " -c";
 	}
 
-	var = conf->getValue ("server_pwd");
-	if (var != "") {
-		tentacle_cmd += " -x " + var;
+	if (pass != "") {
+		tentacle_cmd += " -x " + pass;
 	}
 
-	var = conf->getValue ("server_opts");
-	if (var != "") {
-		tentacle_cmd += " " + var;
+	if (opts != "") {
+		tentacle_cmd += " " + opts;
 	}
 
 	tentacle_cmd += " " +  filepath;
@@ -322,19 +322,17 @@ Pandora_Windows_Service::copyScpDataFile (string host,
 void
 Pandora_Windows_Service::copyFtpDataFile (string host,
 					  string remote_path,
-					  string filename)
+					  string filename,
+					  string password)
 {
 	FTP::Pandora_Ftp_Client ftp_client;
 	string                  filepath;
-	string                  password;
 
 	filepath = conf->getValue ("temporal");
 	if (filepath[filepath.length () - 1] != '\\') {
 		filepath += "\\";
 	}
 	filepath += filename;
-
-	password = conf->getValue ("server_pwd");
 
 	ftp_client.connect (host,
 			    22,
@@ -368,6 +366,7 @@ Pandora_Windows_Service::copyFtpDataFile (string host,
 void
 Pandora_Windows_Service::copyDataFile (string filename)
 {
+	unsigned char copy_to_secondary = 0;
 	string mode, host, remote_path;
 
 	mode = conf->getValue ("transfer_mode");
@@ -379,9 +378,11 @@ Pandora_Windows_Service::copyDataFile (string filename)
 
 	try {
 		if (mode == "ftp") {
-			copyFtpDataFile (host, remote_path, filename);
+			copyFtpDataFile (host, remote_path, filename, conf->getValue ("server_pwd"));
 		} else if (mode == "tentacle") {
-			copyTentacleDataFile (host, filename);
+			copyTentacleDataFile (host, filename, conf->getValue ("server_port"),
+			                      conf->getValue ("server_ssl"), conf->getValue ("server_pwd"),
+			                      conf->getValue ("server_opts"));
 		} else if (mode == "ssh" || mode == "") {
 			copyScpDataFile (host, remote_path, filename);
 		} else {
@@ -391,6 +392,37 @@ Pandora_Windows_Service::copyDataFile (string filename)
 		}
 	
 		pandoraDebug ("Successfuly copied XML file to server.");
+	} catch (Pandora_Exception e) {
+		if (conf->getValue ("secondary_mode") == "on_error") {
+			copy_to_secondary = 1;
+		}
+	}
+	
+	if (conf->getValue ("secondary_mode") == "always") {
+		copy_to_secondary = 1;	
+	}
+
+	// Copy the file to the secondary server if needed
+	if (copy_to_secondary == 0) {
+		return;
+	}
+	
+	try {
+		if (mode == "ftp") {
+			copyFtpDataFile (host, remote_path, filename, conf->getValue ("secondary_server_pwd"));
+		} else if (mode == "tentacle") {
+			copyTentacleDataFile (host, filename, conf->getValue ("secondary_server_port"),
+			                      conf->getValue ("secondary_server_ssl"), conf->getValue ("secondary_server_pwd"),
+			                      conf->getValue ("secondary_server_opts"));
+		} else if (mode == "ssh" || mode == "") {
+			copyScpDataFile (host, remote_path, filename);
+		} else {
+			pandoraLog ("Invalid transfer mode: %s."
+				    "Please recheck transfer_mode option "
+				    "in configuration file.");
+		}
+	
+		pandoraDebug ("Successfuly copied XML file to secondary server.");
 	} catch (Pandora_Exception e) {
 	}
 }

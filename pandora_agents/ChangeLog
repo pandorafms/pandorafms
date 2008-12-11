@@ -1,5 +1,12 @@
 2008-12-11  Ramon Novoa  <rnovoa@artica.es>
 
+	* win32/pandora_windows_service.h,
+	  win32/pandora_windows_service.cc: Added support for a secondary server
+	  .
+
+
+2008-12-11  Ramon Novoa  <rnovoa@artica.es>
+
 	* win32/windows/pandora_wmi.cc,
 	  win32/pandora_windows_service.h,
 	  win32/PandoraAgent.dev,

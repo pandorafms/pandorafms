@@ -611,7 +611,7 @@ Pandora_Wmi::stopService (string service_name) {
 		return false;
 	}
 	
-	service = OpenService (manager, service_name.c_str (), GENERIC_EXECUTE);
+	service = OpenService (manager, service_name.c_str (), SERVICE_STOP);
 	if (service == NULL) {
 		pandoraLog ("Could not access to service \"%s\" to stop.",
 			    service_name.c_str ());

@@ -76,6 +76,7 @@ namespace Pandora {
 		
 		void           start        ();
 		void           sendXml      (Pandora_Module_List *modules);
+		Pandora_Agent_Conf  *getConf ();
 	};
 }
 

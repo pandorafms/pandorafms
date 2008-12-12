@@ -57,7 +57,7 @@ if ((isset ($_GET["operacion"])) && (!isset ($_POST["update_agent"]))) {
 		// Copy
 		for ($a = 0; $a < count ($origen_modulo); $a++) { // For every agent selected
 			$id_agentemodulo = $origen_modulo[$a];
-			echo "<br><br>".__('Filtering data module')."<b> [".dame_nombre_modulo_agentemodulo ($id_agentemodulo)."]</b>";
+			echo "<br><br>".__('Filtering data module')."<b> [".get_agentmodule_name ($id_agentemodulo)."]</b>";
 			$sql ='DELETE FROM tagente_datos WHERE id_agente_modulo = '.$origen_modulo[$a].' AND ( datos < '.$min.' OR  datos > '.$max.' )';
 			process_sql ($sql);
 			//echo "<br>DEBUG DELETE $sql1 <br>";
@@ -74,7 +74,7 @@ if ((isset ($_GET["operacion"])) && (!isset ($_POST["update_agent"]))) {
 	<select name="origen" class="w130">
 	<?php
 	if ( (isset ($_POST["update_agent"])) && (isset ($_POST["origen"])) ) {
-		echo "<option value=".$_POST["origen"].">".dame_nombre_agente($_POST["origen"]);
+		echo "<option value=".$_POST["origen"].">".get_agent_name($_POST["origen"]);
 	}
 	// Show combo with agents
 	$sql1='SELECT * FROM tagente';

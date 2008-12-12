@@ -17,7 +17,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Load global vars
-require ("include/config.php");
+require_once ("include/config.php");
 check_login ();
 
 if (! give_acl ($config['id_user'], 0, "AR")) {
@@ -30,12 +30,9 @@ if (! give_acl ($config['id_user'], 0, "AR")) {
 // Take some parameters (GET)
 $offset = get_parameter ("offset", 0);
 $group_id = get_parameter ("group_id", 0);
-$ag_group = get_parameter ("ag_group", -1);
-if (($ag_group == -1) && ($group_id != 0))
-	$ag_group = $group_id;
-if (isset($_GET["ag_group_refresh"])){
-	$ag_group = $_GET["ag_group_refresh"];
-}
+$ag_group = get_parameter ("ag_group", $group_id);
+$ag_group = get_parameter_get ("ag_group_refresh", $ag_group); //if it isn't set, defaults to prev. value
+
 $search = get_parameter ("search", "");
 
 echo "<h2>".__('Pandora Agents')." &gt; ".__('Summary')."</h2>";
@@ -276,7 +273,7 @@ if ($agents !== false) {
 		echo '<td class="'.$tdcolor.'" align="center">';
 
 		echo "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=$id_grupo'>";
-echo '<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.png" title="'. dame_grupo($id_grupo).'"></A></td>';
+echo '<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.png" title="'. get_group_name ($id_grupo).'"></A></td>';
 
 		echo "<td class='$tdcolor'> ".
 		$numero_modulos." <b>/</b> ".$numero_monitor;

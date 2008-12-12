@@ -273,7 +273,7 @@ if (! $edit_layout && ! $id_layout) {
 			
 			$data[0] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/map_builder&id_layout='.$map['id'].'">'.$map['name'].'</a>';
 			$data[1] = '<img src="images/'.dame_grupo_icono ($map['id_group']).'.png" /> ';
-			$data[1] .= dame_nombre_grupo ($map['id_group']);
+			$data[1] .= get_group_name ($map['id_group']);
 			$data[2] = '<a href="index.php?sec=greporting&sec2=godmode/reporting/map_builder&id_layout='.$map['id'].'&delete_layout=1">
 				<img src="images/cross.png"></a>';
 			array_push ($table->data, $data);

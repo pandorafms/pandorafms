@@ -31,7 +31,7 @@ if (! give_acl ($config['id_user'], 0, "AR") && ! give_acl ($config['id_user'], 
 if (isset ($_GET["agentmodule"]) && isset ($_GET["agent"]) ){
 	$id_agentmodule = $_GET["agentmodule"];
 	$id_agent = $_GET["agent"];
-	$agentmodule_name = dame_nombre_modulo_agentemodulo ($id_agentmodule);
+	$agentmodule_name = get_agentmodule_name ($id_agentmodule);
 	if (! give_acl ($config['id_user'], dame_id_grupo ($id_agent), "AR")) {
 		audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
 			"Trying to access Agent Export Data");
@@ -57,7 +57,7 @@ if (isset ($_GET["agentmodule"]) && isset ($_GET["agent"]) ){
 	
 	// Make the query
 	$sql1="SELECT * FROM tdatos WHERE id_agente = $id_agent AND id_agente_modulo = $id_agentmodule";
-	$tipo = dame_nombre_tipo_modulo(dame_id_tipo_modulo_agentemodulo($id_agentmodule));
+	$tipo = get_moduletype_name (get_agentmodule_type ($id_agentmodule));
 	if ($tipo == "generic_data_string")
 		$sql1='SELECT * FROM tagente_datos_string WHERE timestamp > "'.$from_date.'" AND timestamp < "'.$to_date.'" AND id_agente_modulo ='.$id_agentmodule.' ORDER BY timestamp DESC';
 	else

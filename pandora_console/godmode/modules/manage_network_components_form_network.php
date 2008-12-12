@@ -201,7 +201,7 @@ echo "<td class='datos2'>";
 echo '<select name="tipo" onChange="type_change()">';
 $sql1="SELECT id_tipo, nombre FROM ttipo_modulo WHERE id_tipo != '$type' ORDER BY nombre";
 $result=mysql_query($sql1);
-echo "<option value='$type'>". dame_nombre_tipo_modulo($type);
+echo "<option value='$type'>". get_moduletype_name ($type);
 while ($row=mysql_fetch_array($result)){
 	echo "<option value='".$row["id_tipo"]."'>".$row["nombre"]."</option>";
 }

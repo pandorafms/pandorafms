@@ -123,9 +123,9 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 	// FOR EACH MODULE IN module_list....
 	for ($i = 0; $i < $module_number; $i++){	
 		$id_agente_modulo = $module_list[$i];
-		$nombre_agente = dame_nombre_agente_agentemodulo($id_agente_modulo);
+		$nombre_agente = get_agentmodule_agent_name($id_agente_modulo);
 		$id_agente = dame_agente_id($nombre_agente);
-		$nombre_modulo = dame_nombre_modulo_agentemodulo($id_agente_modulo);
+		$nombre_modulo = get_agentmodule_name ($id_agente_modulo);
 		$module_list_name[$i] = substr($nombre_agente,0,9)." / ".substr($nombre_modulo,0,20);
 		for ($j = 0; $j <= $resolution; $j++) {
 			$valores[$j][0] = 0; // SUM of all values for this interval
@@ -407,9 +407,9 @@ function grafico_modulo_sparse ($id_agente_modulo, $periodo, $show_event,
 	$fechatope = $date - $periodo;
 
 	$horasint = $periodo / $resolution; // Each intervalo is $horasint seconds length
-	$nombre_agente = dame_nombre_agente_agentemodulo ($id_agente_modulo);
+	$nombre_agente = get_agentmodule_agent_name ($id_agente_modulo);
 	$id_agente = dame_agente_id ($nombre_agente);
-	$nombre_modulo = dame_nombre_modulo_agentemodulo ($id_agente_modulo);
+	$nombre_modulo = get_agentmodule_name ($id_agente_modulo);
 
 	if ($show_event) {
 		// If we want to show events in graphs
@@ -930,9 +930,9 @@ function graphic_string_data ($id_agent_module, $periodo, $width, $height, $pure
 		return;
 	}
 
-	$nombre_agente = dame_nombre_agente_agentemodulo ($id_agent_module);
+	$nombre_agente = get_agentmodule_agent_name ($id_agent_module);
 	$id_agente = dame_agente_id ($nombre_agente);
-	$nombre_modulo = dame_nombre_modulo_agentemodulo ($id_agent_module);
+	$nombre_modulo = get_agentmodule_name ($id_agent_module);
 
 	if ($pure == 0) {
 		$Graph =& Image_Graph::factory('graph', array($width, $height));
@@ -1056,7 +1056,7 @@ function graphic_incident_group () {
 			$result2=mysql_query ($sql);
 			$row2 = mysql_fetch_array($result2);
 			$data[] = $row2[0];
-			$legend[] = dame_nombre_grupo($row[0])."(".$row2[0].")";
+			$legend[] = get_group_name ($row[0])."(".$row2[0].")";
 	}
 	// Sort array by bubble method (yes, I study more methods in university, but if you want more speed, please, submit a patch :)
 	// or much better, pay me to do a special version for you, highly optimized :-))))
@@ -1207,7 +1207,7 @@ function grafico_db_agentes_modulos($width, $height) {
 		$result = array();
 
 	foreach ($result as $row) {
-		$data[] = get_agentmodule_count ($row["id_agente"]);
+		$data[] = get_agent_modules_count ($row["id_agente"]);
 		$legend[] = get_agent_name ($row["id_agente"], "lower");
 	}
 	
@@ -1328,7 +1328,7 @@ function graph_event_module ($width = 300, $height = 200, $id_agent) {
                                 $legend[] = "SYSTEM (".$row["count"].")";
                         } else {
                                 //Other events
-                                $legend[] = substr (dame_nombre_modulo_agentemodulo ($row["id_agentmodule"]), 0, 15)." (".$row["count"].")";
+                                $legend[] = substr (get_agentmodule_name ($row["id_agentmodule"]), 0, 15)." (".$row["count"].")";
                         }
                 }
         }
@@ -1447,7 +1447,7 @@ function grafico_db_agentes_purge ($id_agent, $width, $height) {
 		$id_agent = -1;
 		$query = "";
 	} else {
-		$modules = get_agentmodules ($id_agent);
+		$modules = get_agent_modules ($id_agent);
 		$query = sprintf (" AND id_agente_modulo IN (%s)", implode (",", array_keys ($modules)));
 	}
 	
@@ -1707,9 +1707,9 @@ function grafico_modulo_boolean ( $id_agente_modulo, $periodo, $show_event,
 	//$unix_timestamp = strtotime($mysql_timestamp) // Convert MYSQL format tio utime
 	$fechatope = time() - $periodo; // limit date
 	$horasint = $periodo / $resolution; // Each intervalo is $horasint seconds length
-	$nombre_agente = dame_nombre_agente_agentemodulo($id_agente_modulo);
+	$nombre_agente = get_agentmodule_agent_name($id_agente_modulo);
 	$id_agente = dame_agente_id($nombre_agente);
-	$nombre_modulo = dame_nombre_modulo_agentemodulo($id_agente_modulo);
+	$nombre_modulo = get_agentmodule_name ($id_agente_modulo);
 
 	if ($show_event == 1)
 		$real_event = array();

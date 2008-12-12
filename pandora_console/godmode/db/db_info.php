@@ -80,9 +80,9 @@ foreach ($result as $row) {
 
 	//First row is a link to the agent
 	$data[0] = '<strong><a href="index.php?sec=gagente&sec2=operation/agentes/ver_agente&id_agente='.
-	$row["id_agente"].'">'.dame_nombre_agente ($row["id_agente"]).'</a></strong>';
+	$row["id_agente"].'">'.get_agent_name ($row["id_agente"]).'</a></strong>';
 	//Second row is a number of modules for the agent
-	$data[1] = get_agentmodule_count ($row["id_agente"]);
+	$data[1] = get_agent_modules_count ($row["id_agente"]);
 	//Then the number of data packets for the agent
 	$data[2] = $row["count"];
 

@@ -139,7 +139,7 @@ if ($datetime > time ()) {
 	exit;
 }
 
-$group_name = dame_grupo ($report['id_group']);
+$group_name = get_group_name ($report['id_group']);
 $contents = get_db_all_rows_field_filter ('treport_content', 'id_report', $id_report, '`order`');
 
 
@@ -158,7 +158,7 @@ $xml["reports"] = array ();
 foreach ($contents as $content) {
 	$data = array ();
 	$data["module"] = get_db_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']);
-	$data["agent"] = dame_nombre_agente_agentemodulo ($content['id_agent_module']);
+	$data["agent"] = get_agentmodule_agent_name ($content['id_agent_module']);
 	$data["period"] = human_time_description ($content['period']);
 	$data["uperiod"] = $content['period'];
 	$data["type"] = $content["type"];
@@ -202,8 +202,8 @@ foreach ($contents as $content) {
 		$sla_failed = false;
 		foreach ($slas as $sla) {
 			$sla_data = array ();
-			$sla_data["agent"] = dame_nombre_agente_agentemodulo ($sla['id_agent_module']);
-			$sla_data["module"] = dame_nombre_modulo_agentemodulo ($sla['id_agent_module']);
+			$sla_data["agent"] = get_agentmodule_agent_name ($sla['id_agent_module']);
+			$sla_data["module"] = get_agentmodule_name ($sla['id_agent_module']);
 			$sla_data["max"] = $sla['sla_max'];
 			$sla_data["min"] = $sla['sla_min'];
 			

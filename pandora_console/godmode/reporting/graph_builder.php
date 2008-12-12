@@ -229,9 +229,9 @@ if (isset ($chunk1)) {
 		}
 
 		echo "<tr><td class='$tdcolor'>";
-		echo dame_nombre_agente($agent_array[$a])."</td>";
+		echo get_agent_name ($agent_array[$a])."</td>";
 		echo "<td class='$tdcolor'>";
-		echo dame_nombre_modulo_agentemodulo($module_array[$a])."</td>";
+		echo get_agentmodule_name ($module_array[$a])."</td>";
 		echo "<td class='$tdcolor'>";
 		echo $weight_array[$a]."</td>";
 		echo "<td class='$tdcolor' align='center'>";

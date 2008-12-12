@@ -72,8 +72,8 @@ while ($rowdup=mysql_fetch_array($resq1)){
 	echo "<a href='#' class='$tip'>&nbsp;<span>";
 	if (mysql_num_rows($result)){
 		while ($row=mysql_fetch_array($result)){
-			echo dame_perfil($row["id_perfil"])."/ ";
-			echo dame_grupo($row["id_grupo"])."<br>";
+			echo dame_perfil ($row["id_perfil"])."/ ";
+			echo get_group_name ($row["id_grupo"])."<br>";
 		}
 	}
 	else { echo __('This user doesn\'t have any assigned profile/group'); }

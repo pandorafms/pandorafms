@@ -264,7 +264,7 @@ if ($modo == "edicion") { // Only show groups for existing users
 			}
 			echo '<td class="'.$tdcolor.'">';
 			echo "<b style='margin-left:10px'>".dame_perfil($row["id_perfil"])."</b> / ";
-			echo "<b>".dame_grupo($row["id_grupo"])."</b>";
+			echo "<b>".get_group_name ($row["id_grupo"])."</b>";
 			echo '<td class="'.$tdcolor.'t"><a href="index.php?sec=gusuarios&sec2=godmode/users/configure_user&id_usuario_mio='.$id_usuario_mio.'&borrar_grupo='.$row["id_up"].' " onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;"><img border=0 src="images/cross.png"></a><tr>';
 		}
 	}

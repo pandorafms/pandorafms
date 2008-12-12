@@ -358,7 +358,7 @@ function get_fired_alerts_reporting_table ($alerts_fired) {
 		$data = array ();
 		foreach ($alerts as $alert) {
 			if (! isset ($data[0]))
-				$data[0] = dame_nombre_agente ($id_agent);
+				$data[0] = get_agent_name ($id_agent);
 			else
 				$data[0] = '';
 			$data[1] = $alert['descripcion'];
@@ -619,7 +619,7 @@ function get_agent_monitors_reporting_table ($id_agent, $period = 0, $date = 0) 
 function get_agent_modules_reporting_table ($id_agent, $period = 0, $date = 0) {
 	$table->data = array ();
 	$n_a_string = __('N/A').'(*)';
-	$modules = get_agentmodules ($id_agent, array ("nombre", "descripcion"));
+	$modules = get_agent_modules ($id_agent, array ("nombre", "descripcion"));
 	if ($modules === false)
 		$modules = array();
 	$data = array ();
@@ -649,7 +649,7 @@ function get_agent_detailed_reporting ($id_agent, $period = 0, $date = 0, $retur
 	
 	/* Show modules in agent */
 	$output .= '<div class="agent_reporting">';
-	$output .= '<h3 style="text-decoration: underline">'.__('Agent').' - '.dame_nombre_agente ($id_agent).'</h3>';
+	$output .= '<h3 style="text-decoration: underline">'.__('Agent').' - '.get_agent_name ($id_agent).'</h3>';
 	$output .= '<h4>'.__('Modules').'</h3>';
 	$table_modules = get_agent_modules_reporting_table ($id_agent, $period, $date);
 	$table_modules->width = '99%';

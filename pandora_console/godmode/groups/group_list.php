@@ -121,7 +121,7 @@ foreach ($groups as $id_group => $group_name) {
 	
 	$data[0] = '<img src="images/groups_small/'.$group["icon"].'.png" border="0">';
 	$data[1] = '<strong><a href="index.php?sec=gagente&sec2=godmode/groups/configure_group&id_group='.$id_group.'">'.$group_name.'</a></strong>';
-	$data[2] = dame_nombre_grupo ($group["parent"]);
+	$data[2] = get_group_name ($group["parent"]);
 	$data[3] = $group['disabled'] ? __('Disabled') : __('Enabled');
 	$data[4] = '<a href="index.php?sec=gagente&sec2=godmode/groups/group_list&id_group='.$id_group.'&delete_group=1" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;"><img border="0" src="images/cross.png"></a>';
 	

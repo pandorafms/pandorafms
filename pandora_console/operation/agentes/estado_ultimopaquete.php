@@ -105,7 +105,7 @@ if (mysql_num_rows ($result3)) {
 				<b>".$nombre_grupomodulo."</b></td>";
 			}
 		}
-		$nombre_tipo_modulo = dame_nombre_tipo_modulo($row3["id_tipo_modulo"]);
+		$nombre_tipo_modulo = get_moduletype_name ($row3["id_tipo_modulo"]);
 		echo "<td class='".$tdcolor."_id' title='".salida_limpia($row3["nombre"])."'>";
 		echo salida_limpia(substr($row3["nombre"],0,15));
 		echo "</td><td class='".$tdcolor."'>";
@@ -182,9 +182,9 @@ if (mysql_num_rows ($result3)) {
 		
         // RAW Table data
 		echo "<td class=".$tdcolor." width=70>";
-		echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=mes&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_m.png'></a>&nbsp;&nbsp;";
-		echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=semana&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_w.png'></a>&nbsp;&nbsp;";
-		echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=dia&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_d.png'></a>";
+		echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&period=2592000&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_m.png'></a>&nbsp;&nbsp;";
+		echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&period=604800&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_w.png'></a>&nbsp;&nbsp;";
+		echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&period=86400&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_d.png'></a>";
 	
 	
 		echo "<td class='".$tdcolor."f9'>";

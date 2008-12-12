@@ -35,9 +35,14 @@ echo "<h2>".__('Pandora Agents')." &gt; ".__('Group view')."</h2>";
 // Check for Network FLAG change request
 // Made it a subquery, much faster on both the database and server side
 if (isset ($_GET["update_netgroup"])) {
-	if (give_acl ($config['id_user'], $_GET["update_netgroup"], "AW")) {
-		$sql = sprintf ("UPDATE tagente_modulo SET `flag` = 1 WHERE `id_agente` = ANY(SELECT id_agente FROM tagente WHERE `id_grupo` = %d)",$_GET["update_netgroup"]);
+	$group = get_parameter_get ("update_netgroup", 0);
+	if (give_acl ($config['id_user'], $group, "AW")) {
+		$sql = sprintf ("UPDATE tagente_modulo SET `flag` = 1 WHERE `id_agente` = ANY(SELECT id_agente FROM tagente WHERE `id_grupo` = %d)",$group);
 		process_sql ($sql);
+	} else {
+		audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation", "Trying to set flag for groups");
+		require ("general/noaccess.php");
+		exit;
 	}
 }
 

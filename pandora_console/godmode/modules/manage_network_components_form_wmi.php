@@ -96,7 +96,7 @@ echo '<td class="datos2"><input type="text" name="name" size="25" value="' . $na
 echo '<td class="datos2">' . __('Module type') . '</td>';
 echo '<td class="datos2">';
 echo '<select name="tipo">';
-echo '<option value="' . $type . '">' . dame_nombre_tipo_modulo($type);
+echo '<option value="' . $type . '">' . get_moduletype_name ($type);
 $result = mysql_query('SELECT id_tipo, nombre FROM ttipo_modulo WHERE categoria IN (0,1,2) ORDER BY nombre;');
 while ($row = mysql_fetch_array($result)){
 	echo '<option value="' . $row['id_tipo'] . '">' . $row['nombre'] . '</option>';

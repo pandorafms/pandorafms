@@ -204,7 +204,7 @@ echo '<div style="width: 450px; float:left;" id="rightcolumn">';
 // Server information
 
 $serverinfo = get_server_info ();
-$total_modules = get_agentmodule_count ();
+$total_modules = get_agent_modules_count ();
 $cells = array ();
 
 if ($serverinfo) {

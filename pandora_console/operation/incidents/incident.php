@@ -282,7 +282,7 @@ if ($count < 1) {
 		
 		$data[3] = print_incidents_priority_img ($row["prioridad"], true);																																																													
 		
-		$data[4] = '<img src="images/groups_small/'.show_icon_group ($row["id_grupo"]).'.png" title="'.dame_grupo ($row["id_grupo"]).'" />';
+		$data[4] = '<img src="images/groups_small/'.show_icon_group ($row["id_grupo"]).'.png" title="'.get_group_name ($row["id_grupo"]).'" />';
 	
 		$data[5] = print_timestamp ($row["actualizacion"], "", "span", true);
 		

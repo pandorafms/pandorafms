@@ -61,8 +61,8 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 			// For every agent in destination
 
 			$id_agente = $destino[$a];
-			$agent_name_src = dame_nombre_agente($id_origen);
-			$agent_name_dst = dame_nombre_agente($id_agente);
+			$agent_name_src = get_agent_name($id_origen);
+			$agent_name_dst = get_agent_name($id_agente);
 			echo "<br><br>".__('copyage')."<b> [".$agent_name_src."] -> [".$agent_name_dst."]</b>";
 			
 			$source = $config["remote_config"]."/".md5($agent_name_src);
@@ -88,7 +88,7 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 
 		echo '<select name="id_group" style="width:200px">';
 		if ($id_group != 0)
-			echo "<option value=$id_group>".dame_nombre_grupo ($id_group);
+			echo "<option value=$id_group>".get_group_name ($id_group)."</option>";
 		list_group ($config["id_user"]);
 		echo '</select>';
 		echo '&nbsp;&nbsp;';
@@ -108,7 +108,7 @@ if ((isset($_GET["operacion"])) AND ($update_agent == -1) AND ($update_group == 
 
 		echo '<select name="origen" style="width:200px">';			
 		if (($update_agent != 1) AND ($origen != -1)){
-			$agent_name_src = dame_nombre_agente ($origen);
+			$agent_name_src = get_agent_name ($origen);
 			$source = $config["remote_config"]."/". md5($agent_name_src).".conf";
 			if (file_exists($source))
 				echo "<option value=".$_POST["origen"].">" . $agent_name_src . "</option>";

@@ -80,7 +80,7 @@ $data["total"] = 0;
 if (isset($_POST["purgedb"])) {
 	$from_date = get_parameter_post ("date_purge", 0); //0: No time selected
 	if ($id_agent > 0) {
-		echo __('Purge task launched for agent')." ".dame_nombre_agente ($id_agent)." :: ".__('Data older than')." ".human_time_description ($from_date);
+		echo __('Purge task launched for agent')." ".get_agent_name ($id_agent)." :: ".__('Data older than')." ".human_time_description ($from_date);
 		echo "<h3>".__('Please be patient. This operation can take a long time depending on the amount of modules.')."</h3>";
 		
 		$sql = sprintf ("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = %d", $id_agent);
@@ -94,7 +94,7 @@ if (isset($_POST["purgedb"])) {
 		process_sql ("START TRANSACTION;"); //We start a transaction for consistency 
 		$errors = 0;
 		foreach ($result as $row) {
-			echo __('Deleting records for module')." ".dame_nombre_modulo_agentemodulo ($row["id_agente_modulo"]);
+			echo __('Deleting records for module')." ".get_agentmodule_name ($row["id_agente_modulo"]);
 			echo "<br />";
 			flush (); //Flush here in case there are errors and the script dies, at least we know where we ended
 			set_time_limit (); //Reset the time limit just in case
@@ -145,7 +145,7 @@ print_help_tip (__("Click here to get the data from the agent specified in the s
 echo '</noscript><br />';
 
 if ($id_agent > 0) {
-	$title = __('Information on agent').' '.dame_nombre_agente ($id_agent).' '.__('in the database');
+	$title = __('Information on agent').' '.get_agent_name ($id_agent).' '.__('in the database');
 } else {
 	$title = __('Information on all agents').' '.__('in the database');
 }
@@ -153,7 +153,7 @@ if ($id_agent > 0) {
 echo "<h3>".$title."</h3>";	
 flush (); //Flush before we do some SQL stuff
 if ($id_agent > 0) { //If the agent is not All or Not selected
-	$modules = get_agentmodules ($id_agent);
+	$modules = get_agent_modules ($id_agent);
 	sprintf ("AND id_agente_modulo IN(%s)", implode (",", array_keys ($modules)));
 } else {
 	$query = "";

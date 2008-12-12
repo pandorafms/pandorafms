@@ -186,7 +186,7 @@ echo "<div id='menu_tab_frame'>";
 echo "<div id='menu_tab_left'><ul class='mn'>";
 echo "<li class='nomn'>";
 echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=$id_agente'>
-<img src='images/setup.png' class='top' border='0'>&nbsp; ".substr(dame_nombre_agente($id_agente),0,15)." - ".__('Setup mode')."</a>";
+<img src='images/setup.png' class='top' border='0'>&nbsp; ".substr(get_agent_name ($id_agente),0,15)." - ".__('Setup mode')."</a>";
 echo "</li>";
 echo "</ul></div>";
 

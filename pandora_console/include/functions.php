@@ -506,49 +506,7 @@ function human_time_description_raw ($seconds) {
  * @return A human readable label for a period of time.
  */
 function human_time_description ($period) {
-	global $lang_label;
-	
-	switch ($period) {
-	case 3600:
-		return __('1 hour');
-		break;
-	case 7200:
-		return __('2 hours');
-		break;
-	case 21600:
-		return __('6 hours');
-		break;
-	case 43200:
-		return __('12 hours');
-		break;
-	case 86400:
-		return __('1 day');
-		break;
-	case 172800:
-		return __('2 days');
-		break;
-	case 432000:
-		return __('5 days');
-		break;
-	case 604800:
-		return __('1 week');
-		break;
-	case 1296000:
-		return __('15 days');
-		break;
-	case 2592000:
-		return __('1 month');
-		break;
-	case 5184000:
-		return __('2 months');
-		break;
-	case 15552000:
-		return __('6 months');
-		break;
-	default:
-		return human_time_description_raw ($period);
-	}
-	return $period_label;
+	return human_time_description_raw ($period); //human_time_description_raw does the same but by calculating instead of a switch
 }
 
 /** 
@@ -858,11 +816,11 @@ function show_alert_show_view ($data, $tdcolor = "datos", $combined = 0) {
 
 	if ($combined == 0) {
 		$id_agente = give_agent_id_from_module_id ($data["id_agente_modulo"]);
-		$agent_name = dame_nombre_agente ($id_agente);
-		$module_name = dame_nombre_modulo_agentemodulo ($data["id_agente_modulo"]);
+		$agent_name = get_agent_name ($id_agente);
+		$module_name = get_agentmodule_name ($data["id_agente_modulo"]);
 	} else {
 		$id_agente = $data["id_agent"];
-		$agent_name =  dame_nombre_agente ($id_agente);
+		$agent_name =  get_agent_name ($id_agente);
 	}
 	
 	$alert_name = dame_nombre_alerta ($data["id_alerta"]);

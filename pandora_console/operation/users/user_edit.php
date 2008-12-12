@@ -154,7 +154,7 @@ if (mysql_num_rows ($result)) {
 		}
 		echo '<td class="'.$tdcolor.'">';
 		echo "<b>".dame_perfil($row["id_perfil"])."</b> / ";
-		echo "<b>".dame_grupo($row["id_grupo"])."</b><tr>";	
+		echo "<b>".get_group_name ($row["id_grupo"])."</b><tr>";	
 	}
 } else { 
 	echo '<div class="nf">'.__('This user doesn\'t have any assigned profile/group').'</div>'; 

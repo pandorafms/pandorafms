@@ -52,7 +52,7 @@ if (defined ('AJAX')) {
 		echo '<strong>'.__('Main IP').':</strong> '.$agent['direccion'].'<br />';
 		echo '<strong>'.__('Group').':</strong> ';
 		echo '<img src="images/groups_small/'.dame_grupo_icono ($agent['id_grupo']).'.png" /> ';
-		echo dame_nombre_grupo ($agent['id_grupo']).'<br />';
+		echo get_group_name ($agent['id_grupo']).'<br />';
 
 		echo '<strong>'.__('Last contact').':</strong> '.human_time_comparation($agent['ultimo_contacto']).'<br />';
 		echo '<strong>'.__('Last remote contact').':</strong> '.human_time_comparation($agent['ultimo_contacto_remoto']).'<br />';
@@ -136,7 +136,7 @@ if (! $id_agente) {
 $id_grupo = get_db_value ('id_grupo', 'tagente', 'id_agente', $id_agente);
 if (! give_acl ($config['id_user'], $id_grupo, "AR")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
-		"Trying to access (read) to agent ".dame_nombre_agente($id_agente));
+		"Trying to access (read) to agent ".get_agent_name($id_agente));
 	include ("general/noaccess.php");
 	return;
 }
@@ -183,7 +183,7 @@ if (isset($_GET["flag_agent"])){
 
 echo "<div id='menu_tab_frame_view'>";
 echo "<div id='menu_tab_left'><ul class='mn'><li class='view'>
-<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/bricks.png' class='top' border=0>&nbsp; ".substr(dame_nombre_agente($id_agente),0,15)." - ".__('View mode')."</a>";
+<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/bricks.png' class='top' border=0>&nbsp; ".substr(get_agent_name($id_agente),0,15)." - ".__('View mode')."</a>";
 echo "</li>";
 echo "</ul></div>";
 $tab = get_parameter ("tab", "main");

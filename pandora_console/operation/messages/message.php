@@ -119,7 +119,7 @@ if (isset ($_GET["nuevo"])) { //create message
 	$sql = sprintf ("SELECT DISTINCT(id_grupo) FROM tusuario_perfil WHERE %s",$group_id);	
 	$result = get_db_all_rows_sql ($sql);
 	foreach ($result as $row) {
-		echo '<option value="'.$row["id_grupo"].'">'.dame_nombre_grupo($row["id_grupo"]).'</option>';
+		echo '<option value="'.$row["id_grupo"].'">'.get_group_name ($row["id_grupo"]).'</option>';
 	}
 	echo '</select></td></tr>
 	<tr><td class="datos">'.__('Subject').':</td><td class="datos"><input name="subject" size="60"></td></tr><tr>

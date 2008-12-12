@@ -85,7 +85,7 @@ echo '<td class="datos2" colspan="2">'.$agent["comentarios"].'</td></tr>';
 // Group
 echo '<tr><td class="datos"><b>'.__('Group').'</b></td>';
 echo '<td class="datos" colspan="2">';
-echo '<img class="bot" src="images/groups_small/'.show_icon_group ($agent["id_grupo"]).'.png" /> - <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$agent["id_grupo"].'">'. dame_grupo ($agent["id_grupo"]).'</a></td></tr>';
+echo '<img class="bot" src="images/groups_small/'.show_icon_group ($agent["id_grupo"]).'.png" /> - <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$agent["id_grupo"].'">'. get_group_name ($agent["id_grupo"]).'</a></td></tr>';
 
 // Agent version
 echo '<tr><td class="datos2"><b>'.__('Agent Version'). '</b></td>';

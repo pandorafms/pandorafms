@@ -320,7 +320,7 @@ foreach ($result as $row) {
 		$data[3] = __('System');
 	} elseif ($row["id_agente"] > 0) {
 		// Agent name
-		$agent_name = dame_nombre_agente ($row["id_agente"]);
+		$agent_name = get_agent_name ($row["id_agente"]);
 		$data[3] = '<a href='.$url.'&pure='.$config["pure"].'&id_agent='.$row["id_agente"].'" title="'.$agent_name.'" class="f9"><b>';
 		if (strlen ($agent_name) > 16) {
 			$data[3] .= substr ($agent_name, 0, 14)."...";
@@ -341,7 +341,7 @@ foreach ($result as $row) {
 	}
 	
 	if (!empty ($row["id_grupo"])) {
-		$data[5] = '<img src="images/groups_small/'.show_icon_group ($row["id_grupo"]).'.png" title="'.dame_nombre_grupo ($row["id_grupo"]).'" class="bot" />';
+		$data[5] = '<img src="images/groups_small/'.show_icon_group ($row["id_grupo"]).'.png" title="'.get_group_name ($row["id_grupo"]).'" class="bot" />';
 	} else {
 		$data[5] = '';
 	}

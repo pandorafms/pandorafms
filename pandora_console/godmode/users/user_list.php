@@ -95,7 +95,7 @@ foreach ($result as $row) {
 	
 	foreach ($profiles as $profile) {
 		$data[2] .= dame_perfil ($profile["id_perfil"])." / ";
-		$data[2] .= dame_grupo ($profile["id_grupo"])."<br />";
+		$data[2] .= get_group_name ($profile["id_grupo"])."<br />";
 	}
 	
 	$data[2] .= "</span></a>";

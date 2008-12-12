@@ -18,7 +18,7 @@
 
 
 // Load global vars
-require("include/config.php");
+require_once ("include/config.php");
 
 if (give_acl($config["id_user"], 0, "AW") != 1) {
 	audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation",
@@ -31,16 +31,17 @@ if (give_acl($config["id_user"], 0, "AW") != 1) {
 $offset = get_parameter ("offset", 0);
 $group_id = get_parameter ("group_id", 0);
 $ag_group = get_parameter ("ag_group", -1);
-if (($ag_group == -1) && ($group_id != 0))
-        $ag_group = $group_id;
+if (($ag_group == -1) && ($group_id != 0)) {
+	$ag_group = $group_id;
+}
 if (isset ($_GET["ag_group_refresh"])){
-        $ag_group = $_GET["ag_group_refresh"];
+	$ag_group = get_parameter_get ("ag_group_refresh", -1);
 }
 $search = get_parameter ("search", "");
 
-if (isset($_GET["borrar_agente"])){ // if delete agent
+if (isset ($_GET["borrar_agente"])) { // if delete agent
 	$id_agente = get_parameter_get ("borrar_agente");
-	$agent_name = dame_nombre_agente ($id_agente);
+	$agent_name = get_agent_name ($id_agente);
 	$id_grupo = dame_id_grupo ($id_agente);
 	if (give_acl ($config["id_user"], $id_grupo, "AW")==1) {
 		//Start transaction - this improves consistency
@@ -148,10 +149,10 @@ echo "<select name='ag_group' onChange='javascript:this.form.submit();'
 class='w130'>";
 
 if ( $ag_group > 1 ){
-	echo "<option value='".$ag_group."'>".dame_nombre_grupo ($ag_group).
+	echo "<option value='".$ag_group."'>".get_group_name ($ag_group).
 	"</option>";
 }
-echo "<option value=1>".dame_nombre_grupo(1)."</option>"; // Group all is always active
+echo "<option value=1>".get_group_name (1)."</option>"; // Group all is always active
 $mis_grupos = list_group ($config["id_user"]); //Print combo for groups and set an array with all groups
 echo "</select>";
 echo "<td valign='top'>
@@ -265,7 +266,7 @@ if (mysql_num_rows($result)){
 			// Group icon and name
 			echo "<td class='$tdcolor'>
 			<img src='images/groups_small/".show_icon_group($id_grupo).".png' class='bot' border='0'>
-			&nbsp; ".dame_grupo($id_grupo)."</td>";
+			&nbsp; ".get_group_name ($id_grupo)."</td>";
 			// Description
 			echo "<td class='".$tdcolor."f9'>".$row["comentarios"]."</td>";
 			// Action

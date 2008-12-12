@@ -271,8 +271,8 @@ if ($edit_sla_report_content) {
 		foreach ($slas as $sla) {
 			$data = array ();
 			
-			$data[0] = dame_nombre_agente_agentemodulo ($sla['id_agent_module']);
-			$data[1] = dame_nombre_modulo_agentemodulo ($sla['id_agent_module']);
+			$data[0] = get_agentmodule_agent_name ($sla['id_agent_module']);
+			$data[1] = get_agentmodule_name ($sla['id_agent_module']);
 			$data[2] = $sla['sla_min'];
 			$data[3] = $sla['sla_max'];
 			$data[4] = $sla['sla_limit'].'%';
@@ -338,7 +338,7 @@ if ($edit_sla_report_content) {
 	if ($report_id_group) {
 		/* Changing the group is not allowed. */
 		$table->data[1][1] = '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.
-				$report_id_group.'">'.dame_grupo ($report_id_group).'</a>';
+				$report_id_group.'">'.get_group_name ($report_id_group).'</a>';
 	} else {
 		$table->data[1][1] = print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo ORDER BY nombre',
 								'report_id_group', $report_id_group, '', '--', 0, true);
@@ -472,7 +472,7 @@ if ($edit_sla_report_content) {
 				$data[2] = '--';
 				$data[3] = '--';
 				if (get_report_type_data_source ($report_content['type']) == 'module') {
-					$data[2] = strtolower (dame_nombre_agente_agentemodulo ($report_content['id_agent_module']));
+					$data[2] = strtolower (get_agentmodule_agent_name ($report_content['id_agent_module']));
 					$data[3] = strtolower (get_db_value ('descripcion', 'tagente_modulo', 'id_agente_modulo', $report_content['id_agent_module']));
 				}
 				$data[4] = human_time_description ($report_content['period']);

@@ -89,7 +89,7 @@ if (isset($_POST["copy"])) {
 			//For each destination agent
 			
 			if ($modulos == 1) {
-				echo '<br /><br />'.__('Copying module').'<b> ['.dame_nombre_agente ($origen).' - '.$module["nombre"].'] -> ['.dame_nombre_agente ($id_agent_dest).']</b>';
+				echo '<br /><br />'.__('Copying module').'<b> ['.get_agent_name ($origen).' - '.$module["nombre"].'] -> ['.get_agent_name ($id_agent_dest).']</b>';
 				$sql = sprintf ('INSERT INTO tagente_modulo 
 					(id_agente, id_tipo_modulo, descripcion,
 					nombre, max, min, module_interval,
@@ -172,7 +172,7 @@ if (isset($_POST["copy"])) {
 				}
 				
 				foreach ($module_alerts as $alert) {
-					echo '<br /><br />'.__('Copying alert').'<b> ['.dame_nombre_agente ($origen).' - '.$module["nombre"].'] -> ['.dame_nombre_agente ($id_agent_dest).']</b>';
+					echo '<br /><br />'.__('Copying alert').'<b> ['.get_agent_name ($origen).' - '.$module["nombre"].'] -> ['.get_agent_name ($id_agent_dest).']</b>';
 					if (!empty ($alert["id_agent"])) {
 						//Compound alert
 						$alert["id_agent"] = $id_agent_dest;

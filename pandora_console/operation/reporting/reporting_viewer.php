@@ -125,7 +125,7 @@ $table->class = 'databox report_table';
 $table->rowclass = array ();
 $table->rowclass[0] = 'datos3';
 
-$group_name = dame_grupo ($report['id_group']);
+$group_name = get_group_name ($report['id_group']);
 $contents = get_db_all_rows_field_filter ("treport_content", "id_report", $id_report, "`order`");
 if ($contents === false) {
 	return;
@@ -138,7 +138,7 @@ foreach ($contents as $content) {
 	$table->rowstyle = array ();
 	
 	$module_name = get_db_value ('nombre', 'tagente_modulo', 'id_agente_modulo', $content['id_agent_module']);
-	$agent_name = dame_nombre_agente_agentemodulo ($content['id_agent_module']);
+	$agent_name = get_agentmodule_agent_name ($content['id_agent_module']);
 	
 	switch ($content["type"]) {
 	case 1:
@@ -210,9 +210,9 @@ foreach ($contents as $content) {
 			
 			$table->colspan[$n][0] = 2;
 			$data[0] = '<strong>'.__('Agent')."</strong> : ";
-			$data[0] .= dame_nombre_agente_agentemodulo ($sla['id_agent_module'])."<br />";
+			$data[0] .= get_agentmodule_agent_name ($sla['id_agent_module'])."<br />";
 			$data[0] .= '<strong>'.__('Module')."</strong> : ";
-			$data[0] .= dame_nombre_modulo_agentemodulo ($sla['id_agent_module'])."<br />";
+			$data[0] .= get_agentmodule_name ($sla['id_agent_module'])."<br />";
 			$data[0] .= '<strong>'.__('SLA Max. (value)')."</strong> : ";
 			$data[0] .= $sla['sla_max']."<br />";
 			$data[0] .= '<strong>'.__('SLA Min. (value)')."</strong> : ";

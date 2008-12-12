@@ -154,7 +154,7 @@ function create_pandora_node ($name, $font_size = 10) {
 // Opens a group definition
 function open_group ($id) {
 	$img = 'images/' . dame_grupo_icono($id) . '.png';
-	$name = dame_nombre_grupo($id);
+	$name = get_group_name ($id);
 	
 	$group = 'subgraph cluster_' . $id . 
 		' { style=filled; color=darkolivegreen3; label=<<TABLE BORDER="0">

@@ -18,7 +18,7 @@
 
 
 // Load global vars
-require("include/config.php");
+require_once ("include/config.php");
 
 check_login();
 
@@ -33,6 +33,7 @@ require ("include/functions_reporting.php");
 
 echo "<h2>".__('SLA view')."</h2>";
 $id_agent = get_parameter ("id_agente", "0");
+$intervalo = get_agent_interval ($id_agent);
 
 // Get all module from agent
 $sql_t='SELECT * FROM tagente_estado, tagente_modulo WHERE tagente_modulo.disabled = 0 AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.id_agente='.$id_agent.' AND tagente_estado.estado != 100 AND tagente_estado.utimestamp != 0 ORDER BY tagente_modulo.nombre';
@@ -51,14 +52,14 @@ if (mysql_num_rows ($result_t)) {
 	while ($module_data=mysql_fetch_array($result_t)){
 		# For evey module in the status table
 		$est_modulo = substr($module_data["nombre"],0,25);
-		$est_tipo = dame_nombre_tipo_modulo($module_data["id_tipo_modulo"]);
+		$est_tipo = get_moduletype_name ($module_data["id_tipo_modulo"]);
 		$est_description = $module_data["descripcion"];
 		$est_timestamp = $module_data["timestamp"];
 		$est_estado = $module_data["estado"];
 		$est_datos = $module_data["datos"];
 		$est_cambio = $module_data["cambio"];
 		$est_interval = $module_data["module_interval"];
-		if (($est_interval != $intervalo) && ($est_interval > 0)) {
+		if ($intervalo != $est_interval && $est_interval > 0) {
 			$temp_interval = $est_interval;
 		} else {
 			$temp_interval = $intervalo;
@@ -165,7 +166,7 @@ if (mysql_num_rows ($result_t)) {
 		$id_tipo_modulo = $module_data[4];
 		$name = $module_data[5];
 		$description = $module_data[6];
-		$est_tipo = dame_nombre_tipo_modulo ($id_tipo_modulo);
+		$est_tipo = get_moduletype_name ($id_tipo_modulo);
 		
 		echo "<tr>";	
 		echo "<td class='" . $tdcolor . "'>";

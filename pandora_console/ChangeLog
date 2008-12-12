@@ -1,3 +1,58 @@
+2008-12-12  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* pandora_console/operation/agentes/datos_agente.php: Rewrite. Uses new
+	functions and better security and validation
+	
+	* pandora_console/include/functions_db.php: Renamed some functions and
+	created agentmodule functions for consistency with documentation and to
+	avoid searching for and typing certain function names: 
+	get_agentmodules is now get_agent_modules; 
+	dame_grupo is now get_group_name; 
+	dame_nombre_agente is now get_agent_name; get_agentmodule_agent is new; 
+	dame_nombre_agente_agentemodulo is now get_agentmodule_agent_name;
+	dame_nombre_modulo_agentemodulo is now get_agentmodule_name;
+	dame_id_tipo_modulo_agentemodulo is now get_agentmodule_type;
+	dame_nombre_tipo_modulo is now get_moduletype_name; dame_nombre_grupo is
+	now get_group_name; get_agentmodule_count is get_agent_modules_count;
+	get_agentmodule_group is new; get_agent_group is new;
+	
+	* pandora_console/include/functions_reporting.php, 
+	pandora_console/include/functions.php,
+	pandora_console/operation/incidents/incident.php,
+	pandora_console/operation/users/user.php,
+	pandora_console/operation/users/user_edit.php,
+	pandora_console/operation/events/events.php,
+	pandora_console/operation/visual_console/index.php,
+	pandora_console/operation/agentes/estado_grupo.php,
+	pandora_console/operation/agentes/export_csv.php,
+	pandora_console/operation/agentes/estado_agente.php,
+	pandora_console/operation/agentes/estado_ultimopaquete.php,
+	pandora_console/operation/agentes/estado_generalagente.php,
+	pandora_console/operation/agentes/sla_view.php,
+	pandora_console/operation/agentes/exportdata.php,
+	pandora_console/operation/agentes/ver_agente.php,
+	pandora_console/operation/agentes/tactical.php,
+	pandora_console/operation/agentes/networkmap.php,
+	pandora_console/operation/messages/message.php,
+	pandora_console/operation/reporting/reporting_xml.php,
+	pandora_console/operation/reporting/reporting_viewer.php,
+	pandora_console/reporting/fgraph.php,
+	pandora_console/godmode/groups/group_list.php,
+	pandora_console/godmode/users/user_list.php,
+	pandora_console/godmode/users/configure_user.php,
+	pandora_console/godmode/db/db_refine.php,
+	pandora_console/godmode/db/db_info.php,
+	pandora_console/godmode/db/db_purge.php,
+	pandora_console/godmode/agentes/manage_config.php,
+	pandora_console/godmode/agentes/modificar_agente.php,
+	pandora_console/godmode/agentes/configurar_agente.php,
+	pandora_console/godmode/agentes/manage_config_remote.php,
+	pandora_console/godmode/modules/manage_network_components_form_network.php,
+	pandora_console/godmode/modules/manage_network_components_form_wmi.php,
+	pandora_console/godmode/reporting/reporting_builder.php,
+	pandora_console/godmode/reporting/map_builder.php,
+	pandora_console/godmode/reporting/graph_builder.php: Renamed functions
+
 2008-12-10  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* include/functions.php: format_for_graph is now much simpler and uses 

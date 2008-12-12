@@ -254,7 +254,7 @@ function get_group_agents ($id_group, $disabled = false, $case = "lower") {
  *
  * @return An array with all modules in the agent. If multiple rows are selected, they will be in an array
  */
-function get_agentmodules ($id_agent, $details = false) {
+function get_agent_modules ($id_agent, $details = false) {
 	$id_agent = safe_int ($id_agent, 1);
 	
 	if (empty ($id_agent)) {
@@ -365,17 +365,6 @@ function get_reports ($id_user) {
 }
 
 /** 
- * Get group name from group.
- * 
- * @param id_group Id group to get the name.
- * 
- * @return The name of the given group
- */
-function dame_grupo ($id_group) {
-	return (string) get_db_value ('nombre', 'tgrupo', 'id_grupo', (int) $id_group);
-}
-
-/** 
  * Get group icon from group.
  * 
  * @param id_group Id group to get the icon
@@ -395,18 +384,6 @@ function dame_grupo_icono ($id_group) {
  */
 function dame_agente_id ($agent_name) {
 	return (int) get_db_value ('id_agente', 'tagente', 'nombre', $agent_name);
-}
-
-	
-/** 
- * DEPRECATED: Use get_agent_name instead
- * 
- * @param id_agent Agent id.
- * 
- * @return Name of the given agent.
- */
-function dame_nombre_agente ($id_agent) {
-	return get_agent_name ($id_agent, "none");
 }
 
 /** 
@@ -498,17 +475,25 @@ function giveme_module_type ($id_type) {
 }
 
 /** 
+ * Get agent id of an agent module.
+ * 
+ * @param (int) id_agentmodule Agent module id.
+ * 
+ * @return (int) The id of the agent of given agent module
+ */
+function get_agentmodule_agent ($id_agentmodule) {
+	return (int) get_db_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
+}
+
+/** 
  * Get agent name of an agent module.
  * 
  * @param id_agente_modulo Agent module id.
  * 
  * @return The name of the given agent module.
  */
-function dame_nombre_agente_agentemodulo ($id_agente_modulo) {
-	$id_agent = get_db_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', (int) $id_agente_modulo);
-	if ($id_agent)
-		return dame_nombre_agente ($id_agent);
-	return '';
+function get_agentmodule_agent_name ($id_agentmodule) {
+	return (string) get_agent_name (get_agentmodule_agent ($id_agentmodule)); //since this is a helper function we don't need to do casting
 }
 
 /** 
@@ -518,7 +503,7 @@ function dame_nombre_agente_agentemodulo ($id_agente_modulo) {
  * 
  * @return Name of the given agent module.
  */
-function dame_nombre_modulo_agentemodulo ($id_agente_modulo) {
+function get_agentmodule_name ($id_agente_modulo) {
 	return (string) get_db_value ('nombre', 'tagente_modulo', 'id_agente_modulo', (int) $id_agente_modulo);
 }
 
@@ -529,8 +514,8 @@ function dame_nombre_modulo_agentemodulo ($id_agente_modulo) {
  * 
  * @return Module type of the given agent module.
  */
-function dame_id_tipo_modulo_agentemodulo ($id_agente_modulo) {
-	return (int) get_db_value ('id_tipo_modulo', 'tagente_modulo', 'id_agente_modulo', (int) $id_agente_modulo);
+function get_agentmodule_type ($id_agentmodule) {
+	return (int) get_db_value ('id_tipo_modulo', 'tagente_modulo', 'id_agente_modulo', (int) $id_agentmodule);
 }
 
 /** 
@@ -790,7 +775,7 @@ function get_alert_last_fire_timestamp_in_period ($id_agent_module, $period, $da
  * @return Name of the given server
  */
 function give_server_name ($id_server) {
-	return (string) get_db_value ('name', 'tserver', 'id_server', $id_server);
+	return (string) get_db_value ('name', 'tserver', 'id_server', (int) $id_server);
 }
 
 /** 
@@ -800,20 +785,9 @@ function give_server_name ($id_server) {
  * 
  * @return Name of the given type.
  */
-function dame_nombre_tipo_modulo ($id_type) {
-	return (string) get_db_value ('nombre', 'ttipo_modulo', 'id_tipo', $id_type);
-} 
-
-/** 
- * Get group name from the id
- * 
- * @param id_group Group id
- * 
- * @return The name of the given group
- */
-function dame_nombre_grupo ($id_group) {
-	return (string) get_db_value ('nombre', 'tgrupo', 'id_grupo', $id_group);
-} 
+function get_moduletype_name ($id_type) {
+	return (string) get_db_value ('nombre', 'ttipo_modulo', 'id_tipo', (int) $id_type);
+}
 
 /** 
  * Get group id of an agent.
@@ -2098,7 +2072,7 @@ function smal_event_table ($filter = "", $limit = 10, $width = 440) {
 			echo "</td>";
 			if ($event["id_agente"] > 0) {
 				// Agent name
-				$agent_name = dame_nombre_agente ($event["id_agente"]);
+				$agent_name = get_agent_name ($event["id_agente"]);
 				echo "<td class='".$tdclass."f9' title='$agent_name'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$event["id_agente"]."'><b>";
 				echo substr ($agent_name, 0, 14);
 				if (strlen ($agent_name) > 14)
@@ -2340,18 +2314,49 @@ function get_server_info ($id_server = -1) {
  * @return integer with the number of agent modules
  *
  **/
-function get_agentmodule_count ($id_agent = 0) {
-	$id_agent = safe_int ($id_agent); //Make sure we're all int's and filter out bad stuff
-	if (empty ($id_agent) || $id_agent < 1) {
+function get_agent_modules_count ($id_agent = 0) {
+	$id_agent = safe_int ($id_agent, 1); //Make sure we're all int's and filter out bad stuff
+	if (empty ($id_agent)) {
 		//If the array proved empty or the agent is less than 1 (eg. -1)
 		$filter = '';
-	} elseif (is_array ($id_agent)) {
-		//If it's an array of agents, flatten the aray
-		$filter = sprintf (" WHERE id_agente IN (%s)", implode (",",$id_agent));
 	} else {
-		$filter = sprintf (" WHERE id_agente = %d", $id_agent);
+		$filter = sprintf (" WHERE id_agente IN (%s)", implode (",",$id_agent));
 	}
 	
 	return (int) get_db_sql ("SELECT COUNT(*) FROM tagente_modulo".$filter);
+}
+
+/**
+ * This function gets the agent group for a given agent module
+ *
+ * @param (int) $id_module: The agent module id
+ *
+ * @return (int) The group id
+**/
+function get_agentmodule_group ($id_module) {
+	$agent = (int) get_agentmodule_agent ((int) $id_module);
+	return (int) get_agent_group ($agent);
+}
+
+/**
+ * This function gets the group for a given agent
+ *
+ * @param (int) $id_agent: The agent id
+ *
+ * @return (int) The group id
+**/
+function get_agent_group ($id_agent) {
+	return (int) get_db_value ('id_grupo', 'tagente', 'id_agente', (int) $id_agent);
+}
+
+/**
+ * This function gets the group name for a given group id
+ *
+ * @param (int) $id_group: The group id
+ *
+ * @return (string) The group name
+**/
+function get_group_name ($id_group) {
+	return (string) get_db_value ('nombre', 'tgrupo', 'id_grupo', (int) $id_group);
 }
 ?>

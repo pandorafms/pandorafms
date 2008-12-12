@@ -52,7 +52,7 @@ function generate_average_table ($id_de_mi_agente, $id_agente_modulo, $fecha_ini
 	require ("include/config.php");
 	
 	$dias_de_la_semana = array (__('Sunday'),__('Monday'), __('Tuesday'), __('Wednesday'), __('Thurdsday'), __('Friday'), __('Saturday'));
-	$nombre_modulo = dame_nombre_modulo_agentemodulo($id_agente_modulo);
+	$nombre_modulo = get_agentmodule_name ($id_agente_modulo);
 	
 	// Table header
 	echo "<table border=0 cellpadding=4 cellspacing=4 width=600 class='databox'>";
@@ -114,8 +114,8 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 			$from_date = $start_date." ".$start_time;
 			$to_date = $end_date." ".$end_time;
 			
-			$agentmodule_name = dame_nombre_modulo_agentemodulo($origen_modulo[0]);
-			echo __('Data from agent '). "<b>" . dame_nombre_agente($origen). "-  $agentmodule_name</b> ". __('from'). " <b>". $from_date. "</b> ". __('to'). " <b>". $to_date. "</b><br>";
+			$agentmodule_name = get_agentmodule_name ($origen_modulo[0]);
+			echo __('Data from agent '). "<b>" . get_agent_name($origen). "-  $agentmodule_name</b> ". __('from'). " <b>". $from_date. "</b> ". __('to'). " <b>". $to_date. "</b><br>";
 
 			echo "<a href='operation/agentes/export_csv.php?from_date=$from_date&to_date=$to_date&agent=$origen&agentmodule=$id_agentemodulo'><img src='images/disk.png'> ".__('Download file')."</a> pandora_export_$agentmodule_name.txt";
 		} else
@@ -131,17 +131,17 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 			$start_time =$_POST["start_time"];
 			$end_time=$_POST["end_time"];
 	
-			$agentmodule_name = dame_nombre_modulo_agentemodulo($origen_modulo[0]);
+			$agentmodule_name = get_agentmodule_name ($origen_modulo[0]);
 			$from_date = $start_date." ".$start_time;
 			$to_date = $end_date." ".$end_time;
 
-			echo __('Data from agent '). "<b>" . dame_nombre_agente ($origen). "-  $agentmodule_name</b> ". __('from'). " <b>". $from_date. "</b> ". __('to'). " <b>". $to_date. "</b><br>";
+			echo __('Data from agent '). "<b>" . get_agent_name ($origen). "-  $agentmodule_name</b> ". __('from'). " <b>". $from_date. "</b> ". __('to'). " <b>". $to_date. "</b><br>";
 			echo "<br>";
 
 			// For each module
 			for ($a=0;$a <count($origen_modulo); $a++){
 				$id_modulo = $origen_modulo[$a];
-				$tipo = dame_nombre_tipo_modulo(dame_id_tipo_modulo_agentemodulo($id_modulo));
+				$tipo = get_moduletype_name (get_agentmodule_type ($id_modulo));
 
 				if ($tipo != "generic_data_string")
 					echo "<br>". generate_average_table  ($origen,$id_modulo,$from_date,$to_date);
@@ -158,7 +158,7 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 				require ("general/noaccess.php");
 			}
 			$origen_modulo = $_POST["origen_modulo"];
-			$agentmodule_name = dame_nombre_modulo_agentemodulo($origen_modulo[0]);
+			$agentmodule_name = get_agentmodule_name ($origen_modulo[0]);
 			$start_date =$_POST["start_date"];
 			$end_date=$_POST["end_date"];
 			$start_time =$_POST["start_time"];
@@ -167,7 +167,7 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 			$from_date = $start_date." ".$start_time;
 			$to_date = $end_date." ".$end_time;
 
-			echo __('Data from agent '). "<b>" . dame_nombre_agente($origen). "-  $agentmodule_name</b>". __(' from '). "<b>". $from_date. "</b>". __(' to '). "<b>". $to_date. "</b><br>";
+			echo __('Data from agent '). "<b>" . get_agent_name($origen). "-  $agentmodule_name</b>". __(' from '). "<b>". $from_date. "</b>". __(' to '). "<b>". $to_date. "</b><br>";
 
 			echo "<br><table cellpadding='4' cellspacing='4' width='600' class='databox'>";
 			echo "<tr>
@@ -179,7 +179,7 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 			for ($a=0; $a <count($origen_modulo); $a++){ // For each module (not used multiple modules yet!)
 				$id_modulo = $origen_modulo[$a];
 				$sql1='SELECT * FROM tdatos WHERE id_agente = '.$origen;
-				$tipo = dame_nombre_tipo_modulo(dame_id_tipo_modulo_agentemodulo($id_modulo));
+				$tipo = get_moduletype_name (get_agentmodule_type ($id_modulo));
 				if ($tipo == "generic_data_string")
 					$sql1 = 'SELECT * FROM tagente_datos_string WHERE timestamp > "'.$from_date.'" AND timestamp < "'.$to_date.'" AND id_agente_modulo ='.$id_modulo.' ORDER BY timestamp DESC';
 				else
@@ -245,7 +245,7 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 	// Show combo with agents
 	echo '<select name="origen" class="w130">';
 	if ( (isset($_POST["update_agent"])) AND (isset($_POST["origen"])) ) {
-		echo "<option value=".$_POST["origen"].">".dame_nombre_agente($_POST["origen"])."</option>";
+		echo "<option value=".$_POST["origen"].">".get_agent_name($_POST["origen"])."</option>";
 	}
 	$sql1='SELECT * FROM tagente';
 	$result=mysql_query($sql1);

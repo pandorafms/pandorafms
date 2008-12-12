@@ -16,126 +16,91 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
-
 // Load global vars
-require ("include/config.php");
+require_once ("include/config.php");
 
 check_login();
 
-if (! give_acl ($config['id_user'], 0, "AR")) {
+$module_id = get_parameter_get ("id", 0);
+$period = get_parameter_get ("period", 86400);
+$group = get_agentmodule_group ($module_id);
+
+if (! give_acl ($config['id_user'], $group, "AR") || $module_id == 0) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
 		"Trying to access Agent Data view");
 	require ("general/noaccess.php");
 	exit;
 }
 
-function datos_raw ($id_agente_modulo, $periodo) {
-	global $config;
-	
-	$periodo_label = $periodo;
-	switch ($periodo) {
-	case "mes":
-		$periodo = 2592000;
-		$et=__('One month');
-		break;
-	case "semana":
-		$periodo = 604800;
-		$et=__('One week');
-		break;
-	case "dia":
-		$periodo = 86400;
-		$et=__('Last 24 Hours');
-		break;
-	}
-	$periodo = time () - $periodo;
-	$id_agent = give_agent_id_from_module_id ($id_agente_modulo);
-	$id_group = get_db_value ("id_grupo", "tagente", "id_agente", $id_agent);
-	// Different query for string data type
-	$id_tipo_modulo = dame_id_tipo_modulo_agentemodulo($id_agente_modulo);
-	if (preg_match("/string/", dame_nombre_tipo_modulo ($id_tipo_modulo) )) {
-		$sql1="SELECT * FROM tagente_datos_string WHERE id_agente_modulo = ".
-		$id_agente_modulo." AND id_agente = $id_agent AND utimestamp > '".$periodo."' 
-		ORDER BY timestamp DESC"; 
-		$string_type = 1;
-	}
-	else {
-		$sql1 = "SELECT * FROM tagente_datos WHERE id_agente_modulo = ".
-			$id_agente_modulo." AND id_agente = $id_agent AND utimestamp > '".$periodo."' 
-			ORDER BY timestamp DESC";
-		$string_type = 0;
-	}
-	
-	$result = mysql_query ($sql1);
-	$nombre_agente = dame_nombre_agente_agentemodulo ($id_agente_modulo);
-	$nombre_modulo = dame_nombre_modulo_agentemodulo ($id_agente_modulo);
-	
-	echo "<h2>".__('Received data from')." 
-	'$nombre_agente' / '$nombre_modulo' </h2>";
-	echo "<h3>". $et ."</h3>";
-	if (mysql_num_rows ($result)) {
-		echo "<table cellpadding='3' cellspacing='3' width='600' class='databox'>";
-		$color=1;
-		echo "<th>".__('Delete')."</th>";
-		echo "<th>".__('Timestamp')."</th>";
-		echo "<th width='400'>".__('Data')."</th>";
-		while ($row=mysql_fetch_array($result)){
-			if ($color == 1){
-				$tdcolor = "datos";
-				$color = 0;
-			} else {
-				$tdcolor = "datos2";
-				$color = 1;
-			}
-			echo "<tr>";
-			if (give_acl ($config['id_user'], $id_group, "AW") ==1) {
-				echo "<td class='".$tdcolor."' width=20>";
-				if ($string_type == 0)
-					echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=$periodo_label&id=$id_agente_modulo&delete=".$row["id_agente_datos"]."'><img src='images/cross.png' border=0>";
-				else
-					echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&tipo=$periodo_label&id=$id_agente_modulo&delete_text=".$row["id_tagente_datos_string"]."'><img src='images/cross.png' border=0>";
-			} else {
-				echo "<td class='".$tdcolor."'>";
-			}
-			echo "<td class='".$tdcolor."' style='width:150px'>".$row["timestamp"]."</td>";
-			echo "<td class='".$tdcolor."'>";
-			if (is_numeric ($row["datos"])) {
-				echo format_for_graph ($row["datos"]);
-			} else {
-				echo salida_limpia ($row["datos"]);
-			}
-			echo "</td></tr>";
-		}
-		echo "</table>";
-	} else {
-		echo "<div class='nf'>no_data</div>";
-	}
-}	
+if (isset ($_GET["delete"])) {
+	$delete = get_parameter_get ("delete", 0);
+	$sql = sprintf ("DELETE FROM tagente_datos WHERE id_agente_datos = %d", $delete);
+	process_sql ($sql);
+} elseif (isset($_GET["delete_text"])) {
+	$delete = get_parameter_get ("delete_string", 0);
+	$sql = sprintf ("DELETE FROM tagente_datos_string WHERE id_tagente_datos_string = %d", $delete);
+	process_sql ($sql);
+}
 
-// ---------------
-// Page begin
-// ---------------
-
-if (isset ($_GET["tipo"]) && isset ($_GET["id"])) {
-	$id = get_parameter ("id");
-	$tipo= get_parameter ("tipo");
+// Different query for string data type
+if (preg_match ("/string/", get_moduletype_name (get_agentmodule_type ($module_id)))) {
+	$sql = sprintf ("SELECT * FROM tagente_datos_string WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY timestamp DESC", $module_id, time () - $period);
+	$string_type = 1;
 } else {
-	echo "<h3 class='error'>".__('There was a problem locating the source of the graph')."</h3>";
-	exit;
+	$sql = sprintf ("SELECT * FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY timestamp DESC", $module_id, time () - $period);
+	$string_type = 0;
+}
+	
+$result = get_db_all_rows_sql ($sql);
+if ($result === false) {
+	$result = array ();
 }
 
-if (isset($_GET["delete"])) {
-	$delete = $_GET["delete"];
-	$sql = "DELETE FROM tagente_datos WHERE id_agente_datos = $delete";
-	$result = process_sql ($sql);
+echo "<h2>".__('Received data from')." ".get_agentmodule_agent_name ($module_id)." / ".get_agentmodule_name ($module_id)." </h2>";
+echo "<h3>".human_time_description ($period) ."</h3>";
+
+$table->cellpadding = 3;
+$table->cellspacing = 3;
+$table->width = 600;
+$table->class = "databox";
+$table->head = array ();
+$table->data = array ();
+$table->align = array ();
+
+$table->head[0] = __('Delete');
+$table->align[0] = 'center';
+
+$table->head[1] = __('Timestamp');
+$table->align[1] = 'center';
+$table->head[2] = __('Data');
+$table->align[2] = 'center';
+
+foreach ($result as $row) {
+	$data = array ();
+	if (give_acl ($config['id_user'], $group, "AW") ==1) {
+		if ($string_type == 0) {
+			$data[0] = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete='.$row["id_agente_datos"].'"><img src="images/cross.png" border="0" /></a>';
+		} else {
+			$data[0] = '<a href="index.php?sec=estado&sec2=operation/agentes/datos_agente&period='.$period.'&id='.$module_id.'&delete_string='.$row["id_tagente_datos_string"].'"><img src="images/cross.png" border="0" /></a>';
+		}
+	} else {
+		$data[0] = '';
+	}
+	$data[1] = print_timestamp ($row["utimestamp"], "", "span", true);
+	if (is_numeric ($row["datos"])) {
+		$data[2] = format_for_graph ($row["datos"]);
+	} else {
+		$data[2] = safe_input ($row["datos"]);
+	}
+	
+	array_push ($table->data, $data);
 }
 
-if (isset($_GET["delete_text"])) {
-	$delete = $_GET["delete_text"];
-	$sql = "DELETE FROM tagente_datos_string WHERE id_tagente_datos_string = $delete";
-	$result = process_sql ($sql);
+if (empty ($table->data)) {
+	echo '<h3 class="error">'.__('There was a problem locating the source of the graph').'</h3>';
+} else {
+	print_table ($table);
+	unset ($table);
 }
-
-datos_raw ($id, $tipo);
 
 ?>

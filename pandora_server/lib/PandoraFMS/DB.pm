@@ -2250,6 +2250,10 @@ sub export_module_data {
 	my $tagente_modulo = get_db_free_row ("SELECT id_export, id_agente_modulo
 	                                       FROM tagente_modulo WHERE id_agente = " . $id_agent .
 	                                       " AND nombre = '" . $module_name . "'", $dbh);
+	if ($tagente_modulo eq '-1') {
+		return;
+	}
+
  	my $id_export = $tagente_modulo->{'id_export'};
 	my $id_agente_modulo = $tagente_modulo->{'id_agente_modulo'};
 	if ($id_export < 1) {

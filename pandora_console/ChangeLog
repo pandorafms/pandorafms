@@ -1,3 +1,8 @@
+2008-12-16  Esteban Sanchez <estebans@artica.es>
+
+	* include/functions_html.php: Added missing documentation and fixed a
+	bit more. Added print_image() to prints an image HTML element.
+
 2008-12-12  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* pandora_console/operation/agentes/datos_agente.php: Rewrite. Uses new

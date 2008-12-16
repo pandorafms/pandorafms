@@ -33,6 +33,8 @@
  * @param bool $return Whether to return an output string or echo now (optional, echo by default).
  * @param bool $multiple Set the input to allow multiple selections (optional, single selection by default).
  * @param bool $sort Whether to sort the options or not (optional, unsorted by default).
+ *
+ * @return string HTML code if return parameter is true.
  */
 function print_select ($fields, $name, $selected = '', $script = '', $nothing = '', $nothing_value = '0', $return = false, $multiple = false, $sort = true, $class = '', $disabled = false) {
 	$output = "\n";
@@ -92,15 +94,20 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
  * Prints an array of fields in a popup menu of a form based on a SQL query.
  * The first and second columns of the query will be used.
  * 
- * Based on choose_from_menu() from Moodle 
+ * The element will have an id like: "password-$value". Based on choose_from_menu() from Moodle.
  * 
- * $sql SQL sentence, the first field will be the identifier of the option. 
+ * @param string SQL sentence, the first field will be the identifier of the option. 
  *      The second field will be the shown value in the dropdown.
- * $name Select form name
- * $selected Current selected value.
- * $script Javascript onChange code.
- * $nothing Label when nothing is selected.
- * $nothing_value Value when nothing is selected
+ * @param string Select form name
+ * @param string Current selected value.
+ * @param string Javascript onChange code.
+ * @param string Label when nothing is selected.
+ * @param string Value when nothing is selected
+ * @param bool Whether to return an output string or echo now (optional, echo by default).
+ * @param bool Whether to allow multiple selections or not. Single by default
+ * @param bool Whether to sort the options or not. Sorted by default.
+ *
+ * @return string HTML code if return parameter is true.
  */
 function print_select_from_sql ($sql, $name, $selected = '', $script = '', $nothing = '', $nothing_value = '0', $return = false, $multiple = false, $sort = true) {
 	
@@ -119,14 +126,18 @@ function print_select_from_sql ($sql, $name, $selected = '', $script = '', $noth
 /**
  * Render an input text element. Extended version, use print_input_text() to simplify.
  * 
- * @param string $name Input name.
- * @param string $value Input value.
- * @param string $alt Alternative HTML string.
- * @param int $size Size of the input.
- * @param int $maxlength Maximum length allowed.
- * @param bool $disabled Disable the button (optional, button enabled by default).
- * @param string $alt Alternative HTML string.
- * @param bool $return Whether to return an output string or echo now (optional, echo by default).
+ * @param string Input name.
+ * @param string Input value.
+ * @param string Input HTML id.
+ * @param string Alternative HTML string.
+ * @param int Size of the input.
+ * @param int Maximum length allowed.
+ * @param bool Disable the button (optional, button enabled by default).
+ * @param string Alternative HTML string.
+ * @param bool Whether to return an output string or echo now (optional, echo by default).
+ * @param bool Whether it is a password input or not. Not password by default.
+ *
+ * @return string HTML code if return parameter is true.
  */
 function print_input_text_extended ($name, $value, $id, $alt, $size, $maxlength, $disabled, $script, $attributes, $return = false, $password = false) {
 	static $idcounter = 0;
@@ -169,15 +180,18 @@ function print_input_text_extended ($name, $value, $id, $alt, $size, $maxlength,
 
 /**
  * Render an input password element.
+ *
+ * The element will have an id like: "password-$name"
  * 
- * @param string $name Input name.
- * @param string $value Input value.
- * @param string $alt Alternative HTML string (optional).
- * @param int $size Size of the input (optional).
- * @param int $maxlength Maximum length allowed (optional).
- * @param bool $return Whether to return an output string or echo now (optional, echo by default).
+ * @param string Input name.
+ * @param string Input value.
+ * @param string Alternative HTML string (optional).
+ * @param int Size of the input (optional).
+ * @param int Maximum length allowed (optional).
+ * @param bool Whether to return an output string or echo now (optional, echo by default).
+ *
+ * @return string HTML code if return parameter is true.
  */
-
 function print_input_password ($name, $value, $alt = '', $size = 50, $maxlength = 0, $return = false) {
 	$output = print_input_text_extended ($name, $value, 'password-'.$name, $alt, $size, $maxlength, false, '', '', true, true);
 
@@ -187,14 +201,18 @@ function print_input_password ($name, $value, $alt = '', $size = 50, $maxlength 
 }
 
 /**
- * Render an input text element. 
+ * Render an input text element.
+ *
+ * The element will have an id like: "text-$name"
  * 
- * @param string $name Input name.
- * @param string $value Input value.
- * @param string $alt Alternative HTML string (optional).
- * @param int $size Size of the input (optional).
- * @param int $maxlength Maximum length allowed (optional).
- * @param bool $return Whether to return an output string or echo now (optional, echo by default).
+ * @param string Input name.
+ * @param string Input value.
+ * @param string Alternative HTML string (optional).
+ * @param int Size of the input (optional).
+ * @param int Maximum length allowed (optional).
+ * @param bool Whether to return an output string or echo now (optional, echo by default).
+ *
+ * @return string HTML code if return parameter is true.
  */
 function print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 0, $return = false) {
 	$output = print_input_text_extended ($name, $value, 'text-'.$name, $alt, $size, $maxlength, false, '', '', true);
@@ -206,12 +224,16 @@ function print_input_text ($name, $value, $alt = '', $size = 50, $maxlength = 0,
 
 /**
  * Render an input image element.
+ *
+ * The element will have an id like: "image-$name"
  * 
- * @param string $name Input name.
- * @param string $src Image source.
- * @param string $value Input value.
- * @param string $style HTML style property.
- * @param bool $return Whether to return an output string or echo now (optional, echo by default).
+ * @param string Input name.
+ * @param string Image source.
+ * @param string Input value.
+ * @param string HTML style property.
+ * @param bool Whether to return an output string or echo now (optional, echo by default).
+ *
+ * @return string HTML code if return parameter is true.
  */
 function print_input_image ($name, $src, $value, $style = '', $return = false) {
 	$output = '<input id="image-'.$name.'" src="'.$src.'" style="'.$style.'" name="'.$name.'" type="image" value="'.$value.'" />';
@@ -223,10 +245,14 @@ function print_input_image ($name, $src, $value, $style = '', $return = false) {
 
 /**
  * Render an input hidden element.
+ *
+ * The element will have an id like: "hidden-$name"
  * 
- * @param string $name Input name.
- * @param string $value Input value.
- * @param bool $return Whether to return an output string or echo now (optional, echo by default).
+ * @param string Input name.
+ * @param string Input value.
+ * @param bool Whether to return an output string or echo now (optional, echo by default).
+ *
+ * @return string HTML code if return parameter is true.
  */
 function print_input_hidden ($name, $value, $return = false) {
 	$output = '<input id="hidden-'.$name.'" name="'.$name.'" type="hidden" value="'.$value.'" />';
@@ -236,6 +262,19 @@ function print_input_hidden ($name, $value, $return = false) {
 	echo $output;
 }
 
+/**
+ * Render an submit input button element.
+ *
+ * The element will have an id like: "submit-$name"
+ * 
+ * @param string Input label.
+ * @param string Input name.
+ * @param bool Whether to disable by default or not. Enabled by default.
+ * @param string Additional HTML attributes.
+ * @param bool Whether to return an output string or echo now (optional, echo by default).
+ *
+ * @return string HTML code if return parameter is true.
+ */
 function print_submit_button ($label = 'OK', $name = '', $disabled = false, $attributes = '', $return = false) {
 	$output = '';
 
@@ -249,6 +288,19 @@ function print_submit_button ($label = 'OK', $name = '', $disabled = false, $att
 	echo $output;
 }
 
+/**
+ * Render an submit input button element.
+ *
+ * The element will have an id like: "button-$name"
+ * 
+ * @param string Input label.
+ * @param string Input name.
+ * @param bool Whether to disable by default or not. Enabled by default.
+ * @param string Additional HTML attributes.
+ * @param bool Whether to return an output string or echo now (optional, echo by default).
+ *
+ * @return string HTML code if return parameter is true.
+ */
 function print_button ($label = 'OK', $name = '', $disabled = false, $script = '', $attributes = '', $return = false) {
 	$output = '';
 
@@ -262,8 +314,18 @@ function print_button ($label = 'OK', $name = '', $disabled = false, $script = '
 	echo $output;
 }
 
+/**
+ * Render an input textarea element.
+ *
+ * The element will have an id like: "textarea_$name"
+ * 
+ * @param string Input name.
+ * @param string Input value.
+ * @param bool Whether to return an output string or echo now (optional, echo by default). *
+ * @return string HTML code if return parameter is true.
+ */
 function print_textarea ($name, $rows, $columns, $value = '', $attributes = '', $return = false) {
-	$output = '<textarea name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' >';
+	$output = '<textarea id="textarea_'.$name.'" name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'" '.$attributes.' >';
 	$output .= $value;
 	$output .= '</textarea>';
 	
@@ -295,6 +357,8 @@ function print_textarea ($name, $rows, $columns, $value = '', $attributes = '', 
  *	   $table->id - Table ID (useful in JavaScript)
  *	   $table->headclass[] - An array of classes for each heading
  * @param  bool $return whether to return an output string or echo now
+ *
+ * @return string HTML code if return parameter is true.
  */
 function print_table (&$table, $return = false) {
 	$output = '';
@@ -466,6 +530,8 @@ function print_table (&$table, $return = false) {
  * @param string $attributes Optional HTML attributes. It's a free string which will be 
 	inserted into the HTML tag, use it carefully (optional).
  * @param bool $return Whether to return an output string or echo now (optional, echo by default).
+ *
+ * @return string HTML code if return parameter is true.
  */
 function print_radio_button_extended ($name, $value, $label, $checkedvalue, $disabled, $script, $attributes, $return = false) {
 	static $idcounter = 0;
@@ -506,6 +572,8 @@ function print_radio_button_extended ($name, $value, $label, $checkedvalue, $dis
  * @param string $label Label to add after the radio button (optional).
  * @param string $checkedvalue Checked and selected value, the button will be selected if it matches $value (optional).
  * @param bool $return Whether to return an output string or echo now (optional, echo by default).
+ *
+ * @return string HTML code if return parameter is true.
  */
 function print_radio_button ($name, $value, $label = '', $checkedvalue = '', $return = false) {
 	$output = print_radio_button_extended ($name, $value, $label, $checkedvalue, false, '', '', true);
@@ -527,6 +595,8 @@ function print_radio_button ($name, $value, $label = '', $checkedvalue = '', $re
  * @param string $attributes Optional HTML attributes. It's a free string which will be 
 	inserted into the HTML tag, use it carefully (optional).
  * @param bool $return Whether to return an output string or echo now (optional, echo by default).
+ *
+ * @return string HTML code if return parameter is true.
  */
 function print_checkbox_extended ($name, $value, $checked, $disabled, $script, $attributes, $return = false) {
 	static $idcounter = 0;
@@ -557,6 +627,8 @@ function print_checkbox_extended ($name, $value, $checked, $disabled, $script, $
  * @param string $value Input value.
  * @param string $checked Set the button to be marked (optional, unmarked by default).
  * @param bool $return Whether to return an output string or echo now (optional, echo by default).
+ *
+ * @return string HTML code if return parameter is true.
  */
 function print_checkbox ($name, $value, $checked = false, $return = false) {
 	$output = print_checkbox_extended ($name, $value, (bool) $checked, false, '', '', true);
@@ -571,11 +643,54 @@ function print_checkbox ($name, $value, $checked = false, $return = false) {
  * 
  * @param  string $text Complete text to show in the tip
  * @param  bool $return whether to return an output string or echo now
- * 
- * @return 
+ *
+ * @return string HTML code if return parameter is true.
  */
 function print_help_tip ($text, $return = false) {
 	$output = '<a href="#" class="tip">&nbsp;<span>'.$text.'</span></a>';
+	
+	if ($return)
+		return $output;
+	echo $output;
+}
+
+
+/**
+ * Prints an image HTML element.
+ *
+ * @param string Image source filename.
+ * @param array Array with optional HTML options to set. At this moment, the 
+ * following options are supported: alt, style, title, width, height, class.
+ *
+ * @return string HTML code if return parameter is true.
+ */
+function print_image ($src, $return = false, $options = false) {
+	$output = '<img src="'.$src.'"" ';
+	
+	if ($options) {
+		if (isset ($options['alt']))
+			$output .= 'alt="'.$options['alt'].'" ';
+		
+		if (isset ($options['style']))
+			$output .= 'style="'.$options['style'].'" ';
+		
+		if (isset ($options['title']))
+			$output .= 'title="'.$options['title'].'" ';
+		
+		if (isset ($options['width']))
+			$output .= 'width="'.$options['width'].'" ';
+		
+		if (isset ($options['height']))
+			$output .= 'height="'.$options['height'].'" ';
+		
+		if (isset ($options['class']))
+			$output .= 'class="'.$options['class'].'" ';
+		
+		if (isset ($options['id']))
+			$output .= 'id="'.$options['id'].'" ';
+	}
+	
+	$output .= '/>';
 	
 	if ($return)
 		return $output;
@@ -586,7 +701,7 @@ function print_help_tip ($text, $return = false) {
  * Evaluates a result using empty () and then prints an error message or a
  * success message
  * 
- * @param any $result the results to evaluate. 0, NULL, false, '' or array()
+ * @param mixed $result the results to evaluate. 0, NULL, false, '' or array()
  * is bad, the rest is good
  * @param string $good the string to be displayed if the result was good
  * @param string $bad the string to be displayed if the result was bad
@@ -595,9 +710,8 @@ function print_help_tip ($text, $return = false) {
  * @param string $tag what tag to use (you could specify something else than
  * h3 like div or h2
  *
- * @return a string or an output
+ * @return string HTML code if return parameter is true.
 */
-       
 function print_error_message ($result, $good = '', $bad = '', $attributes = '', $return = false, $tag = 'h3') {
 	if ($good == '' || $good === false)
 		$good = __('Request successfully processed');
@@ -626,6 +740,8 @@ function print_error_message ($result, $good = '', $bad = '', $attributes = '', 
  * @param string $attributes: Any additional attributes (class, script etc.)
  * @param string $tag: If it should be in a different tag than span
  * @param bool $return whether to output the string or return it
+ *
+ * @return string HTML code if return parameter is true.
  */
 function print_timestamp ($unixtime, $attributes = "", $tag = "span", $return = false) {
 	global $config;
@@ -664,12 +780,11 @@ function print_timestamp ($unixtime, $attributes = "", $tag = "span", $return = 
 /**
  * Prints a username with real name, link to the user_edit page etc.
  *
- * @param username (string) The username
- * @param return (bool) Whether to return or print
+ * @param string The username to render
+ * @param bool Whether to return or print
  *
- * @return (string) The full <a href string
+ * @return string HTML code if return parameter is true.
  */
-	
 function print_username ($username, $return = false) {
 	$string = '<a href="index.php?sec=usuario&sec2=operation/users/user_edit&ver='.$username.'">'.dame_nombre_real ($username).'</a>';
 	if ($return === false) {

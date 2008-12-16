@@ -1,7 +1,7 @@
 [Project]
 FileName=PandoraAgent.dev
 Name=PandoraAgent
-UnitCount=79
+UnitCount=81
 Type=1
 Ver=1
 ObjFiles=
@@ -831,6 +831,26 @@ BuildCmd=
 FileName=udp_server\udp_server.cc
 CompileCpp=1
 Folder=UDP Server
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit80]
+FileName=modules\pandora_module_wmiquery.cc
+CompileCpp=1
+Folder=Modules
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit81]
+FileName=modules\pandora_module_wmiquery.h
+CompileCpp=1
+Folder=Modules
 Compile=1
 Link=1
 Priority=1000

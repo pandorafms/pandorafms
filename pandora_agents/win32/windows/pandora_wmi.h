@@ -61,6 +61,9 @@ namespace Pandora_Wmi {
 	bool          runProgram            (string command);
 	bool          startService          (string service_name);
 	bool          stopService           (string service_name);
+ 	void          runWMIQuery       (string wmi_query,
+					     string var,
+					     list<string> &rows);
 };
 
 #endif

@@ -28,6 +28,7 @@
 #include "pandora_module_cpuusage.h"
 #include "pandora_module_odbc.h"
 #include "pandora_module_logevent.h"
+#include "pandora_module_wmiquery.h"
 #include "../pandora_strutils.h"
 #include <list>
 
@@ -57,6 +58,8 @@ using namespace Pandora_Strutils;
 #define TOKEN_ASYNC         ("module_async")
 #define TOKEN_WATCHDOG      ("module_watchdog ")
 #define TOKEN_START_COMMAND ("module_start_command ")
+#define TOKEN_WMIQUERY      ("module_wmiquery ")
+#define TOKEN_WMICOLUMN     ("module_wmicolumn ")
 
 string
 parseLine (string line, string token) {
@@ -94,6 +97,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	string                 module_logevent, module_source, module_eventtype, module_eventcode;
 	string                 module_pattern, module_async;
 	string                 module_watchdog, module_start_command;
+	string                 module_wmiquery, module_wmicolumn;
 	Pandora_Module        *module;
 	bool                   numeric;
 	Module_Type            type;
@@ -118,6 +122,8 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_async         = "";
 	module_watchdog      = "";
 	module_start_command = "";
+	module_wmiquery      = "";
+	module_wmicolumn     = "";
 
 	stringtok (tokens, definition, "\n");
 	
@@ -194,7 +200,13 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_watchdog == "") {
 			module_watchdog = parseLine (line, TOKEN_WATCHDOG);
 		}
-		
+		if (module_wmiquery == "") {
+			module_wmiquery = parseLine (line, TOKEN_WMIQUERY);
+		}
+		if (module_wmicolumn == "") {
+			module_wmicolumn = parseLine (line, TOKEN_WMICOLUMN);
+		}
+
 		iter++;
 	}
 
@@ -263,6 +275,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 						      module_eventtype,
 						      module_eventcode,
 						      module_pattern);
+	} else if (module_wmiquery != "") {
+		module = new Pandora_Module_WMIQuery (module_name,
+						      module_wmiquery, module_wmicolumn);
 	} else {
 		return NULL;
 	}

@@ -70,7 +70,8 @@ namespace Pandora_Modules {
 		MODULE_FREEMEMORY, /**< The module checks the amount of 
 				   *   freememory in the system        */
 		MODULE_ODBC,       /**< The module performs a SQL query via ODBC */
-		MODULE_LOGEVENT       /**< The module checks for log events */		
+		MODULE_LOGEVENT,       /**< The module checks for log events */	
+		MODULE_WMIQUERY       /**< The module runs WQL queries */		
 	} Module_Kind;
 	
 	const string module_exec_str       = "module_exec";
@@ -81,6 +82,7 @@ namespace Pandora_Modules {
 	const string module_cpuusage_str   = "module_cpuusage";
 	const string module_odbc_str       = "module_odbc";
 	const string module_logevent_str   = "module_logevent";	
+	const string module_wmiquery_str   = "module_wmiquery";	
 
 	/**
 	 * Pandora module super-class exception.
@@ -102,7 +104,8 @@ namespace Pandora_Modules {
 	 */
 	class Interval_Not_Fulfilled : public Pandora_Modules::Module_Exception { };
 	
-	/**	 * Pandora module super-class.
+	/**
+	 * Pandora module super-class.
 	 *
 	 * Every defined module must inherit of this class.
 	 */

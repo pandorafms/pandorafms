@@ -632,3 +632,40 @@ Pandora_Wmi::stopService (string service_name) {
 	return success;
 }
 
+/**
+ * Runs a generic WQL query.
+ * 
+ * @param wmi_query WQL query.
+ * @param column Column to retrieve from the query result.
+ * @param rows List where the query result will be placed.
+ */
+void
+Pandora_Wmi::runWMIQuery (string wmi_query, string column, list<string> &rows) {
+	CDhInitialize init;
+	CDispPtr      wmi_svc, quickfixes;
+	char         *value = NULL;
+    wstring column_w(column.length(), L' ');
+    wstring wmi_query_w(wmi_query.length(), L' ');
+
+    // Copy string to wstring.
+    std::copy(column.begin(), column.end(), column_w.begin());
+    std::copy(wmi_query.begin(), wmi_query.end(), wmi_query_w.begin());
+
+	try {
+		dhCheck (dhGetObject (getWmiStr (L"."), NULL, &wmi_svc));
+		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
+				     L".ExecQuery(%S)",
+				     wmi_query_w.c_str ()));
+		FOR_EACH (quickfix, quickfixes, NULL) {
+			dhGetValue (L"%s", &value, quickfix,
+				    column_w.c_str ());
+			rows.push_back (value);
+			dhFreeString (value);		
+		} NEXT_THROW (quickfix);
+	} catch (string errstr) {
+		pandoraLog ("runWMIQuery error. %s", errstr.c_str ());
+	}
+}
+
+
+

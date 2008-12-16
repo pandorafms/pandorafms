@@ -28,6 +28,7 @@
 #include "pandora_module_cpuusage.h"
 #include "pandora_module_odbc.h"
 #include "pandora_module_logevent.h"
+#include "pandora_module_wmiquery.h"
 #include <fstream>
 
 using namespace std;
@@ -135,6 +136,7 @@ Pandora_Modules::Pandora_Module_List::parseModuleDefinition (string definition) 
 	Pandora_Module_Freememory *module_freememory;
 	Pandora_Module_Odbc       *module_odbc;
 	Pandora_Module_Logevent   *module_logevent;	
+	Pandora_Module_WMIQuery   *module_wmiquery;	
 	
 	module = Pandora_Module_Factory::getModuleFromDefinition (definition);
 	
@@ -179,6 +181,10 @@ Pandora_Modules::Pandora_Module_List::parseModuleDefinition (string definition) 
 		case MODULE_LOGEVENT:
 			module_logevent = (Pandora_Module_Logevent *) module;
 			modules->push_back (module_logevent);
+			break;
+		case MODULE_WMIQUERY:
+			module_wmiquery = (Pandora_Module_WMIQuery *) module;
+			modules->push_back (module_wmiquery);
 			break;
 		default:
 			break;

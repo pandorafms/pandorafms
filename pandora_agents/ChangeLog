@@ -1,3 +1,17 @@
+2008-12-16  Ramon Novoa  <rnovoa@artica.es>
+
+	* win32/modules/pandora_module_wmiquery.cc,
+	  win32/modules/pandora_module_wmiquery.h: Added to repository. WMI
+	  query module.
+
+	* win32/windows/pandora_wmi.cc,
+	  win32/windows/pandora_wmi.h,
+	  win32/modules/pandora_module.h,
+	  win32/modules/pandora_module_factory.cc,
+	  win32/modules/pandora_module_list.cc,
+	  win32/modules/pandora_module.cc,
+	  win32/PandoraAgent.dev: Added support for WMI query module.
+
 2008-12-11  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* linux/plugins/SGE: Added the SGE plugin

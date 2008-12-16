@@ -120,8 +120,9 @@ Pandora_Module::parseModuleKindFromString (string kind) {
 	} else if (kind == module_odbc_str) {
 		return MODULE_ODBC;
 	} else if (kind == module_logevent_str) {
-
-		return MODULE_LOGEVENT;                
+		return MODULE_LOGEVENT;  
+	} else if (kind == module_wmiquery_str) {
+		return MODULE_WMIQUERY;               
 	} else {
 		return MODULE_0;
 	}

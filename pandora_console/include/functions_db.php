@@ -774,7 +774,7 @@ function get_alert_last_fire_timestamp_in_period ($id_agent_module, $period, $da
  * 
  * @return Name of the given server
  */
-function give_server_name ($id_server) {
+function get_server_name ($id_server) {
 	return (string) get_db_value ('name', 'tserver', 'id_server', (int) $id_server);
 }
 
@@ -838,8 +838,8 @@ function dame_generic_string_data ($id) {
  * 
  * @return Name of the given operating system.
  */
-function dame_so_name ($id_os) {
-	return (string) get_db_value ('name', 'tconfig_os', 'id_os', $id_os);
+function get_os_name ($id_os) {
+	return (string) get_db_value ('name', 'tconfig_os', 'id_os', (int) $id_os);
 }
 
 /** 
@@ -852,20 +852,6 @@ function update_user_contact ($id_user) {
 	
 	$sql = sprintf ("UPDATE `tusuario` set `fecha_registro` = NOW() WHERE 'id_usuario' = %d",$id_user);
 	process_sql ($sql);
-}
-
-/** 
- * Get the icon of an operating system.
- *
- * The path of the icons is 'images/' which must be append by the
- * caller (including slash and filename extension .png)
- * 
- * @param id_os Operating system id
- * 
- * @return Icon filename of the operating system
- */
-function dame_so_icon ($id_os) {
-	return (string) get_db_value ('icon_name', 'tconfig_os', 'id_os', $id_os);
 }
 
 /** 
@@ -1082,22 +1068,6 @@ function get_user_groups ($id_user = 0, $privilege = "AR") {
 	return $user_groups;
 }
 
-
-/** 
- * Get group icon
- *
- * The path of the icons is 'images/' or 'images/group_small/', which
- * must be append by the caller (including slash and filename
- * extension .png)
- * 
- * @param id_group Group id
- * 
- * @return Icon filename of the given group
- */
-function show_icon_group ($id_group) {
-	return (string) get_db_value ('icon', 'tgrupo', 'id_grupo', $id_group);
-}
-
 /** 
  * Get module type icon.
  *
@@ -1183,7 +1153,7 @@ function give_network_component_group_name ($id_network_component_group) {
  * 
  * @return Name of the given network profile.
  */
-function give_network_profile_name ($id_network_profile) {
+function get_networkprofile_name ($id_network_profile) {
 	return (string) get_db_value ('name', 'tnetwork_profile', 'id_np', $id_network_profile);
 }
 
@@ -1984,127 +1954,6 @@ function show_alert_row_mini ($id_combined_alert) {
 	}
 	echo "</table>";
 }
-
-/** 
- * 
- * 
- * @param filter 
- * @param limit 
- * @param width 
- * 
- * @return 
- */
-function smal_event_table ($filter = "", $limit = 10, $width = 440) {
-	global $config;
-	$sql = sprintf ("SELECT * FROM tevento %s
-		ORDER BY timestamp DESC LIMIT %d",
-		$filter, $limit);
-	$result = get_db_all_rows_sql ($sql);
-	
-	if ($result === false) {
-		$result = array ();
-		echo '<div class="nf">'.__('No events').'</div>';
-	} else {
-		echo "<table cellpadding='4' cellspacing='4' width='$width' border=0 class='databox'>";
-		echo "<tr>";
-		echo "<th colspan='6' style='background-color:#799E48'>".__('Latest events')."</th>";
-		echo "<tr>";
-		echo "<th class='datos3 f9'>".__('St')."</th>";
-		echo "<th class='datos3 f9'>".__('Type')."</th>";
-		echo "<th class='datos3 f9'>".__('Event name')."</th>";
-		echo "<th class='datos3 f9'>".__('Agent name')."</th>";
-		echo "<th class='datos3 f9'>".__('User ID')."</th>";
-		echo "<th class='datos3 f9'>".__('Timestamp')."</th>";
-	
-		foreach ($result as $event) {
-			$id_grupo = $event["id_grupo"];
-			if (! give_acl ($config["id_user"], $id_grupo, "AR")) {
-				continue;
-			}
-			
-			/* Only incident read access to view data ! */
-			$tdclass = get_priority_class ($event["criticity"]);		
-			$criticity_label = get_priority_name ($event["criticity"]);
-			/* Colored box */
-			echo "<tr>";
-			echo "<td class='$tdclass' title='$criticity_label' align='center'>";
-			if ($event["estado"] == 0) {
-				echo "<img src='images/pixel_red.png' width=20 height=20>";
-			} else {
-				echo "<img src='images/pixel_green.png' width=20 height=20>";
-			}
-			echo "</td>";
-			/* Event type */
-			echo "<td class='".$tdclass."' title='".$event["event_type"]."'>";
-			switch ($event["event_type"]) {
-			case "unknown": 
-				echo "<img src='images/err.png'>";
-				break;
-			case "alert_recovered": 
-				echo "<img src='images/error.png'>";
-				break;
-			case "alert_manual_validation": 
-				echo "<img src='images/eye.png'>";
-				break;
-			case "monitor_up":
-				echo "<img src='images/lightbulb.png'>";
-				break;
-			case "monitor_down":
-				echo "<img src='images/lightbulb_off.png'>";
-				break;
-			case "alert_fired":
-				echo "<img src='images/bell.png'>";
-				break;
-			case "system";
-				echo "<img src='images/cog.png'>";
-				break;
-			case "recon_host_detected";
-				echo "<img src='images/network.png'>";
-				break;
-			}
-			echo "</td>";
-			// Event description
-			echo "<td class='".$tdclass."f9' title='".$event["evento"]."'>";
-			echo substr ($event["evento"],0,45);
-			if (strlen ($event["evento"]) > 45) {
-				echo "..";
-			}
-			echo "</td>";
-			if ($event["id_agente"] > 0) {
-				// Agent name
-				$agent_name = get_agent_name ($event["id_agente"]);
-				echo "<td class='".$tdclass."f9' title='$agent_name'><a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$event["id_agente"]."'><b>";
-				echo substr ($agent_name, 0, 14);
-				if (strlen ($agent_name) > 14)
-					echo "..";
-				echo "</b></a>";
-				echo "</td>";
-			
-				// for System or SNMP generated alerts
-			} else { 
-				if ($event["event_type"] == "system") {
-					echo "<td class='$tdclass'>".__('System')."</td>";
-				} else {
-					echo "<td class='$tdclass'>".__('Alert')."SNMP</td>";
-				}
-			}
-		
-			// User who validated event
-			echo "<td class='$tdclass'>";
-			if ($event["estado"] != 0) {
-				echo "<a href='index.php?sec=usuario&sec2=operation/users/user_edit&ver=".$event["id_usuario"]."'>".substr ($event["id_usuario"],0,8)."<a href='#' class='tip'> <span>".dame_nombre_real ($event["id_usuario"])."</span></a></a>";
-			}
-			echo "</td>";
-			// Timestamp
-			echo "<td class='".$tdclass."f9' title='".$event["timestamp"]."'>";
-			echo human_time_comparation ($event["timestamp"]);
-			echo "</td>";
-			echo "</tr>";
-		}
-		echo "</table>";
-	}
-}
-
 
 /** 
  * *DEPRECATED* use get_server_info instead 

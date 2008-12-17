@@ -97,7 +97,7 @@ foreach ($modules as $module) {
 	} else {
 		$data[6] = '<span>';
 	}
-	$data[6] .= print_timestamp ($module["utimestamp"], '', 'span', true);
+	$data[6] .= print_timestamp ($module["utimestamp"], true);
 	$data[6] .= '</span>';
 	
 	if ($module["estado"] != 100) {

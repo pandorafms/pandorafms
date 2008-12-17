@@ -340,11 +340,7 @@ foreach ($result as $row) {
 		$data[4] .= '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$row["id_agente"].'&tab=alert"><img src="images/bell.png" border="0" /></a>';
 	}
 	
-	if (!empty ($row["id_grupo"])) {
-		$data[5] = '<img src="images/groups_small/'.show_icon_group ($row["id_grupo"]).'.png" title="'.get_group_name ($row["id_grupo"]).'" class="bot" />';
-	} else {
-		$data[5] = '';
-	}
+	$data[5] = print_group_icon ($row["id_grupo"], true);
 
 	if (!empty ($row["estado"])) {
 		$data[6] = '<a href="index.php?sec=usuario&sec2=operation/user/user_edit&ver='.$row["id_usuario"].'" title="'.dame_nombre_real ($row["id_usuario"]).'">'.substr ($row["id_usuario"],0,8).'</a>';
@@ -353,7 +349,7 @@ foreach ($result as $row) {
 	}
 	
 	//Time
-	$data[7] = '<span class="f9" title="'.format_datetime ($row["timestamp"]).'">'.human_time_comparation ($row["timestamp"]).'</span>';
+	$data[7] = print_timestamp ($row["timestamp"], true);
 	
 	//Actions
 	$data[8] = '';

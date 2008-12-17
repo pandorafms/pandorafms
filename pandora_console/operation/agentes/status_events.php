@@ -16,10 +16,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
-
 // Load global vars
-global $config;
 check_login();
 
 if (!isset($id_agente)){
@@ -27,7 +24,9 @@ if (!isset($id_agente)){
     exit;
 }
 
+require_once ("include/functions_events.php");
+
 echo "<h3>".__('Latest events for this agent')."</h3>";
-smal_event_table ("WHERE id_agente = $id_agente", $limit = 10, $width=750);
+print_events_table ("WHERE id_agente = $id_agente", $limit = 10, $width=750);
 
 ?>

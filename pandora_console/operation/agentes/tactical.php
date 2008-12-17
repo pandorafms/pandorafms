@@ -19,6 +19,7 @@
 
 // Load global vars
 require_once ("include/config.php");
+require_once ("include/functions_events.php");
 
 check_login ();
 
@@ -258,7 +259,7 @@ if ($serverinfo) {
 } else {
 	echo "<div class='nf'>".__('There are no servers configured into the database')."</div>";
 }
-smal_event_table ("", 10, 450);
+print_events_table ("", 10, 450);
 
 echo '</div>';
 ?>

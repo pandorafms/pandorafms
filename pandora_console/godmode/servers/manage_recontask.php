@@ -110,13 +110,13 @@ if ($result !== false) {
 		// Network (subnet)
 			$row["subnet"],
 		// Network profile name
-			'<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates&id='.$row["id_network_profile"].'">'.give_network_profile_name ($row["id_network_profile"]).'</a>',
+			'<a href="index.php?sec=gmodules&sec2=godmode/modules/manage_network_templates&id='.$row["id_network_profile"].'">'.get_networkprofile_name ($row["id_network_profile"]).'</a>',
 		// GROUP
-			'<img class="bot" src="images/groups_small/'.show_icon_group ($row["id_group"]).'.png" alt="">',
+			print_group_icon ($row["id_group"], true),
 		// INCIDENT
 			(($row["create_incident"] == 1) ? __('Yes') : __('No')),	
 		// OS
-			(($row["id_os"] > 0) ? '<img src="images/'.dame_so_icon ($row["id_os"]).'" />' : __('Any')),
+			(($row["id_os"] > 0) ? print_os_icon ($row["id_os"], false, true) : __('Any')),
 		// INTERVAL
 			human_time_description_raw($row["interval_sweep"]),
 		// ACTION

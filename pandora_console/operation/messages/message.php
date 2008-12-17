@@ -214,7 +214,7 @@ if (isset ($_GET["leer"]) || (!isset ($_GET["nuevo"]) && !isset ($_GET["nuevo_g"
 			} else {
 				echo __('No subject');
 			}
-			echo '</b></a></td><td class="'.$tdcolor.'">'.format_datetime(strtotime($row["timestamp"])).'</td>
+			echo '</b></a></td><td class="'.$tdcolor.'">'.print_timestamp ($row["timestamp"], true).'</td>
 			<td class="'.$tdcolor.'" align="center"><a href="index.php?sec=messages&sec2=operation/messages/message&borrar=1&id_mensaje='.$row["id_mensaje"].'">
 			<img src="images/cross.png" border="0"></a></td></tr>';
 		}

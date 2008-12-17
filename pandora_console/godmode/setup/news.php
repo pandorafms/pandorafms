@@ -31,61 +31,53 @@ if (! give_acl ($config['id_user'], 0, "PM")) {
 if (isset ($_POST["create"])) { // If create
 	$subject = get_parameter ("subject");
 	$text = get_parameter ("text");
-	$text = safe_sql_string ($text);
-
-	$timestamp = $ahora = date ("Y/m/d H:i:s");
-	$author = $config['id_user'];
 	
-	$sql = "INSERT INTO tnews (subject, text, author, timestamp) VALUES ('$subject','$text', '$author', '$timestamp') ";
-	$result = mysql_query ($sql);
-	if (! $result) {
-		echo "<h3 class='error'>".__('Not created. Error inserting data')."</h3>";
-	} else {
-		echo "<h3 class='suc'>".__('Created successfully')."</h3>";
-		$id_link = mysql_insert_id ();
-	}
+	$sql = sprintf ("INSERT INTO tnews (subject, text, author, timestamp) VALUES ('%s', '%s', '%s', NOW()) ", $subject, $text, $config["id_user"]);
+	$id_link = process_sql ($sql, "insert_id");
+	
+	print_error_message ($id_link, __('Created successfully'), __('Not created. Error inserting data'));
 }
 
 if (isset ($_POST["update"])) { // if update
-	$id_news = get_parameter ("id_news");
+	$id_news = (int) get_parameter ("id_news", 0);
 	$subject = get_parameter ("subject");
 	$text = get_parameter ("text");
-	$timestamp = $ahora = date("Y/m/d H:i:s");
-	$sql_update ="UPDATE tnews SET subject = '".$subject."', text ='".$text."', timestamp = '$timestamp' WHERE id_news = '".$id_news."'";
-	$result = mysql_query($sql_update);
-	if (! $result)
-		echo "<h3 class='error'>".__('Not updated. Error updating data')."</h3>";
-	else
-		echo "<h3 class='suc'>".__('Updated successfully')."</h3>";
+	
+	$sql = sprintf ("UPDATE tnews SET subject = '%s', text ='%s', timestamp = NOW() WHERE id_news = %d", $subject, $text, $id_news);
+		
+	$result = process_sql ($sql);
+
+	print_error_message ($result, __('Updated successfully'), __('Not updated. Error updating data'));
 }
 
 if (isset ($_GET["borrar"])) { // if delete
-	$id_news = get_parameter ("borrar");
-	$sql_delete = "DELETE FROM tnews WHERE id_news = ".$id_news;
-	$result = mysql_query ($sql_delete);
-	if (! $result)
-		echo "<h3 class='error'>".__('Not deleted. Error deleting data')."</h3>";
-	else
-		echo "<h3 class='suc'>".__('Deleted successfully')."</h3>";
+	$id_news = (int) get_parameter ("borrar", 0);
+	
+	$sql = sprintf ("DELETE FROM tnews WHERE id_news = %d", $id_news);
+	
+	$result = mysql_query ($sql);
+	
+	print_error_message ($result, __('Deleted successfully'), __('Not deleted. Error deleting data'));
 }
 
 // Main form view for Links edit
 if ((isset ($_GET["form_add"])) || (isset ($_GET["form_edit"]))) {
 	if (isset($_GET["form_edit"])) {
 		$creation_mode = 0;
-		$id_news = get_parameter ("id_news");
-		$sql = 'SELECT * FROM tnews WHERE id_news = '.$id_news;
-		$result = mysql_query ($sql);
-		if ($row = mysql_fetch_array ($result)) {
-			$subject = $row["subject"];
-			$text = $row["text"];
-			$author = $row["author"];
-			$timestamp = $row["timestamp"];
+		$id_news = (int) get_parameter ("id_news", 0);
+		
+		$result = get_db_row ("tnews", "id_news", $id_news);
+		
+		if ($result !== false) {
+			$subject = $result["subject"];
+			$text = $result["text"];
+			$author = $result["author"];
+			$timestamp = $result["timestamp"];
 		} else {
 			echo "<h3 class='error'>".__('Name error')."</h3>";
 		}
 	} else { // form_add
-		$creation_mode =1;
+		$creation_mode = 1;
 		$text = "";
 		$subject = "";
 		$author = $config['id_user'];

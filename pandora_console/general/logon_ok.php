@@ -51,7 +51,7 @@ if ($news !== false) {
 	echo '<table cellpadding="4" cellspacing="4" class="databox">';
 	foreach ($news as $article) {
 		echo '<tr><th><b>'.$article["subject"].'</b></th></tr>';
-		echo '<tr><td>'.__('by').' <b>'.$article["author"].'</b> '.__('at').' <i>'.$article["timestamp"].'</i></td></tr>';
+		echo '<tr><td>'.__('by').' <b>'.$article["author"].'</b> '.__('at').' <i>'.print_timestamp ($article["timestamp"], true).'</i></td></tr>';
 		echo '<tr><td class="datos">';
 		echo nl2br ($article["text"]);
 		echo '</td></tr>';

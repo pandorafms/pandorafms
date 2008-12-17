@@ -246,7 +246,8 @@ if ($create_downtime || $update_downtime) {
 			$data[1] = get_db_sql ("SELECT nombre FROM tgrupo WHERE id_grupo = ". $downtime["id_grupo"]);
 	
 	
-			$data[2] = '<img src="images/'.dame_so_icon($downtime["id_os"]).'"> - '.dame_so_name($downtime["id_os"]);
+			$data[2] = print_os_icon ($downtime["id_os"], true, true);
+			
 			$data[3] = $downtime["ultimo_contacto"];
 	
 			$data[4] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/planned_downtime&id_agent='.

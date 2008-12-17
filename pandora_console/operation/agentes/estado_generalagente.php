@@ -68,7 +68,7 @@ echo '</td></tr>';
 
 //OS
 echo '<tr><td class="datos"><b>'.__('OS').'</b></td>';
-echo '<td class="datos" colspan="2"><img src="images/'.dame_so_icon ($agent["id_os"]).'"> - '.dame_so_name ($agent["id_os"]).' '.$agent["os_version"].'</td></tr>';
+echo '<td class="datos" colspan="2">'.print_os_icon ($agent["id_os"], true, true).' '.$agent["os_version"].'</td></tr>';
 
 // Parent
 echo '<tr><td class="datos2"><b>'.__('Parent').'</b></td>';
@@ -85,7 +85,8 @@ echo '<td class="datos2" colspan="2">'.$agent["comentarios"].'</td></tr>';
 // Group
 echo '<tr><td class="datos"><b>'.__('Group').'</b></td>';
 echo '<td class="datos" colspan="2">';
-echo '<img class="bot" src="images/groups_small/'.show_icon_group ($agent["id_grupo"]).'.png" /> - <a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$agent["id_grupo"].'">'. get_group_name ($agent["id_grupo"]).'</a></td></tr>';
+print_group_icon ($agent["id_grupo"]);
+echo '</td></tr>';
 
 // Agent version
 echo '<tr><td class="datos2"><b>'.__('Agent Version'). '</b></td>';
@@ -97,11 +98,7 @@ echo '<td class="datos" colspan=2>'.dame_numero_datos ($id_agente).'</td></tr>';
 
 // Last contact
 echo '<tr><td class="datos2"><b>'.__('Last contact')." / ".__('Remote').'</b></td><td class="datos2 f9" colspan="2">';
-if ($agent["ultimo_contacto"] == "0000-00-00 00:00:00") { 
-	echo __('Never');
-} else {
-	echo $agent["ultimo_contacto"];
-}
+print_timestamp ($agent["ultimo_contacto"]);
 
 echo " / ";
 

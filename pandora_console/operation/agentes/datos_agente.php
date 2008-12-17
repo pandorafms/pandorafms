@@ -86,7 +86,7 @@ foreach ($result as $row) {
 	} else {
 		$data[0] = '';
 	}
-	$data[1] = print_timestamp ($row["utimestamp"], "", "span", true);
+	$data[1] = print_timestamp ($row["utimestamp"], true);
 	if (is_numeric ($row["datos"])) {
 		$data[2] = format_for_graph ($row["datos"]);
 	} else {

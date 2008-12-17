@@ -258,9 +258,9 @@ if ($agents !== false) {
 		<b>".$nombre_agente."</b></a></td>";
 
 		// Show SO icon :)
-		echo "<td class='$tdcolor' align='center'>
-		<img border=0 src='images/".dame_so_icon($id_os)."' 
-		alt='".dame_so_name($id_os)."'></td>";
+		echo "<td class='$tdcolor' align='center'>";
+		print_os_icon ($id_os, false);
+		echo "</td>";
 		// If there are a module interval bigger than agent interval
 		if ($biginterval > $intervalo) {
 			echo "<td class='$tdcolor'>
@@ -273,7 +273,7 @@ if ($agents !== false) {
 		echo '<td class="'.$tdcolor.'" align="center">';
 
 		echo "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=$id_grupo'>";
-echo '<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.png" title="'. get_group_name ($id_grupo).'"></A></td>';
+		print_group_icon ($id_grupo);
 
 		echo "<td class='$tdcolor'> ".
 		$numero_modulos." <b>/</b> ".$numero_monitor;
@@ -321,17 +321,8 @@ echo '<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.p
 		}				
 		echo "</td>";
 		echo "<td class='$tdcolor'>";
-		if ($ultimo_contacto == "0000-00-00 00:00:00") {
-			echo __('Never');
-		} else {
-			$last_time = strtotime ($ultimo_contacto);
-			$diferencia = $now - $last_time;
-			$time = human_time_comparation ($ultimo_contacto);
-			$style = '';
-			if ($diferencia > ($biginterval * 2))
-				$style = 'style="color: #ff0000"';
-			echo '<span '.$style.' title="'.format_datetime ($last_time).'">'.$time.'</span>';
-		}
+		print_timestamp ($ultimo_contacto);
+		echo "</td>";
 	}
 	echo "<tr>";
 	echo "</table><br>";

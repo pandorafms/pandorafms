@@ -1,3 +1,35 @@
+2008-12-16  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* general/logon_ok.php, godmode/agentes/modificar_agente.php, 
+	godmode/agentes/planned_downtime.php, 
+	godmode/agentes/manage_recontask.php, godmode/setup/news.php, 
+	operation/agentes/datos_agente.php, operation/agentes/estado_agente.php,
+	operation/agentes/status_events.php, operation/agentes/tactical.php, 
+	operation/events/events.php, operation/incidents/incidents.php,
+	operation/incidents/incident_detail.php, operation/messages/message.php:
+	Function updates and new function definitions
+	
+	* include/functions.php: safe_input used utf_decode which gives problems
+	with foreign chars since everything else is (or should be UTF-8) fixed.
+	format_datetime is no longer necessary - use print_timestamp for output.
+	Extended multibyte wrapper functions.
+	
+	* include/functions_db.php: give_server_name is now get_server_name; 
+	dame_so_name is now get_os_name; dame_so_icon is now print_os_icon;
+	show_icon_group is now print_group_icon; give_network_profile_name is now
+	get_networkprofile_name; smal_event_table is now print_events_table
+	
+	* include/functions_events.php: print_events_table was moved here and 
+	fixed. Now calculates the cutoff of event and agent text.
+	
+	* include/functions_html.php: Added title to print_table function and 
+	updated documentation. print_timestamp now uses the new function 
+	definitions (array) and handles 0-dates better. print_group_icon and 
+	print_os_icon added and extended. Added print_agent_name. This function 
+	fixes issues that show up when cutting off agent names with multibyte char
+	
+	* operation/servers/view_server.php: Rewrite with new functions
+
 2008-12-16  Esteban Sanchez <estebans@artica.es>
 
 	* include/functions_html.php: Added missing documentation and fixed a

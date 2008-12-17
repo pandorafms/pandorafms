@@ -38,8 +38,9 @@ function pandora_help ($help_id, $return = false) {
 }
 
 /** 
- * Cleans a string by decoding from UTF-8 and replacing the HTML
- * entities.
+ * Cleans a string by encoding to UTF-8 and replacing the HTML
+ * entities. UTF-8 is necessary for foreign chars like asian 
+ * and our databases are (or should be) UTF-8
  * 
  * @param value String or array of strings to be cleaned.
  * 
@@ -52,7 +53,7 @@ function safe_input ($value) {
 		array_walk ($value, 'safe_input');
 		return $value;
 	}
-	return htmlentities (utf8_decode ($value), ENT_QUOTES); 
+	return htmlentities (utf8_encode ($value), ENT_QUOTES, "UTF-8"); 
 }
 
 /**
@@ -361,33 +362,6 @@ function pagination ($count, $url, $offset, $pagination = 0) {
 	// End div and layout
 	echo "</div>";
 }
-
-
-
-/** 
- * Format a unix timestamp to render a datetime string with specific format
- *
- * format comes with $config["date_format"]
- * 
- * @param utimestamp Unixtimestamp integer format
- * @param alt_format Alternative format, for use insted configþ[]
- * 
- * @return 
- */
-function format_datetime ($timestamp, $alt_format = "") {
-	global $config;
-	
-	if (!is_int ($timestamp)) {
-		//Make function format agnostic
-		$timestamp = strtotime ($timestamp);
-	}
-	
-	if ($alt_format == "")
-		$alt_format = $config["date_format"];
-		
-	return date ($alt_format, $timestamp); 
-}
-
 
 /** 
  * Format a number with decimals and thousands separator.
@@ -1201,12 +1175,23 @@ function enterprise_include ($filename) {
 }
 
 if (!function_exists ("mb_strtoupper")) {
-	//Multibyte not loaded
+	//Multibyte not loaded - use wrapper functions
+	//You should really load multibyte especially for foreign charsets
+	
 	function mb_strtoupper ($string, $encoding = false) {
 		return strtoupper ($string);
 	}
+	
 	function mb_strtolower ($string, $encoding = false) {
 		return strtoupper ($string);
+	}
+	
+	function mb_substr ($string, $start, $length, $encoding = false) {
+		return substr ($string, $start, $length);
+	}
+	
+	function mb_strlen ($string, $encoding = false) {
+		return strlen ($string);
 	}
 }
 ?>

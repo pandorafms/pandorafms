@@ -323,7 +323,7 @@ if (isset ($id_inc)) {
 	foreach ($result as $row) {
 		$data = array ();
 		$data[0] = '<img src="images/page_white_text.png" border="0" />';
-		$data[1] = __('Author').': '.print_username ($row["id_usuario"], true).' ('.print_timestamp ($row["timestamp"], "", "span", true).')';
+		$data[1] = __('Author').': '.print_username ($row["id_usuario"], true).' ('.print_timestamp ($row["timestamp"], true).')';
 		array_push ($table->data, $data);
 		
 		$data = array ();

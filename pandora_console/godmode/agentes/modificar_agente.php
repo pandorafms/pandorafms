@@ -261,12 +261,11 @@ if (mysql_num_rows($result)){
 
 
 			// Operating System icon
-			echo "<td class='$tdcolor' align='center'>
-			<img src='images/".dame_so_icon($row["id_os"])."'></td>";
+			echo "<td class='$tdcolor' align='center'>";
+			print_os_icon ($row["id_os"], false);
+			echo "</td>";
 			// Group icon and name
-			echo "<td class='$tdcolor'>
-			<img src='images/groups_small/".show_icon_group($id_grupo).".png' class='bot' border='0'>
-			&nbsp; ".get_group_name ($id_grupo)."</td>";
+			echo "<td class='$tdcolor' align='center'>".print_group_icon ($id_grupo, true)."</td>";
 			// Description
 			echo "<td class='".$tdcolor."f9'>".$row["comentarios"]."</td>";
 			// Action

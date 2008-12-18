@@ -134,10 +134,10 @@ $table->data[15][1] .=  print_radio_button ('prominent_time', "timestamp", '', $
 $table->data[15][1] .= '<br />'.__('Timestamp in rollover').' ';
 $table->data[15][1] .= print_radio_button ('prominent_time', "comparation", '', $config["prominent_time"], true);
 
-enterprise_hook ('load_snmpforward_enterprise');
-
 $table->data[16][0] = __('Automatic update check');
 $table->data[16][1] = print_checkbox ('autoupdate', 1, $config["autoupdate"], true);
+
+enterprise_hook ('load_snmpforward_enterprise');
 
 echo '<form id="form_setup" method="POST" action="index.php?sec=gsetup&amp;sec2=godmode/setup/setup">';
 print_input_hidden ('update_settings', 1);

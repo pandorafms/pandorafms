@@ -212,10 +212,10 @@ INSERT INTO `ttipo_modulo` VALUES
 (22,'async_data', 6, 'Asyncronous numeric data', 'mod_async_data.png'), 
 (23,'async_string', 8, 'Asyncronous string data', 'mod_async_string.png'),
 (100,'keep_alive',-1,'KeepAlive','mod_keepalive.png');
---Not yet implemented
---(19,'image_jpg',9,'Image JPG data', 'mod_image_jpg.png'), 
---(20,'image_png',9,'Image PNG data', 'mod_image_png.png');
---(24,'async_inc', 6, 'Asyncronous incremental data', 'mod_async_inc.png')
+-- Not yet implemented
+-- (19,'image_jpg',9,'Image JPG data', 'mod_image_jpg.png'), 
+-- (20,'image_png',9,'Image PNG data', 'mod_image_png.png');
+-- (24,'async_inc', 6, 'Asyncronous incremental data', 'mod_async_inc.png')
 
 -- Categoria field is used to segregate several types (plugin, agents, network) on their data
 -- types, could be used or could be avoided and use directly primary key (id_tipo) 

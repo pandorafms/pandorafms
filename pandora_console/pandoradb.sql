@@ -17,9 +17,9 @@
 -- PLEASE NO NOT USE MULTILINE COMMENTS 
 -- Because Pandora Installer don't understand them
 -- and fails creating database !!!
---------------------------------------------------------------
+-- -----------------------------------------------------------
 -- Pandora FMS official tables for 2.0 version              --
---------------------------------------------------------------
+-- -----------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS `taddress` (
   `id_a` int(10) unsigned NOT NULL auto_increment,

@@ -1,3 +1,18 @@
+2008-12-18  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* pandoradb_data.sql, pandoradb.sql: removed extra '-' which made the 
+	  file invalid for mysql population.
+
+	* include/languages/es.po, include/languages/es.mo: Updated Spanish
+	  translation.
+
+	* include/languages/index.pot: Updated po template.
+
+	* general/footer.php: changed format_datetime to print_timestamp.
+
+	* godmode/setup/setup.php: moved the enterprise hook so the table 
+	  fields show properly in both versions.
+
 2008-12-16  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* general/logon_ok.php, godmode/agentes/modificar_agente.php, 

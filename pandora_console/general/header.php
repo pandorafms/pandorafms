@@ -22,7 +22,7 @@ echo '<table width="100%" cellpadding="0" cellspacing="0" style="margin:0px; pad
 // Yes, put here your corporate logo instead pandora_logo_head.png
 // The style specifies width and height so that oversized images get resized.
 // Optimally your logo would be this size.
-echo '<a href="index.php"><img src="images/pandora_logo_head.png" alt="logo" style="border-width:0px width:140px; height:60px;" /></a>';
+echo '<a href="index.php"><img src="images/pandora_logo_head.png" alt="logo" style="border-width:0px; width:140px; height:60px;" /></a>';
 
 // Margin to logo
 echo '</td><td width="20">&nbsp;</td>';

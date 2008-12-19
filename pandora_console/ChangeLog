@@ -1,3 +1,34 @@
+2008-12-19  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* general/footer.php: Updated print_timestamp to always print full.
+	Removed the center tag (deprecated in HTML 4.01)
+	
+	* general/header.php: Fixed some CSS.
+	
+	* general/links_menu.php: Rewritten for new css style
+	
+	* general/main_menu.php: Rewritten for new css style and to avoid 
+	repetition in writing tags uses an array and functions
+	
+	* godmode/menu.php: Rewritten for new css style and to avoid repetition
+	writing tags
+	
+	* include/functions_html.php: Added option to override prominent time
+	
+	* include/styles/link.css: Rewritten the whole CSS. Now all menu options
+	are directly available through slide-outs (pure CSS, no JS) and avoids div
+	for each single item. The pages renders quite a bit faster too.
+	
+	* include/styles/pandora.css: Fixed some bad tags and removed stuff that 
+	was for the rewritten menu.
+	
+	* index.php: Added &nbsp; to div. IE will in some situations not render 
+	empty divs.
+	
+	* operation/menu.php: Rewritten for new CSS style
+	
+	* include/styles/god.css, include/styles/op.css: 
+
 2008-12-18  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* pandoradb_data.sql, pandoradb.sql: removed extra '-' which made the 

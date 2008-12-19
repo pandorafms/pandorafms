@@ -756,11 +756,14 @@ function print_error_message ($result, $good = '', $bad = '', $attributes = '', 
  * @param array $option: An array with different options for this function
  *		Key html_attr: which html attributes to add (defaults to none)
  *		Key tag: Which html tag to use (defaults to span)
+ *		Key prominent: Overrides user preference and display "comparation" or "timestamp"
  *
  * @return string HTML code if return parameter is true.
  */
 function print_timestamp ($unixtime, $return = false, $option = array ()) {
 	global $config;
+	
+	//TODO: Add/use a javascript timer for the seconds so it automatically updates as time passes by
 	
 	if (isset ($option["html_attr"])) {
 		$attributes = $option["html_attr"];
@@ -773,6 +776,14 @@ function print_timestamp ($unixtime, $return = false, $option = array ()) {
 	} else {
 		$tag = "span";
 	}
+	
+	if (isset ($option["prominent"]) && $option["prominent"] == "timestamp") {
+		$prominent = "timestamp";
+	} elseif (isset ($option["prominent"]) && $option["prominent"] == "comparation") {
+		$prominent = "comparation";
+	} else {
+		$prominent = $config["prominent_time"];
+	}
 				
 	if (!is_numeric ($unixtime)) {
 		$unixtime = strtotime ($unixtime);
@@ -782,7 +793,7 @@ function print_timestamp ($unixtime, $return = false, $option = array ()) {
 	if ($unixtime == 0) {
 		$title = __('Never');
 		$data = __('Never');
-	} elseif ($config["prominent_time"] == "timestamp") {
+	} elseif ($prominent == "timestamp") {
 		$title = human_time_comparation ($unixtime);
 		$data = date ($config["date_format"], $unixtime);
 	} else {

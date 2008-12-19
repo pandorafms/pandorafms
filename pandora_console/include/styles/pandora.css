@@ -20,8 +20,6 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-@import url(op.css);
-@import url(god.css);
 @import url(link.css);
 @import url(tip.css);
 * {
@@ -48,7 +46,7 @@ input {
 }
 input.button { 
 	margin: 0; 
-	font: bold, Arial, Sans-serif; 
+	font-family: Arial,Sans-serif; 
 	border: 1px solid #ccc;
 	background: #fff; 
 	padding: 2px 3px; 
@@ -63,7 +61,9 @@ checkbox {
 	border:1px solid #eee;
 }
 h1, h2, h3, h4 {
-	font: bold 1em Arial, Sans-serif;
+	font-weight: bold;
+	font-size: 1em;
+	font-family: Arial, Sans-serif;
 	text-transform: uppercase;
 	color: #786;
 	padding-bottom: 4px;
@@ -198,9 +198,6 @@ div#menu {
 	width: 155px;
 	float: left;
 }
-div#page>div#menu {
-	width: 157px;
-}
 div#head {
 	font-size: 8pt;
 	width: 960px;
@@ -210,7 +207,7 @@ div#head {
 }
 div#foot {
 	font-size: 7pt;
-	margin-top: solid 2px #000;
+	border-top: solid 2px #000;
 	padding-top: 5px;
 	padding-bottom: 5px;
 	text-align: center;
@@ -334,7 +331,7 @@ td.datos_id {
 	font-style: italic;
 }
 .tit {
-	padding-top: 3px;
+	padding: 3px 1px;
 }
 .tit, .titb {
 	font-weight: bold;
@@ -432,7 +429,7 @@ div.title_line {
     background: #D84437; 
     width: 805px; 
     min-height: 22px; 
-    padding-left: 0x;
+    padding-left: 0px;
     margin-left: -25px;
     float:left; 
     border-bottom: 1px solid #778866;
@@ -441,7 +438,7 @@ div.title_line {
     background: #66AA44; 
     width: 805px; 
     min-height: 22px; 
-    padding-left: 0x;
+    padding-left: 0px;
     margin-left: -25px;
     float:left; 
     border-bottom: 1px solid #778866;
@@ -478,7 +475,7 @@ div.title_line {
 	display: block;
 	text-decoration: none;
 }
-#menu_tab li.nomn:hover a,  li.nomn:hover_high a
+#menu_tab li.nomn:hover a,
 #menu_tab li:hover ul a:hover {
 	background: #799E48;
     color: #fff;
@@ -710,6 +707,7 @@ div#main_pure {
 .img_help {
 	cursor: help;
 }
+
 #loading {
 	position:fixed;
 	width: 200px;

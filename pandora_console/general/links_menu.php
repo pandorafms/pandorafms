@@ -15,16 +15,14 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-$sql='SELECT link,name FROM tlink ORDER BY name';
+$sql = 'SELECT link, name FROM tlink ORDER BY name';
 $result = get_db_all_rows_sql ($sql);
-if ($result !== false){
-?>
-	<div class="tit bg4">:: <?php echo __('Links') ?> ::</div>
-	<div class="menul" id="link">
-<?php
+if ($result !== false) {
+	echo '<div class="tit bg4">:: '.__('Links').' ::</div>';
+	echo '<div class="menu links"><ul>';
 	foreach ($result as $row){
-		echo "<div class='linkli'><ul class='mn'><li><a href='".$row["link"]."' target='_new' class='mn'>".$row["name"]."</a></li></ul></div>";
+		echo '<li><a href="'.$row["link"].'" target="_new">'.$row["name"].'</a></li>';
 	}
-	echo "</div>";
+	echo '</ul></div>';
 }
 ?>

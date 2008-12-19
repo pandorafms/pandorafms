@@ -263,7 +263,7 @@ if ($page != "") {
 
 if ($config["pure"] == 0) {    
 	echo '</div>'; // main
-	echo '<div style="clear:both"></div>';
+	echo '<div style="clear:both">&nbsp;</div>';
 	echo '</div>'; // page (id = page)
 } else {
 	echo "</div>"; // main_pure

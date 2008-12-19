@@ -21,302 +21,195 @@ if (! isset ($config['id_user'])) {
 }
 
 enterprise_include ('operation/menu.php');
-?>
-
-<div class="tit bg">:: <?php echo __('Operation'); ?> ::</div>
-<div class="menu-operation" id="menu-operation">
-<?php
-$sec = get_parameter ('sec');
-$sec2 = get_parameter ('sec2');
 
 // Agent read, Server read
 if (give_acl ($config['id_user'], 0, "AR")) {
-	if ($sec2 == "operation/agentes/tactical") {
-		$selected = ' menu-selected';
-	} else {
-		$selected = '';
-	}
-	echo '<div id="op1" class="operation-menu'.$selected.'">';
-	echo '<ul class="mn"><li><a href="index.php?sec=estado&amp;sec2=operation/agentes/tactical&amp;refr=60" class="mn">'.__('View agents').'</a></li></ul></div>';
-
-	if ($sec == "estado") {
-		if ($sec2 == "operation/agentes/tactical") {
-			echo "<div class='operation-submenu submenu-selected'>";
-		} else {
-			echo "<div class='operation-submenu'>";
-		}
-		echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/tactical&refr=60' class='mn'>".__('Tactical view')."</a></li></ul></div>";
 	
-		if ($sec2 == "operation/agentes/estado_grupo") {
-			echo "<div class='operation-submenu submenu-selected'>";
-		} else {
-			echo "<div class='operation-submenu'>";
-		}
-		echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/estado_grupo&refr=60' class='mn'>".__('Group view')."</a></li></ul></div>";
-
-		if ($sec2 == "operation/agentes/networkmap") {
-			echo "<div class='operation-submenu submenu-selected'>";
-		} else {
-			echo "<div class='operation-submenu'>";
-		}
-		echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/networkmap' class='mn'>".__('Network Map')."</a></li></ul></div>";
+	//View agents
+	$menu["estado"]["text"] = __('View agents');
+	$menu["estado"]["sec2"] = "operation/agentes/tactical";
+	$menu["estado"]["refr"] = 60;
+	$menu["estado"]["id"] = "oper-agents";
 	
-		if (($sec2 == "operation/agentes/estado_agente" || $sec2 == "operation/agentes/ver_agente" || $sec2 == "operation/agentes/datos_agente")) {
-			echo "<div class='operation-submenu submenu-selected'>";
-		} else {
-			echo "<div class='operation-submenu'>";
-		}
-		echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60' class='mn'>".__('Agent detail')."</a></li></ul></div>";
+	$sub = array ();
+	$sub["operation/agentes/tactical"]["text"] = __('Tactical view');
+	$sub["operation/agentes/tactical"]["refr"] = 60;
+	
+	$sub["operation/agentes/estado_grupo"]["text"] = __('Group view');
+	$sub["operation/agentes/estado_grupo"]["refr"] = 60;
+	
+	$sub["operation/agentes/networkmap"]["text"] = __('Network Map');
+	$sub["operation/agentes/networkmap"]["refr"] = 0;
+	
+	$sub["operation/agentes/estado_agente"]["text"] = __('Agent detail');
+	$sub["operation/agentes/estado_agente"]["refr"] = 60;
+				
+	$sub["operation/agentes/estado_alertas"]["text"] = __('Alert detail');
+	$sub["operation/agentes/estado_alertas"]["refr"] = 60;
+	
+	$sub["operation/agentes/status_monitor"]["text"] = __('Monitor detail');
+	$sub["operation/agentes/status_monitor"]["refr"] = 60;
+	
+	$sub["operation/agentes/exportdata"]["text"] = __('Export data');
+	$sub["operation/agentes/exportdata"]["refr"] = 60;
 
-		if ($sec2 == "operation/agentes/estado_alertas"){
-			echo "<div class='operation-submenu submenu-selected'>";
-		} else {
-			echo "<div class='operation-submenu'>";
-		}
-		echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/estado_alertas&amp;refr=60' class='mn'>".__('Alert detail')."</a></li></ul></div>";
-
-		if ($sec2 == "operation/agentes/status_monitor") {
-			echo "<div class='operation-submenu submenu-selected'>";
-		} else {
-			echo "<div class='operation-submenu'>";
-		}
-		echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/status_monitor&amp;refr=60' class='mn'>".__('Monitor detail')."</a></li></ul></div>";
-
-		if ($sec2 == "operation/agentes/exportdata") {
-			echo "<div class='operation-submenu submenu-selected'>";
-		} else {
-			echo "<div class='operation-submenu'>";
-		}
-		echo "<ul class='mn'><li><a href='index.php?sec=estado&amp;sec2=operation/agentes/exportdata' class='mn'>".__('Export data')."</a></li></ul></div>";
-
+	$menu["estado"]["sub"] = $sub;
+	//End of view agents
+	
+	//Visual console
+	$menu["visualc"]["text"] = __('Visual console');
+	$menu["visualc"]["sec2"] = "operation/visual_console/index";
+	$menu["visualc"]["refr"] = 60;
+	$menu["visualc"]["id"] = "oper-visualc";
+	
+	$sub = array ();
+	
+	$layouts = get_db_all_rows_in_table ('tlayout', 'name');
+	if ($layouts === false) {
+		$layouts = array ();
 	}
-
-	// Visual console
-	if ( $sec2 == "operation/visual_console/index") {
-		$selected = ' menu-selected';
-	} else {
-		$selected = '';
-	}
-	echo '<div id="op9" class="operation-menu'.$selected.'">';
-	echo '<ul class="mn"><li>';
-	echo '<a href="index.php?sec=visualc&sec2=operation/visual_console/index" class="mn">'.__('Visual console').'</a></li></ul></div>';
-
-	if ($sec  == "visualc") {
-		$layouts = get_db_all_rows_in_table ('tlayout', 'name');
-		if ($layouts === false)
-			$layouts = array ();
-		$id = get_parameter ('id');
-		foreach ($layouts as $layout) {
-			if (! give_acl ($config["id_user"], $layout["id_group"], "AR")) {
-				continue;
-			}
-			if ($sec2 == "operation/visual_console/render_view" && $id == $layout["id"]) {
-				echo "<div class='operation-submenu submenu-selected'>";
-			} else {
-				echo "<div class='operation-submenu'>";
-			}
-			echo "<ul class='mn'><li><a href='index.php?sec=visualc&sec2=operation/visual_console/render_view&id=".$layout["id"]."' class='mn'>". substr ($layout["name"], 0, 15). "</a></li></ul></div>";
+	$id = (int) get_parameter ('id', -1);
+	
+	foreach ($layouts as $layout) {
+		if (! give_acl ($config["id_user"], $layout["id_group"], "AR")) {
+			continue;
 		}
+		$sub["operation/visual_console/render_view&amp;id=".$layout["id"]]["text"] = mb_substr ($layout["name"], 0, 15);
+		$sub["operation/visual_console/render_view&amp;id=".$layout["id"]]["refr"] = 0;
 	}
-
-	enterprise_hook ('inventory_menu');
-
+	
+	$menu["visualc"]["sub"] = $sub;
+	//End of visual console
+	
 	// Server view
-	if ( $sec == "estado_server") {
-		$selected = ' menu-selected';
-	} else {
-		$selected = '';
-	}
-	echo '<div id="op2" class="operation-menu'.$selected.'">';
-	echo '<ul class="mn"><li>';
-	echo '<a href="index.php?sec=estado_server&amp;sec2=operation/servers/view_server&amp;refr=60" class="mn">'.__('Pandora servers').'</a></li></ul></div>';
+	$menu["estado_server"]["text"] = __('Pandora servers');
+	$menu["estado_server"]["sec2"] = "operation/servers/view_server";
+	$menu["estado_server"]["refr"] = 60;
+	$menu["estado_server"]["id"] = "oper-servers";
+	//End of server view
 }
+				
+enterprise_hook ('inventory_menu');
 
-// Check access for incident
+//Incidents
 if (give_acl ($config['id_user'], 0, "IR") == 1) {
-	if (($sec2 == "operation/incidents/incident" || $sec2 == "operation/incidents/incident_detail"|| $sec2 == "operation/incidents/incident_note")) {
-		$selected = ' menu-selected';
-	} else {
-		$selected = '';
-	}
-	echo '<div id="op3" class="operation-menu'.$selected.'">';
-	echo '<ul class="mn"><li><a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident" class="mn">'.__('Manage incidents').'</a></li></ul></div>';
-
-	if ($sec == "incidencias"){
-		if($sec2 == "operation/incidents/incident_search") {
-			echo "<div class='operation-submenu submenu-selected'>";
-		} else {
-			echo "<div class='operation-submenu'>";
-		}
-		echo "<ul class='mn'><li><a href='index.php?sec=incidencias&amp;sec2=operation/incidents/incident_search' class='mn'>".__('Search incident')."</a></li></ul></div>";
-
-		if ($sec2 == "operation/incidents/incident_statistics") {
-			echo "<div class='operation-submenu submenu-selected'>";
-		} else {
-			echo "<div class='operation-submenu'>";
-		}
-		echo "<ul class='mn'><li><a href='index.php?sec=incidencias&amp;sec2=operation/incidents/incident_statistics' class='mn'>".__('Statistics')."</a></li></ul></div>";
-	}
+	$menu["incidencias"]["text"] = __('Manage incidents');
+	$menu["incidencias"]["sec2"] = "operation/incidents/incident";
+	$menu["incidencias"]["refr"] = 60;
+	$menu["incidencias"]["id"] = "oper-incidents";
+	
+	$sub = array ();
+	$sub["operation/incidents/incident_search"]["text"] = __('Search incidents');
+	$sub["operation/incidents/incident_search"]["refr"] = 0;
+	
+	$sub["operation/incidents/incident_statistics"]["text"] = __('Statistics');
+	$sub["operation/incidents/incident_statistics"]["refr"] = 0;
+	
+	$menu["incidencias"]["sub"] = $sub;
 }
 
-
-// Rest of options, all with AR privilege
+// Rest of options, all with AR privilege (or should events be with incidents?)
 if (give_acl ($config['id_user'], 0, "AR")) {
 	// Events
-	if($sec2 == "operation/events/events") {
-		$selected = ' menu-selected';
-	} else {
-		$selected = '';
-	}
-	echo '<div id="op4" class="operation-menu'.$selected.'">';
-	echo '<ul class="mn"><li><a href="index.php?sec=eventos&amp;sec2=operation/events/events" class="mn">'.__('View events').'</a></li></ul></div>';
-	// Event statistics submenu
-	if ($sec == "eventos") {
-		if($sec2 == "operation/events/event_statistics") {
-			echo "<div class='operation-submenu submenu-selected'>";
-		} else {
-			echo "<div class='operation-submenu'>";
-		}
-		echo "<ul class='mn'><li><a href='index.php?sec=eventos&amp;sec2=operation/events/event_statistics' class='mn'>".__('Statistics')."</a></li></ul></div>";
-		
-		// Event RSS
-		echo "<div class='operation-submenu'>";
-		echo "<ul class='mn'><li>";
-		echo "<a target='_top' href='operation/events/events_rss.php' class='mn'><img src='images/rss.png' /> ".__('RSS');
-		echo "</a></li></ul></div>";
-		
-		// Event CSV
-		echo "<div class='operation-submenu'>";
-		echo "<ul class='mn'><li>";
-		echo "<a target='_top' href='operation/events/export_csv.php' class='mn'>".__('CSV File')."</a></li></ul></div>";
-		
-		// Event Marquee
-		echo "<div class='operation-submenu'>";
-		echo "<ul class='mn'><li>";
-		echo "<a target='_top' href='operation/events/events_marquee.php' class='mn'>".__('Marquee')."</a></li></ul></div>";
-	}
+	$menu["eventos"]["text"] = __('View events'); 
+	$menu["eventos"]["refr"] = 60;
+	$menu["eventos"]["sec2"] = "operation/events/events";
+	$menu["eventos"]["id"] = "oper-events";
+	
+	$sub = array ();
+	$sub["operation/events/event_statistics"]["text"] = __('Statistics');
+	$sub["operation/events/event_statistics"]["refr"] = 0;
+	
+	//RSS
+	$sub["operation/events/events_rss.php"]["text"] = __('RSS');
+	$sub["operation/events/events_rss.php"]["refr"] = 0;
+	$sub["operation/events/events_rss.php"]["type"] = "direct";
+	
+	//CSV
+	$sub["operation/events/export_csv.php"]["text"] = __('CSV File');
+	$sub["operation/events/export_csv.php"]["refr"] = 0;
+	$sub["operation/events/export_csv.php"]["type"] = "direct";
+	
+	//Marquee
+	$sub["operation/events/events_marquee.php"]["text"] = __('Marquee');
+	$sub["operation/events/events_marquee.php"]["refr"] = 0;
+	$sub["operation/events/events_marquee.php"]["type"] = "direct";
+	
+	$menu["eventos"]["sub"] = $sub;
 	
 	// Users
-	if (($sec2 == "operation/users/user" || $sec2 == "operation/users/user_edit" )) {
-		$selected = ' menu-selected';
-	} else {
-		$selected = '';
+	$menu["usuarios"]["text"] = __('View users');
+	$menu["usuarios"]["refr"] = 0;
+	$menu["usuarios"]["sec2"] = "operation/users/user";
+	$menu["usuarios"]["id"] = "oper-users";
+	
+	$sub = array ();
+	$sub["operation/users/user_edit"]["text"] = __('Edit my user');
+	$sub["operation/users/user_edit"]["refr"] = 0;
+	$sub["operation/users/user_edit"]["options"]["name"] = "ver";
+	$sub["operation/users/user_edit"]["options"]["value"] = $config["id_user"];
+	
+	if (give_acl ($config["id_user"], 0, "UM")) {
+		$sub["operation/users/user_statistics"]["text"] = __('Statistics');
+		$sub["operation/users/user_statistics"]["refr"] = 0;
 	}
-	echo '<div id="op5" class="operation-menu'.$selected.'">';
-	echo '<ul class="mn"><li><a href="index.php?sec=usuarios&amp;sec2=operation/users/user" class="mn">'.__('View users').'</a></li></ul></div>';
-
-	// User edit (submenu)
-	if ($sec == "usuarios") {
-		if (isset($_GET["ver"]) && $_GET["ver"] == $config['id_user']) {
-			echo "<div class='operation-submenu submenu-selected'>";
-		} else {
-			echo "<div class='operation-submenu'>";
-		}
-		echo "<ul class='mn'><li><a href='index.php?sec=usuarios&amp;sec2=operation/users/user_edit&amp;ver=".$config['id_user']."' class='mn'>".__('Edit my user')."</a></li></ul></div>";
-
-		// User statistics require UM
-		if (give_acl ($config['id_user'], 0, "UM")) {
-			if($sec2 == "operation/users/user_statistics") {
-				echo "<div class='operation-submenu submenu-selected'>";
-			} else {
-				echo "<div class='operation-submenu'>";
-			}
-			echo "<ul class='mn'><li><a href='index.php?sec=usuarios&amp;sec2=operation/users/user_statistics' class='mn'>".__('Statistics')."</a></li></ul></div>";
-		}
-	}
-
-	// SNMP console
-	if ($sec2 == "operation/snmpconsole/snmp_view") {
-		$selected = ' menu-selected';
-	} else {
-		$selected = '';
-	}
-	echo '<div id="op6" class="operation-menu'.$selected.'">';
-	echo '<ul class="mn"><li><a href="index.php?sec=snmpconsole&amp;sec2=operation/snmpconsole/snmp_view" class="mn">'.__('SNMP console').'</a></li></ul></div>';
-
+	
+	$menu["usuarios"]["sub"] = $sub;
+	//End of Users
+	
+	//SNMP Console
+	$menu["snmpconsole"]["text"] = __('SNMP console');
+	$menu["snmpconsole"]["refr"] = 60;
+	$menu["snmpconsole"]["sec2"] = "operation/snmpconsole/snmp_view";
+	$menu["snmpconsole"]["id"] = "oper-snmpc";
+	
 	// Messages
-	if($sec2 == "operation/messages/message" && !isset ($_GET["nuevo_g"])) {
-		$selected = ' menu-selected';
-	} else {
-		$selected = '';
-	}
-	echo '<div id="op7" class="operation-menu'.$selected.'">';
-	echo '<ul class="mn"><li><a href="index.php?sec=messages&amp;sec2=operation/messages/message" class="mn">'. __('Messages').'</a></li></ul></div>';
-
-	// New message (submenu)
-	if ($sec == "messages") {
-		if (isset ($_GET["nuevo_g"])) {
-			echo "<div class='operation-submenu submenu-selected'>";
-		} else {
-			echo "<div class='operation-submenu'>";
-		}
-		echo "<ul class='mn'><li><a href='index.php?sec=messages&amp;sec2=operation/messages/message&amp;nuevo_g' class='mn'>".__('Messages to groups')."</a></li></ul></div>";
-	}
-
+	$menu["messages"]["text"] = __('Messages');
+	$menu["messages"]["refr"] = 60;
+	$menu["messages"]["sec2"] = "operation/messages/message";
+	$menu["messages"]["id"] = "oper-messages";
+	
+	$sub = array ();
+	$sub["operation/messages/message"]["text"] = __('Messages to groups');
+	$sub["operation/messages/message"]["refr"] = 0;
+	$sub["operation/messages/message"]["options"]["name"] = "nuevo_g";
+	$sub["operation/messages/message"]["options"]["value"] = 1;
+	
+	$menu["messages"]["sub"] = $sub;
+	
 	// Reporting
-	if ($sec2 == "operation/reporting/reporting") {
-		$selected = ' menu-selected';
-	} else {
-		$selected = '';
-	}
-	echo '<div id="op8" class="operation-menu'.$selected.'">';
-	echo '<ul class="mn"><li>';
-	echo '<a href="index.php?sec=reporting&sec2=operation/reporting/custom_reporting" class="mn">'.
-		__('Reporting').'</a></li></ul></div>';
+	$menu["reporting"]["text"] = __('Reporting');
+	$menu["reporting"]["refr"] = 0;
+	$menu["reporting"]["sec2"] = "operation/reporting/custom_reporting";
+	$menu["reporting"]["id"] = "oper-reporting";
+	
+	$sub = array ();
+	$sub["operation/reporting/custom_reporting"]["text"] = __('Custom reporting');
+	$sub["operation/reporting/custom_reporting"]["refr"] = 0;
 
-	// Custom reporting
-	if ($sec == "reporting") {
-		if ($sec2 == "operation/reporting/custom_reporting"
-			|| $sec2 == "operation/reporting/reporting_viewer") {
-			echo "<div class='operation-submenu submenu-selected'>";
-		} else {
-			echo "<div class='operation-submenu'>";
-		}
-		echo "<ul class='mn'><li>
-		<a href='index.php?sec=reporting&sec2=operation/reporting/custom_reporting' class='mn'>".__('Custom reporting')."</a></li></ul></div>";
-	}
-
-	// Custom graph viewer
-	if ($sec == "reporting") {
-		if ($sec2 == "operation/reporting/graph_viewer") {
-			echo "<div class='operation-submenu submenu-selected'>";
-		} else {
-			echo "<div class='operation-submenu'>";
-		}
-		echo "<ul class='mn'><li>
-		<a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer' class='mn'>".__('Custom graphs')."</a></li></ul></div>";
-	}
-
+	$sub["operation/reporting/graph_viewer"]["text"] = __('Custom graphs');	
+	$sub["operation/reporting/graph_viewer"]["refr"] = 0;
+	
+	$menu["reporting"]["sub"] = $sub;
+	
 	// Extensions menu additions
 	if (is_array ($config['extensions'])) {
-		if ($sec == "extensions") {
-			$selected = ' menu-selected';
-		} else {
-			$selected = '';
-		}
-		echo '<div id="op-extensions" class="operation-menu'.$selected.'">';
-		echo '<ul class="mn"><li class="bb0">
-		<a href="index.php?sec=extensions&sec2=operation/extensions" class="mn">';
-		echo __('Extensions');
-		echo '</a></li></ul>';
-		echo "</div>";
-		if ($selected != '') {
-			foreach ($config['extensions'] as $extension) {
-				if ($extension['operation_menu'] == '')
-					continue;
-				$menu = $extension['operation_menu'];
-				if ($sec2 == $menu['sec2']) {
-					echo '<div class="operation-submenu submenu-selected">';
-				} else {
-					echo '<div class="operation-submenu">';
-				}
-				echo '<ul class="mn"><li>';
-				echo '<a href="index.php?sec=extensions&sec2='.$menu['sec2'].'" class="mn">'.$menu['name'];
-				echo '</a></li></ul></div>';
+		$menu["extensions"]["text"] = __('Extensions');
+		$menu["extensions"]["refr"] = 0;
+		$menu["extensions"]["sec2"] = "operation/extensions";
+		$menu["extensions"]["id"] = "oper-extensions";
+		
+		$sub = array ();
+		foreach ($config["extensions"] as $extension) {
+			if ($extension["operation_menu"] == '') {
+				continue;
 			}
+			$extension_menu = $extension["operation_menu"];
+			$sub[$extension_menu["sec2"]]["text"] = $extension_menu["name"];
+			$sub[$extension_menu["sec2"]]["refr"] = 0;
 		}
+		
+		$menu["extensions"]["sub"] = $sub;
 	}
 }
-
 ?>
-</div>

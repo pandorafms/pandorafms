@@ -1,13 +1,11 @@
 /* 
-// Pandora FMS - the Flexible monitoring system
+// Pandora FMS - the Flexible Monitoring System
 // =============================================
 
-// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
-// Main PHP/SQL code development and project architecture and management
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.comnt
 // Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
-// CSS and some PHP additions
 // Copyright (c) 2005-2008 Artica Soluciones Tecnologicas, info@artica.es
-//
+// Copyright (c) 2008-2008 Evi Vanoost, vanooste@rcbi.rochester.edu
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; version 2
@@ -20,7 +18,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-@import url(link.css);
+@import url(menu.css);
 @import url(tip.css);
 * {
 	font-family: verdana, sans-serif;
@@ -317,8 +315,13 @@ td.datos_id {
 }
 .bg, .bg2, .bg3, .bg4 {
 	position: relative;
-	height: 20px;
 	width: 100%;
+}
+.bg  {
+	height: 20px;
+}
+.bg2, .bg3, .bg4 {
+	height: 17px;
 }
 .f10, #ip {
 	font-size: 7pt;
@@ -443,8 +446,6 @@ div.title_line {
     float:left; 
     border-bottom: 1px solid #778866;
 }
-
-
 #menu_tab .mn, #menu_tab ul, #menu_tab .mn ul {
 	padding: 0px;
 	list-style: none;
@@ -470,13 +471,11 @@ div.title_line {
     font-weight: bold;
     line-height: 18px;
 }
-
 #menu_tab .mn li a {
 	display: block;
 	text-decoration: none;
 }
-#menu_tab li.nomn:hover a,
-#menu_tab li:hover ul a:hover {
+#menu_tab li.nomn:hover a, #menu_tab li:hover ul a:hover {
 	background: #799E48;
     color: #fff;
 }

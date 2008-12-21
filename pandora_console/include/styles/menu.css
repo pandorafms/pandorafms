@@ -1,9 +1,10 @@
 /*
-// Pandora FMS - the Free monitoring system
-// ========================================
-// Copyright (c) 2004-2007 Sancho Lerena, slerena@openideas.info
-// Copyright (c) 2005-2007 Artica Soluciones Tecnologicas
-// Copyright (c) 2004-2007 Raul Mateos Martin, raulofpandora@gmail.com
+// Pandora FMS - the Flexible Monitoring System
+// ============================================
+// Copyright (c) 2004-2008 Sancho Lerena, slerena@openideas.info
+// Copyright (c) 2005-2008 Artica Soluciones Tecnologicas
+// Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
+// Copyright (c) 2008-2008 Evi Vanoost, vanooste@rcbi.rochester.edu
 // Copyright (c) 2006-2007 Jose Navarro jose@jnavarro.net
 // Copyright (c) 2006-2007 Jonathan Barajas, jonathan.barajas[AT]gmail[DOT]com
 
@@ -18,10 +19,9 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
 .menu {
-	background-color: #E9F3D2;
-	border: 1px solid #DADBDC;
+	background-color: #e9f3d2;
+	border: 1px solid #dadbdc;
 	width: 155px;
 }
 .menu ul {
@@ -29,22 +29,19 @@
 	padding: 0;
 	margin: 0;
 }
-
 .menu li {
-	background-color: #E9F3D2;
+	background-color: #e9f3d2;
 	border: 0px solid black;
-	border-bottom: 1px solid #D4D4D4;
+	border-bottom: 1px solid #d4d4d4;
 	padding: 5px 5px 5px 30px;
 	margin: 0;
 }
-
 .menu a, .menu a:hover {
 	font-family: Arial, Verdana, sans-serif, Helvetica;
 	color: #000000;
 	display:block; /* This makes it so that the whole li is clickable */
 	text-decoration:none;
 }
-
 
 /* This is for the dropout menu */
 .menu.int ul {
@@ -173,5 +170,5 @@
 #god-agents:hover, #god-modules:hover, #god-alerts:hover, #god-dbmaint:hover, #god-users:hover, #god-reporting:hover, #god-profiles:hover, #god-servers:hover, #god-audit:hover, #god-setup:hover, #god-snmpc:hover, #god-extensions:hover,
 #god-agents.selected, #god-modules.selected, #god-alerts.selected, #god-dbmaint.selected, #god-users.selected, #god-reporting.selected, #god-profiles.selected, #god-servers.selected, #god-audit.selected, #god-setup.selected, #god-snmpc.selected, #god-extensions.selected
 {
-	background-color: #EFEFBD;
+	background-color: #efefbd;
 }

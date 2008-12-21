@@ -20,7 +20,7 @@
 // Silk icon set 1.3 (cc) Mark James, http://www.famfamfam.com/lab/icons/silk/
 // Pandora FMS uses Pear Image::Graph code
 
-$build_version="PC081123";
+$build_version="PC081221";
 $pandora_version="v2.1-dev";
 global $build_version;
 global $pandora_version;
@@ -130,7 +130,7 @@ echo '</head>';
 if ($config["pure"] == 0) {
 	echo '<body bgcolor="#555555">';
 } else {
-	echo '<body bgcolor="#FFFFFF">';
+	echo '<body bgcolor="#ffffff">';
 }
 
 $REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
@@ -170,7 +170,7 @@ if (! isset ($_SESSION['id_usuario']) && isset ($_GET["login"])) {
 			// $ultima = substr ($pass, strlen ($pass) - 1, 1);
 			// $pass = $primera . "****" . $ultima;
 			audit_db ($nick, $REMOTE_ADDR, "Logon Failed",
-				  "Incorrect password: " . $nick);
+				"Incorrect password: " . $nick);
 			exit;
 		}
 	} else {
@@ -183,7 +183,7 @@ if (! isset ($_SESSION['id_usuario']) && isset ($_GET["login"])) {
 		//$ultima = substr ($pass, strlen ($pass) - 1, 1);
 		//$pass = $primera . "****" . $ultima;
 		audit_db ($nick, $REMOTE_ADDR, "Logon Failed",
-			  "Invalid username: " . $nick);
+			"Invalid username: " . $nick);
 		exit;
 	}
 } elseif (! isset ($_SESSION['id_usuario'])) {

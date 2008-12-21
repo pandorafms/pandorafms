@@ -1,3 +1,14 @@
+2008-12-21  Raul Mateos  <raulofpandora@gmail.com>
+
+	* index.php: Updated build, there were some changes in last month that make
+	this build to change.
+	
+	* include/styles/link.css: updated and renamed to menu.css, more coherent.
+	Updated header.
+	
+	* include/styles/pandora.css: updated header. Reduced height in
+	administration and link menu titles.
+
 2008-12-19  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* general/footer.php: Updated print_timestamp to always print full.

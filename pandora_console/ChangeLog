@@ -1,3 +1,14 @@
+2008-12-22  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* godmode/agentes/agent_template.php: Rewritten to use new functions
+	
+	* godmode/agentes/configurar_agente.php: Fixed adding empty ips
+	
+	* godmode/db/db_purge.php: Fixed bug #2445819 ?
+
+	* godmode/db/db_refine.php: Rewritten to use new functions. Fixed bug 
+	#2445819 ?
+
 2008-12-22  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* pandoradb_data.sql: Added Dutch to translations.

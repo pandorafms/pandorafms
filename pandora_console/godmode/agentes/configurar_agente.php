@@ -518,7 +518,7 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 		echo '<h3 class="error">'.__('There is already an agent in the database with this name').'</h3>';
 	} else {
 		//If different IP is specified than previous, add the IP
-		if ($direccion_agente != get_agent_address ($id_agente))
+		if ($direccion_agente != '' && $direccion_agente != get_agent_address ($id_agente))
 			agent_add_address ($id_agente, $direccion_agente);
 		
 		//If IP is set for deletion, delete first

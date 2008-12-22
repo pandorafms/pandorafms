@@ -1,20 +1,21 @@
-# SOME DESCRIPTIVE TITLE.
+# translation of pandora-fr.po to French
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# Aline Jorand, jorand.aline@laposte.net, 2006-2007
 #
+# Aline Jorand, jorand.aline@laposte.net, 2006-2007.
+# Jorge Gonzalez <jorgegonz@artica.es>, 2008.
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: pandora-fr\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-10-31 11:29+0100\n"
-"PO-Revision-Date: 2008-11-27 15:02+0000\n"
-"Last-Translator: didier Belot <didier.belot@electrolinux.net>\n"
-"Language-Team: fr <LL@li.org>\n"
+"PO-Revision-Date: 2008-12-02 17:14+0000\n"
+"Last-Translator: Jorge Gonzalez <Unknown>\n"
+"Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-12-02 10:48+0000\n"
+"X-Launchpad-Export-Date: 2008-12-22 09:05+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../../reporting/stat_win.php:46
@@ -538,7 +539,7 @@ msgstr ""
 
 #: ../../general/header.php:55
 msgid "Ready"
-msgstr ""
+msgstr "Prêt"
 
 #: ../../general/header.php:65 ../../general/header.php:67
 msgid "Autorefresh"
@@ -618,7 +619,7 @@ msgstr "Votre système est à jour"
 
 #: ../../extensions/update_manager/main.php:68
 msgid "Server connection failed"
-msgstr ""
+msgstr "La connexion au serveur a échoué"
 
 #: ../../extensions/update_manager/main.php:70
 msgid "Server authorization rejected"
@@ -781,7 +782,7 @@ msgstr ""
 
 #: ../../extensions/update_manager/settings.php:70
 msgid "Proxy port"
-msgstr ""
+msgstr "Port du serveur mandataire"
 
 #: ../../extensions/update_manager/settings.php:73
 msgid "Proxy user"
@@ -793,15 +794,15 @@ msgstr ""
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:552
 msgid "Development"
-msgstr ""
+msgstr "Développement"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:553
 msgid "Testing"
-msgstr ""
+msgstr "Test"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:554
 msgid "Public"
-msgstr ""
+msgstr "Public"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:555
 #: ../../godmode/groups/group_list.php:125
@@ -821,7 +822,7 @@ msgstr "Desactivé"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:563
 msgid "Database"
-msgstr ""
+msgstr "Base de données"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:564
 msgid "Code / binary directory"
@@ -1086,14 +1087,14 @@ msgstr "Déposez l'élément ici pour le supprimer de la carte"
 
 #: ../../godmode/reporting/map_builder.php:364
 msgid "Hour"
-msgstr ""
+msgstr "Heure"
 
 #: ../../godmode/reporting/map_builder.php:365
 #: ../../godmode/reporting/map_builder.php:366
 #: ../../godmode/reporting/map_builder.php:367
 #: ../../godmode/reporting/map_builder.php:368
 msgid "Hours"
-msgstr ""
+msgstr "Heures"
 
 #: ../../godmode/reporting/map_builder.php:369
 #: ../../godmode/reporting/graph_builder.php:390
@@ -1116,7 +1117,7 @@ msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:373
 msgid "Last Month"
-msgstr ""
+msgstr "Le mois dernier"
 
 #: ../../godmode/reporting/map_builder.php:374
 msgid "Two Months"
@@ -1223,7 +1224,7 @@ msgstr "En lien avec la carte"
 #: ../../godmode/reporting/map_builder.php:453
 #: ../../operation/reporting/reporting_viewer.php:82
 msgid "Loading"
-msgstr ""
+msgstr "Chargement"
 
 #: ../../godmode/reporting/graph_builder.php:83
 msgid "Graph stored successfully"
@@ -1240,7 +1241,7 @@ msgstr "Liste de modules de construction d’un tableau"
 
 #: ../../godmode/reporting/graph_builder.php:217
 msgid "Weight"
-msgstr ""
+msgstr "Poids"
 
 #: ../../godmode/reporting/graph_builder.php:252
 #: ../../operation/reporting/graph_viewer.php:110
@@ -1334,7 +1335,7 @@ msgstr "Empilé"
 #: ../../godmode/reporting/graph_builder.php:418
 #: ../../operation/reporting/graph_viewer.php:139
 msgid "Area"
-msgstr ""
+msgstr "Zone"
 
 #: ../../godmode/reporting/graph_builder.php:419
 #: ../../operation/reporting/graph_viewer.php:140
@@ -1491,11 +1492,11 @@ msgstr "Éléments du rapport"
 
 #: ../../godmode/reporting/reporting_builder.php:431
 msgid "Order"
-msgstr ""
+msgstr "Ordre"
 
 #: ../../godmode/reporting/reporting_builder.php:436
 msgid "Options"
-msgstr ""
+msgstr "Options"
 
 #: ../../godmode/reporting/reporting_builder.php:458
 msgid "Up"
@@ -1598,7 +1599,7 @@ msgstr "Intervale"
 #: ../../godmode/servers/manage_export.php:102
 #: ../../godmode/servers/manage_export_form.php:90
 msgid "Address"
-msgstr ""
+msgstr "Adresse"
 
 #: ../../godmode/servers/manage_export.php:102
 msgid "Transfer Mode"
@@ -1658,13 +1659,13 @@ msgstr "Etat"
 
 #: ../../godmode/servers/modificar_server.php:87
 msgid "Started"
-msgstr ""
+msgstr "Démarré"
 
 #: ../../godmode/servers/modificar_server.php:87
 #: ../../operation/incidents/incident.php:261
 #: ../../operation/servers/view_server.php:61
 msgid "Updated"
-msgstr ""
+msgstr "Mis à jour"
 
 #: ../../godmode/servers/modificar_server.php:124
 #: ../../godmode/agentes/agent_manager.php:126
@@ -1782,7 +1783,7 @@ msgstr ""
 
 #: ../../godmode/servers/manage_recontask_form.php:86
 msgid "hour"
-msgstr ""
+msgstr "heure"
 
 #: ../../godmode/servers/manage_recontask_form.php:90
 #: ../../operation/agentes/exportdata.php:61
@@ -1826,7 +1827,7 @@ msgstr ""
 #: ../../godmode/servers/manage_export_form.php:111
 #: ../../godmode/agentes/module_manager_editor_plugin.php:129
 msgid "Port"
-msgstr ""
+msgstr "Port"
 
 #: ../../godmode/servers/manage_export_form.php:115
 msgid "Target directory"
@@ -1898,7 +1899,7 @@ msgstr ""
 
 #: ../../godmode/servers/plugin.php:199
 msgid "execute"
-msgstr ""
+msgstr "exécuter"
 
 #: ../../godmode/servers/plugin.php:223
 msgid "There are no plugins in the system"
@@ -2060,7 +2061,7 @@ msgstr "Gestion de profils"
 
 #: ../../godmode/menu.php:194
 msgid "Manage plugins"
-msgstr ""
+msgstr "Gérer les greffons"
 
 #: ../../godmode/menu.php:201
 msgid "Export targets"
@@ -2384,7 +2385,7 @@ msgstr ""
 
 #: ../../godmode/profiles/profile_list.php:233
 msgid "Manage Incidents"
-msgstr ""
+msgstr "Gérer les incidents"
 
 #: ../../godmode/profiles/profile_list.php:234
 msgid "Read Agent Information"
@@ -2634,7 +2635,7 @@ msgstr "IP destinataire"
 #: ../../godmode/agentes/module_manager_editor_wmi.php:138
 #: ../../godmode/modules/manage_network_components_form_wmi.php:168
 msgid "Namespace"
-msgstr ""
+msgstr "Espace de noms"
 
 #: ../../godmode/agentes/module_manager_editor_wmi.php:145
 #: ../../godmode/modules/manage_network_components_form_wmi.php:144
@@ -2655,7 +2656,7 @@ msgstr ""
 #: ../../godmode/agentes/module_manager_editor_plugin.php:134
 #: ../../godmode/modules/manage_network_components_form_wmi.php:176
 msgid "Username"
-msgstr ""
+msgstr "Nom d'utilisateur"
 
 #: ../../godmode/agentes/module_manager_editor_wmi.php:173
 #: ../../godmode/agentes/module_manager_editor_data.php:95
@@ -2816,7 +2817,7 @@ msgstr "Dernier contact"
 
 #: ../../godmode/agentes/planned_downtime.php:230
 msgid "Remove"
-msgstr ""
+msgstr "Supprimer"
 
 #: ../../godmode/agentes/planned_downtime.php:237
 #: ../../godmode/agentes/planned_downtime.php:281
@@ -2846,7 +2847,7 @@ msgstr "Au"
 
 #: ../../godmode/agentes/planned_downtime.php:274
 msgid "Del"
-msgstr ""
+msgstr "Suppr"
 
 #: ../../godmode/agentes/planned_downtime.php:275
 msgid "Upd"
@@ -2854,7 +2855,7 @@ msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.php:276
 msgid "Running"
-msgstr ""
+msgstr "En cours"
 
 #: ../../godmode/agentes/module_manager_editor_plugin.php:79
 msgid "Plugin server module"
@@ -2946,7 +2947,7 @@ msgstr ""
 #: ../../godmode/agentes/alert_manager_editor.php:364
 #: ../../include/functions_db.php:1871
 msgid "Oper"
-msgstr ""
+msgstr "Donner le statut d'opérateur"
 
 #: ../../godmode/agentes/manage_config.php:55
 #: ../../godmode/agentes/manage_config.php:212
@@ -3226,7 +3227,7 @@ msgstr ""
 
 #: ../../godmode/agentes/agent_manager.php:211
 msgid "Not available"
-msgstr ""
+msgstr "Pas disponible"
 
 #: ../../godmode/agentes/module_manager.php:57
 msgid "Create a new data server module"
@@ -3250,7 +3251,7 @@ msgstr ""
 
 #: ../../godmode/agentes/module_manager.php:84
 msgid "S"
-msgstr ""
+msgstr "S"
 
 #: ../../godmode/agentes/module_manager.php:88
 #: ../../godmode/modules/manage_network_components.php:188
@@ -3382,37 +3383,37 @@ msgstr "Jours de la semaine"
 #: ../../godmode/agentes/alert_manager_editor.php:237
 #: ../../include/functions.php:714
 msgid "Mon"
-msgstr ""
+msgstr "Lun"
 
 #: ../../godmode/agentes/alert_manager_editor.php:240
 #: ../../include/functions.php:716
 msgid "Tue"
-msgstr ""
+msgstr "Mar"
 
 #: ../../godmode/agentes/alert_manager_editor.php:243
 #: ../../include/functions.php:718
 msgid "Wed"
-msgstr ""
+msgstr "Mer"
 
 #: ../../godmode/agentes/alert_manager_editor.php:246
 #: ../../include/functions.php:720
 msgid "Thu"
-msgstr ""
+msgstr "Jeu"
 
 #: ../../godmode/agentes/alert_manager_editor.php:249
 #: ../../include/functions.php:722
 msgid "Fri"
-msgstr ""
+msgstr "Ven"
 
 #: ../../godmode/agentes/alert_manager_editor.php:252
 #: ../../include/functions.php:724
 msgid "Sat"
-msgstr ""
+msgstr "Sam"
 
 #: ../../godmode/agentes/alert_manager_editor.php:255
 #: ../../include/functions.php:726
 msgid "Sun"
-msgstr ""
+msgstr "Sun"
 
 #: ../../godmode/agentes/alert_manager_editor.php:259
 msgid "Field #2 (Rec)"
@@ -4077,11 +4078,11 @@ msgstr ""
 
 #: ../../include/functions.php:420
 msgid "."
-msgstr ""
+msgstr ","
 
 #: ../../include/functions.php:422
 msgid ","
-msgstr ""
+msgstr ","
 
 #: ../../include/functions.php:476 ../../include/functions.php:488
 #: ../../include/functions.php:490 ../../include/functions.php:514
@@ -4096,7 +4097,7 @@ msgstr "minutes"
 #: ../../include/functions.php:482
 #: ../../operation/snmpconsole/snmp_alert.php:233
 msgid "seconds"
-msgstr ""
+msgstr "secondes"
 
 #: ../../include/functions.php:499 ../../include/functions.php:500
 msgid "months"
@@ -4280,7 +4281,7 @@ msgstr ""
 
 #: ../../include/functions_db.php:1880
 msgid "Days"
-msgstr ""
+msgstr "Jours"
 
 #: ../../include/functions_db.php:1881
 msgid "Fired"
@@ -4326,7 +4327,7 @@ msgstr ""
 #: ../../include/functions_reporting.php:440
 #: ../../include/functions_reporting.php:544
 msgid "Monitor"
-msgstr ""
+msgstr "Moniteur"
 
 #: ../../include/functions_reporting.php:484
 msgid "Agents in group"
@@ -4406,7 +4407,7 @@ msgstr "HTML"
 
 #: ../../operation/reporting/custom_reporting.php:46
 msgid "XML"
-msgstr ""
+msgstr "XML"
 
 #: ../../operation/incidents/incident.php:50
 msgid "Incident successfully deleted"
@@ -4479,7 +4480,7 @@ msgstr ""
 
 #: ../../operation/incidents/incident.php:256
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #: ../../operation/incidents/incident.php:262
 #: ../../operation/incidents/incident_detail.php:260
@@ -4550,11 +4551,11 @@ msgstr ""
 
 #: ../../operation/incidents/incident_detail.php:112
 msgid "Unable to delete file"
-msgstr ""
+msgstr "Impossible de supprimer le fichier."
 
 #: ../../operation/incidents/incident_detail.php:121
 msgid "No description available"
-msgstr ""
+msgstr "Aucune description disponible"
 
 #: ../../operation/incidents/incident_detail.php:149
 msgid "File could not be saved due to database error"
@@ -4601,7 +4602,7 @@ msgstr "Fermée"
 
 #: ../../operation/incidents/incident_detail.php:302
 msgid "Creator"
-msgstr ""
+msgstr "Créateur"
 
 #: ../../operation/incidents/incident_detail.php:321
 msgid "Update incident"
@@ -4665,7 +4666,7 @@ msgstr "Detail de la Configuration"
 
 #: ../../operation/servers/view_server_detail.php:68
 msgid "Force"
-msgstr ""
+msgstr "Forcer"
 
 #: ../../operation/servers/view_server_detail.php:76
 msgid "Progress"
@@ -4673,7 +4674,7 @@ msgstr "En cours"
 
 #: ../../operation/servers/view_server_detail.php:78
 msgid "Op"
-msgstr ""
+msgstr "Op"
 
 #: ../../operation/servers/view_server_detail.php:124
 msgid "Done"
@@ -4704,7 +4705,7 @@ msgstr "Version"
 #: ../../operation/servers/view_server.php:90
 #: ../../operation/agentes/tactical.php:288
 msgid "of"
-msgstr ""
+msgstr "de"
 
 #: ../../operation/servers/view_server.php:100
 msgid "SNMP server"
@@ -4799,7 +4800,7 @@ msgstr "Fichier CSV"
 
 #: ../../operation/menu.php:193
 msgid "Marquee"
-msgstr ""
+msgstr "Texte défilant"
 
 #: ../../operation/menu.php:203
 msgid "View users"
@@ -4867,7 +4868,7 @@ msgstr "Agent SNMP"
 
 #: ../../operation/snmpconsole/snmp_alert.php:228
 msgid "Other value"
-msgstr ""
+msgstr "Autre valeur"
 
 #: ../../operation/snmpconsole/snmp_alert.php:251
 msgid "Alert Overview"
@@ -4922,11 +4923,11 @@ msgstr "Eliminer l'événement"
 
 #: ../../operation/snmpconsole/snmp_view.php:172
 msgid "Value"
-msgstr ""
+msgstr "Valeur"
 
 #: ../../operation/snmpconsole/snmp_view.php:173
 msgid "Custom"
-msgstr ""
+msgstr "Personnalisé"
 
 #: ../../operation/snmpconsole/snmp_view.php:276
 #: ../../operation/agentes/estado_alertas.php:67
@@ -4960,7 +4961,7 @@ msgstr "Plein écran"
 
 #: ../../operation/agentes/networkmap.php:271
 msgid "Layout"
-msgstr ""
+msgstr "Agencement"
 
 #: ../../operation/agentes/networkmap.php:275
 msgid "No Overlap"
@@ -4968,7 +4969,7 @@ msgstr ""
 
 #: ../../operation/agentes/networkmap.php:279
 msgid "Simple"
-msgstr ""
+msgstr "Simple"
 
 #: ../../operation/agentes/networkmap.php:283
 msgid "Regenerate"
@@ -4984,7 +4985,7 @@ msgstr "Distance entre deux noeux"
 
 #: ../../operation/agentes/networkmap.php:312
 msgid "Font"
-msgstr ""
+msgstr "Police"
 
 #: ../../operation/agentes/networkmap.php:352
 #: ../../operation/agentes/networkmap.php:361
@@ -5318,7 +5319,7 @@ msgstr "Liste complète des alertes"
 
 #: ../../operation/agentes/estado_alertas.php:60
 msgid "Info"
-msgstr ""
+msgstr "Info"
 
 #: ../../operation/agentes/estado_alertas.php:143
 msgid "Combined alert"
@@ -5430,7 +5431,7 @@ msgstr ""
 
 #: ../../operation/events/events.php:250
 msgid "Severity"
-msgstr ""
+msgstr "Gravité"
 
 #: ../../operation/events/events.php:255
 msgid "Event status"
@@ -5458,7 +5459,7 @@ msgstr ""
 
 #: ../../operation/events/events.php:304
 msgid "Default"
-msgstr ""
+msgstr "Par défaut"
 
 #: ../../operation/events/events.php:316
 msgid "Marquee display"
@@ -5514,7 +5515,7 @@ msgstr ""
 
 #: ../../operation/users/user.php:123
 msgid "Database management"
-msgstr ""
+msgstr "Gestion de la base de données"
 
 #: ../../operation/users/user.php:126
 msgid "Alerts management"
@@ -5586,574 +5587,80 @@ msgstr "Expéditeur"
 msgid "No subject"
 msgstr "Sans Objet"
 
-#~ msgid "There are no defined layouts"
-#~ msgstr "Aucun plan n’a été défini"
-
-#~ msgid "user"
-#~ msgstr "Usager"
-
-#~ msgid "You are "
-#~ msgstr "Vous êtes connecté(e) "
-
-#~ msgid "Started at"
-#~ msgstr "Lancé le"
-
-#~ msgid "There was a problem deleting module"
-#~ msgstr "Pandora a rencontré un problème pour effacer le module"
-
-#~ msgid "You must select modules and/or alerts for copy operation"
-#~ msgstr "Veuillez sélectionner des modules et/ou des alertes à copier"
-
-#~ msgid " in agent "
-#~ msgstr " dans l'agent "
-
-#~ msgid "Deleting data"
-#~ msgstr "Effacement des données"
-
-#~ msgid "Copy Configuration"
-#~ msgstr "Copier la configuration"
-
-#~ msgid "Copy"
-#~ msgstr "Copier"
-
-#~ msgid "Add note to incident"
-#~ msgstr "Ajouter une note à l'incident"
-
-#~ msgid "There was a problem updating incident"
-#~ msgstr ""
-#~ "Pandora a rencontré un problème lors de l'actualisation de l'incident"
-
-#~ msgid "Incident successfully created"
-#~ msgstr "Incident créé avec succès"
-
-#~ msgid "Viewing incidents"
-#~ msgstr "Visualisation des incidents"
-
-#~ msgid "groups"
-#~ msgstr "groupes"
-
-#~ msgid "No incident matches your search filter"
-#~ msgstr "Aucun incident ne correspond à votre recherche filtrée"
-
-#~ msgid ""
-#~ "File cannot be saved. Please contact Pandora administrator about this error "
-#~ "<br>"
-#~ msgstr "Le dossier n'a pas pu être sauvegardé.<br>"
-
-#~ msgid "Review of incident"
-#~ msgstr "Reviser l'incident"
-
-#~ msgid "Attach file"
-#~ msgstr "Ajouter un dossier"
-
-#~ msgid ""
-#~ "(*) The text search will look for all words entered as substring, in index "
-#~ "title or description of each incident"
-#~ msgstr ""
-#~ "(*) La recherche du texte se fera à  partir de tous les mots introduits "
-#~ "comme une sous-chaîne, dans la description du titre ou dans la description "
-#~ "de chaque incident"
-
-#~ msgid "Check"
-#~ msgstr "Vérifier"
-
-#~ msgid "Custom value"
-#~ msgstr "Valeur de l'usager"
-
 #~ msgid "ok"
 #~ msgstr "Ok"
-
-#~ msgid "Database Statistics per Agent"
-#~ msgstr "Statistiques de la Base de Données pour l'agent"
-
-#~ msgid "is a <b>OpenSource Software Project, licensed under GPL terms</b>"
-#~ msgstr "est un <b>Projet Logiciel GPL</b>"
-
-#~ msgid "You're not connected"
-#~ msgstr "Vous n'êtes pas connecté(e)"
-
-#~ msgid "There was a problem deleting server"
-#~ msgstr "Pandora a rencontré un problème pour éliminer le serveur"
-
-#~ msgid "There was a problem updating server"
-#~ msgstr "Pandora a rencontré un problème pour actualiser le serveur"
-
-#~ msgid "Press here to get DB Info as text"
-#~ msgstr ""
-#~ "Appuyez ici pour voir l'information de la Base de Données en format texte"
-
-#~ msgid "Purge task launched for agent id "
-#~ msgstr "Tâche d'effacement lancée par l'agent "
-
-#~ msgid ""
-#~ "Please be patient. This operation can be very long in time (5-10 minutes)"
-#~ msgstr "Veuillez patienter"
-
-#~ msgid "while deleting data for "
-#~ msgstr "Pendant l'effacement des données pour "
-
-#~ msgid "Deleting records for module "
-#~ msgstr "Effacement des registres du module "
-
-#~ msgid " in the Database"
-#~ msgstr " dans la Base de Données"
-
-#~ msgid "Packets three months old"
-#~ msgstr "Paquets ayant moins de trois mois"
-
-#~ msgid "Packets one month old"
-#~ msgstr "Paquets ayant moins d'un mois"
-
-#~ msgid "Packets two weeks old"
-#~ msgstr "Paquets ayant moins de deux semaines"
-
-#~ msgid "Packets one week old"
-#~ msgstr "Paquets ayant moins d'une semaine"
-
-#~ msgid "Packets three days old"
-#~ msgstr "Paquets ayant moins de trois jours"
-
-#~ msgid "Packets one day old"
-#~ msgstr "Paquets ayant moins de 24 heures"
-
-#~ msgid "Purge data over 90 days"
-#~ msgstr "Effacer les données qui ont plus de trois mois"
-
-#~ msgid "Purge data over 30 days"
-#~ msgstr "Effacer les données qui ont plus de 30 jours"
-
-#~ msgid "Purge data over 14 days"
-#~ msgstr "Effacer les données qui ont plus de deux semaines"
-
-#~ msgid "Purge data over 7 days"
-#~ msgstr "Effacer les données qui ont plus d'une semaine"
-
-#~ msgid "create_user_no"
-#~ msgstr "Pandora a rencontré un problème lors de la création de l'usager"
-
-#~ msgid "User successfully created"
-#~ msgstr "Usager créé avec succès"
-
-#~ msgid "delete_link_ok"
-#~ msgstr "Lien éliminé avec succès"
-
-#~ msgid "agent_exists"
-#~ msgstr "Cet agent existe déjà"
-
-#~ msgid "add_module_ok"
-#~ msgstr "Module ajouté avec succès"
-
-#~ msgid "delete_module_ok"
-#~ msgstr "Module éliminé avec succès"
-
-#~ msgid "delete_agent_ok"
-#~ msgstr "Agent éliminé avec succès"
-
-#~ msgid "notfoundmod"
-#~ msgstr "Le module n'a pas été trouvé"
-
-#~ msgid "noagents_del"
-#~ msgstr "Aucun agent destinataire n'a été sélectionné pour être effacé"
-
-#~ msgid "delete_profile_no"
-#~ msgstr "Pandora a rencontré un problème lors de l'élimination du profil"
-
-#~ msgid "Main Event View"
-#~ msgstr "Aperçu principal d'événements"
-
-#~ msgid "m_from"
-#~ msgstr "Expéditeur"
-
-#~ msgid "m_to"
-#~ msgstr "Destinataire"
-
-#~ msgid "new_message_g"
-#~ msgstr "Nouveau Message pour un groupe"
-
-#~ msgid "group_view"
-#~ msgstr "Detail des groupes d'agents"
-
-#~ msgid "New Incident"
-#~ msgstr "Nouvel incident"
-
-#~ msgid "Open with notes"
-#~ msgstr "Ouverte et annotée"
-
-#~ msgid "Delete incident"
-#~ msgstr "Effacer l'incident"
-
-#~ msgid "Source IP(s)"
-#~ msgstr "IP(s) Orignie"
-
-#~ msgid "Destination IP(s)"
-#~ msgstr "IP(s) Destination"
-
-#~ msgid "Last received data from Agent"
-#~ msgstr "Dernières données reçues par l'agent"
-
-#~ msgid "Module Update/Create form"
-#~ msgstr "Edition/Création du module"
-
-#~ msgid "gpl_used"
-#~ msgstr "Développé en utilisant des outils et des logiciels GPL"
-
-#~ msgid "Incident Main view"
-#~ msgstr "Vue principale des incidents"
-
-#~ msgid "Agent main config screen"
-#~ msgstr "Ecran principal de configuration de l'agent"
-
-#~ msgid "Select agent to modify"
-#~ msgstr "Selectionner l'agent à modifier"
-
-#~ msgid "Name / Type"
-#~ msgstr "Nom / Type"
-
-#~ msgid "Detailed alert view"
-#~ msgstr "Aperçu détaillé des alertes"
-
-#~ msgid "Detailed full view"
-#~ msgstr "Aperçu détaillé"
-
-#~ msgid "Agent down default alert"
-#~ msgstr "Alerte par défaut pour agent déconnecté"
-
-#~ msgid "Pandora Main setup "
-#~ msgstr "Configuration de Pandora "
-
-#~ msgid "Internal Audit Pages"
-#~ msgstr "Page pour l'audit interne"
-
-#~ msgid "Log type filter"
-#~ msgstr "Type de filtre pour le registre"
-
-#~ msgid "Purge all data"
-#~ msgstr "Effacer toutes les données"
-
-#~ msgid "Database Manipulation"
-#~ msgstr "Manipulation de la Base de Données"
-
-#~ msgid "Database compact"
-#~ msgstr "Compression des Bases de Données"
-
-#~ msgid "Configure"
-#~ msgstr "Configurer"
-
-#~ msgid "Checked by"
-#~ msgstr "Validé par"
-
-#~ msgid "Resolution (%)"
-#~ msgstr "Resolution (%)"
-
-#~ msgid "(*) Please enter date with format yyyy/mm/dd hh:mm:ss"
-#~ msgstr "(*) Veuillez introduire la date selon le format aaaa/mm/jj hh:mm:ss"
-
-#~ msgid "There are "
-#~ msgstr "Il y a "
-
-#~ msgid "users defined in Pandora"
-#~ msgstr "usagers définis dans Pandora"
-
-#~ msgid "alerts defined in Pandora"
-#~ msgstr "alertes définies dans Pandora"
-
-#~ msgid "data modules stored in Pandora Database"
-#~ msgstr "modules de données réunis par Pandora"
-
-#~ msgid "Last data received at "
-#~ msgstr "Données réunies la dernière fois par un agent le "
-
-#~ msgid "Pandora general statistics"
-#~ msgstr "Statistiques générales de Pandora"
-
-#~ msgid "Average"
-#~ msgstr "Moyenne"
-
-#~ msgid "Monthly graph"
-#~ msgstr "Tableau mensuel"
-
-#~ msgid "Weekly graph"
-#~ msgstr "Tableau hebdomadaire"
-
-#~ msgid "Hourly graph"
-#~ msgstr "Tableau horaire"
-
-#~ msgid "There was a problem creating keepalive module in new agent"
-#~ msgstr ""
-#~ "Pandora a rencontré un problème pour créer le module keepalive dans le "
-#~ "nouvel agent"
-
-#~ msgid ""
-#~ "User profiles in Pandora define which users can access Pandora as well as "
-#~ "what each user can do. Groups define elements in common among various users. "
-#~ "Each user could be in one or more groups at any one time. Each group has "
-#~ "user profiles which are defined and attached to it. A profile is a list of "
-#~ "things a user can do, such as view incidents, manage database or other. A "
-#~ "list of available profiles is defined below by the local Pandora "
-#~ "administrators"
-#~ msgstr ""
-#~ "Les profils de l'usager dans Pandora définissent quels usagers peuvent "
-#~ "accéder à Pandora et ce que chacun peut faire. Les groupes definissent les "
-#~ "éléments que les usagers ont en commun. Chaque usager peut appartenir à un "
-#~ "ou plusieurs groupes et il a un profil attribué dans chaque groupe auquel il "
-#~ "appartient. Un profil est une liste de ce qu'il peut ou ne peut pas faire "
-#~ "dans chaque groupe, comme par exemple «voir des incident» ou «gérer des "
-#~ "bases de donnée». Dans la partie inférieur il y a une liste des profils "
-#~ "disponibles (définis par les administrateurs locaux de Pandora)"
-
-#~ msgid ""
-#~ "This user has permissions to manage all. This is admin user and overwrites "
-#~ "all permissions given in profiles/groups."
-#~ msgstr ""
-#~ "Cet usager est spécial et il a le droit d'effectuer toute action, en passant "
-#~ "au dessus des privilèges attribués à travers les groupes/profils"
-
-#~ msgid "This button refresh info about database usage among time"
-#~ msgstr ""
-#~ "Ce bouton actualise l'information à long terme concernant la Base de Données"
-
-#~ msgid ""
-#~ "Use this combo to select agent for operation. You need to select an agent to "
-#~ "purge data and to get info about database usage"
-#~ msgstr ""
-#~ "Utilisez cette commande pour sélectionner un agent. Il est nécessaire de "
-#~ "sélectionner un agent pour obtenir des informations de la Base de Données et "
-#~ "pour effacer les données présentes dans celle-ci."
-
-#~ msgid "ERROR: At this moment only Global Admin can manage profiles"
-#~ msgstr ""
-#~ "ERREUR : Seulement l'Administrateur Général peut administrer des profils "
-#~ "actuellement"
-
-#~ msgid "Agents Reading rights"
-#~ msgstr "Permission pour lire les agents"
-
-#~ msgid "Agents Writing rights"
-#~ msgstr "Permission pour écrire sur les agents"
-
-#~ msgid "Agents Management rights"
-#~ msgstr "Permission pour administrer les agents"
-
-#~ msgid "System Incidents Reading rights"
-#~ msgstr "Permission pour lire le système des incidents"
-
-#~ msgid "System Incidents Writing rights"
-#~ msgstr "Permission pour écrire sur le système des incidents"
-
-#~ msgid "System Incidents Management rights"
-#~ msgstr "Permission pour administrar le système des incidents"
-
-#~ msgid "Alerts Edition rights"
-#~ msgstr "Permission pour assigner des alertes"
-
-#~ msgid "Alerts Management rights"
-#~ msgstr "Permission pour administrer des alertes"
-
-#~ msgid "Users Management rights"
-#~ msgstr "Permission pour administrer des usagers"
-
-#~ msgid "Database Management rights"
-#~ msgstr "Permission pour administrer la Base de Données"
-
-#~ msgid "Pandora System Management rights"
-#~ msgstr "Permission pour administrer Pandora"
-
-#~ msgid "From Agent"
-#~ msgstr "depuis l'agent"
-
-#~ msgid "Destination"
-#~ msgstr "Destination"
-
-#~ msgid "Packets by date range"
-#~ msgstr "Paquets par rangs de date"
-
-#~ msgid "Total events"
-#~ msgstr "Total des événements"
-
-#~ msgid "Incidents"
-#~ msgstr "Incidents"
-
-#~ msgid "group_detail"
-#~ msgstr "Detail des groupes"
-
-#~ msgid "Pandora Database"
-#~ msgstr "Base de Données de Pandora"
-
-#~ msgid "It is necesary to select modules or alerts to delete"
-#~ msgstr "Veuillez sélectionner les modules ou les alertes à effacer"
-
-#~ msgid "There was a problem deleting note"
-#~ msgstr "Pandora a rencontré un problème lors de l'élimination de la note"
-
-#~ msgid "Incident writers"
-#~ msgstr "Auteurs des incidents"
-
-#~ msgid "This field can't be changed while in Edition mode"
-#~ msgstr "Ce champ ne peut pas être modifié en mode édition"
-
-#~ msgid " so there are no alerts"
-#~ msgstr " , par conséquent il n'y a pas d'alertes"
 
 #~ msgid "SNMP"
 #~ msgstr "SNMP"
 
-#~ msgid "There are no events"
-#~ msgstr "Il n'y a pas d'événements"
-
-#~ msgid "Agent module share out"
-#~ msgstr "Distribution de modules"
-
-#~ msgid "Truetype fonts"
-#~ msgstr "Polices truetype"
-
-#~ msgid "Right to Left"
-#~ msgstr "dr. a gau."
-
-#~ msgid "Left to Right"
-#~ msgstr "gau. a dr."
-
-#~ msgid "Cancel"
-#~ msgstr "Annuler"
-
-#~ msgid "Network module refresh executed"
-#~ msgstr "L'actualisation du module de Réseau est exécuté"
-
-#~ msgid "Help"
-#~ msgstr "Aide"
-
-#~ msgid "Two hours"
-#~ msgstr "Deux heures"
-
-#~ msgid "Six hours"
-#~ msgstr "Six heures"
-
-#~ msgid "One day"
-#~ msgstr "Un jour"
-
-#~ msgid "Two days"
-#~ msgstr "Deux jours"
-
-#~ msgid "Five days"
-#~ msgstr "Cinq jours"
-
-#~ msgid "Two months"
-#~ msgstr "Deux mois"
-
-#~ msgid "Six months"
-#~ msgstr "Six mois"
-
 #~ msgid "Data checks"
 #~ msgstr "Contrôle des données"
 
-#~ msgid "Event validation failed"
-#~ msgstr "La validation de cette commande a échoué"
+#~ msgid "at"
+#~ msgstr "à"
 
-#~ msgid "Update_alert"
-#~ msgstr "Actualiser l'alerte"
+#~ msgid "Lag"
+#~ msgstr "Retard"
 
-#~ msgid "Agent overview"
-#~ msgstr "Sommaire Agent"
+#~ msgid "Unknown type"
+#~ msgstr "Type inconnu"
 
-#~ msgid "Detailed monitor view"
-#~ msgstr "Aperçu détaillé des moniteurs"
+#~ msgid "Legend"
+#~ msgstr "Libellé champ (formulaire)"
 
-#~ msgid "Group name"
-#~ msgstr "Nom de groupes"
+#~ msgid "Hourly"
+#~ msgstr "Horaire"
 
-#~ msgid "Daily graph"
-#~ msgstr "Tableau du jour"
+#~ msgid "Daily"
+#~ msgstr "Journalière"
 
-#~ msgid "Incidents status"
-#~ msgstr "Etat des incidents"
+#~ msgid "Weekly"
+#~ msgstr "Hebdomadaire"
 
-#~ msgid "Incidents priorities"
-#~ msgstr "Priorités des incidents"
+#~ msgid "Monthly"
+#~ msgstr "Mensuel"
 
-#~ msgid "Events per user"
-#~ msgstr "événements par usager"
+#~ msgid "Report"
+#~ msgstr "Rapport"
 
-#~ msgid "Events per group"
-#~ msgstr "événements par groupe"
+#~ msgid "Task"
+#~ msgstr "Tâche"
 
-#~ msgid "valprohelp"
-#~ msgstr ""
-#~ "Les valeurs relatives à l'agent, au module, au minimum et au maximum "
-#~ "définissent les données correctes. Toutes les données qui ne sont pas "
-#~ "reconnues comme étant correctes seront éliminées"
+#~ msgid "Last run"
+#~ msgstr "Dernière course"
 
-#~ msgid "Incident sources"
-#~ msgstr "Origines des incidents"
+#~ msgid "Parameters"
+#~ msgstr "Paramètres"
 
-#~ msgid "Incident groups"
-#~ msgstr "Groupes des incidents"
+#~ msgid "update"
+#~ msgstr "update"
 
-#~ msgid "Assigned Network Server"
-#~ msgstr "Serveur assigné"
+#~ msgid "create"
+#~ msgstr "création"
 
-#~ msgid "Active Server"
-#~ msgstr "Serveur actif"
+#~ msgid "Actions"
+#~ msgstr "Actions"
 
-#~ msgid "Graph order"
-#~ msgstr "Ordre du tableau"
+#~ msgid "Target"
+#~ msgstr "Cible"
 
-#~ msgid "Background image"
-#~ msgstr "Image de base"
+#~ msgid "Update all"
+#~ msgstr "Tout mettre à jour"
 
-#~ msgid "SNMP modules"
-#~ msgstr "Modules SNMP"
+#~ msgid "name"
+#~ msgstr "nom"
 
-#~ msgid "Network components groups"
-#~ msgstr "Groupes de composantes réseau"
+#~ msgid "description"
+#~ msgstr "description"
 
-#~ msgid "Module Component"
-#~ msgstr "Composante réseau"
-
-#~ msgid "# Modules"
-#~ msgstr "# Modules"
-
-#~ msgid "Save"
-#~ msgstr "Sauvegarder"
-
-#~ msgid "says"
-#~ msgstr "dit"
-
-#~ msgid "Tactical indicator"
-#~ msgstr "Indicateur tactique"
-
-#~ msgid "Position X"
-#~ msgstr "Position X"
-
-#~ msgid "Position Y"
-#~ msgstr "Position Y"
-
-#~ msgid "Parent item"
-#~ msgstr "Élément parent"
-
-#~ msgid "Link color"
-#~ msgstr "Couleur du lien"
-
-#~ msgid "White"
-#~ msgstr "Blanc"
-
-#~ msgid "Add map item"
-#~ msgstr "Ajouter un element sur la carte"
-
-#~ msgid "There are no defined report items"
-#~ msgstr "Aucun élément du rapport n’a été défini"
-
-#~ msgid "Message already read"
-#~ msgstr "Message lu"
-
-#~ msgid "Message not read"
-#~ msgstr "Message non lu"
-
-#~ msgid "dbprohelp"
-#~ msgstr ""
-#~ "Le processus d'élimination de la Base de données sert à éliminer les données "
-#~ "inscrites sur celle-ci si elles"
+#~ msgid "Code"
+#~ msgstr "Code"
 
 #~ msgid "SLA result"
 #~ msgstr "Résultat de SLA"
+
+#~ msgid "Welcome"
+#~ msgstr "Bienvenue"
 
 #~ msgid "PDF"
 #~ msgstr "PDF"

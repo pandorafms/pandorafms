@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-10-31 11:29+0100\n"
-"PO-Revision-Date: 2008-12-01 11:09+0000\n"
-"Last-Translator: nafets <nafets1@gmx.at>\n"
+"PO-Revision-Date: 2008-12-09 14:43+0000\n"
+"Last-Translator: Jorge González <Unknown>\n"
 "Language-Team: de <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-12-02 10:49+0000\n"
+"X-Launchpad-Export-Date: 2008-12-22 09:05+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: ../../reporting/stat_win.php:46
@@ -264,11 +264,11 @@ msgstr "Out of limits"
 #: ../../operation/agentes/estado_grupo.php:168
 #: ../../operation/agentes/ver_agente.php:106
 msgid "Alerts fired"
-msgstr ""
+msgstr "Alarme abgegeben"
 
 #: ../../reporting/fgraph.php:2131
 msgid "Alerts not fired"
-msgstr ""
+msgstr "Keine Alarme abgegeben"
 
 #: ../../reporting/fgraph.php:2140
 msgid "Monitors BAD"
@@ -280,11 +280,11 @@ msgstr ""
 
 #: ../../general/pandora_help.php:22
 msgid "Pandora FMS help system"
-msgstr ""
+msgstr "Pandora FMS Hilfesystem"
 
 #: ../../general/pandora_help.php:37
 msgid "Help system error"
-msgstr ""
+msgstr "Problem mit Pandora FMS Hilfesystem"
 
 #: ../../general/pandora_help.php:43
 msgid ""
@@ -407,7 +407,7 @@ msgstr ""
 
 #: ../../general/logon_ok.php:122 ../../operation/agentes/tactical.php:96
 msgid "Data health"
-msgstr ""
+msgstr "Daten in Ordnung"
 
 #: ../../general/logon_ok.php:123 ../../operation/agentes/tactical.php:97
 msgid "of modules with updated data"
@@ -423,7 +423,7 @@ msgstr ""
 
 #: ../../general/logon_ok.php:128 ../../operation/agentes/tactical.php:100
 msgid "Module sanity"
-msgstr ""
+msgstr "Status der Module"
 
 #: ../../general/logon_ok.php:129 ../../operation/agentes/tactical.php:101
 msgid "of well initialized modules"
@@ -602,6 +602,9 @@ msgid ""
 "Enterprise version, for more information visit <a "
 "href=\"http://pandorafms.com\">http://pandorafms.com</a>."
 msgstr ""
+"Der Updatemanager ist ein sehr interessantes Feature von Pandora FMS 2.0. "
+"Weitere Informationen unter: <a "
+"href=\"http://pandorafms.com\">http://pandorafms.com</a>."
 
 #: ../../extensions/update_manager/main.php:46
 msgid ""
@@ -609,6 +612,10 @@ msgid ""
 "of agents and modules running). To disable it, just delete extension or "
 "remove remote server address from Update Manager plugin setup."
 msgstr ""
+"Der Updatemanager sendet anonym Daten über die Pandora FMS Auslastung. "
+"(Anzahl der Agenten und der Module welche laufen). Wenn Sie dies unterbinden "
+"möchten, so löschen Sie das Update Plugin, oder löschen Sie die Adresse des "
+"Remoteservers direkt im Plugin."
 
 #: ../../extensions/update_manager/main.php:66
 msgid "Your system is up-to-date"
@@ -628,7 +635,7 @@ msgstr "Keine neuen Pandora FMS Updates vorhaden."
 
 #: ../../extensions/update_manager/main.php:77
 msgid "Id"
-msgstr ""
+msgstr "ID"
 
 #: ../../extensions/update_manager/main.php:80
 #: ../../godmode/setup/news.php:129 ../../include/functions_db.php:1993
@@ -751,7 +758,7 @@ msgstr "Einstellungen"
 
 #: ../../extensions/update_manager/settings.php:49
 msgid "Customer key"
-msgstr ""
+msgstr "Schlüssel des Anwenders"
 
 #: ../../extensions/update_manager/settings.php:52
 msgid "Update server host"
@@ -759,15 +766,15 @@ msgstr ""
 
 #: ../../extensions/update_manager/settings.php:55
 msgid "Update server path"
-msgstr ""
+msgstr "Pfad des Updateservers"
 
 #: ../../extensions/update_manager/settings.php:58
 msgid "Update server port"
-msgstr ""
+msgstr "Port des Updateservers"
 
 #: ../../extensions/update_manager/settings.php:61
 msgid "Binary input path"
-msgstr ""
+msgstr "Eingangspfad der Binärdateien"
 
 #: ../../extensions/update_manager/settings.php:64
 msgid "Keygen path"
@@ -823,7 +830,7 @@ msgstr "Datenbank"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:564
 msgid "Code / binary directory"
-msgstr ""
+msgstr "Code / Verzeichnis der Binärdateien"
 
 #: ../../extensions/update_manager.php:107
 msgid "There's a new update for Pandora"
@@ -880,11 +887,11 @@ msgstr "Nicht gelöscht. Fehler beim Löschen von Daten"
 
 #: ../../godmode/reporting/map_builder.php:109
 msgid "Update layout successful"
-msgstr ""
+msgstr "Das Layput wurde erfolgreich geändert."
 
 #: ../../godmode/reporting/map_builder.php:111
 msgid "Update layout failed"
-msgstr ""
+msgstr "Das Layout konnte nich aktualisiert werden."
 
 #: ../../godmode/reporting/map_builder.php:240
 #: ../../godmode/reporting/reporting_builder.php:177
@@ -1337,7 +1344,7 @@ msgstr "Bereich"
 #: ../../godmode/reporting/graph_builder.php:419
 #: ../../operation/reporting/graph_viewer.php:140
 msgid "Stacked area"
-msgstr ""
+msgstr "gestapelter Bereich"
 
 #: ../../godmode/reporting/graph_builder.php:420
 #: ../../operation/reporting/graph_viewer.php:141
@@ -1600,7 +1607,7 @@ msgstr "Adresse"
 
 #: ../../godmode/servers/manage_export.php:102
 msgid "Transfer Mode"
-msgstr ""
+msgstr "Transfermodus"
 
 #: ../../godmode/servers/modificar_server.php:36
 msgid "Server deleted successfully"
@@ -1694,27 +1701,27 @@ msgstr "Keine Servers sind in der Datenbasis konfiguriert"
 
 #: ../../godmode/servers/manage_recontask.php:40
 msgid "Succesfully deleted recon task"
-msgstr ""
+msgstr "Recon Task wurde gelöscht."
 
 #: ../../godmode/servers/manage_recontask.php:42
 msgid "Error deleting recon task"
-msgstr ""
+msgstr "Recon Task onnte nicht gelöscht werden."
 
 #: ../../godmode/servers/manage_recontask.php:71
 msgid "Successfully updated recon task"
-msgstr ""
+msgstr "Recon Task wurde aktualisiert."
 
 #: ../../godmode/servers/manage_recontask.php:73
 msgid "Error updating recon task"
-msgstr ""
+msgstr "Recon Task konnte nicht aktualisiert werden."
 
 #: ../../godmode/servers/manage_recontask.php:86
 msgid "Successfully created recon task"
-msgstr ""
+msgstr "Recon Task wurde erfolgreich erstellt."
 
 #: ../../godmode/servers/manage_recontask.php:88
 msgid "Error creating recon task"
-msgstr ""
+msgstr "Recon Task konnte nicht erstellt werden."
 
 #: ../../godmode/servers/manage_recontask.php:95
 #: ../../godmode/servers/manage_recontask_form.php:56
@@ -1777,6 +1784,8 @@ msgid ""
 "You must select a Recon Server for the Task, otherwise the Recon Task will "
 "never run"
 msgstr ""
+"Sie müssen einen ReconServer für diesen Task auswählen, sonst wird dieser "
+"nicht laufen."
 
 #: ../../godmode/servers/manage_recontask_form.php:86
 msgid "hour"
@@ -1819,7 +1828,7 @@ msgstr "Keine"
 
 #: ../../godmode/servers/manage_export_form.php:94
 msgid "Transfer mode"
-msgstr ""
+msgstr "Übertragungs Modus"
 
 #: ../../godmode/servers/manage_export_form.php:111
 #: ../../godmode/agentes/module_manager_editor_plugin.php:129
@@ -1844,7 +1853,7 @@ msgstr "Plugin erfolgreich aktualisiert"
 
 #: ../../godmode/servers/plugin.php:75
 msgid "Problem creating plugin"
-msgstr "Plugion konnte nicht erstellt werden"
+msgstr "Plugin konnte nicht erstellt werden"
 
 #: ../../godmode/servers/plugin.php:78
 msgid "Plugin created successfully"
@@ -1876,7 +1885,7 @@ msgstr "max. Verzögerung"
 
 #: ../../godmode/servers/plugin.php:157
 msgid "IP address option"
-msgstr ""
+msgstr "Optionen der IP Adressen"
 
 #: ../../godmode/servers/plugin.php:161
 msgid "Port option"
@@ -2017,7 +2026,7 @@ msgstr "Verw. Nutzergruppen"
 
 #: ../../godmode/menu.php:72
 msgid "Scheduled downtime"
-msgstr ""
+msgstr "vorgesehene Stillstandszeit"
 
 #: ../../godmode/menu.php:82
 msgid "Manage modules"
@@ -6163,6 +6172,12 @@ msgstr "Kein Betreff"
 #~ "Bereiches liegen. Beispiele sind: Fehler des Agenten, Daten liegen "
 #~ "au&szlig;erhalb eines Definitionsbereiches, es wurden Tests durchgeführt. "
 #~ "Durch das Löschen inkorrekter Daten werden realistischere Plots erzeugt."
+
+#~ msgid "at"
+#~ msgstr "an"
+
+#~ msgid "No news articles at this moment"
+#~ msgstr "Keine neuen Nachrichten"
 
 #~ msgid "Users defined"
 #~ msgstr "Benutzer definiert"

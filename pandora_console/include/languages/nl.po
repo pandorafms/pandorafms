@@ -1,21 +1,24 @@
-# translation of pandora-sk.po to Slovak
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# translation of pandora-nl.po to Dutch
+# Dutch translation for pandora-fms
+# Copyright (c) 2008 Rosetta Contributors and Canonical Ltd 2008
+# This file is distributed under the same license as the pandora-fms package.
 #
-# Jorge Gonzalez <jorgegonz@artica.es>, 2008.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2008.
+# Jorge Gonzalez <jorge.gonzalez@artica.es>, 2008.
 msgid ""
 msgstr ""
-"Project-Id-Version: pandora-sk\n"
-"Report-Msgid-Bugs-To: \n"
+"Project-Id-Version: pandora-nl\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2008-12-18 12:34+0100\n"
-"PO-Revision-Date: 2008-11-20 20:56+0000\n"
-"Last-Translator: Jorge Gonzalez <Unknown>\n"
-"Language-Team: Slovak <sk@li.org>\n"
+"PO-Revision-Date: 2008-12-22 10:49+0100\n"
+"Last-Translator: Jorge Gonzalez <jorge.gonzalez@artica.es>\n"
+"Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-12-22 09:08+0000\n"
-"X-Generator: Launchpad (build Unknown)\n"
+"X-Launchpad-Export-Date: 2008-12-22 09:09+0000\n"
+"X-Generator: KBabel 1.11.4\n"
+"Plural-Forms:  nplurals=2; plural=(n != 1);\n"
 
 #: ../../reporting/stat_win.php:46
 #: ../../operation/agentes/datos_agente.php:100
@@ -40,13 +43,13 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:338
 #: ../../godmode/reporting/graph_builder.php:388
 msgid "6 hours"
-msgstr ""
+msgstr "6 uren"
 
 #: ../../reporting/stat_win.php:59 ../../reporting/stat_win.php:221
 #: ../../godmode/reporting/graph_builder.php:341
 #: ../../godmode/reporting/graph_builder.php:389
 msgid "12 hours"
-msgstr ""
+msgstr "12 uren"
 
 #: ../../reporting/stat_win.php:61 ../../reporting/stat_win.php:222
 #: ../../godmode/reporting/graph_builder.php:344
@@ -62,11 +65,11 @@ msgstr ""
 #: ../../godmode/reporting/reporting_builder.php:398
 #: ../../operation/reporting/graph_viewer.php:130
 msgid "2 days"
-msgstr ""
+msgstr "2 dagen"
 
 #: ../../reporting/stat_win.php:65 ../../reporting/stat_win.php:224
 msgid "5 days"
-msgstr ""
+msgstr "5 dagen"
 
 #: ../../reporting/stat_win.php:67 ../../reporting/stat_win.php:225
 #: ../../godmode/reporting/reporting_builder.php:399
@@ -79,7 +82,7 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:356
 #: ../../godmode/reporting/graph_builder.php:393
 msgid "15 days"
-msgstr ""
+msgstr "15 dagen"
 
 #: ../../reporting/stat_win.php:71 ../../reporting/stat_win.php:227
 #: ../../godmode/reporting/reporting_builder.php:401
@@ -112,14 +115,14 @@ msgstr ""
 #: ../../operation/reporting/reporting_viewer.php:320
 #: ../../operation/reporting/reporting_xml.php:252
 msgid "Max. Value"
-msgstr ""
+msgstr "Maximale Waarde"
 
 #: ../../reporting/stat_win.php:116 ../../include/functions.php:918
 #: ../../enterprise/include/functions_reporting_pdf.php:261
 #: ../../operation/reporting/reporting_viewer.php:305
 #: ../../operation/reporting/reporting_xml.php:247
 msgid "Avg. Value"
-msgstr ""
+msgstr "Gemiddelde Waarde"
 
 #: ../../reporting/stat_win.php:118
 #: ../../godmode/agentes/module_manager_editor_wmi.php:215
@@ -132,7 +135,7 @@ msgstr ""
 #: ../../operation/reporting/reporting_viewer.php:335
 #: ../../operation/reporting/reporting_xml.php:257
 msgid "Min. Value"
-msgstr ""
+msgstr "Minimale Waarde"
 
 #: ../../reporting/stat_win.php:187
 msgid "Refresh time"
@@ -140,11 +143,11 @@ msgstr ""
 
 #: ../../reporting/stat_win.php:191
 msgid "Avg. Only"
-msgstr ""
+msgstr "Alleen Gemiddelde"
 
 #: ../../reporting/stat_win.php:198
 msgid "Begin date"
-msgstr ""
+msgstr "Begin datum"
 
 #: ../../reporting/stat_win.php:203
 msgid "Zoom factor"
@@ -152,11 +155,11 @@ msgstr ""
 
 #: ../../reporting/stat_win.php:214
 msgid "Time range"
-msgstr ""
+msgstr "Tijdspanne"
 
 #: ../../reporting/stat_win.php:233
 msgid "Show events"
-msgstr ""
+msgstr "Toon de evenementen"
 
 #: ../../reporting/stat_win.php:242
 msgid "Show alert"
@@ -168,23 +171,23 @@ msgstr ""
 
 #: ../../reporting/fgraph.php:1040 ../../include/functions_incidents.php:26
 msgid "Informative"
-msgstr ""
+msgstr "Informatief"
 
 #: ../../reporting/fgraph.php:1041 ../../include/functions_incidents.php:27
 msgid "Low"
-msgstr "Nízka"
+msgstr "Laag"
 
 #: ../../reporting/fgraph.php:1042 ../../include/functions_incidents.php:28
 msgid "Medium"
-msgstr "Stredné"
+msgstr "Middel"
 
 #: ../../reporting/fgraph.php:1043 ../../include/functions_incidents.php:29
 msgid "Serious"
-msgstr ""
+msgstr "Serieus"
 
 #: ../../reporting/fgraph.php:1044 ../../include/functions_incidents.php:30
 msgid "Very serious"
-msgstr ""
+msgstr "Heel serieus"
 
 #: ../../reporting/fgraph.php:1045 ../../reporting/fgraph.php:1265
 #: ../../include/functions_incidents.php:31 ../../include/functions.php:585
@@ -195,34 +198,34 @@ msgstr ""
 #: ../../reporting/fgraph.php:1273 ../../include/functions.php:588
 #: ../../include/functions.php:1070 ../../include/functions.php:1090
 msgid "Informational"
-msgstr "Informačné"
+msgstr ""
 
 #: ../../reporting/fgraph.php:1280 ../../include/functions.php:591
 #: ../../include/functions.php:1071 ../../include/functions.php:1092
 msgid "Normal"
-msgstr "Normálne"
+msgstr "Normaal"
 
 #: ../../reporting/fgraph.php:1287 ../../include/functions.php:594
 #: ../../include/functions.php:1072 ../../include/functions.php:1094
 msgid "Warning"
-msgstr "Upozornenie"
+msgstr "Waarschuwing"
 
 #: ../../reporting/fgraph.php:1294 ../../include/functions.php:597
 #: ../../include/functions.php:1073 ../../include/functions.php:1096
 msgid "Critical"
-msgstr "Critické"
+msgstr "Kritisch"
 
 #: ../../reporting/fgraph.php:1470
 msgid "Today"
-msgstr "Dnes"
+msgstr "Vandaag"
 
 #: ../../reporting/fgraph.php:1471
 msgid "Week"
-msgstr "Týždeň"
+msgstr "Week"
 
 #: ../../reporting/fgraph.php:1472
 msgid "Month"
-msgstr "Mesiac"
+msgstr "Maand"
 
 #: ../../reporting/fgraph.php:1473
 msgid "Months"
@@ -285,11 +288,11 @@ msgstr ""
 
 #: ../../general/login_page.php:38
 msgid "Build"
-msgstr "Generovať"
+msgstr "Bouwen"
 
 #: ../../general/login_page.php:40
 msgid "Login"
-msgstr "Prihlásenie"
+msgstr "Aanmelden"
 
 #: ../../general/login_page.php:43
 #: ../../godmode/servers/manage_export_form.php:107
@@ -301,7 +304,7 @@ msgstr "Prihlásenie"
 #: ../../operation/users/user_edit.php:115
 #: ../../operation/users/user_edit.php:119
 msgid "Password"
-msgstr "Heslo"
+msgstr "Wachtwoord"
 
 #: ../../general/footer.php:31
 msgid "Page generated at"
@@ -313,7 +316,7 @@ msgstr ""
 
 #: ../../general/logoff.php:22
 msgid "Logged Out"
-msgstr ""
+msgstr "Uitgelogd"
 
 #: ../../general/logoff.php:31
 msgid ""
@@ -323,11 +326,11 @@ msgstr ""
 
 #: ../../general/links_menu.php:22 ../../godmode/menu.php:255
 msgid "Links"
-msgstr "Odkazy"
+msgstr "Verwijzingen"
 
 #: ../../general/noaccess.php:22
 msgid "You don't have access to this page"
-msgstr ""
+msgstr "U hebt geen toegang tot deze pagina"
 
 #: ../../general/noaccess.php:26
 msgid ""
@@ -361,11 +364,11 @@ msgstr ""
 
 #: ../../general/logon_ok.php:54
 msgid "by"
-msgstr "od"
+msgstr "door"
 
 #: ../../general/logon_ok.php:54
 msgid "at"
-msgstr ""
+msgstr "apestaart"
 
 #: ../../general/logon_ok.php:61
 msgid "No news articles at this moment"
@@ -459,7 +462,7 @@ msgstr ""
 #: ../../godmode/admin_access_logs.php:88
 #: ../../enterprise/extensions/cron/main.php:85
 msgid "User"
-msgstr "Používateľ"
+msgstr "Gebruiker"
 
 #: ../../general/logon_ok.php:146 ../../godmode/servers/manage_export.php:102
 #: ../../godmode/servers/manage_recontask.php:100
@@ -478,12 +481,12 @@ msgstr "Používateľ"
 #: ../../operation/snmpconsole/snmp_view.php:390
 #: ../../operation/events/events.php:258 ../../operation/events/events.php:398
 msgid "Action"
-msgstr "Akcia"
+msgstr "Actie"
 
 #: ../../general/logon_ok.php:147 ../../godmode/admin_access_logs.php:90
 #: ../../operation/reporting/reporting_viewer.php:70
 msgid "Date"
-msgstr "Dátum"
+msgstr "Datum"
 
 #: ../../general/logon_ok.php:148 ../../godmode/admin_access_logs.php:91
 msgid "Source IP"
@@ -497,7 +500,7 @@ msgstr ""
 #: ../../godmode/users/configure_user.php:209
 #: ../../operation/users/user_edit.php:129
 msgid "Comments"
-msgstr "Komentáre"
+msgstr "Commentaar"
 
 #: ../../general/header.php:31
 msgid "You are"
@@ -505,7 +508,7 @@ msgstr ""
 
 #: ../../general/header.php:35
 msgid "Logout"
-msgstr "Odhlásenie"
+msgstr "Afmelden"
 
 #: ../../general/header.php:39
 msgid "General information"
@@ -520,7 +523,7 @@ msgstr ""
 #: ../../enterprise/include/functions_reporting_pdf.php:254
 #: ../../operation/agentes/estado_grupo.php:225
 msgid "Down"
-msgstr "Dole"
+msgstr "Omlaag"
 
 #: ../../general/header.php:52
 msgid "servers down"
@@ -528,7 +531,7 @@ msgstr ""
 
 #: ../../general/header.php:55
 msgid "Ready"
-msgstr "Pripravený"
+msgstr "Voltooid"
 
 #: ../../general/header.php:65 ../../general/header.php:67
 msgid "Autorefresh"
@@ -537,7 +540,7 @@ msgstr ""
 #: ../../general/header.php:72 ../../operation/events/event_statistics.php:32
 #: ../../operation/events/events.php:96
 msgid "Events"
-msgstr "Udalosti"
+msgstr "Gebeurtenissen"
 
 #: ../../general/logon_failed.php:22
 msgid "Authentication Error"
@@ -626,7 +629,7 @@ msgstr "Id"
 #: ../../operation/events/events.php:255
 #: ../../operation/messages/message.php:191
 msgid "Timestamp"
-msgstr ""
+msgstr "Tijdstempel"
 
 #: ../../extensions/update_manager/main.php:83
 #: ../../godmode/reporting/graph_builder.php:487
@@ -677,7 +680,7 @@ msgstr ""
 #: ../../operation/agentes/estado_alertas.php:163
 #: ../../operation/users/user.php:35
 msgid "Description"
-msgstr "Popis"
+msgstr "Beschrijving"
 
 #: ../../extensions/update_manager/main.php:89
 msgid "Overwrite local changes"
@@ -730,7 +733,7 @@ msgstr ""
 #: ../../operation/events/events.php:188
 #: ../../operation/users/user_edit.php:137
 msgid "Update"
-msgstr "Aktualizovať"
+msgstr "Verversen"
 
 #: ../../extensions/update_manager/main.php:98
 msgid "Your system version number is"
@@ -742,7 +745,7 @@ msgstr ""
 
 #: ../../extensions/update_manager/settings.php:43
 msgid "Settings"
-msgstr "Nastavenia"
+msgstr "Instellingen"
 
 #: ../../extensions/update_manager/settings.php:49
 msgid "Customer key"
@@ -774,7 +777,7 @@ msgstr ""
 
 #: ../../extensions/update_manager/settings.php:70
 msgid "Proxy port"
-msgstr ""
+msgstr "Proxy poort"
 
 #: ../../extensions/update_manager/settings.php:73
 msgid "Proxy user"
@@ -786,7 +789,7 @@ msgstr ""
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:552
 msgid "Development"
-msgstr "Vývoj"
+msgstr "Ontwikkeling"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:553
 msgid "Testing"
@@ -794,7 +797,7 @@ msgstr ""
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:554
 msgid "Public"
-msgstr "Verejný"
+msgstr "Openbaar"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:555
 #: ../../godmode/groups/group_list.php:125
@@ -810,11 +813,11 @@ msgstr "Verejný"
 #: ../../godmode/agentes/alert_manager_editor.php:273
 #: ../../include/functions.php:684
 msgid "Disabled"
-msgstr "Zakázaný"
+msgstr "Uitgeschakeld"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:563
 msgid "Database"
-msgstr "Databáza"
+msgstr "Database"
 
 #: ../../extensions/update_manager/lib/libupdate_manager.php:564
 msgid "Code / binary directory"
@@ -949,7 +952,7 @@ msgstr ""
 #: ../../operation/agentes/estado_alertas.php:134
 #: ../../operation/events/events.php:117 ../../operation/events/events.php:249
 msgid "Group"
-msgstr "Skupina"
+msgstr "Groep"
 
 #: ../../godmode/reporting/map_builder.php:263
 #: ../../godmode/reporting/map_builder.php:352
@@ -992,7 +995,7 @@ msgstr "Skupina"
 #: ../../operation/events/events.php:383
 #: ../../operation/messages/message.php:192
 msgid "Delete"
-msgstr "Odstrániť"
+msgstr "Verwijderen"
 
 #: ../../godmode/reporting/map_builder.php:287
 #: ../../godmode/reporting/map_builder.php:319
@@ -1028,7 +1031,7 @@ msgstr "Odstrániť"
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:117
 #: ../../operation/incidents/incident_detail.php:293
 msgid "Create"
-msgstr "Vytvoriť"
+msgstr "Aanmaken"
 
 #: ../../godmode/reporting/map_builder.php:297
 #: ../../godmode/reporting/graph_builder.php:475
@@ -1060,23 +1063,23 @@ msgstr "Vytvoriť"
 #: ../../operation/agentes/estado_alertas.php:58
 #: ../../operation/agentes/tactical.php:219 ../../operation/users/user.php:34
 msgid "Name"
-msgstr "Meno"
+msgstr "Naam"
 
 #: ../../godmode/reporting/map_builder.php:301
 msgid "Background"
-msgstr "Pozadie"
+msgstr "Achtergrond"
 
 #: ../../godmode/reporting/map_builder.php:305
 #: ../../godmode/reporting/map_builder.php:392
 #: ../../godmode/reporting/graph_builder.php:304
 msgid "Width"
-msgstr "Šírka"
+msgstr "Breedte"
 
 #: ../../godmode/reporting/map_builder.php:307
 #: ../../godmode/reporting/map_builder.php:390
 #: ../../godmode/reporting/graph_builder.php:322
 msgid "Height"
-msgstr "Výška"
+msgstr "Hoogte"
 
 #: ../../godmode/reporting/map_builder.php:327
 msgid "preview"
@@ -1092,14 +1095,14 @@ msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:359
 msgid "Hour"
-msgstr "hodina"
+msgstr "Uur"
 
 #: ../../godmode/reporting/map_builder.php:360
 #: ../../godmode/reporting/map_builder.php:361
 #: ../../godmode/reporting/map_builder.php:362
 #: ../../godmode/reporting/map_builder.php:363
 msgid "Hours"
-msgstr "hodín"
+msgstr "Uur"
 
 #: ../../godmode/reporting/map_builder.php:364
 #: ../../godmode/reporting/graph_builder.php:390
@@ -1114,7 +1117,7 @@ msgstr ""
 #: ../../enterprise/godmode/agentes/inventory_manager.php:120
 #: ../../enterprise/godmode/agentes/inventory_manager.php:121
 msgid "days"
-msgstr "dní"
+msgstr "dagen"
 
 #: ../../godmode/reporting/map_builder.php:366
 #: ../../godmode/reporting/graph_builder.php:353
@@ -1144,7 +1147,7 @@ msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:384
 msgid "Label"
-msgstr "Popis"
+msgstr "Label"
 
 #: ../../godmode/reporting/map_builder.php:386
 msgid "Label color"
@@ -1172,7 +1175,7 @@ msgstr ""
 #: ../../operation/agentes/estado_alertas.php:162
 #: ../../operation/events/events.php:237
 msgid "Type"
-msgstr "Typ"
+msgstr "Type"
 
 #: ../../godmode/reporting/map_builder.php:394
 #: ../../godmode/reporting/graph_builder.php:215
@@ -1191,7 +1194,7 @@ msgstr "Typ"
 #: ../../operation/agentes/estado_agente.php:148
 #: ../../operation/agentes/estado_alertas.php:160
 msgid "Agent"
-msgstr "Agent"
+msgstr "Contactpersoon"
 
 #: ../../godmode/reporting/map_builder.php:396
 #: ../../godmode/reporting/graph_builder.php:216
@@ -1207,7 +1210,7 @@ msgstr "Agent"
 #: ../../operation/reporting/reporting_viewer.php:214
 #: ../../operation/agentes/exportdata.php:174
 msgid "Module"
-msgstr "Modul"
+msgstr "Module"
 
 #: ../../godmode/reporting/map_builder.php:398
 #: ../../godmode/reporting/graph_builder.php:376
@@ -1219,7 +1222,7 @@ msgstr ""
 
 #: ../../godmode/reporting/map_builder.php:400
 msgid "Image"
-msgstr "Obrázok"
+msgstr "Afbeelding"
 
 #: ../../godmode/reporting/map_builder.php:403
 #: ../../godmode/groups/group_list.php:108
@@ -1229,7 +1232,7 @@ msgstr "Obrázok"
 #: ../../godmode/modules/manage_nc_groups_form.php:58
 #: ../../operation/agentes/estado_generalagente.php:74
 msgid "Parent"
-msgstr "Rodič"
+msgstr "Parent"
 
 #: ../../godmode/reporting/map_builder.php:406
 msgid "Map linked"
@@ -1238,7 +1241,7 @@ msgstr ""
 #: ../../godmode/reporting/map_builder.php:441
 #: ../../operation/reporting/reporting_viewer.php:82
 msgid "Loading"
-msgstr ""
+msgstr "Laden"
 
 #: ../../godmode/reporting/graph_builder.php:83
 msgid "Graph stored successfully"
@@ -1286,11 +1289,11 @@ msgstr ""
 #: ../../operation/agentes/exportdata.php:268
 #: ../../operation/agentes/estado_agente.php:152
 msgid "Modules"
-msgstr "Moduly"
+msgstr "Modules"
 
 #: ../../godmode/reporting/graph_builder.php:300
 msgid "Factor"
-msgstr "Faktor"
+msgstr "Factor"
 
 #: ../../godmode/reporting/graph_builder.php:310
 msgid "Render now"
@@ -1306,7 +1309,7 @@ msgstr ""
 #: ../../include/functions.php:739 ../../include/functions.php:823
 #: ../../include/functions_db.php:1930
 msgid "Yes"
-msgstr "Áno"
+msgstr "Ja"
 
 #: ../../godmode/reporting/graph_builder.php:315
 #: ../../godmode/reporting/graph_builder.php:317
@@ -1318,7 +1321,7 @@ msgstr "Áno"
 #: ../../include/functions.php:741 ../../include/functions.php:825
 #: ../../include/functions_db.php:1932
 msgid "No"
-msgstr "Nie"
+msgstr "Nee"
 
 #: ../../godmode/reporting/graph_builder.php:335
 #: ../../godmode/reporting/graph_builder.php:387
@@ -1344,12 +1347,12 @@ msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:414
 msgid "Stacked"
-msgstr "Na seba"
+msgstr ""
 
 #: ../../godmode/reporting/graph_builder.php:418
 #: ../../operation/reporting/graph_viewer.php:139
 msgid "Area"
-msgstr "Oblasť"
+msgstr "Gebied"
 
 #: ../../godmode/reporting/graph_builder.php:419
 #: ../../operation/reporting/graph_viewer.php:140
@@ -1359,7 +1362,7 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:420
 #: ../../operation/reporting/graph_viewer.php:141
 msgid "Line"
-msgstr "Čiara"
+msgstr "Regel"
 
 #: ../../godmode/reporting/graph_builder.php:443
 #: ../../godmode/reporting/reporting_builder.php:425
@@ -1377,7 +1380,7 @@ msgstr "Čiara"
 #: ../../enterprise/dashboard/main_dashboard.php:181
 #: ../../operation/incidents/incident_detail.php:311
 msgid "Add"
-msgstr "Pridať"
+msgstr "Toevoegen"
 
 #: ../../godmode/reporting/graph_builder.php:443
 msgid "Redraw"
@@ -1390,11 +1393,11 @@ msgstr ""
 #: ../../godmode/reporting/graph_builder.php:479
 #: ../../godmode/reporting/reporting_builder.php:351
 msgid "Private"
-msgstr "Súkromný"
+msgstr "Privé"
 
 #: ../../godmode/reporting/graph_builder.php:493
 msgid "Store"
-msgstr "Uložiť"
+msgstr "Opslaan"
 
 #: ../../godmode/reporting/reporting_builder.php:123
 msgid "Reporting successfully deleted"
@@ -1496,7 +1499,7 @@ msgstr ""
 #: ../../operation/reporting/graph_viewer.php:127
 #: ../../operation/reporting/graph_viewer.php:128
 msgid "hours"
-msgstr "hodín"
+msgstr "uur"
 
 #: ../../godmode/reporting/reporting_builder.php:400
 msgid "2 weeks"
@@ -1512,16 +1515,16 @@ msgstr ""
 
 #: ../../godmode/reporting/reporting_builder.php:437
 msgid "Order"
-msgstr "Poradie"
+msgstr "Volgorde"
 
 #: ../../godmode/reporting/reporting_builder.php:442
 msgid "Options"
-msgstr "Možnosti"
+msgstr "Opties"
 
 #: ../../godmode/reporting/reporting_builder.php:464
 #: ../../enterprise/include/functions_reporting_pdf.php:252
 msgid "Up"
-msgstr "Hore"
+msgstr "Omhoog"
 
 #: ../../godmode/reporting/reporting_builder.php:495
 #: ../../operation/reporting/reporting_viewer.php:54
@@ -1617,12 +1620,12 @@ msgstr ""
 #: ../../operation/agentes/sla_view.php:49
 #: ../../operation/agentes/estado_agente.php:150
 msgid "Interval"
-msgstr ""
+msgstr "Interval"
 
 #: ../../godmode/servers/manage_export.php:102
 #: ../../godmode/servers/manage_export_form.php:90
 msgid "Address"
-msgstr "Adresa"
+msgstr "Adres"
 
 #: ../../godmode/servers/manage_export.php:102
 msgid "Transfer Mode"
@@ -1653,7 +1656,7 @@ msgstr ""
 #: ../../godmode/agentes/agent_manager.php:89
 #: ../../operation/agentes/estado_generalagente.php:64
 msgid "IP Address"
-msgstr "IP adresa"
+msgstr "IP-adres"
 
 #: ../../godmode/servers/modificar_server.php:79 ../../godmode/menu.php:205
 msgid "Manage servers"
@@ -1679,17 +1682,17 @@ msgstr ""
 #: ../../operation/agentes/tactical.php:220
 #: ../../operation/events/events.php:392
 msgid "Status"
-msgstr "Stav"
+msgstr "Status"
 
 #: ../../godmode/servers/modificar_server.php:87
 msgid "Started"
-msgstr "Začaté"
+msgstr "Gestart"
 
 #: ../../godmode/servers/modificar_server.php:87
 #: ../../operation/incidents/incident.php:257
 #: ../../operation/servers/view_server.php:61
 msgid "Updated"
-msgstr "Aktualizované"
+msgstr "Vernieuwd"
 
 #: ../../godmode/servers/modificar_server.php:124
 #: ../../godmode/agentes/agent_manager.php:117
@@ -1699,7 +1702,7 @@ msgstr ""
 
 #: ../../godmode/servers/modificar_server.php:125
 msgid "Master"
-msgstr "Hlavný"
+msgstr "Meester"
 
 #: ../../godmode/servers/modificar_server.php:126
 #: ../../operation/servers/view_server.php:97
@@ -1754,7 +1757,7 @@ msgstr ""
 #: ../../godmode/servers/manage_recontask_form.php:82
 #: ../../operation/servers/view_server_detail.php:77
 msgid "Network"
-msgstr "Sieť"
+msgstr "Netwerk"
 
 #: ../../godmode/servers/manage_recontask.php:100
 #: ../../godmode/servers/manage_recontask_form.php:107
@@ -1786,7 +1789,7 @@ msgstr "OS"
 #: ../../godmode/servers/manage_recontask_form.php:113
 #: ../../godmode/agentes/planned_downtime.php:207
 msgid "Any"
-msgstr "Všetky"
+msgstr "Alle"
 
 #: ../../godmode/servers/manage_recontask.php:131
 msgid "There are no recon task configured"
@@ -1811,26 +1814,26 @@ msgstr ""
 #: ../../godmode/servers/manage_recontask_form.php:86
 #: ../../enterprise/godmode/agentes/inventory_manager.php:114
 msgid "hour"
-msgstr "hodina"
+msgstr "uur"
 
 #: ../../godmode/servers/manage_recontask_form.php:90
 #: ../../enterprise/godmode/agentes/inventory_manager.php:118
 #: ../../operation/agentes/exportdata.php:61
 msgid "day"
-msgstr "deň"
+msgstr "dag"
 
 #: ../../godmode/servers/manage_recontask_form.php:92
 msgid "week"
-msgstr "týždeň"
+msgstr "week"
 
 #: ../../godmode/servers/manage_recontask_form.php:93
 msgid "weeks"
-msgstr "týždňov"
+msgstr "weken"
 
 #: ../../godmode/servers/manage_recontask_form.php:94
 #: ../../enterprise/godmode/agentes/inventory_manager.php:122
 msgid "month"
-msgstr "mesiac"
+msgstr "maand"
 
 #: ../../godmode/servers/manage_export_form.php:77
 #: ../../operation/servers/view_server.php:106
@@ -1846,7 +1849,7 @@ msgstr ""
 #: ../../godmode/agentes/module_manager_editor_network.php:255
 #: ../../godmode/users/configure_user.php:224 ../../include/functions.php:619
 msgid "None"
-msgstr "Žiadne"
+msgstr "Geen"
 
 #: ../../godmode/servers/manage_export_form.php:94
 msgid "Transfer mode"
@@ -1855,7 +1858,7 @@ msgstr ""
 #: ../../godmode/servers/manage_export_form.php:111
 #: ../../godmode/agentes/module_manager_editor_plugin.php:129
 msgid "Port"
-msgstr "Port"
+msgstr "Poort"
 
 #: ../../godmode/servers/manage_export_form.php:115
 msgid "Target directory"
@@ -1927,7 +1930,7 @@ msgstr ""
 
 #: ../../godmode/servers/plugin.php:199
 msgid "execute"
-msgstr "vykonať"
+msgstr "uitvoeren"
 
 #: ../../godmode/servers/plugin.php:223
 msgid "There are no plugins in the system"
@@ -1970,7 +1973,7 @@ msgstr ""
 #: ../../godmode/groups/configure_group.php:68
 #: ../../godmode/modules/module_list.php:55
 msgid "Icon"
-msgstr "Ikona"
+msgstr "Pictogram"
 
 #: ../../godmode/groups/group_list.php:109
 #: ../../godmode/groups/configure_group.php:88
@@ -1983,7 +1986,7 @@ msgstr "Ikona"
 #: ../../operation/agentes/ver_agente.php:226
 #: ../../operation/agentes/estado_agente.php:154
 msgid "Alerts"
-msgstr "Výstrahy"
+msgstr "Attenderingen"
 
 #: ../../godmode/groups/group_list.php:125
 #: ../../godmode/agentes/alert_manager_editor.php:103
@@ -1991,7 +1994,7 @@ msgstr "Výstrahy"
 #: ../../godmode/agentes/alert_manager_editor.php:270
 #: ../../godmode/agentes/alert_manager_editor.php:274
 msgid "Enabled"
-msgstr "Povolené"
+msgstr "Ingeschakeld"
 
 #: ../../godmode/groups/group_list.php:126 ../../godmode/setup/links.php:133
 #: ../../godmode/setup/news.php:140
@@ -2033,7 +2036,7 @@ msgstr ""
 
 #: ../../godmode/menu.php:30
 msgid "Administration"
-msgstr "Správa"
+msgstr "Beheer"
 
 #: ../../godmode/menu.php:40
 msgid "Manage agents"
@@ -2147,7 +2150,7 @@ msgstr ""
 
 #: ../../godmode/menu.php:328 ../../operation/menu.php:300
 msgid "Extensions"
-msgstr "Rozšírenia"
+msgstr "Uitbreiding"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:37
 #: ../../godmode/agentes/configurar_agente.php:283
@@ -2257,12 +2260,12 @@ msgstr ""
 
 #: ../../godmode/snmpconsole/snmp_alert.php:229
 msgid "Other value"
-msgstr "Iná hodnota"
+msgstr "Andere waarde"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:234
 #: ../../include/functions.php:450
 msgid "seconds"
-msgstr "sekúnd"
+msgstr "seconden"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:237
 #: ../../godmode/agentes/alert_manager_editor.php:73
@@ -2272,7 +2275,7 @@ msgstr "sekúnd"
 #: ../../operation/incidents/incident.php:255
 #: ../../operation/incidents/incident_detail.php:265
 msgid "Priority"
-msgstr "Priorita"
+msgstr "Prioriteit"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:252
 msgid "Alert Overview"
@@ -2315,7 +2318,7 @@ msgstr ""
 #: ../../operation/agentes/sla_view.php:99
 #: ../../operation/agentes/sla_view.php:180
 msgid "N/A"
-msgstr "N/A"
+msgstr "N/B"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:325
 #: ../../include/functions_html.php:783 ../../include/functions_html.php:784
@@ -2326,12 +2329,12 @@ msgstr "N/A"
 #: ../../operation/agentes/sla_view.php:126
 #: ../../operation/agentes/estado_alertas.php:197
 msgid "Never"
-msgstr "Nikdy"
+msgstr "Nooit"
 
 #: ../../godmode/snmpconsole/snmp_alert.php:350
 #: ../../operation/snmpconsole/snmp_view.php:396
 msgid "Legend"
-msgstr ""
+msgstr "Legenda"
 
 #: ../../godmode/admin_access_logs.php:31
 msgid "Pandora audit"
@@ -2366,7 +2369,7 @@ msgstr "Filter"
 #: ../../operation/events/events.php:123 ../../operation/events/events.php:128
 #: ../../operation/events/events.php:155
 msgid "All"
-msgstr "Všetko"
+msgstr "Alles"
 
 #: ../../godmode/admin_access_logs.php:54
 #: ../../godmode/agentes/modificar_agente.php:161
@@ -2377,7 +2380,7 @@ msgstr "Všetko"
 #: ../../operation/agentes/estado_agente.php:62
 #: ../../operation/agentes/estado_alertas.php:139
 msgid "Show"
-msgstr "Zobraziť"
+msgstr "Tonen"
 
 #: ../../godmode/setup/setup.php:80
 msgid "General configuration"
@@ -2499,7 +2502,7 @@ msgstr ""
 
 #: ../../godmode/setup/links.php:103
 msgid "Link"
-msgstr "Odkaz"
+msgstr "Verwijzing"
 
 #: ../../godmode/setup/news.php:88 ../../godmode/setup/news.php:117
 msgid "Site news management"
@@ -2511,7 +2514,7 @@ msgstr ""
 #: ../../operation/messages/message.php:143
 #: ../../operation/messages/message.php:190
 msgid "Subject"
-msgstr "Predmet"
+msgstr "Onderwerp"
 
 #: ../../godmode/setup/news.php:104 ../../include/functions.php:724
 #: ../../include/functions.php:748 ../../include/functions.php:833
@@ -2520,12 +2523,12 @@ msgstr "Predmet"
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor_form.php:70
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:176
 msgid "Text"
-msgstr "Text"
+msgstr "Tekst"
 
 #: ../../godmode/setup/news.php:120
 #: ../../operation/incidents/incident_detail.php:326
 msgid "Author"
-msgstr "Autor"
+msgstr "Auteur"
 
 #: ../../godmode/profiles/profile_list.php:33
 #: ../../operation/users/user.php:91
@@ -2575,7 +2578,7 @@ msgstr ""
 
 #: ../../godmode/profiles/profile_list.php:172
 msgid "Profile name"
-msgstr ""
+msgstr "Profielnaam"
 
 #: ../../godmode/profiles/profile_list.php:174
 msgid "View incidents"
@@ -2614,7 +2617,7 @@ msgstr ""
 #: ../../godmode/users/configure_user.php:233
 #: ../../operation/users/user.php:100
 msgid "Profiles"
-msgstr "Profily"
+msgstr "Profielen"
 
 #: ../../godmode/profiles/profile_list.php:231
 msgid "Read Incidents"
@@ -2685,7 +2688,7 @@ msgstr ""
 #: ../../godmode/agentes/configurar_agente.php:196
 #: ../../operation/reporting/graph_viewer.php:169
 msgid "View"
-msgstr "Zobraziť"
+msgstr "Beeld"
 
 #: ../../godmode/agentes/configurar_agente.php:204
 msgid "Setup Agent"
@@ -2853,7 +2856,7 @@ msgstr ""
 #: ../../godmode/agentes/module_manager_editor_wmi.php:138
 #: ../../godmode/modules/manage_network_components_form_wmi.php:168
 msgid "Namespace"
-msgstr "Priestor mien"
+msgstr "Naamruimte"
 
 #: ../../godmode/agentes/module_manager_editor_wmi.php:145
 #: ../../godmode/modules/manage_network_components_form_wmi.php:144
@@ -2875,7 +2878,7 @@ msgstr ""
 #: ../../godmode/modules/manage_network_components_form_wmi.php:176
 #: ../../enterprise/godmode/agentes/inventory_manager.php:124
 msgid "Username"
-msgstr "Meno používateľa"
+msgstr "Gebruikersnaam"
 
 #: ../../godmode/agentes/module_manager_editor_wmi.php:173
 #: ../../godmode/agentes/module_manager_editor_data.php:95
@@ -2940,11 +2943,11 @@ msgstr ""
 
 #: ../../godmode/agentes/agent_template.php:130
 msgid "Template"
-msgstr "Šablóna"
+msgstr "Sjabloon"
 
 #: ../../godmode/agentes/agent_template.php:141
 msgid "Assign"
-msgstr ""
+msgstr "Toewijzen"
 
 #: ../../godmode/agentes/agent_template.php:148
 #: ../../godmode/agentes/module_manager.php:76 ../../godmode/db/db_info.php:62
@@ -3037,7 +3040,7 @@ msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.php:230
 msgid "Remove"
-msgstr "Odstrániť"
+msgstr "Verwijderen"
 
 #: ../../godmode/agentes/planned_downtime.php:237
 #: ../../godmode/agentes/planned_downtime.php:282
@@ -3057,13 +3060,13 @@ msgstr ""
 #: ../../operation/messages/message.php:105
 #: ../../operation/messages/message.php:139
 msgid "From"
-msgstr "Od"
+msgstr "Van"
 
 #: ../../godmode/agentes/planned_downtime.php:274
 #: ../../operation/messages/message.php:67
 #: ../../operation/messages/message.php:107
 msgid "To"
-msgstr "Pre"
+msgstr "Aan"
 
 #: ../../godmode/agentes/planned_downtime.php:275
 msgid "Del"
@@ -3075,7 +3078,7 @@ msgstr ""
 
 #: ../../godmode/agentes/planned_downtime.php:277
 msgid "Running"
-msgstr "Beží"
+msgstr "Actief"
 
 #: ../../godmode/agentes/module_manager_editor_plugin.php:79
 msgid "Plugin server module"
@@ -3108,14 +3111,14 @@ msgstr ""
 #: ../../operation/snmpconsole/snmp_view.php:384
 #: ../../operation/events/events.php:332
 msgid "Alert"
-msgstr ""
+msgstr "Alert"
 
 #: ../../godmode/agentes/alert_manager.php:109
 #: ../../godmode/agentes/alert_manager.php:185
 #: ../../godmode/agentes/alert_manager_editor.php:365
 #: ../../include/functions_reporting.php:548
 msgid "Threshold"
-msgstr "Prah"
+msgstr "Drempelwaarde"
 
 #: ../../godmode/agentes/alert_manager.php:110
 #: ../../godmode/agentes/alert_manager.php:186
@@ -3136,7 +3139,7 @@ msgstr ""
 #: ../../godmode/agentes/alert_manager_editor.php:368
 #: ../../include/functions_db.php:1862
 msgid "Time"
-msgstr "Čas"
+msgstr "Tijd"
 
 #: ../../godmode/agentes/alert_manager.php:114
 #: ../../godmode/agentes/alert_manager.php:190
@@ -3169,7 +3172,7 @@ msgstr ""
 #: ../../godmode/agentes/alert_manager_editor.php:364
 #: ../../include/functions_db.php:1858
 msgid "Oper"
-msgstr "Oper"
+msgstr ""
 
 #: ../../godmode/agentes/manage_config.php:55
 #: ../../godmode/agentes/manage_config.php:243
@@ -3205,8 +3208,7 @@ msgid "You must check modules and/or alerts to be deleted"
 msgstr ""
 
 #: ../../godmode/agentes/manage_config.php:329
-msgid ""
-"There was an error removing the module data, the removal has been cancelled"
+msgid "There was an error removing the module data, the removal has been cancelled"
 msgstr ""
 
 #: ../../godmode/agentes/manage_config.php:332
@@ -3244,7 +3246,7 @@ msgstr ""
 
 #: ../../godmode/agentes/manage_config.php:441
 msgid "Targets"
-msgstr ""
+msgstr "Doelen"
 
 #: ../../godmode/agentes/manage_config.php:473
 msgid "Copy Modules/Alerts"
@@ -3335,7 +3337,7 @@ msgstr ""
 #: ../../operation/incidents/incident_search.php:48
 #: ../../operation/agentes/estado_agente.php:72
 msgid "Search"
-msgstr "Hľadať"
+msgstr "Zoeken"
 
 #: ../../godmode/agentes/modificar_agente.php:220
 #: ../../godmode/agentes/agent_manager.php:75 ../../godmode/db/db_info.php:61
@@ -3391,7 +3393,7 @@ msgstr ""
 
 #: ../../godmode/agentes/agent_manager.php:98
 msgid "Delete selected"
-msgstr ""
+msgstr "Verwijderen geselecteerde"
 
 #: ../../godmode/agentes/agent_manager.php:117
 msgid ""
@@ -3446,7 +3448,7 @@ msgstr ""
 
 #: ../../godmode/agentes/agent_manager.php:146
 msgid "Active"
-msgstr "Aktívny"
+msgstr "Actief"
 
 #: ../../godmode/agentes/agent_manager.php:149
 msgid "Remote configuration"
@@ -3454,7 +3456,7 @@ msgstr ""
 
 #: ../../godmode/agentes/agent_manager.php:157
 msgid "Not available"
-msgstr "Nie je k dispozícií"
+msgstr "Niet beschikbaar"
 
 #: ../../godmode/agentes/module_manager.php:57
 msgid "Create a new data server module"
@@ -3518,13 +3520,12 @@ msgid "Alert text"
 msgstr ""
 
 #: ../../godmode/agentes/alert_manager_editor.php:136
-msgid ""
-"This value must be al least Module Interval * (Min.Number of Alerts + 1)"
+msgid "This value must be al least Module Interval * (Min.Number of Alerts + 1)"
 msgstr ""
 
 #: ../../godmode/agentes/alert_manager_editor.php:158
 msgid "Other"
-msgstr "Iné"
+msgstr "Overig"
 
 #: ../../godmode/agentes/alert_manager_editor.php:204
 msgid "Time from"
@@ -3571,7 +3572,7 @@ msgstr ""
 #: ../../godmode/agentes/alert_manager_editor.php:255
 #: ../../include/functions.php:635
 msgid "Sun"
-msgstr "Slnko"
+msgstr "Sun"
 
 #: ../../godmode/agentes/alert_manager_editor.php:259
 msgid "Field #2 (Rec)"
@@ -3596,7 +3597,7 @@ msgstr ""
 #: ../../godmode/agentes/alert_manager_editor.php:341
 #: ../../operation/menu.php:26
 msgid "Operation"
-msgstr "Činnosť"
+msgstr "Bewerking"
 
 #: ../../godmode/modules/manage_network_components.php:137
 #: ../../godmode/modules/manage_nc_groups.php:70
@@ -3736,11 +3737,11 @@ msgstr ""
 #: ../../operation/events/events.php:252
 #: ../../operation/users/user_edit.php:109
 msgid "User ID"
-msgstr "ID používateľa"
+msgstr "Gebruiker-id"
 
 #: ../../godmode/users/user_list.php:64 ../../operation/users/user.php:33
 msgid "Profile"
-msgstr "Profil"
+msgstr "Profiel"
 
 #: ../../godmode/users/user_list.php:92
 #: ../../godmode/users/configure_user.php:272
@@ -3797,7 +3798,7 @@ msgstr ""
 #: ../../godmode/users/configure_user.php:194
 #: ../../operation/users/user_edit.php:127
 msgid "Telephone"
-msgstr "Telefón"
+msgstr "Telefoon"
 
 #: ../../godmode/users/configure_user.php:196
 msgid "Global Profile"
@@ -3805,7 +3806,7 @@ msgstr ""
 
 #: ../../godmode/users/configure_user.php:201
 msgid "Administrator"
-msgstr ""
+msgstr "Beheerder"
 
 #: ../../godmode/users/configure_user.php:203
 msgid ""
@@ -4045,7 +4046,7 @@ msgstr ""
 #: ../../enterprise/operation/agentes/agent_inventory.php:98
 #: ../../enterprise/operation/inventory/inventory.php:144
 msgid "Total"
-msgstr "Celkom"
+msgstr "Totaal"
 
 #: ../../godmode/db/db_audit.php:80 ../../godmode/db/db_event.php:56
 msgid "Records"
@@ -4089,7 +4090,7 @@ msgstr ""
 
 #: ../../godmode/db/db_refine.php:35
 msgid "Delete Data"
-msgstr ""
+msgstr "Data verwijderen"
 
 #: ../../godmode/db/db_refine.php:41
 msgid "Maximum equal to minimum"
@@ -4185,7 +4186,7 @@ msgstr ""
 
 #: ../../godmode/alerts/configure_alert.php:84
 msgid "Command"
-msgstr "Príkaz"
+msgstr "Opdracht"
 
 #: ../../include/functions_html.php:732
 msgid "Request successfully processed"
@@ -4269,7 +4270,7 @@ msgstr ""
 #: ../../operation/events/events.php:158 ../../operation/events/events.php:296
 #: ../../operation/events/events.php:320
 msgid "System"
-msgstr "Systém"
+msgstr "Systeem"
 
 #: ../../include/functions_events.php:231
 msgid "Host detected by recon server"
@@ -4302,7 +4303,7 @@ msgstr ","
 
 #: ../../include/functions.php:384
 msgid ","
-msgstr ""
+msgstr ", "
 
 #: ../../include/functions.php:456 ../../include/functions.php:458
 #: ../../operation/visual_console/render_view.php:78
@@ -4311,11 +4312,11 @@ msgstr ""
 #: ../../operation/visual_console/render_view.php:81
 #: ../../operation/visual_console/render_view.php:82
 msgid "minutes"
-msgstr "minút"
+msgstr "minuten"
 
 #: ../../include/functions.php:468 ../../include/functions.php:470
 msgid "months"
-msgstr "mesiacov"
+msgstr "maanden"
 
 #: ../../include/functions.php:765 ../../include/functions.php:847
 #: ../../include/functions_db.php:1865
@@ -4408,7 +4409,7 @@ msgstr ""
 #: ../../operation/reporting/reporting_viewer.php:226
 #: ../../operation/reporting/reporting_xml.php:212
 msgid "Unknown"
-msgstr "Neznámy"
+msgstr "Onbekend"
 
 #: ../../include/functions.php:1053
 msgid "Alert ceased"
@@ -4424,7 +4425,7 @@ msgstr ""
 
 #: ../../include/functions.php:1057
 msgid "Error"
-msgstr "Chyba"
+msgstr "Fout"
 
 #: ../../include/functions_db.php:1123
 msgid "Software agent data"
@@ -4464,7 +4465,7 @@ msgstr ""
 
 #: ../../include/functions_db.php:1867
 msgid "Days"
-msgstr "dní"
+msgstr "Dagen"
 
 #: ../../include/functions_db.php:1868
 #: ../../operation/snmpconsole/snmp_view.php:385
@@ -4515,7 +4516,7 @@ msgstr ""
 #: ../../enterprise/include/functions_reporting_pdf.php:342
 #: ../../operation/agentes/estado_grupo.php:218
 msgid "Monitors"
-msgstr "Monitoruje"
+msgstr "Monitors"
 
 #: ../../enterprise/extensions/cron.php:43
 msgid "Send custom report by email"
@@ -4531,19 +4532,19 @@ msgstr ""
 
 #: ../../enterprise/extensions/cron/functions.php:14
 msgid "Hourly"
-msgstr ""
+msgstr "Elk uur"
 
 #: ../../enterprise/extensions/cron/functions.php:15
 msgid "Daily"
-msgstr ""
+msgstr "Dagelijks"
 
 #: ../../enterprise/extensions/cron/functions.php:16
 msgid "Weekly"
-msgstr ""
+msgstr "Wekelijk"
 
 #: ../../enterprise/extensions/cron/functions.php:17
 msgid "Monthly"
-msgstr ""
+msgstr "Maandelijks"
 
 #: ../../enterprise/extensions/cron/functions.php:18
 msgid "Yearly"
@@ -4551,7 +4552,7 @@ msgstr ""
 
 #: ../../enterprise/extensions/cron/functions.php:128
 msgid "Report"
-msgstr ""
+msgstr "Rapportage"
 
 #: ../../enterprise/extensions/cron/functions.php:129
 msgid "This is the automatic generated report"
@@ -4602,7 +4603,7 @@ msgstr ""
 #: ../../enterprise/extensions/cron/main.php:86
 #: ../../enterprise/extensions/cron/main.php:125
 msgid "Task"
-msgstr ""
+msgstr "Taak"
 
 #: ../../enterprise/extensions/cron/main.php:87
 #: ../../enterprise/extensions/cron/main.php:128
@@ -4623,7 +4624,7 @@ msgstr ""
 
 #: ../../enterprise/extensions/cron/main.php:131
 msgid "Parameters"
-msgstr ""
+msgstr "Parameters"
 
 #: ../../enterprise/godmode/menu.php:16
 #: ../../enterprise/godmode/modules/manage_inventory_modules_form.php:49
@@ -4644,7 +4645,7 @@ msgstr ""
 #: ../../operation/snmpconsole/snmp_view.php:173
 #: ../../operation/events/events.php:127
 msgid "Severity"
-msgstr ""
+msgstr "Ernst"
 
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor_form.php:79
 #: ../../enterprise/godmode/modules/manage_inventory_modules_form.php:81
@@ -4699,7 +4700,7 @@ msgstr ""
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:178
 #: ../../enterprise/godmode/agentes/inventory_manager.php:164
 msgid "Actions"
-msgstr ""
+msgstr "Acties"
 
 #: ../../enterprise/godmode/snmpconsole/snmp_trap_editor.php:204
 msgid "There are no trap custom values defined"
@@ -4756,11 +4757,11 @@ msgstr ""
 #: ../../enterprise/godmode/agentes/inventory_manager.php:111
 #: ../../enterprise/godmode/agentes/inventory_manager.php:162
 msgid "Target"
-msgstr ""
+msgstr "Doel"
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:129
 msgid "Update all"
-msgstr ""
+msgstr "Alles bijwerken"
 
 #: ../../enterprise/godmode/agentes/inventory_manager.php:145
 msgid "Inventory Modules"
@@ -4815,7 +4816,7 @@ msgstr ""
 #: ../../enterprise/include/functions_reporting_pdf.php:172
 #: ../../operation/agentes/estado_alertas.php:60
 msgid "Info"
-msgstr "Informácie"
+msgstr "Info"
 
 #: ../../enterprise/include/functions_reporting_pdf.php:173
 msgid "SLA result"
@@ -4854,7 +4855,7 @@ msgstr ""
 #: ../../operation/snmpconsole/snmp_view.php:170
 #: ../../operation/events/events.php:183
 msgid "Default"
-msgstr "Predvolené"
+msgstr "Standaard"
 
 #: ../../enterprise/dashboard/main_dashboard.php:161
 msgid "Add tab"
@@ -4878,15 +4879,14 @@ msgstr ""
 
 #: ../../enterprise/dashboard/widgets/example.php:20
 msgid "Welcome"
-msgstr ""
+msgstr "Welkom"
 
 #: ../../enterprise/dashboard/widgets/example.php:22
 msgid "Welcome to Pandora FMS"
 msgstr ""
 
 #: ../../enterprise/dashboard/widgets/example.php:23
-msgid ""
-"This is an example of a dashboard widget. A widget may contain elements"
+msgid "This is an example of a dashboard widget. A widget may contain elements"
 msgstr ""
 
 #: ../../enterprise/dashboard/widgets/example.php:24
@@ -4903,8 +4903,7 @@ msgid ""
 msgstr ""
 
 #: ../../enterprise/dashboard/widgets/example.php:26
-msgid ""
-"To do so, just click on the title and drag and drop it to the desired place."
+msgid "To do so, just click on the title and drag and drop it to the desired place."
 msgstr ""
 
 #: ../../enterprise/dashboard/widgets/example.php:28
@@ -4937,7 +4936,7 @@ msgstr ""
 
 #: ../../enterprise/operation/reporting/custom_reporting.php:13
 msgid "PDF"
-msgstr ""
+msgstr "PDF"
 
 #: ../../enterprise/operation/agentes/agent_inventory.php:28
 msgid "Pandora Agents "
@@ -5044,12 +5043,12 @@ msgstr "ID"
 #: ../../operation/incidents/incident_detail.php:239
 #: ../../operation/events/events.php:246
 msgid "Source"
-msgstr "Zdroj"
+msgstr "Bron"
 
 #: ../../operation/incidents/incident.php:259
 #: ../../operation/incidents/incident_detail.php:223
 msgid "Owner"
-msgstr "Vlastník"
+msgstr "Eigenaar"
 
 #: ../../operation/incidents/incident.php:306
 msgid "Delete incidents"
@@ -5069,7 +5068,7 @@ msgstr ""
 #: ../../operation/menu.php:158 ../../operation/menu.php:180
 #: ../../operation/menu.php:224
 msgid "Statistics"
-msgstr "Štatistiky"
+msgstr "Statistieken"
 
 #: ../../operation/incidents/incident_statistics.php:33
 msgid "Incidents by status"
@@ -5117,7 +5116,7 @@ msgstr ""
 
 #: ../../operation/incidents/incident_detail.php:105
 msgid "No description available"
-msgstr ""
+msgstr "Geen omschrijving beschikbaar"
 
 #: ../../operation/incidents/incident_detail.php:133
 msgid "File could not be saved due to database error"
@@ -5148,7 +5147,7 @@ msgstr ""
 
 #: ../../operation/incidents/incident_detail.php:273
 msgid "Creator"
-msgstr "Vytvárač"
+msgstr "Maker"
 
 #: ../../operation/incidents/incident_detail.php:291
 msgid "Update incident"
@@ -5169,11 +5168,11 @@ msgstr ""
 #: ../../operation/incidents/incident_detail.php:360
 #: ../../operation/incidents/incident_detail.php:400
 msgid "Filename"
-msgstr "Názov súboru"
+msgstr "Bestandsnaam"
 
 #: ../../operation/incidents/incident_detail.php:362
 msgid "Size"
-msgstr "Veľkosť"
+msgstr "Grootte"
 
 #: ../../operation/incidents/incident_detail.php:381
 msgid "Attached files"
@@ -5212,19 +5211,19 @@ msgstr ""
 
 #: ../../operation/servers/view_server_detail.php:92
 msgid "Progress"
-msgstr "Priebeh"
+msgstr "Voortgang"
 
 #: ../../operation/servers/view_server_detail.php:104
 msgid "Force"
-msgstr "Sila"
+msgstr "Dwingen"
 
 #: ../../operation/servers/view_server_detail.php:113
 msgid "Done"
-msgstr "Hotovo"
+msgstr "Klaar"
 
 #: ../../operation/servers/view_server_detail.php:115
 msgid "Pending"
-msgstr "Čaká"
+msgstr "Wachtend"
 
 #: ../../operation/servers/view_server_detail.php:142
 msgid "This server has no recon tasks assigned"
@@ -5233,7 +5232,7 @@ msgstr ""
 #: ../../operation/servers/view_server.php:55
 #: ../../operation/agentes/tactical.php:221
 msgid "Load"
-msgstr "Zaťaženie"
+msgstr "Belasting"
 
 #: ../../operation/servers/view_server.php:57
 msgid "LAG"
@@ -5241,16 +5240,16 @@ msgstr ""
 
 #: ../../operation/servers/view_server.php:59
 msgid "Version"
-msgstr "Verzia"
+msgstr "Versie"
 
 #: ../../operation/servers/view_server.php:90
 #: ../../operation/agentes/tactical.php:241
 msgid "of"
-msgstr "z"
+msgstr "van"
 
 #: ../../operation/servers/view_server.php:100
 msgid "SNMP server"
-msgstr "SNMP server"
+msgstr "SNMP-server"
 
 #: ../../operation/servers/view_server.php:118
 msgid "Master server"
@@ -5271,7 +5270,7 @@ msgstr ""
 #: ../../operation/visual_console/render_view.php:76
 #: ../../operation/visual_console/render_view.php:77
 msgid "Seconds"
-msgstr "Sekundy"
+msgstr "Seconden"
 
 #: ../../operation/visual_console/render_view.php:86
 msgid "Autorefresh time"
@@ -5279,7 +5278,7 @@ msgstr ""
 
 #: ../../operation/visual_console/render_view.php:88
 msgid "Refresh"
-msgstr "Aktualizovať"
+msgstr "Verversen"
 
 #: ../../operation/visual_console/render_view.php:119
 msgid "Until refresh"
@@ -5293,11 +5292,11 @@ msgstr ""
 #: ../../operation/agentes/estado_agente.php:38
 #: ../../operation/agentes/tactical.php:180
 msgid "Summary"
-msgstr "Súhrn"
+msgstr "Samenvatting"
 
 #: ../../operation/visual_console/index.php:37
 msgid "Elements"
-msgstr "Prvky"
+msgstr "Elementen"
 
 #: ../../operation/visual_console/index.php:60
 msgid "No layouts found"
@@ -5333,7 +5332,7 @@ msgstr ""
 
 #: ../../operation/menu.php:185
 msgid "RSS"
-msgstr ""
+msgstr "RSS"
 
 #: ../../operation/menu.php:191
 msgid "CSV File"
@@ -5341,7 +5340,7 @@ msgstr ""
 
 #: ../../operation/menu.php:196
 msgid "Marquee"
-msgstr "Markíza"
+msgstr "Lichtkrant"
 
 #: ../../operation/menu.php:206
 msgid "View users"
@@ -5357,7 +5356,7 @@ msgstr ""
 
 #: ../../operation/menu.php:244 ../../operation/messages/message.php:58
 msgid "Messages"
-msgstr "Správy"
+msgstr "Berichten"
 
 #: ../../operation/menu.php:253
 msgid "Messages to groups"
@@ -5418,11 +5417,11 @@ msgstr ""
 
 #: ../../operation/snmpconsole/snmp_view.php:208
 msgid "Value"
-msgstr "Hodnota"
+msgstr "Waarde"
 
 #: ../../operation/snmpconsole/snmp_view.php:211
 msgid "Custom"
-msgstr "Vlastné"
+msgstr "Aangepast"
 
 #: ../../operation/snmpconsole/snmp_view.php:269
 #: ../../operation/snmpconsole/snmp_view.php:381
@@ -5471,7 +5470,7 @@ msgstr ""
 
 #: ../../operation/agentes/networkmap.php:271
 msgid "Layout"
-msgstr "Rozloženie"
+msgstr "Indeling"
 
 #: ../../operation/agentes/networkmap.php:275
 msgid "No Overlap"
@@ -5479,7 +5478,7 @@ msgstr ""
 
 #: ../../operation/agentes/networkmap.php:279
 msgid "Simple"
-msgstr "Jednoduchý"
+msgstr "Eenvoudig"
 
 #: ../../operation/agentes/networkmap.php:283
 msgid "Regenerate"
@@ -5487,7 +5486,7 @@ msgstr ""
 
 #: ../../operation/agentes/networkmap.php:298
 msgid "Zoom"
-msgstr "Zväčšenie"
+msgstr "Zoomen"
 
 #: ../../operation/agentes/networkmap.php:306
 msgid "Distance between nodes"
@@ -5495,7 +5494,7 @@ msgstr ""
 
 #: ../../operation/agentes/networkmap.php:312
 msgid "Font"
-msgstr "Písmo"
+msgstr "Lettertype"
 
 #: ../../operation/agentes/networkmap.php:352
 #: ../../operation/agentes/networkmap.php:361
@@ -5568,7 +5567,7 @@ msgstr ""
 
 #: ../../operation/agentes/estado_generalagente.php:100
 msgid "Remote"
-msgstr "Vzdialené"
+msgstr "Op afstand"
 
 #: ../../operation/agentes/estado_generalagente.php:127
 msgid "Next agent contact"
@@ -5600,7 +5599,7 @@ msgstr ""
 
 #: ../../operation/agentes/estado_grupo.php:214
 msgid "Agents"
-msgstr ""
+msgstr "Agenten"
 
 #: ../../operation/agentes/estado_ultimopaquete.php:43
 msgid "Display of last data modules received by agent"
@@ -5615,15 +5614,15 @@ msgstr ""
 #: ../../operation/agentes/datos_agente.php:75
 #: ../../operation/agentes/ver_agente.php:217
 msgid "Data"
-msgstr "Dáta"
+msgstr "Gegevens"
 
 #: ../../operation/agentes/estado_ultimopaquete.php:57
 msgid "Graph"
-msgstr "Graf"
+msgstr "Diagram"
 
 #: ../../operation/agentes/estado_ultimopaquete.php:58
 msgid "Raw Data"
-msgstr ""
+msgstr "Ruwe gegevens"
 
 #: ../../operation/agentes/estado_monitores.php:81
 #: ../../operation/agentes/bulbs.php:27
@@ -5662,19 +5661,19 @@ msgstr ""
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Sunday"
-msgstr "Nedeľa"
+msgstr "Zondag"
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Monday"
-msgstr "Pondelok"
+msgstr "Maandag"
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Tuesday"
-msgstr "Utorok"
+msgstr "Dinsdag"
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Wednesday"
-msgstr "Streda"
+msgstr "Woensdag"
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Thurdsday"
@@ -5682,15 +5681,15 @@ msgstr ""
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Friday"
-msgstr "Piatok"
+msgstr "Vrijdag"
 
 #: ../../operation/agentes/exportdata.php:54
 msgid "Saturday"
-msgstr "Sobota"
+msgstr "Zaterdag"
 
 #: ../../operation/agentes/exportdata.php:60
 msgid "One hour"
-msgstr ""
+msgstr "Een uur"
 
 #: ../../operation/agentes/exportdata.php:76
 msgid "Hr"
@@ -5709,12 +5708,12 @@ msgstr ""
 #: ../../operation/agentes/exportdata.php:118
 #: ../../operation/agentes/exportdata.php:138
 msgid "from"
-msgstr "z"
+msgstr "van"
 
 #: ../../operation/agentes/exportdata.php:118
 #: ../../operation/agentes/exportdata.php:138
 msgid "to"
-msgstr ""
+msgstr "tot"
 
 #: ../../operation/agentes/exportdata.php:120
 msgid "Download file"
@@ -5731,7 +5730,7 @@ msgstr ""
 
 #: ../../operation/agentes/exportdata.php:170
 msgid " to "
-msgstr " do "
+msgstr " tot "
 
 #: ../../operation/agentes/exportdata.php:287
 msgid "Begin date (*)"
@@ -5759,7 +5758,7 @@ msgstr ""
 
 #: ../../operation/agentes/exportdata.php:313
 msgid "Export"
-msgstr "Exportovať"
+msgstr "Exporteren"
 
 #: ../../operation/agentes/bulbs.php:31
 #: ../../operation/agentes/estado_agente.php:309
@@ -5800,7 +5799,7 @@ msgstr ""
 
 #: ../../operation/agentes/ver_agente.php:208
 msgid "Main"
-msgstr "Hlavný"
+msgstr "Hoofd"
 
 #: ../../operation/agentes/sla_view.php:34
 msgid "SLA view"
@@ -5884,7 +5883,7 @@ msgstr ""
 
 #: ../../operation/agentes/tactical.php:222
 msgid "Lag"
-msgstr "Oneskorenie"
+msgstr "Achterstand"
 
 #: ../../operation/events/event_statistics.php:33
 msgid "Events statistics"
@@ -5996,7 +5995,7 @@ msgstr ""
 
 #: ../../operation/events/events.php:306
 msgid "Unknown type"
-msgstr "Neznámy typ"
+msgstr "Onbekend type"
 
 #: ../../operation/events/events.php:332
 msgid "SNMP"
@@ -6097,12 +6096,12 @@ msgstr ""
 #: ../../operation/messages/message.php:126
 #: ../../operation/messages/message.php:147
 msgid "Message"
-msgstr "Správa"
+msgstr "Bericht"
 
 #: ../../operation/messages/message.php:100
 #: ../../operation/messages/message.php:129
 msgid "Send message"
-msgstr "Poslať správu"
+msgstr "Bericht versturen"
 
 #: ../../operation/messages/message.php:152
 msgid " wrote"
@@ -6110,7 +6109,7 @@ msgstr ""
 
 #: ../../operation/messages/message.php:155
 msgid "Reply"
-msgstr "Odpovedať"
+msgstr "Beantwoorden"
 
 #: ../../operation/messages/message.php:160
 msgid "Read messages"
@@ -6130,18 +6129,13 @@ msgstr ""
 
 #: ../../operation/messages/message.php:188
 msgid "Read"
-msgstr "Čítať"
+msgstr "Gelezen"
 
 #: ../../operation/messages/message.php:189
 msgid "Sender"
-msgstr "Odosielateľ"
+msgstr "Afzender"
 
 #: ../../operation/messages/message.php:215
 msgid "No subject"
-msgstr "Bez predmetu"
+msgstr ""
 
-#~ msgid "Closed"
-#~ msgstr "Uzavreté"
-
-#~ msgid "Op"
-#~ msgstr "Op"

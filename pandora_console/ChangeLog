@@ -1,3 +1,46 @@
+2008-12-22  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* pandoradb_data.sql: Added Dutch to translations.
+
+	* include/languages/Makefile: Added Dutch to translations.
+
+	* include/languages/index.pot: Updated po template file.
+
+	* include/languages/cs.po, include/languages/pt_BR.po, 
+	include/languages/pl.mo, include/languages/it.mo, 
+	include/languages/ko.po, include/languages/sl.mo, 
+	include/languages/sk.po, include/languages/uk.po, 
+	include/languages/pt.mo, include/languages/ro.po, 
+	include/languages/ast.mo, include/languages/bn.po, 
+	include/languages/cs.mo, include/languages/ar.po, 
+	include/languages/pt_BR.mo, include/languages/ko.mo, 
+	include/languages/fr.po, include/languages/sk.mo, 
+	include/languages/uk.mo, include/languages/ro.mo, 
+	include/languages/ca.po, include/languages/da.po, 
+	include/languages/tr.po, include/languages/sv.po, 
+	include/languages/de.po, include/languages/ja.po, 
+	include/languages/zh_TW.po, include/languages/bn.mo, 
+	include/languages/he.po, include/languages/fi.po, 
+	include/languages/ar.mo, include/languages/hi.po, 
+	include/languages/zh_CN.po, include/languages/fr.mo, 
+	include/languages/te.po, include/languages/eu.po, 
+	include/languages/hu.po, include/languages/ca.mo, 
+	include/languages/da.mo, include/languages/tr.mo, 
+	include/languages/sv.mo, include/languages/de.mo, 
+	include/languages/ru.po, include/languages/ja.mo, 
+	include/languages/zh_TW.mo, include/languages/he.mo, 
+	include/languages/fi.mo, include/languages/hi.mo, 
+	include/languages/zh_CN.mo, include/languages/el.po, 
+	include/languages/gl.po, include/languages/te.mo, 
+	include/languages/eu.mo, include/languages/hu.mo, 
+	include/languages/pl.po, include/languages/it.po, 
+	include/languages/sl.po, include/languages/pt.po, 
+	include/languages/ru.mo, include/languages/ast.po, 
+	include/languages/el.mo, include/languages/gl.mo
+
+	* include/languages/nl.po, include/languages/nl.mo: Added Dutch 
+	translation from Rosetta.
+
 2008-12-21  Raul Mateos  <raulofpandora@gmail.com>
 
 	* index.php: Updated build, there were some changes in last month that make

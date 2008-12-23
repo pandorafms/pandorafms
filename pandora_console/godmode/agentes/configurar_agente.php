@@ -152,7 +152,7 @@ if (isset ($_POST["create_agent"])) { // Create a new and shiny agent
 			$sql = "INSERT INTO tagente_modulo 
 					(nombre, id_agente, id_tipo_modulo, descripcion, id_modulo, custom_id) 
 					VALUES 
-					('agent_keepalive',".$id_agente.",100,'Agent Keepalive monitor',1".$custom_id.")";
+					('agent_keepalive',".$id_agente.",100,'Agent Keepalive monitor',1,'".$custom_id."')";
 			$id_agent_module = process_sql ($sql, "insert_id");
 			
 			if ($id_agent_module !== false) {

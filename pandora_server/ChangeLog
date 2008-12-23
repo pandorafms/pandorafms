@@ -1,3 +1,8 @@
+2008-12-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* bin/pandora_recon: Added a timeout to pandora_getparent(). The call
+	  to traceroute() would hang despite query_timeout being set.
+
 2008-12-10  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* lib/PandoraFMS/DB.pm: New table layout doesn't require timestamp anymore

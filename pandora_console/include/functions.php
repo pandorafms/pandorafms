@@ -375,6 +375,8 @@ function pagination ($count, $url, $offset, $pagination = 0) {
  * @return 
  */
 function format_numeric ($number, $decimals = 1) {
+	$number = (float) $number; //Translate to float in case there are characters in the string so fmod doesn't throw a notice
+	
 	if ($number == 0)
 		return 0;
 	

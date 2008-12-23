@@ -1,3 +1,8 @@
+2008-12-23  Evi Vanoost <vanooste@rcbi.rochester.edu
+
+	* include/functions.php: Fixed format_numeric in case there are characters
+	in a number or the number is not a number. Fixes notices from fmod.
+
 2008-12-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* pandoradb_data.sql, include/config.php, pandoradb.sql,

@@ -33,6 +33,7 @@ $icon = "";
 $name = "";
 $id_parent = 0;
 $alerts_disabled = 0;
+$custom_id = "";
 
 $create_group = (bool) get_parameter ('create_group');
 $id_group = (int) get_parameter ('id_group');
@@ -44,6 +45,7 @@ if ($id_group) {
 		$icon = $group["icon"].'.png';
 		$alerts_disabled = $group["disabled"];
 		$id_parent = $group["parent"];
+		$custom_id = $group["custom_id"];
 	} else {
 		echo "<h3 class='error'>".__('There was a problem loading group')."</h3>";
 		echo "</table>"; 
@@ -87,6 +89,9 @@ echo'</span>';
 
 $table->data[3][0] = __('Alerts');
 $table->data[3][1] = print_checkbox ('alerts_enabled', 1, ! $alerts_disabled, true);
+
+$table->data[4][0] = __('Custom ID');
+$table->data[4][1] = print_input_text ('custom_id', $custom_id, '', 16, 255, true);
 
 echo '<form name="grupo" method="post" action="index.php?sec=gagente&sec2=godmode/groups/group_list">';
 print_table ($table);

@@ -64,6 +64,7 @@ if ($update_module_id != NULL){
 	$form_post_process = $row['post_process'];
 	$form_prediction_module = $row['prediction_module'];
 	$form_max_timeout = $row['max_timeout'];
+	$form_custom_id = $row['custom_id'];
 
 	if ($tbl_disabled == 1) 
 		$disabled_status = true;
@@ -176,6 +177,13 @@ echo '<td valign="top" class="datos">'.__('Description')."</td>";
 echo '<td valign="top" class="datos" colspan="3">';
 print_textarea ("form_description", 2, 65, $form_description);
 echo '</td></tr>';
+
+// Custom ID
+echo '<tr>';
+echo '<td class="datos2">'.__('Custom ID')."</td>";
+echo '<td class="datos2" colspan="3"><input type="text" name="form_custom_id" size="20" value="'.$form_custom_id.'"></td>';
+echo '</tr>';
+
 echo '</table>';
 
 //Submit

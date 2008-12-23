@@ -94,7 +94,8 @@ if (($form_moduletype == "networkserver" || $form_moduletype == "wmiserver") && 
 	$form_prediction_module = "";
 	$form_id_plugin = "";
 	$form_post_process = "";
-	
+	$form_custom_id = "";
+
 } elseif (!isset($_POST['oid'])) {
 	// Clean up specific network modules fields
 	$form_name = "";
@@ -119,6 +120,7 @@ if (($form_moduletype == "networkserver" || $form_moduletype == "wmiserver") && 
 	$form_plugin_user = "";
 	$form_plugin_pass = "";
 	$form_plugin_parameter = "";
+	$form_custom_id = "";
 }
 
 switch ($form_moduletype) {

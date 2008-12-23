@@ -1,3 +1,18 @@
+2008-12-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* pandoradb_data.sql, include/config.php, pandoradb.sql,
+	  godmode/groups/configure_group.php,
+	  godmode/groups/group_list.php,
+	  godmode/agentes/module_manager_editor_network.php,
+	  godmode/agentes/module_manager_editor_wmi.php,
+	  godmode/agentes/module_manager_editor_plugin.php,
+	  godmode/agentes/module_manager_editor_prediction.php,
+	  godmode/agentes/module_manager_editor_data.php,
+	  godmode/agentes/configurar_agente.php,
+	  godmode/agentes/module_manager_editor.php,
+	  godmode/agentes/agent_manager.php: Added support for a custom ID to
+	  agents, modules and groups.
+
 2008-12-22  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* godmode/agentes/agent_template.php: Rewritten to use new functions

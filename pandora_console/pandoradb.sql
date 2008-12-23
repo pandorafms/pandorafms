@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
   `id_prediction_server` smallint(4) unsigned default '0',
   `id_wmi_server` smallint(4) unsigned default '0',
   `id_parent` int(10) unsigned default '0',
+  `custom_id` varchar(255) default '',
   PRIMARY KEY  (`id_agente`),
   KEY `nombre` (`nombre`),
   KEY `direccion` (`direccion`),
@@ -156,6 +157,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   `post_process` double(18,13) default NULL,
   `prediction_module` bigint(14) default '0',
   `max_timeout` int(4) unsigned default '0',
+  `custom_id` varchar(255) default '',
   PRIMARY KEY  (`id_agente_modulo`),
   KEY `main_idx` (`id_agente_modulo`,`id_agente`),
   KEY `tam_agente` (`id_agente`),
@@ -315,6 +317,7 @@ CREATE TABLE IF NOT EXISTS `tgrupo` (
   `icon` varchar(50) default NULL,
   `parent` mediumint(4) unsigned NOT NULL default '0',
   `disabled` tinyint(3) unsigned NOT NULL default '0',
+  `custom_id` varchar(255) default '',
   PRIMARY KEY  (`id_grupo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

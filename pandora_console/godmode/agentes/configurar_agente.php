@@ -106,6 +106,7 @@ $id_prediction_server = 0;
 $id_wmi_server = 0;
 $grupo = 0;
 $id_os = 0;
+$custom_id = "";
 
 // ================================
 // Create AGENT
@@ -126,6 +127,7 @@ if (isset ($_POST["create_agent"])) { // Create a new and shiny agent
 	$id_wmi_server = get_parameter_post ("wmi_server", 0);
 	$id_os = get_parameter_post ("id_os", 0);
 	$disabled = get_parameter_post ("disabled", 0);
+	$custom_id = get_parameter_post ("custom_id", "");
 
 	// Check if agent exists (BUG WC-50518-2)
 	if ($nombre_agente == "") {
@@ -136,10 +138,10 @@ if (isset ($_POST["create_agent"])) { // Create a new and shiny agent
 		$agent_created_ok = 0;
 	} else {
 		$sql = sprintf ("INSERT INTO tagente 
-				(nombre, direccion, id_grupo, intervalo, comentarios, modo, id_os, disabled, id_network_server, id_plugin_server, id_wmi_server, id_prediction_server, id_parent) 
+				(nombre, direccion, id_grupo, intervalo, comentarios, modo, id_os, disabled, id_network_server, id_plugin_server, id_wmi_server, id_prediction_server, id_parent, custom_id) 
 				VALUES 
-				('%s', '%s', %d, %d, '%s', %d, %d, %d, %d, %d, %d, %d, %d)",
-				$nombre_agente, $direccion_agente, $grupo, $intervalo, $comentarios, $modo, $id_os, $disabled, $id_network_server, $id_plugin_server, $id_wmi_server, $id_prediction_server, $id_parent);
+				('%s', '%s', %d, %d, '%s', %d, %d, %d, %d, %d, %d, %d, %d, '%s')",
+				$nombre_agente, $direccion_agente, $grupo, $intervalo, $comentarios, $modo, $id_os, $disabled, $id_network_server, $id_plugin_server, $id_wmi_server, $id_prediction_server, $id_parent, $custom_id);
 		$id_agente = process_sql ($sql, "insert_id");
 		enterprise_hook ('update_agent', array ($id_agente));
 		if ($id_agente !== false) {
@@ -148,9 +150,9 @@ if (isset ($_POST["create_agent"])) { // Create a new and shiny agent
 			
 			// Create special module agent_keepalive
 			$sql = "INSERT INTO tagente_modulo 
-					(nombre, id_agente, id_tipo_modulo, descripcion, id_modulo) 
+					(nombre, id_agente, id_tipo_modulo, descripcion, id_modulo, custom_id) 
 					VALUES 
-					('agent_keepalive',".$id_agente.",100,'Agent Keepalive monitor',1)";
+					('agent_keepalive',".$id_agente.",100,'Agent Keepalive monitor',1".$custom_id.")";
 			$id_agent_module = process_sql ($sql, "insert_id");
 			
 			if ($id_agent_module !== false) {
@@ -509,6 +511,7 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 	$id_wmi_server = (int) get_parameter_post ("wmi_server", 0);
 	$id_prediction_server = (int) get_parameter_post ("prediction_server", 0);
 	$id_parent = (int) get_parameter_post ("id_parent", 0);
+	$custom_id = (string) get_parameter_post ("custom_id", "");
 
 	//Verify if there is another agent with the same name but different ID
 	if ($nombre_agente == "") { 
@@ -532,12 +535,12 @@ if (isset($_POST["update_agent"])) { // if modified some agent paramenter
 			SET disabled = %d, id_parent = %d, id_os = %d, modo = %d, 
 			nombre = '%s', direccion = '%s', id_grupo = %d,
 			intervalo = %d, comentarios = '%s', id_network_server = %d,
-			id_plugin_server = %d, id_wmi_server = %d, id_prediction_server = %d
-			WHERE id_agente = %d",
+			id_plugin_server = %d, id_wmi_server = %d, id_prediction_server = %d,
+			custom_id = '%s' WHERE id_agente = %d",
 			$disabled, $id_parent, $id_os, $modo, $nombre_agente,
 			$direccion_agente, $grupo, $intervalo, $comentarios,
 			$id_network_server, $id_plugin_server, $id_wmi_server,
-			$id_prediction_server, $id_agente);
+			$id_prediction_server, $custom_id, $id_agente);
 		$result = process_sql ($sql);
 		if ($result === false) {
 			echo '<h3 class="error">'.__('There was a problem updating agent').'</h3>';
@@ -588,6 +591,7 @@ if (isset($_GET["id_agente"])) {
 	$id_os = $row["id_os"];
 	$disabled = $row["disabled"];
 	$id_parent = $row["id_parent"];
+	$custom_id = $row["custom_id"];
 }
 
 // Read data module if editing module
@@ -617,6 +621,7 @@ if ((isset ($_GET["update_module"])) && (!isset ($_POST["oid"])) && (!isset ($_P
 			$modulo_max = "N/A";
 		if (empty ($modulo_min))
 			$modulo_min = "N/A";	
+		$custom_id = $row["custom_id"];
 	}
 }
 
@@ -708,6 +713,7 @@ if ((isset ($_POST["update_module"])) || (isset ($_POST["insert_module"]))) {
 	$form_plugin_pass = (string) get_parameter ("form_plugin_pass","");
 	$form_plugin_parameter = (string) get_parameter ("form_plugin_parameter","");
 	$form_id_modulo = (int) get_parameter ("form_id_modulo",0);
+	$form_custom_id = (string) get_parameter ("form_custom_id","");
 }
 
 // MODULE UPDATE
@@ -742,10 +748,11 @@ if ((isset ($_POST["update_module"])) && (!isset ($_POST["oid"]))) { // if modif
 			id_plugin = %d, 
 			post_process = %f, 
 			prediction_module = %d, 
-			max_timeout = %d 
+			max_timeout = %d,
+			custom_id = '%s'
 			WHERE id_agente_modulo = %d", $form_description, $form_id_module_group, $form_name, $form_maxvalue, $form_minvalue, $form_interval, $form_tcp_port, $form_tcp_send, $form_tcp_rcv,
 			$form_snmp_community, $form_snmp_oid, $form_ip_target, $form_flag, $form_id_modulo, $form_disabled, $form_id_export, $form_plugin_user, $form_plugin_pass,
-			$form_plugin_parameter, $form_id_plugin, $form_post_process, $form_prediction_module, $form_max_timeout, $id_agente_modulo);
+			$form_plugin_parameter, $form_id_plugin, $form_post_process, $form_prediction_module, $form_max_timeout, $form_custom_id, $id_agente_modulo);
 	$result = process_sql ($sql);
 	
 	if ($result === false) {
@@ -790,11 +797,11 @@ if (((!isset ($_POST["nc"]) OR ($_POST["nc"] == -1))) && (!isset ($_POST["oid"])
 		(id_agente, id_tipo_modulo, nombre, descripcion, max, min, snmp_oid, snmp_community,
 		id_module_group, module_interval, ip_target, tcp_port, tcp_rcv, tcp_send, id_export, 
 		plugin_user, plugin_pass, plugin_parameter, id_plugin, post_process, prediction_module,
-		max_timeout, disabled, id_modulo) 
-		VALUES (%d,%d,'%s','%s',%d,%d,'%s','%s',%d,%d,'%s',%d,'%s','%s',%d,'%s','%s','%s',%d,%d,%d,%d,%d,%d)",
+		max_timeout, disabled, id_modulo, custom_id) 
+		VALUES (%d,%d,'%s','%s',%d,%d,'%s','%s',%d,%d,'%s',%d,'%s','%s',%d,'%s','%s','%s',%d,%d,%d,%d,%d,%d,'%s')",
 			$id_agente, $form_id_tipo_modulo, $form_name, $form_description, $form_maxvalue, $form_minvalue, $form_snmp_oid, $form_snmp_community, 
 			$form_id_module_group, $form_interval, $form_ip_target, $form_tcp_port, $form_tcp_rcv, $form_tcp_send, $form_id_export, $form_plugin_user, $form_plugin_pass, 
-			$form_plugin_parameter, $form_id_plugin, $form_post_process, $form_id_prediction_module, $form_max_timeout, $form_disabled, $form_id_modulo);
+			$form_plugin_parameter, $form_id_plugin, $form_post_process, $form_id_prediction_module, $form_max_timeout, $form_disabled, $form_id_modulo, $form_custom_id);
 	$id_agente_modulo = process_sql ($sql, 'insert_id');
 
 	if ($id_agente_modulo === false){

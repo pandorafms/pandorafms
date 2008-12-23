@@ -54,10 +54,11 @@ if ($create_group) {
 	$icon = (string) get_parameter ('icon');
 	$id_parent = (int) get_parameter ('id_parent');
 	$alerts_disabled = (bool) get_parameter ('alerts_disabled');
+	$custom_id = (string) get_parameter ('custom_id');
 
-	$sql = sprintf ('INSERT INTO tgrupo (nombre, icon, parent, disabled) 
-			VALUES ("%s", "%s", %d, %d)',
-			$name, substr ($icon, 0, -4), $id_parent, $alerts_disabled);
+	$sql = sprintf ('INSERT INTO tgrupo (nombre, icon, parent, disabled, custom_id) 
+			VALUES ("%s", "%s", %d, %d, "%s")',
+			$name, substr ($icon, 0, -4), $id_parent, $alerts_disabled, $custom_id);
 	$result = mysql_query ($sql);
 	if ($result) {
 		echo "<h3 class='suc'>".__('Group successfully created')."</h3>"; 
@@ -72,10 +73,12 @@ if ($update_group) {
 	$icon = (string) get_parameter ('icon');
 	$id_parent = (int) get_parameter ('id_parent');
 	$alerts_enabled = (bool) get_parameter ('alerts_enabled');
+	$custom_id = (string) get_parameter ('custom_id');
+
 	$sql = sprintf ('UPDATE tgrupo  SET nombre = "%s",
-			icon = "%s", disabled = %d, parent = %d 
+			icon = "%s", disabled = %d, parent = %d, custom_id = "%s"
 			WHERE id_grupo = %d',
-			$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $id_group);
+			$name, substr ($icon, 0, -4), !$alerts_enabled, $id_parent, $custom_id, $id_group);
 	$result = process_sql ($sql);
 	if ($result !== false) {
 		echo "<h3 class='suc'>".__('Group successfully updated')."</h3>";

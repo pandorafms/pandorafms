@@ -89,14 +89,14 @@ UNLOCK TABLES;
 
 LOCK TABLES `tgrupo` WRITE;
 INSERT INTO `tgrupo` VALUES 
-(1,'All','world',0,0),
-(2,'Servers','server_database',0,0),
-(4,'Firewalls','firewall',0,0),
-(8,'Databases','database_gear',0,0),
-(9,'Network','transmit',0,0),
-(10,'Unknown','world',0,0),
-(11,'Workstations','computer',0,0),
-(12,'Applications','applications',0,0);
+(1,'All','world',0,0,''),
+(2,'Servers','server_database',0,0,''),
+(4,'Firewalls','firewall',0,0,''),
+(8,'Databases','database_gear',0,0,''),
+(9,'Network','transmit',0,0,''),
+(10,'Unknown','world',0,0,''),
+(11,'Workstations','computer',0,0,''),
+(12,'Applications','applications',0,0,'');
 UNLOCK TABLES;
 
 

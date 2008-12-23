@@ -673,7 +673,13 @@ sub pandora_getparent ($$){
     );
 
 	my $success = 0;
-	$success = $t->traceroute();
+	eval {
+		local $SIG{ALRM} = sub { die "alarm" };
+		alarm($pa_config->{"networktimeout"});
+		$success = $t->traceroute();
+		alarm(0);
+	};
+
 	if ($t->hops > 1){
 		if ($success){
 			my $parent_ip = $t->hop_query_host($t->hops-1,0);

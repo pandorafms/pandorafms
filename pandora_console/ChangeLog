@@ -1,3 +1,8 @@
+2008-12-23  Ramon Novoa  <rnovoa@artica.es>
+
+	* godmode/agentes/configurar_agente.php: Properly insert the custom ID
+	  when creating the keepalive module (there was a typo).
+
 2008-12-23  Evi Vanoost <vanooste@rcbi.rochester.edu
 
 	* include/functions.php: Fixed format_numeric in case there are characters

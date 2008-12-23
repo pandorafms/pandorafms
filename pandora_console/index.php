@@ -74,36 +74,29 @@ load_extensions ($config['extensions']);
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head>';
 
 // Pure mode (without menu, header and footer).
-$config["pure"] = get_parameter ("pure", 0);
+$config["pure"] = (bool) get_parameter ("pure", 0);
 
 // Auto Refresh page
-$config["refr"] = get_parameter ("refr", 0);
+$config["refr"] = (int) get_parameter ("refr", 0);
 if ($config["refr"] > 0) {
 	// Agent selection filters and refresh
 	$query = 'http' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '') . '://' . $_SERVER['SERVER_NAME'];
-	if ($_SERVER['SERVER_PORT'] != 80 && (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE && $_SERVER['SERVER_PORT'] != 443))
+	if ($_SERVER['SERVER_PORT'] != 80 && (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE && $_SERVER['SERVER_PORT'] != 443)) {
 		$query .= ":" . $_SERVER['SERVER_PORT'];
+	}
 	
 	$query .= $_SERVER['SCRIPT_NAME'];
-	if (isset ($_REQUEST["refr"])) {
-		$query .= '?';
+	$query .= '?1=1'; //Some (old) browsers don't like the ?&key=var
 		
-		foreach ($_POST as $key => $value) {
-			$query .= '&'.$key.'='.$value;
-		}
-		foreach ($_GET as $key => $value) {
-			$query .= '&'.$key.'='.$value;
-		}
+	//We don't clean these variables up as they're only being passed along
+	foreach ($_GET as $key => $value) {
+		$query .= '&'.$key.'='.$value;
 	}
-	if (isset ($_POST["ag_group"])) {
-		$ag_group = $_POST["ag_group"];
-		$query = 'http' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '') . '://' . $_SERVER['SERVER_NAME'];
-		if ($_SERVER['SERVER_PORT'] != 80 && (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE && $_SERVER['SERVER_PORT'] != 443))
-			$query .= ":" . $_SERVER['SERVER_PORT'];
-		$query .= $_SERVER['REQUEST_URI'] . '&ag_group_refresh=' . $ag_group;
-	} else {
-		echo '<meta http-equiv="refresh" content="' . $config["refr"] . '; URL=' . $query . '">';
+	foreach ($_POST as $key => $value) {
+		$query .= '&'.$key.'='.$value;
 	}
+	
+	echo '<meta http-equiv="refresh" content="' . $config["refr"] . '; URL=' . $query . '">';
 }
 
 enterprise_include ('index.php');
@@ -136,6 +129,14 @@ if ($config["pure"] == 0) {
 $REMOTE_ADDR = $_SERVER['REMOTE_ADDR'];
 $config["remote_addr"] = $_SERVER['REMOTE_ADDR'];
 
+$sec2 = get_parameter_get ('sec2');
+$sec2 = safe_url_extraclean ($sec2);
+$page = $sec2; //Reference variable for old time sake
+
+$sec = get_parameter_get ('sec');
+$sec = safe_url_extraclean ($sec);
+	
+
 // Login process 
 if (! isset ($_SESSION['id_usuario']) && isset ($_GET["login"])) {
 	$nick = get_parameter_post ("nick");
@@ -157,7 +158,7 @@ if (! isset ($_SESSION['id_usuario']) && isset ($_GET["login"])) {
 			unset ($_GET["sec2"]);
 			$_GET["sec"] = "general/logon_ok";
 			update_user_contact ($nick);
-			logon_db ($nick, $REMOTE_ADDR);
+			logon_db ($nick, $config["remote_addr"]);
 			$_SESSION['id_usuario'] = $nick;
 			$config['id_user'] = $nick;
 			unset ($_GET['pass'], $pass);
@@ -169,7 +170,7 @@ if (! isset ($_SESSION['id_usuario']) && isset ($_GET["login"])) {
 			// $primera = substr ($pass,0,1);
 			// $ultima = substr ($pass, strlen ($pass) - 1, 1);
 			// $pass = $primera . "****" . $ultima;
-			audit_db ($nick, $REMOTE_ADDR, "Logon Failed",
+			audit_db ($nick, $config["remote_addr"], "Logon Failed",
 				"Incorrect password: " . $nick);
 			exit;
 		}
@@ -182,7 +183,7 @@ if (! isset ($_SESSION['id_usuario']) && isset ($_GET["login"])) {
 		//$primera = substr ($pass, 0, 1);
 		//$ultima = substr ($pass, strlen ($pass) - 1, 1);
 		//$pass = $primera . "****" . $ultima;
-		audit_db ($nick, $REMOTE_ADDR, "Logon Failed",
+		audit_db ($nick, $config["remote_addr"], "Logon Failed",
 			"Invalid username: " . $nick);
 		exit;
 	}
@@ -203,20 +204,6 @@ if (isset ($_GET["bye"])) {
 	logoff_db ($iduser, $REMOTE_ADDR);
 	session_unregister ("id_usuario");
 	exit;
-}
-$page = "";
-$sec2 = "";
-$sec = "";
-if (isset ($_GET["sec2"])) {
-	$sec2 = get_parameter_get ('sec2');
-	$sec2 = safe_url_extraclean ($sec2);
-	$page = $sec2;
-}
-
-if (isset ($_GET["sec"])) {
-	$sec = get_parameter_get ('sec');
-	$sec = safe_url_extraclean ($sec);
-	$page = $sec2;
 }
 
 // http://es2.php.net/manual/en/ref.session.php#64525

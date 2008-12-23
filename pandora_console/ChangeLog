@@ -1,3 +1,12 @@
+2008-12-23  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* index.php: Cleaned up some old stuff and fixed the order of GET/POST
+	
+	* general/header.php: Added tags for custom branding and todo
+	
+	* general/login_page.php: Cleaned up some old stuff and fixed always
+	redirecting the user to the overview if they followed a link.
+
 2008-12-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* godmode/agentes/configurar_agente.php: Properly insert the custom ID

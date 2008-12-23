@@ -16,27 +16,38 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-$addr = "";
-if (isset($_GET['sec'])){
-	$addr = 'http' . (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE ? 's': '') . '://' . $_SERVER['SERVER_NAME'];
-	
-	if ($_SERVER['SERVER_PORT'] != 80 && (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == TRUE && $_SERVER['SERVER_PORT'] != 443))
-		$query .= ":" . $_SERVER['SERVER_PORT'];
-	
-	$addr .= $_SERVER['REQUEST_URI'];
-	
-	$addr = urlencode($addr);
+//These variables come from index.php
+if (!empty ($page) && !empty ($sec)) {
+	$url = '?login=1';
+	foreach ($_GET as $key => $value) {
+		$url .= '&'.$key.'='.$value;
+	}
+	foreach ($_POST as $key => $value) {
+		$url .= '&'.$key.'='.$value;
+	}
+} else {
+	$url = '?login=1';
 }
 
 echo '<div class="databox" id="login">
 	<h1 id="log">'.__('Pandora FMS Web Console').'</h1><br>
 	<div class="databox" id="login_in">
-		<form method="post" action="index.php?login=1">
+		<form method="post" action="index.php'.$url.'">
 		<table cellpadding="4" cellspacing="1" width="400">
-		<tr><td rowspan="3" align="left" style="border-right: solid 1px #678;">
-			<a href="index.php"><img src="images/pandora_logo.png" border="0" alt="logo"></a><br />
-			'.$pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : '').'
-		</td><td class="f9b">
+		<tr><td rowspan="3" align="left" style="border-right: solid 1px #678;">';
+
+//TODO: Put branding in variables (external file) or database
+/* CUSTOM BRANDING STARTS HERE */
+
+//Replace the following with your own URL and logo. A mashup of the Pandora FMS logo and your companies highly preferred ;-)
+echo '<a href="http://pandorafms.org" title="Go to pandorafms.org..." alt="Pandora FMS - Free Monitoring System"><img src="images/pandora_logo.png" border="0" alt="logo"></a><br />';
+
+//This prints the current pandora console version. For stable/live function it might be wise to comment it out
+echo $pandora_version.(($develop_bypass == 1) ? ' '.__('Build').' '.$build_version : ''); 
+	
+/* CUSTOM BRANDING ENDS HERE */
+
+echo '</td><td class="f9b">
 			'.__('Login').':<br />'.print_input_text_extended ("nick", '', "nick", '', '', '' , false, '', 'class="login"', true).'
 		</td></tr>
 		<tr><td class="f9b">
@@ -46,10 +57,9 @@ echo '<div class="databox" id="login">
 			'.print_submit_button ("Login",'',false,'class="sub next"',true).'
 		</td></tr>
 		</table>
-		'.((strlen($addr) > 0) ? print_input_hidden("redirect",$addr,true) : '').'
 		</form>
 	</div>
-	<div id="ip">IP: <b class="f10">'.$REMOTE_ADDR.'</b>
+	<div id="ip">'.__('Your IP').': <b class="f10">'.$config["remote_addr"].'</b>
 </div>
 
 	</div><script type="text/javascript">document.getElementById(\'nick\').focus();</script>';

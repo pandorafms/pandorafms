@@ -53,6 +53,7 @@ if ($update_settings) {
 	$config["trap2agent"] = (string) get_parameter ('trap2agent', $config["trap2agent"]);
 	$config["autoupdate"] = (string) get_parameter ('autoupdate', $config["autoupdate"]);
 	$config["prominent_time"] = (string) get_parameter ('prominent_time', $config["prominent_time"]);
+	$config["timesource"] = (string) get_parameter ('timesource', $config["timesource"]);
 
 	$config["style"] = substr ($config["style"], 0, strlen ($config["style"]) - 4);
 
@@ -74,6 +75,7 @@ if ($update_settings) {
 	process_sql ("UPDATE tconfig SET VALUE='".$config["trap2agent"]."' WHERE token = 'trap2agent'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["autoupdate"]."' WHERE token = 'autoupdate'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["prominent_time"]."' WHERE token = 'prominent_time'");
+	process_sql ("UPDATE tconfig SET VALUE='".$config["timesource"]."' WHERE token = 'timesource'");
 }
 
 echo "<h2>".__('Pandora Setup')." &gt; ";
@@ -134,8 +136,13 @@ $table->data[15][1] .=  print_radio_button ('prominent_time', "timestamp", '', $
 $table->data[15][1] .= '<br />'.__('Timestamp in rollover').' ';
 $table->data[15][1] .= print_radio_button ('prominent_time', "comparation", '', $config["prominent_time"], true);
 
-$table->data[16][0] = __('Automatic update check');
-$table->data[16][1] = print_checkbox ('autoupdate', 1, $config["autoupdate"], true);
+$table->data[16][0] = __('Time source') . pandora_help("timesource", true);
+$sources["system"] = __('System');
+$sources["sql"] = __('Database');
+$table->data[16][1] = print_select ($sources, 'timesource', $config["timesource"], '', '', '', true);
+
+$table->data[17][0] = __('Automatic update check');
+$table->data[17][1] = print_checkbox ('autoupdate', 1, $config["autoupdate"], true);
 
 enterprise_hook ('load_snmpforward_enterprise');
 

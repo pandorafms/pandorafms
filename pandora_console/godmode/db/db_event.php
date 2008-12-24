@@ -70,7 +70,7 @@ echo '<form name="db_audit" method="post" action="index.php?sec=gdbman&sec2=godm
 echo '<table width="300" cellpadding="4" cellspacing="4" class="databox">
 	<tr><td class="datos">';
 
-$time = time ();
+$time = get_system_time ();
 $fields = array ();
 $fields[$time - 7776000] = __('Purge event data over 90 days');
 $fields[$time - 2592000] = __('Purge event data over 30 days');

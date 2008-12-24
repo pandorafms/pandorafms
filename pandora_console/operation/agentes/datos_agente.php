@@ -44,10 +44,10 @@ if (isset ($_GET["delete"])) {
 
 // Different query for string data type
 if (preg_match ("/string/", get_moduletype_name (get_agentmodule_type ($module_id)))) {
-	$sql = sprintf ("SELECT * FROM tagente_datos_string WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY timestamp DESC", $module_id, time () - $period);
+	$sql = sprintf ("SELECT * FROM tagente_datos_string WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY timestamp DESC", $module_id, get_system_time () - $period);
 	$string_type = 1;
 } else {
-	$sql = sprintf ("SELECT * FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY timestamp DESC", $module_id, time () - $period);
+	$sql = sprintf ("SELECT * FROM tagente_datos WHERE id_agente_modulo = %d AND utimestamp > %d ORDER BY timestamp DESC", $module_id, get_system_time () - $period);
 	$string_type = 0;
 }
 	

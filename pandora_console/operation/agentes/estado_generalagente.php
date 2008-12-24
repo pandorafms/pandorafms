@@ -110,7 +110,7 @@ if ($agent["ultimo_contacto_remoto"] == "0000-00-00 00:00:00") {
 echo '</td></tr>';
 
 // Next contact (agent)
-$difference = time () - strtotime ($agent["ultimo_contacto"]);
+$difference = get_system_time () - strtotime ($agent["ultimo_contacto"]);
 $sql = sprintf ("SELECT MAX(module_interval) FROM tagente_modulo WHERE id_agente = %d", $id_agente);
 $max = (int) get_db_sql ($sql);
 if ($max > 0) {

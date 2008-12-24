@@ -134,7 +134,7 @@ if ($datetime === false || $datetime == -1) {
 	exit;
 }
 /* Date must not be older than now */
-if ($datetime > time ()) {
+if ($datetime > get_system_time ()) {
 	echo "<error>Date is larger than current time</error>"; //Not translatable because this is an error message
 	exit;
 }
@@ -307,7 +307,7 @@ function xml_array ($array) {
 	}
 }
 
-$time = time ();
+$time = get_system_time ();
 echo '<report>';
 echo '<generated><unix>'.$time.'</unix>';
 echo '<rfc2822>'.date ("r",$time).'</rfc2822></generated>';

@@ -30,7 +30,7 @@
  */
 function get_agent_module_sla ($id_agent_module, $period, $min_value, $max_value, $date = 0) {
 	if (empty ($date))
-		$date = time ();
+		$date = get_system_time ();
 	
 	if (empty ($period))
 		return false; //We can't calculate a 0 period (division by zero)
@@ -158,7 +158,7 @@ function get_group_stats ($id_group) {
 	$data["data_alerts_fire_count"] = 0;
 	
 	
-	$cur_time = time ();
+	$cur_time = get_system_time ();
 
 	foreach ($result as $row) {
 		$last_update = $cur_time - $row["utimestamp"];
@@ -293,8 +293,8 @@ function get_group_stats ($id_group) {
  */
 function event_reporting ($id_group, $period, $date = 0, $return = false) {
 	if (empty ($date)) {
-		$date = time ();
-	} elseif (!is_int ($date)) {
+		$date = get_system_time ();
+	} elseif (!is_numeric ($date)) {
 		$date = strtotime ($date);
 	}
 	
@@ -430,7 +430,7 @@ function alert_reporting ($id_group, $period = 0, $date = 0, $return = false) {
  */
 function monitor_health_reporting ($id_group, $period = 0, $date = 0, $return = false) {
 	if (empty ($date)) //If date is 0, false or empty
-		$date = time ();
+		$date = get_system_time ();
 		
 	$datelimit = $date - $period;
 	$output = '';

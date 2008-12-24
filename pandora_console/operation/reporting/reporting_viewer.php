@@ -113,7 +113,7 @@ if ($datetime === false || $datetime == -1) {
 	return;
 }
 /* Date must not be older than now */
-if ($datetime > time ()) {
+if ($datetime > get_system_time ()) {
 	echo '<h3 class="error">'.__('Selected date is older than current date').'</h3>';
 	return;
 }

@@ -91,7 +91,7 @@ foreach ($modules as $module) {
 		$data[5] = "--";
 	}
 	
-	$seconds = time () - $module["utimestamp"];
+	$seconds = get_system_time () - $module["utimestamp"];
 	if ($module["current_interval"] > 0 && $module["utimestamp"] > 0 && $seconds >= ($module["current_interval"] * 2)) {
 		$data[6] = '<span class="redb">';
 	} else {

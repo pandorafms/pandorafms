@@ -340,7 +340,7 @@ if($nooverlap) {
 $filename_map .= ".map";
 $filename_img .= ".png";
 
-if ($regen != 1 && file_exists ($filename_img) && filemtime ($filename_img) > time () - 300) {
+if ($regen != 1 && file_exists ($filename_img) && filemtime ($filename_img) > get_system_time () - 300) {
 	$result = true;
 } else {
 	$cmd = "echo " . escapeshellarg($graph) . " | $filter -Tcmapx -o".$filename_map." -Tpng -o".$filename_img;

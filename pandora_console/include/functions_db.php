@@ -540,7 +540,7 @@ function dame_nombre_real ($id_user) {
  */
 function get_monitor_downs_in_period ($id_agent_module, $period, $date = 0) {
 	if ($date == 0) {
-		$date = time ();
+		$date = get_system_time ();
 	}
 	$datelimit = $date - $period;
 	$sql = sprintf ("SELECT COUNT(`id_agentmodule`) FROM `tevento` WHERE 
@@ -564,7 +564,7 @@ function get_monitor_downs_in_period ($id_agent_module, $period, $date = 0) {
  */
 function get_monitor_last_down_timestamp_in_period ($id_agent_module, $period, $date = 0) {
 	if ($date == 0) {
-		$date = time ();
+		$date = get_system_time ();
 	}
 	$datelimit = $date - $period;
 	$sql = sprintf ("SELECT MAX(`timestamp`) FROM `tevento` WHERE 
@@ -685,7 +685,7 @@ function get_monitors_down ($monitors, $period = 0, $date = 0) {
  */
 function get_alert_fires_in_period ($id_agent_module, $period, $date = 0) {
 	if (!$date)
-		$date = time ();
+		$date = get_system_time ();
 	$datelimit = $date - $period;
 	$sql = sprintf ("SELECT COUNT(`id_agentmodule`) FROM `tevento` WHERE
 			`event_type` = 'alert_fired'
@@ -729,7 +729,7 @@ function get_alerts_in_group ($id_group) {
  */
 function get_alerts_fired ($alerts, $period = 0, $date = 0) {
 	if (! $date)
-		$date = time ();
+		$date = get_system_time ();
 	$datelimit = $date - $period;
 
 	$alerts_fired = array ();
@@ -755,7 +755,7 @@ function get_alerts_fired ($alerts, $period = 0, $date = 0) {
  */
 function get_alert_last_fire_timestamp_in_period ($id_agent_module, $period, $date = 0) {
 	if ($date == 0) {
-		$date = time ();
+		$date = get_system_time ();
 	}
 	$datelimit = $date - $period;
 	$sql = sprintf ("SELECT MAX(`timestamp`) FROM `tevento` WHERE
@@ -1648,7 +1648,7 @@ function get_previous_data ($id_agent_module, $utimestamp) {
  */
 function get_agent_module_value_average ($id_agent_module, $period, $date = 0) {
 	if (! $date)
-		$date = time ();
+		$date = get_system_time ();
 	$datelimit = $date - $period;
 	
 	$sql = sprintf ("SELECT SUM(datos), COUNT(*) FROM tagente_datos 
@@ -1680,7 +1680,7 @@ function get_agent_module_value_average ($id_agent_module, $period, $date = 0) {
  */
 function get_agent_module_value_max ($id_agent_module, $period, $date = 0) {
 	if (! $date)
-		$date = time ();
+		$date = get_system_time ();
 	$datelimit = $date - $period;
 	
 	$sql = sprintf ("SELECT MAX(datos) FROM tagente_datos 
@@ -1708,7 +1708,7 @@ function get_agent_module_value_max ($id_agent_module, $period, $date = 0) {
  */
 function get_agent_module_value_min ($id_agent_module, $period, $date = 0) {
 	if (! $date)
-		$date = time ();
+		$date = get_system_time ();
 	$datelimit = $date - $period;
 	
 	$sql = sprintf ("SELECT MIN(datos) FROM tagente_datos 
@@ -1735,7 +1735,7 @@ function get_agent_module_value_min ($id_agent_module, $period, $date = 0) {
  */
 function get_agent_module_value_sumatory ($id_agent_module, $period, $date = 0) {
 	if (! $date)
-		$date = time ();
+		$date = get_system_time ();
 	$datelimit = $date - $period; // limit date
 	$id_module_type = get_db_value ('id_tipo_modulo', 'tagente_modulo','id_agente_modulo', $id_agent_module);
 	$module_name = get_db_value ('nombre', 'ttipo_modulo', 'id_tipo', $id_module_type);
@@ -2146,7 +2146,7 @@ function get_server_info ($id_server = -1) {
 		if (empty ($server["lag"])) {
 			$server["lag"] = 0;
 		} else {
-			$server["lag"] = time () - $server["lag"];
+			$server["lag"] = get_system_time () - $server["lag"];
 		}
 		
 		//Push the raw data on the return stack

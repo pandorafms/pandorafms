@@ -1,3 +1,8 @@
+2008-12-24  Ramon Novoa  <rnovoa@artica.es>
+
+	* win32/pandora_windows_service.cc: Do not send XML if server address
+	  is not set.
+
 2008-12-16  Ramon Novoa  <rnovoa@artica.es>
 
 	* win32/modules/pandora_module_wmiquery.cc,

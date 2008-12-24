@@ -742,10 +742,16 @@ Pandora_Windows_Service::sendXml (Pandora_Module_List *modules) {
 
 void
 Pandora_Windows_Service::pandora_run () {
+	Pandora_Agent_Conf  *conf = NULL;
+	string server_addr;
+
 	pandoraDebug ("Run begin");
 	
 	/* Check for configuration changes */
 	this->checkConfig ();
+
+	conf = this->getConf ();
+	server_addr = conf->getValue ("server_ip");
 
 	execution_number++;
 
@@ -768,8 +774,9 @@ Pandora_Windows_Service::pandora_run () {
 	
 	if (this->elapsed_transfer_time >= this->transfer_interval) {
 		this->elapsed_transfer_time = 0;
-		
-		this->sendXml (this->modules);
+		if (!server_addr.empty ()) {
+		  this->sendXml (this->modules);
+		}
 	}
 	
 	/* Get the interval value (in minutes) */

@@ -1,5 +1,11 @@
 2008-12-24  Ramon Novoa  <rnovoa@artica.es>
 
+	* win32/pandora_windows_service.h,
+	  win32/bin/pandora_agent.conf,
+	  win32/pandora_windows_service.cc: Added local transfer mode.
+
+2008-12-24  Ramon Novoa  <rnovoa@artica.es>
+
 	* win32/pandora_windows_service.cc: Do not send XML if server address
 	  is not set.
 

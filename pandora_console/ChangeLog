@@ -1,3 +1,15 @@
+2008-12-24  Raul Mateos  <raulofpandora@gmail.com>
+
+	* index.php: Updated build, again due to the use of the new custom ID.
+
+	* reporting/fgraph2.php: New file, test for ezcomponents.
+
+	* operation/events/event_statistics.php: Use of fgraph2 if test var is
+	set in the URL. It uses ezComponents, that need to be installed. 
+	This shows a 3D chart. Probably not will be used, but it's an idea
+	about how to improve graphs in pandora. To test, just add &test to the
+	event_statistics URL.
+
 2008-12-23  Evi Vanoost <vanooste@rcbi.rochester.edu>
 
 	* index.php: Cleaned up some old stuff and fixed the order of GET/POST

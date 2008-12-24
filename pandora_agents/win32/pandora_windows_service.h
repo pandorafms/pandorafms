@@ -61,6 +61,8 @@ namespace Pandora {
 						string remote_path,
 						string filename,
 						string password);
+		void           copyLocalDataFile (string remote_path,
+						string filename);
 		void           recvDataFile (string filename);
 		void           recvTentacleDataFile (string host,
 						     string filename);

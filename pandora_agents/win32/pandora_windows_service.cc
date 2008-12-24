@@ -372,19 +372,24 @@ Pandora_Windows_Service::copyDataFile (string filename)
 	mode = conf->getValue ("transfer_mode");
 	host = conf->getValue ("server_ip");
 	remote_path = conf->getValue ("server_path");
-	if (remote_path[remote_path.length () - 1] != '/') {
+	// Fix remote path
+	if (mode != "local" && remote_path[remote_path.length () - 1] != '/') {
 		remote_path += "/";
+	} else if (mode == "local" && remote_path[remote_path.length () - 1] != '\\') {
+		remote_path += "\\";
 	}
 
 	try {
 		if (mode == "ftp") {
 			copyFtpDataFile (host, remote_path, filename, conf->getValue ("server_pwd"));
-		} else if (mode == "tentacle") {
+		} else if (mode == "tentacle" || mode == "") {
 			copyTentacleDataFile (host, filename, conf->getValue ("server_port"),
 			                      conf->getValue ("server_ssl"), conf->getValue ("server_pwd"),
 			                      conf->getValue ("server_opts"));
-		} else if (mode == "ssh" || mode == "") {
+		} else if (mode == "ssh") {
 			copyScpDataFile (host, remote_path, filename);
+		} else if (mode == "local") {
+			copyLocalDataFile (remote_path, filename);
 		} else {
 			pandoraLog ("Invalid transfer mode: %s."
 				    "Please recheck transfer_mode option "
@@ -516,6 +521,23 @@ Pandora_Windows_Service::recvDataFile (string filename) {
 	catch (Pandora_Exception e) {
 		throw e;
 	}
+}
+
+void
+Pandora_Windows_Service::copyLocalDataFile (string remote_path,
+					  string filename)
+{
+	string local_path, local_file, remote_file;
+	local_path = conf->getValue ("temporal");
+	if (local_path[local_path.length () - 1] != '\\') {
+		local_path += "\\";
+	}
+
+	local_file = local_path + filename;
+	remote_file = remote_path + filename;
+	if (!CopyFile (local_file.c_str (), remote_file.c_str (), TRUE)) {
+        throw Pandora_Exception ();
+    }
 }
 
 void

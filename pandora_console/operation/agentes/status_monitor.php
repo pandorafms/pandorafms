@@ -182,7 +182,7 @@ $table->head[5] = __('Status');
 $table->align[5] = "center";
 
 $table->head[6] = __('Timestamp');
-$table->algin[6] = "center";
+$table->align[6] = "right";
 
 foreach ($result as $row) {
 	$data = array ();
@@ -211,16 +211,16 @@ foreach ($result as $row) {
 		$data[5] = '<img src="images/pixel_red.png" width="40" height="18" title="'.__('Monitor down').'">';
 	}
 
-	$seconds = time () - $row["utimestamp"];
+	$seconds = get_system_time () - $row["utimestamp"];
+	
 	
 	if ($seconds >= ($row["agent_interval"] * 2)) {
-		$data[6] = '<span class="redb">';
+		$option = array ("html_attr" => 'class="redb"');
 	} else {
-		$data[6] = '<span>';
+		$option = array ();
 	}
 	
-	$data[6] .= human_time_comparation ($row["utimestamp"]);
-	$data[6] .= "</span>";
+	$data[6] = print_timestamp ($row["utimestamp"], true, $option);
 	
 	array_push ($table->data, $data);
 }

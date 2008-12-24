@@ -777,10 +777,8 @@ function print_timestamp ($unixtime, $return = false, $option = array ()) {
 		$tag = "span";
 	}
 	
-	if (isset ($option["prominent"]) && $option["prominent"] == "timestamp") {
-		$prominent = "timestamp";
-	} elseif (isset ($option["prominent"]) && $option["prominent"] == "comparation") {
-		$prominent = "comparation";
+	if (!empty ($option["prominent"])) {
+		$prominent = $option["prominent"];
 	} else {
 		$prominent = $config["prominent_time"];
 	}

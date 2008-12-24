@@ -426,13 +426,34 @@ function format_for_graph ($number , $decimals = 1, $dec_point = ".", $thousands
  * time and given timestamp.
  */
 function human_time_comparation ($timestamp) {
+	global $config;
+	
 	if (!is_numeric ($timestamp)) {
 		$timestamp = strtotime ($timestamp);
 	}
 	
-	$seconds = time () - $timestamp;
+	$seconds = get_system_time () - $timestamp;
 	
 	return human_time_description_raw ($seconds);
+}
+
+/**
+ *   @function	 get_system_time
+ *   @abstract   This function gets the time from either system or sql based on preference and returns it
+ *   @result     Unix timestamp
+**/
+function get_system_time () {
+	global $config;
+	
+	if ($config["timesource"] = "sql") {
+		$time = get_db_sql ("SELECT UNIX_TIMESTAMP()");
+		if (empty ($time)) {
+			return time ();
+		}
+		return $time;
+	} else {
+		return time ();
+	}
 }
 
 /** 

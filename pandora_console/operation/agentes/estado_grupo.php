@@ -50,7 +50,7 @@ if (isset ($_GET["update_netgroup"])) {
 $groups = get_user_groups ($config['id_user']);
 $groups_info = array ();
 $total_agents = 0;
-$now = time ();
+$now = get_system_time ();
 // Prepare data to show
 // For each valid group for this user, take data from agent and modules
 foreach ($groups as $id_group => $group_name) {

@@ -44,7 +44,7 @@ echo '<h2>'.__('Database Maintenance').' &gt; '.__('Database purge').'</h2>
 	<h3>'.__('Get data from agent').'</h3>';
 
 // All data (now)
-$time["all"] = time ();
+$time["all"] = get_system_time ();
 
 // 1 day ago
 $time["1day"] = $time["all"]-86400;

@@ -95,7 +95,7 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 	$resolution = $config['graph_res'] * 50; // Number of "slices" we want in graph
 	
 	if (! $date)
-		$date = time ();
+		$date = get_system_time ();
 	//$unix_timestamp = strtotime($mysql_timestamp) // Convert MYSQL format tio utime
 	$fechatope = $date - $periodo; // limit date
 	$horasint = $periodo / $resolution; // Each intervalo is $horasint seconds length
@@ -401,7 +401,7 @@ function grafico_modulo_sparse ($id_agente_modulo, $periodo, $show_event,
 	require_once 'Image/Graph.php';	
 
 	if (empty ($date))
-		$date = time ();
+		$date = get_system_time ();
 	
 	$resolution = $config["graph_res"] * 50; // Number of "slices" we want in graph
 	$fechatope = $date - $periodo;
@@ -883,15 +883,15 @@ function graphic_agentaccess ($id_agent, $periodo, $width, $height) {
 	$Graph->done();
 }
 
-function graphic_string_data ($id_agent_module, $periodo, $width, $height, $pure = 0, $date = "") {
+function graphic_string_data ($id_agent_module, $periodo, $width, $height, $pure = 0, $date = 0) {
 	global $config;
 	
 	// $color = $config["color_graph1"]; //#437722"; // Green pandora 1.1 octopus color
 	$color = "#437722";
 
 
-	if ($date == "")
-		$date = time ();
+	if ($date == 0)
+		$date = get_system_time ();
 	$resolution = $config["graph_res"] * 5; // Number of "slices" we want in graph
 	$fechatope = $date - $periodo;
 	$horasint = $periodo / $resolution; // Each intervalo is $horasint seconds length
@@ -1452,7 +1452,7 @@ function grafico_db_agentes_purge ($id_agent, $width, $height) {
 	}
 	
 	// All data (now)
-	$time["all"] = time ();
+	$time["all"] = get_system_time ();
 
 	// 1 day ago
 	$time["1day"] = $time["all"]-86400;

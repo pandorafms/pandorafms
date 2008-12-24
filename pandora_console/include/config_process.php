@@ -142,4 +142,9 @@ if (!isset ($config["prominent_time"])) {
 	process_sql ("INSERT INTO tconfig (token,value) VALUES ('prominent_time','comparation')");	
 }
 
+if (!isset ($config["timesource"])) {
+	// Prominent time tells us what to show prominently when a timestamp is displayed. The comparation (... days ago) or the timestamp (full date)
+	$config["timesource"] = "system";
+	process_sql ("INSERT INTO tconfig (token,value) VALUES ('timesource','system')");	
+}
 ?>

@@ -29,7 +29,7 @@ if (! give_acl ($config['id_user'], 0, "DM")) {
 }
 
 // All data (now)
-$time["all"] = time ();
+$time["all"] = get_system_time ();
 
 // 1 day ago
 $time["1day"] = $time["all"]-86400;

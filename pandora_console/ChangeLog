@@ -1,3 +1,25 @@
+2008-12-24  Evi Vanoost <vanooste@rcbi.rochester.edu>
+
+	* include/functions_reporting.php, include/functions_db.php, 
+	include/functions_html.php, operation/agentes/datos_agente.php, 
+	operation/agentes/estado_agente.php, 
+	operation/agentes/estado_generalagente.php, 
+	operation/agentes/estado_grupo.php, operation/agentes/estado_monitores.php,
+	operation/agentes/networkmap.php, operation/agentes/status_monitor.php,
+	operation/incidents/incident_detail.php, 
+	operation/reporting/reporting_viewer.php, 
+	operation/reporting/reporting_xml.php, reporting/fgraph.php, 
+	godmode/db/db_audit.php, godmode/db/db_event.php, godmode/db/db_purge.php:
+	Added get_system_time in favor of time ();
+
+	* include/functions.php: Added get_system_time which gets the time from 
+	a source based on user preference
+
+	* include/help/en/help_timesource.php: Explanation of timesource.
+	
+	* godmode/setup/setup.php, include/config_process.php: Added timesource
+	selection and preference
+
 2008-12-24  Raul Mateos  <raulofpandora@gmail.com>
 
 	* index.php: Updated build, again due to the use of the new custom ID.

@@ -192,7 +192,7 @@ if ($agents !== false) {
 		$numero_datamodules = 0;
 		$estado_cambio = 0;
 		$agent_down = 0;
-		$now = time ();
+		$now = get_system_time ();
 		
 		// Calculate module/monitor totals  for this agent
 		foreach ($modules as $module) {

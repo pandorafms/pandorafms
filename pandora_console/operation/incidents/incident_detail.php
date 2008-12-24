@@ -32,8 +32,8 @@ if (! give_acl ($config["id_user"], 0, "IR")) {
 	exit;
 }
 
-$inicio = time (); //Just inits the variable
-$actualizacion = time ();
+$inicio = get_system_time (); //Just inits the variable
+$actualizacion = get_system_time ();
 
 // EDITION MODE
 if (isset ($_GET["id"])) {

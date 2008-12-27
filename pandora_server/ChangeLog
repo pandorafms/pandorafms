@@ -1,3 +1,9 @@
+2008-12-27  Sancho Lerena <slerena@artica.es>
+
+	* bin/pandora_recon: Added a timeout to pandora_getparent(). The call
+	  to traceroute() would hang despite query_timeout. Merged from trunk
+	  repository.         
+
 2008-12-15  Ramon Novoa  <rnovoa@artica.es>
 
 	* lib/PandoraFMS/DB.pm: Check for module existence before trying

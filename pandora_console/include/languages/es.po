@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Jorge Gonzalez <jorge.gonzalez@artica.es>, 2008.
+# Jorge González <jorgegonz@svn.gnome.org>, 2008.
 msgid ""
 msgstr ""
 "Project-Id-Version: index.es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-12-18 12:15+0100\n"
-"PO-Revision-Date: 2008-12-18 12:17+0100\n"
-"Last-Translator: Jorge Gonzalez <jorge.gonzalez@artica.es>\n"
-"Language-Team: Español <artica@artica.es>\n"
+"PO-Revision-Date: 2008-12-29 10:29+0100\n"
+"Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
+"Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -535,11 +536,11 @@ msgstr "Caído(s)"
 
 #: ../../general/header.php:52
 msgid "servers down"
-msgstr "servidores caídos"
+msgstr "servidor(es) caído(s)"
 
 #: ../../general/header.php:55
 msgid "Ready"
-msgstr "Preparado(s)"
+msgstr "Listos"
 
 #: ../../general/header.php:65 ../../general/header.php:67
 msgid "Autorefresh"
@@ -3237,8 +3238,10 @@ msgid "You must check modules and/or alerts to be deleted"
 msgstr "Debe comprobar módulos y/o alertas para borrar"
 
 #: ../../godmode/agentes/manage_config.php:329
-msgid "There was an error removing the module data, the removal has been cancelled"
-msgstr "Hubo un error al eliminar el módulo de datos. Se canceló la eliminación."
+msgid ""
+"There was an error removing the module data, the removal has been cancelled"
+msgstr ""
+"Hubo un error al eliminar el módulo de datos. Se canceló la eliminación."
 
 #: ../../godmode/agentes/manage_config.php:332
 msgid "Successfully removed module data"
@@ -3561,7 +3564,8 @@ msgid "Alert text"
 msgstr "Texto de la alerta"
 
 #: ../../godmode/agentes/alert_manager_editor.php:136
-msgid "This value must be al least Module Interval * (Min.Number of Alerts + 1)"
+msgid ""
+"This value must be al least Module Interval * (Min.Number of Alerts + 1)"
 msgstr ""
 "Este valor debe ser como mínimo, el intervalo del módulo multiplicado por el "
 "mínimo número de alertas + 1"
@@ -4635,13 +4639,17 @@ msgstr "La extensión Cron no se está ejecutando"
 
 #: ../../enterprise/extensions/cron/main.php:56
 msgid "Cron extension has never run or it's not configured well"
-msgstr "La extensión Cron no se ha ejecutado nunca o no está correctamente configurada"
+msgstr ""
+"La extensión Cron no se ha ejecutado nunca o no está correctamente "
+"configurada"
 
 #: ../../enterprise/extensions/cron/main.php:57
 msgid ""
 "This extension relies on a proper setup of cron, the time-based scheduling "
 "service"
-msgstr "Esta extensión depende de una configuración correcta del «cron», el servicio de planificación basado en tiempo."
+msgstr ""
+"Esta extensión depende de una configuración correcta del «cron», el servicio "
+"de planificación basado en tiempo."
 
 #: ../../enterprise/extensions/cron/main.php:59
 msgid "Please, add the following line to your crontab file"
@@ -4839,7 +4847,9 @@ msgstr "Servidor de inventario"
 msgid ""
 "You must select an Inventory Server for the Agent, so it can work properly "
 "with this kind of modules"
-msgstr "Debe seleccionar un servidor de inventario para el agente, de tal forma que pueda funcionar correctamente con este tipo de módulos"
+msgstr ""
+"Debe seleccionar un servidor de inventario para el agente, de tal forma que "
+"pueda funcionar correctamente con este tipo de módulos"
 
 #: ../../enterprise/godmode/modules/manage_inventory_modules.php:40
 msgid "Successfully created inventory module"
@@ -4946,24 +4956,33 @@ msgstr "Bienvenido a Pandora FMS"
 
 #: ../../enterprise/dashboard/widgets/example.php:23
 msgid "This is an example of a dashboard widget. A widget may contain elements"
-msgstr "Este es un ejemplo de un marco del Dashboard. Un marco puede contener elementos."
+msgstr ""
+"Este es un ejemplo de un marco del Dashboard. Un marco puede contener "
+"elementos."
 
 #: ../../enterprise/dashboard/widgets/example.php:24
 msgid ""
 "To add more elements, click on \"<em>Add widgets</em>\" on the top of this "
 "page."
-msgstr "Para añadir más elementos pulse \"<em>Añadir marco</em>\" en la parte superior de esta página."
+msgstr ""
+"Para añadir más elementos pulse \"<em>Añadir marco</em>\" en la parte "
+"superior de esta página."
 
 #: ../../enterprise/dashboard/widgets/example.php:25
 #: ../../enterprise/dashboard/widgets/example.php:27
 msgid ""
 "To delete this message, click on the delete button on top right corner of "
 "this element."
-msgstr "Para borrar este mensaje pulse en el botón de borrado en la esquina superior derecha del elemento."
+msgstr ""
+"Para borrar este mensaje pulse en el botón de borrado en la esquina superior "
+"derecha del elemento."
 
 #: ../../enterprise/dashboard/widgets/example.php:26
-msgid "To do so, just click on the title and drag and drop it to the desired place."
-msgstr "Para hacerlo, simplemente pulse en la barra de título, arrastre y suéltela en el lugar deseado."
+msgid ""
+"To do so, just click on the title and drag and drop it to the desired place."
+msgstr ""
+"Para hacerlo, simplemente pulse en la barra de título, arrastre y suéltela "
+"en el lugar deseado."
 
 #: ../../enterprise/dashboard/widgets/example.php:28
 msgid "Thanks for using Pandora FMS"
@@ -6201,4 +6220,3 @@ msgstr "Remitente"
 #: ../../operation/messages/message.php:215
 msgid "No subject"
 msgstr "Sin asunto"
-

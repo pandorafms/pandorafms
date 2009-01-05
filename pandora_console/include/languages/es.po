@@ -3,13 +3,13 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Jorge Gonzalez <jorge.gonzalez@artica.es>, 2008.
-# Jorge González <jorgegonz@svn.gnome.org>, 2008.
+# Jorge González <jorgegonz@svn.gnome.org>, 200, 2009.
 msgid ""
 msgstr ""
 "Project-Id-Version: index.es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-12-18 12:15+0100\n"
-"PO-Revision-Date: 2008-12-29 10:29+0100\n"
+"PO-Revision-Date: 2009-01-05 09:10+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -1765,7 +1765,7 @@ msgstr "Tarea de reconocimiento actualizada correctamente"
 
 #: ../../godmode/servers/manage_recontask.php:73
 msgid "Error updating recon task"
-msgstr "Gestionar tarea recon"
+msgstr "Error al actualizar la tarea recon"
 
 #: ../../godmode/servers/manage_recontask.php:86
 msgid "Successfully created recon task"

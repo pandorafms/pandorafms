@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Jorge Gonzalez <jorge.gonzalez@artica.es>, 2008.
+# Jorge González <jorgegonz@svn.gnome.org>, 2009.
 msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-10-31 11:29+0100\n"
-"PO-Revision-Date: 2008-12-29 10:30+0100\n"
-"Last-Translator: Jorge Gonzalez <jorge.gonzalez@artica.es>\n"
-"Language-Team: Español <artica@artica.es>\n"
+"PO-Revision-Date: 2009-01-05 09:11+0100\n"
+"Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
+"Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -605,12 +606,12 @@ msgstr ""
 #: ../../extensions/update_manager/main.php:44
 msgid ""
 "Update Manager is one of the most advanced features of Pandora FMS 2.0 "
-"Enterprise version, for more information visit <a "
-"href=\"http://pandorafms.com\">http://pandorafms.com</a>."
+"Enterprise version, for more information visit <a href=\"http://pandorafms."
+"com\">http://pandorafms.com</a>."
 msgstr ""
 "El Update Manager es una de las características más avanzadas de Pandora FMS "
-"2.0 Enterprise, para obtener más información visite <a "
-"href=\"http://pandorafms.com\">http://pandorafms.com</a>."
+"2.0 Enterprise, para obtener más información visite <a href=\"http://"
+"pandorafms.com\">http://pandorafms.com</a>."
 
 #: ../../extensions/update_manager/main.php:46
 msgid ""
@@ -1719,7 +1720,7 @@ msgstr "Tarea de reconocimiento actualizada correctamente"
 
 #: ../../godmode/servers/manage_recontask.php:73
 msgid "Error updating recon task"
-msgstr "Gestionar tarea recon"
+msgstr "Error al actualizar la tarea recon"
 
 #: ../../godmode/servers/manage_recontask.php:86
 msgid "Successfully created recon task"
@@ -2992,8 +2993,10 @@ msgid "You must check modules and/or alerts to be deleted"
 msgstr "Debe comprobar módulos y/o alertas para borrar"
 
 #: ../../godmode/agentes/manage_config.php:301
-msgid "There was an error removing the module data, the removal has been cancelled"
-msgstr "Hubo un error al eliminar el módulo de datos. Se canceló la eliminación."
+msgid ""
+"There was an error removing the module data, the removal has been cancelled"
+msgstr ""
+"Hubo un error al eliminar el módulo de datos. Se canceló la eliminación."
 
 #: ../../godmode/agentes/manage_config.php:304
 msgid "Successfully removed module data"
@@ -3348,7 +3351,8 @@ msgid "Time threshold"
 msgstr "Umbral de tiempo"
 
 #: ../../godmode/agentes/alert_manager_editor.php:136
-msgid "This value must be al least Module Interval * (Min.Number of Alerts + 1)"
+msgid ""
+"This value must be al least Module Interval * (Min.Number of Alerts + 1)"
 msgstr ""
 "Este valor debe ser como mínimo, el intervalo del módulo multiplicado por el "
 "mínimo número de alertas + 1"
@@ -5607,4 +5611,3 @@ msgstr "Remitente"
 #: ../../operation/messages/message.php:215
 msgid "No subject"
 msgstr "Sin asunto"
-

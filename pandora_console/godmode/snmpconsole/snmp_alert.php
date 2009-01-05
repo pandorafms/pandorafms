@@ -295,7 +295,7 @@ if (isset ($_GET["update_alert"])) {
 
 	foreach ($result as $row) {
 		$data = array ();
-		$data[0] = dame_nombre_alerta ($row["id_alert"]);
+		$data[0] = get_alert_type ($row["id_alert"]);
 		$data[1] = __('N/A');
 		$data[2] = __('N/A');
 		$data[3] = __('N/A');

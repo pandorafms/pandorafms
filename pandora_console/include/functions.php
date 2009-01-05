@@ -799,130 +799,76 @@ function show_alert_row_edit ($row2, $tdcolor = "datos", $id_tipo_modulo = 1, $c
 }
 
 /** 
+ * Formats a row from the alert table and returns an array usable in the table function
  * 
+ * @param $alert (array) A valid (non empty) row from the alert table
+ * @param $agent (bool) Whether to print the agent information with the module information
+ * @param $combined (bool) Whether or not this is a combined alert
  * 
- * @param data 
- * @param tdcolor 
- * @param combined 
- * 
- * @return 
+ * @return (array) A formatted array with proper html for use in $table -> 7 columns
  */
-function show_alert_show_view ($data, $tdcolor = "datos", $combined = 0) {
-	global $config;
-	global $lang_label;
-
-	if ($combined == 0) {
-		$id_agente = give_agent_id_from_module_id ($data["id_agente_modulo"]);
-		$agent_name = get_agent_name ($id_agente);
-		$module_name = get_agentmodule_name ($data["id_agente_modulo"]);
-	} else {
-		$id_agente = $data["id_agent"];
-		$agent_name =  get_agent_name ($id_agente);
+function format_alert_row ($alert, $combined = 0, $agent = 1) {
+	if (empty ($alert)) {
+		return array ("", "", "", "", "", "", "");
 	}
 	
-	$alert_name = dame_nombre_alerta ($data["id_alerta"]);
-
-	echo '<td class="'.$tdcolor.'f9" title="'.$alert_name.'">'.substr($alert_name,0,15).'</td>';
+	$data = array ();
+	$data[0] = get_alert_type ($alert["id_alerta"]);
 	
-	if ($combined == 0) {
-		echo '<td class="'.$tdcolor.'">'.substr ($module_name,0,12).'</td>';
+	if ($combined == 1) {
+		$data[1] =  print_agent_name ($alert["id_agente"], true, 20);
+	} elseif ($agent == 0) {
+		$data[1] = mb_substr (get_agentmodule_name ($alert["id_agente_modulo"]), 0, 20);
 	} else {
-		echo '<td class="'.$tdcolor.'">';
-		// More details EYE tooltip (combined)
-		echo '<a href="#" class="info_table"><img class="top" src="images/eye.png" alt=""><span>';
-		echo show_alert_row_mini ($data["id_aam"]);
-		echo '</span></a>';
-		echo substr($agent_name,0,16).'</td>'; 
-	}
-
-	// Description
-	echo '<td class="'.$tdcolor.'">'.$data["descripcion"].'</td>';
-
-	// Extended info
-	echo '<td class="'.$tdcolor.'">';
-
-	// Has recovery notify activated ?
-	if ($data["recovery_notify"] > 0) {
-		$recovery_notify = __('Yes');
-	} else {
-		$recovery_notify = __('No');
+		$data[1] = print_agent_name (get_agentmodule_agent ($alert["id_agente_modulo"]), true, 20);
 	}
 	
-	// calculate priority
-	$priority = get_alert_priority ($data["priority"]);
-
-	// calculare firing conditions
-	if ($data["alert_text"] != ""){
-		$firing_cond = __('Text')." (".substr($data["alert_text"],0,12).")";
-	} else {
-		$firing_cond = $data["min_alerts"]." / ".$data["max_alerts"];
-	}
+	$data[2] = mb_substr (safe_input ($alert["descripcion"]), 0, 35);
 	
-	// calculate days
-	$firing_days = get_alert_days ($data);
-
-	// More details EYE tooltip
-	echo '<a href="#" class="info"><img class="top" src="images/eye.png" alt="">';
-
-	// Add float info table
-	echo '<span>
-		<table cellspacing="2" cellpadding="0" style="margin-left:2px;">
-		<tr><th colspan="2" width="91">'.__('Recovery').'</th></tr>
-		<tr><td colspan="2" class="datos" align="center"><b>'.$recovery_notify.'</b></td></tr>
-		<tr><th colspan="2" width="91">'.__('Priority').'</th></tr>
-		<tr><td colspan="2" class="datos" align="center"><b>'.$priority.'</b></td></tr>
-		<tr><th colspan="2" width="91">'.__('Alert Ctrl.').'</th></tr>
-		<tr><td colspan="2" class="datos" align="center"><b>'.$firing_cond.'</b></td></tr>
-		<tr><th colspan="2" width="91">'.__('Firing days').'</th></tr>
-		<tr><td colspan="2" class="datos" align="center"><b>'.$firing_days.'</b></td></tr>
-		</table></span></a>';
-
-	$mytempdata = fmod ($data["dis_min"], 1);
-	if ($mytempdata == 0) {
-		$mymin = intval($data["dis_min"]);
+	//Eye tooltip
+	$data[3] = '<a class="info"><img class="top" src="images/eye.png" alt="detail tooltip" />';
+	$data[3] .= '<span><table cellspacing="2" cellpadding="0" style="margin-left:2px;">
+	<tr><th colspan="2" width="91">'.__('Recovery').'</th></tr>
+	<tr><td colspan="2" class="datos" align="center"><b>'.($alert["recovery_notify"] == 1 ? __('Yes') : __('No')).'</b></td></tr>
+	<tr><th colspan="2" width="91">'.__('Priority').'</th></tr>
+	<tr><td colspan="2" class="datos" align="center"><b>'.get_alert_priority ($alert["priority"]).'</b></td></tr>
+	<tr><th colspan="2" width="91">'.__('Fires every').'</th></tr><tr><td colspan="2" class="datos" align="center"><b>';
+	if ($alert["min_alerts"] > 0) {
+		$data[3] .= human_time_description_raw ($alert["time_threshold"] / $alert["min_alerts"]);
 	} else {
-		$mymin = $data["dis_min"];
+		$data[3] .= human_time_description_raw ($alert["time_threshold"]);
 	}
-	$mymin = format_for_graph ($mymin);
-
-	$mytempdata = fmod ($data["dis_max"], 1);
-	if ($mytempdata == 0) {
-		$mymax = intval($data["dis_max"]);
+	$data[3] .= '</b></td></tr>
+	<tr><th colspan="2" width="91">'.__('Firing days').'</th></tr>
+	<tr><td colspan="2" class="datos" align="center"><b>'.get_alert_days ($alert).'</b></td></tr>
+	<tr><th colspan="2" width="91">'.__('Firing times').'</th></tr>
+	<tr><td colspan="2" class="datos" align="center"><b>'.($alert["time_from"] == $alert["time_to"] ? __('Always') : $alert["time_from"].' - '.$alert["time_to"]).'</b></td></tr>
+	</table></span></a>';
+	
+	//Min. and Max. - maybe move this to the span
+	$data[4] = format_numeric ($alert["dis_min"], 2).' / '.format_numeric ($alert["dis_max"], 2);
+	
+	$data[5] = print_timestamp ($alert["last_fired"], true);
+	
+	$options = array ();
+	$options["height"] = 9;
+	$options["width"] = 20;
+	
+	if ($alert["times_fired"] > 0) {
+		$options["src"] = "images/pixel_red.png";
+		$options["title"] = __('Alert fired').' '.$alert["times_fired"].' '.__('times');
+	} elseif ($alert["disable"] > 0) {
+		$options["src"] = "images/pixel_gray.png";
+		$options["title"] = __('Alert disabled');
 	} else {
-		$mymax = $data["dis_max"];
+		$options["src"] = "images/pixel_green.png";
+		$options["title"] = __('Alert not fired');
 	}
-	$mymax =  format_for_graph($mymax);
+	$data[6] = print_image ($options["src"], true, $options);
 	
-	// Text alert ?
-	if ($data["alert_text"] != "") {
-		echo '<td class="'.$tdcolor.'" colspan="2">'.__('Text').'</td>';
-	} else {
-		echo '<td class="'.$tdcolor.'">'.$mymin.'</td>';
-		echo '<td class="'.$tdcolor.'">'.$mymax.'</td>';
-	}
+	$data[7] = print_checkbox ("validate[]", $alert["id_aam"], false, true);	
 	
-	echo '<td align="center" class="'.$tdcolor.'">'.human_time_description ($data["time_threshold"]).'</td>';
-	
-	if ($data["last_fired"] == "0000-00-00 00:00:00") {
-		echo '<td align="center" class="'.$tdcolor.'f9">'.__('Never').'</td>';
-	} else {
-		echo '<td align="center" class="'.$tdcolor.'f9">'.human_time_comparation ($data["last_fired"]).'</td>';
-	}
-	
-	echo '<td align="center" class="'.$tdcolor.'">'.$data["times_fired"].'</td>';
-	
-	if ($data["times_fired"] != 0) {
-		echo '<td class="'.$tdcolor.'" align="center"><img width="20" height="9" src="images/pixel_red.png" title="'.__('Alert fired').'"></td>';
-		$id_grupo_alerta = dame_id_grupo ($id_agente);
-		
-		if (give_acl($config["id_user"], $id_grupo_alerta, "AW") == 1) {
-			echo '<td align="center" class="'.$tdcolor.'">';
-			echo '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&validate_alert='.$data["id_aam"].'"><img src="images/ok.png"></a>';
-			echo '</td>';
-		}
-	} else {
-		echo '<td class="'.$tdcolor.'" align="center"><img width="20" height="9" src="images/pixel_green.png" title="'.__('Alert not fired').'"></td>';
-	}
+	return $data;
 }
 
 /**

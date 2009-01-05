@@ -293,11 +293,26 @@ function get_agent_modules ($id_agent, $details = false) {
  * Get all the simple alerts of an agent.
  *
  * @param $id_agent Agent id
- *
+ * @param $filter Filter on "fired", "notfired" or "disabled"
+ * @param $limit Limit the return to a certain number
+ * @param $offset Offset to start the limit from
  * @return An array with all simple alerts defined for an agent.
  */
-function get_simple_alerts_in_agent ($id_agent) {
-	$sql = sprintf ("SELECT talerta_agente_modulo.* FROM talerta_agente_modulo, tagente_modulo WHERE talerta_agente_modulo.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.id_agente = %d", $id_agent);
+function get_agent_alerts_simple ($id_agent, $filter = false) {
+	switch ($filter) {
+			case "notfired":
+				$filter = ' AND times_fired = 0 AND disable = 0';
+			break;
+			case "fired":
+				$filter = ' AND times_fired > 0 AND disable = 0';
+			break;
+			case "disabled":
+				$filter = ' AND disable = 1';
+			break;
+			default:
+				$filter = '';
+	}
+	$sql = sprintf ("SELECT talerta_agente_modulo.* FROM talerta_agente_modulo, tagente_modulo WHERE talerta_agente_modulo.id_agente_modulo = tagente_modulo.id_agente_modulo AND tagente_modulo.id_agente = %d%s", $id_agent, $filter);
 	$alerts = get_db_all_rows_sql ($sql);
 	
 	if ($alerts === false)
@@ -312,8 +327,22 @@ function get_simple_alerts_in_agent ($id_agent) {
  *
  * @return An array with all combined alerts defined for an agent.
  */
-function get_combined_alerts_in_agent ($id_agent) {
-	$alerts = get_db_all_rows_field_filter ('talerta_agente_modulo', 'id_agent', (int) $id_agent);
+function get_agent_alerts_combined ($id_agent, $filter = false) {
+	switch ($filter) {
+		case "notfired":
+			$filter = ' AND times_fired = 0 AND disable = 0';
+			break;
+		case "fired":
+			$filter = ' AND times_fired > 0 AND disable = 0';
+			break;
+		case "disabled":
+			$filter = ' AND disable = 1';
+			break;
+		default:
+			$filter = '';
+	}
+	$sql = sprintf ("SELECT * FROM talerta_agente_modulo WHERE id_agent = %d%s", $id_agent, $filter);
+	$alerts = get_db_all_rows_sql ($sql);
 	
 	if ($alerts === false)
 		return array ();
@@ -327,9 +356,9 @@ function get_combined_alerts_in_agent ($id_agent) {
  *
  * @return An array with all alerts defined for an agent.
  */
-function get_alerts_in_agent ($id_agent) {
-	$simple_alerts = get_simple_alerts_in_agent ($id_agent);
-	$combined_alerts = get_combined_alerts_in_agent ($id_agent);
+function get_agent_alerts ($id_agent, $filter = false) {
+	$simple_alerts = get_agent_alerts_simple ($id_agent, $filter);
+	$combined_alerts = get_agent_alerts_combined ($id_agent, $filter);
 	
 	return array_merge ($simple_alerts, $combined_alerts);
 }
@@ -420,14 +449,14 @@ function get_user_password ($id_user) {
 }
 
 /** 
- * Get name of an alert
+ * Get type of an alert (e-mail, text, internal, ...)
  * 
- * @param id_alert Alert id.
+ * @param id_alert Alert type id.
  * 
- * @return Name of the alert.
+ * @return Type name of the alert.
  */
-function dame_nombre_alerta ($id_alert) {
-	return (string) get_db_value ('nombre', 'talerta', 'id_alerta', (int) $id_alert);
+function get_alert_type ($id_type) {
+	return (string) get_db_value ('nombre', 'talerta', 'id_alerta', (int) $id_type);
 }
 
 /** 
@@ -705,12 +734,12 @@ function get_alert_fires_in_period ($id_agent_module, $period, $date = 0) {
  * 
  * @return An array with alerts dictionaries defined in a group.
  */
-function get_alerts_in_group ($id_group) {
+function get_group_alerts ($id_group) {
 	$alerts = array ();
 	$agents = get_group_agents ($id_group, false, "none");
 	
 	foreach ($agents as $agent_id => $agent_name) {
-		$agent_alerts = get_alerts_in_agent ($agent_id);
+		$agent_alerts = get_agent_alerts ($agent_id);
 		$alerts = array_merge ($alerts, $agent_alerts);
 	}
 	
@@ -790,14 +819,10 @@ function get_moduletype_name ($id_type) {
 }
 
 /** 
- * Get group id of an agent.
- * 
- * @param id_agent Agent id
- * 
- * @return Group of the given agent
+ * DEPRECATED: USE get_agent_group ($id) now (fully compatible)
  */
 function dame_id_grupo ($id_agent) {
-	return (int) get_db_value ('id_grupo', 'tagente', 'id_agente', $id_agent);
+	return get_agent_group ($id_agent);
 }
 
 /** 
@@ -2207,5 +2232,52 @@ function get_agent_group ($id_agent) {
 **/
 function get_group_name ($id_group) {
 	return (string) get_db_value ('nombre', 'tgrupo', 'id_grupo', (int) $id_group);
+}
+
+/**
+ *   @function	 process_alerts_validate
+ *   @abstract   Validates an alert id or an array of alert id's
+ *   @param      $alert_id Array of or single id
+ *   @result     True if it was successful, false if it doesn't
+ **/
+function process_alerts_validate ($id_alert) {
+	global $config;
+	require_once ("include/functions_events.php");
+	
+	if (!is_array ($id_alert)) {
+		$id_alert = (array) $id_alert;
+	}
+	$id_alert = safe_int ($id_alert, 1);
+	
+	if (empty ($id_alert)) {
+		return false;
+	}
+	
+	foreach ($id_alert as $id_aam) {
+		$alert = get_db_row ("talerta_agente_modulo", "id_aam", $id_aam);
+		
+		if (empty ($alert["id_agent"])) {
+			//Simple alert
+			$agent_id = get_agentmodule_agent ($alert["id_agente_modulo"]);
+			$group_id = get_agentmodule_group ($alert["id_agente_modulo"]);	
+		} else {
+			//Combined alert
+			$agent_id = $alert["id_agent"];
+			$group_id = get_agent_group ($agent_id);
+		}
+		
+		if (give_acl ($config['id_user'], $group_id, "AW") == 0) {
+			continue;
+		}
+		
+		$sql = sprintf ("UPDATE talerta_agente_modulo SET times_fired = 0, internal_counter = 0 WHERE id_aam = %d", $id_aam);
+		$result = process_sql ($sql);
+		if ($result > 0) {
+			create_event ("Manual validation of alert for ".$alert["descripcion"], $group_id, $agent_id, 1, $config["id_user"], "alert_manual_validation", 1, $alert["id_agente_modulo"], $id_aam);
+		} elseif ($result === false) {
+			return false;
+		}
+	}
+	return true;
 }
 ?>

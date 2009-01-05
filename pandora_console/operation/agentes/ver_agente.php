@@ -18,7 +18,6 @@
 
 // Load global vars
 require_once ("include/config.php");
-require_once ("include/functions_events.php");
 
 enterprise_include ('operation/agentes/ver_agente.php');
 
@@ -127,8 +126,8 @@ if (defined ('AJAX')) {
 	exit ();
 }
 
-$id_agente = (int) get_parameter ("id_agente");
-if (! $id_agente) {
+$id_agente = (int) get_parameter ("id_agente", 0);
+if (empty ($id_agente)) {
 	return;
 }
 
@@ -142,28 +141,10 @@ if (! give_acl ($config['id_user'], $id_grupo, "AR")) {
 }
 
 // Check for validate alert request
-$validate_alert = get_parameter ("validate_alert");
-if ($validate_alert != ""){
-	if (give_acl ($config['id_user'], $id_grupo, "AW") == 1) {
-		$alert_row = get_db_row ("talerta_agente_modulo", "id_aam", $validate_alert);
-		if ($alert_row["id_agente_modulo"] != 0){
-			$am_row = get_db_row ("tagente_modulo", "id_agente_modulo", $alert_row["id_agente_modulo"]);
-			$ag_row = get_db_row ("tagente", "id_agente", $am_row["id_agente"]);
-		} else {
-			$ag_row = get_db_row ("tagente", "id_agente", $alert_row ["id_agent"]);
-		}
-		$alert_name = $alert_row["descripcion"];
-
-		// Single alerts
-		if ($alert_row["id_agente_modulo"] != 0){
-			create_event ("Manual validation of alert for '$alert_name'", $ag_row["id_grupo"], $am_row["id_agente"], 1, $config["id_user"], "alert_manual_validation", 1, $alert_row["id_agente_modulo"], $validate_alert);
-		// Combined alerts
-		} else {
-			create_event ("Manual validation of alert for '$alert_name'", $ag_row["id_grupo"], $alert_row ["id_agent"], 1, $config["id_user"], "alert_manual_validation", 1, 0, $validate_alert);
-		}
-		$sql='UPDATE talerta_agente_modulo SET times_fired = 0, internal_counter = 0 WHERE id_aam = '.$validate_alert;
-		$result=mysql_query($sql);
-	}
+$validate_alert = get_parameter ("validate_alert", 0);
+if ($validate_alert > 0) {
+	$result = process_alerts_validate ($validate_alert);
+	print_error_message ($result, __('Alert(s) validated'), __('Error processing alert(s)'));
 }
 
 // Check for Network FLAG change request

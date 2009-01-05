@@ -25,6 +25,11 @@ $pandora_version="v2.1-dev";
 global $build_version;
 global $pandora_version;
 
+//Set character encoding to UTF-8 - fixes a lot of multibyte character headaches
+if (function_exists (mb_internal_encoding)) {
+	mb_internal_encoding ("UTF-8");
+}
+
 // Set to 1 to do not check for installer or config file (for development!).
 $develop_bypass = 1;
 

@@ -84,7 +84,7 @@ pandora_help ("alert_type");
 echo '</td>';
 echo '<td class="datos"><select name="tipo_alerta">';
 if (isset($tipo_alerta)){
-	echo "<option value='".$tipo_alerta."'>".dame_nombre_alerta($tipo_alerta)."</option>";
+	echo "<option value='".$tipo_alerta."'>".get_alert_type ($tipo_alerta)."</option>";
 }
 $sql1 = 'SELECT id_alerta, nombre FROM talerta ORDER BY nombre';
 $result = mysql_query ($sql1);

@@ -384,7 +384,7 @@ function get_fired_alerts_reporting_table ($alerts_fired) {
  */
 function alert_reporting ($id_group, $period = 0, $date = 0, $return = false) {
 	$output = '';
-	$alerts = get_alerts_in_group ($id_group);
+	$alerts = get_group_alerts ($id_group);
 	$alerts_fired = get_alerts_fired ($alerts, $period, $date);
 	
 	$fired_percentage = 0;
@@ -549,7 +549,7 @@ function get_agent_alerts_reporting_table ($id_agent, $period = 0, $date = 0) {
 	$table->head[5] = __('Last fired');
 	$table->head[6] = __('Times Fired');
 	
-	$alerts = get_alerts_in_agent ($id_agent);
+	$alerts = get_agent_alerts ($id_agent);
 	foreach ($alerts as $alert) {
 		$fires = get_alert_fires_in_period ($alert['id_agente_modulo'], $period, $date);
 		if (! $fires) {

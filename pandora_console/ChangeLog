@@ -1,3 +1,25 @@
+2009-01-05  Evi Vanoost <vanooste@rcbi.rochester.edu>
+	
+	* godmode/agentes/alert_manager_editor.php, 
+	godmode/snmpconsole/snmp_alert.php, include/functions_reporting.php,
+	include/functions_reporting.php:
+	Function updates
+	
+	* include/functions.php: show_alert_show_view is now format_alert_row
+	
+	* include/functions_db.php: get_simple_alerts_in_agent is now 
+	get_agent_alerts_simple; get_combined_alerts_in_agent is now 
+	get_agent_alerts_combined; get_alerts_in_agent is now get_agent_alerts;
+	dame_nombre_alerta is now get_alert_type; get_alerts_in_group is now
+	get_group_alerts; dame_id_grupo set to deprecated; Added 
+	process_alerts_validate to validate alerts passed to it.
+	
+	* index.php: Set UTF-8 encoding standard for multibyte functions
+	
+	* operation/agentes/estado_alertas.php: Rewritten
+	
+	* operation/agentes/ver_agente.php: Put alert validation in a function
+
 2009-01-05  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/languages/es.po, include/languages/es.mo: Updated Spanish

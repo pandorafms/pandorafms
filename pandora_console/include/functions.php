@@ -43,9 +43,9 @@ function pandora_help ($help_id, $return = false) {
  * entities. UTF-8 is necessary for foreign chars like asian 
  * and our databases are (or should be) UTF-8
  * 
- * @param mixed String or array of strings to be cleaned.
+ * @param (mixed) String or array of strings to be cleaned.
  * 
- * @return The cleaned string.
+ * @return (mixed) The cleaned string or array.
  */
 function safe_input ($value) {
 	if (is_numeric ($value))
@@ -135,21 +135,21 @@ function output_clean_strict ($string) {
 
 
 /** 
- * WARNING: Deprecated function, use safe_input. Keep from compatibility.
+ * DEPRECATED use safe_input. Keep for compatibility.
  */
 function entrada_limpia ($string) {
 	return safe_input ($string);
 }
 
 /** 
- * Performs an extra clean to a string.
+ * Performs an extra clean to a string. Makes it usable in an URL
  *
  * It's useful on sec and sec2 index parameters, to avoid the use of
  * malicious parameters. The string is also stripped to 125 charactes.
  * 
- * @param string String to clean
+ * @param (string) String to clean
  * 
- * @return 
+ * @return (string) Cleaned string
  */
 function safe_url_extraclean ($string) {
 	/* Clean "://" from the strings
@@ -371,10 +371,10 @@ function pagination ($count, $url, $offset, $pagination = 0) {
  * If the number is zero or it's integer value, no decimals are
  * shown. Otherwise, the number of decimals are given in the call.
  * 
- * @param number Number to be rendered
- * @param decimals Number of decimals to be shown. Default value: 1
+ * @param (float) Number to be rendered
+ * @param (int) Number of decimals to be shown. Default value: 1
  * 
- * @return 
+ * @return (string) A formatted number for use in output
  */
 function format_numeric ($number, $decimals = 1) {
 	//Translate to float in case there are characters in the string so
@@ -442,9 +442,9 @@ function human_time_comparation ($timestamp) {
 }
 
 /**
- *   @function	 get_system_time
- *   @abstract   This function gets the time from either system or sql based on preference and returns it
- *   @result     Unix timestamp
+ * This function gets the time from either system or sql based on preference and returns it
+ *
+ * @return (int) Unix timestamp
 **/
 function get_system_time () {
 	global $config;
@@ -525,11 +525,7 @@ function human_date_relative ($seconds) {
 }
 
 /** 
- * 
- * 
- * @param lapse 
- * 
- * @return 
+ * DEPRECATED: Use print_timestamp instead
  */
 function render_time ($lapse) {
 	$myhour = intval (($lapse*30) / 60);
@@ -547,15 +543,15 @@ function render_time ($lapse) {
 }
 
 /** 
- * Get a paramter from a request.
+ * Get a parameter from a request.
  *
  * It checks first on post request, if there were nothing defined, it
  * would return get request
  * 
- * @param name 
- * @param default 
+ * @param (string) name of the parameter in the $_POST or $_GET array
+ * @param (mixed) default value if it wasn't found
  * 
- * @return 
+ * @return (mixed) Whatever was in that parameter, cleaned however 
  */
 function get_parameter ($name, $default = '') {
 	// POST has precedence
@@ -628,11 +624,11 @@ function get_alert_priority ($priority = 0) {
 }
 
 /** 
+ * Gets a translated string of names of days based on the boolean properties of it's input ($row["monday"] = (bool) 1 will output Mon) 
  * 
+ * @param (array) The array of boolean values to check. They should have monday -> sunday in boolean
  * 
- * @param row 
- * 
- * @return 
+ * @return (string) Translated names of days
  */
 function get_alert_days ($row) {
 	global $config;
@@ -669,11 +665,11 @@ function get_alert_days ($row) {
 }
 
 /** 
+ * Gets the alert times values and returns them as string
  * 
+ * @param (array) Array with time_from and time_to in it's keys
  * 
- * @param row2 
- * 
- * @return 
+ * @return (string) A string with the concatenated values
  */
 function get_alert_times ($row2) {
 	if ($row2["time_from"]){
@@ -693,14 +689,14 @@ function get_alert_times ($row2) {
 }
 
 /** 
- * 
+ * DEPRECATED: This has been replaced with print_table or format_alert_row
  * 
  * @param row2 
  * @param tdcolor 
  * @param id_tipo_modulo 
  * @param combined 
  * 
- * @return 
+ * @return (string) HTML code
  */
 function show_alert_row_edit ($row2, $tdcolor = "datos", $id_tipo_modulo = 1, $combined = 0){
 	global $config;
@@ -805,9 +801,9 @@ function show_alert_row_edit ($row2, $tdcolor = "datos", $id_tipo_modulo = 1, $c
 /** 
  * Formats a row from the alert table and returns an array usable in the table function
  * 
- * @param $alert (array) A valid (non empty) row from the alert table
- * @param $agent (bool) Whether to print the agent information with the module information
- * @param $combined (bool) Whether or not this is a combined alert
+ * @param (array) $alert A valid (non empty) row from the alert table
+ * @param (bool) $combined Whether or not this is a combined alert
+ * @param (bool) $agent Whether to print the agent information with the module information
  * 
  * @return (array) A formatted array with proper html for use in $table -> 7 columns
  */
@@ -1107,17 +1103,6 @@ function get_priority_class ($priority) {
 function unsafe_string ($string) {
 	if (get_magic_quotes_gpc () == 1) 
 		$string = stripslashes ($string);
-	return $string;
-}
-
-/**
- * Deprecated by get_parameter functions and safe_input funcitons
- * Magic Quotes are deprecated in PHP5 and will be removed in PHP6
- */
-
-function safe_sql_string ($string) {
-	if (get_magic_quotes_gpc () == 0) 
-		$string = mysql_escape_string ($string);
 	return $string;
 }
 

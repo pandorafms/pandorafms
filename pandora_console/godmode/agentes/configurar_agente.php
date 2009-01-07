@@ -16,17 +16,16 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
 // Load global vars
-require("include/config.php");
-enterprise_include('godmode/agentes/configurar_agente.php');
+require_once ("include/config.php");
+enterprise_include ('godmode/agentes/configurar_agente.php');
 
 check_login ();
 
 //See if id_agente is set (either POST or GET, otherwise -1
-$id_agente = get_parameter ("id_agente", -1);
+$id_agente = (int) get_parameter ("id_agente", -1);
 
-$group = dame_id_grupo ($id_agente); //Will return 0 or an int
+$group = get_agent_group ($id_agente);
 
 if (! give_acl($config["id_user"], $group, "AW")) {
 	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
@@ -34,7 +33,6 @@ if (! give_acl($config["id_user"], $group, "AW")) {
 	require ("general/noaccess.php");
 	exit;
 }
-
 
 // Get passed variables
 $tab = get_parameter_get ("tab", "main");
@@ -699,7 +697,6 @@ if ((isset ($_POST["update_module"])) || (isset ($_POST["insert_module"]))) {
 	$form_minvalue = (int) get_parameter_post ("form_minvalue",0);
 	$form_maxvalue = (int) get_parameter ("form_maxvalue",0);
 	$form_interval = (int) get_parameter ("form_interval",300);
-	$form_id_prediction_module = (int) get_parameter ("form_id_prediction_module",0);
 	$form_id_plugin = (int) get_parameter ("form_id_plugin",0);
 	$form_id_export = (int) get_parameter ("form_id_export",0);
 	$form_disabled = (bool) get_parameter ("form_disabled",0);
@@ -725,6 +722,7 @@ if ((isset ($_POST["update_module"])) && (!isset ($_POST["oid"]))) { // if modif
 			$snmp_oid = $form_combo_snmp_oid;
 		}
 	}
+	
 	$sql = sprintf ("UPDATE tagente_modulo SET 
 			descripcion = '%s', 
 			id_module_group = %d,
@@ -801,7 +799,7 @@ if (((!isset ($_POST["nc"]) OR ($_POST["nc"] == -1))) && (!isset ($_POST["oid"])
 		VALUES (%d,%d,'%s','%s',%d,%d,'%s','%s',%d,%d,'%s',%d,'%s','%s',%d,'%s','%s','%s',%d,%d,%d,%d,%d,%d,'%s')",
 			$id_agente, $form_id_tipo_modulo, $form_name, $form_description, $form_maxvalue, $form_minvalue, $form_snmp_oid, $form_snmp_community, 
 			$form_id_module_group, $form_interval, $form_ip_target, $form_tcp_port, $form_tcp_rcv, $form_tcp_send, $form_id_export, $form_plugin_user, $form_plugin_pass, 
-			$form_plugin_parameter, $form_id_plugin, $form_post_process, $form_id_prediction_module, $form_max_timeout, $form_disabled, $form_id_modulo, $form_custom_id);
+			$form_plugin_parameter, $form_id_plugin, $form_post_process, $form_prediction_module, $form_max_timeout, $form_disabled, $form_id_modulo, $form_custom_id);
 	$id_agente_modulo = process_sql ($sql, 'insert_id');
 
 	if ($id_agente_modulo === false){

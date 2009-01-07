@@ -16,7 +16,9 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
+if (!isset ($id_agente)) {
+	die ("Not Authorized");
+}
 
 $add_component = get_parameter ("add_component",0);
 echo "<h3>".__('Alert association form');

@@ -16,11 +16,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
-
 // General startup for established session
-global $config;
-check_login();
+if (!isset ($id_agente)) {
+	die ("Not Authorized");
+}
 
 // get the variable form_moduletype
 $form_moduletype = get_parameter_post ("form_moduletype");

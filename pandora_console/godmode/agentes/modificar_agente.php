@@ -16,24 +16,20 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
 // Load global vars
 require_once ("include/config.php");
-
-if (give_acl($config["id_user"], 0, "AW") != 1) {
-	audit_db($config["id_user"],$REMOTE_ADDR, "ACL Violation",
-	"Trying to access Agent Management");
-	require ("general/noaccess.php");
-	exit;
-}
+	
+check_login ();
 
 // Take some parameters (GET)
 $offset = get_parameter ("offset", 0);
 $group_id = get_parameter ("group_id", 0);
 $ag_group = get_parameter ("ag_group", -1);
+
 if (($ag_group == -1) && ($group_id != 0)) {
 	$ag_group = $group_id;
 }
+
 if (isset ($_GET["ag_group_refresh"])){
 	$ag_group = get_parameter_get ("ag_group_refresh", -1);
 }

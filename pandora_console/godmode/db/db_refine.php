@@ -64,13 +64,13 @@ echo '<div style="float:left; width: 250px;">';
 echo '<b>'.__('Source agent').'</b><br />';
 
 $agent_selected = get_parameter_post ("origen", 0);
-$agents = get_group_agents (get_user_groups ($config["id_user"], "AW"));
+$agents = get_group_agents (array_keys (get_user_groups ($config["id_user"], "AW")));
 
 print_select ($agents, "origen", $agent_selected, 'javascript:this.form.update_agent.click();', __('No agent selected'), '0', false, false, false, 'w130');
 
 echo '&nbsp;&nbsp;';
 
-print_submit_button (__('Get Info'), 'update_agent', false, 'class="sub upd"');
+print_submit_button (__('Get Info'), 'update_agent', false, 'style="display:none;"');
 
 echo '<br /><br />';
 echo '<b>'.__('Modules').'</b><br /><br />';

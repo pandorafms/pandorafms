@@ -18,15 +18,9 @@
 
 
 // Load global vars
-require("include/config.php");
-check_login();
-
-if (give_acl($config["id_user"], 0, "AW")!=1) {
-    audit_db($config["id_user"], $REMOTE_ADDR, "ACL Violation","Trying to access agent manager");
-    require ($config["homedir"]."/general/noaccess.php");
-    exit;
-};
-
+if (!isset ($id_agente)) {
+	die ("Not Authorized");
+}
 
 echo "<h2>".__('Agent configuration')." &gt; ".__('Modules')."</h2>"; 
 

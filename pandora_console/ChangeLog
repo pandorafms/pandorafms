@@ -1,5 +1,14 @@
 2009-01-07  Esteban Sanchez  <estebans@artica.es>
 
+	* godmode/agentes/modificar_agente.php: Old functions replace with new
+	ones. Removed one indentation level when there's no access rights.
+	
+	* include/functions_ui.php: Wrong variable was being used in
+	print_group_icon() to store the output and an incosistent behaviour
+	was happening.
+
+2009-01-07  Esteban Sanchez  <estebans@artica.es>
+
 	* include/functions_ui.php: Added to repository. Functions that prints
 	UI elements for Pandora. Let's make functions_html.php a single HTML
 	library instead of mixing it up with Pandora specific elements.

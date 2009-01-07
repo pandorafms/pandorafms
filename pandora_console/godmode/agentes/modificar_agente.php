@@ -234,46 +234,49 @@ if (mysql_num_rows($result)){
 			$tdcolor = "datos2";
 			$color = 1;
 		}
-		if (give_acl($config["id_user"], $id_grupo, "AW")==1){
-			// Agent name
-			echo "<tr><td class='$tdcolor'>";
-			if ($row["disabled"] == 1){
-				echo "<i>";
-			}
-			echo "<b><a href='index.php?sec=gagente&
-			sec2=godmode/agentes/configurar_agente&tab=main&
-			id_agente=".$row["id_agente"]."'>".substr(strtoupper($row["nombre"]),0,20)."</a></b>";
-			if ($row["disabled"] == 1){
-                                echo "<i>";
-                        }
-			echo "</td>";
-
-			echo "<td align='center' class='$tdcolor'>";
-			// Has remote configuration ?
-			$agent_md5 = md5($row["nombre"], FALSE);
-			if (file_exists($config["remote_config"] . "/" . $agent_md5 . ".md5")){
-
-				echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=".$row["id_agente"]."&disk_conf=" . $agent_md5 . "'>";
-				echo "<img src='images/application_edit.png' border='0' align='middle' title='".__('Edit remote config')."'>";
-				echo "</A>";
-			}
-			echo "</td>";
-
-
-			// Operating System icon
-			echo "<td class='$tdcolor' align='center'>";
-			print_os_icon ($row["id_os"], false);
-			echo "</td>";
-			// Group icon and name
-			echo "<td class='$tdcolor' align='center'>".print_group_icon ($id_grupo, true)."</td>";
-			// Description
-			echo "<td class='".$tdcolor."f9'>".$row["comentarios"]."</td>";
-			// Action
-			echo "<td class='$tdcolor' align='center'><a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
-			borrar_agente=".$row["id_agente"]."'";
-			echo ' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-			echo "<img border='0' src='images/cross.png'></a></td>";
+		if (! give_acl($config["id_user"], $id_grupo, "AW"))
+			continue;
+	
+		// Agent name
+		echo "<tr class='$tdcolor' >";
+		echo "<td>";
+		if ($row["disabled"] == 1){
+			echo "<i>";
 		}
+		echo "<b><a href='index.php?sec=gagente&
+		sec2=godmode/agentes/configurar_agente&tab=main&
+		id_agente=".$row["id_agente"]."'>".substr(strtoupper($row["nombre"]),0,20)."</a></b>";
+		if ($row["disabled"] == 1){
+			echo "<i>";
+		}
+		echo "</td>";
+
+		echo "<td align='center'>";
+		// Has remote configuration ?
+		$agent_md5 = md5 ($row["nombre"], false);
+		if (file_exists ($config["remote_config"]."/".$agent_md5.".md5")) {
+
+			echo "<a href='index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=main&id_agente=".$row["id_agente"]."&disk_conf=" . $agent_md5 . "'>";
+			echo "<img src='images/application_edit.png' border='0' align='middle' title='".__('Edit remote config')."'>";
+			echo "</A>";
+		}
+		echo "</td>";
+		
+		// Operating System icon
+		echo "<td align='center'>";
+		print_os_icon ($row["id_os"], false);
+		echo "</td>";
+		// Group icon and name
+		echo "<td>";
+		print_group_icon ($id_grupo);
+		echo "&nbsp; ".get_group_name ($id_grupo)."</td>";
+		// Description
+		echo "<td class='".$tdcolor."f9'>".$row["comentarios"]."</td>";
+		// Action
+		echo "<td align='center'><a href='index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&
+		borrar_agente=".$row["id_agente"]."'";
+		echo ' onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
+		echo "<img src='images/cross.png'></a></td>";
 	}
 	echo "</table>";
 	echo "<table width='750'><tr><td align='right'>";
@@ -282,10 +285,10 @@ if (mysql_num_rows($result)){
 	echo "&nbsp;</td></tr><tr><td>";
 }
 
-	// Create agent button
-	echo "<form method='post' action='index.php?sec=gagente&
-	sec2=godmode/agentes/configurar_agente&create_agent=1'>";
-	echo "<input type='submit' class='sub next' name='crt'
-	value='".__('Create agent')."'>";
-	echo "</form></td></tr></table>";
+// Create agent button
+echo "<form method='post' action='index.php?sec=gagente&
+sec2=godmode/agentes/configurar_agente&create_agent=1'>";
+echo "<input type='submit' class='sub next' name='crt'
+value='".__('Create agent')."'>";
+echo "</form></td></tr></table>";
 ?>

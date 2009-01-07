@@ -18,7 +18,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 /** 
- * Evaluates a result using empty () and then prints an error message or a
+ * Evaluates a result using empty() and then prints an error message or a
  * success message
  * 
  * @param mixed $result the results to evaluate. 0, NULL, false, '' or array()
@@ -155,14 +155,14 @@ function print_group_icon ($id_group, $return = false, $path = "groups_small") {
 		return "-";
 	}
 	
-	$return = '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$id_group.'">';
-	$return .= '<img class="bot" src="images/'.$path.'/'.$icon.'.png" alt="'.get_group_name ($id_group).'" title="'.get_group_name ($id_group).'" />';
-	$return .= '</a>';
+	$output = '<a href="index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id='.$id_group.'">';
+	$output .= '<img class="bot" src="images/'.$path.'/'.$icon.'.png" alt="'.get_group_name ($id_group).'" title="'.get_group_name ($id_group).'" />';
+	$output .= '</a>';
 	
 	if ($return)
-		return $return;
+		return $output;
 	
-	echo $return;
+	echo $output;
 }
 
 /** 

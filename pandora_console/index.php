@@ -151,50 +151,32 @@ if (! isset ($_SESSION['id_usuario']) && isset ($_GET["login"])) {
 	$row = get_db_row_sql ($sql);
 	
 	// For every registry
-	if ($row !== false) {
-		if ($row["password"] == md5 ($pass)) {
-			// Login OK
-			// Nick could be uppercase or lowercase (select in MySQL
-			// is not case sensitive)
-			// We get DB nick to put in PHP Session variable,
-			// to avoid problems with case-sensitive usernames.
-			// Thanks to David Muñiz for Bug discovery :)
-			$nick = $row["id_usuario"];
-			unset ($_GET["sec2"]);
-			$_GET["sec"] = "general/logon_ok";
-			update_user_contact ($nick);
-			logon_db ($nick, $config["remote_addr"]);
-			$_SESSION['id_usuario'] = $nick;
-			$config['id_user'] = $nick;
-			unset ($_GET['pass'], $pass);
-		} else {
-			// Login failed (bad password)
-			unset ($_GET["sec2"]);
-			require "general/logon_failed.php";
-			// change password to do not show any string
-			// $primera = substr ($pass,0,1);
-			// $ultima = substr ($pass, strlen ($pass) - 1, 1);
-			// $pass = $primera . "****" . $ultima;
-			audit_db ($nick, $config["remote_addr"], "Logon Failed",
-				"Incorrect password: " . $nick);
-			exit;
-		}
+	if ($row !== false && $row["password"] == md5 ($pass)) {
+		// Login OK
+		// Nick could be uppercase or lowercase (select in MySQL
+		// is not case sensitive)
+		// We get DB nick to put in PHP Session variable,
+		// to avoid problems with case-sensitive usernames.
+		// Thanks to David Muñiz for Bug discovery :)
+		$nick = $row["id_usuario"];
+		unset ($_GET["sec2"]);
+		$_GET["sec"] = "general/logon_ok";
+		update_user_contact ($nick);
+		logon_db ($nick, $REMOTE_ADDR);
+		$_SESSION['id_usuario'] = $nick;
+		$config['id_user'] = $nick;
+		unset ($_GET['pass'], $pass);
 	} else {
 		// User not known
-		unset ($_GET["sec2"]);
-		require "general/logon_failed.php";
-		// do not show any password string. Unsafe especially with
-		// short passwords
-		//$primera = substr ($pass, 0, 1);
-		//$ultima = substr ($pass, strlen ($pass) - 1, 1);
-		//$pass = $primera . "****" . $ultima;
-		audit_db ($nick, $config["remote_addr"], "Logon Failed",
-			"Invalid username: " . $nick);
+		$login_failed = true;
+		require_once ('general/login_page.php');
+		audit_db ($nick, $REMOTE_ADDR, "Logon Failed",
+			  "Invalid login: ".$nick);
 		exit;
 	}
 } elseif (! isset ($_SESSION['id_usuario'])) {
 	// There is no user connected
-	include "general/login_page.php";
+	require_once ('general/login_page.php');
 	echo '</body></html>';
 	exit;
 } else {

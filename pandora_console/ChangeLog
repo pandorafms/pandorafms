@@ -1,3 +1,22 @@
+2009-01-07  Esteban Sanchez  <estebans@artica.es>
+
+	* include/functions_ui.php: Added to repository. Functions that prints
+	UI elements for Pandora. Let's make functions_html.php a single HTML
+	library instead of mixing it up with Pandora specific elements.
+
+	* include/functions.php: Fixed inline doc. Added functions_ui.php.
+
+	* include/functions_html.php: Functions moved to functions_ui.php.
+	Fixed checkbox ids in print_checkbox_extended().
+
+	* general/main_menu.php: Make refr attribute optional. Do not print
+	class attribut tag if no class was given.
+
+	* general/login_page.php: Show login error message if login fails.
+	Put POST values into the form instead of the URL.
+
+	* index.php: Cleaned up login code to become easier.
+
 2009-01-06  Raul Mateos  <raulofpandora@gmail.com>
 
 	* index.php: Updated build.

@@ -32,7 +32,11 @@ function temp_print_menu ($menu, $type) {
 		//Set class
 		if (!isset ($main["sub"])) {
 			$main["sub"] = array ();
-		} 
+		}
+		
+		if (!isset ($main["refr"])) {
+			$main["refr"] = 0;
+		}
 		
 		if ($sec == $mainsec) {
 			$class = 'selected';
@@ -44,11 +48,15 @@ function temp_print_menu ($menu, $type) {
 		}
 		
 		//Print out the first level
-		echo '<ul class="'.$class.'"><li class="mainmenu '.$class.'" id="'.$main["id"].'"><a href="index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].'&amp;refr='.$main["refr"].'">'.$main["text"].'</a></li>';
+		echo '<ul'.($class ? ' class="'.$class.'"' : '').'>';
+		echo '<li class="mainmenu '.$class.'" id="'.$main["id"].'">';
+		echo '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$main["sec2"].'&amp;refr='.$main["refr"].'">'.$main["text"].'</a>';
+		echo '</li>';
 		
 		foreach ($main["sub"] as $subsec2 => $sub) {
 			//Set class
-			if (($sec2 == $subsec2) && (isset ($sub[$subsec2]["options"])) && (get_parameter_get ($sub[$subsec2]["options"]["name"]) == $sub[$subsec2]["options"]["value"])) {
+			if (($sec2 == $subsec2) && (isset ($sub[$subsec2]["options"]))
+				&& (get_parameter_get ($sub[$subsec2]["options"]["name"]) == $sub[$subsec2]["options"]["value"])) {
 				//If the subclass is selected and there are options and that options value is true 
 				$class = 'submenu selected';
 			} elseif ($sec2 == $subsec2 && (!isset ($sub[$subsec2]["options"]))) {
@@ -62,17 +70,23 @@ function temp_print_menu ($menu, $type) {
 				$class = 'submenu invisible';
 			}
 			
+			if (!isset ($sub["refr"])) {
+				$sub["refr"] = 0;
+			} 
+			
 			if (isset ($sub["type"]) && $sub["type"] == "direct") {
 				//This is an external link
 				echo '<li class="'.$class.'"><a href="'.$subsec2.'">'.$sub["text"].'</a></li>';
 			} else {
 				//This is an internal link
-				if (isset($sub[$subsec2]["options"])) {
+				if (isset ($sub[$subsec2]["options"])) {
 					$link_add = "&amp;".$sub[$subsec2]["options"]["name"]."=".$sub[$subsec2]["options"]["value"];
 				} else {
 					$link_add = "";
 				}
-				echo '<li class="'.$class.'"><a href="index.php?sec='.$mainsec.'&amp;sec2='.$subsec2.'&amp;refr='.$sub["refr"].$link_add.'">'.$sub["text"].'</a></li>';
+				echo '<li'.($class ? ' class="'.$class.'"' : '').'>';
+				echo '<a href="index.php?sec='.$mainsec.'&amp;sec2='.$subsec2.'&amp;refr='.$sub["refr"].$link_add.'">'.$sub["text"].'</a>';
+				echo '</li>';
 			}
 		}
 		echo '</ul>';

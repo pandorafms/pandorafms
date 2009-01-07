@@ -18,6 +18,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 require_once ('functions_html.php');
+require_once ('functions_ui.php');
 
 define ('ENTERPRISE_NOT_HOOK', -1);
 
@@ -42,7 +43,7 @@ function pandora_help ($help_id, $return = false) {
  * entities. UTF-8 is necessary for foreign chars like asian 
  * and our databases are (or should be) UTF-8
  * 
- * @param value String or array of strings to be cleaned.
+ * @param mixed String or array of strings to be cleaned.
  * 
  * @return The cleaned string.
  */
@@ -59,11 +60,12 @@ function safe_input ($value) {
 /**
  * Cleans an object or an array and casts all values as integers
  *
- * @param value String or array of strings to be cleaned
+ * @param mixed String or array of strings to be cleaned
  * @param min If value is smaller than min it will return false
  * @param max if value is larger than max it will return false
  *
- * @return The cleaned string. If an array was passed, the invalid values will have been removed
+ * @return The cleaned string. If an array was passed, the invalid values would
+ * be removed
  */
 function safe_int ($value, $min = false, $max = false) {
 	if (is_array ($value)) {
@@ -91,8 +93,8 @@ function safe_int ($value, $min = false, $max = false) {
  *
  * It prints a variable value and a message.
  * 
- * @param var Variable to be displayed
- * @param mesg Message to be displayed
+ * @param mixed Variable to be displayed
+ * @param string Message to be displayed
  */
 function pandora_debug ($var, $msg) { 
 	echo "[Pandora DEBUG (".$var."): (".$msg.")<br />";
@@ -101,9 +103,9 @@ function pandora_debug ($var, $msg) {
 /** 
  * Clean a string.
  * 
- * @param string 
+ * @param string String to be cleaned
  * 
- * @return 
+ * @return Cleaned given string
  */
 function salida_limpia ($string) {
 	$quote_style = ENT_QUOTES;
@@ -375,7 +377,9 @@ function pagination ($count, $url, $offset, $pagination = 0) {
  * @return 
  */
 function format_numeric ($number, $decimals = 1) {
-	$number = (float) $number; //Translate to float in case there are characters in the string so fmod doesn't throw a notice
+	//Translate to float in case there are characters in the string so
+	// fmod doesn't throw a notice
+	$number = (float) $number;
 	
 	if ($number == 0)
 		return 0;
@@ -386,7 +390,7 @@ function format_numeric ($number, $decimals = 1) {
 	$thousands_sep = __(",");
 	
 	/* If has decimals */
-	if (fmod ($number , 1) > 0)
+	if (fmod ($number, 1) > 0)
 		return number_format ($number, $decimals, $dec_point, $thousands_sep);
 	return number_format ($number, 0, $dec_point, $thousands_sep);
 }

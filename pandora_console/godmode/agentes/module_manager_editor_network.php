@@ -18,9 +18,9 @@
 
 
 // General startup for established session
-global $config;
-check_login();
-global $form_snmp_community;
+if (!isset ($id_agente)) {
+	die ("Not Authorized");
+}
 
 // get the variable form_moduletype
 $form_moduletype = get_parameter_post ("form_moduletype");

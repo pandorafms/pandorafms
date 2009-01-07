@@ -16,17 +16,11 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
-
-// General startup for established session
-check_login();
-
-// Specific ACL check
-if (give_acl ($config["id_user"], 0, "AW") != 1) {
-	audit_db($config["id_user"], $REMOTE_ADDR, "ACL Violation","Trying to access agent manager");
-	require ($config["homedir"]."/general/noaccess.php");
-	exit;
+if (!isset ($id_agente)) {
+	die ("Not Authorized");
 }
+
+require_once ("include/functions_exportserver.php");
 
 // Following variables come from module_manager.php -> configurar_agente.php :
 //

@@ -16,19 +16,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
-
 // Load global vars
-require("include/config.php");
-
-check_login();
-
-if (! give_acl ($config["id_user"], 0, "AW")) {
-	audit_db ($config["id_user"], $REMOTE_ADDR, "ACL Violation",
-		"Trying to access agent manager");
-	require ($config["homedir"]."/general/noaccess.php");
-	return;
-};
+if (!isset ($id_agente)) {
+	die ("Not Authorized");
+}
 
 echo "<h2>".__('Agent configuration')." &gt; ".__('Alerts')."</h2>";
 // ==========================

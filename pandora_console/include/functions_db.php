@@ -192,8 +192,7 @@ function give_disabled_group ($id_group) {
 /**
  * Get all the agents within a group(s).
  *
- * @param id_group Group id or a comma delimited list of id_groups or an array
- * of ID's
+ * @param id_group Group id or an array of ID's
  * 
  * @param disabled Add disabled agents to agents. Default: False.
  * 
@@ -202,17 +201,15 @@ function give_disabled_group ($id_group) {
  * @return An array with all agents in the group or an empty array
  */
 function get_group_agents ($id_group, $disabled = false, $case = "lower") {
-	$id_group = safe_int ($id_group, 1);
+	$id_group = (array) safe_int ($id_group, 1);
 	
-	if (is_array ($id_group)) {
-		//If id_group is an array, then 
-		if (in_array (1, $id_group)) {
-			//If All is included in the group list, just select All
-			$id_group = 1;
-		} else {
-			//If All is not included, select what we need
-			$id_group = implode (",", $id_group);
-		}
+	//If id_group is an array, then 
+	if (in_array (1, $id_group)) {
+		//If All is included in the group list, just select All
+		$id_group = 1;
+	} else {
+		//If All is not included, select what we need
+		$id_group = implode (",", $id_group);
 	}
 	
 	/* 'All' group must return all agents */
@@ -808,7 +805,7 @@ function get_server_name ($id_server) {
 }
 
 /** 
- * Get the module type name.
+ * Get the module type name (type = generic_data, remote_snmp, ...)
  * 
  * @param id_type Type id
  * 
@@ -828,9 +825,9 @@ function dame_id_grupo ($id_agent) {
 /** 
  * Get the number of pandora data in the database.
  * 
- * @param id_agent Agent id or 0 for all
+ * @param (int) $id_agent Agent id or 0 for all
  *
- * @return 
+ * @return (int) The number of data in the database
  */
 function dame_numero_datos ($id_agent = 0) {
 	if ($id_agent < 1) {
@@ -950,12 +947,12 @@ function existe ($id_user) {
  *
  * If the module interval is not set, the agent interval is returned
  * 
- * @param id_agent_module Id agent module to get the interval value.
+ * @param (int) $id_agent_module Id agent module to get the interval value.
  * 
- * @return 
+ * @return (int) Module interval or agent interval if no module interval
  */
 function get_module_interval ($id_agent_module) {
-	$interval = (int) get_db_value ('module_interval', 'tagente_modulo', 'id_agente_modulo', $id_agent_module);
+	$interval = (int) get_db_value ('module_interval', 'tagente_modulo', 'id_agente_modulo', (int) $id_agent_module);
 	if ($interval > 0)
 		return $interval;
 		
@@ -1530,7 +1527,7 @@ function get_db_all_rows_field_filter ($table, $field, $condition, $order_field 
  *
  * @return A matrix with all the values in the table that matches the condition in the field
  */
-function get_db_all_fields_in_table ($table, $field, $condition = '', $order_field = '') {
+function get_db_all_fields_in_table ($table, $field = '', $condition = '', $order_field = '') {
 	$sql = sprintf ("SELECT * FROM `%s`", $table);
 	if ($condition != '') {
 		$sql .= sprintf (" WHERE `%s` = '%s'", $field, $condition);
@@ -1861,11 +1858,11 @@ function check_server_status () {
 }
 
 /** 
+ * DEPRECATED or MOVE: Will show a small HTML table with some compound alert information
  * 
+ * @param (int) id_combined_alert 
  * 
- * @param id_combined_alert 
- * 
- * @return 
+ * @return (string) HTML block
  */
 function show_alert_row_mini ($id_combined_alert) {
 	$color=1;
@@ -2183,9 +2180,9 @@ function get_server_info ($id_server = -1) {
 /**
  * This function will return the number of all agent modules in the database
  *
- * @param integer or array of integers with agent(s). Leave empty to select everything
+ * @param (int) or (array) of integers with agent(s). Leave empty to select everything
  *
- * @return integer with the number of agent modules
+ * @return (int) The number of agent modules
  *
  **/
 function get_agent_modules_count ($id_agent = 0) {
@@ -2235,19 +2232,17 @@ function get_group_name ($id_group) {
 }
 
 /**
- *   @function	 process_alerts_validate
- *   @abstract   Validates an alert id or an array of alert id's
- *   @param      $alert_id Array of or single id
- *   @result     True if it was successful, false if it doesn't
+ * Validates an alert id or an array of alert id's
+ *
+ * @param $alert_id (array) Array of or a single id
+ *
+ * @return (bool) True if it was successful, false if it doesn't
  **/
 function process_alerts_validate ($id_alert) {
 	global $config;
 	require_once ("include/functions_events.php");
 	
-	if (!is_array ($id_alert)) {
-		$id_alert = (array) $id_alert;
-	}
-	$id_alert = safe_int ($id_alert, 1);
+	$id_alert = (array) safe_int ($id_alert, 1);
 	
 	if (empty ($id_alert)) {
 		return false;
@@ -2279,5 +2274,36 @@ function process_alerts_validate ($id_alert) {
 		}
 	}
 	return true;
+}
+
+/**
+ * Gets all module groups. (General, Networking, System). Module groups are merely for sorting frontend
+ *
+ * @return (array) All module groups
+**/
+function get_modulegroups () {
+	$result = get_db_all_fields_in_table ("tmodule_group");
+	$return = array ();
+	
+	if (empty ($result)) {
+		return $return;
+	}
+	
+	foreach ($result as $modulegroup) {
+		$return[$modulegroup["id_mg"]] = $modulegroup["name"];
+	}
+	
+	return $return;
+}
+
+/**
+ * Gets a modulegroup name based on the id
+ *
+ * @param (int) $modulegroup_id The id of the modulegroup
+ *
+ * @return (string) The modulegroup name
+**/	
+function get_modulegroup_name ($modulegroup_id) {
+	return (string) get_db_value ('name', 'tmodule_group', 'id_mg', (int) $modulegroup_id);
 }
 ?>

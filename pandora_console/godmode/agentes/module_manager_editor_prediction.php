@@ -16,11 +16,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
-
 // General startup for established session
-global $config;
-check_login();
+if (!isset ($id_agente)) {
+	die ("Not Authorized");
+}
 
 // get the variable form_moduletype
 $form_moduletype = get_parameter_post ("form_moduletype");
@@ -30,7 +29,7 @@ $update_module_id = get_parameter_get ("update_module");
 $disabled_status = NULL;
 
 // Specific ACL check
-if (give_acl($config["id_user"], 0, "AW")!=1) {
+if (give_acl($config["id_user"], 0, "AW") != 1) {
     audit_db($config["id_user"], $REMOTE_ADDR, "ACL Violation","Trying to access agent manager");
     require ($config["homedir"]."/general/noaccess.php");
     exit;
@@ -82,112 +81,102 @@ echo "<h3>".__('Module assignment')." - ".__('Prediction server module')."</h3>"
 echo '<form name="modulo" method="post" action="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agente.'">';
 // Whether in update or insert mode
 if ($update_module_id == NULL){
-	echo "<input type='hidden' name='insert_module' value='1'>";
+	print_input_hidden ("insert_module", 1);
 } else {
-	echo "<input type='hidden' name='update_module' value='1'>";
+	print_input_hidden ("update_module", 1);
 }
 
 //id_agente_module
-echo "<input type='hidden' name='id_agente_modulo'' value='".$update_module_id."'>";
+print_input_hidden ("id_agente_modulo", $update_module_id);
 
 // id_modulo 5 - Prediction
-echo "<input type='hidden' name='form_id_modulo' value='5'>";
+print_input_hidden ("form_id_modulo", 5);
 
 // name / disabled
 echo '<table width="600" cellpadding="4" cellspacing="4" class="databox_color">';
 echo '<tr>';
-echo '<td class="datos2">'.__('Module name')."</td>";
-echo '<td class="datos2"><input type="text" name="form_name" size="35" value="'.$form_name.'"></td>';
-echo '<td class="datos2">'.__('Disabled')."</td>";
-echo '<td class="datos2"><input type="checkbox" name="form_disabled" value="1" "'.$disabled_status.'"></td>';
-echo '</tr>';
+echo '<td class="datos2">'.__('Module name').'</td>';
+echo '<td class="datos2">';
+print_input_text ("form_name", $form_name, '', 35);
+echo '<td class="datos2">'.__('Disabled').'</td>';
+echo '<td class="datos2">';
+print_checkbox ("form_disabled", 1, $disabled_status);
+echo '</td></tr>';
 
-
+//Source module
 echo '<tr>';
 echo '<td class="datos">'.__('Source module');
 pandora_help ("prediction_source_module");
 echo '</td>';
 echo '<td class="datos" colspan="3">';
-echo '<select name="form_id_prediction_module">';
-$sql1='SELECT id_agente_modulo, tagente_modulo.nombre, tagente.id_agente, tagente.id_grupo, tagente.nombre FROM tagente_modulo, tagente WHERE id_tipo_modulo NOT IN (100,24,19,20,21,22,23,17,10,2) AND tagente.id_agente = tagente_modulo.id_agente ORDER BY tagente.nombre';
-$result=mysql_query($sql1);
-while ($row=mysql_fetch_array($result)){
-	if (give_acl($config["id_user"], $row[3], "AR"))
-    	echo "<option value='".$row[0]."'>".$row[1]. " / ". $row[4];
-}
-echo "</select>";
-echo "</tr>";
 
-// module type
-echo '</tr><tr>';
-echo '<td class="datos2">'. __('Module type') .'</td>';
-echo '<td class="datos2">';
-if ($update_module_id != NULL){
-	echo "<span class='redi'>Not available in edition mode</span>";
-	echo "<input type='hidden' name='form_id_tipo_modulo' value='".$form_id_tipo_modulo."'>";
-} else {
-	echo '<select name="form_id_tipo_modulo">';
-	$sql1='SELECT id_tipo, nombre FROM ttipo_modulo WHERE id_tipo IN (1,2) ORDER BY nombre';
-	$result=mysql_query($sql1);
-	while ($row=mysql_fetch_array($result)){
-		echo "<option value='".$row["id_tipo"]."'>".$row["nombre"]."</option>";
+$agents = get_group_agents (array_keys (get_user_groups ($config["id_user"], "AW")));
+$fields = array ();
+
+foreach ($agents as $agent_id => $agent_name) {
+	$modules = get_agent_modules ($agent_id);
+	foreach ($modules as $module_id => $module_name) {
+		$fields[$module_id] = $agent_name.' / '.$module_name;
 	}
-	echo '</select>';
 }
 
-echo '<td class="datos2">'.__('Interval')."</td>";
-echo '<td class="datos2"><input type="text" name="form_interval" size="5" value="'.$form_interval.'"></td></tr>';
+print_select ($fields, "form_prediction_module", $form_prediction_module);
+echo '</td></tr>';
+
+// module type / interval
+echo '<tr><td class="datos2">'. __('Module type') .'</td><td class="datos2">';
+if (!empty ($update_module_id)) {
+	echo '<span class="redi">Not available in edition mode</span>';
+	print_input_hidden ("form_id_tipo_modulo", $form_id_tipo_modulo);
+} else {
+	$fields = array ();
+	$fields[1] = get_moduletype_name (1);
+	$fields[2] = get_moduletype_name (2);
+	print_select ($fields, "form_id_tipo_modulo");
+}
+
+echo '<td class="datos2">'.__('Interval').'</td><td class="datos2">';
+print_input_text ("form_interval", $form_interval, '', 5);
+echo '</td></tr>';
 
 // Post process / Export server
-echo '<tr>';
-echo '<td class="datos">'.__('Module group')."</td>";
-echo '<td class="datos"><select name="form_id_module_group">';
-if ($form_id_module_group != 0){
-    echo "<option value='".$form_id_module_group."'>".dame_nombre_grupomodulo($form_id_module_group)."</option>";
-}
-$sql1='SELECT * FROM tmodule_group';
-$result=mysql_query($sql1);
-while ($row=mysql_fetch_array($result)){
-    echo "<option value='".$row["id_mg"]."'>".$row["name"]."</option>";
-}
-echo '</select>';
+echo '<tr><td class="datos">'.__('Module group').'</td><td class="datos">';
+$fields = get_modulegroups ();
+print_select ($fields, "form_id_module_group", $form_id_module_group);
+
 // Export target is a server where the data will be sent
-echo '<td class="datos">'.__('Export target')."</td>";
-echo '<td class="datos"><select name="form_id_export">';
-if ($form_id_export != 0){
-    echo "<option value='".$form_id_export."'>".dame_nombre_servidorexportacion($form_id_export)."</option>";
-}
-echo "<option value='0'>".__('None')."</option>";
-$sql1='SELECT id, name FROM tserver_export ORDER BY name;';
-$result=mysql_query($sql1);
-while ($row=mysql_fetch_array($result)){
-    echo "<option value='".$row["id"]."'>".$row["name"]."</option>";
-}
-echo '</select>';
-echo '</tr>';
+echo '<td class="datos">'.__('Export target').'</td>';
+echo '<td class="datos">';
+
+$fields = get_exportservers_info ();
+$fields[0] = __('None');
+
+print_select ($fields, "form_id_export", $form_id_export);
+echo '</td></tr>';
 
 // Description
 echo '<tr>';
-echo '<td valign="top" class="datos2">'.__('Description')."</td>";
-echo '<td valign="top" class="datos2" colspan="3"><textarea name="form_description" cols="65" rows="2">'.$form_description.'</textarea>';
-echo '</tr>';
+echo '<td valign="top" class="datos2">'.__('Description').'</td>';
+echo '<td valign="top" class="datos2" colspan="3">';
+print_textarea ("form_description", 2, 65, $form_description);
+echo '</td></tr>';
 
 // Custom ID
 echo '<tr>';
-echo '<td class="datos">'.__('Custom ID')."</td>";
-echo '<td class="datos" colspan="3"><input type="text" name="form_custom_id" size="20" value="'.$form_custom_id.'"></td>';
-echo '</tr>';
+echo '<td class="datos">'.__('Custom ID').'</td>';
+echo '<td class="datos" colspan="3">';
+print_input_text ("form_custom_id", $form_custom_id, '', 20);
+echo '</td></tr>';
 
 echo '</table>';
 
 // Submit
-echo '<table width="680" cellpadding="4" cellspacing="4">';
-echo '<td valign="top" align="right">';
+echo '<div style="width:680px; text-align: right">';
 if ($update_module_id == NULL){
-	echo '<input name="crtbutton" type="submit" class="sub wand" value="'.__('Create').'">';
+	print_submit_button (__('Create'), 'crtbutton', false, 'class="sub wand"');
 } else {
-	echo '<input name="updbutton" type="submit" class="sub wand" value="'.__('Update').'">';
+	print_submit_button (__('Update'), 'updbutton', false, 'class="sub upd"');
 }
-echo '</table>';
+echo '</div>';
 
 ?>

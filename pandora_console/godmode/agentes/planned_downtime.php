@@ -3,6 +3,7 @@
 // Pandora FMS - the Flexible Monitoring System
 // ============================================
 // Copyright (c) 2008 Artica Soluciones Tecnologicas, http://www.artica.es
+// Copyright (c) 2008-2009 Evi Vanoost <vanooste@rcbi.rochester.edu>
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -16,13 +17,8 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
-// Copyright (c) 2008 Evi Vanoost <vanooste@rcbi.rochester.edu>
-// Please see http://pandora.sourceforge.net for full contribution list
-
-
 // Load global vars
-require("include/config.php");
+require_once ("include/config.php");
 
 check_login();
 

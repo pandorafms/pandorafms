@@ -16,23 +16,16 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+// Load global vars
+enterprise_include ('godmode/agentes/agent_manager.php');
+
+if (!isset ($id_agente)) {
+	die ("Not Authorized");
+}
+
 // ========================
 // AGENT GENERAL DATA FORM 
 // ========================
-
-// Load global vars
-require_once ('include/config.php');
-
-enterprise_include ('godmode/agentes/agent_manager.php');
-
-check_login ();
-
-if (! give_acl ($config['id_user'], 0, "AW")) {
-	audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
-		"Trying to access agent manager");
-	require ("general/noaccess.php");
-	exit;
-}
 
 echo "<h2>".__('Agent configuration');
 if (isset($_GET["create_agent"])) {

@@ -1,3 +1,41 @@
+2009-01-07  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* include/functions.php: Removed safe_sql_string. Cleaned documenation so
+	it would be parsed without errors by phpdoc
+	
+	* include/functions_exportserver.php: Aggregate all exportserver functions
+	here.
+	
+	* include/functions_db.php: Cleaned up documentation. Added 
+	get_modulegroups and get_modulegroup_name.
+	
+	* godmode/db/db_refine.php: Fixed the selection box.
+
+	* godmode/agentes/agent_disk_conf_editor.php: Added todo. Don't handle 
+	the footer anymore
+	
+	* godmode/agentes/agent_template.php, 
+	godmode/agentes/module_manager_editor_plugin.php,
+	godmode/agentes/module_manager_editor_wmi.php, 
+	godmode/agentes/module_manager_editor.php,
+	godmode/agentes/module_manager_editor_data.php,
+	godmode/agentes/alert_manager_editor.php,
+	godmode/agentes/module_manager_editor_network.php, 
+	godmode/agentes/module_manager.php, godmode/agentes/agent_manager.php,
+	godmode/agentes/alert_manager.php: 
+	Removed the ACL part since it was redundant due to the inclusion. 
+	Just made sure that it was included (checking on $id_agente)
+	
+	* godmode/agentes/manage_config.php,
+	godmode/agentes/manage_config_remote.php,
+	godmode/agentes/planned_downtime.php: Style fix
+	
+	* godmode/agentes/configurar_agente.php
+	godmode/agentes/module_manager_editor_prediction.php: Fixed prediction 
+	module creation/update bugs
+	
+	* godmode/setup/links.php: No more relying on antique (PHP4) functions
+	
 2009-01-07  Esteban Sanchez  <estebans@artica.es>
 
 	* godmode/agentes/modificar_agente.php: Old functions replace with new

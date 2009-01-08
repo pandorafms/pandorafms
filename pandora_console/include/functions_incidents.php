@@ -18,9 +18,8 @@
 /**
  * Gets all the possible priorities for incidents in an array
  *
- * @return (array) The several priorities with their values
+ * @return array The several priorities with their values
  */
-
 function get_incidents_priorities () {
 	$fields = array();
 	$fields[0] = __('Informative');
@@ -36,11 +35,10 @@ function get_incidents_priorities () {
 /**
  * Prints the image tag for passed status
  *
- * @param (int) $id_status: Which status to return the image to
+ * @param int $id_status Which status to return the image to
  *
- * @return (string) The string with the image tag
+ * @return string The string with the image tag
  */
-
 function print_incidents_priority_img ($id_priority, $return = false) {
 	switch ($id_priority) {
 		case 0:
@@ -73,9 +71,8 @@ function print_incidents_priority_img ($id_priority, $return = false) {
 /**
  * Gets all the possible status for incidents in an array
  *
- * @return (array) The several status with their values
+ * @return array The several status with their values
  */
-
 function get_incidents_status () {
 	$fields = array ();
 	$fields[0] = __('Active incidents');
@@ -90,11 +87,10 @@ function get_incidents_status () {
 /**
  * Prints the image tag for passed status
  *
- * @param (int) $id_status: Which status to return the image to
+ * @param int $id_status: Which status to return the image to
  *
- * @return (string) The string with the image tag
+ * @return string The string with the image tag
  */
-	
 function print_incidents_status_img ($id_status, $return = false) {
 	switch ($id_status) {
 		case 0:
@@ -124,11 +120,10 @@ function print_incidents_status_img ($id_status, $return = false) {
  * Updates the last user (either by adding an attachment, note or the incident itself)
  * Named after the UNIX touch utility
  *
- * @param (int) $id_incident: A single incident or an array of incidents
+ * @param int $id_incident: A single incident or an array of incidents
  *
- * @return (bool) True if it was done, false if it wasn't
+ * @return bool True if it was done, false if it wasn't
  */
-
 function process_incidents_touch ($id_incident) {
 	global $config;
 	
@@ -144,11 +139,10 @@ function process_incidents_touch ($id_incident) {
 /**
  * Updates the owner (named after the UNIX utility chown)
  *
- * @param (int) $id_incident: A single incident or an array of incidents
+ * @param int $id_incident: A single incident or an array of incidents
  *
- * @return (bool) True if it was done, false if it wasn't
+ * @return bool True if it was done, false if it wasn't
  */
-
 function process_incidents_chown ($id_incident, $owner = false) {
 	if ($owner === false) {
 		global $config;
@@ -168,9 +162,9 @@ function process_incidents_chown ($id_incident, $owner = false) {
 /** 
  * Get the author of an incident.
  * 
- * @param (int) id_incident Incident id.
+ * @param int $id_incident Incident id.
  * 
- * @return (string) The author of an incident
+ * @return string The author of an incident
  */
 function get_incidents_author ($id_incident) {
 	if ($id_incident < 1) {
@@ -182,9 +176,9 @@ function get_incidents_author ($id_incident) {
 /** 
  * Get the owner of an incident.
  * 
- * @param (int) id_incident Incident id.
+ * @param int $id_incident Incident id.
  * 
- * @return (string) The last updater of an incident
+ * @return string The last updater of an incident
  */
 function get_incidents_owner ($id_incident) {
 	if ($id_incident < 1) {
@@ -196,9 +190,9 @@ function get_incidents_owner ($id_incident) {
 /** 
  * Get the last updater of an incident.
  * 
- * @param (int) id_incident Incident id.
+ * @param int $id_incident Incident id.
  * 
- * @return (string) The last updater of an incident
+ * @return string The last updater of an incident
  */
 function get_incidents_lastupdate ($id_incident) {
 	if ($id_incident < 1) {
@@ -211,9 +205,9 @@ function get_incidents_lastupdate ($id_incident) {
 /** 
  * Get the group id of an incident.
  * 
- * @param (int) id_incident Incident id.
+ * @param int $id_incident Incident id.
  * 
- * @return (int) The group id of an incident
+ * @return int The group id of an incident
  */
 function get_incidents_group ($id_incident) {
 	if ($id_incident < 1) {
@@ -225,9 +219,9 @@ function get_incidents_group ($id_incident) {
 /** 
  * Delete an incident out the database.
  * 
- * @param id_inc (array or int) An int or an array of ints to be deleted
+ * @param mixed $id_inc An int or an array of ints to be deleted
  *
- * @return (bool) True if incident was succesfully deleted, false if not
+ * @return bool True if incident was succesfully deleted, false if not
  */
 function delete_incidents ($id_incident) {
 	global $config;
@@ -277,10 +271,10 @@ function delete_incidents ($id_incident) {
 /** 
  * Delete notes out the database.
  * 
- * @param id_note (array or int) An int or an array of ints to be deleted
- * @param transact (bool) true if a transaction should be started, false if not
+ * @param mixed $id_note An int or an array of ints to be deleted
+ * @param bool $transact true if a transaction should be started, false if not
  *
- * @return (bool) True if note was succesfully deleted, false if not
+ * @return bool True if note was succesfully deleted, false if not
  */
 function delete_incidents_note ($id_note, $transact = true) {
 	$id_note = (array) safe_int ($id_note, 1); //cast as array
@@ -319,10 +313,10 @@ function delete_incidents_note ($id_note, $transact = true) {
 /** 
  * Delete attachments out the database and from the machine.
  * 
- * @param id_attach (array or int) An int or an array of ints to be deleted
- * @param transact (bool) true if a transaction should be started, false if not
+ * @param mixed $id_attach An int or an array of ints to be deleted
+ * @param bool $transact true if a transaction should be started, false if not
  *
- * @return (bool) True if attachment was succesfully deleted, false if not
+ * @return bool True if attachment was succesfully deleted, false if not
  */
 function delete_incidents_attach ($id_attach, $transact = true) {
 	global $config;
@@ -365,9 +359,9 @@ function delete_incidents_attach ($id_attach, $transact = true) {
 /** 
  * Get notes based on the incident id.
  * 
- * @param id_inc (int) An int with the incident id
+ * @param int $id_incident An int with the incident id
  *
- * @return (array) An array of all the notes for that incident
+ * @return array An array of all the notes for that incident
  */
 function get_incidents_notes ($id_incident) {
 	$return = get_db_all_rows_field_filter ("tnota", "id_incident", (int) $id_incident);
@@ -387,9 +381,9 @@ function get_incidents_notes ($id_incident) {
 /** 
  * Get attachments based on the incident id.
  * 
- * @param id_inc (int) An int with the incident id
+ * @param int $id_incident An int with the incident id
  *
- * @return (array) An array of all the notes for that incident
+ * @return array An array of all the notes for that incident
  */
 function get_incidents_attach ($id_incident) {
 	$return = get_db_all_rows_field_filter ("tattachment", "id_incidencia", (int) $id_incident);
@@ -410,15 +404,17 @@ function get_incidents_attach ($id_incident) {
 /** 
  * Get user id of a note.
  * 
- * @param id_note Note id.
+ * @param int $id_note Note id.
  * 
- * @return User id of the given note.
+ * @return string User id of the given note.
  */
 function get_incidents_notes_author ($id_note) {
 	return (string) get_db_value ('id_usuario', 'tnota', 'id_nota', (int) $id_note);
 }
 
-//Upgrade incidents table from 1.3 to 2.1
+/**
+ * @ignore This function should never be used
+ */
 function upgrade_inc13to21 () {
 	$sql = "ALTER TABLE  `tincidencia` CHANGE  `id_incidencia`  `id_incidencia` BIGINT( 6 ) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT";
 	process_sql ($sql);

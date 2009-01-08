@@ -22,13 +22,13 @@ require_once ('functions_ui.php');
 
 define ('ENTERPRISE_NOT_HOOK', -1);
 
-/** 
+/**
  * Prints a help tip icon.
  * 
- * @param id Help id
- * @param return Flag to return or output the result
+ * @param string $help_id Id of the help article
+ * @param bool $return Whether to return or output the result
  * 
- * @return The help tip if return flag was active.
+ * @return string The help tip
  */
 function pandora_help ($help_id, $return = false) {
 	global $config;
@@ -43,9 +43,9 @@ function pandora_help ($help_id, $return = false) {
  * entities. UTF-8 is necessary for foreign chars like asian 
  * and our databases are (or should be) UTF-8
  * 
- * @param (mixed) String or array of strings to be cleaned.
+ * @param mixed String or array of strings to be cleaned.
  * 
- * @return (mixed) The cleaned string or array.
+ * @return mixed The cleaned string or array.
  */
 function safe_input ($value) {
 	if (is_numeric ($value))
@@ -60,12 +60,12 @@ function safe_input ($value) {
 /**
  * Cleans an object or an array and casts all values as integers
  *
- * @param mixed String or array of strings to be cleaned
- * @param min If value is smaller than min it will return false
- * @param max if value is larger than max it will return false
+ * @param mixed $value String or array of strings to be cleaned
+ * @param int $min If value is smaller than min it will return false
+ * @param int $max if value is larger than max it will return false
  *
- * @return The cleaned string. If an array was passed, the invalid values would
- * be removed
+ * @return mixed The cleaned string. If an array was passed, the invalid values 
+ * will be removed
  */
 function safe_int ($value, $min = false, $max = false) {
 	if (is_array ($value)) {
@@ -89,23 +89,24 @@ function safe_int ($value, $min = false, $max = false) {
 
 
 /** 
- * Pandora debug functions.
- *
  * It prints a variable value and a message.
+ * TODO: Expand this to handle mixed variables
  * 
- * @param mixed Variable to be displayed
+ * @param mixed variable to be displayed
  * @param string Message to be displayed
+ *
+ * @return string Variable with message and Pandora DEBUG identifier
  */
-function pandora_debug ($var, $msg) { 
+function pandora_debug ($var, $msg = '') { 
 	echo "[Pandora DEBUG (".$var."): (".$msg.")<br />";
 } 
 
 /** 
- * Clean a string.
+ * @deprecated Use get_parameter or safe_input functions
  * 
  * @param string String to be cleaned
  * 
- * @return Cleaned given string
+ * @return string Cleaned string
  */
 function salida_limpia ($string) {
 	$quote_style = ENT_QUOTES;
@@ -123,11 +124,12 @@ function salida_limpia ($string) {
 }
 
 /** 
- * Cleans a string to be shown in a graphic.
+ * Cleans a string of special characters (|,@,$,%,/,\,=,?,*,&,#)
+ * Useful for filenames and graphs
  * 
  * @param string String to be cleaned
  * 
- * @return String with special characters cleaned.
+ * @return string Special characters cleaned.
  */
 function output_clean_strict ($string) {
 	return preg_replace ('/[\|\@\$\%\/\(\)\=\?\*\&\#]/', '', $string);
@@ -135,21 +137,22 @@ function output_clean_strict ($string) {
 
 
 /** 
- * DEPRECATED use safe_input. Keep for compatibility.
+ * @deprecated use safe_input and get_parameter functions. Keep temporarily for compatibility.
  */
 function entrada_limpia ($string) {
 	return safe_input ($string);
 }
 
 /** 
- * Performs an extra clean to a string. Makes it usable in an URL
+ * Performs an extra clean to a string removing all but alphanumerical 
+ * characters _ and / The string is also stripped to 125 characters from after ://
+ * It's useful on sec and sec2, to avoid the use of malicious parameters.
+ * 
+ * TODO: Make this multibyte safe (I don't know if there is an attack vector there)
  *
- * It's useful on sec and sec2 index parameters, to avoid the use of
- * malicious parameters. The string is also stripped to 125 charactes.
+ * @param string String to clean
  * 
- * @param (string) String to clean
- * 
- * @return (string) Cleaned string
+ * @return string Cleaned string
  */
 function safe_url_extraclean ($string) {
 	/* Clean "://" from the strings
@@ -169,7 +172,12 @@ function safe_url_extraclean ($string) {
 /** 
  * Add a help link to show help in a popup window.
  * 
- * @param help_id Help id to be shown when clicking.
+ * TODO: Get this merged with the other help function(s)
+ *
+ * @param string $help_id Help id to be shown when clicking.
+ * @param bool $return Whether to print this (false) or return (true)
+ * 
+ * @return string Link with the popup.
  */
 function popup_help ($help_id, $return = false) {
 	$output = "&nbsp;<a href='javascript:help_popup(".$help_id.")'>[H]</a>";
@@ -195,9 +203,11 @@ function no_permission () {
 }
 
 /** 
- * Prints a generic error message for some unhandled error.
+ * Prints a generic error message for some unhandled error and exits
  * 
- * @param error Aditional error string to be shown. Blank by default
+ * TODO: Clean this up so it doesn't use table and insert erroneous td
+ * 
+ * @param string $error Aditional error string to be shown. Blank by default
  */
 function unmanaged_error ($error = "") {
 	require_once ("config.php");
@@ -217,14 +227,14 @@ function unmanaged_error ($error = "") {
 /** 
  * List files in a directory in the local path.
  * 
- * @param directory Local path.
- * @param stringSearch String to match the values.
- * @param searchHandler Pattern of files to match.
- * @param return Flag to print or return the list.
+ * @param string $directory Local path.
+ * @param string $stringSearch String to match the values.
+ * @param string $searchHandler Pattern of files to match.
+ * @param bool $return Whether to print or return the list.
  * 
- * @return The list if $return parameter is true.
+ * @return string he list of files if $return parameter is true.
  */
-function list_files ($directory, $stringSearch, $searchHandler, $return) {
+function list_files ($directory, $stringSearch, $searchHandler, $return = false) {
 	$errorHandler = false;
 	$result = array ();
 	if (! $directoryHandler = @opendir ($directory)) {
@@ -247,26 +257,27 @@ function list_files ($directory, $stringSearch, $searchHandler, $return) {
 		echo ("<pre>\nerror: no filetype \"$fileExtension\" found!\n</pre>\n");
 	} else {
 		asort ($result);
-		if ($return == 0) {
-			return $result;
+		if ($return === false) {
+			echo ("<pre>\n");
+			print_r ($result);
+			echo ("</pre>\n");
 		}
-		echo ("<pre>\n");
-		print_r ($result);
-		echo ("</pre>\n");
+		return $result;
 	}
 }
 
 /** 
  * Prints a pagination menu to browse into a collection of data.
  * 
- * @param count Number of elements in the collection.
- * @param url URL of the pagination links. It must include all form values as GET form.
- * @param offset Current offset for the pagination
- * @param pagination Current pagination size. If a user requests a larger pagination than config["block_size"]
- * 
- * @return It returns nothing, it prints the pagination.
+ * @param int $count Number of elements in the collection.
+ * @param string $url URL of the pagination links. It must include all form values as GET form.
+ * @param int $offset Current offset for the pagination
+ * @param int $pagination Current pagination size. If a user requests a larger pagination than config["block_size"]
+ * @param bool $return Whether to return or print this 
+ *
+ * @return string The pagination div or nothing if no pagination needs to be done
  */
-function pagination ($count, $url, $offset, $pagination = 0) {
+function pagination ($count, $url, $offset, $pagination = 0, $return = false) {
 	global $config;
 	
 	if (empty ($pagination)) {
@@ -282,7 +293,7 @@ function pagination ($count, $url, $offset, $pagination = 0) {
 	*/
 	$block_limit = 15; // Visualize only $block_limit blocks
 	if ($count <= $pagination) {
-		return;
+		return false;
 	}
 	// If exists more registers than I can put in a page, calculate index markers
 	$index_counter = ceil($count/$pagination); // Number of blocks of block_size with data
@@ -311,17 +322,17 @@ function pagination ($count, $url, $offset, $pagination = 0) {
 	else
 		$inicio_pag = 0;
 
-	echo "<div>";
+	$output = '<div>';
 	// Show GOTO FIRST button
-	echo '<a href="'.$url.'&offset=0"><img src="images/control_start_blue.png" class="bot" /></a>&nbsp;';
+	$output .= '<a href="'.$url.'&offset=0"><img src="images/control_start_blue.png" class="bot" /></a>&nbsp;';
 	// Show PREVIOUS button
 	if ($index_page > 0){
 		$index_page_prev= ($index_page-(floor($block_limit/2)))*$pagination;
 		if ($index_page_prev < 0)
 			$index_page_prev = 0;
-		echo '<a href="'.$url.'&offset='.$index_page_prev.'"><img src="images/control_rewind_blue.png" class="bot" /></a>';
+		$output .= '<a href="'.$url.'&offset='.$index_page_prev.'"><img src="images/control_rewind_blue.png" class="bot" /></a>';
 	}
-	echo "&nbsp;";echo "&nbsp;";
+	$output .= "&nbsp;&nbsp;";
 	// Draw blocks markers
 	// $i stores number of page
 	for ($i = $inicio_pag; $i < $index_limit; $i++) {
@@ -330,27 +341,27 @@ function pagination ($count, $url, $offset, $pagination = 0) {
 		if ($final_bloque > $count){ // if upper limit is beyond max, this shouldnt be possible !
 			$final_bloque = ($i-1) * $pagination + $count-(($i-1) * $pagination);
 		}
-		echo "<span>";
+		$output .= "<span>";
 			
 		$inicio_bloque_fake = $inicio_bloque + 1;
 		// To Calculate last block (doesnt end with round data,
 		// it must be shown if not round to block limit)
-		echo '<a href="'.$url.'&offset='.$inicio_bloque.'">';
-		if ($inicio_bloque == $offset)
-			echo "<b>[ $i ]</b>";
-		else
-			echo "[ $i ]";
-		echo '</a> ';	
-		echo "</span>";
+		$output .= '<a href="'.$url.'&offset='.$inicio_bloque.'">';
+		if ($inicio_bloque == $offset) {
+			$output .= "<b>[ $i ]</b>";
+		} else {
+			$output .= "[ $i ]";
+		}
+		$output .= '</a></span>';
 	}
-	echo "&nbsp;";echo "&nbsp;";
+	$output .= "&nbsp;&nbsp;";
 	// Show NEXT PAGE (fast forward)
 	// Index_counter stores max of blocks
 	if (($paginacion_maxima == 1) AND (($index_counter - $i) > 0)) {
 		$prox_bloque = ($i + ceil ($block_limit / 2)) * $pagination;
 		if ($prox_bloque > $count)
 			$prox_bloque = ($count -1) - $pagination;
-		echo '<a href="'.$url.'&offset='.$prox_bloque.'"><img class="bot" src="images/control_fastforward_blue.png" /></a>';
+		$output .= '<a href="'.$url.'&offset='.$prox_bloque.'"><img class="bot" src="images/control_fastforward_blue.png" /></a>';
 		$i = $index_counter;
 	}
 	// if exists more registers than i can put in a page (defined by $block_size config parameter)
@@ -359,10 +370,14 @@ function pagination ($count, $url, $offset, $pagination = 0) {
 	// as painted in last block (last integer block).	
 	if (($count - $pagination) > 0){
 		$myoffset = floor(($count-1) / $pagination) * $pagination;
-		echo '<a href="'.$url.'&offset='.$myoffset.'"><img class="bot" src="images/control_end_blue.png" /></a>';
+		$output .= '<a href="'.$url.'&offset='.$myoffset.'"><img class="bot" src="images/control_end_blue.png" /></a>';
 	}
 	// End div and layout
-	echo "</div>";
+	$output .= "</div>";
+	if ($return === false) {
+		echo $output;
+	}
+	return $output;
 }
 
 /** 
@@ -371,10 +386,10 @@ function pagination ($count, $url, $offset, $pagination = 0) {
  * If the number is zero or it's integer value, no decimals are
  * shown. Otherwise, the number of decimals are given in the call.
  * 
- * @param (float) Number to be rendered
- * @param (int) Number of decimals to be shown. Default value: 1
+ * @param float $number Number to be rendered
+ * @param int $decimals numbers after comma to be shown. Default value: 1
  * 
- * @return (string) A formatted number for use in output
+ * @return string A formatted number for use in output
  */
 function format_numeric ($number, $decimals = 1) {
 	//Translate to float in case there are characters in the string so
@@ -396,16 +411,17 @@ function format_numeric ($number, $decimals = 1) {
 }
 
 /** 
- * Render numeric data for a graph.
+ * Render numeric data for a graph. It adds magnitude suffix to the number 
+ * (M for millions, K for thousands...) base-10
  *
- * It adds magnitude suffix to the number (M for millions, K for thousands...)
+ * TODO: base-2 multiplication
  * 
- * @param number Number to be rendered
- * @param decimals Number of decimals to display. Default value: 1
+ * @param float $number Number to be rendered
+ * @param int $decimals Numbers after comma. Default value: 1
  * @param dec_point Decimal separator character. Default value: .
  * @param thousands_sep Thousands separator character. Default value: ,
  * 
- * @return A number rendered to be displayed gently on a graph.
+ * @return string A string with the number and the multiplier
  */
 function format_for_graph ($number , $decimals = 1, $dec_point = ".", $thousands_sep = ",") {
 	$shorts = array("","K","M","G","T","P");
@@ -421,13 +437,15 @@ function format_for_graph ($number , $decimals = 1, $dec_point = ".", $thousands
 }
 
 /** 
- * Get a human readable string of the difference between current time
- * and given timestamp.
+ * INTERNAL: Use print_timestamp for output Get a human readable string of 
+ * the difference between current time and given timestamp.
  * 
- * @param timestamp Timestamp to compare with current time.
+ * TODO: Make sense out of all these time functions and stick with 2 or 3
+ *
+ * @param int $timestamp Unixtimestamp to compare with current time.
  * 
- * @return A human readable string of the diference between current
- * time and given timestamp.
+ * @return string A human readable string of the diference between current
+ * time and a given timestamp.
  */
 function human_time_comparation ($timestamp) {
 	global $config;
@@ -444,8 +462,8 @@ function human_time_comparation ($timestamp) {
 /**
  * This function gets the time from either system or sql based on preference and returns it
  *
- * @return (int) Unix timestamp
-**/
+ * @return int Unix timestamp
+ */
 function get_system_time () {
 	global $config;
 	
@@ -461,12 +479,12 @@ function get_system_time () {
 }
 
 /** 
- * Transform an amount of time in seconds into a human readable
+ * INTERNAL (use print_timestamp for output): Transform an amount of time in seconds into a human readable
  * strings of minutes, hours or days.
  * 
- * @param seconds Seconds elapsed time
+ * @param int $seconds Seconds elapsed time
  * 
- * @return A human readable translation of minutes.
+ * @return string A human readable translation of minutes.
  */
 function human_time_description_raw ($seconds) {
 	if (empty ($seconds)) {
@@ -498,24 +516,18 @@ function human_time_description_raw ($seconds) {
 }
 
 /** 
- * Get a human readable label for a period of time.
- *
- * It only works with rounded period of times (one hour, two hours, six hours...)
- * 
- * @param period Period of time in seconds
- * 
- * @return A human readable label for a period of time.
+ * @deprecated Use print_timestamp for output.
  */
 function human_time_description ($period) {
 	return human_time_description_raw ($period); //human_time_description_raw does the same but by calculating instead of a switch
 }
 
 /** 
- * Get current time minus some seconds.
+ * @deprecated Get current time minus some seconds. (Do your calculations yourself on unix timestamps)
  * 
- * @param seconds Seconds to substract from current time.
+ * @param int $seconds Seconds to substract from current time.
  * 
- * @return The current time minus the seconds given.
+ * @return int The current time minus the seconds given.
  */
 function human_date_relative ($seconds) {
 	$ahora=date("Y/m/d H:i:s");
@@ -525,7 +537,7 @@ function human_date_relative ($seconds) {
 }
 
 /** 
- * DEPRECATED: Use print_timestamp instead
+ * @deprecated Use print_timestamp instead
  */
 function render_time ($lapse) {
 	$myhour = intval (($lapse*30) / 60);
@@ -548,10 +560,10 @@ function render_time ($lapse) {
  * It checks first on post request, if there were nothing defined, it
  * would return get request
  * 
- * @param (string) name of the parameter in the $_POST or $_GET array
- * @param (mixed) default value if it wasn't found
+ * @param string $name key of the parameter in the $_POST or $_GET array
+ * @param mixed $default default value if the key wasn't found
  * 
- * @return (mixed) Whatever was in that parameter, cleaned however 
+ * @return mixed Whatever was in that parameter, cleaned however 
  */
 function get_parameter ($name, $default = '') {
 	// POST has precedence
@@ -565,12 +577,12 @@ function get_parameter ($name, $default = '') {
 }
 
 /** 
- * Get a parameter from get request array.
+ * Get a parameter from a get request.
+ *
+ * @param string $name key of the parameter in the $_GET array
+ * @param mixed $default default value if the key wasn't found
  * 
- * @param name Name of the parameter
- * @param default Value returned if there were no parameter.
- * 
- * @return Parameter value.
+ * @return mixed Whatever was in that parameter, cleaned however 
  */
 function get_parameter_get ($name, $default = "") {
 	if ((isset ($_GET[$name])) && ($_GET[$name] != ""))
@@ -580,12 +592,12 @@ function get_parameter_get ($name, $default = "") {
 }
 
 /** 
- * Get a parameter from post request array.
+ * Get a parameter from a post request.
+ *
+ * @param string $name key of the parameter in the $_POST array
+ * @param mixed $default default value if the key wasn't found
  * 
- * @param name Name of the parameter
- * @param default Value returned if there were no parameter.
- * 
- * @return Parameter value.
+ * @return mixed Whatever was in that parameter, cleaned however 
  */
 function get_parameter_post ($name, $default = "") {
 	if ((isset ($_POST[$name])) && ($_POST[$name] != ""))
@@ -597,9 +609,9 @@ function get_parameter_post ($name, $default = "") {
 /** 
  * Get name of a priority value.
  * 
- * @param priority Priority value
+ * @param int $priority Priority value
  * 
- * @return Name of given priority
+ * @return string Name of given priority
  */
 function get_alert_priority ($priority = 0) {
 	global $config;
@@ -626,9 +638,9 @@ function get_alert_priority ($priority = 0) {
 /** 
  * Gets a translated string of names of days based on the boolean properties of it's input ($row["monday"] = (bool) 1 will output Mon) 
  * 
- * @param (array) The array of boolean values to check. They should have monday -> sunday in boolean
+ * @param  array $row The array of boolean values to check. They should have monday -> sunday in boolean
  * 
- * @return (string) Translated names of days
+ * @return string Translated names of days
  */
 function get_alert_days ($row) {
 	global $config;
@@ -667,9 +679,9 @@ function get_alert_days ($row) {
 /** 
  * Gets the alert times values and returns them as string
  * 
- * @param (array) Array with time_from and time_to in it's keys
+ * @param array Array with time_from and time_to in it's keys
  * 
- * @return (string) A string with the concatenated values
+ * @return string A string with the concatenated values
  */
 function get_alert_times ($row2) {
 	if ($row2["time_from"]){
@@ -689,14 +701,7 @@ function get_alert_times ($row2) {
 }
 
 /** 
- * DEPRECATED: This has been replaced with print_table or format_alert_row
- * 
- * @param row2 
- * @param tdcolor 
- * @param id_tipo_modulo 
- * @param combined 
- * 
- * @return (string) HTML code
+ * @deprecated This should be replaced with print_table and format_alert_row
  */
 function show_alert_row_edit ($row2, $tdcolor = "datos", $id_tipo_modulo = 1, $combined = 0){
 	global $config;
@@ -801,12 +806,12 @@ function show_alert_row_edit ($row2, $tdcolor = "datos", $id_tipo_modulo = 1, $c
 /** 
  * Formats a row from the alert table and returns an array usable in the table function
  * 
- * @param (array) $alert A valid (non empty) row from the alert table
- * @param (bool) $combined Whether or not this is a combined alert
- * @param (bool) $agent Whether to print the agent information with the module information
- * @param $section (string) Tab where the function was called from (used for urls)
+ * @param array $alert A valid (non empty) row from the alert table
+ * @param bool $combined Whether or not this is a combined alert
+ * @param bool $agent Whether to print the agent information with the module information
+ * @param string $section Tab where the function was called from (used for urls)
  * 
- * @return (array) A formatted array with proper html for use in $table -> 7 columns
+ * @return array A formatted array with proper html for use in $table->data (7 columns)
  */
 function format_alert_row ($alert, $combined = 0, $agent = 1, $tab = 'main') {
 	if (empty ($alert)) {
@@ -890,7 +895,7 @@ function format_alert_row ($alert, $combined = 0, $agent = 1, $tab = 'main') {
 /**
  * Get report types in an array.
  * 
- * @return An array with all the possible reports in Pandora where the array index is the report id.
+ * @return array An array with all the possible reports in Pandora where the array index is the report id.
  */
 function get_report_types () {
 	$types = array ();
@@ -914,9 +919,9 @@ function get_report_types () {
 /**
  * Get report type name from type id.
  *
- * @param type Type id of the report.
+ * @param int $type Type id of the report.
  *
- * @return Report type name.
+ * @return string Report type name.
  */
 function get_report_name ($type) {
 	$types = get_report_types ();
@@ -926,11 +931,13 @@ function get_report_name ($type) {
 }
 
 /**
- * Get report type name from type id.
+ * Get report type data source from type id.
  *
- * @param type Type id of the report.
+ * TODO: Better documentation as to what this function does
  *
- * @return Report type name.
+ * @param mixed $type Type id or type name of the report.
+ *
+ * @return string Report type name.
  */
 function get_report_type_data_source ($type) {
 	switch ($type) {
@@ -970,9 +977,9 @@ function get_report_type_data_source ($type) {
 /**
  * Checks if a module is of type "data"
  *
- * @param module_name Module name to check.
+ * @param string $module_name Module name to check.
  *
- * @return true if the module is of type "data"
+ * @return bool True if the module is of type "data"
  */
 function is_module_data ($module_name) {
 	$result = ereg ("^(.*_data)$", $module_name);
@@ -984,9 +991,9 @@ function is_module_data ($module_name) {
 /**
  * Checks if a module is of type "proc"
  *
- * @param module_name Module name to check.
+ * @param string $module_name Module name to check.
  *
- * @return true if the module is of type "proc"
+ * @return bool true if the module is of type "proc"
  */
 function is_module_proc ($module_name) {
 	$result = ereg ('^(.*_proc)$', $module_name);
@@ -998,9 +1005,9 @@ function is_module_proc ($module_name) {
 /**
  * Checks if a module is of type "inc"
  *
- * @param module_name Module name to check.
+ * @param string $module_name Module name to check.
  *
- * @return true if the module is of type "inc"
+ * @return bool true if the module is of type "inc"
  */
 function is_module_inc ($module_name) {
 	$result = ereg ('^(.*_inc)$', $module_name);
@@ -1012,9 +1019,9 @@ function is_module_inc ($module_name) {
 /**
  * Checks if a module is of type "string"
  *
- * @param module_name Module name to check.
+ * @param string $module_name Module name to check.
  *
- * @return true if the module is of type "string"
+ * @return bool true if the module is of type "string"
  */
 function is_module_data_string ($module_name) {
 	$result = ereg ('^(.*string)$', $module_name);
@@ -1024,9 +1031,9 @@ function is_module_data_string ($module_name) {
 }
 
 /**
- * Checks if a module is of type "string"
+ * Get all event types in an array
  *
- * @return module_name Module name to check.
+ * @return array module_name Module name to check.
  */
 function get_event_types () {
 	$types = array ();
@@ -1047,7 +1054,7 @@ function get_event_types () {
 /**
  * Get an array with all the priorities.
  *
- * @return An array with all the priorities.
+ * @return array An array with all the priorities.
  */
 function get_priorities () {
 	$priorities = array ();
@@ -1063,9 +1070,9 @@ function get_priorities () {
 /**
  * Get priority name from priority value.
  *
- * @param priority value (integer) as stored eg. in database.
+ * @param int $priority value (integer) as stored eg. in database.
  *
- * @return priority string.
+ * @return string priority string.
  */
 function get_priority_name ($priority) {
 	switch ($priority) {
@@ -1087,9 +1094,9 @@ function get_priority_name ($priority) {
 /**
  * Get priority class (CSS class) from priority value.
  *
- * @param priority value (integer) as stored eg. in database.
+ * @param int priority value (integer) as stored eg. in database.
  *
- * @return priority class.
+ * @return string CSS priority class.
  */
 function get_priority_class ($priority) {
 	switch ($priority) {
@@ -1108,24 +1115,9 @@ function get_priority_class ($priority) {
 	}
 }
 	
-
 /**
- * Avoid magic_quotes protection
- * Deprecated by get_parameter functions and safe_input funcitons
- * Magic Quotes are deprecated in PHP5 and will be removed in PHP6
- * @param string Text string to be stripped of magic_quotes protection
+ * TODO: Document enterprise functions
  */
-
-function unsafe_string ($string) {
-	if (get_magic_quotes_gpc () == 1) 
-		$string = stripslashes ($string);
-	return $string;
-}
-
-/**
- * enterprise functions
- */
-
 function enterprise_hook ($function_name, $parameters = false) {
 	if (function_exists ($function_name)) {
 		if (!is_array ($parameters))
@@ -1135,6 +1127,9 @@ function enterprise_hook ($function_name, $parameters = false) {
 	return ENTERPRISE_NOT_HOOK;
 }
 
+/**
+ * TODO: Document enterprise functions
+ */
 function enterprise_include ($filename) {
 	global $config;
 	// Load enterprise extensions
@@ -1148,22 +1143,36 @@ function enterprise_include ($filename) {
 	return ENTERPRISE_NOT_HOOK;
 }
 
+
+//These are wrapper functions for PHP. Don't document them
 if (!function_exists ("mb_strtoupper")) {
 	//Multibyte not loaded - use wrapper functions
 	//You should really load multibyte especially for foreign charsets
 	
+	/**
+	 * @ignore
+	 */
 	function mb_strtoupper ($string, $encoding = false) {
-		return strtoupper ($string);
-	}
-	
+			return strtoupper ($string);
+		}
+
+	/**
+	 * @ignore
+	 */		
 	function mb_strtolower ($string, $encoding = false) {
-		return strtoupper ($string);
+			return strtoupper ($string);
 	}
 	
+	/**
+	 * @ignore
+	 */
 	function mb_substr ($string, $start, $length, $encoding = false) {
 		return substr ($string, $start, $length);
 	}
 	
+	/**
+	 * @ignore
+	 */
 	function mb_strlen ($string, $encoding = false) {
 		return strlen ($string);
 	}

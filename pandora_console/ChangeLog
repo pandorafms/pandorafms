@@ -1,3 +1,22 @@
+2009-01-08  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* general/footer.php: Made image link relative. It wasn't working for me.
+	
+	* include/functions.php, include/functions_exportserver.php,
+	include/functions_incidents.php, include/functions_visual_map.php, 
+	include/functions_db.php, include/functions_extensions.php,
+	include/functions_reporting.php, include/functions_events.php,
+	include/functions_html.php, include/functions_ui.php: 
+	Updated documentation to adhere to PHPDoc and parses without errors
+	
+	* include/functions.php: Removed unsafe_string function (magic_quotes)
+	Made pagination possible to return instead of print
+	
+	* include/functions_db.php: Removed give_modulecategory_name 
+	(Module types etc. are now in database). Was unused.
+	
+	* reporting/fgraph.php: Removed unsafe_string usage
+
 2009-01-08  Ramon Novoa  <rnovoa@artica.es>
 
 	* include/functions.php,

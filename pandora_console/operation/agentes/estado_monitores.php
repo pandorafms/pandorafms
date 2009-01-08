@@ -45,7 +45,7 @@ $table->class = "databox";
 $table->head = array ();
 $table->data = array ();
 
-$table->head[0] = "X";
+$table->head[0] = '';
 $table->head[1] = __('Type');
 $table->head[2] = __('Module name');
 $table->head[3] = __('Description');

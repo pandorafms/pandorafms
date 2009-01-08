@@ -804,41 +804,57 @@ function show_alert_row_edit ($row2, $tdcolor = "datos", $id_tipo_modulo = 1, $c
  * @param (array) $alert A valid (non empty) row from the alert table
  * @param (bool) $combined Whether or not this is a combined alert
  * @param (bool) $agent Whether to print the agent information with the module information
+ * @param $section (string) Tab where the function was called from (used for urls)
  * 
  * @return (array) A formatted array with proper html for use in $table -> 7 columns
  */
-function format_alert_row ($alert, $combined = 0, $agent = 1) {
+function format_alert_row ($alert, $combined = 0, $agent = 1, $tab = 'main') {
 	if (empty ($alert)) {
 		return array ("", "", "", "", "", "", "");
 	}
-	
+
+	// Get agent id
+	$id_agente = get_agentmodule_agent($alert["id_agente_modulo"]);
+
 	$data = array ();
-	$data[0] = get_alert_type ($alert["id_alerta"]);
+
+	// Force alert execution
+	if ($combined == 0) {
+		if ($alert["flag"] == 0) {
+			$data[0] = "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."&id_agente_modulo=".$alert["id_agente_modulo"]."&tab=".$tab."&flag_alert=1&refr=60'><img src='images/target.png' border='0'></a>";
+		} else {
+			$data[0] = "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$id_agente."&tab=".$tab."&refr=60'><img src='images/refresh.png' border='0'></a>";
+		}
+	} else {
+		$data[0] = '';
+	}
+
+	$data[1] = get_alert_type ($alert["id_alerta"]);
 	
 	if ($combined == 1) {
-		$data[1] =  print_agent_name ($alert["id_agente"], true, 20);
+		$data[2] =  print_agent_name ($id_agente, true, 20);
 	} elseif ($agent == 0) {
-		$data[1] = mb_substr (get_agentmodule_name ($alert["id_agente_modulo"]), 0, 20);
+		$data[2] = mb_substr (get_agentmodule_name ($alert["id_agente_modulo"]), 0, 20);
 	} else {
-		$data[1] = print_agent_name (get_agentmodule_agent ($alert["id_agente_modulo"]), true, 20);
+		$data[2] = print_agent_name (get_agentmodule_agent ($alert["id_agente_modulo"]), true, 20);
 	}
 	
-	$data[2] = mb_substr (safe_input ($alert["descripcion"]), 0, 35);
+	$data[3] = mb_substr (safe_input ($alert["descripcion"]), 0, 35);
 	
 	//Eye tooltip
-	$data[3] = '<a class="info"><img class="top" src="images/eye.png" alt="detail tooltip" />';
-	$data[3] .= '<span><table cellspacing="2" cellpadding="0" style="margin-left:2px;">
+	$data[4] = '<a class="info"><img class="top" src="images/eye.png" alt="detail tooltip" />';
+	$data[4] .= '<span><table cellspacing="2" cellpadding="0" style="margin-left:2px;">
 	<tr><th colspan="2" width="91">'.__('Recovery').'</th></tr>
 	<tr><td colspan="2" class="datos" align="center"><b>'.($alert["recovery_notify"] == 1 ? __('Yes') : __('No')).'</b></td></tr>
 	<tr><th colspan="2" width="91">'.__('Priority').'</th></tr>
 	<tr><td colspan="2" class="datos" align="center"><b>'.get_alert_priority ($alert["priority"]).'</b></td></tr>
 	<tr><th colspan="2" width="91">'.__('Fires every').'</th></tr><tr><td colspan="2" class="datos" align="center"><b>';
 	if ($alert["min_alerts"] > 0) {
-		$data[3] .= human_time_description_raw ($alert["time_threshold"] / $alert["min_alerts"]);
+		$data[4] .= human_time_description_raw ($alert["time_threshold"] / $alert["min_alerts"]);
 	} else {
-		$data[3] .= human_time_description_raw ($alert["time_threshold"]);
+		$data[4] .= human_time_description_raw ($alert["time_threshold"]);
 	}
-	$data[3] .= '</b></td></tr>
+	$data[4] .= '</b></td></tr>
 	<tr><th colspan="2" width="91">'.__('Firing days').'</th></tr>
 	<tr><td colspan="2" class="datos" align="center"><b>'.get_alert_days ($alert).'</b></td></tr>
 	<tr><th colspan="2" width="91">'.__('Firing times').'</th></tr>
@@ -846,9 +862,9 @@ function format_alert_row ($alert, $combined = 0, $agent = 1) {
 	</table></span></a>';
 	
 	//Min. and Max. - maybe move this to the span
-	$data[4] = format_numeric ($alert["dis_min"], 2).' / '.format_numeric ($alert["dis_max"], 2);
+	$data[5] = format_numeric ($alert["dis_min"], 2).' / '.format_numeric ($alert["dis_max"], 2);
 	
-	$data[5] = print_timestamp ($alert["last_fired"], true);
+	$data[6] = print_timestamp ($alert["last_fired"], true);
 	
 	$options = array ();
 	$options["height"] = 9;
@@ -864,9 +880,9 @@ function format_alert_row ($alert, $combined = 0, $agent = 1) {
 		$options["src"] = "images/pixel_green.png";
 		$options["title"] = __('Alert not fired');
 	}
-	$data[6] = print_image ($options["src"], true, $options);
+	$data[7] = print_image ($options["src"], true, $options);
 	
-	$data[7] = print_checkbox ("validate[]", $alert["id_aam"], false, true);	
+	$data[8] = print_checkbox ("validate[]", $alert["id_aam"], false, true);	
 	
 	return $data;
 }

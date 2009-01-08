@@ -115,27 +115,29 @@ $table->class = "databox";
 
 $table->head = array ();
 
-$table->head[0] = __('Type');
-$table->head[1] = ''; //Placeholder for name
-$table->head[2] = __('Description');
-$table->head[3] = __('Info');
-$table->head[4] = __('Min').'/'.__('Max');
-$table->head[5] = __('Last fired');
-$table->head[6] = __('Status');
-$table->head[7] = __('Validate') . pandora_help('alert_validation', true);
+$table->head[0] = '';
+$table->head[1] = __('Type');
+$table->head[2] = ''; //Placeholder for name
+$table->head[3] = __('Description');
+$table->head[4] = __('Info');
+$table->head[5] = __('Min').'/'.__('Max');
+$table->head[6] = __('Last fired');
+$table->head[7] = __('Status');
+$table->head[8] = __('Validate') . pandora_help('alert_validation', true);
 $table->align = array ();
 $table->align[0] = "center";
-$table->align[3] = "center";
+$table->align[1] = "center";
 $table->align[4] = "center";
 $table->align[5] = "center";
 $table->align[6] = "center";
 $table->align[7] = "center";
+$table->align[8] = "center";
 
 $table->title = __('Single alerts');
 if ($print_agent == 0) {
-	$table->head[1] = __('Module name');
+	$table->head[2] = __('Module name');
 } else {
-	$table->head[1] = __('Agent name');	
+	$table->head[2] = __('Agent name');	
 }
 
 $table->data = array ();
@@ -148,7 +150,7 @@ foreach ($alerts_simple as $alert) {
 		continue;
 	}
 	$counter[1]++;
-	array_push ($table->data, format_alert_row ($alert, 0, $print_agent));
+	array_push ($table->data, format_alert_row ($alert, 0, $print_agent, 'alert'));
 }
 
 if (!empty ($table->data)) {

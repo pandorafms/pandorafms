@@ -161,6 +161,13 @@ if (isset($_GET["flag_agent"])){
 		process_sql ($sql);
 	}
 }
+// Force alert execution
+$flag_alert = (int) get_parameter ('flag_alert', 0);
+$id_agente_modulo = (int) get_parameter ('id_agente_modulo', 0);
+if ($flag_alert  == 1 && give_acl ($config['id_user'], $id_grupo, "AW")) {
+	$sql = "UPDATE talerta_agente_modulo SET flag = 1 WHERE id_agente_modulo = " . $id_agente_modulo;
+	process_sql ($sql);
+}
 
 echo "<div id='menu_tab_frame_view'>";
 echo "<div id='menu_tab_left'><ul class='mn'><li class='view'>

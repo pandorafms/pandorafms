@@ -247,6 +247,7 @@ CREATE TABLE `talerta_agente_modulo` (
   `priority` tinyint(4) default '0',
   `al_f2_recovery` varchar(255) NOT NULL default '',
   `al_f3_recovery` mediumtext NOT NULL,
+  `flag` tinyint(1) unsigned default '0',
   PRIMARY KEY  (`id_aam`),
 	KEY `id_agente_modulo` (`id_agente_modulo`),
 	KEY `disable` (`disable`)

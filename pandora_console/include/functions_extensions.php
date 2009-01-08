@@ -19,6 +19,12 @@
 
 $extension_file = '';
 
+
+/**
+ * TODO: Document extensions
+ *
+ * @param string $filename
+ */
 function extension_call_main_function ($filename) {
 	global $config;
 	
@@ -29,6 +35,11 @@ function extension_call_main_function ($filename) {
 	}
 }
 
+/**
+ * TODO: Document extensions
+ *
+ * @param string $filename
+ */
 function extension_call_godmode_function ($filename) {
 	global $config;
 	
@@ -39,6 +50,9 @@ function extension_call_godmode_function ($filename) {
 	}
 }
 
+/**
+ * TODO: Document extensions
+ */
 function extensions_call_login_function () {
 	global $config;
 	
@@ -50,6 +64,11 @@ function extensions_call_login_function () {
 	}
 }
 
+/**
+ * TODO: Document extensions
+ *
+ * @param string $page
+ */
 function is_extension ($page) {
 	global $config;
 	
@@ -57,6 +76,11 @@ function is_extension ($page) {
 	return isset ($config['extensions'][$filename]);
 }
 
+/**
+ * TODO: Document extensions
+ *
+ * @param bool $enterprise
+ */
 function get_extensions ($enterprise = false) {
 	$dir = EXTENSIONS_DIR;
 	if ($enterprise)
@@ -97,6 +121,11 @@ function get_extensions ($enterprise = false) {
 	return $extensions;
 }
 
+/**
+ * TODO: Document extensions
+ *
+ * @param array $extensions
+ */
 function load_extensions ($extensions) {
 	global $config;
 	global $extension_file;
@@ -107,6 +136,11 @@ function load_extensions ($extensions) {
 	}
 }
 
+/**
+ * TODO: Document extensions
+ *
+ * @param string $name
+ */
 function add_operation_menu_option ($name) {
 	global $config;
 	global $extension_file;
@@ -120,6 +154,12 @@ function add_operation_menu_option ($name) {
 	$extension['operation_menu'] = $option_menu;
 }
 
+/**
+ * TODO: Document extensions
+ *
+ * @param string $name
+ * @param string $acl
+ */
 function add_godmode_menu_option ($name, $acl) {
 	global $config;
 	global $extension_file;
@@ -134,7 +174,11 @@ function add_godmode_menu_option ($name, $acl) {
 	$extension['godmode_menu'] = $option_menu;
 }
 
-
+/**
+ * TODO: Document extensions
+ *
+ * @param string $function_name
+ */
 function add_extension_main_function ($function_name) {
 	global $config;
 	global $extension_file;
@@ -143,6 +187,11 @@ function add_extension_main_function ($function_name) {
 	$extension['main_function'] = $function_name;
 }
 
+/**
+ * TODO: Document extensions
+ *
+ * @param string $function_name
+ */
 function add_extension_godmode_function ($function_name) {
 	global $config;
 	global $extension_file;
@@ -151,6 +200,11 @@ function add_extension_godmode_function ($function_name) {
 	$extension['godmode_function'] = $function_name;
 }
 
+/**
+ * TODO: Document extensions
+ *
+ * @param string $function_name
+ */
 function add_extension_login_function ($function_name) {
 	global $config;
 	global $extension_file;
@@ -158,5 +212,4 @@ function add_extension_login_function ($function_name) {
 	$extension = &$config['extensions'][$extension_file];
 	$extension['login_function'] = $function_name;
 }
-
 ?>

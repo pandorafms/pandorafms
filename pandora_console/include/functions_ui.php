@@ -21,17 +21,17 @@
  * Evaluates a result using empty() and then prints an error message or a
  * success message
  * 
- * @param mixed $result the results to evaluate. 0, NULL, false, '' or array()
- * is bad, the rest is good
+ * @param mixed $result the results to evaluate. 0, NULL, false, '' or 
+ * array() is bad, the rest is good
  * @param string $good the string to be displayed if the result was good
  * @param string $bad the string to be displayed if the result was bad
  * @param string $attributes any other attributes to be set for the h3
  * @param bool $return whether to output the string or return it
  * @param string $tag what tag to use (you could specify something else than
- * h3 like div or h2
+ * h3 like div or h2)
  *
- * @return string HTML code if return parameter is true.
-*/
+ * @return string XHTML code if return parameter is true.
+ */
 function print_error_message ($result, $good = '', $bad = '', $attributes = '', $return = false, $tag = 'h3') {
 	if ($good == '' || $good === false)
 		$good = __('Request successfully processed');
@@ -196,13 +196,13 @@ function print_os_icon ($id_os, $name = true, $return = false) {
 /**
  * Prints an agent name with the correct link
  * 
- * @param int $agent Agent id
+ * @param int $id_agent Agent id
  * @param bool $return Whether to return the string or echo it too
- * @param int $cutoff After how much characters to cut off the inside of the link.
- * The full agent name will remain in the roll-over
+ * @param int $cutoff After how much characters to cut off the inside of the 
+ * link. The full agent name will remain in the roll-over
  * 
  * @return string HTML with agent name and link
-**/
+ */
 function print_agent_name ($id_agent, $return = false, $cutoff = 0) {
 	$agent_name = (string) get_agent_name ($id_agent);
 	$output = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent.'" title="'.$agent_name.'"><b>';
@@ -220,5 +220,4 @@ function print_agent_name ($id_agent, $return = false, $cutoff = 0) {
 	
 	echo $output;
 }
-
 ?>

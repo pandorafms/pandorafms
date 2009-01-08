@@ -2036,7 +2036,6 @@ $date = get_parameter ("date");
 $graphic_type = (string) get_parameter ('tipo');
 $mode = get_parameter ("mode", 1);
 $url = get_parameter ('url','');
-$url = unsafe_string ($url);
 
 if ($graphic_type) {
 	switch ($graphic_type) {

@@ -16,6 +16,13 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+/**
+ * Delete events in a transaction
+ *
+ * @param mixed $id_event Event ID or array of events
+ *
+ * @return bool Whether or not it was successful
+ */
 function delete_event ($id_event) {
 	global $config;
 	
@@ -54,6 +61,13 @@ function delete_event ($id_event) {
 	}
 }
 
+/**
+ * Validate events in a transaction
+ *
+ * @param mixed $id_event Event ID or array of events
+ *
+ * @return bool Whether or not it was successful
+ */	
 function process_event_validate ($id_event) {
 	global $config;
 	
@@ -95,9 +109,9 @@ function process_event_validate ($id_event) {
 /** 
  * Get group id of an event.
  * 
- * @param id_event Event id
+ * @param int $id_event Event id
  * 
- * @return Group id of the given event.
+ * @return int Group id of the given event.
  */
 function get_event_group ($id_event) {
 	return (int) get_db_value ('id_grupo', 'tevento', 'id_evento', (int) $id_event);
@@ -106,9 +120,9 @@ function get_event_group ($id_event) {
 /** 
  * Get description of an event.
  * 
- * @param id_event Event id.
+ * @param int $id_event Event id.
  * 
- * @return Description of the given event.
+ * @return string Description of the given event.
  */
 function get_event_description ($id_event) {
 	return (string) get_db_value ('evento', 'tevento', 'id_evento', (int) $id_event);
@@ -117,17 +131,17 @@ function get_event_description ($id_event) {
 /** 
  * Insert a event in the event log system.
  * 
- * @param event 
- * @param id_group 
- * @param id_agent 
- * @param status 
- * @param id_user 
- * @param event_type 
- * @param priority 
- * @param id_agent_module 
- * @param id_aam 
+ * @param int $event 
+ * @param int $id_group 
+ * @param int $id_agent 
+ * @param int $status 
+ * @param string $id_user 
+ * @param string $event_type 
+ * @param int $priority 
+ * @param int $id_agent_module 
+ * @param int $id_aam 
  *
- * @return event_id
+ * @return int event id
  */
 function create_event ($event, $id_group, $id_agent, $status = 0, $id_user = "", $event_type = "unknown", $priority = 0, $id_agent_module = 0, $id_aam = 0) {
 	$sql = sprintf ('INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, 
@@ -272,5 +286,4 @@ function print_events_table ($filter = "", $limit = 10, $width = 440, $return = 
 		return $return;
 	}
 }
-	
 ?>

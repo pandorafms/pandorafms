@@ -17,6 +17,14 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+
+/**
+ * Prints visual map
+ *
+ * @param int $id_layout Layout id
+ * @param bool $show_links
+ * @param bool $draw_lines
+ */
 function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines = true) {
 	global $config;
 	$layout = get_db_row ('tlayout', 'id', $id_layout);
@@ -135,6 +143,9 @@ function print_pandora_visual_map ($id_layout, $show_links = true, $draw_lines =
 	echo "</div>";
 }
 
+/**
+ * @return array Layout data types
+ */
 function get_layout_data_types () {
 	$types = array (0 => __('Static graph'),
 			1 => __('Module graph'));

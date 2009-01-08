@@ -20,13 +20,13 @@
 /** 
  * Get SLA of a module.
  * 
- * @param id_agent_module Agent module to calculate SLA
- * @param period Period to check the SLA compliance.
- * @param min_value Minimum data value the module in the right interval
- * @param max_value Maximum data value the module in the right interval
- * @param date Beginning date of the report in UNIX time (current date by default).
+ * @param int $id_agent_module Agent module to calculate SLA
+ * @param int $period Period to check the SLA compliance.
+ * @param int $min_value Minimum data value the module in the right interval
+ * @param int $max_value Maximum data value the module in the right interval
+ * @param int $date Beginning date of the report in UNIX time (current date by default).
  * 
- * @return SLA percentage of the requested module.
+ * @return int SLA percentage of the requested module.
  */
 function get_agent_module_sla ($id_agent_module, $period, $min_value, $max_value, $date = 0) {
 	if (empty ($date))
@@ -116,9 +116,9 @@ function get_agent_module_sla ($id_agent_module, $period, $min_value, $max_value
 /** 
  * Get general stats info on a group
  * 
- * @param id_group 
+ * @param int $id_group
  * 
- * @return 
+ * @return array
  */
 function get_group_stats ($id_group) {
 	$groups = array_keys (get_user_groups ());
@@ -284,12 +284,12 @@ function get_group_stats ($id_group) {
  * It construct a table object with all the events happened in a group
  * during a period of time.
  * 
- * @param id_group Group id to get the report.
- * @param period Period of time to get the report.
- * @param date Beginning date of the report
- * @param return Flag to return or echo the report table (echo by default).
+ * @param int $id_group Group id to get the report.
+ * @param int $period Period of time to get the report.
+ * @param int $date Beginning date of the report
+ * @param int $return Flag to return or echo the report table (echo by default).
  * 
- * @return A table object if return variable is true.
+ * @return object A table object
  */
 function event_reporting ($id_group, $period, $date = 0, $return = false) {
 	if (empty ($date)) {
@@ -329,9 +329,10 @@ function event_reporting ($id_group, $period, $date = 0, $return = false) {
 /** 
  * Get a table report from a alerts fired array.
  * 
- * @param alerts_fired Alerts fired array. See get_alerts_fired()
+ * @param array $alerts_fired Alerts fired array. 
+ * @see function get_alerts_fired ()
  * 
- * @return A table object with a report of the fired alerts.
+ * @return object A table object with a report of the fired alerts.
  */
 function get_fired_alerts_reporting_table ($alerts_fired) {
 	$agents = array ();
@@ -377,10 +378,12 @@ function get_fired_alerts_reporting_table ($alerts_fired) {
  * It prints the numbers of alerts defined, fired and not fired in a group.
  * It also prints all the alerts that were fired grouped by agents.
  *
- * @param $id_group Group to get info of the alerts.
- * @param $period Period of time of the desired alert report.
- * @param $date Beggining date of the report (current date by default).
- * @param $return Flag to return or echo the report (echo by default).
+ * @param int $id_group Group to get info of the alerts.
+ * @param int $period Period of time of the desired alert report.
+ * @param int $date Beggining date of the report (current date by default).
+ * @param bool $return Flag to return or echo the report (echo by default).
+ *
+ * @return string
  */
 function alert_reporting ($id_group, $period = 0, $date = 0, $return = false) {
 	$output = '';
@@ -423,10 +426,12 @@ function alert_reporting ($id_group, $period = 0, $date = 0, $return = false) {
  * It prints the numbers of monitors defined, showing those which went up and down, in a group.
  * It also prints all the down monitors in the group.
  *
- * @param $id_group Group to get info of the monitors.
- * @param $period Period of time of the desired monitor report.
- * @param $date Beginning date of the report in UNIX time (current date by default).
- * @param $return Flag to return or echo the report (by default).
+ * @param int $id_group Group to get info of the monitors.
+ * @param int $period Period of time of the desired monitor report.
+ * @param int $date Beginning date of the report in UNIX time (current date by default).
+ * @param bool $return Flag to return or echo the report (by default).
+ *
+ * @return string
  */
 function monitor_health_reporting ($id_group, $period = 0, $date = 0, $return = false) {
 	if (empty ($date)) //If date is 0, false or empty
@@ -459,7 +464,7 @@ function monitor_health_reporting ($id_group, $period = 0, $date = 0, $return = 
 	$output .= print_table ($table, true);
 	
 	//Floating it was ugly, moved it to the bottom
-	$output .= '<img src="reporting/fgraph.php?tipo=monitors_health_pipe&height=150&width=280&down='.$down_percentage.'&amp;not_down='.$not_down_percentage.'" style="border: 1px solid black">';
+	$output .= '<img src="reporting/fgraph.php?tipo=monitors_health_pipe&height=150&width=280&down='.$down_percentage.'&amp;not_down='.$not_down_percentage.'" style="border: 1px solid black" />';
 	
 	if (!$return)
 		echo $output;
@@ -469,10 +474,10 @@ function monitor_health_reporting ($id_group, $period = 0, $date = 0, $return = 
 /** 
  * Get a report table with all the monitors down.
  * 
- * @param monitors_down An array with all the monitors down. See
- * get_monitors_down()
+ * @param array $monitors_down An array with all the monitors down
+ * @see function get_monitors_down()
  * 
- * @return A table object with a monitors down report.
+ * @return object A table object with a monitors down report.
  */
 function get_monitors_down_reporting_table ($monitors_down) {
 	$table->data = array ();
@@ -518,6 +523,8 @@ function get_monitors_down_reporting_table ($monitors_down) {
  *
  * @param $id_group Group to get the report
  * @param $return Flag to return or echo the report (by default).
+ * 
+ * @return string
  */
 function general_group_reporting ($id_group, $return = false) {
 	$agents = get_group_agents ($id_group, false, "none");
@@ -532,11 +539,11 @@ function general_group_reporting ($id_group, $return = false) {
 /** 
  * Get a report table of the fired alerts group by agents.
  * 
- * @param id_agent Agent id to generate the report.
- * @param period Period of time of the report.
- * @param date Beginning date of the report in UNIX time (current date by default).
+ * @param int $id_agent Agent id to generate the report.
+ * @param int $period Period of time of the report.
+ * @param int $date Beginning date of the report in UNIX time (current date by default).
  * 
- * @return A table object with the alert reporting..
+ * @return object A table object with the alert reporting..
  */
 function get_agent_alerts_reporting_table ($id_agent, $period = 0, $date = 0) {
 	$table->data = array ();
@@ -573,11 +580,11 @@ function get_agent_alerts_reporting_table ($id_agent, $period = 0, $date = 0) {
 /** 
  * Get a report of monitors in an agent.
  * 
- * @param id_agent Agent id to get the report
- * @param period Period of time of the report.
- * @param date Beginning date of the report in UNIX time (current date by default).
+ * @param int $id_agent Agent id to get the report
+ * @param int $period Period of time of the report.
+ * @param int $date Beginning date of the report in UNIX time (current date by default).
  * 
- * @return A table object with the report.
+ * @return object A table object with the report.
  */
 function get_agent_monitors_reporting_table ($id_agent, $period = 0, $date = 0) {
 	$n_a_string = __('N/A').'(*)';
@@ -610,11 +617,11 @@ function get_agent_monitors_reporting_table ($id_agent, $period = 0, $date = 0) 
 /** 
  * Get a report of all the modules in an agent.
  * 
- * @param id_agent Agent id to get the report.
- * @param period Period of time of the report
- * @param date Beginning date of the report in UNIX time (current date by default).
+ * @param int $id_agent Agent id to get the report.
+ * @param int $period Period of time of the report
+ * @param int $date Beginning date of the report in UNIX time (current date by default).
  * 
- * @return 
+ * @return object
  */
 function get_agent_modules_reporting_table ($id_agent, $period = 0, $date = 0) {
 	$table->data = array ();
@@ -638,10 +645,12 @@ function get_agent_modules_reporting_table ($id_agent, $period = 0, $date = 0) {
 /**
  * Get a detailed report of an agent
  *
- * @param $id_agent Agent to get the report.
- * @param $period Period of time of the desired report.
- * @param $date Beginning date of the report in UNIX time (current date by default).
- * @param $return Flag to return or echo the report (by default).
+ * @param int $id_agent Agent to get the report.
+ * @param int $period Period of time of the desired report.
+ * @param int $date Beginning date of the report in UNIX time (current date by default).
+ * @param bool $return Flag to return or echo the report (by default).
+ *
+ * @return string
  */
 function get_agent_detailed_reporting ($id_agent, $period = 0, $date = 0, $return = false) {
 	$output = '';
@@ -689,8 +698,12 @@ function get_agent_detailed_reporting ($id_agent, $period = 0, $date = 0, $retur
 /**
  * Get a detailed report of agents in a group.
  *
- * @param $id_group Group to get the report
- * @param $return Flag to return or echo the report (by default).
+ * @param int $id_group Group to get the report
+ * @param int $period Period
+ * @param int $date Timestamp to start from
+ * @param bool $return Flag to return or echo the report (by default).
+ *
+ * @return string
  */
 function get_agents_detailed_reporting ($id_group, $period = 0, $date = 0, $return = false) {
 	$agents = get_group_agents ($id_group, false, "none");

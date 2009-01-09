@@ -252,7 +252,7 @@ if (isset ($_POST["create_agent"])) {
 if (isset($_GET["fix_module"])){ 
 	$id_module = get_parameter_get ("fix_module",0);
 	// get info about this module
-	$media = get_agent_module_value_average ($id_module, 30758400); //Get average over the year
+	$media = get_agentmodule_data_average ($id_module, 30758400); //Get average over the year
 	$media *= 1.3;
 	$error = "";
 	//If the value of media is 0 or something went wrong, don't delete

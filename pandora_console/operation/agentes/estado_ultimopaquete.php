@@ -191,7 +191,7 @@ if (mysql_num_rows ($result3)) {
 		if ($row3["timestamp"] == "0000-00-00 00:00:00"){ 
 			echo __('Never');
 		} else {
-			$ahora = time();
+			$ahora = get_system_time ();
 			// Async modules
 			if (($row3["id_tipo_modulo"] > 20) AND ($row3["id_tipo_modulo"] < 100)){
 				 echo human_time_comparation($row3["timestamp"]);

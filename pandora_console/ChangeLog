@@ -1,3 +1,20 @@
+2009-01-09  Evi Vanoost  <vanooste@rcbi.rochester.edu>
+
+	* general/footer.php, operation/agentes/sla_view.php, 
+	operation/agentes/estado_ultimopaquete.php: Replaced time 
+	function with get_system_time
+	
+	* operation/reporting/reporting_viewer.php, 
+	operation/reporting/reporting_xml.php, reporting/stat_win.php,
+	godmode/agentes/configurar_agente.php: Function renaming
+	
+	* include/functions_reporting.php, include/functions_db.php, 
+	operation/agentes/exportdata.php, 
+	operation/agentes/estado_generalagente.php, reporting/fgraph.php,
+	godmode/db/db_info.php, godmode/db/db_purge.php, 
+	godmode/agentes/modificar_agente.php: Made tagente_datos.id_agente
+	redundant by using the internal functions and separate queries.
+
 2009-01-08  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* general/footer.php: Made image link relative. It wasn't working for me.

@@ -37,27 +37,22 @@ function get_agent_module_sla ($id_agent_module, $period, $min_value, $max_value
 	
 	$datelimit = $date - $period; // start date
 	
-	$id_agent = get_db_value ('id_agente', 'tagente_modulo', 'id_agente_modulo', (int) $id_agent_module);
-	if (empty ($id_agent))
-		return 0; 
-		//No agent connected to this module. Something bad in the database
-	
 	/* Get all the data in the interval */
 	$sql = sprintf ('SELECT datos, utimestamp FROM tagente_datos 
-			WHERE id_agente = %d AND id_agente_modulo = %d 
+			WHERE id_agente_modulo = %d 
 			AND utimestamp > %d AND utimestamp <= %d 
 			ORDER BY utimestamp ASC',
-			$id_agent, $id_agent_module, $datelimit, $date);
+			$id_agent_module, $datelimit, $date);
 	$datas = get_db_all_rows_sql ($sql);
 	if ($datas === false) {
 		
 		/* Try to get data from tagente_estado. It may found nothing because of
 		data compression */
 		$sql = sprintf ('SELECT datos, utimestamp FROM tagente_estado 
-			WHERE id_agente = %d AND id_agente_modulo = %d 
+			WHERE id_agente_modulo = %d 
 			AND utimestamp > %d AND utimestamp <= %d 
 			ORDER BY utimestamp ASC',
-			$id_agent, $id_agent_module, $datelimit, $date);
+			$id_agent_module, $datelimit, $date);
 		$data = get_db_sql ($sql);
 		
 		if ($data === false) {

@@ -48,18 +48,6 @@ function graphic_error () {
 }
 
 /**
- * Return a MySQL timestamp date, formatted with actual date MINUS X minutes, 
- *
- * @param int Date in unix format (timestamp)
- *
- * @return string Formatted date string (YY-MM-DD hh:mm:ss)
- */
-function dame_fecha ($mh) {
-	$mh *= 60;
-	return date ("Y-m-d H:i:00", time() - $mh); 
-}
-
-/**
  * Return a short timestamp data, D/M h:m
  *
  * @param int Date in unix format (timestamp)
@@ -166,17 +154,14 @@ function graphic_combined_module ($module_list, $weight_list, $periodo, $width, 
 		}
 		$previous=0;
 		// Get the first data outsite (to the left---more old) of the interval given
-		$sql = "SELECT datos, utimestamp FROM tagente_datos WHERE id_agente = $id_agente AND id_agente_modulo = $id_agente_modulo AND utimestamp < $fechatope AND utimestamp >= $date ORDER BY utimestamp DESC LIMIT 1";
-		if ($result = mysql_query($sql)) {
-			$row = mysql_fetch_array($result);
-			$previous = $row[0];
-		}
+		$sql = "SELECT datos FROM tagente_datos WHERE id_agente_modulo = $id_agente_modulo AND utimestamp < $fechatope AND utimestamp >= $date ORDER BY utimestamp DESC";
+		$previous = (float) get_db_sql ($sql);
 		
-		$sql1="SELECT datos,utimestamp FROM tagente_datos WHERE id_agente = $id_agente AND id_agente_modulo = $id_agente_modulo AND utimestamp >= $fechatope AND utimestamp < $date";
-		if ($result = mysql_query($sql1))
-		while ($row = mysql_fetch_array ($result)) {
-			$datos = $row[0];
-			$utimestamp = $row[1];
+		$sql1="SELECT datos,utimestamp FROM tagente_datos WHERE id_agente_modulo = $id_agente_modulo AND utimestamp >= $fechatope AND utimestamp < $date";
+		$result = (array) get_db_all_rows_sql ($sql);
+		foreach ($result as $row) {
+			$datos = $row["datos"];
+			$utimestamp = $row["utimestamp"];
 			for ($j = 0; $j <= $resolution; $j++) {
 				if ($utimestamp <= $valores[$j][3] && $utimestamp > $valores[$j][2]) {
 					$valores[$j][0]=$valores[$j][0]+$datos;
@@ -473,22 +458,21 @@ function grafico_modulo_sparse ($id_agente_modulo, $periodo, $show_event,
 	$min_value = 0;
 
 	// Get the first data outsite (to the left---more old) of the interval given
-	$sql = sprintf ('SELECT datos, utimestamp FROM tagente_datos 
-			WHERE id_agente = %d AND id_agente_modulo = %d 
-			AND utimestamp < %d ORDER BY utimestamp DESC LIMIT 1', $id_agente, $id_agente_modulo, $fechatope);
+	$sql = sprintf ('SELECT datos FROM tagente_datos 
+			WHERE id_agente_modulo = %d 
+			AND utimestamp < %d ORDER BY utimestamp DESC', $id_agente_modulo, $fechatope);
 	$previous = (float) get_db_sql ($sql);
 	
 	$sql = sprintf ('SELECT datos,utimestamp FROM tagente_datos 
-			WHERE id_agente = %d AND id_agente_modulo = %d AND utimestamp > %d',
-			$id_agente, $id_agente_modulo, $fechatope);
-	$result = mysql_query ($sql);
-	if (mysql_num_rows ($result) == 0) {
+			WHERE id_agente_modulo = %d AND utimestamp > %d', $id_agente_modulo, $fechatope);
+	$result = get_db_all_rows_sql ($sql);
+	if (empty ($result)) {
 		graphic_error ();
 		return;
 	}
-	while ($row = mysql_fetch_array ($result)) {
-		$datos = $row[0];
-		$utimestamp = $row[1];
+	foreach ($result as $row) {
+		$datos = $row["datos"];
+		$utimestamp = $row["utimestamp"];
 		for ($i = 0; $i <= $resolution; $i++) {
 			if ( ($utimestamp <= $valores[$i][3]) && ($utimestamp >= $valores[$i][2]) ){
 				$valores[$i][0]=$valores[$i][0]+$datos;
@@ -803,7 +787,8 @@ function graphic_agentaccess ($id_agent, $periodo, $width, $height) {
 		
 	}*/
 	$intervalo = 24;
-	$fechatope = dame_fecha($periodo);
+	$fechatope = get_system_time () - $periodo;
+	
 	$horasint = $periodo / $intervalo;
 
 	// $intervalo now stores "ideal" interval			}
@@ -816,25 +801,25 @@ function graphic_agentaccess ($id_agent, $periodo, $width, $height) {
 	// esto acelera el tiempo de calculo al maximo, aunque complica el algoritmo :-)
 	
 	// Creamos la tabla (array) con los valores para el grafico. Inicializacion
-	for ($i = 0; $i <$intervalo; $i++) {
+	for ($i = 0; $i < $intervalo; $i++) {
 		$valores[$i][0] = 0; // [0] Valor (contador)
 		$valores[$i][1] = 0; // [0] Valor (contador)
-		$valores[$i][2] = dame_fecha($horasint * $i); // [2] Rango superior de fecha para ese rango
-		$valores[$i][3] = dame_fecha($horasint*($i+1)); // [3] Rango inferior de fecha para ese rango
+		$valores[$i][2] = date ("Y-m-d H:i:00", get_system_time () - ($horasint * $i)); // [2] Rango superior de fecha para ese rango
+		$valores[$i][3] = date ("Y-m-d H:i:00", get_system_time () - ($horasint * ($i+1))); // [3] Rango inferior de fecha para ese rango
 	}
-	$sql1="SELECT * FROM tagent_access WHERE id_agent = ".$id_agent." and timestamp > '".$fechatope."'";
+	$sql1="SELECT timestamp FROM tagent_access WHERE id_agent = ".$id_agent." and timestamp > '".date ("Y-m-d H:i:00", $fechatope)."'";
 
-	$result=mysql_query($sql1);
-	while ($row=mysql_fetch_array($result)){
-		for ($i = 0; $i < $intervalo; $i++){
-			if (($row["timestamp"] < $valores[$i][2]) and ($row["timestamp"] >= $valores[$i][3]) ){ 
+	$result= get_db_all_rows_sql ($sql1);
+	foreach ($result as $row) {
+		for ($i = 0; $i < $intervalo; $i++) {
+			if (($row["timestamp"] < $valores[$i][2]) and ($row["timestamp"] >= $valores[$i][3])) { 
 				// entra en esta fila
 				$valores[$i][0]++;
 			}
-		} 
-		
+		}
 	}
 	$valor_maximo = 0;
+	
 	for ($i = 0; $i < $intervalo; $i++) { // 30 entries in graph, one by day
 		$grafica[]=$valores[$i][0];
 		if ($valores[$i][0] > $valor_maximo)
@@ -851,8 +836,7 @@ function graphic_agentaccess ($id_agent, $periodo, $width, $height) {
 	$Graph->add(
 	Image_Graph::vertical(
 		Image_Graph::factory('title', array("", 2)),
-		$Plotarea = Image_Graph::factory('plotarea'),
-		0)
+		$Plotarea = Image_Graph::factory('plotarea'),0)
 	);
 	// Create the dataset
 	// Merge data into a dataset object (sancho)
@@ -905,11 +889,11 @@ function graphic_string_data ($id_agent_module, $periodo, $width, $height, $pure
 		$valores[$i][3] = $fechatope + ($horasint * ($i + 1)); // [3] Botom limit
 	}
 	$sql1="SELECT utimestamp FROM tagente_datos_string WHERE id_agente_modulo = ".$id_agent_module." and utimestamp > '".$fechatope."'";
-
-	$result=mysql_query($sql1);
-	while ($row=mysql_fetch_array($result)){
+	$result = get_db_all_rows_sql ($sql1);
+	
+	foreach ($result as $row) {
 		for ($i = 0; $i < $resolution; $i++){
-			if (($row[0] < $valores[$i][3]) and ($row[0] >= $valores[$i][2]) ){ 
+			if (($row["utimestamp"] < $valores[$i][3]) and ($row["utimestamp"] >= $valores[$i][2]) ){ 
 				// entra en esta fila
 				$valores[$i][0]++;
 			}
@@ -1197,21 +1181,17 @@ function grafico_db_agentes_modulos($width, $height) {
 	$data = array();
 	$legend = array();
 	
-	$sql = "SELECT DISTINCT(id_agente), COUNT(id_agente_datos) AS count FROM tagente_datos GROUP BY id_agente ORDER BY count ASC";
-	//This query is not the most efficient on itself. But other functions
-	//use this query so it will a) be fetched from cache and b) it will
-	//return the result in the same order as the other graph and data
+	$agents = get_group_agents (1);
 	
-	$result = get_db_all_rows_sql ($sql);
-	if ($result === false)
-		$result = array();
-
-	foreach ($result as $row) {
-		$data[] = get_agent_modules_count ($row["id_agente"]);
-		$legend[] = get_agent_name ($row["id_agente"], "lower");
+	foreach ($agents as $agent_id => $agent_name) {
+		//This query is not the most efficient on itself. But other functions
+		//use this query so it will a) be fetched from cache and b) it will
+		//return the result in the same order as the other graph and data
+		$data[$agent_name] = get_agent_modules_count ($agent_id);
 	}
+	asort ($data, SORT_NUMERIC);
 	
-	generic_bar_graph ($width, $height, $data, $legend);
+	generic_bar_graph ($width, $height, $data, array_keys ($data));
 }
 
 function grafico_eventos_usuario( $width=420, $height=200) {
@@ -1410,8 +1390,10 @@ function generic_bar_graph ( $width =380, $height = 200, $data, $legend) {
 	// Create the dataset
 	// Merge data into a dataset object (sancho)
 	$Dataset1 =& Image_Graph::factory('dataset');
-	for ($i = 0; $i < sizeof($data); $i++) {
-		$Dataset1->addPoint(substr($legend[$i], 0, 22), $data[$i]);
+	$i = 0;
+	foreach ($data as $datapoint) {
+		$Dataset1->addPoint(substr($legend[$i], 0, 22), $datapoint);
+		$i++;
 	}
 	$Plot =& $Plotarea->addNew('bar', $Dataset1);
 	$GridY2 =& $Plotarea->addNew('bar_grid', IMAGE_GRAPH_AXIS_Y_SECONDARY);
@@ -1426,15 +1408,16 @@ function grafico_db_agentes_paquetes ($width = 380, $height = 300) {
 	$data = array();
 	$legend = array();
 	
-	$sql = "SELECT DISTINCT(id_agente), COUNT(id_agente_datos) AS count FROM tagente_datos GROUP BY id_agente ORDER BY count ASC";
-	$result = get_db_all_rows_sql ($sql);
+	$agents = get_group_agents (1);
 	
-	if ($result === false)
-		$result = array();
-
-	foreach ($result as $row) {
-		$data[] = $row["count"];
-		$legend[] = get_agent_name ($row["id_agente"], "lower");
+	$count = get_agent_modules_data_count (array_keys ($agents));
+	
+	unset ($count["total"]);
+	asort ($count, SORT_NUMERIC);
+	
+	foreach ($count as $agent_id => $value) {
+		$data[] = $value;
+		$legend[] = $agents[$agent_id];
 	}													
 	
 	generic_bar_graph ($width, $height, $data, $legend);
@@ -1473,18 +1456,18 @@ function grafico_db_agentes_purge ($id_agent, $width, $height) {
 	$legend[3] = "3 ".__("Months");
 	$legend[4] = __("Older");
 	
-	$data[0] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp > %d %s", $time["1day"], $query));
-	$data[1] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp > %d %s", $time["1week"], $query));
-	$data[2] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp > %d %s", $time["1month"], $query));
-	$data[3] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE utimestamp > %d %s", $time["3month"], $query));
-	$data[4] = get_db_sql (sprintf ("SELECT COUNT(id_agente_datos) FROM tagente_datos WHERE 1=1 %s", $query));
+	$data[0] = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1day"], $query));
+	$data[1] = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1week"], $query));
+	$data[2] = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["1month"], $query));
+	$data[3] = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE utimestamp > %d %s", $time["3month"], $query));
+	$data[4] = get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos WHERE 1=1 %s", $query));
 
 
-	$data[0] += get_db_sql (sprintf ("SELECT COUNT(id_tagente_datos_string) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1day"], $query));
-	$data[1] += get_db_sql (sprintf ("SELECT COUNT(id_tagente_datos_string) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1week"], $query));
-	$data[2] += get_db_sql (sprintf ("SELECT COUNT(id_tagente_datos_string) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1month"], $query));
-	$data[3] += get_db_sql (sprintf ("SELECT COUNT(id_tagente_datos_string) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["3month"], $query));
-	$data[4] += get_db_sql (sprintf ("SELECT COUNT(id_tagente_datos_string) FROM tagente_datos_string WHERE 1=1 %s", $query));
+	$data[0] += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1day"], $query));
+	$data[1] += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1week"], $query));
+	$data[2] += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["1month"], $query));
+	$data[3] += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE utimestamp > %d %s", $time["3month"], $query));
+	$data[4] += get_db_sql (sprintf ("SELECT COUNT(*) FROM tagente_datos_string WHERE 1=1 %s", $query));
 
 	$data[4] = $data[4] - $data[3];
 	
@@ -1704,11 +1687,10 @@ function grafico_modulo_boolean ( $id_agente_modulo, $periodo, $show_event,
 
 	$resolution = $config['graph_res'] * 50; // Number of "slices" we want in graph
 	
-	//$unix_timestamp = strtotime($mysql_timestamp) // Convert MYSQL format tio utime
-	$fechatope = time() - $periodo; // limit date
+	$fechatope = get_system_time () - $periodo; // limit date
 	$horasint = $periodo / $resolution; // Each intervalo is $horasint seconds length
-	$nombre_agente = get_agentmodule_agent_name($id_agente_modulo);
-	$id_agente = dame_agente_id($nombre_agente);
+	$id_agente = get_agentmodule_agent ($id_agente_modulo);
+	$nombre_agente = get_agent_name ($id_agente);
 	$nombre_modulo = get_agentmodule_name ($id_agente_modulo);
 
 	if ($show_event == 1)
@@ -1718,16 +1700,14 @@ function grafico_modulo_boolean ( $id_agente_modulo, $periodo, $show_event,
 		$alert_high = 0;
 		$alert_low = 10000000;
 		// If we want to show alerts limits
-		$sql1="SELECT * FROM talerta_agente_modulo where id_agente_modulo = ".$id_agente_modulo;
-		$result=mysql_query($sql1);
-		while ($row=mysql_fetch_array($result)){
-			if ($row["dis_max"] > $alert_high)
-				$alert_high = $row["dis_max"];
-			if ($row["dis_min"] < $alert_low)
-				$alert_low = $row["dis_min"];
+		$sql1 = "SELECT MAX(dis_max), MIN(dis_min) FROM talerta_agente_modulo WHERE id_agente_modulo = ".$id_agente_modulo;
+		$result = get_db_row_sql ($sql1);
+		if ($result !== false) {
+			$alert_high = $result["max"];
+			$alert_low = $result["min"];
 		}
 		// if no valid alert defined to render limits, disable it
-		if (($alert_low == 10000000) && ($alert_high == 0)){
+		if (($alert_low == 10000000) && ($alert_high == 0)) {
 			$show_alert = 0;
 		}
 	}
@@ -1741,7 +1721,7 @@ function grafico_modulo_boolean ( $id_agente_modulo, $periodo, $show_event,
 		$valores[$i][0] = 0; // SUM of all values for this interval
 		$valores[$i][1] = 0; // counter
 		$valores[$i][2] = $fechatope + ($horasint * $i); // [2] Top limit for this range
-		$valores[$i][3] = $fechatope + ($horasint*($i+1)); // [3] Botom limit
+		$valores[$i][3] = $fechatope + ($horasint * ($i+1)); // [3] Botom limit
 		$valores[$i][4] = -1; // MIN
 		$valores[$i][5] = -1; // MAX
 		$valores[$i][6] = -1; // Event
@@ -1750,12 +1730,11 @@ function grafico_modulo_boolean ( $id_agente_modulo, $periodo, $show_event,
 	if ($show_event == 1){
 		// If we want to show events in graphs
 		$sql1="SELECT utimestamp FROM tevento WHERE id_agente = $id_agente AND utimestamp > $fechatope";
-		$result=mysql_query($sql1);
-		while ($row = mysql_fetch_array($result)){
-			$utimestamp = $row[0];
+		$result = get_db_all_rows_sql ($sql1);
+		foreach ($result as $row) {
 			for ($i=0; $i <= $resolution; $i++) {
-				if ( ($utimestamp <= $valores[$i][3]) && ($utimestamp >= $valores[$i][2]) ){
-					$real_event[$i]=1;
+				if ( ($row["utimestamp"] <= $valores[$i][3]) && ($row["utimestamp"] >= $valores[$i][2]) ){
+					$real_event[$i] = 1;
 				}
 			}
 		}
@@ -1772,45 +1751,52 @@ function grafico_modulo_boolean ( $id_agente_modulo, $periodo, $show_event,
 		$row=mysql_fetch_array($result);
 		$title=$title." [C] ".$row[0];
 	*/
-	$previous=0;
+	$previous = 0;
 	// Get the first data outsite (to the left---more old) of the interval given
-	$sql1="SELECT datos,utimestamp FROM tagente_datos WHERE id_agente = $id_agente AND id_agente_modulo = $id_agente_modulo AND utimestamp < $fechatope ORDER BY utimestamp DESC LIMIT 1";
-	$result=mysql_query($sql1);
-	if ($row=mysql_fetch_array($result))
-		$previous=$row[0];
+	$sql1 = "SELECT datos FROM tagente_datos WHERE id_agente_modulo = $id_agente_modulo AND utimestamp < $fechatope ORDER BY utimestamp DESC";
+	$result = get_db_sql ($sql1);
+	if (!empty ($result)) {
+		$previous = $result["datos"];
+	}
 	
-	$sql1="SELECT datos,utimestamp FROM tagente_datos WHERE id_agente = $id_agente AND id_agente_modulo = $id_agente_modulo AND utimestamp > $fechatope";
-	//echo "$sql1<br>";
-	$result=mysql_query($sql1);
-	while ($row=mysql_fetch_array($result)){
-		$datos = $row[0];
-		$utimestamp = $row[1];
+	$sql1="SELECT datos, utimestamp FROM tagente_datos WHERE id_agente_modulo = $id_agente_modulo AND utimestamp > $fechatope";
+	
+	$result = get_db_all_rows_sql ($sql1);
+	if ($result === false) {
+		$result = array ();
+	}
+	foreach ($result as $row) {
+		$datos = $row["datos"];
+		$utimestamp = $row["utimestamp"];
 		
 		$i = round(($utimestamp - $fechatope) / $horasint);
-		if (isset($valores[$i][0])){
+		if (isset ($valores[$i][0])) {
 			$valores[$i][0] += $datos;
 			$valores[$i][1]++;
 		
-			if ($valores[$i][6] == -1)
-				$valores[$i][6]=$datos;
+			if ($valores[$i][6] == -1) {
+				$valores[$i][6] = $datos;
+			}
 			
 			// Init min value
-			if ($valores[$i][4] == -1)
+			if ($valores[$i][4] == -1) {
 				$valores[$i][4] = $datos;
-			else {
+			} else {
 				// Check min value
-				if ($datos < $valores[$i][4])
+				if ($datos < $valores[$i][4]) {
 					$valores[$i][4] = $datos;
+				}
 			}
 			// Check max value
-			if ($valores[$i][5] == -1)
+			if ($valores[$i][5] == -1) {
 				$valores[$i][5] = $datos;
-			else
-				if ($datos > $valores[$i][5])
+			} else {
+				if ($datos > $valores[$i][5]) {
 					$valores[$i][5] = $datos;
+				}
+			}
 		}
 	}
-	
 	
 	$last = $previous;
 	// Calculate Average value for $valores[][0]

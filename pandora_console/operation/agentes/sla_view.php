@@ -74,7 +74,7 @@ if (mysql_num_rows ($result_t)) {
 				$tdcolor = "datos2";
 				$color = 1;
 			}
-			$seconds = time() - $module_data["utimestamp"];
+			$seconds = get_system_time () - $module_data["utimestamp"];
 			if ($seconds >= ($temp_interval*2)) // If every interval x 2 secs. we get nothing, there's and alert
 				$agent_down = 1;
 			else

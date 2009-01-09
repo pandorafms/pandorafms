@@ -190,9 +190,9 @@ function give_disabled_group ($id_group) {
 }
 
 /**
- * Get all the agents within a group(s).
+ * Get all the agents within a group(s). For non-godmode usage get_user_groups should be used.
  *
- * @param mixed $id_group Group id or an array of ID's
+ * @param mixed $id_group Group id or an array of ID's. If nothing is selected, it will select all
  * 
  * @param bool $disabled Add disabled agents to agents. Default: False.
  * 
@@ -200,16 +200,16 @@ function give_disabled_group ($id_group) {
  *
  * @return array An array with all agents in the group or an empty array
  */
-function get_group_agents ($id_group, $disabled = false, $case = "lower") {
-	$id_group = (array) safe_int ($id_group, 1);
+function get_group_agents ($id_group = 0, $disabled = false, $case = "lower") {
+	$id_group = safe_int ($id_group, 1);
 	
 	//If id_group is an array, then 
-	if (in_array (1, $id_group)) {
+	if (empty ($id_group) || in_array (1, (array) $id_group)) {
 		//If All is included in the group list, just select All
 		$id_group = 1;
 	} else {
 		//If All is not included, select what we need
-		$id_group = implode (",", $id_group);
+		$id_group = implode (",", (array) $id_group);
 	}
 	
 	/* 'All' group must return all agents */
@@ -244,9 +244,9 @@ function get_group_agents ($id_group, $disabled = false, $case = "lower") {
 }
 
 /**
- * Get all the modules in an agent.
+ * Get all the modules in an agent. If an empty list is passed it will select all
  *
- * @param int $id_agent Agent id
+ * @param mixed $id_agent Agent id. If empty it selects all, array or int can be passed too
  * @param mixed $details Array, comma delimited list or singular value of rows to select. If nothing is specified, nombre will be selected
  *
  * @return array An array with all modules in the agent. If multiple rows are selected, they will be in an array
@@ -256,10 +256,8 @@ function get_agent_modules ($id_agent, $details = false) {
 	
 	if (empty ($id_agent)) {
 		$filter = '';
-	} elseif (is_array ($id_agent)) {
-		$filter = sprintf (' WHERE id_agente IN (%s)', implode (",",$id_agent));
 	} else {
-		$filter = sprintf (' WHERE id_agente = %d', $id_agent);
+		$filter = sprintf (' WHERE id_agente IN (%s)', implode (",", (array) $id_agent));
 	}
 	
 	if (empty ($details)) {
@@ -822,34 +820,54 @@ function dame_id_grupo ($id_agent) {
 }
 
 /** 
- * Get the number of pandora data in the database.
- * 
- * @param int $id_agent Agent id or 0 for all
+ * Get the number of pandora data packets in the database. 
  *
- * @return int The number of data in the database
+ * In case an array is passed, it will have a value for every agent passed 
+ * incl. a total otherwise it will just return the total
+ * 
+ * @param mixed $id_agent Agent id or array of agent id's, 0 for all
+ *
+ * @return mixed The number of data in the database
  */
-function dame_numero_datos ($id_agent = 0) {
-	if ($id_agent < 1) {
-		$query = '';
+function get_agent_modules_data_count ($id_agent = 0) {
+	$id_agent = safe_int ($id_agent, 1);
+	
+	if (empty ($id_agent)) {
+		$id_agent = array ();
 	} else {
-		$query = sprintf (" WHERE id_agente_modulo = ANY(SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = %d)", $id_agent);
+		$id_agent = (array) $id_agent;
 	}
-	$datos = 0;
-	$datos += (int) get_db_sql ("SELECT COUNT(*) FROM tagente_datos".$query);
-	$datos += (int) get_db_sql ("SELECT COUNT(*) FROM tagente_datos_inc".$query);
-	$datos += (int) get_db_sql ("SELECT COUNT(*) FROM tagente_datos_string".$query);
-	return $datos;
-}
-
-/** 
- * Get the data value of a agent module of string type.
- * 
- * @param int $id Agent module string id
- * 
- * @return string Data value of the agent module.
- */
-function dame_generic_string_data ($id) {
-	return (string) get_db_value ('datos', 'tagente_datos_string', 'id_tagente_datos_string', $id);
+	
+	$count = array ();
+	$count["total"] = 0;
+	
+	$query[0] = "SELECT COUNT(*) FROM tagente_datos";
+	//$query[1] = "SELECT COUNT(*) FROM tagente_datos_inc";
+	//$query[2] = "SELECT COUNT(*) FROM tagente_datos_string";
+	
+	foreach ($id_agent as $agent_id) {
+		//Init value
+		$count[$agent_id] = 0;
+		$modules = array_keys (get_agent_modules ($agent_id));
+		foreach ($query as $sql) {
+			//Add up each table's data
+			$count[$agent_id] += (int) get_db_sql ($sql." WHERE id_agente_modulo IN (".implode (",", $modules).")");
+		}
+		//Add total agent count to total count
+		$count["total"] += $count[$agent_id];
+	}
+	
+	if ($count["total"] == 0) {
+		foreach ($query as $sql) {
+			$count["total"] += (int) get_db_sql ($sql);
+		}
+	}
+	
+	if (!isset ($agent_id)) {
+		//If agent_id is not set, it didn't loop through any agents
+		return $count["total"];
+	}
+	return $count; //Return the array
 }
 
 /** 
@@ -1648,7 +1666,7 @@ function get_previous_data ($id_agent_module, $utimestamp) {
  * 
  * @return int The average module value in the interval.
  */
-function get_agent_module_value_average ($id_agent_module, $period, $date = 0) {
+function get_agentmodule_data_average ($id_agent_module, $period, $date = 0) {
 	if (! $date)
 		$date = get_system_time ();
 	$datelimit = $date - $period;
@@ -1680,7 +1698,7 @@ function get_agent_module_value_average ($id_agent_module, $period, $date = 0) {
  * 
  * @return int The maximum module value in the interval.
  */
-function get_agent_module_value_max ($id_agent_module, $period, $date = 0) {
+function get_agentmodule_data_max ($id_agent_module, $period, $date = 0) {
 	if (! $date)
 		$date = get_system_time ();
 	$datelimit = $date - $period;
@@ -1708,7 +1726,7 @@ function get_agent_module_value_max ($id_agent_module, $period, $date = 0) {
  * 
  * @return int The minimum module value of the module
  */
-function get_agent_module_value_min ($id_agent_module, $period, $date = 0) {
+function get_agentmodule_data_min ($id_agent_module, $period, $date = 0) {
 	if (! $date)
 		$date = get_system_time ();
 	$datelimit = $date - $period;
@@ -1727,7 +1745,7 @@ function get_agent_module_value_min ($id_agent_module, $period, $date = 0) {
 }
 
 /** 
- * Get the sumatory of values of an agent module in a period of time.
+ * Get the sum of values of an agent module in a period of time.
  * 
  * @param int $id_agent_module Agent module id to get the sumatory.
  * @param int $period Period of time to check (in seconds)
@@ -1735,7 +1753,7 @@ function get_agent_module_value_min ($id_agent_module, $period, $date = 0) {
  * 
  * @return int The sumatory of the module values in the interval.
  */
-function get_agent_module_value_sumatory ($id_agent_module, $period, $date = 0) {
+function get_agentmodule_data_sum ($id_agent_module, $period, $date = 0) {
 	if (! $date)
 		$date = get_system_time ();
 	$datelimit = $date - $period; // limit date
@@ -2167,11 +2185,11 @@ function get_server_info ($id_server = -1) {
   */
 function get_agent_modules_count ($id_agent = 0) {
 	$id_agent = safe_int ($id_agent, 1); //Make sure we're all int's and filter out bad stuff
+	
 	if (empty ($id_agent)) {
-		//If the array proved empty or the agent is less than 1 (eg. -1)
 		$filter = '';
 	} else {
-		$filter = sprintf (" WHERE id_agente IN (%s)", implode (",",$id_agent));
+		$filter = sprintf (" WHERE id_agente IN (%s)", implode (",", (array) $id_agent));
 	}
 	
 	return (int) get_db_sql ("SELECT COUNT(*) FROM tagente_modulo".$filter);
@@ -2222,10 +2240,12 @@ function process_alerts_validate ($id_alert) {
 	global $config;
 	require_once ("include/functions_events.php");
 	
-	$id_alert = (array) safe_int ($id_alert, 1);
+	$id_alert = safe_int ($id_alert, 1);
 	
 	if (empty ($id_alert)) {
 		return false;
+	} else {
+		$id_alert = (array) $id_alert;
 	}
 	
 	foreach ($id_alert as $id_aam) {

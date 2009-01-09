@@ -20,7 +20,7 @@
 if (isset($_SERVER['REQUEST_TIME'])) {
 	$time = $_SERVER['REQUEST_TIME'];
 } else {
-	$time = time();
+	$time = get_system_time ();
 }
 
 echo '<a class="white_bold" target="_new" href="general/license/pandora_info_'.$config["language"].'.html">Pandora FMS '.$pandora_version.' - Build '.$build_version.'<br>';

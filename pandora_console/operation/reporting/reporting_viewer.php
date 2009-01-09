@@ -309,7 +309,7 @@ foreach ($contents as $content) {
 		
 		$data = array ();
 		$table->colspan[1][0] = 2;
-		$value = format_numeric (get_agent_module_value_average ($content['id_agent_module'], $content['period'], $datetime));
+		$value = format_numeric (get_agentmodule_data_average ($content['id_agent_module'], $content['period'], $datetime));
 		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
 		array_push ($table->data, $data);
 		
@@ -324,7 +324,7 @@ foreach ($contents as $content) {
 		
 		$data = array ();
 		$table->colspan[1][0] = 2;
-		$value = format_numeric (get_agent_module_value_max ($content['id_agent_module'], $content['period'], $datetime));
+		$value = format_numeric (get_agentmodule_data_max ($content['id_agent_module'], $content['period'], $datetime));
 		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
 		array_push ($table->data, $data);
 		
@@ -339,7 +339,7 @@ foreach ($contents as $content) {
 		
 		$data = array ();
 		$table->colspan[1][0] = 2;
-		$value = format_numeric (get_agent_module_value_min ($content['id_agent_module'], $content['period'], $datetime));
+		$value = format_numeric (get_agentmodule_data_min ($content['id_agent_module'], $content['period'], $datetime));
 		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
 		array_push ($table->data, $data);
 		
@@ -354,7 +354,7 @@ foreach ($contents as $content) {
 		
 		$data = array ();
 		$table->colspan[1][0] = 2;
-		$value = format_numeric (get_agent_module_value_sumatory ($content['id_agent_module'], $content['period'], $datetime));
+		$value = format_numeric (get_agentmodule_data_sum ($content['id_agent_module'], $content['period'], $datetime));
 		$data[0] = '<p style="font: bold 3em Arial, Sans-serif; color: #000000;">'.$value.'</p>';
 		array_push ($table->data, $data);
 		

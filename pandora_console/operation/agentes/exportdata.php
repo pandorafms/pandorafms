@@ -178,15 +178,14 @@ if ((isset($_POST["export"])) AND (! isset($_POST["update_agent"]))){
 			// Begin the render !	
 			for ($a=0; $a <count($origen_modulo); $a++){ // For each module (not used multiple modules yet!)
 				$id_modulo = $origen_modulo[$a];
-				$sql1='SELECT * FROM tdatos WHERE id_agente = '.$origen;
 				$tipo = get_moduletype_name (get_agentmodule_type ($id_modulo));
 				if ($tipo == "generic_data_string")
 					$sql1 = 'SELECT * FROM tagente_datos_string WHERE timestamp > "'.$from_date.'" AND timestamp < "'.$to_date.'" AND id_agente_modulo ='.$id_modulo.' ORDER BY timestamp DESC';
 				else
 					$sql1 = 'SELECT * FROM tagente_datos WHERE timestamp > "'.$from_date.'" AND timestamp < "'.$to_date.'" AND id_agente_modulo ='.$id_modulo.' ORDER BY timestamp DESC';
-				$result1 = mysql_query ($sql1);
+				$result1 = get_db_all_rows_sql ($sql1);
 				$color=1;
-				while ($row = mysql_fetch_array ($result1)){
+				foreach ($result1 as $row){
 					if ($color == 1){
 						$tdcolor = "datos";
 						$color = 0;

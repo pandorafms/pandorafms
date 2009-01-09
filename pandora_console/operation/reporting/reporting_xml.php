@@ -245,22 +245,22 @@ foreach ($contents as $content) {
 	case 7:
 	case 'avg_value':
 		$data["title"] = __('Avg. Value');
-		$data["objdata"] = format_numeric (get_agent_module_value_average ($content['id_agent_module'], $content['period'], $datetime));
+		$data["objdata"] = format_numeric (get_agentmodule_data_average ($content['id_agent_module'], $content['period'], $datetime));
 		break;
 	case 8:
 	case 'max_value':
 		$data["title"] = __('Max. Value');
-		$data["objdata"] = format_numeric (get_agent_module_value_max ($content['id_agent_module'], $content['period'], $datetime));
+		$data["objdata"] = format_numeric (get_agentmodule_data_max ($content['id_agent_module'], $content['period'], $datetime));
 		break;
 	case 9:
 	case 'min_value':
 		$data["title"] = __('Min. Value');
-		$data["objdata"] = format_numeric (get_agent_module_value_min ($content['id_agent_module'], $content['period'], $datetime));
+		$data["objdata"] = format_numeric (get_agentmodule_data_min ($content['id_agent_module'], $content['period'], $datetime));
 		break;
 	case 10:
 	case 'sumatory':
 		$data["title"] = __('Sumatory');
-		$data["objdata"] = format_numeric (get_agent_module_value_sumatory ($content['id_agent_module'], $content['period'], $datetime));
+		$data["objdata"] = format_numeric (get_agentmodule_data_sum ($content['id_agent_module'], $content['period'], $datetime));
 		break;
 	case 11:
 	case 'general_group_report':

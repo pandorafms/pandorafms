@@ -39,6 +39,7 @@ if (isset ($_GET["borrar_agente"])) { // if delete agent
 	$id_agente = get_parameter_get ("borrar_agente");
 	$agent_name = get_agent_name ($id_agente);
 	$id_grupo = dame_id_grupo ($id_agente);
+	$modules = array_keys (get_agent_modules ($id_agente));
 	if (give_acl ($config["id_user"], $id_grupo, "AW")==1) {
 		//Start transaction - this improves consistency
 		process_sql ("SET AUTOCOMMIT=0;");
@@ -55,29 +56,28 @@ if (isset ($_GET["borrar_agente"])) { // if delete agent
 		if (process_sql ($sql_delete) === false) 
 			$del_error++;
 		
-		// Delete tagente_datos data
-		$sql_delete = "DELETE FROM tagente_datos WHERE id_agente = ".$id_agente;
-		if (process_sql ($sql_delete) === false)
-			$del_error++;
+		if (!empty ($modules) {
+			// Delete tagente_datos data
+			$sql_delete = "DELETE FROM tagente_datos WHERE id_agente_modulo IN (".implode (",",$modules).")";
+			if (process_sql ($sql_delete) === false)
+				$del_error++;
 			
-		// Delete tagente_datos_string data
-		$sql_delete = "DELETE FROM tagente_datos_string WHERE id_agente = ".$id_agente;
-		if (process_sql ($sql_delete) === false)
-			$del_error++;	
+			// Delete tagente_datos_string data
+			$sql_delete = "DELETE FROM tagente_datos_string WHERE id_agente_modulo IN (".implode (",",$modules).")";
+			if (process_sql ($sql_delete) === false)
+				$del_error++;	
 		
-		// Delete from tagente_datos - relies on id_agente_modulo
-		$sql_delete = "DELETE FROM tagente_datos_inc WHERE 
-		id_agente_modulo = ANY(SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ".$id_agente.")";
-		if (process_sql ($sql_delete) === false)
-			$del_error++;
+			// Delete from tagente_datos - relies on id_agente_modulo
+			$sql_delete = "DELETE FROM tagente_datos_inc WHERE id_agente_modulo IN (".implode (",",$modules).")";
+			if (process_sql ($sql_delete) === false)
+				$del_error++;
 		
-		// Delete alerts from talerta_agente_modulo - relies on
-		// id_agente_modulo	
-		$sql_delete = "DELETE FROM talerta_agente_modulo WHERE
-		id_agente_modulo = ANY(SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = ".$id_agente.")";
-		if (process_sql ($sql_delete) === false)
-			$del_error++;
-		
+			// Delete alerts from talerta_agente_modulo - relies on
+			// id_agente_modulo	
+			$sql_delete = "DELETE FROM talerta_agente_modulo WHERE id_agente_modulo IN (".implode (",",$modules).")";
+			if (process_sql ($sql_delete) === false)
+				$del_error++;
+		}
 		// Delete from tagente_modulo	
 		$sql_delete ="DELETE FROM tagente_modulo WHERE id_agente = ".$id_agente;
 		if (process_sql ($sql_delete) === false)

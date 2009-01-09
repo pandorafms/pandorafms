@@ -53,6 +53,7 @@ echo '<img src="reporting/fgraph.php?tipo=db_agente_paquetes&width=600&height=20
 echo '</table>';
 echo '<a href="#" onClick="toggleDiv(\'db_info_data\'); toggleDiv(\'db_info_graph\'); return false;">'.__('Press here to get database information as text').'</a></div>';
 echo '<div id="db_info_data" style="display:none">';
+
 //Merged from db_info_data.php because the queries are the same, so the cache
 //will kick in.
 
@@ -62,30 +63,23 @@ $table->head[0] = __('Agent name');
 $table->head[1] = __('Assigned modules');
 $table->head[2] = __('Total data');
 
-$sql = "SELECT DISTINCT(id_agente), COUNT(id_agente_datos) AS count FROM tagente_datos GROUP BY id_agente ORDER BY count ASC";
+$agents = get_group_agents (1);
 
-// Not implemented yet
-//$sql2 = "SELECT DISTINCT(id_agente), COUNT(id_agente_datos_string) AS count FROM tagente_datos_string GROUP BY id_agente ORDER BY count ASC";
+$count = get_agent_modules_data_count (array_keys ($agents));
 
-//This query takes 1s on a 1 million entry database. Merging it with tagente
-//costs 7 seconds so we rely on the functions to return information on
-//id_agente.
-$result = get_db_all_rows_sql ($sql);
-if ($result === false) {
-	$result = array();
-}
+unset ($count["total"]); //Not interested in total
+asort ($count, SORT_NUMERIC);
 
-foreach ($result as $row) {
+foreach ($count as $agent_id => $value) {
 	$data = array ();
 
 	//First row is a link to the agent
-	$data[0] = '<strong><a href="index.php?sec=gagente&sec2=operation/agentes/ver_agente&id_agente='.
-	$row["id_agente"].'">'.get_agent_name ($row["id_agente"]).'</a></strong>';
+	$data[0] = '<strong><a href="index.php?sec=gagente&sec2=operation/agentes/ver_agente&id_agente='.$agent_id.'">'.$agents[$agent_id].'</a></strong>';
 	//Second row is a number of modules for the agent
-	$data[1] = get_agent_modules_count ($row["id_agente"]);
+	$data[1] = get_agent_modules_count ($agent_id);
 	//Then the number of data packets for the agent
-	$data[2] = $row["count"];
-
+	$data[2] = $value;
+	
 	array_unshift ($table->data, $data);
 }
 print_table ($table);

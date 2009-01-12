@@ -47,7 +47,7 @@ function create_alert_command ($name, $command, $values = false) {
 	return process_sql ($sql, 'insert_id');
 }
 
-function update_alert_command ($id_alert_command, $name, $command, $description = '') {
+function update_alert_command ($id_alert_command, $name, $command, $description = '', $values = false) {
 	$id_alert_command = safe_int ($id_alert_command, 1);
 	if (empty ($id_alert_command))
 		return false;
@@ -71,7 +71,7 @@ function delete_alert_command ($id_alert_command) {
 	
 	$sql = sprintf ('DELETE FROM talert_commands WHERE id = %d',
 		$id_alert_command);
-	return process_sql ($sql);
+	return @process_sql ($sql);
 }
 
 function get_alert_command ($id_alert_command) {
@@ -96,6 +96,14 @@ function get_alert_command_command ($id_alert_command) {
 		return false;
 	
 	return get_db_value ('command', 'talert_commands', 'id', $id_alert_command);
+}
+
+function get_alert_command_internal ($id_alert_command) {
+	$id_alert_command = safe_int ($id_alert_command, 1);
+	if (empty ($id_alert_command))
+		return false;
+	
+	return (bool) get_db_value ('internal', 'talert_commands', 'id', $id_alert_command);
 }
 
 function get_alert_command_description ($id_alert_command) {
@@ -173,7 +181,7 @@ function delete_alert_action ($id_alert_action) {
 	
 	$sql = sprintf ('DELETE FROM talert_actions WHERE id = %d',
 		$id_alert_action);
-	return process_sql ($sql);
+	return @process_sql ($sql);
 }
 
 function get_alert_actions ($only_names = true) {
@@ -371,7 +379,7 @@ function update_alert_template ($id_alert_template, $values = false) {
 		SET %s
 		WHERE id = %d',
 		format_array_to_update_sql ($values), $id_alert_template);
-	echo $sql;
+	
 	return process_sql ($sql) !== false;
 }
 
@@ -382,7 +390,7 @@ function delete_alert_template ($id_alert_template) {
 	
 	$sql = sprintf ('DELETE FROM talert_templates WHERE id = %d',
 		$id_alert_template);
-	return process_sql ($sql);
+	return @process_sql ($sql);
 }
 
 function get_alert_templates ($only_names = true) {

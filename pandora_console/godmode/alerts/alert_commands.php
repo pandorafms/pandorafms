@@ -77,12 +77,13 @@ if ($update_command) {
 
 if ($delete_command) {
 	$id = get_parameter ('id');
-	// Commands below 4 are special and cannot be deleted
-	if ($id < 4) {
+	
+	// Internal commands cannot be deleted
+	if (get_alert_command_internal ($id)) {
 		audit_db ($config['id_user'], $REMOTE_ADDR, "ACL Violation",
 			"Trying to access Alert Management");
 		require ("general/noaccess.php");
-		exit;
+		return;
 	}
 	
 	$result = delete_alert_command ($id);

@@ -838,7 +838,7 @@ function graphic_agentaccess ($id_agent, $periodo, $width, $height) {
 	$valor_maximo = 0;
 	
 	for ($i = 0; $i < $intervalo; $i++) { // 30 entries in graph, one by day
-		$grafica[]=$valores[$intervalo-$i][0];
+		$grafica[]=$valores[$intervalo-$i-1][0];
 		if ($valores[$i][0] > $valor_maximo)
 			$valor_maximo = $valores[$i][0];
 	}

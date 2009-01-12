@@ -1,5 +1,10 @@
 2009-01-12  Sancho Lerena  <slerena@artica.es>
 
+      * reporting/fgraph.php: Tagent_Access graph has a small bug drawing
+	the first hour. Fixed.
+
+2009-01-12  Sancho Lerena  <slerena@artica.es>
+
       * include/functions_db.php: Data from tagente_datos, tagente_datos_inc 
       and tagente_datos_string is not deleted because it's a lot time 
       consuming to do in interactive console.

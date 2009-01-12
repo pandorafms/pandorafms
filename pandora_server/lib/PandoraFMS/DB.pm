@@ -3,11 +3,11 @@ package PandoraFMS::DB;
 # Database Package
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.com
-# Copyright (c) 2005-2008 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2004-2009 Sancho Lerena, slerena@gmail.com
+# Copyright (c) 2005-2009 Artica Soluciones Tecnologicas S.L
 #
 # This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
+# modify it under the terms of the GNU Lesser General Public License
 # as published by the Free Software Foundation; version 2
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -52,12 +52,14 @@ our @EXPORT = qw(
 		dame_nombretipomodulo_idagentemodulo
 		dame_ultimo_contacto
 		give_networkserver_status
+		
+		pandora_writedata
+		pandora_writestate
+		
 		pandora_updateserver
 		pandora_serverkeepaliver
 		pandora_audit
 		pandora_lastagentcontact
-		pandora_writedata
-		pandora_writestate
 		pandora_evaluate_alert
 		pandora_evaluate_compound_alert
 		pandora_generate_alerts
@@ -73,9 +75,14 @@ our @EXPORT = qw(
 		execute_alert
 		give_network_component_profile_name
 		pandora_create_incident 
+		update_keepalive_module
+		
 		get_db_value
 		get_db_free_row
 		get_db_free_field
+		db_insert
+		db_update
+		db_delete
 	);
 
 # Spanish translation note:
@@ -586,9 +593,8 @@ sub pandora_writestate (%$$$$$$$) {
 	my $tipo_modulo = $_[2]; # passed as string
 	my $nombre_modulo = $_[3];
 	my $datos = $_[4]; # Careful: This don't reference a hash, only a single value
-	my $estado = $_[5];
-	my $dbh = $_[6];
-	my $needs_update = $_[7];
+	my $dbh = $_[5];
+	my $needs_update = $_[6];
 	
 	my @data;
 	my $cambio = 0;
@@ -604,15 +610,21 @@ sub pandora_writestate (%$$$$$$$) {
 	# Get id
 	# BE CAREFUL: We don't verify the strings chains
 	# TO DO: Verify errors
-	my $id_agente = dame_agente_id ($pa_config, $nombre_agente, $dbh);
+	my $agent_data = get_db_free_row ("SELECT * FROM tagente WHERE nombre = '$nombre_agente'", $dbh);
+	if ($agent_data == -1){
+		return -1;
+	}
+	
 	my $id_modulo = dame_modulo_id ($pa_config, $tipo_modulo, $dbh);
-	my $id_agente_modulo = dame_agente_modulo_id($pa_config, $id_agente, $id_modulo, $nombre_modulo, $dbh);
+	my $id_agente_modulo = dame_agente_modulo_id($pa_config, $agent_data->{'id_agente'}, $id_modulo, $nombre_modulo, $dbh);
 
 	# Valid agent ?
-	if (($id_agente ==  -1) || ($id_agente_modulo == -1)) {
+	if ($id_agente_modulo == -1) {
 		return -1;
 	}
 
+	my $module_data = get_db_free_row ("SELECT * FROM tagente_modulo WHERE id_agente_modulo = $id_agente_modulo", $dbh);
+	
 	# Valid string data ? (not null)
 	if (($id_modulo == 3) || ($id_modulo == 17) || ($id_modulo == 10) || ($id_modulo == 23)){
 			if ($datos eq "") {
@@ -621,121 +633,137 @@ sub pandora_writestate (%$$$$$$$) {
 	}
 
 	# Take group for this module
-
-	my $id_grupo = dame_grupo_agente($pa_config, $id_agente,$dbh);
-
-	# Get data for this module from tagent_module table
-
-	my $query_idag = "SELECT * FROM tagente_modulo WHERE id_agente = $id_agente AND id_agente_modulo = " . $id_agente_modulo;
-	my $s_idag = $dbh->prepare($query_idag);
-	$s_idag ->execute;
-	if ($s_idag->rows == 0) {
-		logger( $pa_config, "ERROR Cannot find agenteModulo $id_agente_modulo",4);
-		logger( $pa_config, "ERROR: SQL Query is $query_idag ",10);
-		return -1;
-	} else  {
-		@data = $s_idag->fetchrow_array();
-	}
+	my $id_grupo = dame_grupo_agente($pa_config, $agent_data->{'id_agente'}, $dbh);
 
 	# Postprocess management
-
-	if ((defined($data[23])) && ($data[23] != 0) && (is_numeric($data[23]))){
+	if ( defined($data->{'post_process'}) && ($data->{'post_process'}> 0)) {
 		if (($id_modulo == 1) || ($id_modulo == 7) || ($id_modulo == 15) || ($id_modulo == 22) || ($id_modulo == 4) || ($id_modulo == 8) || ($id_modulo == 16) ){
-			$datos = $datos * $data[23];
+			$datos = $datos * $data->{'post_process'};
 		}
 	}
 
-	$s_idag->finish();
+	# Status management
+	my $estado = 0; # Normal (OK) by default
+	
+	
+	# Only PROC modules have min_critical/max_critical default
+	if ( $tipo_modulo  =~ m/proc/ ){
+		if ($module_data->{'min_critical'} eq $module_data->{'max_critical'}){
+			$module_data->{'min_critical'} = 0;
+			$module_data->{'max_critical'} = 1;
+		}
+	}
+	
+	if ($module_data->{'min_warning'} ne $module_data->{'max_warning'}){
+		if (($datos >= $module_data->{'min_warning'}) && ($datos < $module_data->{'max_warning'})){ 
+			$estado = 2;
+		}
+		if (($datos >= $module_data->{'min_warning'}) && ($module_data->{'max_warning'} < $module_data->{'min_warning'})){ 
+			$estado = 2;
+		}
+	}
+
+	if ($module_data->{'min_critical'} ne $module_data->{'max_critical'}){
+		if (($datos >= $module_data->{'min_critical'}) && ($datos < $module_data->{'max_critical'})){ 
+			$estado = 1;
+		}
+		if (($datos >= $module_data->{'min_critical'}) && ($module_data->{'max_critical'} < $module_data->{'min_critical'})){ 
+			$estado = 1;
+		}
+	}
 
 	# Get module interval or agent interval if module don't defined
-	my $id_module_type	= $data[2];
-	my $module_interval = $data[7];
-	if ($module_interval == 0){
-		$module_interval = dame_intervalo ($pa_config, $id_agente, $dbh);
+	my $module_interval = $module_data->{'module_interval'};
+	if ($module_data->{'module_interval'} == 0){
+		$module_interval = dame_intervalo ($pa_config, $module_data->{'id_agente'}, $dbh);
  	}
-	$s_idag->finish();
 
 	# Check alert subroutine - Protect execution on an eval block
 
 	eval {
-		pandora_generate_alerts ($pa_config, $timestamp, $nombre_agente, $id_agente, $id_agente_modulo, $id_module_type, $id_grupo, $datos, $dbh);
+		pandora_generate_alerts ($pa_config, $timestamp, $nombre_agente, $module_data->{'id_agente'}, $id_agente_modulo, $id_module_type, $id_grupo, $datos, $dbh);
 	};
 	if ($@) {
 		logger($pa_config, "ERROR: Error in SUB calcula_alerta(). ModuleName: $nombre_modulo ModuleType: $tipo_modulo AgentName: $nombre_agente", 4);
 		logger($pa_config, "ERROR Code: $@",10)
 	}
 
-	# $id_agente is agent ID to update ".dame_nombreagente_agentemodulo ($id_agente_modulo)."
 	# Let's see if there is any entry at tagente_estado table
-
-	my $idages = "SELECT * from tagente_estado WHERE id_agente_modulo = $id_agente_modulo";
-	my $s_idages = $dbh->prepare($idages);
-	$s_idages ->execute;
-
+	my $data_status = get_db_free_row ("SELECT * from tagente_estado WHERE id_agente_modulo = ". $module_data->{'id_agente_modulo'}, $dbh);
+	
 	# Apply Mysql quotes to data to prepare for database insertion / update
 	$datos = $dbh->quote($datos); # Parse data entry for adecuate SQL representation.
 
-	my $query_act; # OJO que dentro de una llave solo tiene existencia en esa llave !!
-	if ($s_idages->rows == 0) { # Doesnt exist entry in table, lets make the first entry
-		logger($pa_config, "Create entry in tagente_estado for module $nombre_modulo",4);
+	my $query_act; 
+	
+	if ($data_status == -1) { # Doesnt exist entry in table, lets make the first entry
+		logger($pa_config, "Create entry in tagente_estado for module $nombre_modulo", 4);
+		$query_act = "INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try, last_status, status_changes) VALUES (". $module_data->{'id_agente_modulo'} ." , $datos,'$timestamp',". $estado ." , " . $agent_data->{'id_agente'}. ",'$timestamp',$utimestamp, $module_interval, $id_server, $utimestamp, 0, 0)"; 
 
-		$query_act = "INSERT INTO tagente_estado (id_agente_modulo, datos, timestamp, estado, cambio, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try) VALUES ($id_agente_modulo,$datos,'$timestamp','$estado','1',$id_agente,'$timestamp',$utimestamp, $module_interval, $id_server, $utimestamp)"; # Cuando se hace un insert, siempre hay un cambio de estado
-
-	} else { # There are an entry in table already
-		@data = $s_idages->fetchrow_array();
-		if ( $data[11] == 0){
+	} else { # An entry in table already exists
+		$data_status->{'estado'} = $estado;
+		if ( $data_status->{'last_execution_try'} == 0){
 			$needs_update = 1;
 		}
 
-		# $data[5](status, should give us prev. status)
-		# For xxxx_PROC type (boolean / monitor), create an event if state has changed
-		if (( $data[5] != $estado) && (($tipo_modulo =~/keep_alive/) || ($tipo_modulo =~ /proc/))) {
-			# Cambio de estado detectado !
-			$cambio = 1;
-			$needs_update = 1;
-
-			# Makes an event entry, only if previous state changes, if new state, doesnt give any alert
-			my $description;
-
-			if ( $estado == 0) {
-				$description = "Monitor ($nombre_modulo) goes up ";
+		# Track status change
+		if ( $data_status->{'last_status'} == $data_status->{'estado'}){
+			$data_status->{'status_changes'} = 0;
+		} else {
+			$data_status->{'status_changes'} = $data_status->{'status_changes'} + 1 ;
+			
+			# Raise event ?
+			if ($data_status->{'status_changes'} > $module_data->{'min_ff_event'}){
+				
+				$needs_update = 1;
+				my $event_type = "";
+				my $status_name = "";
+				my $severity = 0;
+				
+				if (($data_status->{'last_status'} == 0) && ($data_status->{'estado'} == 2)){
+					$event_type = "going_up_warning";
+					$status_name = "going up to WARNING";
+					$severity = 3;
+				} elsif (($data_status->{'last_status'} == 1) && ($data_status->{'estado'} == 2)){
+					$event_type = "going_down_warning";
+					$status_name = "going down to WARNING";
+					$severity = 3;
+				} elsif ($data_status->{'estado'} == 1){
+					$event_type = "going_up_critical";
+					$status_name = "going up to CRITICAL";
+					$severity = 4;
+				} elsif ($data_status->{'estado'} == 0){
+					$event_type = "going_down_normal";
+					$status_name = "going down to NORMAL";
+					$severity = 2;
+				}
+				$data_status->{'status_changes'} = 0;
+				$data_status->{'last_status'} = $data_status->{'estado'};
+				
+				my $description = "Module ".$module_data->{'nombre'}." ($datos) is $status_name";
 				pandora_event ($pa_config, $description, $id_grupo,
-							$id_agente, 2, 0, $id_agente_modulo, 
-							"monitor_up", $dbh);
-			}
-			if ( $estado == 1) {
-				$description = "Monitor ($nombre_modulo) goes down";
-				pandora_event ($pa_config, $description, $id_grupo,
-							$id_agente, 3, 0, $id_agente_modulo, 
-							"monitor_down", $dbh);
+							$module_data->{'id_agente'}, $severity, 0, $module_data->{'id_agente_modulo'}, 
+							$event_type, $dbh);
+							
+				if ($event_type eq "going_down_warning"){
+					# Clean up and system mark all active CRITICAL events for this module
+					db_update ("UPDATE tevento SET estado=1 WHERE id_agentmodule = ".$module_data->{'id_agente_modulo'}." AND event_type = 'going_up_critical'", $dbh);
+				}
+				elsif ($event_type eq "going_down_normal"){
+					# Clean up and system mark all active WARNING and CRITICAL events for this module 
+					db_update ("UPDATE tevento SET estado=1 WHERE id_agentmodule = ".$module_data->{'id_agente_modulo'}." AND (event_type = 'going_up_warning' OR event_type = 'going_down_warning' OR event_type = 'going_up_critical')", $dbh);
+				}
 			}
 		}
 
+		my $needs_update_sql = "";
 		if ($needs_update == 1) {
-
-			$query_act = "UPDATE tagente_estado SET 
-							utimestamp = $utimestamp, datos = $datos, cambio = '$cambio', 
-							timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, 
-							last_try = '$timestamp', current_interval = '$module_interval', 
-							running_by = $id_server, last_execution_try = $utimestamp 
-							WHERE id_agente_modulo = $id_agente_modulo";
-		} else { 
-
-			# dont update last_try field, that it's the field
-			# we use to check last update time in database
-
-			$query_act = "UPDATE tagente_estado SET 
-						utimestamp = $utimestamp, datos = $datos, cambio = '$cambio', 
-						timestamp = '$timestamp', estado = '$estado', id_agente = $id_agente, 
-						current_interval = '$module_interval', running_by = $id_server, 
-						last_execution_try = $utimestamp WHERE id_agente_modulo = $id_agente_modulo";
+			$needs_update_sql = " , last_try = '$timestamp' ";
 		}
+		
+		$query_act = "UPDATE tagente_estado SET utimestamp = $utimestamp, datos = $datos, last_status = " . $data_status->{'last_status'} . ", status_changes = " . $data_status->{'status_changes'} . ", timestamp = '$timestamp', estado = ".$data_status->{'estado'}.", id_agente = $module_data->{'id_agente'}, current_interval = $module_interval, running_by = $id_server, last_execution_try = $utimestamp " . $needs_update_sql . " WHERE id_agente_modulo = ". $module_data->{'id_agente_modulo'};
 	}
-
-	my $a_idages = $dbh->prepare($query_act);
-	$a_idages->execute;
-	$a_idages->finish();
-   	$s_idages->finish();
+	db_update ($query_act, $dbh);
 }
 
 ##########################################################################
@@ -776,39 +804,9 @@ sub pandora_accessupdate (%$$) {
 
 		if ($id_agent != -1){
 			my $intervalo = dame_intervalo ($pa_config, $id_agent, $dbh);
-			my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
-			my $temp = $intervalo / 2;
-			my $fecha_limite = DateCalc($timestamp,"- $temp seconds",\$err);
-			$fecha_limite = &UnixDate($fecha_limite,"%Y-%m-%d %H:%M:%S");
-			# Fecha limite has limit date, if there are records below this date
-			# we cannot insert any data in Database. We use a limit based on agent_interval / 2
-			# So if an agent has interval 300, could have a max of 24 records per hour in access_table
-			# This is to do not saturate database with access records (because if you hace a network module with interval 30, you have
-			# a new record each 30 seconds !
-			# Compare with tagente.ultimo_contacto (tagent_lastcontact in english), so this will have
-			# the latest update for this agent
-			
-			my $query = "select count(*) from tagent_access where id_agent = $id_agent and timestamp > '$fecha_limite'";
-			my $query_exec = $dbh->prepare($query);
-			my @data_row;
-			$query_exec ->execute;
-			@data_row = $query_exec->fetchrow_array();
-			$temp = $data_row[0];
-			$query_exec->finish();
-			if ( $temp == 0) { # We need update access time
-				my $query2 = "insert into tagent_access (id_agent, timestamp) VALUES ($id_agent,'$timestamp')";
-				$dbh->do($query2);
-				logger($pa_config,"Updating tagent_access for agent id $id_agent",9);
-			}
-
-			# Update keepalive module (if present, if there is more than one, only updates first one!).
-			my $id_agent_module = get_db_free_field ("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = $id_agent AND id_tipo_modulo = 100", $dbh);
-			if ($id_agent_module ne -1){
-					my $agent_name = get_db_free_field ("SELECT nombre FROM tagente WHERE id_agente = $id_agent", $dbh);
-					my $module_typename = "keep_alive";
-					my $module_name = get_db_free_field ("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = $id_agent_module", $dbh);
-					pandora_writestate ($pa_config, $agent_name, $module_typename, $module_name, 1, 0, $dbh, 1);
-			}
+			my $utimestamp = &UnixDate("today","%s");
+			my $query2 = "INSERT INTO tagent_access (id_agent, utimestamp) VALUES ($id_agent,'$utimestamp')";
+			$dbh->do($query2);
 		}
 }
 
@@ -852,14 +850,7 @@ sub module_generic_proc (%$$$$$) {
 	}
 	if (pandora_writedata ($pa_config, $a_timestamp, $agent_name, $module_type, $a_name, 
 						$a_datos, $a_max, $a_min, $a_desc, $dbh, \$bUpdateDatos) != -1){
-		# Check for status: <1 state 1 (Bad), >= 1 state 0 (Good)
-		# Calculamos su estado
-		if ( $a_datos >= 1 ) { 
-			$estado = 0;
-		} else { 
-			$estado = 1;
-		}
-		pandora_writestate ($pa_config, $agent_name, $module_type, $a_name, $a_datos, $estado, $dbh, $bUpdateDatos);
+		pandora_writestate ($pa_config, $agent_name, $module_type, $a_name, $a_datos, $dbh, $bUpdateDatos);
 	}
 }
 
@@ -917,8 +908,7 @@ sub module_generic_data (%$$$$$) {
 			$a_min = "";
 		}
 		if (pandora_writedata($pa_config, $m_timestamp,$agent_name,$module_type,$m_name,$m_data,$a_max,$a_min,$a_desc,$dbh,\$bUpdateDatos) != -1){
-			# Numeric data has status N/A (100) always
-			pandora_writestate ($pa_config, $agent_name, $module_type, $m_name, $m_data, 100, $dbh, $bUpdateDatos);
+			pandora_writestate ($pa_config, $agent_name, $module_type, $m_name, $m_data, $dbh, $bUpdateDatos);
 		}
 	} else {
 		logger($pa_config, "(data) Invalid data value received from $agent_name, module $m_name", 3);
@@ -1022,12 +1012,12 @@ sub module_generic_data_inc (%$$$$$) {
 	
 		# Update of tagente_datos_inx (AUX TABLE)	
 		if ($no_existe == 1){
-			my $query = "INSERT INTO tagente_datos_inc (id_agente_modulo,datos, timestamp, utimestamp) VALUES ($id_agente_modulo, '$m_data', '$m_timestamp', $m_utimestamp)";
+			my $query = "INSERT INTO tagente_datos_inc (id_agente_modulo,datos, utimestamp) VALUES ($id_agente_modulo, '$m_data', $m_utimestamp)";
 			$dbh->do($query);
 		} else {
 			# Data exists previously	
 			if ($diferencia != 0) {
-				my $query2 = "UPDATE tagente_datos_inc SET timestamp='$m_timestamp', utimestamp = $m_utimestamp, datos = '$m_data' WHERE id_agente_modulo  = $id_agente_modulo";
+				my $query2 = "UPDATE tagente_datos_inc SET  utimestamp = $m_utimestamp, datos = '$m_data' WHERE id_agente_modulo  = $id_agente_modulo";
 				$dbh->do($query2);
 			}
 		}
@@ -1040,7 +1030,7 @@ sub module_generic_data_inc (%$$$$$) {
 		if ($no_existe == 0){
 			if (pandora_writedata ($pa_config, $m_timestamp, $agent_name, $module_type, $m_name, $new_data, $a_max, $a_min, $a_desc, $dbh, \$bUpdateDatos) != -1){
 				# Inc status is always 100 (N/A)
-				pandora_writestate ($pa_config, $agent_name, $module_type, $m_name, $new_data, 100, $dbh, $bUpdateDatos);
+				pandora_writestate ($pa_config, $agent_name, $module_type, $m_name, $new_data, $dbh, $bUpdateDatos);
 			}
 		}
 	} else {
@@ -1083,7 +1073,7 @@ sub module_generic_data_string (%$$$$$) {
 		}
 	if (pandora_writedata($pa_config, $m_timestamp, $agent_name, $module_type, $m_name, $m_data, $a_max, $a_min, $a_desc, $dbh, \$bUpdateDatos) != -1){
 		# String type has no state (100 = N/A)
-		pandora_writestate ($pa_config, $agent_name, $module_type, $m_name, $m_data, 100, $dbh, $bUpdateDatos);
+		pandora_writestate ($pa_config, $agent_name, $module_type, $m_name, $m_data, $dbh, $bUpdateDatos);
 	}
 }
 
@@ -1094,6 +1084,11 @@ sub module_generic_data_string (%$$$$$) {
 ## Insert data in main table: tagente_datos
 	   
 ##########################################################################
+
+# Optimizations: 
+# Pass id_agent, and id_agent_module as parameters
+# Separate detection of existance of tagente_modulo before calling this function
+# Pass Entire hash reference with tagente_modulo record
 
 sub pandora_writedata (%$$$$$$$$$$){
 	my $pa_config = $_[0];
@@ -1148,31 +1143,32 @@ sub pandora_writedata (%$$$$$$$$$$){
 
 	# take max and min values for this id_agente_module
 	if ($id_agente_modulo != -1){ # ID AgenteModulo does exists
+		my $agent_module_row = get_db_free_row ("SELECT * FROM tagente_modulo WHERE id_agente_modulo = $id_agente_modulo", $dbh);
 
 		# Postprocess and get MAX/MIN only for numeric moduletypes
 
 		if (($id_modulo != 3) && ($id_modulo != 17) && ($id_modulo != 10) && ($id_modulo != 23)){
-			my $query_idag = "SELECT * FROM tagente_modulo WHERE id_agente = $id_agente AND id_agente_modulo = ".$id_agente_modulo;
-			my $s_idag = $dbh->prepare($query_idag);
-			$s_idag ->execute;
-			if ($s_idag->rows == 0) {
-				logger( $pa_config, "ERROR Cannot find agenteModulo $id_agente_modulo",6);
-				logger( $pa_config, "ERROR: SQL Query is $query_idag ",10);
-			} else  {	
-				@data = $s_idag->fetchrow_array(); 
-			}
-			$max = $data[5];
-			$min = $data[6];
+			$max = $agent_module_row->{'max'};
+			$min = $agent_module_row->{'min'};
 
 			# Postprocess
-			if ((defined($data[23])) && ($data[23] != 0) && (is_numeric($data[23]))){
-				$datos = $datos * $data[23];
+			if ((defined($agent_module_row->{'post_process'})) && ($agent_module_row->{'post_process'} != 0) && (is_numeric($agent_module_row->{'post_process'}))){
+				$datos = $datos * $agent_module_row->{'post_process'};
 			}
-			$s_idag->finish();
 		} else {
 			$max = "";
 			$min = "";
 		}
+
+		# history_data detection. If this module don't have history, exit from here now with returncode 0
+		
+		if ($agent_module_row->{'history_data'} == 0){
+                	if ( defined $Ref_bUpdateDatos ) {
+	                        $$Ref_bUpdateDatos = 1; # TODO: Make check of status change here. 
+	                }
+			return 0;
+		}
+
 	} else { # Id AgenteModulo DOESNT exist, it could need to be created...
 		if (dame_learnagente($pa_config, $id_agente, $dbh) eq "1" ){
 			# Try to write a module and agent_module definition for that datablock
@@ -1248,7 +1244,7 @@ sub pandora_writedata (%$$$$$$$$$$){
 			$datos = $dbh->quote($datos);
 			$timestamp = $dbh->quote($timestamp);
 			# Parse data entry for adecuate SQL representation.
-			$query = "INSERT INTO tagente_datos_string (id_agente_modulo, datos, timestamp, utimestamp, id_agente) VALUES ($id_agente_modulo, $datos, $timestamp, $utimestamp, $id_agente)";
+			$query = "INSERT INTO tagente_datos_string (id_agente_modulo, datos, utimestamp) VALUES ($id_agente_modulo, $datos, $utimestamp)";
 		} elsif (is_numeric($datos)){
 			if ($max != $min) {
 				if (int($datos) > $max) { 
@@ -1265,7 +1261,7 @@ sub pandora_writedata (%$$$$$$$$$$){
 			$datos = $dbh->quote($datos);
 			$timestamp = $dbh->quote($timestamp);
 			# Parse data entry for adecuate SQL representation.
-			$query = "INSERT INTO tagente_datos (id_agente_modulo, datos, timestamp, utimestamp, id_agente) VALUES ($id_agente_modulo, $datos, $timestamp, $utimestamp, $id_agente)";
+			$query = "INSERT INTO tagente_datos (id_agente_modulo, datos, utimestamp) VALUES ($id_agente_modulo, $datos, $utimestamp)";
 		}
 		# If data is out of limits, do not insert into database
 		if ($outlimit == 0){
@@ -1509,18 +1505,39 @@ sub pandora_lastagentcontact (%$$$$$$) {
 		pandora_accessupdate ($pa_config, $id_agente, $dbh);
 		my $query = ""; 
 		if ($interval == -1){ # no update for interval field (some old agents doest support it) 
-		$query = "update tagente set agent_version = '$agent_version', ultimo_contacto_remoto = '$timestamp', ultimo_contacto = '$time_now', os_version = '$os_data' where id_agente = $id_agente";
+		  $query = "UPDATE tagente SET agent_version = '$agent_version', ultimo_contacto_remoto = '$timestamp', ultimo_contacto = '$time_now', os_version = '$os_data' WHERE id_agente = $id_agente";
 		} else {
-		$query = "update tagente set intervalo = $interval, agent_version = '$agent_version', ultimo_contacto_remoto = '$timestamp', ultimo_contacto = '$time_now', os_version = '$os_data' where id_agente = $id_agente";
+		  $query = "UPDATE tagente SET intervalo = $interval, agent_version = '$agent_version', ultimo_contacto_remoto = '$timestamp', ultimo_contacto = '$time_now', os_version = '$os_data' WHERE id_agente = $id_agente";
 		}
 		logger( $pa_config, "pandora_lastagentcontact: Updating Agent last contact data for $nombre_agente",6);
-		logger( $pa_config, "pandora_lastagentcontact: SQL Query: ".$query,10);
-		my $sag = $dbh->prepare($query);
-		$sag ->execute;
-		$sag ->finish();
+		logger( $pa_config, "pandora_lastagentcontact: SQL Query: ".$query, 10);
+		db_update ($query, $dbh);
+		
 }
 
+##########################################################################
+## SUB update_keepalive_module
+##
+## Updates keepalive module from one agent. This only should be called
+## when processing an agent, only one time, and not to be used on network
+## or other agentless modules
+##########################################################################
 
+sub update_keepalive_module (%$) {
+	my $pa_config= $_[0];
+	my $id_agent = $_[1];
+	my $agent_name = $_[2];
+	my $dbh = $_[3];
+	
+	# Update keepalive module 
+	# if present, if there is more than one (nosense), only updates first one!
+	my $id_agent_module = get_db_free_field ("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = $id_agent AND id_tipo_modulo = 100", $dbh);
+	if ($id_agent_module ne -1){
+		my $module_typename = "keep_alive";
+		my $module_name = get_db_free_field ("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = $id_agent_module", $dbh);
+		pandora_writestate ($pa_config, $agent_name, $module_typename, $module_name, 1, $dbh, 1);
+	}
+}
 
 ##########################################################################
 ## SUB pandora_incident (pa_config, dbh, title, text, priority, status, origin, id_group
@@ -2143,6 +2160,43 @@ sub get_db_free_row ($$) {
 		}
 		return -1;
 }
+
+
+# ---------------------------------------------------------------
+# Insert SQL sentence. Returns ID of row inserted
+# ---------------------------------------------------------------
+
+sub db_insert ($$) {
+	my $query= $_[0];
+	my $dbh = $_[1];
+	
+	$dbh->do($query);
+	return $dbh->{'mysql_insertid'};
+}
+
+
+# ---------------------------------------------------------------
+# UPDATE SQL sentence. 
+# ---------------------------------------------------------------
+
+sub db_update ($$) {
+	my $query= $_[0];
+	my $dbh = $_[1];
+	
+	$dbh->do($query);
+}
+
+# ---------------------------------------------------------------
+# DELETE SQL sentence. 
+# ---------------------------------------------------------------
+
+sub db_delete ($$) {
+	my $query= $_[0];
+	my $dbh = $_[1];
+	
+	$dbh->do($query);
+}
+
 
 
 ##########################################################################

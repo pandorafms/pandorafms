@@ -41,8 +41,6 @@ if ($update_settings) {
 	$config["days_purge"] = (int) get_parameter ('days_purge', $config["days_purge"]);
 	$config["graph_res"] = (int) get_parameter ('graph_res', $config["graph_res"]);
 	$config["step_compact"] = (int) get_parameter ('step_compact', $config["step_compact"]);
-	$config["show_unknown"] = (int) get_parameter ('show_unknown', $config["show_unknown"]);
-	$config["show_lastalerts"] = (int) get_parameter ('show_lastalerts', $config["show_lastalerts"]);
 	$config["style"] = (string) get_parameter ('style', $config["style"]);
 	$config["remote_config"] = (string) get_parameter ('remote_config', $config["remote_config"]);
 	$config["graph_color1"] = (string) get_parameter ('graph_color1', $config["graph_color1"]);
@@ -54,7 +52,7 @@ if ($update_settings) {
 	$config["autoupdate"] = (string) get_parameter ('autoupdate', $config["autoupdate"]);
 	$config["prominent_time"] = (string) get_parameter ('prominent_time', $config["prominent_time"]);
 	$config["timesource"] = (string) get_parameter ('timesource', $config["timesource"]);
-
+	$config["event_view_hr"] = (int) get_parameter ('event_view_hr', $config["event_view_hr"]);
 	$config["style"] = substr ($config["style"], 0, strlen ($config["style"]) - 4);
 
 	process_sql ("UPDATE tconfig SET VALUE='".$config["remote_config"]."' WHERE token = 'remote_config'");
@@ -64,8 +62,6 @@ if ($update_settings) {
 	process_sql ("UPDATE tconfig SET VALUE='".$config["days_compact"]." ' WHERE token = 'days_compact'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["graph_res"]."' WHERE token = 'graph_res'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["step_compact"]."' WHERE token = 'step_compact'");
-	process_sql ("UPDATE tconfig SET VALUE='".$config["show_unknown"]."' WHERE token = 'show_unknown'");
-	process_sql ("UPDATE tconfig SET VALUE='".$config["show_lastalerts"]."' WHERE token = 'show_lastalerts'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["style"]."' WHERE token = 'style'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["graph_color1"]."' WHERE token = 'graph_color1'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["graph_color2"]."' WHERE token = 'graph_color2'");
@@ -76,6 +72,7 @@ if ($update_settings) {
 	process_sql ("UPDATE tconfig SET VALUE='".$config["autoupdate"]."' WHERE token = 'autoupdate'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["prominent_time"]."' WHERE token = 'prominent_time'");
 	process_sql ("UPDATE tconfig SET VALUE='".$config["timesource"]."' WHERE token = 'timesource'");
+	process_sql ("UPDATE tconfig SET VALUE='".$config["event_view_hr"]."' WHERE token = 'event_view_hr'");
 }
 
 echo "<h2>".__('Pandora Setup')." &gt; ";
@@ -118,17 +115,14 @@ $table->data[9][1] = print_input_text ('graph_res', $config["graph_res"], '', 5,
 $table->data[10][0] = __('Compact interpolation in hours (1 Fine-20 bad)');
 $table->data[10][1] = print_input_text ('step_compact', $config["step_compact"], '', 5, 5, true);
 
-$table->data[11][0] = __('Show unknown modules in global view');
-$table->data[11][1] = print_checkbox ('show_unknown', 1, $config["show_unknown"], true);
-
-$table->data[12][0] = __('Show last fired alerts in global view');
-$table->data[12][1] = print_checkbox ('show_lastalerts', 1, $config["show_lastalerts"], true);
-
 $table->data[13][0] = __('Style template');
 $table->data[13][1] = print_select ($file_styles, 'style', $config["style"], '', '', '', true);
 
 $table->data[14][0] = __('Block size for pagination');
 $table->data[14][1] = print_input_text ('block_size', $config["block_size"], '', 5, 5, true);
+
+$table->data[14][0] = __('Default hours for event view');
+$table->data[14][1] = print_input_text ('event_view_hr', $config["event_view_hr"], '', 5, 5, true);
 
 $table->data[15][0] = __('Timestamp or time comparation');
 $table->data[15][1] = __('Comparation in rollover').' ';

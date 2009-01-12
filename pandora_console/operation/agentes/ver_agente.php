@@ -171,7 +171,7 @@ if ($flag_alert  == 1 && give_acl ($config['id_user'], $id_grupo, "AW")) {
 
 echo "<div id='menu_tab_frame_view'>";
 echo "<div id='menu_tab_left'><ul class='mn'><li class='view'>
-<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/bricks.png' class='top' border=0>&nbsp; ".substr(get_agent_name($id_agente),0,15)." - ".__('View mode')."</a>";
+<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente'><img src='images/bricks.png' class='top' border=0>&nbsp; ".substr(get_agent_name($id_agente),0,21)."</a>";
 echo "</li>";
 echo "</ul></div>";
 $tab = get_parameter ("tab", "main");
@@ -197,7 +197,7 @@ echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=
 echo "</li>";
 
 // Data
-if ($tab == "data") {
+if (($tab == "data") OR ($tab == "data_view")){
 	echo "<li class='nomn_high'>";
 } else {
 	echo "<li class='nomn'>";
@@ -223,6 +223,14 @@ if ($tab == "sla") {
 echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sla&id_agente=$id_agente'><img src='images/images.png' class='top' border=0> ".__('S.L.A')." </a>";
 echo "</li>";
 
+// Group tab
+echo "<li class='nomn'>";
+echo "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&group_id=$id_grupo'>";
+echo "<img src='images/god4.png' class='top' border=0>&nbsp;";
+echo __("Group");
+echo "</a></li>";
+
+
 // Inventory
 enterprise_hook ('inventory_tab');
 
@@ -243,6 +251,9 @@ case "main":
 	require "estado_monitores.php";
 	require "estado_alertas.php";
 	require "status_events.php";
+	break;
+case "data_view":
+	require "datos_agente.php";
 	break;
 case "data": 	
 	require "estado_ultimopaquete.php";

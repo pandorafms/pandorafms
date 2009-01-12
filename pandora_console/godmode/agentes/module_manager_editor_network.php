@@ -70,7 +70,12 @@ if ($update_module_id != NULL){
 		$form_prediction_module = $row['prediction_module'];
 		$form_max_timeout = $row['max_timeout'];
 		$form_custom_id = $row['custom_id'];
-
+		$form_history_data = $row['history_data'];
+		$form_min_warning = $row['min_warning'];
+		$form_max_warning = $row['max_warning'];
+		$form_min_critical = $row['min_critical'];
+		$form_max_critical = $row['max_critical'];
+		$form_ff_event = $row['min_ff_event'];
 		if ($tbl_disabled == 1){
 			$disabled_status = 'checked="ckecked"';
 		} else {
@@ -241,6 +246,28 @@ echo '<td class="datos2">'.__('Max. Value')."</td>";
 echo '<td class="datos2"><input type="text" name="form_maxvalue" size="5" value="'.$form_maxvalue.'"></td>';
 echo '</tr>';
 
+// Warning value threshold
+echo '<tr>';
+echo '<td class="datos2">'.__('Warning status')."</td>";
+echo '<td class="datos2">'.__("Min").' <input type="text" name="form_min_warning" size="5" value="'.$form_min_warning.'">';
+echo ' '.__("Max").' <input type="text" name="form_max_warning" size="5" value="'.$form_max_warning.'"></td>';
+
+// Critical value threshold
+echo '<td class="datos2">'.__('Critical status')."</td>";
+echo '<td class="datos2">'.__("Min").' <input type="text" name="form_min_critical" size="5" value="'.$form_min_critical.'">';
+echo ' '.__("Max").' <input type="text" name="form_max_critical" size="5" value="'.$form_max_critical.'"></td>';
+echo '</tr>';
+
+echo "<tr>";
+echo '<td class="datos2">'.__('Historical data')."</td>";
+echo '<td class="datos2">';
+print_checkbox ("form_history_data", 1, $form_history_data, false);
+
+echo '<td class="datos">'.__('FF Threshold');
+pandora_help ("ff_threshold");
+echo '</td>';
+echo '<td class="datos"><input type="text" name="form_ff_event" size="5" value="'.$form_ff_event.'"></td>';
+
 // Post process / Export server
 echo '<tr>';
 echo '<td class="datos">'.__('Post process');
@@ -268,14 +295,14 @@ echo '<td class="datos2" valign="top">'.__('TCP send');
 pandora_help ("tcp_send");
 echo "</td>";
 
-// SNMP module, tcp_send contains the SNMP version
 if ($form_id_tipo_modulo >= 15 && $form_id_tipo_modulo <= 18) {
-	echo '<td class="datos2"><textarea cols=20 style="height:55px;" name="form_tcp_send_void"></textarea>';
+	echo '<td class="datos2" colspan=3 ><textarea cols=65 style="height:55px;" name="form_tcp_send_void"></textarea>';
 } else {
-	echo '<td class="datos2"><textarea cols=20 style="height:55px;" name="form_tcp_send">'.$form_tcp_send.'</textarea>';
+	echo '<td class="datos2" colspan=3 ><textarea cols=65 style="height:55px;" name="form_tcp_send">'.$form_tcp_send.'</textarea>';
 }
+echo '<tr>';
 echo '<td class="datos2" valign="top">'.__('TCP receive')."</td>";
-echo '<td class="datos2"><textarea cols=20 style="height:55px;" name="form_tcp_rcv">'.$form_tcp_rcv.'</textarea>';
+echo '<td class="datos2" colspan=3><textarea cols=65 style="height:55px;" name="form_tcp_rcv">'.$form_tcp_rcv.'</textarea>';
 echo '</tr>';
 
 // Description

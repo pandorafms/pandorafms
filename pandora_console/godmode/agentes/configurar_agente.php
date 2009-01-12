@@ -16,6 +16,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+
 // Load global vars
 require_once ("include/config.php");
 enterprise_include ('godmode/agentes/configurar_agente.php');
@@ -33,6 +34,7 @@ if (! give_acl($config["id_user"], $group, "AW")) {
 	require ("general/noaccess.php");
 	exit;
 }
+
 
 // Get passed variables
 $tab = get_parameter_get ("tab", "main");
@@ -148,17 +150,17 @@ if (isset ($_POST["create_agent"])) { // Create a new and shiny agent
 			
 			// Create special module agent_keepalive
 			$sql = "INSERT INTO tagente_modulo 
-					(nombre, id_agente, id_tipo_modulo, descripcion, id_modulo, custom_id) 
+					(nombre, id_agente, id_tipo_modulo, descripcion, id_modulo,min_warning, max_warning ) 
 					VALUES 
-					('agent_keepalive',".$id_agente.",100,'Agent Keepalive monitor',1,'".$custom_id."')";
+					('agent_keepalive',".$id_agente.",100,'Agent Keepalive monitor',1 ,0,1)";
 			$id_agent_module = process_sql ($sql, "insert_id");
 			
 			if ($id_agent_module !== false) {
 				// Create agent_keepalive in tagente_estado table
 				$sql = "INSERT INTO tagente_estado 
-					(id_agente_modulo, datos, timestamp, cambio, estado, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try) 
+					(id_agente_modulo, datos, timestamp, estado, id_agente, last_try, utimestamp, current_interval, running_by, last_execution_try) 
 					VALUES 
-					(".$id_agent_module.",1,'',0,0,".$id_agente.",0,0,0,0,0)";
+					(".$id_agent_module.",'',0,0,".$id_agente.",0,0,0,0,0)";
 				$result = process_sql ($sql);
 				if ($result === false) {
 					$agent_created_ok = 0;
@@ -697,6 +699,7 @@ if ((isset ($_POST["update_module"])) || (isset ($_POST["insert_module"]))) {
 	$form_minvalue = (int) get_parameter_post ("form_minvalue",0);
 	$form_maxvalue = (int) get_parameter ("form_maxvalue",0);
 	$form_interval = (int) get_parameter ("form_interval",300);
+	$form_id_prediction_module = (int) get_parameter ("form_id_prediction_module",0);
 	$form_id_plugin = (int) get_parameter ("form_id_plugin",0);
 	$form_id_export = (int) get_parameter ("form_id_export",0);
 	$form_disabled = (bool) get_parameter ("form_disabled",0);
@@ -711,6 +714,12 @@ if ((isset ($_POST["update_module"])) || (isset ($_POST["insert_module"]))) {
 	$form_plugin_parameter = (string) get_parameter ("form_plugin_parameter","");
 	$form_id_modulo = (int) get_parameter ("form_id_modulo",0);
 	$form_custom_id = (string) get_parameter ("form_custom_id","");
+	$form_history_data = (int) get_parameter('form_history_data',0);
+	$form_min_warning = (float) get_parameter ('form_min_warning', 0);
+	$form_max_warning = (float) get_parameter ('form_max_warning', 0);
+	$form_min_critical = (float) get_parameter ('form_min_critical', 0);
+	$form_max_critical = (float) get_parameter ('form_max_critical', 0);
+	$form_ff_event = (int) get_parameter ('form_ff_event', 0);
 }
 
 // MODULE UPDATE
@@ -747,10 +756,16 @@ if ((isset ($_POST["update_module"])) && (!isset ($_POST["oid"]))) { // if modif
 			post_process = %f, 
 			prediction_module = %d, 
 			max_timeout = %d,
-			custom_id = '%s'
+			custom_id = '%s',
+			history_data = %d,
+			min_warning = %f,
+			max_warning = %f,
+			min_critical = %f,
+			max_critical = %f,
+			min_ff_event = %d 
 			WHERE id_agente_modulo = %d", $form_description, $form_id_module_group, $form_name, $form_maxvalue, $form_minvalue, $form_interval, $form_tcp_port, $form_tcp_send, $form_tcp_rcv,
 			$form_snmp_community, $form_snmp_oid, $form_ip_target, $form_flag, $form_id_modulo, $form_disabled, $form_id_export, $form_plugin_user, $form_plugin_pass,
-			$form_plugin_parameter, $form_id_plugin, $form_post_process, $form_prediction_module, $form_max_timeout, $form_custom_id, $id_agente_modulo);
+			$form_plugin_parameter, $form_id_plugin, $form_post_process, $form_prediction_module, $form_max_timeout, $form_custom_id, $form_history_data, $form_min_warning, $form_max_warning, $form_min_critical, $form_max_critical, $form_ff_event, $id_agente_modulo);
 	$result = process_sql ($sql);
 	
 	if ($result === false) {
@@ -795,32 +810,20 @@ if (((!isset ($_POST["nc"]) OR ($_POST["nc"] == -1))) && (!isset ($_POST["oid"])
 		(id_agente, id_tipo_modulo, nombre, descripcion, max, min, snmp_oid, snmp_community,
 		id_module_group, module_interval, ip_target, tcp_port, tcp_rcv, tcp_send, id_export, 
 		plugin_user, plugin_pass, plugin_parameter, id_plugin, post_process, prediction_module,
-		max_timeout, disabled, id_modulo, custom_id) 
-		VALUES (%d,%d,'%s','%s',%d,%d,'%s','%s',%d,%d,'%s',%d,'%s','%s',%d,'%s','%s','%s',%d,%d,%d,%d,%d,%d,'%s')",
+		max_timeout, disabled, id_modulo, custom_id, history_data, min_warning, max_warning, min_critical, max_critical, min_ff_event) 
+		VALUES (%d,%d,'%s','%s',%d,%d,'%s','%s',%d,%d,'%s',%d,'%s','%s',%d,'%s','%s','%s',%d,%d,%d,%d,%d,%d,'%s', %d, %f, %f, %f, %f, %d)",
 			$id_agente, $form_id_tipo_modulo, $form_name, $form_description, $form_maxvalue, $form_minvalue, $form_snmp_oid, $form_snmp_community, 
 			$form_id_module_group, $form_interval, $form_ip_target, $form_tcp_port, $form_tcp_rcv, $form_tcp_send, $form_id_export, $form_plugin_user, $form_plugin_pass, 
-			$form_plugin_parameter, $form_id_plugin, $form_post_process, $form_prediction_module, $form_max_timeout, $form_disabled, $form_id_modulo, $form_custom_id);
+			$form_plugin_parameter, $form_id_plugin, $form_post_process, $form_id_prediction_module, $form_max_timeout, $form_disabled, $form_id_modulo, $form_custom_id, $form_history_data, $form_min_warning, $form_max_warning, $form_min_critical, $form_max_critical, $form_ff_event);
 	$id_agente_modulo = process_sql ($sql, 'insert_id');
 
 	if ($id_agente_modulo === false){
 		echo '<h3 class="error">'.__('There was a problem adding module').'</h3>';
 	} else {
-		// Create with different estado if proc type or data type
-		if (($form_id_tipo_modulo == 2) ||   // data_proc
-			($form_id_tipo_modulo == 6) ||   // icmp_proc
-			($form_id_tipo_modulo == 9) ||   // tcp_proc
-			($form_id_tipo_modulo == 18) ||  //snmp proc
-			($form_id_tipo_modulo == 21) ||  // async proc
-			($form_id_tipo_modulo == 100)  // Keepalive
-			) { 
-			$sql = sprintf ("INSERT INTO tagente_estado 
-			(id_agente_modulo,datos,timestamp,cambio,estado,id_agente, utimestamp) 
-			VALUES (%d, 0,'0000-00-00 00:00:00',0,0,%d,0)",$id_agente_modulo,$id_agente);
-		} else { 
-			$sql = sprintf ("INSERT INTO tagente_estado 
-			(id_agente_modulo,datos,timestamp,cambio,estado,id_agente, utimestamp) 
-			VALUES (%d, 0,'0000-00-00 00:00:00',0,100,%d,0)",$id_agente_modulo,$id_agente);
-		}
+		$sql = sprintf ("INSERT INTO tagente_estado 
+			(id_agente_modulo,datos,timestamp,estado,id_agente, utimestamp, status_changes, last_status) 
+			VALUES (%d, 0,'0000-00-00 00:00:00',0,%d,0,0,0)",$id_agente_modulo,$id_agente);
+		
 		$result = process_sql ($sql);
 		if ($result !== false) {
 			echo '<h3 class="suc">'.__('Module added successfully').'</h3>';
@@ -857,21 +860,12 @@ if (isset ($_GET["delete_module"])){ // DELETE agent module !
 	
 	// First delete from tagente_modulo -> if not successful, increment
 	// error
-	if (process_sql ("DELETE FROM tagente_modulo WHERE id_agente_modulo = ".$id_borrar_modulo) === false)
+	if (process_sql ("UPDATE tagente_modulo SET disabled = 1, delete_pending = 1 WHERE id_agente_modulo = ".$id_borrar_modulo) === false)
 		$error++;
 	
 	if (process_sql ("DELETE FROM tagente_estado WHERE id_agente_modulo = ".$id_borrar_modulo) === false)
 		$error++;
-	
-	if (process_sql ("DELETE FROM tagente_datos WHERE id_agente_modulo = ".$id_borrar_modulo) === false)
-		$error++;
-	
-	if (process_sql ("DELETE FROM tagente_datos_string WHERE id_agente_modulo = ".$id_borrar_modulo) === false)
-		$error++;
-			
-	if (process_sql ("DELETE FROM tagente_datos_inc WHERE id_agente_modulo = ".$id_borrar_modulo) === false)
-		$error++;
-			
+
 	//Check for errors
 	if ($error != 0) {
 		echo '<h3 class="error">'.__('There was a problem deleting the module').'</h3>'; 

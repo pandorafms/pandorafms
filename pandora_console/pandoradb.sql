@@ -1,6 +1,6 @@
 -- Pandora FMS - the Flexible Monitoring System
 -- ============================================
--- Copyright (c) 2008 Artica Soluciones Tecnológicas, http://www.artica.es
+-- Copyright (c) 2005-2009 Artica Soluciones Tecnológicas, http://www.artica.es
 -- Please see http://pandora.sourceforge.net for full contribution list
 
 -- This program is free software; you can redistribute it and/or
@@ -69,11 +69,8 @@ CREATE TABLE IF NOT EXISTS `tagente_datos` (
   `id_agente_datos` bigint(20) unsigned NOT NULL auto_increment,
   `id_agente_modulo` int(10) unsigned NOT NULL default '0',
   `datos` double(18,2) default NULL,
-  `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
-  `id_agente` int(10) unsigned NOT NULL default '0',
   `utimestamp` bigint(20) default '0',
   PRIMARY KEY  (`id_agente_datos`),
-  KEY `data_index2` (`id_agente`,`id_agente_modulo`),
   KEY `data_index1` (`id_agente_modulo`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 ;
 
@@ -81,7 +78,6 @@ CREATE TABLE IF NOT EXISTS `tagente_datos_inc` (
   `id_adi` int(10) unsigned NOT NULL auto_increment,
   `id_agente_modulo` int(10) unsigned NOT NULL default '0',
   `datos` double(18,2) default NULL,
-  `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `utimestamp` int(20) unsigned default '0',
   PRIMARY KEY  (`id_adi`),
   KEY `data_inc_index_1` (`id_agente_modulo`)
@@ -92,19 +88,17 @@ CREATE TABLE IF NOT EXISTS `tagente_datos_string` (
   `id_tagente_datos_string` bigint(20) unsigned NOT NULL auto_increment,
   `id_agente_modulo` int(10) unsigned NOT NULL default '0',
   `datos` text NOT NULL,
-  `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
-  `id_agente` int(10) unsigned NOT NULL default '0',
   `utimestamp` int(20) unsigned NOT NULL default 0,
   PRIMARY KEY  (`id_tagente_datos_string`),
-  KEY `data_string_index_1` (`id_agente`,`id_agente_modulo`)
+  KEY `data_string_index_1` (`id_agente_modulo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- delete "cambio" not used anymore
 CREATE TABLE `tagente_estado` (
   `id_agente_estado` int(10) unsigned NOT NULL auto_increment,
   `id_agente_modulo` int(10) NOT NULL default '0',
   `datos` varchar(255) NOT NULL default '',
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
-  `cambio` int(4) NOT NULL default '0',
   `estado` int(4) NOT NULL default '0',
   `id_agente` int(10) NOT NULL default '0',
   `last_try` datetime default NULL,
@@ -112,6 +106,8 @@ CREATE TABLE `tagente_estado` (
   `current_interval` int(8) unsigned NOT NULL default '0',
   `running_by` smallint(4) unsigned default '0',
   `last_execution_try` bigint(20) NOT NULL default '0',
+  `status_changes` tinyint(4) default 0,
+  `last_status` tinyint(4) default 0,
   PRIMARY KEY  (`id_agente_estado`),
   KEY `status_index_1` (`id_agente_modulo`),
   KEY `status_index_2` (`id_agente_modulo`,`estado`),
@@ -120,6 +116,7 @@ CREATE TABLE `tagente_estado` (
   KEY `last_execution_try` (`last_execution_try`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
+-- Probably last_execution_try index is not useful and loads more than benefits
 
 -- id_modulo now uses tmodule 
 -- ---------------------------
@@ -158,11 +155,17 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   `prediction_module` bigint(14) default '0',
   `max_timeout` int(4) unsigned default '0',
   `custom_id` varchar(255) default '',
+  `history_data` tinyint(1) unsigned default '1',
+  `min_warning` double(18,2) default 0,
+  `max_warning` double(18,2) default 0,
+  `min_critical` double(18,2) default 0,
+  `max_critical` double(18,2) default 0,
+  `min_ff_event` int(4) unsigned default '0',
+  `delete_pending` int(1) unsigned default 0,
   PRIMARY KEY  (`id_agente_modulo`),
   KEY `main_idx` (`id_agente_modulo`,`id_agente`),
   KEY `tam_agente` (`id_agente`),
   KEY `id_tipo_modulo` (`id_tipo_modulo`),
-  KEY `tam_plugin` (`id_plugin`),
   KEY `disabled` (`disabled`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
@@ -171,7 +174,6 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 CREATE TABLE IF NOT EXISTS `tagent_access` (
   `id_ac` bigint(20) unsigned NOT NULL auto_increment,
   `id_agent` int(10) unsigned NOT NULL default '0',
-  `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `utimestamp` bigint(20) NOT NULL default '0',
   PRIMARY KEY  (`id_ac`),
   KEY `agent_index` (`id_agent`)
@@ -297,7 +299,7 @@ CREATE TABLE IF NOT EXISTS `tevento` (
   `timestamp` datetime NOT NULL default '0000-00-00 00:00:00',
   `evento` varchar(255) NOT NULL default '',
   `utimestamp` bigint(20) NOT NULL default '0',
-  `event_type` enum('unknown','monitor_up','monitor_down','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent') default 'unknown',
+  `event_type` enum('unknown','alert_fired','alert_recovered','alert_ceased','alert_manual_validation','recon_host_detected','system','error','new_agent','going_up_warning','going_up_critical','going_down_warning','going_down_normal') default 'unknown',
   `id_agentmodule` int(10) NOT NULL default '0',
   `id_alert_am` int(10) NOT NULL default '0',
   `criticity` int(4) unsigned NOT NULL default '0',
@@ -307,10 +309,10 @@ CREATE TABLE IF NOT EXISTS `tevento` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Criticity: 0 - Maintance (grey)
--- Criticity: 1 - Low (green)
--- Criticity: 2 - Normal (blue)
--- Criticity: 3 - Warning (yellow)
--- Criticity: 4 - Critical (red)
+-- Criticity: 1 - Informational (blue)
+-- Criticity: 2 - Normal (green) (status 0)
+-- Criticity: 3 - Warning (yellow) (status 2)
+-- Criticity: 4 - Critical (red) (status 1)
 
 CREATE TABLE IF NOT EXISTS `tgrupo` (
   `id_grupo` mediumint(4) unsigned NOT NULL auto_increment,
@@ -397,6 +399,12 @@ CREATE TABLE IF NOT EXISTS `tnetwork_component` (
   `plugin_pass` varchar(250) default '',
   `plugin_parameter` text,
   `max_timeout` tinyint(3) unsigned default '0',
+  `history_data` tinyint(1) unsigned default '1',
+  `min_warning` double(18,13) default 0,
+  `max_warning` double(18,13) default 0,
+  `min_critical` double(18,13) default 0,
+  `max_critical` double(18,13) default 0,
+  `min_ff_event` int(4) unsigned default '0',
   PRIMARY KEY  (`id_nc`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -1,3 +1,60 @@
+2009-01-12  Sancho Lerena  <slerena@artica.es>
+
+	* pandoradb.sql: Removed fields "timestamp" and "id_agente" (and altered
+	some indexes) on tagente_datos, tagente_datos_string and 
+	tagente_datos_inc.
+
+	tagente_estado table: removed cambio, added status_changes, last_status.
+	tagente_modulo: added five new fields (warning,critical mgmt., flipflop
+	detection, history module and delete_pending bit.
+	
+	* agent_manager.php: Group ALL not shown anymore.
+
+	* configurar_agente.php: Support for new options. Delete a module now
+	mark for deletion the module, not delete data (It's VERY slow!).
+
+	* modificar_agente.php: Delete agent now uses the global function, 
+	minor fixes.
+
+	* module_manager_editor.php: New fields initializacion.
+
+	* module_manager_editor_network.php: At this time, the first module
+	editor who implements the new fields and improve old ones (tcp data).
+
+	* setup.php: Added support for new token: event_view_hr (Filter of max
+	old (in hr) for the event viewer. Removed old tokens show_unknown and 
+	show_lastalert.
+
+	* functions.php: format_for_graph() has an important BUG that makes
+	all units rendered without the "K" !!!!. Fixed.
+
+	* delete_agent.php: Delete remote config (if present). Also mark 
+	for deletion modules instead delete them (and let the data without
+	being deleted, because it's a HUGE consuming time, and it's left
+	for the daily db maintance process).
+
+	* estado_agente.php: Updated code for view new status.
+
+	* estado_generalagente.php: Total packets are removed from this view, 
+	this was a huge time consuming SQL operation that don't give important 
+	infomation. Groupname is now visualized.
+	
+	* estado_ultimopaquete.php,
+	* estado_monitores.php,
+	* estado_grupo.php: Rewritten much code to view new status and other
+	minor changes.
+
+	* ver_agente.php: Data view now works under the tabs and other minor
+	changes.
+
+	* events.php: Support for the new events and status. Added filter for
+	username and for a max. hours old events. Some boxes are now hidden
+	by default.
+
+	* fgraph.php: Some graphs are now fixed and uses tagente_datos and 
+	tagent_access with utimestamp and without id_agent index. Works faster
+
+
 2009-01-09  Evi Vanoost  <vanooste@rcbi.rochester.edu>
 
 	* general/footer.php, operation/agentes/sla_view.php, 

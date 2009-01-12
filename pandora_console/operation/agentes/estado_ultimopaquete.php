@@ -110,6 +110,10 @@ if (mysql_num_rows ($result3)) {
 		echo salida_limpia(substr($row3["nombre"],0,15));
 		echo "</td><td class='".$tdcolor."'>";
 		echo "<img src='images/".show_icon_type($row3["id_tipo_modulo"])."' border=0>";
+		if (give_acl ($config['id_user'], $id_grupo, "AW")) 
+		  echo '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente=2505&tab=module&update_module='.$row3["id_agente_modulo"].'&moduletype=2#modules"><img src="images/config.png"></a>';
+		
+		
 		echo "</td><td class='".$tdcolor."'>";
 		if ($row3["module_interval"] != 0){
 			echo $row3["module_interval"];
@@ -130,7 +134,7 @@ if (mysql_num_rows ($result3)) {
 			}
             echo "</td>";
         } 
-		if ($row3["id_tipo_modulo"] == 100) {
+		if (($row3["id_tipo_modulo"] == 100) OR ($row3['history_data'] == 0)) {
             echo "<td class='".$tdcolor."f9' colspan='2' title='".$row3["datos"]."'>";
 			echo substr(salida_limpia($row3["datos"]),0,12);
    		} else {
@@ -180,12 +184,17 @@ if (mysql_num_rows ($result3)) {
 			echo '<a href="javascript:'.$link.'"><img src="images/grafica_h.png" border=0></a>';
 		}
 		
-        // RAW Table data
-		echo "<td class=".$tdcolor." width=70>";
-		echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&period=2592000&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_m.png'></a>&nbsp;&nbsp;";
-		echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&period=604800&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_w.png'></a>&nbsp;&nbsp;";
-		echo "<a href='index.php?sec=estado&sec2=operation/agentes/datos_agente&period=86400&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_d.png'></a>";
-	
+		
+		if ($row3['history_data'] == 1){
+		  // RAW Table data
+		  echo "<td class=".$tdcolor." width=70>";
+		  echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data_view&period=2592000&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_m.png'></a>&nbsp;&nbsp;";
+		  echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data_view&period=604800&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_w.png'></a>&nbsp;&nbsp;";
+		  echo "<a href='index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=$id_agente&tab=data_view&period=86400&id=".$row3["id_agente_modulo"]."'><img border=0 src='images/data_d.png'></a>";
+		} else {
+			echo "<td class=".$tdcolor."></td>";
+		}
+		  
 	
 		echo "<td class='".$tdcolor."f9'>";
 		if ($row3["timestamp"] == "0000-00-00 00:00:00"){ 

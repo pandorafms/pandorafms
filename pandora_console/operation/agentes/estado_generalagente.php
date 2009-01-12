@@ -46,7 +46,7 @@ echo '<div style="height: 10px">&nbsp;</div>';
 //Floating div
 echo '<div style="float:right; width:300px; padding-top:16px;">';
 echo '<b>'.__('Agent access rate (24h)').'</b><br /><br />';
-echo '<img border="1" src="reporting/fgraph.php?id='.$id_agente.'&tipo=agentaccess&periodo=86400&height=70&width=280" />';
+echo '<img border="1" src="reporting/fgraph.php?id='.$id_agente.'&tipo=agentaccess&periodo=1440&height=70&width=280" />';
 echo '<div style="height:25px">&nbsp;</div>';
 echo '<b>'.__('Events generated -by module-').'</b><br /><br />';
 echo '<img border="1" src="reporting/fgraph.php?tipo=event_module&width=250&height=180&id_agent='.$id_agente.'" />';
@@ -85,16 +85,14 @@ echo '<td class="datos2" colspan="2">'.$agent["comentarios"].'</td></tr>';
 // Group
 echo '<tr><td class="datos"><b>'.__('Group').'</b></td>';
 echo '<td class="datos" colspan="2">';
-print_group_icon ($agent["id_grupo"]);
-echo '</td></tr>';
+echo print_group_icon ($agent["id_grupo"]);
+echo '&nbsp;(<b>';
+echo get_group_name ($agent["id_grupo"]);
+echo '</b>)</td></tr>';
 
 // Agent version
 echo '<tr><td class="datos2"><b>'.__('Agent Version'). '</b></td>';
 echo '<td class="datos2" colspan="2">'.$agent["agent_version"].'</td></tr>';
-
-// Total packets
-echo '<tr><td class="datos"><b>'. __('Total packets'). '</b></td>';
-echo '<td class="datos" colspan=2>'.get_agent_modules_data_count ($id_agente).'</td></tr>';
 
 // Last contact
 echo '<tr><td class="datos2"><b>'.__('Last contact')." / ".__('Remote').'</b></td><td class="datos2 f9" colspan="2">';

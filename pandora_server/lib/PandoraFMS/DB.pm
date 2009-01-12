@@ -777,42 +777,22 @@ sub pandora_accessupdate (%$$) {
 	my $dbh = $_[2];
 	my $err;
 
-        if ($id_agent != -1){
-	        my $intervalo = dame_intervalo ($pa_config, $id_agent, $dbh);
-	        my $timestamp = &UnixDate("today","%Y-%m-%d %H:%M:%S");
-	        my $temp = $intervalo / 2;
-	        my $fecha_limite = DateCalc($timestamp,"- $temp seconds",\$err);
-	        $fecha_limite = &UnixDate($fecha_limite,"%Y-%m-%d %H:%M:%S");
-	        # Fecha limite has limit date, if there are records below this date
-	        # we cannot insert any data in Database. We use a limit based on agent_interval / 2
-	        # So if an agent has interval 300, could have a max of 24 records per hour in access_table
-	        # This is to do not saturate database with access records (because if you hace a network module with interval 30, you have
-	        # a new record each 30 seconds !
-	        # Compare with tagente.ultimo_contacto (tagent_lastcontact in english), so this will have
-	        # the latest update for this agent
-	        
-	        my $query = "select count(*) from tagent_access where id_agent = $id_agent and timestamp > '$fecha_limite'";
-	        my $query_exec = $dbh->prepare($query);
-	        my @data_row;
-	        $query_exec ->execute;
-	        @data_row = $query_exec->fetchrow_array();
-	        $temp = $data_row[0];
-	        $query_exec->finish();
-	        if ( $temp == 0) { # We need update access time
-		        my $query2 = "insert into tagent_access (id_agent, timestamp) VALUES ($id_agent,'$timestamp')";
-		        $dbh->do($query2);	
-		        logger($pa_config,"Updating tagent_access for agent id $id_agent",9);
-	        }
+	if ($id_agent != -1){
+		my $intervalo = dame_intervalo ($pa_config, $id_agent, $dbh);
+		my $utimestamp = &UnixDate("today","%s");
+		my $query2 = "INSERT INTO tagent_access (id_agent, utimestamp) VALUES ($id_agent,'$utimestamp')";
+		$dbh->do($query2);
+	}
 
-            # Update keepalive module (if present, if there is more than one, only updates first one!).
-            my $id_agent_module = get_db_free_field ("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = $id_agent AND id_tipo_modulo = 100", $dbh);
-            if ($id_agent_module ne -1){
-                    my $agent_name = get_db_free_field ("SELECT nombre FROM tagente WHERE id_agente = $id_agent", $dbh);
-                    my $module_typename = "keep_alive";
-                    my $module_name = get_db_free_field ("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = $id_agent_module", $dbh);
-                    pandora_writestate ($pa_config, $agent_name, $module_typename, $module_name, 1, 0, $dbh, 1);
-            }
-        }
+	# Update keepalive module (if present, if there is more than one, only updates first one!).
+	my $id_agent_module = get_db_free_field ("SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente = $id_agent AND id_tipo_modulo = 100", $dbh);
+	if ($id_agent_module ne -1){
+		my $agent_name = get_db_free_field ("SELECT nombre FROM tagente WHERE id_agente = $id_agent", $dbh);
+		my $module_typename = "keep_alive";
+		my $module_name = get_db_free_field ("SELECT nombre FROM tagente_modulo WHERE id_agente_modulo = $id_agent_module", $dbh);
+		pandora_writestate ($pa_config, $agent_name, $module_typename, $module_name, 1, 0, $dbh, 1);
+	}
+        
 }
 
 ##########################################################################

@@ -14,6 +14,15 @@ install () {
 	make
 	make install
 
+	echo "Setting permissions..."
+
+	chmod 750 bin/*
+	chmod 750 pandora_* 
+	chmod 750 util/*.pl
+	chmod 750 util/pandora_exec
+	chmod 750 util/SLES10/*
+	chmod 750 util/plugin/*
+
 	echo "Copying utilities...."
 	cp -R util /usr/share/pandora
 

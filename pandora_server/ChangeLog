@@ -1,5 +1,11 @@
 2000-01-12  Sancho Lerena <slerena@artica.es>
 
+	* DB.pm: Agent AccessUpdate  now uses unixtime (faster!).
+
+	* pandora_server_upgrade: Updates permission on files.
+
+2000-01-12  Sancho Lerena <slerena@artica.es>
+
 	* DB.pm: Added generic functions db_delete, db_update and db_insert.
 
 	* util/pandora_db.pl: Optimized maintance script. Solves some detected

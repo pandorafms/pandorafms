@@ -249,13 +249,13 @@ echo '</tr>';
 // Warning value threshold
 echo '<tr>';
 echo '<td class="datos2">'.__('Warning status')."</td>";
-echo '<td class="datos2">'.__("Min").' <input type="text" name="form_min_warning" size="5" value="'.$form_min_warning.'">';
-echo ' '.__("Max").' <input type="text" name="form_max_warning" size="5" value="'.$form_max_warning.'"></td>';
+echo '<td class="datos2">'.__("Min.").' <input type="text" name="form_min_warning" size="5" value="'.$form_min_warning.'">';
+echo ' '.__("Max.").' <input type="text" name="form_max_warning" size="5" value="'.$form_max_warning.'"></td>';
 
 // Critical value threshold
 echo '<td class="datos2">'.__('Critical status')."</td>";
-echo '<td class="datos2">'.__("Min").' <input type="text" name="form_min_critical" size="5" value="'.$form_min_critical.'">';
-echo ' '.__("Max").' <input type="text" name="form_max_critical" size="5" value="'.$form_max_critical.'"></td>';
+echo '<td class="datos2">'.__("Min.").' <input type="text" name="form_min_critical" size="5" value="'.$form_min_critical.'">';
+echo ' '.__("Max.").' <input type="text" name="form_max_critical" size="5" value="'.$form_max_critical.'"></td>';
 echo '</tr>';
 
 echo "<tr>";
@@ -263,7 +263,8 @@ echo '<td class="datos2">'.__('Historical data')."</td>";
 echo '<td class="datos2">';
 print_checkbox ("form_history_data", 1, $form_history_data, false);
 
-echo '<td class="datos">'.__('FF Threshold');
+//FF stands for Flip-Flop
+echo '<td class="datos">'.__('FF threshold');
 pandora_help ("ff_threshold");
 echo '</td>';
 echo '<td class="datos"><input type="text" name="form_ff_event" size="5" value="'.$form_ff_event.'"></td>';

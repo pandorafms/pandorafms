@@ -140,7 +140,7 @@ if (give_acl ($config['id_user'], 0, "PM")) {
 	$menu["glog"]["id"] = "god-audit";
 	
 	// Setup
-	$menu["gsetup"]["text"] = __('Pandora setup');
+	$menu["gsetup"]["text"] = __('Setup');
 	$menu["gsetup"]["sec2"] = "godmode/setup/setup";
 	$menu["gsetup"]["id"] = "god-setup";
 	

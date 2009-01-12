@@ -1,3 +1,17 @@
+2009-01-12  Jorge Gonzalez  <jorgegonz@artica.es>
+
+	* include/languages/es.po, include/languages/es.mo: Updated Spanish
+	  translation.
+
+	* include/languages/index.pot: Updated po template.
+
+	* include/functions_alerts.php, godmode/menu.php,
+	  godmode/agentes/module_manager_editor_network.php,
+	  godmode/alerts/alert_templates.php,
+	  godmode/alerts/configure_alert_template.php,
+	  godmode/setup/setup.php, operation/agentes/estado_alertas.php:
+	  Modified strings to improve i18n infrastructure.
+
 2009-01-12  Esteban Sanchez  <estebans@artica.es>
 
 	* include/javascript/pandora_alerts.js: Added to repository.

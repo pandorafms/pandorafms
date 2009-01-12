@@ -35,7 +35,7 @@ INSERT INTO `talert_commands` VALUES (5,'Pandora FMS Alertlog','echo _timestamp_
 INSERT INTO `talert_commands` VALUES (6,'SNMP Trap','/usr/bin/snmptrap -v 1 -c trap_public 192.168.0.4 1.1.1.1.1.1.1.1 _agent_ _field1_','Send a SNMPTRAP to 192.168.0.4. Please review config and adapt to your needs, this is only a sample, not functional itself.', 0);
 INSERT INTO `talert_commands` VALUES (7,'Syslog','logger -p daemon.alert Pandora Alert _agent_ _data_ _field1_ _field2_','Uses field1 and field2 to generate Syslog alert in facility daemon with "alert" level.', 0);
 INSERT INTO `talert_commands` VALUES (8,'Sound Alert','/usr/bin/play /usr/share/sounds/alarm.wav','', 0);
-INSERT INTO `talert_commands` VALUES (9,'Jabber Alert','echo _field3_ | sendxmpp -r _field1_ --chatroom _field2_','Send jabber alert to chat room in a predefined server (configure first .sendxmpprc file). Uses field3 as text message, field1 as useralias for source message, and field2 for chatroom name');
+INSERT INTO `talert_commands` VALUES (9,'Jabber Alert','echo _field3_ | sendxmpp -r _field1_ --chatroom _field2_','Send jabber alert to chat room in a predefined server (configure first .sendxmpprc file). Uses field3 as text message, field1 as useralias for source message, and field2 for chatroom name', 0);
 
 
 --

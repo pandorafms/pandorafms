@@ -216,6 +216,7 @@ print_input_text ('fires_min', -1, '', 4, 10);
 echo ' '.__('to').' ';
 print_input_text ('fires_max', -1, '', 4, 10);
 echo ' '.__('matches of the alert');
+echo pandora_help("alert-matches", true);
 echo '</span></div>';
 echo '<div style="float: right; margin-left: 30px;"><br />';
 print_submit_button (__('Add'), 'add', false, 'class="sub next"');

@@ -1,5 +1,18 @@
 2009-01-12  Jorge Gonzalez  <jorgegonz@artica.es>
 
+	include/help/en/help_alert-matches.php,
+	include/help/en/help_time_stamp-comparation.php: Added help files.
+
+	include/languages/es.po, include/languages/es.mo: Updated Spanish
+	translation.
+
+	include/languages/index.pot: Updated po template.
+
+	godmode/setup/setup.php, godmode/agentes/alert_manager.php: Added
+	help functions.
+
+2009-01-12  Jorge Gonzalez  <jorgegonz@artica.es>
+
 	* include/languages/es.po, include/languages/es.mo: Updated Spanish
 	  translation.
 

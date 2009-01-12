@@ -3,7 +3,7 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile(
 	NAME            => 'PandoraFMS',
-	VERSION_FROM    => 'bin/PandoraFMS/Config.pm',
+	VERSION_FROM    => 'lib/PandoraFMS/Config.pm',
 	AUTHOR 		=> 'Sancho Lerena <slerena@gmail.com>',
 	PREREQ_PM 	=> {
 		NetAddr::IP => 0,

@@ -1,5 +1,12 @@
 2009-01-12  Esteban Sanchez  <estebans@artica.es>
 
+	* include/javascript/pandora_alerts.js: Added to repository.
+	Javascript functions for alerts.
+
+	* pandoradb_data.sql: Added missing field in a talert_commands row.
+
+2009-01-12  Esteban Sanchez  <estebans@artica.es>
+
 	* include/functions_alerts.php: Removed debug output. Show no SQL
 	error on delete_alert_* functions.
 

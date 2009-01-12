@@ -286,10 +286,9 @@ function pagination ($count, $url, $offset, $pagination = 0, $return = false) {
 	
 	/* 	URL passed render links with some parameter
 			&offset - Offset records passed to next page
-	  		&counter - Number of items to be blocked 
-	   	Pagination needs $url to build the base URL to render links, its a base url, like 
-	   " http://pandora/index.php?sec=godmode&sec2=godmode/admin_access_logs "
-	   
+			&counter - Number of items to be blocked 
+		Pagination needs $url to build the base URL to render links, its a base url, like 
+		" http://pandora/index.php?sec=godmode&sec2=godmode/admin_access_logs "
 	*/
 	$block_limit = 15; // Visualize only $block_limit blocks
 	if ($count <= $pagination) {

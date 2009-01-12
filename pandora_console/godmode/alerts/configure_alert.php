@@ -28,40 +28,40 @@ if (! give_acl ($config['id_user'], 0, "LM")) {
 	require ("general/noaccess.php");
 	exit;
 }
-	// Var init
-	$descripcion = "";
-	$nombre = "";
-	$comando ="";
-	
-	if (isset($_GET["id_alerta"])){
-		$id_alerta = entrada_limpia($_GET["id_alerta"]);
-		$sql1='SELECT * FROM talerta WHERE id_alerta = '.$id_alerta;
-		$result=mysql_query($sql1);
-		if ($row=mysql_fetch_array($result)){
-			$descripcion = $row["descripcion"];
-			$nombre= $row["nombre"];
-			$comando = $row["comando"];
-		} else
-			{
-			echo "<h3 class='error'>".__('There was a problem loading alert')."</h3>";
-			echo "</table>";
-			include ("general/footer.php");
-			exit;
-		}
+// Var init
+$descripcion = "";
+$nombre = "";
+$comando ="";
+
+if (isset($_GET["id_alerta"])){
+	$id_alerta = entrada_limpia($_GET["id_alerta"]);
+	$sql1='SELECT * FROM talerta WHERE id_alerta = '.$id_alerta;
+	$result=mysql_query($sql1);
+	if ($row=mysql_fetch_array($result)){
+		$descripcion = $row["descripcion"];
+		$nombre= $row["nombre"];
+		$comando = $row["comando"];
+	} else
+		{
+		echo "<h3 class='error'>".__('There was a problem loading alert')."</h3>";
+		echo "</table>";
+		include ("general/footer.php");
+		exit;
 	}
-	
-	$creacion_alerta = 0;
-	if (isset($_GET["creacion"])){
-		$creacion_alerta = 1;
-	}
+}
+
+$creacion_alerta = 0;
+if (isset($_GET["creacion"])){
+	$creacion_alerta = 1;
+}
 	
 echo "<h2>".__('Alert configuration')." &gt; ";
-	if (isset($_GET["creacion"])){
-		echo __('Create alert');
-	}
-	if (isset($_GET["id_alerta"])){
-		echo __('Modify alert');
-	}
+if (isset($_GET["creacion"])){
+	echo __('Create alert');
+}
+if (isset($_GET["id_alerta"])){
+	echo __('Modify alert');
+}
 pandora_help ("manage_alerts");
 echo "</h2>";
  ?>

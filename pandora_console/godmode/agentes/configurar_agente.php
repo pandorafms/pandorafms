@@ -567,8 +567,8 @@ if (isset($_GET["id_agente"])) {
 		exit;
 	}
 	
-	$row = get_db_row ('tagente', 'id_agente', $id_agente);
-	if (empty ($row)) {
+	$agent = get_db_row ('tagente', 'id_agente', $id_agente);
+	if (empty ($agent)) {
 		//Close out the page
 		echo '<h3 class="error">'.__('There was a problem loading agent').'</h3>';
 		echo '</table></div><div id="foot">';
@@ -577,21 +577,21 @@ if (isset($_GET["id_agente"])) {
 		exit;
 	}
 	
-	$intervalo = $row["intervalo"]; // Define interval in seconds
-	$nombre_agente = $row["nombre"];
-	$direccion_agente = $row["direccion"];
-	$grupo = $row["id_grupo"];
-	$ultima_act = $row["ultimo_contacto"];
-	$comentarios = $row["comentarios"];
-	$id_plugin_server = $row["id_plugin_server"];
-	$id_network_server = $row["id_network_server"];
-	$id_prediction_server = $row["id_prediction_server"];
-	$id_wmi_server = $row["id_wmi_server"];
-	$modo = $row["modo"];
-	$id_os = $row["id_os"];
-	$disabled = $row["disabled"];
-	$id_parent = $row["id_parent"];
-	$custom_id = $row["custom_id"];
+	$intervalo = $agent["intervalo"]; // Define interval in seconds
+	$nombre_agente = $agent["nombre"];
+	$direccion_agente = $agent["direccion"];
+	$grupo = $agent["id_grupo"];
+	$ultima_act = $agent["ultimo_contacto"];
+	$comentarios = $agent["comentarios"];
+	$id_plugin_server = $agent["id_plugin_server"];
+	$id_network_server = $agent["id_network_server"];
+	$id_prediction_server = $agent["id_prediction_server"];
+	$id_wmi_server = $agent["id_wmi_server"];
+	$modo = $agent["modo"];
+	$id_os = $agent["id_os"];
+	$disabled = $agent["disabled"];
+	$id_parent = $agent["id_parent"];
+	$custom_id = $agent["custom_id"];
 }
 
 // Read data module if editing module
@@ -600,28 +600,28 @@ if ((isset ($_GET["update_module"])) && (!isset ($_POST["oid"])) && (!isset ($_P
 	$update_module = 1;
 	$id_agente_modulo = (int) get_parameter_get ("update_module",0);
 
-	$row = get_db_row ('tagente_modulo', 'id_agente_modulo', $id_agente_modulo);
+	$module = get_db_row ('tagente_modulo', 'id_agente_modulo', $id_agente_modulo);
 
-	if ($row === false) {
+	if ($module === false) {
 		echo '<h3 class="error">'.__('There was a problem loading the module').'</h3>';
 	} else {
-		$modulo_id_agente = $row["id_agente"];
-		$modulo_id_tipo_modulo = $row["id_tipo_modulo"];
-		$modulo_nombre = $row["nombre"];
-		$modulo_descripcion = $row["descripcion"];
-		$tcp_send = $row["tcp_send"];
-		$tcp_rcv = $row["tcp_rcv"];
-		$ip_target = $row["ip_target"];
-		$snmp_community = $row["snmp_community"];
-		$snmp_oid = $row["snmp_oid"];
-		$id_module_group = $row["id_module_group"];
-		$module_interval = $row["module_interval"];
-		$modulo_max = $row["max"];
+		$modulo_id_agente = $module["id_agente"];
+		$modulo_id_tipo_modulo = $module["id_tipo_modulo"];
+		$modulo_nombre = $module["nombre"];
+		$modulo_descripcion = $module["descripcion"];
+		$tcp_send = $module["tcp_send"];
+		$tcp_rcv = $module["tcp_rcv"];
+		$ip_target = $module["ip_target"];
+		$snmp_community = $module["snmp_community"];
+		$snmp_oid = $module["snmp_oid"];
+		$id_module_group = $module["id_module_group"];
+		$module_interval = $module["module_interval"];
+		$modulo_max = $module["max"];
 		if (empty ($modulo_max))
 			$modulo_max = "N/A";
 		if (empty ($modulo_min))
 			$modulo_min = "N/A";	
-		$custom_id = $row["custom_id"];
+		$custom_id = $module["custom_id"];
 	}
 }
 
@@ -637,39 +637,39 @@ if (isset ($_GET["update_alert"])) {
 	
 	$update_alert = 1;
 	$id_aam = (int) get_parameter_get ("update_alert",0);
-	$row = get_db_row ('talerta_agente_modulo', 'id_aam', $id_aam);
+	$alert = get_db_row ('talerta_agente_modulo', 'id_aam', $id_aam);
 	
-	if ($row === false) {
+	if ($alert === false) {
 		echo '<h3 class="error">'.__('There was a problem loading the alert').'</h3>';
 	} else {
-		$alerta_id_aam = $row["id_aam"];
-		$alerta_campo1 = $row["al_campo1"];
-		$alerta_campo2 = $row["al_campo2"];
-		$alerta_campo3 = $row["al_campo3"];
-		$alerta_campo2_rec = $row["al_f2_recovery"];
-		$alerta_campo3_rec = $row["al_f3_recovery"];
-		$alerta_dis_max = $row["dis_max"];
-		$alerta_dis_min = $row["dis_min"];
-		$tipo_alerta = $row["id_alerta"];
-		$alert_text = $row["alert_text"];
-		$alerta_max_alerts = $row["max_alerts"];
-		$alerta_min_alerts = $row["min_alerts"];
-		$alerta_time_threshold = $row["time_threshold"];
-		$alerta_descripcion = $row["descripcion"];
-		$alerta_disable = $row["disable"];
-		$time_from = $row["time_from"];
-		$time_to = $row["time_to"];
-		$alerta_id_agentemodulo = $row["id_agente_modulo"]; // Only to show, cannot be changed
-		$alert_id_agent = $row["id_agent"];
-		$alert_d1 = $row["monday"];
-		$alert_d2 = $row["tuesday"];
-		$alert_d3 = $row["wednesday"];
-		$alert_d4 = $row["thursday"];
-		$alert_d5 = $row["friday"];
-		$alert_d6 = $row["saturday"];
-		$alert_d7 = $row["sunday"];
-		$alert_recovery = $row["recovery_notify"];
-		$alert_priority = $row["priority"];
+		$alerta_id_aam = $alert["id_aam"];
+		$alerta_campo1 = $alert["al_campo1"];
+		$alerta_campo2 = $alert["al_campo2"];
+		$alerta_campo3 = $alert["al_campo3"];
+		$alerta_campo2_rec = $alert["al_f2_recovery"];
+		$alerta_campo3_rec = $alert["al_f3_recovery"];
+		$alerta_dis_max = $alert["dis_max"];
+		$alerta_dis_min = $alert["dis_min"];
+		$tipo_alerta = $alert["id_alerta"];
+		$alert_text = $alert["alert_text"];
+		$alerta_max_alerts = $alert["max_alerts"];
+		$alerta_min_alerts = $alert["min_alerts"];
+		$alerta_time_threshold = $alert["time_threshold"];
+		$alerta_descripcion = $alert["descripcion"];
+		$alerta_disable = $alert["disable"];
+		$time_from = $alert["time_from"];
+		$time_to = $alert["time_to"];
+		$alerta_id_agentemodulo = $alert["id_agente_modulo"]; // Only to show, cannot be changed
+		$alert_id_agent = $alert["id_agent"];
+		$alert_d1 = $alert["monday"];
+		$alert_d2 = $alert["tuesday"];
+		$alert_d3 = $alert["wednesday"];
+		$alert_d4 = $alert["thursday"];
+		$alert_d5 = $alert["friday"];
+		$alert_d6 = $alert["saturday"];
+		$alert_d7 = $alert["sunday"];
+		$alert_recovery = $alert["recovery_notify"];
+		$alert_priority = $alert["priority"];
 	}
 }
 

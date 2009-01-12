@@ -1,7 +1,6 @@
 /* 
 // Pandora FMS - the Flexible Monitoring System
 // =============================================
-
 // Copyright (c) 2004-2008 Sancho Lerena, slerena@gmail.comnt
 // Copyright (c) 2004-2008 Raul Mateos Martin, raulofpandora@gmail.com
 // Copyright (c) 2005-2008 Artica Soluciones Tecnologicas, info@artica.es
@@ -17,7 +16,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
 @import url(menu.css);
 @import url(tip.css);
 * {
@@ -33,6 +31,7 @@ input, textarea {
 textarea {
 	padding: 5px;
 	height: 100px;
+	width: 100%;
 }
 textarea.conf_editor {
 	padding: 5px;
@@ -96,13 +95,11 @@ a.white_bold {
 	text-decoration: none;
 	font-weight: bold;
 }
-
 a.white_grey_bold {
 	color: #999;
 	text-decoration: none;
 	font-weight: bold;
 }
-
 a.white {
 	color: #eee;
 	text-decoration: none;
@@ -187,7 +184,7 @@ div#main {
 	padding-bottom: 20px;
 	margin-bottom: 25px;
 	background-color: #fefefe;
-    background-image: url(../../images/backgrounds/background4.jpg);
+	background-image: url(../../images/backgrounds/background4.jpg);
 	margin-top: 0px;
 	margin-left: 0px;
 	margin-right: 0px;
@@ -222,8 +219,8 @@ div#foot {
 }
 label {
 	display: block;
-	float: left;
 	padding-top: 4px;
+	font-weight: bold;
 }
 th > label {
 	padding-top: 7px;
@@ -253,34 +250,34 @@ input.sub {
 	border-right-color: #708090;
 	-moz-border-radius: 5%;
 	font-size: 8pt;
+	background-color: #e5e5e5;
+}
+input.next, input.upd, input.ok, input.wand, input.delete, input.search, input.copy {
+	padding-right: 21px;
 }
 input.next {
-	padding-right: 21px;
 	background: #e5e5e5 url(../../images/go.png) no-repeat right 2px;
 }
 input.upd {
-	padding-right: 21px;
 	background: #e5e5e5 url(../../images/upd.png) no-repeat right 3px;
 }
 input.wand {
-	padding-right: 21px;
 	background: #e5e5e5 url(../../images/wand.png) no-repeat right 3px;
 }
 input.delete {
-	padding-right: 21px;
 	background: #e5e5e5 url(../../images/cross.png) no-repeat right 3px;
 }
 input.search {
-	padding-right: 21px;
 	background: #e5e5e5 url(../../images/zoom.png) no-repeat right 3px;
 }
 input.copy {
-	padding-right: 21px;
 	background: #e5e5e5 url(../../images/copy.png) no-repeat right 3px;
 }
 input.ok {
-	padding-right: 21px;
 	background: #e5e5e5 url(../../images/ok.png) no-repeat right 3px;
+}
+input.ok {
+	background: #e5e5e5 url(../../images/add.png) no-repeat right 3px;
 }
 table, img {
 	border: 0px;
@@ -289,10 +286,13 @@ th {
 	color: #fff;
 	background-color: #786;
 }
-td.datos, td.datost, td.datosb , td.datos_id, td.datosf9 {
+tr.datos, tr.datost, tr.datosb , tr.datos_id, tr.datosf9,
+tr.datos2, tr.datos2t, tr.datos2b, tr.datos2_id , tr.datos2f9, {
 	background-color: #f9f9f9;
 }
-td.datos2, td.datos2t, td.datos2b, td.datos2_id , td.datos2f9 {
+tr.datos:hover, tr.datost:hover, tr.datosb:hover, tr.datos_id:hover,
+tr.datosf9:hover, tr.datos2:hover, tr.datos2t:hover,
+tr.datos2b:hover, tr.datos2_id:hover, tr.datos2f9:hover {
 	background-color: #efefef; 
 }
 td.datos3 {
@@ -433,22 +433,22 @@ div.title_line {
 	width: 762px;
 }
 #menu_tab_frame {
-    background: #D84437; 
-    width: 805px; 
-    min-height: 22px; 
-    padding-left: 0px;
-    margin-left: -25px;
-    float:left; 
-    border-bottom: 1px solid #778866;
+	background: #D84437; 
+	width: 805px; 
+	min-height: 22px; 
+	padding-left: 0px;
+	margin-left: -25px;
+	float:left; 
+	border-bottom: 1px solid #778866;
 }
 #menu_tab_frame_view {
-    background: #66AA44; 
-    width: 805px; 
-    min-height: 22px; 
-    padding-left: 0px;
-    margin-left: -25px;
-    float:left; 
-    border-bottom: 1px solid #778866;
+	background: #66AA44; 
+	width: 805px; 
+	min-height: 22px; 
+	padding-left: 0px;
+	margin-left: -25px;
+	float:left; 
+	border-bottom: 1px solid #778866;
 }
 #menu_tab .mn, #menu_tab ul, #menu_tab .mn ul {
 	padding: 0px;
@@ -468,12 +468,12 @@ div.title_line {
 	line-height: 18px;
 }
 #menu_tab li.nomn_high a {
-    background: #799E48;
-    color: #fff;
-    padding: 2px 10px 2px 10px;
-    border-left: 2px solid #778866;
-    font-weight: bold;
-    line-height: 18px;
+	background: #799E48;
+	color: #fff;
+	padding: 2px 10px 2px 10px;
+	border-left: 2px solid #778866;
+	font-weight: bold;
+	line-height: 18px;
 }
 #menu_tab .mn li a {
 	display: block;
@@ -481,7 +481,7 @@ div.title_line {
 }
 #menu_tab li.nomn:hover a, #menu_tab li:hover ul a:hover {
 	background: #799E48;
-    color: #fff;
+	color: #fff;
 }
 #menu_tab li:hover a {
 	background: #b2b08a url("../images/arrow.png") no-repeat right 3px;
@@ -540,16 +540,16 @@ span.master {
 	background: url(../../images/master.png) no-repeat;
 }
 span.wmi {
-    background: url(../../images/wmi.png) no-repeat;
+	background: url(../../images/wmi.png) no-repeat;
 }
 span.prediction {
-    background: url(../../images/chart_bar.png) no-repeat;
+	background: url(../../images/chart_bar.png) no-repeat;
 }
 span.plugin {
-    background: url(../../images/plugin.png) no-repeat;
+	background: url(../../images/plugin.png) no-repeat;
 }
 span.export {
-    background: url(../../images/database_refresh.png) no-repeat;
+	background: url(../../images/database_refresh.png) no-repeat;
 }
 span.snmp {
 	background: url(../../images/snmp.png) no-repeat;
@@ -566,11 +566,9 @@ span.rmess {
 span.nrmess {
 	background: url(../../images/email.png) no-repeat;
 }
-
 /* This kind of span do not have any sense, should be replaced on PHP code
 by a real img in code. They are not useful because insert too much margin around
 (for example, not valid to use in the table of server view */
-
 span.users, span.agents, span.data, span.alerts, span.time, span.net,
 span.master, span.snmp, span.binary, span.recon, span.wmi, span.prediction,
 span.plugin, span.plugin, span.export {
@@ -613,7 +611,6 @@ span.rmess, span.nrmess {
 	padding-top: 6px;
 	padding-left: 12em;	
 }
-
 span#logo_text1 {
 	font: bolder 3em Arial, Sans-serif;
 	letter-spacing: -2px;
@@ -630,41 +627,32 @@ span#logo_text2 {
 .bt0 {
 	border-top: 0px;
 }
-
 .action-buttons {
 	text-align: right;
 }
-
 #table-add-item select, #table-add-sla select {
 	width: 180px;
 }
-
 /* classes for event priorities. Sits now in functions.php */
 .datos_green, .datos_greenf9 {
 	background-color: #BBFFA4;
 }
-
 .datos_red, .datos_redf9 {
 	background-color: #FFC0B5;
 }
-
 .datos_yellow, .datos_yellowf9 {
 	background-color: #F4FFBF;
 }
-
 .datos_blue, .datos_bluef9 {
 	background-color: #CDE2EA;
 }
-
 .datos_grey, .datos_greyf9 {
 	background-color: #E4E4E4;
 }
-
 td.datos_greyf9, td.datos_bluef9, td.datos_greenf9, td.datos_redf9, td.datos_yellowf9 {
 	padding: 5px 5px 5px 5px;
 }
 /* end of classes for event priorities */
-
 div#main_pure {
 	background-color: #fefefe;
 	text-align: left;
@@ -673,44 +661,35 @@ div#main_pure {
 	margin-left: 10px;
 	margin-right: 10px;
 }
-
 #table-agent-configuration radio {
 	margin-right: 40px;
 }
-
 .ui-draggable {
 	cursor:move;
 }
-
 #layout_trash_drop {
 	float: right;
 	width: 300px;
 	height: 180px;
 	background: #fff url("../../images/trash.png") no-repeat bottom left;
 }
-
 #layout_trash_drop div {
 	display: block;
 }
-
 #layout_editor_drop {
 	float: left;
 	width: 300px;
 }
-
 .agent_reporting {
 	margin: 5px;
 	padding: 5px;
 }
-
 .report_table, .agent_reporting {
 	border: #CCC outset 3px;
 }
-
 .img_help {
 	cursor: help;
 }
-
 #loading {
 	position:fixed;
 	width: 200px;
@@ -720,15 +699,47 @@ div#main_pure {
 	background-color: #999999;
 	padding: 20px;
 }
-
 /* big_data is used in tactical and logon_ok */
 a.big_data {
 	text-decoration: none; font: bold 2em Arial, Sans-serif;
 }
-
 .notify {
 	background-color: #f7ffa5;
 	text-align: center;
 	font-weight: bold;
 	padding: 8px;
+}
+.listing {
+	border-collapse: collapse;
+}
+.listing td {
+	border-bottom: 1px solid #CCCCCC;
+	border-top: 1px solid #CCCCCC;
+}
+.left {
+	float: left;
+	text-align: left;
+}
+.right {
+	float: right;
+	text-align: right;
+}
+.top {
+	vertical-align: top
+	margin-top: 0;
+	padding-top: 0;
+}
+ul {
+	list-style-type: none;
+	padding-left: 0;
+	margin-left: 0;
+}
+span.actions {
+	margin-left: 30px;
+}
+code {
+	font-family: courier;
+}
+select#template, select#action {
+	width: 250px;
 }

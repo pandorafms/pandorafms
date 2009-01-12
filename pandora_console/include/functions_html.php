@@ -23,16 +23,16 @@
  * 
  * Based on choose_from_menu() from Moodle 
  * 
- * @param array $fields Array with dropdown values. Example: $fields["value"] = "label"
- * @param string $name Select form name
- * @param variant $selected Current selected value. Can be a single value or an
+ * @param array Array with dropdown values. Example: $fields["value"] = "label"
+ * @param string Select form name
+ * @param variant Current selected value. Can be a single value or an
  * array of selected values (in combination with multiple)
- * @param string $script Javascript onChange code.
- * @param string $nothing Label when nothing is selected.
- * @param variant $nothing_value Value when nothing is selected
- * @param bool $return Whether to return an output string or echo now (optional, echo by default).
- * @param bool $multiple Set the input to allow multiple selections (optional, single selection by default).
- * @param bool $sort Whether to sort the options or not (optional, unsorted by default).
+ * @param string Javascript onChange code.
+ * @param string Label when nothing is selected.
+ * @param variant Value when nothing is selected
+ * @param bool Whether to return an output string or echo now (optional, echo by default).
+ * @param bool Set the input to allow multiple selections (optional, single selection by default).
+ * @param bool Whether to sort the options or not (optional, unsorted by default).
  *
  * @return string HTML code if return parameter is true.
  */
@@ -60,7 +60,8 @@ function print_select ($fields, $name, $selected = '', $script = '', $nothing = 
 		if ($nothing_value == $selected) {
 			$output .= " selected";
 		}
-		$output .= '>'.$nothing."</option>"; //You should pass a translated string already
+		//You should pass a translated string already
+		$output .= '>'.$nothing."</option>";
 	}
 
 	if (!empty ($fields)) {
@@ -343,7 +344,7 @@ function print_textarea ($name, $rows, $columns, $value = '', $attributes = '', 
 /**
  * Print a nicely formatted table. Code taken from moodle.
  *
- * @param object $table is an object with several properties:
+ * @param object Object with several properties:
  *     $table->head - An array of heading names.
  *     $table->align - An array of column alignments
  *     $table->valign - An array of column alignments
@@ -365,7 +366,7 @@ function print_textarea ($name, $rows, $columns, $value = '', $attributes = '', 
  *     $table->title - Title of the table is a single string that will be on top of the table in the head spanning the whole table
  *	   $table->titlestyle - Title style
  *	   $table->titleclass - Title class
- * @param bool $return whether to return an output string or echo now
+ * @param  bool Whether to return an output string or echo now
  *
  * @return string HTML code if return parameter is true.
  */
@@ -544,14 +545,14 @@ function print_table (&$table, $return = false) {
 /**
  * Render a radio button input. Extended version, use print_radio_button() to simplify.
  *
- * @param string $name Input name.
- * @param string $value Input value.
- * @param string $checked Set the button to be marked (optional, unmarked by default).
- * @param bool $disabled Disable the button (optional, button enabled by default).
- * @param string $script Script to execute when onClick event is triggered (optional).
- * @param string $attributes Optional HTML attributes. It's a free string which will be 
+ * @param string Input name.
+ * @param string Input value.
+ * @param string Set the button to be marked (optional, unmarked by default).
+ * @param bool Disable the button (optional, button enabled by default).
+ * @param string Script to execute when onClick event is triggered (optional).
+ * @param string Optional HTML attributes. It's a free string which will be 
 	inserted into the HTML tag, use it carefully (optional).
- * @param bool $return Whether to return an output string or echo now (optional, echo by default).
+ * @param bool Whether to return an output string or echo now (optional, echo by default).
  *
  * @return string HTML code if return parameter is true.
  */
@@ -589,11 +590,11 @@ function print_radio_button_extended ($name, $value, $label, $checkedvalue, $dis
 /**
  * Render a radio button input.
  *
- * @param string $name Input name.
- * @param string $value Input value.
- * @param string $label Label to add after the radio button (optional).
- * @param string $checkedvalue Checked and selected value, the button will be selected if it matches $value (optional).
- * @param bool $return Whether to return an output string or echo now (optional, echo by default).
+ * @param string Input name.
+ * @param string Input value.
+ * @param string Label to add after the radio button (optional).
+ * @param string Checked and selected value, the button will be selected if it matches $value (optional).
+ * @param bool Whether to return an output string or echo now (optional, echo by default).
  *
  * @return string HTML code if return parameter is true.
  */
@@ -609,14 +610,14 @@ function print_radio_button ($name, $value, $label = '', $checkedvalue = '', $re
 /**
  * Render a checkbox button input. Extended version, use print_checkbox() to simplify.
  *
- * @param string $name Input name.
- * @param string $value Input value.
- * @param string $checked Set the button to be marked (optional, unmarked by default).
- * @param bool $disabled Disable the button  (optional, button enabled by default).
- * @param string $script Script to execute when onClick event is triggered (optional).
- * @param string $attributes Optional HTML attributes. It's a free string which will be 
+ * @param string Input name.
+ * @param string Input value.
+ * @param string Set the button to be marked (optional, unmarked by default).
+ * @param bool Disable the button  (optional, button enabled by default).
+ * @param string Script to execute when onClick event is triggered (optional).
+ * @param string Optional HTML attributes. It's a free string which will be 
 	inserted into the HTML tag, use it carefully (optional).
- * @param bool $return Whether to return an output string or echo now (optional, echo by default).
+ * @param bool Whether to return an output string or echo now (optional, echo by default).
  *
  * @return string HTML code if return parameter is true.
  */
@@ -642,10 +643,10 @@ function print_checkbox_extended ($name, $value, $checked, $disabled, $script, $
 /**
  * Render a checkbox button input.
  *
- * @param string $name Input name.
- * @param string $value Input value.
- * @param string $checked Set the button to be marked (optional, unmarked by default).
- * @param bool $return Whether to return an output string or echo now (optional, echo by default).
+ * @param string Input name.
+ * @param string Input value.
+ * @param string Set the button to be marked (optional, unmarked by default).
+ * @param bool Whether to return an output string or echo now (optional, echo by default).
  *
  * @return string HTML code if return parameter is true.
  */
@@ -660,8 +661,8 @@ function print_checkbox ($name, $value, $checked = false, $return = false) {
 /** 
  * Prints only a tip button which shows a text when the user puts the mouse over it.
  * 
- * @param string $text Complete text to show in the tip
- * @param bool $return whether to return an output string or echo now
+ * @param string Complete text to show in the tip
+ * @param bool whether to return an output string or echo now
  *
  * @return string HTML code if return parameter is true.
  */
@@ -714,6 +715,74 @@ function print_image ($src, $return = false, $options = false) {
 	
 	if ($return)
 		return $output;
+	echo $output;
+}
+
+/**
+ * Render an input text element. Extended version, use print_input_text() to simplify.
+ *
+ * @param string Input name.
+ * @param bool Whether to return an output string or echo now (optional, echo by default).
+ * @param array An array with optional HTML parameters. 
+ *	Key size: HTML size attribute.
+ *	Key disabled: Whether to disable the input or not.
+ *	Key class: HTML class
+ */
+function print_input_file ($name, $return = false, $options = false) {
+	$output = '';
+	
+	$output .= '<input type="file" value="" name="'.$name.'" id="file-'.$name.'" ';
+	
+	if ($options) {
+		if (isset ($options['size']))
+			$output .= 'size="'.$options['size'].'"';
+		
+		if (isset ($options['disabled']))
+			$output .= 'disabled="disabled"';
+		
+		if (isset ($options['class']))
+			$output .= 'class="'.$options['class'].'"';
+	}
+	
+	$output .= ' />';
+
+	if ($return)
+		return $output;
+	echo $output;
+}
+
+/**
+ * Render a label for a input elemennt.
+ *
+ * @param string Label text.
+ * @param string Input id to refer.
+ * @param bool Whether to return an output string or echo now (optional, echo by default).
+ * @param array An array with optional HTML parameters. 
+ *	Key html: Extra HTML to add after the label.
+ *	Key class: HTML class
+ */
+function print_label ($text, $id, $return = false, $options = false) {
+	$output = '';
+	
+	$output .= '<label id="label-'.$id.'" ';
+	
+	if ($options) {
+		if (isset ($options['class']))
+			$output .= 'class="'.$options['class'].'" ';
+	}
+	
+	$output .= 'for="'.$id.'" >';
+	$output .= $text;
+	$output .= '</label>';
+	
+	if ($options) {
+		if (isset ($options['html']))
+			$output .= $options['html'];
+	}
+	
+	if ($return)
+		return $output;
+	
 	echo $output;
 }
 ?>

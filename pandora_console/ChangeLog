@@ -1,3 +1,63 @@
+2009-01-12  Esteban Sanchez  <estebans@artica.es>
+
+	* godmode/agentes/alert_manager.php: Complete rewritten of the alert
+	system when assigned alerts to an agent.
+
+	* pandoradb.sql: New tables for alert system. These are:
+	talert_commands, talert_actions, talert_templates,
+	talert_template_modules, talert_template_module_actions. No migration
+	tool is available yet.
+
+	* godmode/alerts/configure_alert_template.php,
+	godmode/alerts/configure_alert_action.php,
+	godmode/alerts/alert_templates.php,
+	godmode/alerts/configure_alert_command.php,
+	godmode/alerts/alert_actions.php: Added to repository. Administration
+	interface to new alert system.
+
+	* godmode/alerts/modify_alert.php: Deleted from repository.
+
+	* godmode/setup/setup.php: Added an example of the date format. Main
+	table has now percentage width.
+
+	* godmode/menu.php, operation/menu.php: Added new alert options.
+	Removed refr value when it's not neccesary.
+
+	* include/styles/pandora.css: Added width to textarea elements. Style
+	correction and cleanup. Tables doesn't have a odd-even pattern, but
+	the hovered row now changes its colour. New styles for alert pages.
+
+	* include/functions_custom_graphs.php: Added to repository. custom
+	graphs functions moved here.
+
+	* include/functions_incidents.php, include/functions_events.php: Moved
+	to LGPL. Style comment corrections.
+
+	* include/functions_html.php: Documentation style correction. Added
+	print_input_file() and print_label().
+
+	* include/functions_ui.php: Doc style correction.
+
+	* operation/reporting/graph_viewer.php: Include new function file with
+	custom graphs. Use generic functions.
+
+	* index.php: Unset pass from POST and REQUEST arrays.
+	
+	* include/functions_db.php: Some documentation updated to new format.
+	Added format_array_to_update_sql() to generate SQL sentences for
+	updates. Style correction.
+
+	* godmode/agentes/configurar_agente.php: Variables renamed to have a
+	meaning.
+
+	* extensions/update_manager/main.php: Mark an string translatable.
+
+	* extensions/update_manager/lib/libupdate_manager_client.php,
+	godmode/alerts/configure_alert.php, include/functions.php,
+	godmode/agentes/module_manager.php, operation/agentes/networkmap.php,
+	operation/reporting/reporting_viewer.php, 
+	godmode/agentes/manage_config.php: Style correction.
+
 2009-01-12  Sancho Lerena  <slerena@artica.es>
 
 	* pandoradb.sql: Removed fields "timestamp" and "id_agente" (and altered

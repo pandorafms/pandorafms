@@ -6,8 +6,9 @@
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
+// modify it under the terms of the GNU Lesser General Public License (LGPL)
 // as published by the Free Software Foundation for version 2.
+// 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -26,7 +27,8 @@
 function delete_event ($id_event) {
 	global $config;
 	
-	$id_event = (array) safe_int ($id_event, 1); //Cleans up the selection for all unwanted values also casts any single values as an array 
+	//Cleans up the selection for all unwanted values also casts any single values as an array 
+	$id_event = (array) safe_int ($id_event, 1);
 	
 	process_sql ("SET AUTOCOMMIT = 0;");
 	process_sql ("START TRANSACTION;");
@@ -71,7 +73,8 @@ function delete_event ($id_event) {
 function process_event_validate ($id_event) {
 	global $config;
 	
-	$id_event = (array) safe_int ($id_event, 1); //Cleans up the selection for all unwanted values also casts any single values as an array 
+	//Cleans up the selection for all unwanted values also casts any single values as an array 
+	$id_event = (array) safe_int ($id_event, 1);
 	
 	process_sql ("SET AUTOCOMMIT = 0;");
 	process_sql ("START TRANSACTION;");
@@ -145,11 +148,11 @@ function get_event_description ($id_event) {
  */
 function create_event ($event, $id_group, $id_agent, $status = 0, $id_user = "", $event_type = "unknown", $priority = 0, $id_agent_module = 0, $id_aam = 0) {
 	$sql = sprintf ('INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, 
-					estado, utimestamp, id_usuario, event_type, criticity,
-					id_agentmodule, id_alert_am) 
-					VALUES (%d, %d, "%s", NOW(), %d, NOW(), "%s", "%s", %d, %d, %d)',
-					$id_agent, $id_group, $event, $status, $id_user, $event_type,
-					$priority, $id_agent_module, $id_aam);
+		estado, utimestamp, id_usuario, event_type, criticity,
+		id_agentmodule, id_alert_am) 
+		VALUES (%d, %d, "%s", NOW(), %d, NOW(), "%s", "%s", %d, %d, %d)',
+		$id_agent, $id_group, $event, $status, $id_user, $event_type,
+		$priority, $id_agent_module, $id_aam);
 	
 	return (int) process_sql ($sql, "insert_id");
 }

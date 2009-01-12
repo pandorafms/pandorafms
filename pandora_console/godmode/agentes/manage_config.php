@@ -241,9 +241,7 @@ if (isset ($_POST["delete"])) {
 		echo '<h3 class="error">ERROR: '.__('No modules have been selected').'</h3>';
 		return;
 	}
-
-
-	
+		
 	// If selected modules or alerts
 	if (isset($_POST["alerts"])) {
 		$alertas = 1;
@@ -331,7 +329,7 @@ if (isset ($_POST["delete"])) {
 		process_sql ("COMMIT;");
 	}
 	process_sql ("SET AUTOCOMMIT = 1;");
-	return; //Page shouldn't continue anymore															
+	return; //Page shouldn't continue anymore
 } //if $_POST['delete']
 
 // -----------

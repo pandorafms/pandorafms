@@ -59,9 +59,9 @@ function print_error_message ($result, $good = '', $bad = '', $attributes = '', 
  * @param int $unixtime: Any type of timestamp really, but we prefer unixtime
  * @param bool $return whether to output the string or return it
  * @param array $option: An array with different options for this function
- *		Key html_attr: which html attributes to add (defaults to none)
- *		Key tag: Which html tag to use (defaults to span)
- *		Key prominent: Overrides user preference and display "comparation" or "timestamp"
+ *	Key html_attr: which html attributes to add (defaults to none)
+ *	Key tag: Which html tag to use (defaults to span)
+ *	Key prominent: Overrides user preference and display "comparation" or "timestamp"
  *
  * @return string HTML code if return parameter is true.
  */

@@ -165,7 +165,7 @@ if (! isset ($_SESSION['id_usuario']) && isset ($_GET["login"])) {
 		logon_db ($nick, $REMOTE_ADDR);
 		$_SESSION['id_usuario'] = $nick;
 		$config['id_user'] = $nick;
-		unset ($_GET['pass'], $pass);
+		unset ($_GET['pass'], $pass, $_POST['pass'], $_REQUEST['pass']);
 	} else {
 		// User not known
 		$login_failed = true;

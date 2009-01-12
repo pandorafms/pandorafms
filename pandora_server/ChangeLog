@@ -1,3 +1,33 @@
+2009-01-12  Sancho Lerena <slerena@artica.es>
+
+	This is a MAJOR upgrade that _BREAK_ your current 2.1 trunk version.
+	Needs an upgrade of DB Schema. At this time no conversion tool has been
+	provided. Libs and console needs also to be re-deployed.
+	
+	* pandora_server: KeepAlive module is now processed OUTSIDE 
+	pandora_lastagentcontact() function, in it's own function. This makes that
+	keepalive only be refreshed on agent data, not network. This should 
+	make keepalive works as "agent down detector" in a definitive way, also
+	it's an important performance improvement operation.
+	
+	* pandora_db.pl: Performance improvements. If compact days = 0 skip. 
+	Compactation and delete needs to be improved in speed.
+	
+	* DB.pm: Added more generic DB access functions (db_insert, db_update, 
+	db_delete). Major rewrite of pandora_writestate(). Now uses three different
+	values for status (NORMAL, WARNING, CRITICAL) and manage all modules like
+	old monitor modules. Uses new fields for control event flip/flop with a 
+	counter. Also uses new WARNING/CRITICAL thresholds to calculate in store-
+	time the status.
+	
+	pandora_accessupdate() Function now uses only utimestamp. Tagente_datos and 
+	tagente_datos_string has been updated and do not use timestamp (string) and
+	id_agent index anymore. Big improvement has been noticed in performance 
+	tests after this change !. tagente_datos_inc has been modified also.
+	
+	pandora_writedata() needs a lot of improvement :(. Added support for 
+	modules without history. 
+
 2008-12-23  Ramon Novoa  <rnovoa@artica.es>
 
 	* bin/pandora_recon: Added a timeout to pandora_getparent(). The call

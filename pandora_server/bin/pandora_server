@@ -359,6 +359,7 @@ sub process_datafile {
 
 		if ($id_agente > 0) {
 			pandora_lastagentcontact ($pa_config, $timestamp, $agent_name, $os_version, $agent_version, $interval, $dbh);
+			update_keepalive_module ($pa_config, $id_agente, $agent_name, $dbh);
 			foreach my $part(@{$datos->{module}}) {
 				$tipo_modulo = $part->{type}->[0];
 				$module_name = $part->{name}->[0];

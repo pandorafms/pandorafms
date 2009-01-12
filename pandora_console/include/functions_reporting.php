@@ -152,7 +152,7 @@ function get_group_stats ($id_group) {
 	$data["data_alerts_fired"] = 0;
 	$data["data_alerts_fire_count"] = 0;
 	
-	
+
 	$cur_time = get_system_time ();
 
 	foreach ($result as $row) {

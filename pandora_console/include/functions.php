@@ -431,9 +431,7 @@ function format_for_graph ($number , $decimals = 1, $dec_point = ".", $thousands
         $number = $number/1000;
     }
 	
-	$number = $number . $shorts[$pos];
-	
-	return format_numeric ($number, $decimals); //This will actually do the rounding and the decimals
+	return format_numeric ($number, $decimals). $shorts[$pos]; //This will actually do the rounding and the decimals
 }
 
 /** 

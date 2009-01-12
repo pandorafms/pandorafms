@@ -68,7 +68,7 @@ echo "</table>";
 // ==========================
 
 echo "<h3>".__('Assigned modules')."</h3>";
-$sql1='SELECT * FROM tagente_modulo WHERE id_agente = "'.$id_agente.'"
+$sql1='SELECT * FROM tagente_modulo WHERE delete_pending = 0 AND id_agente = "'.$id_agente.'"
 ORDER BY id_module_group, nombre ';
 $result=mysql_query($sql1);
 if ($row=mysql_num_rows($result)){

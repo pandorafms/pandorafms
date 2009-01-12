@@ -95,10 +95,10 @@ $groups = get_user_groups ($config["id_user"]);
 $agents = get_group_agents (array_keys ($groups));
 
 $table->data[2][0] = '<b>'.__('Parent').'</b>';
-$table->data[2][1] = print_select ($agents, 'id_parent', $id_parent, '', get_agent_name ($id_parent, "lower"), $id_parent, true, false, false); //I use get_agent_name because the user might not have rights to the current parent
+$table->data[2][1] = print_select ($agents, 'id_parent', $id_parent, '', __('None'), 0, true, false, false); //I use get_agent_name because the user might not have rights to the current parent
 
 $table->data[3][0] = '<b>'.__('Group').'</b>';
-$table->data[3][1] = print_select ($groups, 'grupo', $grupo, '', '', 0, true, false, false);
+$table->data[3][1] = print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo WHERE id_grupo > 1 ORDER BY nombre', 'grupo', $grupo, '', '', 0, true);
 
 $table->data[4][0] = '<b>'.__('Interval').'</b>';
 $table->data[4][1] = print_input_text ('intervalo', $intervalo, '', 16, 100, true);

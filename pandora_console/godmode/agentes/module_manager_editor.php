@@ -115,6 +115,12 @@ if (($form_moduletype == "networkserver" || $form_moduletype == "wmiserver") && 
 	$form_plugin_pass = "";
 	$form_plugin_parameter = "";
 	$form_custom_id = "";
+	$form_history_data = 1;
+	$form_min_warning = 0;
+	$form_max_warning = 0;
+	$form_min_critical = 0;
+	$form_max_critical = 0;
+	$form_ff_event = 0;
 }
 
 switch ($form_moduletype) {

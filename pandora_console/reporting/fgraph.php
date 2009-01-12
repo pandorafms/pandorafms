@@ -48,6 +48,18 @@ function graphic_error () {
 }
 
 /**
+ * Return a MySQL timestamp date, formatted with actual date MINUS X minutes, 
+ *
+ * @param int Date in unix format (timestamp)
+ *
+ * @return string Formatted date string (YY-MM-DD hh:mm:ss)
+ */
+function dame_fecha ($mh) {
+	$mh *= 60;
+	return date ("Y-m-d H:i:00", time() - $mh); 
+}
+
+/**
  * Return a short timestamp data, D/M h:m
  *
  * @param int Date in unix format (timestamp)
@@ -458,9 +470,9 @@ function grafico_modulo_sparse ($id_agente_modulo, $periodo, $show_event,
 	$min_value = 0;
 
 	// Get the first data outsite (to the left---more old) of the interval given
-	$sql = sprintf ('SELECT datos FROM tagente_datos 
+	$sql = sprintf ('SELECT datos, utimestamp FROM tagente_datos 
 			WHERE id_agente_modulo = %d 
-			AND utimestamp < %d ORDER BY utimestamp DESC', $id_agente_modulo, $fechatope);
+			AND utimestamp < %d ORDER BY utimestamp DESC LIMIT 1', $id_agente, $id_agente_modulo, $fechatope);
 	$previous = (float) get_db_sql ($sql);
 	
 	$sql = sprintf ('SELECT datos,utimestamp FROM tagente_datos 
@@ -787,9 +799,9 @@ function graphic_agentaccess ($id_agent, $periodo, $width, $height) {
 		
 	}*/
 	$intervalo = 24;
-	$fechatope = get_system_time () - $periodo;
-	
-	$horasint = $periodo / $intervalo;
+	$UNIXdate = date('U');
+	$fechatope = $UNIXdate - (60*24*60);
+	$horasint = 86400 / $intervalo;
 
 	// $intervalo now stores "ideal" interval			}
 	// interval is the number of rows that will store data. more rows, more resolution
@@ -804,24 +816,25 @@ function graphic_agentaccess ($id_agent, $periodo, $width, $height) {
 	for ($i = 0; $i < $intervalo; $i++) {
 		$valores[$i][0] = 0; // [0] Valor (contador)
 		$valores[$i][1] = 0; // [0] Valor (contador)
-		$valores[$i][2] = date ("Y-m-d H:i:00", get_system_time () - ($horasint * $i)); // [2] Rango superior de fecha para ese rango
-		$valores[$i][3] = date ("Y-m-d H:i:00", get_system_time () - ($horasint * ($i+1))); // [3] Rango inferior de fecha para ese rango
+		$valores[$i][2] = $fechatope + ($horasint * $i); // [2] Rango superior de fecha para ese rango
+		$valores[$i][3] = $fechatope + ($horasint*($i+1)); // [3] Rango inferior de fecha para ese rango
 	}
-	$sql1="SELECT timestamp FROM tagent_access WHERE id_agent = ".$id_agent." and timestamp > '".date ("Y-m-d H:i:00", $fechatope)."'";
+	$sql1="SELECT utimestamp FROM tagent_access WHERE id_agent = ".$id_agent." and utimestamp > '".$fechatope."'";
 
 	$result= get_db_all_rows_sql ($sql1);
 	foreach ($result as $row) {
-		for ($i = 0; $i < $intervalo; $i++) {
-			if (($row["timestamp"] < $valores[$i][2]) and ($row["timestamp"] >= $valores[$i][3])) { 
+		for ($i = 0; $i < $intervalo; $i++){
+			if (($row["utimestamp"] > $valores[$i][2]) and ($row["utimestamp"] <= $valores[$i][3]) ){ 
 				// entra en esta fila
 				$valores[$i][0]++;
 			}
-		}
+		
+		} 
 	}
 	$valor_maximo = 0;
 	
 	for ($i = 0; $i < $intervalo; $i++) { // 30 entries in graph, one by day
-		$grafica[]=$valores[$i][0];
+		$grafica[]=$valores[$intervalo-$i][0];
 		if ($valores[$i][0] > $valor_maximo)
 			$valor_maximo = $valores[$i][0];
 	}
@@ -889,6 +902,7 @@ function graphic_string_data ($id_agent_module, $periodo, $width, $height, $pure
 		$valores[$i][3] = $fechatope + ($horasint * ($i + 1)); // [3] Botom limit
 	}
 	$sql1="SELECT utimestamp FROM tagente_datos_string WHERE id_agente_modulo = ".$id_agent_module." and utimestamp > '".$fechatope."'";
+
 	$result = get_db_all_rows_sql ($sql1);
 	
 	foreach ($result as $row) {
@@ -1797,6 +1811,7 @@ function grafico_modulo_boolean ( $id_agente_modulo, $periodo, $show_event,
 			}
 		}
 	}
+	
 	
 	$last = $previous;
 	// Calculate Average value for $valores[][0]

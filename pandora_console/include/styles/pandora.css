@@ -353,6 +353,7 @@ td.datos_id {
 .red, .redb, .redi, .error {
 	color: #f00;
 }
+
 .sep {
 	margin-left: 30px;
 	border-bottom: 1px solid #708090;
@@ -360,6 +361,9 @@ td.datos_id {
 }
 .green  {
 	color: #5a8629;
+}
+.yellow  {
+	color: #F3C500;
 }
 .greenb {
 	color: #00aa00;

@@ -60,6 +60,8 @@ $id_agent = (int) get_parameter ("id_agent", -1); //-1 all, 0 system
 $id_event = (int) get_parameter ("id_event", -1);
 $pagination = (int) get_parameter ("pagination", $config["block_size"]);
 $groups = get_user_groups ($config["id_user"], "IR");
+$event_view_hr = (int) get_parameter ("event_view_hr", $config["event_view_hr"]);
+$id_user_ack = (int) get_parameter ("id_user_ack", 0);
 
 //Group selection
 if ($ev_group > 1 && in_array ($ev_group, array_keys ($groups))) {
@@ -90,6 +92,11 @@ if ($id_agent != -1)
 	$sql_post .= " AND id_agente = ".$id_agent;
 if ($id_event != -1)
 	$sql_post .= " AND id_evento = ".$id_event;
+if ($id_user_ack  != 0)
+	$sql_post .= " AND id_usuario == '$id_user_ack' ";
+
+$unixtime = date("U") - ($event_view_hr*60*60);
+$sql_post .= " AND utimestamp > $unixtime ";
 
 $url = "index.php?sec=eventos&sec2=operation/events/events&search=$search&event_type=$event_type&severity=$severity&status=$status&ev_group=$ev_group&refr=60&id_agent=$id_agent&id_event=$id_event&pagination=$pagination";
 
@@ -104,14 +111,12 @@ if ($config["pure"] == 1) {
 echo "</h2>";
 echo '<a href="#" id="tgl_event_control"><b>'.__('Event control filter').'</b>&nbsp;'.'<img src="images/wand.png" /></a>';
 
-if ($config["pure"] == 1) {
+
 	echo '<div id="event_control" style="display:none">';
-} else {
-	echo '<div id="event_control" style="display:block">'; //There is no value all to property display
-}
+
 // Table for filter controls
 echo '<form method="post" action="index.php?sec=eventos&sec2=operation/events/events&refr=60&pure='.$config["pure"].'">';
-echo '<table style="width:500px; float:left;" cellpadding="4" cellspacing="4" class="databox"><tr>';
+echo '<table style="width:550px; float:left;" cellpadding="4" cellspacing="4" class="databox"><tr>';
 
 // Group combo
 echo "<td>".__('Group')."</td><td>";
@@ -183,8 +188,21 @@ echo "<td>";
 print_select ($lpagination, "pagination", $pagination, 'javascript:this.form.submit();', __('Default'), $config["block_size"]);
 echo "</td>";
 
+echo "<td>".__('Max. hours old')."</td>";
+echo "<td>";
+print_input_text ('event_view_hr', $event_view_hr, '', 5);
+echo "</td>";
+
+
+echo "<tr>";
+echo "<td>".__('User ack.')."</td>";
+echo "<td>";
+print_select_from_sql ("SELECT id_usuario, nombre_real FROM tusuario", "id_user_ack", $id_user_ack,'', __('Any'), '0',  false, false, true);
+echo "</td>";
+
+
 //The buttons
-echo '<td colspan="2">';
+echo '<td colspan=3>';
 print_submit_button (__('Update'), '', false, 'class="sub upd"');
 
 // CSV
@@ -198,12 +216,12 @@ echo '&nbsp;<a target="_top" href="operation/events/events_rss.php?ev_group='.$e
 
 
 echo "</td></tr></table></form>"; //This is the internal table
-echo '<div style="width:250px; float:left;"><img src="reporting/fgraph.php?tipo=group_events&width=250&height=180&url='.rawurlencode ($sql_post).'" border="0"></div>';
+echo '<div style="width:220px; float:left;"><img src="reporting/fgraph.php?tipo=group_events&width=220&height=180&url='.rawurlencode ($sql_post).'" border="0"></div>';
 echo '</div><div style="clear:both">&nbsp;</div>';
 
 $sql = "SELECT * FROM tevento WHERE 1=1 ".$sql_post." ORDER BY utimestamp DESC LIMIT ".$offset.",".$pagination;
 $result = get_db_all_rows_sql ($sql);
-$sql = "SELECT COUNT(id_evento) FROM tevento WHERE 1=1 ".$sql_post;
+$sql = "SELECT COUNT(id_evento) FROM tevento WHERE id_evento > 0 ".$sql_post;
 $total_events = get_db_sql ($sql);
 
 if (empty ($result)) {
@@ -270,11 +288,10 @@ foreach ($result as $row) {
 	
 	// Colored box
 	if ($row["estado"] == 0) {
-		$data[0] = '<img src="images/pixel_red.png" width="20" height="35" title="'.get_priority_name ($row["criticity"]).'" />';
+		$data[0] = '<img src="images/pixel_red.png" width="20" height="20" title="'.get_priority_name ($row["criticity"]).'" />';
 	} else {
-		$data[0] = '<img src="images/pixel_green.png" width="20" height="35" title="'.get_priority_name ($row["criticity"]).'" />';
+		$data[0] = '<img src="images/pixel_green.png" width="20" height="20" title="'.get_priority_name ($row["criticity"]).'" />';
 	}
-
 	
 	switch ($row["event_type"]) {
 	case "alert_recovered": 
@@ -283,12 +300,19 @@ foreach ($result as $row) {
 	case "alert_manual_validation": 
 		$data[1] = '<img src="images/eye.png" title="'.__('Manual Alert Validation').'" />';
 		break;
-	case "monitor_up":
-		$data[1] = '<img src="images/lightbulb.png" title="'.__('Monitor Up').'" />';
+	case "going_up_warning":
+		$data[1] = '<img src="images/b_yellow.png" title="'.__('Going up Warning').'" />';
 		break;
-	case "monitor_down":
-		$data[1] = '<img src="images/lightbulb_off.png" title="'.__('Monitor Down').'" />';
+	case "going_up_critical":
+		$data[1] = '<img src="images/b_red.png" title="'.__('Going up Critical').'" />';
 		break;
+	case "going_down_normal":
+		$data[1] = '<img src="images/b_green.png" title="'.__('Going to Normal').'" />';
+		break;
+	case "going_down_warning":
+		$data[1] = '<img src="images/b_yellow.png" title="'.__('Going down Warning').'" />';
+		break;
+	
 	case "alert_fired":
 		$data[1] = '<img src="images/bell.png" title="'.__('Alert Fired').'" />';
 		break;
@@ -343,7 +367,11 @@ foreach ($result as $row) {
 	$data[5] = print_group_icon ($row["id_grupo"], true);
 
 	if (!empty ($row["estado"])) {
-		$data[6] = '<a href="index.php?sec=usuario&sec2=operation/user/user_edit&ver='.$row["id_usuario"].'" title="'.dame_nombre_real ($row["id_usuario"]).'">'.substr ($row["id_usuario"],0,8).'</a>';
+		if ($row["id_usuario"] != '0' && $row["id_usuario"] != ''){
+		  $data[6] = '<a href="index.php?sec=usuario&sec2=operation/user/user_edit&ver='.$row["id_usuario"].'" title="'.dame_nombre_real ($row["id_usuario"]).'">'.substr ($row["id_usuario"],0,8).'</a>';
+		} else {
+		  $data[6]=__('System');
+		}
 	} else {
 		$data[6] = '';
 	}
@@ -388,20 +416,22 @@ if (!empty ($table->data)) {
 }
 unset ($table);
 
-echo '<div style="padding-left:30px; width:150px; float:left; line-height:17px;">';
-echo '<h3>'.__('Status').'</h3>';
-echo '<img src="images/dot_green.png" /> - '.__('Validated event');
-echo '<br />';
-echo '<img src="images/dot_red.png" /> - '.__('Not validated event');
+if ($config["pure"]== 0) {
+	echo '<div style="padding-left:30px; width:150px; float:left; line-height:17px;">';
+	echo '<h3>'.__('Status').'</h3>';
+	echo '<img src="images/dot_green.png" /> - '.__('Validated event');
+	echo '<br />';
+	echo '<img src="images/dot_red.png" /> - '.__('Not validated event');
 
-echo '</div><div style="padding-left:30px; width:150px; float:left; line-height:17px;">';
-echo '<h3>'.__('Action').'</h3>';
-echo '<img src="images/ok.png" /> - '.__('Validate event');
-echo '<br />';
-echo '<img src="images/cross.png" /> - '.__('Delete event');
-echo '<br />';
-echo '<img src="images/page_lightning.png" /> - '.__('Create incident');
-echo '</div><div style="clear:both;">&nbsp;</div>';
+	echo '</div><div style="padding-left:30px; width:150px; float:left; line-height:17px;">';
+	echo '<h3>'.__('Action').'</h3>';
+	echo '<img src="images/ok.png" /> - '.__('Validate event');
+	echo '<br />';
+	echo '<img src="images/cross.png" /> - '.__('Delete event');
+	echo '<br />';
+	echo '<img src="images/page_lightning.png" /> - '.__('Create incident');
+	echo '</div><div style="clear:both;">&nbsp;</div>';
+}
 ?>
 <script type="text/javascript" src="include/javascript/jquery.js"></script>
 <script language="JavaScript" type="text/javascript">

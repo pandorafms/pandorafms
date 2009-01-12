@@ -119,6 +119,11 @@ if (!isset ($config['date_format'])) {
 	process_sql ("INSERT INTO tconfig (token,value) VALUES ('date_format', '".$config['date_format']."')");
 }
 
+if (!isset($config["event_view_hr"])){
+	$config["event_view_hr"] = 8;
+	process_sql ("INSERT INTO tconfig (token,value) VALUES ('event_view_hr', ".$config["event_view_hr"].")");
+}
+
 if (isset ($config['homeurl']) && $config['homeurl'][0] != '/') {
 	$config['homeurl'] = '/'.$config['homeurl'];
 }

@@ -819,6 +819,7 @@ function dame_id_grupo ($id_agent) {
 	return get_agent_group ($id_agent);
 }
 
+
 /** 
  * Get the number of pandora data packets in the database. 
  *
@@ -1151,6 +1152,31 @@ function show_server_type ($id){
 		break;
 	default: return "--";
 	}
+}
+
+/** 
+ * Get a module category name
+ * 
+ * @param id_category Id category
+ * 
+ * @return Name of the given category
+ */
+function give_modulecategory_name ($id_category) {
+	switch ($id_category) {
+	case 0: 
+		return __('Software agent data');
+		break;
+	case 1: 
+		return __('Software agent monitor');
+		break;
+	case 2: 
+		return __('Network agent data');
+		break;
+	case 3: 
+		return __('Network agent monitor');
+		break;
+	}
+	return __('Unknown');
 }
 
 /** 
@@ -2028,7 +2054,7 @@ function delete_agent ($id_agents) {
 
 	foreach ($id_agents as $id_agent) {
 		$id_agent = (int) $id_agent; //Cast as integer
-		
+		$agent_name = get_agent_name ($id_agent);
 		if ($id_agent < 1)
 			continue; //If an agent is not an integer or invalid, don't process it 
 	
@@ -2040,20 +2066,17 @@ function delete_agent ($id_agents) {
 		$sql = sprintf ("SELECT id_ag FROM taddress_agent, taddress WHERE taddress_agent.id_a = taddress.id_a AND id_agent = %d", $id_agent);
 		$result = get_db_all_rows_sql ($sql);
 		
+		if ($result)
 		foreach ($result as $row) {
 			temp_sql_delete ("taddress_agent", "id_ag", $row["id_ag"]);
 		}
 		
-		//Standard data
-		temp_sql_delete ("tagente_datos", "id_agente_modulo", $tmodbase);
-                
-		//Incremental Data
-		temp_sql_delete ("tagente_datos_inc", "id_agente_modulo", $tmodbase);
-                
-		//String data
-		temp_sql_delete ("tagente_datos_string", "id_agente_modulo", $tmodbase);
-                
-                //Alert
+		// We cannot delete tagente_datos and tagente_datos_string here
+		// because it's a huge ammount of time. tagente_module has a special
+		// field to mark for delete each module of agent deleted and in 
+		// daily maintance process, all data for that modules are deleted
+		        
+        //Alert
 		temp_sql_delete ("tcompound_alert", "id_aam", "ANY(SELECT id_aam FROM talerta_agente_modulo WHERE id_agent = ".$id_agent.")");
 		temp_sql_delete ("talerta_agente_modulo", "id_agente_modulo", $tmodbase);
 		temp_sql_delete ("talerta_agente_modulo", "id_agent", $id_agent);
@@ -2076,11 +2099,23 @@ function delete_agent ($id_agents) {
 		//tagente_modulo after this
 		temp_sql_delete ("tagente_modulo", "id_agente", $id_agent);
 		
+		process_sql ('UPDATE tagente_modulo SET delete_pending = 1, disabled = 1 WHERE id_agente = '. $id_agent);
+		
 		//Access entries
 		temp_sql_delete ("tagent_access", "id_agent", $id_agent);
 
 		//And at long last, the agent
 		temp_sql_delete ("tagente", "id_agente", $id_agent);
+		
+		// Delete remote configuration
+		$agent_md5 = md5($agent_name, FALSE);
+		if (file_exists($config["remote_config"] . "/" . $agent_md5 . ".md5")) {
+		// Agent remote configuration editor
+			$file_name = $config["remote_config"] . "/" . $agent_md5 . ".conf";
+			unlink ($file_name);
+			$file_name = $config["remote_config"] . "/" . $agent_md5 . ".md5";
+			unlink ($file_name);
+		}
 	}
 
 	if ($errors > 0) {
@@ -2187,6 +2222,7 @@ function get_agent_modules_count ($id_agent = 0) {
 	$id_agent = safe_int ($id_agent, 1); //Make sure we're all int's and filter out bad stuff
 	
 	if (empty ($id_agent)) {
+		//If the array proved empty or the agent is less than 1 (eg. -1)
 		$filter = '';
 	} else {
 		$filter = sprintf (" WHERE id_agente IN (%s)", implode (",", (array) $id_agent));
@@ -2228,7 +2264,6 @@ function get_agent_group ($id_agent) {
 function get_group_name ($id_group) {
 	return (string) get_db_value ('nombre', 'tgrupo', 'id_grupo', (int) $id_group);
 }
-
 /**
  * Validates an alert id or an array of alert id's
  *

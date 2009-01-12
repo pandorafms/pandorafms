@@ -48,6 +48,7 @@ if (isset ($_GET["update_netgroup"])) {
 
 // Get group list that user has access
 $groups = get_user_groups ($config['id_user']);
+
 $groups_info = array ();
 $total_agents = 0;
 $now = get_system_time ();
@@ -64,8 +65,9 @@ foreach ($groups as $id_group => $group_name) {
 	
 	$total_agents += $agents;
 	$group_info = array ('agent' => $agents,
-			'ok' => 0,
-			'bad' => 0,
+			'normal' => 0,
+			'critical' => 0,
+			'warning' => 0,
 			'alerts' => 0,
 			'down' => 0,
 			'icon' => dame_grupo_icono ($id_group),
@@ -73,13 +75,12 @@ foreach ($groups as $id_group => $group_name) {
 			'name' => $group_name);
 	
 	// SQL Join to get monitor status for agents belong this group
-	$sql = sprintf ("SELECT tagente_estado.datos, tagente_estado.current_interval,
+	$sql = sprintf ("SELECT tagente_estado.estado, tagente_estado.current_interval,
 			tagente_estado.utimestamp
 			FROM tagente, tagente_estado, tagente_modulo 
 			WHERE tagente.disabled = 0 
 			AND tagente.id_grupo = %d 
 			AND tagente.id_agente = tagente_estado.id_agente 
-			AND tagente_estado.estado != 100
 			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 			AND tagente_modulo.disabled = 0
 			AND tagente_estado.utimestamp != 0",
@@ -88,18 +89,15 @@ foreach ($groups as $id_group => $group_name) {
 	if ($modules === false)
 		$modules = array ();
 	foreach ($modules as $module) {
-		//if ($config["show_unknown"] > 0) {
-		//this needs to be filled out somehow, but this was a serious bug. If that config var is set, it would short circuit both ok++ and bad++ returning empty for everything
-		//}
 		$seconds = $now - $module['utimestamp'];
-		// Down = module/agent down (as in it didn't monitor in time)
-		// Bad  = module bad  (as in it did monitor but it returned 0)
 		if ($seconds >= ($module['current_interval'] * 2)) {
-			$group_info["down"]++;
-		} elseif ($module['datos'] != 0) {
-			$group_info["ok"]++;
+			$group_info['down']++;
+		} elseif ($module['estado'] == 2) {
+			$group_info['warning']++;
+		} elseif ($module['estado'] == 1) {
+			$group_info['critical']++;
 		} else {
-			$group_info["bad"]++;
+			$group_info['normal']++;
 		}
 	}
 
@@ -113,7 +111,7 @@ foreach ($groups as $id_group => $group_name) {
 				AND tagente.id_agente = tagente_modulo.id_agente
 				AND talerta_agente_modulo.id_agente_modulo = tagente_modulo.id_agente_modulo",
 				$id_group);
-		$group_info["alerts"] = get_db_sql ($sql);
+		$group_info["alerts"] = 0 + get_db_sql ($sql);
 	}
 	array_push ($groups_info, $group_info);
 }
@@ -160,17 +158,21 @@ for ($table = 0; $table < $ancho; $table++) {
 		$group_name  = $group_info["name"];
 		$icono_grupo = $group_info["icon"];
 		$icono_type  = "";
-		if ($group_info["bad"] > 0) {
-			$icono_type .= '<img src="images/dot_red.png" title="'.__('Modules bad').'" />';
+		if ($group_info['critical'] > 0) {
+			$icono_type .= '<img src="images/dot_red.png" title="'.__('Modules critical').'" />';
 		}
 		
-		if ($group_info["ok"] > 0) {
-			$icono_type .= '<img src="images/dot_green.png" title="'.__('Modules OK').'" />';
+		if ($group_info["normal"] > 0) {
+			$icono_type .= '<img src="images/dot_green.png" title="'.__('Modules normal').'" />';
+		}
+		
+		if ($group_info["warning"] > 0) {
+			$icono_type .= '<img src="images/dot_yellow.png" title="'.__('Modules warning').'" />';
 		}
 			
 		// Show yellow light if there are recent alerts fired for this group
 		if ($group_info["alerts"] > 0 ) {
-			$icono_type .= '<img src="images/dot_yellow.png" title="'.__('Alerts fired').'" />';
+			$icono_type .= '<img src="images/dot_magenta.png" title="'.__('Alerts fired').'" />';
 		}
 		
 		// Show grey light if there are agent down for this group
@@ -187,22 +189,24 @@ for ($table = 0; $table < $ancho; $table++) {
 		$celda = '<td class="top" style="border: 5px solid #aeff21;" width="100">';
 		
 		// Grey border if agent down
-		if ($config["show_unknown"] > 0) {
-			if ($group_info["down"] > 0)
-				$celda = '<td class="top" style="border: 5px solid #aabbaa;" width="100">';
-		}
+		if ($group_info["down"] > 0)
+			$celda = '<td class="top" style="border: 5px solid #aabbaa;" width="100">';
 		
-		// Yellow border if agents with alerts
+		// Yellow border if agents WARNING
+		if ($group_info["warning"] > 0)
+			$celda = '<td class="top" style="border: 5px solid #FFD800;" width="100">';
+		
+		// Red border if agents CRITICAL
+		if ($group_info["critical"] > 0)
+			$celda = '<td class="top" style="border: 5px solid #FF0000;" width="100">';
+		
+		// Magenta border if agents with alerts
 		if ($group_info["alerts"] > 0)
-			$celda = '<td class="top" style="border: 5px solid #ffea00;" width="100">';
+			$celda = '<td class="top" style="border: 5px solid #F200FF;" width="100">';
 		
-		// Red border if agents bad
-		if ($group_info["bad"] > 0)
-			$celda = '<td class="top" style="border: 5px solid #ff0000;" width="100">';
-		
-		// Orange if alerts and down modules
-		if (($group_info["bad"] > 0) && ($group_info["alerts"] > 0))
-			$celda = '<td class="top" style="border: 5px solid #ffbb00;" width="100">';
+		// Black if alerts and down modules
+		if (($group_info["critical"] > 0) && ($group_info["alerts"] > 0))
+			$celda = '<td class="top" style="border: 5px solid #000000;" width="100">';
 		
 		$celda .= '<a href="index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$group_info["id_group"].'"	class="info">';
 		
@@ -210,25 +214,24 @@ for ($table = 0; $table < $ancho; $table++) {
 		$celda .= '<img class="top" src="images/groups_small/'.$icono_grupo.'.png" height="32" width="32" alt="" />';
 		
 		// Add float info table
-		$celda .= '<span><table cellspacing="2" cellpadding="0" style="margin-left:2px;">
-					<tr><th colspan="2" width="91">'.__('Agents').':</th></tr>
+		$celda .= '<span><table cellspacing="0" cellpadding="0" style="margin-left:2px; background: #ffffff;">
+					<tr><th colspan="2" width="140">'.__('Agents').':</th></tr>
 					<tr><td colspan="2" class="datos" align="center"><b>'.$group_info["agent"].'</b></td></tr>
 				</table>
-				<table cellspacing="2" cellpadding="0" style="margin-left:2px">
-					<tr><th colspan="2" width="90">'.__('Monitors').':</th></tr>
-					<tr><td class="datos"><img src="images/b_green.png" align="top" alt="" />'.__('Ok').':</td>
-					<td class="datos"><font class="greenb">'.$group_info["ok"].'</font></td></tr>
-					<tr><td class="datos"><img src="images/b_red.png" align="top" alt="" />'.__('Fail').':</td>
-					<td class="datos"><font class="redb">'.$group_info["bad"].'</font></td></tr>';
+				<table cellspacing="0" cellpadding="2" style="margin-left:2px">
+					
+					<tr><td class="datos"><img src="images/b_green.png" align="top" alt="" />'.__('Normal').'</td>
+					<td class="datos"><b>'.format_for_graph ($group_info["normal"] , 1).'</b></td></tr>
+					<tr><td class="datos"><img src="images/b_yellow.png" align="top" alt="" />'.__('Warning').'</td>
+					<td class="datos"><b>'.format_for_graph ($group_info["warning"] , 1).'</b></td></tr>
+					<tr><td class="datos"><img src="images/b_red.png" align="top" alt="" />'.__('Critical').'</td>
+					<td class="datos"><b>'.format_for_graph ($group_info["critical"] , 1).'</b></td></tr>';
 		
-		if ($config["show_unknown"] > 0) {
-			$celda .= '<tr><td class="datos"><img src="images/b_white.png" align="top" alt="" />'.__('Down').':</td>
-				<td class="datos"><font class="redb">'.$group_info["down"].'</font></td></tr>';
-		}
+			$celda .= '<tr><td class="datos"><img src="images/b_white.png" align="top" alt="" />'.__('Down').'</td>
+				<td class="datos"><b>'.format_for_graph ($group_info["down"] , 1).'</b></td></tr>';
 		
-		if ($config["show_lastalerts"] == 1)
-			$celda .= '<tr><td class="datos"><img src="images/b_yellow.png" align="top" alt="" />'.__('Alerts').':</td>
-				<td class="datos"><font class="grey">'.$group_info["alerts"].'</font></td></tr>';
+			$celda .= '<tr><td class="datos"><img src="images/b_magenta.png" align="top" alt="" />'.__('Alerts').'</td>
+				<td class="datos"><b>'.$group_info["alerts"].'</b></td></tr>';
 		
 		$celda .= "</table></span></a>";
 		

@@ -182,25 +182,22 @@ if ($agents !== false) {
 		$modules = get_db_all_rows_sql ($sql);
 		if ($modules === false)
 			$modules = array ();
-		$estado_general = 0; 
 		$numero_modulos = 0; 
-		$numero_monitor = 0; 
 		$est_timestamp = ""; 
-		$monitor_bad = 0; 
-		$monitor_ok = 0; 
+		$monitor_normal = 0; 
+		$monitor_warning = 0;
+		$monitor_critical = 0; 
 		$monitor_down = 0; 
-		$numero_datamodules = 0;
-		$estado_cambio = 0;
 		$agent_down = 0;
 		$now = get_system_time ();
 		
 		// Calculate module/monitor totals  for this agent
 		foreach ($modules as $module) {
-			$est_modulo = $module["estado"]; 
+			$numero_modulos ++;
 			$ultimo_contacto_modulo = $module["timestamp"];
 			$module_interval = $module["module_interval"];
 			$module_type = $module["id_tipo_modulo"];
-
+			
 			if ($module_interval > $biginterval)
 				$biginterval = $module_interval;
 			if ($module_interval != 0)
@@ -219,22 +216,16 @@ if ($agents !== false) {
 			// Defines if Agent is down (interval x 2 > time last contact	
 			if ($seconds >= ($intervalo_comp * 2)) { // If (intervalx2) secs. ago we don't get anything, show alert
 				$agent_down = 1;
-				if ($est_modulo != 100)
-					$numero_monitor++;
 				if ($async == 0)
 					$monitor_down++;
-			} elseif ($est_modulo != 100) { // estado=100 are data modules
-				$estado_general = $estado_general + $est_modulo;
-				$estado_cambio = $estado_cambio + $module["cambio"]; 
-				$numero_monitor ++;
-				if ($est_modulo != 0)
-					$monitor_bad++;
-				else
-					$monitor_ok++;
-			} elseif ($est_modulo == 100) { // Data modules
-				$numero_datamodules++;
+			} else{
+				if ($module["estado"] == 2) 
+					$monitor_warning ++;
+				elseif ($module["estado"]== 1) 
+					$monitor_critical ++;
+				else 
+					$monitor_normal ++;
 			}
-			$numero_modulos++;
 		}
 		// Color change for each line (1.2 beta2)
 		if ($color == 1){
@@ -271,44 +262,41 @@ if ($agents !== false) {
 
 		// Show GROUP icon
 		echo '<td class="'.$tdcolor.'" align="center">';
+		echo "<a  href='index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=$id_grupo'>";
+		echo print_group_icon ($id_grupo);
+		//echo '&nbsp;(<b>';
+		//echo get_group_name ($id_grupo);
+		//echo "</b>)";
+		echo "</A>";
 
-		echo "<a href='index.php?sec=estado&sec2=operation/agentes/estado_agente&refr=60&group_id=$id_grupo'>";
-		print_group_icon ($id_grupo);
 
-		echo "<td class='$tdcolor'> ".
-		$numero_modulos." <b>/</b> ".$numero_monitor;
-		if ($monitor_bad != 0) {
-			echo " <b>/</b> <span class='red'>".$monitor_bad."</span>";
-		}
-		if ($monitor_down != 0){
-			echo " <b>/</b> <span class='grey'>".$monitor_down."</span>";
-		}
+		echo "<td class='$tdcolor'><b>".$numero_modulos." : ";
+		if ($monitor_normal >  0)
+			echo " <span class='green'>".$monitor_normal."</span>";
+		if ($monitor_warning >  0)
+			echo " <span class='yellow'>".$monitor_warning."</span>";
+		if ($monitor_critical >  0)
+			echo " <span class='red'>".$monitor_critical."</span>";
+		if ($monitor_down >  0)
+			echo " <span class='grey'>".$monitor_down."</span>";
 		echo "</td>";
 		
 		echo "<td class='$tdcolor' align='center'>";
-		if ($numero_monitor != 0){
-			if ($estado_general != 0){
-				if ($estado_cambio == 0){
-					echo '<img src="images/pixel_red.png" width="40" height="18" title="'.__('At least one monitor fails').'" />';
-				} else {
-					echo '<img src="images/pixel_yellow.png" width="40" height="18" title="'.__('Change between Green/Red state').'" />';
-				}
-			} elseif ($monitor_ok > 0) {
-				echo '<img src="images/pixel_green.png" width="40" height="18" title="'.__('All Monitors OK').'" />';
-			} elseif ($monitor_down > 0) {
+		if ($numero_modulos > 0){
+			if ($agent_down > 0) {
 				echo '<img src="images/pixel_fucsia.png" width="40" height="18" title="'.__('Agent down').'" />';
-			} elseif ($numero_datamodules == 0) {
-				echo '<img src="images/pixel_blue.png" width="40" height="18" title="'.__('Agent without data').'" />';
 			}
-		} else {
-			if ($agent_down && $numero_datamodules == 0) {
-				echo '<img src="images/pixel_fucsia.png" width="40" height="18" title="'.__('Agent down').'" />';
-			} elseif ($numero_datamodules == 0) {
-				echo '<img src="images/pixel_blue.png" width="40" height="18" title="'.__('Agent without data').'" />';
+			elseif ($monitor_critical > 0){
+					echo '<img src="images/pixel_red.png" width="40" height="18" title="'.__('At least one module in CRITICAL status').'" />';
+			} elseif ($monitor_warning > 0) {
+					echo '<img src="images/pixel_yellow.png" width="40" height="18" title="'.__('At least one module in WARNING status').'" />';
 			} else {
-				echo '<img src="images/pixel_gray.png" width="40" height="18" title="'.__('Agent without monitors').'" />';
-			}
+				echo '<img src="images/pixel_green.png" width="40" height="18" title="'.__('All Monitors OK').'" />';
+			} 
+		} else {
+			  echo '<img src="images/pixel_blue.png" width="40" height="18" title="'.__('Agent without data').'" />';
 		}
+		
 		// checks if an alert was fired recently
 		echo "<td class='$tdcolor' align='center'>";
 		if (give_disabled_group ($id_grupo)) {

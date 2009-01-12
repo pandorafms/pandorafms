@@ -866,6 +866,10 @@ if (isset ($_GET["delete_module"])){ // DELETE agent module !
 	if (process_sql ("DELETE FROM tagente_estado WHERE id_agente_modulo = ".$id_borrar_modulo) === false)
 		$error++;
 
+	if (process_sql ("DELETE FROM tagente_datos_inc WHERE id_agente_modulo = ".$id_borrar_modulo) === false)
+		$error++;
+	
+
 	//Check for errors
 	if ($error != 0) {
 		echo '<h3 class="error">'.__('There was a problem deleting the module').'</h3>'; 

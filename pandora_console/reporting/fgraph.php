@@ -813,7 +813,7 @@ function graphic_agentaccess ($id_agent, $periodo, $width, $height) {
 	// esto acelera el tiempo de calculo al maximo, aunque complica el algoritmo :-)
 	
 	// Creamos la tabla (array) con los valores para el grafico. Inicializacion
-	for ($i = 0; $i < $intervalo; $i++) {
+	for ($i = 0; $i <= $intervalo; $i++) {
 		$valores[$i][0] = 0; // [0] Valor (contador)
 		$valores[$i][1] = 0; // [0] Valor (contador)
 		$valores[$i][2] = $fechatope + ($horasint * $i); // [2] Rango superior de fecha para ese rango
@@ -834,7 +834,7 @@ function graphic_agentaccess ($id_agent, $periodo, $width, $height) {
 	$valor_maximo = 0;
 	
 	for ($i = 0; $i < $intervalo; $i++) { // 30 entries in graph, one by day
-		$grafica[]=$valores[$intervalo-$i][0];
+		$grafica[]=$valores[$intervalo-$i-1][0];
 		if ($valores[$i][0] > $valor_maximo)
 			$valor_maximo = $valores[$i][0];
 	}

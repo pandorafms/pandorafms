@@ -2169,18 +2169,23 @@ function delete_agent ($id_agents) {
 		//Access entries
 		temp_sql_delete ("tagent_access", "id_agent", $id_agent);
 
+		//tagente_datos_inc
+                temp_sql_delete ("tagente_datos_inc", "id_agente_modulo", $tmodbase);
+
 		//And at long last, the agent
 		temp_sql_delete ("tagente", "id_agente", $id_agent);
 		
 		// Delete remote configuration
 		$agent_md5 = md5($agent_name, FALSE);
-		if (file_exists($config["remote_config"] . "/" . $agent_md5 . ".md5")) {
-		// Agent remote configuration editor
-			$file_name = $config["remote_config"] . "/" . $agent_md5 . ".conf";
-			unlink ($file_name);
-			$file_name = $config["remote_config"] . "/" . $agent_md5 . ".md5";
-			unlink ($file_name);
-		}
+
+		if (isset($config["remote_config"]))
+			if (file_exists($config["remote_config"] . "/" . $agent_md5 . ".md5")) {
+				// Agent remote configuration editor
+				$file_name = $config["remote_config"] . "/" . $agent_md5 . ".conf";
+				unlink ($file_name);
+				$file_name = $config["remote_config"] . "/" . $agent_md5 . ".md5";
+				unlink ($file_name);
+			}
 	}
 
 	if ($errors > 0) {

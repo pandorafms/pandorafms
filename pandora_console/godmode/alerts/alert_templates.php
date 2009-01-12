@@ -56,7 +56,7 @@ if (defined ('AJAX')) {
 			break;
 		case 'max':
 		case 'max_min':
-			echo '<strong>'.__('Max. value').':</strong> ';
+			echo '<strong>'.__('Max. Value').':</strong> ';
 			echo format_numeric ($template['max_value']);
 			echo '<br />';
 			
@@ -64,7 +64,7 @@ if (defined ('AJAX')) {
 			if ($template['type'] == 'max')
 				break;
 		case 'min':
-			echo '<strong>'.__('Min. value').':</strong> ';
+			echo '<strong>'.__('Min. Value').':</strong> ';
 			echo format_numeric ($template['min_value']);
 			echo '<br />';
 		}

@@ -239,8 +239,8 @@ function get_alert_templates_types () {
 	
 	$types['regex'] = __('Regular expression');
 	$types['max_min'] = __('Max and min');
-	$types['max'] = __('Max');
-	$types['min'] = __('Min');
+	$types['max'] = __('Max.');
+	$types['min'] = __('Min.');
 	$types['equal'] = __('Equal to');
 	$types['not_equal'] = __('Not equal to');
 	

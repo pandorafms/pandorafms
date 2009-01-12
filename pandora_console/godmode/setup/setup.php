@@ -75,14 +75,14 @@ if ($update_settings) {
 	process_sql ("UPDATE tconfig SET VALUE='".$config["event_view_hr"]."' WHERE token = 'event_view_hr'");
 }
 
-echo "<h2>".__('Pandora Setup')." &gt; ";
+echo "<h2>".__('Setup')." &gt; ";
 echo __('General configuration')."</h2>";
 
 $file_styles = list_files('include/styles/', "pandora", 1, 0);
 
 $table->width = '90%';
 $table->data = array ();
-$table->data[0][0] = __('Language Code for Pandora');
+$table->data[0][0] = __('Language code for Pandora');
 $table->data[0][1] = print_select_from_sql ('SELECT id_language, name FROM tlanguage', 'language_code', $config["language"], '', '', '', true);
 
 $table->data[1][0] = __('Date format string') . pandora_help("date_format", true);

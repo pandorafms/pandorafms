@@ -430,10 +430,10 @@ if ($step == 2) {
 			'title' => __('The regular expression is not valid')));
 	$table->data['value'][1] .= '</span>';
 
-	$table->data['max'][0] = __('Max');
+	$table->data['max'][0] = __('Max.');
 	$table->data['max'][1] = print_input_text ('max', $max, '', 5, 255, true);
 
-	$table->data['min'][0] = __('Min');
+	$table->data['min'][0] = __('Min.');
 	$table->data['min'][1] = print_input_text ('min', $min, '', 5, 255, true);
 }
 

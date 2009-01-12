@@ -1,5 +1,11 @@
 2009-01-12  Sancho Lerena <slerena@artica.es>
 
+	* Makefile.PL: Path to libs was wrong. Fixed.
+	
+	* pandora_db.pl: Fixed small bug.
+
+2009-01-12  Sancho Lerena <slerena@artica.es>
+
 	This is a MAJOR upgrade that _BREAK_ your current 2.1 trunk version.
 	Needs an upgrade of DB Schema. At this time no conversion tool has been
 	provided. Libs and console needs also to be re-deployed.

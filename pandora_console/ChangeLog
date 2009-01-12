@@ -1,3 +1,14 @@
+2009-01-12  Sancho Lerena <lsrena@artica.es>
+
+	* functions_db.php, 
+	* godmode/agentes/configurar_agente.php: Delete module deletes 
+	tagent_data_inc record (it's a very small table).
+
+	* reporting/fgraph.php: Fixed small problem in tagent_access graph.
+
+	* pandoradb_migrate_20_to_21.sql: DB Schema migration script. Not
+	finished (not convert old data, only add/remove structures).
+
 2009-01-12  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	include/help/en/help_alert-matches.php,
@@ -109,6 +120,7 @@
 	operation/reporting/reporting_viewer.php, 
 	godmode/agentes/manage_config.php: Style correction.
 
+>>>>>>> .r1336
 2009-01-12  Sancho Lerena  <slerena@artica.es>
 
 	* pandoradb.sql: Removed fields "timestamp" and "id_agente" (and altered

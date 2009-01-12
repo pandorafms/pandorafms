@@ -20,7 +20,6 @@ if ((include_once ('XML/RPC.php')) != 1)
 error_reporting ($prev_level);
 unset ($prev_level);
 
-
 define ('XMLRPC_DEBUG', 0);
 define ('XMLRPC_TIMEOUT', 15);
 

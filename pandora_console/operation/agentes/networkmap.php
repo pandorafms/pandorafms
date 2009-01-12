@@ -15,8 +15,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
-
 // Load global vars
 require("include/config.php");
 
@@ -368,7 +366,6 @@ if ($result !== false) {
 ?>
 
 <link rel="stylesheet" href="include/styles/cluetip.css" type="text/css" />
-<script type="text/javascript" src="include/javascript/jquery.js"></script>
 <script type="text/javascript" src="include/javascript/jquery.js"></script>
 <script type="text/javascript" src="include/javascript/jquery.cluetip.js"></script>
 

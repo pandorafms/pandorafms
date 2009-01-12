@@ -51,7 +51,7 @@ $user_key = get_user_key ($settings);
 $update_package = (bool) get_parameter_post ('update_package');
 
 if ($update_package) {
-	echo '<h2>Updating...</h2>';
+	echo '<h2>'.__('Updating').'...</h2>';
 	flush ();
 	$force = (bool) get_parameter_post ('force_update');
 	

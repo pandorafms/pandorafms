@@ -21,6 +21,8 @@
 
 check_login ();
 
+require_once ('include/functions_custom_graphs.php');
+
 $delete_graph = (bool) get_parameter ('delete_graph');
 $view_graph = (bool) get_parameter ('view_graph');
 $id = (int) get_parameter ('id');
@@ -82,7 +84,6 @@ if ($view_graph) {
 		if ($stacked == -1)
 			$stacked = $graph["stacked"];
 		
-
 		$name = $graph["name"];
 		if (($graph["private"]==1) && ($graph["id_user"] != $id_user)){
 			audit_db($config['id_user'],$REMOTE_ADDR, "ACL Violation","Trying to access to a custom graph not allowed");
@@ -90,29 +91,11 @@ if ($view_graph) {
 			exit;
 		}
 		
-		$sql2="SELECT * FROM tgraph_source WHERE id_graph = $id";
-		$res2=mysql_query($sql2);
-		while ($graph_source = mysql_fetch_array($res2)) {
-			$weight = $graph_source["weight"];
-			$id_agent_module = $graph_source["id_agent_module"];
-			$id_grupo = get_db_sql ("SELECT id_grupo FROM tagente, tagente_modulo WHERE tagente_modulo.id_agente_modulo = $id_agent_module AND tagente.id_agente = tagente_modulo.id_agente");
-			if (give_acl($config["id_user"], $id_grupo, "AR")==1){
-				if (!isset($modules)){
-					$modules = $id_agent_module;
-					$weights = $weight;
-				} else {
-					$modules = $modules.",".$id_agent_module;
-					$weights = $weights.",".$weight;
-				}
-			}
-		}
 		echo "<h2>".__('Reporting')." &gt; ";
 		echo __('Combined image render')."</h2>";
 		echo "<table class='databox_frame' cellpadding=0 cellspacing=0>";
 		echo "<tr><td>";
-		echo "<img 
-src='reporting/fgraph.php?tipo=combined&height=$height&width=$width&id=$modules&period=$period&weight_l=$weights&stacked=$stacked' 
-border=1 alt=''>";
+		print_custom_graph ($id, $height, $width, $period, $stacked);
 		echo "</td></tr></table>";
 		$period_label = human_time_description ($period);
 		echo "<form method='POST' action='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=$id'>";
@@ -120,18 +103,9 @@ border=1 alt=''>";
 		echo "<tr><td class='datos'>";
 		echo "<b>".__('Period')."</b>";
 		echo "<td class='datos'>";
-		$periods = array ();
-		$periods[1] = __('1 hour');
-		$periods[2] = '2 '.__('hours');
-		$periods[3] = '3 '.__('hours');
-		$periods[6] = '6 '.__('hours');
-		$periods[12] = '12 '.__('hours');
-		$periods[24] = __('1 day');
-		$periods[48] = __('2 days');
-		$periods[360] = __('1 week');
-		$periods[720] = __('1 month');
-		$periods[4320] = __('6 months');
-		print_select ($periods, 'period', intval ($period / 3600), '', '', 0);
+		
+		print_select (get_custom_graph_periods (), 'period', intval ($period / 3600),
+			'', '', 0, false, false, false);
 
 		echo "<td class='datos'>";
 		$stackeds = array ();
@@ -158,43 +132,35 @@ border=1 alt=''>";
 echo "<h2>" . __('Reporting') . " &gt; ";
 echo __('Custom graph viewer') . "</h2>";
 
-$color=1;
-$sql="SELECT * FROM tgraph ORDER by name";
-$res=mysql_query($sql);
-if (mysql_num_rows($res)) {
-	echo "<table width='500' cellpadding=4 cellpadding=4 class='databox_frame'>";
-	echo "<tr>
-		<th>".__('Graph name')."</th>
-		<th>".__('Description')."</th>
-		<th>".__('View')."</th>";
+$graphs = get_user_custom_graphs ();
+if (! empty ($graphs)) {
+	$table->width = '500px';
+	$tale->class = 'databox_frame';
+	$table->align = array ();
+	$table->align[2] = 'center';
+	$table->head = array ();
+	$table->head[0] = __('Graph name');
+	$table->head[1] = __('Description');
 	if (give_acl ($config['id_user'], 0, "AW"))
-		echo "<th>".__('Delete')."</th>";
-	echo "</tr>";
-
-	while ($graph = mysql_fetch_array($res)){
-		if (($graph["private"] == 0) || ($graph["id_user"] == $id_user)) {
-			// Calculate table line color
-			if ($color == 1){
-				$tdcolor = "datos";
-				$color = 0;
-			}
-			else {
-				$tdcolor = "datos2";
-				$color = 1;
-			}
-			echo "<tr>";
-			echo "<td valign='top' class='$tdcolor'>".$graph["name"]."</td>";
-			echo "<td class='$tdcolor'>".$graph["description"]."</td>";
-			$id =  $graph["id_graph"];
-			echo "<td valign='middle' class='$tdcolor' align='center'><a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id=$id'><img src='images/images.png'></a>";
-			
-			if (give_acl ($config['id_user'], 0, "AW")) {
-				echo "<td class='$tdcolor' align='center'><a href='index.php?sec=reporting&sec2=operation/reporting/graph_viewer&delete_graph=1&id=$id' ".'onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">';
-				echo "<img src='images/cross.png'></a></td>";
-			}
+		$table->head[2] = __('Delete');
+	$table->data = array ();
+	
+	foreach ($graphs as $graph) {
+		$data = array ();
+		
+		$data[0] = '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.
+			$graph['id_graph'].'">'.$graph['name'].'</a>';
+		$data[1] = $graph["description"];
+		
+		if (give_acl ($config['id_user'], 0, "AW")) {
+			$data[2] = '<a href="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&delete_graph=1&id='
+				.$graph['id_graph'].'" onClick="if (!confirm(\''.__('Are you sure?').'\'))
+					return false;"><img src="images/cross.png" /></a>';
 		}
+		
+		array_push ($table->data, $data);
 	}
-	echo "</table>";
+	print_table ($table);
 } else {
 	echo "<div class='nf'>".__('There are no defined reportings')."</div>";
 }

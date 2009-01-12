@@ -5,8 +5,9 @@
 // Please see http://pandora.sourceforge.net for full contribution list
 
 // This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
+// modify it under the terms of the GNU Lesser General Public License (LGPL)
 // as published by the Free Software Foundation for version 2.
+// 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -41,24 +42,24 @@ function get_incidents_priorities () {
  */
 function print_incidents_priority_img ($id_priority, $return = false) {
 	switch ($id_priority) {
-		case 0:
-			$img = '<img src="images/dot_green.png" /><img src="images/dot_green.png" /><img src="images/dot_yellow.png" />';
-			break;
-		case 1:
-			$img = '<img src="images/dot_green.png" /><img src="images/dot_yellow.png" /><img src="images/dot_yellow.png" />';
-			break;
-		case 2:
-			$img = '<img src="images/dot_yellow.png" /><img src="images/dot_yellow.png" /><img src="images/dot_red.png" />';
-			break;
-		case 3:
-			$img = '<img src="images/dot_yellow.png" /><img src="images/dot_red.png" /><img src="images/dot_red.png" />';
-			break;
-		case 4:
-			$img = '<img src="images/dot_red.png" /><img src="images/dot_red.png" /><img src="images/dot_red.png" />';
-			break;
-		case 10:
-			$img = '<img src="images/dot_green.png" /><img src="images/dot_green.png" /><img src="images/dot_green.png" />';
-			break;
+	case 0:
+		$img = '<img src="images/dot_green.png" /><img src="images/dot_green.png" /><img src="images/dot_yellow.png" />';
+		break;
+	case 1:
+		$img = '<img src="images/dot_green.png" /><img src="images/dot_yellow.png" /><img src="images/dot_yellow.png" />';
+		break;
+	case 2:
+		$img = '<img src="images/dot_yellow.png" /><img src="images/dot_yellow.png" /><img src="images/dot_red.png" />';
+		break;
+	case 3:
+		$img = '<img src="images/dot_yellow.png" /><img src="images/dot_red.png" /><img src="images/dot_red.png" />';
+		break;
+	case 4:
+		$img = '<img src="images/dot_red.png" /><img src="images/dot_red.png" /><img src="images/dot_red.png" />';
+		break;
+	case 10:
+		$img = '<img src="images/dot_green.png" /><img src="images/dot_green.png" /><img src="images/dot_green.png" />';
+		break;
 	}
 	
 	if ($return === false) {

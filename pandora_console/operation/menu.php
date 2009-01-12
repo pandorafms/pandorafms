@@ -39,7 +39,6 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	$sub["operation/agentes/estado_grupo"]["refr"] = 60;
 	
 	$sub["operation/agentes/networkmap"]["text"] = __('Network Map');
-	$sub["operation/agentes/networkmap"]["refr"] = 0;
 	
 	$sub["operation/agentes/estado_agente"]["text"] = __('Agent detail');
 	$sub["operation/agentes/estado_agente"]["refr"] = 60;
@@ -88,7 +87,7 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	$menu["estado_server"]["id"] = "oper-servers";
 	//End of server view
 }
-				
+
 enterprise_hook ('inventory_menu');
 
 //Incidents
@@ -100,10 +99,8 @@ if (give_acl ($config['id_user'], 0, "IR") == 1) {
 	
 	$sub = array ();
 	$sub["operation/incidents/incident_search"]["text"] = __('Search incidents');
-	$sub["operation/incidents/incident_search"]["refr"] = 0;
 	
 	$sub["operation/incidents/incident_statistics"]["text"] = __('Statistics');
-	$sub["operation/incidents/incident_statistics"]["refr"] = 0;
 	
 	$menu["incidencias"]["sub"] = $sub;
 }
@@ -118,40 +115,33 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	
 	$sub = array ();
 	$sub["operation/events/event_statistics"]["text"] = __('Statistics');
-	$sub["operation/events/event_statistics"]["refr"] = 0;
 	
 	//RSS
 	$sub["operation/events/events_rss.php"]["text"] = __('RSS');
-	$sub["operation/events/events_rss.php"]["refr"] = 0;
 	$sub["operation/events/events_rss.php"]["type"] = "direct";
 	
 	//CSV
 	$sub["operation/events/export_csv.php"]["text"] = __('CSV File');
-	$sub["operation/events/export_csv.php"]["refr"] = 0;
 	$sub["operation/events/export_csv.php"]["type"] = "direct";
 	
 	//Marquee
 	$sub["operation/events/events_marquee.php"]["text"] = __('Marquee');
-	$sub["operation/events/events_marquee.php"]["refr"] = 0;
 	$sub["operation/events/events_marquee.php"]["type"] = "direct";
 	
 	$menu["eventos"]["sub"] = $sub;
 	
 	// Users
 	$menu["usuarios"]["text"] = __('View users');
-	$menu["usuarios"]["refr"] = 0;
 	$menu["usuarios"]["sec2"] = "operation/users/user";
 	$menu["usuarios"]["id"] = "oper-users";
 	
 	$sub = array ();
 	$sub["operation/users/user_edit"]["text"] = __('Edit my user');
-	$sub["operation/users/user_edit"]["refr"] = 0;
 	$sub["operation/users/user_edit"]["options"]["name"] = "ver";
 	$sub["operation/users/user_edit"]["options"]["value"] = $config["id_user"];
 	
 	if (give_acl ($config["id_user"], 0, "UM")) {
 		$sub["operation/users/user_statistics"]["text"] = __('Statistics');
-		$sub["operation/users/user_statistics"]["refr"] = 0;
 	}
 	
 	$menu["usuarios"]["sub"] = $sub;
@@ -171,7 +161,6 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	
 	$sub = array ();
 	$sub["operation/messages/message"]["text"] = __('Messages to groups');
-	$sub["operation/messages/message"]["refr"] = 0;
 	$sub["operation/messages/message"]["options"]["name"] = "nuevo_g";
 	$sub["operation/messages/message"]["options"]["value"] = 1;
 	
@@ -179,23 +168,19 @@ if (give_acl ($config['id_user'], 0, "AR")) {
 	
 	// Reporting
 	$menu["reporting"]["text"] = __('Reporting');
-	$menu["reporting"]["refr"] = 0;
 	$menu["reporting"]["sec2"] = "operation/reporting/custom_reporting";
 	$menu["reporting"]["id"] = "oper-reporting";
 	
 	$sub = array ();
 	$sub["operation/reporting/custom_reporting"]["text"] = __('Custom reporting');
-	$sub["operation/reporting/custom_reporting"]["refr"] = 0;
 
 	$sub["operation/reporting/graph_viewer"]["text"] = __('Custom graphs');	
-	$sub["operation/reporting/graph_viewer"]["refr"] = 0;
 	
 	$menu["reporting"]["sub"] = $sub;
 	
 	// Extensions menu additions
 	if (is_array ($config['extensions'])) {
 		$menu["extensions"]["text"] = __('Extensions');
-		$menu["extensions"]["refr"] = 0;
 		$menu["extensions"]["sec2"] = "operation/extensions";
 		$menu["extensions"]["id"] = "oper-extensions";
 		

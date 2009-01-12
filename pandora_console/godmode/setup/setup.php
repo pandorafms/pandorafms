@@ -80,13 +80,14 @@ echo __('General configuration')."</h2>";
 
 $file_styles = list_files('include/styles/', "pandora", 1, 0);
 
-$table->width = '500px';
+$table->width = '90%';
 $table->data = array ();
 $table->data[0][0] = __('Language Code for Pandora');
 $table->data[0][1] = print_select_from_sql ('SELECT id_language, name FROM tlanguage', 'language_code', $config["language"], '', '', '', true);
 
 $table->data[1][0] = __('Date format string') . pandora_help("date_format", true);
-$table->data[1][1] = print_input_text ('date_format', $config["date_format"], '', 30, 100, true);
+$table->data[1][1] = '<em>'.__('Example').'</em> '.date ($config["date_format"]);
+$table->data[1][1] .= print_input_text ('date_format', $config["date_format"], '', 30, 100, true);
 
 $table->data[2][0] = __('Remote config directory');
 $table->data[2][1] = print_input_text ('remote_config', $config["remote_config"], '', 30, 100, true);
@@ -150,7 +151,6 @@ echo '</form>';
 ?>
 
 <link rel="stylesheet" href="include/styles/color-picker.css" type="text/css" />
-<script type="text/javascript" src="include/javascript/jquery.js"></script>
 <script type="text/javascript" src="include/javascript/jquery.colorpicker.js"></script>
 <script language="javascript" type="text/javascript">
 $(document).ready (function () {

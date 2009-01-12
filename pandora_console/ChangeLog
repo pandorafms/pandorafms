@@ -1,3 +1,20 @@
+2009-01-12  Sancho Lerena  <slerena@artica.es>
+
+      * include/functions_db.php: Data from tagente_datos, tagente_datos_inc 
+      and tagente_datos_string is not deleted because it's a lot time 
+      consuming to do in interactive console.
+
+      * operation/agentes/estado_generalagente.php: Do not shown total
+      count of packets per agent, it's a time consuming operation.
+
+      * reporting/fgraph.php: Tagent access is now generated using unix	
+      time instead strings, much more efficient.
+    
+      * godmode/agentes/configurar_agente.php: Deletion of a module
+      dont delete data anyore.
+
+      * godmode/agentes/agent_manager.php: Group ALL is not shown anymore.
+
 2009-01-05  Jorge Gonzalez  <jorgegonz@artica.es>
 
 	* include/languages/es.po, include/languages/es.mo: Updated Spanish

@@ -113,19 +113,8 @@ echo '<img class="bot" src="images/groups_small/'.show_icon_group($id_grupo).'.p
 echo '<tr><td class="datos2"><b>'.__('Agent Version'). '</b>';
 echo '<td class="datos2" colspan=2>'.salida_limpia($agent_version). '</td>';
 
-// Total packets
-echo '<tr><td class="datos"><b>'. __('Total packets'). '</b></td>';
-echo '<td class="datos" colspan=2>';
-$total_paketes= 0;
-$sql_3='SELECT COUNT(*) FROM tagente_datos WHERE id_agente = '.$id_agente;
-$result_3=mysql_query($sql_3);
-$row3=mysql_fetch_array($result_3);
-$total_paketes = $row3[0];
-echo $total_paketes;
-echo '</td></tr>';
-
 // Last contact
-echo '<tr><td class="datos2f9"><b>'.__('Last contact')." / ".__('Remote').'</b></td><td class="datos2 f9" colspan="2">';
+echo '<tr><td class="datos f9"><b>'.__('Last contact')." / ".__('Remote').'</b></td><td class="datos f9" colspan="2">';
 
 if ($ultima_act == "0000-00-00 00:00:00"){ 
 	echo __('Never');
@@ -158,8 +147,8 @@ if ($row_maxi=mysql_fetch_array($result_maxi))
 	} else {
 		$percentil = -1;
 	}
-	echo "<tr><td class='datos'><b>".__('Next agent contact')."</b>
-		<td class='datosf9' colspan=2>
+	echo "<tr><td class='datos2'><b>".__('Next agent contact')."</b>
+		<td class='datos2 f9' colspan=2>
 		<img src='reporting/fgraph.php?tipo=progress&percent=".$percentil."&height=20&width=200'>
 		</td></tr></table>
 

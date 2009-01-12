@@ -2267,14 +2267,14 @@ function delete_agent ($id_agents) {
 			temp_sql_delete ("taddress_agent", "id_ag", $row["id_ag"]);
 		}
 		
-		//Standard data
-		temp_sql_delete ("tagente_datos", "id_agente_modulo", $tmodbase);
-                
+		// Data from tagente_datos, tagente_datos_inc and tagente_datos_string
+		// is not deleted because it's a lot time consuming to do in 
+		// interactive console. Next version implement a mark-up mechanism to
+		// delete in daily maintance. In this version just left in database and
+		// Wait to be deleted when get too old
+		
 		//Incremental Data
 		temp_sql_delete ("tagente_datos_inc", "id_agente_modulo", $tmodbase);
-                
-		//String data
-		temp_sql_delete ("tagente_datos_string", "id_agente_modulo", $tmodbase);
                 
                 //Alert
 		temp_sql_delete ("tcompound_alert", "id_aam", "ANY(SELECT id_aam FROM talerta_agente_modulo WHERE id_agent = ".$id_agent.")");

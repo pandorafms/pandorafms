@@ -109,7 +109,7 @@ print_select_from_sql ('SELECT id_agente, nombre FROM tagente ORDER BY nombre',
 
 echo '<tr><td class="datos"><b>'.__('Group').'</b>';
 echo '<td class="datos">';
-print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo ORDER BY nombre',
+print_select_from_sql ('SELECT id_grupo, nombre FROM tgrupo WHERE id_grupo > 1 ORDER BY nombre',
 			'grupo', $grupo, '', '', '');
 
 echo "<tr><td class='datos2'>";

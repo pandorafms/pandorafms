@@ -803,8 +803,9 @@ function graphic_agentaccess ($id_agent, $periodo, $width, $height) {
 		
 	}*/
 	$intervalo = 24;
-	$fechatope = dame_fecha($periodo);
-	$horasint = $periodo / $intervalo;
+	$UNIXdate = date('U');
+	$fechatope = $UNIXdate - (60*24*60);
+	$horasint = 86400 / $intervalo;
 
 	// $intervalo now stores "ideal" interval			}
 	// interval is the number of rows that will store data. more rows, more resolution
@@ -816,27 +817,28 @@ function graphic_agentaccess ($id_agent, $periodo, $width, $height) {
 	// esto acelera el tiempo de calculo al maximo, aunque complica el algoritmo :-)
 	
 	// Creamos la tabla (array) con los valores para el grafico. Inicializacion
-	for ($i = 0; $i <$intervalo; $i++) {
+	for ($i = 0; $i <= $intervalo; $i++) {
 		$valores[$i][0] = 0; // [0] Valor (contador)
 		$valores[$i][1] = 0; // [0] Valor (contador)
-		$valores[$i][2] = dame_fecha($horasint * $i); // [2] Rango superior de fecha para ese rango
-		$valores[$i][3] = dame_fecha($horasint*($i+1)); // [3] Rango inferior de fecha para ese rango
+		$valores[$i][2] = $fechatope + ($horasint * $i); // [2] Rango superior de fecha para ese rango
+		$valores[$i][3] = $fechatope + ($horasint*($i+1)); // [3] Rango inferior de fecha para ese rango
 	}
-	$sql1="SELECT * FROM tagent_access WHERE id_agent = ".$id_agent." and timestamp > '".$fechatope."'";
+	$sql1="SELECT utimestamp FROM tagent_access WHERE id_agent = ".$id_agent." and utimestamp > '".$fechatope."'";
 
-	$result=mysql_query($sql1);
-	while ($row=mysql_fetch_array($result)){
+	$result= get_db_all_rows_sql ($sql1);
+	foreach ($result as $row) {
 		for ($i = 0; $i < $intervalo; $i++){
-			if (($row["timestamp"] < $valores[$i][2]) and ($row["timestamp"] >= $valores[$i][3]) ){ 
+			if (($row["utimestamp"] > $valores[$i][2]) AND ($row["utimestamp"] <= $valores[$i][3]) ){ 
 				// entra en esta fila
 				$valores[$i][0]++;
 			}
-		} 
 		
+		} 
 	}
 	$valor_maximo = 0;
+	
 	for ($i = 0; $i < $intervalo; $i++) { // 30 entries in graph, one by day
-		$grafica[]=$valores[$i][0];
+		$grafica[]=$valores[$intervalo-$i][0];
 		if ($valores[$i][0] > $valor_maximo)
 			$valor_maximo = $valores[$i][0];
 	}
@@ -851,8 +853,7 @@ function graphic_agentaccess ($id_agent, $periodo, $width, $height) {
 	$Graph->add(
 	Image_Graph::vertical(
 		Image_Graph::factory('title', array("", 2)),
-		$Plotarea = Image_Graph::factory('plotarea'),
-		0)
+		$Plotarea = Image_Graph::factory('plotarea'),0)
 	);
 	// Create the dataset
 	// Merge data into a dataset object (sancho)

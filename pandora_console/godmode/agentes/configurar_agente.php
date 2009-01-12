@@ -849,12 +849,11 @@ if (isset ($_GET["delete_module"])){ // DELETE agent module !
 	
 	if (process_sql ("DELETE FROM tagente_estado WHERE id_agente_modulo = ".$id_borrar_modulo) === false)
 		$error++;
-	
-	if (process_sql ("DELETE FROM tagente_datos WHERE id_agente_modulo = ".$id_borrar_modulo) === false)
-		$error++;
-	
-	if (process_sql ("DELETE FROM tagente_datos_string WHERE id_agente_modulo = ".$id_borrar_modulo) === false)
-		$error++;
+	// Data from tagente_datos, tagente_datos_inc and tagente_datos_string
+	// is not deleted because it's a lot time consuming to do in 
+	// interactive console. Next version implement a mark-up mechanism to
+	// delete in daily maintance. In this version just left in database and
+	// Wait to be deleted when get too old
 			
 	if (process_sql ("DELETE FROM tagente_datos_inc WHERE id_agente_modulo = ".$id_borrar_modulo) === false)
 		$error++;

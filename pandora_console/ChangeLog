@@ -1,5 +1,22 @@
 2009-01-12  Esteban Sanchez  <estebans@artica.es>
 
+	* include/functions_alerts.php: Removed debug output. Show no SQL
+	error on delete_alert_* functions.
+
+	* index.php: Added missing jQuery script.
+
+	* godmode/alerts/alert_templates.php: Added a missing br. Show "empty"
+	string if no value was set.
+
+	* godmode/alerts/alert_commands.php: Added a check to avoid internal
+	commands removal.
+
+	* pandoradb.sql: Removed talerta table.
+
+	* pandoradb_data.sql: Data from talerta moved to talert_commands.
+
+2009-01-12  Esteban Sanchez  <estebans@artica.es>
+
 	* godmode/agentes/alert_manager.php: Complete rewritten of the alert
 	system when assigned alerts to an agent.
 

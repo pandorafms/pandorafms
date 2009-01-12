@@ -47,7 +47,11 @@ if (defined ('AJAX')) {
 		case 'equal':
 		case 'not_equal':
 			echo '<strong>'.__('Value').':</strong> ';
-			echo '<code>'.$template['value'].'</code>';
+			if (empty ($template['value']))
+				echo '<em>'.__('Empty').'</em>';
+			else
+				echo '<code>'.$template['value'].'</code>';
+			echo '<br />';
 			
 			break;
 		case 'max':

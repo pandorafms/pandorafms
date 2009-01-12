@@ -284,14 +284,6 @@ CREATE TABLE IF NOT EXISTS `talert_template_module_actions` (
     ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE  IF NOT EXISTS `talerta` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `id_alert_module` int(10) unsigned NOT NULL,
-  `id_alert_template` int(10) unsigned NOT NULL,
-  `id_alert_action` int(10) unsigned NOT NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 CREATE TABLE  IF NOT EXISTS `tcompound_alert` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `id_aam` int(10) unsigned NOT NULL default '0',
